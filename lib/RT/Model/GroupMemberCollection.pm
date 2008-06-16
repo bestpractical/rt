@@ -71,7 +71,7 @@ use base qw/RT::SearchBuilder/;
 
 # {{{ limit_ToUsers
 
-=head2 limit_ToUsers
+=head2 limit_to_users
 
 Limits this search object to users who are members of this group.
 This is really useful when you want to have your UI separate out
@@ -102,7 +102,7 @@ sub limit_to_users {
 
 # {{{ limit_ToGroups
 
-=head2 limit_ToGroups
+=head2 limit_to_groups
 
 Limits this search object to Groups who are members of this group.
 This is really useful when you want to have your UI separate out
@@ -131,9 +131,9 @@ sub limit_to_groups {
 
 # }}}
 
-# {{{ sub limit_ToMembersOfGroup
+# {{{ sub limit_to_members_of_group
 
-=head2 limit_ToMembersOfGroup PRINCIPAL_ID
+=head2 limit_to_members_of_group PRINCIPAL_ID
 
 Takes a Principal id as its only argument. 
 Limits the current search principals which are _directly_ members

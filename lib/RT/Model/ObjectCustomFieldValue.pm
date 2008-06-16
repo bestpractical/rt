@@ -57,19 +57,25 @@ use base qw/RT::Record/;
 sub table {'ObjectCustomFieldValues'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column content_type => type is 'varchar(80)', max_length is 80, default is '';
+    column
+        content_type => type is 'varchar(80)',
+        max_length is 80, default is '';
     column large_content => type is 'blob', default is '';
     column creator => references RT::Model::User;
     column object_id => type is 'int', max_length is 11, default is '0';
     column last_updated_by => references RT::Model::User;
-    column disabled => type is 'smallint', max_length is 6, default is '0';
-    column sort_order => type is 'int', max_length is 11, default is '0';
-    column Created => type is 'timestamp';
-    column custom_field => references RT::Model::CustomField;
-    column content => type is 'varchar(255)', max_length is 255, default is '';
-    column content_encoding => type is 'varchar(80)', max_length is 80, default is '';
+    column disabled        => type is 'smallint', max_length is 6, default is '0';
+    column sort_order      => type is 'int', max_length is 11, default is '0';
+    column Created         => type is 'timestamp';
+    column custom_field    => references RT::Model::CustomField;
+    column content         => type is 'varchar(255)', max_length is 255, default is '';
+    column
+        content_encoding => type is 'varchar(80)',
+        max_length is 80, default is '';
     column last_updated => type is 'timestamp';
-    column object_type => type is 'varchar(255)', max_length is 255, default is '';
+    column
+        object_type => type is 'varchar(255)',
+        max_length is 255, default is '';
 
 };
 
@@ -77,10 +83,10 @@ sub create {
     my $self = shift;
     my %args = (
         custom_field     => 0,
-        object_type     => '',
-        object_id       => 0,
-        disabled        => 0,
-        content         => '',
+        object_type      => '',
+        object_id        => 0,
+        disabled         => 0,
+        content          => '',
         large_content    => undef,
         content_type     => '',
         content_encoding => '',
@@ -89,25 +95,23 @@ sub create {
 
     if ( defined $args{'content'} && length( $args{'content'} ) > 255 ) {
         if ( defined $args{'large_content'} && length $args{'large_content'} ) {
-            Jifty->log->error(
-                "content is longer than 255 and large_content specified");
+            Jifty->log->error("content is longer than 255 and large_content specified");
         } else {
             $args{'large_content'} = $args{'content'};
-            $args{'content'}      = '';
+            $args{'content'}       = '';
             $args{'content_type'} ||= 'text/plain';
         }
     }
 
-    ( $args{'content_encoding'}, $args{'large_content'} )
-        = $self->_encode_lob( $args{'large_content'}, $args{'content_type'} )
+    ( $args{'content_encoding'}, $args{'large_content'} ) = $self->_encode_lob( $args{'large_content'}, $args{'content_type'} )
         if defined $args{'large_content'};
 
     return $self->SUPER::create(
         custom_field     => $args{'custom_field'},
-        object_type     => $args{'object_type'},
-        object_id       => $args{'object_id'},
-        disabled        => $args{'disabled'},
-        content         => $args{'content'},
+        object_type      => $args{'object_type'},
+        object_id        => $args{'object_id'},
+        disabled         => $args{'disabled'},
+        content          => $args{'content'},
         large_content    => $args{'large_content'},
         content_type     => $args{'content_type'},
         content_encoding => $args{'content_encoding'},
@@ -116,11 +120,10 @@ sub create {
 
 sub large_content {
     my $self = shift;
-    return $self->_decode_lob( $self->content_type, $self->content_encoding,
-        $self->_value( 'large_content', decode_utf8 => 0 ) );
+    return $self->_decode_lob( $self->content_type, $self->content_encoding, $self->_value( 'large_content', decode_utf8 => 0 ) );
 }
 
-=head2 LoadByTicketContentAndCustomField { Ticket => TICKET, custom_field => customfield, content => CONTENT }
+=head2 load_by_ticket_content_and_custom_field { Ticket => TICKET, custom_field => customfield, content => CONTENT }
 
 Loads a custom field value by Ticket, content and which custom_field it's tied to
 
@@ -129,38 +132,38 @@ Loads a custom field value by Ticket, content and which custom_field it's tied t
 sub load_by_ticket_content_and_custom_field {
     my $self = shift;
     my %args = (
-        ticket      => undef,
+        ticket       => undef,
         custom_field => undef,
-        content     => undef,
+        content      => undef,
         @_
     );
 
     return $self->load_by_cols(
-        content     => $args{'content'},
+        content      => $args{'content'},
         custom_field => $args{'custom_field'},
-        object_type => 'RT::Model::Ticket',
-        object_id   => $args{'ticket'},
-        disabled    => 0
+        object_type  => 'RT::Model::Ticket',
+        object_id    => $args{'ticket'},
+        disabled     => 0
     );
 }
 
 sub load_by_object_content_and_custom_field {
     my $self = shift;
     my %args = (
-        object      => undef,
+        object       => undef,
         custom_field => undef,
-        content     => undef,
+        content      => undef,
         @_
     );
 
     my $obj = $args{'object'} or return;
 
     return $self->load_by_cols(
-        content     => $args{'content'},
+        content      => $args{'content'},
         custom_field => $args{'custom_field'},
-        object_type => ref($obj),
-        object_id   => $obj->id,
-        disabled    => 0
+        object_type  => ref($obj),
+        object_id    => $obj->id,
+        disabled     => 0
     );
 }
 
@@ -196,7 +199,7 @@ sub object {
     return $object;
 }
 
-=head2 Delete
+=head2 delete
 
 Disable this value. Used to remove "current" values from records while leaving them in the history.
 
@@ -207,7 +210,7 @@ sub delete {
     return $self->set_disabled(1);
 }
 
-=head2 _FillInTemplateURL URL
+=head2 _fill_in_template_url URL
 
 Takes a URL containing placeholders and returns the URL as filled in for this 
 ObjectCustomFieldValue.
@@ -240,7 +243,7 @@ sub _fill_in_template_url {
     return $url;
 }
 
-=head2 ValueLinkURL
+=head2 value_link_url
 
 Returns a filled in URL template for this ObjectCustomFieldValue, suitable for 
 constructing a hyperlink in RT's webui. Returns undef if this custom field doesn't have
@@ -250,11 +253,10 @@ a link_value_to
 
 sub link_value_to {
     my $self = shift;
-    return $self->_fill_in_template_url(
-        $self->custom_field->link_value_to );
+    return $self->_fill_in_template_url( $self->custom_field->link_value_to );
 }
 
-=head2 ValueIncludeURL
+=head2 value_include_url
 
 Returns a filled in URL template for this ObjectCustomFieldValue, suitable for 
 constructing a hyperlink in RT's webui. Returns undef if this custom field doesn't have
@@ -264,8 +266,7 @@ a include_content_for_value
 
 sub include_content_for_value {
     my $self = shift;
-    return $self->_fill_in_template_url(
-        $self->custom_field->include_content_for_value );
+    return $self->_fill_in_template_url( $self->custom_field->include_content_for_value );
 }
 
 1;

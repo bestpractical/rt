@@ -63,7 +63,7 @@ It is a subclass of L<Tree::Simple>.
 
 =head1 METHODS
 
-=head2 TraversePrePost PREFUNC POSTFUNC
+=head2 traverse_pre_post PREFUNC POSTFUNC
 
 Traverses the tree depth-first.  Before processing the node's children,
 calls PREFUNC with the node as its argument; after processing all of the
@@ -88,7 +88,7 @@ sub traverse_pre_post {
     $postfunc->($self) if $postfunc;
 }
 
-=head2 GetReferencedQueues
+=head2 get_referenced_queues
 
 Returns a hash reference with keys each queue name referenced in a clause in
 the key (even if it's "Queue != 'Foo'"), and values all 1.
@@ -118,7 +118,7 @@ sub get_referenced_queues {
     return $queues;
 }
 
-=head2 GetQueryAndOptionList SELECTED_NODES
+=head2 get_query_and_option_list SELECTED_NODES
 
 Given an array reference of tree nodes that have been selected by the user,
 traverses the tree and returns the equivalent SQL query and a list of hashes
@@ -139,14 +139,13 @@ sub get_query_and_option_list {
     my $list = $self->__linearize_tree;
     foreach my $e (@$list) {
         $e->{'DEPTH'} = $e->{'NODE'}->getDepth;
-        $e->{'SELECTED'}
-            = ( grep $_ == $e->{'NODE'}, @$selected_nodes ) ? 'selected' : '';
+        $e->{'SELECTED'} = ( grep $_ == $e->{'NODE'}, @$selected_nodes ) ? 'selected' : '';
     }
 
     return ( join ' ', map $_->{'TEXT'}, @$list ), $list;
 }
 
-=head2 PruneChildLessAggregators
+=head2 prune_child_less_aggregators
 
 If tree manipulation has left it in a state where there are ANDs, ORs,
 or parenthesizations with no children, get rid of them.
@@ -174,7 +173,7 @@ sub prune_childless_aggregators {
     );
 }
 
-=head2 GetDisplayedNodes
+=head2 get_displayed_nodes
 
 This function returns a list of the nodes of the tree in depth-first
 order which correspond to options in the "clauses" multi-select box.

@@ -1,4 +1,50 @@
-
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
+#                                          <jesse@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/copyleft/gpl.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
 use strict;
 use warnings;
 
@@ -19,7 +65,7 @@ sub setup {
     # Make sure to call the super-class version
     $self->SUPER::setup($args);
 
-    $self->_setup_config( @$args );
+    $self->_setup_config(@$args);
     RT::init_system_objects();
 }
 
@@ -73,12 +119,7 @@ sub open_mailgate_ok {
     my $baseurl = shift;
     my $queue   = shift || 'general';
     my $action  = shift || 'correspond';
-    ok( open(
-            my $mail,
-            "|$RT::BinPath/rt-mailgate --url $baseurl --queue $queue --action $action"
-        ),
-        "Opened the mailgate - $!"
-    );
+    ok( open( my $mail, "|$RT::BinPath/rt-mailgate --url $baseurl --queue $queue --action $action" ), "Opened the mailgate - $!" );
     return $mail;
 }
 
@@ -92,8 +133,7 @@ sub close_mailgate_ok {
 sub mailsent_ok {
     my $class    = shift;
     my $expected = shift;
-    is( $mailsent, $expected,
-        "The number of mail sent ($expected) matches. yay" );
+    is( $mailsent, $expected, "The number of mail sent ($expected) matches. yay" );
 }
 
 =head1 UTILITIES
@@ -133,8 +173,7 @@ sub load_or_create_user {
     # clean group membership
     {
         require RT::Model::GroupMemberCollection;
-        my $gms = RT::Model::GroupMemberCollection->new(
-            current_user => RT->system_user );
+        my $gms = RT::Model::GroupMemberCollection->new( current_user => RT->system_user );
         my $groups_alias = $gms->join(
             column1 => 'group_id',
             table2  => 'Groups',
@@ -153,8 +192,7 @@ sub load_or_create_user {
 
     # add new user to groups
     foreach (@$MemberOf) {
-        my $group
-            = RT::Model::Group->new( current_user => RT::system_user() );
+        my $group = RT::Model::Group->new( current_user => RT::system_user() );
         $group->load_user_defined_group($_);
         die "couldn't load group '$_'" unless $group->id;
         $group->add_member( $obj->id );
@@ -247,8 +285,7 @@ sub set_rights {
     my $self = shift;
 
     require RT::Model::ACECollection;
-    my $acl
-        = RT::Model::ACECollection->new( current_user => RT->system_user );
+    my $acl = RT::Model::ACECollection->new( current_user => RT->system_user );
     $acl->limit(
         column   => 'right_name',
         operator => '!=',
@@ -276,13 +313,10 @@ sub add_rights {
         my $principal = delete $e->{'principal'};
         unless ( ref $principal ) {
             if ( $principal =~ /^(everyone|(?:un)?privileged)$/i ) {
-                $principal = RT::Model::Group->new(
-                    current_user => RT->system_user
-                );
+                $principal = RT::Model::Group->new( current_user => RT->system_user );
                 $principal->load_system_internal_group($1);
             } else {
-                die
-                    "principal is not an object, but also is not name of a system group";
+                die "principal is not an object, but also is not name of a system group";
             }
         }
         unless ( $principal->isa('RT::Model::Principal') ) {
@@ -290,11 +324,9 @@ sub add_rights {
                 $principal = $principal->principal_object;
             }
         }
-        my @Rights
-            = ref $e->{'right'} ? @{ $e->{'right'} } : ( $e->{'right'} );
+        my @Rights = ref $e->{'right'} ? @{ $e->{'right'} } : ( $e->{'right'} );
         foreach my $right (@Rights) {
-            my ( $status, $msg )
-                = $principal->grant_right( %$e, right => $right );
+            my ( $status, $msg ) = $principal->grant_right( %$e, right => $right );
             Jifty->log->warn($msg) unless $status;
         }
     }
@@ -348,8 +380,7 @@ sub send_via_mailgate {
     my $message = shift;
     my %args    = (@_);
 
-    my ( $status, $gate_result )
-        = $self->run_mailgate( message => $message, %args );
+    my ( $status, $gate_result ) = $self->run_mailgate( message => $message, %args );
 
     my $id;
     unless ( $status >> 8 ) {
@@ -372,8 +403,7 @@ sub import_gnupg_key {
     $key =~ s/\@/-at-/g;
     $key .= ".$type.key";
     require RT::Crypt::GnuPG;
-    return RT::Crypt::GnuPG::import_key(
-        RT::Test->file_content( [ qw(t data gnupg keys), $key ] ) );
+    return RT::Crypt::GnuPG::import_key( RT::Test->file_content( [ qw(t data gnupg keys), $key ] ) );
 }
 
 sub set_mail_catcher {
@@ -393,8 +423,7 @@ sub set_mail_catcher {
 
 sub fetch_caught_mails {
     my $self = shift;
-    return grep /\S/, split /%% split me! %%/,
-        RT::Test->file_content( 't/mailbox', 'unlink' => 1 );
+    return grep /\S/, split /%% split me! %%/, RT::Test->file_content( 't/mailbox', 'unlink' => 1 );
 }
 
 sub file_content {
@@ -426,9 +455,7 @@ sub lsign_gnupg_key {
     require GnuPG::Interface;
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
-    $gnupg->options->hash_init(
-        RT::Crypt::GnuPG::_prepare_gnupg_options(%opt),
-        meta_interactive => 0, );
+    $gnupg->options->hash_init( RT::Crypt::GnuPG::_prepare_gnupg_options(%opt), meta_interactive => 0, );
 
     my %handle;
     my $handles = GnuPG::Handles->new(
@@ -486,9 +513,7 @@ sub trust_gnupg_key {
     require GnuPG::Interface;
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
-    $gnupg->options->hash_init(
-        RT::Crypt::GnuPG::_prepare_gnupg_options(%opt),
-        meta_interactive => 0, );
+    $gnupg->options->hash_init( RT::Crypt::GnuPG::_prepare_gnupg_options(%opt), meta_interactive => 0, );
 
     my %handle;
     my $handles = GnuPG::Handles->new(
@@ -518,14 +543,9 @@ sub trust_gnupg_key {
                 } else {
                     print { $handle{'command'} } "trust\n";
                 }
-            } elsif (
-                $str =~ /^\[GNUPG:\]\s*\QGET_LINE edit_ownertrust.value/ )
-            {
+            } elsif ( $str =~ /^\[GNUPG:\]\s*\QGET_LINE edit_ownertrust.value/ ) {
                 print { $handle{'command'} } "5\n";
-            } elsif ( $str
-                =~ /^\[GNUPG:\]\s*\QGET_BOOL edit_ownertrust.set_ultimate.okay/
-                )
-            {
+            } elsif ( $str =~ /^\[GNUPG:\]\s*\QGET_BOOL edit_ownertrust.set_ultimate.okay/ ) {
                 print { $handle{'command'} } "y\n";
                 $done = 1;
             }

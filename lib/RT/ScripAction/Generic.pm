@@ -85,24 +85,24 @@ sub new {
 sub _init {
     my $self = shift;
     my %args = (
-        argument        => undef,
-        scrip_action_obj  => undef,
-        scrip_obj       => undef,
-        template_obj    => undef,
-        ticket_obj      => undef,
-        transaction_obj => undef,
-        type            => undef,
+        argument         => undef,
+        scrip_action_obj => undef,
+        scrip_obj        => undef,
+        template_obj     => undef,
+        ticket_obj       => undef,
+        transaction_obj  => undef,
+        type             => undef,
 
         @_
     );
 
-    $self->{'argument'}        = $args{'argument'};
-    $self->{'scrip_action_obj'}  = $args{'scrip_action_obj'};
-    $self->{'scrip_obj'}       = $args{'scrip_obj'};
-    $self->{'template_obj'}    = $args{'template_obj'};
-    $self->{'ticket_obj'}      = $args{'ticket_obj'};
-    $self->{'transaction_obj'} = $args{'transaction_obj'};
-    $self->{'type'}            = $args{'type'};
+    $self->{'argument'}         = $args{'argument'};
+    $self->{'scrip_action_obj'} = $args{'scrip_action_obj'};
+    $self->{'scrip_obj'}        = $args{'scrip_obj'};
+    $self->{'template_obj'}     = $args{'template_obj'};
+    $self->{'ticket_obj'}       = $args{'ticket_obj'};
+    $self->{'transaction_obj'}  = $args{'transaction_obj'};
+    $self->{'type'}             = $args{'type'};
 
     Scalar::Util::weaken( $self->{'scrip_action_obj'} );
     Scalar::Util::weaken( $self->{'scrip_obj'} );
@@ -164,7 +164,7 @@ sub scrip_action_obj {
 
 # }}}
 
-# {{{ sub Type
+# {{{ sub type
 sub type {
     my $self = shift;
     return ( $self->{'type'} );
@@ -186,7 +186,7 @@ sub commit {
 
 #What does this type of Action does
 
-# {{{ sub Describe
+# {{{ sub describe
 sub describe {
     my $self = shift;
     return _( "No description for %1", ref $self );
@@ -206,7 +206,7 @@ sub prepare {
 
 #If this rule applies to this transaction, return true.
 
-# {{{ sub IsApplicable
+# {{{ sub is_applicable
 sub is_applicable {
     my $self = shift;
     return (undef);

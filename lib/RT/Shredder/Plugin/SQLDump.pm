@@ -65,7 +65,7 @@ sub test_args {
     my %args = @_;
     $args{'from_storage'} = 1 unless defined $args{'from_storage'};
     my $file = $args{'filename'} = RT::Shredder->get_filename(
-        filename    => $args{'filename'},
+        filename     => $args{'filename'},
         from_storage => delete $args{'from_storage'},
     );
     open $args{'file_handle'}, ">:raw", $file

@@ -69,21 +69,19 @@ use RT::EmailParser ();
 
 sub get_current_user {
     my %args = (
-        message       => undef,
+        message         => undef,
         raw_message_ref => undef,
         @_
     );
 
-    $args{'message'}->head->delete($_)
-        for qw(X-RT-GnuPG-status X-RT-Incoming-Encryption
+    $args{'message'}->head->delete($_) for qw(X-RT-GnuPG-status X-RT-Incoming-Encryption
         X-RT-Incoming-Signature X-RT-Privacy);
 
     my $msg = $args{'message'}->dup;
 
     my ( $status, @res ) = verify_decrypt( entity => $args{'message'} );
     if ( $status && !@res ) {
-        $args{'message'}
-            ->head->add( 'X-RT-Incoming-Encryption' => 'Not encrypted' );
+        $args{'message'}->head->add( 'X-RT-Incoming-Encryption' => 'Not encrypted' );
 
         return 1;
     }
@@ -93,10 +91,8 @@ sub get_current_user {
 
     unless ($status) {
         Jifty->log->error("Had a problem during decrypting and verifying");
-        my $reject
-            = handle_errors( message => $args{'message'}, result => \@res );
-        return ( 0,
-            'rejected because of problems during decrypting and verifying' )
+        my $reject = handle_errors( message => $args{'message'}, result => \@res );
+        return ( 0, 'rejected because of problems during decrypting and verifying' )
             if $reject;
     }
 
@@ -107,8 +103,7 @@ sub get_current_user {
         Data        => ${ $args{'raw_message_ref'} },
     );
 
-    $args{'message'}->head->add( 'X-RT-GnuPG-status' => $_->{'status'} )
-        foreach @res;
+    $args{'message'}->head->add( 'X-RT-GnuPG-status' => $_->{'status'} ) foreach @res;
     $args{'message'}->head->add( 'X-RT-Privacy' => 'PGP' );
 
     # XXX: first entity only for now
@@ -120,8 +115,7 @@ sub get_current_user {
                 $decrypted = 1;
             }
             if ( $_->{operation} eq 'verify' && $_->{status} eq 'DONE' ) {
-                $args{'message'}->head->add(
-                    'X-RT-Incoming-Signature' => $_->{user_string} );
+                $args{'message'}->head->add( 'X-RT-Incoming-Signature' => $_->{user_string} );
             }
         }
 
@@ -191,11 +185,7 @@ sub check_no_private_key {
 
     Jifty->log->error("Couldn't decrypt a message: have no private key");
 
-    my $address = (
-        RT::Interface::Email::parse_sender_address_from_head(
-            $args{'message'}->head
-        )
-    )[0];
+    my $address = ( RT::Interface::Email::parse_sender_address_from_head( $args{'message'}->head ) )[0];
     my ($status) = RT::Interface::Email::send_email_using_template(
         to        => $address,
         template  => 'Error: no private key',
@@ -219,14 +209,9 @@ sub check_bad_data {
         @{ $args{'status'} };
     return 1 unless @bad_data_messages;
 
-    Jifty->log->error( "Couldn't process a message: " . join ', ',
-        @bad_data_messages );
+    Jifty->log->error( "Couldn't process a message: " . join ', ', @bad_data_messages );
 
-    my $address = (
-        RT::Interface::Email::parse_sender_address_from_head(
-            $args{'message'}->head
-        )
-    )[0];
+    my $address = ( RT::Interface::Email::parse_sender_address_from_head( $args{'message'}->head ) )[0];
     my ($status) = RT::Interface::Email::send_email_using_template(
         to        => $address,
         template  => 'Error: bad GnuPG data',

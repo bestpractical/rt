@@ -45,7 +45,6 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
 use strict;
 use warnings FATAL => 'all';
 
@@ -117,7 +116,7 @@ C<(0, $msg)> in other case.
 
 =cut
 
-sub HasSupportForArgs {
+sub has_support_for_args {
     my $self        = shift;
     my @args        = @_;
     my @unsupported = ();

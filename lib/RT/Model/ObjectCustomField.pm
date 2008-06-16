@@ -48,22 +48,20 @@ use strict;
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
 package RT::Model::ObjectCustomField;
 use base qw/RT::Record/;
 
 sub table {'ObjectCustomFields'}
 
-
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column custom_field => references RT::Model::CustomField;
-    column object_id   => type is 'int', max_length is 11, default is '0';
-    column sort_order => type is 'int', max_length is 11, default is '0';
-    column creator     => references RT::Model::User;
-    column created     => type is 'timestamp';
+    column custom_field    => references RT::Model::CustomField;
+    column object_id       => type is 'int', max_length is 11, default is '0';
+    column sort_order      => type is 'int', max_length is 11, default is '0';
+    column creator         => references RT::Model::User;
+    column created         => type is 'timestamp';
     column last_updated_by => references RT::Model::User;
-    column last_updated => type is 'timestamp';
+    column last_updated    => type is 'timestamp';
 
 };
 
@@ -71,15 +69,14 @@ sub create {
     my $self = shift;
     my %args = (
         custom_field => 0,
-        object_id   => 0,
+        object_id    => 0,
         sort_order   => undef,
         @_
     );
 
     my $cf = $self->custom_field_obj( $args{'custom_field'} );
     unless ( $cf->id ) {
-        Jifty->log->error(
-            "Couldn't load '$args{'custom_field'}' custom field");
+        Jifty->log->error("Couldn't load '$args{'custom_field'}' custom field");
         return 0;
     }
 
@@ -95,8 +92,7 @@ sub create {
     }
 
     unless ( defined $args{'sort_order'} ) {
-        my $objectCFs = RT::Model::ObjectCustomFieldCollection->new(
-            current_user => RT->system_user );
+        my $objectCFs = RT::Model::ObjectCustomFieldCollection->new( current_user => RT->system_user );
         $objectCFs->limit_to_object_id( $args{'object_id'} );
         $objectCFs->limit_to_lookup_type( $cf->lookup_type );
         $objectCFs->order_by( column => 'sort_order', order => 'DESC' );
@@ -109,7 +105,7 @@ sub create {
 
     return $self->SUPER::create(
         custom_field => $args{'custom_field'},
-        object_id   => $args{'object_id'},
+        object_id    => $args{'object_id'},
         sort_order   => $args{'sort_order'},
     );
 }

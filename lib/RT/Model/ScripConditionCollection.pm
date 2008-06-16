@@ -80,7 +80,7 @@ sub _init {
 
 # }}}
 
-# {{{ sub limit_ToType
+# {{{ sub limit_to_type
 sub limit_to_type {
     my $self = shift;
     my $type = shift;

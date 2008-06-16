@@ -56,7 +56,7 @@ BEGIN {
     use vars qw ($VERSION  @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
 
     # set the version for version checking
-    $VERSION = do { my @r = ( q$Revision: 1.2.2.1 $ =~ /\d+/g ); sprintf "%d." . "%02d" x $#r, @r }; # must be all one line, for MakeMaker
+    $VERSION = do { my @r = ( q$Revision: 1.2.2.1 $ =~ /\d+/g ); sprintf "%d." . "%02d" x $#r, @r };    # must be all one line, for MakeMaker
 
     @ISA = qw(Exporter);
 
@@ -92,7 +92,7 @@ BEGIN {
   #Get the current user all loaded
   my $CurrentUser = get_current_user();
 
-  print _('Hello!'); # Synonym of $CuurentUser->loc('Hello!');
+  print _('Hello!'); # Synonym of $CuurentUser->_('Hello!');
 
 =head1 description
 
@@ -102,14 +102,14 @@ BEGIN {
 
 =cut
 
-=head2 CleanEnv
+=head2 clean_env
 
 Removes some of the nastiest nasties from the user\'s environment.
 
 =cut
 
 sub clean_env {
-    $ENV{'PATH'}   = '/bin:/usr/bin';                   # or whatever you need
+    $ENV{'PATH'}   = '/bin:/usr/bin';                      # or whatever you need
     $ENV{'CDPATH'} = '' if defined $ENV{'CDPATH'};
     $ENV{'SHELL'}  = '/bin/sh' if defined $ENV{'SHELL'};
     $ENV{'ENV'}    = '' if defined $ENV{'ENV'};
@@ -118,7 +118,7 @@ sub clean_env {
 
 {
 
-    my $CurrentUser;    # shared betwen get_current_user and loc
+    my $CurrentUser;                                       # shared betwen get_current_user and loc
 
     # {{{ sub get_current_user
 
@@ -135,8 +135,7 @@ loaded with that user.  if the current user isn't found, returns a copy of RT::N
 
         #Instantiate a user object
 
-        my $gecos
-            = ( $^O eq 'MSWin32' ) ? Win32::Loginname() : ( getpwuid($<) )[0];
+        my $gecos = ( $^O eq 'MSWin32' ) ? Win32::Loginname() : ( getpwuid($<) )[0];
 
         #If the current user is 0, then RT will assume that the User object
         #is that of the currentuser.
@@ -145,15 +144,13 @@ loaded with that user.  if the current user isn't found, returns a copy of RT::N
         $CurrentUser->load_by_gecos($gecos);
 
         unless ( $CurrentUser->id ) {
-            Jifty->log->debug(
-                "No user with a unix login of '$gecos' was found. ");
+            Jifty->log->debug("No user with a unix login of '$gecos' was found. ");
         }
 
         return ($CurrentUser);
     }
 
     # }}}
-
 
 }
 

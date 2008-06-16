@@ -45,7 +45,6 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
 package RT::Condition::AnyTransaction;
 require RT::Condition::Generic;
 
@@ -53,7 +52,7 @@ use strict;
 use vars qw/@ISA/;
 @ISA = qw(RT::Condition::Generic);
 
-=head2 IsApplicable
+=head2 is_applicable
 
 This happens on every transaction. it's always applicable
 

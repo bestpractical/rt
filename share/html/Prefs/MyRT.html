@@ -1,0 +1,156 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, Title => $title &>
+<& /Prefs/Elements/Tabs,
+    current_tab => 'Prefs/MyRT.html',
+    Title => $title,
+    Searches => \@sys_searches
+&>
+<& /Elements/ListActions, actions => \@results &>
+
+<& /Widgets/SelectionBox:header, nojs => 1 &>
+
+<form method="post" action="MyRT.html">
+<input type="hidden" name="Reset" value="1" />
+<input type="submit" class="button" value="<% _('Reset to default') %>">
+</form>
+
+<br />
+
+% for my $pane ( @panes ) {
+<&|/Widgets/TitleBox,
+    title => _('RT at a glance') .': '. _( $pane->{name} ),
+    bodyclass => ""
+&>
+<& /Widgets/SelectionBox:show, self => $pane, nojs => 1 &>
+</&>
+% }
+
+<&|/Widgets/TitleBox, title => _('Options'), bodyclass => "" &>
+<form method="post" action="MyRT.html">
+<&|/l&>Rows per box</&>:
+<input name="SummaryRows" value="<% $ARGS{SummaryRows} %>" />
+<input type="submit" class="button" name="UpdateSummaryRows" value="<% _('Save') %>" />
+</form>
+</&>
+
+<%INIT>
+my @results;
+my $title = _("Customize").' '._("RT at a glance");
+my $user = Jifty->web->current_user->user_object;
+
+if ( $ARGS{'UpdateSummaryRows'} ) {
+    unless ( $ARGS{SummaryRows} && int $ARGS{SummaryRows} > 0 ) {
+        push @results, _("Illegal '%1' preference value.", _('summary rows'));
+        $ARGS{SummaryRows} = 0;
+    }
+    else {
+        $user->set_preferences( 'SummaryRows', int $ARGS{SummaryRows} );
+        push @results, _('Preferences saved for %1.', _('summary rows'));
+    }
+}
+$ARGS{'SummaryRows'} ||= $user->preferences('SummaryRows', RT->config->get('DefaultSummaryRows'));
+
+if ($ARGS{Reset}) {
+    $user->set_preferences('HomepageSettings', {});
+    delete $session{'my_rt_portlets'};
+}
+
+unless (exists $session{'my_rt_portlets'}) {
+    my ($default_portlets) = RT::System->new()->attributes->named('HomepageSettings');
+    my $portlets = $default_portlets ? $default_portlets->content : {};
+    $session{'my_rt_portlets'} = $user->preferences('HomepageSettings', $portlets);
+}
+my $portlets = $session{'my_rt_portlets'};
+
+my %seen;
+my @items = map ["component-$_", $_], grep !$seen{$_}++, @{RT->config->get('HomepageComponents')};
+
+my $sys = RT::System->new();
+my @objs = ($sys);
+
+push @objs, RT::SavedSearches->new()->_privacy_objects
+    if Jifty->web->current_user->has_right( right  => 'LoadSavedSearch',
+                                          object => RT->system );
+
+my @sys_searches;
+for my $object (@objs) {
+    for ($m->comp("/Search/Elements/SearchesForObject", object => $object)) {
+        my ($desc, $search) = @$_;
+        my $SearchType = $search->content->{'SearchType'} || 'Ticket';
+        if ($object eq $sys && $SearchType eq 'Ticket') {
+            push @items, ["system-$desc", $desc];
+            push @sys_searches, [$desc, $search];
+        }
+        else {
+            my $oid = ref($object).'-'.$object->id.'-SavedSearch-'.$search->id;
+            my $type = ($SearchType eq 'Ticket')
+                ? 'Saved Search' : $SearchType; # loc
+            push @items, ["saved-$oid", _($type).": $desc"];
+        }
+    }
+}
+
+my @panes = $m->comp(
+    '/Admin/Elements/ConfigureMyRT',
+    panes  => ['body', 'summary'],
+    Action => 'MyRT.html',
+    items => \@items,
+    current_portlets => $portlets,
+    OnSave => sub  {
+        my ( $conf, $pane ) = @_;
+        $user->set_preferences( 'HomepageSettings', $conf );
+        push @results, _( 'Preferences saved for %1.', $pane );
+        delete $session{'my_rt_portlets'};
+    }
+);
+
+$m->comp( '/Widgets/SelectionBox:process', %ARGS, self => $_, nojs => 1 )
+    for @panes;
+
+</%INIT>

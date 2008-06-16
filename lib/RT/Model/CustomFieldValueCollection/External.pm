@@ -73,7 +73,7 @@ Subclasses should implement the following methods:
 This method should return a string describing the data source; this is
 the identifier by which the user will see the dropdown.
 
-=head2 ExternalValues
+=head2 external_values
 
 This method should return an array reference of hash references.  The
 hash references should contain keys for C<name>, C<description>, and
@@ -109,8 +109,7 @@ sub _cloned_attributes {
 sub limit {
     my $self = shift;
     my %args = (@_);
-    push @{ $self->{'__external_cf_limits'} ||= [] },
-        { %args, CALLBACK => $self->__build_limit_check(%args), };
+    push @{ $self->{'__external_cf_limits'} ||= [] }, { %args, CALLBACK => $self->__build_limit_check(%args), };
     return $self->SUPER::limit(%args);
 }
 
@@ -134,18 +133,12 @@ END
     if ( $args{'operator'} =~ /^(?:=|!=|<>)$/ ) {
         $code .= 'return 0 unless defined $value;';
         my %h = ( '=' => ' eq ', '!=' => ' ne ', '<>' => ' ne ' );
-        $code
-            .= 'return 0 unless $value'
-            . $h{ $args{'operator'} }
-            . '$condition;';
+        $code .= 'return 0 unless $value' . $h{ $args{'operator'} } . '$condition;';
         $code .= 'return 1;';
     } elsif ( $args{'operator'} =~ /^(?:LIKE|NOT LIKE)$/i ) {
         $code .= 'return 0 unless defined $value;';
         my %h = ( 'LIKE' => ' =~ ', 'NOT LIKE' => ' !~ ' );
-        $code
-            .= 'return 0 unless $value'
-            . $h{ uc $args{'operator'} }
-            . '/\Q$condition/i;';
+        $code .= 'return 0 unless $value' . $h{ uc $args{'operator'} } . '/\Q$condition/i;';
         $code .= 'return 1;';
     } else {
         $code .= 'return 0;';
@@ -164,16 +157,9 @@ sub __build_aggregators_check {
     my $code = '';
     for ( my $i = 0; $i < @{ $self->{'__external_cf_limits'} }; $i++ ) {
         next unless $self->{'__external_cf_limits'}->[$i]->{'CALLBACK'};
-        $code .= $h{
-            uc( $self->{'__external_cf_limits'}->[$i]->{'entry_aggregator'}
-                    || 'OR'
-            )
-            }
+        $code .= $h{ uc( $self->{'__external_cf_limits'}->[$i]->{'entry_aggregator'} || 'OR' ) }
             if $code;
-        $code
-            .= '$sb->{\'__external_cf_limits\'}->[' 
-            . $i
-            . ']->{\'CALLBACK\'}->($record)';
+        $code .= '$sb->{\'__external_cf_limits\'}->[' . $i . ']->{\'CALLBACK\'}->($record)';
     }
     return unless $code;
 
@@ -192,7 +178,7 @@ sub _do_search {
         id            => 1,
         name          => '',
         customfield   => $self->{'__external_cf'},
-        sort_order     => 0,
+        sort_order    => 0,
         description   => '',
         creator       => RT->system_user->id,
         Created       => undef,

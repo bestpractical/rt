@@ -68,7 +68,7 @@ sub new {
     return $self;
 }
 
-=head2 _PushDependencies
+=head2 _push_dependencies
 
 Put in objects into collection.
 Takes
@@ -85,8 +85,7 @@ SeeAlso: _PushDependecy, RT::Shredder::Dependency
 sub _push_dependencies {
     my $self = shift;
     my %args = ( target_objects => undef, shredder => undef, @_ );
-    my @objs = $args{'shredder'}
-        ->cast_objects_to_records( objects => delete $args{'target_objects'} );
+    my @objs = $args{'shredder'}->cast_objects_to_records( objects => delete $args{'target_objects'} );
     $self->_push_dependency( %args, target_object => $_ ) foreach @objs;
     return;
 }
@@ -94,20 +93,19 @@ sub _push_dependencies {
 sub _push_dependency {
     my $self = shift;
     my %args = (
-        base_object  => undef,
-        flags        => undef,
+        base_object   => undef,
+        flags         => undef,
         target_object => undef,
-        shredder     => undef,
+        shredder      => undef,
         @_
     );
-    my $rec
-        = $args{'shredder'}->put_object( object => $args{'target_object'} );
+    my $rec = $args{'shredder'}->put_object( object => $args{'target_object'} );
     return if $rec->{'state'} & WIPED;    # there is no object anymore
 
     push @{ $self->{'list'} },
         RT::Shredder::Dependency->new(
-        base_object  => $args{'base_object'},
-        flags        => $args{'flags'},
+        base_object   => $args{'base_object'},
+        flags         => $args{'flags'},
         target_object => $rec->{'object'},
         );
 
@@ -127,7 +125,7 @@ sub list {
     my %args = (
         with_flags    => undef,
         without_flags => undef,
-        callback     => undef,
+        callback      => undef,
         @_
     );
 

@@ -47,8 +47,9 @@
 # END BPS TAGGED BLOCK }}}
 use warnings;
 use strict;
+
 package RT::ScripAction::RecordComment;
-use base  qw(RT::ScripAction::Generic);
+use base qw(RT::ScripAction::Generic);
 
 =head1 name
 
@@ -66,7 +67,7 @@ $scrip_action->commit() if $result;
 
 =head1 METHODS
 
-=head2 Prepare
+=head2 prepare
 
 Check for the existence of a Transaction.  If a Transaction already
 exists, and is of type "comment" or "Correspond", abort because that
@@ -84,7 +85,7 @@ sub prepare {
     return 1;
 }
 
-=head2 Commit
+=head2 commit
 
 Create a Transaction by calling the ticket's comment method on our
 parsed Template, which may have an RT-Send-Cc or RT-Send-Bcc header.
@@ -101,14 +102,10 @@ sub commit {
 sub create_transaction {
     my $self = shift;
 
-    my ( $result, $msg )
-        = $self->{'template_obj'}
-        ->parse( ticket_obj => $self->{'ticket_obj'} );
+    my ( $result, $msg ) = $self->{'template_obj'}->parse( ticket_obj => $self->{'ticket_obj'} );
     return undef unless $result;
 
-    my ( $trans, $desc, $transaction )
-        = $self->{'ticket_obj'}
-        ->comment( mime_obj => $self->template_obj->mime_obj );
+    my ( $trans, $desc, $transaction ) = $self->{'ticket_obj'}->comment( mime_obj => $self->template_obj->mime_obj );
     $self->{'transaction_obj'} = $transaction;
 }
 

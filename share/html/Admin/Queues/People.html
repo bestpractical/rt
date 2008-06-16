@@ -1,0 +1,212 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, Title => _('Modify people related to queue %1', $queue_obj->name) &>
+<& /Admin/Elements/QueueTabs, id => $id, 
+    queue_obj => $queue_obj,                                                      
+    current_tab => $current_tab, 
+    Title => _('Modify people related to queue %1', $queue_obj->name) &>
+
+<& /Elements/ListActions, actions => \@results &>
+
+ 
+<form method="post" action="People.html">
+<input type="hidden" class="hidden" name="id" value="<%$queue_obj->id%>" />
+
+<table width="100%">
+<tr>
+<td valign="top" >
+
+<h3><&|/l&>Current watchers</&></h3>
+
+
+<&|/l&>Cc</&>:
+
+<& /Admin/Elements/EditQueueWatchers, queue_obj => $queue_obj, Watchers => $queue_obj->role_group("cc") &>
+
+<&|/l&>Administrative Cc</&>:
+
+<& /Admin/Elements/EditQueueWatchers, queue_obj => $queue_obj, Watchers => $queue_obj->role_group("admin_cc") &>
+
+
+</td>
+<td valign="top">
+<h3><&|/l&>New watchers</&></h3>
+
+<&|/l&>Find people whose</&><br />
+<& /Elements/SelectUsers &>
+<input type="submit" class="button" name="OnlySearchForPeople" value="<&|/l&>Go!</&>" />
+<br />
+<&|/l&>Find groups whose</&><br />
+<& /Elements/SelectGroups &>
+<input type="submit" class="button" name="OnlySearchForGroup" value="<&|/l&>Go!</&>" />
+
+<p>
+<&|/l&>add new watchers</&>:<br />
+<p>
+<strong><&|/l&>Users</&></strong>
+% if ($user_msg) {
+<br />
+<em><%$user_msg%></em>
+% } elsif ($Users) {
+<ul>
+% while (my $u = $Users->next ) {
+<li><& /Elements/SelectWatcherType,
+    Scope => 'queue',
+    name => "Queue-AddWatcher-Principal-". $u->principal_id,
+&>
+<& /Elements/ShowUser, User => $u &></li>
+% }
+</ul>
+% }
+
+<p>
+<strong><&|/l&>Groups</&></strong>
+
+% if ($group_msg) {
+<br />
+<em><%$group_msg%></em>
+% } elsif ($Groups) {
+<ul>
+% while (my $g = $Groups->next ) {
+<li><&/Elements/SelectWatcherType, Scope=>'queue', name =>
+"Queue-AddWatcher-Principal-".$g->principal_id &> <%$g->name%>
+(<%$g->description%>)
+% }
+</ul>
+% }
+
+</td>
+</tr>
+</table>
+
+
+
+
+<& /Elements/Submit, Label => _('Save Changes'), Caption => _("If you've updated anything above, be sure to"), Reset => 1 &>
+</form>
+
+<%INIT>
+
+my $current_tab;
+my ($field, @results, $User, $Users, $Groups, $watcher, $user_msg, $group_msg);
+
+# {{{ Load the queue
+#If we get handed two ids, mason will make them an array. bleck.
+# We want teh first one. Just because there's no other sensible way
+# to deal
+
+
+
+my $queue_obj = RT::Model::Queue->new();
+$queue_obj->load($id) || abort(_("Couldn't load queue", $id));
+# }}}
+
+# {{{ Delete deletable watchers
+
+foreach my $key (keys %ARGS) {
+        my $id = $queue_obj->id;
+
+    if (($key =~ /^Queue-$id-DeleteWatcher-Type-(.*?)-Principal-(\d*)$/)) {;
+	    my ($code, $msg) = $queue_obj->delete_watcher(type => $1,
+                                                    principal_id => $2);
+	    push @results, $msg;
+    }
+}
+# }}}
+
+# {{{ Add new watchers
+foreach my  $key (keys %ARGS) {
+    #They're in this order because otherwise $1 gets clobbered :/
+    if ( ($ARGS{$key} =~ /^(AdminCc|Cc)$/) and
+	 ($key =~ /^Queue-AddWatcher-Principal-(\d*)$/) ) {
+	Jifty->log->debug("Adding a watcher $1 to ".$ARGS{$key}."\n");
+	my ($code, $msg) = $queue_obj->add_watcher(type => $ARGS{$key},
+				                             principal_id => $1);
+	push @results, $msg;
+    }
+}
+
+# }}}
+
+ 
+
+if (!length $ARGS{'UserString'}) {
+$user_msg = _("No principals selected.");
+ }
+else {
+    $Users = RT::Model::UserCollection->new();
+    $Users->limit(column => $ARGS{'UserField'},
+                 value => $ARGS{'UserString'},
+                 operator => $ARGS{'UserOp'});
+     }
+
+if (!length $ARGS{'GroupString'}) {
+$group_msg = _("No principals selected.");
+ }
+else {
+$Groups = RT::Model::GroupCollection->new();
+$Groups->limit(column => 'domain', operator => '=', value => 'UserDefined');
+$Groups->limit(column => $ARGS{'GroupField'},
+		value => $ARGS{'GroupString'},
+		operator => $ARGS{'GroupOp'});
+     }
+
+$current_tab = 'Admin/Queues/People.html?id='.$queue_obj->id;
+</%INIT>
+
+<%ARGS>
+$UserField => 'name'
+$UserOp => '='
+$UserString => undef
+$GroupField => 'name'
+$GroupOp => '='
+$GroupString => undef
+$Type => undef
+$id => undef
+</%ARGS>
+

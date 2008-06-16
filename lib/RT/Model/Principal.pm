@@ -53,12 +53,10 @@ use warnings;
 package RT::Model::Principal;
 use base qw/RT::Record/;
 
-
 use Cache::Simple::TimedExpiry;
 
 use RT::Model::Group;
 use RT::Model::User;
-
 
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
@@ -86,8 +84,7 @@ Returns undef, otherwise
 
 sub is_group {
     my $self = shift;
-    if ( lc( $self->principal_type ||'') eq 'group' )
-    {
+    if ( lc( $self->principal_type || '' ) eq 'group' ) {
         return 1;
     }
     return undef;
@@ -210,7 +207,7 @@ sub revoke_right {
         @_
     );
 
-#if we haven't specified any sort of right, we're talking about a global right
+    #if we haven't specified any sort of right, we're talking about a global right
     if (   !defined $args{'object'}
         && !defined $args{'object_id'}
         && !defined $args{'object_type'} )
@@ -317,10 +314,7 @@ sub has_right {
         if $args{'equiv_objects'};
 
     if ( $self->disabled ) {
-        Jifty->log->error( "disabled User #"
-                . $self->id
-                . " failed access check for "
-                . $args{'right'} );
+        Jifty->log->error( "disabled User #" . $self->id . " failed access check for " . $args{'right'} );
         return (undef);
     }
 
@@ -341,22 +335,20 @@ sub has_right {
         # this is a little bit hacky, but basically, now that we've done
         # the ticket roles magic, we load the queue object
         # and ask all the rest of our questions about the queue.
-        unshift @{ $args{'equiv_objects'} },
-            $args{'object'}->acl_equivalence_objects;
+        unshift @{ $args{'equiv_objects'} }, $args{'object'}->acl_equivalence_objects;
 
     }
 
     unshift @{ $args{'equiv_objects'} }, RT->system
-                unless $self->can('_is_override_global_acl')
-                    && $self->_is_override_global_acl( $args{'object'} );
-
+        unless $self->can('_is_override_global_acl')
+            && $self->_is_override_global_acl( $args{'object'} );
 
     # {{{ If we've cached a win or loss for this lookup say so
 
-# Construct a hashkeys to cache decisions:
-# 1) full_hashkey - key for any result and for full combination of uid, right and objects
-# 2) short_hashkey - one key for each object to store positive results only, it applies
-# only to direct group rights and partly to role rights
+    # Construct a hashkeys to cache decisions:
+    # 1) full_hashkey - key for any result and for full combination of uid, right and objects
+    # 2) short_hashkey - one key for each object to store positive results only, it applies
+    # only to direct group rights and partly to role rights
     my $self_id = $self->id;
     my $full_hashkey = join ";:;", $self_id, $args{'right'};
     foreach ( @{ $args{'equiv_objects'} } ) {
@@ -418,23 +410,18 @@ sub _has_group_right {
 
     my $right = $args{'right'};
 
-    my $query
-        = "SELECT ACL.id, ACL.object_type, ACL.object_id "
-        . "FROM ACL, Principals, CachedGroupMembers WHERE "
-        .
+    my $query = "SELECT ACL.id, ACL.object_type, ACL.object_id " . "FROM ACL, Principals, CachedGroupMembers WHERE " .
 
         # Only find superuser or rights with the name $right
         "(ACL.right_name = 'SuperUser' OR ACL.right_name = '$right') "
 
         # Never find disabled groups.
-        . "AND Principals.id = ACL.principal_id "
-        . "AND Principals.principal_type = 'Group' "
-        . "AND Principals.disabled = 0 "
+        . "AND Principals.id = ACL.principal_id " . "AND Principals.principal_type = 'Group' " . "AND Principals.disabled = 0 "
 
-# See if the principal is a member of the group recursively or _is the rightholder_
-# never find recursively disabled group members
-# also, check to see if the right is being granted _directly_ to this principal,
-#  as is the case when we want to look up group rights
+        # See if the principal is a member of the group recursively or _is the rightholder_
+        # never find recursively disabled group members
+        # also, check to see if the right is being granted _directly_ to this principal,
+        #  as is the case when we want to look up group rights
         . "AND CachedGroupMembers.group_id  = ACL.principal_id "
         . "AND CachedGroupMembers.group_id  = Principals.id "
         . "AND CachedGroupMembers.member_id = "
@@ -471,30 +458,22 @@ sub _has_role_right {
     );
     my $right = $args{'right'};
 
-    my $query
-        = "SELECT ACL.id "
-        . "FROM ACL, Groups, Principals, CachedGroupMembers WHERE "
-        .
+    my $query = "SELECT ACL.id " . "FROM ACL, Groups, Principals, CachedGroupMembers WHERE " .
 
         # Only find superuser or rights with the name $right
         "(ACL.right_name = 'SuperUser' OR  ACL.right_name = '$right') "
 
         # Never find disabled things
-        . "AND ( Principals.disabled = 0 OR Principals.disabled IS NULL) "
-        . "AND (CachedGroupMembers.disabled = 0 OR CachedGroupMembers.disabled IS NULL )"
+        . "AND ( Principals.disabled = 0 OR Principals.disabled IS NULL) " . "AND (CachedGroupMembers.disabled = 0 OR CachedGroupMembers.disabled IS NULL )"
 
         # We always grant rights to Groups
-        . "AND Principals.id = Groups.id "
-        . "AND Principals.principal_type = 'Group' "
+        . "AND Principals.id = Groups.id " . "AND Principals.principal_type = 'Group' "
 
-# See if the principal is a member of the group recursively or _is the rightholder_
-# never find recursively disabled group members
-# also, check to see if the right is being granted _directly_ to this principal,
-#  as is the case when we want to look up group rights
-        . "AND Principals.id = CachedGroupMembers.group_id "
-        . "AND CachedGroupMembers.member_id = "
-        . $self->id . " "
-        . "AND ACL.principal_type = Groups.type ";
+        # See if the principal is a member of the group recursively or _is the rightholder_
+        # never find recursively disabled group members
+        # also, check to see if the right is being granted _directly_ to this principal,
+        #  as is the case when we want to look up group rights
+        . "AND Principals.id = CachedGroupMembers.group_id " . "AND CachedGroupMembers.member_id = " . $self->id . " " . "AND ACL.principal_type = Groups.type ";
 
     my (@object_clauses);
     foreach my $obj ( @{ $args{'equiv_objects'} } ) {
@@ -571,8 +550,7 @@ return that. if it has no type, return group.
 sub _get_principal_type_for_acl {
     my $self = shift;
     my $type;
-    if (   $self->is_group && $self->object->domain =~ /Role$/ )
-    {
+    if ( $self->is_group && $self->object->domain =~ /Role$/ ) {
         $type = $self->object->type;
     } else {
         $type = $self->principal_type;

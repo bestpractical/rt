@@ -57,10 +57,9 @@ sub new {
     my $class = shift;
 
     my $new_class
-        = $HTML::Mason::ApacheHandler::VERSION
-        ? 'HTML::Mason::Request::ApacheHandler'
-        : $HTML::Mason::CGIHandler::VERSION ? 'HTML::Mason::Request::CGI'
-        :                                     'HTML::Mason::Request';
+        = $HTML::Mason::ApacheHandler::VERSION ? 'HTML::Mason::Request::ApacheHandler'
+        : $HTML::Mason::CGIHandler::VERSION    ? 'HTML::Mason::Request::CGI'
+        :                                        'HTML::Mason::Request';
 
     $class->alter_superclass($new_class);
     $class->valid_params( %{ $new_class->valid_params } );
@@ -125,8 +124,7 @@ package HTML::Mason::Request::Jifty;
         unless ($callbacks) {
             my $path = "/Callbacks/*$page/$name";
             my @roots
-                = map $_->[1],
-                $HTML::Mason::VERSION <= 1.28
+                = map $_->[1], $HTML::Mason::VERSION <= 1.28
                 ? $self->interp->resolver->comp_root_array
                 : $self->interp->comp_root_array;
 

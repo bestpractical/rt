@@ -88,7 +88,7 @@ sub _init {
 
 # {{{ limit_ToNotInQueue
 
-=head2 limit_ToNotInQueue
+=head2 limit_to_not_in_queue
 
 Takes a queue id # and limits the returned set of templates to those which 
 aren't that queue's templates.
@@ -109,7 +109,7 @@ sub limit_to_not_in_queue {
 
 # {{{ limit_ToGlobal
 
-=head2 limit_ToGlobal
+=head2 limit_to_global
 
 Takes no arguments. Limits the returned set to "Global" templates
 which can be used with any queue.
@@ -130,7 +130,7 @@ sub limit_to_global {
 
 # {{{ limit_ToQueue
 
-=head2 limit_ToQueue
+=head2 limit_to_queue
 
 Takes a queue id # and limits the returned set of templates to that queue's
 templates
@@ -183,8 +183,7 @@ sub next {
 
         # If it's part of a queue, and the user can read templates in
         # that queue, or the user can globally read templates, show it
-        if (   $templ->queue
-            && $templ->current_user_has_queue_right('ShowTemplate')
+        if ($templ->queue && $templ->current_user_has_queue_right('ShowTemplate')
             or $templ->current_user->has_right(
                 object => RT->system,
                 right  => 'ShowTemplate'

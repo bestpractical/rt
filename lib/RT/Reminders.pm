@@ -74,7 +74,7 @@ sub ticket_obj {
     return $self->{'_ticketobj'};
 }
 
-=head2 Collection
+=head2 collection
 
 Returns an RT::Model::TicketCollection object containing reminders for this object's "Ticket"
 
@@ -84,10 +84,7 @@ sub collection {
     my $self = shift;
     my $col  = RT::Model::TicketCollection->new;
 
-    my $query
-        = 'Queue = "'
-        . $self->ticket_obj->queue_obj->name
-        . '" AND type = "reminder"';
+    my $query = 'Queue = "' . $self->ticket_obj->queue_obj->name . '" AND type = "reminder"';
     $query .= ' AND RefersTo = "' . $self->ticket . '"';
 
     $col->from_sql($query);
@@ -95,7 +92,7 @@ sub collection {
     return ($col);
 }
 
-=head2 Add
+=head2 add
 
 Add a reminder for this ticket.
 

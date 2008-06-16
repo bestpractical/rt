@@ -86,7 +86,7 @@ msgid "%1 %2 deleted"
 msgstr ""
 
 #: html/Admin/Elements/EditScrips:65 html/Admin/Elements/ListGlobalScrips:63 html/Ticket/Elements/PreviewScrips:103
-#. (_($scrip->scrip_condition->name), loc($scrip->scrip_action->name), loc($scrip->template_obj->name))
+#. (_($scrip->scrip_condition->name), _($scrip->scrip_action->name), _($scrip->template_obj->name))
 msgid "%1 %2 with template %3"
 msgstr ""
 
@@ -100,7 +100,7 @@ msgid "%1 (%2) by %3"
 msgstr ""
 
 #: html/SelfService/Update.html:60 html/Ticket/Elements/EditBasics:108 html/Ticket/Update.html:61 html/Ticket/Update.html:63 html/Tools/MyDay.html:66
-#. (_($DefaultStatus))
+#. (_($default_status))
 #. (_($Ticket->Status()))
 #. (_($ticket_obj->Status))
 #. ($ticket_obj->owner_obj->name())
@@ -2848,7 +2848,7 @@ msgid "Modify Custom Field %1"
 msgstr "カスタムフィールド%1を修正する"
 
 #: html/Admin/Elements/ObjectCustomFields:96
-#. (_(lc($FriendlySubTypes)), loc(lc($Types)))
+#. (_(lc($FriendlySubTypes)), _(lc($Types)))
 msgid "Modify Custom Fields which apply to %1 for all %2"
 msgstr ""
 

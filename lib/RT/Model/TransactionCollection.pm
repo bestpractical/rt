@@ -91,7 +91,7 @@ sub _init {
 
 # }}}
 
-=head2 limit_ToTicket TICKETID 
+=head2 limit_to_ticket TICKETID 
 
 Find only transactions for the ticket whose id is TICKETID.
 
@@ -138,7 +138,7 @@ sub next {
 
         # If the user can see the transaction's type, then they can
         #  see the transaction and we should hand it back.
-        if ( $Transaction->type) {
+        if ( $Transaction->type ) {
             return ($Transaction);
         }
 

@@ -45,14 +45,13 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
 use strict;
 use warnings;
 
 package RT::ScripAction::Autoreply;
 use base qw(RT::ScripAction::SendEmail);
 
-=head2 Prepare
+=head2 prepare
 
 Set up the relevant recipients, then call our parent.
 
@@ -64,9 +63,9 @@ sub prepare {
     $self->SUPER::prepare();
 }
 
-# {{{ sub set_Recipients
+# {{{ sub set_recipients
 
-=head2 SetRecipients
+=head2 set_recipients
 
 Sets the recipients of this message to this ticket's Requestor.
 
@@ -111,16 +110,7 @@ sub set_return_address {
             my $friendly_name = $self->ticket_obj->queue_obj->description
                 || $self->ticket_obj->queue_obj->name;
             $friendly_name =~ s/"/\\"/g;
-            $self->set_header(
-                'From',
-                sprintf(
-                    RT->config->get('friendly_from_line_format'),
-                    $self->mime_encode_string(
-                        $friendly_name, RT->config->get('EmailOutputEncoding')
-                    ),
-                    $replyto
-                ),
-            );
+            $self->set_header( 'From', sprintf( RT->config->get('friendly_from_line_format'), $self->mime_encode_string( $friendly_name, RT->config->get('EmailOutputEncoding') ), $replyto ), );
         } else {
             $self->set_header( 'From', $replyto );
         }

@@ -135,8 +135,7 @@ LINE:
                 my @v = ( $2 || () );
 
                 # Read continuation lines, if any.
-                while ( @lines && ( $lines[0] eq '' || $lines[0] =~ /^\s+/ ) )
-                {
+                while ( @lines && ( $lines[0] eq '' || $lines[0] =~ /^\s+/ ) ) {
                     push @v, shift @lines;
                 }
                 pop @v while ( @v && $v[-1] eq '' );
@@ -219,8 +218,7 @@ sub form_compose {
                         }
                         push @lines, "$key: $v\n\n";
                     } elsif ( $line
-                        && length($line) + length($v) - rindex( $line, "\n" )
-                        >= 70 )
+                        && length($line) + length($v) - rindex( $line, "\n" ) >= 70 )
                     {
                         $line .= ",\n$sp$v";
                     } else {
@@ -271,9 +269,7 @@ sub vsplit {
     my ($val) = @_;
     my ( $line, $word, @words );
 
-    foreach $line ( map { split /\n/ }
-        ( ref $val eq 'ARRAY' ) ? @$val : $val )
-    {
+    foreach $line ( map { split /\n/ } ( ref $val eq 'ARRAY' ) ? @$val : $val ) {
 
         # XXX: This should become a real parser, ? la Text::ParseWords.
         $line =~ s/^\s+//;

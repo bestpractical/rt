@@ -1,3 +1,50 @@
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
+#                                          <jesse@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/copyleft/gpl.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
 use strict;
 use warnings;
 
@@ -25,10 +72,10 @@ use Jifty::DBI::Record schema {
     column
         object_type => max_length is 64,
         type is 'varchar(64)', default is '';
-    column object_id => max_length is 11, type is 'int', default is '0';
-    column time_taken => max_length is 11, type is 'int', default is '0';
-    column type  => max_length is 20, type is 'varchar(20)', default is '';
-    column field => max_length is 40, type is 'varchar(40)', default is '';
+    column object_id  => max_length is 11, type is 'int',         default is '0';
+    column time_taken => max_length is 11, type is 'int',         default is '0';
+    column type       => max_length is 20, type is 'varchar(20)', default is '';
+    column field      => max_length is 40, type is 'varchar(40)', default is '';
     column
         old_value => max_length is 255,
         type is 'varchar(255)', default is '';
@@ -38,11 +85,11 @@ use Jifty::DBI::Record schema {
     column
         reference_type => max_length is 255,
         type is 'varchar(255)', default is '';
-    column old_reference => max_length is 11, type is 'int', default is '0';
-    column new_reference => max_length is 11, type is 'int', default is '0';
-    column data => max_length is 255, type is 'varchar(255)', default is '';
-    column creator => max_length is 11, type is 'int', default is '0';
-    column created => type is 'timestamp';
+    column old_reference => max_length is 11,  type is 'int',          default is '0';
+    column new_reference => max_length is 11,  type is 'int',          default is '0';
+    column data          => max_length is 255, type is 'varchar(255)', default is '';
+    column creator       => max_length is 11,  type is 'int',          default is '0';
+    column created       => type is 'timestamp';
 
 };
 
@@ -53,7 +100,7 @@ Returns the current value of object_type.
 
 
 
-=head2 Setobject_type value
+=head2 setobject_type value
 
 
 Set object_type to value. 
@@ -70,7 +117,7 @@ Returns the current value of object_id.
 
 
 
-=head2 Setobject_id value
+=head2 setobject_id value
 
 
 Set object_id to value. 
@@ -138,7 +185,7 @@ Returns the current value of old_value.
 
 
 
-=head2 Setold_value value
+=head2 setold_value value
 
 
 Set old_value to value. 
@@ -155,7 +202,7 @@ Returns the current value of new_value.
 
 
 
-=head2 Setnew_value value
+=head2 setnew_value value
 
 
 Set new_value to value. 
@@ -261,7 +308,7 @@ use HTML::TreeBuilder;
 
 # {{{ sub create
 
-=head2 Create
+=head2 create
 
 Create a new transaction.
 
@@ -277,18 +324,18 @@ TODO: Document what gets passed to this
 sub create {
     my $self = shift;
     my %args = (
-        id             => undef,
+        id              => undef,
         time_taken      => 0,
-        type           => 'undefined',
-        data           => '',
-        field          => undef,
-        old_value      => undef,
-        new_value      => undef,
+        type            => 'undefined',
+        data            => '',
+        field           => undef,
+        old_value       => undef,
+        new_value       => undef,
         mime_obj        => undef,
         activate_scrips => 1,
-        commit_scrips  => 1,
-        object_type    => 'RT::Model::Ticket',
-        object_id      => 0,
+        commit_scrips   => 1,
+        object_type     => 'RT::Model::Ticket',
+        object_id       => 0,
         reference_type  => undef,
         old_reference   => undef,
         new_reference   => undef,
@@ -299,31 +346,26 @@ sub create {
 
     #if we didn't specify a ticket, we need to bail
     unless ( $args{'object_id'} && $args{'object_type'} ) {
-        return (
-            0,
-            _(  "Transaction->create couldn't, as you didn't specify an object type and id"
-            )
-        );
+        return ( 0, _( "Transaction->create couldn't, as you didn't specify an object type and id" ) );
     }
 
     #lets create our transaction
     my %params = (
-        type          => $args{'type'},
-        data          => $args{'data'},
-        field         => $args{'field'},
-        old_value     => $args{'old_value'},
-        new_value     => $args{'new_value'},
-        created       => $args{'created'},
-        object_type   => $args{'object_type'},
-        object_id     => $args{'object_id'},
+        type           => $args{'type'},
+        data           => $args{'data'},
+        field          => $args{'field'},
+        old_value      => $args{'old_value'},
+        new_value      => $args{'new_value'},
+        created        => $args{'created'},
+        object_type    => $args{'object_type'},
+        object_id      => $args{'object_id'},
         reference_type => $args{'reference_type'},
         old_reference  => $args{'old_reference'},
         new_reference  => $args{'new_reference'},
     );
 
-# Parameters passed in during an import that we probably don't want to touch, otherwise
-    foreach my $attr
-        qw(id creator created last_updated time_taken last_updated_by) {
+    # Parameters passed in during an import that we probably don't want to touch, otherwise
+    foreach my $attr qw(id creator created last_updated time_taken last_updated_by) {
         $params{$attr} = $args{$attr} if ( $args{$attr} );
     }
 
@@ -338,16 +380,13 @@ sub create {
     }
 
     #Provide a way to turn off scrips if we need to
-    Jifty->log->debug(
-        'About to think about scrips for transaction #' . $self->id );
+    Jifty->log->debug( 'About to think about scrips for transaction #' . $self->id );
     if (    $args{'activate_scrips'}
         and $args{'object_type'} eq 'RT::Model::Ticket' )
     {
-        $self->{'scrips'} = RT::Model::ScripCollection->new(
-            current_user => RT->system_user );
+        $self->{'scrips'} = RT::Model::ScripCollection->new( current_user => RT->system_user );
 
-        Jifty->log->debug(
-            'About to prepare scrips for transaction #' . $self->id );
+        Jifty->log->debug( 'About to prepare scrips for transaction #' . $self->id );
         $self->{'scrips'}->prepare(
             stage       => 'TransactionCreate',
             type        => $args{'type'},
@@ -355,12 +394,10 @@ sub create {
             transaction => $self->id,
         );
         if ( $args{'commit_scrips'} ) {
-            Jifty->log->debug(
-                'About to commit scrips for transaction #' . $self->id );
+            Jifty->log->debug( 'About to commit scrips for transaction #' . $self->id );
             $self->{'scrips'}->commit();
         } else {
-            Jifty->log->debug(
-                'Skipping commit of scrips for transaction #' . $self->id );
+            Jifty->log->debug( 'Skipping commit of scrips for transaction #' . $self->id );
 
         }
     }
@@ -370,7 +407,7 @@ sub create {
 
 # }}}
 
-=head2 Scrips
+=head2 scrips
 
 Returns the Scrips object for this transaction.
 This routine is only useful on a freshly created transaction object.
@@ -386,7 +423,7 @@ sub scrips {
 
 # {{{ sub delete
 
-=head2 Delete
+=head2 delete
 
 Delete this transaction. Currently DOES NOT CHECK ACLS
 
@@ -419,9 +456,9 @@ sub delete {
 
 # {{{ Routines dealing with Attachments
 
-# {{{ sub Message
+# {{{ sub message
 
-=head2 Message
+=head2 message
 
 Returns the L<RT::Model::AttachmentCollection> object which contains the "top-level" object
 attachment for this transaction.
@@ -486,8 +523,7 @@ sub content {
                 $content = HTML::FormatText->new(
                     leftmargin  => 0,
                     rightmargin => 78,
-                    )
-                    ->format( HTML::TreeBuilder->new_from_content($content) );
+                )->format( HTML::TreeBuilder->new_from_content($content) );
             }
         } else {
             $content =~ s/\n-- \n.*?$//s if $args{'Quote'};
@@ -526,9 +562,7 @@ sub content {
         }
 
         $content =~ s/^/> /gm;
-        $content = _( "On %1, %2 wrote:",
-            $self->created_as_string, $self->creator_obj->name )
-            . "\n$content\n\n";
+        $content = _( "On %1, %2 wrote:", $self->created_as_string, $self->creator_obj->name ) . "\n$content\n\n";
     }
 
     return ($content);
@@ -536,7 +570,7 @@ sub content {
 
 # }}}
 
-=head2 Addresses
+=head2 addresses
 
 Returns a hashref of addresses related to this transaction. See L<RT::Model::Attachment/Addresses> for details.
 
@@ -573,13 +607,12 @@ sub content_obj {
         return ($Attachment);
     }
 
-# If it's a multipart object, first try returning the first part with preferred
-# MIME type ('text/plain' by default).
+    # If it's a multipart object, first try returning the first part with preferred
+    # MIME type ('text/plain' by default).
 
     elsif ( $Attachment->content_type =~ '^multipart/' ) {
         my $plain_parts = $Attachment->children;
-        $plain_parts->content_type(
-            value => ( $Preferredcontent_type || 'text/plain' ) );
+        $plain_parts->content_type( value => ( $Preferredcontent_type || 'text/plain' ) );
         $plain_parts->limit_not_empty;
 
         # If we actully found a part, return its content
@@ -620,9 +653,9 @@ sub subject {
 
 # }}}
 
-# {{{ sub Attachments
+# {{{ sub attachments
 
-=head2 Attachments
+=head2 attachments
 
 Returns all the RT::Model::Attachment objects which are attached
 to this transaction. Takes an optional parameter, which is
@@ -645,8 +678,7 @@ sub attachments {
         return $self->{'attachments'};
     }
 
-    $self->{'attachments'}
-        ->limit( column => 'transaction_id', value => $self->id );
+    $self->{'attachments'}->limit( column => 'transaction_id', value => $self->id );
 
     # Get the self->{'attachments'} in the order they're put into
     # the database.  Arguably, we should be returning a tree
@@ -660,28 +692,27 @@ sub attachments {
 
 # }}}
 
-# {{{ sub _Attach
+# {{{ sub _attach
 
-=head2 _Attach
+=head2 _attach
 
 A private method used to attach a mime object to this transaction.
 
 =cut
 
 sub _attach {
-    my $self       = shift;
+    my $self        = shift;
     my $mime_object = shift;
 
     unless ( defined $mime_object ) {
-        Jifty->log->error(
-            "We can't attach a mime object if you don't give us one.");
+        Jifty->log->error("We can't attach a mime object if you don't give us one.");
         return ( 0, _( "%1: no attachment specified", $self ) );
     }
 
     my $Attachment = RT::Model::Attachment->new;
     my ( $id, $msg ) = $Attachment->create(
         transaction_id => $self->id,
-        attachment    => $mime_object
+        attachment     => $mime_object
     );
     return ( $Attachment, $msg || _("Attachment Created") );
 }
@@ -711,8 +742,7 @@ sub description {
         return ( _("No transaction type specified") );
     }
 
-    return _( "%1 by %2", $self->brief_description,
-        $self->creator_obj->name );
+    return _( "%1 by %2", $self->brief_description, $self->creator_obj->name );
 }
 
 # }}}
@@ -747,12 +777,7 @@ sub brief_description {
             if ( $self->new_value eq 'deleted' ) {
                 return ( _( "%1 deleted", $obj_type ) );
             } else {
-                return (
-                    _(  "Status changed from %1 to %2",
-                        "'" . _( $self->old_value ) . "'",
-                        "'" . _( $self->new_value ) . "'"
-                    )
-                );
+                return ( _( "Status changed from %1 to %2", "'" . _( $self->old_value ) . "'", "'" . _( $self->new_value ) . "'" ) );
 
             }
         }
@@ -820,8 +845,7 @@ sub brief_description {
             return ( _( "%1 %2 deleted", $field, $self->old_value ) );
 
         } else {
-            return _( "%1 %2 changed to %3",
-                $field, $self->old_value, $self->new_value );
+            return _( "%1 %2 changed to %3", $field, $self->old_value, $self->new_value );
         }
     },
     Untake => sub {
@@ -839,8 +863,7 @@ sub brief_description {
         my $New = RT::Model::User->new;
         $New->load( $self->new_value );
 
-        return _( "Owner forcibly changed from %1 to %2",
-            $Old->name, $New->name );
+        return _( "Owner forcibly changed from %1 to %2", $Old->name, $New->name );
     },
     Steal => sub {
         my $self = shift;
@@ -940,8 +963,7 @@ sub brief_description {
             $q1->load( $self->old_value );
             my $q2 = RT::Model::Queue->new();
             $q2->load( $self->new_value );
-            return _( "%1 changed from %2 to %3",
-                $self->field, $q1->name, $q2->name );
+            return _( "%1 changed from %2 to %3", $self->field, $q1->name, $q2->name );
         }
 
         # Write the date/time change at local time:
@@ -950,10 +972,7 @@ sub brief_description {
             $t1->set( format => 'ISO', value => $self->new_value );
             my $t2 = RT::Date->new();
             $t2->set( format => 'ISO', value => $self->old_value );
-            return _(
-                "%1 changed from %2 to %3", $self->field,
-                $t2->as_string,             $t1->as_string
-            );
+            return _( "%1 changed from %2 to %3", $self->field, $t2->as_string, $t1->as_string );
         } else {
             return _(
                 "%1 changed from %2 to %3",
@@ -1008,8 +1027,7 @@ Returns false otherwise
 sub is_inbound {
     my $self = shift;
     $self->object_type eq 'RT::Model::Ticket' or return undef;
-    return (
-        $self->ticket_obj->is_requestor( $self->creator_obj->principal_id ) );
+    return ( $self->ticket_obj->is_requestor( $self->creator_obj->principal_id ) );
 }
 
 # }}}
@@ -1101,7 +1119,7 @@ sub current_user_can_see {
         }
     }
 
-  # Make sure the user can see the custom field before showing that it changed
+    # Make sure the user can see the custom field before showing that it changed
     elsif ( $type eq 'custom_field' and my $cf_id = $self->__value('field') ) {
         my $cf = RT::Model::CustomField->new;
         $cf->load($cf_id);
@@ -1203,14 +1221,11 @@ sub update_custom_fields {
 
     foreach my $arg ( keys %$args ) {
         next
-            unless ( $arg
-            =~ /^(?:object-RT::Model::Transaction--)?CustomField-(\d+)/ );
+            unless ( $arg =~ /^(?:object-RT::Model::Transaction--)?CustomField-(\d+)/ );
         next if $arg =~ /-magic$/;
         my $cfid   = $1;
         my $values = $args->{$arg};
-        foreach my $value (
-            UNIVERSAL::isa( $values, 'ARRAY' ) ? @$values : $values )
-        {
+        foreach my $value ( UNIVERSAL::isa( $values, 'ARRAY' ) ? @$values : $values ) {
             next unless length($value);
             $self->add_custom_field_value(
                 field              => $cfid,
@@ -1252,7 +1267,7 @@ sub custom_field_values {
 
 # {{{ sub custom_field_lookup_type
 
-=head2 CustomFieldlookup_type
+=head2 custom_fieldlookup_type
 
 Returns the RT::Model::Transaction lookup type, which can 
 be passed to RT::Model::CustomField->create() via the 'lookup_type' hash key.

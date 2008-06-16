@@ -95,26 +95,24 @@ sub new {
 sub _init {
     my $self = shift;
     my %args = (
-        transaction_obj      => undef,
-        ticket_obj           => undef,
-        scrip_obj            => undef,
-        template_obj         => undef,
-        argument             => undef,
+        transaction_obj        => undef,
+        ticket_obj             => undef,
+        scrip_obj              => undef,
+        template_obj           => undef,
+        argument               => undef,
         applicable_trans_types => undef,
         @_
     );
 
-    $self->{'argument'}             = $args{'argument'};
-    $self->{'scrip_obj'}            = $args{'scrip_obj'};
-    $self->{'ticket_obj'}           = $args{'ticket_obj'};
-    $self->{'transaction_obj'}      = $args{'transaction_obj'};
+    $self->{'argument'}               = $args{'argument'};
+    $self->{'scrip_obj'}              = $args{'scrip_obj'};
+    $self->{'ticket_obj'}             = $args{'ticket_obj'};
+    $self->{'transaction_obj'}        = $args{'transaction_obj'};
     $self->{'applicable_trans_types'} = $args{'applicable_trans_types'};
-    Jifty->log->debug( "My trans type is ".$self->{'applicable_trans_types'} );
+    Jifty->log->debug( "My trans type is " . $self->{'applicable_trans_types'} );
 }
 
-
 # Access Scripwide data
-
 
 =head2 argument
 
@@ -180,7 +178,6 @@ sub describe {
     return ( _( "No description for %1", ref $self ) );
 }
 
-
 #Parse the templates, get things ready to go.
 
 #If this rule applies to this transaction, return true.
@@ -195,8 +192,8 @@ sub DESTROY {
 
     # We need to clean up all the references that might maybe get
     # oddly circular
-    $self->{'template_obj'} = undef;
-    $self->{'ticket_obj'} = undef;
+    $self->{'template_obj'}    = undef;
+    $self->{'ticket_obj'}      = undef;
     $self->{'transaction_obj'} = undef;
     $self->{'scrip_obj'}       = undef;
 

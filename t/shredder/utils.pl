@@ -67,27 +67,29 @@ RT config option to switch to local SQLite database.
 
 =cut
 
-sub rewrite_rtconfig
-{
+sub rewrite_rtconfig {
+
     # database
-    config_set( '$DatabaseType'       , 'SQLite' );
-    config_set( '$DatabaseHost'       , 'localhost' );
-    config_set( '$DatabaseRTHost'     , 'localhost' );
-    config_set( '$DatabasePort'       , '' );
-    config_set( '$DatabaseUser'       , 'rt_user' );
-    config_set( '$Databasepassword'   , 'rt_pass' );
-    config_set( '$DatabaseRequireSSL' , undef );
+    config_set( '$DatabaseType',       'SQLite' );
+    config_set( '$DatabaseHost',       'localhost' );
+    config_set( '$DatabaseRTHost',     'localhost' );
+    config_set( '$DatabasePort',       '' );
+    config_set( '$DatabaseUser',       'rt_user' );
+    config_set( '$Databasepassword',   'rt_pass' );
+    config_set( '$DatabaseRequireSSL', undef );
+
     # database file name
-    config_set( '$Databasename'       , db_name() );
+    config_set( '$Databasename', db_name() );
 
     # generic logging
-    config_set( '$LogToSyslog'    , undef );
-    config_set( '$LogToScreen'    , 'error' );
-    config_set( '$LogStackTraces' , 'crit' );
+    config_set( '$LogToSyslog',    undef );
+    config_set( '$LogToScreen',    'error' );
+    config_set( '$LogStackTraces', 'crit' );
+
     # logging to standalone file
-    config_set( '$LogToFile'      , 'debug' );
-    my $fname = File::Spec->catfile(create_tmpdir(), test_name() .".log");
-    config_set( '$LogToFilenamed' , $fname );
+    config_set( '$LogToFile', 'debug' );
+    my $fname = File::Spec->catfile( create_tmpdir(), test_name() . ".log" );
+    config_set( '$LogToFilenamed', $fname );
 }
 
 =head3 config_set
@@ -97,7 +99,7 @@ sub rewrite_rtconfig
 sub config_set {
     my $opt = shift;
     $opt =~ s/^[\$\%\@]//;
-    RT->config->set($opt, @_)
+    RT->config->set( $opt, @_ );
 }
 
 =head2 DATABASES
@@ -112,26 +114,23 @@ in common situation.
 
 =cut
 
-sub init_db
-{
+sub init_db {
 
-
-    $SIG{__WARN__} = sub  { Jifty->log->warn( @_ ); warn @_ };
-    $SIG{__DIE__} = sub  { Jifty->log->fatal( @_ ) unless $^S; Carp::confess @_ };
+    $SIG{__WARN__} = sub { Jifty->log->warn(@_); warn @_ };
+    $SIG{__DIE__} = sub { Jifty->log->fatal(@_) unless $^S; Carp::confess @_ };
 }
 
 use IPC::Open2;
-sub _init_db
-{
 
+sub _init_db {
 
-    foreach ( qw(Type Host Port Name User password) ) {
-        $ENV{ "RT_DB_". uc $_ } = RT->config->get("Database$_");
+    foreach (qw(Type Host Port Name User password)) {
+        $ENV{ "RT_DB_" . uc $_ } = RT->config->get("Database$_");
     }
-    my $cmd =  "$^X sbin/rt-setup-database --action init";
+    my $cmd = "$^X sbin/rt-setup-database --action init";
 
-    my ($child_out, $child_in);
-    my $pid = open2($child_out, $child_in, $cmd);
+    my ( $child_out, $child_in );
+    my $pid = open2( $child_out, $child_in, $cmd );
     close $child_in;
     my $result = do { local $/; <$child_out> };
     return $result;
@@ -154,9 +153,8 @@ Takes path to sqlite db.
 
 =cut
 
-sub connect_sqlite
-{
-    return DBI->connect("dbi:SQLite:dbname=". shift, "", "");
+sub connect_sqlite {
+    return DBI->connect( "dbi:SQLite:dbname=" . shift, "", "" );
 }
 
 =head2 SHREDDER
@@ -165,19 +163,19 @@ sub connect_sqlite
 
 =cut
 
-sub shredder_new
-{
+sub shredder_new {
     my $obj = RT::Shredder->new();
 
-    my $file = File::Spec->catfile( tmpdir(), test_name() .'.XXXX.sql' );
-    $obj->add_dump_plugin( arguments => {
-        filename    => $file,
-        from_storage => 0,
-    } );
+    my $file = File::Spec->catfile( tmpdir(), test_name() . '.XXXX.sql' );
+    $obj->add_dump_plugin(
+        arguments => {
+            filename     => $file,
+            from_storage => 0,
+        }
+    );
 
     return $obj;
 }
-
 
 =head2 TEST FILES
 
@@ -189,8 +187,7 @@ For exmple returns '00load' for 't/00load.t' test file.
 
 =cut
 
-sub test_name
-{
+sub test_name {
     my $name = $0;
     $name =~ s/^.*[\\\/]//;
     $name =~ s/\..*$//;
@@ -206,7 +203,7 @@ It is C<cwd(). "t/data/tmp">.
 
 =cut
 
-sub tmpdir { return File::Spec->catdir(Cwd::cwd(), qw(lib t data shredder)) }
+sub tmpdir { return File::Spec->catdir( Cwd::cwd(), qw(lib t data shredder) ) }
 
 =head2 create_tmpdir
 
@@ -214,7 +211,7 @@ Creates tmp dir if doesn't exist. Returns tmpdir absolute path.
 
 =cut
 
-sub create_tmpdir { my $n = tmpdir(); File::Path::mkpath( $n );    return $n }
+sub create_tmpdir { my $n = tmpdir(); File::Path::mkpath($n); return $n }
 
 =head3 cleanup_tmp
 
@@ -223,9 +220,8 @@ See also C<test_name> function.
 
 =cut
 
-sub cleanup_tmp
-{
-    my $mask = File::Spec->catfile( tmpdir(), test_name() ) .'.*';
+sub cleanup_tmp {
+    my $mask = File::Spec->catfile( tmpdir(), test_name() ) . '.*';
     return unlink glob($mask);
 }
 
@@ -238,10 +234,9 @@ Takes one argument - savepoint name, by default C<sp>.
 
 =cut
 
-sub savepoint_name
-{
+sub savepoint_name {
     my $name = shift || 'sp';
-    return File::Spec->catfile( create_tmpdir(), test_name() .".$name.db" );
+    return File::Spec->catfile( create_tmpdir(), test_name() . ".$name.db" );
 }
 
 =head3 create_savepoint
@@ -256,19 +251,20 @@ Takes name of the savepoint as argument.
 
 =cut
 
-sub create_savepoint { return __cp_db( db_name() => savepoint_name( shift ) ) }
-sub restore_savepoint { return __cp_db( savepoint_name( shift ) => db_name() ) }
-sub __cp_db
-{
-    my( $orig, $dest ) = @_;
+sub create_savepoint  { return __cp_db( db_name()             => savepoint_name(shift) ) }
+sub restore_savepoint { return __cp_db( savepoint_name(shift) => db_name() ) }
+
+sub __cp_db {
+    my ( $orig, $dest ) = @_;
     Jifty->handle->dbh->disconnect;
+
     # DIRTY HACK: undef Handles to force reconnect
 
-    File::Copy::copy( $orig, $dest ) or die "Couldn't copy '$orig' => '$dest': $!";
+    File::Copy::copy( $orig, $dest )
+        or die "Couldn't copy '$orig' => '$dest': $!";
     Jifty->handle->connect();
     return;
 }
-
 
 =head2 DUMPS
 
@@ -288,8 +284,7 @@ dump. True by default.
 
 =cut
 
-sub dump_sqlite
-{
+sub dump_sqlite {
     my $dbh = shift;
     my %args = ( clean_dates => 1, @_ );
 
@@ -297,12 +292,12 @@ sub dump_sqlite
     $dbh->{'FetchHashKeyName'} = 'NAME_lc';
 
     my $sth = $dbh->table_info( '', '', '%', 'TABLE' ) || die $DBI::err;
-    my @tables = keys %{$sth->fetchall_hashref( 'table_name' )};
+    my @tables = keys %{ $sth->fetchall_hashref('table_name') };
 
     my $res = {};
-    foreach my $t( @tables ) {
-        next if lc($t) =~/^_|sqlite/;
-        $res->{$t} = $dbh->selectall_hashref("SELECT * FROM $t", 'id');
+    foreach my $t (@tables) {
+        next if lc($t) =~ /^_|sqlite/;
+        $res->{$t} = $dbh->selectall_hashref( "SELECT * FROM $t", 'id' );
         clean_dates( $res->{$t} ) if $args{'clean_dates'};
         die $DBI::err if $DBI::err;
     }
@@ -318,11 +313,10 @@ Takes one argument - savepoint name.
 
 =cut
 
-sub dump_current_and_savepoint
-{
-    my $orig = savepoint_name( shift );
+sub dump_current_and_savepoint {
+    my $orig = savepoint_name(shift);
     die "Couldn't find savepoint file" unless -f $orig && -r _;
-    my $odbh = connect_sqlite( $orig );
+    my $odbh = connect_sqlite($orig);
     return ( dump_sqlite( Jifty->handle->dbh, @_ ), dump_sqlite( $odbh, @_ ) );
 }
 
@@ -335,15 +329,15 @@ but in reversed order.
 
 sub dump_savepoint_and_current { return reverse dump_current_and_savepoint(@_) }
 
-sub clean_dates
-{
-    my $h = shift;
+sub clean_dates {
+    my $h       = shift;
     my $date_re = qr/^\d\d\d\d\-\d\d\-\d\d\s*\d\d\:\d\d(\:\d\d)?$/i;
-    foreach my $id ( keys %{ $h } ) {
-        next unless $h->{ $id };
-        foreach ( keys %{ $h->{ $id } } ) {
-            delete $h->{$id}{$_} if $h->{$id}{$_} &&
-              $h->{$id}{$_} =~ /$date_re/;
+    foreach my $id ( keys %{$h} ) {
+        next unless $h->{$id};
+        foreach ( keys %{ $h->{$id} } ) {
+            delete $h->{$id}{$_}
+                if $h->{$id}{$_}
+                    && $h->{$id}{$_} =~ /$date_re/;
         }
     }
 }
@@ -358,9 +352,8 @@ Returns note about debug info you can find if test failed.
 
 =cut
 
-sub note_on_fail
-{
-    my $name = test_name();
+sub note_on_fail {
+    my $name   = test_name();
     my $tmpdir = tmpdir();
     return <<END;
 Some tests in '$0' file failed.
@@ -381,11 +374,10 @@ Returns true if all tests you've already run are successful.
 
 =cut
 
-sub is_all_successful
-{
+sub is_all_successful {
     use Test::Builder;
     my $Test = Test::Builder->new;
-    return grep( !$_, $Test->summary )? 0: 1;
+    return grep( !$_, $Test->summary ) ? 0 : 1;
 }
 
 1;

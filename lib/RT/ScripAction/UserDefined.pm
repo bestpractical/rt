@@ -45,9 +45,9 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
 use strict;
 use warnings;
+
 package RT::ScripAction::UserDefined;
 
 use base qw(RT::ScripAction::Generic);
@@ -59,8 +59,8 @@ This happens on every transaction. it's always applicable
 =cut
 
 sub prepare {
-    my $self   = shift;
-        Jifty->log->debug("preparing");
+    my $self = shift;
+    Jifty->log->debug("preparing");
     my $retval = eval $self->scrip_obj->custom_prepare_code;
     if ($@) {
         Jifty->log->error( "Scrip " . $self->scrip_obj->id . " Prepare failed: " . $@ );
@@ -69,19 +69,18 @@ sub prepare {
     return ($retval);
 }
 
-=head2 Commit
+=head2 commit
 
 This happens on every transaction. it's always applicable
 
 =cut
 
 sub commit {
-    my $self   = shift;
-        Jifty->log->debug("committing");
+    my $self = shift;
+    Jifty->log->debug("committing");
     my $retval = eval $self->scrip_obj->custom_commit_code;
     if ($@) {
-        Jifty->log->error(
-            "Scrip " . $self->scrip_obj->id . " Commit failed: " . $@ );
+        Jifty->log->error( "Scrip " . $self->scrip_obj->id . " Commit failed: " . $@ );
         return (undef);
     }
     return ($retval);

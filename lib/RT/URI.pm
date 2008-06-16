@@ -45,7 +45,6 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
 use warnings;
 use strict;
 
@@ -106,7 +105,7 @@ sub from_object {
 
 # {{{ FromURI
 
-=head2 FromURI <URI>
+=head2 from_uri <URI>
 
 Returns a local object id for this content. You are expected to know
 what sort of object this is the id of
@@ -137,8 +136,7 @@ sub from_uri {
     $self->_get_resolver($scheme);
 
     unless ( $self->resolver->parse_uri($uri) ) {
-        Jifty->log->warn(
-            "Resolver " . ref( $self->resolver ) . " could not parse $uri" );
+        Jifty->log->warn( "Resolver " . ref( $self->resolver ) . " could not parse $uri" );
         $self->{resolver} = RT::URI::base->new;    # clear resolver
         return (undef);
     }
@@ -168,8 +166,7 @@ sub _get_resolver {
     Jifty::Util->try_to_require($class);
 
     if ( $class->can('new') ) {
-        $self->{'resolver'}
-            = $class->new( current_user => $self->current_user );
+        $self->{'resolver'} = $class->new( current_user => $self->current_user );
     } else {
         $self->{'resolver'} = RT::URI::base->new;
     }
@@ -229,7 +226,7 @@ sub object {
 
 # {{{ IsLocal
 
-=head2 IsLocal
+=head2 is_local
 
 Returns a local object for this content. This will usually be an RT::Model::Ticket or somesuch
 
@@ -242,7 +239,7 @@ sub is_local {
 
 # }}}
 
-=head2 AsHREF
+=head2 as_href
 
 
 =cut

@@ -45,22 +45,20 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
 use strict;
 use warnings;
 
 package RT::Condition::UserDefined;
 use base qw(RT::Condition::Generic);
 
-=head2 IsApplicable
+=head2 is_applicable
 
 This happens on every transaction. it's always applicable
 
 =cut
 
 sub is_applicable {
-    my $self   = shift;
-
+    my $self = shift;
 
     my $retval = eval $self->scrip_obj->custom_is_applicable_code;
     if ($@) {

@@ -51,8 +51,7 @@ use base qw/RT::Record/;
 # XXX TODO: how the heck do we acl a report?
 #
 
-
-sub table { 'Tickets'}
+sub table                  {'Tickets'}
 sub current_user_has_right {1}
 
 1;

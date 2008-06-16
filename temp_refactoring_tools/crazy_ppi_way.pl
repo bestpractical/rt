@@ -7,12 +7,12 @@ use PPI::Dumper;
 while ( my $f = shift ) {
     print "processing $f\n";
 
-    my $doc = PPI::Document->new( $f );
+    my $doc  = PPI::Document->new($f);
     my $subs = $doc->find('PPI::Statement::Sub');
     if ( $subs && @$subs ) {
         process_sub_args($_) foreach @$subs;
         $doc->save($f);
-        $doc = PPI::Document->new( $f );
+        $doc = PPI::Document->new($f);
     } else {
         print "no subs found in the file\n";
     }
@@ -23,48 +23,54 @@ while ( my $f = shift ) {
 
 sub process_calls {
     my $doc = shift;
-#    dumpe($doc);
-    my $method_calls = $doc->find(sub {
-        return 0 unless $_[1]->isa('PPI::Token::Operator') && $_[1] eq '->';
-        my $sib = $_[1]->next_sibling;
-        return 0 unless $sib && $sib->isa('PPI::Token::Word');
-        $sib = $sib->next_sibling;
-        return 0 unless $sib && $sib->isa('PPI::Structure::List');
-    });
+
+    #    dumpe($doc);
+    my $method_calls = $doc->find(
+        sub {
+            return 0 unless $_[1]->isa('PPI::Token::Operator') && $_[1] eq '->';
+            my $sib = $_[1]->next_sibling;
+            return 0 unless $sib && $sib->isa('PPI::Token::Word');
+            $sib = $sib->next_sibling;
+            return 0 unless $sib && $sib->isa('PPI::Structure::List');
+        }
+    );
     unless ( $method_calls && @$method_calls ) {
         print "no method calls\n";
         return;
     }
-    foreach my $call ( @$method_calls ) {
-        print 'call to '. $call->next_sibling->literal ."\n";
+    foreach my $call (@$method_calls) {
+        print 'call to ' . $call->next_sibling->literal . "\n";
         my $list = $call->next_sibling->next_sibling;
         next unless $list->find_first('PPI::Statement::Expression');
         foreach my $word ( grep $_->isa('PPI::Token::Word'), $list->find_first('PPI::Statement::Expression')->schildren ) {
             my $sib = $word->snext_sibling;
-            next unless $sib && $sib->isa('PPI::Token::Operator') && $sib eq '=>';
+            next
+                unless $sib
+                    && $sib->isa('PPI::Token::Operator')
+                    && $sib eq '=>';
             next unless $word->literal =~ /[A-Z][a-z]/;
-            $word->set_content( low_api( $word->literal) );
-#            dumpe($word);
+            $word->set_content( low_api( $word->literal ) );
+
+            #            dumpe($word);
         }
     }
 
-#    dumpe($_->statement) foreach @$method_calls;
+    #    dumpe($_->statement) foreach @$method_calls;
 }
-
-
 
 sub process_sub_args {
     my $sub = shift;
-#    return unless $sub->name eq 'set_from_config';
-    print $sub->name ."\n";
-    my $block = $sub->block;
+
+    #    return unless $sub->name eq 'set_from_config';
+    print $sub->name . "\n";
+    my $block    = $sub->block;
     my @children = $block->schildren;
-    foreach my $child ( @children ) {
+    foreach my $child (@children) {
         if ( $child->isa('PPI::Statement::Variable') ) {
             next unless $child->type eq 'my';
             my @vars = $child->variables;
-            if (@vars == 1 && $vars[0] eq '%args' ) {
-                process_args($block, $child);
+            if ( @vars == 1 && $vars[0] eq '%args' ) {
+                process_args( $block, $child );
             }
         } else {
             last;
@@ -73,29 +79,29 @@ sub process_sub_args {
 }
 
 sub process_args {
-    my ($sub_block, $args) = @_;
-    my ($type, $name, $operator, $list) = $args->schildren;
+    my ( $sub_block, $args ) = @_;
+    my ( $type, $name, $operator, $list ) = $args->schildren;
     unless ( $list && $list->isa('PPI::Structure::List') ) {
         print "is not a list\n";
         return;
     }
     my $expr = $list->find_first('PPI::Statement::Expression');
-    unless ( $expr ) {
+    unless ($expr) {
         print "couldn't find expression";
         return;
     }
     my @tokens = $expr->tokens;
-    my $state = '';
+    my $state  = '';
     my @names;
     while ( my $token = shift @tokens ) {
         next if $token->isa('PPI::Token::Whitespace');
-        dumpe( $token );
-        unless ( $state ) {
+        dumpe($token);
+        unless ($state) {
             unless ( $token->isa('PPI::Token::Word') ) {
                 if ( $token->isa('PPI::Token::Magic') && $token eq '@_' ) {
                     last;
                 }
-                print ref($token) ." is not a word, lost\n";
+                print ref($token) . " is not a word, lost\n";
                 return;
             }
             if ( $token =~ /[A-Z][a-z]/ ) {
@@ -109,11 +115,11 @@ sub process_args {
                 } elsif ( $token eq ',' ) {
                     $state = '';
                 } else {
-                    print ref($token) ." is not a => or ',', lost\n";
+                    print ref($token) . " is not a => or ',', lost\n";
                     return;
                 }
             } else {
-                print ref($token) ." is not an op, lost\n";
+                print ref($token) . " is not an op, lost\n";
             }
         } elsif ( $state eq 'val' ) {
             $state = 'op';
@@ -122,32 +128,37 @@ sub process_args {
     return unless @names;
 
     my %convs;
-    foreach my $name ( @names ) {
-        $convs{ "$name" } = low_api("$name");
-        $name->set_content( $convs{ "$name" } );
+    foreach my $name (@names) {
+        $convs{"$name"} = low_api("$name");
+        $name->set_content( $convs{"$name"} );
     }
-    my $usages = $sub_block->find(sub {
-        return 0 unless $_[1]->isa('PPI::Token::Symbol') && $_[1] eq '$args';
-        my $sib = $_[1]->next_sibling;
-        return 0 unless $sib->isa('PPI::Structure::Subscript');
-        return 1;
-    });
+    my $usages = $sub_block->find(
+        sub {
+            return 0
+                unless $_[1]->isa('PPI::Token::Symbol') && $_[1] eq '$args';
+            my $sib = $_[1]->next_sibling;
+            return 0 unless $sib->isa('PPI::Structure::Subscript');
+            return 1;
+        }
+    );
     unless ( $usages && @$usages ) {
         print "no usages found\n";
         return;
     }
-    foreach my $u ( @$usages ) {
+    foreach my $u (@$usages) {
         my $subscript = $u->next_sibling;
-        my $quotes = $subscript->find(sub{
-            return 1 if $_[1]->isa('PPI::Token::Quote');
-            return 0;
-        });
+        my $quotes    = $subscript->find(
+            sub {
+                return 1 if $_[1]->isa('PPI::Token::Quote');
+                return 0;
+            }
+        );
         if ( !$quotes || @$quotes != 1 ) {
             print "no quoted string or more then one\n";
             next;
         }
         my $replacement = $convs{ $quotes->[0]->string };
-        unless ( $replacement ) {
+        unless ($replacement) {
             if ( $quotes->[0]->string =~ /[A-Z][a-z]/ ) {
                 print "WARNING!!! potential bug\n";
                 $replacement = low_api( $quotes->[0]->string );
@@ -155,7 +166,7 @@ sub process_args {
                 next;
             }
         }
-        $quotes->[0]->set_content( "'". $replacement ."'");
+        $quotes->[0]->set_content( "'" . $replacement . "'" );
     }
 }
 
@@ -166,6 +177,6 @@ sub low_api {
 }
 
 sub dumpe {
-    PPI::Dumper->new( shift )->print;
+    PPI::Dumper->new(shift)->print;
 }
 

@@ -123,7 +123,7 @@ sub new {
     return $self;
 }
 
-=head2 Set
+=head2 set
 
 Takes a param hash with the fields C<Format>, C<value> and C<timezone>.
 
@@ -156,18 +156,13 @@ sub set {
     } elsif ( $args{'format'} =~ /^(sql|datemanip|iso)$/i ) {
         $args{'value'} =~ s!/!-!g;
 
-        if (( $args{'value'} =~ /^(\d{4})?(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/ )
-            || ( $args{'value'}
-                =~ /^(\d{4})?(\d\d)(\d\d)(\d\d):(\d\d):(\d\d)$/ )
-            || ( $args{'value'}
-                =~ /^(?:(\d{4})-)?(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)$/ )
-            || ( $args{'value'}
-                =~ /^(?:(\d{4})-)?(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)\+00$/ )
-            )
+        if (   ( $args{'value'} =~ /^(\d{4})?(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/ )
+            || ( $args{'value'} =~ /^(\d{4})?(\d\d)(\d\d)(\d\d):(\d\d):(\d\d)$/ )
+            || ( $args{'value'} =~ /^(?:(\d{4})-)?(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)$/ )
+            || ( $args{'value'} =~ /^(?:(\d{4})-)?(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)\+00$/ ) )
         {
 
-            my ( $year, $mon, $mday, $hours, $min, $sec )
-                = ( $1, $2, $3, $4, $5, $6 );
+            my ( $year, $mon, $mday, $hours, $min, $sec ) = ( $1, $2, $3, $4, $5, $6 );
 
             # use current year if string has no value
             $year ||= ( CORE::localtime time )[5] + 1900;
@@ -175,21 +170,15 @@ sub set {
             #timegm expects month as 0->11
             $mon--;
 
-          #now that we've parsed it, deal with the case where everything was 0
+            #now that we've parsed it, deal with the case where everything was 0
             return $self->unix(0) if $mon < 0 || $mon > 11;
 
             my $tz = lc $args{'format'} eq 'datemanip' ? 'user' : 'utc';
-            $self->unix(
-                $self->time_local(
-                    $tz, $sec, $min, $hours, $mday, $mon, $year
-                )
-            );
+            $self->unix( $self->time_local( $tz, $sec, $min, $hours, $mday, $mon, $year ) );
 
             $self->unix(0) unless $self->unix > 0;
         } else {
-            Jifty->log->warn(
-                "Couldn't parse date '$args{'value'}' as a $args{'format'} format"
-            );
+            Jifty->log->warn( "Couldn't parse date '$args{'value'}' as a $args{'format'} format" );
             return $self->unix(undef);
         }
     } elsif ( $args{'format'} =~ /^unknown$/i ) {
@@ -208,9 +197,7 @@ sub set {
         # apply timezone offset
         $date -= ( $self->localtime( $args{timezone}, $date ) )[9];
 
-        Jifty->log->debug(
-            "RT::Date used Time::ParseDate to make '$args{'value'}' $date\n"
-        );
+        Jifty->log->debug("RT::Date used Time::ParseDate to make '$args{'value'}' $date\n");
 
         return $self->set( format => 'unix', value => $date );
     } else {
@@ -232,7 +219,7 @@ sub set_to_now {
     return $_[0]->unix(time);
 }
 
-=head2 SetToMidnight [timezone => 'utc']
+=head2 set_to_midnight [timezone => 'utc']
 
 Sets the date to midnight (at the beginning of the day).
 Returns the unixtime at midnight.
@@ -252,12 +239,11 @@ timezone context C<user>, C<server> or C<UTC>. See also L</timezone>.
 sub set_to_midnight {
     my $self = shift;
     my %args = ( timezone => '', @_ );
-    my $new  = $self->time_local( $args{'timezone'}, 0, 0, 0,
-        ( $self->localtime( $args{'timezone'} ) )[ 3 .. 9 ] );
+    my $new  = $self->time_local( $args{'timezone'}, 0, 0, 0, ( $self->localtime( $args{'timezone'} ) )[ 3 .. 9 ] );
     return $self->unix($new);
 }
 
-=head2 Diff
+=head2 diff
 
 Takes either an C<RT::Date> object or the date in unixtime format as a string,
 if nothing is specified uses the current time.
@@ -283,7 +269,7 @@ sub diff {
     return $unix - $other;
 }
 
-=head2 DiffAsString
+=head2 diff_as_string
 
 Takes either an C<RT::Date> object or the date in unixtime format as a string,
 if nothing is specified uses the current time.
@@ -302,7 +288,7 @@ sub diff_as_string {
     return $self->duration_as_string($diff);
 }
 
-=head2 DurationAsString
+=head2 duration_as_string
 
 Takes a number of seconds. Returns a localized string describing
 that duration.
@@ -347,7 +333,7 @@ sub duration_as_string {
     }
 }
 
-=head2 AgeAsString
+=head2 age_as_string
 
 Takes nothing. Returns a string that's the differnce between the
 time in the object and now.
@@ -356,7 +342,7 @@ time in the object and now.
 
 sub age_as_string { return $_[0]->diff_as_string }
 
-=head2 AsString
+=head2 as_string
 
 Returns the object's time as a localized string with curent user's prefered
 format and timezone.
@@ -381,7 +367,7 @@ sub as_string {
     return $self->get( timezone => 'user', %args );
 }
 
-=head2 GetWeekday DAY
+=head2 get_weekday DAY
 
 Takes an integer day of week and returns a localized string for
 that day of week. Valid values are from range 0-6, Note that B<0
@@ -397,7 +383,7 @@ sub get_weekday {
     return '';
 }
 
-=head2 GetMonth MONTH
+=head2 get_month MONTH
 
 Takes an integer month and returns a localized string for that month.
 Valid values are from from range 0-11.
@@ -412,7 +398,7 @@ sub get_month {
     return '';
 }
 
-=head2 Addseconds SECONDS
+=head2 addseconds SECONDS
 
 Takes a number of seconds and returns the new unix time.
 
@@ -429,7 +415,7 @@ sub add_seconds {
     return ( $self->unix );
 }
 
-=head2 AddDays [DAYS]
+=head2 add_days [DAYS]
 
 Adds C<24 hours * DAYS> to the current time. Adds one day when
 no argument is specified. Negative value can be used to substract
@@ -445,7 +431,7 @@ sub add_days {
     return $self->add_seconds( $days * $DAY );
 }
 
-=head2 AddDay
+=head2 add_day
 
 Adds 24 hours to the current time. Returns new unix time.
 
@@ -453,7 +439,7 @@ Adds 24 hours to the current time. Returns new unix time.
 
 sub add_day { return $_[0]->add_seconds($DAY) }
 
-=head2 Unix [unixtime]
+=head2 unix [unixtime]
 
 Optionally takes a date in unix seconds since the epoch format.
 Returns the number of seconds since the epoch
@@ -466,7 +452,7 @@ sub unix {
     return $self->{'time'};
 }
 
-=head2 DateTime
+=head2 date_time
 
 Alias for L</Get> method. Arguments C<Date> and <Time>
 are fixed to true values, other arguments could be used
@@ -479,7 +465,7 @@ sub date_time {
     return $self->get( @_, date => 1, time => 1 );
 }
 
-=head2 Date
+=head2 date
 
 Takes format argument which allows you choose date formatter.
 Pass throught other arguments to the formatter method.
@@ -493,7 +479,7 @@ sub date {
     return $self->get( @_, date => 1, time => 0 );
 }
 
-=head2 Time
+=head2 time
 
 
 =cut
@@ -520,7 +506,7 @@ sub get {
     return $self->$formatter(%args);
 }
 
-=head2 Output formatters
+=head2 output formatters
 
 Fomatter is a method that returns date and time in different configurable
 format.
@@ -555,21 +541,17 @@ sub default_format {
     );
 
     #  0    1    2     3     4    5     6     7      8      9
-    my ($sec,  $min,  $hour,  $mday,  $mon,
-        $year, $wday, $ydaym, $isdst, $offset
-    ) = $self->localtime( $args{'timezone'} );
+    my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $ydaym, $isdst, $offset ) = $self->localtime( $args{'timezone'} );
     $wday = $self->get_weekday($wday);
     $mon  = $self->get_month($mon);
-    ( $mday, $hour, $min, $sec )
-        = map { sprintf "%02d", $_ } ( $mday, $hour, $min, $sec );
+    ( $mday, $hour, $min, $sec ) = map { sprintf "%02d", $_ } ( $mday, $hour, $min, $sec );
 
     if ( $args{'date'} && !$args{'time'} ) {
         return _( '%1 %2 %3 %4', $wday, $mon, $mday, $year );
     } elsif ( !$args{'date'} && $args{'time'} ) {
         return _( '%1:%2:%3', $hour, $min, $sec );
     } else {
-        return _( '%1 %2 %3 %4:%5:%6 %7',
-            $wday, $mon, $mday, $hour, $min, $sec, $year );
+        return _( '%1 %2 %3 %4:%5:%6 %7', $wday, $mon, $mday, $hour, $min, $sec, $year );
     }
 }
 
@@ -595,9 +577,7 @@ sub iso {
     );
 
     #  0    1    2     3     4    5     6     7      8      9
-    my ($sec,  $min,  $hour,  $mday,  $mon,
-        $year, $wday, $ydaym, $isdst, $offset
-    ) = $self->localtime( $args{'timezone'} );
+    my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $ydaym, $isdst, $offset ) = $self->localtime( $args{'timezone'} );
 
     #the month needs incrementing, as gmtime returns 0-11
     $mon++;
@@ -637,9 +617,7 @@ sub w3cdtf {
     );
 
     #  0    1    2     3     4    5     6     7      8      9
-    my ($sec,  $min,  $hour,  $mday,  $mon,
-        $year, $wday, $ydaym, $isdst, $offset
-    ) = $self->localtime( $args{'timezone'} );
+    my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $ydaym, $isdst, $offset ) = $self->localtime( $args{'timezone'} );
 
     #the month needs incrementing, as gmtime returns 0-11
     $mon++;
@@ -675,18 +653,16 @@ arguments.
 sub rfc2822 {
     my $self = shift;
     my %args = (
-        date      => 1,
-        time      => 1,
-        timezone  => '',
+        date        => 1,
+        time        => 1,
+        timezone    => '',
         day_of_week => 1,
-        seconds   => 1,
+        seconds     => 1,
         @_,
     );
 
     #  0    1    2     3     4    5     6     7      8     9
-    my ($sec,  $min,  $hour,  $mday,  $mon,
-        $year, $wday, $ydaym, $isdst, $offset
-    ) = $self->localtime( $args{'timezone'} );
+    my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $ydaym, $isdst, $offset ) = $self->localtime( $args{'timezone'} );
 
     my ( $date, $time ) = ( '', '' );
     $date .= "$DAYS_OF_WEEK[$wday], " if $args{'day_of_week'} && $args{'date'};
@@ -733,8 +709,8 @@ sub rfc2616 {
         date => 1,
         time => 1,
         @_,
-        timezone  => 'utc',
-        seconds   => 1,
+        timezone    => 'utc',
+        seconds     => 1,
         day_of_week => 1,
     );
 

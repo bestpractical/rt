@@ -1,0 +1,118 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<input type="hidden" class="hidden" name="CheckACL"  value="<%$ACLDesc%>" />
+     <table border="0">
+<tr>
+<td valign="top" width="180" align="left"> 
+%  my %current_rights;
+<h3><&|/l&>Current rights</&></h3>
+% if ($ACLObj->count() == 0) {
+<i><&|/l&>No rights granted.</&></i> <br />    
+% } else {
+<i>(<&|/l&>Check box to revoke right</&>)</i> <br />
+% while (my $right = $ACLObj->next()) {
+% if ($right->right_name) {
+% $current_rights{$right->right_name} = 1;
+<input type="checkbox" class="checkbox" value="<% $right->right_name %>" name="revoke_right-<%$ACLDesc%>" /> <% _($right->right_name) %><br />
+% }
+%  }
+% }
+</td>
+<td valign="top">
+<h3><&|/l&>New rights</&></h3> 
+<select size="5"  multiple  name="grant_right-<%$ACLDesc%>">
+% foreach $right (sort keys %Rights) {
+% next if $current_rights{$right};
+      <option value="<%$right%>"  
+	><% _($right) %></option>
+% }
+<option value="" selected><&|/l&>(no value)</&></option>
+</select>
+</td>
+</tr>
+</table>
+<%INIT>
+    my ($right, $ACLDesc, $AppliesTo, %Rights);
+
+    # if the principal id points to a user, we really want to point
+    # to their ACL equivalence group. The machinations we're going through
+    # lead me to start to suspect that we really want users and groups
+    # to just be the same table. or _maybe_ that we want an object db.
+    my $princ = RT::Model::Principal->new(current_user => RT->system_user);
+    $princ->load($principal_id);
+    if ($princ->principal_type eq 'User') {
+    my $group = RT::Model::Group->new(current_user => RT->system_user);
+        $group->load_acl_equivalence_group($princ);
+        $principal_id = $group->principal_id;
+    }
+
+
+    my $ACLObj = RT::Model::ACECollection->new();
+    my $ACE = RT::Model::ACE->new();
+
+
+    $ACLObj->limit_to_object( $object);
+    $ACLObj->limit_to_principal( id => $principal_id);
+    $ACLObj->order_by(column=>'right_name'); 
+
+    if (ref($object) && UNIVERSAL::can($object, 'available_rights')) { 
+        %Rights = %{$object->available_rights};
+    } 
+
+        else {
+                %Rights = ( _('System Error') => _("No rights found") );
+        }
+        
+    $ACLDesc = "$principal_id-".ref($object)."-".$object->id;
+</%INIT>
+    
+<%ARGS>
+$principal_type => undef
+$principal_id => undef
+$object =>undef
+</%ARGS>

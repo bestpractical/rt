@@ -1,0 +1,159 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/ListActions, actions => \@results &>
+
+
+<form method="post" action="CustomField.html">
+<input type="hidden" class="hidden" name="CustomField" value="<%$id %>" />
+<input type="hidden" class="hidden" name="queue" value="<%$queue%>" />
+
+<table width="100%" border="0">
+<tr><td align="right">
+<&|/l&>name</&>:
+</td><td>
+<input name="name" value="<%$CustomFieldObj->name%>" size="20" />
+</td></tr>
+<tr><td align="right">
+<&|/l&>description</&>:
+</td><td>
+<input name="description" value="<%$CustomFieldObj->description%>" size="80" />
+</td></tr>
+<tr><td align="right">
+<&|/l&>Type</&>:
+</td><td>
+<& /Admin/Elements/SelectCustomFieldType, name => "Type", default => $CustomFieldObj->type &>
+</td></tr>
+<tr><td>
+</td><td>
+<input type="hidden" class="hidden" name="set_enabled" value="1" />
+<input type="checkbox" class="checkbox" name="enabled" value="1" <%$enabled_checked%> /> <&|/l&>enabled (Unchecking this box disables this custom field)</&>
+</td></tr>
+</table>
+
+<p>
+% if ($CustomFieldObj->id and $CustomFieldObj->type =~ /Select/) {
+<h2><&|/l&>Values</&></h2>
+<font size="-1">
+<& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
+<& /Admin/Elements/AddCustomFieldValue, CustomField => $CustomFieldObj &>
+</font>
+% }
+<&/Elements/Submit, Label => _('Create') &>
+</form>
+
+
+
+<%INIT>
+
+my $CustomFieldObj = RT::Model::CustomField->new();
+my $enabled_checked = "CHECKED";
+my (@results);
+
+if (! $CustomField ) { 
+  $title = _("Create a CustomField");
+  $id = 'new';
+} else {
+
+    if ($CustomField eq 'new') {
+      my ($val, $msg) =  $CustomFieldObj->create(queue => $queue, 
+                                                 name => $name, 
+                                                 type => $Type,
+                                                 description => $description,
+						 );
+      
+      # if there is an error, then abort.  But since at this point there's
+      # stuff already printed, clear it out.
+      # (This only works in conjunction with temporarily turning autoflush
+      #  off in the files that use this component.)
+      unless ($val) {
+	  $m->clear_buffer;
+	  abort(_("Could not create CustomField: %1", $msg));
+      }
+      push @results, $msg;
+      $CustomFieldObj->set_sort_order($CustomFieldObj->id);
+      $title = _('Created CustomField %1', $CustomFieldObj->name()); 
+    } else {
+      $CustomFieldObj->load($CustomField) || abort(_('No CustomField'));
+      $title = _('Editing CustomField %1', $CustomFieldObj->name()); 
+
+      my @aresults = process_custom_field_updates ( 
+                        CustomFieldObj => $CustomFieldObj,
+                        args_ref => \%ARGS );
+      push @results, @aresults;
+    }
+
+
+$id = $CustomFieldObj->id;
+
+  #we're asking about enabled on the web page but really care about disabled.
+  my $disabled = ($enabled ? 0 : 1);
+
+  if  ( ($set_enabled) and ( $disabled != $CustomFieldObj->disabled) ) { 
+      my  ($code, $msg) = $CustomFieldObj->set_disabled($disabled);
+      push @results, _('enabled status %1', _($msg));
+  }
+  
+  if ($CustomFieldObj->disabled()) {
+      $enabled_checked ="";
+  }
+
+}
+
+
+</%INIT>
+<%ARGS>
+$id => undef
+$title => undef
+$queue => undef
+$CustomField => undef
+$Type => undef
+$description => undef
+$name => undef
+$set_enabled => undef
+$enabled => undef
+</%ARGS>

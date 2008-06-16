@@ -1,0 +1,158 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<%method new>
+<%init>
+return \%ARGS;
+</%init>
+</%method>
+
+<%method process>
+
+<%init>
+my @actions;
+my @objects = RT::SavedSearches->new()->_privacy_objects;
+push @objects, RT::System->new()
+    if Jifty->web->current_user->has_right( object=> RT->system,
+                                          right => 'SuperUser');
+$self->{SearchId} ||= 'new';
+my $search_params = { map { $_ => $args->{$_} } @{$self->{SearchFields}} };
+
+if ( my ( $container_object, $search_id ) = _parse_saved_search( $args->{'LoadSavedSearch'} ) ) {
+    my $search = $container_object->attributes->with_id($search_id);
+    # We have a $search and now; import the others
+    $self->{SearchId} = $args->{'LoadSavedSearch'};
+    $self->{CurrentSearch}{object} = $search;
+    $args->{$_} = $search->sub_value($_) for @{ $self->{SearchFields} };
+}
+
+# look for the current one in the available saved searches
+if ($self->{SearchId} eq 'new') {
+    for my $obj (@objects) {
+        for ( $m->comp( "/Search/Elements/SearchesForObject", object => $obj ) ) {
+            my ( $desc, $search ) = @$_;
+            use Data::Dumper;
+            # FFS
+            local $Data::Dumper::Sortkeys = 1;
+            if ( Dumper( $search->content ) eq
+                 Dumper( { %$search_params, SearchType => $self->{SearchType} } ) ) {
+                $self->{CurrentSearch}{object}      = $search;
+                $self->{SearchId}                   = $search->id;
+            }
+        }
+    }
+}
+
+if ( $args->{Save} ) {
+    if ( my $search = $self->{CurrentSearch}{object} ) {
+        # rename
+        $search->set_description( $args->{description} );
+	push @actions, _($self->{SearchType})._( ' %1 renamed to %2.', $self->{CurrentSearch}{description}, $args->{description} );
+    }
+    else {
+        # new saved search
+        my $saved_search = RT::SavedSearch->new();
+        my ( $ok, $search_msg ) = $saved_search->save(
+            Privacy      => $args->{'Owner'},
+            name         => $args->{'description'},
+            type         => $self->{'SearchType'},
+            search_params => $search_params
+        );
+        if ($ok) {
+	    $self->{CurrentSearch}{object} = $saved_search->{Attribute};
+            push @actions, _($self->{SearchType})._( ' %1 saved.', $args->{description} );
+        } else {
+            push @actions,
+                [ _("Can't save %1", _($self->{SearchType})) . ': ' . _($search_msg), 0 ];
+        }
+    }
+}
+
+if ( $args->{Delete} && $self->{CurrentSearch}{object} ) {
+    my ($ok, $msg) = $self->{CurrentSearch}{object}->delete;
+    push @actions, $ok ? _($self->{SearchType})._( ' %1 deleted.', $self->{CurrentSearch}{object}->description ) : $msg;
+    delete $self->{CurrentSearch}{object};
+    delete $self->{SearchId};
+
+}
+
+$self->{CurrentSearch}{description} = $self->{CurrentSearch}{object}->description
+    if $self->{CurrentSearch}{object};
+
+return @actions;
+</%init>
+<%ARGS>
+$self
+$args
+</%ARGS>
+
+</%method>
+
+<%method show>
+<form method="post" action="<% $Action %>" name="SaveSearch">
+<& /Search/Elements/EditSearches, name => 'Owner', type => $self->{SearchType}, AllowCopy => 0,
+   CurrentSearch => $self->{CurrentSearch}, SearchId => $self->{SearchId}, Title => $Title  &><br />
+<%PERL>
+foreach my $field ( @{$self->{SearchFields}} ) {
+    if ( ref($ARGS{$field}) && ref($ARGS{$field}) ne 'ARRAY' ) {
+        Jifty->log->error("Couldn't store '$field'. it's reference to ". ref($ARGS{$field}) );
+        next;
+    }
+    foreach my $value ( grep defined, ref($ARGS{$field})? @{ $ARGS{$field} } : $ARGS{$field} ) {
+</%PERL>
+<input type="hidden" class="hidden" name="<% $field %>" value="<% $value %>" />
+%   }
+% }
+</form>
+<%ARGS>
+$self => undef
+$Action => ''
+$Title => 'Saved searches'
+</%ARGS>
+<%init>
+</%init>
+</%method>

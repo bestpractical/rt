@@ -73,7 +73,7 @@ use base qw/RT::SearchBuilder/;
 
 use RT::URI;
 
-# {{{ sub Limit
+# {{{ sub limit
 sub limit {
     my $self = shift;
     my %args = (
@@ -82,7 +82,7 @@ sub limit {
         @_
     );
 
-#if someone's trying to search for tickets, try to resolve the uris for searching.
+    #if someone's trying to search for tickets, try to resolve the uris for searching.
 
     if (   ( $args{'operator'} eq '=' ) and ( $args{'column'} eq 'base' )
         or ( $args{'column'} eq 'target' ) )
@@ -121,7 +121,7 @@ sub limit {
 
 # {{{ limit_RefersTo
 
-=head2 limit_RefersTo URI
+=head2 limit_refers_to URI
 
 find all things that refer to URI
 
@@ -138,7 +138,7 @@ sub limit_refers_to {
 # }}}
 # {{{ limit_ReferredToBy
 
-=head2 limit_ReferredToBy URI
+=head2 limit_referred_to_by URI
 
 find all things that URI refers to
 

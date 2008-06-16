@@ -61,7 +61,7 @@ use RT::Shredder::Dependencies;
 # I should decide is TicketCustomFieldValue depends by this or not.
 # Today I think no. What would be tomorrow I don't know.
 
-sub __Relates {
+sub __relates {
     my $self = shift;
     my %args = (
         shredder     => undef,
@@ -78,15 +78,14 @@ sub __Relates {
         my $rec = $args{'shredder'}->get_record( object => $self );
         $self = $rec->{'object'};
         $rec->{'state'} |= INVALID;
-        $rec->{'description'}
-            = "Have no related CustomField #" . $self->id . " object";
+        $rec->{'description'} = "Have no related CustomField #" . $self->id . " object";
     }
 
     $deps->_push_dependencies(
-        base_object   => $self,
-        flags         => RELATES,
+        base_object    => $self,
+        flags          => RELATES,
         target_objects => $list,
-        shredder      => $args{'shredder'}
+        shredder       => $args{'shredder'}
     );
     return $self->__relates(%args);
 }

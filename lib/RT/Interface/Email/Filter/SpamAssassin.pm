@@ -52,9 +52,9 @@ my $spamtest = Mail::SpamAssassin->new();
 
 sub get_current_user {
     my %args = (
-        Message     => undef,
+        Message      => undef,
         current_user => undef,
-        AuthLevel   => undef,
+        AuthLevel    => undef,
         @_
     );
     my $status = $spamtest->check( $args{'Message'} );
@@ -92,12 +92,10 @@ the floor; otherwise, it is passed on as normal.
 eval "require RT::Interface::Email::Filter::SpamAssassin_Vendor";
 die $@
     if ( $@
-    && $@
-    !~ qr{^Can't locate RT/Interface/Email/Filter/SpamAssassin_Vendor.pm} );
+    && $@ !~ qr{^Can't locate RT/Interface/Email/Filter/SpamAssassin_Vendor.pm} );
 eval "require RT::Interface::Email::Filter::SpamAssassin_Local";
 die $@
     if ( $@
-    && $@
-    !~ qr{^Can't locate RT/Interface/Email/Filter/SpamAssassin_Local.pm} );
+    && $@ !~ qr{^Can't locate RT/Interface/Email/Filter/SpamAssassin_Local.pm} );
 
 1;

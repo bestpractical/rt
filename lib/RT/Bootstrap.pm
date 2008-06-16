@@ -1,4 +1,50 @@
-
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
+#                                          <jesse@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/copyleft/gpl.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
 use warnings;
 use strict;
 
@@ -11,10 +57,7 @@ sub run {
     $self->insert_data( $RT::EtcPath . "/initialdata" );
 }
 
-
-
 use File::Spec;
-
 
 sub _yesno {
 
@@ -56,8 +99,7 @@ sub insert_initial_data {
     my ( $val, $msg ) = $RT_System->_bootstrap_create(
         name      => 'RT_System',
         real_name => 'The RT System itself',
-        comments  => 'Do not delete or modify this user. '
-            . 'It is integral to RT\'s internal database structures',
+        comments  => 'Do not delete or modify this user. ' . 'It is integral to RT\'s internal database structures',
     );
 
     unless ($val) {
@@ -99,17 +141,9 @@ sub insert_data {
     my $self     = shift;
     my $datafile = shift;
 
- # Slurp in stuff to insert from the datafile. Possible things to go in here:-
-    our (
-        @Groups,       @Users,           @ACL,       @Queues,
-        @scrip_actions, @scrip_conditions, @Templates, @CustomFields,
-        @Scrips,       @Attributes,      @Initial,   @Final
-    );
-    local (
-        @Groups,       @Users,           @ACL,       @Queues,
-        @scrip_actions, @scrip_conditions, @Templates, @CustomFields,
-        @Scrips,       @Attributes,      @Initial,   @Final
-    );
+    # Slurp in stuff to insert from the datafile. Possible things to go in here:-
+    our ( @Groups, @Users, @ACL, @Queues, @scrip_actions, @scrip_conditions, @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final );
+    local ( @Groups, @Users, @ACL, @Queues, @scrip_actions, @scrip_conditions, @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final );
 
     require $datafile
         || die "Couldn't find initial data for import\n" . $@;
@@ -126,8 +160,7 @@ sub insert_data {
         #print "My systemuser is ".RT->system_user ."\n";
         $RT::system_user = RT::CurrentUser->new( name => 'RT_System' );
         foreach my $item (@Groups) {
-            my $new_entry
-                = RT::Model::Group->new( current_user => RT->system_user );
+            my $new_entry = RT::Model::Group->new( current_user => RT->system_user );
             my $member_of = delete $item->{'member_of'};
             my ( $return, $msg ) = $new_entry->_create(%$item);
 
@@ -136,8 +169,7 @@ sub insert_data {
             if ($member_of) {
                 $member_of = [$member_of] unless ref $member_of eq 'ARRAY';
                 foreach (@$member_of) {
-                    my $parent = RT::Model::Group->new(
-                        current_user => RT->system_user );
+                    my $parent = RT::Model::Group->new( current_user => RT->system_user );
                     if ( ref $_ eq 'HASH' ) {
                         $parent->load_by_cols(%$_);
                     } elsif ( !ref $_ ) {
@@ -153,8 +185,7 @@ sub insert_data {
                         print "(Error: couldn't load group to add member)";
                         next;
                     }
-                    my ( $return, $msg )
-                        = $parent->add_member( $new_entry->id );
+                    my ( $return, $msg ) = $parent->add_member( $new_entry->id );
 
                     #print "(Error: $msg)" unless ($return);
                     #print $return. ".";
@@ -168,8 +199,7 @@ sub insert_data {
 
         #print "Creating users...";
         foreach my $item (@Users) {
-            my $new_entry
-                = RT::Model::User->new( current_user => RT->system_user );
+            my $new_entry = RT::Model::User->new( current_user => RT->system_user );
             my ( $return, $msg ) = $new_entry->create(%$item);
             print "(Error: $msg)" unless $return;
 
@@ -182,8 +212,7 @@ sub insert_data {
 
         #print "Creating queues...";
         for my $item (@Queues) {
-            my $new_entry
-                = RT::Model::Queue->new( current_user => RT->system_user );
+            my $new_entry = RT::Model::Queue->new( current_user => RT->system_user );
             my ( $return, $msg ) = $new_entry->create(%$item);
 
             #print "(Error: $msg)" unless $return;
@@ -196,8 +225,7 @@ sub insert_data {
 
         #print "Creating custom fields...";
         for my $item (@CustomFields) {
-            my $new_entry = RT::Model::CustomField->new(
-                current_user => RT->system_user );
+            my $new_entry = RT::Model::CustomField->new( current_user => RT->system_user );
             my $values = delete $item->{'values'};
 
             my @queues;
@@ -222,27 +250,23 @@ sub insert_data {
             }
 
             # apply by default
-            if ( !@queues && !exists $item->{'queue'} && $item->{lookup_type} )
-            {
-                my $ocf = RT::Model::ObjectCustomField->new(
-                    current_user => RT->system_user );
+            if ( !@queues && !exists $item->{'queue'} && $item->{lookup_type} ) {
+                my $ocf = RT::Model::ObjectCustomField->new( current_user => RT->system_user );
                 $ocf->create( custom_field => $new_entry->id );
             }
 
             for my $q (@queues) {
-                my $q_obj = RT::Model::Queue->new(
-                    current_user => RT->system_user );
+                my $q_obj = RT::Model::Queue->new( current_user => RT->system_user );
                 $q_obj->load($q);
                 unless ( $q_obj->id ) {
 
                     #print "(Error: Could not find queue " . $q . ")\n";
                     next;
                 }
-                my $OCF = RT::Model::ObjectCustomField->new(
-                    current_user => RT->system_user );
+                my $OCF = RT::Model::ObjectCustomField->new( current_user => RT->system_user );
                 ( $return, $msg ) = $OCF->create(
                     custom_field => $new_entry->id,
-                    object_id   => $q_obj->id,
+                    object_id    => $q_obj->id,
                 );
 
                 #print "(Error: $msg)\n" unless $return and $OCF->id;
@@ -254,37 +278,34 @@ sub insert_data {
         #print "done.\n";
     }
     if (@ACL) {
+
         #print "Creating ACL...";
         for my $item (@ACL) {
             my ( $princ, $object );
 
             # Global rights or queue rights?
             if ( $item->{'CF'} ) {
-                $object = RT::Model::CustomField->new(
-                    current_user => RT->system_user );
+                $object = RT::Model::CustomField->new( current_user => RT->system_user );
                 my @columns = ( name => $item->{'CF'} );
                 push @columns, queue => $item->{'queue'}
                     if $item->{'queue'} and not ref $item->{'queue'};
                 $object->load_by_name(@columns);
             } elsif ( $item->{'queue'} ) {
-                $object = RT::Model::Queue->new(
-                    current_user => RT->system_user );
+                $object = RT::Model::Queue->new( current_user => RT->system_user );
                 $object->load( $item->{'queue'} );
             } else {
                 $object = RT->system;
             }
 
-        #print "Couldn't load object" and next unless $object and $object->id;
+            #print "Couldn't load object" and next unless $object and $object->id;
 
             # Group rights or user rights?
             if ( $item->{'GroupDomain'} ) {
-                $princ = RT::Model::Group->new(
-                    current_user => RT->system_user );
+                $princ = RT::Model::Group->new( current_user => RT->system_user );
                 if ( $item->{'GroupDomain'} eq 'UserDefined' ) {
                     $princ->load_user_defined_group( $item->{'group_id'} );
                 } elsif ( $item->{'GroupDomain'} eq 'SystemInternal' ) {
-                    $princ->load_system_internal_group(
-                        $item->{'GroupType'} );
+                    $princ->load_system_internal_group( $item->{'GroupType'} );
                 } elsif ( $item->{'GroupDomain'} eq 'RT::System-Role' ) {
                     $princ->load_system_role_group( $item->{'GroupType'} );
                 } elsif ( $item->{'GroupDomain'} eq 'RT::Model::Queue-Role'
@@ -298,14 +319,12 @@ sub insert_data {
                     $princ->load( $item->{'group_id'} );
                 }
             } else {
-                $princ
-                    = RT::Model::User->new( current_user => RT->system_user );
+                $princ = RT::Model::User->new( current_user => RT->system_user );
                 $princ->load( $item->{'user_id'} );
             }
 
             unless ( $princ->id ) {
-                Carp::confess(
-                    "Could not create principal! - " . YAML::Dump($item) );
+                Carp::confess( "Could not create principal! - " . YAML::Dump($item) );
             }
 
             # Grant it
@@ -333,8 +352,7 @@ sub insert_data {
         #print "Creating scrip_actions...";
 
         for my $item (@scrip_actions) {
-            my $new_entry = RT::Model::ScripAction->new(
-                current_user => RT->system_user );
+            my $new_entry = RT::Model::ScripAction->new( current_user => RT->system_user );
             my $return = $new_entry->create(%$item);
 
             #print $return. ".";
@@ -348,8 +366,7 @@ sub insert_data {
         #print "Creating scrip_conditions...";
 
         for my $item (@scrip_conditions) {
-            my $new_entry = RT::Model::ScripCondition->new(
-                current_user => RT->system_user );
+            my $new_entry = RT::Model::ScripCondition->new( current_user => RT->system_user );
             my $return = $new_entry->create(%$item);
 
             #print $return. ".";
@@ -363,8 +380,7 @@ sub insert_data {
         #print "Creating templates...";
 
         for my $item (@Templates) {
-            my $new_entry
-                = RT::Model::Template->new( current_user => RT->system_user );
+            my $new_entry = RT::Model::Template->new( current_user => RT->system_user );
             my $return = $new_entry->create(%$item);
 
             #print $return. ".";
@@ -377,8 +393,7 @@ sub insert_data {
         #print "Creating scrips...";
 
         for my $item (@Scrips) {
-            my $new_entry
-                = RT::Model::Scrip->new( current_user => RT->system_user );
+            my $new_entry = RT::Model::Scrip->new( current_user => RT->system_user );
 
             my @queues
                 = ref $item->{'queue'} eq 'ARRAY'
@@ -387,8 +402,7 @@ sub insert_data {
             push @queues, 0 unless @queues;    # add global queue at least
 
             foreach my $q (@queues) {
-                my ( $return, $msg )
-                    = $new_entry->create( %$item, queue => $q );
+                my ( $return, $msg ) = $new_entry->create( %$item, queue => $q );
                 if ($return) {
 
                     #print $return. ".";
@@ -409,8 +423,7 @@ sub insert_data {
         use RT::System;
         my $sys = RT::System->new( current_user => RT->system_user );
         for my $item (@Attributes) {
-            my $obj
-                = delete $item->{object};  # XXX: make this something loadable
+            my $obj = delete $item->{object};    # XXX: make this something loadable
             $obj ||= $sys;
             my ( $return, $msg ) = $obj->add_attribute(%$item);
             if ($return) {
@@ -448,8 +461,7 @@ sub acl_equiv_group_id {
     my $username = shift;
     my $user = RT::Model::User->new( current_user => RT->system_user );
     $user->load($username);
-    my $equiv_group
-        = RT::Model::Group->new( current_user => RT->system_user );
+    my $equiv_group = RT::Model::Group->new( current_user => RT->system_user );
     $equiv_group->load_acl_equivalence_group($user);
     return ( $equiv_group->id );
 }

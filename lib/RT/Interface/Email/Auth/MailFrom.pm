@@ -52,18 +52,17 @@ use RT::Interface::Email qw(parse_sender_address_from_head create_user);
 
 sub get_current_user {
     my %args = (
-        message     => undef,
+        message      => undef,
         current_user => undef,
-        AuthLevel   => undef,
-        Ticket      => undef,
-        queue       => undef,
-        action      => undef,
+        AuthLevel    => undef,
+        Ticket       => undef,
+        queue        => undef,
+        action       => undef,
         @_
     );
 
     # We don't need to do any external lookups
-    my ( $Address, $name )
-        = parse_sender_address_from_head( $args{'message'}->head );
+    my ( $Address, $name ) = parse_sender_address_from_head( $args{'message'}->head );
     unless ($Address) {
         Jifty->log->error("Couldn't find sender's address");
         return ( $args{'CurrentUser'}, -1 );
@@ -74,12 +73,11 @@ sub get_current_user {
         $CurrentUser = RT::CurrentUser->new( name => $Address );
     }
     if ( $CurrentUser->id ) {
-        Jifty->log->debug(
-            "Mail from user #" . $CurrentUser->id . " ($Address)" );
+        Jifty->log->debug( "Mail from user #" . $CurrentUser->id . " ($Address)" );
         return ( $CurrentUser, 1 );
     }
 
-# If the user can't be loaded, we may need to create one. Figure out the acl situation.
+    # If the user can't be loaded, we may need to create one. Figure out the acl situation.
     my $unpriv = RT::Model::Group->new( current_user => RT->system_user );
     $unpriv->load_system_internal_group('Unprivileged');
     unless ( $unpriv->id ) {
@@ -96,15 +94,15 @@ sub get_current_user {
 
     Jifty->log->debug("Going to create user with address '$Address'");
 
-# but before we do that, we need to make sure that the Created user would have the right
-# to do what we're doing.
+    # but before we do that, we need to make sure that the Created user would have the right
+    # to do what we're doing.
     if ( $args{'ticket'} && $args{'ticket'}->id ) {
         my $qname = $args{'queue'}->name;
 
         # We have a ticket. that means we're commenting or corresponding
         if ( $args{'action'} =~ /^comment$/i ) {
 
-# check to see whether "Everyone" or "Unprivileged users" can comment on tickets
+            # check to see whether "Everyone" or "Unprivileged users" can comment on tickets
             unless (
                 $everyone->principal_object->has_right(
                     object => $args{'queue'},
@@ -116,14 +114,12 @@ sub get_current_user {
                 )
                 )
             {
-                Jifty->log->debug(
-                    "Unprivileged users have no right to comment on ticket in queue '$qname'"
-                );
+                Jifty->log->debug( "Unprivileged users have no right to comment on ticket in queue '$qname'" );
                 return ( $args{'CurrentUser'}, 0 );
             }
         } elsif ( $args{'action'} =~ /^correspond$/i ) {
 
-# check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
+            # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
             unless (
                 $everyone->principal_object->has_right(
                     object => $args{'queue'},
@@ -135,14 +131,12 @@ sub get_current_user {
                 )
                 )
             {
-                Jifty->log->debug(
-                    "Unprivileged users have no right to reply to ticket in queue '$qname'"
-                );
+                Jifty->log->debug( "Unprivileged users have no right to reply to ticket in queue '$qname'" );
                 return ( $args{'CurrentUser'}, 0 );
             }
         } elsif ( $args{'action'} =~ /^take$/i ) {
 
-# check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
+            # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
             unless (
                 $everyone->principal_object->has_right(
                     object => $args{'queue'},
@@ -154,15 +148,13 @@ sub get_current_user {
                 )
                 )
             {
-                Jifty->log->debug(
-                    "Unprivileged users have no right to own ticket in queue '$qname'"
-                );
+                Jifty->log->debug( "Unprivileged users have no right to own ticket in queue '$qname'" );
                 return ( $args{'CurrentUser'}, 0 );
             }
 
         } elsif ( $args{'action'} =~ /^resolve$/i ) {
 
-# check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
+            # check to see whether "Everybody" or "Unprivileged users" can correspond on tickets
             unless (
                 $everyone->principal_object->has_right(
                     object => $args{'queue'},
@@ -174,15 +166,12 @@ sub get_current_user {
                 )
                 )
             {
-                Jifty->log->debug(
-                    "Unprivileged users have no right to resolve ticket in queue '$qname'"
-                );
+                Jifty->log->debug( "Unprivileged users have no right to resolve ticket in queue '$qname'" );
                 return ( $args{'CurrentUser'}, 0 );
             }
 
         } else {
-            Jifty->log->warn(
-                "action '" . ( $args{'action'} || '' ) . "' is unknown" );
+            Jifty->log->warn( "action '" . ( $args{'action'} || '' ) . "' is unknown" );
             return ( $args{'CurrentUser'}, 0 );
         }
     }
@@ -191,7 +180,7 @@ sub get_current_user {
     elsif ( $args{'queue'} && $args{'queue'}->id ) {
         my $qname = $args{'queue'}->name;
 
-# check to see whether "Everybody" or "Unprivileged users" can create tickets in this queue
+        # check to see whether "Everybody" or "Unprivileged users" can create tickets in this queue
         unless (
             $everyone->principal_object->has_right(
                 object => $args{'queue'},
@@ -203,15 +192,12 @@ sub get_current_user {
             )
             )
         {
-            Jifty->log->debug(
-                "Unprivileged users have no right to create ticket in queue '$qname'"
-            );
+            Jifty->log->debug( "Unprivileged users have no right to create ticket in queue '$qname'" );
             return ( $args{'CurrentUser'}, 0 );
         }
     }
 
-    $CurrentUser
-        = create_user( undef, $Address, $name, $Address, $args{'message'} );
+    $CurrentUser = create_user( undef, $Address, $name, $Address, $args{'message'} );
 
     return ( $CurrentUser, 1 );
 }

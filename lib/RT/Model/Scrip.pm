@@ -72,19 +72,18 @@ sub table {'Scrips'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
 
-    column queue          => references RT::Model::Queue;
-    column template       => references RT::Model::Template;
-    column scrip_action    => references RT::Model::ScripAction;
-    column scrip_condition =>  references RT::Model::ScripCondition;
-    column stage => type is 'varchar(32)', default is 'TransactionCreate';
-    column description            => type is 'text';
-    column custom_prepare_code      => type is 'text';
-    column custom_commit_code       => type is 'text';
+    column queue                     => references RT::Model::Queue;
+    column template                  => references RT::Model::Template;
+    column scrip_action              => references RT::Model::ScripAction;
+    column scrip_condition           => references RT::Model::ScripCondition;
+    column stage                     => type is 'varchar(32)', default is 'TransactionCreate';
+    column description               => type is 'text';
+    column custom_prepare_code       => type is 'text';
+    column custom_commit_code        => type is 'text';
     column custom_is_applicable_code => type is 'text';
 };
 
-
-=head2 Create
+=head2 create
 
 Creates a new entry in the Scrips table. Takes a paramhash with:
 
@@ -108,14 +107,14 @@ retval is 0 for failure or scrip id.  msg is a textual description of what happe
 sub create {
     my $self = shift;
     my %args = (
-        queue                  => 0,
-        template               => 0,                     # name or id
-        scrip_action            => 0,                     # name or id
-        scrip_condition         => 0,                     # name or id
-        stage                  => 'TransactionCreate',
-        description            => undef,
-        custom_prepare_code      => undef,
-        custom_commit_code       => undef,
+        queue                     => 0,
+        template                  => 0,                     # name or id
+        scrip_action              => 0,                     # name or id
+        scrip_condition           => 0,                     # name or id
+        stage                     => 'TransactionCreate',
+        description               => undef,
+        custom_prepare_code       => undef,
+        custom_commit_code        => undef,
         custom_is_applicable_code => undef,
         @_
     );
@@ -143,7 +142,6 @@ sub create {
         $args{'queue'} = $queue_obj->id;
     }
 
-
     return ( 0, _("Action is mandatory argument") )
         unless $args{'scrip_action'};
     my $action = RT::Model::ScripAction->new;
@@ -168,14 +166,14 @@ sub create {
         unless $condition->id;
 
     my ( $id, $msg ) = $self->SUPER::create(
-        queue                  => $args{'queue'},
-        template               => $template->id,
-        scrip_condition         => $condition->id,
-        stage                  => $args{'stage'},
-        scrip_action            => $action->id,
-        description            => $args{'description'},
-        custom_prepare_code      => $args{'custom_prepare_code'},
-        custom_commit_code       => $args{'custom_commit_code'},
+        queue                     => $args{'queue'},
+        template                  => $template->id,
+        scrip_condition           => $condition->id,
+        stage                     => $args{'stage'},
+        scrip_action              => $action->id,
+        description               => $args{'description'},
+        custom_prepare_code       => $args{'custom_prepare_code'},
+        custom_commit_code        => $args{'custom_commit_code'},
         custom_is_applicable_code => $args{'custom_is_applicable_code'},
     );
 
@@ -186,20 +184,20 @@ sub create {
     }
 }
 
-
 sub scrip_action {
     my $self = shift;
-    Jifty->log->debug("loading scripaction ".$self->__value('scrip_action'));
+    Jifty->log->debug( "loading scripaction " . $self->__value('scrip_action') );
+
     # jfity returns a new object each time you call the accessor. I'm not sure that's right, but it blows our behaviour
-    unless ($self->{'scrip_action'}) {
-            $self->{'scrip_action'} = RT::Model::ScripAction->new();
-            $self->{'scrip_action'}->load( $self->_value('scrip_action'), $self->_value('template'));
-        }
+    unless ( $self->{'scrip_action'} ) {
+        $self->{'scrip_action'} = RT::Model::ScripAction->new();
+        $self->{'scrip_action'}->load( $self->_value('scrip_action'), $self->_value('template') );
+    }
     return $self->{'scrip_action'};
 
 }
 
-=head2 Delete
+=head2 delete
 
 Delete this object
 
@@ -214,7 +212,6 @@ sub delete {
 
     return ( $self->SUPER::delete(@_) );
 }
-
 
 =head2 queue_obj
 
@@ -250,8 +247,7 @@ sub template_obj {
     return ( $self->{'template_obj'} );
 }
 
-
-=head2 Apply { ticket_obj => undef, transaction_obj => undef}
+=head2 apply { ticket_obj => undef, transaction_obj => undef}
 
 This method instantiates the ScripCondition and ScripAction objects for a
 single execution of this scrip. it then calls the is_applicable method of the 
@@ -275,8 +271,11 @@ sub apply {
         @_
     );
 
-    Jifty->log->debug( "Now applying scrip " . $self->id . " for transaction " . $args{'transaction_obj'}->id ); 
-    my $applicable_trans = $self->is_applicable( ticket_obj      => $args{'ticket_obj'}, transaction_obj => $args{'transaction_obj'});
+    Jifty->log->debug( "Now applying scrip " . $self->id . " for transaction " . $args{'transaction_obj'}->id );
+    my $applicable_trans = $self->is_applicable(
+        ticket_obj      => $args{'ticket_obj'},
+        transaction_obj => $args{'transaction_obj'}
+    );
     unless ($applicable_trans) {
         return undef;
     }
@@ -287,12 +286,24 @@ sub apply {
 
     #If it's applicable, prepare and commit it
     Jifty->log->debug( "Now preparing scrip " . $self->id . " for transaction " . $applicable_trans->id );
-    unless ( $self->prepare( ticket_obj      => $args{'ticket_obj'}, transaction_obj => $applicable_trans)) {
+    unless (
+        $self->prepare(
+            ticket_obj      => $args{'ticket_obj'},
+            transaction_obj => $applicable_trans
+        )
+        )
+    {
         return undef;
     }
 
     Jifty->log->debug( "Now commiting scrip " . $self->id . " for transaction " . $applicable_trans->id );
-    unless ( $self->commit( ticket_obj      => $args{'ticket_obj'}, transaction_obj => $applicable_trans)) {
+    unless (
+        $self->commit(
+            ticket_obj      => $args{'ticket_obj'},
+            transaction_obj => $applicable_trans
+        )
+        )
+    {
         return undef;
     }
 
@@ -300,7 +311,6 @@ sub apply {
     return (1);
 
 }
-
 
 =head2 is_applicable
 
@@ -329,7 +339,7 @@ sub is_applicable {
     my $return;
     eval {
 
-        Jifty->log->debug("In the eval for stage ". $self->stage);
+        Jifty->log->debug( "In the eval for stage " . $self->stage );
         my @Transactions;
 
         if ( $self->stage eq 'TransactionCreate' ) {
@@ -346,13 +356,15 @@ sub is_applicable {
         }
         foreach my $transaction_obj (@Transactions) {
 
-        Jifty->log->debug("I found the transaction");
-        # in TxnBatch stage we can select scrips that are not applicable to all txns
-        my $txn_type = $transaction_obj->type;
+            Jifty->log->debug("I found the transaction");
 
-        my $condition = $self->scrip_condition;
+            # in TxnBatch stage we can select scrips that are not applicable to all txns
+            my $txn_type = $transaction_obj->type;
 
-            next unless ( $condition->applicable_trans_types =~ /(?:^|,)(?:Any|\Q$txn_type\E)(?:,|$)/i );
+            my $condition = $self->scrip_condition;
+
+            next
+                unless ( $condition->applicable_trans_types =~ /(?:^|,)(?:Any|\Q$txn_type\E)(?:,|$)/i );
 
             # Load the scrip's Condition object
             $condition->load_condition(
@@ -360,10 +372,10 @@ sub is_applicable {
                 ticket_obj      => $args{'ticket_obj'},
                 transaction_obj => $transaction_obj,
             );
-        Jifty->log->debug("I loaded the condition");
+            Jifty->log->debug("I loaded the condition");
             if ( $condition->is_applicable() ) {
                 Jifty->log->debug("It's applicable");
-    
+
                 # We found an application Transaction -- return it
                 $return = $transaction_obj;
                 last;
@@ -374,7 +386,7 @@ sub is_applicable {
         }
     };
 
-    if (my $err = $@) {
+    if ( my $err = $@ ) {
         Jifty->log->error( "Scrip is_applicable " . $self->id . " died. - " . $err );
         return (undef);
     }
@@ -409,11 +421,7 @@ sub prepare {
         $return = $self->scrip_action->prepare();
     };
     if ( my $err = $@ ) {
-        Jifty->log->error( "Scrip prepare "
-                . $self->id
-                . " died. - "
-                . $err . " "
-                . $self->scrip_action->exec_module );
+        Jifty->log->error( "Scrip prepare " . $self->id . " died. - " . $err . " " . $self->scrip_action->exec_module );
         return (undef);
     }
     return ($return);
@@ -440,8 +448,8 @@ sub commit {
     my $return;
     eval { $return = $self->scrip_action->commit(); };
 
-#Searchbuilder caching isn't perfectly coherent. got to reload the ticket object, since it
-# may have changed
+    #Searchbuilder caching isn't perfectly coherent. got to reload the ticket object, since it
+    # may have changed
 
     if ($@) {
         Jifty->log->error( "Scrip Commit " . $self->id . " died. - " . $@ );
@@ -449,6 +457,7 @@ sub commit {
     }
 
     $args{'ticket_obj'}->load( $args{'ticket_obj'}->id );
+
     # Not destroying or weakening hte Action and Condition here could cause a
     # leak
 
@@ -460,8 +469,7 @@ sub _set {
     my $self = shift;
 
     unless ( $self->current_user_has_right('ModifyScrips') ) {
-        Jifty->log->debug(
-            "CurrentUser can't modify Scrips for " . $self->queue . "\n" );
+        Jifty->log->debug( "CurrentUser can't modify Scrips for " . $self->queue . "\n" );
         return ( 0, _('Permission Denied') );
     }
     return $self->__set(@_);
@@ -472,15 +480,12 @@ sub _value {
     my $self = shift;
 
     unless ( $self->current_user_has_right('ShowScrips') ) {
-        Jifty->log->debug( "CurrentUser can't modify Scrips for "
-                . $self->__value('queue')
-                . "\n" );
+        Jifty->log->debug( "CurrentUser can't modify Scrips for " . $self->__value('queue') . "\n" );
         return (undef);
     }
 
     return $self->__value(@_);
 }
-
 
 =head2 current_user_has_right
 
@@ -500,7 +505,6 @@ sub current_user_has_right {
     );
 
 }
-
 
 =head2 has_right
 
@@ -530,8 +534,6 @@ sub has_right {
         );
     }
 }
-
-
 
 1;
 

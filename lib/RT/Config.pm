@@ -45,7 +45,6 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
 use strict;
 use warnings;
 
@@ -102,9 +101,9 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            description => 'Interface style',        #loc
-                 # XXX: we need support for 'get values callback'
-            values => [qw(3.5-default 3.4-compat)],
+            description => 'Interface style',              #loc
+                                                           # XXX: we need support for 'get values callback'
+            values      => [qw(3.5-default 3.4-compat)],
         },
     },
     DefaultSummaryRows => {
@@ -112,9 +111,7 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            description =>
-                'Number of rows displayed in search results on the frontpage'
-            ,    #loc
+            description => 'Number of rows displayed in search results on the frontpage',    #loc
         },
     },
     MessageBoxWidth => {
@@ -122,7 +119,7 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            description => 'Message box width',    #loc
+            description => 'Message box width',                                              #loc
         },
     },
     MessageBoxHeight => {
@@ -130,17 +127,15 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            description => 'Message box height',    #loc
+            description => 'Message box height',                                             #loc
         },
     },
     MaxInlineBody => {
-        Section         => 'Ticket display',          #loc
+        Section         => 'Ticket display',                                                 #loc
         Overridable     => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            description =>
-                'Maximum size of messages (in bytes) that should be inlined in ticket history; A value of 0 (zero) will always inline'
-            ,                                         #loc
+            description => 'Maximum size of messages (in bytes) that should be inlined in ticket history; A value of 0 (zero) will always inline',    #loc
         },
     },
     OldestTransactionsFirst => {
@@ -148,21 +143,21 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
-            description => 'Show oldest transactions first',    #loc
+            description => 'Show oldest transactions first',                                                                                          #loc
         },
     },
     date_time_format => {
-        Section         => 'Date and time',                     #loc
+        Section         => 'Date and time',                                                                                                           #loc
         Overridable     => 1,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            description  => 'Date and time output format',            #loc
+            description  => 'Date and time output format',                                                                                            #loc
             values       => [qw(default_format RFC2822 ISO W3CDTF)],
             values_label => {
-                default_format => 'Default (Tue Dec 25 21:59:12 1995)',    #loc
-                RFC2822       => 'RFC (Tue, 25 Dec 1995 21:59:12 -0300)', #loc
-                ISO           => 'ISO (1995-11-25 21:59:12)',             #loc
-                W3CDTF        => 'W3C (1995-11-25T21:59:12Z)',            #loc
+                default_format => 'Default (Tue Dec 25 21:59:12 1995)',                                                                               #loc
+                RFC2822        => 'RFC (Tue, 25 Dec 1995 21:59:12 -0300)',                                                                            #loc
+                ISO            => 'ISO (1995-11-25 21:59:12)',                                                                                        #loc
+                W3CDTF         => 'W3C (1995-11-25T21:59:12Z)',                                                                                       #loc
             },
         },
     },
@@ -190,7 +185,7 @@ sub new {
 
 sub _init { return; }
 
-=head2 InitConfig
+=head2 init_config
 
 =cut
 
@@ -292,9 +287,7 @@ sub _load_config {
             }
         }
         unless ($file_path) {
-            die
-                qq{Couldn't load RT config file $args{'File'} as user $username / group $group.\n}
-                . qq{The file couldn't be find in $RT::LocalEtcPath and $RT::EtcPath.\n$@};
+            die qq{Couldn't load RT config file $args{'File'} as user $username / group $group.\n} . qq{The file couldn't be find in $RT::LocalEtcPath and $RT::EtcPath.\n$@};
         }
 
         my $message = <<EOF;
@@ -314,8 +307,7 @@ EOF
 
         my $fileusername = getpwuid($fileuid);
         my $filegroup    = getgrgid($filegid);
-        my $errormessage = sprintf( $message,
-            $file_path, $fileusername, $filegroup, $filegroup );
+        my $errormessage = sprintf( $message, $file_path, $fileusername, $filegroup, $filegroup );
         die "$errormessage\n$@";
     }
     return 1;
@@ -334,8 +326,7 @@ sub configs {
     foreach my $path ( $RT::LocalEtcPath, $RT::EtcPath ) {
         my $mask = File::Spec->catfile( $path, "*_Config.pm" );
         my @files = glob $mask;
-        @files = grep !/^RT_Config\.pm$/, grep $_ && /^\w+_Config\.pm$/,
-            map { s/^.*[\\\/]//; $_ } @files;
+        @files = grep !/^RT_Config\.pm$/, grep $_ && /^\w+_Config\.pm$/, map { s/^.*[\\\/]//; $_ } @files;
         push @configs, @files;
     }
 
@@ -381,7 +372,7 @@ sub get {
     return $self->_return_value( $res, $META{$name}->{'type'} || 'SCALAR' );
 }
 
-=head2 Set
+=head2 set
 
 Set option's value to new value. Takes name of the option and new value.
 Returns old value.
@@ -519,10 +510,10 @@ sub set_from_config {
     }
 }
 
-=head2 Metadata
+=head2 metadata
 
 
-=head2 Meta
+=head2 meta
 
 =cut
 
@@ -541,17 +532,12 @@ sub options {
     my $self = shift;
     my %args = ( Section => undef, Overridable => 1, @_ );
     my @res  = sort keys %META;
-    @res = grep( ( $META{$_}->{'Section'} || 'General' ) eq $args{'Section'},
-        @res )
+    @res = grep( ( $META{$_}->{'Section'} || 'General' ) eq $args{'Section'}, @res )
         if defined $args{'Section'};
     if ( defined $args{'Overridable'} ) {
-        @res
-            = grep(
-            ( $META{$_}->{'Overridable'} || 0 ) == $args{'Overridable'},
-            @res );
+        @res = grep( ( $META{$_}->{'Overridable'} || 0 ) == $args{'Overridable'}, @res );
     }
     return @res;
 }
-
 
 1;

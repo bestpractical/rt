@@ -1,0 +1,293 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, Title=>_("Preferences") &>
+<& /User/Elements/Tabs, 
+    current_tab => 'User/Prefs.html', 
+    Title=>_("Preferences") &>
+
+<& /Elements/ListActions, actions => \@results &>
+
+<form action="<%RT->config->get('WebPath')%>/User/Prefs.html" method="post">
+<input type="hidden" class="hidden" name="id" value="<%$user_object->id%>" />
+
+<table width="100%" border="0">
+<tr>
+
+<td valign="top" class="boxcontainer">
+<&| /Widgets/TitleBox, title => _('Identity'), id => "user-prefs-identity" &>
+
+<input type="hidden" class="hidden" name="name" value="<%$user_object->name%>" />
+<table cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="label"><&|/l&>Email</&>: </td>
+    <td class="value"><input name="email" value="<%$user_object->email%>" /></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Real name</&>:</td>
+    <td class="value"><input name="real_name" value="<%$user_object->real_name%>" /></td>  </tr>
+  <tr>
+    <td class="label"><&|/l&>nickname</&>:</td>
+    <td class="value"><input name="nickname" value="<%$user_object->nickname || ''%>" /></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Language</&>:</td>
+    <td class="value"><& /Elements/SelectLang, name => 'lang', default => $user_object->lang &></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>timezone</&>:</td>
+    <td class="value"><& /Elements/SelectTimezone, name => 'timezone', default => $user_object->timezone &></td>
+  </tr>
+</table>
+</&>
+<&| /Widgets/TitleBox, title => _('Phone numbers'), id => "user-prefs-phone" &>
+<table cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="label"><&|/l&>Residence</&>:</td>
+    <td class="value"><input name="HomePhone" value="<%$user_object->home_phone || ''%>" size="13" /></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Work</&>:</td>
+    <td class="value"><input name="WorkPhone" value="<%$user_object->work_phone || ''%>" size="13" /></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Mobile</&>:</td>
+    <td class="value"><input name="MobilePhone" value="<%$user_object->mobile_phone || ''%>" size="13" /></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Pager</&>:</td>
+    <td class="value"><input name="PagerPhone" value="<%$user_object->pager_phone || ''%>" size="13" /></td>
+  </tr>
+</table>
+</&>
+% $m->callback( %ARGS, user_object => $user_object, Callbackname => 'FormLeftColumn' );
+</td>
+<td valign="top" class="boxcontainer">
+% unless (RT->config->get('WebExternalAuth') and !RT->config->get('WebFallbackToInternalAuth')) {
+<&| /Widgets/TitleBox, title => _('password'), id => "user-prefs-password" &>
+<table>
+<tr>
+<td class="label">
+<&|/l&>New password</&>:
+</td>
+<td class="value">
+<input type="password" name="Pass1" autocomplete="off"/>
+</td>
+</tr>
+<tr><td class="label">
+<&|/l&>Retype password</&>:
+</td>
+<td class="value">
+<input type="password" name="Pass2" autocomplete="off" />
+</td>
+</tr>
+</table>
+</&>
+% }
+
+<&| /Widgets/TitleBox, title => _('Location'), id => "user-prefs-location" &>
+<table cellspacing="0" cellpadding="0">
+  <tr>
+    <td class="label"><&|/l&>organization</&>:</td>
+    <td class="value"><input name="organization" value="<%$user_object->organization || ''%>" /></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Address1</&>:</td>
+    <td class="value"><input name="Address1" value="<%$user_object->Address1 || ''%>" /></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Address2</&>:</td>
+    <td class="value"><input name="Address2" value="<%$user_object->Address2 || ''%>" /></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>City</&>:</td>
+    <td><input name="City" value="<%$user_object->city || ''%>" size="14" /></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>State</&>:</td>
+    <td class="value"><input name="State" value="<%$user_object->state || ''%>" size="3" /></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Zip</&>:</td>
+    <td class="value"><input name="Zip" value="<%$user_object->zip || ''%>" size="9" /></td>
+  </tr>
+  <tr>
+    <td class="label"><&|/l&>Country</&>:</td>
+    <td class="value"><input name="Country" value="<%$user_object->country || ''%>" /></td>
+  </tr>
+</table>
+</&>
+% $m->callback( %ARGS, user_object => $user_object, Callbackname => 'FormRightColumn' );
+</td>
+</tr>
+
+
+<tr>
+
+
+
+<td colspan="2" valign="top" class="boxcontainer">
+%if ($user_object->privileged) {
+<br />
+<&| /Widgets/TitleBox, title => _('Signature') &>
+<textarea cols="80" rows="5" name="Signature" class="signature" wrap="hard">
+<%$user_object->signature || ''%></textarea>
+</&>
+% }
+
+</td>
+
+</tr>
+
+</table>
+
+% $m->callback( %ARGS, user_object => $user_object, Callbackname => 'FormEnd' );
+
+<& /Elements/Submit, Label => _('Save Preferences') &>
+</form>
+
+
+<%INIT>
+
+my $user_object = RT::Model::User->new();
+my ($title, $privilegedChecked, $enabled_checked, $disabled, $result, @results);
+
+my ($val, $msg);
+
+
+	$user_object->load($id) || $user_object->load($name) || abort("Couldn't load user '$name'");
+	$val = $user_object->id();
+    
+
+
+
+
+
+# If we have a user to modify, lets try. 
+if ($user_object->id) {
+    
+    my @fields = qw(name comments Signature email freeform_contact_info 
+		    organization real_name nickname lang email_encoding web_encoding 
+		    ExternalContactInfoId ContactInfoSystem gecos ExternalAuthId 
+		    auth_system HomePhone WorkPhone MobilePhone PagerPhone Address1
+		Address2 City State Zip Country lang timezone
+		   );
+
+    $m->callback(
+        Callbackname => 'UpdateLogic',
+        fields       => \@fields,
+        results      => \@results,
+        user_object      => $user_object,
+        args_ref      => \%ARGS,
+    );
+    
+    my @fieldresults = update_record_object ( attributes_ref => \@fields,
+					    object => $user_object,
+					    args_ref => \%ARGS );
+    push (@results,@fieldresults);
+
+
+# {{{ Deal with special fields: privileged, enabled, and password
+if  ( ($set_privileged) and ( $privileged != $user_object->privileged) ) {
+my  ($code, $msg) = $user_object->set_privileged($privileged);
+     push @results, _('privileged status: %1', _($msg));
+}
+
+
+
+#TODO: make this report errors properly
+if ((defined $Pass1) and ($Pass1 ne '') and ($Pass1 eq $Pass2) and (!$user_object->password_is($Pass1))) {
+    my ($code, $msg);
+    ($code, $msg) = $user_object->set_password($Pass1);
+    push @results, _('password: %1', _($msg));
+} elsif ( $Pass1 && ($Pass1 ne $Pass2)) {
+    push @results, _("passwords do not match. Your password has not been changed");
+}
+
+# }}}
+}
+
+
+</%INIT>
+
+
+<%ARGS>
+$id => Jifty->web->current_user->id
+$name  => undef
+$comments  => undef
+$Signature  => undef
+$email  => undef
+$freeform_contact_info => undef
+$organization  => undef
+$real_name  => undef
+$nickname  => undef
+$privileged => undef
+$set_privileged => undef
+$enabled => undef
+$set_enabled => undef
+$lang  => undef
+$email_encoding  => undef
+$web_encoding => undef
+$ExternalContactInfoId  => undef
+$ContactInfoSystem  => undef
+$gecos => undef
+$ExternalAuthId  => undef
+$auth_system  => undef
+$HomePhone => undef
+$WorkPhone  => undef
+$MobilePhone  => undef
+$PagerPhone  => undef
+$Address1 => undef
+$Address2  => undef
+$City  => undef
+$State  => undef
+$Zip  => undef
+$Country => undef
+$Pass1 => undef
+$Pass2=> undef
+$Create=> undef
+</%ARGS>

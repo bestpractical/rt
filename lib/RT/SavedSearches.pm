@@ -136,7 +136,7 @@ sub next {
     return $search;
 }
 
-=head2 Count
+=head2 count
 
 Returns the number of search objects found.
 

@@ -68,13 +68,13 @@ package RT::Search::FromSQL;
 use strict;
 use base qw(RT::Search::Generic);
 
-=head2 Describe
+=head2 describe
 
 Returns a localized string describing the module's function.
 
 =cut
 
-# {{{ sub Describe
+# {{{ sub describe
 sub describe {
     my $self = shift;
     return ( _( "TicketSQL search module", ref $self ) );
@@ -82,7 +82,7 @@ sub describe {
 
 # }}}
 
-=head2 Prepare
+=head2 prepare
 
 The meat of the module.  Runs a search on its Tickets object, using
 the SQL string described in its argument object.  The Tickets object

@@ -80,7 +80,7 @@ sub _init {
 
 # }}}
 
-# {{{ sub Describe
+# {{{ sub describe
 sub describe {
     my $self = shift;
     return ( _( "No description for %1", ref $self ) );
@@ -88,14 +88,12 @@ sub describe {
 
 # }}}
 
-# {{{ sub QueryToSQL
+# {{{ sub query_to_sql
 sub query_to_sql {
     my $self     = shift;
     my $query    = shift || $self->argument;
     my @keywords = split /\s+/, $query;
-    my (@tql_clauses,  @owner_clauses, @queue_clauses,
-        @user_clauses, @id_clauses,    @status_clauses
-    );
+    my ( @tql_clauses, @owner_clauses, @queue_clauses, @user_clauses, @id_clauses, @status_clauses );
     my ( $Queue, $User );
     for my $key (@keywords) {
 
@@ -109,36 +107,25 @@ sub query_to_sql {
         }
 
         # Is there a status with this name?
-        elsif (
-            $Queue = RT::Model::Queue->new(
-                current_user => $self->tickets_obj->current_user
-            )
-            and $Queue->is_valid_status($key)
-            )
+        elsif ( $Queue = RT::Model::Queue->new( current_user => $self->tickets_obj->current_user )
+            and $Queue->is_valid_status($key) )
         {
             push @status_clauses, "Status = '" . $key . "'";
         }
 
         # Is there a owner named $key?
         # Is there a queue named $key?
-        elsif (
-            $Queue = RT::Model::Queue->new(
-                current_user => $self->tickets_obj->current_user
-            )
-            and $Queue->load($key)
-            )
+        elsif ( $Queue = RT::Model::Queue->new( current_user => $self->tickets_obj->current_user )
+            and $Queue->load($key) )
         {
             push @queue_clauses, "Queue = '" . $Queue->name . "'";
         }
 
         # Is there a owner named $key?
-        elsif (
-            $User = RT::Model::User->new(
-                current_user => $self->tickets_obj->current_user
-            )
+        elsif ( $User 
+                = RT::Model::User->new( current_user => $self->tickets_obj->current_user )
             and $User->load($key)
-            and $User->privileged
-            )
+            and $User->privileged )
         {
             push @owner_clauses, "Owner = '" . $User->name . "'";
         }
@@ -159,8 +146,7 @@ sub query_to_sql {
 
     # restrict to any queues requested by the caller
     for my $queue ( @{ $self->{'Queues'} } ) {
-        my $queue_obj = RT::Model::Queue->new(
-            current_user => $self->tickets_obj->current_user );
+        my $queue_obj = RT::Model::Queue->new( current_user => $self->tickets_obj->current_user );
         $queue_obj->load($queue) or next;
         push @queue_clauses, "Queue = '" . $queue_obj->name . "'";
     }

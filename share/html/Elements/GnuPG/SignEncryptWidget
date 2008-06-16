@@ -1,0 +1,184 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<table>
+<td><% _('sign')%></td>
+<td><& /Widgets/Form/Boolean:InputOnly, name => 'sign', current_value => $self->{'sign'} &>
+using <& SelectKeyForSigning, User => Jifty->web->current_user->user_object &>
+</td>
+<td><% _('encrypt')%></td>
+<td><& /Widgets/Form/Boolean:InputOnly, name => 'encrypt', current_value => $self->{'encrypt'} &></td>
+</table>
+<%ARGS>
+$self => undef,
+</%ARGS>
+<%INIT>
+return unless $self;
+</%INIT>
+
+<%METHOD new>
+<%ARGS>
+$arguments => {}
+</%ARGS>
+<%INIT>
+return undef unless RT->config->get('GnuPG')->{'enable'};
+
+require RT::Crypt::GnuPG;
+return { %$arguments };
+</%INIT>
+</%METHOD>
+
+<%METHOD ShowIssues>
+<%ARGS>
+$self => undef,
+</%ARGS>
+<%INIT>
+return unless $self;
+
+return $m->comp( '/Elements/GnuPGKeyIssues',
+    Issues => $self->{'GnuPGRecipientsKeyIssues'} || [],
+    SignAddresses => $self->{'GnuPGCanNotSignAs'} || [],
+);
+</%INIT>
+</%METHOD>
+
+
+<%METHOD Process>
+<%ARGS>
+$self => undef
+$queue_obj => undef
+$ticket_obj => undef
+</%ARGS>
+<%INIT>
+return unless $self;
+
+$queue_obj ||= $ticket_obj->queue_obj if $ticket_obj;
+
+foreach ( qw(sign encrypt) ) {
+    $self->{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
+        name => $_,
+        default_value => $queue_obj->$_,
+        Arguments => $self,
+    );
+}
+</%INIT>
+</%METHOD>
+
+<%METHOD Check>
+<%ARGS>
+$self      => undef
+$operation => 'update'
+$ticket_obj => undef
+$queue_obj  => undef
+</%ARGS>
+<%INIT>
+return 1 unless $self;
+
+my $checks_failure = 0;
+
+if ( $self->{'sign'} ) {
+    $queue_obj ||= $ticket_obj->queue_obj
+        if $ticket_obj;
+
+    my $address = $self->{'sign_using'};
+    $address ||= ($self->{'update_type'}||'') eq "private"
+        ? ( $queue_obj->comment_address || RT->config->get('comment_address') )
+        : ( $queue_obj->correspond_address || RT->config->get('correspond_address') );
+
+    unless ( RT::Crypt::GnuPG::dry_sign( $address ) ) {
+        push @{ $self->{'GnuPGCanNotSignAs'} ||= [] }, $address;
+        $checks_failure = 1;
+    } else {
+        RT::Crypt::GnuPG::use_key_for_signing( $self->{'sign_using'} )
+            if $self->{'sign_using'};
+    }
+}
+
+if ( $self->{'encrypt'} ) {
+
+    my @recipients;
+
+    if ( $operation eq 'update' ) {
+        # skip any email addresses that we won't be sending mail to
+        my %squelch = $m->comp(
+            '/Ticket/Elements/PreviewScrips:SquelchRecipients',
+            %$self,
+            ticket_obj => $ticket_obj
+        );
+
+        @recipients = $m->comp(
+            '/Ticket/Elements/PreviewScrips:GetRecipients',
+            %$self, ticket_obj => $ticket_obj
+        );
+    }
+    elsif ( $operation eq 'create' ) {
+        @recipients = $m->comp(
+            '/Ticket/Elements/PreviewScrips:GetRecipientsOnCreate',
+            %$self,
+        );
+    }
+    else {
+        Jifty->log->fatal('Incorrect operation: '. $operation );
+    }
+
+    my %seen;
+    @recipients = grep !$seen{ lc $_ }++, @recipients;
+
+    RT::Crypt::GnuPG::use_key_for_encryption(
+        map { (/^UseKey-(.*)$/)[0] => $self->{ $_ } }
+        grep $self->{ $_ } && /^UseKey-/,
+        keys %$self
+    );
+
+    my ($status, @issues) = RT::Crypt::GnuPG::check_recipients( @recipients );
+    push @{ $self->{'GnuPGRecipientsKeyIssues'} ||= [] }, @issues;
+    $checks_failure = 1 unless $status;
+}
+
+return $checks_failure ? 0 : 1;
+</%INIT>
+</%METHOD>

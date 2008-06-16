@@ -1,3 +1,50 @@
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
+#                                          <jesse@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/copyleft/gpl.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
 use strict;
 use warnings;
 
@@ -79,11 +126,11 @@ use Jifty::DBI::Record schema {
     column
         Address2 => max_length is 200,
         type is 'varchar(200)', default is '';
-    column city  => max_length is 100, type is 'varchar(100)', default is '';
-    column state => max_length is 100, type is 'varchar(100)', default is '';
-    column zip   => max_length is 16,  type is 'varchar(16)',  default is '';
-    column country  => max_length is 50, type is 'varchar(50)', default is '';
-    column timezone => max_length is 50, type is 'varchar(50)', default is '';
+    column city     => max_length is 100, type is 'varchar(100)', default is '';
+    column state    => max_length is 100, type is 'varchar(100)', default is '';
+    column zip      => max_length is 16,  type is 'varchar(16)',  default is '';
+    column country  => max_length is 50,  type is 'varchar(50)',  default is '';
+    column timezone => max_length is 50,  type is 'varchar(50)',  default is '';
     column PGPKey   => type is 'text';
 
 };
@@ -102,7 +149,7 @@ sub set_email {
 
 # {{{ sub create
 
-=head2 Create { PARAMHASH }
+=head2 create { PARAMHASH }
 
 
 
@@ -151,16 +198,8 @@ sub create {
         $args{'password'} = '*NO-PASSWORD*';
     }
 
-    elsif (
-        length( $args{'password'} )
-        < RT->config->get('MinimumpasswordLength') )
-    {
-        return (
-            0,
-            _(  "password needs to be at least %1 characters long",
-                RT->config->get('MinimumpasswordLength')
-            )
-        );
+    elsif ( length( $args{'password'} ) < RT->config->get('MinimumpasswordLength') ) {
+        return ( 0, _( "password needs to be at least %1 characters long", RT->config->get('MinimumpasswordLength') ) );
     }
 
     unless ( $args{'name'} ) {
@@ -168,10 +207,8 @@ sub create {
     }
 
     #SANITY CHECK THE name AND ABORT IF IT'S TAKEN
-    if ( RT->system_user )
-    {    #This only works if RT::system_user has been defined
-        my $TempUser
-            = RT::Model::User->new( current_user => RT->system_user );
+    if ( RT->system_user ) {    #This only works if RT::system_user has been defined
+        my $TempUser = RT::Model::User->new( current_user => RT->system_user );
         $TempUser->load( $args{'name'} );
         return ( 0, _('name in use') ) if ( $TempUser->id );
 
@@ -209,8 +246,7 @@ sub create {
     #If the create failed.
     unless ($id) {
         Jifty->handle->rollback();
-        Jifty->log->error(
-            "Could not create a new user - " . join( '-', %args ) );
+        Jifty->log->error( "Could not create a new user - " . join( '-', %args ) );
 
         return ( 0, _('Could not create user') );
     }
@@ -234,11 +270,10 @@ sub create {
 
     my ( $everyone_id, $everyone_msg ) = $everyone->_add_member(
         inside_transaction => 1,
-        principal_id      => $self->principal_id
+        principal_id       => $self->principal_id
     );
     unless ($everyone_id) {
-        Jifty->log->fatal(
-            "Could not add user to Everyone group on user creation.");
+        Jifty->log->fatal("Could not add user to Everyone group on user creation.");
         Jifty->log->fatal($everyone_msg);
         Jifty->handle->rollback();
         return ( 0, _('Could not create user') );
@@ -252,22 +287,18 @@ sub create {
     }
 
     unless ( $access_class->id ) {
-        Jifty->log->fatal(
-            "Could not load privileged or Unprivileged group on user creation"
-        );
+        Jifty->log->fatal( "Could not load privileged or Unprivileged group on user creation" );
         Jifty->handle->rollback();
         return ( 0, _('Could not create user') );
     }
 
     my ( $ac_id, $ac_msg ) = $access_class->_add_member(
         inside_transaction => 1,
-        principal_id      => $self->principal_id
+        principal_id       => $self->principal_id
     );
 
     unless ($ac_id) {
-        Jifty->log->fatal(
-            "Could not add user to privileged or Unprivileged group on user creation. aborted"
-        );
+        Jifty->log->fatal( "Could not add user to privileged or Unprivileged group on user creation. aborted" );
         Jifty->log->fatal($ac_msg);
         Jifty->handle->rollback();
         return ( 0, _('Could not create user') );
@@ -338,14 +369,11 @@ sub set_privileged {
             # if we had layered transactions, life would be good
             # sadly, we have to just go ahead, even if something
             # bogus happened
-            Jifty->log->fatal( "User "
-                    . $self->id
-                    . " is neither privileged nor "
-                    . "unprivileged. something is drastically wrong." );
+            Jifty->log->fatal( "User " . $self->id . " is neither privileged nor " . "unprivileged. something is drastically wrong." );
         }
         my ( $status, $msg ) = $priv->_add_member(
             inside_transaction => 1,
-            principal_id      => $self->principal_id
+            principal_id       => $self->principal_id
         );
         if ($status) {
             return ( 1, _("That user is now privileged") );
@@ -365,14 +393,11 @@ sub set_privileged {
             # if we had layered transactions, life would be good
             # sadly, we have to just go ahead, even if something
             # bogus happened
-            Jifty->log->fatal( "User "
-                    . $self->id
-                    . " is neither privileged nor "
-                    . "unprivileged. something is drastically wrong." );
+            Jifty->log->fatal( "User " . $self->id . " is neither privileged nor " . "unprivileged. something is drastically wrong." );
         }
         my ( $status, $msg ) = $unpriv->_add_member(
             inside_transaction => 1,
-            principal_id      => $self->principal_id
+            principal_id       => $self->principal_id
         );
         if ($status) {
             return ( 1, _("That user is now unprivileged") );
@@ -420,8 +445,7 @@ sub _bootstrap_create {
 
     # Groups deal with principal ids, rather than user ids.
     # When creating this user, set up a principal id for it.
-    my $principal = RT::Model::Principal->new(
-        current_user => RT::CurrentUser->new( _bootstrap => 1 ) );
+    my $principal = RT::Model::Principal->new( current_user => RT::CurrentUser->new( _bootstrap => 1 ) );
     my ( $principal_id, $pmsg ) = $principal->create(
         principal_type => 'User',
         object_id      => '0',
@@ -431,13 +455,10 @@ sub _bootstrap_create {
     # If we couldn't create a principal Id, get the fuck out.
     unless ($principal_id) {
         Jifty->handle->rollback();
-        Jifty->log->fatal(
-            "Couldn't create a Principal on new user create. Strange things are afoot at the circle K: $pmsg"
-        );
+        Jifty->log->fatal( "Couldn't create a Principal on new user create. Strange things are afoot at the circle K: $pmsg" );
         return ( 0, 'Could not create user' );
     }
-    my ( $val, $msg )
-        = $principal->__set( column => 'object_id', value => $principal_id );
+    my ( $val, $msg ) = $principal->__set( column => 'object_id', value => $principal_id );
 
     my ( $status, $user_msg ) = $self->SUPER::create(
         id => $principal_id,
@@ -476,8 +497,7 @@ sub _bootstrap_create {
 sub delete {
     my $self = shift;
 
-    return ( 0,
-        _('Deleting this object would violate referential integrity') );
+    return ( 0, _('Deleting this object would violate referential integrity') );
 
 }
 
@@ -485,7 +505,7 @@ sub delete {
 
 # {{{ sub load
 
-=head2 Load
+=head2 load
 
 Load a user object from the database. Takes a single argument.
 If the argument is numerical, load by the column 'id'. If a user
@@ -557,8 +577,7 @@ sub load_or_create_by_email {
     if ( UNIVERSAL::isa( $email => 'Mail::Address' ) ) {
         ( $email, $name ) = ( $email->address, $email->phrase );
     } else {
-        ( $email, $name )
-            = RT::Interface::Email::parse_address_from_header($email);
+        ( $email, $name ) = RT::Interface::Email::parse_address_from_header($email);
     }
 
     $self->load_by_email($email);
@@ -583,12 +602,10 @@ sub load_or_create_by_email {
                 $self->load_by_email($email);
             }
             if ( $self->id ) {
-                Jifty->log->error(
-                    "Recovered from creation failure due to race condition");
+                Jifty->log->error("Recovered from creation failure due to race condition");
                 $message = _("User loaded");
             } else {
-                Jifty->log->fatal(
-                    "Failed to create user " . $email . ": " . $message );
+                Jifty->log->fatal( "Failed to create user " . $email . ": " . $message );
             }
         }
     }
@@ -600,7 +617,7 @@ sub load_or_create_by_email {
 
 # {{{ sub validate_email
 
-=head2 Validateemail ADDRESS
+=head2 validateemail ADDRESS
 
 Returns true if the email address entered is not in use by another user or is 
 undef or ''. Returns false if it's in use. 
@@ -617,11 +634,10 @@ sub validate_email {
     my $TempUser = RT::Model::User->new( current_user => RT->system_user );
     $TempUser->load_by_email($value);
 
-    if ( $TempUser->id && ( !$self->id || $TempUser->id != $self->id ) )
-    {    # if we found a user with that address
-            # it's invalid to set this user's address to it
+    if ( $TempUser->id && ( !$self->id || $TempUser->id != $self->id ) ) {    # if we found a user with that address
+                                                                              # it's invalid to set this user's address to it
         return (undef);
-    } else {    #it's a valid email address
+    } else {                                                                  #it's a valid email address
         return (1);
     }
 }
@@ -657,9 +673,9 @@ sub canonicalize_email {
 
 # }}}
 
-# {{{ sub canonicalize_UserInfo
+# {{{ sub canonicalize_user_info
 
-=head2 canonicalize_UserInfo HASH of ARGS
+=head2 canonicalize_user_info HASH of ARGS
 
 canonicalize_UserInfo can convert all User->create options.
 it takes a hashref of all the params sent to User->create and
@@ -682,9 +698,9 @@ sub canonicalize_user_info {
 
 # {{{ password related functions
 
-# {{{ sub set_Randompassword
+# {{{ sub set_randompassword
 
-=head2 SetRandompassword
+=head2 set_randompassword
 
 Takes no arguments. Returns a status code and a new password or an error message.
 If the status is 1, the second value returned is the new password.
@@ -699,14 +715,16 @@ sub set_randompassword {
         return ( 0, _("Permission Denied") );
     }
 
-    my $min
-        = ( RT->config->get('MinimumpasswordLength') > 6
+    my $min = (
+          RT->config->get('MinimumpasswordLength') > 6
         ? RT->config->get('MinimumpasswordLength')
-        : 6 );
-    my $max
-        = ( RT->config->get('MinimumpasswordLength') > 8
+        : 6
+    );
+    my $max = (
+          RT->config->get('MinimumpasswordLength') > 8
         ? RT->config->get('MinimumpasswordLength')
-        : 8 );
+        : 8
+    );
     my $pass = Text::Password::Pronounceable->generate( $min => $max );
 
     # If we have "notify user on
@@ -727,7 +745,7 @@ sub set_randompassword {
 
 # {{{ sub set_password
 
-=head2 Setpassword
+=head2 setpassword
 
 Takes a string. Checks the string's length and sets this user's password 
 to that string.
@@ -745,12 +763,7 @@ sub before_set_password {
     if ( !$password ) {
         return ( 0, _("No password set") );
     } elsif ( length($password) < RT->config->get('MinimumpasswordLength') ) {
-        return (
-            0,
-            _(  "password needs to be at least %1 characters long",
-                RT->config->get('MinimumpasswordLength')
-            )
-        );
+        return ( 0, _( "password needs to be at least %1 characters long", RT->config->get('MinimumpasswordLength') ) );
     }
     return ( 1, "ok" );
 
@@ -780,7 +793,7 @@ sub has_password {
 
 # {{{ sub set_disabled
 
-=head2 sub Setdisabled
+=head2 sub setdisabled
 
 Toggles the user's disabled flag.
 If this flag is
@@ -835,11 +848,7 @@ sub principal_object {
         Jifty->log->fatal( 'No principal for user #' . $self->id );
         return undef;
     } elsif ( $obj->principal_type ne 'User' ) {
-        Jifty->log->fatal( 'User #'
-                . $self->id
-                . ' has principal of '
-                . $obj->principal_type
-                . ' type' );
+        Jifty->log->fatal( 'User #' . $self->id . ' has principal of ' . $obj->principal_type . ' type' );
         return undef;
     }
     return $obj;
@@ -879,8 +888,8 @@ sub has_group_right {
     my $self = shift;
     my %args = (
         group_obj => undef,
-        group    => undef,
-        right    => undef,
+        group     => undef,
+        right     => undef,
         @_
     );
 
@@ -908,9 +917,9 @@ sub has_group_right {
 
 # }}}
 
-# {{{ sub OwnGroups
+# {{{ sub own_groups
 
-=head2 OwnGroups
+=head2 own_groups
 
 Returns a group collection object containing the groups of which this
 user is a member.
@@ -1040,9 +1049,9 @@ sub _prefname {
     return 'Pref-' . $name;
 }
 
-# {{{ sub Preferences
+# {{{ sub preferences
 
-=head2 Preferences name/OBJ DEFAULT
+=head2 preferences name/OBJ DEFAULT
 
   Obtain user preferences associated with given object or name.
   Returns DEFAULT if no preferences found.  If DEFAULT is a hashref,
@@ -1068,16 +1077,14 @@ sub preferences {
             exists $content->{$_} or $content->{$_} = $default->{$_};
         }
     } elsif ( defined $default ) {
-        Jifty->log->error( "Preferences $name for user"
-                . $self->id
-                . " is hash but default is not" );
+        Jifty->log->error( "Preferences $name for user" . $self->id . " is hash but default is not" );
     }
     return $content;
 }
 
 # }}}
 
-# {{{ sub set_Preferences
+# {{{ sub set_preferences
 
 =head2 set_preferences name/OBJ value
 
@@ -1163,8 +1170,7 @@ sub watched_queues {
         value  => $self->principal_id,
     );
 
-    Jifty->log->debug(
-        "WatchedQueues got " . $watched_queues->count . " queues" );
+    Jifty->log->debug( "WatchedQueues got " . $watched_queues->count . " queues" );
 
     return $watched_queues;
 
@@ -1214,11 +1220,10 @@ sub _cleanup_invalid_delegations {
         );
 
     # Look up all delegation rights currently posessed by this user.
-    my $deleg_acl
-        = RT::Model::ACECollection->new( current_user => RT->system_user );
+    my $deleg_acl = RT::Model::ACECollection->new( current_user => RT->system_user );
     $deleg_acl->limit_to_principal(
-        type                   => 'User',
-        id                     => $self->principal_id,
+        type                     => 'User',
+        id                       => $self->principal_id,
         include_group_membership => 1
     );
     $deleg_acl->limit(
@@ -1226,13 +1231,11 @@ sub _cleanup_invalid_delegations {
         operator => '=',
         value    => 'DelegateRights'
     );
-    my @allowed_deleg_objects
-        = map { $_->object() } @{ $deleg_acl->items_array_ref() };
+    my @allowed_deleg_objects = map { $_->object() } @{ $deleg_acl->items_array_ref() };
 
     # Look up all rights delegated by this principal which are
     # inconsistent with the allowed delegation objects.
-    my $acl_to_del
-        = RT::Model::ACECollection->new( current_user => RT->system_user );
+    my $acl_to_del = RT::Model::ACECollection->new( current_user => RT->system_user );
     $acl_to_del->delegated_by( id => $self->id );
     foreach (@allowed_deleg_objects) {
         $acl_to_del->limitnot_object($_);
@@ -1243,8 +1246,7 @@ sub _cleanup_invalid_delegations {
         my $ret = $ace->_delete( inside_transaction => 1 );
         unless ($ret) {
             Jifty->handle->rollback() unless $in_trans;
-            Jifty->log->warn(
-                "Couldn't delete delegated ACL entry " . $ace->id );
+            Jifty->log->warn( "Couldn't delete delegated ACL entry " . $ace->id );
             return (undef);
         }
     }
@@ -1263,7 +1265,7 @@ sub _set {
     my %args = (
         column             => undef,
         value              => undef,
-        transaction_type    => 'Set',
+        transaction_type   => 'Set',
         record_transaction => 1,
         @_
     );
@@ -1293,10 +1295,10 @@ sub _set {
     if ( $args{'record_transaction'} == 1 ) {
 
         my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
-            type      => $args{'transaction_type'},
-            field     => $args{'column'},
-            new_value => $args{'value'},
-            old_value => $Old,
+            type       => $args{'transaction_type'},
+            field      => $args{'column'},
+            new_value  => $args{'value'},
+            old_value  => $Old,
             time_taken => $args{'time_taken'},
         );
         return ( $Trans, scalar $TransObj->brief_description );
@@ -1452,11 +1454,7 @@ sub set_private_key {
 }
 
 sub basic_columns {
-    (   [ name         => 'User Id' ],
-        [ email        => 'Email' ],
-        [ real_name    => 'name' ],
-        [ organization => 'organization' ],
-    );
+    ( [ name => 'User Id' ], [ email => 'Email' ], [ real_name => 'name' ], [ organization => 'organization' ], );
 }
 
 1;

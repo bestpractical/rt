@@ -211,7 +211,7 @@ Read `man gpg` to get list of all options this program support.
 
 =back
 
-=head2 Per-queue options
+=head2 per-queue options
 
 Using the web interface it's possible to enable signing and/or encrypting by
 default. As an administrative user of RT, open 'Configuration' then 'Queues',
@@ -222,7 +222,7 @@ As well, encryption is enabled for autoreplies and other notifications when
 an encypted message enters system via mailgate interface even if queue's
 option is disabled.
 
-=head2 Handling incoming messages
+=head2 handling incoming messages
 
 To enable handling of encrypted and signed message in the RT you should add
 'Auth::GnuPG' mail plugin.
@@ -231,7 +231,7 @@ To enable handling of encrypted and signed message in the RT you should add
 
 See also `perldoc lib/RT/Interface/Email/Auth/GnuPG.pm`.
 
-=head2 Error handling
+=head2 error handling
 
 There are several global templates created in the database by default. RT
 uses these templates to send error messages to users or RT's owner. These 
@@ -310,7 +310,7 @@ of error messages.
 
 =head1 FOR DEVELOPERS
 
-=head2 Documentation and references
+=head2 documentation and references
 
 * RFC1847 - Security Multiparts for MIME: Multipart/Signed and Multipart/Encrypted.
 Describes generic MIME security framework, "mulitpart/signed" and "multipart/encrypted"
@@ -420,15 +420,12 @@ sub sign_encrypt {
 
     my $entity = $args{'entity'};
     if ( $args{'sign'} && !defined $args{'signer'} ) {
-        $args{'signer'} = use_key_for_signing() || ( Mail::Address->parse( $entity->head->get('From') ) )[0] ->address;
+        $args{'signer'} = use_key_for_signing()
+            || ( Mail::Address->parse( $entity->head->get('From') ) )[0]->address;
     }
     if ( $args{'encrypt'} && !$args{'recipients'} ) {
         my %seen;
-        $args{'recipients'} = [
-            grep $_ && !$seen{$_}++,
-            map $_->address,
-            map Mail::Address->parse( $entity->head->get($_) ), qw(To Cc Bcc)
-        ];
+        $args{'recipients'} = [ grep $_ && !$seen{$_}++, map $_->address, map Mail::Address->parse( $entity->head->get($_) ), qw(To Cc Bcc) ];
     }
 
     my $format = lc RT->config->get('GnuPG')->{'outgoing_messages_format'}
@@ -477,9 +474,9 @@ sub sign_encrypt_rfc3156 {
 
     my %res;
     if ( $args{'sign'} && !$args{'encrypt'} ) {
+
         # required by RFC3156(Ch. 5) and RFC1847(Ch. 2.1)
-        $entity->head->mime_attr(
-            'Content-Transfer-Encoding' => 'quoted-printable' );
+        $entity->head->mime_attr( 'Content-Transfer-Encoding' => 'quoted-printable' );
 
         my %handle;
         my $handles = GnuPG::Handles->new(
@@ -493,8 +490,7 @@ sub sign_encrypt_rfc3156 {
 
         eval {
             local $SIG{'CHLD'} = 'DEFAULT';
-            my $pid
-                = _safe_run_child { $gnupg->detach_sign( handles => $handles ) };
+            my $pid = _safe_run_child { $gnupg->detach_sign( handles => $handles ) };
             $entity->make_multipart( 'mixed', Force => 1 );
             $entity->parts(0)->print( $handle{'input'} );
             close $handle{'input'};
@@ -511,19 +507,21 @@ sub sign_encrypt_rfc3156 {
             close $handle{$_};
         }
         Jifty->log->debug( $res{'status'} ) if $res{'status'};
-        Jifty->log->warn(  $res{'error'} )   if $res{'error'};
+        Jifty->log->warn( $res{'error'} )   if $res{'error'};
         Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
         if ( $err || $res{'exit_code'} ) {
-            $res{'message'} = $err ? $err : "gpg exitted with error code " . ( $res{'exit_code'} >> 8 );
+            $res{'message'}
+                = $err
+                ? $err
+                : "gpg exitted with error code " . ( $res{'exit_code'} >> 8 );
             return %res;
         }
 
         # setup RFC1847(Ch.2.1) requirements
         my $protocol = 'application/pgp-signature';
-        $entity->head->mime_attr( 'Content-Type' => 'multipart/signed' );
+        $entity->head->mime_attr( 'Content-Type'          => 'multipart/signed' );
         $entity->head->mime_attr( 'Content-Type.protocol' => $protocol );
-        $entity->head->mime_attr(
-            'Content-Type.micalg' => 'pgp-' . lc $opt{'digest-algo'} );
+        $entity->head->mime_attr( 'Content-Type.micalg'   => 'pgp-' . lc $opt{'digest-algo'} );
         $entity->attach(
             Type        => $protocol,
             Disposition => 'inline',
@@ -533,10 +531,7 @@ sub sign_encrypt_rfc3156 {
     }
     if ( $args{'encrypt'} ) {
         my %seen;
-        $gnupg->options->push_recipients($_)
-            foreach map use_key_for_encryption($_) || $_, grep !$seen{$_}++,
-            map $_->address,
-            map Mail::Address->parse( $entity->head->get($_) ), qw(To Cc Bcc);
+        $gnupg->options->push_recipients($_) foreach map use_key_for_encryption($_) || $_, grep !$seen{$_}++, map $_->address, map Mail::Address->parse( $entity->head->get($_) ), qw(To Cc Bcc);
 
         my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile();
         binmode $tmp_fh, ':raw';
@@ -572,17 +567,16 @@ sub sign_encrypt_rfc3156 {
             close $handle{$_};
         }
         Jifty->log->debug( $res{'status'} ) if $res{'status'};
-        Jifty->log->warn(  $res{'error'} )   if $res{'error'};
+        Jifty->log->warn( $res{'error'} )   if $res{'error'};
         Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
         if ( $@ || $? ) {
-            $res{'message'}
-                = $@ ? $@ : "gpg exitted with error code " . ( $? >> 8 );
+            $res{'message'} = $@ ? $@ : "gpg exitted with error code " . ( $? >> 8 );
             return %res;
         }
 
         my $protocol = 'application/pgp-encrypted';
         $entity->parts( [] );
-        $entity->head->mime_attr( 'Content-Type' => 'multipart/encrypted' );
+        $entity->head->mime_attr( 'Content-Type'          => 'multipart/encrypted' );
         $entity->head->mime_attr( 'Content-Type.protocol' => $protocol );
         $entity->attach(
             Type        => $protocol,
@@ -815,8 +809,7 @@ sub sign_encrypt_attachment_inline {
     } else {
         $entity->bodyhandle( new MIME::Body::File $tmp_fn );
         $entity->effective_type('application/octet-stream');
-        $args{'data'}->head->mime_attr( $_ => "$filename.pgp" )
-            foreach (qw(Content-Type.name Content-Disposition.filename));
+        $args{'data'}->head->mime_attr( $_ => "$filename.pgp" ) foreach (qw(Content-Type.name Content-Disposition.filename));
 
     }
     $entity->{'__store_tmp_handle_to_avoid_early_cleanup'} = $tmp_fh;
@@ -933,9 +926,7 @@ sub find_protected_parts {
     unless ( $entity->is_multipart ) {
         my $io = $entity->open('r');
         unless ($io) {
-            Jifty->log->warn( "Entity of type "
-                    . $entity->effective_type
-                    . " has no body" );
+            Jifty->log->warn( "Entity of type " . $entity->effective_type . " has no body" );
             return ();
         }
         while ( defined( $_ = $io->getline ) ) {
@@ -953,27 +944,21 @@ sub find_protected_parts {
     }
 
     # RFC3156, multipart/{signed,encrypted}
-    if ( ( my $type = $entity->effective_type )
-        =~ /^multipart\/(?:encrypted|signed)$/ )
-    {
+    if ( ( my $type = $entity->effective_type ) =~ /^multipart\/(?:encrypted|signed)$/ ) {
         unless ( $entity->parts == 2 ) {
-            Jifty->log->error(
-                "Encrypted or signed entity must has two subparts. Skipped");
+            Jifty->log->error("Encrypted or signed entity must has two subparts. Skipped");
             return ();
         }
 
         my $protocol = $entity->head->mime_attr('Content-Type.protocol');
         unless ($protocol) {
-            Jifty->log->error(
-                "Entity is '$type', but has no protocol defined. Skipped");
+            Jifty->log->error("Entity is '$type', but has no protocol defined. Skipped");
             return ();
         }
 
         if ( $type eq 'multipart/encrypted' ) {
             unless ( $protocol eq 'application/pgp-encrypted' ) {
-                Jifty->log->info(
-                    "Skipping protocol '$protocol', only 'application/pgp-encrypted' is supported"
-                );
+                Jifty->log->info( "Skipping protocol '$protocol', only 'application/pgp-encrypted' is supported" );
                 return ();
             }
             Jifty->log->debug("Found encrypted according to RFC3156 part");
@@ -986,9 +971,7 @@ sub find_protected_parts {
             };
         } else {
             unless ( $protocol eq 'application/pgp-signature' ) {
-                Jifty->log->info(
-                    "Skipping protocol '$protocol', only 'application/pgp-signature' is supported"
-                );
+                Jifty->log->info( "Skipping protocol '$protocol', only 'application/pgp-signature' is supported" );
                 return ();
             }
             Jifty->log->debug("Found signed according to RFC3156 part");
@@ -1003,11 +986,8 @@ sub find_protected_parts {
     }
 
     # attachments signed with signature in another part
-    my @file_indices
-        = grep { $entity->parts($_)->head->recommended_filename }
-        grep {
-        $entity->parts($_)->effective_type eq 'application/pgp-signature'
-        } 0 .. $entity->parts - 1;
+    my @file_indices = grep { $entity->parts($_)->head->recommended_filename }
+        grep { $entity->parts($_)->effective_type eq 'application/pgp-signature' } 0 .. $entity->parts - 1;
 
     my ( @res, %skip );
     foreach my $i (@file_indices) {
@@ -1016,21 +996,15 @@ sub find_protected_parts {
         my $sig_name = $sig_part->head->recommended_filename;
         my ($file_name) = $sig_name =~ /^(.*?)(?:.sig)?$/;
 
-        my ($data_part_idx)
-            = grep $file_name eq
-            ( $entity->parts($_)->head->recommended_filename || '' ),
-            grep $sig_part ne $entity->parts($_), 0 .. $entity->parts - 1;
+        my ($data_part_idx) = grep $file_name eq ( $entity->parts($_)->head->recommended_filename || '' ), grep $sig_part ne $entity->parts($_), 0 .. $entity->parts - 1;
         unless ( defined $data_part_idx ) {
-            Jifty->log->error(
-                "Found $sig_name attachment, but didn't find $file_name");
+            Jifty->log->error("Found $sig_name attachment, but didn't find $file_name");
             next;
         }
         my $data_part_in = $entity->parts($data_part_idx);
 
         $skip{"$data_part_in"}++;
-        Jifty->log->debug(
-            "Found signature in attachment '$sig_name' of attachment '$file_name'"
-        );
+        Jifty->log->debug( "Found signature in attachment '$sig_name' of attachment '$file_name'" );
         push @res,
             {
             type      => 'signed',
@@ -1042,17 +1016,12 @@ sub find_protected_parts {
     }
 
     # attachments with inline encryption
-    my @encrypted_indices
-        = grep {
-        ( $entity->parts($_)->head->recommended_filename || '' ) =~ /\.pgp$/
-        } 0 .. $entity->parts - 1;
+    my @encrypted_indices = grep { ( $entity->parts($_)->head->recommended_filename || '' ) =~ /\.pgp$/ } 0 .. $entity->parts - 1;
 
     foreach my $i (@encrypted_indices) {
         my $part = $entity->parts($i);
         $skip{"$part"}++;
-        Jifty->log->debug( "Found encrypted attachment '"
-                . $part->head->recommended_filename
-                . "'" );
+        Jifty->log->debug( "Found encrypted attachment '" . $part->head->recommended_filename . "'" );
         push @res,
             {
             type   => 'encrypted',
@@ -1062,8 +1031,7 @@ sub find_protected_parts {
             };
     }
 
-    push @res, find_protected_parts( entity => $_ )
-        foreach grep !$skip{"$_"}, $entity->parts;
+    push @res, find_protected_parts( entity => $_ ) foreach grep !$skip{"$_"}, $entity->parts;
 
     return @res;
 }
@@ -1090,11 +1058,7 @@ sub verify_decrypt {
         } elsif ( $item->{'format'} eq 'attachment' ) {
             push @res, { verify_attachment(%$item) };
             if ( $args{'detach'} ) {
-                $item->{'top'}->parts(
-                    [   grep "$_" ne $item->{'signature'},
-                        $item->{'top'}->parts
-                    ]
-                );
+                $item->{'top'}->parts( [ grep "$_" ne $item->{'signature'}, $item->{'top'}->parts ] );
                 $item->{'top'}->make_singlepart;
             }
         }
@@ -1107,10 +1071,10 @@ sub verify_decrypt {
         } elsif ( $item->{'format'} eq 'attachment' ) {
             push @res, { decrypt_attachment(%$item) };
 
-#            if ( $args{'Detach'} ) {
-#                $item->{'top'}->parts( [ grep "$_" ne $item->{'signature'}, $item->{'top'}->parts ] );
-#                $item->{'top'}->make_singlepart;
-#            }
+            #            if ( $args{'Detach'} ) {
+            #                $item->{'top'}->parts( [ grep "$_" ne $item->{'signature'}, $item->{'top'}->parts ] );
+            #                $item->{'top'}->make_singlepart;
+            #            }
         }
     }
     return @res;
@@ -1127,8 +1091,7 @@ sub verify_attachment {
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
-    $gnupg->options->hash_init( _prepare_gnupg_options(%opt),
-        meta_interactive => 0, );
+    $gnupg->options->hash_init( _prepare_gnupg_options(%opt), meta_interactive => 0, );
 
     my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
@@ -1168,8 +1131,7 @@ sub verify_attachment {
     Jifty->log->warn( $res{'error'} )   if $res{'error'};
     Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
     if ( $@ || $? ) {
-        $res{'message'}
-            = $@ ? $@ : "gpg exitted with error code " . ( $? >> 8 );
+        $res{'message'} = $@ ? $@ : "gpg exitted with error code " . ( $? >> 8 );
     }
     return %res;
 }
@@ -1180,8 +1142,7 @@ sub verify_rfc3156 {
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
-    $gnupg->options->hash_init( _prepare_gnupg_options(%opt),
-        meta_interactive => 0, );
+    $gnupg->options->hash_init( _prepare_gnupg_options(%opt), meta_interactive => 0, );
 
     my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw:eol(CRLF?)';
@@ -1221,8 +1182,7 @@ sub verify_rfc3156 {
     Jifty->log->warn( $res{'error'} )   if $res{'error'};
     Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
     if ( $@ || $? ) {
-        $res{'message'}
-            = $@ ? $@ : "gpg exitted with error code " . ( $? >> 8 );
+        $res{'message'} = $@ ? $@ : "gpg exitted with error code " . ( $? >> 8 );
     }
     return %res;
 }
@@ -1239,8 +1199,7 @@ sub decrypt_rfc3156 {
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
-    $gnupg->options->hash_init( _prepare_gnupg_options(%opt),
-        meta_interactive => 0, );
+    $gnupg->options->hash_init( _prepare_gnupg_options(%opt), meta_interactive => 0, );
 
     if ( $args{'data'}->bodyhandle->is_encoded ) {
         require RT::EmailParser;
@@ -1292,8 +1251,7 @@ sub decrypt_rfc3156 {
     # XXX: add argument to the function to control this check
     if ( $res{'status'} !~ /DECRYPTION_OKAY/ ) {
         if ( $@ || $? ) {
-            $res{'message'}
-                = $@ ? $@ : "gpg exitted with error code " . ( $? >> 8 );
+            $res{'message'} = $@ ? $@ : "gpg exitted with error code " . ( $? >> 8 );
             return %res;
         }
     }
@@ -1319,8 +1277,7 @@ sub decrypt_inline {
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
-    $gnupg->options->hash_init( _prepare_gnupg_options(%opt),
-        meta_interactive => 0, );
+    $gnupg->options->hash_init( _prepare_gnupg_options(%opt), meta_interactive => 0, );
 
     if ( $args{'data'}->bodyhandle->is_encoded ) {
         require RT::EmailParser;
@@ -1372,8 +1329,7 @@ sub decrypt_inline {
     # XXX: add argument to the function to control this check
     if ( $res{'status'} !~ /DECRYPTION_OKAY/ ) {
         if ( $@ || $? ) {
-            $res{'message'}
-                = $@ ? $@ : "gpg exitted with error code " . ( $? >> 8 );
+            $res{'message'} = $@ ? $@ : "gpg exitted with error code " . ( $? >> 8 );
             return %res;
         }
     }
@@ -1396,8 +1352,7 @@ sub decrypt_attachment {
 
     my $filename = $args{'data'}->head->recommended_filename;
     $filename =~ s/\.pgp$//i;
-    $args{'data'}->head->mime_attr( $_ => $filename )
-        foreach (qw(Content-Type.name Content-Disposition.filename));
+    $args{'data'}->head->mime_attr( $_ => $filename ) foreach (qw(Content-Type.name Content-Disposition.filename));
 
     return %res;
 }
@@ -1412,8 +1367,7 @@ sub decrypt_content {
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
-    $gnupg->options->hash_init( _prepare_gnupg_options(%opt),
-        meta_interactive => 0, );
+    $gnupg->options->hash_init( _prepare_gnupg_options(%opt), meta_interactive => 0, );
 
     # handling passphrase in GnupGOptions
     $args{'passphrase'} = delete $opt{'passphrase'}
@@ -1451,17 +1405,16 @@ sub decrypt_content {
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
-    Jifty->log->debug( $res{'status'} )  if $res{'status'};
-    Jifty->log->warn( $res{'error'} ) if $res{'error'};
-    Jifty->log->error( $res{'logger'} )  if $res{'logger'} && $?;
+    Jifty->log->debug( $res{'status'} ) if $res{'status'};
+    Jifty->log->warn( $res{'error'} )   if $res{'error'};
+    Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
 
     # if the decryption is fine but the signature is bad, then without this
     # status check we lose the decrypted text
     # XXX: add argument to the function to control this check
     if ( $res{'status'} !~ /DECRYPTION_OKAY/ ) {
         if ( $@ || $? ) {
-            $res{'message'}
-                = $@ ? $@ : "gpg exitted with error code " . ( $? >> 8 );
+            $res{'message'} = $@ ? $@ : "gpg exitted with error code " . ( $? >> 8 );
             return %res;
         }
     }
@@ -1650,16 +1603,12 @@ sub parse_status {
                 if $status[ $i - 1 ] =~ /^MISSING_PASSPHRASE/;
             foreach my $line ( reverse @status[ 0 .. $i - 1 ] ) {
                 next
-                    unless $line
-                        =~ /^NEED_PASSPHRASE\s+(\S+)\s+(\S+)\s+(\S+)/;
+                    unless $line =~ /^NEED_PASSPHRASE\s+(\S+)\s+(\S+)\s+(\S+)/;
                 next if $key_id && $2 ne $key_id;
                 @res{ 'main_key', 'key', 'key_type' } = ( $1, $2, $3 );
                 last;
             }
-            $res{'message'}
-                = ucfirst(
-                lc( $res{'status'} eq 'DONE' ? 'GOOD' : $res{'status'} ) )
-                . ' passphrase';
+            $res{'message'} = ucfirst( lc( $res{'status'} eq 'DONE' ? 'GOOD' : $res{'status'} ) ) . ' passphrase';
             $res{'user'} = ( $user_hint{ $res{'main_key'} } ||= {} )
                 if $res{'main_key'};
             if ( exists $res{'user'}->{'email'} ) {
@@ -1694,11 +1643,11 @@ sub parse_status {
                 my ( $key, $alg, $key_length ) = ( $1, $2, $3 );
 
                 my %encrypted_to = (
-                    message   => "The message is encrypted to '0x$key'",
-                    user      => ( $user_hint{$key} ||= {} ),
-                    key       => $key,
+                    message    => "The message is encrypted to '0x$key'",
+                    user       => ( $user_hint{$key} ||= {} ),
+                    key        => $key,
                     key_length => $key_length,
-                    algorithm => $alg,
+                    algorithm  => $alg,
                 );
 
                 push @{ $res{'encrypted_to'} ||= [] }, \%encrypted_to;
@@ -1711,9 +1660,9 @@ sub parse_status {
             my %res = (
                 operation => 'key_check',
                 status    => 'MISSING',
-                message => ucfirst($type) . " key '0x$key' is not available",
-                key     => $key,
-                key_type => $type,
+                message   => ucfirst($type) . " key '0x$key' is not available",
+                key       => $key,
+                key_type  => $type,
             );
             $res{'user'} = ( $user_hint{$key} ||= {} );
             $res{'user'}{ ucfirst($type) . 'key_missing' } = 1;
@@ -1735,8 +1684,7 @@ sub parse_status {
                 $res{'trust'} = $1;
                 last;
             }
-            $res{'message'}
-                .= ', trust level is ' . lc( $res{'trust'} || 'unknown' );
+            $res{'message'} .= ', trust level is ' . lc( $res{'trust'} || 'unknown' );
 
             foreach my $line ( @status[ $i .. $#status ] ) {
                 next unless $line =~ /^VALIDSIG\s+(.*)/;
@@ -1773,57 +1721,53 @@ sub parse_status {
                 status    => 'ERROR',
                 message   => 'Not possible to check the signature',
             );
-            @res{qw(key pubkey_algo hash_algo class timestamp reason_code Other)}
-                = split /\s+/, $args, 7;
+            @res{ qw(key pubkey_algo hash_algo class timestamp reason_code Other) } = split /\s+/, $args, 7;
 
-            $res{'reason'}
-                = reason_code_to_text( $keyword, $res{'reason_code'} );
+            $res{'reason'} = reason_code_to_text( $keyword, $res{'reason_code'} );
             $res{'message'} .= ", the reason is " . $res{'reason'};
 
             push @res, \%res;
         } elsif ( $keyword eq 'SIG_CREATED' ) {
 
-  # SIG_CREATED <type> <pubkey algo> <hash algo> <class> <timestamp> <key fpr>
+            # SIG_CREATED <type> <pubkey algo> <hash algo> <class> <timestamp> <key fpr>
             my @props = split /\s+/, $args;
             push @res,
                 {
-                operation      => 'sign',
-                status         => 'DONE',
-                message        => "Signed message",
-                type           => $props[0],
+                operation       => 'sign',
+                status          => 'DONE',
+                message         => "Signed message",
+                type            => $props[0],
                 pubkey_algo     => $props[1],
                 hashkey_algo    => $props[2],
-                class          => $props[3],
-                timestamp      => $props[4],
+                class           => $props[3],
+                timestamp       => $props[4],
                 key_fingerprint => $props[5],
-                user           => $user_hint{$latest_user_main_key},
+                user            => $user_hint{$latest_user_main_key},
                 };
-            $res[-1]->{message}
-                .= ' by ' . $user_hint{$latest_user_main_key}->{'email'}
+            $res[-1]->{message} .= ' by ' . $user_hint{$latest_user_main_key}->{'email'}
                 if $user_hint{$latest_user_main_key};
         } elsif ( $keyword eq 'INV_RECP' ) {
             my ( $rcode, $recipient ) = split /\s+/, $args, 2;
             my $reason = reason_code_to_text( $keyword, $rcode );
             push @res,
                 {
-                operation => 'recipients_check',
-                status    => 'ERROR',
-                message =>
-                    "Recipient '$recipient' is unusable, the reason is '$reason'",
-                recipient  => $recipient,
+                operation   => 'recipients_check',
+                status      => 'ERROR',
+                message     => "Recipient '$recipient' is unusable, the reason is '$reason'",
+                recipient   => $recipient,
                 reason_code => $rcode,
-                reason     => $reason,
+                reason      => $reason,
                 };
         } elsif ( $keyword eq 'NODATA' ) {
             my $rcode = ( split /\s+/, $args )[0];
             my $reason = reason_code_to_text( $keyword, $rcode );
             push @res,
                 {
-                operation => 'data',
-                status    => 'ERROR',
-                message => "No data has been found. The reason is '$reason'",
+                operation   => 'data',
+                status      => 'ERROR',
+                message     => "No data has been found. The reason is '$reason'",
                 reason_code => $rcode,
-                reason     => $reason,
+                reason      => $reason,
                 };
         } else {
             Jifty->log->warn("keyword $keyword is unknown");
@@ -1836,22 +1780,20 @@ sub parse_status {
 
 sub _parse_user_hint {
     my ( $status, $hint ) = (@_);
-    my ( $main_key_id, $user_str )
-        = ( $hint =~ /^USERID_HINT\s+(\S+)\s+(.*)$/ );
+    my ( $main_key_id, $user_str ) = ( $hint =~ /^USERID_HINT\s+(\S+)\s+(.*)$/ );
     return () unless $main_key_id;
     return (
         main_key => $main_key_id,
-        string  => $user_str,
-        email   => ( map $_->address, Mail::Address->parse($user_str) )[0],
+        string   => $user_str,
+        email    => ( map $_->address, Mail::Address->parse($user_str) )[0],
     );
 }
 
 sub _prepare_gnupg_options {
     my %opt = @_;
-    my %res = map { lc $_ => $opt{$_} } grep $supported_opt{ lc $_ },
-        keys %opt;
+    my %res = map { lc $_ => $opt{$_} } grep $supported_opt{ lc $_ }, keys %opt;
     $res{'extra_args'} ||= [];
-    foreach my $o ( grep !$supported_opt{  $_ }, keys %opt ) {
+    foreach my $o ( grep !$supported_opt{$_}, keys %opt ) {
         push @{ $res{'extra_args'} }, '--' . $o;
         push @{ $res{'extra_args'} }, $opt{$o}
             if defined $opt{$o};
@@ -1943,9 +1885,7 @@ sub check_recipients {
     my ( $status, @issues ) = ( 1, () );
 
     my %seen;
-    foreach
-        my $address ( grep !$seen{ lc $_ }++, map $_->address, @recipients )
-    {
+    foreach my $address ( grep !$seen{ lc $_ }++, map $_->address, @recipients ) {
         my %res = get_keys_for_encryption($address);
         if (   $res{'info'}
             && @{ $res{'info'} } == 1
@@ -1974,9 +1914,7 @@ sub check_recipients {
                 $user ? ( user => $user ) : (),
                 keys => undef,
             );
-            $issue{'message'}
-                = "Selected key either is not trusted or doesn't exist anymore."
-                ;    #loc
+            $issue{'message'} = "Selected key either is not trusted or doesn't exist anymore.";    #loc
             push @issues, \%issue;
             next;
         }
@@ -1997,19 +1935,15 @@ sub check_recipients {
         unless ( $res{'info'} && @{ $res{'info'} } ) {
 
             # no key
-            $issue{'message'}
-                = "There is no key suitable for encryption.";    #loc
+            $issue{'message'} = "There is no key suitable for encryption.";    #loc
         } elsif ( @{ $res{'info'} } == 1 && !$res{'info'}[0]{'trust_level'} ) {
 
             # trust is not set
-            $issue{'message'}
-                = "There is one suitable key, but trust level is not set."
-                ;                                                #loc
+            $issue{'message'} = "There is one suitable key, but trust level is not set.";    #loc
         } else {
 
             # multiple keys
-            $issue{'message'}
-                = "There are several keys suitable for encryption.";    #loc
+            $issue{'message'} = "There are several keys suitable for encryption.";           #loc
         }
         push @issues, \%issue;
     }
@@ -2064,8 +1998,7 @@ sub get_keys_info {
 
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
-        my $method
-            = $type eq 'private' ? 'list_secret_keys' : 'list_public_keys';
+        my $method = $type eq 'private' ? 'list_secret_keys' : 'list_public_keys';
         my $pid = _safe_run_child {
             $gnupg->$method(
                 handles => $handles,
@@ -2090,8 +2023,7 @@ sub get_keys_info {
     Jifty->log->error( "Tried to get $type key '$email'.\n" . $res{'logger'} )
         if $res{'logger'} && $?;
     if ( $@ || $? ) {
-        $res{'message'}
-            = $@ ? $@ : "gpg exitted with error code " . ( $? >> 8 );
+        $res{'message'} = $@ ? $@ : "gpg exitted with error code " . ( $? >> 8 );
         return %res;
     }
 
@@ -2121,24 +2053,21 @@ sub parse_keys_info {
                 }
                 = split /:/, $line, 12;
 
-# workaround gnupg's wierd behaviour, --list-keys command report calculated trust levels
-# for any model except 'always', so you can change models and see changes, but not for 'always'
-# we try to handle it in a simple way - we set ultimate trust for any key with trust
-# level >= 0 if trust model is 'always'
+            # workaround gnupg's wierd behaviour, --list-keys command report calculated trust levels
+            # for any model except 'always', so you can change models and see changes, but not for 'always'
+            # we try to handle it in a simple way - we set ultimate trust for any key with trust
+            # level >= 0 if trust model is 'always'
             my $always_trust;
             $always_trust = 1 if exists $gpg_opt{'always-trust'};
             $always_trust = 1
                 if exists $gpg_opt{'trust-model'}
                     && $gpg_opt{'trust-model'} eq 'always';
-            @info{qw(trust trust_terse trust_level)}
-                = _convert_trust_char( $info{'trust_char'} );
+            @info{qw(trust trust_terse trust_level)} = _convert_trust_char( $info{'trust_char'} );
             if ( $always_trust && $info{'trust_level'} >= 0 ) {
-                @info{qw(trust trust_terse trust_level)}
-                    = _convert_trust_char('u');
+                @info{qw(trust trust_terse trust_level)} = _convert_trust_char('u');
             }
 
-            @info{qw(owner_trust owner_trust_terse owner_trust_level)}
-                = _convert_trust_char( $info{'owner_trust_char'} );
+            @info{qw(owner_trust owner_trust_terse owner_trust_level)} = _convert_trust_char( $info{'owner_trust_char'} );
             $info{$_} = _parse_date( $info{$_} ) foreach qw(created expire);
             push @res, \%info;
         } elsif ( $tag eq 'sec' ) {
@@ -2151,14 +2080,12 @@ sub parse_keys_info {
                     )
                 }
                 = split /:/, $line, 12;
-            @info{qw(owner_trust owner_trust_terse owner_trust_level)}
-                = _convert_trust_char( $info{'owner_trust_char'} );
+            @info{qw(owner_trust owner_trust_terse owner_trust_level)} = _convert_trust_char( $info{'owner_trust_char'} );
             $info{$_} = _parse_date( $info{$_} ) foreach qw(created expire);
             push @res, \%info;
         } elsif ( $tag eq 'uid' ) {
             my %info;
-            @info{qw(trust created expire string)}
-                = ( split /:/, $line )[ 0, 4, 5, 8 ];
+            @info{qw(trust created expire string)} = ( split /:/, $line )[ 0, 4, 5, 8 ];
             $info{$_} = _parse_date( $info{$_} ) foreach qw(created expire);
             push @{ $res[-1]{'user'} ||= [] }, \%info;
         } elsif ( $tag eq 'fpr' ) {
@@ -2196,7 +2123,7 @@ sub parse_keys_info {
             -1,
         ],
 
-     #gpupg docs says that '-' and 'q' may safely be treated as the same value
+        #gpupg docs says that '-' and 'q' may safely be treated as the same value
         '-' => [
             'Unknown (no trust value assigned)',    #loc
             'not set',
@@ -2261,8 +2188,7 @@ sub delete_key {
 
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
-    $gnupg->options->hash_init( _prepare_gnupg_options(%opt),
-        meta_interactive => 0, );
+    $gnupg->options->hash_init( _prepare_gnupg_options(%opt), meta_interactive => 0, );
 
     my %handle;
     my $handles = GnuPG::Handles->new(
@@ -2319,8 +2245,7 @@ sub import_key {
 
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
-    $gnupg->options->hash_init( _prepare_gnupg_options(%opt),
-        meta_interactive => 0, );
+    $gnupg->options->hash_init( _prepare_gnupg_options(%opt), meta_interactive => 0, );
 
     my %handle;
     my $handles = GnuPG::Handles->new(

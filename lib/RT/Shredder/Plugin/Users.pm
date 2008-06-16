@@ -92,8 +92,7 @@ and you most probably want to use C<replace_relations> option.
 =cut
 
 sub support_args {
-    return $_[0]->SUPER::support_args,
-        qw(status name email replace_relations no_tickets);
+    return $_[0]->SUPER::support_args, qw(status name email replace_relations no_tickets);
 }
 
 sub test_args {
@@ -129,8 +128,7 @@ sub test_args {
 sub run {
     my $self = shift;
     my %args = ( shredder => undef, @_ );
-    my $objs
-        = RT::Model::UserCollection->new( current_user => RT->system_user );
+    my $objs = RT::Model::UserCollection->new( current_user => RT->system_user );
 
     # XXX: we want preload only things we need, but later while
     # logging we need all data, TODO envestigate this
@@ -179,7 +177,7 @@ sub run {
     return ( 1, $objs );
 }
 
-sub set_Resolvers {
+sub set_resolvers {
     my $self = shift;
     my %args = ( shredder => undef, @_ );
 
@@ -195,7 +193,7 @@ sub set_Resolvers {
         };
         $args{'shredder'}->put_resolver(
             base_class => 'RT::Model::User',
-            code      => $resolver
+            code       => $resolver
         );
     }
     return (1);
@@ -222,8 +220,7 @@ sub filter_without_tickets {
 
 sub _without_tickets {
     my ( $self, $user ) = @_;
-    my $tickets
-        = RT::Model::TicketCollection->new( current_user => RT->system_user );
+    my $tickets = RT::Model::TicketCollection->new( current_user => RT->system_user );
     $tickets->from_sql( 'Watcher.id = ' . $user->id );
 
     # HACK: we may use Count method which counts all records

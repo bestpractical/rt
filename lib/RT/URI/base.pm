@@ -122,7 +122,7 @@ sub is_local {
     return undef;
 }
 
-=head2 AsString
+=head2 as_string
 
 Return a "pretty" string representing the URI object.
 

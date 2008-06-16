@@ -84,7 +84,7 @@ sub new {
     return $self;
 }
 
-=head2 Load
+=head2 load
 
 Takes a privacy specification, an object ID, and a search ID.  Loads
 the given search ID if it belongs to the stated user or group.
@@ -103,24 +103,20 @@ sub load {
         if ( $self->{'attribute'}->id ) {
             $self->{'id'}      = $self->{'attribute'}->id;
             $self->{'privacy'} = $privacy;
-            $self->{'type'} = $self->{'attribute'}->sub_value('SearchType');
+            $self->{'type'}    = $self->{'attribute'}->sub_value('SearchType');
             return ( 1, _( "Loaded search %1", $self->name ) );
         } else {
-            Jifty->log->error( "Could not load attribute " 
-                    . $id
-                    . " for object "
-                    . $privacy );
+            Jifty->log->error( "Could not load attribute " . $id . " for object " . $privacy );
             return ( 0, _("Search attribute load failure") );
         }
     } else {
-        Jifty->log->warn(
-            "Could not load object $privacy when loading search");
+        Jifty->log->warn("Could not load object $privacy when loading search");
         return ( 0, _( "Could not load object for %1", $privacy ) );
     }
 
 }
 
-=head2 Save
+=head2 save
 
 Takes a privacy, an optional type, a name, and a hashref containing the
 search parameters.  Saves the given parameters to the appropriate user/
@@ -136,9 +132,9 @@ and message, where status is true on success.  Defaults are:
 sub save {
     my $self = shift;
     my %args = (
-        'privacy'      => 'RT::Model::User-' . $self->current_user->id,
-        'type'         => 'Ticket',
-        'name'         => 'new search',
+        'privacy'       => 'RT::Model::User-' . $self->current_user->id,
+        'type'          => 'Ticket',
+        'name'          => 'new search',
         'search_params' => {},
         @_
     );
@@ -178,7 +174,7 @@ sub save {
     }
 }
 
-=head2 Update
+=head2 update
 
 Updates the parameters of an existing search.  Takes the arguments
 "name" and "search_params"; search_params should be a hashref containing
@@ -190,7 +186,7 @@ will not be changed.
 sub update {
     my $self = shift;
     my %args = (
-        'name'         => '',
+        'name'          => '',
         'search_params' => {},
         @_
     );
@@ -198,16 +194,14 @@ sub update {
     return ( 0, _("No search loaded") ) unless $self->id;
     return ( 0, _("Could not load search attribute") )
         unless $self->{'attribute'}->id;
-    my ( $status, $msg )
-        = $self->{'attribute'}->set_sub_values( %{ $args{'search_params'} } );
+    my ( $status, $msg ) = $self->{'attribute'}->set_sub_values( %{ $args{'search_params'} } );
     if ( $status && $args{'name'} ) {
-        ( $status, $msg )
-            = $self->{'attribute'}->set_description( $args{'name'} );
+        ( $status, $msg ) = $self->{'attribute'}->set_description( $args{'name'} );
     }
     return ( $status, _( "Search update: %1", $msg ) );
 }
 
-=head2 Delete
+=head2 delete
     
 Deletes the existing search.  Returns a tuple of status and message,
 where status is true upon success.
@@ -242,7 +236,7 @@ sub name {
     return $self->{'attribute'}->description();
 }
 
-=head2 GetParameter
+=head2 get_parameter
 
 Returns the given named parameter of the search, e.g. 'query', 'format'.
 
@@ -278,7 +272,7 @@ sub privacy {
     return $self->{'privacy'};
 }
 
-=head2 Type
+=head2 type
 
 Returns the type of this search, e.g. 'Ticket'.  Useful for denoting the
 saved searches that are relevant to a particular search page.
@@ -306,9 +300,7 @@ sub _load_privacy_object {
         return RT::System->new;
     }
 
-    Jifty->log->error(
-        "Tried to load a search belonging to an $obj_type ($obj_id), which is neither a user nor a group"
-    );
+    Jifty->log->error( "Tried to load a search belonging to an $obj_type ($obj_id), which is neither a user nor a group" );
     return undef;
 }
 
@@ -324,9 +316,7 @@ sub _get_object {
     my $object = $self->_load_privacy_object( $obj_type, $obj_id );
 
     unless ( ref($object) eq $obj_type ) {
-        Jifty->log->error(
-            "Could not load object of type $obj_type with ID $obj_id I AM "
-                . $self->current_user->id );
+        Jifty->log->error( "Could not load object of type $obj_type with ID $obj_id I AM " . $self->current_user->id );
         return undef;
     }
 
@@ -339,15 +329,10 @@ sub _get_object {
         Jifty->log->debug("Permission denied for user other than self");
         return undef;
     }
-    if ($obj_type eq 'RT::Model::Group'
-        && !$object->has_member_recursively(
-            $self->current_user->principal_object
-        )
-        )
+    if ( $obj_type eq 'RT::Model::Group'
+        && !$object->has_member_recursively( $self->current_user->principal_object ) )
     {
-        Jifty->log->debug( "Permission denied, "
-                . $self->current_user->name
-                . " is not a member of group" );
+        Jifty->log->debug( "Permission denied, " . $self->current_user->name . " is not a member of group" );
         return undef;
     }
 

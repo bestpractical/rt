@@ -175,7 +175,7 @@ set( $SenderMustExistInExternalDatabase, undef );
 
 # @MailPlugins is a list of auth plugins for L<RT::Interface::Email>
 # to use; see L<rt-mailgate>
-set(@MailPlugins, 'Auth::MailFrom');
+set( @MailPlugins, 'Auth::MailFrom' );
 
 # $UnsafeEmailCommands, if set to true, enables 'take' and 'resolve'
 # as possible actions via the mail gateway.  As its name implies, this
@@ -272,8 +272,7 @@ set( $UseFriendlyToLine, 0 );
 
 # sprintf() format of the friendly 'From:' header; its arguments
 # are WatcherType and TicketId.
-set( $friendly_to_line_format,
-    "\"%s of " . RT->config->get('rtname') . " Ticket #%s\":;" );
+set( $friendly_to_line_format, "\"%s of " . RT->config->get('rtname') . " Ticket #%s\":;" );
 
 # By default, RT doesn't notify the person who performs an update, as they
 # already know what they've done. If you'd like to change this behaviour,
@@ -368,9 +367,9 @@ set( $LogToScreen, 'error' );
 # the direct API, Best Practical recommends using syslog instead of
 # direct file logging.
 
-set( $LogToFile, undef );
-set( $LogDir,    '/home/jesse/svk/3.999-DANGEROUS/var/log' );
-set( $LogToFilenamed, "rt.log" );    #log to rt.log
+set( $LogToFile,      undef );
+set( $LogDir,         '/home/jesse/svk/3.999-DANGEROUS/var/log' );
+set( $LogToFilenamed, "rt.log" );                                    #log to rt.log
 
 # If set to a log level then logging will include stack
 # traces for messages with level equal to or greater than
@@ -431,8 +430,7 @@ set( $WebPort, 80 );    # + ($< * 7274) % 32766 + ($< && 1024));
 
 set( $WebbaseURL, "http://localhost:" . RT->config->get('WebPort') );
 
-set( $WebURL,
-    RT->config->get('WebbaseURL') . RT->config->get('WebPath') . "/" );
+set( $WebURL, RT->config->get('WebbaseURL') . RT->config->get('WebPath') . "/" );
 
 # $WebImagesURL points to the base URL where RT can find its images.
 
@@ -553,10 +551,10 @@ set( $WebFlushDbCacheEveryRequest, '1' );
 
 set( $MaxInlineBody, 12000 );
 
-# $DefaultSummaryRows is default number of rows displayed in for search
+# $defaultSummaryRows is default number of rows displayed in for search
 # results on the frontpage.
 
-set( $DefaultSummaryRows, 10 );
+set( $defaultSummaryRows, 10 );
 
 # By default, RT shows newest transactions at the bottom of the ticket
 # history page, if you want see them at the top set this to '0'.  This
@@ -572,10 +570,7 @@ set( $ShowTransactionImages, 1 );
 # $HomepageComponents is an arrayref of allowed components on a user's
 # customized homepage ("RT at a glance").
 
-set($HomepageComponents,
-    [   qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues MyReminders  RefreshHomepage)
-    ]
-);
+set( $HomepageComponents, [ qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues MyReminders  RefreshHomepage) ] );
 
 # @MasonParameters is the list of parameters for the constructor of
 # HTML::Mason's Apache or CGI Handler.  This is normally only useful
@@ -585,8 +580,8 @@ set($HomepageComponents,
 
 set( @MasonParameters, () );
 
-# $DefaultSearchResultFormat is the default format for RT search results
-set($DefaultSearchResultFormat, qq{
+# $defaultSearchResultFormat is the default format for RT search results
+set($defaultSearchResultFormat, qq{
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__subject__</a></B>/TITLE:subject',
    Status,

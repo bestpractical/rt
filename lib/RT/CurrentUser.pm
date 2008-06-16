@@ -94,7 +94,7 @@ use warnings;
 
 use base qw/Jifty::CurrentUser/;
 
-=head2 Create, Delete and Set*
+=head2 create, Delete and Set*
 
 As stated above it's a subclass of L<RT::Model::User>, but this class is read-only
 and calls to these methods are illegal. Return 'permission denied' message
@@ -104,26 +104,23 @@ and log an error.
 
 sub create {
     my $self = shift;
-    Jifty->log->error(
-        'RT::CurrentUser is read-only, RT::Model::User for manipulation');
+    Jifty->log->error('RT::CurrentUser is read-only, RT::Model::User for manipulation');
     return ( 0, _('Permission Denied') );
 }
 
 sub delete {
     my $self = shift;
-    Jifty->log->error(
-        'RT::CurrentUser is read-only, RT::Model::User for manipulation');
+    Jifty->log->error('RT::CurrentUser is read-only, RT::Model::User for manipulation');
     return ( 0, _('Permission Denied') );
 }
 
 sub _set {
     my $self = shift;
-    Jifty->log->error(
-        'RT::CurrentUser is read-only, RT::Model::User for manipulation');
+    Jifty->log->error('RT::CurrentUser is read-only, RT::Model::User for manipulation');
     return ( 0, _('Permission Denied') );
 }
 
-=head2 LoadBygecos
+=head2 load_bygecos
 
 Loads a User into this current_user object.
 Takes a unix username as its only argument.
@@ -147,7 +144,7 @@ sub load_by_name {
     return $self->new( "name", shift );
 }
 
-=head2 CurrentUser
+=head2 current_user
 
 Return the current currentuser object
 
@@ -158,7 +155,6 @@ sub current_user {
     return ($self);
 
 }
-
 
 sub has_right {
     my $self = shift;

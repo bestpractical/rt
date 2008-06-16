@@ -100,17 +100,17 @@ sub numf {
         and $num > -10_000_000_000
         and $num == int($num) )
     {
-        $num += 0;   # Just use normal integer stringification.
-                     # Specifically, don't let %G turn ten million into 1E+007
+        $num += 0;    # Just use normal integer stringification.
+                      # Specifically, don't let %G turn ten million into 1E+007
     } else {
         $num = CORE::sprintf( "%G", $num );
 
         # "CORE::" is there to avoid confusion with the above sub sprintf.
     }
-    while ( $num =~ s/^([-+]?\d+)(\d{3})/$1,$2/s ) {1}   # right from perlfaq5
-          # The initial \d+ gobbles as many digits as it can, and then we
-          #  backtrack so it un-eats the rightmost three, and then we
-          #  insert the comma there.
+    while ( $num =~ s/^([-+]?\d+)(\d{3})/$1,$2/s ) {1}    # right from perlfaq5
+                                                          # The initial \d+ gobbles as many digits as it can, and then we
+                                                          #  backtrack so it un-eats the rightmost three, and then we
+                                                          #  insert the comma there.
 
     $num =~ tr<.,><,.> if ref($handle) and $handle->{'numf_comma'};
 

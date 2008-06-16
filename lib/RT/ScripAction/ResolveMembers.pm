@@ -59,11 +59,10 @@ use vars qw/@ISA/;
 
 #What does this type of Action does
 
-# {{{ sub Describe
+# {{{ sub describe
 sub describe {
     my $self = shift;
-    return _( "%1 will resolve all members of a resolved group ticket.",
-        ref $self );
+    return _( "%1 will resolve all members of a resolved group ticket.", ref $self );
 }
 
 # }}}
@@ -80,8 +79,7 @@ sub prepare {
 sub commit {
     my $self = shift;
 
-    my $Links
-        = RT::Model::LinkCollection->new( current_user => RT->system_user );
+    my $Links = RT::Model::LinkCollection->new( current_user => RT->system_user );
     $Links->limit( column => 'type',   value => 'MemberOf' );
     $Links->limit( column => 'target', value => $self->ticket_obj->id );
 
@@ -94,14 +92,14 @@ sub commit {
         # Todo: Only work if base is a plain ticket num:
         $base->load( $Link->base );
 
-    # I'm afraid this might be a major bottleneck if ResolveGroupTicket is on.
+        # I'm afraid this might be a major bottleneck if ResolveGroupTicket is on.
         $base->resolve;
     }
 }
 
 # Applicability checked in Commit.
 
-# {{{ sub IsApplicable
+# {{{ sub is_applicable
 sub is_applicable {
     my $self = shift;
     1;

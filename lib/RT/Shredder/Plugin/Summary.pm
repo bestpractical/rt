@@ -59,8 +59,7 @@ sub test_args {
     my %args = ( filename => '', @_ );
     unless ( $args{'filename'} ) {
         require POSIX;
-        $args{'filename'}
-            = POSIX::strftime( "summary-%Y%m%dT%H%M%S.XXXX.txt", gmtime );
+        $args{'filename'} = POSIX::strftime( "summary-%Y%m%dT%H%M%S.XXXX.txt", gmtime );
     }
     return $self->SUPER::test_args(%args);
 }
@@ -82,9 +81,7 @@ my %skip_refs_to = ();
 sub write_down_default {
     my $self = shift;
     my %args = ( object => undef, @_ );
-    return $self->_write_down_hash( $args{'object'},
-        $self->_make_hash( $args{'object'} ),
-    );
+    return $self->_write_down_hash( $args{'object'}, $self->_make_hash( $args{'object'} ), );
 }
 
 # TODO: cover other objects

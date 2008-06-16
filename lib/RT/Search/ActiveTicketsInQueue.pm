@@ -68,7 +68,7 @@ package RT::Search::ActiveTicketsInQueue;
 use strict;
 use base qw(RT::Search::Generic);
 
-# {{{ sub Describe
+# {{{ sub describe
 sub describe {
     my $self = shift;
     return ( _( "No description for %1", ref $self ) );

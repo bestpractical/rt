@@ -105,8 +105,7 @@ sub smart_parse_mime_entity_from_scalar {
             # with other processes, causing a race condition. we try to
             # accommodate this by pausing and retrying.
             last
-                if ( $fh, $temp_file )
-                = eval { File::Temp::tempfile( undef, UNLINK => 0 ) };
+                if ( $fh, $temp_file ) = eval { File::Temp::tempfile( undef, UNLINK => 0 ) };
             sleep 1;
         }
         if ($fh) {
@@ -120,9 +119,7 @@ sub smart_parse_mime_entity_from_scalar {
 
                 # We have to trust the temp file's name -- untaint it
                 $temp_file =~ /(.*)/;
-                my $entity
-                    = $self->parse_mime_entity_from_file( $1, $args{'decode'},
-                    $args{'exact'} );
+                my $entity = $self->parse_mime_entity_from_file( $1, $args{'decode'}, $args{'exact'} );
                 unlink($1);
                 return $entity;
             }
@@ -132,8 +129,7 @@ sub smart_parse_mime_entity_from_scalar {
     #If for some reason we weren't able to parse the message using a temp file
     # try it with a scalar
     if ( $@ || !$self->entity ) {
-        return $self->parse_mime_entity_from_scalar( $args{'message'},
-            $args{'decode'}, $args{'exact'} );
+        return $self->parse_mime_entity_from_scalar( $args{'message'}, $args{'decode'}, $args{'exact'} );
     }
 
 }
@@ -175,7 +171,7 @@ sub parse_mime_entity_from_filehandle {
     return $self->_parse_mime_entity( shift, 'parse', @_ );
 }
 
-=head2 parse_mime_entityFromFile 
+=head2 parse_mime_entity_from_file 
 
 Parses a mime entity from a filename passed in as an argument
 
@@ -200,8 +196,7 @@ sub _parse_mime_entity {
 
     # TODO: XXX 3.0 we really need to wrap this in an eval { }
     unless ( $self->{'entity'} = $parser->$method($message) ) {
-        Jifty->log->fatal(
-            "Couldn't parse MIME stream and extract the submessages");
+        Jifty->log->fatal("Couldn't parse MIME stream and extract the submessages");
 
         # Try again, this time without extracting nested messages
         $parser->extract_nested_messages(0);
@@ -235,8 +230,7 @@ sub _decode_body {
     my $encoding = $entity->head->mime_encoding;
     my $decoder  = new MIME::Decoder $encoding;
     unless ($decoder) {
-        Jifty->log->error(
-            "Couldn't find decoder for '$encoding', switching to binary");
+        Jifty->log->error("Couldn't find decoder for '$encoding', switching to binary");
         $old->is_encoded(0);
         return;
     }
@@ -261,7 +255,7 @@ sub _decode_body {
     $entity->bodyhandle($new);
 }
 
-=head2 _PostProcessNewEntity
+=head2 _post_process_new_entity
 
 cleans up and postprocesses a newly parsed MIME Entity
 
@@ -281,8 +275,7 @@ sub _post_process_new_entity {
     RT::I18N::set_mime_entity_to_encoding( $self->{'entity'}, 'utf-8' );
 }
 
-
-=head2 IsRTaddress ADDRESS
+=head2 is_rtaddress ADDRESS
 
 Takes a single parameter, an email address. 
 Returns true if that address matches the C<RTAddressRegexp> config option.
@@ -339,7 +332,7 @@ sub cull_rt_addresses {
 # If you define an AutoRejectRequest template, RT will use this
 # template for the rejection message.
 
-=head2 LookupExternalUserInfo
+=head2 lookup_external_user_info
 
  LookupExternalUserInfo is a site-definable method for synchronizing
  incoming users with an external data source. 
@@ -385,7 +378,7 @@ sub lookup_external_user_info {
     return ( $FoundInExternalDatabase, %params );
 }
 
-=head2 Head
+=head2 head
 
 Return the parsed head from this message
 
@@ -396,7 +389,7 @@ sub head {
     return $self->entity->head;
 }
 
-=head2 Entity 
+=head2 entity 
 
 Return the parsed Entity from this message
 
@@ -407,7 +400,7 @@ sub entity {
     return $self->{'entity'};
 }
 
-=head2 _SetupMIMEParser $parser
+=head2 _setup_mimeparser $parser
 
 A private instance method which sets up a mime parser to do its job
 
@@ -443,10 +436,10 @@ sub _setup_mime_parser {
 
     $parser->output_to_core(0);
 
-# From the MIME::Parser docs:
-# "Normally, tmpfiles are created when needed during parsing, and destroyed automatically when they go out of scope"
-# Turns out that the default is to recycle tempfiles
-# Temp files should never be recycled, especially when running under perl taint checking
+    # From the MIME::Parser docs:
+    # "Normally, tmpfiles are created when needed during parsing, and destroyed automatically when they go out of scope"
+    # Turns out that the default is to recycle tempfiles
+    # Temp files should never be recycled, especially when running under perl taint checking
 
     $parser->tmp_recycling(0) if $parser->can('tmp_recycling');
 

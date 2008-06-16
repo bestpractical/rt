@@ -60,12 +60,11 @@ use constant KEYWORD     => 32;
 my @tokens = qw[VALUE AGGREGATOR OPERATOR OPEN_PAREN CLOSE_PAREN KEYWORD];
 
 use Regexp::Common qw /delimited/;
-my $re_aggreg  = qr[(?i:AND|OR)];
-my $re_delim   = qr[$RE{delimited}{-delim=>qq{\'\"}}];
-my $re_value   = qr[\d+|NULL|$re_delim];
-my $re_keyword = qr[[{}\w\.]+|$re_delim];
-my $re_op = qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)]
-    ;    # long to short
+my $re_aggreg     = qr[(?i:AND|OR)];
+my $re_delim      = qr[$RE{delimited}{-delim=>qq{\'\"}}];
+my $re_value      = qr[\d+|NULL|$re_delim];
+my $re_keyword    = qr[[{}\w\.]+|$re_delim];
+my $re_op         = qr[=|!=|>=|<=|>|<|(?i:IS NOT)|(?i:IS)|(?i:NOT LIKE)|(?i:LIKE)];    # long to short
 my $reopen_paren  = qr[\(];
 my $reclose_paren = qr[\)];
 
@@ -76,12 +75,10 @@ sub parse_to_array {
     $node = $tree = [];
 
     my %callback;
-    $callback{'open_paren'}
-        = sub { push @pnodes, $node; $node = []; push @{ $pnodes[-1] }, $node };
+    $callback{'open_paren'} = sub { push @pnodes, $node; $node = []; push @{ $pnodes[-1] }, $node };
     $callback{'close_paren'} = sub { $node = pop @pnodes };
     $callback{'entry_aggregator'} = sub { push @$node, $_[0] };
-    $callback{'Condition'}
-        = sub { push @$node, { Key => $_[0], Op => $_[1], Value => $_[2] } };
+    $callback{'Condition'} = sub { push @$node, { Key => $_[0], Op => $_[1], Value => $_[2] } };
 
     Parse( $string, \%callback );
     return $tree;
@@ -128,12 +125,8 @@ sub parse {
 
         unless ( $current && $want & $current ) {
             my $tmp = substr( $string, 0, pos($string) - length($match) );
-            $tmp
-                .= '>' . $match . '<--here' . substr( $string, pos($string) );
-            my $msg
-                = "Wrong query, expecting a "
-                . _bitmask_to_string($want)
-                . " in '$tmp'";
+            $tmp .= '>' . $match . '<--here' . substr( $string, pos($string) );
+            my $msg = "Wrong query, expecting a " . _bitmask_to_string($want) . " in '$tmp'";
             return $cb->{'Error'}->($msg) if $cb->{'Error'};
             die $msg;
         }
@@ -187,17 +180,13 @@ sub parse {
     }    # while
 
     unless ( !$last || $last & ( CLOSE_PAREN | VALUE ) ) {
-        my $msg
-            = "Incomplete query, last element ("
-            . _bitmask_to_string($last)
-            . ") is not CLOSE_PAREN or VALUE in '$string'";
+        my $msg = "Incomplete query, last element (" . _bitmask_to_string($last) . ") is not CLOSE_PAREN or VALUE in '$string'";
         return $cb->{'Error'}->($msg) if $cb->{'Error'};
         die $msg;
     }
 
     if ($depth) {
-        my $msg
-            = "Incomplete query, $depth paren(s) isn't closed in '$string'";
+        my $msg = "Incomplete query, $depth paren(s) isn't closed in '$string'";
         return $cb->{'Error'}->($msg) if $cb->{'Error'};
         die $msg;
     }

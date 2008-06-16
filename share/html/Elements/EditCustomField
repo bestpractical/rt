@@ -1,0 +1,104 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<%INIT>
+
+my $Type = $CustomField->type;
+unless ( $Type ) {
+    # if we can't see the type, all hell will break loose.
+    Jifty->log->error( "Custom field #". $CustomField->id ." has empty type" );
+    return;
+}
+
+my $values;
+if ( $object && $object->id ) {
+    $values = $object->custom_field_values( $CustomField->id );
+    $values->query_columns( qw( id custom_field object_type object_id disabled content content_type content_encoding ) );
+    $namePrefix ||= join('-', 'object', ref($object), $object->id, 'CustomField', '');
+} elsif (not $default) {
+    my %TOP = $m->request_args;
+    $default = $TOP{ $namePrefix .$CustomField->id . '-values' }
+            || $TOP{ $namePrefix .$CustomField->id . '-value' };
+}
+
+my $MaxValues = $CustomField->max_values;
+if ($MaxValues == 1 && $values) {
+    # what exactly is this doing?  Without the "unless" it breaks RTFM
+    # transaction extraction into articles.
+    $default = ($values->first ? $values->first->content : '') unless $default;
+    $values->goto_first_item;
+}
+# The "magic" hidden input causes RT to know that we were trying to edit the field, even if 
+# we don't see a value later, since browsers aren't compelled to submit empty form fields
+$m->out("\n".'<input type="hidden" class="hidden" name="'.$namePrefix.$CustomField->id.'-values-magic" value="1" />'."\n");
+
+my $EditComponent = "EditCustomField$Type";
+$m->callback( Callbackname => 'EditComponentname', name => \$EditComponent, CustomField => $CustomField, object => $object );
+$EditComponent = "EditCustomField$Type" unless $m->comp_exists($EditComponent);
+
+return $m->comp(
+    $EditComponent,
+    %ARGS,
+    Rows => $Rows,
+    Cols => $Cols,
+    default => $default,
+    object => $object,
+    Values => $values,
+    MaxValues => $MaxValues,
+    Multiple => ($MaxValues != 1),
+    namePrefix => $namePrefix,
+    CustomField => $CustomField,
+);
+</%INIT>
+<%ARGS>
+$object      => undef
+$CustomField => undef
+$namePrefix  => undef
+$Rows        => 5
+$Cols        => 15
+$default     => undef
+</%ARGS>

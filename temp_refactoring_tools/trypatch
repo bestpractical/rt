@@ -1,0 +1,6 @@
+#!/bin/sh
+svk revert -R . 
+svk st |grep '^\?' |cut -c 2- |xargs rm -rf
+find . -name \*.rej |xargs rm
+find . -name \*.orig |xargs rm
+patch -p0 < $1

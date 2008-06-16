@@ -91,7 +91,7 @@ sub clean_slate {
     return $self->SUPER::clean_slate(@_);
 }
 
-=head2 TransactionAlias
+=head2 transaction_alias
 
 Returns alias for transactions table with applied join condition.
 Always return the same alias, so if you want to build some complex
@@ -132,7 +132,7 @@ sub content_type {
     return $self->limit( %args, column => 'content_type' );
 }
 
-=head2 ChildrenOf ID
+=head2 children_of ID
 
 Limit result set to children of Attachment ID
 
@@ -147,7 +147,7 @@ sub children_of {
     );
 }
 
-=head2 limit_NotEmpty
+=head2 limit_not_empty
 
 Limit result set to attachments with not empty content.
 
@@ -171,7 +171,7 @@ sub limit_not_empty {
     return;
 }
 
-=head2 limit_ByTicket $ticket_id
+=head2 limit_by_ticket $ticket_id
 
 Limit result set to attachments of a ticket.
 

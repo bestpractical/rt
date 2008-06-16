@@ -74,8 +74,7 @@ sub __depends_on {
     my $map       = RT::Model::Ticket->LINKTYPEMAP;
     my $link_meta = $map->{ $self->type };
     unless ( $link_meta && $link_meta->{'Mode'} && $link_meta->{'type'} ) {
-        RT::Shredder::Exception->throw(
-            'Wrong link link_meta, no record for ' . $self->type );
+        RT::Shredder::Exception->throw( 'Wrong link link_meta, no record for ' . $self->type );
     }
     if ( $self->base_uri->is_local ) {
         my $objs = $self->base_obj->transactions;
@@ -111,10 +110,10 @@ sub __depends_on {
     }
 
     $deps->_push_dependencies(
-        base_object   => $self,
-        flags         => DEPENDS_ON | WIPE_AFTER,
+        base_object    => $self,
+        flags          => DEPENDS_ON | WIPE_AFTER,
         target_objects => $list,
-        shredder      => $args{'shredder'}
+        shredder       => $args{'shredder'}
     );
     return $self->SUPER::__depends_on(%args);
 }
@@ -122,7 +121,7 @@ sub __depends_on {
 #TODO: Link record has small strength, but should be encountered
 # if we plan write export tool.
 
-sub __Relates {
+sub __relates {
     my $self = shift;
     my %args = (
         shredder     => undef,

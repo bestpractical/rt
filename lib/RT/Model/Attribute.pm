@@ -45,7 +45,6 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
 use warnings;
 use strict;
 
@@ -59,11 +58,17 @@ sub table {'Attributes'}
 use base 'RT::Record';
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column object_id => max_length is 11, type is 'int', default is '0';
-    column name => max_length is 200, type is 'varchar(200)', default is '';
-    column object_type => max_length is 200, type is 'varchar(200)', default is '';
-    column description => max_length is 255, type is 'varchar(255)', default is '';
-    column content_type => max_length is 255, type is 'varchar(255)', default is '';
+    column object_id => max_length is 11,  type is 'int',          default is '0';
+    column name      => max_length is 200, type is 'varchar(200)', default is '';
+    column
+        object_type => max_length is 200,
+        type is 'varchar(200)', default is '';
+    column
+        description => max_length is 255,
+        type is 'varchar(255)', default is '';
+    column
+        content_type => max_length is 255,
+        type is 'varchar(255)', default is '';
     column content => type is 'blob', default is '';
 
 };
@@ -101,7 +106,7 @@ our $PERSONAL_ACL_MAP = {
 
 };
 
-=head2 Lookupobjectright { object_type => undef, object_id => undef, name => undef, right => { create, update, delete, display } }
+=head2 lookupobjectright { object_type => undef, object_id => undef, name => undef, right => { create, update, delete, display } }
 
 Returns the right that the user needs to have on this attribute's object to perform the related attribute operation. Returns "allow" if the right is otherwise unspecified.
 
@@ -123,8 +128,7 @@ sub lookup_object_right {
     {
         return ('allow') unless ( $PERSONAL_ACL_MAP->{ $args{'name'} } );
         return ('allow')
-            unless (
-            $PERSONAL_ACL_MAP->{ $args{'name'} }->{ $args{'right'} } );
+            unless ( $PERSONAL_ACL_MAP->{ $args{'name'} }->{ $args{'right'} } );
         return ( $PERSONAL_ACL_MAP->{ $args{'name'} }->{ $args{'right'} } );
 
     }
@@ -138,7 +142,7 @@ sub lookup_object_right {
     }
 }
 
-=head2 Create PARAMHASH
+=head2 create PARAMHASH
 
 Create takes a hash of values and creates a row in the database:
 
@@ -155,11 +159,11 @@ You may pass a C<object> instead of C<object_type> and C<object_id>.
 sub create {
     my $self = shift;
     my %args = (
-        name        => '',
-        description => '',
-        content     => '',
+        name         => '',
+        description  => '',
+        content      => '',
         content_type => '',
-        object      => undef,
+        object       => undef,
         @_
     );
 
@@ -173,7 +177,7 @@ sub create {
 
     Carp::confess unless $self->current_user;
 
-# object_right is the right that the user has to have on the object for them to have $right on this attribute
+    # object_right is the right that the user has to have on the object for them to have $right on this attribute
     my $object_right = $self->lookup_object_right(
         right       => 'create',
         object_id   => $args{'object_id'},
@@ -198,9 +202,7 @@ sub create {
     }
 
     if ( ref( $args{'content'} ) ) {
-        eval {
-            $args{'content'} = $self->_serialize_content( $args{'content'} );
-        };
+        eval { $args{'content'} = $self->_serialize_content( $args{'content'} ); };
         if ($@) {
             return ( 0, $@ );
         }
@@ -208,17 +210,17 @@ sub create {
     }
 
     $self->SUPER::create(
-        name        => $args{'name'},
-        content     => $args{'content'},
+        name         => $args{'name'},
+        content      => $args{'content'},
         content_type => $args{'content_type'},
-        description => $args{'description'},
-        object_type => $args{'object_type'},
-        object_id   => $args{'object_id'},
+        description  => $args{'description'},
+        object_type  => $args{'object_type'},
+        object_id    => $args{'object_id'},
     );
 
 }
 
-# {{{ sub load_by_nameAndobject
+# {{{ sub load_by_name_andobject
 
 =head2  load_by_nameAndobject (object => OBJECT, name => name)
 
@@ -246,7 +248,7 @@ sub load_by_name_and_object {
 
 # }}}
 
-=head2 _Deserializecontent
+=head2 _deserializecontent
 
 Deserializecontent returns this Attribute's "content" as a hashref.
 
@@ -260,8 +262,7 @@ sub _deserialize_content {
     my $hashref;
     eval { $hashref = thaw( decode_base64($content) ) };
     if ($@) {
-        Jifty->log->error(
-            "Deserialization of attribute " . $self->id . " failed" );
+        Jifty->log->error( "Deserialization of attribute " . $self->id . " failed" );
     }
 
     return ($hashref);
@@ -283,10 +284,7 @@ sub content {
     if ( $self->__value('content_type') eq 'storable' ) {
         eval { $content = $self->_deserialize_content($content); };
         if ($@) {
-            Jifty->log->error( "Deserialization of content for attribute "
-                    . $self->id
-                    . " failed. Attribute was: "
-                    . $content );
+            Jifty->log->error( "Deserialization of content for attribute " . $self->id . " failed. Attribute was: " . $content );
         }
     }
 
@@ -317,7 +315,7 @@ sub set_content {
     return $self->_set( column => 'content', value => $content );
 }
 
-=head2 SubValue KEY
+=head2 sub_value KEY
 
 Returns the subvalue for $key.
 
@@ -332,7 +330,7 @@ sub sub_value {
     return ( $values->{$key} );
 }
 
-=head2 DeleteSubValue name
+=head2 delete_sub_value name
 
 Deletes the subvalue with the key name
 
@@ -347,7 +345,7 @@ sub delete_sub_value {
 
 }
 
-=head2 DeleteAllSubValues 
+=head2 delete_all_sub_values 
 
 Deletes all subvalues for this attribute
 
@@ -358,7 +356,7 @@ sub delete_all_sub_values {
     $self->set_content( {} );
 }
 
-=head2 SetSubValues  {  }
+=head2 set_sub_values  {  }
 
 Takes a hash of keys and values and stores them in the content of this attribute.
 
@@ -386,11 +384,7 @@ sub object {
     my $object;
     eval { $object = $object_type->new };
     unless ( UNIVERSAL::isa( $object, $object_type ) ) {
-        Jifty->log->error( "Attribute "
-                . $self->id
-                . " has a bogus object type - $object_type ("
-                . $@
-                . ")" );
+        Jifty->log->error( "Attribute " . $self->id . " has a bogus object type - $object_type (" . $@ . ")" );
         return (undef);
     }
     $object->load( $self->__value('object_id') );
@@ -437,7 +431,7 @@ sub current_user_has_right {
     my $self  = shift;
     my $right = shift;
 
-# object_right is the right that the user has to have on the object for them to have $right on this attribute
+    # object_right is the right that the user has to have on the object for them to have $right on this attribute
     my $object_right = $self->lookup_object_right(
         right       => $right,
         object_id   => $self->__value('object_id'),

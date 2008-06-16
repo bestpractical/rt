@@ -11,15 +11,15 @@ use RT;
 
 # Create a user with rights, a queue, and some tickets.
 my $user_obj = RT::Model::User->new(current_user => RT->system_user);
-my ($ret, $msg) = $user_obj->load_or_create_by_email('tara@example.com');
+my ($ret, $msg) = $user_object->load_or_create_by_email('tara@example.com');
 ok($ret, 'record test user creation');
-($ret,$msg) =$user_obj->set_name('tara');
+($ret,$msg) =$user_object->set_name('tara');
 ok($ret,$msg);
-($ret,$msg) =$user_obj->principal_object->grant_right(right => 'SuperUser');
+($ret,$msg) =$user_object->principal_object->grant_right(right => 'SuperUser');
 ok($ret,$msg);
 my $CurrentUser = RT::CurrentUser->new(name => 'tara');
-is($user_obj->name,'tara');
-is ($user_obj->id, $CurrentUser->id);
+is($user_object->name,'tara');
+is ($user_object->id, $CurrentUser->id);
 
 # Create our template, which will be used for tests of RT::ScripAction::Record*.
 

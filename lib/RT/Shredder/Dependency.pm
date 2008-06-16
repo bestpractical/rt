@@ -51,12 +51,7 @@ use strict;
 use RT::Shredder::Constants;
 use RT::Shredder::Exceptions;
 
-my %FlagDescs = (
-    DEPENDS_ON, 'depends on',
-    VARIABLE,   'resolvable dependency',
-    WIPE_AFTER, 'delete after',
-    RELATES,    'relates with',
-);
+my %FlagDescs = ( DEPENDS_ON, 'depends on', VARIABLE, 'resolvable dependency', WIPE_AFTER, 'delete after', RELATES, 'relates with', );
 
 sub new {
     my $proto = shift;

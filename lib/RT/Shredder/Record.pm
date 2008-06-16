@@ -56,7 +56,7 @@ use warnings FATAL => 'redefine';
 use RT::Shredder::Constants;
 use RT::Shredder::Exceptions;
 
-=head2 _AsString
+=head2 _as_string
 
 Returns string in format Classname-object_id.
 
@@ -78,15 +78,9 @@ sub _as_insert_query {
 
     my $res    = "INSERT INTO " . $dbh->quote_identifier( $self->table );
     my $values = $self->{'values'};
-    $res
-        .= "("
-        . join( ",", map { $dbh->quote_identifier($_) } sort keys %$values )
-        . ")";
+    $res .= "(" . join( ",", map { $dbh->quote_identifier($_) } sort keys %$values ) . ")";
     $res .= " VALUES";
-    $res
-        .= "("
-        . join( ",", map { $dbh->quote( $values->{$_} ) } sort keys %$values )
-        . ")";
+    $res .= "(" . join( ",", map { $dbh->quote( $values->{$_} ) } sort keys %$values ) . ")";
     $res .= ";";
 
     return $res;
@@ -94,7 +88,7 @@ sub _as_insert_query {
 
 sub before_wipeout { return 1 }
 
-=head2 Dependencies
+=head2 dependencies
 
 Returns L<RT::Shredder::Dependencies> object.
 
@@ -166,15 +160,15 @@ sub __depends_on {
     push( @$list, $objs );
 
     $deps->_push_dependencies(
-        base_object   => $self,
-        flags         => DEPENDS_ON,
+        base_object    => $self,
+        flags          => DEPENDS_ON,
         target_objects => $list,
-        shredder      => $args{'shredder'}
+        shredder       => $args{'shredder'}
     );
     return;
 }
 
-sub __Relates {
+sub __relates {
     my $self = shift;
     my %args = (
         shredder     => undef,
@@ -194,10 +188,7 @@ sub __Relates {
             my $rec = $args{'shredder'}->get_record( object => $self );
             $self = $rec->{'object'};
             $rec->{'state'} |= INVALID;
-            push @{ $rec->{'description'} },
-                "Have no related User(creator) #"
-                . $self->creator
-                . " object";
+            push @{ $rec->{'description'} }, "Have no related User(creator) #" . $self->creator . " object";
         }
     }
 
@@ -211,18 +202,15 @@ sub __Relates {
             my $rec = $args{'shredder'}->get_record( object => $self );
             $self = $rec->{'object'};
             $rec->{'state'} |= INVALID;
-            push @{ $rec->{'description'} },
-                "Have no related User(last_updated_by) #"
-                . $self->last_updated_by
-                . " object";
+            push @{ $rec->{'description'} }, "Have no related User(last_updated_by) #" . $self->last_updated_by . " object";
         }
     }
 
     $deps->_push_dependencies(
-        base_object   => $self,
-        flags         => RELATES,
+        base_object    => $self,
+        flags          => RELATES,
         target_objects => $list,
-        shredder      => $args{'shredder'}
+        shredder       => $args{'shredder'}
     );
 
     # cause of this $self->SUPER::__Relates should be called last

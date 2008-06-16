@@ -45,7 +45,6 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
 use strict;
 use warnings;
 
@@ -171,7 +170,7 @@ A convoluted example
  Your approval is requred for this ticket, too.
  ENDOFCONTENT
  
-=head2 Acceptable fields
+=head2 acceptable fields
 
 A complete list of acceptable fields for this beastie:
 
@@ -324,7 +323,7 @@ sub prepare {
     }
 
     $self->parse(
-        content        => $self->template_obj->content,
+        content         => $self->template_obj->content,
         _active_content => 1
     );
     return 1;
@@ -360,26 +359,20 @@ sub create_by_template {
         $T::ID    = $template_id;
         @T::AllID = @{ $self->{'CreateTickets'} };
 
-        ( $T::Tickets{$template_id}, $ticketargs )
-            = $self->parse_lines( $template_id, \@links, \@postponed );
+        ( $T::Tickets{$template_id}, $ticketargs ) = $self->parse_lines( $template_id, \@links, \@postponed );
 
         # Now we have a %args to work with.
         # Make sure we have at least the minimum set of
         # reasonable data and do our thang
 
-        my ( $id, $transid, $msg )
-            = $T::Tickets{$template_id}->create(%$ticketargs);
+        my ( $id, $transid, $msg ) = $T::Tickets{$template_id}->create(%$ticketargs);
 
         foreach my $res ( split( '\n', $msg ) ) {
-            push @results,
-                _( "Ticket %1", $T::Tickets{$template_id}->id ) . ': ' . $res;
+            push @results, _( "Ticket %1", $T::Tickets{$template_id}->id ) . ': ' . $res;
         }
         if ( !$id ) {
             if ( $self->ticket_obj ) {
-                $msg
-                    = "Couldn't create related ticket $template_id for "
-                    . $self->ticket_obj->id . " "
-                    . $msg;
+                $msg = "Couldn't create related ticket $template_id for " . $self->ticket_obj->id . " " . $msg;
             } else {
                 $msg = "Couldn't create ticket $template_id " . $msg;
             }
@@ -419,8 +412,7 @@ sub update_by_template {
         $T::ID    = $template_id;
         @T::AllID = @{ $self->{'update_tickets'} };
 
-        ( $T::Tickets{$template_id}, $ticketargs )
-            = $self->parse_lines( $template_id, \@links, \@postponed );
+        ( $T::Tickets{$template_id}, $ticketargs ) = $self->parse_lines( $template_id, \@links, \@postponed );
 
         # Now we have a %args to work with.
         # Make sure we have at least the minimum set of
@@ -446,8 +438,7 @@ sub update_by_template {
         my ( $loaded, $msg ) = $T::Tickets{$template_id}->load_by_id($id);
 
         unless ($loaded) {
-            Jifty->log->error(
-                "Couldn't update ticket $template_id: " . $msg );
+            Jifty->log->error( "Couldn't update ticket $template_id: " . $msg );
             push @results, _( "Couldn't load ticket '%1'", $id );
             next;
         }
@@ -464,10 +455,7 @@ sub update_by_template {
 
             # If we have no base template, set what we can.
             if ( $base ne $current ) {
-                push @results,
-                    "Could not update ticket "
-                    . $T::Tickets{$template_id}->id
-                    . ": Ticket has changed";
+                push @results, "Could not update ticket " . $T::Tickets{$template_id}->id . ": Ticket has changed";
                 next;
             }
         }
@@ -477,53 +465,32 @@ sub update_by_template {
         );
 
         if ( $ticketargs->{'owner'} ) {
-            ( $id, $msg )
-                = $T::Tickets{$template_id}
-                ->set_owner( $ticketargs->{'owner'}, "Force" );
+            ( $id, $msg ) = $T::Tickets{$template_id}->set_owner( $ticketargs->{'owner'}, "Force" );
             push @results, $msg
                 unless $msg eq _("That user already owns that ticket");
         }
 
-        push @results,
-            $self->update_watchers( $T::Tickets{$template_id}, $ticketargs );
+        push @results, $self->update_watchers( $T::Tickets{$template_id}, $ticketargs );
 
-        push @results,
-            $self->update_custom_fields( $T::Tickets{$template_id},
-            $ticketargs );
+        push @results, $self->update_custom_fields( $T::Tickets{$template_id}, $ticketargs );
 
         next unless $ticketargs->{'mime_obj'};
         if ( $ticketargs->{'UpdateType'} =~ /^(private|comment)$/i ) {
-            my ( $Transaction, $description, $object )
-                = $T::Tickets{$template_id}->comment(
+            my ( $Transaction, $description, $object ) = $T::Tickets{$template_id}->comment(
                 bcc_message_to => $ticketargs->{'Bcc'},
-                mime_obj      => $ticketargs->{'mime_obj'},
-                time_taken    => $ticketargs->{'time_worked'}
-                );
-            push( @results,
-                $T::Tickets{$template_id}
-                    ->_( "Ticket %1", $T::Tickets{$template_id}->id ) . ': '
-                    . $description );
-        } elsif (
-            $ticketargs->{'UpdateType'} =~ /^(public|response|correspond)$/i )
-        {
-            my ( $Transaction, $description, $object )
-                = $T::Tickets{$template_id}->correspond(
-                bcc_message_to => $ticketargs->{'Bcc'},
-                mime_obj      => $ticketargs->{'mime_obj'},
-                time_taken    => $ticketargs->{'time_worked'}
-                );
-            push( @results,
-                $T::Tickets{$template_id}
-                    ->_( "Ticket %1", $T::Tickets{$template_id}->id ) . ': '
-                    . $description );
-        } else {
-            push(
-                @results,
-                $T::Tickets{$template_id}->_(
-                    "Update type was neither correspondence nor comment.")
-                    . " "
-                    . $T::Tickets{$template_id}->_("Update not recorded.")
+                mime_obj       => $ticketargs->{'mime_obj'},
+                time_taken     => $ticketargs->{'time_worked'}
             );
+            push( @results, $T::Tickets{$template_id}->_( "Ticket %1", $T::Tickets{$template_id}->id ) . ': ' . $description );
+        } elsif ( $ticketargs->{'UpdateType'} =~ /^(public|response|correspond)$/i ) {
+            my ( $Transaction, $description, $object ) = $T::Tickets{$template_id}->correspond(
+                bcc_message_to => $ticketargs->{'Bcc'},
+                mime_obj       => $ticketargs->{'mime_obj'},
+                time_taken     => $ticketargs->{'time_worked'}
+            );
+            push( @results, $T::Tickets{$template_id}->_( "Ticket %1", $T::Tickets{$template_id}->id ) . ': ' . $description );
+        } else {
+            push( @results, $T::Tickets{$template_id}->_("Update type was neither correspondence nor comment.") . " " . $T::Tickets{$template_id}->_("Update not recorded.") );
         }
     }
 
@@ -532,7 +499,7 @@ sub update_by_template {
     return @results;
 }
 
-=head2 Parse  TEMPLATE_CONTENT, DEFAULT_QUEUE, DEFAULT_REQEUESTOR ACTIVE
+=head2 parse  TEMPLATE_CONTENT, DEFAULT_QUEUE, DEFAULT_REQEUESTOR ACTIVE
 
 Parse a template from TEMPLATE_CONTENT
 
@@ -544,9 +511,9 @@ allowing you to embed active perl in your templates.
 sub parse {
     my $self = shift;
     my %args = (
-        content        => undef,
-        queue          => undef,
-        requestor      => undef,
+        content         => undef,
+        queue           => undef,
+        requestor       => undef,
         _active_content => undef,
         @_
     );
@@ -566,7 +533,7 @@ sub parse {
     }
 }
 
-=head2 _ParseMultilineTemplate
+=head2 _parse_multiline_template
 
 Parses mulitline templates. Things like:
 
@@ -588,12 +555,10 @@ sub _parse_multiline_template {
         Jifty->log->debug("Line: $line");
         if ( $line =~ /^===/ ) {
             if ( $template_id && !$queue && $args{'queue'} ) {
-                $self->{'templates'}->{$template_id}
-                    .= "Queue: $args{'queue'}\n";
+                $self->{'templates'}->{$template_id} .= "Queue: $args{'queue'}\n";
             }
             if ( $template_id && !$requestor && $args{'requestor'} ) {
-                $self->{'templates'}->{$template_id}
-                    .= "Requestor: $args{'requestor'}\n";
+                $self->{'templates'}->{$template_id} .= "Requestor: $args{'requestor'}\n";
             }
             $queue     = 0;
             $requestor = 0;
@@ -651,8 +616,7 @@ sub parse_lines {
 
     if ( $self->{'UsePerlTextTemplate'} ) {
 
-        Jifty->log->debug(
-            "Workflow: evaluating\n$self->{templates}{$template_id}");
+        Jifty->log->debug("Workflow: evaluating\n$self->{templates}{$template_id}");
 
         my $template = Text::Template->new(
             TYPE   => 'STRING',
@@ -672,8 +636,7 @@ sub parse_lines {
         if ($err) {
             Jifty->log->error( "Ticket creation failed: " . $err );
             while ( my ( $k, $v ) = each %T::X ) {
-                Jifty->log->debug(
-                    "Eliminating $template_id from ${k}'s parents.");
+                Jifty->log->debug("Eliminating $template_id from ${k}'s parents.");
                 delete $v->{$template_id};
             }
             next;
@@ -695,18 +658,16 @@ sub parse_lines {
 
             $original_tags{$tag} = $original_tag;
 
-            if ( ref( $args{$tag} ) )
-            {    #If it's an array, we want to push the value
+            if ( ref( $args{$tag} ) ) {    #If it's an array, we want to push the value
                 push @{ $args{$tag} }, $value;
-            } elsif ( defined( $args{$tag} ) )
-            {    #if we're about to get a second value, make it an array
+            } elsif ( defined( $args{$tag} ) ) {    #if we're about to get a second value, make it an array
                 $args{$tag} = [ $args{$tag}, $value ];
-            } else {    #if there's nothing there, just set the value
+            } else {                                #if there's nothing there, just set the value
                 $args{$tag} = $value;
             }
 
-            if ( $tag =~ /^content$/i ) {    #just build up the content
-                                             # convert it to an array
+            if ( $tag =~ /^content$/i ) {           #just build up the content
+                                                    # convert it to an array
                 $args{$tag} = defined($value) ? [ $value . "\n" ] : [];
                 while ( defined( my $l = shift @lines ) ) {
                     last if ( $l =~ /^ENDOFCONTENT\s*$/ );
@@ -719,11 +680,8 @@ sub parse_lines {
                     $args{$tag} =~ s/^\s+//g;
                     $args{$tag} =~ s/\s+$//g;
                 }
-                if ((   $tag =~ /^(requestor|cc|admin_cc)$/i
-                        or grep { lc $_ eq $tag } keys %LINKTYPEMAP
-                    )
-                    and $args{$tag} =~ /,/
-                    )
+                if ( ( $tag =~ /^(requestor|cc|admin_cc)$/i or grep { lc $_ eq $tag } keys %LINKTYPEMAP )
+                    and $args{$tag} =~ /,/ )
                 {
                     $args{$tag} = [ split /,\s*/, $args{$tag} ];
                 }
@@ -761,7 +719,7 @@ sub parse_lines {
         owner            => $args{'owner'},
         requestor        => $args{'requestor'},
         cc               => $args{'cc'},
-        admin_cc          => $args{'admin_cc'},
+        admin_cc         => $args{'admin_cc'},
         time_worked      => $args{'time_worked'},
         time_estimated   => $args{'time_estimated'},
         time_left        => $args{'time_left'},
@@ -807,7 +765,7 @@ sub parse_lines {
     return $ticket_obj, \%ticketargs;
 }
 
-=head2 _ParseXSVTemplate 
+=head2 _parse_xsvtemplate 
 
 Parses a tab or comma delimited template. Should only ever be called by Parse
 
@@ -903,8 +861,8 @@ LINE:
                     $queue = 1;
                     $value ||= $args{'queue'};
                 } elsif ( $field =~ /^Requestors?$/i ) {
-                    $field     = 'Requestor'; # Remove plural
-                                              # Note that we found a requestor
+                    $field     = 'Requestor';    # Remove plural
+                                                 # Note that we found a requestor
                     $requestor = 1;
                     $value ||= $args{'requestor'};
                 }
@@ -931,8 +889,7 @@ LINE:
 
         # If we never found an ID, come up with one
         unless ($template_id) {
-            $autoid++
-                while exists $self->{'templates'}->{"create-auto-$autoid"};
+            $autoid++ while exists $self->{'templates'}->{"create-auto-$autoid"};
             $template_id = "create-auto-$autoid";
 
             # Also, it's a ticket to create
@@ -1138,8 +1095,7 @@ sub update_watchers {
                 email => $_
             );
 
-            push @results,
-                $ticket->_( "Ticket %1", $ticket->id ) . ': ' . $msg;
+            push @results, $ticket->_( "Ticket %1", $ticket->id ) . ': ' . $msg;
         }
 
         foreach (@delete) {
@@ -1147,8 +1103,7 @@ sub update_watchers {
                 type  => $type,
                 email => $_
             );
-            push @results,
-                $ticket->_( "Ticket %1", $ticket->id ) . ': ' . $msg;
+            push @results, $ticket->_( "Ticket %1", $ticket->id ) . ': ' . $msg;
         }
     }
     return @results;
@@ -1174,11 +1129,8 @@ sub update_custom_fields {
             @values = split /\n/, $args->{$arg};
         }
 
-        if ((   $cf_obj->type eq 'Freeform'
-                && !$cf_obj->single_value
-            )
-            || $cf_obj->type =~ /text/i
-            )
+        if ( ( $cf_obj->type eq 'Freeform' && !$cf_obj->single_value )
+            || $cf_obj->type =~ /text/i )
         {
             foreach my $val (@values) {
                 $val =~ s/\r//g;
@@ -1211,32 +1163,27 @@ sub post_process {
 
         foreach my $type ( keys %LINKTYPEMAP ) {
             next unless ( defined $args{$type} );
-            foreach my $link (
-                ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) )
-            {
+            foreach my $link ( ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) ) {
                 next unless $link;
 
                 if ( $link =~ /^TOP$/i ) {
-                    Jifty->log->debug( "Building $type link for $link: "
-                            . $T::Tickets{TOP}->id );
+                    Jifty->log->debug( "Building $type link for $link: " . $T::Tickets{TOP}->id );
                     $link = $T::Tickets{TOP}->id;
 
                 } elsif ( $link !~ m/^\d+$/ ) {
                     my $key = "create-$link";
                     if ( !exists $T::Tickets{$key} ) {
-                        Jifty->log->debug(
-                            "Skipping $type link for $key (non-existent)");
+                        Jifty->log->debug("Skipping $type link for $key (non-existent)");
                         next;
                     }
-                    Jifty->log->debug( "Building $type link for $link: "
-                            . $T::Tickets{$key}->id );
+                    Jifty->log->debug( "Building $type link for $link: " . $T::Tickets{$key}->id );
                     $link = $T::Tickets{$key}->id;
                 } else {
                     Jifty->log->debug("Building $type link for $link");
                 }
 
                 my ( $wval, $wmsg ) = $ticket->add_link(
-                    type => $LINKTYPEMAP{$type}->{'type'},
+                    type                          => $LINKTYPEMAP{$type}->{'type'},
                     $LINKTYPEMAP{$type}->{'Mode'} => $link,
                     silent                        => 1
                 );

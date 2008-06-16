@@ -76,18 +76,18 @@ use base qw/RT::Record/;
 sub table {'ScripActions'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column name        => type is 'text';
-    column description => type is 'text';
-    column exec_module  => type is 'text';
-    column argument    => type is 'text';
-    column creator     => references RT::Model::User;
-    column created => type is 'timestamp';
+    column name            => type is 'text';
+    column description     => type is 'text';
+    column exec_module     => type is 'text';
+    column argument        => type is 'text';
+    column creator         => references RT::Model::User;
+    column created         => type is 'timestamp';
     column last_updated_by => references RT::Model::User;
-    column last_updated => type is 'timestamp';
+    column last_updated    => type is 'timestamp';
 
 };
 
-=head2 Create
+=head2 create
 
 Takes a hash. Creates a new Action entry.  should be better
 documented.
@@ -99,7 +99,6 @@ sub delete {
 
     return ( 0, "ScripAction->delete not implemented" );
 }
-
 
 =head2 load IDENTIFIER
 
@@ -149,18 +148,17 @@ sub load_action {
     );
 
     $self->{_ticket_obj} = $args{ticket_obj};
-        my $type = "RT::ScripAction::".$self->exec_module ;
+    my $type = "RT::ScripAction::" . $self->exec_module;
     Jifty::Util->require($type);
 
-
     $self->{'action'} = $type->new(
-        argument        => $self->argument,
+        argument         => $self->argument,
         current_user     => $self->current_user,
-        scrip_action_obj  => $self,
-        scrip_obj       => $args{'scrip_obj'},
-        template_obj    => $self->template_obj,
-        ticket_obj      => $args{'ticket_obj'},
-        transaction_obj => $args{'transaction_obj'},
+        scrip_action_obj => $self,
+        scrip_obj        => $args{'scrip_obj'},
+        template_obj     => $self->template_obj,
+        ticket_obj       => $args{'ticket_obj'},
+        transaction_obj  => $args{'transaction_obj'},
     );
 }
 
@@ -201,7 +199,6 @@ sub template_obj {
     return ( $self->{'template_obj'} );
 }
 
-
 # The following methods call the action object
 
 sub prepare {
@@ -216,14 +213,14 @@ sub commit {
     return ( $self->action->commit() );
 
 }
+
 sub describe {
     my $self = shift;
     return ( $self->action->describe() );
 
 }
 
-
-=head2 Action
+=head2 action
 
 Return the actual RT::ScripAction object for this scrip.
 
@@ -240,7 +237,6 @@ sub DESTROY {
     $self->{'action'}       = undef;
     $self->{'template_obj'} = undef;
 }
-
 
 1;
 

@@ -80,7 +80,8 @@ Returns name of the class that is used as sessions storage.
 sub class {
     my $self = shift;
 
-    my $class = RT->config->get('WebSessionClass')
+    my $class 
+        = RT->config->get('WebSessionClass')
         || $self->backends->{ RT->config->get('DatabaseType') }
         || 'Apache::Session::File';
     eval "require $class";
@@ -155,8 +156,7 @@ sub _ids_dir {
 
 sub _ids_db {
     my ( $self, $dbh ) = @_;
-    my $ids = $dbh->selectcol_arrayref(
-        "SELECT id FROM sessions order BY last_updated DESC");
+    my $ids = $dbh->selectcol_arrayref("SELECT id FROM sessions order BY last_updated DESC");
     die "couldn't get ids: " . $dbh->errstr if $dbh->errstr;
     return $ids;
 }
@@ -185,8 +185,7 @@ sub clear_old_db {
         die "couldn't delete sessions: " . $dbh->errstr unless defined $rows;
     } else {
         require POSIX;
-        my $date = POSIX::strftime( "%Y-%m-%d %H:%M",
-            localtime( time - int $older_than ) );
+        my $date = POSIX::strftime( "%Y-%m-%d %H:%M", localtime( time - int $older_than ) );
 
         my $sth = $dbh->prepare("DELETE FROM sessions WHERE last_updated < ?");
         die "couldn't prepare query: " . $dbh->errstr unless $sth;
@@ -252,8 +251,7 @@ sub clear_by_user {
         }
         if ( Jifty->web->current_user && Jifty->web->current_user->id ) {
             unless ( $seen{ Jifty->web->current_user->id }++ ) {
-                Jifty->log->debug(
-                    "skipped session '$id', first user's session");
+                Jifty->log->debug("skipped session '$id', first user's session");
                 next;
             }
         }
@@ -276,11 +274,7 @@ sub TIEHASH {
     eval { tie %session, $class, undef, $attrs } if $@;
     if ($@) {
         die _("RT couldn't store your session.") . "\n"
-            . _(
-            "This may mean that that the directory '%1' isn't writable or a database table is missing or corrupt.",
-            $RT::MasonSessionDir
-            )
-            . "\n\n"
+            . _( "This may mean that that the directory '%1' isn't writable or a database table is missing or corrupt.", $RT::MasonSessionDir ) . "\n\n"
             . $@;
     }
 

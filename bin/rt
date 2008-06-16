@@ -71,7 +71,7 @@ my $HOME = eval{(getpwuid($<))[7]}
 my %config = (
     (
         debug   => 0,
-        user    => eval{(getpwuid($<))[0]} || $ENV{USER} || $ENV{USERname},
+        user    => eval{(getpwuid($<))[0]} || $ENV{USER} || $ENV{USERNAME},
         passwd  => undef,
         server  => 'http://localhost/',
         query   => undef,

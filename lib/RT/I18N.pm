@@ -85,7 +85,7 @@ our %Lexicon = (
 
 # End of lexicon.
 
-=head2 Init
+=head2 init
 
 Initializes the lexicons used for localization.
 
@@ -159,8 +159,7 @@ sub set_mime_entity_to_encoding {
     my ( $entity, $enc, $preserve_words ) = ( shift, shift, shift );
 
     # do the same for parts first of all
-    set_mime_entity_to_encoding( $_, $enc, $preserve_words )
-        foreach $entity->parts;
+    set_mime_entity_to_encoding( $_, $enc, $preserve_words ) foreach $entity->parts;
 
     my $charset = _find_or_guess_charset($entity) or return;
 
@@ -197,28 +196,18 @@ sub set_mime_entity_to_encoding {
 
         # {{{ Convert the body
         eval {
-            Jifty->log->debug( "Converting '$charset' to '$enc' for "
-                    . $head->mime_type . " - "
-                    . ( $head->get('subject') || 'subjectless message' ) );
+            Jifty->log->debug( "Converting '$charset' to '$enc' for " . $head->mime_type . " - " . ( $head->get('subject') || 'subjectless message' ) );
 
             # NOTE:: see the comments at the end of the sub.
             Encode::_utf8_off( $lines[$_] ) foreach ( 0 .. $#lines );
-            Encode::from_to( $lines[$_], $charset => $enc )
-                for ( 0 .. $#lines );
+            Encode::from_to( $lines[$_], $charset => $enc ) for ( 0 .. $#lines );
         };
 
         if ($@) {
-            Jifty->log->error( "Encoding error: " 
-                    . $@
-                    . " defaulting to ISO-8859-1 -> UTF-8" );
-            eval {
-                Encode::from_to( $lines[$_], 'iso-8859-1' => $enc )
-                    foreach ( 0 .. $#lines );
-            };
+            Jifty->log->error( "Encoding error: " . $@ . " defaulting to ISO-8859-1 -> UTF-8" );
+            eval { Encode::from_to( $lines[$_], 'iso-8859-1' => $enc ) foreach ( 0 .. $#lines ); };
             if ($@) {
-                Jifty->log->fatal( "Totally failed to convert to utf-8: " 
-                        . $@
-                        . " I give up" );
+                Jifty->log->fatal( "Totally failed to convert to utf-8: " . $@ . " I give up" );
             }
         }
 
@@ -275,14 +264,13 @@ sub decode_mime_words_to_encoding {
     @_ = $str =~ m/(.*?)=\?([^?]+)\?([QqBb])\?([^?]+)\?=([^=]*)/gcs;
     return ($str) unless (@_);
 
-   # add everything that hasn't matched to the end of the latest
-   # string in array this happen when we have 'key="=?encoded?="; key="plain"'
+    # add everything that hasn't matched to the end of the latest
+    # string in array this happen when we have 'key="=?encoded?="; key="plain"'
     $_[-1] .= substr( $str, pos $str );
 
     $str = "";
     while (@_) {
-        my ( $prefix, $charset, $encoding, $enc_str, $trailing )
-            = ( shift, shift, lc shift, shift, shift );
+        my ( $prefix, $charset, $encoding, $enc_str, $trailing ) = ( shift, shift, lc shift, shift, shift );
 
         $trailing =~ s/\s?\t?$//;    # Observed from Outlook Express
 
@@ -294,8 +282,7 @@ sub decode_mime_words_to_encoding {
             use MIME::Base64;
             $enc_str = decode_base64($enc_str);
         } else {
-            Jifty->log->warn( "Incorrect encoding '$encoding' in '$str', "
-                    . "only Q(uoted-printable) and B(ase64) are supported" );
+            Jifty->log->warn( "Incorrect encoding '$encoding' in '$str', " . "only Q(uoted-printable) and B(ase64) are supported" );
         }
 
         # now we have got a decoded subject, try to convert into the encoding
@@ -307,18 +294,18 @@ sub decode_mime_words_to_encoding {
             }
         }
 
-# XXX TODO: RT doesn't currently do the right thing with mime-encoded headers
-# We _should_ be preserving them encoded until after parsing is completed and
-# THEN undo the mime-encoding.
-#
-# This routine should be translating the existing mimeencoding to utf8 but leaving
-# things encoded.
-#
-# It's legal for headers to contain mime-encoded commas and semicolons which
-# should not be treated as address separators. (Encoding == quoting here)
-#
-# until this is fixed, we must escape any string containing a comma or semicolon
-# this is only a bandaid
+        # XXX TODO: RT doesn't currently do the right thing with mime-encoded headers
+        # We _should_ be preserving them encoded until after parsing is completed and
+        # THEN undo the mime-encoding.
+        #
+        # This routine should be translating the existing mimeencoding to utf8 but leaving
+        # things encoded.
+        #
+        # It's legal for headers to contain mime-encoded commas and semicolons which
+        # should not be treated as address separators. (Encoding == quoting here)
+        #
+        # until this is fixed, we must escape any string containing a comma or semicolon
+        # this is only a bandaid
 
         $enc_str = qq{"$enc_str"} if ( $enc_str =~ /[,;]/ );
         $str .= $prefix . $enc_str . $trailing;
@@ -394,27 +381,20 @@ sub _guess_charset {
                 return 'utf-8'
                     if $matched{'utf8'};    # one and only normalization
 
-                foreach my $suspect ( RT->config->get('EmailInputEncodings') )
-                {
+                foreach my $suspect ( RT->config->get('EmailInputEncodings') ) {
                     next unless $matched{$suspect};
-                    Jifty->log->debug(
-                        "Encode::Guess ambiguous ($decoder); using $suspect");
+                    Jifty->log->debug("Encode::Guess ambiguous ($decoder); using $suspect");
                     $charset = $suspect;
                     last;
                 }
             } else {
-                Jifty->log->warn(
-                    "Encode::Guess failed: $decoder; fallback to $fallback");
+                Jifty->log->warn("Encode::Guess failed: $decoder; fallback to $fallback");
             }
         } else {
-            Jifty->log->warn(
-                "Encode::Guess failed: decoder is undefined; fallback to $fallback"
-            );
+            Jifty->log->warn( "Encode::Guess failed: decoder is undefined; fallback to $fallback" );
         }
     } elsif ( @encodings && $@ ) {
-        Jifty->log->error(
-            "You have set EmailInputEncodings, but we couldn't load Encode::Guess: $@"
-        );
+        Jifty->log->error( "You have set EmailInputEncodings, but we couldn't load Encode::Guess: $@" );
     } else {
         Jifty->log->warn("No EmailInputEncodings set, fallback to $fallback");
     }
@@ -436,8 +416,7 @@ all the time
 =cut
 
 sub set_mime_ehead_to_encoding {
-    my ( $head, $charset, $enc, $preserve_words )
-        = ( shift, shift, shift, shift );
+    my ( $head, $charset, $enc, $preserve_words ) = ( shift, shift, shift, shift );
 
     $charset = 'utf-8' if $charset eq 'utf8';
     $enc     = 'utf-8' if $enc     eq 'utf8';
@@ -456,15 +435,10 @@ sub set_mime_ehead_to_encoding {
                     Encode::from_to( $value, $charset => $enc );
                 };
                 if ($@) {
-                    Jifty->log->error( "Encoding error: " 
-                            . $@
-                            . " defaulting to ISO-8859-1 -> UTF-8" );
+                    Jifty->log->error( "Encoding error: " . $@ . " defaulting to ISO-8859-1 -> UTF-8" );
                     eval { Encode::from_to( $value, 'iso-8859-1' => $enc ) };
                     if ($@) {
-                        Jifty->log->fatal(
-                                  "Totally failed to convert to utf-8: " 
-                                . $@
-                                . " I give up" );
+                        Jifty->log->fatal( "Totally failed to convert to utf-8: " . $@ . " I give up" );
                     }
                 }
             }

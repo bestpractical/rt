@@ -8,15 +8,15 @@ my ($baseurl, $m) = RT::Test->started_ok;
 my $url = $m->rt_base_url;
 
 my $user_obj = RT::Model::User->new(current_user => RT->system_user);
-my ($ret, $msg) = $user_obj->load_or_create_by_email('customer@example.com');
+my ($ret, $msg) = $user_object->load_or_create_by_email('customer@example.com');
 ok($ret, 'ACL test user creation');
-$user_obj->set_name('customer');
-$user_obj->set_privileged(1);
-($ret, $msg) = $user_obj->set_password('customer');
-$user_obj->principal_object->grant_right(right => 'LoadSavedSearch');
-$user_obj->principal_object->grant_right(right => 'EditSavedSearch');
-$user_obj->principal_object->grant_right(right => 'CreateSavedSearch');
-$user_obj->principal_object->grant_right(right => 'ModifySelf');
+$user_object->set_name('customer');
+$user_object->set_privileged(1);
+($ret, $msg) = $user_object->set_password('customer');
+$user_object->principal_object->grant_right(right => 'LoadSavedSearch');
+$user_object->principal_object->grant_right(right => 'EditSavedSearch');
+$user_object->principal_object->grant_right(right => 'CreateSavedSearch');
+$user_object->principal_object->grant_right(right => 'ModifySelf');
 
 ok $m->login( 'customer' => 'customer' ), "logged in";
 

@@ -112,15 +112,14 @@ sub run {
     if ( $self->{'opt'}{'longer'} ) {
         my $size = $self->{'opt'}{'longer'};
         $size =~ s/([mk])//i;
-        $size *= 1024        if $1 && lc $1 eq 'k';
+        $size *= 1024 if $1 && lc $1 eq 'k';
         $size *= 1024 * 1024 if $1 && lc $1 eq 'm';
         push @conditions, "( LENGTH(content) > ? )";
         push @values,     $size;
     }
     return ( 0, "At least one condition should be provided" )
         unless @conditions;
-    my $query = "SELECT id FROM Attachments WHERE " . join ' AND ',
-        @conditions;
+    my $query = "SELECT id FROM Attachments WHERE " . join ' AND ', @conditions;
     if ( $self->{'opt'}{'limit'} ) {
         Jifty->handle->apply_limits( \$query, $self->{'opt'}{'limit'} );
     }
@@ -132,8 +131,7 @@ sub run {
     while ( my $row = $sth->fetchrow_arrayref ) {
         push @objs, $row->[0];
     }
-    return ( 0,
-        "Internal error: '" . $sth->err . "'. Please send bug report." )
+    return ( 0, "Internal error: '" . $sth->err . "'. Please send bug report." )
         if $sth->err;
 
     map { $_ = "RT::Model::Attachment-$_" } @objs;

@@ -94,10 +94,10 @@ sub __depends_on {
     push( @$list, $objs );
 
     $deps->_push_dependencies(
-        base_object   => $self,
-        flags         => DEPENDS_ON,
+        base_object    => $self,
+        flags          => DEPENDS_ON,
         target_objects => $list,
-        shredder      => $args{'shredder'}
+        shredder       => $args{'shredder'}
     );
     return $self->SUPER::__depends_on(%args);
 }

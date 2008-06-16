@@ -189,7 +189,6 @@ sub check_for_bounce {
     return ( $ReturnPath =~ /<>/ );
 }
 
-
 =head2 mail_error PARAM HASH
 
 Sends an error message. Takes a param hash:
@@ -225,9 +224,9 @@ sub mail_error {
         From        => RT->config->get('correspond_address'),
         subject     => 'There has been an error',
         explanation => 'Unexplained error',
-        mime_obj     => undef,
+        mime_obj    => undef,
         Attach      => undef,
-        log_level    => 'error',
+        log_level   => 'error',
         @_
     );
 
@@ -355,8 +354,7 @@ sub send_email {
         require RT::Date;
         my $date = RT::Date->new( current_user => RT->system_user );
         $date->set_to_now;
-        $args{'entity'}
-            ->head->set( 'date', $date->rfc2822( timezone => 'server' ) );
+        $args{'entity'}->head->set( 'date', $date->rfc2822( timezone => 'server' ) );
     }
 
     my $mail_command = RT->config->get('MailCommand');
@@ -390,37 +388,28 @@ sub send_email {
             open my $mail, "|$path $args"
                 or die "couldn't execute program: $!";
 
-     # if something wrong with $mail->print we will get PIPE signal, handle it
-            local $SIG{'PIPE'}
-                = sub { die "program unexpectedly closed pipe" };
+            # if something wrong with $mail->print we will get PIPE signal, handle it
+            local $SIG{'PIPE'} = sub { die "program unexpectedly closed pipe" };
             $args{'entity'}->print($mail);
 
             unless ( close $mail ) {
                 die "close pipe failed: $!" if $!;    # system error
-                  # sendmail exit statuses mostly errors with data not software
-                  # TODO: status parsing: core dump, exit on signal or EX_*
-                my $msg = "$msgid: `$path $args` exitted with code "
-                    . ( $? >> 8 );
+                                                      # sendmail exit statuses mostly errors with data not software
+                                                      # TODO: status parsing: core dump, exit on signal or EX_*
+                my $msg = "$msgid: `$path $args` exitted with code " . ( $? >> 8 );
                 $msg = ", interrupted by signal " . ( $? & 127 ) if $? & 127;
                 Jifty->log->error($msg);
             }
         };
         if ($@) {
-            Jifty->log->fatal(
-                "$msgid: Could not send mail with command `$path $args`: "
-                    . $@ );
+            Jifty->log->fatal( "$msgid: Could not send mail with command `$path $args`: " . $@ );
             return 0;
         }
     } elsif ( $mail_command eq 'smtp' ) {
         require Net::SMTP;
         my $smtp = do {
             local $@;
-            eval {
-                Net::SMTP->new(
-                    Host  => RT->config->get('SMTPServer'),
-                    Debug => RT->config->get('SMTPDebug'),
-                );
-            };
+            eval { Net::SMTP->new( Host => RT->config->get('SMTPServer'), Debug => RT->config->get('SMTPDebug'), ); };
         };
         unless ($smtp) {
             Jifty->log->fatal("Could not connect to SMTP server.");
@@ -428,9 +417,8 @@ sub send_email {
         }
 
         # duplicate head as we want drop Bcc field
-        my $head       = $args{'entity'}->head->dup;
-        my @recipients = map $_->address,
-            Mail::Address->parse( map $head->get($_), qw(To Cc Bcc) );
+        my $head = $args{'entity'}->head->dup;
+        my @recipients = map $_->address, Mail::Address->parse( map $head->get($_), qw(To Cc Bcc) );
         $head->delete('Bcc');
 
         my $sender = RT->config->get('SMTPFrom')
@@ -460,8 +448,7 @@ sub send_email {
         my @mailer_args = ($mail_command);
         if ( $mail_command eq 'sendmail' ) {
             $ENV{'PERL_MAILERS'} = RT->config->get('SendmailPath');
-            push @mailer_args,
-                split( /\s+/, RT->config->get('SendmailArguments') );
+            push @mailer_args, split( /\s+/, RT->config->get('SendmailArguments') );
         } else {
             push @mailer_args, RT->config->get('MailParams');
         }
@@ -491,12 +478,10 @@ sub prepare_email_using_template {
         @_
     );
 
-    my $template
-        = RT::Model::Template->new( current_user => RT->system_user );
+    my $template = RT::Model::Template->new( current_user => RT->system_user );
     $template->load_global_template( $args{'template'} );
     unless ( $template->id ) {
-        return ( undef,
-            "Couldn't load template '" . $args{'template'} . "'" );
+        return ( undef, "Couldn't load template '" . $args{'template'} . "'" );
     }
     return $template if $template->is_empty;
 
@@ -514,12 +499,12 @@ Sends email using a template, takes name of template, arguments for it and recip
 
 sub send_email_using_template {
     my %args = (
-        template  => '',
-        arguments => {},
-        to        => undef,
-        cc        => undef,
-        bcc       => undef,
-        from      => RT->config->get('correspond_address'),
+        template    => '',
+        arguments   => {},
+        to          => undef,
+        cc          => undef,
+        bcc         => undef,
+        from        => RT->config->get('correspond_address'),
         in_reply_to => undef,
         @_
     );
@@ -529,21 +514,18 @@ sub send_email_using_template {
 
     my $mail = $template->mime_obj;
     unless ($mail) {
-        Jifty->log->info( "Message is not sent as template #"
-                . $template->id
-                . " is empty" );
+        Jifty->log->info( "Message is not sent as template #" . $template->id . " is empty" );
         return -1;
     }
 
-    $mail->head->set( $_ => $args{$_} )
-        foreach grep defined $args{$_}, qw(To Cc Bcc From);
+    $mail->head->set( $_ => $args{$_} ) foreach grep defined $args{$_}, qw(To Cc Bcc From);
 
     set_in_reply_to( Message => $mail, in_reply_to => $args{'in_reply_to'} );
 
     return send_email( entity => $mail );
 }
 
-=head2 ForwardTransaction TRANSACTION, To => '', Cc => '', Bcc => ''
+=head2 forward_transaction TRANSACTION, To => '', Cc => '', Bcc => ''
 
 Forwards transaction with all attachments 'message/rfc822'.
 
@@ -560,11 +542,10 @@ sub forward_transaction {
 
         # main content is not top most entity, we shouldn't loose
         # From/To/Cc headers that are on a top part
-        my $attachments = RT::Model::AttachmentCollection->new(
-            current_user => $txn->current_user );
+        my $attachments = RT::Model::AttachmentCollection->new( current_user => $txn->current_user );
         $attachments->query_columns(qw(id parent transaction_id headers));
         $attachments->limit( column => 'transaction_id', value => $txn->id );
-        $attachments->limit( column => 'parent',        value => 0 );
+        $attachments->limit( column => 'parent',         value => 0 );
         $attachments->limit(
             column      => 'parent',
             operator    => 'IS',
@@ -576,14 +557,12 @@ sub forward_transaction {
 
         if ( $tmp && $tmp->id ne $main_content->id ) {
             $entity->make_multipart;
-            $entity->head->add( split /:/, $_, 2 )
-                foreach $tmp->split_headers;
+            $entity->head->add( split /:/, $_, 2 ) foreach $tmp->split_headers;
             $entity->make_singlepart;
         }
     }
 
-    my $attachments = RT::Model::AttachmentCollection->new(
-        current_user => $txn->current_user );
+    my $attachments = RT::Model::AttachmentCollection->new( current_user => $txn->current_user );
     $attachments->limit( column => 'transaction_id', value => $txn->id );
     $attachments->limit(
         column   => 'id',
@@ -621,19 +600,14 @@ sub forward_transaction {
     unless ($mail) {
         Jifty->log->warn("Couldn't generate email using template 'Forward'");
 
-        my $description
-            = 'This is forward of transaction #'
-            . $txn->id
-            . " of a ticket #"
-            . $txn->object_id;
+        my $description = 'This is forward of transaction #' . $txn->id . " of a ticket #" . $txn->object_id;
         $mail = MIME::Entity->build(
             Type => 'text/plain',
             Data => $description,
         );
     }
 
-    $mail->head->set( $_ => $args{$_} )
-        foreach grep defined $args{$_}, qw(To Cc Bcc From);
+    $mail->head->set( $_ => $args{$_} ) foreach grep defined $args{$_}, qw(To Cc Bcc From);
 
     $mail->attach(
         Type        => 'message/rfc822',
@@ -711,8 +685,7 @@ sub sign_encrypt {
         if ( ( $line->{'Operation'} || '' eq 'PassphraseCheck' )
             && $line->{'Status'} =~ /^(?:BAD|MISSING)$/ )
         {
-            Jifty->log->error(
-                "$line->{'Status'} PASSPHRASE: $line->{'message'}");
+            Jifty->log->error("$line->{'Status'} PASSPHRASE: $line->{'message'}");
             return 0;
         }
         next unless ( $line->{'Operation'} || '' ) eq 'RecipientsCheck';
@@ -722,8 +695,7 @@ sub sign_encrypt {
     }
     return 0 unless @bad_recipients;
 
-    $_->{'address_obj'} = ( Mail::Address->parse( $_->{'Recipient'} ) )[0]
-        foreach @bad_recipients;
+    $_->{'address_obj'} = ( Mail::Address->parse( $_->{'Recipient'} ) )[0] foreach @bad_recipients;
 
     foreach my $recipient (@bad_recipients) {
         my $status = send_email_using_template(
@@ -744,7 +716,7 @@ sub sign_encrypt {
         to        => RT->config->get('OwnerEmail'),
         template  => 'Error to RT owner: public key',
         arguments => {
-            bad_recipients   => \@bad_recipients,
+            bad_recipients  => \@bad_recipients,
             ticket_obj      => $args{'ticket'},
             transaction_obj => $args{'transaction'},
         },
@@ -753,16 +725,13 @@ sub sign_encrypt {
         Jifty->log->error("Couldn't send 'Error to RT owner: public key'");
     }
 
-    delete_recipients_from_head( $args{'entity'}->head,
-        map $_->{'address_obj'}->address,
-        @bad_recipients );
+    delete_recipients_from_head( $args{'entity'}->head, map $_->{'address_obj'}->address, @bad_recipients );
 
     unless ( $args{'entity'}->head->get('To')
         || $args{'entity'}->head->get('Cc')
         || $args{'entity'}->head->get('Bcc') )
     {
-        Jifty->log->debug(
-            "$msgid No recipients that have public key, not sending");
+        Jifty->log->debug("$msgid No recipients that have public key, not sending");
         return -1;
     }
 
@@ -800,12 +769,11 @@ sub create_user {
 
         unless ( $NewUser->id ) {
             mail_error(
-                to      => $errors_to,
-                subject => "User could not be Created",
-                explanation =>
-                    "User creation failed in mailgateway: $Message",
-                mime_obj  => $entity,
-                log_level => 'error',
+                to          => $errors_to,
+                subject     => "User could not be Created",
+                explanation => "User creation failed in mailgateway: $Message",
+                mime_obj    => $entity,
+                log_level   => 'error',
             );
         }
     }
@@ -816,12 +784,11 @@ sub create_user {
     unless ( $CurrentUser->id ) {
         Jifty->log->warn( "Couldn't load user '$Address'." . "giving up" );
         mail_error(
-            to      => $errors_to,
-            subject => "User could not be loaded",
-            explanation =>
-                "User  '$Address' could not be loaded in the mail gateway",
-            mime_obj  => $entity,
-            log_level => 'error'
+            to          => $errors_to,
+            subject     => "User could not be loaded",
+            explanation => "User  '$Address' could not be loaded in the mail gateway",
+            mime_obj    => $entity,
+            log_level   => 'error'
         );
     }
 
@@ -839,8 +806,8 @@ email address  and anything that the configuration sub RT::is_rt_address matches
 
 sub parse_cc_addresses_from_head {
     my %args = (
-        Head        => undef,
-        queue_obj   => undef,
+        Head         => undef,
+        queue_obj    => undef,
         current_user => undef,
         @_
     );
@@ -851,8 +818,7 @@ sub parse_cc_addresses_from_head {
 
     my @res;
     foreach my $address (@recipients) {
-        $address
-            = $args{'CurrentUser'}->user_object->canonicalize_email($address);
+        $address = $args{'CurrentUser'}->user_object->canonicalize_email($address);
         next if lc $args{'CurrentUser'}->email            eq $address;
         next if lc $args{'queue_obj'}->correspond_address eq $address;
         next if lc $args{'queue_obj'}->comment_address    eq $address;
@@ -959,38 +925,27 @@ sub delete_recipients_from_head {
 
 sub gen_message_id {
     my %args = (
-        ticket      => undef,
-        Scrip       => undef,
+        ticket       => undef,
+        Scrip        => undef,
         scrip_action => undef,
         @_
     );
     my $org = RT->config->get('organization');
-    my $ticket_id
-        = ( ref $args{'ticket'} ? $args{'ticket'}->id : $args{'ticket'} )
+    my $ticket_id = ( ref $args{'ticket'} ? $args{'ticket'}->id : $args{'ticket'} )
         || 0;
-    my $scrip_id
-        = ( ref $args{'Scrip'} ? $args{'Scrip'}->id : $args{'Scrip'} ) || 0;
-    my $sent
-        = (
-        ref $args{'scrip_action'} ? $args{'scrip_action'}->{'_Message_ID'} : 0 )
+    my $scrip_id = ( ref $args{'Scrip'} ? $args{'Scrip'}->id : $args{'Scrip'} )
+        || 0;
+    my $sent = ( ref $args{'scrip_action'} ? $args{'scrip_action'}->{'_Message_ID'} : 0 )
         || 0;
 
-    return "<rt-"
-        . $RT::VERSION . "-"
-        . $$ . "-"
-        . CORE::time() . "-"
-        . int( rand(2000) ) . '.'
-        . $ticket_id . "-"
-        . $scrip_id . "-"
-        . $sent . "@"
-        . $org . ">";
+    return "<rt-" . $RT::VERSION . "-" . $$ . "-" . CORE::time() . "-" . int( rand(2000) ) . '.' . $ticket_id . "-" . $scrip_id . "-" . $sent . "@" . $org . ">";
 }
 
 sub set_in_reply_to {
     my %args = (
-        Message   => undef,
+        Message     => undef,
         in_reply_to => undef,
-        ticket    => undef,
+        ticket      => undef,
         @_
     );
     return unless $args{'message'} && $args{'in_reply_to'};
@@ -1013,10 +968,7 @@ sub set_in_reply_to {
     }
     push @references, @id, @rtid;
     if ( $args{'ticket'} ) {
-        my $pseudo_ref
-            = '<RT-Ticket-'
-            . $args{'ticket'}->id . '@'
-            . RT->config->get('organization') . '>';
+        my $pseudo_ref = '<RT-Ticket-' . $args{'ticket'}->id . '@' . RT->config->get('organization') . '>';
         push @references, $pseudo_ref
             unless grep $_ eq $pseudo_ref, @references;
     }
@@ -1114,8 +1066,7 @@ sub _load_plugins {
 
             no strict 'refs';
             unless ( defined *{ $Class . "::get_current_user" }{CODE} ) {
-                Jifty->log->fatal(
-                    "No get_current_user code found in $Class module");
+                Jifty->log->fatal("No get_current_user code found in $Class module");
                 next;
             }
             push @res, $Class;
@@ -1142,14 +1093,7 @@ sub gateway {
     # Validate the action
     my ( $status, @actions ) = is_correct_action( $args{'action'} );
     unless ($status) {
-        return (
-            -75,
-            "Invalid 'action' parameter "
-                . $actions[0]
-                . " for queue "
-                . $args{'queue'},
-            undef
-        );
+        return ( -75, "Invalid 'action' parameter " . $actions[0] . " for queue " . $args{'queue'}, undef );
     }
 
     my $parser = RT::EmailParser->new();
@@ -1167,9 +1111,7 @@ sub gateway {
             attach      => $args{'message'}
         );
 
-        return ( 0,
-            "Failed to parse this message. Something is likely badly wrong with the message"
-        );
+        return ( 0, "Failed to parse this message. Something is likely badly wrong with the message" );
     }
 
     my @mail_plugins = grep $_, RT->config->get('MailPlugins');
@@ -1187,7 +1129,7 @@ sub gateway {
         next unless defined $check_cb;
         next
             unless $check_cb->(
-            message       => $Message,
+            message         => $Message,
             raw_message_ref => \$args{'message'},
             );
 
@@ -1198,7 +1140,7 @@ sub gateway {
             *{ $class . "::get_current_user" }{CODE};
         };
         my ( $status, $msg ) = $Code->(
-            message       => $Message,
+            message         => $Message,
             raw_message_ref => \$args{'message'},
         );
         next if $status > 0;
@@ -1213,14 +1155,11 @@ sub gateway {
     $parser->_decode_bodies;
     $parser->_post_process_new_entity;
 
-    my $head     = $Message->head;
+    my $head      = $Message->head;
     my $errors_to = parse_errors_to_address_from_head($head);
 
     my $message_id = $head->get('Message-ID')
-        || "<no-message-id-" 
-        . time
-        . rand(2000) . '@'
-        . RT->config->get('organization') . '>';
+        || "<no-message-id-" . time . rand(2000) . '@' . RT->config->get('organization') . '>';
 
     #Pull apart the subject line
     my $subject = $head->get('subject') || '';
@@ -1228,13 +1167,12 @@ sub gateway {
 
     # {{{ Lets check for mail loops of various sorts.
     my ( $should_store_machine_generated_message, $IsALoop, $result );
-    ( $should_store_machine_generated_message, $errors_to, $result, $IsALoop )
-        = _handle_machine_generated_mail(
-        message   => $Message,
+    ( $should_store_machine_generated_message, $errors_to, $result, $IsALoop ) = _handle_machine_generated_mail(
+        message    => $Message,
         errors_to  => $errors_to,
-        subject   => $subject,
+        subject    => $subject,
         message_id => $message_id
-        );
+    );
 
     # Do not pass loop messages to MailPlugins, to make sure the loop
     # is broken, unless $RT::StoreLoops is set.
@@ -1253,21 +1191,19 @@ sub gateway {
     }
 
     #Set up a queue object
-    my $Systemqueue_obj
-        = RT::Model::Queue->new( current_user => RT->system_user );
+    my $Systemqueue_obj = RT::Model::Queue->new( current_user => RT->system_user );
     $Systemqueue_obj->load( $args{'queue'} );
 
     # We can safely have no queue of we have a known-good ticket
     unless ( $SystemTicket->id || $Systemqueue_obj->id ) {
-        return ( -75, "RT couldn't find the queue: " . $args{'queue'},
-            undef );
+        return ( -75, "RT couldn't find the queue: " . $args{'queue'}, undef );
     }
 
-   # Authentication Level ($AuthStat)
-   # -1 - Get out.  this user has been explicitly declined
-   # 0 - User may not do anything (Not used at the moment)
-   # 1 - Normal user
-   # 2 - User is allowed to specify status updates etc. a la enhanced-mailgate
+    # Authentication Level ($AuthStat)
+    # -1 - Get out.  this user has been explicitly declined
+    # 0 - User may not do anything (Not used at the moment)
+    # 1 - Normal user
+    # 2 - User is allowed to specify status updates etc. a la enhanced-mailgate
     my ( $CurrentUser, $AuthStat, $error );
 
     # Initalize AuthStat so comparisons work correctly
@@ -1289,23 +1225,23 @@ sub gateway {
 
         foreach my $action (@actions) {
             ( $CurrentUser, $NewAuthStat ) = $Code->(
-                message       => $Message,
+                message         => $Message,
                 raw_message_ref => \$args{'message'},
-                current_user   => $CurrentUser,
-                auth_level     => $AuthStat,
-                action        => $action,
-                ticket        => $SystemTicket,
-                queue         => $Systemqueue_obj
+                current_user    => $CurrentUser,
+                auth_level      => $AuthStat,
+                action          => $action,
+                ticket          => $SystemTicket,
+                queue           => $Systemqueue_obj
             );
 
-# You get the highest level of authentication you were assigned, unless you get the magic -1
-# If a module returns a "-1" then we discard the ticket, so.
+            # You get the highest level of authentication you were assigned, unless you get the magic -1
+            # If a module returns a "-1" then we discard the ticket, so.
             $AuthStat = $NewAuthStat
                 if ( $NewAuthStat > $AuthStat
                 or $NewAuthStat == -1
                 or $NewAuthStat == -2 );
 
-            last                    if $AuthStat == -1;
+            last if $AuthStat == -1;
             $skip_action{$action}++ if $AuthStat == -2;
         }
 
@@ -1335,18 +1271,12 @@ sub gateway {
     # If we got a user, but they don't have the right to say things
     if ( $AuthStat == 0 ) {
         mail_error(
-            to      => $errors_to,
-            subject => "Permission Denied",
+            to          => $errors_to,
+            subject     => "Permission Denied",
             explanation => "You do not have permission to communicate with RT",
-            mime_obj => $Message
+            mime_obj    => $Message
         );
-        return (
-            0,
-            "$errors_to tried to submit a message to "
-                . $args{'queue'}
-                . " without permission.",
-            undef
-        );
+        return ( 0, "$errors_to tried to submit a message to " . $args{'queue'} . " without permission.", undef );
     }
 
     unless ($should_store_machine_generated_message) {
@@ -1365,9 +1295,9 @@ sub gateway {
 
         if ( RT->config->get('ParseNewMessageForTicketCcs') ) {
             @Cc = parse_cc_addresses_from_head(
-                head        => $head,
+                head         => $head,
                 current_user => $CurrentUser,
-                queue_obj   => $Systemqueue_obj
+                queue_obj    => $Systemqueue_obj
             );
         }
 
@@ -1376,14 +1306,14 @@ sub gateway {
             subject   => $subject,
             requestor => \@requestors,
             cc        => \@Cc,
-            mime_obj   => $Message
+            mime_obj  => $Message
         );
         if ( $id == 0 ) {
             mail_error(
                 to          => $errors_to,
                 subject     => "Ticket creation failed: $subject",
                 explanation => $ErrStr,
-                mime_obj     => $Message
+                mime_obj    => $Message
             );
             return ( 0, "Ticket creation failed: $ErrStr", $ticket );
         }
@@ -1402,7 +1332,7 @@ sub gateway {
                 to          => $errors_to,
                 subject     => "Message not recorded: $subject",
                 explanation => $error,
-                mime_obj     => $Message
+                mime_obj    => $Message
             );
 
             return ( 0, $error );
@@ -1428,16 +1358,16 @@ sub gateway {
                     to          => $errors_to,
                     subject     => "Message not recorded: $subject",
                     explanation => $msg,
-                    mime_obj     => $Message
+                    mime_obj    => $Message
                 );
                 return ( 0, "Message not recorded: $msg", $ticket );
             }
         } elsif ($unsafe_actions) {
             my ( $status, $msg ) = _run_unsafe_action(
-                action      => $action,
+                action       => $action,
                 errors_to    => $errors_to,
-                message     => $Message,
-                ticket      => $ticket,
+                message      => $Message,
+                ticket       => $ticket,
                 current_user => $CurrentUser,
             );
             return ( $status, $msg, $ticket ) unless $status == 1;
@@ -1448,23 +1378,22 @@ sub gateway {
 
 sub _run_unsafe_action {
     my %args = (
-        action      => undef,
+        action       => undef,
         errors_to    => undef,
-        message     => undef,
-        ticket      => undef,
+        message      => undef,
+        ticket       => undef,
         current_user => undef,
         @_
     );
 
     if ( $args{'action'} =~ /^take$/i ) {
-        my ( $status, $msg )
-            = $args{'ticket'}->set_owner( $args{'CurrentUser'}->id );
+        my ( $status, $msg ) = $args{'ticket'}->set_owner( $args{'CurrentUser'}->id );
         unless ($status) {
             mail_error(
                 To          => $args{'errors_to'},
                 subject     => "Ticket not taken",
                 explanation => $msg,
-                mime_obj     => $args{'message'}
+                mime_obj    => $args{'message'}
             );
             return ( 0, "Ticket not taken" );
         }
@@ -1477,13 +1406,12 @@ sub _run_unsafe_action {
                 to          => $args{'errors_to'},
                 subject     => "Ticket not resolved",
                 explanation => $msg,
-                mime_obj     => $args{'message'}
+                mime_obj    => $args{'message'}
             );
             return ( 0, "Ticket not resolved" );
         }
     } else {
-        return ( 0, "Not supported unsafe action $args{'action'}",
-            $args{'ticket'} );
+        return ( 0, "Not supported unsafe action $args{'action'}", $args{'ticket'} );
     }
     return ( 1, "Success" );
 }
@@ -1550,13 +1478,13 @@ Returns a triple of ("Should we continue (boolean)", "New value for $errors_to",
 
 sub _handle_machine_generated_mail {
     my %args = (
-        message   => undef,
+        message    => undef,
         errors_to  => undef,
-        subject   => undef,
+        subject    => undef,
         message_id => undef,
         @_
     );
-    my $head     = $args{'message'}->head;
+    my $head      = $args{'message'}->head;
     my $errors_to = $args{'errors_to'};
 
     my $IsBounce = check_for_bounce($head);
@@ -1575,13 +1503,12 @@ sub _handle_machine_generated_mail {
     # send mail to the sender
     if ( $IsBounce || $IsSuspiciousSender || $IsAutoGenerated || $IsALoop ) {
         $SquelchReplies = 1;
-        $errors_to       = $owner_mail;
+        $errors_to      = $owner_mail;
     }
 
     # Warn someone if it's a loop, before we drop it on the ground
     if ($IsALoop) {
-        Jifty->log->fatal(
-            "RT Received mail (" . $args{message_id} . ") from itself." );
+        Jifty->log->fatal( "RT Received mail (" . $args{message_id} . ") from itself." );
 
         #Should we mail it to RTOwner?
         if ( RT->config->get('LoopsToRTOwner') ) {
@@ -1589,7 +1516,7 @@ sub _handle_machine_generated_mail {
                 to          => $owner_mail,
                 subject     => "RT Bounce: " . $args{'subject'},
                 explanation => "RT thinks this message may be a bounce",
-                mime_obj     => $args{Message}
+                mime_obj    => $args{Message}
             );
         }
 
@@ -1601,10 +1528,7 @@ sub _handle_machine_generated_mail {
     # Squelch replies if necessary
     # Don't let the user stuff the RT-Squelch-Replies-To header.
     if ( $head->get('RT-Squelch-Replies-To') ) {
-        $head->add(
-            'RT-Relocated-Squelch-Replies-To',
-            $head->get('RT-Squelch-Replies-To')
-        );
+        $head->add( 'RT-Relocated-Squelch-Replies-To', $head->get('RT-Squelch-Replies-To') );
         $head->delete('RT-Squelch-Replies-To');
     }
 

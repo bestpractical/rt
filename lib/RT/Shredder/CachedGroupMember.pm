@@ -73,15 +73,13 @@ sub __depends_on {
     $objs->limit( column => 'id', operator => '!=', value => $self->id );
     push( @$list, $objs );
 
-# principal lost group membership and lost some rights which he could delegate to
-# some body
+    # principal lost group membership and lost some rights which he could delegate to
+    # some body
 
- # XXX: Here is problem cause has_member_recursively would return true allways
- # cause we didn't delete anything yet. :(
- # if pricipal is not member anymore(could be via other groups) then proceed
-    if ( $self->group_obj->object->has_member_recursively( $self->member_obj )
-        )
-    {
+    # XXX: Here is problem cause has_member_recursively would return true allways
+    # cause we didn't delete anything yet. :(
+    # if pricipal is not member anymore(could be via other groups) then proceed
+    if ( $self->group_obj->object->has_member_recursively( $self->member_obj ) ) {
         my $acl = RT::Model::ACECollection->new;
         $acl->limit_to_principal( id => $self->group_id );
 
@@ -97,10 +95,10 @@ sub __depends_on {
     # XXX: Do we need to delete records if user lost right 'DelegateRights'?
 
     $deps->_push_dependencies(
-        base_object   => $self,
-        flags         => DEPENDS_ON,
+        base_object    => $self,
+        flags          => DEPENDS_ON,
         target_objects => $list,
-        shredder      => $args{'shredder'}
+        shredder       => $args{'shredder'}
     );
 
     return $self->SUPER::__depends_on(%args);
@@ -109,7 +107,7 @@ sub __depends_on {
 #TODO: If we plan write export tool we also should fetch parent groups
 # now we only wipeout things.
 
-sub __Relates {
+sub __relates {
     my $self = shift;
     my %args = (
         shredder     => undef,
@@ -126,8 +124,7 @@ sub __Relates {
         my $rec = $args{'shredder'}->get_record( object => $self );
         $self = $rec->{'object'};
         $rec->{'state'} |= INVALID;
-        $rec->{'description'}
-            = "Have no related Principal #" . $self->member_id . " object.";
+        $rec->{'description'} = "Have no related Principal #" . $self->member_id . " object.";
     }
 
     $obj = $self->group_obj;
@@ -137,15 +134,14 @@ sub __Relates {
         my $rec = $args{'shredder'}->get_record( object => $self );
         $self = $rec->{'object'};
         $rec->{'state'} |= INVALID;
-        $rec->{'description'}
-            = "Have no related Principal #" . $self->group_id . " object.";
+        $rec->{'description'} = "Have no related Principal #" . $self->group_id . " object.";
     }
 
     $deps->_push_dependencies(
-        base_object   => $self,
-        flags         => RELATES,
+        base_object    => $self,
+        flags          => RELATES,
         target_objects => $list,
-        shredder      => $args{'shredder'}
+        shredder       => $args{'shredder'}
     );
     return $self->SUPER::__Relates(%args);
 }

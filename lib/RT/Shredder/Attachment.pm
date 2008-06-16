@@ -82,15 +82,15 @@ sub __depends_on {
     push( @$list, $objs );
 
     $deps->_push_dependencies(
-        base_object   => $self,
-        flags         => DEPENDS_ON,
+        base_object    => $self,
+        flags          => DEPENDS_ON,
         target_objects => $list,
-        shredder      => $args{'shredder'}
+        shredder       => $args{'shredder'}
     );
     return $self->SUPER::__depends_on(%args);
 }
 
-sub __Relates {
+sub __relates {
     my $self = shift;
     my %args = (
         shredder     => undef,
@@ -108,8 +108,7 @@ sub __Relates {
             my $rec = $args{'shredder'}->get_record( object => $self );
             $self = $rec->{'object'};
             $rec->{'state'} |= INVALID;
-            $rec->{'description'}
-                = "Have no parent attachment #" . $self->parent . " object";
+            $rec->{'description'} = "Have no parent attachment #" . $self->parent . " object";
         }
     }
 
@@ -121,17 +120,14 @@ sub __Relates {
         my $rec = $args{'shredder'}->get_record( object => $self );
         $self = $rec->{'object'};
         $rec->{'state'} |= INVALID;
-        $rec->{'description'}
-            = "Have no related transaction #"
-            . $self->transaction_id
-            . " object";
+        $rec->{'description'} = "Have no related transaction #" . $self->transaction_id . " object";
     }
 
     $deps->_push_dependencies(
-        base_object   => $self,
-        flags         => RELATES,
+        base_object    => $self,
+        flags          => RELATES,
         target_objects => $list,
-        shredder      => $args{'shredder'}
+        shredder       => $args{'shredder'}
     );
     return $self->SUPER::__Relates(%args);
 }

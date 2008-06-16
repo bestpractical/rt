@@ -55,7 +55,7 @@ use base qw(RT::ScripAction::SendEmail);
 
 use Mail::Address;
 
-=head2 Prepare
+=head2 prepare
 
 Set up the relevant recipients, then call our parent.
 
@@ -67,7 +67,7 @@ sub prepare {
     $self->SUPER::prepare();
 }
 
-=head2 SetRecipients
+=head2 set_recipients
 
 Sets the recipients of this meesage to Owner, Requestor, AdminCc, Cc or All. 
 Explicitly B<does not> notify the creator of the transaction by default
@@ -86,13 +86,8 @@ sub set_recipients {
 
     if ( $arg =~ /\bOther_?Recipients\b/i ) {
         if ( my $attachment = $self->transaction_obj->attachments->first ) {
-            push @Cc,
-                map { $_->address }
-                Mail::Address->parse( $attachment->get_header('RT-Send-Cc') );
-            push @Bcc,
-                map { $_->address }
-                Mail::Address->parse(
-                $attachment->get_header('RT-Send-Bcc') );
+            push @Cc,  map { $_->address } Mail::Address->parse( $attachment->get_header('RT-Send-Cc') );
+            push @Bcc, map { $_->address } Mail::Address->parse( $attachment->get_header('RT-Send-Bcc') );
         }
     }
 
@@ -130,8 +125,7 @@ sub set_recipients {
 
     if ( RT->config->get('UseFriendlyToLine') ) {
         unless (@To) {
-            push @PseudoTo, sprintf RT->config->get('friendly_to_line_format'),
-                $arg, $ticket->id;
+            push @PseudoTo, sprintf RT->config->get('friendly_to_line_format'), $arg, $ticket->id;
         }
     }
 

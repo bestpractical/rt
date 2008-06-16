@@ -45,7 +45,6 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
 use strict;
 use warnings;
 
@@ -71,7 +70,7 @@ sub external_values {
             {
             name        => $group->name,
             description => $group->description,
-            sort_order   => $i++,
+            sort_order  => $i++,
             };
     }
     return \@res;

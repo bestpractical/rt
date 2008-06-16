@@ -1,3 +1,50 @@
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
+#                                          <jesse@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/copyleft/gpl.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
 
 =head1 name
 
@@ -42,7 +89,7 @@ use Jifty::DBI::Record schema {
 
 # {{{ sub create
 
-=head2 Create { Group => undef, Member => undef }
+=head2 create { Group => undef, Member => undef }
 
 Add a Principal to the group Group.
 if the Principal is a group, automatically inserts all
@@ -55,8 +102,8 @@ Both Group and Member are expected to be RT::Model::Principal objects
 sub create {
     my $self = shift;
     my %args = (
-        group             => undef,
-        member            => undef,
+        group              => undef,
+        member             => undef,
         inside_transaction => undef,
         @_
     );
@@ -66,13 +113,12 @@ sub create {
         && $args{'group'}->id )
     {
         Carp::cluck();
-        Jifty->log->warn("GroupMember::Create called with a bogus group arg: ".$args{'group'});
+        Jifty->log->warn( "GroupMember::Create called with a bogus group arg: " . $args{'group'} );
         return (undef);
     }
 
     unless ( $args{'group'}->is_group ) {
-        Jifty->log->warn(
-            "Someone tried to add a member to a user instead of a group");
+        Jifty->log->warn("Someone tried to add a member to a user instead of a group");
         return (undef);
     }
 
@@ -80,13 +126,12 @@ sub create {
         && UNIVERSAL::isa( $args{'member'}, 'RT::Model::Principal' )
         && $args{'member'}->id )
     {
-        Jifty->log->warn(
-            "GroupMember::Create called with a bogus Principal arg");
+        Jifty->log->warn("GroupMember::Create called with a bogus Principal arg");
         return (undef);
     }
 
-#Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space.
-# TODO what about the groups key cache?
+    #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space.
+    # TODO what about the groups key cache?
     RT::Model::Principal->invalidate_acl_cache();
 
     Jifty->handle->begin_transaction() unless ( $args{'inside_transaction'} );
@@ -119,14 +164,14 @@ sub create {
 
     my $cached_member = RT::Model::CachedGroupMember->new;
     my $cached_id     = $cached_member->create(
-        member          => $args{'member'},
-        group           => $args{'group'},
+        member           => $args{'member'},
+        group            => $args{'group'},
         immediate_parent => $args{'group'},
-        via             => '0'
+        via              => '0'
     );
 
-#When adding a member to a group, we need to go back
-#and popuplate the CachedGroupMembers of all the groups that group is part of .
+    #When adding a member to a group, we need to go back
+    #and popuplate the CachedGroupMembers of all the groups that group is part of .
 
     my $cgm = RT::Model::CachedGroupMemberCollection->new;
 
@@ -141,15 +186,13 @@ sub create {
 
         my $other_cached_member = RT::Model::CachedGroupMember->new;
         my $other_cached_id     = $other_cached_member->create(
-            member          => $args{'member'},
-            group           => $parent_member->group_obj,
+            member           => $args{'member'},
+            group            => $parent_member->group_obj,
             immediate_parent => $parent_member->member_obj,
-            via             => $parent_member->id
+            via              => $parent_member->id
         );
         unless ($other_cached_id) {
-            Jifty->log->err( "Couldn't add "
-                    . $args{'member'}
-                    . " as a submember of a supergroup" );
+            Jifty->log->err( "Couldn't add " . $args{'member'} . " as a submember of a supergroup" );
             Jifty->handle->rollback() unless ( $args{'inside_transaction'} );
             return (undef);
         }
@@ -167,9 +210,9 @@ sub create {
 
 # }}}
 
-# {{{ sub _StashUser
+# {{{ sub _stash_user
 
-=head2 _StashUser PRINCIPAL
+=head2 _stash_user PRINCIPAL
 
 Create { Group => undef, Member => undef }
 
@@ -191,8 +234,8 @@ sub _stash_user {
         @_
     );
 
-#Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space.
-# TODO what about the groups key cache?
+    #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space.
+    # TODO what about the groups key cache?
     RT::Model::Principal->invalidate_acl_cache();
 
     # We really need to make sure we don't add any members to this group
@@ -211,10 +254,10 @@ sub _stash_user {
 
     my $cached_member = RT::Model::CachedGroupMember->new;
     my $cached_id     = $cached_member->create(
-        member          => $args{'member'},
-        group           => $args{'group'},
+        member           => $args{'member'},
+        group            => $args{'group'},
         immediate_parent => $args{'group'},
-        via             => '0'
+        via              => '0'
     );
 
     unless ($cached_id) {
@@ -228,7 +271,7 @@ sub _stash_user {
 
 # {{{ sub delete
 
-=head2 Delete
+=head2 delete
 
 Takes no arguments. deletes the currently loaded member from the 
 group in question.
@@ -269,16 +312,14 @@ sub delete {
         my ( $del_err, $del_msg ) = $item_to_del->delete();
         unless ($del_err) {
             Jifty->handle->rollback();
-            Jifty->log->warn( "Couldn't delete cached group submember "
-                    . $item_to_del->id );
+            Jifty->log->warn( "Couldn't delete cached group submember " . $item_to_del->id );
             return (undef);
         }
     }
 
     my ( $err, $msg ) = $self->SUPER::delete();
     unless ($err) {
-        Jifty->log->warn(
-            "Couldn't delete cached group submember " . $self->id );
+        Jifty->log->warn( "Couldn't delete cached group submember " . $self->id );
         Jifty->handle->rollback();
         return (undef);
     }
@@ -286,18 +327,15 @@ sub delete {
     # Since this deletion may have changed the former member's
     # delegation rights, we need to ensure that no invalid delegations
     # remain.
-    ( $err, $msg )
-        = $self->member_obj->_cleanup_invalid_delegations(
-        inside_transaction => 1 );
+    ( $err, $msg ) = $self->member_obj->_cleanup_invalid_delegations( inside_transaction => 1 );
     unless ($err) {
-        Jifty->log->warn(
-            "Unable to revoke delegated rights for principal " . $self->id );
+        Jifty->log->warn( "Unable to revoke delegated rights for principal " . $self->id );
         Jifty->handle->rollback();
         return (undef);
     }
 
-#Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space.
-# TODO what about the groups key cache?
+    #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space.
+    # TODO what about the groups key cache?
     RT::Model::Principal->invalidate_acl_cache();
 
     Jifty->handle->commit();
@@ -307,9 +345,9 @@ sub delete {
 
 # }}}
 
-# {{{ sub MemberObj
+# {{{ sub member_obj
 
-=head2 MemberObj
+=head2 member_obj
 
 Returns an RT::Model::Principal object for the Principal specified by $self->principal_id
 
@@ -326,9 +364,9 @@ sub member_obj {
 
 # }}}
 
-# {{{ sub GroupObj
+# {{{ sub group_obj
 
-=head2 GroupObj
+=head2 group_obj
 
 Returns an RT::Model::Principal object for the Group specified in $self->group_id
 

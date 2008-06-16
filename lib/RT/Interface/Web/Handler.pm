@@ -62,13 +62,7 @@ use File::Glob qw( bsd_glob );
 use File::Spec::Unix;
 
 sub default_handler_args {
-    (   comp_root => [
-            [ local => $RT::MasonLocalComponentRoot ],
-            (   map { [ "plugin-" . $_->name => $_->component_root ] }
-                    @{ RT->plugins }
-            ),
-            [ standard => $RT::MasonComponentRoot ]
-        ],
+    (   comp_root => [ [ local => $RT::MasonLocalComponentRoot ], ( map { [ "plugin-" . $_->name => $_->component_root ] } @{ RT->plugins } ), [ standard => $RT::MasonComponentRoot ] ],
         error_format => ( RT->config->get('DevelMode') ? 'html' : 'brief' ),
         request_class => 'RT::Interface::Web::Request',
     );
@@ -85,13 +79,12 @@ sub default_handler_args {
 
 sub new {
     my $class = shift;
-    my $self = {};
+    my $self  = {};
     bless $self, $class;
     return $self;
 }
 
-
-=head2 CleanupRequest
+=head2 cleanup_request
 
 Clean ups globals, caches and other things that could be still
 there from previous requests:
@@ -118,9 +111,7 @@ sub cleanup_request {
 
     if ( Jifty->handle->transaction_depth ) {
         Jifty->handle->force_rollback;
-        Jifty->log->fatal(
-            "Transaction not committed. Usually indicates a software fault."
-                . "Data loss may have occurred" );
+        Jifty->log->fatal( "Transaction not committed. Usually indicates a software fault." . "Data loss may have occurred" );
     }
 
     # Clean out the ACL cache. the performance impact should be marginal.
@@ -128,8 +119,7 @@ sub cleanup_request {
     RT::Model::Principal->invalidate_acl_cache();
     Jifty::DBI::Record::Cachable->flush_cache
         if ( RT->config->get('WebFlushDbCacheEveryRequest')
-        and UNIVERSAL::can( 'Jifty::DBI::Record::Cachable' => 'flush_cache' )
-        );
+        and UNIVERSAL::can( 'Jifty::DBI::Record::Cachable' => 'flush_cache' ) );
 
     # cleanup global squelching of the mails
     require RT::ScripAction::SendEmail;

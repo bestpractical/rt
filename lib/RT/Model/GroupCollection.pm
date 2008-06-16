@@ -103,7 +103,8 @@ sub implicit_clauses {
     # even if this condition is useless and ids in the Groups table
     # only match principals with type 'Group' this could speed up
     # searches in some DBs.
-    $self->limit( alias  => $self->{'princalias'},
+    $self->limit(
+        alias  => $self->{'princalias'},
         column => 'principal_type',
         value  => 'Group',
     );
@@ -127,7 +128,7 @@ sub principals_alias {
 
 # {{{ LimiToSystemInternalGroups
 
-=head2 limit_ToSystemInternalGroups
+=head2 limit_to_system_internal_groups
 
 Return only SystemInternal Groups, such as "privileged" "unprivileged" and "everyone" 
 
@@ -141,15 +142,15 @@ sub limit_to_system_internal_groups {
         value    => 'SystemInternal'
     );
 
-# All system internal groups have the same instance. No reason to limit down further
-#$self->limit(column => 'instance', operator => '=', value => '0');
+    # All system internal groups have the same instance. No reason to limit down further
+    #$self->limit(column => 'instance', operator => '=', value => '0');
 }
 
 # }}}
 
 # {{{ LimiToUserDefinedGroups
 
-=head2 limit_ToUserDefined Groups
+=head2 limit_to_user_defined Groups
 
 Return only UserDefined Groups
 
@@ -163,15 +164,15 @@ sub limit_to_user_defined_groups {
         value    => 'UserDefined'
     );
 
-# All user-defined groups have the same instance. No reason to limit down further
-#$self->limit(column => 'instance', operator => '=', value => '');
+    # All user-defined groups have the same instance. No reason to limit down further
+    #$self->limit(column => 'instance', operator => '=', value => '');
 }
 
 # }}}
 
 # {{{ LimiToPersonalGroups
 
-=head2 limit_ToPersonalGroupsFor PRINCIPAL_ID
+=head2 limit_to_personal_groups_for PRINCIPAL_ID
 
 Return only Personal Groups for the user whose principal id 
 is PRINCIPAL_ID
@@ -194,7 +195,7 @@ sub limit_to_personal_groups_for {
 
 # {{{ limit_ToRolesForQueue
 
-=head2 limit_ToRolesForQueue QUEUE_ID
+=head2 limit_to_roles_for_queue QUEUE_ID
 
 Limits the set of groups found to role groups for queue QUEUE_ID
 
@@ -215,7 +216,7 @@ sub limit_to_roles_for_queue {
 
 # {{{ limit_ToRolesForTicket
 
-=head2 limit_ToRolesForTicket Ticket_ID
+=head2 limit_to_roles_for_ticket Ticket_ID
 
 Limits the set of groups found to role groups for Ticket Ticket_ID
 
@@ -236,7 +237,7 @@ sub limit_to_roles_for_ticket {
 
 # {{{ limit_ToRolesForSystem
 
-=head2 limit_ToRolesForSystem System_ID
+=head2 limit_to_roles_for_system System_ID
 
 Limits the set of groups found to role groups for System System_ID
 
@@ -253,7 +254,7 @@ sub limit_to_roles_for_system {
 
 # }}}
 
-=head2 WithMember {principal_id => PRINCIPAL_ID, recursively => undef}
+=head2 with_member {principal_id => PRINCIPAL_ID, recursively => undef}
 
 Limits the set of groups returned to groups which have
 Principal PRINCIPAL_ID as a member
@@ -297,8 +298,7 @@ sub without_member {
         @_
     );
 
-    my $members
-        = $args{'recursively'} ? 'CachedGroupMembers' : 'GroupMembers';
+    my $members = $args{'recursively'} ? 'CachedGroupMembers' : 'GroupMembers';
     my $members_alias = $self->join(
         type    => 'LEFT',
         column1 => 'id',
@@ -321,7 +321,7 @@ sub without_member {
     );
 }
 
-=head2 Withright { right => RIGHTNAME, object => RT::Record, include_system_rights => 1, include_superusers => 0, equiv_objects => [ ] }
+=head2 withright { right => RIGHTNAME, object => RT::Record, include_system_rights => 1, include_superusers => 0, equiv_objects => [ ] }
 
 
 Find all groups which have RIGHTNAME for RT::Record. Optionally include global rights and superusers. By default, include the global rights, but not the superusers.
@@ -334,12 +334,12 @@ Find all groups which have RIGHTNAME for RT::Record. Optionally include global r
 sub with_right {
     my $self = shift;
     my %args = (
-        right                  => undef,
-        object                 => => undef,
+        right                    => undef,
+        object                   => => undef,
         include_system_rights    => 1,
-        include_superusers      => undef,
+        include_superusers       => undef,
         include_subgroup_members => 0,
-        equiv_objects          => [],
+        equiv_objects            => [],
         @_
     );
 
@@ -381,10 +381,7 @@ sub _join_group_members_for_group_rights {
     my %args          = (@_);
     my $group_members = $self->_join_group_members(%args);
     unless ( $group_members eq 'main' ) {
-        return
-            $self
-            ->RT::Model::UserCollection::_join_group_members_for_group_rights(
-            %args);
+        return $self->RT::Model::UserCollection::_join_group_members_for_group_rights(%args);
     }
     $self->limit(
         alias       => $args{'aclalias'},
@@ -400,8 +397,7 @@ sub _role_clauses {
 }
 
 sub who_have_role_right_splitted {
-    return (shift)
-        ->RT::Model::UserCollection::_who_have_role_rightSplitted(@_);
+    return (shift)->RT::Model::UserCollection::_who_have_role_rightSplitted(@_);
 }
 
 sub _get_equiv_objects {
@@ -459,7 +455,7 @@ sub next {
 sub _do_search {
     my $self = shift;
 
-#unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
+    #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
     unless ( $self->{'find_disabled_rows'} ) {
         $self->limit_to_enabled();
     }

@@ -1,0 +1,111 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, Title => $title &>
+<& /Prefs/Elements/Tabs,
+    current_tab => 'Prefs/MyRT.html',
+#    current_subtab => 'Prefs/Search.html?name='.$m->comp('/Elements/QueryString', name => $ARGS{name}),
+    current_subtab => 'Prefs/Search.html?name='.$ARGS{name},
+    Title => $title
+&>
+<& /Elements/ListActions, actions => \@actions &>
+% if (Jifty->web->current_user->has_right( object=> RT->system, right => 'SuperUser')) {
+<p>
+  <&|/l&>You can also edit the predefined search itself</&>:
+  <a href="<% RT->config->get('WebPath').'/Search/Build.html?'.
+	  $m->comp('/Elements/QueryString',
+		   LoadSavedSearch => 'RT::System-1-SavedSearch-'.$id) %>"><% $search->name %></a>
+</p>
+% }
+
+<form method="post" action="Search.html" name="build_query">
+<input type="hidden" name="name" value="<%$ARGS{name}%>" class="hidden" />
+<input type="hidden" name="format" value="<%$ARGS{format}%>" class="hidden" />
+
+<& /Search/Elements/DisplayOptions, %$SearchArg, %ARGS,
+   AvailableColumns => $AvailableColumns, current_format => $current_format &>
+<& /Elements/Submit, Caption => _("Save"), Label => _('Save'), name => 'Save'&>
+
+</form>
+
+<%INIT>
+my @actions;
+my $title = _("Customize").' ';
+
+my @fields = qw(format order order_by rows_per_page);
+$ARGS{name} ||= '';
+my ($class, $id) = ( $ARGS{name} =~ m/^(.*)-(\d+)$/ );
+
+abort('No search specified')
+    unless defined $class and $class eq 'RT::Model::Attribute';
+
+my $search = $class->new();
+$search->load_by_id ($id);
+$title .= _($search->description, _('"N"'));
+my $user = Jifty->web->current_user->user_object;
+my $SearchArg = $user->preferences($search, $search->content);
+$ARGS{order}       = (ref $ARGS{order}   ? join('|',grep {/\S/} @{$ARGS{order}})   : $ARGS{order});
+$ARGS{order_by}     = (ref $ARGS{order_by} ? join('|',grep {/\S/} @{$ARGS{order_by}}) : $ARGS{order_by});
+for (@fields) {
+    $ARGS{$_} = $SearchArg->{$_} unless defined $ARGS{$_};
+}
+$ARGS{'order'} = join '|', grep defined && /\S/, (ref $ARGS{'order'})? @{$ARGS{'order'}}: $ARGS{'order'};
+$ARGS{'order_by'} = join '|', grep defined && /\S/, (ref $ARGS{'order_by'})? @{$ARGS{'order_by'}}: $ARGS{'order_by'};
+
+my ( $AvailableColumns, $current_format );
+( $ARGS{format}, $AvailableColumns, $current_format ) = $m->comp(
+    '/Search/Elements/BuildFormatString',
+    cfqueues => {}, %ARGS
+);
+
+if ($ARGS{'Save'}) {
+    my $hash = {map { $_ => $ARGS{$_}} @fields};
+    my $pref = $user->set_preferences ($search, $hash);
+    push @actions, _('Preferences saved.');
+}
+
+</%INIT>

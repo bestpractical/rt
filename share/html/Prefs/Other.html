@@ -1,0 +1,124 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, Title => $title &>
+<& /User/Elements/Tabs, 
+    current_tab => 'Prefs/Other.html',
+    Title => $title,
+&>
+<& /Elements/ListActions, actions => \@results &>
+
+<form method="post" action="Other.html">
+% foreach my $section( RT->config->sections ) {
+<&|/Widgets/TitleBox, title => _( $section ) &>
+% foreach my $option( RT->config->options( Section => $section ) ) {
+% my $meta = RT->config->meta( $option );
+<& $meta->{'Widget'},
+    default      => 1,
+    %{ $localize_meta->( $meta->{'WidgetArguments'} ) },
+    name         => $option,
+    default_value => scalar RT->config->get( $option ),
+    current_value => $preferences->{ $option },
+&>
+% }
+</&>
+% }
+
+% if ( RT->config->get('GnuPG')->{'enable'} ) {
+<&|/Widgets/TitleBox, title => _( 'Cryptography' ) &>
+Preferred key: <& /Elements/GnuPG/SelectKeyForEncryption, email => $user_object->email, default => $user_object->preferred_key &>
+</&>
+% }
+
+<& /Elements/Submit, name => 'Update', Label => _('Save changes') &>
+</form>
+<%INIT>
+my @results;
+my $title = _("Other preferences");
+
+my $user_object = Jifty->web->current_user->user_object;
+my $preferences = $user_object->preferences( RT->system );
+
+if ((defined $preferred_key) && $preferred_key ne $user_object->first_attribute('preferred_key')) {
+    my ($code, $msg) = $user_object->set_attribute(name => 'preferred_key', content => $preferred_key);
+    push @results, _('Preferred Key: %1', _($msg));
+}
+
+if ( $Update ) {
+    foreach my $option( RT->config->options ) {
+        my $meta = RT->config->meta( $option );
+        my $value = $m->comp($meta->{'Widget'} .":Process",
+            Arguments    => \%ARGS,
+            default      => 1,
+            %{ $meta->{'WidgetArguments'} },
+            name         => $option,
+            default_value => scalar RT->config->get( $option ),
+        );
+        if ( defined $value ) {
+            $preferences->{ $option } = $value;
+        } else {
+            delete $preferences->{ $option };
+        }
+    }
+    $user_object->set_preferences( RT->system, $preferences );
+}
+my $localize_meta = sub  {
+    my %meta = %{ shift() };
+    $meta{'description'} = _( $meta{'description'} ) if $meta{'description'};
+    if ( $meta{'values_label'} ) {
+        while (my ($k, $v) = each %{ $meta{'values_label'} } ) {
+            $meta{'values_label'}->{$k} = _( $meta{'values_label'}->{$k} );
+        }
+    }
+    return \%meta;
+};
+</%INIT>
+<%ARGS>
+$Update => 0,
+$User   => undef,
+$preferred_key => undef,
+</%ARGS>

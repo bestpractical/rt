@@ -68,24 +68,24 @@ should only be accessed through exported APIs in other modules.
 
 use strict;
 use warnings;
+
 package RT::Model::ScripCondition;
 use base qw/RT::Record/;
 
 sub table {'ScripConditions'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column name                 => type is 'text';
-    column description          => type is 'text';
-    column exec_module           => type is 'text';
-    column argument             => type is 'text';
+    column name                   => type is 'text';
+    column description            => type is 'text';
+    column exec_module            => type is 'text';
+    column argument               => type is 'text';
     column applicable_trans_types => type is 'text';
-    column creator =>  references RT::Model::User;
-    column created => type is 'timestamp';
-    column last_updated_by => references RT::Model::User;
-    column last_updated => type is 'timestamp';
+    column creator                => references RT::Model::User;
+    column created                => type is 'timestamp';
+    column last_updated_by        => references RT::Model::User;
+    column last_updated           => type is 'timestamp';
 
 };
-
 
 =head2 delete
 
@@ -119,8 +119,6 @@ sub load {
     }
 }
 
-
-
 =head2 load_condition  HASH
 
 takes a hash which has the following elements:  transaction_obj and ticket_obj.
@@ -136,21 +134,20 @@ sub load_condition {
         @_
     );
 
-    my $type   = "RT::Condition::" . $self->exec_module;
+    my $type = "RT::Condition::" . $self->exec_module;
 
     Jifty::Util->require($type);
 
     $self->{'condition'} = $type->new(
-        'scrip_scrip_condition'    => $self,
-        'ticket_obj'           => $args{'ticket_obj'},
-        'scrip_obj'            => $args{'scrip_obj'},
-        'transaction_obj'      => $args{'transaction_obj'},
-        'argument'             => $self->argument,
+        'scrip_scrip_condition'  => $self,
+        'ticket_obj'             => $args{'ticket_obj'},
+        'scrip_obj'              => $args{'scrip_obj'},
+        'transaction_obj'        => $args{'transaction_obj'},
+        'argument'               => $self->argument,
         'applicable_trans_types' => $self->applicable_trans_types,
-        current_user            => $self->current_user
+        current_user             => $self->current_user
     );
 }
-
 
 =head2 describe 
 
@@ -163,7 +160,6 @@ sub describe {
     return ( $self->{'condition'}->describe() );
 
 }
-
 
 =head2 is_applicable
 
@@ -181,7 +177,6 @@ sub DESTROY {
     my $self = shift;
     $self->{'condition'} = undef;
 }
-
 
 sub _value { shift->__value(@_) }
 1;

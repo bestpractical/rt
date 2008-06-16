@@ -90,7 +90,7 @@ msgstr "%1 %2 ändrat till %3"
 msgid "%1 %2 deleted"
 msgstr "%1 %2 raderad"
 
-#. (_($scrip->scrip_condition->name), loc($scrip->scrip_action->name), loc($scrip->template_obj->name))
+#. (_($scrip->scrip_condition->name), _($scrip->scrip_action->name), _($scrip->template_obj->name))
 #: html/Admin/Elements/EditScrips:65
 #: html/Admin/Elements/ListGlobalScrips:63
 #: html/Ticket/Elements/PreviewScrips:103
@@ -105,7 +105,7 @@ msgstr "%1 (%2) av %3"
 #. (_($Ticket->Status()))
 #. (_($ticket_obj->Status))
 #. ($ticket_obj->owner_obj->name())
-#. (_($DefaultStatus))
+#. (_($default_status))
 #: html/SelfService/Update.html:60
 #: html/Ticket/Elements/EditBasics:108
 #: html/Ticket/Update.html:61
@@ -2714,7 +2714,7 @@ msgstr "Mobil"
 msgid "Modify Access Control List"
 msgstr "Modifiera Tillgångskontrollista"
 
-#. (_(lc($FriendlySubTypes)), loc(lc($Types)))
+#. (_(lc($FriendlySubTypes)), _(lc($Types)))
 #: html/Admin/Elements/ObjectCustomFields:96
 msgid "Modify Custom Fields which apply to %1 for all %2"
 msgstr "Modifiera extrafält som gäller för %1 för alla %2"

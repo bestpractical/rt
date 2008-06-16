@@ -1,0 +1,235 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<%args>
+$ticket_obj => undef
+
+</%args>
+<%init>
+my %squelch = $m->comp('SELF:SquelchRecipients', %ARGS);
+my $object = $squelch{'object'};
+my @non_recipients = @{ $squelch{'emails'} };
+
+</%init>
+<h2><&|/l&>This message will be sent to...</&></h2>
+
+% if ( $object ) {
+<i><&|/l&>(Check boxes to disable notifications to the listed recipients)</&></i><br />
+
+% foreach my $scrip (@{$object->scrips->prepared}) {
+% next unless $scrip->scrip_action->action->isa('RT::ScripAction::SendEmail');
+<b><% $scrip->description || _('Scrip #%1',$scrip->id) %></b><br />
+<&|/l, _($scrip->scrip_condition->name), _($scrip->scrip_action->name), _($scrip->template_obj->name)&>%1 %2 with template %3</&>
+<br />
+%foreach my $type qw(to cc bcc) {
+%my @addresses =  $scrip->scrip_action->action->$type();
+<ul>
+%foreach my $addr (@addresses) {
+<li> <b><%_($type)%></b>: <input type="checkbox" class="checkbox" name="Ticket-<%$ticket_obj->id%>-SquelchMailTo" value="<%$addr->address%>" /> <%$addr->address%>
+% }
+</ul>
+% }
+% if (RT->config->get('PreviewScripMessages')) {
+<textarea cols="80" rows="5">
+<%$scrip->scrip_action->template_obj->mime_obj->as_string%>
+</textarea>
+% }
+% }
+% }
+<br />
+
+<h2><&|/l&>Messages about this ticket will not be sent to...</&></h2>
+<i><&|/l&>(Check boxes to enable notifications to the listed recipients)</&></i>
+<br />
+<ul>
+% foreach my $recipient (@non_recipients) {
+<li><input type="checkbox" class="checkbox" name="Ticket-<%$ticket_obj->id%>-UnsquelchMailTo" value="<%$recipient->content%>" />
+<% $recipient->content %>
+% }
+</ul>
+<& /Elements/Submit, Value => 'UpdatePreview', Label => _('Save changes')&>
+
+<%METHOD SquelchRecipients>
+<%ARGS>
+$ticket_obj => undef
+</%ARGS>
+<%INIT>
+my $arg = 'Ticket-'.$ticket_obj->id.'-SquelchMailTo';
+my @squelchto = ref($ARGS{$arg}) eq 'ARRAY' ? @{$ARGS{$arg}} : ($ARGS{$arg});
+
+foreach my $address (@squelchto) {
+        $ticket_obj->squelch_mail_to($address) if ($address);
+}
+
+
+$arg = 'Ticket-'.$ticket_obj->id.'-UnsquelchMailTo';
+my @unsquelchto = ref($ARGS{$arg}) eq 'ARRAY' ? @{$ARGS{$arg}} : ($ARGS{$arg});
+
+foreach my $address (@unsquelchto) {
+        $ticket_obj->unsquelch_mail_to($address) if ($address);
+}
+
+
+my $action;
+
+if (($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq 'response' ) || ($ARGS{'action'} && $ARGS{'action'} eq 'respond' )) {
+    $action = 'correspond';
+}
+else {
+    $action = 'comment';
+}
+
+my $Message = make_mime_entity(
+    subject => $ARGS{'Updatesubject'},
+    body    => $ARGS{'update_content'},
+);
+
+my ( $Transaction, $description, $object ) = $ticket_obj->$action(
+    cc_message_to  => $ARGS{'update_cc'},
+    bcc_message_to => $ARGS{'UpdateBcc'},
+    mime_obj      => $Message,
+    time_taken    => $ARGS{'UpdateTimeWorked'},
+    dry_run       => 1
+);
+unless ( $Transaction ) {
+    Jifty->log->error("Coulfn't fire '$action' action: $description");
+}
+
+
+return (object => $object, emails => [$ticket_obj->squelch_mail_to]);
+</%INIT>
+</%METHOD>
+
+<%METHOD GetRecipients>
+<%ARGS>
+$ticket_obj
+</%ARGS>
+<%INIT>
+my $action;
+if ( ( $ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq 'response' )
+    || ( $ARGS{'action'} && $ARGS{'action'} eq 'respond' ) )
+{
+    $action = 'correspond';
+}
+else {
+    $action = 'comment';
+}
+
+my $Message = make_mime_entity(
+    subject => $ARGS{'Updatesubject'},
+    body    => $ARGS{'update_content'},
+);
+
+my ( $id, $msg, $txn ) = $ticket_obj->$action(
+    cc_message_to  => $ARGS{'update_cc'},
+    bcc_message_to => $ARGS{'UpdateBcc'},
+    mime_obj      => $Message,
+    time_taken    => $ARGS{'UpdateTimeWorked'},
+    dry_run       => 1
+);
+unless ( $id && $txn ) {
+    Jifty->log->error("Couldn't fire '$action' action: $msg");
+    return ();
+}
+
+my @recipients;
+foreach my $scrip ( @{ $txn->scrips->prepared } ) {
+    my $action = $scrip->scrip_action->action;
+    next unless $action->isa('RT::ScripAction::SendEmail');
+
+    foreach my $type qw(to cc bcc) {
+        push @recipients, $action->$type();
+    }
+}
+return @recipients;
+</%INIT>
+</%METHOD>
+
+<%METHOD GetRecipientsOnCreate>
+<%INIT>
+my $action;
+my $Message = make_mime_entity(
+    subject => $ARGS{'subject'},
+    cc => $ARGS{'cc'},
+    body    => $ARGS{'content'},
+);
+
+my $ticket_obj = RT::Model::Ticket->new();
+my ( $id, $txn, $msg ) = $ticket_obj->create(
+    type            => $ARGS{'type'} || 'ticket',
+    queue           => $ARGS{'queue'},
+    owner           => $ARGS{'owner'},
+    requestor       => $ARGS{'requestors'},
+    cc              => $ARGS{'cc'},
+    admin_Cc         => $ARGS{'admin_cc'},
+    initial_priority => $ARGS{'initial_priority'},
+    final_priority   => $ARGS{'final_priority'},
+    time_left        => $ARGS{'time_left'},
+    time_estimated   => $ARGS{'time_estimated'},
+    time_worked      => $ARGS{'time_worked'},
+    subject         => $ARGS{'subject'},
+    status          => $ARGS{'status'},
+    mime_obj      => $Message,
+    dry_run       => 1
+);
+unless ( $id && $txn ) {
+    Jifty->log->error("Couldn't fire '$action' action: $msg");
+    return ();
+}
+
+my @recipients;
+foreach my $scrip ( @{ $txn->scrips->prepared } ) {
+    my $action = $scrip->scrip_action->action;
+    next unless $action->isa('RT::ScripAction::SendEmail');
+
+    foreach my $type qw(to cc bcc) {
+        push @recipients, $action->$type();
+    }
+}
+return @recipients;
+</%INIT>
+</%METHOD>

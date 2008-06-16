@@ -91,7 +91,7 @@ sub clean_slate {
     $self->attach_tickets(undef);
 }
 
-=head2 Commit
+=head2 commit
 
 Sends the prepared message and writes outgoing record into DB if the feature is
 activated in the config.
@@ -140,7 +140,7 @@ sub commit {
     return ( abs $ret );
 }
 
-=head2 Prepare
+=head2 prepare
 
 Builds an outgoing email we're going to send using scrip's template.
 
@@ -175,7 +175,7 @@ sub prepare {
     # Go add all the Tos, Ccs and Bccs that we need to to the message to
     # make it happy, but only if we actually have values in those arrays.
 
-# TODO: We should be pulling the recipients out of the template and shove them into To, Cc and Bcc
+    # TODO: We should be pulling the recipients out of the template and shove them into To, Cc and Bcc
 
     $self->set_header( 'To', join( ', ', @{ $self->{'To'} } ) )
         if ( !$mime_obj->head->get('To')
@@ -217,9 +217,7 @@ sub prepare {
         }
     }
 
-    RT::I18N::set_mime_entity_to_encoding( $mime_obj,
-        RT->config->get('EmailOutputEncoding'),
-        'mime_words_ok', );
+    RT::I18N::set_mime_entity_to_encoding( $mime_obj, RT->config->get('EmailOutputEncoding'), 'mime_words_ok', );
 
     # Build up a MIME::Entity that looks like the original message.
     $self->add_attachments if $mime_obj->head->get('RT-Attach-Message');
@@ -227,12 +225,8 @@ sub prepare {
     $self->add_tickets;
 
     my $attachment = $self->transaction_obj->attachments->first;
-    if ($attachment
-        && !(
-               $attachment->get_header('X-RT-Encrypt')
-            || $self->ticket_obj->queue_obj->encrypt
-        )
-        )
+    if ( $attachment
+        && !( $attachment->get_header('X-RT-Encrypt') || $self->ticket_obj->queue_obj->encrypt ) )
     {
         $attachment->set_header( 'X-RT-Encrypt' => 1 )
             if $attachment->get_header("X-RT-Incoming-Encryption")
@@ -242,7 +236,7 @@ sub prepare {
     return $result;
 }
 
-=head2 To
+=head2 to
 
 Returns an array of L<Mail::Address> objects containing all the To: recipients for this notification
 
@@ -253,7 +247,7 @@ sub to {
     return ( $self->_addresses_from_header('To') );
 }
 
-=head2 Cc
+=head2 cc
 
 Returns an array of L<Mail::Address> objects containing all the Cc: recipients for this notification
 
@@ -264,7 +258,7 @@ sub cc {
     return ( $self->_addresses_from_header('Cc') );
 }
 
-=head2 Bcc
+=head2 bcc
 
 Returns an array of L<Mail::Address> objects containing all the Bcc: recipients for this notification
 
@@ -303,12 +297,7 @@ sub send_message {
 
     $self->scrip_action_obj->{_Message_ID}++;
 
-    Jifty->log->info( $msgid . " #"
-            . $self->ticket_obj->id . "/"
-            . $self->transaction_obj->id
-            . " - Scrip "
-            . $self->scrip_obj->id . " "
-            . ( $self->scrip_obj->description || '' ) );
+    Jifty->log->info( $msgid . " #" . $self->ticket_obj->id . "/" . $self->transaction_obj->id . " - Scrip " . $self->scrip_obj->id . " " . ( $self->scrip_obj->description || '' ) );
 
     my $status = RT::Interface::Email::send_email(
         entity      => $mime_obj,
@@ -329,7 +318,7 @@ sub send_message {
     return (1);
 }
 
-=head2 AddAttachments
+=head2 add_attachments
 
 Takes any attachments to this transaction and attaches them to the message
 we're building.
@@ -343,8 +332,7 @@ sub add_attachments {
 
     $mime_obj->head->delete('RT-Attach-Message');
 
-    my $attachments = RT::Model::AttachmentCollection->new(
-        current_user => RT->system_user );
+    my $attachments = RT::Model::AttachmentCollection->new( current_user => RT->system_user );
     $attachments->limit(
         column => 'transaction_id',
         value  => $self->transaction_obj->id
@@ -380,7 +368,7 @@ sub add_attachments {
 
 }
 
-=head2 AddAttachment $attachment
+=head2 add_attachment $attachment
 
 Takes one attachment object of L<RT::Model::Attachmment> class and attaches it to the message
 we're building.
@@ -388,8 +376,8 @@ we're building.
 =cut
 
 sub add_attachment {
-    my $self    = shift;
-    my $attach  = shift;
+    my $self     = shift;
+    my $attach   = shift;
     my $mime_obj = shift || $self->template_obj->mime_obj;
 
     $mime_obj->attach(
@@ -397,13 +385,10 @@ sub add_attachment {
         Charset  => $attach->original_encoding,
         Data     => $attach->original_content,
         Filename => defined( $attach->filename )
-        ? $self->mime_encode_string( $attach->filename,
-            RT->config->get('EmailOutputEncoding') )
+        ? $self->mime_encode_string( $attach->filename, RT->config->get('EmailOutputEncoding') )
         : undef,
-        'RT-Attachment:' => $self->ticket_obj->id . "/"
-            . $self->transaction_obj->id . "/"
-            . $attach->id,
-        Encoding => '-SUGGEST',
+        'RT-Attachment:' => $self->ticket_obj->id . "/" . $self->transaction_obj->id . "/" . $attach->id,
+        Encoding         => '-SUGGEST',
     );
 }
 
@@ -426,7 +411,7 @@ clean list by passing undef as argument.
     }
 }
 
-=head2 AddTickets
+=head2 add_tickets
 
 Attaches tickets to the current message, list of tickets' ids get from
 L</AttachTickets> method.
@@ -439,7 +424,7 @@ sub add_tickets {
     return;
 }
 
-=head2 AddTicket $ID
+=head2 add_ticket $ID
 
 Attaches a ticket with ID to the message.
 
@@ -454,8 +439,7 @@ sub add_ticket {
     my $tid  = shift;
 
     # XXX: we need a current user here, but who is current user?
-    my $attachs = RT::Model::AttachmentCollection->new(
-        current_user => RT->system_user );
+    my $attachs = RT::Model::AttachmentCollection->new( current_user => RT->system_user );
     my $txn_alias = $attachs->transaction_alias;
     $attachs->limit(
         alias  => $txn_alias,
@@ -487,14 +471,14 @@ sub add_ticket {
     return;
 }
 
-=head2 RecordOutgoingMailTransaction mime_obj
+=head2 record_outgoing_mail_transaction mime_obj
 
 Record a transaction in RT with this outgoing message for future record-keeping purposes
 
 =cut
 
 sub record_outgoing_mail_transaction {
-    my $self    = shift;
+    my $self     = shift;
     my $mime_obj = shift;
 
     my @parts = $mime_obj->parts;
@@ -503,8 +487,7 @@ sub record_outgoing_mail_transaction {
     foreach my $part (@parts) {
         my $attach = $part->head->get('RT-Attachment');
         if ($attach) {
-            Jifty->log->debug(
-                "We found an attachment. we want to not record it.");
+            Jifty->log->debug("We found an attachment. we want to not record it.");
             push @attachments, $attach;
         } else {
             Jifty->log->debug("We found a part. we want to record it.");
@@ -516,13 +499,11 @@ sub record_outgoing_mail_transaction {
         $mime_obj->head->add( 'RT-Attachment', $attachment );
     }
 
-    RT::I18N::set_mime_entity_to_encoding( $mime_obj, 'utf-8',
-        'mime_words_ok' );
+    RT::I18N::set_mime_entity_to_encoding( $mime_obj, 'utf-8', 'mime_words_ok' );
 
-    my $transaction = RT::Model::Transaction->new(
-        current_user => $self->transaction_obj->current_user );
+    my $transaction = RT::Model::Transaction->new( current_user => $self->transaction_obj->current_user );
 
-# XXX: TODO -> Record attachments as references to things in the attachments table, maybe.
+    # XXX: TODO -> Record attachments as references to things in the attachments table, maybe.
 
     my $type;
     if ( $self->transaction_obj->type eq 'comment' ) {
@@ -535,9 +516,9 @@ sub record_outgoing_mail_transaction {
     chomp $msgid;
 
     my ( $id, $msg ) = $transaction->create(
-        ticket         => $self->ticket_obj->id,
-        type           => $type,
-        data           => $msgid,
+        ticket          => $self->ticket_obj->id,
+        type            => $type,
+        data            => $msgid,
         mime_obj        => $mime_obj,
         activate_scrips => 0
     );
@@ -545,13 +526,12 @@ sub record_outgoing_mail_transaction {
     if ($id) {
         $self->{'OutgoingMailTransaction'} = $id;
     } else {
-        Jifty->log->warn(
-            "Could not record outgoing message transaction: $msg");
+        Jifty->log->warn("Could not record outgoing message transaction: $msg");
     }
     return $id;
 }
 
-=head2 SetRTSpecialheaders 
+=head2 set_rtspecialheaders 
 
 This routine adds all the random headers that RT wants in a mail message
 that don't matter much to anybody else.
@@ -563,8 +543,7 @@ sub set_rt_special_headers {
 
     $self->set_subject();
     $self->set_subject_token();
-    $self->set_header_as_encoding( 'subject',
-        RT->config->get('EmailOutputEncoding') )
+    $self->set_header_as_encoding( 'subject', RT->config->get('EmailOutputEncoding') )
         if ( RT->config->get('EmailOutputEncoding') );
     $self->set_return_address();
     $self->set_references_headers();
@@ -580,8 +559,7 @@ sub set_rt_special_headers {
 
         # If there is one, and we can parse it, then base our Message-ID on it
         if (    $msgid
-            and $msgid
-            =~ s/<(rt-.*?-\d+-\d+)\.(\d+)-\d+-\d+\@\QRT->config->get('organization')\E>$/
+            and $msgid =~ s/<(rt-.*?-\d+-\d+)\.(\d+)-\d+-\d+\@\QRT->config->get('organization')\E>$/
                          "<$1." . $self->ticket_obj->id
                           . "-" . $self->scrip_obj->id
                           . "-" . $self->scrip_action_obj->{_Message_ID}
@@ -593,8 +571,8 @@ sub set_rt_special_headers {
         } else {
             $self->set_header(
                 'Message-ID' => RT::Interface::Email::gen_message_id(
-                    ticket      => $self->ticket_obj,
-                    scrip       => $self->scrip_obj,
+                    ticket       => $self->ticket_obj,
+                    scrip        => $self->scrip_obj,
                     scrip_action => $self->scrip_action_obj
                 ),
             );
@@ -605,20 +583,18 @@ sub set_rt_special_headers {
         unless ( $self->template_obj->mime_obj->head->get("Precedence") );
 
     $self->set_header( 'X-RT-Loop-Prevention', RT->config->get('rtname') );
-    $self->set_header( 'RT-Ticket',
-        RT->config->get('rtname') . " #" . $self->ticket_obj->id() );
-    $self->set_header( 'Managed-by',
-        "RT $RT::VERSION (http://www.bestpractical.com/rt/)" );
+    $self->set_header( 'RT-Ticket',            RT->config->get('rtname') . " #" . $self->ticket_obj->id() );
+    $self->set_header( 'Managed-by',           "RT $RT::VERSION (http://www.bestpractical.com/rt/)" );
 
-# XXX, TODO: use /ShowUser/ShowUserEntry(or something like that) when it would be
-#            refactored into user's method.
+    # XXX, TODO: use /ShowUser/ShowUserEntry(or something like that) when it would be
+    #            refactored into user's method.
     if ( my $email = $self->transaction_obj->creator_obj->email ) {
         $self->set_header( 'RT-Originator', $email );
     }
 
 }
 
-=head2 SquelchMailTo [@ADDRESSES]
+=head2 squelch_mail_to [@ADDRESSES]
 
 Mark ADDRESSES to be removed from list of the recipients. Returns list of the addresses.
 To empty list pass undefined argument.
@@ -640,7 +616,7 @@ clean this list when blocking is not required anymore, pass undef to do this.
     }
 }
 
-=head2 RemoveInappropriateRecipients
+=head2 remove_inappropriate_recipients
 
 Remove addresses that are RT addresses or that are on this transaction's blacklist
 
@@ -657,8 +633,7 @@ sub remove_inappropriate_recipients {
 
     # Weed out any RT addresses. We really don't want to talk to ourselves!
     foreach my $type (@types) {
-        @{ $self->{$type} }
-            = RT::EmailParser::cull_rt_addresses( "", @{ $self->{$type} } );
+        @{ $self->{$type} } = RT::EmailParser::cull_rt_addresses( "", @{ $self->{$type} } );
     }
 
     # If there are no recipients, don't try to send the message.
@@ -678,12 +653,8 @@ sub remove_inappropriate_recipients {
                 @{ $self->{'Cc'} }  = ();
                 @{ $self->{'Bcc'} } = ();
 
-                Jifty->log->info( $msgid
-                        . " The incoming message was autogenerated. Not redistributing this message based on site configuration.\n"
-                );
-            } elsif ( RT->config->get('RedistributeAutoGeneratedMessages') eq
-                'privileged' )
-            {
+                Jifty->log->info( $msgid . " The incoming message was autogenerated. Not redistributing this message based on site configuration.\n" );
+            } elsif ( RT->config->get('RedistributeAutoGeneratedMessages') eq 'privileged' ) {
 
                 # Only send to "privileged" watchers.
                 #
@@ -691,30 +662,25 @@ sub remove_inappropriate_recipients {
                 foreach my $type (@types) {
 
                     foreach my $addr ( @{ $self->{$type} } ) {
-                        my $user = RT::Model::User->new(
-                            current_user => RT->system_user );
+                        my $user = RT::Model::User->new( current_user => RT->system_user );
                         $user->load_by_email($addr);
-                        @{ $self->{$type} }
-                            = grep ( !/^\Q$addr\E$/, @{ $self->{$type} } )
+                        @{ $self->{$type} } = grep ( !/^\Q$addr\E$/, @{ $self->{$type} } )
                             if ( !$user->privileged );
 
                     }
                 }
-                Jifty->log->info( $msgid
-                        . " The incoming message was autogenerated. Not redistributing this message to unprivileged users based on site configuration.\n"
-                );
+                Jifty->log->info( $msgid . " The incoming message was autogenerated. Not redistributing this message to unprivileged users based on site configuration.\n" );
 
             }
 
         }
 
-        if ( my $squelch = $attachment->get_header('RT-Squelch-Replies-To') )
-        {
+        if ( my $squelch = $attachment->get_header('RT-Squelch-Replies-To') ) {
             @blacklist = split( /,/, $squelch );
         }
     }
 
-# Let's grab the SquelchMailTo attribue and push those entries into the @blacklist
+    # Let's grab the SquelchMailTo attribue and push those entries into the @blacklist
     push @blacklist, map $_->content, $self->ticket_obj->squelch_mail_to;
     push @blacklist, $self->squelch_mail_to;
 
@@ -724,8 +690,7 @@ sub remove_inappropriate_recipients {
     foreach my $person_to_yank (@blacklist) {
         $person_to_yank =~ s/\s//g;
         foreach my $type (@types) {
-            @{ $self->{$type} }
-                = grep !/^\Q$person_to_yank\E$/, @{ $self->{$type} };
+            @{ $self->{$type} } = grep !/^\Q$person_to_yank\E$/, @{ $self->{$type} };
         }
     }
 }
@@ -758,23 +723,13 @@ sub set_return_address {
 
     unless ( $self->template_obj->mime_obj->head->get('From') ) {
         if ( RT->config->get('UseFriendlyFromLine') ) {
-            my $friendly_name
-                = $self->transaction_obj->creator_obj->friendly_name;
+            my $friendly_name = $self->transaction_obj->creator_obj->friendly_name;
             if ( $friendly_name =~ /^"(.*)"$/ ) {    # a quoted string
                 $friendly_name = $1;
             }
 
             $friendly_name =~ s/"/\\"/g;
-            $self->set_header(
-                'From',
-                sprintf(
-                    RT->config->get('friendly_from_line_format'),
-                    $self->mime_encode_string(
-                        $friendly_name, RT->config->get('EmailOutputEncoding')
-                    ),
-                    $replyto
-                ),
-            );
+            $self->set_header( 'From', sprintf( RT->config->get('friendly_from_line_format'), $self->mime_encode_string( $friendly_name, RT->config->get('EmailOutputEncoding') ), $replyto ), );
         } else {
             $self->set_header( 'From', $replyto );
         }
@@ -786,7 +741,7 @@ sub set_return_address {
 
 }
 
-=head2 SetHeader column, value
+=head2 set_header column, value
 
 Set the column of the current MIME object into value.
 
@@ -804,7 +759,7 @@ sub set_header {
     return $self->template_obj->mime_obj->head->get($field);
 }
 
-=head2 Setsubject
+=head2 setsubject
 
 This routine sets the subject. it does not add the rt tag. that gets done elsewhere
 If $self->{'subject'} is already defined, it uses that. otherwise, it tries to get
@@ -838,7 +793,7 @@ sub set_subject {
 
 }
 
-=head2 SetsubjectToken
+=head2 setsubject_token
 
 This routine fixes the RT tag in the subject. It's unlikely that you want to overwrite this.
 
@@ -847,15 +802,10 @@ This routine fixes the RT tag in the subject. It's unlikely that you want to ove
 sub set_subject_token {
     my $self = shift;
 
-    $self->template_obj->mime_obj->head->replace(
-        subject => RT::Interface::Email::add_subject_tag(
-            $self->template_obj->mime_obj->head->get('subject'),
-            $self->ticket_obj->id,
-        ),
-    );
+    $self->template_obj->mime_obj->head->replace( subject => RT::Interface::Email::add_subject_tag( $self->template_obj->mime_obj->head->get('subject'), $self->ticket_obj->id, ), );
 }
 
-=head2 SetReferencesheaders
+=head2 set_referencesheaders
 
 Set References and In-Reply-To headers for this message.
 
@@ -925,7 +875,7 @@ sub set_references_headers {
 
 }
 
-=head2 PseudoReference
+=head2 pseudo_reference
 
 Returns a fake Message-ID: header for the ticket to allow a base level of threading
 
@@ -933,15 +883,12 @@ Returns a fake Message-ID: header for the ticket to allow a base level of thread
 
 sub pseudo_reference {
 
-    my $self = shift;
-    my $pseudo_ref
-        = '<RT-Ticket-'
-        . $self->ticket_obj->id . '@'
-        . RT->config->get('organization') . '>';
+    my $self       = shift;
+    my $pseudo_ref = '<RT-Ticket-' . $self->ticket_obj->id . '@' . RT->config->get('organization') . '>';
     return $pseudo_ref;
 }
 
-=head2 SetHeaderAsEncoding($field_name, $charset_encoding)
+=head2 set_header_as_encoding($field_name, $charset_encoding)
 
 This routine converts the field into specified charset encoding.
 
@@ -952,8 +899,7 @@ sub set_header_as_encoding {
     my ( $field, $enc ) = ( shift, shift );
 
     if ( $field eq 'From' and RT->config->get('SMTPFrom') ) {
-        $self->template_obj->mime_obj->head->replace( $field,
-            RT->config->get('SMTPFrom') );
+        $self->template_obj->mime_obj->head->replace( $field, RT->config->get('SMTPFrom') );
         return;
     }
 
@@ -965,7 +911,7 @@ sub set_header_as_encoding {
 
 }
 
-=head2 MIMEEncodeString STRING ENCODING
+=head2 mimeencode_string STRING ENCODING
 
 Takes a string and a possible encoding and returns the string wrapped in MIME goo.
 
@@ -988,11 +934,7 @@ sub mime_encode_string {
     #
     # First we get the integer max which max*4/3 would fit on space.
     # Then we find the greater multiple of 3 lower or equal than $max.
-    my $max = int(
-        (   ( 75 - length( '=?' . $charset . '?' . $encoding . '?' . '?=' ) )
-            * 3
-        ) / 4
-    );
+    my $max = int( ( ( 75 - length( '=?' . $charset . '?' . $encoding . '?' . '?=' ) ) * 3 ) / 4 );
     $max = int( $max / 3 ) * 3;
 
     chomp $value;
@@ -1024,8 +966,7 @@ sub mime_encode_string {
     push @chunks, $tmp if length $tmp;
 
     # encode an join chuncks
-    $value = join "\n ", map encode_mimeword( $_, $encoding, $charset ),
-        @chunks;
+    $value = join "\n ", map encode_mimeword( $_, $encoding, $charset ), @chunks;
     return ($value);
 }
 

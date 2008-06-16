@@ -56,12 +56,10 @@ use vars qw/@ISA/;
 
 #What does this type of Action does
 
-# {{{ sub Describe
+# {{{ sub describe
 sub describe {
     my $self = shift;
-    return (
-        ref $self
-            . " will set a ticket's priority to the argument provided." );
+    return ( ref $self . " will set a ticket's priority to the argument provided." );
 }
 
 # }}}
@@ -71,7 +69,7 @@ sub prepare {
 
     # nothing to prepare
     # warn "preparing";
-    Jifty->log->debug( "Preparing the setprio");
+    Jifty->log->debug("Preparing the setprio");
     return 1;
 }
 
@@ -79,7 +77,7 @@ sub prepare {
 
 sub commit {
     my $self = shift;
-    Jifty->log->debug( "Committing the setprio");
+    Jifty->log->debug("Committing the setprio");
     $self->ticket_obj->set_priority( $self->argument );
 
 }

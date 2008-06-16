@@ -1,3 +1,50 @@
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
+#                                          <jesse@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/copyleft/gpl.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
 use warnings;
 use strict;
 
@@ -32,20 +79,24 @@ use base 'RT::Record';
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
     column transaction_id => references RT::Model::Transaction;
-    column message_id => max_length is 200, type is 'varchar(200)', default is '';
+    column
+        message_id => max_length is 200,
+        type is 'varchar(200)', default is '';
     column parent => references RT::Model::Attachment;
-    column content_type => max_length is 200, type is 'varchar(200)', default is '';
+    column
+        content_type => max_length is 200,
+        type is 'varchar(200)', default is '';
     column filename => max_length is 255, type is 'varchar(255)', default is '';
-    column subject => max_length is 255, type is 'varchar(255)', default is '';
-    column content         => type is 'blob', default is '';
+    column subject  => max_length is 255, type is 'varchar(255)', default is '';
+    column content  => type is 'blob',    default is '';
     column content_encoding => type is 'blob', default is '';
-    column headers         => type is 'blob', default is '';
-    column creator => references RT::Model::Principal;
-    column created => type is 'timestamp';
+    column headers          => type is 'blob', default is '';
+    column creator          => references RT::Model::Principal;
+    column created          => type is 'timestamp';
 
 };
 
-=head2 Create
+=head2 create
 
 Create a new attachment. Takes a paramhash:
     
@@ -58,10 +109,10 @@ Create a new attachment. Takes a paramhash:
 sub create {
     my $self = shift;
     my %args = (
-        id            => 0,
+        id             => 0,
         transaction_id => 0,
-        parent        => 0,
-        attachment    => undef,
+        parent         => 0,
+        attachment     => undef,
         @_
     );
 
@@ -70,9 +121,7 @@ sub create {
 
     # if we didn't specify a ticket, we need to bail
     unless ( $args{'transaction_id'} ) {
-        Jifty->log->fatal(
-            "RT::Model::Attachment->create couldn't, as you didn't specify a transaction\n"
-        );
+        Jifty->log->fatal( "RT::Model::Attachment->create couldn't, as you didn't specify a transaction\n" );
         return (0);
     }
 
@@ -93,33 +142,31 @@ sub create {
     #Get the filename
     my $filename = $Attachment->head->recommended_filename;
 
-# If a message has no bodyhandle, that means that it has subparts (or appears to)
-# and we should act accordingly.
+    # If a message has no bodyhandle, that means that it has subparts (or appears to)
+    # and we should act accordingly.
     unless ( defined $Attachment->bodyhandle ) {
         my ($id) = $self->SUPER::create(
             transaction_id => $args{'transaction_id'},
-            parent        => $args{'parent'},
+            parent         => $args{'parent'},
             content_type   => $Attachment->mime_type,
-            headers       => $Attachment->head->as_string,
+            headers        => $Attachment->head->as_string,
             message_id     => $message_id,
-            subject       => $subject,
+            subject        => $subject,
         );
 
         unless ($id) {
-            Jifty->log->fatal(
-                "Attachment insert failed - " . Jifty->handle->dbh->errstr );
+            Jifty->log->fatal( "Attachment insert failed - " . Jifty->handle->dbh->errstr );
         }
 
         foreach my $part ( $Attachment->parts ) {
             my $SubAttachment = RT::Model::Attachment->new();
             my ($id) = $SubAttachment->create(
                 transaction_id => $args{'transaction_id'},
-                parent        => $id,
-                attachment    => $part,
+                parent         => $id,
+                attachment     => $part,
             );
             unless ($id) {
-                Jifty->log->fatal( "Attachment insert failed: "
-                        . Jifty->handle->dbh->errstr );
+                Jifty->log->fatal( "Attachment insert failed: " . Jifty->handle->dbh->errstr );
             }
         }
         return ($id);
@@ -128,31 +175,28 @@ sub create {
     #If it's not multipart
     else {
 
-        my ( $content_encoding, $Body )
-            = $self->_encode_lob( $Attachment->bodyhandle->as_string,
-            $Attachment->mime_type );
+        my ( $content_encoding, $Body ) = $self->_encode_lob( $Attachment->bodyhandle->as_string, $Attachment->mime_type );
 
         my $id = $self->SUPER::create(
             transaction_id   => $args{'transaction_id'},
             content_type     => $Attachment->mime_type,
             content_encoding => $content_encoding,
-            parent          => $args{'parent'},
-            headers         => $Attachment->head->as_string,
-            subject         => $subject,
-            content         => $Body,
-            filename        => $filename,
+            parent           => $args{'parent'},
+            headers          => $Attachment->head->as_string,
+            subject          => $subject,
+            content          => $Body,
+            filename         => $filename,
             message_id       => $message_id,
         );
 
         unless ($id) {
-            Jifty->log->fatal(
-                "Attachment insert failed: " . Jifty->handle->dbh->errstr );
+            Jifty->log->fatal( "Attachment insert failed: " . Jifty->handle->dbh->errstr );
         }
         return $id;
     }
 }
 
-=head2 Import
+=head2 import
 
 Create an attachment exactly as specified in the named parameters.
 
@@ -163,8 +207,7 @@ sub __import {
     my $self = shift;
     my %args = ( content_encoding => 'none', @_ );
 
-    ( $args{'content_encoding'}, $args{'content'} )
-        = $self->_encode_lob( $args{'content'}, $args{'MimeType'} );
+    ( $args{'content_encoding'}, $args{'content'} ) = $self->_encode_lob( $args{'content'}, $args{'MimeType'} );
 
     return ( $self->SUPER::create(%args) );
 }
@@ -184,16 +227,12 @@ sub transaction_obj {
     }
 
     unless ( $self->{_transaction_obj}->id ) {
-        Jifty->log->fatal( "Attachment "
-                . $self->id
-                . " can't find transaction "
-                . $self->transaction_id
-                . " which it is ostensibly part of. That's bad" );
+        Jifty->log->fatal( "Attachment " . $self->id . " can't find transaction " . $self->transaction_id . " which it is ostensibly part of. That's bad" );
     }
     return $self->{_transaction_obj};
 }
 
-=head2 ParentObj
+=head2 parent_obj
 
 Returns a parent's L<RT::Model::Attachment> object if this attachment
 has a parent, otherwise returns undef.
@@ -209,7 +248,7 @@ sub parent_obj {
     return $parent;
 }
 
-=head2 Children
+=head2 children
 
 Returns an L<RT::Model::AttachmentCollection> object which is preloaded with
 all attachments objects with this attachment\'s id as their
@@ -234,9 +273,7 @@ before returning it.
 
 sub content {
     my $self = shift;
-    return $self->_decode_lob( $self->content_type, $self->content_encoding,
-        $self->_value( 'content', decode_utf8 => 0 ),
-    );
+    return $self->_decode_lob( $self->content_type, $self->content_encoding, $self->_value( 'content', decode_utf8 => 0 ), );
 }
 
 =head2 original_content
@@ -258,16 +295,14 @@ sub original_content {
     if ( !$self->content_encoding || $self->content_encoding eq 'none' ) {
         $content = $self->_value( 'content', decode_utf8 => 0 );
     } elsif ( $self->content_encoding eq 'base64' ) {
-        $content = MIME::Base64::decode_base64(
-            $self->_value( 'content', decode_utf8 => 0 ) );
+        $content = MIME::Base64::decode_base64( $self->_value( 'content', decode_utf8 => 0 ) );
     } elsif ( $self->content_encoding eq 'quoted-printable' ) {
-        $content = MIME::QuotedPrint::decode(
-            $self->_value( 'content', decode_utf8 => 0 ) );
+        $content = MIME::QuotedPrint::decode( $self->_value( 'content', decode_utf8 => 0 ) );
     } else {
         return ( _( "Unknown content_encoding %1", $self->content_encoding ) );
     }
 
-  # Turn *off* the SvUTF8 bits here so decode_utf8 and from_to below can work.
+    # Turn *off* the SvUTF8 bits here so decode_utf8 and from_to below can work.
     local $@;
     Encode::_utf8_off($content);
 
@@ -280,9 +315,7 @@ sub original_content {
 
     eval { Encode::from_to( $content, 'utf8' => $enc ) } if $enc;
     if ($@) {
-        Jifty->log->error(
-            "Could not convert attachment from assumed utf8 to '$enc' :"
-                . $@ );
+        Jifty->log->error( "Could not convert attachment from assumed utf8 to '$enc' :" . $@ );
     }
     return $content;
 }
@@ -319,7 +352,7 @@ sub content_length {
     return $len;
 }
 
-=head2 Quote
+=head2 quote
 
 =cut
 
@@ -360,12 +393,7 @@ sub quote {
 
         $body =~ s/^/> /gm;
 
-        $body
-            = '['
-            . $self->transaction_obj->creator_obj->name() . ' - '
-            . $self->transaction_obj->created_as_string()
-            . "]:\n\n"
-            . $body . "\n\n";
+        $body = '[' . $self->transaction_obj->creator_obj->name() . ' - ' . $self->transaction_obj->created_as_string() . "]:\n\n" . $body . "\n\n";
 
     } else {
         $body = "[Non-text message not quoted]\n\n";
@@ -396,7 +424,7 @@ sub content_as_mime {
     return $entity;
 }
 
-=head2 Addresses
+=head2 addresses
 
 Returns a hashref of all addresses related to this attachment.
 The keys of the hash are C<From>, C<To>, C<Cc>, C<Bcc>, C<RT-Send-Cc>
@@ -410,10 +438,8 @@ sub addresses {
 
     my %data                 = ();
     my $current_user_address = lc $self->current_user->user_object->email;
-    my $correspond           = lc
-        $self->transaction_obj->ticket_obj->queue_obj->correspond_address;
-    my $comment
-        = lc $self->transaction_obj->ticket_obj->queue_obj->comment_address;
+    my $correspond           = lc $self->transaction_obj->ticket_obj->queue_obj->correspond_address;
+    my $comment              = lc $self->transaction_obj->ticket_obj->queue_obj->comment_address;
     foreach my $hdr (qw(From To Cc Bcc RT-Send-Cc RT-Send-Bcc)) {
         my @Addresses;
         my $line = $self->get_header($hdr);
@@ -522,7 +548,7 @@ sub add_header {
     return $self->__set( column => 'headers', value => $newheader );
 }
 
-=head2 SetHeader ( 'Tag', 'Value' )
+=head2 set_header ( 'Tag', 'Value' )
 
 Replace or add a Header to the attachment's headers.
 
@@ -604,12 +630,7 @@ sub encrypt {
 
     my $queue = $txn->ticket_obj->queue_obj;
     my $encrypt_for;
-    foreach my $address (
-        grep $_, $queue->correspond_address, $queue->comment_address,
-        RT->config->get('correspond_address'),
-        RT->config->get('comment_address'),
-        )
-    {
+    foreach my $address ( grep $_, $queue->correspond_address, $queue->comment_address, RT->config->get('correspond_address'), RT->config->get('comment_address'), ) {
         my %res = RT::Crypt::GnuPG::get_keys_info( $address, 'private' );
         next if $res{'exit_code'} || !$res{'info'};
         %res = RT::Crypt::GnuPG::get_keys_for_encryption($address);
@@ -634,11 +655,9 @@ sub encrypt {
         return ( 0, _('GnuPG error. Contact with administrator') );
     }
 
-    my ( $status, $msg )
-        = $self->__set( column => 'content', value => $content );
+    my ( $status, $msg ) = $self->__set( column => 'content', value => $content );
     unless ($status) {
-        return ( $status,
-            _( "Couldn't replace content with encrypted data: %1", $msg ) );
+        return ( $status, _( "Couldn't replace content with encrypted data: %1", $msg ) );
     }
     return ( 1, _('Successfuly encrypted data') );
 }
@@ -671,11 +690,9 @@ sub decrypt {
         return ( 0, _('GnuPG error. Contact with administrator') );
     }
 
-    my ( $status, $msg )
-        = $self->__set( column => 'content', value => $content );
+    my ( $status, $msg ) = $self->__set( column => 'content', value => $content );
     unless ($status) {
-        return ( $status,
-            _( "Couldn't replace content with decrypted data: %1", $msg ) );
+        return ( $status, _( "Couldn't replace content with decrypted data: %1", $msg ) );
     }
     return ( 1, _('Successfuly decrypted data') );
 }

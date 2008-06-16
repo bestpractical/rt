@@ -1,4 +1,50 @@
-
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
+#                                          <jesse@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/copyleft/gpl.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
 use warnings;
 use strict;
 
@@ -12,32 +58,32 @@ use File::Spec ();
 use vars qw($Config $System $nobody $Handle );
 our $VERSION = '3.7.14';
 
-our $BASE_PATH         = Jifty::Util->app_root;
-our $EtcPath          = $BASE_PATH.'/etc';
-our $BinPath          = $BASE_PATH.'/bin';
-our $VarPath          = $BASE_PATH.'/var';
-our $LocalPath        = $BASE_PATH.'/local';
-our $LocalLibPath     = $BASE_PATH.'/local/lib';
-our $LocalEtcPath     = $BASE_PATH.'/local/etc';
-our $LocalLexiconPath = $BASE_PATH.'/local/po';
+our $BASE_PATH        = Jifty::Util->app_root;
+our $EtcPath          = $BASE_PATH . '/etc';
+our $BinPath          = $BASE_PATH . '/bin';
+our $VarPath          = $BASE_PATH . '/var';
+our $LocalPath        = $BASE_PATH . '/local';
+our $LocalLibPath     = $BASE_PATH . '/local/lib';
+our $LocalEtcPath     = $BASE_PATH . '/local/etc';
+our $LocalLexiconPath = $BASE_PATH . '/local/po';
 our $LocalPluginPath  = $LocalPath . "/plugins";
 
 # $MasonComponentRoot is where your rt instance keeps its mason html files
 
-our $MasonComponentRoot = $BASE_PATH.'/html';
+our $MasonComponentRoot = $BASE_PATH . '/html';
 
 # $MasonLocalComponentRoot is where your rt instance keeps its site-local
 # mason html files.
 
-our $MasonLocalComponentRoot = $BASE_PATH.'/local/html';
+our $MasonLocalComponentRoot = $BASE_PATH . '/local/html';
 
 # $MasonDataDir Where mason keeps its datafiles
 
-our $MasonDataDir = $BASE_PATH.'/var/mason_data';
+our $MasonDataDir = $BASE_PATH . '/var/mason_data';
 
 # RT needs to put session data (for preserving state between connections
 # via the web interface)
-our $MasonSessionDir = $BASE_PATH.'/var/session_data';
+our $MasonSessionDir = $BASE_PATH . '/var/session_data';
 
 =head1 name
 
@@ -152,8 +198,7 @@ sub init_system_objects {
 
     #RT's "nobody user" is a genuine database user. its ID lives here.
     $nobody = RT::CurrentUser->new( name => 'Nobody' );
-    Carp::confess
-        "Could not load 'Nobody' User. This usually indicates a corrupt or missing RT database"
+    Carp::confess "Could not load 'Nobody' User. This usually indicates a corrupt or missing RT database"
         unless $nobody->id;
 
     $System = RT::System->new();
@@ -235,8 +280,7 @@ sub init_plugins {
         my $plugindir = $plugin;
         $plugindir =~ s/::/-/g;
         unless ( -d $RT::LocalPluginPath . "/$plugindir" ) {
-            Jifty->log->fatal(
-                "Plugin $plugindir not found in $RT::LocalPluginPath");
+            Jifty->log->fatal("Plugin $plugindir not found in $RT::LocalPluginPath");
         }
 
         # Splice the plugin's lib dir into @INC;
@@ -244,11 +288,10 @@ sub init_plugins {
 
         for (@INC) {
             if ( $_ eq $RT::LocalLibPath ) {
-                        push @tmp_inc, $_,
-                            $RT::LocalPluginPath . "/$plugindir";
-                } else {
-                        push @tmp_inc, $_;
-                }
+                push @tmp_inc, $_, $RT::LocalPluginPath . "/$plugindir";
+            } else {
+                push @tmp_inc, $_;
+            }
         }
 
         @INC = @tmp_inc;

@@ -1,0 +1,145 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<%ARGS>
+$Class => 'RT__Model__Ticket'
+$name
+$Attr  => undef
+</%ARGS>
+<%ONCE>
+
+# This is scary and should totally be refactored -- jesse
+my $COLUMN_MAP = {
+    id => {
+        attribute => 'id',
+        align     => 'right',
+        value     => sub  { return $_[0]->id }
+    },
+
+    Created => {
+        attribute => 'Created',
+        title     => 'Created',
+        value     => sub  { return $_[0]->created_obj->as_string }
+    },
+    CreatedRelative => {
+        attribute => 'Created',
+        title     => 'Created',
+        value     => sub  { return $_[0]->created_obj->age_as_string }
+    },
+    CreatedBy => {
+        attribute => 'CreatedBy',
+        title => 'Created By',
+        value     => sub  { return $_[0]->creator_obj->name }
+    },
+    last_updated => {
+        attribute => 'last_updated',
+        title     => 'Last Updated',
+        value     => sub  { return $_[0]->last_updated_obj->as_string }
+    },
+    last_updatedRelative => {
+        attribute => 'last_updated',
+        title     => 'Last Updated',
+        value     => sub  { return $_[0]->last_updated_obj->age_as_string }
+    },
+    last_updated_by => {
+        attribute => 'last_updated_by',
+        title     => 'Last Updated By',
+        value     => sub  { return $_[0]->last_updated_by_obj->name }
+    },
+
+
+    CheckBox => {
+        title => sub  {
+            my $name = $_[1] || 'SelectedTickets';
+            my $checked = $m->request_args->{ $name .'All' }? 'checked="checked"': '';
+
+            return \qq{<input type="checkbox" name="${name}All" value="1" $checked
+                              onclick="setCheckbox(this.form, '$name', this.checked)" />};
+        },
+        value => sub  {
+            my $id = $_[0]->id;
+
+            my $name = $_[2] || 'SelectedTickets';
+            return \qq{<input type="checkbox" name="$name" value="$id" checked />}
+                if $m->request_args->{ $name . 'All'};
+
+            my $arg = $m->request_args->{ $name };
+            my $checked = '';
+            if ( $arg && ref $arg ) {
+                $checked = 'checked="checked"' if grep $_ == $id, @$arg;
+            }
+            elsif ( $arg ) {
+                $checked = 'checked="checked"' if $arg == $id;
+            }
+            return \qq{<input type="checkbox" name="$name" value="$id" $checked />}
+        },
+    },
+    RadioButton => {
+        title => \'&nbsp;',
+        value => sub  {
+            my $id = $_[0]->id;
+
+            my $name = $_[2] || 'SelectedTicket';
+            my $arg = $m->request_args->{ $name };
+            my $checked = '';
+            $checked = 'checked="checked"' if $arg && $arg == $id;
+            return \qq{<input type="radio" name="SelectedTicket" value="$id" $checked />};
+        },
+    },
+};
+
+</%ONCE>
+<%INIT>
+$m->callback( COLUMN_MAP => $COLUMN_MAP, Callbackname => 'Once', CallbackOnce => 1 );
+$m->callback( COLUMN_MAP => $COLUMN_MAP );
+
+# first deal with class specific things
+my $class_map = $m->comp("/Elements/$Class/ColumnMap", Attr => $Attr, name => $name );
+return $class_map if defined $class_map;
+return get_column_map_entry( Map => $COLUMN_MAP, name => $name, Attribute => $Attr );
+
+</%INIT>

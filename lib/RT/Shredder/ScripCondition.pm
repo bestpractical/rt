@@ -71,16 +71,16 @@ sub __depends_on {
     my $objs = RT::Model::ScripCollection->new;
     $objs->limit( column => 'ScripCondition', value => $self->id );
     $deps->_push_dependencies(
-        base_object   => $self,
-        flags         => DEPENDS_ON,
+        base_object    => $self,
+        flags          => DEPENDS_ON,
         target_objects => $objs,
-        shredder      => $args{'shredder'}
+        shredder       => $args{'shredder'}
     );
 
     return $self->SUPER::__depends_on(%args);
 }
 
-sub __Relates {
+sub __relates {
     my $self = shift;
     my %args = (
         shredder     => undef,

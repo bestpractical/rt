@@ -97,8 +97,8 @@ sub groupings {
             $queue->load($id);
             unless ( $queue->id ) {
 
-               # XXX TODO: This ancient code dates from a former developer
-               # we have no idea what it means or why cfqueues are so encoded.
+                # XXX TODO: This ancient code dates from a former developer
+                # we have no idea what it means or why cfqueues are so encoded.
                 $id =~ s/^.'*(.*).'*$/$1/;
                 $queue->load($id);
             }
@@ -106,8 +106,7 @@ sub groupings {
         }
         $CustomFields->limit_to_global;
         while ( my $CustomField = $CustomFields->next ) {
-            push @fields, "Custom field '" . $CustomField->name . "'",
-                "CF.{" . $CustomField->id . "}";
+            push @fields, "Custom field '" . $CustomField->name . "'", "CF.{" . $CustomField->id . "}";
         }
     }
     return @fields;
@@ -160,7 +159,7 @@ sub _do_search {
     $self->add_empty_rows;
 }
 
-=head2 _FieldToFunction column
+=head2 _field_to_function column
 
 Returns a tuple of the field or a database function to allow grouping on that 
 field.
@@ -182,16 +181,14 @@ sub _field_to_function {
         } elsif ( $grouping =~ /Annually/ ) {
             $args{'function'} = "SUBSTR($field,1,4)";
         }
-    } elsif ( $field =~ /^(?:CF|CustomField)\.{(.*)}$/ )
-    {    #XXX: use CFDecipher method
+    } elsif ( $field =~ /^(?:CF|CustomField)\.{(.*)}$/ ) {    #XXX: use CFDecipher method
         my $cf_name = $1;
         my $cf      = RT::Model::CustomField->new;
         $cf->load($cf_name);
         unless ( $cf->id ) {
             Jifty->log->error("Couldn't load CustomField #$cf_name");
         } else {
-            my ( $ticket_cf_alias, $cf_alias )
-                = $self->_custom_field_join( $cf->id, $cf->id, $cf_name );
+            my ( $ticket_cf_alias, $cf_alias ) = $self->_custom_field_join( $cf->id, $cf->id, $cf_name );
             @args{qw(alias column)} = ( $ticket_cf_alias, 'content' );
         }
     }
@@ -219,11 +216,10 @@ sub next {
 
 sub new_item {
     my $self = shift;
-    return RT::Report::Tickets::Entry->new( current_user => RT->system_user )
-        ;    # $self->current_user);
+    return RT::Report::Tickets::Entry->new( current_user => RT->system_user );    # $self->current_user);
 }
 
-=head2 AddEmptyRows
+=head2 add_empty_rows
 
 If we're grouping on a criterion we know how to add zero-value rows
 for, do that.
@@ -233,12 +229,9 @@ for, do that.
 sub add_empty_rows {
     my $self = shift;
     if ( $self->{'_group_by_field'} eq 'status' ) {
-        my %has = map { $_->__value('status') => 1 }
-            @{ $self->items_array_ref || [] };
+        my %has = map { $_->__value('status') => 1 } @{ $self->items_array_ref || [] };
 
-        foreach
-            my $status ( grep !$has{$_}, RT::Model::Queue->new->status_array )
-        {
+        foreach my $status ( grep !$has{$_}, RT::Model::Queue->new->status_array ) {
 
             my $record = $self->new_item;
             $record->load_from_hash(

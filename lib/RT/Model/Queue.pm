@@ -68,6 +68,7 @@ use RT::Model::Queue;
 
 use warnings;
 use strict;
+
 package RT::Model::Queue;
 
 use RT::Model::GroupCollection;
@@ -82,17 +83,23 @@ use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
 
     column name => max_length is 200, type is 'varchar(200)', default is '';
-    column description => max_length is 255, type is 'varchar(255)', default is '';
-    column correspond_address => max_length is 120, type is 'varchar(120)', default is '';
-    column comment_address => max_length is 120, type is 'varchar(120)', default is '';
-    column initial_priority => max_length is 11, type is 'int', default is '0';
-    column final_priority => max_length is 11, type is 'int', default is '0';
-    column default_due_in => max_length is 11, type is 'int', default is '0';
-    column creator => references RT::Model::User;
-    column Created => type is 'timestamp';
-    column last_updated_by => references RT::Model::User;
-    column last_updated => type is 'timestamp';
-    column disabled => max_length is 6, type is 'smallint', default is '0';
+    column
+        description => max_length is 255,
+        type is 'varchar(255)', default is '';
+    column
+        correspond_address => max_length is 120,
+        type is 'varchar(120)', default is '';
+    column
+        comment_address => max_length is 120,
+        type is 'varchar(120)', default is '';
+    column initial_priority => max_length is 11, type is 'int',      default is '0';
+    column final_priority   => max_length is 11, type is 'int',      default is '0';
+    column default_due_in   => max_length is 11, type is 'int',      default is '0';
+    column creator          => references RT::Model::User;
+    column Created          => type is 'timestamp';
+    column last_updated_by  => references RT::Model::User;
+    column last_updated     => type is 'timestamp';
+    column disabled         => max_length is 6,  type is 'smallint', default is '0';
 };
 our @DEFAULT_ACTIVE_STATUS   = qw(new open stalled);
 our @DEFAULT_INACTIVE_STATUS = qw(resolved rejected deleted);
@@ -105,35 +112,34 @@ our @DEFAULT_INACTIVE_STATUS = qw(resolved rejected deleted);
 # _('deleted'); # For the string extractor to get a string to localize
 
 our $RIGHTS = {
-    SeeQueue            => 'Can this principal see this queue',     # loc_pair
-    AdminQueue          => 'Create, delete and modify queues',      # loc_pair
-    ShowACL             => 'Display Access Control List',           # loc_pair
-    ModifyACL           => 'Modify Access Control List',            # loc_pair
-    ModifyQueueWatchers => 'Modify the queue watchers',             # loc_pair
-    AssignCustomFields  => 'Assign and remove custom fields',       # loc_pair
-    ModifyTemplate      => 'Modify Scrip templates for this queue', # loc_pair
-    ShowTemplate => 'Display Scrip templates for this queue',       # loc_pair
+    SeeQueue            => 'Can this principal see this queue',         # loc_pair
+    AdminQueue          => 'Create, delete and modify queues',          # loc_pair
+    ShowACL             => 'Display Access Control List',               # loc_pair
+    ModifyACL           => 'Modify Access Control List',                # loc_pair
+    ModifyQueueWatchers => 'Modify the queue watchers',                 # loc_pair
+    AssignCustomFields  => 'Assign and remove custom fields',           # loc_pair
+    ModifyTemplate      => 'Modify Scrip templates for this queue',     # loc_pair
+    ShowTemplate        => 'Display Scrip templates for this queue',    # loc_pair
 
-    ModifyScrips => 'Modify Scrips for this queue',                 # loc_pair
-    ShowScrips   => 'Display Scrips for this queue',                # loc_pair
+    ModifyScrips => 'Modify Scrips for this queue',                     # loc_pair
+    ShowScrips   => 'Display Scrips for this queue',                    # loc_pair
 
-    ShowTicket         => 'See ticket summaries',                   # loc_pair
-    ShowTicketcomments => 'See ticket private commentary',          # loc_pair
-    ShowOutgoingEmail =>
-        'See exact outgoing email messages and their recipeients',  # loc_pair
+    ShowTicket         => 'See ticket summaries',                                       # loc_pair
+    ShowTicketcomments => 'See ticket private commentary',                              # loc_pair
+    ShowOutgoingEmail  => 'See exact outgoing email messages and their recipeients',    # loc_pair
 
-    Watch => 'Sign up as a ticket Requestor or ticket or queue Cc', # loc_pair
-    WatchAsAdminCc  => 'Sign up as a ticket or queue AdminCc',      # loc_pair
-    CreateTicket    => 'Create tickets in this queue',              # loc_pair
-    ReplyToTicket   => 'Reply to tickets',                          # loc_pair
-    CommentOnTicket => 'comment on tickets',                        # loc_pair
-    OwnTicket       => 'Own tickets',                               # loc_pair
-    ModifyTicket    => 'Modify tickets',                            # loc_pair
-    DeleteTicket    => 'Delete tickets',                            # loc_pair
-    TakeTicket      => 'Take tickets',                              # loc_pair
-    StealTicket     => 'Steal tickets',                             # loc_pair
+    Watch           => 'Sign up as a ticket Requestor or ticket or queue Cc',           # loc_pair
+    WatchAsAdminCc  => 'Sign up as a ticket or queue AdminCc',                          # loc_pair
+    CreateTicket    => 'Create tickets in this queue',                                  # loc_pair
+    ReplyToTicket   => 'Reply to tickets',                                              # loc_pair
+    CommentOnTicket => 'comment on tickets',                                            # loc_pair
+    OwnTicket       => 'Own tickets',                                                   # loc_pair
+    ModifyTicket    => 'Modify tickets',                                                # loc_pair
+    DeleteTicket    => 'Delete tickets',                                                # loc_pair
+    TakeTicket      => 'Take tickets',                                                  # loc_pair
+    StealTicket     => 'Steal tickets',                                                 # loc_pair
 
-    ForwardMessage => 'Forward messages to third person(s)',        # loc_pair
+    ForwardMessage => 'Forward messages to third person(s)',                            # loc_pair
 
 };
 
@@ -206,9 +212,7 @@ sub active_status_array {
     if ( RT->config->get('ActiveStatus') ) {
         return ( RT->config->get('ActiveStatus') );
     } else {
-        Jifty->log->warn(
-            "RT::ActiveStatus undefined, falling back to deprecated defaults"
-        );
+        Jifty->log->warn("RT::ActiveStatus undefined, falling back to deprecated defaults");
         return (@DEFAULT_ACTIVE_STATUS);
     }
 }
@@ -228,9 +232,7 @@ sub inactive_status_array {
     if ( RT->config->get('InactiveStatus') ) {
         return ( RT->config->get('InactiveStatus') );
     } else {
-        Jifty->log->warn(
-            "RT::InactiveStatus undefined, falling back to deprecated defaults"
-        );
+        Jifty->log->warn( "RT::InactiveStatus undefined, falling back to deprecated defaults" );
         return (@DEFAULT_INACTIVE_STATUS);
     }
 }
@@ -314,7 +316,7 @@ sub is_inactive_status {
 
 # {{{ sub create
 
-=head2 Create(ARGS)
+=head2 create(ARGS)
 
 Arguments: ARGS is a hash of named parameters.  Valid parameters are:
 
@@ -364,9 +366,7 @@ sub create {
 
     #TODO better input validation
     Jifty->handle->begin_transaction();
-    my $id
-        = $self->SUPER::create( map { $_ => $args{$_} } grep exists $args{$_},
-        keys %attrs );
+    my $id = $self->SUPER::create( map { $_ => $args{$_} } grep exists $args{$_}, keys %attrs );
     unless ($id) {
         Jifty->handle->rollback();
         return ( 0, _('Queue could not be Created') );
@@ -406,7 +406,7 @@ sub delete {
 
 # {{{ sub set_disabled
 
-=head2 Setdisabled
+=head2 setdisabled
 
 Takes a boolean.
 1 will cause this queue to no longer be available for tickets.
@@ -418,7 +418,7 @@ Takes a boolean.
 
 # {{{ sub load
 
-=head2 Load
+=head2 load
 
 Takes either a numerical id or a textual name and loads the specified queue.
 
@@ -445,7 +445,7 @@ sub load {
 
 # {{{ sub validate_name
 
-=head2 Validatename name
+=head2 validatename name
 
 Takes a queue name. Returns true if it's an ok name for
 a new queue. Returns undef if there's already a queue by that name.
@@ -529,9 +529,9 @@ sub set_encrypt {
     return ( $status, _('Encrypting disabled') );
 }
 
-# {{{ sub Templates
+# {{{ sub templates
 
-=head2 Templates
+=head2 templates
 
 Returns an RT::Model::TemplateCollection object of all of this queue's templates.
 
@@ -555,7 +555,7 @@ sub templates {
 
 # {{{  CustomField
 
-=head2 CustomField name
+=head2 custom_field name
 
 Load the queue-specific custom field named name
 
@@ -593,7 +593,7 @@ sub ticket_custom_fields {
 
 # {{{ TicketTransactionCustomFields
 
-=head2 TicketTransactionCustomFields
+=head2 ticket_transaction_custom_fields
 
 Returns an L<RT::Model::CustomFieldCollection> object containing all global and
 queue-specific B<transaction> custom fields.
@@ -606,8 +606,7 @@ sub ticket_transaction_custom_fields {
     my $cfs = RT::Model::CustomFieldCollection->new;
     if ( $self->current_user_has_right('SeeQueue') ) {
         $cfs->limit_to_global_or_object_id( $self->id );
-        $cfs->limit_to_lookup_type(
-            'RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction');
+        $cfs->limit_to_lookup_type('RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction');
     }
     return ($cfs);
 }
@@ -616,7 +615,7 @@ sub ticket_transaction_custom_fields {
 
 # }}}
 
-=head2 _createQueueGroups
+=head2 _create_queue_groups
 
 Create the ticket groups and links for this ticket. 
 This routine expects to be called from Ticket->create _inside of a transaction_
@@ -627,13 +626,12 @@ It will return true on success and undef on failure.
 
 =cut
 
-
-sub roles { qw(requestor cc admin_cc) }
+sub roles {qw(requestor cc admin_cc)}
 
 sub _create_role_groups {
     my $self = shift;
 
-    my @types = ('owner', $self->roles);
+    my @types = ( 'owner', $self->roles );
 
     foreach my $type (@types) {
         my $type_obj = RT::Model::Group->new;
@@ -694,7 +692,7 @@ sub add_watcher {
 
         #  If it's a Requestor or Cc and they don't have
         #   'Watch' or 'ModifyTicket', bail
-        elsif (( $args{'type'} eq 'cc' ) or ( $args{'type'} eq 'requestor' ) ) {
+        elsif ( ( $args{'type'} eq 'cc' ) or ( $args{'type'} eq 'requestor' ) ) {
 
             unless ( $self->current_user_has_right('ModifyQueueWatchers')
                 or $self->current_user_has_right('Watch') )
@@ -749,12 +747,9 @@ sub _add_watcher {
         } else {
 
             # if the user doesn't exist, we need to create a new user
-            my $new_user
-                = RT::Model::User->new( current_user => RT->system_user );
+            my $new_user = RT::Model::User->new( current_user => RT->system_user );
 
-            my ( $Address, $name )
-                = RT::Interface::Email::parse_address_from_header(
-                $args{'email'} );
+            my ( $Address, $name ) = RT::Interface::Email::parse_address_from_header( $args{'email'} );
 
             my ( $Val, $Message ) = $new_user->create(
                 name       => $Address,
@@ -764,11 +759,9 @@ sub _add_watcher {
                 comments   => 'AutoCreated when added as a watcher'
             );
             unless ($Val) {
-                Jifty->log->error( "Failed to create user "
-                        . $args{'email'} . ": "
-                        . $Message );
+                Jifty->log->error( "Failed to create user " . $args{'email'} . ": " . $Message );
 
-               # Deal with the race condition of two account creations at once
+                # Deal with the race condition of two account creations at once
                 $new_user->load_by_email( $args{'email'} );
             }
             $principal->load( $new_user->principal_id );
@@ -791,39 +784,23 @@ sub _add_watcher {
 
     if ( $group->has_member($principal) ) {
 
-        return (
-            0,
-            _(  'That principal is already a %1 for this queue',
-                $args{'type'}
-            )
-        );
+        return ( 0, _( 'That principal is already a %1 for this queue', $args{'type'} ) );
     }
 
-    my ( $m_id, $m_msg )
-        = $group->_add_member( principal_id => $principal->id );
+    my ( $m_id, $m_msg ) = $group->_add_member( principal_id => $principal->id );
     unless ($m_id) {
-        Jifty->log->error( "Failed to add "
-                . $principal->id
-                . " as a member of group "
-                . $group->id . "\n"
-                . $m_msg );
+        Jifty->log->error( "Failed to add " . $principal->id . " as a member of group " . $group->id . "\n" . $m_msg );
 
-        return (
-            0,
-            _(  'Could not make that principal a %1 for this queue',
-                $args{'type'}
-            )
-        );
+        return ( 0, _( 'Could not make that principal a %1 for this queue', $args{'type'} ) );
     }
-    return ( 1,
-        _( 'Added principal as a %1 for this queue', $args{'type'} ) );
+    return ( 1, _( 'Added principal as a %1 for this queue', $args{'type'} ) );
 }
 
 # }}}
 
 # {{{ sub delete_watcher
 
-=head2 DeleteWatcher { type => TYPE, principal_id => PRINCIPAL_ID }
+=head2 delete_watcher { type => TYPE, principal_id => PRINCIPAL_ID }
 
 
 Deletes a queue  watcher.  Takes two arguments:
@@ -893,8 +870,7 @@ sub delete_watcher {
                 return ( 0, _('Permission Denied') );
             }
         } else {
-            Jifty->log->warn(
-                "$self -> DeleteWatcher got passed a bogus type");
+            Jifty->log->warn("$self -> DeleteWatcher got passed a bogus type");
             return ( 0, _('Error in parameters to Queue->delete_watcher') );
         }
     }
@@ -912,33 +888,17 @@ sub delete_watcher {
     # see if this user is already a watcher.
 
     unless ( $group->has_member($principal) ) {
-        return ( 0,
-            _( 'That principal is not a %1 for this queue', $args{'type'} ) );
+        return ( 0, _( 'That principal is not a %1 for this queue', $args{'type'} ) );
     }
 
     my ( $m_id, $m_msg ) = $group->_delete_member( $principal->id );
     unless ($m_id) {
-        Jifty->log->error( "Failed to delete "
-                . $principal->id
-                . " as a member of group "
-                . $group->id . "\n"
-                . $m_msg );
+        Jifty->log->error( "Failed to delete " . $principal->id . " as a member of group " . $group->id . "\n" . $m_msg );
 
-        return (
-            0,
-            _(  'Could not remove that principal as a %1 for this queue',
-                $args{'type'}
-            )
-        );
+        return ( 0, _( 'Could not remove that principal as a %1 for this queue', $args{'type'} ) );
     }
 
-    return (
-        1,
-        _(  "%1 is no longer a %2 for this queue.",
-            $principal->object->name,
-            $args{'type'}
-        )
-    );
+    return ( 1, _( "%1 is no longer a %2 for this queue.", $principal->object->name, $args{'type'} ) );
 }
 
 # }}}
@@ -963,10 +923,10 @@ sub role_group {
 
 # {{{ IsWatcher, IsCc, is_admin_cc
 
-# {{{ sub IsWatcher
+# {{{ sub is_watcher
 # a generic routine to be called by IsRequestor, IsCc and is_admin_cc
 
-=head2 IsWatcher { type => TYPE, principal_id => PRINCIPAL_ID }
+=head2 is_watcher { type => TYPE, principal_id => PRINCIPAL_ID }
 
 Takes a param hash with the attributes type and principal_id
 
@@ -1090,8 +1050,7 @@ sub has_right {
         return undef;
     }
 
-    return $principal->has_right( %args,
-        object => ( $self->id ? $self : RT->system ), );
+    return $principal->has_right( %args, object => ( $self->id ? $self : RT->system ), );
 }
 
 # }}}

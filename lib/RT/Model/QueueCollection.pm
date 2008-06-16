@@ -99,7 +99,7 @@ we're explicitly trying to see them.
 sub _do_search {
     my $self = shift;
 
-#unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
+    #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
     unless ( $self->{'find_disabled_rows'} ) {
         $self->limit_to_enabled();
     }
@@ -110,7 +110,7 @@ sub _do_search {
 
 # }}}
 
-# {{{ sub Limit
+# {{{ sub limit
 sub limit {
     my $self = shift;
     my %args = (

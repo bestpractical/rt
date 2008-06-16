@@ -64,8 +64,7 @@ sub is_applicable {
         my @vals = $self->argument =~ m/(\d+)$_/;
         $e{$_} = pop @vals || 0;
     }
-    my $elapse
-        = $e{'d'} * 24 * 60 * 60 + $e{'h'} * 60 * 60 + $e{'m'} * 60 + $e{'s'};
+    my $elapse = $e{'d'} * 24 * 60 * 60 + $e{'h'} * 60 * 60 + $e{'m'} * 60 + $e{'s'};
 
     my $cur = RT::Date->new( RT->system_user );
     $cur->set_to_now();

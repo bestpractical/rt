@@ -84,8 +84,7 @@ See also L<with_linked>.
 =cut
 
 sub support_args {
-    return $_[0]->SUPER::support_args,
-        qw(query with_linked apply_query_to_linked);
+    return $_[0]->SUPER::support_args, qw(query with_linked apply_query_to_linked);
 }
 
 sub test_args {
@@ -93,8 +92,7 @@ sub test_args {
     my %args = @_;
     my $queue;
     if ( $args{'query'} ) {
-        my $objs = RT::Model::TicketCollection->new(
-            current_user => RT->system_user );
+        my $objs = RT::Model::TicketCollection->new( current_user => RT->system_user );
         $objs->{'allow_deleted_search'} = 1;
         my ( $status, $msg ) = $objs->from_sql( $args{'query'} );
         return ( 0, "Bad query argument, error: $msg" ) unless $status;
@@ -139,8 +137,7 @@ sub get_linked {
     if ( $self->{'opt'}{'apply_query_to_linked'} ) {
         $query .= " AND ( " . $self->{'opt'}{'query'} . " )";
     }
-    my $objs
-        = RT::Model::TicketCollection->new( current_user => RT->system_user );
+    my $objs = RT::Model::TicketCollection->new( current_user => RT->system_user );
     $objs->{'allow_deleted_search'} = 1;
     $objs->from_sql($query);
     $self->fetch_next( $objs, 1 );

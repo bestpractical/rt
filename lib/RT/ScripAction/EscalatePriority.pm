@@ -81,12 +81,10 @@ use vars qw/@ISA/;
 
 #What does this type of Action does
 
-# {{{ sub Describe
+# {{{ sub describe
 sub describe {
     my $self = shift;
-    return (
-        ref $self
-            . " will move a ticket's priority toward its final priority." );
+    return ( ref $self . " will move a ticket's priority toward its final priority." );
 }
 
 # }}}
@@ -95,8 +93,7 @@ sub describe {
 sub prepare {
     my $self = shift;
 
-    if ($self->ticket_obj->priority() == $self->ticket_obj->final_priority() )
-    {
+    if ( $self->ticket_obj->priority() == $self->ticket_obj->final_priority() ) {
 
         # no update necessary.
         return 0;
@@ -108,13 +105,10 @@ sub prepare {
     # If we don't have a due date, adjust the priority by one
     # until we hit the final priority
     if ( $due->unix() < 1 ) {
-        if ( $self->ticket_obj->priority > $self->ticket_obj->final_priority )
-        {
+        if ( $self->ticket_obj->priority > $self->ticket_obj->final_priority ) {
             $self->{'prio'} = ( $self->ticket_obj->priority - 1 );
             return 1;
-        } elsif (
-            $self->ticket_obj->priority < $self->ticket_obj->final_priority )
-        {
+        } elsif ( $self->ticket_obj->priority < $self->ticket_obj->final_priority ) {
             $self->{'prio'} = ( $self->ticket_obj->priority + 1 );
             return 1;
         }
@@ -137,8 +131,7 @@ sub prepare {
             # compute the difference between the current priority and the
             # final priority
 
-            my $prio_delta = $self->ticket_obj->final_priority()
-                - $self->ticket_obj->priority;
+            my $prio_delta = $self->ticket_obj->final_priority() - $self->ticket_obj->priority;
 
             my $inc_priority_by = int( $prio_delta / $diff_in_days );
 

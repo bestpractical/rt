@@ -102,7 +102,7 @@ sub _init {
     $self->{'opt'} = \%args;
 }
 
-=head2 List
+=head2 list
 
 Returns hash with names of the available plugins as keys and path to
 library files as values. Method has no arguments. Can be used as class
@@ -174,7 +174,7 @@ sub load_by_name {
     return ( 1, "successfuly load plugin" );
 }
 
-=head2 LoadByString
+=head2 load_by_string
 
 Takes formatted string as first argument and which is used to
 load plugin. The format of the string is
@@ -193,7 +193,7 @@ is C<false>.
 
 =cut
 
-sub loadByString {
+sub load_by_string {
     my $self = shift;
     my ( $plugin, $args ) = split /=/, ( shift || '' ), 2;
 

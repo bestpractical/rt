@@ -127,7 +127,7 @@ we're explicitly trying to see them.
 sub _do_search {
     my $self = shift;
 
-#unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
+    #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
     unless ( $self->{'find_disabled_rows'} ) {
         $self->limit_to_enabled();
     }
@@ -295,7 +295,7 @@ sub _join_groups {
 sub _join_acl {
     my $self = shift;
     my %args = (
-        right             => undef,
+        right              => undef,
         include_superusers => undef,
         @_,
     );
@@ -324,9 +324,9 @@ sub _join_acl {
 sub _get_equiv_objects {
     my $self = shift;
     my %args = (
-        object              => undef,
+        object                => undef,
         include_system_rights => undef,
-        equiv_objects       => [],
+        equiv_objects         => [],
         @_
     );
     return () unless $args{'object'};
@@ -334,9 +334,9 @@ sub _get_equiv_objects {
     my @objects = ( $args{'object'} );
     if ( UNIVERSAL::isa( $args{'object'}, 'RT::Model::Ticket' ) ) {
 
-# If we're looking at ticket rights, we also want to look at the associated queue rights.
-# this is a little bit hacky, but basically, now that we've done the ticket roles magic,
-# we load the queue object and ask all the rest of our questions about the queue.
+        # If we're looking at ticket rights, we also want to look at the associated queue rights.
+        # this is a little bit hacky, but basically, now that we've done the ticket roles magic,
+        # we load the queue object and ask all the rest of our questions about the queue.
 
         # XXX: This should be abstracted into object itself
         if ( $args{'object'}->id ) {
@@ -357,19 +357,17 @@ sub _get_equiv_objects {
 sub who_have_right {
     my $self = shift;
     my %args = (
-        right                  => undef,
-        object                 => undef,
+        right                    => undef,
+        object                   => undef,
         include_system_rights    => undef,
-        include_superusers      => undef,
+        include_superusers       => undef,
         include_subgroup_members => 1,
-        equiv_objects          => [],
+        equiv_objects            => [],
         @_
     );
 
     if ( defined $args{'object_type'} || defined $args{'object_id'} ) {
-        Jifty->log->fatal(
-            "who_have_right called with the Obsolete object_id/Object_type API"
-        );
+        Jifty->log->fatal( "who_have_right called with the Obsolete object_id/Object_type API" );
         return (undef);
     }
 
@@ -396,12 +394,12 @@ sub who_have_right {
 sub who_have_role_right {
     my $self = shift;
     my %args = (
-        right                  => undef,
-        object                 => undef,
+        right                    => undef,
+        object                   => undef,
         include_system_rights    => undef,
-        include_superusers      => undef,
+        include_superusers       => undef,
         include_subgroup_members => 1,
-        equiv_objects          => [],
+        equiv_objects            => [],
         @_
     );
 
@@ -478,12 +476,12 @@ sub _join_group_members_for_group_rights {
 sub who_have_group_right {
     my $self = shift;
     my %args = (
-        right                  => undef,
-        object                 => undef,
+        right                    => undef,
+        object                   => undef,
         include_system_rights    => undef,
-        include_superusers      => undef,
+        include_superusers       => undef,
         include_subgroup_members => 1,
-        equiv_objects          => [],
+        equiv_objects            => [],
         @_
     );
 
@@ -544,7 +542,7 @@ sub who_have_group_right {
 sub who_belong_to_groups {
     my $self = shift;
     my %args = (
-        groups                 => undef,
+        groups                   => undef,
         include_subgroup_members => 1,
         @_
     );

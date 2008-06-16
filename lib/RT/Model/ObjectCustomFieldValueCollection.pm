@@ -45,7 +45,6 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
 use strict;
 use warnings;
 
@@ -96,7 +95,7 @@ sub limit_to_object {
 
 # }}}
 
-=sub HasEntry value
+=sub has_entry value
 
 If this collection has an entry with content that eq value then
 returns the entry, otherwise returns undef.

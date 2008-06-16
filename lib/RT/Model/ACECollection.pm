@@ -113,7 +113,7 @@ sub limit_to_object {
 
 # {{{ limit_Notobject
 
-=head2 limit_Notobject $object
+=head2 limit_notobject $object
 
 Limit the ACL to rights NOT on the object $object.  $object needs to be
 an RT::Record class.
@@ -151,7 +151,7 @@ sub limitnot_object {
 
 # {{{ limit_ToPrincipal
 
-=head2 limit_ToPrincipal { type => undef, id => undef, include_group_membership => undef }
+=head2 limit_to_principal { type => undef, id => undef, include_group_membership => undef }
 
 Limit the ACL to the principal with principal_id id and principal_type Type
 
@@ -166,8 +166,8 @@ if include_group_membership => 1 is specified, ACEs which apply to the principal
 sub limit_to_principal {
     my $self = shift;
     my %args = (
-        type                   => undef,
-        id                     => undef,
+        type                     => undef,
+        id                       => undef,
         include_group_membership => undef,
         @_
     );
@@ -200,12 +200,10 @@ sub limit_to_principal {
         # to their ACL equivalence group. The machinations we're going through
         # lead me to start to suspect that we really want users and groups
         # to just be the same table. or _maybe_ that we want an object db.
-        my $princ
-            = RT::Model::Principal->new( current_user => RT->system_user );
+        my $princ = RT::Model::Principal->new( current_user => RT->system_user );
         $princ->load( $args{'id'} );
         if ( $princ->principal_type eq 'User' ) {
-            my $group
-                = RT::Model::Group->new( current_user => RT->system_user );
+            my $group = RT::Model::Group->new( current_user => RT->system_user );
             $group->load_acl_equivalence_group($princ);
             $args{'id'} = $group->principal_id;
         }
@@ -222,7 +220,7 @@ sub limit_to_principal {
 
 # {{{ ExcludeDelegatedRights
 
-=head2 ExcludeDelegatedRights 
+=head2 exclude_delegated_rights 
 
 Don't list rights which have been delegated.
 
@@ -335,7 +333,7 @@ sub _do_search {
     # Jifty->log->debug("Now in ".$self."->_do_search");
     my $return = $self->SUPER::_do_search(@_);
 
-#  Jifty->log->debug("In $self ->_do_search. return from SUPER::_do_search was $return\n");
+    #  Jifty->log->debug("In $self ->_do_search. return from SUPER::_do_search was $return\n");
     $self->{'must_redo_search'} = 0;
     $self->_is_limited(1);
     $self->_build_hash();
@@ -361,7 +359,7 @@ sub _build_hash {
 
 # {{{ HasEntry
 
-=head2 HasEntry
+=head2 has_entry
 
 =cut
 
@@ -369,26 +367,18 @@ sub has_entry {
 
     my $self = shift;
     my %args = (
-        right_scope     => undef,
+        right_scope      => undef,
         right_applies_to => undef,
-        right_name     => undef,
-        principal_id   => undef,
-        principal_type => undef,
+        right_name       => undef,
+        principal_id     => undef,
+        principal_type   => undef,
         @_
     );
 
     #if we haven't done the search yet, do it now.
     $self->_do_search();
 
-    if ($self->{'as_hash'}->{
-                  $args{'right_scope'} . "-"
-                . $args{'right_applies_to'} . "-"
-                . $args{'right_name'} . "-"
-                . $args{'principal_id'} . "-"
-                . $args{'principal_type'}
-        } == 1
-        )
-    {
+    if ( $self->{'as_hash'}->{ $args{'right_scope'} . "-" . $args{'right_applies_to'} . "-" . $args{'right_name'} . "-" . $args{'principal_id'} . "-" . $args{'principal_type'} } == 1 ) {
         return (1);
     } else {
         return (undef);

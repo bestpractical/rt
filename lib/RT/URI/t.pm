@@ -105,7 +105,7 @@ sub parse_uri {
     }
 }
 
-=head2 Scheme
+=head2 scheme
 
 Return the URI scheme 
 

@@ -1,3 +1,50 @@
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
+#                                          <jesse@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/copyleft/gpl.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
 # Portions Copyright 2000 Tobias Brox <tobix@cpan.org>
 
 =head1 name
@@ -31,15 +78,17 @@ sub table {'Templates'}
 use base qw'RT::Record';
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column queue => max_length is 11,  type is 'int',      default is '0';
+    column queue => max_length is 11,  type is 'int',          default is '0';
     column name  => max_length is 200, type is 'varchar(200)', default is '';
-    column description => max_length is 255, type is 'varchar(255)', default is '';
-    column type     => max_length is 16, type is 'varchar(16)', default is '';
-    column content     => type is 'blob',     default is '';
-    column last_updated => type is 'timestamp';
+    column
+        description => max_length is 255,
+        type is 'varchar(255)', default is '';
+    column type => max_length is 16, type is 'varchar(16)', default is '';
+    column content => type is 'blob', default is '';
+    column last_updated    => type is 'timestamp';
     column last_updated_by => max_length is 11, type is 'int', default is '0';
-    column creator => max_length is 11, type is 'int', default is '0';
-    column created => type is 'timestamp';
+    column creator         => max_length is 11, type is 'int', default is '0';
+    column created         => type is 'timestamp';
 
 };
 
@@ -81,7 +130,7 @@ sub _value {
 
 # {{{ sub load
 
-=head2 Load <identifer>
+=head2 load <identifer>
 
 Load a template, either by number or by name
 
@@ -100,7 +149,7 @@ sub load {
 
 # }}}
 
-# {{{ sub loadGlobalTemplate
+# {{{ sub load_global_template
 
 =head2 load_global_template name
 
@@ -117,7 +166,7 @@ sub load_global_template {
 
 # }}}
 
-# {{{ sub loadqueueTemplate
+# {{{ sub loadqueue_template
 
 =head2  load_queue_template (queue => QUEUEID, name => name)
 
@@ -133,9 +182,7 @@ sub load_queue_template {
         @_
     );
 
-    return (
-        $self->load_by_cols( name => $args{'name'}, queue => $args{'queue'} )
-    );
+    return ( $self->load_by_cols( name => $args{'name'}, queue => $args{'queue'} ) );
 
 }
 
@@ -143,7 +190,7 @@ sub load_queue_template {
 
 # {{{ sub create
 
-=head2 Create
+=head2 create
 
 Takes a paramhash of content, queue, name and description.
 name should be a unique string identifying this Template.
@@ -163,8 +210,8 @@ sub create {
         content     => undef,
         queue       => 0,
         description => '[no description]',
-        type => 'Action',    #By default, template are 'Action' templates
-        name => undef,
+        type        => 'Action',             #By default, template are 'Action' templates
+        name        => undef,
         @_
     );
 
@@ -180,8 +227,7 @@ sub create {
         }
         $args{'queue'} = 0;
     } else {
-        my $queue_obj
-            = RT::Model::Queue->new( current_user => $self->current_user );
+        my $queue_obj = RT::Model::Queue->new( current_user => $self->current_user );
         $queue_obj->load( $args{'queue'} )
             || return ( undef, _('Invalid queue') );
 
@@ -206,7 +252,7 @@ sub create {
 
 # {{{ sub delete
 
-=head2 Delete
+=head2 delete
 
 Delete this template.
 
@@ -222,7 +268,7 @@ sub delete {
     return ( $self->SUPER::delete(@_) );
 }
 
-=head2 IsEmpty
+=head2 is_empty
  
 Returns true value if content of the template is empty, otherwise
 returns false.
@@ -248,9 +294,9 @@ sub mime_obj {
     return ( $self->{'mime_obj'} );
 }
 
-# {{{ sub Parse
+# {{{ sub parse
 
-=head2 Parse
+=head2 parse
 
  This routine performs Text::Template parsing on the template and then
  imports the results into a MIME::Entity so we can really use it
@@ -262,7 +308,7 @@ sub mime_obj {
 
 =cut
 
-=head2 Parse
+=head2 parse
          
 This routine performs L<Text::Template> parsing on the template and then
 imports the results into a L<MIME::Entity> so we can really use it. Use
@@ -321,7 +367,7 @@ sub parse {
 
 # }}}
 
-# {{{ sub _Parsecontent
+# {{{ sub _parsecontent
 
 # Perform template substitutions on the template
 
@@ -350,8 +396,7 @@ sub _parse_content {
     $args{'ticket'} = delete $args{'ticket_obj'} if $args{'ticket_obj'};
     $args{'transaction'} = delete $args{'transaction_obj'}
         if $args{'transaction_obj'};
-    $args{'requestor'}
-        = eval { $args{'ticket'}->role_group("requestor")->user_members_obj->first->name }
+    $args{'requestor'} = eval { $args{'ticket'}->role_group("requestor")->user_members_obj->first->name; }
         if $args{'ticket'};
     $args{'rtname'} = RT->config->get('rtname');
     if ( $args{'ticket'} ) {
@@ -374,7 +419,7 @@ sub _parse_content {
         BROKEN => sub {
             my (%args) = @_;
             Jifty->log->error("Template parsing error: $args{error}")
-                unless $args{error} =~ /^Died at /; # ignore intentional die()
+                unless $args{error} =~ /^Died at /;    # ignore intentional die()
             $is_broken++;
             return undef;
         },

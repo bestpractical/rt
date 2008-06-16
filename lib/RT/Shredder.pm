@@ -76,7 +76,7 @@ RT::Shredder uses the term "Wipeout" to mean "permanently erase" (or
 what most people would think of as "delete").
 
 
-=head2 Why do you want this?
+=head2 why do you want this?
 
 Normally in RT, "deleting" an item simply deactivates it and makes it
 invisible from view.  This is done to retain full history and
@@ -93,14 +93,14 @@ An additional use of Shredder is to obliterate sensitive information
 into RT.
 
 
-=head2 Command line tools (CLI)
+=head2 command line tools (CLI)
 
 L<rt-shredder> is a program which allows you to wipe objects from
 command line or with system tasks scheduler (cron, for example).
 See also 'rt-shredder --help'.
 
 
-=head2 Web based interface (WebUI)
+=head2 web based interface (WebUI)
 
 Shredder's WebUI integrates into RT's WebUI.  You can find it in the
 Configuration->Tools->Shredder tab.  The interface is similar to the
@@ -162,7 +162,7 @@ $ShredderStoragePath, new_path );>  Be sure to use an absolute path.
 
 =head1 INFORMATION FOR DEVELOPERS
 
-=head2 General API
+=head2 general API
 
 L<RT::Shredder> is an extension to RT which adds shredder methods to
 RT objects and classes.  The API is not well documented yet, but you
@@ -381,9 +381,7 @@ sub put_objects {
     my %args = ( objects => undef, @_ );
 
     my @res;
-    for (
-        $self->cast_objects_to_records( objects => delete $args{'objects'} ) )
-    {
+    for ( $self->cast_objects_to_records( objects => delete $args{'objects'} ) ) {
         push @res, $self->put_object( %args, object => $_ );
     }
 
@@ -406,13 +404,11 @@ sub put_object {
 
     my $obj = $args{'object'};
     unless ( UNIVERSAL::isa( $obj, 'RT::Record' ) ) {
-        RT::Shredder::Exception->throw(
-            "Unsupported type '" . ( ref $obj || $obj || '(undef)' ) . "'" );
+        RT::Shredder::Exception->throw( "Unsupported type '" . ( ref $obj || $obj || '(undef)' ) . "'" );
     }
 
     my $str = $obj->_as_string;
-    return ( $self->{'cache'}->{$str}
-            ||= { state => ON_STACK, object => $obj } );
+    return ( $self->{'cache'}->{$str} ||= { state => ON_STACK, object => $obj } );
 }
 
 =head4 Getobject, GetState, GetRecord( String => ''| object => '' )
@@ -466,15 +462,14 @@ sub put_resolver {
     my %args = (
         base_class   => '',
         target_class => '',
-        code        => undef,
+        code         => undef,
         @_,
     );
     unless ( UNIVERSAL::isa( $args{'code'} => 'CODE' ) ) {
         die "Resolver '$args{Code}' is not code reference";
     }
 
-    my $resolvers = ( ( $self->{'resolver'}->{ $args{'base_class'} } ||= {} )
-        ->{ $args{'target_class'} || '' } ||= [] );
+    my $resolvers = ( ( $self->{'resolver'}->{ $args{'base_class'} } ||= {} )->{ $args{'target_class'} || '' } ||= [] );
     unshift @$resolvers, $args{'code'};
     return;
 }
@@ -489,12 +484,9 @@ sub get_resolvers {
 
     my @res;
     if ( $args{'target_class'}
-        && exists $self->{'resolver'}->{ $args{'base_class'} }
-        ->{ $args{'target_class'} } )
+        && exists $self->{'resolver'}->{ $args{'base_class'} }->{ $args{'target_class'} } )
     {
-        push @res,
-            @{ $self->{'resolver'}->{ $args{'base_class'} }
-                ->{ $args{'target_class'} || '' } };
+        push @res, @{ $self->{'resolver'}->{ $args{'base_class'} }->{ $args{'target_class'} || '' } };
     }
     if ( exists $self->{'resolver'}->{ $args{'base_class'} }->{''} ) {
         push @res, @{ $self->{'resolver'}->{ $args{'base_class'} }->{''} };
@@ -516,13 +508,12 @@ sub apply_resolvers {
     unless (@resolvers) {
         RT::Shredder::Exception::Info->throw(
             tag   => 'NoResolver',
-            error => "Couldn't find resolver for dependency '"
-                . $dep->as_string . "'",
+            error => "Couldn't find resolver for dependency '" . $dep->as_string . "'",
         );
     }
     $_->(
-        shredder     => $self,
-        base_object  => $dep->base_object,
+        shredder      => $self,
+        base_object   => $dep->base_object,
         target_object => $dep->target_object,
     ) foreach @resolvers;
 
@@ -577,14 +568,14 @@ sub _wipeout {
     my $deps = $object->dependencies( shredder => $self );
     $deps->list(
         with_flags => DEPENDS_ON | VARIABLE,
-        callback  => sub { $self->apply_resolvers( dependency => $_[0] ) },
+        callback   => sub { $self->apply_resolvers( dependency => $_[0] ) },
     );
     $self->dump_object( object => $object, state => 'after resolvers' );
 
     $deps->list(
         with_flags    => DEPENDS_ON,
         without_flags => WIPE_AFTER | VARIABLE,
-        callback => sub { $self->_wipeout( object => $_[0]->target_object ) },
+        callback      => sub { $self->_wipeout( object => $_[0]->target_object ) },
     );
     $self->dump_object(
         object => $object,
@@ -599,7 +590,7 @@ sub _wipeout {
     $deps->list(
         with_flags    => DEPENDS_ON | WIPE_AFTER,
         without_flags => VARIABLE,
-        callback => sub { $self->_wipeout( object => $_[0]->target_object ) },
+        callback      => sub { $self->_wipeout( object => $_[0]->target_object ) },
     );
     $self->dump_object(
         object => $object,
@@ -699,8 +690,7 @@ sub get_filename {
         }
 
         # check base dir
-        my $dir
-            = File::Spec->join( ( File::Spec->splitpath($file) )[ 0, 1 ] );
+        my $dir = File::Spec->join( ( File::Spec->splitpath($file) )[ 0, 1 ] );
         unless ( -e $dir && -d _ ) {
             die "base directory '$dir' for file '$file' doesn't exist";
         }
@@ -761,7 +751,7 @@ sub dump_object {
     my $self = shift;
     my %args = ( object => undef, state => undef, @_ );
     die "No state passed" unless $args{'state'};
-    return                unless $active_dump_state{ lc $args{'state'} };
+    return unless $active_dump_state{ lc $args{'state'} };
 
     foreach ( @{ $self->{'dump_plugins'} } ) {
         next unless grep lc $args{'state'} eq lc $_, $_->applies_to_states;
@@ -805,12 +795,12 @@ __END__
 
 =head1 NOTES
 
-=head2 Database transactions support
+=head2 database transactions support
 
 Since 0.03_01 RT::Shredder uses database transactions and should be
 much safer to run on production servers.
 
-=head2 Foreign keys
+=head2 foreign keys
 
 Mainstream RT doesn't use FKs, but at least I posted DDL script that creates them
 in mysql DB, note that if you use FKs then this two valid keys don't allow delete
@@ -826,28 +816,28 @@ L<http://bugs.mysql.com/bug.php?id=4042>
 We need your feedback in all cases: if you use it or not,
 is it works for you or not.
 
-=head2 Testing
+=head2 testing
 
 Don't skip C<make test> step while install and send me reports if it's fails.
 Add your own tests, it's easy enough if you've writen at list one perl script
 that works with RT. Read more about testing in F<t/utils.pl>.
 
-=head2 Reporting
+=head2 reporting
 
 Send reports to L</AUTHOR> or to the RT mailing lists.
 
-=head2 Documentation
+=head2 documentation
 
 Many bugs in the docs: insanity, spelling, gramar and so on.
 Patches are wellcome.
 
-=head2 Todo
+=head2 todo
 
 Please, see Todo file, it has some technical notes
 about what I plan to do, when I'll do it, also it
 describes some problems code has.
 
-=head2 Repository
+=head2 repository
 
 Since RT-3.7 shredder is a part of the RT distribution.
 Versions of the RTx::Shredder extension could

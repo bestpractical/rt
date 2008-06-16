@@ -80,8 +80,10 @@ use Jifty::DBI::Record schema {
         type is 'varchar(25)', default is '';
     column principal_id => references RT::Model::Principal;
     column right_name => max_length is 25, type is 'varchar(25)', default is '';
-    column object_type => max_length is 25, type is 'varchar(25)', default is '';
-    column object_id     => type is 'int', default is '0';
+    column
+        object_type => max_length is 25,
+        type is 'varchar(25)', default is '';
+    column object_id => type is 'int', default is '0';
     column delegated_by   => references RT::Model::Principal;
     column delegated_from => references RT::Model::ACE;
 };
@@ -111,14 +113,14 @@ use vars qw (
     owner     => 'The owner of a ticket',                # loc_pair
     requestor => 'The requestor of a ticket',            # loc_pair
     cc        => 'The CC of a ticket',                   # loc_pair
-    admin_cc   => 'The administrative CC of a ticket',    # loc_pair
+    admin_cc  => 'The administrative CC of a ticket',    # loc_pair
 );
 
 # }}}
 
 # {{{ sub load_by_values
 
-=head2 LoadByValues PARAMHASH
+=head2 load_by_values PARAMHASH
 
 Load an ACE by specifying a paramhash with the following fields:
 
@@ -150,16 +152,13 @@ sub load_by_values {
     );
 
     my $princ_obj;
-    ( $princ_obj, $args{'principal_type'} )
-        = $self->canonicalize_principal( $args{'principal_id'},
-        $args{'principal_type'} );
+    ( $princ_obj, $args{'principal_type'} ) = $self->canonicalize_principal( $args{'principal_id'}, $args{'principal_type'} );
 
     unless ( $princ_obj->id ) {
         return ( 0, _( 'Principal %1 not found.', $args{'principal_id'} ) );
     }
 
-    my ( $object, $object_type, $object_id )
-        = $self->_parse_object_arg(%args);
+    my ( $object, $object_type, $object_id ) = $self->_parse_object_arg(%args);
     unless ($object) {
         return ( 0, _("System error. Right not granted.") );
     }
@@ -186,7 +185,7 @@ sub load_by_values {
 
 # {{{ sub create
 
-=head2 Create <PARAMS>
+=head2 create <PARAMS>
 
 PARAMS is a parameter hash with the following elements:
 
@@ -229,24 +228,21 @@ sub create {
         return ( 0, _('No right specified') );
     }
 
-#if we haven't specified any sort of right, we're talking about a global right
+    #if we haven't specified any sort of right, we're talking about a global right
     if (   !defined $args{'object'}
         && !defined $args{'object_id'}
         && !defined $args{'object_type'} )
     {
         $args{'object'} = RT->system;
     }
-    ( $args{'object'}, $args{'object_type'}, $args{'object_id'} )
-        = $self->_parse_object_arg(%args);
+    ( $args{'object'}, $args{'object_type'}, $args{'object_id'} ) = $self->_parse_object_arg(%args);
     unless ( $args{'object'} ) {
         return ( 0, _("System error. Right not granted.") );
     }
 
     # {{{ Validate the principal
     my $princ_obj;
-    ( $princ_obj, $args{'principal_type'} )
-        = $self->canonicalize_principal( $args{'principal_id'},
-        $args{'principal_type'} );
+    ( $princ_obj, $args{'principal_type'} ) = $self->canonicalize_principal( $args{'principal_id'}, $args{'principal_type'} );
 
     unless ( $princ_obj->id ) {
         return ( 0, _( 'Principal %1 not found.', $args{'principal_id'} ) );
@@ -285,25 +281,14 @@ sub create {
     # {{{ canonicalize_ and check the right name
     my $canonic_name = $self->canonicalize_right_name( $args{'right_name'} );
     unless ($canonic_name) {
-        return (
-            0,
-            _(  "Invalid right. Couldn't canonicalize_ right '$args{'right_name'}'"
-            )
-        );
+        return ( 0, _( "Invalid right. Couldn't canonicalize right '$args{'right_name'}'" ) );
     }
     $args{'right_name'} = $canonic_name;
 
     #check if it's a valid right_name
     if ( $args{'object'}->can('available_rights') ) {
-        unless (
-            exists $args{'object'}
-            ->available_rights->{ $args{'right_name'} } )
-        {
-            Jifty->log->warn(
-                      "Couldn't validate right name '$args{'right_name'}'"
-                    . " for object of "
-                    . ref( $args{'object'} )
-                    . " class" );
+        unless ( exists $args{'object'}->available_rights->{ $args{'right_name'} } ) {
+            Jifty->log->warn( "Couldn't validate right name '$args{'right_name'}'" . " for object of " . ref( $args{'object'} ) . " class" );
             return ( 0, _('Invalid right') );
         }
     }
@@ -317,8 +302,8 @@ sub create {
         right_name     => $args{'right_name'},
         object_type    => $args{'object_type'},
         object_id      => $args{'object_id'},
-        delegated_by    => 0,
-        delegated_from  => 0,
+        delegated_by   => 0,
+        delegated_from => 0,
     );
     if ( $self->id ) {
         return ( 0, _('That principal already has that right') );
@@ -330,11 +315,11 @@ sub create {
         right_name     => $args{'right_name'},
         object_type    => ref( $args{'object'} ),
         object_id      => $args{'object'}->id,
-        delegated_by    => 0,
-        delegated_from  => 0,
+        delegated_by   => 0,
+        delegated_from => 0,
     );
 
-#Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space.
+    #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space.
     RT::Model::Principal->invalidate_acl_cache();
 
     if ($id) {
@@ -346,9 +331,9 @@ sub create {
 
 # }}}
 
-# {{{ sub Delegate
+# {{{ sub delegate
 
-=head2 Delegate <PARAMS>
+=head2 delegate <PARAMS>
 
 This routine delegates the current ACE to a principal specified by the
 B<principal_id>  parameter.
@@ -372,9 +357,7 @@ sub delegate {
         return ( 0, _("Right not loaded.") );
     }
     my $princ_obj;
-    ( $princ_obj, $args{'principal_type'} )
-        = $self->canonicalize_principal( $args{'principal_id'},
-        $args{'principal_type'} );
+    ( $princ_obj, $args{'principal_type'} ) = $self->canonicalize_principal( $args{'principal_id'}, $args{'principal_type'} );
 
     unless ( $princ_obj->id ) {
         return ( 0, _( 'Principal %1 not found.', $args{'principal_id'} ) );
@@ -399,23 +382,16 @@ sub delegate {
     unless ( $self->principal_object->is_group ) {
         return ( 0, _("System Error") );
     }
-    unless (
-        $self->principal_object->object->has_member_recursively(
-            $self->current_user->principal_object
-        )
-        )
-    {
+    unless ( $self->principal_object->object->has_member_recursively( $self->current_user->principal_object ) ) {
         return ( 0, _("Permission Denied") );
     }
 
     # }}}
 
-    my $concurrency_check
-        = RT::Model::ACE->new( current_user => RT->system_user );
+    my $concurrency_check = RT::Model::ACE->new( current_user => RT->system_user );
     $concurrency_check->load( $self->id );
     unless ( $concurrency_check->id ) {
-        Jifty->log->fatal(
-            "Trying to delegate a right which had already been deleted");
+        Jifty->log->fatal("Trying to delegate a right which had already been deleted");
         return ( 0, _('Permission Denied') );
     }
 
@@ -428,24 +404,24 @@ sub delegate {
         right_name     => $self->__value('right_name'),
         object_type    => $self->__value('object_type'),
         object_id      => $self->__value('object_id'),
-        delegated_by    => $self->current_user->id,
-        delegated_from  => $self->id
+        delegated_by   => $self->current_user->id,
+        delegated_from => $self->id
     );
     if ( $delegated_ace->id ) {
         return ( 0, _('That principal already has that right') );
     }
     my $id = $delegated_ace->SUPER::create(
         principal_id   => $princ_obj->id,
-        principal_type => 'Group',          # do we want to hardcode this?
-        right_name    => $self->__value('right_name'),
-        object_type   => $self->__value('object_type'),
-        object_id     => $self->__value('object_id'),
+        principal_type => 'Group',                         # do we want to hardcode this?
+        right_name     => $self->__value('right_name'),
+        object_type    => $self->__value('object_type'),
+        object_id      => $self->__value('object_id'),
         delegated_by   => $self->current_user->id,
         delegated_from => $self->id
     );
 
-#Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space.
-# TODO what about the groups key cache?
+    #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space.
+    # TODO what about the groups key cache?
     RT::Model::Principal->invalidate_acl_cache();
 
     if ( $id > 0 ) {
@@ -459,7 +435,7 @@ sub delegate {
 
 # {{{ sub delete
 
-=head2 Delete { inside_transaction => undef}
+=head2 delete { inside_transaction => undef}
 
 Delete this object. This method should ONLY ever be called from RT::Model::User or RT::Model::Group (or from itself)
 If this is being called from within a transaction, specify a true value for the parameter inside_transaction.
@@ -476,8 +452,8 @@ sub delete {
         return ( 0, _('Right not loaded.') );
     }
 
-# A user can delete an ACE if the current user has the right to modify it and it's not a delegated ACE
-# or if it's a delegated ACE and it was delegated by the current user
+    # A user can delete an ACE if the current user has the right to modify it and it's not a delegated ACE
+    # or if it's a delegated ACE and it was delegated by the current user
     unless (
         (   $self->current_user->has_right(
                 right  => 'ModifyACL',
@@ -505,8 +481,7 @@ sub _delete {
 
     Jifty->handle->begin_transaction() unless $inside_transaction;
 
-    my $delegated_from_this
-        = RT::Model::ACECollection->new( current_user => RT->system_user );
+    my $delegated_from_this = RT::Model::ACECollection->new( current_user => RT->system_user );
     $delegated_from_this->limit(
         column   => 'delegated_from',
         operator => '=',
@@ -516,8 +491,7 @@ sub _delete {
     my $delete_succeeded = 1;
     my $submsg;
     while ( my $delegated_ace = $delegated_from_this->next ) {
-        ( $delete_succeeded, $submsg )
-            = $delegated_ace->_delete( inside_transaction => 1 );
+        ( $delete_succeeded, $submsg ) = $delegated_ace->_delete( inside_transaction => 1 );
         last unless ($delete_succeeded);
     }
 
@@ -535,14 +509,13 @@ sub _delete {
             or $self->right_name() eq 'SuperUser' )
         )
     {
-        $val = $self->principal_object->_cleanup_invalid_delegations(
-            inside_transaction => 1 );
+        $val = $self->principal_object->_cleanup_invalid_delegations( inside_transaction => 1 );
     }
 
     if ($val) {
 
-#Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space.
-# TODO what about the groups key cache?
+        #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space.
+        # TODO what about the groups key cache?
         RT::Model::Principal->invalidate_acl_cache();
         Jifty->handle->commit() unless $inside_transaction;
         return ( $val, _('Right revoked') );
@@ -637,9 +610,7 @@ sub object {
         $appliesto_obj->load( $self->__value('object_id') );
         return ($appliesto_obj);
     } else {
-        Jifty->log->warn( "$self -> object called for an object "
-                . "of an unknown type:"
-                . $self->__value('object_type') );
+        Jifty->log->warn( "$self -> object called for an object " . "of an unknown type:" . $self->__value('object_type') );
         return (undef);
     }
 }
@@ -661,10 +632,7 @@ sub principal_object {
     $princ_obj->load( $self->__value('principal_id') );
 
     unless ( $princ_obj->id ) {
-        Jifty->log->err( "ACE "
-                . $self->id
-                . " couldn't load its principal object - "
-                . $self->__value('principal_id') );
+        Jifty->log->err( "ACE " . $self->id . " couldn't load its principal object - " . $self->__value('principal_id') );
     }
     return ($princ_obj);
 
@@ -690,12 +658,8 @@ sub _value {
 
     if ( $self->__value('delegated_by') eq $self->current_user->id ) {
         return ( $self->__value(@_) );
-    } elsif (
-        $self->principal_object->is_group
-        && $self->principal_object->object->has_member_recursively(
-            $self->current_user->principal_object
-        )
-        )
+    } elsif ( $self->principal_object->is_group
+        && $self->principal_object->object->has_member_recursively( $self->current_user->principal_object ) )
     {
         return ( $self->__value(@_) );
     } elsif (
@@ -717,7 +681,7 @@ sub _value {
 
 # {{{ _canonicalize_Principal
 
-=head2 _canonicalize_Principal (principal_id, principal_type)
+=head2 _canonicalize_principal (principal_id, principal_type)
 
 Takes a principal id and an optional principal type.
 
@@ -731,8 +695,7 @@ sub canonicalize_principal {
     my $princ_id   = shift;
     my $princ_type = shift || 'Group';
 
-    my $princ_obj
-        = RT::Model::Principal->new( current_user => RT->system_user );
+    my $princ_obj = RT::Model::Principal->new( current_user => RT->system_user );
     $princ_obj->load($princ_id);
 
     unless ( $princ_obj->id ) {
@@ -748,12 +711,8 @@ sub canonicalize_principal {
         my $equiv_group = RT::Model::Group->new;
         $equiv_group->load_acl_equivalence_group($princ_obj);
         unless ( $equiv_group->id ) {
-            Jifty->log->fatal(
-                "No ACL equiv group for princ " . $princ_obj->id );
-            return (
-                RT::Model::Principal->new( current_user => RT->system_user ),
-                undef
-            );
+            Jifty->log->fatal( "No ACL equiv group for princ " . $princ_obj->id );
+            return ( RT::Model::Principal->new( current_user => RT->system_user ), undef );
         }
         $princ_obj  = $equiv_group->principal_object();
         $princ_type = 'Group';
@@ -772,13 +731,10 @@ sub _parse_object_arg {
     );
 
     if ( $args{'object'} && ( $args{'object_id'} || $args{'object_type'} ) ) {
-        Jifty->log->fatal(
-            "Method called with an object_type or an object_id and object args"
-        );
+        Jifty->log->fatal( "Method called with an object_type or an object_id and object args" );
         return ();
     } elsif ( $args{'object'} && !UNIVERSAL::can( $args{'object'}, 'id' ) ) {
-        Jifty->log->fatal(
-            "Method called called object that has no id method");
+        Jifty->log->fatal("Method called called object that has no id method");
         return ();
     } elsif ( $args{'object'} ) {
         my $obj = $args{'object'};

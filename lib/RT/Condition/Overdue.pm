@@ -63,7 +63,7 @@ use strict;
 use vars qw/@ISA/;
 @ISA = qw(RT::Condition::Generic);
 
-=head2 IsApplicable
+=head2 is_applicable
 
 If the due date is before "now" return true
 

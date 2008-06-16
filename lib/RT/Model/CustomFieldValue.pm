@@ -48,24 +48,25 @@ use strict;
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
 package RT::Model::CustomFieldValue;
 use base qw/RT::Record/;
 sub table {'CustomFieldValues'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column creator => references RT::Model::User;
+    column creator         => references RT::Model::User;
     column last_updated_by => references RT::Model::User;
-    column sort_order   => type is 'int', max_length is 11, default is '0';
-    column custom_field => type is 'int', max_length is 11, default is '0';
-    column created     => type is 'timestamp';
-    column last_updated => type is 'timestamp';
-    column name => type is 'varchar(200)', max_length is 200, default is '';
-    column description => type is 'varchar(255)', max_length is 255, default is '';
+    column sort_order      => type is 'int', max_length is 11, default is '0';
+    column custom_field    => type is 'int', max_length is 11, default is '0';
+    column created         => type is 'timestamp';
+    column last_updated    => type is 'timestamp';
+    column name            => type is 'varchar(200)', max_length is 200, default is '';
+    column
+        description => type is 'varchar(255)',
+        max_length is 255, default is '';
 
 };
 
-=head2 Validatename
+=head2 validatename
 
 Override the default Validatename method that stops custom field values
 from being integers.
@@ -76,14 +77,17 @@ sub create {
     my $self = shift;
     my %args = (
         custom_field => 0,
-        name        => '',
-        description => '',
+        name         => '',
+        description  => '',
         sort_order   => 0,
-        category    => '',
+        category     => '',
         @_,
     );
 
-    my $cf_id = ref $args{'custom_field'} ? $args{'custom_field'}->id : $args{'custom_field'};
+    my $cf_id
+        = ref $args{'custom_field'}
+        ? $args{'custom_field'}->id
+        : $args{'custom_field'};
 
     my $cf = RT::Model::CustomField->new;
     $cf->load($cf_id);

@@ -103,7 +103,7 @@ sub __set {
 
 }
 
-=head2 Delete
+=head2 delete
 
 Delete this record object from the database.
 
@@ -120,7 +120,7 @@ sub delete {
     }
 }
 
-=head2 object_typeStr
+=head2 object_type_str
 
 Returns a string which is this object's type.  The type is the class,
 without the "RT::" prefix.
@@ -137,7 +137,7 @@ sub object_type_str {
     }
 }
 
-=head2 Attributes
+=head2 attributes
 
 Return this object's attributes as an RT::Model::AttributeCollection object
 
@@ -336,8 +336,7 @@ sub load_by_cols {
     # We don't want to hang onto this
     delete $self->{'attributes'};
 
-    return $self->SUPER::load_by_cols(@_)
-        ;    # unless $self->_handle->case_sensitive;
+    return $self->SUPER::load_by_cols(@_);    # unless $self->_handle->case_sensitive;
 
     # If this database is case sensitive we need to uncase objects for
     # explicit loading
@@ -347,9 +346,7 @@ sub load_by_cols {
         # We don't need to explicitly downcase integers or an id.
         if ( $key ne 'id' && defined $hash{$key} && $hash{$key} !~ /^\d+$/ ) {
             my ( $op, $val, $func );
-            ( $key, $op, $val, $func )
-                = Jifty->handle->_make_clause_case_insensitive( $key, '=',
-                delete $hash{$key} );
+            ( $key, $op, $val, $func ) = Jifty->handle->_make_clause_case_insensitive( $key, '=', delete $hash{$key} );
             $hash{$key}->{operator} = $op;
             $hash{$key}->{value}    = $val;
             $hash{$key}->{function} = $func;
@@ -480,19 +477,10 @@ sub _set {
 
     # @values has two values, a status code and a message.
 
-# $ret is a Class::Returnvalue object. as such, in a boolean context, it's a bool
-# we want to change the standard "success" message
+    # $ret is a Class::Returnvalue object. as such, in a boolean context, it's a bool
+    # we want to change the standard "success" message
     if ($status) {
-        $msg = _(
-            "%1 changed from %2 to %3",
-            $args{'column'},
-            ( $old_val ? "'$old_val'" : _("(no value)") ),
-            '"'
-                . (
-                $self->__value( $args{'column'} ) || 'weird undefined value'
-                )
-                . '"'
-        );
+        $msg = _( "%1 changed from %2 to %3", $args{'column'}, ( $old_val ? "'$old_val'" : _("(no value)") ), '"' . ( $self->__value( $args{'column'} ) || 'weird undefined value' ) . '"' );
     } else {
 
         $msg = _($msg);
@@ -549,9 +537,9 @@ sub creator_obj {
 
 # }}}
 
-# {{{ sub last_updated_byObj
+# {{{ sub last_updated_by_obj
 
-=head2 last_updated_byObj
+=head2 last_updated_by_obj
 
   Returns an RT::Model::User object of the last user to touch this object
 
@@ -584,7 +572,7 @@ sub uri {
 
 # }}}
 
-=head2 Validatename name
+=head2 validatename name
 
 Validate the name of the record we're creating. Mostly, just make sure it's not a numeric ID, which is invalid for name
 
@@ -600,7 +588,7 @@ sub validate_name {
     }
 }
 
-=head2 _EncodeLOB BODY MIME_TYPE
+=head2 _encode_lob BODY MIME_TYPE
 
 Takes a potentially large attachment. Returns (content_encoding, EncodedBody) based on system configuration and selected database
 
@@ -653,11 +641,7 @@ sub _encode_lob {
         elsif ( RT->config->get('DropLongAttachments') ) {
 
             # drop the attachment on the floor
-            Jifty->log->info( "$self: Dropped an attachment of size "
-                    . length($Body) . "\n"
-                    . "It started: "
-                    . substr( $Body, 0, 60 )
-                    . "\n" );
+            Jifty->log->info( "$self: Dropped an attachment of size " . length($Body) . "\n" . "It started: " . substr( $Body, 0, 60 ) . "\n" );
             return ( "none", "Large attachment dropped" );
         }
     }
@@ -679,10 +663,10 @@ sub _encode_lob {
 }
 
 sub _decode_lob {
-    my $self            = shift;
+    my $self             = shift;
     my $content_type     = shift || '';
     my $content_encoding = shift || 'none';
-    my $content         = shift;
+    my $content          = shift;
 
     if ( $content_encoding eq 'base64' ) {
         $content = MIME::Base64::decode_base64($content);
@@ -724,7 +708,7 @@ use vars '%LINKDIRMAP';
 
 );
 
-=head2 Update  ARGSHASH
+=head2 update  ARGSHASH
 
 Updates fields on an object for you using the proper set methods,
 skipping unchanged values.
@@ -751,22 +735,17 @@ sub update {
     );
 
     my $attributes = $args{'attributes_ref'};
-    my $args_ref    = $args{'args_ref'};
+    my $args_ref   = $args{'args_ref'};
     my @results;
 
     foreach my $attribute (@$attributes) {
         my $value;
         if ( defined $args_ref->{$attribute} ) {
             $value = $args_ref->{$attribute};
-        } elsif (
-            defined( $args{'attribute_prefix'} )
-            && defined(
-                $args_ref->{ $args{'attribute_prefix'} . "-" . $attribute }
-            )
-            )
+        } elsif ( defined( $args{'attribute_prefix'} )
+            && defined( $args_ref->{ $args{'attribute_prefix'} . "-" . $attribute } ) )
         {
-            $value
-                = $args_ref->{ $args{'attribute_prefix'} . "-" . $attribute };
+            $value = $args_ref->{ $args{'attribute_prefix'} . "-" . $attribute };
 
         } else {
             next;
@@ -820,9 +799,9 @@ sub update {
 
 # {{{ Link Collections
 
-# {{{ sub Members
+# {{{ sub members
 
-=head2 Members
+=head2 members
 
   This returns an RT::Model::LinkCollection object which references all the tickets 
 which are 'MembersOf' this ticket
@@ -836,9 +815,9 @@ sub members {
 
 # }}}
 
-# {{{ sub MemberOf
+# {{{ sub member_of
 
-=head2 MemberOf
+=head2 member_of
 
   This returns an RT::Model::LinkCollection object which references all the tickets that this
 ticket is a 'MemberOf'
@@ -854,7 +833,7 @@ sub member_of {
 
 # {{{ RefersTo
 
-=head2 RefersTo
+=head2 refers_to
 
   This returns an RT::Model::LinkCollection object which shows all references for which this ticket is a base
 
@@ -869,7 +848,7 @@ sub refers_to {
 
 # {{{ ReferredToBy
 
-=head2 ReferredToBy
+=head2 referred_to_by
 
 This returns an L<RT::Model::LinkCollection> object which shows all references for which this ticket is a target
 
@@ -884,7 +863,7 @@ sub referred_to_by {
 
 # {{{ DependedOnBy
 
-=head2 DependedOnBy
+=head2 depended_on_by
 
   This returns an RT::Model::LinkCollection object which references all the tickets that depend on this one
 
@@ -961,7 +940,7 @@ sub unresolved_dependencies {
 
 # {{{ AllDependedOnBy
 
-=head2 AllDependedOnBy
+=head2 all_depended_on_by
 
 Returns an array of RT::Model::Ticket objects which (directly or indirectly)
 depends on this ticket; takes an optional 'type' argument in the param
@@ -1006,7 +985,7 @@ sub all_depended_on_by {
 
 # {{{ DependsOn
 
-=head2 DependsOn
+=head2 depends_on
 
   This returns an RT::Model::LinkCollection object which references all the tickets that this ticket depends on
 
@@ -1021,7 +1000,7 @@ sub depends_on {
 
 # {{{ sub _links
 
-=head2 Links DIRECTION [TYPE]
+=head2 links DIRECTION [TYPE]
 
 Return links (L<RT::Model::LinkCollection>) to/from this object.
 
@@ -1037,8 +1016,8 @@ links of any type.
 sub _links {
     my $self = shift;
 
-#TODO: Field isn't the right thing here. but I ahave no idea what mnemonic ---
-#tobias meant by $f
+    #TODO: Field isn't the right thing here. but I ahave no idea what mnemonic ---
+    #tobias meant by $f
     my $field = shift;
     my $type = shift || "";
 
@@ -1089,9 +1068,7 @@ sub _add_link {
     my $direction;
 
     if ( $args{'base'} and $args{'target'} ) {
-        Jifty->log->debug(
-            "$self tried to create a link. both base and target were specified\n"
-        );
+        Jifty->log->debug( "$self tried to create a link. both base and target were specified\n" );
         return ( 0, _("Can't specifiy both base and target") );
     } elsif ( $args{'base'} ) {
         $args{'target'} = $self->uri();
@@ -1133,8 +1110,7 @@ sub _add_link {
         return ( 0, _("Link could not be Created") );
     }
 
-    my $TransString
-        = "Record $args{'base'} $args{'type'} record $args{'target'}.";
+    my $TransString = "Record $args{'base'} $args{'type'} record $args{'target'}.";
 
     return ( $linkid, _( "Link Created (%1)", $TransString ) );
 }
@@ -1183,11 +1159,7 @@ sub _delete_link {
     }
 
     my $link = RT::Model::Link->new();
-    Jifty->log->debug( "Trying to load link: "
-            . $args{'base'} . " "
-            . $args{'type'} . " "
-            . $args{'target'}
-            . "\n" );
+    Jifty->log->debug( "Trying to load link: " . $args{'base'} . " " . $args{'type'} . " " . $args{'target'} . "\n" );
 
     $link->load_by_params(
         base   => $args{'base'},
@@ -1201,8 +1173,7 @@ sub _delete_link {
         my $linkid = $link->id;
         $link->delete();
 
-        my $TransString
-            = "Record $args{'base'} no longer $args{'type'} record $args{'target'}.";
+        my $TransString = "Record $args{'base'} no longer $args{'type'} record $args{'target'}.";
         return ( 1, _( "Link deleted (%1)", $TransString ) );
     }
 
@@ -1231,17 +1202,17 @@ sub _new_transaction {
     my $self = shift;
     my %args = (
         time_taken      => undef,
-        type           => undef,
-        old_value      => undef,
-        new_value      => undef,
+        type            => undef,
+        old_value       => undef,
+        new_value       => undef,
         old_reference   => undef,
         new_reference   => undef,
         reference_type  => undef,
-        data           => undef,
-        field          => undef,
+        data            => undef,
+        field           => undef,
         mime_obj        => undef,
         activate_scrips => 1,
-        commit_scrips  => 1,
+        commit_scrips   => 1,
         @_
     );
 
@@ -1260,23 +1231,23 @@ sub _new_transaction {
 
     my $trans = RT::Model::Transaction->new();
     my ( $transaction, $msg ) = $trans->create(
-        object_id      => $self->id,
-        object_type    => ref($self),
+        object_id       => $self->id,
+        object_type     => ref($self),
         time_taken      => $args{'time_taken'},
-        type           => $args{'type'},
-        data           => $args{'data'},
-        field          => $args{'field'},
-        new_value      => $args{'new_value'},
-        old_value      => $args{'old_value'},
+        type            => $args{'type'},
+        data            => $args{'data'},
+        field           => $args{'field'},
+        new_value       => $args{'new_value'},
+        old_value       => $args{'old_value'},
         new_reference   => $new_ref,
         old_reference   => $old_ref,
         reference_type  => $ref_type,
         mime_obj        => $args{'mime_obj'},
         activate_scrips => $args{'activate_scrips'},
-        commit_scrips  => $args{'commit_scrips'},
+        commit_scrips   => $args{'commit_scrips'},
     );
 
-# Rationalize the object since we may have done things to it during the caching.
+    # Rationalize the object since we may have done things to it during the caching.
     $self->load( $self->id );
 
     Jifty->log->warn($msg) unless $transaction;
@@ -1295,9 +1266,9 @@ sub _new_transaction {
 
 # }}}
 
-# {{{ sub Transactions
+# {{{ sub transactions
 
-=head2 Transactions
+=head2 transactions
 
   Returns an RT::Model::TransactionCollection object of all transactions on this record object
 
@@ -1333,8 +1304,7 @@ sub custom_fields {
 
     # XXX handle multiple types properly
     $cfs->limit_to_lookup_type( $self->custom_field_lookup_type );
-    $cfs->limit_to_global_or_object_id(
-        $self->_lookup_id( $self->custom_field_lookup_type ) );
+    $cfs->limit_to_global_or_object_id( $self->_lookup_id( $self->custom_field_lookup_type ) );
 
     return $cfs;
 }
@@ -1372,7 +1342,7 @@ sub custom_field_lookup_type {
 
 # {{{ AddCustomFieldValue
 
-=head2 AddCustomFieldValue { Field => column, value => value }
+=head2 add_custom_field_value { Field => column, value => value }
 
 value should be a string. column can be any identifier of a CustomField
 supported by L</LoadCustomFieldByIdentifier> method.
@@ -1395,17 +1365,15 @@ sub _add_custom_field_value {
     my %args = (
         field              => undef,
         value              => undef,
-        large_content       => undef,
-        content_type        => undef,
+        large_content      => undef,
+        content_type       => undef,
         record_transaction => 1,
         @_
     );
     if ( !defined $args{'field'} ) {
         $args{'field'} ||= delete $args{'column'};
         unless ( $args{'field'} ) {
-            Carp::cluck(
-                "Field argument missing. maybe a mistaken s// changed Field to Column?"
-            );
+            Carp::cluck( "Field argument missing. maybe a mistaken s// changed Field to Column?" );
 
         }
     }
@@ -1418,12 +1386,7 @@ sub _add_custom_field_value {
     my $OCFs = $self->custom_fields;
     $OCFs->limit( column => 'id', value => $cf->id );
     unless ( $OCFs->count ) {
-        return (
-            0,
-            _(  "Custom field %1 does not apply to this object",
-                $args{'field'}
-            )
-        );
+        return ( 0, _( "Custom field %1 does not apply to this object", $args{'field'} ) );
     }
 
     # empty string is not correct value of any CF, so undef it
@@ -1437,22 +1400,21 @@ sub _add_custom_field_value {
         }
     }
 
- # If the custom field only accepts a certain # of values, delete the existing
- # value and record a "changed from foo to bar" transaction
+    # If the custom field only accepts a certain # of values, delete the existing
+    # value and record a "changed from foo to bar" transaction
     unless ( $cf->unlimited_values ) {
 
-# Load up a ObjectCustomFieldValues object for this custom field and this ticket
+        # Load up a ObjectCustomFieldValues object for this custom field and this ticket
         my $values = $cf->values_for_object($self);
 
-# We need to whack any old values here.  In most cases, the custom field should
-# only have one value to delete.  In the pathalogical case, this custom field
-# used to be a multiple and we have many values to whack....
+        # We need to whack any old values here.  In most cases, the custom field should
+        # only have one value to delete.  In the pathalogical case, this custom field
+        # used to be a multiple and we have many values to whack....
         my $cf_values = $values->count;
 
         if ( $cf_values > $cf->max_values ) {
-            my $i = 0
-                ; #We want to delete all but the max we can currently have , so we can then
-                  # execute the same code to "change" the value from old to new
+            my $i = 0;    #We want to delete all but the max we can currently have , so we can then
+                          # execute the same code to "change" the value from old to new
             while ( my $value = $values->next ) {
                 $i++;
                 if ( $i < $cf_values ) {
@@ -1463,12 +1425,11 @@ sub _add_custom_field_value {
                     unless ($val) {
                         return ( 0, $msg );
                     }
-                    my ( $transaction_id, $Msg, $transaction_obj )
-                        = $self->_new_transaction(
-                        type         => 'custom_field',
-                        field        => $cf->id,
+                    my ( $transaction_id, $Msg, $transaction_obj ) = $self->_new_transaction(
+                        type          => 'custom_field',
+                        field         => $cf->id,
                         old_reference => $value,
-                        );
+                    );
                 }
             }
             $values->redo_search
@@ -1504,15 +1465,14 @@ sub _add_custom_field_value {
         }
 
         my ( $new_value_id, $value_msg ) = $cf->add_value_for_object(
-            object       => $self,
-            content      => $args{'value'},
+            object        => $self,
+            content       => $args{'value'},
             large_content => $args{'large_content'},
             content_type  => $args{'content_type'},
         );
 
         unless ($new_value_id) {
-            return ( 0,
-                _( "Could not add new custom field value: %1", $value_msg ) );
+            return ( 0, _( "Could not add new custom field value: %1", $value_msg ) );
         }
 
         my $new_value = RT::Model::ObjectCustomFieldValue->new;
@@ -1525,29 +1485,21 @@ sub _add_custom_field_value {
         }
 
         if ( $args{'record_transaction'} ) {
-            my ( $transaction_id, $Msg, $transaction_obj )
-                = $self->_new_transaction(
-                type         => 'custom_field',
-                field        => $cf->id,
+            my ( $transaction_id, $Msg, $transaction_obj ) = $self->_new_transaction(
+                type          => 'custom_field',
+                field         => $cf->id,
                 old_reference => $old_value,
                 new_reference => $new_value,
-                );
+            );
         }
 
         my $new_content = $new_value->content;
         unless ( defined $old_content && length $old_content ) {
-            return ( $new_value_id,
-                _( "%1 %2 added", $cf->name, $new_content ) );
+            return ( $new_value_id, _( "%1 %2 added", $cf->name, $new_content ) );
         } elsif ( !defined $new_content || !length $new_content ) {
-            return ( $new_value_id,
-                _( "%1 %2 deleted", $cf->name, $old_content ) );
+            return ( $new_value_id, _( "%1 %2 deleted", $cf->name, $old_content ) );
         } else {
-            return (
-                $new_value_id,
-                _(  "%1 %2 changed to %3", $cf->name,
-                    $old_content,          $new_content
-                )
-            );
+            return ( $new_value_id, _( "%1 %2 changed to %3", $cf->name, $old_content, $new_content ) );
         }
 
     }
@@ -1555,20 +1507,19 @@ sub _add_custom_field_value {
     # otherwise, just add a new value and record "new value added"
     else {
         my ( $new_value_id, $msg ) = $cf->add_value_for_object(
-            object       => $self,
-            content      => $args{'value'},
+            object        => $self,
+            content       => $args{'value'},
             large_content => $args{'large_content'},
             content_type  => $args{'content_type'},
         );
 
         unless ($new_value_id) {
-            return ( 0,
-                _( "Could not add new custom field value: %1", $msg ) );
+            return ( 0, _( "Could not add new custom field value: %1", $msg ) );
         }
         if ( $args{'record_transaction'} ) {
             my ( $tid, $msg ) = $self->_new_transaction(
-                type          => 'custom_field',
-                field         => $cf->id,
+                type           => 'custom_field',
+                field          => $cf->id,
                 new_reference  => $new_value_id,
                 reference_type => 'RT::Model::ObjectCustomFieldValue',
             );
@@ -1576,8 +1527,7 @@ sub _add_custom_field_value {
                 return ( 0, _( "Couldn't create a transaction: %1", $msg ) );
             }
         }
-        return ( $new_value_id,
-            _( "%1 added as a value for %2", $args{'value'}, $cf->name ) );
+        return ( $new_value_id, _( "%1 added as a value for %2", $args{'value'}, $cf->name ) );
     }
 }
 
@@ -1585,7 +1535,7 @@ sub _add_custom_field_value {
 
 # {{{ DeleteCustomFieldValue
 
-=head2 DeleteCustomFieldValue { Field => column, value => value }
+=head2 delete_custom_field_value { Field => column, value => value }
 
 Deletes value as a value of CustomField column. 
 
@@ -1599,8 +1549,8 @@ If value is not a valid value for the custom field, returns
 sub delete_custom_field_value {
     my $self = shift;
     my %args = (
-       field   => undef,
-        value   => undef,
+        field    => undef,
+        value    => undef,
         value_id => undef,
         @_
     );
@@ -1620,8 +1570,8 @@ sub delete_custom_field_value {
     }
 
     my ( $transaction_id, $Msg, $transaction_obj ) = $self->_new_transaction(
-        type          => 'custom_field',
-        field         => $cf->id,
+        type           => 'custom_field',
+        field          => $cf->id,
         old_reference  => $val,
         reference_type => 'RT::Model::ObjectCustomFieldValue',
     );
@@ -1629,13 +1579,7 @@ sub delete_custom_field_value {
         return ( 0, _( "Couldn't create a transaction: %1", $Msg ) );
     }
 
-    return (
-        $transaction_id,
-        _(  "%1 is no longer a value for custom field %2",
-            $transaction_obj->old_value,
-            $cf->name
-        )
-    );
+    return ( $transaction_id, _( "%1 is no longer a value for custom field %2", $transaction_obj->old_value, $cf->name ) );
 }
 
 # }}}
@@ -1677,8 +1621,7 @@ sub custom_field_values {
 
         # we were asked to search on a custom field we couldn't find
         unless ( $cf->id ) {
-            Jifty->log->warn(
-                "Couldn't load custom field by '$field' identifier");
+            Jifty->log->warn("Couldn't load custom field by '$field' identifier");
             return RT::Model::ObjectCustomFieldValueCollection->new;
         }
         return ( $cf->values_for_object($self) );
@@ -1690,7 +1633,7 @@ sub custom_field_values {
     return $ocfs;
 }
 
-=head2 LoadCustomFieldByIdentifier IDENTIFER
+=head2 load_custom_field_by_identifier IDENTIFER
 
 Find the custom field has id or name IDENTIFIER for this object.
 
@@ -1733,6 +1676,5 @@ sub basic_columns {
 sub wiki_base {
     return RT->config->get('WebPath') . "/index.html?q=";
 }
-
 
 1;

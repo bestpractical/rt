@@ -70,23 +70,23 @@ sub __depends_on {
     my $list = [];
 
     my $objs = RT::Model::CachedGroupMemberCollection->new;
-    $objs->limit( column => 'member_id',          value => $self->member_id );
+    $objs->limit( column => 'member_id',           value => $self->member_id );
     $objs->limit( column => 'immediate_parent_id', value => $self->group_id );
     push( @$list, $objs );
 
     # XXX: right delegations should be cleaned here
 
     $deps->_push_dependencies(
-        base_object   => $self,
-        flags         => DEPENDS_ON,
+        base_object    => $self,
+        flags          => DEPENDS_ON,
         target_objects => $list,
-        shredder      => $args{'shredder'}
+        shredder       => $args{'shredder'}
     );
 
     my $group = $self->group_obj->object;
 
- # XXX: If we delete member of the ticket owner role group then we should also
- # fix ticket object, but only if we don't plan to delete group itself!
+    # XXX: If we delete member of the ticket owner role group then we should also
+    # fix ticket object, but only if we don't plan to delete group itself!
     unless ( lc( $group->type || '' ) eq 'owner'
         && lc( $group->domain || '' ) eq 'rt::model::ticket-role' )
     {
@@ -95,20 +95,19 @@ sub __depends_on {
 
     # we don't delete group, so we have to fix Ticket and Group
     $deps->_push_dependencies(
-        base_object   => $self,
-        flags         => DEPENDS_ON | VARIABLE,
+        base_object    => $self,
+        flags          => DEPENDS_ON | VARIABLE,
         target_objects => $group,
-        shredder      => $args{'shredder'}
+        shredder       => $args{'shredder'}
     );
     $args{'shredder'}->put_resolver(
         base_class   => ref $self,
         target_class => ref $group,
-        code        => sub {
+        code         => sub {
             my %args  = (@_);
             my $group = $args{'target_object'};
             return
-                if $args{'shredder'}->get_state( object => $group )
-                    & ( WIPED | IN_WIPING );
+                if $args{'shredder'}->get_state( object => $group ) & ( WIPED | IN_WIPING );
             return unless lc( $group->type || '' ) eq 'owner';
             return
                 unless lc( $group->domain || '' ) eq 'rt::model::ticket-role';
@@ -118,15 +117,13 @@ sub __depends_on {
             my $group_member = $args{'base_object'};
 
             if ( $group_member->member_obj->id == RT->nobody->id ) {
-                RT::Shredder::Exception->throw(
-                    "Couldn't delete Nobody from owners role group");
+                RT::Shredder::Exception->throw("Couldn't delete Nobody from owners role group");
             }
 
             my ( $status, $msg ) = $group->add_member( RT->nobody->id );
             RT::Shredder::Exception->throw($msg) unless $status;
 
-            my $ticket = RT::Model::Ticket->new(
-                current_user => $group->current_user );
+            my $ticket = RT::Model::Ticket->new( current_user => $group->current_user );
             $ticket->load( $group->instance );
             RT::Shredder::Exception->throw("Couldn't load ticket")
                 unless $ticket->id;
@@ -147,7 +144,7 @@ sub __depends_on {
 #TODO: If we plan write export tool we also should fetch parent groups
 # now we only wipeout things.
 
-sub __Relates {
+sub __relates {
     my $self = shift;
     my %args = (
         shredder     => undef,
@@ -164,8 +161,7 @@ sub __Relates {
         my $rec = $args{'shredder'}->get_record( object => $self );
         $self = $rec->{'object'};
         $rec->{'state'} |= INVALID;
-        $rec->{'description'}
-            = "Have no related Principal #" . $self->member_id . " object.";
+        $rec->{'description'} = "Have no related Principal #" . $self->member_id . " object.";
     }
 
     $obj = $self->group_obj;
@@ -175,15 +171,14 @@ sub __Relates {
         my $rec = $args{'shredder'}->get_record( object => $self );
         $self = $rec->{'object'};
         $rec->{'state'} |= INVALID;
-        $rec->{'description'}
-            = "Have no related Principal #" . $self->group_id . " object.";
+        $rec->{'description'} = "Have no related Principal #" . $self->group_id . " object.";
     }
 
     $deps->_push_dependencies(
-        base_object   => $self,
-        flags         => RELATES,
+        base_object    => $self,
+        flags          => RELATES,
         target_objects => $list,
-        shredder      => $args{'shredder'}
+        shredder       => $args{'shredder'}
     );
     return $self->SUPER::__Relates(%args);
 }

@@ -102,7 +102,7 @@ msgstr "%1 %2 ændret til %3"
 msgid "%1 %2 deleted"
 msgstr "%1 %2 slettet"
 
-#. (_($scrip->scrip_condition->name), loc($scrip->scrip_action->name), loc($scrip->template_obj->name))
+#. (_($scrip->scrip_condition->name), _($scrip->scrip_action->name), _($scrip->template_obj->name))
 #: html/Admin/Elements/EditScrips:65
 #: html/Admin/Elements/ListGlobalScrips:63
 #: html/Ticket/Elements/PreviewScrips:103
@@ -121,7 +121,7 @@ msgstr "%1 (%2) af %3"
 #. (_($Ticket->Status()))
 #. (_($ticket_obj->Status))
 #. ($ticket_obj->owner_obj->name())
-#. (_($DefaultStatus))
+#. (_($default_status))
 #: html/SelfService/Update.html:60
 #: html/Ticket/Elements/EditBasics:108
 #: html/Ticket/Update.html:61
@@ -3324,7 +3324,7 @@ msgstr "Rediger adgangskontrolliste"
 msgid "Modify Custom Field %1"
 msgstr "Rediger ekstrafelt %1"
 
-#. (_(lc($FriendlySubTypes)), loc(lc($Types)))
+#. (_(lc($FriendlySubTypes)), _(lc($Types)))
 #: html/Admin/Elements/ObjectCustomFields:96
 msgid "Modify Custom Fields which apply to %1 for all %2"
 msgstr "Rediger ekstrafelter, der gælder for %1 for alle %2"

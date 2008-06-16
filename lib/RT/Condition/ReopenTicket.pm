@@ -52,7 +52,7 @@ use warnings;
 
 use base 'RT::Condition::Generic';
 
-=head2 IsApplicable
+=head2 is_applicable
 
 If the ticket was repopened, ie status was changed from any inactive status to
 an active. See F<RT_Config.pm> for C<ActiveStatuses> and C<InactiveStatuses>
@@ -72,11 +72,7 @@ sub is_applicable {
     return 0 unless $queue->is_inactive_status( $txn->old_value );
     return 0 unless $queue->is_active_status( $txn->new_value );
 
-    Jifty->log->debug( "Condition 'On Reopen' triggered "
-            . "for ticket #"
-            . $self->ticket_obj->id
-            . " transaction #"
-            . $txn->id );
+    Jifty->log->debug( "Condition 'On Reopen' triggered " . "for ticket #" . $self->ticket_obj->id . " transaction #" . $txn->id );
 
     return 1;
 }

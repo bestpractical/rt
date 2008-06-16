@@ -45,7 +45,6 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
 use warnings;
 use strict;
 
@@ -97,9 +96,7 @@ Returns the RT URI for a local RT::Record object
 sub uri_for_object {
     my $self = shift;
     my $obj  = shift;
-    return (  $self->local_uri_prefix . "/"
-            . $self->object_type($obj) . "/"
-            . $obj->id );
+    return ( $self->local_uri_prefix . "/" . $self->object_type($obj) . "/" . $obj->id );
 }
 
 =head2 parse_uri URI
@@ -148,7 +145,7 @@ sub parse_uri {
     return undef;
 }
 
-=head2 IsLocal 
+=head2 is_local 
 
 Returns true if this URI is for a local ticket.
 Returns undef otherwise.
@@ -203,15 +200,13 @@ sub href {
         && $self->object
         && ( $self->object_type eq 'ticket' ) )
     {
-        return (  RT->config->get('WebURL')
-                . "Ticket/Display.html?id="
-                . $self->object->id );
+        return ( RT->config->get('WebURL') . "Ticket/Display.html?id=" . $self->object->id );
     } else {
         return ( $self->uri );
     }
 }
 
-=head2 AsString
+=head2 as_string
 
 Returns either a localized string 'ticket #23' or the full URI if the object is not local
 

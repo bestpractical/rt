@@ -55,8 +55,8 @@ which is always the first one, in integer box string '' means empty
 value, but boolean box uses radio buttons in this case with three
 options: Yes, No and Default.
 
-Each widget that supports C<Default> feature as well has C<DefaultLabel> and
-C<DefaultValue> arguments.
+Each widget that supports C<Default> feature as well has C<default_label> and
+C<default_value> arguments.
 
 =head4 Processing and showing with activated Default feature
 
@@ -72,9 +72,9 @@ shouldn't care much about that, but this allows you to implement
 custom actions if processing returned undef, for example delete user's
 preference record instead of updating it (default value may change later to).
 
-=head4 C<DefaultValue> when C<Default> is not active
+=head4 C<default_value> when C<Default> is not active
 
-DefaultValue argument is still actual in the Process method even if
+default_value argument is still actual in the Process method even if
 C<Default> is not true. This argument defines intial value. If value
 of a key in Arguments is not defined then it's treated as intial state
 and the method returns default value.

@@ -74,18 +74,17 @@ use strict;
 no warnings qw(redefine);
 sub table {'Links'}
 
-
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
     column target => type is 'varchar(240)', max_length is 240, default is '';
     column base   => type is 'varchar(240)', max_length is 240, default is '';
-    column local_base => type is 'int';#references RT::Model::Ticket;
-    column local_target =>  type is 'int';#references RT::Model::Ticket;
-    column creator     =>  references RT::Model::User;
-    column type => type is 'varchar(20)', max_length is 20, default is '';
+    column local_base      => type is 'int';                                            #references RT::Model::Ticket;
+    column local_target    => type is 'int';                                            #references RT::Model::Ticket;
+    column creator         => references RT::Model::User;
+    column type            => type is 'varchar(20)', max_length is 20, default is '';
     column last_updated_by => references RT::Model::User;
-    column created => type is 'timestamp';
-    column last_updated => type is 'timestamp';
+    column created         => type is 'timestamp';
+    column last_updated    => type is 'timestamp';
 
 };
 
@@ -94,7 +93,7 @@ use RT::URI;
 
 # {{{ sub create
 
-=head2 Create PARAMHASH
+=head2 create PARAMHASH
 
 Create a new link object. Takes 'base', 'target' and 'type'.
 Returns undef on failure or a Link id on success.
@@ -114,8 +113,7 @@ sub create {
     $base->from_uri( $args{'base'} );
 
     unless ( $base->resolver && $base->scheme ) {
-        my $msg
-            = _( "Couldn't resolve base '%1' into a URI.", $args{'base'} );
+        my $msg = _( "Couldn't resolve base '%1' into a URI.", $args{'base'} );
         Jifty->log->warn("$self $msg\n");
 
         if (wantarray) {
@@ -129,8 +127,7 @@ sub create {
     $target->from_uri( $args{'target'} );
 
     unless ( $target->resolver ) {
-        my $msg = _( "Couldn't resolve target '%1' into a URI.",
-            $args{'target'} );
+        my $msg = _( "Couldn't resolve target '%1' into a URI.", $args{'target'} );
         Jifty->log->warn("$self $msg\n");
 
         if (wantarray) {
@@ -145,24 +142,14 @@ sub create {
 
     if ( $base->is_local ) {
         unless ( UNIVERSAL::can( $base->object, 'id' ) ) {
-            return (
-                undef,
-                _(  "%1 appears to be a local object, but can't be found in the database",
-                    $args{'base'}
-                )
-            );
+            return ( undef, _( "%1 appears to be a local object, but can't be found in the database", $args{'base'} ) );
 
         }
         $base_id = $base->object->id;
     }
     if ( $target->is_local ) {
         unless ( UNIVERSAL::can( $target->object, 'id' ) ) {
-            return (
-                undef,
-                _(  "%1 appears to be a local object, but can't be found in the database",
-                    $args{'target'}
-                )
-            );
+            return ( undef, _( "%1 appears to be a local object, but can't be found in the database", $args{'target'} ) );
 
         }
         $target_id = $target->object->id;
@@ -176,17 +163,17 @@ sub create {
     # }}}
 
     my ( $id, $msg ) = $self->SUPER::create(
-        base        => $base->uri,
-        target      => $target->uri,
+        base         => $base->uri,
+        target       => $target->uri,
         local_base   => $base_id,
         local_target => $target_id,
-        type        => $args{'type'}
+        type         => $args{'type'}
     );
     return ( $id, $msg );
 }
 
 # }}}
-# {{{ sub loadByParams
+# {{{ sub load_by_params
 
 =head2 load_by_params
 
@@ -234,7 +221,7 @@ sub load_by_params {
 # }}}
 # {{{ sub load
 
-=head2 Load
+=head2 load
 
   Load an RT::Model::Link object from the database.  Takes one parameter, the id of an entry in the links table.
 
@@ -274,9 +261,9 @@ sub target_uri {
 }
 
 # }}}
-# {{{ sub targetObj
+# {{{ sub target_obj
 
-=head2 targetObj
+=head2 target_obj
 
 =cut
 

@@ -1,4 +1,50 @@
-
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
+#                                          <jesse@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/copyleft/gpl.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
 package RT::Model::CachedGroupMember;
 
 use strict;
@@ -8,11 +54,11 @@ use base qw/RT::Record/;
 
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column group_id           => references RT::Model::Group;
-    column member_id          => references RT::Model::Principal;
-    column via               => references RT::Model::CachedGroupMember;
+    column group_id            => references RT::Model::Group;
+    column member_id           => references RT::Model::Principal;
+    column via                 => references RT::Model::CachedGroupMember;
     column immediate_parent_id => references RT::Model::CachedGroupMember;
-    column disabled          => type is 'integer', default is '0';
+    column disabled            => type is 'integer', default is '0';
 
 };
 
@@ -32,7 +78,7 @@ use Jifty::DBI::Record schema {
 
 # {{ Create
 
-=head2 Create PARAMHASH
+=head2 create PARAMHASH
 
 Create takes a hash of values and creates a row in the database:
 
@@ -59,11 +105,11 @@ sub table {'CachedGroupMembers'}
 sub create {
     my $self = shift;
     my %args = (
-        group           => '',
-        member          => '',
+        group            => '',
+        member           => '',
         immediate_parent => '',
-        via             => '0',
-        disabled        => '0',
+        via              => '0',
+        disabled         => '0',
         @_
     );
 
@@ -88,38 +134,28 @@ sub create {
         Jifty->log->debug("$self->create: bogus immediate_parent argument");
     }
 
-# If the parent group for this group member is disabled, it's disabled too, along with all its children
+    # If the parent group for this group member is disabled, it's disabled too, along with all its children
     if ( $args{'immediate_parent'}->disabled ) {
         $args{'disabled'} = $args{'immediate_parent'}->disabled;
     }
 
     my $id = $self->SUPER::create(
-        group_id           => $args{'group'}->id,
-        member_id          => $args{'member'}->id,
+        group_id            => $args{'group'}->id,
+        member_id           => $args{'member'}->id,
         immediate_parent_id => $args{'immediate_parent'}->id,
-        disabled          => $args{'disabled'},
-        via               => $args{'via'},
+        disabled            => $args{'disabled'},
+        via                 => $args{'via'},
     );
 
     unless ($id) {
-        Jifty->log->warn( "Couldn't create "
-                . $args{'member'}
-                . " as a cached member of "
-                . $args{'group'}->id . " via "
-                . $args{'via'} );
-        return (undef)
-            ;    #this will percolate up and bail out of the transaction
+        Jifty->log->warn( "Couldn't create " . $args{'member'} . " as a cached member of " . $args{'group'}->id . " via " . $args{'via'} );
+        return (undef);    #this will percolate up and bail out of the transaction
     }
     if ( $self->__value('via') == 0 ) {
         my ( $vid, $vmsg ) = $self->__set( column => 'via', value => $id );
         unless ($vid) {
-            Jifty->log->warn( "Due to a via error, couldn't create "
-                    . $args{'member'}
-                    . " as a cached member of "
-                    . $args{'group'}->id . " via "
-                    . $args{'via'} );
-            return (undef)
-                ;    #this will percolate up and bail out of the transaction
+            Jifty->log->warn( "Due to a via error, couldn't create " . $args{'member'} . " as a cached member of " . $args{'group'}->id . " via " . $args{'via'} );
+            return (undef);    #this will percolate up and bail out of the transaction
         }
     }
 
@@ -128,15 +164,15 @@ sub create {
         while ( my $member = $GroupMembers->next() ) {
             my $cached_member = RT::Model::CachedGroupMember->new;
             my $c_id          = $cached_member->create(
-                group           => $args{'group'},
-                member          => $member->member_obj,
+                group            => $args{'group'},
+                member           => $member->member_obj,
                 immediate_parent => $args{'member'},
-                disabled        => $args{'disabled'},
-                via             => $id
+                disabled         => $args{'disabled'},
+                via              => $id
             );
             unless ($c_id) {
                 return (undef);    #percolate the error upwards.
-                    # the caller will log an error and abort the transaction
+                                   # the caller will log an error and abort the transaction
             }
 
         }
@@ -150,7 +186,7 @@ sub create {
 
 # {{{ Delete
 
-=head2 Delete
+=head2 delete
 
 Deletes the current CachedGroupMember from the group it's in and cascades 
 the delete to all submembers. This routine could be completely excised if
@@ -179,8 +215,7 @@ sub delete {
         while ( my $kid = $deletable->next ) {
             my $kid_err = $kid->delete();
             unless ($kid_err) {
-                Jifty->log->error(
-                    "Couldn't delete CachedGroupMember " . $kid->id );
+                Jifty->log->error( "Couldn't delete CachedGroupMember " . $kid->id );
                 return (undef);
             }
         }
@@ -199,22 +234,18 @@ sub delete {
         return undef;
     }
 
-  # Unless $self->group_obj still has the member recursively $self->member_obj
-  # (Since we deleted the database row above, $self no longer counts)
-    unless (
-        $self->group_obj->object->has_member_recursively( $self->member_id ) )
-    {
+    # Unless $self->group_obj still has the member recursively $self->member_obj
+    # (Since we deleted the database row above, $self no longer counts)
+    unless ( $self->group_obj->object->has_member_recursively( $self->member_id ) ) {
 
         #   Find all ACEs granted to $self->group_id
-        my $acl = RT::Model::ACECollection->new(
-            current_user => RT->system_user );
+        my $acl = RT::Model::ACECollection->new( current_user => RT->system_user );
         $acl->limit_to_principal( id => $self->group_id );
 
         while ( my $this_ace = $acl->next() ) {
 
-      #       Find all ACEs which $self-MemberObj has delegated from $this_ace
-            my $delegations = RT::Model::ACECollection->new(
-                current_user => RT->system_user );
+            #       Find all ACEs which $self-MemberObj has delegated from $this_ace
+            my $delegations = RT::Model::ACECollection->new( current_user => RT->system_user );
             $delegations->delegated_from( id => $this_ace->id );
             $delegations->delegated_by( id => $self->member_id );
 
@@ -224,9 +255,7 @@ sub delete {
                 # WHACK IT
                 my $del_ret = $delegation->_delete( inside_transaction => 1 );
                 unless ($del_ret) {
-                    Jifty->log->fatal(
-                        "Couldn't delete an ACL delegation that we know exists "
-                            . $delegation->id );
+                    Jifty->log->fatal( "Couldn't delete an ACL delegation that we know exists " . $delegation->id );
                     return (undef);
                 }
             }
@@ -239,7 +268,7 @@ sub delete {
 
 # {{{ Setdisabled
 
-=head2 Setdisabled
+=head2 setdisabled
 
 Setdisableds the current CachedGroupMember from the group it's in and cascades 
 the Setdisabled to all submembers. This routine could be completely excised if
@@ -256,9 +285,7 @@ sub set_disabled {
     my $err = $self->_set( column => 'disabled', value => $val );
     my ( $retval, $msg ) = $err->as_array();
     unless ($retval) {
-        Jifty->log->error( "Couldn't Setdisabled CachedGroupMember "
-                . $self->id
-                . ": $msg" );
+        Jifty->log->error( "Couldn't Setdisabled CachedGroupMember " . $self->id . ": $msg" );
         return ($err);
     }
 
@@ -280,29 +307,24 @@ sub set_disabled {
         while ( my $kid = $deletable->next ) {
             my $kid_err = $kid->set_disabled($val);
             unless ($kid_err) {
-                Jifty->log->error(
-                    "Couldn't Setdisabled CachedGroupMember " . $kid->id );
+                Jifty->log->error( "Couldn't Setdisabled CachedGroupMember " . $kid->id );
                 return ($kid_err);
             }
         }
     }
 
-  # Unless $self->group_obj still has the member recursively $self->member_obj
-  # (Since we Setdisabledd the database row above, $self no longer counts)
-    unless (
-        $self->group_obj->object->has_member_recursively( $self->member_id ) )
-    {
+    # Unless $self->group_obj still has the member recursively $self->member_obj
+    # (Since we Setdisabledd the database row above, $self no longer counts)
+    unless ( $self->group_obj->object->has_member_recursively( $self->member_id ) ) {
 
         #   Find all ACEs granted to $self->group_id
-        my $acl = RT::Model::ACECollection->new(
-            current_user => RT->system_user );
+        my $acl = RT::Model::ACECollection->new( current_user => RT->system_user );
         $acl->limit_to_principal( id => $self->group_id );
 
         while ( my $this_ace = $acl->next() ) {
 
-      #       Find all ACEs which $self-MemberObj has delegated from $this_ace
-            my $delegations = RT::Model::ACECollection->new(
-                current_user => RT->system_user );
+            #       Find all ACEs which $self-MemberObj has delegated from $this_ace
+            my $delegations = RT::Model::ACECollection->new( current_user => RT->system_user );
             $delegations->delegated_from( id => $this_ace->id );
             $delegations->delegated_by( id => $self->member_id );
 
@@ -312,9 +334,7 @@ sub set_disabled {
                 # WHACK IT
                 my $del_ret = $delegation->_delete( inside_transaction => 1 );
                 unless ($del_ret) {
-                    Jifty->log->fatal(
-                        "Couldn't delete an ACL delegation that we know exists "
-                            . $delegation->id );
+                    Jifty->log->fatal( "Couldn't delete an ACL delegation that we know exists " . $delegation->id );
                     return (undef);
                 }
             }
@@ -327,7 +347,7 @@ sub set_disabled {
 
 # {{{ GroupObj
 
-=head2 GroupObj  
+=head2 group_obj  
 
 Returns the RT::Model::Principal object for this group Group
 
@@ -344,7 +364,7 @@ sub group_obj {
 
 # {{{ immediate_parentObj
 
-=head2 immediate_parentObj  
+=head2 immediate_parent_obj  
 
 Returns the RT::Model::Principal object for this group immediate_parent
 
@@ -361,7 +381,7 @@ sub immediate_parent_obj {
 
 # {{{ MemberObj
 
-=head2 MemberObj  
+=head2 member_obj  
 
 Returns the RT::Model::Principal object for this group member
 

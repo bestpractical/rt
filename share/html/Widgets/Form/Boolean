@@ -1,0 +1,101 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<%DOC>
+see docs/using_forms_widgets.pod
+</%DOC>
+<div id="form-box-<% lc $name %>">
+<span class="description"><% $description %></span>:\
+<& SELF:InputOnly, %ARGS &>
+</div>
+<%ARGS>
+$name         => undef,
+$description  => undef,
+</%ARGS>
+
+<%METHOD InputOnly>
+<%ARGS>
+$name         => undef,
+
+$default        => 0,
+$default_value   => 0,
+$default_label   => _( 'Use system default (%1)', $default_value? _('Yes'): _('No') ),
+
+$current_value => undef,
+</%ARGS>
+% unless ( $default ) {
+<input type="hidden" name="<% $name %>" value="0" />\
+<input type="checkbox" name="<% $name %>" value="1"<% $current_value? ' checked="checked"': '' |n %> />\
+% } else {
+<input type="radio" name="<% $name %>" value="1"<% $current_value? ' checked="checked"': '' |n %> />\
+<% _('Yes') %>
+<input type="radio" name="<% $name %>" value="0"<% defined $current_value && !$current_value? ' checked="checked"': '' |n %> />\
+<% _('No') %>
+<input type="radio" name="<% $name %>" value="__empty_value__"<% !defined $current_value? ' checked="checked"': '' |n %> />\
+<% $default_label %>
+% }
+</%METHOD>
+
+<%METHOD Process>
+<%ARGS>
+$name
+$Arguments    => {},
+
+$default      => 0,
+$default_value => 0,
+</%ARGS>
+<%INIT>
+my $value = $Arguments->{ $name };
+if ( $default ) {
+    return undef if !defined $value || $value eq '__empty_value__';
+    return $value? 1: 0;
+} else {
+    return $value? 1: 0 if defined $value;
+    return $default_value;
+}
+</%INIT>
+</%METHOD>

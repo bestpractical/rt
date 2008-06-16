@@ -69,7 +69,7 @@ use strict;
 package RT::Model::ScripCollection;
 use base qw/RT::SearchBuilder/;
 
-=head2 limit_ToQueue
+=head2 limit_to_queue
 
 Takes a queue id (numerical) as its only argument. Makes sure that 
 Scopes it pulls out apply to this queue (or another that you've selected with
@@ -88,7 +88,6 @@ sub limit_to_queue {
     ) if defined $queue;
 
 }
-
 
 =head2 limit_to_global
 
@@ -173,8 +172,7 @@ Commit all of this object's prepared scrips
 sub commit {
     my $self = shift;
     foreach my $scrip ( @{ $self->prepared } ) {
-        Jifty->log->debug( "Committing scrip #" . $scrip->id . " on txn #"
-                . $self->{'transaction_obj'}->id . " of ticket #" . $self->{'ticket_obj'}->id );
+        Jifty->log->debug( "Committing scrip #" . $scrip->id . " on txn #" . $self->{'transaction_obj'}->id . " of ticket #" . $self->{'ticket_obj'}->id );
 
         $scrip->commit(
             ticket_obj      => $self->{'ticket_obj'},
@@ -203,6 +201,7 @@ sub prepare {
     );
 
     Jifty->log->debug("preparing a scripcollection");
+
     #We're really going to need a non-acled ticket for the scrips to work
     $self->setup_source_objects(
         ticket_obj      => $args{'ticket_obj'},
@@ -215,24 +214,31 @@ sub prepare {
 
     #Iterate through each script and check it's applicability.
     while ( my $scrip = $self->next() ) {
-        Jifty->log->debug("I found a scrip " .$scrip->id);
-            unless ( $scrip->is_applicable(
+        Jifty->log->debug( "I found a scrip " . $scrip->id );
+        unless (
+            $scrip->is_applicable(
                 ticket_obj      => $self->{'ticket_obj'},
-                transaction_obj => $self->{'transaction_obj'})) {
+                transaction_obj => $self->{'transaction_obj'}
+            )
+            )
+        {
 
-                Jifty->log->debug("It's not applicable: ".$@);
-                next;
-            }
- 
+            Jifty->log->debug( "It's not applicable: " . $@ );
+            next;
+        }
+
         #If it's applicable, prepare and commit it
-        
-       if ( $scrip->prepare(
+
+        if ($scrip->prepare(
                 ticket_obj      => $self->{'ticket_obj'},
-                transaction_obj => $self->{'transaction_obj'})) {
-                Jifty->log->debug("And it's prepared");
-                push @{ $self->{'prepared_scrips'} }, $scrip;
+                transaction_obj => $self->{'transaction_obj'}
+            )
+            )
+        {
+            Jifty->log->debug("And it's prepared");
+            push @{ $self->{'prepared_scrips'} }, $scrip;
         } else {
-           Jifty->log->debug("Prepare failed " . $@); 
+            Jifty->log->debug( "Prepare failed " . $@ );
         }
     }
 
@@ -277,7 +283,7 @@ sub setup_source_objects {
     } else {
         $self->{'ticket_obj'} = RT::Model::Ticket->new;
         $self->{'ticket_obj'}->load( $args{'ticket'} )
-            || Jifty->log->err( "$self couldn't load ticket $args{'ticket'}");
+            || Jifty->log->err("$self couldn't load ticket $args{'ticket'}");
     }
 
     if ( ( $self->{'transaction_obj'} = $args{'transaction_obj'} ) ) {
@@ -285,7 +291,7 @@ sub setup_source_objects {
     } else {
         $self->{'transaction_obj'} = RT::Model::Transaction->new;
         $self->{'transaction_obj'}->load( $args{'transaction'} )
-            || Jifty->log->err( "$self couldn't load transaction $args{'transaction'}");
+            || Jifty->log->err("$self couldn't load transaction $args{'transaction'}");
     }
 }
 
@@ -306,7 +312,7 @@ sub _find_scrips {
         @_
     );
 
-    $self->limit_to_queue( $self->{'ticket_obj'}->queue_obj->id ) ;    #Limit it to  $Ticket->queue_obj->id
+    $self->limit_to_queue( $self->{'ticket_obj'}->queue_obj->id );    #Limit it to  $Ticket->queue_obj->id
     $self->limit_to_global();
 
     # or to "global"
@@ -350,8 +356,7 @@ sub _find_scrips {
     # so just do search and get count from results
     $self->_do_search if $self->{'must_redo_search'};
 
-    Jifty->log->debug( "Found " . $self->count . " scrips for $args{'stage'} stage"
-            . " with applicable type(s) $args{'type'}" );
+    Jifty->log->debug( "Found " . $self->count . " scrips for $args{'stage'} stage" . " with applicable type(s) $args{'type'}" );
 }
 
 1;

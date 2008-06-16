@@ -1,0 +1,241 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<&| /Widgets/TitleBox, title => _($Title)&>
+
+%# Hide all the save functionality if the user shouldn't see it.
+% if (Jifty->web->current_user->has_right( right => 'CreateSavedSearch',
+%                                        object=> RT->system )) {
+<&|/l&>Privacy:</&>
+% if ( $object && $object->id ) {
+<& SearchPrivacy, object => $object->object &>
+% } else {
+<& SelectSearchObject, name => 'SavedSearchOwner', objects => \@objects &>
+% }
+<br />
+<&|/l&>description</&>:
+<input size="25" name="SavedSearchdescription" value="<% $description %>" />
+
+% if ($Id ne 'new') {
+<nobr>
+% if ($Dirty) {
+<input type="submit" class="button" name="SavedSearchRevert" value="<%_('Revert')%>" />
+% }
+<input type="submit" class="button" name="SavedSearchDelete" value="<%_('Delete')%>" />
+% if ( $AllowCopy ) {
+<input type="submit" class="button" name="SavedSearchCopy"   value="<%_('Copy')%>" />
+% }
+</nobr>
+% }
+<input type="submit" class="button" name="SavedSearchSave"   value="<%_('Save')%>" />
+% }
+<br />
+<hr />
+<&|/l&>load saved search:</&>
+<& SelectSearchesForObjects, name => 'SavedSearchLoad', objects => \@objects, SearchType => $Type &>
+<input type="submit" value="<% _('Load') %>" class="button" />
+
+</&>
+
+<%INIT>
+return unless Jifty->web->current_user->has_right(
+    right  => 'LoadSavedSearch',
+    object => RT->system,
+);
+
+# If we're modifying an old query, check if it's been changed
+my $Dirty = $m->comp(
+    'EditSearches:IsDirty',
+    query => $CurrentSearch,
+    saved_search => { id => $Id, object => $object, description => $description }
+);
+
+use RT::SavedSearches;
+my @objects = RT::SavedSearches->new()->_privacy_objects;
+push @objects, RT::System->new()
+    if Jifty->web->current_user->has_right( object=> RT->system,
+                                          right => 'SuperUser' );
+
+</%INIT>
+
+<%ARGS>
+$Id => 'new'
+$object => undef
+$Type => 'Ticket'
+$description => ''
+$CurrentSearch => {}
+$AllowCopy => 1
+$Title => 'Saved searches'
+</%ARGS>
+
+<%METHOD Init>
+<%ARGS>
+$query   => {}
+$SavedSearch => {}
+</%ARGS>
+<%INIT>
+
+my @columns = qw(query format order_by order rows_per_page);
+
+$SavedSearch->{'id'}          = $ARGS{'SavedSearchId'}          || 'new';
+$SavedSearch->{'description'} = $ARGS{'SavedSearchdescription'} || '';
+
+if ( $ARGS{'SavedSearchRevert'} ) {
+    $ARGS{'SavedSearchLoad'} = $SavedSearch->{'id'};
+}
+
+if ( $ARGS{'SavedSearchLoad'} ) {
+    my ($container, $id ) = _parse_saved_search ($ARGS{'SavedSearchLoad'});
+    my $search = $container->attributes->with_id( $id );
+
+    $SavedSearch->{'id'}          = $ARGS{'SavedSearchLoad'};
+    $SavedSearch->{'object'}      = $search;
+    $SavedSearch->{'description'} = $search->description;
+    $query->{$_} = $search->sub_value($_) foreach @columns;
+}
+elsif ( $ARGS{'SavedSearchDelete'} ) {
+    # We set $SearchId to 'new' above already, so peek into the %ARGS
+    my ($container, $id) = _parse_saved_search( $SavedSearch->{'id'} );
+    if ( $container && $container->id ) {
+        # We have the object the entry is an attribute on; delete the entry...
+        $container->attributes->delete_entry( name => 'SavedSearch', id => $id );
+    }
+    $SavedSearch->{'id'}          = 'new';
+    $SavedSearch->{'object'}      = undef;
+}
+elsif ( $ARGS{'SavedSearchCopy'} ) {
+    $SavedSearch->{'id'}          = 'new';
+    $SavedSearch->{'object'}      = undef;
+    $SavedSearch->{'description'} = _( "%1 copy", $SavedSearch->{'description'} );
+}
+
+if ( $SavedSearch->{'id'} && $SavedSearch->{'id'} ne 'new'
+     && !$SavedSearch->{'object'} )
+{
+    my ($container, $id ) = _parse_saved_search( $ARGS{'SavedSearchId'} );
+    $SavedSearch->{'object'} = $container->attributes->with_id( $id );
+    $SavedSearch->{'description'} ||= $SavedSearch->{'object'}->description;
+}
+
+</%INIT>
+</%METHOD>
+
+<%METHOD Save>
+<%ARGS>
+$query   => {}
+$SavedSearch => {}
+</%ARGS>
+<%INIT>
+
+return unless $ARGS{'SavedSearchSave'};
+
+my @results;
+my $obj  = $SavedSearch->{'object'};
+my $id   = $SavedSearch->{'id'};
+my $desc = $SavedSearch->{'description'};
+
+if ( $obj && $obj->id ) {
+    # permission check
+    if ($obj->object->isa('RT::System')) {
+        unless (Jifty->web->current_user->has_right( object=> RT->system, right => 'SuperUser')) {
+            push @results, [ _("No permission to save system-wide searches"), 0 ];
+            return @results;
+        }
+    }
+
+    $obj->set_sub_values( %$query );
+    $obj->set_description( $desc );
+}
+elsif ( $id eq 'new' ) {
+    my $saved_search = RT::SavedSearch->new();
+    my ($status, $msg) = $saved_search->save(
+        privacy      => $ARGS{'SavedSearchOwner'},
+        name         => $desc,
+        search_params => $query,
+    );
+
+    if ( $status ) {
+        $SavedSearch->{'object'} =
+            Jifty->web->current_user->user_object->attributes->with_id( $saved_search->id );
+        # Build new SearchId
+        $SavedSearch->{'id'} =
+                ref( Jifty->web->current_user->user_object ) . '-'
+                    . Jifty->web->current_user->user_object->id
+                    . '-SavedSearch-'
+                    . $SavedSearch->{'object'}->id;
+    }
+    else {
+        push @results, [ _("Can't find a saved search to work with").': '._($msg), 0 ];
+    }
+}
+else {
+    push @results, [ _("Can't save this search"), 0 ];
+}
+
+return @results;
+
+</%INIT>
+</%METHOD>
+
+<%METHOD IsDirty>
+<%ARGS>
+$query   => {}
+$SavedSearch => {}
+</%ARGS>
+<%INIT>
+
+my $obj  = $SavedSearch->{'object'};
+return 0 unless $obj && $obj->id;
+
+foreach( qw(query format order_by order rows_per_page) ) {
+    return 1 if $obj->sub_value( $_ ) ne $query->{$_};
+}
+
+return 0;
+
+</%INIT>
+</%METHOD>

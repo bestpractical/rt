@@ -45,7 +45,6 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
 use warnings;
 use strict;
 
@@ -89,8 +88,7 @@ sub has_entry_for_custom_field {
     my @items = grep { $_->custom_field == $id } @{ $self->items_array_ref };
 
     if ( $#items > 1 ) {
-        die
-            "$self HasEntry had a list with more than one of $id in it. this can never happen";
+        die "$self HasEntry had a list with more than one of $id in it. this can never happen";
     }
     if ( $#items == -1 ) {
         return undef;

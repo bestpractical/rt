@@ -91,7 +91,7 @@ sub limit_to_enabled {
     );
 }
 
-=head2 limit_Attribute PARAMHASH
+=head2 limit_attribute PARAMHASH
 
 Takes name, operator and value to find records that has the
 matching Attribute.
@@ -180,7 +180,7 @@ sub limit_attribute {
     ) if $args{NULL};
 }
 
-=head2 limit_CustomField
+=head2 limit_custom_field
 
 Takes a paramhash of key/value pairs with the following keys:
 
@@ -249,7 +249,7 @@ sub include_disabled_rows {
     shift->{'find_disabled_rows'} = 1;
 }
 
-=head2 Limit PARAMHASH
+=head2 limit PARAMHASH
 
 This Limit sub calls SUPER::limit, but defaults "case_sensitive" to 1, thus
 making sure that by default lots of things don't do extra work trying to 

@@ -1,9 +1,0 @@
-<% $queue_obj->name %>
-<%ARGS>
-$queue_obj
-</%ARGS>
-<%INIT>
-my $value = $queue_obj->name;
-$value = '#'. $queue_obj->id
-    unless defined $value && length $value;
-</%INIT>

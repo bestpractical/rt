@@ -84,9 +84,9 @@ sub ocf_alias {
     return ( $self->{_sql_ocfalias} );
 }
 
-# {{{ sub limit_ToGlobalOrQueue
+# {{{ sub limit_to_global_or_queue
 
-=head2 limit_ToGlobalOrQueue QUEUEID
+=head2 limit_to_global_or_queue QUEUEID
 
 Limits the set of custom fields found to global custom fields or those tied to the queue with ID QUEUEID 
 
@@ -101,9 +101,9 @@ sub limit_to_global_or_queue {
 
 # }}}
 
-# {{{ sub limit_ToQueue
+# {{{ sub limit_to_queue
 
-=head2 limit_ToQueue QUEUEID
+=head2 limit_to_queue QUEUEID
 
 Takes a queue id (numerical) as its only argument. Makes sure that 
 Scopes it pulls out apply to this queue (or another that you've selected with
@@ -126,9 +126,9 @@ sub limit_to_queue {
 
 # }}}
 
-# {{{ sub limit_ToGlobal
+# {{{ sub limit_to_global
 
-=head2 limit_ToGlobal
+=head2 limit_to_global
 
 Makes sure that 
 Scopes it pulls out apply to all queues (or another that you've selected with
@@ -163,7 +163,7 @@ them.
 sub _do_search {
     my $self = shift;
 
-#unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
+    #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
     unless ( $self->{'find_disabled_rows'} ) {
         $self->limit_to_enabled();
     }
@@ -218,7 +218,7 @@ sub limit_to_child_type {
     my $self   = shift;
     my $lookup = shift;
 
-    $self->limit( column => 'lookup_type', value => "$lookup" );
+    $self->limit( column => 'lookup_type', value    => "$lookup" );
     $self->limit( column => 'lookup_type', ENDSWITH => "$lookup" );
 }
 
@@ -226,7 +226,7 @@ sub limit_to_parent_type {
     my $self   = shift;
     my $lookup = shift;
 
-    $self->limit( column => 'lookup_type', value => "$lookup" );
+    $self->limit( column => 'lookup_type', value       => "$lookup" );
     $self->limit( column => 'lookup_type', starts_with => "$lookup" );
 }
 
@@ -253,13 +253,10 @@ sub limit_to_global_or_object_id {
         entry_aggregator => 'OR'
     ) unless $global_only;
 
-    $self->order_by(
-        { alias => $self->ocf_alias, column => 'object_id', order => 'DESC' },
-        { alias => $self->ocf_alias, column => 'sort_order' },
-    );
+    $self->order_by( { alias => $self->ocf_alias, column => 'object_id', order => 'DESC' }, { alias => $self->ocf_alias, column => 'sort_order' }, );
 
-# This doesn't work on postgres.
-#$self->order_by( alias => $class_cfs , column => "sort_order", order => 'ASC');
+    # This doesn't work on postgres.
+    #$self->order_by( alias => $class_cfs , column => "sort_order", order => 'ASC');
 
 }
 

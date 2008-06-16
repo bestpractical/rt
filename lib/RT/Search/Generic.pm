@@ -103,9 +103,9 @@ sub _init {
 
 # }}}
 
-# {{{ sub Argument
+# {{{ sub argument
 
-=head2 Argument
+=head2 argument
 
 Return the optional argument associated with this Search
 
@@ -118,7 +118,7 @@ sub argument {
 
 # }}}
 
-=head2 TicketsObj 
+=head2 tickets_obj 
 
 Return the Tickets object passed into this search
 
@@ -129,7 +129,7 @@ sub tickets_obj {
     return ( $self->{'TicketsObj'} );
 }
 
-# {{{ sub Describe
+# {{{ sub describe
 sub describe {
     my $self = shift;
     return ( _( "No description for %1", ref $self ) );

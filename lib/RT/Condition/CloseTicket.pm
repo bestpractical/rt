@@ -52,7 +52,7 @@ use warnings;
 
 use base 'RT::Condition::Generic';
 
-=head2 IsApplicable
+=head2 is_applicable
 
 If the ticket was closed, ie status was changed from any active status to
 an inactive. See F<RT_Config.pm> for C<ActiveStatuses> and C<InactiveStatuses>

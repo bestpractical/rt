@@ -44,77 +44,83 @@ attributes => a ref to a list of hashrefs containing the arguments for
 =cut
 
 sub create_users {
-    my %ARGS = (number => 1,
-		subdomain => undef,
-		privileged => 1,
-		@_);
+    my %ARGS = (
+        number     => 1,
+        subdomain  => undef,
+        privileged => 1,
+        @_
+    );
     my $lorem = Text::Lorem->new();
     my @users_returned;
 
     my @usernames;
     my $anon;
-    if ($ARGS{'users'}) {
-	@usernames = @{$ARGS{'users'}};
-	$anon = 0;
+    if ( $ARGS{'users'} ) {
+        @usernames = @{ $ARGS{'users'} };
+        $anon      = 0;
     } else {
-	@usernames = split(/\s+/, $lorem->words($ARGS{'number'}));
-	$anon = 1;
+        @usernames = split( /\s+/, $lorem->words( $ARGS{'number'} ) );
+        $anon = 1;
     }
 
     my $domain = 'example.com';
     $domain = $ARGS{'subdomain'} . ".$domain" if $ARGS{'subdomain'};
 
     foreach my $user (@usernames) {
-	my $user_obj = RT::Model::User->new(current_user => RT->system_user);
-	$user_obj->load($user);
-	if ($user_obj->id() && !$anon) {
-	    # Use this user; assume we know what we're doing.  Don't
-	    # modify it, other than adding it to any group specified.
-	    push(@users_returned, $user_obj);
-	} elsif ($user_obj->id()) {
-	    # Oops.  Get a different username and stick it on the back
-	    # of the list.
-	    append(@users, $lorem->words(1));
-	} else {
-	    $user_obj->create(name => $user,
-			      password => $user."pass",
-			      email => $user.'@'.$domain,
-			      real_name => "$user ipsum",
-			      privileged => $ARGS{'privileged'},
-			      );
-	    push(@users_returned, $user_obj);
-	}
+        my $user_obj = RT::Model::User->new( current_user => RT->system_user );
+        $user_object->load($user);
+        if ( $user_object->id() && !$anon ) {
+
+            # Use this user; assume we know what we're doing.  Don't
+            # modify it, other than adding it to any group specified.
+            push( @users_returned, $user_obj );
+        } elsif ( $user_object->id() ) {
+
+            # Oops.  Get a different username and stick it on the back
+            # of the list.
+            append( @users, $lorem->words(1) );
+        } else {
+            $user_object->create(
+                name       => $user,
+                password   => $user . "pass",
+                email      => $user . '@' . $domain,
+                real_name  => "$user ipsum",
+                privileged => $ARGS{'privileged'},
+            );
+            push( @users_returned, $user_obj );
+        }
     }
 
     # Now we have our list of users.  Did we have groups to add them
     # to?
 
-    if ($ARGS{'groups'}) {
-	my @groups = @{$ARGS{'groups'}};
-	foreach my $group (@groups) {
-	    my $group_obj = RT::Model::Group->new();
-	    $group_obj->load_user_defined_group($group);
-	    unless ($group_obj->id()) {
-		# Create it.
-		$group_obj->create_user_defined_group(
-				name => $group,
-				description => "lorem defined group $group",
-						   );
-	    }
-	    foreach (@users_returned) {
-		$group_obj->add_member($_->id);
-	    }
-	}
+    if ( $ARGS{'groups'} ) {
+        my @groups = @{ $ARGS{'groups'} };
+        foreach my $group (@groups) {
+            my $group_obj = RT::Model::Group->new();
+            $group_obj->load_user_defined_group($group);
+            unless ( $group_obj->id() ) {
+
+                # Create it.
+                $group_obj->create_user_defined_group(
+                    name        => $group,
+                    description => "lorem defined group $group",
+                );
+            }
+            foreach (@users_returned) {
+                $group_obj->add_member( $_->id );
+            }
+        }
     }
 
     # Do we have attributes to apply to the users?
-    if ($ARGS{'attributes'}) {
-	foreach my $attrib (@{$ARGS{'attributes'}}) {
-	    my %attr_args = %{$attrib};
-	    foreach (@users_returned) {
-		$_->add_attribute(%attr_args);
-	    }
-	}
+    if ( $ARGS{'attributes'} ) {
+        foreach my $attrib ( @{ $ARGS{'attributes'} } ) {
+            my %attr_args = %{$attrib};
+            foreach (@users_returned) {
+                $_->add_attribute(%attr_args);
+            }
+        }
     }
 
     # Return our list of users.
@@ -125,12 +131,10 @@ sub create_users {
 #### The group names should be given either as part of user creation,
 #### or as a name with a number of subgroups which should be members.
 
-
 #### Generate some queues.  Users/groups who have permissions on
 #### queues need to be specified on this point.  Permissions can be
 #### specified by role, e.g. "client" or "staffmember" or "admin" for
 #### each queue.  If the queue should have anything special like a
 #### custom field, say so here.
-
 
 #### Generate some tickets and transactions.

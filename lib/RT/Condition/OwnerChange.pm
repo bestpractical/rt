@@ -45,7 +45,6 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-
 package RT::Condition::OwnerChange;
 require RT::Condition::Generic;
 
@@ -53,7 +52,7 @@ use strict;
 use vars qw/@ISA/;
 @ISA = qw(RT::Condition::Generic);
 
-=head2 IsApplicable
+=head2 is_applicable
 
 If we're changing the owner return true, otherwise return false
 
@@ -69,7 +68,6 @@ sub is_applicable {
         return (undef);
     }
 }
-
 
 1;
 
