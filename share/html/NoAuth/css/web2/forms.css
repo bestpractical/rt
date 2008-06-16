@@ -174,17 +174,16 @@ div.widget .hints {
 %# ComboBox styles... some properties like height and width must be dynamically
 %# set in the JS (at least for now).
 .combobox {
-    border: 2px inset ButtonHighlight;
     position: relative;
-    min-width: 10em;
+    width: 11.5em;
 }
 
 .combobox .combo-button {
+    right: 0;
     padding: 0;
     margin-top: 0;
     cursor: default;
     color: ButtonFace;
-    padding-right: 0.2em;
     background: ButtonFace;
     border: 2px outset ButtonHighlight;
 }
@@ -204,8 +203,8 @@ div.widget .hints {
 }
 
 .combobox .combo-text {
+    border: 1px inset ButtonHighlight;
     margin: 0;
-    border: 0;
     padding: 0;
 }
 
