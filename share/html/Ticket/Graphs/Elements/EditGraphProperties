@@ -47,6 +47,14 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => loc('Graph Properties') &>
 
+<% loc('Direction') %> <select name="Direction">
+<option value="TB" <% ($Direction||'TB') eq 'TB'? 'selected="selected"': '' |n %>><% loc('top to bottom') %></option>
+<option value="LR" <% ($Direction||'TB') eq 'LR'? 'selected="selected"': '' |n %>><% loc('left to right') %></option>
+%# XXX: not supported by GraphViz perl module
+%#<option value="BT" <% ($Direction||'TB') eq 'BT'? 'selected="selected"': '' |n %>><% loc('bottom to top') %></option>
+%#<option value="RL" <% ($Direction||'TB') eq 'RL'? 'selected="selected"': '' |n %>><% loc('right to left') %></option>
+</select><br />
+
 <% loc('Main type of links') %> <select name="LeadingLink">
 % foreach ( @link_types ) {
 <option value="<% $_ %>" <% ($LeadingLink||'Members') eq $_? 'selected="selected"': '' |n %>><% loc($_) %></option>
@@ -116,6 +124,7 @@ for my $i ( 1..($MaxDepth||6) ) {
 
 <%ARGS>
 $id => undef
+$Direction => 'TB'
 $LeadingLink => 'Members'
 @ShowLinks => ('MemberOf', 'DependsOn', 'RefersTo')
 $MaxDepth => 3

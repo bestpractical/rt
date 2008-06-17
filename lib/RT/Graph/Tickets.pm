@@ -267,6 +267,7 @@ sub TicketLinks {
         Ticket               => undef,
 
         Graph                => undef,
+        Direction            => 'TB',
         Seen                 => undef,
         SeenEdge             => undef,
 
@@ -283,6 +284,8 @@ sub TicketLinks {
         $args{'Graph'} = GraphViz->new(
             name    => 'ticket_links_'. $args{'Ticket'}->id,
             bgcolor => "transparent",
+# TODO: patch GraphViz to support all posible RDs
+            rankdir => ($args{'Direction'} || "TB") eq "LR",
             node => { shape => 'box', style => 'filled,rounded', fillcolor => 'white' },
         );
         %fill_cache = ();
