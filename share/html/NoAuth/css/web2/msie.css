@@ -72,7 +72,7 @@ div#header h1 {
 
 #topactions {
     top: 4.1em;
-    width: 42em;
+    width: auto;
 }
 .topaction form * { 
     vertical-align: top;

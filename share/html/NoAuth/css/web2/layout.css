@@ -80,9 +80,9 @@ div#body {
 #topactions {
  position: absolute;
  background: transparent;
- right: 1em;
  top: 3.8em; 
- width: 39em;
+ right: 1em;
+ width: auto;
  font-size: 0.9em;
  z-index: 99;
 }
