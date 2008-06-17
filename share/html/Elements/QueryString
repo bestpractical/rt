@@ -47,7 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 my @params;
-while ( my ($key, $value) = each %ARGS ) {
+for my $key (sort keys %ARGS) {
+    my $value = $ARGS{$key};
     next unless defined $value;
     $key = $m->interp->apply_escapes( $key, 'u' );
     if( UNIVERSAL::isa( $value, 'ARRAY' ) ) {
@@ -58,5 +59,6 @@ while ( my ($key, $value) = each %ARGS ) {
         push @params, $key ."=". $m->interp->apply_escapes($value, 'u');
     }
 }
-return join '&', @params;
+
+return join '&', sort(@params);
 </%INIT>
