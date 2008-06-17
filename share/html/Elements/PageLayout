@@ -81,11 +81,7 @@
          
          $path    =~ s#/index.html$##gi;
          $current =~ s#/index.html$##gi;
-        
-
-    warn $path;
-    warn $current;
-
+         
          $sep = $toptabs->{$tab}->{'separator'} ? 1 : 0;
          $class->{a} = $path eq $current ? ' class="selected"' : undef;
 
