@@ -123,58 +123,62 @@ RT_READABLE_DIR_MODE	=	0755
 # {{{ all these define the places that RT's binaries should get installed
 
 # RT_MODPERL_HANDLER is the mason handler script for mod_perl
-RT_MODPERL_HANDLER	=	$(RT_BIN_PATH)/webmux.pl
+RT_MODPERL_HANDLER	=	webmux.pl
 # RT_STANDALONE_SERVER is a stand-alone HTTP server
-RT_STANDALONE_SERVER	=	$(RT_BIN_PATH)/standalone_httpd
+RT_STANDALONE_SERVER	=	standalone_httpd
 # RT_SPEEDYCGI_HANDLER is the mason handler script for SpeedyCGI
-RT_SPEEDYCGI_HANDLER	=	$(RT_BIN_PATH)/mason_handler.scgi
+RT_SPEEDYCGI_HANDLER	=	mason_handler.scgi
 # RT_FASTCGI_HANDLER is the mason handler script for FastCGI
-RT_FASTCGI_HANDLER	=	$(RT_BIN_PATH)/mason_handler.fcgi
+RT_FASTCGI_HANDLER	=	mason_handler.fcgi
 # RT_WIN32_FASTCGI_HANDLER is the mason handler script for FastCGI
-RT_WIN32_FASTCGI_HANDLER	=	$(RT_BIN_PATH)/mason_handler.svc
+RT_WIN32_FASTCGI_HANDLER	=	mason_handler.svc
 # RT's CLI
-RT_CLI_BIN		=	$(RT_BIN_PATH)/rt
+RT_CLI_BIN		=	rt
 # RT's mail gateway
-RT_MAILGATE_BIN		=	$(RT_BIN_PATH)/rt-mailgate
+RT_MAILGATE_BIN		=	rt-mailgate
 # RT's cron tool
-RT_CRON_BIN		=	$(RT_BIN_PATH)/rt-crontool
+RT_CRON_BIN		=	rt-crontool
 
 # }}}
 
 
-BINARIES		=	$(DESTDIR)/$(RT_MODPERL_HANDLER) \
-				$(DESTDIR)/$(RT_MAILGATE_BIN) \
-				$(DESTDIR)/$(RT_CLI_BIN) \
-				$(DESTDIR)/$(RT_CRON_BIN) \
-				$(DESTDIR)/$(RT_STANDALONE_SERVER) \
-				$(DESTDIR)/$(RT_SPEEDYCGI_HANDLER) \
-				$(DESTDIR)/$(RT_FASTCGI_HANDLER) \
-				$(DESTDIR)/$(RT_WIN32_FASTCGI_HANDLER)
-SYSTEM_BINARIES		=	$(DESTDIR)/$(RT_SBIN_PATH)/rt-dump-database \
-				$(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database \
-				$(DESTDIR)/$(RT_SBIN_PATH)/rt-send-digest \
-				$(DESTDIR)/$(RT_SBIN_PATH)/rt-email-dashboards \
-				$(DESTDIR)/$(RT_SBIN_PATH)/rt-server \
-				$(DESTDIR)/$(RT_SBIN_PATH)/rt-test-dependencies \
-				$(DESTDIR)/$(RT_SBIN_PATH)/rt-clean-sessions \
-				$(DESTDIR)/$(RT_SBIN_PATH)/rt-shredder \
-				$(DESTDIR)/$(RT_SBIN_PATH)/rt-notify-group-admin
+BINARIES		=	$(RT_MODPERL_HANDLER) \
+				$(RT_MAILGATE_BIN) \
+				$(RT_CLI_BIN) \
+				$(RT_CRON_BIN) \
+				$(RT_STANDALONE_SERVER) \
+				$(RT_SPEEDYCGI_HANDLER) \
+				$(RT_FASTCGI_HANDLER) \
+				$(RT_WIN32_FASTCGI_HANDLER)
 
-ETC_FILES		=	$(DESTDIR)/$(RT_ETC_PATH)/RT_Config.pm \
-			$(DESTDIR)/$(RT_ETC_PATH)/RT_SiteConfig.pm \
-			$(DESTDIR)/$(RT_ETC_PATH)/acl.Informix \
-			$(DESTDIR)/$(RT_ETC_PATH)/acl.Pg \
-			$(DESTDIR)/$(RT_ETC_PATH)/acl.Oracle \
-			$(DESTDIR)/$(RT_ETC_PATH)/acl.mysql \
-			$(DESTDIR)/$(RT_ETC_PATH)/acl.Sybase \
-			$(DESTDIR)/$(RT_ETC_PATH)/schema.Informix \
-			$(DESTDIR)/$(RT_ETC_PATH)/schema.Pg \
-			$(DESTDIR)/$(RT_ETC_PATH)/schema.Oracle \
-			$(DESTDIR)/$(RT_ETC_PATH)/schema.mysql \
-			$(DESTDIR)/$(RT_ETC_PATH)/schema.mysql-4.1 \
-			$(DESTDIR)/$(RT_ETC_PATH)/schema.Sybase \
-			$(DESTDIR)/$(RT_ETC_PATH)/schema.SQLite \
-			$(DESTDIR)/$(RT_ETC_PATH)/initialdata
+
+
+
+
+SYSTEM_BINARIES		=	rt-dump-database \
+				rt-setup-database \
+				rt-send-digest \
+				rt-email-dashboards \
+				rt-server \
+				rt-test-dependencies \
+				rt-clean-sessions \
+				rt-shredder \
+				rt-notify-group-admin
+
+
+ETC_FILES		=	acl.Informix \
+			acl.Pg \
+			acl.Oracle \
+			acl.mysql \
+			acl.Sybase \
+			schema.Informix \
+			schema.Pg \
+			schema.Oracle \
+			schema.mysql \
+			schema.mysql-4.1 \
+			schema.Sybase \
+			schema.SQLite \
+			initialdata
 
 # }}}
 
@@ -248,7 +252,7 @@ default:
 
 
 instruct:
-	@echo "Congratulations. RT has been installed. "
+	@echo "Congratulations. RT is now installed."
 	@echo ""
 	@echo ""
 	@echo "You must now configure RT by editing $(SITE_CONFIG_FILE)."
@@ -262,14 +266,9 @@ instruct:
 	@echo "After that, you need to initialize RT's database by running" 
 	@echo " 'make initialize-database'"
 
-#	@echo " or by executing "       
-#	@echo " '$(RT_SBIN_PATH)/rt-setup-database --action init \ "
-#	@echo "     --dba $(DB_DBA) --prompt-for-dba-password'"
-
-
 
 upgrade-instruct: 
-	@echo "Congratulations. RT has been upgraded. You should now check-over"
+	@echo "Congratulations. RT has been upgraded. You should now check over"
 	@echo "$(CONFIG_FILE) for any necessary site customization. Additionally,"
 	@echo "you should update RT's system database objects by running "
 	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --prompt-for-dba-password --action upgrade"
@@ -277,7 +276,7 @@ upgrade-instruct:
 
 upgrade: testdeps config-install dirs files-install fixperms upgrade-instruct
 
-upgrade-noclobber: config-install libs-install html-install bin-install local-install doc-install fixperms
+upgrade-noclobber: config-install dirs libs-install html-install bin-install local-install doc-install fixperms
 
 
 # {{{ dependencies
@@ -306,7 +305,7 @@ fixperms:
 	chmod $(RT_READABLE_DIR_MODE) $(DESTDIR)/$(RT_BIN_PATH)	
 
 	chmod 0755 $(DESTDIR)/$(RT_ETC_PATH)
-	chmod 0400 $(ETC_FILES)
+	cd $(DESTDIR)/$(RT_ETC_PATH) && chmod 0400 $(ETC_FILES)
 
 	#TODO: the config file should probably be able to have its
 	# owner set separately from the binaries.
@@ -316,15 +315,11 @@ fixperms:
 	chmod 0440 $(DESTDIR)/$(CONFIG_FILE)
 	chmod 0640 $(DESTDIR)/$(SITE_CONFIG_FILE)
 
-	# Make the interfaces executable
-	chown $(BIN_OWNER) $(BINARIES)
-	chgrp $(RTGROUP) $(BINARIES)
-	chmod 0755  $(BINARIES)
+	# Make the system binaries
+	cd $(DESTDIR)/$(RT_BIN_PATH) && ( chmod 0755 $(BINARIES) ; chown $(BIN_OWNER) $(BINARIES);  chgrp $(RTGROUP) $(BINARIES))
 
 	# Make the system binaries executable also
-	chown $(BIN_OWNER) $(SYSTEM_BINARIES)
-	chgrp $(RTGROUP) $(SYSTEM_BINARIES)
-	chmod 0755  $(SYSTEM_BINARIES)
+	cd $(DESTDIR)/$(RT_SBIN_PATH) && ( chmod 0755 $(SYSTEM_BINARIES) ; chown $(BIN_OWNER) $(SYSTEM_BINARIES);  chgrp $(RTGROUP) $(SYSTEM_BINARIES))
 
 	# Make the web ui readable by all. 
 	chmod -R  u+rwX,go-w,go+rX 	$(DESTDIR)/$(MASON_HTML_PATH) \
@@ -362,20 +357,13 @@ dirs:
 
 install: testdeps config-install dirs files-install fixperms instruct
 
-files-install: libs-install etc-install bin-install sbin-install html-install local-install doc-install
+files-install: libs-install etc-install config-install bin-install sbin-install html-install local-install doc-install
 
 config-install:
-	$(INSTALL) -m 0755 -d $(DESTDIR)/$(CONFIG_FILE_PATH)	
-	-$(INSTALL) -m 0440 etc/RT_Config.pm $(DESTDIR)/$(CONFIG_FILE)
-	[ -f $(DESTDIR)/$(SITE_CONFIG_FILE) ] || $(INSTALL) -m 0640 etc/RT_SiteConfig.pm $(DESTDIR)/$(SITE_CONFIG_FILE) 
-
-	chgrp $(RTGROUP) $(DESTDIR)/$(CONFIG_FILE)
-	chown $(BIN_OWNER) $(DESTDIR)/$(CONFIG_FILE)
-
-	chgrp $(RTGROUP) $(DESTDIR)/$(SITE_CONFIG_FILE)
-	chown $(BIN_OWNER) $(DESTDIR)/$(SITE_CONFIG_FILE)
-
-	@echo "Installed configuration. about to install rt in  $(RT_PATH)"
+	$(INSTALL) -m 0755 -o $(BIN_OWNER) -g $(RTGROUP) -d $(DESTDIR)/$(CONFIG_FILE_PATH)	
+	-$(INSTALL) -m 0440 -o $(BIN_OWNER) -g $(RTGROUP)  etc/RT_Config.pm $(DESTDIR)/$(CONFIG_FILE)
+	[ -f $(DESTDIR)/$(SITE_CONFIG_FILE) ] || $(INSTALL) -m 0640 -o $(BIN_OWNER) -g $(RTGROUP) etc/RT_SiteConfig.pm $(DESTDIR)/$(SITE_CONFIG_FILE) 
+	@echo "Installed configuration. About to install RT in  $(RT_PATH)"
 
 TEST_FILES = t/*.t t/*/*.t
 TEST_VERBOSE = 0
@@ -432,24 +420,14 @@ doc-install:
 
 etc-install:
 	$(INSTALL) -m 0755 -d $(DESTDIR)/$(RT_ETC_PATH)
-	-$(INSTALL) -m 0644 $(ETC_FILES) $(DESTDIR)/$(RT_ETC_PATH)/
+	cd etc && $(INSTALL) -m 0644 $(ETC_FILES) $(DESTDIR)/$(RT_ETC_PATH)/
 # }}}
 
 # {{{ sbin-install
 
 sbin-install:
 	$(INSTALL) -m 0755 -d $(DESTDIR)/$(RT_SBIN_PATH)
-	-$(INSTALL) -m 0755 \
-		sbin/rt-dump-database \
-		sbin/rt-setup-database \
-		sbin/rt-test-dependencies \
-		sbin/rt-clean-sessions \
-		sbin/rt-shredder \
-		sbin/rt-notify-group-admin \
-		sbin/rt-send-digest \
-		sbin/rt-email-dashboards \
-		sbin/rt-server \
-		$(DESTDIR)/$(RT_SBIN_PATH)/
+	cd sbin && $(INSTALL) -o $(BIN_OWNER) -g $(RTGROUP) -m 0755 $(SYSTEM_BINARIES)  $(DESTDIR)/$(RT_SBIN_PATH)/
 
 # }}}
 
@@ -457,17 +435,7 @@ sbin-install:
 
 bin-install:
 	$(INSTALL) -m 0755 -d $(DESTDIR)/$(RT_BIN_PATH)
-	-$(INSTALL) -m 0755 \
-		bin/rt-mailgate \
-		bin/mason_handler.fcgi \
-		bin/mason_handler.scgi \
-		bin/standalone_httpd \
-		bin/mason_handler.svc \
-		bin/rt \
-		bin/webmux.pl \
-		bin/rt-crontool \
-		$(DESTDIR)/$(RT_BIN_PATH)/
-# }}}
+	cd bin && $(INSTALL) -o $(BIN_OWNER) -g $(RTGROUP) -m 0755 $(BINARIES) $(DESTDIR)/$(RT_BIN_PATH)/
 
 # {{{ local-install
 local-install:
