@@ -75,14 +75,14 @@ our %ticket_status_style = (
     deleted  => { fontcolor => '#A9A9A9' },
 );
 
-my %link_style = (
+our %link_style = (
     MemberOf  => { style => 'solid' },
     DependsOn => { style => 'dashed' },
     RefersTo  => { style => 'dotted' },
 );
 
 # We don't use qw() because perl complains about "possible attempt to put comments in qw() list"
-my @fill_colors = split ' ',<<EOT;
+our @fill_colors = split ' ',<<EOT;
     #0000FF #8A2BE2 #A52A2A #DEB887 #5F9EA0 #7FFF00 #D2691E #FF7F50
     #6495ED #FFF8DC #DC143C #00FFFF #00008B #008B8B #B8860B #A9A9A9
     #A9A9A9 #006400 #BDB76B #8B008B #556B2F #FF8C00 #9932CC #8B0000
@@ -110,7 +110,7 @@ sub gv_escape($) {
 
 our (%fill_cache, @available_colors) = ();
 
-my %property_cb = (
+our %property_cb = (
     Queue => sub { return $_[0]->QueueObj->Name || $_[0]->Queue },
     CF    => sub {
         my $values = $_[0]->CustomFieldValues( $_[1] );
@@ -239,7 +239,12 @@ sub AddTicket {
     
     if ( $args{'FillUsing'} ) {
         my ($key, @subkeys) = $self->_SplitProperty( $args{'FillUsing'} );
-        my $value = $property_cb{ $key }->( $args{'Ticket'}, @subkeys );
+        my $value;
+        if ( $property_cb{ $key } ) {
+            $value = $property_cb{ $key }->( $args{'Ticket'}, @subkeys );
+        } else {
+            $RT::Logger->error("Couldn't find property callback for '$key'");
+        }
         if ( defined $value && length $value && $value =~ /\S/ ) {
             my $fill = $fill_cache{ $value };
             $fill = $fill_cache{ $value } = shift @available_colors
@@ -262,6 +267,7 @@ sub TicketLinks {
         Ticket               => undef,
 
         Graph                => undef,
+        Direction            => 'TB',
         Seen                 => undef,
         SeenEdge             => undef,
 
@@ -278,6 +284,8 @@ sub TicketLinks {
         $args{'Graph'} = GraphViz->new(
             name    => 'ticket_links_'. $args{'Ticket'}->id,
             bgcolor => "transparent",
+# TODO: patch GraphViz to support all posible RDs
+            rankdir => ($args{'Direction'} || "TB") eq "LR",
             node => { shape => 'box', style => 'filled,rounded', fillcolor => 'white' },
         );
         %fill_cache = ();

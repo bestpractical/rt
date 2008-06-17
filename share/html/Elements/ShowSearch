@@ -77,7 +77,7 @@ if ($SavedSearch) {
     } else {
         $customize = RT->Config->Get('WebPath') . '/Search/Build.html?'
             . $m->comp( '/Elements/QueryString',
-            LoadSavedSearch => $SavedSearch );
+            SavedSearchLoad => $SavedSearch );
     }
 } else {
     ($search) = RT::System->new( $session{'CurrentUser'} ) ->Attributes->Named( 'Search - ' . $Name );
