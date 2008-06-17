@@ -235,12 +235,12 @@ if ( ( defined $actions->{A} || defined $actions->{B} || defined $actions->{C} )
 }
 
 my $args = '';
-my $query = '';
+my $has_query = '';
 my %query_args;
 my $search_id = $ARGS{'SavedSearchId'}
             || $session{'CurrentSearchHash'}->{'SearchId'};
 
-$query = 1 if ( $ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'} );
+$has_query = 1 if ( $ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'} );
   
 %query_args = (
 
@@ -261,7 +261,7 @@ $tabs->{"f"} = {
     title => loc('New Search')
 };
 $tabs->{"g"} = {
-    path  => "Search/Build.html" . (($query) ? $args : ''),
+    path  => "Search/Build.html" . (($has_query) ? $args : ''),
     title => loc('Edit Search')
 };
 $tabs->{"h"} = {
@@ -269,7 +269,7 @@ $tabs->{"h"} = {
     title     => loc('Advanced'),
     separator => 1
 };
-if ($query) {
+if ($has_query) {
 
     if ( $current_tab =~ m{Search/Results.html} ) {
         $current_tab = "Search/Results.html$args";
