@@ -89,12 +89,12 @@ input[type=reset], input[type=submit], input[class=button] {
    -webkit-border-radius: 0.5em;
 }
 
-input.button:hover{
-   background: #006;
+input.button:hover, button:hover, input[type=reset]:hover, input[type=submit]:hover, input[class=button]:hover {
+   background: #1D3B7D;
 }
 
-input.button:focus{
-   background: #006;
+input.button:focus, button:focus, input[type=reset]:focus, input[type=submit]:focus, input[class=button]:focus {
+   background: #1D3B7D;
 }
 
 div.error div.error {
