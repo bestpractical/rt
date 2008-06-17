@@ -79,8 +79,8 @@
          my $current = $page_tabs->{current_toptab} || "";
          my $path    = $page_tabs->{$tab}->{'path'} || "";
          
-         $path    =~ s#/index.html$##gi;
-         $current =~ s#/index.html$##gi;
+         $path    =~ s#(/index\.html)?(\?)?$##gi;
+         $current =~ s#(/index\.html)?(\?)?$##gi;
          
          $sep = $toptabs->{$tab}->{'separator'} ? 1 : 0;
          $class->{a} = $path eq $current ? ' class="selected"' : undef;
@@ -91,7 +91,6 @@
          push @li, 'post-separator' if $postsep;
          push @li, 'last' if $tab eq $tabs[-1];
          $class->{li} = join ' ', @li;
-     
 </%perl>
     <li<% $class->{li} ? qq[ class="$class->{li}"] : ''|n %>><% $count > 1 && !$postsep && "&#183; "|n%><a href="<%RT->Config->Get('WebPath')%>/<%$page_tabs->{$tab}->{'path'}%>"<%$class->{a}|n%><% $class->{a} ? ' name="focus"' : ''|n %>><% $page_tabs->{$tab}->{'title'} %></a></li>
 %
