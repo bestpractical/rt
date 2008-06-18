@@ -51,8 +51,8 @@
 
 <form method="post">
     <p>RT works just great with a number of different databases. <b>MySQL</b>, <b>PostgreSQL</b>, <b>Oracle</b> and <b>SQLite</b> are all supported.</p>
-    <p>You should choose whichever database you or your local database administrator is most comfortable with.</p>
-    <p><b>SQLite is a database that doesn't need a server or any configuration whatsoever. RT's authors recommend it for testing, demoing and development, but it's not quite right for a high-volume production RT server.</b></p>
+    <p>You should choose the database you or your local database administrator is most comfortable with.</p>
+    <p><i>SQLite is a simple database that doesn't need a server or any configuration whatsoever. RT's authors recommend it for testing, demoing and development, but <b>it's not quite right for a high-volume production RT server</b>.</i></p>
     <p>If your supported database isn't listed in the dropdown below, that means RT couldn't find a <i>database driver</i> for it installed locally. You may be able to remedy this by using <a href="http://search.cpan.org" target="_new">CPAN</a> to download and install DBD::MySQL, DBD::Oracle or DBD::Pg.</p>
 
 <& /Widgets/BulkEdit, Types => \@Types, Meta => $RT::Installer->{Meta},
