@@ -50,8 +50,8 @@
 if ($User) {
     my $printable;
     if ( $User->Privileged ) {
-             $printable = $User->NickName
-          || $User->RealName
+             $printable = $User->RealName
+          || $User->NickName
           || $User->Name
           || $User->EmailAddress;
     }
