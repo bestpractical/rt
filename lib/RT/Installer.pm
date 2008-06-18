@@ -135,12 +135,6 @@ my %Meta = (
             Description => 'RT Name',                        #loc
         },
     },
-    Organization => {
-        Widget          => '/Widgets/Form/String',
-        WidgetArguments => {
-            Description => 'Organization',                  #loc
-        },
-    },
     MinimumPasswordLength => {
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
@@ -152,12 +146,6 @@ my %Meta = (
         WidgetArguments => {
             Description => 'password of the user root in RT',         #loc
             Type => 'password',
-        },
-    },
-    MaxAttachmentSize => {
-        Widget          => '/Widgets/Form/Integer',
-        WidgetArguments => {
-            Description => 'Max attachment size( in bytes )',             #loc
         },
     },
     OwnerEmail => {
@@ -280,6 +268,10 @@ sub SaveConfig {
         $content = <$fh>;
         $content =~ s/^\s*1;\s*$//m;
     }
+
+    # make organization the same as rtname
+    $RT::Installer->{InstallConfig}{Organization} =
+        $RT::Installer->{InstallConfig}{rtname};
 
     if ( open my $fh, '>', $file  ) {
         for ( keys %{$RT::Installer->{InstallConfig}} ) {
