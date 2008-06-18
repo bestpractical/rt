@@ -62,6 +62,10 @@ my $query_link_url = 'Search/Results.html';
 
 if ($SavedSearch) {
     my ( $container_object, $search_id ) = _parse_saved_search($SavedSearch);
+    unless ( $container_object ) {
+        $m->out(loc("Either you have no rights to view saved search [_1] or identifier is incorrect", $SavedSearch));
+        return;
+    }
     $search = $container_object->Attributes->WithId($search_id);
     unless ( $search->Id && ref( $SearchArg = $search->Content ) eq 'HASH' ) {
         $m->out(loc("Saved Search [_1] not found", $SavedSearch)) unless $IgnoreMissing;
