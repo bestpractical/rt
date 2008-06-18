@@ -75,11 +75,6 @@ if ( $Run ) {
 'Install/Emails.html');
     }
 
-    for ( qw/MaxAttachmentSize/ ) {
-        if ( $ARGS{$_} && $ARGS{$_} !~ /^\d+$/ ) {
-            push @results, "Invalid $_: it should be a number";
-        }
-    }
 
     unless ( -e $ARGS{SendmailPath} ) {
         push @results, "$ARGS{SendmailPath} doesn't exist.";
