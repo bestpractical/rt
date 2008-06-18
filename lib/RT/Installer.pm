@@ -121,7 +121,6 @@ my %Meta = (
             Description =>
               'Database password for RT',    #loc
             Type => 'password',
-            Hints => 'default is rt_pass',
         },
     },
     DatabaseRequireSSL => {
@@ -287,12 +286,13 @@ sub SaveConfig {
             # we don't want to store root's password in config.
             next if $_ eq 'Password';
 
-            if (defined $RT::Installer->{InstallConfig}{$_}) {
-                # remove obsolete settings we'll add later
-                $content =~ s/^\s* Set \s* \( \s* \$$_ .*$//xm;
+            $RT::Installer->{InstallConfig}{$_} = '' unless defined
+                $RT::Installer->{InstallConfig}{$_};
 
-                $content .= "Set( \$$_, '$RT::Installer->{InstallConfig}{$_}' );\n";
-            }
+            # remove obsolete settings we'll add later
+            $content =~ s/^\s* Set \s* \( \s* \$$_ .*$//xm;
+
+            $content .= "Set( \$$_, '$RT::Installer->{InstallConfig}{$_}' );\n";
         }
         $content .= "1;\n";
         print $fh $content;
