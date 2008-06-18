@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select name="<% $Name %>">
+<select class="TimeUnits" id="<% $Name %>" name="<% $Name %>">
 <option value="minutes" selected="selected"><% loc('Minutes') %></option>
 <option value="hours"><% loc('Hours') %></option>
 </select>

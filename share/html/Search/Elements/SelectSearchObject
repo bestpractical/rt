@@ -56,7 +56,7 @@ if ( $Object && $Object->Id ) {
     $default_privacy = ref($Object).'-'.$Object->Id;
 }
 </%init>
-<select name="<%$Name%>">
+<select id="<%$Name%>" name="<%$Name%>">
 % foreach my $object (@Objects) {
 % my $privacy = ref($object).'-'.$object->id;
 % if (ref($object) eq 'RT::User' && $object->id == $session{'CurrentUser'}->Id) {
