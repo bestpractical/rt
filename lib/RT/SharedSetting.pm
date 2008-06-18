@@ -319,8 +319,13 @@ sub _GetObject {
 
 sub _load_privacy_object {
     my ($self, $obj_type, $obj_id) = @_;
-    if ( $obj_type eq 'RT::User' && $obj_id == $self->CurrentUser->Id)  {
-        return $self->CurrentUser->UserObj;
+    if ( $obj_type eq 'RT::User' ) {
+        if ( $obj_id == $self->CurrentUser->Id ) {
+            return $self->CurrentUser->UserObj;
+        } else {
+            $RT::Logger->warning("User #". $self->CurrentUser->Id ." tried to load container user #". $obj_id);
+            return undef;
+        }
     }
     elsif ($obj_type eq 'RT::Group') {
         my $group = RT::Group->new($self->CurrentUser);
@@ -331,7 +336,11 @@ sub _load_privacy_object {
         return RT::System->new($self->CurrentUser);
     }
 
-    $RT::Logger->error("Tried to load a " . $self->ObjectName . " belonging to an $obj_type, which is neither a user nor a group");
+    $RT::Logger->error(
+        "Tried to load a ". $self->ObjectName 
+        ." belonging to an $obj_type, which is neither a user nor a group"
+    );
+
     return undef;
 }
 

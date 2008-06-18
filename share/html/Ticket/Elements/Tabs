@@ -53,7 +53,6 @@
     current_toptab => $current_toptab,
     Title => $Title &> 
 <%INIT>
-
 my $tabs = {};
 my $current_toptab = "Search/Build.html", my $searchtabs = {};
 my $actions;
@@ -236,31 +235,33 @@ if ( ( defined $actions->{A} || defined $actions->{B} || defined $actions->{C} )
 }
 
 my $args = '';
+my $has_query = '';
 my %query_args;
+my $search_id = $ARGS{'SavedSearchId'}
+            || $session{'CurrentSearchHash'}->{'SearchId'};
 
-if ( $ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'} ) {
-    %query_args = (
+$has_query = 1 if ( $ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'} );
+  
+%query_args = (
 
-        SavedSearchId => $ARGS{'SavedSearchId'}
-            || $session{'CurrentSearchHash'}->{'SearchId'},
+        SavedSearchId => ($search_id eq 'new') ? undef : $search_id,
         Query  => $ARGS{'Query'}  || $session{'CurrentSearchHash'}->{'Query'},
         Format => $ARGS{'Format'} || $session{'CurrentSearchHash'}->{'Format'},
         OrderBy => $ARGS{'OrderBy'}
             || $session{'CurrentSearchHash'}->{'OrderBy'},
         Order => $ARGS{'Order'} || $session{'CurrentSearchHash'}->{'Order'},
         Page  => $ARGS{'Page'}  || $session{'CurrentSearchHash'}->{'Page'},
-        Rows  => $ARGS{'Rows'}  || $session{'CurrentSearchHash'}->{'Rows'},
+        RowsPerPage  => $ARGS{'RowsPerPage'}  || $session{'CurrentSearchHash'}->{'RowsPerPage'},
     );
 
     $args = "?" . $m->comp( '/Elements/QueryString', %query_args );
-}
 
 $tabs->{"f"} = {
     path  => "Search/Build.html?NewQuery=1",
     title => loc('New Search')
 };
 $tabs->{"g"} = {
-    path  => "Search/Build.html$args",
+    path  => "Search/Build.html" . (($has_query) ? $args : ''),
     title => loc('Edit Search')
 };
 $tabs->{"h"} = {
@@ -268,7 +269,7 @@ $tabs->{"h"} = {
     title     => loc('Advanced'),
     separator => 1
 };
-if ($args) {
+if ($has_query) {
 
     if ( $current_tab =~ m{Search/Results.html} ) {
         $current_tab = "Search/Results.html$args";
@@ -312,6 +313,7 @@ foreach my $searchtab ( keys %{$searchtabs} ) {
         ? $tabs->{ "s" . $searchtab } = $searchtabs->{$searchtab}
         : $tabs->{ "z_" . $searchtab } = $searchtabs->{$searchtab};
 }
+
 </%INIT>
 
   
@@ -321,4 +323,5 @@ $subtabs => undef
 $current_tab => ''
 $current_subtab => ''
 $Title => undef
+$RowsPerPage => undef
 </%ARGS>

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&|Elements/Wrapper, Title => 'Email Configuration' &> 
+<&|Elements/Wrapper, Title => 'Step 5 of 7: Email Configuration' &> 
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -62,7 +62,7 @@ loc('Next: Finish') : loc('Next: Initialize Database'), Back => 1,
 <%init>
 my @results;
 
-my @Types = qw/MaxAttachmentSize SendmailArguments SendmailBounceArguments SendmailPath/;
+my @Types = qw/SendmailArguments SendmailBounceArguments SendmailPath/;
 
 if ( $Run ) {
 
@@ -75,11 +75,6 @@ if ( $Run ) {
 'Install/Emails.html');
     }
 
-    for ( qw/MaxAttachmentSize/ ) {
-        if ( $ARGS{$_} && $ARGS{$_} !~ /^\d+$/ ) {
-            push @results, "Invalid $_: it should be a number";
-        }
-    }
 
     unless ( -e $ARGS{SendmailPath} ) {
         push @results, "$ARGS{SendmailPath} doesn't exist.";

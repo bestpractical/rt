@@ -124,7 +124,6 @@ my %Meta = (
             Description =>
               'RT database password',    #loc
             Type => 'password',
-            Hints => 'The default password is "rt_pass"',
         },
     },
     DatabaseRequireSSL => {
@@ -140,12 +139,6 @@ my %Meta = (
             Hints => 'Set this to your internet domain. (ex: example.com)' #loc
         },
     },
-    Organization => {
-        Widget          => '/Widgets/Form/String',
-        WidgetArguments => {
-            Description => 'Organization',                  #loc
-        },
-    },
     MinimumPasswordLength => {
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
@@ -158,12 +151,6 @@ my %Meta = (
             Description => 'Administrative password', #loc
             Hints => 'RT will create a user called "root" and set this as their password', #loc
             Type => 'password',
-        },
-    },
-    MaxAttachmentSize => {
-        Widget          => '/Widgets/Form/Integer',
-        WidgetArguments => {
-            Description => 'Max attachment size( in bytes )',             #loc
         },
     },
     OwnerEmail => {
@@ -287,17 +274,22 @@ sub SaveConfig {
         $content =~ s/^\s*1;\s*$//m;
     }
 
+    # make organization the same as rtname
+    $RT::Installer->{InstallConfig}{Organization} =
+        $RT::Installer->{InstallConfig}{rtname};
+
     if ( open my $fh, '>', $file  ) {
         for ( keys %{$RT::Installer->{InstallConfig}} ) {
             # we don't want to store root's password in config.
             next if $_ eq 'Password';
 
-            if (defined $RT::Installer->{InstallConfig}{$_}) {
-                # remove obsolete settings we'll add later
-                $content =~ s/^\s* Set \s* \( \s* \$$_ .*$//xm;
+            $RT::Installer->{InstallConfig}{$_} = '' unless defined
+                $RT::Installer->{InstallConfig}{$_};
 
-                $content .= "Set( \$$_, '$RT::Installer->{InstallConfig}{$_}' );\n";
-            }
+            # remove obsolete settings we'll add later
+            $content =~ s/^\s* Set \s* \( \s* \$$_ .*$//xm;
+
+            $content .= "Set( \$$_, '$RT::Installer->{InstallConfig}{$_}' );\n";
         }
         $content .= "1;\n";
         print $fh $content;

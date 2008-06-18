@@ -219,3 +219,8 @@ div.widget .hints {
     z-index: 150;
 }
 
+.value .TimeUnits{
+    margin-left: .5em;
+    width: 7em;
+}
+

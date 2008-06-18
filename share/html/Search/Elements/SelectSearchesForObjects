@@ -50,7 +50,7 @@
 $Name => undef
 $SearchType => 'Ticket',
 </%args>
-<select name="<%$Name%>">
+<select id="<%$Name%>" name="<%$Name%>">
 % foreach my $object (@Objects) {
 % if (ref($object) eq 'RT::User' && $object->id == $session{'CurrentUser'}->Id) {
 <option value=""><&|/l&>My saved searches</&></option>

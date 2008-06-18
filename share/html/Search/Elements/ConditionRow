@@ -76,11 +76,11 @@ $handle_block = sub {
     if ( $box->{'Type'} eq 'text' ) {
         my $default = $box->{'Default'} || '';
         my $size = $box->{'Size'}? qq{size="$box->{'Size'}"} : '';
-        return qq{<input name="$name" value="$default" $size />};
+        return qq{<input id="$name" name="$name" value="$default" $size />};
     }
     if ( $box->{'Type'} eq 'select' ) {
         my $res = '';
-        $res .= qq{<select name="$name">};
+        $res .= qq{<select id="$name" name="$name">};
         my @options = @{ $box->{'Options'} };
         while( my $k = shift @options ) {
             my $v = shift @options;

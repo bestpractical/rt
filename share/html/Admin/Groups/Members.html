@@ -75,7 +75,7 @@
 <br />
 <br />
 <&|/l&>Users</&>
-% my $Users = $Group->UserMembersObj;
+% my $Users = $Group->UserMembersObj( Recursively => 0 );
 % $Users->OrderBy( FIELD => $UserOrderBy, ORDER => $UserOrder );
 <ul>
 % while ( my $user = $Users->Next ) {

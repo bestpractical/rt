@@ -233,7 +233,9 @@ sub AddTicket {
     my @fields = $self->_PropertiesToFields( %args );
     if ( @fields ) {
         unshift @fields, $args{'Ticket'}->id;
-        $node_style{'label'} = gv_escape( '{ '. join( ' | ', map { s/(?=[{}|])/\\/g; $_ }  @fields ) .' }' );
+        my $label = join ' | ', map { s/(?=[{}|])/\\/g; $_ } @fields;
+        $label = "{ $label }" if ($args{'Direction'} || 'TB') =~ /^(?:TB|BT)$/;
+        $node_style{'label'} = gv_escape( $label );
         $node_style{'shape'} = 'record';
     }
     
@@ -311,10 +313,10 @@ sub TicketLinks {
             next if $args{'SeenEdge'}{ $link->id }++;
 
             my $target = $link->TargetObj;
-            next unless $target->isa('RT::Ticket');
+            next unless $target && $target->isa('RT::Ticket');
 
             my $base = $link->BaseObj;
-            next unless $target->isa('RT::Ticket');
+            next unless $base && $base->isa('RT::Ticket');
 
             my $next = $target->id == $args{'Ticket'}->id? $base : $target;
 
