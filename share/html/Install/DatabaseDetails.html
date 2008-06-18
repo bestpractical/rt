@@ -57,7 +57,9 @@
             $RT::Installer->{InstallConfig}{DatabaseAdmin} ||
             ( $db_type eq 'mysql' ? 'root'
               : $db_type eq 'Pg' ? 'postgres'
-              : '' ) }
+              : '' ),
+       DatabasePassword => '' 
+        }
                     &>
 <input type="hidden" name="Run" value="1">
 
