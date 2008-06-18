@@ -313,10 +313,10 @@ sub TicketLinks {
             next if $args{'SeenEdge'}{ $link->id }++;
 
             my $target = $link->TargetObj;
-            next unless $target->isa('RT::Ticket');
+            next unless $target && $target->isa('RT::Ticket');
 
             my $base = $link->BaseObj;
-            next unless $target->isa('RT::Ticket');
+            next unless $base && $base->isa('RT::Ticket');
 
             my $next = $target->id == $args{'Ticket'}->id? $base : $target;
 
