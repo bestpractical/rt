@@ -54,7 +54,7 @@
     CurrentValue => RT::Installer->CurrentValues(@Types) &>
 
 <input type="hidden" name="Run" value="1">
-<& /Elements/Submit, Label => loc('Next: Customize Password for Users in RT'), Back => 1,
+<& /Elements/Submit, Label => loc('Next: Customize Email Addresses'), Back => 1,
     BackLabel => loc('Back: Customize Database Details') &>
 </form>
 </&>
@@ -63,7 +63,7 @@
 <%init>
 my @results;
 
-my @Types = qw/rtname WebDomain WebPort Timezone/;
+my @Types = qw/rtname WebDomain WebPort Timezone Password/;
 
 if ( $Run ) {
 
@@ -84,7 +84,7 @@ if ( $Run ) {
 
     unless ( @results ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
-'Install/Password.html');
+'Install/Emails.html');
     }
 }
 
