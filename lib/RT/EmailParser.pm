@@ -475,29 +475,40 @@ sub _SetupMIMEParser {
     # Set up output directory for files; we use $RT::VarPath instead
     # of File::Spec->tmpdir (e.g., /tmp) beacuse it isn't always
     # writable.
-    my $tmpdir = File::Temp::tempdir( DIR => $RT::VarPath, CLEANUP => 1 );
-    push ( @{ $self->{'AttachmentDirs'} ||= [] }, $tmpdir );
-    $parser->output_dir($tmpdir);
-    $parser->filer->ignore_filename(1);
+    my $tmpdir;
+    if ( -w $RT::VarPath ) {
+        $tmpdir = File::Temp::tempdir( DIR => $RT::VarPath, CLEANUP => 1 );
+    } elsif (-w File::Spec->tmpdir) {
+        $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
+    } else {
+        $RT::Logger->crit("Neither the RT var directory ($RT::VarPath) nor the system tmpdir (@{[File::Spec->tmpdir]}) are writable; falling back to in-memory parsing!");
+    }
 
     #If someone includes a message, extract it
     $parser->extract_nested_messages(1);
-
     $parser->extract_uuencode(1);    ### default is false
 
-    # Set up the prefix for files with auto-generated names:
-    $parser->output_prefix("part");
+    if ($tmpdir) {
+        # If we got a writable tmpdir, write to disk
+        push ( @{ $self->{'AttachmentDirs'} ||= [] }, $tmpdir );
+        $parser->output_dir($tmpdir);
+        $parser->filer->ignore_filename(1);
 
-    # do _not_ store each msg as in-core scalar;
+        # Set up the prefix for files with auto-generated names:
+        $parser->output_prefix("part");
 
-    $parser->output_to_core(0);
+        # From the MIME::Parser docs:
+        # "Normally, tmpfiles are created when needed during parsing, and destroyed automatically when they go out of scope"
+        # Turns out that the default is to recycle tempfiles
+        # Temp files should never be recycled, especially when running under perl taint checking
 
-    # From the MIME::Parser docs:
-    # "Normally, tmpfiles are created when needed during parsing, and destroyed automatically when they go out of scope"
-    # Turns out that the default is to recycle tempfiles
-    # Temp files should never be recycled, especially when running under perl taint checking
-    
-    $parser->tmp_recycling(0) if $parser->can('tmp_recycling');
+        $parser->tmp_recycling(0) if $parser->can('tmp_recycling');
+    } else {
+        # Otherwise, fall back to storing it in memory
+        $parser->output_to_core(1);
+        $parser->tmp_to_core(1);
+        $parser->use_inner_files(1);
+    }
 
 }
 
