@@ -62,6 +62,8 @@ my $value_name = $tix->Column( FIELD => $PrimaryGroupBy );
 my %class = (
     Queue => 'RT::Queue',
     Owner => 'RT::User',
+    Creator => 'RT::User',
+    LastUpdatedBy => 'RT::User',
 );
 my $class = $class{ $PrimaryGroupBy };
 
