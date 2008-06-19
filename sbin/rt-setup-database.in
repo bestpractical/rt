@@ -292,7 +292,7 @@ sub action_upgrade {
     print map "* $_\n", @versions;
 
     print "HI THERE IT'S VERY IMPORTANT TO BACK UP BEFORE THIS STEP\n\n";
-    _yesno() unless $args{'force'};
+    _yesno() or exit(-2) unless $args{'force'};
 
     foreach my $v ( @versions ) {
         print "Processing $v\n";
