@@ -1,7 +1,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: RT 3.5.x\n"
+"Project-Id-Version: RT 3.8.x\n"
 "POT-Creation-Date: 2002-06-22 06:06+0200\n"
 "PO-Revision-Date: 2005-10-03 13:48-0400\n"
 "Last-Translator: Attila K. Mergl <mergl@astron.hu>\n"

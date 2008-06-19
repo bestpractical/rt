@@ -1,7 +1,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: RT 3.5.x\n"
+"Project-Id-Version: RT 3.8.x\n"
 "PO-Revision-Date: 2005-10-03 13:44-0400\n"
 "Last-Translator: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"

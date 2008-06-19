@@ -2,7 +2,7 @@
 # First Author: Burak Gürsoy <burak@cpan.org>, Jun 2007
 msgid ""
 msgstr ""
-"Project-Id-Version: RT 3.6.x\n"
+"Project-Id-Version: RT 3.8.x\n"
 "POT-Creation-Date: 2007-15-06 22:30+0200\n"
 "PO-Revision-Date: 2007-15-06 22:30+0200\n"
 "Last-Translator: Burak Gürsoy <burak@cpan.org>\n"

@@ -4,7 +4,7 @@
 # Andrew Kornilov <akornilov@gmail.com>, 2004, 2005, 2006.
 msgid ""
 msgstr ""
-"Project-Id-Version: RT 3.6.x\n"
+"Project-Id-Version: RT 3.8.x\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: (null)\n"
 "PO-Revision-Date: 2006-12-19 13:54+0200\n"
