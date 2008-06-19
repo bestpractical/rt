@@ -619,7 +619,7 @@ sub SetFromConfig {
         no strict 'refs';
         my $name = undef;
 
-        # scan $pack name table(hash)
+        # scan $pack's nametable(hash)
         foreach my $k ( keys %{$pack} ) {
 
             # hash for main:: has reference on itself
@@ -639,8 +639,10 @@ sub SetFromConfig {
             next unless $entry;
 
             # get entry for type we are looking for
-            # XXX skip scalar references. Otherwie 5.10 goes boom
-            return if ref($entry) eq 'SCALAR';  
+            # XXX skip references to scalars or other references.
+            # Otherwie 5.10 goes boom. may be we should skip any
+            # reference
+            return if ref($entry) eq 'SCALAR' || ref($entry) eq 'REF';
             my $entry_ref = *{$entry}{ ref($ref) };
             next unless $entry_ref;
 
