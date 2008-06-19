@@ -562,33 +562,35 @@ sub ProcessUpdateMessage {
         delete $args{ARGSRef}->{'UpdateAttachments'};
     }
 
-    return () unless    $args{ARGSRef}->{'UpdateTimeWorked'}
-                     || $args{ARGSRef}->{'UpdateAttachments'}
-                     || defined $args{ARGSRef}->{'UpdateContent'};
+    if ( defined $args{ARGSRef}->{'UpdateContent'} ) {
+        #Make the update content have no 'weird' newlines in it
+        $args{ARGSRef}->{'UpdateContent'} =~ s/\r+\n/\n/g;
 
-    #Make the update content have no 'weird' newlines in it
-    $args{ARGSRef}->{'UpdateContent'} =~ s/\r+\n/\n/g if $args{ARGSRef}->{'UpdateContent'};
+        #filter empty content when type is text/html
+        $args{ARGSRef}->{'UpdateContent'} = ''
+            if ($args{ARGSRef}->{'UpdateContentType'}||'') eq "text/html"
+                && $args{ARGSRef}->{'UpdateContent'} =~ m{^\s*(?:<br[^>]*/?>)*\s*$}s;
 
-    # skip updates if the content contains only user's signature
-    # and we don't update other fields
-    if ( $args{'SkipSignatureOnly'} ) {
-        my $sig = $args{'TicketObj'}->CurrentUser->UserObj->Signature || '';
-        $sig =~ s/^\s*|\s*$//g;
-        if ($args{ARGSRef}->{'UpdateContent'} =~ /^\s*(--)?\s*\Q$sig\E\s*$/
-            or (    defined $args{ARGSRef}->{'UpdateContentType'}
-                and $args{ARGSRef}->{'UpdateContentType'} eq "text/html"
+        # skip updates if the content contains only user's signature
+        # and we don't update other fields
+        if ( $args{'SkipSignatureOnly'} ) {
+            my $sig = $args{'TicketObj'}->CurrentUser->UserObj->Signature || '';
+            $sig =~ s/^\s*|\s*$//g;
+
+            $args{ARGSRef}->{'UpdateContent'} = ''
+                if $args{ARGSRef}->{'UpdateContent'} =~ /^\s*(--)?\s*\Q$sig\E\s*$/;
+
+            $args{ARGSRef}->{'UpdateContent'} = ''
+                if ($args{ARGSRef}->{'UpdateContentType'}||'') eq "text/html"
                 and $args{ARGSRef}->{'UpdateContent'}
-                =~ /^\s*<p>\s*(--)?\s*<br\s*\/?>\s*\Q$sig\E\s*<\/p>\s*$/ )
-            )
-        {
-            return () unless $args{ARGSRef}->{'UpdateTimeWorked'} ||
-                             $args{ARGSRef}->{'UpdateAttachments'};
-
-            # we have to create transaction, but we don't create attachment
-            # XXX: this couldn't work as expected
-            $args{ARGSRef}->{'UpdateContent'} = '';
+                    =~ m{^\s*<p>\s*(--)?\s*<br[^>]*?/?>\s*\Q$sig\E\s*</p>\s*$}s;
         }
     }
+
+    return () unless    $args{ARGSRef}->{'UpdateTimeWorked'}
+                     || $args{ARGSRef}->{'UpdateAttachments'}
+                     || ( defined $args{ARGSRef}->{'UpdateContent'}
+                         && length $args{ARGSRef}->{'UpdateContent'} );
 
     if ( $args{ARGSRef}->{'UpdateSubject'} eq $args{'TicketObj'}->Subject ) {
         $args{ARGSRef}->{'UpdateSubject'} = undef;
