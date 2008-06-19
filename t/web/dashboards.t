@@ -52,7 +52,7 @@ $m->follow_link_ok({text => "different dashboard"});
 $m->content_contains("Basics");
 $m->content_contains("Queries");
 $m->content_lacks("Subscription", "we don't have the SubscribeDashboard right");
-$m->content_contains("Preview");
+$m->content_contains("Show");
 
 $m->follow_link_ok({text => "Basics"});
 $m->content_contains("Modify the dashboard different dashboard");
@@ -96,7 +96,7 @@ $ticket->Create(
 	Subject   => 'dashboard test',
 );
 
-$m->follow_link_ok({text => "Preview"});
+$m->follow_link_ok({text => "Show"});
 $m->content_contains("20 highest priority tickets I own");
 $m->content_contains("20 newest unowned tickets");
 $m->content_lacks("Bookmarked Tickets");
