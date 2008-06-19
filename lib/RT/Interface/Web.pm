@@ -236,6 +236,39 @@ sub StaticFileHeaders {
     # $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = $date->RFC2616;
 }
 
+sub StripContent {
+    my %args    = @_;
+    my $content = $args{Content};
+    my $html    = ( ( $args{ContentType} || '' ) eq "text/html" );
+    my $sigonly = $args{StripSignature};
+
+    # Make the content have no 'weird' newlines in it
+    $content =~ s/\r+\n/\n/g;
+
+    # Filter empty content when type is text/html
+    return '' if $html && $content =~ m{^\s*(?:<br[^>]*/?>)*\s*$}s;
+
+    # If we aren't supposed to strip the sig, just bail now.
+    return $content unless $sigonly;
+
+    # Find the signature
+    my $sig = $args{'CurrentUser'}->UserObj->Signature || '';
+    $sig =~ s/^\s*|\s*$//g;
+
+    # Check for plaintext sig
+    return '' if not $html and $content =~ /^\s*(--)?\s*\Q$sig\E\s*$/;
+
+    # Check for html-formatted sig
+    RT::Interface::Web::EscapeUTF8( \$sig );
+    return ''
+        if $html
+        and $content
+        =~ m{^\s*<p>\s*(--)?\s*<br[^>]*?/?>\s*\Q$sig\E\s*</p>\s*$}s;
+
+    # Pass it through
+    return $content;
+}
+
 
 package HTML::Mason::Commands;
 
@@ -354,11 +387,18 @@ sub CreateTicket {
         $starts->Set( Format => 'unknown', Value => $ARGS{'Starts'} );
     }
 
+    my $sigless = RT::Interface::Web::StripContent(
+        Content        => $ARGS{Content},
+        ContentType    => $ARGS{ContentType},
+        StripSignature => 1,
+        CurrentUser    => $session{'CurrentUser'},
+    );
+
     my $MIMEObj = MakeMIMEEntity(
         Subject             => $ARGS{'Subject'},
         From                => $ARGS{'From'},
         Cc                  => $ARGS{'Cc'},
-        Body                => $ARGS{'Content'},
+        Body                => $sigless,
         Type                => $ARGS{'ContentType'},
     );
 
@@ -563,28 +603,12 @@ sub ProcessUpdateMessage {
     }
 
     if ( defined $args{ARGSRef}->{'UpdateContent'} ) {
-        #Make the update content have no 'weird' newlines in it
-        $args{ARGSRef}->{'UpdateContent'} =~ s/\r+\n/\n/g;
-
-        #filter empty content when type is text/html
-        $args{ARGSRef}->{'UpdateContent'} = ''
-            if ($args{ARGSRef}->{'UpdateContentType'}||'') eq "text/html"
-                && $args{ARGSRef}->{'UpdateContent'} =~ m{^\s*(?:<br[^>]*/?>)*\s*$}s;
-
-        # skip updates if the content contains only user's signature
-        # and we don't update other fields
-        if ( $args{'SkipSignatureOnly'} ) {
-            my $sig = $args{'TicketObj'}->CurrentUser->UserObj->Signature || '';
-            $sig =~ s/^\s*|\s*$//g;
-
-            $args{ARGSRef}->{'UpdateContent'} = ''
-                if $args{ARGSRef}->{'UpdateContent'} =~ /^\s*(--)?\s*\Q$sig\E\s*$/;
-
-            $args{ARGSRef}->{'UpdateContent'} = ''
-                if ($args{ARGSRef}->{'UpdateContentType'}||'') eq "text/html"
-                and $args{ARGSRef}->{'UpdateContent'}
-                    =~ m{^\s*<p>\s*(--)?\s*<br[^>]*?/?>\s*\Q$sig\E\s*</p>\s*$}s;
-        }
+        $args{ARGSRef}->{UpdateContent} = RT::Interface::Web::StripContent(
+            Content        => $args{ARGSRef}->{UpdateContent},
+            ContentType    => $args{ARGSRef}->{UpdateContentType},
+            StripSignature => $args{SkipSignatureOnly},
+            CurrentUser    => $args{'TicketObj'}->CurrentUser,
+        );
     }
 
     return () unless    $args{ARGSRef}->{'UpdateTimeWorked'}
