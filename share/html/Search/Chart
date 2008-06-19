@@ -118,6 +118,8 @@ if ($chart_class eq "GD::Graph::bars") {
 my %class = (
     Queue => 'RT::Queue',
     Owner => 'RT::User',
+    Creator => 'RT::User',
+    LastUpdatedBy => 'RT::User',
 );
 my $class = $class{ $PrimaryGroupBy };
 

@@ -59,6 +59,8 @@ sub Groupings {
     my %args = (@_);
     my @fields = qw(
         Owner
+        Creator
+        LastUpdatedBy
         Status
         Queue
         DueDaily
