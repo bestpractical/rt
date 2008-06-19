@@ -146,6 +146,10 @@ div.results .titlebox-content {
   padding-top: 0.25em;
 }
 
+div.ticket-info-basics div.titlebox-content .labeltop{
+  width: 10em;
+}
+
 div.submit {
  text-align: right;
 }
