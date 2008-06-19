@@ -165,6 +165,7 @@ foreach my $action ( @actions ) {
     no strict 'refs';
     my ($status, $msg) = *{ 'action_'. $action }{'CODE'}->( %args );
     error($action, $msg) unless $status;
+    print $msg ."\n" if $msg;
     print "Done.\n";
 }
 
@@ -274,6 +275,9 @@ sub action_upgrade {
     return (0, "The current version $upgrading_to is lower than $upgrading_from")
         if RT::Handle::cmp_version( $upgrading_from, $upgrading_to ) > 0;
 
+    return (1, "The version $upgrading_to you're upgrading to is up to date")
+        if RT::Handle::cmp_version( $upgrading_from, $upgrading_to ) == 0;
+
     opendir my $dh, $base_dir or die "couldn't open dir: $!";
     my @versions = grep -d "$base_dir/$_" && /\d+\.\d+\.\d+/, readdir $dh;
     closedir $dh;
@@ -283,10 +287,8 @@ sub action_upgrade {
         grep RT::Handle::cmp_version($_, $upgrading_from) > 0,
         sort RT::Handle::cmp_version @versions;
 
-    unless ( @versions ) {
-        print "No DB changes between $upgrading_from and $upgrading_to\n";
-        return 1;
-    }
+    return (1, "No DB changes between $upgrading_from and $upgrading_to")
+        unless @versions;
 
     print "Going to apply following upgrades:\n";
     print map "* $_\n", @versions;
