@@ -256,7 +256,7 @@ sub action_insert {
 sub action_upgrade {
     my %args = @_;
     my $base_dir = $args{'datadir'} || "./etc/upgrade";
-    return (0, "Couldn't read dir '$base_dir' with upgrade date")
+    return (0, "Couldn't read dir '$base_dir' with upgrade data")
         unless -d $base_dir || -r _;
 
     my $upgrading_from = undef;
