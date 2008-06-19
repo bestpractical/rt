@@ -57,6 +57,7 @@ form {
   display: inline-block;
   position: relative;
   text-align: right;
+  width: 4em;
 }
 
 .input-row .input {
