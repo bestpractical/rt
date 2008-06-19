@@ -1,40 +1,40 @@
 # BEGIN BPS TAGGED BLOCK {{{
-# 
+#
 # COPYRIGHT:
-# 
+#
 # This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 #                                          <jesse@bestpractical.com>
-# 
+#
 # (Except where explicitly superseded by other copyright notices)
-# 
-# 
+#
+#
 # LICENSE:
-# 
+#
 # This work is made available to you under the terms of Version 2 of
 # the GNU General Public License. A copy of that license should have
 # been provided with this software, but in any event can be snarfed
 # from www.gnu.org.
-# 
+#
 # This work is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301 or visit their web page on the internet at
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
-# 
-# 
+#
+#
 # CONTRIBUTION SUBMISSION POLICY:
-# 
+#
 # (The following paragraph is not intended to limit the rights granted
 # to you to modify and distribute this software under the terms of
 # the GNU General Public License and is only of importance to you if
 # you choose to contribute your changes and enhancements to the
 # community by submitting them to Best Practical Solutions, LLC.)
-# 
+#
 # By intentionally submitting any modifications, corrections or
 # derivatives to this work, or any other work intended for use with
 # Request Tracker, to Best Practical Solutions, LLC, you confirm that
@@ -43,7 +43,7 @@
 # royalty-free, perpetual, license to use, copy, create derivative
 # works based on those contributions, and sublicense and distribute
 # those contributions and any derivatives thereof.
-# 
+#
 # END BPS TAGGED BLOCK }}}
 
 package RT::Installer;
@@ -55,7 +55,7 @@ my %Meta = (
     DatabaseType => {
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            Description => 'Database type',
+            Description => 'Database type',    # loc
             Values      => [
                 grep {
                     my $m = 'DBD::' . $_;
@@ -63,64 +63,63 @@ my %Meta = (
                   } qw/mysql Pg SQLite Oracle/
             ],
             ValuesLabel => {
-                mysql  => 'MySQL',                                          #loc
-                Pg     => 'PostgreSQL',                                     #loc
-                SQLite => 'SQLite',  #loc
-                Oracle => 'Oracle',                                         #loc
+                mysql  => 'MySQL',             #loc
+                Pg     => 'PostgreSQL',        #loc
+                SQLite => 'SQLite',            #loc
+                Oracle => 'Oracle',            #loc
             },
         },
     },
     DatabaseHost => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'Database host',
-            Hints => "The domain name of your database server (like 'db.int.example.com')",       #loc
+            Description => 'Database host',    #loc
+            Hints =>
+"The domain name of your database server (like 'db.int.example.com')"
+            ,                                  #loc
         },
     },
     DatabasePort => {
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'Database port number',         #loc
+            Description => 'Database port number',    #loc
             Default     => 1,
             DefaultLabel =>
-              'Leave empty to use default value of the RDBMS',              #loc
+              'Leave empty to use default value of the RDBMS',    #loc
         },
     },
     DatabaseName => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'Database name', #loc
+            Description => 'Database name',                       #loc
         },
     },
     DatabaseAdmin => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'DBA of the database',  #loc
-            Hints => "The database username of the administrator",
+            Description => 'DBA of the database',                           #loc
+            Hints       => "The database username of the administrator",    #loc
         },
     },
     DatabaseAdminPassword => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description =>
-              'DBA password',  #loc
-            Hints => "The database password of the administrator",
-            Type => 'password',
+            Description => 'DBA password',                                  #loc
+            Hints       => "The database password of the administrator",    #loc
+            Type        => 'password',
         },
     },
     DatabaseUser => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description =>
-              'Database username for RT', #loc
+            Description => 'Database username for RT',                      #loc
         },
     },
     DatabasePassword => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description =>
-              'Database password for RT',    #loc
-            Type => 'password',
+            Description => 'Database password for RT',                      #loc
+            Type        => 'password',
         },
     },
     DatabaseRequireSSL => {
@@ -132,59 +131,61 @@ my %Meta = (
     rtname => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'RT Name',                        #loc
+            Description => 'RT Name',     #loc
         },
     },
     MinimumPasswordLength => {
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'Minimum password length',         #loc
+            Description => 'Minimum password length',    #loc
         },
     },
     Password => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'password of the user root in RT',         #loc
-            Type => 'password',
+            Description => 'password of the user root in RT',    #loc
+            Type        => 'password',
         },
     },
     OwnerEmail => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'Owner email',                   #loc
-            Hints => 'the address of a human who manages RT.',
+            Description => 'Owner email',                               #loc
+            Hints       => 'the address of a human who manages RT.',    #loc
         },
     },
     CommentAddress => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'Comment address',                #loc
-            Hints => 'the default addresses that will be listed in From: and Reply-To: headers of comment mail.'
+            Description => 'Comment address',                           #loc
+            Hints =>
+'the default addresses that will be listed in From: and Reply-To: headers of comment mail.' #loc
         },
     },
     CorrespondAddress => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'Correspond address',             #loc
-            Hints => 'the default addresses that will be listed in From: and Reply-To: headers of correspondence mail.'
+            Description => 'Correspond address',    #loc
+            Hints =>
+'the default addresses that will be listed in From: and Reply-To: headers of correspondence mail.' #loc
         },
     },
     SendmailArguments => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'Sendmail arguments',             #loc
+            Description => 'Sendmail arguments',    #loc
         },
     },
     SendmailBounceArguments => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'Sendmail bounce arguments',       #loc
+            Description => 'Sendmail bounce arguments',    #loc
         },
     },
     SendmailPath => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'where is sendmail command',                  #loc
+            Description => 'where is sendmail command',    #loc
         },
     },
     WebDomain => {
@@ -196,7 +197,7 @@ my %Meta = (
     WebPort => {
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'web port',                  #loc
+            Description => 'web port',                     #loc
         },
     },
 
@@ -208,10 +209,10 @@ if ($HAS_DATETIME_TZ) {
     $Meta{Timezone} = {
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            Description => 'Timezone',
+            Description => 'Timezone',                              #loc
             Values      => [ '', DateTime::TimeZone->all_names ],
             ValuesLabel => {
-                '' => 'System Default',    #loc
+                '' => 'System Default',                             #loc
             },
         },
     };
@@ -219,7 +220,9 @@ if ($HAS_DATETIME_TZ) {
 else {
     $Meta{Timezone} = {
         Widget          => '/Widgets/Form/String',
-        WidgetArguments => { Description => 'Timezone', },
+        WidgetArguments => {
+            Description => 'Timezone',                              #loc
+        },
     };
 }
 
@@ -252,7 +255,7 @@ sub CurrentValues {
 
 sub ConfigFile {
     require File::Spec;
-    return File::Spec->catfile($RT::EtcPath, 'RT_SiteConfig.pm');
+    return File::Spec->catfile( $RT::EtcPath, 'RT_SiteConfig.pm' );
 }
 
 sub SaveConfig {
@@ -271,15 +274,16 @@ sub SaveConfig {
 
     # make organization the same as rtname
     $RT::Installer->{InstallConfig}{Organization} =
-        $RT::Installer->{InstallConfig}{rtname};
+      $RT::Installer->{InstallConfig}{rtname};
 
-    if ( open my $fh, '>', $file  ) {
-        for ( keys %{$RT::Installer->{InstallConfig}} ) {
+    if ( open my $fh, '>', $file ) {
+        for ( keys %{ $RT::Installer->{InstallConfig} } ) {
+
             # we don't want to store root's password in config.
             next if $_ eq 'Password';
 
-            $RT::Installer->{InstallConfig}{$_} = '' unless defined
-                $RT::Installer->{InstallConfig}{$_};
+            $RT::Installer->{InstallConfig}{$_} = ''
+              unless defined $RT::Installer->{InstallConfig}{$_};
 
             # remove obsolete settings we'll add later
             $content =~ s/^\s* Set \s* \( \s* \$$_ .*$//xm;
