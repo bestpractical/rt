@@ -216,12 +216,7 @@ sub LanguageHandle {
         || !UNIVERSAL::can( $self->{'LangHandle'}, 'maketext' )
         || @_ )
     {
-        if (   !$RT::SystemUser
-            || !$RT::SystemUser->id
-            || ( $self->id || 0 ) == $RT::SystemUser->id ) {
-            @_ = qw(en-US);
-        }
-        elsif ( my $lang = $self->Lang ) {
+        if ( my $lang = $self->Lang ) {
             push @_, $lang;
         }
 
