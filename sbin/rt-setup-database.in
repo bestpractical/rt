@@ -280,7 +280,7 @@ sub action_upgrade {
 
     @versions =
         grep RT::Handle::cmp_version($_, $upgrading_to) <= 0,
-        grep RT::Handle::cmp_version($_, $upgrading_from) >= 0,
+        grep RT::Handle::cmp_version($_, $upgrading_from) > 0,
         sort RT::Handle::cmp_version @versions;
 
     unless ( @versions ) {
