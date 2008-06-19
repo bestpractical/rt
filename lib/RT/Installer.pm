@@ -73,19 +73,19 @@ my %Meta = (
     DatabaseHost => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'Database host',    #loc
-            Hints =>
-"The domain name of your database server (like 'db.int.example.com')"
-            ,                                  #loc
+            Description => 'Database host',
+            Default => 1,
+            DefaultLabel => "Keep 'localhost' if you're not sure", #loc
+            Hints => "The domain name of your database server (like 'db.example.com').",       #loc
         },
     },
     DatabasePort => {
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'Database port number',    #loc
+            Description => 'Database port',         #loc
             Default     => 1,
             DefaultLabel =>
-              'Leave empty to use default value of the RDBMS',    #loc
+              'Leave empty to use a default value',              #loc
         },
     },
     DatabaseName => {
@@ -97,16 +97,18 @@ my %Meta = (
     DatabaseAdmin => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'DBA of the database',                           #loc
-            Hints       => "The database username of the administrator",    #loc
+            Default => 1,
+            DefaultLabel => "Leave this alone to use a default value", #loc
+            Description => 'DBA username', # loc
         },
     },
     DatabaseAdminPassword => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'DBA password',                                  #loc
-            Hints       => "The database password of the administrator",    #loc
-            Type        => 'password',
+            Description =>
+              'DBA password',  #loc
+            Hints => "The DBA's database password",#loc
+            Type => 'password',
         },
     },
     DatabaseUser => {
@@ -131,7 +133,8 @@ my %Meta = (
     rtname => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'RT Name',     #loc
+            Description => 'Site name',                        #loc
+            Hints => 'Set this to your internet domain. (ex: example.com)' #loc
         },
     },
     MinimumPasswordLength => {
@@ -143,15 +146,16 @@ my %Meta = (
     Password => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'password of the user root in RT',    #loc
-            Type        => 'password',
+            Description => 'Administrative password', #loc
+            Hints => 'RT will create a user called "root" and set this as their password', #loc
+            Type => 'password',
         },
     },
     OwnerEmail => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'Owner email',                               #loc
-            Hints       => 'the address of a human who manages RT.',    #loc
+            Description => 'RT Administrator',                   #loc
+            Hints => 'The email address of a human who manages RT.',
         },
     },
     CommentAddress => {

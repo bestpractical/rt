@@ -377,21 +377,19 @@ regression-install: config-install
 # {{{ database-installation
 
 regression-reset-db: force-dropdb
-	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action init --dba $(DB_DBA) --dba-password ''
+	$(PERL) sbin/rt-setup-database --action init --dba $(DB_DBA) --dba-password ''
 
 initdb :: initialize-database
 
 initialize-database: 
-	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action init --dba $(DB_DBA) --prompt-for-dba-password
+	$(PERL) sbin/rt-setup-database --action init --dba $(DB_DBA) --prompt-for-dba-password
 
 dropdb: 
-	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action drop --dba $(DB_DBA) --prompt-for-dba-password
+	$(PERL)	sbin/rt-setup-database --action drop --dba $(DB_DBA) --prompt-for-dba-password
 
 force-dropdb: 
-	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action drop --dba $(DB_DBA) --dba-password '' --force
+	$(PERL)	sbin/rt-setup-database --action drop --dba $(DB_DBA) --dba-password '' --force
 
-insert-approval-data: 
-	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/insert_approval_scrips
 # }}}
 
 # {{{ libs-install
