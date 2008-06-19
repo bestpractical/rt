@@ -58,7 +58,8 @@
             ( $db_type eq 'mysql' ? 'root'
               : $db_type eq 'Pg' ? 'postgres'
               : '' ),
-       DatabasePassword => '' 
+       DatabasePassword => @results ?
+           $RT::Installer->{InstallConfig}{DatabasePassword} : ''
         }
                     &>
 <input type="hidden" name="Run" value="1">
