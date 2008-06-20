@@ -82,23 +82,19 @@
  text-align: right;
 }
 
+#comp-Search-Build #pick-criteria td.value #ValueOfDate,
+#comp-Search-Build #pick-criteria td.value select{
+ width: 7em;
+}
+
 #comp-Search-Build #pick-criteria td.value input,
 #comp-Search-Build #pick-criteria td.value select {
- width: 10em;
+ width: 14em;
 }
 
-#comp-Search-Build #pick-criteria td.value #ValueOfDate {
- width: 6em;
-}
-
-
-#comp-Search-Build #pick-criteria td.value #ValueOfTime {
- width: 4em;
-
-}
-
+#comp-Search-Build #pick-criteria td.value #ValueOfTime,
 #comp-Search-Build #pick-criteria td.value #ValueOfTime-TimeUnits{
- width: 5.5em;
+ width: 7em;
 }
 
 #comp-Search-Build #pick-criteria td.value {
