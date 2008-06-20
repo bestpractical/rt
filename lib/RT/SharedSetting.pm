@@ -89,7 +89,7 @@ sub new  {
 =head2 Load
 
 Takes a privacy specification and a shared-setting ID.  Loads the given object
-ID if it belongs to the stated user or group. Calls the PostLoad method on
+ID if it belongs to the stated user or group. Calls the L</PostLoad> method on
 success for any further initialization. Returns a tuple of status and message,
 where status is true on success.
 
@@ -154,7 +154,7 @@ sub PostLoad { }
 
 Takes a privacy, a name, and any other arguments. Saves the given parameters to
 the appropriate user/group object, and loads the resulting object. Arguments
-are passed to the SaveAttribute method, which does the actual update. Returns a
+are passed to the L</SaveAttribute> method, which does the actual update. Returns a
 tuple of status and message, where status is true on success. Defaults are:
 
   Privacy:  CurrentUser only
@@ -199,11 +199,19 @@ sub Save {
     }
 }
 
+=head2 SaveAttribute
+
+An empty method for subclassing. Called from L</Save> method.
+
+=cut
+
+sub SaveAttribute { }
+
 =head2 Update
 
 Updates the parameters of an existing shared setting. Any arguments are passed
-to the UpdateAttribute method. Returns a tuple of status and message, where
-status is true on success. 
+to the L</UpdateAttribute> method. Returns a tuple of status and message, where
+status is true on success.
 
 =cut
 
@@ -226,6 +234,14 @@ sub Update {
 
     return ($status, $self->loc("[_1] update: [_2]", ucfirst($self->ObjectName), $msg));
 }
+
+=head2 UpdateAttribute
+
+An empty method for subclassing. Called from L</Update> method.
+
+=cut
+
+sub UpdateAttribute { }
 
 =head2 Delete
     
