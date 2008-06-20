@@ -588,15 +588,14 @@ is true.
 sub ProcessUpdateMessage {
 
     my %args = (
-        ARGSRef   => undef,
-        TicketObj => undef,
+        ARGSRef           => undef,
+        TicketObj         => undef,
         SkipSignatureOnly => 1,
         @_
     );
 
-
     if ( $args{ARGSRef}->{'UpdateAttachments'}
-        && !keys %{$args{ARGSRef}->{'UpdateAttachments'}} )
+        && !keys %{ $args{ARGSRef}->{'UpdateAttachments'} } )
     {
         delete $args{ARGSRef}->{'UpdateAttachments'};
     }
@@ -610,10 +609,11 @@ sub ProcessUpdateMessage {
         );
     }
 
-    return () unless    $args{ARGSRef}->{'UpdateTimeWorked'}
-                     || $args{ARGSRef}->{'UpdateAttachments'}
-                     || ( defined $args{ARGSRef}->{'UpdateContent'}
-                         && length $args{ARGSRef}->{'UpdateContent'} );
+    return ()
+        unless $args{ARGSRef}->{'UpdateTimeWorked'}
+        || $args{ARGSRef}->{'UpdateAttachments'}
+        || ( defined $args{ARGSRef}->{'UpdateContent'}
+        && length $args{ARGSRef}->{'UpdateContent'} );
 
     if ( $args{ARGSRef}->{'UpdateSubject'} eq $args{'TicketObj'}->Subject ) {
         $args{ARGSRef}->{'UpdateSubject'} = undef;
@@ -633,75 +633,74 @@ sub ProcessUpdateMessage {
     my $old_txn = RT::Transaction->new( $session{'CurrentUser'} );
     if ( $args{ARGSRef}->{'QuoteTransaction'} ) {
         $old_txn->Load( $args{ARGSRef}->{'QuoteTransaction'} );
-    }
-    else {
+    } else {
         $old_txn = $args{TicketObj}->Transactions->First();
     }
 
     if ( my $msg = $old_txn->Message->First ) {
-        RT::Interface::Email::SetInReplyTo( Message => $Message, InReplyTo => $msg );
+        RT::Interface::Email::SetInReplyTo(
+            Message   => $Message,
+            InReplyTo => $msg
+        );
     }
 
     if ( $args{ARGSRef}->{'UpdateAttachments'} ) {
         $Message->make_multipart;
         $Message->add_part($_)
-           foreach values %{ $args{ARGSRef}->{'UpdateAttachments'} };
+            foreach values %{ $args{ARGSRef}->{'UpdateAttachments'} };
     }
 
     if ( $args{ARGSRef}->{'AttachTickets'} ) {
         require RT::Action::SendEmail;
         RT::Action::SendEmail->AttachTickets(
             RT::Action::SendEmail->AttachTickets,
-            ref $args{ARGSRef}->{'AttachTickets'}?
-                @{ $args{ARGSRef}->{'AttachTickets'} }
-                :( $args{ARGSRef}->{'AttachTickets'} )
+            ref $args{ARGSRef}->{'AttachTickets'}
+            ? @{ $args{ARGSRef}->{'AttachTickets'} }
+            : ( $args{ARGSRef}->{'AttachTickets'} )
         );
     }
 
-           my  $bcc = $args{ARGSRef}->{'UpdateBcc'};
-           my  $cc = $args{ARGSRef}->{'UpdateCc'};
+    my $bcc = $args{ARGSRef}->{'UpdateBcc'};
+    my $cc  = $args{ARGSRef}->{'UpdateCc'};
 
     my %message_args = (
-            CcMessageTo  => $cc,
-            BccMessageTo => $bcc,
-            Sign         => $args{ARGSRef}->{'Sign'},
-            Encrypt      => $args{ARGSRef}->{'Encrypt'},
-            MIMEObj      => $Message,
-            TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'});
-
+        CcMessageTo  => $cc,
+        BccMessageTo => $bcc,
+        Sign         => $args{ARGSRef}->{'Sign'},
+        Encrypt      => $args{ARGSRef}->{'Encrypt'},
+        MIMEObj      => $Message,
+        TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
+    );
 
     unless ( $args{'ARGSRef'}->{'UpdateIgnoreAddressCheckboxes'} ) {
         foreach my $key ( keys %{ $args{ARGSRef} } ) {
             next unless $key =~ /^Update(Cc|Bcc)-(.*)$/;
 
-            my $var   = ucfirst($1).'MessageTo';
+            my $var   = ucfirst($1) . 'MessageTo';
             my $value = $2;
-            if ( $message_args{ $var } ) {
-                $message_args{ $var } .= ", $value";
+            if ( $message_args{$var} ) {
+                $message_args{$var} .= ", $value";
             } else {
-                $message_args{ $var } = $value;
+                $message_args{$var} = $value;
             }
         }
     }
 
     my @results;
     if ( $args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/ ) {
-        my ( $Transaction, $Description, $Object ) = $args{TicketObj}->Comment(%message_args);
+        my ( $Transaction, $Description, $Object )
+            = $args{TicketObj}->Comment(%message_args);
         push( @results, $Description );
         $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
-    }
-    elsif ( $args{ARGSRef}->{'UpdateType'} eq 'response' ) {
-        my ( $Transaction, $Description, $Object ) =
-        $args{TicketObj}->Correspond(%message_args);
+    } elsif ( $args{ARGSRef}->{'UpdateType'} eq 'response' ) {
+        my ( $Transaction, $Description, $Object )
+            = $args{TicketObj}->Correspond(%message_args);
         push( @results, $Description );
         $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
-    }
-    else {
-        push(
-            @results,
+    } else {
+        push( @results,
             loc("Update type was neither correspondence nor comment.") . " "
-              . loc("Update not recorded.")
-        );
+                . loc("Update not recorded.") );
     }
     return @results;
 }
