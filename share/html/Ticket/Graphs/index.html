@@ -82,7 +82,7 @@ my @save_arguments = qw(id Direction LeadingLink ShowLinks MaxDepth FillUsing Sh
 foreach my $level ( 0 .. 6 ) {
     push @save_arguments, "Level-". $level ."-Properties";
 }
-my $saved_search = { };
+my $saved_search = { Type => 'Graph' };
 push @results, $m->comp( '/Search/Elements/EditSearches:Init',
     %ARGS,
     Query        => \%ARGS,
