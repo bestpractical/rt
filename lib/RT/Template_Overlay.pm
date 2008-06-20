@@ -431,8 +431,6 @@ sub _ParseContent {
     );
     return ( undef, $self->loc('Template parsing error') ) if $is_broken;
 
-    # MIME::Parser has problems dealing with high-bit utf8 data.
-    Encode::_utf8_off($retval);
     return ($retval);
 }
 
