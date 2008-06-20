@@ -242,6 +242,9 @@ sub StripContent {
     my $html    = ( ( $args{ContentType} || '' ) eq "text/html" );
     my $sigonly = $args{StripSignature};
 
+    # Save us from undef warnings
+    return '' unless defined $content;
+
     # Make the content have no 'weird' newlines in it
     $content =~ s/\r+\n/\n/g;
 
@@ -600,20 +603,26 @@ sub ProcessUpdateMessage {
         delete $args{ARGSRef}->{'UpdateAttachments'};
     }
 
-    if ( defined $args{ARGSRef}->{'UpdateContent'} ) {
-        $args{ARGSRef}->{UpdateContent} = RT::Interface::Web::StripContent(
-            Content        => $args{ARGSRef}->{UpdateContent},
-            ContentType    => $args{ARGSRef}->{UpdateContentType},
-            StripSignature => $args{SkipSignatureOnly},
-            CurrentUser    => $args{'TicketObj'}->CurrentUser,
-        );
-    }
+    # Strip the signature
+    $args{ARGSRef}->{UpdateContent} = RT::Interface::Web::StripContent(
+        Content        => $args{ARGSRef}->{UpdateContent},
+        ContentType    => $args{ARGSRef}->{UpdateContentType},
+        StripSignature => $args{SkipSignatureOnly},
+        CurrentUser    => $args{'TicketObj'}->CurrentUser,
+    );
 
-    return ()
-        unless $args{ARGSRef}->{'UpdateTimeWorked'}
-        || $args{ARGSRef}->{'UpdateAttachments'}
-        || ( defined $args{ARGSRef}->{'UpdateContent'}
-        && length $args{ARGSRef}->{'UpdateContent'} );
+    # If, after stripping the signature, we have no message, move the
+    # UpdateTimeWorked into adjusted TimeWorked, so that a later
+    # ProcessBasics can deal -- then bail out.
+    if ( not $args{ARGSRef}->{'UpdateAttachments'}
+        and not length $args{ARGSRef}->{'UpdateContent'} )
+    {
+        if ( $args{ARGSRef}->{'UpdateTimeWorked'} ) {
+            $args{ARGSRef}->{TimeWorked} = $args{TicketObj}->TimeWorked
+                + delete $args{ARGSRef}->{'UpdateTimeWorked'};
+        }
+        return;
+    }
 
     if ( $args{ARGSRef}->{'UpdateSubject'} eq $args{'TicketObj'}->Subject ) {
         $args{ARGSRef}->{'UpdateSubject'} = undef;
