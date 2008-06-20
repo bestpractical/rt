@@ -355,10 +355,6 @@ sub _Parse {
     # Set up the prefix for files with auto-generated names:
     $parser->output_prefix("part");
 
-    # If content length is <= 50000 bytes, store each msg as in-core scalar;
-    # Else, write to a disk file (the default action):
-    $parser->output_to_core(50000);
-
     ### Should we forgive normally-fatal errors?
     $parser->ignore_errors(1);
     $self->{'MIMEObj'} = eval { $parser->parse_data($content) };
