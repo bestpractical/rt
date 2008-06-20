@@ -357,7 +357,11 @@ sub _Parse {
 
     ### Should we forgive normally-fatal errors?
     $parser->ignore_errors(1);
-    $self->{'MIMEObj'} = eval { $parser->parse_data($content) };
+
+    open my $stream, "<:utf8", \$content
+        or return (0, $self->loc("Couldn't open stream for parsing MIME::Entity: $!"));
+
+    $self->{'MIMEObj'} = eval { $parser->parse( $stream ) };
     if ( my $error = $@ || $parser->last_error ) {
         $RT::Logger->error( "$error" );
         return ( 0, $error );
