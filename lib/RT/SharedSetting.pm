@@ -350,16 +350,16 @@ sub _build_privacy {
     # allow passing in just an object to find its privacy string
     if (ref($obj_type)) {
         my $Object = $obj_type;
-        return $Object->isa('RT::User')   ? 'RT::User-'  . $Object->Id
-             : $Object->isa('RT::Group')  ? 'RT::Group-' . $Object->Id
-             : $Object->isa('RT::System') ? 'RT::System'
+        return $Object->isa('RT::User')   ? 'RT::User-'   . $Object->Id
+             : $Object->isa('RT::Group')  ? 'RT::Group-'  . $Object->Id
+             : $Object->isa('RT::System') ? 'RT::System-' . $Object->Id
              : undef;
     }
 
     return undef unless ($obj_type);  # undef workaround
     return $obj_type eq 'RT::User'   ? "$obj_type-$obj_id"
          : $obj_type eq 'RT::Group'  ? "$obj_type-$obj_id"
-         : $obj_type eq 'RT::System' ? $obj_type
+         : $obj_type eq 'RT::System' ? "$obj_type-$obj_id"
          : undef;
 }
 
