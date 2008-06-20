@@ -236,6 +236,42 @@ sub StaticFileHeaders {
     # $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = $date->RFC2616;
 }
 
+sub StripContent {
+    my %args    = @_;
+    my $content = $args{Content};
+    my $html    = ( ( $args{ContentType} || '' ) eq "text/html" );
+    my $sigonly = $args{StripSignature};
+
+    # Save us from undef warnings
+    return '' unless defined $content;
+
+    # Make the content have no 'weird' newlines in it
+    $content =~ s/\r+\n/\n/g;
+
+    # Filter empty content when type is text/html
+    return '' if $html && $content =~ m{^\s*(?:<br[^>]*/?>)*\s*$}s;
+
+    # If we aren't supposed to strip the sig, just bail now.
+    return $content unless $sigonly;
+
+    # Find the signature
+    my $sig = $args{'CurrentUser'}->UserObj->Signature || '';
+    $sig =~ s/^\s*|\s*$//g;
+
+    # Check for plaintext sig
+    return '' if not $html and $content =~ /^\s*(--)?\s*\Q$sig\E\s*$/;
+
+    # Check for html-formatted sig
+    RT::Interface::Web::EscapeUTF8( \$sig );
+    return ''
+        if $html
+        and $content
+        =~ m{^\s*<p>\s*(--)?\s*<br[^>]*?/?>\s*\Q$sig\E\s*</p>\s*$}s;
+
+    # Pass it through
+    return $content;
+}
+
 
 package HTML::Mason::Commands;
 
@@ -354,11 +390,18 @@ sub CreateTicket {
         $starts->Set( Format => 'unknown', Value => $ARGS{'Starts'} );
     }
 
+    my $sigless = RT::Interface::Web::StripContent(
+        Content        => $ARGS{Content},
+        ContentType    => $ARGS{ContentType},
+        StripSignature => 1,
+        CurrentUser    => $session{'CurrentUser'},
+    );
+
     my $MIMEObj = MakeMIMEEntity(
         Subject             => $ARGS{'Subject'},
         From                => $ARGS{'From'},
         Cc                  => $ARGS{'Cc'},
-        Body                => $ARGS{'Content'},
+        Body                => $sigless,
         Type                => $ARGS{'ContentType'},
     );
 
@@ -547,47 +590,38 @@ is true.
 
 sub ProcessUpdateMessage {
 
-    #TODO document what else this takes.
     my %args = (
-        ARGSRef   => undef,
-        TicketObj => undef,
+        ARGSRef           => undef,
+        TicketObj         => undef,
         SkipSignatureOnly => 1,
         @_
     );
 
-
     if ( $args{ARGSRef}->{'UpdateAttachments'}
-        && !keys %{$args{ARGSRef}->{'UpdateAttachments'}} )
+        && !keys %{ $args{ARGSRef}->{'UpdateAttachments'} } )
     {
         delete $args{ARGSRef}->{'UpdateAttachments'};
     }
 
-    return () unless    $args{ARGSRef}->{'UpdateTimeWorked'}
-                     || $args{ARGSRef}->{'UpdateAttachments'}
-                     || defined $args{ARGSRef}->{'UpdateContent'};
+    # Strip the signature
+    $args{ARGSRef}->{UpdateContent} = RT::Interface::Web::StripContent(
+        Content        => $args{ARGSRef}->{UpdateContent},
+        ContentType    => $args{ARGSRef}->{UpdateContentType},
+        StripSignature => $args{SkipSignatureOnly},
+        CurrentUser    => $args{'TicketObj'}->CurrentUser,
+    );
 
-    #Make the update content have no 'weird' newlines in it
-    $args{ARGSRef}->{'UpdateContent'} =~ s/\r+\n/\n/g if $args{ARGSRef}->{'UpdateContent'};
-
-    # skip updates if the content contains only user's signature
-    # and we don't update other fields
-    if ( $args{'SkipSignatureOnly'} ) {
-        my $sig = $args{'TicketObj'}->CurrentUser->UserObj->Signature || '';
-        $sig =~ s/^\s*|\s*$//g;
-        if ($args{ARGSRef}->{'UpdateContent'} =~ /^\s*(--)?\s*\Q$sig\E\s*$/
-            or (    defined $args{ARGSRef}->{'UpdateContentType'}
-                and $args{ARGSRef}->{'UpdateContentType'} eq "text/html"
-                and $args{ARGSRef}->{'UpdateContent'}
-                =~ /^\s*<p>\s*(--)?\s*<br\s*\/?>\s*\Q$sig\E\s*<\/p>\s*$/ )
-            )
-        {
-            return () unless $args{ARGSRef}->{'UpdateTimeWorked'} ||
-                             $args{ARGSRef}->{'UpdateAttachments'};
-
-            # we have to create transaction, but we don't create attachment
-            # XXX: this couldn't work as expected
-            $args{ARGSRef}->{'UpdateContent'} = '';
+    # If, after stripping the signature, we have no message, move the
+    # UpdateTimeWorked into adjusted TimeWorked, so that a later
+    # ProcessBasics can deal -- then bail out.
+    if ( not $args{ARGSRef}->{'UpdateAttachments'}
+        and not length $args{ARGSRef}->{'UpdateContent'} )
+    {
+        if ( $args{ARGSRef}->{'UpdateTimeWorked'} ) {
+            $args{ARGSRef}->{TimeWorked} = $args{TicketObj}->TimeWorked
+                + delete $args{ARGSRef}->{'UpdateTimeWorked'};
         }
+        return;
     }
 
     if ( $args{ARGSRef}->{'UpdateSubject'} eq $args{'TicketObj'}->Subject ) {
@@ -608,75 +642,74 @@ sub ProcessUpdateMessage {
     my $old_txn = RT::Transaction->new( $session{'CurrentUser'} );
     if ( $args{ARGSRef}->{'QuoteTransaction'} ) {
         $old_txn->Load( $args{ARGSRef}->{'QuoteTransaction'} );
-    }
-    else {
+    } else {
         $old_txn = $args{TicketObj}->Transactions->First();
     }
 
     if ( my $msg = $old_txn->Message->First ) {
-        RT::Interface::Email::SetInReplyTo( Message => $Message, InReplyTo => $msg );
+        RT::Interface::Email::SetInReplyTo(
+            Message   => $Message,
+            InReplyTo => $msg
+        );
     }
 
     if ( $args{ARGSRef}->{'UpdateAttachments'} ) {
         $Message->make_multipart;
         $Message->add_part($_)
-           foreach values %{ $args{ARGSRef}->{'UpdateAttachments'} };
+            foreach values %{ $args{ARGSRef}->{'UpdateAttachments'} };
     }
 
     if ( $args{ARGSRef}->{'AttachTickets'} ) {
         require RT::Action::SendEmail;
         RT::Action::SendEmail->AttachTickets(
             RT::Action::SendEmail->AttachTickets,
-            ref $args{ARGSRef}->{'AttachTickets'}?
-                @{ $args{ARGSRef}->{'AttachTickets'} }
-                :( $args{ARGSRef}->{'AttachTickets'} )
+            ref $args{ARGSRef}->{'AttachTickets'}
+            ? @{ $args{ARGSRef}->{'AttachTickets'} }
+            : ( $args{ARGSRef}->{'AttachTickets'} )
         );
     }
 
-           my  $bcc = $args{ARGSRef}->{'UpdateBcc'};
-           my  $cc = $args{ARGSRef}->{'UpdateCc'};
+    my $bcc = $args{ARGSRef}->{'UpdateBcc'};
+    my $cc  = $args{ARGSRef}->{'UpdateCc'};
 
     my %message_args = (
-            CcMessageTo  => $cc,
-            BccMessageTo => $bcc,
-            Sign         => $args{ARGSRef}->{'Sign'},
-            Encrypt      => $args{ARGSRef}->{'Encrypt'},
-            MIMEObj      => $Message,
-            TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'});
+        CcMessageTo  => $cc,
+        BccMessageTo => $bcc,
+        Sign         => $args{ARGSRef}->{'Sign'},
+        Encrypt      => $args{ARGSRef}->{'Encrypt'},
+        MIMEObj      => $Message,
+        TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
+    );
 
-
-    unless ( $args{'ARGRef'}->{'UpdateIgnoreAddressCheckboxes'} ) {
+    unless ( $args{'ARGSRef'}->{'UpdateIgnoreAddressCheckboxes'} ) {
         foreach my $key ( keys %{ $args{ARGSRef} } ) {
             next unless $key =~ /^Update(Cc|Bcc)-(.*)$/;
 
-            my $var   = ucfirst($1).'MessageTo';
+            my $var   = ucfirst($1) . 'MessageTo';
             my $value = $2;
-            if ( $message_args{ $var } ) {
-                $message_args{ $var } .= ", $value";
+            if ( $message_args{$var} ) {
+                $message_args{$var} .= ", $value";
             } else {
-                $message_args{ $var } = $value;
+                $message_args{$var} = $value;
             }
         }
     }
 
     my @results;
     if ( $args{ARGSRef}->{'UpdateType'} =~ /^(private|public)$/ ) {
-        my ( $Transaction, $Description, $Object ) = $args{TicketObj}->Comment(%message_args);
+        my ( $Transaction, $Description, $Object )
+            = $args{TicketObj}->Comment(%message_args);
         push( @results, $Description );
         $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
-    }
-    elsif ( $args{ARGSRef}->{'UpdateType'} eq 'response' ) {
-        my ( $Transaction, $Description, $Object ) =
-        $args{TicketObj}->Correspond(%message_args);
+    } elsif ( $args{ARGSRef}->{'UpdateType'} eq 'response' ) {
+        my ( $Transaction, $Description, $Object )
+            = $args{TicketObj}->Correspond(%message_args);
         push( @results, $Description );
         $Object->UpdateCustomFields( ARGSRef => $args{ARGSRef} ) if $Object;
-    }
-    else {
-        push(
-            @results,
+    } else {
+        push( @results,
             loc("Update type was neither correspondence nor comment.") . " "
-              . loc("Update not recorded.")
-        );
+                . loc("Update not recorded.") );
     }
     return @results;
 }

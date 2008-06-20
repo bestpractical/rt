@@ -80,7 +80,7 @@ if ( $DashboardObj and $DashboardObj->Id ) {
             },
 
 
-            z_Preview => { title => loc('Preview'),
+            z_Preview => { title => loc('Show'),
                            path  => $render,
             },
         }

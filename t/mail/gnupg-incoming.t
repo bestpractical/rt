@@ -20,19 +20,7 @@ use IPC::Run3 'run3';
 my $homedir = File::Spec->catdir( getcwd(), qw(t data gnupg keyrings) );
 
 # catch any outgoing emails
-unlink "t/mailbox";
-
-sub capture_mail {
-    my $MIME = shift;
-
-    open my $handle, '>>', 't/mailbox'
-        or die "Unable to open t/mailbox for appending: $!";
-
-    $MIME->print($handle);
-    print $handle "%% split me! %%\n";
-    close $handle;
-}
-
+RT::Test->set_mail_catcher;
 
 RT->Config->Set( LogToScreen => 'debug' );
 RT->Config->Set( 'GnuPG',
@@ -42,7 +30,6 @@ RT->Config->Set( 'GnuPG',
 RT->Config->Set( 'GnuPGOptions',
                  homedir => $homedir,
                  'no-permission-warning' => undef);
-RT->Config->Set( MailCommand => \&capture_mail);
 
 RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
@@ -311,7 +298,8 @@ run3(
 
 $buf =~ s/PGP MESSAGE/SCREWED UP/g;
 
-unlink 't/mailbox';
+RT::Test->fetch_caught_mails;
+
 $mail = RT::Test->open_mailgate_ok($baseurl);
 print $mail <<"EOF";
 From: recipient\@example.com
@@ -321,8 +309,7 @@ Subject: encrypted message for queue
 $buf
 EOF
 RT::Test->close_mailgate_ok($mail);
-my $mails = RT::Test->file_content('t/mailbox', 'unlink' => 1);
-my @mail = grep {/\S/} split /%% split me! %%/, $mails;
+my @mail = RT::Test->fetch_caught_mails;
 is(@mail, 1, 'caught outgoing mail.');
 }
 

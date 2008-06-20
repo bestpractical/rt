@@ -136,40 +136,40 @@ is( $c_susp, 1, "correct number of suspended messages" );
 # Now let's actually run the daily and weekly digest tool to make sure we generate those
 
 # the first time get the content
-{open (my $digester, "-|", $RT::SbinPath."/rt-send-digest --mode daily --print");
+{open (my $digester, "-|", $RT::SbinPath."/rt-email-digest --mode daily --print");
 my @results = <$digester>;
 my $content = join ('', @results);
 like($content, qr/in the last day/);
 } {
 # The second time run it for real so we make sure that we get RT to mark the txn as sent
-open (my $digester, "-|", $RT::SbinPath."/rt-send-digest --mode daily");
+open (my $digester, "-|", $RT::SbinPath."/rt-email-digest --mode daily");
 my @results = <$digester>;
 my $content = join ('', @results);
 like($content, qr/maildaily\@/);
 close($digester);
 }
 # now we should have nothing to do, so no content.
-{open (my $digester, "-|", $RT::SbinPath."/rt-send-digest --mode daily --print");
+{open (my $digester, "-|", $RT::SbinPath."/rt-email-digest --mode daily --print");
 my @results = <$digester>;
 my $content = join ('', @results);
 is ($content, '');
 } 
 
 # the first time get the content
-{open (my $digester, "-|", $RT::SbinPath."/rt-send-digest --mode weekly --print");
+{open (my $digester, "-|", $RT::SbinPath."/rt-email-digest --mode weekly --print");
 my @results = <$digester>;
 my $content = join ('', @results);
 like($content, qr/in the last seven days/);
 } {
 # The second time run it for real so we make sure that we get RT to mark the txn as sent
-open (my $digester, "-|", $RT::SbinPath."/rt-send-digest --mode weekly");
+open (my $digester, "-|", $RT::SbinPath."/rt-email-digest --mode weekly");
 my @results = <$digester>;
 my $content = join ('', @results);
 like($content, qr/mailweekly\@/);
 close($digester);
 }
 # now we should have nothing to do, so no content.
-{open (my $digester, "-|", $RT::SbinPath."/rt-send-digest --mode weekly --print");
+{open (my $digester, "-|", $RT::SbinPath."/rt-email-digest --mode weekly --print");
 my @results = <$digester>;
 my $content = join ('', @results);
 is ($content, '');

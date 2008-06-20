@@ -48,17 +48,20 @@
 <%flags>
 inherit => undef
 </%flags>
+
 <%init>
-RT::Interface::Web::Redirect(RT->Config->Get('WebURL')) unless (RT->InstallMode);
+
 if (RT->InstallMode) {
+    $r->content_type("text/html; charset=utf-8");
     require RT::Installer;
 
     $RT::Installer->{'CurrentUser'} = RT::CurrentUser->new();
     $RT::Installer->{Meta} = RT::Installer->Meta;
+    $m->call_next;
 }
 else {
-     RT::Interface::Web::Redirect(RT->Config->Get('WebURL'));
+    # redirect to login page if not in install mode
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL'))
 }
 </%init>
-<%$m->call_next()%>
 

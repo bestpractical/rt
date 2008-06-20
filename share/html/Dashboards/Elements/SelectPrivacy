@@ -48,13 +48,17 @@
 <%args>
 @Objects => undef
 $Name => undef
+$Default => undef
 </%args>
 <select name="<%$Name%>">
 % foreach my $object (@Objects) {
+% my $privacy = ref($object) . '-' . $object->id;
+% my $selected = $privacy eq ($Default || '') ? 'selected="selected"' : '';
+
 % if (ref($object) eq 'RT::User' && $object->id == $session{'CurrentUser'}->Id) {
-<option value="<%ref($object)%>-<%$object->id%>"><&|/l&>My dashboards</&></option>
+<option <%$selected|n%> value="<%$privacy%>"><&|/l&>My dashboards</&></option>
 % } else {
-<option value="<%ref($object)%>-<%$object->id%>"><&|/l, $object->Name&>[_1]'s dashboards</&></option>
+<option <%$selected|n%> value="<%$privacy%>"><&|/l, $object->Name&>[_1]'s dashboards</&></option>
 % }
 % }
 </select>

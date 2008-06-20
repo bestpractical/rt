@@ -48,7 +48,8 @@
 % for my $type ( @$Types ) {
 <& $Meta->{$type}{'Widget'},
     Default      => $Default,
-    %{ $Meta->{$type}{'WidgetArguments'} },
+    %{ $m->comp('/Widgets/FinalizeWidgetArguments', WidgetArguments =>
+            $Meta->{$type}{'WidgetArguments'} ) },
     Name         => $type,
     exists $CurrentValue->{$type} ? ( CurrentValue => $CurrentValue->{$type} )
         : (),

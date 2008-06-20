@@ -69,10 +69,10 @@
 <tr><td align="right">
 <&|/l&>Privacy</&>:
 </td><td>
-<& /Dashboards/Elements/SelectPrivacy, Name => "Privacy", Objects => \@privacies &>
+<& /Dashboards/Elements/SelectPrivacy, Name => "Privacy", Objects => \@privacies, Default => $Dashboard->Privacy &>
 </td></tr>
 </table>
-<& /Elements/Submit, Label => loc('Save Changes') &>
+<& /Elements/Submit, Name => 'Save', Label => loc('Save Changes') &>
 </form>
 <%INIT>
 
@@ -130,7 +130,7 @@ else {
     }
 }
 
-if (!$Create && !$tried_create && $id && defined($ARGS{'Name'})) {
+if (!$Create && !$tried_create && $id && $ARGS{'Save'}) {
     my ($ok, $msg);
     if ($session{'CurrentUser'}->HasRight(Right => 'ModifyDashboard', Object => $RT::System)) {
         ($ok, $msg) = $Dashboard->Update(Privacy  => $ARGS{'Privacy'},

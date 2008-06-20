@@ -179,8 +179,8 @@ want to read a more comprehensive installation guide at:
 
         crontab -e    # as the RT administrator (probably root)
         # insert the following lines:
-        0 0 * * * /opt/rt3/sbin/rt-send-digest -m daily
-        0 0 * * 0 /opt/rt3/sbin/rt-send-digest -m weekly
+        0 0 * * * /opt/rt3/sbin/rt-email-digest -m daily
+        0 0 * * 0 /opt/rt3/sbin/rt-email-digest -m weekly
         0 * * * * /opt/rt3/sbin/rt-email-dashboards
 
 

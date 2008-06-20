@@ -53,7 +53,7 @@ RT::Action::NotifyGroupAsComment - RT Action that sends notifications to groups 
 =head1 DESCRIPTION
 
 This is subclass of L<RT::Action::NotifyGroup> that send comments instead of replies.
-See C<rt-notify-group-admin> and L<RT::Action::NotifyGroup> docs for more info.
+See C<rt-email-group-admin> and L<RT::Action::NotifyGroup> docs for more info.
 
 =cut
 

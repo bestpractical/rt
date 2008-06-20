@@ -185,7 +185,7 @@ $COLUMN_MAP = {
         value     => sub { 
             my $date = $_[0]->DueObj;
             # Highlight the date if it was due in the past, and it's still active
-            if ( $date && $date->Unix > 0 && $date->Diff < 0 && $_[0]->Queue->IsActiveStatus($_[0]->Status)) {
+            if ( $date && $date->Unix > 0 && $date->Diff < 0 && $_[0]->QueueObj->IsActiveStatus($_[0]->Status)) {
                 return (\'<span class="overdue">' , $date->AgeAsString , \'</span>');
             } else {
                 return $date->AgeAsString;

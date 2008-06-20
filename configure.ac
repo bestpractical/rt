@@ -116,11 +116,11 @@ AC_SUBST(LIBS_GROUP)
 dnl DB_TYPE
 AC_ARG_WITH(db-type,
 	    AC_HELP_STRING([--with-db-type=TYPE],
-	    		   [sort of database RT will use (default: mysql) (mysql, Pg, Oracle, Informix and SQLite are valid)]), 
+	    		   [sort of database RT will use (default: mysql) (mysql, Pg, Oracle and SQLite are valid)]), 
             DB_TYPE=$withval,
             DB_TYPE=mysql)
 if test "$DB_TYPE" != 'mysql' -a "$DB_TYPE" != 'Pg' -a "$DB_TYPE" != 'SQLite' -a "$DB_TYPE" != 'Oracle' -a "$DB_TYPE" != 'Informix' -a "$DB_TYPE" != 'Sybase' ; then
-	AC_MSG_ERROR([Only Oracle, Informix, Pg, mysql and SQLite are valid db types])
+	AC_MSG_ERROR([Only Oracle, Pg, mysql and SQLite are valid db types])
 fi
 AC_SUBST(DB_TYPE)
 
@@ -389,12 +389,12 @@ AC_CONFIG_FILES([
                  sbin/rt-dump-database
                  sbin/rt-setup-database
                  sbin/rt-test-dependencies
-                 sbin/rt-send-digest
+                 sbin/rt-email-digest
                  sbin/rt-email-dashboards
                  sbin/rt-clean-sessions
                  sbin/rt-shredder
                  sbin/rt-validator
-                 sbin/rt-notify-group-admin
+                 sbin/rt-email-group-admin
                  sbin/rt-server
                  bin/mason_handler.fcgi
                  bin/mason_handler.scgi

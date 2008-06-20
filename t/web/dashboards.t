@@ -52,7 +52,7 @@ $m->follow_link_ok({text => "different dashboard"});
 $m->content_contains("Basics");
 $m->content_contains("Queries");
 $m->content_lacks("Subscription", "we don't have the SubscribeDashboard right");
-$m->content_contains("Preview");
+$m->content_contains("Show");
 
 $m->follow_link_ok({text => "Basics"});
 $m->content_contains("Modify the dashboard different dashboard");
@@ -60,7 +60,7 @@ $m->content_contains("Modify the dashboard different dashboard");
 $m->follow_link_ok({text => "Queries"});
 $m->content_contains("Modify the queries of dashboard different dashboard");
 $m->form_name('DashboardQueries');
-$m->field('Searches-Available' => ["2-RT::System"]);
+$m->field('Searches-Available' => ["2-RT::System-1"]);
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
 
@@ -75,7 +75,7 @@ is(@searches, 1, "one saved search in the dashboard");
 like($searches[0]->Name, qr/newest unowned tickets/, "correct search name");
 
 $m->form_name('DashboardQueries');
-$m->field('Searches-Available' => ["1-RT::System"]);
+$m->field('Searches-Available' => ["1-RT::System-1"]);
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
 
@@ -96,7 +96,7 @@ $ticket->Create(
 	Subject   => 'dashboard test',
 );
 
-$m->follow_link_ok({text => "Preview"});
+$m->follow_link_ok({text => "Show"});
 $m->content_contains("20 highest priority tickets I own");
 $m->content_contains("20 newest unowned tickets");
 $m->content_lacks("Bookmarked Tickets");

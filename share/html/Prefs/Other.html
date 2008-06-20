@@ -59,7 +59,8 @@
 % my $meta = RT->Config->Meta( $option );
 <& $meta->{'Widget'},
     Default      => 1,
-    %{ $finalize_meta->( $meta->{'WidgetArguments'} ) },
+    %{ $m->comp('/Widgets/FinalizeWidgetArguments', WidgetArguments =>
+            $meta->{'WidgetArguments'} ) },
     Name         => $option,
     DefaultValue => scalar RT->Config->Get( $option ),
     CurrentValue => $preferences->{ $option },
@@ -102,17 +103,6 @@ if ( $Update ) {
     my ($ok, $msg) = $UserObj->SetPreferences( $RT::System, $preferences );
     push @results, $ok ? loc("Preferences saved.") : $msg;
 }
-my $finalize_meta = sub {
-    my %meta = %{ shift() };
-    %meta = (%meta, %{ $meta{Callback}->() }) if $meta{Callback};
-    $meta{'Description'} = loc( $meta{'Description'} ) if $meta{'Description'};
-    if ( $meta{'ValuesLabel'} ) {
-        while (my ($k, $v) = each %{ $meta{'ValuesLabel'} } ) {
-            $meta{'ValuesLabel'}->{$k} = loc( $meta{'ValuesLabel'}->{$k} );
-        }
-    }
-    return \%meta;
-};
 </%INIT>
 <%ARGS>
 $Update => 0,

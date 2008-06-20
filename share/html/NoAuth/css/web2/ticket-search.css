@@ -60,6 +60,7 @@
 #comp-Search-Build #pick-criteria td.label {
     font: message-box;    
     padding-right: 0.5em;
+    width: 11em;
 }
 
 #comp-Search-Build #pick-criteria td.label * {
@@ -72,10 +73,11 @@
 
 #comp-Search-Build #pick-criteria td.operator {
  padding-right: 0.5em;
- text-align: right;
-
- width: 1em;
+ text-align: left;
+ vertical-align: bottom;
+ width: 7em;
 }
+
 #comp-Search-Build #pick-criteria td.operator select {
  text-align: right;
 }

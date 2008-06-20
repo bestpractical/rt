@@ -341,23 +341,13 @@ sub _Parse {
         $content = "\n".$content;
     }
 
-    #Lets build our mime Entity
-
+    # Re-use the MIMEParser setup code from RT::EmailParser, which
+    # tries to use tmpdirs, falling back to in-memory parsing. But we
+    # don't stick the RT::EmailParser into a lexical because it cleans
+    # out the tmpdir it makes on DESTROY
     my $parser = MIME::Parser->new();
-
-    # On some situations TMPDIR is non-writable. sad but true.
-    $parser->output_to_core(1);
-    $parser->tmp_to_core(1);
-
-    #If someone includes a message, don't extract it
-    $parser->extract_nested_messages(1);
-
-    # Set up the prefix for files with auto-generated names:
-    $parser->output_prefix("part");
-
-    # If content length is <= 50000 bytes, store each msg as in-core scalar;
-    # Else, write to a disk file (the default action):
-    $parser->output_to_core(50000);
+    $self->{rtparser} = RT::EmailParser->new;
+    $self->{rtparser}->_SetupMIMEParser($parser);
 
     ### Should we forgive normally-fatal errors?
     $parser->ignore_errors(1);

@@ -115,7 +115,22 @@ sub UpdateAttribute {
     }
 
     if ($status && $args->{'Name'}) {
-        ($status, $msg) = $self->{'Attribute'}->SetDescription($args->{'Name'});
+        ($status, $msg) = $self->{'Attribute'}->SetDescription($args->{'Name'})
+            unless $self->Name eq $args->{'Name'};
+    }
+
+    if ($status && $args->{'Privacy'}) {
+        my ($new_obj_type, $new_obj_id) = split /-/, $args->{'Privacy'};
+        my ($obj_type, $obj_id) = split /-/, $self->Privacy;
+
+        my $attr = $self->{'Attribute'};
+        if ($new_obj_type ne $obj_type) {
+            ($status, $msg) = $attr->SetObjectType($new_obj_type);
+        }
+        if ($status && $new_obj_id != $obj_id ) {
+            ($status, $msg) = $attr->SetObjectId($new_obj_id);
+        }
+        $self->{'Privacy'} = $args->{'Privacy'} if $status;
     }
 
     return ($status, $msg);

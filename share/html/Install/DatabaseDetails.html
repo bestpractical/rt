@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| Elements/Wrapper, Title => 'Step 2 of 7: Check your database credentials' &> 
+<&| Elements/Wrapper, Title => loc('Step 2 of 7: Check your database credentials') &> 
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -58,7 +58,8 @@
             ( $db_type eq 'mysql' ? 'root'
               : $db_type eq 'Pg' ? 'postgres'
               : '' ),
-       DatabasePassword => '' 
+       DatabasePassword => @results ?
+           $RT::Installer->{InstallConfig}{DatabasePassword} : ''
         }
                     &>
 <input type="hidden" name="Run" value="1">

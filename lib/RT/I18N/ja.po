@@ -1,6 +1,6 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: RT 3.6.x\n"
+"Project-Id-Version: RT 3.8.x\n"
 "POT-Creation-Date: 2002-05-02 11:36+0800\n"
 "PO-Revision-Date: 2007-11-30 01:18+0900\n"
 "Last-Translator: Shinji R. Yamane <s-yamane@computer.org>\n"
@@ -328,7 +328,7 @@ msgstr "優先度の高いチケット%1件"
 msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
 msgstr ""
 
-#: sbin/rt-send-digest:69
+#: sbin/rt-email-digest:69
 #. ($0)
 msgid "%1 is a utility, meant to be run from cron, that dispatches all deferred RT notifications as a per-user digest."
 msgstr ""
@@ -2517,7 +2517,7 @@ msgstr ""
 msgid "Enter up to %1 values with autocompletion"
 msgstr ""
 
-#: sbin/rt-send-digest:80 share/html/Elements/Login:78 share/html/SelfService/Error.html:48 share/html/SelfService/Error.html:49
+#: sbin/rt-email-digest:80 share/html/Elements/Login:78 share/html/SelfService/Error.html:48 share/html/SelfService/Error.html:49
 msgid "Error"
 msgstr "エラー"
 
@@ -2625,11 +2625,11 @@ msgstr ""
 msgid "Failed to load object for %1"
 msgstr ""
 
-#: sbin/rt-send-digest:143
+#: sbin/rt-email-digest:143
 msgid "Failed to load template"
 msgstr ""
 
-#: sbin/rt-send-digest:151
+#: sbin/rt-email-digest:151
 msgid "Failed to parse template"
 msgstr ""
 
@@ -3627,7 +3627,7 @@ msgstr ""
 msgid "Message could not be recorded"
 msgstr ""
 
-#: sbin/rt-send-digest:268
+#: sbin/rt-email-digest:268
 msgid "Message for user"
 msgstr ""
 
@@ -4876,11 +4876,11 @@ msgstr "優先度"
 msgid "Principal %1 not found."
 msgstr ""
 
-#: sbin/rt-send-digest:73
+#: sbin/rt-email-digest:73
 msgid "Print the resulting digest messages to STDOUT; don't mail them. Do not mark them as sent"
 msgstr ""
 
-#: sbin/rt-send-digest:75
+#: sbin/rt-email-digest:75
 msgid "Print this message"
 msgstr ""
 
@@ -5864,7 +5864,7 @@ msgstr "サイズ"
 msgid "Skip Menu"
 msgstr ""
 
-#: sbin/rt-send-digest:264
+#: sbin/rt-email-digest:264
 msgid "Skipping disabled user"
 msgstr ""
 
@@ -5896,7 +5896,7 @@ msgstr "並び順"
 msgid "Sorting"
 msgstr ""
 
-#: sbin/rt-send-digest:71
+#: sbin/rt-email-digest:71
 msgid "Specify whether this is a daily or weekly run."
 msgstr ""
 
@@ -6853,7 +6853,7 @@ msgstr ""
 msgid "Upload your changes"
 msgstr ""
 
-#: sbin/rt-send-digest:65
+#: sbin/rt-email-digest:65
 msgid "Usage: "
 msgstr ""
 

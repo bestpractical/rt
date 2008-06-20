@@ -38,7 +38,7 @@
   customlibdir:		${customdir}/lib
 </Layout>
 <Layout inplace>
-  prefix:		`pwd`
+  prefix:		.
   exec_prefix:		${prefix}
   bindir:		${exec_prefix}/bin
   sbindir:		${exec_prefix}/sbin

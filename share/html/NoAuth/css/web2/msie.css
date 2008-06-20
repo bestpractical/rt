@@ -224,3 +224,11 @@ table.queue-summary td, td.collection-as-table {
     margin-top:0.5em;
     margin-left: -0.2em;
 }
+
+#comp-Search-Build #pick-criteria td.label {
+     width: auto;
+}
+
+#comp-Search-Build #pick-criteria td.operator {
+  width: 7.5em;
+}

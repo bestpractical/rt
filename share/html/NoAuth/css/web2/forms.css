@@ -57,6 +57,7 @@ form {
   display: inline-block;
   position: relative;
   text-align: right;
+  width: 4em;
 }
 
 .input-row .input {
@@ -144,6 +145,10 @@ div.results .titlebox-content {
 
 .labeltop, .label, .value {
   padding-top: 0.25em;
+}
+
+div.ticket-info-basics div.titlebox-content .labeltop{
+  width: 10em;
 }
 
 div.submit {

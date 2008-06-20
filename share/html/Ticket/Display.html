@@ -141,24 +141,15 @@ if ($ARGS{'id'} eq 'new') {
             ARGSRef => \%ARGS, 
             Actions => \@Actions);
     
-    $ARGS{'UpdateContent'} =~ s/\r\n/\n/g if defined $ARGS{'UpdateContent'};
-    my $signature = $session{'CurrentUser'}->UserObj->Signature || '';
-    if ( $ARGS{'UpdateTimeWorked'} || (
-        defined $ARGS{'UpdateContent'}
-        && $ARGS{'UpdateContent'} ne ''
-        && $ARGS{'UpdateContent'} ne "-- \n" . $signature ))
-    {
-        $ARGS{UpdateAttachments} = $session{'Attachments'};
-        push @Actions, ProcessUpdateMessage(
-            ARGSRef   => \%ARGS,
-            Actions   => \@Actions,
-            TicketObj => $TicketObj,
+    $ARGS{UpdateAttachments} = $session{'Attachments'};
+    push @Actions,
+        ProcessUpdateMessage(
+        ARGSRef   => \%ARGS,
+        Actions   => \@Actions,
+        TicketObj => $TicketObj,
         );
-	    delete $session{'Attachments'};
-    } elsif ( $ARGS{'UpdateTimeWorked'} ) {
-        # Add UpdateTimeWorked to TimeWorked (processed below with ProcessTicketBasics)
-        $ARGS{'TimeWorked'} = $TicketObj->TimeWorked + $ARGS{'UpdateTimeWorked'};
-    }
+    delete $session{'Attachments'};
+
     #Process status updates
     push @Actions, ProcessTicketWatchers(ARGSRef => \%ARGS, TicketObj => $TicketObj );
     push @Actions, ProcessTicketBasics(   ARGSRef => \%ARGS, TicketObj => $TicketObj );
