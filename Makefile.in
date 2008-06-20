@@ -157,13 +157,13 @@ BINARIES		=	$(RT_MODPERL_HANDLER) \
 
 SYSTEM_BINARIES		=	rt-dump-database \
 				rt-setup-database \
-				rt-send-digest \
+				rt-email-digest \
 				rt-email-dashboards \
+				rt-email-group-admin \
 				rt-server \
 				rt-test-dependencies \
 				rt-clean-sessions \
-				rt-shredder \
-				rt-notify-group-admin
+				rt-shredder
 
 
 ETC_FILES		=	acl.Informix \

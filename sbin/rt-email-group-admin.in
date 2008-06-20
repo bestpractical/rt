@@ -48,20 +48,20 @@
 # END BPS TAGGED BLOCK }}}
 =head1 NAME
 
-rt-notify-group-admin - Command line tool for administrating NotifyGroup actions
+rt-email-group-admin - Command line tool for administrating NotifyGroup actions
 
 =head1 SYNOPSIS
 
-    rt-notify-group-admin --list
-    rt-notify-group-admin --create 'Notify foo team' --group Foo
-    rt-notify-group-admin --create 'Notify foo team as comment' --comment --group Foo
-    rt-notify-group-admin --create 'Notify group Foo and Bar' --group Foo --group Bar
-    rt-notify-group-admin --create 'Notify user foo@bar.com' --user foo@bar.com
-    rt-notify-group-admin --create 'Notify VIPs' --user vip1@bar.com
-    rt-notify-group-admin --add 'Notify VIPs' --user vip2@bar.com --group vip1 --user vip3@foo.com
-    rt-notify-group-admin --rename 'Notify VIPs' --newname 'Inform VIPs'
-    rt-notify-group-admin --switch 'Notify VIPs'
-    rt-notify-group-admin --delete 'Notify user foo@bar.com'
+    rt-email-group-admin --list
+    rt-email-group-admin --create 'Notify foo team' --group Foo
+    rt-email-group-admin --create 'Notify foo team as comment' --comment --group Foo
+    rt-email-group-admin --create 'Notify group Foo and Bar' --group Foo --group Bar
+    rt-email-group-admin --create 'Notify user foo@bar.com' --user foo@bar.com
+    rt-email-group-admin --create 'Notify VIPs' --user vip1@bar.com
+    rt-email-group-admin --add 'Notify VIPs' --user vip2@bar.com --group vip1 --user vip3@foo.com
+    rt-email-group-admin --rename 'Notify VIPs' --newname 'Inform VIPs'
+    rt-email-group-admin --switch 'Notify VIPs'
+    rt-email-group-admin --delete 'Notify user foo@bar.com'
 
 =head1 DESCRIPTION
 
@@ -70,7 +70,7 @@ you've created an action you can use it in a scrip.
 
 For example you can create the following action using this script:
 
-    rt-notify-group-admin --create 'Notify developers' --group 'Development Team'
+    rt-email-group-admin --create 'Notify developers' --group 'Development Team'
 
 Then you can add the followoing scrip to your Bugs queue:
     
@@ -203,7 +203,7 @@ exit(0);
 
 =head1 USAGE
 
-rt-notify-group-admin --COMMAND ARGS
+rt-email-group-admin --COMMAND ARGS
 
 =head1 COMMANDS
 
@@ -284,7 +284,7 @@ sub __create_empty {
     my $action = RT::ScripAction->new( $RT::SystemUser );
     $action->Create(
         Name => $name,
-        Description => "Created with rt-notify-group-admin script",
+        Description => "Created with rt-email-group-admin script",
         ExecModule => $as_comment? 'NotifyGroupAsComment': 'NotifyGroup',
         Argument => '',
     );

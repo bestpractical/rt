@@ -276,7 +276,7 @@ msgstr "Mes %1 tickets de plus haute priorité"
 msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
 msgstr "%1 est un outil agissant sur les tickets depuis un ordonnanceur externe tel que cron."
 
-#: sbin/rt-send-digest:69
+#: sbin/rt-email-digest:69
 #. ($0)
 msgid "%1 is a utility, meant to be run from cron, that dispatches all deferred RT notifications as a per-user digest."
 msgstr "%1 est un utilitaire, destiné a être lancé via cron, qui envoi une compilation par utilisateur des notifications RT en attente."
@@ -2129,7 +2129,7 @@ msgstr "Saisir au plus %1 valeurs"
 msgid "Enter up to %1 values with autocompletion"
 msgstr "Saisir jusqu'à %1 valeurs avec complétion automatique"
 
-#: sbin/rt-send-digest:80 share/html/Elements/Login:78 share/html/SelfService/Error.html:48 share/html/SelfService/Error.html:49
+#: sbin/rt-email-digest:80 share/html/Elements/Login:78 share/html/SelfService/Error.html:48 share/html/SelfService/Error.html:49
 msgid "Error"
 msgstr "Erreur"
 
@@ -2221,11 +2221,11 @@ msgstr "Impossible de charger le module %1. (%2)"
 msgid "Failed to load object for %1"
 msgstr "Impossible de charger l'objet pour %1"
 
-#: sbin/rt-send-digest:143
+#: sbin/rt-email-digest:143
 msgid "Failed to load template"
 msgstr "Impossible de charger le modèle"
 
-#: sbin/rt-send-digest:151
+#: sbin/rt-email-digest:151
 msgid "Failed to parse template"
 msgstr "Impossible d'analyser le modèle"
 
@@ -3121,7 +3121,7 @@ msgstr "Largeur des boîtes de dialogue"
 msgid "Message could not be recorded"
 msgstr "Le message ne peut être sauvegardé"
 
-#: sbin/rt-send-digest:268
+#: sbin/rt-email-digest:268
 msgid "Message for user"
 msgstr "Message pour l'utilisateur"
 
@@ -4242,11 +4242,11 @@ msgstr "Précédent"
 msgid "Principal %1 not found."
 msgstr "Personne/groupe %1 non trouvé(e)."
 
-#: sbin/rt-send-digest:73
+#: sbin/rt-email-digest:73
 msgid "Print the resulting digest messages to STDOUT; don't mail them. Do not mark them as sent"
 msgstr "Afficher la compilation des messages sur la sortie standard (STDOUT); ne pas les envoyer. Ne pas les marquer comme \"envoyés\""
 
-#: sbin/rt-send-digest:75
+#: sbin/rt-email-digest:75
 msgid "Print this message"
 msgstr "Imprimer ce message"
 
@@ -5090,7 +5090,7 @@ msgstr "Taille"
 msgid "Skip Menu"
 msgstr "Passer le menu"
 
-#: sbin/rt-send-digest:264
+#: sbin/rt-email-digest:264
 msgid "Skipping disabled user"
 msgstr "Sauter les utilisateurs désactivés"
 
@@ -5110,7 +5110,7 @@ msgstr "Trier"
 msgid "Sorting"
 msgstr "Tri"
 
-#: sbin/rt-send-digest:71
+#: sbin/rt-email-digest:71
 msgid "Specify whether this is a daily or weekly run."
 msgstr "Spécifie si le lancement et quotidien ou hebdomadaire."
 
@@ -5913,7 +5913,7 @@ msgstr "Télécharger au plus %1 images"
 msgid "Upload your changes"
 msgstr "Envoyer vos changements"
 
-#: sbin/rt-send-digest:65
+#: sbin/rt-email-digest:65
 msgid "Usage: "
 msgstr "Utilisation: "
 

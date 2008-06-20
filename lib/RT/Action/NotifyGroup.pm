@@ -53,7 +53,7 @@ RT::Action::NotifyGroup - RT Action that sends notifications to groups and/or us
 =head1 DESCRIPTION
 
 RT action module that allow you to notify particular groups and/or users.
-Distribution is shipped with C<rt-notify-group-admin> script that
+Distribution is shipped with C<rt-email-group-admin> script that
 is command line tool for managing NotifyGroup scrip actions. For more
 more info see its documentation.
 
@@ -188,7 +188,7 @@ sub __PushUserAddress {
 
 Ruslan U. Zakirov E<lt>ruz@bestpractical.comE<gt>
 
-L<RT::Action::NotifyGroupAsComment>, F<rt-notify-group-admin>
+L<RT::Action::NotifyGroupAsComment>, F<rt-email-group-admin>
 
 =cut
 
