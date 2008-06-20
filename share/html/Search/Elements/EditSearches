@@ -261,7 +261,7 @@ elsif ( $id eq 'new' ) {
     my ($status, $msg) = $saved_search->Save(
         Privacy      => $privacy,
         Name         => $desc,
-        Type         => $saved_search->{'Type'},
+        Type         => $SavedSearch->{'Type'},
         SearchParams => \%params,
     );
 
