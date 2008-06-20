@@ -48,19 +48,16 @@
 
 =head1 NAME
 
-  RT::SharedSetting - an API for settings that belong to an RT::User or RT::Group
+RT::SharedSetting - an API for settings that belong to an RT::User or RT::Group
 
 =head1 SYNOPSIS
 
-  use RT::SharedSetting
+  use RT::SharedSetting;
 
 =head1 DESCRIPTION
 
-  A SharedSetting is an object that can belong to an RT::User or an RT::Group.
-  It consists of an ID, a name, and some arbitrary data.
-
-=head1 METHODS
-
+A RT::SharedSetting is an object that can belong to an L<RT::User> or an <RT::Group>.
+It consists of an ID, a name, and some arbitrary data.
 
 =cut
 
@@ -69,6 +66,15 @@ use strict;
 use warnings;
 use RT::Attribute;
 use base qw/RT::Base/;
+
+=head1 METHODS
+
+=head2 new
+
+Returns a new L<RT::SharedSetting> object.
+Takes the current user, see also L<RT::Base>.
+
+=cut
 
 sub new  {
     my $proto = shift;
@@ -112,8 +118,6 @@ sub Load {
     }
 }
 
-sub PostLoad { }
-
 =head2 LoadById
 
 First loads up the L<RT::Attribute> for this shared setting by ID, then calls
@@ -138,12 +142,21 @@ sub LoadById {
     return $self->Load($privacy, $id);
 }
 
+=head2 PostLoad
+
+Called after after successful L</Load>.
+
+=cut
+
+sub PostLoad { }
+
 =head2 Save
 
 Takes a privacy, a name, and any other arguments. Saves the given parameters to
 the appropriate user/group object, and loads the resulting object. Arguments
 are passed to the SaveAttribute method, which does the actual update. Returns a
 tuple of status and message, where status is true on success. Defaults are:
+
   Privacy:  CurrentUser only
   Name:     "new (ObjectName)"
 
@@ -253,8 +266,8 @@ Returns the numerical ID of this shared setting.
 =cut
 
 sub Id {
-     my $self = shift;
-     return $self->{'Id'};
+    my $self = shift;
+    return $self->{'Id'};
 }
 
 =head2 Privacy
@@ -369,4 +382,3 @@ eval "require RT::SharedSetting_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/SharedSetting_Local.pm});
 
 1;
-

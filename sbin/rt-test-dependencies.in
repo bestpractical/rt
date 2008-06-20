@@ -70,6 +70,7 @@ GetOptions(
     'with-SMTP',
     'with-GRAPHVIZ',
     'with-GD',
+    'with-DASHBOARDS',
 
     'download=s',
     'repository=s',
@@ -94,6 +95,7 @@ my %default = (
     'with-SMTP' => 1,
     'with-GRAPHVIZ' => @RT_GRAPHVIZ@,
     'with-GD' => @RT_GD@,
+    'with-DASHBOARDS' => 1
 );
 $args{$_} = $default{$_} foreach grep !exists $args{$_}, keys %default;
 

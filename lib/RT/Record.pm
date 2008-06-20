@@ -1179,6 +1179,29 @@ sub _Links {
 
 # }}}
 
+# {{{ sub FormatLink
+
+=head2 FormatLink
+
+Takes either a Target or a Base and returns a string of human friendly text.
+
+=cut
+
+sub FormatLink {
+    my $self = shift;
+    my %args = ( Object => undef,
+		 FallBack => '',
+		 @_
+	       );
+    my $text = "URI " . $args{FallBack};
+    if ($args{Object} && $args{Object}->isa("RT::Ticket")) {
+	$text = "Ticket " . $args{Object}->id;
+    }
+    return $text;
+}
+
+# }}}
+
 # {{{ sub _AddLink
 
 =head2 _AddLink
@@ -1189,7 +1212,6 @@ Returns C<link id>, C<message> and C<exist> flag.
 
 
 =cut
-
 
 sub _AddLink {
     my $self = shift;
@@ -1247,10 +1269,13 @@ sub _AddLink {
         return ( 0, $self->loc("Link could not be created") );
     }
 
+    my $basetext = $self->FormatLink(Object => $link->BaseObj,
+				     FallBack => $args{Base});
+    my $targettext = $self->FormatLink(Object => $link->TargetObj,
+				       FallBack => $args{Target});
     my $TransString =
-      "Record $args{'Base'} $args{Type} record $args{'Target'}.";
-
-    return ( $linkid, $self->loc( "Link created ([_1])", $TransString ) );
+      "$basetext $args{Type} $targettext.";
+    return ( $linkid, $TransString ) ;
 }
 
 # }}}
@@ -1305,13 +1330,16 @@ sub _DeleteLink {
 
     $link->LoadByParams( Base=> $args{'Base'}, Type=> $args{'Type'}, Target=>  $args{'Target'} );
     #it's a real link. 
-    if ( $link->id ) {
 
+    if ( $link->id ) {
+	my $basetext = $self->FormatLink(Object => $link->BaseObj,
+				     FallBack => $args{Base});
+	my $targettext = $self->FormatLink(Object => $link->TargetObj,
+				       FallBack => $args{Target});
         my $linkid = $link->id;
         $link->Delete();
-
-        my $TransString = "Record $args{'Base'} no longer $args{Type} record $args{'Target'}.";
-        return ( 1, $self->loc("Link deleted ([_1])", $TransString));
+        my $TransString = "$basetext no longer $args{Type} $targettext.";
+        return ( 1, $TransString);
     }
 
     #if it's not a link we can find
