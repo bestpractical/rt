@@ -587,7 +587,6 @@ is true.
 
 sub ProcessUpdateMessage {
 
-    #TODO document what else this takes.
     my %args = (
         ARGSRef   => undef,
         TicketObj => undef,
@@ -671,7 +670,7 @@ sub ProcessUpdateMessage {
             TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'});
 
 
-    unless ( $args{'ARGRef'}->{'UpdateIgnoreAddressCheckboxes'} ) {
+    unless ( $args{'ARGSRef'}->{'UpdateIgnoreAddressCheckboxes'} ) {
         foreach my $key ( keys %{ $args{ARGSRef} } ) {
             next unless $key =~ /^Update(Cc|Bcc)-(.*)$/;
 
