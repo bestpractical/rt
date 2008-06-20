@@ -220,7 +220,7 @@ our %META = (
             Default     => 'Individual messages',
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            Description => 'Email Reports delivery',    #loc
+            Description => 'Email delivery',    #loc
             Values      => [
                 'Individual messages',    #loc
                 'Daily digest',           #loc
