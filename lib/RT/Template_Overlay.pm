@@ -351,11 +351,7 @@ sub _Parse {
 
     ### Should we forgive normally-fatal errors?
     $parser->ignore_errors(1);
-
-    open my $stream, "<:utf8", \$content
-        or return (0, $self->loc("Couldn't open stream for parsing MIME::Entity: $!"));
-
-    $self->{'MIMEObj'} = eval { $parser->parse( $stream ) };
+    $self->{'MIMEObj'} = eval { $parser->parse_data($content) };
     if ( my $error = $@ || $parser->last_error ) {
         $RT::Logger->error( "$error" );
         return ( 0, $error );
@@ -429,6 +425,8 @@ sub _ParseContent {
     );
     return ( undef, $self->loc('Template parsing error') ) if $is_broken;
 
+    # MIME::Parser has problems dealing with high-bit utf8 data.
+    Encode::_utf8_off($retval);
     return ($retval);
 }
 
