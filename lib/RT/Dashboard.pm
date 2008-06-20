@@ -115,7 +115,8 @@ sub UpdateAttribute {
     }
 
     if ($status && $args->{'Name'}) {
-        ($status, $msg) = $self->{'Attribute'}->SetDescription($args->{'Name'});
+        ($status, $msg) = $self->{'Attribute'}->SetDescription($args->{'Name'})
+            unless $self->Name eq $args->{'Name'};
     }
 
     return ($status, $msg);
