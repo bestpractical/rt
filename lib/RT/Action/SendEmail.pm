@@ -941,7 +941,7 @@ sub SetSubjectToken {
     my $head = $self->TemplateObj->MIMEObj->head;
     $head->replace(
         Subject => RT::Interface::Email::AddSubjectTag(
-            $self->TemplateObj->MIMEObj->head->get('Subject'),
+            Encode::decode_utf8( $head->get('Subject') ),
             $self->TicketObj,
         ),
     );
