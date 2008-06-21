@@ -1043,17 +1043,16 @@ sub SetHeaderAsEncoding {
     my $self = shift;
     my ( $field, $enc ) = ( shift, shift );
 
-    if ( $field eq 'From' and RT->Config->Get('SMTPFrom') ) {
-        $self->TemplateObj->MIMEObj->head->replace( $field,
-            RT->Config->Get('SMTPFrom') );
+    my $head = $self->TemplateObj->MIMEObj->head;
+
+    if ( lc($field) eq 'from' and RT->Config->Get('SMTPFrom') ) {
+        $head->replace( $field, RT->Config->Get('SMTPFrom') );
         return;
     }
 
-    my $value = $self->TemplateObj->MIMEObj->head->get($field);
-
+    my $value = $head->get( $field );
     $value = $self->MIMEEncodeString( $value, $enc );
-
-    $self->TemplateObj->MIMEObj->head->replace( $field, $value );
+    $head->replace( $field, $value );
 
 }
 
