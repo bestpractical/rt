@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| Elements/Wrapper, Title => loc('Step 4 of 7: Customize Email Addresses') &> 
+<&| Elements/Wrapper, Title => loc('Step [_1] of [_2]: ', 4, 7 ) . loc('Customize Email Addresses') &> 
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -54,8 +54,8 @@
     CurrentValue => RT::Installer->CurrentValues(@Types) &>
 
 <input type="hidden" name="Run" value="1">
-<& /Elements/Submit, Label => loc('Next: Email Configuration'), Back => 1,
-    BackLabel => loc('Back: Customize Basics') &>
+<& /Elements/Submit, Label => loc('Next: ') . loc( 'Email Configuration'), 
+    Back => 1, BackLabel => loc('Back: ' ) . loc( 'Customize Basics') &>
 </form>
 </&>
 <%init>

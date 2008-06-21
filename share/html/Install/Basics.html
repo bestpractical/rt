@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| Elements/Wrapper, Title => loc('Step 3 of 7: Customize Basics') &> 
+<&| Elements/Wrapper, Title => loc('Step [_1] of [_2]: ', 3, 7) . loc('Customize Basics') &> 
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -54,8 +54,7 @@
     CurrentValue => RT::Installer->CurrentValues(@Types) &>
 
 <input type="hidden" name="Run" value="1">
-<& /Elements/Submit, Label => loc('Next: Customize Email Addresses'), Back => 1,
-    BackLabel => loc('Back: Customize Database Details') &>
+<& /Elements/Submit, Label => loc('Next: ') . loc('Customize Email Addresses'), Back => 1, BackLabel => loc('Back: ' ) . loc( 'Customize Database Details') &>
 </form>
 </&>
 

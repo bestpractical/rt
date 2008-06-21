@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| Elements/Wrapper, Title => loc('Step 2 of 7: Check your database credentials') &> 
+<&| Elements/Wrapper, Title => loc('Step [_1] of [_2]: ', 2, 7 ) . loc('Check your database credentials') &> 
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -65,11 +65,11 @@
 <input type="hidden" name="Run" value="1">
 
 <& /Elements/Submit, Label => loc('Check Database Connectivity'), 
-Back => 1, BackLabel => loc('Back: Select Database Type'),
+Back => 1, BackLabel => loc('Back: ') . loc('Select Database Type'),
 &>
 
 % if ( @results && $results[0] eq 'Connection succeeded' ) {
-<& /Elements/Submit, Label => loc('Next: Customize Basics'), Name => 'Next' &>
+<& /Elements/Submit, Label => loc('Next: ') . loc('Customize Basics'), Name => 'Next' &>
 % }
 
 
