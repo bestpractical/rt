@@ -889,15 +889,16 @@ sub SetHeader {
 
     chomp $val;
     chomp $field;
-    $self->TemplateObj->MIMEObj->head->fold_length( $field, 10000 );
-    $self->TemplateObj->MIMEObj->head->replace( $field, $val );
-    return $self->TemplateObj->MIMEObj->head->get($field);
+    my $head = $self->TemplateObj->MIMEObj->head;
+    $head->fold_length( $field, 10000 );
+    $head->replace( $field, $val );
+    return $head->get($field);
 }
 
 =head2 SetSubject
 
-This routine sets the subject. it does not add the rt tag. that gets done elsewhere
-If $self->{'Subject'} is already defined, it uses that. otherwise, it tries to get
+This routine sets the subject. it does not add the rt tag. That gets done elsewhere
+If subject is already defined via template, it uses that. otherwise, it tries to get
 the transaction's subject.
 
 =cut 
@@ -937,7 +938,8 @@ This routine fixes the RT tag in the subject. It's unlikely that you want to ove
 sub SetSubjectToken {
     my $self = shift;
 
-    $self->TemplateObj->MIMEObj->head->replace(
+    my $head = $self->TemplateObj->MIMEObj->head;
+    $head->replace(
         Subject => RT::Interface::Email::AddSubjectTag(
             $self->TemplateObj->MIMEObj->head->get('Subject'),
             $self->TicketObj,
