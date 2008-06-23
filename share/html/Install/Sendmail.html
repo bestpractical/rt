@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&|Elements/Wrapper, Title => loc('Step [_1] of [_2]: ', 5, 7 ) . loc('Email Configuration') &> 
+<&|Elements/Wrapper, Title => loc('Step [_1] of [_2]: ', 4, 7 ) . loc('Email Configuration') &> 
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -55,9 +55,8 @@
 &>
 
 <input type="hidden" name="Run" value="1">
-<& /Elements/Submit, Label => $RT::Installer->{DatabaseAction} eq 'none' ?
-loc('Next: ') . loc('Finish') : loc('Next: ') . loc( 'Initialize Database'),
-    Back => 1, BackLabel => loc('Back: ' ) . loc('Customize Email Addresses') &>
+<& /Elements/Submit, Label => loc('Next: ') . loc( 'Customize Global'),
+    Back => 1, BackLabel => loc('Back: ' ) . loc('Customize Basics') &>
 </form>
 </&>
 <%init>
@@ -73,7 +72,7 @@ if ( $Run ) {
 
     if ( $Back ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
-'Install/Emails.html');
+'Install/Basics.html');
     }
 
 
@@ -87,25 +86,8 @@ if ( $Run ) {
 
 
     unless ( @results ) {
-
-        my ( $status, $msg ) = RT::Installer->SaveConfig;
-
-        if ( $status ) {
-            delete $INC{'RT_SiteConfig.pm'};
-            RT->LoadConfig;
-
-            if ( $RT::Installer->{DatabaseAction} ne 'none' ) {
-                RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
-'Install/Initialize.html');
-            }
-            else {
-                RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
-'Install/Finish.html');
-            }
-        }
-        else {
-            push @results, $msg;
-        }
+        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
+'Install/Global.html');
     }
 }
 

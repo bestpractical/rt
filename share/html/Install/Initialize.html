@@ -58,7 +58,7 @@
 <form method="post">
 <input type="hidden" name="Run" value="1">
 <& /Elements/Submit, Label => loc('Initialize Database'), Back => 1,
-    BackLabel => loc('Back: ') . loc('Customize Sendmail') &>
+    BackLabel => loc('Back: ') . loc('Customize Global') &>
 </form>
 </&>
 <%init>
@@ -66,7 +66,7 @@ my @results;
 if ( $Run ) {
     if ( $Back ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
-'Install/Sendmail.html');
+'Install/Global.html');
     }
 
     my @actions = split /,/, $RT::Installer->{DatabaseAction};
