@@ -93,6 +93,8 @@ my @fields = qw(
     MemberOf    Members
     Parents     Children
 
+    Bookmark
+
     NEWLINE
 );
 
