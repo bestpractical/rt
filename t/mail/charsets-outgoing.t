@@ -124,10 +124,7 @@ diag "non-ascii subject with non-ascii subject tag" if $ENV{'TEST_VERBOSE'};
         $subject =~ /$str_ru_test/
             or do { $status = 0; diag "wrong subject: $subject" };
     }
-    {
-        local $TODO = "This is being worked in in a branch";
-        ok $status, "all mails have correct data";
-    }
+    ok $status, "all mails have correct data";
 }
 
 diag "return back the empty subject tag" if $ENV{'TEST_VERBOSE'};
@@ -225,10 +222,7 @@ diag "non-ascii subject, non-ascii prefix in template and non-ascii tag"
         $subject =~ /$str_ru_autoreply/
             or do { $status = 0; diag "wrong subject: $subject" };
     }
-    {
-        local $TODO = "This is being worked in in a branch";
-        ok $status, "all mails have correct data";
-    }
+    ok $status, "all mails have correct data";
 }
 
 diag "flush subject tag of the queue" if $ENV{'TEST_VERBOSE'};
