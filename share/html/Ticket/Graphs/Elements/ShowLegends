@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc('Legends') &>
+<&| /Widgets/TitleBox, title => loc('Legends'), hideable => $hideable &>
 <table>
 
 <tr style="height: 2.8em;"><td>Status:</td><td>
@@ -69,4 +69,5 @@
 
 <%ARGS>
 $FillUsing => ''
+$hideable  => 1
 </%ARGS>

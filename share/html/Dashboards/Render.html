@@ -61,7 +61,12 @@
 % foreach ($DashboardObj->SearchIds) {
 %   my ($type, $id, $desc) = @$_;
 %   my @for_showsearch = $DashboardObj->SearchPrivacy(@$_);
-    <& /Elements/ShowSearch, @for_showsearch, Override => { Rows => $rows }, IgnoreMissing => 1 &>
+    <& /Elements/ShowSearch,
+        @for_showsearch,
+        Override => { Rows => $rows },
+        IgnoreMissing => 1,
+        hideable => $Preview,
+    &>
 % }
 </td>
 

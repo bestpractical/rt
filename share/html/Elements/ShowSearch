@@ -49,8 +49,9 @@
     title => loc($search->Description, $ProcessedSearchArg->{'Rows'}),
     title_href => $query_link_url.$QueryString,
     titleright => $customize ? loc('Edit') : '',
-    titleright_href => $customize &>
-<& $query_display_component, %$ProcessedSearchArg, ShowNavigation => 0, Class => 'RT::Tickets' &>
+    titleright_href => $customize,
+    hideable => $hideable &>
+<& $query_display_component, hideable => $hideable, %$ProcessedSearchArg, ShowNavigation => 0, Class => 'RT::Tickets' &>
 </&>
 <%init>
 my $search;
@@ -133,8 +134,9 @@ my $QueryString = '?' . $m->comp( '/Elements/QueryString', %$SearchArg );
 
 </%init>
 <%ARGS>
-$Name        => undef
-$SavedSearch => undef
-%Override    => ()
+$Name          => undef
+$SavedSearch   => undef
+%Override      => ()
 $IgnoreMissing => undef
+$hideable      => 1
 </%ARGS>
