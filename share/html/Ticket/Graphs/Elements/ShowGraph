@@ -53,6 +53,8 @@
 $id => undef
 </%ARGS>
 <%INIT>
+use RT::Util 'safe_run_child';
+
 my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
 $ticket->Load( $id );
 unless ( $ticket->id ) {
