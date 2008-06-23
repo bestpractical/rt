@@ -76,6 +76,10 @@ if ( $Run ) {
         }
     }
 
+    unless ( $ARGS{Password} ) {
+        push @results, "Invalid password: it can't be null";
+    }
+
     if ( $Back ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
 'Install/DatabaseDetails.html');

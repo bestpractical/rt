@@ -86,12 +86,18 @@ my $locked;
     elsif ( $Run ) {
         $RT::Installer->{InstallConfig} ||= {};
         for my $field  ( qw/DatabaseType DatabaseName DatabaseHost DatabasePort
-                DatabaseUser DatabasePassword DatabaseRequireSSL rtname
-                Organization TimeZone MinimumPasswordLength MaxAttachmentSize
-                OwnerEmail CommentAddress CorrespondAddress MailCommand
-                SendmailArguments SendmailBounceArguments SendmailPath/ ) {
+                DatabaseUser DatabaseRequireSSL rtname
+                Organization TimeZone CommentAddress CorrespondAddress 
+                SendmailPath WebDomain WebPort/ ) {
             $RT::Installer->{InstallConfig}{$field} ||= RT->Config->Get($field);
         }
+
+        for my $field ( qw/OwnerEmail Password DatabasePassword
+                DatabaseAdminPassword/ ) {
+            # stuff we don't want to keep null
+            $RT::Installer->{InstallConfig}{$field} = '';
+        }
+
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .  'Install/DatabaseType.html');
     
         }

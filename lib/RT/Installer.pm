@@ -155,7 +155,7 @@ my %Meta = (
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             Description => 'RT Administrator',                   #loc
-            Hints => 'The email address of a human who manages RT.',
+            Hints => "When RT can't handle an email message, where should it be forwarded to?", #loc
         },
     },
     CommentAddress => {
@@ -174,18 +174,6 @@ my %Meta = (
 'the default addresses that will be listed in From: and Reply-To: headers of correspondence mail.' #loc
         },
     },
-    SendmailArguments => {
-        Widget          => '/Widgets/Form/String',
-        WidgetArguments => {
-            Description => 'Sendmail arguments',    #loc
-        },
-    },
-    SendmailBounceArguments => {
-        Widget          => '/Widgets/Form/String',
-        WidgetArguments => {
-            Description => 'Sendmail bounce arguments',    #loc
-        },
-    },
     SendmailPath => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
@@ -195,13 +183,15 @@ my %Meta = (
     WebDomain => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'domain name',                  #loc
+            Description => 'Domain name',                  #loc
+            Hints => "like 'localhost', 'rt.example.com'", #loc
         },
     },
     WebPort => {
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'web port',                     #loc
+            Description => 'Web port',                     #loc
+            Hints => 'which port your web server will listen to, e.g. 8080', #loc
         },
     },
 

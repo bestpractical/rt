@@ -58,18 +58,18 @@
             ( $db_type eq 'mysql' ? 'root'
               : $db_type eq 'Pg' ? 'postgres'
               : '' ),
-       DatabasePassword => @results ?
-           $RT::Installer->{InstallConfig}{DatabasePassword} : ''
         }
                     &>
 <input type="hidden" name="Run" value="1">
 
-<& /Elements/Submit, Label => loc('Check Database Connectivity'), 
-Back => 1, BackLabel => loc('Back: ') . loc('Select Database Type'),
-&>
-
 % if ( @results && $results[0] eq 'Connection succeeded' ) {
-<& /Elements/Submit, Label => loc('Next: ') . loc('Customize Basics'), Name => 'Next' &>
+<& /Elements/Submit, Label => loc('Next: ') . loc('Customize Basics'),
+Back => 1, BackLabel => loc('Back: ') . loc('Select Database Type'),
+Name => 'Next' &>
+% } else {
+<& /Elements/Submit, Label => loc('Check Database Connectivity'),
+Back => 1, BackLabel => loc('Back: ') . loc('Select Database Type')
+&>
 % }
 
 
