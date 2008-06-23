@@ -381,6 +381,9 @@ sub get_resource {
     my $uri = shift;
     my ($content, $filename, $mimetype, $encoding);
 
+    my $original_uri = $uri;
+    verbose "Getting resource [_1]", $original_uri;
+
     # strip out RT::WebURL
     $uri =~ s/^\Q$RT::WebURL//;
 
@@ -430,6 +433,13 @@ sub get_resource {
     #If all else fails then some conservative and general-purpose defaults are:
     $mimetype ||= 'application/octet-stream';
     $encoding ||= 'base64';
+
+    vverbose "Resource [_1]: length=[_2] filename='[_3]' mimetype='[_4]', encoding='[_5]'",
+        $original_uri,
+        length($content),
+        $filename,
+        $mimetype,
+        $encoding;
 
     return ($content, $filename, $mimetype, $encoding);
 }
