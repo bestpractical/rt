@@ -395,7 +395,19 @@ sub get_resource {
                 or die "Unable to parse query parameter '$_'";
 
             for ($k, $v) { s/%(..)/chr hex $1/ge }
-            $args{$k} = $v;
+
+            # no value yet, simple key=value
+            if (!exists $args{$k}) {
+                $args{$k} = $v;
+            }
+            # already have key=value, need to upgrade it to key=[value1, value2]
+            elsif (!ref($args{$k})) {
+                $args{$k} = [$args{$k}, $v];
+            }
+            # already key=[value1, value2], just add the new value
+            else {
+                push @{ $args{$k} }, $v;
+            }
         }
     }
 
