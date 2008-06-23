@@ -215,7 +215,8 @@ SUMMARY
     $HTML::Mason::Commands::session{CurrentUser} = $currentuser;
     my $contents = run_component(
         '/Dashboards/Render.html',
-        id => $dashboard->Id,
+        id      => $dashboard->Id,
+        Preview => 0,
     );
 
     for (@{ RT->Config->Get('EmailDashboardRemove') || [] }) {

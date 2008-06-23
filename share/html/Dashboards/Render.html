@@ -45,11 +45,14 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => $title &>
+<& /Elements/Header, title => $title, JavaScript => $Preview, ShowBar => $Preview  &>
+
+% if ($Preview) {
 <& /Dashboards/Elements/Tabs,
     current_subtab => $current_subtab,
     Title => $title,
     DashboardObj => $DashboardObj &>
+% }
 
 <table border="0" width="100%">
 <tr valign="top">
@@ -91,5 +94,6 @@ my $title = $DashboardObj->Name;
 </%INIT>
 <%ARGS>
 $id => undef
+$Preview => 1
 </%ARGS>
 
