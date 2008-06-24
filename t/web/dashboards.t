@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 66;
+use Test::More tests => 59;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -41,7 +41,6 @@ $m->content_contains("New dashboard", "'New dashboard' link because we now have 
 $m->follow_link_ok({text => "New dashboard"});
 $m->form_name('ModifyDashboard');
 $m->field("Name" => 'different dashboard');
-$m->content_lacks('Delete', "Delete button hidden because we lack DeleteDashboard");
 $m->click_button(value => 'Save Changes');
 $m->content_lacks("No permission to create dashboards");
 $m->content_contains("Saved dashboard different dashboard");
@@ -148,18 +147,3 @@ $m->content_contains("Unsubscribed to dashboard different dashboard");
 
 RT::Record->FlushCache if RT::Record->can('FlushCache');
 is($user_obj->Attributes->Named('Subscription'), 0, "no more subscriptions");
-
-$m->get_ok("/Dashboards/Modify.html?id=$id&Delete=1");
-$m->content_contains("Permission denied", "unable to delete dashboard because we lack DeleteDashboard");
-
-$user_obj->PrincipalObj->GrantRight(Right => 'DeleteDashboard');
-$m->get_ok("/Dashboards/Modify.html?id=$id");
-$m->content_contains('Delete', "Delete button shows because we have DeleteDashboard");
-
-$m->form_name('ModifyDashboard');
-$m->click_button(name => 'Delete');
-$m->content_contains("Deleted dashboard $id");
-
-$m->get("/Dashboards/Modify.html?id=$id");
-$m->content_contains("Could not load dashboard");
-
