@@ -450,6 +450,15 @@ Set($CorrespondAddress , '');
 
 Set($CommentAddress , '');
 
+=item C<$DashboardAddress>
+
+The email address from which RT will send dashboards. If none is set, then
+C<$CorrespondAddress> will be used.
+
+=cut
+
+Set($DashboardAddress, '');
+
 =item C<UseFriendlyFromLine>
 
 By default, RT sets the outgoing mail's "From:" header to
