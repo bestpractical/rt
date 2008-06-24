@@ -57,6 +57,7 @@
 
 <%INIT>
 
+return unless $Ticket;
 my $members = $Ticket->Members;
 return unless $members->Count;
 
