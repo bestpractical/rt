@@ -230,10 +230,10 @@ SUMMARY
         RT->Config->Get('WebURL') . '/Dashboards/Render.html',
     );
 
-    send_mail($currentuser, $dashboard, $subscription, $contents);
+    email_dashboard($currentuser, $dashboard, $subscription, $contents);
 }
 
-sub send_mail {
+sub email_dashboard {
     my ($currentuser, $dashboard, $subscription, $content) = @_;
 
     verbose 'Sending dashboard "[_1]" to user [_2] <[_3]>',
@@ -241,11 +241,10 @@ sub send_mail {
             $currentuser->Name,
             email_of($currentuser);
 
-    my $subject = $currentuser->loc(
-        (RT->Config->Get('DashboardSubject') || "RT [_2] Dashboard: [_1]"),
-        $dashboard->Name,
+    my $subject = sprintf '[%s] ' .  RT->Config->Get('DashboardSubject'),
+        RT->Config->Get('rtname'),
         ucfirst($subscription->SubValue('Frequency')),
-    );
+        $dashboard->Name;
 
     my $entity = build_email(
         $content, $from, email_of($currentuser), $subject,
