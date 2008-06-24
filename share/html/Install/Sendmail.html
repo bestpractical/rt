@@ -86,11 +86,13 @@ if ( $Run ) {
 
 
     unless ( -e $ARGS{SendmailPath} ) {
-        push @results, "$ARGS{SendmailPath} doesn't exist.";
+        push @results, loc( "[_1] doesn't exist.", $ARGS{SendmailPath} );
     }
 
     if ( ! $ARGS{OwnerEmail} || $ARGS{OwnerEmail} !~ /.+@.+/ ) {
-        push @results, "Invalid Administrator Email: That doesn't look like an email address";
+        push @results,
+            loc("Invalid [_1]: that doesn't look like an email address",
+            'Administrator Email');
     }
 
 

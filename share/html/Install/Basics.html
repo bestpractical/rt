@@ -78,14 +78,12 @@ if ( $Run ) {
             Store => $RT::Installer->{InstallConfig},
             Meta => $RT::Installer->{Meta} );
     
-    for ( qw/WebPort/ ) {
-        if ( $ARGS{$_} && $ARGS{$_} !~ /^\d+$/ ) {
-            push @results, "Invalid $_: it should be a number";
-        }
+    if ( $ARGS{WebPort} && $ARGS{WebPort} !~ /^\d+$/ ) {
+        push @results, loc("Invalid [_1]: it should be a number", 'WebPort');
     }
 
     unless ( $ARGS{Password} ) {
-        push @results, "You must enter an Administrative password";
+        push @results, loc("You must enter an Administrative password");
     }
 
     if ( $Back ) {

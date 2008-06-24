@@ -84,7 +84,7 @@ if ( $Run ) {
     if ( $actions[0] eq 'create' ) {
         ($status, $msg) = RT::Handle->CreateDatabase( $sysdbh );
         unless ( $status ) {
-            push @results, "ERROR: $msg";
+            push @results, loc('ERROR: [_1]', $msg );
         }
 
         shift @actions; # shift the 'create' action since its job is done.
@@ -121,7 +121,7 @@ if ( $Run ) {
                 ($status, $msg) = $RT::Handle->InsertData( $file );
             }
             unless ( $status ) {
-                push @results, "ERROR: $msg";
+                push @results, loc('ERROR: [_1]', $msg);
                 last;
             }
         }
