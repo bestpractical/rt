@@ -191,10 +191,10 @@ $val || Abort("Couldn't load dashboard $DashboardId: $msg.");
 
 if ($SubscriptionObj->Id && $Unsubscribe) {
     my ($ok, $msg) = $SubscriptionObj->Delete();
-    $ok || Abort("Couldn't unsubscribe to dashboard $DashboardId.");
+    $ok || Abort("Couldn't unsubscribe to dashboard $DashboardId: $msg");
 
     # put the user back into a useful place with a message
-    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Dashboards/index.html?Unsubscribe=$DashboardId");
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Dashboards/index.html?Unsubscribed=$DashboardId");
 }
 
 my %fields = (

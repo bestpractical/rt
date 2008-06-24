@@ -73,6 +73,9 @@
 </td></tr>
 </table>
 <& /Elements/Submit, Name => 'Save', Label => loc('Save Changes') &>
+% if ($Dashboard->Id) {
+<& /Elements/Submit, Name => 'Delete', Label => loc('Delete') &>
+% }
 </form>
 <%INIT>
 
@@ -148,11 +151,22 @@ if (!$Create && !$tried_create && $id && $ARGS{'Save'}) {
     }
 
 }
+
+if (!$Create && !$tried_create && $id && $ARGS{'Delete'}) {
+    my ($ok, $msg) = $Dashboard->Delete();
+    $ok || Abort("Couldn't delete dashboard $id: $msg");
+
+    # put the user back into a useful place with a message
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Dashboards/index.html?Deleted=$id");
+
+}
+
 </%INIT>
 
 <%ARGS>
 $Create => undef
 $Name => undef
 $id => '' unless defined $id
+$Delete => undef
 </%ARGS>
 
