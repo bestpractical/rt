@@ -76,6 +76,7 @@ use base qw/RT::SharedSetting/;
 my %new_rights = (
     ModifyDashboard    => 'Create and modify dashboards', #loc_pair
     SubscribeDashboard => 'Subscribe to email dashboards', #loc_pair
+    DeleteDashboard    => 'Delete dashboards', #loc_pair
 );
 
 use RT::System;
@@ -90,6 +91,14 @@ An object of this class is called "dashboard"
 =cut
 
 sub ObjectName { "dashboard" }
+
+=head2 DeleteRightName
+
+Objects of this class check the "DeleteDashboard" right
+
+=cut
+
+sub DeleteRightName { "DeleteDashboard" }
 
 sub SaveAttribute {
     my $self   = shift;

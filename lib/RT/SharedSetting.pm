@@ -248,10 +248,23 @@ sub UpdateAttribute { }
 Deletes the existing shared setting. Returns a tuple of status and message,
 where status is true upon success.
 
+Uses the C<DeleteRightName> method for discovering which right to check.
+
 =cut
+
+sub DeleteRightName { undef }
 
 sub Delete {
     my $self = shift;
+
+    my $right_name = $self->DeleteRightName;
+    if ($right_name) {
+        return (0, $self->loc("Permission denied"))
+            unless $self->CurrentUser->HasRight(
+                Object => $RT::System,
+                Right  => $right_name,
+            );
+    }
 
     my ($status, $msg) = $self->{'Attribute'}->Delete;
     if ($status) {

@@ -73,7 +73,7 @@
 </td></tr>
 </table>
 <& /Elements/Submit, Name => 'Save', Label => loc('Save Changes') &>
-% if ($Dashboard->Id) {
+% if ($Dashboard->Id && $can_delete) {
 <& /Elements/Submit, Name => 'Delete', Label => loc('Delete') &>
 % }
 </form>
@@ -87,6 +87,8 @@ use RT::Dashboard;
 
 my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
 my @privacies = $Dashboard->_PrivacyObjects;
+
+my $can_delete = $session{'CurrentUser'}->HasRight(Right => 'DeleteDashboard', Object => $RT::System);
 
 # user went directly to Modify.html
 $Create = 1 if !$id;
