@@ -49,6 +49,14 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
+<p>
+<&|/l&>
+These configuration options cover some of the basics needed to get RT up and running.  We need to know the name of
+your RT installation and the domain name where RT will live.  You will also need to set a password for your defauly
+administrative user.
+</&>
+</p>
+
 <form method="post">
 <& /Widgets/BulkEdit, Types => \@Types,Meta => $RT::Installer->{Meta},
     CurrentValue => RT::Installer->CurrentValues(@Types) &>
@@ -77,7 +85,7 @@ if ( $Run ) {
     }
 
     unless ( $ARGS{Password} ) {
-        push @results, "Invalid password: it can't be null";
+        push @results, "You must enter an Administrative password";
     }
 
     if ( $Back ) {

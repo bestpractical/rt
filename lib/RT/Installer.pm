@@ -73,7 +73,7 @@ my %Meta = (
     DatabaseHost => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'Database host',
+            Description => 'Database host', #loc
             Default => 1,
             DefaultLabel => "Keep 'localhost' if you're not sure", #loc
             Hints => "The domain name of your database server (like 'db.example.com').",       #loc
@@ -85,7 +85,7 @@ my %Meta = (
             Description => 'Database port',         #loc
             Default     => 1,
             DefaultLabel =>
-              'Leave empty to use a default value',              #loc
+              'Leave empty to use the default value for your database',              #loc
         },
     },
     DatabaseName => {
@@ -98,23 +98,25 @@ my %Meta = (
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             Default => 1,
-            DefaultLabel => "Leave this alone to use a default value", #loc
+            Hints => "Leave this alone to use the default dba username for your database type", #loc
             Description => 'DBA username', # loc
+            DefaultLabel => '',
         },
     },
     DatabaseAdminPassword => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description =>
-              'DBA password',  #loc
-            Hints => "The DBA's database password",#loc
+            Description => 'DBA password',  #loc
+            DefaultLabel => "The DBA's database password",#loc
             Type => 'password',
+            Hints => "You must provide the dba's password so we can create the RT database and user.",
         },
     },
     DatabaseUser => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             Description => 'Database username for RT',                      #loc
+            Hints => 'RT will connect to the database using this user.  It will be created for you.', #loc
         },
     },
     DatabasePassword => {
@@ -122,6 +124,7 @@ my %Meta = (
         WidgetArguments => {
             Description => 'Database password for RT',                      #loc
             Type        => 'password',
+            Hints       => 'The password RT should use to connect to the database.',
         },
     },
     DatabaseRequireSSL => {
@@ -134,7 +137,7 @@ my %Meta = (
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             Description => 'Site name',                        #loc
-            Hints => 'Set this to your internet domain. (ex: example.com)' #loc
+            Hints => 'RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)' #loc
         },
     },
     MinimumPasswordLength => {
@@ -154,8 +157,8 @@ my %Meta = (
     OwnerEmail => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'RT Administrator',                   #loc
-            Hints => "When RT can't handle an email message, where should it be forwarded to?", #loc
+            Description => 'RT Administrator Email',                   #loc
+            Hints => "When RT can't handle an email message, where should it be forwarded?", #loc
         },
     },
     CommentAddress => {
@@ -177,14 +180,15 @@ my %Meta = (
     SendmailPath => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'where is sendmail command',    #loc
+            Hints => 'Where to find your sendmail binary.',    #loc
+            Description => 'Path to sendmail', #loc
         },
     },
     WebDomain => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             Description => 'Domain name',                  #loc
-            Hints => "like 'localhost', 'rt.example.com'", #loc
+            Hints => "Don't include http://, just something like 'localhost', 'rt.example.com'", #loc
         },
     },
     WebPort => {

@@ -49,20 +49,29 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
+<p>
+<&|/l&>
+RT can communicate with your users about new tickets or new correspondence on tickets.
+Tell us where to find sendmail (or a sendmail compatible binary such as the one provided by
+postifx).  RT also needs to know who to notify when someone sends invalid email.  This must not be an address that
+feeds back into RT.
+</&>
+</p>
+
 <form method="post">
 <& /Widgets/BulkEdit, Types => \@Types,Meta => $RT::Installer->{Meta},
     CurrentValue => RT::Installer->CurrentValues(@Types)
 &>
 
 <input type="hidden" name="Run" value="1">
-<& /Elements/Submit, Label => loc('Next: ') . loc( 'Customize Global'),
+<& /Elements/Submit, Label => loc('Next: ') . loc( 'Customize Global Defaults'),
     Back => 1, BackLabel => loc('Back: ' ) . loc('Customize Basics') &>
 </form>
 </&>
 <%init>
 my @results;
 
-my @Types = qw/OwnerEmail SendmailPath/;
+my @Types = qw/SendmailPath OwnerEmail/;
 
 if ( $Run ) {
 
@@ -81,7 +90,7 @@ if ( $Run ) {
     }
 
     if ( ! $ARGS{OwnerEmail} || $ARGS{OwnerEmail} !~ /.+@.+/ ) {
-        push @results, "Invalid OwnerEmail: not like an email address";
+        push @results, "Invalid Administrator Email: That doesn't look like an email address";
     }
 
 
