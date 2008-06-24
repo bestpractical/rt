@@ -208,9 +208,22 @@ if ($HAS_DATETIME_TZ) {
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             Description => 'Timezone',                              #loc
-            Values      => [ '', DateTime::TimeZone->all_names ],
-            ValuesLabel => {
-                '' => 'System Default',                             #loc
+            Callback    => sub {
+                my $ret;
+                $ret->{Values} = ['', DateTime::TimeZone->all_names];
+
+                my $has_datetime = eval { require DateTime };
+                if ( $has_datetime ) {
+                    my $dt = DateTime->now;
+                    for my $tz ( DateTime::TimeZone->all_names ) {
+                        $dt->set_time_zone( $tz );
+                        $ret->{ValuesLabel}{$tz} =
+                            $tz . ' ' . $dt->strftime('%z');
+                    }
+                }
+                $ret->{ValuesLabel}{''} = 'System Default'; #loc
+
+                return $ret;
             },
         },
     };
