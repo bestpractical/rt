@@ -192,13 +192,40 @@ sub send_dashboard {
 
     my $dashboard = RT::Dashboard->new($currentuser);
 
-    $dashboard->LoadById($subscription->SubValue('DashboardId'))
-        or die loc(
-            "Unable to load dashboard [_1] of subscription [_2] for user [_3]",
+    $dashboard->LoadById($subscription->SubValue('DashboardId'));
+
+    # failed to load dashboard. perhaps it was deleted?
+    if (!$dashboard->Id) {
+        warning "Unable to load dashboard [_1] of subscription [_2] for user [_3]",
             $subscription->SubValue('DashboardId'),
             $subscription->Id,
-            $currentuser->Name
+            $currentuser->Name;
+
+        my $ok = RT::Interface::Email::SendEmailUsingTemplate(
+            From      => $from,
+            To        => email_of($currentuser),
+            Template  => 'Error: Missing dashboard',
+            Arguments => {
+                SubscriptionObj => $subscription,
+            },
         );
+
+        # only delete the subscription if the email looks like it went through
+        if ($ok) {
+            my ($deleted, $msg) = $subscription->Delete();
+            if ($deleted) {
+                verbose("Deleted an obsolete subscription: [_1]", $msg);
+            }
+            else {
+                warning("Unable to delete an obsolete subscription: [_1]", $msg);
+            }
+        }
+        else {
+            warning("Unable to notify [_1] of an obsolete subscription", $currentuser->Name);
+        }
+
+        return;
+    }
 
     verbose 'Creating dashboard "[_1]" for user "[_2]":',
             $dashboard->Name,
