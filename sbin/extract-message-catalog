@@ -155,7 +155,7 @@ sub extract_strings_from_code {
     # Comment-based mark: "..." # loc
     $line = 1;
     pos($_) = 0;
-    while (m/\G.*?($RE{delimited}{-delim=>q{'"}}{-keep})[\}\)\],]*\s*\#\s*loc\s*$/smg) {
+    while (m/\G.*?($RE{delimited}{-delim=>q{'"}}{-keep})[\}\)\],;]*\s*\#\s*loc\s*$/smg) {
 	my $str = substr($1, 1, -1);
 	$line += ( () = ( $& =~ /\n/g ) );    # cryptocontext!
 	$str  =~ s/\\'/\'/g;
@@ -165,7 +165,7 @@ sub extract_strings_from_code {
     # Comment-based pair mark: "..." => "..." # loc_pair
     $line = 1;
     pos($_) = 0;
-    while (m/\G.*?(\w+)\s*=>\s*($RE{delimited}{-delim=>q{'"}}{-keep})[\}\)\],]*\s*\#\s*loc_pair\s*$/smg) {
+    while (m/\G.*?(\w+)\s*=>\s*($RE{delimited}{-delim=>q{'"}}{-keep})[\}\)\],;]*\s*\#\s*loc_pair\s*$/smg) {
 	my $key = $1;
 	my $val = substr($2, 1, -1);
 	$line += ( () = ( $& =~ /\n/g ) );    # cryptocontext!
