@@ -88,6 +88,14 @@ if ( $Run ) {
 'Install/Sendmail.html');
     }
 
+    for ( qw/CommentAddress CorrespondAddress/ ) {
+        if ( $ARGS{$_} && $ARGS{$_} !~ /.+@.+/ ) {
+            push @results,
+                loc("Invalid [_1]: '[_2]' doesn't look like an email address",
+                $_, $ARGS{$_});
+        }
+    }
+
     unless ( @results ) {
         my ( $status, $msg ) = RT::Installer->SaveConfig;
 
