@@ -45,56 +45,24 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => $title &>
-<& /Dashboards/Elements/Tabs,
-    current_subtab => 'Dashboards/index.html',
-    Title => $title &>
+<%args>
+@Objects
+$dashboards => {}
+</%args>
+<%init>
+# Returns a hash of dashboards associated with @Objects
 
-<& /Elements/ListActions, actions => \@actions &>
+for my $object (@Objects) {
+    my $new_dashboards = $m->comp("/Dashboards/Elements/DashboardsForObject", Object => $object);
 
-<& /Dashboards/Elements/ShowDashboards,
-    Type       => "Personal",
-    Dashboards => $dashboards->{personal},
-&>
+    push @{ $dashboards->{$_} }, @{ $new_dashboards->{$_} || [] }
+        for qw/personal system/;
 
-<& /Dashboards/Elements/ShowDashboards,
-    Type => "System",
-    Dashboards => $dashboards->{system},
-&>
-
-% for my $group (sort keys %{ $dashboards->{group} || {} }) {
-    <& /Dashboards/Elements/ShowDashboards,
-        Type       => $group,
-        Dashboards => $dashboards->{group}{$group},
-    &>
-% }
-
-<%INIT>
-my $title = loc("Dashboards");
-use RT::Dashboard;
-
-my @objs = RT::Dashboard->new($session{CurrentUser})->_PrivacyObjects(ShowSystem => 1);
-my $dashboards = $m->comp("/Dashboards/Elements/DashboardsForObjects", Objects => \@objs);
-
-my @actions;
-if (defined $Unsubscribed) {
-    my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
-    $Dashboard->LoadById($Unsubscribed);
-    if ($Dashboard->Id) {
-        push @actions, loc("Unsubscribed to dashboard [_1]", $Dashboard->Name);
-    }
-    else {
-        push @actions, loc("Unable to unsubscribe to dashboard [_1]", $Unsubscribed);
-    }
+    push @{ $dashboards->{group}{$_} }, @{ $new_dashboards->{group}{$_} }
+        for keys %{ $new_dashboards->{group} || {} };
 }
 
-if (defined $Deleted) {
-    push @actions, loc("Deleted dashboard [_1]", $Deleted);
-}
+return $dashboards;
+</%init>
 
-</%INIT>
-<%ARGS>
-$Unsubscribed => undef
-$Deleted => undef
-</%ARGS>
 

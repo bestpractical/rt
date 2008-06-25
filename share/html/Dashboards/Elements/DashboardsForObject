@@ -49,10 +49,10 @@
 $Object => undef
 </%args>
 <%init>
-# Returns an array of dashboards associated on $Object
+# Returns a hash of dashboards associated on $Object
 
 use RT::Dashboard;
-my @dashboards;
+my %dashboards;
 my $privacy = RT::Dashboard->_build_privacy($Object);
 
 while (my $attr = $Object->Attributes->Next) {
@@ -61,9 +61,17 @@ while (my $attr = $Object->Attributes->Next) {
         my ($ok) = $dashboard->Load($privacy, $attr->id);
         next if !$ok;
 
-        push @dashboards, $dashboard;
+        if ($Object->isa('RT::System')) {
+            push @{ $dashboards{system} }, $dashboard;
+        }
+        elsif ($Object->isa('RT::User')) {
+            push @{ $dashboards{personal} }, $dashboard;
+        }
+        elsif ($Object->isa('RT::Group')) {
+            push @{ $dashboards{group}{$Object->Name} }, $dashboard;
+        }
     }
 }
-return @dashboards;
+return \%dashboards;
 </%init>
 
