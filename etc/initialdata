@@ -720,6 +720,7 @@ return 0; # ignore $passed;
 	[ 
 	  { type => 'component', name => 'MyReminders' },
           { type => 'component', name => 'Quicksearch' },
+	  { type => 'component', name => 'Dashboards' },
 	  { type => 'component', name => 'RefreshHomepage' },
 	]
     },
