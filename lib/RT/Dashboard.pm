@@ -219,32 +219,43 @@ sub PossibleHiddenSearches {
 }
 
 # _PrivacyObjects: returns a list of objects that can be used to load
-# dashboards from. Unlike SavedSearch, this will return the System object if
-# applicable. You may pass in a paramhash of ShowSystem to force
-# showing/hiding of the System object
+# dashboards from. If the Write parameter is true, then check write rights.
+# Otherwise, check read rights.
 
 sub _PrivacyObjects {
     my $self = shift;
     my %args = @_;
 
+    my ($local_right, $system_right) = $args{Write}
+                                     ? ('ModifyDashboard', 'SuperUser')
+                                     : ('SeeDashboard', undef);
+
     my $CurrentUser = $self->CurrentUser;
-    my @objects = $CurrentUser->UserObj;
+    my @objects;
+
+    push @objects, $CurrentUser->UserObj
+        if $self->CurrentUser->HasRight(
+            Right  => $local_right,
+            Object => $RT::System,
+        );
 
     my $groups = RT::Groups->new($CurrentUser);
     $groups->LimitToUserDefinedGroups;
     $groups->WithMember( PrincipalId => $CurrentUser->Id,
                          Recursively => 1 );
 
-    push @objects, @{ $groups->ItemsArrayRef };
+    push @objects, grep {
+        $self->CurrentUser->HasRight(
+            Right  => $local_right,
+            Object => $_,
+        )
+    } @{ $groups->ItemsArrayRef };
 
-    # if ShowSystem, always show it
-    # if not ShowSystem, then show only if the user didn't specify AND the
-    #    current user is superuser
     push @objects, RT::System->new($CurrentUser)
-        if $args{ShowSystem}
-        || (!defined($args{ShowSystem})
-            && $CurrentUser->HasRight(Object => $RT::System,
-                                      Right => 'SuperUser'));
+        unless $system_right && !$CurrentUser->HasRight(
+            Object => $RT::System,
+            Right  => $system_right,
+        );
 
     return @objects;
 }

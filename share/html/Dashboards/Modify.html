@@ -86,7 +86,7 @@ my $tried_create = 0;
 use RT::Dashboard;
 
 my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
-my @privacies = $Dashboard->_PrivacyObjects;
+my @privacies = $Dashboard->_PrivacyObjects(Write => 1);
 
 my $can_delete = $session{'CurrentUser'}->HasRight(Right => 'DeleteDashboard', Object => $RT::System);
 

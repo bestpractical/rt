@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 68;
+use Test::More tests => 71;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -41,13 +41,19 @@ $m->content_contains("New dashboard", "'New dashboard' link because we now have 
 $m->follow_link_ok({text => "New dashboard"});
 $m->form_name('ModifyDashboard');
 $m->field("Name" => 'different dashboard');
-$m->content_lacks('Delete', "Delete button hidden because we lack DeleteDashboard");
+$m->content_lacks('Delete', "Delete button hidden because we are creating");
 $m->click_button(value => 'Save Changes');
 $m->content_lacks("No permission to create dashboards");
 $m->content_contains("Saved dashboard different dashboard");
+$m->content_lacks('Delete', "Delete button hidden because we lack DeleteDashboard");
 
 $m->get_ok($url."Dashboards/index.html");
-$m->content_contains("different dashboard");
+$m->content_lacks("different dashboard", "we lack SeeDashboard");
+
+$user_obj->PrincipalObj->GrantRight(Right => 'SeeDashboard');
+
+$m->get_ok($url."Dashboards/index.html");
+$m->content_contains("different dashboard", "we now have SeeDashboard");
 
 $m->follow_link_ok({text => "different dashboard"});
 $m->content_contains("Basics");
