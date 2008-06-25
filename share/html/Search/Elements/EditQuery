@@ -163,9 +163,12 @@ elsif ( $ARGS{"DeleteClause"} ) {
             push @top, $node;
         }
 
+        my %seen;
+        my @non_siblings_top = grep !$seen{ $_->getParent }++, @top;
+
         foreach ( @New ) {
             my $add = $_->clone;
-            foreach my $selected( @top ) {
+            foreach my $selected( @non_siblings_top ) {
                 my $newindex = $selected->getIndex + 1;
                 $selected->insertSibling( $newindex, $add );
             }
@@ -207,9 +210,12 @@ elsif ( $ARGS{"Toggle"} ) {
 }
 
 if ( @New && @$Selected ) {
+    my %seen;
+    my @non_siblings_selected = grep !$seen{ $_->getParent }++, @$Selected;
+
     foreach ( @New ) {
         my $add = $_->clone;
-        foreach my $selected( @$Selected ) {
+        foreach my $selected( @non_siblings_selected ) {
             my $newindex = $selected->getIndex + 1;
             $selected->insertSibling( $newindex, $add );
         }
