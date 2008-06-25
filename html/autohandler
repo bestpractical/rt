@@ -311,7 +311,7 @@ if ( $log_sql_statements ) {
         }
         $RT::Logger->log(
             level => $log_sql_statements,
-            message => "SQL(" . sprintf( "%.2f", $duration ) . "s): $sql;"
+            message => "SQL(" . sprintf( "%.6f", $duration ) . "s): $sql;"
                 . ( @bind ? "  [ bound values: @{[map{qq|'$_'|} @bind]} ]" : "" )
         );
     }
