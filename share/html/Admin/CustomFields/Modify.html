@@ -145,6 +145,8 @@ else {
             LookupType    => $LookupType,
             Description   => $Description,
             Pattern       => $Pattern,
+            LinkValueTo   => $LinkValueTo,
+            IncludeContentForValue => $IncludeContentForValue,
         );
         $m->comp( "/Elements/Error", Why => loc( "Could not create CustomField", $msg ) ) unless $val;
         push @results, $msg;
@@ -227,4 +229,6 @@ $Name => undef
 $SetEnabled => undef
 $Enabled => 0
 $ValuesClass => 'RT::CustomFieldValues'
+$LinkValueTo => undef
+$IncludeContentForValue => undef
 </%ARGS>

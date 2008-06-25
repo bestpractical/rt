@@ -120,8 +120,10 @@ sub Create {
                 SortOrder => '0',
                 LookupType => '',
                 Disabled => '0',
+                LinkToValue => '',
+                IncludeContentForValue => '',
 
-		  @_);
+                  @_);
     $self->SUPER::Create(
                          Name => $args{'Name'},
                          Type => $args{'Type'},
@@ -132,6 +134,8 @@ sub Create {
                          SortOrder => $args{'SortOrder'},
                          LookupType => $args{'LookupType'},
                          Disabled => $args{'Disabled'},
+                         LinkToValue => $args{'LinkToValue'},
+                         IncludeContentForValue => $args{'IncludeContentForValue'}
 );
 
 }

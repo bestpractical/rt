@@ -164,6 +164,8 @@ sub Create {
         Disabled    => 0,
         LookupType  => '',
         Repeated    => 0,
+        LinkValueTo => '',
+        IncludeContentForValue => '',
         @_,
     );
 
@@ -220,6 +222,14 @@ sub Create {
         LookupType  => $args{'LookupType'},
         Repeated    => $args{'Repeated'},
     );
+
+    if ( exists $args{'LinkValueTo'}) {
+	$self->SetLinkValueTo($args{'LinkValueTo'});
+    }
+
+    if ( exists $args{'IncludeContentForValue'}) {
+	$self->SetIncludeContentForValue($args{'IncludeContentForValue'});
+    }
 
     if ( exists $args{'ValuesClass'} ) {
         $self->SetValuesClass( $args{'ValuesClass'} );
