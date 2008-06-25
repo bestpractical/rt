@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 66;
+use Test::More tests => 68;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -70,6 +70,9 @@ my ($id) = $m->content =~ /name="id" value="(\d+)"/;
 ok($id, "got an ID, $id");
 $dashboard->LoadById($id);
 is($dashboard->Name, "different dashboard");
+
+is($dashboard->Privacy, 'RT::User-' . $user_obj->Id, "correct privacy");
+is($dashboard->PossibleHiddenSearches, 0, "all searches are visible");
 
 my @searches = $dashboard->Searches;
 is(@searches, 1, "one saved search in the dashboard");

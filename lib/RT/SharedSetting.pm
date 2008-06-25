@@ -324,6 +324,44 @@ sub GetParameter {
     return $self->{'Attribute'}->SubValue($param);
 }
 
+=head2 IsVisibleTo Privacy
+
+Returns true if the setting is visible to all principals of the given privacy.
+
+=cut
+
+sub IsVisibleTo {
+    my $self    = shift;
+    my $to      = shift;
+    my $privacy = $self->Privacy;
+
+    # if the privacies are the same, then they can be seen. this handles
+    # a personal setting being visible to that user.
+    return 1 if $privacy eq $to;
+
+    # If the setting is systemwide, then any user can see it.
+    return 1 if $privacy =~ /^RT::System/;
+
+    # Only privacies that are RT::System can be seen by everyone.
+    return 0 if $to eq /^RT::System/;
+
+    # If the setting is group-wide...
+    if ($privacy =~ /^RT::Group-(\d+)$/) {
+        my $setting_group = RT::Group->new($self->CurrentUser);
+        $setting_group->Load($1);
+
+        if ($to =~ /-(\d+)$/) {
+            my $to_id = $1;
+
+            # then any principal that is a member of the setting's group can see
+            # the setting
+            return $setting_group->HasMemberRecursively($to_id);
+        }
+    }
+
+    return 0;
+}
+
 ### Internal methods
 
 # _GetObject: helper routine to load the correct object whose parameters

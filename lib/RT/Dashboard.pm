@@ -202,6 +202,21 @@ sub SearchPrivacy {
     return SavedSearch => join('-', $type, 'SavedSearch', $id);
 }
 
+=head2 PossibleHiddenSearches
+
+This will return a list of saved searches that are potentially not visible by
+all users for whom the dashboard is visible. You may pass in a privacy to
+use instead of the dashboard's privacy.
+
+=cut
+
+sub PossibleHiddenSearches {
+    my $self = shift;
+    my $privacy = shift || $self->Privacy;
+
+    return grep { !$_->IsVisibleTo($privacy) } $self->Searches;
+}
+
 # _PrivacyObjects: returns a list of objects that can be used to load
 # dashboards from. Unlike SavedSearch, this will return the System object if
 # applicable. You may pass in a paramhash of ShowSystem to force
