@@ -62,10 +62,10 @@ my @objs = RT::Dashboard->new($session{CurrentUser})->_PrivacyObjects(ShowSystem
 my $dashboard_map = $m->comp("/Dashboards/Elements/DashboardsForObjects", Objects => \@objs);
 
 my @dashboards = (
-    @{ $dashboard_map->{personal} || [] },
-    @{ $dashboard_map->{system}   || [] },
+    (sort { $a->Id <=> $b->Id } @{ $dashboard_map->{personal} || [] }),
+    (sort { $a->Id <=> $b->Id } @{ $dashboard_map->{system}   || [] }),
 
-    map { @{ $dashboard_map->{group}{$_} } }
+    map { sort { $a->Id <=> $b->Id } @{ $dashboard_map->{group}{$_} } }
         keys %{ $dashboard_map->{group} || {} },
 );
 

@@ -79,7 +79,7 @@ for my $attr ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription'
         </tr>
 
 %   my $i = 0;
-%   for my $dashboard (sort {$b->Id <=> $a->Id} @$Dashboards) {
+%   for my $dashboard (@$Dashboards) {
 %       my $url = sprintf '%s/Dashboards/Modify.html?id=%d',
 %                 RT->Config->Get('WebPath'),
 %                 $dashboard->Id;

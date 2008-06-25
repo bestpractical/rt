@@ -54,18 +54,18 @@
 
 <& /Dashboards/Elements/ShowDashboards,
     Type       => "Personal",
-    Dashboards => $dashboards->{personal},
+    Dashboards => [sort { $a->Id <=> $b->Id } @{ $dashboards->{personal} }],
 &>
 
 <& /Dashboards/Elements/ShowDashboards,
     Type => "System",
-    Dashboards => $dashboards->{system},
+    Dashboards => [sort { $a->Id <=> $b->Id } @{ $dashboards->{system} }],
 &>
 
 % for my $group (sort keys %{ $dashboards->{group} || {} }) {
     <& /Dashboards/Elements/ShowDashboards,
         Type       => $group,
-        Dashboards => $dashboards->{group}{$group},
+        Dashboards => [sort { $a->Id <=> $b->Id } @{$dashboards->{group}{$group}}],
     &>
 % }
 
