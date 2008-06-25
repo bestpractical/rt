@@ -219,14 +219,14 @@ sub PossibleHiddenSearches {
 }
 
 # _PrivacyObjects: returns a list of objects that can be used to load
-# dashboards from. If the Write parameter is true, then check write rights.
+# dashboards from. If the Modify parameter is true, then check write rights.
 # Otherwise, check read rights.
 
 sub _PrivacyObjects {
     my $self = shift;
     my %args = @_;
 
-    my ($local_right, $system_right) = $args{Write}
+    my ($local_right, $system_right) = $args{Modify}
                                      ? ('ModifyDashboard', 'SuperUser')
                                      : ('SeeDashboard', undef);
 

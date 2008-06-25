@@ -327,6 +327,7 @@ sub GetParameter {
 =head2 IsVisibleTo Privacy
 
 Returns true if the setting is visible to all principals of the given privacy.
+This does not deal with ACLs, this only looks at membership.
 
 =cut
 
@@ -357,6 +358,31 @@ sub IsVisibleTo {
             # the setting
             return $setting_group->HasMemberRecursively($to_id);
         }
+    }
+
+    return 0;
+}
+
+sub CurrentUserCanSee {
+    my $self = shift;
+    my $privacy = $self->Privacy;
+
+    return 1 if $privacy =~ /^RT::System/;
+
+    return 1 if $privacy =~ /^RT::User-(\d+)/
+             && $self->CurrentUser->Id == $1
+             && $self->CurrentUser->HasRight(
+                    Right  => 'SeeDashboard',
+                    Object => $RT::System,
+                );
+
+    if ($privacy =~ /^RT::Group-(\d+)/) {
+        my $group = RT::Group->new($self->CurrentUser);
+        $group->Load($1);
+        return 1 if $self->CurrentUser->HasRight(
+                        Right  => 'SeeDashboard',
+                        Object => $group,
+                    );
     }
 
     return 0;
