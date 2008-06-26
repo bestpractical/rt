@@ -1008,6 +1008,18 @@ inline. Set this variable to 0 if you'd like to disable that behaviour
 
 Set($ShowTransactionImages, 1);
 
+=item C<$PlainTextPre>
+
+Normally plain text attachments are displayed as HTML with line
+breaks preserved.  This causes space- and tab-based formatting not
+to be displayed correctly.  By setting $PlainTextPre they'll be
+displayed using <pre> instead so such formatting works, but they'll
+use a monospaced font.
+
+=cut
+
+Set($PlainTextPre, 0);
+
 
 =item C<$ShowUnreadMessageNotifications>
 
