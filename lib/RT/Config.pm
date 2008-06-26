@@ -164,8 +164,16 @@ our %META = (
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
             Description => 'Notify me of unread messages',    #loc
-            } 
+            },
 
+    },
+    PlainTextPre => {
+	Section         => 'Ticket display',
+	Overridable     => 1,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Use fixed-with font to display messages',
+	},
     },
     DateTimeFormat => {
         Section         => 'Locale',                       #loc
