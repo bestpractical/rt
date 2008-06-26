@@ -83,6 +83,11 @@ $Rows => undef
 
 <%METHOD options>
 % @Default = grep defined && length, @Default;
+% # $Values->HasEntry is too slow here
+% if ( !@Default && $Values ) {
+%     @Default = map $_->Content, @{$Values->ItemsArrayRef};
+% }
+% $_ = lc $_ foreach @Default;
 % my $selected;
 % my $CFVs = $CustomField->Values;
 % my @levels;
@@ -107,8 +112,7 @@ $Rows => undef
 %           push @levels, $level;
 %       }
         <option value="<% $name %>"
-%       if ( ( grep $_ eq $name, @Default )
-%            || ( $Values && $Values->HasEntry( $name ) ) )
+%       if ( grep $_ eq lc $name, @Default )
 %       {
 %           $$SelectedRef = 1;
             selected
