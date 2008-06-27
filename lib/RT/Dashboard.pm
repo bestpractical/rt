@@ -254,22 +254,67 @@ sub _PrivacyObjects {
 
 # ACLs
 
+sub _CurrentUserCan {
+    my $self    = shift;
+    my $privacy = shift || $self->Privacy;
+    my %rights  = @_;
+
+    my $object = $self->_GetObject($privacy);
+    return 0 unless $object;
+
+    my $right;
+
+       if ($object->isa('RT::System')) { $right = $rights{System} }
+    elsif ($object->isa('RT::User'))   { $right = $rights{User}   }
+    elsif ($object->isa('RT::Group'))  { $right = $rights{Group}  }
+
+    $right ||= $rights{Right};
+
+    if (!$right) {
+        $RT::Logger->error("No right provided for object $object");
+        return 0;
+    }
+
+    # users are mildly special-cased, since we actually have to check that
+    # the user has the global right
+    if ($object->isa('RT::User')) {
+        return 0 unless $object->Id == $self->CurrentUser->Id;
+        $object = $RT::System;
+    }
+
+    return $self->CurrentUser->HasRight(
+        Right  => $right,
+        Object => $object,
+    );
+}
+
 sub CurrentUserCanSee {
     my $self = shift;
-    my $privacy = shift || $self->Privacy;
-    return 1;
+    my $privacy = shift;
+
+    $self->_CurrentUserCan($privacy,
+        Right => 'SeeDashboard',
+    );
 }
 
 sub CurrentUserCanModify {
     my $self = shift;
-    my $privacy = shift || $self->Privacy;
-    return 1;
+    my $privacy = shift;
+
+    $self->_CurrentUserCan($privacy,
+        Right  => 'ModifyDashboard',
+        System => 'SuperUser',
+    );
 }
 
 sub CurrentUserCanDelete {
     my $self = shift;
-    my $privacy = shift || $self->Privacy;
-    return 1;
+    my $privacy = shift;
+
+    $self->_CurrentUserCan($privacy,
+        Right  => 'DeleteDashboard',
+        System => 'SuperUser',
+    );
 }
 
 eval "require RT::Dashboard_Vendor";

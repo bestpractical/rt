@@ -337,7 +337,7 @@ sub IsVisibleTo {
     return 1 if $privacy =~ /^RT::System/;
 
     # Only privacies that are RT::System can be seen by everyone.
-    return 0 if $to eq /^RT::System/;
+    return 0 if $to =~ /^RT::System/;
 
     # If the setting is group-wide...
     if ($privacy =~ /^RT::Group-(\d+)$/) {
