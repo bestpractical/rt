@@ -93,14 +93,6 @@ An object of this class is called "dashboard"
 
 sub ObjectName { "dashboard" }
 
-=head2 DeleteRightName
-
-Objects of this class check the "DeleteDashboard" right
-
-=cut
-
-sub DeleteRightName { "DeleteDashboard" }
-
 sub SaveAttribute {
     my $self   = shift;
     my $object = shift;
@@ -228,7 +220,7 @@ sub _PrivacyObjects {
 
     my ($local_right, $system_right) = $args{Modify}
                                      ? ('ModifyDashboard', 'SuperUser')
-                                     : ('SeeDashboard', undef);
+                                     : ('SeeDashboard', 'SeeDashboard');
 
     my $CurrentUser = $self->CurrentUser;
     my @objects;
@@ -252,9 +244,9 @@ sub _PrivacyObjects {
     } @{ $groups->ItemsArrayRef };
 
     push @objects, RT::System->new($CurrentUser)
-        unless $system_right && !$CurrentUser->HasRight(
-            Object => $RT::System,
+        if $CurrentUser->HasRight(
             Right  => $system_right,
+            Object => $RT::System,
         );
 
     return @objects;
