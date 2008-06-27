@@ -297,6 +297,15 @@ sub CurrentUserCanSee {
     );
 }
 
+sub CurrentUserCanSubscribe {
+    my $self = shift;
+    my $privacy = shift;
+
+    $self->_CurrentUserCan($privacy,
+        Right => 'SubscribeDashboard',
+    );
+}
+
 sub CurrentUserCanModify {
     my $self = shift;
     my $privacy = shift;

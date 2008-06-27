@@ -238,6 +238,9 @@ if (defined $ARGS{Save}) {
     }
     # create
     else {
+        Abort(loc("Unable to subscribe to dashboard [_1]: Permission denied", $DashboardId))
+            unless $DashboardObj->CurrentUserCanSubscribe;
+
         my ($val, $msg) = $SubscriptionObj->Create(
             Name        => 'Subscription',
             Description => 'Subscription to dashboard ' . $DashboardId,
