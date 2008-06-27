@@ -367,6 +367,11 @@ sub CurrentUserCanSee {
     my $self = shift;
     my $privacy = $self->Privacy;
 
+    if (!defined($privacy)) {
+        $RT::Logger->error("CurrentUserCanSee called with a dashboard without privacy.");
+        return 0;
+    }
+
     return 1 if $privacy =~ /^RT::System/;
 
     return 1 if $privacy =~ /^RT::User-(\d+)/
