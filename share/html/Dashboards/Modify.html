@@ -88,7 +88,7 @@ use RT::Dashboard;
 my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
 my @privacies = $Dashboard->_PrivacyObjects(Modify => 1);
 
-my $can_delete = 1; # XXX: acl check
+my $can_delete = $Dashboard->CurrentUserCanDelete;
 
 # user went directly to Modify.html
 $Create = 1 if !$id;
@@ -115,7 +115,7 @@ else {
     }
     else {
         my ($ok, $msg) = $Dashboard->LoadById($id);
-        $ok || Abort(loc('Couldn't load dashboard [_1]: [_2]', $id, $msg));
+        $ok || Abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg));
     }
 
     if ($id) {
