@@ -152,10 +152,11 @@ sub PostLoad { }
 
 =head2 Save
 
-Takes a privacy, a name, and any other arguments. Saves the given parameters to
-the appropriate user/group object, and loads the resulting object. Arguments
-are passed to the L</SaveAttribute> method, which does the actual update. Returns a
-tuple of status and message, where status is true on success. Defaults are:
+Creates a new shared setting. Takes a privacy, a name, and any other arguments.
+Saves the given parameters to the appropriate user/group object, and loads the
+resulting object. Arguments are passed to the L</SaveAttribute> method, which
+does the actual update. Returns a tuple of status and message, where status is
+true on success. Defaults are:
 
   Privacy:  CurrentUser only
   Name:     "new (ObjectName)"
@@ -177,7 +178,8 @@ sub Save {
     return (0, $self->loc("Failed to load object for [_1]", $privacy))
         unless $object;
 
-    # XXX: check acls
+    return (0, $self->loc("Permission denied"))
+        unless $self->CurrentUserCanModify($privacy);
 
     my ($att_id, $att_msg) = $self->SaveAttribute($object, \%args);
 
@@ -217,6 +219,9 @@ sub Update {
     return(0, $self->loc("Could not load [_1] attribute", $self->ObjectName))
         unless $self->{'Attribute'}->Id;
 
+    return (0, $self->loc("Permission denied"))
+        unless $self->CurrentUserCanModify;
+
     my ($status, $msg) = $self->UpdateAttribute(\%args);
 
     return (1, $self->loc("[_1] update: Nothing changed", ucfirst($self->ObjectName)))
@@ -246,6 +251,9 @@ where status is true upon success.
 
 sub Delete {
     my $self = shift;
+
+    return (0, $self->loc("Permission denied"))
+        unless $self->CurrentUserCanDelete;
 
     my ($status, $msg) = $self->{'Attribute'}->Delete;
     if ($status) {
@@ -343,6 +351,10 @@ sub IsVisibleTo {
 
     return 0;
 }
+
+sub CurrentUserCanSee { 1 }
+sub CurrentUserCanModify { 1 }
+sub CurrentUserCanDelete { 1 }
 
 ### Internal methods
 

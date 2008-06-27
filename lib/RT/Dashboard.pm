@@ -252,6 +252,26 @@ sub _PrivacyObjects {
     return @objects;
 }
 
+# ACLs
+
+sub CurrentUserCanSee {
+    my $self = shift;
+    my $privacy = shift || $self->Privacy;
+    return 1;
+}
+
+sub CurrentUserCanModify {
+    my $self = shift;
+    my $privacy = shift || $self->Privacy;
+    return 1;
+}
+
+sub CurrentUserCanDelete {
+    my $self = shift;
+    my $privacy = shift || $self->Privacy;
+    return 1;
+}
+
 eval "require RT::Dashboard_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Dashboard_Vendor.pm});
 eval "require RT::Dashboard_Local";
