@@ -206,6 +206,7 @@ $cfs->LimitToQueue($_) for keys %$seen_queues;
 
 
 <%INIT>
+$Rows = $RowsPerPage unless (defined $Rows);
 my $title = loc("Update multiple tickets");
 
 # Iterate through the ARGS hash and remove anything with a null value.
@@ -380,6 +381,7 @@ $TxnCFs->LimitToGlobalOrObjectId( sort keys %queues );
 $Format => undef
 $Page => 1
 $Rows => undef
+$RowsPerPage => undef
 $Order => 'ASC'
 $OrderBy => 'id'
 $Query => undef
