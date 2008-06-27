@@ -52,10 +52,11 @@ $m->content_lacks('Delete', "Delete button hidden because we lack DeleteDashboar
 $m->get_ok($url."Dashboards/index.html");
 $m->content_lacks("different dashboard", "we lack SeeDashboard");
 
-$user_obj->PrincipalObj->GrantRight(Right => 'SeeDashboard');
+$user_obj->PrincipalObj->GrantRight(Right => 'SeeDashboard', Object => $RT::System);
 
 $m->get_ok($url."Dashboards/index.html");
 $m->content_contains("different dashboard", "we now have SeeDashboard");
+$m->content_lacks("Permission denied");
 
 $m->follow_link_ok({text => "different dashboard"});
 $m->content_contains("Basics");
@@ -123,12 +124,12 @@ $m->content_contains("dashboard test", "ticket subject");
 $m->get_ok("/Dashboards/Subscription.html?DashboardId=$id");
 $m->form_name('SubscribeDashboard');
 $m->click_button(name => 'Save');
-$m->content_contains("No permission to subscribe to dashboards");
+$m->content_contains("Permission denied");
 
 RT::Record->FlushCache if RT::Record->can('FlushCache');
 is($user_obj->Attributes->Named('Subscription'), 0, "no subscriptions");
 
-$user_obj->PrincipalObj->GrantRight(Right => 'SubscribeDashboard');
+$user_obj->PrincipalObj->GrantRight(Right => 'SubscribeDashboard', Object => $RT::System);
 
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->follow_link_ok({text => "Subscription"});
@@ -139,7 +140,7 @@ $m->content_lacks("Bookmarked Tickets", "only dashboard queries show up");
 
 $m->form_name('SubscribeDashboard');
 $m->click_button(name => 'Save');
-$m->content_lacks("No permission to subscribe to dashboards");
+$m->content_lacks("Permission denied");
 $m->content_contains("Subscribed to dashboard different dashboard");
 
 RT::Record->FlushCache if RT::Record->can('FlushCache');
@@ -163,7 +164,7 @@ is($user_obj->Attributes->Named('Subscription'), 0, "no more subscriptions");
 $m->get_ok("/Dashboards/Modify.html?id=$id&Delete=1");
 $m->content_contains("Permission denied", "unable to delete dashboard because we lack DeleteDashboard");
 
-$user_obj->PrincipalObj->GrantRight(Right => 'DeleteDashboard');
+$user_obj->PrincipalObj->GrantRight(Right => 'DeleteDashboard', Object => $RT::System);
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->content_contains('Delete', "Delete button shows because we have DeleteDashboard");
 
