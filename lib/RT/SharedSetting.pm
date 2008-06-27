@@ -106,6 +106,10 @@ sub Load {
             $self->{'Id'} = $self->{'Attribute'}->Id;
             $self->{'Privacy'} = $privacy;
             $self->PostLoad();
+
+            return (0, $self->loc("Permission denied"))
+                unless $self->CurrentUserCanSee;
+
             return (1, $self->loc("Loaded [_1] [_2]", $self->ObjectName, $self->Name));
         } else {
             $RT::Logger->error("Could not load attribute " . $id
