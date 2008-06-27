@@ -88,6 +88,8 @@ use RT::Dashboard;
 my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
 my @privacies = $Dashboard->_PrivacyObjects(Modify => 1);
 
+Abort(loc("Permission denied")) if @privacies == 0;
+
 my $can_delete = $Dashboard->CurrentUserCanDelete;
 
 # user went directly to Modify.html

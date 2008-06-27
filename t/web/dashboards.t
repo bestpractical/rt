@@ -28,12 +28,14 @@ $m->get_ok($url."Dashboards/index.html");
 $m->content_lacks("New dashboard", "No 'new dashboard' link because we have no ModifyDashboard");
 
 $m->get_ok($url."Dashboards/Modify.html?Create=1");
-$m->form_name('ModifyDashboard');
-$m->field("Name" => 'test dashboard');
-$m->click_button(value => 'Save Changes');
-$m->content_contains("No permission to create dashboards");
+$m->content_contains("Permission denied");
+$m->content_lacks("Save Changes");
 
-$user_obj->PrincipalObj->GrantRight(Right => 'ModifyDashboard');
+$user_obj->PrincipalObj->GrantRight(Right => 'ModifyDashboard', Object => $RT::System);
+
+$m->get_ok($url."Dashboards/Modify.html?Create=1");
+$m->content_lacks("Permission denied");
+$m->content_contains("Save Changes");
 
 $m->get_ok($url."Dashboards/index.html");
 $m->content_contains("New dashboard", "'New dashboard' link because we now have ModifyDashboard");
