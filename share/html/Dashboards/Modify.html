@@ -88,7 +88,7 @@ use RT::Dashboard;
 my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
 my @privacies = $Dashboard->_PrivacyObjects(Modify => 1);
 
-my $can_delete = $session{'CurrentUser'}->HasRight(Right => 'DeleteDashboard', Object => $RT::System);
+my $can_delete = 1; # XXX: acl check
 
 # user went directly to Modify.html
 $Create = 1 if !$id;
@@ -99,23 +99,18 @@ if ($Create) {
 }
 else {
     if ($id eq 'new') {
-        my ($val, $msg);
         $tried_create = 1;
 
-        if ($session{'CurrentUser'}->HasRight(Right => 'ModifyDashboard', Object => $RT::System)) {
-            ($val, $msg) = $Dashboard->Save(
-                Name                  => $ARGS{'Name'},
-                Privacy               => $ARGS{'Privacy'},
-            );
-            push @results, $msg;
-        }
-        else {
-            $msg = "No permission to create dashboards";
-        }
+        my ($val, $msg) = $Dashboard->Save(
+            Name    => $ARGS{'Name'},
+            Privacy => $ARGS{'Privacy'},
+        );
 
         if (!$val) {
             Abort(loc("Dashboard could not be created: [_1]", $msg));
         }
+
+        push @results, $msg;
         $id = $Dashboard->Id;
     }
     else {
@@ -136,14 +131,8 @@ else {
 }
 
 if (!$Create && !$tried_create && $id && $ARGS{'Save'}) {
-    my ($ok, $msg);
-    if ($session{'CurrentUser'}->HasRight(Right => 'ModifyDashboard', Object => $RT::System)) {
-        ($ok, $msg) = $Dashboard->Update(Privacy  => $ARGS{'Privacy'},
-                                         Name     => $ARGS{'Name'});
-    }
-    else {
-        $msg = "No permission to update dashboards";
-    }
+    my ($ok, $msg) = $Dashboard->Update(Privacy  => $ARGS{'Privacy'},
+                                        Name     => $ARGS{'Name'});
 
     if ($ok) {
         push @results, loc("Dashboard updated");
@@ -162,8 +151,6 @@ if (!$Create && !$tried_create && $id && $ARGS{'Delete'}) {
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Dashboards/index.html?Deleted=$id");
 
 }
-
-Abort(loc("Permission denied")) unless $Dashboard->CurrentUserCanSee;
 </%INIT>
 
 <%ARGS>

@@ -238,18 +238,13 @@ if (defined $ARGS{Save}) {
     }
     # create
     else {
-        if ($session{'CurrentUser'}->HasRight(Right => 'SubscribeDashboard', Object => $RT::System)) {
-            ($val, $msg) = $SubscriptionObj->Create(
-                Name        => 'Subscription',
-                Description => 'Subscription to dashboard ' . $DashboardId,
-                ContentType => 'storable',
-                Object      => $session{'CurrentUser'}->UserObj,
-                Content     => \%fields,
-            );
-        }
-        else {
-            ($val, $msg) = (0, "No permission to subscribe to dashboards");
-        }
+        my ($val, $msg) = $SubscriptionObj->Create(
+            Name        => 'Subscription',
+            Description => 'Subscription to dashboard ' . $DashboardId,
+            ContentType => 'storable',
+            Object      => $session{'CurrentUser'}->UserObj,
+            Content     => \%fields,
+        );
         if ($val) {
             push @results, loc("Subscribed to dashboard [_1]", $DashboardObj->Name);
             push @results, loc("Warning: you have no email address set, so you will not receive this dashboard until you have it set")

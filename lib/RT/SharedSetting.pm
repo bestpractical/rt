@@ -177,13 +177,7 @@ sub Save {
     return (0, $self->loc("Failed to load object for [_1]", $privacy))
         unless $object;
 
-    if ( $object->isa('RT::System') ) {
-        return (0, $self->loc("No permission to save system-wide [_1]", $self->ObjectName))
-            unless $self->CurrentUser->HasRight(
-                Object => $RT::System,
-                Right  => 'SuperUser',
-            );
-    }
+    # XXX: check acls
 
     my ($att_id, $att_msg) = $self->SaveAttribute($object, \%args);
 
@@ -358,36 +352,6 @@ sub IsVisibleTo {
             # the setting
             return $setting_group->HasMemberRecursively($to_id);
         }
-    }
-
-    return 0;
-}
-
-sub CurrentUserCanSee {
-    my $self = shift;
-    my $privacy = $self->Privacy;
-
-    if (!defined($privacy)) {
-        $RT::Logger->error("CurrentUserCanSee called with a dashboard without privacy.");
-        return 0;
-    }
-
-    return 1 if $privacy =~ /^RT::System/;
-
-    return 1 if $privacy =~ /^RT::User-(\d+)/
-             && $self->CurrentUser->Id == $1
-             && $self->CurrentUser->HasRight(
-                    Right  => 'SeeDashboard',
-                    Object => $RT::System,
-                );
-
-    if ($privacy =~ /^RT::Group-(\d+)/) {
-        my $group = RT::Group->new($self->CurrentUser);
-        $group->Load($1);
-        return 1 if $self->CurrentUser->HasRight(
-                        Right  => 'SeeDashboard',
-                        Object => $group,
-                    );
     }
 
     return 0;

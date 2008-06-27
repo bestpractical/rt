@@ -134,13 +134,7 @@ my $sel = $m->comp(
             [ reverse(split /-/, $_, 2), $desc_of{$_} ]
         } @{ $self->{Current} } ];
 
-        my ($ok, $msg);
-        if ($session{'CurrentUser'}->HasRight(Right => 'ModifyDashboard', Object => $RT::System)) {
-            ($ok, $msg) = $Dashboard->Update(Searches => $searches);
-        }
-        else {
-            $msg = "No permission to update dashboards";
-        }
+        my ($ok, $msg) = $Dashboard->Update(Searches => $searches);
 
         if ($ok) {
             push @results, loc("Dashboard updated");
