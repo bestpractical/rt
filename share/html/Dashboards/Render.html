@@ -79,8 +79,8 @@ my $current_subtab = 'Dashboards/Render.html?id=' . $id;
 
 use RT::Dashboard;
 my $DashboardObj = RT::Dashboard->new($session{'CurrentUser'});
-my ($ok) = $DashboardObj->LoadById($id);
-Abort('Could not load dashboard') if !$ok;
+my ($ok, $msg) = $DashboardObj->LoadById($id);
+Abort(loc('Couldn't load dashboard [_1]: [_2]', $id, $msg)) if !$ok;
 
 my $SubscriptionObj = RT::Attribute->new($session{'CurrentUser'});
 my $Loaded = 0;

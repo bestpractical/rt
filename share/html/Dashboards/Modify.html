@@ -114,8 +114,8 @@ else {
         $id = $Dashboard->Id;
     }
     else {
-        my ($ok) = $Dashboard->LoadById($id);
-        $ok || Abort('Could not load dashboard');
+        my ($ok, $msg) = $Dashboard->LoadById($id);
+        $ok || Abort(loc('Couldn't load dashboard [_1]: [_2]', $id, $msg));
     }
 
     if ($id) {
@@ -145,7 +145,7 @@ if (!$Create && !$tried_create && $id && $ARGS{'Save'}) {
 
 if (!$Create && !$tried_create && $id && $ARGS{'Delete'}) {
     my ($ok, $msg) = $Dashboard->Delete();
-    $ok || Abort("Couldn't delete dashboard $id: $msg");
+    $ok || Abort(loc("Couldn't delete dashboard [_1]: [_2]", $id, $msg));
 
     # put the user back into a useful place with a message
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Dashboards/index.html?Deleted=$id");

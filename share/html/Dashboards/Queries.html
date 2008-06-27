@@ -83,8 +83,8 @@ my @results;
 
 use RT::Dashboard;
 my $Dashboard = new RT::Dashboard($session{'CurrentUser'});
-my ($ok) = $Dashboard->LoadById($id);
-$ok || Abort("Couldn't load dashboard.");
+my ($ok, $msg) = $Dashboard->LoadById($id);
+$ok || Abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg));
 my $title = loc("Modify the queries of dashboard [_1]", $Dashboard->Name);
 
 my %desc_of;
