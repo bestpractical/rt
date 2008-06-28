@@ -314,8 +314,6 @@ sub Create {
    }
 
     if  (UNIVERSAL::isa('errno',$id)) {
-        exit(0);
-       warn "It's here!";
         return(undef);
     }
 
