@@ -50,14 +50,16 @@
 <option value=""<% !$Default ? qq[ selected="selected"] : '' |n %>><%$DefaultLabel%></option>
 %}
 % $Default = 0 unless defined $Default && $Default =~ /^\d+$/;
-%foreach my $User ( @users)  {
+% my @formatednames = sort {lc $a->[1] cmp lc $b->[1]} map {[$_, $m->scomp('/Elements/ShowUser', User => $_)]} @users;
+%foreach my $UserRef ( @formatednames)  {
+%my $User = $UserRef->[0];
 <option <% ( $User->Id == $Default) ? qq[ selected="selected"] : '' |n %>
 %if ($ValueAttribute eq 'id') {
     value="<%$User->id%>"
 %} elsif ($ValueAttribute eq 'Name') {
     value="<%$User->Name%>"
 %}
-><& /Elements/ShowUser, User => $User &></option>
+><% $UserRef->[1] %></option>
 %}
 </select>
 <%INIT>

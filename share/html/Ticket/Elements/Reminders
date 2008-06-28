@@ -133,7 +133,7 @@ $Ticket
 <tr class="input-row">
 <td class="label">
 <label class="horizontal" for="NewReminder-Owner" ><&|/l&>Owner</&>:</label></td><td class="value">
-<& /Elements/SelectOwner, Name => 'NewReminder-Owner', QueueObj => $Ticket->QueueObj, DefaultValue => 0 &>
+<& /Elements/SelectOwner, Name => 'NewReminder-Owner', QueueObj => $Ticket->QueueObj, Default=>$session{'CurrentUser'}->id, DefaultValue => 0 &>
 </td>
 </tr>
 <tr class="input-row">
