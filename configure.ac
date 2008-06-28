@@ -307,6 +307,7 @@ else
 fi
 AC_SUBST(RT_GPG)
 
+
 dnl This section maps the variable names this script 'natively' generates
 dnl to their existing names. They should be removed from here as the .in
 dnl files are changed to use the new names.
@@ -334,7 +335,6 @@ AC_SUBST([LOCAL_ETC_PATH],		${exp_custometcdir})
 AC_SUBST([MASON_LOCAL_HTML_PATH],	${exp_customhtmldir})
 AC_SUBST([LOCAL_LEXICON_PATH],		${exp_customlexdir})
 AC_SUBST([LOCAL_LIB_PATH],		${exp_customlibdir})
-AC_SUBST([DESTDIR],			${exp_prefix})
 AC_SUBST([RT_LOG_PATH],			${exp_logfiledir})
 
 if test ${exp_sysconfdir} = "etc"; then
@@ -355,7 +355,6 @@ AC_SUBST([LOCAL_ETC_PATH_R],		${exp_prefix}/${exp_custometcdir})
 AC_SUBST([MASON_LOCAL_HTML_PATH_R],	${exp_prefix}/${exp_customhtmldir})
 AC_SUBST([LOCAL_LEXICON_PATH_R],		${exp_prefix}/${exp_customlexdir})
 AC_SUBST([LOCAL_LIB_PATH_R],		${exp_prefix}/${exp_customlibdir})
-AC_SUBST([DESTDIR_R],			${exp_prefix})
 AC_SUBST([RT_LOG_PATH_R],			${exp_prefix}/${exp_logfiledir})
 else
 AC_SUBST([RT_PATH_R],			${exp_prefix})
@@ -375,7 +374,6 @@ AC_SUBST([LOCAL_ETC_PATH_R],		${exp_custometcdir})
 AC_SUBST([MASON_LOCAL_HTML_PATH_R],	${exp_customhtmldir})
 AC_SUBST([LOCAL_LEXICON_PATH_R],		${exp_customlexdir})
 AC_SUBST([LOCAL_LIB_PATH_R],		${exp_customlibdir})
-AC_SUBST([DESTDIR_R],			${exp_prefix})
 AC_SUBST([RT_LOG_PATH_R],			${exp_logfiledir})
 
 fi

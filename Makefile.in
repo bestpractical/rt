@@ -89,9 +89,11 @@ APACHECTL		=	@APACHECTL@
 # {{{ Files and directories 
 
 # DESTDIR allows you to specify that RT be installed somewhere other than
-# where it will eventually reside
+# where it will eventually reside. DESTDIR _must_ have a trailing slash
+# if it's defined.
 
 DESTDIR			=	
+
 
 
 RT_PATH			=	@RT_PATH_R@
@@ -103,7 +105,7 @@ RT_MAN_PATH		=	@RT_MAN_PATH_R@
 RT_VAR_PATH		=	@RT_VAR_PATH_R@
 RT_DOC_PATH		=	@RT_DOC_PATH_R@
 RT_LOCAL_PATH		=	@RT_LOCAL_PATH_R@
-RT_LOCAL_PLUGIN_PATH		=	@RT_LOCAL_PATH_R@/plugins
+LOCAL_PLUGIN_PATH		=	@RT_LOCAL_PATH_R@/plugins
 LOCAL_ETC_PATH		=	@LOCAL_ETC_PATH_R@
 LOCAL_LIB_PATH		=	@LOCAL_LIB_PATH_R@
 LOCAL_LEXICON_PATH	=	@LOCAL_LEXICON_PATH_R@
@@ -246,8 +248,7 @@ DB_RT_PASS		=	@DB_RT_PASS@
 all: default
 
 default:
-	@echo "Please read RT's readme before installing. Not doing so could"
-	@echo "be dangerous."
+	@echo "Please read RT's README before beginning your installation."
 
 
 
@@ -295,64 +296,64 @@ fixdeps:
 # {{{ fixperms
 fixperms:
 	# Make the libraries readable
-	chmod $(RT_READABLE_DIR_MODE) $(DESTDIR)/$(RT_PATH)
-	chown -R $(LIBS_OWNER) $(DESTDIR)/$(RT_LIB_PATH)
-	chgrp -R $(LIBS_GROUP) $(DESTDIR)/$(RT_LIB_PATH)
-	chmod -R  u+rwX,go-w,go+rX 	$(DESTDIR)/$(RT_LIB_PATH)
+	chmod $(RT_READABLE_DIR_MODE) $(DESTDIR)$(RT_PATH)
+	chown -R $(LIBS_OWNER) $(DESTDIR)$(RT_LIB_PATH)
+	chgrp -R $(LIBS_GROUP) $(DESTDIR)$(RT_LIB_PATH)
+	chmod -R  u+rwX,go-w,go+rX 	$(DESTDIR)$(RT_LIB_PATH)
 
 
-	chmod $(RT_READABLE_DIR_MODE) $(DESTDIR)/$(RT_BIN_PATH)
-	chmod $(RT_READABLE_DIR_MODE) $(DESTDIR)/$(RT_BIN_PATH)	
+	chmod $(RT_READABLE_DIR_MODE) $(DESTDIR)$(RT_BIN_PATH)
+	chmod $(RT_READABLE_DIR_MODE) $(DESTDIR)$(RT_BIN_PATH)	
 
-	chmod 0755 $(DESTDIR)/$(RT_ETC_PATH)
-	cd $(DESTDIR)/$(RT_ETC_PATH) && chmod 0400 $(ETC_FILES)
+	chmod 0755 $(DESTDIR)$(RT_ETC_PATH)
+	cd $(DESTDIR)$(RT_ETC_PATH) && chmod 0400 $(ETC_FILES)
 
 	#TODO: the config file should probably be able to have its
 	# owner set separately from the binaries.
-	chown -R $(BIN_OWNER) $(DESTDIR)/$(RT_ETC_PATH)
-	chgrp -R $(RTGROUP) $(DESTDIR)/$(RT_ETC_PATH)
+	chown -R $(BIN_OWNER) $(DESTDIR)$(RT_ETC_PATH)
+	chgrp -R $(RTGROUP) $(DESTDIR)$(RT_ETC_PATH)
 
-	chmod 0440 $(DESTDIR)/$(CONFIG_FILE)
-	chmod 0640 $(DESTDIR)/$(SITE_CONFIG_FILE)
+	chmod 0440 $(DESTDIR)$(CONFIG_FILE)
+	chmod 0640 $(DESTDIR)$(SITE_CONFIG_FILE)
 
 	# Make the system binaries
-	cd $(DESTDIR)/$(RT_BIN_PATH) && ( chmod 0755 $(BINARIES) ; chown $(BIN_OWNER) $(BINARIES);  chgrp $(RTGROUP) $(BINARIES))
+	cd $(DESTDIR)$(RT_BIN_PATH) && ( chmod 0755 $(BINARIES) ; chown $(BIN_OWNER) $(BINARIES);  chgrp $(RTGROUP) $(BINARIES))
 
 	# Make the system binaries executable also
-	cd $(DESTDIR)/$(RT_SBIN_PATH) && ( chmod 0755 $(SYSTEM_BINARIES) ; chown $(BIN_OWNER) $(SYSTEM_BINARIES);  chgrp $(RTGROUP) $(SYSTEM_BINARIES))
+	cd $(DESTDIR)$(RT_SBIN_PATH) && ( chmod 0755 $(SYSTEM_BINARIES) ; chown $(BIN_OWNER) $(SYSTEM_BINARIES);  chgrp $(RTGROUP) $(SYSTEM_BINARIES))
 
 	# Make the web ui readable by all. 
-	chmod -R  u+rwX,go-w,go+rX 	$(DESTDIR)/$(MASON_HTML_PATH) \
-					$(DESTDIR)/$(MASON_LOCAL_HTML_PATH) \
-					$(DESTDIR)/$(LOCAL_LEXICON_PATH)
-	chown -R $(LIBS_OWNER) 	$(DESTDIR)/$(MASON_HTML_PATH) \
-				$(DESTDIR)/$(MASON_LOCAL_HTML_PATH)
-	chgrp -R $(LIBS_GROUP) 	$(DESTDIR)/$(MASON_HTML_PATH) \
-				$(DESTDIR)/$(MASON_LOCAL_HTML_PATH)
+	chmod -R  u+rwX,go-w,go+rX 	$(DESTDIR)$(MASON_HTML_PATH) \
+					$(DESTDIR)$(MASON_LOCAL_HTML_PATH) \
+					$(DESTDIR)$(LOCAL_LEXICON_PATH)
+	chown -R $(LIBS_OWNER) 	$(DESTDIR)$(MASON_HTML_PATH) \
+				$(DESTDIR)$(MASON_LOCAL_HTML_PATH)
+	chgrp -R $(LIBS_GROUP) 	$(DESTDIR)$(MASON_HTML_PATH) \
+				$(DESTDIR)$(MASON_LOCAL_HTML_PATH)
 
 	# Make the web ui's data dir writable
-	chmod 0770  	$(DESTDIR)/$(MASON_DATA_PATH) \
-			$(DESTDIR)/$(MASON_SESSION_PATH)
-	chown -R $(WEB_USER) 	$(DESTDIR)/$(MASON_DATA_PATH) \
-				$(DESTDIR)/$(MASON_SESSION_PATH)
-	chgrp -R $(WEB_GROUP) 	$(DESTDIR)/$(MASON_DATA_PATH) \
-				$(DESTDIR)/$(MASON_SESSION_PATH)
+	chmod 0770  	$(DESTDIR)$(MASON_DATA_PATH) \
+			$(DESTDIR)$(MASON_SESSION_PATH)
+	chown -R $(WEB_USER) 	$(DESTDIR)$(MASON_DATA_PATH) \
+				$(DESTDIR)$(MASON_SESSION_PATH)
+	chgrp -R $(WEB_GROUP) 	$(DESTDIR)$(MASON_DATA_PATH) \
+				$(DESTDIR)$(MASON_SESSION_PATH)
 # }}}
 
 # {{{ dirs
 dirs:
-	$(INSTALL) -m 0755 -d $(DESTDIR)/$(RT_LOG_PATH)
-	$(INSTALL) -m 0770 -d $(DESTDIR)/$(MASON_DATA_PATH)
-	$(INSTALL) -m 0770 -d $(DESTDIR)/$(MASON_DATA_PATH)/cache
-	$(INSTALL) -m 0770 -d $(DESTDIR)/$(MASON_DATA_PATH)/etc
-	$(INSTALL) -m 0770 -d $(DESTDIR)/$(MASON_DATA_PATH)/obj
-	$(INSTALL) -m 0770 -d $(DESTDIR)/$(MASON_SESSION_PATH)
-	$(INSTALL) -m 0755 -d $(DESTDIR)/$(MASON_HTML_PATH)
-	$(INSTALL) -m 0755 -d $(DESTDIR)/$(MASON_LOCAL_HTML_PATH)
-	$(INSTALL) -m 0755 -d $(DESTDIR)/$(LOCAL_ETC_PATH)
-	$(INSTALL) -m 0755 -d $(DESTDIR)/$(LOCAL_LIB_PATH)
-	$(INSTALL) -m 0755 -d $(DESTDIR)/$(LOCAL_PLUGIN_PATH)
-	$(INSTALL) -m 0755 -d $(DESTDIR)/$(LOCAL_LEXICON_PATH)
+	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_LOG_PATH)
+	$(INSTALL) -m 0770 -d $(DESTDIR)$(MASON_DATA_PATH)
+	$(INSTALL) -m 0770 -d $(DESTDIR)$(MASON_DATA_PATH)/cache
+	$(INSTALL) -m 0770 -d $(DESTDIR)$(MASON_DATA_PATH)/etc
+	$(INSTALL) -m 0770 -d $(DESTDIR)$(MASON_DATA_PATH)/obj
+	$(INSTALL) -m 0770 -d $(DESTDIR)$(MASON_SESSION_PATH)
+	$(INSTALL) -m 0755 -d $(DESTDIR)$(MASON_HTML_PATH)
+	$(INSTALL) -m 0755 -d $(DESTDIR)$(MASON_LOCAL_HTML_PATH)
+	$(INSTALL) -m 0755 -d $(DESTDIR)$(LOCAL_ETC_PATH)
+	$(INSTALL) -m 0755 -d $(DESTDIR)$(LOCAL_LIB_PATH)
+	$(INSTALL) -m 0755 -d $(DESTDIR)$(LOCAL_PLUGIN_PATH)
+	$(INSTALL) -m 0755 -d $(DESTDIR)$(LOCAL_LEXICON_PATH)
 # }}}
 
 install: testdeps config-install dirs files-install fixperms instruct
@@ -360,9 +361,9 @@ install: testdeps config-install dirs files-install fixperms instruct
 files-install: libs-install etc-install config-install bin-install sbin-install html-install local-install doc-install
 
 config-install:
-	$(INSTALL) -m 0755 -o $(BIN_OWNER) -g $(RTGROUP) -d $(DESTDIR)/$(CONFIG_FILE_PATH)	
-	-$(INSTALL) -m 0440 -o $(BIN_OWNER) -g $(RTGROUP)  etc/RT_Config.pm $(DESTDIR)/$(CONFIG_FILE)
-	[ -f $(DESTDIR)/$(SITE_CONFIG_FILE) ] || $(INSTALL) -m 0640 -o $(BIN_OWNER) -g $(RTGROUP) etc/RT_SiteConfig.pm $(DESTDIR)/$(SITE_CONFIG_FILE) 
+	$(INSTALL) -m 0755 -o $(BIN_OWNER) -g $(RTGROUP) -d $(DESTDIR)$(CONFIG_FILE_PATH)	
+	-$(INSTALL) -m 0440 -o $(BIN_OWNER) -g $(RTGROUP)  etc/RT_Config.pm $(DESTDIR)$(CONFIG_FILE)
+	[ -f $(DESTDIR)$(SITE_CONFIG_FILE) ] || $(INSTALL) -m 0640 -o $(BIN_OWNER) -g $(RTGROUP) etc/RT_SiteConfig.pm $(DESTDIR)$(SITE_CONFIG_FILE) 
 	@echo "Installed configuration. About to install RT in  $(RT_PATH)"
 
 TEST_FILES = t/*.t t/*/*.t
@@ -372,7 +373,7 @@ test:
 	$(PERL) "-MExtUtils::Command::MM" -e "test_harness($(TEST_VERBOSE), 'lib')" $(TEST_FILES)
 
 regression-install: config-install
-	$(PERL) -pi -e 's/Set\(\$$DatabaseName.*\);/Set\(\$$DatabaseName, "rt3regression"\);/' $(DESTDIR)/$(CONFIG_FILE)
+	$(PERL) -pi -e 's/Set\(\$$DatabaseName.*\);/Set\(\$$DatabaseName, "rt3regression"\);/' $(DESTDIR)$(CONFIG_FILE)
 
 # {{{ database-installation
 
@@ -394,55 +395,55 @@ force-dropdb:
 
 # {{{ libs-install
 libs-install: 
-	[ -d $(DESTDIR)/$(RT_LIB_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)/$(RT_LIB_PATH)
-	-cd lib && find . -type d -name .svn -prune -o -type d -exec $(INSTALL) -m 0755 -d $(DESTDIR)/$(RT_LIB_PATH)/{} \;
-	-cd lib && find . -type d -name .svn -prune -o -type f -exec $(INSTALL) -m 0644 {} $(DESTDIR)/$(RT_LIB_PATH)/{} \;
+	[ -d $(DESTDIR)$(RT_LIB_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(RT_LIB_PATH)
+	-cd lib && find . -type d -name .svn -prune -o -type d -exec $(INSTALL) -m 0755 -d $(DESTDIR)$(RT_LIB_PATH)/{} \;
+	-cd lib && find . -type d -name .svn -prune -o -type f -exec $(INSTALL) -m 0644 {} $(DESTDIR)$(RT_LIB_PATH)/{} \;
 # }}}
 
 # {{{ html-install
 html-install:
-	[ -d $(DESTDIR)/$(MASON_HTML_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)/$(MASON_HTML_PATH)
-	-cd share/html && find . -type d -name .svn -prune -o -type d -exec $(INSTALL) -m 0755 -d $(DESTDIR)/$(MASON_HTML_PATH)/{} \;
-	-cd share/html && find . -type d -name .svn -prune -o -type f -exec $(INSTALL) -m 0644 {} $(DESTDIR)/$(MASON_HTML_PATH)/{} \;
+	[ -d $(DESTDIR)$(MASON_HTML_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(MASON_HTML_PATH)
+	-cd share/html && find . -type d -name .svn -prune -o -type d -exec $(INSTALL) -m 0755 -d $(DESTDIR)$(MASON_HTML_PATH)/{} \;
+	-cd share/html && find . -type d -name .svn -prune -o -type f -exec $(INSTALL) -m 0644 {} $(DESTDIR)$(MASON_HTML_PATH)/{} \;
 # }}}
 
 # {{{ doc-install
 doc-install:
 	# RT 3.0.0 - RT 3.0.2 would accidentally create a file instead of a dir
-	-[ -f $(DESTDIR)/$(RT_DOC_PATH) ] && rm $(DESTDIR)/$(RT_DOC_PATH) 
-	[ -d $(DESTDIR)/$(RT_DOC_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)/$(RT_DOC_PATH)
-	-$(INSTALL) -m 0644 ./README $(DESTDIR)/$(RT_DOC_PATH)/
+	-[ -f $(DESTDIR)$(RT_DOC_PATH) ] && rm $(DESTDIR)$(RT_DOC_PATH) 
+	[ -d $(DESTDIR)$(RT_DOC_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(RT_DOC_PATH)
+	-$(INSTALL) -m 0644 ./README $(DESTDIR)$(RT_DOC_PATH)/
 # }}}
 
 # {{{ etc-install
 
 etc-install:
-	$(INSTALL) -m 0755 -d $(DESTDIR)/$(RT_ETC_PATH)
-	cd etc && $(INSTALL) -m 0644 $(ETC_FILES) $(DESTDIR)/$(RT_ETC_PATH)/
+	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_ETC_PATH)
+	cd etc && $(INSTALL) -m 0644 $(ETC_FILES) $(DESTDIR)$(RT_ETC_PATH)/
 # }}}
 
 # {{{ sbin-install
 
 sbin-install:
-	$(INSTALL) -m 0755 -d $(DESTDIR)/$(RT_SBIN_PATH)
-	cd sbin && $(INSTALL) -o $(BIN_OWNER) -g $(RTGROUP) -m 0755 $(SYSTEM_BINARIES)  $(DESTDIR)/$(RT_SBIN_PATH)/
+	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_SBIN_PATH)
+	cd sbin && $(INSTALL) -o $(BIN_OWNER) -g $(RTGROUP) -m 0755 $(SYSTEM_BINARIES)  $(DESTDIR)$(RT_SBIN_PATH)/
 
 # }}}
 
 # {{{ bin-install
 
 bin-install:
-	$(INSTALL) -m 0755 -d $(DESTDIR)/$(RT_BIN_PATH)
-	cd bin && $(INSTALL) -o $(BIN_OWNER) -g $(RTGROUP) -m 0755 $(BINARIES) $(DESTDIR)/$(RT_BIN_PATH)/
+	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_BIN_PATH)
+	cd bin && $(INSTALL) -o $(BIN_OWNER) -g $(RTGROUP) -m 0755 $(BINARIES) $(DESTDIR)$(RT_BIN_PATH)/
 
 # {{{ local-install
 local-install:
-	-cd local/html && find . -type d -name .svn -prune -o -type d -exec $(INSTALL) -m 0755 -d $(DESTDIR)/$(MASON_LOCAL_HTML_PATH)/{} \;
-	-cd local/html && find . -type d -name .svn -prune -o -type f -exec $(INSTALL) -m 0644 {} $(DESTDIR)/$(MASON_LOCAL_HTML_PATH)/{} \;
-	-cd local/po && find . -type d -name .svn -prune -o -type d -exec $(INSTALL) -m 0755 -d $(DESTDIR)/$(LOCAL_LEXICON_PATH)/{} \;
-	-cd local/po && find . -type d -name .svn -prune -o -type f -exec $(INSTALL) -m 0644 {} $(DESTDIR)/$(LOCAL_LEXICON_PATH)/{} \;
-	-cd local/etc && find . -type d -name .svn -prune -o -type d -exec $(INSTALL) -m 0755 -d $(DESTDIR)/$(LOCAL_ETC_PATH)/{} \;
-	-cd local/etc && find . -type d -name .svn -prune -o -type f -exec $(INSTALL) -m 0644 {} $(DESTDIR)/$(LOCAL_ETC_PATH)/{} \;
+	-cd local/html && find . -type d -name .svn -prune -o -type d -exec $(INSTALL) -m 0755 -d $(DESTDIR)$(MASON_LOCAL_HTML_PATH)/{} \;
+	-cd local/html && find . -type d -name .svn -prune -o -type f -exec $(INSTALL) -m 0644 {} $(DESTDIR)$(MASON_LOCAL_HTML_PATH)/{} \;
+	-cd local/po && find . -type d -name .svn -prune -o -type d -exec $(INSTALL) -m 0755 -d $(DESTDIR)$(LOCAL_LEXICON_PATH)/{} \;
+	-cd local/po && find . -type d -name .svn -prune -o -type f -exec $(INSTALL) -m 0644 {} $(DESTDIR)$(LOCAL_LEXICON_PATH)/{} \;
+	-cd local/etc && find . -type d -name .svn -prune -o -type d -exec $(INSTALL) -m 0755 -d $(DESTDIR)$(LOCAL_ETC_PATH)/{} \;
+	-cd local/etc && find . -type d -name .svn -prune -o -type f -exec $(INSTALL) -m 0644 {} $(DESTDIR)$(LOCAL_ETC_PATH)/{} \;
 # }}}
 
 # {{{ Best Practical Build targets -- no user servicable parts inside
