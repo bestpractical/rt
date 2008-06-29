@@ -71,7 +71,7 @@
 <tr><td align="right">
 <&|/l&>Queries</&>:
 </td><td>
-% my @searches = $DashboardObj->Searches;
+% my @searches = grep { defined } $DashboardObj->Searches;
 % if (!@searches) {
 (none)
 % } else {
