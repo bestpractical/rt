@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <&| Elements/Wrapper, Title => loc('Welcome to RT!') &>
 
-<& /Elements/ListActions, actions => \@results &>
+<& Elements/Errors, Errors => \@errors &>
 
 % if ( !$locked) {
 
@@ -85,13 +85,13 @@ If you already have a working RT server and database, you should take this oppor
 % }
 </&>
 <%init>
-my @results;
+my @errors;
 my $locked;
     my $file = File::Spec->catfile( $RT::EtcPath, 'RT_SiteConfig.pm' );
     $locked = 1 unless -w $file;
     
     if ( $locked ) {
-        push @results, loc("Config file [_1] is locked", $file);
+        push @errors, loc("Config file [_1] is locked", $file);
     }
     elsif ( $Run ) {
         $RT::Installer->{InstallConfig} ||= {};

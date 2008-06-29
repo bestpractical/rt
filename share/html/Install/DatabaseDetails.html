@@ -47,18 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 <&| Elements/Wrapper, Title => loc('Step [_1] of [_2]: ', 2, 7 ) . loc('Check your database credentials') &> 
 
-<& /Elements/ListActions, actions => \@results &>
-
-% if ( $ConnectionSucceeded ) {
-
-<p>
-<&|/l&>
-We were able to find your database and connect as the DBA.  You can click on 'Customize Basics' to continue
-customizing RT.
-</&>
-
-% } else {
-
+% if ( @errors ) {
+<& Elements/Errors, Errors => \@errors &>
 <p>
 <&|/l&>Tell us a little about how to find the database RT will be using</&>
 <p>
@@ -74,6 +64,16 @@ information to create and initialize RT's database.
 When you click on 'Check Database Connectivity' there may be a small delay while RT tries to connect to your
 database
 </&>
+
+% } else {
+<& /Elements/ListActions, actions => \@results &>
+
+<p>
+<&|/l&>
+We were able to find your database and connect as the DBA.  You can click on 'Customize Basics' to continue
+customizing RT.
+</&>
+
 % }
 
 <form method="post">
@@ -89,7 +89,7 @@ database
                     &>
 <input type="hidden" name="Run" value="1">
 
-% if ( $ConnectionSucceeded ) {
+% unless ( @errors ) {
 <& /Elements/Submit, Label => loc('Next: ') . loc('Customize Basics'),
 Back => 1, BackLabel => loc('Back: ') . loc('Select Database Type'),
 Name => 'Next' &>
@@ -103,7 +103,7 @@ Back => 1, BackLabel => loc('Back: ') . loc('Select Database Type')
 </&>
 
 <%init>
-my @results;
+my (@results, @errors);
 my $ConnectionSucceeded;
 
 my @Types = 'DatabaseName';
@@ -189,7 +189,7 @@ if ( $Run ) {
         }
         else {
             $RT::Installer->{DatabaseAction} = 'error';
-            push @results, loc("Failed to connect to database: [_1]",
+            push @errors, loc("Failed to connect to database: [_1]",
                     $DBI::errstr );
         }
     }
@@ -197,8 +197,6 @@ if ( $Run ) {
         push @results, loc($msg);
     }
 
-$ConnectionSucceeded =
-    ( @results && $results[0] eq loc('Connection succeeded') ) ? 1 : 0;
 }
 
 </%init>

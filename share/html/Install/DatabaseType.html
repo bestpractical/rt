@@ -47,8 +47,6 @@
 %# END BPS TAGGED BLOCK }}}
 <&|Elements/Wrapper, Title => loc('Step [_1] of [_2]: ', 1, 7 ) . loc('Choose a database engine') &>
 
-<& /Elements/ListActions, actions => \@results &>
-
 <div class="intro">
 <p>
 <&|/l&>
@@ -84,7 +82,6 @@ able to remedy this by using [_1] to download and install DBD::MySQL, DBD::Oracl
 </&>
 <%init>
 
-my @results;
 my @Types = 'DatabaseType';
 
 if ( $Run ) {

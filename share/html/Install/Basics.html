@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <&| Elements/Wrapper, Title => loc('Step [_1] of [_2]: ', 3, 7) . loc('Customize Basics') &> 
 
-<& /Elements/ListActions, actions => \@results &>
+<& Elements/Errors, Errors => \@errors &>
 
 <p>
 <&|/l&>
@@ -68,7 +68,7 @@ administrative user.
 
 
 <%init>
-my @results;
+my @errors;
 
 my @Types = qw/rtname WebDomain WebPort Password/;
 
@@ -79,11 +79,11 @@ if ( $Run ) {
             Meta => $RT::Installer->{Meta} );
     
     if ( $ARGS{WebPort} && $ARGS{WebPort} !~ /^\d+$/ ) {
-        push @results, loc("Invalid [_1]: it should be a number", 'WebPort');
+        push @errors, loc("Invalid [_1]: it should be a number", 'WebPort');
     }
 
     unless ( $ARGS{Password} ) {
-        push @results, loc("You must enter an Administrative password");
+        push @errors, loc("You must enter an Administrative password");
     }
 
     if ( $Back ) {
@@ -91,7 +91,7 @@ if ( $Run ) {
 'Install/DatabaseDetails.html');
     }
 
-    unless ( @results ) {
+    unless ( @errors ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
 'Install/Sendmail.html');
     }

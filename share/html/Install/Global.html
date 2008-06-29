@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <&| Elements/Wrapper, Title => loc('Step [_1] of [_2]: ', 5, 7 ) . loc('Customize Email Addresses') &> 
 
-<& /Elements/ListActions, actions => \@results &>
+<& Elements/Errors, Errors => \@errors &>
 
 <p><&|/l&>Help us set up some useful defaults for RT.</&></p>
 
@@ -73,7 +73,7 @@ loc('Next: ') . loc('Finish') : loc('Next: ') . loc( 'Initialize Database'),
 </form>
 </&>
 <%init>
-my @results;
+my @errors;
 
 my @Types = qw/CommentAddress CorrespondAddress Timezone/;
 
@@ -90,13 +90,13 @@ if ( $Run ) {
 
     for ( qw/CommentAddress CorrespondAddress/ ) {
         if ( $ARGS{$_} && $ARGS{$_} !~ /.+@.+/ ) {
-            push @results,
+            push @errors,
                 loc("Invalid [_1]: '[_2]' doesn't look like an email address",
                 $_, $ARGS{$_});
         }
     }
 
-    unless ( @results ) {
+    unless ( @errors ) {
         my ( $status, $msg ) = RT::Installer->SaveConfig;
 
         if ( $status ) {
@@ -113,7 +113,7 @@ if ( $Run ) {
             }
         }
         else {
-            push @results, loc($msg);
+            push @errors, loc($msg);
         }
     }
 }

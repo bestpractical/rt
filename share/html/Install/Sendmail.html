@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <&|Elements/Wrapper, Title => loc('Step [_1] of [_2]: ', 4, 7 ) . loc('Email Configuration') &> 
 
-<& /Elements/ListActions, actions => \@results &>
+<& Elements/Errors, Errors => \@errors &>
 
 <p>
 <&|/l&>
@@ -69,7 +69,7 @@ feeds back into RT.
 </form>
 </&>
 <%init>
-my @results;
+my @errors;
 
 my @Types = qw/SendmailPath OwnerEmail/;
 
@@ -86,17 +86,17 @@ if ( $Run ) {
 
 
     unless ( -e $ARGS{SendmailPath} ) {
-        push @results, loc( "[_1] doesn't exist.", $ARGS{SendmailPath} );
+        push @errors, loc( "[_1] doesn't exist.", $ARGS{SendmailPath} );
     }
 
     if ( ! $ARGS{OwnerEmail} || $ARGS{OwnerEmail} !~ /.+@.+/ ) {
-        push @results,
+        push @errors,
             loc("Invalid [_1]: that doesn't look like an email address",
             'Administrator Email');
     }
 
 
-    unless ( @results ) {
+    unless ( @errors ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
 'Install/Global.html');
     }
