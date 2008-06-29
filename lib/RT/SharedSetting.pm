@@ -373,7 +373,7 @@ sub _GetObject {
 
     unless ($obj_type && $obj_id) {
         $privacy = '(undef)' if !defined($privacy);
-        $RT::Logger->error("Invalid privacy string '$privacy'");
+        $RT::Logger->debug("Invalid privacy string '$privacy'");
         return undef;
     }
 
