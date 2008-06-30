@@ -56,7 +56,7 @@ BEGIN {
     if (RT->config->get('DevelMode')) { require Module::Refresh; }
 }
 
-RT::Init();
+RT::init();
 
 my $port = shift @ARGV || RT->config->get('WebPort') || '8080';
 use RT::Interface::Web::Standalone;
