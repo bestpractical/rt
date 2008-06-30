@@ -52,27 +52,16 @@
 <p>
 <&|/l&>Tell us a little about how to find the database RT will be using</&>
 <p>
-<&|/l&>
-We need to know the name of the database RT will use and where to find it.  We also need to know the username and
-password of the user RT should use. RT can create the database and user for you, which is why we ask for the
-username and password of a user with DBA privileges.  During step 6 of the installation process we will use this
-information to create and initialize RT's database.
-</&>
+<&|/l&>We need to know the name of the database RT will use and where to find it.  We also need to know the username and password of the user RT should use. RT can create the database and user for you, which is why we ask for the username and password of a user with DBA privileges.  During step 6 of the installation process we will use this information to create and initialize RT's database.</&>
 </p>
 <p>
-<&|/l&>
-When you click on 'Check Database Connectivity' there may be a small delay while RT tries to connect to your
-database
-</&>
+<&|/l&>When you click on 'Check Database Connectivity' there may be a small delay while RT tries to connect to your database</&>
 
 % } else {
 <& /Elements/ListActions, actions => \@results &>
 
 <p>
-<&|/l&>
-We were able to find your database and connect as the DBA.  You can click on 'Customize Basics' to continue
-customizing RT.
-</&>
+<&|/l&>We were able to find your database and connect as the DBA.  You can click on 'Customize Basics' to continue customizing RT.</&>
 
 % }
 
