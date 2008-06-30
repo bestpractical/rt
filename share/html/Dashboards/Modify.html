@@ -90,7 +90,6 @@ my @privacies = $Dashboard->_PrivacyObjects(Modify => 1);
 
 Abort(loc("Permission denied")) if @privacies == 0;
 
-
 # user went directly to Modify.html
 $Create = 1 if !$id;
 
@@ -116,7 +115,7 @@ else {
     }
     else {
         my ($ok, $msg) = $Dashboard->LoadById($id);
-        $ok || Abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg));
+        $ok || Abort($msg);
     }
 
     if ($id) {

@@ -114,7 +114,7 @@ sub Load {
         } else {
             $RT::Logger->error("Could not load attribute " . $id
                     . " for object " . $privacy);
-            return (0, $self->loc("[_1] attribute load failure", ucfirst($self->ObjectName)));
+            return (0, $self->loc("Failed to load [_1] [_2]", $self->ObjectName, $id))
         }
     } else {
         $RT::Logger->warning("Could not load object $privacy when loading " . $self->ObjectName);
@@ -135,8 +135,10 @@ sub LoadById {
     my $id   = shift;
 
     my $attr = RT::Attribute->new($self->CurrentUser);
-    unless ($attr->LoadById($id)) {
-        return (0, $self->loc("Failed to load attribute [_1]", $id))
+    my ($ok, $msg) = $attr->LoadById($id);
+
+    if (!$ok) {
+        return (0, $self->loc("Failed to load [_1] [_2]: [_3]", $self->ObjectName, $id, $msg))
     }
 
     my $privacy = $self->_build_privacy($attr->ObjectType, $attr->ObjectId);

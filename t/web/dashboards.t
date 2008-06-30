@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 76;
+use Test::More tests => 77;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -175,4 +175,5 @@ $m->content_contains("Deleted dashboard $id");
 
 $m->get("/Dashboards/Modify.html?id=$id");
 $m->content_lacks("different dashboard", "dashboard was deleted");
+$m->content_contains("Failed to load dashboard $id");
 
