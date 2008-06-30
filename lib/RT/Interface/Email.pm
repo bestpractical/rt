@@ -207,7 +207,7 @@ Sends an error message. Takes a param hash:
 
 =item From - sender's address, by default is 'CorrespondAddress';
 
-=item To - reciepient, by default is 'OwnerEmail';
+=item To - recipient, by default is 'OwnerEmail';
 
 =item Bcc - optional Bcc recipients;
 
