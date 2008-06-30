@@ -63,6 +63,16 @@
 <p>
 <&|/l&>We were able to find your database and connect as the DBA.  You can click on 'Customize Basics' to continue customizing RT.</&>
 
+
+% } else {
+<& /Elements/ListActions, actions => \@results &>
+
+<p>
+<&|/l&>
+We were able to find your database and connect as the DBA.  You can click on 'Customize Basics' to continue
+customizing RT.
+</&>
+
 % }
 
 <form method="post">
