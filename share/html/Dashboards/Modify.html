@@ -90,7 +90,6 @@ my @privacies = $Dashboard->_PrivacyObjects(Modify => 1);
 
 Abort(loc("Permission denied")) if @privacies == 0;
 
-my $can_delete = $Dashboard->CurrentUserCanDelete;
 
 # user went directly to Modify.html
 $Create = 1 if !$id;
@@ -144,6 +143,8 @@ if (!$Create && !$tried_create && $id && $ARGS{'Save'}) {
     }
 
 }
+
+my $can_delete = $Dashboard->CurrentUserCanDelete;
 
 if (!$Create && !$tried_create && $id && $ARGS{'Delete'}) {
     my ($ok, $msg) = $Dashboard->Delete();

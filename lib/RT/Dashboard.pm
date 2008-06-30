@@ -259,6 +259,11 @@ sub _CurrentUserCan {
     my $privacy = shift || $self->Privacy;
     my %rights  = @_;
 
+    if (!defined($privacy)) {
+        $RT::Logger->debug("No privacy provided to $self->_CurrentUserCan");
+        return 0;
+    }
+
     my $object = $self->_GetObject($privacy);
     return 0 unless $object;
 
@@ -276,7 +281,7 @@ sub _CurrentUserCan {
     }
 
     # users are mildly special-cased, since we actually have to check that
-    # the user has the global right
+    # the user has the global right, and that the user is operating on himself
     if ($object->isa('RT::User')) {
         return 0 unless $object->Id == $self->CurrentUser->Id;
         $object = $RT::System;

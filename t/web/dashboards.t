@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 71;
+use Test::More tests => 76;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -165,6 +165,7 @@ $m->get_ok("/Dashboards/Modify.html?id=$id&Delete=1");
 $m->content_contains("Permission denied", "unable to delete dashboard because we lack DeleteDashboard");
 
 $user_obj->PrincipalObj->GrantRight(Right => 'DeleteDashboard', Object => $RT::System);
+
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->content_contains('Delete', "Delete button shows because we have DeleteDashboard");
 
@@ -173,5 +174,5 @@ $m->click_button(name => 'Delete');
 $m->content_contains("Deleted dashboard $id");
 
 $m->get("/Dashboards/Modify.html?id=$id");
-$m->content_contains("Could not load dashboard");
+$m->content_lacks("different dashboard", "dashboard was deleted");
 
