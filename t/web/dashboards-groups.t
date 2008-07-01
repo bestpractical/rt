@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 19;
+use Test::More tests => 38;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -58,3 +58,40 @@ $user_obj->PrincipalObj->GrantRight(Right => 'ModifyDashboard', Object => $inner
 
 $m->get_ok("$url/Dashboards");
 $m->content_contains("New dashboard", "new dashboard link shows because we have the ModifyDashboard right on inner group");
+
+$m->follow_link_ok({text => "New dashboard"});
+$m->form_name('ModifyDashboard');
+is_deeply([$m->current_form->param('Privacy')], ["RT::Group-" . $inner_group->Id], "the only selectable privacy is inner group");
+$m->field("Name" => 'inner dashboard');
+$m->content_lacks('Delete', "Delete button hidden because we are creating");
+
+$m->click_button(value => 'Save Changes');
+$m->content_lacks("No permission to create dashboards");
+$m->content_contains("Saved dashboard inner dashboard");
+$m->content_lacks('Delete', "Delete button hidden because we lack DeleteDashboard");
+
+my $dashboard = RT::Dashboard->new($currentuser);
+my ($id) = $m->content =~ /name="id" value="(\d+)"/;
+ok($id, "got an ID, $id");
+$dashboard->LoadById($id);
+is($dashboard->Name, "inner dashboard");
+
+is($dashboard->Privacy, 'RT::Group-' . $inner_group->Id, "correct privacy");
+is($dashboard->PossibleHiddenSearches, 0, "all searches are visible");
+
+$m->get_ok("/Dashboards/Modify.html?id=$id");
+$m->content_lacks("inner dashboard", "no SeeDashboard right");
+$m->content_contains("Permission denied");
+
+$user_obj->PrincipalObj->GrantRight(Right => 'SeeDashboard', Object => $inner_group);
+$m->get_ok("/Dashboards/Modify.html?id=$id");
+$m->content_contains("inner dashboard", "we now have SeeDashboard right");
+$m->content_lacks("Permission denied");
+
+$m->content_lacks('Subscription', "Subscription link still hidden because we lack SubscribeDashboard on this dashboard's privacy");
+
+$user_obj->PrincipalObj->GrantRight(Right => 'SubscribeDashboard', Object => $inner_group);
+
+$m->get_ok("/Dashboards/Modify.html?id=$id");
+$m->content_contains('Subscription', "We now have SubscribeDashboard on inner group");
+

@@ -87,7 +87,7 @@ if ( $DashboardObj and $DashboardObj->Id ) {
     };
 
     delete $tabs->{"this"}{"subtabs"}{"c_Subscription"}
-        if !$session{'CurrentUser'}->HasRight(Right => 'SubscribeDashboard', Object => $RT::System);
+        unless $DashboardObj->CurrentUserCanSubscribe;
 
     $current_subtab = $modify;
 }
