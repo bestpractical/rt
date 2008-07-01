@@ -274,7 +274,7 @@ In the 'Error: public key' template there are a few additional variables availab
 
 =item $Recipient - recipient's identification
 
-=item $AddressObj - L<Mail::Address> object containing recipient's email address
+=item $AddressObj - L<Email::Address> object containing recipient's email address
 
 =back
 
@@ -400,13 +400,13 @@ sub SignEncrypt {
     my $entity = $args{'Entity'};
     if ( $args{'Sign'} && !defined $args{'Signer'} ) {
         $args{'Signer'} = UseKeyForSigning()
-            || (Mail::Address->parse( $entity->head->get( 'From' ) ))[0]->address;
+            || (Email::Address->parse( $entity->head->get( 'From' ) ))[0]->address;
     }
     if ( $args{'Encrypt'} && !$args{'Recipients'} ) {
         my %seen;
         $args{'Recipients'} = [
             grep $_ && !$seen{ $_ }++, map $_->address,
-            map Mail::Address->parse( $entity->head->get( $_ ) ),
+            map Email::Address->parse( $entity->head->get( $_ ) ),
             qw(To Cc Bcc)
         ];
     }
@@ -514,7 +514,7 @@ sub SignEncryptRFC3156 {
         $gnupg->options->push_recipients( $_ ) foreach 
             map UseKeyForEncryption($_) || $_,
             grep !$seen{ $_ }++, map $_->address,
-            map Mail::Address->parse( $entity->head->get( $_ ) ),
+            map Email::Address->parse( $entity->head->get( $_ ) ),
             qw(To Cc Bcc);
 
         my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
@@ -1796,7 +1796,7 @@ sub _ParseUserHint {
     return (
         MainKey      => $main_key_id,
         String       => $user_str,
-        EmailAddress => (map $_->address, Mail::Address->parse( $user_str ))[0],
+        EmailAddress => (map $_->address, Email::Address->parse( $user_str ))[0],
     );
 }
 

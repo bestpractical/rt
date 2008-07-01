@@ -54,7 +54,7 @@ use base qw/RT::Base/;
 use strict;
 use warnings;
 
-use Mail::Address;
+use Email::Address;
 use MIME::Entity;
 use MIME::Head;
 use MIME::Parser;
@@ -300,8 +300,8 @@ sub ParseCcAddressesFromHead {
 
     my (@Addresses);
 
-    my @ToObjs = Mail::Address->parse( $self->Head->get('To') );
-    my @CcObjs = Mail::Address->parse( $self->Head->get('Cc') );
+    my @ToObjs = Email::Address->parse( $self->Head->get('To') );
+    my @CcObjs = Email::Address->parse( $self->Head->get('Cc') );
 
     foreach my $AddrObj ( @ToObjs, @CcObjs ) {
         my $Address = $AddrObj->address;

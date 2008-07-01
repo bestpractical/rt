@@ -55,7 +55,7 @@ $address = $User->EmailAddress;
 $phrase = $User->RealName
     if $User->RealName && lc $User->RealName ne lc $address;
 $comment = $User->Name if lc $User->Name ne lc $address;
- $Address = Mail::Address->new( $phrase, $address, $comment );
+ $Address = Email::Address->new( $phrase, $address, $comment );
 } 
 
 

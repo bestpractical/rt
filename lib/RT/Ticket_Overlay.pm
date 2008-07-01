@@ -430,7 +430,7 @@ sub Create {
             if ( $watcher =~ /^\d+$/ ) {
                 push @{ $args{$type} }, $watcher;
             } else {
-                my @addresses = Mail::Address->parse( $watcher );
+                my @addresses = Email::Address->parse( $watcher );
                 foreach my $address( @addresses ) {
                     my $user = RT::User->new( $RT::SystemUser );
                     my ($uid, $msg) = $user->LoadOrCreateByEmail( $address );
@@ -1037,7 +1037,7 @@ sub AddWatcher {
     return $self->_AddWatcher( %args )
         if $self->CurrentUserHasRight('ModifyTicket');
     if ( $args{'Email'} ) {
-        my ($addr) = Mail::Address->parse( $args{'Email'} );
+        my ($addr) = Email::Address->parse( $args{'Email'} );
         return (0, $self->loc("Couldn't parse address from '[_1]' string", $args{'Email'} ))
             unless $addr;
 
@@ -1601,7 +1601,7 @@ sub IsOwner {
 =head2 TransactionAddresses
 
 Returns a composite hashref of the results of L<RT::Transaction/Addresses> for all this ticket's Create, Comment or Correspond transactions.
-The keys are C<To>, C<Cc> and C<Bcc>. The values are lists of C<Mail::Address> objects.
+The keys are C<To>, C<Cc> and C<Bcc>. The values are lists of C<Email::Address> objects.
 
 NOTE: For performance reasons, this method might want to skip transactions and go straight for attachments. But to make that work right, we're going to need to go and walk around the access control in Attachment.pm's sub _Value.
 
@@ -2119,7 +2119,7 @@ sub _RecordNote {
 
             my $addresses = join ', ', (
                 map { RT::User->CanonicalizeEmailAddress( $_->address ) }
-                    Mail::Address->parse( $args{ $type . 'MessageTo' } ) );
+                    Email::Address->parse( $args{ $type . 'MessageTo' } ) );
             $args{'MIMEObj'}->head->add( 'RT-Send-' . $type, $addresses );
         }
     }

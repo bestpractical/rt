@@ -430,7 +430,7 @@ sub ContentAsMIME {
 Returns a hashref of all addresses related to this attachment.
 The keys of the hash are C<From>, C<To>, C<Cc>, C<Bcc>, C<RT-Send-Cc>
 and C<RT-Send-Bcc>. The values are references to lists of
-L<Mail::Address> objects.
+L<Email::Address> objects.
 
 =cut
 
@@ -445,7 +445,7 @@ sub Addresses {
         my @Addresses;
         my $line      = $self->GetHeader($hdr);
         
-        foreach my $AddrObj ( Mail::Address->parse( $line )) {
+        foreach my $AddrObj ( Email::Address->parse( $line )) {
             my $address = $AddrObj->address;
             $address = lc RT::User->CanonicalizeEmailAddress($address);
             next if ( $current_user_address eq $address );

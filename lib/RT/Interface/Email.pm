@@ -51,7 +51,7 @@ package RT::Interface::Email;
 use strict;
 use warnings;
 
-use Mail::Address;
+use Email::Address;
 use MIME::Entity;
 use RT::EmailParser;
 use File::Temp;
@@ -430,7 +430,7 @@ sub SendEmail {
 
         # duplicate head as we want drop Bcc field
         my $head = $args{'Entity'}->head->dup;
-        my @recipients = map $_->address, Mail::Address->parse(
+        my @recipients = map $_->address, Email::Address->parse(
             map $head->get($_), qw(To Cc Bcc)
         );
         $head->delete('Bcc');
@@ -704,7 +704,7 @@ sub SignEncrypt {
     }
     return 0 unless @bad_recipients;
 
-    $_->{'AddressObj'} = (Mail::Address->parse( $_->{'Recipient'} ))[0]
+    $_->{'AddressObj'} = (Email::Address->parse( $_->{'Recipient'} ))[0]
         foreach @bad_recipients;
 
     foreach my $recipient ( @bad_recipients ) {
@@ -834,7 +834,7 @@ sub ParseCcAddressesFromHead {
 
     my @recipients =
         map lc $_->address,
-        map Mail::Address->parse( $args{'Head'}->get( $_ ) ),
+        map Email::Address->parse( $args{'Head'}->get( $_ ) ),
         qw(To Cc);
 
     my @res;
@@ -912,7 +912,7 @@ sub ParseAddressFromHeader {
 
     # Some broken mailers send:  ""Vincent, Jesse"" <jesse@fsck.com>. Hate
     $Addr =~ s/\"\"(.*?)\"\"/\"$1\"/g;
-    my @Addresses = Mail::Address->parse($Addr);
+    my @Addresses = Email::Address->parse($Addr);
 
     my ($AddrObj) = grep ref $_, @Addresses;
     unless ( $AddrObj ) {
@@ -941,7 +941,7 @@ sub DeleteRecipientsFromHead {
     foreach my $field ( qw(To Cc Bcc) ) {
         $head->set( $field =>
             join ', ', map $_->format, grep !$skip{ lc $_->address },
-                Mail::Address->parse( $head->get( $field ) )
+                Email::Address->parse( $head->get( $field ) )
         );
     }
 }

@@ -59,7 +59,7 @@ use MIME::Words qw(encode_mimeword);
 
 use RT::EmailParser;
 use RT::Interface::Email;
-use Mail::Address;
+use Email::Address;
 our @EMAIL_RECIPIENT_HEADERS = qw(To Cc Bcc);
 
 
@@ -240,7 +240,7 @@ sub Prepare {
 
 =head2 To
 
-Returns an array of L<Mail::Address> objects containing all the To: recipients for this notification
+Returns an array of L<Email::Address> objects containing all the To: recipients for this notification
 
 =cut
 
@@ -251,7 +251,7 @@ sub To {
 
 =head2 Cc
 
-Returns an array of L<Mail::Address> objects containing all the Cc: recipients for this notification
+Returns an array of L<Email::Address> objects containing all the Cc: recipients for this notification
 
 =cut
 
@@ -262,7 +262,7 @@ sub Cc {
 
 =head2 Bcc
 
-Returns an array of L<Mail::Address> objects containing all the Bcc: recipients for this notification
+Returns an array of L<Email::Address> objects containing all the Bcc: recipients for this notification
 
 =cut
 
@@ -276,7 +276,7 @@ sub AddressesFromHeader {
     my $self      = shift;
     my $field     = shift;
     my $header    = $self->TemplateObj->MIMEObj->head->get($field);
-    my @addresses = Mail::Address->parse($header);
+    my @addresses = Email::Address->parse($header);
 
     return (@addresses);
 }
@@ -635,6 +635,8 @@ sub DeferDigestRecipients {
     my $digest_hash = {};
 
     foreach my $mailfield (@EMAIL_RECIPIENT_HEADERS) {
+        # If we have a "PseudoTo", the "To" contains it, so we don't need to access it
+        next if ( ( $self->{'PseudoTo'} && @{ $self->{'PseudoTo'} } ) && ( $mailfield eq 'To' ) );
         $RT::Logger->debug( "Working on mailfield $mailfield; recipients are " . join( ',', @{ $self->{$mailfield} } ) );
 
         # Store the 'daily digest' folk in an array.
