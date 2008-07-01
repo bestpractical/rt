@@ -1010,7 +1010,7 @@ Set($ShowTransactionImages, 1);
 
 =item C<$PlainTextPre>
 
-Normally plain text attachments are displayed as HTML with line
+Normally plaintext attachments are displayed as HTML with line
 breaks preserved.  This causes space- and tab-based formatting not
 to be displayed correctly.  By setting $PlainTextPre they'll be
 displayed using <pre> instead so such formatting works, but they'll
