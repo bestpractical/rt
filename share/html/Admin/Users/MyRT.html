@@ -80,7 +80,7 @@ my $title = loc("RT at a glance for the user [_1]", $UserObj->Name);
 
 if ($ARGS{Reset}) {
     my ($ok, $msg) = $UserObj->SetPreferences('HomepageSettings', {});
-    push @actions, $ok ? loc('Preferences saved for user [_2].', $UserObj->Name) : $msg;
+    push @actions, $ok ? loc('Preferences saved for user [_1].', $UserObj->Name) : $msg;
 }
 
 my ($default_portlets) = RT::System->new($session{'CurrentUser'})->Attributes->Named('HomepageSettings');
