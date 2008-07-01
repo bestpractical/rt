@@ -55,7 +55,8 @@
     Query => $Query,
     Rows => $Rows,
     OrderBy => $OrderBy,
-    Order => $Order &>
+    Order => $Order,
+    SavedSearchId => $SavedSearchId &>
 <& /Elements/CollectionList, 
     Query => $Query,
     AllowSorting => 1,
@@ -192,4 +193,5 @@ $Rows => undef
 $Page => 1
 $OrderBy => undef
 $Order => undef
+$SavedSearchId => undef
 </%ARGS>

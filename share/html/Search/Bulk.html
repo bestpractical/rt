@@ -53,7 +53,8 @@
     Query => $Query,
     Rows => $Rows,
     OrderBy => $OrderBy,
-    Order => $Order &>
+    Order => $Order,
+    SavedSearchId => $SavedSearchId &>
 
 <& /Elements/ListActions, actions => \@results &>
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Search/Bulk.html" enctype="multipart/form-data">
@@ -385,4 +386,5 @@ $RowsPerPage => undef
 $Order => 'ASC'
 $OrderBy => 'id'
 $Query => undef
+$SavedSearchId => undef
 </%args>
