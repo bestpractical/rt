@@ -296,25 +296,25 @@ IPC::Run3
 .
 
 $deps{'FASTCGI'} = [ text_to_hash( << '.') ];
-CGI 3.35
+CGI 3.38
 FCGI
 CGI::Fast 
 .
 
 $deps{'SPEEDYCGI'} = [ text_to_hash( << '.') ];
-CGI 3.35
+CGI 3.38
 CGI::SpeedyCGI
 .
 
 
 $deps{'MODPERL1'} = [ text_to_hash( << '.') ];
-CGI 3.35
+CGI 3.38
 Apache::Request
 Apache::DBI 0.92
 .
 
 $deps{'MODPERL2'} = [ text_to_hash( << '.') ];
-CGI 3.35
+CGI 3.38
 Apache::DBI
 HTML::Mason 1.36
 .
