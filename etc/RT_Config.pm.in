@@ -453,7 +453,7 @@ Set($CommentAddress , '');
 =item C<$DashboardAddress>
 
 The email address from which RT will send dashboards. If none is set, then
-C<$CorrespondAddress> will be used.
+C<$OwnerEmail> will be used.
 
 =cut
 

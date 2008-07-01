@@ -343,7 +343,7 @@ sub email_of {
 }
 
 sub get_from {
-    RT->Config->Get('DashboardAddress') || RT->Config->Get('CorrespondAddress')
+    RT->Config->Get('DashboardAddress') || RT->Config->Get('OwnerEmail')
 }
 
 {
