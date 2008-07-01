@@ -142,15 +142,6 @@ while (defined(my $user = $Users->Next)) {
         next;
     }
 
-    if (!$opts{"skip-acl"}) {
-        unless ($user->HasRight(Right => 'SubscribeDashboard', Object => $RT::System)) {
-            vverbose "Skipping over "
-                   . $user->Name
-                   . " due to lack of SubscribeDashboard right.";
-            next;
-        }
-    }
-
     my ($hour, $dow, $dom) = hour_dow_dom_in($user->Timezone || 'UTC');
     $hour .= ':00';
     vverbose "Checking [_1]'s subscriptions: hour [_2], dow [_3], dom [_4]",
@@ -192,14 +183,15 @@ sub send_dashboard {
 
     my $dashboard = RT::Dashboard->new($currentuser);
 
-    $dashboard->LoadById($subscription->SubValue('DashboardId'));
+    my ($ok, $msg) = $dashboard->LoadById($subscription->SubValue('DashboardId'));
 
-    # failed to load dashboard. perhaps it was deleted?
-    if (!$dashboard->Id) {
-        warning "Unable to load dashboard [_1] of subscription [_2] for user [_3]",
+    # failed to load dashboard. perhaps it was deleted or it changed privacy
+    if (!$ok) {
+        warning "Unable to load dashboard [_1] of subscription [_2] for user [_3]: [_4]",
             $subscription->SubValue('DashboardId'),
             $subscription->Id,
-            $currentuser->Name;
+            $currentuser->Name,
+            $msg;
 
         my $ok = RT::Interface::Email::SendEmailUsingTemplate(
             From      => $from,
@@ -542,10 +534,6 @@ being considered)
 
 Disable checking of whether each subscription should be sent right now (should
 only be used with --dryrun)
-
-=item --skip-acl
-
-Skip SubscribeDashboard access control checks
 
 =back
 
