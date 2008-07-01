@@ -171,12 +171,18 @@ Set( \$MailCommand, 'testfile');
 
 my $created_new_db;    # have we created new db? mainly for parallel testing
 
+sub db_requires_no_dba {
+    my $self = shift;
+    my $db_type = RT->Config->Get('DatabaseType');
+    return 1 if $db_type eq 'SQLite';
+}
+
 sub bootstrap_db {
     my $self = shift;
     my %args = @_;
 
    unless (defined $ENV{'RT_DBA_USER'} && defined $ENV{'RT_DBA_PASSWORD'}) {
-	BAIL_OUT("RT_DBA_USER and RT_DBA_PASSWORD environment variables need to be set in order to run 'make test'");
+	BAIL_OUT("RT_DBA_USER and RT_DBA_PASSWORD environment variables need to be set in order to run 'make test'") unless $self->db_requires_no_dba;
    }
     # bootstrap with dba cred
     my $dbh = _get_dbh(RT::Handle->SystemDSN,
