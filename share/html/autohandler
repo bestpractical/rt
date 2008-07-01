@@ -201,7 +201,7 @@ elsif ( RT->Config->Get('WebExternalAuth') ) {
                     'Zip',                   'Country'
                     )
                 {
-                    $m->callback( Attribute => $attribute, UserInfo => $new_user_info, CallbackName => 'NewUser' );
+                    $m->callback( Attribute => $attribute, User => $user, UserInfo => $new_user_info, CallbackName => 'NewUser' );
 
                     my $method = "Set$attribute";
                     $UserObj->$method( $new_user_info->{$attribute} )
