@@ -93,6 +93,11 @@ $RIGHTS = {
     EditSavedSearches => 'Edit saved searches for this group',        # loc_pair
     ShowSavedSearches => 'Display saved searches for this group',        # loc_pair
     SeeGroup => 'Make this group visible to user',                    # loc_pair
+
+    SeeDashboard       => 'View dashboards', #loc_pair
+    ModifyDashboard    => 'Create and modify dashboards', #loc_pair
+    SubscribeDashboard => 'Subscribe to email dashboards', #loc_pair
+    DeleteDashboard    => 'Delete dashboards', #loc_pair
 };
 
 # Tell RT::ACE that this sort of object can get acls granted
