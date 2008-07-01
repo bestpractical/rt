@@ -115,6 +115,7 @@ BEGIN {
 use RT::Interface::Web::Standalone;
 use Test::HTTP::Server::Simple;
 use Test::WWW::Mechanize;
+use File::Path 'mkpath';
 
 unshift @RT::Interface::Web::Standalone::ISA, 'Test::HTTP::Server::Simple';
 
@@ -167,6 +168,12 @@ Set( \$MailCommand, 'testfile');
                         min_level => $screen_logger->min_level,
                         action => { error     => 'warn',
                                     critical  => 'warn' } ) );
+
+    # XXX: this should really be totally isolated environment so we
+    # can parallelize and be sane
+    mkpath [ $RT::MasonSessionDir ]
+        if RT->Config->Get('DatabaseType');
+
 }
 
 my $created_new_db;    # have we created new db? mainly for parallel testing
