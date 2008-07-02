@@ -2728,7 +2728,7 @@ msgstr "Portlet global %1 sauvé."
 #: share/html/Admin/Elements/SelectTemplate:61
 #. (loc($Template->Name))
 msgid "Global template: %1"
-msgstr "Modèle global :  %1"
+msgstr "Modèle global : %1"
 
 #: share/html/Admin/Elements/UserTabs:76
 msgid "GnuPG"
@@ -3564,7 +3564,7 @@ msgid "Modify a scrip for queue %1"
 msgstr "Modifier le scrip pour la file %1"
 
 #: share/html/Admin/Global/Scrip.html:77
-msgid "Modify a scrip which applies to all queues"
+msgid "Modify a scrip that applies to all queues"
 msgstr "Modifier le scrip qui s'applique à toutes les files"
 
 #: share/html/Admin/CustomFields/Objects.html:92

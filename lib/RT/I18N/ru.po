@@ -1940,7 +1940,7 @@ msgid "Create a CustomField for queue %1"
 msgstr "Создать дополнительное поле для очереди %1"
 
 #: NOT FOUND IN SOURCE
-msgid "Create a CustomField which applies to all queues"
+msgid "Create a CustomField that applies to all queues"
 msgstr "Создать дополнительное поле для всех очередей"
 
 #: NOT FOUND IN SOURCE
@@ -4111,7 +4111,7 @@ msgid "Modify a CustomField for queue %1"
 msgstr "Изменить дополнительное поле для очереди %1"
 
 #: NOT FOUND IN SOURCE
-msgid "Modify a CustomField which applies to all queues"
+msgid "Modify a CustomField that applies to all queues"
 msgstr "Изменить дополнительное поле, которое применяется ко всем очередям"
 
 #: share/html/Admin/Queues/Scrip.html:84
@@ -4120,7 +4120,7 @@ msgid "Modify a scrip for queue %1"
 msgstr "Изменить скриплет для очереди %1"
 
 #: share/html/Admin/Global/Scrip.html:77
-msgid "Modify a scrip which applies to all queues"
+msgid "Modify a scrip that applies to all queues"
 msgstr "Изменить скриплет, который действует для всех очередей"
 
 #: share/html/Admin/CustomFields/Objects.html:92

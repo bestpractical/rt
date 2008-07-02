@@ -1870,7 +1870,7 @@ msgid "Create a CustomField for queue %1"
 msgstr "Crear un campo personalizables para la cola %1"
 
 #: NOT FOUND IN SOURCE
-msgid "Create a CustomField which applies to all queues"
+msgid "Create a CustomField that applies to all queues"
 msgstr "Crear un campo personalizable que se aplique a todas las colas"
 
 #: NOT FOUND IN SOURCE
@@ -3060,7 +3060,7 @@ msgstr ""
 #: share/html/Admin/Elements/SelectTemplate:61
 #. (loc($Template->Name))
 msgid "Global template: %1"
-msgstr "Plantilla global"
+msgstr "Plantilla global: %1"
 
 #: share/html/Admin/Elements/UserTabs:76
 msgid "GnuPG"
@@ -4002,7 +4002,7 @@ msgid "Modify a CustomField for queue %1"
 msgstr "Modificar un campo personalizable para la cola %1"
 
 #: NOT FOUND IN SOURCE
-msgid "Modify a CustomField which applies to all queues"
+msgid "Modify a CustomField that applies to all queues"
 msgstr "Modificar un campo personalizable que se aplique a todas las colas"
 
 #: share/html/Admin/Queues/Scrip.html:84
@@ -4011,7 +4011,7 @@ msgid "Modify a scrip for queue %1"
 msgstr "Modificar un scrip para la cola %1"
 
 #: share/html/Admin/Global/Scrip.html:77
-msgid "Modify a scrip which applies to all queues"
+msgid "Modify a scrip that applies to all queues"
 msgstr "Modificar un scrip que se aplique a todas las colas"
 
 #: share/html/Admin/CustomFields/Objects.html:92

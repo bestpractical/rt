@@ -116,7 +116,6 @@ $m->callback(
 );
 
 foreach ( $SearchArg, $ProcessedSearchArg ) {
-    $_->{'Query'}  =~ s/__CurrentUser__/$session{'CurrentUser'}->Id/ge;
     $_->{'Format'} =~ s/__(Web(?:Path|Base|BaseURL))__/scalar RT->Config->Get($1)/ge;
     $_->{'Format'} =~ s/__loc\(["']?(\w+)["']?\)__/loc("$1")/ge;
     if ( $_->{'Query'} =~ /__Bookmarks__/ ) {

@@ -799,6 +799,17 @@ What portion of RT's URLspace should not require authentication.
 
 Set($WebNoAuthRegex, qr{^ (?:/+NoAuth/ | /+REST/\d+\.\d+/NoAuth/) }x );
 
+=item C<$SelfServiceRegex>
+
+What portion of RT's URLspace should be accessible to Unprivileged users
+This does not override the redirect from F</Ticket/Display.html> to
+F</SelfService/Display.html> when Unprivileged users attempt to access
+ticked displays
+
+=cut
+
+Set($SelfServiceRegex, qr!^(?:/+SelfService/)!x );
+
 =item C<$MessageBoxWidth>, C<$MessageBoxHeight>
 
 For message boxes, set the entry box width, height and what type of

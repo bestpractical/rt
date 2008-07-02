@@ -3357,7 +3357,7 @@ msgid "Modify a scrip for queue %1"
 msgstr "Modifiera ett scrip för kö %1"
 
 #: share/html/Admin/Global/Scrip.html:77
-msgid "Modify a scrip which applies to all queues"
+msgid "Modify a scrip that applies to all queues"
 msgstr "Modifiera ett scrip som gäller för alla köer"
 
 #: share/html/Admin/CustomFields/Objects.html:92

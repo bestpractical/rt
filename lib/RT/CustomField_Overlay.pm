@@ -271,6 +271,9 @@ sub Load {
 
 Loads the Custom field named NAME.
 
+Will load a Disabled Custom Field even if there is a non-disabled Custom Field
+with the same Name.
+
 If a Queue parameter is specified, only look for ticket custom fields tied to that Queue.
 
 If the Queue parameter is '0', look for global ticket custom fields.

@@ -238,6 +238,7 @@ Calendar::Simple
 Encode 2.13
 CSS::Squish 0.06
 File::Glob
+Devel::StackTrace 1.19
 .
 
 $deps{'MASON'} = [ text_to_hash( << '.') ];

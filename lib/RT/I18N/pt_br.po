@@ -1909,7 +1909,7 @@ msgid "Create a CustomField for queue %1"
 msgstr "Criar um Campo Personalizado para a fila %1"
 
 #: NOT FOUND IN SOURCE
-msgid "Create a CustomField which applies to all queues"
+msgid "Create a CustomField that applies to all queues"
 msgstr "Criar um Campo Personalizado para todas as filas"
 
 #: NOT FOUND IN SOURCE
@@ -4042,7 +4042,7 @@ msgid "Modify a CustomField for queue %1"
 msgstr "Modificar um Campo Personalizado para a fila %1"
 
 #: NOT FOUND IN SOURCE
-msgid "Modify a CustomField which applies to all queues"
+msgid "Modify a CustomField that applies to all queues"
 msgstr "Modificar um Campo Personalizado que se aplica a todas as filas"
 
 #: share/html/Admin/Queues/Scrip.html:84
@@ -4051,7 +4051,7 @@ msgid "Modify a scrip for queue %1"
 msgstr "Modificar um scrip para a fila %1"
 
 #: share/html/Admin/Global/Scrip.html:77
-msgid "Modify a scrip which applies to all queues"
+msgid "Modify a scrip that applies to all queues"
 msgstr "Modificar um scrip aplicável a todas as filas"
 
 #: share/html/Admin/CustomFields/Objects.html:92
