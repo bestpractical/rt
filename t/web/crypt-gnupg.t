@@ -79,7 +79,7 @@ $m->form_with_fields('Sign', 'Encrypt');
 $m->field(Encrypt => 1);
 $m->submit;
 
-unlink "t/mailbox";
+RT::Test->clean_caught_mails;
 
 $m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
@@ -148,7 +148,7 @@ $m->field(Encrypt => undef);
 $m->field(Sign => 1);
 $m->submit;
 
-unlink "t/mailbox";
+RT::Test->clean_caught_mails;
 
 $m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
@@ -220,7 +220,8 @@ $m->field(Encrypt => 1);
 $m->field(Sign => 1);
 $m->submit;
 
-unlink "t/mailbox";
+RT::Test->clean_caught_mails;
+
 
 $m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
@@ -285,7 +286,7 @@ MAIL
     like($attachments[0]->Content, qr/$RT::rtname/, "RT's mail includes this instance's name");
 }
 
-unlink "t/mailbox";
+RT::Test->clean_caught_mails;
 
 $m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');

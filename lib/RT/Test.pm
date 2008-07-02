@@ -544,13 +544,14 @@ sub send_via_mailgate {
     return ($status, $id);
 }
 
+my $mailbox_catcher = File::Temp->new( OPEN => 0, CLEANUP => 0 )->filename;
 sub set_mail_catcher {
     my $self = shift;
     my $catcher = sub {
         my $MIME = shift;
 
-        open my $handle, '>>', 't/mailbox'
-            or die "Unable to open t/mailbox for appending: $!";
+        open my $handle, '>>', $mailbox_catcher
+            or die "Unable to open $mailbox_catcher for appending: $!";
 
         $MIME->print($handle);
         print $handle "%% split me! %%\n";
@@ -562,7 +563,11 @@ sub set_mail_catcher {
 sub fetch_caught_mails {
     my $self = shift;
     return grep /\S/, split /%% split me! %%/,
-        RT::Test->file_content( 't/mailbox', 'unlink' => 1, noexist => 1 );
+        RT::Test->file_content( $mailbox_catcher, 'unlink' => 1, noexist => 1 );
+}
+
+sub clean_caught_mails {
+    unlink $mailbox_catcher;
 }
 
 sub file_content {
@@ -570,7 +575,7 @@ sub file_content {
     my $path = shift;
     my %args = @_;
 
-    $path = File::Spec->catfile( @$path ) if ref $path;
+    $path = File::Spec->catfile( @$path ) if ref $path eq 'ARRAY';
 
     diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
 
