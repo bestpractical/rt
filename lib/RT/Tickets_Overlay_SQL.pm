@@ -197,9 +197,9 @@ sub _parser {
             $class = $FIELD_METADATA{$key}->[0];
         }
         die "Unknown field '$key' in '$string'" unless $class;
-      
-      # replace __CurrentUser__ with id
-      $val = $self->CurrentUser->id if $val eq '__CurrentUser__';
+
+        # replace __CurrentUser__ with id
+        $value = $self->CurrentUser->id if $value eq '__CurrentUser__';
 
 
         unless( $dispatch{ $class } ) {
