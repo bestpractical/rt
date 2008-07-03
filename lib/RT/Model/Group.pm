@@ -219,7 +219,7 @@ sub load_user_defined_group {
 
 Loads a user's acl equivalence group. Takes a principal object.
 ACL equivalnce groups are used to simplify the acl system. Each user
-has one group that only he is a member of. rights granted to the user
+has one group that only he is a member of. Rights granted to the user
 are actually granted to that group. This greatly simplifies ACL checks.
 While this results in a somewhat more complex setup when creating users
 and granting ACLs, it _greatly_ simplifies acl checks.
