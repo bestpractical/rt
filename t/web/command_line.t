@@ -109,12 +109,8 @@ ok($val,$msg);
     expect_like(qr/Message recorded/, "Added the correspondence");
     ### should test to make sure it actually got added
 
-    # figure out the path to the test data
-    (my $volume, my $directories, my $file) = File::Spec->splitpath($0);
-    my $datadir = File::Spec->catdir(File::Spec->curdir(), $directories,
-        File::Spec->updir(), "data");
-    my $test_email = File::Spec->catfile(
-        File::Spec->catdir($datadir, "emails"), "lorem-ipsum");
+    my $test_email = RT::Test::get_relocateable_file('lorem-ipsum', qw(data emails));
+    warn("test email path: $test_email");
 
     # add attachments to a ticket
     # text attachment
