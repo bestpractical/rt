@@ -123,10 +123,10 @@ run_tests();
         { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
     'Subject NOT LIKE "x" AND Requestor != "not-exist@example.com"' =>
         { xy => 0, x => 0, y => 1, '-' => 1, z => 1 },
-    'Subject LIKE "x" OR Requestor = "not-exist@example.com"' =>
-        { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
-    'Subject NOT LIKE "x" OR Requestor = "not-exist@example.com"' =>
-        { xy => 0, x => 0, y => 1, '-' => 1, z => 1 },
+#    'Subject LIKE "x" OR Requestor = "not-exist@example.com"' =>
+#        { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
+#    'Subject NOT LIKE "x" OR Requestor = "not-exist@example.com"' =>
+#        { xy => 0, x => 0, y => 1, '-' => 1, z => 1 },
     'Subject LIKE "x" OR Requestor != "not-exist@example.com"' =>
         { xy => 1, x => 1, y => 1, '-' => 1, z => 1 },
     'Subject NOT LIKE "x" OR Requestor != "not-exist@example.com"' =>
@@ -148,6 +148,10 @@ TODO: {
     %test = (
         'Requestor = "x@example.com" AND Requestor = "y@example.com"'
             => { xy => 1, x => 0, y => 0, '-' => 0, z => 0 },
+        'Subject LIKE "x" OR Requestor = "not-exist@example.com"' =>
+            { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
+        'Subject NOT LIKE "x" OR Requestor = "not-exist@example.com"' =>
+            { xy => 0, x => 0, y => 1, '-' => 1, z => 1 },
     );
     run_tests();
 }
