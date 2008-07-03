@@ -83,15 +83,15 @@ my $current_subtab;
 my ($title, @results);
 my $tried_create = 0;
 
+# user went directly to Modify.html
+$Create = 1 if !$id;
+
 use RT::Dashboard;
 
 my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
-my @privacies = $Dashboard->_PrivacyObjects(Modify => 1);
+my @privacies = $Dashboard->_PrivacyObjects(($Create ? 'Create' : 'Modify') => 1);
 
 Abort(loc("Permission denied")) if @privacies == 0;
-
-# user went directly to Modify.html
-$Create = 1 if !$id;
 
 if ($Create) {
     $current_subtab = 'Dashboards/Modify.html?Create=1';

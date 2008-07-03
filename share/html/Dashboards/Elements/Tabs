@@ -96,7 +96,7 @@ $tabs->{"A"} = { title => loc('Select dashboard'),
                  path  => "Dashboards/index.html" };
 
 my $dashboard = RT::Dashboard->new($session{'CurrentUser'});
-my @objects = $dashboard->_PrivacyObjects(Modify => 1);
+my @objects = $dashboard->_PrivacyObjects(Create => 1);
 
 if (@objects) {
     $tabs->{"B"} = { title     => loc('New dashboard'),

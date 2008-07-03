@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 38;
+use Test::More tests => 36;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -26,7 +26,7 @@ $user_obj->PrincipalObj->GrantRight(Right => $_, Object => $queue)
 # grant the user all these rights so we can make sure that the group rights
 # are checked and not these as well
 $user_obj->PrincipalObj->GrantRight(Right => $_, Object => $RT::System)
-    for qw/SeeDashboard ModifyDashboard SubscribeDashboard DeleteDashboard/;
+    for qw/SubscribeDashboard CreateOwnDashboard SeeOwnDashboard ModifyOwnDashboard DeleteOwnDashboard/;
 # }}}
 # create and test groups (outer < inner < user) {{{
 my $inner_group = RT::Group->new($RT::SystemUser);
@@ -63,7 +63,7 @@ $m->form_name('ModifyDashboard');
 is_deeply([$m->current_form->find_input('Privacy')->possible_values], ["RT::User-" . $user_obj->Id], "the only selectable privacy is user");
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
 
-$user_obj->PrincipalObj->GrantRight(Right => 'SubscribeDashboard', Object => $inner_group);
+$user_obj->PrincipalObj->GrantRight(Right => 'CreateGroupDashboard', Object => $inner_group);
 
 $m->follow_link_ok({text => "New dashboard"});
 $m->form_name('ModifyDashboard');
@@ -87,18 +87,13 @@ is($dashboard->Privacy, 'RT::Group-' . $inner_group->Id, "correct privacy");
 is($dashboard->PossibleHiddenSearches, 0, "all searches are visible");
 
 $m->get_ok("/Dashboards/Modify.html?id=$id");
-$m->content_lacks("inner dashboard", "no SeeDashboard right");
+$m->content_lacks("inner dashboard", "no SeeGroupDashboard right");
 $m->content_contains("Permission denied");
 
-$user_obj->PrincipalObj->GrantRight(Right => 'SeeDashboard', Object => $inner_group);
+$user_obj->PrincipalObj->GrantRight(Right => 'SeeGroupDashboard', Object => $inner_group);
 $m->get_ok("/Dashboards/Modify.html?id=$id");
-$m->content_contains("inner dashboard", "we now have SeeDashboard right");
+$m->content_contains("inner dashboard", "we now have SeeGroupDashboard right");
 $m->content_lacks("Permission denied");
 
-$m->content_lacks('Subscription', "Subscription link still hidden because we lack SubscribeDashboard on this dashboard's privacy");
-
-$user_obj->PrincipalObj->GrantRight(Right => 'SubscribeDashboard', Object => $inner_group);
-
-$m->get_ok("/Dashboards/Modify.html?id=$id");
-$m->content_contains('Subscription', "We now have SubscribeDashboard on inner group");
+$m->content_contains('Subscription', "Subscription link not hidden because we have SubscribeDashboard");
 

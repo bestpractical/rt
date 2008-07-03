@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 77;
+use Test::More tests => 80;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -25,20 +25,27 @@ $user_obj->PrincipalObj->GrantRight(Right => 'OwnTicket',  Object => $queue);
 ok $m->login(customer => 'customer'), "logged in";
 
 $m->get_ok($url."Dashboards/index.html");
-$m->content_lacks("New dashboard", "No 'new dashboard' link because we have no ModifyDashboard");
+$m->content_lacks("New dashboard", "No 'new dashboard' link because we have no CreateOwnDashboard");
 
 $m->get_ok($url."Dashboards/Modify.html?Create=1");
 $m->content_contains("Permission denied");
 $m->content_lacks("Save Changes");
 
-$user_obj->PrincipalObj->GrantRight(Right => 'ModifyDashboard', Object => $RT::System);
+$user_obj->PrincipalObj->GrantRight(Right => 'ModifyOwnDashboard', Object => $RT::System);
+
+# Modify itself is no longer good enough, you need Create
+$m->get_ok($url."Dashboards/Modify.html?Create=1");
+$m->content_contains("Permission denied");
+$m->content_lacks("Save Changes");
+
+$user_obj->PrincipalObj->GrantRight(Right => 'CreateOwnDashboard', Object => $RT::System);
 
 $m->get_ok($url."Dashboards/Modify.html?Create=1");
 $m->content_lacks("Permission denied");
 $m->content_contains("Save Changes");
 
 $m->get_ok($url."Dashboards/index.html");
-$m->content_contains("New dashboard", "'New dashboard' link because we now have ModifyDashboard");
+$m->content_contains("New dashboard", "'New dashboard' link because we now have ModifyOwnDashboard");
 
 $m->follow_link_ok({text => "New dashboard"});
 $m->form_name('ModifyDashboard');
@@ -47,15 +54,15 @@ $m->content_lacks('Delete', "Delete button hidden because we are creating");
 $m->click_button(value => 'Save Changes');
 $m->content_lacks("No permission to create dashboards");
 $m->content_contains("Saved dashboard different dashboard");
-$m->content_lacks('Delete', "Delete button hidden because we lack DeleteDashboard");
+$m->content_lacks('Delete', "Delete button hidden because we lack DeleteOwnDashboard");
 
 $m->get_ok($url."Dashboards/index.html");
-$m->content_lacks("different dashboard", "we lack SeeDashboard");
+$m->content_lacks("different dashboard", "we lack SeeOwnDashboard");
 
-$user_obj->PrincipalObj->GrantRight(Right => 'SeeDashboard', Object => $RT::System);
+$user_obj->PrincipalObj->GrantRight(Right => 'SeeOwnDashboard', Object => $RT::System);
 
 $m->get_ok($url."Dashboards/index.html");
-$m->content_contains("different dashboard", "we now have SeeDashboard");
+$m->content_contains("different dashboard", "we now have SeeOwnDashboard");
 $m->content_lacks("Permission denied");
 
 $m->follow_link_ok({text => "different dashboard"});
@@ -162,12 +169,12 @@ RT::Record->FlushCache if RT::Record->can('FlushCache');
 is($user_obj->Attributes->Named('Subscription'), 0, "no more subscriptions");
 
 $m->get_ok("/Dashboards/Modify.html?id=$id&Delete=1");
-$m->content_contains("Permission denied", "unable to delete dashboard because we lack DeleteDashboard");
+$m->content_contains("Permission denied", "unable to delete dashboard because we lack DeleteOwnDashboard");
 
-$user_obj->PrincipalObj->GrantRight(Right => 'DeleteDashboard', Object => $RT::System);
+$user_obj->PrincipalObj->GrantRight(Right => 'DeleteOwnDashboard', Object => $RT::System);
 
 $m->get_ok("/Dashboards/Modify.html?id=$id");
-$m->content_contains('Delete', "Delete button shows because we have DeleteDashboard");
+$m->content_contains('Delete', "Delete button shows because we have DeleteOwnDashboard");
 
 $m->form_name('ModifyDashboard');
 $m->click_button(name => 'Delete');

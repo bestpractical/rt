@@ -185,7 +185,7 @@ sub Save {
         unless $object;
 
     return (0, $self->loc("Permission denied"))
-        unless $self->CurrentUserCanModify($privacy);
+        unless $self->CurrentUserCanCreate($privacy);
 
     my ($att_id, $att_msg) = $self->SaveAttribute($object, \%args);
 
@@ -358,7 +358,8 @@ sub IsVisibleTo {
     return 0;
 }
 
-sub CurrentUserCanSee { 1 }
+sub CurrentUserCanSee    { 1 }
+sub CurrentUserCanCreate { 1 }
 sub CurrentUserCanModify { 1 }
 sub CurrentUserCanDelete { 1 }
 

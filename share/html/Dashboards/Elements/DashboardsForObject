@@ -58,8 +58,12 @@ my $privacy = RT::Dashboard->_build_privacy($Object);
 while (my $attr = $Object->Attributes->Next) {
     if ($attr->Name =~ /^Dashboard\b/) {
         my $dashboard = RT::Dashboard->new($session{'CurrentUser'});
-        my ($ok) = $dashboard->Load($privacy, $attr->id);
-        next if !$ok;
+        my ($ok, $msg) = $dashboard->Load($privacy, $attr->id);
+
+        if (!$ok) {
+            $RT::Logger->debug("Unable to load dashboard $ok (privacy $privacy): $msg");
+            next;
+        }
 
         if ($Object->isa('RT::System')) {
             push @{ $dashboards{system} }, $dashboard;
