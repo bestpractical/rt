@@ -49,7 +49,7 @@ use warnings;
 use strict;
 
 package RT::URI;
-use base qw(RT::Base);
+use base 'RT::Base';
 
 use RT::URI::base;
 use Carp;
