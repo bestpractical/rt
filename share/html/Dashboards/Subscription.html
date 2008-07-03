@@ -62,15 +62,15 @@
 <&| /Widgets/TitleBox, title => loc('Dashboard') &>
 
 <table>
-<tr><td align="right">
+<tr><td class="label">
 <&|/l&>Dashboard</&>:
-</td><td>
+</td><td class="value">
 <% $DashboardObj->Name %>
 </td></tr>
 
-<tr><td align="right">
+<tr><td class="label">
 <&|/l&>Queries</&>:
-</td><td>
+</td><td class="value">
 % my @searches = grep { defined } $DashboardObj->Searches;
 % if (!@searches) {
 (none)
@@ -97,9 +97,9 @@
 <&| /Widgets/TitleBox, title => loc('Subscription') &>
 
 <table>
-<tr><td align="right">
+<tr><td class="label">
 <&|/l&>Hour</&>:
-</td><td>
+</td><td class="value">
 <select name="Hour">
 % for my $hour (0..23) {
 %     my $formatted = sprintf '%02d:00', $hour;
@@ -112,9 +112,9 @@
 </select>
 (in <%$timezone%>)
 </td></tr>
-<tr><td align="right">
+<tr><td class="label">
 <&|/l&>Frequency</&>:
-</td><td>
+</td><td class="value">
 <input type="radio" name="Frequency" value="daily" <% $fields{'Frequency'} eq 'daily' ? 'checked="checked"' : "" %>>
     daily
 </input><br />
@@ -137,9 +137,9 @@ monthly</input> , on day
 </select>
 
 </td></tr>
-<tr><td align="right">
+<tr><td class="label">
 <&|/l&>Rows</&>:
-</td><td>
+</td><td class="value">
 <select name="Rows">
 %   for my $rows (1, 2, 5, 10, 15, 20, 25, 50, 75, 100, 0) {
     <option value="<% $rows %>" <% $fields{'Rows'} eq $rows ? 'selected="selected"' : '' %>><% loc($rows || 'Unlimited') %></option>
