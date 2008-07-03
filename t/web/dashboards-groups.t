@@ -19,9 +19,14 @@ my $currentuser = RT::CurrentUser->new($user_obj);
 
 my $queue = RT::Queue->new($RT::SystemUser);
 $queue->Create(Name => 'SearchQueue'.$$);
-$user_obj->PrincipalObj->GrantRight(Right => 'SeeQueue',   Object => $queue);
-$user_obj->PrincipalObj->GrantRight(Right => 'ShowTicket', Object => $queue);
-$user_obj->PrincipalObj->GrantRight(Right => 'OwnTicket',  Object => $queue);
+
+$user_obj->PrincipalObj->GrantRight(Right => $_, Object => $queue)
+    for qw/SeeQueue ShowTicket OwnTicket/;
+
+# grant the user all these rights so we can make sure that the group rights
+# are checked and not these as well
+$user_obj->PrincipalObj->GrantRight(Right => $_, Object => $RT::System)
+    for qw/SeeDashboard ModifyDashboard SubscribeDashboard DeleteDashboard/;
 # }}}
 # create and test groups (outer < inner < user) {{{
 my $inner_group = RT::Group->new($RT::SystemUser);
@@ -52,17 +57,19 @@ ok($inner_group->HasMemberRecursively($user_obj->PrincipalId), "inner has user r
 ok $m->login(customer => 'customer'), "logged in";
 
 $m->get_ok("$url/Dashboards");
-$m->content_lacks("New dashboard", "new dashboard link hidden because we have no ModifyDashboard right");
-
-$user_obj->PrincipalObj->GrantRight(Right => 'ModifyDashboard', Object => $inner_group);
-
-$m->get_ok("$url/Dashboards");
-$m->content_contains("New dashboard", "new dashboard link shows because we have the ModifyDashboard right on inner group");
 
 $m->follow_link_ok({text => "New dashboard"});
 $m->form_name('ModifyDashboard');
-is_deeply([$m->current_form->param('Privacy')], ["RT::Group-" . $inner_group->Id], "the only selectable privacy is inner group");
+is_deeply([$m->current_form->find_input('Privacy')->possible_values], ["RT::User-" . $user_obj->Id], "the only selectable privacy is user");
+$m->content_lacks('Delete', "Delete button hidden because we are creating");
+
+$user_obj->PrincipalObj->GrantRight(Right => 'SubscribeDashboard', Object => $inner_group);
+
+$m->follow_link_ok({text => "New dashboard"});
+$m->form_name('ModifyDashboard');
+is_deeply([$m->current_form->find_input('Privacy')->possible_values], ["RT::User-" . $user_obj->Id, "RT::Group-" . $inner_group->Id], "the only selectable privacies are user and inner group (not outer group)");
 $m->field("Name" => 'inner dashboard');
+$m->field("Privacy" => "RT::Group-" . $inner_group->Id);
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
 
 $m->click_button(value => 'Save Changes');
