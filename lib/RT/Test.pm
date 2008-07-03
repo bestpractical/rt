@@ -641,8 +641,14 @@ sub import_gnupg_key {
     $key .= ".$type.key";
 
     require RT::Crypt::GnuPG;
+    (my $volume, my $directories, my $file) = File::Spec->splitpath($0);
+    my $keys_dir = File::Spec->catdir( File::Spec->curdir(), $directories,
+        File::Spec->updir(), qw(data gnupg keys) );
+    # this is a bit hackish; calling it from somewhere that's not a subdir
+    # of t/ will fail
     return RT::Crypt::GnuPG::ImportKey(
-        RT::Test->file_content([get_relocateable_dir(qw(data gnupg keys)), $key])
+        RT::Test->file_content([get_relocateable_dir(File::Spec->updir(), 'data',
+        'gnupg', 'keys')), $key])
     );
 }
 

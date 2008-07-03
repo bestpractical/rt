@@ -111,8 +111,6 @@ ok($val,$msg);
 
     my $test_email = RT::Test::get_relocateable_file('lorem-ipsum',
         (File::Spec->updir(), 'data', 'emails'));
-    warn("test email path: $test_email");
-
     # add attachments to a ticket
     # text attachment
     check_attachment($test_email);
