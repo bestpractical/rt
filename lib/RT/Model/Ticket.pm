@@ -827,8 +827,7 @@ sub add_watcher {
 
     if ( $args{'email'} ) {
         my ($addr) = Mail::Address->parse( $args{'email'} );
-        return ( 0, _( "Couldn't parse address from '%1 string", $args{'email'} ) )
-            unless $addr;
+        return ( 0, _( "Couldn't parse address from '%1 string", $args{'email'} ) ) unless $addr;
 
         if ( lc $self->current_user->user_object->email eq lc RT::Model::User->canonicalize_email( $addr->address ) ) {
             $args{'principal_id'} = $self->current_user->id;
