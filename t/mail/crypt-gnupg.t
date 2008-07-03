@@ -18,9 +18,9 @@ RT->Config->Set( LogStackTraces => 'error' );
 use File::Spec ();
 use Cwd;
 
-(my $volume, my $directories, my $file) = File::Spec->splitpath($0);
-my $homedir = File::Spec->catdir( cwd(), $directories, File::Spec->updir(),
+my $homedir = RT::Test::get_abs_relocateable_dir(File::Spec->updir(),
     qw(data gnupg keyrings) );
+
 mkdir $homedir;
 
 use_ok('RT::Crypt::GnuPG');

@@ -14,9 +14,8 @@ plan tests => 6;
 
 use Cwd 'getcwd';
 
-(my $volume, my $directories, my $file) = File::Spec->splitpath($0);
-my $homedir = File::Spec->catdir( getcwd(), $directories, File::Spec->updir(),
-    qw(data gnupg keyrings) );
+my $homedir = RT::Test::get_abs_relocateable_dir(File::Spec->updir(),
+    qw(data gnupg keyrings));
 
 RT->Config->Set( LogToScreen => 'debug' );
 RT->Config->Set( 'GnuPG',
