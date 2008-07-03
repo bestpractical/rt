@@ -6,10 +6,10 @@ use warnings;
 use Test::More;
 use Test::Deep;
 use File::Spec;
+use RT::Test ();
 BEGIN {
-    (my $volume, my $directories, my $file) = File::Spec->splitpath($0);
-    my $shredder_utils = File::Spec->catfile(
-        File::Spec->catdir(File::Spec->curdir(), $directories), "utils.pl");
+    my $shredder_utils = RT::Test::get_relocateable_file('utils.pl',
+        File::Spec->curdir());
     require $shredder_utils;
 }
 

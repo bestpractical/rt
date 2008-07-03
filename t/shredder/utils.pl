@@ -138,10 +138,8 @@ sub _init_db
     foreach ( qw(Type Host Port Name User Password) ) {
         $ENV{ "RT_DB_". uc $_ } = RT->Config->Get("Database$_");
     }
-    (my $volume, my $directories, my $file) = File::Spec->splitpath($0);
-    my $rt_setup_database = File::Spec->catfile(
-        File::Spec->catdir(File::Spec->curdir(), $directories, File::Spec->updir(),
-        File::Spec->updir(), "sbin"), "rt-setup-database");
+    my $rt_setup_database = RT::Test::get_relocateable_file(
+        'rt-setup-database', (File::Spec->updir(), File::Spec->updir(), 'sbin'));
     my $cmd =  "$^X $rt_setup_database --action init";
 
     my ($child_out, $child_in);
@@ -222,9 +220,9 @@ location of this file, where $directories is the directory portion of $0.
 =cut
 
 sub tmpdir {
-    (my $volume, my $directories, my $file) = File::Spec->splitpath($0);
-    return File::Spec->catdir(Cwd->getcwd(),
-        $directories, File::Spec->updir(), qw(data shredder)) }
+    return RT::Test::get_abs_relocateable_dir(File::Spec->updir(),
+        'data', 'shredder');
+}
 
 =head2 create_tmpdir
 
