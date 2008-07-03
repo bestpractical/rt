@@ -1,7 +1,6 @@
 #!/usr/bin/perl -w
 
 use strict;
-use File::Spec;
 use Test::Expect;
 use Test::More tests => 241;
 use RT::Test;
