@@ -73,7 +73,9 @@ for my $attr ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription'
 % } else {
     <table class="collection-as-table">
         <tr class="collection-as-table">
+% if ($Verbose) {
             <th class="collection-as-table"><% loc("#") %></th>
+% }
             <th class="collection-as-table"><% loc("Name") %></th>
             <th class="collection-as-table"><% loc("Subscription") %></th>
         </tr>
@@ -86,11 +88,13 @@ for my $attr ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription'
 %                 $dashboard->Name;
 
         <tr class="collection-as-table <% ++$i % 2 ? 'oddline' : 'evenline' %>">
+% if ($Verbose) {
             <td class="collection-as-table">
                 <a href="<% $url %>">
                     <% $dashboard->Id %>
                 </a>
             </td>
+% }
             <td class="collection-as-table">
                 <a href="<% $url %>">
                     <% $dashboard->Name %>
