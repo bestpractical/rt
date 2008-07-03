@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Test::More tests => 1;
+use RT::Test ();
 
 my $ok = 1;
 
@@ -23,7 +24,7 @@ find( {
         $ok = 0;
         diag "error in ${File::Find::name}:\n$@";
     },
-}, 'share/html');
+}, RT::Test::get_relocateable_dir('../share/html'));
 ok($ok, "mason syntax is ok");
 
 use HTML::Mason;
