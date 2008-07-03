@@ -632,6 +632,11 @@ sub get_relocateable_file {
     return File::Spec->catfile(get_relocateable_dir(@_), $file);
 }
 
+sub get_abs_relocateable_dir {
+    (my $volume, my $directories, my $file) = File::Spec->splitpath($0);
+    return File::Spec->catdir(Cwd->getcwd(), $directories, @_);
+}
+
 sub import_gnupg_key {
     my $self = shift;
     my $key = shift;
@@ -648,7 +653,7 @@ sub import_gnupg_key {
     # of t/ will fail
     return RT::Crypt::GnuPG::ImportKey(
         RT::Test->file_content([get_relocateable_dir(File::Spec->updir(), 'data',
-        'gnupg', 'keys')), $key])
+        'gnupg', 'keys'), $key])
     );
 }
 
