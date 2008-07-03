@@ -603,6 +603,21 @@ sub find_executable {
     return undef;
 }
 
+sub get_relocateable_dir {
+    # takes a path relative to the top-level test dir and retuns
+    # a path relative to the invocation path
+    (my $volume, my $directories, my $file) = File::Spec->splitpath($0);
+    return File::Spec->catdir( File::Spec->curdir(), $directories,
+        File::Spec->updir(), @_);
+}
+
+sub get_relocateable_file {
+    # same as get_relocateable_dir, but takes a file and a path instead
+    # of just a path
+    my $file = shift;
+    return File::Spec->catfile(get_relocateable_dir(@_), $file);
+}
+
 sub import_gnupg_key {
     my $self = shift;
     my $key = shift;
@@ -612,11 +627,8 @@ sub import_gnupg_key {
     $key .= ".$type.key";
 
     require RT::Crypt::GnuPG;
-    (my $volume, my $directories, my $file) = File::Spec->splitpath($0);
-    my $keys_dir = File::Spec->catdir( File::Spec->curdir(), $directories,
-        File::Spec->updir(), qw(data gnupg keys) );
     return RT::Crypt::GnuPG::ImportKey(
-        RT::Test->file_content([$keys_dir, $key])
+        RT::Test->file_content([get_relocateable_dir(qw(data gnupg keys)), $key])
     );
 }
 
