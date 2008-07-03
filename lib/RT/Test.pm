@@ -54,7 +54,6 @@ use warnings;
 use Test::More;
 use Socket;
 use File::Temp;
-use File::Spec;
 my $config;
 our ($existing_server, $port, $dbname);
 my $mailsent;
@@ -610,13 +609,9 @@ sub import_gnupg_key {
 
     $key =~ s/\@/-at-/g;
     $key .= ".$type.key";
-
     require RT::Crypt::GnuPG;
-    (my $volume, my $directories, my $file) = File::Spec->splitpath($0);
-    my $keys_dir = File::Spec->catdir( File::Spec->curdir(), $directories,
-        File::Spec->updir(), qw(data gnupg keys) );
     return RT::Crypt::GnuPG::ImportKey(
-        RT::Test->file_content([$keys_dir, $key])
+        RT::Test->file_content([qw(t data gnupg keys), $key])
     );
 }
 

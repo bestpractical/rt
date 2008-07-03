@@ -49,10 +49,7 @@ RT::Test->import_gnupg_key('rt-recipient@example.com');
 
 my @ticket_ids;
 
-(my $volume, my $directories, my $file) = File::Spec->splitpath($0);
-my $emaildatadir = File::Spec->catdir( File::Spec->curdir(), $directories,
-    File::Spec->updir(), qw(data gnupg emails) );
-my @files = glob("$emaildatadir/*-signed-*");
+my @files = glob("t/data/gnupg/emails/*-signed-*");
 foreach my $file ( @files ) {
     diag "testing $file" if $ENV{'TEST_VERBOSE'};
 

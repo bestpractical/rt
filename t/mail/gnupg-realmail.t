@@ -69,10 +69,7 @@ sub email_ok {
     my ($eid, $usage, $format, $attachment) = @_;
     diag "email_ok $eid: $usage, $format, $attachment" if $ENV{'TEST_VERBOSE'};
 
-    (my $volume, my $directories, my $file_new) = File::Spec->splitpath($0);
-    my $emaildatadir = File::Spec->catdir( File::Spec->curdir(), $directories,
-        File::Spec->updir(), qw(data gnupg emails));
-    my ($file) = glob("$emaildatadir/$eid-*");
+    my ($file) = glob("t/data/gnupg/emails/$eid-*");
     my $mail = RT::Test->file_content($file);
 
     my ($status, $id) = RT::Test->send_via_mailgate($mail);
