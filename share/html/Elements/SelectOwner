@@ -59,7 +59,7 @@
 %} elsif ($ValueAttribute eq 'Name') {
     value="<%$User->Name%>"
 %}
-><% $UserRef->[1] %></option>
+><% $UserRef->[1] |n %></option>
 %}
 </select>
 <%INIT>
