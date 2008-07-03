@@ -142,7 +142,7 @@ while (defined(my $user = $Users->Next)) {
         next;
     }
 
-    my ($hour, $dow, $dom) = hour_dow_dom_in($user->Timezone || 'UTC');
+    my ($hour, $dow, $dom) = hour_dow_dom_in($user->Timezone || RT->Config->Get('Timezone'));
     $hour .= ':00';
     vverbose "Checking [_1]'s subscriptions: hour [_2], dow [_3], dom [_4]",
              $user->Name, $hour, $dow, $dom;

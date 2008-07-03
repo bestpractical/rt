@@ -168,7 +168,7 @@ my $current_subtab = 'Dashboards/Subscription.html?DashboardId=' . $DashboardId;
 my ($title, @results);
 my ($val, $msg);
 my $Loaded = 0;
-my $timezone = eval{$session{'CurrentUser'}->UserObj->Timezone} || 'UTC';
+my $timezone = $session{'CurrentUser'}->UserObj->Timezone || RT->Config->Get('Timezone');
 
 use RT::Dashboard;
 my $DashboardObj = RT::Dashboard->new($session{'CurrentUser'});
