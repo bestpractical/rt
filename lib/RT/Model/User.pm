@@ -698,9 +698,9 @@ sub canonicalize_user_info {
 
 # {{{ password related functions
 
-# {{{ sub set_randompassword
+# {{{ sub set_random_password
 
-=head2 set_randompassword
+=head2 set_random_password
 
 Takes no arguments. Returns a status code and a new password or an error message.
 If the status is 1, the second value returned is the new password.
@@ -708,7 +708,7 @@ If the status is anything else, the new value returned is the error code.
 
 =cut
 
-sub set_randompassword {
+sub set_random_password {
     my $self = shift;
 
     unless ( $self->current_user_can_modify('password') ) {
