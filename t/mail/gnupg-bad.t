@@ -14,7 +14,9 @@ plan tests => 6;
 
 use Cwd 'getcwd';
 
-my $homedir = File::Spec->catdir( getcwd(), qw(t data gnupg keyrings) );
+(my $volume, my $directories, my $file) = File::Spec->splitpath($0);
+my $homedir = File::Spec->catdir( getcwd(), $directories, File::Spec->updir(),
+    qw(data gnupg keyrings) );
 
 RT->Config->Set( LogToScreen => 'debug' );
 RT->Config->Set( 'GnuPG',

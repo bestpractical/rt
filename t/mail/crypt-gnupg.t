@@ -17,7 +17,10 @@ RT->Config->Set( LogStackTraces => 'error' );
 
 use File::Spec ();
 use Cwd;
-my $homedir = File::Spec->catdir( cwd(), qw(t data gnupg keyrings) );
+
+(my $volume, my $directories, my $file) = File::Spec->splitpath($0);
+my $homedir = File::Spec->catdir( cwd(), $directories, File::Spec->updir(),
+    qw(data gnupg keyrings) );
 mkdir $homedir;
 
 use_ok('RT::Crypt::GnuPG');
