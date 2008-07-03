@@ -603,16 +603,31 @@ sub find_executable {
     return undef;
 }
 
+=head2 get_relocateable_dir
+
+Takes a path relative to the location of the test file that is being
+run and returns a path that takes the invocation path into account.
+
+e.g. RT::Test::get_relocateable_dir(File::Spec->updir(), 'data', 'emails')
+
+=cut
+
 sub get_relocateable_dir {
-    # takes a path relative to the location of the test file and returns
-    # a path that takes the invocation path into account
     (my $volume, my $directories, my $file) = File::Spec->splitpath($0);
     return File::Spec->catdir(File::Spec->curdir(), $directories, @_);
 }
 
+=head2 get_relocateable_file
+
+Same as get_relocateable_dir, but takes a file and a path instead
+of just a path.
+
+e.g. RT::Test::get_relocateable_file('test-email',
+        (File::Spec->updir(), 'data', 'emails'))
+
+=cut
+
 sub get_relocateable_file {
-    # same as get_relocateable_dir, but takes a file and a path instead
-    # of just a path
     my $file = shift;
     return File::Spec->catfile(get_relocateable_dir(@_), $file);
 }
