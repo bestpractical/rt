@@ -1933,7 +1933,7 @@ sub add_link {
     );
 
     unless ( $args{'target'} || $args{'base'} ) {
-        Jifty->log->error("base or target must be specified\n");
+        Jifty->log->error("Base or target must be specified\n");
         return ( 0, _('Either base or target must be specified') );
     }
 
