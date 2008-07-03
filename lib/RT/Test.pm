@@ -604,11 +604,10 @@ sub find_executable {
 }
 
 sub get_relocateable_dir {
-    # takes a path relative to the top-level test dir and retuns
-    # a path relative to the invocation path
+    # takes a path relative to the location of the test file and returns
+    # a path that takes the invocation path into account
     (my $volume, my $directories, my $file) = File::Spec->splitpath($0);
-    return File::Spec->catdir( File::Spec->curdir(), $directories,
-        File::Spec->updir(), @_);
+    return File::Spec->catdir(File::Spec->curdir(), $directories, @_);
 }
 
 sub get_relocateable_file {
