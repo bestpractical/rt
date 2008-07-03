@@ -156,7 +156,7 @@ RT->Config->Set( EmailOutputEncoding => 'iso-8859-1' );
 # create an iso 8859-1 ticket
 @scrips_fired = ();
 
- $content =  RT::Test->file_content($test_email);
+ $content =  RT::Test->file_content($iso_8859_1_ticket_email);
 # be as much like the mail gateway as possible.
 use RT::Interface::Email;
                                   
