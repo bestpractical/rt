@@ -700,7 +700,7 @@ sub add_watcher {
                 return ( 0, _('Permission Denied') );
             }
         } else {
-            Jifty->log->warn("$self -> AddWatcher got passed a bogus type");
+            Jifty->log->warn("$self -> add_watcher got passed a bogus type");
             return ( 0, _('Error in parameters to Queue->add_watcher') );
         }
     }
@@ -847,7 +847,7 @@ sub delete_watcher {
 
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
-    if ( $self->current_user->id eq $args{'principal_id'} ) {
+    if ( $self->current_user->principal_id eq $args{'principal_id'} ) {
 
         #  If it's an AdminCc and they don't have
         #   'WatchAsAdminCc' or 'ModifyQueue', bail
@@ -861,16 +861,15 @@ sub delete_watcher {
 
         #  If it's a Requestor or Cc and they don't have
         #   'Watch' or 'ModifyQueue', bail
-        elsif (( $args{'type'} eq 'cc' )
-            or ( $args{'type'} eq 'requestor' ) )
-        {
+        elsif (( $args{'type'} eq 'cc' ) or ( $args{'type'} eq 'requestor' ) ) {
+
             unless ( $self->current_user_has_right('ModifyQueueWatchers')
                 or $self->current_user_has_right('Watch') )
             {
                 return ( 0, _('Permission Denied') );
             }
         } else {
-            Jifty->log->warn("$self -> DeleteWatcher got passed a bogus type");
+            Jifty->log->warn("$self -> delete_watcher got passed a bogus type");
             return ( 0, _('Error in parameters to Queue->delete_watcher') );
         }
     }
