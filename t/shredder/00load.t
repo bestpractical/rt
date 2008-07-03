@@ -1,8 +1,14 @@
 use strict;
 use warnings;
+use File::Spec;
 use Test::More tests => 11;
 
-BEGIN { require "t/shredder/utils.pl" }
+BEGIN {
+    (my $volume, my $directories, my $file) = File::Spec->splitpath($0);
+    my $shredder_utils = File::Spec->catfile(
+        File::Spec->catdir(File::Spec->curdir(), $directories), "utils.pl");
+    require $shredder_utils;
+}
 
 use_ok("RT::Shredder");
 

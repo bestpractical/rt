@@ -5,7 +5,13 @@ use warnings;
 
 use Test::More;
 use Test::Deep;
-BEGIN { require "t/shredder/utils.pl"; }
+use File::Spec;
+BEGIN {
+    (my $volume, my $directories, my $file) = File::Spec->splitpath($0);
+    my $shredder_utils = File::Spec->catfile(
+        File::Spec->catdir(File::Spec->curdir(), $directories), "utils.pl");
+    require $shredder_utils;
+}
 init_db();
 
 plan tests => 1;

@@ -5,10 +5,17 @@ use warnings;
 
 use Test::More;
 use Test::Deep;
+use File::Spec;
 
 plan tests => 15;
 
-BEGIN { require "t/shredder/utils.pl"; }
+BEGIN {
+    (my $volume, my $directories, my $file) = File::Spec->splitpath($0);
+    my $shredder_utils = File::Spec->catfile(
+        File::Spec->catdir(File::Spec->curdir(), $directories), "utils.pl");
+    require $shredder_utils;
+}
+
 init_db();
 create_savepoint('clean');
 
