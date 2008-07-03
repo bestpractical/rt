@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
+use File::Spec ();
 use Test::Expect;
 use Test::More tests => 241;
 use RT::Test;
@@ -108,7 +109,8 @@ ok($val,$msg);
     expect_like(qr/Message recorded/, "Added the correspondence");
     ### should test to make sure it actually got added
 
-    my $test_email = RT::Test::get_relocateable_file('lorem-ipsum', qw(data emails));
+    my $test_email = RT::Test::get_relocateable_file('lorem-ipsum',
+        (File::Spec->updir(), 'data', 'emails'));
     warn("test email path: $test_email");
 
     # add attachments to a ticket
