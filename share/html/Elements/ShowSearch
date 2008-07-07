@@ -59,7 +59,7 @@ my $user = $session{'CurrentUser'}->UserObj;
 my $SearchArg;
 my $customize;
 my $query_display_component = '/Elements/CollectionList';
-my $query_link_url = RT->Config->Get('WebBaseURL').'Search/Results.html';
+my $query_link_url = RT->Config->Get('WebURL').'Search/Results.html';
 
 if ($SavedSearch) {
     my ( $container_object, $search_id ) = _parse_saved_search($SavedSearch);
