@@ -405,8 +405,9 @@ sub get_resource {
     my $original_uri = $uri;
     verbose "Getting resource [_1]", $original_uri;
 
-    # strip out RT::WebURL
-    $uri =~ s/^\Q$RT::WebURL//;
+    # strip out WebURL, mason doesn't want it
+    my $weburl = RT->Config->Get('WebURL');
+    $uri =~ s/^\Q$weburl//;
 
     # add a leading / if needed
     $uri = "/$uri"
@@ -435,6 +436,7 @@ sub get_resource {
         }
     }
 
+    vverbose("Running component '$uri'");
     $content = run_component($uri, %args);
 
     $uri =~ s{^(.*/)(.*?)$}{$1};
