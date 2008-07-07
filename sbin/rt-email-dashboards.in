@@ -127,6 +127,8 @@ debug "Sending email from [_1]", $from;
 
 # look through each user for her subscriptions
 my $Users = RT::Users->new($RT::SystemUser);
+$Users->LimitToPrivileged;
+
 while (defined(my $user = $Users->Next)) {
     if ($user->PrincipalObj->Disabled) {
         debug "Skipping over "
