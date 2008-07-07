@@ -614,7 +614,11 @@ e.g. RT::Test::get_relocateable_dir(File::Spec->updir(), 'data', 'emails')
 
 sub get_relocateable_dir {
     (my $volume, my $directories, my $file) = File::Spec->splitpath($0);
-    return File::Spec->catdir(File::Spec->curdir(), $directories, @_);
+    if (File::Spec->file_name_is_absolute($directories)) {
+        return $directories;
+    } else {
+        return File::Spec->catdir(File::Spec->curdir(), $directories, @_);
+    }
 }
 
 =head2 get_relocateable_file
