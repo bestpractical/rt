@@ -89,6 +89,10 @@ if ( $DashboardObj and $DashboardObj->Id ) {
     delete $tabs->{"this"}{"subtabs"}{"c_Subscription"}
         unless $DashboardObj->CurrentUserCanSubscribe;
 
+    $tabs->{"this"}{"subtabs"}{"z_Preview"}{path} = $real_subtab
+        if $real_subtab =~ /Render/
+        || $real_subtab =~ /Dashboard\/\d+/;
+
     $current_subtab = $modify;
 }
 
