@@ -399,48 +399,47 @@ sub get_from {
 }
 
 sub get_resource {
-    my $uri = shift;
+    my $uri = URI->new(shift);
     my ($content, $filename, $mimetype, $encoding);
 
-    my $original_uri = $uri;
-    verbose "Getting resource [_1]", $original_uri;
+    verbose "Getting resource [_1]", $uri;
 
-    # strip out WebURL, mason doesn't want it
-    my $weburl = RT->Config->Get('WebURL');
-    $uri =~ s/^\Q$weburl//;
+    # strip out the equivalent of WebURL, so we start at the correct /
+    my $path = $uri->path;
+    my $webpath = RT->Config->Get('WebPath');
+    $path =~ s/^\Q$webpath//;
 
     # add a leading / if needed
-    $uri = "/$uri"
-        unless $uri =~ m{^/};
+    $path = "/$path"
+        unless $path =~ m{^/};
 
+    # grab the query arguments
     my %args;
-    if ($uri =~ s/\?(.*)//) {
-        for (split /&/, ($1||'')) {
-            my ($k, $v) = /^(.*?)=(.*)$/
-                or die "Unable to parse query parameter '$_'";
+    for (split /&/, ($uri->query||'')) {
+        my ($k, $v) = /^(.*?)=(.*)$/
+            or die "Unable to parse query parameter '$_'";
 
-            for ($k, $v) { s/%(..)/chr hex $1/ge }
+        for ($k, $v) { s/%(..)/chr hex $1/ge }
 
-            # no value yet, simple key=value
-            if (!exists $args{$k}) {
-                $args{$k} = $v;
-            }
-            # already have key=value, need to upgrade it to key=[value1, value2]
-            elsif (!ref($args{$k})) {
-                $args{$k} = [$args{$k}, $v];
-            }
-            # already key=[value1, value2], just add the new value
-            else {
-                push @{ $args{$k} }, $v;
-            }
+        # no value yet, simple key=value
+        if (!exists $args{$k}) {
+            $args{$k} = $v;
+        }
+        # already have key=value, need to upgrade it to key=[value1, value2]
+        elsif (!ref($args{$k})) {
+            $args{$k} = [$args{$k}, $v];
+        }
+        # already key=[value1, value2], just add the new value
+        else {
+            push @{ $args{$k} }, $v;
         }
     }
 
-    debug "Running component '[_1]'", $uri;
-    $content = run_component($uri, %args);
+    debug "Running component '[_1]'", $path;
+    $content = run_component($path, %args);
 
-    $uri =~ s{^(.*/)(.*?)$}{$1};
-    $filename = $2;
+    # guess at the filename from the component name
+    $filename = $2 if $path =~ m{^.*/(.*?)$};
 
     # the rest of this was taken from Email::MIME::CreateHTML::Resolver::LWP
     ($mimetype, $encoding) = MIME::Types::by_suffix($filename);
@@ -458,7 +457,7 @@ sub get_resource {
     $encoding ||= 'base64';
 
     debug "Resource [_1]: length=[_2] filename='[_3]' mimetype='[_4]', encoding='[_5]'",
-        $original_uri,
+        $uri,
         length($content),
         $filename,
         $mimetype,
