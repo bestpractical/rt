@@ -154,8 +154,6 @@ monthly</input> , on day
 
 % if ($SubscriptionObj->Id) {
     <& /Elements/Submit, Name => "Save", Label => loc('Save Changes') &>
-    <br />
-    <& /Elements/Submit, Name => "Unsubscribe", Label => loc('Unsubscribe') &>
 % } else {
     <& /Elements/Submit, Name => "Save", Label => loc('Subscribe') &>
 % }
@@ -188,14 +186,6 @@ $DashboardId = $SubscriptionObj->Id
 
 ($val, $msg) = $DashboardObj->LoadById($DashboardId);
 $val || Abort(loc("Couldn't load dashboard [_1]: [_2].", $DashboardId, $msg));
-
-if ($SubscriptionObj->Id && $Unsubscribe) {
-    my ($ok, $msg) = $SubscriptionObj->Delete();
-    $ok || Abort(loc("Couldn't unsubscribe to dashboard [_1]: [_2]", $DashboardId, $msg));
-
-    # put the user back into a useful place with a message
-    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Dashboards/index.html?Unsubscribed=$DashboardId");
-}
 
 my %fields = (
     DashboardId => $DashboardId,
@@ -274,6 +264,5 @@ $Hour        => undef
 $Dow         => undef
 $Dom         => undef
 $Rows        => undef
-$Unsubscribe => undef
 </%ARGS>
 

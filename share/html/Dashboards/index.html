@@ -77,24 +77,12 @@ my @objs = RT::Dashboard->new($session{CurrentUser})->_PrivacyObjects;
 my $dashboards = $m->comp("/Dashboards/Elements/DashboardsForObjects", Objects => \@objs);
 
 my @actions;
-if (defined $Unsubscribed) {
-    my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
-    $Dashboard->LoadById($Unsubscribed);
-    if ($Dashboard->Id) {
-        push @actions, loc("Unsubscribed to dashboard [_1]", $Dashboard->Name);
-    }
-    else {
-        push @actions, loc("Unable to unsubscribe to dashboard [_1]", $Unsubscribed);
-    }
-}
-
 if (defined $Deleted) {
     push @actions, loc("Deleted dashboard [_1]", $Deleted);
 }
 
 </%INIT>
 <%ARGS>
-$Unsubscribed => undef
 $Deleted => undef
 </%ARGS>
 
