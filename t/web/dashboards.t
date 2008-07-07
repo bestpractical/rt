@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 80;
+use Test::More tests => 78;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -159,14 +159,6 @@ TODO: {
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->follow_link_ok({text => "Subscription"});
 $m->content_contains("Modify the subscription to dashboard different dashboard");
-
-$m->form_name('SubscribeDashboard');
-$m->click_button(name => 'Unsubscribe');
-
-$m->content_contains("Unsubscribed to dashboard different dashboard");
-
-RT::Record->FlushCache if RT::Record->can('FlushCache');
-is($user_obj->Attributes->Named('Subscription'), 0, "no more subscriptions");
 
 $m->get_ok("/Dashboards/Modify.html?id=$id&Delete=1");
 $m->content_contains("Permission denied", "unable to delete dashboard because we lack DeleteOwnDashboard");
