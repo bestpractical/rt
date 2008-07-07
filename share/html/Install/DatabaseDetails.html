@@ -78,7 +78,7 @@
                     &>
 <input type="hidden" name="Run" value="1">
 
-% unless ( @errors ) {
+% if ( @results && !@errors ) {
 <& /Elements/Submit, Label => loc('Next: ') . loc('Customize Basics'),
 Back => 1, BackLabel => loc('Back: ') . loc('Select Database Type'),
 Name => 'Next' &>
