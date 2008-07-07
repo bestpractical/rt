@@ -157,6 +157,8 @@ while (defined(my $user = $Users->Next)) {
         if (!$opts{all}) {
             vverbose "Checking against subscription with frequency [_1], hour [_2], dow [_3], dom [_4]", $subscription->SubValue('Frequency'), $subscription->SubValue('Hour'), $subscription->SubValue('Dow'), $subscription->SubValue('Dom');
 
+            next if $subscription->SubValue('Frequency') eq 'never';
+
             # correct hour?
             next if $subscription->SubValue('Hour') ne $hour;
 

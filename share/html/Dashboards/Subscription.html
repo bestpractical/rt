@@ -98,21 +98,6 @@
 
 <table>
 <tr><td class="label">
-<&|/l&>Hour</&>:
-</td><td class="value">
-<select name="Hour">
-% for my $hour (0..23) {
-%     my $formatted = sprintf '%02d:00', $hour;
-%     my $selected = $formatted eq $fields{'Hour'}
-%                  ? 'selected="selected"'
-%                  : '';
-
-    <option value="<% $formatted %>" <%$selected%>><% $formatted %></option>
-% }
-</select>
-(in <%$timezone%>)
-</td></tr>
-<tr><td class="label">
 <&|/l&>Frequency</&>:
 </td><td class="value">
 <input type="radio" name="Frequency" value="daily" <% $fields{'Frequency'} eq 'daily' ? 'checked="checked"' : "" %>>
@@ -135,7 +120,27 @@ monthly</input> , on day
     <option value="<% $dom %>" <% $fields{'Dom'} == $dom ? 'selected="selected"' : '' %>><% loc($dom) %></option>
 %   }
 </select>
+<br />
 
+<input type="radio" name="Frequency" value="never" <% $fields{'Frequency'} eq 'never' ? 'checked="checked"' : "" %>>
+    never
+</input>
+
+</td></tr>
+<tr><td class="label">
+<&|/l&>Hour</&>:
+</td><td class="value">
+<select name="Hour">
+% for my $hour (0..23) {
+%     my $formatted = sprintf '%02d:00', $hour;
+%     my $selected = $formatted eq $fields{'Hour'}
+%                  ? 'selected="selected"'
+%                  : '';
+
+    <option value="<% $formatted %>" <%$selected%>><% $formatted %></option>
+% }
+</select>
+(in <%$timezone%>)
 </td></tr>
 <tr><td class="label">
 <&|/l&>Rows</&>:
