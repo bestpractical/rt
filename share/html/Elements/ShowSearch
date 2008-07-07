@@ -59,7 +59,7 @@ my $user = $session{'CurrentUser'}->UserObj;
 my $SearchArg;
 my $customize;
 my $query_display_component = '/Elements/CollectionList';
-my $query_link_url = RT->Config->Get('WebBaseURL').'Search/Results.html';
+my $query_link_url = RT->Config->Get('WebURL') . 'Search/Results.html';
 
 if ($SavedSearch) {
     my ( $container_object, $search_id ) = _parse_saved_search($SavedSearch);
@@ -78,7 +78,7 @@ if ($SavedSearch) {
         # XXX: dispatch to different handler here
         $query_display_component
             = '/Search/Elements/' . $SearchArg->{SearchType};
-        $query_link_url = "Search/$SearchArg->{SearchType}.html";
+        $query_link_url = RT->Config->Get('WebURL') . "/Search/$SearchArg->{SearchType}.html";
     } else {
         $customize = RT->Config->Get('WebPath') . '/Search/Build.html?'
             . $m->comp( '/Elements/QueryString',
