@@ -603,42 +603,46 @@ sub find_executable {
     return undef;
 }
 
-=head2 get_relocateable_dir
+=head2 get_relocatable_dir
 
 Takes a path relative to the location of the test file that is being
 run and returns a path that takes the invocation path into account.
 
-e.g. RT::Test::get_relocateable_dir(File::Spec->updir(), 'data', 'emails')
+e.g. RT::Test::get_relocatable_dir(File::Spec->updir(), 'data', 'emails')
 
 =cut
 
-sub get_relocateable_dir {
+sub get_relocatable_dir {
     (my $volume, my $directories, my $file) = File::Spec->splitpath($0);
     if (File::Spec->file_name_is_absolute($directories)) {
-        return $directories;
+        return File::Spec->catdir($directories, @_);
     } else {
         return File::Spec->catdir(File::Spec->curdir(), $directories, @_);
     }
 }
 
-=head2 get_relocateable_file
+=head2 get_relocatable_file
 
-Same as get_relocateable_dir, but takes a file and a path instead
+Same as get_relocatable_dir, but takes a file and a path instead
 of just a path.
 
-e.g. RT::Test::get_relocateable_file('test-email',
+e.g. RT::Test::get_relocatable_file('test-email',
         (File::Spec->updir(), 'data', 'emails'))
 
 =cut
 
-sub get_relocateable_file {
+sub get_relocatable_file {
     my $file = shift;
-    return File::Spec->catfile(get_relocateable_dir(@_), $file);
+    return File::Spec->catfile(get_relocatable_dir(@_), $file);
 }
 
-sub get_abs_relocateable_dir {
+sub get_abs_relocatable_dir {
     (my $volume, my $directories, my $file) = File::Spec->splitpath($0);
-    return File::Spec->catdir(Cwd->getcwd(), $directories, @_);
+    if (File::Spec->file_name_is_absolute($directories)) {
+        return File::Spec->catdir($directories, @_);
+    } else {
+        return File::Spec->catdir(Cwd->getcwd(), $directories, @_);
+    }
 }
 
 sub import_gnupg_key {
@@ -656,7 +660,7 @@ sub import_gnupg_key {
     # this is a bit hackish; calling it from somewhere that's not a subdir
     # of t/ will fail
     return RT::Crypt::GnuPG::ImportKey(
-        RT::Test->file_content([get_relocateable_dir(File::Spec->updir(), 'data',
+        RT::Test->file_content([get_relocatable_dir(File::Spec->updir(), 'data',
         'gnupg', 'keys'), $key])
     );
 }
