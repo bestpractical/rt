@@ -14,7 +14,7 @@ plan tests => 6;
 
 use Cwd 'getcwd';
 
-my $homedir = RT::Test::get_abs_relocateable_dir(File::Spec->updir(),
+my $homedir = RT::Test::get_abs_relocatable_dir(File::Spec->updir(),
     qw(data gnupg keyrings));
 
 RT->Config->Set( LogToScreen => 'debug' );

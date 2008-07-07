@@ -8,7 +8,7 @@ use Test::Deep;
 use File::Spec;
 use RT::Test ();
 BEGIN {
-    my $shredder_utils = RT::Test::get_relocateable_file('utils.pl',
+    my $shredder_utils = RT::Test::get_relocatable_file('utils.pl',
         File::Spec->curdir());
     require $shredder_utils;
 }

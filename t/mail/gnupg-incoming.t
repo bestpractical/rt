@@ -17,7 +17,7 @@ use Cwd 'getcwd';
 use String::ShellQuote 'shell_quote';
 use IPC::Run3 'run3';
 
-my $homedir = RT::Test::get_abs_relocateable_dir(File::Spec->updir(),
+my $homedir = RT::Test::get_abs_relocatable_dir(File::Spec->updir(),
     qw(data gnupg keyrings));
 
 # catch any outgoing emails

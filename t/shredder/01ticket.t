@@ -11,7 +11,7 @@ use RT::Test ();
 plan tests => 15;
 
 BEGIN {
-    my $shredder_utils = RT::Test::get_relocateable_file('utils.pl',
+    my $shredder_utils = RT::Test::get_relocatable_file('utils.pl',
         File::Spec->curdir());
     require $shredder_utils;
 }

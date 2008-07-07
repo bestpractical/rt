@@ -109,7 +109,7 @@ ok($val,$msg);
     expect_like(qr/Message recorded/, "Added the correspondence");
     ### should test to make sure it actually got added
 
-    my $test_email = RT::Test::get_relocateable_file('lorem-ipsum',
+    my $test_email = RT::Test::get_relocatable_file('lorem-ipsum',
         (File::Spec->updir(), 'data', 'emails'));
     # add attachments to a ticket
     # text attachment

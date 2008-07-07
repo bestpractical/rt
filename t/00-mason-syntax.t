@@ -24,7 +24,7 @@ find( {
         $ok = 0;
         diag "error in ${File::Find::name}:\n$@";
     },
-}, RT::Test::get_relocateable_dir('../share/html'));
+}, RT::Test::get_relocatable_dir('../share/html'));
 ok($ok, "mason syntax is ok");
 
 use HTML::Mason;

@@ -69,7 +69,7 @@ sub email_ok {
     my ($eid, $usage, $format, $attachment) = @_;
     diag "email_ok $eid: $usage, $format, $attachment" if $ENV{'TEST_VERBOSE'};
 
-    my $emaildatadir = RT::Test::get_relocateable_dir(File::Spec->updir(),
+    my $emaildatadir = RT::Test::get_relocatable_dir(File::Spec->updir(),
         qw(data gnupg emails));
     my ($file) = glob("$emaildatadir/$eid-*");
     my $mail = RT::Test->file_content($file);
