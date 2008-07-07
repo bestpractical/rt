@@ -54,14 +54,18 @@
 <%INIT>
 my $tabs = {
     a => {
+        title => loc('Dashboards'),
+        path  => 'Dashboards/index.html',
+    },
+    b => {
         title => loc('Offline'),
         path  => 'Tools/Offline.html',
     },
-    b => {
+    c => {
         title => loc('Reports'),
         path  => 'Tools/Reports/index.html',
     },
-    c => {
+    d => {
         title => loc('My Day'),
         path  => 'Tools/MyDay.html',
     },

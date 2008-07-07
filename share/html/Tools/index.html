@@ -49,4 +49,33 @@
 <& Elements/Tabs, 
     current_tab => "Tools/index.html", 
     Title => loc("Tools") &>
+<& /Elements/ListMenu, items => $tabs &>
 
+<%init>
+
+my $tabs = {
+    A => {
+        title       => loc('Dashboards'),
+        path        => '/Dashboards/index.html',
+        description => loc('Named, shared collection of saved searches'),
+    },
+    B => {
+        title       => loc('Offline'),
+        path        => 'Offline.html',
+        description => loc('Create tickets offline'),
+    },
+    C => {
+        title       => loc('Reports'),
+        path        => 'Reports/index.html',
+        description => loc('Various RT reports'),
+    },
+    D => {
+        title       => loc('My Day'),
+        path        => 'MyDay.html',
+        description => loc('Easy updating of your open tickets'),
+    },
+};
+
+$m->callback( %ARGS, tabs => $tabs );
+
+</%init>

@@ -103,7 +103,7 @@ no warnings 'once';
 # Read in the options
 my %opts;
 GetOptions( \%opts,
-    "help", "dryrun", "verbose", "vverbose", "epoch=i", "all", "skip-acl"
+    "help", "dryrun", "verbose", "debug", "epoch=i", "all", "skip-acl"
 );
 
 if ($opts{'help'}) {
@@ -114,8 +114,8 @@ if ($opts{'help'}) {
 }
 
 # helper functions
-sub verbose  { print loc(@_), "\n" if $opts{verbose} || $opts{vverbose}; 1 }
-sub vverbose { print loc(@_), "\n" if $opts{vverbose}; 1 }
+sub verbose  { print loc(@_), "\n" if $opts{verbose} || $opts{verbose}; 1 }
+sub debug    { print loc(@_), "\n" if $opts{debug}; 1 }
 sub error    { $RT::Logger->error(loc(@_)); verbose(@_); 1 }
 sub warning  { $RT::Logger->warning(loc(@_)); verbose(@_); 1 }
 
@@ -123,38 +123,31 @@ my $now = $opts{epoch} || time;
 verbose "Using time [_1]", scalar localtime($now);
 
 my $from = get_from();
-vverbose "Sending email from [_1]", $from;
+debug "Sending email from [_1]", $from;
 
 # look through each user for her subscriptions
 my $Users = RT::Users->new($RT::SystemUser);
+$Users->LimitToPrivileged;
+
 while (defined(my $user = $Users->Next)) {
     if ($user->PrincipalObj->Disabled) {
-        vverbose "Skipping over "
-               . $user->Name
-               . " due to having a disabled account.";
+        debug "Skipping over "
+            . $user->Name
+            . " due to having a disabled account.";
         next;
     }
 
     unless (email_of($user)) {
-        vverbose "Skipping over "
-               . $user->Name
-               . " due to lack of EmailAddress.";
+        debug "Skipping over "
+            . $user->Name
+            . " due to lack of EmailAddress.";
         next;
     }
 
-    if (!$opts{"skip-acl"}) {
-        unless ($user->HasRight(Right => 'SubscribeDashboard', Object => $RT::System)) {
-            vverbose "Skipping over "
-                   . $user->Name
-                   . " due to lack of SubscribeDashboard right.";
-            next;
-        }
-    }
-
-    my ($hour, $dow, $dom) = hour_dow_dom_in($user->Timezone || 'UTC');
+    my ($hour, $dow, $dom) = hour_dow_dom_in($user->Timezone || RT->Config->Get('Timezone'));
     $hour .= ':00';
-    vverbose "Checking [_1]'s subscriptions: hour [_2], dow [_3], dom [_4]",
-             $user->Name, $hour, $dow, $dom;
+    debug "Checking [_1]'s subscriptions: hour [_2], dow [_3], dom [_4]",
+          $user->Name, $hour, $dow, $dom;
 
     my $currentuser = RT::CurrentUser->new;
     $currentuser->LoadByName($user->Name);
@@ -164,7 +157,9 @@ while (defined(my $user = $Users->Next)) {
     for my $subscription ($user->Attributes->Named('Subscription')) {
 
         if (!$opts{all}) {
-            vverbose "Checking against subscription with frequency [_1], hour [_2], dow [_3], dom [_4]", $subscription->SubValue('Frequency'), $subscription->SubValue('Hour'), $subscription->SubValue('Dow'), $subscription->SubValue('Dom');
+            debug "Checking against subscription with frequency [_1], hour [_2], dow [_3], dom [_4]", $subscription->SubValue('Frequency'), $subscription->SubValue('Hour'), $subscription->SubValue('Dow'), $subscription->SubValue('Dom');
+
+            next if $subscription->SubValue('Frequency') eq 'never';
 
             # correct hour?
             next if $subscription->SubValue('Hour') ne $hour;
@@ -192,13 +187,41 @@ sub send_dashboard {
 
     my $dashboard = RT::Dashboard->new($currentuser);
 
-    $dashboard->LoadById($subscription->SubValue('DashboardId'))
-        or die loc(
-            "Unable to load dashboard [_1] of subscription [_2] for user [_3]",
+    my ($ok, $msg) = $dashboard->LoadById($subscription->SubValue('DashboardId'));
+
+    # failed to load dashboard. perhaps it was deleted or it changed privacy
+    if (!$ok) {
+        warning "Unable to load dashboard [_1] of subscription [_2] for user [_3]: [_4]",
             $subscription->SubValue('DashboardId'),
             $subscription->Id,
-            $currentuser->Name
+            $currentuser->Name,
+            $msg;
+
+        my $ok = RT::Interface::Email::SendEmailUsingTemplate(
+            From      => $from,
+            To        => email_of($currentuser),
+            Template  => 'Error: Missing dashboard',
+            Arguments => {
+                SubscriptionObj => $subscription,
+            },
         );
+
+        # only delete the subscription if the email looks like it went through
+        if ($ok) {
+            my ($deleted, $msg) = $subscription->Delete();
+            if ($deleted) {
+                verbose("Deleted an obsolete subscription: [_1]", $msg);
+            }
+            else {
+                warning("Unable to delete an obsolete subscription: [_1]", $msg);
+            }
+        }
+        else {
+            warning("Unable to notify [_1] of an obsolete subscription", $currentuser->Name);
+        }
+
+        return;
+    }
 
     verbose 'Creating dashboard "[_1]" for user "[_2]":',
             $dashboard->Name,
@@ -215,24 +238,25 @@ SUMMARY
     $HTML::Mason::Commands::session{CurrentUser} = $currentuser;
     my $contents = run_component(
         '/Dashboards/Render.html',
-        id => $dashboard->Id,
+        id      => $dashboard->Id,
+        Preview => 0,
     );
 
     for (@{ RT->Config->Get('EmailDashboardRemove') || [] }) {
         $contents =~ s/$_//g;
     }
 
-    vverbose "Got [_1] characters of output.", length $contents;
+    debug "Got [_1] characters of output.", length $contents;
 
     $contents = HTML::RewriteAttributes::Links->rewrite(
         $contents,
         RT->Config->Get('WebURL') . '/Dashboards/Render.html',
     );
 
-    send_mail($currentuser, $dashboard, $subscription, $contents);
+    email_dashboard($currentuser, $dashboard, $subscription, $contents);
 }
 
-sub send_mail {
+sub email_dashboard {
     my ($currentuser, $dashboard, $subscription, $content) = @_;
 
     verbose 'Sending dashboard "[_1]" to user [_2] <[_3]>',
@@ -240,11 +264,10 @@ sub send_mail {
             $currentuser->Name,
             email_of($currentuser);
 
-    my $subject = $currentuser->loc(
-        (RT->Config->Get('DashboardSubject') || "RT [_2] Dashboard: [_1]"),
-        $dashboard->Name,
+    my $subject = sprintf '[%s] ' .  RT->Config->Get('DashboardSubject'),
+        RT->Config->Get('rtname'),
         ucfirst($subscription->SubValue('Frequency')),
-    );
+        $dashboard->Name;
 
     my $entity = build_email(
         $content, $from, email_of($currentuser), $subject,
@@ -254,9 +277,9 @@ sub send_mail {
         Entity => $entity,
     );
 
-    vverbose "Done sending dashboard to [_1] <[_2]>",
-             $currentuser->Name, email_of($currentuser)
-                 and return if $ok;
+    debug "Done sending dashboard to [_1] <[_2]>",
+          $currentuser->Name, email_of($currentuser)
+              and return if $ok;
 
     error 'Failed to email dashboard to user [_1] <[_2]>',
           $currentuser->Name, email_of($currentuser);
@@ -324,7 +347,7 @@ sub email_of {
 }
 
 sub get_from {
-    RT->Config->Get('DashboardAddress') || RT->Config->Get('CorrespondAddress')
+    RT->Config->Get('DashboardAddress') || RT->Config->Get('OwnerEmail')
 }
 
 {
@@ -333,7 +356,7 @@ sub get_from {
 
     sub mason {
         unless ($mason) {
-            vverbose "Creating Mason object.";
+            debug "Creating Mason object.";
             $mason = HTML::Mason::Interp->new(
                 RT::Interface::Web::Handler->DefaultHandlerArgs,
                 out_method => \$outbuf,
@@ -378,31 +401,47 @@ sub get_from {
 }
 
 sub get_resource {
-    my $uri = shift;
+    my $uri = URI->new(shift);
     my ($content, $filename, $mimetype, $encoding);
 
-    # strip out RT::WebURL
-    $uri =~ s/^\Q$RT::WebURL//;
+    verbose "Getting resource [_1]", $uri;
+
+    # strip out the equivalent of WebURL, so we start at the correct /
+    my $path = $uri->path;
+    my $webpath = RT->Config->Get('WebPath');
+    $path =~ s/^\Q$webpath//;
 
     # add a leading / if needed
-    $uri = "/$uri"
-        unless $uri =~ m{^/};
+    $path = "/$path"
+        unless $path =~ m{^/};
 
+    # grab the query arguments
     my %args;
-    if ($uri =~ s/\?(.*)//) {
-        for (split /&/, ($1||'')) {
-            my ($k, $v) = /^(.*?)=(.*)$/
-                or die "Unable to parse query parameter '$_'";
+    for (split /&/, ($uri->query||'')) {
+        my ($k, $v) = /^(.*?)=(.*)$/
+            or die "Unable to parse query parameter '$_'";
 
-            for ($k, $v) { s/%(..)/chr hex $1/ge }
+        for ($k, $v) { s/%(..)/chr hex $1/ge }
+
+        # no value yet, simple key=value
+        if (!exists $args{$k}) {
             $args{$k} = $v;
+        }
+        # already have key=value, need to upgrade it to key=[value1, value2]
+        elsif (!ref($args{$k})) {
+            $args{$k} = [$args{$k}, $v];
+        }
+        # already key=[value1, value2], just add the new value
+        else {
+            push @{ $args{$k} }, $v;
         }
     }
 
-    $content = run_component($uri, %args);
+    debug "Running component '[_1]'", $path;
+    $content = run_component($path, %args);
 
-    $uri =~ s{^(.*/)(.*?)$}{$1};
-    $filename = $2;
+    # guess at the filename from the component name
+    $filename = $2 if $path =~ m{^.*/(.*?)$};
 
     # the rest of this was taken from Email::MIME::CreateHTML::Resolver::LWP
     ($mimetype, $encoding) = MIME::Types::by_suffix($filename);
@@ -418,6 +457,13 @@ sub get_resource {
     #If all else fails then some conservative and general-purpose defaults are:
     $mimetype ||= 'application/octet-stream';
     $encoding ||= 'base64';
+
+    debug "Resource [_1]: length=[_2] filename='[_3]' mimetype='[_4]', encoding='[_5]'",
+        $uri,
+        length($content),
+        $filename,
+        $mimetype,
+        $encoding;
 
     return ($content, $filename, $mimetype, $encoding);
 }
@@ -484,7 +530,7 @@ be Oct 12 19:06:58 GMT 2007).
 Print out some tracing information (such as which dashboards are being
 generated and sent out)
 
-=item --vverbose
+=item --debug
 
 Print out more tracing information (such as each user and subscription that is
 being considered)
@@ -493,10 +539,6 @@ being considered)
 
 Disable checking of whether each subscription should be sent right now (should
 only be used with --dryrun)
-
-=item --skip-acl
-
-Skip SubscribeDashboard access control checks
 
 =back
 

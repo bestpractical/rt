@@ -150,7 +150,7 @@ sub handle_startup_error {
 sub handle_bind_error {
 
     print STDERR <<EOF;
-WARNINING: RT couldn't start up a web server on port @{[$port]}.
+WARNING: RT couldn't start up a web server on port @{[$port]}.
 This is often the case if you're running @{[$0]} as 
 someone other than your system's "root" user.  
 EOF

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => $title &>
+<& /Elements/Header, Title => $title &>
 <& /Dashboards/Elements/Tabs,
     current_subtab => 'Dashboards/index.html',
     Title => $title &>
@@ -54,59 +54,35 @@
 
 <& /Dashboards/Elements/ShowDashboards,
     Type       => "Personal",
-    Dashboards => \@personal_dashboards,
+    Dashboards => [sort { $a->Id <=> $b->Id } @{ $dashboards->{personal} || [] }],
 &>
 
 <& /Dashboards/Elements/ShowDashboards,
     Type => "System",
-    Dashboards => \@system_dashboards,
+    Dashboards => [sort { $a->Id <=> $b->Id } @{ $dashboards->{system} || [] }],
 &>
 
-% for my $group (sort keys %group_dashboards) {
+% for my $group (sort keys %{ $dashboards->{group} || {} }) {
     <& /Dashboards/Elements/ShowDashboards,
         Type       => $group,
-        Dashboards => $group_dashboards{$group},
+        Dashboards => [sort { $a->Id <=> $b->Id } @{ $dashboards->{group}{$group} || [] }],
     &>
 % }
 
 <%INIT>
 my $title = loc("Dashboards");
-my @personal_dashboards;
-my @system_dashboards;
-my %group_dashboards;
-
 use RT::Dashboard;
 
-my @objs = RT::Dashboard->new($session{CurrentUser})->_PrivacyObjects(ShowSystem => 1);
-
-for my $object (@objs) {
-    for my $dashboard ($m->comp("/Dashboards/Elements/DashboardsForObject", Object => $object)) {
-        if ($object->isa('RT::System')) {
-            push @system_dashboards, $dashboard;
-        }
-        elsif ($object->isa('RT::User')) {
-            push @personal_dashboards, $dashboard;
-        }
-        else {
-            push @{ $group_dashboards{$object->Name} }, $dashboard;
-        }
-    }
-}
+my @objs = RT::Dashboard->new($session{CurrentUser})->_PrivacyObjects;
+my $dashboards = $m->comp("/Dashboards/Elements/DashboardsForObjects", Objects => \@objs);
 
 my @actions;
-if (defined $Unsubscribe) {
-    my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
-    $Dashboard->LoadById($Unsubscribe);
-    if ($Dashboard->Id) {
-        push @actions, loc("Unsubscribed to dashboard [_1]", $Dashboard->Name);
-    }
-    else {
-        push @actions, loc("Unable to unsubscribe to dashboard [_1]", $Unsubscribe);
-    }
+if (defined $Deleted) {
+    push @actions, loc("Deleted dashboard [_1]", $Deleted);
 }
 
 </%INIT>
 <%ARGS>
-$Unsubscribe => undef
+$Deleted => undef
 </%ARGS>
 

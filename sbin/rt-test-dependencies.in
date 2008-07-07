@@ -221,6 +221,7 @@ Locale::Maketext::Lexicon 0.32
 Locale::Maketext::Fuzzy
 MIME::Entity 5.425
 Mail::Mailer 1.57
+Email::Address
 Text::Wrapper 
 Time::ParseDate
 Time::HiRes 
@@ -237,6 +238,7 @@ Calendar::Simple
 Encode 2.13
 CSS::Squish 0.06
 File::Glob
+Devel::StackTrace 1.19
 .
 
 $deps{'MASON'} = [ text_to_hash( << '.') ];
@@ -295,25 +297,25 @@ IPC::Run3
 .
 
 $deps{'FASTCGI'} = [ text_to_hash( << '.') ];
-CGI 3.35
+CGI 3.38
 FCGI
 CGI::Fast 
 .
 
 $deps{'SPEEDYCGI'} = [ text_to_hash( << '.') ];
-CGI 3.35
+CGI 3.38
 CGI::SpeedyCGI
 .
 
 
 $deps{'MODPERL1'} = [ text_to_hash( << '.') ];
-CGI 3.35
+CGI 3.38
 Apache::Request
 Apache::DBI 0.92
 .
 
 $deps{'MODPERL2'} = [ text_to_hash( << '.') ];
-CGI 3.35
+CGI 3.38
 Apache::DBI
 HTML::Mason 1.36
 .

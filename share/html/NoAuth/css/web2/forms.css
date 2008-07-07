@@ -54,7 +54,6 @@ form {
 
 
 .input-row .label {
-  display: inline-block;
   position: relative;
   text-align: right;
   width: 4em;
@@ -139,7 +138,7 @@ div.results .titlebox-content {
 .label, .labeltop {
  text-align: right;
  font-size: 0.8em;
- padding-right: 0.5em;
+ padding-right: .5em;
 
 } 
 

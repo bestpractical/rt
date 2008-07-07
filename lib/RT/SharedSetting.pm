@@ -89,7 +89,7 @@ sub new  {
 =head2 Load
 
 Takes a privacy specification and a shared-setting ID.  Loads the given object
-ID if it belongs to the stated user or group. Calls the PostLoad method on
+ID if it belongs to the stated user or group. Calls the L</PostLoad> method on
 success for any further initialization. Returns a tuple of status and message,
 where status is true on success.
 
@@ -106,11 +106,15 @@ sub Load {
             $self->{'Id'} = $self->{'Attribute'}->Id;
             $self->{'Privacy'} = $privacy;
             $self->PostLoad();
+
+            return (0, $self->loc("Permission denied"))
+                unless $self->CurrentUserCanSee;
+
             return (1, $self->loc("Loaded [_1] [_2]", $self->ObjectName, $self->Name));
         } else {
             $RT::Logger->error("Could not load attribute " . $id
                     . " for object " . $privacy);
-            return (0, $self->loc("[_1] attribute load failure", ucfirst($self->ObjectName)));
+            return (0, $self->loc("Failed to load [_1] [_2]", $self->ObjectName, $id))
         }
     } else {
         $RT::Logger->warning("Could not load object $privacy when loading " . $self->ObjectName);
@@ -131,8 +135,10 @@ sub LoadById {
     my $id   = shift;
 
     my $attr = RT::Attribute->new($self->CurrentUser);
-    unless ($attr->LoadById($id)) {
-        return (0, $self->loc("Failed to load attribute [_1]", $id))
+    my ($ok, $msg) = $attr->LoadById($id);
+
+    if (!$ok) {
+        return (0, $self->loc("Failed to load [_1] [_2]: [_3]", $self->ObjectName, $id, $msg))
     }
 
     my $privacy = $self->_build_privacy($attr->ObjectType, $attr->ObjectId);
@@ -152,10 +158,11 @@ sub PostLoad { }
 
 =head2 Save
 
-Takes a privacy, a name, and any other arguments. Saves the given parameters to
-the appropriate user/group object, and loads the resulting object. Arguments
-are passed to the SaveAttribute method, which does the actual update. Returns a
-tuple of status and message, where status is true on success. Defaults are:
+Creates a new shared setting. Takes a privacy, a name, and any other arguments.
+Saves the given parameters to the appropriate user/group object, and loads the
+resulting object. Arguments are passed to the L</SaveAttribute> method, which
+does the actual update. Returns a tuple of status and message, where status is
+true on success. Defaults are:
 
   Privacy:  CurrentUser only
   Name:     "new (ObjectName)"
@@ -177,13 +184,8 @@ sub Save {
     return (0, $self->loc("Failed to load object for [_1]", $privacy))
         unless $object;
 
-    if ( $object->isa('RT::System') ) {
-        return (0, $self->loc("No permission to save system-wide [_1]", $self->ObjectName))
-            unless $self->CurrentUser->HasRight(
-                Object => $RT::System,
-                Right  => 'SuperUser',
-            );
-    }
+    return (0, $self->loc("Permission denied"))
+        unless $self->CurrentUserCanCreate($privacy);
 
     my ($att_id, $att_msg) = $self->SaveAttribute($object, \%args);
 
@@ -199,11 +201,19 @@ sub Save {
     }
 }
 
+=head2 SaveAttribute
+
+An empty method for subclassing. Called from L</Save> method.
+
+=cut
+
+sub SaveAttribute { }
+
 =head2 Update
 
 Updates the parameters of an existing shared setting. Any arguments are passed
-to the UpdateAttribute method. Returns a tuple of status and message, where
-status is true on success. 
+to the L</UpdateAttribute> method. Returns a tuple of status and message, where
+status is true on success.
 
 =cut
 
@@ -214,6 +224,9 @@ sub Update {
     return(0, $self->loc("No [_1] loaded", $self->ObjectName)) unless $self->Id;
     return(0, $self->loc("Could not load [_1] attribute", $self->ObjectName))
         unless $self->{'Attribute'}->Id;
+
+    return (0, $self->loc("Permission denied"))
+        unless $self->CurrentUserCanModify;
 
     my ($status, $msg) = $self->UpdateAttribute(\%args);
 
@@ -227,6 +240,14 @@ sub Update {
     return ($status, $self->loc("[_1] update: [_2]", ucfirst($self->ObjectName), $msg));
 }
 
+=head2 UpdateAttribute
+
+An empty method for subclassing. Called from L</Update> method.
+
+=cut
+
+sub UpdateAttribute { }
+
 =head2 Delete
     
 Deletes the existing shared setting. Returns a tuple of status and message,
@@ -236,6 +257,9 @@ where status is true upon success.
 
 sub Delete {
     my $self = shift;
+
+    return (0, $self->loc("Permission denied"))
+        unless $self->CurrentUserCanDelete;
 
     my ($status, $msg) = $self->{'Attribute'}->Delete;
     if ($status) {
@@ -295,6 +319,50 @@ sub GetParameter {
     return $self->{'Attribute'}->SubValue($param);
 }
 
+=head2 IsVisibleTo Privacy
+
+Returns true if the setting is visible to all principals of the given privacy.
+This does not deal with ACLs, this only looks at membership.
+
+=cut
+
+sub IsVisibleTo {
+    my $self    = shift;
+    my $to      = shift;
+    my $privacy = $self->Privacy;
+
+    # if the privacies are the same, then they can be seen. this handles
+    # a personal setting being visible to that user.
+    return 1 if $privacy eq $to;
+
+    # If the setting is systemwide, then any user can see it.
+    return 1 if $privacy =~ /^RT::System/;
+
+    # Only privacies that are RT::System can be seen by everyone.
+    return 0 if $to =~ /^RT::System/;
+
+    # If the setting is group-wide...
+    if ($privacy =~ /^RT::Group-(\d+)$/) {
+        my $setting_group = RT::Group->new($self->CurrentUser);
+        $setting_group->Load($1);
+
+        if ($to =~ /-(\d+)$/) {
+            my $to_id = $1;
+
+            # then any principal that is a member of the setting's group can see
+            # the setting
+            return $setting_group->HasMemberRecursively($to_id);
+        }
+    }
+
+    return 0;
+}
+
+sub CurrentUserCanSee    { 1 }
+sub CurrentUserCanCreate { 1 }
+sub CurrentUserCanModify { 1 }
+sub CurrentUserCanDelete { 1 }
+
 ### Internal methods
 
 # _GetObject: helper routine to load the correct object whose parameters
@@ -305,6 +373,12 @@ sub _GetObject {
     my $privacy = shift;
 
     my ($obj_type, $obj_id) = split(/\-/, ($privacy || ''));
+
+    unless ($obj_type && $obj_id) {
+        $privacy = '(undef)' if !defined($privacy);
+        $RT::Logger->debug("Invalid privacy string '$privacy'");
+        return undef;
+    }
 
     my $object = $self->_load_privacy_object($obj_type, $obj_id);
 

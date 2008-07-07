@@ -45,25 +45,28 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| Elements/Wrapper, Title => loc('Step 3 of 7: Customize Basics') &> 
+<&| Elements/Wrapper, Title => loc('Step [_1] of [_2]: ', 3, 7) . loc('Customize Basics') &> 
 
-<& /Elements/ListActions, actions => \@results &>
+<& Elements/Errors, Errors => \@errors &>
+
+<p>
+<&|/l&>These configuration options cover some of the basics needed to get RT up and running.  We need to know the name of your RT installation and the domain name where RT will live.  You will also need to set a password for your defauly administrative user.</&>
+</p>
 
 <form method="post">
 <& /Widgets/BulkEdit, Types => \@Types,Meta => $RT::Installer->{Meta},
     CurrentValue => RT::Installer->CurrentValues(@Types) &>
 
 <input type="hidden" name="Run" value="1">
-<& /Elements/Submit, Label => loc('Next: Customize Email Addresses'), Back => 1,
-    BackLabel => loc('Back: Customize Database Details') &>
+<& /Elements/Submit, Label => loc('Next: ') . loc('Customize Email Configuration'),Back => 1, BackLabel => loc('Back: ' ) . loc( 'Customize Database Details') &>
 </form>
 </&>
 
 
 <%init>
-my @results;
+my @errors;
 
-my @Types = qw/rtname WebDomain WebPort Timezone Password/;
+my @Types = qw/rtname WebDomain WebPort Password/;
 
 if ( $Run ) {
 
@@ -71,10 +74,12 @@ if ( $Run ) {
             Store => $RT::Installer->{InstallConfig},
             Meta => $RT::Installer->{Meta} );
     
-    for ( qw/WebPort/ ) {
-        if ( $ARGS{$_} && $ARGS{$_} !~ /^\d+$/ ) {
-            push @results, "Invalid $_: it should be a number";
-        }
+    if ( $ARGS{WebPort} && $ARGS{WebPort} !~ /^\d+$/ ) {
+        push @errors, loc("Invalid [_1]: it should be a number", 'WebPort');
+    }
+
+    unless ( $ARGS{Password} ) {
+        push @errors, loc("You must enter an Administrative password");
     }
 
     if ( $Back ) {
@@ -82,9 +87,9 @@ if ( $Run ) {
 'Install/DatabaseDetails.html');
     }
 
-    unless ( @results ) {
+    unless ( @errors ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
-'Install/Emails.html');
+'Install/Sendmail.html');
     }
 }
 

@@ -1,0 +1,28 @@
+@Templates = (
+{
+    Queue       => 0,
+    Name        => "Error: Missing dashboard",    # loc
+    Description =>
+      "Inform user that a dashboard he subscribed to is missing", # loc
+    Content => q{Subject: [{RT->Config->Get('rtname')}] Missing dashboard!
+
+Greetings,
+
+You are subscribed to a dashboard that is currently missing. Most likely, the dashboard was deleted.
+
+RT will remove this subscription as it is no longer useful. Here's the information RT had about your subscription:
+
+DashboardID:  { $SubscriptionObj->SubValue('DashboardId') }
+Frequency:    { $SubscriptionObj->SubValue('Frequency') }
+Hour:         { $SubscriptionObj->SubValue('Hour') }
+{
+    $SubscriptionObj->SubValue('Frequency') eq 'weekly'
+    ? "Day of week:  " . $SubscriptionObj->SubValue('Dow')
+    : $SubscriptionObj->SubValue('Frequency') eq 'monthly'
+      ? "Day of month: " . $SubscriptionObj->SubValue('Dom')
+      : ''
+}
+}
+},
+);
+

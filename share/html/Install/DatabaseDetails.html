@@ -45,9 +45,25 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| Elements/Wrapper, Title => loc('Step 2 of 7: Check your database credentials') &> 
+<&| Elements/Wrapper, Title => loc('Step [_1] of [_2]: ', 2, 7 ) . loc('Check your database credentials') &> 
 
+% if ( @errors ) {
+<& Elements/Errors, Errors => \@errors &>
+<p>
+<&|/l&>Tell us a little about how to find the database RT will be using</&>
+<p>
+<&|/l&>We need to know the name of the database RT will use and where to find it.  We also need to know the username and password of the user RT should use. RT can create the database and user for you, which is why we ask for the username and password of a user with DBA privileges.  During step 6 of the installation process we will use this information to create and initialize RT's database.</&>
+</p>
+<p>
+<&|/l&>When you click on 'Check Database Connectivity' there may be a small delay while RT tries to connect to your database</&>
+
+% } else {
 <& /Elements/ListActions, actions => \@results &>
+
+<p>
+<&|/l&>We were able to find your database and connect as the DBA.  You can click on 'Customize Basics' to continue customizing RT.</&>
+
+% }
 
 <form method="post">
 <& /Widgets/BulkEdit, Types => \@Types, Meta => $RT::Installer->{Meta},
@@ -58,25 +74,26 @@
             ( $db_type eq 'mysql' ? 'root'
               : $db_type eq 'Pg' ? 'postgres'
               : '' ),
-       DatabasePassword => @results ?
-           $RT::Installer->{InstallConfig}{DatabasePassword} : ''
         }
                     &>
 <input type="hidden" name="Run" value="1">
 
-<& /Elements/Submit, Label => loc('Check Database Connectivity'), 
-Back => 1, BackLabel => loc('Back: Select Database Type'),
+% if ( @results && !@errors ) {
+<& /Elements/Submit, Label => loc('Next: ') . loc('Customize Basics'),
+Back => 1, BackLabel => loc('Back: ') . loc('Select Database Type'),
+Name => 'Next' &>
+% } else {
+<& /Elements/Submit, Label => loc('Check Database Connectivity'),
+Back => 1, BackLabel => loc('Back: ') . loc('Select Database Type')
 &>
-
-% if ( @results && $results[0] eq 'Connection succeeded' ) {
-<& /Elements/Submit, Label => loc('Next: Customize Basics'), Name => 'Next' &>
 % }
-
 
 </form>
 </&>
+
 <%init>
-my @results;
+my (@results, @errors);
+my $ConnectionSucceeded;
 
 my @Types = 'DatabaseName';
 
@@ -116,7 +133,7 @@ if ( $Run ) {
         );
     
         if ( $dbh ) {
-            push @results, 'Connection succeeded';
+            push @results, loc('Connection succeeded');
             # dba connect dsn, which has table info
             $dbh = DBI->connect(
                 RT::Handle->DSN, $ARGS{DatabaseAdmin}, $ARGS{DatabaseAdminPassword}, { RaiseError => 0, PrintError => 0 },
@@ -141,16 +158,16 @@ if ( $Run ) {
                     $sth->execute('RT_System'); 
                     if ( $sth->fetchrow_array ) {
                         $RT::Installer->{DatabaseAction} = 'none';
-                        push @results, "Database $RT::DatabaseName appears to be fully initialized.";
+                        push @results, loc("[_1] appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customez RT by clicking 'Customize Basics' below", $RT::DatabaseName);
                     }
                     else {
                         $RT::Installer->{DatabaseAction} = 'acl,coredata,insert';
-                        push @results, "Database $RT::DatabaseName already exists and has RT's tables in place, but does not contain RT's metadata. The 'Initialize Database' step later on can insert metadata into this existing database. If this is acceptable, click 'Customize Basic' below to continue customizing RT.";
+                        push @results, loc("[_1] already exists and has RT's tables in place, but does not contain RT's metadata. The 'Initialize Database' step later on can insert metadata into this existing database. If this is acceptable, click 'Customize Basics' below to continue customizing RT.", $RT::DatabaseName);
                     }
                 }
                 else {
                     $RT::Installer->{DatabaseAction} = 'schema,acl,coredata,insert';
-                    push @results, "Database $RT::DatabaseName already exists, but does not contain RT's tables or metadata. The 'Initialize Database' step later on can insert tables and metadata into this existing database. if this is acceptable, click 'Customize Basic' below to continue customizing RT.";
+                    push @results, loc("[_1] already exists, but does not contain RT's tables or metadata. The 'Initialize Database' step later on can insert tables and metadata into this existing database. if this is acceptable, click 'Customize Basic' below to continue customizing RT.", $RT::DatabaseName );
                 }
 
             }
@@ -161,13 +178,13 @@ if ( $Run ) {
         }
         else {
             $RT::Installer->{DatabaseAction} = 'error';
-            push @results, "Failed to connect to database: $DBI::errstr";
+            push @errors, loc("Failed to connect to database: [_1]",
+                    $DBI::errstr );
         }
     }
     else {
-        push @results, $msg;
+        push @results, loc($msg);
     }
-
 
 }
 

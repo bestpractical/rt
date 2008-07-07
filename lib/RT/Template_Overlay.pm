@@ -272,6 +272,11 @@ sub IsEmpty {
 Returns L<MIME::Entity> object parsed using L</Parse> method. Returns
 undef if last call to L</Parse> failed or never be called.
 
+Note that content of the template is UTF-8, but L<MIME::Parser> is not
+good at handling it and all data of the entity should be treated as
+octets and converted to perl strings using Encode::decode_utf8 or
+something else.
+
 =cut
 
 sub MIMEObj {
@@ -351,7 +356,9 @@ sub _Parse {
 
     ### Should we forgive normally-fatal errors?
     $parser->ignore_errors(1);
-    $self->{'MIMEObj'} = eval { $parser->parse_data($content) };
+    # MIME::Parser doesn't play well with perl strings
+    utf8::encode($content);
+    $self->{'MIMEObj'} = eval { $parser->parse_data( \$content ) };
     if ( my $error = $@ || $parser->last_error ) {
         $RT::Logger->error( "$error" );
         return ( 0, $error );
@@ -425,8 +432,6 @@ sub _ParseContent {
     );
     return ( undef, $self->loc('Template parsing error') ) if $is_broken;
 
-    # MIME::Parser has problems dealing with high-bit utf8 data.
-    Encode::_utf8_off($retval);
     return ($retval);
 }
 

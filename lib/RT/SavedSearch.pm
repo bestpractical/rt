@@ -48,7 +48,7 @@
 
 =head1 NAME
 
-  RT::SavedSearch - an API for saving and retrieving search form values.
+RT::SavedSearch - an API for saving and retrieving search form values.
 
 =head1 SYNOPSIS
 
@@ -56,12 +56,9 @@
 
 =head1 DESCRIPTION
 
-  SavedSearch is an object that can belong to either an RT::User or an
-  RT::Group.  It consists of an ID, a description, and a number of
-  search parameters.
-
-=head1 METHODS
-
+SavedSearch is an object based on L<RT::SharedSetting> that can belong
+to either an L<RT::User> or an L<RT::Group>. It consists of an ID,
+a description, and a number of search parameters.
 
 =cut
 
@@ -70,6 +67,8 @@ package RT::SavedSearch;
 use strict;
 use warnings;
 use base qw/RT::SharedSetting/;
+
+=head1 METHODS
 
 =head2 ObjectName
 

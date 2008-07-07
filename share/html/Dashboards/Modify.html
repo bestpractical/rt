@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => $title &>
+<& /Elements/Header, Title => $title &>
 <& /Dashboards/Elements/Tabs,
     current_subtab => $current_subtab,
     Title => $title,
@@ -73,6 +73,9 @@
 </td></tr>
 </table>
 <& /Elements/Submit, Name => 'Save', Label => loc('Save Changes') &>
+% if ($Dashboard->Id && $can_delete) {
+<& /Elements/Submit, Name => 'Delete', Label => loc('Delete') &>
+% }
 </form>
 <%INIT>
 
@@ -80,13 +83,15 @@ my $current_subtab;
 my ($title, @results);
 my $tried_create = 0;
 
+# user went directly to Modify.html
+$Create = 1 if !$id;
+
 use RT::Dashboard;
 
 my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
-my @privacies = $Dashboard->_PrivacyObjects;
+my @privacies = $Dashboard->_PrivacyObjects(($Create ? 'Create' : 'Modify') => 1);
 
-# user went directly to Modify.html
-$Create = 1 if !$id;
+Abort(loc("Permission denied")) if @privacies == 0;
 
 if ($Create) {
     $current_subtab = 'Dashboards/Modify.html?Create=1';
@@ -94,28 +99,23 @@ if ($Create) {
 }
 else {
     if ($id eq 'new') {
-        my ($val, $msg);
         $tried_create = 1;
 
-        if ($session{'CurrentUser'}->HasRight(Right => 'ModifyDashboard', Object => $RT::System)) {
-            ($val, $msg) = $Dashboard->Save(
-                Name                  => $ARGS{'Name'},
-                Privacy               => $ARGS{'Privacy'},
-            );
-            push @results, $msg;
-        }
-        else {
-            $msg = "No permission to create dashboards";
-        }
+        my ($val, $msg) = $Dashboard->Save(
+            Name    => $ARGS{'Name'},
+            Privacy => $ARGS{'Privacy'},
+        );
 
         if (!$val) {
             Abort(loc("Dashboard could not be created: [_1]", $msg));
         }
+
+        push @results, $msg;
         $id = $Dashboard->Id;
     }
     else {
-        my ($ok) = $Dashboard->LoadById($id);
-        $ok || Abort('Could not load dashboard');
+        my ($ok, $msg) = $Dashboard->LoadById($id);
+        $ok || Abort($msg);
     }
 
     if ($id) {
@@ -131,14 +131,8 @@ else {
 }
 
 if (!$Create && !$tried_create && $id && $ARGS{'Save'}) {
-    my ($ok, $msg);
-    if ($session{'CurrentUser'}->HasRight(Right => 'ModifyDashboard', Object => $RT::System)) {
-        ($ok, $msg) = $Dashboard->Update(Privacy  => $ARGS{'Privacy'},
-                                         Name     => $ARGS{'Name'});
-    }
-    else {
-        $msg = "No permission to update dashboards";
-    }
+    my ($ok, $msg) = $Dashboard->Update(Privacy  => $ARGS{'Privacy'},
+                                        Name     => $ARGS{'Name'});
 
     if ($ok) {
         push @results, loc("Dashboard updated");
@@ -148,11 +142,23 @@ if (!$Create && !$tried_create && $id && $ARGS{'Save'}) {
     }
 
 }
+
+my $can_delete = $Dashboard->CurrentUserCanDelete;
+
+if (!$Create && !$tried_create && $id && $ARGS{'Delete'}) {
+    my ($ok, $msg) = $Dashboard->Delete();
+    $ok || Abort(loc("Couldn't delete dashboard [_1]: [_2]", $id, $msg));
+
+    # put the user back into a useful place with a message
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Dashboards/index.html?Deleted=$id");
+
+}
 </%INIT>
 
 <%ARGS>
 $Create => undef
 $Name => undef
 $id => '' unless defined $id
+$Delete => undef
 </%ARGS>
 

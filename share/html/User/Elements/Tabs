@@ -73,9 +73,6 @@
 	       r => { title => loc('RT at a glance'),
 			   path => 'Prefs/MyRT.html',
 			 },
-	       s => { title => loc('Dashboards'),
-			   path => 'Dashboards/index.html',
-			 },
 	     };
 
   # Now let callbacks add their extra tabs

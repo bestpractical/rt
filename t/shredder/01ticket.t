@@ -5,10 +5,17 @@ use warnings;
 
 use Test::More;
 use Test::Deep;
+use File::Spec;
+use RT::Test ();
 
 plan tests => 15;
 
-BEGIN { require "t/shredder/utils.pl"; }
+BEGIN {
+    my $shredder_utils = RT::Test::get_relocatable_file('utils.pl',
+        File::Spec->curdir());
+    require $shredder_utils;
+}
+
 init_db();
 create_savepoint('clean');
 

@@ -73,6 +73,6 @@ $ShortQueryString => undef
 <%init>
 my $ical_path = join '/', map $m->interp->apply_escapes($_, 'u'),
     $session{'CurrentUser'}->UserObj->Name,
-    substr(Digest::MD5::md5_hex($session{'CurrentUser'}->UserObj->AuthToken . $Query),0,16),
+    $session{'CurrentUser'}->UserObj->GenerateAuthString( $Query ),
     $Query;
 </%init>

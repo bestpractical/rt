@@ -201,7 +201,7 @@ elsif ( RT->Config->Get('WebExternalAuth') ) {
                     'Zip',                   'Country'
                     )
                 {
-                    $m->callback( Attribute => $attribute, UserInfo => $new_user_info, CallbackName => 'NewUser' );
+                    $m->callback( Attribute => $attribute, User => $user, UserInfo => $new_user_info, CallbackName => 'NewUser' );
 
                     my $method = "Set$attribute";
                     $UserObj->$method( $new_user_info->{$attribute} )
@@ -296,7 +296,7 @@ unless ( $session{'CurrentUser'}->Privileged ) {
     }
 
     # otherwise, drop the user at the SelfService default page
-    elsif ( $m->base_comp->path !~ '^(/+)SelfService/' ) {
+    elsif ( $m->base_comp->path !~ RT->Config->Get('SelfServiceRegex') ) {
         RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."SelfService/" );
     }
     # if user is in SelfService dir let him do anything
@@ -324,7 +324,7 @@ if ( $log_sql_statements ) {
         }
         $RT::Logger->log(
             level => $log_sql_statements,
-            message => "SQL(" . sprintf( "%.2f", $duration ) . "s): $sql;"
+            message => "SQL(" . sprintf( "%.6f", $duration ) . "s): $sql;"
                 . ( @bind ? "  [ bound values: @{[map{qq|'$_'|} @bind]} ]" : "" )
         );
     }

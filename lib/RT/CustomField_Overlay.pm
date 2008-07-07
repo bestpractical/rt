@@ -164,6 +164,8 @@ sub Create {
         Disabled    => 0,
         LookupType  => '',
         Repeated    => 0,
+        LinkValueTo => '',
+        IncludeContentForValue => '',
         @_,
     );
 
@@ -221,6 +223,14 @@ sub Create {
         Repeated    => $args{'Repeated'},
     );
 
+    if ( exists $args{'LinkValueTo'}) {
+	$self->SetLinkValueTo($args{'LinkValueTo'});
+    }
+
+    if ( exists $args{'IncludeContentForValue'}) {
+	$self->SetIncludeContentForValue($args{'IncludeContentForValue'});
+    }
+
     if ( exists $args{'ValuesClass'} ) {
         $self->SetValuesClass( $args{'ValuesClass'} );
     }
@@ -260,6 +270,9 @@ sub Load {
 =head2 LoadByName (Queue => QUEUEID, Name => NAME)
 
 Loads the Custom field named NAME.
+
+Will load a Disabled Custom Field even if there is a non-disabled Custom Field
+with the same Name.
 
 If a Queue parameter is specified, only look for ticket custom fields tied to that Queue.
 

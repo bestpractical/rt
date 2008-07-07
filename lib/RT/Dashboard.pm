@@ -74,8 +74,17 @@ use warnings;
 use base qw/RT::SharedSetting/;
 
 my %new_rights = (
-    ModifyDashboard    => 'Create and modify dashboards', #loc_pair
     SubscribeDashboard => 'Subscribe to email dashboards', #loc_pair
+
+    SeeDashboard       => 'View system dashboards', #loc_pair
+    CreateDashboard    => 'Create system dashboards', #loc_pair
+    ModifyDashboard    => 'Modify system dashboards', #loc_pair
+    DeleteDashboard    => 'Delete system dashboards', #loc_pair
+
+    SeeOwnDashboard    => 'View personal dashboards', #loc_pair
+    CreateOwnDashboard => 'Create personal dashboards', #loc_pair
+    ModifyOwnDashboard => 'Modify personal dashboards', #loc_pair
+    DeleteOwnDashboard => 'Delete personal dashboards', #loc_pair
 );
 
 use RT::System;
@@ -193,35 +202,140 @@ sub SearchPrivacy {
     return SavedSearch => join('-', $type, 'SavedSearch', $id);
 }
 
+=head2 PossibleHiddenSearches
+
+This will return a list of saved searches that are potentially not visible by
+all users for whom the dashboard is visible. You may pass in a privacy to
+use instead of the dashboard's privacy.
+
+=cut
+
+sub PossibleHiddenSearches {
+    my $self = shift;
+    my $privacy = shift || $self->Privacy;
+
+    return grep { !$_->IsVisibleTo($privacy) } $self->Searches;
+}
+
 # _PrivacyObjects: returns a list of objects that can be used to load
-# dashboards from. Unlike SavedSearch, this will return the System object if
-# applicable. You may pass in a paramhash of ShowSystem to force
-# showing/hiding of the System object
+# dashboards from. If the Modify parameter is true, then check modify rights.
+# If the Create parameter is true, then check create rights. Otherwise, check
+# read rights.
 
 sub _PrivacyObjects {
     my $self = shift;
     my %args = @_;
 
     my $CurrentUser = $self->CurrentUser;
-    my @objects = $CurrentUser->UserObj;
+    my @objects;
+
+    my $prefix = $args{Modify} ? "Modify"
+               : $args{Create} ? "Create"
+                               : "See";
+
+    push @objects, $CurrentUser->UserObj
+        if $self->CurrentUser->HasRight(
+            Right  => "${prefix}OwnDashboard",
+            Object => $RT::System,
+        );
 
     my $groups = RT::Groups->new($CurrentUser);
     $groups->LimitToUserDefinedGroups;
     $groups->WithMember( PrincipalId => $CurrentUser->Id,
                          Recursively => 1 );
 
-    push @objects, @{ $groups->ItemsArrayRef };
+    push @objects, grep {
+        $self->CurrentUser->HasRight(
+            Right  => "${prefix}GroupDashboard",
+            Object => $_,
+        )
+    } @{ $groups->ItemsArrayRef };
 
-    # if ShowSystem, always show it
-    # if not ShowSystem, then show only if the user didn't specify AND the
-    #    current user is superuser
     push @objects, RT::System->new($CurrentUser)
-        if $args{ShowSystem}
-        || (!defined($args{ShowSystem})
-            && $CurrentUser->HasRight(Object => $RT::System,
-                                      Right => 'SuperUser'));
+        if $CurrentUser->HasRight(
+            Right  => "${prefix}Dashboard",
+            Object => $RT::System,
+        );
 
     return @objects;
+}
+
+# ACLs
+
+sub _CurrentUserCan {
+    my $self    = shift;
+    my $privacy = shift || $self->Privacy;
+    my %args    = @_;
+
+    if (!defined($privacy)) {
+        $RT::Logger->debug("No privacy provided to $self->_CurrentUserCan");
+        return 0;
+    }
+
+    my $object = $self->_GetObject($privacy);
+    return 0 unless $object;
+
+    my $level;
+
+       if ($object->isa('RT::User'))   { $level = 'Own' }
+    elsif ($object->isa('RT::Group'))  { $level = 'Group' }
+    elsif ($object->isa('RT::System')) { $level = '' }
+    else {
+        $RT::Logger->error("Unknown object $object from privacy $privacy");
+        return 0;
+    }
+
+    # users are mildly special-cased, since we actually have to check that
+    # the user is operating on himself
+    if ($object->isa('RT::User')) {
+        return 0 unless $object->Id == $self->CurrentUser->Id;
+    }
+
+    my $right = $args{FullRight}
+             || join('', $args{Right}, $level, 'Dashboard');
+
+    # all rights, except group rights, are global
+    $object = $RT::System unless $object->isa('RT::Group');
+
+    return $self->CurrentUser->HasRight(
+        Right  => $right,
+        Object => $object,
+    );
+}
+
+sub CurrentUserCanSee {
+    my $self    = shift;
+    my $privacy = shift;
+
+    $self->_CurrentUserCan($privacy, Right => 'See');
+}
+
+sub CurrentUserCanCreate {
+    my $self    = shift;
+    my $privacy = shift;
+
+    $self->_CurrentUserCan($privacy, Right => 'Create');
+}
+
+sub CurrentUserCanModify {
+    my $self    = shift;
+    my $privacy = shift;
+
+    $self->_CurrentUserCan($privacy, Right => 'Modify');
+}
+
+sub CurrentUserCanDelete {
+    my $self    = shift;
+    my $privacy = shift;
+
+    $self->_CurrentUserCan($privacy, Right => 'Delete');
+}
+
+sub CurrentUserCanSubscribe {
+    my $self    = shift;
+    my $privacy = shift;
+
+    $self->_CurrentUserCan($privacy, FullRight => 'SubscribeDashboard');
 }
 
 eval "require RT::Dashboard_Vendor";

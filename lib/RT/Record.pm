@@ -314,8 +314,6 @@ sub Create {
    }
 
     if  (UNIVERSAL::isa('errno',$id)) {
-        exit(0);
-       warn "It's here!";
         return(undef);
     }
 
@@ -1179,6 +1177,26 @@ sub _Links {
 
 # }}}
 
+# {{{ sub FormatType
+
+=head2 FormatType
+
+Takes a Type and returns a string that is more human readable.
+
+=cut
+
+sub FormatType{
+    my $self = shift;
+    my %args = ( Type => '',
+		 @_
+	       );
+    $args{Type} =~ s/([A-Z])/" " . lc $1/ge;
+    return $args{Type};
+}
+
+
+# }}}
+
 # {{{ sub FormatLink
 
 =head2 FormatLink
@@ -1273,8 +1291,9 @@ sub _AddLink {
 				     FallBack => $args{Base});
     my $targettext = $self->FormatLink(Object => $link->TargetObj,
 				       FallBack => $args{Target});
+    my $typetext = $self->FormatType(Type => $args{Type});
     my $TransString =
-      "$basetext $args{Type} $targettext.";
+      "$basetext $typetext $targettext.";
     return ( $linkid, $TransString ) ;
 }
 
@@ -1332,13 +1351,14 @@ sub _DeleteLink {
     #it's a real link. 
 
     if ( $link->id ) {
-	my $basetext = $self->FormatLink(Object => $link->BaseObj,
-				     FallBack => $args{Base});
-	my $targettext = $self->FormatLink(Object => $link->TargetObj,
-				       FallBack => $args{Target});
+        my $basetext = $self->FormatLink(Object => $link->BaseObj,
+                                     FallBack => $args{Base});
+        my $targettext = $self->FormatLink(Object => $link->TargetObj,
+                                       FallBack => $args{Target});
+        my $typetext = $self->FormatType(Type => $args{Type});
         my $linkid = $link->id;
         $link->Delete();
-        my $TransString = "$basetext no longer $args{Type} $targettext.";
+        my $TransString = "$basetext no longer $typetext $targettext.";
         return ( 1, $TransString);
     }
 

@@ -67,12 +67,12 @@ unless ($RT::DisableGraphViz) {
 }
 
 our %ticket_status_style = (
-    new      => { fontcolor => '#FF0000' },
-    open     => { fontcolor => '#000000' },
-    stalled  => { fontcolor => '#DAA520' },
-    resolved => { fontcolor => '#00FF00' },
-    rejected => { fontcolor => '#808080' },
-    deleted  => { fontcolor => '#A9A9A9' },
+    new      => { fontcolor => '#FF0000', fontsize => 10 },
+    open     => { fontcolor => '#000000', fontsize => 10 },
+    stalled  => { fontcolor => '#DAA520', fontsize => 10 },
+    resolved => { fontcolor => '#00FF00', fontsize => 10 },
+    rejected => { fontcolor => '#808080', fontsize => 10 },
+    deleted  => { fontcolor => '#A9A9A9', fontsize => 10 },
 );
 
 our %link_style = (

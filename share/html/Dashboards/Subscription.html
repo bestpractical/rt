@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => $title &>
+<& /Elements/Header, Title => $title &>
 <& /Dashboards/Elements/Tabs,
     current_subtab => $current_subtab,
     Title => $title,
@@ -62,16 +62,16 @@
 <&| /Widgets/TitleBox, title => loc('Dashboard') &>
 
 <table>
-<tr><td align="right">
+<tr><td class="label">
 <&|/l&>Dashboard</&>:
-</td><td>
+</td><td class="value">
 <% $DashboardObj->Name %>
 </td></tr>
 
-<tr><td align="right">
+<tr><td class="label">
 <&|/l&>Queries</&>:
-</td><td>
-% my @searches = $DashboardObj->Searches;
+</td><td class="value">
+% my @searches = grep { defined } $DashboardObj->Searches;
 % if (!@searches) {
 (none)
 % } else {
@@ -97,24 +97,9 @@
 <&| /Widgets/TitleBox, title => loc('Subscription') &>
 
 <table>
-<tr><td align="right">
-<&|/l&>Hour</&>:
-</td><td>
-<select name="Hour">
-% for my $hour (0..23) {
-%     my $formatted = sprintf '%02d:00', $hour;
-%     my $selected = $formatted eq $fields{'Hour'}
-%                  ? 'selected="selected"'
-%                  : '';
-
-    <option value="<% $formatted %>" <%$selected%>><% $formatted %></option>
-% }
-</select>
-(in <%$timezone%>)
-</td></tr>
-<tr><td align="right">
+<tr><td class="label">
 <&|/l&>Frequency</&>:
-</td><td>
+</td><td class="value">
 <input type="radio" name="Frequency" value="daily" <% $fields{'Frequency'} eq 'daily' ? 'checked="checked"' : "" %>>
     daily
 </input><br />
@@ -135,11 +120,31 @@ monthly</input> , on day
     <option value="<% $dom %>" <% $fields{'Dom'} == $dom ? 'selected="selected"' : '' %>><% loc($dom) %></option>
 %   }
 </select>
+<br />
+
+<input type="radio" name="Frequency" value="never" <% $fields{'Frequency'} eq 'never' ? 'checked="checked"' : "" %>>
+    never
+</input>
 
 </td></tr>
-<tr><td align="right">
+<tr><td class="label">
+<&|/l&>Hour</&>:
+</td><td class="value">
+<select name="Hour">
+% for my $hour (0..23) {
+%     my $formatted = sprintf '%02d:00', $hour;
+%     my $selected = $formatted eq $fields{'Hour'}
+%                  ? 'selected="selected"'
+%                  : '';
+
+    <option value="<% $formatted %>" <%$selected%>><% $formatted %></option>
+% }
+</select>
+(in <%$timezone%>)
+</td></tr>
+<tr><td class="label">
 <&|/l&>Rows</&>:
-</td><td>
+</td><td class="value">
 <select name="Rows">
 %   for my $rows (1, 2, 5, 10, 15, 20, 25, 50, 75, 100, 0) {
     <option value="<% $rows %>" <% $fields{'Rows'} eq $rows ? 'selected="selected"' : '' %>><% loc($rows || 'Unlimited') %></option>
@@ -154,8 +159,6 @@ monthly</input> , on day
 
 % if ($SubscriptionObj->Id) {
     <& /Elements/Submit, Name => "Save", Label => loc('Save Changes') &>
-    <br />
-    <& /Elements/Submit, Name => "Unsubscribe", Label => loc('Unsubscribe') &>
 % } else {
     <& /Elements/Submit, Name => "Save", Label => loc('Subscribe') &>
 % }
@@ -168,7 +171,7 @@ my $current_subtab = 'Dashboards/Subscription.html?DashboardId=' . $DashboardId;
 my ($title, @results);
 my ($val, $msg);
 my $Loaded = 0;
-my $timezone = eval{$session{'CurrentUser'}->UserObj->Timezone} || 'UTC';
+my $timezone = $session{'CurrentUser'}->UserObj->Timezone || RT->Config->Get('Timezone');
 
 use RT::Dashboard;
 my $DashboardObj = RT::Dashboard->new($session{'CurrentUser'});
@@ -187,15 +190,7 @@ $DashboardId = $SubscriptionObj->Id
              : $ARGS{'DashboardId'};
 
 ($val, $msg) = $DashboardObj->LoadById($DashboardId);
-$val || Abort("Couldn't load dashboard $DashboardId: $msg.");
-
-if ($SubscriptionObj->Id && $Unsubscribe) {
-    my ($ok, $msg) = $SubscriptionObj->Delete();
-    $ok || Abort("Couldn't unsubscribe to dashboard $DashboardId.");
-
-    # put the user back into a useful place with a message
-    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Dashboards/index.html?Unsubscribe=$DashboardId");
-}
+$val || Abort(loc("Couldn't load dashboard [_1]: [_2].", $DashboardId, $msg));
 
 my %fields = (
     DashboardId => $DashboardId,
@@ -238,18 +233,16 @@ if (defined $ARGS{Save}) {
     }
     # create
     else {
-        if ($session{'CurrentUser'}->HasRight(Right => 'SubscribeDashboard', Object => $RT::System)) {
-            ($val, $msg) = $SubscriptionObj->Create(
-                Name        => 'Subscription',
-                Description => 'Subscription to dashboard ' . $DashboardId,
-                ContentType => 'storable',
-                Object      => $session{'CurrentUser'}->UserObj,
-                Content     => \%fields,
-            );
-        }
-        else {
-            ($val, $msg) = (0, "No permission to subscribe to dashboards");
-        }
+        Abort(loc("Unable to subscribe to dashboard [_1]: Permission denied", $DashboardId))
+            unless $DashboardObj->CurrentUserCanSubscribe;
+
+        my ($val, $msg) = $SubscriptionObj->Create(
+            Name        => 'Subscription',
+            Description => 'Subscription to dashboard ' . $DashboardId,
+            ContentType => 'storable',
+            Object      => $session{'CurrentUser'}->UserObj,
+            Content     => \%fields,
+        );
         if ($val) {
             push @results, loc("Subscribed to dashboard [_1]", $DashboardObj->Name);
             push @results, loc("Warning: you have no email address set, so you will not receive this dashboard until you have it set")
@@ -276,6 +269,5 @@ $Hour        => undef
 $Dow         => undef
 $Dom         => undef
 $Rows        => undef
-$Unsubscribe => undef
 </%ARGS>
 

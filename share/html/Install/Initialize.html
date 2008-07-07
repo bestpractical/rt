@@ -45,28 +45,28 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&|Elements/Wrapper, Title => loc('Step 6 of 7: Initialize Database') &> 
+<&|Elements/Wrapper, Title => loc('Step [_1] of [_2]: ', 6, 7) . loc('Initialize Database') &> 
 
-<& /Elements/ListActions, actions => \@results &>
+<& Elements/Errors, Errors => \@errors &>
 
-% unless ( @results ) {
+% unless ( @errors ) {
 <div>
-<&|/l&>Click "Initialize Database" to begin creating the database. This may take a few moments</&>
+<&|/l&>Click "Initialize Database" to create RT's database and insert initial metadata. This may take a few moments</&>
 </div>
 % }
 
 <form method="post">
 <input type="hidden" name="Run" value="1">
 <& /Elements/Submit, Label => loc('Initialize Database'), Back => 1,
-    BackLabel => loc('Back: Customize Sendmail') &>
+    BackLabel => loc('Back: ') . loc('Customize Global') &>
 </form>
 </&>
 <%init>
-my @results;
+my @errors;
 if ( $Run ) {
     if ( $Back ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
-'Install/Sendmail.html');
+'Install/Global.html');
     }
 
     my @actions = split /,/, $RT::Installer->{DatabaseAction};
@@ -84,7 +84,7 @@ if ( $Run ) {
     if ( $actions[0] eq 'create' ) {
         ($status, $msg) = RT::Handle->CreateDatabase( $sysdbh );
         unless ( $status ) {
-            push @results, "ERROR: $msg";
+            push @errors, loc('ERROR: [_1]', $msg );
         }
 
         shift @actions; # shift the 'create' action since its job is done.
@@ -121,13 +121,13 @@ if ( $Run ) {
                 ($status, $msg) = $RT::Handle->InsertData( $file );
             }
             unless ( $status ) {
-                push @results, "ERROR: $msg";
+                push @errors, loc('ERROR: [_1]', $msg);
                 last;
             }
         }
     }
 
-    unless ( @results ) {
+    unless ( @errors ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
 'Install/Finish.html');
     }

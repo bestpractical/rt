@@ -17,7 +17,8 @@ use Cwd 'getcwd';
 use String::ShellQuote 'shell_quote';
 use IPC::Run3 'run3';
 
-my $homedir = File::Spec->catdir( getcwd(), qw(t data gnupg keyrings) );
+my $homedir = RT::Test::get_abs_relocatable_dir(File::Spec->updir(),
+    qw(data gnupg keyrings));
 
 # catch any outgoing emails
 RT::Test->set_mail_catcher;

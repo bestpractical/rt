@@ -54,6 +54,7 @@ use warnings;
 use Test::More;
 use Socket;
 use File::Temp;
+use File::Spec;
 my $config;
 our ($existing_server, $port, $dbname);
 my $mailsent;
@@ -115,6 +116,7 @@ BEGIN {
 use RT::Interface::Web::Standalone;
 use Test::HTTP::Server::Simple;
 use Test::WWW::Mechanize;
+use File::Path 'mkpath';
 
 unshift @RT::Interface::Web::Standalone::ISA, 'Test::HTTP::Server::Simple';
 
@@ -167,16 +169,28 @@ Set( \$MailCommand, 'testfile');
                         min_level => $screen_logger->min_level,
                         action => { error     => 'warn',
                                     critical  => 'warn' } ) );
+
+    # XXX: this should really be totally isolated environment so we
+    # can parallelize and be sane
+    mkpath [ $RT::MasonSessionDir ]
+        if RT->Config->Get('DatabaseType');
+
 }
 
 my $created_new_db;    # have we created new db? mainly for parallel testing
+
+sub db_requires_no_dba {
+    my $self = shift;
+    my $db_type = RT->Config->Get('DatabaseType');
+    return 1 if $db_type eq 'SQLite';
+}
 
 sub bootstrap_db {
     my $self = shift;
     my %args = @_;
 
    unless (defined $ENV{'RT_DBA_USER'} && defined $ENV{'RT_DBA_PASSWORD'}) {
-	BAIL_OUT("RT_DBA_USER and RT_DBA_PASSWORD environment variables need to be set in order to run 'make test'");
+	BAIL_OUT("RT_DBA_USER and RT_DBA_PASSWORD environment variables need to be set in order to run 'make test'") unless $self->db_requires_no_dba;
    }
     # bootstrap with dba cred
     my $dbh = _get_dbh(RT::Handle->SystemDSN,
@@ -531,13 +545,14 @@ sub send_via_mailgate {
     return ($status, $id);
 }
 
+my $mailbox_catcher = File::Temp->new( OPEN => 0, CLEANUP => 0 )->filename;
 sub set_mail_catcher {
     my $self = shift;
     my $catcher = sub {
         my $MIME = shift;
 
-        open my $handle, '>>', 't/mailbox'
-            or die "Unable to open t/mailbox for appending: $!";
+        open my $handle, '>>', $mailbox_catcher
+            or die "Unable to open $mailbox_catcher for appending: $!";
 
         $MIME->print($handle);
         print $handle "%% split me! %%\n";
@@ -549,7 +564,11 @@ sub set_mail_catcher {
 sub fetch_caught_mails {
     my $self = shift;
     return grep /\S/, split /%% split me! %%/,
-        RT::Test->file_content( 't/mailbox', 'unlink' => 1, noexist => 1 );
+        RT::Test->file_content( $mailbox_catcher, 'unlink' => 1, noexist => 1 );
+}
+
+sub clean_caught_mails {
+    unlink $mailbox_catcher;
 }
 
 sub file_content {
@@ -557,7 +576,7 @@ sub file_content {
     my $path = shift;
     my %args = @_;
 
-    $path = File::Spec->catfile( @$path ) if ref $path;
+    $path = File::Spec->catfile( @$path ) if ref $path eq 'ARRAY';
 
     diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
 
@@ -584,6 +603,48 @@ sub find_executable {
     return undef;
 }
 
+=head2 get_relocatable_dir
+
+Takes a path relative to the location of the test file that is being
+run and returns a path that takes the invocation path into account.
+
+e.g. RT::Test::get_relocatable_dir(File::Spec->updir(), 'data', 'emails')
+
+=cut
+
+sub get_relocatable_dir {
+    (my $volume, my $directories, my $file) = File::Spec->splitpath($0);
+    if (File::Spec->file_name_is_absolute($directories)) {
+        return File::Spec->catdir($directories, @_);
+    } else {
+        return File::Spec->catdir(File::Spec->curdir(), $directories, @_);
+    }
+}
+
+=head2 get_relocatable_file
+
+Same as get_relocatable_dir, but takes a file and a path instead
+of just a path.
+
+e.g. RT::Test::get_relocatable_file('test-email',
+        (File::Spec->updir(), 'data', 'emails'))
+
+=cut
+
+sub get_relocatable_file {
+    my $file = shift;
+    return File::Spec->catfile(get_relocatable_dir(@_), $file);
+}
+
+sub get_abs_relocatable_dir {
+    (my $volume, my $directories, my $file) = File::Spec->splitpath($0);
+    if (File::Spec->file_name_is_absolute($directories)) {
+        return File::Spec->catdir($directories, @_);
+    } else {
+        return File::Spec->catdir(Cwd->getcwd(), $directories, @_);
+    }
+}
+
 sub import_gnupg_key {
     my $self = shift;
     my $key = shift;
@@ -591,9 +652,16 @@ sub import_gnupg_key {
 
     $key =~ s/\@/-at-/g;
     $key .= ".$type.key";
+
     require RT::Crypt::GnuPG;
+    (my $volume, my $directories, my $file) = File::Spec->splitpath($0);
+    my $keys_dir = File::Spec->catdir( File::Spec->curdir(), $directories,
+        File::Spec->updir(), qw(data gnupg keys) );
+    # this is a bit hackish; calling it from somewhere that's not a subdir
+    # of t/ will fail
     return RT::Crypt::GnuPG::ImportKey(
-        RT::Test->file_content([qw(t data gnupg keys), $key])
+        RT::Test->file_content([get_relocatable_dir(File::Spec->updir(), 'data',
+        'gnupg', 'keys'), $key])
     );
 }
 

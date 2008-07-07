@@ -55,7 +55,8 @@
     Query => $Query,
     Rows => $Rows,
     OrderBy => $OrderBy,
-    Order => $Order &>
+    Order => $Order,
+    SavedSearchId => $SavedSearchId &>
 <& /Elements/CollectionList, 
     Query => $Query,
     AllowSorting => 1,
@@ -106,7 +107,7 @@ $OrderBy     ||= $prefs->{'OrderBy'} || 'id';
 # We call it RowsPerPage everywhere else.
 
 if ( !defined($Rows) ) {
-    if ( $ARGS{'RowsPerPage'} ) {
+    if (defined $ARGS{'RowsPerPage'} ) {
         $Rows = $ARGS{'RowsPerPage'};
     } elsif ( defined $prefs->{'RowsPerPage'} ) {
         $Rows = $prefs->{'RowsPerPage'};
@@ -179,7 +180,7 @@ my $BaseURL = RT->Config->Get('WebPath')."/Search/Results.html?";
 $link_rel{first} = $BaseURL . $genpage->(1)         if $Page > 1;
 $link_rel{prev}  = $BaseURL . $genpage->($Page - 1) if $Page > 1;
 $link_rel{next}  = $BaseURL . $genpage->($Page + 1) if ($Page * $Rows) < $ticketcount;
-$link_rel{last}  = $BaseURL . $genpage->(POSIX::ceil($ticketcount/$Rows)) if ($Page * $Rows) < $ticketcount;
+$link_rel{last}  = $BaseURL . $genpage->(POSIX::ceil($ticketcount/$Rows)) if $Rows and ($Page * $Rows) < $ticketcount;
 </%INIT>
 <%CLEANUP>
 $session{'tickets'}->PrepForSerialization();
@@ -192,4 +193,5 @@ $Rows => undef
 $Page => 1
 $OrderBy => undef
 $Order => undef
+$SavedSearchId => undef
 </%ARGS>

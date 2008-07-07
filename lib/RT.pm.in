@@ -53,6 +53,7 @@ package RT;
 
 
 use File::Spec ();
+use Cwd ();
 
 use vars qw($Config $System $SystemUser $Nobody $Handle $Logger $_INSTALL_MODE);
 
@@ -103,6 +104,8 @@ unless (  File::Spec->file_name_is_absolute($EtcPath) ) {
           File::Spec->rel2abs(
             File::Spec->catdir( $pm_path, File::Spec->updir ) );
     }
+
+    $BasePath = Cwd::realpath( $BasePath );
 
     for my $path ( qw/EtcPath BinPath SbinPath VarPath LocalPath LocalEtcPath
             LocalLibPath LocalLexiconPath LocalPluginPath MasonComponentRoot

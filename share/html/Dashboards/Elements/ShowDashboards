@@ -46,29 +46,55 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => loc("[_1] Dashboards", $Type) &>
+<& SELF:table, %ARGS &>
+</&>
+<%ARGS>
+$Type    => undef
+</%ARGS>
+
+<%METHOD table>
+<%ARGS>
+$Dashboards => undef
+$Verbose => 1
+</%ARGS>
+<%INIT>
+# map each subscription to a dashboard ID
+my %subscription_for;
+
+for my $attr ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription')) {
+    $subscription_for{$attr->SubValue('DashboardId')} = $attr;
+}
+</%INIT>
 
 % if (@$Dashboards == 0) {
-    <p><% loc("No dashboards.") %></p>
+%   if ($Verbose) {
+        <p><% loc("No dashboards.") %></p>
+%   }
 % } else {
     <table class="collection-as-table">
         <tr class="collection-as-table">
+% if ($Verbose) {
             <th class="collection-as-table"><% loc("#") %></th>
+% }
             <th class="collection-as-table"><% loc("Name") %></th>
             <th class="collection-as-table"><% loc("Subscription") %></th>
         </tr>
 
 %   my $i = 0;
-%   for my $dashboard (sort {$b->Id <=> $a->Id} @$Dashboards) {
-%       my $url = sprintf '%s/Dashboards/Modify.html?id=%d',
+%   for my $dashboard (@$Dashboards) {
+%       my $url = sprintf '%s/Dashboards/%d/%s',
 %                 RT->Config->Get('WebPath'),
-%                 $dashboard->Id;
+%                 $dashboard->Id,
+%                 $dashboard->Name;
 
         <tr class="collection-as-table <% ++$i % 2 ? 'oddline' : 'evenline' %>">
+% if ($Verbose) {
             <td class="collection-as-table">
                 <a href="<% $url %>">
                     <% $dashboard->Id %>
                 </a>
             </td>
+% }
             <td class="collection-as-table">
                 <a href="<% $url %>">
                     <% $dashboard->Name %>
@@ -82,19 +108,5 @@
 
     </table>
 % }
-
-</&>
-
-<%ARGS>
-$Type    => "Personal"
-$Dashboards => undef
-</%ARGS>
-<%INIT>
-# map each subscription to a dashboard ID
-my %subscription_for;
-
-for my $attr ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription')) {
-    $subscription_for{$attr->SubValue('DashboardId')} = $attr;
-}
-</%INIT>
+</%METHOD>
 

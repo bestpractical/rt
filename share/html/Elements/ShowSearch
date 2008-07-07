@@ -49,8 +49,9 @@
     title => loc($search->Description, $ProcessedSearchArg->{'Rows'}),
     title_href => $query_link_url.$QueryString,
     titleright => $customize ? loc('Edit') : '',
-    titleright_href => $customize &>
-<& $query_display_component, %$ProcessedSearchArg, ShowNavigation => 0, Class => 'RT::Tickets' &>
+    titleright_href => $customize,
+    hideable => $hideable &>
+<& $query_display_component, hideable => $hideable, %$ProcessedSearchArg, ShowNavigation => 0, Class => 'RT::Tickets' &>
 </&>
 <%init>
 my $search;
@@ -58,7 +59,7 @@ my $user = $session{'CurrentUser'}->UserObj;
 my $SearchArg;
 my $customize;
 my $query_display_component = '/Elements/CollectionList';
-my $query_link_url = 'Search/Results.html';
+my $query_link_url = RT->Config->Get('WebURL').'Search/Results.html';
 
 if ($SavedSearch) {
     my ( $container_object, $search_id ) = _parse_saved_search($SavedSearch);
@@ -77,7 +78,7 @@ if ($SavedSearch) {
         # XXX: dispatch to different handler here
         $query_display_component
             = '/Search/Elements/' . $SearchArg->{SearchType};
-        $query_link_url = "Search/$SearchArg->{SearchType}.html";
+        $query_link_url = RT->Config->Get('WebURL') . "/Search/$SearchArg->{SearchType}.html";
     } else {
         $customize = RT->Config->Get('WebPath') . '/Search/Build.html?'
             . $m->comp( '/Elements/QueryString',
@@ -115,7 +116,6 @@ $m->callback(
 );
 
 foreach ( $SearchArg, $ProcessedSearchArg ) {
-    $_->{'Query'}  =~ s/__CurrentUser__/$session{'CurrentUser'}->Id/ge;
     $_->{'Format'} =~ s/__(Web(?:Path|Base|BaseURL))__/scalar RT->Config->Get($1)/ge;
     $_->{'Format'} =~ s/__loc\(["']?(\w+)["']?\)__/loc("$1")/ge;
     if ( $_->{'Query'} =~ /__Bookmarks__/ ) {
@@ -133,8 +133,9 @@ my $QueryString = '?' . $m->comp( '/Elements/QueryString', %$SearchArg );
 
 </%init>
 <%ARGS>
-$Name        => undef
-$SavedSearch => undef
-%Override    => ()
+$Name          => undef
+$SavedSearch   => undef
+%Override      => ()
 $IgnoreMissing => undef
+$hideable      => 1
 </%ARGS>

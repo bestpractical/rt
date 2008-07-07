@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /User/Elements/Tabs,
+<& /Tools/Elements/Tabs,
     subtabs => $tabs,
     current_tab => 'Dashboards/index.html',
     current_subtab => $current_subtab,
@@ -87,7 +87,11 @@ if ( $DashboardObj and $DashboardObj->Id ) {
     };
 
     delete $tabs->{"this"}{"subtabs"}{"c_Subscription"}
-        if !$session{'CurrentUser'}->HasRight(Right => 'SubscribeDashboard', Object => $RT::System);
+        unless $DashboardObj->CurrentUserCanSubscribe;
+
+    $tabs->{"this"}{"subtabs"}{"z_Preview"}{path} = $real_subtab
+        if $real_subtab =~ /Render/
+        || $real_subtab =~ /Dashboard\/\d+/;
 
     $current_subtab = $modify;
 }
@@ -95,7 +99,10 @@ if ( $DashboardObj and $DashboardObj->Id ) {
 $tabs->{"A"} = { title => loc('Select dashboard'),
                  path  => "Dashboards/index.html" };
 
-if ($session{'CurrentUser'}->HasRight(Right => 'ModifyDashboard', Object => $RT::System)) {
+my $dashboard = RT::Dashboard->new($session{'CurrentUser'});
+my @objects = $dashboard->_PrivacyObjects(Create => 1);
+
+if (@objects) {
     $tabs->{"B"} = { title     => loc('New dashboard'),
                      path      => "Dashboards/Modify.html?Create=1",
                      separator => 1 };

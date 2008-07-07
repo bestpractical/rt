@@ -47,8 +47,21 @@
 %# END BPS TAGGED BLOCK }}}
 <%ONCE>
 my $HAS_DATETIME_TZ = eval { require DateTime::TimeZone };
-my @names;
-@names = DateTime::TimeZone->all_names if $HAS_DATETIME_TZ;
+my $HAS_DATETIME = eval { require DateTime };
+
+my (@names, %label);
+if ( $HAS_DATETIME_TZ ) {
+    @names = DateTime::TimeZone->all_names;
+}
+
+if ( $HAS_DATETIME ) {
+    my $dt = DateTime->now;
+    for ( @names ) {
+        $dt->set_time_zone( $_ );
+        $label{$_} = $_ . ' ' . $dt->strftime('%z');
+    }
+}
+
 </%ONCE>
 % unless ( $HAS_DATETIME_TZ && @names ) {
 <input type="text" name="<% $Name %>" value="<% $Default %>" />
@@ -58,7 +71,8 @@ my @names;
 <option value=""><&|/l&>System Default</&></option>
 % }
 % foreach my $tz (@names) {
-<option value="<% $tz %>" <% ($Default||'') eq $tz? 'selected="selected"' :'' |n %> ><% $tz %></option>
+<option value="<% $tz %>" <% ($Default||'') eq $tz? 'selected="selected"' :''
+ |n %> ><% $label{$tz} || $tz %></option>
 % }
 </select>
 % }

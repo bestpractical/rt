@@ -47,4 +47,30 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, Title => loc('Reports') &>
 <& /Tools/Reports/Elements/Tabs, Title => loc('Reports') &>
+<& /Elements/ListMenu, items => $tabs &>
+
 % $m->callback;
+
+<%init>
+
+my $tabs = {
+    A => {
+        title       => loc('Resolved by owner'),
+        path        => 'ResolvedByOwner.html',
+        description => loc('Examine tickets resolved in a queue, grouped by owner'),
+    },
+    B => {
+        title       => loc('Resolved in date range'),
+        path        => 'ResolvedByDates.html',
+        description => loc('Examine tickets resolved in a queue between two dates'),
+    },
+    C => {
+        title       => loc('Created in a date range'),
+        path        => 'CreatedByDates.html',
+        description => loc('Examine tickets created in a queue between two dates'),
+    },
+};
+
+$m->callback( CallbackName => 'ListReports', %ARGS, tabs => $tabs );
+
+</%init>

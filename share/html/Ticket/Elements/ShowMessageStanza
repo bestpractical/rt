@@ -46,6 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % if ( ref $Message ) {
+%    $m->out($pon);
 <div class="message-stanza-depth-<% $Depth %>">
 <%perl>
 my $para = '';
@@ -64,10 +65,15 @@ foreach my $stanza ( @$Message) {
 $print_content->( \$para ) if length $para;
 </%perl>
 </div>
+%$m->out($poff);
 % } else {
 %       $print_content->( \$Message );
 % }
 <%INIT>
+my ($pon, $poff) = (RT->Config->Get('PlainTextPre', $session{'CurrentUser'}) && $Depth == 0)
+                            ? ('<pre>', '</pre>')
+                            : ('', '');
+
 my $ticket = $Transaction ? $Transaction->TicketObj : undef;
 
 my $print_content = sub {

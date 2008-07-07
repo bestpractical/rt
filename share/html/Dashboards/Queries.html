@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => $title &>
+<& /Elements/Header, Title => $title &>
 <& /Dashboards/Elements/Tabs,
     current_subtab => $current_subtab,
     Title => $title,
@@ -83,8 +83,8 @@ my @results;
 
 use RT::Dashboard;
 my $Dashboard = new RT::Dashboard($session{'CurrentUser'});
-my ($ok) = $Dashboard->LoadById($id);
-$ok || Abort("Couldn't load dashboard.");
+my ($ok, $msg) = $Dashboard->LoadById($id);
+$ok || Abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg));
 my $title = loc("Modify the queries of dashboard [_1]", $Dashboard->Name);
 
 my %desc_of;
@@ -134,13 +134,7 @@ my $sel = $m->comp(
             [ reverse(split /-/, $_, 2), $desc_of{$_} ]
         } @{ $self->{Current} } ];
 
-        my ($ok, $msg);
-        if ($session{'CurrentUser'}->HasRight(Right => 'ModifyDashboard', Object => $RT::System)) {
-            ($ok, $msg) = $Dashboard->Update(Searches => $searches);
-        }
-        else {
-            $msg = "No permission to update dashboards";
-        }
+        my ($ok, $msg) = $Dashboard->Update(Searches => $searches);
 
         if ($ok) {
             push @results, loc("Dashboard updated");

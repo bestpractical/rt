@@ -447,7 +447,7 @@ sub CreateTicket {
 
     my @temp_squelch;
     foreach my $type (qw(Requestor Cc AdminCc)) {
-        push @temp_squelch, map $_->address, Mail::Address->parse( $create_args{ $type } )
+        push @temp_squelch, map $_->address, Email::Address->parse( $create_args{ $type } )
             if grep $_ eq $type || $_ eq ($type.'s'), @{ $ARGS{'SkipNotification'} || [] };
 
     }

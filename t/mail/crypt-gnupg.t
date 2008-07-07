@@ -17,7 +17,10 @@ RT->Config->Set( LogStackTraces => 'error' );
 
 use File::Spec ();
 use Cwd;
-my $homedir = File::Spec->catdir( cwd(), qw(t data gnupg keyrings) );
+
+my $homedir = RT::Test::get_abs_relocatable_dir(File::Spec->updir(),
+    qw(data gnupg keyrings) );
+
 mkdir $homedir;
 
 use_ok('RT::Crypt::GnuPG');

@@ -450,6 +450,15 @@ Set($CorrespondAddress , '');
 
 Set($CommentAddress , '');
 
+=item C<$DashboardAddress>
+
+The email address from which RT will send dashboards. If none is set, then
+C<$OwnerEmail> will be used.
+
+=cut
+
+Set($DashboardAddress, '');
+
 =item C<UseFriendlyFromLine>
 
 By default, RT sets the outgoing mail's "From:" header to
@@ -547,6 +556,16 @@ To change this set the following option to true value.
 =cut
 
 Set($ShowBccHeader, 0);
+
+=item C<$DashboardSubject>
+
+Lets you set the subject of dashboards. Arguments are the frequency (Daily,
+Weekly, Monthly) of the dashboard and the dashboard's name. [_1] for the name
+of the dashboard.
+
+=cut
+
+Set($DashboardSubject, '%s Dashboard: %s');
 
 =back
 
@@ -780,6 +799,17 @@ What portion of RT's URLspace should not require authentication.
 
 Set($WebNoAuthRegex, qr{^ (?:/+NoAuth/ | /+REST/\d+\.\d+/NoAuth/) }x );
 
+=item C<$SelfServiceRegex>
+
+What portion of RT's URLspace should be accessible to Unprivileged users
+This does not override the redirect from F</Ticket/Display.html> to
+F</SelfService/Display.html> when Unprivileged users attempt to access
+ticked displays
+
+=cut
+
+Set($SelfServiceRegex, qr!^(?:/+SelfService/)!x );
+
 =item C<$MessageBoxWidth>, C<$MessageBoxHeight>
 
 For message boxes, set the entry box width, height and what type of
@@ -989,6 +1019,18 @@ inline. Set this variable to 0 if you'd like to disable that behaviour
 
 Set($ShowTransactionImages, 1);
 
+=item C<$PlainTextPre>
+
+Normally plaintext attachments are displayed as HTML with line
+breaks preserved.  This causes space- and tab-based formatting not
+to be displayed correctly.  By setting $PlainTextPre they'll be
+displayed using <pre> instead so such formatting works, but they'll
+use a monospaced font.
+
+=cut
+
+Set($PlainTextPre, 0);
+
 
 =item C<$ShowUnreadMessageNotifications>
 
@@ -1009,7 +1051,7 @@ customized homepage ("RT at a glance").
 
 =cut
 
-Set($HomepageComponents, [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues MyReminders RefreshHomepage)]);
+Set($HomepageComponents, [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards)]);
 
 =item C<@MasonParameters>
 

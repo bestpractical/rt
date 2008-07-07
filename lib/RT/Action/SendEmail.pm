@@ -59,7 +59,7 @@ use MIME::Words qw(encode_mimeword);
 
 use RT::EmailParser;
 use RT::Interface::Email;
-use Mail::Address;
+use Email::Address;
 our @EMAIL_RECIPIENT_HEADERS = qw(To Cc Bcc);
 
 
@@ -240,7 +240,7 @@ sub Prepare {
 
 =head2 To
 
-Returns an array of L<Mail::Address> objects containing all the To: recipients for this notification
+Returns an array of L<Email::Address> objects containing all the To: recipients for this notification
 
 =cut
 
@@ -251,7 +251,7 @@ sub To {
 
 =head2 Cc
 
-Returns an array of L<Mail::Address> objects containing all the Cc: recipients for this notification
+Returns an array of L<Email::Address> objects containing all the Cc: recipients for this notification
 
 =cut
 
@@ -262,7 +262,7 @@ sub Cc {
 
 =head2 Bcc
 
-Returns an array of L<Mail::Address> objects containing all the Bcc: recipients for this notification
+Returns an array of L<Email::Address> objects containing all the Bcc: recipients for this notification
 
 =cut
 
@@ -276,7 +276,7 @@ sub AddressesFromHeader {
     my $self      = shift;
     my $field     = shift;
     my $header    = $self->TemplateObj->MIMEObj->head->get($field);
-    my @addresses = Mail::Address->parse($header);
+    my @addresses = Email::Address->parse($header);
 
     return (@addresses);
 }
@@ -635,6 +635,8 @@ sub DeferDigestRecipients {
     my $digest_hash = {};
 
     foreach my $mailfield (@EMAIL_RECIPIENT_HEADERS) {
+        # If we have a "PseudoTo", the "To" contains it, so we don't need to access it
+        next if ( ( $self->{'PseudoTo'} && @{ $self->{'PseudoTo'} } ) && ( $mailfield eq 'To' ) );
         $RT::Logger->debug( "Working on mailfield $mailfield; recipients are " . join( ',', @{ $self->{$mailfield} } ) );
 
         # Store the 'daily digest' folk in an array.
@@ -889,15 +891,16 @@ sub SetHeader {
 
     chomp $val;
     chomp $field;
-    $self->TemplateObj->MIMEObj->head->fold_length( $field, 10000 );
-    $self->TemplateObj->MIMEObj->head->replace( $field, $val );
-    return $self->TemplateObj->MIMEObj->head->get($field);
+    my $head = $self->TemplateObj->MIMEObj->head;
+    $head->fold_length( $field, 10000 );
+    $head->replace( $field, $val );
+    return $head->get($field);
 }
 
 =head2 SetSubject
 
-This routine sets the subject. it does not add the rt tag. that gets done elsewhere
-If $self->{'Subject'} is already defined, it uses that. otherwise, it tries to get
+This routine sets the subject. it does not add the rt tag. That gets done elsewhere
+If subject is already defined via template, it uses that. otherwise, it tries to get
 the transaction's subject.
 
 =cut 
@@ -937,9 +940,10 @@ This routine fixes the RT tag in the subject. It's unlikely that you want to ove
 sub SetSubjectToken {
     my $self = shift;
 
-    $self->TemplateObj->MIMEObj->head->replace(
+    my $head = $self->TemplateObj->MIMEObj->head;
+    $head->replace(
         Subject => RT::Interface::Email::AddSubjectTag(
-            $self->TemplateObj->MIMEObj->head->get('Subject'),
+            Encode::decode_utf8( $head->get('Subject') ),
             $self->TicketObj,
         ),
     );
@@ -1041,17 +1045,16 @@ sub SetHeaderAsEncoding {
     my $self = shift;
     my ( $field, $enc ) = ( shift, shift );
 
-    if ( $field eq 'From' and RT->Config->Get('SMTPFrom') ) {
-        $self->TemplateObj->MIMEObj->head->replace( $field,
-            RT->Config->Get('SMTPFrom') );
+    my $head = $self->TemplateObj->MIMEObj->head;
+
+    if ( lc($field) eq 'from' and RT->Config->Get('SMTPFrom') ) {
+        $head->replace( $field, RT->Config->Get('SMTPFrom') );
         return;
     }
 
-    my $value = $self->TemplateObj->MIMEObj->head->get($field);
-
+    my $value = $head->get( $field );
     $value = $self->MIMEEncodeString( $value, $enc );
-
-    $self->TemplateObj->MIMEObj->head->replace( $field, $value );
+    $head->replace( $field, $value );
 
 }
 

@@ -292,8 +292,8 @@ if ($has_query) {
 
         }
     }
-    if ( $current_tab =~ m{Search/Bulk.html} ) {
-        $current_tab = "Search/Bulk.html$args";
+    if ( $current_tab =~ m{Search/(Bulk|Build|Edit)\.html} ) {
+        $current_tab = "Search/$1.html$args";
     }
 
     $tabs->{"i"} = {

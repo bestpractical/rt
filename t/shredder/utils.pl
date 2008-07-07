@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-require File::Spec;
+use File::Spec;
 require File::Path;
 require File::Copy;
 require Cwd;
@@ -138,7 +138,9 @@ sub _init_db
     foreach ( qw(Type Host Port Name User Password) ) {
         $ENV{ "RT_DB_". uc $_ } = RT->Config->Get("Database$_");
     }
-    my $cmd =  "$^X sbin/rt-setup-database --action init";
+    my $rt_setup_database = RT::Test::get_relocatable_file(
+        'rt-setup-database', (File::Spec->updir(), File::Spec->updir(), 'sbin'));
+    my $cmd =  "$^X $rt_setup_database --action init";
 
     my ($child_out, $child_in);
     my $pid = open2($child_out, $child_in, $cmd);
@@ -212,15 +214,19 @@ sub test_name
 =head3 tmpdir
 
 Return absolute path to tmp dir used in tests.
-It is C<cwd(). "t/data/shredder">.
+It is C<Cwd->getcwd()>. $directories . "../data/shredder", relative to the
+location of this file, where $directories is the directory portion of $0.
 
 =cut
 
-sub tmpdir { return File::Spec->catdir(Cwd::cwd(), qw(t data shredder)) }
+sub tmpdir {
+    return RT::Test::get_abs_relocatable_dir(File::Spec->updir(),
+        'data', 'shredder');
+}
 
 =head2 create_tmpdir
 
-Creates tmp dir if doesn't exist. Returns tmpdir absolute path.
+Creates tmp dir if doesn't exist. Returns tmpdir path.
 
 =cut
 
