@@ -1,0 +1,99 @@
+# Needed english translations
+msgid ""
+msgstr ""
+"Project-Id-Version: RT 3.8.x\n"
+"PO-Revision-Date: 2005-10-03 13:44-0400\n"
+"Last-Translator: rt-devel <rt-devel@lists.bestpractical.com>\n"
+"Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: NOT FOUND IN SOURCE
+msgid "Apr."
+msgstr "Apr"
+
+#: NOT FOUND IN SOURCE
+msgid "Aug."
+msgstr "Aug"
+
+#: NOT FOUND IN SOURCE
+msgid "Dec."
+msgstr "Dec"
+
+#: NOT FOUND IN SOURCE
+msgid "Feb."
+msgstr "Feb"
+
+#: NOT FOUND IN SOURCE
+msgid "Fri."
+msgstr "Fri"
+
+#: share/html/Elements/Tabs:68
+msgid "Homepage"
+msgstr "Home"
+
+#: NOT FOUND IN SOURCE
+msgid "Jan."
+msgstr "Jan"
+
+#: NOT FOUND IN SOURCE
+msgid "Jul."
+msgstr "Jul"
+
+#: NOT FOUND IN SOURCE
+msgid "Jun."
+msgstr "Jun"
+
+#: NOT FOUND IN SOURCE
+msgid "Mar."
+msgstr "Mar"
+
+#: NOT FOUND IN SOURCE
+msgid "May."
+msgstr "May"
+
+#: NOT FOUND IN SOURCE
+msgid "Mon."
+msgstr "Mon"
+
+#: NOT FOUND IN SOURCE
+msgid "Nov."
+msgstr "Nov"
+
+#: NOT FOUND IN SOURCE
+msgid "Oct."
+msgstr "Oct"
+
+#: share/html/Ticket/Elements/Tabs:188
+msgid "Open it"
+msgstr "Open"
+
+#: share/html/Admin/Users/Modify.html:186 share/html/User/Prefs.html:90
+msgid "Residence"
+msgstr "Home"
+
+#: NOT FOUND IN SOURCE
+msgid "Sat."
+msgstr "Sat"
+
+#: NOT FOUND IN SOURCE
+msgid "Sep."
+msgstr "Sep"
+
+#: NOT FOUND IN SOURCE
+msgid "Sun."
+msgstr "Sun"
+
+#: NOT FOUND IN SOURCE
+msgid "Thu."
+msgstr "Thu"
+
+#: NOT FOUND IN SOURCE
+msgid "Tue."
+msgstr "Tue"
+
+#: NOT FOUND IN SOURCE
+msgid "Wed."
+msgstr "Wed"
+
