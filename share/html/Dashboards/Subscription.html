@@ -75,7 +75,7 @@
 % if (!@searches) {
 (none)
 % } else {
-<ol>
+<ol class="dashboard-queries">
 %    for my $query (@searches) {
 %       my $name;
 %       if ($query->{Attribute}->Name =~ /^Search - (.*)$/) {
@@ -83,7 +83,7 @@
 %       } else {
 %           $name = $query->Name;
 %       }
-        <li>
+        <li class="dashboard-query">
             <% loc($name, $fields{'Rows'}) %>
         </li>
 %    }
