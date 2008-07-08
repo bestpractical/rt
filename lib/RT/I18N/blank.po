@@ -1,3 +1,14 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: RT 3.8.x\n"
+"PO-Revision-Date: 2008-07-07 21:30+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
 #: share/html/Widgets/SavedSearch:117
 #. ($self->{CurrentSearch}{Object}->Description)
 msgid " %1 deleted."
