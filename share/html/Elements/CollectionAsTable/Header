@@ -99,7 +99,7 @@ foreach my $col ( @Format ) {
     );
 
     unless( $tmp ) {
-        $title = $m->interp->apply_escapes( loc($title), 'h' );
+        $title = loc($m->comp('/Elements/ScrubHTML', Content => $title));
     } else {
         if ( UNIVERSAL::isa( $tmp, 'CODE' ) ) {
             my @tmp = $tmp->( $title );
