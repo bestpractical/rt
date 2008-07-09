@@ -82,7 +82,7 @@ sub _Init {
 
 
 
-  # By default, order by name
+  # By default, order by SortOrder which isn't displayed in the UI yet
   $self->OrderBy( ALIAS => 'main',
                   FIELD => 'SortOrder',
                   ORDER => 'ASC');
