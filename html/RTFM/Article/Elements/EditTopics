@@ -143,6 +143,6 @@ sub buildTree {
 <%ARGS>
 $ArticleObj => new RT::FM::Article($session{'CurrentUser'})
 @Classes => ()
-@Topics => undef
+@Topics => ()
 $OnlyThisClass => undef
 </%ARGS>

@@ -156,7 +156,7 @@ my $EnabledChecked = ($Create ? $Disabled : $ClassObj->Disabled()) ? "" : "CHECK
 my $HotListChecked = $ClassObj->HotList ? "CHECKED" : "";
 
 my $current_subtab;
-if ($Create == 1) {
+if ($Create && $Create == 1) {
     $current_subtab = "Admin/RTFM/Classes/Modify.html?Create=1";
 } else { 
     $current_subtab = "Admin/RTFM/Classes/Modify.html?id=$id";
