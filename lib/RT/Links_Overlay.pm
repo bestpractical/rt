@@ -153,6 +153,10 @@ sub Next {
     my $Link = $self->SUPER::Next();
     return $Link unless $Link && ref $Link;
 
+    # skip very invalid Link records
+    unless ($Link->Target && $Link->Base) {
+        return $self->Next;
+    }
     # Skip links to local objects thast are deleted
     if ( $Link->TargetURI->IsLocal and UNIVERSAL::isa($Link->TargetObj,"RT::Ticket")
              and $Link->TargetObj->__Value('status') eq "deleted") {
