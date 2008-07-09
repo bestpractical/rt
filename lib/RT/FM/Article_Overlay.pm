@@ -387,8 +387,18 @@ sub AddLink {
     # allowed, they default to being tickets instead of articles, which
     # is counterintuitive.
     if ($args{'Target'} =~ /^\d+$/) {
-	return ( 0, $self->loc("Cannot add link to plain number") );
+        return ( 0, $self->loc("Cannot add link to plain number") );
     }
+
+    # Check that we're actually getting a valid URI
+    my $uri_obj = RT::URI->new( $self->CurrentUser );
+    $uri_obj->FromURI( $args{'Target'} );
+    unless ( $uri_obj->Resolver && $uri_obj->Scheme ) {
+        my $msg = $self->loc( "Couldn't resolve '[_1]' into a Link.", $args{'Target'} );
+        $RT::Logger->warning( $msg );
+        return( 0, $msg );
+    }
+
 
     $self->_AddLink(%args);
 }
