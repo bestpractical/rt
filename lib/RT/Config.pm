@@ -194,15 +194,15 @@ our %META = (
     UsernameFormat => {
         Section         => 'General',
         Overridable     => 1,
-	Widget          =>'/Widgets/Form/Select',
-	WidgetArguments => {
-	   Description  => 'Username format',
-	   Values       => [qw(concise verbose)],
-           ValueLabel   => {
-                concise     => 'Short usernames',
-                verbose     => 'Name and email address',
-                },
-	},
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => 'Username format',
+            Values      => [qw(concise verbose)],
+            ValuesLabel => {
+                concise => 'Short usernames',
+                verbose => 'Name and email address',
+            },
+        },
     },
     DefaultQueue => {
         Section         => 'General',
