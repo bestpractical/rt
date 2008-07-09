@@ -59,7 +59,7 @@ use vars qw($DEBUG $FILECAT);
 
 $DEBUG = 1;
 
-@ARGV = (<lib/RT/I18N/*.po>, <lib/RT/I18N/*.pot>) unless @ARGV;
+@ARGV = (<lib/RT/I18N/*.po>, "lib/RT/I18N/rt.pot") unless @ARGV;
 
 $FILECAT = {};
 
@@ -83,6 +83,7 @@ foreach my $str ( sort keys %{$FILECAT} ) {
 
 # update all language dictionaries
 foreach my $dict (@ARGV) {
+    $dict = "lib/RT/I18N/$dict.pot" if ( $dict eq 'rt' );
     $dict = "lib/RT/I18N/$dict.po" unless -f $dict or $dict =~ m!/!;
 
     my $lang = $dict;
