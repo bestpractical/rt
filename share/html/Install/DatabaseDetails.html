@@ -158,7 +158,7 @@ if ( $Run ) {
                     $sth->execute('RT_System'); 
                     if ( $sth->fetchrow_array ) {
                         $RT::Installer->{DatabaseAction} = 'none';
-                        push @results, loc("[_1] appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customez RT by clicking 'Customize Basics' below", $RT::DatabaseName);
+                        push @results, loc("[_1] appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customize RT by clicking 'Customize Basics' below", $RT::DatabaseName);
                     }
                     else {
                         $RT::Installer->{DatabaseAction} = 'acl,coredata,insert';
