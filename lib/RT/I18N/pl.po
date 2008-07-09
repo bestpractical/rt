@@ -2656,7 +2656,7 @@ msgid "Easy updating of your open tickets"
 msgstr ""
 
 #: share/html/Ticket/Elements/ShowTransaction:218
-msgid "Ecnrypt/Decrypt"
+msgid "Encrypt/Decrypt"
 msgstr ""
 
 #: share/html/Elements/Dashboards:50 share/html/Elements/Quicksearch:50 share/html/Elements/ShowSearch:51 share/html/index.html:132

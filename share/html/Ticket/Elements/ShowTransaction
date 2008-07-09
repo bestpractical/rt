@@ -215,7 +215,7 @@ else {
             $titlebar_commands .=
                 "[<a href=\"". $EncryptionPath
               . "?id=". $Transaction->Id
-              . "\">". loc('Ecnrypt/Decrypt') . "</a>]";
+              . "\">". loc('Encrypt/Decrypt') . "</a>]";
         }
     }
 }
