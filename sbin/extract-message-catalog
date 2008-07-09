@@ -88,6 +88,7 @@ foreach my $dict (@ARGV) {
     my $lang = $dict;
     $lang =~ s|.*/||;
     $lang =~ s|\.po$||;
+    $lang =~ s|\.pot$||;
 
     update($lang, $dict);
 }
