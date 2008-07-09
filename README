@@ -16,7 +16,7 @@ you may have.
 Installation instructions:
 --------------------------
 
-NOTE that upgrade steps are described below.
+NOTE that upgrade steps are described in UPGRADING
 
 1) Install RT 3.4.2 or newer
 
@@ -29,9 +29,11 @@ NOTE that upgrade steps are described below.
 
 5) make initdb
 
-6) stop and start your web server
+6) 
 
-7) Before you can add content to RTFM articles, you will need to configure
+7) stop and start your web server
+
+8) Before you can add content to RTFM articles, you will need to configure
    classes and custom fields. For details, see lib/RT/FM/Introduction.pod
 
 ----------------------------------------------
