@@ -80,7 +80,15 @@
 my @errors;
 my $locked;
     my $file = File::Spec->catfile( $RT::EtcPath, 'RT_SiteConfig.pm' );
-    $locked = 1 unless -w $file;
+
+    if ( ! -e $file ) {
+        # write a blank RT_SiteConfig.pm
+        open my $fh, '>', $file or die $!;
+        close $fh;
+    }
+    elsif ( ! -w $file ) {
+        $locked = 1;
+    }
     
     if ( $locked ) {
         push @errors, loc("Config file [_1] is locked", $file);
