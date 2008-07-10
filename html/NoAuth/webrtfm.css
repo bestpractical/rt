@@ -50,7 +50,7 @@
 #cfs .de-emphasized td { font-weight: lighter; color: #999; font-size:  9pt; }
 #cfs .de-emphasized th { font-weight: normal;  color: #999; font-size: 11pt; }
 
-#cfs .visible       td { font-weight: nomal;                                 }
+#cfs .visible       td { font-weight: normal;                                }
 #cfs .visible       th { font-weight: bold;                                  }
 
 #cfs .emphasized    td { font-weight: bold;    color: #c00; font-size: 11pt; }
