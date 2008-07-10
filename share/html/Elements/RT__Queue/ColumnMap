@@ -52,7 +52,7 @@ $Attr => undef
 <%ONCE>
 my $COLUMN_MAP = {
     id => {
-        title     => '#',
+        title     => loc('#'),
         attribute => 'id',
         align     => 'right',
         value     => sub { return $_[0]->id },
@@ -63,15 +63,49 @@ my $COLUMN_MAP = {
         value     => sub { return $_[0]->Disabled? $_[0]->loc('Disabled'): $_[0]->loc('Enabled') },
     },
     Priority => {
+        title     => loc('Priority'),
         value     => sub { return $_[0]->InitialPriority .'-'. $_[0]->FinalPriority },
     },
     Address  => {
+        title     => loc('Address'),
         value     => sub { return ($_[0]->CorrespondAddress||'-') .'/'. ($_[0]->CommentAddress||'-') },
     },
+    Name => {
+        title     => loc('Name'),
+	attribute => 'Name',
+	value     => sub { return $_[0]->Name() },
+    },
+    Description => {
+        title     => loc('Description'),
+	attribute => 'Description',
+	value     => sub { return $_[0]->Description() },
+    },
+    CorrespondAddress => {
+        title     => loc('CorrespondAddress'),
+	attribute => 'CorrespondAddress',
+	value     => sub { return $_[0]->CorrespondAddress() },
+    },
+    CommentAddress => {
+        title     => loc('CommentAddress'),
+	attribute => 'CommentAddress',
+	value     => sub { return $_[0]->CommentAddress() },
+    },
+    InitialPriority => {
+        title     => loc('InitialPriority'),
+	attribute => 'InitialPriority',
+	value     => sub { return $_[0]->InitialPriority() },
+    },
+    FinalPriority => {
+        title     => loc('FinalPriority'),
+	attribute => 'FinalPriority',
+	value     => sub { return $_[0]->FinalPriority() },
+    },
+    DefaultDueIn => {
+        title     => loc('DefaultDueIn'),
+	attribute => 'DefaultDueIn',
+	value     => sub { return $_[0]->DefaultDueIn() },
+    },
 };
-foreach my $col(qw(Name Description CorrespondAddress CommentAddress InitialPriority FinalPriority DefaultDueIn)) {
-    $COLUMN_MAP->{$col} = { attribute => $col, value => sub { return $_[0]->$col() } };
-}
 
 </%ONCE>
 <%INIT>

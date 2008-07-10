@@ -52,43 +52,50 @@ $Attr => undef
 <%ONCE>
 my $COLUMN_MAP = {
     id => {
-        title     => '#',
+        title     => loc('#'),
         attribute => 'id',
         align     => 'right',
         value     => sub { return $_[0]->id },
     },
     Queue => {
-        title     => 'Queue',
+        title     => loc('Queue'),
         value     => sub {
             return $_[0]->QueueObj->Name if $_[0]->Queue;
             return $_[0]->loc('Global');
         },
     },
     Condition => {
-        title     => 'Condition',
+        title     => loc('Condition'),
         value     => sub { return $_[0]->loc( $_[0]->ScripConditionObj->Name ) },
     },
     Action => {
-        title     => 'Action',
+        title     => loc('Action'),
         value     => sub { return $_[0]->loc( $_[0]->ScripActionObj->Name ) },
     },
     Template => {
-        title     => 'Template',
+        title     => loc('Template'),
         value     => sub { return $_[0]->loc( $_[0]->TemplateObj->Name ) },
     },
     AutoDescription => {
-        title     => 'Condition, Action and Template',
+        title     => loc('Condition, Action and Template'),
         value     => sub { return $_[0]->loc( "[_1] [_2] with template [_3]",
             $_[0]->loc($_[0]->ConditionObj->Name),
             $_[0]->loc($_[0]->ActionObj->Name),
             $_[0]->loc($_[0]->TemplateObj->Name),
         ) },
     },
+    Description => {
+        title     => loc('Description'),
+	attribute => 'Description',
+	value     => sub { return $_[0]->Description() },
+    },
+    Stage => {
+        title     => loc('Stage'),
+	attribute => 'Stage',
+	value     => sub { return $_[0]->Stage() },
+    },
 };
 
-foreach my $col( qw(Description Stage) ) {
-    $COLUMN_MAP->{ $col } = { attribute => $col, value => sub { return $_[0]->$col() } };
-}
 </%ONCE>
 <%INIT>
 $m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'ColumnMap', CallbackOnce => 1 );

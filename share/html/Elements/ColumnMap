@@ -56,38 +56,39 @@ $Attr  => undef
 my $COLUMN_MAP = {
     id => {
         attribute => 'id',
+        tiitle    => loc('id'),
         align     => 'right',
         value     => sub { return $_[0]->id }
     },
 
     Created => {
         attribute => 'Created',
-        title     => 'Created',
+        title     => loc('Created'),
         value     => sub { return $_[0]->CreatedObj->AsString }
     },
     CreatedRelative => {
         attribute => 'Created',
-        title     => 'Created',
+        title     => loc('Created'),
         value     => sub { return $_[0]->CreatedObj->AgeAsString }
     },
     CreatedBy => {
         attribute => 'CreatedBy',
-        title => 'Created By',
+        title     => loc('Created By'),
         value     => sub { return $_[0]->CreatorObj->Name }
     },
     LastUpdated => {
         attribute => 'LastUpdated',
-        title     => 'Last Updated',
+        title     => loc('Last Updated'),
         value     => sub { return $_[0]->LastUpdatedObj->AsString }
     },
     LastUpdatedRelative => {
         attribute => 'LastUpdated',
-        title     => 'Last Updated',
+        title     => loc('Last Updated'),
         value     => sub { return $_[0]->LastUpdatedObj->AgeAsString }
     },
     LastUpdatedBy => {
         attribute => 'LastUpdatedBy',
-        title     => 'Last Updated By',
+        title     => loc('Last Updated By'),
         value     => sub { return $_[0]->LastUpdatedByObj->Name }
     },
 

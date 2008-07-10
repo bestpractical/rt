@@ -52,18 +52,87 @@ $Attr => undef
 <%ONCE>
 my $COLUMN_MAP = {
     id => {
-        title     => '#',
+        title     => loc('#'),
         attribute => 'id',
         align     => 'right',
         value     => sub { return $_[0]->id },
     },
+    Name => {
+        title     => loc('Name'),
+	attribute => 'Name',
+	value     => sub { return $_[0]->Name() },
+    },
+    RealName => {
+        title     => loc('RealName'),
+	attribute => 'RealName',
+	value     => sub { return $_[0]->RealName() },
+    },
+    NickName => {
+        title     => loc('NickName'),
+	attribute => 'NickName',
+	value     => sub { return $_[0]->NickName() },
+    },
+    EmailAddress => {
+        title     => loc('EmailAddress'),
+	attribute => 'EmailAddress',
+	value     => sub { return $_[0]->EmailAddress() },
+    },
+    Organization => {
+        title     => loc('Organization'),
+	attribute => 'Organization',
+	value     => sub { return $_[0]->Organization() },
+    },
+    HomePhone => {
+        title     => loc('HomePhone'),
+	attribute => 'HomePhone',
+	value     => sub { return $_[0]->HomePhone() },
+    },
+    WorkPhone => {
+        title     => loc('WorkPhone'),
+	attribute => 'WorkPhone',
+	value     => sub { return $_[0]->WorkPhone() },
+    },
+    MobilePhone => {
+        title     => loc('MobilePhone'),
+	attribute => 'MobilePhone',
+	value     => sub { return $_[0]->MobilePhone() },
+    },
+    PagerPhone => {
+        title     => loc('PagerPhone'),
+	attribute => 'PagerPhone',
+	value     => sub { return $_[0]->PagerPhone() },
+    },
+    Address1 => {
+        title     => loc('Address1'),
+	attribute => 'Address1',
+	value     => sub { return $_[0]->Address1() },
+    },
+    Address2 => {
+        title     => loc('Address2'),
+	attribute => 'Address2',
+	value     => sub { return $_[0]->Address2() },
+    },
+    City => {
+        title     => loc('City'),
+	attribute => 'City',
+	value     => sub { return $_[0]->City() },
+    },
+    State => {
+        title     => loc('State'),
+	attribute => 'State',
+	value     => sub { return $_[0]->State() },
+    },
+    Zip => {
+        title     => loc('Zip'),
+	attribute => 'Zip',
+	value     => sub { return $_[0]->Zip() },
+    },
+    Country => {
+        title     => loc('Country'),
+	attribute => 'Country',
+	value     => sub { return $_[0]->Country() },
+    },
 };
-
-foreach my $col(qw(Name RealName NickName EmailAddress Organization 
-    HomePhone WorkPhone MobilePhone PagerPhone Address1 Address2 City State Zip Country))
-{
-    $COLUMN_MAP->{ $col } = { attribute => $col, value => sub { return $_[0]->$col() } };
-}
 
 </%ONCE>
 <%INIT>

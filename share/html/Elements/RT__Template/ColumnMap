@@ -52,16 +52,22 @@ $Attr => undef
 <%ONCE>
 my $COLUMN_MAP = {
     id => {
-        title     => '#',
+        title     => loc('#'),
         attribute => 'id',
         align     => 'right',
         value     => sub { return $_[0]->id },
     },
+    Name => {
+        title     => loc('Name'),
+	attribute => 'Name',
+	value     => sub { return $_[0]->Name() },
+    },
+    Description => {
+        title     => loc('Description'),
+	attribute => 'Description',
+	value     => sub { return $_[0]->Description() },
+    },
 };
-
-foreach my $col(qw(Name Description)) {
-    $COLUMN_MAP->{ $col } = { attribute => $col, value => sub { return $_[0]->$col() } };
-}
 
 </%ONCE>
 <%INIT>

@@ -77,29 +77,31 @@ my $LinkCallback = sub {
 $COLUMN_MAP = {
     Queue => {
         attribute => 'Queue',
-        title     => 'Queue id',
+        title     => loc('Queue id'),
         value     => sub { return $_[0]->Queue }
     },
     QueueName => {
         attribute => 'Queue',
-        title     => 'Queue',
+        title     => loc('Queue'),
         value     => sub { return $_[0]->QueueObj->Name }
     },
     OwnerName => {
-        title     => 'Owner',
+        title     => loc('Owner'),
         attribute => 'Owner',
         value     => sub { return $_[0]->OwnerObj->Name }
     },
     Status => {
+        title     => loc('Status'),
         attribute => 'Status',
         value     => sub { return loc($_[0]->Status) }
     },
     Subject => {
+        title     => loc('Subject'),
         attribute => 'Subject',
-        value => sub { return $_[0]->Subject || "(" . loc('No subject') . ")" }
+        value     => sub { return $_[0]->Subject || "(" . loc('No subject') . ")" }
     },
     ExtendedStatus => {
-        title     => 'Status',
+        title     => loc('Status'),
         attribute => 'Status',
         value     => sub {
             my $Ticket = shift;
@@ -121,71 +123,79 @@ $COLUMN_MAP = {
           }
     },
     Priority => {
+        title     => loc('Priority'),
         attribute => 'Priority',
         value     => sub { return $_[0]->Priority }
     },
     InitialPriority => {
+        title     => loc('InitialPriority'),
         attribute => 'InitialPriority',
-        name => 'Initial Priority',
+        name      => 'Initial Priority',
         value     => sub { return $_[0]->InitialPriority }
     },
     FinalPriority => {
+        title     => loc('FinalPriority'),
         attribute => 'FinalPriority',
-        name => 'Final Priority',
+        name      => 'Final Priority',
         value     => sub { return $_[0]->FinalPriority }
     },
     EffectiveId => {
+        title     => loc('EffectiveId'),
         attribute => 'EffectiveId',
         value     => sub { return $_[0]->EffectiveId }
     },
     Type => {
+        title     => loc('Type'),
         attribute => 'Type',
         value     => sub { return $_[0]->Type }
     },
     TimeWorked => {
         attribute => 'TimeWorked',
-        title => 'Time Worked',
+        title     => loc('Time Worked'),
         value     => sub { return $_[0]->TimeWorked }
     },
     TimeLeft => {
         attribute => 'TimeLeft',
-        title     => 'Time Left',
+        title     => loc('Time Left'),
         value     => sub { return $_[0]->TimeLeft }
     },
     TimeEstimated => {
         attribute => 'TimeEstimated',
-        title => 'Time Estimated',
+        title     => loc('Time Estimated'),
         value     => sub { return $_[0]->TimeEstimated }
     },
     Requestors => {
+        title     => loc('Requestors'),
         attribute => 'Requestor.EmailAddress',
-        value => sub { return $_[0]->Requestors->MemberEmailAddressesAsString }
+        value     => sub { return $_[0]->Requestors->MemberEmailAddressesAsString }
     },
     Cc => {
+        title     => loc('Cc'),
         attribute => 'Cc.EmailAddress',
-        value => sub { return $_[0]->Cc->MemberEmailAddressesAsString }
+        value     => sub { return $_[0]->Cc->MemberEmailAddressesAsString }
     },
     AdminCc => {
+        loc       => ('AdminCc'),
         attribute => 'AdminCc.EmailAddress',
-        value => sub { return $_[0]->AdminCc->MemberEmailAddressesAsString }
+        value     => sub { return $_[0]->AdminCc->MemberEmailAddressesAsString }
     },
     StartsRelative => {
-        title     => 'Starts',
+        title     => loc('Starts'),
         attribute => 'Starts',
         value     => sub { return $_[0]->StartsObj->AgeAsString }
     },
     StartedRelative => {
-        title     => 'Started',
+        title     => loc('Started'),
         attribute => 'Started',
         value     => sub { return $_[0]->StartedObj->AgeAsString }
     },
     ToldRelative => {
-        title     => 'Told',
+        title     => loc('Told'),
         attribute => 'Told',
         value     => sub { return $_[0]->ToldObj->AgeAsString }
     },
     DueRelative => {
-        title     => 'Due',
+        title     => loc('Due'),
         attribute => 'Due',
         value     => sub { 
             my $date = $_[0]->DueObj;
@@ -198,27 +208,32 @@ $COLUMN_MAP = {
         }
     },
     ResolvedRelative => {
-        title     => 'Resolved',
+        title     => loc('Resolved'),
         attribute => 'Resolved',
         value     => sub { return $_[0]->ResolvedObj->AgeAsString }
     },
     Starts => {
+        title     => loc('Starts'),
         attribute => 'Starts',
         value     => sub { return $_[0]->StartsObj->AsString }
     },
     Started => {
+        title     => loc('Started'),
         attribute => 'Started',
         value     => sub { return $_[0]->StartedObj->AsString }
     },
     Told => {
+        title     => loc('Told'),
         attribute => 'Told',
         value     => sub { return $_[0]->ToldObj->AsString }
     },
     Due => {
+        title     => loc('Due'),
         attribute => 'Due',
         value     => sub { return $_[0]->DueObj->AsString }
     },
     Resolved => {
+        title     => loc('Resolved'),
         attribute => 'Resolved',
         value     => sub { return $_[0]->ResolvedObj->AsString }
     },
@@ -232,7 +247,7 @@ $COLUMN_MAP = {
         },
     },
     KeyRequestors => {
-        title     => 'Requestors',
+        title     => loc('Requestors'),
         attribute => 'Requestor.EmailAddress',
         value => sub {
             my $t = shift;
@@ -251,7 +266,7 @@ $COLUMN_MAP = {
         }
     },
     KeyOwnerName => {
-        title     => 'Owner',
+        title     => loc('Owner'),
         attribute => 'Owner',
         value     => sub {
             my $t = shift;
