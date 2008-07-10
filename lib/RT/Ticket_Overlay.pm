@@ -169,14 +169,14 @@ sub Load {
         my ($ticketid,$msg) = $self->LoadById($id);
 
         unless ($self->Id) {
-            $RT::Logger->crit("$self tried to load a bogus ticket: $id");
+            $RT::Logger->debug("$self tried to load a bogus ticket: $id");
             return (undef);
         }
     }
 
     #It's not a URI. It's not a numerical ticket ID. Punt!
     else {
-        $RT::Logger->warning("Tried to load a bogus ticket id: '$id'");
+        $RT::Logger->debug("Tried to load a bogus ticket id: '$id'");
         return (undef);
     }
 
