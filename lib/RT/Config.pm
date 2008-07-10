@@ -173,7 +173,7 @@ our %META = (
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
             Description => 'Use monospace font',
-            Hints       => "Use fixed-width font to display plaintext messages"
+            Hints       => "Use fixed-width font to display plaintext messages" #loc
 	},
     },
     DateTimeFormat => {
