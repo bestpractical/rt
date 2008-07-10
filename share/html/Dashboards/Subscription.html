@@ -151,6 +151,13 @@ monthly</input> , on day
 %   }
 </select>
 </td></tr>
+
+<tr><td class="label">
+<&|/l&>Recipient</&>:
+</td><td class="value">
+<input name="Recipient" id="Recipient" size="30" value="<%$fields{Recipient} ? $fields{Recipient} : ''%>" />
+<div class="hints">Leave blank to send to your current email address with RT</div>
+</td></tr>
 </table>
 </&>
 </td>
@@ -199,6 +206,7 @@ my %fields = (
     Dow         => 'Monday',
     Dom         => 1,
     Rows        => 20,
+    Recipient   => '',
 );
 
 # update any fields with the values from the subscription object
@@ -214,7 +222,6 @@ for my $field (keys %fields) {
     $fields{$field} = $ARGS{$field}
         if defined($ARGS{$field});
 }
-
 
 # this'll be defined on submit
 if (defined $ARGS{Save}) {
@@ -246,7 +253,7 @@ if (defined $ARGS{Save}) {
         if ($val) {
             push @results, loc("Subscribed to dashboard [_1]", $DashboardObj->Name);
             push @results, loc("Warning: you have no email address set, so you will not receive this dashboard until you have it set")
-                unless $session{'CurrentUser'}->EmailAddress;
+                unless $session{'CurrentUser'}->EmailAddress || $fields{Recipient};
         }
         else {
             push @results, loc('Subscription could not be created: [_1]', $msg);
@@ -269,5 +276,6 @@ $Hour        => undef
 $Dow         => undef
 $Dom         => undef
 $Rows        => undef
+$Recipient   => undef
 </%ARGS>
 

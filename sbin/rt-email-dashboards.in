@@ -137,13 +137,6 @@ while (defined(my $user = $Users->Next)) {
         next;
     }
 
-    unless (email_of($user)) {
-        debug "Skipping over "
-            . $user->Name
-            . " due to lack of EmailAddress.";
-        next;
-    }
-
     my ($hour, $dow, $dom) = hour_dow_dom_in($user->Timezone || RT->Config->Get('Timezone'));
     $hour .= ':00';
     debug "Checking [_1]'s subscriptions: hour [_2], dow [_3], dom [_4]",
@@ -175,13 +168,16 @@ while (defined(my $user = $Users->Next)) {
             }
         }
 
-        eval { send_dashboard($currentuser, $subscription) };
+        my $email = $subscription->SubValue('Recipient')
+                 || email_of($user);
+
+        eval { send_dashboard($currentuser, $email, $subscription) };
         error 'Caught exception: ' . $@ if $@;
     }
 }
 
 sub send_dashboard {
-    my ($currentuser, $subscription) = @_;
+    my ($currentuser, $email, $subscription) = @_;
 
     my $rows = $subscription->SubValue('Rows');
 
@@ -199,7 +195,7 @@ sub send_dashboard {
 
         my $ok = RT::Interface::Email::SendEmailUsingTemplate(
             From      => $from,
-            To        => email_of($currentuser),
+            To        => $email,
             Template  => 'Error: Missing dashboard',
             Arguments => {
                 SubscriptionObj => $subscription,
@@ -230,7 +226,7 @@ sub send_dashboard {
     if ($opts{'dryrun'}) {
         print << "SUMMARY";
     Dashboard: @{[ $dashboard->Name ]}
-    User:   @{[ $currentuser->Name ]} <@{[ email_of($currentuser) ]}>
+    User:   @{[ $currentuser->Name ]} <$email>
 SUMMARY
         return;
     }
@@ -253,36 +249,34 @@ SUMMARY
         RT->Config->Get('WebURL') . '/Dashboards/Render.html',
     );
 
-    email_dashboard($currentuser, $dashboard, $subscription, $contents);
+    email_dashboard($currentuser, $email, $dashboard, $subscription, $contents);
 }
 
 sub email_dashboard {
-    my ($currentuser, $dashboard, $subscription, $content) = @_;
+    my ($currentuser, $email, $dashboard, $subscription, $content) = @_;
 
     verbose 'Sending dashboard "[_1]" to user [_2] <[_3]>',
             $dashboard->Name,
             $currentuser->Name,
-            email_of($currentuser);
+            $email;
 
     my $subject = sprintf '[%s] ' .  RT->Config->Get('DashboardSubject'),
         RT->Config->Get('rtname'),
         ucfirst($subscription->SubValue('Frequency')),
         $dashboard->Name;
 
-    my $entity = build_email(
-        $content, $from, email_of($currentuser), $subject,
-    );
+    my $entity = build_email($content, $from, $email, $subject);
 
     my $ok = RT::Interface::Email::SendEmail(
         Entity => $entity,
     );
 
     debug "Done sending dashboard to [_1] <[_2]>",
-          $currentuser->Name, email_of($currentuser)
+          $currentuser->Name, $email
               and return if $ok;
 
     error 'Failed to email dashboard to user [_1] <[_2]>',
-          $currentuser->Name, email_of($currentuser);
+          $currentuser->Name, $email;
 }
 
 sub build_email {
