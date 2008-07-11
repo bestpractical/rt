@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -136,6 +136,14 @@
 
 
 my $Ticket = load_ticket($id);
+my $CustomFields = $Ticket->queue_obj->ticketCustomFields();
+
+# call this to show up hints of valid cf values.
+$m->comp(
+    '/Elements/ValidateCustomFields',
+    CustomFields => $CustomFields,
+    args_ref => {},
+);
 
 my $CanRespond = 0;
 my $Cancomment = 0;
@@ -151,7 +159,7 @@ $Cancomment = 1 if ( $Ticket->current_user_has_right('CommentOnTicket') or
 $m->callback( ticket_obj => $Ticket, args_ref => \%ARGS );
 my (@wresults, @results,  @dresults, @lresults, @cf_results);
 
-unless ($OnlySearchForPeople) {
+unless ($OnlySearchForPeople or $OnlySearchForGroup ) {
     # There might be two owners. 
     if ( ref ($ARGS{'Owner'} )) {
         my @owners =@{$ARGS{'Owner'}};
@@ -165,7 +173,6 @@ unless ($OnlySearchForPeople) {
     @wresults   = process_ticket_watchers( ticket_obj => $Ticket, args_ref => \%ARGS);
     @cf_results = process_object_custom_field_updates( object => $Ticket, args_ref => \%ARGS);
     @dresults   = process_ticket_dates( ticket_obj => $Ticket, args_ref => \%ARGS);
-    @lresults   = process_ticket_links( ticket_obj => $Ticket, args_ref => \%ARGS);
 
     if ($ARGS{'UpdateAttachment'}) {
         my $subject = "$ARGS{'UpdateAttachment'}";
@@ -185,6 +192,7 @@ unless ($OnlySearchForPeople) {
     push @results, process_update_message( ticket_obj => $Ticket, args_ref=>\%ARGS );
     push @results, process_ticket_basics( ticket_obj => $Ticket, args_ref => \%ARGS );
 }
+    @lresults   = ProcessTicketLinks( ticket_obj => $Ticket, args_ref => \%ARGS);
 push @results, @wresults;
 push @results, @dresults;
 push @results, @lresults;
@@ -208,9 +216,13 @@ unless ($Ticket->current_user_has_right('ShowTicket')) {
 
 <%ARGS>
 $OnlySearchForPeople => undef
+$OnlySearchForGroup => undef
 $UserField => undef
 $UserOp => undef
 $UserString => undef
+$GroupString => undef
+$GroupOp => undef
+$GroupField => undef
 $id => undef
 </%ARGS>
 

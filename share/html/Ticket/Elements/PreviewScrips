@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -57,7 +57,7 @@ my @non_recipients = @{ $squelch{'emails'} };
 </%init>
 <h2><&|/l&>This message will be sent to...</&></h2>
 
-% if ( $object ) {
+% if ( $object and $object->Scrips ) {
 <i><&|/l&>(Check boxes to disable notifications to the listed recipients)</&></i><br />
 
 % foreach my $scrip (@{$object->scrips->prepared}) {
@@ -91,7 +91,7 @@ my @non_recipients = @{ $squelch{'emails'} };
 <% $recipient->content %>
 % }
 </ul>
-<& /Elements/Submit, Value => 'UpdatePreview', Label => _('Save changes')&>
+<& /Elements/Submit, name => 'UpdatePreview', value => 'UpdatePreview', Label => _('Save Changes')&>
 
 <%METHOD SquelchRecipients>
 <%ARGS>

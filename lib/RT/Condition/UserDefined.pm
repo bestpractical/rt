@@ -49,7 +49,7 @@ use strict;
 use warnings;
 
 package RT::Condition::UserDefined;
-use base qw(RT::Condition::Generic);
+use base 'RT::Condition';
 
 =head2 is_applicable
 

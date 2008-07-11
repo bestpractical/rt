@@ -223,7 +223,7 @@ sub create {
             )
             )
         {
-            return ( undef, _('Permission denied') );
+            return ( undef, _('Permission Denied') );
         }
         $args{'queue'} = 0;
     } else {
@@ -232,7 +232,7 @@ sub create {
             || return ( undef, _('Invalid queue') );
 
         unless ( $queue_obj->current_user_has_right('ModifyTemplate') ) {
-            return ( undef, _('Permission denied') );
+            return ( undef, _('Permission Denied') );
         }
         $args{'queue'} = $queue_obj->id;
     }
@@ -287,6 +287,11 @@ sub is_empty {
 Returns L<MIME::Entity> object parsed using L</Parse> method. Returns
 undef if last call to L</Parse> failed or never be called.
  
+Note that content of the template is UTF-8, but L<MIME::Parser> is not
+good at handling it and all data of the entity should be treated as
+octets and converted to perl strings using Encode::decode_utf8 or
+something else.
+
 =cut
 
 sub mime_obj {
@@ -324,6 +329,31 @@ an error message.
 
 sub parse {
     my $self = shift;
+    my ( $rv, $msg );
+
+    if ( $self->Content =~ m{^Content-type:\s+text/html\b}im ) {
+        local $RT::Transaction::Preferredcontent_type = 'text/html';
+        ( $rv, $msg ) = $self->_Parse(@_);
+    }
+    else {
+        ( $rv, $msg ) = $self->_Parse(@_);
+    }
+
+# We only HTMLify things if the template includes at least one Transaction->Content call.
+    return ( $rv, $msg ) unless $rv and $self->Content =~ /->\s*Content\b/;
+
+    my $orig_entity = $self->mime_obj;
+    my $mime_type   = $self->mime_obj->mime_type;
+
+    if ( defined $mime_type and $mime_type eq 'text/html' ) {
+        $self->_DowngradeFromHTML(@_);
+    }
+
+    return ( $rv, $msg );
+}
+
+sub _Parse {
+    my $self = shift;
 
     # clear prev MIME object
     $self->{'mime_obj'} = undef;
@@ -332,27 +362,31 @@ sub parse {
     my ( $content, $msg ) = $self->_parse_content(@_);
     return ( 0, $msg ) unless defined $content && length $content;
 
-    #Lets build our mime Entity
+    if ( $content =~ /^\S/s && $content !~ /^\S+:/ ) {
+        Jifty->log->error( "Template #"
+              . $self->id
+              . " has leading line that doesn't"
+              . " look like header field, if you don't want to override"
+              . " any headers and don't want to see this error message"
+              . " then leave first line of the template empty" );
+        $content = "\n" . $content;
+    }
 
+    # Re-use the MIMEParser setup code from RT::EmailParser, which
+    # tries to use tmpdirs, falling back to in-memory parsing. But we
+    # don't stick the RT::EmailParser into a lexical because it cleans
+    # out the tmpdir it makes on DESTROY
     my $parser = MIME::Parser->new();
+    $self->{rtparser} = RT::EmailParser->new;
+    $self->{rtparser}->_setupMIMEParser($parser);
 
-    # On some situations TMPDIR is non-writable. sad but true.
-    $parser->output_to_core(1);
-    $parser->tmp_to_core(1);
-
-    #If someone includes a message, don't extract it
-    $parser->extract_nested_messages(1);
-
-    # Set up the prefix for files with auto-generated names:
-    $parser->output_prefix("part");
-
-    # If content length is <= 50000 bytes, store each msg as in-core scalar;
-    # Else, write to a disk file (the default action):
-    $parser->output_to_core(50000);
 
     ### Should we forgive normally-fatal errors?
     $parser->ignore_errors(1);
-    $self->{'mime_obj'} = eval { $parser->parse_data($content) };
+
+    # MIME::Parser doesn't play well with perl strings
+    utf8::encode($content);
+    $self->{'mime_obj'} = eval { $parser->parse_data( \$content ) };
     if ( my $error = $@ || $parser->last_error ) {
         Jifty->log->error("$error");
         return ( 0, $error );
@@ -382,7 +416,7 @@ sub _parse_content {
 
     my $content = $self->content;
     unless ( defined $content ) {
-        return ( undef, _("Permissions denied") );
+        return ( undef, _("Permission Denied") );
     }
 
     # We need to untaint the content of the template, since we'll be working
@@ -426,9 +460,53 @@ sub _parse_content {
     );
     return ( undef, _('Template parsing error') ) if $is_broken;
 
-    # MIME::Parser has problems dealing with high-bit utf8 data.
-    Encode::_utf8_off($retval);
     return ($retval);
+}
+
+sub _DowngradeFromHTML {
+    my $self        = shift;
+    my $orig_entity = $self->mime_obj;
+    die 'hehe';
+
+    local $RT::Transaction::Preferredcontent_type = 'text/plain';
+
+    my ( $rv, $msg ) = $self->_Parse(@_);
+    if ( !$rv ) {
+        $self->{mime_obj} = $orig_entity;
+        return;
+    }
+
+    $orig_entity->head->mime_attr( "Content-type"         => 'text/html' );
+    $orig_entity->head->mime_attr( "Content-type.charset" => 'utf-8' );
+    $orig_entity->make_multipart( 'alternative', Force => 1 );
+
+    my $new_entity = $self->{mime_obj};
+    $new_entity->head->mime_attr( "Content-type"         => 'text/plain' );
+    $new_entity->head->mime_attr( "Content-type.charset" => 'utf-8' );
+
+    require HTML::formatText;
+    require HTML::TreeBuilder;
+    $new_entity->bodyhandle(
+        MIME::Body::InCore->new(
+            \(
+                scalar(
+                    HTML::formatText->new(
+                        leftmargin  => 0,
+                        rightmargin => 78,
+                      )->format(
+                        HTML::TreeBuilder->new_from_content(
+                            $new_entity->bodyhandle->as_string
+                        )
+                      )
+                )
+            )
+        )
+    );
+
+    $orig_entity->add_part( $new_entity, 0 );    # plain comes before html
+    $self->{mime_obj} = $orig_entity;
+
+    return ( $rv, $msg );
 }
 
 # }}}

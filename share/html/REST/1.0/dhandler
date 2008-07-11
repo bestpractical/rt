@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -63,7 +63,7 @@ my $object = $m->dhandler_arg;
 my $name   = qr{[\w.-]+};
 my $list   = '(?:(?:\d+-)?\d+,)*(?:\d+-)?\d+';
 my $label  = '[a-zA-Z0-9@_.+-]+';
-my $field  = '[a-zA-Z](?:[a-zA-Z0-9_-]|\s+)*';
+my $field  = RT::Interface::REST->field_spec;
 my $labels = "(?:$label,)*$label";
 
 # We must handle requests such as the following:
@@ -214,6 +214,16 @@ if ($fields) {
     unless (exists $fields{id}) {
         unshift @fields, "id";
         $fields{id} = ();
+    }
+
+    # canonicalize cf-foo to cf.{foo}
+    for my $field (@fields) {
+        if ($field =~ /^(c(?:ustom)?f(?:ield)?)-(.+)/) {
+            $fields{"cf.{$2}"} = delete $fields{"$1-$2"};
+
+            # overwrite the element in @fields
+            $field = "cf.{$2}";
+        }
     }
 }
 

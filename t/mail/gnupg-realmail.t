@@ -2,7 +2,15 @@
 use strict;
 use warnings;
 
-use RT::Test; use Test::More tests => 176;
+use RT::Test;
+use Test::More;
+
+plan skip_all => 'GnuPG required.'
+    unless eval 'use GnuPG::Interface; 1';
+plan skip_all => 'gpg executable is required.'
+    unless RT::Test->find_executable('gpg');
+
+plan tests => 176;
 
 
 use Digest::MD5 qw(md5_hex);
@@ -61,7 +69,9 @@ for my $usage (qw/signed encrypted signed&encrypted/) {
 sub get_contents {
     my $eid = shift;
 
-    my ($file) = glob("t/data/mails/gnupg-basic-set/$eid-*");
+    my $emaildatadir = RT::Test::get_relocatable_dir(File::Spec->updir(),
+        qw(data gnupg emails));
+    my ($file) = glob("$emaildatadir/$eid-*");
     defined $file
         or do { diag "Unable to find t/data/mails/gnupg-basic-set/$eid-*"; return };
 

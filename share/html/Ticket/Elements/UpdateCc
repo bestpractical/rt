@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -45,12 +45,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<tr><td align="right"><&|/l&>Cc</&>:</td><td> <input name="update_cc" id = "update_cc" size="60"
+<tr><td class="label"><&|/l&>One-time Cc</&>:</td><td><& /Elements/EmailInput, name => 'UpdateCc', Size => '60', default => $ARGS{UpdateCc} &>
         value="<% $ARGS{update_cc}||'' %>" />
 <input type="hidden" id="UpdateIgnoreAddressCheckboxes" name="UpdateIgnoreAddressCheckboxes" value="0">
         <br />
 
 %foreach my $addr ( keys %txn_addresses) {
+%    next if ( grep {$addr eq $_} @req_addresses );
 <input 
 id="update_cc-<%$addr%>" 
 name="update_cc-<%$addr%>" 
@@ -58,12 +59,10 @@ name="update_cc-<%$addr%>"
     onClick="checkboxToInput('update_cc', 'update_cc-<%$addr%>','<%$txn_addresses{$addr}->format%>' ); $(UpdateIgnoreAddressCheckboxes).value=1"  
     <% $ARGS{'update_cc-'.$addr} ? 'checked="checked"' : ''%> > <& /Elements/ShowUser, Address => $txn_addresses{$addr}&>
 %}
-<div class="hints"><i><font size="-2">
-            <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)</&></font></i>
-</div>
 </td></tr>
-<tr><td align="right"><&|/l&>Bcc</&>:</td><td> <input id="UpdateBcc"  name="UpdateBcc" size="60" value="<%$ARGS{UpdateBcc}||''%>" /><br />
+<tr><td class="label"><&|/l&>One-time Bcc</&>:</td><td><& /Elements/EmailInput, name => 'UpdateBcc', Size => '60', default => $ARGS{UpdateBcc} &><br />
 %foreach my $addr ( keys %txn_addresses) {
+%    next if ( grep {$addr eq $_} @req_addresses );
 <input
     id="UpdateBcc-<%$addr%>"
     name="UpdateBcc-<%$addr%>"
@@ -72,14 +71,11 @@ name="update_cc-<%$addr%>"
         <% $ARGS{'UpdateBcc-'.$addr} ? 'checked="checked"' : ''%>> 
 <& /Elements/ShowUser, Address => $txn_addresses{$addr}&>
 %}
-        <div class="hints">
-<i><font size="-2">
-        <&|/l&>(Sends a blind carbon-copy of this update to a comma-delimited list of email addresses. Does <strong>not</strong> change who will receive future updates.)</&></font></i>
-</div>
 </td></tr>
 <%args>
 $ticket_obj
 </%args>
 <%init>
-my %txn_addresses = %{$ticket_obj->transaction_addresses;};
+my %txn_addresses = %{$ticket_obj->transaction_addresses};
+my @req_addresses = split /,/, $ticket_obj->RequestorAddresses;
 </%init>

@@ -4,7 +4,13 @@ use strict;
 use warnings;
 
 use RT::Test; use Test::More;
-BEGIN { require "t/shredder/utils.pl"; }
+use File::Spec;
+use RT::Test ();
+BEGIN {
+    my $shredder_utils = RT::Test::get_relocatable_file('utils.pl',
+        File::Spec->curdir());
+    require $shredder_utils;
+}
 use Test::Deep;
 init_db();
 
@@ -25,9 +31,3 @@ my $shredder = shredder_new();
 $shredder->wipeout( object => $ticket );
 
 cmp_deeply( dump_current_and_savepoint(), "current DB equal to savepoint");
-
-if( is_all_successful() ) {
-	cleanup_tmp();
-} else {
-	diag( note_on_fail() );
-}

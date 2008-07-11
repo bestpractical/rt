@@ -1,0 +1,227 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+/* body */
+
+body {
+
+
+    padding:0;
+    margin:0;
+
+    background: #547CCC url(<%RT->Config->Get('WebPath')%>/NoAuth/css/web2/images/background-gradient.png) top left repeat-x ;
+    font-family: helvetica, arial, sans-serif;
+
+}
+
+div#body {
+    position: relative;
+    padding: 1em;
+    padding-top: 1.5em;
+    -moz-border-radius: 0.5em;
+    -webkit-border-radius: 0.5em;
+    margin-left: 10.5em;
+    margin-top: 5.2em;
+    margin-right: 1em;
+    margin-bottom: 0em;
+    min-height: 10%;
+    background: #fff;
+    border-top: 2px solid #ccc;
+    border-left: 2px solid #ccc;
+    z-index:1;
+
+
+}
+
+#topactions {
+ position: absolute;
+ background: transparent;
+ top: 3.8em; 
+ right: 1em;
+ width: auto;
+ min-width: 42em;
+ font-size: 0.9em;
+ z-index: 99;
+}
+
+#topactions form * {
+    vertical-align: top;
+}
+
+#topactions button, #topactions select, #topactions input{
+ padding-top: 0em;
+ padding-bottom: 0em;
+ width: 8em;
+
+}
+
+#topactions form {
+ display: block;
+
+}
+
+#topactions #CreateTicketInQueue {
+ text-align: right; 
+
+}
+#topactions #simple-search {
+    float: right;
+}
+
+#topactions #simple-search input.button {
+    width: 5em;
+}
+#topactions #simple-search .field{
+ margin-left: 1em;
+ }
+
+div#footer {
+ position: absolute;
+ right: 0;
+  text-align: right;
+ font-size: 0.9em;
+ margin-top: 2em;
+ background: #fff;
+ margin-bottom: 0;
+ padding-left: 3em;
+ padding-right: 1em;
+
+
+
+
+
+ border-top: 2px solid #aaa;
+ border-left: 2px solid #aaa;
+
+
+
+ -moz-border-radius-topleft: 0.5em;
+ -webkit-border-top-left-radius: 0.5em;
+ -moz-border-radius-bottomleft: 0.5em;
+ -webkit-border-bottom-left-radius: 0.5em;
+}
+
+div#footer #time {
+display: none ;
+}
+
+div#footer #bpscredits {
+ text-align: right;
+ background: url(<%RT->Config->Get('WebPath')%>/NoAuth/images//bplogo.gif) no-repeat top right;
+ padding-top: 4em;
+} 
+
+
+/* logo stuff */
+
+div#logo {
+}
+
+
+div#logo a {
+     display: none;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}
+div#logo a img {
+    border: 0;
+}
+div#logo .rtname {
+    position: absolute;
+    font-weight: bold;
+    top: 1em;
+    left: 1em;
+}
+
+
+div#quickbar, div#logo {
+    font-size: 0.9em;
+}
+div#quickbar a, div#logo a { 
+    color: #000;
+}
+
+
+div#quickbar {
+ background: #eaeaea;
+ padding-top: 1em;
+ padding-left: 1em;
+ padding-bottom: 0.5em;
+ height: 1em;
+ border-bottom: 1px solid #ccc;
+
+}
+div#quick-personal {
+    position: absolute;
+    right: 1em;
+    top: 1em;
+}
+
+
+div#header h1 {
+ position: absolute;
+ left: 7.25em;
+ right: 20em;
+ overflow: hidden;
+ height: 1em;
+ font-size: 1.4em;
+ margin-top: 0.4em;
+ padding: 0.25em;
+ color: #fff;
+}
+
+/* in multi-column layouts, make sure we have an internal gutter */
+
+tr .boxcontainer {
+      padding-right: 1em;
+}
+
+tr .boxcontainer:last-child {
+      padding-right: 0;
+}
+

@@ -1,0 +1,164 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, Title => $title &>
+<& /Dashboards/Elements/Tabs,
+    current_subtab => $current_subtab,
+    Title => $title,
+    $Create ? () : (DashboardObj => $Dashboard),
+&>
+<& /Elements/ListActions, actions => \@results &>
+
+<form action="<%RT->Config->Get('WebPath')%>/Dashboards/Modify.html" method="post" enctype="multipart/form-data" name="ModifyDashboard">
+
+%unless ($Dashboard->Id) {
+<input type="hidden" class="hidden" name="id" value="new" />
+% } else {
+<input type="hidden" class="hidden" name="id" value="<%$Dashboard->Id%>" />
+% }
+<table>
+<tr><td align="right">
+<&|/l&>Name</&>:
+</td>
+<td><input name="Name" value="<%$Dashboard->Name%>" /></td>
+</tr>
+<tr><td align="right">
+<&|/l&>Privacy</&>:
+</td><td>
+<& /Dashboards/Elements/SelectPrivacy, Name => "Privacy", Objects => \@privacies, Default => $Dashboard->Privacy &>
+</td></tr>
+</table>
+<& /Elements/Submit, Name => 'Save', Label => loc('Save Changes') &>
+% if ($Dashboard->Id && $can_delete) {
+<& /Elements/Submit, Name => 'Delete', Label => loc('Delete') &>
+% }
+</form>
+<%INIT>
+
+my $current_subtab;
+my ($title, @results);
+my $tried_create = 0;
+
+# user went directly to Modify.html
+$Create = 1 if !$id;
+
+use RT::Dashboard;
+
+my $Dashboard = RT::Dashboard->new($session{'CurrentUser'});
+my @privacies = $Dashboard->_PrivacyObjects(($Create ? 'Create' : 'Modify') => 1);
+
+Abort(loc("Permission denied")) if @privacies == 0;
+
+if ($Create) {
+    $current_subtab = 'Dashboards/Modify.html?Create=1';
+    $title = loc("Create a new dashboard");
+}
+else {
+    if ($id eq 'new') {
+        $tried_create = 1;
+
+        my ($val, $msg) = $Dashboard->Save(
+            Name    => $ARGS{'Name'},
+            Privacy => $ARGS{'Privacy'},
+        );
+
+        if (!$val) {
+            Abort(loc("Dashboard could not be created: [_1]", $msg));
+        }
+
+        push @results, $msg;
+        $id = $Dashboard->Id;
+    }
+    else {
+        my ($ok, $msg) = $Dashboard->LoadById($id);
+        $ok || Abort($msg);
+    }
+
+    if ($id) {
+        $title = loc("Modify the dashboard [_1]", $Dashboard->Name);
+        $current_subtab = 'Dashboards/Modify.html?id=' . $id;
+    }	
+    # If the create failed
+    else {
+        $Create = 1;
+        $current_subtab = 'Dashboards/Modify.html?Create=1';
+        $title = loc("Create a new dashboard");
+    }
+}
+
+if (!$Create && !$tried_create && $id && $ARGS{'Save'}) {
+    my ($ok, $msg) = $Dashboard->Update(Privacy  => $ARGS{'Privacy'},
+                                        Name     => $ARGS{'Name'});
+
+    if ($ok) {
+        push @results, loc("Dashboard updated");
+    }
+    else {
+        push @results, loc("Dashboard could not be updated: [_1]", $msg);
+    }
+
+}
+
+my $can_delete = $Dashboard->CurrentUserCanDelete;
+
+if (!$Create && !$tried_create && $id && $ARGS{'Delete'}) {
+    my ($ok, $msg) = $Dashboard->Delete();
+    $ok || Abort(loc("Couldn't delete dashboard [_1]: [_2]", $id, $msg));
+
+    # put the user back into a useful place with a message
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Dashboards/index.html?Deleted=$id");
+
+}
+</%INIT>
+
+<%ARGS>
+$Create => undef
+$Name => undef
+$id => '' unless defined $id
+$Delete => undef
+</%ARGS>
+

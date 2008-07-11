@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -64,10 +64,10 @@
 
 <table width="100%" border="0">
 
-<tr><td align="right"><&|/l&>Status</&>:</td>
+<tr><td class="label"><&|/l&>Status</&>:</td>
 <td>
 <& /Elements/SelectStatus, name=>"status", default_label => _("%1 (Unchanged)", _($ticket_obj->status)), default => $ARGS{'status'} || ($ticket_obj->status eq $default_status ? undef : $default_status)&>
-<&|/l&>Owner</&>:  
+<span class="label"><&|/l&>Owner</&>:</span>
 <& /Elements/SelectOwner,
      name         => "owner",
      ticket_obj    => $ticket_obj,
@@ -75,7 +75,7 @@
      default_label => _("%1 (Unchanged)", $ticket_obj->owner_obj->name),
      default      => $ARGS{'owner'}
  &>
-<&|/l&>Worked</&>: <input size="4" name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked}||'' %>" /> 
+<span class="label"><&|/l&>Worked</&>:</span><input size="4" name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked}||'' %>" /> 
 <& /Elements/SelectTimeUnits, name => 'UpdateTimeWorked'&>
 </td></tr>
 % my $skip;
@@ -83,17 +83,17 @@
 % if (!$skip) {
 <input type="hidden" class="hidden" name="id" value="<%$ticket_obj->id%>" /><br />
 % }
-<tr><td align="right"><&|/l&>update Type</&>:</td>
+<tr><td class="label"><&|/l&>Update Type</&>:</td>
 <td><select name="UpdateType">
 % if ($Cancomment) {
-<option value="private" <% ($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq "private") ? "SELECTED" : !$ARGS{'UpdateType'}&&$commentDefault%>><&|/l&>comments (Not sent to requestors)</&></option>
+<option value="private" <% ($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq "private") ? qq[ selected="selected"] : !$ARGS{'UpdateType'}&&$Commentdefault |n %>><&|/l&>comments (Not sent to requestors)</&></option>
 % }
 % if ($CanRespond) {
-<option value="response" <% ($ARGS{'UpdateType'} && $ARGS{'UpdateType'} eq "response") ? "SELECTED" : !$ARGS{'UpdateType'}&&$ResponseDefault%>><&|/l&>Reply to requestors</&></option>
+<option value="response" <% ($ARGS{'UpdateType'} && $ARGS{'UpdateType'} eq "response") ? qq[ selected="selected"] : !$ARGS{'UpdateType'}&&$Responsedefault |n %>><&|/l&>Reply to requestors</&></option>
 % }
 </select> 
 </td></tr>
-<tr><td align="right"><&|/l&>subject</&>:</td><td> <input name="Updatesubject" size="60" value="<% $ARGS{Updatesubject} || $ticket_obj->subject()%>" /></td></tr>
+<tr><td class="label"><&|/l&>Subject</&>:</td><td> <input name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || $ticket_obj->Subject()%>" /></td></tr>
 
 <& /Ticket/Elements/UpdateCc, %ARGS, ticket_obj => $ticket_obj &>
 
@@ -101,7 +101,7 @@
 % if (my $TxnCFs = $ticket_obj->transaction_custom_fields) {
 %    while (my $CF = $TxnCFs->next()) {
 <tr>
-<td align="right"><% $CF->name %>:</td>
+<td class="label"><% $CF->name %>:</td>
 <td><& /Elements/EditCustomField, CustomField => $CF, namePrefix =>
     "object-RT::Model::Transaction--CustomField-" &><em><% $CF->friendly_type %></em></td>
 </tr>
@@ -119,7 +119,7 @@
 </tr>
 % } # end of if
 
-<tr><td align="right"><&|/l&>Attach</&>:</td><td><input name="Attach" type="file" /><input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>add More Files</&>" /><input type="hidden" class="hidden" name="UpdateAttach" value="1" />
+<tr><td class="label"><&|/l&>Attach</&>:</td><td><input name="Attach" type="file" /><input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" /><input type="hidden" class="hidden" name="UpdateAttach" value="1" />
 </td></tr>
 
 % if ( $gnupg_widget ) {
@@ -131,7 +131,7 @@
 </td></tr>
 % }
 
-<tr><td align="right" valign="top"><&|/l&>Message</&>:</td><td>
+<tr><td class="label" valign="top"><&|/l&>Message</&>:</td><td>
 % $m->callback( %ARGS, Callbackname => 'BeforeMessageBox' );
 % if (exists $ARGS{update_content}) {
 % # preserve QuoteTransaction so we can use it to set up sane references/in/reply to
@@ -150,7 +150,10 @@
 
 <& /Elements/Submit, Label => _('Update Ticket'), name => 'SubmitTicket' &>
 % if ($ticket_obj->current_user_has_right('ShowOutgoingEmail')) {
+<&|/Widgets/TitleBox, title => _('Scrips and Recipients') &>
 <& /Ticket/Elements/PreviewScrips, ticket_obj => $ticket_obj, %ARGS &>
+</&>
+
 % }
 </form>
 <%INIT>
@@ -182,11 +185,11 @@ if ($default_status eq 'resolved') {
 
 my ($commentDefault, $ResponseDefault);
 if ($action ne 'respond') {
-   $commentdefault = "SELECTED"; 
+   $commentdefault = qq[ selected="selected"];
     $Responsedefault = "";
 } else {
     $commentdefault = ""; 
-    $Responsedefault = "SELECTED";
+    $Responsedefault = qq[ selected="selected"];
 }
 
 

@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -48,13 +48,13 @@
 <select name="<%$name%>">
 <option value="-1"
 %unless ($default) {
- selected
+ selected="selected"
 %}
 ><&|/l&>Don't refresh this page.</&></option>
 %foreach my $value (@refreshevery) {
 <option value="<%$value%>"
 % if  ( $default && ($value == $default)) {
-selected 
+selected="selected"
 % }
 ><&|/l, $value/60 &>Refresh this page every %1 minutes.</&></option>
 %}

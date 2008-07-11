@@ -66,12 +66,46 @@ sub new {
     return $class->SUPER::new(@_);
 }
 
+# XXX TODO: This alter_superclass replaces teh funcitonality in Mason 1.39
+# with code which doesn't trigger a bug in Perl 5.10.
+# (Perl 5.10.0 does NOT take kindly to having its @INC entries changed)
+# http://rt.perl.org/rt3/Public/Bug/Display.html?id=54566
+#
+# This routine can be removed when either:
+#   * RT depends on a version of mason which contains this fix
+#   * Perl 5.10.0 is not supported for running RT
+sub alter_superclass {
+    my $class     = shift;
+    my $new_super = shift;
+    my $isa_ref;
+    {
+        no strict 'refs';
+        my @entries = @{ $class . "::ISA" };
+        $isa_ref = \@entries;
+    }
+
+    # handles multiple inheritance properly and preserve
+    # inheritance order
+    for ( my $x = 0 ; $x <= $#{$isa_ref} ; $x++ ) {
+        if ( $isa_ref->[$x]->isa('HTML::Mason::Request') ) {
+            my $old_super = $isa_ref->[$x];
+            $isa_ref->[$x] = $new_super
+              if ( $old_super ne $new_super );
+            last;
+        }
+    }
+
+    { no strict 'refs'; @{ $class . "::ISA" } = @$isa_ref; }
+    $class->valid_params( %{ $class->valid_params } );
+}
+
+
 =head2 callback
 
 Method replaces deprecated component C<Element/Callback>.
 
 Takes hash with optional C<CallbackPage>, C<Callbackname>
-and C<CallabckOnce> arguments, other arguments are passed
+and C<CallbackOnce> arguments, other arguments are passed
 throught to callback components.
 
 =over4
@@ -112,16 +146,17 @@ package HTML::Mason::Request::Jifty;
         my $name = delete $args{'Callbackname'} || 'Default';
         my $page = delete $args{'CallbackPage'} || $self->callers(0)->path;
         unless ($page) {
-            Jifty->log->error("Coulnd't get a page name for callbacks");
+            Jifty->log->error("Couldn't get a page name for callbacks");
             return;
         }
 
         my $CacheKey = "$page--$name";
         return 1 if delete $args{'CallbackOnce'} && $called{$CacheKey};
-        ++$called{$CacheKey};
+        $called{$CacheKey} = 1;
 
         my $callbacks = $cache{$CacheKey};
         unless ($callbacks) {
+            $callbacks = [];
             my $path = "/Callbacks/*$page/$name";
             my @roots
                 = map $_->[1], $HTML::Mason::VERSION <= 1.28
@@ -129,7 +164,8 @@ package HTML::Mason::Request::Jifty;
                 : $self->interp->comp_root_array;
 
             my %seen;
-            @$callbacks = sort map {
+            @$callbacks = (
+                sort grep defined && length,
 
                 # Skip backup files, files without a leading package name,
                 # and files we've already seen
@@ -137,8 +173,9 @@ package HTML::Mason::Request::Jifty;
                     && !m{/\.}
                     && !m{~$}
                     && m{^/Callbacks/[^/]+\Q$page/$name\E$},
-                    $self->interp->resolver->glob_path( $path, $_ );
-            } @roots;
+                map $self->interp->resolver->glob_path( $path, $_ ),
+                @roots
+            );
 
             $cache{$CacheKey} = $callbacks
                 unless RT->config->get('DevelMode');

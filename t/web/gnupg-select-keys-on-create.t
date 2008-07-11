@@ -2,8 +2,16 @@
 use strict;
 use warnings;
 
-use Test::More tests => 60;
+use Test::More;
 use RT::Test;
+
+plan skip_all => 'GnuPG required.'
+    unless eval 'use GnuPG::Interface; 1';
+plan skip_all => 'gpg executable is required.'
+    unless RT::Test->find_executable('gpg');
+
+plan tests => 60;
+
 use RT::ScripAction::SendEmail;
 use File::Temp qw(tempdir);
 
@@ -24,7 +32,7 @@ RT->config->set( GnuPGOptions =>
     passphrase => 'rt-test',
     'no-permission-warning' => undef,
 );
-diag "GnuPG --homedir ". RT->config->get('GnuPGOptions')->{'homedir'};
+diag "GnuPG --homedir ". RT->config->get('GnuPGOptions')->{'homedir'} if $ENV{TEST_VERBOSE};
 
 RT->config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
@@ -43,9 +51,9 @@ RT::Test->set_rights(
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in';
 
-diag "check that signing doesn't work if there is no key";
+diag "check that signing doesn't work if there is no key" if $ENV{TEST_VERBOSE};
 {
-    RT::Test->fetch_caught_mails;
+    RT::Test->clean_caught_mails;
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);
@@ -69,9 +77,9 @@ diag "check that signing doesn't work if there is no key";
     is $res{'info'}[0]{'trust_terse'}, 'ultimate', 'ultimately trusted key';
 }
 
-diag "check that things don't work if there is no key";
+diag "check that things don't work if there is no key" if $ENV{TEST_VERBOSE};
 {
-    RT::Test->fetch_caught_mails;
+    RT::Test->clean_caught_mails;
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);
@@ -95,7 +103,7 @@ diag "check that things don't work if there is no key";
     ok !@mail, 'there are no outgoing emails';
 }
 
-diag "import first key of rt-test\@example.com";
+diag "import first key of rt-test\@example.com" if $ENV{TEST_VERBOSE};
 my $fpr1 = '';
 {
     RT::Test->import_gnupg_key('rt-test@example.com', 'public');
@@ -104,9 +112,9 @@ my $fpr1 = '';
     $fpr1 = $res{'info'}[0]{'fingerprint'};
 }
 
-diag "check that things still doesn't work if key is not trusted";
+diag "check that things still doesn't work if key is not trusted" if $ENV{TEST_VERBOSE};
 {
-    RT::Test->fetch_caught_mails;
+    RT::Test->clean_caught_mails;
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);
@@ -142,7 +150,7 @@ diag "check that things still doesn't work if key is not trusted";
     ok !@mail, 'there are no outgoing emails';
 }
 
-diag "import a second key of rt-test\@example.com";
+diag "import a second key of rt-test\@example.com" if $ENV{TEST_VERBOSE};
 my $fpr2 = '';
 {
     RT::Test->import_gnupg_key('rt-test@example.com.2', 'public');
@@ -151,9 +159,9 @@ my $fpr2 = '';
     $fpr2 = $res{'info'}[2]{'fingerprint'};
 }
 
-diag "check that things still doesn't work if two keys are not trusted";
+diag "check that things still doesn't work if two keys are not trusted" if $ENV{TEST_VERBOSE};
 {
-    RT::Test->fetch_caught_mails;
+    RT::Test->clean_caught_mails;
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);
@@ -198,7 +206,7 @@ diag "check that things still doesn't work if two keys are not trusted";
 
 diag "check that we see key selector even if only one key is trusted but there are more keys";
 {
-    RT::Test->fetch_caught_mails;
+    RT::Test->clean_caught_mails;
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);
@@ -225,7 +233,7 @@ diag "check that we see key selector even if only one key is trusted but there a
 
 diag "check that key selector works and we can select trusted key";
 {
-    RT::Test->fetch_caught_mails;
+    RT::Test->clean_caught_mails;
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);
@@ -257,7 +265,7 @@ diag "check that key selector works and we can select trusted key";
 
 diag "check encrypting of attachments";
 {
-    RT::Test->fetch_caught_mails;
+    RT::Test->clean_caught_mails;
 
     ok $m->goto_create_ticket( $queue ), "UI -> create ticket";
     $m->form_number(3);

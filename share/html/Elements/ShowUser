@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -46,26 +46,24 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 %# Released under the terms of version 2 of the GNU Public License
-<% $Address->format %>\
 <%INIT>
-my ($phrase, $address, $comment);
-
-if ($User) {
-$address = $User->email;
-$phrase = $User->real_name
-    if $User->real_name && lc $User->real_name ne lc $address;
-$comment = $User->name if lc $User->name ne lc $address;
- $Address = Mail::Address->new( $phrase, $address, $comment );
-} 
-
-
-$Address->comment('') if $comment && lc $Address->user eq lc $comment;
-if ( $phrase and my ($l, $r) = ($phrase =~ /^(\w+) (\w+)$/) ) {
-    $Address->phrase('') if $Address->user =~ /^\Q$l\E.\Q$r\E$/
-                        || $Address->user =~ /^\Q$r\E.\Q$l\E$/; 
+# $User is an RT::Model::User object
+# $Address is email::Address object
+if ( !$User && $Address ) {
+    $User = RT::Model::User->new;
+    $User->load_by_email( $Address->address );
+    unless ( $User->id ) {
+        $m->comp( '/Elements/ShowUserVerbose', Address => $Address );
+        return;
+    }
 }
+if ( $style eq 'concise' ) {
+    $m->comp( '/Elements/ShowUserConcise', User => $User );
+}
+else { $m->comp( '/Elements/ShowUserVerbose', User => $User ); }
 </%INIT>
 <%ARGS>
 $User => undef
 $Address => undef
+$style => RT->config->get('Usernameformat', Jifty->web->current_user)
 </%ARGS>

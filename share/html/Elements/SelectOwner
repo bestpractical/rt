@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -45,59 +45,79 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<select name="<%$name%>">
+<select name="<%$name%>" id="<%$name%>">
 %if ($default_value) {
-<option <% !$default ? "SELECTED" : '' %> value=""><%$default_label%></option>
+<option value=""<% !$default ? qq[ selected="selected"] : '' |n %>><%$default_label%></option>
 %}
 
 
 % $default = 0 unless defined $default && $default =~ /^\d+$/;
-%foreach my $User ( @users)  {
-<option <% ( $User->id == $default) ? "SELECTED" : ''%>
+% my @formatednames = sort {lc $a->[1] cmp lc $b->[1]} map {[$_, $m->scomp('/Elements/ShowUser', User => $_)]} @users;
+%foreach my $UserRef ( @formatednames)  {
+%my $User = $UserRef->[0];
+<option <% ( $User->id == $default) ? qq[ selected="selected"] : '' |n %>
 %if ($value_attribute eq 'id') {
     value="<%$User->id%>"
 %} elsif ($value_attribute eq 'name') {
     value="<%$User->name%>"
 %}
-><& /Elements/ShowUser, User => $User &></option>
+><% $UserRef->[1] |n %></option>
 %}
 </select>
 <%INIT>
 
 my @objects;
 if ($ticket_obj) {
-        @objects = ($ticket_obj);
-}
-elsif ($queue_obj) {
-        @objects = ($queue_obj);
-} 
-elsif ($cfqueues) {
-	@objects = keys %{$cfqueues};
-}
-else {
-    # Let's check rights on an empty queue object. that will do a search for any queue.
-    my $queue = RT::Model::Queue->new();
-	      push( @objects, $queue );
-}
+    @objects = ($ticket_obj);
+} elsif ($queue_obj) {
+    @objects = ($queue_obj);
+} elsif ($cfqueues) {
+    @objects = keys %{$cfqueues};
+} else {
+# Let's check rights on an empty queue object. that will do a search
+# for any queue.
+    my $queue = RT::Model::Queue->new;
+    push( @objects, $queue );
 
 my %user_uniq_hash;
 
-$m->callback( %ARGS, objects => \@objects, Callbackname => 'UpdateobjectList');
+$m->callback(
+    %ARGS,
+    objects      => \@objects,
+    Callbackname => 'update_objectList'
+);
+
+my $isSU = Jifty->web->current_user
+    ->has_right( Right => 'SuperUser', object => RT->system );
 
 foreach my $object (@objects) {
-	my $Users = RT::Model::UserCollection->new();
-        $Users->who_have_right(right => 'OwnTicket', object => $object, include_system_rights => 1, include_superusers => 0); 
-        while (my $User = $Users->next()) {
-                next if ($User->id == RT->nobody->id); # skip nobody here, so we can make them first later
-	      $user_uniq_hash{$User->id()} = $User;
-        }
+    my $Users = RT::Model::UserCollection->new;
+    $Users->WhoHaveRight(
+        Right               => 'OwnTicket',
+        object              => $object,
+        IncludeSystemRights => 1,
+        IncludeSuperusers   => $isSU
+    );
+    while ( my $User = $Users->next() ) {
+        next
+            if ( $User->id == $RT::Nobody->id )
+            ;    # skip nobody here, so we can make them first later
+        $user_uniq_hash{ $User->id() } = $User;
+    }
+}
+if ($default && $default != $RT::Nobody->id && !$user_uniq_hash{$default}) {
+    $user_uniq_hash{$default} = RT::Model::User->new;
+    $user_uniq_hash{$default}->load($default);
 }
 
-my @users = sort { uc($a->name) cmp uc($b->name) } values %user_uniq_hash; 
-unshift(@users, RT->nobody->user_object);
+my @users = sort { uc( $a->name ) cmp uc( $b->name ) } values %user_uniq_hash;
+unshift( @users, $RT::Nobody );
 
-$m->callback( %ARGS, objects => \@objects, Callbackname => 'UpdateobjectList');
-
+$m->callback(
+    %ARGS,
+    objects      => \@objects,
+    Callbackname => 'update_objectList'
+);
 
 </%INIT>
 

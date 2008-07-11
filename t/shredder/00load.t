@@ -1,8 +1,15 @@
 use strict;
 use warnings;
-use RT::Test; use Test::More tests => 11;
+use File::Spec;
+use Test::More tests => 11;
 
-BEGIN { require "t/shredder/utils.pl" }
+use RT::Test ();
+
+BEGIN {
+    my $shredder_utils = RT::Test::get_relocatable_file('utils.pl',
+        File::Spec->curdir());
+    require $shredder_utils;
+}
 
 use_ok("RT::Shredder");
 

@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -52,7 +52,7 @@ $Attr => undef
 
 
 <%ONCE>
-our ( $TICKET_COLUMN_MAP );
+my $COLUMN_MAP;
 
 my $LinkCallback = sub  {
     my $method = shift;
@@ -74,7 +74,12 @@ my $LinkCallback = sub  {
     }
 };
 
-$TICKET_COLUMN_MAP = {
+$COLUMN_MAP = {
+    queue => {
+        attribute => 'queue',
+        title     => 'Queue id',
+        value     => sub { return $_[0]->Queue }
+    },
     Queuename => {
         attribute => 'queue',
         title     => 'queue',
@@ -99,14 +104,14 @@ $TICKET_COLUMN_MAP = {
         value     => sub  {
             my $Ticket = shift;
 
-            if ( $Ticket->has_unresolved_dependencies ) {
+            if ( my $count = $Ticket->has_unresolved_dependencies ) {
                 if (   $Ticket->has_unresolved_dependencies( type => 'approval' )
                     or $Ticket->has_unresolved_dependencies( type => 'code' ) )
                 {
                     return \'<em>', _('(pending approval)'), \'</em>';
                 }
                 else {
-                    return \'<em>', _('(pending other Collection)'), \'</em>';
+                    return \'<em>', _('(pending [quant,_1,other ticket])',$count), \'</em>';
                 }
             }
             else {
@@ -184,7 +189,8 @@ $TICKET_COLUMN_MAP = {
         attribute => 'Due',
         value     => sub  { 
             my $date = $_[0]->due_obj;
-            if ( $date && $date->unix > 0 && $date->diff < 0 ) {
+            # Highlight the date if it was due in the past, and it's still active
+            if ( $date && $date->Unix > 0 && $date->Diff < 0 && $_[0]->queue_obj->is_active_status($_[0]->status)) {
                 return (\'<span class="overdue">' , $date->age_as_string , \'</span>');
             } else {
                 return $date->age_as_string;
@@ -267,12 +273,6 @@ $TICKET_COLUMN_MAP = {
         $_ => { value => $LinkCallback->( $_ ) }
     } keys %RT::Model::Ticket::LINKTYPEMAP),
 
-    (map {
-        my $value = RT->config->get($_);
-        $_ => { value => sub  { return \$value } };
-    
-    } qw(WebPath WebbaseURL WebURL)),
-
     '_CLASS' => {
         value => sub  { return $_[1] % 2 ? 'oddline' : 'evenline' }
     },
@@ -280,7 +280,7 @@ $TICKET_COLUMN_MAP = {
         attribute => 'checkbox',
         title => _('Update'),
         align     => 'right',
-        value     => sub  { return \('<input type="checkbox" class="checkbox" name="UpdateTicket'.$_[0]->id.'" value="1" checked />') }
+        value     => sub { return \('<input type="checkbox" class="checkbox" name="UpdateTicket'.$_[0]->id.'" value="1" checked="checked" />') }
     },
 
     CustomField => {
@@ -303,9 +303,19 @@ $TICKET_COLUMN_MAP = {
             return @values;
         },
     },
+    Bookmark => {
+        title => ' ',
+        value => sub {
+            my $bookmark = $m->scomp( '/Ticket/Elements/Bookmark', id => $_[0]->id );
+            # the CollectionAsTable/Row template replaces newlines with <br>
+            $bookmark =~ s/\n//g;
+
+            return \$bookmark;
+        },
+    },
 };
 
-$TICKET_COLUMN_MAP->{'CF'} = $TICKET_COLUMN_MAP->{'CustomField'};
+$COLUMN_MAP->{'CF'} = $COLUMN_MAP->{'CustomField'};
 
 # if no GPG support, then key_owner_name and key_requestors fall back to the regular
 # versions
@@ -313,12 +323,13 @@ if (RT->config->get('GnuPG')->{'enable'}) {
     require RT::Crypt::GnuPG;
 }
 else {
-    $TICKET_COLUMN_MAP->{key_owner_name} = $TICKET_COLUMN_MAP->{owner_name};
-    $TICKET_COLUMN_MAP->{key_requestors} = $TICKET_COLUMN_MAP->{requestors};
+    $COLUMN_MAP->{key_owner_name} = $COLUMN_MAP->{owner_name};
+    $COLUMN_MAP->{key_requestors} = $COLUMN_MAP->{requestors};
 }
 </%ONCE>
 <%init>
-$m->callback( COLUMN_MAP => $TICKET_COLUMN_MAP, Callbackname => 'Once', CallbackOnce => 1 );
-$m->callback( COLUMN_MAP => $TICKET_COLUMN_MAP, Callbackname => 'ColumnMap' );
-return get_column_map_entry( Map => $TICKET_COLUMN_MAP, name => $name, Attribute => $Attr );
+$m->callback( COLUMN_MAP => $COLUMN_MAP, Callbackname => 'Once', CallbackOnce => 1 );
+# backward compatibility
+$m->callback( COLUMN_MAP => $COLUMN_MAP, Callbackname => 'ColumnMap' );
+return GetColumnMapEntry( Map => $COLUMN_MAP, name => $name, Attribute => $Attr );
 </%init>

@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -53,9 +53,9 @@ $Wipeout => ''
 </%ARGS>
 <& /Admin/Elements/Header, Title => $title &>
 <& /Admin/Elements/ToolTabs,
-	current_tab => 'Admin/Tools/Shredder',
-	current_subtab => 'Admin/Tools/Shredder',
-	Title => $title,
+    current_tab => 'Admin/Tools/Shredder',
+    current_subtab => 'Admin/Tools/Shredder',
+    Title => $title,
 &>
 <form id="shredder-search-form" action="<% RT->config->get('WebPath') %>/Admin/Tools/Shredder/" method="GET">
 <div id="shredder-select-plugin">
@@ -95,92 +95,95 @@ my $catch_non_fatals = sub  {
 
 
 if( $Plugin ) { { # use additional block({}) to effectively exit block on errors
-	use RT::Shredder::Plugin;
-	$plugin_obj = RT::Shredder::Plugin->new;
-	my( $status, $msg ) = $plugin_obj->load_by_name( $Plugin );
-	unless( $status ) {
-		push @{ $messages{Errors} }, $msg;
-		$Search = '';
-		last;
-	}
+    use RT::Shredder::Plugin;
+    $plugin_obj = new RT::Shredder::Plugin;
+    my( $status, $msg ) = $plugin_obj->load_by_name( $Plugin );
+    unless( $status ) {
+        push @{ $messages{Errors} }, $msg;
+        $Search = '';
+        last;
+    }
 
-	my %args;
-	foreach my $k( keys %ARGS ) {
-		next unless $k =~ /^\Q$Plugin\E:(.*)$/;
-		$args{ $1 } = $ARGS{$k};
-	}
-	( $status, $msg ) = $plugin_obj->has_support_for_args( keys %args );
-	unless( $status ) {
-		push @{ $messages{Errors} }, $msg;
-		$Search = '';
-		last;
-	}
+    my %args;
+    foreach my $k( keys %ARGS ) {
+        next unless $k =~ /^\Q$Plugin\E:(.*)$/;
+        $args{ $1 } = $ARGS{$k};
+    }
+    ( $status, $msg ) = $plugin_obj->HasSupportForArgs( keys %args );
+    unless( $status ) {
+        push @{ $messages{Errors} }, $msg;
+        $Search = '';
+        last;
+    }
 
-	($status, $msg) = eval { $plugin_obj->test_args( %args ) };
+    ($status, $msg) = eval { $plugin_obj->TestArgs( %args ) };
     $catch_non_fatals->() && last if $@;
-	unless( $status ) {
-		push @{ $messages{Errors} }, $msg;
-		$Search = '';
-		last;
-	}
+    unless( $status ) {
+        push @{ $messages{Errors} }, $msg;
+        $Search = '';
+        last;
+    }
 } }
 
 my $dump_file = '';
 
 if( $Plugin && $Wipeout ) { { # use additional block({}) to effectively exit block on errors
-	my $shredder = RT::Shredder->new( force => 1 );
+    my $shredder = new RT::Shredder( force => 1 );
     my $backup_plugin = RT::Shredder::Plugin->new;
     my ($status, $msg) = $backup_plugin->load_by_name('SQLDump');
-	unless( $status ) {
-		push @{ $messages{Errors} }, $msg;
-		$Search = ''; @objs = ();
-		last;
-	}
+    unless( $status ) {
+        push @{ $messages{Errors} }, $msg;
+        $Search = ''; @objs = ();
+        last;
+    }
     ($status, $msg) = $backup_plugin->test_args;
-	unless( $status ) {
-		push @{ $messages{Errors} }, $msg;
-		$Search = ''; @objs = ();
-		last;
-	}
 
-	($dump_file) = $backup_plugin->filename;
+    unless( $status ) {
+        push @{ $messages{Errors} }, $msg;
+        $Search = ''; @objs = ();
+        last;
+    }
+
+    ($dump_file) = $backup_plugin->FileName;
     push @{ $messages{'Success'} }, "SQL dump file is '$dump_file'";
 
     $shredder->add_dump_plugin( object => $backup_plugin );
 
-	$shredder->put_objects( objects => \@Wipeoutobject );
-	($status, $msg) = $plugin_obj->set_resolvers( Shredder => $shredder );
-	unless( $status ) {
-		push @{ $messages{Errors} }, $msg;
-		$Search = ''; @objs = ();
-		last;
-	}
-	eval { $shredder->wipeout_all };
+    $shredder->put_objects( objects => \@wipeout_object );
+    ($status, $msg) = $plugin_obj->set_resolvers( Shredder => $shredder );
+    unless( $status ) {
+        push @{ $messages{Errors} }, $msg;
+        $Search = ''; @objs = ();
+        last;
+    }
+    eval { $shredder->WipeoutAll };
+
     $catch_non_fatals->() && last if $@;
 
-	push @{ $messages{Success} }, 'objects were successfuly removed';
+    push @{ $messages{Success} }, 'objects were successfuly removed';
+
 } }
 
 if( $Plugin && ( $Search || $Wipeout ) ) { { # use additional block({}) to effectively exit block on errors
-	my $status;
-	($status, @objs) = eval { $plugin_obj->run };
+    my $status;
+    ($status, @objs) = eval { $plugin_obj->Run };
     $catch_non_fatals->() && last if $@;
     unless( $status ) {
-		push @{ $messages{Errors} }, $objs[0];
-		$Search = ''; @objs = ();
-		last;
-	}
-	push @{ $messages{Success} }, 'executed plugin successfuly';
+        push @{ $messages{Errors} }, $objs[0];
+        $Search = ''; @objs = ();
+        last;
+    }
+    push @{ $messages{Success} }, 'executed plugin successfuly';
 
-	my $shredder = RT::Shredder->new;
-	foreach my $o( splice @objs ) {
-		eval { push @objs, $shredder->cast_objects_to_records( objects => $o ) };
-        $catch_non_fatals->() && last if $@;
-	}
-	unless( @objs ) {
-		push @{ $messages{Success} }, 'plugin returned empty list';
-	} else {
-		push @{ $messages{Success} }, 'see object list below';
-	}
+    my $shredder = new RT::Shredder;
+    foreach my $o( grep defined, splice @objs ) {
+        eval { push @objs, $shredder->cast_objectsToRecords( objects => $o ) };
+          $catch_non_fatals->() && last if $@;
+    }
+    unless( @objs ) {
+        push @{ $messages{Success} }, 'plugin returned empty list';
+    } else {
+        push @{ $messages{Success} }, 'see object list below';
+    }
 } }
 </%INIT>

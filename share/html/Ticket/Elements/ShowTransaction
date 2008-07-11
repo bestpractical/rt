@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -46,11 +46,14 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <div class="ticket-transaction <% $type_class %> <% $RowNum % 2 ? 'odd' : 'even' %>">
-<table width="100%" cellspacing="0" cellpadding="2" border="0">
-  <tr>
+% $m->callback( titlebar_cmd => \$titlebar_commands, Transaction => $Transaction, %ARGS, Callbackname => 'ModifyDisplay' );
+
+<table width="100%" cellspacing="0" cellpadding="2" border="0" class="ticket-transaction">
+% $m->callback( titlebar_cmd => \$titlebar_commands, Transaction => $Transaction, %ARGS, Callbackname => 'ModifyCommand' );
+  <tr class="metadata">
     <td rowspan="2" valign="top" class="type">
       <a name="txn-<% $Transaction->id %>" href="<% $DisplayPath %>#txn-<% $Transaction->id %>">#</a>
-      <% $LastTransaction ? '<a name="lasttrans">&nbsp;</a>' : '&nbsp;' |n %>
+      <% $LastTransaction ? '<a id="lasttrans" name="lasttrans"/>' : ''|n %>
     </td>
     <td class="date"><% $transdate|n %></td>
 % my $desc = $Transaction->brief_description;
@@ -59,11 +62,11 @@
       <% $Transaction->creator_obj->name %> - <% $TicketString %> <% $desc %>
     </td>
     <td class="time-taken"><% $time_taken %></td>
-    <td class="actions"><% $titlebar_commands |n %></td>
+    <td class="actions<% $titlebar_commands ? '': ' hidden'%>"><% $titlebar_commands |n %></td>
   </tr>
 
   <tr>
-    <td colspan="4" class="content">
+    <td colspan="5" class="content">
 % if ( $Attachments->[0] && $Attachments->[0]->id ) {
 %   if (RT->config->get('GnuPG')->{'enable'}) {
         <& ShowGnuPGStatus, Attachment => $Attachments->[0], WarnUnsigned => $WarnUnsigned &>
@@ -75,6 +78,7 @@
 % $m->comp('ShowTransactionAttachments', %ARGS, Parent => 0) unless ($Collapsed ||!$ShowBody);
     </td>
   </tr>
+
 </table>
 </div>
 
@@ -156,12 +160,9 @@ unless ($Attachments) {
     $attachments->query_columns( qw( id filename content_type headers subject parent content_encoding content_type transaction_id) );
     $Attachments = $attachments->items_array_ref();
 }
-my $titlebar_commands = '&nbsp;';
-
-my @display_headers=qw ( _all);
+my $titlebar_commands = '';
 
 if ( $type =~ /EmailRecord$/ ) {
-    @display_headers = qw(To Cc Bcc);
 
     $titlebar_commands .=
         "[<a target=\"_blank\" href=\"$EmailRecordPath?id="
@@ -177,10 +178,6 @@ if ( $type =~ /EmailRecord$/ ) {
 
 # If the transaction has anything attached to it at all
 else {
-
-    unless ( $show_headers ) {
-        @display_headers = qw(To From RT-Send-Cc Cc Bcc Date Subject);
-    }
 
     if ( $Attachments->[0] && $ShowTitleBarCommands ) {
         my $ticket = $Transaction->ticket_obj;

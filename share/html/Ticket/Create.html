@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -56,9 +56,9 @@
 <form action="<% RT->config->get('WebPath') %>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
 <input type="hidden" class="hidden" name="id" value="new" />
 % $m->callback( Callbackname => 'FormStart', args_ref => \%ARGS );
-
+% if ($gnupg_widget) {
 <& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
-
+% }
 <div id="Ticket-Create-basics">
 <a name="basics"></a>
 <&| /Widgets/TitleBox, title => _("Create a new ticket") &>
@@ -84,23 +84,23 @@
 <&|/l&>Requestors</&>:
 </td>
 <td class="value" colspan="5">
-    <input name="requestors" value="<% ($ARGS{requestors}) || Jifty->web->current_user->user_object->email %>" size="40" />
+    <& /Elements/EmailInput, name => 'Requestors', Size => '40', default => $ARGS{requestors} || Jifty->web->current_user->email &>
 </td>
 </tr>
 <tr>
-<td class="labeltop">
+<td class="label">
 <&|/l&>Cc</&>:
 </td>
-<td class="value" colspan="3"><input name="cc" size="40" value="<% $ARGS{cc} || ''%>" /></td>
+<td class="value" colspan="3"><& /Elements/EmailInput, name => 'cc', Size => '40', default => $ARGS{cc} &></td>
 <td class="comment" colspan="2"><i><font size="-2">
 <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)</&></font></i>
 </td>
 </tr>
 <tr>
-<td class="labeltop">
+<td class="label">
 <&|/l&>Admin Cc</&>:
 </td>
-<td class="value" colspan="3"><input name="admin_cc" size="40" value="<% $ARGS{admin_cc} || ''%>" /></td>
+<td class="value" colspan="3"><& /Elements/EmailInput, name => 'admin_cc', Size => '40', default => $ARGS{AdminCc} &></td>
 <td class="comment" colspan="2"><i><font size="-2">
 <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)</&></font></i>
 </td>
@@ -115,13 +115,13 @@
 </tr>
 <tr>
 <td colspan="6">
-<& /Ticket/Elements/EditCustomFields, queue_obj => $queue_obj &>
+<& /Ticket/Elements/EditCustomFields, %ARGS, queue_obj => $queue_obj &>
 </td>
 </tr>
 % if ($TxnCFs->count) {
 % while (my $CF = $TxnCFs->next()) {
 <tr>
-<td align="right"><% $CF->name %>:</td>
+<td class="label"><% $CF->name %>:</td>
 <td><& /Elements/EditCustomField, CustomField => $CF, namePrefix =>
     "object-RT::Model::Transaction--CustomField-" &><em><% $CF->friendly_type %></em></td>
 </td></tr>
@@ -141,7 +141,7 @@
 </tr>
 <tr>
 % } # end of if
-<td>
+<td class="label">
 <&|/l&>Attach file</&>:
 </td>
 <td class="value" colspan="5">
@@ -159,6 +159,7 @@
 <tr>
 <td colspan="6">
 <&|/l&>describe the issue below</&>:<br />
+<& /Elements/Callback, _Callbackname => 'BeforeMessageBox', queue_obj => $queue_obj, %ARGS &>
 % if (exists $ARGS{Content}) {
 <& /Elements/MessageBox, default => $ARGS{Content}, IncludeSignature => 0 &>
 % } else {
@@ -177,28 +178,29 @@
 <a name="details"></a>
 <table width="100%" border="0">
 <tr>
-<td width="50%" valign="top">
+<td width="50%" valign="top" class="boxcontainer">
+    <div class="ticket-info-basics">
 
 	  <&| /Widgets/TitleBox, title => _('The Basics'), 
 		title_class=> 'inverse',  
 		color => "#993333" &>
 <table border="0">
-<tr><td align="right"><&|/l&>Priority</&>:</td><td><input size="3" name="initial_priority" value="<% $ARGS{initial_priority} ? $ARGS{initial_priority} : $queue_obj->initial_priority %>" /></td></tr>
-<tr><td align="right"><&|/l&>Final Priority</&>:</td><td><input size="3" name="final_priority" value="<% $ARGS{final_priority} ? $ARGS{final_priority} : $queue_obj->final_priority %>" /></td></tr>
-<tr><td align="right"><&|/l&>time Estimated</&>:</td>
+<tr><td class="label"><&|/l&>Priority</&>:</td><td><input size="3" name="initial_priority" value="<% $ARGS{initial_priority} ? $ARGS{initial_priority} : $queue_obj->initial_priority %>" /></td></tr>
+<tr><td class="label"><&|/l&>Final Priority</&>:</td><td><input size="3" name="final_priority" value="<% $ARGS{final_priority} ? $ARGS{final_priority} : $queue_obj->final_priority %>" /></td></tr>
+<tr><td class="label"><&|/l&>Time Estimated</&>:</td>
 <td>
 <input size="3" name="time_estimated" value="<%$ARGS{time_estimated} || ''%>" />
 <& /Elements/SelectTimeUnits, name =>'time_estimated' &>
 
 </td></tr>
-<tr><td align="right"><&|/l&>time Worked</&>:</td>
+<tr><td class="label"><&|/l&>Time Worked</&>:</td>
 <td>
 <input size="3" name="time_worked" value="<%$ARGS{time_worked} || ''%>" />
 <& /Elements/SelectTimeUnits, name =>'time_worked' &>
 
 </td></tr>
 <tr>
-<td align="right"><&|/l&>time Left</&>:</td>
+<td class="label"><&|/l&>Time Left</&>:</td>
 <td><input size="3" name="time_left" value="<%$ARGS{time_left} || ''%>" />
 <& /Elements/SelectTimeUnits, name =>'time_left' &>
 </td></tr>
@@ -214,24 +216,28 @@
 <tr><td class="label"><&|/l&>Due</&>:</td><td><& /Elements/SelectDate, name => "Due", default => $ARGS{Due} || '' &></td></tr>
 </table>
 </&>
+</div>
+</div>
 <br />
 </td>
 
-<td valign="top">
+<td valign="top" class="boxcontainer">
+<div class="ticket-info-links">
 <&| /Widgets/TitleBox, title => _('Links'), title_class=> 'inverse' &>
 
 <em><&|/l&>(Enter ticket ids or URLs, separated with spaces)</&></em>
 <table border="0">
-<tr><td align="right"><&|/l&>Depends on</&></td><td><input size="10" name="new-DependsOn" value="<% $ARGS{'new-DependsOn'} || '' %>" /></td></tr>
-<tr><td align="right"><&|/l&>Depended on by</&></td><td><input size="10" name="DependsOn-new" value="<% $ARGS{'DependsOn-new'} || '' %>" /></td></tr>
-<tr><td align="right"><&|/l&>Parents</&></td><td><input size="10" name="new-MemberOf" value="<% $ARGS{'new-MemberOf'} || '' %>" /></td></tr>
-<tr><td align="right"><&|/l&>Children</&></td><td><input size="10" name="MemberOf-new" value="<% $ARGS{'MemberOf-new'} || '' %>" /></td></tr>
-<tr><td align="right"><&|/l&>Refers to</&></td><td><input size="10" name="new-RefersTo" value="<% $ARGS{'new-RefersTo'} || '' %>" /></td></tr>
-<tr><td align="right"><&|/l&>Referred to by</&></td><td><input size="10" name="RefersTo-new" value="<% $ARGS{'RefersTo-new'} || '' %>" /></td></tr>
+<tr><td class="label"><&|/l&>Depends on</&></td><td><input size="10" name="new-DependsOn" value="<% $ARGS{'new-DependsOn'} || '' %>" /></td></tr>
+<tr><td class="label"><&|/l&>Depended on by</&></td><td><input size="10" name="DependsOn-new" value="<% $ARGS{'DependsOn-new'} || '' %>" /></td></tr>
+<tr><td class="label"><&|/l&>Parents</&></td><td><input size="10" name="new-MemberOf" value="<% $ARGS{'new-MemberOf'} || '' %>" /></td></tr>
+<tr><td class="label"><&|/l&>Children</&></td><td><input size="10" name="MemberOf-new" value="<% $ARGS{'MemberOf-new'} || '' %>" /></td></tr>
+<tr><td class="label"><&|/l&>Refers to</&></td><td><input size="10" name="new-RefersTo" value="<% $ARGS{'new-RefersTo'} || '' %>" /></td></tr>
+<tr><td class="label"><&|/l&>Referred to by</&></td><td><input size="10" name="RefersTo-new" value="<% $ARGS{'RefersTo-new'} || '' %>" /></td></tr>
 
 
 </table>
 </&>
+</div>
 <br />
 
 </td>
@@ -261,17 +267,6 @@ if ( $cloneTicket ) {
     
         my $members = $cloneticket_obj->members;
         my ( @members, @members_of, @refers, @refers_by, @depends, @depends_by );
-        while ( my $member = $members->next ) {
-            push @members, $member->local_base;
-        }
-        $clone->{'MemberOf-new'} = join ' ', @members;
-    
-        my $members_of = $cloneticket_obj->member_of;
-        while ( my $member_of = $members_of->next ) {
-            push @members_of, $member_of->local_target;
-        }
-        $clone->{'new-MemberOf'} = join ' ', @members_of;
-        
         my $refers = $cloneticket_obj->refers_to;
         while ( my $refer = $refers->next ) {
             push @refers, $refer->local_target;
@@ -283,20 +278,30 @@ if ( $cloneTicket ) {
             push @refers_by, $refer_by->local_base;
         }
         $clone->{'RefersTo-new'} = join ' ', @refers_by;
-    
-        my $depends = $cloneticket_obj->depends_on;
-        while ( my $depend = $depends->next ) {
-            push @depends, $depend->local_target;
-        }
-        $clone->{'new-DependsOn'} = join ' ', @depends;
-    
-        my $depends_by = $cloneticket_obj->depended_on_by;
-        while ( my $depend_by = $depends_by->next ) {
-            push @depends_by, $depend_by->local_base;
-        }
-        $clone->{'DependsOn-new'} = join ' ', @depends_by;
-    
-    
+        if (0) { # Temporarily disabled
+            my $depends = $cloneticket_obj->depends_on;
+            while ( my $depend = $depends->next ) {
+                push @depends, $depend->Localtarget;
+            }
+            $clone->{'new-DependsOn'} = join ' ', @depends;
+
+            my $depends_by = $cloneticket_obj->depended_on_by;
+            while ( my $depend_by = $depends_by->next ) {
+                push @depends_by, $depend_by->LocalBase;
+            }
+            $clone->{'DependsOn-new'} = join ' ', @depends_by;
+
+            while ( my $member = $members->next ) {
+                push @members, $member->LocalBase;
+            }
+            $clone->{'MemberOf-new'} = join ' ', @members;
+
+            my $members_of = $cloneticket_obj->MemberOf;
+            while ( my $member_of = $members_of->next ) {
+                push @members_of, $member_of->Localtarget;
+            }
+            $clone->{'new-MemberOf'} = join ' ', @members_of;
+
     
     my $cfs = $cloneticket_obj->queue_obj->ticket_custom_fields();
     while ( my $cf = $cfs->next ) {
@@ -321,6 +326,8 @@ $queue_obj->load($queue) || abort(_("Queue could not be loaded."));
 
 $m->callback( queue_obj => $queue_obj, args_ref => \%ARGS );
 
+$queue_obj->Disabled && Abort(loc("Cannot create tickets in a disabled queue."));
+
 my $CFs = $queue_obj->ticket_custom_fields();
 my $TxnCFs = $queue_obj->ticket_transaction_custom_fields();
 
@@ -329,15 +336,6 @@ my $ValidCFs = $m->comp(
     CustomFields => $CFs,
     args_ref => \%ARGS
 );
-
-# if no due date has been set explicitly, then use the
-# queue's default if it exists
-if ($queue_obj->default_due_in && !$ARGS{'Due'}) {
-    my $default_due = RT::Date->new();
-    $default_due->set_to_now();
-    $default_due->add_days($queue_obj->default_due_in);
-    $ARGS{'Due'} = $default_due->iso();
-}
 
 # {{{ deal with deleting uploaded attachments
 foreach my $key (keys %ARGS) {

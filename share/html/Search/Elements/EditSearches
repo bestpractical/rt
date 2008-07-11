@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -48,29 +48,28 @@
 <&| /Widgets/TitleBox, title => _($Title)&>
 
 %# Hide all the save functionality if the user shouldn't see it.
-% if (Jifty->web->current_user->has_right( right => 'CreateSavedSearch',
-%                                        object=> RT->system )) {
+% if ( $can_modify ) {
 <&|/l&>Privacy:</&>
-% if ( $object && $object->id ) {
-<& SearchPrivacy, object => $object->object &>
-% } else {
-<& SelectSearchObject, name => 'SavedSearchOwner', objects => \@objects &>
-% }
+<& selectsearch_object, name => 'SavedSearchOwner', objects => \@objects, object => ( $object && $object->id ) ? $object->object : '' &>
 <br />
 <&|/l&>description</&>:
-<input size="25" name="SavedSearchdescription" value="<% $description %>" />
+<input size="25" name="SavedSearchDescription" value="<% $description || '' %>" />
 
 % if ($Id ne 'new') {
 <nobr>
-% if ($Dirty) {
+% if ( $Dirty ) {
 <input type="submit" class="button" name="SavedSearchRevert" value="<%_('Revert')%>" />
 % }
 <input type="submit" class="button" name="SavedSearchDelete" value="<%_('Delete')%>" />
 % if ( $AllowCopy ) {
-<input type="submit" class="button" name="SavedSearchCopy"   value="<%_('Copy')%>" />
+<input type="submit" class="button" name="SavedSearchCopy"   value="<%_('Save as New')%>" />
 % }
 </nobr>
 % }
+% if ( $object && $object->id ) {
+<input type="submit" class="button" name="SavedSearchSave"   value="<%_('Update')%>" />
+% } else {
+}
 <input type="submit" class="button" name="SavedSearchSave"   value="<%_('Save')%>" />
 % }
 <br />
@@ -87,11 +86,9 @@ return unless Jifty->web->current_user->has_right(
     object => RT->system,
 );
 
-# If we're modifying an old query, check if it's been changed
-my $Dirty = $m->comp(
-    'EditSearches:IsDirty',
-    query => $CurrentSearch,
-    saved_search => { id => $Id, object => $object, description => $description }
+my $can_modify = Jifty->web->current_user->has_right(
+    Right  => 'CreateSavedSearch',
+    object => RT->system,
 );
 
 use RT::SavedSearches;
@@ -99,30 +96,59 @@ my @objects = RT::SavedSearches->new()->_privacy_objects;
 push @objects, RT::System->new()
     if Jifty->web->current_user->has_right( object=> RT->system,
                                           right => 'SuperUser' );
+my $is_dirty = sub {
+    my %arg = (
+        Query       => {},
+        SavedSearch => {},
+        SearchFields => [qw(Query format order_by order rows_per_page)],
+        @_
+    );
+
+    my $obj  = $arg{'SavedSearch'}->{'object'};
+    return 0 unless $obj && $obj->id;
+
+    foreach( @{ $arg{'SearchFields'} } ) {
+        return 1 if $obj->SubValue( $_ ) ne $arg{'Query'}->{$_};
+    }
+
+    return 0;
+};
+
+# If we're modifying an old query, check if it's been changed
+my $Dirty = $is_dirty->(
+    Query       => $CurrentSearch,
+    SavedSearch => { id => $id, object => $object, Description => $Description },
+    SearchFields => \@SearchFields,
+);
+
 
 </%INIT>
 
 <%ARGS>
-$Id => 'new'
-$object => undef
-$Type => 'Ticket'
-$description => ''
+$id            => 'new'
+$object        => undef
+$type          => 'Ticket'
+$Description   => ''
 $CurrentSearch => {}
-$AllowCopy => 1
-$Title => 'Saved searches'
+@SearchFields   => ()
+$AllowCopy     => 1
+$Title         => _('Saved searches')
 </%ARGS>
 
 <%METHOD Init>
 <%ARGS>
-$query   => {}
+$query       => {}
 $SavedSearch => {}
+@SearchFields => qw(Query format order_by order rows_per_page)
 </%ARGS>
 <%INIT>
 
-my @columns = qw(query format order_by order rows_per_page);
 
 $SavedSearch->{'id'}          = $ARGS{'SavedSearchId'}          || 'new';
-$SavedSearch->{'description'} = $ARGS{'SavedSearchdescription'} || '';
+$SavedSearch->{'description'} = $ARGS{'SavedSearchDescription'} || undef;
+$SavedSearch->{'Privacy'}     = $ARGS{'SavedSearchOwner'}       || undef;
+
+my @results;
 
 if ( $ARGS{'SavedSearchRevert'} ) {
     $ARGS{'SavedSearchLoad'} = $SavedSearch->{'id'};
@@ -135,7 +161,13 @@ if ( $ARGS{'SavedSearchLoad'} ) {
     $SavedSearch->{'id'}          = $ARGS{'SavedSearchLoad'};
     $SavedSearch->{'object'}      = $search;
     $SavedSearch->{'description'} = $search->description;
-    $query->{$_} = $search->sub_value($_) foreach @columns;
+    $query->{$_} = $search->SubValue($_) foreach @SearchFields;
+
+    if ( $ARGS{'SavedSearchRevert'} ) {
+        push @results, _('Loaded original "%1" saved search', $SavedSearch->{'description'} );
++     } else {
++         push @results, _('Loaded saved search "%1"', $SavedSearch->{'description'} );
++     }
 }
 elsif ( $ARGS{'SavedSearchDelete'} ) {
     # We set $SearchId to 'new' above already, so peek into the %ARGS
@@ -146,11 +178,19 @@ elsif ( $ARGS{'SavedSearchDelete'} ) {
     }
     $SavedSearch->{'id'}          = 'new';
     $SavedSearch->{'object'}      = undef;
+    $SavedSearch->{'description'} = undef;
+    push @results, _("Deleted saved search");
 }
 elsif ( $ARGS{'SavedSearchCopy'} ) {
+    my ($container, $id ) = _parse_saved_search( $ARGS{'SavedSearchid'} );
+    $SavedSearch->{'object'} = $container->Attributes->Withid( $id );
+    if ( $ARGS{'SavedSearchDescription'} && $ARGS{'SavedSearchDescription'} ne $SavedSearch->{'object'}->Description ) {
+        $SavedSearch->{'description'} = $ARGS{'SavedSearchDescription'};
+    } else {
+        $SavedSearch->{'description'} = _( "%1 copy", $SavedSearch->{'object'}->Description );
+    }
     $SavedSearch->{'id'}          = 'new';
     $SavedSearch->{'object'}      = undef;
-    $SavedSearch->{'description'} = _( "%1 copy", $SavedSearch->{'description'} );
 }
 
 if ( $SavedSearch->{'id'} && $SavedSearch->{'id'} ne 'new'
@@ -161,41 +201,70 @@ if ( $SavedSearch->{'id'} && $SavedSearch->{'id'} ne 'new'
     $SavedSearch->{'description'} ||= $SavedSearch->{'object'}->description;
 }
 
+return @results;
+
 </%INIT>
 </%METHOD>
 
 <%METHOD Save>
 <%ARGS>
-$query   => {}
-$SavedSearch => {}
+$query        => {}
+$SavedSearch  => {}
+@SearchFields => qw(Query format order_by order rows_per_page)
 </%ARGS>
 <%INIT>
 
-return unless $ARGS{'SavedSearchSave'};
+return unless $ARGS{'SavedSearchSave'} || $ARGS{'SavedSearchCopy'};
 
 my @results;
 my $obj  = $SavedSearch->{'object'};
 my $id   = $SavedSearch->{'id'};
 my $desc = $SavedSearch->{'description'};
 
+my $privacy = $SavedSearch->{'Privacy'};
+
+my %params = map { $_ => $Query->{$_} } @SearchFields;
+my ($new_obj_type, $new_obj_id) = split(/\-/, ($privacy || ''));
+
 if ( $obj && $obj->id ) {
     # permission check
     if ($obj->object->isa('RT::System')) {
         unless (Jifty->web->current_user->has_right( object=> RT->system, right => 'SuperUser')) {
-            push @results, [ _("No permission to save system-wide searches"), 0 ];
+            push @results, _("No permission to save system-wide searches");
             return @results;
         }
     }
 
-    $obj->set_sub_values( %$query );
+    $obj->set_sub_values( %params );
     $obj->set_description( $desc );
+
+    my $obj_type = ref($obj->object);
+    # We need to get current obj_id now, because when we change obj_type to
+    # RT::System, $obj->object->id returns 1, not the old one :(
+    my $obj_id = $obj->object->id;
+
+    if ( $new_obj_type && $new_obj_id ) {
+        my ($val, $msg);
+        if ( $new_obj_type ne $obj_type ) {
+            ($val, $msg ) = $obj->set_objectType($new_obj_type);
+            push @results, _('Unable to set privacy object: %1', $msg) unless ( $val );
+        }
+        if ( $new_obj_id != $obj_id ) {
+            ($val, $msg) = $obj->set_objectid($new_obj_id);
+            push @results, _('Unable to set privacy id: %1', $msg) unless ( $val );
+        }
+    } else {
+        push @results, _('Unable to determine object type or id');
+    }
+    push @results, _('Updated saved search "%1"', $desc);
 }
 elsif ( $id eq 'new' ) {
     my $saved_search = RT::SavedSearch->new();
     my ($status, $msg) = $saved_search->save(
-        privacy      => $ARGS{'SavedSearchOwner'},
+        privacy      => $privacy,
         name         => $desc,
-        search_params => $query,
+        type         => $SavedSearch->{'type'},
+        search_params => \%params,
     );
 
     if ( $status ) {
@@ -209,33 +278,14 @@ elsif ( $id eq 'new' ) {
                     . $SavedSearch->{'object'}->id;
     }
     else {
-        push @results, [ _("Can't find a saved search to work with").': '._($msg), 0 ];
+        push @results, _("Can't find a saved search to work with").': '._($msg);
     }
 }
 else {
-    push @results, [ _("Can't save this search"), 0 ];
+    push @results, _("Can't save this search");
 }
 
 return @results;
-
-</%INIT>
-</%METHOD>
-
-<%METHOD IsDirty>
-<%ARGS>
-$query   => {}
-$SavedSearch => {}
-</%ARGS>
-<%INIT>
-
-my $obj  = $SavedSearch->{'object'};
-return 0 unless $obj && $obj->id;
-
-foreach( qw(query format order_by order rows_per_page) ) {
-    return 1 if $obj->sub_value( $_ ) ne $query->{$_};
-}
-
-return 0;
 
 </%INIT>
 </%METHOD>

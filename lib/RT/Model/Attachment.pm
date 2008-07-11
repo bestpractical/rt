@@ -121,7 +121,7 @@ sub create {
 
     # if we didn't specify a ticket, we need to bail
     unless ( $args{'transaction_id'} ) {
-        Jifty->log->fatal( "RT::Model::Attachment->create couldn't, as you didn't specify a transaction\n" );
+        Jifty->log->fatal( "RT::Model::Attachment->create couldn't, as you didn't specify a transaction" );
         return (0);
     }
 
@@ -429,7 +429,7 @@ sub content_as_mime {
 Returns a hashref of all addresses related to this attachment.
 The keys of the hash are C<From>, C<To>, C<Cc>, C<Bcc>, C<RT-Send-Cc>
 and C<RT-Send-Bcc>. The values are references to lists of
-L<Mail::Address> objects.
+L<Email::Address> objects.
 
 =cut
 
@@ -444,7 +444,7 @@ sub addresses {
         my @Addresses;
         my $line = $self->get_header($hdr);
 
-        foreach my $AddrObj ( Mail::Address->parse($line) ) {
+        foreach my $AddrObj ( Email::Address->parse($line) ) {
             my $address = $AddrObj->address;
             $address = lc RT::Model::User->canonicalize_email($address);
             next if ( $current_user_address eq $address );

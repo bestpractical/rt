@@ -52,11 +52,29 @@ package RT::Test;
 use base qw/Jifty::Test/;
 use Test::More;
 use File::Temp;
+use File::Spec;
 my $config;
 our ( $existing_server, $port );
 my $mailsent;
 
 my @server;
+
+=head1 NAME
+
+RT::Test - RT Testing
+
+=head1 NOTES
+
+=head2 COVERAGE
+
+To run the rt test suite with coverage support, install L<Devel::Cover> and run:
+
+  make test RT_DBA_USER=.. RT_DBA_PASSWORD=.. HARNESS_PERL_SWITCHES=-MDevel::Cover
+ cover -ignore_re 'var/mason/.*'
+
+The coverage tests have DevelMode turned off, and have C<named_component_subs> enabled for L<HTML::Mason> to avoid an optimizer problem in Perl that hides the top-level optree from L<Devel::Cover>.
+
+=cut
 
 sub setup {
     my $self = shift;
@@ -122,6 +140,8 @@ sub open_mailgate_ok {
     ok( open( my $mail, "|$RT::BinPath/rt-mailgate --url $baseurl --queue $queue --action $action" ), "Opened the mailgate - $!" );
     return $mail;
 }
+    RT->config->set( DevelMode => '0' ) if $INC{'Devel/Cover.pm'};
+
 
 sub close_mailgate_ok {
     my $class = shift;
@@ -228,6 +248,28 @@ sub load_or_create_queue {
             my ( $val, $msg ) = $obj->$method( $args{$field} );
             die "$msg" unless $val;
         }
+    }
+
+    return $obj;
+}
+
+=head2 load_or_create_custom_field
+
+=cut
+
+sub load_or_create_custom_field {
+    my $self = shift;
+    my %args = ( Disabled => 0, @_ );
+    my $obj  = RT::Model::CustomField->new(RT->system_user);
+    if ( $args{'name'} ) {
+        $obj->load_by_name( name => $args{'name'}, queue => $args{'queue'} );
+    }
+    else {
+        die "Name is required";
+    }
+    unless ( $obj->id ) {
+        my ( $val, $msg ) = $obj->create(%args);
+        die "$msg" unless $val;
     }
 
     return $obj;
@@ -402,17 +444,37 @@ sub import_gnupg_key {
 
     $key =~ s/\@/-at-/g;
     $key .= ".$type.key";
+
     require RT::Crypt::GnuPG;
-    return RT::Crypt::GnuPG::import_key( RT::Test->file_content( [ qw(t data gnupg keys), $key ] ) );
+    ( my $volume, my $directories, my $file ) = File::Spec->splitpath($0);
+    my $keys_dir = File::Spec->catdir(
+        File::Spec->curdir(), $directories,
+        File::Spec->updir(),  qw(data gnupg keys)
+    );
+
+    # this is a bit hackish; calling it from somewhere that's not a subdir
+    # of t/ will fail
+    return RT::Crypt::GnuPG::ImportKey(
+        RT::Test->file_content(
+            [
+                get_relocatable_dir(
+                    File::Spec->updir(), 'data', 'gnupg', 'keys'
+                ),
+                $key
+            ]
+        )
+    );
 }
+
+my $mailbox_catcher = File::Temp->new( OPEN => 0, CLEANUP => 0 )->filename;
 
 sub set_mail_catcher {
     my $self    = shift;
     my $catcher = sub {
         my $MIME = shift;
 
-        open my $handle, '>>', 't/mailbox'
-            or die "Unable to open t/mailbox for appending: $!";
+        open my $handle, '>>', $mailbox_catcher
+          or die "Unable to open $mailbox_catcher for appending: $!";
 
         $MIME->print($handle);
         print $handle "%% split me! %%\n";
@@ -421,9 +483,21 @@ sub set_mail_catcher {
     RT->config->set( MailCommand => $catcher );
 }
 
+sub db_requires_no_dba {
+    my $self    = shift;
+    my $db_type = RT->config->get('DatabaseType');
+    return 1 if $db_type eq 'SQLite';
+}
+
+
 sub fetch_caught_mails {
     my $self = shift;
-    return grep /\S/, split /%% split me! %%/, RT::Test->file_content( 't/mailbox', 'unlink' => 1 );
+    return grep /\S/, split /%% split me! %%/,
+       RT::Test->file_content( $mailbox_catcher, 'unlink' => 1, noexist => 1 );
+}
+
+sub clean_caught_mails {
+    unlink $mailbox_catcher;
 }
 
 sub file_content {
@@ -431,13 +505,16 @@ sub file_content {
     my $path = shift;
     my %args = @_;
 
-    $path = File::Spec->catfile(@$path) if ref $path;
+    $path = File::Spec->catfile(@$path) if ref $path eq 'ARRAY';
 
     diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
     my $content = '';
     if ( -f $path ) {
         open my $fh, "<:raw", $path
-            or do { warn "couldn't open file '$path': $!"; return '' };
+          or do {
+            warn "couldn't open file '$path': $!" unless $args{noexist};
+            return '';
+          };
         $content = do { local $/; <$fh> };
         close $fh;
 
@@ -446,6 +523,64 @@ sub file_content {
 
     return $content;
 }
+sub find_executable {
+    my $self = shift;
+    my $name = shift;
+
+    require File::Spec;
+    foreach my $dir ( split /:/, $ENV{'PATH'} ) {
+        my $fpath = File::Spec->catpath(
+            ( File::Spec->splitpath( $dir, 'no file' ) )[ 0 .. 1 ], $name );
+        next unless -e $fpath && -r _ && -x _;
+        return $fpath;
+    }
+    return undef;
+}
+
+=head2 get_relocatable_dir
+
+Takes a path relative to the location of the test file that is being
+run and returns a path that takes the invocation path into account.
+
+e.g. RT::Test::get_relocatable_dir(File::Spec->updir(), 'data', 'emails')
+
+=cut
+
+sub get_relocatable_dir {
+    ( my $volume, my $directories, my $file ) = File::Spec->splitpath($0);
+    if ( File::Spec->file_name_is_absolute($directories) ) {
+        return File::Spec->catdir( $directories, @_ );
+    }
+    else {
+        return File::Spec->catdir( File::Spec->curdir(), $directories, @_ );
+    }
+}
+
+=head2 get_relocatable_file
+
+Same as get_relocatable_dir, but takes a file and a path instead
+of just a path.
+
+e.g. RT::Test::get_relocatable_file('test-email',
+        (File::Spec->updir(), 'data', 'emails'))
+
+=cut
+
+sub get_relocatable_file {
+    my $file = shift;
+    return File::Spec->catfile( get_relocatable_dir(@_), $file );
+}
+
+sub get_abs_relocatable_dir {
+    ( my $volume, my $directories, my $file ) = File::Spec->splitpath($0);
+    if ( File::Spec->file_name_is_absolute($directories) ) {
+        return File::Spec->catdir( $directories, @_ );
+    }
+    else {
+        return File::Spec->catdir( Cwd->getcwd(), $directories, @_ );
+    }
+}
+
 
 sub lsign_gnupg_key {
     my $self = shift;

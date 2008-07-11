@@ -53,16 +53,39 @@ use strict;
 use RT;
 
 BEGIN {
-    use Exporter ();
-    use vars qw($VERSION @ISA @EXPORT);
+    use base 'Exporter';
+    use vars qw($VERSION @EXPORT);
 
     $VERSION = do { my @r = ( q$Revision: 1.00$ =~ /\d+/g ); sprintf "%d." . "%02d" x $#r, @r };
 
-    @ISA    = qw(Exporter);
     @EXPORT = qw(expand_list form_parse form_compose vpush vsplit);
 }
 
-my $field = '(?i:[a-z][a-z0-9_-]*|C(?:ustom)?F(?:ield)?-(?:[a-z0-9_ -]|\s)+)';
+sub custom_field_spec {
+    my $self    = shift;
+    my $capture = shift;
+
+    my $CF_char = '[\sa-z0-9_ :()/-]';
+    my $CF_name = $CF_char . '+';
+    $CF_name = '(' . $CF_name . ')' if $capture;
+
+    my $new_style = 'CF\.\{' . $CF_name . '\}';
+    my $old_style = 'C(?:ustom)?F(?:ield)?-' . $CF_name;
+
+    return '(?i:' . join( '|', $new_style, $old_style ) . ')';
+}
+
+sub field_spec {
+    my $self    = shift;
+    my $capture = shift;
+
+    my $field = '[a-z][a-z0-9_-]*';
+    $field = '(' . $field . ')' if $capture;
+
+    my $custom_field = __PACKAGE__->custom_field_spec($capture);
+
+    return '(?i:' . join( '|', $field, $custom_field ) . ')';
+}
 
 # WARN: this code is duplicated in bin/rt.in,
 # change both functions at once
@@ -98,6 +121,7 @@ sub form_parse {
     my @forms = ();
     my @lines = split /\n/, $_[0];
     my ( $c, $o, $k, $e ) = ( "", [], {}, "" );
+    my $field = __PACKAGE__->field_spec;
 
 LINE:
     while (@lines) {
@@ -132,7 +156,8 @@ LINE:
 
                 # Read a field: value specification.
                 my $f = $1;
-                my @v = ( $2 || () );
+                my @v = ($2);
+                $v[0] = '' unless defined $v[0];
 
                 # Read continuation lines, if any.
                 while ( @lines && ( $lines[0] eq '' || $lines[0] =~ /^\s+/ ) ) {
@@ -146,6 +171,8 @@ LINE:
                     $ws = $ls if ( !$ws || length($ls) < length($ws) );
                 }
                 s/^$ws// foreach @v;
+
+                shift @v while ( @v && $v[0] eq '' );
 
                 push( @$o, $f ) unless exists $k->{$f};
                 vpush( $k, $f, join( "\n", @v ) );
@@ -205,7 +232,7 @@ sub form_compose {
                 $sp = " " x 4 if length($sp) > 16;
 
                 foreach $v (@values) {
-                    $v = '' unless $v;
+                    $v = '' unless defined $v;
                     if ( $v =~ /\n/ ) {
                         $v =~ s/^/$sp/gm;
                         $v =~ s/^$sp//;

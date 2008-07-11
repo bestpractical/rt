@@ -1,0 +1,119 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<&| Elements/Wrapper, Title => loc('Step [_1] of [_2]: ', 5, 7 ) . loc('Customize Email Addresses') &> 
+
+<& Elements/Errors, Errors => \@errors &>
+
+<p><&|/l&>Help us set up some useful defaults for RT.</&></p>
+
+<p><&|/l&>When RT sends an email it sets the From: and Reply-To: headers so users can add to the conversation by just hitting Reply in their mail client.  It uses different addresses for Replies and Comments.  These can be changed for each of your queues.  These addresses will need to be configured to use the <tt>rt-mailgate</tt> program.</&></p>
+
+<p><&|/l&>By default, RT will use the timezone of your system.  This lets you set a global default for the display of dates and times in RT.  Your users can choose a different Timezone in their preferences.</&></p>
+<form method="post">
+<& /Widgets/BulkEdit, Types => \@Types,Meta => $RT::Installer->{Meta},
+    CurrentValue => RT::Installer->CurrentValues(@Types)
+&>
+
+<input type="hidden" name="Run" value="1">
+<& /Elements/Submit, Label => $RT::Installer->{DatabaseAction} eq 'none' ?
+loc('Next: ') . loc('Finish') : loc('Next: ') . loc( 'Initialize Database'),
+    Back => 1, BackLabel => loc('Back: ' ) . loc('Customize Email Configuration') &>
+</form>
+</&>
+<%init>
+my @errors;
+
+my @Types = qw/CommentAddress CorrespondAddress Timezone/;
+
+if ( $Run ) {
+
+    $m->comp('/Widgets/BulkProcess', Types => \@Types, Arguments => \%ARGS,
+            Store => $RT::Installer->{InstallConfig},
+            Meta => $RT::Installer->{Meta}, KeepUndef => 1 );
+
+    if ( $Back ) {
+        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
+'Install/Sendmail.html');
+    }
+
+    for ( qw/CommentAddress CorrespondAddress/ ) {
+        if ( $ARGS{$_} && $ARGS{$_} !~ /.+@.+/ ) {
+            push @errors,
+                loc("Invalid [_1]: '[_2]' doesn't look like an email address",
+                $_, $ARGS{$_});
+        }
+    }
+
+    unless ( @errors ) {
+        my ( $status, $msg ) = RT::Installer->SaveConfig;
+
+        if ( $status ) {
+            delete $INC{'RT_SiteConfig.pm'};
+            RT->LoadConfig;
+
+            if ( $RT::Installer->{DatabaseAction} ne 'none' ) {
+                RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
+'Install/Initialize.html');
+            }
+            else {
+                RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
+'Install/Finish.html');
+            }
+        }
+        else {
+            push @errors, loc($msg);
+        }
+    }
+}
+
+</%init>
+
+<%args>
+$Run => undef
+$Back => undef
+</%args>

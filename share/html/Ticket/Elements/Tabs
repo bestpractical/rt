@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -53,186 +53,267 @@
     current_toptab => $current_toptab,
     Title => $Title &> 
 <%INIT>
-
 my $tabs = {};
-my $current_toptab = "Search/Build.html",
-my $searchtabs = {};
 my $actions;
 
-if ( $Ticket) {
-    
-my $id   = $Ticket->id();
+my $current_toptab = "Search/Build.html", my $searchtabs = {};
 
-if ( defined $session{'tickets'} ) {
+if ($Ticket) {
+
+    my $id = $Ticket->id();
+
+    if ( defined $session{'tickets'} ) {
 
         # we have to update session data if we get new ItemMap
-        my $updatesession = 1 unless($session{'tickets'}->{'item_map'});
+        my $updatesession = 1 unless ( $session{'tickets'}->{'item_map'} );
 
         my $item_map = $session{'tickets'}->item_map;
 
         if ($updatesession) {
-                $session{'i'}++;
-        $session{'tickets'}->prep_for_serialization();
+            $session{'i'}++;
+            $session{'tickets'}->PrepForSerialization();
         }
 
         # Don't display prev links if we're on the first ticket
-        if ($item_map->{$Ticket->id}->{prev}) {
-                $searchtabs->{'_a'} = {
-                            class => "nav",
-                            path => "Ticket/Display.html?id=" . $item_map->{first},
-                            title => '<< ' . _('First') };
-                $searchtabs->{"_b"} = { class => "nav",
-                            path => "Ticket/Display.html?id=" . $item_map->{$Ticket->id}->{prev},
-                                  title => '< ' . _('Prev') };
-       } 
-
-
-        # Don't display next links if we're on the last ticket
-        if ($item_map->{$Ticket->id}->{next}) {
-            $searchtabs->{'d'} = { class => "nav",
-                            path => "Ticket/Display.html?id=" . $item_map->{$Ticket->id}->{next},
-                             title => _('Next') . ' >' };
-            $searchtabs->{'e'} = {
-                           class => "nav",
-                           path => "Ticket/Display.html?id=" . $item_map->{last},
-                           title => _('Last') . ' >>' };
+        if ( $item_map->{ $Ticket->id }->{prev} ) {
+            $searchtabs->{'_a'} = {
+                class => "nav",
+                path  => "Ticket/Display.html?id=" . $item_map->{first},
+                title => '<< ' . _('First')
+            };
+            $searchtabs->{"_b"} = {
+                class => "nav",
+                path  => "Ticket/Display.html?id="
+                    . $item_map->{ $Ticket->id }->{prev},
+                title => '< ' . _('Prev')
+            };
         }
+  
+        # Don't display next links if we're on the last ticket
+        if ( $item_map->{ $Ticket->id }->{next} ) {
+            $searchtabs->{'d'} = {
+                class => "nav",
+                path  => "Ticket/Display.html?id="
+                    . $item_map->{ $Ticket->id }->{next},
+                title => _('next') . ' >'
+            };
+            $searchtabs->{'e'} = {
+                class => "nav",
+                path  => "Ticket/Display.html?id=" . $item_map->{last},
+                title => _('Last') . ' >>'
+            };
+        }
+    }
+
+    $tabs->{"this"} = {
+        class          => "currentnav",
+        path           => "Ticket/Display.html?id=" . $Ticket->id,
+        title          => "#" . $id,
+        current_subtab => $current_subtab
+    };
+
+    my $ticket_page_tabs = {
+        _A => {
+            title => _('Display'),
+            path  => "Ticket/Display.html?id=" . $id,
+        },
+
+        _Ab => {
+            title => _('History'),
+            path  => "Ticket/History.html?id=" . $id,
+        },
+        _B => {
+            title => _('Basics'),
+            path  => "Ticket/Modify.html?id=" . $id,
+        },
+
+        _C => {
+            title => _('Dates'),
+            path  => "Ticket/ModifyDates.html?id=" . $id,
+        },
+        _D => {
+            title => _('People'),
+            path  => "Ticket/ModifyPeople.html?id=" . $id,
+        },
+        _E => {
+            title => _('Links'),
+            path  => "Ticket/ModifyLinks.html?id=" . $id,
+        },
+        _X => {
+            title => _('Jumbo'),
+            path  => "Ticket/ModifyAll.html?id=" . $id,
+        },
+
+    };
+
+    if ( RT->config->get('enableReminders') ) {
+        $ticket_page_tabs->{_F} = {
+            title     => _('Reminders'),
+            path      => "Ticket/Reminders.html?id=" . $id,
+            separator => 1,
+        };
+    }
+
+    foreach my $tab ( sort keys %{$ticket_page_tabs} ) {
+        if ( $ticket_page_tabs->{$tab}->{'path'} eq $current_tab ) {
+            $ticket_page_tabs->{$tab}->{"subtabs"} = $subtabs;
+            $tabs->{'this'}->{"current_subtab"}
+                = $ticket_page_tabs->{$tab}->{"path"};
+        }
+    }
+    $tabs->{'this'}->{"subtabs"} = $ticket_page_tabs;
+    $current_tab = "Ticket/Display.html?id=" . $id;
+
+    my %can = ( ModifyTicket => $Ticket->current_user_has_right('ModifyTicket'), );
+
+    if ( $can{'ModifyTicket'} or $Ticket->current_user_has_right('ReplyToTicket') )
+    {
+        $actions->{'F'} = {
+            title => _('Reply'),
+            path  => "Ticket/Update.html?Action=Respond&id=" . $id,
+        };
+    }
+
+    if ( $can{'ModifyTicket'} ) {
+        if ( $Ticket->status ne 'resolved' ) {
+            $actions->{'G'} = {
+                path =>
+                    "Ticket/Update.html?Action=Comment&DefaultStatus=resolved&id="
+                    . $id,
+                title => _('Resolve')
+            };
+        }
+        if ( $Ticket->status ne 'open' ) {
+            $actions->{'A'} = {
+                path  => "Ticket/Display.html?Status=open&id=" . $id,
+                title => _('Open it')
+            };
+        }
+    }
+
+    if ( $Ticket->current_user_has_right('OwnTicket') ) {
+        if ( $Ticket->owner_obj->id == $RT::Nobody->id ) {
+            $actions->{'B'} = {
+                path  => "Ticket/Display.html?Action=Take&id=" . $id,
+                title => _('Take'),
+                }
+                if $can{'ModifyTicket'}
+                    or $Ticket->current_user_has_right('TakeTicket');
+        } elsif ( $Ticket->owner_obj->id != Jifty->web->current_user->id ) {
+            $actions->{'C'} = {
+                path  => "Ticket/Display.html?Action=Steal&id=" . $id,
+                title => _('Steal'),
+                }
+                if $can{'ModifyTicket'}
+                    or $Ticket->current_user_has_right('StealTicket');
+        }
+    }
+
+    if (   $can{'ModifyTicket'}
+        or $Ticket->current_user_has_right('CommentOnTicket') )
+    {
+        $actions->{'E'} = {
+            title => _('Comment'),
+            path  => "Ticket/Update.html?Action=Comment&id=" . $id,
+        };
+    }
+
+    $actions->{'_ZZ'}
+        = { html => $m->scomp( '/Ticket/Elements/Bookmark', id => $Ticket->id ),
+        };
+
 }
 
+if ( ( defined $actions->{A} || defined $actions->{B} || defined $actions->{C} )
+    && (   defined $actions->{E}
+        || defined $actions->{F}
+        || defined $actions->{G} ) )
+{
 
+    if    ( defined $actions->{C} ) { $actions->{C}->{separator} = 1 }
+    elsif ( defined $actions->{B} ) { $actions->{B}->{separator} = 1 }
+    elsif ( defined $actions->{A} ) { $actions->{A}->{separator} = 1 }
+}
 
-$tabs->{"this"} = { class => "currentnav",
-                    path  => "Ticket/Display.html?id=" . $Ticket->id,
-                    title => "#" . $id,
-                    current_subtab => $current_subtab };
+my $args = '';
+my $has_query = '';
+my %query_args;
+my $search_id = $ARGS{'SavedSearchid'}
+            || $session{'CurrentSearchHash'}->{'Searchid'} || '';
 
-my $ticket_page_tabs = {
-    _A => { title => _('Display'),
-            path  => "Ticket/Display.html?id=" . $id, },
+$has_query = 1 if ( $ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'} );
+  
+%query_args = (
 
-    _Ab => { title => _('History'),
-             path  => "Ticket/History.html?id=" . $id, },
-    _B => { title => _('Basics'),
-            path  => "Ticket/Modify.html?id=" . $id, },
+        SavedSearchid => ($search_id eq 'new') ? undef : $search_id,
+        Query  => $ARGS{'Query'}  || $session{'CurrentSearchHash'}->{'Query'},
+        format => $ARGS{'format'} || $session{'CurrentSearchHash'}->{'format'},
+        order_by => $ARGS{'order_by'}
+            || $session{'CurrentSearchHash'}->{'order_by'},
+        order => $ARGS{'order'} || $session{'CurrentSearchHash'}->{'order'},
+        Page  => $ARGS{'Page'}  || $session{'CurrentSearchHash'}->{'Page'},
+        rows_per_page  => $ARGS{'rows_per_page'}  || $session{'CurrentSearchHash'}->{'rows_per_page'},
+    );
 
-    _C => { title => _('dates'),
-            path  => "Ticket/ModifyDates.html?id=" . $id, },
-    _D =>
-      { title => _('People'), path => "Ticket/ModifyPeople.html?id=" . $id, },
-    _E => { title => _('Links'),
-            path  => "Ticket/ModifyLinks.html?id=" . $id, },
-    _F => { title => _('Reminders'),
-            path  => "Ticket/Reminders.html?id=" . $id,
-            separator => 1, },
-    _X => { title => _('Jumbo'),
-            path  => "Ticket/ModifyAll.html?id=" . $id, 
- },
+    $args = "?" . $m->comp( '/Elements/QueryString', %query_args );
 
+$tabs->{"f"} = {
+    path  => "Search/Build.html?NewQuery=1",
+    title => _('New Search')
 };
+$tabs->{"g"} = {
+    path  => "Search/Build.html" . (($has_query) ? $args : ''),
+    title => _('Edit Search')
+};
+$tabs->{"h"} = {
+    path      => "Search/Edit.html$args",
+    title     => _('Advanced'),
+    separator => 1
+};
+if ($has_query) {
 
-foreach my $tab ( sort keys %{$ticket_page_tabs} ) {
-    if ( $ticket_page_tabs->{$tab}->{'path'} eq $current_tab ) {
-        $ticket_page_tabs->{$tab}->{"subtabs"}        = $subtabs;
-        $tabs->{'this'}->{"current_subtab"}        = 
-        $ticket_page_tabs->{$tab}->{"path"};
+    if ( $current_tab =~ m{Search/Results.html} ) {
+        $current_tab = "Search/Results.html$args";
+
+        if ( Jifty->web->current_user
+            ->has_right( Right => 'SuperUser', object => RT->system ) )
+        {
+            my $shred_args = $m->comp(
+                '/Elements/QueryString',
+                Search          => 1,
+                Plugin          => 'Tickets',
+                'Tickets:query' => $query_args{'query'},
+                'Tickets:limit' => $query_args{'rows'}
+            );
+
+            $tabs->{"shredder"} = {
+                path  => 'Admin/Tools/Shredder/?' . $shred_args,
+                title => _('Shredder')
+            };
+
+        }
     }
-}
-$tabs->{'this'}->{"subtabs"} = $ticket_page_tabs;
-$current_tab = "Ticket/Display.html?id=" . $id;
+    if ( $current_tab =~ m{Search/(Bulk|Build|Edit)\.html} ) {
+        $current_tab = "Search/$1.html$args";
+    }
 
-my %can = (
-    ModifyTicket => $Ticket->current_user_has_right('ModifyTicket'),
-);
-
-if ( $can{'ModifyTicket'} or $Ticket->current_user_has_right('ReplyToTicket') ) {
-    $actions->{'F'} = {
-        title => _('Reply'),
-        path  => "Ticket/Update.html?action=respond&id=" . $id,
+    $tabs->{"i"} = {
+        path  => "Search/Results.html$args",
+        title => _('Show Results'),
     };
-}
 
-if ( $can{'ModifyTicket'} ) {
-    if ( $Ticket->status ne 'resolved' ) {
-        $actions->{'G'} = {
-            path => "Ticket/Update.html?action=comment&default_status=resolved&id=" . $id,
-            title => _('Resolve') };
-    }
-    if ( $Ticket->status ne 'open' ) {
-        $actions->{'A'} = { path => "Ticket/Display.html?Status=open&id=" . $id,
-                            title => _('Open it') };
-    }
-}
-
-
- if ( $Ticket->current_user_has_right('OwnTicket') ) {
-     if ( $Ticket->owner_obj->id == RT->nobody->id ) {
-         $actions->{'B'} = {
-             path => "Ticket/Display.html?action=take&id=" . $id,
-             title => _('Take'),
-         } if $can{'ModifyTicket'} or $Ticket->current_user_has_right('TakeTicket');
-     }
-     elsif ( $Ticket->owner_obj->id != Jifty->web->current_user->id ) {
-         $actions->{'C'} = {
-             path => "Ticket/Display.html?action=steal&id=" . $id,
-             title => _('Steal'),
-         } if $can{'ModifyTicket'} or $Ticket->current_user_has_right('StealTicket');
-     }
-
-
-}
-
-if ( $can{'ModifyTicket'} or $Ticket->current_user_has_right('CommentOnTicket') ) {
-    $actions->{'E'} = {
-        title => _('comment'),
-        path  => "Ticket/Update.html?action=comment&id=" . $id,
+    $tabs->{"j"} = {
+        path  => "Search/Bulk.html$args",
+        title => _('Bulk Update'),
     };
-}
-}
 
-if ( (defined $actions->{A} || defined $actions->{B} || defined $actions->{C})
-    && (defined $actions->{E} || defined $actions->{F} || defined $actions->{G}) ) { 
-    
-    if    (defined $actions->{C}) { $actions->{C}->{separator} = 1 }
-    elsif (defined $actions->{B}) { $actions->{B}->{separator} = 1 }
-    elsif (defined $actions->{A}) { $actions->{A}->{separator} = 1 }
 }
 
-my $args;
-$args= "?" . $m->comp(
-    '/Elements/QueryString',
-    SavedSearchId => $ARGS{'SavedSearchId'} || $session{'CurrentSearchHash'}->{'SearchId'},
-    query         => $ARGS{'query'}         || $session{'CurrentSearchHash'}->{'query'},
-    format        => $ARGS{'format'}        || $session{'CurrentSearchHash'}->{'format'},
-    order_by       => $ARGS{'order_by'}       || $session{'CurrentSearchHash'}->{'order_by'},
-    order         => $ARGS{'order'}         || $session{'CurrentSearchHash'}->{'order'},
-    Page          => $ARGS{'Page'}          || $session{'CurrentSearchHash'}->{'Page'},
-    Rows          => $ARGS{'Rows'},
-  ) if ($ARGS{'query'} or $session{'CurrentSearchHash'}->{'query'});
-$args ||= '';
+foreach my $searchtab ( keys %{$searchtabs} ) {
+    ( $searchtab =~ /^_/ )
+        ? $tabs->{ "s" . $searchtab } = $searchtabs->{$searchtab}
+        : $tabs->{ "z_" . $searchtab } = $searchtabs->{$searchtab};
 
-$tabs->{"f"} = { path      => "Search/Build.html?new_query=1",
-                 title     => _('New Search')};
-$tabs->{"g"} = { path      => "Search/Build.html$args",
-                 title     => _('Edit Search')};
-$tabs->{"h"} = { path      => "Search/Edit.html$args",
-                 title     => _('Advanced'),
-                 separator => 1 };
-if ($args) {
-  $tabs->{"i"} = { path      => "Search/Results.html$args",
-                   title     => _('Show Results'),
-                   };
-  if ($current_tab =~  "Search/Results.html") {
-    $current_tab = "Search/Results.html$args";
-  }
-  $tabs->{"j"} = { path      => "Search/Bulk.html$args",
-                   title     => _('Bulk Update'),
-                   };
-  if ($current_tab =~  "Search/Bulk.html") {
-    $current_tab = "Search/Bulk.html$args";
-  }
-  foreach my $searchtab (keys %{$searchtabs}) {
-    ($searchtab =~ /^_/) ? $tabs->{"s".$searchtab} = $searchtabs->{$searchtab} : $tabs->{"z_".$searchtab} = $searchtabs->{$searchtab};
-  }
 }
 </%INIT>
 
@@ -243,4 +324,5 @@ $subtabs => undef
 $current_tab => ''
 $current_subtab => ''
 $Title => undef
+$rows_per_page => undef
 </%ARGS>

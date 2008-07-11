@@ -1,0 +1,104 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<& /Elements/Header, Title => $title, JavaScript => $Preview, ShowBar => $Preview  &>
+
+% if ($Preview) {
+<& /Dashboards/Elements/Tabs,
+    current_subtab => $current_subtab,
+    Title => $title,
+    DashboardObj => $DashboardObj &>
+% }
+
+<table border="0" width="100%">
+<tr valign="top">
+
+<td class="boxcontainer" width="70%">
+% foreach ($DashboardObj->SearchIds) {
+%   my ($type, $id, $desc) = @$_;
+%   my @for_showsearch = $DashboardObj->SearchPrivacy(@$_);
+    <& /Elements/ShowSearch,
+        @for_showsearch,
+        Override => { Rows => $rows },
+        IgnoreMissing => 1,
+        hideable => $Preview,
+    &>
+% }
+</td>
+
+</tr>
+</table>
+
+<%INIT>
+
+my $current_subtab = 'Dashboards/Render.html?id=' . $id;
+
+use RT::Dashboard;
+my $DashboardObj = RT::Dashboard->new($session{'CurrentUser'});
+my ($ok, $msg) = $DashboardObj->LoadById($id);
+Abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg)) if !$ok;
+
+my $SubscriptionObj = RT::Attribute->new($session{'CurrentUser'});
+my $Loaded = 0;
+
+# try to load the subscription to this id
+for my $sub ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription')) {
+    next unless $sub->SubValue('DashboardId') == $id;
+    $SubscriptionObj = $sub;
+    $Loaded = 1;
+    last;
+}
+
+my $rows = $Loaded ? $SubscriptionObj->SubValue('Rows') : 20;
+my $title = $DashboardObj->Name;
+
+</%INIT>
+<%ARGS>
+$id => undef
+$Preview => 1
+</%ARGS>
+

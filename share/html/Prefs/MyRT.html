@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -90,14 +90,15 @@ if ( $ARGS{'UpdateSummaryRows'} ) {
         $ARGS{SummaryRows} = 0;
     }
     else {
-        $user->set_preferences( 'SummaryRows', int $ARGS{SummaryRows} );
-        push @results, _('Preferences saved for %1.', _('summary rows'));
+        my ($ok, $msg) = $user->set_preferences( 'SummaryRows', int $ARGS{SummaryRows} );
+        push @results, $ok ? _('Preferences saved for %1.', _('summary rows')) : $msg;
     }
 }
 $ARGS{'SummaryRows'} ||= $user->preferences('SummaryRows', RT->config->get('DefaultSummaryRows'));
 
 if ($ARGS{Reset}) {
-    $user->set_preferences('HomepageSettings', {});
+    my ($ok, $msg) = $user->set_preferences('HomepageSettings', {});
+    push @results, $ok ? _('Preferences saved.') : $msg;
     delete $session{'my_rt_portlets'};
 }
 
@@ -144,8 +145,8 @@ my @panes = $m->comp(
     current_portlets => $portlets,
     OnSave => sub  {
         my ( $conf, $pane ) = @_;
-        $user->set_preferences( 'HomepageSettings', $conf );
-        push @results, _( 'Preferences saved for %1.', $pane );
+        my ($ok, $msg) = $user->set_preferences( 'HomepageSettings', $conf );
+        push @results, $ok ? _('Preferences saved for %1.', $pane) : $msg;
         delete $session{'my_rt_portlets'};
     }
 );

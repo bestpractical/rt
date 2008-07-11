@@ -45,3 +45,6 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
+start-server:
+	$(PERL) sbin/rt-server &
+

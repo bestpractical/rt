@@ -183,7 +183,7 @@ sub set_mime_entity_to_encoding {
     }
 
     # If this is a textual entity, we'd need to preserve its original encoding
-    $head->add( "X-RT-Original-Encoding" => $charset )
+    $head->replace( "X-RT-Original-Encoding" => $charset )
         if $head->mime_attr('content-type.charset')
             or is_textual_content_type( $head->mime_type );
 
@@ -307,7 +307,12 @@ sub decode_mime_words_to_encoding {
         # until this is fixed, we must escape any string containing a comma or semicolon
         # this is only a bandaid
 
-        $enc_str = qq{"$enc_str"} if ( $enc_str =~ /[,;]/ );
+        # Some _other_ MUAs encode quotes _already_, and double quotes
+        # confuse us a lot, so only quote it if it isn't quoted
+        # already.
+        $enc_str = qq{"$enc_str"}
+          if $enc_str =~ /[,;]/ and $enc_str !~ /^".*"$/;
+
         $str .= $prefix . $enc_str . $trailing;
     }
 

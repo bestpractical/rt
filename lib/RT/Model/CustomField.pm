@@ -103,6 +103,7 @@ our %FieldTypes = (
     ],
     Image => [
         'Upload multiple images',             # loc
+RT::Model::CustomField->_for_objectType( 'RT::Model::Queue' => "Queues", );                #loc
         'Upload one image',                   # loc
         'Upload up to %1 images',             # loc
     ],
@@ -206,6 +207,7 @@ sub create {
         # old style type string
         $args{'max_values'} = $1 ? 1 : 0;
     }
+    $args{'max_values'} = int $args{'max_values'};
 
     if ( !exists $args{'queue'} ) {
 
@@ -237,6 +239,12 @@ sub create {
     my ( $ok, $msg ) = $self->_is_valid_regex( $args{'pattern'} );
     return ( 0, _( "Invalid pattern: %1", $msg ) ) unless $ok;
 
+    if ( $args{'max_values'} != 1 && $args{'type'} =~ /(text|combobox)$/i ) {
+        Jifty->log->warn(
+            "Support for 'multiple' Texts or Comboboxes is not implemented");
+        $args{'max_values'} = 1;
+    }
+
     ( my $rv, $msg ) = $self->SUPER::create(
         name        => $args{'name'},
         type        => $args{'type'},
@@ -250,6 +258,14 @@ sub create {
 
     if ( exists $args{'ValuesClass'} ) {
         $self->set_values_class( $args{'ValuesClass'} );
+    if ( exists $args{'link_value_to'} ) {
+        $self->set_linkvalueto( $args{'link_value_to'} );
+    }
+
+    if ( exists $args{'include_content_for_value'} ) {
+        $self->set_includecontentforvalue( $args{'include_content_for_value'} );
+    }
+
     }
 
     return ( $rv, $msg ) unless exists $args{'queue'};
@@ -286,6 +302,9 @@ sub load {
 =head2 load_by_name (queue => QUEUEID, name => name)
 
 Loads the Custom field named name.
+
+Will load a Disabled Custom column even if there is a non-disabled Custom Field
+with the same Name.
 
 If a queue parameter is specified, only look for ticket custom fields tied to that Queue.
 
@@ -989,7 +1008,7 @@ sub match_pattern {
     my $self = shift;
     my $regex = $self->pattern or return 1;
 
-    return ( ( $_[0] || '' ) =~ $regex );
+    return ( ( defined $_[0] ? $_[0] : '' ) =~ $regex );
 }
 
 # }}}

@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -82,7 +82,7 @@
 my $ticket_obj = load_ticket($id);
 $id = $ARGS{'id'} = $ticket_obj->id;
 
-abort( _("Permission denied") )
+abort( _("Permission Denied") )
     unless $ticket_obj->current_user_has_right('ForwardMessage');
 
 my $txn = RT::Transaction->new();
@@ -98,10 +98,9 @@ if ( $Forward || $ForwardAndReturn ) {
 
     if ( $ForwardAndReturn ) {
         $session{'i'}++;
-        push @{ $session{"Actions"} ||= [] }, @results;
-        RT::Interface::Web::redirect(
-            RT->config->get('WebURL') ."/Ticket/Display.html?id=". $id
-        );
+        my $key = Digest::MD5::md5_hex(rand(1024));
+        push @{ $session{"Actions"}->{$key}  ||= [] }, @results;
+        RT::Interface::Web::Redirect( RT->config->get('WebURL') ."Ticket/Display.html?id=". $id."&results=".$key);
     }
 }
 

@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -55,7 +55,7 @@ $format_string => undef
 $query        => undef
 $Rows         => undef
 $Page         => undef
-
+$GenericQueryArgs => undef
 $maxitems     => undef
 
 $AllowSorting  => undef
@@ -65,9 +65,9 @@ $baseURL       => undef
 <tr class="collection-as-table">
 <%PERL>
 
-my %generic_query_args = map { $_ => $ARGS{$_} } @PassArguments;
+my $generic_query_args = $GenericQueryArgs || {map { $_ => $ARGS{$_} } @PassArguments};
 # backward compatibility workaround
-$generic_query_args{'format'} = $format_string if grep $_ eq 'format', @PassArguments;
+$generic_query_args->{'format'} = $formatString if grep $_ eq 'format', @PassArguments;
 
 my $item = 0;
 foreach my $col ( @format ) {
@@ -132,7 +132,7 @@ foreach my $col ( @format ) {
         $m->out(
             '<a href="' . $baseURL
             . $m->comp( '/Elements/QueryString',
-                %generic_query_args,
+                %$generic_query_args,
                 order_by => $attr, order => $new_order
             )
             . '">'. $title .'</a>'

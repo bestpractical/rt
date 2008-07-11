@@ -96,6 +96,7 @@ use Jifty::DBI::Record schema {
         web_encoding => max_length is 16,
         type is 'varchar(16)', default is '';
     column
+
         ExternalContactInfoId => max_length is 100,
         type is 'varchar(100)', default is '';
     column
@@ -147,7 +148,6 @@ sub set_email {
     $self->__set( column => 'email', value => $addr );
 }
 
-# {{{ sub create
 
 =head2 create { PARAMHASH }
 
@@ -190,9 +190,7 @@ sub create {
     # if the user doesn't have a name defined, set it to the email address
     $args{'name'} = $args{'email'} unless ( $args{'name'} );
 
-    # privileged is no longer a column in users
-    my $privileged = $args{'privileged'};
-    delete $args{'privileged'};
+    my $privileged = delete $args{'privileged'};
 
     if ( !$args{'password'} ) {
         $args{'password'} = '*NO-PASSWORD*';
@@ -313,10 +311,6 @@ sub create {
     return ( $id, _('User Created') );
 }
 
-# }}}
-
-# {{{ set_privileged
-
 =head2 set_privileged BOOL
 
 If passed a true value, makes this user a member of the "privileged"  PseudoGroup.
@@ -339,7 +333,7 @@ sub set_privileged {
         )
         )
     {
-        return ( 0, _('Permission Denied') );
+        return ( 0, _('No permission to create users') );
     }
     my $priv = RT::Model::Group->new;
     $priv->load_system_internal_group('privileged');
@@ -407,9 +401,6 @@ sub set_privileged {
     }
 }
 
-# }}}
-
-# {{{ privileged
 
 =head2 privileged
 
@@ -428,9 +419,8 @@ sub privileged {
     }
 }
 
-# }}}
 
-# {{{ sub _bootstrap_create
+# sub _bootstrap_create
 
 #create a user without validating _any_ data.
 
@@ -490,9 +480,6 @@ sub _bootstrap_create {
     return ( $id, 'User Created' );
 }
 
-# }}}
-
-# {{{ sub delete
 
 sub delete {
     my $self = shift;
@@ -500,10 +487,6 @@ sub delete {
     return ( 0, _('Deleting this object would violate referential integrity') );
 
 }
-
-# }}}
-
-# {{{ sub load
 
 =head2 load
 
@@ -528,10 +511,6 @@ sub load {
     }
 }
 
-# }}}
-
-# {{{ sub load_by_email
-
 =head2 load_by_email
 
 Tries to load this user object from the database by the user's email address.
@@ -550,18 +529,14 @@ sub load_by_email {
 
     $address = $self->canonicalize_email($address);
 
-    #Jifty->log->debug("Trying to load an email address: $address\n");
+    #Jifty->log->debug("Trying to load an email address: $address");
     return $self->load_by_cols( "email", $address );
 }
-
-# }}}
-
-# {{{ load_or_create_by_email
 
 =head2 load_or_create_by_email ADDRESS
 
 Attempts to find a user who has the provided email address. If that fails, creates an unprivileged user with
-the provided email address and loads them. Address can be provided either as L<Mail::Address> object
+the provided email address and loads them. Address can be provided either as L<Email::Address> object
 or string which is parsed using the module.
 
 Returns a tuple of the user's id and a status message.
@@ -574,7 +549,7 @@ sub load_or_create_by_email {
     my $email = shift;
 
     my ( $message, $name );
-    if ( UNIVERSAL::isa( $email => 'Mail::Address' ) ) {
+    if ( UNIVERSAL::isa( $email => 'Email::Address' ) ) {
         ( $email, $name ) = ( $email->address, $email->phrase );
     } else {
         ( $email, $name ) = RT::Interface::Email::parse_address_from_header($email);
@@ -613,9 +588,6 @@ sub load_or_create_by_email {
     return ( $self->id, $message );
 }
 
-# }}}
-
-# {{{ sub validate_email
 
 =head2 validateemail ADDRESS
 
@@ -642,9 +614,6 @@ sub validate_email {
     }
 }
 
-# }}}
-
-# {{{ sub canonicalize_email
 
 =head2 canonicalize_email ADDRESS
 
@@ -669,15 +638,13 @@ sub canonicalize_email {
         $email =~ s/$match/$replace/gi;
     }
     return ($email);
+
 }
-
-# }}}
-
-# {{{ sub canonicalize_user_info
 
 =head2 canonicalize_user_info HASH of ARGS
 
 canonicalize_UserInfo can convert all User->create options.
+
 it takes a hashref of all the params sent to User->create and
 returns that same hash, by default nothing is done.
 
@@ -694,13 +661,9 @@ sub canonicalize_user_info {
     return ($success);
 }
 
-# }}}
+=head2 Password and authentication related functions
 
-# {{{ password related functions
-
-# {{{ sub set_random_password
-
-=head2 set_random_password
+=head3 set_random_password
 
 Takes no arguments. Returns a status code and a new password or an error message.
 If the status is 1, the second value returned is the new password.
@@ -739,13 +702,7 @@ sub set_random_password {
 
 }
 
-# }}}
-
-# }}}
-
-# {{{ sub set_password
-
-=head2 setpassword
+=head3 set_password
 
 Takes a string. Checks the string's length and sets this user's password 
 to that string.
@@ -769,9 +726,7 @@ sub before_set_password {
 
 }
 
-# }}}
-
-=head2 has_password
+=head3 has_password
                                                                                 
 Returns true if the user has a valid password, otherwise returns false.         
                                                                                
@@ -784,16 +739,12 @@ sub has_password {
         if !defined $pwd
             || $pwd eq ''
             || $pwd eq '*NO-PASSWORD*';
+
     return 1;
 }
 
-# }}}
 
-# }}}
-
-# {{{ sub set_disabled
-
-=head2 sub setdisabled
+=head2 sub set_disabled
 
 Toggles the user's disabled flag.
 If this flag is
@@ -801,8 +752,6 @@ set, all password checks for this user will fail. All ACL checks for this
 user will fail. The user will appear in no user listings.
 
 =cut 
-
-# }}}
 
 sub set_disabled {
     my $self = shift;
@@ -818,12 +767,16 @@ sub set_disabled {
     return $self->principal_object->set_disabled(@_);
 }
 
+=head2 disabled
+
+Returns true if user is disabled or false otherwise
+
+=cut
+
 sub disabled {
     my $self = shift;
     return $self->principal_object->disabled(@_);
 }
-
-# {{{ Principal related routines
 
 =head2 principal_object 
 
@@ -865,10 +818,6 @@ sub principal_id {
     return $self->id;
 }
 
-# }}}
-
-# {{{ sub has_group_right
-
 =head2 has_group_right
 
 Takes a paramhash which can contain
@@ -898,12 +847,10 @@ sub has_group_right {
         $args{'group_obj'}->load( $args{'group'} );
     }
 
-    # {{{ Validate and load up the group_id
+    # Validate and load up the group_id
     unless ( ( defined $args{'group_obj'} ) and ( $args{'group_obj'}->id ) ) {
         return undef;
     }
-
-    # }}}
 
     # Figure out whether a user has the right we're asking about.
     my $retval = $self->has_right(
@@ -914,10 +861,6 @@ sub has_group_right {
     return ($retval);
 
 }
-
-# }}}
-
-# {{{ sub own_groups
 
 =head2 own_groups
 
@@ -937,23 +880,15 @@ sub own_groups {
     return $groups;
 }
 
-# }}}
-
-# {{{ sub rights testing
 
 =head1 rights testing
 
 
-
 =cut
-
-# }}}
-
-# {{{ sub has_right
 
 =head2 has_right
 
-Shim around principal_object->has_right. See RT::Model::Principal
+Shim around principal_obj->has_right. See L<RT::Model::Principal>.
 
 =cut
 
@@ -962,10 +897,6 @@ sub has_right {
     return $self->principal_object->has_right(@_);
 
 }
-
-# }}}
-
-# {{{ sub current_user_can_modify
 
 =head2 current_user_can_modify RIGHT
 
@@ -1016,10 +947,6 @@ sub current_user_can_modify {
 
 }
 
-# }}}
-
-# {{{ sub current_user_has_right
-
 =head2 current_user_has_right
   
 Takes a single argument. returns 1 if $Self->current_user
@@ -1038,7 +965,6 @@ sub current_user_has_right {
     );
 }
 
-# }}}
 
 sub _prefname {
     my $name = shift;
@@ -1049,13 +975,11 @@ sub _prefname {
     return 'Pref-' . $name;
 }
 
-# {{{ sub preferences
-
 =head2 preferences name/OBJ DEFAULT
 
-  Obtain user preferences associated with given object or name.
-  Returns DEFAULT if no preferences found.  If DEFAULT is a hashref,
-  override the entries with user preferences.
+Obtain user preferences associated with given object or name.
+Returns DEFAULT if no preferences found.  If DEFAULT is a hashref,
+override the entries with user preferences.
 
 =cut
 
@@ -1082,13 +1006,10 @@ sub preferences {
     return $content;
 }
 
-# }}}
-
-# {{{ sub set_preferences
 
 =head2 set_preferences name/OBJ value
 
-  Set user preferences associated with given object or name.
+Set user preferences associated with given object or name.
 
 =cut
 
@@ -1096,7 +1017,11 @@ sub set_preferences {
     my $self  = shift;
     my $name  = _prefname(shift);
     my $value = shift;
-    my $attr  = RT::Model::Attribute->new;
+
+    return ( 0, _("No permission to set preferences") )
+      unless $self->current_userCanModify('Preferences');
+
+    my $attr = RT::Model::Attribute->new;
     $attr->load_by_name_and_object( object => $self, name => $name );
     if ( $attr->id ) {
         return $attr->set_content($value);
@@ -1104,8 +1029,6 @@ sub set_preferences {
         return $self->add_attribute( name => $name, content => $value );
     }
 }
-
-# }}}
 
 =head2 watched_queues ROLE_LIST
 
@@ -1175,8 +1098,6 @@ sub watched_queues {
     return $watched_queues;
 
 }
-
-# {{{ sub _cleanup_invalid_delegations
 
 =head2 _cleanup_invalid_delegations { inside_transaction => undef }
 
@@ -1255,10 +1176,6 @@ sub _cleanup_invalid_delegations {
     return (1);
 }
 
-# }}}
-
-# {{{ sub _set
-
 sub _set {
     my $self = shift;
 
@@ -1306,10 +1223,6 @@ sub _set {
         return ( $ret, $msg );
     }
 }
-
-# }}}
-
-# {{{ sub _value
 
 =head2 _value
 
@@ -1363,13 +1276,9 @@ sub _value {
 
 }
 
-# }}}
-
-# {{{ sub friendly_name
-
 =head2 friendly_name
 
-  Return the friendly name
+Return the friendly name
 
 =cut
 
@@ -1379,8 +1288,6 @@ sub friendly_name {
     return $self->name      if defined( $self->name );
     return "";
 }
-
-# }}}
 
 =head2 preferred_key
 
@@ -1433,6 +1340,7 @@ sub set_private_key {
         unless ($status) {
             Jifty->log->error("Couldn't delete attribute: $msg");
             return ( $status, _("Couldn't unset private key") );
+
         }
         return ( $status, _("Unset private key") );
     }
@@ -1455,7 +1363,9 @@ sub set_private_key {
 
 sub basic_columns {
     ( [ name => 'User Id' ], [ email => 'Email' ], [ real_name => 'name' ], [ organization => 'organization' ], );
+
 }
+
 
 1;
 

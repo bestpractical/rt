@@ -15,6 +15,8 @@ my($ret,$msg);
 
 
 # Test Sorting by custom fields.
+# TODO: it's hard to read this file, conver to new style,
+# for example look at 23cfsort-freeform-single.t
 
 # ---- Create a queue to test with.
 my $queue = "CFSortQueue-$$";
@@ -113,22 +115,15 @@ check_order( $tx, 2, 1);
 $tx = RT::Model::TicketCollection->new( current_user => RT->system_user );
 $tx->from_sql(qq[queue="$queue"] );
 $tx->order_by({ column => "CF.{Charlie}", order => 'DESC' });
-diag $tx->build_select_query;
 is($tx->count,2);
-TODO: {
-    local $TODO = 'order by CF fail';
 check_order( $tx, 1, 2);
-}
 
 $tx = RT::Model::TicketCollection->new( current_user => RT->system_user );
 $tx->from_sql(qq[queue="$queue"] );
 $tx->order_by( {column => "CF.{Charlie}", order => 'ASC' });
 diag $tx->build_select_query;
 is($tx->count,2);
-TODO: {
-    local $TODO = 'order by CF fail';
 check_order( $tx, 2, 1);
-}
 
 # Add a new ticket, to test sorting on multiple columns.
 my $t3 = RT::Model::Ticket->new(current_user => RT->system_user);
@@ -147,10 +142,7 @@ $tx->order_by(
     { column => "CF.${queue}.{Alpha}",   order => 'DES' },
 );
 is($tx->count,3);
-TODO: {
-    local $TODO = 'order by CF fail';
 check_order( $tx, 3, 2, 1);
-}
 
 $tx = RT::Model::TicketCollection->new( current_user => RT->system_user );
 $tx->from_sql(qq[queue="$queue"] );
@@ -159,10 +151,7 @@ $tx->order_by(
     { column => "CF.${queue}.{Alpha}",   order => 'ASC' },
 );
 is($tx->count,3);
-TODO: {
-    local $TODO = 'order by CF fail';
 check_order( $tx, 1, 2, 3);
-}
 
 # Reverse the order of the secondary column, which changes the order
 # of the first two tickets.
@@ -173,10 +162,7 @@ $tx->order_by(
     { column => "CF.${queue}.{Alpha}",   order => 'ASC' },
 );
 is($tx->count,3);
-TODO: {
-    local $TODO = 'order by CF fail';
 check_order( $tx, 2, 3, 1);
-}
 
 $tx = RT::Model::TicketCollection->new( current_user => RT->system_user );
 $tx->from_sql(qq[queue="$queue"] );
@@ -185,7 +171,4 @@ $tx->order_by(
     { column => "CF.${queue}.{Alpha}",   order => 'DES' },
 );
 is($tx->count,3);
-TODO: {
-    local $TODO = 'order by CF fail';
 check_order( $tx, 1, 3, 2);
-}

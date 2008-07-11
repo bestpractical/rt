@@ -48,19 +48,11 @@
 
 =head1 name
 
-  RT::Search::Generic - ;
+  RT::Search::Generic - deprecated, see RT::Search
 
 =head1 SYNOPSIS
 
-    use RT::Search::Generic;
-    my $tickets = RT::Model::TicketCollection->new($CurrentUser);
-    my $foo = RT::Search::Generic->new(Argument => $arg,
-                                       TicketsObj => $tickets);
-    $foo->prepare();
-    while ( my $ticket = $foo->next ) {
-        # Do something with each ticket we've found
-    }
-
+  This module is provided only for backwards compatibility.
 
 =head1 description
 
@@ -73,81 +65,23 @@
 =cut
 
 package RT::Search::Generic;
+use base 'RT::Search';
 
 use strict;
-
-# {{{ sub new
-sub new {
-    my $proto = shift;
-    my $class = ref($proto) || $proto;
-    my $self  = {};
-    bless( $self, $class );
-    $self->_init(@_);
-    return $self;
-}
-
-# }}}
-
-# {{{ sub _init
-sub _init {
-    my $self = shift;
-    my %args = (
-        TicketsObj => undef,
-        Argument   => undef,
-        @_
-    );
-
-    $self->{'TicketsObj'} = $args{'TicketsObj'};
-    $self->{'Argument'}   = $args{'Argument'};
-}
-
-# }}}
-
-# {{{ sub argument
-
-=head2 argument
-
-Return the optional argument associated with this Search
-
-=cut
-
-sub argument {
-    my $self = shift;
-    return ( $self->{'Argument'} );
-}
-
-# }}}
-
-=head2 tickets_obj 
-
-Return the Tickets object passed into this search
-
-=cut
-
-sub tickets_obj {
-    my $self = shift;
-    return ( $self->{'TicketsObj'} );
-}
-
-# {{{ sub describe
-sub describe {
-    my $self = shift;
-    return ( _( "No description for %1", ref $self ) );
-}
-
-# }}}
-
-# {{{ sub prepare
-sub prepare {
-    my $self = shift;
-    return (1);
-}
-
-# }}}
+use warnings;
 
 eval "require RT::Search::Generic_Vendor";
 die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Search/Generic_Vendor.pm} );
+warn
+"RT::Search::Generic has become RT::Search. Please adjust your RT::Search::Generic_Vendor file at "
+  . $INC{"RT/Search/Generic_Vendor.pm"}
+  if !$@;
+
 eval "require RT::Search::Generic_Local";
 die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Search/Generic_Local.pm} );
+warn
+"RT::Search::Generic has become RT::Search. Please adjust your RT::Search::Generic_Local file at "
+  . $INC{"RT/Search/Generic_Local.pm"}
+  if !$@;
 
 1;

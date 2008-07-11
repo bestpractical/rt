@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -53,14 +53,15 @@
     query => $query,
     Rows => $Rows,
     order_by => $order_by,
-    order => $order &>
+    order => $order,
+    SavedSearchid => $SavedSearchid &>
 
 <& /Elements/ListActions, actions => \@results &>
 <form method="post" action="<% RT->config->get('WebPath') %>/Search/Bulk.html" enctype="multipart/form-data">
 % foreach my $var qw(query format order_by order Rows Page) {
 <input type="hidden" class="hidden" name="<%$var%>" value="<%$ARGS{$var} || ''%>" />
 %}
-<& /Elements/TicketList, query => $query,
+<& /Elements/CollectionList, query => $Query,
     display_format => $format,
     format => $ARGS{'format'},
     Verbatim => 1,
@@ -69,10 +70,13 @@
     order => $order,
     Rows => $Rows,
     Page => $Page,
-    baseURL => RT->config->get('WebPath')."/Search/Bulk.html?"
+    baseURL => RT->config->get('WebPath')."/Search/Bulk.html?",
+    Class => 'RT::Model::Tickets'
    &>
 
-<hr>
+% $m->callback(Callbackname => 'AfterTicketList', args_ref => \%ARGS);
+
+<hr />
 
 <& /Elements/Submit, Label => _('Update'), CheckAll => 1, ClearAll => 1 &>
 <br />
@@ -148,12 +152,15 @@
  </table>
 
 </&>
-<&|/Widgets/TitleBox, title => _('Edit Custom Fields'), color => "#336633"&>
+
 <%perl>
 my $cfs = RT::Model::CustomFieldCollection->new();
 $cfs->limit_to_global();
 $cfs->limit_to_queue($_) for keys %$seen_queues;
 </%perl>
+
+% if ($cfs->count) {
+<&|/Widgets/TitleBox, title => _('Edit Custom Fields'), color => "#336633"&>
 <table>
 <tr>
 <th><&|/l&>name</&></th>
@@ -186,6 +193,7 @@ $cfs->limit_to_queue($_) for keys %$seen_queues;
 % }
 </table>
 </&>
+% }
 
 <&|/Widgets/TitleBox, title => _('Edit Links'), color => "#336633"&>
 <em><&|/l&>Enter tickets or URIs to link tickets to. Separate multiple entries with spaces.</&></em><br />
@@ -199,6 +207,7 @@ $cfs->limit_to_queue($_) for keys %$seen_queues;
 
 
 <%INIT>
+$Rows = $rows_per_page unless (defined $Rows);
 my $title = _("Update multiple tickets");
 
 # Iterate through the ARGS hash and remove anything with a null value.
@@ -317,6 +326,7 @@ while ( my $Ticket = $Tickets->next ) {
 
         foreach my $key (@$list) {
             my ( $cfid, $cf );
+            next if $key =~ /CustomField-(\d+)-Category$/;
             if ( $key =~ /CustomField-(\d+)-/ ) {
                 $cfid = $1;
                 $cf   = RT::Model::CustomField->new();
@@ -372,7 +382,9 @@ $TxnCFs->limit_to_global_or_object_id( sort keys %queues );
 $format => undef
 $Page => 1
 $Rows => 50
+$rows_per_page => undef
 $order => 'ASC'
 $order_by => 'id'
 $query => undef
+$SavedSearchid => undef
 </%args>

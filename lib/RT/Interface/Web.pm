@@ -64,6 +64,7 @@ package RT::Interface::Web;
 use RT::System;
 use RT::SavedSearches;
 use URI qw();
+use Digest::MD5 ();
 
 # {{{ escape_utf8
 
@@ -137,7 +138,14 @@ sub web_external_auto_info {
 
     my %user_info;
 
-    $user_info{'privileged'} = 1;
+    # default to making privileged users, even if they specify
+    # some other default Attributes
+    if ( !$RT::AutoCreate
+        || ( ref($RT::AutoCreate) && not exists $RT::AutoCreate->{privileged} )
+      )
+    {
+        $user_info{'privileged'} = 1;
+    }
 
     if ( $^O !~ /^(?:riscos|MacOS|MSWin32|dos|os2)$/ ) {
 
@@ -174,9 +182,18 @@ sub redirect {
     # If the user is coming in via a non-canonical
     # hostname, don't redirect them to the canonical host,
     # it will just upset them (and invalidate their credentials)
-    if (   $uri->host eq $server_uri->host
+    # don't do this if $RT::CanoniaclRedirectURLs is true
+    if (   !RT->config->get('CanonicalizeRedirectURLs')
+        && $uri->host eq $server_uri->host
         && $uri->port eq $server_uri->port )
     {
+        if ( defined $ENV{HTTPS} and $ENV{'HTTPS'} eq 'on' ) {
+            $uri->scheme('https');
+        }
+        else {
+            $uri->scheme('http');
+        }
+
         $uri->host( $ENV{'HTTP_HOST'} );
         $uri->port( $ENV{'SERVER_PORT'} );
     }
@@ -210,6 +227,42 @@ sub static_file_headers {
     # $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = $date->rfc2616;
 }
 
+sub StripContent {
+    my %args    = @_;
+    my $content = $args{content};
+    my $html    = ( ( $args{content_type} || '' ) eq "text/html" );
+    my $sigonly = $args{strip_signature};
+
+    # Save us from undef warnings
+    return '' unless defined $content;
+
+    # Make the content have no 'weird' newlines in it
+    $content =~ s/\r+\n/\n/g;
+
+    # Filter empty content when type is text/html
+    return '' if $html && $content =~ m{^\s*(?:<br[^>]*/?>)*\s*$}s;
+
+    # If we aren't supposed to strip the sig, just bail now.
+    return $content unless $sigonly;
+
+    # Find the signature
+    my $sig = $args{'current_user'}->user_object->Signature || '';
+    $sig =~ s/^\s*|\s*$//g;
+
+    # Check for plaintext sig
+    return '' if not $html and $content =~ /^\s*(--)?\s*\Q$sig\E\s*$/;
+
+    # Check for html-formatted sig
+    RT::Interface::Web::EscapeUTF8( \$sig );
+    return ''
+      if $html
+          and $content =~
+          m{^\s*<p>\s*(--)?\s*<br[^>]*?/?>\s*\Q$sig\E\s*</p>\s*$}s;
+
+    # Pass it through
+    return $content;
+}
+
 package HTML::Mason::Commands;
 
 use vars qw/$r $m %session/;
@@ -235,15 +288,17 @@ sub loc {
 # {{{ sub abort
 # Error - calls Error and aborts
 sub abort {
+    my $why  = shift;
+    my %args = @_;
 
     if (   $session{'ErrorDocument'}
         && $session{'ErrorDocumentType'} )
     {
         $r->content_type( $session{'ErrorDocumentType'} );
-        $m->comp( $session{'ErrorDocument'}, Why => shift );
+        $m->comp( $session{'ErrorDocument'}, Why => $why, %args );
         $m->abort;
     } else {
-        $m->comp( "/Elements/Error", Why => shift );
+        $m->comp( "/Elements/Error", Why => $why, %args );
         $m->abort;
     }
 }
@@ -274,16 +329,29 @@ sub create_ticket {
         abort('You have no permission to create tickets in that queue.');
     }
 
-    my $due = RT::Date->new();
-    $due->set( format => 'unknown', value => $ARGS{'due'} );
-    my $starts = RT::Date->new();
-    $starts->set( format => 'unknown', value => $ARGS{'starts'} );
+    my $due;
+    if ( defined $ARGS{'Due'} and $ARGS{'Due'} =~ /\S/ ) {
+        $due = new RT::Date( Jifty->web->current_user );
+        $due->set( format => 'unknown', value => $ARGS{'Due'} );
+    }
+    my $starts;
+    if ( defined $ARGS{'Starts'} and $ARGS{'Starts'} =~ /\S/ ) {
+        $starts = new RT::Date( Jifty->web->current_user );
+        $starts->set( format => 'unknown', value => $ARGS{'Starts'} );
+    }
+
+    my $sigless = RT::Interface::Web::StripContent(
+        content        => $ARGS{content},
+        content_type    => $ARGS{content_type},
+        strip_signature => 1,
+        current_user    => Jifty->web->current_user,
+    );
 
     my $mime_obj = make_mime_entity(
         subject => $ARGS{'subject'},
-        from    => $ARGS{'From'},
+        from    => $ARGS{'from'},
         cc      => $ARGS{'cc'},
-        body    => $ARGS{'content'},
+        body    => $sigless,
         type    => $ARGS{'content_type'},
     );
 
@@ -322,14 +390,14 @@ sub create_ticket {
         time_worked      => $ARGS{'time_worked'},
         subject          => $ARGS{'subject'},
         status           => $ARGS{'status'},
-        due              => $due->iso,
-        starts           => $starts->iso,
+        due              => $due ? $due->iso : undef,
+        starts           => $starts ? $starts->iso : undef,
         mime_obj         => $mime_obj
     );
 
     my @temp_squelch;
     foreach my $type (qw(requestor cc admin_cc)) {
-        push @temp_squelch, map $_->address, Mail::Address->parse( $create_args{$type} )
+        push @temp_squelch, map $_->address, Email::Address->parse( $create_args{$type} )
             if grep $_ eq $type || $_ eq ( $type . 's' ),
             @{ $ARGS{'SkipNotification'} || [] };
 
@@ -357,7 +425,7 @@ sub create_ticket {
         }
 
         # object-RT::Model::Ticket--CustomField-3-values
-        elsif ( $arg =~ /^object-RT::Model::Ticket--CustomField-(\d+)(.*?)$/ ) {
+        elsif ( $arg =~ /^object-RT::Model::Ticket--CustomField-(\d+)/ ) {
             my $cfid = $1;
 
             my $cf = RT::Model::CustomField->new();
@@ -471,7 +539,6 @@ is true.
 
 sub process_update_message {
 
-    #TODO document what else this takes.
     my %args = (
         args_ref          => undef,
         ticket_obj        => undef,
@@ -485,30 +552,26 @@ sub process_update_message {
         delete $args{args_ref}->{'UpdateAttachments'};
     }
 
-    #Make the update content have no 'weird' newlines in it
-    return ()
-        unless $args{args_ref}->{'UpdateTimeWorked'}
-            || $args{args_ref}->{'UpdateAttachments'}
-            || $args{args_ref}->{'update_content'};
+    # Strip the signature
+    $args{args_ref}->{update_content} = RT::Interface::Web::StripContent(
+        content        => $args{args_ref}->{update_content},
+        content_type    => $args{args_ref}->{update_content_type},
+        strip_signature => $args{skip_signature_only},
+        current_user    => $args{'ticket_obj'}->current_user,
+    );
 
-    $args{args_ref}->{'update_content'} =~ s/\r+\n/\n/g
-        if $args{args_ref}->{'update_content'};
-
-    # skip updates if the content contains only user's signature
-    # and we don't update other fields
-    if ( $args{'SkipSignatureOnly'} ) {
-        my $sig = $args{'ticket_obj'}->current_user->user_object->signature
-            || '';
-        $sig =~ s/^\s*|\s*$//g;
-        if ( $args{args_ref}->{'update_content'} =~ /^\s*(--)?\s*\Q$sig\E\s*$/ ) {
-            return ()
-                unless $args{args_ref}->{'UpdateTimeWorked'}
-                    || $args{args_ref}->{'UpdateAttachments'};
-
-            # we have to create transaction, but we don't create attachment
-            # XXX: this couldn't work as expected
-            $args{args_ref}->{'update_content'} = '';
+    # If, after stripping the signature, we have no message, move the
+    # UpdateTimeWorked into adjusted TimeWorked, so that a later
+    # ProcessBasics can deal -- then bail out.
+    if (    not $args{args_ref}->{'UpdateAttachments'}
+        and not length $args{args_ref}->{'UpdateContent'} )
+    {
+        if ( $args{args_ref}->{'UpdateTimeWorked'} ) {
+            $args{args_ref}->{TimeWorked} =
+              $args{ticket_obj}->TimeWorked +
+              delete $args{args_ref}->{'UpdateTimeWorked'};
         }
+        return;
     }
 
     if ( $args{args_ref}->{'Updatesubject'} eq $args{'ticket_obj'}->subject ) {
@@ -561,7 +624,7 @@ sub process_update_message {
         time_taken     => $args{args_ref}->{'UpdateTimeWorked'}
     );
 
-    unless ( $args{'ARGRef'}->{'UpdateIgnoreAddressCheckboxes'} ) {
+    unless ( $args{'args_ref'}->{'UpdateIgnoreAddressCheckboxes'} ) {
         foreach my $key ( keys %{ $args{args_ref} } ) {
             next unless $key =~ /^Update(cc|Bcc)-(.*)$/;
 
@@ -960,7 +1023,7 @@ sub process_object_custom_field_updates {
                 my $CustomFieldObj = RT::Model::CustomField->new();
                 $CustomFieldObj->load_by_id($cf);
                 unless ( $CustomFieldObj->id ) {
-                    Jifty->log->warn("Couldn't load custom field #$id");
+                    Jifty->log->warn("Couldn't load custom field #$cf");
                     next;
                 }
                 push @results,
@@ -1303,7 +1366,6 @@ sub process_record_links {
             my $type   = $2;
             my $target = $3;
 
-            push @results, _( "Trying to delete: base: %1 target: %2 Type: %3", $base, $target, $type );
             my ( $val, $msg ) = $Record->delete_link(
                 base   => $base,
                 type   => $type,
@@ -1320,7 +1382,12 @@ sub process_record_links {
 
     foreach my $linktype (@linktypes) {
         if ( $args_ref->{ $Record->id . "-$linktype" } ) {
+            $args_ref->{ $Record->id . "-$linktype" } =
+              join( ' ', @{ $args_ref->{ $Record->id . "-$linktype" } } )
+              if ref( $args_ref->{ $Record->id . "-$linktype" } );
+
             for my $luri ( split( / /, $args_ref->{ $Record->id . "-$linktype" } ) ) {
+                next unless $luri;
                 $luri =~ s/\s*$//;    # Strip trailing whitespace
                 my ( $val, $msg ) = $Record->add_link(
                     target => $luri,
@@ -1330,8 +1397,12 @@ sub process_record_links {
             }
         }
         if ( $args_ref->{ "$linktype-" . $Record->id } ) {
+            $args_ref->{ "$linktype-" . $Record->id } =
+              join( ' ', @{ $args_ref->{ "$linktype-" . $Record->id } } )
+              if ref( $args_ref->{ "$linktype-" . $Record->id } );
 
             for my $luri ( split( / /, $args_ref->{ "$linktype-" . $Record->id } ) ) {
+                next unless $luri;
                 my ( $val, $msg ) = $Record->add_link(
                     base => $luri,
                     type => $linktype

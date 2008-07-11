@@ -64,6 +64,14 @@ GetOptions(
     'with-SPEEDYCGI',                     'with-MODPERL1',
     'with-MODPERL2',                      'with-DEV',
     'with-STANDALONE',
+
+    'with-GPG',
+    'with-ICAL',
+    'with-SMTP',
+    'with-GRAPHVIZ',
+    'with-GD',
+    'with-DASHBOARDS',
+
     'with-OPENID',
     'download=s',
     'repository=s'
@@ -71,7 +79,7 @@ GetOptions(
 
 unless (keys %args) {
     help();
-    exit(0);
+    exit(1);
 }
 # Set up defaults
 my %default = (
@@ -82,6 +90,12 @@ my %default = (
     'with-MAILGATE' => 1, 
     'with-DEV' => 1,
     'with-STANDALONE' => 1,
+    'with-GPG' => @RT_GPG@,
+    'with-ICAL' => 1,
+    'with-SMTP' => 1,
+    'with-GRAPHVIZ' => @RT_GRAPHVIZ@,
+    'with-GD' => @RT_GD@,
+    'with-DASHBOARDS' => 1
 );
 $args{$_} = $default{$_} foreach grep !exists $args{$_}, keys %default;
 
@@ -120,7 +134,7 @@ sub conclude {
 
     unless ( $args{'list-deps'} ) {
         unless ( keys %missing_by_type ) {
-            print "\nEverything was found.\n";
+            print "\nAll dependencies have been found.\n";
             return;
         }
 
@@ -137,6 +151,7 @@ sub conclude {
                     0, $module->{error} );
             }
         }
+        exit 1;
     }
 }
 
@@ -148,22 +163,23 @@ sub help {
 By default, testdeps determine whether you have 
 installed all the perl modules RT needs to run.
 
-	--install		Install missing modules
+    --install           Install missing modules
 
 The following switches will tell the tool to check for specific dependencies
 
-	--with-mysql		Database interface for MySQL
-	--with-postgresql	Database interface for PostgreSQL 
-	--with-sqlite		Database interface and driver for SQLite (unsupported)
-	--with-oracle		Database interface for oracle (unsupported)
+    --with-mysql        Database interface for MySQL
+    --with-postgresql   Database interface for PostgreSQL 
+    --with-oracle       Database interface for Oracle
+    --with-sqlite       Database interface and driver for SQLite (unsupported)
 
-	--with-standalone	Libraries needed to support the standalone simple pure perl server
-	--with-fastcgi		Libraries needed to support the fastcgi handler
-	--with-speedycgi	Libraries needed to support the speedycgi handler
-	--with-modperl1		Libraries needed to support the modperl 1 handler
-	--with-modperl2		Libraries needed to support the modperl 2 handler
+    --with-standalone   Libraries needed to support the standalone simple pure perl server
+    --with-forking      Libraries needed to support the standalone forking pure perl server
+    --with-fastcgi      Libraries needed to support the fastcgi handler
+    --with-speedycgi    Libraries needed to support the speedycgi handler
+    --with-modperl1     Libraries needed to support the modperl 1 handler
+    --with-modperl2     Libraries needed to support the modperl 2 handler
 
-	--with-dev		    Tools needed for RT development
+    --with-dev          Tools needed for RT development
     --with-openid       Libraries needed to support OpenID logins
 
 You can also specify -v or --verbose to list the status of all dependencies,
@@ -194,10 +210,10 @@ Digest::Base
 Digest::MD5 2.27
 DBI 1.37
 Class::ReturnValue 0.40
-GnuPG::Interface
-PerlIO::eol
 Jifty::DBI 1.48
+Jifty::Collection 1.53
 Text::Template
+File::ShareDir
 File::Spec 0.8
 HTML::Entities 
 HTML::Scrubber 0.08
@@ -206,44 +222,45 @@ Locale::Maketext 1.06
 Locale::Maketext::Lexicon 0.32
 Locale::Maketext::Fuzzy
 MIME::Entity 5.425
+Email::Address
 Mail::Mailer 1.57
-Net::SMTP
 Text::Wrapper 
 Time::ParseDate
 Time::HiRes 
 File::Temp 0.18
-Text::Autoformat
 Text::Quoted 2.02
 Tree::Simple 1.04
 UNIVERSAL::require
 Regexp::Common
 Scalar::Util
-Module::Versions::Report 1.03
+Module::Versions::Report 1.05
 Cache::Simple::TimedExpiry
 UNIVERSAL::require
 Calendar::Simple
 Encode 2.13
 CSS::Squish 0.06
+File::Glob
+Devel::StackTrace 1.19
 .
 
 $deps{'MASON'} = [ text_to_hash( << '.') ];
-HTML::Mason 1.23
+HTML::Mason 1.36
 Errno
 Digest::MD5 2.27
 CGI::Cookie 1.20
 Storable 2.08
 Apache::Session 1.53
 XML::RSS 1.05
-GD
-GD::Graph
-GD::Text
 Text::WikiFormat 0.76
 CSS::Squish 0.06
+Devel::StackTrace 1.19
 .
 
 $deps{'STANDALONE'} = [ text_to_hash( << '.') ];
-HTTP::Server::Simple 0.07
+HTTP::Server::Simple 0.34
 HTTP::Server::Simple::Mason 0.09
+Net::Server
+Net::Server::PreFork
 .
 
 $deps{'MAILGATE'} = [ text_to_hash( << '.') ];
@@ -269,46 +286,50 @@ HTML::TokeParser
 WWW::Mechanize
 Test::WWW::Mechanize 1.04
 Module::Refresh 0.03
-Test::Expect 0.30
+Test::Expect 0.31
 XML::Simple
 File::Find
 Test::Deep 0 # needed for shredder tests
 String::ShellQuote 0 # needed for gnupg-incoming.t
-Test::HTTP::Server::Simple
+Test::HTTP::Server::Simple 0.09
 Log::Dispatch::Perl
 Test::Warn
+Test::Builder 0.77 # needed to fix TODO test
+IPC::Run3
 .
 
 $deps{'FASTCGI'} = [ text_to_hash( << '.') ];
-CGI 2.92
+CGI 3.38
 FCGI
 CGI::Fast 
 .
 
 $deps{'SPEEDYCGI'} = [ text_to_hash( << '.') ];
-CGI 2.92
+CGI 3.38
 CGI::SpeedyCGI
 .
 
 
 $deps{'MODPERL1'} = [ text_to_hash( << '.') ];
-CGI 2.92
+CGI 3.38
 Apache::Request
 Apache::DBI 0.92
 .
 
 $deps{'MODPERL2'} = [ text_to_hash( << '.') ];
-CGI 2.92
+CGI 3.38
 Apache::DBI
-HTML::Mason 1.31
+HTML::Mason 1.36
 .
 
 $deps{'MYSQL'} = [ text_to_hash( << '.') ];
 DBD::mysql 2.1018
 .
+
 $deps{'ORACLE'} = [ text_to_hash( << '.') ];
 DBD::Oracle
 .
+
 $deps{'POSTGRESQL'} = [ text_to_hash( << '.') ];
 DBD::Pg 1.43
 .
@@ -322,6 +343,36 @@ LWPx::ParanoidAgent
 Cache::FileCache
 .
 
+
+$deps{'GPG'} = [ text_to_hash( << '.') ];
+GnuPG::Interface
+PerlIO::eol
+.
+
+$deps{'ICAL'} = [ text_to_hash( << '.') ];
+Data::ICal
+.
+
+$deps{'SMTP'} = [ text_to_hash( << '.') ];
+Net::SMTP
+.
+
+$deps{'DASHBOARDS'} = [ text_to_hash( << '.') ];
+HTML::RewriteAttributes 0.02
+MIME::types
+.
+
+$deps{'GRAPHVIZ'} = [ text_to_hash( << '.') ];
+GraphViz
+IPC::Run
+IPC::Run::SafeHandles
+.
+
+$deps{'GD'} = [ text_to_hash( << '.') ];
+GD
+GD::Graph
+GD::Text
+.
 
 if ($args{'download'}) {
 
@@ -385,6 +436,7 @@ sub test_dep {
         if ($@) {
             my $error = $@;
             $error =~ s/\n(.*)$//s;
+            $error =~ s/at \(eval \d+\) line \d+\.$//;
             undef $error unless $error =~ /this is only/;
 
             return ( 0, $error );
@@ -413,8 +465,8 @@ sub resolve_dep {
         }
         unless ( $configured ) {
             print <<END;
-You didn't configure CPAN shell yet.
-Please run `perl -MCPAN -e shell` tool and configure it.
+You haven't configured the CPAN shell yet.
+Please run `@PERL@ -MCPAN -e shell` to configure it.
 END
             exit(1);
         }

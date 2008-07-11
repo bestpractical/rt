@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -50,34 +50,33 @@
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head>
-
 <title><%$Title%></title>
 
-% if ($Refresh && $Refresh > 0) {
+
+% if ($Refresh && $Refresh =~ /^(\d+)/ && $1 > 0) {
     <meta http-equiv="refresh" content="<% $Refresh %>" />
 % }
 
 <link rel="shortcut icon" href="<%RT->config->get('WebImagesURL')%>/favicon.png" type="image/png" />
-<link rel="stylesheet" href="<%RT->config->get('WebPath')%>/NoAuth/css/<% RT->config->get( 'WebDefaultStylesheet', Jifty->web->current_user ) %>/main-squished.css" type="text/css" media="all" />
+<link rel="stylesheet" href="<%RT->config->get('WebPath')%>/NoAuth/css/<% RT->config->get( 'WebDefaultStylesheet', Jifty->web->current_user ) %>/main<% RT->config->get('DevelMode')? '' : '-squished' %>.css" type="text/css" media="all" />
 <link rel="stylesheet" href="<%RT->config->get('WebPath')%>/NoAuth/css/print.css" type="text/css" media="print" />
+
+% for (keys %{$LinkRel || {}}) {
+    <link rel="<% $_ %>" href="<% RT->config->get('WebPath') . $LinkRel->{$_} %>" />
+% }
+
 
 % if ( $RSSAutoDiscovery ) {
     <link rel="alternate" href="<%$RSSAutoDiscovery%>" type="application/rss+xml" title="RSS RT Search" />
 % }
 
-<script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/util.js"></script>
-<script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/titlebox-state.js"></script>
-<script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/ahah.js"></script>
-<script type="text/javascript"><!--
-    onLoadHook("loadTitleBoxStates()");
-% if ( $Focus ) {
-    onLoadHook("focusElementById('<% $Focus %>')");
+% if ($JavaScript) {
+<& HeaderJavascript, focus => $Focus, onload => $onload &>
 % }
-% if ( $onload ) {
-    onLoadHook("<% $onload |n %>");
+% my $stylesheet_plugin = "/NoAuth/css/". RT->config->get( 'WebDefaultStylesheet', Jifty->web->current_user )."/InHeader";
+% if ($m->comp_exists($stylesheet_plugin) ) {
+<& $stylesheet_plugin &>
 % }
---></script>
-
 % $m->callback( %ARGS, Callbackname => 'Head' );
 
 </head>
@@ -119,7 +118,7 @@ $id =~ s|-$||g;
 </%INIT>
 
 <%ARGS>
-$Prefs => '/User/Prefs.html'
+$Prefs => '/Prefs/Other.html'
 #$Focus => 'focus'
 $Focus => ''
 $Title =>  'RT'
@@ -130,4 +129,6 @@ $ShowBar => 1
 $URL => undef
 $RSSAutoDiscovery => undef
 $onload => undef
+$LinkRel => undef
+$JavaScript => 1
 </%ARGS>

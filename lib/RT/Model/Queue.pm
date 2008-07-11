@@ -181,7 +181,7 @@ sub delete_link {
 
     #check acls
     unless ( $self->current_user_has_right('ModifyQueue') ) {
-        Jifty->log->debug("No permission to delete links\n");
+        Jifty->log->debug("No permission to delete links");
         return ( 0, _('Permission Denied') );
     }
 
@@ -340,6 +340,7 @@ sub create {
         correspond_address => '',
         description        => '',
         comment_address    => '',
+        SubjectTag        => '',
         initial_priority   => 0,
         final_priority     => 0,
         default_due_in     => 0,
@@ -534,6 +535,44 @@ sub set_encrypt {
 =head2 templates
 
 Returns an RT::Model::TemplateCollection object of all of this queue's templates.
+sub SubjectTag {
+    my $self = shift;
+    return RT->System->SubjectTag($self);
+}
+
+sub SetSubjectTag {
+    my $self  = shift;
+    my $value = shift;
+
+    return ( 0, _('Permission Denied') )
+      unless $self->current_user_has_right('AdminQueue');
+
+    my $attr = RT->System->firstAttribute('BrandedSubjectTag');
+    my $map = $attr ? $attr->Content : {};
+    if ( defined $value && length $value ) {
+        $map->{ $self->id } = $value;
+    }
+    else {
+        delete $map->{ $self->id };
+    }
+
+    my ( $status, $msg ) = RT->System->set_attribute(
+        name        => 'BrandedSubjectTag',
+        Description => 'Queue id => subject tag map',
+        Content     => $map,
+    );
+    return ( $status, $msg ) unless $status;
+    return (
+        $status,
+        _(
+            "SubjectTag changed to %1",
+            ( defined $value && length $value )
+            ? $value
+            : _("(no value)")
+        )
+    );
+}
+
 
 =cut
 
@@ -674,7 +713,20 @@ sub add_watcher {
         @_
     );
 
+    return ( 0, "No principal specified" )
+      unless $args{'email'}
+          or $args{'principal_id'};
+
+    if ( !$args{'principal_id'} && $args{'email'} ) {
+        my $user = RT::Model::User->new;
+        $user->load_by_email( $args{'email'} );
+        $args{'principal_id'} = $user->principal_id if $user->id;
+    }
+
     # {{{ Check ACLS
+    return ( $self->_add_watcher(%args) )
+      if $self->current_user_has_right('ModifyQueueWatchers');
+
     #If the watcher we're trying to add is for the current user
     if ( defined $args{'principal_id'}
         && $self->current_user->id eq $args{'principal_id'} )
@@ -683,40 +735,22 @@ sub add_watcher {
         #  If it's an AdminCc and they don't have
         #   'WatchAsAdminCc' or 'ModifyTicket', bail
         if ( defined $args{'type'} && ( $args{'type'} eq 'admin_cc' ) ) {
-            unless ( $self->current_user_has_right('ModifyQueueWatchers')
-                or $self->current_user_has_right('WatchAsAdminCc') )
-            {
-                return ( 0, _('Permission Denied') );
-            }
+            return ( $self->_add_watcher(%args) )
+              if $self->current_user_has_right('WatchAsAdminCc');
         }
 
         #  If it's a Requestor or Cc and they don't have
         #   'Watch' or 'ModifyTicket', bail
-        elsif ( ( $args{'type'} eq 'cc' ) or ( $args{'type'} eq 'requestor' ) ) {
-
-            unless ( $self->current_user_has_right('ModifyQueueWatchers')
-                or $self->current_user_has_right('Watch') )
-            {
-                return ( 0, _('Permission Denied') );
-            }
+        elsif ( $args{'type'} eq 'cc' or $args{'type'} eq 'requestor' ) {
+            return ( $self->_add_watcher(%args) )
+              if $self->current_user_has_right('Watch');
         } else {
             Jifty->log->warn("$self -> add_watcher got passed a bogus type");
             return ( 0, _('Error in parameters to Queue->add_watcher') );
         }
     }
 
-    # If the watcher isn't the current user
-    # and the current user  doesn't have 'ModifyQueueWatcher'
-    # bail
-    else {
-        unless ( $self->current_user_has_right('ModifyQueueWatchers') ) {
-            return ( 0, _("Permission Denied") );
-        }
-    }
-
-    # }}}
-
-    return ( $self->_add_watcher(%args) );
+    return ( 0, _("Permission Denied") );
 }
 
 #This contains the meat of AddWatcher. but can be called from a routine like
@@ -735,13 +769,11 @@ sub _add_watcher {
     if ( $args{'principal_id'} ) {
         $principal->load( $args{'principal_id'} );
     } elsif ( $args{'email'} ) {
-
         my $user = RT::Model::User->new;
         $user->load_by_email( $args{'email'} );
+        $user->load( $args{'email'} )
+          unless $user->id;
 
-        unless ( $user->id ) {
-            $user->load( $args{'email'} );
-        }
         if ( $user->id ) {    # If the user exists
             $principal->load( $user->principal_id );
         } else {
@@ -789,7 +821,11 @@ sub _add_watcher {
 
     my ( $m_id, $m_msg ) = $group->_add_member( principal_id => $principal->id );
     unless ($m_id) {
-        Jifty->log->error( "Failed to add " . $principal->id . " as a member of group " . $group->id . "\n" . $m_msg );
+        Jifty->log->error( "Failed to add "
+              . $principal->id
+              . " as a member of group "
+              . $group->id . ": "
+              . $m_msg );
 
         return ( 0, _( 'Could not make that principal a %1 for this queue', $args{'type'} ) );
     }
@@ -822,14 +858,29 @@ sub delete_watcher {
     my %args = (
         type         => undef,
         principal_id => undef,
+        email       => undef,
         @_
     );
 
-    unless ( $args{'principal_id'} ) {
+    unless ( $args{'principal_id'} || $args{'email'} ) {
         return ( 0, _("No principal specified") );
     }
+
+    if ( !$args{principal_id} and $args{email} ) {
+        my $user = RT::Model::User->new;
+        my ( $rv, $msg ) = $user->load_by_email( $args{email} );
+        $args{principal_id} = $user->principal_id if $rv;
+    }
+
     my $principal = RT::Model::Principal->new;
-    $principal->load( $args{'principal_id'} );
+    if ( $args{'principal_id'} ) {
+        $principal->load( $args{'principal_id'} );
+    }
+    else {
+        my $user = RT::Model::User->new;
+        $user->load_by_email( $args{'email'} );
+        $principal->load( $user->id );
+    }
 
     # If we can't find this watcher, we need to bail.
     unless ( $principal->id ) {
@@ -845,14 +896,18 @@ sub delete_watcher {
         return ( 0, _("Group not found") );
     }
 
+    my $can_modify_queue = $self->current_user_has_right('ModifyQueueWatchers');
+
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
-    if ( $self->current_user->principal_id eq $args{'principal_id'} ) {
+    if ( defined $args{'principal_id'}
+        and $self->current_user->principal_id eq $args{'principal_id'} )
+    {
 
         #  If it's an AdminCc and they don't have
         #   'WatchAsAdminCc' or 'ModifyQueue', bail
         if ( $args{'type'} eq 'admin_cc' ) {
-            unless ( $self->current_user_has_right('ModifyQueueWatchers')
+            unless ( $can_modify_queue
                 or $self->current_user_has_right('WatchAsAdminCc') )
             {
                 return ( 0, _('Permission Denied') );
@@ -863,7 +918,7 @@ sub delete_watcher {
         #   'Watch' or 'ModifyQueue', bail
         elsif (( $args{'type'} eq 'cc' ) or ( $args{'type'} eq 'requestor' ) ) {
 
-            unless ( $self->current_user_has_right('ModifyQueueWatchers')
+            unless ( $can_modify_queue
                 or $self->current_user_has_right('Watch') )
             {
                 return ( 0, _('Permission Denied') );
@@ -877,7 +932,7 @@ sub delete_watcher {
     # If the watcher isn't the current user
     # and the current user  doesn't have 'ModifyQueueWathcers' bail
     else {
-        unless ( $self->current_user_has_right('ModifyQueueWatchers') ) {
+        unless ($can_modify_queue) {
             return ( 0, _("Permission Denied") );
         }
     }
@@ -892,7 +947,11 @@ sub delete_watcher {
 
     my ( $m_id, $m_msg ) = $group->_delete_member( $principal->id );
     unless ($m_id) {
-        Jifty->log->error( "Failed to delete " . $principal->id . " as a member of group " . $group->id . "\n" . $m_msg );
+        Jifty->log->error( "Failed to delete "
+              . $principal->id
+              . " as a member of group "
+              . $group->id . ": "
+              . $m_msg );
 
         return ( 0, _( 'Could not remove that principal as a %1 for this queue', $args{'type'} ) );
     }

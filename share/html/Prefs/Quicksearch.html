@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -58,7 +58,7 @@
 % for my $queue (@queues) {
 <li><input type="checkbox" class="checkbox" name="Want-<%$queue->name%>" value="1"
 % unless ($unwanted->{$queue->name}) {
-checked
+checked="checked"
 % }
 /><%$queue->name%>: <%$queue->description%></li>
 % }
@@ -87,8 +87,9 @@ if ($ARGS{'Save'}) {
         }
     }
 
-    $user->set_preferences('QuickSearch', $unwanted);
-    push @actions, _('Preferences saved.');
+    my ($ok, $msg) = $user->set_preferences('QuickSearch', $unwanted);
+    push @actions, $ok ? _('Preferences saved.') : $msg;
+
     # Let QueueSummary rebuild the cache
     delete $session{'quick_search_queues'};
 }

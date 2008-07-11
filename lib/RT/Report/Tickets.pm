@@ -59,6 +59,12 @@ sub groupings {
     my @fields = qw(
         owner
         status
+      Requestor
+      Cc
+      AdminCc
+      Watcher
+      Creator
+      LastUpdatedBy
         queue
         DueDaily
         DueMonthly
@@ -191,6 +197,11 @@ sub _field_to_function {
             my ( $ticket_cf_alias, $cf_alias ) = $self->_custom_field_join( $cf->id, $cf->id, $cf_name );
             @args{qw(alias column)} = ( $ticket_cf_alias, 'content' );
         }
+    }
+    elsif ( $field =~ /^(?:Watcher|(Requestor|Cc|AdminCc))$/ ) {
+        my $type = $1;
+        my ( $g_alias, $gm_alias, $u_alias ) = $self->_Watcherjoin($type);
+        @args{qw(alias column)} = ( $u_alias, 'name' );
     }
     return %args;
 }

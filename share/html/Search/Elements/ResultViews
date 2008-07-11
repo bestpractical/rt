@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -56,30 +56,23 @@ $RSSFeedURL => undef
 $Shortquery_string => undef
 
 </%args>
-<a href="<%RT->config->get('WebPath')%>/Search/Bulk.html<%$query_string%>"><&|/l&>update multiple tickets</&></a><br />
-<a href="<%RT->config->get('WebPath')%>/Search/Results.html<%$query_string%>"><&|/l&>Bookmarkable link</&></a><br />
-<a href="<%RT->config->get('WebPath')%>/Search/Results.tsv<%$query_string%>"><&|/l&>spreadsheet</&></a> |
-<a href="<%$RSSFeedURL%>"><&|/l&>RSS</&></a> |
-<a href="<%RT->config->get('WebPath')%>/Tools/Offline.html<%$Shortquery_string%>"><&|/l&>Work offline</&></a><br />
-
-<form method="get" action="<%RT->config->get('WebPath')%>/Search/Chart.html"><&|/l&>chart</&>
+<ul class="search-result-views">
+<li><a href="<%RT->config->get('WebPath')%>/Search/Results.tsv<%$QueryString%>"><&|/l&>Spreadsheet</&></a></li>
+<li><a href="<%$RSSFeedURL%>"><&|/l&>RSS</&></a></li>
+<li><a href="<%RT->config->get('WebURL')%>/NoAuth/iCal/<% $ical_path %>"><% _('iCal') %></a></li>
+<li><a href="<%RT->config->get('WebPath')%>/Tools/Offline.html<%$ShortQueryString%>"><&|/l&>Editable text</&></a></li>
+</ul>
+<form method="get" action="<%RT->config->get('WebPath')%>/Search/Chart.html">
 % my %hiddens = (query => $query, format => $format, Rows => $Rows, order_by => $order_by, order => $order);
 % foreach my $key (keys(%hiddens)) {
 <input type="hidden" class="hidden" name="<%$key%>" value="<%defined($hiddens{$key})?$hiddens{$key}:''%>" />
 % }
-<&|/l, $m->scomp('SelectGroupBy', name => 'PrimaryGroupBy', query => $query) &>grouped by %1</&>
-<&|/l, $m->scomp('SelectChartType', name => 'ChartStyle') &>style: %1</&>
-<input type="submit" class="button" value="<%_('Go')%>" />
+<&|/l, $m->scomp('SelectChartType', name => 'ChartStyle'), $m->scomp('SelectGroupBy', name => 'PrimaryGroupBy', Query => $Query) 
+&>%1 chart by %2</&><input type="submit" class="button" value="<%_('Go')%>" />
 </form>
-
-<%PERL>
-if ( Jifty->web->current_user->has_right( right => 'SuperUser', object => RT->system ) ) {
-    my $query_string = $m->comp('/Elements/QueryString',
-        Search => 1,
-        Plugin => 'Tickets',
-        'Tickets:query' => $query,
-        'Tickets:limit' => $Rows || '',
-    );
-</%PERL>
-<a href="<% RT->config->get('WebPath') %>/Admin/Tools/Shredder/?<% $query_string |n %>"><&|/l&>Shredder...</&></a>
-% }
+<%init>
+my $ical_path = join '/', map $m->interp->apply_escapes($_, 'u'),
+    Jifty->web->current_user->user_object->name,
+    Jifty->web->current_user->user_object->GenerateAuthString( $Query ),
+    $Query;
+</%init>

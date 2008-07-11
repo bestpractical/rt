@@ -1,27 +1,26 @@
 #!/usr/bin/perl
 use strict;
-use RT::Test; use Test::More tests => 46;
-use File::Temp;
+use warnings;
+
+use Test::More;
+
+use RT::Test;
+plan skip_all => 'GnuPG required.'
+    unless eval 'use GnuPG::Interface; 1';
+plan skip_all => 'gpg executable is required.'
+    unless RT::Test->find_executable('gpg');
+
+plan tests => 46;
 
 use Cwd 'getcwd';
 use String::ShellQuote 'shell_quote';
 use IPC::Run3 'run3';
 
-my $homedir = File::Spec->catdir( getcwd(), qw(lib t data crypt-gnupg) );
+my $homedir = RT::Test::get_abs_relocatable_dir(File::Spec->updir(),
+    qw(data gnupg keyrings));
 
 # catch any outgoing emails
-RT::Test->fetch_caught_mails;
-
-sub capture_mail {
-    my $MIME = shift;
-
-    open my $handle, '>>', 't/mailbox'
-        or die "Unable to open t/mailbox for appending: $!";
-
-    $MIME->print($handle);
-    print $handle "%% split me! %%\n";
-    close $handle;
-}
+RT::Test->set_mail_catcher;
 
 
 RT->config->set( LogToScreen => 'debug' );
@@ -32,7 +31,6 @@ RT->config->set( 'GnuPG',
 RT->config->set( 'GnuPGOptions',
                  homedir => $homedir,
                  'no-permission-warning' => undef);
-RT->config->set( MailCommand => \&capture_mail);
 
 RT->config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
@@ -301,7 +299,8 @@ run3(
 
 $buf =~ s/PGP MESSAGE/SCREWED UP/g;
 
-unlink 't/mailbox';
+RT::Test->fetch_caught_mails;
+
 $mail = RT::Test->open_mailgate_ok($baseurl);
 print $mail <<"EOF";
 From: recipient\@example.com
@@ -311,8 +310,7 @@ Subject: encrypted message for queue
 $buf
 EOF
 RT::Test->close_mailgate_ok($mail);
-my $mails = file_content_unlink('t/mailbox');
-my @mail = grep {/\S/} split /%% split me! %%/, $mails;
+my @mail = RT::Test->fetch_caught_mails;
 is(@mail, 1, 'caught outgoing mail.');
 }
 

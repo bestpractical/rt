@@ -2,7 +2,15 @@
 use strict;
 use warnings;
 
-use RT::Test; use Test::More tests => 111;
+use RT::Test;
+use Test::More;
+
+plan skip_all => 'GnuPG required.'
+    unless eval 'use GnuPG::Interface; 1';
+plan skip_all => 'gpg executable is required.'
+    unless RT::Test->find_executable('gpg');
+
+plan tests => 111;
 
 
 use File::Temp qw(tempdir);
@@ -42,7 +50,9 @@ RT::Test->import_gnupg_key('rt-recipient@example.com');
 
 my @ticket_ids;
 
-my @files = glob("t/data/mails/gnupg-basic-set/*-signed-*");
+my $emaildatadir = RT::Test::get_relocatable_dir(File::Spec->updir(),
+    qw(data gnupg emails));
+my @files = glob("$emaildatadir/*-signed-*");
 foreach my $file ( @files ) {
     diag "testing $file" if $ENV{'TEST_VERBOSE'};
 

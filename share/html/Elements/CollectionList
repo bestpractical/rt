@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -45,61 +45,14 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<table border="0" cellspacing="0" cellpadding="1" width="100%">
-
-% if ( $ShowHeader ) {
-<& /Elements/CollectionAsTable/Header,
-    %ARGS,
-    Class        => $Class,
-    format       => \@format,
-    format_string => $format,
-    order        => \@order,
-    order_by      => \@order_by,
-    Rows         => $Rows,
-    Page         => $Page,
-    AllowSorting => $AllowSorting, 
-    baseURL      => $baseURL,
-    maxitems     => $maxitems,
-&> 
-% }
-
-<%PERL>
-my $i = 0;
-while ( my $record = $Collection->next ) {
-    # Every ten rows, flush the buffer and put something on the page.
-    $m->flush_buffer unless ++$i % 10;
-    $m->comp('/Elements/CollectionAsTable/Row',
-        i => $i,
-        format => \@format,
-        record => $record,
-        maxitems => $maxitems,
-        Class     => $Class,
-    );
-}
-</%PERL>
-
-</table>
-
-% if ( $Rows && $ShowNavigation && $TotalFound > $Rows ) {
-<hr>
-% my $oddRows = ($TotalFound && $TotalFound % $Rows == 0 )? 0 : 1;
-<&|/l, $Page, int($TotalFound/$Rows)+$oddRows&>Page %1 of %2</&>
-
-<%PERL>
-my %query_args = map { $_ => $ARGS{$_} } @PassArguments;
-my $prev = $m->comp( '/Elements/QueryString', %query_args, Page => $Page - 1 );
-my $next = $m->comp( '/Elements/QueryString', %query_args, Page => $Page + 1 );
-</%PERL>
-% if ( $Page > 1 ) {
-<a href="<% $baseURL %><% $prev %>"><&|/l&>Previous Page</&></a>
-% }
-% if ( ($Page * $Rows) < $TotalFound ) {
-<a href="<% $baseURL %><% $next %>"><&|/l&>next Page</&></a>
-% }
-% }
 <%INIT>
-my $TotalFound = $Collection->count_all;
+if (!$Collection && $Class eq 'RT::Model::Tickets') {
+    $Collection = RT::Model::TicketCollection->new;
+    $Collection->from_sql($Query);
+}
+my $TotalFound = $Collection->count_all();
 return '' if !$TotalFound && !$ShowEmpty;
+
 
 if ( @order_by ) {
     if ( $order_by[0] =~ /\|/ ) {
@@ -113,6 +66,7 @@ if ( @order_by ) {
 }
 
 $Page = 1 unless $Page && $Page > 0; # workaround problems with Page = '' or undef
+$Page = 1 unless $Page && $Page > 0;    # workaround problems with $Page = '' or undef
 $Collection->set_page_info($Rows ? ( per_page => $Rows) : (per_page => 25), current_page => $Page);
 
 # display_format lets us use a "temporary" format for display, while 
@@ -139,29 +93,83 @@ foreach my $col (@format) {
     }
 }
 
-my $Class = ref $Collection;
+$Class ||= ref $Collection;
 $Class =~ s/Collection$//;
 $Class =~ s/:/_/g;
 
+$m->out('<table border="0" cellspacing="0" cellpadding="1"' . 
+	' width="100%" class="' . 
+	($Collection->isa('RT::Model::Tickets') ? 'ticket-list' : 'collection') . '">');
+
+if ( $ShowHeader ) {
+  $m->comp('/Elements/CollectionAsTable/Header',
+	   %ARGS,
+	   Class        => $Class,
+	   format       => \@format,
+	   formatString => $format,
+	   order        => \@order,
+	   order_by      => \@order_by,
+	   Rows         => $Rows,
+	   Page         => $Page,
+	   AllowSorting => $AllowSorting, 
+	   baseURL      => $BaseURL,
+	   GenericQueryArgs => $GenericQueryArgs,
+	   maxitems     => $maxitems,
+	   );
+}
+
+my ($i, $column_map) = (0, {});
+while ( my $record = $Collection->next ) {
+    # Every ten rows, flush the buffer and put something on the page.
+    $m->flush_buffer unless ++$i % 10;
+    $m->comp('/Elements/CollectionAsTable/Row',
+        i => $i,
+        format => \@format,
+        record => $record,
+        maxitems => $maxitems,
+        ColumnMap => $column_map,
+        Class     => $Class,
+    );
+}
+
+$m->out('</table>');
+if ( $Rows && $ShowNavigation && $TotalFound > $Rows ) {
+  my $oddRows = ($TotalFound && $TotalFound % $Rows == 0 )? 0 : 1;
+  my $pages = int( $TotalFound / $Rows ) + $oddRows;
+  $pages = 1 if $pages < 1;
+
+
+  my %query_args = map { $_ => $ARGS{$_} } @PassArguments;
+  $m->comp(
+        '/Elements/CollectionListPaging',
+        baseURL     => $BaseURL,
+        Rows        => $Rows,
+        TotalFound  => $TotalFound,
+        CurrentPage => $Page,
+        Pages       => $pages,
+        URLParams   => \%query_args
+    );
+
+}
+
+
 </%INIT>
 <%ARGS>
+$Class         => ''
 $Collection    => undef
-
 $format        => undef
 $display_format => undef
-
 @order         => ()
 @order_by       => ()
-
+$GenericQueryArgs => undef
 $Rows          => undef
 $Page          => 1
-
 $Title         => _('Ticket Search')
 $baseURL       => RT->config->get('WebPath') . $m->request_comp->path .'?'
 @PassArguments => qw(query format rows page order order_by)
-
 $AllowSorting   => 0
 $ShowNavigation => 1
 $ShowHeader     => 1
 $ShowEmpty      => 0
+$Query => 0
 </%ARGS>

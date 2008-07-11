@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -45,133 +45,23 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<table border="0" cellspacing="0" cellpadding="1" width="100%">
-
-% if ($ShowHeader) {
-<& /Elements/CollectionAsTable/Header, 
-    format => \@format, 
-    format_string => $format,
-    AllowSorting => $AllowSorting, 
-    order => $order, 
-    query => $query,
-    Rows => $Rows,
-    Page => $Page,
-    order_by => $order_by , 
-    baseURL => $baseURL,
-    maxitems => $maxitems &> 
-% }
-<%PERL>
-my $i = 0;
-while ( my $record = $Collection->next ) {
-    $i++;
-    # Every ten rows, flush the buffer and put something on the page.
-    $m->flush_buffer unless $i % 10;
-    $m->comp('/Elements/CollectionAsTable/Row',
-        i => $i,
-        format => \@format,
-        record => $record,
-        maxitems => $maxitems,
-    );
-}
-</%PERL>
-
-</table>
-
-% if ($Rows && $ShowNavigation) {
-<hr>
-% my $oddRows = ($TotalFound && $TotalFound % $Rows == 0 )? 0 : 1;
-% my $pages = int($TotalFound/$Rows)+$oddRows;
-% $pages = 1 if $pages < 1;
-<&|/l, $Page, $pages &>Page %1 of %2</&>
-
-<%perl>
-my $prev = $m->comp(
-    '/Elements/QueryString',
-    query   => $query,
-    format  => $format,
-    Rows    => $Rows,
-    order_by => $order_by,
-    order   => $order,
-    Page    => ( $Page - 1 )
-);
-my $next = $m->comp(
-    '/Elements/QueryString',
-    query   => $query,
-    format  => $format,
-    Rows    => $Rows,
-    order_by => $order_by,
-    order   => $order,
-    Page    => ( $Page + 1 )
-);
-</%perl>
-% if ($Page > 1) {
-<a href="<%$baseURL%><%$prev%>"><&|/l&>Previous Page</&></a>
-% }
-% if (($Page * $Rows) < $TotalFound) {
-<a href="<%$baseURL%><%$next%>"><&|/l&>next Page</&></a>
-% }
-% }
 <%INIT>
-unless ($Collection) {
-        $Collection = RT::Model::TicketCollection->new();
-        $Collection->from_sql( $query );
-}
-
-my $TotalFound =  $Collection->count_all();
-return '' if !$TotalFound && !$ShowEmpty;
-
-if ($order_by =~ /\|/) {
-    # Multiple Sorts
-    my @order_by = split /\|/,$order_by;
-    my @order = split /\|/,$order;
-    $Collection->order_by(
-        map { { column => $order_by[$_], order => $order[$_] } }
-        ( 0 .. $#order_by )
-    );
-} else {
-    $Collection->order_by(column => $order_by, order => $order); 
-}
-
-$Page = 1 unless $Page && $Page > 0; # workaround problems with Page = '' or undef
-$Collection->set_page_info(per_page => $Rows, current_page => $Page);
-
-# display_format lets us use a "temporary" format for display, while 
-# still using our original format for next/prev page links.
-# bulk update uses this feature to add checkboxes
-
-$display_format ||= $format;
-
-# Scrub the html of the format string to remove any potential nasties.
-$format = $m->comp('/Elements/ScrubHTML', content => $format);
-$display_format = $m->comp('/Elements/ScrubHTML', content => $display_format);
-
-my @format = $m->comp('/Elements/CollectionAsTable/ParseFormat', format => $display_format);
-
-# Find the maximum number of items in any row, so we can pad the table.
-my ($maxitems, $item) = (0, 0);
-foreach my $col (@format) {
-    $item++;
-    if ( $col->{title} && ($col->{title} eq 'NEWLINE') ) {
-        $item = 0;
-    }
-    else {
-        $maxitems = $item if $item > $maxitems;
-    }
-}
-
+$m->comp(
+	 '/Elements/CollectionList',
+	 %ARGS,
+	 Class => 'RT::Model::Tickets'
+	);
 </%INIT>
 <%ARGS>
 $Collection => undef
-
 $query => undef
 $format => RT->config->get('DefaultSearchResultFormat')
 $display_format => undef
 $order => undef
 $order_by => undef
 $Rows => 50
-
 $Page => 1
-$Title => 'Ticket Search'
+$Title => _('Ticket Search')
 $baseURL => undef
 $AllowSorting => undef
 $ShowNavigation => 1

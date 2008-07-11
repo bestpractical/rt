@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -134,7 +134,7 @@
 </table>
 % }
 </&>
-<& /Elements/Callback, _Callbackname => 'LeftColumnBottom', user_object => $user_object, %ARGS &>
+% $m->callback( %ARGS, Callbackname => 'LeftColumnBottom', user_object => $user_object );
 </td>
 
 <td valign="top" class="boxcontainer">
@@ -222,7 +222,7 @@
 % }
 </table>
 </&>
-<& /Elements/Callback, _Callbackname => 'RightColumnBottom', user_object => $user_object, %ARGS &>
+% $m->callback( %ARGS, Callbackname => 'RightColumnBottom', user_object => $user_object );
 </td></tr>
 <tr>
 <td colspan="2">
@@ -380,11 +380,11 @@ if ( $user_object->id ) {
 
 # Do some setup for the ui
 unless ( $user_object->id && $user_object->disabled ) {
-    $enabled_checked ="CHECKED";
+    $enabled_checked = 'checked="checked"';
 }
 
 if (!$Create && $user_object->privileged()) {  
-    $privilegedChecked = "CHECKED";
+    $privilegedChecked = 'checked="checked"';
 }
 
 # set the id, so the the menu will have the right info, this needs to

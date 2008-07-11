@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-require File::Spec;
+use File::Spec;
 require File::Path;
 require File::Copy;
 require Cwd;
@@ -127,7 +127,10 @@ sub _init_db {
     foreach (qw(Type Host Port Name User password)) {
         $ENV{ "RT_DB_" . uc $_ } = RT->config->get("Database$_");
     }
-    my $cmd = "$^X sbin/rt-setup-database --action init";
+    my $rt_setup_database =
+      RT::Test::get_relocatable_file( 'rt-setup-database',
+        ( File::Spec->updir(), File::Spec->updir(), 'sbin' ) );
+    my $cmd = "$^X $rt_setup_database --action init";
 
     my ( $child_out, $child_in );
     my $pid = open2( $child_out, $child_in, $cmd );
@@ -139,7 +142,7 @@ sub _init_db {
 =head3 db_name
 
 Returns absolute file path to the current DB.
-It is C<cwd() .'/t/data/tmp/'. test_name() .'.db'>.
+It is C<cwd() .'/t/data/shredder/'. test_name() .'.db'>.
 See also C<test_name> function.
 
 =cut
@@ -199,15 +202,19 @@ sub test_name {
 =head3 tmpdir
 
 Return absolute path to tmp dir used in tests.
-It is C<cwd(). "t/data/tmp">.
+It is C<Cwd->getcwd()>. $directories . "../data/shredder", relative to the
+location of this file, where $directories is the directory portion of $0.
 
 =cut
 
-sub tmpdir { return File::Spec->catdir( Cwd::cwd(), qw(lib t data shredder) ) }
+sub tmpdir {
+    return RT::Test::get_abs_relocatable_dir( File::Spec->updir(), 'data',
+        'shredder' );
+}
 
 =head2 create_tmpdir
 
-Creates tmp dir if doesn't exist. Returns tmpdir absolute path.
+Creates tmp dir if doesn't exist. Returns tmpdir path.
 
 =cut
 
@@ -215,7 +222,7 @@ sub create_tmpdir { my $n = tmpdir(); File::Path::mkpath($n); return $n }
 
 =head3 cleanup_tmp
 
-Delete all tmp files that match C<t/data/tmp/test_name.*> mask.
+Delete all tmp files that match C<t/data/shredder/test_name.*> mask.
 See also C<test_name> function.
 
 =cut
@@ -378,6 +385,16 @@ sub is_all_successful {
     use Test::Builder;
     my $Test = Test::Builder->new;
     return grep( !$_, $Test->summary ) ? 0 : 1;
+}
+
+END {
+    return unless -e tmpdir();
+    if ( is_all_successful() ) {
+        cleanup_tmp();
+    }
+    else {
+        diag( note_on_fail() );
+    }
 }
 
 1;

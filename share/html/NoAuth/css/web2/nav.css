@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -45,99 +45,159 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-#nav {
-    float: left;
-    clear: both;
-    height: 4em;
-    width: 100%;
-    background: #999;
-    padding-top: 1em;
+div#nav {
+ position: absolute;
+ left: 0;
+ font-size: 0.9em;
+ top: 3.2em;
+ width: 10.5em;
+ background: #fff;
+ -moz-border-radius-bottomright: 0.5em;
+ -webkit-border-bottom-right-radius: 0.5em;
+  border-left: 1px solid #999;  
+border-top: 1px solid #999;
+
+ -moz-border-radius-topright: 0.5em;
+ -webkit-border-top-right-radius: 0.5em;
+ z-index: 99;
+
+
 }
 
-#nav ul {
-    float: left;
-    clear: left;
-    color: #eee;
-    font-weight: bold;
-    
-    margin: 0;
-    padding: 0;
-     
+div#nav ul {
+ padding-left: 0.75em;
+ margin-left: 0;
+ padding-right: 0.75em;
+ list-style-type: none;
 }
 
-#nav li ul {
+div#nav li:first-child {
+ border-top: 1px solid #ccc;
+ padding-top: 0.25em;
+
 }
 
-/*
-%# We need the extra padding above for browsers where we display the arrows
-%# but those don't work in IE so we don't want as much spacing
-%# 
-%# IE wrongly matches the selector below even though there isn't an element
-%# above <html> in the doc tree
-*/
-* html #nav li ul {
+div#nav li {
+ padding: 0.125em;
+ padding-bottom: 0.25em;
+ margin-bottom: 0.25em;
+ border-bottom: 1px solid #ccc;
+ padding-left: 0.5em;
+ margin-right: 0.25em;
+ margin-left: 0em;
+}
+
+div#nav li li:first-child {
     margin-top: 0.25em;
 }
+div#nav li li {
+    margin-left: -0.5em;
+    padding-left: 0.25em;
+    margin-right: -0.5em;
+}
 
-#nav li {
-    display: inline;
-    margin-bottom: 1em;
-    padding: 0.2em 0 0.4em 0;
+div#nav li li:last-child {
+    margin-bottom: 0; 
+    padding-bottom: 0;
+    border: none;
+}
+
+div#nav .bullet {
+ display: none;
+}
+
+div#nav .separator {
+display: none;
 }
 
 
-#nav ul div div.wrapper {
-    text-align: left;
-    padding: 0.2em 1em 0.4em 0;
-    margin-left:0;
+div#nav a, div#page-navigation a{
+ text-decoration: none;
+ font-weight: normal;
+ color: #000;
 }
 
-
-#nav :link,
-#nav :visited
-{
-    color: #ececec;
-    text-decoration: none;
-}
-
-#nav :link.selected,
-#nav :visited.selected,
-#nav :link:hover,
-#nav :visited:hover
-{
-    color: #fc6; /*#ff6;*/
-}
-
-#nav :link.selected,
-#nav :visited.selected
-{
-    text-decoration: underline;
+div#nav a:hover, div#page-navigation a:hover {
+ text-decoration: underline;
 }
 
 
 
-
-#header #page-menu {
-    width: 100%;
-    height: 3em;
-    margin-top: -3.5em;
-    text-align: left;
-    padding-right: 0em;
-    float: left;
-    clear: both;
-    background: #999;
-}
-
-#header ul li {
-    display: inline;
+div#nav a.selected, div#page-navigation a.selected {
+  font-weight: bold;
 }
 
 
-
-#actions-menu  div div div{
-    position: relative;
-    right: 0;
-    top: -2em;
-    float: right;
-    margin-right: 2em;
+div#nav a.selected:after {
+/* content: " > " */
 }
+
+div#page-navigation {
+ background: white;
+ position: relative;
+ width:100%;
+ z-index: 10;
+
+}
+
+
+div#page-navigation ul {
+
+}
+
+div#page-navigation ul#page-menu {
+ display: block;
+ position: absolute;
+ left: 8em;
+ font-size: 0.9em;
+ top: 2.3em;
+ height: 1em;
+ background-color: white;
+ right: 0em;
+ padding-top:0.3em;
+ padding-bottom:0.5em;
+ border-top: 1px solid #aaa;
+
+}
+
+/* ie hack */
+* html div#page-navigation ul#page-menu {
+    left: 6.5em;
+    top: 3.2em;
+    padding-left: 2em;
+}
+
+
+div#page-navigation ul#actions-menu {
+ position: absolute;
+ right: 1em;
+ top: 5.2em;
+ margin-top: 0em;
+ padding: 0.25em;
+ padding-left: 0.5em;
+ padding-right: 0.5em;
+
+ background: #dedede;
+ border-left: 1px solid #aaa;
+ border-bottom: 2px solid #aaa;
+ -moz-border-radius-bottomleft: 0.5em;
+ -webkit-border-bottom-left-radius: 0.5em;
+ -moz-border-radius-topright: 0.25em;
+ -webkit-border-top-right-radius: 0.25em;
+
+
+
+}
+
+
+
+div#page-navigation ul li{
+ display: inline;
+
+}
+
+
+ul.page-navigation ul.page-menu {
+ float: right;
+}
+

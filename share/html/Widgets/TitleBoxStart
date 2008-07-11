@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -45,13 +45,23 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<div class="titlebox <% $class %>" id="<% $id %>">
-  <div class="titlebox-title<% $title_class && " $title_class" %>">
+<div class="titlebox<% $class ? " $class " : '' %>" id="<% $id %>">
+  <div class="titlebox-title<% $title_class ? " $title_class" : ''%>">
 % if (0) { #$hideable) {
-    <span class="widget"><a href="#" onclick="return rollup('<%$tid%>');" onfocus="this.blur(); return false;" title="Toggle visibility">X</a></span>
+    <span class="widget"><a href="#" 
+	onclick="return rollup('<%$tid%>');" 
+	onfocus="this.blur(); return false;" 
+	title="Toggle visibility">X</a>
+	</span>
 % }
-    <span class="left"><% $title_href && qq[<a href="$title_href">] | n %><% $title %><% $title_raw |n %><% $title_href && "</a>" |n%></span>
-    <span class="right"><% $titleright_href && qq[<a href="$titleright_href">] | n %><% $titleright  %><% $titleright_raw |n%> <% $titleright_href && "</a>" |n%></span>
+    <span class="left">
+      	<% $title_href ? qq[<a href="$title_href">] : '' | n 
+        %><% $title %><% $title_raw |n %><% $title_href ? "</a>" : '' |n%>
+    </span>
+    <span class="right<%($titleright_href || $titleright || $titleright_raw) ? '' : '-empty' %>">
+	<% $titleright_href ? qq[<a href="$titleright_href">] : '' | n %>
+	<% $titleright  %><% $titleright_raw |n%><% $titleright_href ? "</a>" : '' |n%>
+    </span>
   </div>
   <div class="titlebox-content <% $bodyclass %>" id="<% $tid %>">
 
@@ -75,9 +85,10 @@ $hideable => 1
 #
 my $page = $m->request_comp->path;
 
-my $tid  ='';# "TitleBox--$page--" .  join '--', ($class, $bodyclass, $title, $id);
+my $tid  ='';
+# "TitleBox--$page--" .  join '--', ($class, $bodyclass, $title_b64, $id);
 
-#$tid =~ s{[/\s]+}{_}g;
+#$tid =~ s{[/\s'\\]+}{_}g;
 
 #my $i = 0;
 #$i++ while $m->notes("$tid-$i");

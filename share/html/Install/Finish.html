@@ -1,0 +1,92 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<&| Elements/Wrapper, Title => loc('Step [_1] of [_2]: ', 7, 7) . loc('Finish') &> 
+
+<div class="intro">
+<p>
+<&|/l&>Click "Finish Installation" below to complete this wizard.</&>
+</p>
+
+<p>
+<&|/l&>You should be taken directly to a login page. You'll be able to log in with username of <tt>root</tt> and the password you set earlier.</&>
+</p>
+
+<p>
+<&|/l&>If you've change the Port that RT runs on, you'll need to restart the server in order to log in.</&>
+</p>
+
+<p>
+<&|/l, RT::Installer->ConfigFile &>The settings you've chosen are stored in [_1].  You can edit this file to refine your configuration further. You can prevent this installation wizard from being shown again by running `<tt>chmod -w '[_1]'</tt>`.</&>
+</p>
+</div>
+
+<form method="post">
+<input type="hidden" value="1" name="Run" />
+<& /Elements/Submit, Label => 'Finish Installation' &>
+</form>
+
+</&>
+<%init>
+if ( $Run ) {
+    RT->InstallMode(0);
+    RT->ConnectToDatabase();
+    RT->InitSystemObjects();
+    RT->InitClasses();
+    RT->InitPlugins();
+
+    my $root = RT::User->new( $RT::SystemUser );
+    $root->Load('root');
+    $root->SetPassword( $RT::Installer->{InstallConfig}{Password} );
+
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL'));
+}
+</%init>
+
+<%args>
+$Run => undef
+</%args>

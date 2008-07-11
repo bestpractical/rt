@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -56,7 +56,7 @@
 <script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/cascaded.js"></script>
 %#      XXX - Hide this select from w3m?
       <select onchange="filter_cascade('<% $id %>-values', this.value)" name="<% $id %>-category">
-        <option value="" <% !$selected && 'selected' %>><&|/l&>-</&></option>
+        <option value=""<% !$selected && qq[ selected="selected"] |n %>><&|/l&>-</&></option>
 %           foreach my $cat (@category) {
 %               my ($depth, $name) = @$cat;
         <option value="<% $name %>"><% '&nbsp;' x $depth |n %><% $name %></option>
@@ -67,8 +67,8 @@
 %       if ( $Rows && ( $Multiple || !@category ) ) {
         size="<% $Rows %>"
 %       }
-        <% $Multiple && 'multiple' %> >
-        <option value="" <% !$selected && 'SELECTED' %>><&|/l&>(no value)</&></option>
+        <% $Multiple && qq[multiple="multiple"] |n %> >
+        <option value=""<% !$selected && qq[ selected="selected"] |n %>><&|/l&>(no value)</&></option>
 %       $m->out($out);
       </select>
 <%ARGS>
@@ -83,6 +83,11 @@ $Rows => undef
 
 <%METHOD options>
 % @default = grep defined && length, @Default;
+% # $Values->HasEntry is too slow here
+% if ( !@default && $Values ) {
+%     @default = map $_->Content, @{$Values->ItemsArrayRef};
+% }
+% $_ = lc $_ foreach @Default;
 % my $selected;
 % my $CFVs = $CustomField->values;
 % my @levels;
@@ -107,11 +112,10 @@ $Rows => undef
 %           push @levels, $level;
 %       }
         <option value="<% $name %>"
-%       if ( ( grep $_ eq $name, @Default )
-%            || ( $values && $values->has_entry( $name ) ) )
+%       if ( grep $_ eq lc $name, @default )
 %       {
 %           $$SelectedRef = 1;
-            selected
+            selected="selected"
 %       }
         ><% $name %></option>
 % }

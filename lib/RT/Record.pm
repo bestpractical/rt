@@ -302,7 +302,6 @@ sub create {
     }
 
     if ( UNIVERSAL::isa( 'errno', $id ) ) {
-        die "it's an errno";
         return (undef);
     }
 
@@ -613,7 +612,7 @@ sub _encode_lob {
         $content_encoding = 'base64';
 
         #cut the max attchment size by 25% (for mime-encoding overhead.
-        Jifty->log->debug("Max size is $MaxSize\n");
+        Jifty->log->debug("Max size is $MaxSize");
         $MaxSize = $MaxSize * 3 / 4;
 
         # Some databases (postgres) can't handle non-utf8 data
@@ -641,7 +640,9 @@ sub _encode_lob {
         elsif ( RT->config->get('DropLongAttachments') ) {
 
             # drop the attachment on the floor
-            Jifty->log->info( "$self: Dropped an attachment of size " . length($Body) . "\n" . "It started: " . substr( $Body, 0, 60 ) . "\n" );
+            Jifty->log->info(
+                "$self: Dropped an attachment of size " . length($Body) );
+            Jifty->log->info( "It started: " . substr( $Body, 0, 60 ) );
             return ( "none", "Large attachment dropped" );
         }
     }
@@ -682,7 +683,6 @@ sub _decode_lob {
     return ($content);
 }
 
-# {{{ LINKDIRMAP
 # A helper table for links mapping to make it easier
 # to build and parse links between tickets
 
@@ -878,9 +878,10 @@ sub depended_on_by {
 
 =head2 has_unresolved_dependencies
 
-  Takes a paramhash of type (default to '__any').  Returns true if
-$self->unresolved_dependencies returns an object with one or more members
-of that type.  Returns false otherwise
+Takes a paramhash of type (default to '__any').  Returns the number of
+unresolved dependencies, if $self->unresolved_dependencies returns an
+object with one or more members of that type.  Returns false
+otherwise.
 
 
 
@@ -906,7 +907,7 @@ sub has_unresolved_dependencies {
     }
 
     if ( $deps->count > 0 ) {
-        return 1;
+        return $deps->count;
     } else {
         return (undef);
     }
@@ -1046,6 +1047,50 @@ sub _links {
 
 =head2 _add_link
 
+# {{{ sub formatType
+
+=head2 formatType
+
+Takes a type and returns a string that is more human readable.
+
+=cut
+
+sub formatType {
+    my $self = shift;
+    my %args = (
+        type => '',
+        @_
+    );
+    $args{type} =~ s/([A-Z])/" " . lc $1/ge;
+    return $args{type};
+}
+
+# }}}
+
+# {{{ sub formatLink
+
+=head2 formatLink
+
+Takes either a target or a base and returns a string of human friendly text.
+
+=cut
+
+sub formatLink {
+    my $self = shift;
+    my %args = (
+        object   => undef,
+        FallBack => '',
+        @_
+    );
+    my $text = "URI " . $args{fall_back};
+    if ( $args{object} && $args{object}->isa("RT::Model::Ticket") ) {
+        $text = "Ticket " . $args{object}->id;
+    }
+    return $text;
+}
+
+# }}}
+
 Takes a paramhash of type and one of base or target. Adds that link to this object.
 
 Returns C<link id>, C<message> and C<exist> flag.
@@ -1068,7 +1113,7 @@ sub _add_link {
     my $direction;
 
     if ( $args{'base'} and $args{'target'} ) {
-        Jifty->log->debug( "$self tried to create a link. both base and target were specified\n" );
+        Jifty->log->debug( "$self tried to create a link. both base and target were specified" );
         return ( 0, _("Can't specifiy both base and target") );
     } elsif ( $args{'base'} ) {
         $args{'target'} = $self->uri();
@@ -1109,6 +1154,17 @@ sub _add_link {
         Jifty->log->error( "Link could not be Created: " . $linkmsg );
         return ( 0, _("Link could not be Created") );
     }
+    my $basetext = $self->formatLink(
+        object   => $link->base_obj,
+        FallBack => $args{base}
+    );
+    my $targettext = $self->formatLink(
+        object   => $link->target_obj,
+        FallBack => $args{target}
+    );
+    my $typetext = $self->formatType( type => $args{type} );
+    my $TransString = "$basetext $typetext $targettext.";
+    return ( $linkid, $TransString );
 
     my $TransString = "Record $args{'base'} $args{'type'} record $args{'target'}.";
 
@@ -1143,7 +1199,7 @@ sub _delete_link {
     my $remote_link;
 
     if ( $args{'base'} and $args{'target'} ) {
-        Jifty->log->debug("$self ->_delete_link. got both base and target\n");
+        Jifty->log->debug("$self ->_delete_link. got both base and target");
         return ( 0, _("Can't specifiy both base and target") );
     } elsif ( $args{'base'} ) {
         $args{'target'} = $self->uri();
@@ -1154,12 +1210,12 @@ sub _delete_link {
         $remote_link  = $args{'target'};
         $direction    = 'base';
     } else {
-        Jifty->log->error("base or target must be specified\n");
+        Jifty->log->error("base or target must be specified");
         return ( 0, _('Either base or target must be specified') );
     }
 
     my $link = RT::Model::Link->new();
-    Jifty->log->debug( "Trying to load link: " . $args{'base'} . " " . $args{'type'} . " " . $args{'target'} . "\n" );
+    Jifty->log->debug( "Trying to load link: " . $args{'base'} . " " . $args{'type'} . " " . $args{'target'} );
 
     $link->load_by_params(
         base   => $args{'base'},
@@ -1169,17 +1225,24 @@ sub _delete_link {
 
     #it's a real link.
     if ( $link->id ) {
-
+        my $basetext = $self->formatLink(
+            object   => $link->base_obj,
+            FallBack => $args{base}
+        );
+        my $targettext = $self->formatLink(
+            object   => $link->target_obj,
+            FallBack => $args{target}
+        );
+        my $typetext = $self->formatType( type => $args{type} );
         my $linkid = $link->id;
         $link->delete();
-
-        my $TransString = "Record $args{'base'} no longer $args{'type'} record $args{'target'}.";
-        return ( 1, _( "Link deleted (%1)", $TransString ) );
+        my $TransString = "$basetext no longer $typetext $targettext.";
+        return ( 1, $TransString );
     }
 
     #if it's not a link we can find
     else {
-        Jifty->log->debug("Couldn't find that link\n");
+        Jifty->log->debug("Couldn't find that link");
         return ( 0, _("Link not found") );
     }
 }

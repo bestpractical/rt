@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT::Test; use Test::More; 
-plan tests => 25;
+plan tests => 24;
 use RT;
 {
 
@@ -49,23 +49,29 @@ ok(!$id, $val);
 
 {
 
-my $Queue = RT::Model::Queue->new(current_user => RT->system_user); my ($id, $msg) = $Queue->create(name => "Foo",
-                );
+my $Queue = RT::Model::Queue->new(current_user => RT->system_user);
+my ($id, $msg) = $Queue->create(name => "Foo");
 ok ($id, "Foo $id was Created");
 ok(my $group = RT::Model::Group->new(current_user => RT->system_user));
 ok($group->load_queue_role_group(queue => $id, type=> 'requestor'));
 ok ($group->id, "Found the ccs object for this Queue");
 
 
-ok (my ($add_id, $add_msg) = $Queue->add_watcher(type => 'cc', email => 'bob@fsck.com'), "Added bob at fsck.com as a cc");
-ok ($add_id, "Add succeeded: ($add_msg)");
+{
+    my ($status, $msg) = $Queue->add_watcher(type => 'cc', email => 'bob@fsck.com');
+    ok ($status, "Added bob at fsck.com as a requestor") or diag "error: $msg";
+}
 ok(my $bob = RT::Model::User->new(current_user => RT->system_user), "Creating a bob rt::user");
 $bob->load_by_email('bob@fsck.com');
 ok($bob->id,  "Found the bob rt user");
-ok ($Queue->is_watcher(type => 'Cc', principal_id => $bob->principal_id), "The queue actually has bob at fsck.com as a cc");;
-ok (($add_id, $add_msg) = $Queue->delete_watcher(type =>'cc', principal_id => $bob->principal_id ), "Removed bob at fsck.com as a cc");
-ok (!$Queue->is_watcher(type => 'Cc', principal_id => $bob->principal_id), "The queue no longer has bob at fsck.com as a cc");;
+ok ($Queue->IsWatcher(type => 'cc', principal_id => $bob->principal_id), "The queue actually has bob at fsck.com as a requestor");
 
+{
+    my ($status, $msg) = $Queue->delete_watcher(type =>'cc', email => 'bob@fsck.com');
+    ok ($status, "Deleted bob from Ccs") or diag "error: $msg";
+    ok (!$Queue->IsWatcher(type => 'cc', principal_id => $bob->principal_id),
+        "The queue no longer has bob at fsck.com as a requestor");
+}
 
 $group = RT::Model::Group->new(current_user => RT->system_user);
 ok($group->load_queue_role_group(queue => $id, type=> 'cc'));

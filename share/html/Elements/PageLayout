@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <div id="topactions">
 % foreach my $action (reverse sort keys %{$topactions}) {
-<span class="topaction"><% $topactions->{"$action"}->{'html'} |n %></span>
+<span class="topaction" id="topaction-<%$action%>"><% $topactions->{"$action"}->{'html'} |n %></span>
 % }
 </div>
 
@@ -68,36 +68,30 @@
 % my $count     = 0;
 % my $class     = { };
 % 
-  <ul id="page-menu"<% (($actions && %$actions) || ($subactions && %$subactions)) && q[ class="actions-present"] | n %>>
+  <ul id="page-menu" <% (($actions && %$actions) || ($subactions && %$subactions)) && q[ class="actions-present"] | n %>>
     <div><div><div>
-% if ($page_tabs) {
-%     foreach my $tab (sort keys %{$page_tabs}) {
-%         next if $tab =~ /^(?:current_toptab|this)$/;
-%         $count++;
-%
-%         my $current = $page_tabs->{current_toptab} || "";
-%         my $path    = $page_tabs->{$tab}->{'path'} || "";
-%         
-%         $path    =~ s#/index.html$##gi;
-%         $current =~ s#/index.html$##gi;
-%         
-%         $sep = $toptabs->{$tab}->{'separator'} ? 1 : 0;
-%
-%         $class->{a} = $path eq $current ? ' class="selected"' : undef;
-%
-%         my @li;
-%         push @li, 'first'
-%                if $count == 1;
-%
-%         push @li, 'pre-separator'
-%                if $sep;
-%
-%         push @li, 'post-separator'
-%                if $postsep;
-%
-%         $class->{li} = join ' ', @li;
-%     
-%
+<%perl>
+ if ($page_tabs) {
+     my @tabs = ( sort grep { $_ !~ /^(?:current_toptab|this)$/ } keys %{$page_tabs});
+     foreach my $tab ( @tabs ) {
+         $count++;
+
+         my $current = $page_tabs->{current_toptab} || "";
+         my $path    = $page_tabs->{$tab}->{'path'} || "";
+         
+         $path    =~ s#(/index\.html)?(\?)?$##gi;
+         $current =~ s#(/index\.html)?(\?)?$##gi;
+         
+         $sep = $toptabs->{$tab}->{'separator'} ? 1 : 0;
+         $class->{a} = $path eq $current ? ' class="selected"' : undef;
+
+         my @li;
+         push @li, 'first' if $count == 1;
+         push @li, 'pre-separator' if $sep;
+         push @li, 'post-separator' if $postsep;
+         push @li, 'last' if $tab eq $tabs[-1];
+         $class->{li} = join ' ', @li;
+</%perl>
     <li<% $class->{li} ? qq[ class="$class->{li}"] : ''|n %>><% $count > 1 && !$postsep && "&#183; "|n%><a href="<%RT->config->get('WebPath')%>/<%$page_tabs->{$tab}->{'path'}%>"<%$class->{a}|n%><% $class->{a} ? ' name="focus"' : ''|n %>><% $page_tabs->{$tab}->{'title'} %></a></li>
 %
 %         if ($sep) {
@@ -114,31 +108,28 @@
 % if (($actions && %$actions) || ($subactions && %$subactions)) {
   <ul id="actions-menu">
     <div><div><div>
-% $sep       = 0;
-% $postsep   = 0;
-% $count     = 0;
-% $class     = { };
-%
-% for my $type ($actions, $subactions) {
-%
-% if ($type && %$type) {
-%     foreach my $action (sort keys %{$type}) {
-%         $count++;
-%
-%         $sep = $type->{$action}->{'separator'} ? 1 : 0;
-%
-%         my @li;
-%         push @li, 'first'
-%                if $count == 1;
-%
-%         push @li, 'pre-separator'
-%                if $sep;
-%
-%         push @li, 'post-separator'
-%                if $postsep;
-%
-%         $class->{li} = join ' ', @li;
-%
+<%perl>
+ $sep       = 0;
+ $postsep   = 0;
+ $count     = 0;
+ $class     = { };
+
+ for my $type ($actions, $subactions) {
+
+ if ($type && %$type) {
+     my @actions  = sort keys %{$type};
+     foreach my $action (@actions) {
+         $count++;
+         $sep = $type->{$action}->{'separator'} ? 1 : 0;
+
+         my @li;
+         push @li, 'first' if $count == 1;
+         push @li, 'pre-separator' if $sep;
+         push @li, 'post-separator' if $postsep;
+         push @li, 'last' if $action  eq $actions[-1];
+
+         $class->{li} = join ' ', @li;
+</%perl>
     <li<% $class->{li} ? qq[ class="$class->{li}"] : ''|n %>><% $count > 1 && !$postsep && qq[<span class="bullet">&#183; </span>]|n%>
 %         if ($type->{"$action"}->{'html'}) {
       <% $type->{"$action"}->{'html'} | n %>

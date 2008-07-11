@@ -57,11 +57,8 @@ Returns true if the ticket we're operating on is overdue
 =cut
 
 package RT::Condition::Overdue;
-require RT::Condition::Generic;
-
+use base 'RT::Condition';
 use strict;
-use vars qw/@ISA/;
-@ISA = qw(RT::Condition::Generic);
 
 =head2 is_applicable
 

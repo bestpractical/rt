@@ -97,6 +97,11 @@ $RIGHTS = {
     EditSavedSearches    => 'Edit saved searches for this group',                          # loc_pair
     ShowSavedSearches    => 'Display saved searches for this group',                       # loc_pair
     SeeGroup             => 'Make this group visible to user',                             # loc_pair
+
+    SeeGroupDashboard    => 'View dashboards for this group',        #loc_pair
+    CreateGroupDashboard => 'Create dashboards for this group',      #loc_pair
+    ModifyGroupDashboard => 'Modify dashboards for this group',      #loc_pair
+    DeleteGroupDashboard => 'Delete dashboards for this group',      #loc_pair
 };
 
 # Tell RT::Model::ACE that this sort of object can get acls granted
@@ -215,27 +220,26 @@ sub load_user_defined_group {
 
 # {{{ sub load_acl_equivalence_group
 
-=head2 load_acl_equivalence_group  PRINCIPAL
+=head2 load_acl_equivalence_group PRINCIPAL
 
-Loads a user's acl equivalence group. Takes a principal object.
+Loads a user's acl equivalence group. Takes a principal object or its ID.
 ACL equivalnce groups are used to simplify the acl system. Each user
 has one group that only he is a member of. Rights granted to the user
 are actually granted to that group. This greatly simplifies ACL checks.
 While this results in a somewhat more complex setup when creating users
 and granting ACLs, it _greatly_ simplifies acl checks.
 
-
-
 =cut
 
 sub load_acl_equivalence_group {
-    my $self  = shift;
-    my $princ = shift;
+    my $self      = shift;
+    my $principal = shift;
+    $principal = $principal->id if ref $principal;
 
-    $self->load_by_cols(
-        "domain"   => 'ACLEquivalence',
-        "type"     => 'UserEquiv',
-        "instance" => $princ->id
+    return $self->load_by_cols(
+        Domain   => 'ACLEquivalence',
+        type     => 'UserEquiv',
+        Instance => $principal,
     );
 }
 
@@ -281,9 +285,9 @@ sub load_system_internal_group {
     my $self       = shift;
     my $identifier = shift;
 
-    $self->load_by_cols(
-        "domain" => 'SystemInternal',
-        "type"   => $identifier
+    return $self->load_by_cols(
+        Domain => 'SystemInternal',
+        type   => $identifier,
     );
 }
 
@@ -435,6 +439,7 @@ sub _create {
     );
     my $id = $self->id;
     unless ($id) {
+        Jifty->handle->rollback() unless ( $args{'inside_transaction'} );
         return ( 0, _('Could not create group') );
     }
 
@@ -729,7 +734,12 @@ sub set_disabled {
     }
 
     Jifty->handle->commit();
-    return ( 1, _("Succeeded") );
+    if ( $val == 1 ) {
+        return ( 1, _("Group disabled") );
+    }
+    else {
+        return ( 1, _("Group enabled") );
+    }
 
 }
 
@@ -988,7 +998,13 @@ sub _add_member {
     if ( $self->has_member($new_member_obj) ) {
 
         #User is already a member of this group. no need to add it
-        return ( 0, _("Group already has member") );
+        return (
+            0,
+            _(
+                "Group already has member: %1",
+                $new_member_obj->object->name
+            )
+        );
     }
     if (   $new_member_obj->is_group
         && $new_member_obj->object->has_member_recursively( $self->principal_object ) )
@@ -1005,7 +1021,8 @@ sub _add_member {
         inside_transaction => $args{'inside_transaction'}
     );
     if ($id) {
-        return ( 1, _("Member added") );
+        return ( 1,
+            _( "Member added: %1", $new_member_obj->object->name ) );
     } else {
         return ( 0, _("Couldn't add member to group") );
     }
@@ -1036,7 +1053,11 @@ sub has_member {
         $id = $principal;
     } else {
         Carp::cluck;
-        Jifty->log->error( "Group::has_member was called with an argument that" . " isn't an RT::Model::Principal or id. It's $principal" );
+        Jifty->log->error(
+            "Group::has_member was called with an argument that"
+              . " isn't an RT::Model::Principal or id. It's "
+              . ( $principal || '(undefined)' )
+        );
         return (undef);
     }
     return undef unless $id;

@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -194,13 +194,10 @@ function createCalendarLink(input) {
     if (e) {
         var link = document.createElement('a');
         link.set_attribute('href', '#');
+        $(link).observe('click', function(ev) { openCalWindow(input); ev.stop(); });
+        //link.setAttribute('onclick', "openCalWindow('"+input+"'); return false;");
 
-        clickevent = function clickevent(e) { openCalWindow(input); return false; };
-        if (! addEvent(link, "click", clickevent)) {
-            return false;
-        }
-        
-        var text = document.createTextNode('<% _("Choose a date") %>');
+        var text = document.createTextNode('<% _("Calendar") %>');
         link.appendChild(text);
 
         var space = document.createTextNode(' ');
@@ -225,17 +222,6 @@ function updateParentField(field, value) {
         window.opener.$(field).value = value;
         window.close();
     }
-}
-
-function addEvent(obj, sType, fn) {
-    if (obj.addEventListener) {
-        obj.addEventListener(sType, fn, false);
-    } else if (obj.attachEvent) {
-        var r = obj.attachEvent("on"+sType, fn);
-    } else {
-        return false;
-    }
-    return true;
 }
 
 function setCheckbox(form, name, val) {

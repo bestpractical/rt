@@ -101,25 +101,33 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            description => 'Interface style',              #loc
-                                                           # XXX: we need support for 'get values callback'
-            values      => [qw(3.5-default 3.4-compat)],
+            description => 'Theme',                  #loc
+                 # XXX: we need support for 'get values callback'
+            values => [qw(3.5-default 3.4-compat web2)],
         },
     },
     DefaultSummaryRows => {
-        Section         => 'General',
+        Section         => 'RT at a glance',          #loc
         Overridable     => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            description => 'Number of rows displayed in search results on the frontpage',    #loc
+            description => 'Number of search results',    #loc
         },
+    },
+    MessageBoxRichText => {
+        Section         => 'General',
+        Overridable     => 1,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            description => 'WYSIWYG message composer'     # loc
+        }
     },
     MessageBoxWidth => {
         Section         => 'General',
         Overridable     => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            description => 'Message box width',                                              #loc
+            description => 'Message box width',           #loc
         },
     },
     MessageBoxHeight => {
@@ -127,43 +135,165 @@ our %META = (
         Overridable     => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            description => 'Message box height',                                             #loc
+            description => 'Message box height',          #loc
         },
     },
     MaxInlineBody => {
-        Section         => 'Ticket display',                                                 #loc
+        Section => 'Ticket display',    #loc
         Overridable     => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            description => 'Maximum size of messages (in bytes) that should be inlined in ticket history; A value of 0 (zero) will always inline',    #loc
+            description => 'Maximum inline message length',    #loc
+            hints =>
+"Length in characters; Use '0' to show all messages inline, regardless of length" #loc
         },
     },
     OldestTransactionsFirst => {
+        Section         => 'Ticket display', #loc
+        Overridable     => 1,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            description => 'Show oldest transactions first',    #loc
+        },
+    },
+    ShowUnreadMessageNotifications => {
         Section         => 'Ticket display',
         Overridable     => 1,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
-            description => 'Show oldest transactions first',                                                                                          #loc
+            description => 'Notify me of unread messages',    #loc
+        },
+
+    },
+    PlainTextPre => {
+        Section         => 'Ticket display',
+        Overridable     => 1,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            description => 'Use monospace font',
+            hints       => "Use fixed-width font to display plaintext messages"
         },
     },
     date_time_format => {
-        Section         => 'Date and time',                                                                                                           #loc
+        Section         => 'Locale',                 #loc
         Overridable     => 1,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            description  => 'Date and time output format',                                                                                            #loc
+            description => 'Date format',                            #loc
             values       => [qw(default_format RFC2822 ISO W3CDTF)],
             values_label => {
-                default_format => 'Default (Tue Dec 25 21:59:12 1995)',                                                                               #loc
-                RFC2822        => 'RFC (Tue, 25 Dec 1995 21:59:12 -0300)',                                                                            #loc
-                ISO            => 'ISO (1995-11-25 21:59:12)',                                                                                        #loc
-                W3CDTF         => 'W3C (1995-11-25T21:59:12Z)',                                                                                       #loc
+                default_format => 'Tue Dec 25 21:59:12 1995',           #loc
+                RFC2822       => 'Tue, 25 Dec 1995 21:59:12 -0300',    #loc
+                ISO           => '1995-11-25 21:59:12',                #loc
+                W3CDTF        => '1995-11-25T21:59:12Z',               #loc
             },
+        },
+    },
+    Usernameformat => {
+        Section         => 'General',
+        Overridable     => 1,
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            description => 'Username format',
+            values      => [qw(concise verbose)],
+            values_label  => {
+                concise => 'Short usernames',
+                verbose => 'Name and email address',
+            },
+        },
+    },
+    default_queue => {
+        Section         => 'General',
+        Overridable     => 1,
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            description => 'default queue',    #loc
+            callback    => sub {
+                my $ret = { Values => [], values_label => {} };
+                my $q = new RT::Model::Queues(
+                    $HTML::Mason::Commands::session{'current_user'} );
+                $q->Unlimit;
+                while ( my $queue = $q->next ) {
+                    next unless $queue->current_user_has_right("CreateTicket");
+                    push @{ $ret->{Values} }, $queue->id;
+                    $ret->{values_label}{ $queue->id } = $queue->name;
+                }
+                return $ret;
+            },
+        }
+    },
+    EmailFrequency => {
+        Section         => 'Mail',                   #loc
+        Overridable     => 1,
+        default         => 'Individual messages',
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            description => 'email delivery',         #loc
+            values      => [
+                'Individual messages',               #loc
+                'Daily digest',                      #loc
+                'Weekly digest',                     #loc
+                'Suspended'                          #loc
+            ]
+        }
+    },
+    DisableGraphViz => {
+        type          => 'SCALAR',
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+            return if $value;
+            return if $INC{'GraphViz.pm'};
+            local $@;
+            return if eval { require GraphViz; 1 };
+            Jifty->log->debug(
+                "You've enabled GraphViz, but we couldn't load the module: $@");
+            $self->set( DisableGraphViz => 1 );
+        },
+    },
+    DisableGD => {
+        type          => 'SCALAR',
+        PostLoadCheck => sub {
+            my $self  = shift;
+            my $value = shift;
+            return if $value;
+            return if $INC{'GD.pm'};
+            local $@;
+            return if eval { require GD; 1 };
+            Jifty->log->debug(
+                "You've enabled GD, but we couldn't load the module: $@");
+            $self->set( DisableGD => 1 );
         },
     },
     MailPlugins  => { type => 'ARRAY' },
     GnuPG        => { type => 'HASH' },
-    GnuPGOptions => { type => 'HASH' },
+    GnuPGOptions => {
+        type          => 'HASH',
+        PostLoadCheck => sub {
+            my $self    = shift;
+            my $gpg     = $self->get('GnuPG');
+            my $gpgopts = $self->get('GnuPGOptions');
+            unless ( -d $gpgopts->{homedir} && -r _ ) {    # no homedir, no gpg
+                Jifty->log->debug(
+                        "RT's GnuPG libraries couldn't successfully read your"
+                      . " configured GnuPG home directory ("
+                      . $gpgopts->{homedir}
+                      . "). PGP support has been disabled" );
+                $gpg->{'enable'} = 0;
+            }
+
+            if ( $gpg->{'enable'} ) {
+                require RT::Crypt::GnuPG;
+                unless ( RT::Crypt::GnuPG->Probe() ) {
+                    Jifty->log->debug(
+"RT's GnuPG libraries couldn't successfully execute gpg."
+                          . " PGP support has been disabled" );
+                    $gpg->{'enable'} = 0;
+                }
+            }
+
+          }
+    },
 );
 my %OPTIONS = ();
 
@@ -201,6 +331,8 @@ sub init_config {
 Load all configs. First of all load RT's config then load
 extensions' config files in alphabetical order.
 Takes no arguments.
+
+Do nothin right now.
 
 =cut
 
@@ -287,7 +419,9 @@ sub _load_config {
             }
         }
         unless ($file_path) {
-            die qq{Couldn't load RT config file $args{'File'} as user $username / group $group.\n} . qq{The file couldn't be find in $RT::LocalEtcPath and $RT::EtcPath.\n$@};
+            die
+qq{Couldn't load RT config file $args{'file'} as user $username / group $group.\n}
+              . qq{The file couldn't be found in $RT::LocalEtcPath and $RT::EtcPath.\n$@};
         }
 
         my $message = <<EOF;
@@ -333,12 +467,28 @@ sub configs {
     @configs = sort @configs;
     unshift( @configs, 'RT_Config.pm' );
 
+sub PostLoadCheck {
+    my $self = shift;
+    foreach my $o (
+        grep $META{$_}{'PostLoadCheck'},
+        $self->options( Overridable => undef )
+      )
+    {
+        $META{$o}->{'PostLoadCheck'}->( $self, $self->get($o) );
+    }
+}
+
     return @configs;
 }
 
 =head2 get
 
 Takes name of the option as argument and returns its current value.
+
+In the case of a user-overridable option, first checks the user's preferences before looking for site-wide configuration.
+
+Returns values from RT_SiteConfig, RT_Config and then the %META hash of configuration variables's "Default" for this config variable, in that order.
+
 
 Returns different things in scalar and array contexts. For scalar
 options it's not that important, however for arrays and hash it's.
@@ -363,12 +513,13 @@ sub get {
     my ( $self, $name, $user ) = @_;
 
     my $res;
-    if ( $user && $META{$name}->{'Overridable'} ) {
+    if ( $user && $user->id && $META{$name}->{'Overridable'} ) {
         $user = $user->user_object if $user->isa('RT::CurrentUser');
         my $prefs = $user->preferences( RT->system );
         $res = $prefs->{$name} if $prefs;
     }
-    $res = $OPTIONS{$name} unless defined $res;
+    $res = $OPTIONS{$name}           unless defined $res;
+    $res = $META{$name}->{'Default'} unless defined $res;
     return $self->_return_value( $res, $META{$name}->{'type'} || 'SCALAR' );
 }
 
@@ -390,13 +541,17 @@ sub set {
     my $type = $META{$name}->{'type'} || 'SCALAR';
     if ( $type eq 'ARRAY' ) {
         $OPTIONS{$name} = [@_];
-        { no strict 'refs'; @{"RT::$name"} = (@_); }
+        { no warnings 'once'; no strict 'refs'; @{"RT::$name"} = (@_); }
     } elsif ( $type eq 'HASH' ) {
         $OPTIONS{$name} = {@_};
-        { no strict 'refs'; %{"RT::$name"} = (@_); }
+        { no warnings 'once'; no strict 'refs'; %{"RT::$name"} = (@_); }
     } else {
         $OPTIONS{$name} = shift;
-        { no strict 'refs'; ${"RT::$name"} = $OPTIONS{$name}; }
+        {
+            no warnings 'once';
+            no strict 'refs';
+            ${"RT::$name"} = $OPTIONS{$name};
+        }
     }
     $META{$name}->{'type'} = $type;
     return $self->_return_value( $old, $type );
@@ -477,7 +632,7 @@ sub set_from_config {
         no strict 'refs';
         my $name = undef;
 
-        # scan $pack name table(hash)
+        # scan $pack's nametable(hash)
         foreach my $k ( keys %{$pack} ) {
 
             # hash for main:: has reference on itself
@@ -497,6 +652,10 @@ sub set_from_config {
             next unless $entry;
 
             # get entry for type we are looking for
+            # XXX skip references to scalars or other references.
+            # Otherwie 5.10 goes boom. may be we should skip any
+            # reference
+            return if ref($entry) eq 'SCALAR' || ref($entry) eq 'REF';
             my $entry_ref = *{$entry}{ ref($ref) };
             next unless $entry_ref;
 

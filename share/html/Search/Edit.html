@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -61,10 +61,12 @@
 
 <form method="post" action="Build.html">
 <input type="hidden" class="hidden" name="SavedSearchId" value="<% $SavedSearchId %>" />
+<&|/Widgets/TitleBox, title => _('Query'), &>
 <textarea name="query" rows="8" cols="72"><% $query %></textarea>
-<br />
+</&>
+<&|/Widgets/TitleBox, title => _('format'), &>
 <textarea name="format" rows="8" cols="72"><% $format %></textarea>
-<br />
+</&>
 <& /Elements/Submit, Label => _("Apply"), Reset => 1, Caption => _("Apply your changes")&>
 </form>
 
@@ -74,7 +76,7 @@ $format = $m->comp('/Elements/ScrubHTML', content => $format);
 my $query_string = $m->comp('/Elements/QueryString',
                            query   => $query,
                            format  => $format,
-                           Rows    => $Rows,
+                           rows_per_page    => $Rows,
                            order_by => $order_by,
                            order   => $order,
                           );

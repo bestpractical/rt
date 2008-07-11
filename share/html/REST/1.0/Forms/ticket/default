@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -55,6 +55,9 @@ $args => undef
 </%ARGS>
 <%INIT>
 use MIME::Entity;
+use RT::Interface::REST;
+
+my $cf_spec = RT::Interface::REST->custom_field_spec(1);
 
 my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
@@ -127,14 +130,20 @@ else {
         my (%v, $text);
 
         foreach my $k (keys %data) {
+            # flexibly parse any dates
+            if ($dates{lc $k}) {
+                my $time = new RT::Date Jifty->web->current_user;
+                $time->set(format => 'unknown', value => $data{$k});
+                $data{$k} = $time->ISO;
+            }
+
             if (exists $create{lc $k}) {
                 $v{$create{lc $k}} = delete $data{$k};
             }
             # Set custom field
-            elsif ($k =~ /^CF-/i) {
+            elsif ($k =~ /^$cf_spec/) {
                 my $cf = RT::Model::CustomField->new(current_user => RT->system_user );
-                my $cfk = $k;
-                $cfk =~ s/^CF-//i;
+                my $cfk = $1 || $2;
                 unless($cf->load_by_name( name => $cfk )) {
                     push @comments, "# Invalid custom field name ($cfk)";
                     delete $data{$k};
@@ -215,13 +224,16 @@ if (!keys(%data)) {
     # Display custom fields
     my $CustomFields = $ticket->queue_obj->ticket_custom_fields();
     while (my $cf = $CustomFields->next()) {
-	next unless (!%$fields || (exists $fields->{"cf-".lc $cf->name}));
+        next unless !%$fields
+                 || exists $fields->{"cf.{".lc($cf->name)."}"}
+                 || exists $fields->{"cf-".lc $cf->name};
+
         my $vals = $ticket->custom_field_values($cf->id());
         my @out = ();
         while (my $v = $vals->next()) {
             push @out, $v->content;
         }
-        push @data, [ 'CF-' . $cf->name => join ',', @out ];
+        push @data, [ ('CF.{' . $cf->name . '}') => join ',', @out ];
     }
 
     my %k = map {@$_} @data;
@@ -267,7 +279,9 @@ else {
             my $time = RT::Date->new() ;
             $time->set(format => 'sql', value => $ticket->$key);
             next if ($val =~ /^not set$/i || $val eq $time->as_string);
-            ($n, $s) = $ticket->$set($val);
+
+            $time->set(format => 'unknown', value => $val);
+            ($n, $s) = $ticket->$set($time->ISO);
         }
         elsif (exists $people{$key}) {
             $key = $people{$key};
@@ -307,9 +321,9 @@ else {
             }
         }
         # Set custom field
-        elsif ($key =~ /^CF-/i) {
+        elsif ($key =~ /^$cf_spec/) {
             my $cf = RT::Model::CustomField->new(current_user => RT->system_user );
-            $key =~ s/^CF-//i;
+            $key = $1 || $2;
             if (not $cf->load_by_name( name => $key )) {
                 $n = 0;
                 $s = "Unknown custom field.";

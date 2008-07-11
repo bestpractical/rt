@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -46,7 +46,8 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, 
-    Title => _("#%1: %2", $ticket_obj->id, $ticket_obj->subject) &>
+    Title => _("#%1: %2", $ticket_obj->id, $ticket_obj->Subject),
+    LinkRel => \%link_rel &>
 <& /Ticket/Elements/Tabs, 
     Ticket => $ticket_obj, 
     current_tab => 'Ticket/Display.html?id='.$ticket_obj->id,
@@ -140,21 +141,16 @@ if ($ARGS{'id'} eq 'new') {
             args_ref => \%ARGS, 
             Actions => \@Actions);
     
-    $ARGS{'update_content'} =~ s/\r\n/\n/g if defined $ARGS{'update_content'};
-    my $signature = Jifty->web->current_user->user_object->signature || '';
-    if ( $ARGS{'UpdateTimeWorked'} || (
-        defined $ARGS{'update_content'}
-        && $ARGS{'update_content'} ne ''
-        && $ARGS{'update_content'} ne "-- \n" . $signature ))
-    {
-        $ARGS{UpdateAttachments} = $session{'Attachments'};
-        push @Actions, process_update_message(
-            args_ref   => \%ARGS,
-            Actions   => \@Actions,
-            ticket_obj => $ticket_obj,
+    $ARGS{UpdateAttachments} = $session{'Attachments'};
+    push @Actions,
+        ProcessUpdateMessage(
+        args_ref   => \%ARGS,
+        Actions   => \@Actions,
+        ticket_obj => $ticket_obj,
         );
-        delete $session{'Attachments'};
-    }
+    delete $session{'Attachments'};
+
+    #Process status updates
     push @Actions, process_ticket_watchers(args_ref => \%ARGS, ticket_obj => $ticket_obj );
     push @Actions, process_ticket_basics(   args_ref => \%ARGS, ticket_obj => $ticket_obj );
     push @Actions, process_ticket_links(    args_ref => \%ARGS, ticket_obj => $ticket_obj );
@@ -184,18 +180,26 @@ $m->callback(
 # This code does automatic redirection if any updates happen. 
 
 if (@Actions) {
-    # We've done something, so we need to clear the decks to avoid 
+
+    # We've done something, so we need to clear the decks to avoid
     # resubmission on refresh.
     # But we need to store Actions somewhere too, so we don't lose them.
-    push @{ $session{"Actions"} ||= [] }, @Actions;
+    my $key = Digest::MD5::md5_hex( rand(1024) );
+    push @{ $session{"Actions"}->{$key} ||= [] }, @Actions;
     $session{'i'}++;
 
-    RT::Interface::Web::redirect(RT->config->get('WebURL') ."Ticket/Display.html?id=".$ticket_obj->id);
-} else {
-    @Actions = @{ delete $session{"Actions"} || [] };
+    RT::Interface::Web::Redirect( RT->config->get('WebURL') . "Ticket/Display.html?id=" . $ticket_obj->id . "&results=" . $key );
 }
 
 my $attachments = $m->comp('Elements/FindAttachments', Ticket => $ticket_obj, Tickets => $Tickets);
 my $attachment_content = $m->comp('Elements/LoadTextAttachments', Ticket => $ticket_obj);
 
+my %link_rel;
+if (defined $session{'tickets'} and ($ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'})) {
+    my $item_map = $session{'tickets'}->ItemMap;
+    $link_rel{first} = "Ticket/Display.html?id=" . $item_map->{first}                if $item_map->{$ticket_obj->id}{prev};
+    $link_rel{prev}  = "Ticket/Display.html?id=" . $item_map->{$ticket_obj->id}{prev} if $item_map->{$ticket_obj->id}{prev};
+    $link_rel{next}  = "Ticket/Display.html?id=" . $item_map->{$ticket_obj->id}{next} if $item_map->{$ticket_obj->id}{next};
+    $link_rel{last}  = "Ticket/Display.html?id=" . $item_map->{last}                 if $item_map->{$ticket_obj->id}{next};
+}
 </%INIT>

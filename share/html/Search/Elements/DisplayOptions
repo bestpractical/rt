@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -45,13 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => _("Display Columns") &>
-<table width="100%">
-<tr>
-<td>
-<& EditFormat, %ARGS &>
-</td>
-<td valign="top">
+<&| /Widgets/TitleBox, title => _("Sorting"), id => 'sorting' &>
 <table valign="top">
 
 % for my $o (0..3) {
@@ -71,7 +65,7 @@
 %    next unless $field;
 <option value="<%$field%>"
 % if (defined $order_by[$o] and $field eq $order_by[$o]) {
-selected
+selected="selected"
 % }
 ><&|/l&><%$field%></&></option>
 % }
@@ -79,12 +73,12 @@ selected
 <select name="order">
 <option value="ASC"
 % unless ( ($order[$o]||'') eq "DESC" ) {
-selected
+selected="selected"
 % }
 ><&|/l&>Asc</&></option>
 <option value="DESC"
 % if ( ($order[$o]||'') eq "DESC" ) {
-selected
+selected="selected"
 % }
 ><&|/l&>Desc</&></option>
 </select>
@@ -101,9 +95,9 @@ selected
 </td>
 </tr>
 </table>
-</td>
-</tr>
-</table>
+</&>
+<&| /Widgets/TitleBox, title => _("Display Columns"), id => 'columns' &>
+<& Editformat, %ARGS &>
 </&>
 
 <%INIT>
@@ -111,6 +105,7 @@ my $tickets = RT::Model::TicketCollection->new();
 my %fields = %{$tickets->columns};
 map { $fields{$_}->[0] =~ /^(?:ENUM|INT|DATE|STRING)$/ || delete $fields{$_} } keys %fields;
 delete $fields{'effective_id'};
+$fields{'Owner'} = 1;
 $fields{ $_ . '.email' } = 1 foreach( qw(Requestor Cc AdminCc) );
 
 # Add all available CustomFields to the list of sortable columns.

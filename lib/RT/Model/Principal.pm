@@ -314,7 +314,7 @@ sub has_right {
         if $args{'equiv_objects'};
 
     if ( $self->disabled ) {
-        Jifty->log->error( "disabled User #" . $self->id . " failed access check for " . $args{'right'} );
+        Jifty->log->debug( "disabled User #" . $self->id . " failed access check for " . $args{'right'} );
         return (undef);
     }
 

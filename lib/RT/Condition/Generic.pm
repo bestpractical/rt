@@ -46,31 +46,20 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-=head1 name
+=head1 NAME
 
-  RT::Condition::Generic - ;
+  RT::Condition::Generic - deprecated, see RT::Condition
 
 =head1 SYNOPSIS
 
-    use RT::Condition::Generic;
-    my $foo = RT::Condition::Generic->new( 
-		transaction_obj => $tr, 
-		ticket_obj => $ti, 
-		scrip_obj => $scr, 
-		argument => $arg, 
-		type => $type);
-
-    if ($foo->is_applicable) {
- 	   # do something
-    }
+  use RT::Condition::Generic;
 
 
-=head1 description
+=head1 DESCRIPTION
 
+This module is provided only for backwards compatibility.
 
 =head1 METHODS
-
-
 
 
 =cut
@@ -80,123 +69,7 @@ package RT::Condition::Generic;
 use strict;
 use warnings;
 
-use base qw/RT::Base/;
+use base 'RT::Condition';
 
-sub new {
-    my $proto = shift;
-    my $class = ref($proto) || $proto;
-    my $self  = {};
-    bless( $self, $class );
-    $self->_get_current_user(@_);
-    $self->_init(@_);
-    return $self;
-}
-
-sub _init {
-    my $self = shift;
-    my %args = (
-        transaction_obj        => undef,
-        ticket_obj             => undef,
-        scrip_obj              => undef,
-        template_obj           => undef,
-        argument               => undef,
-        applicable_trans_types => undef,
-        @_
-    );
-
-    $self->{'argument'}               = $args{'argument'};
-    $self->{'scrip_obj'}              = $args{'scrip_obj'};
-    $self->{'ticket_obj'}             = $args{'ticket_obj'};
-    $self->{'transaction_obj'}        = $args{'transaction_obj'};
-    $self->{'applicable_trans_types'} = $args{'applicable_trans_types'};
-    Jifty->log->debug( "My trans type is " . $self->{'applicable_trans_types'} );
-}
-
-# Access Scripwide data
-
-=head2 argument
-
-Return the optional argument associated with this scrip_condition
-
-=cut
-
-sub argument {
-    my $self = shift;
-    return ( $self->{'argument'} );
-}
-
-=head2 ticket_obj
-
-Return the ticket object we're talking about
-
-=cut
-
-sub ticket_obj {
-    my $self = shift;
-    return ( $self->{'ticket_obj'} );
-}
-
-=head2 scrip_obj
-
-Return the Scrip object we're talking about
-
-=cut
-
-sub scrip_obj {
-    my $self = shift;
-    return ( $self->{'scrip_obj'} );
-}
-
-=head2 transaction_obj
-
-Return the transaction object we're talking about
-
-=cut
-
-sub transaction_obj {
-    my $self = shift;
-    return ( $self->{'transaction_obj'} );
-}
-
-=head2 type 
-
-
-
-=cut
-
-sub applicable_trans_types {
-    my $self = shift;
-    return ( $self->{'applicable_trans_types'} );
-}
-
-# Scrip methods
-
-#What does this type of Action does
-
-sub describe {
-    my $self = shift;
-    return ( _( "No description for %1", ref $self ) );
-}
-
-#Parse the templates, get things ready to go.
-
-#If this rule applies to this transaction, return true.
-
-sub is_applicable {
-    my $self = shift;
-    return (undef);
-}
-
-sub DESTROY {
-    my $self = shift;
-
-    # We need to clean up all the references that might maybe get
-    # oddly circular
-    $self->{'template_obj'}    = undef;
-    $self->{'ticket_obj'}      = undef;
-    $self->{'transaction_obj'} = undef;
-    $self->{'scrip_obj'}       = undef;
-
-}
 
 1;

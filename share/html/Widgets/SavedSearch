@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -58,14 +58,14 @@ my @actions;
 my @objects = RT::SavedSearches->new()->_privacy_objects;
 push @objects, RT::System->new()
     if Jifty->web->current_user->has_right( object=> RT->system,
-                                          right => 'SuperUser');
+                                          right => 'SuperUser' );
 $self->{SearchId} ||= 'new';
 my $search_params = { map { $_ => $args->{$_} } @{$self->{SearchFields}} };
 
-if ( my ( $container_object, $search_id ) = _parse_saved_search( $args->{'LoadSavedSearch'} ) ) {
+if ( my ( $container_object, $search_id ) = _parse_saved_search( $args->{'SavedSearchLoad'} ) ) {
     my $search = $container_object->attributes->with_id($search_id);
     # We have a $search and now; import the others
-    $self->{SearchId} = $args->{'LoadSavedSearch'};
+    $self->{SearchId} = $args->{'SavedSearchLoad'};
     $self->{CurrentSearch}{object} = $search;
     $args->{$_} = $search->sub_value($_) for @{ $self->{SearchFields} };
 }
@@ -87,24 +87,24 @@ if ($self->{SearchId} eq 'new') {
     }
 }
 
-if ( $args->{Save} ) {
+if ( $args->{SavedSearchSave} ) {
     if ( my $search = $self->{CurrentSearch}{object} ) {
         # rename
-        $search->set_description( $args->{description} );
-	push @actions, _($self->{SearchType})._( ' %1 renamed to %2.', $self->{CurrentSearch}{description}, $args->{description} );
+        $search->set_description( $args->{SavedSearchDescription} );
+	push @actions, _($self->{SearchType}).loc( ' %1 renamed to %2.', $self->{CurrentSearch}{Description}, $args->{SavedSearchDescription} );
     }
     else {
         # new saved search
         my $saved_search = RT::SavedSearch->new();
         my ( $ok, $search_msg ) = $saved_search->save(
-            Privacy      => $args->{'Owner'},
-            name         => $args->{'description'},
+            Privacy      => $args->{'SavedSearchOwner'},
+            name         => $args->{'SavedSearchDescription'},
             type         => $self->{'SearchType'},
             search_params => $search_params
         );
         if ($ok) {
 	    $self->{CurrentSearch}{object} = $saved_search->{Attribute};
-            push @actions, _($self->{SearchType})._( ' %1 saved.', $args->{description} );
+            push @actions, _($self->{SearchType})._( ' %1 saved.', $args->{SavedSearchDescription} );
         } else {
             push @actions,
                 [ _("Can't save %1", _($self->{SearchType})) . ': ' . _($search_msg), 0 ];
@@ -112,7 +112,7 @@ if ( $args->{Save} ) {
     }
 }
 
-if ( $args->{Delete} && $self->{CurrentSearch}{object} ) {
+if ( $args->{SavedSearchDelete} && $self->{CurrentSearch}{object} ) {
     my ($ok, $msg) = $self->{CurrentSearch}{object}->delete;
     push @actions, $ok ? _($self->{SearchType})._( ' %1 deleted.', $self->{CurrentSearch}{object}->description ) : $msg;
     delete $self->{CurrentSearch}{object};
@@ -134,8 +134,13 @@ $args
 
 <%method show>
 <form method="post" action="<% $Action %>" name="SaveSearch">
-<& /Search/Elements/EditSearches, name => 'Owner', type => $self->{SearchType}, AllowCopy => 0,
-   CurrentSearch => $self->{CurrentSearch}, SearchId => $self->{SearchId}, Title => $Title  &><br />
+<& /Search/Elements/EditSearches,
+    id            => $self->{Searchid},
+    type          => $self->{SearchType},
+    CurrentSearch => $self->{CurrentSearch},
+    Title         => $Title,
+    AllowCopy     => 0,
+&><br />
 <%PERL>
 foreach my $field ( @{$self->{SearchFields}} ) {
     if ( ref($ARGS{$field}) && ref($ARGS{$field}) ne 'ARRAY' ) {
@@ -149,9 +154,9 @@ foreach my $field ( @{$self->{SearchFields}} ) {
 % }
 </form>
 <%ARGS>
-$self => undef
+$self   => undef
 $Action => ''
-$Title => 'Saved searches'
+$Title  => _('Saved searches')
 </%ARGS>
 <%init>
 </%init>

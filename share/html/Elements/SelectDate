@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -48,7 +48,7 @@
 <script type="text/javascript"><!--
     onLoadHook('createCalendarLink("<% $name %>");');
 --></script>
-<input type="text" id="<% $name %>" name="<% $name %>" value="<% $default %>" size="<% $Size %>" />
+<input type="text" id="<% $name %>" name="<% $name %>" value="<% $Value %>" size="<% $Size %>" />
 <%init>
 unless ((defined $default) or 
 	($current <= 0)) {
@@ -58,6 +58,7 @@ unless ((defined $default) or
                            $year+1900,$mon+1,$mday,                            
                            $hour,$min);   
 }
+$Value = $Value || $default;
 
 unless ($name) {
 	$name = $menu_prefix. "_date";
@@ -66,10 +67,11 @@ unless ($name) {
 
 <%args>
 
-$ShowTime => undef
+$ShowTime => 1
 $menu_prefix=>''
 $current=>time
 $default => ''
+$value => ''
 $name => undef
 $Size => 16
 </%args>

@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -85,7 +85,6 @@ function ComboBox_Load( comboId ) {
     button.onclick = button.Toggle;
     button.onmouseover = function(e) { this.Container.List.DisableBlur(e); };
     button.onmouseout = function(e) { this.Container.List.EnableBlur(e); };
-    button.innerHTML = "\u25BC";
     button.onselectstart = function(e){ return false; };
     button.style.height = ( list.offsetHeight - 4 ) + "px";
     
@@ -93,7 +92,6 @@ function ComboBox_Load( comboId ) {
     text.TypeDown = ComboBox_TextTypeDown;
     text.KeyAccess = ComboBox_TextKeyAccess;
     text.onkeyup = function(e) { this.KeyAccess(e); this.TypeDown(e); };
-    text.style.width = ( list.offsetWidth ) + "px";
     
     list.Container = combo;
     list.Show = ComboBox_ShowList;
@@ -132,8 +130,8 @@ function ComboBox_GetListSize( theList ) {
 function ComboBox_EnsureListSize( theList ) {
     if ( typeof( theList.listSize ) == "undefined" ) {
         if( typeof( theList.getAttribute ) != "undefined" ) {
-            if( theList.getAttribute( "listSize" ) != null && theList.getAttribute( "listSize" ) != "" ) {
-                theList.listSize = theList.getAttribute( "listSize" );
+            if( theList.getAttribute( "size" ) != null && theList.getAttribute( "size" ) != "" ) {
+                theList.listSize = theList.getAttribute( "size" );
                 return;
             }
         }
@@ -220,8 +218,8 @@ function ComboBox_ToggleList(e) {
 function ComboBox_ShowList(e) {
     if ( !this.IsShowing && !this.disabled ) {
         this.style.width = ( this.Container.offsetWidth ) + "px";
-        this.style.top = ( this.Container.offsetHeight + ComboBox_RecursiveOffsetTop(this.Container,true) ) + "px";
-        this.style.left = ( ComboBox_RecursiveOffsetLeft(this.Container,true) + 1 ) + "px";
+        this.style.top = '1.2em';//( this.Container.offsetHeight + ComboBox_RecursiveOffsetTop(this.Container,true) ) + "px";
+        this.style.left = '0px';// ( ComboBox_RecursiveOffsetLeft(this.Container,true) + 1 ) + "px";
         ComboBox_setVisibility(this,true);
         this.focus();
         this.IsShowing = true;

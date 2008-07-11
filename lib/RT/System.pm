@@ -70,13 +70,11 @@ use strict;
 package RT::System;
 use base qw/RT::Record/;
 
-our $RIGHTS;
-
 use RT::Model::ACECollection;
 
 # System rights are rights granted to the whole system
 # XXX TODO Can't localize these outside of having an object around.
-$RIGHTS = {
+our $RIGHTS = {
     SuperUser              => 'Do anything and everything',                                             # loc_pair
     AdminAllPersonalGroups => "Create, delete and modify the members of any user's personal groups",    # loc_pair
     AdminOwnPersonalGroups => 'Create, delete and modify the members of personal groups',               # loc_pair
@@ -107,6 +105,10 @@ those rights globally.
 
 =cut
 
+use RT::Model::CustomField;
+use RT::Model::Queue;
+use RT::Model::Group;
+
 sub available_rights {
     my $self = shift;
 
@@ -127,18 +129,29 @@ sub available_rights {
 
 Returns RT::System's id. It's 1. 
 
-
-
-
 =cut
 
 *Id = \&id;
-sub id      { return (1); }
-sub load    { return (1); }
-sub name    { return 'RT System'; }
-sub __set   {0}
-sub __value {0}
-sub create  {0}
-sub delete  {0}
+sub id      { return 1 }
+sub load    { return 1 }
+sub name    { return 'RT System' }
+sub __set   { return 0 }
+sub __value { return 0 }
+sub create  { return 0 }
+sub delete  { return 0 }
+
+sub subject_tag {
+    my $self  = shift;
+    my $queue = shift;
+
+    my $map = $self->first_attribute('BrandedSubjectTag');
+    $map = $map->Content if $map;
+    return $queue ? undef : () unless $map;
+
+    return $map->{ $queue->id } if $queue;
+
+    my %seen = ();
+    return grep !$seen{ lc $_ }++, values %$map;
+}
 
 1;

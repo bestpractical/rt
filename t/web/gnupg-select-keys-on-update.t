@@ -2,8 +2,16 @@
 use strict;
 use warnings;
 
-use Test::More tests => 68;
+use Test::More;
 use RT::Test;
+
+plan skip_all => 'GnuPG required.'
+    unless eval 'use GnuPG::Interface; 1';
+plan skip_all => 'gpg executable is required.'
+    unless RT::Test->find_executable('gpg');
+
+plan tests => 68;
+
 use RT::ScripAction::SendEmail;
 use File::Temp qw(tempdir);
 
@@ -24,7 +32,7 @@ RT->config->set( GnuPGOptions =>
     passphrase => 'rt-test',
     'no-permission-warning' => undef,
 );
-diag "GnuPG --homedir ". RT->config->get('GnuPGOptions')->{'homedir'};
+diag "GnuPG --homedir ". RT->config->get('GnuPGOptions')->{'homedir'} if $ENV{TEST_VERBOSE};
 
 RT->config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 
@@ -54,9 +62,9 @@ my $tid;
     ok $tid, 'ticket created';
 }
 
-diag "check that signing doesn't work if there is no key";
+diag "check that signing doesn't work if there is no key" if $ENV{TEST_VERBOSE};
 {
-    RT::Test->fetch_caught_mails;
+    RT::Test->clean_caught_mails;
 
     ok $m->goto_ticket( $tid ), "UI -> ticket #$tid";
     $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );
@@ -81,9 +89,9 @@ diag "check that signing doesn't work if there is no key";
     is $res{'info'}[0]{'trust_terse'}, 'ultimate', 'ultimately trusted key';
 }
 
-diag "check that things don't work if there is no key";
+diag "check that things don't work if there is no key" if $ENV{TEST_VERBOSE};
 {
-    RT::Test->fetch_caught_mails;
+    RT::Test->clean_caught_mails;
 
     ok $m->goto_ticket( $tid ), "UI -> ticket #$tid";
     $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );
@@ -109,7 +117,7 @@ diag "check that things don't work if there is no key";
 }
 
 
-diag "import first key of rt-test\@example.com";
+diag "import first key of rt-test\@example.com" if $ENV{TEST_VERBOSE};
 my $fpr1 = '';
 {
     RT::Test->import_gnupg_key('rt-test@example.com', 'public');
@@ -118,9 +126,9 @@ my $fpr1 = '';
     $fpr1 = $res{'info'}[0]{'fingerprint'};
 }
 
-diag "check that things still doesn't work if key is not trusted";
+diag "check that things still doesn't work if key is not trusted" if $ENV{TEST_VERBOSE};
 {
-    RT::Test->fetch_caught_mails;
+    RT::Test->clean_caught_mails;
 
     ok $m->goto_ticket( $tid ), "UI -> ticket #$tid";
     $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );
@@ -157,7 +165,7 @@ diag "check that things still doesn't work if key is not trusted";
     ok !@mail, 'there are no outgoing emails';
 }
 
-diag "import a second key of rt-test\@example.com";
+diag "import a second key of rt-test\@example.com" if $ENV{TEST_VERBOSE};
 my $fpr2 = '';
 {
     RT::Test->import_gnupg_key('rt-test@example.com.2', 'public');
@@ -166,9 +174,9 @@ my $fpr2 = '';
     $fpr2 = $res{'info'}[2]{'fingerprint'};
 }
 
-diag "check that things still doesn't work if two keys are not trusted";
+diag "check that things still doesn't work if two keys are not trusted" if $ENV{TEST_VERBOSE};
 {
-    RT::Test->fetch_caught_mails;
+    RT::Test->clean_caught_mails;
 
     ok $m->goto_ticket( $tid ), "UI -> ticket #$tid";
     $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );
@@ -212,9 +220,9 @@ diag "check that things still doesn't work if two keys are not trusted";
     is $res{'info'}[1]{'trust_level'}, 0, 'is not trusted key';
 }
 
-diag "check that we see key selector even if only one key is trusted but there are more keys";
+diag "check that we see key selector even if only one key is trusted but there are more keys" if $ENV{TEST_VERBOSE};
 {
-    RT::Test->fetch_caught_mails;
+    RT::Test->clean_caught_mails;
 
     ok $m->goto_ticket( $tid ), "UI -> ticket #$tid";
     $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );
@@ -240,9 +248,9 @@ diag "check that we see key selector even if only one key is trusted but there a
     ok !@mail, 'there are no outgoing emails';
 }
 
-diag "check that key selector works and we can select trusted key";
+diag "check that key selector works and we can select trusted key" if $ENV{TEST_VERBOSE};
 {
-    RT::Test->fetch_caught_mails;
+    RT::Test->clean_caught_mails;
 
     ok $m->goto_ticket( $tid ), "UI -> ticket #$tid";
     $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );
@@ -273,9 +281,9 @@ diag "check that key selector works and we can select trusted key";
     check_text_emails( { encrypt => 1 }, @mail );
 }
 
-diag "check encrypting of attachments";
+diag "check encrypting of attachments" if $ENV{TEST_VERBOSE};
 {
-    RT::Test->fetch_caught_mails;
+    RT::Test->clean_caught_mails;
 
     ok $m->goto_ticket( $tid ), "UI -> ticket #$tid";
     $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );

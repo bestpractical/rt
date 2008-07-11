@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -71,6 +71,7 @@
 % }
 
 <%init>
+my @actions;
 my $current_tab;
 $current_tab = 'Admin/Users/MyRT.html?id='.$id if ($id);
 my $user_object = RT::Model::User->new();
@@ -78,7 +79,8 @@ $user_object->load($id) || abort("Couldn't load user '$id'");
 my $title = _("RT at a glance for the user %1", $user_object->name);
 
 if ($ARGS{Reset}) {
-    $user_object->set_preferences('HomepageSettings', {});
+    my ($ok, $msg) = $user_object->set_preferences('HomepageSettings', {});
+    push @actions, $ok ? _('Preferences saved for user %1.', $user_object->name) : $msg;
 }
 
 my ($default_portlets) = RT::System->new()->attributes->named('HomepageSettings');
@@ -93,7 +95,6 @@ my $sys = RT::System->new(current_user => RT::CurrentUser->new($user_object) );
 my @objs = ($sys);
 
 push @objs, RT::SavedSearches->new(current_user => RT::CurrentUser->new( $user_object ) )->_privacy_objects;
-my @actions;
 
 for my $object (@objs) {
     for ($m->comp("/Search/Elements/SearchesForObject", object => $object)) {
@@ -119,8 +120,8 @@ my @panes = $m->comp(
     current_portlets => $portlets,
     OnSave => sub  {
         my ( $conf, $pane ) = @_;
-        $user_object->set_preferences( 'HomepageSettings', $conf );
-        push @actions, _( 'Preferences %1 for user %2 .', $pane, $user_object->name );
+        my ($ok, $msg) = $user_object->set_preferences( 'HomepageSettings', $conf );
+        push @actions, $ok ? _('Preferences %1 for user %2.', $pane, $user_object->name) : $msg;
     }
 );
 

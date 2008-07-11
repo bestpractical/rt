@@ -1,7 +1,15 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test; use Test::More tests => 92;
+use Test::More;
+use RT::Test;
+
+plan skip_all => 'GnuPG required.'
+    unless eval 'use GnuPG::Interface; 1';
+plan skip_all => 'gpg executable is required.'
+    unless RT::Test->find_executable('gpg');
+
+plan tests => 94;
 
 use RT::ScripAction::SendEmail;
 
@@ -70,7 +78,7 @@ $m->form_with_fields('sign', 'encrypt');
 $m->field(encrypt => 1);
 $m->submit;
 
-RT::Test->fetch_caught_mails;
+RT::Test->clean_caught_mails;
 
 $m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
@@ -139,7 +147,7 @@ $m->field(encrypt => undef);
 $m->field(sign => 1);
 $m->submit;
 
-RT::Test->fetch_caught_mails;
+RT::Test->clean_caught_mails;
 
 $m->goto_create_ticket( $queue );
 $m->form_name('TicketCreate');
@@ -211,7 +219,7 @@ $m->field(encrypt => 1);
 $m->field(sign => 1);
 $m->submit;
 
-RT::Test->fetch_caught_mails;
+RT::Test->clean_caught_mails;
 
 $user->set_email('recipient@example.com');
 $m->goto_create_ticket( $queue );

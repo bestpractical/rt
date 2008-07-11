@@ -9,12 +9,9 @@ use constant FaviconFile => $RT::MasonComponentRoot .'/NoAuth/images/favicon.png
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in';
-my $queue_name = 'General';
-my $qid;
-{
-    $m->content =~ /<SELECT\s+name\s*="queue"\s*>.*?<OPTION\s+value="(\d+)".*?>\s*\Q$queue_name\E\s*<\/OPTION>/msig;
-    ok( $qid = $1, "found id of the '$queue_name' queue");
-}
+my $queue = RT::Model::Queue->new($RT::Nobody);
+my $qid = $queue->load('General');
+ok( $qid, "Loaded General queue" );
 
 $m->form_name('CreateTicketInQueue');
 $m->field('queue', $qid);

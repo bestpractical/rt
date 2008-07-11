@@ -226,7 +226,7 @@ sub load {
         my ( $ticketid, $msg ) = $self->load_by_id($id);
 
         unless ( $self->id ) {
-            Jifty->log->fatal("$self tried to load a bogus ticket: $id\n");
+            Jifty->log->fatal("$self tried to load a bogus ticket: $id");
             return (undef);
         }
     }
@@ -250,29 +250,6 @@ sub load {
 
 # }}}
 
-# {{{ sub load_by_uri
-
-=head2 load_by_uri
-
-Given a local ticket URI, loads the specified ticket.
-
-=cut
-
-sub load_by_uri {
-    my $self = shift;
-    my $uri  = shift;
-
-    # FIXME: there is no ticket_base_uri option in config
-    my $base_uri = RT->config->get('ticket_base_uri');
-    if ( $base_uri && $uri =~ /^$base_uri(\d+)$/ ) {
-        my $id = $1;
-        return $self->load($id);
-    } else {
-        return undef;
-    }
-}
-
-# }}}
 
 # {{{ sub create
 
@@ -362,6 +339,19 @@ sub create {
     unless ( $queue_obj->id ) {
         Jifty->log->debug("$self No valid queue given for ticket creation.");
         return ( 0, 0, _('Could not create ticket. queue not set') );
+    }
+
+    if ( $queue_obj->Disabled ) {
+        Jifty->log->debug( "$self Disabled queue '"
+              . $queue_obj->name
+              . "' given for ticket creation." );
+        return (
+            0, 0,
+            _(
+                'Could not create ticket in disabled queue "%1"',
+                $queue_obj->name
+            )
+        );
     }
 
     #Now that we have a queue, Check the ACLS
@@ -497,7 +487,7 @@ sub create {
             if ( $watcher =~ /^\d+$/ ) {
                 push @{ $args{$type} }, $watcher;
             } else {
-                my @addresses = Mail::Address->parse($watcher);
+                my @addresses = email::Address->parse($watcher);
                 foreach my $address (@addresses) {
                     my $user = RT::Model::User->new( current_user => RT->system_user );
                     my ( $uid, $msg ) = $user->load_or_create_by_email($address);
@@ -558,7 +548,7 @@ sub create {
         value  => ( $args{'effective_id'} || $id )
     );
     unless ($val) {
-        Jifty->log->fatal("Couldn't set effective_id: $msg\n");
+        Jifty->log->fatal("Couldn't set effective_id: $msg");
         Jifty->handle->rollback;
         return ( 0, 0, _("Ticket could not be created due to an internal error") );
     }
@@ -681,8 +671,15 @@ sub create {
     if ($defer_owner) {
         if ( !$defer_owner->has_right( object => $self, right => 'OwnTicket' ) ) {
 
-            Jifty->log->warn( "User " . $owner->name . "(" . $owner->id . ") was proposed " . "as a ticket owner but has no rights to own " . "tickets in " . $queue_obj->name );
-            push @non_fatal_errors, _( "Owner '%1' does not have rights to own this ticket.", $owner->name );
+            Jifty->log->warn( "User "
+                  . $defer_owner->name . "("
+                  . $defer_owner->id
+                  . ") was proposed as a ticket owner but has no rights to own "
+                  . "tickets in "
+                  . $queue_obj->name );
+            push @non_fatal_errors,
+              _( "Owner '%1' does not have rights to own this ticket.",
+                $defer_owner->name );
 
         } else {
             $owner = $defer_owner;
@@ -826,8 +823,8 @@ sub add_watcher {
         if $self->current_user_has_right('ModifyTicket');
 
     if ( $args{'email'} ) {
-        my ($addr) = Mail::Address->parse( $args{'email'} );
-        return ( 0, _( "Couldn't parse address from '%1 string", $args{'email'} ) ) unless $addr;
+        my ($addr) = Email::Address->parse( $args{'email'} );
+        return ( 0, _( "Couldn't parse address from '%1' string", $args{'email'} ) ) unless $addr;
 
         if ( lc $self->current_user->user_object->email eq lc RT::Model::User->canonicalize_email( $addr->address ) ) {
             $args{'principal_id'} = $self->current_user->id;
@@ -910,7 +907,11 @@ sub _add_watcher {
         inside_transaction => 1
     );
     unless ($m_id) {
-        Jifty->log->error( "Failed to add " . $principal->id . " as a member of group " . $group->id . "\n" . $m_msg );
+        Jifty->log->error( "Failed to add "
+              . $principal->id
+              . " as a member of group "
+              . $group->id . ": "
+              . $m_msg );
 
         return ( 0, _( 'Could not make that principal a %1 for this ticket', _( $args{'type'} ) ) );
     }
@@ -1031,7 +1032,11 @@ sub delete_watcher {
 
     my ( $m_id, $m_msg ) = $group->_delete_member( $principal->id );
     unless ($m_id) {
-        Jifty->log->error( "Failed to delete " . $principal->id . " as a member of group " . $group->id . "\n" . $m_msg );
+        Jifty->log->error( "Failed to delete "
+              . $principal->id
+              . " as a member of group "
+              . $group->id . ": "
+              . $m_msg );
 
         return ( 0, _( 'Could not remove that principal as a %1 for this ticket', $args{'type'} ) );
     }
@@ -1223,7 +1228,7 @@ sub is_owner {
 =head2 transaction_addresses
 
 Returns a composite hashref of the results of L<RT::Model::Transaction/Addresses> for all this ticket's Create, comment or Correspond transactions.
-The keys are C<To>, C<cc> and C<Bcc>. The values are lists of C<Mail::Address> objects.
+The keys are C<To>, C<cc> and C<Bcc>. The values are lists of C<Email::Address> objects.
 
 NOTE: For performance reasons, this method might want to skip transactions and go straight for attachments. But to make that work right, we're going to need to go and walk around the access control in Attachment.pm's sub _value.
 
@@ -1254,6 +1259,9 @@ sub transaction_addresses {
                     if ( $addresses{ $addr->address }
                     && $addresses{ $addr->address }->phrase
                     && not $addr->phrase );
+
+                # skips "comment-only" addresses
+                next unless ( $addr->address );
                 $addresses{ $addr->address } = $addr;
             }
         }
@@ -1336,7 +1344,23 @@ sub set_queue {
             unless $status;
     }
 
-    return ( $self->_set( column => 'queue', value => $Newqueue_obj->id() ) );
+    my ( $status, $msg ) =
+      $self->_set( column => 'queue', value => $Newqueue_obj->id() );
+
+    if ($status) {
+
+        # On queue change, change queue for reminders too
+        my $reminder_collection = $self->Reminders->Collection;
+        while ( my $reminder = $reminder_collection->next ) {
+            my ( $status, $msg ) = $reminder->set_queue($NewQueue);
+            Jifty->log->error( 'Queue change failed for reminder #'
+                  . $reminder->id . ': '
+                  . $msg )
+              unless $status;
+        }
+    }
+
+    return ( $status, $msg );
 }
 
 # }}}
@@ -1716,7 +1740,8 @@ sub _record_note {
     foreach my $type (qw/cc bcc/) {
         next unless defined $args{ $type . '_message_to' };
 
-        my $addresses = join ', ', ( map { RT::Model::User->canonicalize_email( $_->address ) } Mail::Address->parse( $args{ $type . '_message_to' } ) );
+        my $addresses = join ', ', ( map {
+                RT::Model::User->canonicalize_email( $_->address ) } Email::Address->parse( $args{ $type . '_message_to' } ) );
         $args{'mime_obj'}->head->add( 'RT-Send-' . $type, $addresses );
     }
 
@@ -1725,7 +1750,6 @@ sub _record_note {
             if defined $args{$argument};
     }
 
-    # XXX: This code is duplicated several times
     # If this is from an external source, we need to come up with its
     # internal Message-ID now, so all emails sent because of this
     # message have a common Message-ID
@@ -1831,7 +1855,7 @@ sub delete_link {
     );
 
     unless ( $args{'target'} || $args{'base'} ) {
-        Jifty->log->error("base or target must be specified\n");
+        Jifty->log->error("base or target must be specified");
         return ( 0, _('Either base or target must be specified') );
     }
 
@@ -1933,7 +1957,7 @@ sub add_link {
     );
 
     unless ( $args{'target'} || $args{'base'} ) {
-        Jifty->log->error("base or target must be specified\n");
+        Jifty->log->error("base or target must be specified");
         return ( 0, _('Either base or target must be specified') );
     }
 
@@ -1973,7 +1997,7 @@ sub _get_ticket_from_uri {
 
     unless ( $uri_obj->resolver && $uri_obj->scheme ) {
         my $msg = _( "Couldn't resolve '%1' into a URI.", $args{'URI'} );
-        Jifty->log->warn("$msg\n");
+        Jifty->log->warn($msg);
         return ( 0, $msg );
     }
     my $obj = $uri_obj->resolver->object;
@@ -2639,7 +2663,6 @@ sub _set_told {
 
 sub seen_up_to {
     my $self = shift;
-
     my $uid  = $self->current_user->id;
     my $attr = $self->first_attribute( "User-" . $uid . "-SeenUpTo" );
     return if $attr && $attr->content gt $self->last_updated;
@@ -2786,7 +2809,7 @@ sub _value {
     #if the column is public, return it.
     if (1) {    # $self->_accessible( $column, 'public' ) ) {
 
-        #Jifty->log->debug("Skipping ACL check for $column\n");
+        #Jifty->log->debug("Skipping ACL check for $column");
         return ( $self->SUPER::_value($column) );
 
     }
@@ -2981,19 +3004,20 @@ See L<RT::Record>
 sub custom_field_values {
     my $self  = shift;
     my $field = shift;
-    if ( $field and $field !~ /^\d+$/ ) {
-        my $cf = RT::Model::CustomField->new;
-        $cf->load_by_name_and_queue( name => $field, queue => $self->queue );
-        unless ( $cf->id ) {
-            $cf->load_by_name_and_queue( name => $field, queue => 0 );
-        }
-        unless ( $cf->id ) {
+    return $self->SUPER::custom_field_values($field)
+      if !$field || $field =~ /^\d+$/;
 
-            # If we didn't find a valid cfid, give up.
-            return RT::Model::CustomFieldValueCollection->new;
-        }
+    my $cf = RT::Model::CustomField->new;
+    $cf->load_by_name_and_queue( name => $field, queue => $self->Queue );
+    unless ( $cf->id ) {
+        $cf->load_by_name_and_queue( name => $field, queue => 0 );
     }
-    return $self->SUPER::custom_field_values($field);
+
+    # If we didn't find a valid cfid, give up.
+    return RT::Model::ObjectCustomFieldValueCollection->new()
+      unless $cf->id;
+
+    return $self->SUPER::custom_field_values( $cf->id );
 }
 
 # }}}

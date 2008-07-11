@@ -145,9 +145,11 @@ sub create {
         my $member_object = $args{'member'}->object;
         if ( $member_object->has_member_recursively( $args{'group'} ) ) {
             Jifty->log->debug("Adding that group would create a loop");
+            Jifty->handle->rollback() unless ( $args{'inside_transaction'} );
             return (undef);
         } elsif ( $args{'member'}->id == $args{'group'}->id ) {
             Jifty->log->debug("Can't add a group to itself");
+            Jifty->handle->rollback() unless ( $args{'inside_transaction'} );
             return (undef);
         }
     }
@@ -171,6 +173,14 @@ sub create {
     );
 
     #When adding a member to a group, we need to go back
+    $cgm->limit(
+        subclause       => 'filter',        # dont't mess up with prev condition
+        column           => 'member_id',
+        operator        => '!=',
+        value           => 'main.group_id',
+        quote_value      => 0,
+        entry_aggregator => 'AND',
+    );
     #and popuplate the CachedGroupMembers of all the groups that group is part of .
 
     my $cgm = RT::Model::CachedGroupMemberCollection->new;

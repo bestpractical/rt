@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -49,22 +49,27 @@
     title => _($search->description, $ProcessedSearchArg->{'Rows'}),
     title_href => $query_link_url.$query_string,
     titleright => $customize ? _('Edit') : '',
-    titleright_href => $customize &>
-<& $query_display_component, %$ProcessedSearchArg, ShowNavigation => 0 &>
+    titleright_href => $customize,
+    hideable => $hideable &>
+<& $query_display_component, hideable => $hideable, %$ProcessedSearchArg, ShowNavigation => 0, Class => 'RT::Model::Tickets' &>
 </&>
 <%init>
 my $search;
 my $user = Jifty->web->current_user->user_object;
 my $SearchArg;
 my $customize;
-my $query_display_component = '/Elements/TicketList';
-my $query_link_url = 'Search/Results.html';
+my $query_display_component = '/Elements/CollectionList';
+my $query_link_url = RT->config->get('WebURL').'Search/Results.html';
 
 if ($SavedSearch) {
     my ( $container_object, $search_id ) = _parse_saved_search($SavedSearch);
+    unless ( $container_object ) {
+        $m->out(loc("Either you have no rights to view saved search %1 or identifier is incorrect", $SavedSearch));
+        return;
+    }
     $search = $container_object->attributes->with_id($search_id);
     unless ( $search->id && ref( $SearchArg = $search->content ) eq 'HASH' ) {
-        $m->out("Saved Search $SavedSearch not found");
++         $m->out(loc("Saved Search %1 not found", $SavedSearch)) unless $IgnoreMissing;
         return;
     }
     $SearchArg->{'SearchType'} ||= 'Ticket';
@@ -73,11 +78,11 @@ if ($SavedSearch) {
         # XXX: dispatch to different handler here
         $query_display_component
             = '/Search/Elements/' . $SearchArg->{SearchType};
-        $query_link_url = "Search/$SearchArg->{SearchType}.html";
+        $query_link_url = RT->config->get('WebURL') . "/Search/$SearchArg->{SearchType}.html";
     } else {
         $customize = RT->config->get('WebPath') . '/Search/Build.html?'
             . $m->comp( '/Elements/QueryString',
-            LoadSavedSearch => $SavedSearch );
+            SavedSearchLoad => $SavedSearch );
     }
 } else {
     ($search) = RT::System->new() ->attributes->named( 'Search - ' . $name );
@@ -111,16 +116,26 @@ $m->callback(
 );
 
 foreach ( $SearchArg, $ProcessedSearchArg ) {
-    $_->{'query'}  =~ s/__CurrentUser__/Jifty->web->current_user->id/ge;
     $_->{'format'} =~ s/__(Web(?:Path|base|baseURL))__/scalar RT->config->get($1)/ge;
     $_->{'format'} =~ s/__loc\(["']?(\w+)["']?\)__/_("$1")/ge;
+    if ( $_->{'query'} =~ /__Bookmarks__/ ) {
+        $_->{'rows'} = 999;
+
+        my $bookmarks = Jifty->web->current_user->user_object->firstAttribute('Bookmarks');
+        $bookmarks = $bookmarks->Content if $bookmarks;
+        $bookmarks ||= {};
+        my $query = join(" OR ", map " id = '$_' ", grep $bookmarks->{ $_ }, keys %$bookmarks ) || 'id=0';
+        $_->{'query'} =~ s/__Bookmarks__/( $query )/g;
+    }
 }
 
 my $query_string = '?' . $m->comp( '/Elements/QueryString', %$SearchArg );
 
 </%init>
 <%ARGS>
-$name        => undef
-$SavedSearch => undef
-%Override    => ()
+$name          => undef
+$SavedSearch   => undef
+%Override      => ()
+$IgnoreMissing => undef
+$hideable      => 1
 </%ARGS>

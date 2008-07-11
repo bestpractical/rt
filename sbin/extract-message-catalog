@@ -121,6 +121,7 @@ sub extract_strings_from_code {
     my $line = 1;
     while (m!\G.*?<&\|/l(.*?)&>(.*?)</&>!sg) {
         my ( $vars, $str ) = ( $1, $2 );
+        $vars =~ s/[\n\r]//g;
         $line += ( () = ( $& =~ /\n/g ) );    # cryptocontext!
         $str =~ s/\\'/\'/g;
         #print "STR IS $str\n";
@@ -136,7 +137,7 @@ sub extract_strings_from_code {
 
         my ( $vars, $str );
         if ( $match =~
-                /\(\s*($RE{delimited}{-delim=>q{'"}}{-keep})(.*?)\s*\)$/ ) {
+                /\(\s*($RE{delimited}{-delim=>q{'"}}{-keep})(.*?)\s*\)$/s ) {
 
             $str = substr( $1, 1, -1 );       # $str comes before $vars now
             $vars = $9;
@@ -154,7 +155,7 @@ sub extract_strings_from_code {
     # comment-based mark: "..." # loc
     $line = 1;
     pos($_) = 0;
-    while (m/\G.*?($RE{delimited}{-delim=>q{'"}}{-keep})[\}\)\],]*\s*\#\s*loc\s*$/smg) {
+    while (m/\G.*?($RE{delimited}{-delim=>q{'"}}{-keep})[\}\)\],;]*\s*\#\s*loc\s*$/smg) {
 	my $str = substr($1, 1, -1);
 	$line += ( () = ( $& =~ /\n/g ) );    # cryptocontext!
 	$str  =~ s/\\'/\'/g;
@@ -164,7 +165,7 @@ sub extract_strings_from_code {
     # comment-based pair mark: "..." => "..." # loc_pair
     $line = 1;
     pos($_) = 0;
-    while (m/\G.*?(\w+)\s*=>\s*($RE{delimited}{-delim=>q{'"}}{-keep})[\}\)\],]*\s*\#\s*loc_pair\s*$/smg) {
+    while (m/\G.*?(\w+)\s*=>\s*($RE{delimited}{-delim=>q{'"}}{-keep})[\}\)\],;]*\s*\#\s*loc_pair\s*$/smg) {
 	my $key = $1;
 	my $val = substr($2, 1, -1);
 	$line += ( () = ( $& =~ /\n/g ) );    # cryptocontext!
@@ -198,7 +199,8 @@ sub update {
         my $msghdr = "";
         $msghdr .= shift @lines while ( $lines[0] && $lines[0] !~ /^msgid/ );
         
-        my $msgid  = shift @lines;
+        my $msgid  = "";
+        $msgid .= shift @lines while ( $lines[0] && $lines[0] =~ /^(msgid|")/ );
         my $msgstr = "";
         $msgstr .= shift @lines while ( $lines[0] && $lines[0] =~ /^(msgstr|")/ );
 
@@ -216,7 +218,7 @@ sub update {
     my $is_english = ( $lang =~ /^en(?:[^A-Za-z]|$)/ );
 
     foreach my $str ( sort keys %{$FILECAT} ) {
-        $Lexicon{$str} ||= '';;
+        $Lexicon{$str} ||= '';
     }
     foreach ( sort keys %Lexicon ) {
         my $f = join ( ' ', sort map $_->[0].":".$_->[1], @{ $FILECAT->{$_} } );
@@ -249,7 +251,7 @@ sub update {
             $var =~ s/\s*$//;
             $out .= "#. ($var)\n" unless $seen{$var}++;
         }
-        $out .= "msgid \"$_\"\nmsgstr \"$Lexicon{$_}\"\n\n";
+        $out .= 'msgid ' . fmt($_) . "msgstr \"$Lexicon{$_}\"\n\n";
     }
 
     open PO, ">$file" or die $!;
@@ -264,6 +266,23 @@ sub escape {
     $text =~ s/\b_(\d+)/%$1/;
     return $text;
 }
+
+sub fmt {
+    my $str = shift;
+    return "\"$str\"\n" unless $str =~ /\n/;
+
+    my $multi_line = ($str =~ /\n(?!\z)/);
+    $str =~ s/\n/\\n"\n"/g;
+
+    if ($str =~ /\n"$/) {
+        chop $str;
+    }
+    else {
+        $str .= "\"\n";
+    }
+    return $multi_line ? qq(""\n"$str) : qq("$str);
+}
+
 
 __END__
 # Local variables:

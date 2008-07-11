@@ -83,29 +83,29 @@ $WEEK   = 7 * $DAY;
 $MONTH  = 30.4375 * $DAY;
 $YEAR   = 365.25 * $DAY;
 
-our @MONTHS = qw(
-    Jan
-    Feb
-    Mar
-    Apr
-    May
-    Jun
-    Jul
-    Aug
-    Sep
-    Oct
-    Nov
-    Dec
+our @MONTHS = (
+    'Jan',    # loc
+    'Feb',    # loc
+    'Mar',    # loc
+    'Apr',    # loc
+    'May',    # loc
+    'Jun',    # loc
+    'Jul',    # loc
+    'Aug',    # loc
+    'Sep',    # loc
+    'Oct',    # loc
+    'Nov',    # loc
+    'Dec',    # loc
 );
 
-our @DAYS_OF_WEEK = qw(
-    Sun
-    Mon
-    Tue
-    Wed
-    Thu
-    Fri
-    Sat
+our @DAYS_OF_WEEK = (
+    'Sun',    # loc
+    'Mon',    # loc
+    'Tue',    # loc
+    'Wed',    # loc
+    'Thu',    # loc
+    'Fri',    # loc
+    'Sat',    # loc
 );
 
 =head2 new
@@ -191,7 +191,7 @@ sub set {
             GMT           => 1,
             UK            => RT->config->get('date_day_before_month'),
             PREFER_PAST   => RT->config->get('AmbiguousDayInPast'),
-            PREFER_FUTURE => !RT->config->get('AmbiguousDayInPast')
+            PREFER_FUTURE => RT->config->get('AmbiguousDayInFuture'),
         );
 
         # apply timezone offset
@@ -717,6 +717,35 @@ sub rfc2616 {
     my $res = $self->rfc2822(@_);
     $res =~ s/\s*[+-]\d\d\d\d$/ GMT/ if $args{'time'};
     return $res;
+}
+
+=head4 iCal
+
+Returns the date and time formatted as an ICalendar string -- that is,
+C<yyyymmddThhmmssZ>
+
+=cut
+
+sub iCal {
+    my $self = shift;
+    my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $ydaym, $isdst, $offset )
+      = $self->Localtime("UTC");
+
+    return sprintf( '%04d%02d%02dT%02d%02d%02dZ',
+        $year, $mon, $mday, $hour, $min, $sec );
+}
+
+=head4 iCalDate
+
+Returns the date formatted as an ICalendar string -- that is, C<yyyymmddZ>
+
+=cut
+
+sub iCalDate {
+    my $self = shift;
+    my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $ydaym, $isdst, $offset )
+      = $self->Localtime("UTC");
+    return sprintf( '%04d%02d%02dZ', $year, $mon, $mday );
 }
 
 sub _split_offset {

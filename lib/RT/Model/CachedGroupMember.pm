@@ -159,6 +159,8 @@ sub create {
         }
     }
 
+    return $id if $args{'member'}->id == $args{'group'}->id;
+
     if ( $args{'member'}->is_group() ) {
         my $GroupMembers = $args{'member'}->object->members_obj();
         while ( my $member = $GroupMembers->next() ) {

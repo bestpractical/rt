@@ -5,7 +5,13 @@ use warnings;
 
 use RT::Test; use Test::More;
 use Test::Deep;
-BEGIN { require "t/shredder/utils.pl"; }
+use File::Spec;
+use RT::Test ();
+BEGIN {
+    my $shredder_utils = RT::Test::get_relocatable_file('utils.pl',
+        File::Spec->curdir());
+    require $shredder_utils;
+}
 init_db();
 
 plan tests => 8;
@@ -55,10 +61,3 @@ create_savepoint('aucreate'); # after user create
     ok($@, "wipeout throw exception if no resolvers");
     cmp_deeply( dump_current_and_savepoint('aucreate'), "current DB equal to savepoint");
 }
-
-if( is_all_successful() ) {
-	cleanup_tmp();
-} else {
-	diag( note_on_fail() );
-}
-

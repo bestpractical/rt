@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -58,7 +58,7 @@
   <&|/l&>You can also edit the predefined search itself</&>:
   <a href="<% RT->config->get('WebPath').'/Search/Build.html?'.
 	  $m->comp('/Elements/QueryString',
-		   LoadSavedSearch => 'RT::System-1-SavedSearch-'.$id) %>"><% $search->name %></a>
+		   SavedSearchLoad => 'RT::System-1-SavedSearch-'.$id) %>"><% $search->name %></a>
 </p>
 % }
 
@@ -68,7 +68,7 @@
 
 <& /Search/Elements/DisplayOptions, %$SearchArg, %ARGS,
    AvailableColumns => $AvailableColumns, current_format => $current_format &>
-<& /Elements/Submit, Caption => _("Save"), Label => _('Save'), name => 'Save'&>
+<& /Elements/Submit, Caption => _("Save Changes"), Label => _('Save'), name => 'Save'&>
 
 </form>
 
@@ -104,8 +104,8 @@ my ( $AvailableColumns, $current_format );
 
 if ($ARGS{'Save'}) {
     my $hash = {map { $_ => $ARGS{$_}} @fields};
-    my $pref = $user->set_preferences ($search, $hash);
-    push @actions, _('Preferences saved.');
+    my ($ok, $msg) = $user->set_preferences($search, $hash);
+    push @actions, $ok ? _('Preferences saved.') : $msg;
 }
 
 </%INIT>

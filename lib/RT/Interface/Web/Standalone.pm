@@ -45,12 +45,15 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+use strict;
+use warnings;
+
 package RT::Interface::Web::Standalone;
 
-use strict;
 use base 'HTTP::Server::Simple::Mason';
 use RT::Interface::Web::Handler;
 use RT::Interface::Web;
+use URI;
 
 sub handler_class {"RT::Interface::Web::Handler"}
 
@@ -74,10 +77,36 @@ sub handle_request {
 
     Module::Refresh->refresh if RT->config->get('DevelMode');
 
+    RT::ConnectToDatabase() unless RT->InstallMode;
     $self->SUPER::handle_request($cgi);
-    Jifty->log->fatal($@) if ($@);
+    Jifty->log->fatal($@) if $@ && Jifty->log;
+    warn $@               if $@ && !Jifty->log;
+    RT::Interface::Web::Handler->CleanupRequest();
+}
 
-    RT::Interface::Web::Handler->cleanup_request();
+sub net_server {
+    my $self = shift;
+    $self->{rt_net_server} = shift if @_;
+    return $self->{rt_net_server};
+}
+
+=head2  print_banner
+
+This routine prints a banner before the server request-handling loop
+starts.
+
+Methods below this point are probably not terribly useful to define
+yourself in subclasses.
+
+=cut
+
+sub print_banner {
+    my $self = shift;
+
+    my $url = URI->new( RT->config->get('WebBaseURL') );
+    $url->host('127.0.0.1') if ( $url->host() eq 'localhost' );
+    $url->port( $self->port );
+    print( "You can connect to your server at " . $url->canonical . "\n" );
 
 }
 

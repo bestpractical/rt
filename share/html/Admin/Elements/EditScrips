@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -48,33 +48,31 @@
 <& /Elements/ListActions, actions => \@actions &>
 
 <form action="Scrips.html" method="post">
-<input type="hidden" class="hidden" name="id" value="<%$id%>" />
+<input type="hidden" class="hidden" name="id" value="<% $id %>" />
 
 <h2><&|/l&>Current Scrips</&></h2>
-% if ($Scrips->count == 0 ) {
-<p><i><&|/l&>(No scrips)</&></i></p>
-% } else {
-<table width="100%">
+<& /Elements/CollectionList,
+    order_by => 'description',
+    order => 'ASC',
+    Rows  => 100,
+    %ARGS,
+    format => $format,
+    Displayformat => "__CheckBox.{DeleteScrip}__, $format",
+    Collection => $Scrips,
+    AllowSorting => 1,
+    PassArguments => [ qw(Query format Rows Page order order_by id) ],
+&>
+
+% if ( $Scrips->count ) {
 <p><i><&|/l&>(Check box to delete)</&></i></p>
-
-%   while (my $scrip = $Scrips->next ) {
-<tr>
-<td>
-<input type="checkbox" class="checkbox" name="DeleteScrip-<%$scrip->id%>" value="1" />
-</td>
-<td>
-<a href="Scrip.html?id=<%$scrip->id%>&queue=<%$id%>"><% $scrip->description || "<i>("._('no value').")</i>" |n %></a><br />
-<small><&|/l, _($scrip->scrip_condition->name), _($scrip->scrip_action->name), _($scrip->template_obj->name) &>%1 %2 with template %3</&></small>
-</td>
-</tr>
-%   }
-
-</table>
+% } else  {
+<p><i><&|/l&>(No scrips)</&></i></p>
 
 % }
-<& /Elements/Submit, 
-	Caption => _("Delete selected scrips"), 
-	Label => _("Delete") &>
+<& /Elements/Submit,
+    Caption => _("Delete selected scrips"),
+    Label => _("Delete")
+&>
 </form>
 
 <%init>
@@ -84,42 +82,46 @@ my $Scrips = RT::Model::ScripCollection->new();
 
 
 my $queue_obj = RT::Model::Queue->new();
-if ($id)  {
-        $queue_obj->load($id);                        
+if ( $id ) {
+    $queue_obj->load( $id );
+    unless ( $queue_obj->id ) {
+        push @actions, _("Couldn't load queue #%1", $id)
+    }
 }
 
-if ($queue_obj->id) {                         
-	$Scrips->limit_to_queue($id);
-}                                            
-else {                                       
-        $Scrips->limit_to_global();
-}                                           
-
-$Scrips->order_by( column => 'description' );
-
+if ($queue_obj->id) {
+    $Scrips->limit_to_queue($id);
+}
+else {
+    $Scrips->limit_to_global();
+}
 
 
 # {{{ deal with modifying and deleting existing scrips
-foreach my $key (keys %ARGS) {
-  # {{{ if we're trying to delete the scrip
-  if ($key =~ /^DeleteScrip-(\d+)/) {
-    my $id = $1;
-    my $scrip = RT::Model::Scrip->new();
-    $scrip->load($id);
+# we still support DeleteScrip-id format but array is preferred
+foreach my $id ( grep $_, @DeleteScrip, map /^DeleteScrip-(\d+)/, keys %ARGS ) {
+    my $scrip = RT::Scrip->new;
+    $scrip->load( $id );
     my ($retval, $msg) = $scrip->delete;
     if ($retval) {
-      push @actions, _("Scrip deleted");
+        push @actions, _("Scrip deleted");
     }
     else {
-      push @actions, $msg;
+        push @actions, $msg;
     }
-  }
-  # }}}
 }
+
+my $dir_path = $m->request_comp->dir_path;
+$format ||= qq{'<a href="__WebPath__$dir_path/Scrip.html?id=__id__&Queue=$id">__id__</a>/TITLE:#'}
+    .qq{,'<a href="__WebPath__$dir_path/Scrip.html?id=__id__&Queue=$id">__Description__</a>/TITLE:Description'}
+    .q{,__Stage__, __Condition__, __Action__, __Template__};
+
 # }}}
 </%init>
 
 <%ARGS>
 $id => undef
 $title => undef
+$format => undef
+@DeleteScrip => ()
 </%ARGS>

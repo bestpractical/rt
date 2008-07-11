@@ -1,11 +1,21 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use RT::Test; use Test::More tests => 6;
+use RT::Test;
+use Test::More tests => 6;
+
+plan skip_all => 'GnuPG required.'
+    unless eval 'use GnuPG::Interface; 1';
+plan skip_all => 'gpg executable is required.'
+    unless RT::Test->find_executable('gpg');
+
+plan tests => 6;
+
 
 use Cwd 'getcwd';
 
-my $homedir = File::Spec->catdir( getcwd(), qw(lib t data crypt-gnupg) );
+my $homedir = RT::Test::get_abs_relocatable_dir(File::Spec->updir(),
+    qw(data gnupg keyrings));
 
 RT->config->set( LogToScreen => 'debug' );
 RT->config->set( 'GnuPG',

@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -45,55 +45,42 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-#login-box {
-    width: 50%;
-    margin: 0 auto 4em auto;
+#login-box hr {
+ display: none;
 }
-
-%# More rules only IE will recognize (but are still valid!) to correct for
-%# IE's incorrect handling of auto margins and the W3C defined behavior.
-%# text-align will affect a block element in IE, therefore centering it, like
-%# left and right auto margins *should*
-
 
 #login-box {
 
-    padding-top: 4em;
+ width: 30em;
+ 
+margin-right:auto;margin-left:auto;
+ padding-top: 2em;
+ padding-bottom: 2em;
+
 
 }
 
-/*
-
-* html #login-box {
-    text-align: center;
-}
-
-
-
-%# ... and align the text back the way it should be
-* html #login-box .titlebox {
-    text-align: left;
-}
 
 #login-box .input-row {
-    padding: 0.5em;
+  position: relative;
+  height: 1.5em;
+  padding-top: 1em;
 }
 
 #login-box .input-row .label {
-    width: 8em;
-    float: left;
-    text-align: right;
-    padding: 0.2em 1em 0 0;
+
+ position: absolute;
+ left:0em;
+ width: 5.5em;
+ text-align: right;
+ font-weight: bold;
+
+
 }
+
 
 #login-box .input-row .input {
-    float: left;
+ position: absolute;
+ left:6em;
 }
 
-#login-box .button-row {
-    clear: both;
-    padding: 0.5em;
-    float: right;
-}
-
-*/

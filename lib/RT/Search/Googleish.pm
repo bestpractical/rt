@@ -67,7 +67,7 @@ Use the argument passed in as a "Google-style" set of keywords
 package RT::Search::Googleish;
 
 use strict;
-use base qw(RT::Search::Generic);
+use base qw(RT::Search);
 
 # sub _init {{{
 sub _init {
@@ -102,6 +102,13 @@ sub query_to_sql {
             push @id_clauses, "id = '$key'";
         }
 
+        elsif ( $key =~ /^fulltext:(.*?)$/i ) {
+            $key = $1;
+            $key =~ s/['\\].*//g;
+            push @tql_clauses, "Content LIKE '$key'";
+
+        }
+
         elsif ( $key =~ /\w+\@\w+/ ) {
             push @user_clauses, "Requestor LIKE '$key'";
         }
@@ -113,12 +120,13 @@ sub query_to_sql {
             push @status_clauses, "Status = '" . $key . "'";
         }
 
-        # Is there a owner named $key?
         # Is there a queue named $key?
         elsif ( $Queue = RT::Model::Queue->new( current_user => $self->tickets_obj->current_user )
             and $Queue->load($key) )
         {
-            push @queue_clauses, "Queue = '" . $Queue->name . "'";
+            my $quoted_queue = $Queue->name;
+            $quoted_queue =~ s/'/\\'/g;
+            push @queue_clauses, "Queue = '$quoted_queue'";
         }
 
         # Is there a owner named $key?
@@ -128,13 +136,6 @@ sub query_to_sql {
             and $User->privileged )
         {
             push @owner_clauses, "Owner = '" . $User->name . "'";
-        }
-
-        elsif ( $key =~ /^fulltext:(.*?)$/i ) {
-            $key = $1;
-            $key =~ s/['\\].*//g;
-            push @tql_clauses, "content LIKE '$key'";
-
         }
 
         # Else, subject must contain $key
@@ -148,12 +149,20 @@ sub query_to_sql {
     for my $queue ( @{ $self->{'Queues'} } ) {
         my $queue_obj = RT::Model::Queue->new( current_user => $self->tickets_obj->current_user );
         $queue_obj->load($queue) or next;
-        push @queue_clauses, "Queue = '" . $queue_obj->name . "'";
+        my $quoted_queue = $Queue->name;
+        $quoted_queue =~ s/'/\\'/g;
+        push @queue_clauses, "Queue = '$quoted_queue'";
     }
 
     push @tql_clauses, join( " OR ", sort @id_clauses );
     push @tql_clauses, join( " OR ", sort @owner_clauses );
-    push @tql_clauses, join( " OR ", sort @status_clauses );
+    if ( !@status_clauses ) {
+        push @tql_clauses,
+          join( " OR ", map "Status = '$_'", RT::Model::Queue->ActiveStatusArray() );
+    }
+    else {
+        push @tql_clauses, join( " OR ", sort @status_clauses );
+    }
     push @tql_clauses, join( " OR ", sort @user_clauses );
     push @tql_clauses, join( " OR ", sort @queue_clauses );
     @tql_clauses = grep { $_ ? $_ = "( $_ )" : undef } @tql_clauses;

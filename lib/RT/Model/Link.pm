@@ -114,7 +114,7 @@ sub create {
 
     unless ( $base->resolver && $base->scheme ) {
         my $msg = _( "Couldn't resolve base '%1' into a URI.", $args{'base'} );
-        Jifty->log->warn("$self $msg\n");
+        Jifty->log->warn("$self $msg");
 
         if (wantarray) {
             return ( undef, $msg );
@@ -128,7 +128,7 @@ sub create {
 
     unless ( $target->resolver ) {
         my $msg = _( "Couldn't resolve target '%1' into a URI.", $args{'target'} );
-        Jifty->log->warn("$self $msg\n");
+        Jifty->log->warn("$self $msg");
 
         if (wantarray) {
             return ( undef, $msg );
@@ -141,18 +141,20 @@ sub create {
     my $target_id = 0;
 
     if ( $base->is_local ) {
-        unless ( UNIVERSAL::can( $base->object, 'id' ) ) {
+        my $object = $base->object;
+        unless ( UNIVERSAL::can( $object, 'id' ) ) {
             return ( undef, _( "%1 appears to be a local object, but can't be found in the database", $args{'base'} ) );
 
         }
-        $base_id = $base->object->id;
+        $base_id = $object->id if UNIVERSAL::isa( $object, 'RT::Model::Ticket' );
     }
     if ( $target->is_local ) {
-        unless ( UNIVERSAL::can( $target->object, 'id' ) ) {
+        my $object = $target->object;
+        unless ( UNIVERSAL::can( $object, 'id' ) ) {
             return ( undef, _( "%1 appears to be a local object, but can't be found in the database", $args{'target'} ) );
 
         }
-        $target_id = $target->object->id;
+        $target_id = $object->id if UNIVERSAL::isa( $object, 'RT::Model::Ticket' );
     }
 
     # {{{ We don't want references to ourself

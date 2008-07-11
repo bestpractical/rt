@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -47,17 +47,37 @@
 %# END BPS TAGGED BLOCK }}}
 <table>
   <tr>
-    <td class="labeltop"><&|/l&>Depends on</&>:</td>
+    <td class="labeltop"><&|/l&>Depends on</&>: (<a href="<%$clone->{'DependsOn-new'}%>"><% _('Create') %></a>)</td>
     <td class="value">
+
+<%PERL>
+my ( @active, @inactive, @not_tickets );
+for my $link ( @{ $Ticket->depends_on->ItemsArrayRef } ) {
+    my $target = $link->target_obj;
+    if ( $target && $target->isa('RT::Model::Ticket') ) {
+        if ( $target->queue_obj->IsInactiveStatus( $target->status ) ) {
+            push( @inactive, $link->targetURI );
+        }
+        else {
+            push( @active, $link->targetURI );
+        }
+    }
+    else {
+        push( @not_tickets, $link->targetURI );
+    }
+}
+</%PERL>
+
+
 <ul>
-% while (my $Link = $Ticket->depends_on->next) {
-<li><& ShowLink, URI => $Link->target_uri &></li>
+% for my $Link (@not_tickets, @active, @inactive) {
+<li><& ShowLink, URI => $Link &></li>
 % }
 </ul>
     </td>
   </tr>
   <tr>
-    <td class="labeltop"><&|/l&>Depended on by</&>:</td>
+    <td class="labeltop"><&|/l&>Depended on by</&>: (<a href="<%$clone->{'new-DependsOn'}%>"><% _('Create') %></a>)</td>
     <td class="value">
 <ul>
 % while (my $Link = $Ticket->depended_on_by->next) {
@@ -67,7 +87,7 @@
     </td>
   </tr>
   <tr>
-    <td class="labeltop"><&|/l&>Parents</&>:</td>
+    <td class="labeltop"><&|/l&>Parents</&>: (<a href="<%$clone->{'MemberOf-new'}%>"><% _('Create') %></a>)</td>
     <td class="value">
 <ul>
 % while (my $Link = $Ticket->member_of->next) {
@@ -77,11 +97,11 @@
     </td>
   </tr>
   <tr>
-    <td class="labeltop"><&|/l&>Children</&>:</td>
+    <td class="labeltop"><&|/l&>Children</&>: (<a href="<%$clone->{'new-MemberOf'}%>"><% _('Create') %></a>)</td>
     <td class="value"><& /Ticket/Elements/ShowMembers, Ticket => $Ticket &></td>
   </tr>
   <tr>
-    <td class="labeltop"><&|/l&>Refers to</&>:</td>
+    <td class="labeltop"><&|/l&>Refers to</&>: (<a href="<%$clone->{'RefersTo-new'}%>"><% _('Create') %></a>)</td>
     <td class="value">
 <ul>
 % while (my $Link = $Ticket->refers_to->next) {
@@ -91,7 +111,7 @@
     </td>
   </tr>
   <tr>
-    <td class="labeltop"><&|/l&>Referred to by</&>:</td>
+    <td class="labeltop"><&|/l&>Referred to by</&>: (<a href="<%$clone->{'new-RefersTo'}%>"><% _('Create') %></a>)</td>
     <td class="value">
     <ul>
 % while (my $Link = $Ticket->referred_to_by->next) {
@@ -102,10 +122,44 @@
     </td>
   </tr>
 
-% # Allow people to add more rows to the table                                                                                                                           
+
+% # Allow people to add more rows to the table
 % $m->callback( %ARGS );
 
 </table>
+
+<%INIT>
+
+my $clone = {};
+my $path
+    = RT->config->get('WebPath')
+    . '/Ticket/Create.html?Queue='
+    . $Ticket->Queue
+    . '&CloneTicket='
+    . $Ticket->id;
+
+
+for my $relation (
+    qw(RefersTo ReferredToBy)) {
+    my $mode  = $RT::Ticket::LINKTYPEMAP{$relation}->{Mode};
+    my $type  = $RT::Ticket::LINKTYPEMAP{$relation}->{type};
+    my $other = "Local" . $mode;
+    my $field = $mode eq 'base' ? 'new-' . $type : $type . '-new';
+    $clone->{$field} 
+        = $path . "&$field="
+        . join( '%20',
+        ( map { $_->$other() } @{ $Ticket->$relation->ItemsArrayRef } ),
+        $Ticket->id );
+}
+
+for my $relation ( qw(MemberOf Members DependsOn DependedOnBy)) {
+    my $mode  = $RT::Ticket::LINKTYPEMAP{$relation}->{Mode};
+    my $type  = $RT::Ticket::LINKTYPEMAP{$relation}->{type};
+    my $field = $mode eq 'base' ? 'new-' . $type : $type . '-new';
+    $clone->{$field} = $path . "&$field=". $Ticket->id ;
+}
+
+</%INIT>
 
 <%ARGS>
 $Ticket => undef

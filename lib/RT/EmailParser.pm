@@ -52,7 +52,7 @@ use base qw/RT::Base/;
 use strict;
 use warnings;
 
-use Mail::Address;
+use Email::Address;
 use MIME::Entity;
 use MIME::Head;
 use MIME::Parser;
@@ -417,37 +417,57 @@ sub _setup_mime_parser {
     my $self   = shift;
     my $parser = shift;
 
-    # Set up output directory for files:
-
-    my $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
-    push( @{ $self->{'_attachment_dirs'} }, $tmpdir );
-    $parser->output_dir($tmpdir);
-    $parser->filer->ignore_filename(1);
+    # Set up output directory for files; we use $RT::VarPath instead
+    # of File::Spec->tmpdir (e.g., /tmp) beacuse it isn't always
+    # writable.
+    my $tmpdir;
+    if ( -w $RT::VarPath ) {
+        $tmpdir = File::Temp::tempdir( DIR => $RT::VarPath, CLEANUP => 1 );
+    }
+    elsif ( -w File::Spec->tmpdir ) {
+        $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
+    }
+    else {
+        Jifty->log->fatal(
+"Neither the RT var directory ($RT::VarPath) nor the system tmpdir (@{[File::Spec->tmpdir]}) are writable; falling back to in-memory parsing!"
+        );
+    }
 
     #If someone includes a message, extract it
     $parser->extract_nested_messages(1);
 
     $parser->extract_uuencode(1);    ### default is false
 
-    # Set up the prefix for files with auto-generated names:
-    $parser->output_prefix("part");
+    if ($tmpdir) {
 
-    # do _not_ store each msg as in-core scalar;
+        # If we got a writable tmpdir, write to disk
+        push( @{ $self->{'attachment_dirs'} ||= [] }, $tmpdir );
+        $parser->output_dir($tmpdir);
+        $parser->filer->ignore_filename(1);
 
-    $parser->output_to_core(0);
-
+        # Set up the prefix for files with auto-generated names:
+        $parser->output_prefix("part");
     # From the MIME::Parser docs:
     # "Normally, tmpfiles are created when needed during parsing, and destroyed automatically when they go out of scope"
     # Turns out that the default is to recycle tempfiles
     # Temp files should never be recycled, especially when running under perl taint checking
+        $parser->tmp_recycling(0) if $parser->can('tmp_recycling');
+    }
+    else {
 
-    $parser->tmp_recycling(0) if $parser->can('tmp_recycling');
+        # Otherwise, fall back to storing it in memory
+        $parser->output_to_core(1);
+        $parser->tmp_to_core(1);
+        $parser->use_inner_files(1);
+    }
+
 
 }
 
 sub DESTROY {
     my $self = shift;
-    File::Path::rmtree( [ @{ $self->{'_attachment_dirs'} } ], 0, 1 );
+    File::Path::rmtree( [ @{ $self->{'attachment_dirs'} } ], 0, 1 )
+      if $self->{'attachment_dirs'};
 }
 
 1;

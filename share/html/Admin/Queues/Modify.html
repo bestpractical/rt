@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -67,6 +67,10 @@
 <td colspan="3"><input name="description" value="<% ($Create) ? "" : $queue_obj->description %>" size="60" /></td>
 </tr>
 
+<tr><td align="right"><&|/l&>Subject Tag</&>:</td>
+<td colspan="3"><input name="SubjectTag" value="<% $ARGS{'SubjectTag'} || ($Create ? "" : $queue_obj->SubjectTag || '' ) %>" size="60" /></td>
+</tr>
+
 <tr><td align="right"><&|/l&>Reply Address</&>:</td>
 <td><input name="correspond_address" value="<% ($Create) ? "" : $queue_obj->correspond_address %>" />
 <br /><span><em><&|/l , RT->config->get('correspond_address')&>(If left blank, will default to %1)</&></em></span></td>
@@ -85,15 +89,27 @@
 <td colspan="3"><input name="default_due_in" value="<% ($Create) ? "" : $queue_obj->default_due_in%>" /> <&|/l&>days</&>.</td>
 </tr>
 
+% my $CFs = $queue_obj->custom_fields;
+% while (my $CF = $CFs->next) {
+<tr valign="top"><td align="right">
+<% $CF->name %>:
+</td><td>
+<& /Elements/EditCustomField, CustomField => $CF, 
+                              object => $queue_obj, 
+                              ($Create ? (NamePrefix => 'object-RT::Model::Queue--CustomField-') 
+                                       : () )&>
+</td></tr>
+% }
+
 % if ( RT->config->get('GnuPG')->{'enable'} ) {
-<tr><td align="right"><input type="checkbox" class="checkbox" name="sign" value="1" <% $queue_obj->sign? 'checked': '' %> /></td>
+<tr><td align="right"><input type="checkbox" class="checkbox" name="sign" value="1" <% $queue_obj->sign? 'checked="checked"': '' |n%> /></td>
 <td><&|/l&>sign by default</&></td>
-<td align="right"><input type="checkbox" class="checkbox" name="encrypt" value="1" <% $queue_obj->encrypt? 'checked': '' %> /></td>
+<td align="right"><input type="checkbox" class="checkbox" name="encrypt" value="1" <% $queue_obj->encrypt? 'checked="checked"': '' |n%> /></td>
 <td><&|/l&>encrypt by default</&></td>
 </tr>
 % }
 
-<tr><td align="right"><input type="checkbox" class="checkbox" name="enabled" value="1" <%$enabled_checked%> /></td>
+<tr><td align="right"><input type="checkbox" class="checkbox" name="enabled" value="1" <%$enabledChecked|n%> /></td>
 <td colspan="3"><&|/l&>enabled (Unchecking this box disables this queue)</&><br />
 % $m->callback( %ARGS, queue_obj => $queue_obj, results => \@results );
 </td></tr>
@@ -118,7 +134,7 @@ my ($title, $current_tab, @results, $disabled, $enabled_checked);
 my $queue_obj = RT::Model::Queue->new();
 $queue_obj->load( $id ) if !$id || $id eq 'new';
 
-$enabled_checked = "checked";
+$enabled_checked = 'checked="checked"';
 
 if ($Create) {
     $current_tab = 'Admin/Queues/Modify.html?Create=1';
@@ -139,7 +155,7 @@ if ($Create) {
 }
 if ( $queue_obj->id ) {
     my @attribs= qw(description correspond_address comment_address name
-        initial_priority final_priority default_due_in sign encrypt disabled);
+        initial_priority final_priority default_due_in Sign Encrypt SubjectTag Disabled);
 
     # we're asking about enabled on the web page but really care about disabled
     if ( $set_enabled ) {
@@ -166,6 +182,7 @@ if ( $queue_obj->id ) {
         Callbackname => 'ProcessLinks'
     );
     push @results, @linkresults;
+    push @results, process_ObjectCustomFieldUpdates( args_ref => \%ARGS, object => $queue_obj );
 }
 </%INIT>
 

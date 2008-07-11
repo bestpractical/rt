@@ -499,7 +499,8 @@ at $args{'Wrap'}.  $args{'Wrap'} defaults to 70.
 
 If $args{'type'} is set to C<text/html>, plain texts are upgraded to HTML.
 Otherwise, HTML texts are downgraded to plain text.  If $args{'type'} is
-missing, it defaults to the value of C<$RT::Transaction::Preferredcontent_type>.
+missing, it defaults to the value of C<$RT::Transaction::Preferredcontent_type>,
+if that's missing too, defaults to 'text/plain'.
 
 =cut
 
@@ -1280,7 +1281,52 @@ sub custom_field_lookup_type {
     "RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction";
 }
 
-# Transactions don't change. by adding this cache congif directiove, we don't lose pathalogically on long tickets.
+=item DeferredRecipients($freq, $include_sent )
+
+Takes the following arguments:
+
+=over
+
+=item * a string to indicate the frequency of digest delivery.  Valid values are "daily", "weekly", or "susp".
+
+=item * an optional argument which, if true, will return addresses even if this notification has been marked as 'sent' for this transaction.
+
+=back
+
+Returns an array of users who should now receive the notification that
+was recorded in this transaction.  Returns an empty array if there were
+no deferred users, or if $include_sent was not specified and the deferred
+notifications have been sent.
+
+=cut
+
+sub DeferredRecipients {
+    my $self         = shift;
+    my $freq         = shift;
+    my $include_sent = @_ ? shift : 0;
+
+    my $attr = $self->firstAttribute('DeferredRecipients');
+
+    return () unless ($attr);
+
+    my $deferred = $attr->Content;
+
+    return () unless ( ref($deferred) eq 'HASH' && exists $deferred->{$freq} );
+
+    # Skip it.
+
+    for my $user ( keys %{ $deferred->{$freq} } ) {
+        if ( $deferred->{$freq}->{$user}->{_sent} && !$include_sent ) {
+            delete $deferred->{$freq}->{$user};
+        }
+    }
+
+    # Now get our users.  Easy.
+
+    return keys %{ $deferred->{$freq} };
+}
+
+# Transactions don't change. by adding this cache config directive, we don't lose pathalogically on long tickets.
 sub _cache_config {
     {   'cache_p'       => 1,
         'fast_update_p' => 1,

@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -47,12 +47,18 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Tabs, 
     tabs => $tabs, 
-    current_toptab => 'User/Prefs.html', 
+    current_toptab => 'Prefs/Other.html', 
     current_tab => $current_tab, 
     Title => $Title &>
 
 <%INIT>
-  my $tabs = { a => { title => _('About me'),
+  my $tabs = {
+  
+	       a => { title => _('Settings'),
+			   path => 'Prefs/Other.html',
+			 },
+  
+             b => { title => _('About me'),
 			  path => 'User/Prefs.html',
 			},
 	       g => { title => _('Personal Groups'),
@@ -66,9 +72,6 @@
 			 },
 	       r => { title => _('RT at a glance'),
 			   path => 'Prefs/MyRT.html',
-			 },
-	       t => { title => _('Other'),
-			   path => 'Prefs/Other.html',
 			 },
 	     };
 

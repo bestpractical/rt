@@ -2,7 +2,9 @@
 
 use strict;
 use Test::Expect;
-use RT::Test; use Test::More tests => 219;
+use File::Spec ();
+use Test::More tests => 241;
+use RT::Test;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 use RT::Model::User;
@@ -109,9 +111,11 @@ ok($val,$msg);
     expect_like(qr/Message recorded/, "Added the correspondence");
     ### should test to make sure it actually got added
 
+    my $test_email = RT::Test::get_relocatable_file('lorem-ipsum',
+        (File::Spec->updir(), 'data', 'emails'));
     # add attachments to a ticket
     # text attachment
-    check_attachment("$RT::BASE_PATH/lib/RT.pm");
+    check_attachment($test_email);
     # binary attachment
     check_attachment($RT::MasonComponentRoot.'/NoAuth/images/bplogo.gif');
 
@@ -148,20 +152,48 @@ expect_like(qr/Queue: EditedQueue$$/, 'Verified lack of change');
 
 # Test reading and setting custom fields without spaces
 expect_send("show ticket/$ticket_id -f CF-myCF$$", 'Checking initial value');
-expect_like(qr/CF-myCF$$:/i, 'Verified initial empty value');
+expect_like(qr/CF\.{myCF$$}:/i, 'Verified initial empty value (CF-x syntax)');
+expect_send("show ticket/$ticket_id -f CF.{myCF$$}", 'Checking initial value');
+expect_like(qr/CF\.{myCF$$}:/i, 'Verified initial empty value (CF.{x} syntax)');
+
 expect_send("edit ticket/$ticket_id set 'CF-myCF$$=value' ", 'Changing CF...');
 expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
 expect_send("show ticket/$ticket_id -f CF-myCF$$", 'Checking new value');
-expect_like(qr/CF-myCF$$: value/i, 'Verified change');
+expect_like(qr/CF\.{myCF$$}: value/i, 'Verified change');
+# Test setting 0 as value of the custom field
+expect_send("edit ticket/$ticket_id set 'CF-myCF$$=0' ", 'Changing CF...');
+expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
+expect_send("show ticket/$ticket_id -f CF-myCF$$", 'Checking new value');
+expect_like(qr/CF\.{myCF$$}: 0/i, 'Verified change');
+
+expect_send("edit ticket/$ticket_id set 'CF.{myCF$$}=value' ",'Changing CF...');
+expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
+expect_send("show ticket/$ticket_id -f CF.{myCF$$}", 'Checking new value');
+expect_like(qr/CF\.{myCF$$}: value/i, 'Verified change');
+# Test setting 0 as value of the custom field
+expect_send("edit ticket/$ticket_id set 'CF.{myCF$$}=0' ", 'Changing CF...');
+expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
+expect_send("show ticket/$ticket_id -f CF.{myCF$$}", 'Checking new value');
+expect_like(qr/CF\.{myCF$$}: 0/i, 'Verified change');
+
 # Test reading and setting custom fields with spaces
 expect_send("show ticket/$ticket_id -f 'CF-my CF$$'", 'Checking initial value');
-expect_like(qr/my CF$$:/i, 'Verified change');
+expect_like(qr/CF\.{my CF$$}:/i, 'Verified change');
 expect_send("edit ticket/$ticket_id set 'CF-my CF$$=value' ", 'Changing CF...');
 expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
 expect_send("show ticket/$ticket_id -f 'CF-my CF$$'", 'Checking new value');
-expect_like(qr/my CF$$: value/i, 'Verified change');
+expect_like(qr/CF\.{my CF$$}: value/i, 'Verified change');
 expect_send("ls 'id = $ticket_id' -f 'CF-my CF$$'", 'Checking new value');
-expect_like(qr/my CF$$: value/i, 'Verified change');
+expect_like(qr/CF\.{my CF$$}: value/i, 'Verified change');
+
+expect_send("show ticket/$ticket_id -f 'CF.{my CF$$}'", 'Checking initial value');
+expect_like(qr/CF\.{my CF$$}: value/i, 'Verified change');
+expect_send("edit ticket/$ticket_id set 'CF.{my CF$$}=NEW' ", 'Changing CF...');
+expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
+expect_send("show ticket/$ticket_id -f 'CF.{my CF$$}'", 'Checking new value');
+expect_like(qr/CF\.{my CF$$}: NEW/i, 'Verified change');
+expect_send("ls 'id = $ticket_id' -f 'CF.{my CF$$}'", 'Checking new value');
+expect_like(qr/CF\.{my CF$$}: NEW/i, 'Verified change');
 
 # ...
 # change a ticket's ...[other properties]...
@@ -198,10 +230,11 @@ expect_like(qr/id: ticket\/$ticket_id/, 'Got our ticket');
 # show ticket history
 expect_send("show ticket/$ticket_id/history", 'Showing our ticket\'s history...');
 expect_like(qr/Ticket Created by root/, 'Got our history');
+
+expect_send("show -v ticket/$ticket_id/history", 'Showing our ticket\'s history verbosely...');
 TODO: {
     local $TODO = "Cannot show verbose ticket history right now";
     # show ticket history verbosely
-    expect_send("show -v ticket/$ticket_id/history", 'Showing our ticket\'s history verbosely...');
     expect_like(qr/Ticket Created by root/, 'Got our history');
 }
 # get attachments from a ticket
@@ -345,10 +378,9 @@ expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in 
     # root takes the ticket
     expect_send("take $steal_ticket_id", 'root takes the ticket...');
     expect_like(qr/Owner changed from Nobody to root/, 'root took the ticket');
+    expect_quit();
 
     # log in as the non-root user
-    #expect_quit();      # this is apparently unnecessary, but I'll leave it in
-                         # until I'm sure
     $ENV{'RTUSER'} = "fooser$$";
     $ENV{'RTPASSWD'} = 'foobar';
     expect_run( command => "$rt_tool_path shell", prompt => 'rt> ', quit => 'quit',);
@@ -368,9 +400,9 @@ expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in 
     expect_like(qr/Owner changed from root to fooser$$/, '...and succeeds!');
     expect_send("show ticket/$steal_ticket_id -f owner", 'Double-checking...');
     expect_like(qr/Owner: fooser$$/, '...yup, it worked.');
+    expect_quit();
 
     # log back in as root
-    #expect_quit();     # ditto
     $ENV{'RTUSER'} = 'root';
     $ENV{'RTPASSWD'} = 'password';
     expect_run( command => "$rt_tool_path shell", prompt => 'rt> ', quit => 'quit',);
@@ -407,6 +439,8 @@ expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in 
     }
 # }}}
 
+expect_quit(); # We need to do this ourselves, so that we quit
+               # *before* we tear down the webserver.
 
 # helper function
 sub ok_create_ticket {

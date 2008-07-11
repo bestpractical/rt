@@ -65,6 +65,7 @@ sub default_handler_args {
     (   comp_root => [ [ local => $RT::MasonLocalComponentRoot ], ( map { [ "plugin-" . $_->name => $_->component_root ] } @{ RT->plugins } ), [ standard => $RT::MasonComponentRoot ] ],
         error_format => ( RT->config->get('DevelMode') ? 'html' : 'brief' ),
         request_class => 'RT::Interface::Web::Request',
+        named_component_subs => $INC{'Devel/Cover.pm'} ? 1 : 0,
     );
 }
 
@@ -109,7 +110,7 @@ and is not recommended to change.
 
 sub cleanup_request {
 
-    if ( Jifty->handle->transaction_depth ) {
+    if ( Jifty->handle && Jifty->handle->transaction_depth ) {
         Jifty->handle->force_rollback;
         Jifty->log->fatal( "Transaction not committed. Usually indicates a software fault." . "Data loss may have occurred" );
     }

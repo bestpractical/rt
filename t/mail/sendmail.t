@@ -2,6 +2,7 @@
 
 use strict;
 use RT::Test; use Test::More tests => 131;
+use File::Spec ();
 
 
 
@@ -43,9 +44,10 @@ sub count_attachs { return first_txn($_[0])->attachments->count }
 
 my $parser = RT::EmailParser->new(current_user => RT->system_user);
 
-
 # Let's test to make sure a multipart/report is processed correctly
-my $content =  RT::Test->file_content("$RT::BASE_PATH/lib/t/data/multipart-report");
+my $multipart_report_email = RT::Test::get_relocatable_file('multipart-report',
+    (File::Spec->updir(), 'data', 'emails'));
+my $content =  RT::Test->file_content($multipart_report_email);
 # be as much like the mail gateway as possible.
 use RT::Interface::Email;
 my %args =        (message => $content, queue => 1, action => 'correspond');
@@ -101,7 +103,9 @@ is ($#scrips_fired, 1, "Fired 2 scrips on ticket creation");
 # create an iso 8859-1 ticket
 @scrips_fired = ();
 
-$content =  RT::Test->file_content("$RT::BASE_PATH/lib/t/data/new-ticket-from-iso-8859-1");
+my $iso_8859_1_ticket_email = RT::Test::get_relocatable_file(
+    'new-ticket-from-iso-8859-1', (File::Spec->updir(), 'data', 'emails'));
+$content =  RT::Test->file_content($iso_8859_1_ticket_email);
 
 
 
@@ -149,7 +153,7 @@ RT->config->set( EmailOutputEncoding => 'iso-8859-1' );
 # create an iso 8859-1 ticket
 @scrips_fired = ();
 
- $content =  RT::Test->file_content("$RT::BASE_PATH/lib/t/data/new-ticket-from-iso-8859-1");
+ $content =  RT::Test->file_content($iso_8859_1_ticket_email);
 # be as much like the mail gateway as possible.
 use RT::Interface::Email;
                                   
@@ -243,7 +247,9 @@ sub iso8859_redef_sendmessage {
 
 # {{{ test a multipart alternative containing a text-html part with an umlaut
 
- $content =  RT::Test->file_content("$RT::BASE_PATH/lib/t/data/multipart-alternative-with-umlaut");
+ my $alt_umlaut_email = RT::Test::get_relocatable_file(
+     'multipart-alternative-with-umlaut', (File::Spec->updir(), 'data', 'emails'));
+ $content =  RT::Test->file_content($alt_umlaut_email);
 
 $parser->parse_mime_entity_from_scalar($content);
 
@@ -272,13 +278,15 @@ $parser->parse_mime_entity_from_scalar($content);
 
 # {{{ test a text-html message with an umlaut
 
- $content =  RT::Test->file_content("$RT::BASE_PATH/lib/t/data/text-html-with-umlaut");
+ my $text_html_email = RT::Test::get_relocatable_file('text-html-with-umlaut',
+     (File::Spec->updir(), 'data', 'emails'));
+ $content =  RT::Test->file_content($text_html_email);
 
 $parser->parse_mime_entity_from_scalar($content);
 
 
 # be as much like the mail gateway as possible.
-&text_html_umlauts_redef_sendmessage;
+&text_html_redef_sendmessage;
 
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::gateway(\%args);
@@ -292,16 +300,15 @@ like (first_attach($tick)->content , qr/causes Error/, "We recorded the content 
 like (first_attach($tick)->content_type , qr/text\/html/, "We recorded the content as text/html");
 is (count_attachs($tick), 1 , "Has one attachment, presumably a text-html and a multipart alternative");
 
-sub text_html_umlauts_redef_sendmessage {
+sub text_html_redef_sendmessage {
     no warnings qw/redefine/;
     eval 'sub RT::ScripAction::SendEmail::send_message { 
                 my $self = shift;
                 my $MIME = shift;
                 return (1) unless ($self->scrip_obj->scrip_action->name eq "Notify AdminCcs" );
-                is ($MIME->parts, 2, "generated correspondence mime entityis composed of three parts");
-                is ($MIME->head->mime_type , "multipart/mixed", "The first part is a multipart mixed". $MIME->head->mime_type);
-                is ($MIME->parts(0)->head->mime_type , "text/plain", "The second part is a plain");
-                is ($MIME->parts(1)->head->mime_type , "text/html", "The third part is an html ");
+                is ($MIME->parts, 0, "generated correspondence mime entity
+                        does not have parts");
+                is ($MIME->head->mime_type , "text/plain", "The mime type is a plain");
          }';
 }
 
@@ -309,13 +316,15 @@ sub text_html_umlauts_redef_sendmessage {
 
 # {{{ test a text-html message with russian characters
 
- $content =  RT::Test->file_content("$RT::BASE_PATH/lib/t/data/text-html-in-russian");
+ my $russian_email = RT::Test::get_relocatable_file('text-html-in-russian',
+     (File::Spec->updir(), 'data', 'emails'));
+ $content =  RT::Test->file_content($russian_email);
 
 $parser->parse_mime_entity_from_scalar($content);
 
 
 # be as much like the mail gateway as possible.
-&text_html_russian_redef_sendmessage;
+&text_html_redef_sendmessage;
 
  %args =        (message => $content, queue => 1, action => 'correspond');
  RT::Interface::Email::gateway(\%args);
@@ -328,23 +337,6 @@ ok ($tick->id, "found ticket ".$tick->id);
 like (first_attach($tick)->content_type , qr/text\/html/, "We recorded the content right as text-html");
 is (count_attachs($tick) ,1 , "Has one attachment, presumably a text-html and a multipart alternative");
 
-sub text_html_russian_redef_sendmessage {
-    no warnings qw/redefine/;
-    eval 'sub RT::ScripAction::SendEmail::send_message { 
-                my $self = shift; 
-                my $MIME = shift; 
-                use Data::Dumper;
-                return (1) unless ($self->scrip_obj->scrip_action->name eq "Notify AdminCcs" );
-                ok (is $MIME->parts, 2, "generated correspondence mime entityis composed of three parts");
-                is ($MIME->head->mime_type , "multipart/mixed", "The first part is a multipart mixed". $MIME->head->mime_type);
-                is ($MIME->parts(0)->head->mime_type , "text/plain", "The second part is a plain");
-                is ($MIME->parts(1)->head->mime_type , "text/html", "The third part is an html ");
-                my $content_1251;
-                $content_1251 = $MIME->parts(1)->bodyhandle->as_string();
-                like ($content_1251 , qr{Ó÷eáíûé Öeíòp "ÊÀÄÐÛ ÄÅËÎÂÎÃÎ ÌÈÐÀ" ïpèãëaøaeò ía òpeíèíã:},
-"content matches drugim in codepage 1251" );
-                 }';
-}
 
 # }}}
 
@@ -352,7 +344,9 @@ sub text_html_russian_redef_sendmessage {
 
 RT->config->set( EmailInputEncodings => 'koi8-r', RT->config->get('EmailInputEncodings') );
 RT->config->set( EmailOutputEncoding => 'koi8-r' );
- $content =  RT::Test->file_content("$RT::BASE_PATH/lib/t/data/russian-subject-no-content-type");
+my $russian_subject_email = RT::Test::get_relocatable_file(
+    'russian-subject-no-content-type', (File::Spec->updir(), 'data', 'emails'));
+$content = RT::Test->file_content($russian_subject_email);
 
 $parser->parse_mime_entity_from_scalar($content);
 
@@ -393,7 +387,9 @@ RT->config->set(EmailOutputEncoding => 'utf-8');
 
 # {{{ test a message containing a nested RFC 822 message
 
- $content =  RT::Test->file_content("$RT::BASE_PATH/lib/t/data/nested-rfc-822");
+my $nested_rfc822_email = RT::Test::get_relocatable_file('nested-rfc-822',
+    (File::Spec->updir(), 'data', 'emails'));
+$content =  RT::Test->file_content($nested_rfc822_email);
 ok ($content, "Loaded nested-rfc-822 to test");
 
 $parser->parse_mime_entity_from_scalar($content);
@@ -432,7 +428,9 @@ sub text_plain_nested_redef_sendmessage {
 
 # {{{ test a multipart alternative containing a uuencoded mesage generated by lotus notes
 
- $content =  RT::Test->file_content("$RT::BASE_PATH/lib/t/data/notes-uuencoded");
+ my $uuencoded_email = RT::Test::get_relocatable_file('notes-uuencoded',
+     (File::Spec->updir(), 'data', 'emails'));
+ $content =  RT::Test->file_content($uuencoded_email);
 
 $parser->parse_mime_entity_from_scalar($content);
 
@@ -457,7 +455,9 @@ $parser->parse_mime_entity_from_scalar($content);
 
 # {{{ test a multipart that crashes the file-based mime-parser works
 
- $content =  RT::Test->file_content("$RT::BASE_PATH/lib/t/data/crashes-file-based-parser");
+ my $crashes_file_based_parser_email = RT::Test::get_relocatable_file(
+     'crashes-file-based-parser', (File::Spec->updir(), 'data', 'emails'));
+ $content = RT::Test->file_content($crashes_file_based_parser_email);
 
 $parser->parse_mime_entity_from_scalar($content);
 
@@ -484,7 +484,9 @@ is (count_attachs($tick) , 5 , "Has three attachments");
 
 # {{{ test a multi-line RT-Send-CC header
 
- $content =  RT::Test->file_content("$RT::BASE_PATH/lib/t/data/rt-send-cc");
+ my $rt_send_cc_email = RT::Test::get_relocatable_file('rt-send-cc',
+     (File::Spec->updir(), 'data', 'emails'));
+ $content =  RT::Test->file_content($rt_send_cc_email);
 
 $parser->parse_mime_entity_from_scalar($content);
 
@@ -509,7 +511,9 @@ like ($cc , qr/test5/, "Found test 5");
 
 diag q{regression test for #5248 from rt3.fsck.com} if $ENV{TEST_VERBOSE};
 {
-    my $content = RT::Test->file_content("$RT::BASE_PATH/lib/t/data/subject-with-folding-ws");
+    my $subject_folding_email = RT::Test::get_relocatable_file(
+        'subject-with-folding-ws', (File::Spec->updir(), 'data', 'emails'));
+    my $content = RT::Test->file_content($subject_folding_email);
     my ($status, $msg, $ticket) = RT::Interface::Email::gateway(
         { message => $content, queue => 1, action => 'correspond' }
     );
@@ -520,7 +524,9 @@ diag q{regression test for #5248 from rt3.fsck.com} if $ENV{TEST_VERBOSE};
 
 diag q{regression test for #5248 from rt3.fsck.com} if $ENV{TEST_VERBOSE};
 {
-    my $content = RT::Test->file_content("$RT::BASE_PATH/lib/t/data/very-long-subject");
+    my $long_subject_email = RT::Test::get_relocatable_file('very-long-subject',
+        (File::Spec->updir(), 'data', 'emails'));
+    my $content = RT::Test->file_content($long_subject_email);
     my ($status, $msg, $ticket) = RT::Interface::Email::gateway(
         { message => $content, queue => 1, action => 'correspond' }
     );

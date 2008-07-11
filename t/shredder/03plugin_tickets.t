@@ -5,7 +5,13 @@ use warnings;
 
 use RT::Test; use Test::More;
 use Test::Deep;
-BEGIN { require "t/shredder/utils.pl"; }
+use File::Spec;
+use RT::Test ();
+BEGIN {
+    my $shredder_utils = RT::Test::get_relocatable_file('utils.pl',
+        File::Spec->curdir());
+    require $shredder_utils;
+}
 
 plan tests => 44;
 
@@ -143,4 +149,3 @@ cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint"
     $shredder->wipeout_all;
 }
 cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
-

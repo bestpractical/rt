@@ -1,6 +1,9 @@
-<& /Elements/Header, Title=>_("RT at a glance"), Refresh => $session{'home_refresh_interval'} &>
++ <!DOCTYPE html 
++      PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
++      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <!--
 % $m->out('--'.'>');
+% $m->comp('/Elements/Header', Title=>loc("RT at a glance"), Refresh => $session{'home_refresh_interval'});
 % if (0) {
 %# -->
 <html><head>
@@ -28,8 +31,8 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -51,7 +54,7 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -84,14 +87,34 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 my @results;
 
 if ( $ARGS{'quick_create'} ) {
-    my $ticket = RT::Model::Ticket->new();
-    my ($tid, $trans, $tmsg) = $ticket->create(queue => $ARGS{'queue'},
-                    owner => $ARGS{'owner'},
-                    Requestor => Jifty->web->current_user->id,
-                    subject => $ARGS{'subject'});
+    my $queue_obj = new RT::Model::Queue(Jifty->web->current_user);
+    $queue_obj->load($ARGS{Queue}) or Abort(loc("Queue could not be loaded."));
+    
+    my $CFs = $queue_obj->ticketCustomFields();
+    
+    my $ValidCFs = $m->comp(
+        '/Elements/ValidateCustomFields',
+        CustomFields => $CFs,
+        args_ref => \%ARGS
+    );
 
 
-    push (@results, $tmsg);
+    if ( $ValidCFs ) {
+        my ($t, $msg) = CreateTicket( 
+                        queue => $ARGS{'queue'},
+                        Owner => $ARGS{'Owner'},
+                        Status => 'new',
+                        # yes! it's Requestors, not Requestor
+                        Requestors => Jifty->web->current_user->id,
+                        From => Jifty->web->current_user->id,
+                        Content => $ARGS{'Content'},
+                        Subject => $ARGS{'Subject'});
+        push @results, $msg;
+    }
+    else {
+        push @results, "can't quickly create ticket in queue " .
+            $queue_obj->name . ' because some cfs need to be set, please go to normal ticket creation page to do that.';
+    }
 }
 
 

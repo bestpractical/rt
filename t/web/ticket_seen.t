@@ -31,7 +31,7 @@ ok $agent_a->login('user_a', 'password'), 'logged in as user A';
 my $agent_b = RT::Test::Web->new;
 ok $agent_b->login('user_b', 'password'), 'logged in as user B';
 
-diag "create a ticket for testing";
+diag "create a ticket for testing" if $ENV{TEST_VERBOSE};
 my $tid;
 {
     my $ticket = RT::Model::Ticket->new(current_user => RT::CurrentUser->new(id =>$user_a->id) );
@@ -45,7 +45,7 @@ my $tid;
     is $ticket->owner, $user_a->id, 'correct owner';
 }
 
-diag "user B adds a message, we check that user A see notification and can clear it";
+diag "user B adds a message, we check that user A see notification and can clear it" if $ENV{TEST_VERBOSE};
 {
     my $ticket = RT::Model::Ticket->new( current_user => RT::CurrentUser->new(id =>$user_b) );
     $ticket->load( $tid );
@@ -58,11 +58,11 @@ diag "user B adds a message, we check that user A see notification and can clear
     $agent_a->content_like(qr/bla-bla/ims, 'the message on the page');
 
     $agent_a->content_like(
-        qr/There are unread/ims,
+        qr/unread message/ims,
         'we have not seen something'
     );
 
-    $agent_a->follow_link_ok(text => 'mark them all as seen');
+    $agent_a->follow_link_ok({text => 'jump to the first unread message and mark all messages as seen'}, 'try to mark all as seen');
     $agent_a->content_like(
         qr/Marked all messages as seen/ims,
         'see success message'
@@ -70,7 +70,7 @@ diag "user B adds a message, we check that user A see notification and can clear
 
     $agent_a->goto_ticket($tid);
     $agent_a->content_unlike(
-        qr/There are unread/ims,
+        qr/unread message/ims,
         'we have seen everything, so no messages'
     );
 }

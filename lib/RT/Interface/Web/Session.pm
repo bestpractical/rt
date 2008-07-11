@@ -114,12 +114,14 @@ sub attributes {
 
     return $_[0]->backends->{ RT->config->get('DatabaseType') }
         ? {
-        Handle     => Jifty->handle->dbh,
-        LockHandle => Jifty->handle->dbh,
+        Handle      => Jifty->handle->dbh,
+        LockHandle  => Jifty->handle->dbh,
+        Transaction => 1,
         }
         : {
         Directory     => $RT::MasonSessionDir,
         LockDirectory => $RT::MasonSessionDir,
+        Transaction   => 1,
         };
 }
 

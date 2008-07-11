@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -48,14 +48,15 @@
 <nobr>
 <script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/combobox.js"></script>
 
-<span id="<% $name %>_Container" class="combobox">
+<div id="<% $name %>_Container" class="combobox">
 <input name="<% $name %>" id="<% $name %>" class="combo-text" value="<% $default || '' %>" type="text" <% $Size ? "size='$Size'" : '' |n %> autocomplete="off" />
-<br style="display: none" /><span id="<% $name %>_Button" class="combo-button"></span></span><select name="List-<% $name %>" id="<% $name %>_List" class="combo-list" onchange="ComboBox_SimpleAttach(this, this.form['<% $name %>']); " rows="<% $Rows %>">
+<br style="display: none" /><span id="<% $name %>_Button" class="combo-button">&#9660;</span><select name="List-<% $name %>" id="<% $name %>_List" class="combo-list" onchange="ComboBox_SimpleAttach(this, this.form['<% $name %>']); " size="<% $Rows %>">
 <option style="display: none" value="">-</option>
 % foreach my $value (@Values) {
         <option value="<%$value%>"><% $value%></option>
 % }
 </select>
+</span>
 <script Language="javascript"><!--
 ComboBox_InitWith('<% $name %>');
 //--></script>

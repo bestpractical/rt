@@ -168,8 +168,23 @@ want to read a more comprehensive installation guide at:
 
     NOTE: root's password for the web interface is "password" 
     (without the quotes).  Not changing this is a SECURITY risk!
-    
-10   Set up users, groups, queues, scrips and access control.
+ 
+10  Set up automated recurring tasks (cronjobs):
+
+    To generate email digest messages, you must arrange for the provided
+    utility to be run once daily, and once weekly. You may also want to
+    arrange for the rt-email-dashboards utility to be run hourly.
+    For example, if your task scheduler is cron, you can configure it as
+    follows:
+
+        crontab -e    # as the RT administrator (probably root)
+        # insert the following lines:
+        0 0 * * * /opt/rt3/sbin/rt-email-digest -m daily
+        0 0 * * 0 /opt/rt3/sbin/rt-email-digest -m weekly
+        0 * * * * /opt/rt3/sbin/rt-email-dashboards
+
+
+11   Set up users, groups, queues, scrips and access control.
 
     Until you do this, RT will not be able to send or receive email,
     nor will it be more than marginally functional.  This is not an

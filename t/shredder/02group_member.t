@@ -5,7 +5,13 @@ use warnings;
 
 use RT::Test; use Test::More;
 use Test::Deep;
-BEGIN { require "t/shredder/utils.pl"; }
+use File::Spec;
+use RT::Test ();
+BEGIN {
+    my $shredder_utils = RT::Test::get_relocatable_file('utils.pl',
+        File::Spec->curdir());
+    require $shredder_utils;
+}
 init_db();
 
 plan tests => 22;
@@ -94,11 +100,4 @@ plan tests => 22;
 	ok( $id, "load ticket" ) or diag( "error: $msg" );
 	is( $ticket->owner, RT->nobody->id, "owner switched back to nobody" );
 	is( $ticket->role_group("owner")->members_obj->first->member_id, RT->nobody->id, "and owner role group member is nobody");
-}
-
-
-if( is_all_successful() ) {
-	cleanup_tmp();
-} else {
-	diag( note_on_fail() );
 }

@@ -46,11 +46,9 @@
 #
 # END BPS TAGGED BLOCK }}}
 package RT::Condition::AnyTransaction;
-require RT::Condition::Generic;
+use base 'RT::Condition';
 
 use strict;
-use vars qw/@ISA/;
-@ISA = qw(RT::Condition::Generic);
 
 =head2 is_applicable
 

@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -51,10 +51,6 @@
       <h3><&|/l&>Current Links</&></h3>
 
 <table>
-  <tr>
-    <td></td>
-    <td><i><&|/l&>(Check box to delete)</&></i></td>
-  </tr>
   <tr>
     <td class="labeltop"><&|/l&>Depends on</&>:</td>
     <td class="value">
@@ -111,6 +107,10 @@
 % }
     </td>
   </tr>
+  <tr>
+    <td></td>
+    <td><i><&|/l&>(Check box to delete)</&></i></td>
+  </tr>
 </table>
 			    
 </td>
@@ -157,6 +157,7 @@
     <td class="label"><&|/l&>Referred to by</&>:</td>
     <td class="entry"> <input name="RefersTo-<%$id%>" /></td>
   </tr>
+% $m->callback( Callbackname => 'NewLink' );
 </table>
 </td>
 </tr>

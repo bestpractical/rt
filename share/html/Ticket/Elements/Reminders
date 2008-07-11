@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -117,25 +117,32 @@ $reminder_collection = $Ticket->reminders->collection;
 % }
 </div>
 <div>
-<h3><&|/l&>New reminder:</&></h3>
+<&|/l&>New reminder:</&>
 <& SELF:NewReminder, Ticket => $Ticket &>
 <%method NewReminder>
 <%args>
 $Ticket
 </%args>
-<div class="input-row">
-<label class="horizontal" for="NewReminder-subject" ><&|/l&>subject</&>:</label> 
-<input type="text" size="15" name="NewReminder-subject" />
-</div>
-<div class="input-row">
-<label class="horizontal" for="NewReminder-Owner" ><&|/l&>Owner</&>:</label> 
-<& /Elements/SelectOwner, name => 'NewReminder-Owner', queue_obj => $Ticket->queue_obj, default_value => 0 &>
-</div>
-<div class="input-row">
-<label class="horizontal" for="NewReminder-Due" ><&|/l&>Due</&> <&|/l&>(yyyy/mm/dd)</&>:</label> 
+<table>
+<tr class="input-row">
+<td class="label"><label class="horizontal" for="NewReminder-Subject" ><&|/l&>Subject</&>:</label></td>
+<td class="value">
+<input type="text" size="15" name="NewReminder-Subject" id="NewReminder-Subject" />
+</td>
+</tr>
+<tr class="input-row">
+<td class="label">
+<label class="horizontal" for="NewReminder-Owner" ><&|/l&>Owner</&>:</label></td><td class="value">
+<& /Elements/SelectOwner, name => 'NewReminder-Owner', queue_obj => $Ticket->queue_obj, default=>Jifty->web->current_user->id, default_value => 0 &>
+</td>
+</tr>
+<tr class="input-row">
+<td class="label"><label class="horizontal" for="NewReminder-Due" ><&|/l&>Due</&>:</label></td>
+<td class="value">
 <& /Elements/SelectDate, name => "NewReminder-Due", default => "" &>
-</div>
-</div>
+</td>
+</tr>
+</table>
 </%method>
 <%method EditEntry>
 <%args>
@@ -145,7 +152,7 @@ $Ticket
 <input
     type="checkbox" 
     name="Complete-Reminder-<%$Reminder->id%>" 
-    <% $Reminder->status eq 'resolved' ? 'CHECKED' : '' %> 
+    <% $Reminder->status eq 'resolved' ? 'checked="checked"' : '' %> 
 /> 
     <input type="text" size="15" name="Reminder-subject-<% $Reminder->id %>" value="<%$Reminder->subject%>" /> &bull; 
     <& /Elements/SelectOwner, name => 'Reminder-Owner-'.$Reminder->id, queue => $Ticket->queue_obj, default => $Reminder->owner, default_value => 0  &>
@@ -160,7 +167,7 @@ $Ticket
 <input
     type="checkbox" 
     name="Complete-Reminder-<%$Reminder->id%>" 
-    <% $Reminder->status eq 'resolved' ? 'CHECKED' : '' %> 
+    <% $Reminder->status eq 'resolved' ? 'checked="checked"' : '' %> 
 /> 
     <%$Reminder->subject%> &bull; 
     <%$Reminder->owner_obj->name%>

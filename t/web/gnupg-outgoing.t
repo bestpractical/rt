@@ -2,8 +2,16 @@
 use strict;
 use warnings;
 
-use Test::More tests => 492;
+use Test::More;
 use RT::Test;
+
+plan skip_all => 'GnuPG required.'
+    unless eval 'use GnuPG::Interface; 1';
+plan skip_all => 'gpg executable is required.'
+    unless RT::Test->find_executable('gpg');
+
+plan tests => 492;
+
 use RT::ScripAction::SendEmail;
 use File::Temp qw(tempdir);
 
@@ -60,7 +68,7 @@ my %mail = (
     signed_encrypted => [],
 );
 
-diag "check in read-only mode that queue's props influence create/update ticket pages";
+diag "check in read-only mode that queue's props influence create/update ticket pages" if $ENV{TEST_VERBOSE};
 {
     foreach my $variant ( @variants ) {
         set_queue_crypt_options( %$variant );
@@ -247,8 +255,7 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'signed_encrypted'} } ) {
 sub create_a_ticket {
     my %args = (@_);
 
-    # cleanup mail catcher's storage
-    RT::Test->fetch_caught_mails;
+    RT::Test->clean_caught_mails;
 
     $m->goto_create_ticket( $queue );
     $m->form_name('TicketCreate');
@@ -279,8 +286,7 @@ sub update_ticket {
     my $tid = shift;
     my %args = (@_);
 
-    # cleanup mail catcher's storage
-    RT::Test->fetch_caught_mails;
+    RT::Test->clean_caught_mails;
 
     ok $m->goto_ticket( $tid ), "UI -> ticket #$tid";
     $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );

@@ -53,6 +53,7 @@ package RT::Crypt::GnuPG;
 use IO::Handle;
 use GnuPG::Interface;
 use RT::EmailParser ();
+use RT::Util 'safe_run_child';
 
 =head1 name
 
@@ -194,7 +195,7 @@ supported algorithms by your gpg. These algorithms are listed as hash-functions.
 =item --use-agent
 
 This option lets you use GPG Agent to cache the passphrase of RT's key. See
-L<http://www.gnupg.org/documentation/manuals./gnupg/Invoking-GPG_002dAGENT.html>
+L<http://www.gnupg.org/documentation/manuals/gnupg/Invoking-GPG_002dAGENT.html>
 for information about GPG Agent.
 
 =item --passphrase
@@ -217,6 +218,10 @@ Using the web interface it's possible to enable signing and/or encrypting by
 default. As an administrative user of RT, open 'Configuration' then 'Queues',
 and select a queue. On the page you can see information about the queue's keys 
 at the bottom and two checkboxes to choose default actions.
+
+As well, encryption is enabled for autoreplies and other notifications when
+an encypted message enters system via mailgate interface even if queue's
+option is disabled.
 
 As well, encryption is enabled for autoreplies and other notifications when
 an encypted message enters system via mailgate interface even if queue's
@@ -272,7 +277,7 @@ In the 'Error: public key' template there are a few additional variables availab
 
 =item $recipient - recipient's identification
 
-=item $AddressObj - L<Mail::Address> object containing recipient's email address
+=item $address_obj - L<Email::Address> object containing recipient's email address
 
 =back
 
@@ -350,38 +355,15 @@ my %supported_opt = map { $_ => 1 } qw(
 );
 
 # DEV WARNING: always pass all STD* handles to GnuPG interface even if we don't
-# need them, just pass 'new IO::Handle' and then close it after _safe_run_child.
+# need them, just pass 'new IO::Handle' and then close it after safe_run_child.
 # we don't want to leak anything into FCGI/Apache/MP handles, this break things.
 # So code should look like:
 #        my $handles = GnuPG::Handles->new(
-#            stdin  => ($handle{'input'}  = new IO::Handle),
-#            stdout => ($handle{'output'} = new IO::Handle),
-#            stderr => ($handle{'error'}  = new IO::Handle),
+#            stdin  => ($handle{'stdin'}  = new IO::Handle),
+#            stdout => ($handle{'stdout'} = new IO::Handle),
+#            stderr => ($handle{'stderr'}  = new IO::Handle),
 #            ...
 #        );
-
-sub _safe_run_child (&) {
-    local @ENV{ 'LANG', 'LC_ALL' } = ( 'C', 'C' );
-
-    return shift->() if $ENV{'MOD_PERL'};
-
-    # We need to reopen stdout temporarily, because in FCGI
-    # environment, stdout is tied to FCGI::Stream, and the child
-    # of the run3 wouldn't be able to reopen STDOUT properly.
-    my $stdin = IO::Handle->new;
-    $stdin->fdopen( 0, 'r' );
-    local *STDIN = $stdin;
-
-    my $stdout = IO::Handle->new;
-    $stdout->fdopen( 1, 'w' );
-    local *STDOUT = $stdout;
-
-    my $stderr = IO::Handle->new;
-    $stderr->fdopen( 2, 'w' );
-    local *STDERR = $stderr;
-
-    return shift->();
-}
 
 =head2 sign_encrypt entity => MIME::Entity, [ encrypt => 1, sign => 1, ... ]
 
@@ -421,11 +403,12 @@ sub sign_encrypt {
     my $entity = $args{'entity'};
     if ( $args{'sign'} && !defined $args{'signer'} ) {
         $args{'signer'} = use_key_for_signing()
-            || ( Mail::Address->parse( $entity->head->get('From') ) )[0]->address;
+            || ( Email::Address->parse( $entity->head->get('From') ) )[0]->address;
     }
     if ( $args{'encrypt'} && !$args{'recipients'} ) {
         my %seen;
-        $args{'recipients'} = [ grep $_ && !$seen{$_}++, map $_->address, map Mail::Address->parse( $entity->head->get($_) ), qw(To Cc Bcc) ];
+        $args{'recipients'} = [ grep $_ && !$seen{$_}++, map $_->address, map
+            Email::Address->parse( $entity->head->get($_) ), qw(To Cc Bcc) ];
     }
 
     my $format = lc RT->config->get('GnuPG')->{'outgoing_messages_format'}
@@ -476,39 +459,43 @@ sub sign_encrypt_rfc3156 {
     if ( $args{'sign'} && !$args{'encrypt'} ) {
 
         # required by RFC3156(Ch. 5) and RFC1847(Ch. 2.1)
-        $entity->head->mime_attr( 'Content-Transfer-Encoding' => 'quoted-printable' );
+        foreach ( grep !$_->is_multipart, $entity->parts_DFS ) {
+            my $tenc = $_->head->mime_encoding;
+            unless ( $tenc =~ m/^(?:7bit|quoted-printable|base64)$/i ) {
+                $_->head->mime_attr(
+                    'Content-Transfer-Encoding' => $_->effective_type =~
+                      m{^text/} ? 'quoted-printable' : 'base64' );
+            }
+        }
 
-        my %handle;
-        my $handles = GnuPG::Handles->new(
-            stdin  => ( $handle{'input'}  = new IO::Handle::CRLF ),
-            stdout => ( $handle{'output'} = new IO::Handle ),
-            stderr => ( $handle{'error'}  = new IO::Handle ),
-            logger => ( $handle{'logger'} = new IO::Handle ),
-            status => ( $handle{'status'} = new IO::Handle ),
-        );
+        my ( $handles, $handle_list ) =
+          _make_gpg_handles( stdin => IO::Handle::CRLF->new );
+        my %handle = %$handle_list;
+
         $gnupg->passphrase( $args{'passphrase'} );
 
         eval {
             local $SIG{'CHLD'} = 'DEFAULT';
-            my $pid = _safe_run_child { $gnupg->detach_sign( handles => $handles ) };
+            my $pid = 
+               safe_run_child { $gnupg->detach_sign( handles => $handles ) };
             $entity->make_multipart( 'mixed', Force => 1 );
-            $entity->parts(0)->print( $handle{'input'} );
-            close $handle{'input'};
+            $entity->parts(0)->print( $handle{'stdin'} );
+            close $handle{'stdin'};
             waitpid $pid, 0;
         };
         my $err       = $@;
-        my @signature = readline $handle{'output'};
-        close $handle{'output'};
+        my @signature = readline $handle{'stdout'};
+        close $handle{'stdout'};
 
         $res{'exit_code'} = $?;
-        foreach (qw(error logger status)) {
+        foreach (qw(stderr logger status)) {
             $res{$_} = do { local $/; readline $handle{$_} };
             delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
             close $handle{$_};
         }
-        Jifty->log->debug( $res{'status'} ) if $res{'status'};
-        Jifty->log->warn( $res{'error'} )   if $res{'error'};
-        Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
+        Jifty->log->debug( $res{'status'} )   if $res{'status'};
+        Jifty->log->warn( $res{'stderr'} ) if $res{'stderr'};
+        Jifty->log->error( $res{'logger'} )   if $res{'logger'} && $?;
         if ( $err || $res{'exit_code'} ) {
             $res{'message'}
                 = $err
@@ -531,46 +518,43 @@ sub sign_encrypt_rfc3156 {
     }
     if ( $args{'encrypt'} ) {
         my %seen;
-        $gnupg->options->push_recipients($_) foreach map use_key_for_encryption($_) || $_, grep !$seen{$_}++, map $_->address, map Mail::Address->parse( $entity->head->get($_) ), qw(To Cc Bcc);
+        $gnupg->options->push_recipients($_) foreach map
+            use_key_for_encryption($_) || $_, grep !$seen{$_}++, map
+            $_->address, map Email::Address->parse( $entity->head->get($_) ), qw(To Cc Bcc);
 
         my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile();
         binmode $tmp_fh, ':raw';
 
-        my %handle;
-        my $handles = GnuPG::Handles->new(
-            stdin => ( $handle{'input'} = new IO::Handle ),
-            stdout => $tmp_fh,
-            stderr => ( $handle{'error'} = new IO::Handle ),
-            logger => ( $handle{'logger'} = new IO::Handle ),
-            status => ( $handle{'status'} = new IO::Handle ),
-        );
+        my ( $handles, $handle_list ) = _make_gpg_handles( stdout => $tmp_fh );
+        my %handle = %$handle_list;
         $handles->options('stdout')->{'direct'} = 1;
         $gnupg->passphrase( $args{'passphrase'} ) if $args{'sign'};
 
         eval {
             local $SIG{'CHLD'} = 'DEFAULT';
-            my $pid = _safe_run_child {
+            my $pid = safe_run_child {
                 $args{'sign'}
                     ? $gnupg->sign_and_encrypt( handles => $handles )
                     : $gnupg->encrypt( handles => $handles );
             };
             $entity->make_multipart( 'mixed', Force => 1 );
-            $entity->parts(0)->print( $handle{'input'} );
-            close $handle{'input'};
+            $entity->parts(0)->print( $handle{'stdin'} );
+            close $handle{'stdin'};
             waitpid $pid, 0;
         };
 
         $res{'exit_code'} = $?;
-        foreach (qw(error logger status)) {
+        foreach (qw(stderr logger status)) {
             $res{$_} = do { local $/; readline $handle{$_} };
             delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
             close $handle{$_};
         }
-        Jifty->log->debug( $res{'status'} ) if $res{'status'};
-        Jifty->log->warn( $res{'error'} )   if $res{'error'};
-        Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
+        Jifty->log->debug( $res{'status'} )   if $res{'status'};
+        Jifty->log->warn( $res{'stderr'} ) if $res{'stderr'};
+        Jifty->log->error( $res{'logger'} )   if $res{'logger'} && $?;
         if ( $@ || $? ) {
-            $res{'message'} = $@ ? $@ : "gpg exitted with error code " . ( $? >> 8 );
+            $res{'message'} =
+              $@ ? $@ : "gpg exited with error code " . ( $? >> 8 );
             return %res;
         }
 
@@ -662,14 +646,9 @@ sub _sign_encrypt_text_inline {
     my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
 
-    my %handle;
-    my $handles = GnuPG::Handles->new(
-        stdin => ( $handle{'input'} = new IO::Handle ),
-        stdout => $tmp_fh,
-        stderr => ( $handle{'error'} = new IO::Handle ),
-        logger => ( $handle{'logger'} = new IO::Handle ),
-        status => ( $handle{'status'} = new IO::Handle ),
-    );
+    my ( $handles, $handle_list ) = _make_gpg_handles( stdout => $tmp_fh );
+    my %handle = %$handle_list;
+
     $handles->options('stdout')->{'direct'} = 1;
     $gnupg->passphrase( $args{'passphrase'} ) if $args{'sign'};
 
@@ -680,22 +659,22 @@ sub _sign_encrypt_text_inline {
             = $args{'sign'} && $args{'encrypt'}
             ? 'sign_and_encrypt'
             : ( $args{'sign'} ? 'clearsign' : 'encrypt' );
-        my $pid = _safe_run_child { $gnupg->$method( handles => $handles ) };
-        $entity->bodyhandle->print( $handle{'input'} );
-        close $handle{'input'};
+        my $pid = safe_run_child { $gnupg->$method( handles => $handles ) };
+        $entity->bodyhandle->print( $handle{'stdin'} );
+        close $handle{'stdin'};
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
     my $err = $@;
 
-    foreach (qw(error logger status)) {
+    foreach (qw(stderr logger status)) {
         $res{$_} = do { local $/; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
-    Jifty->log->debug( $res{'status'} ) if $res{'status'};
-    Jifty->log->warn( $res{'error'} )   if $res{'error'};
-    Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
+    Jifty->log->debug( $res{'status'} )   if $res{'status'};
+    Jifty->log->warn( $res{'stderr'} ) if $res{'stderr'};
+    Jifty->log->error( $res{'logger'} )   if $res{'logger'} && $?;
     if ( $err || $res{'exit_code'} ) {
         $res{'message'}
             = $err
@@ -756,14 +735,8 @@ sub sign_encrypt_attachment_inline {
     my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
 
-    my %handle;
-    my $handles = GnuPG::Handles->new(
-        stdin => ( $handle{'input'} = new IO::Handle ),
-        stdout => $tmp_fh,
-        stderr => ( $handle{'error'} = new IO::Handle ),
-        logger => ( $handle{'logger'} = new IO::Handle ),
-        status => ( $handle{'status'} = new IO::Handle ),
-    );
+    my ( $handles, $handle_list ) = _make_gpg_handles( stdout => $tmp_fh );
+    my %handle = %$handle_list;
     $handles->options('stdout')->{'direct'} = 1;
     $gnupg->passphrase( $args{'passphrase'} ) if $args{'sign'};
 
@@ -773,22 +746,22 @@ sub sign_encrypt_attachment_inline {
             = $args{'sign'} && $args{'encrypt'}
             ? 'sign_and_encrypt'
             : ( $args{'sign'} ? 'detach_sign' : 'encrypt' );
-        my $pid = _safe_run_child { $gnupg->$method( handles => $handles ) };
-        $entity->bodyhandle->print( $handle{'input'} );
-        close $handle{'input'};
+        my $pid = safe_run_child { $gnupg->$method( handles => $handles ) };
+        $entity->bodyhandle->print( $handle{'stdin'} );
+        close $handle{'stdin'};
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
     my $err = $@;
 
-    foreach (qw(error logger status)) {
+    foreach (qw(stderr logger status)) {
         $res{$_} = do { local $/; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
-    Jifty->log->debug( $res{'status'} ) if $res{'status'};
-    Jifty->log->warn( $res{'error'} )   if $res{'error'};
-    Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
+    Jifty->log->debug( $res{'status'} )   if $res{'status'};
+    Jifty->log->warn( $res{'stderr'} ) if $res{'stderr'};
+    Jifty->log->error( $res{'logger'} )   if $res{'logger'} && $?;
     if ( $err || $res{'exit_code'} ) {
         $res{'message'}
             = $err
@@ -862,14 +835,8 @@ sub sign_encrypt_content {
     my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
 
-    my %handle;
-    my $handles = GnuPG::Handles->new(
-        stdin => ( $handle{'input'} = new IO::Handle ),
-        stdout => $tmp_fh,
-        stderr => ( $handle{'error'} = new IO::Handle ),
-        logger => ( $handle{'logger'} = new IO::Handle ),
-        status => ( $handle{'status'} = new IO::Handle ),
-    );
+    my ( $handles, $handle_list ) = _make_gpg_handles( stdout => $tmp_fh );
+    my %handle = %$handle_list;
     $handles->options('stdout')->{'direct'} = 1;
     $gnupg->passphrase( $args{'passphrase'} ) if $args{'sign'};
 
@@ -879,22 +846,22 @@ sub sign_encrypt_content {
             = $args{'sign'} && $args{'encrypt'}
             ? 'sign_and_encrypt'
             : ( $args{'sign'} ? 'clearsign' : 'encrypt' );
-        my $pid = _safe_run_child { $gnupg->$method( handles => $handles ) };
-        $handle{'input'}->print( ${ $args{'content'} } );
-        close $handle{'input'};
+        my $pid = safe_run_child { $gnupg->$method( handles => $handles ) };
+        $handle{'stdin'}->print( ${ $args{'content'} } );
+        close $handle{'stdin'};
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
     my $err = $@;
 
-    foreach (qw(error logger status)) {
+    foreach (qw(stderr logger status)) {
         $res{$_} = do { local $/; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
-    Jifty->log->debug( $res{'status'} )  if $res{'status'};
-    Jifty->log->warning( $res{'error'} ) if $res{'error'};
-    Jifty->log->error( $res{'logger'} )  if $res{'logger'} && $?;
+    Jifty->log->debug( $res{'status'} )   if $res{'status'};
+    Jifty->log->warn( $res{'stderr'} ) if $res{'stderr'};
+    Jifty->log->error( $res{'logger'} )   if $res{'logger'} && $?;
     if ( $err || $res{'exit_code'} ) {
         $res{'message'}
             = $err
@@ -1080,10 +1047,7 @@ sub verify_decrypt {
     return @res;
 }
 
-sub verify_inline {
-    my %args = ( data => undef, top => undef, @_ );
-    return decrypt_inline(%args);
-}
+sub VerifyInline { return decrypt_inline(@_) }
 
 sub verify_attachment {
     my %args = ( data => undef, signature => undef, top => undef, @_ );
@@ -1098,38 +1062,32 @@ sub verify_attachment {
     $args{'data'}->bodyhandle->print($tmp_fh);
     $tmp_fh->flush;
 
-    my %handle;
-    my $handles = GnuPG::Handles->new(
-        stdin  => ( $handle{'input'}  = new IO::Handle ),
-        stdout => ( $handle{'output'} = new IO::Handle ),
-        stderr => ( $handle{'error'}  = new IO::Handle ),
-        logger => ( $handle{'logger'} = new IO::Handle ),
-        status => ( $handle{'status'} = new IO::Handle ),
-    );
+    my ( $handles, $handle_list ) = _make_gpg_handles();
+    my %handle = %$handle_list;
 
     my %res;
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
-        my $pid = _safe_run_child {
+        my $pid = safe_run_child {
             $gnupg->verify(
                 handles      => $handles,
                 command_args => [ '-', $tmp_fn ]
             );
         };
-        $args{'signature'}->bodyhandle->print( $handle{'input'} );
-        close $handle{'input'};
+        $args{'signature'}->bodyhandle->print( $handle{'stdin'} );
+        close $handle{'stdin'};
 
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
-    foreach (qw(error logger status)) {
+    foreach (qw(stderr logger status)) {
         $res{$_} = do { local $/; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
-    Jifty->log->debug( $res{'status'} ) if $res{'status'};
-    Jifty->log->warn( $res{'error'} )   if $res{'error'};
-    Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
+    Jifty->log->debug( $res{'status'} )   if $res{'status'};
+    Jifty->log->warn( $res{'stderr'} ) if $res{'stderr'};
+    Jifty->log->error( $res{'logger'} )   if $res{'logger'} && $?;
     if ( $@ || $? ) {
         $res{'message'} = $@ ? $@ : "gpg exitted with error code " . ( $? >> 8 );
     }
@@ -1149,38 +1107,32 @@ sub verify_rfc3156 {
     $args{'data'}->print($tmp_fh);
     $tmp_fh->flush;
 
-    my %handle;
-    my $handles = GnuPG::Handles->new(
-        stdin  => ( $handle{'input'}  = new IO::Handle ),
-        stdout => ( $handle{'output'} = new IO::Handle ),
-        stderr => ( $handle{'error'}  = new IO::Handle ),
-        logger => ( $handle{'logger'} = new IO::Handle ),
-        status => ( $handle{'status'} = new IO::Handle ),
-    );
+    my ( $handles, $handle_list ) = _make_gpg_handles();
+    my %handle = %$handle_list;
 
     my %res;
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
-        my $pid = _safe_run_child {
+        my $pid = safe_run_child {
             $gnupg->verify(
                 handles      => $handles,
                 command_args => [ '-', $tmp_fn ]
             );
         };
-        $args{'signature'}->bodyhandle->print( $handle{'input'} );
-        close $handle{'input'};
+        $args{'signature'}->bodyhandle->print( $handle{'stdin'} );
+        close $handle{'stdin'};
 
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
-    foreach (qw(error logger status)) {
+    foreach (qw(stderr logger status)) {
         $res{$_} = do { local $/; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
-    Jifty->log->debug( $res{'status'} ) if $res{'status'};
-    Jifty->log->warn( $res{'error'} )   if $res{'error'};
-    Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
+    Jifty->log->debug( $res{'status'} )   if $res{'status'};
+    Jifty->log->warn( $res{'stderr'} ) if $res{'stderr'};
+    Jifty->log->error( $res{'logger'} )   if $res{'logger'} && $?;
     if ( $@ || $? ) {
         $res{'message'} = $@ ? $@ : "gpg exitted with error code " . ( $? >> 8 );
     }
@@ -1216,35 +1168,32 @@ sub decrypt_rfc3156 {
     my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
 
-    my %handle;
-    my $handles = GnuPG::Handles->new(
-        stdin => ( $handle{'input'} = new IO::Handle ),
-        stdout => $tmp_fh,
-        stderr => ( $handle{'error'} = new IO::Handle ),
-        logger => ( $handle{'logger'} = new IO::Handle ),
-        status => ( $handle{'status'} = new IO::Handle ),
+    my ( $handles, $handle_list ) = _make_gpg_handles(
+        stdin  => $args{'block_handle'},
+        stdout => $tmp_fh
     );
-    $handles->options('stdout')->{'direct'} = 1;
+    my %handle = %$handle_list;
+    $handles->options('stdin')->{'direct'}  = 1;
 
     my %res;
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
         $gnupg->passphrase( $args{'passphrase'} );
-        my $pid = _safe_run_child { $gnupg->decrypt( handles => $handles ) };
+        my $pid = safe_run_child { $gnupg->decrypt( handles => $handles ) };
         $args{'data'}->bodyhandle->print( $handle{'input'} );
         close $handle{'input'};
 
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
-    foreach (qw(error logger status)) {
+    foreach (qw(stderr logger status)) {
         $res{$_} = do { local $/; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
-    Jifty->log->debug( $res{'status'} ) if $res{'status'};
-    Jifty->log->warn( $res{'error'} )   if $res{'error'};
-    Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
+    Jifty->log->debug( $res{'status'} )   if $res{'status'};
+    Jifty->log->warn( $res{'stderr'} ) if $res{'stderr'};
+    Jifty->log->error( $res{'logger'} )   if $res{'logger'} && $?;
 
     # if the decryption is fine but the signature is bad, then without this
     # status check we lose the decrypted text
@@ -1273,71 +1222,127 @@ sub decrypt_inline {
         passphrase => undef,
         @_
     );
-
     my $gnupg = new GnuPG::Interface;
-    my %opt   = RT->config->get('GnuPGOptions');
+    my %opt = RT->Config->Get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
-    $gnupg->options->hash_init( _prepare_gnupg_options(%opt), meta_interactive => 0, );
+    $gnupg->options->hash_init(
+        _PrepareGnuPGOptions( %opt ),
+        meta_interactive => 0,
+    );
 
-    if ( $args{'data'}->bodyhandle->is_encoded ) {
+    if ( $args{'Data'}->bodyhandle->is_encoded ) {
         require RT::EmailParser;
-        RT::EmailParser->_decode_body( $args{'data'} );
+        RT::EmailParser->_DecodeBody($args{'Data'});
     }
 
-    # handling passphrase in GnupGOptions
-    $args{'passphrase'} = delete $opt{'passphrase'}
-        if !defined( $args{'passphrase'} );
+    # handling passphrase in GnuPGOptions
+    $args{'Passphrase'} = delete $opt{'passphrase'}
+        if !defined($args{'Passphrase'});
 
-    $args{'passphrase'} = get_passphrase()
-        unless defined $args{'passphrase'};
+    $args{'Passphrase'} = get_passphrase()
+        unless defined $args{'Passphrase'};
 
-    my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile();
+    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
 
-    my %handle;
-    my $handles = GnuPG::Handles->new(
-        stdin => ( $handle{'input'} = new IO::Handle ),
-        stdout => $tmp_fh,
-        stderr => ( $handle{'error'} = new IO::Handle ),
-        logger => ( $handle{'logger'} = new IO::Handle ),
-        status => ( $handle{'status'} = new IO::Handle ),
+    my $io = $args{'Data'}->open('r');
+    unless ( $io ) {
+        die "Entity has no body, never should happen";
+    }
+
+    my ($had_literal, $in_block) = ('', 0);
+    my ($block_fh, $block_fn) = File::Temp::tempfile();
+    binmode $block_fh, ':raw';
+
+    my %res;
+    while ( defined(my $str = $io->getline) ) {
+        if ( $in_block && $str =~ /-----END PGP (?:MESSAGE|SIGNATURE)-----/ ) {
+            print $block_fh $str;
+            seek $block_fh, 0, 0;
+
+            my ($res_fh, $res_fn);
+            ($res_fh, $res_fn, %res) = _DecryptInlineBlock(
+                %args,
+                gnupg => $gnupg,
+                block_handle => $block_fh,
+            );
+            return %res unless $res_fh;
+
+            print $tmp_fh "-----BEGIN OF PGP PROTECTED PART-----\n" if $had_literal;
+            while (my $buf = <$res_fh> ) {
+                print $tmp_fh $buf;
+            }
+            print $tmp_fh "-----END OF PART-----\n" if $had_literal;
+
+            ($block_fh, $block_fn) = File::Temp::tempfile();
+            binmode $block_fh, ':raw';
+            $in_block = 0;
+        }
+        elsif ( $in_block || $str =~ /-----BEGIN PGP (SIGNED )?MESSAGE-----/ ) {
+            $in_block = 1;
+            print $block_fh $str;
+        }
+        else {
+            print $tmp_fh $str;
+            $had_literal = 1 if /\S/s;
+        }
+    }
+    $io->close;
+
+    seek $tmp_fh, 0, 0;
+    $args{'Data'}->bodyhandle( new MIME::Body::File $tmp_fn );
+    $args{'Data'}->{'__store_tmp_handle_to_avoid_early_cleanup'} = $tmp_fh;
+    return %res;
+}
+
+sub _decrypt_inline_block {
+    my %args = (
+        gnupg => undef,
+        block_handle => undef,
+        passphrase => undef,
+        @_
     );
-    $handles->options('stdout')->{'direct'} = 1;
+    my $gnupg = $args{'GnuPG'};
+
+    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
+    binmode $tmp_fh, ':raw';
+
+    my ($handles, $handle_list) = _make_gpg_handles(
+            stdin => $args{'BlockHandle'}, 
+            stdout => $tmp_fh);
+    my %handle = %$handle_list;
+    $handles->options( 'stdout' )->{'direct'} = 1;
+    $handles->options( 'stdin' )->{'direct'} = 1;
 
     my %res;
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
-        $gnupg->passphrase( $args{'passphrase'} );
-        my $pid = _safe_run_child { $gnupg->decrypt( handles => $handles ) };
-        $args{'data'}->bodyhandle->print( $handle{'input'} );
-        close $handle{'input'};
-
+        $gnupg->passphrase( $args{'Passphrase'} );
+        my $pid = safe_run_child { $gnupg->decrypt( handles => $handles ) };
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
-    foreach (qw(error logger status)) {
+    foreach ( qw(stderr logger status) ) {
         $res{$_} = do { local $/; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
-    Jifty->log->debug( $res{'status'} ) if $res{'status'};
-    Jifty->log->warn( $res{'error'} )   if $res{'error'};
-    Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
+    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
+    $RT::Logger->warning( $res{'stderr'} ) if $res{'stderr'};
+    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
 
     # if the decryption is fine but the signature is bad, then without this
     # status check we lose the decrypted text
     # XXX: add argument to the function to control this check
     if ( $res{'status'} !~ /DECRYPTION_OKAY/ ) {
         if ( $@ || $? ) {
-            $res{'message'} = $@ ? $@ : "gpg exitted with error code " . ( $? >> 8 );
-            return %res;
+            $res{'message'} = $@? $@: "gpg exitted with error code ". ($? >> 8);
+            return (undef, undef, %res);
         }
     }
 
     seek $tmp_fh, 0, 0;
-    $args{'data'}->bodyhandle( new MIME::Body::File $tmp_fn );
-    $args{'data'}->{'__store_tmp_handle_to_avoid_early_cleanup'} = $tmp_fh;
-    return %res;
+    return ($tmp_fh, $tmp_fn, %res);
 }
 
 sub decrypt_attachment {
@@ -1347,8 +1352,39 @@ sub decrypt_attachment {
         passphrase => undef,
         @_
     );
-    my %res = decrypt_inline(%args);
-    return %res if $res{'exit_code'};
+
+    my $gnupg = new GnuPG::Interface;
+    my %opt   = RT->config->get('GnuPGOptions');
+    $opt{'digest-algo'} ||= 'SHA1';
+    $gnupg->options->hash_init( _PrepareGnuPGOptions(%opt),
+        meta_interactive => 0, );
+
+    if ( $args{'data'}->bodyhandle->is_encoded ) {
+        require RT::EmailParser;
+        RT::EmailParser->_DecodeBody( $args{'data'} );
+    }
+
+    # handling passphrase in GnuPGOptions
+    $args{'passphrase'} = delete $opt{'passphrase'}
+      if !defined( $args{'passphrase'} );
+
+    $args{'passphrase'} = GetPassphrase()
+      unless defined $args{'passphrase'};
+
+    my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile();
+    binmode $tmp_fh, ':raw';
+    $args{'data'}->bodyhandle->print($tmp_fh);
+    seek $tmp_fh, 0, 0;
+
+    my ( $res_fh, $res_fn, %res ) = _DecryptInlineBlock(
+        %args,
+        GnuPG       => $gnupg,
+        BlockHandle => $tmp_fh,
+    );
+    return %res unless $res_fh;
+
+    $args{'data'}->bodyhandle( new MIME::Body::File $res_fn );
+    $args{'data'}->{'__store_tmp_handle_to_avoid_early_cleanup'} = $res_fh;
 
     my $filename = $args{'data'}->head->recommended_filename;
     $filename =~ s/\.pgp$//i;
@@ -1369,7 +1405,7 @@ sub decrypt_content {
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init( _prepare_gnupg_options(%opt), meta_interactive => 0, );
 
-    # handling passphrase in GnupGOptions
+    # handling passphrase in GnuPGOptions
     $args{'passphrase'} = delete $opt{'passphrase'}
         if !defined( $args{'passphrase'} );
 
@@ -1379,35 +1415,29 @@ sub decrypt_content {
     my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
 
-    my %handle;
-    my $handles = GnuPG::Handles->new(
-        stdin => ( $handle{'input'} = new IO::Handle ),
-        stdout => $tmp_fh,
-        stderr => ( $handle{'error'} = new IO::Handle ),
-        logger => ( $handle{'logger'} = new IO::Handle ),
-        status => ( $handle{'status'} = new IO::Handle ),
-    );
+    my ( $handles, $handle_list ) = _make_gpg_handles( stdout => $tmp_fh );
+    my %handle = %$handle_list;
     $handles->options('stdout')->{'direct'} = 1;
 
     my %res;
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
         $gnupg->passphrase( $args{'passphrase'} );
-        my $pid = _safe_run_child { $gnupg->decrypt( handles => $handles ) };
-        print { $handle{'input'} } ${ $args{'content'} };
-        close $handle{'input'};
+        my $pid = safe_run_child { $gnupg->decrypt( handles => $handles ) };
+        print { $handle{'stdin'} } ${ $args{'content'} };
+        close $handle{'stdin'};
 
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
-    foreach (qw(error logger status)) {
+    foreach (qw(stderr logger status)) {
         $res{$_} = do { local $/; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
-    Jifty->log->debug( $res{'status'} ) if $res{'status'};
-    Jifty->log->warn( $res{'error'} )   if $res{'error'};
-    Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
+    Jifty->log->debug( $res{'status'} )   if $res{'status'};
+    Jifty->log->warn( $res{'stderr'} ) if $res{'stderr'};
+    Jifty->log->error( $res{'logger'} )   if $res{'logger'} && $?;
 
     # if the decryption is fine but the signature is bad, then without this
     # status check we lose the decrypted text
@@ -1785,7 +1815,7 @@ sub _parse_user_hint {
     return (
         main_key => $main_key_id,
         string   => $user_str,
-        email    => ( map $_->address, Mail::Address->parse($user_str) )[0],
+        email    => ( map $_->address, Email::Address->parse($user_str) )[0],
     );
 }
 
@@ -1987,41 +2017,34 @@ sub get_keys_info {
 
     my %res;
 
-    my %handle;
-    my $handles = GnuPG::Handles->new(
-        stdin  => ( $handle{'input'}  = new IO::Handle ),
-        stdout => ( $handle{'output'} = new IO::Handle ),
-        stderr => ( $handle{'error'}  = new IO::Handle ),
-        logger => ( $handle{'logger'} = new IO::Handle ),
-        status => ( $handle{'status'} = new IO::Handle ),
-    );
+    my ( $handles, $handle_list ) = _make_gpg_handles();
+    my %handle = %$handle_list;
 
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
         my $method = $type eq 'private' ? 'list_secret_keys' : 'list_public_keys';
-        my $pid = _safe_run_child {
+        my $pid = safe_run_child {
             $gnupg->$method(
                 handles => $handles,
                 $email ? ( command_args => $email ) : ()
             );
         };
-        close $handle{'input'};
+        close $handle{'stdin'};
         waitpid $pid, 0;
     };
 
-    my @info = readline $handle{'output'};
-    close $handle{'output'};
+    my @info = readline $handle{'stdout'};
+    close $handle{'stdout'};
 
     $res{'exit_code'} = $?;
-    foreach (qw(error logger status)) {
+    foreach (qw(stderr logger status)) {
         $res{$_} = do { local $/; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
-    Jifty->log->debug( $res{'status'} ) if $res{'status'};
-    Jifty->log->warn( $res{'error'} )   if $res{'error'};
-    Jifty->log->error( "Tried to get $type key '$email'.\n" . $res{'logger'} )
-        if $res{'logger'} && $?;
+    Jifty->log->debug( $res{'status'} )   if $res{'status'};
+    Jifty->log->warn( $res{'stderr'} ) if $res{'stderr'};
+    Jifty->log->error( $res{'logger'} )   if $res{'logger'} && $?;
     if ( $@ || $? ) {
         $res{'message'} = $@ ? $@ : "gpg exitted with error code " . ( $? >> 8 );
         return %res;
@@ -2190,27 +2213,20 @@ sub delete_key {
     my %opt   = RT->config->get('GnuPGOptions');
     $gnupg->options->hash_init( _prepare_gnupg_options(%opt), meta_interactive => 0, );
 
-    my %handle;
-    my $handles = GnuPG::Handles->new(
-        stdin   => ( $handle{'input'}   = new IO::Handle ),
-        stdout  => ( $handle{'output'}  = new IO::Handle ),
-        stderr  => ( $handle{'error'}   = new IO::Handle ),
-        logger  => ( $handle{'logger'}  = new IO::Handle ),
-        status  => ( $handle{'status'}  = new IO::Handle ),
-        command => ( $handle{'command'} = new IO::Handle ),
-    );
+    my ( $handles, $handle_list ) = _make_gpg_handles();
+    my %handle = %$handle_list;
 
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
         local @ENV{ 'LANG', 'LC_ALL' } = ( 'C', 'C' );
-        my $pid = _safe_run_child {
+        my $pid = safe_run_child {
             $gnupg->wrap_call(
                 handles      => $handles,
                 commands     => ['--delete-secret-and-public-key'],
                 command_args => [$key],
             );
         };
-        close $handle{'input'};
+        close $handle{'stdin'};
         while ( my $str = readline $handle{'status'} ) {
             if ( $str =~ /^\[GNUPG:\]\s*GET_BOOL delete_key\..*/ ) {
                 print { $handle{'command'} } "y\n";
@@ -2219,18 +2235,18 @@ sub delete_key {
         waitpid $pid, 0;
     };
     my $err = $@;
-    close $handle{'output'};
+    close $handle{'stdout'};
 
     my %res;
     $res{'exit_code'} = $?;
-    foreach (qw(error logger status)) {
+    foreach (qw(stderr logger status)) {
         $res{$_} = do { local $/; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
-    Jifty->log->debug( $res{'status'} ) if $res{'status'};
-    Jifty->log->warn( $res{'error'} )   if $res{'error'};
-    Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
+    Jifty->log->debug( $res{'status'} )   if $res{'status'};
+    Jifty->log->warn( $res{'stderr'} ) if $res{'stderr'};
+    Jifty->log->error( $res{'logger'} )   if $res{'logger'} && $?;
     if ( $err || $res{'exit_code'} ) {
         $res{'message'}
             = $err
@@ -2247,42 +2263,35 @@ sub import_key {
     my %opt   = RT->config->get('GnuPGOptions');
     $gnupg->options->hash_init( _prepare_gnupg_options(%opt), meta_interactive => 0, );
 
-    my %handle;
-    my $handles = GnuPG::Handles->new(
-        stdin   => ( $handle{'input'}   = new IO::Handle ),
-        stdout  => ( $handle{'output'}  = new IO::Handle ),
-        stderr  => ( $handle{'error'}   = new IO::Handle ),
-        logger  => ( $handle{'logger'}  = new IO::Handle ),
-        status  => ( $handle{'status'}  = new IO::Handle ),
-        command => ( $handle{'command'} = new IO::Handle ),
-    );
+    my ( $handles, $handle_list ) = _make_gpg_handles();
+    my %handle = %$handle_list;
 
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
         local @ENV{ 'LANG', 'LC_ALL' } = ( 'C', 'C' );
-        my $pid = _safe_run_child {
+        my $pid = safe_run_child {
             $gnupg->wrap_call(
                 handles  => $handles,
                 commands => ['--import'],
             );
         };
-        print { $handle{'input'} } $key;
-        close $handle{'input'};
+        print { $handle{'stdin'} } $key;
+        close $handle{'stdin'};
         waitpid $pid, 0;
     };
     my $err = $@;
-    close $handle{'output'};
+    close $handle{'stdout'};
 
     my %res;
     $res{'exit_code'} = $?;
-    foreach (qw(error logger status)) {
+    foreach (qw(stderr logger status)) {
         $res{$_} = do { local $/; readline $handle{$_} };
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
-    Jifty->log->debug( $res{'status'} ) if $res{'status'};
-    Jifty->log->warn( $res{'error'} )   if $res{'error'};
-    Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
+    Jifty->log->debug( $res{'status'} )   if $res{'status'};
+    Jifty->log->warn( $res{'stderr'} ) if $res{'stderr'};
+    Jifty->log->error( $res{'logger'} )   if $res{'logger'} && $?;
     if ( $err || $res{'exit_code'} ) {
         $res{'message'}
             = $err
@@ -2324,6 +2333,53 @@ sub dry_sign {
 }
 
 1;
+
+=head2 Probe
+
+This routine returns true if RT's GnuPG support is configured and working 
+properly (and false otherwise).
+
+
+=cut
+
+sub Probe {
+    my $gnupg = new GnuPG::Interface;
+    my %opt   = RT->config->get('GnuPGOptions');
+    $gnupg->options->hash_init(
+        _PrepareGnuPGOptions(%opt),
+        armor            => 1,
+        meta_interactive => 0,
+    );
+
+    my ( $handles, $handle_list ) = _make_gpg_handles();
+    my %handle = %$handle_list;
+
+    eval {
+        local $SIG{'CHLD'} = 'DEFAULT';
+        my $pid = safe_run_child { $gnupg->version( handles => $handles ) };
+        close $handle{'stdin'};
+        waitpid $pid, 0;
+    };
+    return 0 if $@;
+    return 0 if $?;
+    return 1;
+}
+
+sub _make_gpg_handles {
+    my %handle_map = (
+        stdin   => IO::Handle->new(),
+        stdout  => IO::Handle->new(),
+        stderr  => IO::Handle->new(),
+        logger  => IO::Handle->new(),
+        status  => IO::Handle->new(),
+        command => IO::Handle->new(),
+
+        @_
+    );
+
+    my $handles = GnuPG::Handles->new(%handle_map);
+    return ( $handles, \%handle_map );
+}
 
 # helper package to avoid using temp file
 package IO::Handle::CRLF;

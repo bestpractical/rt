@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -50,7 +50,7 @@
     Ticket => $Ticket, current_tab => 'Ticket/History.html?id='.$Ticket->id, 
     Title => _("Ticket History # %1 %2", $Ticket->id, $Ticket->subject) &>
 
-% $m->callback(Callbackname => 'BeforeActionList', args_ref => \%ARGS, Ticket => $Ticket);
+% $m->callback( %ARGS, Ticket => $Ticket, Callbackname => 'BeforeActionList' );
 
 
 <br />
@@ -63,8 +63,7 @@
     attachment_content => $attachment_content
     &> 
 
-<& /Elements/Callback, _Callbackname => 'AfterShowHistory', Ticket => $Ticket, 
-current_tab => 'Ticket/History.html?id=' . $Ticket->id, %ARGS &>
+% $m->callback( %ARGS, Callbackname => 'AfterShowHistory', Ticket => $Ticket, current_tab => 'Ticket/History.html?id=' . $Ticket->id );
 
 <%ARGS>
 $id => undef

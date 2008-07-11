@@ -139,7 +139,10 @@ sub get_query_and_option_list {
     my $list = $self->__linearize_tree;
     foreach my $e (@$list) {
         $e->{'DEPTH'} = $e->{'NODE'}->getDepth;
-        $e->{'SELECTED'} = ( grep $_ == $e->{'NODE'}, @$selected_nodes ) ? 'selected' : '';
+        $e->{'SELECTED'} =
+          ( grep $_ == $e->{'NODE'}, @$selected_nodes )
+          ? qq[ selected="selected"]
+          : '';
     }
 
     return ( join ' ', map $_->{'TEXT'}, @$list ), $list;
@@ -264,9 +267,11 @@ sub parse_sql {
             $key =~ s/^[^.]+/ $lcfield{ lc $main_key } /e;
         }
         unless ($class) {
-            push @results, [ _("Unknown field: $key"), -1 ];
+            push @results,
+              [ $args{'current_user'}->loc( "Unknown field: %1", $key ), -1 ];
         }
 
+        $value =~ s/'/\\'/g;
         $value = "'$value'" if $value =~ /[^0-9]/;
         $key   = "'$key'"   if $key   =~ /^CF./;
 

@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -56,10 +56,9 @@
 <&| /Widgets/TitleBox, title => _('Modify global user rights.') &>
 <table>
 
-% while ( my $Member = $Users->next ) {
-% my $user_object = $Member->member_obj->object;
+% while ( my $user_object = $Users->next ) {
 % my $group = RT::Model::Group->new();
-% $group->load_acl_equivalence_group( $Member->member_obj );
+% $group->load_acl_equivalence_group( $user_object );
   <tr align="right">
 	<td valign="top"><& /Elements/ShowUser, User => $user_object &></td>
 	<td><& /Admin/Elements/SelectRights,
@@ -73,7 +72,7 @@
 
 <& /Elements/Submit, Label => _('Modify User rights'), Reset => 1 &>
       
-</form> 
+</form>
 <%INIT>
  
   #Update the acls.
@@ -85,7 +84,8 @@
 # Find out which users we want to display ACL selects for
 my $privileged = RT::Model::Group->new();
 $privileged->load_system_internal_group('privileged');
-my $Users = $privileged->members_obj();
+my $Users = $privileged->usermembers_obj();
+$Users->order_by( column => $Userorder_by, order => $Userorder );
 
     
   
@@ -94,4 +94,6 @@ my $Users = $privileged->members_obj();
 </%INIT>
 
 <%ARGS>
+$Userorder_by => 'name'
+$Userorder => 'ASC'
 </%ARGS>

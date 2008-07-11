@@ -3,15 +3,20 @@
 use strict;
 use warnings;
 use RT::Test; use Test::More;
-eval 'use GnuPG::Interface; 1' or plan skip_all => 'GnuPG required.';
+plan skip_all => 'GnuPG required.'
+    unless eval 'use GnuPG::Interface; 1';
+plan skip_all => 'gpg executable is required.'
+    unless RT::Test->find_executable('gpg');
 
-plan tests => 94;
+plan tests => 92;
 
-use Data::Dumper;
 
 use File::Spec ();
 use Cwd;
-my $homedir = File::Spec->catdir( cwd(), qw(lib t data crypt-gnupg) );
+
+my $homedir = RT::Test::get_abs_relocatable_dir(File::Spec->updir(),
+    qw(data gnupg keyrings) );
+
 mkdir $homedir;
 
 use_ok('RT::Crypt::GnuPG');
@@ -22,7 +27,9 @@ RT->config->set( 'GnuPG',
                  outgoing_messages_format => 'RFC' );
 
 RT->config->set( 'GnuPGOptions',
-                 homedir => $homedir );
+                 homedir => $homedir,
+                 'no-permission-warning' => undef,
+);
 
 
 diag 'only signing. correct passphrase' if $ENV{'TEST_VERBOSE'};
@@ -34,7 +41,7 @@ diag 'only signing. correct passphrase' if $ENV{'TEST_VERBOSE'};
     );
     my %res = RT::Crypt::GnuPG::sign_encrypt( entity => $entity, encrypt => 0, passphrase => 'test' );
     ok( $entity, 'signed entity');
-    ok( !$res{'logger'}, "log is here as well" );
+    ok( !$res{'logger'}, "log is here as well" ) or diag $res{'logger'};
     warn $res{'logger'};
     my @status = RT::Crypt::GnuPG::parse_status( $res{'status'} );
     is( scalar @status, 2, 'two records: passphrase, signing');
@@ -71,8 +78,7 @@ diag 'only signing. missing passphrase' if $ENV{'TEST_VERBOSE'};
     );
     my %res = RT::Crypt::GnuPG::sign_encrypt( entity => $entity, encrypt => 0, passphrase => '' );
     ok( $res{'exit_code'}, "couldn't sign without passphrase");
-    ok( $res{'error'}, "error is here" );
-    ok( $res{'logger'}, "log is here as well" );
+    ok( $res{'error'} || $res{'logger'}, "error is here" );
     my @status = RT::Crypt::GnuPG::parse_status( $res{'status'} );
     is( scalar @status, 1, 'one record');
     is( $status[0]->{'operation'}, 'passphrase_check', 'operation is correct');
@@ -88,8 +94,7 @@ diag 'only signing. wrong passphrase' if $ENV{'TEST_VERBOSE'};
     );
     my %res = RT::Crypt::GnuPG::sign_encrypt( entity => $entity, encrypt => 0, passphrase => 'wrong' );
     ok( $res{'exit_code'}, "couldn't sign with bad passphrase");
-    ok( $res{'error'}, "error is here" );
-    ok( $res{'logger'}, "log is here as well" );
+    ok( $res{'error'} || $res{'logger'}, "error is here" );
 
     my @status = RT::Crypt::GnuPG::parse_status( $res{'status'} );
     is( scalar @status, 1, 'one record');

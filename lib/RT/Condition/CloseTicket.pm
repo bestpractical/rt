@@ -50,7 +50,7 @@ package RT::Condition::CloseTicket;
 use strict;
 use warnings;
 
-use base 'RT::Condition::Generic';
+use base 'RT::Condition';
 
 =head2 is_applicable
 

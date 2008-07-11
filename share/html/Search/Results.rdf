@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -49,6 +49,16 @@
 
 my $Tickets = RT::Model::TicketCollection->new();
 $Tickets->from_sql($ARGS{'query'});
+if ($order_by =~ /\|/) {
+    # Multiple Sorts
+    my @order_by = split /\|/,$order_by;
+    my @order = split /\|/,$order;
+    $Tickets->order_by(
+        map { { column => $order_by[$_], order => $order[$_] } } ( 0
+        .. $#order_by ) );;
+} else {
+    $Tickets->order_by(column => $order_by, order => $order);
+}
 $r->content_type('application/rss+xml');
 
 
@@ -75,7 +85,7 @@ $r->content_type('application/rss+xml');
         $creator_str =~ s/[\r\n]//g;
         $rss->add_item(
           title       =>  $Ticket->subject,
-          link        => RT->config->get('WebURL')."/Ticket/Display.html?id=".$Ticket->id,
+          link        => RT->config->get('WebURL')."Ticket/Display.html?id=".$Ticket->id,
           description => $Ticket->transactions->first->content,
           dc => {
             subject  => ($Ticket->subject  || _('No subject')),
@@ -86,3 +96,7 @@ $r->content_type('application/rss+xml');
 $m->out($rss->as_string);
 $m->abort();
 </%INIT>
+<%ARGS>
+$order_by => 'Created'
+$order => 'ASC'
+</%ARGS>

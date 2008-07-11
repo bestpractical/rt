@@ -1,64 +1,19 @@
 # Initial data for a fresh RT3 Installation.
 
 @Users = (
-    {  name     => 'Nobody',
-       real_name => 'Nobody in particular',
-       comments => 'Do not delete or modify this user. It is integral '
-         . 'to RT\'s internal data structures',
-       privileged => '0', },
+    {
+        name            => 'root',
+        gecos           => 'root',
+        real_name       => 'Enoch Root',
+        password        => 'password',
+        email           => "root\@localhost",
+        email_confirmed => 1,
+        comments        => 'SuperUser',
+        privileged      => '1',
+    }
+);
 
-    {  name         => 'root',
-       gecos        => 'root',
-       real_name     => 'Enoch Root',
-       password     => 'password',
-       email => "root\@localhost",
-       email_confirmed => 1,
-       comments     => 'SuperUser',
-       privileged   => '1', } );
-
-@Groups = (
-    { name        => '',
-      type        => 'Everyone',                        # loc
-      domain      => 'SystemInternal',
-      instance    => '',
-      description => 'Pseudogroup for internal use',    # loc
-    },
-    { type        => 'privileged',                      # loc
-      domain      => 'SystemInternal',
-      instance    => '',
-      name        => '',
-      description => 'Pseudogroup for internal use',    # loc
-    },
-    { name        => '',
-      type        => 'Unprivileged',                    # loc
-      domain      => 'SystemInternal',
-      instance    => '',
-      description => 'Pseudogroup for internal use',    # loc
-    },
-    { name        => '',
-      type        => 'owner',                               # loc
-      domain      => 'RT::System-Role',
-      instance    => '',
-      description => 'SystemRolegroup for internal use',    # loc
-    },
-    { name        => '',
-      type        => 'requestor',                           # loc
-      domain      => 'RT::System-Role',
-      instance    => '',
-      description => 'SystemRolegroup for internal use',    # loc
-    },
-    { name        => '',
-      type        => 'cc',                                  # loc
-      domain      => 'RT::System-Role',
-      instance    => '',
-      description => 'SystemRolegroup for internal use',    # loc
-    },
-    { name        => '',
-      type        => 'admin_cc',                             # loc
-      domain      => 'RT::System-Role',
-      instance    => '',
-      description => 'Pseudogroup for internal use',        # loc
-    }, );
+@Groups = ( );
 
 @Queues = ({ name              => 'General',
              description       => 'The default queue',
@@ -139,6 +94,9 @@
        exec_module => 'CreateTickets', },
     { name        => 'Open Tickets',                                      # loc
       description => 'Open tickets on correspondence',                    # loc
+    { name        => 'Extract Subject Tag',                               # loc
+      Description => 'Extract tags from a Transaction\'s subject and add them to the Ticket\'s subject.', # loc
+      ExecModule  => 'ExtractSubjectTag' },
       exec_module  => 'AutoOpen' },
 );
 
@@ -212,12 +170,12 @@
     },
 
     {  name                 => 'On Close',                                 # loc
-       description          => 'Whenever a ticket is closed(inactivated)', # loc
+       description          => 'Whenever a ticket is closed', # loc
        applicable_trans_types => 'Status,Set',
        exec_module           => 'CloseTicket',
     },
     {  name                 => 'On Reopen',                                # loc
-       description          => 'Whenever a ticket is reopened(activated)', # loc
+       description          => 'Whenever a ticket is reopened', # loc
        applicable_trans_types => 'Status,Set',
        exec_module           => 'ReopenTicket',
     },
@@ -273,7 +231,7 @@ Transaction: {$transaction->description}
        owner: {$ticket->owner_obj->name}
   requestors: {$ticket->role_group("requestor")->member_emails_as_string}
       Status: {$ticket->status}
- Ticket <URL: {RT->config->get(\'WebURL\')}/Ticket/Display.html?id={$ticket->id} >
+ Ticket <URL: {RT->config->get(\'WebURL\')}Ticket/Display.html?id={$ticket->id} >
 
 
 {$transaction->content()}
@@ -461,6 +419,41 @@ Your new password is:
   {$Newpassword}
 }
     },
+
+	       {   queue       => '0',
+		   name        => 'email Digest',    # loc
+		   Description => 'email template for periodic notification digests',  # loc
+		   Content => q[Subject: RT email Digest
+
+{ $Argument }
+],
+               },
+
+{
+    queue       => 0,
+    name        => "Error: Missing dashboard",    # loc
+    Description =>
+      "Inform user that a dashboard he subscribed to is missing", # loc
+    Content => q{Subject: [{RT->config->get('rtname')}] Missing dashboard!
+
+Greetings,
+
+You are subscribed to a dashboard that is currently missing. Most likely, the dashboard was deleted.
+
+RT will remove this subscription as it is no longer useful. Here's the information RT had about your subscription:
+
+DashboardID:  { $subscription_obj->SubValue('Dashboardid') }
+Frequency:    { $subscription_obj->SubValue('Frequency') }
+Hour:         { $subscription_obj->SubValue('Hour') }
+{
+    $subscription_obj->SubValue('Frequency') eq 'weekly'
+    ? "Day of week:  " . $subscription_obj->SubValue('Dow')
+    : $subscription_obj->SubValue('Frequency') eq 'monthly'
+      ? "Day of month: " . $subscription_obj->SubValue('Dom')
+      : ''
+}
+}
+},
 );
 # }}}
 
@@ -505,6 +498,10 @@ Your new password is:
        scrip_condition => 'On Resolve',
        scrip_action    => 'Notify requestors',
        template       => 'resolved' },
+    {  Description    => "On transaction, add any tags in the transaction's subject to the ticket's subject",
+       ScripCondition => 'On Transaction',
+       ScripAction    => 'Extract Subject Tag',
+       Template       => 'Blank' },
     {  description => "When an approval ticket is Created, notify the owner and admin_cc of the item awaiting their approval",    # loc
        queue          => '___Approvals',
        scrip_condition => 'User Defined',
@@ -669,9 +666,6 @@ return 0; # ignore $passed;
 );
 
 @ACL = (
-    { user_id => 'Nobody',      # - principalId
-      right  => 'OwnTicket', },
-
     { user_id => 'root',        # - principalid
       right  => 'SuperUser', },
 
@@ -704,18 +698,30 @@ return 0; # ignore $passed;
         order   => 'DESC'
       },
     },
+    { name => 'Search - Bookmarked Tickets',
+      Description => 'Bookmarked Tickets', #loc
+      Content     =>
+      { format => q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
+                . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>/TITLE:Subject',}
+                . q{Priority, QueueName, ExtendedStatus, Bookmark},
+        Query   => "__Bookmarks__",
+        order_by => 'LastUpdated',
+        order   => 'DESC' },
+    },
     { name => 'HomepageSettings',
       description => 'HomepageSettings',
       content =>
       { 'body' => # loc
 	[ { type => 'system', name => 'My Tickets' },
 	  { type => 'system', name => 'Unowned Tickets' },
+ 	  { type => 'system', name => 'Bookmarked Tickets' },
 	  { type => 'component',  name => 'QuickCreate'},
 	],
         'summary' => # loc
 	[ 
 	  { type => 'component', name => 'MyReminders' },
           { type => 'component', name => 'Quicksearch' },
+	  { type => 'component', name => 'Dashboards' },
 	  { type => 'component', name => 'RefreshHomepage' },
 	]
     },

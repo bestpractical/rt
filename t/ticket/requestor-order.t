@@ -112,11 +112,10 @@ sub check_emails_order
 
     my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);    
     $tix->from_sql("Queue = '$queue' AND subject = 'first test'");
-TODO: {
-    local $TODO = "if group has non users members we get wrong order";
+
     $tix->order_by({ column => "requestor.email" });
     check_emails_order($tix, 7, 'ASC');
-}
+
     $tix->order_by({ column => "requestor.email", order => 'DESC' });
     check_emails_order($tix, 7, 'DESC');
 

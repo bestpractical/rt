@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -48,13 +48,14 @@
 <%DOC>
 see docs/using_forms_widgets.pod
 </%DOC>
-<div id="form-box-<% lc $name %>">
-<span class="description"><% $description %></span>:\
-<& SELF:InputOnly, %ARGS &>
-</div>
+<div id="form-box-<% lc $name %>" class="widget">
+<span class="label description"><% $Description %></span>
+<span class="value"><& SELF:InputOnly, %ARGS &></span>
+<span class="hints"><% $Hints %></span>
 <%ARGS>
 $name         => undef,
 $description  => undef,
+$hints        => ''
 </%ARGS>
 
 <%METHOD InputOnly>
@@ -63,19 +64,19 @@ $name         => undef,
 
 $default        => 0,
 $default_value   => 0,
-$default_label   => _( 'Use system default (%1)', $default_value? _('Yes'): _('No') ),
+$default_label   => _( 'Use default (%1)', $default_value? _('Yes'): _('No') ),
 
 $current_value => undef,
 </%ARGS>
 % unless ( $default ) {
 <input type="hidden" name="<% $name %>" value="0" />\
-<input type="checkbox" name="<% $name %>" value="1"<% $current_value? ' checked="checked"': '' |n %> />\
+<input type="checkbox" name="<% $name %>" value="1" <% $current_value? ' checked="checked"': '' |n %> />\
 % } else {
-<input type="radio" name="<% $name %>" value="1"<% $current_value? ' checked="checked"': '' |n %> />\
+<input type="radio" name="<% $name %>" value="1" <% $current_value? ' checked="checked"': '' |n %> />\
 <% _('Yes') %>
-<input type="radio" name="<% $name %>" value="0"<% defined $current_value && !$current_value? ' checked="checked"': '' |n %> />\
+<input type="radio" name="<% $name %>" value="0" <% defined $current_value && !$current_value? ' checked="checked"': '' |n %> />\
 <% _('No') %>
-<input type="radio" name="<% $name %>" value="__empty_value__"<% !defined $current_value? ' checked="checked"': '' |n %> />\
+<input type="radio" name="<% $name %>" value="__empty_value__" <% !defined $current_value? ' checked="checked"': '' |n %> />\
 <% $default_label %>
 % }
 </%METHOD>

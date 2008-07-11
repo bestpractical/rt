@@ -1,8 +1,8 @@
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
-%#  
-%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%# 
+%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
 %#                                          <jesse@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -24,7 +24,7 @@
 %# along with this program; if not, write to the Free Software
 %# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 %# 02110-1301 or visit their web page on the internet at
-%# http://www.gnu.org/copyleft/gpl.html.
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
 %# 
 %# 
 %# CONTRIBUTION SUBMISSION POLICY:
@@ -50,15 +50,12 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<&|/l, Jifty->web->current_user->name&>(displaying new and open tickets for %1)</&>
+<h2><&|/l, Jifty->web->current_user->name &>New and open tickets for %1</&></h2>
 <form method="post" action="MyDay.html">
-<table width="100%" cellpadding="0" cellspacing="0">
+<table width="100%" cellpadding="0" cellspacing="0" class="myday">
 % while ( my $Ticket = $tickets->next()) {
-% my $class;
+% my $class =  $i % 2  ? 'class="evenline"' : 'class="oddline"';
 % $i++;
-% if ($i % 2 ) {
-%  $class = 'class="oddline"';
-% }
 <tr <%$class|n%>><td colspan="2"><h2><a
 href="<%RT->config->get('WebPath')%>/Ticket/Display.html?id=<%$Ticket->id%>"><%$Ticket->id%>:
 <%$Ticket->subject%></a></h2></td></tr>
@@ -73,7 +70,7 @@ cols="60"></textarea></td></tr>
 
 % }
 </table>
-<& /Elements/Submit, Label => "Record all updates" ,  Reset => 'Clear'&>
+<& /Elements/Submit, Label => _('Record all updates') ,  Reset => 1, ResetLabel => _('Clear')&>
 </form>
 </html>
 <%INIT>
