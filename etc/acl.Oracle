@@ -4,7 +4,7 @@ sub acl {
     my $db_pass = RT->Config->Get('DatabasePassword');
 
     return (
-        "CREATE USER $db_name IDENTIFIED BY $db_pass"
+        "CREATE USER $db_user IDENTIFIED BY $db_pass"
             . " default tablespace USERS"
             . " temporary tablespace TEMP"
             . " quota unlimited on USERS",
