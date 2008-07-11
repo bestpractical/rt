@@ -2312,12 +2312,25 @@ sub Probe {
 
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
-        my $pid = safe_run_child { $gnupg->version( handles => $handles ) };
+        my $pid = safe_run_child { $gnupg->wrap_call( commands => ['--version' ], handles => $handles ) };
         close $handle{'stdin'};
         waitpid $pid, 0;
     };
-    return 0 if $@;
-    return 0 if $?;
+    if ( $@ ) {
+        $RT::Logger->debug(
+            "Probe for GPG failed."
+            ." Couldn't run `gpg --version`: ". $@
+        );
+        return 0;
+    }
+    if ( $? ) {
+        $RT::Logger->debug(
+            "Probe for GPG failed."
+            ." Process exitted with code ". ($? >> 8)
+            . ($? & 127 ? (" as recieved signal ". ($? & 127)) : '')
+        );
+        return 0;
+    }
     return 1;
 }
 
