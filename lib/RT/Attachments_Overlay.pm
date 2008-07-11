@@ -165,12 +165,21 @@ sub LimitNotEmpty {
         VALUE           => 'NULL',
         QUOTEVALUE      => 0,
     );
-    $self->Limit(
-        ENTRYAGGREGATOR => 'AND',
-        FIELD           => 'Content',
-        OPERATOR        => '!=',
-        VALUE           => '',
-    );
+    if ( RT->Config->Get('DatabaseType') ne 'Oracle' ) {
+        $self->Limit(
+            ENTRYAGGREGATOR => 'AND',
+            FIELD           => 'Content',
+            OPERATOR        => '!=',
+            VALUE           => '',
+        );
+    } else {
+        $self->Limit(
+            ENTRYAGGREGATOR => 'AND',
+            FIELD           => 'Content',
+            OPERATOR        => 'NOT MATCHES',
+            VALUE           => '',
+        );
+    }
     return;
 }
 
