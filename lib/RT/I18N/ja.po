@@ -25,59 +25,27 @@ msgstr "%1 を %2 に変更しました"
 msgid " %1 saved."
 msgstr "%1 を保存しました"
 
-#: share/html/Elements/RT__Ticket/ColumnMap:239 share/html/Elements/RT__Ticket/ColumnMap:256
+#: share/html/Elements/RT__Ticket/ColumnMap:244 share/html/Elements/RT__Ticket/ColumnMap:261
 msgid " (no pubkey!)"
 msgstr ""
 
-#: share/html/Elements/RT__Ticket/ColumnMap:242 share/html/Elements/RT__Ticket/ColumnMap:259
+#: share/html/Elements/RT__Ticket/ColumnMap:247 share/html/Elements/RT__Ticket/ColumnMap:264
 msgid " (untrusted!)"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
-msgid ""
-"Log directory %1 not found or couldn't be written.\\n"
-" RT can't run."
-msgstr ""
-"ログディレクトリー%1が見つからない、または書き出せません。\\n"
-" RTが動きません"
-
-#: NOT FOUND IN SOURCE
-msgid ""
-"No Ticket specified. Aborting ticket modifications\\n"
-"\\n"
-msgstr ""
-"チケットが指定されていません。チケットの修正を終了します\\n"
-"\\n"
-
-#: NOT FOUND IN SOURCE
-msgid ""
-"The following commands were not proccessed:\\n"
-"\\n"
-msgstr ""
-"次のコマンドは処理されませんでした:\\n"
-"\\n"
-
-#: NOT FOUND IN SOURCE
-msgid ""
-"modifications\\n"
-"\\n"
-msgstr ""
-"修正\\n"
-"\\n"
-
-#: share/html/Dashboards/Elements/ShowDashboards:55
+#: share/html/Dashboards/Elements/ShowDashboards:77
 msgid "#"
 msgstr "#"
 
 #: share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:49 share/html/Ticket/Display.html:54
-#. ($TicketObj->Id, $TicketObj->Subject)
 #. ($Ticket->id, $Ticket->Subject)
-#. ($ticket->Id, $ticket->Subject)
 #. ($link->BaseObj->Id, $link->BaseObj->Subject)
+#. ($ticket->Id, $ticket->Subject)
+#. ($TicketObj->Id, $TicketObj->Subject)
 msgid "#%1: %2"
 msgstr ""
 
-#: share/html/Elements/ShowSearch:116
+#: share/html/Elements/ShowSearch:120
 msgid "$1"
 msgstr ""
 
@@ -89,9 +57,14 @@ msgstr ""
 msgid "$MONTHS[$mon]."
 msgstr ""
 
-#: lib/RT/Record.pm:906
+#: lib/RT/Record.pm:904
 #. ($label)
 msgid "$prefix %1"
+msgstr ""
+
+#: sbin/tweak-template-locstring:5
+#. ($arg)
+msgid "$x"
 msgstr ""
 
 #: lib/RT/URI/fsck_com_rt.pm:231
@@ -104,7 +77,7 @@ msgstr ""
 msgid "%1 %2"
 msgstr ""
 
-#: lib/RT/Tickets_Overlay.pm:1544
+#: lib/RT/Tickets_Overlay.pm:1548
 #. ($args{'FIELD'},        $args{'OPERATOR'}, $args{'VALUE'})
 msgid "%1 %2 %3"
 msgstr ""
@@ -119,7 +92,7 @@ msgstr ""
 msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr "%1 %2 %3 %4:%5:%6 %7"
 
-#: lib/RT/Record.pm:1628 lib/RT/Transaction_Overlay.pm:636 lib/RT/Transaction_Overlay.pm:679
+#: lib/RT/Record.pm:1676 lib/RT/Transaction_Overlay.pm:636 lib/RT/Transaction_Overlay.pm:679
 #. ($cf->Name, $new_content)
 #. ($field, $self->NewValue)
 #. ($self->Field, $principal->Object->Name)
@@ -131,13 +104,13 @@ msgstr ""
 msgid "%1 %2 ago"
 msgstr "%1 %2 前"
 
-#: lib/RT/Record.pm:1635 lib/RT/Transaction_Overlay.pm:643
+#: lib/RT/Record.pm:1683 lib/RT/Transaction_Overlay.pm:643
 #. ($cf->Name, $old_content, $new_content)
 #. ($field, $self->OldValue, $self->NewValue)
 msgid "%1 %2 changed to %3"
 msgstr "%3に変更された%1 %2 "
 
-#: lib/RT/Record.pm:1632 lib/RT/Transaction_Overlay.pm:639 lib/RT/Transaction_Overlay.pm:685
+#: lib/RT/Record.pm:1680 lib/RT/Transaction_Overlay.pm:639 lib/RT/Transaction_Overlay.pm:685
 #. ($cf->Name, $old_content)
 #. ($field, $self->OldValue)
 #. ($self->Field, $principal->Object->Name)
@@ -145,8 +118,8 @@ msgid "%1 %2 deleted"
 msgstr ""
 
 #: share/html/Elements/RT__Scrip/ColumnMap:85 share/html/Ticket/Elements/PreviewScrips:66
-#. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
 #. ($_[0]->loc($_[0]->ConditionObj->Name),            $_[0]->loc($_[0]->ActionObj->Name),            $_[0]->loc($_[0]->TemplateObj->Name),)
+#. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
 msgid "%1 %2 with template %3"
 msgstr ""
 
@@ -160,10 +133,10 @@ msgid "%1 (%2) by %3"
 msgstr ""
 
 #: share/html/SelfService/Update.html:62 share/html/Ticket/Elements/EditBasics:115 share/html/Ticket/Update.html:69 share/html/Ticket/Update.html:75 share/html/Tools/MyDay.html:68
+#. (loc($Ticket->Status))
 #. (loc($Ticket->Status()))
 #. (loc($TicketObj->Status))
 #. ($TicketObj->OwnerObj->Name)
-#. (loc($Ticket->Status))
 msgid "%1 (Unchanged)"
 msgstr "%1 (変更なし)"
 
@@ -234,7 +207,7 @@ msgstr ""
 msgid "%1 ScripAction loaded"
 msgstr "%1スクリプトアクションロードしました"
 
-#: lib/RT/Record.pm:1663
+#: lib/RT/Record.pm:1711
 #. ($args{'Value'}, $cf->Name)
 msgid "%1 added as a value for %2"
 msgstr "%2の値に%1が追加されました"
@@ -251,10 +224,25 @@ msgstr "%1aliasesを動かすためにチケットIDが必要です "
 msgid "%1 aliases require a TicketId to work on (from %2) %3"
 msgstr "%1aliasesを動かすためにチケットIDが必要です(%2から) %3"
 
+#: share/html/Install/DatabaseDetails.html:165
+#. ($RT::DatabaseName)
+msgid "%1 already exists and has RT's tables in place, but does not contain RT's metadata. The 'Initialize Database' step later on can insert metadata into this existing database. If this is acceptable, click 'Customize Basics' below to continue customizing RT."
+msgstr ""
+
+#: share/html/Install/DatabaseDetails.html:170
+#. ($RT::DatabaseName)
+msgid "%1 already exists, but does not contain RT's tables or metadata. The 'Initialize Database' step later on can insert tables and metadata into this existing database. if this is acceptable, click 'Customize Basic' below to continue customizing RT."
+msgstr ""
+
 #: lib/RT/Link_Overlay.pm:134 lib/RT/Link_Overlay.pm:142
 #. ($args{'Base'})
 #. ($args{'Target'})
 msgid "%1 appears to be a local object, but can't be found in the database"
+msgstr ""
+
+#: share/html/Install/DatabaseDetails.html:161
+#. ($RT::DatabaseName)
+msgid "%1 appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customez RT by clicking 'Customize Basics' below"
 msgstr ""
 
 #: share/html/Dashboards/Elements/ShowSubscription:72
@@ -262,18 +250,13 @@ msgstr ""
 msgid "%1 at %2"
 msgstr ""
 
-#: lib/RT/SharedSetting.pm:107
-#. (ucfirst($self->ObjectName))
-msgid "%1 attribute load failure"
-msgstr ""
-
 #: lib/RT/Transaction_Overlay.pm:531 share/html/Ticket/Elements/ShowDates:80
-#. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
 #. ($self->BriefDescription , $self->CreatorObj->Name)
+#. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
 msgid "%1 by %2"
 msgstr "%1 (%2)"
 
-#: lib/RT/Record.pm:502 lib/RT/Transaction_Overlay.pm:587 lib/RT/Transaction_Overlay.pm:777 lib/RT/Transaction_Overlay.pm:786 lib/RT/Transaction_Overlay.pm:789
+#: lib/RT/Record.pm:500 lib/RT/Transaction_Overlay.pm:587 lib/RT/Transaction_Overlay.pm:777 lib/RT/Transaction_Overlay.pm:786 lib/RT/Transaction_Overlay.pm:789
 #. ($args{'Field'},            ( $old_val ? "'$old_val'" : $self->loc("(no value)") ),            '"' . $self->__Value( $args{'Field'}) . '"')
 #. ($self->Field,                ( $self->OldValue ? "'" . $self->OldValue . "'" : $no_value ),                "'" . $self->NewValue . "'")
 #. ($self->Field , $q1->Name , $q2->Name)
@@ -292,7 +275,7 @@ msgstr ""
 msgid "%1 copy"
 msgstr ""
 
-#: lib/RT/Record.pm:910
+#: lib/RT/Record.pm:908
 msgid "%1 could not be set to %2."
 msgstr ""
 
@@ -315,11 +298,16 @@ msgstr ""
 msgid "%1 deleted"
 msgstr ""
 
+#: share/html/Install/Sendmail.html:84
+#. ($ARGS{SendmailPath})
+msgid "%1 doesn't exist."
+msgstr ""
+
 #: NOT FOUND IN SOURCE
 msgid "%1 grouped by %2"
 msgstr "優先度の高いチケット%1件"
 
-#: etc/initialdata:652
+#: etc/initialdata:677
 msgid "%1 highest priority tickets I own"
 msgstr "優先度の高いチケット%1件"
 
@@ -328,7 +316,7 @@ msgstr "優先度の高いチケット%1件"
 msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
 msgstr ""
 
-#: sbin/rt-email-digest:69
+#: sbin/rt-email-digest:92
 #. ($0)
 msgid "%1 is a utility, meant to be run from cron, that dispatches all deferred RT notifications as a per-user digest."
 msgstr ""
@@ -343,7 +331,7 @@ msgstr "%1はこのキューでは%2ではありません"
 msgid "%1 is no longer a %2 for this ticket."
 msgstr "%1はこのチケットでは%2ではありません"
 
-#: lib/RT/Record.pm:1720
+#: lib/RT/Record.pm:1768
 #. ($TransactionObj->OldValue, $cf->Name)
 msgid "%1 is no longer a value for custom field %2"
 msgstr "%1はもうカスタムフィールド%2の値ではありません"
@@ -357,7 +345,7 @@ msgstr "%1は有効なキューIDではありません。"
 msgid "%1 min"
 msgstr "%1分"
 
-#: etc/initialdata:663
+#: etc/initialdata:688
 msgid "%1 newest unowned tickets"
 msgstr "担当者なしチケット%1件"
 
@@ -365,7 +353,7 @@ msgstr "担当者なしチケット%1件"
 msgid "%1 not shown"
 msgstr "%1表示されません"
 
-#: lib/RT/CustomField_Overlay.pm:793
+#: lib/RT/CustomField_Overlay.pm:806
 msgid "%1 objects"
 msgstr ""
 
@@ -378,17 +366,17 @@ msgstr ""
 msgid "%1 succeeded\\n"
 msgstr "%1 成功しました\\n"
 
-#: lib/RT/SharedSetting.pm:214
+#: lib/RT/SharedSetting.pm:240
 #. (ucfirst($self->ObjectName), $msg)
 msgid "%1 update: %2"
 msgstr ""
 
-#: lib/RT/SharedSetting.pm:207
+#: lib/RT/SharedSetting.pm:233
 #. (ucfirst($self->ObjectName))
 msgid "%1 update: Nothing changed"
 msgstr ""
 
-#: lib/RT/SharedSetting.pm:211
+#: lib/RT/SharedSetting.pm:237
 msgid "%1 updated"
 msgstr ""
 
@@ -401,22 +389,22 @@ msgstr "%1はグループチケットのすべてのメンバーを解決状態�
 msgid "%1 will stall a [local] BASE if it's dependent [or member] of a linked up request."
 msgstr "%1がもしリンクされたリクエストに依存する（もしくはメンバーである）場合、[ローカル]ベースがとぎれます。"
 
-#: lib/RT/CustomField_Overlay.pm:794
+#: lib/RT/CustomField_Overlay.pm:807
 msgid "%1's %2 objects"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:795
+#: lib/RT/CustomField_Overlay.pm:808
 msgid "%1's %2's %3 objects"
 msgstr ""
 
-#: share/html/Dashboards/Elements/SelectPrivacy:57
+#: share/html/Dashboards/Elements/SelectPrivacy:61
 #. ($object->Name)
 msgid "%1's dashboards"
 msgstr ""
 
 #: share/html/Search/Elements/SearchPrivacy:54 share/html/Search/Elements/SelectSearchObject:65 share/html/Search/Elements/SelectSearchesForObjects:59
-#. ($Object->Name)
 #. ($object->Name)
+#. ($Object->Name)
 msgid "%1's saved searches"
 msgstr ""
 
@@ -545,7 +533,7 @@ msgstr "(空)"
 msgid "(no subject)"
 msgstr "(件名なし)"
 
-#: lib/RT/Transaction_Overlay.pm:580 share/html/Admin/Elements/SelectRights:74 share/html/Elements/EditCustomFieldSelect:71 share/html/Elements/SelectCustomFieldValue:53 share/html/Elements/ShowCustomFields:56 share/html/Search/Chart:134 share/html/Search/Elements/Chart:78
+#: lib/RT/Transaction_Overlay.pm:580 share/html/Admin/Elements/SelectRights:74 share/html/Elements/EditCustomFieldSelect:71 share/html/Elements/SelectCustomFieldValue:53 share/html/Elements/ShowCustomFields:56 share/html/Search/Chart:136 share/html/Search/Elements/Chart:80
 msgid "(no value)"
 msgstr "(値なし)"
 
@@ -557,12 +545,12 @@ msgstr ""
 msgid "(only one ticket)"
 msgstr "(ひとつのチケットのみ)"
 
-#: share/html/Elements/RT__Ticket/ColumnMap:109
+#: share/html/Elements/RT__Ticket/ColumnMap:114
 #. ($count)
 msgid "(pending %quant(%1,other ticket))"
 msgstr ""
 
-#: share/html/Elements/RT__Ticket/ColumnMap:106
+#: share/html/Elements/RT__Ticket/ColumnMap:111
 msgid "(pending approval)"
 msgstr "(承認待ち)"
 
@@ -591,11 +579,11 @@ msgstr ""
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
 msgstr ""
 
-#: lib/RT/Config.pm:180
+#: lib/RT/Config.pm:189
 msgid "1995-11-25 21:59:12"
 msgstr ""
 
-#: lib/RT/Config.pm:181
+#: lib/RT/Config.pm:190
 msgid "1995-11-25T21:59:12Z"
 msgstr ""
 
@@ -698,7 +686,7 @@ msgstr ""
 msgid "Add"
 msgstr "追加する"
 
-#: share/html/Search/Bulk.html:97
+#: share/html/Search/Bulk.html:98
 msgid "Add AdminCc"
 msgstr "管理Ccを追加する"
 
@@ -706,7 +694,7 @@ msgstr "管理Ccを追加する"
 msgid "Add Bookmark"
 msgstr ""
 
-#: share/html/Search/Bulk.html:93
+#: share/html/Search/Bulk.html:94
 msgid "Add Cc"
 msgstr "Ccを追加する"
 
@@ -722,7 +710,7 @@ msgstr ""
 msgid "Add More Files"
 msgstr "さらにファイルを追加"
 
-#: share/html/Search/Bulk.html:89
+#: share/html/Search/Bulk.html:90
 msgid "Add Requestor"
 msgstr "作成者を追加する"
 
@@ -746,7 +734,7 @@ msgstr "すべてのキューに適用するスクリプトを追加する"
 msgid "Add and Search"
 msgstr "追加して検索"
 
-#: share/html/Search/Bulk.html:129
+#: share/html/Search/Bulk.html:130
 msgid "Add comments or replies to selected tickets"
 msgstr "選択されたチケットへのコメントまたは返事を追加する"
 
@@ -770,7 +758,7 @@ msgstr ""
 msgid "Add these terms to your search"
 msgstr "これらの検索条件を追加"
 
-#: share/html/Search/Bulk.html:166
+#: share/html/Search/Bulk.html:167
 msgid "Add values"
 msgstr ""
 
@@ -860,7 +848,11 @@ msgstr "管理ユーザー"
 msgid "Administrative Cc"
 msgstr "管理者Cc"
 
-#: share/html/Ticket/Elements/Tabs:268
+#: lib/RT/Installer.pm:152
+msgid "Administrative password"
+msgstr ""
+
+#: share/html/Ticket/Elements/Tabs:269
 msgid "Advanced"
 msgstr "詳細"
 
@@ -900,7 +892,7 @@ msgstr ""
 msgid "Apply your changes"
 msgstr ""
 
-#: share/html/Elements/Tabs.orig:80 share/html/Elements/Tabs:80
+#: share/html/Elements/Tabs:80
 msgid "Approval"
 msgstr "承認状況"
 
@@ -933,7 +925,7 @@ msgstr ""
 msgid "Approve"
 msgstr "承認"
 
-#: etc/initialdata:565 etc/initialdata:567
+#: etc/initialdata:590 etc/initialdata:592
 #. (# loc	    $note)
 msgid "Approver's notes: %1"
 msgstr ""
@@ -966,7 +958,7 @@ msgstr ""
 msgid "AssignCustomFields"
 msgstr ""
 
-#: share/html/Search/Bulk.html:147 share/html/SelfService/Update.html:89 share/html/Ticket/ModifyAll.html:118 share/html/Ticket/Update.html:122
+#: share/html/Search/Bulk.html:148 share/html/SelfService/Update.html:89 share/html/Ticket/ModifyAll.html:118 share/html/Ticket/Update.html:122
 msgid "Attach"
 msgstr "添付"
 
@@ -987,7 +979,7 @@ msgstr "添付ファイル%1は見つかりません"
 msgid "Attachment created"
 msgstr "添付ファイルが作成されました"
 
-#: lib/RT/Tickets_Overlay.pm:1994
+#: lib/RT/Tickets_Overlay.pm:1998
 msgid "Attachment filename"
 msgstr "添付ファイル名"
 
@@ -1039,28 +1031,8 @@ msgstr ""
 msgid "Back"
 msgstr ""
 
-#: share/html/Install/Password.html:58
-msgid "Back: Customize Basics"
-msgstr ""
-
-#: share/html/Install/Basics.html:58
-msgid "Back: Customize Database Details"
-msgstr ""
-
-#: share/html/Install/Sendmail.html:59
-msgid "Back: Customize Email Addresses"
-msgstr ""
-
-#: share/html/Install/Emails.html:58
-msgid "Back: Customize Password for Users in RT"
-msgstr ""
-
-#: share/html/Install/Initialize.html:61
-msgid "Back: Customize Sendmail"
-msgstr ""
-
-#: share/html/Install/DatabaseDetails.html:65
-msgid "Back: Select Database Type"
+#: share/html/Install/Basics.html:61 share/html/Install/DatabaseDetails.html:83 share/html/Install/DatabaseDetails.html:87 share/html/Install/Global.html:65 share/html/Install/Initialize.html:61 share/html/Install/Sendmail.html:63
+msgid "Back: "
 msgstr ""
 
 #: NOT FOUND IN SOURCE
@@ -1075,7 +1047,7 @@ msgstr "不正な添付IDです。添付ファイルが見つかりません'%1'
 msgid "Bad data in %1"
 msgstr "%1の不正データです"
 
-#: lib/RT/SharedSetting.pm:135
+#: lib/RT/SharedSetting.pm:145
 #. ($id)
 msgid "Bad privacy for attribute %1"
 msgstr ""
@@ -1086,7 +1058,7 @@ msgstr ""
 "添付ファイルにとって不正なトランザクションナンバーです。%1は%2\\n"
 "のはずです"
 
-#: share/html/Admin/Elements/CustomFieldTabs:67 share/html/Admin/Elements/GroupTabs:62 share/html/Admin/Elements/QueueTabs:62 share/html/Admin/Elements/UserTabs:60 share/html/Dashboards/Elements/Tabs:70 share/html/Ticket/Elements/Tabs:126 share/html/User/Elements/GroupTabs:61
+#: share/html/Admin/Elements/CustomFieldTabs:67 share/html/Admin/Elements/GroupTabs:62 share/html/Admin/Elements/QueueTabs:62 share/html/Admin/Elements/UserTabs:60 share/html/Dashboards/Elements/Tabs:70 share/html/Ticket/Elements/Tabs:125 share/html/User/Elements/GroupTabs:61
 msgid "Basics"
 msgstr "基本項目"
 
@@ -1114,7 +1086,7 @@ msgstr ""
 msgid "Bookmarkable URL for this search"
 msgstr "この検索にブックマークのできるURLです"
 
-#: etc/initialdata:676
+#: etc/initialdata:701
 msgid "Bookmarked Tickets"
 msgstr ""
 
@@ -1122,7 +1094,7 @@ msgstr ""
 msgid "Brief headers"
 msgstr "短いヘッダー"
 
-#: share/html/Ticket/Elements/Tabs:305
+#: share/html/Ticket/Elements/Tabs:306
 msgid "Bulk Update"
 msgstr "まとめて更新"
 
@@ -1134,11 +1106,15 @@ msgstr "チケットを一括して更新"
 msgid "Buy Support"
 msgstr ""
 
-#: share/html/NoAuth/js/util.js:199
+#: share/html/Install/Global.html:56
+msgid "By default, RT will use the timezone of your system.  This lets you set a global default for the display of dates and times in RT.  Your users can choose a different Timezone in their preferences."
+msgstr ""
+
+#: share/html/NoAuth/js/util.js:200
 msgid "Calendar"
 msgstr ""
 
-#: lib/RT/User_Overlay.pm:1441
+#: lib/RT/User_Overlay.pm:1479
 msgid "Can not modify system users"
 msgstr "システムユーザーを修正できません"
 
@@ -1146,7 +1122,7 @@ msgstr "システムユーザーを修正できません"
 msgid "Can this principal see this queue"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:364
+#: lib/RT/CustomField_Overlay.pm:377
 msgid "Can't add a custom field value without a name"
 msgstr "名前なしにカスタムフィールドバリューの追加はできません"
 
@@ -1176,7 +1152,7 @@ msgstr ""
 msgid "Can't save this search"
 msgstr ""
 
-#: lib/RT/Record.pm:1209 lib/RT/Record.pm:1285
+#: lib/RT/Record.pm:1249 lib/RT/Record.pm:1329
 msgid "Can't specifiy both base and target"
 msgstr "ベースとターゲット両方を指定する事はできません"
 
@@ -1201,7 +1177,7 @@ msgstr ""
 msgid "Cc"
 msgstr "Cc"
 
-#: share/html/Search/Results.html:78
+#: share/html/Search/Results.html:79
 msgid "Change"
 msgstr ""
 
@@ -1213,7 +1189,7 @@ msgstr "パスワードを変更する"
 msgid "Check All"
 msgstr ""
 
-#: share/html/Install/DatabaseDetails.html:64
+#: share/html/Install/DatabaseDetails.html:86
 msgid "Check Database Connectivity"
 msgstr ""
 
@@ -1225,9 +1201,17 @@ msgstr "ボックスのチェックで削除"
 msgid "Check box to revoke right"
 msgstr "ボックスのチェックで権利を剥脱"
 
+#: share/html/Install/DatabaseDetails.html:48 share/html/Install/DatabaseType.html:70
+msgid "Check your database credentials"
+msgstr ""
+
 #: share/html/Elements/EditLinks:149 share/html/Elements/EditLinks:82 share/html/Elements/ShowLinks:100 share/html/Ticket/Create.html:233 share/html/Ticket/Elements/BulkLinks:66
 msgid "Children"
 msgstr "下位チケット"
+
+#: share/html/Install/DatabaseType.html:48
+msgid "Choose a database engine"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Choose a date"
@@ -1245,8 +1229,12 @@ msgstr ""
 msgid "Clear All"
 msgstr ""
 
+#: share/html/Install/Finish.html:52
+msgid "Click \"Finish Installation\" below to complete this wizard."
+msgstr ""
+
 #: share/html/Install/Initialize.html:54
-msgid "Click \"Initialize Database\" to begin creating the database. This may take a few moments"
+msgid "Click \"Initialize Database\" to create RT's database and insert initial metadata. This may take a few moments"
 msgstr ""
 
 #: share/html/Helpers/CalPopup.html:53
@@ -1281,7 +1269,7 @@ msgstr ""
 msgid "Command not understood!\\n"
 msgstr "理解していないコマンド!\\n"
 
-#: share/html/Ticket/Elements/ShowTransaction:201 share/html/Ticket/Elements/Tabs:216
+#: share/html/Ticket/Elements/ShowTransaction:201 share/html/Ticket/Elements/Tabs:215
 msgid "Comment"
 msgstr "コメント"
 
@@ -1289,7 +1277,7 @@ msgstr "コメント"
 msgid "Comment Address"
 msgstr "コメントアドレス"
 
-#: lib/RT/Installer.pm:174
+#: lib/RT/Installer.pm:167
 msgid "Comment address"
 msgstr ""
 
@@ -1313,7 +1301,7 @@ msgstr "コメント"
 msgid "Comments (Not sent to requestors)"
 msgstr "コメント（リクエストした人には送信されません）"
 
-#: share/html/Search/Bulk.html:133
+#: share/html/Search/Bulk.html:134
 msgid "Comments (not sent to requestors)"
 msgstr "コメント（リクエストした人には送信されません）"
 
@@ -1354,13 +1342,22 @@ msgstr ""
 msgid "Condition not found"
 msgstr "条件が見つかりません"
 
-#: share/html/Elements/Tabs.orig:87 share/html/Elements/Tabs:87
+#: share/html/Install/index.html:86
+#. ($file)
+msgid "Config file %1 is locked"
+msgstr ""
+
+#: share/html/Elements/Tabs:87
 msgid "Configuration"
 msgstr "システム設定"
 
 #: share/html/SelfService/Prefs.html:56
 msgid "Confirm"
 msgstr "確認"
+
+#: share/html/Install/DatabaseDetails.html:136
+msgid "Connection succeeded"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "ContactInfoSystem"
@@ -1378,7 +1375,7 @@ msgstr "コンテント"
 msgid "Content-Type"
 msgstr ""
 
-#: lib/RT/Installer.pm:181
+#: lib/RT/Installer.pm:175
 msgid "Correspond address"
 msgstr ""
 
@@ -1402,7 +1399,7 @@ msgstr "記録されていない通信"
 msgid "Could not add new custom field value for ticket. "
 msgstr "チケットの新しいカスタムフィールドバリューを追加できませんでした"
 
-#: lib/RT/Record.pm:1604 lib/RT/Record.pm:1650
+#: lib/RT/Record.pm:1652 lib/RT/Record.pm:1698
 #. ($value_msg)
 #. ($msg)
 msgid "Could not add new custom field value: %1"
@@ -1412,7 +1409,7 @@ msgstr ""
 msgid "Could not change owner. "
 msgstr "担当者変更ができませんでした"
 
-#: share/html/Admin/CustomFields/Modify.html:149
+#: share/html/Admin/CustomFields/Modify.html:151
 #. ($msg)
 msgid "Could not create CustomField"
 msgstr "カスタムフィールドの作成ができませんでした"
@@ -1422,7 +1419,7 @@ msgstr "カスタムフィールドの作成ができませんでした"
 msgid "Could not create CustomField: %1"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:433 lib/RT/Group_Overlay.pm:440 share/html/User/Groups/Modify.html:100
+#: lib/RT/Group_Overlay.pm:438 lib/RT/Group_Overlay.pm:445 share/html/User/Groups/Modify.html:100
 msgid "Could not create group"
 msgstr "グループの作成ができませんでした"
 
@@ -1464,7 +1461,7 @@ msgstr "その責任者を見つけることができませんでした"
 msgid "Could not find user %1."
 msgstr "ユーザー%1を見つけることができませんでした"
 
-#: lib/RT/SharedSetting.pm:202
+#: lib/RT/SharedSetting.pm:225
 #. ($self->ObjectName)
 msgid "Could not load %1 attribute"
 msgstr ""
@@ -1477,7 +1474,7 @@ msgstr ""
 msgid "Could not load group"
 msgstr "グループをロードできませんでした"
 
-#: lib/RT/SharedSetting.pm:111
+#: lib/RT/SharedSetting.pm:121
 #. ($privacy)
 msgid "Could not load object for %1"
 msgstr ""
@@ -1510,18 +1507,23 @@ msgstr ""
 msgid "Couldn't add attachment"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:999
+#: lib/RT/Group_Overlay.pm:1004
 msgid "Couldn't add member to group"
 msgstr "グループにメンバーの追加ができませんでした"
 
-#: lib/RT/Record.pm:1660 lib/RT/Record.pm:1712
+#: lib/RT/Record.pm:1708 lib/RT/Record.pm:1760
 #. ($msg)
 #. ($Msg)
 msgid "Couldn't create a transaction: %1"
 msgstr "トランザクション: %1の作成ができませんでした"
 
-#: lib/RT/CustomField_Overlay.pm:958
+#: lib/RT/CustomField_Overlay.pm:971
 msgid "Couldn't create record"
+msgstr ""
+
+#: share/html/Dashboards/Modify.html:150
+#. ($id, $msg)
+msgid "Couldn't delete dashboard %1: %2"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
@@ -1536,7 +1538,7 @@ msgstr ""
 "グループ\\n"
 "が見つかりませんでした"
 
-#: lib/RT/Record.pm:919
+#: lib/RT/Record.pm:917
 msgid "Couldn't find row"
 msgstr ""
 
@@ -1544,11 +1546,11 @@ msgstr ""
 msgid "Couldn't find suitable transaction, skipping"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:973
+#: lib/RT/Group_Overlay.pm:978
 msgid "Couldn't find that principal"
 msgstr "責任者が見つかりませんでした"
 
-#: lib/RT/CustomField_Overlay.pm:394
+#: lib/RT/CustomField_Overlay.pm:407
 msgid "Couldn't find that value"
 msgstr "その値は見つかりませんでした"
 
@@ -1591,6 +1593,16 @@ msgstr "スクリプトをロードできませんでした"
 #: lib/RT/Ticket_Overlay.pm:1707
 #. ($self->Id)
 msgid "Couldn't load copy of ticket #%1."
+msgstr ""
+
+#: share/html/Dashboards/Queries.html:87 share/html/Dashboards/Render.html:83
+#. ($id, $msg)
+msgid "Couldn't load dashboard %1: %2"
+msgstr ""
+
+#: share/html/Dashboards/Subscription.html:193
+#. ($DashboardId, $msg)
+msgid "Couldn't load dashboard %1: %2."
 msgstr ""
 
 #: share/html/Admin/Users/Memberships.html:105 share/html/Admin/Users/Memberships.html:115
@@ -1665,8 +1677,8 @@ msgid "Couldn't load ticket '%1'"
 msgstr "チケット'%1'をロードできませんでした"
 
 #: share/html/Ticket/Forward.html:90 share/html/Ticket/GnuPG.html:75
-#. ($QuoteTransaction)
 #. ($id)
+#. ($QuoteTransaction)
 msgid "Couldn't load transaction #%1"
 msgstr ""
 
@@ -1714,11 +1726,11 @@ msgstr ""
 msgid "Couldn't set %1 watcher: %2"
 msgstr ""
 
-#: lib/RT/User_Overlay.pm:1592
+#: lib/RT/User_Overlay.pm:1630
 msgid "Couldn't set private key"
 msgstr ""
 
-#: lib/RT/User_Overlay.pm:1576
+#: lib/RT/User_Overlay.pm:1614
 msgid "Couldn't unset private key"
 msgstr ""
 
@@ -1747,7 +1759,7 @@ msgstr ""
 msgid "Create a new Custom Field"
 msgstr "新しいカスタムフィールドの作成"
 
-#: share/html/Dashboards/Modify.html:129 share/html/Dashboards/Modify.html:93
+#: share/html/Dashboards/Modify.html:129 share/html/Dashboards/Modify.html:98
 msgid "Create a new dashboard"
 msgstr ""
 
@@ -1804,12 +1816,20 @@ msgstr "テンプレートの作成"
 msgid "Create a ticket"
 msgstr ""
 
-#: lib/RT/Dashboard.pm:77
-msgid "Create and modify dashboards"
+#: lib/RT/Group_Overlay.pm:98
+msgid "Create dashboards for this group"
 msgstr ""
 
 #: etc/initialdata:92
 msgid "Create new tickets based on this scrip's template"
+msgstr ""
+
+#: lib/RT/Dashboard.pm:85
+msgid "Create personal dashboards"
+msgstr ""
+
+#: lib/RT/Dashboard.pm:80
+msgid "Create system dashboards"
 msgstr ""
 
 #: share/html/SelfService/Create.html:109
@@ -1818,6 +1838,10 @@ msgstr "チケットの作成"
 
 #: lib/RT/Queue_Overlay.pm:109
 msgid "Create tickets in this queue"
+msgstr ""
+
+#: share/html/Tools/index.html:65
+msgid "Create tickets offline"
 msgstr ""
 
 #: lib/RT/CustomField_Overlay.pm:113
@@ -1836,6 +1860,18 @@ msgstr ""
 msgid "Create, delete and modify users"
 msgstr ""
 
+#: lib/RT/Dashboard.pm:80
+msgid "CreateDashboard"
+msgstr ""
+
+#: lib/RT/Group_Overlay.pm:98
+msgid "CreateGroupDashboard"
+msgstr ""
+
+#: lib/RT/Dashboard.pm:85
+msgid "CreateOwnDashboard"
+msgstr ""
+
 #: lib/RT/System.pm:91
 msgid "CreateSavedSearch"
 msgstr ""
@@ -1848,13 +1884,13 @@ msgstr ""
 msgid "Created"
 msgstr "作成日時"
 
-#: share/html/Admin/CustomFields/Modify.html:151 share/html/Admin/Elements/EditCustomField:119
+#: share/html/Admin/CustomFields/Modify.html:153 share/html/Admin/Elements/EditCustomField:119
 #. ($CustomFieldObj->Name())
 #. ($CustomFieldObj->Name)
 msgid "Created CustomField %1"
 msgstr "カスタムフィールド%1を作成しました"
 
-#: share/html/Tools/Reports/Elements/Tabs:65
+#: share/html/Tools/Reports/Elements/Tabs:65 share/html/Tools/Reports/index.html:68
 msgid "Created in a date range"
 msgstr "作成された全チケット"
 
@@ -1870,7 +1906,7 @@ msgstr ""
 msgid "Creator"
 msgstr "作成者"
 
-#: share/html/Prefs/Other.html:72
+#: share/html/Prefs/Other.html:73
 msgid "Cryptography"
 msgstr ""
 
@@ -1919,32 +1955,32 @@ msgstr ""
 msgid "Custom condition"
 msgstr ""
 
-#: lib/RT/Tickets_Overlay.pm:2458
+#: lib/RT/Tickets_Overlay.pm:2462
 #. ($CF->Name, $args{OPERATOR}, $args{VALUE})
 msgid "Custom field %1 %2 %3"
 msgstr "カスタムフィールド%1 %2 %3"
 
-#: lib/RT/Record.pm:1522
+#: lib/RT/Record.pm:1570
 #. ($args{'Field'})
 msgid "Custom field %1 does not apply to this object"
 msgstr ""
 
-#: lib/RT/Tickets_Overlay.pm:2452
+#: lib/RT/Tickets_Overlay.pm:2456
 #. ($CF->Name)
 msgid "Custom field %1 has a value."
 msgstr "カスタムフィールド%1は値が入力されています"
 
-#: lib/RT/Tickets_Overlay.pm:2448
+#: lib/RT/Tickets_Overlay.pm:2452
 #. ($CF->Name)
 msgid "Custom field %1 has no value."
 msgstr "カスタムフィールド%1は値がありません"
 
-#: lib/RT/Record.pm:1511 lib/RT/Record.pm:1693
+#: lib/RT/Record.pm:1559 lib/RT/Record.pm:1741
 #. ($args{'Field'})
 msgid "Custom field %1 not found"
 msgstr "カスタムフィールド%1が見つかりません"
 
-#: lib/RT/Report/Tickets.pm:120 lib/RT/Report/Tickets.pm:123
+#: lib/RT/Report/Tickets.pm:126 lib/RT/Report/Tickets.pm:129
 #. ($cf)
 #. ($obj->Name)
 msgid "Custom field '%1'"
@@ -1954,7 +1990,7 @@ msgstr ""
 msgid "Custom field not found"
 msgstr "カスタムフィールドが見つかりません"
 
-#: lib/RT/CustomField_Overlay.pm:1050
+#: lib/RT/CustomField_Overlay.pm:1063
 #. ($args{'Content'}, $self->Name)
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr "カスタムフィールド%2のためのカスタムフィールドバリュー%1が見つかりません"
@@ -1963,15 +1999,15 @@ msgstr "カスタムフィールド%2のためのカスタムフィールドバ�
 msgid "Custom field value changed from %1 to %2"
 msgstr "カスタムフィールドが%1から%2に変更されました"
 
-#: lib/RT/CustomField_Overlay.pm:402
+#: lib/RT/CustomField_Overlay.pm:415
 msgid "Custom field value could not be deleted"
 msgstr "カスタムフィールドバリューは削除されません"
 
-#: lib/RT/CustomField_Overlay.pm:1062
+#: lib/RT/CustomField_Overlay.pm:1075
 msgid "Custom field value could not be found"
 msgstr "カスタムフィールドバリューが見つかりません"
 
-#: lib/RT/CustomField_Overlay.pm:1064 lib/RT/CustomField_Overlay.pm:404
+#: lib/RT/CustomField_Overlay.pm:1077 lib/RT/CustomField_Overlay.pm:417
 msgid "Custom field value deleted"
 msgstr "カスタムフィールドバリューが削除されました"
 
@@ -1983,15 +2019,39 @@ msgstr ""
 msgid "Customize"
 msgstr "カスタマイズ: "
 
-#: lib/RT/Installer.pm:98
-msgid "DBA of the database"
+#: share/html/Install/Basics.html:48 share/html/Install/DatabaseDetails.html:82 share/html/Install/Sendmail.html:63
+msgid "Customize Basics"
 msgstr ""
 
-#: lib/RT/Installer.pm:106
+#: share/html/Install/Basics.html:61
+msgid "Customize Database Details"
+msgstr ""
+
+#: share/html/Install/Global.html:48
+msgid "Customize Email Addresses"
+msgstr ""
+
+#: share/html/Install/Basics.html:61 share/html/Install/Global.html:65
+msgid "Customize Email Configuration"
+msgstr ""
+
+#: share/html/Install/Initialize.html:61
+msgid "Customize Global"
+msgstr ""
+
+#: share/html/Install/Sendmail.html:62
+msgid "Customize Global Defaults"
+msgstr ""
+
+#: lib/RT/Installer.pm:109
 msgid "DBA password"
 msgstr ""
 
-#: lib/RT/Config.pm:226
+#: lib/RT/Installer.pm:102
+msgid "DBA username"
+msgstr ""
+
+#: lib/RT/Config.pm:235
 msgid "Daily digest"
 msgstr ""
 
@@ -1999,50 +2059,53 @@ msgstr ""
 msgid "Dashboard"
 msgstr ""
 
-#: share/html/Dashboards/Modify.html:112
+#: share/html/Dashboards/Modify.html:110
 #. ($msg)
 msgid "Dashboard could not be created: %1"
 msgstr ""
 
-#: share/html/Dashboards/Modify.html:147 share/html/Dashboards/Queries.html:149
+#: share/html/Dashboards/Modify.html:141 share/html/Dashboards/Queries.html:143
 #. ($msg)
 msgid "Dashboard could not be updated: %1"
 msgstr ""
 
-#: share/html/Dashboards/Modify.html:144 share/html/Dashboards/Queries.html:146
+#: share/html/Dashboards/Modify.html:138 share/html/Dashboards/Queries.html:140
 msgid "Dashboard updated"
 msgstr ""
 
-#: sbin/rt-email-dashboards:247
-#. () || "RT [_2] Dashboard: [_1]"),        $dashboard->Name,        ucfirst($subscription->SubValue('Frequency')),)
-msgid "DashboardSubject"
-msgstr ""
-
-#: share/html/Dashboards/index.html:73 share/html/User/Elements/Tabs:76
+#: share/html/Dashboards/index.html:73 share/html/Elements/Dashboards:49 share/html/Tools/Elements/Tabs:57 share/html/Tools/index.html:58
 msgid "Dashboards"
 msgstr ""
 
-#: lib/RT/Installer.pm:92
+#: lib/RT/Installer.pm:76
+msgid "Database host"
+msgstr ""
+
+#: lib/RT/Installer.pm:94
 msgid "Database name"
 msgstr ""
 
-#: lib/RT/Installer.pm:122
+#: lib/RT/Installer.pm:125
 msgid "Database password for RT"
 msgstr ""
 
-#: lib/RT/Installer.pm:83
-msgid "Database port number"
+#: lib/RT/Installer.pm:85
+msgid "Database port"
 msgstr ""
 
-#: lib/RT/Installer.pm:115
+#: lib/RT/Installer.pm:58
+msgid "Database type"
+msgstr ""
+
+#: lib/RT/Installer.pm:118
 msgid "Database username for RT"
 msgstr ""
 
-#: lib/RT/Config.pm:175
+#: lib/RT/Config.pm:184
 msgid "Date format"
 msgstr ""
 
-#: share/html/SelfService/Display.html:63 share/html/Ticket/Create.html:210 share/html/Ticket/Elements/ShowSummary:93 share/html/Ticket/Elements/Tabs:131 share/html/Ticket/ModifyAll.html:68
+#: share/html/SelfService/Display.html:63 share/html/Ticket/Create.html:210 share/html/Ticket/Elements/ShowSummary:93 share/html/Ticket/Elements/Tabs:130 share/html/Ticket/ModifyAll.html:68
 msgid "Dates"
 msgstr "日付"
 
@@ -2086,7 +2149,7 @@ msgstr ""
 msgid "Default correspondence template"
 msgstr ""
 
-#: lib/RT/Config.pm:203
+#: lib/RT/Config.pm:212
 msgid "Default queue"
 msgstr ""
 
@@ -2120,7 +2183,7 @@ msgstr ""
 msgid "Delegation"
 msgstr ""
 
-#: share/html/Admin/Elements/EditScrips:73 share/html/Search/Elements/EditFormat:99 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:63 share/html/Widgets/SelectionBox:212
+#: share/html/Admin/Elements/EditScrips:73 share/html/Dashboards/Modify.html:77 share/html/Search/Elements/EditFormat:99 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:63 share/html/Widgets/SelectionBox:212
 msgid "Delete"
 msgstr "削除"
 
@@ -2128,30 +2191,59 @@ msgstr "削除"
 msgid "Delete Template"
 msgstr ""
 
-#: lib/RT/SharedSetting.pm:231
+#: lib/RT/Group_Overlay.pm:100
+msgid "Delete dashboards for this group"
+msgstr ""
+
+#: lib/RT/SharedSetting.pm:268
 #. ($msg)
 msgid "Delete failed: %1"
+msgstr ""
+
+#: lib/RT/Dashboard.pm:87
+msgid "Delete personal dashboards"
 msgstr ""
 
 #: share/html/Admin/Elements/EditScrips:72
 msgid "Delete selected scrips"
 msgstr ""
 
+#: lib/RT/Dashboard.pm:83
+msgid "Delete system dashboards"
+msgstr ""
+
 #: lib/RT/Queue_Overlay.pm:114
 msgid "Delete tickets"
 msgstr ""
 
-#: share/html/Search/Bulk.html:167
+#: share/html/Search/Bulk.html:168
 msgid "Delete values"
+msgstr ""
+
+#: lib/RT/Dashboard.pm:83
+msgid "DeleteDashboard"
+msgstr ""
+
+#: lib/RT/Group_Overlay.pm:100
+msgid "DeleteGroupDashboard"
+msgstr ""
+
+#: lib/RT/Dashboard.pm:87
+msgid "DeleteOwnDashboard"
 msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:114
 msgid "DeleteTicket"
 msgstr ""
 
-#: lib/RT/SharedSetting.pm:229
+#: lib/RT/SharedSetting.pm:266
 #. ($self->ObjectName)
 msgid "Deleted %1"
+msgstr ""
+
+#: share/html/Dashboards/index.html:81
+#. ($Deleted)
+msgid "Deleted dashboard %1"
 msgstr ""
 
 #: share/html/Search/Elements/EditSearches:181
@@ -2226,11 +2318,15 @@ msgstr "詳細"
 msgid "Details"
 msgstr "詳細"
 
+#: share/html/Ticket/Graphs/Elements/EditGraphProperties:50
+msgid "Direction"
+msgstr ""
+
 #: share/html/Elements/RT__Queue/ColumnMap:63
 msgid "Disabled"
 msgstr ""
 
-#: share/html/Search/Elements/EditFormat:68 share/html/Ticket/Elements/Tabs:117
+#: share/html/Search/Elements/EditFormat:68 share/html/Ticket/Elements/Tabs:116
 msgid "Display"
 msgstr "表示"
 
@@ -2270,6 +2366,14 @@ msgstr "<a href=\"http://www.gnu.org/copyleft/gpl.html\">GNU GPL</a>  version 2 
 msgid "Do anything and everything"
 msgstr ""
 
+#: lib/RT/Installer.pm:190
+msgid "Domain name"
+msgstr ""
+
+#: lib/RT/Installer.pm:191
+msgid "Don't include http://, just something like 'localhost', 'rt.example.com'"
+msgstr ""
+
 #: share/html/Elements/Refresh:53
 msgid "Don't refresh this page."
 msgstr "ページを定期的に更新しない"
@@ -2294,21 +2398,30 @@ msgstr "終了予定日時"
 msgid "Due date '%1' could not be parsed"
 msgstr "期限が切れる日'%1'は解析されません"
 
+#: share/html/Install/Initialize.html:124 share/html/Install/Initialize.html:87
+#. ($msg)
+msgid "ERROR: %1"
+msgstr ""
+
 #: NOT FOUND IN SOURCE
 msgid "ERROR: Couldn't load ticket '%1': %2.\\n"
 msgstr ""
 "ERROR: チケット '%1': %2.\\n"
 "をロードできませんでした"
 
+#: share/html/Tools/index.html:75
+msgid "Easy updating of your open tickets"
+msgstr ""
+
 #: share/html/Ticket/Elements/ShowTransaction:218
 msgid "Ecnrypt/Decrypt"
 msgstr ""
 
-#: share/html/Elements/Quicksearch:50 share/html/Elements/ShowSearch:51 share/html/index.html:132
+#: share/html/Elements/Dashboards:50 share/html/Elements/Quicksearch:50 share/html/Elements/ShowSearch:51 share/html/index.html:132
 msgid "Edit"
 msgstr "編集"
 
-#: share/html/Search/Bulk.html:162
+#: share/html/Search/Bulk.html:163
 msgid "Edit Custom Fields"
 msgstr ""
 
@@ -2333,7 +2446,7 @@ msgstr ""
 msgid "Edit Custom Fields for tickets in all queues"
 msgstr ""
 
-#: share/html/Search/Bulk.html:197 share/html/Ticket/ModifyLinks.html:62
+#: share/html/Search/Bulk.html:198 share/html/Ticket/ModifyLinks.html:62
 msgid "Edit Links"
 msgstr "リンク関係を編集する"
 
@@ -2341,7 +2454,7 @@ msgstr "リンク関係を編集する"
 msgid "Edit Query"
 msgstr "クエリの直接編集"
 
-#: share/html/Ticket/Elements/Tabs:264
+#: share/html/Ticket/Elements/Tabs:265
 msgid "Edit Search"
 msgstr "検索を編集"
 
@@ -2383,7 +2496,7 @@ msgstr "キュー%1の設定を編集する"
 msgid "Editing Configuration for user %1"
 msgstr "ユーザー%1の設定を編集する"
 
-#: share/html/Admin/CustomFields/Modify.html:154 share/html/Admin/Elements/EditCustomField:122
+#: share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/Elements/EditCustomField:122
 #. ($CustomFieldObj->Name())
 #. ($CustomFieldObj->Name)
 msgid "Editing CustomField %1"
@@ -2403,13 +2516,22 @@ msgstr "個人グループ%1のメンバーを編集する"
 msgid "Editing template %1"
 msgstr "テンプレート%1を編集する"
 
-#: lib/RT/Record.pm:1222 lib/RT/Record.pm:1299 lib/RT/Ticket_Overlay.pm:2230 lib/RT/Ticket_Overlay.pm:2325
+#: lib/RT/Record.pm:1262 lib/RT/Record.pm:1343 lib/RT/Ticket_Overlay.pm:2230 lib/RT/Ticket_Overlay.pm:2325
 msgid "Either base or target must be specified"
 msgstr "ベースもしくはターゲットを指定しなければなりません"
+
+#: share/html/Elements/ShowSearch:67
+#. ($SavedSearch)
+msgid "Either you have no rights to view saved search %1 or identifier is incorrect"
+msgstr ""
 
 #: share/html/Admin/Users/Modify.html:76 share/html/Ticket/Elements/AddWatchers:79 share/html/User/Prefs.html:67
 msgid "Email"
 msgstr "Eメール"
+
+#: share/html/Install/Sendmail.html:48
+msgid "Email Configuration"
+msgstr ""
 
 #: etc/initialdata:423 etc/upgrade/3.7.85/content:4
 msgid "Email Digest"
@@ -2419,7 +2541,7 @@ msgstr ""
 msgid "Email address in use"
 msgstr "お使いのEメールアドレス"
 
-#: lib/RT/Config.pm:223
+#: lib/RT/Config.pm:232
 msgid "Email delivery"
 msgstr ""
 
@@ -2505,7 +2627,7 @@ msgstr ""
 msgid "Enter queues or URIs to link queues to. Separate multiple entries with spaces."
 msgstr ""
 
-#: share/html/Elements/EditLinks:120 share/html/Search/Bulk.html:198
+#: share/html/Elements/EditLinks:120 share/html/Search/Bulk.html:199
 msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
 msgstr "チケットをリンクするチケットまたはURLsを入力してください。入力する項目がいくつかある場合にはスペースで区切ってください。"
 
@@ -2517,7 +2639,7 @@ msgstr ""
 msgid "Enter up to %1 values with autocompletion"
 msgstr ""
 
-#: sbin/rt-email-digest:80 share/html/Elements/Login:78 share/html/SelfService/Error.html:48 share/html/SelfService/Error.html:49
+#: sbin/rt-email-digest:103 share/html/Elements/Login:78 share/html/Install/Elements/Errors:49 share/html/SelfService/Error.html:48 share/html/SelfService/Error.html:49
 msgid "Error"
 msgstr "エラー"
 
@@ -2549,6 +2671,10 @@ msgstr ""
 msgid "Error to RT owner: public key"
 msgstr ""
 
+#: etc/initialdata:433 etc/upgrade/3.7.87/content:4
+msgid "Error: Missing dashboard"
+msgstr ""
+
 #: etc/initialdata:396 etc/upgrade/3.7.10/content:38
 msgid "Error: bad GnuPG data"
 msgstr ""
@@ -2567,6 +2693,18 @@ msgstr ""
 
 #: share/html/Ticket/Elements/ShowBasics:59
 msgid "Estimated"
+msgstr ""
+
+#: share/html/Tools/Reports/index.html:70
+msgid "Examine tickets created in a queue between two dates"
+msgstr ""
+
+#: share/html/Tools/Reports/index.html:65
+msgid "Examine tickets resolved in a queue between two dates"
+msgstr ""
+
+#: share/html/Tools/Reports/index.html:60
+msgid "Examine tickets resolved in a queue, grouped by owner"
 msgstr ""
 
 #: bin/rt-crontool:321
@@ -2597,7 +2735,12 @@ msgstr ""
 msgid "Extract tags from a Transaction's subject and add them to the Ticket's subject."
 msgstr ""
 
-#: lib/RT/SharedSetting.pm:185
+#: share/html/Install/DatabaseDetails.html:182
+#. ($DBI::errstr)
+msgid "Failed to connect to database: %1"
+msgstr ""
+
+#: lib/RT/SharedSetting.pm:200
 #. ($self->ObjectName)
 msgid "Failed to create %1 attribute"
 msgstr ""
@@ -2610,9 +2753,14 @@ msgstr "'特権のある'ユーザーの擬似グループの検索が失敗し�
 msgid "Failed to find 'Unprivileged' users pseudogroup"
 msgstr "'特権のない'ユーザーの擬似グループの検索が失敗しました"
 
-#: lib/RT/SharedSetting.pm:131
-#. ($id)
-msgid "Failed to load attribute %1"
+#: lib/RT/SharedSetting.pm:117
+#. ($self->ObjectName, $id)
+msgid "Failed to load %1 %2"
+msgstr ""
+
+#: lib/RT/SharedSetting.pm:141
+#. ($self->ObjectName, $id, $msg)
+msgid "Failed to load %1 %2: %3"
 msgstr ""
 
 #: bin/rt-crontool:256
@@ -2620,16 +2768,16 @@ msgstr ""
 msgid "Failed to load module %1. (%2)"
 msgstr ""
 
-#: lib/RT/SharedSetting.pm:164
+#: lib/RT/SharedSetting.pm:184
 #. ($privacy)
 msgid "Failed to load object for %1"
 msgstr ""
 
-#: sbin/rt-email-digest:143
+#: sbin/rt-email-digest:166
 msgid "Failed to load template"
 msgstr ""
 
-#: sbin/rt-email-digest:151
+#: sbin/rt-email-digest:174
 msgid "Failed to parse template"
 msgstr ""
 
@@ -2685,7 +2833,7 @@ msgstr ""
 msgid "Fin"
 msgstr "終了"
 
-#: lib/RT/Tickets_Overlay.pm:1890 share/html/Search/Elements/PickBasics:188 share/html/Ticket/Create.html:188 share/html/Ticket/Elements/EditBasics:103
+#: lib/RT/Tickets_Overlay.pm:1894 share/html/Search/Elements/PickBasics:188 share/html/Ticket/Create.html:188 share/html/Ticket/Elements/EditBasics:103
 msgid "Final Priority"
 msgstr "最終優先順位"
 
@@ -2709,11 +2857,15 @@ msgstr "新しい/開くチケットを見つける"
 msgid "Find people whose"
 msgstr "個人をさがす:"
 
-#: share/html/Search/Results.html:148
+#: share/html/Search/Results.html:149
 msgid "Find tickets"
 msgstr ""
 
-#: share/html/Ticket/Elements/Tabs:82
+#: share/html/Install/Finish.html:48 share/html/Install/Global.html:64
+msgid "Finish"
+msgstr ""
+
+#: share/html/Ticket/Elements/Tabs:81
 msgid "First"
 msgstr "最初の"
 
@@ -2729,7 +2881,7 @@ msgstr "Foo Bar Baz"
 msgid "Foo!"
 msgstr "ばか！"
 
-#: share/html/Search/Bulk.html:88
+#: share/html/Search/Bulk.html:89
 msgid "Force change"
 msgstr "変更を強制します"
 
@@ -2761,12 +2913,12 @@ msgstr ""
 msgid "ForwardMessage"
 msgstr ""
 
-#: share/html/Search/Results.html:146
+#: share/html/Search/Results.html:147
 #. ($ticketcount)
 msgid "Found %quant(%1,ticket)"
 msgstr ""
 
-#: lib/RT/Record.pm:922
+#: lib/RT/Record.pm:920
 msgid "Found Object"
 msgstr ""
 
@@ -2774,7 +2926,7 @@ msgstr ""
 msgid "FreeformContactInfo"
 msgstr "コンタクト情報(書式自由)"
 
-#: share/html/Dashboards/Subscription.html:116
+#: share/html/Dashboards/Subscription.html:101
 msgid "Frequency"
 msgstr ""
 
@@ -2796,6 +2948,10 @@ msgstr ""
 
 #: share/html/Tools/Offline.html:86
 msgid "Get template from file"
+msgstr ""
+
+#: share/html/Install/index.html:63
+msgid "Getting started"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
@@ -2889,7 +3045,7 @@ msgstr ""
 msgid "Graph Properties"
 msgstr ""
 
-#: share/html/Search/Elements/Chart:106
+#: share/html/Search/Elements/Chart:108
 msgid "Graphical charts are not available."
 msgstr ""
 
@@ -2905,7 +3061,7 @@ msgstr "グループ%1 %2: %3"
 msgid "Group Rights"
 msgstr "グループ権利"
 
-#: lib/RT/Group_Overlay.pm:979
+#: lib/RT/Group_Overlay.pm:984
 #. ($new_member_obj->Object->Name)
 msgid "Group already has member: %1"
 msgstr "グループにはすでにメンバーがいます: %1"
@@ -2915,23 +3071,23 @@ msgstr "グループにはすでにメンバーがいます: %1"
 msgid "Group could not be created: %1"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:460
+#: lib/RT/Group_Overlay.pm:465
 msgid "Group created"
 msgstr "グループが作成されました"
 
-#: lib/RT/Group_Overlay.pm:714
+#: lib/RT/Group_Overlay.pm:719
 msgid "Group disabled"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:716
+#: lib/RT/Group_Overlay.pm:721
 msgid "Group enabled"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:1154
+#: lib/RT/Group_Overlay.pm:1159
 msgid "Group has no such member"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:959 lib/RT/Queue_Overlay.pm:789 lib/RT/Queue_Overlay.pm:864 lib/RT/Ticket_Overlay.pm:1113 lib/RT/Ticket_Overlay.pm:1193
+#: lib/RT/Group_Overlay.pm:964 lib/RT/Queue_Overlay.pm:789 lib/RT/Queue_Overlay.pm:864 lib/RT/Ticket_Overlay.pm:1113 lib/RT/Ticket_Overlay.pm:1193
 msgid "Group not found"
 msgstr "グループが見つかりません"
 
@@ -2943,11 +3099,11 @@ msgstr "グループが見つかりません。\\n"
 msgid "Group not specified.\\n"
 msgstr "グループが指定されていません。\\n"
 
-#: lib/RT/CustomField_Overlay.pm:1103 share/html/Admin/Elements/GlobalCustomFieldTabs:63 share/html/Admin/Elements/SelectNewGroupMembers:60 share/html/Admin/Elements/Tabs:58 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:87 share/html/Admin/Queues/People.html:108 share/html/Admin/index.html:63 share/html/User/Groups/Members.html:90
+#: lib/RT/CustomField_Overlay.pm:1116 share/html/Admin/Elements/GlobalCustomFieldTabs:63 share/html/Admin/Elements/SelectNewGroupMembers:60 share/html/Admin/Elements/Tabs:58 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:87 share/html/Admin/Queues/People.html:108 share/html/Admin/index.html:63 share/html/User/Groups/Members.html:90
 msgid "Groups"
 msgstr "グループ"
 
-#: lib/RT/Group_Overlay.pm:985
+#: lib/RT/Group_Overlay.pm:990
 msgid "Groups can't be members of their members"
 msgstr "グループは彼らのメンバーにはなれません"
 
@@ -2980,7 +3136,11 @@ msgstr "こんにちは！"
 msgid "Hello, %1"
 msgstr "こんにちは、%1さん"
 
-#: share/html/Admin/Elements/GroupTabs:72 share/html/Admin/Elements/UserTabs:66 share/html/Ticket/Elements/ShowHistory:55 share/html/Ticket/Elements/Tabs:122
+#: share/html/Install/Global.html:52
+msgid "Help us set up some useful defaults for RT."
+msgstr ""
+
+#: share/html/Admin/Elements/GroupTabs:72 share/html/Admin/Elements/UserTabs:66 share/html/Ticket/Elements/ShowHistory:55 share/html/Ticket/Elements/Tabs:121
 msgid "History"
 msgstr "更新履歴"
 
@@ -2998,11 +3158,11 @@ msgstr ""
 msgid "HomePhone"
 msgstr "電話（自宅）"
 
-#: share/html/Elements/Tabs.orig:68 share/html/Elements/Tabs:68
+#: share/html/Elements/Tabs:68
 msgid "Homepage"
 msgstr "ホーム"
 
-#: share/html/Dashboards/Subscription.html:101
+#: share/html/Dashboards/Subscription.html:131
 msgid "Hour"
 msgstr ""
 
@@ -3019,7 +3179,7 @@ msgstr ""
 msgid "I have [quant,_1,concrete mixer]."
 msgstr "私は[quant,_1,concrete mixer]があります。"
 
-#: lib/RT/Tickets_Overlay.pm:1815 share/html/Ticket/Elements/ShowBasics:50
+#: lib/RT/Tickets_Overlay.pm:1819 share/html/Ticket/Elements/ShowBasics:50
 msgid "Id"
 msgstr "ID"
 
@@ -3027,7 +3187,7 @@ msgstr "ID"
 msgid "Identity"
 msgstr "個人識別情報"
 
-#: etc/initialdata:490
+#: etc/initialdata:515
 msgid "If an approval is rejected, reject the original and delete pending approvals"
 msgstr ""
 
@@ -3043,15 +3203,28 @@ msgstr ""
 msgid "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
 msgstr ""
 
+#: share/html/Install/index.html:70
+msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p>"
+msgstr ""
+
+#: share/html/Install/Finish.html:60
+msgid "If you've change the Port that RT runs on, you'll need to restart the server in order to log in."
+msgstr ""
+
 #: share/html/Admin/Queues/People.html:130 share/html/Ticket/Modify.html:65 share/html/Ticket/ModifyAll.html:131 share/html/Ticket/ModifyPeople.html:63
 msgid "If you've updated anything above, be sure to"
 msgstr "変更を反映するにはボタンを押してください"
 
-#: lib/RT/Record.pm:913
+#: share/html/Install/DatabaseType.html:61
+#. ('<a href="http://search.cpan.org" target="_new">CPAN</a>')
+msgid "If your preferred database isn't listed in the dropdown below, that means RT couldn't find a <i>database driver</i> for it installed locally. You may be able to remedy this by using %1 to download and install DBD::MySQL, DBD::Oracle or DBD::Pg."
+msgstr ""
+
+#: lib/RT/Record.pm:911
 msgid "Illegal value for %1"
 msgstr ""
 
-#: lib/RT/Record.pm:916
+#: lib/RT/Record.pm:914
 msgid "Immutable field"
 msgstr ""
 
@@ -3075,12 +3248,16 @@ msgstr "利用停止したユーザーも検索に含める"
 msgid "Include page"
 msgstr ""
 
-#: lib/RT/Config.pm:225
+#: lib/RT/Config.pm:234
 msgid "Individual messages"
 msgstr ""
 
 #: etc/initialdata:373 etc/upgrade/3.7.10/content:15
 msgid "Inform RT owner that user(s) have problems with public keys"
+msgstr ""
+
+#: etc/initialdata:435 etc/upgrade/3.7.87/content:6
+msgid "Inform user that a dashboard he subscribed to is missing"
 msgstr ""
 
 #: etc/initialdata:398 etc/upgrade/3.7.10/content:40
@@ -3099,7 +3276,7 @@ msgstr ""
 msgid "Inform user that we received an encrypted email and we have no private keys to decrypt"
 msgstr ""
 
-#: lib/RT/Tickets_Overlay.pm:1865 share/html/Search/Elements/PickBasics:187
+#: lib/RT/Tickets_Overlay.pm:1869 share/html/Search/Elements/PickBasics:187
 msgid "Initial Priority"
 msgstr "最初の優先権"
 
@@ -3107,7 +3284,7 @@ msgstr "最初の優先権"
 msgid "InitialPriority"
 msgstr ""
 
-#: share/html/Install/Initialize.html:60
+#: share/html/Install/Global.html:64 share/html/Install/Initialize.html:48 share/html/Install/Initialize.html:60
 msgid "Initialize Database"
 msgstr ""
 
@@ -3115,9 +3292,9 @@ msgstr ""
 msgid "Input error"
 msgstr "入力エラー"
 
-#: lib/RT/CustomField_Overlay.pm:1055 lib/RT/CustomField_Overlay.pm:919 share/html/Elements/ValidateCustomFields:87
-#. ($CF->FriendlyPattern)
+#: lib/RT/CustomField_Overlay.pm:1068 lib/RT/CustomField_Overlay.pm:932 share/html/Elements/ValidateCustomFields:87
 #. ($self->FriendlyPattern)
+#. ($CF->FriendlyPattern)
 msgid "Input must match %1"
 msgstr ""
 
@@ -3134,7 +3311,22 @@ msgstr ""
 msgid "Internal Error: %1"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:607
+#: share/html/Install/Global.html:88
+#. ($_, $ARGS{$_})
+msgid "Invalid %1: '%2' doesn't look like an email address"
+msgstr ""
+
+#: share/html/Install/Basics.html:78
+#. ('WebPort')
+msgid "Invalid %1: it should be a number"
+msgstr ""
+
+#: share/html/Install/Sendmail.html:90
+#. ('Administrator Email')
+msgid "Invalid %1: that doesn't look like an email address"
+msgstr ""
+
+#: lib/RT/Group_Overlay.pm:612
 msgid "Invalid Group Type"
 msgstr "無効なグループタイプです"
 
@@ -3142,11 +3334,11 @@ msgstr "無効なグループタイプです"
 msgid "Invalid Right"
 msgstr ""
 
-#: lib/RT/Record.pm:918
+#: lib/RT/Record.pm:916
 msgid "Invalid data"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:912
+#: lib/RT/CustomField_Overlay.pm:925
 msgid "Invalid object"
 msgstr ""
 
@@ -3158,7 +3350,7 @@ msgstr ""
 msgid "Invalid owner. Defaulting to 'nobody'."
 msgstr "無効な担当者です。 'nobody'に設定します."
 
-#: lib/RT/CustomField_Overlay.pm:206 lib/RT/CustomField_Overlay.pm:580
+#: lib/RT/CustomField_Overlay.pm:208 lib/RT/CustomField_Overlay.pm:593
 #. ($msg)
 msgid "Invalid pattern: %1"
 msgstr ""
@@ -3181,7 +3373,7 @@ msgstr ""
 msgid "Invalid value for %1"
 msgstr "%1は無効な値です"
 
-#: lib/RT/Record.pm:1532
+#: lib/RT/Record.pm:1580
 msgid "Invalid value for custom field"
 msgstr "カスタムフィールドに無効な値です"
 
@@ -3237,7 +3429,7 @@ msgstr "7月"
 msgid "July"
 msgstr ""
 
-#: share/html/Ticket/Elements/Tabs:143
+#: share/html/Ticket/Elements/Tabs:142
 msgid "Jumbo"
 msgstr "総合ビュー"
 
@@ -3251,6 +3443,10 @@ msgstr "6月"
 
 #: share/html/CalPopup.html:93
 msgid "June"
+msgstr ""
+
+#: lib/RT/Installer.pm:78
+msgid "Keep 'localhost' if you're not sure"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
@@ -3269,7 +3465,7 @@ msgstr "言語"
 msgid "Large"
 msgstr ""
 
-#: share/html/Ticket/Elements/Tabs:103
+#: share/html/Ticket/Elements/Tabs:102
 msgid "Last"
 msgstr ""
 
@@ -3289,8 +3485,12 @@ msgstr "最終更新日時"
 msgid "Last updated by"
 msgstr ""
 
-#: lib/RT/Installer.pm:86
-msgid "Leave empty to use default value of the RDBMS"
+#: lib/RT/Installer.pm:88
+msgid "Leave empty to use the default value for your database"
+msgstr ""
+
+#: lib/RT/Installer.pm:101
+msgid "Leave this alone to use the default dba username for your database type"
 msgstr ""
 
 #: share/html/Ticket/Elements/ShowBasics:71
@@ -3313,7 +3513,7 @@ msgstr "このユーザーをRTにアクセス可能にします"
 msgid "Let this user be granted rights"
 msgstr "このユーザーの権利を認めます"
 
-#: share/html/Install/index.html:71
+#: share/html/Install/index.html:75
 msgid "Let's go!"
 msgstr ""
 
@@ -3329,25 +3529,23 @@ msgstr "キューを%1 %2に制限します"
 msgid "Link"
 msgstr "リンク"
 
-#: lib/RT/Record.pm:1233
+#: lib/RT/Record.pm:1273
 msgid "Link already exists"
 msgstr "すでにリンクしています"
 
-#: lib/RT/Record.pm:1247
+#: lib/RT/Record.pm:1287
 msgid "Link could not be created"
 msgstr "リンクが作成されませんでした"
 
-#: lib/RT/Record.pm:1253
-#. ($TransString)
+#: NOT FOUND IN SOURCE
 msgid "Link created (%1)"
 msgstr "リンクが作成されました（%1）"
 
-#: lib/RT/Record.pm:1314
-#. ($TransString)
+#: NOT FOUND IN SOURCE
 msgid "Link deleted (%1)"
 msgstr "リンクが削除されました（%1）"
 
-#: lib/RT/Record.pm:1320
+#: lib/RT/Record.pm:1368
 msgid "Link not found"
 msgstr "リンクが見つかりません"
 
@@ -3364,7 +3562,7 @@ msgstr ""
 msgid "Linking. Permission denied"
 msgstr ""
 
-#: share/html/Ticket/Create.html:226 share/html/Ticket/Elements/ShowSummary:100 share/html/Ticket/Elements/Tabs:139 share/html/Ticket/ModifyAll.html:81
+#: share/html/Ticket/Create.html:226 share/html/Ticket/Elements/ShowSummary:100 share/html/Ticket/Elements/Tabs:138 share/html/Ticket/ModifyAll.html:81
 msgid "Links"
 msgstr "リンク"
 
@@ -3380,7 +3578,7 @@ msgstr ""
 msgid "LoadSavedSearch"
 msgstr ""
 
-#: lib/RT/SharedSetting.pm:103
+#: lib/RT/SharedSetting.pm:113
 #. ($self->ObjectName, $self->Name)
 msgid "Loaded %1 %2"
 msgstr ""
@@ -3399,7 +3597,7 @@ msgstr "ロードされたPerlモジュール"
 msgid "Loaded saved search \"%1\""
 msgstr ""
 
-#: lib/RT/Config.pm:171
+#: lib/RT/Config.pm:180
 msgid "Locale"
 msgstr ""
 
@@ -3407,7 +3605,7 @@ msgstr ""
 msgid "Location"
 msgstr "住所"
 
-#: share/html/Elements/Header:89
+#: share/html/Elements/Header:92
 #. ("<span>".$session{'CurrentUser'}->Name."</span>")
 msgid "Logged in as %1"
 msgstr "\"%1\"でログインしています"
@@ -3420,63 +3618,63 @@ msgstr ""
 msgid "Login"
 msgstr "ログイン"
 
-#: share/html/Elements/Header:99 share/html/NoAuth/Logout.html:48
+#: share/html/Elements/Header:102 share/html/NoAuth/Logout.html:48
 msgid "Logout"
 msgstr "ログアウト"
 
-#: lib/RT/CustomField_Overlay.pm:832
+#: lib/RT/CustomField_Overlay.pm:845
 msgid "Lookup type mismatch"
 msgstr ""
 
-#: lib/RT/Config.pm:218
+#: lib/RT/Config.pm:227
 msgid "Mail"
 msgstr ""
 
-#: share/html/Ticket/Graphs/Elements/EditGraphProperties:50
+#: share/html/Ticket/Graphs/Elements/EditGraphProperties:58
 msgid "Main type of links"
 msgstr ""
 
-#: share/html/Search/Bulk.html:87
+#: share/html/Search/Bulk.html:88
 msgid "Make Owner"
 msgstr "担当者を決める"
 
-#: share/html/Search/Bulk.html:111
+#: share/html/Search/Bulk.html:112
 msgid "Make Status"
 msgstr "ステータスを決める"
 
-#: share/html/Search/Bulk.html:119
+#: share/html/Search/Bulk.html:120
 msgid "Make date Due"
 msgstr "期限期日を決める"
 
-#: share/html/Search/Bulk.html:121
+#: share/html/Search/Bulk.html:122
 msgid "Make date Resolved"
 msgstr "解決期日を決める"
 
-#: share/html/Search/Bulk.html:115
+#: share/html/Search/Bulk.html:116
 msgid "Make date Started"
 msgstr "開始日を決める"
 
-#: share/html/Search/Bulk.html:113
+#: share/html/Search/Bulk.html:114
 msgid "Make date Starts"
 msgstr "開始日を決める"
 
-#: share/html/Search/Bulk.html:117
+#: share/html/Search/Bulk.html:118
 msgid "Make date Told"
 msgstr "言われた日を決める"
 
-#: share/html/Search/Bulk.html:107
+#: share/html/Search/Bulk.html:108
 msgid "Make priority"
 msgstr "優先順位を決める"
 
-#: share/html/Search/Bulk.html:109
+#: share/html/Search/Bulk.html:110
 msgid "Make queue"
 msgstr "キューを決める"
 
-#: share/html/Search/Bulk.html:105
+#: share/html/Search/Bulk.html:106
 msgid "Make subject"
 msgstr "サブジェクトを決める"
 
-#: lib/RT/Group_Overlay.pm:95
+#: lib/RT/Group_Overlay.pm:96
 msgid "Make this group visible to user"
 msgstr ""
 
@@ -3516,12 +3714,8 @@ msgstr "3月"
 msgid "March"
 msgstr ""
 
-#: share/html/Ticket/Display.html:177
+#: share/html/Ticket/Display.html:168
 msgid "Marked all messages as seen"
-msgstr ""
-
-#: lib/RT/Installer.pm:161
-msgid "Max attachment size( in bytes )"
 msgstr ""
 
 #: lib/RT/Config.pm:148
@@ -3546,16 +3740,16 @@ msgstr ""
 msgid "Member %1 deleted"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:996
+#: lib/RT/Group_Overlay.pm:1001
 #. ($new_member_obj->Object->Name)
 msgid "Member added: %1"
 msgstr "メンバーが追加されました: %1"
 
-#: lib/RT/Group_Overlay.pm:1161
+#: lib/RT/Group_Overlay.pm:1166
 msgid "Member deleted"
 msgstr "メンバーが削除されました"
 
-#: lib/RT/Group_Overlay.pm:1165
+#: lib/RT/Group_Overlay.pm:1170
 msgid "Member not deleted"
 msgstr "メンバーが削除されていません"
 
@@ -3607,7 +3801,7 @@ msgstr "次のチケットに結合"
 msgid "Merged into %1"
 msgstr ""
 
-#: share/html/Search/Bulk.html:148 share/html/Ticket/Update.html:134
+#: share/html/Search/Bulk.html:149 share/html/Ticket/Update.html:134
 msgid "Message"
 msgstr ""
 
@@ -3627,7 +3821,7 @@ msgstr ""
 msgid "Message could not be recorded"
 msgstr ""
 
-#: sbin/rt-email-digest:268
+#: sbin/rt-email-digest:291
 msgid "Message for user"
 msgstr ""
 
@@ -3639,7 +3833,7 @@ msgstr ""
 msgid "Messages about this ticket will not be sent to..."
 msgstr "このチケットのメッセージは以下の宛先には送信されなくなります:"
 
-#: lib/RT/Installer.pm:148
+#: lib/RT/Installer.pm:146
 msgid "Minimum password length"
 msgstr ""
 
@@ -3647,7 +3841,7 @@ msgstr ""
 msgid "Minutes"
 msgstr "分"
 
-#: lib/RT/Record.pm:920
+#: lib/RT/Record.pm:918
 msgid "Missing a primary key?: %1"
 msgstr ""
 
@@ -3718,6 +3912,10 @@ msgstr ""
 #: share/html/Admin/CustomFields/Objects.html:92
 #. ($CF->Name)
 msgid "Modify associated objects for %1"
+msgstr ""
+
+#: lib/RT/Group_Overlay.pm:99
+msgid "Modify dashboards for this group"
 msgstr ""
 
 #: share/html/Ticket/ModifyDates.html:48 share/html/Ticket/ModifyDates.html:52
@@ -3792,6 +3990,10 @@ msgstr "キュー%1の関与者を修正する"
 msgid "Modify people related to ticket #%1"
 msgstr "チケット#%1の関与者を修正する"
 
+#: lib/RT/Dashboard.pm:86
+msgid "Modify personal dashboards"
+msgstr ""
+
 #: share/html/Admin/Queues/Scrips.html:69
 #. ($QueueObj->Name)
 msgid "Modify scrips for queue %1"
@@ -3799,6 +4001,10 @@ msgstr "キュー%1のスクリプトを修正する"
 
 #: share/html/Admin/Global/Scrips.html:67 share/html/Admin/Global/index.html:57
 msgid "Modify scrips which apply to all queues"
+msgstr ""
+
+#: lib/RT/Dashboard.pm:81
+msgid "Modify system dashboards"
 msgstr ""
 
 #: share/html/Admin/Global/Template.html:100 share/html/Admin/Queues/Template.html:101
@@ -3833,7 +4039,7 @@ msgstr ""
 msgid "Modify the queue watchers"
 msgstr ""
 
-#: share/html/Dashboards/Subscription.html:265
+#: share/html/Dashboards/Subscription.html:258
 #. ($DashboardObj->Name)
 msgid "Modify the subscription to dashboard %1"
 msgstr ""
@@ -3884,8 +4090,16 @@ msgstr ""
 msgid "ModifyCustomField"
 msgstr ""
 
-#: lib/RT/Dashboard.pm:77
+#: lib/RT/Dashboard.pm:81
 msgid "ModifyDashboard"
+msgstr ""
+
+#: lib/RT/Group_Overlay.pm:99
+msgid "ModifyGroupDashboard"
+msgstr ""
+
+#: lib/RT/Dashboard.pm:86
+msgid "ModifyOwnDashboard"
 msgstr ""
 
 #: lib/RT/Group_Overlay.pm:92
@@ -3950,7 +4164,7 @@ msgstr ""
 msgid "My Bookmarks"
 msgstr ""
 
-#: share/html/Tools/Elements/Tabs:65
+#: share/html/Tools/Elements/Tabs:69 share/html/Tools/index.html:73
 msgid "My Day"
 msgstr ""
 
@@ -3958,7 +4172,7 @@ msgstr ""
 msgid "My approvals"
 msgstr "担当チケットの承認状況"
 
-#: share/html/Dashboards/Elements/SelectPrivacy:55
+#: share/html/Dashboards/Elements/SelectPrivacy:59
 msgid "My dashboards"
 msgstr ""
 
@@ -3970,7 +4184,7 @@ msgstr ""
 msgid "MySQL"
 msgstr ""
 
-#: share/html/Admin/CustomFields/Modify.html:61 share/html/Admin/Elements/AddCustomFieldValue:54 share/html/Admin/Elements/EditCustomField:57 share/html/Admin/Elements/EditCustomFieldValues:58 share/html/Admin/Elements/ModifyTemplate:51 share/html/Admin/Groups/Modify.html:67 share/html/Dashboards/Elements/ShowDashboards:56 share/html/Dashboards/Modify.html:65 share/html/Search/Bulk.html:165 share/html/User/Groups/Modify.html:67
+#: share/html/Admin/CustomFields/Modify.html:61 share/html/Admin/Elements/AddCustomFieldValue:54 share/html/Admin/Elements/EditCustomField:57 share/html/Admin/Elements/EditCustomFieldValues:58 share/html/Admin/Elements/ModifyTemplate:51 share/html/Admin/Groups/Modify.html:67 share/html/Dashboards/Elements/ShowDashboards:79 share/html/Dashboards/Modify.html:65 share/html/Search/Bulk.html:166 share/html/User/Groups/Modify.html:67
 msgid "Name"
 msgstr "名前"
 
@@ -3978,11 +4192,15 @@ msgstr "名前"
 msgid "Name in use"
 msgstr "現在お使いの名前"
 
+#: share/html/Tools/index.html:60
+msgid "Named, shared collection of saved searches"
+msgstr ""
+
 #: share/html/Ticket/Elements/ShowDates:80
 msgid "Never"
 msgstr ""
 
-#: share/html/Elements/RT__Ticket/ColumnMap:226
+#: share/html/Elements/RT__Ticket/ColumnMap:231
 msgid "New"
 msgstr "新規"
 
@@ -3998,7 +4216,7 @@ msgstr "新規パスワード"
 msgid "New Pending Approval"
 msgstr ""
 
-#: share/html/Ticket/Elements/Tabs:260
+#: share/html/Ticket/Elements/Tabs:261
 msgid "New Search"
 msgstr "新規検索"
 
@@ -4011,7 +4229,7 @@ msgstr ""
 msgid "New custom field"
 msgstr ""
 
-#: share/html/Dashboards/Elements/Tabs:99
+#: share/html/Dashboards/Elements/Tabs:106
 msgid "New dashboard"
 msgstr ""
 
@@ -4019,7 +4237,7 @@ msgstr ""
 msgid "New group"
 msgstr ""
 
-#: share/html/Elements/RT__Ticket/ColumnMap:221 share/html/Ticket/Elements/ShowUpdateStatus:49
+#: share/html/Elements/RT__Ticket/ColumnMap:226 share/html/Ticket/Elements/ShowUpdateStatus:49
 msgid "New messages"
 msgstr ""
 
@@ -4079,7 +4297,7 @@ msgstr "新規ウォッチャー"
 msgid "New window setting"
 msgstr "新しいウインドウ設定"
 
-#: share/html/Elements/CollectionListPaging:104 share/html/Helpers/CalPopup.html:60 share/html/Ticket/Elements/Tabs:98
+#: share/html/Elements/CollectionListPaging:104 share/html/Helpers/CalPopup.html:60 share/html/Ticket/Elements/Tabs:97
 msgid "Next"
 msgstr "次へ"
 
@@ -4091,43 +4309,19 @@ msgstr "次のページ"
 msgid "Next page"
 msgstr "次のページ"
 
-#: share/html/Install/DatabaseType.html:62
-msgid "Next: Check your database credentials"
-msgstr ""
-
-#: share/html/Install/DatabaseDetails.html:69
-msgid "Next: Customize Basics"
-msgstr ""
-
-#: share/html/Install/Password.html:57
-msgid "Next: Customize Email Addresses"
-msgstr ""
-
-#: share/html/Install/Basics.html:57
-msgid "Next: Customize Password for Users in RT"
-msgstr ""
-
-#: share/html/Install/Emails.html:57
-msgid "Next: Email Configuration"
-msgstr ""
-
-#: share/html/Install/Sendmail.html:58
-msgid "Next: Finish"
-msgstr ""
-
-#: share/html/Install/Sendmail.html:58
-msgid "Next: Initialize Database"
+#: share/html/Install/Basics.html:61 share/html/Install/DatabaseDetails.html:82 share/html/Install/DatabaseType.html:70 share/html/Install/Global.html:64 share/html/Install/Global.html:64 share/html/Install/Sendmail.html:62
+msgid "Next: "
 msgstr ""
 
 #: share/html/Admin/Users/Modify.html:86 share/html/User/Prefs.html:74
 msgid "Nickname"
 msgstr "ニックネーム"
 
-#: share/html/Elements/RT__Ticket/ColumnMap:223 share/html/Widgets/Form/Boolean:77
+#: share/html/Elements/RT__Ticket/ColumnMap:228 share/html/Widgets/Form/Boolean:79
 msgid "No"
 msgstr ""
 
-#: lib/RT/SharedSetting.pm:201
+#: lib/RT/SharedSetting.pm:224
 #. ($self->ObjectName)
 msgid "No %1 loaded"
 msgstr ""
@@ -4136,7 +4330,7 @@ msgstr ""
 msgid "No Class defined"
 msgstr ""
 
-#: share/html/Admin/CustomFields/Modify.html:153 share/html/Admin/Elements/EditCustomField:121
+#: share/html/Admin/CustomFields/Modify.html:155 share/html/Admin/Elements/EditCustomField:121
 msgid "No CustomField"
 msgstr "カスタムフィールドがありません"
 
@@ -4148,7 +4342,7 @@ msgstr ""
 msgid "No Group defined"
 msgstr "グループが定義されません"
 
-#: lib/RT/Tickets_Overlay_SQL.pm:289
+#: lib/RT/Tickets_Overlay_SQL.pm:292
 msgid "No Query"
 msgstr ""
 
@@ -4172,7 +4366,7 @@ msgstr "チケットが指定されていません"
 msgid "No action"
 msgstr ""
 
-#: lib/RT/Record.pm:915
+#: lib/RT/Record.pm:913
 msgid "No column specified"
 msgstr ""
 
@@ -4188,7 +4382,7 @@ msgstr "このユーザーに関してのコメントは入力されていませ
 msgid "No correspondence attached"
 msgstr "メールの添付はありません"
 
-#: share/html/Dashboards/Elements/ShowDashboards:51
+#: share/html/Dashboards/Elements/ShowDashboards:71
 msgid "No dashboards."
 msgstr ""
 
@@ -4242,16 +4436,11 @@ msgstr "ユーザーを作成する許可がされていません"
 msgid "No permission to display that ticket"
 msgstr "そのチケットを表示する許可がありません"
 
-#: lib/RT/SharedSetting.pm:168
-#. ($self->ObjectName)
-msgid "No permission to save system-wide %1"
-msgstr ""
-
 #: share/html/Search/Elements/EditSearches:231
 msgid "No permission to save system-wide searches"
 msgstr ""
 
-#: lib/RT/User_Overlay.pm:1277
+#: lib/RT/User_Overlay.pm:1315
 msgid "No permission to set preferences"
 msgstr ""
 
@@ -4287,15 +4476,15 @@ msgstr ""
 msgid "No rights granted."
 msgstr "権利が許可されていません"
 
-#: share/html/Search/Bulk.html:241
+#: share/html/Search/Bulk.html:243
 msgid "No search to operate on."
 msgstr "操作のための検索ができません"
 
-#: share/html/Elements/RT__Ticket/ColumnMap:94 share/html/Search/Results.rdf:91
+#: share/html/Elements/RT__Ticket/ColumnMap:99 share/html/Search/Results.rdf:91
 msgid "No subject"
 msgstr ""
 
-#: lib/RT/User_Overlay.pm:1584
+#: lib/RT/User_Overlay.pm:1622
 msgid "No such key or it's not suitable for signing"
 msgstr ""
 
@@ -4323,7 +4512,7 @@ msgstr "検索基準にあったユーザーが見つかりません"
 msgid "No valid RT user found. RT cvs handler disengaged. Please consult your RT administrator.\\n"
 msgstr "有効なRTユーザーが見つかりません。RT　cvcハンドラが分離しています。RT管理者に相談してください。\\n"
 
-#: lib/RT/Record.pm:912
+#: lib/RT/Record.pm:910
 msgid "No value sent to _Set!\\n"
 msgstr ""
 
@@ -4335,19 +4524,19 @@ msgstr ""
 msgid "None"
 msgstr ""
 
-#: lib/RT/Record.pm:917
+#: lib/RT/Record.pm:915
 msgid "Nonexistant field?"
 msgstr ""
 
-#: share/html/Search/Chart:149 share/html/Search/Elements/Chart:90
+#: share/html/Search/Chart:151 share/html/Search/Elements/Chart:92
 msgid "Not Set"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:309
+#: lib/RT/CustomField_Overlay.pm:322
 msgid "Not found"
 msgstr ""
 
-#: share/html/Elements/Header:94
+#: share/html/Elements/Header:97
 msgid "Not logged in."
 msgstr "ログインしていません"
 
@@ -4471,7 +4660,7 @@ msgstr ""
 msgid "Object could not be deleted"
 msgstr ""
 
-#: lib/RT/Record.pm:327
+#: lib/RT/Record.pm:325
 msgid "Object created"
 msgstr ""
 
@@ -4485,7 +4674,7 @@ msgstr ""
 msgid "Object of type %1 cannot take custom fields"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:866
+#: lib/RT/CustomField_Overlay.pm:879
 msgid "Object type mismatch"
 msgstr ""
 
@@ -4501,7 +4690,7 @@ msgstr "10月"
 msgid "October"
 msgstr ""
 
-#: share/html/Tools/Elements/Tabs:57
+#: share/html/Tools/Elements/Tabs:61 share/html/Tools/index.html:63
 msgid "Offline"
 msgstr "オフライン"
 
@@ -4596,7 +4785,7 @@ msgstr ""
 msgid "Open URL"
 msgstr ""
 
-#: share/html/Ticket/Elements/Tabs:189
+#: share/html/Ticket/Elements/Tabs:188
 msgid "Open it"
 msgstr ""
 
@@ -4636,7 +4825,7 @@ msgstr "並びかえ順番"
 msgid "Ordering and sorting"
 msgstr "整列と並び替え"
 
-#: lib/RT/Installer.pm:142 share/html/Admin/Users/Modify.html:144 share/html/User/Prefs.html:135
+#: share/html/Admin/Users/Modify.html:144 share/html/User/Prefs.html:135
 msgid "Organization"
 msgstr "組織"
 
@@ -4665,7 +4854,7 @@ msgstr ""
 msgid "OwnTicket"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:99 lib/RT/Tickets_Overlay.pm:2055 share/html/Elements/QuickCreate:58 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Create.html:76 share/html/Ticket/Elements/EditBasics:63 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:135 share/html/Ticket/Elements/ShowPeople:50 share/html/Ticket/Update.html:70
+#: lib/RT/ACE_Overlay.pm:99 lib/RT/Tickets_Overlay.pm:2059 share/html/Elements/QuickCreate:58 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Create.html:76 share/html/Ticket/Elements/EditBasics:63 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:135 share/html/Ticket/Elements/ShowPeople:50 share/html/Ticket/Update.html:70
 msgid "Owner"
 msgstr "担当者"
 
@@ -4681,10 +4870,6 @@ msgstr ""
 
 #: lib/RT/Ticket_Overlay.pm:397
 msgid "Owner could not be set."
-msgstr ""
-
-#: lib/RT/Installer.pm:167
-msgid "Owner email"
 msgstr ""
 
 #: lib/RT/Transaction_Overlay.pm:661
@@ -4766,7 +4951,11 @@ msgstr ""
 msgid "Passwords do not match. Your password has not been changed"
 msgstr ""
 
-#: share/html/Ticket/Elements/ShowSummary:64 share/html/Ticket/Elements/Tabs:135 share/html/Ticket/ModifyAll.html:75
+#: lib/RT/Installer.pm:184
+msgid "Path to sendmail"
+msgstr ""
+
+#: share/html/Ticket/Elements/ShowSummary:64 share/html/Ticket/Elements/Tabs:134 share/html/Ticket/ModifyAll.html:75
 msgid "People"
 msgstr "担当者等"
 
@@ -4778,9 +4967,13 @@ msgstr ""
 msgid "Perl configuration"
 msgstr "Perlの設定情報"
 
-#: lib/RT/ACE_Overlay.pm:247 lib/RT/ACE_Overlay.pm:253 lib/RT/ACE_Overlay.pm:351 lib/RT/ACE_Overlay.pm:361 lib/RT/ACE_Overlay.pm:371 lib/RT/ACE_Overlay.pm:436 lib/RT/Attachment_Overlay.pm:615 lib/RT/Attachment_Overlay.pm:616 lib/RT/Attachment_Overlay.pm:677 lib/RT/Attachment_Overlay.pm:678 lib/RT/Attribute_Overlay.pm:161 lib/RT/Attribute_Overlay.pm:167 lib/RT/Attribute_Overlay.pm:376 lib/RT/Attribute_Overlay.pm:385 lib/RT/Attribute_Overlay.pm:398 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomFieldValue_Overlay.pm:83 lib/RT/CustomField_Overlay.pm:1031 lib/RT/CustomField_Overlay.pm:1174 lib/RT/CustomField_Overlay.pm:171 lib/RT/CustomField_Overlay.pm:188 lib/RT/CustomField_Overlay.pm:199 lib/RT/CustomField_Overlay.pm:359 lib/RT/CustomField_Overlay.pm:388 lib/RT/CustomField_Overlay.pm:665 lib/RT/CustomField_Overlay.pm:836 lib/RT/CustomField_Overlay.pm:870 lib/RT/CustomField_Overlay.pm:915 lib/RT/Group_Overlay.pm:1116 lib/RT/Group_Overlay.pm:1120 lib/RT/Group_Overlay.pm:1129 lib/RT/Group_Overlay.pm:1239 lib/RT/Group_Overlay.pm:1243 lib/RT/Group_Overlay.pm:1249 lib/RT/Group_Overlay.pm:383 lib/RT/Group_Overlay.pm:481 lib/RT/Group_Overlay.pm:559 lib/RT/Group_Overlay.pm:567 lib/RT/Group_Overlay.pm:665 lib/RT/Group_Overlay.pm:669 lib/RT/Group_Overlay.pm:675 lib/RT/Group_Overlay.pm:918 lib/RT/Group_Overlay.pm:922 lib/RT/Group_Overlay.pm:935 lib/RT/Queue_Overlay.pm:1112 lib/RT/Queue_Overlay.pm:142 lib/RT/Queue_Overlay.pm:160 lib/RT/Queue_Overlay.pm:471 lib/RT/Queue_Overlay.pm:497 lib/RT/Queue_Overlay.pm:519 lib/RT/Queue_Overlay.pm:731 lib/RT/Queue_Overlay.pm:877 lib/RT/Queue_Overlay.pm:886 lib/RT/Queue_Overlay.pm:899 lib/RT/Scrip_Overlay.pm:113 lib/RT/Scrip_Overlay.pm:124 lib/RT/Scrip_Overlay.pm:188 lib/RT/Scrip_Overlay.pm:497 lib/RT/Template_Overlay.pm:215 lib/RT/Template_Overlay.pm:224 lib/RT/Template_Overlay.pm:250 lib/RT/Template_Overlay.pm:389 lib/RT/Template_Overlay.pm:99 lib/RT/Ticket_Overlay.pm:1055 lib/RT/Ticket_Overlay.pm:1061 lib/RT/Ticket_Overlay.pm:1068 lib/RT/Ticket_Overlay.pm:1205 lib/RT/Ticket_Overlay.pm:1215 lib/RT/Ticket_Overlay.pm:1229 lib/RT/Ticket_Overlay.pm:1317 lib/RT/Ticket_Overlay.pm:1674 lib/RT/Ticket_Overlay.pm:1828 lib/RT/Ticket_Overlay.pm:1998 lib/RT/Ticket_Overlay.pm:2048 lib/RT/Ticket_Overlay.pm:2237 lib/RT/Ticket_Overlay.pm:2250 lib/RT/Ticket_Overlay.pm:2331 lib/RT/Ticket_Overlay.pm:2344 lib/RT/Ticket_Overlay.pm:2447 lib/RT/Ticket_Overlay.pm:2461 lib/RT/Ticket_Overlay.pm:2690 lib/RT/Ticket_Overlay.pm:2701 lib/RT/Ticket_Overlay.pm:2707 lib/RT/Ticket_Overlay.pm:2905 lib/RT/Ticket_Overlay.pm:2909 lib/RT/Ticket_Overlay.pm:3046 lib/RT/Ticket_Overlay.pm:3198 lib/RT/Transaction_Overlay.pm:524 lib/RT/Transaction_Overlay.pm:548 lib/RT/User_Overlay.pm:1047 lib/RT/User_Overlay.pm:124 lib/RT/User_Overlay.pm:1444 lib/RT/User_Overlay.pm:283 lib/RT/User_Overlay.pm:623 lib/RT/User_Overlay.pm:658 share/html/Ticket/Forward.html:85
+#: lib/RT/ACE_Overlay.pm:247 lib/RT/ACE_Overlay.pm:253 lib/RT/ACE_Overlay.pm:351 lib/RT/ACE_Overlay.pm:361 lib/RT/ACE_Overlay.pm:371 lib/RT/ACE_Overlay.pm:436 lib/RT/Attachment_Overlay.pm:615 lib/RT/Attachment_Overlay.pm:616 lib/RT/Attachment_Overlay.pm:677 lib/RT/Attachment_Overlay.pm:678 lib/RT/Attribute_Overlay.pm:161 lib/RT/Attribute_Overlay.pm:167 lib/RT/Attribute_Overlay.pm:376 lib/RT/Attribute_Overlay.pm:385 lib/RT/Attribute_Overlay.pm:398 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomFieldValue_Overlay.pm:83 lib/RT/CustomField_Overlay.pm:1044 lib/RT/CustomField_Overlay.pm:1187 lib/RT/CustomField_Overlay.pm:173 lib/RT/CustomField_Overlay.pm:190 lib/RT/CustomField_Overlay.pm:201 lib/RT/CustomField_Overlay.pm:372 lib/RT/CustomField_Overlay.pm:401 lib/RT/CustomField_Overlay.pm:678 lib/RT/CustomField_Overlay.pm:849 lib/RT/CustomField_Overlay.pm:883 lib/RT/CustomField_Overlay.pm:928 lib/RT/Group_Overlay.pm:1121 lib/RT/Group_Overlay.pm:1125 lib/RT/Group_Overlay.pm:1134 lib/RT/Group_Overlay.pm:1244 lib/RT/Group_Overlay.pm:1248 lib/RT/Group_Overlay.pm:1254 lib/RT/Group_Overlay.pm:388 lib/RT/Group_Overlay.pm:486 lib/RT/Group_Overlay.pm:564 lib/RT/Group_Overlay.pm:572 lib/RT/Group_Overlay.pm:670 lib/RT/Group_Overlay.pm:674 lib/RT/Group_Overlay.pm:680 lib/RT/Group_Overlay.pm:923 lib/RT/Group_Overlay.pm:927 lib/RT/Group_Overlay.pm:940 lib/RT/Queue_Overlay.pm:1112 lib/RT/Queue_Overlay.pm:142 lib/RT/Queue_Overlay.pm:160 lib/RT/Queue_Overlay.pm:471 lib/RT/Queue_Overlay.pm:497 lib/RT/Queue_Overlay.pm:519 lib/RT/Queue_Overlay.pm:731 lib/RT/Queue_Overlay.pm:877 lib/RT/Queue_Overlay.pm:886 lib/RT/Queue_Overlay.pm:899 lib/RT/Scrip_Overlay.pm:113 lib/RT/Scrip_Overlay.pm:124 lib/RT/Scrip_Overlay.pm:188 lib/RT/Scrip_Overlay.pm:497 lib/RT/Template_Overlay.pm:215 lib/RT/Template_Overlay.pm:224 lib/RT/Template_Overlay.pm:250 lib/RT/Template_Overlay.pm:386 lib/RT/Template_Overlay.pm:99 lib/RT/Ticket_Overlay.pm:1055 lib/RT/Ticket_Overlay.pm:1061 lib/RT/Ticket_Overlay.pm:1068 lib/RT/Ticket_Overlay.pm:1205 lib/RT/Ticket_Overlay.pm:1215 lib/RT/Ticket_Overlay.pm:1229 lib/RT/Ticket_Overlay.pm:1317 lib/RT/Ticket_Overlay.pm:1674 lib/RT/Ticket_Overlay.pm:1828 lib/RT/Ticket_Overlay.pm:1998 lib/RT/Ticket_Overlay.pm:2048 lib/RT/Ticket_Overlay.pm:2237 lib/RT/Ticket_Overlay.pm:2250 lib/RT/Ticket_Overlay.pm:2331 lib/RT/Ticket_Overlay.pm:2344 lib/RT/Ticket_Overlay.pm:2447 lib/RT/Ticket_Overlay.pm:2461 lib/RT/Ticket_Overlay.pm:2690 lib/RT/Ticket_Overlay.pm:2701 lib/RT/Ticket_Overlay.pm:2707 lib/RT/Ticket_Overlay.pm:2905 lib/RT/Ticket_Overlay.pm:2909 lib/RT/Ticket_Overlay.pm:3046 lib/RT/Ticket_Overlay.pm:3198 lib/RT/Transaction_Overlay.pm:524 lib/RT/Transaction_Overlay.pm:548 lib/RT/User_Overlay.pm:1085 lib/RT/User_Overlay.pm:124 lib/RT/User_Overlay.pm:1482 lib/RT/User_Overlay.pm:283 lib/RT/User_Overlay.pm:623 lib/RT/User_Overlay.pm:658 share/html/Ticket/Forward.html:85
 msgid "Permission Denied"
 msgstr "許可が下りませんでした"
+
+#: lib/RT/SharedSetting.pm:110 lib/RT/SharedSetting.pm:187 lib/RT/SharedSetting.pm:228 lib/RT/SharedSetting.pm:261 share/html/Dashboards/Modify.html:94
+msgid "Permission denied"
+msgstr ""
 
 #: share/html/User/Elements/Tabs:64
 msgid "Personal Groups"
@@ -4814,7 +5007,7 @@ msgstr ""
 msgid "Pref"
 msgstr "設定"
 
-#: share/html/Elements/Header:91 share/html/Elements/Tabs:94 share/html/SelfService/Elements/Tabs:98 share/html/SelfService/Prefs.html:48 share/html/User/Prefs.html:48 share/html/User/Prefs.html:51
+#: share/html/Elements/Header:94 share/html/Elements/Tabs:94 share/html/SelfService/Elements/Tabs:98 share/html/SelfService/Prefs.html:48 share/html/User/Prefs.html:48 share/html/User/Prefs.html:51
 msgid "Preferences"
 msgstr "個人設定"
 
@@ -4831,19 +5024,19 @@ msgstr ""
 
 #: share/html/Admin/Users/MyRT.html:83
 #. ($UserObj->Name)
-msgid "Preferences saved for user %2."
+msgid "Preferences saved for user %1."
 msgstr ""
 
-#: share/html/Prefs/MyRT.html:101 share/html/Prefs/Other.html:103 share/html/Prefs/Quicksearch.html:91 share/html/Prefs/Search.html:108 share/html/Prefs/SearchOptions.html:84
+#: share/html/Prefs/MyRT.html:101 share/html/Prefs/Other.html:104 share/html/Prefs/Quicksearch.html:91 share/html/Prefs/Search.html:108 share/html/Prefs/SearchOptions.html:84
 msgid "Preferences saved."
 msgstr ""
 
-#: share/html/Prefs/Other.html:88
+#: share/html/Prefs/Other.html:89
 #. (loc_fuzzy($msg))
 msgid "Preferred Key: %1"
 msgstr ""
 
-#: share/html/Prefs/Other.html:73
+#: share/html/Prefs/Other.html:74
 msgid "Preferred key"
 msgstr ""
 
@@ -4851,13 +5044,9 @@ msgstr ""
 msgid "Prepare Stubbed"
 msgstr ""
 
-#: share/html/Helpers/CalPopup.html:58 share/html/Ticket/Elements/Tabs:88
+#: share/html/Helpers/CalPopup.html:58 share/html/Ticket/Elements/Tabs:87
 msgid "Prev"
 msgstr "前の"
-
-#: share/html/Dashboards/Elements/Tabs:83
-msgid "Preview"
-msgstr ""
 
 #: share/html/Elements/CollectionListPaging:101
 msgid "Previous"
@@ -4876,15 +5065,15 @@ msgstr "優先度"
 msgid "Principal %1 not found."
 msgstr ""
 
-#: sbin/rt-email-digest:73
+#: sbin/rt-email-digest:96
 msgid "Print the resulting digest messages to STDOUT; don't mail them. Do not mark them as sent"
 msgstr ""
 
-#: sbin/rt-email-digest:75
+#: sbin/rt-email-digest:98
 msgid "Print this message"
 msgstr ""
 
-#: lib/RT/Tickets_Overlay.pm:1839 share/html/Search/Elements/PickBasics:186 share/html/Ticket/Create.html:187 share/html/Ticket/Elements/EditBasics:97 share/html/Ticket/Elements/ShowBasics:76
+#: lib/RT/Tickets_Overlay.pm:1843 share/html/Search/Elements/PickBasics:186 share/html/Ticket/Create.html:187 share/html/Ticket/Elements/EditBasics:97 share/html/Ticket/Elements/ShowBasics:76
 msgid "Priority"
 msgstr "優先度"
 
@@ -4938,11 +5127,11 @@ msgstr ""
 msgid "Query Builder"
 msgstr "クエリ作成"
 
-#: share/html/Search/Elements/Chart:103
+#: share/html/Search/Elements/Chart:105
 msgid "Query:"
 msgstr "クエリ:"
 
-#: lib/RT/Tickets_Overlay.pm:1666 share/html/Elements/QueueSummary:50 share/html/Elements/QuickCreate:56 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:56 share/html/Ticket/Create.html:66 share/html/Ticket/Elements/EditBasics:59 share/html/Ticket/Elements/ShowBasics:80 share/html/Tools/Reports/CreatedByDates.html:87 share/html/Tools/Reports/ResolvedByDates.html:88 share/html/Tools/Reports/ResolvedByOwner.html:68 share/html/User/Elements/DelegateRights:103
+#: lib/RT/Tickets_Overlay.pm:1670 share/html/Elements/QueueSummary:50 share/html/Elements/QuickCreate:56 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:56 share/html/Ticket/Create.html:66 share/html/Ticket/Elements/EditBasics:59 share/html/Ticket/Elements/ShowBasics:80 share/html/Tools/Reports/CreatedByDates.html:87 share/html/Tools/Reports/ResolvedByDates.html:88 share/html/Tools/Reports/ResolvedByOwner.html:68 share/html/User/Elements/DelegateRights:103
 msgid "Queue"
 msgstr "キュー"
 
@@ -4980,7 +5169,7 @@ msgstr "キューのロードができませんでした"
 msgid "Queue created"
 msgstr "キューが作成されました"
 
-#: lib/RT/CustomField_Overlay.pm:196 share/html/SelfService/Display.html:129
+#: lib/RT/CustomField_Overlay.pm:198 share/html/SelfService/Display.html:129
 msgid "Queue not found"
 msgstr "キューが見つかりません"
 
@@ -5025,6 +5214,10 @@ msgstr "RT %1. Copyright 1996-%1 Jesse Vincent <jesse\\@bestpractical.com>\\n"
 msgid "RT Administration"
 msgstr "RT管理"
 
+#: lib/RT/Installer.pm:160
+msgid "RT Administrator Email"
+msgstr ""
+
 #: NOT FOUND IN SOURCE
 msgid "RT Authentication error."
 msgstr "RT認証エラー"
@@ -5049,10 +5242,6 @@ msgstr "RT重大なエラー。メッセージが記録されません"
 msgid "RT Error"
 msgstr "RTエラー"
 
-#: lib/RT/Installer.pm:136
-msgid "RT Name"
-msgstr ""
-
 #: NOT FOUND IN SOURCE
 msgid "RT Received mail (%1) from itself."
 msgstr "RT受信メール(%1)自身からのメール "
@@ -5076,6 +5265,10 @@ msgstr ""
 #: share/html/Admin/Users/MyRT.html:79
 #. ($UserObj->Name)
 msgid "RT at a glance for the user %1"
+msgstr ""
+
+#: share/html/Install/Sendmail.html:53
+msgid "RT can communicate with your users about new tickets or new correspondence on tickets. Tell us where to find sendmail (or a sendmail compatible binary such as the one provided by postifx).  RT also needs to know who to notify when someone sends invalid email.  This must not be an address that feeds back into RT."
 msgstr ""
 
 #: share/html/Admin/CustomFields/Modify.html:104
@@ -5119,9 +5312,25 @@ msgstr "RTはあなたのコマンドを処理しました"
 msgid "RT is &copy; Copyright 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com&gt;.  It is distributed under <a href=\"http://www.gnu.org/copyleft/gpl.html\">Version 2 of the GNU General Public License.</a>"
 msgstr "RT&copy; Copyright 1996-%1 Jesse Vincent &lt;jesse@bestpractical.com&gt;。RTは<a href=\"http://www.gnu.org/copyleft/gpl.html\">GNU一般公衆利用許諾契約書のバージョン2にもとづいて配布されています。</a>"
 
+#: share/html/Install/index.html:58
+msgid "RT is an enterprise-grade issue tracking system designed to let you intelligently and efficiently manage tasks, issues, requests, defects or anything else that looks like an \"action item.\""
+msgstr ""
+
+#: share/html/Install/index.html:61
+msgid "RT is used by Fortune 100 companies, one-person businesses, government agencies, educational institutions, hospitals, nonprofits, NGOs, libraries, open source projects and all sorts of other organizations on all seven continents. (Yes, even Antarctica.)"
+msgstr ""
+
 #: NOT FOUND IN SOURCE
 msgid "RT thinks this message may be a bounce"
 msgstr "RTによるとこのメッセージはバウンスする可能性があります"
+
+#: lib/RT/Installer.pm:119
+msgid "RT will connect to the database using this user.  It will be created for you."
+msgstr ""
+
+#: lib/RT/Installer.pm:153
+msgid "RT will create a user called \"root\" and set this as their password"
+msgstr ""
 
 #: share/html/Search/Simple.html:62
 msgid "RT will look for anything else you enter in ticket subjects."
@@ -5133,6 +5342,14 @@ msgstr "RTはこのメッセージが電子署名されていないものとし�
 
 #: share/html/Admin/CustomFields/Modify.html:106 share/html/Admin/CustomFields/Modify.html:98
 msgid "RT will replace <tt>__id__</tt> and <tt>__CustomField__</tt> with the record id and custom field value, respectively"
+msgstr ""
+
+#: lib/RT/Installer.pm:140
+msgid "RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)"
+msgstr ""
+
+#: share/html/Install/DatabaseType.html:52
+msgid "RT works with a number of different databases. <b>MySQL</b>, <b>PostgreSQL</b>, <b>Oracle</b> and <b>SQLite</b> are all supported."
 msgstr ""
 
 #: NOT FOUND IN SOURCE
@@ -5216,7 +5433,7 @@ msgstr ""
 msgid "Reminder ticket #%1"
 msgstr ""
 
-#: share/html/Elements/MyReminders:50 share/html/Ticket/Elements/ShowSummary:78 share/html/Ticket/Elements/Tabs:151 share/html/Ticket/Reminders.html:57
+#: share/html/Elements/MyReminders:50 share/html/Ticket/Elements/ShowSummary:78 share/html/Ticket/Elements/Tabs:150 share/html/Ticket/Reminders.html:57
 msgid "Reminders"
 msgstr "リマインダ通知"
 
@@ -5225,7 +5442,7 @@ msgstr "リマインダ通知"
 msgid "Reminders for ticket #%1"
 msgstr ""
 
-#: share/html/Search/Bulk.html:99
+#: share/html/Search/Bulk.html:100
 msgid "Remove AdminCc"
 msgstr "管理Ccを削除する"
 
@@ -5233,15 +5450,15 @@ msgstr "管理Ccを削除する"
 msgid "Remove Bookmark"
 msgstr ""
 
-#: share/html/Search/Bulk.html:95
+#: share/html/Search/Bulk.html:96
 msgid "Remove Cc"
 msgstr "Ccを削除する"
 
-#: share/html/Search/Bulk.html:91
+#: share/html/Search/Bulk.html:92
 msgid "Remove Requestor"
 msgstr "作成者を削除する"
 
-#: share/html/Ticket/Elements/ShowTransaction:191 share/html/Ticket/Elements/Tabs:172
+#: share/html/Ticket/Elements/ShowTransaction:191 share/html/Ticket/Elements/Tabs:171
 msgid "Reply"
 msgstr "返信"
 
@@ -5249,7 +5466,7 @@ msgstr "返信"
 msgid "Reply Address"
 msgstr "返信アドレス"
 
-#: share/html/Search/Bulk.html:134 share/html/Ticket/ModifyAll.html:97 share/html/Ticket/Update.html:92
+#: share/html/Search/Bulk.html:135 share/html/Ticket/ModifyAll.html:97 share/html/Ticket/Update.html:92
 msgid "Reply to requestors"
 msgstr "リクエストした人に返信"
 
@@ -5261,7 +5478,7 @@ msgstr ""
 msgid "ReplyToTicket"
 msgstr ""
 
-#: share/html/Tools/Elements/Tabs:61 share/html/Tools/Reports/index.html:48 share/html/Tools/Reports/index.html:49
+#: share/html/Tools/Elements/Tabs:65 share/html/Tools/Reports/index.html:48 share/html/Tools/Reports/index.html:49 share/html/Tools/index.html:68
 msgid "Reports"
 msgstr "レポート作成"
 
@@ -5302,7 +5519,7 @@ msgstr ""
 msgid "Residence"
 msgstr "住所"
 
-#: share/html/Ticket/Elements/Tabs:183
+#: share/html/Ticket/Elements/Tabs:182
 msgid "Resolve"
 msgstr "解決済みにする"
 
@@ -5315,11 +5532,11 @@ msgstr ""
 msgid "Resolved"
 msgstr "解決済み"
 
-#: share/html/Tools/Reports/Elements/Tabs:57
+#: share/html/Tools/Reports/Elements/Tabs:57 share/html/Tools/Reports/index.html:58
 msgid "Resolved by owner"
 msgstr "解決済み（所有者別）"
 
-#: share/html/Tools/Reports/Elements/Tabs:61
+#: share/html/Tools/Reports/Elements/Tabs:61 share/html/Tools/Reports/index.html:63
 msgid "Resolved in date range"
 msgstr "解決済み（期間）"
 
@@ -5393,7 +5610,7 @@ msgstr "権利が無効になりました"
 msgid "Rights"
 msgstr "権利"
 
-#: lib/RT/Interface/Web.pm:831
+#: lib/RT/Interface/Web.pm:864
 #. ($object_type)
 msgid "Rights could not be granted for %1"
 msgstr ""
@@ -5402,7 +5619,7 @@ msgstr ""
 msgid "Roles"
 msgstr "役割"
 
-#: share/html/Dashboards/Subscription.html:141
+#: share/html/Dashboards/Subscription.html:146
 msgid "Rows"
 msgstr ""
 
@@ -5418,6 +5635,10 @@ msgstr "一度に表示する行数"
 msgid "SQLite"
 msgstr ""
 
+#: share/html/Install/DatabaseType.html:58
+msgid "SQLite is a database that doesn't need a server or any configuration whatsoever. RT's authors recommend it for testing, demoing and development, but it's not quite right for a high-volume production RT server."
+msgstr ""
+
 #: lib/RT/Date.pm:109 share/html/CalPopup.html:91
 msgid "Sat"
 msgstr ""
@@ -5430,7 +5651,7 @@ msgstr "土曜日"
 msgid "Save"
 msgstr "保存する"
 
-#: share/html/Admin/CustomFields/Modify.html:126 share/html/Admin/Groups/Modify.html:94 share/html/Admin/Queues/Modify.html:127 share/html/Admin/Queues/People.html:130 share/html/Admin/Users/GnuPG.html:75 share/html/Admin/Users/Modify.html:243 share/html/Dashboards/Modify.html:75 share/html/Dashboards/Subscription.html:156 share/html/Prefs/Other.html:77 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:71 share/html/Prefs/SearchOptions.html:65 share/html/SelfService/Prefs.html:60 share/html/Ticket/Elements/PreviewScrips:94 share/html/Ticket/Modify.html:65 share/html/Ticket/ModifyAll.html:130 share/html/Ticket/ModifyDates.html:63 share/html/Ticket/ModifyLinks.html:65 share/html/Ticket/ModifyPeople.html:63 share/html/User/Groups/Modify.html:79
+#: share/html/Admin/CustomFields/Modify.html:126 share/html/Admin/Groups/Modify.html:94 share/html/Admin/Queues/Modify.html:127 share/html/Admin/Queues/People.html:130 share/html/Admin/Users/GnuPG.html:75 share/html/Admin/Users/Modify.html:243 share/html/Dashboards/Modify.html:75 share/html/Dashboards/Subscription.html:161 share/html/Prefs/Other.html:78 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:71 share/html/Prefs/SearchOptions.html:65 share/html/SelfService/Prefs.html:60 share/html/Ticket/Elements/PreviewScrips:94 share/html/Ticket/Modify.html:65 share/html/Ticket/ModifyAll.html:130 share/html/Ticket/ModifyDates.html:63 share/html/Ticket/ModifyLinks.html:65 share/html/Ticket/ModifyPeople.html:63 share/html/User/Groups/Modify.html:79
 msgid "Save Changes"
 msgstr "変更を保存する"
 
@@ -5446,9 +5667,14 @@ msgstr ""
 msgid "Save changes"
 msgstr "変更を保存する"
 
-#: lib/RT/SharedSetting.pm:181
+#: lib/RT/SharedSetting.pm:196
 #. ($self->ObjectName, $name)
 msgid "Saved %1 %2"
+msgstr ""
+
+#: share/html/Elements/ShowSearch:72
+#. ($SavedSearch)
+msgid "Saved Search %1 not found"
 msgstr ""
 
 #: share/html/Search/Elements/EditSearches:135 share/html/Widgets/SavedSearch:159
@@ -5456,8 +5682,8 @@ msgid "Saved searches"
 msgstr ""
 
 #: share/html/Admin/Global/Scrip.html:79 share/html/Admin/Queues/Scrip.html:86 share/html/Ticket/Elements/PreviewScrips:65
-#. ($scrip->id)
 #. ($id)
+#. ($scrip->id)
 msgid "Scrip #%1"
 msgstr ""
 
@@ -5564,8 +5790,20 @@ msgstr ""
 msgid "SeeCustomField"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:95
+#: lib/RT/Dashboard.pm:79
+msgid "SeeDashboard"
+msgstr ""
+
+#: lib/RT/Group_Overlay.pm:96
 msgid "SeeGroup"
+msgstr ""
+
+#: lib/RT/Group_Overlay.pm:97
+msgid "SeeGroupDashboard"
+msgstr ""
+
+#: lib/RT/Dashboard.pm:84
+msgid "SeeOwnDashboard"
 msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:91
@@ -5574,6 +5812,10 @@ msgstr ""
 
 #: share/html/Admin/Elements/CustomFieldTabs:92 share/html/Admin/Elements/GroupTabs:77 share/html/Admin/Elements/QueueTabs:94 share/html/Admin/Elements/UserTabs:83
 msgid "Select"
+msgstr ""
+
+#: share/html/Install/DatabaseDetails.html:83 share/html/Install/DatabaseDetails.html:87
+msgid "Select Database Type"
 msgstr ""
 
 #: share/html/Admin/CustomFields/index.html:48 share/html/Admin/CustomFields/index.html:51
@@ -5616,7 +5858,7 @@ msgstr ""
 msgid "Select custom fields for transactions on tickets in all queues"
 msgstr ""
 
-#: share/html/Dashboards/Elements/Tabs:95
+#: share/html/Dashboards/Elements/Tabs:99
 msgid "Select dashboard"
 msgstr ""
 
@@ -5652,6 +5894,10 @@ msgstr ""
 msgid "Selected Custom Fields"
 msgstr ""
 
+#: lib/RT/Crypt/GnuPG.pm:1915
+msgid "Selected key either is not trusted or doesn't exist anymore."
+msgstr ""
+
 #: share/html/Admin/CustomFields/Objects.html:61
 msgid "Selected objects"
 msgstr ""
@@ -5682,14 +5928,6 @@ msgstr ""
 
 #: etc/initialdata:62
 msgid "Send mail to requestors and Ccs as a comment"
-msgstr ""
-
-#: lib/RT/Installer.pm:188
-msgid "Sendmail arguments"
-msgstr ""
-
-#: lib/RT/Installer.pm:194
-msgid "Sendmail bounce arguments"
 msgstr ""
 
 #: etc/initialdata:33
@@ -5732,11 +5970,11 @@ msgstr "9月"
 msgid "September"
 msgstr ""
 
-#: share/html/Prefs/Other.html:81 share/html/User/Elements/Tabs:57
+#: share/html/Prefs/Other.html:82 share/html/User/Elements/Tabs:57
 msgid "Settings"
 msgstr ""
 
-#: share/html/Ticket/Elements/ShowTransaction:174
+#: share/html/Dashboards/Elements/Tabs:83 share/html/Ticket/Elements/ShowTransaction:174
 msgid "Show"
 msgstr "表示する"
 
@@ -5748,7 +5986,7 @@ msgstr "承認状況を表示"
 msgid "Show Columns"
 msgstr "コラム表示"
 
-#: share/html/Ticket/Elements/Tabs:300
+#: share/html/Ticket/Elements/Tabs:301
 msgid "Show Results"
 msgstr "結果を見る"
 
@@ -5756,7 +5994,7 @@ msgstr "結果を見る"
 msgid "Show approved requests"
 msgstr "承認されたリクエストを表示する"
 
-#: share/html/Ticket/Graphs/Elements/EditGraphProperties:63
+#: share/html/Ticket/Graphs/Elements/EditGraphProperties:71
 msgid "Show as well"
 msgstr ""
 
@@ -5816,7 +6054,7 @@ msgstr ""
 msgid "ShowTicketComments"
 msgstr ""
 
-#: share/html/Admin/Elements/ToolTabs:60 share/html/Admin/Tools/Shredder/index.html:78 share/html/Ticket/Elements/Tabs:289
+#: share/html/Admin/Elements/ToolTabs:60 share/html/Admin/Tools/Shredder/index.html:78 share/html/Ticket/Elements/Tabs:290
 msgid "Shredder"
 msgstr ""
 
@@ -5848,7 +6086,7 @@ msgstr ""
 msgid "Signing enabled"
 msgstr ""
 
-#: share/html/Elements/Tabs.orig:71 share/html/Elements/Tabs:71
+#: share/html/Elements/Tabs:71
 msgid "Simple Search"
 msgstr "シンプル検索"
 
@@ -5856,15 +6094,19 @@ msgstr "シンプル検索"
 msgid "Single"
 msgstr "ひとつの"
 
+#: lib/RT/Installer.pm:139
+msgid "Site name"
+msgstr ""
+
 #: share/html/Search/Elements/EditFormat:72
 msgid "Size"
 msgstr "サイズ"
 
-#: share/html/Elements/Header:87
+#: share/html/Elements/Header:90
 msgid "Skip Menu"
 msgstr ""
 
-#: sbin/rt-email-digest:264
+#: sbin/rt-email-digest:287
 msgid "Skipping disabled user"
 msgstr ""
 
@@ -5896,7 +6138,7 @@ msgstr "並び順"
 msgid "Sorting"
 msgstr ""
 
-#: sbin/rt-email-digest:71
+#: sbin/rt-email-digest:94
 msgid "Specify whether this is a daily or weekly run."
 msgstr ""
 
@@ -5940,7 +6182,7 @@ msgstr "開始日'%1'を解析できませんでした"
 msgid "State"
 msgstr "都道府県"
 
-#: lib/RT/Ticket_Overlay.pm:902 lib/RT/Tickets_Overlay.pm:1700 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:59 share/html/Ticket/Create.html:70 share/html/Ticket/Elements/EditBasics:55 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Update.html:67 share/html/Tools/MyDay.html:67
+#: lib/RT/Ticket_Overlay.pm:902 lib/RT/Tickets_Overlay.pm:1704 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:59 share/html/Ticket/Create.html:70 share/html/Ticket/Elements/EditBasics:55 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Update.html:67 share/html/Tools/MyDay.html:67
 msgid "Status"
 msgstr "ステータス"
 
@@ -5953,7 +6195,7 @@ msgstr ""
 msgid "Status changed from %1 to %2"
 msgstr "ステータスが%1から%2に変更されました"
 
-#: share/html/Ticket/Elements/Tabs:205
+#: share/html/Ticket/Elements/Tabs:204
 msgid "Steal"
 msgstr "担当者変更"
 
@@ -5963,6 +6205,17 @@ msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:117
 msgid "StealTicket"
+msgstr ""
+
+#: share/html/Install/Basics.html:48 share/html/Install/DatabaseDetails.html:48 share/html/Install/DatabaseType.html:48 share/html/Install/Finish.html:48 share/html/Install/Global.html:48 share/html/Install/Initialize.html:48 share/html/Install/Sendmail.html:48
+#. (4, 7)
+#. (7, 7)
+#. (5, 7)
+#. (6, 7)
+#. (3, 7)
+#. (1, 7)
+#. (2, 7)
+msgid "Step %1 of %2: "
 msgstr ""
 
 #: lib/RT/Transaction_Overlay.pm:667
@@ -5978,7 +6231,7 @@ msgstr "%1から盗用した "
 msgid "Style"
 msgstr "表示スタイル"
 
-#: lib/RT/Ticket_Overlay.pm:898 lib/RT/Tickets_Overlay.pm:1782 share/html/Elements/QuickCreate:53 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:137 share/html/SelfService/Create.html:81 share/html/SelfService/Update.html:67 share/html/Ticket/Create.html:110 share/html/Ticket/Elements/EditBasics:50 share/html/Ticket/Elements/Reminders:128 share/html/Ticket/Forward.html:64 share/html/Ticket/ModifyAll.html:103 share/html/Ticket/Update.html:96
+#: lib/RT/Ticket_Overlay.pm:898 lib/RT/Tickets_Overlay.pm:1786 share/html/Elements/QuickCreate:53 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:138 share/html/SelfService/Create.html:81 share/html/SelfService/Update.html:67 share/html/Ticket/Create.html:110 share/html/Ticket/Elements/EditBasics:50 share/html/Ticket/Elements/Reminders:128 share/html/Ticket/Forward.html:64 share/html/Ticket/ModifyAll.html:103 share/html/Ticket/Update.html:96
 msgid "Subject"
 msgstr "件名"
 
@@ -6000,11 +6253,11 @@ msgstr ""
 msgid "Submit"
 msgstr ""
 
-#: share/html/Dashboards/Subscription.html:160
+#: share/html/Dashboards/Subscription.html:163
 msgid "Subscribe"
 msgstr ""
 
-#: share/html/Dashboards/Subscription.html:268
+#: share/html/Dashboards/Subscription.html:261
 #. ($DashboardObj->Name)
 msgid "Subscribe to dashboard %1"
 msgstr ""
@@ -6017,16 +6270,16 @@ msgstr ""
 msgid "SubscribeDashboard"
 msgstr ""
 
-#: share/html/Dashboards/Subscription.html:254
+#: share/html/Dashboards/Subscription.html:247
 #. ($DashboardObj->Name)
 msgid "Subscribed to dashboard %1"
 msgstr ""
 
-#: share/html/Dashboards/Elements/ShowDashboards:57 share/html/Dashboards/Elements/Tabs:78 share/html/Dashboards/Subscription.html:97
+#: share/html/Dashboards/Elements/ShowDashboards:80 share/html/Dashboards/Elements/Tabs:78 share/html/Dashboards/Subscription.html:97
 msgid "Subscription"
 msgstr ""
 
-#: share/html/Dashboards/Subscription.html:259
+#: share/html/Dashboards/Subscription.html:252
 #. ($msg)
 msgid "Subscription could not be created: %1"
 msgstr ""
@@ -6051,7 +6304,7 @@ msgstr "日曜日"
 msgid "SuperUser"
 msgstr ""
 
-#: lib/RT/Config.pm:228
+#: lib/RT/Config.pm:237
 msgid "Suspended"
 msgstr ""
 
@@ -6063,11 +6316,11 @@ msgstr "システム"
 msgid "System Configuration"
 msgstr "システムの設定情報"
 
-#: lib/RT/Installer.pm:227 share/html/Elements/SelectTimezone:58
+#: lib/RT/Installer.pm:225 share/html/Elements/SelectTimezone:71
 msgid "System Default"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:355 lib/RT/Interface/Web.pm:830 share/html/Admin/Elements/SelectRights:108
+#: lib/RT/ACE_Overlay.pm:355 lib/RT/Interface/Web.pm:863 share/html/Admin/Elements/SelectRights:108
 msgid "System Error"
 msgstr "システムエラー"
 
@@ -6100,7 +6353,7 @@ msgstr ""
 msgid "TEST_STRING"
 msgstr "テスト＿ストリング"
 
-#: etc/initialdata:665 share/html/Search/Elements/EditFormat:69 share/html/Ticket/Elements/Tabs:198
+#: etc/initialdata:690 share/html/Search/Elements/EditFormat:69 share/html/Ticket/Elements/Tabs:197
 msgid "Take"
 msgstr "担当する"
 
@@ -6115,6 +6368,10 @@ msgstr ""
 #: lib/RT/Transaction_Overlay.pm:652
 msgid "Taken"
 msgstr "担当済み"
+
+#: share/html/Install/DatabaseDetails.html:53
+msgid "Tell us a little about how to find the database RT will be using"
+msgstr ""
 
 #: share/html/Admin/Elements/EditScrip:74 share/html/Tools/Offline.html:79
 msgid "Template"
@@ -6135,7 +6392,7 @@ msgstr ""
 msgid "Template '%1' not found"
 msgstr ""
 
-#: lib/RT/Template_Overlay.pm:393
+#: lib/RT/Template_Overlay.pm:390
 msgid "Template is empty"
 msgstr ""
 
@@ -6151,11 +6408,11 @@ msgstr "テンプレートが見つかりません"
 msgid "Template not found\\n"
 msgstr "テンプレートが見つかりません\\n"
 
-#: lib/RT/Template_Overlay.pm:373
+#: lib/RT/Template_Overlay.pm:370
 msgid "Template parsed"
 msgstr "テンプレートを解析しました"
 
-#: lib/RT/Template_Overlay.pm:436
+#: lib/RT/Template_Overlay.pm:433
 msgid "Template parsing error"
 msgstr ""
 
@@ -6169,11 +6426,11 @@ msgstr ""
 "%1\\n"
 "のテンプレート"
 
-#: lib/RT/CustomField_Overlay.pm:842 lib/RT/Record.pm:911
+#: lib/RT/CustomField_Overlay.pm:855 lib/RT/Record.pm:909
 msgid "That is already the current value"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:397
+#: lib/RT/CustomField_Overlay.pm:410
 msgid "That is not a value for this custom field"
 msgstr "このカスタムフィールドはその値をうけつけません"
 
@@ -6257,6 +6514,10 @@ msgstr "基本"
 msgid "The CC of a ticket"
 msgstr ""
 
+#: lib/RT/Installer.pm:110
+msgid "The DBA's database password"
+msgstr ""
+
 #: lib/RT/ACE_Overlay.pm:102
 msgid "The administrative CC of a ticket"
 msgstr ""
@@ -6265,8 +6526,8 @@ msgstr ""
 msgid "The comment has been recorded"
 msgstr "コメントは記録されました"
 
-#: lib/RT/Installer.pm:77
-msgid "The domain name of your database server (like 'db.int.example.com')"
+#: lib/RT/Installer.pm:79
+msgid "The domain name of your database server (like 'db.example.com')."
 msgstr ""
 
 #: bin/rt-crontool:325
@@ -6293,7 +6554,7 @@ msgstr ""
 msgid "The key is ultimately trusted"
 msgstr ""
 
-#: lib/RT/Record.pm:914
+#: lib/RT/Record.pm:912
 msgid "The new value has been set."
 msgstr ""
 
@@ -6309,12 +6570,21 @@ msgstr ""
 msgid "The requestor of a ticket"
 msgstr ""
 
+#: share/html/Install/Finish.html:64
+#. (RT::Installer->ConfigFile)
+msgid "The settings you've chosen are stored in %1.  You can edit this file to refine your configuration further. You can prevent this installation wizard from being shown again by running `<tt>chmod -w '%1'</tt>`."
+msgstr ""
+
 #: share/html/Elements/GnuPG/KeyIssues:52
 msgid "The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem addresses are:"
 msgstr ""
 
 #: lib/RT/Config.pm:106
 msgid "Theme"
+msgstr ""
+
+#: lib/RT/Crypt/GnuPG.pm:1942
+msgid "There are several keys suitable for encryption."
 msgstr ""
 
 #: share/html/Ticket/Elements/ShowUpdateStatus:50
@@ -6326,11 +6596,23 @@ msgstr ""
 msgid "There is marginal trust in this key"
 msgstr ""
 
+#: lib/RT/Crypt/GnuPG.pm:1934
+msgid "There is no key suitable for encryption."
+msgstr ""
+
+#: lib/RT/Crypt/GnuPG.pm:1938
+msgid "There is one suitable key, but trust level is not set."
+msgstr ""
+
 #: share/html/Admin/Elements/EditUserComments:49
 msgid "These comments aren't generally visible to the user"
 msgstr "それらのコメントは実際ユーザーには見ることができません"
 
-#: lib/RT/CustomField_Overlay.pm:876
+#: share/html/Install/Basics.html:53
+msgid "These configuration options cover some of the basics needed to get RT up and running.  We need to know the name of your RT installation and the domain name where RT will live.  You will also need to set a password for your defauly administrative user."
+msgstr ""
+
+#: lib/RT/CustomField_Overlay.pm:889
 msgid "This custom field does not apply to that object"
 msgstr ""
 
@@ -6411,9 +6693,9 @@ msgstr "チケット %1がキュー '%2'で作成されました"
 msgid "Ticket %1 loaded\\n"
 msgstr "チケット%1がロードされました\\n"
 
-#: share/html/Search/Bulk.html:369 share/html/Tools/MyDay.html:100 share/html/Tools/MyDay.html:91 share/html/Tools/MyDay.html:94
-#. ($id, $msg)
+#: share/html/Search/Bulk.html:371 share/html/Tools/MyDay.html:100 share/html/Tools/MyDay.html:91 share/html/Tools/MyDay.html:94
 #. ($Ticket->Id, $_)
+#. ($id, $msg)
 msgid "Ticket %1: %2"
 msgstr "チケット　%1: %2"
 
@@ -6438,7 +6720,7 @@ msgstr ""
 msgid "Ticket Search"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:1100 share/html/Admin/Elements/GlobalCustomFieldTabs:81 share/html/Admin/Global/CustomFields/index.html:89
+#: lib/RT/CustomField_Overlay.pm:1113 share/html/Admin/Elements/GlobalCustomFieldTabs:81 share/html/Admin/Global/CustomFields/index.html:89
 msgid "Ticket Transactions"
 msgstr ""
 
@@ -6446,11 +6728,11 @@ msgstr ""
 msgid "Ticket attachment"
 msgstr "チケット添付"
 
-#: lib/RT/Tickets_Overlay.pm:1969
+#: lib/RT/Tickets_Overlay.pm:1973
 msgid "Ticket content"
 msgstr "チケットコンテンツ"
 
-#: lib/RT/Tickets_Overlay.pm:2018
+#: lib/RT/Tickets_Overlay.pm:2022
 msgid "Ticket content type"
 msgstr "チケットコンテンツタイプ"
 
@@ -6495,16 +6777,16 @@ msgstr "チケットウォッチャー"
 msgid "TicketSQL search module"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:1099 share/html/Admin/Elements/GlobalCustomFieldTabs:75 share/html/Admin/Global/CustomFields/index.html:83 share/html/Elements/Tabs.orig:74 share/html/Elements/Tabs:74 share/html/Search/Chart:113 share/html/Search/Elements/Chart:115
+#: lib/RT/CustomField_Overlay.pm:1112 share/html/Admin/Elements/GlobalCustomFieldTabs:75 share/html/Admin/Global/CustomFields/index.html:83 share/html/Elements/Tabs:74 share/html/Search/Chart:113 share/html/Search/Elements/Chart:117
 msgid "Tickets"
 msgstr "チケット"
 
-#: lib/RT/Tickets_Overlay.pm:2189
+#: lib/RT/Tickets_Overlay.pm:2193
 #. ($self->loc( $args{'TYPE'} ),            $args{'BASE'},)
 msgid "Tickets %1 %2"
 msgstr ""
 
-#: lib/RT/Tickets_Overlay.pm:2144
+#: lib/RT/Tickets_Overlay.pm:2148
 #. ($self->loc( $args{'TYPE'} ),            $args{'TARGET'})
 msgid "Tickets %1 by %2"
 msgstr ""
@@ -6537,11 +6819,11 @@ msgstr ""
 msgid "Time Estimated"
 msgstr "所要時間（予想）"
 
-#: lib/RT/Tickets_Overlay.pm:1940 share/html/Search/Elements/PickBasics:166 share/html/Ticket/Create.html:202 share/html/Ticket/Elements/EditBasics:89
+#: lib/RT/Tickets_Overlay.pm:1944 share/html/Search/Elements/PickBasics:166 share/html/Ticket/Create.html:202 share/html/Ticket/Elements/EditBasics:89
 msgid "Time Left"
 msgstr "残り時間"
 
-#: lib/RT/Tickets_Overlay.pm:1915 share/html/Search/Elements/PickBasics:164 share/html/Ticket/Create.html:195 share/html/Ticket/Elements/EditBasics:82
+#: lib/RT/Tickets_Overlay.pm:1919 share/html/Search/Elements/PickBasics:164 share/html/Ticket/Create.html:195 share/html/Ticket/Elements/EditBasics:82
 msgid "Time Worked"
 msgstr "作業時間"
 
@@ -6561,7 +6843,7 @@ msgstr "使った時間"
 msgid "TimeWorked"
 msgstr "使った時間"
 
-#: share/html/User/Prefs.html:82
+#: lib/RT/Installer.pm:210 lib/RT/Installer.pm:235 share/html/User/Prefs.html:82
 msgid "Timezone"
 msgstr ""
 
@@ -6590,11 +6872,11 @@ msgstr "サポート、トレーニング、カスタム開発またはライセ
 msgid "Told"
 msgstr ""
 
-#: share/html/Admin/Elements/Tabs:70 share/html/Admin/index.html:84 share/html/Elements/Tabs.orig:77 share/html/Elements/Tabs:77 share/html/Tools/index.html:48 share/html/Tools/index.html:51
+#: share/html/Admin/Elements/Tabs:70 share/html/Admin/index.html:84 share/html/Elements/Tabs:77 share/html/Tools/index.html:48 share/html/Tools/index.html:51
 msgid "Tools"
 msgstr "表示ツール"
 
-#: share/html/Search/Elements/Chart:136
+#: share/html/Search/Elements/Chart:138
 msgid "Total"
 msgstr "合計"
 
@@ -6635,11 +6917,11 @@ msgstr "権利: %1を削除しています"
 msgid "Tue"
 msgstr ""
 
-#: lib/RT/Config.pm:178
+#: lib/RT/Config.pm:187
 msgid "Tue Dec 25 21:59:12 1995"
 msgstr ""
 
-#: lib/RT/Config.pm:179
+#: lib/RT/Config.pm:188
 msgid "Tue, 25 Dec 1995 21:59:12 -0300"
 msgstr ""
 
@@ -6647,11 +6929,11 @@ msgstr ""
 msgid "Tue."
 msgstr "火曜日"
 
-#: lib/RT/Ticket_Overlay.pm:904 lib/RT/Tickets_Overlay.pm:1754 share/html/Admin/CustomFields/Modify.html:67 share/html/Admin/Elements/EditCustomField:67 share/html/Ticket/Elements/AddWatchers:56 share/html/Ticket/Elements/AddWatchers:67 share/html/Ticket/Elements/AddWatchers:77
+#: lib/RT/Ticket_Overlay.pm:904 lib/RT/Tickets_Overlay.pm:1758 share/html/Admin/CustomFields/Modify.html:67 share/html/Admin/Elements/EditCustomField:67 share/html/Ticket/Elements/AddWatchers:56 share/html/Ticket/Elements/AddWatchers:67 share/html/Ticket/Elements/AddWatchers:77
 msgid "Type"
 msgstr "タイプ"
 
-#: lib/RT/CustomField_Overlay.pm:736
+#: lib/RT/CustomField_Overlay.pm:749
 #. ($self->FriendlyTypeComposite( $old ),        $self->FriendlyTypeComposite( $composite ),)
 msgid "Type changed from '%1' to '%2'"
 msgstr ""
@@ -6660,14 +6942,9 @@ msgstr ""
 msgid "Unable to determine object type or id"
 msgstr ""
 
-#: sbin/rt-email-dashboards:201
-#. ($subscription->SubValue('DashboardId'),            $subscription->Id,            $currentuser->Name)
-msgid "Unable to load dashboard %1 of subscription %2 for user %3"
-msgstr ""
-
-#: share/html/Dashboards/index.html:104
-#. ($Unsubscribe)
-msgid "Unable to unsubscribe to dashboard %1"
+#: share/html/Dashboards/Subscription.html:236
+#. ($DashboardId)
+msgid "Unable to subscribe to dashboard %1: Permission denied"
 msgstr ""
 
 #: lib/RT/ScripCondition_Overlay.pm:126
@@ -6690,7 +6967,7 @@ msgstr ""
 msgid "Unknown (this value is new to the system)"
 msgstr ""
 
-#: lib/RT/Attachment_Overlay.pm:300 lib/RT/Record.pm:806
+#: lib/RT/Attachment_Overlay.pm:300 lib/RT/Record.pm:804
 #. ($self->ContentEncoding)
 #. ($ContentEncoding)
 msgid "Unknown ContentEncoding %1"
@@ -6701,7 +6978,7 @@ msgstr "不明なエンコーディング%1"
 msgid "Unknown field: %1"
 msgstr ""
 
-#: share/html/Ticket/Graphs/Elements/EditGraphProperties:57
+#: share/html/Ticket/Graphs/Elements/EditGraphProperties:65
 msgid "Unlimit"
 msgstr ""
 
@@ -6721,28 +6998,19 @@ msgstr ""
 msgid "Unselected objects"
 msgstr ""
 
-#: lib/RT/User_Overlay.pm:1578 lib/RT/User_Overlay.pm:1594
+#: lib/RT/User_Overlay.pm:1616 lib/RT/User_Overlay.pm:1632
 msgid "Unset private key"
-msgstr ""
-
-#: share/html/Dashboards/Subscription.html:158
-msgid "Unsubscribe"
-msgstr ""
-
-#: share/html/Dashboards/index.html:101
-#. ($Dashboard->Name)
-msgid "Unsubscribed to dashboard %1"
 msgstr ""
 
 #: lib/RT/Transaction_Overlay.pm:648
 msgid "Untaken"
 msgstr "とられていない"
 
-#: share/html/Admin/Elements/EditScrip:143 share/html/Admin/Users/Memberships.html:88 share/html/Elements/RT__Ticket/ColumnMap:276 share/html/Search/Bulk.html:202 share/html/Search/Bulk.html:80 share/html/Search/Elements/EditSearches:70
+#: share/html/Admin/Elements/EditScrip:143 share/html/Admin/Users/Memberships.html:88 share/html/Elements/RT__Ticket/ColumnMap:281 share/html/Search/Bulk.html:203 share/html/Search/Bulk.html:81 share/html/Search/Elements/EditSearches:70
 msgid "Update"
 msgstr "更新"
 
-#: share/html/Ticket/Graphs/Elements/EditGraphProperties:113
+#: share/html/Ticket/Graphs/Elements/EditGraphProperties:121
 msgid "Update Graph"
 msgstr ""
 
@@ -6754,7 +7022,7 @@ msgstr "IDを更新"
 msgid "Update Ticket"
 msgstr "チケットの更新"
 
-#: share/html/Search/Bulk.html:131 share/html/Ticket/ModifyAll.html:90 share/html/Ticket/Update.html:86
+#: share/html/Search/Bulk.html:132 share/html/Ticket/ModifyAll.html:90 share/html/Ticket/Update.html:86
 msgid "Update Type"
 msgstr "タイプの更新"
 
@@ -6770,7 +7038,7 @@ msgstr "Eメールを更新"
 msgid "Update format and Search"
 msgstr ""
 
-#: share/html/Search/Bulk.html:209
+#: share/html/Search/Bulk.html:211
 msgid "Update multiple tickets"
 msgstr "複数のチケットを更新"
 
@@ -6778,7 +7046,7 @@ msgstr "複数のチケットを更新"
 msgid "Update name"
 msgstr "名前を更新"
 
-#: lib/RT/Action/CreateTickets.pm:521 lib/RT/Interface/Web.pm:678
+#: lib/RT/Action/CreateTickets.pm:521 lib/RT/Interface/Web.pm:712
 msgid "Update not recorded."
 msgstr "更新内容は記録されませんでした"
 
@@ -6808,11 +7076,11 @@ msgstr "チケット #%1 を更新"
 msgid "Update ticket #%1 (%2)"
 msgstr ""
 
-#: lib/RT/Action/CreateTickets.pm:519 lib/RT/Interface/Web.pm:677
+#: lib/RT/Action/CreateTickets.pm:519 lib/RT/Interface/Web.pm:711
 msgid "Update type was neither correspondence nor comment."
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:1177 lib/RT/Ticket_Overlay.pm:907 share/html/Elements/SelectDateType:56 share/html/Ticket/Elements/ShowDates:79
+#: lib/RT/CustomField_Overlay.pm:1190 lib/RT/Ticket_Overlay.pm:907 share/html/Elements/SelectDateType:56 share/html/Ticket/Elements/ShowDates:79
 msgid "Updated"
 msgstr "最終更新日時"
 
@@ -6853,15 +7121,15 @@ msgstr ""
 msgid "Upload your changes"
 msgstr ""
 
-#: sbin/rt-email-digest:65
+#: sbin/rt-email-digest:88
 msgid "Usage: "
 msgstr ""
 
-#: lib/RT/Installer.pm:130
+#: lib/RT/Installer.pm:133
 msgid "Use SSL?"
 msgstr ""
 
-#: share/html/Widgets/Form/Boolean:66
+#: share/html/Widgets/Form/Boolean:68
 #. ($DefaultValue? loc('Yes'): loc('No'))
 msgid "Use default (%1)"
 msgstr ""
@@ -6920,7 +7188,7 @@ msgstr "ユーザーID"
 msgid "User Rights"
 msgstr "ユーザー権利"
 
-#: lib/RT/Interface/Web.pm:1205
+#: lib/RT/Interface/Web.pm:1238
 #. ($cf->Name, ref $args{'Object'}, $args{'Object'}->id)
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr ""
@@ -6966,7 +7234,7 @@ msgstr ""
 msgid "Username"
 msgstr "ユーザー名"
 
-#: lib/RT/CustomField_Overlay.pm:1101 share/html/Admin/Elements/GlobalCustomFieldTabs:57 share/html/Admin/Elements/SelectNewGroupMembers:49 share/html/Admin/Elements/Tabs:55 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:77 share/html/Admin/Queues/People.html:91 share/html/Admin/index.html:58 share/html/User/Groups/Members.html:81
+#: lib/RT/CustomField_Overlay.pm:1114 share/html/Admin/Elements/GlobalCustomFieldTabs:57 share/html/Admin/Elements/SelectNewGroupMembers:49 share/html/Admin/Elements/Tabs:55 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:77 share/html/Admin/Queues/People.html:91 share/html/Admin/index.html:58 share/html/User/Groups/Members.html:81
 msgid "Users"
 msgstr "ユーザー"
 
@@ -6979,7 +7247,7 @@ msgstr "ユーザーが検索基準にあっています"
 msgid "Using transaction #%1..."
 msgstr ""
 
-#: lib/RT/Tickets_Overlay_SQL.pm:336
+#: lib/RT/Tickets_Overlay_SQL.pm:339
 msgid "Valid Query"
 msgstr ""
 
@@ -6991,6 +7259,22 @@ msgstr ""
 msgid "Values"
 msgstr ""
 
+#: share/html/Tools/index.html:70
+msgid "Various RT reports"
+msgstr ""
+
+#: lib/RT/Group_Overlay.pm:97
+msgid "View dashboards for this group"
+msgstr ""
+
+#: lib/RT/Dashboard.pm:84
+msgid "View personal dashboards"
+msgstr ""
+
+#: lib/RT/Dashboard.pm:79
+msgid "View system dashboards"
+msgstr ""
+
 #: lib/RT/Config.pm:124
 msgid "WYSIWYG message composer"
 msgstr ""
@@ -6999,7 +7283,7 @@ msgstr ""
 msgid "Warning! This is NOT signed!"
 msgstr ""
 
-#: share/html/Dashboards/Subscription.html:255
+#: share/html/Dashboards/Subscription.html:248
 msgid "Warning: you have no email address set, so you will not receive this dashboard until you have it set"
 msgstr ""
 
@@ -7015,6 +7299,18 @@ msgstr ""
 msgid "Watchers"
 msgstr "ウォッチャー"
 
+#: share/html/Install/DatabaseDetails.html:55
+msgid "We need to know the name of the database RT will use and where to find it.  We also need to know the username and password of the user RT should use. RT can create the database and user for you, which is why we ask for the username and password of a user with DBA privileges.  During step 6 of the installation process we will use this information to create and initialize RT's database."
+msgstr ""
+
+#: share/html/Install/DatabaseDetails.html:64
+msgid "We were able to find your database and connect as the DBA.  You can click on 'Customize Basics' to continue customizing RT."
+msgstr ""
+
+#: lib/RT/Installer.pm:197
+msgid "Web port"
+msgstr ""
+
 #: NOT FOUND IN SOURCE
 msgid "WebEncoding"
 msgstr "ウェブエンコーディング"
@@ -7027,7 +7323,7 @@ msgstr ""
 msgid "Wed."
 msgstr "水曜日"
 
-#: lib/RT/Config.pm:227
+#: lib/RT/Config.pm:236
 msgid "Weekly digest"
 msgstr ""
 
@@ -7039,11 +7335,23 @@ msgstr ""
 msgid "What I did today"
 msgstr ""
 
-#: etc/initialdata:582
+#: share/html/Install/index.html:54
+msgid "What is RT?"
+msgstr ""
+
+#: lib/RT/Installer.pm:161
+msgid "When RT can't handle an email message, where should it be forwarded?"
+msgstr ""
+
+#: share/html/Install/Global.html:54
+msgid "When RT sends an email it sets the From: and Reply-To: headers so users can add to the conversation by just hitting Reply in their mail client.  It uses different addresses for Replies and Comments.  These can be changed for each of your queues.  These addresses will need to be configured to use the <tt>rt-mailgate</tt> program."
+msgstr ""
+
+#: etc/initialdata:607
 msgid "When a ticket has been approved by all approvers, add correspondence to the original ticket"
 msgstr ""
 
-#: etc/initialdata:546
+#: etc/initialdata:571
 msgid "When a ticket has been approved by any approver, add correspondence to the original ticket"
 msgstr ""
 
@@ -7051,12 +7359,16 @@ msgstr ""
 msgid "When a ticket is created"
 msgstr ""
 
-#: etc/initialdata:479
+#: etc/initialdata:504
 msgid "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"
 msgstr ""
 
 #: etc/initialdata:109
 msgid "When anything happens"
+msgstr ""
+
+#: share/html/Install/DatabaseDetails.html:58
+msgid "When you click on 'Check Database Connectivity' there may be a small delay while RT tries to connect to your database"
 msgstr ""
 
 #: etc/initialdata:172 etc/upgrade/3.7.1/content:3
@@ -7099,6 +7411,10 @@ msgstr ""
 msgid "Whenever correspondence comes in"
 msgstr ""
 
+#: lib/RT/Installer.pm:183
+msgid "Where to find your sendmail binary."
+msgstr ""
+
 #: share/html/Admin/Tools/Shredder/Elements/SelectObjects:63
 msgid "Wipeout"
 msgstr ""
@@ -7119,7 +7435,7 @@ msgstr "電話(仕事）"
 msgid "Worked"
 msgstr "累積作業時間"
 
-#: share/html/Widgets/Form/Boolean:75
+#: share/html/Widgets/Form/Boolean:77
 msgid "Yes"
 msgstr ""
 
@@ -7177,6 +7493,22 @@ msgstr "指定のキューでチケット作成の許可がありません"
 msgid "You may not create requests in that queue."
 msgstr "指定のキューでリクエストの作成ができません"
 
+#: share/html/Install/Basics.html:82
+msgid "You must enter an Administrative password"
+msgstr ""
+
+#: share/html/Install/Finish.html:56
+msgid "You should be taken directly to a login page. You'll be able to log in with username of <tt>root</tt> and the password you set earlier."
+msgstr ""
+
+#: share/html/Install/DatabaseType.html:55
+msgid "You should choose the database you or your local database administrator is most comfortable with."
+msgstr ""
+
+#: share/html/Install/index.html:66
+msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>Let's go!</i> below, RT will guide you through setting up your RT server and database."
+msgstr ""
+
 #: share/html/NoAuth/Logout.html:59
 msgid "You're welcome to login again"
 msgstr "トップページ"
@@ -7189,16 +7521,16 @@ msgstr "あなたの%1のリクエスト"
 msgid "Your RT administrator has misconfigured the mail aliases which invoke RT"
 msgstr "あなたのRT管理者はRTを呼び出すメールaliasesを設定できませんでした"
 
-#: etc/initialdata:563 etc/initialdata:565
+#: etc/initialdata:588 etc/initialdata:590
 #. (# loc	    $self->TransactionObj->CreatorObj->Name,)
 msgid "Your request has been approved by %1. Other approvals may still be pending."
 msgstr ""
 
-#: etc/initialdata:601
+#: etc/initialdata:626
 msgid "Your request has been approved."
 msgstr "あなたのリクエストは承認されました"
 
-#: etc/initialdata:506
+#: etc/initialdata:531
 msgid "Your request was rejected."
 msgstr "あなたのリクエストは拒否されました"
 
@@ -7234,6 +7566,10 @@ msgstr "%1への許可"
 #: share/html/Elements/SelectDateRelation:57 t/api/currentuser.t:28
 msgid "before"
 msgstr "が以下より前である"
+
+#: share/html/Ticket/Graphs/Elements/EditGraphProperties:54
+msgid "bottom to top"
+msgstr ""
 
 #: share/html/SelfService/Closed.html:53
 msgid "closed"
@@ -7275,10 +7611,6 @@ msgstr "が以下を含まない"
 msgid "doesn't match"
 msgstr ""
 
-#: lib/RT/Installer.pm:206
-msgid "domain name"
-msgstr ""
-
 #: share/html/Ticket/ShowEmailRecord.html:62
 msgid "download"
 msgstr ""
@@ -7299,7 +7631,7 @@ msgstr ""
 msgid "error: can't move up"
 msgstr ""
 
-#: share/html/Search/Elements/EditQuery:185
+#: share/html/Search/Elements/EditQuery:188
 msgid "error: nothing to delete"
 msgstr ""
 
@@ -7307,7 +7639,7 @@ msgstr ""
 msgid "error: nothing to move"
 msgstr ""
 
-#: share/html/Search/Elements/EditQuery:205
+#: share/html/Search/Elements/EditQuery:208
 msgid "error: nothing to toggle"
 msgstr ""
 
@@ -7319,7 +7651,7 @@ msgstr ""
 msgid "greater than"
 msgstr "より大きい"
 
-#: lib/RT/Group_Overlay.pm:140
+#: lib/RT/Group_Overlay.pm:145
 #. ($self->Name)
 msgid "group '%1'"
 msgstr "グループ'%1'"
@@ -7356,6 +7688,10 @@ msgstr ""
 msgid "key revoked"
 msgstr ""
 
+#: share/html/Ticket/Graphs/Elements/EditGraphProperties:52
+msgid "left to right"
+msgstr ""
+
 #: share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectEqualityOperator:61
 msgid "less than"
 msgstr "より小さい"
@@ -7368,7 +7704,7 @@ msgstr ""
 msgid "matches"
 msgstr "合う"
 
-#: share/html/Ticket/Graphs/Elements/EditGraphProperties:56
+#: share/html/Ticket/Graphs/Elements/EditGraphProperties:64
 msgid "maximum depth"
 msgstr ""
 
@@ -7420,16 +7756,12 @@ msgstr "着手"
 msgid "other..."
 msgstr ""
 
-#: lib/RT/Installer.pm:154
-msgid "password of the user root in RT"
-msgstr ""
-
-#: lib/RT/Group_Overlay.pm:145
+#: lib/RT/Group_Overlay.pm:150
 #. ($self->Name, $user->Name)
 msgid "personal group '%1' for user '%2'"
 msgstr "ユーザー　'%2'　のパーソナルグループ　'%1'　"
 
-#: lib/RT/Group_Overlay.pm:153
+#: lib/RT/Group_Overlay.pm:158
 #. ($queue->Name, $self->Type)
 msgid "queue %1 %2"
 msgstr "キュー　%1 %2"
@@ -7441,6 +7773,10 @@ msgstr "拒否"
 #: lib/RT/Queue_Overlay.pm:85
 msgid "resolved"
 msgstr "解決済み"
+
+#: share/html/Ticket/Graphs/Elements/EditGraphProperties:55
+msgid "right to left"
+msgstr ""
 
 #: lib/RT/Date.pm:321
 msgid "sec"
@@ -7458,12 +7794,12 @@ msgstr "保留"
 msgid "summary rows"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:148
+#: lib/RT/Group_Overlay.pm:153
 #. ($self->Type)
 msgid "system %1"
 msgstr "システム　%1"
 
-#: lib/RT/Group_Overlay.pm:159
+#: lib/RT/Group_Overlay.pm:164
 #. ($self->Type)
 msgid "system group '%1'"
 msgstr "システムグループ　'%1'"
@@ -7472,16 +7808,28 @@ msgstr "システムグループ　'%1'"
 msgid "the calling component did not specify why"
 msgstr "呼び出しているコンポーネントはなぜ次のようなことが起こるのか特定できませんでした"
 
-#: lib/RT/Group_Overlay.pm:156
+#: lib/RT/Installer.pm:169
+msgid "the default addresses that will be listed in From: and Reply-To: headers of comment mail."
+msgstr ""
+
+#: lib/RT/Installer.pm:177
+msgid "the default addresses that will be listed in From: and Reply-To: headers of correspondence mail."
+msgstr ""
+
+#: lib/RT/Group_Overlay.pm:161
 #. ($self->Instance, $self->Type)
 msgid "ticket #%1 %2"
 msgstr "チケット　#%1 %2"
+
+#: share/html/Ticket/Graphs/Elements/EditGraphProperties:51
+msgid "top to bottom"
+msgstr ""
 
 #: lib/RT/Crypt/GnuPG.pm:2139
 msgid "ultimate"
 msgstr ""
 
-#: lib/RT/Group_Overlay.pm:162
+#: lib/RT/Group_Overlay.pm:167
 #. ($self->Id)
 msgid "undescribed group %1"
 msgstr ""
@@ -7490,21 +7838,17 @@ msgstr ""
 msgid "undescripbed group %1"
 msgstr "表示されないグループ　%1"
 
-#: lib/RT/Group_Overlay.pm:137
+#: lib/RT/Group_Overlay.pm:142
 #. ($user->Object->Name)
 msgid "user %1"
 msgstr "ユーザー　%1"
-
-#: lib/RT/Installer.pm:212
-msgid "web port"
-msgstr ""
 
 #: lib/RT/Date.pm:337
 msgid "weeks"
 msgstr "週間"
 
-#: lib/RT/Installer.pm:200
-msgid "where is sendmail command"
+#: lib/RT/Installer.pm:198
+msgid "which port your web server will listen to, e.g. 8080"
 msgstr ""
 
 #: share/html/Ticket/Elements/ShowTransactionAttachments:63
