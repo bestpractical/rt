@@ -233,7 +233,7 @@ msgstr "%1 tycks vara ett lokalt objekt men går inte att hitta i databasen"
 
 #: share/html/Install/DatabaseDetails.html:161
 #. ($RT::DatabaseName)
-msgid "%1 appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customez RT by clicking 'Customize Basics' below"
+msgid "%1 appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customize RT by clicking 'Customize Basics' below"
 msgstr ""
 
 #: share/html/Dashboards/Elements/ShowSubscription:72
@@ -6088,7 +6088,7 @@ msgid "These comments aren't generally visible to the user"
 msgstr "Dessa kommentarer är vanligtvis inte synliga för användaren"
 
 #: share/html/Install/Basics.html:53
-msgid "These configuration options cover some of the basics needed to get RT up and running.  We need to know the name of your RT installation and the domain name where RT will live.  You will also need to set a password for your defauly administrative user."
+msgid "These configuration options cover some of the basics needed to get RT up and running.  We need to know the name of your RT installation and the domain name where RT will live.  You will also need to set a password for your default administrative user."
 msgstr ""
 
 #: lib/RT/CustomField_Overlay.pm:889
