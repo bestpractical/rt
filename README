@@ -138,19 +138,16 @@ want to read a more comprehensive installation guide at:
      You'll need to add any new values you need to change from the defaults 
      in etc/RT_Config.pm
 
-     You may also need to update RT's database.  To find out, type:
+     You may also need to update RT's database.  You can do this with 
+     the rt-setup-database tool.  Replace root with the name of the dba
+     user on your database (root is the default for MySQL).
 
-       ls etc/upgrade
+     You will be prompted for your previous version of RT (such as 3.6.4)
+     so that we can calculate which database updates to apply
 
-     For each item in that directory whose name is greater than
-     your previously installed RT version, run:
+     You should back up your database before running this command.
 
-       /opt/rt3/sbin/rt-setup-database --action schema \
-           --datadir etc/upgrade/<version>
-       /opt/rt3/sbin/rt-setup-database --action acl \
-           --datadir etc/upgrade/<version>
-       /opt/rt3/sbin/rt-setup-database --action insert \
-            --datadir etc/upgrade/<version>
+       /opt/rt3/rt-setup-database --dba root --prompt-for-dba-password --action upgrade
 
      Clear mason cache dir:
 
