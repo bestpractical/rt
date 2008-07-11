@@ -52,32 +52,32 @@ $Attr => undef
 <%ONCE>
 my $COLUMN_MAP = {
     id => {
-        title     => loc('#'),
+        title     => '#', # loc
         attribute => 'id',
         align     => 'right',
         value     => sub { return $_[0]->id },
     },
     Queue => {
-        title     => loc('Queue'),
+        title     => 'Queue', # loc
         value     => sub {
             return $_[0]->QueueObj->Name if $_[0]->Queue;
             return $_[0]->loc('Global');
         },
     },
     Condition => {
-        title     => loc('Condition'),
+        title     => 'Condition', # loc
         value     => sub { return $_[0]->loc( $_[0]->ScripConditionObj->Name ) },
     },
     Action => {
-        title     => loc('Action'),
+        title     => 'Action', # loc
         value     => sub { return $_[0]->loc( $_[0]->ScripActionObj->Name ) },
     },
     Template => {
-        title     => loc('Template'),
+        title     => 'Template', # loc
         value     => sub { return $_[0]->loc( $_[0]->TemplateObj->Name ) },
     },
     AutoDescription => {
-        title     => loc('Condition, Action and Template'),
+        title     => 'Condition, Action and Template', # loc
         value     => sub { return $_[0]->loc( "[_1] [_2] with template [_3]",
             $_[0]->loc($_[0]->ConditionObj->Name),
             $_[0]->loc($_[0]->ActionObj->Name),
@@ -85,12 +85,12 @@ my $COLUMN_MAP = {
         ) },
     },
     Description => {
-        title     => loc('Description'),
+        title     => 'Description', # loc
 	attribute => 'Description',
 	value     => sub { return $_[0]->Description() },
     },
     Stage => {
-        title     => loc('Stage'),
+        title     => 'Stage', # loc
 	attribute => 'Stage',
 	value     => sub { return $_[0]->Stage() },
     },

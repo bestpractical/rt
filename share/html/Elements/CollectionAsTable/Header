@@ -99,7 +99,7 @@ foreach my $col ( @Format ) {
     );
 
     unless( $tmp ) {
-        $title = loc($m->comp('/Elements/ScrubHTML', Content => $title));
+        $title = $m->comp('/Elements/ScrubHTML', Content => $title);
     } else {
         if ( UNIVERSAL::isa( $tmp, 'CODE' ) ) {
             my @tmp = $tmp->( $title );
@@ -135,11 +135,11 @@ foreach my $col ( @Format ) {
                 %$generic_query_args,
                 OrderBy => $attr, Order => $new_order
             )
-            . '">'. $title .'</a>'
+            . '">'. loc($title) .'</a>'
         );
     }
     else {
-        $m->out( $title );
+        $m->out( loc($title) );
     }
     $m->out('</th>');
 }

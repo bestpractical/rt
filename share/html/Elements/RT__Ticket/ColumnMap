@@ -77,31 +77,31 @@ my $LinkCallback = sub {
 $COLUMN_MAP = {
     Queue => {
         attribute => 'Queue',
-        title     => loc('Queue id'),
+        title     => 'Queue id', # loc
         value     => sub { return $_[0]->Queue }
     },
     QueueName => {
         attribute => 'Queue',
-        title     => loc('Queue'),
+        title     => 'Queue', # loc
         value     => sub { return $_[0]->QueueObj->Name }
     },
     OwnerName => {
-        title     => loc('Owner'),
+        title     => 'Owner', # loc
         attribute => 'Owner',
         value     => sub { return $_[0]->OwnerObj->Name }
     },
     Status => {
-        title     => loc('Status'),
+        title     => 'Status', # loc
         attribute => 'Status',
         value     => sub { return loc($_[0]->Status) }
     },
     Subject => {
-        title     => loc('Subject'),
+        title     => 'Subject', # loc
         attribute => 'Subject',
         value     => sub { return $_[0]->Subject || "(" . loc('No subject') . ")" }
     },
     ExtendedStatus => {
-        title     => loc('Status'),
+        title     => 'Status', # loc
         attribute => 'Status',
         value     => sub {
             my $Ticket = shift;
@@ -123,54 +123,54 @@ $COLUMN_MAP = {
           }
     },
     Priority => {
-        title     => loc('Priority'),
+        title     => 'Priority', # loc
         attribute => 'Priority',
         value     => sub { return $_[0]->Priority }
     },
     InitialPriority => {
-        title     => loc('InitialPriority'),
+        title     => 'InitialPriority', # loc
         attribute => 'InitialPriority',
         name      => 'Initial Priority',
         value     => sub { return $_[0]->InitialPriority }
     },
     FinalPriority => {
-        title     => loc('FinalPriority'),
+        title     => 'FinalPriority', # loc
         attribute => 'FinalPriority',
         name      => 'Final Priority',
         value     => sub { return $_[0]->FinalPriority }
     },
     EffectiveId => {
-        title     => loc('EffectiveId'),
+        title     => 'EffectiveId', # loc
         attribute => 'EffectiveId',
         value     => sub { return $_[0]->EffectiveId }
     },
     Type => {
-        title     => loc('Type'),
+        title     => 'Type', # loc
         attribute => 'Type',
         value     => sub { return $_[0]->Type }
     },
     TimeWorked => {
         attribute => 'TimeWorked',
-        title     => loc('Time Worked'),
+        title     => 'Time Worked', # loc
         value     => sub { return $_[0]->TimeWorked }
     },
     TimeLeft => {
         attribute => 'TimeLeft',
-        title     => loc('Time Left'),
+        title     => 'Time Left', # loc
         value     => sub { return $_[0]->TimeLeft }
     },
     TimeEstimated => {
         attribute => 'TimeEstimated',
-        title     => loc('Time Estimated'),
+        title     => 'Time Estimated', # loc
         value     => sub { return $_[0]->TimeEstimated }
     },
     Requestors => {
-        title     => loc('Requestors'),
+        title     => 'Requestors', # loc
         attribute => 'Requestor.EmailAddress',
         value     => sub { return $_[0]->Requestors->MemberEmailAddressesAsString }
     },
     Cc => {
-        title     => loc('Cc'),
+        title     => 'Cc', # loc
         attribute => 'Cc.EmailAddress',
         value     => sub { return $_[0]->Cc->MemberEmailAddressesAsString }
     },
@@ -180,22 +180,22 @@ $COLUMN_MAP = {
         value     => sub { return $_[0]->AdminCc->MemberEmailAddressesAsString }
     },
     StartsRelative => {
-        title     => loc('Starts'),
+        title     => 'Starts', # loc
         attribute => 'Starts',
         value     => sub { return $_[0]->StartsObj->AgeAsString }
     },
     StartedRelative => {
-        title     => loc('Started'),
+        title     => 'Started', # loc
         attribute => 'Started',
         value     => sub { return $_[0]->StartedObj->AgeAsString }
     },
     ToldRelative => {
-        title     => loc('Told'),
+        title     => 'Told', # loc
         attribute => 'Told',
         value     => sub { return $_[0]->ToldObj->AgeAsString }
     },
     DueRelative => {
-        title     => loc('Due'),
+        title     => 'Due', # loc
         attribute => 'Due',
         value     => sub { 
             my $date = $_[0]->DueObj;
@@ -208,37 +208,37 @@ $COLUMN_MAP = {
         }
     },
     ResolvedRelative => {
-        title     => loc('Resolved'),
+        title     => 'Resolved', # loc
         attribute => 'Resolved',
         value     => sub { return $_[0]->ResolvedObj->AgeAsString }
     },
     Starts => {
-        title     => loc('Starts'),
+        title     => 'Starts', # loc
         attribute => 'Starts',
         value     => sub { return $_[0]->StartsObj->AsString }
     },
     Started => {
-        title     => loc('Started'),
+        title     => 'Started', # loc
         attribute => 'Started',
         value     => sub { return $_[0]->StartedObj->AsString }
     },
     Told => {
-        title     => loc('Told'),
+        title     => 'Told', # loc
         attribute => 'Told',
         value     => sub { return $_[0]->ToldObj->AsString }
     },
     Due => {
-        title     => loc('Due'),
+        title     => 'Due', # loc
         attribute => 'Due',
         value     => sub { return $_[0]->DueObj->AsString }
     },
     Resolved => {
-        title     => loc('Resolved'),
+        title     => 'Resolved', # loc
         attribute => 'Resolved',
         value     => sub { return $_[0]->ResolvedObj->AsString }
     },
     UpdateStatus => {
-        title => loc('New messages'),
+        title => 'New messages', # loc
         value => sub {
             my $txn = $_[0]->SeenUpTo or return $_[0]->loc('No');
             return \('<a href="'. RT->Config->Get('WebPath') .'/Ticket/Display.html?id='
@@ -247,7 +247,7 @@ $COLUMN_MAP = {
         },
     },
     KeyRequestors => {
-        title     => loc('Requestors'),
+        title     => 'Requestors', # loc
         attribute => 'Requestor.EmailAddress',
         value => sub {
             my $t = shift;
@@ -266,7 +266,7 @@ $COLUMN_MAP = {
         }
     },
     KeyOwnerName => {
-        title     => loc('Owner'),
+        title     => 'Owner', # loc
         attribute => 'Owner',
         value     => sub {
             my $t = shift;
@@ -293,7 +293,7 @@ $COLUMN_MAP = {
     },
     '_CHECKBOX' => {
         attribute => 'checkbox',
-        title => loc('Update'),
+        title => 'Update', # loc
         align     => 'right',
         value     => sub { return \('<input type="checkbox" class="checkbox" name="UpdateTicket'.$_[0]->id.'" value="1" checked="checked" />') }
     },

@@ -52,83 +52,83 @@ $Attr => undef
 <%ONCE>
 my $COLUMN_MAP = {
     id => {
-        title     => loc('#'),
+        title     => '#', # loc
         attribute => 'id',
         align     => 'right',
         value     => sub { return $_[0]->id },
     },
     Name => {
-        title     => loc('Name'),
+        title     => 'Name', # loc
 	attribute => 'Name',
 	value     => sub { return $_[0]->Name() },
     },
     RealName => {
-        title     => loc('RealName'),
+        title     => 'RealName', # loc
 	attribute => 'RealName',
 	value     => sub { return $_[0]->RealName() },
     },
     NickName => {
-        title     => loc('NickName'),
+        title     => 'NickName', # loc
 	attribute => 'NickName',
 	value     => sub { return $_[0]->NickName() },
     },
     EmailAddress => {
-        title     => loc('EmailAddress'),
+        title     => 'EmailAddress', # loc
 	attribute => 'EmailAddress',
 	value     => sub { return $_[0]->EmailAddress() },
     },
     Organization => {
-        title     => loc('Organization'),
+        title     => 'Organization', # loc
 	attribute => 'Organization',
 	value     => sub { return $_[0]->Organization() },
     },
     HomePhone => {
-        title     => loc('HomePhone'),
+        title     => 'HomePhone', # loc
 	attribute => 'HomePhone',
 	value     => sub { return $_[0]->HomePhone() },
     },
     WorkPhone => {
-        title     => loc('WorkPhone'),
+        title     => 'WorkPhone', # loc
 	attribute => 'WorkPhone',
 	value     => sub { return $_[0]->WorkPhone() },
     },
     MobilePhone => {
-        title     => loc('MobilePhone'),
+        title     => 'MobilePhone', # loc
 	attribute => 'MobilePhone',
 	value     => sub { return $_[0]->MobilePhone() },
     },
     PagerPhone => {
-        title     => loc('PagerPhone'),
+        title     => 'PagerPhone', # loc
 	attribute => 'PagerPhone',
 	value     => sub { return $_[0]->PagerPhone() },
     },
     Address1 => {
-        title     => loc('Address1'),
+        title     => 'Address1', # loc
 	attribute => 'Address1',
 	value     => sub { return $_[0]->Address1() },
     },
     Address2 => {
-        title     => loc('Address2'),
+        title     => 'Address2', # loc
 	attribute => 'Address2',
 	value     => sub { return $_[0]->Address2() },
     },
     City => {
-        title     => loc('City'),
+        title     => 'City', # loc
 	attribute => 'City',
 	value     => sub { return $_[0]->City() },
     },
     State => {
-        title     => loc('State'),
+        title     => 'State', # loc
 	attribute => 'State',
 	value     => sub { return $_[0]->State() },
     },
     Zip => {
-        title     => loc('Zip'),
+        title     => 'Zip', # loc
 	attribute => 'Zip',
 	value     => sub { return $_[0]->Zip() },
     },
     Country => {
-        title     => loc('Country'),
+        title     => 'Country', # loc
 	attribute => 'Country',
 	value     => sub { return $_[0]->Country() },
     },

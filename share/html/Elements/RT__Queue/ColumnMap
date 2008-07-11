@@ -52,7 +52,7 @@ $Attr => undef
 <%ONCE>
 my $COLUMN_MAP = {
     id => {
-        title     => loc('#'),
+        title     => '#', # loc
         attribute => 'id',
         align     => 'right',
         value     => sub { return $_[0]->id },
@@ -63,45 +63,45 @@ my $COLUMN_MAP = {
         value     => sub { return $_[0]->Disabled? $_[0]->loc('Disabled'): $_[0]->loc('Enabled') },
     },
     Priority => {
-        title     => loc('Priority'),
+        title     => 'Priority', # loc
         value     => sub { return $_[0]->InitialPriority .'-'. $_[0]->FinalPriority },
     },
     Address  => {
-        title     => loc('Address'),
+        title     => 'Address', # loc
         value     => sub { return ($_[0]->CorrespondAddress||'-') .'/'. ($_[0]->CommentAddress||'-') },
     },
     Name => {
-        title     => loc('Name'),
+        title     => 'Name', # loc
 	attribute => 'Name',
 	value     => sub { return $_[0]->Name() },
     },
     Description => {
-        title     => loc('Description'),
+        title     => 'Description', # loc
 	attribute => 'Description',
 	value     => sub { return $_[0]->Description() },
     },
     CorrespondAddress => {
-        title     => loc('CorrespondAddress'),
+        title     => 'CorrespondAddress', # loc
 	attribute => 'CorrespondAddress',
 	value     => sub { return $_[0]->CorrespondAddress() },
     },
     CommentAddress => {
-        title     => loc('CommentAddress'),
+        title     => 'CommentAddress', # loc
 	attribute => 'CommentAddress',
 	value     => sub { return $_[0]->CommentAddress() },
     },
     InitialPriority => {
-        title     => loc('InitialPriority'),
+        title     => 'InitialPriority', # loc
 	attribute => 'InitialPriority',
 	value     => sub { return $_[0]->InitialPriority() },
     },
     FinalPriority => {
-        title     => loc('FinalPriority'),
+        title     => 'FinalPriority', # loc
 	attribute => 'FinalPriority',
 	value     => sub { return $_[0]->FinalPriority() },
     },
     DefaultDueIn => {
-        title     => loc('DefaultDueIn'),
+        title     => 'DefaultDueIn', # loc
 	attribute => 'DefaultDueIn',
 	value     => sub { return $_[0]->DefaultDueIn() },
     },
