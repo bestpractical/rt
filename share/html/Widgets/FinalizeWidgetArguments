@@ -50,6 +50,7 @@
 
     %args = (%args, %{ $args{Callback}->() }) if $args{Callback};
     $args{'Description'} = loc( $args{'Description'} ) if $args{'Description'};
+    $args{'Hints'} = loc( $args{'Hints'} ) if $args{'Hints'};
     if ( $args{'ValuesLabel'} ) {
         while (my ($k, $v) = each %{ $args{'ValuesLabel'} } ) {
             $args{'ValuesLabel'}->{$k} = loc( $args{'ValuesLabel'}->{$k} );
