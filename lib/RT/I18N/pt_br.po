@@ -4281,12 +4281,8 @@ msgid "Location"
 msgstr "Local"
 
 #: NOT FOUND IN SOURCE
-msgid ""
-"Log directory %1 not found or couldn't be written.\\n"
-" RT can't run."
-msgstr ""
-"O diretório de log %1 não foi encontrado ou não pôde ser alterado.\\n"
-" RT não pode ser executado."
+msgid "Log directory %1 not found or couldn't be written. RT can't run."
+msgstr "O diretório de log %1 não foi encontrado ou não pôde ser alterado. RT não pode ser executado."
 
 #. ("<span>".$session{'CurrentUser'}->Name."</span>")
 #: share/html/Elements/Header:92
@@ -5168,12 +5164,8 @@ msgid "No Ticket specified. Aborting ticket "
 msgstr "Não há Tíquete especificado.  Abortando o tíquete "
 
 #: NOT FOUND IN SOURCE
-msgid ""
-"No Ticket specified. Aborting ticket modifications\\n"
-"\\n"
-msgstr ""
-"Não há Tíquete especificado. Abortando modificações no tíquete\\n"
-"\\n"
+msgid "No Ticket specified. Aborting ticket modifications"
+msgstr "Não há Tíquete especificado. Abortando modificações no tíquete"
 
 #: share/html/Approvals/Elements/Approve:79
 msgid "No action"
@@ -7833,12 +7825,8 @@ msgid "The following command will find all active tickets in the queue 'general'
 msgstr "O seguinte comando procurará por todos os tíquetes ativos na fila 'geral' e alterar sua prioridade para 99 se eles não tiverem sido alterados há 4 horas:"
 
 #: NOT FOUND IN SOURCE
-msgid ""
-"The following commands were not proccessed:\\n"
-"\\n"
-msgstr ""
-"Os seguintes comandos não foram processados:\\n"
-"\\n"
+msgid "The following commands were not proccessed:"
+msgstr "Os seguintes comandos não foram processados:"
 
 #: lib/RT/Crypt/GnuPG.pm:2089
 msgid "The key has been disabled"
@@ -9210,12 +9198,8 @@ msgid "minutes"
 msgstr "minutos"
 
 #: NOT FOUND IN SOURCE
-msgid ""
-"modifications\\n"
-"\\n"
-msgstr ""
-"modificações\\n"
-"\\n"
+msgid "modifications"
+msgstr "modificações"
 
 #: lib/RT/Date.pm:341
 msgid "months"
