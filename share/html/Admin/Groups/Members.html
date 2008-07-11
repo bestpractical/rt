@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => "RT/Admin/Edit the group ". $Group->Name &>
+<& /Admin/Elements/Header, Title => loc('RT/Admin/Edit the group [_1]', $Group->Name) &>
 <& /Admin/Elements/GroupTabs, GroupObj => $Group, 
     current_tab => 'Admin/Groups/Members.html?id='.$id, 
     Title => "RT/Admin/Edit the group ". $Group->Name &>
