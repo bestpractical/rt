@@ -59,7 +59,7 @@ use vars qw($DEBUG $FILECAT);
 
 $DEBUG = 1;
 
-@ARGV = <lib/RT/I18N/*.po> unless @ARGV;
+@ARGV = (<lib/RT/I18N/*.po>, "lib/RT/I18N/rt.pot") unless @ARGV;
 
 $FILECAT = {};
 
@@ -83,11 +83,13 @@ foreach my $str ( sort keys %{$FILECAT} ) {
 
 # update all language dictionaries
 foreach my $dict (@ARGV) {
+    $dict = "lib/RT/I18N/$dict.pot" if ( $dict eq 'rt' );
     $dict = "lib/RT/I18N/$dict.po" unless -f $dict or $dict =~ m!/!;
 
     my $lang = $dict;
     $lang =~ s|.*/||;
     $lang =~ s|\.po$||;
+    $lang =~ s|\.pot$||;
 
     update($lang, $dict);
 }
@@ -101,7 +103,7 @@ sub extract_strings_from_code {
     local $/;
     return if ( -d $_ );
     return if ( $File::Find::dir =~ 'lib/blib|lib/t/autogen|var|m4|local|\.svn' );
-    return if ( /\.po$|\.bak$|~|,D|,B$|extract-message-catalog$/ );
+    return if ( /\.pot$|\.po$|\.bak$|~|,D|,B$|extract-message-catalog$/ );
     return if ( /^[\.#]/ );
     return if ( -f "$_.in" );
 
