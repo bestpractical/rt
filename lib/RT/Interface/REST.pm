@@ -295,7 +295,7 @@ sub vsplit {
     my ($val) = @_;
     my ($line, $word, @words);
 
-    foreach $line (map {split /\n/} (ref $val eq 'ARRAY') ? @$val : $val)
+    foreach $line (map {split /\n/} (ref $val eq 'ARRAY') ? @$val : ($val||''))
     {
         # XXX: This should become a real parser, ? la Text::ParseWords.
         $line =~ s/^\s+//;

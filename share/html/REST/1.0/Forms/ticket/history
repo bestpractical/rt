@@ -148,7 +148,7 @@ if ($tid) {
 	my $attachlist;
 	my $attachments = $t->Attachments;
 	while (my $a = $attachments->Next) {
-	    my $size = length($a->Content);
+	    my $size = length($a->Content||'');
 	    if ($size > 1024) { $size  = int($size/102.4)/10 . "k" }
 	    else              { $size .= "b" }
 	    $attachlist .= "\n" . $a->Id.": ".($a->Filename || "untitled")." (".$size.")";
