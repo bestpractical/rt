@@ -215,12 +215,12 @@ msgstr "%1 ajouté(e) comme valeur de %2"
 #: share/html/Install/DatabaseDetails.html:165
 #. ($RT::DatabaseName)
 msgid "%1 already exists and has RT's tables in place, but does not contain RT's metadata. The 'Initialize Database' step later on can insert metadata into this existing database. If this is acceptable, click 'Customize Basics' below to continue customizing RT."
-msgstr ""
+msgstr "%1 existe déjà et contient des tables RT mais ne contient pas les métadonnées RT. L'étape 'Initialiser la base de données' pourra insérer ces données dans cette base. Si cette solution vous convient, cliquez sur 'Configuration de base' ci-dessous pour continuer la configuration de RT."
 
 #: share/html/Install/DatabaseDetails.html:170
 #. ($RT::DatabaseName)
 msgid "%1 already exists, but does not contain RT's tables or metadata. The 'Initialize Database' step later on can insert tables and metadata into this existing database. if this is acceptable, click 'Customize Basic' below to continue customizing RT."
-msgstr ""
+msgstr "%1 existe déjà mais ne contient pas de tables RT.  L'étape 'Initialiser la base de données' pourra insérer ces tables et les données initiales dans cette base. Si cette solution vous convient, cliquez sur 'Configuration de base' ci-dessous pour continuer la configuration de RT."
 
 #: lib/RT/Link_Overlay.pm:134 lib/RT/Link_Overlay.pm:142
 #. ($args{'Base'})
@@ -231,7 +231,7 @@ msgstr "%1 semble être un objet local, mais est introuvable dans la base de don
 #: share/html/Install/DatabaseDetails.html:161
 #. ($RT::DatabaseName)
 msgid "%1 appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customez RT by clicking 'Customize Basics' below"
-msgstr ""
+msgstr "%1 semble être complètement initialisé. Il ne sera pas nécessaire de créer des tables ou d'insérer les données de bases mais vous pouvez continuer à configurer RT en cliquant 'Configuration de base' ci-dessous"
 
 #: share/html/Dashboards/Elements/ShowSubscription:72
 #. ($freq, $hour)
@@ -300,7 +300,7 @@ msgstr "Mes %1 tickets de plus haute priorité"
 msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
 msgstr "%1 est un outil agissant sur les tickets depuis un ordonnanceur externe tel que cron."
 
-#: sbin/rt-email-digest:92
+#: sbin/rt-email-digest:92 sbin/rt-send-digest:69
 #. ($0)
 msgid "%1 is a utility, meant to be run from cron, that dispatches all deferred RT notifications as a per-user digest."
 msgstr "%1 est un utilitaire, destiné a être lancé via cron, qui envoi une compilation par utilisateur des notifications RT en attente."
@@ -514,6 +514,11 @@ msgstr "-"
 #: bin/rt-crontool:120
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
 msgstr "l'argument pour --transaction ne peut être que 'first', 'last' ou 'all'"
+
+#: share/html/Elements/CollectionAsTable/Header:102
+#. (Content => $title))
+msgid "/Elements/ScrubHTML"
+msgstr ""
 
 #: lib/RT/Config.pm:189
 msgid "1995-11-25 21:59:12"
@@ -976,7 +981,6 @@ msgstr "Support commercial"
 msgid "By default, RT will use the timezone of your system.  This lets you set a global default for the display of dates and times in RT.  Your users can choose a different Timezone in their preferences."
 msgstr "Par défaut, RT utilisera le fuseau horaire configuré au sur votre système. Vous pouvez configurer une valeur par défaut pour l'affichage des dates et heures dans RT. Vos utilisateurs pourront choisir un fuseau différent dans leurs préférences."
 
-
 #: share/html/NoAuth/js/util.js:200
 msgid "Calendar"
 msgstr "Calendrier"
@@ -1185,7 +1189,7 @@ msgstr "L'argument condition est obligatoire"
 msgid "Condition matches..."
 msgstr "La condition satisfait..."
 
-#: share/html/Install/index.html:86
+#: share/html/Install/index.html:94
 #. ($file)
 msgid "Config file %1 is locked"
 msgstr "Le fichier de configuration %1 est blocké"
@@ -1335,7 +1339,7 @@ msgstr "Impossible de créer l'enregistrement"
 #: share/html/Dashboards/Modify.html:150
 #. ($id, $msg)
 msgid "Couldn't delete dashboard %1: %2"
-msgstr ""
+msgstr "Impossible de supprimer le tableaux de bord %1: %2"
 
 #: lib/RT/Record.pm:917
 msgid "Couldn't find row"
@@ -1381,12 +1385,12 @@ msgstr "Impossible de charger une copie du ticket #%1."
 #: share/html/Dashboards/Queries.html:87 share/html/Dashboards/Render.html:83
 #. ($id, $msg)
 msgid "Couldn't load dashboard %1: %2"
-msgstr ""
+msgstr "Impossible de charger le tableaux de bord %1: %2"
 
 #: share/html/Dashboards/Subscription.html:193
 #. ($DashboardId, $msg)
 msgid "Couldn't load dashboard %1: %2."
-msgstr ""
+msgstr "Impossible de charger le tableaux de bord %1: %2."
 
 #: share/html/Admin/Users/Memberships.html:105 share/html/Admin/Users/Memberships.html:115
 #. ($gid)
@@ -1569,7 +1573,7 @@ msgstr "Créer et modifier les tableaux de bord"
 
 #: lib/RT/Group_Overlay.pm:98
 msgid "Create dashboards for this group"
-msgstr ""
+msgstr "Créer des tableaux de bord pour ce groupe"
 
 #: etc/initialdata:92
 msgid "Create new tickets based on this scrip's template"
@@ -1577,11 +1581,11 @@ msgstr "Ajouter de nouveaux tickets basés sur le modèle de ce scrip"
 
 #: lib/RT/Dashboard.pm:85
 msgid "Create personal dashboards"
-msgstr ""
+msgstr "Créer des tableaux de bord personnels"
 
 #: lib/RT/Dashboard.pm:80
 msgid "Create system dashboards"
-msgstr ""
+msgstr "Créer des tableaux de bord systèmes"
 
 #: share/html/SelfService/Create.html:109
 msgid "Create ticket"
@@ -1593,7 +1597,7 @@ msgstr "Ajouter des tickets dans cette file"
 
 #: share/html/Tools/index.html:65
 msgid "Create tickets offline"
-msgstr ""
+msgstr "Créer des tickets hors-ligne"
 
 #: lib/RT/CustomField_Overlay.pm:113
 msgid "Create, delete and modify custom fields"
@@ -1613,15 +1617,15 @@ msgstr "Ajouter, supprimer et modifier les utilisateurs"
 
 #: lib/RT/Dashboard.pm:80
 msgid "CreateDashboard"
-msgstr ""
+msgstr "CréerTableauxDeBord"
 
 #: lib/RT/Group_Overlay.pm:98
 msgid "CreateGroupDashboard"
-msgstr ""
+msgstr "CréerTableauxDeBordDeGroupe"
 
 #: lib/RT/Dashboard.pm:85
 msgid "CreateOwnDashboard"
-msgstr ""
+msgstr "CréerTableauxDeBordPersonnel"
 
 #: lib/RT/System.pm:91
 msgid "CreateSavedSearch"
@@ -1944,7 +1948,7 @@ msgstr "Supprimer les tableaux de bords"
 
 #: lib/RT/Group_Overlay.pm:100
 msgid "Delete dashboards for this group"
-msgstr ""
+msgstr "Supprimer les tableaux de bord pour ce groupe"
 
 #: lib/RT/SharedSetting.pm:268
 #. ($msg)
@@ -1953,7 +1957,7 @@ msgstr "Échec de la destruction : %1"
 
 #: lib/RT/Dashboard.pm:87
 msgid "Delete personal dashboards"
-msgstr ""
+msgstr "Supprimer les tableaux de bord personnels"
 
 #: share/html/Admin/Elements/EditScrips:72
 msgid "Delete selected scrips"
@@ -1961,7 +1965,7 @@ msgstr "Supprimer les scrips sélectionnés"
 
 #: lib/RT/Dashboard.pm:83
 msgid "Delete system dashboards"
-msgstr ""
+msgstr "Supprimer les tableaux de bord systèmes"
 
 #: lib/RT/Queue_Overlay.pm:114
 msgid "Delete tickets"
@@ -1977,11 +1981,11 @@ msgstr "SupprimerTableauxDeBords"
 
 #: lib/RT/Group_Overlay.pm:100
 msgid "DeleteGroupDashboard"
-msgstr ""
+msgstr "SupprimerTableauxDeBordDeGroupe"
 
 #: lib/RT/Dashboard.pm:87
 msgid "DeleteOwnDashboard"
-msgstr ""
+msgstr "SupprimerTableauxDeBordPersonnels"
 
 #: lib/RT/Queue_Overlay.pm:114
 msgid "DeleteTicket"
@@ -2132,10 +2136,10 @@ msgstr "ERREUR: %1"
 
 #: share/html/Tools/index.html:75
 msgid "Easy updating of your open tickets"
-msgstr ""
+msgstr "Mise à jour facile de vos tickets ouverts"
 
 #: share/html/Ticket/Elements/ShowTransaction:218
-msgid "Ecnrypt/Decrypt"
+msgid "Encrypt/Decrypt"
 msgstr "Chiffrer/Déchiffrer"
 
 #: share/html/Elements/Dashboards:50 share/html/Elements/Quicksearch:50 share/html/Elements/ShowSearch:51 share/html/index.html:132
@@ -2336,7 +2340,7 @@ msgstr "Saisir au plus %1 valeurs"
 msgid "Enter up to %1 values with autocompletion"
 msgstr "Saisir jusqu'à %1 valeurs avec complétion automatique"
 
-#: sbin/rt-email-digest:103 share/html/Elements/Login:78 share/html/Install/Elements/Errors:49 share/html/SelfService/Error.html:48 share/html/SelfService/Error.html:49
+#: sbin/rt-email-digest:103 sbin/rt-send-digest:80 share/html/Elements/Login:78 share/html/Install/Elements/Errors:49 share/html/SelfService/Error.html:48 share/html/SelfService/Error.html:49
 msgid "Error"
 msgstr "Erreur"
 
@@ -2386,15 +2390,15 @@ msgstr "Estimé"
 
 #: share/html/Tools/Reports/index.html:70
 msgid "Examine tickets created in a queue between two dates"
-msgstr ""
+msgstr "Éxaminer les tickets créer dans une file entre deux dates"
 
 #: share/html/Tools/Reports/index.html:65
 msgid "Examine tickets resolved in a queue between two dates"
-msgstr ""
+msgstr "Éxaminer les tickets résolus dans une file entre deux dates"
 
 #: share/html/Tools/Reports/index.html:60
 msgid "Examine tickets resolved in a queue, grouped by owner"
-msgstr ""
+msgstr "Éxaminer les tickets résolus dans une file, groupés par propriétaire"
 
 #: bin/rt-crontool:321
 msgid "Example:"
@@ -2437,12 +2441,12 @@ msgstr "Recherche du pseudo groupe d'utilisateurs 'non-privilégiés' infructueu
 #: lib/RT/SharedSetting.pm:117
 #. ($self->ObjectName, $id)
 msgid "Failed to load %1 %2"
-msgstr ""
+msgstr "Échec pour charger %1 %2"
 
 #: lib/RT/SharedSetting.pm:141
 #. ($self->ObjectName, $id, $msg)
 msgid "Failed to load %1 %2: %3"
-msgstr ""
+msgstr "Échec pour charger %1 %2: %3"
 
 #: NOT FOUND IN SOURCE
 msgid "Failed to load attribute %1"
@@ -2458,11 +2462,11 @@ msgstr "Impossible de charger le module %1. (%2)"
 msgid "Failed to load object for %1"
 msgstr "Impossible de charger l'objet pour %1"
 
-#: sbin/rt-email-digest:166
+#: sbin/rt-email-digest:166 sbin/rt-send-digest:143
 msgid "Failed to load template"
 msgstr "Impossible de charger le modèle"
 
-#: sbin/rt-email-digest:174
+#: sbin/rt-email-digest:174 sbin/rt-send-digest:151
 msgid "Failed to parse template"
 msgstr "Impossible d'analyser le modèle"
 
@@ -3412,7 +3416,7 @@ msgstr "Largeur des boîtes de dialogue"
 msgid "Message could not be recorded"
 msgstr "Le message ne peut être sauvegardé"
 
-#: sbin/rt-email-digest:291
+#: sbin/rt-email-digest:291 sbin/rt-send-digest:268
 msgid "Message for user"
 msgstr "Message pour l'utilisateur"
 
@@ -3499,7 +3503,7 @@ msgstr "Modifier les objets associés à %1"
 
 #: lib/RT/Group_Overlay.pm:99
 msgid "Modify dashboards for this group"
-msgstr ""
+msgstr "Modifier les tableaux de bord pour ce groupe"
 
 #: share/html/Ticket/ModifyDates.html:48 share/html/Ticket/ModifyDates.html:52
 #. ($TicketObj->Id)
@@ -3571,7 +3575,7 @@ msgstr "Modifier les utilisateurs du ticket n°%1"
 
 #: lib/RT/Dashboard.pm:86
 msgid "Modify personal dashboards"
-msgstr ""
+msgstr "Modifier les tableaux de bord personnels"
 
 #: share/html/Admin/Queues/Scrips.html:69
 #. ($QueueObj->Name)
@@ -3584,7 +3588,7 @@ msgstr "Modifier les scrips s'appliquant à toutes les files"
 
 #: lib/RT/Dashboard.pm:81
 msgid "Modify system dashboards"
-msgstr ""
+msgstr "Modifier les tableaux de bord systèmes"
 
 #: share/html/Admin/Global/Template.html:100 share/html/Admin/Queues/Template.html:101
 #. (loc($TemplateObj->Name()))
@@ -3671,11 +3675,11 @@ msgstr "ModifierTableauDeBord"
 
 #: lib/RT/Group_Overlay.pm:99
 msgid "ModifyGroupDashboard"
-msgstr ""
+msgstr "ModifierTableauxDeBordDeGroupe"
 
 #: lib/RT/Dashboard.pm:86
 msgid "ModifyOwnDashboard"
-msgstr ""
+msgstr "ModifierTableauxDeBordPersonnels"
 
 #: lib/RT/Group_Overlay.pm:92
 msgid "ModifyOwnMembership"
@@ -4532,7 +4536,7 @@ msgstr "Préférences sauvées pour %1."
 #: share/html/Admin/Users/MyRT.html:83
 #. ($UserObj->Name)
 msgid "Preferences saved for user %1."
-msgstr ""
+msgstr "Préférences sauvées pour l'utilisateur %1."
 
 #: NOT FOUND IN SOURCE
 msgid "Preferences saved for user %2."
@@ -4572,11 +4576,11 @@ msgstr "Précédent"
 msgid "Principal %1 not found."
 msgstr "Personne/groupe %1 non trouvé(e)."
 
-#: sbin/rt-email-digest:96
+#: sbin/rt-email-digest:96 sbin/rt-send-digest:73
 msgid "Print the resulting digest messages to STDOUT; don't mail them. Do not mark them as sent"
 msgstr "Afficher la compilation des messages sur la sortie standard (STDOUT); ne pas les envoyer. Ne pas les marquer comme \"envoyés\""
 
-#: sbin/rt-email-digest:98
+#: sbin/rt-email-digest:98 sbin/rt-send-digest:75
 msgid "Print this message"
 msgstr "Imprimer ce message"
 
@@ -4794,7 +4798,6 @@ msgstr "RT utilisera cette chaine de caractère pour identifier de manière uniq
 #: share/html/Install/DatabaseType.html:52
 msgid "RT works with a number of different databases. <b>MySQL</b>, <b>PostgreSQL</b>, <b>Oracle</b> and <b>SQLite</b> are all supported."
 msgstr "RT fonctionne avec différentes bases de données. <b>MySQL</b>, <b>PostgreSQL</b>, <b>Oracle</b> and <b>SQLite</b> sont supportées."
-
 
 #: share/html/Admin/Users/Modify.html:81 share/html/User/Prefs.html:71
 msgid "Real Name"
@@ -5176,7 +5179,7 @@ msgstr "VoirChampPersonnalisé"
 
 #: lib/RT/Dashboard.pm:79
 msgid "SeeDashboard"
-msgstr ""
+msgstr "VoirTableauxDeBord"
 
 #: lib/RT/Group_Overlay.pm:96
 msgid "SeeGroup"
@@ -5184,11 +5187,11 @@ msgstr "VoirGroupe"
 
 #: lib/RT/Group_Overlay.pm:97
 msgid "SeeGroupDashboard"
-msgstr ""
+msgstr "VoirTableauxDeBordDeGroupe"
 
 #: lib/RT/Dashboard.pm:84
 msgid "SeeOwnDashboard"
-msgstr ""
+msgstr "VoirTableauxDeBordPersonnels"
 
 #: lib/RT/Queue_Overlay.pm:91
 msgid "SeeQueue"
@@ -5486,7 +5489,7 @@ msgstr "Taille"
 msgid "Skip Menu"
 msgstr "Passer le menu"
 
-#: sbin/rt-email-digest:287
+#: sbin/rt-email-digest:287 sbin/rt-send-digest:264
 msgid "Skipping disabled user"
 msgstr "Sauter les utilisateurs désactivés"
 
@@ -5506,7 +5509,7 @@ msgstr "Trier"
 msgid "Sorting"
 msgstr "Tri"
 
-#: sbin/rt-email-digest:94
+#: sbin/rt-email-digest:94 sbin/rt-send-digest:71
 msgid "Specify whether this is a daily or weekly run."
 msgstr "Spécifie si le lancement et quotidien ou hebdomadaire."
 
@@ -5558,8 +5561,8 @@ msgstr "VolerTicket"
 #: share/html/Install/Basics.html:48 share/html/Install/DatabaseDetails.html:48 share/html/Install/DatabaseType.html:48 share/html/Install/Finish.html:48 share/html/Install/Global.html:48 share/html/Install/Initialize.html:48 share/html/Install/Sendmail.html:48
 #. (4, 7)
 #. (7, 7)
-#. (5, 7)
 #. (6, 7)
+#. (5, 7)
 #. (3, 7)
 #. (1, 7)
 #. (2, 7)
@@ -6199,7 +6202,7 @@ msgstr "Impossible de charger le tableau de bord %1 de l'abonnement %2 pour l'ut
 #: share/html/Dashboards/Subscription.html:236
 #. ($DashboardId)
 msgid "Unable to subscribe to dashboard %1: Permission denied"
-msgstr ""
+msgstr "Impossible de s'abonner au tableau de bord %1: permissions refusée"
 
 #: NOT FOUND IN SOURCE
 msgid "Unable to unsubscribe to dashboard %1"
@@ -6355,7 +6358,7 @@ msgstr "Télécharger au plus %1 images"
 msgid "Upload your changes"
 msgstr "Envoyer vos changements"
 
-#: sbin/rt-email-digest:88
+#: sbin/rt-email-digest:88 sbin/rt-send-digest:65
 msgid "Usage: "
 msgstr "Utilisation: "
 
@@ -6463,19 +6466,19 @@ msgstr "Valeurs"
 
 #: share/html/Tools/index.html:70
 msgid "Various RT reports"
-msgstr ""
+msgstr "Raports divers RT"
 
 #: lib/RT/Group_Overlay.pm:97
 msgid "View dashboards for this group"
-msgstr ""
+msgstr "Voir les tableaux de bord pour ce groupe"
 
 #: lib/RT/Dashboard.pm:84
 msgid "View personal dashboards"
-msgstr ""
+msgstr "Voir les tableaux de bord personnels"
 
 #: lib/RT/Dashboard.pm:79
 msgid "View system dashboards"
-msgstr ""
+msgstr "Voir les tableaux de bord systèmes"
 
 #: lib/RT/Config.pm:124
 msgid "WYSIWYG message composer"
@@ -6563,7 +6566,7 @@ msgstr "Quand quelque chose arrive"
 
 #: share/html/Install/DatabaseDetails.html:58
 msgid "When you click on 'Check Database Connectivity' there may be a small delay while RT tries to connect to your database"
-msgstr "Lorsque vous cliquez sur 'Tester la connexion à la base de données' il peut y avoir un peu d'attente le temps que RT se connecte à votre base de données." 
+msgstr "Lorsque vous cliquez sur 'Tester la connexion à la base de données' il peut y avoir un peu d'attente le temps que RT se connecte à votre base de données."
 
 #: etc/initialdata:172 etc/upgrade/3.7.1/content:3
 msgid "Whenever a ticket is closed"
@@ -6687,10 +6690,9 @@ msgstr "Vous devriez être redirigé vers la page de connection. Vous pourrez vo
 msgid "You should choose the database you or your local database administrator is most comfortable with."
 msgstr "Vous devez choisir la base de données que vous ou votre administrateur de base de données maîtrisez le mieux."
 
-
 #: share/html/Install/index.html:66
 msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>Let's go!</i> below, RT will guide you through setting up your RT server and database."
-msgstr "Vous voyez cet écran car vous avez démarré RT sans base de données fonctionnelle. C'est probablement la première fois que vous lancez RT. Si vous cliques <i>C'est parti!</i> ci-dessous, RT vous guidera pour configurer votre serveur RT et votre base de données." 
+msgstr "Vous voyez cet écran car vous avez démarré RT sans base de données fonctionnelle. C'est probablement la première fois que vous lancez RT. Si vous cliques <i>C'est parti!</i> ci-dessous, RT vous guidera pour configurer votre serveur RT et votre base de données."
 
 #: share/html/NoAuth/Logout.html:59
 msgid "You're welcome to login again"
