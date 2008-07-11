@@ -75,9 +75,22 @@ foreach my $arg ( keys %$parent_args ) {
     }
 
 
-    $m->comp('/RTFM/Article/Elements/Preformatted',
+    my $formatted_article = $m->scomp('/RTFM/Article/Elements/Preformatted',
         Article => $article, Ticket => $Ticket
     );
+
+    # if we're on 3.8 and using the javascript MessageBox apply the
+    # escapse that the JS usually applies in HeaderJavascript.
+    if ($RT::VERSION =~ /^3\.8/) {
+        if (RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'})) {
+            $formatted_article =~ s/>/&gt;/g;
+            $formatted_article =~ s/</&lt;/g;
+            $formatted_article =~ s/&/&amp;/g;
+            $formatted_article =~ s/\n/\n<br \/>/g;
+        }
+    }
+    $m->print($formatted_article);
+
 }
 return;
 </%INIT>
