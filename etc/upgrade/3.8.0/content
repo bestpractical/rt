@@ -1,0 +1,22 @@
+@Final = (
+    # by incident we've changed 'My Bookmarks' to 'Bookmarked Tickets' when
+    # 3.7.82 upgrade script still was creating 'My Bookmarks', try to fix it
+    sub {
+        $RT::Logger->debug("Going to rename 'My Bookmarks' to 'Bookmarked Tickets'");
+        my $sys = RT::System->new($RT::SystemUser);
+
+        my $attrs = RT::Attributes->new( $RT::SystemUser );
+        $attrs->LimitToObject( $sys );
+        my ($attr) = $attrs->Named( 'Search - My Bookmarks' );
+        unless ($attr) {
+            $RT::Logger->debug("You have no global search 'My Bookmarks'. Skipped.");
+            return 1;
+        }
+        my ($status, $msg) = $attr->SetName( 'Search - Bookmarked Tickets' );
+        $RT::Logger->error($msg) and return undef unless $status;
+
+        $RT::Logger->debug("Renamed.");
+        return 1;
+    },
+);
+
