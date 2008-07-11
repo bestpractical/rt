@@ -209,7 +209,7 @@ sub mark_transactions_sent {
             $deferred->{$freq}->{$user}->{'_sent'} = 1;
             $txn->SetAttribute(
                 Name        => 'DeferredRecipients',
-                Description => 'Deferred recipients for this message',
+                description => 'Deferred recipients for this message',
                 Content     => $deferred,
             );
         }

@@ -55,7 +55,7 @@ my %Meta = (
     DatabaseType => {
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            Description => 'Database type',    # loc
+            description => 'Database type',    # loc
             Values      => [
                 grep {
                     my $m = 'DBD::' . $_;
@@ -73,7 +73,7 @@ my %Meta = (
     DatabaseHost => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description  => 'Database host',                          #loc
+            description  => 'Database host',                          #loc
             Default      => 1,
             DefaultLabel => "Keep 'localhost' if you're not sure",    #loc
             Hints =>
@@ -84,7 +84,7 @@ my %Meta = (
     DatabasePort => {
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'Database port',                           #loc
+            description => 'Database port',                           #loc
             Default     => 1,
             DefaultLabel =>
               'Leave empty to use the default value for your database',    #loc
@@ -93,7 +93,7 @@ my %Meta = (
     DatabaseName => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'Database name',                                #loc
+            description => 'Database name',                                #loc
         },
     },
     DatabaseAdmin => {
@@ -103,14 +103,14 @@ my %Meta = (
             Hints =>
 "Leave this alone to use the default dba username for your database type"
             ,                                                              #loc
-            Description  => 'DBA username',                                # loc
+            description  => 'DBA username',                                # loc
             DefaultLabel => '',
         },
     },
     DatabaseAdminPassword => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description  => 'DBA password',                                #loc
+            description  => 'DBA password',                                #loc
             DefaultLabel => "The DBA's database password",                 #loc
             Type         => 'password',
             Hints =>
@@ -120,7 +120,7 @@ my %Meta = (
     DatabaseUser => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'Database username for RT',                     #loc
+            description => 'Database username for RT',                     #loc
             Hints =>
 'RT will connect to the database using this user.  It will be created for you.'
             ,                                                              #loc
@@ -129,7 +129,7 @@ my %Meta = (
     DatabasePassword => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'Database password for RT',                     #loc
+            description => 'Database password for RT',                     #loc
             Type        => 'password',
             Hints => 'The password RT should use to connect to the database.',
         },
@@ -137,13 +137,13 @@ my %Meta = (
     DatabaseRequireSSL => {
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
-            Description => 'Use SSL?',                                     # loc
+            description => 'Use SSL?',                                     # loc
         },
     },
     rtname => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'Site name',                                    #loc
+            description => 'Site name',                                    #loc
             Hints =>
 'RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)' #loc
         },
@@ -151,13 +151,13 @@ my %Meta = (
     MinimumPasswordLength => {
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'Minimum password length',    #loc
+            description => 'Minimum password length',    #loc
         },
     },
     Password => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'Administrative password',    #loc
+            description => 'Administrative password',    #loc
             Hints =>
 'RT will create a user called "root" and set this as their password'
             ,                                            #loc
@@ -167,7 +167,7 @@ my %Meta = (
     OwnerEmail => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'RT Administrator Email',     #loc
+            description => 'RT Administrator Email',     #loc
             Hints =>
 "When RT can't handle an email message, where should it be forwarded?"
             ,                                            #loc
@@ -176,7 +176,7 @@ my %Meta = (
     CommentAddress => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'Comment address',            #loc
+            description => 'Comment address',            #loc
             Hints =>
 'the default addresses that will be listed in From: and Reply-To: headers of comment mail.' #loc
         },
@@ -184,7 +184,7 @@ my %Meta = (
     CorrespondAddress => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'Correspond address',    #loc
+            description => 'Correspond address',    #loc
             Hints =>
 'the default addresses that will be listed in From: and Reply-To: headers of correspondence mail.' #loc
         },
@@ -193,13 +193,13 @@ my %Meta = (
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             Hints       => 'Where to find your sendmail binary.',    #loc
-            Description => 'Path to sendmail',                       #loc
+            description => 'Path to sendmail',                       #loc
         },
     },
     WebDomain => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'Domain name',                            #loc
+            description => 'Domain name',                            #loc
             Hints =>
 "Don't include http://, just something like 'localhost', 'rt.example.com'"
             ,                                                        #loc
@@ -208,7 +208,7 @@ my %Meta = (
     WebPort => {
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'Web port',                               #loc
+            description => 'Web port',                               #loc
             Hints =>
               'which port your web server will listen to, e.g. 8080',    #loc
         },
@@ -222,7 +222,7 @@ if ($HAS_DATETIME_TZ) {
     $Meta{Timezone} = {
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            Description => 'Timezone',                                   #loc
+            description => 'Timezone',                                   #loc
             Callback    => sub {
                 my $ret;
                 $ret->{Values} = [ '', DateTime::TimeZone->all_names ];
@@ -247,7 +247,7 @@ else {
     $Meta{Timezone} = {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Description => 'Timezone',                         #loc
+            description => 'Timezone',                         #loc
         },
     };
 }

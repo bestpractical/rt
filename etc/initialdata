@@ -94,10 +94,10 @@
        exec_module => 'CreateTickets', },
     { name        => 'Open Tickets',                                      # loc
       description => 'Open tickets on correspondence',                    # loc
-    { name        => 'Extract Subject Tag',                               # loc
-      Description => 'Extract tags from a Transaction\'s subject and add them to the Ticket\'s subject.', # loc
-      ExecModule  => 'ExtractSubjectTag' },
       exec_module  => 'AutoOpen' },
+    { name        => 'Extract Subject Tag',                               # loc
+      description => 'Extract tags from a Transaction\'s subject and add them to the Ticket\'s subject.', # loc
+      exec_module  => 'ExtractSubjectTag' },
 );
 
 @scrip_conditions = (
@@ -422,7 +422,7 @@ Your new password is:
 
 	       {   queue       => '0',
 		   name        => 'email Digest',    # loc
-		   Description => 'email template for periodic notification digests',  # loc
+		   description => 'email template for periodic notification digests',  # loc
 		   Content => q[Subject: RT email Digest
 
 { $Argument }
@@ -432,7 +432,7 @@ Your new password is:
 {
     queue       => 0,
     name        => "Error: Missing dashboard",    # loc
-    Description =>
+    description =>
       "Inform user that a dashboard he subscribed to is missing", # loc
     Content => q{Subject: [{RT->config->get('rtname')}] Missing dashboard!
 
@@ -498,7 +498,7 @@ Hour:         { $subscription_obj->SubValue('Hour') }
        scrip_condition => 'On Resolve',
        scrip_action    => 'Notify requestors',
        template       => 'resolved' },
-    {  Description    => "On transaction, add any tags in the transaction's subject to the ticket's subject",
+    {  description    => "On transaction, add any tags in the transaction's subject to the ticket's subject",
        ScripCondition => 'On Transaction',
        ScripAction    => 'Extract Subject Tag',
        Template       => 'Blank' },
@@ -699,7 +699,7 @@ return 0; # ignore $passed;
       },
     },
     { name => 'Search - Bookmarked Tickets',
-      Description => 'Bookmarked Tickets', #loc
+      description => 'Bookmarked Tickets', #loc
       Content     =>
       { format => q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
                 . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>/TITLE:Subject',}

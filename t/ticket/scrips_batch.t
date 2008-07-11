@@ -25,7 +25,7 @@ my $sid;
     $m->follow_link_ok(  text => 'Scrips'  );
     $m->follow_link_ok(  text => 'New scrip'  );
     $m->form_number(3);
-    $m->field('Scrip-new-Description' => 'On transaction, record updates');
+    $m->field('Scrip-new-description' => 'On transaction, record updates');
     $m->select('Scrip-new-scrip_condition' => 'On Transaction');
     $m->select('Scrip-new-scrip_action' => 'User Defined');
     $m->select('Scrip-new-Template' => 'Global template: Blank');
@@ -38,7 +38,7 @@ my $sid;
     ($sid) = ($m->content =~ /Scrip\s*#(\d+)/);
 
     my $form = $m->form_number(3);
-    is $m->value("Scrip-$sid-Description"), 'On transaction, record updates', 'correct description';
+    is $m->value("Scrip-$sid-description"), 'On transaction, record updates', 'correct description';
     is value_name($form, "Scrip-$sid-scrip_condition"), 'On Transaction', 'correct condition';
     is value_name($form, "Scrip-$sid-scrip_action"), 'User Defined', 'correct action';
     is value_name($form, "Scrip-$sid-Template"), 'Global template: Blank', 'correct template';

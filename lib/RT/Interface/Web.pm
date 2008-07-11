@@ -868,7 +868,7 @@ sub process_custom_field_updates {
     if ( $args_ref->{"$prefix-AddValue-name"} ) {
         my ( $addval, $addmsg ) = $object->add_value(
             name        => $args_ref->{"$prefix-AddValue-name"},
-            description => $args_ref->{"$prefix-AddValue-Description"},
+            description => $args_ref->{"$prefix-AddValue-description"},
             sort_order  => $args_ref->{"$prefix-AddValue-sort_order"},
         );
         push( @results, $addmsg );

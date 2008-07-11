@@ -48,9 +48,9 @@
 
 =head1 NAME
 
-RT::Action::LinearEscalate - will move a ticket's priority toward its final priority.
+RT::ScripAction::LinearEscalate - will move a ticket's priority toward its final priority.
 
-=head1 This vs. RT::Action::EscalatePriority
+=head1 This vs. RT::ScripAction::EscalatePriority
 
 This action doesn't change priority if due date is not set.
 
@@ -89,7 +89,7 @@ will get tickets to where they need to be:
 
     rt-crontool --search RT::Search::FromSQL --search-arg \
     "(Status='new' OR Status='open' OR Status = 'stalled')" \
-    --action RT::Action::LinearEscalate
+    --action RT::ScripAction::LinearEscalate
 
 The Starts date is associated with intial ticket's priority or
 the Created field if the former is not set. End of interval is
@@ -125,7 +125,7 @@ From a shell you can use the following command:
 
     rt-crontool --search RT::Search::FromSQL --search-arg \
     "(Status='new' OR Status='open' OR Status = 'stalled')" \
-    --action RT::Action::LinearEscalate \
+    --action RT::ScripAction::LinearEscalate \
     --action-arg "RecordTransaction: 1"
 
 This ScripAction uses RT's internal _Set or __Set calls to set ticket
@@ -134,11 +134,11 @@ update, if it's been said to.
 
 =cut
 
-package RT::Action::LinearEscalate;
+package RT::ScripAction::LinearEscalate;
 
 use strict;
 use warnings;
-use base qw(RT::Action);
+use base qw(RT::ScripAction);
 
 our $VERSION = '0.06';
 
@@ -273,9 +273,9 @@ sub Commit {
     return 1;
 }
 
-eval "require RT::Action::LinearEscalate_Vendor";
+eval "require RT::ScripAction::LinearEscalate_Vendor";
 die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Action/LinearEscalate_Vendor.pm} );
-eval "require RT::Action::LinearEscalate_Local";
+eval "require RT::ScripAction::LinearEscalate_Local";
 die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Action/LinearEscalate_Local.pm} );
 
 1;

@@ -62,7 +62,7 @@
 <tr>
 <td><input type="text" size="3"  name="<% $paramtag %>-sort_order"   /></td>
 <td><input type="text" size="30" name="<% $paramtag %>-name"        /></td>
-<td><input type="text" size="50" name="<% $paramtag %>-Description" /></td>
+<td><input type="text" size="50" name="<% $paramtag %>-description" /></td>
 % if ( $CustomField->type ne 'Combobox' ) {
 <td><input type="text" size="10" name="<% $paramtag %>-category"    /></td>
 % }

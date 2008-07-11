@@ -97,7 +97,7 @@ sub SaveAttribute {
 
     return $object->AddAttribute(
         'Name'        => 'SavedSearch',
-        'Description' => $args->{'Name'},
+        'description' => $args->{'Name'},
         'Content'     => $params,
     );
 }
@@ -111,7 +111,7 @@ sub UpdateAttribute {
     my ($status, $msg) = $self->{'Attribute'}->SetSubValues(%$params);
 
     if ($status && $args->{'Name'}) {
-        ($status, $msg) = $self->{'Attribute'}->SetDescription($args->{'Name'});
+        ($status, $msg) = $self->{'Attribute'}->set_description($args->{'Name'});
     }
 
     return ($status, $msg);

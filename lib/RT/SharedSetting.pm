@@ -64,7 +64,7 @@ It consists of an ID, a name, and some arbitrary data.
 package RT::SharedSetting;
 use strict;
 use warnings;
-use RT::Attribute;
+use RT::Model::Attribute;
 use base qw/RT::Base/;
 
 =head1 METHODS
@@ -137,7 +137,7 @@ sub Load {
 
 =head2 LoadById
 
-First loads up the L<RT::Attribute> for this shared setting by ID, then calls
+First loads up the L<RT::Model::Attribute> for this shared setting by ID, then calls
 L</Load> with the correct parameters. Returns a tuple of status and message,
 where status is true on success.
 
@@ -147,7 +147,7 @@ sub LoadById {
     my $self = shift;
     my $id   = shift;
 
-    my $attr = RT::Attribute->new( $self->CurrentUser );
+    my $attr = RT::Model::Attribute->new( $self->CurrentUser );
     my ( $ok, $msg ) = $attr->LoadById($id);
 
     if ( !$ok ) {
@@ -308,8 +308,8 @@ Returns the name of this shared setting.
 
 sub Name {
     my $self = shift;
-    return unless ref( $self->{'Attribute'} ) eq 'RT::Attribute';
-    return $self->{'Attribute'}->Description();
+    return unless ref( $self->{'Attribute'} ) eq 'RT::Model::Attribute';
+    return $self->{'Attribute'}->description();
 }
 
 =head2 Id
@@ -344,7 +344,7 @@ Returns the given named parameter of the setting.
 sub GetParameter {
     my $self  = shift;
     my $param = shift;
-    return unless ref( $self->{'Attribute'} ) eq 'RT::Attribute';
+    return unless ref( $self->{'Attribute'} ) eq 'RT::Model::Attribute';
     return $self->{'Attribute'}->SubValue($param);
 }
 

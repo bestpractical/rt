@@ -107,7 +107,7 @@ sub SaveAttribute {
 
     return $object->AddAttribute(
         'Name'        => 'Dashboard',
-        'Description' => $args->{'Name'},
+        'description' => $args->{'Name'},
         'Content'     => { Searches => $args->{'Searches'} },
     );
 }
@@ -125,7 +125,7 @@ sub UpdateAttribute {
 
     if ( $status && $args->{'Name'} ) {
         ( $status, $msg ) =
-          $self->{'Attribute'}->SetDescription( $args->{'Name'} )
+          $self->{'Attribute'}->set_description( $args->{'Name'} )
           unless $self->Name eq $args->{'Name'};
     }
 
@@ -170,7 +170,7 @@ description
 
 sub SearchIds {
     my $self = shift;
-    return unless ref( $self->{'Attribute'} ) eq 'RT::Attribute';
+    return unless ref( $self->{'Attribute'} ) eq 'RT::Model::Attribute';
     return @{ $self->{'Attribute'}->SubValue('Searches') || [] };
 }
 

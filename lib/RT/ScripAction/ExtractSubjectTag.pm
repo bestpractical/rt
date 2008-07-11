@@ -46,8 +46,8 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-package RT::Action::ExtractSubjectTag;
-use base 'RT::Action';
+package RT::ScripAction::ExtractSubjectTag;
+use base 'RT::ScripAction';
 use strict;
 
 sub Describe {

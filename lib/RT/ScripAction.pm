@@ -48,11 +48,11 @@
 
 =head1 NAME
 
-  RT::Action - a generic baseclass for RT Actions
+  RT::ScripAction - a generic baseclass for RT Actions
 
 =head1 SYNOPSIS
 
-  use RT::Action;
+  use RT::ScripAction;
 
 =head1 DESCRIPTION
 
@@ -61,7 +61,7 @@
 
 =cut
 
-package RT::Action;
+package RT::ScripAction;
 
 use strict;
 use Scalar::Util;
@@ -229,9 +229,9 @@ sub DESTROY {
 
 # }}}
 
-eval "require RT::Action_Vendor";
+eval "require RT::ScripAction_Vendor";
 die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Action_Vendor.pm} );
-eval "require RT::Action_Local";
+eval "require RT::ScripAction_Local";
 die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Action_Local.pm} );
 
 1;

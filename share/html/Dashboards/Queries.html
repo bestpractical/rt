@@ -129,7 +129,7 @@ my $sel = $m->comp(
         my $self = shift;
 
         # transform list of "SearchID-PrivacyObjType-PrivacyObjID"s to
-        # list of [Privacy, SearchID, Description]s
+        # list of [Privacy, SearchID, description]s
         my $searches = [ map {
             [ reverse(split /-/, $_, 2), $desc_of{$_} ]
         } @{ $self->{Current} } ];

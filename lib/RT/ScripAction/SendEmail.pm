@@ -458,7 +458,7 @@ sub add_ticket {
     my $ticket_mime = MIME::Entity->build(
         Type        => 'multipart/mixed',
         Top         => 0,
-        Description => "ticket #$tid",
+        description => "ticket #$tid",
     );
     while ( my $attachment = $attachs->next ) {
         $self->add_attachment( $attachment, $ticket_mime );

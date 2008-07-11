@@ -176,7 +176,7 @@ my $timezone = $session{'CurrentUser'}->UserObj->Timezone || RT->Config->Get('Ti
 use RT::Dashboard;
 my $DashboardObj = RT::Dashboard->new($session{'CurrentUser'});
 
-my $SubscriptionObj = RT::Attribute->new($session{'CurrentUser'});
+my $SubscriptionObj = RT::Model::Attribute->new($session{'CurrentUser'});
 
 # first let's see if we already have a subscription to this DashboardId
 for my $sub ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription')) {
@@ -238,7 +238,7 @@ if (defined $ARGS{Save}) {
 
         my ($val, $msg) = $SubscriptionObj->Create(
             Name        => 'Subscription',
-            Description => 'Subscription to dashboard ' . $DashboardId,
+            description => 'Subscription to dashboard ' . $DashboardId,
             ContentType => 'storable',
             Object      => $session{'CurrentUser'}->UserObj,
             Content     => \%fields,

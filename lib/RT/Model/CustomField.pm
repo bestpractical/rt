@@ -103,7 +103,6 @@ our %FieldTypes = (
     ],
     Image => [
         'Upload multiple images',             # loc
-RT::Model::CustomField->_for_objectType( 'RT::Model::Queue' => "Queues", );                #loc
         'Upload one image',                   # loc
         'Upload up to %1 images',             # loc
     ],

@@ -76,7 +76,7 @@ my $COLUMN_MAP = {
         title     => 'Template',
         value     => sub { return $_[0]->loc( $_[0]->TemplateObj->Name ) },
     },
-    AutoDescription => {
+    Autodescription => {
         title     => 'Condition, Action and Template',
         value     => sub { return $_[0]->loc( "[_1] [_2] with template [_3]",
             $_[0]->loc($_[0]->ConditionObj->Name),
@@ -86,7 +86,7 @@ my $COLUMN_MAP = {
     },
 };
 
-foreach my $col( qw(Description Stage) ) {
+foreach my $col( qw(description Stage) ) {
     $COLUMN_MAP->{ $col } = { attribute => $col, value => sub { return $_[0]->$col() } };
 }
 </%ONCE>

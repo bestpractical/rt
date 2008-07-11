@@ -95,11 +95,11 @@ while ( my ($group, $list) = (splice @tmp, 0, 2) ) {
 % } }
 </select><br />
 
-% if ( RT::Link->can('Description' ) ) {
+% if ( RT::Link->can('description' ) ) {
 % my $checked = '';
-% $checked = 'checked="checked"' if $ShowLinkDescriptions;
+% $checked = 'checked="checked"' if $show_link_descriptions;
 Show link descriptions:
-<input type="checkbox" name="ShowLinkDescriptions" value="1" <% $checked |n %> />
+<input type="checkbox" name="show_link_descriptions" value="1" <% $checked |n %> />
 <br />
 % }
 
@@ -129,7 +129,7 @@ $LeadingLink => 'Members'
 @ShowLinks => ('MemberOf', 'DependsOn', 'RefersTo')
 $MaxDepth => 3
 $FillUsing => ''
-$ShowLinkDescriptions => 0
+$show_link_descriptions => 0
 </%ARGS>
 <%INIT>
 require RT::Graph::Tickets;

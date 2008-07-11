@@ -90,21 +90,21 @@ if ($self->{SearchId} eq 'new') {
 if ( $args->{SavedSearchSave} ) {
     if ( my $search = $self->{CurrentSearch}{object} ) {
         # rename
-        $search->set_description( $args->{SavedSearchDescription} );
-	push @actions, _($self->{SearchType}).loc( ' %1 renamed to %2.', $self->{CurrentSearch}{Description}, $args->{SavedSearchDescription} );
+        $search->set_description( $args->{saved_search_description} );
+	push @actions, _($self->{SearchType}).loc( ' %1 renamed to %2.', $self->{CurrentSearch}{description}, $args->{saved_search_description} );
     }
     else {
         # new saved search
         my $saved_search = RT::SavedSearch->new();
         my ( $ok, $search_msg ) = $saved_search->save(
             Privacy      => $args->{'SavedSearchOwner'},
-            name         => $args->{'SavedSearchDescription'},
+            name         => $args->{'saved_search_description'},
             type         => $self->{'SearchType'},
             search_params => $search_params
         );
         if ($ok) {
 	    $self->{CurrentSearch}{object} = $saved_search->{Attribute};
-            push @actions, _($self->{SearchType})._( ' %1 saved.', $args->{SavedSearchDescription} );
+            push @actions, _($self->{SearchType})._( ' %1 saved.', $args->{saved_search_description} );
         } else {
             push @actions,
                 [ _("Can't save %1", _($self->{SearchType})) . ': ' . _($search_msg), 0 ];

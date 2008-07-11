@@ -53,7 +53,7 @@
 <& selectsearch_object, name => 'SavedSearchOwner', objects => \@objects, object => ( $object && $object->id ) ? $object->object : '' &>
 <br />
 <&|/l&>description</&>:
-<input size="25" name="SavedSearchDescription" value="<% $description || '' %>" />
+<input size="25" name="saved_search_description" value="<% $description || '' %>" />
 
 % if ($Id ne 'new') {
 <nobr>
@@ -117,7 +117,7 @@ my $is_dirty = sub {
 # If we're modifying an old query, check if it's been changed
 my $Dirty = $is_dirty->(
     Query       => $CurrentSearch,
-    SavedSearch => { id => $id, object => $object, Description => $Description },
+    SavedSearch => { id => $id, object => $object, description => $description },
     SearchFields => \@SearchFields,
 );
 
@@ -128,7 +128,7 @@ my $Dirty = $is_dirty->(
 $id            => 'new'
 $object        => undef
 $type          => 'Ticket'
-$Description   => ''
+$description   => ''
 $CurrentSearch => {}
 @SearchFields   => ()
 $AllowCopy     => 1
@@ -145,7 +145,7 @@ $SavedSearch => {}
 
 
 $SavedSearch->{'id'}          = $ARGS{'SavedSearchId'}          || 'new';
-$SavedSearch->{'description'} = $ARGS{'SavedSearchDescription'} || undef;
+$SavedSearch->{'description'} = $ARGS{'saved_search_description'} || undef;
 $SavedSearch->{'Privacy'}     = $ARGS{'SavedSearchOwner'}       || undef;
 
 my @results;
@@ -184,10 +184,10 @@ elsif ( $ARGS{'SavedSearchDelete'} ) {
 elsif ( $ARGS{'SavedSearchCopy'} ) {
     my ($container, $id ) = _parse_saved_search( $ARGS{'SavedSearchid'} );
     $SavedSearch->{'object'} = $container->Attributes->Withid( $id );
-    if ( $ARGS{'SavedSearchDescription'} && $ARGS{'SavedSearchDescription'} ne $SavedSearch->{'object'}->Description ) {
-        $SavedSearch->{'description'} = $ARGS{'SavedSearchDescription'};
+    if ( $ARGS{'saved_search_description'} && $ARGS{'saved_search_description'} ne $SavedSearch->{'object'}->description ) {
+        $SavedSearch->{'description'} = $ARGS{'saved_search_description'};
     } else {
-        $SavedSearch->{'description'} = _( "%1 copy", $SavedSearch->{'object'}->Description );
+        $SavedSearch->{'description'} = _( "%1 copy", $SavedSearch->{'object'}->description );
     }
     $SavedSearch->{'id'}          = 'new';
     $SavedSearch->{'object'}      = undef;

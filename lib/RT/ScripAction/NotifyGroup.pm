@@ -48,7 +48,7 @@
 
 =head1 NAME
 
-RT::Action::NotifyGroup - RT Action that sends notifications to groups and/or users
+RT::ScripAction::NotifyGroup - RT Action that sends notifications to groups and/or users
 
 =head1 DESCRIPTION
 
@@ -59,11 +59,11 @@ more info see its documentation.
 
 =cut
 
-package RT::Action::NotifyGroup;
+package RT::ScripAction::NotifyGroup;
 
 use strict;
 use warnings;
-use base qw(RT::Action::Notify);
+use base qw(RT::ScripAction::Notify);
 
 require RT::User;
 require RT::Group;
@@ -171,7 +171,7 @@ sub __ConvertOldArg {
         else {
             next;
         }
-        $obj->Load( $r->{'Instance'} );
+        $obj->Load( $r->{'instance'} );
         my $id = $obj->id;
         next unless ($id);
 
@@ -192,7 +192,7 @@ sub __PushUserAddress {
 
 Ruslan U. Zakirov E<lt>ruz@bestpractical.comE<gt>
 
-L<RT::Action::NotifyGroupAsComment>, F<rt-email-group-admin>
+L<RT::ScripAction::NotifyGroupAsComment>, F<rt-email-group-admin>
 
 =cut
 

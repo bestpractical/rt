@@ -172,6 +172,10 @@ sub create {
         via              => '0'
     );
 
+    #and popuplate the CachedGroupMembers of all the groups that group is part of .
+
+    my $cgm = RT::Model::CachedGroupMemberCollection->new;
+
     #When adding a member to a group, we need to go back
     $cgm->limit(
         subclause       => 'filter',        # dont't mess up with prev condition
@@ -181,10 +185,6 @@ sub create {
         quote_value      => 0,
         entry_aggregator => 'AND',
     );
-    #and popuplate the CachedGroupMembers of all the groups that group is part of .
-
-    my $cgm = RT::Model::CachedGroupMemberCollection->new;
-
     # find things which have the current group as a member.
     # $group is an RT::Model::Principal for the group.
     $cgm->limit_to_groups_with_member( $args{'group'}->id );

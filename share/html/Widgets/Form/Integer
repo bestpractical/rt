@@ -49,7 +49,7 @@
 see docs/using_forms_widgets.pod
 </%DOC>
 <div id="form-box-<% lc $name %>" class="widget">
-<span class="label description"><% $Description %></span>
+<span class="label description"><% $description %></span>
 <span class="value"><& SELF:InputOnly, %ARGS &></span>
 % if ( $default ) {
 <span class="comment"><% $default_label %></span>

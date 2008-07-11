@@ -1045,7 +1045,6 @@ sub _links {
 
 # {{{ sub _add_link
 
-=head2 _add_link
 
 # {{{ sub formatType
 
@@ -1090,6 +1089,8 @@ sub formatLink {
 }
 
 # }}}
+
+=head2 _add_link
 
 Takes a paramhash of type and one of base or target. Adds that link to this object.
 
@@ -1163,8 +1164,6 @@ sub _add_link {
         FallBack => $args{target}
     );
     my $typetext = $self->formatType( type => $args{type} );
-    my $TransString = "$basetext $typetext $targettext.";
-    return ( $linkid, $TransString );
 
     my $TransString = "Record $args{'base'} $args{'type'} record $args{'target'}.";
 

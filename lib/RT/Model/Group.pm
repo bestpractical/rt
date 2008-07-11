@@ -237,9 +237,9 @@ sub load_acl_equivalence_group {
     $principal = $principal->id if ref $principal;
 
     return $self->load_by_cols(
-        Domain   => 'ACLEquivalence',
+        domain   => 'ACLEquivalence',
         type     => 'UserEquiv',
-        Instance => $principal,
+        instance => $principal,
     );
 }
 
@@ -286,7 +286,7 @@ sub load_system_internal_group {
     my $identifier = shift;
 
     return $self->load_by_cols(
-        Domain => 'SystemInternal',
+        domain => 'SystemInternal',
         type   => $identifier,
     );
 }

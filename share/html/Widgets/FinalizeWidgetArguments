@@ -49,7 +49,7 @@
     my %args = %$WidgetArguments;
 
     %args = (%args, %{ $args{Callback}->() }) if $args{Callback};
-    $args{'Description'} = loc( $args{'Description'} ) if $args{'Description'};
+    $args{'description'} = loc( $args{'description'} ) if $args{'description'};
     if ( $args{'ValuesLabel'} ) {
         while (my ($k, $v) = each %{ $args{'ValuesLabel'} } ) {
             $args{'ValuesLabel'}->{$k} = loc( $args{'ValuesLabel'}->{$k} );

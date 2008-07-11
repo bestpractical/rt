@@ -62,8 +62,8 @@
 
 <%init>
 my $format = q{'<a href="__WebPath__/Admin/Global/Scrip.html?id=__id__&Queue=0">__id__</a>/TITLE:#'}
-    .q{,'<a href="__WebPath__/Admin/Global/Scrip.html?id=__id__&Queue=0">__AutoDescription__</a>/TITLE:Condition, Action and Template'}
-    .q{__NEWLINE__,'','<small>__Description__</small>'};
+    .q{,'<a href="__WebPath__/Admin/Global/Scrip.html?id=__id__&Queue=0">__Autodescription__</a>/TITLE:Condition, Action and Template'}
+    .q{__NEWLINE__,'','<small>__description__</small>'};
 
 my $Scrips = RT::Scrips->new;
 $Scrips->limit_toGlobal;

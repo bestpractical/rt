@@ -48,23 +48,23 @@
 
 =head1 NAME
 
-RT::Action::NotifyGroupAsComment - RT Action that sends notifications to groups and/or users as comment
+RT::ScripAction::NotifyGroupAsComment - RT Action that sends notifications to groups and/or users as comment
 
 =head1 DESCRIPTION
 
-This is subclass of L<RT::Action::NotifyGroup> that send comments instead of replies.
-See C<rt-email-group-admin> and L<RT::Action::NotifyGroup> docs for more info.
+This is subclass of L<RT::ScripAction::NotifyGroup> that send comments instead of replies.
+See C<rt-email-group-admin> and L<RT::ScripAction::NotifyGroup> docs for more info.
 
 =cut
 
-package RT::Action::NotifyGroupAsComment;
+package RT::ScripAction::NotifyGroupAsComment;
 
 use strict;
 use warnings;
 
-use RT::Action::NotifyGroup;
+use RT::ScripAction::NotifyGroup;
 
-use base qw(RT::Action::NotifyGroup);
+use base qw(RT::ScripAction::NotifyGroup);
 
 sub SetReturnAddress {
     my $self = shift;

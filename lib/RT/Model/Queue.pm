@@ -558,7 +558,7 @@ sub SetSubjectTag {
 
     my ( $status, $msg ) = RT->System->set_attribute(
         name        => 'BrandedSubjectTag',
-        Description => 'Queue id => subject tag map',
+        description => 'Queue id => subject tag map',
         Content     => $map,
     );
     return ( $status, $msg ) unless $status;

@@ -49,7 +49,7 @@
 see docs/using_forms_widgets.pod
 </%DOC>
 <div id="form-box-<% lc $Name %>" class="widget">
-<span class="description label"><% $Description %></span>
+<span class="description label"><% $description %></span>
 <span class="value"><& SELF:InputOnly, %ARGS &></span>
 % if ( $Default ) {
 <span class="comment"><% $DefaultLabel %></span>
@@ -59,7 +59,7 @@ see docs/using_forms_widgets.pod
 <%ARGS>
 $Name
 
-$Description  => undef,
+$description  => undef,
 $Hints        => ''
 
 $CurrentValue => '',

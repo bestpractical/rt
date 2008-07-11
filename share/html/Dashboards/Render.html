@@ -82,7 +82,7 @@ my $DashboardObj = RT::Dashboard->new($session{'CurrentUser'});
 my ($ok, $msg) = $DashboardObj->LoadById($id);
 Abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg)) if !$ok;
 
-my $SubscriptionObj = RT::Attribute->new($session{'CurrentUser'});
+my $SubscriptionObj = RT::Model::Attribute->new($session{'CurrentUser'});
 my $Loaded = 0;
 
 # try to load the subscription to this id

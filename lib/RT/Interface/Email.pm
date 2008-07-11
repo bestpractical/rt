@@ -612,7 +612,7 @@ sub forward_transaction {
     $mail->attach(
         Type        => 'message/rfc822',
         Disposition => 'attachment',
-        Description => 'forwarded message',
+        description => 'forwarded message',
         Data        => $entity->as_string,
     );
 

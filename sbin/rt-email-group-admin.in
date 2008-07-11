@@ -284,7 +284,7 @@ sub __create_empty {
     my $action = RT::ScripAction->new( $RT::SystemUser );
     $action->Create(
         Name => $name,
-        Description => "Created with rt-email-group-admin script",
+        description => "Created with rt-email-group-admin script",
         ExecModule => $as_comment? 'NotifyGroupAsComment': 'NotifyGroup',
         Argument => '',
     );

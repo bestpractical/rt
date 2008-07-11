@@ -55,7 +55,7 @@
 <table>
 
 <tr><td align="right"><&|/l&>description</&>:</td><td>
-<input name="Scrip-<% $id %>-Description" value="<% $ARGS{"Scrip-$id-Description"} || $scrip->description || ''%>" />
+<input name="Scrip-<% $id %>-description" value="<% $ARGS{"Scrip-$id-description"} || $scrip->description || ''%>" />
 </td></tr>
 
 <tr><td align="right"><&|/l&>Condition</&>:</td><td>
@@ -172,7 +172,7 @@ if ( $id eq 'new' ) {
         scrip_action            => $ARGS{"Scrip-new-scrip_action"},
         scrip_condition         => $ARGS{"Scrip-new-scrip_condition"},
         template               => $ARGS{"Scrip-new-Template"},
-        description            => $ARGS{"Scrip-new-Description"},
+        description            => $ARGS{"Scrip-new-description"},
         custom_prepare_code      => $ARGS{"Scrip-new-custom_prepare_code"},
         custom_commit_code       => $ARGS{"Scrip-new-custom_commit_code"},
         custom_is_applicable_code => $ARGS{"Scrip-new-custom_is_applicable_code"},

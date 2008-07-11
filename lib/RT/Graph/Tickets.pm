@@ -289,7 +289,7 @@ sub TicketLinks {
         MaxDepth     => 0,
         CurrentDepth => 1,
 
-        ShowLinkDescriptions => 0,
+        show_link_descriptions => 0,
         @_
     );
     unless ( $args{'Graph'} ) {
@@ -319,8 +319,8 @@ sub TicketLinks {
 
     $args{'SeenEdge'} ||= {};
 
-    my $show_link_descriptions = $args{'ShowLinkDescriptions'}
-      && RT::Link->can('Description');
+    my $show_link_descriptions = $args{'show_link_descriptions'}
+      && RT::Link->can('description');
 
     foreach my $type ( $args{'LeadingLink'}, @{ $args{'ShowLinks'} } ) {
         my $links = $args{'Ticket'}->$type();
@@ -348,7 +348,7 @@ sub TicketLinks {
             );
 
             my $desc;
-            $desc = $link->Description if $show_link_descriptions;
+            $desc = $link->description if $show_link_descriptions;
             $args{'Graph'}->add_edge(
 
                 # we revers order of member links to get better layout
