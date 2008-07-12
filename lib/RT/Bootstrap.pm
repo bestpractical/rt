@@ -73,63 +73,132 @@ sub insert_acl { }
 =cut
 
 sub insert_initial_data {
-    my $self    = shift;
-    my $db_type = RT->config->get('DatabaseType');
+    my $self = shift;
 
-    #Put together a current user object so we can create a User object
     require RT::CurrentUser;
     my $bootstrap_user = RT::CurrentUser->new( _bootstrap => 1 );
 
-    #print "Checking for existing system user...";
-    my $test_user = RT::Model::User->new( current_user => $bootstrap_user );
-    $test_user->load('RT_System');
-    if ( $test_user->id ) {
+    # create RT_System user and grant him rights
+    {
+        my $test_user =
+          RT::Model::User->new( current_user => $bootstrap_user );
+        $test_user->load('RT_System');
+        if ( $test_user->id ) {
 
-        #print "found!\n\nYou appear to have a functional RT database.\n"
-        #. "Exiting, so as not to clobber your existing data.\n";
-
-    } else {
-
-        #print "not found.  This appears to be a new installation.\n";
+            #            push @warns, "Found system user in the DB.";
+        }
+        else {
+            my $user = RT::Model::User->new( current_user => $bootstrap_user );
+            my ( $val, $msg ) = $user->_bootstrap_create(
+                name      => 'RT_System',
+                real_name => 'The RT System itself',
+                comments  => 'Do not delete or modify this user. '
+                  . 'It is integral to RT\'s internal database structures',
+            );
+            return ( $val, $msg ) unless $val;
+        }
     }
 
-    #print "Creating system user...";
-    my $RT_System = RT::Model::User->new( current_user => $bootstrap_user );
-
-    my ( $val, $msg ) = $RT_System->_bootstrap_create(
-        name      => 'RT_System',
-        real_name => 'The RT System itself',
-        comments  => 'Do not delete or modify this user. ' . 'It is integral to RT\'s internal database structures',
-    );
-
-    unless ($val) {
-
-        #print "$msg\n";
-        exit(-1);
-    }
     Jifty::DBI::Record::Cachable->flush_cache;
 
-    #print "done.\n";
+    # grant SuperUser right to system user
+    {
+        my $test_ace = RT::Model::ACE->new( current_user => RT->system_user );
+        if ( $test_ace->id ) {
 
-    #print "Creating system user's ACL...";
-
-    my $current_user = RT::CurrentUser->new( name => 'RT_System' );
-    unless ( $current_user->id ) {
-
-        #print "Couldn't load system user\n";
-        exit(-1);
+            #            push @warns, "System user has global SuperUser right.";
+        }
+        else {
+            my $ace = RT::Model::ACE->new( current_user => RT->system_user );
+            my ( $val, $msg ) = $ace->_bootstrap_create(
+                principal_id   => acl_equiv_group_id( RT->system_user ),
+                principal_type => 'Group',
+                right_name     => 'SuperUser',
+                object_type    => 'RT::System',
+                object_id      => 1,
+            );
+            return ( $val, $msg ) unless $val;
+        }
     }
 
-    my $superuser_ace = RT::Model::ACE->new( current_user => $current_user );
-    $superuser_ace->_bootstrap_create(
-        principal_id   => acl_equiv_group_id( $current_user->id ),
-        principal_type => 'Group',
-        right_name     => 'SuperUser',
-        object_type    => 'RT::System',
-        object_id      => 1,
-    );
+    Jifty::DBI::Record::Cachable->flush_cache;
 
-    #print "done.\n";
+    # system groups
+    foreach my $name (qw(Everyone Privileged Unprivileged)) {
+        my $group = RT::Model::Group->new( current_user => RT->system_user );
+        $group->load_system_internal_group($name);
+        if ( $group->id ) {
+
+            #            push @warns, "System group '$name' already exists.";
+            next;
+        }
+
+        $group = RT::Model::Group->new( current_user => RT->system_user );
+        my ( $val, $msg ) = $group->_create(
+            type        => $name,
+            domain      => 'SystemInternal',
+            description => 'Pseudogroup for internal use',    # loc
+            name        => '',
+            instance    => '',
+        );
+        return ( $val, $msg ) unless $val;
+    }
+
+    # nobody
+    {
+        my $user = RT::Model::User->new( current_user => RT->system_user );
+        $user->load('Nobody');
+        if ( $user->id ) {
+
+            #            push @warns, "Found 'Nobody' user in the DB.";
+        }
+        else {
+            my ( $val, $msg ) = $user->create(
+                name      => 'Nobody',
+                real_name => 'Nobody in particular',
+                comments => 'Do not delete or modify this user. It is integral '
+                  . 'to RT\'s internal data structures',
+                privileged => 0,
+            );
+            return ( $val, $msg ) unless $val;
+        }
+
+        if ( $user->has_right( right => 'OwnTicket', object => RT->system ) ) {
+
+          #            push @warns, "User 'Nobody' has global OwnTicket right.";
+        }
+        else {
+            my ( $val, $msg ) = $user->principal_object->grant_right(
+                right  => 'OwnTicket',
+                object => RT->system,
+            );
+            return ( $val, $msg ) unless $val;
+        }
+    }
+
+    # rerun to get init Nobody as well
+    RT::init_system_objects();
+
+    # system role groups
+    foreach my $name (qw(Owner Requestor Cc AdminCc)) {
+        my $group = RT::Model::Group->new( current_user => RT->system_user );
+        $group->load_system_role_group($name);
+        if ( $group->id ) {
+
+            #            push @warns, "System role '$name' already exists.";
+            next;
+        }
+
+        $group = RT::Model::Group->new( current_user => RT->system_user );
+        my ( $val, $msg ) = $group->_create(
+            type        => $name,
+            domain      => 'RT::System-Role',
+            description => 'SystemRolegroup for internal use',    # loc
+            name        => '',
+            instance    => '',
+        );
+        return ( $val, $msg ) unless $val;
+    }
 }
 
 =head insert_data
