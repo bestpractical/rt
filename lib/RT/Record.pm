@@ -1165,9 +1165,6 @@ sub _add_link {
     );
     my $typetext = $self->formatType( type => $args{type} );
 
-    my $TransString = "Record $args{'base'} $args{'type'} record $args{'target'}.";
-
-    return ( $linkid, _( "Link Created (%1)", $TransString ) );
 }
 
 # }}}

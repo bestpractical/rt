@@ -177,14 +177,6 @@ sub create {
     my $cgm = RT::Model::CachedGroupMemberCollection->new;
 
     #When adding a member to a group, we need to go back
-    $cgm->limit(
-        subclause       => 'filter',        # dont't mess up with prev condition
-        column           => 'member_id',
-        operator        => '!=',
-        value           => 'main.group_id',
-        quote_value      => 0,
-        entry_aggregator => 'AND',
-    );
     # find things which have the current group as a member.
     # $group is an RT::Model::Principal for the group.
     $cgm->limit_to_groups_with_member( $args{'group'}->id );
