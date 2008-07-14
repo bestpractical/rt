@@ -135,14 +135,12 @@ if ( $ARGS{id} && $ARGS{id} ne 'new' ) {
     $uri{$_}++ for split ' ', ($ARGS{$ARGS{'id'}.'-RefersTo'} || '');
 
     foreach my $arg (keys %ARGS) {
-        if ($arg =~ /^RTFM-Include-Article-(\d+)$/) {
-            my $art = RT::FM::Article->new($session{'CurrentUser'});
-            $art->Load($1);
-            if ($art->Id) {
-                $uri{$art->URI}++;
-            }
-
+        my $article = RT::FM::Article->new($session{'CurrentUser'});
+        $article->LoadByInclude( Field => $arg, Value => $ARGS{$arg} );
+        if ($article->Id) {
+            $uri{$article->URI}++;
         }
+
     }
 }
 

@@ -602,4 +602,36 @@ sub _LookupId {
 
 }
 
+=head2 LoadByInclude Field Value
+
+Takes the name of a form field from RTFM's "Include Article" callbacks
+and the value submitted by the browser and attempts to load an Article.
+
+This handles Articles included by searching, by the Name and via
+the hotlist.
+
+=cut
+
+sub LoadByInclude {
+    my $self = shift;
+    my %args = @_;
+    my $Field = $args{Field};
+    my $Value = $args{Value};
+
+    return unless $Field;
+
+    if ( $Field eq 'RTFM-Include-Article' && $Value ) {
+        return $self->Load( $Value );
+    } elsif ( $Field =~ /^RTFM-Include-Article-(\d+)$/ ) {
+        return $self->Load( $1 );
+    } elsif ( $Field =~ /^RTFM-Include-Article-Named/ && $Value ) {
+        if ( $Value =~ /\D/ ) {
+            return $self->LoadByCols( Field => $Value );
+        } else {
+            return $self->LoadByCols( id => $Value );
+        }
+    }
+
+}
+
 1;
