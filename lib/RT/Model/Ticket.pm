@@ -487,7 +487,7 @@ sub create {
             if ( $watcher =~ /^\d+$/ ) {
                 push @{ $args{$type} }, $watcher;
             } else {
-                my @addresses = email::Address->parse($watcher);
+                my @addresses = Email::Address->parse($watcher);
                 foreach my $address (@addresses) {
                     my $user = RT::Model::User->new( current_user => RT->system_user );
                     my ( $uid, $msg ) = $user->load_or_create_by_email($address);
@@ -3008,7 +3008,7 @@ sub custom_field_values {
       if !$field || $field =~ /^\d+$/;
 
     my $cf = RT::Model::CustomField->new;
-    $cf->load_by_name_and_queue( name => $field, queue => $self->Queue );
+    $cf->load_by_name_and_queue( name => $field, queue => $self->queue );
     unless ( $cf->id ) {
         $cf->load_by_name_and_queue( name => $field, queue => 0 );
     }
