@@ -77,7 +77,7 @@ if ( $Run ) {
             Meta => $RT::Installer->{Meta}, KeepUndef => 1 );
 
     if ( $Back ) {
-        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
+        RT::Interface::Web::redirect(RT->Config->Get('WebURL') .
 'Install/Sendmail.html');
     }
 
@@ -97,11 +97,11 @@ if ( $Run ) {
             RT->LoadConfig;
 
             if ( $RT::Installer->{DatabaseAction} ne 'none' ) {
-                RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
+                RT::Interface::Web::redirect(RT->Config->Get('WebURL') .
 'Install/Initialize.html');
             }
             else {
-                RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
+                RT::Interface::Web::redirect(RT->Config->Get('WebURL') .
 'Install/Finish.html');
             }
         }

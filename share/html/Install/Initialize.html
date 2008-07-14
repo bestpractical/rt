@@ -65,7 +65,7 @@
 my @errors;
 if ( $Run ) {
     if ( $Back ) {
-        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
+        RT::Interface::Web::redirect(RT->Config->Get('WebURL') .
 'Install/Global.html');
     }
 
@@ -128,7 +128,7 @@ if ( $Run ) {
     }
 
     unless ( @errors ) {
-        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
+        RT::Interface::Web::redirect(RT->Config->Get('WebURL') .
 'Install/Finish.html');
     }
 }

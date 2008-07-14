@@ -219,7 +219,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
         my $key = Digest::MD5::md5_hex(rand(1024));
         push @{ $session{"Actions"}->{$key}  ||= [] }, @results;
         $session{'i'}++;
-        RT::Interface::Web::Redirect( RT->config->get('WebURL') ."SelfService/Display.html?id=". $Ticket->id."&results=".$key);
+        RT::Interface::Web::redirect( RT->config->get('WebURL') ."SelfService/Display.html?id=". $Ticket->id."&results=".$key);
     }
 
     my $Transactions = $Ticket->transactions;

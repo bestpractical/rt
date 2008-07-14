@@ -78,6 +78,7 @@ if ($ticket_obj) {
 # for any queue.
     my $queue = RT::Model::Queue->new;
     push( @objects, $queue );
+}
 
 my %user_uniq_hash;
 
@@ -92,26 +93,26 @@ my $isSU = Jifty->web->current_user
 
 foreach my $object (@objects) {
     my $Users = RT::Model::UserCollection->new;
-    $Users->WhoHaveRight(
-        Right               => 'OwnTicket',
+    $Users->who_have_right(
+        right               => 'OwnTicket',
         object              => $object,
-        IncludeSystemRights => 1,
-        IncludeSuperusers   => $isSU
+        include_system_rights => 1,
+        include_superusers   => $isSU
     );
     while ( my $User = $Users->next() ) {
         next
-            if ( $User->id == $RT::Nobody->id )
+            if ( $User->id == $RT::nobody->id )
             ;    # skip nobody here, so we can make them first later
         $user_uniq_hash{ $User->id() } = $User;
     }
 }
-if ($default && $default != $RT::Nobody->id && !$user_uniq_hash{$default}) {
+if ($default && $default != $RT::nobody->id && !$user_uniq_hash{$default}) {
     $user_uniq_hash{$default} = RT::Model::User->new;
     $user_uniq_hash{$default}->load($default);
 }
 
 my @users = sort { uc( $a->name ) cmp uc( $b->name ) } values %user_uniq_hash;
-unshift( @users, $RT::Nobody );
+unshift( @users, $RT::nobody );
 
 $m->callback(
     %ARGS,

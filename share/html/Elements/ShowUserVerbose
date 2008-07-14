@@ -51,10 +51,10 @@
 my ($phrase, $address, $comment);
 
 if ($User) {
-    $address = $User->EmailAddress;
-    $phrase  = $User->RealName
-      if $User->RealName && lc $User->RealName ne lc $address;
-    $comment = $User->Name if lc $User->Name ne lc $address;
+    $address = $User->email;
+    $phrase  = $User->real_name
+      if $User->real_name && lc $User->real_name ne lc $address;
+    $comment = $User->name if lc $User->name ne lc $address;
     $comment = "($comment)" if defined $comment and length $comment;
     $Address = Email::Address->new( $phrase, $address, $comment );
 }

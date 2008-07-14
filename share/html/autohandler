@@ -53,7 +53,7 @@ if (RT->install_mode) {
     $m->call_next();
   }
   elsif ( $m->request_comp->path !~ '^(/+)Install/' ) {
-    RT::Interface::Web::Redirect(RT->config->get('WebURL')."Install/index.html");
+    RT::Interface::Web::redirect(RT->config->get('WebURL')."Install/index.html");
     } else {
         $m->call_next();
     }

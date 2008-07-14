@@ -192,7 +192,7 @@ if ($Ticket) {
     }
 
     if ( $Ticket->current_user_has_right('OwnTicket') ) {
-        if ( $Ticket->owner_obj->id == $RT::Nobody->id ) {
+        if ( $Ticket->owner_obj->id == $RT::nobody->id ) {
             $actions->{'B'} = {
                 path  => "Ticket/Display.html?Action=Take&id=" . $id,
                 title => _('Take'),

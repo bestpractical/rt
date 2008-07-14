@@ -55,7 +55,7 @@ see docs/using_forms_widgets.pod
 <%ARGS>
 $name         => undef,
 $description  => undef,
-$hints        => ''
+$Hints        => ''
 </%ARGS>
 
 <%METHOD InputOnly>

@@ -100,7 +100,7 @@ my $locked;
             $RT::Installer->{InstallConfig}{$field} = '';
         }
 
-        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .  'Install/DatabaseType.html');
+        RT::Interface::Web::redirect(RT->Config->Get('WebURL') .  'Install/DatabaseType.html');
     
         }
 </%init>

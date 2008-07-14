@@ -70,12 +70,12 @@ if ( $Run ) {
             Meta => $RT::Installer->{Meta}, KeepUndef => 1 );
 
     if ( $Back ) {
-        RT::Interface::Web::Redirect(RT->config->get('WebURL') .
+        RT::Interface::Web::redirect(RT->config->get('WebURL') .
 'Install/Password.html');
     }
 
     unless ( @results ) {
-        RT::Interface::Web::Redirect(RT->config->get('WebURL') .
+        RT::Interface::Web::redirect(RT->config->get('WebURL') .
 'Install/Sendmail.html');
     }
 }

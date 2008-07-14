@@ -49,13 +49,13 @@
 $focus => undef
 $onload => undef
 </%args>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/util.js"></script>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/titlebox-state.js"></script>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/ahah.js"></script>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/prototype/prototype.js"></script>
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/scriptaculous/scriptaculous.js?load=effects,controls"></script>
-% if ( RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ) {
-<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/RichText/fckeditor.js"></script>
+<script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/util.js"></script>
+<script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/titlebox-state.js"></script>
+<script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/ahah.js"></script>
+<script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/prototype/prototype.js"></script>
+<script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/scriptaculous/scriptaculous.js?load=effects,controls"></script>
+% if ( RT->config->get('MessageBoxRichText',  $session{'CurrentUser'}) ) {
+<script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/RichText/fckeditor.js"></script>
 % }
 <script type="text/javascript"><!--
     onLoadHook("loadTitleBoxStates()");
@@ -63,7 +63,7 @@ $onload => undef
     onLoadHook("focusElementById('<% $focus %>')");
 % }
 
-% if ( RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'})) {
+% if ( RT->config->get('MessageBoxRichText',  $session{'CurrentUser'})) {
     function ReplaceAllTextareas() {
         if (!FCKeditor_IsCompatibleBrowser())
             return false;
@@ -105,7 +105,7 @@ $onload => undef
                 textArea.parentNode.appendChild(typeField);
 
                 var oFCKeditor = new FCKeditor( textArea.name ) ;
-                oFCKeditor.BasePath = "<%RT->Config->Get('WebPath')%>/NoAuth/RichText/";
+                oFCKeditor.BasePath = "<%RT->config->get('WebPath')%>/NoAuth/RichText/";
                 oFCKeditor.ReplaceTextarea();
             }
         }

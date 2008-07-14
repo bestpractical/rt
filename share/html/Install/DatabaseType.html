@@ -79,7 +79,7 @@ if ( $Run ) {
     $m->comp('/Widgets/BulkProcess', Types => \@Types, Arguments => \%ARGS, Meta
             => $RT::Installer->{Meta}, Store => $RT::Installer->{InstallConfig} );
 
-    RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .  'Install/DatabaseDetails.html');
+    RT::Interface::Web::redirect(RT->Config->Get('WebURL') .  'Install/DatabaseDetails.html');
 }
 
 

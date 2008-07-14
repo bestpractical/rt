@@ -114,12 +114,12 @@ if ( $Run ) {
             Store => $RT::Installer->{InstallConfig}, 
             Meta => $RT::Installer->{Meta}, KeepUndef => 1 ); 
     if ( $Back ) {
-        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
+        RT::Interface::Web::redirect(RT->Config->Get('WebURL') .
 'Install/DatabaseType.html');
     }
     
     if ( $ARGS{Next} ) {
-        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
+        RT::Interface::Web::redirect(RT->Config->Get('WebURL') .
 'Install/Basics.html');
     }
     my ( $status, $msg ) = RT::Installer->SaveConfig;

@@ -150,7 +150,7 @@ if (!$Create && !$tried_create && $id && $ARGS{'Delete'}) {
     $ok || Abort(loc("Couldn't delete dashboard [_1]: [_2]", $id, $msg));
 
     # put the user back into a useful place with a message
-    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Dashboards/index.html?Deleted=$id");
+    RT::Interface::Web::redirect(RT->Config->Get('WebURL')."Dashboards/index.html?Deleted=$id");
 
 }
 </%INIT>
