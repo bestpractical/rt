@@ -10,7 +10,7 @@ use RT;
 ### Set up some testing data.  Test the testing data because why not?
 
 # Create a user with rights, a queue, and some tickets.
-my $user_obj = RT::Model::User->new(current_user => RT->system_user);
+my $user_object = RT::Model::User->new(current_user => RT->system_user);
 my ($ret, $msg) = $user_object->load_or_create_by_email('tara@example.com');
 ok($ret, 'record test user creation');
 ($ret,$msg) =$user_object->set_name('tara');
@@ -66,8 +66,8 @@ ok( require RT::Search::FromSQL, "Search::FromSQL loaded" );
 my $ticketsqlstr
     = "Requestor.email = '" . $CurrentUser->email . "' AND Priority > '20'";
 my $search = RT::Search::FromSQL->new(
-    Argument => $ticketsqlstr,
-    TicketsObj => RT::Model::TicketCollection->new( current_user => RT->system_user ),
+    argument => $ticketsqlstr,
+    tickets_obj => RT::Model::TicketCollection->new( current_user => RT->system_user ),
 );
 is(ref($search), 'RT::Search::FromSQL', "search Created");
 ok($search->prepare(), "from_sql search run");
