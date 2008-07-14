@@ -158,7 +158,7 @@ sub query_to_sql {
     push @tql_clauses, join( " OR ", sort @owner_clauses );
     if ( !@status_clauses ) {
         push @tql_clauses,
-          join( " OR ", map "Status = '$_'", RT::Model::Queue->ActiveStatusArray() );
+          join( " OR ", map "Status = '$_'", RT::Model::Queue->active_status_array() );
     }
     else {
         push @tql_clauses, join( " OR ", sort @status_clauses );

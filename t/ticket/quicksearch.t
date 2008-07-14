@@ -25,11 +25,11 @@ ok( $id, $msg );
 
 use_ok("RT::Search::Googleish");
 
-my $active_statuses = join( " OR ", map "Status = '$_'", RT::Model::Queue->ActiveStatusArray());
+my $active_statuses = join( " OR ", map "Status = '$_'", RT::Model::Queue->active_status_array());
 
 my $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
-my $quick = RT::Search::Googleish->new(Argument => "",
-                                 TicketsObj => $tickets);
+my $quick = RT::Search::Googleish->new(argument => "",
+                                 tickets_obj => $tickets);
 my @tests = (
     "General new open root"     => "( owner = 'root' ) AND ( queue = 'General' ) AND ( status = 'new' OR status = 'open' )", 
     "fulltext:jesse"       => "( content LIKE 'jesse' ) AND ( $active_statuses )",
