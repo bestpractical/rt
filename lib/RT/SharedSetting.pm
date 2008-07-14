@@ -80,62 +80,68 @@ sub new {
     my $proto = shift;
     my $class = ref($proto) || $proto;
     my $self  = {};
-    $self->{'Id'} = 0;
+    $self->{'id'} = 0;
     bless( $self, $class );
-    $self->CurrentUser(@_);
+    if ( @_ > 1 ) {
+        $self->current_user($_[-1]);
+    }
+    else {
+        $self->current_user(@_);
+    }
+
     return $self;
 }
 
-=head2 Load
+=head2 load
 
 Takes a privacy specification and a shared-setting ID.  Loads the given object
-ID if it belongs to the stated user or group. Calls the L</PostLoad> method on
+ID if it belongs to the stated user or group. Calls the L</post_load> method on
 success for any further initialization. Returns a tuple of status and message,
 where status is true on success.
 
 =cut
 
-sub Load {
+sub load {
     my $self = shift;
     my ( $privacy, $id ) = @_;
-    my $object = $self->_GetObject($privacy);
+    my $object = $self->_get_object($privacy);
 
     if ($object) {
-        $self->{'Attribute'} = $object->Attributes->WithId($id);
-        if ( $self->{'Attribute'}->Id ) {
-            $self->{'Id'}      = $self->{'Attribute'}->Id;
-            $self->{'Privacy'} = $privacy;
-            $self->PostLoad();
+        $self->{'attribute'} = $object->attributes->with_id($id);
+        if ( $self->{'attribute'}->id ) {
+            $self->{'id'}      = $self->{'attribute'}->id;
+            $self->{'privacy'} = $privacy;
+            $self->post_load();
 
             return ( 0, $self->loc("Permission denied") )
-              unless $self->CurrentUserCanSee;
+              unless $self->current_userCanSee;
 
             return (
                 1,
                 $self->loc(
-                    "Loaded [_1] [_2]", $self->ObjectName, $self->Name
+                    "Loaded [_1] [_2]", $self->object_name, $self->Name
                 )
             );
         }
         else {
-            $RT::Logger->error(
+            Jifty->log->error(
                 "Could not load attribute " . $id . " for object " . $privacy );
             return (
                 0,
                 $self->loc(
-                    "Failed to load [_1] [_2]", $self->ObjectName, $id
+                    "Failed to load [_1] [_2]", $self->object_name, $id
                 )
             );
         }
     }
     else {
-        $RT::Logger->warning( "Could not load object $privacy when loading "
-              . $self->ObjectName );
+        Jifty->log->warn( "Could not load object $privacy when loading "
+              . $self->object_name );
         return ( 0, $self->loc( "Could not load object for [_1]", $privacy ) );
     }
 }
 
-=head2 LoadById
+=head2 load_by_id
 
 First loads up the L<RT::Model::Attribute> for this shared setting by ID, then calls
 L</Load> with the correct parameters. Returns a tuple of status and message,
@@ -143,37 +149,37 @@ where status is true on success.
 
 =cut
 
-sub LoadById {
+sub load_by_id {
     my $self = shift;
     my $id   = shift;
 
-    my $attr = RT::Model::Attribute->new( $self->CurrentUser );
-    my ( $ok, $msg ) = $attr->LoadById($id);
+    my $attr = RT::Model::Attribute->new( $self->current_user );
+    my ( $ok, $msg ) = $attr->load_by_id($id);
 
     if ( !$ok ) {
         return (
             0,
             $self->loc(
-                "Failed to load [_1] [_2]: [_3]", $self->ObjectName,
+                "Failed to load [_1] [_2]: [_3]", $self->object_name,
                 $id,                              $msg
             )
         );
     }
 
-    my $privacy = $self->_build_privacy( $attr->ObjectType, $attr->ObjectId );
+    my $privacy = $self->_build_privacy( $attr->object_type, $attr->object_id );
     return ( 0, $self->loc( "Bad privacy for attribute [_1]", $id ) )
       if !$privacy;
 
-    return $self->Load( $privacy, $id );
+    return $self->load( $privacy, $id );
 }
 
-=head2 PostLoad
+=head2 post_load
 
 Called after after successful L</Load>.
 
 =cut
 
-sub PostLoad { }
+sub post_load { }
 
 =head2 Save
 
@@ -183,40 +189,41 @@ resulting object. Arguments are passed to the L</SaveAttribute> method, which
 does the actual update. Returns a tuple of status and message, where status is
 true on success. Defaults are:
 
-  Privacy:  CurrentUser only
-  Name:     "new (ObjectName)"
+  Privacy:  current_user only
+  Name:     "new (object_name)"
 
 =cut
 
-sub Save {
+sub save {
     my $self = shift;
+
     my %args = (
-        'Privacy' => 'RT::User-' . $self->CurrentUser->Id,
-        'Name'    => "new " . $self->ObjectName,
+        'privacy' => 'RT::User-' . $self->current_user->user_object->id,
+        'name'    => "new " . $self->object_name,
         @_,
     );
 
-    my $privacy = $args{'Privacy'};
-    my $name = $args{'Name'}, my $object = $self->_GetObject($privacy);
+    my $privacy = $args{'privacy'};
+    my $name = $args{'name'}, my $object = $self->_get_object($privacy);
 
     return ( 0, $self->loc( "Failed to load object for [_1]", $privacy ) )
       unless $object;
 
     return ( 0, $self->loc("Permission denied") )
-      unless $self->CurrentUserCanCreate($privacy);
+      unless $self->current_user_can_create($privacy);
 
-    my ( $att_id, $att_msg ) = $self->SaveAttribute( $object, \%args );
+    my ( $att_id, $att_msg ) = $self->save_attribute( $object, \%args );
 
     if ($att_id) {
-        $self->{'Attribute'} = $object->Attributes->WithId($att_id);
-        $self->{'Id'}        = $att_id;
-        $self->{'Privacy'}   = $privacy;
-        return ( 1, $self->loc( "Saved [_1] [_2]", $self->ObjectName, $name ) );
+        $self->{'attribute'} = $object->attributes->with_id($att_id);
+        $self->{'id'}        = $att_id;
+        $self->{'privacy'}   = $privacy;
+        return ( 1, $self->loc( "Saved [_1] [_2]", $self->object_name, $name ) );
     }
     else {
-        $RT::Logger->error( $self->ObjectName . " save failure: $att_msg" );
+        Jifty->log->error( $self->object_name . " save failure: $att_msg" );
         return ( 0,
-            $self->loc( "Failed to create [_1] attribute", $self->ObjectName )
+            $self->loc( "Failed to create [_1] attribute", $self->object_name )
         );
     }
 }
@@ -227,7 +234,7 @@ An empty method for subclassing. Called from L</Save> method.
 
 =cut
 
-sub SaveAttribute { }
+sub save_attribute { }
 
 =head2 Update
 
@@ -237,61 +244,61 @@ status is true on success.
 
 =cut
 
-sub Update {
+sub update {
     my $self = shift;
     my %args = @_;
 
-    return ( 0, $self->loc( "No [_1] loaded", $self->ObjectName ) )
-      unless $self->Id;
+    return ( 0, $self->loc( "No [_1] loaded", $self->object_name ) )
+      unless $self->id;
     return ( 0,
-        $self->loc( "Could not load [_1] attribute", $self->ObjectName ) )
-      unless $self->{'Attribute'}->Id;
+        $self->loc( "Could not load [_1] attribute", $self->object_name ) )
+      unless $self->{'attribute'}->id;
 
     return ( 0, $self->loc("Permission denied") )
-      unless $self->CurrentUserCanModify;
+      unless $self->current_user_can_modify;
 
-    my ( $status, $msg ) = $self->UpdateAttribute( \%args );
+    my ( $status, $msg ) = $self->update_attribute( \%args );
 
     return (
         1,
         $self->loc(
             "[_1] update: Nothing changed",
-            ucfirst( $self->ObjectName )
+            ucfirst( $self->object_name )
         )
     ) if !defined $msg;
 
     # prevent useless warnings
-    return ( 1, $self->loc("[_1] updated"), ucfirst( $self->ObjectName ) )
+    return ( 1, $self->loc("[_1] updated"), ucfirst( $self->object_name ) )
       if $msg =~ /That is already the current value/;
 
     return ( $status,
-        $self->loc( "[_1] update: [_2]", ucfirst( $self->ObjectName ), $msg ) );
+        $self->loc( "[_1] update: [_2]", ucfirst( $self->object_name ), $msg ) );
 }
 
-=head2 UpdateAttribute
+=head2 update_attribute
 
 An empty method for subclassing. Called from L</Update> method.
 
 =cut
 
-sub UpdateAttribute { }
+sub update_attribute { }
 
-=head2 Delete
+=head2 delete
     
 Deletes the existing shared setting. Returns a tuple of status and message,
 where status is true upon success.
 
 =cut
 
-sub Delete {
+sub delete {
     my $self = shift;
 
     return ( 0, $self->loc("Permission denied") )
-      unless $self->CurrentUserCanDelete;
+      unless $self->current_user_can_delete;
 
-    my ( $status, $msg ) = $self->{'Attribute'}->Delete;
+    my ( $status, $msg ) = $self->{'attribute'}->delete;
     if ($status) {
-        return ( 1, $self->loc( "Deleted [_1]", $self->ObjectName ) );
+        return ( 1, $self->loc( "Deleted [_1]", $self->object_name ) );
     }
     else {
         return ( 0, $self->loc( "Delete failed: [_1]", $msg ) );
@@ -300,65 +307,65 @@ sub Delete {
 
 ### Accessor methods
 
-=head2 Name
+=head2 name
 
 Returns the name of this shared setting.
 
 =cut
 
-sub Name {
+sub name {
     my $self = shift;
-    return unless ref( $self->{'Attribute'} ) eq 'RT::Model::Attribute';
-    return $self->{'Attribute'}->description();
+    return unless ref( $self->{'attribute'} ) eq 'RT::Model::Attribute';
+    return $self->{'attribute'}->description();
 }
 
-=head2 Id
+=head2 id
 
 Returns the numerical ID of this shared setting.
 
 =cut
 
-sub Id {
+sub id {
     my $self = shift;
-    return $self->{'Id'};
+    return $self->{'id'};
 }
 
-=head2 Privacy
+=head2 privacy
 
 Returns the principal object to whom this shared setting belongs, in a string
 "<class>-<id>", e.g. "RT::Group-16".
 
 =cut
 
-sub Privacy {
+sub privacy {
     my $self = shift;
-    return $self->{'Privacy'};
+    return $self->{'privacy'};
 }
 
-=head2 GetParameter
+=head2 get_parameter
 
 Returns the given named parameter of the setting.
 
 =cut
 
-sub GetParameter {
+sub get_parameter {
     my $self  = shift;
     my $param = shift;
-    return unless ref( $self->{'Attribute'} ) eq 'RT::Model::Attribute';
-    return $self->{'Attribute'}->SubValue($param);
+    return unless ref( $self->{'attribute'} ) eq 'RT::Model::Attribute';
+    return $self->{'attribute'}->sub_value($param);
 }
 
-=head2 IsVisibleTo Privacy
+=head2 is_visible_to Privacy
 
 Returns true if the setting is visible to all principals of the given privacy.
 This does not deal with ACLs, this only looks at membership.
 
 =cut
 
-sub IsVisibleTo {
+sub is_visible_to {
     my $self    = shift;
     my $to      = shift;
-    my $privacy = $self->Privacy;
+    my $privacy = $self->privacy;
 
     # if the privacies are the same, then they can be seen. this handles
     # a personal setting being visible to that user.
@@ -372,32 +379,32 @@ sub IsVisibleTo {
 
     # If the setting is group-wide...
     if ( $privacy =~ /^RT::Group-(\d+)$/ ) {
-        my $setting_group = RT::Group->new( $self->CurrentUser );
-        $setting_group->Load($1);
+        my $setting_group = RT::Group->new( $self->current_user );
+        $setting_group->load($1);
 
         if ( $to =~ /-(\d+)$/ ) {
             my $to_id = $1;
 
             # then any principal that is a member of the setting's group can see
             # the setting
-            return $setting_group->HasMemberRecursively($to_id);
+            return $setting_group->has_member_recursively($to_id);
         }
     }
 
     return 0;
 }
 
-sub CurrentUserCanSee    { 1 }
-sub CurrentUserCanCreate { 1 }
-sub CurrentUserCanModify { 1 }
-sub CurrentUserCanDelete { 1 }
+sub current_user_can_see    { 1 }
+sub current_user_can_create { 1 }
+sub current_user_can_modify { 1 }
+sub current_user_can_delete { 1 }
 
 ### Internal methods
 
 # _GetObject: helper routine to load the correct object whose parameters
 #  have been passed.
 
-sub _GetObject {
+sub _get_object {
     my $self    = shift;
     my $privacy = shift;
 
@@ -405,14 +412,14 @@ sub _GetObject {
 
     unless ( $obj_type && $obj_id ) {
         $privacy = '(undef)' if !defined($privacy);
-        $RT::Logger->debug("Invalid privacy string '$privacy'");
+        Jifty->log->debug("Invalid privacy string '$privacy'");
         return undef;
     }
 
     my $object = $self->_load_privacy_object( $obj_type, $obj_id );
 
     unless ( ref($object) eq $obj_type ) {
-        $RT::Logger->error(
+        Jifty->log->error(
 "Could not load object of type $obj_type with ID $obj_id, got object of type "
               . ( ref($object) || 'undef' ) );
         return undef;
@@ -422,17 +429,17 @@ sub _GetObject {
     # user, or of a group object of which the current user is not a member.
 
     if (   $obj_type eq 'RT::User'
-        && $object->Id != $self->CurrentUser->UserObj->Id )
+        && $object->id != $self->current_user->user_object->id )
     {
-        $RT::Logger->debug("Permission denied for user other than self");
+        Jifty->log->debug("Permission denied for user other than self");
         return undef;
     }
 
     if ( $obj_type eq 'RT::Group'
-        && !$object->HasMemberRecursively( $self->CurrentUser->PrincipalObj ) )
+        && !$object->HasMemberRecursively( $self->current_user->principal_obj ) )
     {
-        $RT::Logger->debug( "Permission denied, "
-              . $self->CurrentUser->Name
+        Jifty->log->debug( "Permission denied, "
+              . $self->current_user->Name
               . " is not a member of group" );
         return undef;
     }
@@ -443,28 +450,28 @@ sub _GetObject {
 sub _load_privacy_object {
     my ( $self, $obj_type, $obj_id ) = @_;
     if ( $obj_type eq 'RT::User' ) {
-        if ( $obj_id == $self->CurrentUser->Id ) {
-            return $self->CurrentUser->UserObj;
+        if ( $obj_id == $self->current_user->id ) {
+            return $self->current_user->user_object;
         }
         else {
-            $RT::Logger->warning( "User #"
-                  . $self->CurrentUser->Id
+            Jifty->log->warn( "User #"
+                  . $self->current_user->id
                   . " tried to load container user #"
                   . $obj_id );
             return undef;
         }
     }
     elsif ( $obj_type eq 'RT::Group' ) {
-        my $group = RT::Group->new( $self->CurrentUser );
+        my $group = RT::Group->new( $self->current_user );
         $group->Load($obj_id);
         return $group;
     }
     elsif ( $obj_type eq 'RT::System' ) {
-        return RT::System->new( $self->CurrentUser );
+        return RT::System->new( $self->current_user );
     }
 
-    $RT::Logger->error( "Tried to load a "
-          . $self->ObjectName
+    Jifty->log->error( "Tried to load a "
+          . $self->object_name
           . " belonging to an $obj_type, which is neither a user nor a group" );
 
     return undef;
@@ -477,9 +484,9 @@ sub _build_privacy {
     if ( ref($obj_type) ) {
         my $Object = $obj_type;
         return
-            $Object->isa('RT::User')   ? 'RT::User-' . $Object->Id
-          : $Object->isa('RT::Group')  ? 'RT::Group-' . $Object->Id
-          : $Object->isa('RT::System') ? 'RT::System-' . $Object->Id
+            $Object->isa('RT::User')   ? 'RT::User-' . $Object->id
+          : $Object->isa('RT::Group')  ? 'RT::Group-' . $Object->id
+          : $Object->isa('RT::System') ? 'RT::System-' . $Object->id
           :                              undef;
     }
 
@@ -490,10 +497,5 @@ sub _build_privacy {
       : $obj_type eq 'RT::System' ? "$obj_type-$obj_id"
       :                             undef;
 }
-
-eval "require RT::SharedSetting_Vendor";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/SharedSetting_Vendor.pm} );
-eval "require RT::SharedSetting_Local";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/SharedSetting_Local.pm} );
 
 1;
