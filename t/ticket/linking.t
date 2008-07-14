@@ -317,7 +317,7 @@ ok($link->LocalTarget == $ticket2->id, "LocalTarget set correctly");
 {
     no warnings 'once';
     *RT::NotTicket::Id = sub { return $$ };
-    *RT::NotTicket::id = &RT::NotTicket::Id;
+    *RT::NotTicket::id = \&RT::NotTicket::Id;
 }
 
 {
