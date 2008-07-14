@@ -52,7 +52,7 @@ $tabs => undef
 <%init>
         $tabs->{RTFM} = {
         title => loc('RTFM'),
-            path  => "Admin/RTFM/index.html",
+            path  => "/Admin/RTFM/index.html",
             description => loc('Manage RTFM classes and permissions')
         };
 
