@@ -50,7 +50,6 @@
 % if ($hideable) {
     <span class="widget"><a href="#" 
 	onclick="return rollup('<%$tid%>');" 
-	onfocus="this.blur(); return false;" 
 	title="Toggle visibility">X</a>
 	</span>
 % }
