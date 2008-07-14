@@ -1,3 +1,20 @@
+2.4.0
+
+FEATURES
+========
+ * SelfService users can search for Articles
+ * Global Topics
+   * Queue specific articles using Topics
+ * Integration with 3.8
+
+BUGS
+====
+
+ * Fix cases where we didn't correctly create "Refers To" links when 
+   using an Article while Replying to Tickets
+ * Better error handling in the display and creation of Links
+ * Fix sorting of Topics in the different views of Articles
+
 2.2.2
 
 CLEANUPS
