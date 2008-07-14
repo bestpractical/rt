@@ -54,9 +54,9 @@
 
     use RT::Search;
     my $tickets = RT::Tickets->new($CurrentUser);
-    my $foo = RT::Search->new(Argument => $arg,
-                              TicketsObj => $tickets);
-    $foo->Prepare();
+    my $foo = RT::Search->new(argument => $arg,
+                              tickets_obj => $tickets);
+    $foo->prepare();
     while ( my $ticket = $foo->Next ) {
         # Do something with each ticket we've found
     }
@@ -82,72 +82,67 @@ sub new {
     my $class = ref($proto) || $proto;
     my $self  = {};
     bless( $self, $class );
-    $self->_Init(@_);
+    $self->_init(@_);
     return $self;
 }
 
 # }}}
 
-# {{{ sub _Init
-sub _Init {
+# {{{ sub _init
+sub _init {
     my $self = shift;
     my %args = (
-        TicketsObj => undef,
-        Argument   => undef,
+        tickets_obj => undef,
+        argument   => undef,
         @_
     );
 
-    $self->{'TicketsObj'} = $args{'TicketsObj'};
-    $self->{'Argument'}   = $args{'Argument'};
+    $self->{'tickets_obj'} = $args{'tickets_obj'};
+    $self->{'argument'}   = $args{'argument'};
 }
 
 # }}}
 
-# {{{ sub Argument
+# {{{ sub argument
 
-=head2 Argument
+=head2 argument
 
 Return the optional argument associated with this Search
 
 =cut
 
-sub Argument {
+sub argument {
     my $self = shift;
-    return ( $self->{'Argument'} );
+    return ( $self->{'argument'} );
 }
 
 # }}}
 
-=head2 TicketsObj 
+=head2 tickets_obj 
 
 Return the Tickets object passed into this search
 
 =cut
 
-sub TicketsObj {
+sub tickets_obj {
     my $self = shift;
-    return ( $self->{'TicketsObj'} );
+    return ( $self->{'tickets_obj'} );
 }
 
-# {{{ sub Describe
-sub Describe {
+# {{{ sub describe
+sub describe {
     my $self = shift;
     return ( $self->loc( "No description for [_1]", ref $self ) );
 }
 
 # }}}
 
-# {{{ sub Prepare
-sub Prepare {
+# {{{ sub prepare
+sub prepare {
     my $self = shift;
     return (1);
 }
 
 # }}}
-
-eval "require RT::Search_Vendor";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Search_Vendor.pm} );
-eval "require RT::Search_Local";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Search_Local.pm} );
 
 1;
