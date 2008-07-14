@@ -331,28 +331,28 @@ sub parse {
     my $self = shift;
     my ( $rv, $msg );
 
-    if ( $self->Content =~ m{^Content-type:\s+text/html\b}im ) {
+    if ( $self->content =~ m{^Content-type:\s+text/html\b}im ) {
         local $RT::Transaction::Preferredcontent_type = 'text/html';
-        ( $rv, $msg ) = $self->_Parse(@_);
+        ( $rv, $msg ) = $self->_parse(@_);
     }
     else {
-        ( $rv, $msg ) = $self->_Parse(@_);
+        ( $rv, $msg ) = $self->_parse(@_);
     }
 
 # We only HTMLify things if the template includes at least one Transaction->Content call.
-    return ( $rv, $msg ) unless $rv and $self->Content =~ /->\s*Content\b/;
+    return ( $rv, $msg ) unless $rv and $self->content =~ /->\s*Content\b/;
 
     my $orig_entity = $self->mime_obj;
     my $mime_type   = $self->mime_obj->mime_type;
 
     if ( defined $mime_type and $mime_type eq 'text/html' ) {
-        $self->_DowngradeFromHTML(@_);
+        $self->_downgrade_from_html(@_);
     }
 
     return ( $rv, $msg );
 }
 
-sub _Parse {
+sub _parse {
     my $self = shift;
 
     # clear prev MIME object
@@ -378,7 +378,7 @@ sub _Parse {
     # out the tmpdir it makes on DESTROY
     my $parser = MIME::Parser->new();
     $self->{rtparser} = RT::EmailParser->new;
-    $self->{rtparser}->_setupMIMEParser($parser);
+    $self->{rtparser}->_setup_mime_parser($parser);
 
 
     ### Should we forgive normally-fatal errors?
@@ -463,14 +463,14 @@ sub _parse_content {
     return ($retval);
 }
 
-sub _DowngradeFromHTML {
+sub _downgrade_from_html {
     my $self        = shift;
     my $orig_entity = $self->mime_obj;
     die 'hehe';
 
     local $RT::Transaction::Preferredcontent_type = 'text/plain';
 
-    my ( $rv, $msg ) = $self->_Parse(@_);
+    my ( $rv, $msg ) = $self->_parse(@_);
     if ( !$rv ) {
         $self->{mime_obj} = $orig_entity;
         return;
