@@ -70,7 +70,7 @@ our $LocalPluginPath  = $LocalPath . "/plugins";
 
 # $MasonComponentRoot is where your rt instance keeps its mason html files
 
-our $MasonComponentRoot = $BASE_PATH . '/html';
+our $MasonComponentRoot = $BASE_PATH . '/share/html';
 
 # $MasonLocalComponentRoot is where your rt instance keeps its site-local
 # mason html files.
