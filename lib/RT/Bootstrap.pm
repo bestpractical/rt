@@ -180,7 +180,7 @@ sub insert_initial_data {
     RT::init_system_objects();
 
     # system role groups
-    foreach my $name (qw(Owner Requestor Cc AdminCc)) {
+    foreach my $name (qw(owner requestor cc admin_cc)) {
         my $group = RT::Model::Group->new( current_user => RT->system_user );
         $group->load_system_role_group($name);
         if ( $group->id ) {
