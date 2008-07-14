@@ -169,6 +169,7 @@ sub superuser {
 
 sub email { shift->user_object->email }
 sub name  { shift->user_object->name }
+sub real_name  { shift->user_object->real_name }
 
 sub principal_object {
     my $self = shift;
