@@ -88,32 +88,32 @@ sub new {
     my $class = ref($proto) || $proto;
     my $self  = {};
     bless( $self, $class );
-    $self->_Init(@_);
+    $self->_init(@_);
     return $self;
 }
 
 # }}}
 
 # {{{ sub _Init
-sub _Init {
+sub _init {
     my $self = shift;
     my %args = (
-        TransactionObj       => undef,
-        TicketObj            => undef,
-        ScripObj             => undef,
-        TemplateObj          => undef,
-        Argument             => undef,
-        ApplicableTransTypes => undef,
-        CurrentUser          => undef,
+        transaction_obj       => undef,
+        ticket_obj            => undef,
+        scrip_obj             => undef,
+        template_obj          => undef,
+        argument             => undef,
+        applicable_trans_types => undef,
+        current_user          => undef,
         @_
     );
 
-    $self->{'Argument'}             = $args{'Argument'};
-    $self->{'ScripObj'}             = $args{'ScripObj'};
-    $self->{'TicketObj'}            = $args{'TicketObj'};
-    $self->{'TransactionObj'}       = $args{'TransactionObj'};
-    $self->{'ApplicableTransTypes'} = $args{'ApplicableTransTypes'};
-    $self->CurrentUser( $args{'CurrentUser'} );
+    $self->{'argument'}             = $args{'argument'};
+    $self->{'scrip_obj'}             = $args{'scrip_obj'};
+    $self->{'ticket_obj'}            = $args{'ticket_obj'};
+    $self->{'transaction_obj'}       = $args{'transaction_obj'};
+    $self->{'applicable_trans_types'} = $args{'applicable_trans_types'};
+    $self->current_user( $args{'current_user'} );
 }
 
 # }}}
@@ -128,9 +128,9 @@ Return the optional argument associated with this ScripCondition
 
 =cut
 
-sub Argument {
+sub argument {
     my $self = shift;
-    return ( $self->{'Argument'} );
+    return ( $self->{'argument'} );
 }
 
 # }}}
@@ -143,9 +143,9 @@ Return the ticket object we're talking about
 
 =cut
 
-sub TicketObj {
+sub ticket_obj {
     my $self = shift;
-    return ( $self->{'TicketObj'} );
+    return ( $self->{'ticket_obj'} );
 }
 
 # }}}
@@ -158,9 +158,9 @@ Return the Scrip object we're talking about
 
 =cut
 
-sub ScripObj {
+sub scrip_obj {
     my $self = shift;
-    return ( $self->{'ScripObj'} );
+    return ( $self->{'scrip_obj'} );
 }
 
 # }}}
@@ -172,9 +172,9 @@ Return the transaction object we're talking about
 
 =cut
 
-sub TransactionObj {
+sub transaction_obj {
     my $self = shift;
-    return ( $self->{'TransactionObj'} );
+    return ( $self->{'transaction_obj'} );
 }
 
 # }}}
@@ -187,9 +187,9 @@ sub TransactionObj {
 
 =cut
 
-sub ApplicableTransTypes {
+sub applicable_trans_types {
     my $self = shift;
-    return ( $self->{'ApplicableTransTypes'} );
+    return ( $self->{'applicable_trans_types'} );
 }
 
 # }}}
@@ -199,7 +199,7 @@ sub ApplicableTransTypes {
 #What does this type of Action does
 
 # {{{ sub Describe
-sub Describe {
+sub describe {
     my $self = shift;
     return ( $self->loc( "No description for [_1]", ref $self ) );
 }
@@ -211,7 +211,7 @@ sub Describe {
 #If this rule applies to this transaction, return true.
 
 # {{{ sub IsApplicable
-sub IsApplicable {
+sub is_applicable {
     my $self = shift;
     return (undef);
 }
@@ -224,17 +224,11 @@ sub DESTROY {
 
     # We need to clean up all the references that might maybe get
     # oddly circular
-    $self->{'TemplateObj'} = undef $self->{'TicketObj'} = undef;
-    $self->{'TransactionObj'} = undef;
-    $self->{'ScripObj'}       = undef;
+    $self->{'template_obj'} = undef;
+    $self->{'ticket_obj'} = undef;
+    $self->{'transaction_obj'} = undef;
+    $self->{'scrip_obj'}       = undef;
 
 }
-
-# }}}
-
-eval "require RT::Condition_Vendor";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Condition_Vendor.pm} );
-eval "require RT::Condition_Local";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Condition_Local.pm} );
 
 1;
