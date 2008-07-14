@@ -123,7 +123,7 @@ sub clean_env {
 =head2 get_current_user
 
   Figures out the uid of the current user and returns an RT::CurrentUser object
-loaded with that user.  if the current user isn't found, returns a copy of RT::Nobody.
+loaded with that user.  if the current user isn't found, returns a copy of RT::nobody.
 
 =cut
 

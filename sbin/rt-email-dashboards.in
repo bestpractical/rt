@@ -93,7 +93,7 @@ CleanEnv();
 # Load the config file
 RT::LoadConfig();
 
-# Connect to the database and get RT::SystemUser and RT::Nobody loaded
+# Connect to the database and get RT::SystemUser and RT::nobody loaded
 RT::Init();
 
 $HTML::Mason::Commands::r = RT::Dashboard::FakeRequest->new;

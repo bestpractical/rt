@@ -6,7 +6,7 @@ use RT::Test; use Test::More tests => 63;
 # Load the config file
 
 
-#Connect to the database and get RT::system_user and RT::Nobody loaded
+#Connect to the database and get RT::system_user and RT::nobody loaded
 
 
 #Get the current user all loaded
