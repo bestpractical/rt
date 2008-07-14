@@ -340,7 +340,7 @@ sub create {
         correspond_address => '',
         description        => '',
         comment_address    => '',
-        SubjectTag        => '',
+        subject_tag        => '',
         initial_priority   => 0,
         final_priority     => 0,
         default_due_in     => 0,
@@ -535,20 +535,23 @@ sub set_encrypt {
 =head2 templates
 
 Returns an RT::Model::TemplateCollection object of all of this queue's templates.
-sub SubjectTag {
+
+=cut
+
+sub subject_tag {
     my $self = shift;
-    return RT->System->SubjectTag($self);
+    return RT->system->subject_tag($self);
 }
 
-sub SetSubjectTag {
+sub set_subject_tag {
     my $self  = shift;
     my $value = shift;
 
     return ( 0, _('Permission Denied') )
       unless $self->current_user_has_right('AdminQueue');
 
-    my $attr = RT->System->firstAttribute('BrandedSubjectTag');
-    my $map = $attr ? $attr->Content : {};
+    my $attr = RT->system->first_attribute('BrandedSubjectTag');
+    my $map = $attr ? $attr->content : {};
     if ( defined $value && length $value ) {
         $map->{ $self->id } = $value;
     }
@@ -556,7 +559,7 @@ sub SetSubjectTag {
         delete $map->{ $self->id };
     }
 
-    my ( $status, $msg ) = RT->System->set_attribute(
+    my ( $status, $msg ) = RT->system->set_attribute(
         name        => 'BrandedSubjectTag',
         description => 'Queue id => subject tag map',
         Content     => $map,
