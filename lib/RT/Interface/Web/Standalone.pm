@@ -77,7 +77,7 @@ sub handle_request {
 
     Module::Refresh->refresh if RT->config->get('DevelMode');
 
-    RT::ConnectToDatabase() unless RT->InstallMode;
+    RT::ConnectToDatabase() unless RT->install_mode;
     $self->SUPER::handle_request($cgi);
     Jifty->log->fatal($@) if $@ && Jifty->log;
     warn $@               if $@ && !Jifty->log;

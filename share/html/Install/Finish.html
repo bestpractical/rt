@@ -73,7 +73,7 @@
 </&>
 <%init>
 if ( $Run ) {
-    RT->InstallMode(0);
+    RT->install_mode(0);
     RT->ConnectToDatabase();
     RT->InitSystemObjects();
     RT->InitClasses();

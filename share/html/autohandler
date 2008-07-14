@@ -48,7 +48,7 @@
 <%INIT>
 use RT::Util;
 
-if (RT->InstallMode) {
+if (RT->install_mode) {
   if  ( $m->base_comp->path =~ RT->config->get('WebNoAuthRegex') ) {
     $m->call_next();
   }
