@@ -341,7 +341,7 @@ sub create {
         return ( 0, 0, _('Could not create ticket. queue not set') );
     }
 
-    if ( $queue_obj->Disabled ) {
+    if ( $queue_obj->disabled ) {
         Jifty->log->debug( "$self Disabled queue '"
               . $queue_obj->name
               . "' given for ticket creation." );
