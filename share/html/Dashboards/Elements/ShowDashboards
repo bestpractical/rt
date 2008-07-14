@@ -83,7 +83,7 @@ for my $attr ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription'
 %   my $i = 0;
 %   for my $dashboard (@$Dashboards) {
 %       my $url = sprintf '%s/Dashboards/%d/%s',
-%                 RT->Config->Get('WebPath'),
+%                 RT->config->get('WebPath'),
 %                 $dashboard->Id,
 %                 $dashboard->Name;
 

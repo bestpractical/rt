@@ -1223,7 +1223,7 @@ sub decrypt_inline {
         @_
     );
     my $gnupg = new GnuPG::Interface;
-    my %opt = RT->Config->Get('GnuPGOptions');
+    my %opt = RT->config->get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init(
         _PrepareGnuPGOptions( %opt ),

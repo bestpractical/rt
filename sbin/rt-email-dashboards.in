@@ -144,7 +144,7 @@ while (defined(my $user = $Users->Next)) {
         next;
     }
 
-    my ($hour, $dow, $dom) = hour_dow_dom_in($user->Timezone || RT->Config->Get('Timezone'));
+    my ($hour, $dow, $dom) = hour_dow_dom_in($user->Timezone || RT->config->get('Timezone'));
     $hour .= ':00';
     debug "Checking [_1]'s subscriptions: hour [_2], dow [_3], dom [_4]",
           $user->Name, $hour, $dow, $dom;
@@ -242,7 +242,7 @@ SUMMARY
         Preview => 0,
     );
 
-    for (@{ RT->Config->Get('EmailDashboardRemove') || [] }) {
+    for (@{ RT->config->get('EmailDashboardRemove') || [] }) {
         $contents =~ s/$_//g;
     }
 
@@ -250,7 +250,7 @@ SUMMARY
 
     $contents = HTML::RewriteAttributes::Links->rewrite(
         $contents,
-        RT->Config->Get('WebURL') . '/Dashboards/Render.html',
+        RT->config->get('WebURL') . '/Dashboards/Render.html',
     );
 
     email_dashboard($currentuser, $dashboard, $subscription, $contents);
@@ -264,8 +264,8 @@ sub email_dashboard {
             $currentuser->Name,
             email_of($currentuser);
 
-    my $subject = sprintf '[%s] ' .  RT->Config->Get('DashboardSubject'),
-        RT->Config->Get('rtname'),
+    my $subject = sprintf '[%s] ' .  RT->config->get('DashboardSubject'),
+        RT->config->get('rtname'),
         ucfirst($subscription->SubValue('Frequency')),
         $dashboard->Name;
 
@@ -347,7 +347,7 @@ sub email_of {
 }
 
 sub get_from {
-    RT->Config->Get('DashboardAddress') || RT->Config->Get('OwnerEmail')
+    RT->config->get('DashboardAddress') || RT->config->get('OwnerEmail')
 }
 
 {
@@ -408,7 +408,7 @@ sub get_resource {
 
     # strip out the equivalent of WebURL, so we start at the correct /
     my $path = $uri->path;
-    my $webpath = RT->Config->Get('WebPath');
+    my $webpath = RT->config->get('WebPath');
     $path =~ s/^\Q$webpath//;
 
     # add a leading / if needed

@@ -52,7 +52,7 @@ $Subscription => undef
 </%ARGS>
 <%INIT>
 my $url = sprintf '%s/Dashboards/Subscription.html?DashboardId=%d',
-          RT->Config->Get('WebPath'),
+          RT->config->get('WebPath'),
           $Dashboard->Id,;
 
 my $frequency = loc("None");

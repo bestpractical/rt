@@ -56,7 +56,7 @@
 
 <& Elements/ShowGraph, %ARGS, Ticket => $ticket &>
 
-<form action="<% RT->Config->Get('WebPath') . $m->request_comp->path %>">
+<form action="<% RT->config->get('WebPath') . $m->request_comp->path %>">
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
 
 <& Elements/EditGraphProperties, %ARGS, Ticket => $ticket &>

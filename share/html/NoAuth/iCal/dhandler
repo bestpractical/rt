@@ -83,7 +83,7 @@ $feed->add_properties('x-wr-calname' => ["RT due dates" => {value => "TEXT"}]);
 $feed->add_properties('x-wr-caldesc' => ["Due dates for RT tickets: $search" => {value => "TEXT"}]);
 $feed->add_properties('calscale' => ['gregorian']);
 $feed->add_properties('method'   => ['publish']);
-$feed->add_properties('prodid'   => ["-//" . RT->Config->Get('rtname') ."//"]);
+$feed->add_properties('prodid'   => ["-//" . RT->config->get('rtname') ."//"]);
 
 while (my $t = $tickets->Next) {
     next unless $t->DueObj->Unix > 0;
@@ -94,7 +94,7 @@ while (my $t = $tickets->Next) {
     my $start = Data::ICal::Entry::Event->new;
     my $end   = Data::ICal::Entry::Event->new;
     $_->add_properties(
-        url       => RT->Config->Get('WebURL') . "?q=".$t->id,
+        url       => RT->config->get('WebURL') . "?q=".$t->id,
         organizer => $t->OwnerObj->Name,
         dtstamp   => $now->iCal,
         created   => $t->CreatedObj->iCal,

@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="dashboards">
 <&|/Widgets/TitleBox, title => loc("Dashboards"), bodyclass => "",
-   titleright => loc("Edit"), titleright_href => RT->Config->Get('WebPath').'/Dashboards' &>
+   titleright => loc("Edit"), titleright_href => RT->config->get('WebPath').'/Dashboards' &>
 
 <& /Dashboards/Elements/ShowDashboards:table,
     Dashboards => \@dashboards,

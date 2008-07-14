@@ -53,7 +53,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%RT->Config->Get('WebPath')%>/Dashboards/Subscription.html" method="post" enctype="multipart/form-data" name="SubscribeDashboard">
+<form action="<%RT->config->get('WebPath')%>/Dashboards/Subscription.html" method="post" enctype="multipart/form-data" name="SubscribeDashboard">
 <input type="hidden" class="hidden" name="DashboardId" value="<% $fields{'DashboardId'} %>" />
 <table width="100%" border="0">
 <tr>
@@ -171,7 +171,7 @@ my $current_subtab = 'Dashboards/Subscription.html?DashboardId=' . $DashboardId;
 my ($title, @results);
 my ($val, $msg);
 my $Loaded = 0;
-my $timezone = $session{'CurrentUser'}->UserObj->Timezone || RT->Config->Get('Timezone');
+my $timezone = $session{'CurrentUser'}->UserObj->Timezone || RT->config->get('Timezone');
 
 use RT::Dashboard;
 my $DashboardObj = RT::Dashboard->new($session{'CurrentUser'});

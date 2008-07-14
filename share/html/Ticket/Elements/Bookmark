@@ -67,12 +67,12 @@ $id
 $Toggle => 0
 </%ARGS>
 <span id="toggle-<% $id %>">
-% my $url = RT->Config->Get('WebPath') ."/Helpers/Toggle/TicketBookmark?id=". $id;
+% my $url = RT->config->get('WebPath') ."/Helpers/Toggle/TicketBookmark?id=". $id;
 <a align="right" href="<% $url %>" onClick="ahah('<% $url |n %>', 'toggle-<% $id |n %>'); return false;" >
 % if ( $bookmarks->{ $id } ) {
-<img src="<% RT->Config->Get('WebPath') %>/NoAuth/images/star.gif" alt="<% loc('Remove Bookmark') %>" style="border-style: none" />
+<img src="<% RT->config->get('WebPath') %>/NoAuth/images/star.gif" alt="<% loc('Remove Bookmark') %>" style="border-style: none" />
 % } else {
-<img src="<% RT->Config->Get('WebPath') %>/NoAuth/images/empty_star.gif" alt="<% loc('Add Bookmark') %>" style="border-style: none" />
+<img src="<% RT->config->get('WebPath') %>/NoAuth/images/empty_star.gif" alt="<% loc('Add Bookmark') %>" style="border-style: none" />
 % }
 </a>
 </span>

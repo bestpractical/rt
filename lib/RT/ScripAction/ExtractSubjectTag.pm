@@ -71,8 +71,8 @@ sub Commit {
     my $origTicketSubject  = $TicketSubject;
     my $TransactionSubject = $FirstAttachment->Subject;
 
-    my $match   = RT->Config->Get('ExtractSubjectTagMatch');
-    my $nomatch = RT->Config->Get('ExtractSubjectTagNoMatch');
+    my $match   = RT->config->get('ExtractSubjectTagMatch');
+    my $nomatch = RT->config->get('ExtractSubjectTagNoMatch');
     while ( $TransactionSubject =~ /($match)/g ) {
         my $tag = $1;
         next if $tag =~ /$nomatch/;

@@ -77,11 +77,11 @@ BEGIN {
 use RT;
 RT::LoadConfig();
 RT->InitLogging();
-if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
+if (RT->config->get('DevelMode')) { require Module::Refresh; }
 
 RT::CheckPerlRequirements();
 
-my $port = shift @ARGV || RT->Config->Get('WebPort') || '8080';
+my $port = shift @ARGV || RT->config->get('WebPort') || '8080';
 
 
 require RT::Handle;

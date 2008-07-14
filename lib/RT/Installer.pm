@@ -268,7 +268,7 @@ sub CurrentValue {
     return $RT::Installer
       && exists $RT::Installer->{InstallConfig}{$type}
       ? $RT::Installer->{InstallConfig}{$type}
-      : scalar RT->Config->Get($type);
+      : scalar RT->config->get($type);
 }
 
 sub CurrentValues {

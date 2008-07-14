@@ -75,7 +75,7 @@ if ( $Run ) {
             Meta => $RT::Installer->{Meta}, KeepUndef => 1);
 
     if ( $Back ) {
-        RT::Interface::Web::redirect(RT->Config->Get('WebURL') .
+        RT::Interface::Web::redirect(RT->config->get('WebURL') .
 'Install/Basics.html');
     }
 
@@ -92,7 +92,7 @@ if ( $Run ) {
 
 
     unless ( @errors ) {
-        RT::Interface::Web::redirect(RT->Config->Get('WebURL') .
+        RT::Interface::Web::redirect(RT->config->get('WebURL') .
 'Install/Global.html');
     }
 }

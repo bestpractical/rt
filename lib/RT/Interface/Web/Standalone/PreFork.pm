@@ -69,15 +69,15 @@ files.
 
 sub default_values {
     my %forking = (
-        map { $_ => RT->Config->Get( $option_map{$_} ) }
-          grep { defined( RT->Config->Get( $option_map{$_} ) ) }
+        map { $_ => RT->config->get( $option_map{$_} ) }
+          grep { defined( RT->config->get( $option_map{$_} ) ) }
           keys %option_map,
     );
 
     return {
         %forking,
         log_level => 1,
-        RT->Config->Get('NetServerOptions')
+        RT->config->get('NetServerOptions')
     };
 }
 

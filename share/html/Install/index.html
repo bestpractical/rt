@@ -91,7 +91,7 @@ my $locked;
                 DatabaseUser DatabaseRequireSSL rtname
                 Organization TimeZone CommentAddress CorrespondAddress 
                 SendmailPath WebDomain WebPort/ ) {
-            $RT::Installer->{InstallConfig}{$field} ||= RT->Config->Get($field);
+            $RT::Installer->{InstallConfig}{$field} ||= RT->config->get($field);
         }
 
         for my $field ( qw/OwnerEmail Password DatabasePassword
@@ -100,7 +100,7 @@ my $locked;
             $RT::Installer->{InstallConfig}{$field} = '';
         }
 
-        RT::Interface::Web::redirect(RT->Config->Get('WebURL') .  'Install/DatabaseType.html');
+        RT::Interface::Web::redirect(RT->config->get('WebURL') .  'Install/DatabaseType.html');
     
         }
 </%init>

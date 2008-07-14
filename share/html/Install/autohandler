@@ -61,7 +61,7 @@ if (RT->install_mode) {
 }
 else {
     # redirect to login page if not in install mode
-    RT::Interface::Web::redirect(RT->Config->Get('WebURL'))
+    RT::Interface::Web::redirect(RT->config->get('WebURL'))
 }
 </%init>
 
