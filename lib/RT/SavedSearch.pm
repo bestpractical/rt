@@ -73,60 +73,60 @@ use base qw/RT::SharedSetting/;
 
 =head1 METHODS
 
-=head2 ObjectName
+=head2 object_name
 
 An object of this class is called "search"
 
 =cut
 
-sub ObjectName { "search" }
+sub object_name { "search" }
 
-sub PostLoad {
+sub post_load {
     my $self = shift;
-    $self->{'Type'} = $self->{'Attribute'}->SubValue('SearchType');
+    $self->{'type'} = $self->{'attribute'}->sub_value('search_type');
 }
 
-sub SaveAttribute {
+sub save_attribute {
     my $self   = shift;
     my $object = shift;
     my $args   = shift;
 
-    my $params = $args->{'SearchParams'};
+    my $params = $args->{'search_params'};
 
-    $params->{'SearchType'} = $args->{'Type'} || 'Ticket';
+    $params->{'search_type'} = $args->{'type'} || 'Ticket';
 
     return $object->AddAttribute(
-        'Name'        => 'SavedSearch',
-        'description' => $args->{'Name'},
-        'Content'     => $params,
+        'name'        => 'saved_search',
+        'description' => $args->{'name'},
+        'content'     => $params,
     );
 }
 
 
-sub UpdateAttribute {
+sub update_attribute {
     my $self = shift;
     my $args = shift;
-    my $params = $args->{'SearchParams'} || {};
+    my $params = $args->{'search_params'} || {};
 
-    my ($status, $msg) = $self->{'Attribute'}->SetSubValues(%$params);
+    my ($status, $msg) = $self->{'attribute'}->set_sub_values(%$params);
 
-    if ($status && $args->{'Name'}) {
-        ($status, $msg) = $self->{'Attribute'}->set_description($args->{'Name'});
+    if ($status && $args->{'name'}) {
+        ($status, $msg) = $self->{'attribute'}->set_description($args->{'name'});
     }
 
     return ($status, $msg);
 }
 
-=head2 Type
+=head2 type
 
 Returns the type of this search, e.g. 'Ticket'.  Useful for denoting the
 saved searches that are relevant to a particular search page.
 
 =cut
 
-sub Type {
+sub type {
     my $self = shift;
-    return $self->{'Type'};
+    return $self->{'type'};
 }
 
 1;
