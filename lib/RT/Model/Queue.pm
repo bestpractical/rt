@@ -901,7 +901,7 @@ sub delete_watcher {
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
     if ( defined $args{'principal_id'}
-        and $self->current_user->principal_id eq $args{'principal_id'} )
+        and $self->current_user->principal_object->id eq $args{'principal_id'} )
     {
 
         #  If it's an AdminCc and they don't have
