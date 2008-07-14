@@ -64,12 +64,12 @@ ok ($group->id, "Found the ccs object for this Queue");
 ok(my $bob = RT::Model::User->new(current_user => RT->system_user), "Creating a bob rt::user");
 $bob->load_by_email('bob@fsck.com');
 ok($bob->id,  "Found the bob rt user");
-ok ($Queue->IsWatcher(type => 'cc', principal_id => $bob->principal_id), "The queue actually has bob at fsck.com as a requestor");
+ok ($Queue->is_watcher(type => 'cc', principal_id => $bob->principal_id), "The queue actually has bob at fsck.com as a requestor");
 
 {
     my ($status, $msg) = $Queue->delete_watcher(type =>'cc', email => 'bob@fsck.com');
     ok ($status, "Deleted bob from Ccs") or diag "error: $msg";
-    ok (!$Queue->IsWatcher(type => 'cc', principal_id => $bob->principal_id),
+    ok (!$Queue->is_watcher(type => 'cc', principal_id => $bob->principal_id),
         "The queue no longer has bob at fsck.com as a requestor");
 }
 
