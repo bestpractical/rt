@@ -246,14 +246,14 @@ sub StripContent {
     return $content unless $sigonly;
 
     # Find the signature
-    my $sig = $args{'current_user'}->user_object->Signature || '';
+    my $sig = $args{'current_user'}->user_object->signature || '';
     $sig =~ s/^\s*|\s*$//g;
 
     # Check for plaintext sig
     return '' if not $html and $content =~ /^\s*(--)?\s*\Q$sig\E\s*$/;
 
     # Check for html-formatted sig
-    RT::Interface::Web::EscapeUTF8( \$sig );
+    RT::Interface::Web::escape_utf8( \$sig );
     return ''
       if $html
           and $content =~
