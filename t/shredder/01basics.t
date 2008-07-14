@@ -5,7 +5,7 @@ use warnings;
 
 use RT::Test; use Test::More;
 use File::Spec;
-use RT::Test;
+use RT::Test ();
 BEGIN {
     my $shredder_utils = RT::Test::get_relocatable_file('utils.pl',
         File::Spec->curdir());

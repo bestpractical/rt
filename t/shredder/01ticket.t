@@ -6,7 +6,7 @@ use warnings;
 use RT::Test; use Test::More;
 use Test::Deep;
 use File::Spec;
-use RT::Test;
+use RT::Test ();
 
 plan tests => 15;
 
