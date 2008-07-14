@@ -29,16 +29,19 @@ NOTE that upgrade steps are described in UPGRADING
 
 5) make initdb
 
-6) 
+6) If you are running 3.8, you need to enable RTFM in your 
+   RT_SiteConfig.pm file.  You can do this by adding the following
+   line:
 
-7) stop and start your web server
+   Set(@Plugins,qw(RT::FM));
 
-8) Before you can add content to RTFM articles, you will need to configure
+7) clear your mason cache.  This is most often accomplished with
+   rm -rf /opt/rt3/var/mason_data/*
+
+8) stop and start your web server
+
+9) Before you can add content to RTFM articles, you will need to configure
    classes and custom fields. For details, see lib/RT/FM/Introduction.pod
-
-----------------------------------------------
-
-Upgrade instructions can be found in UPGRADING
 
 Further reading:
 -----------------------------------------------------
@@ -47,7 +50,7 @@ You can read pod files using perldoc utility that comes with perl.
 1) lib/RT/FM/Introduction.pod - quick overview
 2) lib/RT/FM/Config.pod - RTFM's config options
 
-Staff users should be now have a new "RTFM" menu item RT's top level menu.
+Users should be now have a new "RTFM" menu item RT's top level menu.
 As an administrator, you should go create some "Classes" of articles in RTFM.
 Classes are equivalent to RT's queues. 
 
