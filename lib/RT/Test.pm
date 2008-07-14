@@ -454,7 +454,7 @@ sub import_gnupg_key {
 
     # this is a bit hackish; calling it from somewhere that's not a subdir
     # of t/ will fail
-    return RT::Crypt::GnuPG::ImportKey(
+    return RT::Crypt::GnuPG::import_key(
         RT::Test->file_content(
             [
                 get_relocatable_dir(
