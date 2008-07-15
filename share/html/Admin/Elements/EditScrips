@@ -100,7 +100,7 @@ else {
 # {{{ deal with modifying and deleting existing scrips
 # we still support DeleteScrip-id format but array is preferred
 foreach my $id ( grep $_, @DeleteScrip, map /^DeleteScrip-(\d+)/, keys %ARGS ) {
-    my $scrip = RT::Scrip->new;
+    my $scrip = RT::Model::Scrip->new;
     $scrip->load( $id );
     my ($retval, $msg) = $scrip->delete;
     if ($retval) {

@@ -65,7 +65,7 @@ $_ =~ s/\%([0-9a-z]{2})/chr(hex($1))/gei for $name, $search;
 # convert to perl strings
 $_ = Encode::decode_utf8( $_ ) for $name, $search;
 
-my $user = RT::User->new( $RT::SystemUser );
+my $user = RT::Model::User->new( RT->system_user );
 $user->Load( $name );
 $notfound->() unless $user->id;
 
@@ -73,7 +73,7 @@ $notfound->() unless $user->ValidateAuthString( $auth, $search );
 
 my $cu = RT::CurrentUser->new;
 $cu->Load($user);
-my $tickets = RT::Tickets->new( $cu );
+my $tickets = RT::Model::TicketCollection->new( $cu );
 $tickets->FromSQL($search);
 
 $r->header_out("Content-Type" => "text/calendar; charset=utf-8");

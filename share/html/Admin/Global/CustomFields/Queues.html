@@ -51,8 +51,8 @@
     current_subtab => "Admin/Global/CustomFields/Queues.html",
     Title => $title
     &>
-    <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, ObjectType => 'RT::Queue', Object=> $object &>
+    <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, ObjectType => 'RT::Model::Queue', Object=> $object &>
 <%INIT>
   my $title = loc( 'Edit Custom Fields for all queues');
-  my $object = RT::Queue->new($session{'CurrentUser'});
+  my $object = RT::Model::Queue->new($session{'CurrentUser'});
 </%INIT>

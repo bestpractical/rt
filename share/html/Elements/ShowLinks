@@ -141,8 +141,8 @@ my $path
 
 for my $relation (
     qw(RefersTo ReferredToBy)) {
-    my $mode  = $RT::Ticket::LINKTYPEMAP{$relation}->{Mode};
-    my $type  = $RT::Ticket::LINKTYPEMAP{$relation}->{type};
+    my $mode  = $RT::Model::Ticket::LINKTYPEMAP{$relation}->{Mode};
+    my $type  = $RT::Model::Ticket::LINKTYPEMAP{$relation}->{type};
     my $other = "Local" . $mode;
     my $field = $mode eq 'base' ? 'new-' . $type : $type . '-new';
     $clone->{$field} 
@@ -153,8 +153,8 @@ for my $relation (
 }
 
 for my $relation ( qw(MemberOf Members DependsOn DependedOnBy)) {
-    my $mode  = $RT::Ticket::LINKTYPEMAP{$relation}->{Mode};
-    my $type  = $RT::Ticket::LINKTYPEMAP{$relation}->{type};
+    my $mode  = $RT::Model::Ticket::LINKTYPEMAP{$relation}->{Mode};
+    my $type  = $RT::Model::Ticket::LINKTYPEMAP{$relation}->{type};
     my $field = $mode eq 'base' ? 'new-' . $type : $type . '-new';
     $clone->{$field} = $path . "&$field=". $Ticket->id ;
 }

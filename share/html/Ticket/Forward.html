@@ -85,7 +85,7 @@ $id = $ARGS{'id'} = $ticket_obj->id;
 abort( _("Permission Denied") )
     unless $ticket_obj->current_user_has_right('ForwardMessage');
 
-my $txn = RT::Transaction->new();
+my $txn = RT::Model::Transaction->new();
 $txn->load( $QuoteTransaction );
 abort( _("Couldn't load transaction #%1", $QuoteTransaction) )
     unless $txn->id;

@@ -160,7 +160,7 @@ sub send_digest {
 
     # Load our template.  If we cannot load the template, abort
     # immediately rather than failing through many loops.
-    my $digest_template = RT::Template->new( RT->SystemUser );
+    my $digest_template = RT::Model::Template->new( RT->SystemUser );
     my ( $ret, $msg ) = $digest_template->Load('Email Digest');
     unless ($ret) {
         print loc("Failed to load template")
@@ -240,7 +240,7 @@ sub find_transactions {
     my $frequency  = shift;
     my $since_date = since_date($frequency);
 
-    my $txns = RT::Transactions->new( RT->SystemUser );
+    my $txns = RT::Model::TransactionCollection->new( RT->SystemUser );
 
     # First limit to recent transactions.
     $txns->Limit(
@@ -253,7 +253,7 @@ sub find_transactions {
     $txns->Limit(
         FIELD           => 'ObjectType',
         OPERATOR        => '=',
-        VALUE           => 'RT::Ticket',
+        VALUE           => 'RT::Model::Ticket',
         ENTRYAGGREGATOR => 'AND'
     );
     my $all_digest        = {};
@@ -281,7 +281,7 @@ sub build_digest_for_user {
 
     # Has the user been disabled since a message was deferred on his/her
     # behalf?
-    my $user_obj = RT::User->new( RT->SystemUser );
+    my $user_obj = RT::Model::User->new( RT->SystemUser );
     $user_obj->LoadByEmail($user);
     if ( $user_obj->PrincipalObj->Disabled ) {
         print STDERR loc("Skipping disabled user") . " $user\n";
@@ -294,7 +294,7 @@ sub build_digest_for_user {
         $contents_body .= "Queue $queue:\n";
         foreach my $ticket ( sort keys %{ $user_digest->{$queue} } ) {
             my $tkt_txns   = $user_digest->{$queue}->{$ticket};
-            my $ticket_obj = RT::Ticket->new( RT->SystemUser );
+            my $ticket_obj = RT::Model::Ticket->new( RT->SystemUser );
             $ticket_obj->Load($ticket);
 
             # Spit out the index entry for this ticket.
@@ -310,12 +310,12 @@ sub build_digest_for_user {
             foreach my $txn ( sort keys %$tkt_txns ) {
                 my $msg = $tkt_txns->{$txn};
 
-                # $msg contains an RT::Attachment with our outgoing
+                # $msg contains an RT::Model::Attachment with our outgoing
                 # message.  Print a few headers for clarity's sake.
                 $contents_body .= "From: " . $msg->GetHeader('From') . "\n";
                 my $date = $msg->GetHeader('Date ');
                 unless ($date) {
-                    my $txn_obj = RT::Transaction->new( RT->SystemUser );
+                    my $txn_obj = RT::Model::Transaction->new( RT->SystemUser );
                     $txn_obj->Load($txn);
                     my $date_obj = RT::Date->new( RT->SystemUser );
                     $date_obj->Set(

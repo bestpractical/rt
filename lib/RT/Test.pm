@@ -278,11 +278,11 @@ sub load_or_create_custom_field {
 sub store_rights {
     my $self = shift;
 
-    require RT::ACE;
+    require RT::Model::ACE;
 
     # fake construction
-    RT::ACE->new( current_user => RT->system_user );
-    my @fields = keys %{ RT::ACE->_class_accessible };
+    RT::Model::ACE->new( current_user => RT->system_user );
+    my @fields = keys %{ RT::Model::ACE->_class_accessible };
 
     require RT::ACL;
     my $acl = RT::ACL->new( current_user => RT->system_user );

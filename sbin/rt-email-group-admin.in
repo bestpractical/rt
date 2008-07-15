@@ -116,8 +116,8 @@ RT::LoadConfig;
 RT::Init;
 
 require RT::Principal;
-require RT::User;
-require RT::Group;
+require RT::Model::User;
+require RT::Model::Group;
 require RT::ScripActions;
 
 use Getopt::Long qw(GetOptions);
@@ -231,7 +231,7 @@ sub _list {
 
     print "Members: \n";
     foreach( @princ ) {
-        my $obj = RT::Principal->new( $RT::SystemUser );
+        my $obj = RT::Principal->new( RT->system_user );
         $obj->Load( $_ );
         next unless $obj->id;
 
@@ -252,7 +252,7 @@ recipient list. Would be notify as comment if --comment specified.
 =cut
 
 sub create {
-    my $actions = RT::ScripActions->new( $RT::SystemUser );
+    my $actions = RT::ScripActions->new( RT->system_user );
     $actions->Limit(
         FIELD => 'Name',
         VALUE => $opts->{'name'},
@@ -281,7 +281,7 @@ sub __create_empty {
     my $name = shift;
     my $as_comment = shift || 0;
     require RT::ScripAction;
-    my $action = RT::ScripAction->new( $RT::SystemUser );
+    my $action = RT::ScripAction->new( RT->system_user );
     $action->Create(
         Name => $name,
         description => "Created with rt-email-group-admin script",
@@ -301,8 +301,8 @@ sub _check_groups
 sub __check_group
 {
     my $instance = shift;
-    require RT::Group;
-    my $obj = RT::Group->new( $RT::SystemUser );
+    require RT::Model::Group;
+    my $obj = RT::Model::Group->new( RT->system_user );
     $obj->LoadUserDefinedGroup( $instance );
     return $obj->id ? $obj : undef;
 }
@@ -316,8 +316,8 @@ sub _check_users
 sub __check_user
 {
     my $instance = shift;
-    require RT::User;
-    my $obj = RT::User->new( $RT::SystemUser );
+    require RT::Model::User;
+    my $obj = RT::Model::User->new( RT->system_user );
     $obj->Load( $instance );
     return $obj->id ? $obj : undef;
 }
@@ -377,8 +377,8 @@ sub delete {
         exit(-1);
     }
 
-    require RT::Scrips;
-    my $scrips = RT::Scrips->new( $RT::SystemUser );
+    require RT::Model::ScripCollection;
+    my $scrips = RT::Model::ScripCollection->new( RT->system_user );
     $scrips->Limit( FIELD => 'ScripAction', VALUE => $action->id );
     if ( $scrips->Count ) {
         my @sid;
@@ -451,7 +451,7 @@ sub rename {
         exit(-1);
     }
 
-    my $actions = RT::ScripActions->new( $RT::SystemUser );
+    my $actions = RT::ScripActions->new( RT->system_user );
     $actions->Limit( FIELD => 'Name', VALUE => $opts->{'newname'} );
     if ( $actions->Count ) {
         print STDERR "ScripAction '". $opts->{'newname'} ."' allready exists\n";
@@ -501,9 +501,9 @@ sub __convert_old {
         my $obj;
         next unless $r->{'Type'};
         if ( lc $r->{'Type'} eq 'user' ) {
-            $obj = RT::User->new( $RT::SystemUser );
+            $obj = RT::Model::User->new( RT->system_user );
         } elsif ( lc $r->{'Type'} eq 'user' ) {
-            $obj = RT::Group->new( $RT::SystemUser );
+            $obj = RT::Model::Group->new( RT->system_user );
         } else {
             next;
         }
@@ -518,7 +518,7 @@ sub __convert_old {
 }
 
 sub _get_our_actions {
-    my $actions = RT::ScripActions->new( $RT::SystemUser );
+    my $actions = RT::ScripActions->new( RT->system_user );
     $actions->Limit(
         FIELD => 'ExecModule',
         VALUE => 'NotifyGroup',

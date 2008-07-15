@@ -55,7 +55,7 @@ $Default => undef
 % my $privacy = ref($object) . '-' . $object->id;
 % my $selected = $privacy eq ($Default || '') ? 'selected="selected"' : '';
 
-% if (ref($object) eq 'RT::User' && $object->id == $session{'CurrentUser'}->Id) {
+% if (ref($object) eq 'RT::Model::User' && $object->id == $session{'CurrentUser'}->Id) {
 <option <%$selected|n%> value="<%$privacy%>"><&|/l&>My dashboards</&></option>
 % } else {
 <option <%$selected|n%> value="<%$privacy%>"><&|/l, $object->Name&>[_1]'s dashboards</&></option>

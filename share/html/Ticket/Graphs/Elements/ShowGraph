@@ -55,7 +55,7 @@ $id => undef
 <%INIT>
 use RT::Util 'safe_run_child';
 
-my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
+my $ticket = RT::Model::Ticket->new( $session{'CurrentUser'} );
 $ticket->Load( $id );
 unless ( $ticket->id ) {
     Jifty->log->error("Couldn't load ticket $id");

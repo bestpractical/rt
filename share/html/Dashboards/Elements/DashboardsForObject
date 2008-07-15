@@ -68,10 +68,10 @@ while (my $attr = $Object->Attributes->Next) {
         if ($Object->isa('RT::System')) {
             push @{ $dashboards{system} }, $dashboard;
         }
-        elsif ($Object->isa('RT::User')) {
+        elsif ($Object->isa('RT::Model::User')) {
             push @{ $dashboards{personal} }, $dashboard;
         }
-        elsif ($Object->isa('RT::Group')) {
+        elsif ($Object->isa('RT::Model::Group')) {
             push @{ $dashboards{group}{$Object->Name} }, $dashboard;
         }
     }

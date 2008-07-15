@@ -79,7 +79,7 @@ if ( $Run ) {
     RT->InitClasses();
     RT->InitPlugins();
 
-    my $root = RT::User->new( $RT::SystemUser );
+    my $root = RT::Model::User->new( RT->system_user );
     $root->Load('root');
     $root->SetPassword( $RT::Installer->{InstallConfig}{Password} );
 

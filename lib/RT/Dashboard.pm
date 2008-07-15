@@ -56,8 +56,8 @@
 
 =head1 DESCRIPTION
 
-  Dashboard is an object that can belong to either an RT::User or an
-  RT::Group.  It consists of an ID, a name, and a number of
+  Dashboard is an object that can belong to either an RT::Model::User or an
+  RT::Model::Group.  It consists of an ID, a name, and a number of
   saved searches.
 
 =head1 METHODS
@@ -89,8 +89,8 @@ my %new_rights = (
 
 use RT::System;
 $RT::System::RIGHTS = { %$RT::System::RIGHTS, %new_rights };
-%RT::ACE::LOWERCASERIGHTNAMES =
-  ( %RT::ACE::LOWERCASERIGHTNAMES, map { lc($_) => $_ } keys %new_rights );
+%RT::Model::ACE::LOWERCASERIGHTNAMES =
+  ( %RT::Model::ACE::LOWERCASERIGHTNAMES, map { lc($_) => $_ } keys %new_rights );
 
 =head2 ObjectName
 
@@ -241,7 +241,7 @@ sub _PrivacyObjects {
         Object => $RT::System,
       );
 
-    my $groups = RT::Groups->new($CurrentUser);
+    my $groups = RT::Model::GroupCollection->new($CurrentUser);
     $groups->LimitToUserDefinedGroups;
     $groups->WithMember(
         PrincipalId => $CurrentUser->Id,
@@ -281,8 +281,8 @@ sub _CurrentUserCan {
 
     my $level;
 
-    if    ( $object->isa('RT::User') )   { $level = 'Own' }
-    elsif ( $object->isa('RT::Group') )  { $level = 'Group' }
+    if    ( $object->isa('RT::Model::User') )   { $level = 'Own' }
+    elsif ( $object->isa('RT::Model::Group') )  { $level = 'Group' }
     elsif ( $object->isa('RT::System') ) { $level = '' }
     else {
         Jifty->log->error("Unknown object $object from privacy $privacy");
@@ -291,7 +291,7 @@ sub _CurrentUserCan {
 
     # users are mildly special-cased, since we actually have to check that
     # the user is operating on himself
-    if ( $object->isa('RT::User') ) {
+    if ( $object->isa('RT::Model::User') ) {
         return 0 unless $object->Id == $self->CurrentUser->Id;
     }
 
@@ -299,7 +299,7 @@ sub _CurrentUserCan {
       || join( '', $args{Right}, $level, 'Dashboard' );
 
     # all rights, except group rights, are global
-    $object = $RT::System unless $object->isa('RT::Group');
+    $object = $RT::System unless $object->isa('RT::Model::Group');
 
     return $self->CurrentUser->HasRight(
         Right  => $right,

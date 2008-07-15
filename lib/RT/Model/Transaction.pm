@@ -499,7 +499,7 @@ at $args{'Wrap'}.  $args{'Wrap'} defaults to 70.
 
 If $args{'type'} is set to C<text/html>, plain texts are upgraded to HTML.
 Otherwise, HTML texts are downgraded to plain text.  If $args{'type'} is
-missing, it defaults to the value of C<$RT::Transaction::Preferredcontent_type>,
+missing, it defaults to the value of C<$RT::Model::Transaction::Preferredcontent_type>,
 if that's missing too, defaults to 'text/plain'.
 
 =cut

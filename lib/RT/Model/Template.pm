@@ -332,7 +332,7 @@ sub parse {
     my ( $rv, $msg );
 
     if ( $self->content =~ m{^Content-type:\s+text/html\b}im ) {
-        local $RT::Transaction::Preferredcontent_type = 'text/html';
+        local $RT::Model::Transaction::Preferredcontent_type = 'text/html';
         ( $rv, $msg ) = $self->_parse(@_);
     }
     else {
@@ -468,7 +468,7 @@ sub _downgrade_from_html {
     my $orig_entity = $self->mime_obj;
     die 'hehe';
 
-    local $RT::Transaction::Preferredcontent_type = 'text/plain';
+    local $RT::Model::Transaction::Preferredcontent_type = 'text/plain';
 
     my ( $rv, $msg ) = $self->_parse(@_);
     if ( !$rv ) {

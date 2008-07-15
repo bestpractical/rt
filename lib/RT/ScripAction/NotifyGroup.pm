@@ -65,8 +65,8 @@ use strict;
 use warnings;
 use base qw(RT::ScripAction::Notify);
 
-require RT::User;
-require RT::Group;
+require RT::Model::User;
+require RT::Model::Group;
 
 =head1 METHODS
 
@@ -104,7 +104,7 @@ sub _HandleArgument {
     my $self     = shift;
     my $instance = shift;
 
-    my $obj = RT::Principal->new($RT::SystemUser);
+    my $obj = RT::Principal->new(RT->system_user);
     $obj->Load($instance);
     unless ( $obj->id ) {
         Jifty->log->error("Couldn't load principal #$instance");
@@ -163,10 +163,10 @@ sub __ConvertOldArg {
         my $obj;
         next unless $r->{'Type'};
         if ( lc $r->{'Type'} eq 'user' ) {
-            $obj = RT::User->new($RT::SystemUser);
+            $obj = RT::Model::User->new(RT->system_user);
         }
         elsif ( lc $r->{'Type'} eq 'user' ) {
-            $obj = RT::Group->new($RT::SystemUser);
+            $obj = RT::Model::Group->new(RT->system_user);
         }
         else {
             next;

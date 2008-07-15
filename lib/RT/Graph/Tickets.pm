@@ -161,8 +161,8 @@ sub TicketProperties {
         Links =>
           [qw(MemberOf Members DependsOn DependedOnBy RefersTo ReferredToBy)],
     );
-    my $cfs = RT::CustomFields->new($user);
-    $cfs->LimitToLookupType('RT::Queue-RT::Ticket');
+    my $cfs = RT::Model::CustomFieldCollection->new($user);
+    $cfs->LimitToLookupType('RT::Model::Queue-RT::Model::Ticket');
     $cfs->OrderBy( FIELD => 'Name' );
     my ( $first, %seen ) = (1);
     while ( my $cf = $cfs->Next ) {
@@ -320,7 +320,7 @@ sub TicketLinks {
     $args{'SeenEdge'} ||= {};
 
     my $show_link_descriptions = $args{'show_link_descriptions'}
-      && RT::Link->can('description');
+      && RT::Model::Link->can('description');
 
     foreach my $type ( $args{'LeadingLink'}, @{ $args{'ShowLinks'} } ) {
         my $links = $args{'Ticket'}->$type();
@@ -329,10 +329,10 @@ sub TicketLinks {
             next if $args{'SeenEdge'}{ $link->id }++;
 
             my $target = $link->TargetObj;
-            next unless $target && $target->isa('RT::Ticket');
+            next unless $target && $target->isa('RT::Model::Ticket');
 
             my $base = $link->BaseObj;
-            next unless $base && $base->isa('RT::Ticket');
+            next unless $base && $base->isa('RT::Model::Ticket');
 
             my $next = $target->id == $args{'Ticket'}->id ? $base : $target;
 

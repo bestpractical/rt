@@ -65,6 +65,6 @@ my $format = q{'<a href="__WebPath__/Admin/Global/Scrip.html?id=__id__&Queue=0">
     .q{,'<a href="__WebPath__/Admin/Global/Scrip.html?id=__id__&Queue=0">__Autodescription__</a>/TITLE:Condition, Action and Template'}
     .q{__NEWLINE__,'','<small>__description__</small>'};
 
-my $Scrips = RT::Scrips->new;
+my $Scrips = RT::Model::ScripCollection->new;
 $Scrips->limit_toGlobal;
 </%init>
