@@ -86,9 +86,9 @@ $q->load_by_cols(name => $queue);
 
 <br /><&|/l&>Queue</&>: <& /Elements/SelectQueue, name => 'queue', named_values => 1, default => $q->id &>
 <br /><&|/l&>Tickets Created after</&>: 
-<& /Elements/SelectDate, name => 'CreatedAfter', default => ($CreatedAfter) ? $after->ISO : ''&>
+<& /Elements/SelectDate, name => 'CreatedAfter', default => ($CreatedAfter) ? $after->iso : ''&>
 <br /><&|/l&>Tickets Created before</&>: 
-<& /Elements/SelectDate, name => 'CreatedBefore', default => ($CreatedBefore) ? $before->ISO : ''&>
+<& /Elements/SelectDate, name => 'CreatedBefore', default => ($CreatedBefore) ? $before->iso : ''&>
 
 <& /Elements/Submit&>
 </form>

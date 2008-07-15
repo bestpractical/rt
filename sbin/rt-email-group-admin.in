@@ -224,7 +224,7 @@ sub list {
 sub _list {
     my $action = shift;
 
-    print "Name: ". $action->Name() ."\n";
+    print "Name: ". $action->name() ."\n";
     print "Module: ". $action->ExecModule() ."\n";
 
     my @princ = argument_to_list( $action );
@@ -236,7 +236,7 @@ sub _list {
         next unless $obj->id;
 
         print "\t". $obj->PrincipalType;
-        print "\t=> ". $obj->Object->Name;
+        print "\t=> ". $obj->Object->name;
         print "(Disabled!!!)" if $obj->Disabled;
         print "\n";
     }

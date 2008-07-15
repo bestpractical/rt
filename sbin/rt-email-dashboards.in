@@ -130,16 +130,16 @@ my $Users = RT::Model::UserCollection->new(RT->system_user);
 $Users->LimitToPrivileged;
 
 while (defined(my $user = $Users->Next)) {
-    if ($user->PrincipalObj->Disabled) {
+    if ($user->principal_object->Disabled) {
         debug "Skipping over "
-            . $user->Name
+            . $user->name
             . " due to having a disabled account.";
         next;
     }
 
     unless (email_of($user)) {
         debug "Skipping over "
-            . $user->Name
+            . $user->name
             . " due to lack of EmailAddress.";
         next;
     }
@@ -147,10 +147,10 @@ while (defined(my $user = $Users->Next)) {
     my ($hour, $dow, $dom) = hour_dow_dom_in($user->Timezone || RT->config->get('Timezone'));
     $hour .= ':00';
     debug "Checking [_1]'s subscriptions: hour [_2], dow [_3], dom [_4]",
-          $user->Name, $hour, $dow, $dom;
+          $user->name, $hour, $dow, $dom;
 
     my $currentuser = RT::CurrentUser->new;
-    $currentuser->LoadByName($user->Name);
+    $currentuser->LoadByName($user->name);
 
     # look through this user's subscriptions, are any supposed to be generated
     # right now?
@@ -194,7 +194,7 @@ sub send_dashboard {
         warning "Unable to load dashboard [_1] of subscription [_2] for user [_3]: [_4]",
             $subscription->SubValue('DashboardId'),
             $subscription->Id,
-            $currentuser->Name,
+            $currentuser->name,
             $msg;
 
         my $ok = RT::Interface::Email::SendEmailUsingTemplate(
@@ -217,20 +217,20 @@ sub send_dashboard {
             }
         }
         else {
-            warning("Unable to notify [_1] of an obsolete subscription", $currentuser->Name);
+            warning("Unable to notify [_1] of an obsolete subscription", $currentuser->name);
         }
 
         return;
     }
 
     verbose 'Creating dashboard "[_1]" for user "[_2]":',
-            $dashboard->Name,
-            $currentuser->Name;
+            $dashboard->name,
+            $currentuser->name;
 
     if ($opts{'dryrun'}) {
         print << "SUMMARY";
-    Dashboard: @{[ $dashboard->Name ]}
-    User:   @{[ $currentuser->Name ]} <@{[ email_of($currentuser) ]}>
+    Dashboard: @{[ $dashboard->name ]}
+    User:   @{[ $currentuser->name ]} <@{[ email_of($currentuser) ]}>
 SUMMARY
         return;
     }
@@ -260,14 +260,14 @@ sub email_dashboard {
     my ($currentuser, $dashboard, $subscription, $content) = @_;
 
     verbose 'Sending dashboard "[_1]" to user [_2] <[_3]>',
-            $dashboard->Name,
-            $currentuser->Name,
+            $dashboard->name,
+            $currentuser->name,
             email_of($currentuser);
 
     my $subject = sprintf '[%s] ' .  RT->config->get('DashboardSubject'),
         RT->config->get('rtname'),
         ucfirst($subscription->SubValue('Frequency')),
-        $dashboard->Name;
+        $dashboard->name;
 
     my $entity = build_email(
         $content, $from, email_of($currentuser), $subject,
@@ -278,11 +278,11 @@ sub email_dashboard {
     );
 
     debug "Done sending dashboard to [_1] <[_2]>",
-          $currentuser->Name, email_of($currentuser)
+          $currentuser->name, email_of($currentuser)
               and return if $ok;
 
     error 'Failed to email dashboard to user [_1] <[_2]>',
-          $currentuser->Name, email_of($currentuser);
+          $currentuser->name, email_of($currentuser);
 }
 
 sub build_email {
@@ -341,8 +341,8 @@ sub build_email {
 
 sub email_of {
     my $user = shift;
-    return $user->EmailAddress if $user->EmailAddress;
-    return $user->Name if $user->Name =~ /\S@\S/;
+    return $user->email if $user->email;
+    return $user->name if $user->name =~ /\S@\S/;
     return undef;
 }
 

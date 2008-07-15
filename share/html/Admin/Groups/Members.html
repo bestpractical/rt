@@ -80,7 +80,7 @@
 <ul>
 % while ( my $user = $Users->next ) {
 % $UsersSeen{ $user->id } = 1 if $SkipSeenUsers;
-<li><input type="checkbox" class="checkbox" name="delete_member-<% $user->principal_obj->id %>" value="1" />
+<li><input type="checkbox" class="checkbox" name="delete_member-<% $user->principal_object->id %>" value="1" />
 <& '/Elements/ShowUser', User => $user &></li>
 % }
 </ul>

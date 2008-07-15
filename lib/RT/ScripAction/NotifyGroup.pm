@@ -90,7 +90,7 @@ sub SetRecipients {
         $self->_HandleArgument($_);
     }
 
-    my $creator = $self->TransactionObj->CreatorObj->EmailAddress();
+    my $creator = $self->transaction_obj->creator_obj->email();
     unless ($RT::NotifyActor) {
         @{ $self->{'To'} } = grep ( !/^\Q$creator\E$/, @{ $self->{'To'} } );
     }
@@ -133,7 +133,7 @@ sub __HandleUserArgument {
     my $self = shift;
     my $obj  = shift;
 
-    my $uea = $obj->EmailAddress;
+    my $uea = $obj->email;
     unless ($uea) {
         Jifty->log->warn( "User #" . $obj->id . " has no email address" );
         return;

@@ -61,13 +61,13 @@ sub Prepare {
 
 sub Commit {
     my $self            = shift;
-    my $Transaction     = $self->TransactionObj;
+    my $Transaction     = $self->transaction_obj;
     my $FirstAttachment = $Transaction->Attachments->First;
     return 1 unless ($FirstAttachment);
 
-    my $Ticket = $self->TicketObj;
+    my $Ticket = $self->ticket_obj;
 
-    my $TicketSubject      = $self->TicketObj->Subject;
+    my $TicketSubject      = $self->ticket_obj->Subject;
     my $origTicketSubject  = $TicketSubject;
     my $TransactionSubject = $FirstAttachment->Subject;
 
@@ -79,7 +79,7 @@ sub Commit {
         $TicketSubject .= " $tag" unless ( $TicketSubject =~ /\Q$tag\E/ );
     }
 
-    $self->TicketObj->SetSubject($TicketSubject)
+    $self->ticket_obj->SetSubject($TicketSubject)
       if ( $TicketSubject ne $origTicketSubject );
 
     return (1);

@@ -58,7 +58,7 @@ $Default => undef
 % if (ref($object) eq 'RT::Model::User' && $object->id == Jifty->web->current_user->Id) {
 <option <%$selected|n%> value="<%$privacy%>"><&|/l&>My dashboards</&></option>
 % } else {
-<option <%$selected|n%> value="<%$privacy%>"><&|/l, $object->Name&>[_1]'s dashboards</&></option>
+<option <%$selected|n%> value="<%$privacy%>"><&|/l, $object->name&>[_1]'s dashboards</&></option>
 % }
 % }
 </select>

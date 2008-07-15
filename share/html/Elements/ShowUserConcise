@@ -50,16 +50,16 @@
 if ($User) {
     my $printable;
     if ( $User->Privileged ) {
-             $printable = $User->RealName
-          || $User->NickName
-          || $User->Name
-          || $User->EmailAddress;
+             $printable = $User->real_name
+          || $User->nickname
+          || $User->name
+          || $User->email;
     }
     else {
-             $printable = $User->EmailAddress
-          || $User->Name
-          || $User->RealName
-          || $User->NickName;
+             $printable = $User->email
+          || $User->name
+          || $User->real_name
+          || $User->nickname;
     }
     $m->out( $printable);
 }

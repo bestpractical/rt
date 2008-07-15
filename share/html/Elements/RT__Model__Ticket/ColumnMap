@@ -78,7 +78,7 @@ $COLUMN_MAP = {
     queue => {
         attribute => 'queue',
         title     => 'Queue id',
-        value     => sub { return $_[0]->Queue }
+        value     => sub { return $_[0]->queue }
     },
     Queuename => {
         attribute => 'queue',
@@ -190,7 +190,7 @@ $COLUMN_MAP = {
         value     => sub  { 
             my $date = $_[0]->due_obj;
             # Highlight the date if it was due in the past, and it's still active
-            if ( $date && $date->Unix > 0 && $date->Diff < 0 && $_[0]->queue_obj->is_active_status($_[0]->status)) {
+            if ( $date && $date->unix > 0 && $date->diff < 0 && $_[0]->queue_obj->is_active_status($_[0]->status)) {
                 return (\'<span class="overdue">' , $date->age_as_string , \'</span>');
             } else {
                 return $date->age_as_string;

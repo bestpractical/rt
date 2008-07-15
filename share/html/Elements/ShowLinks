@@ -134,7 +134,7 @@ my $clone = {};
 my $path
     = RT->config->get('WebPath')
     . '/Ticket/Create.html?Queue='
-    . $Ticket->Queue
+    . $Ticket->queue
     . '&CloneTicket='
     . $Ticket->id;
 

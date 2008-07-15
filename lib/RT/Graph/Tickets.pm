@@ -111,7 +111,7 @@ sub gv_escape($) {
 our ( %fill_cache, @available_colors ) = ();
 
 our %property_cb = (
-    Queue => sub { return $_[0]->QueueObj->Name || $_[0]->Queue },
+    Queue => sub { return $_[0]->queue_obj->name || $_[0]->queue },
     CF => sub {
         my $values = $_[0]->CustomFieldValues( $_[1] );
         return join ', ', map $_->Content, @{ $values->ItemsArrayRef };
@@ -123,7 +123,7 @@ foreach my $field (qw(Subject Status TimeLeft TimeWorked TimeEstimated)) {
 foreach my $field (qw(Creator LastUpdatedBy Owner)) {
     $property_cb{$field} = sub {
         my $method = $field . 'Obj';
-        return $_[0]->$method->Name;
+        return $_[0]->$method->name;
     };
 }
 foreach my $field (qw(Requestor Cc AdminCc)) {
@@ -135,18 +135,18 @@ foreach my $field (qw(Requestor Cc AdminCc)) {
 foreach my $field (qw(Told Starts Started Due Resolved LastUpdated Created)) {
     $property_cb{$field} = sub {
         my $method = $field . 'Obj';
-        return $_[0]->$method->AsString;
+        return $_[0]->$method->as_string;
     };
 }
 foreach my $field (qw(Members DependedOnBy ReferredToBy)) {
     $property_cb{$field} = sub {
-        return join ', ', map $_->BaseObj->id,
+        return join ', ', map $_->base_obj->id,
           @{ $_[0]->$field->ItemsArrayRef };
     };
 }
 foreach my $field (qw(MemberOf DependsOn RefersTo)) {
     $property_cb{$field} = sub {
-        return join ', ', map $_->TargetObj->id,
+        return join ', ', map $_->target_obj->id,
           @{ $_[0]->$field->ItemsArrayRef };
     };
 }
@@ -166,13 +166,13 @@ sub TicketProperties {
     $cfs->OrderBy( FIELD => 'Name' );
     my ( $first, %seen ) = (1);
     while ( my $cf = $cfs->Next ) {
-        next if $seen{ lc $cf->Name }++;
+        next if $seen{ lc $cf->name }++;
         next if $cf->Type eq 'Image';
         if ($first) {
             push @res, 'CustomFields', [];
             $first = 0;
         }
-        push @{ $res[-1] }, 'CF.{' . $cf->Name . '}';
+        push @{ $res[-1] }, 'CF.{' . $cf->name . '}';
     }
     return @res;
 }
@@ -328,10 +328,10 @@ sub TicketLinks {
         while ( my $link = $links->Next ) {
             next if $args{'SeenEdge'}{ $link->id }++;
 
-            my $target = $link->TargetObj;
+            my $target = $link->target_obj;
             next unless $target && $target->isa('RT::Model::Ticket');
 
-            my $base = $link->BaseObj;
+            my $base = $link->base_obj;
             next unless $base && $base->isa('RT::Model::Ticket');
 
             my $next = $target->id == $args{'Ticket'}->id ? $base : $target;

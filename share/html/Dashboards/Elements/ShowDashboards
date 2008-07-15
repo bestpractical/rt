@@ -85,7 +85,7 @@ for my $attr (Jifty->web->current_user->user_object->attributes->named('Subscrip
 %       my $url = sprintf '%s/Dashboards/%d/%s',
 %                 RT->config->get('WebPath'),
 %                 $dashboard->Id,
-%                 $dashboard->Name;
+%                 $dashboard->name;
 
         <tr class="collection-as-table <% ++$i % 2 ? 'oddline' : 'evenline' %>">
 % if ($Verbose) {
@@ -97,7 +97,7 @@ for my $attr (Jifty->web->current_user->user_object->attributes->named('Subscrip
 % }
             <td class="collection-as-table">
                 <a href="<% $url %>">
-                    <% $dashboard->Name %>
+                    <% $dashboard->name %>
                 </a>
             </td>
             <td class="collection-as-table">

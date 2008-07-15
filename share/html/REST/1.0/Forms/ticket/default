@@ -134,7 +134,7 @@ else {
             if ($dates{lc $k}) {
                 my $time = new RT::Date Jifty->web->current_user;
                 $time->set(format => 'unknown', value => $data{$k});
-                $data{$k} = $time->ISO;
+                $data{$k} = $time->iso;
             }
 
             if (exists $create{lc $k}) {
@@ -281,7 +281,7 @@ else {
             next if ($val =~ /^not set$/i || $val eq $time->as_string);
 
             $time->set(format => 'unknown', value => $val);
-            ($n, $s) = $ticket->$set($time->ISO);
+            ($n, $s) = $ticket->$set($time->iso);
         }
         elsif (exists $people{$key}) {
             $key = $people{$key};

@@ -65,7 +65,7 @@
 <tr><td class="label">
 <&|/l&>Dashboard</&>:
 </td><td class="value">
-<% $DashboardObj->Name %>
+<% $DashboardObj->name %>
 </td></tr>
 
 <tr><td class="label">
@@ -78,10 +78,10 @@
 <ol>
 %    for my $query (@searches) {
 %       my $name;
-%       if ($query->{Attribute}->Name =~ /^Search - (.*)$/) {
+%       if ($query->{Attribute}->name =~ /^Search - (.*)$/) {
 %           $name = $1;
 %       } else {
-%           $name = $query->Name;
+%           $name = $query->name;
 %       }
         <li>
             <% loc($name, $fields{'Rows'}) %>
@@ -244,9 +244,9 @@ if (defined $ARGS{Save}) {
             Content     => \%fields,
         );
         if ($val) {
-            push @results, loc("Subscribed to dashboard [_1]", $DashboardObj->Name);
+            push @results, loc("Subscribed to dashboard [_1]", $DashboardObj->name);
             push @results, loc("Warning: you have no email address set, so you will not receive this dashboard until you have it set")
-                unless Jifty->web->current_user->EmailAddress;
+                unless Jifty->web->current_user->email;
         }
         else {
             push @results, loc('Subscription could not be created: [_1]', $msg);
@@ -255,10 +255,10 @@ if (defined $ARGS{Save}) {
 }
 
 if ($SubscriptionObj->Id) {
-    $title = loc("Modify the subscription to dashboard [_1]", $DashboardObj->Name);
+    $title = loc("Modify the subscription to dashboard [_1]", $DashboardObj->name);
 }
 else {
-    $title = loc("Subscribe to dashboard [_1]", $DashboardObj->Name);
+    $title = loc("Subscribe to dashboard [_1]", $DashboardObj->name);
 }
 
 </%INIT>

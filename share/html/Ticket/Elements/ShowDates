@@ -65,10 +65,10 @@
   <tr>
     <td class="label date due"><&|/l&>Due</&>:</td>
 % my $due = $Ticket->due_obj;
-% if ( $due && $due->Unix > 0 && $due->Diff < 0 ) {
-    <td class="value date due"><span class="overdue"><% $due->AsString  %></span></td>
+% if ( $due && $due->unix > 0 && $due->diff < 0 ) {
+    <td class="value date due"><span class="overdue"><% $due->as_string  %></span></td>
 % } else {
-    <td class="value date due"><% $due->AsString  %></td>
+    <td class="value date due"><% $due->as_string  %></td>
 % }
   </tr>
   <tr>

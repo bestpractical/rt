@@ -60,28 +60,28 @@ my $COLUMN_MAP = {
     Queue => {
         title     => 'Queue',
         value     => sub {
-            return $_[0]->QueueObj->Name if $_[0]->Queue;
+            return $_[0]->queue_obj->name if $_[0]->queue;
             return $_[0]->loc('Global');
         },
     },
     Condition => {
         title     => 'Condition',
-        value     => sub { return $_[0]->loc( $_[0]->ScripConditionObj->Name ) },
+        value     => sub { return $_[0]->loc( $_[0]->ScripConditionObj->name ) },
     },
     Action => {
         title     => 'Action',
-        value     => sub { return $_[0]->loc( $_[0]->ScripActionObj->Name ) },
+        value     => sub { return $_[0]->loc( $_[0]->ScripActionObj->name ) },
     },
     Template => {
         title     => 'Template',
-        value     => sub { return $_[0]->loc( $_[0]->TemplateObj->Name ) },
+        value     => sub { return $_[0]->loc( $_[0]->template_obj->name ) },
     },
     Autodescription => {
         title     => 'Condition, Action and Template',
         value     => sub { return $_[0]->loc( "[_1] [_2] with template [_3]",
-            $_[0]->loc($_[0]->ConditionObj->Name),
-            $_[0]->loc($_[0]->ActionObj->Name),
-            $_[0]->loc($_[0]->TemplateObj->Name),
+            $_[0]->loc($_[0]->condition_obj->name),
+            $_[0]->loc($_[0]->action_obj->name),
+            $_[0]->loc($_[0]->template_obj->name),
         ) },
     },
 };

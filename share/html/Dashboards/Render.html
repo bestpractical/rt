@@ -94,7 +94,7 @@ for my $sub (Jifty->web->current_user->user_object->attributes->named('Subscript
 }
 
 my $rows = $Loaded ? $SubscriptionObj->SubValue('Rows') : 20;
-my $title = $DashboardObj->Name;
+my $title = $DashboardObj->name;
 
 </%INIT>
 <%ARGS>

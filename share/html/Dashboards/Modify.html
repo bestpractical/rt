@@ -64,7 +64,7 @@
 <tr><td align="right">
 <&|/l&>Name</&>:
 </td>
-<td><input name="Name" value="<%$Dashboard->Name%>" /></td>
+<td><input name="Name" value="<%$Dashboard->name%>" /></td>
 </tr>
 <tr><td align="right">
 <&|/l&>Privacy</&>:
@@ -119,7 +119,7 @@ else {
     }
 
     if ($id) {
-        $title = loc("Modify the dashboard [_1]", $Dashboard->Name);
+        $title = loc("Modify the dashboard [_1]", $Dashboard->name);
         $current_subtab = 'Dashboards/Modify.html?id=' . $id;
     }	
     # If the create failed

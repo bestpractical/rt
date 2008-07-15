@@ -56,14 +56,14 @@ my $tabs;
 my $real_subtab = $current_subtab;
 if ( $DashboardObj and $DashboardObj->Id ) {
 
-    my $name = $DashboardObj->Name;
+    my $name = $DashboardObj->name;
 
     my $modify  = "Dashboards/Modify.html?id=" . $DashboardObj->Id;
     my $queries = "Dashboards/Queries.html?id=" . $DashboardObj->Id;
     my $render  = "Dashboards/" . $DashboardObj->Id . "/$name";
 
     $tabs->{"this"} = {
-        title   => $DashboardObj->Name,
+        title   => $DashboardObj->name,
         path    => $modify,
         current_subtab  => $current_subtab,
         subtabs => {

@@ -246,7 +246,7 @@ sub find_transactions {
     $txns->Limit(
         FIELD    => 'Created',
         OPERATOR => '>',
-        VALUE    => $since_date->ISO
+        VALUE    => $since_date->iso
     );
 
     # Next limit to ticket transactions.
@@ -261,10 +261,10 @@ sub find_transactions {
 
     while ( my $txn = $txns->Next ) {
         my $ticket = $txn->Ticket;
-        my $queue  = $txn->TicketObj->QueueObj->Name;
+        my $queue  = $txn->ticket_obj->queue_obj->name;
         # Xxx todo - may clobber if two queues have the same name
         foreach my $user ( $txn->DeferredRecipients($frequency) ) {
-            $all_digest->{$user}->{$queue}->{$ticket}->{ $txn->id } = $txn->ContentObj;
+            $all_digest->{$user}->{$queue}->{$ticket}->{ $txn->id } = $txn->content_obj;
             $sent_transactions->{$user}->{ $txn->id } = $txn;
         }
     }
@@ -283,7 +283,7 @@ sub build_digest_for_user {
     # behalf?
     my $user_obj = RT::Model::User->new( RT->SystemUser );
     $user_obj->LoadByEmail($user);
-    if ( $user_obj->PrincipalObj->Disabled ) {
+    if ( $user_obj->principal_object->Disabled ) {
         print STDERR loc("Skipping disabled user") . " $user\n";
         next;
     }
@@ -300,7 +300,7 @@ sub build_digest_for_user {
             # Spit out the index entry for this ticket.
             my $ticket_title = sprintf(
                 "#%d %s [%s]\t%s\n",
-                $ticket, $ticket_obj->Status, $ticket_obj->OwnerObj->Name,
+                $ticket, $ticket_obj->Status, $ticket_obj->owner_obj->name,
                 $ticket_obj->Subject
             );
             $contents_list .= $ticket_title;
@@ -323,7 +323,7 @@ sub build_digest_for_user {
                         Value  => $txn_obj->Created
                     );
                     $date = strftime( '%a, %d %b %Y %H:%M:%S %z',
-                        @{ [ localtime( $date_obj->Unix ) ] } );
+                        @{ [ localtime( $date_obj->unix ) ] } );
                 }
                 $contents_body .= "Date: $date\n\n";
                 $contents_body .= $msg->Content . "\n";

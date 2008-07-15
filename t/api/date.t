@@ -391,9 +391,9 @@ my $year = (localtime(time))[5] + 1900;
 # XXX: TODO, doesn't work with Test::Warn
 #    TODO: {
 #        local $TODO = "BUG or subject to change Date handling to support unix time <= 0";
-#        $date->Unix(0);
+#        $date->unix(0);
 #        $date->AddSeconds(-2);
-#        ok($date->Unix > 0);
+#        ok($date->unix > 0);
 #    }
 
     $date->unix(0);

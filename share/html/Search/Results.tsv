@@ -81,7 +81,7 @@ while ( my $Ticket = $Tickets->next()) {
             $row->{$attr} = "";
         } else {
             my $method = '$Ticket->'.$attr.'()';
-            $method =~ s/->ISO\(\)$/->ISO( Timezone => 'user' )/;
+            $method =~ s/->iso\(\)$/->iso( Timezone => 'user' )/;
             $row->{$attr} = eval $method;
             if ($@) {die "Failed to find $attr - ". $@}; 
         }

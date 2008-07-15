@@ -126,7 +126,7 @@ sub UpdateAttribute {
     if ( $status && $args->{'Name'} ) {
         ( $status, $msg ) =
           $self->{'Attribute'}->set_description( $args->{'Name'} )
-          unless $self->Name eq $args->{'Name'};
+          unless $self->name eq $args->{'Name'};
     }
 
     if ( $status && $args->{'Privacy'} ) {
