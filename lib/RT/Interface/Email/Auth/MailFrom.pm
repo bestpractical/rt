@@ -54,8 +54,8 @@ sub get_current_user {
     my %args = (
         message      => undef,
         current_user => undef,
-        AuthLevel    => undef,
-        Ticket       => undef,
+        auth_level    => undef,
+        ticket       => undef,
         queue        => undef,
         action       => undef,
         @_
