@@ -108,6 +108,10 @@ sub limit_to_privacy {
             my $search = RT::SavedSearch->new;
             $search->load( $privacy, $att->id );
 
+#           XXX TODO get rid of already deleted ones
+#           I think it's because of a cache bug
+            next unless $search->id; 
+
             next if $type && $search->type ne $type;
             push( @{ $self->{'objects'} }, $search );
         }
