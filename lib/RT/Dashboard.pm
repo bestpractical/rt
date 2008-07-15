@@ -92,108 +92,108 @@ $RT::System::RIGHTS = { %$RT::System::RIGHTS, %new_rights };
 %RT::Model::ACE::LOWERCASERIGHTNAMES =
   ( %RT::Model::ACE::LOWERCASERIGHTNAMES, map { lc($_) => $_ } keys %new_rights );
 
-=head2 ObjectName
+=head2 object_name
 
 An object of this class is called "dashboard"
 
 =cut
 
-sub ObjectName { "dashboard" }
+sub object_name { "dashboard" }
 
-sub SaveAttribute {
+sub save_attribute {
     my $self   = shift;
     my $object = shift;
     my $args   = shift;
 
-    return $object->AddAttribute(
-        'Name'        => 'Dashboard',
-        'description' => $args->{'Name'},
-        'Content'     => { Searches => $args->{'Searches'} },
+    return $object->add_attribute(
+        'name'        => 'Dashboard',
+        'description' => $args->{'name'},
+        'content'     => { Searches => $args->{'searches'} },
     );
 }
 
-sub UpdateAttribute {
+sub update_attribute {
     my $self = shift;
     my $args = shift;
 
     my ( $status, $msg ) = ( 1, undef );
-    if ( defined $args->{'Searches'} ) {
+    if ( defined $args->{'searches'} ) {
         ( $status, $msg ) =
-          $self->{'Attribute'}
-          ->SetSubValues( Searches => $args->{'Searches'}, );
+          $self->{'attribute'}
+          ->set_sub_values( searches => $args->{'searches'}, );
     }
 
-    if ( $status && $args->{'Name'} ) {
+    if ( $status && $args->{'name'} ) {
         ( $status, $msg ) =
-          $self->{'Attribute'}->set_description( $args->{'Name'} )
-          unless $self->name eq $args->{'Name'};
+          $self->{'attribute'}->set_description( $args->{'name'} )
+          unless $self->name eq $args->{'name'};
     }
 
-    if ( $status && $args->{'Privacy'} ) {
-        my ( $new_obj_type, $new_obj_id ) = split /-/, $args->{'Privacy'};
-        my ( $obj_type,     $obj_id )     = split /-/, $self->Privacy;
+    if ( $status && $args->{'privacy'} ) {
+        my ( $new_obj_type, $new_obj_id ) = split /-/, $args->{'privacy'};
+        my ( $obj_type,     $obj_id )     = split /-/, $self->privacy;
 
-        my $attr = $self->{'Attribute'};
+        my $attr = $self->{'attribute'};
         if ( $new_obj_type ne $obj_type ) {
-            ( $status, $msg ) = $attr->SetObjectType($new_obj_type);
+            ( $status, $msg ) = $attr->set_object_type($new_obj_type);
         }
         if ( $status && $new_obj_id != $obj_id ) {
-            ( $status, $msg ) = $attr->SetObjectId($new_obj_id);
+            ( $status, $msg ) = $attr->set_object_id($new_obj_id);
         }
-        $self->{'Privacy'} = $args->{'Privacy'} if $status;
+        $self->{'privacy'} = $args->{'privacy'} if $status;
     }
 
     return ( $status, $msg );
 }
 
-=head2 Searches
+=head2 searches
 
 Returns a list of loaded saved searches
 
 =cut
 
-sub Searches {
+sub searches {
     my $self = shift;
     return map {
-        my $search = RT::SavedSearch->new( $self->CurrentUser );
-        $search->Load( $_->[0], $_->[1] );
+        my $search = RT::SavedSearch->new( current_user => $self->current_user );
+        $search->load( $_->[0], $_->[1] );
         $search
-    } $self->SearchIds;
+    } $self->search_ids;
 }
 
-=head2 SearchIds
+=head2 search_ids
 
 Returns a list of array references, each being a saved-search privacy, ID, and
 description
 
 =cut
 
-sub SearchIds {
+sub search_ids {
     my $self = shift;
-    return unless ref( $self->{'Attribute'} ) eq 'RT::Model::Attribute';
-    return @{ $self->{'Attribute'}->SubValue('Searches') || [] };
+    return unless ref( $self->{'attribute'} ) eq 'RT::Model::Attribute';
+    return @{ $self->{'attribute'}->sub_value('searches') || [] };
 }
 
-=head2 SearchPrivacies
+=head2 search_privacies
 
 Returns a list of array references, each one being suitable to pass to
 /Elements/ShowSearch.
 
 =cut
 
-sub SearchPrivacies {
+sub search_privacies {
     my $self = shift;
-    return map { [ $self->SearchPrivacy(@$_) ] } $self->SearchIds;
+    return map { [ $self->search_privacy(@$_) ] } $self->search_ids;
 }
 
-=head2 SearchPrivacy TYPE, ID, DESC
+=head2 search_privacy TYPE, ID, DESC
 
 Returns an array for one saved search, suitable for passing to
 /Elements/ShowSearch.
 
 =cut
 
-sub SearchPrivacy {
+sub search_privacy {
     my $self = shift;
     my ( $type, $id, $desc ) = @_;
     if ( $type eq 'RT::System' ) {
@@ -203,7 +203,7 @@ sub SearchPrivacy {
     return SavedSearch => join( '-', $type, 'SavedSearch', $id );
 }
 
-=head2 PossibleHiddenSearches
+=head2 possible_hidden_searches
 
 This will return a list of saved searches that are potentially not visible by
 all users for whom the dashboard is visible. You may pass in a privacy to
@@ -211,54 +211,54 @@ use instead of the dashboard's privacy.
 
 =cut
 
-sub PossibleHiddenSearches {
+sub possible_hidden_searches {
     my $self = shift;
-    my $privacy = shift || $self->Privacy;
+    my $privacy = shift || $self->privacy;
 
-    return grep { !$_->IsVisibleTo($privacy) } $self->Searches;
+    return grep { !$_->is_visible_to($privacy) } $self->searches;
 }
 
-# _PrivacyObjects: returns a list of objects that can be used to load
+# _privacy_objects: returns a list of objects that can be used to load
 # dashboards from. If the Modify parameter is true, then check modify rights.
 # If the Create parameter is true, then check create rights. Otherwise, check
 # read rights.
 
-sub _PrivacyObjects {
+sub _privacy_objects {
     my $self = shift;
     my %args = @_;
 
-    my $CurrentUser = $self->CurrentUser;
+    my $CurrentUser = $self->current_user;
     my @objects;
 
     my $prefix =
-        $args{Modify} ? "Modify"
-      : $args{Create} ? "Create"
+        $args{modify} ? "Modify"
+      : $args{create} ? "Create"
       :                 "See";
 
     push @objects, $CurrentUser->user_object
-      if $self->CurrentUser->HasRight(
+      if $self->current_user->has_right(
         Right  => "${prefix}OwnDashboard",
         Object => $RT::System,
       );
 
     my $groups = RT::Model::GroupCollection->new( current_user => $CurrentUser );
-    $groups->LimitToUserDefinedGroups;
-    $groups->WithMember(
-        PrincipalId => $CurrentUser->Id,
-        Recursively => 1
+    $groups->limit_to_user_defined_groups;
+    $groups->with_member(
+        principal_id => $CurrentUser->id,
+        recursively => 1
     );
 
     push @objects, grep {
-        $self->CurrentUser->HasRight(
-            Right  => "${prefix}GroupDashboard",
-            Object => $_,
+        $self->current_user->has_right(
+            right  => "${prefix}GroupDashboard",
+            object => $_,
           )
-    } @{ $groups->ItemsArrayRef };
+    } @{ $groups->items_array_ref };
 
     push @objects, RT::System->new( current_user => $CurrentUser )
-      if $CurrentUser->HasRight(
-        Right  => "${prefix}Dashboard",
-        Object => $RT::System,
+      if $CurrentUser->has_right(
+        right  => "${prefix}Dashboard",
+        object => $RT::System,
       );
 
     return @objects;
@@ -266,17 +266,17 @@ sub _PrivacyObjects {
 
 # ACLs
 
-sub _CurrentUserCan {
+sub _current_user_can {
     my $self    = shift;
-    my $privacy = shift || $self->Privacy;
+    my $privacy = shift || $self->privacy;
     my %args    = @_;
 
     if ( !defined($privacy) ) {
-        Jifty->log->debug("No privacy provided to $self->_CurrentUserCan");
+        Jifty->log->debug("No privacy provided to $self->_current_user_can");
         return 0;
     }
 
-    my $object = $self->_GetObject($privacy);
+    my $object = $self->_get_object($privacy);
     return 0 unless $object;
 
     my $level;
@@ -292,7 +292,7 @@ sub _CurrentUserCan {
     # users are mildly special-cased, since we actually have to check that
     # the user is operating on himself
     if ( $object->isa('RT::Model::User') ) {
-        return 0 unless $object->Id == $self->CurrentUser->Id;
+        return 0 unless $object->id == $self->current_user->id;
     }
 
     my $right = $args{FullRight}
@@ -301,50 +301,45 @@ sub _CurrentUserCan {
     # all rights, except group rights, are global
     $object = $RT::System unless $object->isa('RT::Model::Group');
 
-    return $self->CurrentUser->HasRight(
-        Right  => $right,
-        Object => $object,
+    return $self->current_user->has_right(
+        right  => $right,
+        object => $object,
     );
 }
 
-sub CurrentUserCanSee {
+sub current_user_can_see {
     my $self    = shift;
     my $privacy = shift;
 
-    $self->_CurrentUserCan( $privacy, Right => 'See' );
+    $self->_current_user_can( $privacy, right => 'See' );
 }
 
-sub CurrentUserCanCreate {
+sub current_user_can_create {
     my $self    = shift;
     my $privacy = shift;
 
-    $self->_CurrentUserCan( $privacy, Right => 'Create' );
+    $self->_current_user_can( $privacy, right => 'Create' );
 }
 
-sub CurrentUserCanModify {
+sub current_user_can_modify {
     my $self    = shift;
     my $privacy = shift;
 
-    $self->_CurrentUserCan( $privacy, Right => 'Modify' );
+    $self->_current_user_can( $privacy, right => 'Modify' );
 }
 
-sub CurrentUserCanDelete {
+sub current_user_can_delete {
     my $self    = shift;
     my $privacy = shift;
 
-    $self->_CurrentUserCan( $privacy, Right => 'Delete' );
+    $self->_current_user_can( $privacy, right => 'Delete' );
 }
 
-sub CurrentUserCanSubscribe {
+sub current_user_can_subscribe {
     my $self    = shift;
     my $privacy = shift;
 
-    $self->_CurrentUserCan( $privacy, FullRight => 'SubscribeDashboard' );
+    $self->_current_user_can( $privacy, full_right => 'SubscribeDashboard' );
 }
-
-eval "require RT::Dashboard_Vendor";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Dashboard_Vendor.pm} );
-eval "require RT::Dashboard_Local";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Dashboard_Local.pm} );
 
 1;
