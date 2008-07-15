@@ -61,7 +61,7 @@ while (my $attr = $Object->Attributes->Next) {
         my ($ok, $msg) = $dashboard->Load($privacy, $attr->id);
 
         if (!$ok) {
-            $RT::Logger->debug("Unable to load dashboard $ok (privacy $privacy): $msg");
+            Jifty->log->debug("Unable to load dashboard $ok (privacy $privacy): $msg");
             next;
         }
 

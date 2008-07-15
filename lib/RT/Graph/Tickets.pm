@@ -206,7 +206,7 @@ sub _PropertiesToFields {
     foreach my $property (@properties) {
         my ( $key, @subkeys ) = $self->_SplitProperty($property);
         unless ( $property_cb{$key} ) {
-            $RT::Logger->error(
+            Jifty->log->error(
 "Couldn't find property handler for '$key' and '@subkeys' subkeys"
             );
             next;
@@ -254,7 +254,7 @@ sub AddTicket {
             $value = $property_cb{$key}->( $args{'Ticket'}, @subkeys );
         }
         else {
-            $RT::Logger->error("Couldn't find property callback for '$key'");
+            Jifty->log->error("Couldn't find property callback for '$key'");
         }
         if ( defined $value && length $value && $value =~ /\S/ ) {
             my $fill = $fill_cache{$value};

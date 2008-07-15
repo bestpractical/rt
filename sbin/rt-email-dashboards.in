@@ -116,8 +116,8 @@ if ($opts{'help'}) {
 # helper functions
 sub verbose  { print loc(@_), "\n" if $opts{verbose} || $opts{verbose}; 1 }
 sub debug    { print loc(@_), "\n" if $opts{debug}; 1 }
-sub error    { $RT::Logger->error(loc(@_)); verbose(@_); 1 }
-sub warning  { $RT::Logger->warning(loc(@_)); verbose(@_); 1 }
+sub error    { Jifty->log->error(loc(@_)); verbose(@_); 1 }
+sub warning  { Jifty->log->warn(loc(@_)); verbose(@_); 1 }
 
 my $now = $opts{epoch} || time;
 verbose "Using time [_1]", scalar localtime($now);

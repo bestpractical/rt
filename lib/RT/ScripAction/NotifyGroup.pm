@@ -107,15 +107,15 @@ sub _HandleArgument {
     my $obj = RT::Principal->new($RT::SystemUser);
     $obj->Load($instance);
     unless ( $obj->id ) {
-        $RT::Logger->error("Couldn't load principal #$instance");
+        Jifty->log->error("Couldn't load principal #$instance");
         return;
     }
     if ( $obj->Disabled ) {
-        $RT::Logger->info("Principal #$instance is disabled => skip");
+        Jifty->log->info("Principal #$instance is disabled => skip");
         return;
     }
     if ( !$obj->PrincipalType ) {
-        $RT::Logger->crit("Principal #$instance has empty type");
+        Jifty->log->crit("Principal #$instance has empty type");
     }
     elsif ( lc $obj->PrincipalType eq 'user' ) {
         $self->__HandleUserArgument( $obj->Object );
@@ -124,7 +124,7 @@ sub _HandleArgument {
         $self->__HandleGroupArgument( $obj->Object );
     }
     else {
-        $RT::Logger->info("Principal #$instance has unsupported type");
+        Jifty->log->info("Principal #$instance has unsupported type");
     }
     return;
 }
@@ -135,7 +135,7 @@ sub __HandleUserArgument {
 
     my $uea = $obj->EmailAddress;
     unless ($uea) {
-        $RT::Logger->warning( "User #" . $obj->id . " has no email address" );
+        Jifty->log->warn( "User #" . $obj->id . " has no email address" );
         return;
     }
     $self->__PushUserAddress($uea);

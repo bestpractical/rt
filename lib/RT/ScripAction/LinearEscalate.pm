@@ -159,25 +159,25 @@ sub Prepare {
 
     my $due = $ticket->DueObj->Unix;
     unless ( $due > 0 ) {
-        $RT::Logger->debug('Due is not set. Not escalating.');
+        Jifty->log->debug('Due is not set. Not escalating.');
         return 1;
     }
 
     my $priority_range = $ticket->FinalPriority - $ticket->InitialPriority;
     unless ($priority_range) {
-        $RT::Logger->debug(
+        Jifty->log->debug(
             'Final and Initial priorities are equal. Not escalating.');
         return 1;
     }
 
     if ( $ticket->Priority >= $ticket->FinalPriority && $priority_range > 0 ) {
-        $RT::Logger->debug(
+        Jifty->log->debug(
             'Current priority is greater than final. Not escalating.');
         return 1;
     }
     elsif ( $ticket->Priority <= $ticket->FinalPriority && $priority_range < 0 )
     {
-        $RT::Logger->debug(
+        Jifty->log->debug(
             'Current priority is lower than final. Not escalating.');
         return 1;
     }
@@ -193,7 +193,7 @@ sub Prepare {
 
     # do nothing if we didn't reach starts or created date
     if ( $starts > $now ) {
-        $RT::Logger->debug('Starts(Created) is in future. Not escalating.');
+        Jifty->log->debug('Starts(Created) is in future. Not escalating.');
         return 1;
     }
 
@@ -227,16 +227,16 @@ sub Commit {
         my $arg = $self->Argument || '';
         if ( $arg =~ /RecordTransaction:\s*(\d+)/i ) {
             $record = $1;
-            $RT::Logger->debug("Overrode RecordTransaction: $record");
+            Jifty->log->debug("Overrode RecordTransaction: $record");
         }
         if ( $arg =~ /UpdateLastUpdated:\s*(\d+)/i ) {
             $update = $1;
-            $RT::Logger->debug("Overrode UpdateLastUpdated: $update");
+            Jifty->log->debug("Overrode UpdateLastUpdated: $update");
         }
         $update = 1 if $record;
     }
 
-    $RT::Logger->debug( 'Linearly escalating priority of ticket #'
+    Jifty->log->debug( 'Linearly escalating priority of ticket #'
           . $ticket->Id
           . ' from '
           . $ticket->Priority . ' to '
@@ -267,7 +267,7 @@ sub Commit {
     }
 
     unless ($val) {
-        $RT::Logger->error("Couldn't set new priority value: $msg");
+        Jifty->log->error("Couldn't set new priority value: $msg");
         return ( 0, $msg );
     }
     return 1;

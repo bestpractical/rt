@@ -272,7 +272,7 @@ sub _CurrentUserCan {
     my %args    = @_;
 
     if ( !defined($privacy) ) {
-        $RT::Logger->debug("No privacy provided to $self->_CurrentUserCan");
+        Jifty->log->debug("No privacy provided to $self->_CurrentUserCan");
         return 0;
     }
 
@@ -285,7 +285,7 @@ sub _CurrentUserCan {
     elsif ( $object->isa('RT::Group') )  { $level = 'Group' }
     elsif ( $object->isa('RT::System') ) { $level = '' }
     else {
-        $RT::Logger->error("Unknown object $object from privacy $privacy");
+        Jifty->log->error("Unknown object $object from privacy $privacy");
         return 0;
     }
 
