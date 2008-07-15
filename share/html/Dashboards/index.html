@@ -73,7 +73,7 @@
 my $title = loc("Dashboards");
 use RT::Dashboard;
 
-my @objs = RT::Dashboard->new(Jifty->web->current_user)->_PrivacyObjects;
+my @objs = RT::Dashboard->new(Jifty->web->current_user)->_privacy_objects;
 my $dashboards = $m->comp("/Dashboards/Elements/DashboardsForObjects", Objects => \@objs);
 
 my @actions;

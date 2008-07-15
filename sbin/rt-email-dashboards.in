@@ -129,7 +129,7 @@ debug "Sending email from [_1]", $from;
 my $Users = RT::Model::UserCollection->new(RT->system_user);
 $Users->LimitToPrivileged;
 
-while (defined(my $user = $Users->Next)) {
+while (defined(my $user = $Users->next)) {
     if ($user->principal_object->Disabled) {
         debug "Skipping over "
             . $user->name
@@ -154,7 +154,7 @@ while (defined(my $user = $Users->Next)) {
 
     # look through this user's subscriptions, are any supposed to be generated
     # right now?
-    for my $subscription ($user->Attributes->Named('Subscription')) {
+    for my $subscription ($user->attributes->Named('Subscription')) {
 
         if (!$opts{all}) {
             debug "Checking against subscription with frequency [_1], hour [_2], dow [_3], dom [_4]", $subscription->SubValue('Frequency'), $subscription->SubValue('Hour'), $subscription->SubValue('Dow'), $subscription->SubValue('Dom');

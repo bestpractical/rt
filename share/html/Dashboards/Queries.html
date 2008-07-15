@@ -102,7 +102,7 @@ for ($Dashboard->SearchIds) {
 my $sys = RT::System->new(Jifty->web->current_user);
 my @objs = ($sys);
 
-push @objs, RT::SavedSearches->new( Jifty->web->current_user )->_PrivacyObjects
+push @objs, RT::SavedSearches->new( Jifty->web->current_user )->_privacy_objects
     if Jifty->web->current_user->HasRight( Right  => 'LoadSavedSearch',
                                           Object => $RT::System );
 

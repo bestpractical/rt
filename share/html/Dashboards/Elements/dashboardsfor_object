@@ -55,7 +55,7 @@ use RT::Dashboard;
 my @dashboards;
 my $privacy = RT::Dashboard->_build_privacy($object);
 
-while (my $attr = $object->Attributes->next) {
+while (my $attr = $object->attributes->next) {
     if ($attr->name =~ /^Dashboard\b/) {
         my $dashboard = RT::Dashboard->new();
         my ($ok) = $dashboard->load($privacy, $attr->id);

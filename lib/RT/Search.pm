@@ -57,7 +57,7 @@
     my $foo = RT::Search->new(argument => $arg,
                               tickets_obj => $tickets);
     $foo->prepare();
-    while ( my $ticket = $foo->Next ) {
+    while ( my $ticket = $foo->next ) {
         # Do something with each ticket we've found
     }
 

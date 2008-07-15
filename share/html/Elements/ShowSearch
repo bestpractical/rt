@@ -107,9 +107,9 @@ if ($SavedSearch) {
 
 # ProcessedSearchArg is a search with overridings, but for link we use
 # orginal search's poperties
+$SearchArg ||= {};
 my $ProcessedSearchArg = $SearchArg;
 $ProcessedSearchArg = { %$SearchArg, %Override } if keys %Override;
-
 $m->callback(
     %ARGS,
     Callbackname  => 'ModifySearch',

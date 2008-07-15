@@ -85,7 +85,7 @@ $feed->add_properties('calscale' => ['gregorian']);
 $feed->add_properties('method'   => ['publish']);
 $feed->add_properties('prodid'   => ["-//" . RT->config->get('rtname') ."//"]);
 
-while (my $t = $tickets->Next) {
+while (my $t = $tickets->next) {
     next unless $t->due_obj->unix > 0;
 
     my $starttime = $t->starts_obj->unix > 0 ? $t->starts_obj : $t->created_obj;

@@ -100,7 +100,7 @@ $tabs->{"A"} = { title => loc('Select dashboard'),
                  path  => "Dashboards/index.html" };
 
 my $dashboard = RT::Dashboard->new(Jifty->web->current_user);
-my @objects = $dashboard->_PrivacyObjects(Create => 1);
+my @objects = $dashboard->_privacy_objects(Create => 1);
 
 if (@objects) {
     $tabs->{"B"} = { title     => loc('New dashboard'),

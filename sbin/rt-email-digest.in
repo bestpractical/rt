@@ -259,7 +259,7 @@ sub find_transactions {
     my $all_digest        = {};
     my $sent_transactions = {};
 
-    while ( my $txn = $txns->Next ) {
+    while ( my $txn = $txns->next ) {
         my $ticket = $txn->Ticket;
         my $queue  = $txn->ticket_obj->queue_obj->name;
         # Xxx todo - may clobber if two queues have the same name

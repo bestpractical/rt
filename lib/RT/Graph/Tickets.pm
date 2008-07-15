@@ -165,7 +165,7 @@ sub TicketProperties {
     $cfs->LimitToLookupType('RT::Model::Queue-RT::Model::Ticket');
     $cfs->OrderBy( FIELD => 'Name' );
     my ( $first, %seen ) = (1);
-    while ( my $cf = $cfs->Next ) {
+    while ( my $cf = $cfs->next ) {
         next if $seen{ lc $cf->name }++;
         next if $cf->Type eq 'Image';
         if ($first) {
@@ -325,7 +325,7 @@ sub TicketLinks {
     foreach my $type ( $args{'LeadingLink'}, @{ $args{'ShowLinks'} } ) {
         my $links = $args{'Ticket'}->$type();
         $links->GotoFirstItem;
-        while ( my $link = $links->Next ) {
+        while ( my $link = $links->next ) {
             next if $args{'SeenEdge'}{ $link->id }++;
 
             my $target = $link->target_obj;

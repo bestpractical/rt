@@ -183,7 +183,7 @@ elsif ( $ARGS{'SavedSearchDelete'} ) {
 }
 elsif ( $ARGS{'SavedSearchCopy'} ) {
     my ($container, $id ) = _parse_saved_search( $ARGS{'SavedSearchid'} );
-    $SavedSearch->{'object'} = $container->Attributes->Withid( $id );
+    $SavedSearch->{'object'} = $container->attributes->Withid( $id );
     if ( $ARGS{'saved_search_description'} && $ARGS{'saved_search_description'} ne $SavedSearch->{'object'}->description ) {
         $SavedSearch->{'description'} = $ARGS{'saved_search_description'};
     } else {

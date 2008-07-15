@@ -58,7 +58,7 @@
 <%INIT>
 use RT::Dashboard;
 
-my @objs = RT::Dashboard->new(Jifty->web->current_user)->_PrivacyObjects(ShowSystem => 1);
+my @objs = RT::Dashboard->new(Jifty->web->current_user)->_privacy_objects(ShowSystem => 1);
 my $dashboard_map = $m->comp("/Dashboards/Elements/DashboardsForObjects", Objects => \@objs);
 
 my @dashboards = (
