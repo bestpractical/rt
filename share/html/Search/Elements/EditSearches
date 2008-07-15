@@ -165,9 +165,9 @@ if ( $ARGS{'SavedSearchLoad'} ) {
 
     if ( $ARGS{'SavedSearchRevert'} ) {
         push @results, _('Loaded original "%1" saved search', $SavedSearch->{'description'} );
-+     } else {
-+         push @results, _('Loaded saved search "%1"', $SavedSearch->{'description'} );
-+     }
+    } else {
+        push @results, _('Loaded saved search "%1"', $SavedSearch->{'description'} );
+    }
 }
 elsif ( $ARGS{'SavedSearchDelete'} ) {
     # We set $SearchId to 'new' above already, so peek into the %ARGS

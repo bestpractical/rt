@@ -70,7 +70,7 @@ if ($SavedSearch) {
     }
     $search = $container_object->attributes->with_id($search_id);
     unless ( $search->id && ref( $SearchArg = $search->content ) eq 'HASH' ) {
-+         $m->out(loc("Saved Search %1 not found", $SavedSearch)) unless $IgnoreMissing;
+         $m->out(loc("Saved Search %1 not found", $SavedSearch)) unless $IgnoreMissing;
         return;
     }
     $SearchArg->{'search_type'} ||= 'Ticket';
