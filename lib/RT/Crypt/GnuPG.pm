@@ -1047,7 +1047,7 @@ sub verify_decrypt {
     return @res;
 }
 
-sub VerifyInline { return decrypt_inline(@_) }
+sub verify_inline { return decrypt_inline(@_) }
 
 sub verify_attachment {
     my %args = ( data => undef, signature => undef, top => undef, @_ );
@@ -1226,26 +1226,26 @@ sub decrypt_inline {
     my %opt = RT->config->get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init(
-        _PrepareGnuPGOptions( %opt ),
+        _prepare_gnupg_options( %opt ),
         meta_interactive => 0,
     );
 
-    if ( $args{'Data'}->bodyhandle->is_encoded ) {
+    if ( $args{'data'}->bodyhandle->is_encoded ) {
         require RT::EmailParser;
-        RT::EmailParser->_DecodeBody($args{'Data'});
+        RT::EmailParser->_decode_body($args{'data'});
     }
 
     # handling passphrase in GnuPGOptions
-    $args{'Passphrase'} = delete $opt{'passphrase'}
-        if !defined($args{'Passphrase'});
+    $args{'passphrase'} = delete $opt{'passphrase'}
+        if !defined($args{'passphrase'});
 
-    $args{'Passphrase'} = get_passphrase()
-        unless defined $args{'Passphrase'};
+    $args{'passphrase'} = get_passphrase()
+        unless defined $args{'passphrase'};
 
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
 
-    my $io = $args{'Data'}->open('r');
+    my $io = $args{'data'}->open('r');
     unless ( $io ) {
         die "Entity has no body, never should happen";
     }
@@ -1261,7 +1261,7 @@ sub decrypt_inline {
             seek $block_fh, 0, 0;
 
             my ($res_fh, $res_fn);
-            ($res_fh, $res_fn, %res) = _DecryptInlineBlock(
+            ($res_fh, $res_fn, %res) = _decrypt_inline_block(
                 %args,
                 gnupg => $gnupg,
                 block_handle => $block_fh,
@@ -1290,8 +1290,8 @@ sub decrypt_inline {
     $io->close;
 
     seek $tmp_fh, 0, 0;
-    $args{'Data'}->bodyhandle( new MIME::Body::File $tmp_fn );
-    $args{'Data'}->{'__store_tmp_handle_to_avoid_early_cleanup'} = $tmp_fh;
+    $args{'data'}->bodyhandle( new MIME::Body::File $tmp_fn );
+    $args{'data'}->{'__store_tmp_handle_to_avoid_early_cleanup'} = $tmp_fh;
     return %res;
 }
 
@@ -1302,13 +1302,13 @@ sub _decrypt_inline_block {
         passphrase => undef,
         @_
     );
-    my $gnupg = $args{'GnuPG'};
+    my $gnupg = $args{'gnupg'};
 
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
 
     my ($handles, $handle_list) = _make_gpg_handles(
-            stdin => $args{'BlockHandle'}, 
+            stdin => $args{'block_handle'}, 
             stdout => $tmp_fh);
     my %handle = %$handle_list;
     $handles->options( 'stdout' )->{'direct'} = 1;
@@ -1317,7 +1317,7 @@ sub _decrypt_inline_block {
     my %res;
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
-        $gnupg->passphrase( $args{'Passphrase'} );
+        $gnupg->passphrase( $args{'passphrase'} );
         my $pid = safe_run_child { $gnupg->decrypt( handles => $handles ) };
         waitpid $pid, 0;
     };
@@ -1327,9 +1327,9 @@ sub _decrypt_inline_block {
         delete $res{$_} unless $res{$_} && $res{$_} =~ /\S/s;
         close $handle{$_};
     }
-    $RT::Logger->debug( $res{'status'} ) if $res{'status'};
-    $RT::Logger->warning( $res{'stderr'} ) if $res{'stderr'};
-    $RT::Logger->error( $res{'logger'} ) if $res{'logger'} && $?;
+    Jifty->log->debug( $res{'status'} ) if $res{'status'};
+    Jifty->log->warning( $res{'stderr'} ) if $res{'stderr'};
+    Jifty->log->error( $res{'logger'} ) if $res{'logger'} && $?;
 
     # if the decryption is fine but the signature is bad, then without this
     # status check we lose the decrypted text
@@ -1356,19 +1356,19 @@ sub decrypt_attachment {
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
     $opt{'digest-algo'} ||= 'SHA1';
-    $gnupg->options->hash_init( _PrepareGnuPGOptions(%opt),
+    $gnupg->options->hash_init( _prepare_gnupg_options(%opt),
         meta_interactive => 0, );
 
     if ( $args{'data'}->bodyhandle->is_encoded ) {
         require RT::EmailParser;
-        RT::EmailParser->_DecodeBody( $args{'data'} );
+        RT::EmailParser->_decode_body( $args{'data'} );
     }
 
     # handling passphrase in GnuPGOptions
     $args{'passphrase'} = delete $opt{'passphrase'}
       if !defined( $args{'passphrase'} );
 
-    $args{'passphrase'} = GetPassphrase()
+    $args{'passphrase'} = get_passphrase()
       unless defined $args{'passphrase'};
 
     my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile();
@@ -1376,10 +1376,10 @@ sub decrypt_attachment {
     $args{'data'}->bodyhandle->print($tmp_fh);
     seek $tmp_fh, 0, 0;
 
-    my ( $res_fh, $res_fn, %res ) = _DecryptInlineBlock(
+    my ( $res_fh, $res_fn, %res ) = _decrypt_inline_block(
         %args,
-        GnuPG       => $gnupg,
-        BlockHandle => $tmp_fh,
+        gnupg       => $gnupg,
+        block_handle => $tmp_fh,
     );
     return %res unless $res_fh;
 
@@ -2334,7 +2334,7 @@ sub dry_sign {
 
 1;
 
-=head2 Probe
+=head2 probe
 
 This routine returns true if RT's GnuPG support is configured and working 
 properly (and false otherwise).
@@ -2342,11 +2342,11 @@ properly (and false otherwise).
 
 =cut
 
-sub Probe {
+sub probe {
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
     $gnupg->options->hash_init(
-        _PrepareGnuPGOptions(%opt),
+        _prepare_gnupg_options(%opt),
         armor            => 1,
         meta_interactive => 0,
     );
