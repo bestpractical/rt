@@ -68,7 +68,7 @@
 </tr>
 
 <tr><td align="right"><&|/l&>Subject Tag</&>:</td>
-<td colspan="3"><input name="SubjectTag" value="<% $ARGS{'SubjectTag'} || ($Create ? "" : $queue_obj->SubjectTag || '' ) %>" size="60" /></td>
+<td colspan="3"><input name="SubjectTag" value="<% $ARGS{'SubjectTag'} || ($Create ? "" : $queue_obj->subject_tag || '' ) %>" size="60" /></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Reply Address</&>:</td>
@@ -109,7 +109,8 @@
 </tr>
 % }
 
-<tr><td align="right"><input type="checkbox" class="checkbox" name="enabled" value="1" <%$enabledChecked|n%> /></td>
+<tr><td align="right"><input type="checkbox" class="checkbox" name="enabled"
+value="1" <%$enabled_checked|n%> /></td>
 <td colspan="3"><&|/l&>enabled (Unchecking this box disables this queue)</&><br />
 % $m->callback( %ARGS, queue_obj => $queue_obj, results => \@results );
 </td></tr>
@@ -182,7 +183,7 @@ if ( $queue_obj->id ) {
         Callbackname => 'ProcessLinks'
     );
     push @results, @linkresults;
-    push @results, process_ObjectCustomFieldUpdates( args_ref => \%ARGS, object => $queue_obj );
+    push @results, process_object_custom_field_updates( args_ref => \%ARGS, object => $queue_obj );
 }
 </%INIT>
 

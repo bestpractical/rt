@@ -51,7 +51,8 @@
     titleright => $customize ? _('Edit') : '',
     titleright_href => $customize,
     hideable => $hideable &>
-<& $query_display_component, hideable => $hideable, %$ProcessedSearchArg, ShowNavigation => 0, Class => 'RT::Model::Tickets' &>
+<& $query_display_component, hideable => $hideable, %$ProcessedSearchArg,
+    ShowNavigation => 0, Class => 'RT::Model::TicketCollection' &>
 </&>
 <%init>
 my $search;
@@ -72,13 +73,14 @@ if ($SavedSearch) {
 +         $m->out(loc("Saved Search %1 not found", $SavedSearch)) unless $IgnoreMissing;
         return;
     }
-    $SearchArg->{'SearchType'} ||= 'Ticket';
-    if ( $SearchArg->{SearchType} ne 'Ticket' ) {
+    $SearchArg->{'search_type'} ||= 'Ticket';
+    if ( $SearchArg->{search_type} ne 'Ticket' ) {
 
         # XXX: dispatch to different handler here
         $query_display_component
-            = '/Search/Elements/' . $SearchArg->{SearchType};
-        $query_link_url = RT->config->get('WebURL') . "/Search/$SearchArg->{SearchType}.html";
+            = '/Search/Elements/' . $SearchArg->{search_type};
+        $query_link_url = RT->config->get('WebURL') .
+            "/Search/$SearchArg->{search_type}.html";
     } else {
         $customize = RT->config->get('WebPath') . '/Search/Build.html?'
             . $m->comp( '/Elements/QueryString',

@@ -46,8 +46,8 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-my $bookmarks = $session{'CurrentUser'}->UserObj->FirstAttribute('Bookmarks');
-$bookmarks = $bookmarks->Content if $bookmarks;
+my $bookmarks = $session{'CurrentUser'}->user_object->first_attribute('Bookmarks');
+$bookmarks = $bookmarks->content if $bookmarks;
 $bookmarks ||= {};
 
 if ( $Toggle ) {
@@ -56,7 +56,7 @@ if ( $Toggle ) {
     } else {
         $bookmarks->{ $id } = 1;
     }
-    $session{'CurrentUser'}->UserObj->SetAttribute(
+    $session{'CurrentUser'}->user_object->set_attribute(
         Name    => 'Bookmarks',
         Content => $bookmarks,
     );

@@ -61,7 +61,7 @@ $Verbose => 1
 # map each subscription to a dashboard ID
 my %subscription_for;
 
-for my $attr ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription')) {
+for my $attr ($session{'CurrentUser'}->user_object->attributes->named('Subscription')) {
     $subscription_for{$attr->SubValue('DashboardId')} = $attr;
 }
 </%INIT>

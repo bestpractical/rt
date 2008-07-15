@@ -235,7 +235,7 @@ sub _PrivacyObjects {
       : $args{Create} ? "Create"
       :                 "See";
 
-    push @objects, $CurrentUser->UserObj
+    push @objects, $CurrentUser->user_object
       if $self->CurrentUser->HasRight(
         Right  => "${prefix}OwnDashboard",
         Object => $RT::System,

@@ -67,7 +67,7 @@ $baseURL       => undef
 
 my $generic_query_args = $GenericQueryArgs || {map { $_ => $ARGS{$_} } @PassArguments};
 # backward compatibility workaround
-$generic_query_args->{'format'} = $formatString if grep $_ eq 'format', @PassArguments;
+$generic_query_args->{'format'} = $format_string if grep $_ eq 'format', @PassArguments;
 
 my $item = 0;
 foreach my $col ( @format ) {

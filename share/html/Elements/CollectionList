@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-if (!$Collection && $Class eq 'RT::Model::Tickets') {
+if (!$Collection && $Class eq 'RT::Model::TicketCollection') {
     $Collection = RT::Model::TicketCollection->new;
     $Collection->from_sql($Query);
 }
@@ -99,7 +99,7 @@ $Class =~ s/:/_/g;
 
 $m->out('<table border="0" cellspacing="0" cellpadding="1"' . 
 	' width="100%" class="' . 
-	($Collection->isa('RT::Model::Tickets') ? 'ticket-list' : 'collection') . '">');
+	($Collection->isa('RT::Model::TicketCollection') ? 'ticket-list' : 'collection') . '">');
 
 if ( $ShowHeader ) {
   $m->comp('/Elements/CollectionAsTable/Header',

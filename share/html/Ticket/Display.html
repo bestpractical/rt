@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, 
-    Title => _("#%1: %2", $ticket_obj->id, $ticket_obj->Subject),
+    Title => _("#%1: %2", $ticket_obj->id, $ticket_obj->subject),
     LinkRel => \%link_rel &>
 <& /Ticket/Elements/Tabs, 
     Ticket => $ticket_obj, 
@@ -143,9 +143,9 @@ if ($ARGS{'id'} eq 'new') {
     
     $ARGS{UpdateAttachments} = $session{'Attachments'};
     push @Actions,
-        ProcessUpdateMessage(
+        process_update_message(
         args_ref   => \%ARGS,
-        Actions   => \@Actions,
+        actions   => \@Actions,
         ticket_obj => $ticket_obj,
         );
     delete $session{'Attachments'};

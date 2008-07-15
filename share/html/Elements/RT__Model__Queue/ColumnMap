@@ -60,7 +60,7 @@ my $COLUMN_MAP = {
     disabled => {
         title     => \'&nbsp;',
         attribute => 'disabled',
-        value     => sub  { return $_[0]->disabled? $_[0]->_('disabled'): $_[0]->_('enabled') },
+        value     => sub  { return $_[0]->disabled? _('disabled'): _('enabled') },
     },
     Priority => {
         value     => sub  { return $_[0]->initial_priority .'-'. $_[0]->final_priority },

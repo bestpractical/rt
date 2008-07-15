@@ -49,7 +49,7 @@
 $m->comp(
 	 '/Elements/CollectionList',
 	 %ARGS,
-	 Class => 'RT::Model::Tickets'
+	 Class => 'RT::Model::TicketCollection'
 	);
 </%INIT>
 <%ARGS>

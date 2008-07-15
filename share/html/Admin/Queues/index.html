@@ -64,7 +64,7 @@
     format => $format,
     Collection => $queues,
     AllowSorting => 1,
-    PassArguments => [qw(format Rows Page order order_by FinddisabledQueues)],
+    PassArguments => [qw(format Rows Page order order_by FindDisabledQueues)],
 &>
 % }
 <form method="post" action="<% RT->config->get('WebPath') %>/Admin/Queues/index.html">
@@ -78,7 +78,7 @@ my ($queue, $caption);
 my $queues = RT::Model::QueueCollection->new();
 $queues->find_all_rows();
 
-if ($FinddisabledQueues) {
+if ($FindDisabledQueues) {
     $caption = _("All Queues");
     $queues->{'find_disabled_rows'} = 1;
 } else {
@@ -91,6 +91,6 @@ $format ||= q{'<a href="__WebPath__/Admin/Queues/Modify.html?id=__id__">__id__</
 
 </%INIT>
 <%ARGS>
-$FinddisabledQueues => 0
+$FindDisabledQueues => 0
 $format             => undef
 </%ARGS>

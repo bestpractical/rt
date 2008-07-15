@@ -14,6 +14,7 @@ plan tests => 92;
 use File::Spec ();
 use Cwd;
 
+my $homedir = File::Spec->catdir( cwd(), qw(lib t data crypt-gnupg) );
 my $homedir = RT::Test::get_abs_relocatable_dir(File::Spec->updir(),
     qw(data gnupg keyrings) );
 

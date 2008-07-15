@@ -71,7 +71,7 @@
     Rows => $Rows,
     Page => $Page,
     baseURL => RT->config->get('WebPath')."/Search/Bulk.html?",
-    Class => 'RT::Model::Tickets'
+    Class => 'RT::Model::TicketCollection'
    &>
 
 % $m->callback(Callbackname => 'AfterTicketList', args_ref => \%ARGS);

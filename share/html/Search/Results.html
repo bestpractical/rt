@@ -66,7 +66,7 @@
     Page => $Page,
     format => $format,
     baseURL => RT->config->get('WebPath')."/Search/Results.html?"
-    Class => 'RT::Model::Tickets',
+    Class => 'RT::Model::TicketCollection',
 
    &>
 % my %hiddens = (query => $query, format => $format, Rows => $Rows, order_by => $order_by, order => $order, HideResults => $HideResults, Page => $Page );

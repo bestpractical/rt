@@ -56,7 +56,7 @@
 			 baseURL => $baseURL,
 			 GenericQueryArgs => $GenericQueryArgs,
 			 AllowSorting => $AllowSorting,
-			 Class   => 'RT::Model::Tickets',
+			 Class   => 'RT::Model::TicketCollection',
              Rows    => $Rows,
 			 Page    => $Page &>
 </&>
