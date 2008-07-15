@@ -54,7 +54,7 @@ $onload => undef
 <script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/ahah.js"></script>
 <script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/prototype/prototype.js"></script>
 <script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/scriptaculous/scriptaculous.js?load=effects,controls"></script>
-% if ( RT->config->get('MessageBoxRichText',  $session{'CurrentUser'}) ) {
+% if ( RT->config->get('MessageBoxRichText',  Jifty->web->current_user) ) {
 <script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/RichText/fckeditor.js"></script>
 % }
 <script type="text/javascript"><!--
@@ -63,7 +63,7 @@ $onload => undef
     onLoadHook("focusElementById('<% $focus %>')");
 % }
 
-% if ( RT->config->get('MessageBoxRichText',  $session{'CurrentUser'})) {
+% if ( RT->config->get('MessageBoxRichText',  Jifty->web->current_user)) {
     function ReplaceAllTextareas() {
         if (!FCKeditor_IsCompatibleBrowser())
             return false;

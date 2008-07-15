@@ -227,7 +227,7 @@ sub static_file_headers {
     # $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = $date->rfc2616;
 }
 
-sub StripContent {
+sub strip_content {
     my %args    = @_;
     my $content = $args{content};
     my $html    = ( ( $args{content_type} || '' ) eq "text/html" );
@@ -340,7 +340,7 @@ sub create_ticket {
         $starts->set( format => 'unknown', value => $ARGS{'Starts'} );
     }
 
-    my $sigless = RT::Interface::Web::StripContent(
+    my $sigless = RT::Interface::Web::strip_content(
         content        => $ARGS{content},
         content_type    => $ARGS{content_type},
         strip_signature => 1,
@@ -553,7 +553,7 @@ sub process_update_message {
     }
 
     # Strip the signature
-    $args{args_ref}->{update_content} = RT::Interface::Web::StripContent(
+    $args{args_ref}->{update_content} = RT::Interface::Web::strip_content(
         content        => $args{args_ref}->{update_content},
         content_type    => $args{args_ref}->{update_content_type},
         strip_signature => $args{skip_signature_only},

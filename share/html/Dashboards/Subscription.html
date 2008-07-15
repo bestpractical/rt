@@ -171,15 +171,15 @@ my $current_subtab = 'Dashboards/Subscription.html?DashboardId=' . $DashboardId;
 my ($title, @results);
 my ($val, $msg);
 my $Loaded = 0;
-my $timezone = $session{'CurrentUser'}->user_object->timezone || RT->config->get('Timezone');
+my $timezone = Jifty->web->current_user->user_object->timezone || RT->config->get('Timezone');
 
 use RT::Dashboard;
-my $DashboardObj = RT::Dashboard->new($session{'CurrentUser'});
+my $DashboardObj = RT::Dashboard->new(Jifty->web->current_user);
 
-my $SubscriptionObj = RT::Model::Attribute->new($session{'CurrentUser'});
+my $SubscriptionObj = RT::Model::Attribute->new(Jifty->web->current_user);
 
 # first let's see if we already have a subscription to this DashboardId
-for my $sub ($session{'CurrentUser'}->user_object->attributes->named('Subscription')) {
+for my $sub (Jifty->web->current_user->user_object->attributes->named('Subscription')) {
     next unless $sub->SubValue('DashboardId') == $DashboardId;
     $SubscriptionObj = $sub;
     last;
@@ -240,13 +240,13 @@ if (defined $ARGS{Save}) {
             Name        => 'Subscription',
             description => 'Subscription to dashboard ' . $DashboardId,
             ContentType => 'storable',
-            Object      => $session{'CurrentUser'}->user_object,
+            Object      => Jifty->web->current_user->user_object,
             Content     => \%fields,
         );
         if ($val) {
             push @results, loc("Subscribed to dashboard [_1]", $DashboardObj->Name);
             push @results, loc("Warning: you have no email address set, so you will not receive this dashboard until you have it set")
-                unless $session{'CurrentUser'}->EmailAddress;
+                unless Jifty->web->current_user->EmailAddress;
         }
         else {
             push @results, loc('Subscription could not be created: [_1]', $msg);

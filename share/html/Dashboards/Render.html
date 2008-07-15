@@ -78,15 +78,15 @@
 my $current_subtab = 'Dashboards/Render.html?id=' . $id;
 
 use RT::Dashboard;
-my $DashboardObj = RT::Dashboard->new($session{'CurrentUser'});
+my $DashboardObj = RT::Dashboard->new(Jifty->web->current_user);
 my ($ok, $msg) = $DashboardObj->LoadById($id);
 Abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg)) if !$ok;
 
-my $SubscriptionObj = RT::Model::Attribute->new($session{'CurrentUser'});
+my $SubscriptionObj = RT::Model::Attribute->new(Jifty->web->current_user);
 my $Loaded = 0;
 
 # try to load the subscription to this id
-for my $sub ($session{'CurrentUser'}->user_object->attributes->named('Subscription')) {
+for my $sub (Jifty->web->current_user->user_object->attributes->named('Subscription')) {
     next unless $sub->SubValue('DashboardId') == $id;
     $SubscriptionObj = $sub;
     $Loaded = 1;

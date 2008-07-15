@@ -54,5 +54,5 @@
     <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, ObjectType => 'RT::Model::Queue', Object=> $object &>
 <%INIT>
   my $title = loc( 'Edit Custom Fields for all queues');
-  my $object = RT::Model::Queue->new($session{'CurrentUser'});
+  my $object = RT::Model::Queue->new(Jifty->web->current_user);
 </%INIT>
