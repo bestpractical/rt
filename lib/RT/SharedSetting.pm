@@ -82,12 +82,7 @@ sub new {
     my $self  = {};
     $self->{'id'} = 0;
     bless( $self, $class );
-    if ( @_ > 1 ) {
-        $self->current_user($_[-1]);
-    }
-    else {
-        $self->current_user(@_);
-    }
+    $self->_get_current_user(@_);
 
     return $self;
 }
