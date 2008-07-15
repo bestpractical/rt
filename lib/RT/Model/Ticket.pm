@@ -53,7 +53,7 @@ use strict;
 =head1 SYNOPSIS
 
   use RT::Model::Ticket;
-  my $ticket = RT::Model::Ticket->new($CurrentUser);
+  my $ticket = RT::Model::Ticket->new( current_user => $CurrentUser );
   $ticket->load($ticket_id);
 
 =head1 description

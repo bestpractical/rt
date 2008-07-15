@@ -57,7 +57,7 @@ package RT::Model::Group;
 =head1 SYNOPSIS
 
 use RT::Model::Group;
-my $group = RT::Model::Group->new($CurrentUser);
+my $group = RT::Model::Group->new( current_user => $CurrentUser );
 
 =head1 description
 

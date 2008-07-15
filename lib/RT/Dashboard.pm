@@ -241,7 +241,7 @@ sub _PrivacyObjects {
         Object => $RT::System,
       );
 
-    my $groups = RT::Model::GroupCollection->new($CurrentUser);
+    my $groups = RT::Model::GroupCollection->new( current_user => $CurrentUser );
     $groups->LimitToUserDefinedGroups;
     $groups->WithMember(
         PrincipalId => $CurrentUser->Id,
@@ -255,7 +255,7 @@ sub _PrivacyObjects {
           )
     } @{ $groups->ItemsArrayRef };
 
-    push @objects, RT::System->new($CurrentUser)
+    push @objects, RT::System->new( current_user => $CurrentUser )
       if $CurrentUser->HasRight(
         Right  => "${prefix}Dashboard",
         Object => $RT::System,

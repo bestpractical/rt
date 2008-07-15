@@ -145,7 +145,7 @@ loaded with that user.  if the current user isn't found, returns a copy of RT::n
             Jifty->log->debug("No user with a unix login of '$gecos' was found. ");
         }
 
-        return ($CurrentUser);
+        return ( current_user => $CurrentUser );
     }
 
     # }}}

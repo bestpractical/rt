@@ -64,7 +64,7 @@
 =head1 SYNOPSIS
 
   use RT::Model::TicketCollection;
-  my $tickets = RT::Model::TicketCollection->new($CurrentUser);
+  my $tickets = RT::Model::TicketCollection->new( current_user => $CurrentUser );
 
 =head1 description
 
