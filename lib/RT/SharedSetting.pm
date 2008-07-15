@@ -48,7 +48,7 @@
 
 =head1 NAME
 
-RT::SharedSetting - an API for settings that belong to an RT::User or RT::Group
+RT::SharedSetting - an API for settings that belong to an RT::Model::User or RT::Model::Group
 
 =head1 SYNOPSIS
 
@@ -56,7 +56,7 @@ RT::SharedSetting - an API for settings that belong to an RT::User or RT::Group
 
 =head1 DESCRIPTION
 
-A RT::SharedSetting is an object that can belong to an L<RT::User> or an <RT::Group>.
+A RT::SharedSetting is an object that can belong to an L<RT::Model::User> or an <RT::Model::Group>.
 It consists of an ID, a name, and some arbitrary data.
 
 =cut
@@ -114,12 +114,12 @@ sub load {
             $self->post_load();
 
             return ( 0, $self->loc("Permission denied") )
-              unless $self->current_userCanSee;
+              unless $self->current_user_can_see;
 
             return (
                 1,
                 $self->loc(
-                    "Loaded [_1] [_2]", $self->object_name, $self->Name
+                    "Loaded %1 %2", $self->object_name, $self->name
                 )
             );
         }
@@ -198,7 +198,7 @@ sub save {
     my $self = shift;
 
     my %args = (
-        'privacy' => 'RT::User-' . $self->current_user->user_object->id,
+        'privacy' => 'RT::Model::User-' . $self->current_user->user_object->id,
         'name'    => "new " . $self->object_name,
         @_,
     );
@@ -218,7 +218,7 @@ sub save {
         $self->{'attribute'} = $object->attributes->with_id($att_id);
         $self->{'id'}        = $att_id;
         $self->{'privacy'}   = $privacy;
-        return ( 1, $self->loc( "Saved [_1] [_2]", $self->object_name, $name ) );
+        return ( 1, $self->loc( "Saved %1 %2", $self->object_name, $name ) );
     }
     else {
         Jifty->log->error( $self->object_name . " save failure: $att_msg" );
@@ -298,10 +298,10 @@ sub delete {
 
     my ( $status, $msg ) = $self->{'attribute'}->delete;
     if ($status) {
-        return ( 1, $self->loc( "Deleted [_1]", $self->object_name ) );
+        return ( 1, $self->loc( "Deleted %1", $self->object_name ) );
     }
     else {
-        return ( 0, $self->loc( "Delete failed: [_1]", $msg ) );
+        return ( 0, $self->loc( "Delete failed: %1", $msg ) );
     }
 }
 
@@ -333,7 +333,7 @@ sub id {
 =head2 privacy
 
 Returns the principal object to whom this shared setting belongs, in a string
-"<class>-<id>", e.g. "RT::Group-16".
+"<class>-<id>", e.g. "RT::Model::Group-16".
 
 =cut
 
@@ -378,8 +378,8 @@ sub is_visible_to {
     return 0 if $to =~ /^RT::System/;
 
     # If the setting is group-wide...
-    if ( $privacy =~ /^RT::Group-(\d+)$/ ) {
-        my $setting_group = RT::Group->new( $self->current_user );
+    if ( $privacy =~ /^RT::Model::Group-(\d+)$/ ) {
+        my $setting_group = RT::Model::Group->new( $self->current_user );
         $setting_group->load($1);
 
         if ( $to =~ /-(\d+)$/ ) {
@@ -428,18 +428,19 @@ sub _get_object {
     # Do not allow the loading of a user object other than the current
     # user, or of a group object of which the current user is not a member.
 
-    if (   $obj_type eq 'RT::User'
+    if (   $obj_type eq 'RT::Model::User'
         && $object->id != $self->current_user->user_object->id )
     {
         Jifty->log->debug("Permission denied for user other than self");
         return undef;
     }
 
-    if ( $obj_type eq 'RT::Group'
-        && !$object->HasMemberRecursively( $self->current_user->principal_obj ) )
+    if ( $obj_type eq 'RT::Model::Group'
+        && !$object->has_member_recursively(
+            $self->current_user->principal_object ) )
     {
         Jifty->log->debug( "Permission denied, "
-              . $self->current_user->Name
+              . $self->current_user->name
               . " is not a member of group" );
         return undef;
     }
@@ -449,7 +450,7 @@ sub _get_object {
 
 sub _load_privacy_object {
     my ( $self, $obj_type, $obj_id ) = @_;
-    if ( $obj_type eq 'RT::User' ) {
+    if ( $obj_type eq 'RT::Model::User' ) {
         if ( $obj_id == $self->current_user->id ) {
             return $self->current_user->user_object;
         }
@@ -461,9 +462,9 @@ sub _load_privacy_object {
             return undef;
         }
     }
-    elsif ( $obj_type eq 'RT::Group' ) {
-        my $group = RT::Group->new( $self->current_user );
-        $group->Load($obj_id);
+    elsif ( $obj_type eq 'RT::Model::Group' ) {
+        my $group = RT::Model::Group->new( current_user => $self->current_user );
+        $group->load($obj_id);
         return $group;
     }
     elsif ( $obj_type eq 'RT::System' ) {
@@ -484,16 +485,16 @@ sub _build_privacy {
     if ( ref($obj_type) ) {
         my $Object = $obj_type;
         return
-            $Object->isa('RT::User')   ? 'RT::User-' . $Object->id
-          : $Object->isa('RT::Group')  ? 'RT::Group-' . $Object->id
+            $Object->isa('RT::Model::User')   ? 'RT::Model::User-' . $Object->id
+          : $Object->isa('RT::Model::Group')  ? 'RT::Model::Group-' . $Object->id
           : $Object->isa('RT::System') ? 'RT::System-' . $Object->id
           :                              undef;
     }
 
     return undef unless ($obj_type);    # undef workaround
     return
-        $obj_type eq 'RT::User'   ? "$obj_type-$obj_id"
-      : $obj_type eq 'RT::Group'  ? "$obj_type-$obj_id"
+        $obj_type eq 'RT::Model::User'   ? "$obj_type-$obj_id"
+      : $obj_type eq 'RT::Model::Group'  ? "$obj_type-$obj_id"
       : $obj_type eq 'RT::System' ? "$obj_type-$obj_id"
       :                             undef;
 }

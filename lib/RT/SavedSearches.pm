@@ -103,9 +103,9 @@ sub limit_to_privacy {
 
     if ($object) {
         $self->{'objects'} = [];
-        my @search_atts = $object->attributes->named('SavedSearch');
+        my @search_atts = $object->attributes->named('saved_search');
         foreach my $att (@search_atts) {
-            my $search = RT::SavedSearch->new;
+            my $search = RT::SavedSearch->new( current_user => $self->current_user );
             $search->load( $privacy, $att->id );
             next if $type && $search->type ne $type;
             push( @{ $self->{'objects'} }, $search );
@@ -156,7 +156,7 @@ sub _get_object {
     my $self    = shift;
     my $privacy = shift;
 
-    return RT::SavedSearch->new->_get_object($privacy);
+    return RT::SavedSearch->new( current_user => $self->current_user )->_get_object($privacy);
 }
 
 ### Internal methods

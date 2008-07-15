@@ -95,7 +95,7 @@ sub save_attribute {
 
     $params->{'search_type'} = $args->{'type'} || 'Ticket';
 
-    return $object->AddAttribute(
+    return $object->add_attribute(
         'name'        => 'saved_search',
         'description' => $args->{'name'},
         'content'     => $params,
