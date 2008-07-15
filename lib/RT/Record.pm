@@ -1046,15 +1046,15 @@ sub _links {
 # {{{ sub _add_link
 
 
-# {{{ sub formatType
+# {{{ sub format_type
 
-=head2 formatType
+=head2 format_type
 
 Takes a type and returns a string that is more human readable.
 
 =cut
 
-sub formatType {
+sub format_type {
     my $self = shift;
     my %args = (
         type => '',
@@ -1066,19 +1066,19 @@ sub formatType {
 
 # }}}
 
-# {{{ sub formatLink
+# {{{ sub format_link
 
-=head2 formatLink
+=head2 format_link
 
 Takes either a target or a base and returns a string of human friendly text.
 
 =cut
 
-sub formatLink {
+sub format_link {
     my $self = shift;
     my %args = (
         object   => undef,
-        FallBack => '',
+        fall_back => '',
         @_
     );
     my $text = "URI " . $args{fall_back};
@@ -1155,15 +1155,18 @@ sub _add_link {
         Jifty->log->error( "Link could not be Created: " . $linkmsg );
         return ( 0, _("Link could not be Created") );
     }
-    my $basetext = $self->formatLink(
+    my $basetext = $self->format_link(
         object   => $link->base_obj,
-        FallBack => $args{base}
+        fall_back => $args{base}
     );
-    my $targettext = $self->formatLink(
+    my $targettext = $self->format_link(
         object   => $link->target_obj,
-        FallBack => $args{target}
+        fall_back => $args{target}
     );
-    my $typetext = $self->formatType( type => $args{type} );
+    my $typetext = $self->format_type( type => $args{type} );
+    my $trans_string =
+      "$basetext $typetext $targettext.";
+    return ( $linkid, $trans_string );
 
 }
 
@@ -1229,7 +1232,7 @@ sub _delete_link {
             object   => $link->target_obj,
             FallBack => $args{target}
         );
-        my $typetext = $self->formatType( type => $args{type} );
+        my $typetext = $self->format_type( type => $args{type} );
         my $linkid = $link->id;
         $link->delete();
         my $TransString = "$basetext no longer $typetext $targettext.";
