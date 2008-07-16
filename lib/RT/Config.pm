@@ -265,6 +265,7 @@ our %META = (
         },
     },
     MailPlugins  => { Type => 'ARRAY' },
+    Plugins      => { Type => 'ARRAY' },
     GnuPG        => { Type => 'HASH' },
     GnuPGOptions => { Type => 'HASH',
         PostLoadCheck => sub {
