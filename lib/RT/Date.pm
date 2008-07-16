@@ -729,7 +729,7 @@ C<yyyymmddThhmmssZ>
 sub iCal {
     my $self = shift;
     my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $ydaym, $isdst, $offset )
-      = $self->Localtime("UTC");
+      = $self->localtime("UTC");
 
     return sprintf( '%04d%02d%02dT%02d%02d%02dZ',
         $year, $mon, $mday, $hour, $min, $sec );
@@ -744,7 +744,7 @@ Returns the date formatted as an ICalendar string -- that is, C<yyyymmddZ>
 sub iCalDate {
     my $self = shift;
     my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $ydaym, $isdst, $offset )
-      = $self->Localtime("UTC");
+      = $self->localtime("UTC");
     return sprintf( '%04d%02d%02dZ', $year, $mon, $mday );
 }
 

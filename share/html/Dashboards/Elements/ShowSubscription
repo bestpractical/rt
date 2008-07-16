@@ -53,20 +53,20 @@ $Subscription => undef
 <%INIT>
 my $url = sprintf '%s/Dashboards/Subscription.html?DashboardId=%d',
           RT->config->get('WebPath'),
-          $Dashboard->Id,;
+          $Dashboard->id,;
 
 my $frequency = loc("None");
 
 if (defined $Subscription) {
-    my $freq = $Subscription->SubValue('Frequency');
-    my $hour = $Subscription->SubValue('Hour');
+    my $freq = $Subscription->sub_value('Frequency');
+    my $hour = $Subscription->sub_value('Hour');
 
     if ($freq eq 'weekly') {
-        my $day = (qw/Monday Tuesday Wednesday Thursday Friday Saturday Sunday/)[$Subscription->SubValue('Dow')];
+        my $day = (qw/Monday Tuesday Wednesday Thursday Friday Saturday Sunday/)[$Subscription->sub_value('Dow')];
         $frequency = loc("%1 (on %2) at %3", $freq, $day, $hour);
     }
     elsif ($freq eq 'monthly') {
-        $frequency = loc("%1 (day %2) at %3", $freq, $Subscription->SubValue('Dom'), $hour);
+        $frequency = loc("%1 (day %2) at %3", $freq, $Subscription->sub_value('Dom'), $hour);
     } 
     elsif ($freq eq 'daily') {
         $frequency = loc("%1 at %2", $freq, $hour);

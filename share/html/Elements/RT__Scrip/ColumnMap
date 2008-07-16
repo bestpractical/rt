@@ -66,11 +66,11 @@ my $COLUMN_MAP = {
     },
     Condition => {
         title     => 'Condition',
-        value     => sub { return $_[0]->loc( $_[0]->ScripConditionObj->name ) },
+        value     => sub { return $_[0]->loc( $_[0]->scrip_condition_obj->name ) },
     },
     Action => {
         title     => 'Action',
-        value     => sub { return $_[0]->loc( $_[0]->ScripActionObj->name ) },
+        value     => sub { return $_[0]->loc( $_[0]->scrip_action_obj->name ) },
     },
     Template => {
         title     => 'Template',

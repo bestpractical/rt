@@ -196,7 +196,7 @@ my $attachment_content = $m->comp('Elements/LoadTextAttachments', Ticket => $tic
 
 my %link_rel;
 if (defined $session{'tickets'} and ($ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'})) {
-    my $item_map = $session{'tickets'}->ItemMap;
+    my $item_map = $session{'tickets'}->item_map;
     $link_rel{first} = "Ticket/Display.html?id=" . $item_map->{first}                if $item_map->{$ticket_obj->id}{prev};
     $link_rel{prev}  = "Ticket/Display.html?id=" . $item_map->{$ticket_obj->id}{prev} if $item_map->{$ticket_obj->id}{prev};
     $link_rel{next}  = "Ticket/Display.html?id=" . $item_map->{$ticket_obj->id}{next} if $item_map->{$ticket_obj->id}{next};

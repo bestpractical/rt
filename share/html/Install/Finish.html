@@ -61,7 +61,7 @@
 </p>
 
 <p>
-<&|/l, RT::Installer->ConfigFile &>The settings you've chosen are stored in %1.  You can edit this file to refine your configuration further. You can prevent this installation wizard from being shown again by running `<tt>chmod -w '%1'</tt>`.</&>
+<&|/l, RT::Installer->config_file &>The settings you've chosen are stored in %1.  You can edit this file to refine your configuration further. You can prevent this installation wizard from being shown again by running `<tt>chmod -w '%1'</tt>`.</&>
 </p>
 </div>
 
@@ -74,14 +74,14 @@
 <%init>
 if ( $Run ) {
     RT->install_mode(0);
-    RT->ConnectToDatabase();
-    RT->InitSystemObjects();
-    RT->InitClasses();
-    RT->InitPlugins();
+    RT->connect_to_database();
+    RT->init_system_objects();
+    RT->init_classes();
+    RT->init_plugins();
 
     my $root = RT::Model::User->new( RT->system_user );
-    $root->Load('root');
-    $root->SetPassword( $RT::Installer->{InstallConfig}{Password} );
+    $root->load('root');
+    $root->set_password( $RT::Installer->{InstallConfig}{Password} );
 
     RT::Interface::Web::redirect(RT->config->get('WebURL'));
 }

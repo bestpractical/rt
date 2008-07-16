@@ -161,7 +161,7 @@ if ( $ARGS{'SavedSearchLoad'} ) {
     $SavedSearch->{'id'}          = $ARGS{'SavedSearchLoad'};
     $SavedSearch->{'object'}      = $search;
     $SavedSearch->{'description'} = $search->description;
-    $query->{$_} = $search->SubValue($_) foreach @SearchFields;
+    $query->{$_} = $search->sub_value($_) foreach @SearchFields;
 
     if ( $ARGS{'SavedSearchRevert'} ) {
         push @results, _('Loaded original "%1" saved search', $SavedSearch->{'description'} );
@@ -183,7 +183,7 @@ elsif ( $ARGS{'SavedSearchDelete'} ) {
 }
 elsif ( $ARGS{'SavedSearchCopy'} ) {
     my ($container, $id ) = _parse_saved_search( $ARGS{'SavedSearchid'} );
-    $SavedSearch->{'object'} = $container->attributes->Withid( $id );
+    $SavedSearch->{'object'} = $container->attributes->withid( $id );
     if ( $ARGS{'saved_search_description'} && $ARGS{'saved_search_description'} ne $SavedSearch->{'object'}->description ) {
         $SavedSearch->{'description'} = $ARGS{'saved_search_description'};
     } else {

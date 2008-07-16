@@ -56,7 +56,7 @@ $id => undef
 use RT::Util 'safe_run_child';
 
 my $ticket = RT::Model::Ticket->new( current_user => Jifty->web->current_user );
-$ticket->Load( $id );
+$ticket->load( $id );
 unless ( $ticket->id ) {
     Jifty->log->error("Couldn't load ticket $id");
     return;
@@ -64,7 +64,7 @@ unless ( $ticket->id ) {
 $ARGS{'id'} = $id = $ticket->id;
 
 require RT::Graph::Tickets;
-my $graph = RT::Graph::Tickets->TicketLinks(
+my $graph = RT::Graph::Tickets->ticket_links(
     %ARGS,
     Ticket => $ticket,
 );

@@ -137,11 +137,11 @@
   </tr>
   <tr>
     <td class="label"><&|/l&>Address1</&>:</td>
-    <td class="value"><input name="Address1" value="<%$user_object->Address1 || ''%>" /></td>
+    <td class="value"><input name="Address1" value="<%$user_object->address1 || ''%>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Address2</&>:</td>
-    <td class="value"><input name="Address2" value="<%$user_object->Address2 || ''%>" /></td>
+    <td class="value"><input name="Address2" value="<%$user_object->address2 || ''%>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>City</&>:</td>
@@ -249,7 +249,7 @@ if ((defined $Pass1) and ($Pass1 ne '') and ($Pass1 eq $Pass2) and (!$user_objec
 }
 
     if ( $ARGS{'ResetAuthToken'} ) {
-        my ($status, $msg) = $user_object->GenerateAuthToken;
+        my ($status, $msg) = $user_object->generate_auth_token;
         push @results, $msg;
     }
 }

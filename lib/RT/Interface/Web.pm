@@ -568,7 +568,7 @@ sub process_update_message {
     {
         if ( $args{args_ref}->{'UpdateTimeWorked'} ) {
             $args{args_ref}->{TimeWorked} =
-              $args{ticket_obj}->TimeWorked +
+              $args{ticket_obj}->time_worked +
               delete $args{args_ref}->{'UpdateTimeWorked'};
         }
         return;

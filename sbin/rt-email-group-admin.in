@@ -225,19 +225,19 @@ sub _list {
     my $action = shift;
 
     print "Name: ". $action->name() ."\n";
-    print "Module: ". $action->ExecModule() ."\n";
+    print "Module: ". $action->exec_module() ."\n";
 
     my @princ = argument_to_list( $action );
 
     print "Members: \n";
     foreach( @princ ) {
         my $obj = RT::Principal->new( RT->system_user );
-        $obj->Load( $_ );
+        $obj->load( $_ );
         next unless $obj->id;
 
-        print "\t". $obj->PrincipalType;
-        print "\t=> ". $obj->Object->name;
-        print "(Disabled!!!)" if $obj->Disabled;
+        print "\t". $obj->principal_type;
+        print "\t=> ". $obj->object->name;
+        print "(Disabled!!!)" if $obj->disabled;
         print "\n";
     }
     print "\n";
@@ -253,11 +253,11 @@ recipient list. Would be notify as comment if --comment specified.
 
 sub create {
     my $actions = RT::ScripActions->new( RT->system_user );
-    $actions->Limit(
-        FIELD => 'Name',
+    $actions->limit(
+        field => 'Name',
         VALUE => $opts->{'name'},
     );
-    if ( $actions->Count ) {
+    if ( $actions->count ) {
         print STDERR "ScripAction '". $opts->{'name'} ."' allready exists\n";
         exit(-1);
     }
@@ -282,7 +282,7 @@ sub __create_empty {
     my $as_comment = shift || 0;
     require RT::ScripAction;
     my $action = RT::ScripAction->new( RT->system_user );
-    $action->Create(
+    $action->create(
         Name => $name,
         description => "Created with rt-email-group-admin script",
         ExecModule => $as_comment? 'NotifyGroupAsComment': 'NotifyGroup',
@@ -303,7 +303,7 @@ sub __check_group
     my $instance = shift;
     require RT::Model::Group;
     my $obj = RT::Model::Group->new( RT->system_user );
-    $obj->LoadUserDefinedGroup( $instance );
+    $obj->load_user_defined_group( $instance );
     return $obj->id ? $obj : undef;
 }
 
@@ -318,7 +318,7 @@ sub __check_user
     my $instance = shift;
     require RT::Model::User;
     my $obj = RT::Model::User->new( RT->system_user );
-    $obj->Load( $instance );
+    $obj->load( $instance );
     return $obj->id ? $obj : undef;
 }
 
@@ -361,7 +361,7 @@ sub __add
 
     push @cur, $id;
 
-    return $action->__Set( Field => 'Argument', Value => join(';', @cur) );
+    return $action->__set( Field => 'Argument', Value => join(';', @cur) );
 }
 
 =head2 delete NAME
@@ -379,8 +379,8 @@ sub delete {
 
     require RT::Model::ScripCollection;
     my $scrips = RT::Model::ScripCollection->new( RT->system_user );
-    $scrips->Limit( FIELD => 'ScripAction', VALUE => $action->id );
-    if ( $scrips->Count ) {
+    $scrips->limit( field => 'ScripAction', VALUE => $action->id );
+    if ( $scrips->count ) {
         my @sid;
         while( my $s = $scrips->next ) {
             push @sid, $s->id;
@@ -402,16 +402,16 @@ sub __delete {
 sub _get_action_by_name {
     my $name = shift;
     my $actions = _get_our_actions();
-    $actions->Limit(
-        FIELD => 'Name',
+    $actions->limit(
+        field => 'Name',
         VALUE => $name
     );
 
-    if ( $actions->Count > 1 ) {
+    if ( $actions->count > 1 ) {
         print STDERR "More then one ScripAction with name '$name'\n";
     }
 
-    return $actions->First;
+    return $actions->first;
 }
 
 =head2 switch NAME
@@ -432,9 +432,9 @@ sub switch {
         NotifyGroupAsComment => 'NotifyGroup'
     );
 
-    return $action->__Set(
+    return $action->__set(
         Field => 'ExecModule',
-        Value => $h{ $action->ExecModule }
+        Value => $h{ $action->exec_module }
     );
 }
 
@@ -452,13 +452,13 @@ sub rename {
     }
 
     my $actions = RT::ScripActions->new( RT->system_user );
-    $actions->Limit( FIELD => 'Name', VALUE => $opts->{'newname'} );
-    if ( $actions->Count ) {
+    $actions->limit( field => 'Name', VALUE => $opts->{'newname'} );
+    if ( $actions->count ) {
         print STDERR "ScripAction '". $opts->{'newname'} ."' allready exists\n";
         exit(-1);
     }
 
-    return $action->__Set(
+    return $action->__set(
         Field => 'Name',
         Value => $opts->{'newname'},
     );
@@ -477,7 +477,7 @@ if other is not specified.
 
 sub argument_to_list {
     my $action = shift;
-    my $arg = $action->Argument;
+    my $arg = $action->argument;
 
     # old variant via Storable
     {
@@ -507,7 +507,7 @@ sub __convert_old {
         } else {
             next;
         }
-        $obj->Load( $r->{'Instance'} );
+        $obj->load( $r->{'Instance'} );
         my $id = $obj->id;
         next unless $id;
 
@@ -519,13 +519,13 @@ sub __convert_old {
 
 sub _get_our_actions {
     my $actions = RT::ScripActions->new( RT->system_user );
-    $actions->Limit(
-        FIELD => 'ExecModule',
+    $actions->limit(
+        field => 'ExecModule',
         VALUE => 'NotifyGroup',
         ENTRYAGGREGATOR => 'OR',
     );
-    $actions->Limit(
-        FIELD => 'ExecModule',
+    $actions->limit(
+        field => 'ExecModule',
         VALUE => 'NotifyGroupAsComment',
         ENTRYAGGREGATOR => 'OR',
     );

@@ -124,7 +124,7 @@ foreach ( $SearchArg, $ProcessedSearchArg ) {
         $_->{'rows'} = 999;
 
         my $bookmarks = Jifty->web->current_user->user_object->firstAttribute('Bookmarks');
-        $bookmarks = $bookmarks->Content if $bookmarks;
+        $bookmarks = $bookmarks->content if $bookmarks;
         $bookmarks ||= {};
         my $query = join(" OR ", map " id = '$_' ", grep $bookmarks->{ $_ }, keys %$bookmarks ) || 'id=0';
         $_->{'query'} =~ s/__Bookmarks__/( $query )/g;

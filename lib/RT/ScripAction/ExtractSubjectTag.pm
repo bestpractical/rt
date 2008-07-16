@@ -62,14 +62,14 @@ sub Prepare {
 sub Commit {
     my $self            = shift;
     my $Transaction     = $self->transaction_obj;
-    my $FirstAttachment = $Transaction->Attachments->First;
+    my $FirstAttachment = $Transaction->attachments->first;
     return 1 unless ($FirstAttachment);
 
     my $Ticket = $self->ticket_obj;
 
-    my $TicketSubject      = $self->ticket_obj->Subject;
+    my $TicketSubject      = $self->ticket_obj->subject;
     my $origTicketSubject  = $TicketSubject;
-    my $TransactionSubject = $FirstAttachment->Subject;
+    my $TransactionSubject = $FirstAttachment->subject;
 
     my $match   = RT->config->get('ExtractSubjectTagMatch');
     my $nomatch = RT->config->get('ExtractSubjectTagNoMatch');
@@ -79,7 +79,7 @@ sub Commit {
         $TicketSubject .= " $tag" unless ( $TicketSubject =~ /\Q$tag\E/ );
     }
 
-    $self->ticket_obj->SetSubject($TicketSubject)
+    $self->ticket_obj->set_subject($TicketSubject)
       if ( $TicketSubject ne $origTicketSubject );
 
     return (1);

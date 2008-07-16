@@ -62,10 +62,10 @@ my @objs = RT::Dashboard->new( current_user => Jifty->web->current_user )->_priv
 my $dashboard_map = $m->comp("/Dashboards/Elements/DashboardsForObjects", Objects => \@objs);
 
 my @dashboards = (
-    (sort { $a->Id <=> $b->Id } @{ $dashboard_map->{personal} || [] }),
-    (sort { $a->Id <=> $b->Id } @{ $dashboard_map->{system}   || [] }),
+    (sort { $a->id <=> $b->id } @{ $dashboard_map->{personal} || [] }),
+    (sort { $a->id <=> $b->id } @{ $dashboard_map->{system}   || [] }),
 
-    map { sort { $a->Id <=> $b->Id } @{ $dashboard_map->{group}{$_} } }
+    map { sort { $a->id <=> $b->id } @{ $dashboard_map->{group}{$_} } }
         keys %{ $dashboard_map->{group} || {} },
 );
 

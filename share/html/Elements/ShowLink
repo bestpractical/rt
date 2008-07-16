@@ -49,7 +49,7 @@
 % if ($URI->is_local) {
 % my $member = $URI->object;
 % if (UNIVERSAL::isa($member, "RT::Model::Ticket")) {
-% my $inactive = $member->queue_obj->IsInactiveStatus($member->status);
+% my $inactive = $member->queue_obj->is_inactive_status($member->status);
 
 <span class="<% $inactive ? 'ticket-inactive' : '' %>">
 <%$member->id%>: (<%$member->owner_obj->name%>) <%$member->subject%> [<% _($member->status) %>]

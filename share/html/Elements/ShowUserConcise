@@ -49,7 +49,7 @@
 <%INIT>
 if ($User) {
     my $printable;
-    if ( $User->Privileged ) {
+    if ( $User->privileged ) {
              $printable = $User->real_name
           || $User->nickname
           || $User->name

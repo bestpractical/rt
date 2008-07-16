@@ -81,7 +81,7 @@ sub handle_request {
     $self->SUPER::handle_request($cgi);
     Jifty->log->fatal($@) if $@ && Jifty->log;
     warn $@               if $@ && !Jifty->log;
-    RT::Interface::Web::Handler->CleanupRequest();
+    RT::Interface::Web::Handler->cleanup_request();
 }
 
 sub net_server {

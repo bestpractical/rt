@@ -71,7 +71,7 @@ if ($Ticket) {
 
         if ($updatesession) {
             $session{'i'}++;
-            $session{'tickets'}->PrepForSerialization();
+            $session{'tickets'}->prep_for_serialization();
         }
 
         # Don't display prev links if we're on the first ticket

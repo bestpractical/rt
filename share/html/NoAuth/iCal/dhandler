@@ -66,15 +66,15 @@ $_ =~ s/\%([0-9a-z]{2})/chr(hex($1))/gei for $name, $search;
 $_ = Encode::decode_utf8( $_ ) for $name, $search;
 
 my $user = RT::Model::User->new( RT->system_user );
-$user->Load( $name );
+$user->load( $name );
 $notfound->() unless $user->id;
 
-$notfound->() unless $user->ValidateAuthString( $auth, $search );
+$notfound->() unless $user->validate_auth_string( $auth, $search );
 
 my $cu = RT::CurrentUser->new;
-$cu->Load($user);
+$cu->load($user);
 my $tickets = RT::Model::TicketCollection->new( $cu );
-$tickets->FromSQL($search);
+$tickets->from_sql($search);
 
 $r->header_out("Content-Type" => "text/calendar; charset=utf-8");
 
@@ -98,16 +98,16 @@ while (my $t = $tickets->next) {
         organizer => $t->owner_obj->name,
         dtstamp   => $now->iCal,
         created   => $t->created_obj->iCal,
-       'last-modified' => $t->LastUpdatedObj->iCal,
+       'last-modified' => $t->last_updated_obj->iCal,
     ) for $start, $end;
 
     $start->add_properties(
-        summary   => "Start: ".$t->Subject,
+        summary   => "Start: ".$t->subject,
         dtstart   => $starttime->iCalDate,
         dtend     => $starttime->iCalDate,
     );
     $end->add_properties(
-        summary   => "Due: ".$t->Subject,
+        summary   => "Due: ".$t->subject,
         dtstart   => $t->due_obj->iCalDate,
         dtend     => $t->due_obj->iCalDate,
     );

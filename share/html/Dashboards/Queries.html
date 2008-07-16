@@ -56,8 +56,8 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="<%RT->config->get('WebPath')%>/Dashboards/Queries.html" method="post" enctype="multipart/form-data" name="DashboardQueries">
-<input type="hidden" class="hidden" name="id" value="<%$Dashboard->Id%>" />
-<input type="hidden" class="hidden" name="Privacy" value="<%$Dashboard->Privacy%>" />
+<input type="hidden" class="hidden" name="id" value="<%$Dashboard->id%>" />
+<input type="hidden" class="hidden" name="Privacy" value="<%$Dashboard->privacy%>" />
 <table width="100%" border="0">
 <tr>
 
@@ -83,7 +83,7 @@ my @results;
 
 use RT::Dashboard;
 my $Dashboard = new RT::Dashboard( current_user => Jifty->web->current_user );
-my ($ok, $msg) = $Dashboard->LoadById($id);
+my ($ok, $msg) = $Dashboard->load_by_id($id);
 $ok || abort(loc("Couldn't load dashboard %1: %2", $id, $msg));
 my $title = loc("Modify the queries of dashboard %1", $Dashboard->name);
 
@@ -92,7 +92,7 @@ my @items;
 my @selected;
 
 # Get the list of queries already in use
-for ($Dashboard->SearchIds) {
+for ($Dashboard->search_ids) {
     my ($privacy, $id, $desc) = @$_;
     my $name = "$id-$privacy";
     push @selected, $name;
@@ -103,15 +103,15 @@ my $sys = RT::System->new( current_user => Jifty->web->current_user );
 my @objs = ($sys);
 
 push @objs, RT::SavedSearches->new( current_user => Jifty->web->current_user )->_privacy_objects
-    if Jifty->web->current_user->HasRight( Right  => 'LoadSavedSearch',
+    if Jifty->web->current_user->has_right( Right  => 'LoadSavedSearch',
                                           Object => $RT::System );
 
 for my $object (@objs) {
     for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
         my ($desc, $search) = @$_;
-        my $SearchType = $search->Content->{'SearchType'} || 'Ticket';
+        my $SearchType = $search->content->{'SearchType'} || 'Ticket';
         my $privacy = $Dashboard->_build_privacy($object);
-        my $name = $search->Id . '-' . $privacy;
+        my $name = $search->id . '-' . $privacy;
         push @items, [$name, $desc];
         $desc_of{$name} = $desc;
     }
@@ -134,7 +134,7 @@ my $sel = $m->comp(
             [ reverse(split /-/, $_, 2), $desc_of{$_} ]
         } @{ $self->{Current} } ];
 
-        my ($ok, $msg) = $Dashboard->Update(Searches => $searches);
+        my ($ok, $msg) = $Dashboard->update(Searches => $searches);
 
         if ($ok) {
             push @results, loc("Dashboard updated");

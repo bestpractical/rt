@@ -76,7 +76,7 @@ BEGIN {
 
 use RT;
 RT::LoadConfig();
-RT->InitLogging();
+RT->init_logging();
 if (RT->config->get('DevelMode')) { require Module::Refresh; }
 
 RT::CheckPerlRequirements();
@@ -85,7 +85,7 @@ my $port = shift @ARGV || RT->config->get('WebPort') || '8080';
 
 
 require RT::Handle;
-my ($integrity, $state, $msg) = RT::Handle->CheckIntegrity;
+my ($integrity, $state, $msg) = RT::Handle->check_integrity;
 
 unless ( $integrity ) {
     print STDERR <<EOF;
@@ -105,16 +105,16 @@ EOF
 
     require RT::Installer;
     # don't enter install mode if the file exists but is unwritable
-    if (-e RT::Installer->ConfigFile && !-w _) {
+    if (-e RT::Installer->config_file && !-w _) {
         die "Since your configuration exists but is not writable, I'm refusing to do anything.\n";
     }
 
     RT->install_mode(1);
 } else {
-    RT->ConnectToDatabase();
-    RT->InitSystemObjects();
-    RT->InitClasses();
-    RT->InitPlugins();
+    RT->connect_to_database();
+    RT->init_system_objects();
+    RT->init_classes();
+    RT->init_plugins();
 }
 
 require RT::Interface::Web::Standalone;

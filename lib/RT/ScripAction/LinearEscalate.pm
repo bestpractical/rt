@@ -163,19 +163,19 @@ sub Prepare {
         return 1;
     }
 
-    my $priority_range = $ticket->FinalPriority - $ticket->InitialPriority;
+    my $priority_range = $ticket->final_priority - $ticket->initial_priority;
     unless ($priority_range) {
         Jifty->log->debug(
             'Final and Initial priorities are equal. Not escalating.');
         return 1;
     }
 
-    if ( $ticket->Priority >= $ticket->FinalPriority && $priority_range > 0 ) {
+    if ( $ticket->priority >= $ticket->final_priority && $priority_range > 0 ) {
         Jifty->log->debug(
             'Current priority is greater than final. Not escalating.');
         return 1;
     }
-    elsif ( $ticket->Priority <= $ticket->FinalPriority && $priority_range < 0 )
+    elsif ( $ticket->priority <= $ticket->final_priority && $priority_range < 0 )
     {
         Jifty->log->debug(
             'Current priority is lower than final. Not escalating.');
@@ -202,9 +202,9 @@ sub Prepare {
     my $percent_complete = ( $now - $starts ) / ( $due - $starts );
 
     my $new_priority =
-      int( $percent_complete * $priority_range ) + $ticket->InitialPriority;
-    $new_priority = $ticket->FinalPriority
-      if $new_priority > $ticket->FinalPriority;
+      int( $percent_complete * $priority_range ) + $ticket->initial_priority;
+    $new_priority = $ticket->final_priority
+      if $new_priority > $ticket->final_priority;
     $self->{'new_priority'} = $new_priority;
 
     return 1;
@@ -219,12 +219,12 @@ sub Commit {
     my $ticket = $self->ticket_obj;
 
     # if the priority hasn't changed do nothing
-    return 1 if $ticket->Priority == $new_value;
+    return 1 if $ticket->priority == $new_value;
 
     # override defaults from argument
     my ( $record, $update ) = ( 0, 1 );
     {
-        my $arg = $self->Argument || '';
+        my $arg = $self->argument || '';
         if ( $arg =~ /RecordTransaction:\s*(\d+)/i ) {
             $record = $1;
             Jifty->log->debug("Overrode RecordTransaction: $record");
@@ -237,9 +237,9 @@ sub Commit {
     }
 
     Jifty->log->debug( 'Linearly escalating priority of ticket #'
-          . $ticket->Id
+          . $ticket->id
           . ' from '
-          . $ticket->Priority . ' to '
+          . $ticket->priority . ' to '
           . $new_value . ' and'
           . ( $record ? '' : ' do not' )
           . ' record a transaction' . ' and'
@@ -249,13 +249,13 @@ sub Commit {
     my ( $val, $msg );
     unless ($record) {
         unless ($update) {
-            ( $val, $msg ) = $ticket->__Set(
+            ( $val, $msg ) = $ticket->__set(
                 Field => 'Priority',
                 Value => $new_value,
             );
         }
         else {
-            ( $val, $msg ) = $ticket->_Set(
+            ( $val, $msg ) = $ticket->_set(
                 Field             => 'Priority',
                 Value             => $new_value,
                 RecordTransaction => 0,
@@ -263,7 +263,7 @@ sub Commit {
         }
     }
     else {
-        ( $val, $msg ) = $ticket->SetPriority($new_value);
+        ( $val, $msg ) = $ticket->set_priority($new_value);
     }
 
     unless ($val) {

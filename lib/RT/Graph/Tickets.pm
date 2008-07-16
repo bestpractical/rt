@@ -113,8 +113,8 @@ our ( %fill_cache, @available_colors ) = ();
 our %property_cb = (
     Queue => sub { return $_[0]->queue_obj->name || $_[0]->queue },
     CF => sub {
-        my $values = $_[0]->CustomFieldValues( $_[1] );
-        return join ', ', map $_->Content, @{ $values->items_array_ref };
+        my $values = $_[0]->custom_field_values( $_[1] );
+        return join ', ', map $_->content, @{ $values->items_array_ref };
     },
 );
 foreach my $field (qw(Subject Status TimeLeft TimeWorked TimeEstimated)) {
@@ -162,12 +162,12 @@ sub TicketProperties {
           [qw(MemberOf Members DependsOn DependedOnBy RefersTo ReferredToBy)],
     );
     my $cfs = RT::Model::CustomFieldCollection->new($user);
-    $cfs->LimitToLookupType('RT::Model::Queue-RT::Model::Ticket');
-    $cfs->OrderBy( FIELD => 'Name' );
+    $cfs->limit_to_lookup_type('RT::Model::Queue-RT::Model::Ticket');
+    $cfs->order_by( field => 'Name' );
     my ( $first, %seen ) = (1);
     while ( my $cf = $cfs->next ) {
         next if $seen{ lc $cf->name }++;
-        next if $cf->Type eq 'Image';
+        next if $cf->type eq 'Image';
         if ($first) {
             push @res, 'CustomFields', [];
             $first = 0;
@@ -204,7 +204,7 @@ sub _PropertiesToFields {
 
     my @fields;
     foreach my $property (@properties) {
-        my ( $key, @subkeys ) = $self->_SplitProperty($property);
+        my ( $key, @subkeys ) = $self->_split_property($property);
         unless ( $property_cb{$key} ) {
             Jifty->log->error(
 "Couldn't find property handler for '$key' and '@subkeys' subkeys"
@@ -231,13 +231,13 @@ sub AddTicket {
 
     my %node_style = (
         style => 'filled,rounded',
-        %{ $ticket_status_style{ $args{'Ticket'}->Status } || {} },
+        %{ $ticket_status_style{ $args{'Ticket'}->status } || {} },
         URL => $RT::WebPath . '/Ticket/Display.html?id=' . $args{'Ticket'}->id,
         tooltip =>
-          gv_escape( $args{'Ticket'}->Subject || '#' . $args{'Ticket'}->id ),
+          gv_escape( $args{'Ticket'}->subject || '#' . $args{'Ticket'}->id ),
     );
 
-    my @fields = $self->_PropertiesToFields(%args);
+    my @fields = $self->_properties_to_fields(%args);
     if (@fields) {
         unshift @fields, $args{'Ticket'}->id;
         my $label = join ' | ', map { s/(?=[{}|])/\\/g; $_ } @fields;
@@ -248,7 +248,7 @@ sub AddTicket {
     }
 
     if ( $args{'FillUsing'} ) {
-        my ( $key, @subkeys ) = $self->_SplitProperty( $args{'FillUsing'} );
+        my ( $key, @subkeys ) = $self->_split_property( $args{'FillUsing'} );
         my $value;
         if ( $property_cb{$key} ) {
             $value = $property_cb{$key}->( $args{'Ticket'}, @subkeys );
@@ -312,7 +312,7 @@ sub TicketLinks {
     $args{'Seen'} ||= {};
     return $args{'Graph'} if $args{'Seen'}{ $args{'Ticket'}->id }++;
 
-    $self->AddTicket(%args);
+    $self->add_ticket(%args);
 
     return $args{'Graph'}
       if $args{'MaxDepth'} && $args{'CurrentDepth'} >= $args{'MaxDepth'};
@@ -324,7 +324,7 @@ sub TicketLinks {
 
     foreach my $type ( $args{'LeadingLink'}, @{ $args{'ShowLinks'} } ) {
         my $links = $args{'Ticket'}->$type();
-        $links->GotoFirstItem;
+        $links->goto_first_item;
         while ( my $link = $links->next ) {
             next if $args{'SeenEdge'}{ $link->id }++;
 
@@ -336,7 +336,7 @@ sub TicketLinks {
 
             my $next = $target->id == $args{'Ticket'}->id ? $base : $target;
 
-            $self->TicketLinks(
+            $self->ticket_links(
                 %args,
                 Ticket => $next,
                 $type eq $args{'LeadingLink'}
@@ -352,10 +352,10 @@ sub TicketLinks {
             $args{'Graph'}->add_edge(
 
                 # we revers order of member links to get better layout
-                $link->Type eq 'MemberOf'
+                $link->type eq 'MemberOf'
                 ? ( $target->id => $base->id, dir => 'back' )
                 : ( $base->id => $target->id ),
-                %{ $link_style{ $link->Type } || {} },
+                %{ $link_style{ $link->type } || {} },
                 $desc ? ( label => gv_escape $desc) : (),
             );
         }

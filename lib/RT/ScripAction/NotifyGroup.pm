@@ -79,15 +79,15 @@ Sets the recipients of this message to Groups and/or Users.
 sub SetRecipients {
     my $self = shift;
 
-    my $arg = $self->Argument;
+    my $arg = $self->argument;
 
     my $old_arg = eval { Storable::thaw($arg) };
     unless ($@) {
-        $arg = $self->__ConvertOldArg($old_arg);
+        $arg = $self->__convert_old_arg($old_arg);
     }
 
-    foreach ( $self->__SplitArg($arg) ) {
-        $self->_HandleArgument($_);
+    foreach ( $self->__split_arg($arg) ) {
+        $self->_handle_argument($_);
     }
 
     my $creator = $self->transaction_obj->creator_obj->email();
@@ -105,23 +105,23 @@ sub _HandleArgument {
     my $instance = shift;
 
     my $obj = RT::Principal->new(RT->system_user);
-    $obj->Load($instance);
+    $obj->load($instance);
     unless ( $obj->id ) {
         Jifty->log->error("Couldn't load principal #$instance");
         return;
     }
-    if ( $obj->Disabled ) {
+    if ( $obj->disabled ) {
         Jifty->log->info("Principal #$instance is disabled => skip");
         return;
     }
-    if ( !$obj->PrincipalType ) {
+    if ( !$obj->principal_type ) {
         Jifty->log->crit("Principal #$instance has empty type");
     }
-    elsif ( lc $obj->PrincipalType eq 'user' ) {
-        $self->__HandleUserArgument( $obj->Object );
+    elsif ( lc $obj->principal_type eq 'user' ) {
+        $self->__handle_user_argument( $obj->object );
     }
-    elsif ( lc $obj->PrincipalType eq 'group' ) {
-        $self->__HandleGroupArgument( $obj->Object );
+    elsif ( lc $obj->principal_type eq 'group' ) {
+        $self->__handle_group_argument( $obj->object );
     }
     else {
         Jifty->log->info("Principal #$instance has unsupported type");
@@ -138,16 +138,16 @@ sub __HandleUserArgument {
         Jifty->log->warn( "User #" . $obj->id . " has no email address" );
         return;
     }
-    $self->__PushUserAddress($uea);
+    $self->__push_user_address($uea);
 }
 
 sub __HandleGroupArgument {
     my $self = shift;
     my $obj  = shift;
 
-    my $members = $obj->UserMembersObj;
+    my $members = $obj->user_members_obj;
     while ( my $m = $members->next ) {
-        $self->__HandleUserArgument($m);
+        $self->__handle_user_argument($m);
     }
 }
 
@@ -171,7 +171,7 @@ sub __ConvertOldArg {
         else {
             next;
         }
-        $obj->Load( $r->{'instance'} );
+        $obj->load( $r->{'instance'} );
         my $id = $obj->id;
         next unless ($id);
 

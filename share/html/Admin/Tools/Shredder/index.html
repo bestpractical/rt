@@ -109,14 +109,14 @@ if( $Plugin ) { { # use additional block({}) to effectively exit block on errors
         next unless $k =~ /^\Q$Plugin\E:(.*)$/;
         $args{ $1 } = $ARGS{$k};
     }
-    ( $status, $msg ) = $plugin_obj->HasSupportForArgs( keys %args );
+    ( $status, $msg ) = $plugin_obj->has_support_for_args( keys %args );
     unless( $status ) {
         push @{ $messages{Errors} }, $msg;
         $Search = '';
         last;
     }
 
-    ($status, $msg) = eval { $plugin_obj->TestArgs( %args ) };
+    ($status, $msg) = eval { $plugin_obj->test_args( %args ) };
     $catch_non_fatals->() && last if $@;
     unless( $status ) {
         push @{ $messages{Errors} }, $msg;
@@ -144,7 +144,7 @@ if( $Plugin && $Wipeout ) { { # use additional block({}) to effectively exit blo
         last;
     }
 
-    ($dump_file) = $backup_plugin->FileName;
+    ($dump_file) = $backup_plugin->file_name;
     push @{ $messages{'Success'} }, "SQL dump file is '$dump_file'";
 
     $shredder->add_dump_plugin( object => $backup_plugin );
@@ -156,7 +156,7 @@ if( $Plugin && $Wipeout ) { { # use additional block({}) to effectively exit blo
         $Search = ''; @objs = ();
         last;
     }
-    eval { $shredder->WipeoutAll };
+    eval { $shredder->wipeout_all };
 
     $catch_non_fatals->() && last if $@;
 
@@ -166,7 +166,7 @@ if( $Plugin && $Wipeout ) { { # use additional block({}) to effectively exit blo
 
 if( $Plugin && ( $Search || $Wipeout ) ) { { # use additional block({}) to effectively exit block on errors
     my $status;
-    ($status, @objs) = eval { $plugin_obj->Run };
+    ($status, @objs) = eval { $plugin_obj->run };
     $catch_non_fatals->() && last if $@;
     unless( $status ) {
         push @{ $messages{Errors} }, $objs[0];

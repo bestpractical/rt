@@ -339,7 +339,7 @@ sub parse {
         ( $rv, $msg ) = $self->_parse(@_);
     }
 
-# We only HTMLify things if the template includes at least one Transaction->Content call.
+# We only HTMLify things if the template includes at least one Transaction->content call.
     return ( $rv, $msg ) unless $rv and $self->content =~ /->\s*Content\b/;
 
     my $orig_entity = $self->mime_obj;

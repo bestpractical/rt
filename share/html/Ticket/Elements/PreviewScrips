@@ -57,7 +57,7 @@ my @non_recipients = @{ $squelch{'emails'} };
 </%init>
 <h2><&|/l&>This message will be sent to...</&></h2>
 
-% if ( $object and $object->Scrips ) {
+% if ( $object and $object->scrips ) {
 <i><&|/l&>(Check boxes to disable notifications to the listed recipients)</&></i><br />
 
 % foreach my $scrip (@{$object->scrips->prepared}) {

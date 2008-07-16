@@ -56,14 +56,14 @@ if ( $arg =~ m{^(\d+)$}i ) {
 }
 
 my $ticket = RT::Model::Ticket->new( current_user => Jifty->web->current_user );
-$ticket->Load( $id );
+$ticket->load( $id );
 unless ( $ticket->id ) {
     Jifty->log->error("Couldn't load ticket #$id");
     return $m->abort( 404 );
 }
 
 require RT::Graph::Tickets;
-my $graph = RT::Graph::Tickets->TicketLinks(
+my $graph = RT::Graph::Tickets->ticket_links(
     %ARGS,
     Ticket => $ticket,
 );

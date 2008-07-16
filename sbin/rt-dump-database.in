@@ -128,7 +128,7 @@ foreach my $class (@classes) {
 	next if $obj->can('last_updated_by') and $obj->last_updated_by == $system_userId;
 
 	if (!%fields) {
-	    %fields = map { $_ => 1 } keys %{$obj->_ClassAccessible};
+	    %fields = map { $_ => 1 } keys %{$obj->_class_accessible};
 	    delete @fields{
 		@{$Ignore{$class}||=[]},
 		@{$Ignore{All}||=[]},

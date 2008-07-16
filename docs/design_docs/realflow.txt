@@ -113,7 +113,7 @@ Prohibit Ticket Operation:
               -> Rule: xxx
 
 isa_ok( $Approval->type, 'RT::Model::Ticket' );
-is( $Approval->Workflow->name, 'W' );
+is( $Approval->workflow->name, 'W' );
 is( $Approval->stage->name, 'Approval' );
 
 [Queue: A]
@@ -130,8 +130,8 @@ is( $Approval->stage->name, 'Approval' );
 [stage: TOP]
   -> Rule: OnCreate Runstage Approval
 
-ok( TicketA->Rules->has_entry($ApprovalRule) )
-ok( TicketB->Rules->has_entry($ApprovalRule) )
+ok( TicketA->rules->has_entry($ApprovalRule) )
+ok( TicketB->rules->has_entry($ApprovalRule) )
 
 [Rule: Approval]
   -> Rule: OnResolve Runstage SUCCESS
@@ -162,14 +162,14 @@ ok( TicketB->Rules->has_entry($ApprovalRule) )
      `==> [stage2] ==>'
 
 OnTransaction:
-    $self->ticket->Queues->scrips->apply
+    $self->ticket->queues->scrips->apply
 
 OnTransaction:
-    $self->ticket->Queues->scrips->apply
+    $self->ticket->queues->scrips->apply
                  ->scrips->apply
 
 OnTransaction:
-    $self->ticket->Queues->scrips->apply
+    $self->ticket->queues->scrips->apply
                  ->stages->scrips->apply
 
 [QueueX]

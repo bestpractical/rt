@@ -71,7 +71,7 @@
 <tr><td class="label">
 <&|/l&>Queries</&>:
 </td><td class="value">
-% my @searches = grep { defined } $DashboardObj->Searches;
+% my @searches = grep { defined } $DashboardObj->searches;
 % if (!@searches) {
 (none)
 % } else {
@@ -157,7 +157,7 @@ monthly</input> , on day
 </tr>
 </table>
 
-% if ($SubscriptionObj->Id) {
+% if ($SubscriptionObj->id) {
     <& /Elements/Submit, Name => "Save", Label => loc('Save Changes') &>
 % } else {
     <& /Elements/Submit, Name => "Save", Label => loc('Subscribe') &>
@@ -180,16 +180,16 @@ my $SubscriptionObj = RT::Model::Attribute->new( current_user => Jifty->web->cur
 
 # first let's see if we already have a subscription to this DashboardId
 for my $sub (Jifty->web->current_user->user_object->attributes->named('Subscription')) {
-    next unless $sub->SubValue('DashboardId') == $DashboardId;
+    next unless $sub->sub_value('DashboardId') == $DashboardId;
     $SubscriptionObj = $sub;
     last;
 }
 
-$DashboardId = $SubscriptionObj->Id
-             ? $SubscriptionObj->SubValue('DashboardId')
+$DashboardId = $SubscriptionObj->id
+             ? $SubscriptionObj->sub_value('DashboardId')
              : $ARGS{'DashboardId'};
 
-($val, $msg) = $DashboardObj->LoadById($DashboardId);
+($val, $msg) = $DashboardObj->load_by_id($DashboardId);
 $val || abort(loc("Couldn't load dashboard %1: %2.", $DashboardId, $msg));
 
 my %fields = (
@@ -202,9 +202,9 @@ my %fields = (
 );
 
 # update any fields with the values from the subscription object
-if ($SubscriptionObj->Id) {
+if ($SubscriptionObj->id) {
     for my $field (keys %fields) {
-        $fields{$field} = $SubscriptionObj->SubValue($field);
+        $fields{$field} = $SubscriptionObj->sub_value($field);
     }
 }
 
@@ -219,9 +219,9 @@ for my $field (keys %fields) {
 # this'll be defined on submit
 if (defined $ARGS{Save}) {
     # update
-    if ($SubscriptionObj->Id) {
+    if ($SubscriptionObj->id) {
         $DashboardId = delete $fields{'DashboardId'}; # immutable
-        ($val, $msg) = $SubscriptionObj->SetSubValues(%fields);
+        ($val, $msg) = $SubscriptionObj->set_sub_values(%fields);
         $fields{'DashboardId'} = $DashboardId;
 
         # not so good to spew base64-encoded data at the user :)
@@ -234,9 +234,9 @@ if (defined $ARGS{Save}) {
     # create
     else {
         abort(loc("Unable to subscribe to dashboard %1: Permission denied", $DashboardId))
-            unless $DashboardObj->CurrentUserCanSubscribe;
+            unless $DashboardObj->current_user_can_subscribe;
 
-        my ($val, $msg) = $SubscriptionObj->Create(
+        my ($val, $msg) = $SubscriptionObj->create(
             Name        => 'Subscription',
             description => 'Subscription to dashboard ' . $DashboardId,
             ContentType => 'storable',
@@ -254,7 +254,7 @@ if (defined $ARGS{Save}) {
     }
 }
 
-if ($SubscriptionObj->Id) {
+if ($SubscriptionObj->id) {
     $title = loc("Modify the subscription to dashboard %1", $DashboardObj->name);
 }
 else {

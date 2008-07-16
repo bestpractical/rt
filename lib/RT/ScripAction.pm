@@ -74,7 +74,7 @@ sub new {
     my $class = ref($proto) || $proto;
     my $self  = {};
     bless( $self, $class );
-    $self->_Init(@_);
+    $self->_init(@_);
     return $self;
 }
 
@@ -97,7 +97,7 @@ sub _Init {
     );
 
     $self->{'Argument'} = $args{'Argument'};
-    $self->CurrentUser( $args{'CurrentUser'} );
+    $self->current_user( $args{'CurrentUser'} );
     $self->{'ScripActionObj'} = $args{'ScripActionObj'};
     $self->{'ScripObj'}       = $args{'ScripObj'};
     $self->{'TemplateObj'}    = $args{'TemplateObj'};

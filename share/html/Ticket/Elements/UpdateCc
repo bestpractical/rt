@@ -77,5 +77,5 @@ $ticket_obj
 </%args>
 <%init>
 my %txn_addresses = %{$ticket_obj->transaction_addresses};
-my @req_addresses = split /,/, $ticket_obj->RequestorAddresses;
+my @req_addresses = split /,/, $ticket_obj->requestor_addresses;
 </%init>

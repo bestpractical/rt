@@ -442,14 +442,14 @@ You are subscribed to a dashboard that is currently missing. Most likely, the da
 
 RT will remove this subscription as it is no longer useful. Here's the information RT had about your subscription:
 
-DashboardID:  { $subscription_obj->SubValue('Dashboardid') }
-Frequency:    { $subscription_obj->SubValue('Frequency') }
-Hour:         { $subscription_obj->SubValue('Hour') }
+DashboardID:  { $subscription_obj->sub_value('Dashboardid') }
+Frequency:    { $subscription_obj->sub_value('Frequency') }
+Hour:         { $subscription_obj->sub_value('Hour') }
 {
-    $subscription_obj->SubValue('Frequency') eq 'weekly'
-    ? "Day of week:  " . $subscription_obj->SubValue('Dow')
-    : $subscription_obj->SubValue('Frequency') eq 'monthly'
-      ? "Day of month: " . $subscription_obj->SubValue('Dom')
+    $subscription_obj->sub_value('Frequency') eq 'weekly'
+    ? "Day of week:  " . $subscription_obj->sub_value('Dow')
+    : $subscription_obj->sub_value('Frequency') eq 'monthly'
+      ? "Day of month: " . $subscription_obj->sub_value('Dom')
       : ''
 }
 }

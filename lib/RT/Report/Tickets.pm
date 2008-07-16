@@ -200,7 +200,7 @@ sub _field_to_function {
     }
     elsif ( $field =~ /^(?:Watcher|(Requestor|Cc|AdminCc))$/ ) {
         my $type = $1;
-        my ( $g_alias, $gm_alias, $u_alias ) = $self->_Watcherjoin($type);
+        my ( $g_alias, $gm_alias, $u_alias ) = $self->_watcherjoin($type);
         @args{qw(alias column)} = ( $u_alias, 'name' );
     }
     return %args;

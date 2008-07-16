@@ -56,7 +56,7 @@ if (RT->install_mode) {
     require RT::Installer;
 
     $RT::Installer->{'CurrentUser'} = RT::CurrentUser->new();
-    $RT::Installer->{Meta} = RT::Installer->Meta;
+    $RT::Installer->{Meta} = RT::Installer->meta;
     $m->call_next;
 }
 else {

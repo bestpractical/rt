@@ -1350,7 +1350,7 @@ sub set_queue {
     if ($status) {
 
         # On queue change, change queue for reminders too
-        my $reminder_collection = $self->Reminders->Collection;
+        my $reminder_collection = $self->reminders->collection;
         while ( my $reminder = $reminder_collection->next ) {
             my ( $status, $msg ) = $reminder->set_queue($NewQueue);
             Jifty->log->error( 'Queue change failed for reminder #'

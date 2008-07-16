@@ -392,7 +392,7 @@ my $year = (localtime(time))[5] + 1900;
 #    TODO: {
 #        local $TODO = "BUG or subject to change Date handling to support unix time <= 0";
 #        $date->unix(0);
-#        $date->AddSeconds(-2);
+#        $date->add_seconds(-2);
 #        ok($date->unix > 0);
 #    }
 

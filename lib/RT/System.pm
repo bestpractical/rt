@@ -145,7 +145,7 @@ sub subject_tag {
     my $queue = shift;
 
     my $map = $self->first_attribute('BrandedSubjectTag');
-    $map = $map->Content if $map;
+    $map = $map->content if $map;
     return $queue ? undef : () unless $map;
 
     return $map->{ $queue->id } if $queue;

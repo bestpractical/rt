@@ -127,10 +127,10 @@ debug "Sending email from %1", $from;
 
 # look through each user for her subscriptions
 my $Users = RT::Model::UserCollection->new(RT->system_user);
-$Users->LimitToPrivileged;
+$Users->limit_to_privileged;
 
 while (defined(my $user = $Users->next)) {
-    if ($user->principal_object->Disabled) {
+    if ($user->principal_object->disabled) {
         debug "Skipping over "
             . $user->name
             . " due to having a disabled account.";
@@ -144,34 +144,34 @@ while (defined(my $user = $Users->next)) {
         next;
     }
 
-    my ($hour, $dow, $dom) = hour_dow_dom_in($user->Timezone || RT->config->get('Timezone'));
+    my ($hour, $dow, $dom) = hour_dow_dom_in($user->timezone || RT->config->get('Timezone'));
     $hour .= ':00';
     debug "Checking %1's subscriptions: hour %2, dow %3, dom %4",
           $user->name, $hour, $dow, $dom;
 
     my $currentuser = RT::CurrentUser->new;
-    $currentuser->LoadByName($user->name);
+    $currentuser->load_by_name($user->name);
 
     # look through this user's subscriptions, are any supposed to be generated
     # right now?
-    for my $subscription ($user->attributes->Named('Subscription')) {
+    for my $subscription ($user->attributes->named('Subscription')) {
 
         if (!$opts{all}) {
-            debug "Checking against subscription with frequency %1, hour %2, dow %3, dom %4", $subscription->SubValue('Frequency'), $subscription->SubValue('Hour'), $subscription->SubValue('Dow'), $subscription->SubValue('Dom');
+            debug "Checking against subscription with frequency %1, hour %2, dow %3, dom %4", $subscription->sub_value('Frequency'), $subscription->sub_value('Hour'), $subscription->sub_value('Dow'), $subscription->sub_value('Dom');
 
-            next if $subscription->SubValue('Frequency') eq 'never';
+            next if $subscription->sub_value('Frequency') eq 'never';
 
             # correct hour?
-            next if $subscription->SubValue('Hour') ne $hour;
+            next if $subscription->sub_value('Hour') ne $hour;
 
             # if weekly, correct day of week?
-            if ($subscription->SubValue('Frequency') eq 'weekly') {
-                next if $subscription->SubValue('Dow') ne $dow;
+            if ($subscription->sub_value('Frequency') eq 'weekly') {
+                next if $subscription->sub_value('Dow') ne $dow;
             }
 
             # if monthly, correct day of month?
-            elsif ($subscription->SubValue('Frequency') eq 'monthly') {
-                next if $subscription->SubValue('Dom') != $dom;
+            elsif ($subscription->sub_value('Frequency') eq 'monthly') {
+                next if $subscription->sub_value('Dom') != $dom;
             }
         }
 
@@ -183,17 +183,17 @@ while (defined(my $user = $Users->next)) {
 sub send_dashboard {
     my ($currentuser, $subscription) = @_;
 
-    my $rows = $subscription->SubValue('Rows');
+    my $rows = $subscription->sub_value('Rows');
 
     my $dashboard = RT::Dashboard->new($currentuser);
 
-    my ($ok, $msg) = $dashboard->LoadById($subscription->SubValue('DashboardId'));
+    my ($ok, $msg) = $dashboard->load_by_id($subscription->sub_value('DashboardId'));
 
     # failed to load dashboard. perhaps it was deleted or it changed privacy
     if (!$ok) {
         warning "Unable to load dashboard %1 of subscription %2 for user %3: %4",
-            $subscription->SubValue('DashboardId'),
-            $subscription->Id,
+            $subscription->sub_value('DashboardId'),
+            $subscription->id,
             $currentuser->name,
             $msg;
 
@@ -208,7 +208,7 @@ sub send_dashboard {
 
         # only delete the subscription if the email looks like it went through
         if ($ok) {
-            my ($deleted, $msg) = $subscription->Delete();
+            my ($deleted, $msg) = $subscription->delete();
             if ($deleted) {
                 verbose("Deleted an obsolete subscription: %1", $msg);
             }
@@ -238,7 +238,7 @@ SUMMARY
     $HTML::Mason::Commands::session{CurrentUser} = $currentuser;
     my $contents = run_component(
         '/Dashboards/Render.html',
-        id      => $dashboard->Id,
+        id      => $dashboard->id,
         Preview => 0,
     );
 
@@ -266,7 +266,7 @@ sub email_dashboard {
 
     my $subject = sprintf '[%s] ' .  RT->config->get('DashboardSubject'),
         RT->config->get('rtname'),
-        ucfirst($subscription->SubValue('Frequency')),
+        ucfirst($subscription->sub_value('Frequency')),
         $dashboard->name;
 
     my $entity = build_email(
@@ -358,7 +358,7 @@ sub get_from {
         unless ($mason) {
             debug "Creating Mason object.";
             $mason = HTML::Mason::Interp->new(
-                RT::Interface::Web::Handler->DefaultHandlerArgs,
+                RT::Interface::Web::Handler->default_handler_args,
                 out_method => \$outbuf,
                 autohandler_name => '', # disable forced login and more
             );

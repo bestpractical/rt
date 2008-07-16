@@ -212,7 +212,7 @@ our %META = (
                 my $ret = { Values => [], values_label => {} };
                 my $q = new RT::Model::Queues(
                     $HTML::Mason::Commands::session{'current_user'} );
-                $q->Unlimit;
+                $q->unlimit;
                 while ( my $queue = $q->next ) {
                     next unless $queue->current_user_has_right("CreateTicket");
                     push @{ $ret->{Values} }, $queue->id;
@@ -284,7 +284,7 @@ our %META = (
 
             if ( $gpg->{'enable'} ) {
                 require RT::Crypt::GnuPG;
-                unless ( RT::Crypt::GnuPG->Probe() ) {
+                unless ( RT::Crypt::GnuPG->probe() ) {
                     Jifty->log->debug(
 "RT's GnuPG libraries couldn't successfully execute gpg."
                           . " PGP support has been disabled" );

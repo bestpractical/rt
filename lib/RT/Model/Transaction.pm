@@ -1309,7 +1309,7 @@ sub DeferredRecipients {
 
     return () unless ($attr);
 
-    my $deferred = $attr->Content;
+    my $deferred = $attr->content;
 
     return () unless ( ref($deferred) eq 'HASH' && exists $deferred->{$freq} );
 

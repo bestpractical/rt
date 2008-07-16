@@ -58,7 +58,7 @@ my $privacy = RT::Dashboard->_build_privacy($Object);
 while (my $attr = $Object->attributes->next) {
     if ($attr->name =~ /^Dashboard\b/) {
         my $dashboard = RT::Dashboard->new( current_user => Jifty->web->current_user );
-        my ($ok, $msg) = $dashboard->Load($privacy, $attr->id);
+        my ($ok, $msg) = $dashboard->load($privacy, $attr->id);
 
         if (!$ok) {
             Jifty->log->debug("Unable to load dashboard $ok (privacy $privacy): $msg");

@@ -72,7 +72,7 @@ if ( $Run ) {
     my @actions = split /,/, $RT::Installer->{DatabaseAction};
 
     my $sysdbh = DBI->connect(
-        RT::Handle->SystemDSN,
+        RT::Handle->system_dsn,
         $RT::Installer->{InstallConfig}{DatabaseAdmin},
         $RT::Installer->{InstallConfig}{DatabaseAdminPassword}, 
         { RaiseError => 0, PrintError => 0 },
@@ -82,7 +82,7 @@ if ( $Run ) {
     my ( $status, $msg ) = ( 1, '' );
 
     if ( $actions[0] eq 'create' ) {
-        ($status, $msg) = RT::Handle->CreateDatabase( $sysdbh );
+        ($status, $msg) = RT::Handle->create_database( $sysdbh );
         unless ( $status ) {
             push @errors, loc('ERROR: %1', $msg );
         }
@@ -102,23 +102,23 @@ if ( $Run ) {
         foreach my $action ( @actions ) {
             ($status, $msg) = (1, '');
             if ( $action eq 'schema' ) {
-                ($status, $msg) = RT::Handle->InsertSchema( $dbh );
+                ($status, $msg) = RT::Handle->insert_schema( $dbh );
             }
             elsif ( $action eq 'acl' ) {
-                ($status, $msg) = RT::Handle->InsertACL( $dbh );
+                ($status, $msg) = RT::Handle->insert_acl( $dbh );
             }
             elsif ( $action eq 'coredata' ) {
                 $RT::Handle = new RT::Handle;
                 $RT::Handle->dbh( undef );
                 RT::ConnectToDatabase();
                 RT::InitLogging();
-                ($status, $msg) = $RT::Handle->InsertInitialData;
+                ($status, $msg) = $RT::Handle->insert_initial_data;
             }
             elsif ( $action eq 'insert' ) {
                 $RT::Handle = new RT::Handle;
                 RT::Init();
                 my $file = $RT::EtcPath . "/initialdata";
-                ($status, $msg) = $RT::Handle->InsertData( $file );
+                ($status, $msg) = $RT::Handle->insert_data( $file );
             }
             unless ( $status ) {
                 push @errors, loc('ERROR: %1', $msg);

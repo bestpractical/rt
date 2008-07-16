@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-# lowers ->CamelCase
+# lowers ->camel_case
 # find lib/ -type f | xargs perl -i -n temp_refactoring_tools/lower_method_calls.pl
 
 my %bad = map { $_ => 1 } qw(

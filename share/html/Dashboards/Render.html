@@ -58,9 +58,9 @@
 <tr valign="top">
 
 <td class="boxcontainer" width="70%">
-% foreach ($DashboardObj->SearchIds) {
+% foreach ($DashboardObj->search_ids) {
 %   my ($type, $id, $desc) = @$_;
-%   my @for_showsearch = $DashboardObj->SearchPrivacy(@$_);
+%   my @for_showsearch = $DashboardObj->search_privacy(@$_);
     <& /Elements/ShowSearch,
         @for_showsearch,
         Override => { Rows => $rows },
@@ -79,7 +79,7 @@ my $current_subtab = 'Dashboards/Render.html?id=' . $id;
 
 use RT::Dashboard;
 my $DashboardObj = RT::Dashboard->new( current_user => Jifty->web->current_user );
-my ($ok, $msg) = $DashboardObj->LoadById($id);
+my ($ok, $msg) = $DashboardObj->load_by_id($id);
 abort(loc("Couldn't load dashboard %1: %2", $id, $msg)) if !$ok;
 
 my $SubscriptionObj = RT::Model::Attribute->new( current_user => Jifty->web->current_user );
@@ -87,13 +87,13 @@ my $Loaded = 0;
 
 # try to load the subscription to this id
 for my $sub (Jifty->web->current_user->user_object->attributes->named('Subscription')) {
-    next unless $sub->SubValue('DashboardId') == $id;
+    next unless $sub->sub_value('DashboardId') == $id;
     $SubscriptionObj = $sub;
     $Loaded = 1;
     last;
 }
 
-my $rows = $Loaded ? $SubscriptionObj->SubValue('Rows') : 20;
+my $rows = $Loaded ? $SubscriptionObj->sub_value('Rows') : 20;
 my $title = $DashboardObj->name;
 
 </%INIT>

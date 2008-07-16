@@ -34,7 +34,7 @@ RT->config->get('TransactionTypes')
    - used by all UIs to create menues of possible (user) actions (one TransactionType is a user action)
 
 The UIs should call sth like
-$Ticket->AddTransaction($Transactionname), which should be equivalent
+$Ticket->add_transaction($Transactionname), which should be equivalent
 with i.e.  $Ticket->correspond when $Transactionname is 'Correspond'
 (AUTOLOAD should call the do-sub if exists
 RT->config->get('TransactionTypes')->{$Transactionname})

@@ -76,7 +76,7 @@
 % }
 <br />
 
-% my @properties = RT::Graph::Tickets->TicketProperties( current_user => Jifty->web->current_user );
+% my @properties = RT::Graph::Tickets->ticket_properties( current_user => Jifty->web->current_user );
 
 Fill boxes with color using:
 <select name="FillUsing">

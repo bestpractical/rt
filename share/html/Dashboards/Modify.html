@@ -55,10 +55,10 @@
 
 <form action="<%RT->config->get('WebPath')%>/Dashboards/Modify.html" method="post" enctype="multipart/form-data" name="ModifyDashboard">
 
-%unless ($Dashboard->Id) {
+%unless ($Dashboard->id) {
 <input type="hidden" class="hidden" name="id" value="new" />
 % } else {
-<input type="hidden" class="hidden" name="id" value="<%$Dashboard->Id%>" />
+<input type="hidden" class="hidden" name="id" value="<%$Dashboard->id%>" />
 % }
 <table>
 <tr><td align="right">
@@ -69,11 +69,11 @@
 <tr><td align="right">
 <&|/l&>Privacy</&>:
 </td><td>
-<& /Dashboards/Elements/SelectPrivacy, Name => "Privacy", Objects => \@privacies, Default => $Dashboard->Privacy &>
+<& /Dashboards/Elements/SelectPrivacy, Name => "Privacy", Objects => \@privacies, Default => $Dashboard->privacy &>
 </td></tr>
 </table>
 <& /Elements/Submit, Name => 'Save', Label => loc('Save Changes') &>
-% if ($Dashboard->Id && $can_delete) {
+% if ($Dashboard->id && $can_delete) {
 <& /Elements/Submit, Name => 'Delete', Label => loc('Delete') &>
 % }
 </form>
@@ -101,7 +101,7 @@ else {
     if ($id eq 'new') {
         $tried_create = 1;
 
-        my ($val, $msg) = $Dashboard->Save(
+        my ($val, $msg) = $Dashboard->save(
             Name    => $ARGS{'Name'},
             Privacy => $ARGS{'Privacy'},
         );
@@ -111,10 +111,10 @@ else {
         }
 
         push @results, $msg;
-        $id = $Dashboard->Id;
+        $id = $Dashboard->id;
     }
     else {
-        my ($ok, $msg) = $Dashboard->LoadById($id);
+        my ($ok, $msg) = $Dashboard->load_by_id($id);
         $ok || abort($msg);
     }
 
@@ -131,7 +131,7 @@ else {
 }
 
 if (!$Create && !$tried_create && $id && $ARGS{'Save'}) {
-    my ($ok, $msg) = $Dashboard->Update(Privacy  => $ARGS{'Privacy'},
+    my ($ok, $msg) = $Dashboard->update(Privacy  => $ARGS{'Privacy'},
                                         Name     => $ARGS{'Name'});
 
     if ($ok) {
@@ -143,10 +143,10 @@ if (!$Create && !$tried_create && $id && $ARGS{'Save'}) {
 
 }
 
-my $can_delete = $Dashboard->CurrentUserCanDelete;
+my $can_delete = $Dashboard->current_user_can_delete;
 
 if (!$Create && !$tried_create && $id && $ARGS{'Delete'}) {
-    my ($ok, $msg) = $Dashboard->Delete();
+    my ($ok, $msg) = $Dashboard->delete();
     $ok || abort(loc("Couldn't delete dashboard %1: %2", $id, $msg));
 
     # put the user back into a useful place with a message

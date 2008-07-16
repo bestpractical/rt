@@ -281,24 +281,24 @@ if ( $cloneTicket ) {
         if (0) { # Temporarily disabled
             my $depends = $cloneticket_obj->depends_on;
             while ( my $depend = $depends->next ) {
-                push @depends, $depend->Localtarget;
+                push @depends, $depend->localtarget;
             }
             $clone->{'new-DependsOn'} = join ' ', @depends;
 
             my $depends_by = $cloneticket_obj->depended_on_by;
             while ( my $depend_by = $depends_by->next ) {
-                push @depends_by, $depend_by->LocalBase;
+                push @depends_by, $depend_by->local_base;
             }
             $clone->{'DependsOn-new'} = join ' ', @depends_by;
 
             while ( my $member = $members->next ) {
-                push @members, $member->LocalBase;
+                push @members, $member->local_base;
             }
             $clone->{'MemberOf-new'} = join ' ', @members;
 
-            my $members_of = $cloneticket_obj->MemberOf;
+            my $members_of = $cloneticket_obj->member_of;
             while ( my $member_of = $members_of->next ) {
-                push @members_of, $member_of->Localtarget;
+                push @members_of, $member_of->localtarget;
             }
             $clone->{'new-MemberOf'} = join ' ', @members_of;
 

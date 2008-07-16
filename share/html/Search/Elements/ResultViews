@@ -73,6 +73,6 @@ $Shortquery_string => undef
 <%init>
 my $ical_path = join '/', map $m->interp->apply_escapes($_, 'u'),
     Jifty->web->current_user->user_object->name,
-    Jifty->web->current_user->user_object->GenerateAuthString( $Query ),
+    Jifty->web->current_user->user_object->generate_auth_string( $Query ),
     $Query;
 </%init>

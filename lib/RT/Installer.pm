@@ -287,7 +287,7 @@ sub ConfigFile {
 sub SaveConfig {
     my $class = shift;
 
-    my $file = $class->ConfigFile;
+    my $file = $class->config_file;
 
     my $content;
 
@@ -333,7 +333,7 @@ sub SaveConfig {
 =head1 SYNOPSYS
 
     use RT::Installer;
-    my $meta = RT::Installer->Meta;
+    my $meta = RT::Installer->meta;
 
 =head1 DESCRIPTION
 

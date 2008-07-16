@@ -160,8 +160,8 @@ sub send_digest {
 
     # Load our template.  If we cannot load the template, abort
     # immediately rather than failing through many loops.
-    my $digest_template = RT::Model::Template->new( RT->SystemUser );
-    my ( $ret, $msg ) = $digest_template->Load('Email Digest');
+    my $digest_template = RT::Model::Template->new( RT->system_user );
+    my ( $ret, $msg ) = $digest_template->load('Email Digest');
     unless ($ret) {
         print loc("Failed to load template")
             . " 'Email Digest': "
@@ -169,7 +169,7 @@ sub send_digest {
             . ".  Cannot continue.\n";
         exit 1;
     }
-    ( $ret, $msg ) = $digest_template->Parse( Argument => $body );
+    ( $ret, $msg ) = $digest_template->parse( Argument => $body );
     unless ($ret) {
         print loc("Failed to parse template")
             . " 'Email Digest'.  Cannot continue.\n";
@@ -177,7 +177,7 @@ sub send_digest {
     }
 
     # Set our sender and recipient.
-    $digest_template->MIMEObj->head->replace( 'From', RT::Config->Get('CorrespondAddress') );
+    $digest_template->MIMEObj->head->replace( 'From', RT::Config->get('CorrespondAddress') );
     $digest_template->MIMEObj->head->replace( 'To',   $to );
 
     if ($print) {
@@ -204,10 +204,10 @@ sub mark_transactions_sent {
 
         # Grab the attribute, mark the "sent" as true, and store the new
         # value.
-        if ( my $attr = $txn->FirstAttribute('DeferredRecipients') ) {
-            my $deferred = $attr->Content;
+        if ( my $attr = $txn->first_attribute('DeferredRecipients') ) {
+            my $deferred = $attr->content;
             $deferred->{$freq}->{$user}->{'_sent'} = 1;
-            $txn->SetAttribute(
+            $txn->set_attribute(
                 Name        => 'DeferredRecipients',
                 description => 'Deferred recipients for this message',
                 Content     => $deferred,
@@ -223,15 +223,15 @@ sub since_date {
     # this process exactly on time.
     my $OVERLAP_HEDGE = -30;
 
-    my $since_date = RT::Date->new( RT->SystemUser );
-    $since_date->Set( Format => 'unix', Value => time() );
+    my $since_date = RT::Date->new( RT->system_user );
+    $since_date->set( Format => 'unix', Value => time() );
     if ( $frequency eq 'daily' ) {
-        $since_date->AddDays(-1);
+        $since_date->add_days(-1);
     } else {
-        $since_date->AddDays(-7);
+        $since_date->add_days(-7);
     }
 
-    $since_date->AddSeconds($OVERLAP_HEDGE);
+    $since_date->add_seconds($OVERLAP_HEDGE);
 
     return $since_date;
 }
@@ -240,18 +240,18 @@ sub find_transactions {
     my $frequency  = shift;
     my $since_date = since_date($frequency);
 
-    my $txns = RT::Model::TransactionCollection->new( RT->SystemUser );
+    my $txns = RT::Model::TransactionCollection->new( RT->system_user );
 
     # First limit to recent transactions.
-    $txns->Limit(
-        FIELD    => 'Created',
+    $txns->limit(
+        field    => 'Created',
         OPERATOR => '>',
         VALUE    => $since_date->iso
     );
 
     # Next limit to ticket transactions.
-    $txns->Limit(
-        FIELD           => 'ObjectType',
+    $txns->limit(
+        field           => 'ObjectType',
         OPERATOR        => '=',
         VALUE           => 'RT::Model::Ticket',
         ENTRYAGGREGATOR => 'AND'
@@ -260,10 +260,10 @@ sub find_transactions {
     my $sent_transactions = {};
 
     while ( my $txn = $txns->next ) {
-        my $ticket = $txn->Ticket;
+        my $ticket = $txn->ticket;
         my $queue  = $txn->ticket_obj->queue_obj->name;
         # Xxx todo - may clobber if two queues have the same name
-        foreach my $user ( $txn->DeferredRecipients($frequency) ) {
+        foreach my $user ( $txn->deferred_recipients($frequency) ) {
             $all_digest->{$user}->{$queue}->{$ticket}->{ $txn->id } = $txn->content_obj;
             $sent_transactions->{$user}->{ $txn->id } = $txn;
         }
@@ -281,9 +281,9 @@ sub build_digest_for_user {
 
     # Has the user been disabled since a message was deferred on his/her
     # behalf?
-    my $user_obj = RT::Model::User->new( RT->SystemUser );
-    $user_obj->LoadByEmail($user);
-    if ( $user_obj->principal_object->Disabled ) {
+    my $user_obj = RT::Model::User->new( RT->system_user );
+    $user_obj->load_by_email($user);
+    if ( $user_obj->principal_object->disabled ) {
         print STDERR loc("Skipping disabled user") . " $user\n";
         next;
     }
@@ -294,14 +294,14 @@ sub build_digest_for_user {
         $contents_body .= "Queue $queue:\n";
         foreach my $ticket ( sort keys %{ $user_digest->{$queue} } ) {
             my $tkt_txns   = $user_digest->{$queue}->{$ticket};
-            my $ticket_obj = RT::Model::Ticket->new( RT->SystemUser );
-            $ticket_obj->Load($ticket);
+            my $ticket_obj = RT::Model::Ticket->new( RT->system_user );
+            $ticket_obj->load($ticket);
 
             # Spit out the index entry for this ticket.
             my $ticket_title = sprintf(
                 "#%d %s [%s]\t%s\n",
-                $ticket, $ticket_obj->Status, $ticket_obj->owner_obj->name,
-                $ticket_obj->Subject
+                $ticket, $ticket_obj->status, $ticket_obj->owner_obj->name,
+                $ticket_obj->subject
             );
             $contents_list .= $ticket_title;
 
@@ -312,21 +312,21 @@ sub build_digest_for_user {
 
                 # $msg contains an RT::Model::Attachment with our outgoing
                 # message.  Print a few headers for clarity's sake.
-                $contents_body .= "From: " . $msg->GetHeader('From') . "\n";
-                my $date = $msg->GetHeader('Date ');
+                $contents_body .= "From: " . $msg->get_header('From') . "\n";
+                my $date = $msg->get_header('Date ');
                 unless ($date) {
-                    my $txn_obj = RT::Model::Transaction->new( RT->SystemUser );
-                    $txn_obj->Load($txn);
-                    my $date_obj = RT::Date->new( RT->SystemUser );
-                    $date_obj->Set(
+                    my $txn_obj = RT::Model::Transaction->new( RT->system_user );
+                    $txn_obj->load($txn);
+                    my $date_obj = RT::Date->new( RT->system_user );
+                    $date_obj->set(
                         Format => 'sql',
-                        Value  => $txn_obj->Created
+                        Value  => $txn_obj->created
                     );
                     $date = strftime( '%a, %d %b %Y %H:%M:%S %z',
                         @{ [ localtime( $date_obj->unix ) ] } );
                 }
                 $contents_body .= "Date: $date\n\n";
-                $contents_body .= $msg->Content . "\n";
+                $contents_body .= $msg->content . "\n";
                 $contents_body .= "-------\n";
             }    # foreach transaction
         }    # foreach ticket

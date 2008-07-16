@@ -141,7 +141,7 @@ ok( $id, $msg );
 my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tix->from_sql("Queue = '$queue'");
 is($tix->count, 7, "found all the tickets")
-    or diag "wrong results from SQL:\n". $tix->BuildSelectcountQuery;
+    or diag "wrong results from SQL:\n". $tix->build_selectcount_query;
 
 
 # very simple searches. both CF and normal
@@ -149,73 +149,73 @@ is($tix->count, 7, "found all the tickets")
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tix->from_sql("Queue = '$queue' AND CF.SearchTest = 'foo1'");
 is($tix->count, 1, "matched identical subject")
-    or diag "wrong results from SQL:\n". $tix->BuildSelectcountQuery;
+    or diag "wrong results from SQL:\n". $tix->build_selectcount_query;
 
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tix->from_sql("Queue = '$queue' AND CF.SearchTest LIKE 'foo1'");
 is($tix->count, 1, "matched LIKE subject")
-    or diag "wrong results from SQL:\n". $tix->BuildSelectcountQuery;
+    or diag "wrong results from SQL:\n". $tix->build_selectcount_query;
 
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tix->from_sql("Queue = '$queue' AND CF.SearchTest = 'foo'");
 is($tix->count, 0, "IS a regexp match")
-    or diag "wrong results from SQL:\n". $tix->BuildSelectcountQuery;
+    or diag "wrong results from SQL:\n". $tix->build_selectcount_query;
 
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tix->from_sql("Queue = '$queue' AND CF.SearchTest LIKE 'foo'");
 is($tix->count, 5, "matched LIKE subject")
-    or diag "wrong results from SQL:\n". $tix->BuildSelectcountQuery;
+    or diag "wrong results from SQL:\n". $tix->build_selectcount_query;
 
 
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tix->from_sql("Queue = '$queue' AND CF.SearchTest IS NULL");
 is($tix->count, 2, "IS null CF")
-    or diag "wrong results from SQL:\n". $tix->BuildSelectcountQuery;
+    or diag "wrong results from SQL:\n". $tix->build_selectcount_query;
 
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tix->from_sql("Queue = '$queue' AND Requestors LIKE 'search1'");
 is($tix->count, 1, "LIKE requestor")
-    or diag "wrong results from SQL:\n". $tix->BuildSelectcountQuery;
+    or diag "wrong results from SQL:\n". $tix->build_selectcount_query;
 
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tix->from_sql("Queue = '$queue' AND Requestors = 'search1\@example.com'");
 is($tix->count, 1, "IS requestor")
-    or diag "wrong results from SQL:\n". $tix->BuildSelectcountQuery;
+    or diag "wrong results from SQL:\n". $tix->build_selectcount_query;
 
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tix->from_sql("Queue = '$queue' AND Requestors LIKE 'search'");
 is($tix->count, 6, "LIKE requestor")
-    or diag "wrong results from SQL:\n". $tix->BuildSelectcountQuery;
+    or diag "wrong results from SQL:\n". $tix->build_selectcount_query;
 
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tix->from_sql("Queue = '$queue' AND Requestors IS NULL");
 is($tix->count, 1, "Search for no requestor")
-    or diag "wrong results from SQL:\n". $tix->BuildSelectcountQuery;
+    or diag "wrong results from SQL:\n". $tix->build_selectcount_query;
 
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tix->from_sql("Queue = '$queue' AND subject = 'SearchTest1'");
 is($tix->count, 1, "IS subject")
-    or diag "wrong results from SQL:\n". $tix->BuildSelectcountQuery;
+    or diag "wrong results from SQL:\n". $tix->build_selectcount_query;
 
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tix->from_sql("Queue = '$queue' AND subject LIKE 'SearchTest1'");
 is($tix->count, 1, "LIKE subject")
-    or diag "wrong results from SQL:\n". $tix->BuildSelectcountQuery;
+    or diag "wrong results from SQL:\n". $tix->build_selectcount_query;
 
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tix->from_sql("Queue = '$queue' AND subject = ''");
 is($tix->count, 1, "found one ticket")
-    or diag "wrong results from SQL:\n". $tix->BuildSelectcountQuery;
+    or diag "wrong results from SQL:\n". $tix->build_selectcount_query;
 
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tix->from_sql("Queue = '$queue' AND subject LIKE 'SearchTest'");
 is($tix->count, 6, "found two ticket")
-    or diag "wrong results from SQL:\n". $tix->BuildSelectcountQuery;
+    or diag "wrong results from SQL:\n". $tix->build_selectcount_query;
 
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
 $tix->from_sql("Queue = '$queue' AND subject LIKE 'qwerty'");
 is($tix->count, 0, "found zero ticket")
-    or diag "wrong results from SQL:\n". $tix->BuildSelectcountQuery;
+    or diag "wrong results from SQL:\n". $tix->build_selectcount_query;
 
 
 
