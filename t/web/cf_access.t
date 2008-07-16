@@ -182,7 +182,7 @@ $col->value( ($col->possible_values)[-1] );
 $m->click('AddCol');
 
 $m->form_name('build_query');
-$m->click('DoSearch');
+$m->click('do_search');
 
 $m->follow_link( text_regex => qr/bplogo\.gif/ );
 $m->content_is(ImageFileContent, "it links to the uploaded image");

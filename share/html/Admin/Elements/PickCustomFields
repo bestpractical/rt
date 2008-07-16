@@ -54,7 +54,7 @@
 <tr>
 %   if (!$ReadOnly) {
   <td valign="top">
-<input type="checkbox" class="checkbox" name="object-<%$id%>-CF-<%$CustomfieldObj->id%>" value="1" <% $Checked ? 'checked="checked"' : '' %>
+<input type="checkbox" class="checkbox" name="object-<%$id%>-CF-<%$CustomFieldObj->id%>" value="1" <% $Checked ? 'checked="checked"' : '' %>
 />
   </td>
 %   }

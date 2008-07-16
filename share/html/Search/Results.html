@@ -65,7 +65,7 @@
     Rows => $Rows,
     Page => $Page,
     format => $format,
-    baseURL => RT->config->get('WebPath')."/Search/Results.html?"
+    baseURL => RT->config->get('WebPath')."/Search/Results.html?",
     Class => 'RT::Model::TicketCollection',
 
    &>
@@ -157,7 +157,7 @@ my $query_string = "?".$m->comp('/Elements/QueryString',
                                order => $order,
                                Page => $Page);
 my $short_querystring = "?".$m->comp('/Elements/QueryString', query => $query);
-my $RSSQueryString = "?".$m->comp('/Elements/QueryString', Query => $Query, order => $order, order_by => $order_by);
+my $RSSQueryString = "?".$m->comp('/Elements/QueryString', Query => $query, order => $order, order_by => $order_by);
 my $RSSFeedURL = RT->config->get('WebPath')."/Search/Results.rdf$RSSQueryString";
 
 if ($ARGS{'TicketsRefreshInterval'}) {
@@ -168,7 +168,7 @@ my %link_rel;
 my $genpage = sub {
     return $m->comp(
         '/Elements/QueryString',
-        Query   => $Query,
+        Query   => $query,
         format  => $format,
         Rows    => $Rows,
         order_by => $order_by,

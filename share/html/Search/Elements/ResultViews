@@ -53,26 +53,26 @@ $Rows => undef
 $order_by => undef
 $order => undef
 $RSSFeedURL => undef
-$Shortquery_string => undef
+$short_query_string => undef
 
 </%args>
 <ul class="search-result-views">
-<li><a href="<%RT->config->get('WebPath')%>/Search/Results.tsv<%$QueryString%>"><&|/l&>Spreadsheet</&></a></li>
+<li><a href="<%RT->config->get('WebPath')%>/Search/Results.tsv<%$query_string%>"><&|/l&>Spreadsheet</&></a></li>
 <li><a href="<%$RSSFeedURL%>"><&|/l&>RSS</&></a></li>
 <li><a href="<%RT->config->get('WebURL')%>/NoAuth/iCal/<% $ical_path %>"><% _('iCal') %></a></li>
-<li><a href="<%RT->config->get('WebPath')%>/Tools/Offline.html<%$ShortQueryString%>"><&|/l&>Editable text</&></a></li>
+<li><a href="<%RT->config->get('WebPath')%>/Tools/Offline.html<%$short_query_string%>"><&|/l&>Editable text</&></a></li>
 </ul>
 <form method="get" action="<%RT->config->get('WebPath')%>/Search/Chart.html">
 % my %hiddens = (query => $query, format => $format, Rows => $Rows, order_by => $order_by, order => $order);
 % foreach my $key (keys(%hiddens)) {
 <input type="hidden" class="hidden" name="<%$key%>" value="<%defined($hiddens{$key})?$hiddens{$key}:''%>" />
 % }
-<&|/l, $m->scomp('SelectChartType', name => 'ChartStyle'), $m->scomp('SelectGroupBy', name => 'PrimaryGroupBy', Query => $Query) 
+<&|/l, $m->scomp('SelectChartType', name => 'ChartStyle'), $m->scomp('SelectGroupBy', name => 'PrimaryGroupBy', Query => $query) 
 &>%1 chart by %2</&><input type="submit" class="button" value="<%_('Go')%>" />
 </form>
 <%init>
 my $ical_path = join '/', map $m->interp->apply_escapes($_, 'u'),
     Jifty->web->current_user->user_object->name,
-    Jifty->web->current_user->user_object->generate_auth_string( $Query ),
-    $Query;
+    Jifty->web->current_user->user_object->generate_auth_string( $query ),
+    $query;
 </%init>

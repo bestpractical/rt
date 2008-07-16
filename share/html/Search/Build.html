@@ -294,7 +294,7 @@ $session{'CurrentSearchHash'} = {
 
 # {{{ Show the results, if we were asked.
 
-if ( $ARGS{'DoSearch'} ) {
+if ( $ARGS{'do_search'} ) {
     $m->comp( 'Results.html', %query );
     $m->comp( '/Elements/Footer' );
     $m->abort;
