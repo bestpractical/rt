@@ -34,7 +34,7 @@ once you start using a given tag, you should probably never change it.
 
 =cut
 
-Set($rtname , "example.com");
+set($rtname , "example.com");
 
 
 =item C<$EmailSubjectTagRegex>
@@ -47,18 +47,18 @@ Be VERY CAREFUL with it. Note that it overrides C<$rtname> for subject
 token matching and that you should use only "non-capturing" parenthesis
 grouping. For example:
 
-C<Set($EmailSubjectTagRegex, qr/(?:example.com|example.org)/i );>
+C<set($EmailSubjectTagRegex, qr/(?:example.com|example.org)/i );>
 
 and NOT
 
-C<Set($EmailSubjectTagRegex, qr/(example.com|example.org)/i );>
+C<set($EmailSubjectTagRegex, qr/(example.com|example.org)/i );>
 
 This setting would make RT behave exactly as it does without the 
 setting enabled.
 
 =cut
 
-#Set($EmailSubjectTagRegex, qr/\Q$rtname\E/i );
+#set($EmailSubjectTagRegex, qr/\Q$rtname\E/i );
 
 
 
@@ -70,7 +70,7 @@ guarantee that ticket URIs are unique and easy to construct.
 
 =cut
 
-Set($Organization , "example.com");
+set($Organization , "example.com");
 
 =item C<$MinimumPasswordLength>
 
@@ -79,7 +79,7 @@ passwords. Setting it to 0 disables this check.
 
 =cut
 
-Set($MinimumPasswordLength , "5");
+set($MinimumPasswordLength , "5");
 
 =item C<$Timezone>
 
@@ -88,7 +88,7 @@ It should be set to a timezone recognized by your local unix box.
 
 =cut
 
-Set($Timezone , 'US/Eastern');
+set($Timezone , 'US/Eastern');
 
 =back
 
@@ -104,7 +104,7 @@ Valid types are "mysql", "Oracle" and "Pg"
 
 =cut
 
-Set($DatabaseType , 'SQLite');
+set($DatabaseType , 'SQLite');
 
 =item C<$DatabaseHost>, C<$DatabaseRTHost>
 
@@ -115,8 +115,8 @@ leave it blank for enhanced performance
 
 =cut
 
-Set($DatabaseHost   , 'localhost');
-Set($DatabaseRTHost , 'localhost');
+set($DatabaseHost   , 'localhost');
+set($DatabaseRTHost , 'localhost');
 
 =item C<$DatabasePort>
 
@@ -125,7 +125,7 @@ a positive integer. It's usually safe to leave this blank
 
 =cut
 
-Set($DatabasePort , '');
+set($DatabasePort , '');
 
 =item C<$DatabaseUser>
 
@@ -133,7 +133,7 @@ The name of the database user (inside the database)
 
 =cut
 
-Set($DatabaseUser , 'rt_user');
+set($DatabaseUser , 'rt_user');
 
 =item C<$DatabasePassword>
 
@@ -141,7 +141,7 @@ Password the C<$DatabaseUser> should use to access the database
 
 =cut
 
-Set($DatabasePassword , 'rt_pass');
+set($DatabasePassword , 'rt_pass');
 
 =item C<$DatabaseName>
 
@@ -149,7 +149,7 @@ The name of the RT's database on your database server
 
 =cut
 
-Set($DatabaseName , 'rt3');
+set($DatabaseName , 'rt3');
 
 =item C<$DatabaseRequireSSL>
 
@@ -158,7 +158,7 @@ set C<$DatabaseRequireSSL> to 1 to turn on SSL communication
 
 =cut
 
-Set($DatabaseRequireSSL , undef);
+set($DatabaseRequireSSL , undef);
 
 =back
 
@@ -174,7 +174,7 @@ should _not_ be an address that's managed by your RT instance.
 
 =cut
 
-Set($OwnerEmail , 'root');
+set($OwnerEmail , 'root');
 
 =item C<$LoopsToRTOwner>
 
@@ -183,7 +183,7 @@ might be a loop to C<$OwnerEmail>
 
 =cut
 
-Set($LoopsToRTOwner , 1);
+set($LoopsToRTOwner , 1);
 
 =item C<$StoreLoops>
 
@@ -195,7 +195,7 @@ sender of these messages
 
 =cut
 
-Set($StoreLoops , undef);
+set($StoreLoops , undef);
 
 =item C<$MaxAttachmentSize>
 
@@ -209,7 +209,7 @@ to drop this to 8192. (8k)
 =cut
 
 
-Set($MaxAttachmentSize , 10000000);
+set($MaxAttachmentSize , 10000000);
 
 =item C<$TruncateLongAttachments>
 
@@ -218,7 +218,7 @@ RT will truncate attachments longer than C<$MaxAttachmentSize>.
 
 =cut
 
-Set($TruncateLongAttachments , undef);
+set($TruncateLongAttachments , undef);
 
 =item C<$DropLongAttachments>
 
@@ -227,7 +227,7 @@ RT will silently drop attachments longer than C<MaxAttachmentSize>.
 
 =cut
 
-Set($DropLongAttachments , undef);
+set($DropLongAttachments , undef);
 
 =item C<$ParsenewMessageForTicketCcs>
 
@@ -239,7 +239,7 @@ C<$RTAddressRegexp> below, you will get yourself into a heap of trouble.
 
 =cut
 
-Set($ParseNewMessageForTicketCcs , undef);
+set($ParseNewMessageForTicketCcs , undef);
 
 =item C<$RTAddressRegexp> 
 
@@ -248,7 +248,7 @@ the setting above is enabled.
 
 =cut
 
-Set($RTAddressRegexp , '^rt\@example.com$');
+set($RTAddressRegexp , '^rt\@example.com$');
 
 =item C<$CanonicalizeEmailAddressMatch>, C<$CanonicalizeEmailAddressReplace>
 
@@ -264,8 +264,8 @@ passed to it.
 
 =cut
 
-#Set($CanonicalizeEmailAddressMatch , '@subdomain\.example\.com$');
-#Set($CanonicalizeEmailAddressReplace , '@example.com');
+#set($CanonicalizeEmailAddressMatch , '@subdomain\.example\.com$');
+#set($CanonicalizeEmailAddressReplace , '@example.com');
 
 =item C<$CanonicalizeEmailAddressMatch>
 
@@ -275,7 +275,7 @@ F<RT/User_Local.pm>
 
 =cut
 
-Set($CanonicalizeOnCreate, 0);
+set($CanonicalizeOnCreate, 0);
 
 =item C<$SenderMustExistInExternalDatabase>
 
@@ -293,7 +293,7 @@ template for the rejection message.
 
 =cut
 
-Set($SenderMustExistInExternalDatabase , undef);
+set($SenderMustExistInExternalDatabase , undef);
 
 =item C<@MailPlugins>
 
@@ -319,8 +319,8 @@ subject accordingly.
 
 =cut
 
-Set($ExtractSubjectTagMatch, qr/\[.+? #\d+\]/);
-Set($ExtractSubjectTagNoMatch, ( ${RT::EmailSubjectTagRegex}
+set($ExtractSubjectTagMatch, qr/\[.+? #\d+\]/);
+set($ExtractSubjectTagNoMatch, ( ${RT::EmailSubjectTagRegex}
        ? qr/\[(?:${RT::EmailSubjectTagRegex}) #\d+\]/
        : qr/\[\Q$RT::rtname\E #\d+\]/));
 
@@ -342,7 +342,7 @@ if you use 'sendmail' rather than 'sendmailpipe'
 
 =cut
 
-Set($MailCommand , 'sendmailpipe');
+set($MailCommand , 'sendmailpipe');
 
 =back
 
@@ -360,11 +360,11 @@ If you picked 'sendmailpipe', you MUST add a -t flag to C<$SendmailArguments>
 These options are good for most sendmail wrappers and workalikes
 
 These arguments are good for sendmail brand sendmail 8 and newer
-C<Set($SendmailArguments,"-oi -t -ODeliveryMode=b -OErrorMode=m");>
+C<set($SendmailArguments,"-oi -t -ODeliveryMode=b -OErrorMode=m");>
 
 =cut
 
-Set($SendmailArguments , "-oi -t");
+set($SendmailArguments , "-oi -t");
 
 
 =item C<$SendmailBounceArguments>
@@ -374,7 +374,7 @@ assuming RT needs to send an error (ie. bounce).
 
 =cut
 
-Set($SendmailBounceArguments , '-f "<>"');
+set($SendmailBounceArguments , '-f "<>"');
 
 =item C<$SendmailPath>
 
@@ -383,7 +383,7 @@ your sendmail binary in C<$SendmailPath>.
 
 =cut
 
-Set($SendmailPath , "/usr/sbin/sendmail");
+set($SendmailPath , "/usr/sbin/sendmail");
 
 
 =back
@@ -400,7 +400,7 @@ C<$SMTPServer> should be set to the hostname of the SMTP server to use
 
 =cut
 
-Set($SMTPServer, undef);
+set($SMTPServer, undef);
 
 =item C<$SMTPFrom>
 
@@ -409,7 +409,7 @@ email's 'From'
 
 =cut
 
-Set($SMTPFrom, undef);
+set($SMTPFrom, undef);
 
 =item C<$SMTPDebug> 
 
@@ -417,7 +417,7 @@ C<$SMTPDebug> should be set to true to debug SMTP mail sending
 
 =cut
 
-Set($SMTPDebug, 0);
+set($SMTPDebug, 0);
 
 =back
 
@@ -432,7 +432,7 @@ is not 'sendmailpipe', 'sendmail', or 'smtp'
 
 =cut
 
-Set(@MailParams, ());
+set(@MailParams, ());
 
 =item C<$CorrespondAddress>, C<$CommentAddress>
 
@@ -446,9 +446,9 @@ address.
 
 =cut
 
-Set($CorrespondAddress , '');
+set($CorrespondAddress , '');
 
-Set($CommentAddress , '');
+set($CommentAddress , '');
 
 =item C<UseFriendlyFromLine>
 
@@ -457,7 +457,7 @@ By default, RT sets the outgoing mail's "From:" header to
 
 =cut
 
-Set($UseFriendlyFromLine, 1);
+set($UseFriendlyFromLine, 1);
 
 =item C<$FriendlyFromLineFormat>
 
@@ -466,7 +466,7 @@ are SenderName and SenderEmailAddress.
 
 =cut
 
-Set($FriendlyFromLineFormat, "\"%s via RT\" <%s>");
+set($FriendlyFromLineFormat, "\"%s via RT\" <%s>");
 
 =item C<$UseFriendlyToLine>
 
@@ -479,7 +479,7 @@ you _must_ disable this option.
 
 =cut
 
-Set($UseFriendlyToLine, 0);
+set($UseFriendlyToLine, 0);
 
 =item C<$FriendlyToLineFormat>
 
@@ -488,7 +488,7 @@ are WatcherType and TicketId.
 
 =cut
 
-Set($FriendlyToLineFormat, "\"%s of ". RT->Config->Get('rtname') ." Ticket #%s\":;");
+set($FriendlyToLineFormat, "\"%s of ". RT->config->get('rtname') ." Ticket #%s\":;");
 
 =item C<$NotifyActor>
 
@@ -498,7 +498,7 @@ Set C<$NotifyActor> to 1
 
 =cut
 
-Set($NotifyActor, 0);
+set($NotifyActor, 0);
 
 =item C<$RecordOutgoingEmail>
 
@@ -507,7 +507,7 @@ To change this behavior, set C<$RecordOutgoingEmail> to 0
 
 =cut
 
-Set($RecordOutgoingEmail, 1);
+set($RecordOutgoingEmail, 1);
 
 =item C<$VERPPrefix>, C<$VERPPrefix>
 
@@ -521,8 +521,8 @@ This currently only works with sendmail and sendmailppie.
 
 =cut
 
-# Set($VERPPrefix, 'rt-');
-# Set($VERPDomain, $RT::Organization);
+# set($VERPPrefix, 'rt-');
+# set($VERPDomain, $RT::Organization);
 
 
 =item C<$ForwardFromUser>
@@ -535,7 +535,7 @@ address of the current user and leave subject without RT's tag.
 
 =cut
 
-Set($ForwardFromUser, 0);
+set($ForwardFromUser, 0);
 
 =item C<$ShowBccHeader>
 
@@ -546,7 +546,7 @@ To change this set the following option to true value.
 
 =cut
 
-Set($ShowBccHeader, 0);
+set($ShowBccHeader, 0);
 
 =back
 
@@ -568,7 +568,7 @@ set C<AllowEncryptDataInDB> to true
 
 =cut
 
-Set( %GnuPG,
+set( %GnuPG,
     Enable => 1,
     OutgoingMessagesFormat => 'RFC', # Inline
     AllowEncryptDataInDB   => 0,
@@ -585,7 +585,7 @@ NOTE that options with '-' character MUST be quoted.
 
 =cut
 
-Set(%GnuPGOptions,
+set(%GnuPGOptions,
     homedir => '/home/jesse/svk/3.999-DANGEROUS/var/data/gpg',
 
 # URL of a keyserver
@@ -623,8 +623,8 @@ From lowest to highest priority, the levels are:
 
 =cut
 
-Set($LogToSyslog    , 'debug');
-Set($LogToScreen    , 'info');
+set($LogToSyslog    , 'debug');
+set($LogToScreen    , 'info');
 
 =item C<$LogToFile>, C<$LogDir>, C<$LogToFileNamed>
 
@@ -639,9 +639,9 @@ direct file logging.
 
 =cut
 
-Set($LogToFile      , undef);
-Set($LogDir, '/home/jesse/svk/3.999-DANGEROUS/var/log');
-Set($LogToFileNamed , "rt.log");    #log to rt.log
+set($LogToFile      , undef);
+set($LogDir, '/home/jesse/svk/3.999-DANGEROUS/var/log');
+set($LogToFileNamed , "rt.log");    #log to rt.log
 
 =item C<$LogStackTraces>
 
@@ -651,7 +651,7 @@ specified.
 
 =cut
 
-Set($LogStackTraces, '');
+set($LogStackTraces, '');
 
 =item C<@LogToSyslogConf>
 
@@ -663,7 +663,7 @@ ident too, if you have multiple RT installations.)
 
 =cut
 
-Set(@LogToSyslogConf, ());
+set(@LogToSyslogConf, ());
 
 =item C<$StatementLog>,
 
@@ -673,7 +673,7 @@ the level that you wish SQL statements to be logged at.
 
 =cut
 
-Set($StatementLog, undef);
+set($StatementLog, undef);
 
 =back
 
@@ -698,7 +698,7 @@ option can be overridden by users in their preferences.
 
 =cut
 
-Set($WebDefaultStylesheet, 'web2');
+set($WebDefaultStylesheet, 'web2');
 
 =item C<$UsernameFormat>
 
@@ -709,7 +709,7 @@ EmailAddress.
 
 =cut
 
-  Set($UsernameFormat, 'concise');
+  set($UsernameFormat, 'concise');
 
 
 =item C<$WebPath>
@@ -724,7 +724,7 @@ In most cases, you should leave C<$WebPath> set to '' (an empty value).
 
 =cut
 
-Set($WebPath, "");
+set($WebPath, "");
 
 =item C<$WebPort>
 
@@ -733,7 +733,7 @@ Otherwise, pick a high port for this user.
 
 =cut
 
-Set($WebPort, 80);# + ($< * 7274) % 32766 + ($< && 1024));
+set($WebPort, 80);# + ($< * 7274) % 32766 + ($< && 1024));
 
 =item C<$WebDomain>
 
@@ -741,7 +741,7 @@ you know what domain name is, right? ;)
 
 =cut
 
-Set( $WebDomain, 'localhost' );
+set( $WebDomain, 'localhost' );
 
 =item C<$WebBaseURL>, C<$WebURL>
 
@@ -750,9 +750,9 @@ C<$WebBaseURL> doesn't need a trailing /
 
 =cut
 
-Set($WebBaseURL, 'http://' . RT->Config->Get('WebDomain') . ':' . RT->Config->Get('WebPort'));
+set($WebBaseURL, 'http://' . RT->config->get('WebDomain') . ':' . RT->config->get('WebPort'));
 
-Set($WebURL, RT->Config->Get('WebBaseURL') . RT->Config->Get('WebPath') . "/");
+set($WebURL, RT->config->get('WebBaseURL') . RT->config->get('WebPath') . "/");
 
 =item C<$WebImagesURL>
 
@@ -762,7 +762,7 @@ documents.
 
 =cut
 
-Set($WebImagesURL, RT->Config->Get('WebPath') . "/NoAuth/images/");
+set($WebImagesURL, RT->config->get('WebPath') . "/NoAuth/images/");
 
 =item C<$LogoURL>
 
@@ -770,7 +770,7 @@ C<$LogoURL> points to the URL of the RT logo displayed in the web UI
 
 =cut
 
-Set($LogoURL, $Config->Get('WebImagesURL') . "bplogo.gif");
+set($LogoURL, RT->config->get('WebImagesURL') . "bplogo.gif");
 
 =item C<$WebNoAuthRegex>
 
@@ -778,7 +778,7 @@ What portion of RT's URLspace should not require authentication.
 
 =cut
 
-Set($WebNoAuthRegex, qr{^ (?:/+NoAuth/ | /+REST/\d+\.\d+/NoAuth/) }x );
+set($WebNoAuthRegex, qr{^ (?:/+NoAuth/ | /+REST/\d+\.\d+/NoAuth/) }x );
 
 =item C<$MessageBoxWidth>, C<$MessageBoxHeight>
 
@@ -790,8 +790,8 @@ Default width: 72, height: 15
 
 =cut
 
-Set($MessageBoxWidth, 72);
-Set($MessageBoxHeight, 15);
+set($MessageBoxWidth, 72);
+set($MessageBoxHeight, 15);
 
 =item C<$MessageBoxWrap>
 
@@ -799,7 +799,7 @@ Default wrapping: "HARD"  (choices "SOFT", "HARD")
 
 =cut
 
-Set($MessageBoxWrap, "HARD");
+set($MessageBoxWrap, "HARD");
 
 =item C<$MessageBoxRichText>
 
@@ -807,7 +807,7 @@ Should "rich text" editing be enabled? This option lets your users send html ema
 
 =cut
 
-Set($MessageBoxRichText, 1);
+set($MessageBoxRichText, 1);
 
 =item C<$WikiImplicitLinks>
 
@@ -818,7 +818,7 @@ RTFM articles, it links to the RTFM article with that name.
 
 =cut
 
-Set($WikiImplicitLinks, 0);
+set($WikiImplicitLinks, 0);
 
 =item C<$TrustHTMLAttachments>
 
@@ -828,7 +828,7 @@ sent in a request (although there is probably more to it than that)
 
 =cut
 
-Set($TrustHTMLAttachments, undef);
+set($TrustHTMLAttachments, undef);
 
 =item C<$RedistributeAutoGeneratedMessages>
 
@@ -841,7 +841,7 @@ bounces and loops caused by autocreated requestors with bogus addresses.
 
 =cut
 
-Set($RedistributeAutoGeneratedMessages, 'privileged');
+set($RedistributeAutoGeneratedMessages, 'privileged');
 
 =item C<$PreferRichText>
 
@@ -852,7 +852,7 @@ by cross-site-scripting attacks.
 
 =cut
 
-Set($PreferRichText, undef);
+set($PreferRichText, undef);
 
 =item C<$WebExternalAuth>
 
@@ -861,7 +861,7 @@ REMOTE_USER variable.
 
 =cut
 
-Set($WebExternalAuth, undef);
+set($WebExternalAuth, undef);
 
 =item C<$WebFallbackToInternalAuth>
 
@@ -870,7 +870,7 @@ of fallback to the login screen, even if REMOTE_USER failed.
 
 =cut
 
-Set($WebFallbackToInternalAuth , undef);
+set($WebFallbackToInternalAuth , undef);
 
 =item C<$WebExternalGecos>
 
@@ -879,7 +879,7 @@ useful with mod_auth_pwcheck and IIS Integrated Windows logon.
 
 =cut
 
-Set($WebExternalGecos , undef);
+set($WebExternalGecos , undef);
 
 =item C<$WebExternalAuto>
 
@@ -888,7 +888,7 @@ upon login, if it's missing in the Users table.
 
 =cut
 
-Set($WebExternalAuto , undef);
+set($WebExternalAuto , undef);
 
 =item C<$AutoCreate>
 
@@ -899,7 +899,7 @@ Unprivileged users with C<{ Privileged => 0 }>
 
 =cut
 
-Set($AutoCreate, undef);
+set($AutoCreate, undef);
 
 =item C<$WebSessionClass>
 
@@ -910,7 +910,7 @@ F<RT_SiteConfig.pm> will prevent session corruption.
 
 =cut
 
-# Set($WebSessionClass , 'Apache::Session::File');
+# set($WebSessionClass , 'Apache::Session::File');
 
 =item C<$AutoLogoff>
 
@@ -921,7 +921,7 @@ to RT for the defined time.
 
 =cut
 
-Set($AutoLogoff, 0);
+set($AutoLogoff, 0);
 
 =item C<$WebSecureCookies>
 
@@ -934,7 +934,7 @@ via SSL encrypted HTTP connections.
 
 =cut
 
-Set($WebSecureCookies, 0);
+set($WebSecureCookies, 0);
 
 =item C<$WebFlushDbCacheEveryRequest>
 
@@ -947,7 +947,7 @@ accuracy.
 
 =cut
 
-Set($WebFlushDbCacheEveryRequest, '1');
+set($WebFlushDbCacheEveryRequest, '1');
 
 
 =item C<$MaxInlineBody>
@@ -959,7 +959,7 @@ preferences.
 
 =cut
 
-Set($MaxInlineBody, 12000);
+set($MaxInlineBody, 12000);
 
 =item C<$DefaultSummaryRows>
 
@@ -968,7 +968,7 @@ results on the frontpage.
 
 =cut
 
-Set($DefaultSummaryRows, 10);
+set($DefaultSummaryRows, 10);
 
 =item C<$OldestTransactionsFirst>
 
@@ -978,7 +978,7 @@ option can be overridden by users in their preferences.
 
 =cut
 
-Set($OldestTransactionsFirst, '1');
+set($OldestTransactionsFirst, '1');
 
 =item C<$ShowTransactionImages>
 
@@ -987,7 +987,7 @@ inline. Set this variable to 0 if you'd like to disable that behaviour
 
 =cut
 
-Set($ShowTransactionImages, 1);
+set($ShowTransactionImages, 1);
 
 
 =item C<$ShowUnreadMessageNotifications>
@@ -999,7 +999,7 @@ Set C<$ShowUnreadMessageNotifications> to a false value to disable this feature.
 
 =cut
 
-Set($ShowUnreadMessageNotifications, 1);
+set($ShowUnreadMessageNotifications, 1);
 
 
 =item C<$HomepageComponents>
@@ -1009,7 +1009,7 @@ customized homepage ("RT at a glance").
 
 =cut
 
-Set($HomepageComponents, [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues MyReminders RefreshHomepage)]);
+set($HomepageComponents, [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues MyReminders RefreshHomepage)]);
 
 =item C<@MasonParameters>
 
@@ -1018,11 +1018,11 @@ HTML::Mason's Apache or CGI Handler.  This is normally only useful
 for debugging, eg. profiling individual components with:
 
     use MasonX::Profiler; # available on CPAN
-    Set(@MasonParameters, (preamble => 'my $p = MasonX::Profiler->new($m, $r);'));
+    set(@MasonParameters, (preamble => 'my $p = MasonX::Profiler->new($m, $r);'));
 
 =cut
 
-Set(@MasonParameters, ());
+set(@MasonParameters, ());
 
 =item C<$DefaultSearchResultFormat>
 
@@ -1030,7 +1030,7 @@ C<$DefaultSearchResultFormat> is the default format for RT search results
 
 =cut
 
-Set ($DefaultSearchResultFormat, qq{
+set($DefaultSearchResultFormat, qq{
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
    Status,
@@ -1054,7 +1054,7 @@ from being displayed in-line when viewing a ticket's history.
 
 =cut
 
-Set($SuppressInlineTextFiles, undef);
+set($SuppressInlineTextFiles, undef);
 
 =item C<DontSearchFileAttachments>
 
@@ -1064,7 +1064,7 @@ ticket searches.
 
 =cut
 
-Set($DontSearchFileAttachments, undef);
+set($DontSearchFileAttachments, undef);
 
 =item C<$ChartFont>
 
@@ -1075,7 +1075,7 @@ support for TrueType fonts to use this option.
 
 =cut
 
-Set($ChartFont, undef);
+set($ChartFont, undef);
 
 
 =item C<@Active_MakeClicky>
@@ -1096,7 +1096,7 @@ See F<share/html/Elements/MakeClicky> for documentation on how to add your own.
 
 =cut
 
-Set(@Active_MakeClicky, qw());
+set(@Active_MakeClicky, qw());
 
 =item C<$DefaultQueue>
 
@@ -1106,7 +1106,7 @@ queue selection boxes on the web interface.
 
 =cut
 
-#Set($DefaultQueue, 'General');
+#set($DefaultQueue, 'General');
 
 =back
 
@@ -1122,8 +1122,8 @@ affect other users less.
 
 =cut
 
-Set($StandaloneMinServers, 1);
-Set($StandaloneMaxServers, 1);
+set($StandaloneMinServers, 1);
+set($StandaloneMaxServers, 1);
 
 =item C<$StandaloneMinSpareServers>, C<$StandaloneMaxSpareServers>
 
@@ -1133,8 +1133,8 @@ to adjust to load. These two options will respect the C<$StandaloneMinServers
 
 =cut
 
-Set($StandaloneMinSpareServers, 0);
-Set($StandaloneMaxSpareServers, 0);
+set($StandaloneMinSpareServers, 0);
+set($StandaloneMaxSpareServers, 0);
 
 =item C<$StandaloneMaxRequests>
 
@@ -1144,7 +1144,7 @@ every hit.
 
 =cut
 
-#Set($StandaloneMaxRequests, 50);
+#set($StandaloneMaxRequests, 50);
 
 =item C<%NetServerOptions>
 
@@ -1152,11 +1152,11 @@ C<%NetServerOptions> is a hash of additional options to use for
 L<Net::Server/DEFAULT ARGUMENTS>. For example, you could set
 reverse_lookups to get the hostnames for all users with:
 
-C<Set(%NetServerOptions, (reverse_lookups => 1));>
+C<set(%NetServerOptions, (reverse_lookups => 1));>
 
 =cut
 
-Set(%NetServerOptions, ());
+set(%NetServerOptions, ());
 
 =back
 
@@ -1173,7 +1173,7 @@ RT bilingual instead of multilingual, but will save some memory.
 
 =cut
 
-Set(@LexiconLanguages, qw(*));
+set(@LexiconLanguages, qw(*));
 
 =item C<@EmailInputEncodings>
 
@@ -1183,7 +1183,7 @@ L<Encode::Guess>.
 
 =cut
 
-Set(@EmailInputEncodings, qw(utf-8 iso-8859-1 us-ascii));
+set(@EmailInputEncodings, qw(utf-8 iso-8859-1 us-ascii));
 
 =item C<$EmailOutputEncoding>
 
@@ -1191,7 +1191,7 @@ The charset for localized email.  Must be recognized by Encode.
 
 =cut
 
-Set($EmailOutputEncoding, 'utf-8');
+set($EmailOutputEncoding, 'utf-8');
 
 
 =back
@@ -1207,13 +1207,13 @@ section in perldoc F<lib/RT/Date.pm> for more options.  This option can
 be overridden by users in their preferences.
 Some examples:
 
-C<Set($DateTimeFormat, { Format => 'ISO', Seconds => 0 });>
-C<Set($DateTimeFormat, 'RFC2822');>
-C<Set($DateTimeFormat, { Format => 'RFC2822', Seconds => 0, DayOfWeek => 0 });>
+C<set($DateTimeFormat, { Format => 'ISO', Seconds => 0 });>
+C<set($DateTimeFormat, 'RFC2822');>
+C<set($DateTimeFormat, { Format => 'RFC2822', Seconds => 0, DayOfWeek => 0 });>
 
 =cut
 
-Set($DateTimeFormat, 'DefaultFormat');
+set($DateTimeFormat, 'DefaultFormat');
 
 # Next two options are for Time::ParseDate
 
@@ -1224,7 +1224,7 @@ instead of "mm/dd/yy".
 
 =cut
 
-Set($DateDayBeforeMonth , 1);
+set($DateDayBeforeMonth , 1);
 
 =item C<$AmbiguousDayInPast>, C<$AmbiguousDayInFuture>
 
@@ -1240,8 +1240,8 @@ The default is usually good.
 
 =cut
 
-Set($AmbiguousDayInPast, 0);
-Set($AmbiguousDayInFuture, 0);
+set($AmbiguousDayInPast, 0);
+set($AmbiguousDayInFuture, 0);
 
 =back
 
@@ -1258,8 +1258,8 @@ will break horribly. The statuses you add must be no longer than
 
 =cut
 
-Set(@ActiveStatus, qw(new open stalled));
-Set(@InactiveStatus, qw(resolved rejected deleted));
+set(@ActiveStatus, qw(new open stalled));
+set(@InactiveStatus, qw(resolved rejected deleted));
 
 =item C<$LinkTransactionsRun1Scrip>
 
@@ -1269,7 +1269,7 @@ only one of the link transactions to have scrips run.
 
 =cut
 
-Set($LinkTransactionsRun1Scrip, 0);
+set($LinkTransactionsRun1Scrip, 0);
 
 =item C<$StrictLinkACL>
 
@@ -1279,7 +1279,7 @@ them.
 
 =cut
 
-Set($StrictLinkACL, 1);
+set($StrictLinkACL, 1);
 
 =item C<$PreviewScripMessages>
 
@@ -1288,7 +1288,7 @@ reply page should include the content of the messages to be sent.
 
 =cut
 
-Set($PreviewScripMessages, 0);
+set($PreviewScripMessages, 0);
 
 =item C<$UseTransactionBatch>
 
@@ -1299,7 +1299,7 @@ others' existence.
 
 =cut
 
-Set($UseTransactionBatch, 0);
+set($UseTransactionBatch, 0);
 
 =item C<@CustomFieldValuesSources>
 
@@ -1309,7 +1309,7 @@ custom field values from external sources at runtime.
 
 =cut
 
-Set(@CustomFieldValuesSources, ());
+set(@CustomFieldValuesSources, ());
 
 =item C<$CanonicalizeRedirectURLs>
 
@@ -1321,14 +1321,14 @@ enable this option.
 
 =cut
 
-Set($CanonicalizeRedirectURLs, 0);
+set($CanonicalizeRedirectURLs, 0);
 =item C<$EnableReminders>
 
 Hide links/portlets related to Reminders by setting this to 0
 
 =cut
 
-Set($EnableReminders,1);
+set($EnableReminders,1);
 
 =back
 
@@ -1351,7 +1351,7 @@ production:
 
 =cut
 
-Set($DevelMode, '1');
+set($DevelMode, '1');
 
 
 =back
