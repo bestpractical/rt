@@ -54,10 +54,10 @@ use Exception::Class;
 use base qw(Exception::Class::Base);
 
 BEGIN {
-    __PACKAGE__->no_refs(0);
+    __PACKAGE__->NoRefs(0);
 }
 
-#sub no_refs { return 0 }
+#sub NoRefs { return 0 }
 sub show_trace { return 1 }
 
 package RT::Shredder::Exception::Info;
