@@ -84,7 +84,7 @@ my @results;
 use RT::Dashboard;
 my $Dashboard = new RT::Dashboard(Jifty->web->current_user);
 my ($ok, $msg) = $Dashboard->LoadById($id);
-$ok || Abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg));
+$ok || abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg));
 my $title = loc("Modify the queries of dashboard [_1]", $Dashboard->name);
 
 my %desc_of;

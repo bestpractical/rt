@@ -88,9 +88,9 @@ my @results;
 
 if ( $ARGS{'quick_create'} ) {
     my $queue_obj = new RT::Model::Queue(Jifty->web->current_user);
-    $queue_obj->load($ARGS{Queue}) or Abort(loc("Queue could not be loaded."));
+    $queue_obj->load($ARGS{queue}) or abort(loc("Queue could not be loaded."));
     
-    my $CFs = $queue_obj->ticketCustomFields();
+    my $CFs = $queue_obj->ticket_custom_fields();
     
     my $ValidCFs = $m->comp(
         '/Elements/ValidateCustomFields',
@@ -100,15 +100,15 @@ if ( $ARGS{'quick_create'} ) {
 
 
     if ( $ValidCFs ) {
-        my ($t, $msg) = CreateTicket( 
+        my ($t, $msg) = create_ticket( 
                         queue => $ARGS{'queue'},
-                        Owner => $ARGS{'Owner'},
-                        Status => 'new',
+                        owner => $ARGS{'owner'},
+                        status => 'new',
                         # yes! it's Requestors, not Requestor
-                        Requestors => Jifty->web->current_user->id,
-                        From => Jifty->web->current_user->id,
-                        Content => $ARGS{'Content'},
-                        Subject => $ARGS{'Subject'});
+                        requestors => Jifty->web->current_user->id,
+                        from => Jifty->web->current_user->id,
+                        content => $ARGS{'content'},
+                        subject => $ARGS{'subject'});
         push @results, $msg;
     }
     else {

@@ -80,7 +80,7 @@ my $current_subtab = 'Dashboards/Render.html?id=' . $id;
 use RT::Dashboard;
 my $DashboardObj = RT::Dashboard->new(Jifty->web->current_user);
 my ($ok, $msg) = $DashboardObj->LoadById($id);
-Abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg)) if !$ok;
+abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg)) if !$ok;
 
 my $SubscriptionObj = RT::Model::Attribute->new(Jifty->web->current_user);
 my $Loaded = 0;

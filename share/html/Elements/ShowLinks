@@ -52,18 +52,18 @@
 
 <%PERL>
 my ( @active, @inactive, @not_tickets );
-for my $link ( @{ $Ticket->depends_on->ItemsArrayRef } ) {
+for my $link ( @{ $Ticket->depends_on->items_array_ref } ) {
     my $target = $link->target_obj;
     if ( $target && $target->isa('RT::Model::Ticket') ) {
-        if ( $target->queue_obj->IsInactiveStatus( $target->status ) ) {
-            push( @inactive, $link->targetURI );
+        if ( $target->queue_obj->is_inactive_status( $target->status ) ) {
+            push( @inactive, $link->target_uri );
         }
         else {
-            push( @active, $link->targetURI );
+            push( @active, $link->target_uri );
         }
     }
     else {
-        push( @not_tickets, $link->targetURI );
+        push( @not_tickets, $link->target_uri );
     }
 }
 </%PERL>
@@ -129,6 +129,12 @@ for my $link ( @{ $Ticket->depends_on->ItemsArrayRef } ) {
 </table>
 
 <%INIT>
+my $pascal_to_camel = sub {
+    my $name = shift;
+    $name =~ s/^([A-Z])/lc $1/e;
+    $name =~ s/([A-Z])/'_' . lc $1/eg;
+    return $name;
+};
 
 my $clone = {};
 my $path
@@ -145,10 +151,11 @@ for my $relation (
     my $type  = $RT::Model::Ticket::LINKTYPEMAP{$relation}->{type};
     my $other = "Local" . $mode;
     my $field = $mode eq 'base' ? 'new-' . $type : $type . '-new';
+    my $rel = $pascal_to_camel->( $relation );
     $clone->{$field} 
         = $path . "&$field="
         . join( '%20',
-        ( map { $_->$other() } @{ $Ticket->$relation->ItemsArrayRef } ),
+        ( map { $_->$other() } @{ $Ticket->$rel->items_array_ref } ),
         $Ticket->id );
 }
 

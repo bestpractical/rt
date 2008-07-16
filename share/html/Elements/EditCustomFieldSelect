@@ -85,7 +85,7 @@ $Rows => undef
 % @default = grep defined && length, @Default;
 % # $Values->HasEntry is too slow here
 % if ( !@default && $Values ) {
-%     @default = map $_->Content, @{$Values->ItemsArrayRef};
+%     @default = map $_->Content, @{$Values->items_array_ref};
 % }
 % $_ = lc $_ foreach @Default;
 % my $selected;

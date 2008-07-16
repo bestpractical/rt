@@ -55,7 +55,7 @@
 <&|/l&>description</&>:
 <input size="25" name="saved_search_description" value="<% $description || '' %>" />
 
-% if ($Id ne 'new') {
+% if ($id ne 'new') {
 <nobr>
 % if ( $Dirty ) {
 <input type="submit" class="button" name="SavedSearchRevert" value="<%_('Revert')%>" />
@@ -69,13 +69,13 @@
 % if ( $object && $object->id ) {
 <input type="submit" class="button" name="SavedSearchSave"   value="<%_('Update')%>" />
 % } else {
-}
+% }
 <input type="submit" class="button" name="SavedSearchSave"   value="<%_('Save')%>" />
 % }
 <br />
 <hr />
 <&|/l&>load saved search:</&>
-<& SelectSearchesForObjects, name => 'SavedSearchLoad', objects => \@objects, SearchType => $Type &>
+<& SelectSearchesForObjects, name => 'SavedSearchLoad', objects => \@objects, SearchType => $type &>
 <input type="submit" value="<% _('Load') %>" class="button" />
 
 </&>
@@ -87,7 +87,7 @@ return unless Jifty->web->current_user->has_right(
 );
 
 my $can_modify = Jifty->web->current_user->has_right(
-    Right  => 'CreateSavedSearch',
+    right  => 'CreateSavedSearch',
     object => RT->system,
 );
 
@@ -108,7 +108,7 @@ my $is_dirty = sub {
     return 0 unless $obj && $obj->id;
 
     foreach( @{ $arg{'SearchFields'} } ) {
-        return 1 if $obj->SubValue( $_ ) ne $arg{'Query'}->{$_};
+        return 1 if $obj->sub_value( $_ ) ne $arg{'Query'}->{$_};
     }
 
     return 0;
@@ -223,7 +223,7 @@ my $desc = $SavedSearch->{'description'};
 
 my $privacy = $SavedSearch->{'Privacy'};
 
-my %params = map { $_ => $Query->{$_} } @SearchFields;
+my %params = map { $_ => $query->{$_} } @SearchFields;
 my ($new_obj_type, $new_obj_id) = split(/\-/, ($privacy || ''));
 
 if ( $obj && $obj->id ) {

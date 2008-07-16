@@ -326,7 +326,7 @@ $queue_obj->load($queue) || abort(_("Queue could not be loaded."));
 
 $m->callback( queue_obj => $queue_obj, args_ref => \%ARGS );
 
-$queue_obj->disabled && Abort(loc("Cannot create tickets in a disabled queue."));
+$queue_obj->disabled && abort(loc("Cannot create tickets in a disabled queue."));
 
 my $CFs = $queue_obj->ticket_custom_fields();
 my $TxnCFs = $queue_obj->ticket_transaction_custom_fields();

@@ -91,7 +91,7 @@ use RT::Dashboard;
 my $Dashboard = RT::Dashboard->new(Jifty->web->current_user);
 my @privacies = $Dashboard->_privacy_objects(($Create ? 'Create' : 'Modify') => 1);
 
-Abort(loc("Permission denied")) if @privacies == 0;
+abort(loc("Permission denied")) if @privacies == 0;
 
 if ($Create) {
     $current_subtab = 'Dashboards/Modify.html?Create=1';
@@ -107,7 +107,7 @@ else {
         );
 
         if (!$val) {
-            Abort(loc("Dashboard could not be created: [_1]", $msg));
+            abort(loc("Dashboard could not be created: [_1]", $msg));
         }
 
         push @results, $msg;
@@ -115,7 +115,7 @@ else {
     }
     else {
         my ($ok, $msg) = $Dashboard->LoadById($id);
-        $ok || Abort($msg);
+        $ok || abort($msg);
     }
 
     if ($id) {
@@ -147,7 +147,7 @@ my $can_delete = $Dashboard->CurrentUserCanDelete;
 
 if (!$Create && !$tried_create && $id && $ARGS{'Delete'}) {
     my ($ok, $msg) = $Dashboard->Delete();
-    $ok || Abort(loc("Couldn't delete dashboard [_1]: [_2]", $id, $msg));
+    $ok || abort(loc("Couldn't delete dashboard [_1]: [_2]", $id, $msg));
 
     # put the user back into a useful place with a message
     RT::Interface::Web::redirect(RT->config->get('WebURL')."Dashboards/index.html?Deleted=$id");

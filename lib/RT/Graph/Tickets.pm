@@ -114,7 +114,7 @@ our %property_cb = (
     Queue => sub { return $_[0]->queue_obj->name || $_[0]->queue },
     CF => sub {
         my $values = $_[0]->CustomFieldValues( $_[1] );
-        return join ', ', map $_->Content, @{ $values->ItemsArrayRef };
+        return join ', ', map $_->Content, @{ $values->items_array_ref };
     },
 );
 foreach my $field (qw(Subject Status TimeLeft TimeWorked TimeEstimated)) {
@@ -141,13 +141,13 @@ foreach my $field (qw(Told Starts Started Due Resolved LastUpdated Created)) {
 foreach my $field (qw(Members DependedOnBy ReferredToBy)) {
     $property_cb{$field} = sub {
         return join ', ', map $_->base_obj->id,
-          @{ $_[0]->$field->ItemsArrayRef };
+          @{ $_[0]->$field->items_array_ref };
     };
 }
 foreach my $field (qw(MemberOf DependsOn RefersTo)) {
     $property_cb{$field} = sub {
         return join ', ', map $_->target_obj->id,
-          @{ $_[0]->$field->ItemsArrayRef };
+          @{ $_[0]->$field->items_array_ref };
     };
 }
 

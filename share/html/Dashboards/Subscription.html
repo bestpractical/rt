@@ -190,7 +190,7 @@ $DashboardId = $SubscriptionObj->Id
              : $ARGS{'DashboardId'};
 
 ($val, $msg) = $DashboardObj->LoadById($DashboardId);
-$val || Abort(loc("Couldn't load dashboard [_1]: [_2].", $DashboardId, $msg));
+$val || abort(loc("Couldn't load dashboard [_1]: [_2].", $DashboardId, $msg));
 
 my %fields = (
     DashboardId => $DashboardId,
@@ -233,7 +233,7 @@ if (defined $ARGS{Save}) {
     }
     # create
     else {
-        Abort(loc("Unable to subscribe to dashboard [_1]: Permission denied", $DashboardId))
+        abort(loc("Unable to subscribe to dashboard [_1]: Permission denied", $DashboardId))
             unless $DashboardObj->CurrentUserCanSubscribe;
 
         my ($val, $msg) = $SubscriptionObj->Create(
