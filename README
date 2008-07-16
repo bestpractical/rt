@@ -147,7 +147,7 @@ want to read a more comprehensive installation guide at:
 
      You should back up your database before running this command.
 
-       /opt/rt3/rt-setup-database --dba root --prompt-for-dba-password --action upgrade
+       /opt/rt3/sbin/rt-setup-database --dba root --prompt-for-dba-password --action upgrade
 
      Clear mason cache dir:
 
