@@ -61,11 +61,11 @@ $False => _("isn't")
 
 <%INIT>
 my $TrueDefault  = '';
-my $Falsedefault = '';
+my $FalseDefault = '';
 if ($default && $default !~ /true/i) {
-	$Falsedefault = 'selected="selected"';
+	$FalseDefault = 'selected="selected"';
 }
 else {
-	$Truedefault = 'selected="selected"';
+	$TrueDefault = 'selected="selected"';
 }
 </%INIT>

@@ -62,21 +62,21 @@ $default => undef
 </%ARGS>
 <%INIT>
 
-my $Truedefault = '';
+my $TrueDefault = '';
 my $FalseDefault='';
 my $LikeDefault=''; 
-my $NotLikedefault ='';
+my $NotLikeDefault ='';
 
 if ($default && $default =~ /false|!=/i) {
-	$Falsedefault = qq[ selected="selected"];
+	$FalseDefault = qq[ selected="selected"];
 }
 elsif ($default && $default =~ /true|=/i) {
-	$Truedefault = qq[ selected="selected"];
+	$TrueDefault = qq[ selected="selected"];
 } 
 elsif ($default && $default =~ /notlike|NOT LIKE/i) {
-	$NotLikedefault = qq[ selected="selected"];
+	$NotLikeDefault = qq[ selected="selected"];
 }
 else {
-	$Likedefault = qq[ selected="selected"];
+	$LikeDefault = qq[ selected="selected"];
 }
 </%INIT>

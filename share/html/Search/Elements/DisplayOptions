@@ -97,7 +97,7 @@ selected="selected"
 </table>
 </&>
 <&| /Widgets/TitleBox, title => _("Display Columns"), id => 'columns' &>
-<& Editformat, %ARGS &>
+<& EditFormat, %ARGS &>
 </&>
 
 <%INIT>
