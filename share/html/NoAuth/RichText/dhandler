@@ -51,7 +51,7 @@ my $arg = $m->dhandler_arg;
 my $file = dirname($m->current_comp->source_file) . '/FCKeditor/' . $arg;
 return $m->decline unless -f $file && -r _;
 
-&RT::Interface::Web::StaticFileHeaders();
+&RT::Interface::Web::static_file_headers();
 
 my $suffix = $1 if $file =~ /([^.]+)$/;
 
