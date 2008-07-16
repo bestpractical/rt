@@ -82,12 +82,12 @@ $Rows => undef
 </%ARGS>
 
 <%METHOD options>
-% @default = grep defined && length, @Default;
-% # $Values->has_entry is too slow here
-% if ( !@default && $Values ) {
-%     @default = map $_->content, @{$Values->items_array_ref};
+% @default = grep defined && length, @default;
+% # $values->has_entry is too slow here
+% if ( !@default && $values ) {
+%     @default = map $_->content, @{$values->items_array_ref};
 % }
-% $_ = lc $_ foreach @Default;
+% $_ = lc $_ foreach @default;
 % my $selected;
 % my $CFVs = $CustomField->values;
 % my @levels;
