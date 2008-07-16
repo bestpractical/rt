@@ -97,13 +97,13 @@ use Jifty::DBI::Record schema {
         type is 'varchar(16)', default is '';
     column
 
-        ExternalContactInfoId => max_length is 100,
+        external_contact_info_id => max_length is 100,
         type is 'varchar(100)', default is '';
     column
-        ContactInfoSystem => max_length is 30,
+        contact_info_system => max_length is 30,
         type is 'varchar(30)', default is '';
     column
-        ExternalAuthId => max_length is 100,
+        external_auth_id => max_length is 100,
         type is 'varchar(100)', default is '';
     column
         auth_system => max_length is 30,
@@ -122,17 +122,17 @@ use Jifty::DBI::Record schema {
         pager_phone => max_length is 30,
         type is 'varchar(30)', default is '';
     column
-        Address1 => max_length is 200,
+        address1 => max_length is 200,
         type is 'varchar(200)', default is '';
     column
-        Address2 => max_length is 200,
+        address2 => max_length is 200,
         type is 'varchar(200)', default is '';
     column city     => max_length is 100, type is 'varchar(100)', default is '';
     column state    => max_length is 100, type is 'varchar(100)', default is '';
     column zip      => max_length is 16,  type is 'varchar(16)',  default is '';
     column country  => max_length is 50,  type is 'varchar(50)',  default is '';
     column timezone => max_length is 50,  type is 'varchar(50)',  default is '';
-    column PGPKey   => type is 'text';
+    column pgp_key   => type is 'text';
 
 };
 
