@@ -61,7 +61,7 @@
 % foreach my $var qw(query format order_by order Rows Page) {
 <input type="hidden" class="hidden" name="<%$var%>" value="<%$ARGS{$var} || ''%>" />
 %}
-<& /Elements/CollectionList, query => $Query,
+<& /Elements/CollectionList, query => $query,
     display_format => $format,
     format => $ARGS{'format'},
     Verbatim => 1,

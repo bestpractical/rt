@@ -51,8 +51,6 @@
 			 query   => $query, 
  			 order   => @order, 
  			 order_by => @order_by,
-			 order   => $order, 
-			 order_by => $order_by,
 			 baseURL => $baseURL,
 			 GenericQueryArgs => $GenericQueryArgs,
 			 AllowSorting => $AllowSorting,
@@ -72,7 +70,6 @@ if ( @status ) {
         . " )";
 }
 my $format = qq{
-my @format = qq{
    '<B><A HREF="}. RT->config->get('WebPath') .qq{/SelfService/Display.html?id=__id__">__id__</a></B>/TITLE:#',
    '<B><A HREF="}. RT->config->get('WebPath') .qq{/SelfService/Display.html?id=__id__">__subject__</a></B>/TITLE:subject',
    Status,

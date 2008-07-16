@@ -91,7 +91,7 @@ push @results, $m->comp( '/Search/Elements/EditSearches:Init',
 );
 
 my $id = $ARGS{'id'};
-my $ticket = LoadTicket( $id );
+my $ticket = load_ticket( $id );
 $ARGS{'id'} = $id = $ticket->id;
 
 $ARGS{'LeadingLink'} ||= 'Members';

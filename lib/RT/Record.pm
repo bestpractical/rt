@@ -1224,11 +1224,11 @@ sub _delete_link {
 
     #it's a real link.
     if ( $link->id ) {
-        my $basetext = $self->formatLink(
+        my $basetext = $self->format_link(
             object   => $link->base_obj,
             FallBack => $args{base}
         );
-        my $targettext = $self->formatLink(
+        my $targettext = $self->format_link(
             object   => $link->target_obj,
             FallBack => $args{target}
         );
