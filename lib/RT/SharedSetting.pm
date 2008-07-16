@@ -374,7 +374,7 @@ sub is_visible_to {
 
     # If the setting is group-wide...
     if ( $privacy =~ /^RT::Model::Group-(\d+)$/ ) {
-        my $setting_group = RT::Model::Group->new( $self->current_user );
+        my $setting_group = RT::Model::Group->new( current_user => $self->current_user );
         $setting_group->load($1);
 
         if ( $to =~ /-(\d+)$/ ) {
@@ -463,7 +463,7 @@ sub _load_privacy_object {
         return $group;
     }
     elsif ( $obj_type eq 'RT::System' ) {
-        return RT::System->new( $self->current_user );
+        return RT::System->new( current_user => $self->current_user );
     }
 
     Jifty->log->error( "Tried to load a "
