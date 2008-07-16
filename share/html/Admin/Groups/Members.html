@@ -75,7 +75,7 @@
 <br />
 <br />
 <&|/l&>Users</&>
-% my $Users = $Group->usermembers_obj( Recursively => 0 );
+% my $Users = $Group->user_members_obj( Recursively => 0 );
 % $Users->order_by( column => $Userorder_by, order => $Userorder );
 <ul>
 % while ( my $user = $Users->next ) {

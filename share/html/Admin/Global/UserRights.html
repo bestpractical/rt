@@ -84,7 +84,7 @@
 # Find out which users we want to display ACL selects for
 my $privileged = RT::Model::Group->new();
 $privileged->load_system_internal_group('privileged');
-my $Users = $privileged->usermembers_obj();
+my $Users = $privileged->user_members_obj();
 $Users->order_by( column => $Userorder_by, order => $Userorder );
 
     

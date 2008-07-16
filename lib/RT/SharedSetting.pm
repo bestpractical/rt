@@ -148,7 +148,7 @@ sub load_by_id {
     my $self = shift;
     my $id   = shift;
 
-    my $attr = RT::Model::Attribute->new( $self->current_user );
+    my $attr = RT::Model::Attribute->new( current_user => $self->current_user );
     my ( $ok, $msg ) = $attr->load_by_id($id);
 
     if ( !$ok ) {

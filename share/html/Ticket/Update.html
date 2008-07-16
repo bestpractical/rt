@@ -86,7 +86,8 @@
 <tr><td class="label"><&|/l&>Update Type</&>:</td>
 <td><select name="UpdateType">
 % if ($Cancomment) {
-<option value="private" <% ($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq "private") ? qq[ selected="selected"] : !$ARGS{'UpdateType'}&&$Commentdefault |n %>><&|/l&>comments (Not sent to requestors)</&></option>
+<option value="private" <% ($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq
+        "private") ? qq[ selected="selected"] : !$ARGS{'UpdateType'}&&$comment_default |n %>><&|/l&>comments (Not sent to requestors)</&></option>
 % }
 % if ($CanRespond) {
 <option value="response" <% ($ARGS{'UpdateType'} && $ARGS{'UpdateType'} eq "response") ? qq[ selected="selected"] : !$ARGS{'UpdateType'}&&$response_default |n %>><&|/l&>Reply to requestors</&></option>
@@ -183,7 +184,7 @@ if ($default_status eq 'resolved') {
 # Things needed in the template - we'll do the processing here, just
 # for the convenience:
 
-my ($comment_default, $Response_default);
+my ($comment_default, $response_default);
 if ($action ne 'respond') {
    $comment_default = qq[ selected="selected"];
     $response_default = "";

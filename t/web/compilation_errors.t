@@ -3,7 +3,7 @@
 use strict;
 use RT::Test;
 use Test::More;
-my $tests = 7;
+my $tests = 2;
 find ( sub { wanted() and $tests += 4 } , 'share/html/');
 plan tests => $tests;
 use HTTP::Request::Common;
