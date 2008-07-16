@@ -7,7 +7,7 @@ my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
 
-my $user_obj = RT::Model::User->new(current_user => RT->system_user);
+my $user_object = RT::Model::User->new(current_user => RT->system_user);
 my ($ret, $msg) = $user_object->load_or_create_by_email('customer@example.com');
 ok($ret, 'ACL test user creation');
 $user_object->set_name('customer');
@@ -26,7 +26,7 @@ $m->get ( $url."Search/Build.html");
 $m->form_name ('build_query');
 
 $m->field ( "value_of_attachment" => 'stupid');
-$m->field ( "SavedSearchdescription" => 'stupid tickets');
+$m->field ( "saved_search_description" => 'stupid tickets');
 $m->click_button (name => 'SavedSearchSave');
 
 $m->get ( $url.'Prefs/MyRT.html' );
