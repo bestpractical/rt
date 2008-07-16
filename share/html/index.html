@@ -87,7 +87,7 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 my @results;
 
 if ( $ARGS{'quick_create'} ) {
-    my $queue_obj = new RT::Model::Queue(Jifty->web->current_user);
+    my $queue_obj = new RT::Model::Queue( current_user => Jifty->web->current_user );
     $queue_obj->load($ARGS{queue}) or abort(loc("Queue could not be loaded."));
     
     my $CFs = $queue_obj->ticket_custom_fields();

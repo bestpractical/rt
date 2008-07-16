@@ -331,12 +331,12 @@ sub create_ticket {
 
     my $due;
     if ( defined $ARGS{'Due'} and $ARGS{'Due'} =~ /\S/ ) {
-        $due = new RT::Date( Jifty->web->current_user );
+        $due = new RT::Date( current_user => Jifty->web->current_user );
         $due->set( format => 'unknown', value => $ARGS{'Due'} );
     }
     my $starts;
     if ( defined $ARGS{'Starts'} and $ARGS{'Starts'} =~ /\S/ ) {
-        $starts = new RT::Date( Jifty->web->current_user );
+        $starts = new RT::Date( current_user => Jifty->web->current_user );
         $starts->set( format => 'unknown', value => $ARGS{'Starts'} );
     }
 

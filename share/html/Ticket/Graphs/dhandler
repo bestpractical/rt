@@ -55,7 +55,7 @@ if ( $arg =~ m{^(\d+)$}i ) {
     return $m->abort( 404 );
 }
 
-my $ticket = RT::Model::Ticket->new(Jifty->web->current_user );
+my $ticket = RT::Model::Ticket->new( current_user => Jifty->web->current_user );
 $ticket->Load( $id );
 unless ( $ticket->id ) {
     Jifty->log->error("Couldn't load ticket #$id");

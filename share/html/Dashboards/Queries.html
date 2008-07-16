@@ -82,7 +82,7 @@ my $current_subtab = 'Dashboards/Queries.html?id=' . $id;
 my @results;
 
 use RT::Dashboard;
-my $Dashboard = new RT::Dashboard(Jifty->web->current_user);
+my $Dashboard = new RT::Dashboard( current_user => Jifty->web->current_user );
 my ($ok, $msg) = $Dashboard->LoadById($id);
 $ok || abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg));
 my $title = loc("Modify the queries of dashboard [_1]", $Dashboard->name);
@@ -99,10 +99,10 @@ for ($Dashboard->SearchIds) {
     $desc_of{$name} = $desc;
 }
 
-my $sys = RT::System->new(Jifty->web->current_user);
+my $sys = RT::System->new( current_user => Jifty->web->current_user );
 my @objs = ($sys);
 
-push @objs, RT::SavedSearches->new( Jifty->web->current_user )->_privacy_objects
+push @objs, RT::SavedSearches->new( current_user => Jifty->web->current_user )->_privacy_objects
     if Jifty->web->current_user->HasRight( Right  => 'LoadSavedSearch',
                                           Object => $RT::System );
 

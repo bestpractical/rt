@@ -99,7 +99,7 @@ if ( $DashboardObj and $DashboardObj->Id ) {
 $tabs->{"A"} = { title => loc('Select dashboard'),
                  path  => "Dashboards/index.html" };
 
-my $dashboard = RT::Dashboard->new(Jifty->web->current_user);
+my $dashboard = RT::Dashboard->new( current_user => Jifty->web->current_user );
 my @objects = $dashboard->_privacy_objects(Create => 1);
 
 if (@objects) {

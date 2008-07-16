@@ -174,9 +174,9 @@ my $Loaded = 0;
 my $timezone = Jifty->web->current_user->user_object->timezone || RT->config->get('Timezone');
 
 use RT::Dashboard;
-my $DashboardObj = RT::Dashboard->new(Jifty->web->current_user);
+my $DashboardObj = RT::Dashboard->new( current_user => Jifty->web->current_user );
 
-my $SubscriptionObj = RT::Model::Attribute->new(Jifty->web->current_user);
+my $SubscriptionObj = RT::Model::Attribute->new( current_user => Jifty->web->current_user );
 
 # first let's see if we already have a subscription to this DashboardId
 for my $sub (Jifty->web->current_user->user_object->attributes->named('Subscription')) {
