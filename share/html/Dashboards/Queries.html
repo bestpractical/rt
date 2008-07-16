@@ -84,8 +84,8 @@ my @results;
 use RT::Dashboard;
 my $Dashboard = new RT::Dashboard( current_user => Jifty->web->current_user );
 my ($ok, $msg) = $Dashboard->LoadById($id);
-$ok || abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg));
-my $title = loc("Modify the queries of dashboard [_1]", $Dashboard->name);
+$ok || abort(loc("Couldn't load dashboard %1: %2", $id, $msg));
+my $title = loc("Modify the queries of dashboard %1", $Dashboard->name);
 
 my %desc_of;
 my @items;
@@ -140,7 +140,7 @@ my $sel = $m->comp(
             push @results, loc("Dashboard updated");
         }
         else {
-            push @results, loc("Dashboard could not be updated: [_1]", $msg);
+            push @results, loc("Dashboard could not be updated: %1", $msg);
         }
     },
 );

@@ -63,13 +63,13 @@ if (defined $Subscription) {
 
     if ($freq eq 'weekly') {
         my $day = (qw/Monday Tuesday Wednesday Thursday Friday Saturday Sunday/)[$Subscription->SubValue('Dow')];
-        $frequency = loc("[_1] (on [_2]) at [_3]", $freq, $day, $hour);
+        $frequency = loc("%1 (on %2) at %3", $freq, $day, $hour);
     }
     elsif ($freq eq 'monthly') {
-        $frequency = loc("[_1] (day [_2]) at [_3]", $freq, $Subscription->SubValue('Dom'), $hour);
+        $frequency = loc("%1 (day %2) at %3", $freq, $Subscription->SubValue('Dom'), $hour);
     } 
     elsif ($freq eq 'daily') {
-        $frequency = loc("[_1] at [_2]", $freq, $hour);
+        $frequency = loc("%1 at %2", $freq, $hour);
     }
 }
 </%INIT>

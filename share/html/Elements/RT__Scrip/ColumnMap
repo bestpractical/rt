@@ -78,7 +78,7 @@ my $COLUMN_MAP = {
     },
     Autodescription => {
         title     => 'Condition, Action and Template',
-        value     => sub { return $_[0]->loc( "[_1] [_2] with template [_3]",
+        value     => sub { return $_[0]->loc( "%1 %2 with template %3",
             $_[0]->loc($_[0]->condition_obj->name),
             $_[0]->loc($_[0]->action_obj->name),
             $_[0]->loc($_[0]->template_obj->name),

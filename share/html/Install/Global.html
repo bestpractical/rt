@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| Elements/Wrapper, Title => loc('Step [_1] of [_2]: ', 5, 7 ) . loc('Customize Email Addresses') &> 
+<&| Elements/Wrapper, Title => loc('Step %1 of %2: ', 5, 7 ) . loc('Customize Email Addresses') &> 
 
 <& Elements/Errors, Errors => \@errors &>
 
@@ -84,7 +84,7 @@ if ( $Run ) {
     for ( qw/CommentAddress CorrespondAddress/ ) {
         if ( $ARGS{$_} && $ARGS{$_} !~ /.+@.+/ ) {
             push @errors,
-                loc("Invalid [_1]: '[_2]' doesn't look like an email address",
+                loc("Invalid %1: '%2' doesn't look like an email address",
                 $_, $ARGS{$_});
         }
     }

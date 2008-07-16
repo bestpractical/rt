@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&|Elements/Wrapper, Title => loc('Step [_1] of [_2]: ', 6, 7) . loc('Initialize Database') &> 
+<&|Elements/Wrapper, Title => loc('Step %1 of %2: ', 6, 7) . loc('Initialize Database') &> 
 
 <& Elements/Errors, Errors => \@errors &>
 
@@ -84,7 +84,7 @@ if ( $Run ) {
     if ( $actions[0] eq 'create' ) {
         ($status, $msg) = RT::Handle->CreateDatabase( $sysdbh );
         unless ( $status ) {
-            push @errors, loc('ERROR: [_1]', $msg );
+            push @errors, loc('ERROR: %1', $msg );
         }
 
         shift @actions; # shift the 'create' action since its job is done.
@@ -121,7 +121,7 @@ if ( $Run ) {
                 ($status, $msg) = $RT::Handle->InsertData( $file );
             }
             unless ( $status ) {
-                push @errors, loc('ERROR: [_1]', $msg);
+                push @errors, loc('ERROR: %1', $msg);
                 last;
             }
         }

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| Elements/Wrapper, Title => loc('Step [_1] of [_2]: ', 2, 7 ) . loc('Check your database credentials') &> 
+<&| Elements/Wrapper, Title => loc('Step %1 of %2: ', 2, 7 ) . loc('Check your database credentials') &> 
 
 % if ( @errors ) {
 <& Elements/Errors, Errors => \@errors &>
@@ -158,16 +158,16 @@ if ( $Run ) {
                     $sth->execute('RT_System'); 
                     if ( $sth->fetchrow_array ) {
                         $RT::Installer->{DatabaseAction} = 'none';
-                        push @results, loc("[_1] appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customez RT by clicking 'Customize Basics' below", $RT::DatabaseName);
+                        push @results, loc("%1 appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customez RT by clicking 'Customize Basics' below", $RT::DatabaseName);
                     }
                     else {
                         $RT::Installer->{DatabaseAction} = 'acl,coredata,insert';
-                        push @results, loc("[_1] already exists and has RT's tables in place, but does not contain RT's metadata. The 'Initialize Database' step later on can insert metadata into this existing database. If this is acceptable, click 'Customize Basics' below to continue customizing RT.", $RT::DatabaseName);
+                        push @results, loc("%1 already exists and has RT's tables in place, but does not contain RT's metadata. The 'Initialize Database' step later on can insert metadata into this existing database. If this is acceptable, click 'Customize Basics' below to continue customizing RT.", $RT::DatabaseName);
                     }
                 }
                 else {
                     $RT::Installer->{DatabaseAction} = 'schema,acl,coredata,insert';
-                    push @results, loc("[_1] already exists, but does not contain RT's tables or metadata. The 'Initialize Database' step later on can insert tables and metadata into this existing database. if this is acceptable, click 'Customize Basic' below to continue customizing RT.", $RT::DatabaseName );
+                    push @results, loc("%1 already exists, but does not contain RT's tables or metadata. The 'Initialize Database' step later on can insert tables and metadata into this existing database. if this is acceptable, click 'Customize Basic' below to continue customizing RT.", $RT::DatabaseName );
                 }
 
             }
@@ -178,7 +178,7 @@ if ( $Run ) {
         }
         else {
             $RT::Installer->{DatabaseAction} = 'error';
-            push @errors, loc("Failed to connect to database: [_1]",
+            push @errors, loc("Failed to connect to database: %1",
                     $DBI::errstr );
         }
     }

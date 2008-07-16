@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&|Elements/Wrapper, Title => loc('Step [_1] of [_2]: ', 4, 7 ) . loc('Email Configuration') &> 
+<&|Elements/Wrapper, Title => loc('Step %1 of %2: ', 4, 7 ) . loc('Email Configuration') &> 
 
 <& Elements/Errors, Errors => \@errors &>
 
@@ -81,12 +81,12 @@ if ( $Run ) {
 
 
     unless ( -e $ARGS{SendmailPath} ) {
-        push @errors, loc( "[_1] doesn't exist.", $ARGS{SendmailPath} );
+        push @errors, loc( "%1 doesn't exist.", $ARGS{SendmailPath} );
     }
 
     if ( ! $ARGS{OwnerEmail} || $ARGS{OwnerEmail} !~ /.+@.+/ ) {
         push @errors,
-            loc("Invalid [_1]: that doesn't look like an email address",
+            loc("Invalid %1: that doesn't look like an email address",
             'Administrator Email');
     }
 

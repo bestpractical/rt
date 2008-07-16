@@ -190,7 +190,7 @@ $DashboardId = $SubscriptionObj->Id
              : $ARGS{'DashboardId'};
 
 ($val, $msg) = $DashboardObj->LoadById($DashboardId);
-$val || abort(loc("Couldn't load dashboard [_1]: [_2].", $DashboardId, $msg));
+$val || abort(loc("Couldn't load dashboard %1: %2.", $DashboardId, $msg));
 
 my %fields = (
     DashboardId => $DashboardId,
@@ -233,7 +233,7 @@ if (defined $ARGS{Save}) {
     }
     # create
     else {
-        abort(loc("Unable to subscribe to dashboard [_1]: Permission denied", $DashboardId))
+        abort(loc("Unable to subscribe to dashboard %1: Permission denied", $DashboardId))
             unless $DashboardObj->CurrentUserCanSubscribe;
 
         my ($val, $msg) = $SubscriptionObj->Create(
@@ -244,21 +244,21 @@ if (defined $ARGS{Save}) {
             Content     => \%fields,
         );
         if ($val) {
-            push @results, loc("Subscribed to dashboard [_1]", $DashboardObj->name);
+            push @results, loc("Subscribed to dashboard %1", $DashboardObj->name);
             push @results, loc("Warning: you have no email address set, so you will not receive this dashboard until you have it set")
                 unless Jifty->web->current_user->email;
         }
         else {
-            push @results, loc('Subscription could not be created: [_1]', $msg);
+            push @results, loc('Subscription could not be created: %1', $msg);
         }
     }
 }
 
 if ($SubscriptionObj->Id) {
-    $title = loc("Modify the subscription to dashboard [_1]", $DashboardObj->name);
+    $title = loc("Modify the subscription to dashboard %1", $DashboardObj->name);
 }
 else {
-    $title = loc("Subscribe to dashboard [_1]", $DashboardObj->name);
+    $title = loc("Subscribe to dashboard %1", $DashboardObj->name);
 }
 
 </%INIT>

@@ -83,7 +83,7 @@ my $locked;
     $locked = 1 unless -w $file;
     
     if ( $locked ) {
-        push @errors, loc("Config file [_1] is locked", $file);
+        push @errors, loc("Config file %1 is locked", $file);
     }
     elsif ( $Run ) {
         $RT::Installer->{InstallConfig} ||= {};

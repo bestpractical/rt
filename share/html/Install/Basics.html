@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| Elements/Wrapper, Title => loc('Step [_1] of [_2]: ', 3, 7) . loc('Customize Basics') &> 
+<&| Elements/Wrapper, Title => loc('Step %1 of %2: ', 3, 7) . loc('Customize Basics') &> 
 
 <& Elements/Errors, Errors => \@errors &>
 
@@ -75,7 +75,7 @@ if ( $Run ) {
             Meta => $RT::Installer->{Meta} );
     
     if ( $ARGS{WebPort} && $ARGS{WebPort} !~ /^\d+$/ ) {
-        push @errors, loc("Invalid [_1]: it should be a number", 'WebPort');
+        push @errors, loc("Invalid %1: it should be a number", 'WebPort');
     }
 
     unless ( $ARGS{Password} ) {

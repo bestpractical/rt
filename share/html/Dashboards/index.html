@@ -78,7 +78,7 @@ my $dashboards = $m->comp("/Dashboards/Elements/DashboardsForObjects", Objects =
 
 my @actions;
 if (defined $Deleted) {
-    push @actions, loc("Deleted dashboard [_1]", $Deleted);
+    push @actions, loc("Deleted dashboard %1", $Deleted);
 }
 
 </%INIT>
