@@ -771,6 +771,9 @@ sub iCal {
     return $res;
 }
 
+# it's been added by mistake in 3.8.0
+sub iCalDate { return (shift)->iCal( Time => 0, @_ ) }
+
 sub _SplitOffset {
     my ($self, $offset) = @_;
     my $sign = $offset < 0? '-': '+';
