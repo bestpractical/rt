@@ -111,7 +111,6 @@ foreach my $id (keys %cfqueues) {
         $id =~ s/^.'*(.*).'*$/$1/;
         $queue->Load($id);
     }
-    $queue->Load($id);
     $CustomFields->LimitToQueue($queue->Id);
 }
 $CustomFields->LimitToGlobal;
