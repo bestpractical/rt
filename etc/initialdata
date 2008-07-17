@@ -423,7 +423,7 @@ Your new password is:
 	       {   queue       => '0',
 		   name        => 'email Digest',    # loc
 		   description => 'email template for periodic notification digests',  # loc
-		   Content => q[Subject: RT email Digest
+		   content => q[Subject: RT email Digest
 
 { $Argument }
 ],
@@ -434,7 +434,7 @@ Your new password is:
     name        => "Error: Missing dashboard",    # loc
     description =>
       "Inform user that a dashboard he subscribed to is missing", # loc
-    Content => q{Subject: [{RT->config->get('rtname')}] Missing dashboard!
+    content => q{Subject: [{RT->config->get('rtname')}] Missing dashboard!
 
 Greetings,
 
@@ -700,11 +700,11 @@ return 0; # ignore $passed;
     },
     { name => 'Search - Bookmarked Tickets',
       description => 'Bookmarked Tickets', #loc
-      Content     =>
+      content     =>
       { format => q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
                 . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>/TITLE:Subject',}
                 . q{Priority, QueueName, ExtendedStatus, Bookmark},
-        Query   => "__Bookmarks__",
+        query   => "__Bookmarks__",
         order_by => 'LastUpdated',
         order   => 'DESC' },
     },
