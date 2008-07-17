@@ -47,7 +47,6 @@
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
 $Class        => 'RT__Model__Ticket'
-
 @format       => undef
 $format_string => undef
 @order_by      => ()

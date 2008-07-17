@@ -133,10 +133,10 @@
     },
     {
 
-      name                 => 'On Priority Change',                       # loc
+      name                 => 'On priority Change',                       # loc
       description          => 'Whenever a ticket\'s priority changes',    # loc
       applicable_trans_types => 'Set',
-      exec_module           => 'PriorityChange',
+      exec_module           => 'priorityChange',
     },
     {
 
@@ -679,9 +679,9 @@ return 0; # ignore $passed;
       content     =>
       { format =>  q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
                  . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__subject__</a>/TITLE:subject',}
-                 . q{Priority, Queuename, ExtendedStatus},
+                 . q{priority, queue_name, extended_status},
         query   => " owner = '__CurrentUser__' AND ( Status = 'new' OR Status = 'open')",
-        order_by => 'Priority',
+        order_by => 'priority',
         order   => 'DESC'
       },
     },
@@ -691,7 +691,7 @@ return 0; # ignore $passed;
 # 'Take' #loc
       { format =>  q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
                  . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__subject__</a>/TITLE:subject',}
-                 . q{Queuename, ExtendedStatus, CreatedRelative, }
+                 . q{queue_name, extended_status, created_relative, }
                  . q{'<A HREF="__WebPath__/Ticket/Display.html?Action=Take&id=__id__">___(Take)__</a>/TITLE:NBSP'},
         query   => " owner = 'Nobody' AND ( Status = 'new' OR Status = 'open')",
         order_by => 'Created',
@@ -703,7 +703,7 @@ return 0; # ignore $passed;
       content     =>
       { format => q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
                 . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a>/TITLE:Subject',}
-                . q{Priority, QueueName, ExtendedStatus, Bookmark},
+                . q{priority, queue_name, extended_status, bookmark},
         query   => "__Bookmarks__",
         order_by => 'LastUpdated',
         order   => 'DESC' },

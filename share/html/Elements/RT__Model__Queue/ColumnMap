@@ -62,10 +62,10 @@ my $COLUMN_MAP = {
         attribute => 'disabled',
         value     => sub  { return $_[0]->disabled? _('disabled'): _('enabled') },
     },
-    Priority => {
+    priority => {
         value     => sub  { return $_[0]->initial_priority .'-'. $_[0]->final_priority },
     },
-    Address  => {
+    address  => {
         value     => sub  { return ($_[0]->correspond_address||'-') .'/'. ($_[0]->comment_address||'-') },
     },
 

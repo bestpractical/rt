@@ -48,7 +48,7 @@
 <%INIT>
 if (!$Collection && $Class eq 'RT::Model::TicketCollection') {
     $Collection = RT::Model::TicketCollection->new;
-    $Collection->from_sql($Query);
+    $Collection->from_sql($query);
 }
 my $TotalFound = $Collection->count_all();
 return '' if !$TotalFound && !$ShowEmpty;
@@ -106,7 +106,7 @@ if ( $ShowHeader ) {
 	   %ARGS,
 	   Class        => $Class,
 	   format       => \@format,
-	   formatString => $format,
+	   format_string => $format,
 	   order        => \@order,
 	   order_by      => \@order_by,
 	   Rows         => $Rows,
@@ -152,7 +152,6 @@ if ( $Rows && $ShowNavigation && $TotalFound > $Rows ) {
 
 }
 
-
 </%INIT>
 <%ARGS>
 $Class         => ''
@@ -171,5 +170,5 @@ $AllowSorting   => 0
 $ShowNavigation => 1
 $ShowHeader     => 1
 $ShowEmpty      => 0
-$Query => 0
+$query => 0
 </%ARGS>

@@ -57,8 +57,8 @@ my $COLUMN_MAP;
 my $LinkCallback = sub  {
     my $method = shift;
 
-    my $mode            = $RT::Model::Ticket::LINKTYPEMAP{$method}{Mode};
-    my $type            = $RT::Model::Ticket::LINKTYPEMAP{$method}{Type};
+    my $mode            = $RT::Model::Ticket::LINKTYPEMAP{$method}{mode};
+    my $type            = $RT::Model::Ticket::LINKTYPEMAP{$method}{type};
     my $other_mode      = ($mode eq "target" ? "base" : "target");
     my $mode_uri        = $mode.'URI';
     my $local_type      = 'local_'.$mode;
@@ -80,7 +80,7 @@ $COLUMN_MAP = {
         title     => 'Queue id',
         value     => sub { return $_[0]->queue }
     },
-    Queuename => {
+    queue_name => {
         attribute => 'queue',
         title     => 'queue',
         value     => sub  { return $_[0]->queue_obj->name }
@@ -98,7 +98,7 @@ $COLUMN_MAP = {
         attribute => 'subject',
         value => sub  { return $_[0]->subject || "(" . _('No subject') . ")" }
     },
-    ExtendedStatus => {
+    extended_status => {
         title     => 'Status',
         attribute => 'Status',
         value     => sub  {
@@ -120,7 +120,7 @@ $COLUMN_MAP = {
 
           }
     },
-    Priority => {
+    priority => {
         attribute => 'Priority',
         value     => sub  { return $_[0]->priority }
     },
@@ -161,30 +161,30 @@ $COLUMN_MAP = {
         attribute => 'Requestor.email',
         value => sub  { return $_[0]->role_group("requestor")->member_emails_as_string }
     },
-    Cc => {
+    cc => {
         attribute => 'Cc.email',
         value => sub  { return $_[0]->role_group("cc")->member_emails_as_string }
     },
-    AdminCc => {
+    admin_cc => {
         attribute => 'AdminCc.email',
         value => sub  { return $_[0]->role_group("admin_cc")->member_emails_as_string }
     },
-    startsRelative => {
+    starts_relative => {
         title     => 'starts',
         attribute => 'starts',
         value     => sub  { return $_[0]->starts_obj->age_as_string }
     },
-    StartedRelative => {
+    started_relative => {
         title     => 'Started',
         attribute => 'Started',
         value     => sub  { return $_[0]->started_obj->age_as_string }
     },
-    ToldRelative => {
+    told_relative => {
         title     => 'Told',
         attribute => 'Told',
         value     => sub  { return $_[0]->told_obj->age_as_string }
     },
-    DueRelative => {
+    due_relative => {
         title     => 'Due',
         attribute => 'Due',
         value     => sub  { 
@@ -197,7 +197,7 @@ $COLUMN_MAP = {
             }
         }
     },
-    ResolvedRelative => {
+    resolved_relative => {
         title     => 'resolved',
         attribute => 'resolved',
         value     => sub  { return $_[0]->resolved_obj->age_as_string }
@@ -206,15 +206,15 @@ $COLUMN_MAP = {
         attribute => 'starts',
         value     => sub  { return $_[0]->starts_obj->as_string }
     },
-    Started => {
+    started => {
         attribute => 'Started',
         value     => sub  { return $_[0]->started_obj->as_string }
     },
-    Told => {
+    told => {
         attribute => 'Told',
         value     => sub  { return $_[0]->told_obj->as_string }
     },
-    Due => {
+    due => {
         attribute => 'Due',
         value     => sub  { return $_[0]->due_obj->as_string }
     },
@@ -222,7 +222,7 @@ $COLUMN_MAP = {
         attribute => 'resolved',
         value     => sub  { return $_[0]->resolved_obj->as_string }
     },
-    UpdateStatus => {
+    update_status => {
         title => _('New messages'),
         value => sub  {
             my $txn = $_[0]->seen_up_to or return $_[0]->_('No');
@@ -283,7 +283,7 @@ $COLUMN_MAP = {
         value     => sub { return \('<input type="checkbox" class="checkbox" name="UpdateTicket'.$_[0]->id.'" value="1" checked="checked" />') }
     },
 
-    CustomField => {
+    custom_field => {
         attribute => undef,
         title     => sub  { return pop @_ },
         value     => sub  {
@@ -303,7 +303,7 @@ $COLUMN_MAP = {
             return @values;
         },
     },
-    Bookmark => {
+    bookmark => {
         title => ' ',
         value => sub {
             my $bookmark = $m->scomp( '/Ticket/Elements/Bookmark', id => $_[0]->id );
@@ -315,7 +315,7 @@ $COLUMN_MAP = {
     },
 };
 
-$COLUMN_MAP->{'CF'} = $COLUMN_MAP->{'CustomField'};
+$COLUMN_MAP->{'CF'} = $COLUMN_MAP->{'custom_field'};
 
 # if no GPG support, then key_owner_name and key_requestors fall back to the regular
 # versions
@@ -331,5 +331,5 @@ else {
 $m->callback( COLUMN_MAP => $COLUMN_MAP, Callbackname => 'Once', CallbackOnce => 1 );
 # backward compatibility
 $m->callback( COLUMN_MAP => $COLUMN_MAP, Callbackname => 'ColumnMap' );
-return GetColumnMapEntry( Map => $COLUMN_MAP, name => $name, Attribute => $Attr );
+return get_column_map_entry( Map => $COLUMN_MAP, name => $name, Attribute => $Attr );
 </%init>

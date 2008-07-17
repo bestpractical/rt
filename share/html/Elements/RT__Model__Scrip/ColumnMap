@@ -57,26 +57,26 @@ my $COLUMN_MAP = {
         align     => 'right',
         value     => sub { return $_[0]->id },
     },
-    Queue => {
+    queue => {
         title     => 'Queue',
         value     => sub {
             return $_[0]->queue_obj->name if $_[0]->queue;
             return $_[0]->loc('Global');
         },
     },
-    Condition => {
+    condition => {
         title     => 'Condition',
         value     => sub { return $_[0]->loc( $_[0]->scrip_condition_obj->name ) },
     },
-    Action => {
+    action => {
         title     => 'Action',
         value     => sub { return $_[0]->loc( $_[0]->scrip_action_obj->name ) },
     },
-    Template => {
+    template => {
         title     => 'Template',
         value     => sub { return $_[0]->loc( $_[0]->template_obj->name ) },
     },
-    Autodescription => {
+    auto_description => {
         title     => 'Condition, Action and Template',
         value     => sub { return $_[0]->loc( "%1 %2 with template %3",
             $_[0]->loc($_[0]->condition_obj->name),
@@ -86,7 +86,7 @@ my $COLUMN_MAP = {
     },
 };
 
-foreach my $col( qw(description Stage) ) {
+foreach my $col( qw(description stage) ) {
     $COLUMN_MAP->{ $col } = { attribute => $col, value => sub { return $_[0]->$col() } };
 }
 </%ONCE>
