@@ -190,7 +190,6 @@ $m->callback( COLUMN_MAP => $COLUMN_MAP, Callbackname => 'Once', CallbackOnce =>
 $m->callback( COLUMN_MAP => $COLUMN_MAP );
 
 # first deal with class specific things
-Jifty->log->error( $Class );
 my $class_map = $m->comp("/Elements/$Class/ColumnMap", Attr => $Attr, name => $name );
 return $class_map if defined $class_map;
 return get_column_map_entry( Map => $COLUMN_MAP, name => $name, Attribute => $Attr );
