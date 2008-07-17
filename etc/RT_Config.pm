@@ -1032,18 +1032,18 @@ C<$DefaultSearchResultFormat> is the default format for RT search results
 
 set($DefaultSearchResultFormat, qq{
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-   '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
-   Status,
-   QueueName, 
-   OwnerName, 
-   Priority, 
+   '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__subject__</a></B>/TITLE:subject',
+   status,
+   queue_name, 
+   owner_name, 
+   priority, 
    '__NEWLINE__',
    '', 
-   '<small>__Requestors__</small>',
-   '<small>__CreatedRelative__</small>',
-   '<small>__ToldRelative__</small>',
-   '<small>__LastUpdatedRelative__</small>',
-   '<small>__TimeLeft__</small>'});
+   '<small>__requestors__</small>',
+   '<small>__created_relative__</small>',
+   '<small>__told_relative__</small>',
+   '<small>__last_updated_relative__</small>',
+   '<small>__time_left__</small>'});
 
 
 =item C<$SuppressInlineTextFiles>

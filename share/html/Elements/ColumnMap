@@ -107,17 +107,17 @@ my $COLUMN_MAP = {
         value     => sub  { return $_[0]->id }
     },
 
-    Created => {
+    created => {
         attribute => 'Created',
         title     => 'Created',
         value     => sub  { return $_[0]->created_obj->as_string }
     },
-    CreatedRelative => {
+    created_relative => {
         attribute => 'Created',
         title     => 'Created',
         value     => sub  { return $_[0]->created_obj->age_as_string }
     },
-    CreatedBy => {
+    created_by => {
         attribute => 'CreatedBy',
         title => 'Created By',
         value     => sub  { return $_[0]->creator_obj->name }
@@ -127,7 +127,7 @@ my $COLUMN_MAP = {
         title     => 'Last Updated',
         value     => sub  { return $_[0]->last_updated_obj->as_string }
     },
-    last_updatedRelative => {
+    last_updated_relative => {
         attribute => 'last_updated',
         title     => 'Last Updated',
         value     => sub  { return $_[0]->last_updated_obj->age_as_string }

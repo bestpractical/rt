@@ -61,44 +61,39 @@ $ColDown => undef
 $SelectDisplayColumns => undef
 $CurrentDisplayColumns => undef
 </%ARGS>
-<%ONCE>
+
+<%init>
+# This can't be in a <once> block, because otherwise we return the
+# same \@fields every request, and keep tacking more CustomFields onto
+# it -- and it grows per request.
 
 # All the things we can display in the format string by default
 my @fields = qw(
-    id Queuename subject
-    Status ExtendedStatus UpdateStatus
-    Type
-
-    owner_name requestors cc admin_cc created_by last_updated_by
-
-    Priority initial_priority final_priority
-
+    id queue_name subject
+    status extended_status update_status
+    type owner_name requestors cc admin_cc created_by last_updated_by
+    priority initial_priority final_priority
     time_worked time_left time_estimated
-
-    starts      startsRelative
-    Started     StartedRelative
-    Created     CreatedRelative
-    last_updated last_updatedRelative
-    Told        ToldRelative
-    Due         DueRelative
-    resolved    ResolvedRelative
-
-    RefersTo    ReferredToBy
-    DependsOn   DependedOnBy
-    MemberOf    Members
-    Parents     Children
-
+    starts      starts_relative
+    started     started_relative
+    created     created_relative
+    last_updated last_updated_relative
+    told        told_relative
+    due         due_relative
+    resolved    resolved_relative
+    refers_to    referred_to_by
+    depends_on   depended_on_by
+    member_of    members
+    parents     children
     NEWLINE
 );
 
-</%ONCE>
-<%init>
 $m->callback( CallbackOnce => 1, Callbackname => 'SetFieldsOnce', Fields => \@fields );
 
-my $CustomFields = RT::Model::CustomFieldCollection->new();
+my $CustomFields = RT::Model::CustomFieldCollection->new( current_user => Jifty->web->current_user);
 foreach my $id (keys %cfqueues) {
     # Gotta load up the $queue object, since queues get stored by name now. my $id
-    my $queue = RT::Model::Queue->new();
+    my $queue = RT::Model::Queue->new( current_user => Jifty->web->current_user );
     $queue->load($id);
     unless ($queue->id) {
         # XXX TODO: This ancient code dates from a former developer
@@ -106,13 +101,12 @@ foreach my $id (keys %cfqueues) {
         $id =~ s/^.'*(.*).'*$/$1/;
         $queue->load($id);
     }
-    $queue->load($id);
     $CustomFields->limit_to_queue($queue->id);
 }
 $CustomFields->limit_to_global;
 
 while ( my $CustomField = $CustomFields->next ) {
-    push @fields, "CustomField.{" . $CustomField->name . "}";
+    push @fields, "custom_field.{" . $CustomField->name . "}";
 }
 
 $m->callback( Fields => \@fields, args_ref => \%ARGS );
