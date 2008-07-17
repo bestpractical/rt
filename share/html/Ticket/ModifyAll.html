@@ -133,10 +133,11 @@
 
 <%INIT>
 
-
+use Data::Dumper;
+Jifty->log->error( Dumper \%ARGS );
 
 my $Ticket = load_ticket($id);
-my $CustomFields = $Ticket->queue_obj->ticketCustomFields();
+my $CustomFields = $Ticket->queue_obj->ticket_custom_fields();
 
 # call this to show up hints of valid cf values.
 $m->comp(
@@ -161,11 +162,11 @@ my (@wresults, @results,  @dresults, @lresults, @cf_results);
 
 unless ($OnlySearchForPeople or $OnlySearchForGroup ) {
     # There might be two owners. 
-    if ( ref ($ARGS{'Owner'} )) {
-        my @owners =@{$ARGS{'Owner'}};
-        delete $ARGS{'Owner'};
+    if ( ref ($ARGS{'owner'} )) {
+        my @owners =@{$ARGS{'owner'}};
+        delete $ARGS{'owner'};
         foreach my $owner(@owners){
-            $ARGS{'Owner'} = $owner unless ($Ticket->owner_obj->id == $owner);
+            $ARGS{'owner'} = $owner unless ($Ticket->owner_obj->id == $owner);
         }
 
     }
@@ -192,7 +193,7 @@ unless ($OnlySearchForPeople or $OnlySearchForGroup ) {
     push @results, process_update_message( ticket_obj => $Ticket, args_ref=>\%ARGS );
     push @results, process_ticket_basics( ticket_obj => $Ticket, args_ref => \%ARGS );
 }
-    @lresults   = ProcessTicketLinks( ticket_obj => $Ticket, args_ref => \%ARGS);
+    @lresults   = process_ticket_links( ticket_obj => $Ticket, args_ref => \%ARGS);
 push @results, @wresults;
 push @results, @dresults;
 push @results, @lresults;

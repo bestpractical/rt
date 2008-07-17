@@ -942,7 +942,7 @@ sub process_ticket_basics {
 
     # Status isn't a field that can be set to a null value.
     # RT core complains if you try
-    delete $args_ref->{'Status'} unless $args_ref->{'Status'};
+    delete $args_ref->{'status'} unless $args_ref->{'status'};
 
     my @results = update_record_object(
         attributes_ref => \@attribs,
