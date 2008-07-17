@@ -66,5 +66,5 @@ my $format = q{'<a href="__WebPath__/Admin/Global/Scrip.html?id=__id__&Queue=0">
     .q{__NEWLINE__,'','<small>__description__</small>'};
 
 my $Scrips = RT::Model::ScripCollection->new;
-$Scrips->limit_toGlobal;
+$Scrips->limit_to_global;
 </%init>
