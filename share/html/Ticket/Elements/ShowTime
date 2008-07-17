@@ -48,7 +48,7 @@
 % if ($minutes < 60) {
 <&|/l, $minutes &>%1 min</&>
 % } else {
-<&|/l, sprintf("%.1f",$minutes / 60) &>[quant,_1,hour]</&> (<&|/l, $minutes &>%1 min</&>)
+<&|/l, sprintf("%.1f",$minutes / 60) &>%quant(%1,hour)</&> (<&|/l, $minutes &>%1 min</&>)
 % }
 <%ARGS>
 $minutes

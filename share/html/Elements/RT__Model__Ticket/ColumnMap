@@ -111,7 +111,7 @@ $COLUMN_MAP = {
                     return \'<em>', _('(pending approval)'), \'</em>';
                 }
                 else {
-                    return \'<em>', _('(pending [quant,_1,other ticket])',$count), \'</em>';
+                    return \'<em>', _('(pending %quant(%1,other ticket))',$count), \'</em>';
                 }
             }
             else {

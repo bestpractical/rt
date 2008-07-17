@@ -96,7 +96,6 @@
 <%INIT>
 # Read from user preferences
 my $prefs = Jifty->web->current_user->user_object->preferences("SearchDisplay") || {};
-
 # These variables are what define a search_hash; this is also
 # where we give sane defaults.
 $format      ||= $prefs->{'format'} || RT->config->get('DefaultSearchResultFormat');
@@ -144,7 +143,7 @@ $session{'CurrentSearchHash'} = {
 
 if ( $session{'tickets'}->query()) {
     $ticketcount = $session{tickets}->count_all();
-    $title = _('Found [quant,_1,ticket]', $ticketcount);
+    $title = _('Found %quant(%1,ticket)', $ticketcount);
 } else {
     $title = _("Find tickets");
 }
