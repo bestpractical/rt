@@ -615,7 +615,7 @@ sub encrypt {
     return ( 0, _('GnuPG integration is disabled') )
         unless RT->config->get('GnuPG')->{'enable'};
     return ( 0, _('Attachments encryption is disabled') )
-        unless RT->config->get('GnuPG')->{'AllowEncryptDataInDB'};
+        unless RT->config->get('GnuPG')->{'allow_encrypt_data_in_db'};
 
     require RT::Crypt::GnuPG;
 

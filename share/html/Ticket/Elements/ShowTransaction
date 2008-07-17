@@ -209,7 +209,7 @@ else {
         }
         if ( $can_modify
             && RT->config->get('GnuPG')->{'enable'}
-            && RT->config->get('GnuPG')->{'AllowEncryptDataInDB'}
+            && RT->config->get('GnuPG')->{'allow_encrypt_data_in_db'}
             && $ticket->current_user_has_right('ForwardMessage')
         ) {
             $titlebar_commands .=

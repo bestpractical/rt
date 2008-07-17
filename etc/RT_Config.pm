@@ -560,18 +560,18 @@ by running the command `perldoc L<RT::Crypt::GnuPG>`  (or `perldoc
 
 =item C<%GnuPG>
 
-Set C<OutgoingMessagesFormat> to 'inline' to use inline encryption and
+Set C<outgoing_messages_format> to 'inline' to use inline encryption and
 signatures instead of 'RFC' (GPG/MIME: RFC3156 and RFC1847) format.
 
 If you want to allow people to encrypt attachments inside the DB then
-set C<AllowEncryptDataInDB> to true
+set C<allow_encrypt_data_in_db> to true
 
 =cut
 
 set( %GnuPG,
-    Enable => 1,
-    OutgoingMessagesFormat => 'RFC', # Inline
-    AllowEncryptDataInDB   => 0,
+    enable => 1,
+    outgoing_messages_format => 'RFC', # Inline
+    allow_encrypt_data_in_db   => 0,
 );
 
 =item C<%GnuPGOptions>

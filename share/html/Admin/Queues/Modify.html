@@ -132,7 +132,8 @@ value="1" <%$enabled_checked|n%> /></td>
 
 <%INIT>
 my ($title, $current_tab, @results, $disabled, $enabled_checked);
-my $queue_obj = RT::Model::Queue->new();
+my $queue_obj = RT::Model::Queue->new( current_user =>
+        Jifty->web->current_user );
 $queue_obj->load( $id ) if !$id || $id eq 'new';
 
 $enabled_checked = 'checked="checked"';
@@ -156,7 +157,7 @@ if ($Create) {
 }
 if ( $queue_obj->id ) {
     my @attribs= qw(description correspond_address comment_address name
-        initial_priority final_priority default_due_in Sign Encrypt SubjectTag Disabled);
+        initial_priority final_priority default_due_in sign encrypt subject_tag disabled);
 
     # we're asking about enabled on the web page but really care about disabled
     if ( $set_enabled ) {

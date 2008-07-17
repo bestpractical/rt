@@ -139,7 +139,7 @@ it well.
 =head3 Encrypting data in the database
 
 You can allow users to encrypt data in the database using
-option C<AllowEncryptDataInDB>. By default it's disabled.
+option C<allow_encrypt_data_in_db>. By default it's disabled.
 Users must have rights to see and modify tickets to use
 this feature.
 
@@ -1180,8 +1180,8 @@ sub decrypt_rfc3156 {
         local $SIG{'CHLD'} = 'DEFAULT';
         $gnupg->passphrase( $args{'passphrase'} );
         my $pid = safe_run_child { $gnupg->decrypt( handles => $handles ) };
-        $args{'data'}->bodyhandle->print( $handle{'input'} );
-        close $handle{'input'};
+        $args{'data'}->bodyhandle->print( $handle{'stdin'} );
+        close $handle{'stdin'};
 
         waitpid $pid, 0;
     };
