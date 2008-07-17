@@ -46,7 +46,6 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <tr><td class="label"><&|/l&>One-time Cc</&>:</td><td><& /Elements/EmailInput, name => 'UpdateCc', Size => '60', default => $ARGS{UpdateCc} &>
-        value="<% $ARGS{update_cc}||'' %>" />
 <input type="hidden" id="UpdateIgnoreAddressCheckboxes" name="UpdateIgnoreAddressCheckboxes" value="0">
         <br />
 
