@@ -196,7 +196,7 @@ sub create {
         $args{'password'} = '*NO-PASSWORD*';
     }
 
-    elsif ( length( $args{'password'} ) < RT->config->get('MinimumpasswordLength') ) {
+    elsif ( length( $args{'password'} ) < RT->config->get('MinimumPasswordLength') ) {
         return ( 0, _( "password needs to be at least %1 characters long", RT->config->get('MinimumpasswordLength') ) );
     }
 
