@@ -249,39 +249,39 @@ perl(1).
 my %LINKTYPEMAP = (
     MemberOf => {
         type => 'MemberOf',
-        Mode => 'target',
+        mode => 'target',
     },
     Parents => {
         type => 'MemberOf',
-        Mode => 'target',
+        mode => 'target',
     },
     Members => {
         type => 'MemberOf',
-        Mode => 'base',
+        mode => 'base',
     },
     Children => {
         type => 'MemberOf',
-        Mode => 'base',
+        mode => 'base',
     },
     has_member => {
         type => 'MemberOf',
-        Mode => 'base',
+        mode => 'base',
     },
     RefersTo => {
         type => 'RefersTo',
-        Mode => 'target',
+        mode => 'target',
     },
     ReferredToBy => {
         type => 'RefersTo',
-        Mode => 'base',
+        mode => 'base',
     },
     DependsOn => {
         type => 'DependsOn',
-        Mode => 'target',
+        mode => 'target',
     },
     DependedOnBy => {
         type => 'DependsOn',
-        Mode => 'base',
+        mode => 'base',
     },
 
 );
