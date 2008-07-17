@@ -742,30 +742,33 @@ sub RFC2616 {
 
 =head4 iCal
 
-Returns the date and time formatted as an ICalendar string -- that is,
-C<yyyymmddThhmmssZ>
+Returns the object's date and time in iCalendar format,
+
+Supports arguments: C<Date> and C<Time>.
+See </Output formatters> for description of arguments.
 
 =cut
 
 sub iCal {
     my $self = shift;
+    my %args = (
+        Date => 1, Time => 1,
+        @_,
+    );
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) =
-                            $self->Localtime( "UTC" );
-    
-    return sprintf( '%04d%02d%02dT%02d%02d%02dZ', $year, $mon, $mday, $hour, $min, $sec );
-}
+        $self->Localtime( 'utc' );
 
-=head4 iCalDate
-
-Returns the date formatted as an ICalendar string -- that is, C<yyyymmddZ>
-
-=cut
-
-sub iCalDate {
-    my $self = shift;
-    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) =
-                            $self->Localtime( "UTC" );
-    return sprintf( '%04d%02d%02dZ', $year, $mon, $mday );
+    my $res;
+    if ( $args{'Date'} && !$args{'Time'} ) {
+        $res = sprintf( '%04d%02d%02dZ', $year, $mon, $mday );
+    }
+    elsif ( !$args{'Date'} && $args{'Time'} ) {
+        $res = sprintf( 'T%02d%02d%02dZ', $hour, $min, $sec );
+    }
+    else {
+        $res = sprintf( '%04d%02d%02dT%02d%02d%02dZ', $year, $mon, $mday, $hour, $min, $sec );
+    }
+    return $res;
 }
 
 sub _SplitOffset {
