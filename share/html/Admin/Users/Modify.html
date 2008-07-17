@@ -367,7 +367,7 @@ if ( $user_object->id ) {
     } elsif ( $Pass1 ne $Pass2 ) {
 	$password_not_set = 1;
         push @results, _("passwords do not match.");
-    } elsif ( $Pass1 eq $Pass2 and !$user_object->is_password($Pass1) ) {
+    } elsif ( $Pass1 eq $Pass2 and $user_object->password ne $Pass1 ) {
         my ($code, $msg) = $user_object->set_password($Pass1);
         push @results, _($msg);
 	$password_not_set = 1 unless $code;
