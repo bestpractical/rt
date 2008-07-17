@@ -59,9 +59,9 @@
 <input type="hidden" class="hidden" name="UpdateObjs" value="1" />
 
 <h2><&|/l&>Selected objects</&></h2>
-<& /Admin/Elements/Pickobjects, objects => \@AssignedObjs, id => $id, Checked => 1 &>
+<& /Admin/Elements/PickObjects, objects => \@AssignedObjs, id => $id, Checked => 1 &>
 <h2><&|/l&>Unselected objects</&></h2>
-<& /Admin/Elements/Pickobjects, objects => \@UnassignedObjs, id => $id &>
+<& /Admin/Elements/PickObjects, objects => \@UnassignedObjs, id => $id &>
 
 <& /Elements/Submit, CheckAll => 1, ClearAll => 1 &>
 </form>
