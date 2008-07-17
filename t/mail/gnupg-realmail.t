@@ -66,31 +66,15 @@ for my $usage (qw/signed encrypted signed&encrypted/) {
     }
 }
 
-sub get_contents {
-    my $eid = shift;
-
-    my $emaildatadir = RT::Test::get_relocatable_dir(File::Spec->updir(),
-        qw(data gnupg emails));
-    my ($file) = glob("$emaildatadir/$eid-*");
-    defined $file
-        or do { diag "Unable to find t/data/mails/gnupg-basic-set/$eid-*"; return };
-
-    open my $mailhandle, '<', $file
-        or do { diag "Unable to read $file: $!"; return };
-
-    my $mail = do { local $/; <$mailhandle> };
-    close $mailhandle;
-
-    return $mail;
-}
-
 sub email_ok {
     my ($eid, $usage, $format, $attachment) = @_;
     diag "email_ok $eid: $usage, $format, $attachment" if $ENV{'TEST_VERBOSE'};
 
-    my $mail = get_contents($eid)
-        or return 0;
-
+    my $emaildatadir = RT::Test::get_relocatable_dir(File::Spec->updir(),
+        qw(data gnupg emails));
+    my ($file) = glob("$emaildatadir/$eid-*");
+    my $mail = RT::Test->file_content($file);
+    
     my ($status, $id) = RT::Test->send_via_mailgate($mail);
     is ($status >> 8, 0, "$eid: The mail gateway exited normally");
     ok ($id, "$eid: got id of a newly created ticket - $id");
