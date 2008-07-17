@@ -182,7 +182,7 @@ sub before_wipeout {
     if ( $self->name =~ /^(RT_System|Nobody)$/ ) {
         RT::Shredder::Exception::Info->throw('Systemobject');
     }
-    return $self->SUPER::BeforeWipeout(@_);
+    return $self->SUPER::before_wipeout(@_);
 }
 
 1;

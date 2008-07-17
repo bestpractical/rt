@@ -176,7 +176,7 @@ sub before_wipeout {
     if ( $self->domain eq 'SystemInternal' ) {
         RT::Shredder::Exception::Info->throw('Systemobject');
     }
-    return $self->SUPER::BeforeWipeout(@_);
+    return $self->SUPER::before_wipeout(@_);
 }
 
 1;
