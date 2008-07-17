@@ -123,7 +123,7 @@ foreach ( $SearchArg, $ProcessedSearchArg ) {
     if ( $_->{'query'} =~ /__Bookmarks__/ ) {
         $_->{'rows'} = 999;
 
-        my $bookmarks = Jifty->web->current_user->user_object->firstAttribute('Bookmarks');
+        my $bookmarks = Jifty->web->current_user->user_object->first_attribute('Bookmarks');
         $bookmarks = $bookmarks->content if $bookmarks;
         $bookmarks ||= {};
         my $query = join(" OR ", map " id = '$_' ", grep $bookmarks->{ $_ }, keys %$bookmarks ) || 'id=0';

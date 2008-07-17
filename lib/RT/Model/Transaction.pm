@@ -1305,7 +1305,7 @@ sub DeferredRecipients {
     my $freq         = shift;
     my $include_sent = @_ ? shift : 0;
 
-    my $attr = $self->firstAttribute('DeferredRecipients');
+    my $attr = $self->first_attribute('DeferredRecipients');
 
     return () unless ($attr);
 

@@ -1019,7 +1019,7 @@ sub set_preferences {
     my $value = shift;
 
     return ( 0, _("No permission to set preferences") )
-      unless $self->current_userCanModify('Preferences');
+      unless $self->current_user_can_modify('Preferences');
 
     my $attr = RT::Model::Attribute->new;
     $attr->load_by_name_and_object( object => $self, name => $name );
