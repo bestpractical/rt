@@ -530,13 +530,24 @@ sub set_encrypt {
     return ( $status, _('Encrypting disabled') );
 }
 
-# {{{ sub templates
-
 =head2 templates
 
 Returns an RT::Model::TemplateCollection object of all of this queue's templates.
 
 =cut
+
+
+sub templates {
+    my $self = shift;
+
+    my $templates = RT::Model::TemplateCollection->new;
+
+    if ( $self->current_user_has_right('ShowTemplate') ) {
+        $templates->limit_to_queue( $self->id );
+    }
+
+    return ($templates);
+}
 
 sub subject_tag {
     my $self = shift;
@@ -575,27 +586,6 @@ sub set_subject_tag {
         )
     );
 }
-
-
-=cut
-
-sub templates {
-    my $self = shift;
-
-    my $templates = RT::Model::TemplateCollection->new;
-
-    if ( $self->current_user_has_right('ShowTemplate') ) {
-        $templates->limit_to_queue( $self->id );
-    }
-
-    return ($templates);
-}
-
-# }}}
-
-# {{{ Dealing with custom fields
-
-# {{{  CustomField
 
 =head2 custom_field name
 
