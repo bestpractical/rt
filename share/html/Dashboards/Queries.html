@@ -103,8 +103,8 @@ my $sys = RT::System->new( current_user => Jifty->web->current_user );
 my @objs = ($sys);
 
 push @objs, RT::SavedSearches->new( current_user => Jifty->web->current_user )->_privacy_objects
-    if Jifty->web->current_user->has_right( Right  => 'LoadSavedSearch',
-                                          Object => $RT::System );
+    if Jifty->web->current_user->has_right( right  => 'LoadSavedSearch',
+                                          object => $RT::System );
 
 for my $object (@objs) {
     for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {

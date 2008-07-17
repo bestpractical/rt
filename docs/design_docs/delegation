@@ -18,7 +18,7 @@ Group ACLs
        
 In user.pm
 
-=item has_right  { Right => 'somerightname', object_type => 'Group', object_id => 'group_id'
+=item has_right  { right => 'somerightname', object_type => 'Group', object_id => 'group_id'
 
         Returns true if this user has the right 'somerightname' for
 the group with id 'id'

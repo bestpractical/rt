@@ -89,7 +89,7 @@ $m->callback(
 );
 
 my $isSU = Jifty->web->current_user
-    ->has_right( Right => 'SuperUser', object => RT->system );
+    ->has_right( right => 'SuperUser', object => RT->system );
 
 foreach my $object (@objects) {
     my $Users = RT::Model::UserCollection->new;

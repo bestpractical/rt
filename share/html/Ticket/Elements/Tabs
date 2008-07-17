@@ -276,7 +276,7 @@ if ($has_query) {
         $current_tab = "Search/Results.html$args";
 
         if ( Jifty->web->current_user
-            ->has_right( Right => 'SuperUser', object => RT->system ) )
+            ->has_right( right => 'SuperUser', object => RT->system ) )
         {
             my $shred_args = $m->comp(
                 '/Elements/QueryString',
