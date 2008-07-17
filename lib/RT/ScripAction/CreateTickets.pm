@@ -1184,7 +1184,7 @@ sub post_process {
 
                 my ( $wval, $wmsg ) = $ticket->add_link(
                     type                          => $LINKTYPEMAP{$type}->{'type'},
-                    $LINKTYPEMAP{$type}->{'Mode'} => $link,
+                    $LINKTYPEMAP{$type}->{'mode'} => $link,
                     silent                        => 1
                 );
 
