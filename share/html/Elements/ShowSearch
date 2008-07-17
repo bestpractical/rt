@@ -89,7 +89,7 @@ if ($SavedSearch) {
 } else {
     ($search) = RT::System->new() ->attributes->named( 'Search - ' . $name );
     unless ( $search && $search->id ) {
-        my (@custom_searches) = RT::System->new()->attributes->named('SavedSearch');
+        my (@custom_searches) = RT::System->new()->attributes->named('saved_search');
         foreach my $custom (@custom_searches) {
             if ($custom->description eq $name) { $search = $custom; last }
         }
