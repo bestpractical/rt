@@ -58,6 +58,7 @@ use Cwd;
 use LWP;
 use Text::ParseWords;
 use HTTP::Request::Common;
+use HTTP::Headers;
 use Term::ReadLine;
 
 # We derive configuration information from hardwired defaults, dotfiles,
@@ -70,12 +71,13 @@ my $HOME = eval{(getpwuid($<))[7]}
            || ".";
 my %config = (
     (
-        debug   => 0,
-        user    => eval{(getpwuid($<))[0]} || $ENV{USER} || $ENV{USERNAME},
-        passwd  => undef,
-        server  => 'http://localhost/',
-        query   => undef,
-        order_by => undef,
+        debug        => 0,
+        user         => eval{(getpwuid($<))[0]} || $ENV{USER} || $ENV{USERNAME},
+        passwd       => undef,
+        server       => 'http://localhost/',
+        query        => undef,
+        orderby      => undef,
+        externalauth => undef,
     ),
     config_from_file($ENV{RTCONFIG} || ".rtrc"),
     config_from_env()
@@ -91,11 +93,12 @@ sub DEBUG { warn @_ if $config{debug} >= shift }
 # These regexes are used by command handlers to parse arguments.
 # (XXX: Ask Autrijus how i18n changes these definitions.)
 
-my $name   = '[\w.-]+';
-my $field  = '(?:[a-zA-Z](?:[a-zA-Z0-9_-]|\s+)*)';
-my $label  = '[a-zA-Z0-9@_.+-]+';
-my $labels = "(?:$label,)*$label";
-my $idlist = '(?:(?:\d+-)?\d+,)*(?:\d+-)?\d+';
+my $name    = '[\w.-]+';
+my $CF_name = '[\sa-z0-9_ :()/-]+';
+my $field   = '(?i:[a-z][a-z0-9_-]*|C(?:ustom)?F(?:ield)?-'.$CF_name.'|CF\.\{'.$CF_name.'\})';
+my $label   = '[a-zA-Z0-9@_.+-]+';
+my $labels  = "(?:$label,)*$label";
+my $idlist  = '(?:(?:\d+-)?\d+,)*(?:\d+-)?\d+';
 
 # Our command line looks like this:
 #
@@ -397,7 +400,7 @@ sub edit {
         elsif (/^set$/i) {
             my $vars = 0;
 
-            while (@ARGV && $ARGV[0] =~ /^($field)([+-]?=)(.*)$/) {
+            while (@ARGV && $ARGV[0] =~ /^($field)([+-]?=)(.*)$/s) {
                 my ($key, $op, $val) = ($1, $2, $3);
                 my $hash = ($op eq '=') ? \%set : ($op =~ /^\+/) ? \%add : \%del;
 
@@ -415,7 +418,7 @@ sub edit {
             my $vars = 0;
             my $hash = ($_ eq "add") ? \%add : \%del;
 
-            while (@ARGV && $ARGV[0] =~ /^($field)=(.*)$/) {
+            while (@ARGV && $ARGV[0] =~ /^($field)=(.*)$/s) {
                 my ($key, $val) = ($1, $2);
 
                 vpush($hash, lc $key, $val);
@@ -453,7 +456,7 @@ sub edit {
             whine "What type of object do you want to create?";
             $bad = 1;
         }
-        @objects = ("$type/new");
+        @objects = ("$type/new") if defined($type);
     }
     #return help($action, $type) if $bad;
     return suggest_help($action, $type) if $bad;
@@ -719,6 +722,8 @@ sub merge {
 
 sub link {
     my ($bad, $del, %data) = (0, 0, ());
+    my $type;
+
     my %ltypes = map { lc $_ => $_ } qw(DependsOn DependedOnBy RefersTo
                                         ReferredToBy has_member MemberOf);
 
@@ -728,21 +733,26 @@ sub link {
         if (/^-d$/) {
             $del = 1;
         }
+        elsif (/^-t$/) {
+            $bad = 1, last unless defined($type = get_type_argument());
+        }
         else {
             whine "Unrecognised option: '$_'.";
             $bad = 1; last;
         }
     }
-
+    
+    $type = "ticket" unless $type; # default type to tickets
+    
     if (@ARGV == 3) {
         my ($from, $rel, $to) = @ARGV;
         if ($from !~ /^\d+$/ || $to !~ /^\d+$/) {
             my $bad = $from =~ /^\d+$/ ? $to : $from;
-            whine "Invalid ticket ID '$bad' specified.";
+            whine "Invalid $type ID '$bad' specified.";
             $bad = 1;
         }
-        unless (exists $ltypes{lc $rel}) {
-            whine "Invalid link '$rel' specified.";
+        if (($type eq "ticket") && ( ! exists $ltypes{lc $rel})) {
+            whine "Invalid link '$rel' for type $type specified.";
             $bad = 1;
         }
         %data = (id => $from, rel => $rel, to => $to, del => $del);
@@ -752,10 +762,9 @@ sub link {
         whine "Too $bad arguments specified.";
         $bad = 1;
     }
-    #return help("link", "ticket") if $bad;
-    return suggest_help("link", "ticket") if $bad;
-
-    my $r = submit("$REST/ticket/link", \%data);
+    return suggest_help("link", $type) if $bad;
+ 
+    my $r = submit("$REST/$type/link", \%data);
     print $r->content;
 }
 
@@ -820,6 +829,7 @@ sub submit {
     my ($uri, $content) = @_;
     my ($req, $data);
     my $ua = new LWP::UserAgent(agent => "RT/3.0b", env_proxy => 1);
+    my $h = HTTP::Headers->new;
 
     # Did the caller specify any data to send with the request?
     $data = [];
@@ -844,8 +854,10 @@ sub submit {
         $data = $content;
     }
 
-    # Should we send authentication information to start a new session?
-    if (!defined $session->cookie) {
+
+    if ($config{externalauth}) {
+        $h->authorization_basic($config{user}, $config{passwd} || read_passwd() );
+    } elsif (!defined $session->cookie) {
         push @$data, ( user => $config{user} );
         push @$data, ( pass => $config{passwd} || read_passwd() );
     }
@@ -858,6 +870,9 @@ sub submit {
         $req = GET($uri);
     }
     $session->add_cookie_header($req);
+    if ($config{externalauth}) {
+        $req->header(%$h);
+    }
 
     # Then we send the request and parse the response.
     DEBUG(3, $req->as_string);
@@ -874,7 +889,7 @@ sub submit {
         $text =~ s/\n*$/\n/ if ($text);
 
         # "RT/3.0.1 401 Credentials required"
-	if ($status !~ m#^RT/\d+(?:\S+) (\d+) ([\w\s]+)$#) {
+        if ($status !~ m#^RT/\d+(?:\S+) (\d+) ([\w\s]+)$#) {
             warn "rt: Malformed RT response from $config{server}.\n";
             warn "(Rerun with RTDEBUG=3 for details.)\n" if $config{debug} < 3;
             exit -1;
@@ -1251,7 +1266,7 @@ sub parse_config_file {
             chomp;
             next if (/^#/ || /^\s*$/);
 
-            if (/^(user|passwd|server|query|order_by)\s+(.*)\s?$/) {
+            if (/^(externalauth|user|passwd|server|query|orderby)\s+(.*)\s?$/) {
                 $cfg{$1} = $2;
             }
             else {
@@ -1834,7 +1849,7 @@ Text:
         rt create -t ticket
 
         # Non-interactive.
-        rt edit ticket/1-3 add cc=foo@example.com set priority=3
+        rt edit ticket/1-3 add cc=foo@example.com set priority=3 due=tomorrow
         rt ls -t tickets -i 'Priority > 5' | rt edit - set status=resolved
         rt edit ticket/4 set priority=3 owner=bar@example.com \
                          add cc=foo@example.com bcc=quux@example.net
