@@ -6,7 +6,7 @@ dnl Embed in generated ./configure script the following CVS info:
 AC_REVISION($Revision$)dnl
 
 dnl Setup autoconf
-AC_PREREQ([2.61a-341])
+AC_PREREQ([2.53])
 AC_INIT(RT, 3.7.86, [rt-bugs@bestpractical.com])
 AC_CONFIG_SRCDIR([lib/RT.pm.in])
 
@@ -23,13 +23,6 @@ test "x$rt_version_patch" = 'x' && rt_version_patch=0
 
 dnl Check for programs
 AC_PROG_INSTALL
-# If $INSTALL point to our install-sh, it may be a relative path. Make it a
-# full path so we can call it from anywhere
-AC_SUBST([rt_srcdir], ["`cd $srcdir && pwd`"])
-if test "$INSTALL" == "./install-sh -c"; then
-    INSTALL="$rt_srcdir/install-sh -c"
-fi
-
 AC_PROG_AWK
 AC_ARG_VAR([PERL],[Perl interpreter command])
 AC_PATH_PROG([PERL], [perl], [not found])
