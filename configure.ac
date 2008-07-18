@@ -23,6 +23,13 @@ test "x$rt_version_patch" = 'x' && rt_version_patch=0
 
 dnl Check for programs
 AC_PROG_INSTALL
+# If $INSTALL point to our install-sh, it may be a relative path. Make it a
+# full path so we can call it from anywhere
+AC_SUBST([rt_srcdir], ["`cd $srcdir && pwd`"])
+if test "$INSTALL" == "./install-sh -c"; then
+    INSTALL="$rt_srcdir/install-sh -c"
+fi
+
 AC_PROG_AWK
 AC_ARG_VAR([PERL],[Perl interpreter command])
 AC_PATH_PROG([PERL], [perl], [not found])
