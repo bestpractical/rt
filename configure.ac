@@ -6,7 +6,7 @@ dnl Embed in generated ./configure script the following CVS info:
 AC_REVISION($Revision$)dnl
 
 dnl Setup autoconf
-AC_PREREQ(2.53)
+AC_PREREQ([2.61a-341])
 AC_INIT(RT, 3.7.86, [rt-bugs@bestpractical.com])
 AC_CONFIG_SRCDIR([lib/RT.pm.in])
 
