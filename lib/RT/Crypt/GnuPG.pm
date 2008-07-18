@@ -1169,11 +1169,10 @@ sub decrypt_rfc3156 {
     binmode $tmp_fh, ':raw';
 
     my ( $handles, $handle_list ) = _make_gpg_handles(
-        stdin  => $args{'block_handle'},
         stdout => $tmp_fh
     );
     my %handle = %$handle_list;
-    $handles->options('stdin')->{'direct'}  = 1;
+    $handles->options('stdout')->{'direct'}  = 1;
 
     my %res;
     eval {
