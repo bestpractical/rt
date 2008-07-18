@@ -62,7 +62,7 @@ setting enabled.
 
 
 
-=item C<$Organization>
+=item C<$organization>
 
 You should set this to your organization's DNS domain. For example,
 I<fsck.com> or I<asylum.arkham.ma.us>. It's used by the linking interface to
@@ -70,7 +70,7 @@ guarantee that ticket URIs are unique and easy to construct.
 
 =cut
 
-set($Organization , "example.com");
+set($organization , "example.com");
 
 =item C<$MinimumPasswordLength>
 
@@ -522,7 +522,7 @@ This currently only works with sendmail and sendmailppie.
 =cut
 
 # set($VERPPrefix, 'rt-');
-# set($VERPDomain, $RT::Organization);
+# set($VERPDomain, $RT::organization);
 
 
 =item C<$ForwardFromUser>

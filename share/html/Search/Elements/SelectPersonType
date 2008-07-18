@@ -72,7 +72,7 @@ else {
    @types = qw(Requestor Cc AdminCc Watcher Owner);
 }
 
-my @subtypes = qw(email name real_name Nickname Organization Address1 Address2 WorkPhone HomePhone MobilePhone PagerPhone id);
+my @subtypes = qw(email name real_name Nickname organization Address1 Address2 WorkPhone HomePhone MobilePhone PagerPhone id);
 
 </%INIT>
 <%ARGS>

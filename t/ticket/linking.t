@@ -349,19 +349,19 @@ my $orig_get_resolver = \&RT::URI::_get_resolver;
     };
 }
 
-($id,$msg) = $link->create( base => "not_ticket::$RT::Organization/notticket/$$", target => $ticket2->uri, type => 'MyLinkType' );
+($id,$msg) = $link->create( base => "not_ticket::$RT::organization/notticket/$$", target => $ticket2->uri, type => 'MyLinkType' );
 ok($id, $msg);
 ok($link->local_base   == 0,            "local_Base set correctly");
 ok($link->local_target == $ticket2->id, "local_target set correctly");
 
-($id,$msg) = $link->create( target => "not_ticket::$RT::Organization/notticket/$$", base => $ticket->uri, type => 'MyLinkType' );
+($id,$msg) = $link->create( target => "not_ticket::$RT::organization/notticket/$$", base => $ticket->uri, type => 'MyLinkType' );
 ok($id, $msg);
 ok($link->local_target == 0,           "local_target set correctly");
 ok($link->local_base   == $ticket->id, "local_base set correctly");
 
 ($id,$msg) = $link->create(
-                       target => "not_ticket::$RT::Organization/notticket/1$$",
-                       base   => "not_ticket::$RT::Organization/notticket/$$",
+                       target => "not_ticket::$RT::organization/notticket/1$$",
+                       base   => "not_ticket::$RT::organization/notticket/$$",
                        type => 'MyLinkType' );
 
 ok($id, $msg);

@@ -1159,7 +1159,7 @@ sub gateway {
     my $errors_to = parse_errors_to_address_from_head($head);
 
     my $message_id = $head->get('Message-ID')
-        || "<no-message-id-" . time . rand(2000) . '@' . RT->config->get('Organization') . '>';
+        || "<no-message-id-" . time . rand(2000) . '@' . RT->config->get('organization') . '>';
 
     #Pull apart the subject line
     my $subject = $head->get('subject') || '';

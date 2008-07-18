@@ -299,7 +299,7 @@ sub SaveConfig {
     }
 
     # make organization the same as rtname
-    $RT::Installer->{InstallConfig}{Organization} =
+    $RT::Installer->{InstallConfig}{organization} =
       $RT::Installer->{InstallConfig}{rtname};
 
     if ( open my $fh, '>', $file ) {
