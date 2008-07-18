@@ -173,7 +173,7 @@ my %Meta = (
             ,                                            #loc
         },
     },
-    CommentAddress => {
+    comment_address => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             description => 'Comment address',            #loc
@@ -181,7 +181,7 @@ my %Meta = (
 'the default addresses that will be listed in From: and Reply-To: headers of comment mail.' #loc
         },
     },
-    CorrespondAddress => {
+    correspond_address => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             description => 'Correspond address',    #loc

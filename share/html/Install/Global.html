@@ -68,7 +68,7 @@ loc('Next: ') . loc('Finish') : loc('Next: ') . loc( 'Initialize Database'),
 <%init>
 my @errors;
 
-my @Types = qw/CommentAddress CorrespondAddress Timezone/;
+my @Types = qw/comment_address correspond_address Timezone/;
 
 if ( $Run ) {
 
@@ -81,7 +81,7 @@ if ( $Run ) {
 'Install/Sendmail.html');
     }
 
-    for ( qw/CommentAddress CorrespondAddress/ ) {
+    for ( qw/comment_address correspond_address/ ) {
         if ( $ARGS{$_} && $ARGS{$_} !~ /.+@.+/ ) {
             push @errors,
                 loc("Invalid %1: '%2' doesn't look like an email address",

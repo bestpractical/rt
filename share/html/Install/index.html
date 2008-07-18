@@ -89,7 +89,7 @@ my $locked;
         $RT::Installer->{InstallConfig} ||= {};
         for my $field  ( qw/DatabaseType DatabaseName DatabaseHost DatabasePort
                 DatabaseUser DatabaseRequireSSL rtname
-                organization TimeZone CommentAddress CorrespondAddress 
+                organization TimeZone comment_address correspond_address 
                 SendmailPath WebDomain WebPort/ ) {
             $RT::Installer->{InstallConfig}{$field} ||= RT->config->get($field);
         }

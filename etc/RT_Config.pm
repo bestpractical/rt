@@ -434,21 +434,21 @@ is not 'sendmailpipe', 'sendmail', or 'smtp'
 
 set(@MailParams, ());
 
-=item C<$CorrespondAddress>, C<$CommentAddress>
+=item C<$correspond_address>, C<$comment_address>
 
 RT is designed such that any mail which already has a ticket-id associated
 with it will get to the right place automatically.
 
-C<$CorrespondAddress> and C<$CommentAddress> are the default addresses
+C<$correspond_address> and C<$comment_address> are the default addresses
 that will be listed in From: and Reply-To: headers of correspondence
 and comment mail tracked by RT, unless overridden by a queue-specific
 address.
 
 =cut
 
-set($CorrespondAddress , '');
+set($correspond_address , '');
 
-set($CommentAddress , '');
+set($comment_address , '');
 
 =item C<UseFriendlyFromLine>
 
