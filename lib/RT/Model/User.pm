@@ -205,7 +205,7 @@ sub create {
     }
 
     #SANITY CHECK THE name AND ABORT IF IT'S TAKEN
-    if ( RT->system_user ) {    #This only works if RT::system_user has been defined
+    if ( RT->system_user ) {    #This only works if RT->system_user has been defined
         my $TempUser = RT::Model::User->new( current_user => RT->system_user );
         $TempUser->load( $args{'name'} );
         return ( 0, _('name in use') ) if ( $TempUser->id );

@@ -355,6 +355,7 @@ sub create {
     }
 
     #Now that we have a queue, Check the ACLS
+            die caller unless $self->current_user->id;
     unless (
         $self->current_user->has_right(
             right  => 'CreateTicket',

@@ -212,7 +212,7 @@ sub load_or_create_user {
 
     # add new user to groups
     foreach (@$MemberOf) {
-        my $group = RT::Model::Group->new( current_user => RT::system_user() );
+        my $group = RT::Model::Group->new( current_user => RT->system_user() );
         $group->load_user_defined_group($_);
         die "couldn't load group '$_'" unless $group->id;
         $group->add_member( $obj->id );

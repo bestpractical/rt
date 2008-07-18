@@ -227,7 +227,6 @@ sub insert_data {
 
         #print "Creating groups...";
         #print "My systemuser is ".RT->system_user ."\n";
-        $RT::system_user = RT::CurrentUser->new( name => 'RT_System' );
         foreach my $item (@Groups) {
             my $new_entry = RT::Model::Group->new( current_user => RT->system_user );
             my $member_of = delete $item->{'member_of'};
