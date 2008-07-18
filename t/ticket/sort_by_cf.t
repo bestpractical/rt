@@ -100,7 +100,7 @@ my $tx = new RT::Tickets( $RT::SystemUser );
 # Make sure we can sort in both directions on a queue specific field.
 $tx->FromSQL(qq[queue="$queue"] );
 $tx->OrderBy( FIELD => "CF.${queue}.{Charlie}", ORDER => 'DES' );
-is($tx->Count,2 ,"We found 2 tickets when lookign for cf charlie");
+is($tx->Count,2 ,"We found 2 tickets when looking for cf charlie");
 check_order( $tx, 1, 2);
 
 $tx = new RT::Tickets( $RT::SystemUser );
