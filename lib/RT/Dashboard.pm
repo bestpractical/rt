@@ -237,8 +237,8 @@ sub _privacy_objects {
 
     push @objects, $CurrentUser->user_object
       if $self->current_user->has_right(
-        Right  => "${prefix}OwnDashboard",
-        Object => $RT::System,
+        right  => "${prefix}OwnDashboard",
+        object => $RT::System,
       );
 
     my $groups = RT::Model::GroupCollection->new( current_user => $CurrentUser );
@@ -295,8 +295,8 @@ sub _current_user_can {
         return 0 unless $object->id == $self->current_user->id;
     }
 
-    my $right = $args{FullRight}
-      || join( '', $args{Right}, $level, 'Dashboard' );
+    my $right = $args{full_right}
+      || join( '', $args{right}, $level, 'Dashboard' );
 
     # all rights, except group rights, are global
     $object = $RT::System unless $object->isa('RT::Model::Group');
