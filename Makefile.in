@@ -397,14 +397,18 @@ force-dropdb:
 libs-install: 
 	[ -d $(DESTDIR)$(RT_LIB_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(RT_LIB_PATH)
 	-cd lib && find . -type d -name .svn -prune -o -type d -exec $(INSTALL) -m 0755 -d $(DESTDIR)$(RT_LIB_PATH)/{} \;
-	-cd lib && find . -type d -name .svn -prune -o -type f -exec $(INSTALL) -m 0644 {} $(DESTDIR)$(RT_LIB_PATH)/{} \;
+	-cd lib && find . -type d -name .svn -prune -o -type f -print | while read file ; do \
+	     $(INSTALL) -m 0644 "$$file" "$(DESTDIR)$(RT_LIB_PATH)/$$file" ; \
+	done
 # }}}
 
 # {{{ html-install
 html-install:
 	[ -d $(DESTDIR)$(MASON_HTML_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(MASON_HTML_PATH)
 	-cd share/html && find . -type d -name .svn -prune -o -type d -exec $(INSTALL) -m 0755 -d $(DESTDIR)$(MASON_HTML_PATH)/{} \;
-	-cd share/html && find . -type d -name .svn -prune -o -type f -exec $(INSTALL) -m 0644 {} $(DESTDIR)$(MASON_HTML_PATH)/{} \;
+	-cd share/html && find . -type d -name .svn -prune -o -type f -print | while read file ; do \
+	    $(INSTALL) -m 0644 "$$file" "$(DESTDIR)$(MASON_HTML_PATH)/$$file" ; \
+	done
 # }}}
 
 # {{{ doc-install
@@ -439,11 +443,17 @@ bin-install:
 # {{{ local-install
 local-install:
 	-cd local/html && find . -type d -name .svn -prune -o -type d -exec $(INSTALL) -m 0755 -d $(DESTDIR)$(MASON_LOCAL_HTML_PATH)/{} \;
-	-cd local/html && find . -type d -name .svn -prune -o -type f -exec $(INSTALL) -m 0644 {} $(DESTDIR)$(MASON_LOCAL_HTML_PATH)/{} \;
+	-cd local/html && find . -type d -name .svn -prune -o -type f -print | while read file ; do \
+	    $(INSTALL) -m 0644 "$$file" "$(DESTDIR)$(MASON_LOCAL_HTML_PATH)/$$file" ; \
+	done
 	-cd local/po && find . -type d -name .svn -prune -o -type d -exec $(INSTALL) -m 0755 -d $(DESTDIR)$(LOCAL_LEXICON_PATH)/{} \;
-	-cd local/po && find . -type d -name .svn -prune -o -type f -exec $(INSTALL) -m 0644 {} $(DESTDIR)$(LOCAL_LEXICON_PATH)/{} \;
+	-cd local/po && find . -type d -name .svn -prune -o -type f -print | while read file ; do \
+	    $(INSTALL) -m 0644 "$$file" "$(DESTDIR)$(LOCAL_LEXICON_PATH)/$$file" ; \
+	done
 	-cd local/etc && find . -type d -name .svn -prune -o -type d -exec $(INSTALL) -m 0755 -d $(DESTDIR)$(LOCAL_ETC_PATH)/{} \;
-	-cd local/etc && find . -type d -name .svn -prune -o -type f -exec $(INSTALL) -m 0644 {} $(DESTDIR)$(LOCAL_ETC_PATH)/{} \;
+	-cd local/etc && find . -type d -name .svn -prune -o -type f -print | while read file ; do \
+	    $(INSTALL) -m 0644 "$$file" "$(DESTDIR)$(LOCAL_ETC_PATH)/$$file" ; \
+	done
 # }}}
 
 # {{{ Best Practical Build targets -- no user servicable parts inside
