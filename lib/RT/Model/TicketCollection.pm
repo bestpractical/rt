@@ -2335,6 +2335,9 @@ sub _parser {
         }
         die "Unknown field '$key' in '$string'" unless $class;
 
+        # replace __CurrentUser__ with id
+        $value = $self->current_user->id if $value eq '__CurrentUser__';
+
         unless ( $dispatch{$class} ) {
             die "No dispatch method for class '$class'";
         }
