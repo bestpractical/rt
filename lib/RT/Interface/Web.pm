@@ -564,7 +564,7 @@ sub process_update_message {
     # UpdateTimeWorked into adjusted TimeWorked, so that a later
     # ProcessBasics can deal -- then bail out.
     if (    not $args{args_ref}->{'UpdateAttachments'}
-        and not length $args{args_ref}->{'UpdateContent'} )
+        and not length $args{args_ref}->{'update_content'} )
     {
         if ( $args{args_ref}->{'UpdateTimeWorked'} ) {
             $args{args_ref}->{TimeWorked} =
