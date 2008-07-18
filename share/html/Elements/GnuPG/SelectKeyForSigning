@@ -101,7 +101,7 @@
 <% _("Queue's key") %>
 % }
 <%ARGS>
-$name => 'SignUsing',
+$name => 'sign_using',
 $User => undef,
 </%ARGS>
 <%INIT>
