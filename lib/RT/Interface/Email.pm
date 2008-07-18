@@ -520,7 +520,7 @@ sub send_email_using_template {
 
     $mail->head->set( $_ => $args{$_} ) foreach grep defined $args{$_}, qw(To Cc Bcc From);
 
-    set_in_reply_to( Message => $mail, in_reply_to => $args{'in_reply_to'} );
+    set_in_reply_to( message => $mail, in_reply_to => $args{'in_reply_to'} );
 
     return send_email( entity => $mail );
 }
@@ -943,7 +943,7 @@ sub gen_message_id {
 
 sub set_in_reply_to {
     my %args = (
-        Message     => undef,
+        message     => undef,
         in_reply_to => undef,
         ticket      => undef,
         @_
@@ -1159,7 +1159,7 @@ sub gateway {
     my $errors_to = parse_errors_to_address_from_head($head);
 
     my $message_id = $head->get('Message-ID')
-        || "<no-message-id-" . time . rand(2000) . '@' . RT->config->get('organization') . '>';
+        || "<no-message-id-" . time . rand(2000) . '@' . RT->config->get('Organization') . '>';
 
     #Pull apart the subject line
     my $subject = $head->get('subject') || '';
