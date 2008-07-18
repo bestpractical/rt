@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
-$Name
+$name
 $Attr => undef
 </%ARGS>
 <%ONCE>
@@ -92,5 +92,5 @@ foreach my $col( qw(description stage) ) {
 </%ONCE>
 <%INIT>
 $m->callback( COLUMN_MAP => $COLUMN_MAP, CallbackName => 'ColumnMap', CallbackOnce => 1 );
-return GetColumnMapEntry( Map => $COLUMN_MAP, Name => $Name, Attribute => $Attr );
+return get_column_map_entry( Map => $COLUMN_MAP, name => $name, Attribute => $Attr );
 </%INIT>
