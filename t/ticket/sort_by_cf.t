@@ -100,7 +100,7 @@ my $tx = RT::Model::TicketCollection->new( current_user => RT->system_user );
 # Make sure we can sort in both directions on a queue specific field.
 $tx->from_sql(qq[queue="$queue"] );
 $tx->order_by({ column => "CF.${queue}.{Charlie}", order => 'DES' });
-is($tx->count,2 ,"We found 2 tickets when lookign for cf charlie");
+is($tx->count,2 ,"We found 2 tickets when looking for cf charlie");
 check_order( $tx, 1, 2);
 
 $tx = RT::Model::TicketCollection->new( current_user => RT->system_user );
