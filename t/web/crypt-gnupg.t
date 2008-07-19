@@ -9,7 +9,7 @@ plan skip_all => 'GnuPG required.'
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
 
-plan tests => 94;
+plan tests => 92;
 
 use RT::ScripAction::SendEmail;
 
@@ -28,7 +28,7 @@ RT->config->set( DefaultSearchResultFormat => qq{
    'OR-__requestors__-O',
    'KO-__key_owner_name__-K',
    'KR-__key_requestors__-K',
-   Status});
+   status});
 
 use File::Spec ();
 use Cwd;
