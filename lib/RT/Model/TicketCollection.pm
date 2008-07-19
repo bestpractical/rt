@@ -111,7 +111,7 @@ our %FIELD_METADATA = (
 
     Linked       => ['LINK'],
     linked_to    => [ 'LINK' => 'To' ],
-    LinkedFrom   => [ 'LINK' => 'From' ],
+    linked_from   => [ 'LINK' => 'From' ],
     MemberOf     => [ 'LINK' => To => 'MemberOf', ],
     DependsOn    => [ 'LINK' => To => 'DependsOn', ],
     RefersTo     => [ 'LINK' => To => 'RefersTo', ],

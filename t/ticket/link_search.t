@@ -176,7 +176,7 @@ ok($Collection->first);
 is($Collection->first->id, $grand_childid, "We found all tickets linked to ticket #$childid");
 
 $Collection = RT::Model::TicketCollection->new(current_user => RT->system_user);
-$Collection->from_sql( "LinkedFrom = $childid" );
+$Collection->from_sql( "linked_from = $childid" );
 is($Collection->count,1, "We found only one result");
 ok($Collection->first);
 is($Collection->first->id, $parentid, "We found all tickets linked from ticket #$childid");
@@ -206,7 +206,7 @@ ok( $has{$childid}, "The collection have our child - $childid");
 ok( $has{$grand_childid}, "The collection have our grand child - $grand_childid");
 
 $Collection = RT::Model::TicketCollection->new(current_user => RT->system_user);
-$Collection->from_sql( "LinkedFrom IS NULL" );
+$Collection->from_sql( "linked_from IS NULL" );
 ok($Collection->count, "Result is set is not empty");
 %has = ();
 while (my $t = $Collection->next) {
@@ -218,7 +218,7 @@ ok( $has{$grand_childid}, "grand child is in collection");
 ok( $has{$unlinked_id}, "unlinked is in collection");
 
 $Collection = RT::Model::TicketCollection->new(current_user => RT->system_user);
-$Collection->from_sql( "LinkedFrom IS NOT NULL" );
+$Collection->from_sql( "linked_from IS NOT NULL" );
 ok($Collection->count, "Result set is not empty");
 %has = ();
 while (my $t = $Collection->next) {
