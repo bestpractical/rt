@@ -1180,7 +1180,7 @@ sub _custom_field_decipher {
     my ( $queue, $field, $column ) = ( $string =~ /^(?:(.+?)\.)?{(.+)}(?:\.(.+))?$/ );
     $field ||= ( $string =~ /^{(.*?)}$/ )[0] || $string;
 
-    my ($cf, $cfid);
+    my $cf;
     if ($queue) {
         my $q = RT::Model::Queue->new;
         $q->load($queue);
@@ -1194,10 +1194,6 @@ sub _custom_field_decipher {
             $queue = 0;
         }
 
-        if ( $cf and my $id = $cf->id ) {
-            $cfid  = $cf->id;
-            $field = $cf->name;
-        }
     } else {
         $queue = '';
         my $cfs = RT::Model::CustomFieldCollection->new( current_user =>
@@ -1212,10 +1208,9 @@ sub _custom_field_decipher {
         if ( $cf ) {
             $cf = undef if $cfs->next;
         }
-        $cfid = $cf ? $cf->id : 0;
     }
 
-    return ( $queue, $field, $cfid, $column );
+    return ( $queue, $field, $cf, $column );
 }
 
 =head2 _custom_fieldjoin
@@ -1320,8 +1315,10 @@ sub _custom_field_limit {
 
     # For our sanity, we can only limit on one queue at a time
 
-    my ( $queue, $cfid, $column );
-    ( $queue, $field, $cfid, $column ) = $self->_custom_field_decipher($field);
+    my ($queue, $cfid, $cf, $column);
+    ($queue, $field, $cf, $column) = $self->_custom_field_decipher( $field );
+    $cfid = $cf ? $cf->id  : 0 ;
+    
 
     # If we're trying to find custom fields that don't match something, we
     # want tickets where the custom field has no value at all.  Note that
@@ -1414,10 +1411,21 @@ sub order_by {
             }
             push @res, { %$row, alias => $users, column => $subkey };
         } elsif ( defined $meta->[0] && $meta->[0] =~ /CUSTOMFIELD/i ) {
-            my ( $queue, $field, $cfid ) = $self->_custom_field_decipher($subkey);
-            my $cfkey = $cfid ? $cfid : "$queue.$field";
-            my ( $TicketCFs, $CFs ) = $self->_custom_field_join( $cfkey, $cfid, $field );
-            unless ($cfid) {
+           my ($queue, $field, $cf_obj, $column) = $self->_custom_field_decipher( $subkey );
+           my $cfkey = $cf_obj ? $cf_obj->id : "$queue.$field";
+           $cfkey .= ".ordering" if !$cf_obj || ($cf_obj->max_values||0) != 1;
+            
+            my ( $TicketCFs, $CFs ) = $self->_custom_field_join( $cfkey, ($cf_obj ?$cf_obj->id :0), $field );
+            $self->_sql_limit(
+                alias      => $CFs,
+                column      => 'name',
+                operator   => 'IS NOT',
+                value      => 'NULL',
+                quote_value => 1,
+                entry_aggregator => 'AND',
+            ) if $CFs;
+            
+            unless ($cf_obj) {
 
                 # For those cases where we are doing a join against the
                 # CF name, and don't have a CFid, use Unique to make sure
