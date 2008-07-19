@@ -1180,12 +1180,11 @@ sub _custom_field_decipher {
     my ( $queue, $field, $column ) = ( $string =~ /^(?:(.+?)\.)?{(.+)}(?:\.(.+))?$/ );
     $field ||= ( $string =~ /^{(.*?)}$/ )[0] || $string;
 
-    my $cfid;
+    my ($cf, $cfid);
     if ($queue) {
         my $q = RT::Model::Queue->new;
         $q->load($queue);
 
-        my $cf;
         if ( $q->id ) {
 
             # $queue = $q->name; # should we normalize the queue?
@@ -1200,7 +1199,20 @@ sub _custom_field_decipher {
             $field = $cf->name;
         }
     } else {
-        $queue = 0;
+        $queue = '';
+        my $cfs = RT::Model::CustomFieldCollection->new( current_user =>
+                $self->current_user );
+        $cfs->limit( column => 'name', value => $field );
+        $cfs->limit_to_lookup_type('RT::Model::Queue-RT::Model::Ticket');
+
+        # if there is more then one field the current user can
+        # see with the same name then we shouldn't return cf object
+        # as we don't know which one to use
+        $cf = $cfs->first;
+        if ( $cf ) {
+            $cf = undef if $cfs->next;
+        }
+        $cfid = $cf ? $cf->id : 0;
     }
 
     return ( $queue, $field, $cfid, $column );
