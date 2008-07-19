@@ -111,7 +111,7 @@ sub insert_initial_data {
         else {
             my $ace = RT::Model::ACE->new( current_user => RT->system_user );
             my ( $val, $msg ) = $ace->_bootstrap_create(
-                principal_id   => acl_equiv_group_id( RT->system_user ),
+                principal_id   => acl_equiv_group_id( RT->system_user->id ),
                 principal_type => 'Group',
                 right_name     => 'SuperUser',
                 object_type    => 'RT::System',
