@@ -137,7 +137,9 @@ our %FIELD_METADATA = (
     AdminCc         => [ 'WATCHERFIELD' => 'admin_cc', ],
     admin_cc        => [ 'WATCHERFIELD' => 'admin_cc', ],
     Watcher         => [ 'WATCHERFIELD', ],
-
+    QueueCc          => [ 'WATCHERFIELD' => 'Cc'      => 'Queue', ],
+    QueueAdminCc     => [ 'WATCHERFIELD' => 'AdminCc' => 'Queue', ],
+    QueueWatcher     => [ 'WATCHERFIELD' => undef     => 'Queue', ],
     CustomFieldvalue => [ 'CUSTOMFIELD', ],
     CustomField      => [ 'CUSTOMFIELD', ],
     CF               => [ 'CUSTOMFIELD', ],
@@ -343,6 +345,13 @@ sub _link_limit {
     die "Invalid Operator $op for $field"
         unless $op =~ /^(=|!=|IS|IS NOT)$/io;
 
+    my $is_negative = 0;
+    if ( $op eq '!=' || $op =~ /\bNOT\b/i ) {
+        $is_negative = 1;
+    } 
+    my $is_null = 0;
+    $is_null = 1 if !$value || $value =~ /^null$/io;
+    
     my $direction = $meta->[1] || '';
     my ( $matchfield, $linkfield ) = ( '', '' );
     if ( $direction eq 'To' ) {
@@ -352,21 +361,29 @@ sub _link_limit {
     } elsif ($direction) {
         die "Invalid link direction '$direction' for $field\n";
     }
+    else {
+        $sb->open_paren;
 
-    my ( $is_local, $is_null ) = ( 1, 0 );
-    if ( !$value || $value =~ /^null$/io ) {
-        $is_null = 1;
+        $sb->_link_limit( 'linked_to', $op, $value, @rest );
+        $sb->_link_limit(
+            'linked_from',
+            $op, $value, @rest,
+            entry_aggregator => (
+                ( $is_negative && $is_null ) || ( !$is_null && !$is_negative )
+              ) ? 'OR' : 'AND',
+        );
+        $sb->close_paren;
+        return;
+    }
+ 
+
+    my $is_local = 1;
+    if ( $is_null ) {
         $op = ( $op =~ /^(=|IS)$/ ) ? 'IS' : 'IS NOT';
     } elsif ( $value =~ /\D/ ) {
         $is_local = 0;
     }
     $matchfield = "local_$matchfield" if $is_local;
-
-    my $is_negative = 0;
-    if ( $op eq '!=' ) {
-        $is_negative = 1;
-        $op          = '=';
-    }
 
     #For doing a left join to find "unlinked tickets" we want to generate a query that looks like this
     #    SELECT main.* FROM Tickets main
@@ -396,7 +413,7 @@ sub _link_limit {
             value       => 'NULL',
             quote_value => 0,
         );
-    } elsif ($is_negative) {
+    } else {
         my $linkalias = $sb->join(
             type    => 'left',
             alias1  => 'main',
@@ -413,81 +430,17 @@ sub _link_limit {
         $sb->SUPER::limit(
             leftjoin => $linkalias,
             column   => $matchfield,
-            operator => $op,
+            operator => '=',
             value    => $value,
         );
         $sb->_sql_limit(
             @rest,
             alias       => $linkalias,
             column      => $matchfield,
-            operator    => 'IS',
+            operator    => $is_negative ? 'IS' : 'IS NOT',
             value       => 'NULL',
             quote_value => 0,
         );
-    } else {
-        my $linkalias = $sb->new_alias( RT::Model::LinkCollection->new );
-        $sb->open_paren;
-
-        $sb->_sql_limit(
-            @rest,
-            alias    => $linkalias,
-            column   => 'type',
-            operator => '=',
-            value    => $meta->[2],
-        ) if $meta->[2];
-
-        $sb->open_paren;
-        if ($direction) {
-            $sb->_sql_limit(
-                alias            => $linkalias,
-                column           => 'local_' . $linkfield,
-                operator         => '=',
-                value            => 'main.id',
-                quote_value      => 0,
-                entry_aggregator => 'AND',
-            );
-            $sb->_sql_limit(
-                alias            => $linkalias,
-                column           => $matchfield,
-                operator         => '=',
-                value            => $value,
-                entry_aggregator => 'AND',
-            );
-        } else {
-            $sb->open_paren;
-            $sb->_sql_limit(
-                alias            => $linkalias,
-                column           => 'local_base',
-                value            => 'main.id',
-                quote_value      => 0,
-                entry_aggregator => 'AND',
-            );
-            $sb->_sql_limit(
-                alias            => $linkalias,
-                column           => $matchfield . 'target',
-                value            => $value,
-                entry_aggregator => 'AND',
-            );
-            $sb->close_paren;
-
-            $sb->open_paren;
-            $sb->_sql_limit(
-                alias            => $linkalias,
-                column           => 'local_target',
-                value            => 'main.id',
-                quote_value      => 0,
-                entry_aggregator => 'OR',
-            );
-            $sb->_sql_limit(
-                alias            => $linkalias,
-                column           => $matchfield . 'base',
-                value            => $value,
-                entry_aggregator => 'AND',
-            );
-            $sb->close_paren;
-        }
-        $sb->close_paren;
-        $sb->close_paren;
     }
 }
 
@@ -789,8 +742,10 @@ sub _watcher_limit {
     my $value = shift;
     my %rest  = (@_);
 
-    my $meta = $FIELD_METADATA{$field};
-    my $type = $meta->[1] || '';
+    my $meta  = $FIELD_METADATA{$field};
+    my $type  = $meta->[1] || '';
+    my $class = $meta->[2] || 'ticket';
+    
 
     # owner was ENUM field, so "owner = 'xxx'" allowed user to
     # search by id and name at the same time, this is workaround
@@ -808,7 +763,7 @@ sub _watcher_limit {
     }
     $rest{subkey} ||= 'email';
 
-    my $groups = $self->_role_groupsjoin( type => $type );
+    my $groups = $self->_role_groupsjoin( type => $type, class => $class );
 
     $self->open_paren;
     if ( $op =~ /^IS(?: NOT)?$/ ) {
@@ -946,15 +901,18 @@ sub _watcher_limit {
 
 sub _role_groupsjoin {
     my $self = shift;
-    my %args = ( new => 0, type => '', @_ );
-    return $self->{'_sql_role_group_aliases'}{ $args{'type'} }
-        if $self->{'_sql_role_group_aliases'}{ $args{'type'} }
-            && !$args{'new'};
+    my %args = ( new => 0, class => 'ticket', type => '', @_ );
+    return $self->{'_sql_role_group_aliases'}
+      { $args{'class'} . '-' . $args{'type'} }
+      if $self->{'_sql_role_group_aliases'}
+          { $args{'class'} . '-' . $args{'type'} }
+          && !$args{'new'};
+    
 
     # we always have watcher groups for ticket, so we use INNER join
     my $groups = $self->join(
         alias1           => 'main',
-        column1          => 'id',
+        column1          => $args{'class'} eq 'queue' ? 'queue' : 'id', 
         table2           => RT::Model::GroupCollection->new,
         column2          => 'instance',
         entry_aggregator => 'AND',
@@ -1190,14 +1148,14 @@ sub _custom_field_decipher {
             # $queue = $q->name; # should we normalize the queue?
             $cf = $q->custom_field($field);
         } else {
-            Jifty->log->warn("Queue '$queue' doesn't exists, parsed from '$string'");
+            Jifty->log->warn("Queue '$queue' doesn't exist, parsed from '$string'");
             $queue = 0;
         }
 
     } else {
         $queue = '';
-        my $cfs = RT::Model::CustomFieldCollection->new( current_user =>
-                $self->current_user );
+        my $cfs =
+          RT::Model::CustomFieldCollection->new( current_user => $self->current_user );
         $cfs->limit( column => 'name', value => $field );
         $cfs->limit_to_lookup_type('RT::Model::Queue-RT::Model::Ticket');
 
@@ -1213,7 +1171,7 @@ sub _custom_field_decipher {
     return ( $queue, $field, $cf, $column );
 }
 
-=head2 _custom_fieldjoin
+=head2 _custom_field_join
 
 Factor out the join of custom fields so we can use it for sorting too
 
@@ -1266,6 +1224,20 @@ sub _custom_field_join {
             table2  => RT::Model::CustomFieldCollection->new,
             column2 => 'id',
         );
+
+# TODO: XXX this's from 3.8, but tests fail if uncomment it
+#        $self->SUPER::limit(
+#            leftjoin        => $CFs,
+#            entry_aggregator => 'AND',
+#            column           => 'lookup_type',
+#            value           => 'RT::Model::Queue-RT::Model::Ticket',
+#        );
+#        $self->SUPER::limit(
+#            leftjoin        => $CFs,
+#            entry_aggregator => 'AND',
+#            column           => 'name',
+#            value           => $field,
+#        );
 
         $TicketCFs = $self->{_sql_object_cfv_alias}{$cfkey} = $self->join(
             type    => 'left',
@@ -1335,6 +1307,8 @@ sub _custom_field_limit {
 
     $self->open_paren;
 
+# TODO: XXX this if block doesn't exist in 3.8, but I got test fails if
+# comment this.
     if ( $CFs && !$cfid ) {
         $self->SUPER::limit(
             alias            => $CFs,
@@ -1344,16 +1318,77 @@ sub _custom_field_limit {
         );
     }
 
-    $self->open_paren if $null_columns_ok;
+    $self->open_paren;
+    $self->open_paren;
 
+     # if column is defined then deal only with it
+     # otherwise search in Content and in LargeContent
+    if ($column) {
+        $self->_sql_limit(
+            alias    => $TicketCFs,
+            column    => $column,
+            operator => $op,
+            value    => $value,
+            %rest
+            );
+    }
+    else {
+        $self->_sql_limit(
+            alias    => $TicketCFs,
+            column    => 'content',
+            operator => $op,
+            value    => $value,
+            %rest
+        );
+  
+        $self->open_paren;
+        $self->open_paren;
+        $self->_sql_limit(
+            alias           => $TicketCFs,
+            column           => 'content',
+            operator        => '=',
+            value           => '',
+            entry_aggregator => 'OR'
+        );
+        $self->_sql_limit(
+            alias           => $TicketCFs,
+            column           => 'content',
+            operator        => 'IS',
+            value           => 'NULL',
+            entry_aggregator => 'OR'
+        );
+        $self->close_paren;
+        $self->_sql_limit(
+            alias           => $TicketCFs,
+            column           => 'large_content',
+            operator        => $op,
+            value           => $value,
+            entry_aggregator => 'AND',
+        );
+        $self->close_paren;
+    }
+    $self->close_paren;
+
+    # XXX: if we join via CustomFields table then
+    # because of order of left joins we get NULLs in
+    # CF table and then get nulls for those records
+    # in OCFVs table what result in wrong results
+    # as decifer method now tries to load a CF then
+    # we fall into this situation only when there
+    # are more than one CF with the name in the DB.
+    # the same thing applies to order by call.
+    # TODO: reorder joins T <- OCFVs <- CFs <- OCFs if
+    # we want treat IS NULL as (not applies or has
+    # no value)
     $self->_sql_limit(
-        alias       => $TicketCFs,
-        column      => $column || 'content',
-        operator    => $op,
-        value       => $value,
-        quote_value => 1,
-        %rest
-    );
+        alias           => $CFs,
+        column           => 'name',
+        operator        => 'IS NOT',
+        value           => 'NULL',
+        quote_value      => 0,
+        entry_aggregator => 'AND',
+    ) if $CFs;
+    $self->close_paren;
 
     if ($null_columns_ok) {
         $self->_sql_limit(
@@ -1364,7 +1399,6 @@ sub _custom_field_limit {
             quote_value      => 0,
             entry_aggregator => 'OR',
         );
-        $self->close_paren;
     }
 
     $self->close_paren;
@@ -1931,7 +1965,6 @@ Returns a reference to the set of all items found in this search
 
 sub items_array_ref {
     my $self = shift;
-    my @items;
 
     unless ( $self->{'items_array'} ) {
 
@@ -1967,22 +2000,7 @@ sub next {
         # of being revoked, it's ok if queue rights allow
         # ShowTicket.  It seems need another query, but we have
         # rights cache in Principal::has_right.
-        elsif ($Ticket->queue_obj->current_user_has_right('ShowTicket')
-            || $Ticket->current_user_has_right('ShowTicket') )
-        {
-            return ($Ticket);
-        }
-
-        if ( $Ticket->__value('status') eq 'deleted' ) {
-            return ( $self->next() );
-        }
-
-        # Since Ticket could be granted with more rights instead
-        # of being revoked, it's ok if queue rights allow
-        # ShowTicket.  It seems need another query, but we have
-        # rights cache in Principal::has_right.
-        elsif ($Ticket->queue_obj->current_user_has_right('ShowTicket')
-            || $Ticket->current_user_has_right('ShowTicket') )
+        elsif ( $Ticket->current_user_has_right('ShowTicket') )
         {
             return ($Ticket);
         }
