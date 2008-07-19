@@ -450,25 +450,25 @@ set($correspond_address , '');
 
 set($comment_address , '');
 
-=item C<UseFriendlyFromLine>
+=item C<use_friendly_from_line>
 
 By default, RT sets the outgoing mail's "From:" header to
-"SenderName via RT".  Setting C<$UseFriendlyFromLine> to 0 disables it.
+"SenderName via RT".  Setting C<$use_friendly_from_line> to 0 disables it.
 
 =cut
 
-set($UseFriendlyFromLine, 1);
+set($use_friendly_from_line, 1);
 
-=item C<$FriendlyFromLineFormat>
+=item C<$friendly_from_line_format>
 
 C<sprintf()> format of the friendly 'From:' header; its arguments
 are SenderName and SenderEmailAddress.
 
 =cut
 
-set($FriendlyFromLineFormat, "\"%s via RT\" <%s>");
+set($friendly_from_line_format, "\"%s via RT\" <%s>");
 
-=item C<$UseFriendlyToLine>
+=item C<$use_friendly_to_line>
 
 RT can optionally set a "Friendly" 'To:' header when sending messages to
 Ccs or AdminCcs (rather than having a blank 'To:' header.
@@ -479,16 +479,16 @@ you _must_ disable this option.
 
 =cut
 
-set($UseFriendlyToLine, 0);
+set($use_friendly_to_line, 0);
 
-=item C<$FriendlyToLineFormat>
+=item C<$friendly_to_line_format>
 
 C<sprintf()> format of the friendly 'From:' header; its arguments
 are WatcherType and TicketId.
 
 =cut
 
-set($FriendlyToLineFormat, "\"%s of ". RT->config->get('rtname') ." Ticket #%s\":;");
+set($friendly_to_line_format, "\"%s of ". RT->config->get('rtname') ." Ticket #%s\":;");
 
 =item C<$NotifyActor>
 

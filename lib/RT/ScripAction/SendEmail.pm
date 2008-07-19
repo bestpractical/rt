@@ -722,7 +722,7 @@ sub set_return_address {
     }
 
     unless ( $self->template_obj->mime_obj->head->get('From') ) {
-        if ( RT->config->get('UseFriendlyFromLine') ) {
+        if ( RT->config->get('use_friendly_from_line') ) {
             my $friendly_name = $self->transaction_obj->creator_obj->friendly_name;
             if ( $friendly_name =~ /^"(.*)"$/ ) {    # a quoted string
                 $friendly_name = $1;
