@@ -111,7 +111,7 @@ our %FIELD_METADATA = (
 
     Linked       => ['LINK'],
     linked_to    => [ 'LINK' => 'To' ],
-    linked_from   => [ 'LINK' => 'From' ],
+    LinkedFrom   => [ 'LINK' => 'From' ],
     MemberOf     => [ 'LINK' => To => 'MemberOf', ],
     DependsOn    => [ 'LINK' => To => 'DependsOn', ],
     RefersTo     => [ 'LINK' => To => 'RefersTo', ],
@@ -366,7 +366,7 @@ sub _link_limit {
 
         $sb->_link_limit( 'linked_to', $op, $value, @rest );
         $sb->_link_limit(
-            'linked_from',
+            'LinkedFrom',
             $op, $value, @rest,
             entry_aggregator => (
                 ( $is_negative && $is_null ) || ( !$is_null && !$is_negative )
