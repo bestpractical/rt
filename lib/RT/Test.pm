@@ -106,6 +106,7 @@ set( \$LogStackTraces , "warning");
     $ENV{'RT_SITE_CONFIG'} = $config->filename;
     close $config;
 
+    RT->config->set( DevelMode => '0' ) if $INC{'Devel/Cover.pm'};
     if ( RT->config->get('DevelMode') ) { require Module::Refresh; }
 
     # make it another function
@@ -140,7 +141,6 @@ sub open_mailgate_ok {
     ok( open( my $mail, "|$RT::BinPath/rt-mailgate --url $baseurl --queue $queue --action $action" ), "Opened the mailgate - $!" );
     return $mail;
 }
-    RT->config->set( DevelMode => '0' ) if $INC{'Devel/Cover.pm'};
 
 
 sub close_mailgate_ok {
