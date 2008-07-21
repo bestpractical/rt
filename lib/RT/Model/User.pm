@@ -197,7 +197,7 @@ sub create {
     }
 
     elsif ( length( $args{'password'} ) < RT->config->get('MinimumPasswordLength') ) {
-        return ( 0, _( "password needs to be at least %1 characters long", RT->config->get('MinimumpasswordLength') ) );
+        return ( 0, _( "password needs to be at least %1 characters long", RT->config->get('MinimumPasswordLength') ) );
     }
 
     unless ( $args{'name'} ) {
@@ -679,13 +679,13 @@ sub set_random_password {
     }
 
     my $min = (
-          RT->config->get('MinimumpasswordLength') > 6
-        ? RT->config->get('MinimumpasswordLength')
+          RT->config->get('MinimumPasswordLength') > 6
+        ? RT->config->get('MinimumPasswordLength')
         : 6
     );
     my $max = (
-          RT->config->get('MinimumpasswordLength') > 8
-        ? RT->config->get('MinimumpasswordLength')
+          RT->config->get('MinimumPasswordLength') > 8
+        ? RT->config->get('MinimumPasswordLength')
         : 8
     );
     my $pass = Text::Password::Pronounceable->generate( $min => $max );
@@ -719,8 +719,8 @@ sub before_set_password {
 
     if ( !$password ) {
         return ( 0, _("No password set") );
-    } elsif ( length($password) < RT->config->get('MinimumpasswordLength') ) {
-        return ( 0, _( "password needs to be at least %1 characters long", RT->config->get('MinimumpasswordLength') ) );
+    } elsif ( length($password) < RT->config->get('MinimumPasswordLength') ) {
+        return ( 0, _( "password needs to be at least %1 characters long", RT->config->get('MinimumPasswordLength') ) );
     }
     return ( 1, "ok" );
 
