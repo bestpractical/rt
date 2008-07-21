@@ -56,6 +56,7 @@ use MIME::Entity;
 use RT::EmailParser;
 use File::Temp;
 use UNIVERSAL::require;
+use Mail::Mailer ();
 
 BEGIN {
     use base 'Exporter';
@@ -373,6 +374,10 @@ sub SendEmail {
     }
 
     my $mail_command = RT->Config->Get('MailCommand');
+
+    if ($mail_command eq 'testfile') {
+        $Mail::Mailer::testfile::config{outfile} = File::Temp->new;
+    }
 
     # if it is a sub routine, we just return it;
     return $mail_command->($args{'Entity'}) if UNIVERSAL::isa( $mail_command, 'CODE' );
