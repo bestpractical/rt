@@ -57,6 +57,10 @@ if ( !$User && $Address ) {
         return;
     }
 }
+elsif ( $User->isa('RT::CurrentUser') ) {
+    $User = $User->user_object;
+}
+
 if ( $style eq 'concise' ) {
     $m->comp( '/Elements/ShowUserConcise', User => $User );
 }
@@ -65,5 +69,5 @@ else { $m->comp( '/Elements/ShowUserVerbose', User => $User ); }
 <%ARGS>
 $User => undef
 $Address => undef
-$style => RT->config->get('Usernameformat', Jifty->web->current_user)
+$style => RT->config->get('UsernameFormat', Jifty->web->current_user)
 </%ARGS>
