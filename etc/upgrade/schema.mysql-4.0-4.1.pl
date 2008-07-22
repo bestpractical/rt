@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use DBI;
+use DBD::mysql 4.002;
 
 unless (@ARGV) {
     print STDERR "usage: $0 db_name db_user db_password\n";
