@@ -294,6 +294,7 @@ Log::Dispatch::Perl
 Test::Warn
 Test::Builder 0.77 # needed to fix TODO test
 IPC::Run3
+Test::MockTime
 .
 
 $deps{'FASTCGI'} = [ text_to_hash( << '.') ];
