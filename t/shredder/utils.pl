@@ -246,7 +246,7 @@ Creates a tmp dir if one doesn't exist already. Returns tmpdir path.
 
 =cut
 
-sub create_tmpdir { my $n = tmpdir(); File::Path::mkpath( $n );    return $n }
+sub create_tmpdir { my $n = tmpdir(); File::Path::mkpath( [$n] ); return $n }
 
 =head3 cleanup_tmp
 
