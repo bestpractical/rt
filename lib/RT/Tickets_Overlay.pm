@@ -2462,12 +2462,12 @@ sub LimitCustomField {
             $CF->Name, $args{OPERATOR}, $args{VALUE} );
     }
 
-    my $q = "";
-    if ( $CF->Queue ) {
-        my $qo = new RT::Queue( $self->CurrentUser );
-        $qo->Load( $CF->Queue );
-        $q = $qo->Name;
+    if ( defined $args{'QUEUE'} && $args{'QUEUE'} =~ /\D/ ) {
+        my $QueueObj = RT::Queue->new( $self->CurrentUser );
+        $QueueObj->Load( $args{'QUEUE'} );
+        $args{'QUEUE'} = $QueueObj->Id;
     }
+    delete $args{'QUEUE'} unless defined $args{'QUEUE'} && length $args{'QUEUE'};
 
     my @rest;
     @rest = ( ENTRYAGGREGATOR => 'AND' )
@@ -2475,12 +2475,9 @@ sub LimitCustomField {
 
     $self->Limit(
         VALUE => $args{VALUE},
-        FIELD => "CF."
-            . (
-              $q
-            ? $q . ".{" . $CF->Name . "}"
-            : $CF->Name
-            ),
+        FIELD => "CF"
+            .(defined $ARGS{'QUEUE'}? ".{$ARGS{'QUEUE'}}" : '' )
+            .".{" . $CF->Name . "}",
         OPERATOR    => $args{OPERATOR},
         CUSTOMFIELD => 1,
         @rest,
