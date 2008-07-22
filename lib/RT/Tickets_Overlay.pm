@@ -2476,7 +2476,7 @@ sub LimitCustomField {
     $self->Limit(
         VALUE => $args{VALUE},
         FIELD => "CF"
-            .(defined $ARGS{'QUEUE'}? ".{$ARGS{'QUEUE'}}" : '' )
+            .(defined $args{'QUEUE'}? ".{$args{'QUEUE'}}" : '' )
             .".{" . $CF->Name . "}",
         OPERATOR    => $args{OPERATOR},
         CUSTOMFIELD => 1,
