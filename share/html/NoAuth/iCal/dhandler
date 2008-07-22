@@ -90,7 +90,7 @@ while (my $t = $tickets->Next) {
 
     my $starttime = $t->StartsObj->Unix > 0 ? $t->StartsObj : $t->CreatedObj;
 
-    my $now = RT::Date->new; $now->SetToNow;
+    my $now = RT::Date->new( $cu ); $now->SetToNow;
     my $start = Data::ICal::Entry::Event->new;
     my $end   = Data::ICal::Entry::Event->new;
     $_->add_properties(
