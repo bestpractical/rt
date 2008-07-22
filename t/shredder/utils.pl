@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use File::Spec;
+use File::Temp ();
 require File::Path;
 require File::Copy;
 require Cwd;
@@ -13,6 +14,9 @@ BEGIN {
     push @INC, qw(/opt/rt3/local/lib /opt/rt3/lib);
 }
 use RT::Shredder;
+
+# where to keep temporary generated test data
+my $tmpdir = '';
 
 =head1 DESCRIPTION
 
@@ -152,7 +156,8 @@ sub _init_db
 =head3 db_name
 
 Returns absolute file path to the current DB.
-It is C<cwd() .'/t/data/shredder/'. test_name() .'.db'>.
+It is $tmpdir . test_name() .'.db'>.
+
 See also C<test_name> function.
 
 =cut
@@ -181,7 +186,7 @@ sub shredder_new
 {
     my $obj = new RT::Shredder;
 
-    my $file = File::Spec->catfile( tmpdir(), test_name() .'.XXXX.sql' );
+    my $file = File::Spec->catfile( create_tmpdir(), test_name() .'.XXXX.sql' );
     $obj->AddDumpPlugin( Arguments => {
         file_name    => $file,
         from_storage => 0,
@@ -213,15 +218,17 @@ sub test_name
 
 =head3 tmpdir
 
-Return absolute path to tmp dir used in tests.
-It is C<Cwd->getcwd()>. $directories . "../data/shredder", relative to the
-location of this file, where $directories is the directory portion of $0.
+Return the absolute path to a tmp dir used in tests.
 
 =cut
 
 sub tmpdir {
-    return RT::Test::get_abs_relocatable_dir(File::Spec->updir(),
-        'data', 'shredder');
+    if (-d $tmpdir) {
+        return $tmpdir;
+    } else {
+        $tmpdir = File::Temp->newdir(TEMPLATE => 'shredderXXXXX');
+        return $tmpdir;
+    }
 }
 
 =head2 create_tmpdir
@@ -234,7 +241,7 @@ sub create_tmpdir { my $n = tmpdir(); File::Path::mkpath( $n );    return $n }
 
 =head3 cleanup_tmp
 
-Delete all tmp files that match C<t/data/shredder/test_name.*> mask.
+Delete all tmp files used in the tests.
 See also C<test_name> function.
 
 =cut
@@ -384,23 +391,23 @@ sub note_on_fail
     return <<END;
 Some tests in '$0' file failed.
 You can find debug info in '$tmpdir' dir.
-There is should be:
+There should be:
     $name.log - RT debug log file
-    $name.db - latest RT DB sed while testing
+    $name.db - latest RT DB used while testing
     $name.*.db - savepoint databases
-See also perldoc t/shredder/utils.pl to know how to use this info.
+See also perldoc t/shredder/utils.pl for how to use this info.
 END
 }
 
 =head2 OTHER
 
-=head3 is_all_seccessful
+=head3 all_were_successful
 
-Returns true if all tests you've already run are successful.
+Returns true if all tests that have already run were successful.
 
 =cut
 
-sub is_all_successful
+sub all_were_successful
 {
     use Test::Builder;
     my $Test = Test::Builder->new;
@@ -409,7 +416,7 @@ sub is_all_successful
 
 END {
     return unless -e tmpdir();
-    if( is_all_successful() ) {
+    if ( all_were_successful() ) {
             cleanup_tmp();
     } else {
             diag( note_on_fail() );
