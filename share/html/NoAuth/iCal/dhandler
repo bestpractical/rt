@@ -103,13 +103,13 @@ while (my $t = $tickets->Next) {
 
     $start->add_properties(
         summary   => "Start: ".$t->Subject,
-        dtstart   => $starttime->iCal( Time => 0 ),
-        dtend     => $starttime->iCal( Time => 0 ),
+        dtstart   => [$starttime->iCal( Time => 0 ) => { value => 'DATE' }],
+        dtend     => [$starttime->iCal( Time => 0 ) => { value => 'DATE'}],
     );
     $end->add_properties(
         summary   => "Due: ".$t->Subject,
-        dtstart   => $t->DueObj->iCal( Time => 0 ),
-        dtend     => $t->DueObj->iCal( Time => 0 ),
+        dtstart   => [$t->DueObj->iCal( Time => 0 ) => { value => 'DATE' }],
+        dtend     => [$t->DueObj->iCal( Time => 0 ) => { value => 'DATE' }],
     );
 
     $feed->add_entry($start);
