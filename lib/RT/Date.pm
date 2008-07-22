@@ -758,6 +758,9 @@ sub iCal {
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) =
         $self->Localtime( 'utc' );
 
+    #the month needs incrementing, as gmtime returns 0-11
+    $mon++;
+
     my $res;
     if ( $args{'Date'} && !$args{'Time'} ) {
         $res = sprintf( '%04d%02d%02dZ', $year, $mon, $mday );
