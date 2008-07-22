@@ -20,33 +20,34 @@ my $tmpdir = '';
 
 =head1 DESCRIPTION
 
-RT::Shredder test suite utilities.
+RT::Shredder test suite utilities
 
 =head1 TESTING
 
-Since RT:Shredder 0.01_03 we have test suite. You 
+Since RT:Shredder 0.01_03 we have a test suite. You
 can run tests and see if everything works as expected
 before you try shredder on your actual data.
 Tests also help in the development process.
 
-Test suite uses SQLite databases to store data in individual files,
-so you could sun tests on your production servers and be in safe.
+The test suite uses SQLite databases to store data in individual files,
+so you could sun tests on your production servers without risking
+damage to your production data.
 
-You want to run test suite almost everytime you install/update
-shredder distribution. Especialy you want do it if you have local
-customizations of the DB schema and/or RT code.
+You'll want to run the test suite almost every time you install or update
+the shredder distribution, especialy if you have local customizations of
+the DB schema and/or RT code.
 
-Tests is one thing you can write even if don't know perl much,
-but want to learn more about RT. New tests are very welcome.
+Tests are one thing you can write even if you don't know much perl,
+but want to learn more about RT's internals. New tests are very welcome.
 
 =head2 WRITING TESTS
 
-Shredder distribution has several files to help write new tests.
+The shredder distribution has several files to help write new tests.
 
   t/shredder/utils.pl - this file, utilities
-  t/00skeleton.t - skeleteton .t file for new test files
+  t/00skeleton.t - skeleteton .t file for new tests
 
-All tests runs by next algorithm:
+All tests follow this algorithm:
 
   require "t/shredder/utils.pl"; # plug in utilities
   init_db(); # create new tmp RT DB and init RT API
@@ -60,7 +61,7 @@ All tests runs by next algorithm:
   # check that shredder deletes things you want
   # this command will compare savepoint DB with current
   cmp_deeply( dump_current_and_savepoint('mysp'), "current DB equal to savepoint");
-  # then you can create another data and delete it then check again
+  # then you can create another object and delete it, then check again
 
 Savepoints are named and you can create two or more savepoints.
 
@@ -70,8 +71,8 @@ Savepoints are named and you can create two or more savepoints.
 
 =head3 rewrite_rtconfig
 
-Call this sub after C<RT::LoadConfig>. Function changes
-RT config option to switch to local SQLite database.
+Call this sub after C<RT::LoadConfig>. It changes the RT config
+options necessary to switch to a local SQLite database.
 
 =cut
 
@@ -100,6 +101,10 @@ sub rewrite_rtconfig
 
 =head3 config_set
 
+This sub is a helper used by C<rewrite_rtconfig>. You shouldn't
+need to use it elsewhere unless you need to change other RT
+configuration variables.
+
 =cut
 
 sub config_set {
@@ -112,19 +117,19 @@ sub config_set {
 
 =head3 init_db
 
-Creates new RT DB with initial data in the test tmp dir.
-Remove old files in the tmp dir if exist.
-Also runs RT::Init() and init logging.
-This is all you need to call to setup testing environment
-in common situation.
+Creates a new RT DB with initial data in a new test tmp dir.
+Also runs RT::Init() and RT::InitLogging().
+
+This is all you need to call to setup a testing environment
+in most situations.
 
 =cut
 
 sub init_db
 {
+    create_tmpdir();
     RT::LoadConfig();
     rewrite_rtconfig();
-    cleanup_tmp();
     RT::InitLogging();
 
     _init_db();
@@ -155,10 +160,10 @@ sub _init_db
 
 =head3 db_name
 
-Returns absolute file path to the current DB.
-It is $tmpdir . test_name() .'.db'>.
+Returns the absolute file path to the current DB.
+It is <$tmpdir . test_name() .'.db'>.
 
-See also C<test_name> function.
+See also the C<test_name> function.
 
 =cut
 
@@ -167,6 +172,7 @@ sub db_name { return File::Spec->catfile(create_tmpdir(), test_name() .".db") }
 =head3 connect_sqlite
 
 Returns connected DBI DB handle.
+
 Takes path to sqlite db.
 
 =cut
@@ -179,6 +185,8 @@ sub connect_sqlite
 =head2 SHREDDER
 
 =head3 shredder_new
+
+Creates and returns a new RT::Shredder object.
 
 =cut
 
@@ -200,9 +208,10 @@ sub shredder_new
 
 =head3 test_name
 
-Returns name of the test file running now
-with stripped extension and dir names.
-For exmple returns '00load' for 't/00load.t' test file.
+Returns name of the test file running now with file extension and
+directory names stripped.
+
+For example, it returns '00load' for the test file 't/00load.t'.
 
 =cut
 
@@ -218,7 +227,7 @@ sub test_name
 
 =head3 tmpdir
 
-Return the absolute path to a tmp dir used in tests.
+Returns the absolute path to a tmp dir used in tests.
 
 =cut
 
@@ -233,7 +242,7 @@ sub tmpdir {
 
 =head2 create_tmpdir
 
-Creates tmp dir if doesn't exist. Returns tmpdir path.
+Creates a tmp dir if one doesn't exist already. Returns tmpdir path.
 
 =cut
 
@@ -241,22 +250,22 @@ sub create_tmpdir { my $n = tmpdir(); File::Path::mkpath( $n );    return $n }
 
 =head3 cleanup_tmp
 
-Delete all tmp files used in the tests.
-See also C<test_name> function.
+Deletes all the tmp dir used in the tests.
+See also the C<test_name> function.
 
 =cut
 
 sub cleanup_tmp
 {
-    my $mask = File::Spec->catfile( tmpdir(), test_name() ) .'.*';
-    return unlink glob($mask);
+    my $dir = File::Spec->catdir(tmpdir(), test_name());
+    return File::Path::rmtree( File::Spec->catdir( tmpdir(), test_name() ));
 }
 
 =head2 SAVEPOINTS
 
 =head3 savepoint_name
 
-Returns absolute path to the named savepoint DB file.
+Returns the absolute path to the named savepoint DB file.
 Takes one argument - savepoint name, by default C<sp>.
 
 =cut
@@ -269,7 +278,7 @@ sub savepoint_name
 
 =head3 create_savepoint
 
-Creates savepoint DB from the current.
+Creates savepoint DB from the current DB.
 Takes name of the savepoint as argument.
 
 =head3 restore_savepoint
@@ -300,7 +309,7 @@ sub __cp_db
 
 =head3 dump_sqlite
 
-Returns DB dump as complex hash structure:
+Returns DB dump as a complex hash structure:
     {
     TableName => {
         #id => {
@@ -309,7 +318,7 @@ Returns DB dump as complex hash structure:
     }
     }
 
-Takes named argument C<CleanDates>. If true clean all date fields from
+Takes named argument C<CleanDates>. If true, clean all date fields from
 dump. True by default.
 
 =cut
@@ -376,11 +385,11 @@ sub clean_dates
 
 =head2 NOTES
 
-Function that return debug notes.
+Function that returns debug notes.
 
 =head3 note_on_fail
 
-Returns note about debug info you can find if test failed.
+Returns a note about debug info that you can display if tests fail.
 
 =cut
 
