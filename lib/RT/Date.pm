@@ -763,7 +763,7 @@ sub iCal {
 
     my $res;
     if ( $args{'Date'} && !$args{'Time'} ) {
-        $res = sprintf( '%04d%02d%02dZ', $year, $mon, $mday );
+        $res = sprintf( '%04d%02d%02d', $year, $mon, $mday );
     }
     elsif ( !$args{'Date'} && $args{'Time'} ) {
         $res = sprintf( 'T%02d%02d%02dZ', $hour, $min, $sec );
