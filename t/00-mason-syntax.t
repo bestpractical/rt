@@ -4,7 +4,6 @@ use strict;
 use warnings;
 
 use RT::Test; use Test::More tests => 1;
-use RT::Test ();
 
 my $ok = 1;
 
