@@ -74,6 +74,8 @@ foreach my $field ( keys %ARGS ) {
 }
 
 $m->call_next();
+
+$m->comp( '/Elements/Footer', %ARGS );
 </%INIT>
 <%ARGS>
 $user => undef
