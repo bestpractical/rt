@@ -389,10 +389,13 @@ if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' ) {
     $checks_failure = 1 unless $status;
 }
 
+my $skip_create = 0;
+$m->callback( CallbackName => 'BeforeCreate', ARGSRef => \%ARGS, skip_create => \$skip_create, 
+              checks_failure => $checks_failure, results => \@results );
 
 if ((!exists $ARGS{'AddMoreAttach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} eq 'new')) { # new ticket?
-    if ( $ValidCFs && !$checks_failure ) {
-        $m->comp('Display.html', %ARGS);
+    if ( $ValidCFs && !$checks_failure && !$skip_create ) {
+        $m->comp(Display.html', %ARGS);
         $RT::Logger->crit("After display call; error is $@");
         $m->abort();
     }
