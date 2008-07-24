@@ -2621,7 +2621,7 @@ sub Merged {
         OPERATOR => '!=',
         VALUE    => $self->Id,
     );
-    return map $_->id, @{ $mergees->ItemsArrayRef };
+    return map $_->id, @{ $mergees->ItemsArrayRef || [] };
 }
 
 # }}}
