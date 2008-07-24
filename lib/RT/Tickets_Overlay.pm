@@ -97,7 +97,7 @@ our %FIELD_METADATA = (
     LastUpdatedBy   => [ 'ENUM' => 'User', ],
     Owner           => [ 'WATCHERFIELD' => 'Owner', ],
     EffectiveId     => [ 'INT', ],
-    id              => [ 'INT', ],
+    id              => [ 'ID', ],
     InitialPriority => [ 'INT', ],
     FinalPriority   => [ 'INT', ],
     Priority        => [ 'INT', ],
@@ -149,6 +149,7 @@ our %FIELD_METADATA = (
 our %dispatch = (
     ENUM            => \&_EnumLimit,
     INT             => \&_IntLimit,
+    ID              => \&_IdLimit,
     LINK            => \&_LinkLimit,
     DATE            => \&_DateLimit,
     STRING          => \&_StringLimit,
@@ -258,6 +259,58 @@ DBIx::SearchBuilder::Limit.
 Essentially they are an expanded/broken out (and much simplified)
 version of what ProcessRestrictions used to do.  They're also much
 more clearly delineated by the TYPE of field being processed.
+
+=head2 _IdLimit
+
+Handle ID field.
+
+=cut
+
+sub _IdLimit {
+    my ( $sb, $field, $op, $value, @rest ) = @_;
+
+    return $sb->_IntLimit( $field, $op, $value, @rest ) unless $value eq '__Bookmarked__';
+
+    die "Invalid operator $op for __Bookmarked__ search on $field"
+        unless $op =~ /^(=|!=)$/;
+
+    my @bookmarks = do {
+        my $tmp = $sb->CurrentUser->UserObj->FirstAttribute('Bookmarks');
+        $tmp = $tmp->Content if $tmp;
+        $tmp ||= {};
+        grep $_, keys %$tmp;
+    };
+
+    return $sb->_SQLLimit(
+        FIELD    => $field,
+        OPERATOR => $op,
+        VALUE    => 0,
+        @rest,
+    ) unless @bookmarks;
+
+    # as bookmarked tickets can be merged we have to use a join
+    # but it should be pretty lightweight
+    my $tickets_alias = $sb->Join(
+        TYPE   => 'LEFT',
+        ALIAS1 => 'main',
+        FIELD1 => 'id',
+        TABLE2 => 'Tickets',
+        FIELD2 => 'EffectiveId',
+    );
+    $sb->_OpenParen;
+    my $first = 1;
+    my $ea = $op eq '='? 'OR': 'AND';
+    foreach my $id ( sort @bookmarks ) {
+        $sb->_SQLLimit(
+            ALIAS    => $tickets_alias,
+            FIELD    => 'id',
+            OPERATOR => $op,
+            VALUE    => $id,
+            $first? (@rest): ( ENTRYAGGREGATOR => $ea )
+        );
+    }
+    $sb->_CloseParen;
+}
 
 =head2 _EnumLimit
 
