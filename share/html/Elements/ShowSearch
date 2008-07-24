@@ -118,9 +118,13 @@ $m->callback(
 foreach ( $SearchArg, $ProcessedSearchArg ) {
     $_->{'Format'} =~ s/__(Web(?:Path|Base|BaseURL))__/scalar RT->Config->Get($1)/ge;
     $_->{'Format'} =~ s/__loc\(["']?(\w+)["']?\)__/loc("$1")/ge;
-    if ( $_->{'Query'} =~ /__Bookmarks__/ ) {
+    if ( $_->{'Query'} =~ /__Bookmarked__/ ) {
+        $_->{'Rows'} = 999;
+    }
+    elsif ( $_->{'Query'} =~ /__Bookmarks__/ ) {
         $_->{'Rows'} = 999;
 
+        # DEPRECATED: will be here for a while up to 3.10/4.0
         my $bookmarks = $session{'CurrentUser'}->UserObj->FirstAttribute('Bookmarks');
         $bookmarks = $bookmarks->Content if $bookmarks;
         $bookmarks ||= {};
