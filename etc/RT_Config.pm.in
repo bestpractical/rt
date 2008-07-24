@@ -459,7 +459,7 @@ C<$OwnerEmail> will be used.
 
 Set($DashboardAddress, '');
 
-=item C<UseFriendlyFromLine>
+=item C<$UseFriendlyFromLine>
 
 By default, RT sets the outgoing mail's "From:" header to
 "SenderName via RT".  Setting C<$UseFriendlyFromLine> to 0 disables it.
@@ -705,8 +705,9 @@ Set($StatementLog, undef);
 This determines the default stylesheet the RT web interface will use.
 RT ships with two valid values by default:
 
-  3.5-default     The totally new, default layout for RT 3.5
-  3.4-compat      A 3.4 compatibility stylesheet to make RT 3.5 look
+  web2            The totally new, default layout for RT 3.8
+  3.5-default     RT 3.5 and 3.6 original layout
+  3.4-compat      A 3.4 compatibility stylesheet to make RT look
                   (mostly) like 3.4
 
 This value actually specifies a directory in F<share/html/NoAuth/css/>
@@ -1098,7 +1099,7 @@ from being displayed in-line when viewing a ticket's history.
 
 Set($SuppressInlineTextFiles, undef);
 
-=item C<DontSearchFileAttachments>
+=item C<$DontSearchFileAttachments>
 
 If C<$DontSearchFileAttachments> is set to a true value, then uploaded
 files (attachments with file names) are not searched during full-content
