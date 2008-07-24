@@ -50,16 +50,31 @@ my $bookmarks = $session{'CurrentUser'}->UserObj->FirstAttribute('Bookmarks');
 $bookmarks = $bookmarks->Content if $bookmarks;
 $bookmarks ||= {};
 
+my $bookmarked = $bookmarks->{ $id }; # we still not sure if it's undef
+
+my @ids;
+if ( $Toggle || !$bookmarked ) {
+    my $ticket = RT::Ticket->new( $session{'CurrentUser'} );
+    $ticket->Load( $id );
+    return unless $id = $ticket->id;
+
+    @ids = ($id, $ticket->Merged);
+}
+
 if ( $Toggle ) {
-    if ( $bookmarks->{ $id } ) {
-        delete $bookmarks->{ $id };
+    if ( grep $bookmarks->{ $_ }, @ids ) {
+        delete $bookmarks->{ $_ } foreach @ids;
+        $bookmarked = 0;
     } else {
         $bookmarks->{ $id } = 1;
+        $bookmarked = 1;
     }
     $session{'CurrentUser'}->UserObj->SetAttribute(
         Name    => 'Bookmarks',
         Content => $bookmarks,
     );
+} elsif ( !$bookmarked ) {
+    $bookmarked = grep $bookmarks->{ $_ }, @ids;
 }
 </%INIT>
 <%ARGS>
@@ -69,7 +84,7 @@ $Toggle => 0
 <span id="toggle-<% $id %>">
 % my $url = RT->Config->Get('WebPath') ."/Helpers/Toggle/TicketBookmark?id=". $id;
 <a align="right" href="<% $url %>" onClick="ahah('<% $url |n %>', 'toggle-<% $id |n %>'); return false;" >
-% if ( $bookmarks->{ $id } ) {
+% if ( $bookmarked ) {
 <img src="<% RT->Config->Get('WebPath') %>/NoAuth/images/star.gif" alt="<% loc('Remove Bookmark') %>" style="border-style: none" />
 % } else {
 <img src="<% RT->Config->Get('WebPath') %>/NoAuth/images/empty_star.gif" alt="<% loc('Add Bookmark') %>" style="border-style: none" />
