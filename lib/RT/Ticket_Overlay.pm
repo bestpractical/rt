@@ -2601,6 +2601,29 @@ sub MergeInto {
     return ( 1, $self->loc("Merge Successful") );
 }
 
+=head2 Merged
+
+Returns list of tickets' ids that's been merged into this ticket.
+
+=cut
+
+sub Merged {
+    my $self = shift;
+
+    my $mergees = new RT::Tickets( $self->CurrentUser );
+    $mergees->Limit(
+        FIELD    => 'EffectiveId',
+        OPERATOR => '=',
+        VALUE    => $self->Id,
+    );
+    $mergees->Limit(
+        FIELD    => 'id',
+        OPERATOR => '!=',
+        VALUE    => $self->Id,
+    );
+    return map $_->id, @{ $mergees->ItemsArrayRef };
+}
+
 # }}}
 
 # }}}
