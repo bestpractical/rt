@@ -1214,7 +1214,7 @@ sub Form::compose {
 sub config_from_env {
     my %env;
 
-    foreach my $k ("DEBUG", "USER", "PASSWD", "SERVER", "QUERY", "ORDERBY") {
+    foreach my $k ("EXTERNALAUTH", "DEBUG", "USER", "PASSWD", "SERVER", "QUERY", "ORDERBY") {
         if (exists $ENV{"RT$k"}) {
             $env{lc $k} = $ENV{"RT$k"};
         }
@@ -1526,6 +1526,7 @@ Text:
         - passwd <passwd>       RT user's password.
         - query <RT Query>      Default RT Query for list action
         - orderby <order>       Default RT order for list action
+        - externalauth <0|1>    Use HTTP Basic authentication
 
         Blank and #-commented lines are ignored.
 
@@ -1536,6 +1537,7 @@ Text:
 
         - RTUSER
         - RTPASSWD
+        - RTEXTERNALAUTH
         - RTSERVER
         - RTDEBUG       Numeric debug level. (Set to 3 for full logs.)
         - RTCONFIG      Specifies a name other than ".rtrc" for the
