@@ -151,7 +151,7 @@ div#page-navigation ul#page-menu {
  left: 8em;
  font-size: 0.9em;
  top: 2.3em;
- height: 1em;
+ min-height: 1em;
  background-color: white;
  right: 0em;
  padding-top:0.3em;
