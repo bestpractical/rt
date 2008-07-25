@@ -126,15 +126,15 @@ if ($id or $showall) {
 </%perl>
 
 % if (@articles) {
-% if ($id) {
+%   if ($id) {
 <h2><&|/l&>Articles in this topic</&></h2>
-% } elsif ($class) {
+%   } elsif ($class) {
 <h2><&|/l&>Articles with no topics</&></h2>
-% }
+%   }
 <ul>
-% for my $a (@articles) {
+%   for my $a (@articles) {
 <li><a href="Article/Display.html?id=<% $a->Id %>"><% $a->Name || loc("(no name)") %></a></li>
-% }
+%   }
 </ul>
 % } else {
 %#<i><&|/l&>No articles found in this topic</&></i>
@@ -149,24 +149,24 @@ my $currclass_id;
 my $currclass_name;
 my $currtopic;
 
-if (defined $class) {
+if ( defined $class ) {
     if ($class) {
-        $currclass = RT::FM::Class->new($session{'CurrentUser'});
+        $currclass = RT::FM::Class->new( $session{'CurrentUser'} );
         $currclass->Load($class);
-        $currclass_id = $currclass->Id;
+        $currclass_id   = $currclass->Id;
         $currclass_name = $currclass->Name;
     } else {
-        $currclass = $RT::FM::System;
-        $currclass_id = 0;
+        $currclass      = $RT::FM::System;
+        $currclass_id   = 0;
         $currclass_name = 'Global Topics';
     }
 } else {
-    $Classes = RT::FM::ClassCollection->new($session{'CurrentUser'});
-    $Classes->LimitToEnabled(); 
+    $Classes = RT::FM::ClassCollection->new( $session{'CurrentUser'} );
+    $Classes->LimitToEnabled();
 }
 
 if ($id) {
-    $currtopic = RT::FM::Topic->new($session{'CurrentUser'});
+    $currtopic = RT::FM::Topic->new( $session{'CurrentUser'} );
     $currtopic->Load($id);
 }
 
@@ -176,90 +176,95 @@ if ($id) {
 # the branch of the hierarchy which contains that topic ID.
 
 sub ProduceTree {
-    my ($Actions, $currclass, $currclass_id, $currclass_name, $parentid, $restrictid) = @_;
+    my ( $Actions, $currclass, $currclass_id, $currclass_name, $parentid, $restrictid ) = @_;
     $parentid = 0 unless $parentid;
 
     # Deal with tree restriction, if any.
     if ($restrictid) {
-        my $rtopic = RT::FM::Topic->new($session{'CurrentUser'});
-	$rtopic->Load($restrictid);
-	unless ($rtopic->Id() &&
-	        $rtopic->ObjectId() == $currclass_id) {
-	    push(@{$Actions}, "Could not restrict view to topic $restrictid");
-	    # Start over, without the restriction.
-	    &ProduceTree($Actions, $currclass, $currclass_id, $currclass_name, $parentid, undef);
-	} else {
-	    my @showtopics;
-	    push(@showtopics, $rtopic);
-	    my $parent = $rtopic->ParentObj;
-	    while ($parent->Id) {
-		push(@showtopics, $parent);
-		my $newparent = $parent->ParentObj;
-		$parent = $newparent;
-	    }
-	    
-	    # List the topics.
+        my $rtopic = RT::FM::Topic->new( $session{'CurrentUser'} );
+        $rtopic->Load($restrictid);
+        unless ( $rtopic->Id()
+            && $rtopic->ObjectId() == $currclass_id )
+        {
+            push( @{$Actions},"Could not restrict view to topic $restrictid");
+
+            # Start over, without the restriction.
+            &ProduceTree( $Actions, $currclass, $currclass_id, $currclass_name, $parentid, undef );
+        } else {
+            my @showtopics;
+            push( @showtopics, $rtopic );
+            my $parent = $rtopic->ParentObj;
+            while ( $parent->Id ) {
+                push( @showtopics, $parent );
+                my $newparent = $parent->ParentObj;
+                $parent = $newparent;
+            }
+
+            # List the topics.
             my $indents = @showtopics;
-	    while (my $t = pop @showtopics) {
-		print "<ul>";
-		print &MakeLinks($t, $currclass, $currclass_id, $currclass_name, $t->Children->Count);
-		if ($t->Id == $restrictid) {
-		    &ProduceTree($Actions, $currclass, $currclass_id, $currclass_name, $restrictid, undef);
-		}
-	    }
+            while ( my $t = pop @showtopics ) {
+                print "<ul>";
+                print &MakeLinks( $t, $currclass, $currclass_id, $currclass_name, $t->Children->Count );
+                if ( $t->Id == $restrictid ) {
+                    &ProduceTree( $Actions, $currclass, $currclass_id, $currclass_name, $restrictid, undef );
+                }
+            }
             print "</ul>" x $indents;
-	}
+        }
     } else {
-	# No restriction in place.  Build the entire tree.
-	my $topics = RT::FM::TopicCollection->new($session{'CurrentUser'});
-	$topics->LimitToObject($currclass);
-	$topics->LimitToKids($parentid);
-	$topics->OrderBy( FIELD => 'Name' );
+
+        # No restriction in place.  Build the entire tree.
+        my $topics = RT::FM::TopicCollection->new( $session{'CurrentUser'} );
+        $topics->LimitToObject($currclass);
+        $topics->LimitToKids($parentid);
+        $topics->OrderBy( FIELD => 'Name' );
         print "<ul>" if $topics->Count;
-	while (my $t = $topics->Next) {
-	    if ($t->Children->Count) {
-		print &MakeLinks($t, $currclass, $currclass_id, $currclass_name, 1);
-		&ProduceTree($Actions, $currclass, $currclass_id, $currclass_name, $t->Id);
-	    } else {
-		print &MakeLinks($t, $currclass, $currclass_id, $currclass_name, 0);
-	    }
-	}
+        while ( my $t = $topics->Next ) {
+            if ( $t->Children->Count ) {
+                print &MakeLinks( $t, $currclass, $currclass_id, $currclass_name, 1 );
+                &ProduceTree( $Actions, $currclass, $currclass_id, $currclass_name, $t->Id );
+            } else {
+                print &MakeLinks( $t, $currclass, $currclass_id, $currclass_name, 0 );
+            }
+        }
         print "</ul>\n" if $topics->Count;
     }
 }
 
 sub MakeLinks {
-    my ($topic, $currclass, $currclass_id, $currclass_name, $haschild) = @_;
+    my ( $topic, $currclass, $currclass_id, $currclass_name, $haschild ) = @_;
     my $query;
     my $output;
 
-    if (ref($topic) eq 'RT::FM::Topic') {
+    if ( ref($topic) eq 'RT::FM::Topic' ) {
 
         my $topic_info = $topic->Name() || loc("(no name)");
         $topic_info .= ": " . $topic->Description() if $topic->Description;
 
-	if ($haschild) {
-	    $query = "Topics.html?id=" . $topic->Id . "&class=" . $currclass_id;
+        if ($haschild) {
+            $query  = "Topics.html?id=" . $topic->Id . "&class=" . $currclass_id;
             $output = qq(<li><a href="$query">$topic_info</a>);
-	} else {
+        } else {
             $output = qq(<li>$topic_info);
         }
-	
-        my $Articles = RT::FM::ObjectTopicCollection->new($session{'CurrentUser'});
-        $Articles->Limit(FIELD => 'ObjectType', VALUE => 'RT::FM::Article');
-        $Articles->Limit(FIELD => 'Topic', VALUE => $topic->Id);
-        $output .= " (".loc("[quant,_1,article]", $Articles->Count).")" if $Articles->Count;
 
-	$output .= "</li>\n";
-	
+        my $Articles = RT::FM::ObjectTopicCollection->new( $session{'CurrentUser'} );
+        $Articles->Limit( FIELD => 'ObjectType', VALUE => 'RT::FM::Article' );
+        $Articles->Limit( FIELD => 'Topic',      VALUE => $topic->Id );
+        if ( $Articles->Count ) {
+            $output .= " (" . loc( "[quant,_1,article]", $Articles->Count ) . ")"
+        }
+
+        $output .= "</li>\n";
+
     } else {
-	# This builds a link for the class specified, with no particular
-	# topic.
-	$query = "Topics.html?class=" . $currclass_id;
-	$output = "<li><a href=\"$query\">" . $currclass_name . "</a>";
-	$output .= ": " . $currclass->Description if $currclass->Description;
+
+        # This builds a link for the class specified, with no particular topic.
+        $query  = "Topics.html?class=" . $currclass_id;
+        $output = "<li><a href=\"$query\">" . $currclass_name . "</a>";
+        $output .= ": " . $currclass->Description if $currclass->Description;
     }
-    
+
     return $output;
 }
 
