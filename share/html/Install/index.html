@@ -49,7 +49,7 @@
 
 <& Elements/Errors, Errors => \@errors &>
 
-% if ( !$locked) {
+% return if $locked;
 
 <h1><% loc('What is RT?') %></h1>
 
@@ -74,46 +74,46 @@
 <input type="hidden" name="Run" value="1" />
 <& /Elements/Submit, Label => loc( "Let's go!") &>
 </form>
-% }
+
 </&>
 <%init>
 my @errors;
 my $locked;
-    my $file = File::Spec->catfile( $RT::EtcPath, 'RT_SiteConfig.pm' );
 
-    if ( ! -e $file ) {
-        # write a blank RT_SiteConfig.pm
-        open my $fh, '>', $file or die $!;
-        close $fh;
-    }
-    elsif ( ! -w $file ) {
-        $locked = 1;
-    }
-    
-    if ( $locked ) {
-        push @errors, loc("Config file [_1] is locked", $file);
-    }
-    elsif ( $Run ) {
-        $RT::Installer->{InstallConfig} ||= {};
-        for my $field  ( qw/DatabaseType DatabaseName DatabaseHost DatabasePort
-                DatabaseUser DatabaseRequireSSL rtname
-                Organization Timezone CommentAddress CorrespondAddress 
-                SendmailPath WebDomain WebPort/ ) {
-            $RT::Installer->{InstallConfig}{$field} ||= RT->Config->Get($field);
-        }
+my $file = File::Spec->catfile( $RT::EtcPath, 'RT_SiteConfig.pm' );
 
-        for my $field ( qw/OwnerEmail Password DatabasePassword
-                DatabaseAdminPassword/ ) {
-            # stuff we don't want to keep null
-            $RT::Installer->{InstallConfig}{$field} = '';
-        }
+if ( ! -e $file ) {
+    # write a blank RT_SiteConfig.pm
+    open my $fh, '>', $file or die $!;
+    close $fh;
+}
+elsif ( ! -w $file ) {
+    $locked = 1;
+}
 
-        RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .  'Install/DatabaseType.html');
-    
-        }
+if ( $locked ) {
+    push @errors, loc("Config file [_1] is locked", $file);
+}
+elsif ( $Run ) {
+    $RT::Installer->{InstallConfig} ||= {};
+    for my $field  (
+            qw/DatabaseType DatabaseName DatabaseHost DatabasePort
+            DatabaseUser DatabaseRequireSSL rtname
+            Organization Timezone CommentAddress CorrespondAddress 
+            SendmailPath WebDomain WebPort/
+    ) {
+        $RT::Installer->{InstallConfig}{$field} ||= RT->Config->Get($field);
+    }
+
+    for my $field ( qw/OwnerEmail Password DatabasePassword DatabaseAdminPassword/ ) {
+        # stuff we don't want to keep null
+        $RT::Installer->{InstallConfig}{$field} = '';
+    }
+
+    RT::Interface::Web::Redirect(RT->Config->Get('WebURL') . 'Install/DatabaseType.html');
+}
 </%init>
 
 <%args>
 $Run => 0
 </%args>
-
