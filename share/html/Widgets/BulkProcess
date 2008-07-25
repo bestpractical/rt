@@ -48,7 +48,7 @@
 <%init>
 for my $type ( @$Types ) {
     my $value =
-        $m->comp( $Meta->{$type}{Widget} . ':Process', Name => $type, 
+        $m->comp( $Meta->{$type}{Widget} . ':Process', name => $type, 
                 Arguments => $Arguments, Default => $Default,
                 DefaultValue => $DefaultValue->{$type},
                 %{ $Meta->{$type}{WidgetArguments} },

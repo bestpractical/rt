@@ -48,7 +48,7 @@
 <%DOC>
 see docs/using_forms_widgets.pod
 </%DOC>
-<div id="form-box-<% lc $Name %>" class="widget">
+<div id="form-box-<% lc $name %>" class="widget">
 <span class="description label"><% $description %></span>
 <span class="value"><& SELF:InputOnly, %ARGS &></span>
 % if ( $Default ) {
@@ -57,7 +57,7 @@ see docs/using_forms_widgets.pod
 <span class="hints"><% $Hints %></span>
 </div>
 <%ARGS>
-$Name
+$name
 
 $description  => undef,
 $Hints        => ''
@@ -70,9 +70,9 @@ $DefaultLabel   => loc( 'Default: %1', $DefaultValue ),
 </%ARGS>
 
 <%METHOD InputOnly>
-<input type="<% $Type %>" name="<% $Name %>" value="<% $CurrentValue || '' %>" />\
+<input type="<% $Type %>" name="<% $name %>" value="<% $CurrentValue || '' %>" />\
 <%ARGS>
-$Name
+$name
 $CurrentValue => '',
 $Type => 'text'
 </%ARGS>
@@ -80,7 +80,7 @@ $Type => 'text'
 
 <%METHOD Process>
 <%ARGS>
-$Name
+$name
 
 $Arguments    => {},
 
@@ -88,7 +88,7 @@ $Default      => 0,
 $DefaultValue => '',
 </%ARGS>
 <%INIT>
-my $value = $Arguments->{ $Name };
+my $value = $Arguments->{ $name };
 $value = '' unless defined $value;
 
 # canonicalize: delete leading and trailing spaces, replaces newlines

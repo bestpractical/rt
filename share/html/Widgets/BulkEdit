@@ -50,7 +50,7 @@
     Default      => $Default,
     %{ $m->comp('/Widgets/FinalizeWidgetArguments', WidgetArguments =>
             $Meta->{$type}{'WidgetArguments'} ) },
-    Name         => $type,
+    name         => $type,
     exists $CurrentValue->{$type} ? ( CurrentValue => $CurrentValue->{$type} )
         : (),
     exists $DefaultValue->{$type} ? ( DefaultValue => $DefaultValue->{$type} )
