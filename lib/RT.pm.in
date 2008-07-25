@@ -180,6 +180,8 @@ sub Init {
 
     CheckPerlRequirements();
 
+    InitPluginPaths();
+
     #Get a database connection
     ConnectToDatabase();
     InitSystemObjects();
@@ -411,7 +413,6 @@ EOF
     }
 }
 
-
 =head2 InitClasses
 
 Load all modules that define base classes.
@@ -561,6 +562,33 @@ sub Plugins {
     return \@PLUGINS;
 }
 
+=head2 InitPluginPaths
+
+Push plugin's lib paths into @INC
+
+=cut
+
+sub InitPluginPaths {
+    my $self = shift;
+
+    foreach my $plugin (grep $_, RT->Config->Get('Plugins')) {
+        my $plugindir = $plugin;
+        $plugindir =~ s/::/-/g;
+        next unless -d $RT::LocalPluginPath."/$plugindir/lib";
+
+        # Splice the plugin's lib dir into @INC;
+        my @tmp_inc;
+        for (@INC) {
+            if ( $_ eq $RT::LocalLibPath) {
+                push @tmp_inc, $_, $RT::LocalPluginPath . "/$plugindir/lib";
+            } else {
+                push @tmp_inc, $_;
+            }
+        }
+        @INC = @tmp_inc;
+    }
+}
+
 =head2 InitPlugins
 
 Initialze all Plugins found in the RT configuration file, setting up their lib and HTML::Mason component roots.
@@ -570,34 +598,13 @@ Initialze all Plugins found in the RT configuration file, setting up their lib a
 sub InitPlugins {
     my $self    = shift;
     my @plugins;
-    use RT::Plugin;
-    foreach my $plugin (RT->Config->Get('Plugins')) {
-        next unless $plugin;
-        my $plugindir = $plugin;
-        $plugindir =~ s/::/-/g;
-        unless (-d $RT::LocalPluginPath."/$plugindir") {
-            $RT::Logger->crit("Plugin $plugindir not found in $RT::LocalPluginPath");
-        }
-
-        # Splice the plugin's lib dir into @INC;
-        my @tmp_inc;
-
-
-        for (@INC) {
-            if ( $_ eq $RT::LocalLibPath) {
-                push @tmp_inc, $_, $RT::LocalPluginPath . "/$plugindir";
-            } else {
-                push @tmp_inc, $_;
-            }
-        }
-
-        @INC = @tmp_inc;
+    require RT::Plugin;
+    foreach my $plugin (grep $_, RT->Config->Get('Plugins')) {
         $plugin->require;
         die $UNIVERSAL::require::ERROR if ($UNIVERSAL::require::ERROR);
         push @plugins, RT::Plugin->new(name =>$plugin);
     }
     return @plugins;
-
 }
 
 
