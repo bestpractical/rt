@@ -74,10 +74,8 @@
 <%init>
 if ( $Run ) {
     RT->install_mode(0);
-    RT->connect_to_database();
     RT->init_system_objects();
-    RT->init_classes();
-    RT->init_plugins();
+    RT->init();
 
     my $root = RT::Model::User->new( RT->system_user );
     $root->load('root');
