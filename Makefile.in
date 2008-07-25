@@ -54,6 +54,8 @@
 PERL			= 	@PERL@
 INSTALL         =   @INSTALL@
 
+RT_LAYOUT		=	@rt_layout_name@
+
 CONFIG_FILE_PATH	=	@CONFIG_FILE_PATH_R@
 CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_Config.pm
 SITE_CONFIG_FILE		= 	$(CONFIG_FILE_PATH)/RT_SiteConfig.pm
@@ -364,10 +366,12 @@ install: testdeps config-install dirs files-install fixperms instruct
 files-install: libs-install etc-install config-install bin-install sbin-install html-install local-install doc-install
 
 config-install:
+ifneq "$(RT_LAYOUT)" "inplace"
 	$(INSTALL) -m 0755 -o $(BIN_OWNER) -g $(RTGROUP) -d $(DESTDIR)$(CONFIG_FILE_PATH)	
 	-$(INSTALL) -m 0440 -o $(BIN_OWNER) -g $(RTGROUP)  etc/RT_Config.pm $(DESTDIR)$(CONFIG_FILE)
 	[ -f $(DESTDIR)$(SITE_CONFIG_FILE) ] || $(INSTALL) -m 0640 -o $(BIN_OWNER) -g $(RTGROUP) etc/RT_SiteConfig.pm $(DESTDIR)$(SITE_CONFIG_FILE) 
 	@echo "Installed configuration. About to install RT in  $(RT_PATH)"
+endif
 
 test: 
 	$(PERL) "-MExtUtils::Command::MM" -e "test_harness($(TEST_VERBOSE), 'lib')" $(TEST_FILES)
@@ -395,6 +399,7 @@ force-dropdb:
 
 # {{{ libs-install
 libs-install: 
+ifneq "$(RT_LAYOUT)" "inplace"
 	[ -d $(DESTDIR)$(RT_LIB_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(RT_LIB_PATH)
 	-( cd lib && find . -type d -name .svn -prune -o -type d -print ) | while read dir ; do \
 	    $(INSTALL) -m 0755 -d "$(DESTDIR)$(RT_LIB_PATH)/$$dir" ; \
@@ -402,10 +407,12 @@ libs-install:
 	-( cd lib && find . -type d -name .svn -prune -o -type f -print ) | while read file ; do \
 	     $(INSTALL) -m 0644 "lib/$$file" "$(DESTDIR)$(RT_LIB_PATH)/$$file" ; \
 	done
+endif
 # }}}
 
 # {{{ html-install
 html-install:
+ifneq "$(RT_LAYOUT)" "inplace"
 	[ -d $(DESTDIR)$(MASON_HTML_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(MASON_HTML_PATH)
 	-( cd share/html && find . -type d -name .svn -prune -o -type d -print ) | while read dir ; do \
 	    $(INSTALL) -m 0755 -d "$(DESTDIR)$(MASON_HTML_PATH)/$$dir" ; \
@@ -413,42 +420,51 @@ html-install:
 	-( cd share/html && find . -type d -name .svn -prune -o -type f -print ) | while read file ; do \
 	    $(INSTALL) -m 0644 "share/html/$$file" "$(DESTDIR)$(MASON_HTML_PATH)/$$file" ; \
 	done
+endif
 # }}}
 
 # {{{ doc-install
 doc-install:
+ifneq "$(RT_LAYOUT)" "inplace"
 	# RT 3.0.0 - RT 3.0.2 would accidentally create a file instead of a dir
 	-[ -f $(DESTDIR)$(RT_DOC_PATH) ] && rm $(DESTDIR)$(RT_DOC_PATH) 
 	[ -d $(DESTDIR)$(RT_DOC_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(RT_DOC_PATH)
 	-$(INSTALL) -m 0644 ./README $(DESTDIR)$(RT_DOC_PATH)/
+endif
 # }}}
 
 # {{{ etc-install
 
 etc-install:
-	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_ETC_PATH)
+ifneq "$(RT_LAYOUT)" "inplace"
+	[ -d $(DESTDIR)$(RT_ETC_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(RT_ETC_PATH)
 	for file in $(ETC_FILES) ; do \
 	    $(INSTALL) -m 0644 "etc/$$file" "$(DESTDIR)$(RT_ETC_PATH)/" ; \
 	done
+endif
 # }}}
 
 # {{{ sbin-install
 
 sbin-install:
+ifneq "$(RT_LAYOUT)" "inplace"
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_SBIN_PATH)
 	for file in $(SYSTEM_BINARIES) ; do \
 		$(INSTALL) -o $(BIN_OWNER) -g $(RTGROUP) -m 0755 "sbin/$$file" "$(DESTDIR)$(RT_SBIN_PATH)/" ; \
 	done
+endif
 
 # }}}
 
 # {{{ bin-install
 
 bin-install:
+ifneq "$(RT_LAYOUT)" "inplace"
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_BIN_PATH)
 	for file in $(BINARIES) ; do \
 		$(INSTALL) -o $(BIN_OWNER) -g $(RTGROUP) -m 0755 "bin/$$file" "$(DESTDIR)$(RT_BIN_PATH)/" ; \
 	done
+endif
 
 # {{{ local-install
 local-install:
