@@ -562,31 +562,48 @@ sub Plugins {
     return \@PLUGINS;
 }
 
+=head2 PluginDirs
+
+Takes optional subdir (e.g. po, lib, etc.) and return plugins' dirs that exist.
+
+=cut
+
+sub PluginDirs {
+    my $self = shift;
+    my $subdir = shift;
+
+    my @res;
+    foreach my $plugin (grep $_, RT->Config->Get('Plugins')) {
+        my $plugindir = $plugin;
+        $plugindir =~ s/::/-/g;
+        my $path = $RT::LocalPluginPath. "/$plugindir";
+        $path .= "/$subdir" if defined $subdir && length $subdir;
+        next unless -d $path;
+        push @res, $path;
+    }
+    return @res;
+}
+
 =head2 InitPluginPaths
 
-Push plugin's lib paths into @INC
+Push plugins' lib paths into @INC right after F<local/lib>.
 
 =cut
 
 sub InitPluginPaths {
     my $self = shift;
 
-    foreach my $plugin (grep $_, RT->Config->Get('Plugins')) {
-        my $plugindir = $plugin;
-        $plugindir =~ s/::/-/g;
-        next unless -d $RT::LocalPluginPath."/$plugindir/lib";
+    my @lib_dirs = $self->PluginDirs('lib');
 
-        # Splice the plugin's lib dir into @INC;
-        my @tmp_inc;
-        for (@INC) {
-            if ( $_ eq $RT::LocalLibPath) {
-                push @tmp_inc, $_, $RT::LocalPluginPath . "/$plugindir/lib";
-            } else {
-                push @tmp_inc, $_;
-            }
+    my @tmp_inc;
+    for (@INC) {
+        if ( $_ eq $RT::LocalLibPath) {
+            push @tmp_inc, $_, @lib_dirs;
+        } else {
+            push @tmp_inc, $_;
         }
-        @INC = @tmp_inc;
     }
+    @INC = @tmp_inc;
 }
 
 =head2 InitPlugins
