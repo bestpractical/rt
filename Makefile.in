@@ -307,7 +307,6 @@ fixperms:
 
 
 	chmod $(RT_READABLE_DIR_MODE) $(DESTDIR)$(RT_BIN_PATH)
-	chmod $(RT_READABLE_DIR_MODE) $(DESTDIR)$(RT_BIN_PATH)	
 
 	chmod 0755 $(DESTDIR)$(RT_ETC_PATH)
 	cd $(DESTDIR)$(RT_ETC_PATH) && chmod 0400 $(ETC_FILES)
