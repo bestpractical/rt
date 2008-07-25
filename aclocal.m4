@@ -26,7 +26,7 @@ dnl
 AC_DEFUN([RT_ENABLE_LAYOUT],[
 AC_ARG_ENABLE(layout,
 	      AC_HELP_STRING([--enable-layout=LAYOUT],
-	      		     [Use a specific directory layout (Default: RT3)]),
+	      		     [Use a specific directory layout (Default: relative)]),
 	      LAYOUT=$enableval)
 
 if test "x$LAYOUT" = "x"; then
