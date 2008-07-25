@@ -243,6 +243,10 @@ DB_RT_PASS		=	@DB_RT_PASS@
 # }}}
 
 
+TEST_FILES = t/*.t t/*/*.t
+TEST_VERBOSE = 0
+
+
 ####################################################################
 
 all: default
@@ -365,9 +369,6 @@ config-install:
 	-$(INSTALL) -m 0440 -o $(BIN_OWNER) -g $(RTGROUP)  etc/RT_Config.pm $(DESTDIR)$(CONFIG_FILE)
 	[ -f $(DESTDIR)$(SITE_CONFIG_FILE) ] || $(INSTALL) -m 0640 -o $(BIN_OWNER) -g $(RTGROUP) etc/RT_SiteConfig.pm $(DESTDIR)$(SITE_CONFIG_FILE) 
 	@echo "Installed configuration. About to install RT in  $(RT_PATH)"
-
-TEST_FILES = t/*.t t/*/*.t
-TEST_VERBOSE = 0
 
 test: 
 	$(PERL) "-MExtUtils::Command::MM" -e "test_harness($(TEST_VERBOSE), 'lib')" $(TEST_FILES)
