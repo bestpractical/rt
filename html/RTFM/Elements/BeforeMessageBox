@@ -62,9 +62,9 @@
 </tr>
 % if ($hotlist->Count) {
 <tr>
-<td>&nbsp;</td>
+<td><&|/l&>Select an Article to include</&></td>
 <td><select name="RTFM-Include-Article-Named-Hotlist">
-<option value="" selected><&|/l&>Select an article</&></option>
+<option value="" selected><&|/l&>-</&></option>
 % while (my $article = $hotlist->Next) {
 <option value="<% $article->Id %>"><%$article->Name|| loc('(no name)')%>: <%$article->Summary%></option>
 % }
@@ -90,14 +90,16 @@
 <td><input type="submit" name="RTFM-Include-Article-<%$article->Id%>" value="Go" /></td>
 </tr>
 % }
+% if ( @$topics ) {
 <tr>
 <td>
-
-% if ( @$topics ) {
+<&|/l, $QueueObj->Name &>Choose from Topics for [_1] </&>
+</td>
+<td>
 <select name="RTFM-Include-Topic">
-<option value="" <% $ARGS{'RTFM-Include-Topic'} ? () : 'selected' %>><&|/l&>Select a topic</&></option>
+<option value="" <% $ARGS{'RTFM-Include-Topic'} ? () : 'selected' %>><&|/l&>-</&></option>
 % for ( @$topics ) { 
-<option value="<% $_->{id} %>" <% $ARGS{'RTFM-Include-Topic'} == $_->{id} ? 'selected' : () %> ><%'&nbsp;' x $_->{depth} . ($_->{name}|| loc('(no name)')) |n%>
+<option value="<% $_->{id} %>" <% $ARGS{'RTFM-Include-Topic'}||0 == $_->{id} ? 'selected' : () %> ><%'&nbsp;' x $_->{depth} . ($_->{name}|| loc('(no name)')) |n%>
 </option>
 % }
 </select>
@@ -108,9 +110,12 @@
 % if ( $ARGS{'RTFM-Include-Topic'} ) {
 <tr>
 <td>
+<&|/l, $included_topic->Name &>Select an Article from [_1]</&>
+</td>
+<td>
 <select name="RTFM-Include-Article">
-<option value="" <% $ARGS{'RTFM-Include-Article'} ? () : 'selected' %>><&|/l&>Select an article</&></option>
-% while ( my $art = $articles->Next ) {
+<option value="" <% $ARGS{'RTFM-Include-Article'} ? () : 'selected' %>><&|/l&>-</&></option>
+% while ( my $art = $topic_articles->Next ) {
 <option value="<% $art->id %>" <% $ARGS{'RTFM-Include-Article'}||0 == $art->id ? 'selected' : () %> ><%$art->Name||loc('(no name)')%>: <%$art->Summary%></option>
 % }
 </select>
@@ -187,8 +192,8 @@ $hotlist->OrderByCols( {
 
     );
 
-my ( $articles, $topics );
-$articles = RT::FM::ArticleCollection->new( $session{CurrentUser} );
+my ( $topic_articles, $topics, $included_topic );
+$topic_articles = RT::FM::ArticleCollection->new( $session{CurrentUser} );
 $topics = [];
 
 my $QueueObj = $ARGS{QueueObj};
@@ -197,21 +202,23 @@ if ( $ARGS{id} && $ARGS{id} ne 'new' && !$QueueObj ) {
     $ticket->Load( $ARGS{id} );
     $QueueObj = $ticket->QueueObj;
 }
+
 my $top_topic = RT::FM::Topic->new( $session{CurrentUser} );
 $top_topic->LoadByCols( Name => 'Queues', Parent => 0 , ObjectType => 'RT::FM::System', ObjectId => 1);
 
 if ( $top_topic->id ) {
     my $queue_topic = RT::FM::Topic->new( $session{CurrentUser} );
-    $queue_topic->LoadByCols( Name => $QueueObj->Name, Parent =>
-            $top_topic->id );
+    $queue_topic->LoadByCols( Name => $QueueObj->Name, Parent => $top_topic->id );
     if ( $queue_topic->id ) {
     
         # store all topics below $queue_topic to $topics
         topics( $queue_topic, $topics, 0 );
         
         if ( $ARGS{'RTFM-Include-Topic'}  ) {
-            $articles->LimitTopics( $ARGS{'RTFM-Include-Topic'} );
-            $articles->OrderBy( FIELD => 'Name' );
+            $included_topic = RT::FM::Topic->new( $session{CurrentUser} );
+            $included_topic->Load($ARGS{'RTFM-Include-Topic'});
+            $topic_articles->LimitTopics( $ARGS{'RTFM-Include-Topic'} );
+            $topic_articles->OrderBy( FIELD => 'Name' );
         }
     }
 }
@@ -223,8 +230,8 @@ sub topics {
     my $out = shift;
     my $depth = shift;
     while ( my $topic = $parent->Children->Next ) {
-	push @$out, { id => $topic->id, name => $topic->Name, depth => $depth };
-	topics( $topic, $out, $depth+1 );
+        push @$out, { id => $topic->id, name => $topic->Name, depth => $depth };
+        topics( $topic, $out, $depth+1 );
     }
 }
 
