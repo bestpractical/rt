@@ -97,9 +97,9 @@
 </td>
 <td>
 <select name="RTFM-Include-Topic">
-<option value="" <% $ARGS{'RTFM-Include-Topic'} ? () : 'selected' %>><&|/l&>-</&></option>
+<option value="" selected>-</option>
 % for ( @$topics ) { 
-<option value="<% $_->{id} %>" <% $ARGS{'RTFM-Include-Topic'}||0 == $_->{id} ? 'selected' : () %> ><%'&nbsp;' x $_->{depth} . ($_->{name}|| loc('(no name)')) |n%>
+<option value="<% $_->{id} %>"><%'&nbsp;' x $_->{depth} . ($_->{name}|| loc('(no name)')) |n%>
 </option>
 % }
 </select>
@@ -114,9 +114,9 @@
 </td>
 <td>
 <select name="RTFM-Include-Article">
-<option value="" <% $ARGS{'RTFM-Include-Article'} ? () : 'selected' %>><&|/l&>-</&></option>
+<option value="" selected>-</option>
 % while ( my $art = $topic_articles->Next ) {
-<option value="<% $art->id %>" <% $ARGS{'RTFM-Include-Article'}||0 == $art->id ? 'selected' : () %> ><%$art->Name||loc('(no name)')%>: <%$art->Summary%></option>
+<option value="<% $art->id %>"><%$art->Name||loc('(no name)')%>: <%$art->Summary%></option>
 % }
 </select>
 </td>
