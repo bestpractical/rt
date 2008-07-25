@@ -252,14 +252,14 @@ else {
     };
 }
 
-sub Meta {
+sub meta {
     my $class = shift;
     my $type  = shift;
     return $Meta{$type} if $type;
     return \%Meta;
 }
 
-sub CurrentValue {
+sub current_value {
     my $class = shift;
     my $type  = shift;
     $type = $class if !ref $class && $class && $class ne 'RT::Installer';
@@ -271,7 +271,7 @@ sub CurrentValue {
       : scalar RT->config->get($type);
 }
 
-sub CurrentValues {
+sub current_values {
     my $class = shift;
     my @types = @_;
     push @types, $class if !ref $class && $class && $class ne 'RT::Installer';
@@ -279,12 +279,12 @@ sub CurrentValues {
     return { map { $_ => CurrentValue($_) } @types };
 }
 
-sub ConfigFile {
+sub config_file {
     require File::Spec;
     return File::Spec->catfile( $RT::EtcPath, 'RT_SiteConfig.pm' );
 }
 
-sub SaveConfig {
+sub save_config {
     my $class = shift;
 
     my $file = $class->config_file;
