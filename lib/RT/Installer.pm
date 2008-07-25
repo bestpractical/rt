@@ -276,7 +276,7 @@ sub current_values {
     my @types = @_;
     push @types, $class if !ref $class && $class && $class ne 'RT::Installer';
 
-    return { map { $_ => CurrentValue($_) } @types };
+    return { map { $_ => current_value($_) } @types };
 }
 
 sub config_file {
