@@ -56,13 +56,14 @@ my %Meta = (
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             description => 'Database type',    # loc
-            Values      => [
+            default      => 0,
+            values      => [
                 grep {
                     my $m = 'DBD::' . $_;
                     $m->require ? 1 : 0
                   } qw/mysql Pg SQLite Oracle/
             ],
-            ValuesLabel => {
+            values_label => {
                 mysql  => 'MySQL',             #loc
                 Pg     => 'PostgreSQL',        #loc
                 SQLite => 'SQLite',            #loc
@@ -74,8 +75,8 @@ my %Meta = (
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             description  => 'Database host',                          #loc
-            Default      => 1,
-            DefaultLabel => "Keep 'localhost' if you're not sure",    #loc
+            default      => 1,
+            default_label => "Keep 'localhost' if you're not sure",    #loc
             Hints =>
               "The domain name of your database server (like 'db.example.com')."
             ,                                                         #loc
@@ -85,8 +86,8 @@ my %Meta = (
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
             description => 'Database port',                           #loc
-            Default     => 1,
-            DefaultLabel =>
+            default     => 1,
+            default_label =>
               'Leave empty to use the default value for your database',    #loc
         },
     },
@@ -99,19 +100,19 @@ my %Meta = (
     DatabaseAdmin => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
-            Default => 1,
+            default => 1,
             Hints =>
 "Leave this alone to use the default dba username for your database type"
             ,                                                              #loc
             description  => 'DBA username',                                # loc
-            DefaultLabel => '',
+            default_label => '',
         },
     },
     DatabaseAdminPassword => {
         Widget          => '/Widgets/Form/String',
         WidgetArguments => {
             description  => 'DBA password',                                #loc
-            DefaultLabel => "The DBA's database password",                 #loc
+            default_label => "The DBA's database password",                 #loc
             Type         => 'password',
             Hints =>
 "You must provide the dba's password so we can create the RT database and user.",
