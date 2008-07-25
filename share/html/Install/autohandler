@@ -51,6 +51,7 @@ inherit => undef
 
 <%init>
 
+$RT::_install_mode = 1;
 if (RT->install_mode) {
     $r->content_type("text/html; charset=utf-8");
     require RT::Installer;

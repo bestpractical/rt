@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| Elements/Wrapper, Title => loc('Step %1 of %2: ', 5, 7 ) . loc('Customize Email Addresses') &> 
+<&| Elements/Wrapper, Title => _('Step %1 of %2: ', 5, 7 ) . _('Customize Email Addresses') &> 
 
 <& Elements/Errors, Errors => \@errors &>
 
@@ -61,8 +61,8 @@
 
 <input type="hidden" name="Run" value="1">
 <& /Elements/Submit, Label => $RT::Installer->{DatabaseAction} eq 'none' ?
-loc('Next: ') . loc('Finish') : loc('Next: ') . loc( 'Initialize Database'),
-    Back => 1, BackLabel => loc('Back: ' ) . loc('Customize Email Configuration') &>
+_('Next: ') . _('Finish') : _('Next: ') . _( 'Initialize Database'),
+    Back => 1, BackLabel => _('Back: ' ) . _('Customize Email Configuration') &>
 </form>
 </&>
 <%init>
@@ -84,7 +84,7 @@ if ( $Run ) {
     for ( qw/comment_address correspond_address/ ) {
         if ( $ARGS{$_} && $ARGS{$_} !~ /.+@.+/ ) {
             push @errors,
-                loc("Invalid %1: '%2' doesn't look like an email address",
+                _("Invalid %1: '%2' doesn't look like an email address",
                 $_, $ARGS{$_});
         }
     }
@@ -106,7 +106,7 @@ if ( $Run ) {
             }
         }
         else {
-            push @errors, loc($msg);
+            push @errors, _($msg);
         }
     }
 }

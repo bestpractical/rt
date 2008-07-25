@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&|Elements/Wrapper, Title => loc('Step %1 of %2: ', 6, 7) . loc('Initialize Database') &> 
+<&|Elements/Wrapper, Title => _('Step %1 of %2: ', 6, 7) . _('Initialize Database') &> 
 
 <& Elements/Errors, Errors => \@errors &>
 
@@ -57,8 +57,8 @@
 
 <form method="post">
 <input type="hidden" name="Run" value="1">
-<& /Elements/Submit, Label => loc('Initialize Database'), Back => 1,
-    BackLabel => loc('Back: ') . loc('Customize Global') &>
+<& /Elements/Submit, Label => _('Initialize Database'), Back => 1,
+    BackLabel => _('Back: ') . _('Customize Global') &>
 </form>
 </&>
 <%init>
@@ -84,7 +84,7 @@ if ( $Run ) {
     if ( $actions[0] eq 'create' ) {
         ($status, $msg) = RT::Handle->create_database( $sysdbh );
         unless ( $status ) {
-            push @errors, loc('ERROR: %1', $msg );
+            push @errors, _('ERROR: %1', $msg );
         }
 
         shift @actions; # shift the 'create' action since its job is done.
@@ -121,7 +121,7 @@ if ( $Run ) {
                 ($status, $msg) = $RT::Handle->insert_data( $file );
             }
             unless ( $status ) {
-                push @errors, loc('ERROR: %1', $msg);
+                push @errors, _('ERROR: %1', $msg);
                 last;
             }
         }

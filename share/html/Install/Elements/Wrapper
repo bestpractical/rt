@@ -48,10 +48,10 @@
 <&/Elements/Header, title => $Title &>
 <& /Elements/PageLayout,
     title => $Title,
-    toptabs => { a => { title => loc('Install RT'),
+    toptabs => { a => { title => _('Install RT'),
                         path => 'Install/'
                         },
-                b => { title => loc('Buy Support'),
+                b => { title => _('Buy Support'),
                         path => 'mailto:sales@bestpractical.com'}
                 },
                         

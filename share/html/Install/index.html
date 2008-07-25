@@ -45,13 +45,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| Elements/Wrapper, Title => loc('Welcome to RT!') &>
+<&| Elements/Wrapper, Title => _('Welcome to RT!') &>
 
 <& Elements/Errors, Errors => \@errors &>
 
 % if ( !$locked) {
 
-<h1><% loc('What is RT?') %></h1>
+<h1><% _('What is RT?') %></h1>
 
 <div class="intro">
 <p>
@@ -60,7 +60,7 @@
 <p>
 <&|/l&>RT is used by Fortune 100 companies, one-person businesses, government agencies, educational institutions, hospitals, nonprofits, NGOs, libraries, open source projects and all sorts of other organizations on all seven continents. (Yes, even Antarctica.)</&>
 </p>
-<h2><% loc('Getting started') %></h2>
+<h2><% _('Getting started') %></h2>
 <p>
 <b>
 <&|/l&>You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>Let's go!</i> below, RT will guide you through setting up your RT server and database.</&>
@@ -72,7 +72,7 @@
 
 <form method="post">
 <input type="hidden" name="Run" value="1" />
-<& /Elements/Submit, Label => loc( "Let's go!") &>
+<& /Elements/Submit, Label => _( "Let's go!") &>
 </form>
 % }
 </&>
@@ -83,7 +83,7 @@ my $locked;
     $locked = 1 unless -w $file;
     
     if ( $locked ) {
-        push @errors, loc("Config file %1 is locked", $file);
+        push @errors, _("Config file %1 is locked", $file);
     }
     elsif ( $Run ) {
         $RT::Installer->{InstallConfig} ||= {};

@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % if (@Errors) {
-<&| "/Widgets/TitleBox", title => loc('Error'), hideable => 0, class => 'error'  &>
+<&| "/Widgets/TitleBox", title => _('Error'), hideable => 0, class => 'error'  &>
 <ul>
 % for my $Error ( @Errors ) {
 <li>

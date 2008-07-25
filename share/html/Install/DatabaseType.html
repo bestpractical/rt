@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&|Elements/Wrapper, Title => loc('Step %1 of %2: ', 1, 7 ) . loc('Choose a database engine') &>
+<&|Elements/Wrapper, Title => _('Step %1 of %2: ', 1, 7 ) . _('Choose a database engine') &>
 
 <div class="intro">
 <p>
@@ -67,7 +67,7 @@
     CurrentValue => RT::Installer->current_values(@Types) &>
 
 <input type="hidden" name="Run" value="1">
-<& /Elements/Submit, Label => loc('Next: ') . loc( 'Check your database credentials') &>
+<& /Elements/Submit, Label => _('Next: ') . _( 'Check your database credentials') &>
 </form>
 </&>
 <%init>

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| Elements/Wrapper, Title => loc('Step %1 of %2: ', 3, 7) . loc('Customize Basics') &> 
+<&| Elements/Wrapper, Title => _('Step %1 of %2: ', 3, 7) . _('Customize Basics') &> 
 
 <& Elements/Errors, Errors => \@errors &>
 
@@ -58,7 +58,7 @@
     CurrentValue => RT::Installer->current_values(@Types) &>
 
 <input type="hidden" name="Run" value="1">
-<& /Elements/Submit, Label => loc('Next: ') . loc('Customize Email Configuration'),Back => 1, BackLabel => loc('Back: ' ) . loc( 'Customize Database Details') &>
+<& /Elements/Submit, Label => _('Next: ') . _('Customize Email Configuration'),Back => 1, BackLabel => _('Back: ' ) . _( 'Customize Database Details') &>
 </form>
 </&>
 
@@ -75,11 +75,11 @@ if ( $Run ) {
             Meta => $RT::Installer->{Meta} );
     
     if ( $ARGS{WebPort} && $ARGS{WebPort} !~ /^\d+$/ ) {
-        push @errors, loc("Invalid %1: it should be a number", 'WebPort');
+        push @errors, _("Invalid %1: it should be a number", 'WebPort');
     }
 
     unless ( $ARGS{Password} ) {
-        push @errors, loc("You must enter an Administrative password");
+        push @errors, _("You must enter an Administrative password");
     }
 
     if ( $Back ) {
