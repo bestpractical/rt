@@ -112,17 +112,18 @@ sub Init {
         require $file;
     }
 
+    my %import;
+    foreach my $l ( @lang ) {
+        $import{$l} = [
+            Gettext => (substr(__FILE__, 0, -3) . "/$l.po"),
+            Gettext => "$RT::LocalLexiconPath/*/$l.po",
+            Gettext => "$RT::LocalLexiconPath/$l.po",
+        ];
+        push @{ $import{$l} }, map {(Gettext => "$_/$l.po")} RT->PluginDirs('po');
+    }
+
     # Acquire all .po files and iterate them into lexicons
-    Locale::Maketext::Lexicon->import({
-        _decode => 1,
-        map {
-            $_ => [
-                Gettext => (substr(__FILE__, 0, -3) . "/$_.po"),
-                Gettext => "$RT::LocalLexiconPath/*/$_.po",
-                Gettext => "$RT::LocalLexiconPath/$_.po",
-            ],
-        } @lang
-    });
+    Locale::Maketext::Lexicon->import({ _decode => 1, %import });
 
     return 1;
 }
