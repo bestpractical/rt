@@ -110,6 +110,9 @@ EOF
         die "Since your configuration exists but is not writable, I'm refusing to do anything.\n";
     }
 
+    RT->Config->Set( 'LexiconLanguages' => '*' );
+    RT::I18N->Init;
+
     RT->InstallMode(1);
 } else {
     RT->ConnectToDatabase();

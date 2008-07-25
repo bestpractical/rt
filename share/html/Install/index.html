@@ -51,6 +51,19 @@
 
 % return if $locked;
 
+<form method="post">
+
+<h1><% loc('Language.') %></h1>
+
+<div class="select-lang">
+<&|/l&>Select another language</&>:
+<& /Elements/SelectLang,
+    Name => 'Lang',
+    Default => $lang_handle? $lang_handle->language_tag : undef,
+&>
+<input type="submit" class="button" name="ChangeLang" value="<% loc('Change') %>" />
+</div>
+
 <h1><% loc('What is RT?') %></h1>
 
 <div class="intro">
@@ -70,9 +83,7 @@
 <&|/l&>If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p></&>
 </div>
 
-<form method="post">
-<input type="hidden" name="Run" value="1" />
-<& /Elements/Submit, Label => loc( "Let's go!") &>
+<& /Elements/Submit, Label => loc( "Let's go!"), Name => 'Run' &>
 </form>
 
 </&>
@@ -111,9 +122,21 @@ elsif ( $Run ) {
     }
 
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL') . 'Install/DatabaseType.html');
+} elsif ( $ChangeLang && $Lang ) {
+    # hackish, but works
+    $session{'CurrentUser'} = new RT::CurrentUser;
+    $session{'CurrentUser'}->LanguageHandle( $Lang );
 }
+my $lang_handle = do { local $@;
+    eval {
+        ($session{'CurrentUser'} || RT::CurrentUser->new($RT::SystemUser->Id))
+            ->LanguageHandle
+    }
+};
 </%init>
 
 <%args>
 $Run => 0
+$ChangeLang => undef
+$Lang => undef
 </%args>
