@@ -591,7 +591,7 @@ Push plugins' lib paths into @INC right after F<local/lib>.
 =cut
 
 sub InitPluginPaths {
-    my $self = shift;
+    my $self = shift || __PACKAGE__;
 
     my @lib_dirs = $self->PluginDirs('lib');
 
