@@ -109,9 +109,6 @@ if ( $db_type eq 'Pg' ) {
 
 if ( $Run ) {
 
-    $m->comp('/Widgets/BulkProcess', Types => \@Types, Arguments => \%ARGS, 
-            Store => $RT::Installer->{InstallConfig}, 
-            Meta => $RT::Installer->{Meta}, KeepUndef => 1 ); 
     if ( $Back ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
 'Install/DatabaseType.html');
@@ -121,6 +118,12 @@ if ( $Run ) {
         RT::Interface::Web::Redirect(RT->Config->Get('WebURL') .
 'Install/Basics.html');
     }
+
+    $m->comp('/Widgets/BulkProcess', Types => \@Types, Arguments => \%ARGS, 
+            Store => $RT::Installer->{InstallConfig}, 
+            Meta => $RT::Installer->{Meta}, KeepUndef => 1 ); 
+
+
     my ( $status, $msg ) = RT::Installer->SaveConfig;
     if ( $status ) {
         delete $INC{'RT_SiteConfig.pm'};
