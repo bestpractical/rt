@@ -105,10 +105,10 @@
 		<div id="divUpload" style="DISPLAY: none">
 			<form id="frmUpload" method="post" target="UploadWindow" enctype="multipart/form-data" action="" onsubmit="return CheckUpload();">
 				<span fckLang="DlgLnkUpload">Upload</span><br />
-				<input id="txtUploadFile" style="WIDTH: 100%" type="file" size="40" name="NewFile" /><br />
+				<input id="txtUploadFile" style="WIDTH: 100%" type="file" size="40" name="new_file" /><br />
 				<br />
 				<input id="btnUpload" type="submit" value="Send it to the Server" fckLang="DlgLnkBtnUpload" />
-				<iframe name="UploadWindow" style="DISPLAY: none" src="javascript:void(0)"></iframe>
+				<iframe name="upload_window" style="DISPLAY: none" src="javascript:void(0)"></iframe>
 			</form>
 		</div>
 		<div id="divTarget" style="DISPLAY: none">
@@ -147,22 +147,22 @@
 						<table cellspacing="0" cellpadding="0" border="0">
 							<tr>
 								<td valign="top" nowrap="nowrap" width="50%">
-									<input id="chkPopupResizable" name="chkFeature" value="resizable" type="checkbox" /><label for="chkPopupResizable" fckLang="DlgLnkPopResize">Resizable</label><br />
-									<input id="chkPopupLocationBar" name="chkFeature" value="location" type="checkbox" /><label for="chkPopupLocationBar" fckLang="DlgLnkPopLocation">Location
+									<input id="chkPopupResizable" name="chk_feature" value="resizable" type="checkbox" /><label for="chkPopupResizable" fckLang="DlgLnkPopResize">Resizable</label><br />
+									<input id="chkPopupLocationBar" name="chk_feature" value="location" type="checkbox" /><label for="chkPopupLocationBar" fckLang="DlgLnkPopLocation">Location
 										Bar</label><br />
-									<input id="chkPopupManuBar" name="chkFeature" value="menubar" type="checkbox" /><label for="chkPopupManuBar" fckLang="DlgLnkPopMenu">Menu
+									<input id="chkPopupManuBar" name="chk_feature" value="menubar" type="checkbox" /><label for="chkPopupManuBar" fckLang="DlgLnkPopMenu">Menu
 										Bar</label><br />
-									<input id="chkPopupScrollBars" name="chkFeature" value="scrollbars" type="checkbox" /><label for="chkPopupScrollBars" fckLang="DlgLnkPopScroll">Scroll
+									<input id="chkPopupScrollBars" name="chk_feature" value="scrollbars" type="checkbox" /><label for="chkPopupScrollBars" fckLang="DlgLnkPopScroll">Scroll
 										Bars</label>
 								</td>
 								<td></td>
 								<td valign="top" nowrap="nowrap" width="50%">
-									<input id="chkPopupStatusBar" name="chkFeature" value="status" type="checkbox" /><label for="chkPopupStatusBar" fckLang="DlgLnkPopStatus">Status
+									<input id="chkPopupStatusBar" name="chk_feature" value="status" type="checkbox" /><label for="chkPopupStatusBar" fckLang="DlgLnkPopStatus">Status
 										Bar</label><br />
-									<input id="chkPopupToolbar" name="chkFeature" value="toolbar" type="checkbox" /><label for="chkPopupToolbar" fckLang="DlgLnkPopToolbar">Toolbar</label><br />
-									<input id="chkPopupFullScreen" name="chkFeature" value="fullscreen" type="checkbox" /><label for="chkPopupFullScreen" fckLang="DlgLnkPopFullScrn">Full
+									<input id="chkPopupToolbar" name="chk_feature" value="toolbar" type="checkbox" /><label for="chkPopupToolbar" fckLang="DlgLnkPopToolbar">Toolbar</label><br />
+									<input id="chkPopupFullScreen" name="chk_feature" value="fullscreen" type="checkbox" /><label for="chkPopupFullScreen" fckLang="DlgLnkPopFullScrn">Full
 										Screen (IE)</label><br />
-									<input id="chkPopupDependent" name="chkFeature" value="dependent" type="checkbox" /><label for="chkPopupDependent" fckLang="DlgLnkPopDependent">Dependent
+									<input id="chkPopupDependent" name="chk_feature" value="dependent" type="checkbox" /><label for="chkPopupDependent" fckLang="DlgLnkPopDependent">Dependent
 										(Netscape)</label>
 								</td>
 							</tr>

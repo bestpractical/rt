@@ -75,7 +75,7 @@
 % foreach my $key (keys(%hiddens)) {
 <input type="hidden" class="hidden" name="<%$key%>" value="<% defined($hiddens{$key})?$hiddens{$key}:'' %>" />
 % }
-<& /Elements/Refresh, name => 'TicketsRefreshInterval', default => $session {'tickets_refresh_interval'} &>
+<& /Elements/Refresh, name => 'tickets_refresh_interval', default => $session {'tickets_refresh_interval'} &>
 <input type="submit" class="button" value="<&|/l&>Change</&>" />
 </form>
 </div>
@@ -91,7 +91,7 @@
     short_querystring => $short_querystring,
 &>
 
-% $m->callback( query_string => $query_string, Callbackname => 'SearchActions' );
+% $m->callback( query_string => $query_string, Callbackname => 'search_actions' );
 </div>
 <%INIT>
 # Read from user preferences
@@ -159,8 +159,8 @@ my $short_querystring = "?".$m->comp('/Elements/QueryString', query => $query);
 my $RSSQueryString = "?".$m->comp('/Elements/QueryString', query => $query, order => $order, order_by => $order_by);
 my $RSSFeedURL = RT->config->get('WebPath')."/Search/Results.rdf$RSSQueryString";
 
-if ($ARGS{'TicketsRefreshInterval'}) {
-	$session{'tickets_refresh_interval'} = $ARGS{'TicketsRefreshInterval'};
+if ($ARGS{'tickets_refresh_interval'}) {
+	$session{'tickets_refresh_interval'} = $ARGS{'tickets_refresh_interval'};
 }
 
 my %link_rel;

@@ -51,11 +51,11 @@
     current_tab => "Ticket/ModifyAll.html?id=".$Ticket->id, 
     title => _("Ticket #%1 Jumbo update: %2", $Ticket->id, $Ticket->subject) &>
 
-% $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, args_ref => \%ARGS, ticket => $Ticket);
+% $m->callback(Callbackname => 'before_action_list', Actions => \@results, args_ref => \%ARGS, ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post" action="ModifyAll.html" enctype="multipart/form-data">
-% $m->callback( Callbackname => 'FormStart', args_ref => \%ARGS );
+% $m->callback( Callbackname => 'form_start', args_ref => \%ARGS );
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
 
 <&| /Widgets/TitleBox, title => _('Modify ticket # %1', $Ticket->id) &>
@@ -89,7 +89,7 @@
   <tr>
     <td class="label"><&|/l&>update Type</&>:</td>
     <td class="entry">
-      <select name="UpdateType">
+      <select name="update_type">
 % if ($Cancomment) {
         <option value="private" ><&|/l&>comments (Not sent to requestors)</&></option>
 % }
@@ -101,7 +101,7 @@
   </tr>
   <tr>
     <td class="label"><&|/l&>subject</&>:</td>
-    <td class="entry"><input name="Updatesubject" size="60" value="<%$Ticket->subject%>" /></td>
+    <td class="entry"><input name="updatesubject" size="60" value="<%$Ticket->subject%>" /></td>
   </tr>
 % if (my $TxnCFs = $Ticket->transaction_custom_fields) {
 %    while (my $CF = $TxnCFs->next()) {
@@ -116,11 +116,11 @@
 % } # end of if
   <tr>
     <td class="label"><&|/l&>Attach</&>:</td>
-    <td class="entry"><input name="UpdateAttachment" type="file" /></td>
+    <td class="entry"><input name="update_attachment" type="file" /></td>
   </tr>
   <tr>
     <td class="labeltop"><&|/l&>Content</&>:</td>
-    <td class="entry"><& /Elements/MessageBox, name=>"update_content", quote_transaction=>$ARGS{QuoteTransaction} &></td>
+    <td class="entry"><& /Elements/MessageBox, name=>"update_content", quote_transaction=>$ARGS{quote_transaction} &></td>
   </tr>
 </table>
 </&>
@@ -175,8 +175,8 @@ unless ($only_search_for_people or $only_search_for_group ) {
     @cf_results = process_object_custom_field_updates( object => $Ticket, args_ref => \%ARGS);
     @dresults   = process_ticket_dates( ticket_obj => $Ticket, args_ref => \%ARGS);
 
-    if ($ARGS{'UpdateAttachment'}) {
-        my $subject = "$ARGS{'UpdateAttachment'}";
+    if ($ARGS{'update_attachment'}) {
+        my $subject = "$ARGS{'update_attachment'}";
         # since CGI.pm deutf8izes the magic field, we need to add it back.
         Encode::_utf8_on($subject);
         # strip leading directories
@@ -184,10 +184,10 @@ unless ($only_search_for_people or $only_search_for_group ) {
 
         my $attachment = make_mime_entity(
            subject             => $subject,
-           AttachmentFieldname => 'UpdateAttachment'
+           AttachmentFieldname => 'update_attachment'
         );
-        delete $ARGS{'UpdateAttachment'};
-        $ARGS{'UpdateAttachments'}->{ $subject } = $attachment;
+        delete $ARGS{'update_attachment'};
+        $ARGS{'update_attachments'}->{ $subject } = $attachment;
     }
 
     push @results, process_update_message( ticket_obj => $Ticket, args_ref=>\%ARGS );

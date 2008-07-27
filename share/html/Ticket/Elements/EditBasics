@@ -95,7 +95,7 @@
 
   <tr>
       <td class="label"><&|/l&>Priority</&>:</td>
-      <td class="value"><input name="Priority" 
+      <td class="value"><input name="priority" 
         value="<%$ticket_obj->priority || ''|h%>" size="5" /></td>
     </tr>
 
@@ -107,7 +107,7 @@
 
 
 
-% $m->callback( Callbackname => 'EndOfList', ticket_obj => $ticket_obj, %ARGS );
+% $m->callback( Callbackname => 'end_of_list', ticket_obj => $ticket_obj, %ARGS );
 </table>
 
 <%INIT>

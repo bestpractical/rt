@@ -52,24 +52,24 @@
 % my %done;
 % foreach ($tickets, $group_tickets) {
 %   while (my $ticket = $_->next() ) {
-%     next if !$ARGS{'ShowDependent'} and $ticket->has_unresolved_dependencies( type => 'approval' );
+%     next if !$ARGS{'show_dependent'} and $ticket->has_unresolved_dependencies( type => 'approval' );
 %     next if $done{$ticket->id}++; # don't show duplicate tickets
 <& Approve, ticket => $ticket &>
 %   }
 % }
 
 <&| /Widgets/TitleBox, title => _("Search for approvals") &>
-<input type="checkbox" class="checkbox" value="1" name="ShowPending"
-        <%((!$ARGS{'ShowRejected'} && !$ARGS{'ShowResolved'}) ||
-         $ARGS{'ShowPending'})
+<input type="checkbox" class="checkbox" value="1" name="show_pending"
+        <%((!$ARGS{'show_rejected'} && !$ARGS{'show_resolved'}) ||
+         $ARGS{'show_pending'})
         && qq[checked="checked"] |n%> /> <&|/l&>Show pending requests</&><br />
-<input type="checkbox" class="checkbox" value="1" name="ShowResolved" <% defined($ARGS{'ShowResolved'}) && $ARGS{'ShowResolved'} && qq[checked="checked"] |n%> /> <&|/l&>Show approved requests</&><br />
-<input type="checkbox" class="checkbox" value="1" name="ShowRejected" <% defined($ARGS{'ShowRejected'}) && $ARGS{'ShowRejected'} && qq[checked="checked"] |n%> /> <&|/l&>Show denied requests</&><br />
-<input type="checkbox" class="checkbox" value="1" name="ShowDependent" <% defined($ARGS{'ShowDependent'}) && $ARGS{'ShowDependent'} && qq[checked="checked"] |n%> /> <&|/l&>Show requests awaiting other approvals</&><br />
+<input type="checkbox" class="checkbox" value="1" name="show_resolved" <% defined($ARGS{'show_resolved'}) && $ARGS{'show_resolved'} && qq[checked="checked"] |n%> /> <&|/l&>Show approved requests</&><br />
+<input type="checkbox" class="checkbox" value="1" name="show_rejected" <% defined($ARGS{'show_rejected'}) && $ARGS{'show_rejected'} && qq[checked="checked"] |n%> /> <&|/l&>Show denied requests</&><br />
+<input type="checkbox" class="checkbox" value="1" name="show_dependent" <% defined($ARGS{'show_dependent'}) && $ARGS{'show_dependent'} && qq[checked="checked"] |n%> /> <&|/l&>Show requests awaiting other approvals</&><br />
 
-<&|/l,"<input size='15' value='".($Created_before->unix > 0 &&$Created_before->iso)."' name='CreatedBefore' id='CreatedBefore' />"&>Only show approvals for requests Created before %1</&><br />
+<&|/l,"<input size='15' value='".($Created_before->unix > 0 &&$Created_before->iso)."' name='created_before' id='CreatedBefore' />"&>Only show approvals for requests Created before %1</&><br />
 
-<&|/l, "<input size='15' value='".( $Created_after->unix >0 && $Created_after->iso)."' name='CreatedAfter' id='CreatedAfter' />"&>Only show approvals for requests Created after %1</&>
+<&|/l, "<input size='15' value='".( $Created_after->unix >0 && $Created_after->iso)."' name='created_after' id='CreatedAfter' />"&>Only show approvals for requests Created after %1</&>
 </&>
 
 <%init>
@@ -86,24 +86,24 @@ my $Created_after = RT::Date->new();
 foreach ($tickets, $group_tickets) {
     $_->limit( column      => 'type', value => 'approval' );
 
-    if ( $ARGS{'ShowResolved'} ) {
+    if ( $ARGS{'show_resolved'} ) {
 	$_->limit_status( value => 'resolved' );
     }
-    if ( $ARGS{'ShowRejected'} ) {
+    if ( $ARGS{'show_rejected'} ) {
 	$_->limit_status( value => 'rejected' );
     }
-    if ( $ARGS{'ShowPending'} || ( !$ARGS{'ShowRejected'} && !$ARGS{'resolved'} ) ) {
+    if ( $ARGS{'show_pending'} || ( !$ARGS{'show_rejected'} && !$ARGS{'resolved'} ) ) {
 	$_->limit_status( value => 'open' );
 	$_->limit_status( value => 'new' );
 	$_->limit_status( value => 'stalled' );
     }
 
-    if ( $ARGS{'CreatedBefore'} ) {
-	$Created_before->set( format => 'unknown', value => $ARGS{'CreatedBefore'} );
+    if ( $ARGS{'created_before'} ) {
+	$Created_before->set( format => 'unknown', value => $ARGS{'created_before'} );
 	$_->limit_created( operator => "<=", value => $Created_before->iso );
     }
-    if ( $ARGS{'CreatedAfter'} ) {
-	$Created_after->set( format => 'unknown', value => $ARGS{'CreatedAfter'} );
+    if ( $ARGS{'created_after'} ) {
+	$Created_after->set( format => 'unknown', value => $ARGS{'created_after'} );
 	$_->limit_created( operator => ">=", value => $Created_after->iso );
     }
 }

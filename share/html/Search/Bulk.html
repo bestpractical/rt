@@ -74,7 +74,7 @@
     class => 'RT::Model::TicketCollection'
    &>
 
-% $m->callback(Callbackname => 'AfterTicketList', args_ref => \%ARGS);
+% $m->callback(Callbackname => 'after_ticket_list', args_ref => \%ARGS);
 
 <hr />
 
@@ -88,17 +88,17 @@
 <tr><td class="label"> <&|/l&>Make Owner</&>: </td>
 <td class="value"> <& /Elements/SelectOwner, name => "owner" &> (<input type="checkbox" class="checkbox" name="force_owner_change" /> <&|/l&>Force change</&>) </td></tr>
 <tr><td class="label"> <&|/l&>add Requestor</&>: </td>
-<td class="value"> <input name="AddRequestor" size="20" /> </td></tr>
+<td class="value"> <input name="add_requestor" size="20" /> </td></tr>
 <tr><td class="label"> <&|/l&>Remove Requestor</&>: </td>
-<td class="value"> <input name="DeleteRequestor" size="20" /> </td></tr>
+<td class="value"> <input name="delete_requestor" size="20" /> </td></tr>
 <tr><td class="label"> <&|/l&>add Cc</&>: </td>
-<td class="value"> <input name="AddCc" size="20" /> </td></tr>
+<td class="value"> <input name="add_cc" size="20" /> </td></tr>
 <tr><td class="label"> <&|/l&>Remove Cc</&>: </td>
-<td class="value"> <input name="DeleteCc" size="20" /> </td></tr>
+<td class="value"> <input name="delete_cc" size="20" /> </td></tr>
 <tr><td class="label"> <&|/l&>add AdminCc</&>: </td>
-<td class="value"> <input name="AddAdminCc" size="20" /> </td></tr>
+<td class="value"> <input name="add_admin_cc" size="20" /> </td></tr>
 <tr><td class="label"> <&|/l&>Remove AdminCc</&>: </td>
-<td class="value"> <input name="DeleteAdminCc" size="20" /> </td></tr>
+<td class="value"> <input name="delete_admin_cc" size="20" /> </td></tr>
 </table>
 </td>
 <td valign="top">
@@ -106,7 +106,7 @@
 <tr><td class="label"> <&|/l&>Make subject</&>: </td>
 <td class="value"> <input name="subject" size="20" /> </td></tr>
 <tr><td class="label"> <&|/l&>Make priority</&>: </td>
-<td class="value"> <input name="Priority" size="4" /> </td></tr>
+<td class="value"> <input name="priority" size="4" /> </td></tr>
 <tr><td class="label"> <&|/l&>Make queue</&>: </td>
 <td class="value"> <& /Elements/SelectQueue, name => "queue" &> </td></tr>
 <tr><td class="label"> <&|/l&>Make Status</&>: </td>
@@ -130,12 +130,12 @@
 <&| /Widgets/TitleBox, title => _('Add comments or replies to selected tickets') &>
 <table>
 <tr><td align="right"><&|/l&>update Type</&>:</td>
-<td><select name="UpdateType">
+<td><select name="update_type">
   <option value="private" ><&|/l&>comments (not sent to requestors)</&></option>
 <option value="response" ><&|/l&>Reply to requestors</&></option>
 </select> 
 </td></tr>
-<tr><td align="right"><&|/l&>subject</&>:</td><td> <input name="Updatesubject" size="60" value="" /></td></tr>
+<tr><td align="right"><&|/l&>subject</&>:</td><td> <input name="updatesubject" size="60" value="" /></td></tr>
 % while (my $CF = $TxnCFs->next()) {
 <tr>
 <td align="right"><% $CF->name %>:</td>
@@ -145,7 +145,7 @@
     &><em><% $CF->friendly_type %></em></td>
 </td></tr>
 % } # end if while
- <tr><td align="right"><&|/l&>Attach</&>:</td><td><input name="UpdateAttachment" type="file" /></td></tr>
+ <tr><td align="right"><&|/l&>Attach</&>:</td><td><input name="update_attachment" type="file" /></td></tr>
  <tr><td class="labeltop"><&|/l&>Message</&>:</td><td>
  <& /Elements/MessageBox, name=>"update_content"&>
  </td></tr>

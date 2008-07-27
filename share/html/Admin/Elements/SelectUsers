@@ -62,5 +62,5 @@ $users->limit_to_privileged();
 
 </%INIT>
 <%ARGS>
-$name => 'Users'
+$name => 'users'
 </%ARGS>

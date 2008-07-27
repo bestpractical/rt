@@ -53,8 +53,8 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%RT->config->get('WebPath')%>/Dashboards/Subscription.html" method="post" enctype="multipart/form-data" name="SubscribeDashboard">
-<input type="hidden" class="hidden" name="DashboardId" value="<% $fields{'DashboardId'} %>" />
+<form action="<%RT->config->get('WebPath')%>/Dashboards/Subscription.html" method="post" enctype="multipart/form-data" name="subscribe_dashboard">
+<input type="hidden" class="hidden" name="dashboard_id" value="<% $fields{'DashboardId'} %>" />
 <table width="100%" border="0">
 <tr>
 
@@ -100,29 +100,29 @@
 <tr><td class="label">
 <&|/l&>Frequency</&>:
 </td><td class="value">
-<input type="radio" name="Frequency" value="daily" <% $fields{'Frequency'} eq 'daily' ? 'checked="checked"' : "" %>>
+<input type="radio" name="frequency" value="daily" <% $fields{'Frequency'} eq 'daily' ? 'checked="checked"' : "" %>>
     daily
 </input><br />
 
-<input type="radio" name="Frequency" value="weekly"<% $fields{'Frequency'} eq 'weekly' ? 'checked="checked"' : "" %>>
+<input type="radio" name="frequency" value="weekly"<% $fields{'Frequency'} eq 'weekly' ? 'checked="checked"' : "" %>>
 weekly</input>, on
-<select name="Dow">
+<select name="dow">
 %   for my $dow (qw/Monday Tuesday Wednesday Thursday Friday Saturday Sunday/) {
     <option value="<% $dow %>" <% $fields{'Dow'} eq $dow ? 'selected="selected"' : '' %>><% loc($dow) %></option>
 %   }
 </select>
 <br />
 
-<input type="radio" name="Frequency" value="monthly"<% $fields{'Frequency'} eq 'monthly' ? 'checked="checked"' : "" %>>
+<input type="radio" name="frequency" value="monthly"<% $fields{'Frequency'} eq 'monthly' ? 'checked="checked"' : "" %>>
 monthly</input> , on day
-<select name="Dom">
+<select name="dom">
 %   for my $dom (1..31) {
     <option value="<% $dom %>" <% $fields{'Dom'} == $dom ? 'selected="selected"' : '' %>><% loc($dom) %></option>
 %   }
 </select>
 <br />
 
-<input type="radio" name="Frequency" value="never" <% $fields{'Frequency'} eq 'never' ? 'checked="checked"' : "" %>>
+<input type="radio" name="frequency" value="never" <% $fields{'Frequency'} eq 'never' ? 'checked="checked"' : "" %>>
     never
 </input>
 
@@ -130,7 +130,7 @@ monthly</input> , on day
 <tr><td class="label">
 <&|/l&>Hour</&>:
 </td><td class="value">
-<select name="Hour">
+<select name="hour">
 % for my $hour (0..23) {
 %     my $formatted = sprintf '%02d:00', $hour;
 %     my $selected = $formatted eq $fields{'Hour'}
@@ -145,7 +145,7 @@ monthly</input> , on day
 <tr><td class="label">
 <&|/l&>Rows</&>:
 </td><td class="value">
-<select name="Rows">
+<select name="rows">
 %   for my $rows (1, 2, 5, 10, 15, 20, 25, 50, 75, 100, 0) {
     <option value="<% $rows %>" <% $fields{'Rows'} eq $rows ? 'selected="selected"' : '' %>><% loc($rows || 'Unlimited') %></option>
 %   }
@@ -158,9 +158,9 @@ monthly</input> , on day
 </table>
 
 % if ($SubscriptionObj->id) {
-    <& /Elements/Submit, name => "Save", label => loc('Save Changes') &>
+    <& /Elements/Submit, name => "save", label => loc('Save Changes') &>
 % } else {
-    <& /Elements/Submit, name => "Save", label => loc('Subscribe') &>
+    <& /Elements/Submit, name => "save", label => loc('Subscribe') &>
 % }
 </form>
 
@@ -187,7 +187,7 @@ for my $sub (Jifty->web->current_user->user_object->attributes->named('Subscript
 
 $dashboard_id = $SubscriptionObj->id
              ? $SubscriptionObj->sub_value('DashboardId')
-             : $ARGS{'DashboardId'};
+             : $ARGS{'dashboard_id'};
 
 ($val, $msg) = $DashboardObj->load_by_id($dashboard_id);
 $val || abort(loc("Couldn't load dashboard %1: %2.", $dashboard_id, $msg));
@@ -217,7 +217,7 @@ for my $field (keys %fields) {
 
 
 # this'll be defined on submit
-if (defined $ARGS{Save}) {
+if (defined $ARGS{save}) {
     # update
     if ($SubscriptionObj->id) {
         $dashboard_id = delete $fields{'DashboardId'}; # immutable
@@ -237,7 +237,7 @@ if (defined $ARGS{Save}) {
             unless $DashboardObj->current_user_can_subscribe;
 
         my ($val, $msg) = $SubscriptionObj->create(
-            name        => 'Subscription',
+            name        => 'subscription',
             description => 'Subscription to dashboard ' . $dashboard_id,
             ContentType => 'storable',
             Object      => Jifty->web->current_user->user_object,

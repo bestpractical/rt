@@ -112,7 +112,7 @@ my $ProcessedSearchArg = $SearchArg;
 $ProcessedSearchArg = { %$SearchArg, %Override } if keys %Override;
 $m->callback(
     %ARGS,
-    Callbackname  => 'ModifySearch',
+    Callbackname  => 'modify_search',
     OriginalSearch => $SearchArg,
     Search         => $ProcessedSearchArg,
 );

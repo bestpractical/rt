@@ -53,9 +53,9 @@
     title => _("Create a new ticket"),
     actions => $actions &>
 <& /Elements/ListActions, actions => \@results &>
-<form action="<% RT->config->get('WebPath') %>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
+<form action="<% RT->config->get('WebPath') %>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="ticket_create">
 <input type="hidden" class="hidden" name="id" value="new" />
-% $m->callback( Callbackname => 'FormStart', args_ref => \%ARGS );
+% $m->callback( Callbackname => 'form_start', args_ref => \%ARGS );
 % if ($gnupg_widget) {
 <& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 % }
@@ -100,7 +100,7 @@
 <td class="label">
 <&|/l&>Admin Cc</&>:
 </td>
-<td class="value" colspan="3"><& /Elements/EmailInput, name => 'admin_cc', size => '40', default => $ARGS{AdminCc} &></td>
+<td class="value" colspan="3"><& /Elements/EmailInput, name => 'admin_cc', size => '40', default => $ARGS{admin_cc} &></td>
 <td class="comment" colspan="2"><i><font size="-2">
 <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)</&></font></i>
 </td>
@@ -145,8 +145,8 @@
 <&|/l&>Attach file</&>:
 </td>
 <td class="value" colspan="5">
-<input type="file" name="Attach" />
-<input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>add More Files</&>" />
+<input type="file" name="attach" />
+<input type="submit" class="button" name="add_more_attach" value="<&|/l&>add More Files</&>" />
 </td>
 </tr>
 
@@ -159,9 +159,9 @@
 <tr>
 <td colspan="6">
 <&|/l&>describe the issue below</&>:<br />
-<& /Elements/Callback, _Callbackname => 'BeforeMessageBox', queue_obj => $queue_obj, %ARGS &>
-% if (exists $ARGS{Content}) {
-<& /Elements/MessageBox, default => $ARGS{Content}, include_signature => 0 &>
+<& /Elements/Callback, _Callbackname => 'before_message_box', queue_obj => $queue_obj, %ARGS &>
+% if (exists $ARGS{content}) {
+<& /Elements/MessageBox, default => $ARGS{content}, include_signature => 0 &>
 % } else {
 <& /Elements/MessageBox, quote_transaction => $quote_transaction &>
 %}
@@ -213,7 +213,7 @@
 
 <table>
 <tr><td class="label"><&|/l&>Starts</&>:</td><td><& /Elements/SelectDate, name => "starts", default => $ARGS{starts} || '' &></td></tr>
-<tr><td class="label"><&|/l&>Due</&>:</td><td><& /Elements/SelectDate, name => "Due", default => $ARGS{Due} || '' &></td></tr>
+<tr><td class="label"><&|/l&>Due</&>:</td><td><& /Elements/SelectDate, name => "due", default => $ARGS{due} || '' &></td></tr>
 </table>
 </&>
 </div>
@@ -344,21 +344,21 @@ foreach my $key (keys %ARGS) {
 }
 
 # {{{ store the uploaded attachment in session
-if ($ARGS{'Attach'}) {			# attachment?
+if ($ARGS{'attach'}) {			# attachment?
     $session{'Attachments'} = {} unless defined $session{'Attachments'};
 
-    my $subject = "$ARGS{'Attach'}";
+    my $subject = "$ARGS{'attach'}";
 
     # strip leading directories
     $subject =~ s#^.*[\\/]##;
 
     my $attachment = make_mime_entity(
         subject             => $subject,
-        AttachmentFieldname => 'Attach'
+        AttachmentFieldname => 'attach'
     );
 
     $session{'Attachments'} = { %{$session{'Attachments'} || {}},
-				$ARGS{'Attach'} => $attachment };
+				$ARGS{'attach'} => $attachment };
 
 }
 # }}}
@@ -377,7 +377,7 @@ $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
 );
 
 
-if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' ) {
+if ( !exists $ARGS{'add_more_attach'} && ($ARGS{'id'}||'') eq 'new' ) {
     my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
         self      => $gnupg_widget,
         operation => 'create',
@@ -387,7 +387,7 @@ if ( !exists $ARGS{'AddMoreAttach'} && ($ARGS{'id'}||'') eq 'new' ) {
 }
 
 
-if ((!exists $ARGS{'AddMoreAttach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} eq 'new')) { # new ticket?
+if ((!exists $ARGS{'add_more_attach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} eq 'new')) { # new ticket?
     if ( $ValidCFs && !$checks_failure ) {
         $m->comp('Display.html', %ARGS);
         Jifty->log->fatal("After display call; error is $@");

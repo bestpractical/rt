@@ -53,7 +53,7 @@ $chart_style => 'bars'
 $description => undef
 </%args>
 <%init>
-$ARGS{SecondaryGroupBy} ||= '';
+$ARGS{secondary_group_by} ||= '';
 
 my $title = _( "Search results grouped by %1", $primary_group_by );
 

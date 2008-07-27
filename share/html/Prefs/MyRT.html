@@ -56,7 +56,7 @@
 <& /Widgets/SelectionBox:header, nojs => 1 &>
 
 <form method="post" action="MyRT.html">
-<input type="hidden" name="Reset" value="1" />
+<input type="hidden" name="reset" value="1" />
 <input type="submit" class="button" value="<% _('Reset to default') %>">
 </form>
 
@@ -74,8 +74,8 @@
 <&|/Widgets/TitleBox, title => _('Options'), bodyclass => "" &>
 <form method="post" action="MyRT.html">
 <&|/l&>Rows per box</&>:
-<input name="SummaryRows" value="<% $ARGS{SummaryRows} %>" />
-<input type="submit" class="button" name="UpdateSummaryRows" value="<% _('Save') %>" />
+<input name="summary_rows" value="<% $ARGS{summary_rows} %>" />
+<input type="submit" class="button" name="update_summary_rows" value="<% _('Save') %>" />
 </form>
 </&>
 
@@ -84,19 +84,19 @@ my @results;
 my $title = _("Customize").' '._("RT at a glance");
 my $user = Jifty->web->current_user->user_object;
 
-if ( $ARGS{'UpdateSummaryRows'} ) {
-    unless ( $ARGS{SummaryRows} && int $ARGS{SummaryRows} > 0 ) {
+if ( $ARGS{'update_summary_rows'} ) {
+    unless ( $ARGS{summary_rows} && int $ARGS{summary_rows} > 0 ) {
         push @results, _("Illegal '%1' preference value.", _('summary rows'));
-        $ARGS{SummaryRows} = 0;
+        $ARGS{summary_rows} = 0;
     }
     else {
-        my ($ok, $msg) = $user->set_preferences( 'SummaryRows', int $ARGS{SummaryRows} );
+        my ($ok, $msg) = $user->set_preferences( 'SummaryRows', int $ARGS{summary_rows} );
         push @results, $ok ? _('Preferences saved for %1.', _('summary rows')) : $msg;
     }
 }
-$ARGS{'SummaryRows'} ||= $user->preferences('SummaryRows', RT->config->get('DefaultSummaryRows'));
+$ARGS{'summary_rows'} ||= $user->preferences('SummaryRows', RT->config->get('DefaultSummaryRows'));
 
-if ($ARGS{Reset}) {
+if ($ARGS{reset}) {
     my ($ok, $msg) = $user->set_preferences('HomepageSettings', {});
     push @results, $ok ? _('Preferences saved.') : $msg;
     delete $session{'my_rt_portlets'};

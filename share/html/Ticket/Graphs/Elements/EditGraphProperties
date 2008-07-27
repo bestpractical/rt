@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title => loc('Graph Properties') &>
 
-<% loc('Direction') %> <select name="Direction">
+<% loc('Direction') %> <select name="direction">
 <option value="TB" <% ($direction||'TB') eq 'TB'? 'selected="selected"': '' |n %>><% loc('top to bottom') %></option>
 <option value="LR" <% ($direction||'TB') eq 'LR'? 'selected="selected"': '' |n %>><% loc('left to right') %></option>
 %# XXX: not supported by GraphViz perl module
@@ -55,13 +55,13 @@
 %#<option value="RL" <% ($direction||'TB') eq 'RL'? 'selected="selected"': '' |n %>><% loc('right to left') %></option>
 </select><br />
 
-<% loc('Main type of links') %> <select name="LeadingLink">
+<% loc('Main type of links') %> <select name="leading_link">
 % foreach ( @link_types ) {
 <option value="<% $_ %>" <% ($leading_link||'Members') eq $_? 'selected="selected"': '' |n %>><% loc($_) %></option>
 % }
 </select>
 
-<% loc('maximum depth') %> <select name="MaxDepth">
+<% loc('maximum depth') %> <select name="max_depth">
 <option value="0"><% loc('Unlimit') %></option>
 % foreach ( 1..6 ) {
 <option value="<% $_ %>" <% ($max_depth||0) == $_? 'selected="selected"': '' %>><% $_ %></option>
@@ -72,14 +72,14 @@
 % foreach my $type ( @link_types ) {
 % my $checked = '';
 % $checked = 'checked="checked"' if grep $type eq $_, @show_links;
-<input type="checkbox" name="ShowLinks" value="<% $type %>" <% $checked |n %> /><% loc($type) %>
+<input type="checkbox" name="show_links" value="<% $type %>" <% $checked |n %> /><% loc($type) %>
 % }
 <br />
 
 % my @properties = RT::Graph::Tickets->ticket_properties( current_user => Jifty->web->current_user );
 
 Fill boxes with color using:
-<select name="FillUsing">
+<select name="fill_using">
 <option value=""><% 'nothing' %></option>
 <%PERL>
 my @tmp = @properties;
@@ -118,7 +118,7 @@ for my $i ( 1..($max_depth||6) ) {
 }
 </%PERL>
 
-<& /Elements/Submit, label => loc('Update Graph'), name => 'Update' &>
+<& /Elements/Submit, label => loc('Update Graph'), name => 'update' &>
 
 </&>
 

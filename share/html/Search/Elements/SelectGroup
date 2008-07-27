@@ -62,6 +62,6 @@ $groups->limit(column => 'domain', operator => '=', value => $domain);
 <%ARGS>
 $allow_null => 1
 $default=> ''
-$name => 'Group'
+$name => 'group'
 $domain => 'UserDefined';
 </%ARGS>

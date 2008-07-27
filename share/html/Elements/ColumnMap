@@ -128,7 +128,7 @@ my $COLUMN_MAP = {
             my $arg = $m->request_args->{ $name };
             my $checked = '';
             $checked = 'checked="checked"' if $arg && $arg == $id;
-            return \qq{<input type="radio" name="SelectedTicket" value="$id" $checked />};
+            return \qq{<input type="radio" name="selected_ticket" value="$id" $checked />};
         },
     },
     (map {
@@ -140,7 +140,7 @@ my $COLUMN_MAP = {
 
 </%ONCE>
 <%INIT>
-$m->callback( COLUMN_MAP => $COLUMN_MAP, Callbackname => 'Once', CallbackOnce => 1 );
+$m->callback( COLUMN_MAP => $COLUMN_MAP, Callbackname => 'once', CallbackOnce => 1 );
 $m->callback( COLUMN_MAP => $COLUMN_MAP );
 
 # first deal with class specific things

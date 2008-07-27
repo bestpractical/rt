@@ -66,7 +66,7 @@ while ( my $requestor = $people->next ) {
 &>
 
 %# Additional information about this user.  Empty by default.
-% $m->callback( requestor => $requestor, %ARGS, Callbackname => 'AboutThisUser' );
+% $m->callback( requestor => $requestor, %ARGS, Callbackname => 'about_this_user' );
 
 <&|/l&>comments about this user</&>:<br />
 <b><% ($requestor->comments || _("No comment entered about this user")) %></b><br />

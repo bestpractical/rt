@@ -51,11 +51,11 @@
     current_tab => "Ticket/ModifyDates.html?id=".$ticket_obj->id, 
     title => _('Modify dates for #%1', $ticket_obj->id) &> 
 
-% $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, args_ref => \%ARGS, ticket => $ticket_obj);
+% $m->callback(Callbackname => 'before_action_list', Actions => \@results, args_ref => \%ARGS, ticket => $ticket_obj);
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post" action="ModifyDates.html">
-% $m->callback( Callbackname => 'FormStart', args_ref => \%ARGS );
+% $m->callback( Callbackname => 'form_start', args_ref => \%ARGS );
 <input type="hidden" class="hidden" name="id" value="<%$ticket_obj->id%>" />
 <&| /Widgets/TitleBox,title => _('Modify dates for ticket # %1', $ticket_obj->id), class=> 'ticket-info-dates' &>
 <& Elements/EditDates, ticket_obj => $ticket_obj &>

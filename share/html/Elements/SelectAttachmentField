@@ -52,5 +52,5 @@
 <option value="Filename"><&|/l&>Filename</&></option>
 </select>
 <%ARGS>
-$name => 'AttachmentField'
+$name => 'attachment_field'
 </%ARGS>

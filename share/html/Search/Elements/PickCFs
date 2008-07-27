@@ -68,7 +68,7 @@ foreach my $id (keys %cfqueues) {
 }
 $CustomFields->limit_to_global;
 $m->callback(
-    Callbackname => 'MassageCustomFields',
+    Callbackname => 'massage_custom_fields',
     CustomFields => $CustomFields,
 );
 

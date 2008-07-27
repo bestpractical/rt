@@ -58,7 +58,7 @@
 
 <form method="post" action="MyRT.html">
 <input type="hidden" name="id" value="<% $id %>" />
-<input type="hidden" name="Reset" value="1" />
+<input type="hidden" name="reset" value="1" />
 <input type="submit" class="button" value="<%_('Reset to default')%>">
 </form>
 
@@ -78,7 +78,7 @@ my $user_object = RT::Model::User->new();
 $user_object->load($id) || abort("Couldn't load user '$id'");
 my $title = _("RT at a glance for the user %1", $user_object->name);
 
-if ($ARGS{Reset}) {
+if ($ARGS{reset}) {
     my ($ok, $msg) = $user_object->set_preferences('HomepageSettings', {});
     push @actions, $ok ? _('Preferences saved for user %1.', $user_object->name) : $msg;
 }

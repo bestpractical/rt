@@ -92,7 +92,7 @@ $groups->limit(column => 'domain', operator => '=', value => 'UserDefined');
 
 </%INIT>
 <%ARGS>
-$name => 'Users'
+$name => 'users'
 $show => 'All'
 $group
 $skip_users => {}

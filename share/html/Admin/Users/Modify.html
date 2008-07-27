@@ -121,20 +121,20 @@
 <&|/l&>New password</&>:
 </td>
 <td align="left">
-<input type="password" name="Pass1" autocomplete="off" />
+<input type="password" name="pass1" autocomplete="off" />
 </td>
 </tr>
 <tr><td align="right">
 <&|/l&>Retype password</&>:
 </td>
 <td>
-<input type="password" name="Pass2" autocomplete="off" />
+<input type="password" name="pass2" autocomplete="off" />
 </td>
 </tr>
 </table>
 % }
 </&>
-% $m->callback( %ARGS, Callbackname => 'LeftColumnBottom', user_object => $user_object );
+% $m->callback( %ARGS, Callbackname => 'left_column_bottom', user_object => $user_object );
 </td>
 
 <td valign="top" class="boxcontainer">
@@ -148,34 +148,34 @@
 <tr><td align="right">
 <&|/l&>Address1</&>: 
 </td><td>
-<input name="Address1" value="<%$user_object->address1%>" />
+<input name="address1" value="<%$user_object->address1%>" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Address2</&>: 
 </td><td>
-<input name="Address2" value="<%$user_object->address2%>" />
+<input name="address2" value="<%$user_object->address2%>" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>City</&>: 
 </td><td>
-<input name="City" value="<%$user_object->city%>" size="14" />
+<input name="city" value="<%$user_object->city%>" size="14" />
 
 </td></tr>
 <tr><td align="right">
 <&|/l&>State</&>: 
 </td><td>
-<input name="State" value="<%$user_object->state%>" size="3" />
+<input name="state" value="<%$user_object->state%>" size="3" />
 
 </td></tr>
 <tr><td align="right">
 <&|/l&>Zip</&>: 
 </td><td>
-<input name="Zip" value="<%$user_object->zip%>" size="9" />
+<input name="zip" value="<%$user_object->zip%>" size="9" />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Country</&>: 
 </td><td>
-<input name="Country" value="<%$user_object->country%>" />
+<input name="country" value="<%$user_object->country%>" />
 </td></tr>
 </table>
 </&>
@@ -185,22 +185,22 @@
 <tr><td align="right">
 <&|/l&>Residence</&>: 
 </td><td>
-<input name="HomePhone" value="<%$user_object->home_phone%>" size="13" /><br />
+<input name="home_phone" value="<%$user_object->home_phone%>" size="13" /><br />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Work</&>: 
 </td><td>
-<input name="WorkPhone" value="<%$user_object->work_phone%>" size="13" /><br />
+<input name="work_phone" value="<%$user_object->work_phone%>" size="13" /><br />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Mobile</&>: 
 </td><td>
-<input name="MobilePhone" value="<%$user_object->mobile_phone%>" size="13" /><br />
+<input name="mobile_phone" value="<%$user_object->mobile_phone%>" size="13" /><br />
 </td></tr>
 <tr><td align="right">
 <&|/l&>Pager</&>: 
 </td><td>
-<input name="PagerPhone" value="<%$user_object->pager_phone%>" size="13" /><br />
+<input name="pager_phone" value="<%$user_object->pager_phone%>" size="13" /><br />
 </td>
 </tr>
 </table>
@@ -222,7 +222,7 @@
 % }
 </table>
 </&>
-% $m->callback( %ARGS, Callbackname => 'RightColumnBottom', user_object => $user_object );
+% $m->callback( %ARGS, Callbackname => 'right_column_bottom', user_object => $user_object );
 </td></tr>
 <tr>
 <td colspan="2">
@@ -232,7 +232,7 @@
 %if (!$create && $user_object->privileged) {
 <br />
 <&| /Widgets/TitleBox, title => _('Signature') &>
-<textarea class="signature" cols="80" rows="5" name="Signature" wrap="hard"><%$user_object->signature%></textarea>
+<textarea class="signature" cols="80" rows="5" name="signature" wrap="hard"><%$user_object->signature%></textarea>
 </&>
 % }
 
@@ -265,7 +265,7 @@ else {
 	    email          => $ARGS{'email'},
 	    name                  => $ARGS{'name'},
 	    comments              => $ARGS{'comments'},
-	    Signature             => $ARGS{'Signature'},
+	    Signature             => $ARGS{'signature'},
 	    email          => $ARGS{'email'},
 	    freeform_contact_info   => $ARGS{'freeform_contact_info'},
 	    organization          => $ARGS{'organization'},
@@ -274,21 +274,21 @@ else {
 	    lang                  => $ARGS{'lang'},
 	    email_encoding         => $ARGS{'email_encoding'},
 	    web_encoding           => $ARGS{'web_encoding'},
-	    ExternalContactInfoId => $ARGS{'ExternalContactInfoId'},
-	    ContactInfoSystem     => $ARGS{'ContactInfoSystem'},
+	    ExternalContactInfoId => $ARGS{'external_contact_info_id'},
+	    ContactInfoSystem     => $ARGS{'contact_info_system'},
 	    gecos                 => $ARGS{'gecos'},
-	    ExternalAuthId        => $ARGS{'ExternalAuthId'},
+	    ExternalAuthId        => $ARGS{'external_auth_id'},
 	    auth_system            => $ARGS{'auth_system'},
-	    HomePhone             => $ARGS{'HomePhone'},
-	    WorkPhone             => $ARGS{'WorkPhone'},
-	    MobilePhone           => $ARGS{'MobilePhone'},
-	    PagerPhone            => $ARGS{'PagerPhone'},
-	    Address1              => $ARGS{'Address1'},
-	    Address2              => $ARGS{'Address2'},
-	    City                  => $ARGS{'City'},
-	    State                 => $ARGS{'State'},
-	    Zip                   => $ARGS{'Zip'},
-	    Country               => $ARGS{'Country'},
+	    HomePhone             => $ARGS{'home_phone'},
+	    WorkPhone             => $ARGS{'work_phone'},
+	    MobilePhone           => $ARGS{'mobile_phone'},
+	    PagerPhone            => $ARGS{'pager_phone'},
+	    Address1              => $ARGS{'address1'},
+	    Address2              => $ARGS{'address2'},
+	    City                  => $ARGS{'city'},
+	    State                 => $ARGS{'state'},
+	    Zip                   => $ARGS{'zip'},
+	    Country               => $ARGS{'country'},
 	    privileged           => $ARGS{'privileged'},
 	    disabled            => ($ARGS{'enabled'} ? 0 : 1)
 	);

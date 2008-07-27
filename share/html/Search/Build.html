@@ -74,7 +74,7 @@
 &>
 
 <form method="post" action="Build.html" name="build_query">
-<input type="hidden" class="hidden" name="SavedSearchId" value="<% $saved_search{'id'} %>" />
+<input type="hidden" class="hidden" name="saved_search_id" value="<% $saved_search{'id'} %>" />
 <input type="hidden" class="hidden" name="query" value="<% $query{'query'} %>" />
 <input type="hidden" class="hidden" name="format" value="<% $query{'format'} %>" />
 
@@ -84,7 +84,7 @@
 <div id="pick-criteria">
     <& Elements/PickCriteria, query => $query{'Query'}, cfqueues => $queues &>
 </div>
-<& /Elements/Submit,  label => _('Add these terms'), name => 'AddClause'&>
+<& /Elements/Submit,  label => _('Add these terms'), name => 'add_clause'&>
 <& /Elements/Submit, label => _('Add these terms and Search'), name => 'do_search'&>
 
 

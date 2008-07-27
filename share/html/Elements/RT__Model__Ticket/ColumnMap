@@ -328,8 +328,8 @@ else {
 }
 </%ONCE>
 <%init>
-$m->callback( COLUMN_MAP => $COLUMN_MAP, Callbackname => 'Once', CallbackOnce => 1 );
+$m->callback( COLUMN_MAP => $COLUMN_MAP, Callbackname => 'once', CallbackOnce => 1 );
 # backward compatibility
-$m->callback( COLUMN_MAP => $COLUMN_MAP, Callbackname => 'ColumnMap' );
+$m->callback( COLUMN_MAP => $COLUMN_MAP, Callbackname => 'column_map' );
 return get_column_map_entry( Map => $COLUMN_MAP, name => $name, Attribute => $attr );
 </%init>

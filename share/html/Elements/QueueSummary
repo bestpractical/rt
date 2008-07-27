@@ -79,7 +79,7 @@ else {
     $Queues->find_all_rows();
     @queues = grep $queue_filter->($_), @{$Queues->items_array_ref};
 
-    $m->callback( Callbackname => 'Filter', Queues => \@queues );
+    $m->callback( Callbackname => 'filter', Queues => \@queues );
 
     @queues = map { {
         id          => $_->id,

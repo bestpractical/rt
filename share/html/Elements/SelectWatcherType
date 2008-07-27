@@ -67,5 +67,5 @@ else {
 $allow_null => 1
 $default=>undef
 $scope => 'ticket'
-$name => 'WatcherType'
+$name => 'watcher_type'
 </%ARGS>

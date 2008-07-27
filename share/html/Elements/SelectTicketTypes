@@ -52,7 +52,7 @@
 </select>
 
 <%ARGS>
-$name => 'TickType'
+$name => 'tick_type'
 $default => undef
 @types => qw(Approval Ticket)
 </%ARGS>

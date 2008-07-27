@@ -122,8 +122,8 @@ if ( $ARGS{'q'} ) {
     RT::Interface::Web::redirect(RT->config->get('WebURL')."Search/Simple.html?q=".$m->interp->apply_escapes($ARGS{q}));
 }
 
-if ($ARGS{'HomeRefreshInterval'}) {
-	$session{'home_refresh_interval'} = $ARGS{'HomeRefreshInterval'};
+if ($ARGS{'home_refresh_interval'}) {
+	$session{'home_refresh_interval'} = $ARGS{'home_refresh_interval'};
 }
 
 my $actions;

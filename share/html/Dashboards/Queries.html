@@ -55,9 +55,9 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%RT->config->get('WebPath')%>/Dashboards/Queries.html" method="post" enctype="multipart/form-data" name="DashboardQueries">
+<form action="<%RT->config->get('WebPath')%>/Dashboards/Queries.html" method="post" enctype="multipart/form-data" name="dashboard_queries">
 <input type="hidden" class="hidden" name="id" value="<%$Dashboard->id%>" />
-<input type="hidden" class="hidden" name="Privacy" value="<%$Dashboard->privacy%>" />
+<input type="hidden" class="hidden" name="privacy" value="<%$Dashboard->privacy%>" />
 <table width="100%" border="0">
 <tr>
 
@@ -121,7 +121,7 @@ for my $object (@objs) {
 my $sel = $m->comp(
     '/Widgets/SelectionBox:new',
     action    => 'Dashboards/Queries.html',
-    name      => "Searches",
+    name      => "searches",
     available => \@items,
     selected  => \@selected,
     auto_save  => 1,

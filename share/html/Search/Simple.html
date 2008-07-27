@@ -51,7 +51,7 @@
     title => $title
 &>
 
-% $m->callback( %ARGS, Callbackname => 'PreForm' );
+% $m->callback( %ARGS, Callbackname => 'pre_form' );
 
 <div id="SimpleSearchForm">
 <form action="Simple.html" method="get">
@@ -69,7 +69,7 @@
 
 </form>
 
-% $m->callback( %ARGS, Callbackname => 'PostForm' );
+% $m->callback( %ARGS, Callbackname => 'post_form' );
 
 </div>
 
@@ -83,7 +83,7 @@ if ($q) {
         RT::Interface::Web::redirect(RT->config->get('WebURL')."Ticket/Display.html?id=".$q);
     }
 
-    $m->callback( %ARGS, query => \$q, Callbackname => 'ModifyQuery' );
+    $m->callback( %ARGS, query => \$q, Callbackname => 'modify_query' );
 
     if ($q =~ /^(\d+)$/) {
         RT::Interface::Web::redirect(RT->config->get('WebURL')."Ticket/Display.html?id=".$q);
@@ -94,7 +94,7 @@ if ($q) {
         TicketsObj => $tickets,
     );
 
-    $m->callback( %ARGS, Callbackname => 'SearchArgs', args => \%args);
+    $m->callback( %ARGS, Callbackname => 'search_args', args => \%args);
 
     my $search = RT::Search::Googleish->new(%args);
 

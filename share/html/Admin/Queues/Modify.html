@@ -181,7 +181,7 @@ if ( $queue_obj->id ) {
         results      => \@linkresults,
         record_obj    => $queue_obj,
         args_ref      => \%ARGS, 
-        Callbackname => 'ProcessLinks'
+        Callbackname => 'process_links'
     );
     push @results, @linkresults;
     push @results, process_object_custom_field_updates( args_ref => \%ARGS, object => $queue_obj );

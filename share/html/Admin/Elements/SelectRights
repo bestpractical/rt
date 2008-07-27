@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<input type="hidden" class="hidden" name="CheckACL"  value="<%$ACLDesc%>" />
+<input type="hidden" class="hidden" name="check_acl"  value="<%$ACLDesc%>" />
      <table border="0">
 <tr>
 <td valign="top" width="180" align="left"> 

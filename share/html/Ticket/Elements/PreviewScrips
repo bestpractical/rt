@@ -91,7 +91,7 @@ my @non_recipients = @{ $squelch{'emails'} };
 <% $recipient->content %>
 % }
 </ul>
-<& /Elements/Submit, name => 'UpdatePreview', value => 'UpdatePreview', label => _('Save Changes')&>
+<& /Elements/Submit, name => 'update_preview', value => 'UpdatePreview', label => _('Save Changes')&>
 
 <%METHOD SquelchRecipients>
 <%ARGS>
@@ -116,7 +116,7 @@ foreach my $address (@unsquelchto) {
 
 my $action;
 
-if (($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq 'response' ) || ($ARGS{'action'} && $ARGS{'action'} eq 'respond' )) {
+if (($ARGS{'update_type'} &&  $ARGS{'update_type'} eq 'response' ) || ($ARGS{'action'} && $ARGS{'action'} eq 'respond' )) {
     $action = 'correspond';
 }
 else {
@@ -124,15 +124,15 @@ else {
 }
 
 my $Message = make_mime_entity(
-    subject => $ARGS{'Updatesubject'},
+    subject => $ARGS{'updatesubject'},
     body    => $ARGS{'update_content'},
 );
 
 my ( $Transaction, $description, $object ) = $ticket_obj->$action(
     cc_message_to  => $ARGS{'update_cc'},
-    bcc_message_to => $ARGS{'UpdateBcc'},
+    bcc_message_to => $ARGS{'update_bcc'},
     mime_obj      => $Message,
-    time_taken    => $ARGS{'UpdateTimeWorked'},
+    time_taken    => $ARGS{'update_time_worked'},
     dry_run       => 1
 );
 unless ( $Transaction ) {
@@ -150,7 +150,7 @@ $ticket_obj
 </%ARGS>
 <%INIT>
 my $action;
-if ( ( $ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq 'response' )
+if ( ( $ARGS{'update_type'} &&  $ARGS{'update_type'} eq 'response' )
     || ( $ARGS{'action'} && $ARGS{'action'} eq 'respond' ) )
 {
     $action = 'correspond';
@@ -160,15 +160,15 @@ else {
 }
 
 my $Message = make_mime_entity(
-    subject => $ARGS{'Updatesubject'},
+    subject => $ARGS{'updatesubject'},
     body    => $ARGS{'update_content'},
 );
 
 my ( $id, $msg, $txn ) = $ticket_obj->$action(
     cc_message_to  => $ARGS{'update_cc'},
-    bcc_message_to => $ARGS{'UpdateBcc'},
+    bcc_message_to => $ARGS{'update_bcc'},
     mime_obj      => $Message,
-    time_taken    => $ARGS{'UpdateTimeWorked'},
+    time_taken    => $ARGS{'update_time_worked'},
     dry_run       => 1
 );
 unless ( $id && $txn ) {

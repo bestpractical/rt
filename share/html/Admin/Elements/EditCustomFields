@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%RT->config->get('WebPath')%><% $m->request_comp->path |n %>" method="post" name="EditCustomFields">
+<form action="<%RT->config->get('WebPath')%><% $m->request_comp->path |n %>" method="post" name="edit_custom_fields">
 <input type="hidden" class="hidden" name="id" value="<% $object->id || ''%>" />
 <input type="hidden" class="hidden" name="object_type" value="<% $object_type %>" />
 <input type="hidden" class="hidden" name="sub_type" value="<% $sub_type %>" />

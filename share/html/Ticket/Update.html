@@ -50,13 +50,13 @@
     ticket => $ticket_obj, 
     title=> $title &>
     
-% $m->callback(Callbackname => 'BeforeActionList', args_ref => \%ARGS, ticket => $ticket_obj);
+% $m->callback(Callbackname => 'before_action_list', args_ref => \%ARGS, ticket => $ticket_obj);
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="Update.html" name="TicketUpdate"
+<form action="Update.html" name="ticket_update"
     method="post" enctype="multipart/form-data">
-% $m->callback( Callbackname => 'FormStart', args_ref => \%ARGS );
-<input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction}||'' %>" />
+% $m->callback( Callbackname => 'form_start', args_ref => \%ARGS );
+<input type="hidden" class="hidden" name="quote_transaction" value="<% $ARGS{quote_transaction}||'' %>" />
 <input type="hidden" class="hidden" name="default_status" value="<% $default_status ||''%>" />
 <input type="hidden" class="hidden" name="action" value="<% $ARGS{action}||'' %>" />
 
@@ -75,26 +75,26 @@
      default_label => _("%1 (Unchanged)", $ticket_obj->owner_obj->name),
      default      => $ARGS{'owner'}
  &>
-<span class="label"><&|/l&>Worked</&>:</span><input size="4" name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked}||'' %>" /> 
-<& /Elements/SelectTimeUnits, name => 'UpdateTimeWorked'&>
+<span class="label"><&|/l&>Worked</&>:</span><input size="4" name="update_time_worked" value="<% $ARGS{update_time_worked}||'' %>" /> 
+<& /Elements/SelectTimeUnits, name => 'update_time_worked'&>
 </td></tr>
 % my $skip;
-% $m->callback( %ARGS, Callbackname => 'BeforeUpdateType', skip => \$skip );
+% $m->callback( %ARGS, Callbackname => 'before_update_type', skip => \$skip );
 % if (!$skip) {
 <input type="hidden" class="hidden" name="id" value="<%$ticket_obj->id%>" /><br />
 % }
 <tr><td class="label"><&|/l&>Update Type</&>:</td>
-<td><select name="UpdateType">
+<td><select name="update_type">
 % if ($Cancomment) {
-<option value="private" <% ($ARGS{'UpdateType'} &&  $ARGS{'UpdateType'} eq
-        "private") ? qq[ selected="selected"] : !$ARGS{'UpdateType'}&&$comment_default |n %>><&|/l&>comments (Not sent to requestors)</&></option>
+<option value="private" <% ($ARGS{'update_type'} &&  $ARGS{'update_type'} eq
+        "private") ? qq[ selected="selected"] : !$ARGS{'update_type'}&&$comment_default |n %>><&|/l&>comments (Not sent to requestors)</&></option>
 % }
 % if ($CanRespond) {
-<option value="response" <% ($ARGS{'UpdateType'} && $ARGS{'UpdateType'} eq "response") ? qq[ selected="selected"] : !$ARGS{'UpdateType'}&&$response_default |n %>><&|/l&>Reply to requestors</&></option>
+<option value="response" <% ($ARGS{'update_type'} && $ARGS{'update_type'} eq "response") ? qq[ selected="selected"] : !$ARGS{'update_type'}&&$response_default |n %>><&|/l&>Reply to requestors</&></option>
 % }
 </select> 
 </td></tr>
-<tr><td class="label"><&|/l&>Subject</&>:</td><td> <input name="UpdateSubject" size="60" value="<% $ARGS{UpdateSubject} || $ticket_obj->subject()%>" /></td></tr>
+<tr><td class="label"><&|/l&>Subject</&>:</td><td> <input name="update_subject" size="60" value="<% $ARGS{update_subject} || $ticket_obj->subject()%>" /></td></tr>
 
 <& /Ticket/Elements/UpdateCc, %ARGS, ticket_obj => $ticket_obj &>
 
@@ -120,7 +120,7 @@
 </tr>
 % } # end of if
 
-<tr><td class="label"><&|/l&>Attach</&>:</td><td><input name="Attach" type="file" /><input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" /><input type="hidden" class="hidden" name="UpdateAttach" value="1" />
+<tr><td class="label"><&|/l&>Attach</&>:</td><td><input name="attach" type="file" /><input type="submit" class="button" name="add_more_attach" value="<&|/l&>Add More Files</&>" /><input type="hidden" class="hidden" name="update_attach" value="1" />
 </td></tr>
 
 % if ( $gnupg_widget ) {
@@ -133,13 +133,13 @@
 % }
 
 <tr><td class="label" valign="top"><&|/l&>Message</&>:</td><td>
-% $m->callback( %ARGS, Callbackname => 'BeforeMessageBox' );
+% $m->callback( %ARGS, Callbackname => 'before_message_box' );
 % if (exists $ARGS{update_content}) {
 % # preserve QuoteTransaction so we can use it to set up sane references/in/reply to
-% my $temp = $ARGS{'QuoteTransaction'};
-% delete $ARGS{'QuoteTransaction'};
+% my $temp = $ARGS{'quote_transaction'};
+% delete $ARGS{'quote_transaction'};
 <& /Elements/MessageBox, name=>"update_content", default=>$ARGS{update_content}, include_signature => 0, %ARGS&>
-% $ARGS{'QuoteTransaction'} = $temp;
+% $ARGS{'quote_transaction'} = $temp;
 % } else {
 <& /Elements/MessageBox, name=>"update_content", %ARGS &>
 % }
@@ -149,7 +149,7 @@
 
 
 
-<& /Elements/Submit, label => _('Update Ticket'), name => 'SubmitTicket' &>
+<& /Elements/Submit, label => _('Update Ticket'), name => 'submit_ticket' &>
 % if ($ticket_obj->current_user_has_right('ShowOutgoingEmail')) {
 <&|/Widgets/TitleBox, title => _('Scrips and Recipients') &>
 <& /Ticket/Elements/PreviewScrips, ticket_obj => $ticket_obj, %ARGS &>
@@ -165,7 +165,7 @@ my $title;
 
 my $ticket_obj = load_ticket($id);
 
-$m->callback( ticket => $ticket_obj, args_ref => \%ARGS, Callbackname => 'Initial' );
+$m->callback( ticket => $ticket_obj, args_ref => \%ARGS, Callbackname => 'initial' );
 
 unless($default_status){
     $default_status=($ARGS{'status'} ||$ticket_obj->status());
@@ -212,10 +212,10 @@ foreach my $key (keys %ARGS) {
 # }}}
 
 # {{{ store the uploaded attachment in session
-if ($ARGS{'Attach'}) {            # attachment?
+if ($ARGS{'attach'}) {            # attachment?
     $session{'Attachments'} = {} unless defined $session{'Attachments'};
 
-    my $subject = "$ARGS{'Attach'}";
+    my $subject = "$ARGS{'attach'}";
     # since CGI.pm deutf8izes the magic field, we need to add it back.
     Encode::_utf8_on($subject);
     # strip leading directories
@@ -223,16 +223,16 @@ if ($ARGS{'Attach'}) {            # attachment?
 
     my $attachment = make_mime_entity(
         filename             => $subject,
-        AttachmentFieldname => 'Attach'
+        AttachmentFieldname => 'attach'
     );
 
     $session{'Attachments'} = { %{$session{'Attachments'} || {}},
-                $ARGS{'Attach'} => $attachment };
+                $ARGS{'attach'} => $attachment };
 }
 # }}}
 
 # delete temporary storage entry to make WebUI clean
-unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
+unless (keys %{$session{'Attachments'}} and $ARGS{'update_attach'}) {
     delete $session{'Attachments'};
 }
 # }}}
@@ -244,7 +244,7 @@ $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
     self => $gnupg_widget,
     ticket_obj => $ticket_obj,
 );
-if ( $ARGS{'SubmitTicket'} ) {
+if ( $ARGS{'submit_ticket'} ) {
     my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
         self      => $gnupg_widget,
         ticket_obj => $ticket_obj,
@@ -252,8 +252,8 @@ if ( $ARGS{'SubmitTicket'} ) {
     $checks_failure = 1 unless $status;
 }
 
-if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {
-    $m->callback( ticket => $ticket_obj, args_ref => \%ARGS, Callbackname => 'BeforeDisplay' );
+if ( !$checks_failure && exists $ARGS{submit_ticket} ) {
+    $m->callback( ticket => $ticket_obj, args_ref => \%ARGS, Callbackname => 'before_display' );
     return $m->comp('Display.html', ticket_obj => $ticket_obj, %ARGS);
 }
 

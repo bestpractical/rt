@@ -52,11 +52,11 @@
 <h3><&|/l&>New watchers</&></h3>
 <&|/l&>Find people whose</&><br />
 <& /Elements/SelectUsers &>
-<input type="submit" class="button" name="OnlySearchForPeople" value="<&|/l&>Go!</&>" />
+<input type="submit" class="button" name="only_search_for_people" value="<&|/l&>Go!</&>" />
 <br />
 <&|/l&>Find groups whose</&><br />
 <& /Elements/SelectGroups &>
-<input type="submit" class="button" name="OnlySearchForGroup" value="<&|/l&>Go!</&>" />
+<input type="submit" class="button" name="only_search_for_group" value="<&|/l&>Go!</&>" />
 
 <& AddWatchers, ticket => $ticket, user_string => $user_string,
         user_op => $user_op, user_field => $user_field,

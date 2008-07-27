@@ -51,13 +51,13 @@
     title  => $Title,
 &>
 
-% $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, args_ref => \%ARGS, ticket => $ticket_obj);
+% $m->callback(Callbackname => 'before_action_list', Actions => \@results, args_ref => \%ARGS, ticket => $ticket_obj);
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="Forward.html" name="ForwardMessage" method="post">
-% $m->callback( Callbackname => 'FormStart', args_ref => \%ARGS );
+<form action="Forward.html" name="forward_message" method="post">
+% $m->callback( Callbackname => 'form_start', args_ref => \%ARGS );
 <input type="hidden" class="hidden" name="id" value="<% $id %>" /><br />
-<input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{'QuoteTransaction'} %>" />
+<input type="hidden" class="hidden" name="quote_transaction" value="<% $ARGS{'quote_transaction'} %>" />
 
 <table border="0">
 
@@ -65,18 +65,18 @@
 <td><% $ticket_obj->subject %></td></tr>
 
 <tr><td align="right"><&|/l&>To</&>:</td>
-<td><input name="To" size="60" value="<% $ARGS{'To'} %>" /></td></tr>
+<td><input name="to" size="60" value="<% $ARGS{'to'} %>" /></td></tr>
 
 <tr><td align="right"><&|/l&>Cc</&>:</td>
-<td><input name="Cc" size="60" value="<% $ARGS{'Cc'} %>" /></td></tr>
+<td><input name="cc" size="60" value="<% $ARGS{'cc'} %>" /></td></tr>
 
 <tr><td align="right"><&|/l&>BCc</&>:</td>
-<td><input name="Bcc" size="60" value="<% $ARGS{'Bcc'} %>" /></td></tr>
+<td><input name="bcc" size="60" value="<% $ARGS{'bcc'} %>" /></td></tr>
 
 </table>
 
-<& /Elements/Submit, label => _('Forward Message and Return'), name => 'ForwardAndReturn' &>
-<& /Elements/Submit, label => _('Forward Message'), name => 'Forward' &>
+<& /Elements/Submit, label => _('Forward Message and Return'), name => 'forward_and_return' &>
+<& /Elements/Submit, label => _('Forward Message'), name => 'forward' &>
 </form>
 <%INIT>
 my $ticket_obj = load_ticket($id);

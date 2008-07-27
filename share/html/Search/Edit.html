@@ -60,7 +60,7 @@
 <& Elements/NewListActions, actions => \@actions &>
 
 <form method="post" action="Build.html">
-<input type="hidden" class="hidden" name="SavedSearchId" value="<% $saved_search_id %>" />
+<input type="hidden" class="hidden" name="saved_search_id" value="<% $saved_search_id %>" />
 <&|/Widgets/TitleBox, title => _('Query'), &>
 <textarea name="query" rows="8" cols="72"><% $query %></textarea>
 </&>

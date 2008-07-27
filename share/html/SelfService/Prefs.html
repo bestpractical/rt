@@ -52,8 +52,8 @@
 
 % unless (RT->config->get('WebExternalAuth') and !RT->config->get('WebFallbackToInternalAuth')) {
 <&| /Widgets/TitleBox, title => _('Change password')  &>
-<&|/l&>New password</&>: <input type="password" name="NewPass1" size="16" autocomplete="off" />
-<&|/l&>Confirm</&>: <input type="password" name="NewPass2" size="16" autocomplete="off" />
+<&|/l&>New password</&>: <input type="password" name="new_pass1" size="16" autocomplete="off" />
+<&|/l&>Confirm</&>: <input type="password" name="new_pass2" size="16" autocomplete="off" />
 </&>
 <br />
 % }

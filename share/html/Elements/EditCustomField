@@ -77,7 +77,7 @@ if ($MaxValues == 1 && $values) {
 $m->out("\n".'<input type="hidden" class="hidden" name="'.$name_prefix.$custom_field->id.'-values-magic" value="1" />'."\n");
 
 my $EditComponent = "EditCustomField$Type";
-$m->callback( Callbackname => 'EditComponentname', name => \$EditComponent, custom_field => $custom_field, object => $object );
+$m->callback( Callbackname => 'edit_componentname', name => \$EditComponent, custom_field => $custom_field, object => $object );
 $EditComponent = "EditCustomField$Type" unless $m->comp_exists($EditComponent);
 
 return $m->comp(

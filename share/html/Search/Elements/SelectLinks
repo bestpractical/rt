@@ -51,7 +51,7 @@
 % }
 </select>
 <%ARGS>
-$name => 'LinksField'
+$name => 'links_field'
 </%ARGS>
 
 <%INIT>

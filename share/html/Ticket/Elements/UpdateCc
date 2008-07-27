@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <tr><td class="label"><&|/l&>One-time Cc</&>:</td><td><& /Elements/EmailInput, name => 'update_cc', size => '60', default => $ARGS{update_cc} &>
-<input type="hidden" id="UpdateIgnoreAddressCheckboxes" name="UpdateIgnoreAddressCheckboxes" value="0">
+<input type="hidden" id="UpdateIgnoreAddressCheckboxes" name="update_ignore_address_checkboxes" value="0">
         <br />
 
 %foreach my $addr ( keys %txn_addresses) {
@@ -59,7 +59,7 @@ name="update_cc-<%$addr%>"
     <% $ARGS{'update_cc-'.$addr} ? 'checked="checked"' : ''%> > <& /Elements/ShowUser, address => $txn_addresses{$addr}&>
 %}
 </td></tr>
-<tr><td class="label"><&|/l&>One-time Bcc</&>:</td><td><& /Elements/EmailInput, name => 'UpdateBcc', size => '60', default => $ARGS{UpdateBcc} &><br />
+<tr><td class="label"><&|/l&>One-time Bcc</&>:</td><td><& /Elements/EmailInput, name => 'update_bcc', size => '60', default => $ARGS{update_bcc} &><br />
 %foreach my $addr ( keys %txn_addresses) {
 %    next if ( grep {$addr eq $_} @req_addresses );
 <input

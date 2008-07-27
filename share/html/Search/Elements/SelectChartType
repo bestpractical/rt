@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%args>
-$name => 'ChartType'
+$name => 'chart_type'
 $default => 'bar'
 </%args>
 <select id="<%$name%>" name="<%$name%>">

@@ -150,7 +150,7 @@
 </div>
 </div>
 <div id="body">
-% $m->callback( %ARGS, Callbackname => 'BeforeBody' );
+% $m->callback( %ARGS, Callbackname => 'before_body' );
 % $m->flush_buffer(); # we've got the page laid out, let's flush the buffer;
 
 <%INIT>

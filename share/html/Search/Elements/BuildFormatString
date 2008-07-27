@@ -88,7 +88,7 @@ my @fields = qw(
     NEWLINE
 );
 
-$m->callback( CallbackOnce => 1, Callbackname => 'SetFieldsOnce', Fields => \@fields );
+$m->callback( CallbackOnce => 1, Callbackname => 'set_fields_once', Fields => \@fields );
 
 my $CustomFields = RT::Model::CustomFieldCollection->new( current_user => Jifty->web->current_user);
 foreach my $id (keys %cfqueues) {

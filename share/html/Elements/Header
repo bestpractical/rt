@@ -77,7 +77,7 @@
 % if ($m->comp_exists($stylesheet_plugin) ) {
 <& $stylesheet_plugin &>
 % }
-% $m->callback( %ARGS, Callbackname => 'Head' );
+% $m->callback( %ARGS, Callbackname => 'head' );
 
 </head>
   <body<% $id && qq[ id="comp-$id"] |n %>>

@@ -77,7 +77,7 @@ foreach my $col(qw(name description correspond_address comment_address initial_p
 
 </%ONCE>
 <%INIT>
-$m->callback( COLUMN_MAP => $COLUMN_MAP, Callbackname => 'ColumnMap', CallbackOnce => 1 );
+$m->callback( COLUMN_MAP => $COLUMN_MAP, Callbackname => 'column_map', CallbackOnce => 1 );
 return get_column_map_entry( Map => $COLUMN_MAP, name => $name, Attribute => $attr );
 </%INIT>
 

@@ -408,12 +408,12 @@ sub create_ticket {
         RT::ScripAction::SendEmail->squelch_mail_to( RT::ScripAction::SendEmail->squelch_mail_to, @temp_squelch );
     }
 
-    if ( $ARGS{'AttachTickets'} ) {
+    if ( $ARGS{'attach_tickets'} ) {
         require RT::ScripAction::SendEmail;
         RT::ScripAction::SendEmail->attach_tickets(
             RT::ScripAction::SendEmail->attach_tickets, ref $ARGS{'AttachTickets'}
-            ? @{ $ARGS{'AttachTickets'} }
-            : ( $ARGS{'AttachTickets'} )
+            ? @{ $ARGS{'attach_tickets'} }
+            : ( $ARGS{'attach_tickets'} )
         );
     }
 
@@ -546,10 +546,10 @@ sub process_update_message {
         @_
     );
 
-    if ( $args{args_ref}->{'UpdateAttachments'}
-        && !keys %{ $args{args_ref}->{'UpdateAttachments'} } )
+    if ( $args{args_ref}->{'update_attachments'}
+        && !keys %{ $args{args_ref}->{'update_attachments'} } )
     {
-        delete $args{args_ref}->{'UpdateAttachments'};
+        delete $args{args_ref}->{'update_attachments'};
     }
 
     # Strip the signature
@@ -563,31 +563,31 @@ sub process_update_message {
     # If, after stripping the signature, we have no message, move the
     # UpdateTimeWorked into adjusted TimeWorked, so that a later
     # ProcessBasics can deal -- then bail out.
-    if (    not $args{args_ref}->{'UpdateAttachments'}
+    if (    not $args{args_ref}->{'update_attachments'}
         and not length $args{args_ref}->{'update_content'} )
     {
-        if ( $args{args_ref}->{'UpdateTimeWorked'} ) {
-            $args{args_ref}->{TimeWorked} =
+        if ( $args{args_ref}->{'update_time_worked'} ) {
+            $args{args_ref}->{time_worked} =
               $args{ticket_obj}->time_worked +
-              delete $args{args_ref}->{'UpdateTimeWorked'};
+              delete $args{args_ref}->{'update_time_worked'};
         }
         return;
     }
 
-    if ( $args{args_ref}->{'Updatesubject'} eq $args{'ticket_obj'}->subject ) {
-        $args{args_ref}->{'Updatesubject'} = undef;
+    if ( $args{args_ref}->{'update_subject'} eq $args{'ticket_obj'}->subject ) {
+        $args{args_ref}->{'update_subject'} = undef;
     }
 
     my $Message = make_mime_entity(
-        subject => $args{args_ref}->{'Updatesubject'},
+        subject => $args{args_ref}->{'update_subject'},
         body    => $args{args_ref}->{'update_content'},
-        type    => $args{args_ref}->{'Updatecontent_type'},
+        type    => $args{args_ref}->{'update_content_type'},
     );
 
     $Message->head->add( 'Message-ID' => RT::Interface::Email::gen_message_id( Ticket => $args{'ticket_obj'}, ) );
     my $old_txn = RT::Model::Transaction->new();
-    if ( $args{args_ref}->{'QuoteTransaction'} ) {
-        $old_txn->load( $args{args_ref}->{'QuoteTransaction'} );
+    if ( $args{args_ref}->{'quote_transaction'} ) {
+        $old_txn->load( $args{args_ref}->{'quote_transaction'} );
     } else {
         $old_txn = $args{ticket_obj}->transactions->first();
     }
@@ -599,20 +599,20 @@ sub process_update_message {
         );
     }
 
-    if ( $args{args_ref}->{'UpdateAttachments'} ) {
+    if ( $args{args_ref}->{'update_attachments'} ) {
         $Message->make_multipart;
-        $Message->add_part($_) foreach values %{ $args{args_ref}->{'UpdateAttachments'} };
+        $Message->add_part($_) foreach values %{ $args{args_ref}->{'update_attachments'} };
     }
 
-    if ( $args{args_ref}->{'AttachTickets'} ) {
+    if ( $args{args_ref}->{'attach_tickets'} ) {
         require RT::ScripAction::SendEmail;
         RT::ScripAction::SendEmail->attach_tickets( RT::ScripAction::SendEmail->attach_tickets,
-            ref $args{args_ref}->{'AttachTickets'}
-            ? @{ $args{args_ref}->{'AttachTickets'} }
-            : ( $args{args_ref}->{'AttachTickets'} ) );
+            ref $args{args_ref}->{'attach_tickets'}
+            ? @{ $args{args_ref}->{'attach_tickets'} }
+            : ( $args{args_ref}->{'attach_tickets'} ) );
     }
 
-    my $bcc = $args{args_ref}->{'UpdateBcc'};
+    my $bcc = $args{args_ref}->{'update_bcc'};
     my $cc  = $args{args_ref}->{'update_cc'};
 
     my %message_args = (
@@ -621,7 +621,7 @@ sub process_update_message {
         sign           => $args{args_ref}->{'sign'},
         encrypt        => $args{args_ref}->{'encrypt'},
         mime_obj       => $Message,
-        time_taken     => $args{args_ref}->{'UpdateTimeWorked'}
+        time_taken     => $args{args_ref}->{'update_time_worked'}
     );
 
     unless ( $args{'args_ref'}->{'UpdateIgnoreAddressCheckboxes'} ) {
@@ -639,11 +639,11 @@ sub process_update_message {
     }
 
     my @results;
-    if ( $args{args_ref}->{'UpdateType'} =~ /^(private|public)$/ ) {
+    if ( $args{args_ref}->{'update_type'} =~ /^(private|public)$/ ) {
         my ( $Transaction, $description, $object ) = $args{ticket_obj}->comment(%message_args);
         push( @results, $description );
         $object->update_custom_fields( args_ref => $args{args_ref} ) if $object;
-    } elsif ( $args{args_ref}->{'UpdateType'} eq 'response' ) {
+    } elsif ( $args{args_ref}->{'update_type'} eq 'response' ) {
         my ( $Transaction, $description, $object ) = $args{ticket_obj}->correspond(%message_args);
         push( @results, $description );
         $object->update_custom_fields( args_ref => $args{args_ref} ) if $object;

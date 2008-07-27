@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <div id="logo">
 <a href="http://bestpractical.com"><img
-    src="<%$ARGS{'LogoURL'}||RT->config->get('LogoURL')%>"
+    src="<%$ARGS{'logo_url'}||RT->config->get('LogoURL')%>"
     alt="<% _("Best Practical Solutions, LLC corporate logo") %>"
     width="177" height="33" /></a>
 % if ( $showname ) {

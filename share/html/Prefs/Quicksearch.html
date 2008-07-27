@@ -53,7 +53,7 @@
 &>
 <& /Elements/ListActions, actions => \@actions &>
 <h1><&|/l&>Select queues to be displayed on the "RT at a glance" page</&></h1>
-<form method="post" action="Quicksearch.html" name="Preferences">
+<form method="post" action="Quicksearch.html" name="preferences">
 <ul>
 % for my $queue (@queues) {
 <li><input type="checkbox" class="checkbox" name="Want-<%$queue->name%>" value="1"
@@ -63,7 +63,7 @@ checked="checked"
 /><%$queue->name%>: <%$queue->description%></li>
 % }
 </ul>
-<& /Elements/Submit, caption => _("Save Changes"), label => _('Save'), name => 'Save'&>
+<& /Elements/Submit, caption => _("Save Changes"), label => _('Save'), name => 'save'&>
 
 </form>
 
@@ -77,7 +77,7 @@ my $Queues = RT::Model::QueueCollection->new();
 $Queues->find_all_rows;
 my @queues = grep {$_->current_user_has_right('ShowTicket')} @{$Queues->items_array_ref};
 
-if ($ARGS{'Save'}) {
+if ($ARGS{'save'}) {
     for my $queue (@queues) {
         if ($ARGS{"Want-".$queue->name}) {
 	    delete $unwanted->{$queue->name};

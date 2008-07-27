@@ -99,7 +99,7 @@ if ($ticket_obj) {
     $name_prefix .= "object-RT::Model::Ticket--CustomField-";
 }
 
-$m->callback( Callbackname => 'MassageCustomFields', CustomFields => $CustomFields );
+$m->callback( Callbackname => 'massage_custom_fields', CustomFields => $CustomFields );
 
 </%INIT>
 <%ARGS>

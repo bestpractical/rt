@@ -76,12 +76,12 @@
               : '' ),
         }
                     &>
-<input type="hidden" name="Run" value="1">
+<input type="hidden" name="run" value="1">
 
 % if ( @results && !@errors ) {
 <& /Elements/Submit, label => _('Next: ') . _('Customize Basics'),
 back => 1, back_label => _('Back: ') . _('Select Database Type'),
-name => 'Next' &>
+name => 'next' &>
 % } else {
 <& /Elements/Submit, label => _('Check Database Connectivity'),
 back => 1, back_label => _('Back: ') . _('Select Database Type')
@@ -118,7 +118,7 @@ if ( $run ) {
 'Install/DatabaseType.html');
     }
     
-    if ( $ARGS{Next} ) {
+    if ( $ARGS{next} ) {
         RT::Interface::Web::redirect(RT->config->get('WebURL') .
 'Install/Basics.html');
     }
@@ -129,14 +129,14 @@ if ( $run ) {
         RT::Handle->finalize_database_type();
     # dba connect systemdsn
         my $dbh = DBI->connect(
-            RT::Handle->system_dsn, $ARGS{DatabaseAdmin}, $ARGS{DatabaseAdminPassword}, { RaiseError => 0, PrintError => 0 },
+            RT::Handle->system_dsn, $ARGS{database_admin}, $ARGS{database_admin_password}, { RaiseError => 0, PrintError => 0 },
         );
     
         if ( $dbh ) {
             push @results, _('Connection succeeded');
             # dba connect dsn, which has table info
             $dbh = DBI->connect(
-                RT::Handle->DSN, $ARGS{DatabaseAdmin}, $ARGS{DatabaseAdminPassword}, { RaiseError => 0, PrintError => 0 },
+                RT::Handle->DSN, $ARGS{database_admin}, $ARGS{database_admin_password}, { RaiseError => 0, PrintError => 0 },
             );
     
             if ( $dbh ) {
@@ -144,8 +144,8 @@ if ( $run ) {
                 eval {
                     my $dbh = DBI->connect(
                         RT::Handle->DSN,
-                        $ARGS{DatabaseAdmin},
-                        $ARGS{DatabaseAdminPassword},
+                        $ARGS{database_admin},
+                        $ARGS{database_admin_password},
                         { RaiseError => 1, PrintError => 0 },
                     );
 

@@ -57,7 +57,7 @@
 <& /Widgets/BulkEdit, types => \@Types,meta => $RT::Installer->{Meta},
     current_value => RT::Installer->current_values(@Types) &>
 
-<input type="hidden" name="Run" value="1">
+<input type="hidden" name="run" value="1">
 <& /Elements/Submit, label => _('Next: ') . _('Customize Email Configuration'),back => 1, back_label => _('Back: ' ) . _( 'Customize Database Details') &>
 </form>
 </&>
@@ -74,11 +74,11 @@ if ( $run ) {
             store => $RT::Installer->{InstallConfig},
             meta => $RT::Installer->{Meta} );
     
-    if ( $ARGS{WebPort} && $ARGS{WebPort} !~ /^\d+$/ ) {
+    if ( $ARGS{web_port} && $ARGS{web_port} !~ /^\d+$/ ) {
         push @errors, _("Invalid %1: it should be a number", 'WebPort');
     }
 
-    unless ( $ARGS{Password} ) {
+    unless ( $ARGS{password} ) {
         push @errors, _("You must enter an Administrative password");
     }
 

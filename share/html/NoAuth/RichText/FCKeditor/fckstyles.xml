@@ -38,10 +38,10 @@
 	<Style name="Heading 4" element="h4" />
 	<Style name="Heading 5" element="h5" />
 	<Style name="Heading 6" element="h6" />
-	<Style name="Paragraph" element="p" />
+	<Style name="paragraph" element="p" />
 	<Style name="Document Block" element="div" />
 	<Style name="Preformatted Text" element="pre" />
-	<Style name="Address" element="address" />
+	<Style name="address" element="address" />
 	-->
 
 	<!-- Inline Styles -->
@@ -49,16 +49,16 @@
 	<!--
 	# These are core styles available as toolbar buttons.
 
-	<Style name="Bold" element="b">
+	<Style name="bold" element="b">
 		<Override element="strong" />
 	</Style>
-	<Style name="Italic" element="i">
+	<Style name="italic" element="i">
 		<Override element="em" />
 	</Style>
-	<Style name="Underline" element="u" />
-	<Style name="Strikethrough" element="strike" />
-	<Style name="Subscript" element="sub" />
-	<Style name="Superscript" element="sup" />
+	<Style name="underline" element="u" />
+	<Style name="strikethrough" element="strike" />
+	<Style name="subscript" element="sub" />
+	<Style name="superscript" element="sup" />
 	-->
 
 	<Style name="Marker: Yellow" element="span">
@@ -69,16 +69,16 @@
 	</Style>
 
 	<Style name="Strong Emphasis" element="strong" />
-	<Style name="Emphasis" element="em" />
+	<Style name="emphasis" element="em" />
 
-	<Style name="Big" element="big" />
-	<Style name="Small" element="small" />
-	<Style name="Typewriter" element="tt" />
+	<Style name="big" element="big" />
+	<Style name="small" element="small" />
+	<Style name="typewriter" element="tt" />
 
 	<Style name="Computer Code" element="code" />
 	<Style name="Keyboard Phrase" element="kbd" />
 	<Style name="Sample Text" element="samp" />
-	<Style name="Variable" element="var" />
+	<Style name="variable" element="var" />
 
 	<Style name="Deleted Text" element="del" />
 	<Style name="Inserted Text" element="ins" />

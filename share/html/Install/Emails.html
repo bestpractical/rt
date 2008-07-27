@@ -53,7 +53,7 @@
 <& /Widgets/BulkEdit, types => \@types,meta => $RT::Installer->{Meta},
     current_value => RT::Installer->current_values(@types) &>
 
-<input type="hidden" name="Run" value="1">
+<input type="hidden" name="run" value="1">
 <& /Elements/Submit, label => _('next: email Configuration'), back => 1,
     back_label => _('Back: Customize Password for Users in RT') &>
 </form>

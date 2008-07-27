@@ -50,7 +50,7 @@
     ticket => $Ticket, current_tab => 'Ticket/History.html?id='.$Ticket->id, 
     title => _("Ticket History # %1 %2", $Ticket->id, $Ticket->subject) &>
 
-% $m->callback( %ARGS, ticket => $Ticket, Callbackname => 'BeforeActionList' );
+% $m->callback( %ARGS, ticket => $Ticket, Callbackname => 'before_action_list' );
 
 
 <br />
@@ -63,7 +63,7 @@
     attachment_content => $attachment_content
     &> 
 
-% $m->callback( %ARGS, Callbackname => 'AfterShowHistory', ticket => $Ticket, current_tab => 'Ticket/History.html?id=' . $Ticket->id );
+% $m->callback( %ARGS, Callbackname => 'after_show_history', ticket => $Ticket, current_tab => 'Ticket/History.html?id=' . $Ticket->id );
 
 <%ARGS>
 $id => undef

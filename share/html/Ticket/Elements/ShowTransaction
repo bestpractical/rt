@@ -46,10 +46,10 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <div class="ticket-transaction <% $type_class %> <% $row_num % 2 ? 'odd' : 'even' %>">
-% $m->callback( titlebar_cmd => \$titlebar_commands, Transaction => $transaction, %ARGS, Callbackname => 'ModifyDisplay' );
+% $m->callback( titlebar_cmd => \$titlebar_commands, Transaction => $transaction, %ARGS, Callbackname => 'modify_display' );
 
 <table width="100%" cellspacing="0" cellpadding="2" border="0" class="ticket-transaction">
-% $m->callback( titlebar_cmd => \$titlebar_commands, Transaction => $transaction, %ARGS, Callbackname => 'ModifyCommand' );
+% $m->callback( titlebar_cmd => \$titlebar_commands, Transaction => $transaction, %ARGS, Callbackname => 'modify_command' );
   <tr class="metadata">
     <td rowspan="2" valign="top" class="type">
       <a name="txn-<% $transaction->id %>" href="<% $display_path %>#txn-<% $transaction->id %>">#</a>
@@ -57,7 +57,7 @@
     </td>
     <td class="date"><% $transdate|n %></td>
 % my $desc = $transaction->brief_description;
-% $m->callback( text => \$desc, Transaction => $transaction, %ARGS, Callbackname => 'ModifyDisplay' );
+% $m->callback( text => \$desc, Transaction => $transaction, %ARGS, Callbackname => 'modify_display' );
     <td class="description">
       <% $transaction->creator_obj->name %> - <% $TicketString %> <% $desc %>
     </td>

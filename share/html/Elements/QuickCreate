@@ -51,7 +51,7 @@
 <input type="hidden" class="hidden" name="quick_create" value="1" />
 <table>
 <tr class="input-row"><td class="label"><&|/l&>Subject</&>:</td>
-    <td colspan="3" class="value"><input type="text" size="50" name="Subject" /></td>
+    <td colspan="3" class="value"><input type="text" size="50" name="subject" /></td>
     </tr><tr class="input-row">
 <td class="label"><&|/l&>Queue</&>:</td><td class="value"><& /Elements/SelectNewTicketQueue, name => 'queue' &>
 </td>
@@ -63,7 +63,7 @@
 </td>
 </tr><tr class="input-row">
 <td class="labeltop"><&|/l&>Content</&>:</td>
-<td colspan="3" class="value"><textarea name="Content" cols="50" rows="3"></textarea></td></tr>
+<td colspan="3" class="value"><textarea name="content" cols="50" rows="3"></textarea></td></tr>
 </table>
 <& /Elements/Submit, label => _('Create') &>
 </form>

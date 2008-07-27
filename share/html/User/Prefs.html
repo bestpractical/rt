@@ -88,23 +88,23 @@
 <table cellspacing="0" cellpadding="0">
   <tr>
     <td class="label"><&|/l&>Residence</&>:</td>
-    <td class="value"><input name="HomePhone" value="<%$user_object->home_phone || ''%>" size="13" /></td>
+    <td class="value"><input name="home_phone" value="<%$user_object->home_phone || ''%>" size="13" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Work</&>:</td>
-    <td class="value"><input name="WorkPhone" value="<%$user_object->work_phone || ''%>" size="13" /></td>
+    <td class="value"><input name="work_phone" value="<%$user_object->work_phone || ''%>" size="13" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Mobile</&>:</td>
-    <td class="value"><input name="MobilePhone" value="<%$user_object->mobile_phone || ''%>" size="13" /></td>
+    <td class="value"><input name="mobile_phone" value="<%$user_object->mobile_phone || ''%>" size="13" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Pager</&>:</td>
-    <td class="value"><input name="PagerPhone" value="<%$user_object->pager_phone || ''%>" size="13" /></td>
+    <td class="value"><input name="pager_phone" value="<%$user_object->pager_phone || ''%>" size="13" /></td>
   </tr>
 </table>
 </&>
-% $m->callback( %ARGS, user_object => $user_object, Callbackname => 'FormLeftColumn' );
+% $m->callback( %ARGS, user_object => $user_object, Callbackname => 'form_left_column' );
 </td>
 <td valign="top" class="boxcontainer">
 % unless (RT->config->get('WebExternalAuth') and !RT->config->get('WebFallbackToInternalAuth')) {
@@ -115,14 +115,14 @@
 <&|/l&>New password</&>:
 </td>
 <td class="value">
-<input type="password" name="Pass1" autocomplete="off"/>
+<input type="password" name="pass1" autocomplete="off"/>
 </td>
 </tr>
 <tr><td class="label">
 <&|/l&>Retype password</&>:
 </td>
 <td class="value">
-<input type="password" name="Pass2" autocomplete="off" />
+<input type="password" name="pass2" autocomplete="off" />
 </td>
 </tr>
 </table>
@@ -137,31 +137,31 @@
   </tr>
   <tr>
     <td class="label"><&|/l&>Address1</&>:</td>
-    <td class="value"><input name="Address1" value="<%$user_object->address1 || ''%>" /></td>
+    <td class="value"><input name="address1" value="<%$user_object->address1 || ''%>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Address2</&>:</td>
-    <td class="value"><input name="Address2" value="<%$user_object->address2 || ''%>" /></td>
+    <td class="value"><input name="address2" value="<%$user_object->address2 || ''%>" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>City</&>:</td>
-    <td><input name="City" value="<%$user_object->city || ''%>" size="14" /></td>
+    <td><input name="city" value="<%$user_object->city || ''%>" size="14" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>State</&>:</td>
-    <td class="value"><input name="State" value="<%$user_object->state || ''%>" size="3" /></td>
+    <td class="value"><input name="state" value="<%$user_object->state || ''%>" size="3" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Zip</&>:</td>
-    <td class="value"><input name="Zip" value="<%$user_object->zip || ''%>" size="9" /></td>
+    <td class="value"><input name="zip" value="<%$user_object->zip || ''%>" size="9" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Country</&>:</td>
-    <td class="value"><input name="Country" value="<%$user_object->country || ''%>" /></td>
+    <td class="value"><input name="country" value="<%$user_object->country || ''%>" /></td>
   </tr>
 </table>
 </&>
-% $m->callback( %ARGS, user_object => $user_object, Callbackname => 'FormRightColumn' );
+% $m->callback( %ARGS, user_object => $user_object, Callbackname => 'form_right_column' );
 </td>
 </tr>
 
@@ -170,7 +170,7 @@
 %if ($user_object->privileged) {
 <br />
 <&| /Widgets/TitleBox, title => _('Signature') &>
-<textarea cols="80" rows="5" name="Signature" class="signature" wrap="hard">
+<textarea cols="80" rows="5" name="signature" class="signature" wrap="hard">
 <%$user_object->signature || ''%></textarea>
 </&>
 % }
@@ -181,13 +181,13 @@
 
 <&|/l&><p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p></&>
 
-<& /Elements/Submit, label => _('Reset secret authentication token'), name => "ResetAuthToken" &>
+<& /Elements/Submit, label => _('Reset secret authentication token'), name => "reset_auth_token" &>
 </&>
 </td></tr>
 
 </table>
 
-% $m->callback( %ARGS, user_object => $user_object, Callbackname => 'FormEnd' );
+% $m->callback( %ARGS, user_object => $user_object, Callbackname => 'form_end' );
 
 <& /Elements/Submit, label => _('Save Preferences') &>
 </form>
@@ -220,7 +220,7 @@ if ($user_object->id) {
 		   );
 
     $m->callback(
-        Callbackname => 'UpdateLogic',
+        Callbackname => 'update_logic',
         fields       => \@fields,
         results      => \@results,
         user_object      => $user_object,
@@ -248,7 +248,7 @@ if ((defined $pass1) and ($pass1 ne '') and ($pass1 eq $pass2) and (!$user_objec
     push @results, _("passwords do not match. Your password has not been changed");
 }
 
-    if ( $ARGS{'ResetAuthToken'} ) {
+    if ( $ARGS{'reset_auth_token'} ) {
         my ($status, $msg) = $user_object->generate_auth_token;
         push @results, $msg;
     }

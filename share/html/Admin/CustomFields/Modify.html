@@ -53,7 +53,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 
-<form method="post" action="Modify.html" name="ModifyCustomField">
+<form method="post" action="Modify.html" name="modify_custom_field">
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
 
 <table>
@@ -123,7 +123,7 @@
 </div>
 % }
 
-<& /Elements/Submit, name => 'Update', label => $id eq 'new'? _('Create'): _('Save Changes') &>
+<& /Elements/Submit, name => 'update', label => $id eq 'new'? _('Create'): _('Save Changes') &>
 
 </form>
 <%INIT>
@@ -158,7 +158,7 @@ else {
     $current_tab .= "?id=$id";
 }
 
-if ( $ARGS{'Update'} && $id ne 'new' ) {
+if ( $ARGS{'update'} && $id ne 'new' ) {
 
     #we're asking about enabled on the web page but really care about disabled.
     $ARGS{'disabled'} = $disabled = $enabled? 0 : 1;
@@ -214,7 +214,7 @@ my @CFvalidations = (
     '(?#Year)^[12]\d{3}$',
 );
 
-$m->callback(Callbackname => 'ValidationPatterns', values => \@CFvalidations);
+$m->callback(Callbackname => 'validation_patterns', values => \@CFvalidations);
 
 
 </%INIT>

@@ -76,19 +76,19 @@
 <&|/l&>Email</&>
 </td></tr>
 <tr><td>
-<&/Elements/SelectWatcherType, name => "WatcherTypeEmail1" &>
+<&/Elements/SelectWatcherType, name => "watcher_type_email1" &>
 </td><td>
-<input name="WatcherAddressEmail1" size="15" />
+<input name="watcher_address_email1" size="15" />
 </td></tr>
 <tr><td>
-<&/Elements/SelectWatcherType, name => "WatcherTypeEmail2" &> 
+<&/Elements/SelectWatcherType, name => "watcher_type_email2" &> 
 </td><td>
-<input name="WatcherAddressEmail2" size="15" />
+<input name="watcher_address_email2" size="15" />
 </td></tr>
 <tr><td>
-<&/Elements/SelectWatcherType, name => "WatcherTypeEmail3" &>
+<&/Elements/SelectWatcherType, name => "watcher_type_email3" &>
 </td><td>
-<input name="WatcherAddressEmail3" size="15" />
+<input name="watcher_address_email3" size="15" />
 </td></tr>
 </table>
 

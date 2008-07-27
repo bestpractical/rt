@@ -51,12 +51,12 @@
     current_tab => "Ticket/ModifyLinks.html?id=".$Ticket->id, 
     title => _("Link ticket #%1", $Ticket->id) &>
 
-% $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, args_ref => \%ARGS, ticket => $Ticket);
+% $m->callback(Callbackname => 'before_action_list', Actions => \@results, args_ref => \%ARGS, ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="ModifyLinks.html" method="post">
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
-% $m->callback( Callbackname => 'FormStart', args_ref => \%ARGS );
+% $m->callback( Callbackname => 'form_start', args_ref => \%ARGS );
 % my (@extra);
 % push @extra, titleright_raw => '<a href="'. RT->config->get('WebPath') . '/Ticket/Graphs/index.html?id='.$Ticket->id.'">'.loc('Graph').'</a>' unless RT->config->get('DisableGraphViz');
 <&| /Widgets/TitleBox, title => _('Edit Links'), class=>'ticket-info-links', @extra &>

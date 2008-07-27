@@ -53,14 +53,14 @@
 <& /Elements/ListActions, actions => ["Objects list is empty"] &>
 % } else {
 <div class="shredder-form">
-<input id="shredder-select-all-objects-checkbox" type="checkbox" name="SelectAllobjects" onclick="checkAllobjects()" />
+<input id="shredder-select-all-objects-checkbox" type="checkbox" name="select_allobjects" onclick="checkAllobjects()" />
 <span>click to check/uncheck all objects at once</span>
 <hr>
 % foreach my $o( @objects ) {
 <& objectCheckBox, object => $o &>
 % }
 </div>
-<& /Elements/Submit, name => 'Wipeout', label => _('Wipeout') &>
+<& /Elements/Submit, name => 'wipeout', label => _('Wipeout') &>
 % }
 </div>
 <%INIT>

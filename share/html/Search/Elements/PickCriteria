@@ -57,7 +57,7 @@
 <tr class="separator"><td colspan="3"><hr /></td></tr>
 <tr>
 <td class="label"><&|/l&>Aggregator</&></td>
-<td class="operator" colspan="2"><& SelectAndOr, name => "AndOr" &></td>
+<td class="operator" colspan="2"><& SelectAndOr, name => "and_or" &></td>
 
 </tr>
 

@@ -79,11 +79,11 @@
 
 <&|/l&>Find people whose</&><br />
 <& /Elements/SelectUsers &>
-<input type="submit" class="button" name="OnlySearchForPeople" value="<&|/l&>Go!</&>" />
+<input type="submit" class="button" name="only_search_for_people" value="<&|/l&>Go!</&>" />
 <br />
 <&|/l&>Find groups whose</&><br />
 <& /Elements/SelectGroups &>
-<input type="submit" class="button" name="OnlySearchForGroup" value="<&|/l&>Go!</&>" />
+<input type="submit" class="button" name="only_search_for_group" value="<&|/l&>Go!</&>" />
 
 <p>
 <&|/l&>add new watchers</&>:<br />
@@ -175,25 +175,25 @@ foreach my  $key (keys %ARGS) {
 
  
 
-if (!length $ARGS{'UserString'}) {
+if (!length $ARGS{'user_string'}) {
 $user_msg = _("No principals selected.");
  }
 else {
     $Users = RT::Model::UserCollection->new();
-    $Users->limit(column => $ARGS{'UserField'},
-                 value => $ARGS{'UserString'},
-                 operator => $ARGS{'UserOp'});
+    $Users->limit(column => $ARGS{'user_field'},
+                 value => $ARGS{'user_string'},
+                 operator => $ARGS{'user_op'});
      }
 
-if (!length $ARGS{'GroupString'}) {
+if (!length $ARGS{'group_string'}) {
 $group_msg = _("No principals selected.");
  }
 else {
 $Groups = RT::Model::GroupCollection->new();
 $Groups->limit(column => 'domain', operator => '=', value => 'UserDefined');
-$Groups->limit(column => $ARGS{'GroupField'},
-		value => $ARGS{'GroupString'},
-		operator => $ARGS{'GroupOp'});
+$Groups->limit(column => $ARGS{'group_field'},
+		value => $ARGS{'group_string'},
+		operator => $ARGS{'group_op'});
      }
 
 $current_tab = 'Admin/Queues/People.html?id='.$queue_obj->id;

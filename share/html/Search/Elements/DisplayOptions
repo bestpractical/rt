@@ -109,7 +109,7 @@ $fields{'Owner'} = 1;
 $fields{ $_ . '.email' } = 1 foreach( qw(Requestor Cc AdminCc) );
 
 # Add all available CustomFields to the list of sortable columns.
-my @cfs = grep /^CustomField/, @{$ARGS{AvailableColumns}};
+my @cfs = grep /^CustomField/, @{$ARGS{available_columns}};
 $fields{$_}=1 for @cfs;
 
 # Add PAW sort

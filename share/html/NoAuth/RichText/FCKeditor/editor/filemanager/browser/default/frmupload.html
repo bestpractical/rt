@@ -59,7 +59,7 @@ function OnUploadCompleted( errorNumber, data )
 
 	// Reset the upload form (On IE we must do a little trick to avoid problems).
 	if ( document.all )
-		document.getElementById('NewFile').outerHTML = '<input id="NewFile" name="NewFile" style="WIDTH: 100%" type="file">' ;
+		document.getElementById('NewFile').outerHTML = '<input id="NewFile" name="new_file" style="WIDTH: 100%" type="file">' ;
 	else
 		document.getElementById('frmUpload').reset() ;
 
@@ -102,7 +102,7 @@ window.onload = function()
 						<span id="eUploadMessage">Upload a new file in this folder</span><br>
 						<table cellspacing="0" cellpadding="0" width="100%" border="0">
 							<tr>
-								<td width="100%"><input id="NewFile" name="NewFile" style="WIDTH: 100%" type="file"></td>
+								<td width="100%"><input id="NewFile" name="new_file" style="WIDTH: 100%" type="file"></td>
 								<td nowrap="nowrap">&nbsp;<input id="btnUpload" type="submit" value="Upload"></td>
 							</tr>
 						</table>

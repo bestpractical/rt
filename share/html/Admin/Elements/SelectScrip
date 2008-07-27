@@ -67,6 +67,6 @@ $Scrips->find_all_rows;
 <%ARGS>
 
 $default => undef
-$name => 'Scrip'
+$name => 'scrip'
 
 </%ARGS>

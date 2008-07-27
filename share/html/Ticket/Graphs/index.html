@@ -61,7 +61,7 @@
 
 <& Elements/EditGraphProperties, %ARGS, ticket => $ticket &>
 
-<input type="hidden" class="hidden" name="SavedSearchId" value="<% $saved_search->{Id} %>" />
+<input type="hidden" class="hidden" name="saved_search_id" value="<% $saved_search->{Id} %>" />
 <& /Search/Elements/EditSearches,
     %$saved_search,
     title         => loc('Manage saved graphs'),
@@ -94,14 +94,14 @@ my $id = $ARGS{'id'};
 my $ticket = load_ticket( $id );
 $ARGS{'id'} = $id = $ticket->id;
 
-$ARGS{'LeadingLink'} ||= 'Members';
-if ( $ARGS{'ShowLinks'} && !ref $ARGS{'ShowLinks'} ) {
-    $ARGS{'ShowLinks'} = [$ARGS{'ShowLinks'}];
-} elsif ( !$ARGS{'ShowLinks'} ) {
-    $ARGS{'ShowLinks'} = [ qw(MemberOf DependsOn RefersTo) ];
+$ARGS{'leading_link'} ||= 'Members';
+if ( $ARGS{'show_links'} && !ref $ARGS{'show_links'} ) {
+    $ARGS{'show_links'} = [$ARGS{'show_links'}];
+} elsif ( !$ARGS{'show_links'} ) {
+    $ARGS{'show_links'} = [ qw(MemberOf DependsOn RefersTo) ];
 }
-$ARGS{'ShowLinks'} = [ grep $_ ne $ARGS{'LeadingLink'}, @{ $ARGS{'ShowLinks'} } ];
-$ARGS{'MaxDepth'} = 3 unless defined $ARGS{'MaxDepth'} && length $ARGS{'MaxDepth'};
+$ARGS{'show_links'} = [ grep $_ ne $ARGS{'leading_link'}, @{ $ARGS{'show_links'} } ];
+$ARGS{'max_depth'} = 3 unless defined $ARGS{'max_depth'} && length $ARGS{'max_depth'};
 
 push @results, $m->comp( '/Search/Elements/EditSearches:Save',
     %ARGS,

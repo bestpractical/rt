@@ -55,9 +55,9 @@
 
 <form method="post" action="Template.html">
 %if ($create ) {
-<input type="hidden" class="hidden" name="Template" value="new" />
+<input type="hidden" class="hidden" name="template" value="new" />
 % } else {
-<input type="hidden" class="hidden" name="Template" value="<%$template_obj->id%>" />
+<input type="hidden" class="hidden" name="template" value="<%$template_obj->id%>" />
 % }
 
 %# hang onto the queue id

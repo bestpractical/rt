@@ -62,6 +62,6 @@ elsif ($default == 0 ) {
 
 </%INIT>
 <%ARGS>
-$name => 'Single'
+$name => 'single'
 $default => 1
 </%ARGS>

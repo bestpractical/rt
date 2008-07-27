@@ -57,6 +57,6 @@ my @sortfields = $tickets->sort_fields();
 
 </%INIT>
 <%ARGS>
-$name => 'SortTicketsBy'
+$name => 'sort_tickets_by'
 $default => 'id'
 </%ARGS>

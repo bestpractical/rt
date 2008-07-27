@@ -72,7 +72,7 @@ if ($actions_pointer &&  ref( $session{'Actions'}->{$actions_pointer} ) eq 'ARRA
             %ARGS,
             row  => \$_,
             skip => \$skip,
-            Callbackname => 'ModifyRow',
+            Callbackname => 'modify_row',
         );
         !$skip;
     }

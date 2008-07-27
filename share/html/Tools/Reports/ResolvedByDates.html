@@ -87,9 +87,9 @@ $q->load_by_cols(name => $queue);
 
 <br /><&|/l&>Queue</&>: <& /Elements/SelectQueue, name => 'queue', named_values => 1, default => $q->id &>
 <br /><&|/l&>Tickets resolved after</&>: 
-<& /Elements/SelectDate, name => 'ResolvedAfter', default => ($resolved_after) ? $after->iso : ''&>
+<& /Elements/SelectDate, name => 'resolved_after', default => ($resolved_after) ? $after->iso : ''&>
 <br /><&|/l&>Tickets resolved before</&>: 
-<& /Elements/SelectDate, name => 'ResolvedBefore', default => ($resolved_before) ? $before->iso : ''&>
+<& /Elements/SelectDate, name => 'resolved_before', default => ($resolved_before) ? $before->iso : ''&>
 
 <& /Elements/Submit&>
 </form>

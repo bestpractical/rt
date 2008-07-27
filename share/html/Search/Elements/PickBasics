@@ -157,7 +157,7 @@ my @lines = (
         },
     },
     {
-        name => 'Time',
+        name => 'time',
         field => {
             type    => 'select',
             options => [
@@ -179,7 +179,7 @@ my @lines = (
         ],
     },
     {
-        name => 'Priority',
+        name => 'priority',
         field => {
             type    => 'select',
             options => [
@@ -195,7 +195,7 @@ my @lines = (
         value => { type => 'text', Size => 5 }
     },
     {
-        name => 'Links',
+        name => 'links',
         field => { type => 'component', path => 'SelectLinks' },
         op => {
             type => 'component',

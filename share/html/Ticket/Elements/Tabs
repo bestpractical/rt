@@ -238,20 +238,20 @@ if ( ( defined $actions->{A} || defined $actions->{B} || defined $actions->{C} )
 my $args = '';
 my $has_query = '';
 my %query_args;
-my $search_id = $ARGS{'SavedSearchid'}
+my $search_id = $ARGS{'saved_searchid'}
             || $session{'CurrentSearchHash'}->{'Searchid'} || '';
 
-$has_query = 1 if ( $ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'} );
+$has_query = 1 if ( $ARGS{'query'} or $session{'CurrentSearchHash'}->{'Query'} );
   
 %query_args = (
 
         SavedSearchid => ($search_id eq 'new') ? undef : $search_id,
-        Query  => $ARGS{'Query'}  || $session{'CurrentSearchHash'}->{'Query'},
+        Query  => $ARGS{'query'}  || $session{'CurrentSearchHash'}->{'Query'},
         format => $ARGS{'format'} || $session{'CurrentSearchHash'}->{'format'},
         order_by => $ARGS{'order_by'}
             || $session{'CurrentSearchHash'}->{'order_by'},
         order => $ARGS{'order'} || $session{'CurrentSearchHash'}->{'order'},
-        Page  => $ARGS{'Page'}  || $session{'CurrentSearchHash'}->{'Page'},
+        Page  => $ARGS{'page'}  || $session{'CurrentSearchHash'}->{'Page'},
         rows_per_page  => $ARGS{'rows_per_page'}  || $session{'CurrentSearchHash'}->{'rows_per_page'},
     );
 

@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <div id="values-source-class-block">
-<select name="ValuesClass">
+<select name="values_class">
 % foreach my $source( @sources ) {
 <option value="<% $source->{'Class'} %>" <% $source->{'Class'} eq $custom_field->values_class && 'selected="selected"' %>><% $source->{'description'} %></option>
 % }

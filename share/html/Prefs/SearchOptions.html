@@ -62,7 +62,7 @@
             order_by => $order_by, 
             order => $order &>
 
-<& /Elements/Submit, name => 'SavePreferences', label => _('Save Changes') &>
+<& /Elements/Submit, name => 'save_preferences', label => _('Save Changes') &>
 </form>
 <%INIT>
 my @actions;
@@ -73,7 +73,7 @@ $order_by = join '|', grep defined && /\S/, (ref $order_by)? @{$order_by}: $orde
 
 $order       = (ref $order   ? join('|',grep {/\S/} @{$order})   : $order);
 $order_by     = (ref $order_by ? join('|',grep {/\S/} @{$order_by}) : $order_by);
-if ($ARGS{'SavePreferences'}) {
+if ($ARGS{'save_preferences'}) {
     my ($ok, $msg) = Jifty->web->current_user->user_object->set_preferences("SearchDisplay",
     {
        format      => $format,

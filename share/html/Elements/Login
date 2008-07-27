@@ -66,7 +66,7 @@ my $form_action = defined $goto             ? $goto
                 ;
 </%INIT>
 
-% $m->callback( %ARGS, Callbackname => 'Header' );
+% $m->callback( %ARGS, Callbackname => 'header' );
 <& /Elements/Header, title => _('Login'), focus => 'user' &>
 
 
@@ -80,7 +80,7 @@ my $form_action = defined $goto             ? $goto
 </&>
 % }
 
-% $m->callback( %ARGS, Callbackname => 'BeforeForm' );
+% $m->callback( %ARGS, Callbackname => 'before_form' );
 
 <div id="login-box">
 <&| /Widgets/TitleBox, title => _('Login'), titleright => $RT::VERSION, hideable => 0 &>
@@ -108,7 +108,7 @@ my $form_action = defined $goto             ? $goto
 % }
 </&>
 </div><!-- #login-box -->
-% $m->callback( %ARGS, Callbackname => 'AfterForm' );
+% $m->callback( %ARGS, Callbackname => 'after_form' );
 </div><!-- #login-body -->
 <& /Elements/Footer, menu => 0 &>
 <%ARGS>

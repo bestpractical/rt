@@ -51,12 +51,12 @@
     current_tab => "Ticket/ModifyPeople.html?id=".$Ticket->id, 
     title => _('Modify people related to ticket #%1', $Ticket->id) &>
 
-% $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, args_ref => \%ARGS, ticket => $Ticket);
+% $m->callback(Callbackname => 'before_action_list', Actions => \@results, args_ref => \%ARGS, ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post" action="ModifyPeople.html">
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
-% $m->callback( Callbackname => 'FormStart', args_ref => \%ARGS );
+% $m->callback( Callbackname => 'form_start', args_ref => \%ARGS );
 <&| /Widgets/TitleBox, title => _('Modify people related to ticket #%1', $Ticket->id),   width => "100%", color=> "#333399", class=>'ticket-info-people' &>
 <& Elements/EditPeople, ticket => $Ticket, user_field => $user_field, user_string => $user_string, user_op => $user_op, group_string => $group_string, group_op => $group_op, group_field => $group_field &>
 </&>

@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%args>
-$name => 'GroupBy'
+$name => 'group_by'
 $default => 'Status'
 $query   => ''
 </%args>

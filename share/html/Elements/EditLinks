@@ -118,7 +118,7 @@
 <h3><&|/l&>New Links</&></h3>
 % if (ref($object) eq 'RT::Model::Ticket') {
 <i><&|/l&>Enter tickets or URIs to link tickets to. Separate multiple entries with spaces.</&>
-% $m->callback( Callbackname => 'ExtraLinkInstructions' );
+% $m->callback( Callbackname => 'extra_link_instructions' );
 </i><br />
 % } elsif (ref($object) eq 'RT::Model::Queue') {
 <i><&|/l&>Enter queues or URIs to link queues to. Separate multiple entries with spaces.</&>
@@ -157,7 +157,7 @@
     <td class="label"><&|/l&>Referred to by</&>:</td>
     <td class="entry"> <input name="RefersTo-<%$id%>" /></td>
   </tr>
-% $m->callback( Callbackname => 'NewLink' );
+% $m->callback( Callbackname => 'new_link' );
 </table>
 </td>
 </tr>

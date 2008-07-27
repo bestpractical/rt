@@ -49,5 +49,5 @@
 <input type="radio" class="radio" name="<%$name%>" value="OR" /><&|/l&>OR</&>
 
 <%ARGS>
-$name => "Operator"
+$name => "operator"
 </%ARGS>

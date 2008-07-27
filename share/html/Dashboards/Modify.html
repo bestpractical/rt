@@ -53,7 +53,7 @@
 &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%RT->config->get('WebPath')%>/Dashboards/Modify.html" method="post" enctype="multipart/form-data" name="ModifyDashboard">
+<form action="<%RT->config->get('WebPath')%>/Dashboards/Modify.html" method="post" enctype="multipart/form-data" name="modify_dashboard">
 
 %unless ($Dashboard->id) {
 <input type="hidden" class="hidden" name="id" value="new" />
@@ -64,17 +64,17 @@
 <tr><td align="right">
 <&|/l&>Name</&>:
 </td>
-<td><input name="Name" value="<%$Dashboard->name%>" /></td>
+<td><input name="name" value="<%$Dashboard->name%>" /></td>
 </tr>
 <tr><td align="right">
 <&|/l&>Privacy</&>:
 </td><td>
-<& /Dashboards/Elements/SelectPrivacy, name => "Privacy", objects => \@privacies, default => $Dashboard->privacy &>
+<& /Dashboards/Elements/SelectPrivacy, name => "privacy", objects => \@privacies, default => $Dashboard->privacy &>
 </td></tr>
 </table>
-<& /Elements/Submit, name => 'Save', label => loc('Save Changes') &>
+<& /Elements/Submit, name => 'save', label => loc('Save Changes') &>
 % if ($Dashboard->id && $can_delete) {
-<& /Elements/Submit, name => 'Delete', label => loc('Delete') &>
+<& /Elements/Submit, name => 'delete', label => loc('Delete') &>
 % }
 </form>
 <%INIT>
@@ -102,8 +102,8 @@ else {
         $tried_create = 1;
 
         my ($val, $msg) = $Dashboard->save(
-            name    => $ARGS{'Name'},
-            Privacy => $ARGS{'Privacy'},
+            name    => $ARGS{'name'},
+            Privacy => $ARGS{'privacy'},
         );
 
         if (!$val) {
@@ -130,9 +130,9 @@ else {
     }
 }
 
-if (!$create && !$tried_create && $id && $ARGS{'Save'}) {
-    my ($ok, $msg) = $Dashboard->update(Privacy  => $ARGS{'Privacy'},
-                                        name     => $ARGS{'Name'});
+if (!$create && !$tried_create && $id && $ARGS{'save'}) {
+    my ($ok, $msg) = $Dashboard->update(Privacy  => $ARGS{'privacy'},
+                                        name     => $ARGS{'name'});
 
     if ($ok) {
         push @results, loc("Dashboard updated");
@@ -145,7 +145,7 @@ if (!$create && !$tried_create && $id && $ARGS{'Save'}) {
 
 my $can_delete = $Dashboard->current_user_can_delete;
 
-if (!$create && !$tried_create && $id && $ARGS{'Delete'}) {
+if (!$create && !$tried_create && $id && $ARGS{'delete'}) {
     my ($ok, $msg) = $Dashboard->delete();
     $ok || abort(loc("Couldn't delete dashboard %1: %2", $id, $msg));
 

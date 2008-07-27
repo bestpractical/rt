@@ -54,7 +54,7 @@
 
 % $m->callback( Requestor => \$requestoraddress, queue => \$qname, %ARGS );
 
-<form action="Offline.html" name="TicketUpdate" 
+<form action="Offline.html" name="ticket_update" 
 	method="post" enctype="multipart/form-data">
 <table>
 <tr>
@@ -86,12 +86,12 @@
 <&|/l&>get template from file</&>:
 </td>
 <td>
-<input name="Template" type="file" value="foo" />
-<input type="submit" class="button" name="Parse" value="<&|/l&>Go!</&>" />
+<input name="template" type="file" value="foo" />
+<input type="submit" class="button" name="parse" value="<&|/l&>Go!</&>" />
 </td>
 </tr>
 </table>
-<& /Elements/Submit, name => 'UpdateTickets', label => _('Upload'), caption => _("Upload your changes"), color => "#993333" &>
+<& /Elements/Submit, name => 'update_tickets', label => _('Upload'), caption => _("Upload your changes"), color => "#993333" &>
 
 </form>
 <%args>
@@ -105,7 +105,7 @@ my @results;
 use RT::ScripAction::CreateTickets;
 my $action = RT::ScripAction::CreateTickets->new(CurrentUser => Jifty->web->current_user);
 ;
-if ($ARGS{'Parse'} && $ARGS{'template'}) {
+if ($ARGS{'parse'} && $ARGS{'template'}) {
     $string = "";
     my $cgi_object = Jifty->handler->cgi;
     my $fh = $cgi_object->upload('template');
@@ -131,7 +131,7 @@ if ($ARGS{'Parse'} && $ARGS{'template'}) {
     }
 
 
-} elsif ($ARGS{'UpdateTickets'}) {
+} elsif ($ARGS{'update_tickets'}) {
     $action->parse(content => $ARGS{string}, queue => $qname, Requestor=> $requestoraddress);
     push @results, $action->create_by_template();
     push @results, $action->update_by_template();

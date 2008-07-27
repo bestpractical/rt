@@ -136,7 +136,7 @@ function SelectColor( wich )
 										<span fcklang="DlgCellWidth">Width</span>:</td>
 									<td>
 										&nbsp;<input onkeypress="return IsDigit(event);" id="txtWidth" type="text" maxlength="4"
-											size="3" name="txtWidth" />&nbsp;<select id="selWidthType" name="selWidthType">
+											size="3" name="txt_width" />&nbsp;<select id="selWidthType" name="sel_width_type">
 												<option fcklang="DlgCellWidthPx" value="pixels" selected="selected">pixels</option>
 												<option fcklang="DlgCellWidthPc" value="percent">percent</option>
 											</select></td>
@@ -145,7 +145,7 @@ function SelectColor( wich )
 									<td nowrap="nowrap">
 										<span fcklang="DlgCellHeight">Height</span>:</td>
 									<td>
-										&nbsp;<input id="txtHeight" type="text" maxlength="4" size="3" name="txtHeight" onkeypress="return IsDigit(event);" />&nbsp;<span
+										&nbsp;<input id="txtHeight" type="text" maxlength="4" size="3" name="txt_height" onkeypress="return IsDigit(event);" />&nbsp;<span
 											fcklang="DlgCellWidthPx">pixels</span></td>
 								</tr>
 								<tr>
@@ -158,7 +158,7 @@ function SelectColor( wich )
 									<td nowrap="nowrap">
 										<span fcklang="DlgCellWordWrap">Word Wrap</span>:</td>
 									<td>
-										&nbsp;<select id="selWordWrap" name="selAlignment">
+										&nbsp;<select id="selWordWrap" name="sel_alignment">
 											<option fcklang="DlgCellWordWrapYes" value="true" selected="selected">Yes</option>
 											<option fcklang="DlgCellWordWrapNo" value="false">No</option>
 										</select></td>
@@ -173,7 +173,7 @@ function SelectColor( wich )
 									<td nowrap="nowrap">
 										<span fcklang="DlgCellHorAlign">Horizontal Alignment</span>:</td>
 									<td>
-										&nbsp;<select id="selHAlign" name="selAlignment">
+										&nbsp;<select id="selHAlign" name="sel_alignment">
 											<option fcklang="DlgCellHorAlignNotSet" value="" selected>&lt;Not set&gt;</option>
 											<option fcklang="DlgCellHorAlignLeft" value="left">Left</option>
 											<option fcklang="DlgCellHorAlignCenter" value="center">Center</option>
@@ -184,7 +184,7 @@ function SelectColor( wich )
 									<td nowrap="nowrap">
 										<span fcklang="DlgCellVerAlign">Vertical Alignment</span>:</td>
 									<td>
-										&nbsp;<select id="selVAlign" name="selAlignment">
+										&nbsp;<select id="selVAlign" name="sel_alignment">
 											<option fcklang="DlgCellVerAlignNotSet" value="" selected>&lt;Not set&gt;</option>
 											<option fcklang="DlgCellVerAlignTop" value="top">Top</option>
 											<option fcklang="DlgCellVerAlignMiddle" value="middle">Middle</option>
@@ -204,7 +204,7 @@ function SelectColor( wich )
 									<td>
 										&nbsp;
 										<input onkeypress="return IsDigit(event);" id="txtRowSpan" type="text" maxlength="3" size="2"
-											name="txtRows"></td>
+											name="txt_rows"></td>
 									<td>
 									</td>
 								</tr>
@@ -214,7 +214,7 @@ function SelectColor( wich )
 									<td>
 										&nbsp;
 										<input onkeypress="return IsDigit(event);" id="txtCollSpan" type="text" maxlength="2"
-											size="2" name="txtColumns"></td>
+											size="2" name="txt_columns"></td>
 									<td>
 									</td>
 								</tr>
@@ -230,7 +230,7 @@ function SelectColor( wich )
 									<td nowrap="nowrap">
 										<span fcklang="DlgCellBackColor">Background Color</span>:</td>
 									<td>
-										&nbsp;<input id="txtBackColor" type="text" size="8" name="txtCellSpacing"></td>
+										&nbsp;<input id="txtBackColor" type="text" size="8" name="txt_cell_spacing"></td>
 									<td>
 										&nbsp;
 										<input type="button" fcklang="DlgCellBtnSelect" value="Select..." onclick="SelectColor( 'Back' )"></td>
@@ -239,7 +239,7 @@ function SelectColor( wich )
 									<td nowrap="nowrap">
 										<span fcklang="DlgCellBorderColor">Border Color</span>:</td>
 									<td>
-										&nbsp;<input id="txtBorderColor" type="text" size="8" name="txtCellPadding" /></td>
+										&nbsp;<input id="txtBorderColor" type="text" size="8" name="txt_cell_padding" /></td>
 									<td>
 										&nbsp;
 										<input type="button" fcklang="DlgCellBtnSelect" value="Select..." onclick="SelectColor( 'Border' )" /></td>

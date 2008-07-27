@@ -53,7 +53,7 @@
     title => $title,
 &>
 
-% $m->callback( Callbackname => 'BeforeActionList', %ARGS, Actions => \@results, args_ref => \%ARGS );
+% $m->callback( Callbackname => 'before_action_list', %ARGS, Actions => \@results, args_ref => \%ARGS );
 <& /Elements/ListActions, actions => \@results &>
 <form method="post" action="<% RT->config->get('WebPath') . $m->request_comp->path %>?id=<% $id %>">
 <a href="<% RT->config->get('WebURL') %>Ticket/Display.html?id=<% $txn->ticket %>#txn-<% $id %>">

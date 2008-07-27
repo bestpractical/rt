@@ -98,10 +98,10 @@ my @id = ( ref $id eq 'ARRAY' ) ? @{$id} : ($id);
 my $Ticket = RT::Model::Ticket->new();
 
 # store the uploaded attachment in session
-if ( $ARGS{'Attach'} ) {    # attachment?
+if ( $ARGS{'attach'} ) {    # attachment?
     $session{'Attachments'} = {} unless defined $session{'Attachments'};
 
-    my $subject = "$ARGS{'Attach'}";
+    my $subject = "$ARGS{'attach'}";
 
     # since CGI.pm deutf8izes the magic field, we need to add it back.
     Encode::_utf8_on($subject);
@@ -111,12 +111,12 @@ if ( $ARGS{'Attach'} ) {    # attachment?
 
     my $attachment = make_mime_entity(
         subject             => $subject,
-        AttachmentFieldname => 'Attach',
+        AttachmentFieldname => 'attach',
     );
 
     $session{'Attachments'} =
     { %{ $session{'Attachments'} || {} },
-        $ARGS{'Attach'} => $attachment };
+        $ARGS{'attach'} => $attachment };
 }
 
 if ( defined ($id[0]) && $id[0] eq 'new' ) {
@@ -148,7 +148,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
         # }}}
 
         # delete temporary storage entry to make WebUI clean
-        unless ( keys %{ $session{'Attachments'} } and $ARGS{'UpdateAttach'} ) {
+        unless ( keys %{ $session{'Attachments'} } and $ARGS{'update_attach'} ) {
             delete $session{'Attachments'};
         }
 
@@ -172,7 +172,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
             . Jifty->web->current_user->user_object->signature )
       )
     {
-        $ARGS{UpdateAttachments} = $session{'Attachments'};
+        $ARGS{update_attachments} = $session{'Attachments'};
     }
     push @results, process_update_message(
         args_ref   => \%ARGS,
@@ -181,7 +181,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
             delete $session{'Attachments'};
 
     # delete temporary storage entry to make WebUI clean
-    unless ( keys %{ $session{'Attachments'} } and $ARGS{'UpdateAttach'} ) {
+    unless ( keys %{ $session{'Attachments'} } and $ARGS{'update_attach'} ) {
         delete $session{'Attachments'};
     }
 
@@ -191,11 +191,11 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
     # }}}
 
     #Update the status
-    if (    ( defined $ARGS{'Status'} )
-        and $ARGS{'Status'}
-        and ( $ARGS{'Status'} ne $Ticket->status ) )
+    if (    ( defined $ARGS{'status'} )
+        and $ARGS{'status'}
+        and ( $ARGS{'status'} ne $Ticket->status ) )
     {
-        ( $code, $msg ) = $Ticket->set_status( $ARGS{'Status'} );
+        ( $code, $msg ) = $Ticket->set_status( $ARGS{'status'} );
         push @results, "$msg";
     }
     # }}}

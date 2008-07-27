@@ -53,13 +53,13 @@
 </select>
 
 <p align="center">
-<input type="submit" class="button" name="Up" value=" &uarr; " />
-<input type="submit" class="button" name="Down" value=" &darr; " />
-<input type="submit" class="button" name="Left" value=" &larr; " />
-<input type="submit" class="button" name="Right" value=" &rarr; " />
-<input type="submit" class="button" name="Toggle" value="<&|/l&>And/Or</&>" />
-<input type="submit" class="button" name="DeleteClause" value="<&|/l&>delete</&>" />
-%#<input type="submit" class="button" name="EditQuery" value="Advanced" />
+<input type="submit" class="button" name="up" value=" &uarr; " />
+<input type="submit" class="button" name="down" value=" &darr; " />
+<input type="submit" class="button" name="left" value=" &larr; " />
+<input type="submit" class="button" name="right" value=" &rarr; " />
+<input type="submit" class="button" name="toggle" value="<&|/l&>And/Or</&>" />
+<input type="submit" class="button" name="delete_clause" value="<&|/l&>delete</&>" />
+%#<input type="submit" class="button" name="edit_query" value="Advanced" />
 </p>
 
 </&>
@@ -80,17 +80,17 @@ $selected
 my @NewSelection = ();
 
 my @results;
-if ( $ARGS{'Up'} || $ARGS{'Down'} ) {
+if ( $ARGS{'up'} || $ARGS{'down'} ) {
     if (@$selected) {
         foreach my $value (@$selected) {
             my $parent = $value->getParent;
             my $index = $value->getIndex;
             my $newindex = $index;
-            $newindex++ if $ARGS{'Down'};
-            $newindex-- if $ARGS{'Up'};
+            $newindex++ if $ARGS{'down'};
+            $newindex-- if $ARGS{'up'};
             if ( $newindex < 0 || $newindex >= $parent->getChildCount ) {
-                push( @results, [ _("error: can't move up"), -1 ] ) if $ARGS{'Up'};
-                push( @results, [ _("error: can't move down"), -1 ] ) if $ARGS{'Down'};
+                push( @results, [ _("error: can't move up"), -1 ] ) if $ARGS{'up'};
+                push( @results, [ _("error: can't move down"), -1 ] ) if $ARGS{'down'};
                 next;
             }
 
@@ -102,7 +102,7 @@ if ( $ARGS{'Up'} || $ARGS{'Down'} ) {
         push( @results, [ _("error: nothing to move"), -1 ] );
     }
 }
-elsif ( $ARGS{"Left"} ) {
+elsif ( $ARGS{"left"} ) {
     if (@$selected) {
         foreach my $value (@$selected) {
             my $parent = $value->getParent;
@@ -129,7 +129,7 @@ elsif ( $ARGS{"Left"} ) {
         push( @results, [ _("error: nothing to move"), -1 ] );
     }
 }
-elsif ( $ARGS{"Right"} ) {
+elsif ( $ARGS{"right"} ) {
     if (@$selected) {
         foreach my $value (@$selected) {
             my $parent = $value->getParent;
@@ -140,7 +140,7 @@ elsif ( $ARGS{"Right"} ) {
                 my $sibling = $parent->getChild( $index - 1 );
                 $newparent = $sibling unless $sibling->isLeaf;
             }
-            $newparent ||= RT::Interface::Web::QueryBuilder::Tree->new( $ARGS{'AndOr'} || 'AND', $parent );
+            $newparent ||= RT::Interface::Web::QueryBuilder::Tree->new( $ARGS{'and_or'} || 'AND', $parent );
 
             $parent->removeChild($value);
             $newparent->addChild($value);
@@ -150,7 +150,7 @@ elsif ( $ARGS{"Right"} ) {
         push( @results, [ _("error: nothing to move"), -1 ] );
     }
 }
-elsif ( $ARGS{"DeleteClause"} ) {
+elsif ( $ARGS{"delete_clause"} ) {
     if (@$selected) {
         my (@top);
         my %Selected = map { $_ => 1 } @$selected;
@@ -172,7 +172,7 @@ elsif ( $ARGS{"DeleteClause"} ) {
                 my $newindex = $sel->getIndex + 1;
                 $sel->insertSibling( $newindex, $add );
             }
-            $add->getParent->setNodeValue( $ARGS{'AndOr'} );
+            $add->getParent->setNodeValue( $ARGS{'and_or'} );
             push @NewSelection, $add;
         }
         @new = ();
@@ -188,7 +188,7 @@ elsif ( $ARGS{"DeleteClause"} ) {
         push( @results, [ _("error: nothing to delete"), -1 ] );
     }
 }
-elsif ( $ARGS{"Toggle"} ) {
+elsif ( $ARGS{"toggle"} ) {
     if (@$selected) {
         my %seen;
         my @unique_nodes = grep !$seen{ $_ + 0 }++,
@@ -219,7 +219,7 @@ if ( @new && @$selected ) {
             my $newindex = $sel->getIndex + 1;
             $sel->insertSibling( $newindex, $add );
         }
-        $add->getParent->setNodeValue( $ARGS{'AndOr'} );
+        $add->getParent->setNodeValue( $ARGS{'and_or'} );
         push @NewSelection, $add;
     }
     @$selected = ();
@@ -230,7 +230,7 @@ elsif ( @new ) {
         $tree->addChild( $add );
         push @NewSelection, $add;
     }
-    $tree->setNodeValue( $ARGS{'AndOr'} );
+    $tree->setNodeValue( $ARGS{'and_or'} );
 }
 $_->DESTROY foreach @new;
 

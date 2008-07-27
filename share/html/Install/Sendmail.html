@@ -58,7 +58,7 @@
     current_value => RT::Installer->current_values(@Types)
 &>
 
-<input type="hidden" name="Run" value="1">
+<input type="hidden" name="run" value="1">
 <& /Elements/Submit, label => _('Next: ') . _( 'Customize Global Defaults'),
     back => 1, back_label => _('Back: ' ) . _('Customize Basics') &>
 </form>
@@ -80,11 +80,11 @@ if ( $run ) {
     }
 
 
-    unless ( -e $ARGS{SendmailPath} ) {
-        push @errors, _( "%1 doesn't exist.", $ARGS{SendmailPath} );
+    unless ( -e $ARGS{sendmail_path} ) {
+        push @errors, _( "%1 doesn't exist.", $ARGS{sendmail_path} );
     }
 
-    if ( ! $ARGS{OwnerEmail} || $ARGS{OwnerEmail} !~ /.+@.+/ ) {
+    if ( ! $ARGS{owner_email} || $ARGS{owner_email} !~ /.+@.+/ ) {
         push @errors,
             _("Invalid %1: that doesn't look like an email address",
             'Administrator Email');

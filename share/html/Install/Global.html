@@ -59,7 +59,7 @@
     current_value => RT::Installer->current_values(@Types)
 &>
 
-<input type="hidden" name="Run" value="1">
+<input type="hidden" name="run" value="1">
 <& /Elements/Submit, label => $RT::Installer->{DatabaseAction} eq 'none' ?
 _('Next: ') . _('Finish') : _('Next: ') . _( 'Initialize Database'),
     back => 1, back_label => _('Back: ' ) . _('Customize Email Configuration') &>

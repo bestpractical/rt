@@ -68,7 +68,7 @@
 
 <& /Search/Elements/DisplayOptions, %$SearchArg, %ARGS,
    available_columns => $AvailableColumns, current_format => $current_format &>
-<& /Elements/Submit, caption => _("Save Changes"), label => _('Save'), name => 'Save'&>
+<& /Elements/Submit, caption => _("Save Changes"), label => _('Save'), name => 'save'&>
 
 </form>
 
@@ -102,7 +102,7 @@ my ( $AvailableColumns, $current_format );
     cfqueues => {}, %ARGS
 );
 
-if ($ARGS{'Save'}) {
+if ($ARGS{'save'}) {
     my $hash = {map { $_ => $ARGS{$_}} @fields};
     my ($ok, $msg) = $user->set_preferences($search, $hash);
     push @actions, $ok ? _('Preferences saved.') : $msg;
