@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /SelfService/Elements/Header, Title => _('Preferences') &>
+<& /SelfService/Elements/Header, title => _('Preferences') &>
 
 <& /Elements/ListActions, actions => \@results &>
 <form method="post">
@@ -57,26 +57,26 @@
 </&>
 <br />
 % }
-<& /Elements/Submit, Label => _('Save Changes') &>
+<& /Elements/Submit, label => _('Save Changes') &>
 	  </form>
 
 
 <%INIT>
 my @results;
 
-if ($NewPass1) {
-    if ($NewPass1 ne $NewPass2) {
+if ($new_pass1) {
+    if ($new_pass1 ne $new_pass2) {
 	push (@results, "passwords did not match.");
     }	
     else {
-	my ($val, $msg)=Jifty->web->current_user->user_object->set_password($NewPass1);
+	my ($val, $msg)=Jifty->web->current_user->user_object->set_password($new_pass1);
 	push (@results, "password: ".$msg);
     }	
 }
-if ($Signature) {
-    $Signature =~ s/(\r\n|\r)/\n/g;
-    if ($Signature ne Jifty->web->current_user->user_object->signature) {
-	my ($val, $msg)=Jifty->web->current_user->user_object->set_signature($Signature);
+if ($signature) {
+    $signature =~ s/(\r\n|\r)/\n/g;
+    if ($signature ne Jifty->web->current_user->user_object->signature) {
+	my ($val, $msg)=Jifty->web->current_user->user_object->set_signature($signature);
 	push (@results, "Signature: ".$msg);
     }
 }
@@ -86,7 +86,7 @@ $session{'i'}++;
 </%INIT>
 
 <%ARGS>
-$Signature => undef
-$NewPass1 => undef
-$NewPass2 => undef
+$signature => undef
+$new_pass1 => undef
+$new_pass2 => undef
 </%ARGS>

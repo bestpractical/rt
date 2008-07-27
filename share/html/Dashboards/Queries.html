@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $title &>
+<& /Elements/Header, title => $title &>
 <& /Dashboards/Elements/Tabs,
     current_subtab => $current_subtab,
-    Title => $title,
-    DashboardObj => $Dashboard &>
+    title => $title,
+    dashboard_obj => $Dashboard &>
 
 <& /Widgets/SelectionBox:header, nojs => 1 &>
 
@@ -107,7 +107,7 @@ push @objs, RT::SavedSearches->new( current_user => Jifty->web->current_user )->
                                           object => $RT::System );
 
 for my $object (@objs) {
-    for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
+    for ($m->comp("/Search/Elements/SearchesForObject", object => $object)) {
         my ($desc, $search) = @$_;
         my $SearchType = $search->content->{'SearchType'} || 'Ticket';
         my $privacy = $Dashboard->_build_privacy($object);
@@ -120,12 +120,12 @@ for my $object (@objs) {
 # Create a selectionbox widget for those queries
 my $sel = $m->comp(
     '/Widgets/SelectionBox:new',
-    Action    => 'Dashboards/Queries.html',
-    Name      => "Searches",
-    Available => \@items,
-    Selected  => \@selected,
-    AutoSave  => 1,
-    OnSubmit  => sub {
+    action    => 'Dashboards/Queries.html',
+    name      => "Searches",
+    available => \@items,
+    selected  => \@selected,
+    auto_save  => 1,
+    on_submit  => sub {
         my $self = shift;
 
         # transform list of "SearchID-PrivacyObjType-PrivacyObjID"s to
@@ -134,7 +134,7 @@ my $sel = $m->comp(
             [ reverse(split /-/, $_, 2), $desc_of{$_} ]
         } @{ $self->{Current} } ];
 
-        my ($ok, $msg) = $Dashboard->update(Searches => $searches);
+        my ($ok, $msg) = $Dashboard->update(searches => $searches);
 
         if ($ok) {
             push @results, loc("Dashboard updated");

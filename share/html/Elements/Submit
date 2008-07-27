@@ -51,29 +51,29 @@ id="<%$id%>"
 % }
 >
   <div class="extra-buttons">
-% if ($CheckAll) {
-  <input type="button" value="<%$CheckAllLabel%>" onclick="setCheckbox(this.form, '<% $Checkboxname %>', true);return false;" class="button" />
+% if ($check_all) {
+  <input type="button" value="<%$check_all_label%>" onclick="setCheckbox(this.form, '<% $checkboxname %>', true);return false;" class="button" />
 % }
-% if ($ClearAll) {
-  <input type="button" value="<%$ClearAllLabel%>" onclick="setCheckbox(this.form, '<% $Checkboxname %>', false);return false;" class="button" />
+% if ($clear_all) {
+  <input type="button" value="<%$clear_all_label%>" onclick="setCheckbox(this.form, '<% $checkboxname %>', false);return false;" class="button" />
 % }
-% if ($Reset) {
-  <input type="reset" value="<%$ResetLabel%>" class="button" />
+% if ($reset) {
+  <input type="reset" value="<%$reset_label%>" class="button" />
 % }
   </div>
   <div class="buttons">
-% if ( $Back ) {
-  <span class="caption"><%$BackCaption%></span>
-  <input type="submit" <% $BackOnClick ? qq[ onclick="$BackOnClick"] : '' | n %> <%
-      $BackName ? qq[ name="$BackName"] : '' | n %> value="<%$BackLabel%>" class="button" />
+% if ( $back ) {
+  <span class="caption"><%$back_caption%></span>
+  <input type="submit" <% $back_on_click ? qq[ onclick="$back_on_click"] : '' | n %> <%
+      $back_name ? qq[ name="$back_name"] : '' | n %> value="<%$back_label%>" class="button" />
 % }
 
-% if ($AlternateLabel) {
-  <span class="caption"><%$AlternateCaption%></span>
-  <input type="submit" <% $OnClick ? qq[ onclick="$OnClick"] : '' | n %> <% $name ? qq[ name="$name"] : '' | n %> value="<%$AlternateLabel%>" class="button" />
+% if ($alternate_label) {
+  <span class="caption"><%$alternate_caption%></span>
+  <input type="submit" <% $on_click ? qq[ onclick="$on_click"] : '' | n %> <% $name ? qq[ name="$name"] : '' | n %> value="<%$alternate_label%>" class="button" />
 % } else {
-  <span class="caption"><%$Caption%></span>
-  <input type="submit" <% $OnClick ? qq[ onclick="$OnClick"] : '' | n %> <% $name ? qq[ name="$name"] : '' | n %> value="<%$Label%>" class="button" />
+  <span class="caption"><%$caption%></span>
+  <input type="submit" <% $on_click ? qq[ onclick="$on_click"] : '' | n %> <% $name ? qq[ name="$name"] : '' | n %> value="<%$label%>" class="button" />
 % }
   </div>
   <div class="submit-clear"></div>
@@ -81,23 +81,23 @@ id="<%$id%>"
 
 <%ARGS>
 $color => undef
-$Caption => ''
-$AlternateCaption => undef
-$AlternateLabel => undef
-$Label => _('Submit')
+$caption => ''
+$alternate_caption => undef
+$alternate_label => undef
+$label => _('Submit')
 $name => undef
-$CheckAll => undef
-$CheckAllLabel => _('Check All')
-$ClearAll => undef
-$ClearAllLabel => _('Clear All')
-$Checkboxname => ''
-$Back => undef
-$BackName => 'Back'
-$BackLabel => _('Back')
-$BackCaption => ''
-$BackOnClick => undef
-$OnClick => undef
-$Reset => undef
-$ResetLabel => _('Reset')
+$check_all => undef
+$check_all_label => _('Check All')
+$clear_all => undef
+$clear_all_label => _('Clear All')
+$checkboxname => ''
+$back => undef
+$back_name => 'Back'
+$back_label => _('Back')
+$back_caption => ''
+$back_on_click => undef
+$on_click => undef
+$reset => undef
+$reset_label => _('Reset')
 $id => undef
 </%ARGS>

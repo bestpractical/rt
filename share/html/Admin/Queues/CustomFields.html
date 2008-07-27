@@ -45,13 +45,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/Header, title => $title &>
 <&    /Admin/Elements/QueueTabs,
     id => $object->id, 
-    current_tab => "Admin/Queues/CustomFields.html?SubType=$SubType&id=$id", 
-    current_subtab => "Admin/Queues/CustomFields.html?SubType=$SubType&id=$id", 
+    current_tab => "Admin/Queues/CustomFields.html?sub_type=$sub_type&id=$id", 
+    current_subtab => "Admin/Queues/CustomFields.html?sub_type=$sub_type&id=$id", 
     queue_obj => $object,
-    Title => $title
+    title => $title
     &>
 
     <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, object => $object, object_type => 'RT::Model::Queue' &>
@@ -68,5 +68,5 @@ my $title = _( 'Edit Custom Fields for %1', $object->name );
 </%INIT>
 <%ARGS>
 $id => undef
-$SubType => 'RT::Model::Queue-RT::Model::Ticket'
+$sub_type => 'RT::Model::Queue-RT::Model::Ticket'
 </%ARGS>

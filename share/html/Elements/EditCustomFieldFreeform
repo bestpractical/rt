@@ -45,27 +45,27 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% my $name = $namePrefix . $CustomField->id . '-value';
-% if ($Multiple) {
-<textarea cols="<%$Cols%>" rows="<%$Rows%>" name="<%$name%>s" id="<%$name%>s" wrap="off"><% $default || '' %></textarea>
+% my $name = $name_prefix . $custom_field->id . '-value';
+% if ($multiple) {
+<textarea cols="<%$cols%>" rows="<%$rows%>" name="<%$name%>s" id="<%$name%>s" wrap="off"><% $default || '' %></textarea>
 % } else {
-<input name="<%$name%>" id="<%$name%>" size="<%$Cols%>" value="<%$default ? $default : ''%>" />
+<input name="<%$name%>" id="<%$name%>" size="<%$cols%>" value="<%$default ? $default : ''%>" />
 % }
 <%INIT>
-if ( $Multiple and $values ) {
+if ( $multiple and $values ) {
     $default = join "\n", map $_->content, @{ $values->items_array_ref };
 }
-unless ( $Multiple ) {
+unless ( $multiple ) {
     $default =~ s/\s*\n+\s*/ /g if $default;
 }
 </%INIT>
 <%ARGS>
 $object => undef
-$CustomField => undef
-$namePrefix => undef
+$custom_field => undef
+$name_prefix => undef
 $default => undef
 $values => undef
-$Multiple => undef
-$Cols
-$Rows
+$multiple => undef
+$cols
+$rows
 </%ARGS>

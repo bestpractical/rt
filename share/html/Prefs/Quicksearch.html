@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $title &>
+<& /Elements/Header, title => $title &>
 <& /Prefs/Elements/Tabs,
     current_tab => 'Prefs/MyRT.html',
     current_subtab => 'Prefs/Quicksearch.html',
-    Title => $title
+    title => $title
 &>
 <& /Elements/ListActions, actions => \@actions &>
 <h1><&|/l&>Select queues to be displayed on the "RT at a glance" page</&></h1>
@@ -63,7 +63,7 @@ checked="checked"
 /><%$queue->name%>: <%$queue->description%></li>
 % }
 </ul>
-<& /Elements/Submit, Caption => _("Save Changes"), Label => _('Save'), name => 'Save'&>
+<& /Elements/Submit, caption => _("Save Changes"), label => _('Save'), name => 'Save'&>
 
 </form>
 

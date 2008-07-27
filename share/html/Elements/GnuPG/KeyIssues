@@ -45,29 +45,29 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% if ( @$Issues || @$SignAddresses ) {
+% if ( @$issues || @$sign_addresses ) {
 <&| /Widgets/TitleBox, title => loc('GnuPG issues') &>
 
-% if ( @$SignAddresses ) {
+% if ( @$sign_addresses ) {
 <% loc("The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem addresses are:") %>
 <ul>
-% for my $address (@$SignAddresses) {
+% for my $address (@$sign_addresses) {
     <li><% $address %></li>
 % }
 </ul>
 % }
 
-% if (@$Issues == 1) {
+% if (@$issues == 1) {
 <% loc("You are going to encrypt outgoing email messages, but there is a problem with a recipient's public key. You have to fix the problem with the key, disable sending a message to that recipient, or disable encryption.") %>
-% } elsif (@$Issues > 1) {
+% } elsif (@$issues > 1) {
 <% loc("You are going to encrypt outgoing email messages, but there are problems with recipients' public keys. You have to fix the problems with the keys, disable sending a message to the recipients with key problems, or disable encryption.") %>
 % }
 
 <ul>
-% foreach my $issue ( @$Issues ) {
+% foreach my $issue ( @$issues ) {
 <li>
 % if ( $issue->{'user'} ) {
-User <a href="<% RT->config->get('WebPath') %>/Admin/Users/Modify.html?id=<% $issue->{'user'}->id %>"><&/Elements/ShowUser, User => $issue->{'user'} &></a> has a problem.
+User <a href="<% RT->config->get('WebPath') %>/Admin/Users/Modify.html?id=<% $issue->{'user'}->id %>"><&/Elements/ShowUser, user => $issue->{'user'} &></a> has a problem.
 % } else {
 There is a problem with key(s) for address <% $issue->{'email'} %>, but there is no user in the DB for this address.
 % }
@@ -86,7 +86,7 @@ Select a key you want to use for encryption:
 % }
 
 <%ARGS>
-$Issues => []
-$SignAddresses => []
+$issues => []
+$sign_addresses => []
 </%ARGS>
 

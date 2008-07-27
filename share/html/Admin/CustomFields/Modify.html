@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/Header, title => $title &>
 <& /Admin/Elements/CustomFieldTabs,
     id => $CustomFieldObj->id ,
     current_tab => $current_tab,
-    Title => $title &>
+    title => $title &>
 <& /Elements/ListActions, actions => \@results &>
 
 
@@ -72,7 +72,7 @@
 
 % if ( $CustomFieldObj->id and $CustomFieldObj->is_selection_type and RT->config->get('custom_field_valuesSources') ) {
 <tr><td class="label"><&|/l&>Field values source:</&></td><td>
-<& /Admin/Elements/EditCustomFieldValuesSource, CustomField => $CustomFieldObj &>
+<& /Admin/Elements/EditCustomFieldValuesSource, custom_field => $CustomFieldObj &>
 </td></tr>
 % }
 
@@ -86,8 +86,8 @@
 <td><& /Widgets/ComboBox,
     name    => 'pattern',
     default => $CustomFieldObj->pattern,
-    Size    => 20,
-    Values  => \@CFvalidations,
+    size    => 20,
+    values  => \@CFvalidations,
 &></td></tr>
 
 <tr><td class="label"><&|/l&>Link values to</&></td><td>
@@ -118,12 +118,12 @@
 % if ( $CustomFieldObj->id && $CustomFieldObj->is_selection_type && !$CustomFieldObj->is_external_values ) {
 <h2><&|/l&>Values</&></h2>
 <div>
-<& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
-<& /Admin/Elements/AddCustomFieldValue, CustomField => $CustomFieldObj &>
+<& /Admin/Elements/EditCustomFieldValues, custom_field => $CustomFieldObj &>
+<& /Admin/Elements/AddCustomFieldValue, custom_field => $CustomFieldObj &>
 </div>
 % }
 
-<& /Elements/Submit, name => 'Update', Label => $id eq 'new'? _('Create'): _('Save Changes') &>
+<& /Elements/Submit, name => 'Update', label => $id eq 'new'? _('Create'): _('Save Changes') &>
 
 </form>
 <%INIT>
@@ -145,14 +145,14 @@ else {
             lookup_type    => $lookup_type,
             description   => $description,
             pattern       => $pattern,
-            LinkValueTo   => $LinkValueTo,
-            IncludeContentForValue => $IncludeContentForValue,
+            LinkValueTo   => $link_value_to,
+            IncludeContentForValue => $include_content_for_value,
         );
-        $m->comp( "/Elements/Error", Why => _( "Could not create CustomField", $msg ) ) unless $val;
+        $m->comp( "/Elements/Error", why => _( "Could not create CustomField", $msg ) ) unless $val;
         push @results, $msg;
         $title = _( 'Created CustomField %1', $CustomFieldObj->name );
     } else {
-        $CustomFieldObj->load( $id ) || $m->comp("/Elements/Error", Why => _('No CustomField') );
+        $CustomFieldObj->load( $id ) || $m->comp("/Elements/Error", why => _('No CustomField') );
         $title = _( 'Editing CustomField %1', $CustomFieldObj->name );
     }
     $current_tab .= "?id=$id";
@@ -169,7 +169,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
         object        => $CustomFieldObj,
         args_ref       => \%ARGS
     );
-    $CustomFieldObj->set_values_class( $valuesClass );
+    $CustomFieldObj->set_values_class( $values_class );
 
     my $paramtag = "CustomField-". $CustomFieldObj->id ."-value";
     # Delete any fields that want to be deleted
@@ -214,7 +214,7 @@ my @CFvalidations = (
     '(?#Year)^[12]\d{3}$',
 );
 
-$m->callback(Callbackname => 'ValidationPatterns', Values => \@CFvalidations);
+$m->callback(Callbackname => 'ValidationPatterns', values => \@CFvalidations);
 
 
 </%INIT>
@@ -222,14 +222,14 @@ $m->callback(Callbackname => 'ValidationPatterns', Values => \@CFvalidations);
 $id => undef
 $type_composite => undef
 $lookup_type => undef
-$MaxValues => undef
+$max_values => undef
 $sort_order => undef
 $description => undef
 $pattern => undef
 $name => undef
 $set_enabled => undef
 $enabled => 0
-$valuesClass => 'RT::Model::CustomFieldValueCollection'
-$LinkValueTo => undef
-$IncludeContentForValue => undef
+$values_class => 'RT::Model::CustomFieldValueCollection'
+$link_value_to => undef
+$include_content_for_value => undef
 </%ARGS>

@@ -79,7 +79,7 @@ if ($self->{SearchId} eq 'new') {
             # FFS
             local $Data::Dumper::Sortkeys = 1;
             if ( Dumper( $search->content ) eq
-                 Dumper( { %$search_params, SearchType => $self->{SearchType} } ) ) {
+                 Dumper( { %$search_params, search_type => $self->{SearchType} } ) ) {
                 $self->{CurrentSearch}{object}      = $search;
                 $self->{SearchId}                   = $search->id;
             }
@@ -133,13 +133,13 @@ $args
 </%method>
 
 <%method show>
-<form method="post" action="<% $Action %>" name="SaveSearch">
+<form method="post" action="<% $action %>" name="SaveSearch">
 <& /Search/Elements/EditSearches,
     id            => $self->{Searchid},
     type          => $self->{SearchType},
-    CurrentSearch => $self->{CurrentSearch},
-    Title         => $Title,
-    AllowCopy     => 0,
+    current_search => $self->{CurrentSearch},
+    title         => $title,
+    allow_copy     => 0,
 &><br />
 <%PERL>
 foreach my $field ( @{$self->{SearchFields}} ) {
@@ -155,8 +155,8 @@ foreach my $field ( @{$self->{SearchFields}} ) {
 </form>
 <%ARGS>
 $self   => undef
-$Action => ''
-$Title  => _('Saved searches')
+$action => ''
+$title  => _('Saved searches')
 </%ARGS>
 <%init>
 </%init>

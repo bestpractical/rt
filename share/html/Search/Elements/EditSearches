@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => _($Title)&>
+<&| /Widgets/TitleBox, title => _($title)&>
 
 %# Hide all the save functionality if the user shouldn't see it.
 % if ( $can_modify ) {
@@ -61,7 +61,7 @@
 <input type="submit" class="button" name="SavedSearchRevert" value="<%_('Revert')%>" />
 % }
 <input type="submit" class="button" name="SavedSearchDelete" value="<%_('Delete')%>" />
-% if ( $AllowCopy ) {
+% if ( $allow_copy ) {
 <input type="submit" class="button" name="SavedSearchCopy"   value="<%_('Save as New')%>" />
 % }
 </nobr>
@@ -75,7 +75,7 @@
 <br />
 <hr />
 <&|/l&>load saved search:</&>
-<& SelectSearchesForObjects, name => 'SavedSearchLoad', objects => \@objects, SearchType => $type &>
+<& SelectSearchesForObjects, name => 'SavedSearchLoad', objects => \@objects, search_type => $type &>
 <input type="submit" value="<% _('Load') %>" class="button" />
 
 </&>
@@ -116,9 +116,9 @@ my $is_dirty = sub {
 
 # If we're modifying an old query, check if it's been changed
 my $Dirty = $is_dirty->(
-    Query       => $CurrentSearch,
+    Query       => $current_search,
     SavedSearch => { id => $id, object => $object, description => $description },
-    SearchFields => \@SearchFields,
+    SearchFields => \@search_fields,
 );
 
 
@@ -129,76 +129,76 @@ $id            => 'new'
 $object        => undef
 $type          => 'Ticket'
 $description   => ''
-$CurrentSearch => {}
-@SearchFields   => ()
-$AllowCopy     => 1
-$Title         => _('Saved searches')
+$current_search => {}
+@search_fields   => ()
+$allow_copy     => 1
+$title         => _('Saved searches')
 </%ARGS>
 
 <%METHOD Init>
 <%ARGS>
 $query       => {}
-$SavedSearch => {}
-@SearchFields => qw(Query format order_by order rows_per_page)
+$saved_search => {}
+@search_fields => qw(Query format order_by order rows_per_page)
 </%ARGS>
 <%INIT>
 
 
-$SavedSearch->{'id'}          = $ARGS{'SavedSearchId'}          || 'new';
-$SavedSearch->{'description'} = $ARGS{'saved_search_description'} || undef;
-$SavedSearch->{'Privacy'}     = $ARGS{'SavedSearchOwner'}       || undef;
+$saved_search->{'id'}          = $ARGS{'SavedSearchId'}          || 'new';
+$saved_search->{'description'} = $ARGS{'saved_search_description'} || undef;
+$saved_search->{'Privacy'}     = $ARGS{'SavedSearchOwner'}       || undef;
 
 my @results;
 
 if ( $ARGS{'SavedSearchRevert'} ) {
-    $ARGS{'SavedSearchLoad'} = $SavedSearch->{'id'};
+    $ARGS{'SavedSearchLoad'} = $saved_search->{'id'};
 }
 
 if ( $ARGS{'SavedSearchLoad'} ) {
     my ($container, $id ) = _parse_saved_search ($ARGS{'SavedSearchLoad'});
     my $search = $container->attributes->with_id( $id );
 
-    $SavedSearch->{'id'}          = $ARGS{'SavedSearchLoad'};
-    $SavedSearch->{'object'}      = $search;
-    $SavedSearch->{'description'} = $search->description;
-    $query->{$_} = $search->sub_value($_) foreach @SearchFields;
+    $saved_search->{'id'}          = $ARGS{'SavedSearchLoad'};
+    $saved_search->{'object'}      = $search;
+    $saved_search->{'description'} = $search->description;
+    $query->{$_} = $search->sub_value($_) foreach @search_fields;
 
     if ( $ARGS{'SavedSearchRevert'} ) {
-        push @results, _('Loaded original "%1" saved search', $SavedSearch->{'description'} );
+        push @results, _('Loaded original "%1" saved search', $saved_search->{'description'} );
     } else {
-        push @results, _('Loaded saved search "%1"', $SavedSearch->{'description'} );
+        push @results, _('Loaded saved search "%1"', $saved_search->{'description'} );
     }
 }
 elsif ( $ARGS{'SavedSearchDelete'} ) {
     # We set $SearchId to 'new' above already, so peek into the %ARGS
-    my ($container, $id) = _parse_saved_search( $SavedSearch->{'id'} );
+    my ($container, $id) = _parse_saved_search( $saved_search->{'id'} );
     if ( $container && $container->id ) {
         # We have the object the entry is an attribute on; delete the entry...
         $container->attributes->delete_entry( name => 'SavedSearch', id => $id );
     }
-    $SavedSearch->{'id'}          = 'new';
-    $SavedSearch->{'object'}      = undef;
-    $SavedSearch->{'description'} = undef;
+    $saved_search->{'id'}          = 'new';
+    $saved_search->{'object'}      = undef;
+    $saved_search->{'description'} = undef;
     push @results, _("Deleted saved search");
 }
 elsif ( $ARGS{'SavedSearchCopy'} ) {
     my ($container, $id ) = _parse_saved_search( $ARGS{'SavedSearchid'} );
-    $SavedSearch->{'object'} = $container->attributes->withid( $id );
-    if ( $ARGS{'saved_search_description'} && $ARGS{'saved_search_description'} ne $SavedSearch->{'object'}->description ) {
-        $SavedSearch->{'description'} = $ARGS{'saved_search_description'};
+    $saved_search->{'object'} = $container->attributes->withid( $id );
+    if ( $ARGS{'saved_search_description'} && $ARGS{'saved_search_description'} ne $saved_search->{'object'}->description ) {
+        $saved_search->{'description'} = $ARGS{'saved_search_description'};
     } else {
-        $SavedSearch->{'description'} = _( "%1 copy", $SavedSearch->{'object'}->description );
+        $saved_search->{'description'} = _( "%1 copy", $saved_search->{'object'}->description );
     }
-    $SavedSearch->{'id'}          = 'new';
-    $SavedSearch->{'object'}      = undef;
+    $saved_search->{'id'}          = 'new';
+    $saved_search->{'object'}      = undef;
 }
 
-if ( $SavedSearch->{'id'} && $SavedSearch->{'id'} ne 'new'
-     && !$SavedSearch->{'object'} )
+if ( $saved_search->{'id'} && $saved_search->{'id'} ne 'new'
+     && !$saved_search->{'object'} )
 {
     my ($container, $id ) = _parse_saved_search( $ARGS{'SavedSearchId'} );
-    $SavedSearch->{'object'} = $container->attributes->with_id( $id );
-    $SavedSearch->{'description'} ||= $SavedSearch->{'object'}->description;
+    $saved_search->{'object'} = $container->attributes->with_id( $id );
+    $saved_search->{'description'} ||= $saved_search->{'object'}->description;
 }
 
 return @results;
@@ -209,21 +209,21 @@ return @results;
 <%METHOD Save>
 <%ARGS>
 $query        => {}
-$SavedSearch  => {}
-@SearchFields => qw(Query format order_by order rows_per_page)
+$saved_search  => {}
+@search_fields => qw(Query format order_by order rows_per_page)
 </%ARGS>
 <%INIT>
 
 return unless $ARGS{'SavedSearchSave'} || $ARGS{'SavedSearchCopy'};
 
 my @results;
-my $obj  = $SavedSearch->{'object'};
-my $id   = $SavedSearch->{'id'};
-my $desc = $SavedSearch->{'description'};
+my $obj  = $saved_search->{'object'};
+my $id   = $saved_search->{'id'};
+my $desc = $saved_search->{'description'};
 
-my $privacy = $SavedSearch->{'Privacy'};
+my $privacy = $saved_search->{'Privacy'};
 
-my %params = map { $_ => $query->{$_} } @SearchFields;
+my %params = map { $_ => $query->{$_} } @search_fields;
 my ($new_obj_type, $new_obj_id) = split(/\-/, ($privacy || ''));
 
 if ( $obj && $obj->id ) {
@@ -263,19 +263,19 @@ elsif ( $id eq 'new' ) {
     my ($status, $msg) = $saved_search->save(
         privacy      => $privacy,
         name         => $desc,
-        type         => $SavedSearch->{'type'},
+        type         => $saved_search->{'type'},
         search_params => \%params,
     );
 
     if ( $status ) {
-        $SavedSearch->{'object'} =
+        $saved_search->{'object'} =
             Jifty->web->current_user->user_object->attributes->with_id( $saved_search->id );
         # Build new SearchId
-        $SavedSearch->{'id'} =
+        $saved_search->{'id'} =
                 ref( Jifty->web->current_user->user_object ) . '-'
                     . Jifty->web->current_user->user_object->id
                     . '-SavedSearch-'
-                    . $SavedSearch->{'object'}->id;
+                    . $saved_search->{'object'}->id;
     }
     else {
         push @results, _("Can't find a saved search to work with").': '._($msg);

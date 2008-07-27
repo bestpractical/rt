@@ -46,8 +46,8 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$name%>">
-% while (my $option = shift @Options) {
-% my $value = shift @Values;
+% while (my $option = shift @options) {
+% my $value = shift @values;
 <option value="<%$value%>"
 % if ($default eq $value) {
 selected="selected"
@@ -58,7 +58,7 @@ selected="selected"
 
 <%ARGS>
 $name => undef
-@Options => (_('less than'), _('equal to'), _('greater than'), _('not equal to'))
-@Values => qw(< = > !=)
+@options => (_('less than'), _('equal to'), _('greater than'), _('not equal to'))
+@values => qw(< = > !=)
 $default =>'' 
 </%ARGS>

@@ -45,13 +45,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /SelfService/Elements/Header, Title => _('Error') &>
+<& /SelfService/Elements/Header, title => _('Error') &>
 <h2 class="title"><%_('Error')%></h2>
-<&| /Widgets/TitleBox, title => $Title &>
-<%$Why%>
+<&| /Widgets/TitleBox, title => $title &>
+<%$why%>
 <br />
 <font size="-1">
-<%$Details%>
+<%$details%>
 </font>
 </&>
 </body>
@@ -59,13 +59,13 @@
 
 
 <%args>
-$Code => undef
-$Details => undef
-$Title => _("RT Error")
-$Why => _("the calling component did not specify why")
+$code => undef
+$details => undef
+$title => _("RT Error")
+$why => _("the calling component did not specify why")
 </%args>
 
 <%INIT>
-$Details ||= "No details";
-Jifty->log->error("WebRT: $Why ($Details)");
+$details ||= "No details";
+Jifty->log->error("WebRT: $why ($details)");
 </%INIT>

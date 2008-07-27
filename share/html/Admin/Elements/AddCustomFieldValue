@@ -53,22 +53,22 @@
 <th><&|/l&>Sort</&></th>
 <th><&|/l&>name</&></th>
 <th><&|/l&>description</&></th>
-% if ( $CustomField->type ne 'Combobox' ) {
+% if ( $custom_field->type ne 'Combobox' ) {
 <th><&|/l&>category</&></th>
 % }
 </tr>
 
-% my $paramtag = "CustomField-". $CustomField->id ."-value-new";
+% my $paramtag = "CustomField-". $custom_field->id ."-value-new";
 <tr>
 <td><input type="text" size="3"  name="<% $paramtag %>-sort_order"   /></td>
 <td><input type="text" size="30" name="<% $paramtag %>-name"        /></td>
 <td><input type="text" size="50" name="<% $paramtag %>-description" /></td>
-% if ( $CustomField->type ne 'Combobox' ) {
+% if ( $custom_field->type ne 'Combobox' ) {
 <td><input type="text" size="10" name="<% $paramtag %>-category"    /></td>
 % }
 </tr>
 
 </table>
 <%args>
-$CustomField => undef
+$custom_field => undef
 </%args>

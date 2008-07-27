@@ -46,9 +46,9 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
-$Plugin => ''
+$plugin => ''
 </%ARGS>
-<div id="shredder-plugin-<% $Plugin %>-help" class="shredder-help">
+<div id="shredder-plugin-<% $plugin %>-help" class="shredder-help">
 <% $text |n%>
 </div>
 <%ONCE>
@@ -57,9 +57,9 @@ my $plugin_obj = RT::Shredder::Plugin->new;
 my %plugins = $plugin_obj->list;
 </%ONCE>
 <%INIT>
-my $file = $plugins{ $Plugin };
+my $file = $plugins{ $plugin };
 unless( $file ) {
-	Jifty->log->error( "Couldn't find plugin '$Plugin'" );
+	Jifty->log->error( "Couldn't find plugin '$plugin'" );
 	return;
 }
 
@@ -67,7 +67,7 @@ use RT::Shredder::POD qw();
 my $text = '';
 open my $io_handle, ">:scalar", \$text or die "Can't open scalar for write: $!";
 RT::Shredder::POD::plugin_html( $file, $io_handle );
-if ( $Plugin eq 'base' ) {
+if ( $plugin eq 'base' ) {
     $file =~ s/\.pm$/\/Search.pm/;
     RT::Shredder::POD::plugin_html( $file, $io_handle );
 }

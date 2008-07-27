@@ -50,8 +50,8 @@
 %# (perhaps by tweaking the .display style?)
 %       my $selected = 0;
 %       my @category;
-%       my $id = $namePrefix . $CustomField->id;
-%       my $out = $m->scomp('SELF:options', %ARGS, SelectedRef => \$selected, category_ref => \@category);
+%       my $id = $name_prefix . $custom_field->id;
+%       my $out = $m->scomp('SELF:options', %ARGS, selected_ref => \$selected, category_ref => \@category);
 %       if (@category) {
 <script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/cascaded.js"></script>
 %#      XXX - Hide this select from w3m?
@@ -64,21 +64,21 @@
       </select><br />
 %       }
       <select name="<%$id%>-values" id="<%$id%>-values"
-%       if ( $Rows && ( $Multiple || !@category ) ) {
-        size="<% $Rows %>"
+%       if ( $rows && ( $multiple || !@category ) ) {
+        size="<% $rows %>"
 %       }
-        <% $Multiple && qq[multiple="multiple"] |n %> >
+        <% $multiple && qq[multiple="multiple"] |n %> >
         <option value=""<% !$selected && qq[ selected="selected"] |n %>><&|/l&>(no value)</&></option>
 %       $m->out($out);
       </select>
 <%ARGS>
 $object => undef
-$CustomField => undef
-$namePrefix => undef
+$custom_field => undef
+$name_prefix => undef
 $default => undef
 $values => undef
-$Multiple => 0
-$Rows => undef
+$multiple => 0
+$rows => undef
 </%ARGS>
 
 <%METHOD options>
@@ -89,7 +89,7 @@ $Rows => undef
 % }
 % $_ = lc $_ foreach @default;
 % my $selected;
-% my $CFVs = $CustomField->values;
+% my $CFVs = $custom_field->values;
 % my @levels;
 % while ( my $value = $CFVs->next ) {
 %       my $name = $value->name;
@@ -114,7 +114,7 @@ $Rows => undef
         <option value="<% $name %>"
 %       if ( grep $_ eq lc $name, @default )
 %       {
-%           $$SelectedRef = 1;
+%           $$selected_ref = 1;
             selected="selected"
 %       }
         ><% $name %></option>
@@ -123,10 +123,10 @@ $Rows => undef
             </optgroup>
 % }
 <%ARGS>
-$CustomField => undef
+$custom_field => undef
 @default => ()
 $values => undef
-$SelectedRef => undef
+$selected_ref => undef
 $category_ref => undef
 </%ARGS>
 </%METHOD>

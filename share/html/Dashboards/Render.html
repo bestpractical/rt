@@ -45,13 +45,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $title, JavaScript => $Preview, ShowBar => $Preview  &>
+<& /Elements/Header, title => $title, java_script => $preview, show_bar => $preview  &>
 
-% if ($Preview) {
+% if ($preview) {
 <& /Dashboards/Elements/Tabs,
     current_subtab => $current_subtab,
-    Title => $title,
-    DashboardObj => $DashboardObj &>
+    title => $title,
+    dashboard_obj => $DashboardObj &>
 % }
 
 <table border="0" width="100%">
@@ -63,9 +63,9 @@
 %   my @for_showsearch = $DashboardObj->search_privacy(@$_);
     <& /Elements/ShowSearch,
         @for_showsearch,
-        Override => { Rows => $rows },
-        IgnoreMissing => 1,
-        hideable => $Preview,
+        override => { rows => $rows },
+        ignore_missing => 1,
+        hideable => $preview,
     &>
 % }
 </td>
@@ -99,6 +99,6 @@ my $title = $DashboardObj->name;
 </%INIT>
 <%ARGS>
 $id => undef
-$Preview => 1
+$preview => 1
 </%ARGS>
 

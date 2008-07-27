@@ -52,7 +52,7 @@
 
 <%PERL>
 my ( @active, @inactive, @not_tickets );
-for my $link ( @{ $Ticket->depends_on->items_array_ref } ) {
+for my $link ( @{ $ticket->depends_on->items_array_ref } ) {
     my $target = $link->target_obj;
     if ( $target && $target->isa('RT::Model::Ticket') ) {
         if ( $target->queue_obj->is_inactive_status( $target->status ) ) {
@@ -71,7 +71,7 @@ for my $link ( @{ $Ticket->depends_on->items_array_ref } ) {
 
 <ul>
 % for my $Link (@not_tickets, @active, @inactive) {
-<li><& ShowLink, URI => $Link &></li>
+<li><& ShowLink, uri => $Link &></li>
 % }
 </ul>
     </td>
@@ -80,8 +80,8 @@ for my $link ( @{ $Ticket->depends_on->items_array_ref } ) {
     <td class="labeltop"><&|/l&>Depended on by</&>: (<a href="<%$clone->{'new-DependsOn'}%>"><% _('Create') %></a>)</td>
     <td class="value">
 <ul>
-% while (my $Link = $Ticket->depended_on_by->next) {
-<li><& ShowLink, URI => $Link->base_uri &></li>
+% while (my $Link = $ticket->depended_on_by->next) {
+<li><& ShowLink, uri => $Link->base_uri &></li>
 % }
 </ul>
     </td>
@@ -90,22 +90,22 @@ for my $link ( @{ $Ticket->depends_on->items_array_ref } ) {
     <td class="labeltop"><&|/l&>Parents</&>: (<a href="<%$clone->{'MemberOf-new'}%>"><% _('Create') %></a>)</td>
     <td class="value">
 <ul>
-% while (my $Link = $Ticket->member_of->next) {
-<li><& ShowLink, URI => $Link->target_uri &></li>
+% while (my $Link = $ticket->member_of->next) {
+<li><& ShowLink, uri => $Link->target_uri &></li>
 % }
 </ul>
     </td>
   </tr>
   <tr>
     <td class="labeltop"><&|/l&>Children</&>: (<a href="<%$clone->{'new-MemberOf'}%>"><% _('Create') %></a>)</td>
-    <td class="value"><& /Ticket/Elements/ShowMembers, Ticket => $Ticket &></td>
+    <td class="value"><& /Ticket/Elements/ShowMembers, ticket => $ticket &></td>
   </tr>
   <tr>
     <td class="labeltop"><&|/l&>Refers to</&>: (<a href="<%$clone->{'RefersTo-new'}%>"><% _('Create') %></a>)</td>
     <td class="value">
 <ul>
-% while (my $Link = $Ticket->refers_to->next) {
-<li><& ShowLink, URI => $Link->target_uri &></li>
+% while (my $Link = $ticket->refers_to->next) {
+<li><& ShowLink, uri => $Link->target_uri &></li>
 % }
 </ul>
     </td>
@@ -114,9 +114,9 @@ for my $link ( @{ $Ticket->depends_on->items_array_ref } ) {
     <td class="labeltop"><&|/l&>Referred to by</&>: (<a href="<%$clone->{'new-RefersTo'}%>"><% _('Create') %></a>)</td>
     <td class="value">
     <ul>
-% while (my $Link = $Ticket->referred_to_by->next) {
+% while (my $Link = $ticket->referred_to_by->next) {
 % next if (UNIVERSAL::isa($Link->base_obj, 'RT::Model::Ticket')  && $Link->base_obj->type eq 'reminder');
-<li><& ShowLink, URI => $Link->base_uri &></li>
+<li><& ShowLink, uri => $Link->base_uri &></li>
 % }
 </ul>
     </td>
@@ -140,9 +140,9 @@ my $clone = {};
 my $path
     = RT->config->get('WebPath')
     . '/Ticket/Create.html?Queue='
-    . $Ticket->queue
+    . $ticket->queue
     . '&CloneTicket='
-    . $Ticket->id;
+    . $ticket->id;
 
 
 for my $relation (
@@ -155,19 +155,19 @@ for my $relation (
     $clone->{$field} 
         = $path . "&$field="
         . join( '%20',
-        ( map { $_->$other() } @{ $Ticket->$rel->items_array_ref } ),
-        $Ticket->id );
+        ( map { $_->$other() } @{ $ticket->$rel->items_array_ref } ),
+        $ticket->id );
 }
 
 for my $relation ( qw(MemberOf Members DependsOn DependedOnBy)) {
     my $mode  = $RT::Model::Ticket::LINKTYPEMAP{$relation}->{mode};
     my $type  = $RT::Model::Ticket::LINKTYPEMAP{$relation}->{type};
     my $field = $mode eq 'base' ? 'new-' . $type : $type . '-new';
-    $clone->{$field} = $path . "&$field=". $Ticket->id ;
+    $clone->{$field} = $path . "&$field=". $ticket->id ;
 }
 
 </%INIT>
 
 <%ARGS>
-$Ticket => undef
+$ticket => undef
 </%ARGS>

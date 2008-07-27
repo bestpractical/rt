@@ -45,9 +45,9 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&/Elements/Header, title => $Title &>
+<&/Elements/Header, title => $title &>
 <& /Elements/PageLayout,
-    title => $Title,
+    title => $title,
     toptabs => { a => { title => _('Install RT'),
                         path => 'Install/'
                         },
@@ -62,5 +62,5 @@
 <& /Elements/Footer &>
 % $m->abort;
 <%args>
-$Title => 'Install RT'
+$title => 'Install RT'
 </%args>

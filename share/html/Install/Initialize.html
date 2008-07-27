@@ -45,9 +45,9 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&|Elements/Wrapper, Title => _('Step %1 of %2: ', 6, 7) . _('Initialize Database') &> 
+<&|Elements/Wrapper, title => _('Step %1 of %2: ', 6, 7) . _('Initialize Database') &> 
 
-<& Elements/Errors, Errors => \@errors &>
+<& Elements/Errors, errors => \@errors &>
 
 % unless ( @errors ) {
 <div>
@@ -57,14 +57,14 @@
 
 <form method="post">
 <input type="hidden" name="Run" value="1">
-<& /Elements/Submit, Label => _('Initialize Database'), Back => 1,
-    BackLabel => _('Back: ') . _('Customize Global') &>
+<& /Elements/Submit, label => _('Initialize Database'), back => 1,
+    back_label => _('Back: ') . _('Customize Global') &>
 </form>
 </&>
 <%init>
 my @errors;
-if ( $Run ) {
-    if ( $Back ) {
+if ( $run ) {
+    if ( $back ) {
         RT::Interface::Web::redirect(RT->config->get('WebURL') .
 'Install/Global.html');
     }
@@ -134,7 +134,7 @@ if ( $Run ) {
 }
 </%init>
 <%args>
-$Run => undef
-$Back => undef
+$run => undef
+$back => undef
 </%args>
 

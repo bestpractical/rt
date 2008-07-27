@@ -45,16 +45,16 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/Header, title => $title &>
 <& /Admin/Elements/SystemTabs, 
     current_tab => 'Admin/Global/Templates.html', 
     current_subtab => $current_subtab, 
     subtabs => $subtabs, 
-    Title => $title &>
+    title => $title &>
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post" action="Template.html">
-%if ($Create ) {
+%if ($create ) {
 <input type="hidden" class="hidden" name="Template" value="new" />
 % } else {
 <input type="hidden" class="hidden" name="Template" value="<%$template_obj->id%>" />
@@ -66,7 +66,7 @@
 <& /Admin/Elements/ModifyTemplate, name => $template_obj->name, description => 
 $template_obj->description, content => $template_obj->content &>
 
-<& /Elements/Submit, Label => _('Create'), Reset => 1 &>
+<& /Elements/Submit, label => _('Create'), reset => 1 &>
 </form>
 
 
@@ -86,19 +86,19 @@ my $subtabs = {
 			   }
 	      };
 
-if ($Create) {
+if ($create) {
   $current_subtab = "Admin/Global/Template.html?Create=1&queue=0";
   $title = _("Create a template");
 }
 
 else {
-  if (defined ($Template) && $Template eq 'new') {
+  if (defined ($template) && $template eq 'new') {
       my ($val, $msg) =  $template_obj->create(queue => $queue, name => $name);
       abort(_("Could not create template: %1", $msg)) unless ($val);
      push @results, $msg;
     }
     else {
-       $template_obj->load($Template) || abort(_('No Template'));
+       $template_obj->load($template) || abort(_('No Template'));
     }
      $title = _('Modify template %1', _($template_obj->name())); 
   
@@ -119,7 +119,7 @@ if ($template_obj->id()) {
 </%INIT>
 <%ARGS>
 $queue => undef
-$Template => undef
-$Create => undef
+$template => undef
+$create => undef
 $name => undef
 </%ARGS>

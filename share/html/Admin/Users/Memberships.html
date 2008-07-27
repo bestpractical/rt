@@ -45,12 +45,12 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => $title  &>
+<& /Admin/Elements/Header, title => $title  &>
 <& /Admin/Elements/UserTabs, 
     id => $id, 
     user_object => $user_object,
     current_tab => $current_tab, 
-    Title => $title &>
+    title => $title &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -62,13 +62,13 @@
 <& /Elements/CollectionList,
     order_by => 'name',
     order   => 'ASC',
-    Rows    => 0,
+    rows    => 0,
     %ARGS,
     display_format => "__CheckBox.{Delete}__,$format",
     format => $format,
-    Collection => $is_member,
-    AllowSorting => 1,
-    PassArguments => [qw(format Rows Page order order_by id)],
+    collection => $is_member,
+    allow_sorting => 1,
+    pass_arguments => [qw(format Rows Page order order_by id)],
 &>
 
 <h2><&|/l&>Groups the user is not member of (check box to add)</&></h2>
@@ -76,16 +76,16 @@
 <& /Elements/CollectionList,
     order_by => 'name',
     order   => 'ASC',
-    Rows    => 100,
+    rows    => 100,
     %ARGS,
     display_format => "__CheckBox.{Add}__,'__has_member_recursively.{$id}__/TITLE:Recursive',$format",
     format => $format,
-    Collection => $is_not_member,
-    AllowSorting => 1,
-    PassArguments => [qw(format Rows Page order order_by)],
+    collection => $is_not_member,
+    allow_sorting => 1,
+    pass_arguments => [qw(format Rows Page order order_by)],
 &>
 
-<& /Elements/Submit, Label => _('Update'), name => 'Update' &>
+<& /Elements/Submit, label => _('Update'), name => 'Update' &>
 
 </form>
 
@@ -97,8 +97,8 @@ my $title = _("Memberships of the user %1", $user_object->name);
 my $current_tab = 'Admin/Users/Memberships.html?id='. $id;
 
 my @results;
-if ( $Update ) {
-    foreach my $gid( @Add ) {
+if ( $update ) {
+    foreach my $gid( @add ) {
         my $group = RT::Model::Group->new();
         $group->load_user_defined_group( $gid );
         unless ( $group->id ) {
@@ -108,7 +108,7 @@ if ( $Update ) {
         my ($status, $msg) = $group->add_member( $id );
         push @results, $msg;
     }
-    foreach my $gid( @Delete ) {
+    foreach my $gid( @delete ) {
         my $group = RT::Model::Group->new();
         $group->load_user_defined_group( $gid );
         unless ( $group->id ) {
@@ -135,9 +135,9 @@ $format ||= q{'<a href="__WebPath__/Admin/Groups/Modify.html?id=__id__">__id__</
 <%ARGS>
 $id     => undef
 
-$Update => 0,
-@Add    => (),
-@Delete => (),
+$update => 0,
+@add    => (),
+@delete => (),
 
 $format => undef
 </%ARGS>

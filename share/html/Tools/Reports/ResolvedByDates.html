@@ -47,8 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 <%args>
 $queue => undef
-$ResolvedBefore => undef
-$ResolvedAfter => undef
+$resolved_before => undef
+$resolved_after => undef
 </%args>
 <%init>
 my $title = _("Resolved tickets in period, grouped by owner");
@@ -58,38 +58,38 @@ my $after = RT::Date->new();
 my $query = '';
 
 
-if ($ResolvedAfter) {
-    $after->set(format => 'unknown', value => $ResolvedAfter);
-    $ResolvedAfter = $after->as_string;
+if ($resolved_after) {
+    $after->set(format => 'unknown', value => $resolved_after);
+    $resolved_after = $after->as_string;
 }
-if ($ResolvedBefore) {
-    $before->set(format => 'unknown', value => $ResolvedBefore);
-    $ResolvedBefore = $before->as_string;
+if ($resolved_before) {
+    $before->set(format => 'unknown', value => $resolved_before);
+    $resolved_before = $before->as_string;
 }
 
 
 $q->load_by_cols(name => $queue);
 </%init>
-<& /Elements/Header, Title => $title &>
-<& /Tools/Reports/Elements/Tabs, current_tab => 'Tools/Reports/ResolvedByDates.html', Title => $title &>
+<& /Elements/Header, title => $title &>
+<& /Tools/Reports/Elements/Tabs, current_tab => 'Tools/Reports/ResolvedByDates.html', title => $title &>
 <form method="post" action="ResolvedByDates.html">
-% if ($queue|| $ResolvedBefore ||$ResolvedAfter) {
+% if ($queue|| $resolved_before ||$resolved_after) {
 % # if we have a queue, do the search
 % $query = "Status = 'resolved'";
 % if ($queue) { $query .= " AND queue = '$queue'"}
-% if ($ResolvedBefore) { $query .= " AND resolved < '".$before->iso."'"; }
-% if ($ResolvedAfter) { $query .= " AND resolved > '".$after->iso."'"}
+% if ($resolved_before) { $query .= " AND resolved < '".$before->iso."'"; }
+% if ($resolved_after) { $query .= " AND resolved > '".$after->iso."'"}
 % my $groupby = 'Owner';
-<& /Search/Elements/Chart, query => $query, PrimaryGroupBy => $groupby &>
+<& /Search/Elements/Chart, query => $query, primary_group_by => $groupby &>
 % }
 
 <hr />
 
 <br /><&|/l&>Queue</&>: <& /Elements/SelectQueue, name => 'queue', named_values => 1, default => $q->id &>
 <br /><&|/l&>Tickets resolved after</&>: 
-<& /Elements/SelectDate, name => 'ResolvedAfter', default => ($ResolvedAfter) ? $after->iso : ''&>
+<& /Elements/SelectDate, name => 'ResolvedAfter', default => ($resolved_after) ? $after->iso : ''&>
 <br /><&|/l&>Tickets resolved before</&>: 
-<& /Elements/SelectDate, name => 'ResolvedBefore', default => ($ResolvedBefore) ? $before->iso : ''&>
+<& /Elements/SelectDate, name => 'ResolvedBefore', default => ($resolved_before) ? $before->iso : ''&>
 
 <& /Elements/Submit&>
 </form>

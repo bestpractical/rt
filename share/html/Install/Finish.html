@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| Elements/Wrapper, Title => _('Step %1 of %2: ', 7, 7) . _('Finish') &> 
+<&| Elements/Wrapper, title => _('Step %1 of %2: ', 7, 7) . _('Finish') &> 
 
 <div class="intro">
 <p>
@@ -67,12 +67,12 @@
 
 <form method="post">
 <input type="hidden" value="1" name="Run" />
-<& /Elements/Submit, Label => 'Finish Installation' &>
+<& /Elements/Submit, label => 'Finish Installation' &>
 </form>
 
 </&>
 <%init>
-if ( $Run ) {
+if ( $run ) {
     RT->install_mode(0);
     RT->init_system_objects();
     RT->init();
@@ -86,5 +86,5 @@ if ( $Run ) {
 </%init>
 
 <%args>
-$Run => undef
+$run => undef
 </%args>

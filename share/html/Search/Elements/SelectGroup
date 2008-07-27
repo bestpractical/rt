@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <select id="<%$name%>" name="<%$name%>">
-% if ($AllowNull) {
+% if ($allow_null) {
 <option value="">-</option>
 % }
 %while (my $group = $groups->next) {
@@ -60,7 +60,7 @@ $groups->limit(column => 'domain', operator => '=', value => $domain);
 
 </%INIT>
 <%ARGS>
-$AllowNull => 1
+$allow_null => 1
 $default=> ''
 $name => 'Group'
 $domain => 'UserDefined';

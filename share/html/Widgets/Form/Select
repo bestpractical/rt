@@ -65,7 +65,7 @@ $name
 $description      => undef,
 
 @values           => (),
-$valuesCallback   => undef,
+$values_callback   => undef,
 %values_label      => (),
 @current_value     => (),
 
@@ -73,10 +73,10 @@ $default            => 1,
 @default_value       => (),
 $default_label       => _('Use system default (%1)', join ', ', @default_value),
 
-$Alternative      => 0,
-$AlternativeLabel => _('other...'),
+$alternative      => 0,
+$alternative_label => _('other...'),
 
-$Multiple         => 0,
+$multiple         => 0,
 </%ARGS>
 <select name="<% $name %>">
 
@@ -92,20 +92,20 @@ $Multiple         => 0,
 <option value="<% $v %>" <% $selected |n %>><% $values_label{ $v } || $v %></option>
 % }
 
-% if ( $Alternative ) {
+% if ( $alternative ) {
 %     my $selected = '';
 %     $selected = 'selected="selected"' if keys %current_value;
-<option value="__alternative_value__" <% $selected |n %>><% $AlternativeLabel %></option>
+<option value="__alternative_value__" <% $selected |n %>><% $alternative_label %></option>
 % }
 
 </select>
-% if ( $Alternative ) {
+% if ( $alternative ) {
 <input type="text" class="alternative" name="Alternative-<% $name %>" value="<% join ', ', @current_value %>" />
 % }
 <%INIT>
 my %current_value = map {$_ => 1} grep defined, @current_value;
-if ( $valuesCallback ) {
-    my $values = $valuesCallback->(
+if ( $values_callback ) {
+    my $values = $values_callback->(
         current_user => Jifty->web->current_user,
         name        => $name,
     );
@@ -123,7 +123,7 @@ if ( $valuesCallback ) {
 <%ARGS>
 $name
 
-$Arguments        => {},
+$arguments        => {},
 
 @values           => (),
 %values_label      => (),
@@ -131,32 +131,32 @@ $Arguments        => {},
 $default          => 0,
 @default_value     => (),
 
-$Alternative      => 0,
-$Multiple         => 0,
+$alternative      => 0,
+$multiple         => 0,
 </%ARGS>
 <%INIT>
-my $value = $Arguments->{ $name };
+my $value = $arguments->{ $name };
 if( !defined $value || $value eq '__empty_value__' ) {
     return undef if $default;
-    return [ @default_value ] if $Multiple;
+    return [ @default_value ] if $multiple;
     return $default_value[0];
 }
 $value = [$value] unless ref $value;
 
-if ( $Alternative ) {
-    my $alt = $Arguments->{ "Alternative-". $name };
-    if( $Multiple ) {
+if ( $alternative ) {
+    my $alt = $arguments->{ "Alternative-". $name };
+    if( $multiple ) {
         push @$value, split /\s*,\s*/, $alt;
     } else {
         push @$value, $alt;
     }
 }
 
-splice @$value, 1 unless $Multiple;
+splice @$value, 1 unless $multiple;
 
 # XXX: check values
 
-return $value->[0] unless $Multiple;
+return $value->[0] unless $multiple;
 return $value;
 </%INIT>
 </%METHOD>

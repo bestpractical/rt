@@ -46,14 +46,14 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&|/l&>Depends on</&>:<br />
-% while (my $Link = $Ticket->depends_on->next) {
+% while (my $Link = $ticket->depends_on->next) {
 % my $member = $Link->target_obj;
 <a href="<%RT->config->get('WebPath')%>/Ticket/Display.html?id=<%$member->id%>"><%$member->id%></a>: (<%$member->owner_obj->name%>) <%$member->subject%>
 [<%$member->status%>]
  <br />
 % }
 <&|/l&>Depended on by</&>:<br />
-% while (my $Link = $Ticket->depended_on_by->next) {
+% while (my $Link = $ticket->depended_on_by->next) {
 % my $member = $Link->target_obj;
 <a href="<%RT->config->get('WebPath')%>/Ticket/Display.html?id=<%$member->id%>"><%$member->id%></a>: (<%$member->owner_obj->name%>) <%$member->subject%> 
 [<%$member->status%>]
@@ -61,5 +61,5 @@
 % }
 
 <%ARGS>
-$Ticket => undef
+$ticket => undef
 </%ARGS>

@@ -48,6 +48,6 @@
 <&|/Widgets/TitleBox, title => _('Refresh')&>
 <form method="get" action="<%RT->config->get('WebPath') . $m->request_comp->path %>">
 <& /Elements/Refresh, name => 'HomeRefreshInterval', default => $session {'home_refresh_interval'} &>
-<& /Elements/Submit,  Label => _('Go!') &>
+<& /Elements/Submit,  label => _('Go!') &>
 </&>
 </form>

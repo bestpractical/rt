@@ -46,16 +46,16 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <div id="shredder-dump-file-link" class="shredder-help">
-<a href="<% RT->config->get('WebPath') %>/Admin/Tools/Shredder/Dumps/<% $File %>">Download dumpfile</a>
+<a href="<% RT->config->get('WebPath') %>/Admin/Tools/Shredder/Dumps/<% $file %>">Download dumpfile</a>
 </div>
 <%ARGS>
-$File => ''
+$file => ''
 </%ARGS>
 <%INIT>
-return unless $File;
+return unless $file;
 use File::Spec ();
 use RT::Shredder ();
 
-$File = File::Spec->abs2rel( $File, RT::Shredder->storage_path )
-    if File::Spec->file_name_is_absolute($File);
+$file = File::Spec->abs2rel( $file, RT::Shredder->storage_path )
+    if File::Spec->file_name_is_absolute($file);
 </%INIT>

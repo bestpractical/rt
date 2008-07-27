@@ -45,18 +45,18 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<input type="checkbox" class="checkbox" name="<%$name%>" value="1" <%$IsChecked%> />
+<input type="checkbox" class="checkbox" name="<%$name%>" value="1" <%$is_checked%> />
 
 <%ARGS>
 $name => undef
 $default => undef
-$True => undef
-$False => undef
-$IsChecked => undef
+$true => undef
+$false => undef
+$is_checked => undef
 </%ARGS>
 
 <%INIT>
-$IsChecked = 
+$is_checked = 
   ($default && $default =~ /checked/i)
     ? ' checked="checked" ' : "";
 1;

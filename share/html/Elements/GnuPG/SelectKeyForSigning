@@ -56,10 +56,10 @@
 % }
 <%ARGS>
 $name => 'sign_using',
-$User => undef,
+$user => undef,
 </%ARGS>
 <%INIT>
 return unless RT->config->get('GnuPG')->{'enable'};
 
-my $user_key = $User->private_key;
+my $user_key = $user->private_key;
 </%INIT>

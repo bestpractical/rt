@@ -45,10 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $title &>
+<& /Elements/Header, title => $title &>
 <& /User/Elements/Tabs, 
     current_tab => 'Prefs/Other.html',
-    Title => $title,
+    title => $title,
 &>
 <& /Elements/ListActions, actions => \@results &>
 
@@ -59,7 +59,7 @@
 % my $meta = RT->config->meta( $option );
 <& $meta->{'Widget'},
     default      => 1,
-    %{ $m->comp('/Widgets/FinalizeWidgetArguments', WidgetArguments =>
+    %{ $m->comp('/Widgets/FinalizeWidgetArguments', widget_arguments =>
             $meta->{'WidgetArguments'} ) },
     name         => $option,
     default_value => scalar RT->config->get( $option ),
@@ -75,7 +75,7 @@
 </&>
 % }
 
-<& /Elements/Submit, name => 'Update', Label => _('Save Changes') &>
+<& /Elements/Submit, name => 'Update', label => _('Save Changes') &>
 </form>
 <%INIT>
 my @results;
@@ -89,13 +89,13 @@ if ((defined $preferred_key) && $preferred_key ne $user_object->first_attribute(
     push @results, _('Preferred Key: %1', _($msg));
 }
 
-if ( $Update ) {
+if ( $update ) {
     $preferences ||= {};
-    $m->comp( '/Widgets/BulkProcess', Meta => {
+    $m->comp( '/Widgets/BulkProcess', meta => {
                 map { $_ => RT->config->meta($_) } RT->config->options
             },
-            Store => $preferences,
-            types => [RT->config->options], default => 1, Arguments => \%ARGS,
+            store => $preferences,
+            types => [RT->config->options], default => 1, arguments => \%ARGS,
             default_value => { map { $_ => RT->config->get($_) }
                 RT->config->options
             }, );
@@ -105,7 +105,7 @@ if ( $Update ) {
 }
 </%INIT>
 <%ARGS>
-$Update => 0,
-$User   => undef,
+$update => 0,
+$user   => undef,
 $preferred_key => undef,
 </%ARGS>

@@ -55,7 +55,7 @@
 <&|/l&>Username</&>
 </td></tr>
 % while (my $u = $Users->next ) {
-<tr><td><&/Elements/SelectWatcherType, name => "Ticket-AddWatcher-Principal-". $u->principal_id &></td><td><& '/Elements/ShowUser', User => $u &></td></tr>
+<tr><td><&/Elements/SelectWatcherType, name => "Ticket-AddWatcher-Principal-". $u->principal_id &></td><td><& '/Elements/ShowUser', user => $u &></td></tr>
 % }
 % }
 
@@ -66,7 +66,7 @@
 <&|/l&>Group</&>
 </td></tr>
 % while (my $g = $Groups->next ) {
-<tr><td><&/Elements/SelectWatcherType, name => "Ticket-AddWatcher-Principal-".$g->principal_id, Scope => 'queue' &></td><td><%$g->name%> (<%$g->description%>)</td></tr>
+<tr><td><&/Elements/SelectWatcherType, name => "Ticket-AddWatcher-Principal-".$g->principal_id, scope => 'queue' &></td><td><%$g->name%> (<%$g->description%>)</td></tr>
 % }
 % }
 
@@ -95,26 +95,26 @@
 <%INIT>
 my ($Users, $Groups);
 
-if ($UserString) {
+if ($user_string) {
     $Users = RT::Model::UserCollection->new();
-    $Users->limit(column => $UserField, value => $UserString, operator => $UserOp);
-    $Users->limit_to_privileged if $privilegedOnly;
+    $Users->limit(column => $user_field, value => $user_string, operator => $user_op);
+    $Users->limit_to_privileged if $privileged_only;
      }
 
-if ($GroupString) {
+if ($group_string) {
     $Groups = RT::Model::GroupCollection->new();
     $Groups->limit(column => 'domain', operator => '=', value => 'UserDefined');
-    $Groups->limit(column => $GroupField, value => $GroupString, operator => $GroupOp);
+    $Groups->limit(column => $group_field, value => $group_string, operator => $group_op);
      }
 
 </%INIT>
 
 <%ARGS>
-$UserField => 'name'
-$UserOp => '='
-$UserString => undef
-$GroupField => 'name'
-$GroupOp => '='
-$GroupString => undef
-$privilegedOnly => undef
+$user_field => 'name'
+$user_op => '='
+$user_string => undef
+$group_field => 'name'
+$group_op => '='
+$group_string => undef
+$privileged_only => undef
 </%ARGS>

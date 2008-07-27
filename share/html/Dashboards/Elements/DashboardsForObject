@@ -46,16 +46,16 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%args>
-$Object => undef
+$object => undef
 </%args>
 <%init>
-# Returns a hash of dashboards associated on $Object
+# Returns a hash of dashboards associated on $object
 
 use RT::Dashboard;
 my %dashboards;
-my $privacy = RT::Dashboard->_build_privacy($Object);
+my $privacy = RT::Dashboard->_build_privacy($object);
 
-while (my $attr = $Object->attributes->next) {
+while (my $attr = $object->attributes->next) {
     if ($attr->name =~ /^Dashboard\b/) {
         my $dashboard = RT::Dashboard->new( current_user => Jifty->web->current_user );
         my ($ok, $msg) = $dashboard->load($privacy, $attr->id);
@@ -65,14 +65,14 @@ while (my $attr = $Object->attributes->next) {
             next;
         }
 
-        if ($Object->isa('RT::System')) {
+        if ($object->isa('RT::System')) {
             push @{ $dashboards{system} }, $dashboard;
         }
-        elsif ($Object->isa('RT::Model::User')) {
+        elsif ($object->isa('RT::Model::User')) {
             push @{ $dashboards{personal} }, $dashboard;
         }
-        elsif ($Object->isa('RT::Model::Group')) {
-            push @{ $dashboards{group}{$Object->name} }, $dashboard;
+        elsif ($object->isa('RT::Model::Group')) {
+            push @{ $dashboards{group}{$object->name} }, $dashboard;
         }
     }
 }

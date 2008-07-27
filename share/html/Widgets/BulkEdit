@@ -45,23 +45,23 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% for my $type ( @$Types ) {
-<& $Meta->{$type}{'Widget'},
-    Default      => $Default,
-    %{ $m->comp('/Widgets/FinalizeWidgetArguments', WidgetArguments =>
-            $Meta->{$type}{'WidgetArguments'} ) },
+% for my $type ( @$types ) {
+<& $meta->{$type}{'Widget'},
+    default      => $default,
+    %{ $m->comp('/Widgets/FinalizeWidgetArguments', widget_arguments =>
+            $meta->{$type}{'WidgetArguments'} ) },
     name         => $type,
-    exists $CurrentValue->{$type} ? ( CurrentValue => $CurrentValue->{$type} )
+    exists $current_value->{$type} ? ( current_value => $current_value->{$type} )
         : (),
-    exists $DefaultValue->{$type} ? ( DefaultValue => $DefaultValue->{$type} )
+    exists $default_value->{$type} ? ( default_value => $default_value->{$type} )
         : (),
 &>
 % }
 
 <%args>
-$Types
-$Meta
-$Default => 0
-$CurrentValue => {}
-$DefaultValue => {}
+$types
+$meta
+$default => 0
+$current_value => {}
+$default_value => {}
 </%args>

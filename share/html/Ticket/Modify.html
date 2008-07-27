@@ -45,12 +45,12 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => _('Modify ticket #%1', $ticket_obj->id) &>
+<& /Elements/Header, title => _('Modify ticket #%1', $ticket_obj->id) &>
 <& /Ticket/Elements/Tabs, 
-    Ticket => $ticket_obj, current_subtab => "Ticket/Modify.html?id=".$ticket_obj->id, 
-    Title => _('Modify ticket #%1', $ticket_obj->id) &>
+    ticket => $ticket_obj, current_subtab => "Ticket/Modify.html?id=".$ticket_obj->id, 
+    title => _('Modify ticket #%1', $ticket_obj->id) &>
 
-% $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, args_ref => \%ARGS, Ticket => $ticket_obj);
+% $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, args_ref => \%ARGS, ticket => $ticket_obj);
 
 <& /Elements/ListActions, actions => \@results &>
 <form method="post" action="Modify.html" enctype="multipart/form-data">
@@ -62,7 +62,7 @@
 <& Elements/EditCustomFields, ticket_obj => $ticket_obj &>
 </&>
 
-<& /Elements/Submit, Label => _('Save Changes'), Caption => _("If you've updated anything above, be sure to"), color => "#993333" &>
+<& /Elements/Submit, label => _('Save Changes'), caption => _("If you've updated anything above, be sure to"), color => "#993333" &>
 </form>
 <%INIT>
   
@@ -72,12 +72,12 @@ my $CustomFields = $ticket_obj->queue_obj->ticket_custom_fields();
 # call this to show up hints of valid cf values.
 $m->comp(
     '/Elements/ValidateCustomFields',
-    CustomFields => $CustomFields,
+    custom_fields => $CustomFields,
     args_ref => {},
 );
 
 # Now let callbacks have a chance at editing %ARGS
-$m->callback( ticket_obj => $ticket_obj, CustomFields => $CustomFields, args_ref => \%ARGS );
+$m->callback( ticket_obj => $ticket_obj, custom_fields => $CustomFields, args_ref => \%ARGS );
 
 my @results = process_ticket_basics(ticket_obj => $ticket_obj, args_ref => \%ARGS);
 my @cf_results = process_object_custom_field_updates(object => $ticket_obj, args_ref => \%ARGS);

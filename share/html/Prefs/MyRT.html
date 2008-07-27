@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $title &>
+<& /Elements/Header, title => $title &>
 <& /Prefs/Elements/Tabs,
     current_tab => 'Prefs/MyRT.html',
-    Title => $title,
-    Searches => \@sys_searches
+    title => $title,
+    searches => \@sys_searches
 &>
 <& /Elements/ListActions, actions => \@results &>
 
@@ -140,10 +140,10 @@ for my $object (@objs) {
 my @panes = $m->comp(
     '/Admin/Elements/ConfigureMyRT',
     panes  => ['body', 'summary'],
-    Action => 'MyRT.html',
+    action => 'MyRT.html',
     items => \@items,
     current_portlets => $portlets,
-    OnSave => sub  {
+    on_save => sub  {
         my ( $conf, $pane ) = @_;
         my ($ok, $msg) = $user->set_preferences( 'HomepageSettings', $conf );
         push @results, $ok ? _('Preferences saved for %1.', $pane) : $msg;

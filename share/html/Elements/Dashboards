@@ -50,8 +50,8 @@
    titleright => loc("Edit"), titleright_href => RT->config->get('WebPath').'/Dashboards' &>
 
 <& /Dashboards/Elements/ShowDashboards:table,
-    Dashboards => \@dashboards,
-    Verbose => 0,
+    dashboards => \@dashboards,
+    verbose => 0,
 &>
 </&>
 </div>
@@ -59,7 +59,7 @@
 use RT::Dashboard;
 
 my @objs = RT::Dashboard->new( current_user => Jifty->web->current_user )->_privacy_objects(ShowSystem => 1);
-my $dashboard_map = $m->comp("/Dashboards/Elements/DashboardsForObjects", Objects => \@objs);
+my $dashboard_map = $m->comp("/Dashboards/Elements/DashboardsForObjects", objects => \@objs);
 
 my @dashboards = (
     (sort { $a->id <=> $b->id } @{ $dashboard_map->{personal} || [] }),

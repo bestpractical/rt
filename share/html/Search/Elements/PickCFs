@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % foreach( @lines ) {
-<& ConditionRow, Condition => $_ &>
+<& ConditionRow, condition => $_ &>
 % }
 <%INIT>
 my $CustomFields = RT::Model::CustomFieldCollection->new();

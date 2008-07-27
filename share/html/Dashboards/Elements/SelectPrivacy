@@ -46,14 +46,14 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%args>
-@Objects => undef
-$Name => undef
-$Default => undef
+@objects => undef
+$name => undef
+$default => undef
 </%args>
-<select name="<%$Name%>">
-% foreach my $object (@Objects) {
+<select name="<%$name%>">
+% foreach my $object (@objects) {
 % my $privacy = ref($object) . '-' . $object->id;
-% my $selected = $privacy eq ($Default || '') ? 'selected="selected"' : '';
+% my $selected = $privacy eq ($default || '') ? 'selected="selected"' : '';
 
 % if (ref($object) eq 'RT::Model::User' && $object->id == Jifty->web->current_user->id) {
 <option <%$selected|n%> value="<%$privacy%>"><&|/l&>My dashboards</&></option>

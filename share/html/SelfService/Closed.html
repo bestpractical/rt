@@ -45,16 +45,16 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /SelfService/Elements/Header, Title => _('Closed tickets') &>
+<& /SelfService/Elements/Header, title => _('Closed tickets') &>
 
 <& /SelfService/Elements/MyRequests,
     %ARGS,
     status          => ['rejected', 'resolved'],
     friendly_status => _('closed'), 
-	baseURL         => RT->config->get('WebPath') ."/SelfService/Closed.html?",
-	Page            => $Page,
+	base_url         => RT->config->get('WebPath') ."/SelfService/Closed.html?",
+	page            => $page,
 &>
 
 <%ARGS>
-$Page => 1
+$page => 1
 </%ARGS>

@@ -49,16 +49,16 @@
   <div class="name">
     <a href="<%RT->config->get('WebPath')%>/Approvals/Display.html?id=<%$ticket->id%>"><% _("#%1: %2", $ticket->id, $ticket->subject) %></a> (<%_($ticket->status)%>)
   </div>
-% if ($ShowApproving) {
+% if ($show_approving) {
 %     foreach my $approving ( $ticket->all_depended_on_by( type => 'ticket' ) ) {
   <div class="originating-ticket">
     <span class="link"><a href="<%RT->config->get('WebPath')%>/Ticket/Display.html?id=<% $approving->id %>"><&|/l, $approving->id, $approving->subject &>Originating ticket: #%1</&></a></span>
     <div class="info">
-% if ($ShowCustomFields) {
-      <& /Ticket/Elements/ShowCustomFields, Ticket => $approving &>
+% if ($show_custom_fields) {
+      <& /Ticket/Elements/ShowCustomFields, ticket => $approving &>
 % }
-% if ($ShowHistory) {
-      <& /Ticket/Elements/ShowHistory, Ticket => $approving, Collapsed => 0, ShowTitle => 0, show_headers => 0, ShowDisplayModes => 0, ShowTitleBarCommands => 0 &>
+% if ($show_history) {
+      <& /Ticket/Elements/ShowHistory, ticket => $approving, collapsed => 0, show_title => 0, show_headers => 0, show_display_modes => 0, show_title_bar_commands => 0 &>
 % }
     </div>
   </div>
@@ -87,8 +87,8 @@
   </div>
 </div>
 <%ARGS>
-$ShowApproving => 1
-$ShowCustomFields => 1
-$ShowHistory => 1
+$show_approving => 1
+$show_custom_fields => 1
+$show_history => 1
 $ticket => undef
 </%ARGS>

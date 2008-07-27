@@ -46,23 +46,23 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
-$Plugin => ''
+$plugin => ''
 </%ARGS>
-<& PluginHelp, %ARGS, Plugin => 'base' &>
+<& PluginHelp, %ARGS, plugin => 'base' &>
 <div class="shredder-form">
 <span>Select plugin: </span>
 <select name="Plugin" onchange="showShredderPluginTab(this.value);">
 <option value="">(no value)</option>
 % foreach my $p( keys %plugins ) {
-<option value="<% $p %>" <% ($p eq $Plugin)? 'selected="selected"': '' %>><% $p %></option>
+<option value="<% $p %>" <% ($p eq $plugin)? 'selected="selected"': '' %>><% $p %></option>
 % }
 </select>
 </div>
 <div id="shredder-plugin-tabs">
 % foreach my $p( keys %plugins ) {
-<div id="shredder-plugin-<% $p %>-tab" class="<% ($p ne $Plugin)? 'hidden': '' %>">
-<& PluginHelp, %ARGS, Plugin => $p &>
-<& PluginArguments, %ARGS, Plugin => $p &>
+<div id="shredder-plugin-<% $p %>-tab" class="<% ($p ne $plugin)? 'hidden': '' %>">
+<& PluginHelp, %ARGS, plugin => $p &>
+<& PluginArguments, %ARGS, plugin => $p &>
 </div>
 % }
 </div>

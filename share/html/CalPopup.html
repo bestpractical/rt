@@ -57,7 +57,7 @@ function updateParent(strItem) {
 <div align="center">
 <div class="table-wrapper">
 <table>
-  <caption><%$months[$DisplayedMonth]%> <%$DisplayedYear%></caption>
+  <caption><%$months[$displayed_month]%> <%$displayed_year%></caption>
   <tr>
 % foreach my $wday (@weekdays) {
     <th><%$wday%></th>
@@ -68,7 +68,7 @@ function updateParent(strItem) {
 %     foreach my $day (@{$week}) {
     <td>
 %         if ($day) {
-%             my $datestr = sprintf('%04d-%02d-%02d', $DisplayedYear, $DisplayedMonth+1, $day);
+%             my $datestr = sprintf('%04d-%02d-%02d', $displayed_year, $displayed_month+1, $day);
       <dt><a href="javascript: updateParent('<%$datestr%>')"><%$day%></a></dt>
 %         }
     </td>
@@ -94,23 +94,23 @@ my @months = (_('January'), _('February'), _('March'), _('April'),
 	      _('September'), _('October'), _('November'), 
               _('December'));
 
-unless ($DisplayedYear) {
-              $DisplayedMonth = $today[4];
-              $DisplayedYear = ($today[5] + 1900);
+unless ($displayed_year) {
+              $displayed_month = $today[4];
+              $displayed_year = ($today[5] + 1900);
 }              
 
 my ($prev_year, $next_year, $prev_month, $next_month);
-$prev_month = $next_month = $DisplayedMonth;
-$prev_year = $next_year = $DisplayedYear;
+$prev_month = $next_month = $displayed_month;
+$prev_year = $next_year = $displayed_year;
 
 $next_month++;
 $prev_month--;
 
-if ($DisplayedMonth == 11) {
+if ($displayed_month == 11) {
     $next_year++;
     $next_month = 0;
     } 
-elsif ($DisplayedMonth == 0) {
+elsif ($displayed_month == 0) {
         $prev_month = 11;
         $prev_year--;
 
@@ -120,11 +120,11 @@ elsif ($DisplayedMonth == 0) {
 
 
 
-my @cal = calendar($DisplayedMonth+1, $DisplayedYear);
+my @cal = calendar($displayed_month+1, $displayed_year);
 
 </%init>
 <%args>
 $field => 'none'
-$DisplayedMonth => undef
-$DisplayedYear => undef
+$displayed_month => undef
+$displayed_year => undef
 </%args>

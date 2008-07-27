@@ -49,10 +49,10 @@
     tabs => $tabs, 
     current_toptab => 'Approvals/', 
     current_tab => $current_tab, 
-    Title => $Title &>
+    title => $title &>
 
 <%ARGS>
 $tabs => undef
 $current_tab => undef
-$Title => undef
+$title => undef
 </%ARGS>

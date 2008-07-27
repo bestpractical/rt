@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& Elements/Header, Title => _("Create a ticket") &>
+<& Elements/Header, title => _("Create a ticket") &>
 
 <form action="Display.html" method="post" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="id" value="new" />
@@ -65,7 +65,7 @@
 <&|/l&>Requestors</&>:
 </td>
 <td class="value">
-<& /Elements/EmailInput, name => 'requestors', Size => '20', default => Jifty->web->current_user->email &>
+<& /Elements/EmailInput, name => 'requestors', size => '20', default => Jifty->web->current_user->email &>
 </td>
 </tr>
 <tr>
@@ -73,7 +73,7 @@
 <&|/l&>Cc</&>:
 </td>
 <td class="value">
-<& /Elements/EmailInput, name => 'cc', Size => '20' &>
+<& /Elements/EmailInput, name => 'cc', size => '20' &>
 </td>
 </tr>
 <tr>
@@ -106,7 +106,7 @@
 </td>
 </tr>
 </table>
-<& /Elements/Submit, Label => _("Create ticket")&>
+<& /Elements/Submit, label => _("Create ticket")&>
 
 
 </form>

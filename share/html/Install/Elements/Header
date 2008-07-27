@@ -46,6 +46,6 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%args>
-$Title => undef
+$title => undef
 </%args>
-<h1><%$Title%></h1>
+<h1><%$title%></h1>

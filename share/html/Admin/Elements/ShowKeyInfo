@@ -51,7 +51,7 @@
 % } else {
 <table>
 
-% unless ( $Type eq 'private' ) {
+% unless ( $type eq 'private' ) {
 <tr><th><% _('Trust') %>:</th>  <td><% _( $res{'info'}{'trust'} ) %></td></tr>
 % }
 
@@ -75,14 +75,14 @@
 
 <%ARGS>
 $email
-$Type => 'public'
+$type => 'public'
 </%ARGS>
 <%INIT>
 require RT::Crypt::GnuPG;
-my %res = RT::Crypt::GnuPG::get_key_info( $email, $Type );
+my %res = RT::Crypt::GnuPG::get_key_info( $email, $type );
 
 my $title;
-if ( $Type eq 'private' ) {
+if ( $type eq 'private' ) {
     $title = _('GnuPG private key(s) for %1', $email);
 } else {
     $title = _('GnuPG public key(s) for %1', $email);

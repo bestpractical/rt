@@ -63,8 +63,8 @@
     <td class="entry">
       <& /Elements/EditCustomField, 
           object => $ticket_obj,
-          CustomField => $CustomField,
-          namePrefix => $namePrefix,
+          custom_field => $CustomField,
+          name_prefix => $name_prefix,
           default => $m->notes('Field-' . $CustomField->id) || $ARGS{"CustomField-".$CustomField->id},
       &>
 %  if (my $msg = $m->notes('InvalidField-' . $CustomField->id)) {
@@ -93,17 +93,17 @@ my $CustomFields;
 
 if ($ticket_obj) {
     $CustomFields = $ticket_obj->custom_fields();
-    $namePrefix .= "object-RT::Model::Ticket-".$ticket_obj->id."-CustomField-";
+    $name_prefix .= "object-RT::Model::Ticket-".$ticket_obj->id."-CustomField-";
 } else {
     $CustomFields = $queue_obj->ticket_custom_fields();
-    $namePrefix .= "object-RT::Model::Ticket--CustomField-";
+    $name_prefix .= "object-RT::Model::Ticket--CustomField-";
 }
 
 $m->callback( Callbackname => 'MassageCustomFields', CustomFields => $CustomFields );
 
 </%INIT>
 <%ARGS>
-$namePrefix => ''
+$name_prefix => ''
 $ticket_obj => undef
 $queue_obj => undef
 </%ARGS>

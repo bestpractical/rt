@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/Header, title => $title &>
 <& /Admin/Elements/GlobalCustomFieldTabs,
     current_tab => "Admin/Global/CustomFields/Users.html",
     current_subtab => "Admin/Global/CustomFields/Users.html",
-    Title => $title
+    title => $title
     &>
     <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, object_type => 'RT::Model::User', object=> $object &>
 <%INIT>

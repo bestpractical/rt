@@ -48,7 +48,7 @@
 <%args>
 @objects => undef
 $name => undef
-$SearchType => 'Ticket',
+$search_type => 'Ticket',
 </%args>
 <select name="<%$name%>">
 % foreach my $object (@objects) {
@@ -62,7 +62,7 @@ $SearchType => 'Ticket',
 % foreach my $search (@searches) { 
 %     # Skip it if it is not of search type we want.
 %     next if ($search->sub_value('SearchType')
-%              && $search->sub_value('SearchType') ne $SearchType);
+%              && $search->sub_value('SearchType') ne $search_type);
 <option value="<%ref($object)%>-<%$object->id%>-SavedSearch-<%$search->id%>"> -<%$search->description||_('Unnamed search')%></option>
 % }
 % }

@@ -46,17 +46,17 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&| /Widgets/TitleBox, title =>  $title &>
-<& /Elements/CollectionList, Title   => $title,
+<& /Elements/CollectionList, title   => $title,
 			 format  => $format, 
 			 query   => $query, 
  			 order   => @order, 
  			 order_by => @order_by,
-			 baseURL => $baseURL,
-			 GenericQueryArgs => $GenericQueryArgs,
-			 AllowSorting => $AllowSorting,
-			 Class   => 'RT::Model::TicketCollection',
-             Rows    => $Rows,
-			 Page    => $Page &>
+			 base_url => $base_url,
+			 generic_query_args => $generic_query_args,
+			 allow_sorting => $allow_sorting,
+			 class   => 'RT::Model::TicketCollection',
+             rows    => $rows,
+			 page    => $page &>
 </&>
 
 <%INIT>
@@ -81,11 +81,11 @@ $friendly_status => _('open')
 $title => _("My %1 tickets", $friendly_status)
 @roles => ('Watcher')
 @status => ('open', 'new', 'stalled')
-$baseURL => undef
-$Page => 1
-$GenericQueryArgs => undef
-$AllowSorting => 1
+$base_url => undef
+$page => 1
+$generic_query_args => undef
+$allow_sorting => 1
 @order => ('ASC')
 @order_by => ('Created')
-$Rows => 50
+$rows => 50
 </%ARGS>

@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $title &>
+<& /Elements/Header, title => $title &>
 <& /Dashboards/Elements/Tabs,
     current_subtab => $current_subtab,
-    Title => $title,
-    DashboardObj => $DashboardObj &>
+    title => $title,
+    dashboard_obj => $DashboardObj &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -158,15 +158,15 @@ monthly</input> , on day
 </table>
 
 % if ($SubscriptionObj->id) {
-    <& /Elements/Submit, Name => "Save", Label => loc('Save Changes') &>
+    <& /Elements/Submit, name => "Save", label => loc('Save Changes') &>
 % } else {
-    <& /Elements/Submit, Name => "Save", Label => loc('Subscribe') &>
+    <& /Elements/Submit, name => "Save", label => loc('Subscribe') &>
 % }
 </form>
 
 <%INIT>
 
-my $current_subtab = 'Dashboards/Subscription.html?DashboardId=' . $DashboardId;
+my $current_subtab = 'Dashboards/Subscription.html?DashboardId=' . $dashboard_id;
 
 my ($title, @results);
 my ($val, $msg);
@@ -180,20 +180,20 @@ my $SubscriptionObj = RT::Model::Attribute->new( current_user => Jifty->web->cur
 
 # first let's see if we already have a subscription to this DashboardId
 for my $sub (Jifty->web->current_user->user_object->attributes->named('Subscription')) {
-    next unless $sub->sub_value('DashboardId') == $DashboardId;
+    next unless $sub->sub_value('DashboardId') == $dashboard_id;
     $SubscriptionObj = $sub;
     last;
 }
 
-$DashboardId = $SubscriptionObj->id
+$dashboard_id = $SubscriptionObj->id
              ? $SubscriptionObj->sub_value('DashboardId')
              : $ARGS{'DashboardId'};
 
-($val, $msg) = $DashboardObj->load_by_id($DashboardId);
-$val || abort(loc("Couldn't load dashboard %1: %2.", $DashboardId, $msg));
+($val, $msg) = $DashboardObj->load_by_id($dashboard_id);
+$val || abort(loc("Couldn't load dashboard %1: %2.", $dashboard_id, $msg));
 
 my %fields = (
-    DashboardId => $DashboardId,
+    DashboardId => $dashboard_id,
     Frequency   => 'daily',
     Hour        => '06:00',
     Dow         => 'Monday',
@@ -220,9 +220,9 @@ for my $field (keys %fields) {
 if (defined $ARGS{Save}) {
     # update
     if ($SubscriptionObj->id) {
-        $DashboardId = delete $fields{'DashboardId'}; # immutable
+        $dashboard_id = delete $fields{'DashboardId'}; # immutable
         ($val, $msg) = $SubscriptionObj->set_sub_values(%fields);
-        $fields{'DashboardId'} = $DashboardId;
+        $fields{'DashboardId'} = $dashboard_id;
 
         # not so good to spew base64-encoded data at the user :)
         if ($msg =~ /^Content changed from/) {
@@ -233,12 +233,12 @@ if (defined $ARGS{Save}) {
     }
     # create
     else {
-        abort(loc("Unable to subscribe to dashboard %1: Permission denied", $DashboardId))
+        abort(loc("Unable to subscribe to dashboard %1: Permission denied", $dashboard_id))
             unless $DashboardObj->current_user_can_subscribe;
 
         my ($val, $msg) = $SubscriptionObj->create(
-            Name        => 'Subscription',
-            description => 'Subscription to dashboard ' . $DashboardId,
+            name        => 'Subscription',
+            description => 'Subscription to dashboard ' . $dashboard_id,
             ContentType => 'storable',
             Object      => Jifty->web->current_user->user_object,
             Content     => \%fields,
@@ -263,11 +263,11 @@ else {
 
 </%INIT>
 <%ARGS>
-$DashboardId => undef
-$Frequency   => undef
-$Hour        => undef
-$Dow         => undef
-$Dom         => undef
-$Rows        => undef
+$dashboard_id => undef
+$frequency   => undef
+$hour        => undef
+$dow         => undef
+$dom         => undef
+$rows        => undef
 </%ARGS>
 

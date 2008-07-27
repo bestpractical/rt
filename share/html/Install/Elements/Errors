@@ -45,10 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% if (@Errors) {
+% if (@errors) {
 <&| "/Widgets/TitleBox", title => _('Error'), hideable => 0, class => 'error'  &>
 <ul>
-% for my $Error ( @Errors ) {
+% for my $Error ( @errors ) {
 <li>
 <% $Error %>
 </li>
@@ -59,5 +59,5 @@
 % }
 
 <%args>
-@Errors
+@errors
 </%args>

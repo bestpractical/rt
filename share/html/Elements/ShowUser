@@ -47,27 +47,27 @@
 %# END BPS TAGGED BLOCK }}}
 %# Released under the terms of version 2 of the GNU Public License
 <%INIT>
-# $User is an RT::Model::User object
-# $Address is email::Address object
-if ( !$User && $Address ) {
-    $User = RT::Model::User->new;
-    $User->load_by_email( $Address->address );
-    unless ( $User->id ) {
-        $m->comp( '/Elements/ShowUserVerbose', Address => $Address );
+# $user is an RT::Model::User object
+# $address is email::Address object
+if ( !$user && $address ) {
+    $user = RT::Model::User->new;
+    $user->load_by_email( $address->address );
+    unless ( $user->id ) {
+        $m->comp( '/Elements/ShowUserVerbose', address => $address );
         return;
     }
 }
-elsif ( $User->isa('RT::CurrentUser') ) {
-    $User = $User->user_object;
+elsif ( $user->isa('RT::CurrentUser') ) {
+    $user = $user->user_object;
 }
 
 if ( $style eq 'concise' ) {
-    $m->comp( '/Elements/ShowUserConcise', User => $User );
+    $m->comp( '/Elements/ShowUserConcise', user => $user );
 }
-else { $m->comp( '/Elements/ShowUserVerbose', User => $User ); }
+else { $m->comp( '/Elements/ShowUserVerbose', user => $user ); }
 </%INIT>
 <%ARGS>
-$User => undef
-$Address => undef
+$user => undef
+$address => undef
 $style => RT->config->get('UsernameFormat', Jifty->web->current_user)
 </%ARGS>

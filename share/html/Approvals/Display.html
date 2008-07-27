@@ -45,21 +45,21 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title =>  $title &>
+<& /Elements/Header, title =>  $title &>
 
 <& Elements/Tabs, 
     current_tab => "Approvals/Display.html", 
-    Title =>  $title &>
+    title =>  $title &>
 <form method="post" action="<%RT->config->get('WebPath')%>/Approvals/index.html">
 
 <&| /Widgets/TitleBox, title => $title &>
-<& /Ticket/Elements/ShowHistory , Ticket => $Ticket, Collapsed => 0, ShowTitle => 0, show_headers => 0, ShowDisplayModes => 0, ShowTitleBarCommands => 0 &>
+<& /Ticket/Elements/ShowHistory , ticket => $Ticket, collapsed => 0, show_title => 0, show_headers => 0, show_display_modes => 0, show_title_bar_commands => 0 &>
 <hr />
-<& Elements/Approve, ticket => $Ticket, ShowApproving => 0 &>
+<& Elements/Approve, ticket => $Ticket, show_approving => 0 &>
 </&>
 <& /Elements/Submit&>
 </form>
-<& Elements/ShowDependency, Ticket => $Ticket &>
+<& Elements/ShowDependency, ticket => $Ticket &>
 
 <%init>
 my $Ticket = load_ticket($id);

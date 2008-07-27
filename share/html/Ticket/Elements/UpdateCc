@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<tr><td class="label"><&|/l&>One-time Cc</&>:</td><td><& /Elements/EmailInput, name => 'update_cc', Size => '60', default => $ARGS{update_cc} &>
+<tr><td class="label"><&|/l&>One-time Cc</&>:</td><td><& /Elements/EmailInput, name => 'update_cc', size => '60', default => $ARGS{update_cc} &>
 <input type="hidden" id="UpdateIgnoreAddressCheckboxes" name="UpdateIgnoreAddressCheckboxes" value="0">
         <br />
 
@@ -56,10 +56,10 @@ id="update_cc-<%$addr%>"
 name="update_cc-<%$addr%>" 
     type="checkbox" 
     onClick="checkboxToInput('update_cc', 'update_cc-<%$addr%>','<%$txn_addresses{$addr}->format%>' ); $(UpdateIgnoreAddressCheckboxes).value=1"  
-    <% $ARGS{'update_cc-'.$addr} ? 'checked="checked"' : ''%> > <& /Elements/ShowUser, Address => $txn_addresses{$addr}&>
+    <% $ARGS{'update_cc-'.$addr} ? 'checked="checked"' : ''%> > <& /Elements/ShowUser, address => $txn_addresses{$addr}&>
 %}
 </td></tr>
-<tr><td class="label"><&|/l&>One-time Bcc</&>:</td><td><& /Elements/EmailInput, name => 'UpdateBcc', Size => '60', default => $ARGS{UpdateBcc} &><br />
+<tr><td class="label"><&|/l&>One-time Bcc</&>:</td><td><& /Elements/EmailInput, name => 'UpdateBcc', size => '60', default => $ARGS{UpdateBcc} &><br />
 %foreach my $addr ( keys %txn_addresses) {
 %    next if ( grep {$addr eq $_} @req_addresses );
 <input
@@ -68,7 +68,7 @@ name="update_cc-<%$addr%>"
     type="checkbox" 
     onClick="checkboxToInput('UpdateBcc', 'UpdateBcc-<%$addr%>','<%$txn_addresses{$addr}->format%>' ); $(UpdateIgnoreAddressCheckboxes).value=1" 
         <% $ARGS{'UpdateBcc-'.$addr} ? 'checked="checked"' : ''%>> 
-<& /Elements/ShowUser, Address => $txn_addresses{$addr}&>
+<& /Elements/ShowUser, address => $txn_addresses{$addr}&>
 %}
 </td></tr>
 <%args>

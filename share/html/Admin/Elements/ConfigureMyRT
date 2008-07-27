@@ -46,8 +46,8 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%args>
-$Action
-$OnSave
+$action
+$on_save
 $items
 $panes
 $current_portlets
@@ -58,20 +58,20 @@ my @panes;
 for my $pane (@$panes) {
     push @panes, $m->comp(
         '/Widgets/SelectionBox:new',
-        Action    => $Action,
+        action    => $action,
         name      => $pane,
-        Available => $items,
-        AutoSave  => 1,
-        OnSubmit  => sub  {
+        available => $items,
+        auto_save  => 1,
+        on_submit  => sub  {
             my $sel = shift;
             $portlets->{$pane} = [
                 map { m/(\w+)-(.*)$/;
                       { type => $1,
                         name => $2 } } @{ $sel->{Current} }
             ];
-            $OnSave->( $portlets, $pane );
+            $on_save->( $portlets, $pane );
         },
-        Selected => [ map { join( '-', @{$_}{qw/type name/} ) }
+        selected => [ map { join( '-', @{$_}{qw/type name/} ) }
                       @{ $portlets->{$pane} } ]
     );
 }

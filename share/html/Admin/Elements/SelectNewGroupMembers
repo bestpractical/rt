@@ -45,22 +45,22 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% if ( $Show ne 'Groups' ) {
+% if ( $show ne 'Groups' ) {
 <b><&|/l&>Users</&></b>
 <select multiple="multiple" name="<% $name %>Users" size="10">
 % while ( my $user = $users->next ) {
-% next if $SkipUsers->{ $user->id };
-<option value="User-<% $user->id %>"><& /Elements/ShowUser, User => $user &></option>
+% next if $skip_users->{ $user->id };
+<option value="User-<% $user->id %>"><& /Elements/ShowUser, user => $user &></option>
 % }
 </select>
 <br />
 % }
 
-% if ( $Show ne 'Users' ) {
+% if ( $show ne 'Users' ) {
 <b><&|/l&>Groups</&></b>
 <select multiple="multiple" name="<% $name %>Groups" size="10">
 % while ( my $group = $groups->next ) {
-% next if $SkipGroups->{ $group->id };
+% next if $skip_groups->{ $group->id };
 <option value="Group-<% $group->id %>"><% $group->name %></option>
 % }
 </select>
@@ -86,15 +86,15 @@ $users->limit_to_privileged();
 my $groups = RT::Model::GroupCollection->new();
 
 # self-recursive group membership considered harmful!
-$groups->limit(column => 'id', value => $Group->id, operator => '!=' );
+$groups->limit(column => 'id', value => $group->id, operator => '!=' );
 $groups->limit(column => 'domain', operator => '=', value => 'UserDefined');
 
 
 </%INIT>
 <%ARGS>
 $name => 'Users'
-$Show => 'All'
-$Group
-$SkipUsers => {}
-$SkipGroups => {}
+$show => 'All'
+$group
+$skip_users => {}
+$skip_groups => {}
 </%ARGS>

@@ -49,7 +49,7 @@
 <table>
 <td><% _('sign')%></td>
 <td><& /Widgets/Form/Boolean:InputOnly, name => 'sign', current_value => $self->{'sign'} &>
-using <& SelectKeyForSigning, User => Jifty->web->current_user->user_object &>
+using <& SelectKeyForSigning, user => Jifty->web->current_user->user_object &>
 </td>
 <td><% _('encrypt')%></td>
 <td><& /Widgets/Form/Boolean:InputOnly, name => 'encrypt', current_value => $self->{'encrypt'} &></td>
@@ -81,8 +81,8 @@ $self => undef,
 return unless $self;
 
 return $m->comp( '/Elements/GnuPG/KeyIssues',
-    Issues => $self->{'GnuPGRecipientsKeyIssues'} || [],
-    SignAddresses => $self->{'GnuPGCanNotSignAs'} || [],
+    issues => $self->{'GnuPGRecipientsKeyIssues'} || [],
+    sign_addresses => $self->{'GnuPGCanNotSignAs'} || [],
 );
 </%INIT>
 </%METHOD>
@@ -103,7 +103,7 @@ foreach ( qw(sign encrypt) ) {
     $self->{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
         name => $_,
         default_value => $queue_obj->$_,
-        Arguments => $self,
+        arguments => $self,
     );
 }
 </%INIT>

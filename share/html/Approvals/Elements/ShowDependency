@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% my $approving = $Ticket->depended_on_by();
+% my $approving = $ticket->depended_on_by();
 % if ($approving->count) {
 <h3><&|/l&>Tickets which depend on this approval:</&></h3>
 
@@ -59,22 +59,22 @@ while (my $link = $approving->next()) {
     my $text = '<a name="' . $link->base_obj->id . '">';
     my $head = '';
     my $type = $link->base_obj->type;
-    my $dep  = $m->scomp('ShowDependency', Ticket => $link->base_obj, _seen => $_seen);
+    my $dep  = $m->scomp('ShowDependency', ticket => $link->base_obj, _seen => $_seen);
 
     if ($type eq 'approval') {
 	$head .= $m->scomp('/Widgets/TitleBoxStart', title => _("Approval #%1: %2", $link->base_obj->id, $link->base_obj->subject));
 	$text .= $head;
-	$text .= $m->scomp('/Ticket/Elements/ShowCustomFields', Ticket => $link->base_obj);
+	$text .= $m->scomp('/Ticket/Elements/ShowCustomFields', ticket => $link->base_obj);
     } elsif ($type eq 'ticket') {
 	$head .= $m->scomp('/Widgets/TitleBoxStart', title => _("Ticket #%1: %2", $link->base_obj->id, $link->base_obj->subject));
 	$text .= $head;
-	$text .= $m->scomp('/Ticket/Elements/ShowSummary', Ticket => $link->base_obj);
+	$text .= $m->scomp('/Ticket/Elements/ShowSummary', ticket => $link->base_obj);
     } else {
 	$head .= $m->scomp('/Widgets/TitleBoxStart', title => _("#%1: %2", $link->base_obj->id, $link->base_obj->subject));
 	$text .= $head;
     }
 
-    $text .= $m->scomp('/Ticket/Elements/ShowHistory' , Ticket => $link->base_obj, Collapsed => ($type ne 'ticket'), ShowTitle => 0, show_headers => 0, ShowDisplayModes => 0, ShowTitleBarCommands => 0);
+    $text .= $m->scomp('/Ticket/Elements/ShowHistory' , ticket => $link->base_obj, collapsed => ($type ne 'ticket'), show_title => 0, show_headers => 0, show_display_modes => 0, show_title_bar_commands => 0);
 
     $head .= $m->scomp('/Widgets/TitleBoxEnd');
     $text .= $m->scomp('/Widgets/TitleBoxEnd');
@@ -104,6 +104,6 @@ $m->print($refer);
 
 % }
 <%ARGS>
-$Ticket
+$ticket
 $_seen => {}
 </%ARGS>

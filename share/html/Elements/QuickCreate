@@ -65,7 +65,7 @@
 <td class="labeltop"><&|/l&>Content</&>:</td>
 <td colspan="3" class="value"><textarea name="Content" cols="50" rows="3"></textarea></td></tr>
 </table>
-<& /Elements/Submit, Label => _('Create') &>
+<& /Elements/Submit, label => _('Create') &>
 </form>
 </&>
 </div>

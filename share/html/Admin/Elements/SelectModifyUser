@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 %while ( $user = $users->next) {
-<a href="Modify.html?id=<%$user->id%>"><%$user->id%>: <& /Elements/ShowUser, User => $user &></a><br />
+<a href="Modify.html?id=<%$user->id%>"><%$user->id%>: <& /Elements/ShowUser, user => $user &></a><br />
 %}
 <%INIT>
 my ($user);
@@ -55,19 +55,19 @@ $users->limit(column => 'id',
               value => RT->system_user->id,
               operator => '!=' );
 
-if (defined $IdLike) {
+if (defined $id_like) {
 $users->limit(column => 'name',
-              value => $IdLike,
+              value => $id_like,
               operator => 'LIKE' );
 }
-if (defined $EmailLike) {
+if (defined $email_like) {
 $users->limit(column => 'email',
-              value => $EmailLike,
+              value => $email_like,
               operator => 'LIKE');
 
 }
 </%INIT>
 <%ARGS>
-$IdLike => undef
-$EmailLike => undef
+$id_like => undef
+$email_like => undef
 </%ARGS>

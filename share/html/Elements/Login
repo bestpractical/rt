@@ -50,7 +50,7 @@ if ($m->request_comp->path =~ '^/REST/\d+\.\d+/') {
     $r->content_type("text/plain");
     $m->error_format("text");
     $m->out("RT/$RT::VERSION 401 Credentials required\n");
-    $m->out("\n$Error\n") if $Error;
+    $m->out("\n$error\n") if $error;
     $m->abort;
 }
 
@@ -67,16 +67,16 @@ my $form_action = defined $goto             ? $goto
 </%INIT>
 
 % $m->callback( %ARGS, Callbackname => 'Header' );
-<& /Elements/Header, Title => _('Login'), Focus => 'user' &>
+<& /Elements/Header, title => _('Login'), focus => 'user' &>
 
 
 %# End of div#quickbar from /Elements/Header
 </div>
 
 <div id="body" class="login-body">
-% if ($Error) {
+% if ($error) {
 <&| "/Widgets/TitleBox", title => _('Error'), hideable => 0, class => 'error'  &>
-<% $Error %>
+<% $error %>
 </&>
 % }
 
@@ -110,10 +110,10 @@ my $form_action = defined $goto             ? $goto
 </div><!-- #login-box -->
 % $m->callback( %ARGS, Callbackname => 'AfterForm' );
 </div><!-- #login-body -->
-<& /Elements/Footer, Menu => 0 &>
+<& /Elements/Footer, menu => 0 &>
 <%ARGS>
 $user => ""
 $pass => undef
 $goto => undef
-$Error => undef
+$error => undef
 </%ARGS>

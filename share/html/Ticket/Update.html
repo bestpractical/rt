@@ -45,12 +45,12 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $title &>
+<& /Elements/Header, title => $title &>
 <& /Ticket/Elements/Tabs, 
-    Ticket => $ticket_obj, 
-    Title=> $title &>
+    ticket => $ticket_obj, 
+    title=> $title &>
     
-% $m->callback(Callbackname => 'BeforeActionList', args_ref => \%ARGS, Ticket => $ticket_obj);
+% $m->callback(Callbackname => 'BeforeActionList', args_ref => \%ARGS, ticket => $ticket_obj);
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="Update.html" name="TicketUpdate"
@@ -103,7 +103,7 @@
 %    while (my $CF = $TxnCFs->next()) {
 <tr>
 <td class="label"><% $CF->name %>:</td>
-<td><& /Elements/EditCustomField, CustomField => $CF, namePrefix =>
+<td><& /Elements/EditCustomField, custom_field => $CF, name_prefix =>
     "object-RT::Model::Transaction--CustomField-" &><em><% $CF->friendly_type %></em></td>
 </tr>
 %    } # end if while
@@ -138,7 +138,7 @@
 % # preserve QuoteTransaction so we can use it to set up sane references/in/reply to
 % my $temp = $ARGS{'QuoteTransaction'};
 % delete $ARGS{'QuoteTransaction'};
-<& /Elements/MessageBox, name=>"update_content", default=>$ARGS{update_content}, IncludeSignature => 0, %ARGS&>
+<& /Elements/MessageBox, name=>"update_content", default=>$ARGS{update_content}, include_signature => 0, %ARGS&>
 % $ARGS{'QuoteTransaction'} = $temp;
 % } else {
 <& /Elements/MessageBox, name=>"update_content", %ARGS &>
@@ -149,7 +149,7 @@
 
 
 
-<& /Elements/Submit, Label => _('Update Ticket'), name => 'SubmitTicket' &>
+<& /Elements/Submit, label => _('Update Ticket'), name => 'SubmitTicket' &>
 % if ($ticket_obj->current_user_has_right('ShowOutgoingEmail')) {
 <&|/Widgets/TitleBox, title => _('Scrips and Recipients') &>
 <& /Ticket/Elements/PreviewScrips, ticket_obj => $ticket_obj, %ARGS &>
@@ -165,7 +165,7 @@ my $title;
 
 my $ticket_obj = load_ticket($id);
 
-$m->callback( Ticket => $ticket_obj, args_ref => \%ARGS, Callbackname => 'Initial' );
+$m->callback( ticket => $ticket_obj, args_ref => \%ARGS, Callbackname => 'Initial' );
 
 unless($default_status){
     $default_status=($ARGS{'status'} ||$ticket_obj->status());
@@ -253,7 +253,7 @@ if ( $ARGS{'SubmitTicket'} ) {
 }
 
 if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {
-    $m->callback( Ticket => $ticket_obj, args_ref => \%ARGS, Callbackname => 'BeforeDisplay' );
+    $m->callback( ticket => $ticket_obj, args_ref => \%ARGS, Callbackname => 'BeforeDisplay' );
     return $m->comp('Display.html', ticket_obj => $ticket_obj, %ARGS);
 }
 

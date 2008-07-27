@@ -63,33 +63,33 @@ $attachments->join( alias1 => 'main',
 		    alias2 => $transactions,
 		    column2 => 'id' );
     
-my $tickets = $attachments->new_alias('Tickets');
+my $tickets_alias = $attachments->new_alias('Tickets');
 
   $attachments->join( alias1 => $transactions,                         
                         column1 => 'object_id',
-                        alias2 => $tickets,
+                        alias2 => $tickets_alias,
                         column2 => 'id' );
     
     $attachments->limit( alias => $transactions,
                          column => 'object_type',
                         value => 'RT::Model::Ticket');
-if ($Tickets) {
-    while ($Ticket = $Tickets->next) {
-	$attachments->limit( alias => $tickets,
+if ($tickets) {
+    while ($ticket = $tickets->next) {
+	$attachments->limit( alias => $tickets_alias,
 			     column => 'effective_id',
-			     value => $Ticket->id() );
+			     value => $ticket->id() );
     }
 } else {
-    $attachments->limit( alias => $tickets,
+    $attachments->limit( alias => $tickets_alias,
 			 column => 'effective_id',
-			 value => $Ticket->id() );
+			 value => $ticket->id() );
 }
 
 
 return ($attachments);
 </%INIT>
 <%ARGS>
-$Ticket => undef
-$Tickets => undef
+$ticket => undef
+$tickets => undef
 </%ARGS>
 

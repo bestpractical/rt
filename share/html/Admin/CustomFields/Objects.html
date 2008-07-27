@@ -45,25 +45,25 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/Header, title => $title &>
 <& /Admin/Elements/CustomFieldTabs,
     id => $id,
     current_tab => "Admin/CustomFields/Objects.html?id=".$id,
-    Title => $title
+    title => $title
     &>
 
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="Objects.html" method="post">
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
-<input type="hidden" class="hidden" name="UpdateObjs" value="1" />
+<input type="hidden" class="hidden" name="update_objs" value="1" />
 
 <h2><&|/l&>Selected objects</&></h2>
-<& /Admin/Elements/PickObjects, objects => \@AssignedObjs, id => $id, Checked => 1 &>
+<& /Admin/Elements/PickObjects, objects => \@AssignedObjs, id => $id, checked => 1 &>
 <h2><&|/l&>Unselected objects</&></h2>
 <& /Admin/Elements/PickObjects, objects => \@UnassignedObjs, id => $id &>
 
-<& /Elements/Submit, CheckAll => 1, ClearAll => 1 &>
+<& /Elements/Submit, check_all => 1, clear_all => 1 &>
 </form>
 
 <%INIT>
@@ -114,7 +114,7 @@ while (my $OCF = $objectCFs->next) {
 while (my $obj = $objects->next) { 
     my $obj_id = $obj->id;
 
-    if ($UpdateObjs) {
+    if ($update_objs) {
 	# Go through and delete all the custom field relationships that this object
 	# no longer has
 	my $key = "object-$obj_id-CF-$id";
@@ -144,6 +144,6 @@ while (my $obj = $objects->next) {
 </%INIT>
 <%ARGS>
 $id => undef
-$Finddisabledobjects => 0
-$UpdateObjs => 0
+$finddisabledobjects => 0
+$update_objs => 0
 </%ARGS>

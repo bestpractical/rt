@@ -45,12 +45,12 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => $title, FeedURI => 'templates' &>
+<& /Admin/Elements/Header, title => $title, feed_uri => 'templates' &>
 <& /Admin/Elements/SystemTabs, 
     current_tab => 'Admin/Global/Templates.html', 
     current_subtab => 'Admin/Global/Templates.html', 
     subtabs => $subtabs, 
-    Title => $title &>
+    title => $title &>
 <& /Admin/Elements/EditTemplates, title => $title, %ARGS &>
 </form>
 <%init>

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /SelfService/Elements/Header, Title => _('#%1: %2', $Ticket->id, $Ticket->subject) &>
+<& /SelfService/Elements/Header, title => _('#%1: %2', $Ticket->id, $Ticket->subject) &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -55,15 +55,15 @@
           <&| /Widgets/TitleBox, title => _('The Basics'), 
                 title_class=> 'inverse',  
                 color => "#993333" &>
-                <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
-                <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &>
+                <& /Ticket/Elements/ShowBasics, ticket => $Ticket &>
+                <& /Ticket/Elements/ShowCustomFields, ticket => $Ticket &>
           </&>
 </td>
         <td valign="top" width="50%" class="boxcontainer">
           <&| /Widgets/TitleBox, title => _("dates"),
                 title_class=> 'inverse',
                  color => "#663366" &>
-          <& /Ticket/Elements/ShowDates, Ticket => $Ticket, UpdatedLink => 0 &>
+          <& /Ticket/Elements/ShowDates, ticket => $Ticket, updated_link => 0 &>
           </&>
 </td>
 </tr>
@@ -73,13 +73,13 @@
 
 %#!!pape: selfservice_find_attachments.patch {{
 <& /Ticket/Elements/ShowHistory, 
-      Ticket => $Ticket, 
-      URIFile => "Display.html", 
+      ticket => $Ticket, 
+      uri_file => "Display.html", 
       show_headers => $ARGS{'show_headers'},
       downloadable_headers => 0,
-      AttachPath => "Attachment", 
-      Attachments => $attachments, 
-      UpdatePath => "Update.html" 
+      attach_path => "Attachment", 
+      attachments => $attachments, 
+      update_path => "Update.html" 
 &>
 %#!!pape: selfservice_find_attachments.patch }}
 
@@ -125,23 +125,23 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
 
     my $queue = RT::Model::Queue->new();
     unless ( $queue->load( $ARGS{'queue'} ) ) {
-        $m->comp( 'Error.html', Why => _('Queue not found') );
+        $m->comp( 'Error.html', why => _('Queue not found') );
         $m->abort;
     }
 
     unless ( $queue->current_user_has_right('CreateTicket') ) {
         $m->comp( 'Error.html',
-            Why =>
+            why =>
               _('You have no permission to create tickets in that queue.') );
         $m->abort;
     }
 
 
     ( $Ticket, @results ) =
-    create_ticket( Attachments => $session{'Attachments'}, %ARGS, status => 'new' );
+    create_ticket( attachments => $session{'Attachments'}, %ARGS, status => 'new' );
 
     unless ( $Ticket->id ) {
-        $m->comp( 'Error.html', Why => join( "\n", @results ));
+        $m->comp( 'Error.html', why => join( "\n", @results ));
               $m->abort();
         }
 
@@ -157,7 +157,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
     else {
         unless ( $Ticket->load( $id[0] ) ) {
             $m->comp( 'Error.html',
-                Why => _( "Couldn't load ticket '%1'", $id ) );
+                why => _( "Couldn't load ticket '%1'", $id ) );
             $m->abort();
         }
 
@@ -207,7 +207,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
 
     unless ( $Ticket->current_user_has_right('ShowTicket') ) {
         $m->comp( 'Error.html',
-            Why => _("No permission to display that ticket") );
+            why => _("No permission to display that ticket") );
         # XXX: Why abort? then we loose footer //ruz
         $m->abort();
     }
@@ -225,7 +225,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
     my $Transactions = $Ticket->transactions;
 
     my $attachments =
-      $m->comp( '/Ticket/Elements/FindAttachments', Ticket => $Ticket );
+      $m->comp( '/Ticket/Elements/FindAttachments', ticket => $Ticket );
 
 </%INIT>
 

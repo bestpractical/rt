@@ -45,10 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => _("Delegate rights") &>
+<& /Elements/Header, title => _("Delegate rights") &>
 <& /User/Elements/Tabs, 
     current_tab => 'User/Delegation.html', 
-    Title => _("Delegate rights") &>
+    title => _("Delegate rights") &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -57,7 +57,7 @@
 <& Elements/DelegateRights, personalgroups => $personalgroups, objects => $objects, object_type => 'RT::Model::Queue' &>
 <& Elements/DelegateRights, personalgroups => $personalgroups, objects => $objects, object_type => 'RT::Model::Group' &>
 
-<& /Elements/Submit, Label => _('Modify rights') &>
+<& /Elements/Submit, label => _('Modify rights') &>
 </form>
 <%INIT>
 

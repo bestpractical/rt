@@ -45,27 +45,27 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $title &>
+<& /Elements/Header, title => $title &>
 <& /Dashboards/Elements/Tabs,
     current_subtab => 'Dashboards/index.html',
-    Title => $title &>
+    title => $title &>
 
 <& /Elements/ListActions, actions => \@actions &>
 
 <& /Dashboards/Elements/ShowDashboards,
-    Type       => "Personal",
-    Dashboards => [sort { $a->id <=> $b->id } @{ $dashboards->{personal} || [] }],
+    type       => "Personal",
+    dashboards => [sort { $a->id <=> $b->id } @{ $dashboards->{personal} || [] }],
 &>
 
 <& /Dashboards/Elements/ShowDashboards,
-    Type => "System",
-    Dashboards => [sort { $a->id <=> $b->id } @{ $dashboards->{system} || [] }],
+    type => "System",
+    dashboards => [sort { $a->id <=> $b->id } @{ $dashboards->{system} || [] }],
 &>
 
 % for my $group (sort keys %{ $dashboards->{group} || {} }) {
     <& /Dashboards/Elements/ShowDashboards,
-        Type       => $group,
-        Dashboards => [sort { $a->id <=> $b->id } @{ $dashboards->{group}{$group} || [] }],
+        type       => $group,
+        dashboards => [sort { $a->id <=> $b->id } @{ $dashboards->{group}{$group} || [] }],
     &>
 % }
 
@@ -74,15 +74,15 @@ my $title = loc("Dashboards");
 use RT::Dashboard;
 
 my @objs = RT::Dashboard->new( current_user => Jifty->web->current_user )->_privacy_objects;
-my $dashboards = $m->comp("/Dashboards/Elements/DashboardsForObjects", Objects => \@objs);
+my $dashboards = $m->comp("/Dashboards/Elements/DashboardsForObjects", objects => \@objs);
 
 my @actions;
-if (defined $Deleted) {
-    push @actions, loc("Deleted dashboard %1", $Deleted);
+if (defined $deleted) {
+    push @actions, loc("Deleted dashboard %1", $deleted);
 }
 
 </%INIT>
 <%ARGS>
-$Deleted => undef
+$deleted => undef
 </%ARGS>
 

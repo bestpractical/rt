@@ -45,10 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => _("Admin queues") &>
+<& /Admin/Elements/Header, title => _("Admin queues") &>
 <& /Admin/Elements/QueueTabs, current_tab => 'Admin/Queues/', 
     current_subtab => 'Admin/Queues/', 
-    Title => _("Admin queues") &>
+    title => _("Admin queues") &>
 
 
 
@@ -62,13 +62,13 @@
     order => 'ASC',
     %ARGS,
     format => $format,
-    Collection => $queues,
-    AllowSorting => 1,
-    PassArguments => [qw(format Rows Page order order_by FindDisabledQueues)],
+    collection => $queues,
+    allow_sorting => 1,
+    pass_arguments => [qw(format Rows Page order order_by FindDisabledQueues)],
 &>
 % }
 <form method="post" action="<% RT->config->get('WebPath') %>/Admin/Queues/index.html">
-<input type="checkbox" class="checkbox" name="FindDisabledQueues" value="1" <% $FindDisabledQueues? 'checked="checked"': '' |n%> />
+<input type="checkbox" class="checkbox" name="FindDisabledQueues" value="1" <% $find_disabled_queues? 'checked="checked"': '' |n%> />
 <&|/l&>Include disabled queues in listing.</&>
 <div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
 </form>
@@ -78,7 +78,7 @@ my ($queue, $caption);
 my $queues = RT::Model::QueueCollection->new();
 $queues->find_all_rows();
 
-if ($FindDisabledQueues) {
+if ($find_disabled_queues) {
     $caption = _("All Queues");
     $queues->{'find_disabled_rows'} = 1;
 } else {
@@ -91,6 +91,6 @@ $format ||= q{'<a href="__WebPath__/Admin/Queues/Modify.html?id=__id__">__id__</
 
 </%INIT>
 <%ARGS>
-$FindDisabledQueues => 0
+$find_disabled_queues => 0
 $format             => undef
 </%ARGS>

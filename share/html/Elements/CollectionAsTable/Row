@@ -50,14 +50,14 @@ $i => undef
 @format => undef
 $record => undef
 $maxitems => undef
-$Depth => undef
-$Warning => undef
-$ColumnMap => {}
-$Class     => 'RT__Model__Ticket'
+$depth => undef
+$warning => undef
+$column_map => {}
+$class     => 'RT__Model__Ticket'
 </%ARGS>
 <%init>
 $m->out(  '<tr class="'
-        . ( $Warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' ) . '" >'
+        . ( $warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' ) . '" >'
         . "\n" );
 use HTML::Entities;
 my $item;
@@ -70,15 +70,15 @@ foreach my $column (@format) {
         $item = 0;
         $m->out( '</tr>' . "\n" );
         $m->out(  '<tr class="'
-                . ( $Warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' )
+                . ( $warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' )
                 . '" >'
                 . "\n" );
         next;
     }
 
     $item++;
-    my $class = $column->{class} ? encode_entities( $column->{class}, q{'"&<>} ) : 'collection-as-table';
-    $m->out(qq{<td class="$class" });
+    my $css_class = $column->{class} ? encode_entities( $column->{class}, q{'"&<>} ) : 'collection-as-table';
+    $m->out(qq{<td class="$css_class" });
 
     my $align = $column->{align};
     my $style = $column->{style};
@@ -93,26 +93,26 @@ foreach my $column (@format) {
         my $col = $1;
         $style = $m->comp(
             "/Elements/ColumnMap",
-            Class => $Class,
+            class => $class,
             name  => $col,
-            Attr  => 'style'
+            attr  => 'style'
         );
         $align = $m->comp(
             "/Elements/ColumnMap",
-            Class => $Class,
+            class => $class,
             name  => $col,
-            Attr  => 'align'
+            attr  => 'align'
         );
-        unless ( exists $ColumnMap->{$col} ) {
-            $ColumnMap->{$col} = $m->comp(
+        unless ( exists $column_map->{$col} ) {
+            $column_map->{$col} = $m->comp(
                 "/Elements/ColumnMap",
-                Class => $Class,
+                class => $class,
                 name  => $col,
-                Attr  => 'value'
+                attr  => 'value'
             );
         }
 
-        my $value = $ColumnMap->{$col};
+        my $value = $column_map->{$col};
 
         if ( ref $value ) {
 

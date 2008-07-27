@@ -49,21 +49,21 @@
     subtabs => $tabs,
     current_tab => 'Dashboards/index.html',
     current_subtab => $current_subtab,
-    Title => $Title &>
+    title => $title &>
 
 <%INIT>
 my $tabs;
 my $real_subtab = $current_subtab;
-if ( $DashboardObj and $DashboardObj->id ) {
+if ( $dashboard_obj and $dashboard_obj->id ) {
 
-    my $name = $DashboardObj->name;
+    my $name = $dashboard_obj->name;
 
-    my $modify  = "Dashboards/Modify.html?id=" . $DashboardObj->id;
-    my $queries = "Dashboards/Queries.html?id=" . $DashboardObj->id;
-    my $render  = "Dashboards/" . $DashboardObj->id . "/$name";
+    my $modify  = "Dashboards/Modify.html?id=" . $dashboard_obj->id;
+    my $queries = "Dashboards/Queries.html?id=" . $dashboard_obj->id;
+    my $render  = "Dashboards/" . $dashboard_obj->id . "/$name";
 
     $tabs->{"this"} = {
-        title   => $DashboardObj->name,
+        title   => $dashboard_obj->name,
         path    => $modify,
         current_subtab  => $current_subtab,
         subtabs => {
@@ -76,7 +76,7 @@ if ( $DashboardObj and $DashboardObj->id ) {
             },
 
             c_Subscription => { title => loc('Subscription'),
-                                path  => "Dashboards/Subscription.html?DashboardId=" . $DashboardObj->id
+                                path  => "Dashboards/Subscription.html?DashboardId=" . $dashboard_obj->id
             },
 
 
@@ -87,7 +87,7 @@ if ( $DashboardObj and $DashboardObj->id ) {
     };
 
     delete $tabs->{"this"}{"subtabs"}{"c_Subscription"}
-        unless $DashboardObj->current_user_can_subscribe;
+        unless $dashboard_obj->current_user_can_subscribe;
 
     $tabs->{"this"}{"subtabs"}{"z_Preview"}{path} = $real_subtab
         if $real_subtab =~ /Render/
@@ -110,7 +110,7 @@ if (@objects) {
 
 </%INIT>
 <%ARGS>
-$DashboardObj => undef
+$dashboard_obj => undef
 $current_subtab => undef
-$Title => undef
+$title => undef
 </%ARGS>

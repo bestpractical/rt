@@ -50,7 +50,7 @@
 <option value=""<% !$default && qq[ selected="selected"] |n %>><%$default_label%></option>
 %}
 %foreach my $status (@status) {
-%next if ($SkipDeleted && $status eq 'deleted');
+%next if ($skip_deleted && $status eq 'deleted');
 <option value="<%$status%>"<% (defined $default && $status eq $default) && qq[ selected="selected"] |n %>><%_($status)%></option>
 % }
 </select>
@@ -61,7 +61,7 @@ my @status = $queue->status_array();
 <%ARGS>
 $name => undef
 $default => ''
-$SkipDeleted => 0
+$skip_deleted => 0
 $default_value => 1
 $default_label => "-"
 </%ARGS>

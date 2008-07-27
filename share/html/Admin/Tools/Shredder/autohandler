@@ -53,7 +53,7 @@ unless( Jifty->web->current_user->has_right( right => 'SuperUser', object => RT-
 use RT::Shredder ();
 my $path = RT::Shredder->storage_path;
 unless( -d $path && -w _ ) {
-	return $m->comp( 'Elements/Error/NoStorage', Path => $path );
+	return $m->comp( 'Elements/Error/NoStorage', path => $path );
 }
 
 $m->call_next(%ARGS);

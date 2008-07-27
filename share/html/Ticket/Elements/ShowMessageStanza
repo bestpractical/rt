@@ -45,18 +45,18 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% if ( ref $Message ) {
+% if ( ref $message ) {
 %    $m->out($pon);
-<div class="message-stanza-depth-<% $Depth %>">
+<div class="message-stanza-depth-<% $depth %>">
 <%perl>
 my $para = '';
-foreach my $stanza ( @$Message) {
+foreach my $stanza ( @$message) {
     if ( ref $stanza eq "ARRAY" ) {
         $print_content->( \$para ); $para = '';
         $m->comp( 'ShowMessageStanza',
-                  Depth   => $Depth + 1,
-                  Transaction => $Transaction,
-                  Message => $stanza );
+                  depth   => $depth + 1,
+                  transaction => $transaction,
+                  message => $stanza );
     }
     elsif ( ref $stanza eq "HASH" ) {
         $para .= ( defined $stanza->{raw} ? $stanza->{raw} : '') ."\n";
@@ -67,14 +67,14 @@ $print_content->( \$para ) if length $para;
 </div>
 %$m->out($poff);
 % } else {
-%       $print_content->( \$Message );
+%       $print_content->( \$message );
 % }
 <%INIT>
-my ($pon, $poff) = (RT->config->get('PlainTextPre', Jifty->web->current_user) && $Depth == 0)
+my ($pon, $poff) = (RT->config->get('PlainTextPre', Jifty->web->current_user) && $depth == 0)
                             ? ('<pre>', '</pre>')
                             : ('', '');
 
-my $ticket = $Transaction ? $Transaction->ticket_obj : undef;
+my $ticket = $transaction ? $transaction->ticket_obj : undef;
 
 my $print_content = sub  {
     my $ref = shift;
@@ -87,7 +87,7 @@ my $print_content = sub  {
 };
 </%INIT>
 <%ARGS>
-$Message => undef
-$Depth => 0
-$Transaction => undef
+$message => undef
+$depth => 0
+$transaction => undef
 </%ARGS>

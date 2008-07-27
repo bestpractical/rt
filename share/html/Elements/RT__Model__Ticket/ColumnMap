@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
 $name => undef
-$Attr => undef
+$attr => undef
 </%ARGS>
 
 
@@ -331,5 +331,5 @@ else {
 $m->callback( COLUMN_MAP => $COLUMN_MAP, Callbackname => 'Once', CallbackOnce => 1 );
 # backward compatibility
 $m->callback( COLUMN_MAP => $COLUMN_MAP, Callbackname => 'ColumnMap' );
-return get_column_map_entry( Map => $COLUMN_MAP, name => $name, Attribute => $Attr );
+return get_column_map_entry( Map => $COLUMN_MAP, name => $name, Attribute => $attr );
 </%init>

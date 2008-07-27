@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$name%>">
-% if ($AllowNull) {
+% if ($allow_null) {
 <option value="">-</option>
 % }
 %for my $option (@types) {
@@ -56,7 +56,7 @@
 
 <%INIT>
 my @types;
-if ($Scope =~ 'queue') {
+if ($scope =~ 'queue') {
    @types = qw(cc admin_cc);
 }
 else { 
@@ -64,8 +64,8 @@ else {
 }
 </%INIT>
 <%ARGS>
-$AllowNull => 1
+$allow_null => 1
 $default=>undef
-$Scope => 'ticket'
+$scope => 'ticket'
 $name => 'WatcherType'
 </%ARGS>

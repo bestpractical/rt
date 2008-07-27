@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $title &>
+<& /Elements/Header, title => $title &>
 <& /User/Elements/GroupTabs, 
-    GroupObj => $Group, 
+    group_obj => $Group, 
     current_subtab => "User/Groups/Members.html?id=".$Group->id, 
-    Title => $title &>
+    title => $title &>
 <& /Elements/ListActions, actions => \@results &>
 
 
@@ -68,7 +68,7 @@
 
 <tr>
 <td valign="top">
-<& /Admin/Elements/SelectNewGroupMembers, name => "add_members", Group => $Group &>
+<& /Admin/Elements/SelectNewGroupMembers, name => "add_members", group => $Group &>
 </td>
 <td valign="top">
 
@@ -84,7 +84,7 @@
 <ul>
 % while (my $member = $UserMembers->next()) {
 <li><input type="checkbox" class="checkbox" name="delete_member-<%$member->member_id%>" value="1" />
-<& /Elements/ShowUser, User => $member->member_obj->object &>
+<& /Elements/ShowUser, user => $member->member_obj->object &>
 % }
 </ul>
 <&|/l&>Groups</&>
@@ -100,7 +100,7 @@
 </td>
 </tr>
 </table>
-<& /Elements/Submit, Label => _('Modify Members') &>
+<& /Elements/Submit, label => _('Modify Members') &>
 </form>
 
 

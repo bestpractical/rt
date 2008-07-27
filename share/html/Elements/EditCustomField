@@ -47,25 +47,25 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 
-my $Type = $CustomField->type;
+my $Type = $custom_field->type;
 unless ( $Type ) {
     # if we can't see the type, all hell will break loose.
-    Jifty->log->error( "Custom field #". $CustomField->id ." has empty type" );
+    Jifty->log->error( "Custom field #". $custom_field->id ." has empty type" );
     return;
 }
 
 my $values;
 if ( $object && $object->id ) {
-    $values = $object->custom_field_values( $CustomField->id );
+    $values = $object->custom_field_values( $custom_field->id );
     $values->query_columns( qw( id custom_field object_type object_id disabled content content_type content_encoding sort_order creator created last_updated_by last_updated ) );
-    $namePrefix ||= join('-', 'object', ref($object), $object->id, 'CustomField', '');
+    $name_prefix ||= join('-', 'object', ref($object), $object->id, 'CustomField', '');
 } elsif (not $default) {
     my %TOP = $m->request_args;
-    $default = $TOP{ $namePrefix .$CustomField->id . '-values' }
-            || $TOP{ $namePrefix .$CustomField->id . '-value' };
+    $default = $TOP{ $name_prefix .$custom_field->id . '-values' }
+            || $TOP{ $name_prefix .$custom_field->id . '-value' };
 }
 
-my $MaxValues = $CustomField->max_values;
+my $MaxValues = $custom_field->max_values;
 if ($MaxValues == 1 && $values) {
     # what exactly is this doing?  Without the "unless" it breaks RTFM
     # transaction extraction into articles.
@@ -74,31 +74,31 @@ if ($MaxValues == 1 && $values) {
 }
 # The "magic" hidden input causes RT to know that we were trying to edit the field, even if 
 # we don't see a value later, since browsers aren't compelled to submit empty form fields
-$m->out("\n".'<input type="hidden" class="hidden" name="'.$namePrefix.$CustomField->id.'-values-magic" value="1" />'."\n");
+$m->out("\n".'<input type="hidden" class="hidden" name="'.$name_prefix.$custom_field->id.'-values-magic" value="1" />'."\n");
 
 my $EditComponent = "EditCustomField$Type";
-$m->callback( Callbackname => 'EditComponentname', name => \$EditComponent, CustomField => $CustomField, object => $object );
+$m->callback( Callbackname => 'EditComponentname', name => \$EditComponent, custom_field => $custom_field, object => $object );
 $EditComponent = "EditCustomField$Type" unless $m->comp_exists($EditComponent);
 
 return $m->comp(
     $EditComponent,
     %ARGS,
-    Rows => $Rows,
-    Cols => $Cols,
+    rows => $rows,
+    cols => $cols,
     default => $default,
     object => $object,
-    Values => $values,
-    MaxValues => $MaxValues,
-    Multiple => ($MaxValues != 1),
-    namePrefix => $namePrefix,
-    CustomField => $CustomField,
+    values => $values,
+    max_values => $MaxValues,
+    multiple => ($MaxValues != 1),
+    name_prefix => $name_prefix,
+    custom_field => $custom_field,
 );
 </%INIT>
 <%ARGS>
 $object      => undef
-$CustomField => undef
-$namePrefix  => undef
-$Rows        => 5
-$Cols        => 15
+$custom_field => undef
+$name_prefix  => undef
+$rows        => 5
+$cols        => 15
 $default     => undef
 </%ARGS>

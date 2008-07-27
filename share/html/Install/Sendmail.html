@@ -45,22 +45,22 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&|Elements/Wrapper, Title => _('Step %1 of %2: ', 4, 7 ) . _('Email Configuration') &> 
+<&|Elements/Wrapper, title => _('Step %1 of %2: ', 4, 7 ) . _('Email Configuration') &> 
 
-<& Elements/Errors, Errors => \@errors &>
+<& Elements/Errors, errors => \@errors &>
 
 <p>
 <&|/l&>RT can communicate with your users about new tickets or new correspondence on tickets. Tell us where to find sendmail (or a sendmail compatible binary such as the one provided by postifx).  RT also needs to know who to notify when someone sends invalid email.  This must not be an address that feeds back into RT.</&>
 </p>
 
 <form method="post">
-<& /Widgets/BulkEdit, Types => \@Types,Meta => $RT::Installer->{Meta},
-    CurrentValue => RT::Installer->current_values(@Types)
+<& /Widgets/BulkEdit, types => \@Types,meta => $RT::Installer->{Meta},
+    current_value => RT::Installer->current_values(@Types)
 &>
 
 <input type="hidden" name="Run" value="1">
-<& /Elements/Submit, Label => _('Next: ') . _( 'Customize Global Defaults'),
-    Back => 1, BackLabel => _('Back: ' ) . _('Customize Basics') &>
+<& /Elements/Submit, label => _('Next: ') . _( 'Customize Global Defaults'),
+    back => 1, back_label => _('Back: ' ) . _('Customize Basics') &>
 </form>
 </&>
 <%init>
@@ -68,13 +68,13 @@ my @errors;
 
 my @Types = qw/SendmailPath OwnerEmail/;
 
-if ( $Run ) {
+if ( $run ) {
 
-    $m->comp('/Widgets/BulkProcess', Types => \@Types, Arguments => \%ARGS,
-            Store => $RT::Installer->{InstallConfig},
-            Meta => $RT::Installer->{Meta}, KeepUndef => 1);
+    $m->comp('/Widgets/BulkProcess', types => \@Types, arguments => \%ARGS,
+            store => $RT::Installer->{InstallConfig},
+            meta => $RT::Installer->{Meta}, keep_undef => 1);
 
-    if ( $Back ) {
+    if ( $back ) {
         RT::Interface::Web::redirect(RT->config->get('WebURL') .
 'Install/Basics.html');
     }
@@ -100,6 +100,6 @@ if ( $Run ) {
 </%init>
 
 <%args>
-$Run => undef 
-$Back => undef
+$run => undef 
+$back => undef
 </%args>

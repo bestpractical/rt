@@ -53,14 +53,14 @@ my $title = _("Resolved tickets, grouped by owner");
 my $q = RT::Model::Queue->new();
 $q->load_by_cols(name => $queue);
 </%init>
-<& /Elements/Header, Title => $title &>
-<& /Tools/Reports/Elements/Tabs, current_tab => '/Tools/Reports/ResolvedByOwner.html', Title => $title &>
+<& /Elements/Header, title => $title &>
+<& /Tools/Reports/Elements/Tabs, current_tab => '/Tools/Reports/ResolvedByOwner.html', title => $title &>
 <form method="post" action="ResolvedByOwner.html">
 % if ($queue) {
 % # if we have a queue, do the search
 % my $query = "Status = 'resolved' AND queue = '$queue'";
 % my $groupby = 'Owner';
-<& /Search/Elements/Chart, query => $query, PrimaryGroupBy => $groupby &>
+<& /Search/Elements/Chart, query => $query, primary_group_by => $groupby &>
 % }
 
 <hr />

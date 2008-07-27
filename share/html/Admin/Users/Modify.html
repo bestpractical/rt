@@ -45,17 +45,17 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => $title  &>
+<& /Admin/Elements/Header, title => $title  &>
 <& /Admin/Elements/UserTabs, 
     id => $id, 
     user_object => $user_object,
     current_tab => $current_tab, 
-    Title => $title &>
+    title => $title &>
 
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="<%RT->config->get('WebPath')%>/Admin/Users/Modify.html" method="post" enctype="multipart/form-data">
-%if ($Create) {
+%if ($create) {
 <input type="hidden" class="hidden" name="id" value="new" />
 % } else {
 <input type="hidden" class="hidden" name="id" value="<%$user_object->id%>" />
@@ -214,9 +214,9 @@
 <% $CF->name %>:
 </td><td>
 % if ($user_object->id) {
-<& /Elements/EditCustomField, %ARGS, object => $user_object, CustomField => $CF &>
+<& /Elements/EditCustomField, %ARGS, object => $user_object, custom_field => $CF &>
 % } else {
-<& /Elements/EditCustomField, %ARGS, namePrefix => 'object-RT::Model::User-new-CustomField-', CustomField => $CF &>
+<& /Elements/EditCustomField, %ARGS, name_prefix => 'object-RT::Model::User-new-CustomField-', custom_field => $CF &>
 % }
 </td></tr>
 % }
@@ -229,7 +229,7 @@
 <&| /Widgets/TitleBox, title => _('comments about this user') &>
 <textarea class="comments" name="comments" cols="80" rows="5" wrap="virtual"><%$user_object->comments%></textarea>
 </&>
-%if (!$Create && $user_object->privileged) {
+%if (!$create && $user_object->privileged) {
 <br />
 <&| /Widgets/TitleBox, title => _('Signature') &>
 <textarea class="signature" cols="80" rows="5" name="Signature" wrap="hard"><%$user_object->signature%></textarea>
@@ -240,7 +240,7 @@
 </tr>
 </table>
 
-<& /Elements/Submit, Label => _('Save Changes') &>
+<& /Elements/Submit, label => _('Save Changes') &>
 </form>
 
 <%INIT>
@@ -251,7 +251,7 @@ my ($title, $privilegedChecked, $enabled_checked, $disabled, $result, @results);
 
 my ($val, $msg);
 
-if ($Create) {
+if ($create) {
     $current_tab = 'Admin/Users/Modify.html?Create=1';
     $title = _("Create a new user");
 } 
@@ -317,7 +317,7 @@ else {
     # If the create failed
     else {
 	$title = _("Create a new user");
-	$Create = 1;
+	$create = 1;
     }
 }
 
@@ -362,13 +362,13 @@ if ($user_object->id && $id ne 'new') {
 if ( $user_object->id ) {
     my $password_not_set;
     # Deal with password field
-    if ( !$Pass1 and !$Pass2 ) {
+    if ( !$pass1 and !$pass2 ) {
 	$password_not_set = 1;
-    } elsif ( $Pass1 ne $Pass2 ) {
+    } elsif ( $pass1 ne $pass2 ) {
 	$password_not_set = 1;
         push @results, _("passwords do not match.");
-    } elsif ( $Pass1 eq $Pass2 and $user_object->password ne $Pass1 ) {
-        my ($code, $msg) = $user_object->set_password($Pass1);
+    } elsif ( $pass1 eq $pass2 and $user_object->password ne $pass1 ) {
+        my ($code, $msg) = $user_object->set_password($pass1);
         push @results, _($msg);
 	$password_not_set = 1 unless $code;
     }
@@ -383,7 +383,7 @@ unless ( $user_object->id && $user_object->disabled ) {
     $enabled_checked = 'checked="checked"';
 }
 
-if (!$Create && $user_object->privileged()) {  
+if (!$create && $user_object->privileged()) {  
     $privilegedChecked = 'checked="checked"';
 }
 
@@ -398,7 +398,7 @@ $id = $user_object->id;
 $id => undef
 $name  => undef
 $comments  => undef
-$Signature  => undef
+$signature  => undef
 $email  => undef
 $freeform_contact_info => undef
 $organization  => undef
@@ -411,22 +411,22 @@ $set_enabled => undef
 $lang  => undef
 $email_encoding  => undef
 $web_encoding => undef
-$ExternalContactInfoId  => undef
-$ContactInfoSystem  => undef
+$external_contact_info_id  => undef
+$contact_info_system  => undef
 $gecos => undef
-$ExternalAuthId  => undef
+$external_auth_id  => undef
 $auth_system  => undef
-$HomePhone => undef
-$WorkPhone  => undef
-$MobilePhone  => undef
-$PagerPhone  => undef
-$Address1 => undef
-$Address2  => undef
-$City  => undef
-$State  => undef
-$Zip  => undef
-$Country => undef
-$Pass1 => undef
-$Pass2=> undef
-$Create=> undef
+$home_phone => undef
+$work_phone  => undef
+$mobile_phone  => undef
+$pager_phone  => undef
+$address1 => undef
+$address2  => undef
+$city  => undef
+$state  => undef
+$zip  => undef
+$country => undef
+$pass1 => undef
+$pass2=> undef
+$create=> undef
 </%ARGS>

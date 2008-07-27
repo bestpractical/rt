@@ -48,23 +48,23 @@
 <table>
   <tr>
     <td class="label date Created"><&|/l&>Created</&>:</td>
-    <td class="value date Created"><% $Ticket->created_obj->as_string %></td>
+    <td class="value date Created"><% $ticket->created_obj->as_string %></td>
   </tr>
   <tr>
     <td class="label date starts"><&|/l&>starts</&>:</td>
-    <td class="value date starts"><% $Ticket->starts_obj->as_string %></td>
+    <td class="value date starts"><% $ticket->starts_obj->as_string %></td>
   </tr>
   <tr>
     <td class="label date started"><&|/l&>Started</&>:</td>
-    <td class="value date started"><% $Ticket->started_obj->as_string %></td>
+    <td class="value date started"><% $ticket->started_obj->as_string %></td>
   </tr>
   <tr>
-    <td class="label date told"><a href="<% RT->config->get('WebPath') %>/Ticket/Display.html?id=<% $Ticket->id %>&Action=SetTold"><&|/l&>Last Contact</&></a>:</td>
-    <td class="value date told"><% $Ticket->told_obj->as_string %></td>
+    <td class="label date told"><a href="<% RT->config->get('WebPath') %>/Ticket/Display.html?id=<% $ticket->id %>&Action=SetTold"><&|/l&>Last Contact</&></a>:</td>
+    <td class="value date told"><% $ticket->told_obj->as_string %></td>
   </tr>
   <tr>
     <td class="label date due"><&|/l&>Due</&>:</td>
-% my $due = $Ticket->due_obj;
+% my $due = $ticket->due_obj;
 % if ( $due && $due->unix > 0 && $due->diff < 0 ) {
     <td class="value date due"><span class="overdue"><% $due->as_string  %></span></td>
 % } else {
@@ -73,12 +73,12 @@
   </tr>
   <tr>
     <td class="label date resolved"><&|/l&>Closed</&>:</td>
-    <td class="value date resolved"><% $Ticket->resolved_obj->as_string  %></td>
+    <td class="value date resolved"><% $ticket->resolved_obj->as_string  %></td>
   </tr>
   <tr>
     <td class="label date updated"><&|/l&>Updated</&>:</td>
-% my $UpdatedString = $Ticket->last_updated ? _("%1 by %2", $Ticket->last_updated_as_string, $Ticket->last_updated_by_obj->name) : _("Never");
-% if ($UpdatedLink) {
+% my $UpdatedString = $ticket->last_updated ? _("%1 by %2", $ticket->last_updated_as_string, $ticket->last_updated_by_obj->name) : _("Never");
+% if ($updated_link) {
     <td class="value date updated"><a href="#lasttrans"><% $UpdatedString | h %></a></td>
 % } else {
     <td class="value date updated"><% $UpdatedString | h %></td>
@@ -86,6 +86,6 @@
   </tr>
 </table>
 <%ARGS>
-$Ticket => undef
-$UpdatedLink => 1
+$ticket => undef
+$updated_link => 1
 </%ARGS>

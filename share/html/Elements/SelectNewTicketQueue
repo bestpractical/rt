@@ -46,5 +46,5 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <label accesskey="9">
-  <& /Elements/SelectQueue, name => 'queue', default => RT->config->get("default_queue", Jifty->web->current_user), %ARGS, ShowNullOption => 0, ShowAllQueues => 0 &>
+  <& /Elements/SelectQueue, name => 'queue', default => RT->config->get("default_queue", Jifty->web->current_user), %ARGS, show_null_option => 0, show_all_queues => 0 &>
 </label>

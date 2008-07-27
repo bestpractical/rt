@@ -50,7 +50,7 @@ my $bookmarks = Jifty->web->current_user->user_object->first_attribute('Bookmark
 $bookmarks = $bookmarks->content if $bookmarks;
 $bookmarks ||= {};
 
-if ( $Toggle ) {
+if ( $toggle ) {
     if ( $bookmarks->{ $id } ) {
         delete $bookmarks->{ $id };
     } else {
@@ -64,7 +64,7 @@ if ( $Toggle ) {
 </%INIT>
 <%ARGS>
 $id
-$Toggle => 0
+$toggle => 0
 </%ARGS>
 <span id="toggle-<% $id %>">
 % my $url = RT->config->get('WebPath') ."/Helpers/Toggle/TicketBookmark?id=". $id;

@@ -49,7 +49,7 @@
     subtabs => $tabs, 
     current_tab => 'Admin/Queues/', 
     current_subtab => $current_tab, 
-    Title => $Title &>
+    title => $title &>
 
 <%INIT>
 my $tabs;
@@ -74,11 +74,11 @@ if ($id) {
 			      },
 
                  G1 => { title => _('Ticket Custom Fields'),
-                        path => 'Admin/Queues/CustomFields.html?SubType=RT::Model::Ticket&id='.$id,
+                        path => 'Admin/Queues/CustomFields.html?sub_type=RT::Model::Ticket&id='.$id,
                         },
 
                  G2 => { title => _('Transaction Custom Fields'),
-                        path => 'Admin/Queues/CustomFields.html?SubType=RT::Model::Ticket-RT::Model::Transaction&id='.$id,
+                        path => 'Admin/Queues/CustomFields.html?sub_type=RT::Model::Ticket-RT::Model::Transaction&id='.$id,
                         },
 
 		 H => { title => _('Group rights'),
@@ -116,5 +116,5 @@ $id => undef
 $subtabs => undef
 $current_subtab => undef
 $current_tab => undef
-$Title => undef
+$title => undef
 </%ARGS>

@@ -45,31 +45,31 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'}, 
-    RSSAutoDiscovery => $RSSFeedURL,
-    LinkRel => \%link_rel &>
+<& /Elements/Header, title => $title, refresh => $session{'tickets_refresh_interval'}, 
+    rss_auto_discovery => $RSSFeedURL,
+    link_rel => \%link_rel &>
 <& /Ticket/Elements/Tabs, 
     current_tab => "Search/Results.html".$query_string, 
-    Title => $title,
+    title => $title,
     format => $format,
     query => $query,
-    Rows => $Rows,
+    rows => $rows,
     order_by => $order_by,
     order => $order,
-    SavedSearchid => $SavedSearchid &>
+    saved_searchid => $saved_searchid &>
 <& /Elements/CollectionList, 
     query => $query,
-    AllowSorting => 1,
+    allow_sorting => 1,
     order_by => $order_by,
     order => $order,
-    Rows => $Rows,
-    Page => $Page,
+    rows => $rows,
+    page => $page,
     format => $format,
-    baseURL => RT->config->get('WebPath')."/Search/Results.html?",
-    Class => 'RT::Model::TicketCollection',
+    base_url => RT->config->get('WebPath')."/Search/Results.html?",
+    class => 'RT::Model::TicketCollection',
 
    &>
-% my %hiddens = (query => $query, format => $format, Rows => $Rows, order_by => $order_by, order => $order, HideResults => $HideResults, Page => $Page );
+% my %hiddens = (query => $query, format => $format, rows => $rows, order_by => $order_by, order => $order, HideResults => $hide_results, page => $page );
 <div align="right" class="refresh">
 <form method="get" action="<%RT->config->get('WebPath')%>/Search/Results.html">
 % foreach my $key (keys(%hiddens)) {
@@ -84,10 +84,10 @@
     query_string => $query_string,
     query => $query,
     format => $format,
-    Rows => $Rows,
+    rows => $rows,
     order_by => $order_by,
     order => $order,
-    RSSFeedURL => $RSSFeedURL,
+    rss_feed_url => $RSSFeedURL,
     short_querystring => $short_querystring,
 &>
 
@@ -105,13 +105,13 @@ $order_by     ||= $prefs->{'order_by'} || 'id';
 # Some forms pass in "rows_per_page" rather than "Rows"
 # We call it rows_per_page everywhere else.
 
-if ( !defined($Rows) ) {
+if ( !defined($rows) ) {
     if (defined $ARGS{'rows_per_page'} ) {
-        $Rows = $ARGS{'rows_per_page'};
+        $rows = $ARGS{'rows_per_page'};
     } elsif ( defined $prefs->{'rows_per_page'} ) {
-        $Rows = $prefs->{'rows_per_page'};
+        $rows = $prefs->{'rows_per_page'};
     } else {
-        $Rows = 50;
+        $rows = 50;
     }
 }
 
@@ -134,10 +134,10 @@ if ($order_by =~ /\|/) {
 $session{'CurrentSearchHash'} = {
     format      => $format,
     query       => $query,
-    Page       => $Page,
+    page       => $page,
     order       => $order,
     order_by     => $order_by,
-    rows_per_page => $Rows
+    rows_per_page => $rows
     };
 
 
@@ -151,12 +151,12 @@ if ( $session{'tickets'}->query()) {
 my $query_string = "?".$m->comp('/Elements/QueryString',
                                query => $query,
                                format => $format,
-                               Rows => $Rows,
+                               rows => $rows,
                                order_by => $order_by,
                                order => $order,
-                               Page => $Page);
+                               page => $page);
 my $short_querystring = "?".$m->comp('/Elements/QueryString', query => $query);
-my $RSSQueryString = "?".$m->comp('/Elements/QueryString', Query => $query, order => $order, order_by => $order_by);
+my $RSSQueryString = "?".$m->comp('/Elements/QueryString', query => $query, order => $order, order_by => $order_by);
 my $RSSFeedURL = RT->config->get('WebPath')."/Search/Results.rdf$RSSQueryString";
 
 if ($ARGS{'TicketsRefreshInterval'}) {
@@ -167,19 +167,19 @@ my %link_rel;
 my $genpage = sub {
     return $m->comp(
         '/Elements/QueryString',
-        Query   => $query,
+        query   => $query,
         format  => $format,
-        Rows    => $Rows,
+        rows    => $rows,
         order_by => $order_by,
         order   => $order,
-        Page    => shift(@_),
+        page    => shift(@_),
     );
 };
 my $BaseURL = RT->config->get('WebPath')."/Search/Results.html?";
-$link_rel{first} = $BaseURL . $genpage->(1)         if $Page > 1;
-$link_rel{prev}  = $BaseURL . $genpage->($Page - 1) if $Page > 1;
-$link_rel{next}  = $BaseURL . $genpage->($Page + 1) if ($Page * $Rows) < $ticketcount;
-$link_rel{last}  = $BaseURL . $genpage->(POSIX::ceil($ticketcount/$Rows)) if $Rows and ($Page * $Rows) < $ticketcount;
+$link_rel{first} = $BaseURL . $genpage->(1)         if $page > 1;
+$link_rel{prev}  = $BaseURL . $genpage->($page - 1) if $page > 1;
+$link_rel{next}  = $BaseURL . $genpage->($page + 1) if ($page * $rows) < $ticketcount;
+$link_rel{last}  = $BaseURL . $genpage->(POSIX::ceil($ticketcount/$rows)) if $rows and ($page * $rows) < $ticketcount;
 </%INIT>
 <%CLEANUP>
 $session{'tickets'}->prep_for_serialization();
@@ -187,10 +187,10 @@ $session{'tickets'}->prep_for_serialization();
 <%ARGS>
 $query => undef
 $format => undef 
-$HideResults => 0
-$Rows => undef
-$Page => 1
+$hide_results => 0
+$rows => undef
+$page => 1
 $order_by => undef
 $order => undef
-$SavedSearchid => undef
+$saved_searchid => undef
 </%ARGS>

@@ -45,16 +45,16 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $title &>
+<& /Elements/Header, title => $title &>
 <& /Ticket/Elements/Tabs, 
     current_tab => "Search/Bulk.html",
-    Title => $title,
+    title => $title,
     format => $ARGS{'format'}, # we don't want the locally modified one
     query => $query,
-    Rows => $Rows,
+    rows => $rows,
     order_by => $order_by,
     order => $order,
-    SavedSearchid => $SavedSearchid &>
+    saved_searchid => $saved_searchid &>
 
 <& /Elements/ListActions, actions => \@results &>
 <form method="post" action="<% RT->config->get('WebPath') %>/Search/Bulk.html" enctype="multipart/form-data">
@@ -64,21 +64,21 @@
 <& /Elements/CollectionList, query => $query,
     display_format => $format,
     format => $ARGS{'format'},
-    Verbatim => 1,
-    AllowSorting => 1,
+    verbatim => 1,
+    allow_sorting => 1,
     order_by => $order_by,
     order => $order,
-    Rows => $Rows,
-    Page => $Page,
-    baseURL => RT->config->get('WebPath')."/Search/Bulk.html?",
-    Class => 'RT::Model::TicketCollection'
+    rows => $rows,
+    page => $page,
+    base_url => RT->config->get('WebPath')."/Search/Bulk.html?",
+    class => 'RT::Model::TicketCollection'
    &>
 
 % $m->callback(Callbackname => 'AfterTicketList', args_ref => \%ARGS);
 
 <hr />
 
-<& /Elements/Submit, Label => _('Update'), CheckAll => 1, ClearAll => 1 &>
+<& /Elements/Submit, label => _('Update'), check_all => 1, clear_all => 1 &>
 <br />
 <&|/Widgets/TitleBox, title => $title &>
 <table>
@@ -112,15 +112,15 @@
 <tr><td class="label"> <&|/l&>Make Status</&>: </td>
 <td class="value"> <& /Elements/SelectStatus, name => "status" &> </td></tr>
 <tr><td class="label"> <&|/l&>Make date starts</&>: </td>
-<td class="value"> <& /Elements/SelectDate, name => "starts_date", ShowTime => 0, default => '' &> </td></tr>
+<td class="value"> <& /Elements/SelectDate, name => "starts_date", show_time => 0, default => '' &> </td></tr>
 <tr><td class="label"> <&|/l&>Make date Started</&>: </td>
-<td class="value"> <& /Elements/SelectDate, name => "started_date", ShowTime => 0, default => '' &> </td></tr>
+<td class="value"> <& /Elements/SelectDate, name => "started_date", show_time => 0, default => '' &> </td></tr>
 <tr><td class="label"> <&|/l&>Make date Told</&>: </td>
-<td class="value"> <& /Elements/SelectDate, name => "told_date", ShowTime => 0, default => '' &> </td></tr>
+<td class="value"> <& /Elements/SelectDate, name => "told_date", show_time => 0, default => '' &> </td></tr>
 <tr><td class="label"> <&|/l&>Make date Due</&>: </td>
-<td class="value"> <& /Elements/SelectDate, name => "due_date", ShowTime => 0, default => '' &> </td></tr>
+<td class="value"> <& /Elements/SelectDate, name => "due_date", show_time => 0, default => '' &> </td></tr>
 <tr><td class="label"> <&|/l&>Make date Resolved</&>: </td>
-<td class="value"> <& /Elements/SelectDate, name => "resolved_date", ShowTime => 0, default => '' &> </td></tr>
+<td class="value"> <& /Elements/SelectDate, name => "resolved_date", show_time => 0, default => '' &> </td></tr>
 </table>
 
 </td>
@@ -140,8 +140,8 @@
 <tr>
 <td align="right"><% $CF->name %>:</td>
 <td><& /Elements/EditCustomField, 
-    CustomField => $CF, 
-    namePrefix => "object-RT::Model::Transaction--CustomField-"
+    custom_field => $CF, 
+    name_prefix => "object-RT::Model::Transaction--CustomField-"
     &><em><% $CF->friendly_type %></em></td>
 </td></tr>
 % } # end if while
@@ -172,8 +172,8 @@ $cfs->limit_to_queue($_) for keys %$seen_queues;
 <td class="label"><%$cf->name%><br />
 <em>(<%$cf->friendly_type%>)</em></td>
 % my $rows = 5;
-% my @add = (namePrefix => 'Bulk-Add-CustomField-', CustomField => $cf, Rows => $rows, Multiple => ($cf->max_values ==1 ? 0 : 1) , Cols => 25);
-% my @del = (namePrefix => 'Bulk-Delete-CustomField-', CustomField => $cf, Rows => $rows, Multiple => 1, Cols => 25);
+% my @add = (name_prefix => 'Bulk-Add-CustomField-', custom_field => $cf, rows => $rows, Multiple => ($cf->max_values ==1 ? 0 : 1) , Cols => 25);
+% my @del = (name_prefix => 'Bulk-Delete-CustomField-', custom_field => $cf, rows => $rows, Multiple => 1, Cols => 25);
 % if ($cf->type eq 'Select') {
 <td><& /Elements/EditCustomFieldSelect, @add &></td>
 <td><& /Elements/EditCustomFieldSelect, @del &></td>
@@ -200,14 +200,14 @@ $cfs->limit_to_queue($_) for keys %$seen_queues;
 <& /Ticket/Elements/BulkLinks &>
 </&>
 
-<& /Elements/Submit, Label => _('Update') &>
+<& /Elements/Submit, label => _('Update') &>
 
 
 </form>
 
 
 <%INIT>
-$Rows = $rows_per_page unless (defined $Rows);
+$rows = $rows_per_page unless (defined $rows);
 my $title = _("Update multiple tickets");
 
 # Iterate through the ARGS hash and remove anything with a null value.
@@ -215,7 +215,7 @@ map ( $ARGS{$_} =~ /^$/ && ( delete $ARGS{$_} ), keys %ARGS );
 
 my (@results);
 
-$Page ||= 1;
+$page ||= 1;
 
 $format ||= RT->config->get('DefaultSearchResultFormat');
 
@@ -237,8 +237,8 @@ else {
   $Tickets->order_by( column => $order_by, order => $order );
 }
 
-$Page = 1 unless $Page && $Page > 0; # workaround problems with Page = '' or undef
-$Tickets->set_page_info(per_page => $Rows, current_page => $Page);
+$page = 1 unless $page && $page > 0; # workaround problems with Page = '' or undef
+$Tickets->set_page_info(per_page => $rows, current_page => $page);
 
 abort( _("No search to operate on.") ) unless ($Tickets);
 
@@ -380,11 +380,11 @@ $TxnCFs->limit_to_global_or_object_id( sort keys %queues );
 </%INIT>
 <%args>
 $format => undef
-$Page => 1
-$Rows => 50
+$page => 1
+$rows => 50
 $rows_per_page => undef
 $order => 'ASC'
 $order_by => 'id'
 $query => undef
-$SavedSearchid => undef
+$saved_searchid => undef
 </%args>

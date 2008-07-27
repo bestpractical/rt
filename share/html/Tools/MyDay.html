@@ -45,8 +45,8 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $title &>
-<& /Tools/Elements/Tabs, current_tab => "Tools/MyDay.html", Title => $title &>
+<& /Elements/Header, title => $title &>
+<& /Tools/Elements/Tabs, current_tab => "Tools/MyDay.html", title => $title &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -70,7 +70,7 @@ cols="60"></textarea></td></tr>
 
 % }
 </table>
-<& /Elements/Submit, Label => _('Record all updates') ,  Reset => 1, ResetLabel => _('Clear')&>
+<& /Elements/Submit, label => _('Record all updates') ,  reset => 1, reset_label => _('Clear')&>
 </form>
 </html>
 <%INIT>

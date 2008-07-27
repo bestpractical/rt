@@ -46,8 +46,8 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <select name="<% $name %>">
-% while (my $option = shift @Options) {
-% my $value = shift @Values;
+% while (my $option = shift @options) {
+% my $value = shift @values;
 <option value="<% $value %>"
 % if ($default eq $value) {
 selected="selected"
@@ -58,7 +58,7 @@ selected="selected"
 
 <%ARGS>
 $name => undef
-@Options => ( _('matches'), _("doesn't match"), _('is'), _("isn't"), _('less than'), _('greater than'))
-@Values => ('LIKE', 'NOT LIKE', '=', '!=', '<', '>')
+@options => ( _('matches'), _("doesn't match"), _('is'), _("isn't"), _('less than'), _('greater than'))
+@values => ('LIKE', 'NOT LIKE', '=', '!=', '<', '>')
 $default => ''
 </%ARGS>

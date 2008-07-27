@@ -46,11 +46,11 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 
-<& /Elements/Header, Title => $title &>
+<& /Elements/Header, title => $title &>
 <& /Ticket/Elements/Tabs,
-    Ticket => $txn->ticket_obj,
+    ticket => $txn->ticket_obj,
     current_tab => 'Ticket/Encrypt.html?id='. $id,
-    Title => $title,
+    title => $title,
 &>
 
 % $m->callback( Callbackname => 'BeforeActionList', %ARGS, Actions => \@results, args_ref => \%ARGS );
@@ -60,14 +60,14 @@
 <% _('Return back to the ticket') %>
 </a>
 <& /Elements/Submit,
-    Label => ($encrypted? _('Decrypt'): _('encrypt')),
+    label => ($encrypted? _('Decrypt'): _('encrypt')),
     name  => ($encrypted? 'Decrypt': 'encrypt'),
 &>
 </form>
 <%ARGS>
 $id => undef
-$Encrypt => 0
-$Decrypt => 0
+$encrypt => 0
+$decrypt => 0
 </%ARGS>
 <%INIT>
 my $txn = RT::Model::Transaction->new();
@@ -89,10 +89,10 @@ while ( my $attachment = $attachments->next ) {
 }
 $attachments->goto_first_item;
 
-if ( $Encrypt || $Decrypt ) {
+if ( $encrypt || $decrypt ) {
     my $done = 1;
     while ( my $attachment = $attachments->next ) {
-        my ($status, $msg) = $Decrypt? $attachment->decrypt : $attachment->encrypt;
+        my ($status, $msg) = $decrypt? $attachment->decrypt : $attachment->encrypt;
         push @results, $msg;
         unless ( $status ) {
             $done = 0; last;

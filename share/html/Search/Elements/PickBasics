@@ -70,10 +70,10 @@ my @lines = (
             type => 'component',
             path => '/Elements/SelectBoolean',
             arguments => {
-			    True => _("matches"), 
-			    False => _("doesn't match"), 
-			    TrueVal => 'LIKE',
-			    FalseVal => 'NOT LIKE',
+			    true => _("matches"), 
+			    false => _("doesn't match"), 
+			    true_val => 'LIKE',
+			    false_val => 'NOT LIKE',
             },
         },
         value => { type => 'text', Size => 20 },
@@ -84,12 +84,12 @@ my @lines = (
         op => {
             type => 'component',
             path => '/Elements/SelectBoolean',
-            arguments => { TrueVal=> '=', FalseVal => '!=' },
+            arguments => { true_val=> '=', false_val => '!=' },
         },
         value => {
             type => 'component',
             path => '/Elements/SelectQueue',
-            arguments => { named_values => 1, CheckQueueRight => 'ShowTicket' },
+            arguments => { named_values => 1, check_queue_right => 'ShowTicket' },
         },
     },
     {
@@ -98,12 +98,12 @@ my @lines = (
         op => {
             type => 'component',
             path => '/Elements/SelectBoolean',
-            arguments => { TrueVal=> '=', FalseVal => '!=' },
+            arguments => { true_val=> '=', false_val => '!=' },
         },
         value => {
             type => 'component',
             path => '/Elements/SelectStatus',
-            arguments => { SkipDeleted => 1 },
+            arguments => { skip_deleted => 1 },
         },
     },
     {
@@ -119,7 +119,7 @@ my @lines = (
         op => {
             type => 'component',
             path => '/Elements/SelectBoolean',
-            arguments => { TrueVal=> '=', FalseVal => '!=' },
+            arguments => { true_val=> '=', false_val => '!=' },
         },
         value => {
             type => 'component',
@@ -153,7 +153,7 @@ my @lines = (
         value => {
             type => 'component',
             path => '/Elements/SelectDate',
-            arguments => { ShowTime => 0, default => '' },
+            arguments => { show_time => 0, default => '' },
         },
     },
     {
@@ -200,7 +200,7 @@ my @lines = (
         op => {
             type => 'component',
             path => '/Elements/SelectBoolean',
-            arguments => { TrueVal=> '=', FalseVal => '!=' },
+            arguments => { true_val=> '=', false_val => '!=' },
         },
         value => { type => 'text', Size => 5 }
     },

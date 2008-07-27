@@ -46,17 +46,17 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % while ($values and my $value = $values->next ) {
-<input type="checkbox" class="checkbox" name="<%$namePrefix%><%$CustomField->id%>-DeleteValueIds" value="<% $value->id %>" /><& ShowCustomFieldImage, object => $value &>
+<input type="checkbox" class="checkbox" name="<%$name_prefix%><%$custom_field->id%>-DeleteValueIds" value="<% $value->id %>" /><& ShowCustomFieldImage, object => $value &>
 <br />
 % }
-% if (!$MaxValues or !$values or $values->count < $MaxValues) {
-<input type="file" name="<%$namePrefix%><%$CustomField->id%>-Upload" />
+% if (!$max_values or !$values or $values->count < $max_values) {
+<input type="file" name="<%$name_prefix%><%$custom_field->id%>-Upload" />
 % }
 <%ARGS>
 $object => undef
-$CustomField => undef
-$namePrefix => undef
+$custom_field => undef
+$name_prefix => undef
 $default => undef
 $values => undef
-$MaxValues => undef
+$max_values => undef
 </%ARGS>

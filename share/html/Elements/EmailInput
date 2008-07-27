@@ -45,9 +45,9 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<input name="<% $name %>" size="<% $Size %>" value="<% $default || '' %>" />
+<input name="<% $name %>" size="<% $size %>" value="<% $default || '' %>" />
 <%ARGS>
 $name
-$Size    => 40
+$size    => 40
 $default => ''
 </%ARGS>

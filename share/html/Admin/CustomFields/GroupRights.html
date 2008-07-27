@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/Header, title => $title &>
 <& /Admin/Elements/CustomFieldTabs,
     id => $id,
     current_tab => "Admin/CustomFields/GroupRights.html?id=".$id,
-    Title => $title
+    title => $title
 &>
 <& /Elements/ListActions, actions => \@results &>
 
@@ -90,18 +90,18 @@
 % }
 </table>
             
-      <& /Elements/Submit, Caption => _("Be sure to save your changes"), Reset => 1 &>
+      <& /Elements/Submit, caption => _("Be sure to save your changes"), reset => 1 &>
       
   </form>
   
 <%INIT>
 
 if (!defined $id) {
-    $m->comp("/Elements/Error", Why => _("No CustomField defined"));
+    $m->comp("/Elements/Error", why => _("No CustomField defined"));
 }
 
 my $CustomFieldObj = RT::Model::CustomField->new();
-$CustomFieldObj->load($id) || $m->comp("/Elements/Error", Why => _("Couldn't load CustomField %1",$id));
+$CustomFieldObj->load($id) || $m->comp("/Elements/Error", why => _("Couldn't load CustomField %1",$id));
 
 my $title = _('Modify group rights for custom field %1', $CustomFieldObj->name);
 

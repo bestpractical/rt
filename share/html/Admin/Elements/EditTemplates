@@ -62,15 +62,15 @@
     %ARGS,
     display_format => '__CheckBox.{DeleteTemplates}__,'. $format,
     format        => $format,
-    Collection    => $Templates,
-    AllowSorting  => 1,
-    PassArguments => [qw(format Rows Page order order_by FinddisabledQueues)],
+    collection    => $Templates,
+    allow_sorting  => 1,
+    pass_arguments => [qw(format Rows Page order order_by FinddisabledQueues)],
 &>
 
 <i><&|/l&>(Check box to delete)</&></i>
 % }
 
-<& /Elements/Submit, Label => _('Delete Template') &>
+<& /Elements/Submit, label => _('Delete Template') &>
 </form>
 
 <%INIT>
@@ -99,10 +99,10 @@ my @actions;
 # backwards compatibility, use DeleteTemplates array for this
 foreach my $key (keys %ARGS) {
     next unless $key =~ /^DeleteTemplate-(\d+)/;
-    push @DeleteTemplates, $1;
+    push @delete_templates, $1;
 }
 
-foreach my $id( @DeleteTemplates ) {
+foreach my $id( @delete_templates ) {
     my $template_obj = RT::Model::Template->new();
     $template_obj->load( $id );
     unless ( $template_obj->id ) {
@@ -124,5 +124,5 @@ $id => 0
 
 $format => undef
 
-@DeleteTemplates => ()
+@delete_templates => ()
 </%ARGS>

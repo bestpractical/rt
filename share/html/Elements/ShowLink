@@ -45,9 +45,9 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<a href="<%$URI->resolver->href%>">
-% if ($URI->is_local) {
-% my $member = $URI->object;
+<a href="<%$uri->resolver->href%>">
+% if ($uri->is_local) {
+% my $member = $uri->object;
 % if (UNIVERSAL::isa($member, "RT::Model::Ticket")) {
 % my $inactive = $member->queue_obj->is_inactive_status($member->status);
 
@@ -56,14 +56,14 @@
 </span>
 
 % } elsif ( UNIVERSAL::can($member, 'name')) {
-<%$URI->resolver->as_string%>: <%$member->name%>
+<%$uri->resolver->as_string%>: <%$member->name%>
 % } else {
-<%$URI->resolver->as_string%>
+<%$uri->resolver->as_string%>
 % }
 % } else {
-<%$URI->resolver->as_string%>
+<%$uri->resolver->as_string%>
 % }
 </a>
 <%ARGS>
-$URI => undef
+$uri => undef
 </%ARGS>

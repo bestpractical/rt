@@ -46,11 +46,11 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%PERL>
-# Find all the attachments which have parent $Parent
+# Find all the attachments which have parent $parent
 # For each of these attachments
-foreach my $message ( grep $_->__value('parent') == $Parent, @$Attachments ) {
+foreach my $message ( grep $_->__value('parent') == $parent, @$attachments ) {
     $m->comp( 'ShowMessageHeaders',
-              Message        => $message,
+              message        => $message,
               display_headers => \@display_headers,
             );
 
@@ -58,9 +58,9 @@ foreach my $message ( grep $_->__value('parent') == $Parent, @$Attachments ) {
     if ( $size ) {
 </%PERL>
 <div class="downloadattachment">
-<a href="<% $AttachPath %>/<% $Transaction->id %>/<% $message->id %>/<% ($message->filename ||'')| u%>"><&|/l&>Download</&> <% $message->filename || _('(untitled)') %></a>
+<a href="<% $attach_path %>/<% $transaction->id %>/<% $message->id %>/<% ($message->filename ||'')| u%>"><&|/l&>Download</&> <% $message->filename || _('(untitled)') %></a>
 % if ( $downloadable_headers && !$message->filename && $message->content_type =~ /text/  ) {
- / <a href="<% $AttachPath %>/WithHeaders/<% $message->id %>"><% _('with headers') %></a>
+ / <a href="<% $attach_path %>/WithHeaders/<% $message->id %>"><% _('with headers') %></a>
 % }
 <br/>
 <span class="downloadcontenttype"><% $message->content_type %> <% $size_to_str->( $size ) %></span>
@@ -84,10 +84,10 @@ unless ( ($message->get_header('Content-Disposition')||"") =~ /attachment/i ) {
         if (
 
             # it's a toplevel object
-            !$ParentObj
+            !$parent_obj
 
             # or its parent isn't a multipart alternative
-            || ( $ParentObj->content_type !~ m{^multipart/alternative$}i )
+            || ( $parent_obj->content_type !~ m{^multipart/alternative$}i )
 
             # or it's of our prefered alterative type
             || (
@@ -122,9 +122,9 @@ unless ( ($message->get_header('Content-Disposition')||"") =~ /attachment/i ) {
 
                 $m->comp(
                     'ShowMessageStanza',
-                    Depth       => 0,
-                    Message     => $content,
-                    Transaction => $Transaction
+                    depth       => 0,
+                    message     => $content,
+                    transaction => $transaction
                 );
             }
         }
@@ -133,8 +133,8 @@ unless ( ($message->get_header('Content-Disposition')||"") =~ /attachment/i ) {
     # if it's an image, show it as an image
     elsif ( RT->config->get('ShowTransactionImages') and  $message->content_type =~ /^image\//i ) {
         $m->out('<img src="'
-              . $AttachPath . '/'
-              . $Transaction->id . '/'
+              . $attach_path . '/'
+              . $transaction->id . '/'
               . $message->id
               . '/" />' );
     }
@@ -150,8 +150,8 @@ unless ( ($message->get_header('Content-Disposition')||"") =~ /attachment/i ) {
 $m->comp(
     $m->current_comp,
     %ARGS,
-    Parent    => $message->id,
-    ParentObj => $message
+    parent    => $message->id,
+    parent_obj => $message
 );
 </%perl>
 </div>
@@ -159,25 +159,25 @@ $m->comp(
 }
 </%PERL>
 <%ARGS>
-$Ticket => undef
-$Transaction => undef
+$ticket => undef
+$transaction => undef
 $show_headers => 0
-$Collapsed => undef
+$collapsed => undef
 $downloadable_headers => 1
-$ShowTitleBarCommands => 1
-$RowNum => 1
-$AttachPath => RT->config->get('WebPath')."/Ticket/Attachment"
-$UpdatePath => RT->config->get('WebPath')."/Ticket/Update.html"
-$EmailRecordPath => RT->config->get('WebPath')."/Ticket/ShowEmailRecord.html"
-$Attachments => undef
+$show_title_bar_commands => 1
+$row_num => 1
+$attach_path => RT->config->get('WebPath')."/Ticket/Attachment"
+$update_path => RT->config->get('WebPath')."/Ticket/Update.html"
+$email_record_path => RT->config->get('WebPath')."/Ticket/ShowEmailRecord.html"
+$attachments => undef
 $attachment_content => {}
-$ShowBody => 1
-$Parent => 0
-$ParentObj => undef
+$show_body => 1
+$parent => 0
+$parent_obj => undef
 </%ARGS>
 <%INIT>
 my @display_headers=qw(_all);
-if ( $Transaction->type =~ /EmailRecord$/ ) {
+if ( $transaction->type =~ /EmailRecord$/ ) {
     @display_headers = qw(To Cc Bcc);
 }
 

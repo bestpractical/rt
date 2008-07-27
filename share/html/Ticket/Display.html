@@ -46,39 +46,39 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header, 
-    Title => _("#%1: %2", $ticket_obj->id, $ticket_obj->subject),
-    LinkRel => \%link_rel &>
+    title => _("#%1: %2", $ticket_obj->id, $ticket_obj->subject),
+    link_rel => \%link_rel &>
 <& /Ticket/Elements/Tabs, 
-    Ticket => $ticket_obj, 
+    ticket => $ticket_obj, 
     current_tab => 'Ticket/Display.html?id='.$ticket_obj->id,
-    Title => _("#%1: %2", $ticket_obj->id, $ticket_obj->subject) &>
+    title => _("#%1: %2", $ticket_obj->id, $ticket_obj->subject) &>
 
-% $m->callback(Callbackname => 'BeforeActionList', %ARGS, Actions => \@Actions, args_ref => \%ARGS, Ticket => $ticket_obj);
+% $m->callback(Callbackname => 'BeforeActionList', %ARGS, Actions => \@Actions, args_ref => \%ARGS, ticket => $ticket_obj);
 
 <& /Elements/ListActions, actions => \@Actions &>
-<& Elements/ShowUpdateStatus, Ticket => $ticket_obj &>
+<& Elements/ShowUpdateStatus, ticket => $ticket_obj &>
 
-% $m->callback( %ARGS, Ticket => $ticket_obj, Callbackname => 'BeforeShowSummary' );
+% $m->callback( %ARGS, ticket => $ticket_obj, Callbackname => 'BeforeShowSummary' );
 <div class="summary">
 <&| /Widgets/TitleBox, title => _('Ticket metadata') &>
-<& /Ticket/Elements/ShowSummary,  Ticket => $ticket_obj, Attachments => $attachments &>
+<& /Ticket/Elements/ShowSummary,  ticket => $ticket_obj, attachments => $attachments &>
 </&>
 </div>
 <br />
 
-% $m->callback( Ticket => $ticket_obj, %ARGS, Callbackname => 'BeforeShowHistory' );
+% $m->callback( ticket => $ticket_obj, %ARGS, Callbackname => 'BeforeShowHistory' );
 
 <& /Ticket/Elements/ShowHistory , 
-      Ticket => $ticket_obj, 
-      Tickets => $Tickets, 
-      Collapsed => $ARGS{'Collapsed'}, 
+      ticket => $ticket_obj, 
+      tickets => $Tickets, 
+      collapsed => $ARGS{'Collapsed'}, 
       show_headers => $ARGS{'show_headers'},
-      Attachments => $attachments,
+      attachments => $attachments,
       attachment_content => $attachment_content
 &> 
 
 % $m->callback( %ARGS,
-%     Ticket       => $ticket_obj,
+%     ticket       => $ticket_obj,
 %     current_tab  => 'Ticket/Display.html?id=' . $ticket_obj->id,
 %     Callbackname => 'AfterShowHistory',
 % );
@@ -87,7 +87,7 @@
 $id => undef
 $ticket_obj => undef
 $show_headers => 0
-$Collapsed => undef
+$collapsed => undef
 </%ARGS>
 
 <%INIT>
@@ -126,7 +126,7 @@ if ($ARGS{'id'} eq 'new') {
     $ticket_obj ||= load_ticket($ARGS{'id'});
 
     $m->callback( Callbackname => 'BeforeProcessArguments',
-        ticket_obj => $ticket_obj, Tickets => $Tickets,
+        ticket_obj => $ticket_obj, tickets => $Tickets,
         ActionsRef => \@Actions, args_ref => \%ARGS );
     if ( defined $ARGS{'action'} ) {
         if ($ARGS{'action'} =~ /^(steal|kill|take|set_told)$/) {
@@ -137,7 +137,7 @@ if ($ARGS{'id'} eq 'new') {
     }
 
     $m->callback(Callbackname => 'ProcessArguments', 
-            Ticket => $ticket_obj, 
+            ticket => $ticket_obj, 
             args_ref => \%ARGS, 
             Actions => \@Actions);
     
@@ -172,7 +172,7 @@ if ($ARGS{'id'} eq 'new') {
 $m->callback(
     Callbackname => 'BeforeDisplay',
     ticket_obj => \$ticket_obj,
-    Tickets => \$Tickets,
+    tickets => \$Tickets,
     Actions => \@Actions,
     args_ref => \%ARGS,
 );
@@ -191,8 +191,8 @@ if (@Actions) {
     RT::Interface::Web::redirect( RT->config->get('WebURL') . "Ticket/Display.html?id=" . $ticket_obj->id . "&results=" . $key );
 }
 
-my $attachments = $m->comp('Elements/FindAttachments', Ticket => $ticket_obj, Tickets => $Tickets);
-my $attachment_content = $m->comp('Elements/LoadTextAttachments', Ticket => $ticket_obj);
+my $attachments = $m->comp('Elements/FindAttachments', ticket => $ticket_obj, tickets => $Tickets);
+my $attachment_content = $m->comp('Elements/LoadTextAttachments', ticket => $ticket_obj);
 
 my %link_rel;
 if (defined $session{'tickets'} and ($ARGS{'Query'} or $session{'CurrentSearchHash'}->{'Query'})) {

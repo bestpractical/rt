@@ -52,11 +52,11 @@
 <& /Elements/CollectionList,
     order_by => 'description',
     order => 'ASC',
-    Rows  => 0,
+    rows  => 0,
     %ARGS,
     format => $format,
-    Collection => $Scrips,
-    ShowHeader => 0,
+    collection => $Scrips,
+    show_header => 0,
 &>
 % }
 

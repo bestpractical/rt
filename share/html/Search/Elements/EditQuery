@@ -71,9 +71,9 @@ $actions => []
 
 <%METHOD Process>
 <%ARGS>
-$Tree
-$Selected
-@New       => ()
+$tree
+$selected
+@new       => ()
 </%ARGS>
 <%INIT>
 
@@ -81,8 +81,8 @@ my @NewSelection = ();
 
 my @results;
 if ( $ARGS{'Up'} || $ARGS{'Down'} ) {
-    if (@$Selected) {
-        foreach my $value (@$Selected) {
+    if (@$selected) {
+        foreach my $value (@$selected) {
             my $parent = $value->getParent;
             my $index = $value->getIndex;
             my $newindex = $index;
@@ -103,8 +103,8 @@ if ( $ARGS{'Up'} || $ARGS{'Down'} ) {
     }
 }
 elsif ( $ARGS{"Left"} ) {
-    if (@$Selected) {
-        foreach my $value (@$Selected) {
+    if (@$selected) {
+        foreach my $value (@$selected) {
             my $parent = $value->getParent;
             if( $value->isRoot || $parent->isRoot ) {
                 push( @results, [ _("error: can't move left"), -1 ] );
@@ -130,8 +130,8 @@ elsif ( $ARGS{"Left"} ) {
     }
 }
 elsif ( $ARGS{"Right"} ) {
-    if (@$Selected) {
-        foreach my $value (@$Selected) {
+    if (@$selected) {
+        foreach my $value (@$selected) {
             my $parent = $value->getParent;
             my $index  = $value->getIndex;
 
@@ -151,10 +151,10 @@ elsif ( $ARGS{"Right"} ) {
     }
 }
 elsif ( $ARGS{"DeleteClause"} ) {
-    if (@$Selected) {
+    if (@$selected) {
         my (@top);
-        my %Selected = map { $_ => 1 } @$Selected;
-        foreach my $node ( @$Selected ) {
+        my %Selected = map { $_ => 1 } @$selected;
+        foreach my $node ( @$selected ) {
             my $tmp = $node->getParent;
             while ( !$Selected{ $tmp } && !$tmp->isRoot ) {
                 $tmp = $tmp->getParent;
@@ -166,34 +166,34 @@ elsif ( $ARGS{"DeleteClause"} ) {
         my %seen;
         my @non_siblings_top = grep !$seen{ $_->getParent }++, @top;
 
-        foreach ( @New ) {
+        foreach ( @new ) {
             my $add = $_->clone;
-            foreach my $selected( @non_siblings_top ) {
-                my $newindex = $selected->getIndex + 1;
-                $selected->insertSibling( $newindex, $add );
+            foreach my $sel( @non_siblings_top ) {
+                my $newindex = $sel->getIndex + 1;
+                $sel->insertSibling( $newindex, $add );
             }
             $add->getParent->setNodeValue( $ARGS{'AndOr'} );
             push @NewSelection, $add;
         }
-        @New = ();
+        @new = ();
     
         while( my $node = shift @top ) {
             my $parent = $node->getParent;
             $parent->removeChild($node);
             $node->DESTROY;
         }
-        @$Selected = ();
+        @$selected = ();
     }
     else {
         push( @results, [ _("error: nothing to delete"), -1 ] );
     }
 }
 elsif ( $ARGS{"Toggle"} ) {
-    if (@$Selected) {
+    if (@$selected) {
         my %seen;
         my @unique_nodes = grep !$seen{ $_ + 0 }++,
             map ref $_->getNodeValue? $_->getParent: $_,
-            @$Selected;
+            @$selected;
 
         foreach my $node ( @unique_nodes ) {
             if ( $node->getNodeValue eq 'AND' ) {
@@ -209,34 +209,34 @@ elsif ( $ARGS{"Toggle"} ) {
     }
 }
 
-if ( @New && @$Selected ) {
+if ( @new && @$selected ) {
     my %seen;
-    my @non_siblings_selected = grep !$seen{ $_->getParent }++, @$Selected;
+    my @non_siblings_selected = grep !$seen{ $_->getParent }++, @$selected;
 
-    foreach ( @New ) {
+    foreach ( @new ) {
         my $add = $_->clone;
-        foreach my $selected( @non_siblings_selected ) {
-            my $newindex = $selected->getIndex + 1;
-            $selected->insertSibling( $newindex, $add );
+        foreach my $sel( @non_siblings_selected ) {
+            my $newindex = $sel->getIndex + 1;
+            $sel->insertSibling( $newindex, $add );
         }
         $add->getParent->setNodeValue( $ARGS{'AndOr'} );
         push @NewSelection, $add;
     }
-    @$Selected = ();
+    @$selected = ();
 }
-elsif ( @New ) {
-    foreach ( @New ) {
+elsif ( @new ) {
+    foreach ( @new ) {
         my $add = $_->clone;
-        $Tree->addChild( $add );
+        $tree->addChild( $add );
         push @NewSelection, $add;
     }
-    $Tree->setNodeValue( $ARGS{'AndOr'} );
+    $tree->setNodeValue( $ARGS{'AndOr'} );
 }
-$_->DESTROY foreach @New;
+$_->DESTROY foreach @new;
 
-push @$Selected, @NewSelection;
+push @$selected, @NewSelection;
 
-$Tree->prune_childless_aggregators;
+$tree->prune_childless_aggregators;
 
 return @results;
 </%INIT>

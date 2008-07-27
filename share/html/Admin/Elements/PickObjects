@@ -53,9 +53,9 @@
 % foreach my $object (@objects) {
 <tr>
 %   my $id = "object-".$object->id."-CF-".$id;
-%   if (!$ReadOnly) {
+%   if (!$read_only) {
   <td valign="top">
-<input type="checkbox" id="<% $id %>" name="<% $id %>" value="1" <% $Checked ? 'CHECKED' : ''%>
+<input type="checkbox" id="<% $id %>" name="<% $id %>" value="1" <% $checked ? 'CHECKED' : ''%>
 />
   </td>
 %   }
@@ -76,6 +76,6 @@
 <%ARGS>
 @objects
 $id
-$ReadOnly => 0
-$Checked => 0
+$read_only => 0
+$checked => 0
 </%ARGS>

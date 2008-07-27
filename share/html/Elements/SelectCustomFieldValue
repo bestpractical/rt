@@ -45,9 +45,9 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% $m->callback( name => $name, CustomField => $CustomField );
-% if ($CustomField->type =~ /Select/i) {
-% my $values = $CustomField->values;
+% $m->callback( name => $name, CustomField => $custom_field );
+% if ($custom_field->type =~ /Select/i) {
+% my $values = $custom_field->values;
 <select name="<%$name%>">
 <option value="" selected="selected">-</option>
 <option value="NULL"><&|/l&>(no value)</&></option>
@@ -61,5 +61,5 @@
 % }
 <%args>
 $name => undef
-$CustomField =>undef
+$custom_field =>undef
 </%args>

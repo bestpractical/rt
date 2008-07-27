@@ -45,9 +45,9 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| Elements/Wrapper, Title => _('Step %1 of %2: ', 5, 7 ) . _('Customize Email Addresses') &> 
+<&| Elements/Wrapper, title => _('Step %1 of %2: ', 5, 7 ) . _('Customize Email Addresses') &> 
 
-<& Elements/Errors, Errors => \@errors &>
+<& Elements/Errors, errors => \@errors &>
 
 <p><&|/l&>Help us set up some useful defaults for RT.</&></p>
 
@@ -55,14 +55,14 @@
 
 <p><&|/l&>By default, RT will use the timezone of your system.  This lets you set a global default for the display of dates and times in RT.  Your users can choose a different Timezone in their preferences.</&></p>
 <form method="post">
-<& /Widgets/BulkEdit, Types => \@Types,Meta => $RT::Installer->{Meta},
-    CurrentValue => RT::Installer->current_values(@Types)
+<& /Widgets/BulkEdit, types => \@Types,meta => $RT::Installer->{Meta},
+    current_value => RT::Installer->current_values(@Types)
 &>
 
 <input type="hidden" name="Run" value="1">
-<& /Elements/Submit, Label => $RT::Installer->{DatabaseAction} eq 'none' ?
+<& /Elements/Submit, label => $RT::Installer->{DatabaseAction} eq 'none' ?
 _('Next: ') . _('Finish') : _('Next: ') . _( 'Initialize Database'),
-    Back => 1, BackLabel => _('Back: ' ) . _('Customize Email Configuration') &>
+    back => 1, back_label => _('Back: ' ) . _('Customize Email Configuration') &>
 </form>
 </&>
 <%init>
@@ -70,13 +70,13 @@ my @errors;
 
 my @Types = qw/comment_address correspond_address Timezone/;
 
-if ( $Run ) {
+if ( $run ) {
 
-    $m->comp('/Widgets/BulkProcess', Types => \@Types, Arguments => \%ARGS,
-            Store => $RT::Installer->{InstallConfig},
-            Meta => $RT::Installer->{Meta}, KeepUndef => 1 );
+    $m->comp('/Widgets/BulkProcess', types => \@Types, arguments => \%ARGS,
+            store => $RT::Installer->{InstallConfig},
+            meta => $RT::Installer->{Meta}, keep_undef => 1 );
 
-    if ( $Back ) {
+    if ( $back ) {
         RT::Interface::Web::redirect(RT->config->get('WebURL') .
 'Install/Sendmail.html');
     }
@@ -114,6 +114,6 @@ if ( $Run ) {
 </%init>
 
 <%args>
-$Run => undef
-$Back => undef
+$run => undef
+$back => undef
 </%args>

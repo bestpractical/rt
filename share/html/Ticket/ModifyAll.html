@@ -45,13 +45,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => _("Ticket #%1 Jumbo update: %2", $Ticket->id, $Ticket->subject) &>
+<& /Elements/Header, title => _("Ticket #%1 Jumbo update: %2", $Ticket->id, $Ticket->subject) &>
 <& /Ticket/Elements/Tabs, 
-    Ticket => $Ticket, 
+    ticket => $Ticket, 
     current_tab => "Ticket/ModifyAll.html?id=".$Ticket->id, 
-    Title => _("Ticket #%1 Jumbo update: %2", $Ticket->id, $Ticket->subject) &>
+    title => _("Ticket #%1 Jumbo update: %2", $Ticket->id, $Ticket->subject) &>
 
-% $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, args_ref => \%ARGS, Ticket => $Ticket);
+% $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, args_ref => \%ARGS, ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post" action="ModifyAll.html" enctype="multipart/form-data">
@@ -73,13 +73,13 @@
 
 
 <&| /Widgets/TitleBox, title => _('People') &>
-<& Elements/EditPeople, Ticket => $Ticket, UserField => $UserField, UserString => $UserString, UserOp => $UserOp &>
+<& Elements/EditPeople, ticket => $Ticket, user_field => $user_field, user_string => $user_string, user_op => $user_op &>
 </&>
 
 <br />
 
 <&| /Widgets/TitleBox, title => _('Links') &>
-<& /Elements/EditLinks, object => $Ticket, Merge => 1 &>
+<& /Elements/EditLinks, object => $Ticket, merge => 1 &>
 </&>
 
 <br />
@@ -108,8 +108,8 @@
 <tr>
 <td class="label"><% $CF->name %>:</td>
 <td class="entry"><& /Elements/EditCustomField, 
-    CustomField => $CF, 
-    namePrefix => "object-RT::Model::Transaction--CustomField-"
+    custom_field => $CF, 
+    name_prefix => "object-RT::Model::Transaction--CustomField-"
     &><em><% $CF->friendly_type %></em>
 </td></tr>
 %    } # end if while
@@ -120,15 +120,15 @@
   </tr>
   <tr>
     <td class="labeltop"><&|/l&>Content</&>:</td>
-    <td class="entry"><& /Elements/MessageBox, name=>"update_content", QuoteTransaction=>$ARGS{QuoteTransaction} &></td>
+    <td class="entry"><& /Elements/MessageBox, name=>"update_content", quote_transaction=>$ARGS{QuoteTransaction} &></td>
   </tr>
 </table>
 </&>
   
 
 <& /Elements/Submit, 
-    Label => _('Save Changes'), 
-    Caption => _("If you've updated anything above, be sure to"), color => "#333399" &>
+    label => _('Save Changes'), 
+    caption => _("If you've updated anything above, be sure to"), color => "#333399" &>
 </form>
 
 <%INIT>
@@ -142,7 +142,7 @@ my $CustomFields = $Ticket->queue_obj->ticket_custom_fields();
 # call this to show up hints of valid cf values.
 $m->comp(
     '/Elements/ValidateCustomFields',
-    CustomFields => $CustomFields,
+    custom_fields => $CustomFields,
     args_ref => {},
 );
 
@@ -160,7 +160,7 @@ $Cancomment = 1 if ( $Ticket->current_user_has_right('CommentOnTicket') or
 $m->callback( ticket_obj => $Ticket, args_ref => \%ARGS );
 my (@wresults, @results,  @dresults, @lresults, @cf_results);
 
-unless ($OnlySearchForPeople or $OnlySearchForGroup ) {
+unless ($only_search_for_people or $only_search_for_group ) {
     # There might be two owners. 
     if ( ref ($ARGS{'owner'} )) {
         my @owners =@{$ARGS{'owner'}};
@@ -216,14 +216,14 @@ unless ($Ticket->current_user_has_right('ShowTicket')) {
 
 
 <%ARGS>
-$OnlySearchForPeople => undef
-$OnlySearchForGroup => undef
-$UserField => undef
-$UserOp => undef
-$UserString => undef
-$GroupString => undef
-$GroupOp => undef
-$GroupField => undef
+$only_search_for_people => undef
+$only_search_for_group => undef
+$user_field => undef
+$user_op => undef
+$user_string => undef
+$group_string => undef
+$group_op => undef
+$group_field => undef
 $id => undef
 </%ARGS>
 

@@ -54,7 +54,7 @@ see docs/using_forms_widgets.pod
 % if ( $default ) {
 <span class="comment"><% $default_label %></span>
 % }
-<span class="hints"><% $Hints %></span>
+<span class="hints"><% $hints %></span>
 </div>
 <%INIT>
 </%INIT>
@@ -62,7 +62,7 @@ see docs/using_forms_widgets.pod
 $name
 
 $description  => undef,
-$Hints        => ''
+$hints        => ''
 
 $current_value => '',
 
@@ -83,13 +83,13 @@ $current_value => '',
 <%ARGS>
 $name
 
-$Arguments    => {},
+$arguments    => {},
 
 $default      => 0,
 $default_value => '',
 </%ARGS>
 <%INIT>
-my $value = $Arguments->{ $name };
+my $value = $arguments->{ $name };
 if ( !defined $value || $value eq '' ) {
     return $default_value unless $default;
     return undef;

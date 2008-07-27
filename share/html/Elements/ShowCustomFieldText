@@ -46,11 +46,11 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%init>
- my $content = $Object->large_content || $Object->content;
- $content = $m->comp('/Elements/ScrubHTML', Content => $content);
+ my $content = $object->large_content || $object->content;
+ $content = $m->comp('/Elements/ScrubHTML', content => $content);
  $content =~ s|\n|<br />|g;
 </%init>
 <%$content|n%>
 <%ARGS>
-$Object
+$object
 </%ARGS>

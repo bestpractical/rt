@@ -51,30 +51,30 @@ see docs/using_forms_widgets.pod
 <div id="form-box-<% lc $name %>" class="widget">
 <span class="description label"><% $description %></span>
 <span class="value"><& SELF:InputOnly, %ARGS &></span>
-% if ( $Default ) {
-<span class="comment"><% $DefaultLabel %></span>
+% if ( $default ) {
+<span class="comment"><% $default_label %></span>
 % }
-<span class="hints"><% $Hints %></span>
+<span class="hints"><% $hints %></span>
 </div>
 <%ARGS>
 $name
 
 $description  => undef,
-$Hints        => ''
+$hints        => ''
 
-$CurrentValue => '',
+$current_value => '',
 
-$Default        => 0,
-$DefaultValue   => '',
-$DefaultLabel   => loc( 'Default: %1', $DefaultValue ),
+$default        => 0,
+$default_value   => '',
+$default_label   => loc( 'Default: %1', $default_value ),
 </%ARGS>
 
 <%METHOD InputOnly>
-<input type="<% $Type %>" name="<% $name %>" value="<% $CurrentValue || '' %>" />\
+<input type="<% $type %>" name="<% $name %>" value="<% $current_value || '' %>" />\
 <%ARGS>
 $name
-$CurrentValue => '',
-$Type => 'text'
+$current_value => '',
+$type => 'text'
 </%ARGS>
 </%METHOD>
 
@@ -82,13 +82,13 @@ $Type => 'text'
 <%ARGS>
 $name
 
-$Arguments    => {},
+$arguments    => {},
 
-$Default      => 0,
-$DefaultValue => '',
+$default      => 0,
+$default_value => '',
 </%ARGS>
 <%INIT>
-my $value = $Arguments->{ $name };
+my $value = $arguments->{ $name };
 $value = '' unless defined $value;
 
 # canonicalize: delete leading and trailing spaces, replaces newlines
@@ -100,7 +100,7 @@ $value =~ s/\r*\n/ /g;
 $value =~ s/\s+$/ /g;
 
 if ( $value eq '' ) {
-    return $DefaultValue unless $Default;
+    return $default_value unless $default;
     return undef;
 }
 return $value;

@@ -45,13 +45,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $Title &>
+<& /Elements/Header, title => $Title &>
 <& /Ticket/Elements/Tabs, 
-    Ticket => $ticket_obj, 
-    Title  => $Title,
+    ticket => $ticket_obj, 
+    title  => $Title,
 &>
 
-% $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, args_ref => \%ARGS, Ticket => $ticket_obj);
+% $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, args_ref => \%ARGS, ticket => $ticket_obj);
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="Forward.html" name="ForwardMessage" method="post">
@@ -75,8 +75,8 @@
 
 </table>
 
-<& /Elements/Submit, Label => _('Forward Message and Return'), name => 'ForwardAndReturn' &>
-<& /Elements/Submit, Label => _('Forward Message'), name => 'Forward' &>
+<& /Elements/Submit, label => _('Forward Message and Return'), name => 'ForwardAndReturn' &>
+<& /Elements/Submit, label => _('Forward Message'), name => 'Forward' &>
 </form>
 <%INIT>
 my $ticket_obj = load_ticket($id);
@@ -86,17 +86,17 @@ abort( _("Permission Denied") )
     unless $ticket_obj->current_user_has_right('ForwardMessage');
 
 my $txn = RT::Model::Transaction->new();
-$txn->load( $QuoteTransaction );
-abort( _("Couldn't load transaction #%1", $QuoteTransaction) )
+$txn->load( $quote_transaction );
+abort( _("Couldn't load transaction #%1", $quote_transaction) )
     unless $txn->id;
 
 my @results;
-if ( $Forward || $ForwardAndReturn ) {
+if ( $forward || $forward_and_return ) {
     require RT::Interface::Email;
     my ($status, $msg) = RT::Interface::Email::ForwardTransaction( $txn, %ARGS );
     push @results, $msg;
 
-    if ( $ForwardAndReturn ) {
+    if ( $forward_and_return ) {
         $session{'i'}++;
         my $key = Digest::MD5::md5_hex(rand(1024));
         push @{ $session{"Actions"}->{$key}  ||= [] }, @results;
@@ -110,7 +110,7 @@ my $Title = _('Forward message');
 
 <%ARGS>
 $id => undef
-$QuoteTransaction => undef
-$ForwardAndReturn => 0,
-$Forward          => $ForwardAndReturn,
+$quote_transaction => undef
+$forward_and_return => 0,
+$forward          => $forward_and_return,
 </%ARGS>

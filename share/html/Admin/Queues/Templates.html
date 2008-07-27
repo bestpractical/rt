@@ -45,13 +45,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/Header, title => $title &>
 <& /Admin/Elements/QueueTabs, id => $queue_obj->id, 
     current_tab => 'Admin/Queues/Templates.html?id='.$id, 
     current_subtab => 'Admin/Queues/Templates.html?id='.$id, 
         queue_obj => $queue_obj,
     subtabs => $subtabs, 
-    Title => $title &>
+    title => $title &>
 
 <& /Admin/Elements/EditTemplates, title => $title, %ARGS &>
 

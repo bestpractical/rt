@@ -49,10 +49,10 @@
 <script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/combobox.js"></script>
 
 <div id="<% $name %>_Container" class="combobox">
-<input name="<% $name %>" id="<% $name %>" class="combo-text" value="<% $default || '' %>" type="text" <% $Size ? "size='$Size'" : '' |n %> autocomplete="off" />
-<br style="display: none" /><span id="<% $name %>_Button" class="combo-button">&#9660;</span><select name="List-<% $name %>" id="<% $name %>_List" class="combo-list" onchange="ComboBox_SimpleAttach(this, this.form['<% $name %>']); " size="<% $Rows %>">
+<input name="<% $name %>" id="<% $name %>" class="combo-text" value="<% $default || '' %>" type="text" <% $size ? "size='$size'" : '' |n %> autocomplete="off" />
+<br style="display: none" /><span id="<% $name %>_Button" class="combo-button">&#9660;</span><select name="List-<% $name %>" id="<% $name %>_List" class="combo-list" onchange="ComboBox_SimpleAttach(this, this.form['<% $name %>']); " size="<% $rows %>">
 <option style="display: none" value="">-</option>
-% foreach my $value (@Values) {
+% foreach my $value (@values) {
         <option value="<%$value%>"><% $value%></option>
 % }
 </select>
@@ -63,8 +63,8 @@ ComboBox_InitWith('<% $name %>');
 </nobr>
 <%ARGS>
 $name
-$Size    => undef
-$Rows    => 5
+$size    => undef
+$rows    => 5
 $default => ''
-@Values  => ()
+@values  => ()
 </%ARGS>

@@ -50,27 +50,27 @@
 #   be generalized at some point.
 </%doc>
 <%perl>
-if ($ShowDisplayModes or $ShowTitle) {
-    my $title = $ShowTitle
+if ($show_display_modes or $show_title) {
+    my $title = $show_title
                     ? _('History')
                     : '&nbsp;';
 
     my $titleright;
 
-    if ($ShowDisplayModes) {
+    if ($show_display_modes) {
         $titleright = '';
         
         if ($show_headers) {
-            $titleright .= qq{<a href="$URIFile?id=} .
-                           $Ticket->id.qq{">} .
+            $titleright .= qq{<a href="$uri_file?id=} .
+                           $ticket->id.qq{">} .
                            _("Brief headers") .
                            qq{</a> &mdash; };
             $titleright .= q[<span class="selected">] . _("Full headers") . "</span>";
         }
         else {
             $titleright .= q[<span class="selected">] . _("Brief headers") . "</span> &mdash; ";
-            $titleright .= qq{<a href="$URIFile?show_headers=1;id=} .
-                           $Ticket->id.qq{">} .
+            $titleright .= qq{<a href="$uri_file?show_headers=1;id=} .
+                           $ticket->id.qq{">} .
                            _("Full headers") .
                            qq{</a>};
         }
@@ -82,14 +82,14 @@ if ($ShowDisplayModes or $ShowTitle) {
 
 <div id="ticket-history">
 <%perl>
-my @attachments = @{$Attachments->items_array_ref()};
+my @attachments = @{$attachments->items_array_ref()};
 my @attachment_content = @{$attachment_content->items_array_ref()};
 
 while ( my $Transaction = $Transactions->next ) {
     my $skip = 0;
     $m->callback(
         %ARGS,
-        Transaction   => $Transaction,
+        transaction   => $Transaction,
         skip          => \$skip,
         Callbackname  => 'SkipTransaction',
     );
@@ -107,13 +107,13 @@ while ( my $Transaction = $Transactions->next ) {
     $m->comp( 'ShowTransaction',
             %ARGS,
 
-              Ticket               => $Ticket,
-              Transaction          => $Transaction,
+              ticket               => $ticket,
+              transaction          => $Transaction,
               show_headers          => $show_headers,
-              RowNum               => $i,
-              Attachments          => \@trans_attachments,
+              row_num               => $i,
+              attachments          => \@trans_attachments,
               attachment_content    => $trans_content,
-              LastTransaction      => $Transactions->is_last
+              last_transaction      => $Transactions->is_last
  );
 
 # manually flush the content buffer after each txn, so the user sees
@@ -123,18 +123,18 @@ $m->flush_buffer();
 
 </%perl>
 </div>
-% if ($ShowDisplayModes or $ShowTitle) {
+% if ($show_display_modes or $show_title) {
 <& /Widgets/TitleBoxEnd &>
 % }
 </div>
 <%INIT>
 my $Transactions = RT::Model::TransactionCollection->new();
-if ($Tickets) {
-    while (my $t = $Tickets->next) {
+if ($tickets) {
+    while (my $t = $tickets->next) {
         $Transactions->limit_to_ticket($t->id);
     }
 } else {
-    $Transactions = $Ticket->transactions;
+    $Transactions = $ticket->transactions;
 }
 
 
@@ -147,18 +147,18 @@ $Transactions->order_by( { column => 'Created',
                           );
 
 my $i;
-$Attachments ||=  $m->comp('/Ticket/Elements/FindAttachments', Ticket => $Ticket, Tickets => $Tickets || undef);
-$attachment_content ||= $m->comp('/Ticket/Elements/LoadTextAttachments', Ticket => $Ticket);
+$attachments ||=  $m->comp('/Ticket/Elements/FindAttachments', ticket => $ticket, tickets => $tickets || undef);
+$attachment_content ||= $m->comp('/Ticket/Elements/LoadTextAttachments', ticket => $ticket);
 
 </%INIT>
 <%ARGS>
-$URIFile => RT->config->get('WebPath')."/Ticket/Display.html"
-$Ticket => undef
-$Tickets => undef
-$Attachments => undef
+$uri_file => RT->config->get('WebPath')."/Ticket/Display.html"
+$ticket => undef
+$tickets => undef
+$attachments => undef
 $attachment_content => undef
 $show_headers => undef
-$ShowTitle => 1
-$ShowDisplayModes => 1
-$WarnUnsigned => undef
+$show_title => 1
+$show_display_modes => 1
+$warn_unsigned => undef
 </%ARGS>

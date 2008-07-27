@@ -45,25 +45,25 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => _("Ticket History # %1 %2", $Ticket->id, $Ticket->subject) &>
+<& /Elements/Header, title => _("Ticket History # %1 %2", $Ticket->id, $Ticket->subject) &>
 <& /Ticket/Elements/Tabs, 
-    Ticket => $Ticket, current_tab => 'Ticket/History.html?id='.$Ticket->id, 
-    Title => _("Ticket History # %1 %2", $Ticket->id, $Ticket->subject) &>
+    ticket => $Ticket, current_tab => 'Ticket/History.html?id='.$Ticket->id, 
+    title => _("Ticket History # %1 %2", $Ticket->id, $Ticket->subject) &>
 
-% $m->callback( %ARGS, Ticket => $Ticket, Callbackname => 'BeforeActionList' );
+% $m->callback( %ARGS, ticket => $Ticket, Callbackname => 'BeforeActionList' );
 
 
 <br />
       
 <& /Ticket/Elements/ShowHistory , 
-    Ticket => $Ticket, 
+    ticket => $Ticket, 
     show_headers => $ARGS{'show_headers'}, 
-    URIFile => 'History.html', 
-    Attachments => $attachments,
+    uri_file => 'History.html', 
+    attachments => $attachments,
     attachment_content => $attachment_content
     &> 
 
-% $m->callback( %ARGS, Callbackname => 'AfterShowHistory', Ticket => $Ticket, current_tab => 'Ticket/History.html?id=' . $Ticket->id );
+% $m->callback( %ARGS, Callbackname => 'AfterShowHistory', ticket => $Ticket, current_tab => 'Ticket/History.html?id=' . $Ticket->id );
 
 <%ARGS>
 $id => undef
@@ -79,8 +79,8 @@ unless ($Ticket->current_user_has_right('ShowTicket')) {
 	abort("No permission to view ticket");
 }
 
-my $attachments = $m->comp('Elements/FindAttachments', Ticket => $Ticket);
-my $attachment_content = $m->comp('Elements/LoadTextAttachments', Ticket =>
+my $attachments = $m->comp('Elements/FindAttachments', ticket => $Ticket);
+my $attachment_content = $m->comp('Elements/LoadTextAttachments', ticket =>
 $Ticket);
 
 

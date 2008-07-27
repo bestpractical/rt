@@ -52,7 +52,7 @@
 <ul>
 % while (my $watcher=$Members->next) {
 <li>
-<input type="checkbox" class="checkbox" name="Queue-<%$queue_obj->id%>-DeleteWatcher-Type-<%$Watchers->type%>-Principal-<%$watcher->member_id%>" value="1"
+<input type="checkbox" class="checkbox" name="Queue-<%$queue_obj->id%>-DeleteWatcher-Type-<%$watchers->type%>-Principal-<%$watcher->member_id%>" value="1"
         unchecked />
 % if ($watcher->member_obj->is_user) { 
 <a href="<%RT->config->get('WebPath')%>/Admin/Users/Modify.html?id=<%$watcher->member_obj->object_id%>">
@@ -66,12 +66,12 @@
 <i><&|/l&>(Check box to delete)</&></i><br /><br />
 
 <%INIT>
-my $Members = $Watchers->members_obj;
+my $Members = $watchers->members_obj;
 </%INIT>
 
 <%ARGS>
 $queue_obj => undef
-$Watchers => undef
+$watchers => undef
 </%ARGS>
 
 

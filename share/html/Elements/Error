@@ -47,15 +47,15 @@
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, error => $error );
 
-% unless ($SuppressHeader) {
-<& /Elements/Header, Code => $Code, Why => $Why, Title => $Title &>
-<& /Elements/Tabs, Title => $Title &>
+% unless ($suppress_header) {
+<& /Elements/Header, code => $code, why => $why, title => $title &>
+<& /Elements/Tabs, title => $title &>
 % }
 
 <div class="error">
-<%$Why%>
+<%$why%>
 <br />
-<%$Details%>
+<%$details%>
 </div>
 
 <%cleanup>
@@ -64,16 +64,16 @@ $m->abort();
 </%cleanup>
 
 <%args>
-$Code => undef
-$Details => ''
-$Title => _("RT Error")
-$Why => _("the calling component did not specify why"),
-$SuppressHeader => 0,
+$code => undef
+$details => ''
+$title => _("RT Error")
+$why => _("the calling component did not specify why"),
+$suppress_header => 0,
 </%args>
 
 <%INIT>
-my $error = "WebRT: $Why";
-$error .= " ($Details)" if defined $Details && length $Details;
+my $error = "WebRT: $why";
+$error .= " ($details)" if defined $details && length $details;
 
 # TODO: Log::Dispatch isn't UTF-8 safe. Autrijus needs to talk to dave rolsky about getting this fixed
 use Encode ();
@@ -83,8 +83,8 @@ Jifty->log->error($error);
 
 if ( defined $session{'SessionType'} && $session{'SessionType'} eq 'REST' ) {
     $r->content_type('text/plain');
-    $m->out( "Error: " . $Why . "\n" );
-    $m->out( $Details . "\n" ) if defined $Details && length $Details;
+    $m->out( "Error: " . $why . "\n" );
+    $m->out( $details . "\n" ) if defined $details && length $details;
     $m->abort();
 }
 </%INIT>

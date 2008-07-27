@@ -45,24 +45,24 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% while ($values and my $value = $values->next and $Multiple) {
-<input type="checkbox" class="checkbox" name="<%$namePrefix%><%$CustomField->id%>-DeleteValueIds" value="<% $value->id %>" /><% $value->content %>
+% while ($values and my $value = $values->next and $multiple) {
+<input type="checkbox" class="checkbox" name="<%$name_prefix%><%$custom_field->id%>-DeleteValueIds" value="<% $value->id %>" /><% $value->content %>
 <br />
 % }
-% (!$Multiple or !$MaxValues or !$values or $values->count < $MaxValues) or return;
+% (!$multiple or !$max_values or !$values or $values->count < $max_values) or return;
 <& /Widgets/ComboBox,
-    name    => $namePrefix . $CustomField->id . "-value",
+    name    => $name_prefix . $custom_field->id . "-value",
     default => $default,
-    Rows    => $Rows,
-    Values  => [map {$_->name} @{$CustomField->values->items_array_ref}],
+    rows    => $rows,
+    values  => [map {$_->name} @{$custom_field->values->items_array_ref}],
 &>
 <%ARGS>
 $object => undef
-$CustomField => undef
-$namePrefix => undef
+$custom_field => undef
+$name_prefix => undef
 $default => undef
 $values => undef
-$Multiple => 0
-$Rows => undef
-$MaxValues => undef
+$multiple => 0
+$rows => undef
+$max_values => undef
 </%ARGS>

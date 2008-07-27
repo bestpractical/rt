@@ -46,29 +46,29 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
-$Plugin => ''
-$Search => ''
-$Wipeout => ''
-@Wipeoutobject => ()
+$plugin => ''
+$search => ''
+$wipeout => ''
+@wipeoutobject => ()
 </%ARGS>
-<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/Header, title => $title &>
 <& /Admin/Elements/ToolTabs,
     current_tab => 'Admin/Tools/Shredder',
     current_subtab => 'Admin/Tools/Shredder',
-    Title => $title,
+    title => $title,
 &>
 <form id="shredder-search-form" action="<% RT->config->get('WebPath') %>/Admin/Tools/Shredder/" method="GET">
 <div id="shredder-select-plugin">
 <& /Elements/ListActions, actions => $messages{'Errors'} &>
 <& /Elements/ListActions, actions => $messages{'Success'} &>
-<& Elements/DumpFileLink, File => $dump_file &>
-<& Elements/SelectPlugin, Plugin => $Plugin, %ARGS &>
-<div id="shredder-submit-button" class="<% $Plugin? '': 'hidden' %>">
-<& /Elements/Submit, name => 'Search', Label => _('Search') &>
+<& Elements/DumpFileLink, file => $dump_file &>
+<& Elements/SelectPlugin, plugin => $plugin, %ARGS &>
+<div id="shredder-submit-button" class="<% $plugin? '': 'hidden' %>">
+<& /Elements/Submit, name => 'Search', label => _('Search') &>
 </div>
 </div>
 <br />
-% if( $Search || $Wipeout ) {
+% if( $search || $wipeout ) {
 <& Elements/Selectobjects, objects => \@objs &>
 % }
 </form>
@@ -83,7 +83,7 @@ my $catch_non_fatals = sub  {
     require RT::Shredder::Exceptions;
     if ( my $e = RT::Shredder::Exception::Info->caught ) {
         push @{ $messages{Errors} }, "$e";
-        $Search = ''; @objs = ();
+        $search = ''; @objs = ();
         return 1;
     }
     if ( UNIVERSAL::isa( $@, 'Class::Exception' ) ) {
@@ -94,25 +94,25 @@ my $catch_non_fatals = sub  {
 };
 
 
-if( $Plugin ) { { # use additional block({}) to effectively exit block on errors
+if( $plugin ) { { # use additional block({}) to effectively exit block on errors
     use RT::Shredder::Plugin;
     $plugin_obj = new RT::Shredder::Plugin;
-    my( $status, $msg ) = $plugin_obj->load_by_name( $Plugin );
+    my( $status, $msg ) = $plugin_obj->load_by_name( $plugin );
     unless( $status ) {
         push @{ $messages{Errors} }, $msg;
-        $Search = '';
+        $search = '';
         last;
     }
 
     my %args;
     foreach my $k( keys %ARGS ) {
-        next unless $k =~ /^\Q$Plugin\E:(.*)$/;
+        next unless $k =~ /^\Q$plugin\E:(.*)$/;
         $args{ $1 } = $ARGS{$k};
     }
     ( $status, $msg ) = $plugin_obj->has_support_for_args( keys %args );
     unless( $status ) {
         push @{ $messages{Errors} }, $msg;
-        $Search = '';
+        $search = '';
         last;
     }
 
@@ -120,27 +120,27 @@ if( $Plugin ) { { # use additional block({}) to effectively exit block on errors
     $catch_non_fatals->() && last if $@;
     unless( $status ) {
         push @{ $messages{Errors} }, $msg;
-        $Search = '';
+        $search = '';
         last;
     }
 } }
 
 my $dump_file = '';
 
-if( $Plugin && $Wipeout ) { { # use additional block({}) to effectively exit block on errors
+if( $plugin && $wipeout ) { { # use additional block({}) to effectively exit block on errors
     my $shredder = new RT::Shredder( force => 1 );
     my $backup_plugin = RT::Shredder::Plugin->new;
     my ($status, $msg) = $backup_plugin->load_by_name('SQLDump');
     unless( $status ) {
         push @{ $messages{Errors} }, $msg;
-        $Search = ''; @objs = ();
+        $search = ''; @objs = ();
         last;
     }
     ($status, $msg) = $backup_plugin->test_args;
 
     unless( $status ) {
         push @{ $messages{Errors} }, $msg;
-        $Search = ''; @objs = ();
+        $search = ''; @objs = ();
         last;
     }
 
@@ -153,7 +153,7 @@ if( $Plugin && $Wipeout ) { { # use additional block({}) to effectively exit blo
     ($status, $msg) = $plugin_obj->set_resolvers( Shredder => $shredder );
     unless( $status ) {
         push @{ $messages{Errors} }, $msg;
-        $Search = ''; @objs = ();
+        $search = ''; @objs = ();
         last;
     }
     eval { $shredder->wipeout_all };
@@ -164,13 +164,13 @@ if( $Plugin && $Wipeout ) { { # use additional block({}) to effectively exit blo
 
 } }
 
-if( $Plugin && ( $Search || $Wipeout ) ) { { # use additional block({}) to effectively exit block on errors
+if( $plugin && ( $search || $wipeout ) ) { { # use additional block({}) to effectively exit block on errors
     my $status;
     ($status, @objs) = eval { $plugin_obj->run };
     $catch_non_fatals->() && last if $@;
     unless( $status ) {
         push @{ $messages{Errors} }, $objs[0];
-        $Search = ''; @objs = ();
+        $search = ''; @objs = ();
         last;
     }
     push @{ $messages{Success} }, 'executed plugin successfuly';

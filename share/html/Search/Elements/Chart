@@ -47,17 +47,17 @@
 %# END BPS TAGGED BLOCK }}}
 <%args>
 $query => "id > 0"
-$PrimaryGroupBy => 'queue'
-$SecondaryGroupBy => undef
-$ChartStyle => 'bars'
+$primary_group_by => 'queue'
+$secondary_group_by => undef
+$chart_style => 'bars'
 </%args>
 <%init>
 use RT::Report::Tickets;
 my $tix = RT::Report::Tickets->new();
 $tix->from_sql( $query );
 my $count_name = $tix->column( function => 'COUNT', column => 'id' );
-$tix->group_by( column => $PrimaryGroupBy );
-my $value_name = $tix->column( column => $PrimaryGroupBy );
+$tix->group_by( column => $primary_group_by );
+my $value_name = $tix->column( column => $primary_group_by );
 
 my %class = (
     queue => 'RT::Model::Queue',
@@ -65,7 +65,7 @@ my %class = (
     Creator => 'RT::Model::User',
     LastUpdatedBy => 'RT::Model::User',
 );
-my $class = $class{ $PrimaryGroupBy };
+my $class = $class{ $primary_group_by };
 
 my (@keys, @values);
 while ( my $entry = $tix->next ) {
@@ -83,11 +83,11 @@ while ( my $entry = $tix->next ) {
 
 # XXX: Convert 1970-01-01 date to the 'Not Set'
 # this code should be generalized!!!
-if ( $PrimaryGroupBy =~ /(Daily|Monthly|Annually)$/ ) {
+if ( $primary_group_by =~ /(Daily|Monthly|Annually)$/ ) {
     my $re;
-    $re = qr{1970-01-01} if $PrimaryGroupBy =~ /Daily$/;
-    $re = qr{1970-01} if $PrimaryGroupBy =~ /Monthly$/;
-    $re = qr{1970} if $PrimaryGroupBy =~ /Annually$/;
+    $re = qr{1970-01-01} if $primary_group_by =~ /Daily$/;
+    $re = qr{1970-01} if $primary_group_by =~ /Monthly$/;
+    $re = qr{1970} if $primary_group_by =~ /Annually$/;
     foreach (@keys) {
         s/^$re/_('Not Set')/e;
     }
@@ -112,7 +112,7 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 
 <table class="collection-as-table">
 <tr>
-<th class="collection-as-table"><% $tix->label($PrimaryGroupBy) %>
+<th class="collection-as-table"><% $tix->label($primary_group_by) %>
 </th>
 <th class="collection-as-table"><&|/l&>Tickets</&>
 </th>

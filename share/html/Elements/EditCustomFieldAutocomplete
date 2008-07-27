@@ -45,8 +45,8 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% if ( $Multiple ) {
-<textarea cols="<% $Cols %>" rows="<% $Rows %>" name="<% $name %>-values" id="<% $name %>-values" ><% $default %></textarea><div id="<% $name %>-Choices" class="autocomplete"></div>
+% if ( $multiple ) {
+<textarea cols="<% $cols %>" rows="<% $rows %>" name="<% $name %>-values" id="<% $name %>-values" ><% $default %></textarea><div id="<% $name %>-Choices" class="autocomplete"></div>
 <script type="text/javascript">
 new Ajax.Autocompleter(
     "<% $name %>-values",
@@ -66,11 +66,11 @@ new Ajax.Autocompleter(
 % }
 </script>
 <%INIT>
-my $name = $namePrefix . $CustomField->id;
-if ( $default && !$Multiple ) {
+my $name = $name_prefix . $custom_field->id;
+if ( $default && !$multiple ) {
     $default =~ s/\s*\r*\n\s*/ /g;
 }
-if ( $Multiple and $values ) {
+if ( $multiple and $values ) {
     $default = '';
     while (my $value = $values->next ) {
         $default .= $value->content ."\n";
@@ -78,11 +78,11 @@ if ( $Multiple and $values ) {
 }
 </%INIT>
 <%ARGS>
-$CustomField => undef
-$namePrefix  => undef
+$custom_field => undef
+$name_prefix  => undef
 $default     => undef
 $values      => undef
-$Multiple    => undef
-$Rows        => undef
-$Cols        => undef
+$multiple    => undef
+$rows        => undef
+$cols        => undef
 </%ARGS>

@@ -84,7 +84,7 @@ $nojs => 0
 
 <%method new>
 <%init>
-$ARGS{_item_map} = {map {$_->[0] => $_->[1]} @{$ARGS{Available}}};
+$ARGS{_item_map} = {map {$_->[0] => $_->[1]} @{$ARGS{available}}};
 return \%ARGS;
 </%init>
 </%method>
@@ -93,18 +93,18 @@ return \%ARGS;
 <%init>
 unless ($ARGS{$self->{name}.'-Submit'}) {
     # init
-    $self->{Current} = $self->{Selected};
-    $self->{Selected} = [];
+    $self->{Current} = $self->{selected};
+    $self->{selected} = [];
     return;
 }
 
-$self->{Selected} = $ARGS{$self->{name}.'-Selected'};
-if ($self->{Selected} && !ref($self->{Selected})) {
-    $self->{Selected} = [$self->{Selected}];
+$self->{selected} = $ARGS{$self->{name}.'-Selected'};
+if ($self->{selected} && !ref($self->{selected})) {
+    $self->{selected} = [$self->{selected}];
 }
 
 if ($ARGS{fromjs}) {
-    $self->{Current} = $self->{Selected};
+    $self->{Current} = $self->{selected};
 }
 else {
     my $current = $self->{Current} = $ARGS{$self->{name}.'-Current'};
@@ -155,8 +155,8 @@ else {
 
 @{$self->{Current}} = grep { exists $self->{_item_map}{$_} } @{$self->{Current}};
 
-if ($self->{AutoSave} or $ARGS{$self->{name}.'-Save'}) {
-    $self->{OnSubmit}->($self);
+if ($self->{auto_save} or $ARGS{$self->{name}.'-Save'}) {
+    $self->{on_submit}->($self);
     delete $self->{Modified};
 }
 
@@ -180,7 +180,7 @@ $self => undef
 </%method>
 
 <%method show>
-<form method="post" action="<%$self->{Action}%>" name="SelectionBox-<% $name %>" id="SelectionBox-<% $name %>"
+<form method="post" action="<%$self->{action}%>" name="SelectionBox-<% $name %>" id="SelectionBox-<% $name %>"
 % unless ($nojs) {
 onsubmit="list_<% $name %>.selectAll();"
 % }
@@ -191,7 +191,7 @@ onsubmit="list_<% $name %>.selectAll();"
 <&|/l&>Available</&>:
 <br />
 <select name="<%$name%>-Available" id="<%$name%>-Available" size="<%$size%>" multiple="multiple">
-% for (@{$self->{Available}}) {
+% for (@{$self->{available}}) {
 <option value="<% $_->[0] %>"><% $_->[1] %></option>
 % }
 </select>
@@ -205,21 +205,21 @@ selected="selected"
 ><% $self->{_item_map}{$_} ||'' %></option>
 % }
 </select>
-% unless ($ARGS{'NoArrows'}) {
+% unless ($ARGS{'no_arrows'}) {
  <input name="moveup" type="submit" class="button" value=" ^ " />
  <input name="movedown" type="submit" class="button" value=" v " />
 % }
  <input name="remove" type="submit" class="button" value="<&|/l&>delete</&>" />
-% if ($ARGS{'Clear'}) {
+% if ($ARGS{'clear'}) {
  <input name="clear" type="submit" class="button" value="<&|/l&>clear</&>" />
 % }
 
 % my $caption = "";
-% unless ($self->{'AutoSave'}) {
+% unless ($self->{'auto_save'}) {
 % if ($self->{Modified}) {
 % $caption = _('Selections modified. Please save your changes');
 % }
-<& /Elements/Submit, Caption => _($caption), Label => _('Save'), name => $name.'-Save' &>
+<& /Elements/Submit, caption => _($caption), label => _('Save'), name => $name.'-Save' &>
 % }
 </form>
 
@@ -237,7 +237,7 @@ $nojs => 0
 </%ARGS>
 <%INIT>
 my $name = $self->{name};
-my %selected = map {$_ => 1} @{$self->{Selected}};
+my %selected = map {$_ => 1} @{$self->{selected}};
 </%INIT>
 
 </%method>

@@ -45,48 +45,48 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/Header, title => $title &>
 <& /Admin/Elements/QueueTabs, id => $queue_obj->id, 
     queue_obj => $queue_obj,
     current_tab => $current_tab, 
-    Title => $title &>
+    title => $title &>
 <& /Elements/ListActions, actions => \@results &>
 
 
 
 <form action="<%RT->config->get('WebPath')%>/Admin/Queues/Modify.html" method="post">
 <input type="hidden" class="hidden" name="set_enabled" value="1" />
-<input type="hidden" class="hidden" name="id" value="<% $Create? 'new': $queue_obj->id %>" />
+<input type="hidden" class="hidden" name="id" value="<% $create? 'new': $queue_obj->id %>" />
 
 <table>
 <tr><td align="right"><&|/l&>Queue name</&>:</td>
-<td colspan="3"><input name="name" value="<% ($Create) ? "" : $queue_obj->name %>" /></td>
+<td colspan="3"><input name="name" value="<% ($create) ? "" : $queue_obj->name %>" /></td>
 </tr>
 
 <tr><td align="right"><&|/l&>description</&>:</td>
-<td colspan="3"><input name="description" value="<% ($Create) ? "" : $queue_obj->description %>" size="60" /></td>
+<td colspan="3"><input name="description" value="<% ($create) ? "" : $queue_obj->description %>" size="60" /></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Subject Tag</&>:</td>
-<td colspan="3"><input name="subject_tag" value="<% $ARGS{'subject_tag'} || ($Create ? "" : $queue_obj->subject_tag || '' ) %>" size="60" /></td>
+<td colspan="3"><input name="subject_tag" value="<% $ARGS{'subject_tag'} || ($create ? "" : $queue_obj->subject_tag || '' ) %>" size="60" /></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Reply Address</&>:</td>
-<td><input name="correspond_address" value="<% ($Create) ? "" : $queue_obj->correspond_address %>" />
+<td><input name="correspond_address" value="<% ($create) ? "" : $queue_obj->correspond_address %>" />
 <br /><span><em><&|/l , RT->config->get('correspond_address')&>(If left blank, will default to %1)</&></em></span></td>
 <td align="right"><&|/l&>comment Address</&>:</td>
-<td><input name="comment_address" value="<% ($Create) ? "" : $queue_obj->comment_address %>" />
+<td><input name="comment_address" value="<% ($create) ? "" : $queue_obj->comment_address %>" />
 <br /><span><em><&|/l , RT->config->get('comment_address')&>(If left blank, will default to %1)</&></em></span></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Priority starts at</&>:</td>
-<td><input name="initial_priority" value="<% ($Create) ? "" : $queue_obj->initial_priority %>" /></td>
+<td><input name="initial_priority" value="<% ($create) ? "" : $queue_obj->initial_priority %>" /></td>
 <td align="right"><&|/l&>Over time, priority moves toward</&>:</td>
-<td><input name="final_priority" value="<% ($Create) ? "" : $queue_obj->final_priority %>" /></td>
+<td><input name="final_priority" value="<% ($create) ? "" : $queue_obj->final_priority %>" /></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Requests should be due in</&>:</td>
-<td colspan="3"><input name="default_due_in" value="<% ($Create) ? "" : $queue_obj->default_due_in%>" /> <&|/l&>days</&>.</td>
+<td colspan="3"><input name="default_due_in" value="<% ($create) ? "" : $queue_obj->default_due_in%>" /> <&|/l&>days</&>.</td>
 </tr>
 
 % my $CFs = $queue_obj->custom_fields;
@@ -94,9 +94,9 @@
 <tr valign="top"><td align="right">
 <% $CF->name %>:
 </td><td>
-<& /Elements/EditCustomField, CustomField => $CF, 
+<& /Elements/EditCustomField, custom_field => $CF, 
                               object => $queue_obj, 
-                              ($Create ? (NamePrefix => 'object-RT::Model::Queue--CustomField-') 
+                              ($create ? (name_prefix => 'object-RT::Model::Queue--CustomField-') 
                                        : () )&>
 </td></tr>
 % }
@@ -125,7 +125,7 @@ value="1" <%$enabled_checked|n%> /></td>
 % }
 
 </table>
-<& /Elements/Submit, Label => _('Save Changes') &>
+<& /Elements/Submit, label => _('Save Changes') &>
 </form>
 
 
@@ -138,7 +138,7 @@ $queue_obj->load( $id ) if !$id || $id eq 'new';
 
 $enabled_checked = 'checked="checked"';
 
-if ($Create) {
+if ($create) {
     $current_tab = 'Admin/Queues/Modify.html?Create=1';
     $title = _("Create a queue");
 } else {
@@ -193,7 +193,7 @@ if ( $queue_obj->id ) {
 $id => undef
 $result => undef
 $name => undef
-$Create => undef
+$create => undef
 $description => undef
 $correspond_address => undef
 $comment_address => undef

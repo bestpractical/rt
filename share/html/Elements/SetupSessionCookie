@@ -50,5 +50,5 @@
 return ();
 </%INIT>
 <%ARGS>
-$SessionCookie => undef
+$session_cookie => undef
 </%ARGS>

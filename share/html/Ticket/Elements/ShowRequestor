@@ -48,10 +48,10 @@
 <%PERL>
 my $rows = 10;
 my $has_right_adminusers = Jifty->web->current_user->has_right(object => RT->system, right => 'AdminUsers');
-my $people = $Ticket->role_group("requestor")->user_members_obj;
+my $people = $ticket->role_group("requestor")->user_members_obj;
 while ( my $requestor = $people->next ) {
     next if $requestor->privileged;
-    my $name = $m->scomp('/Elements/ShowUser', User => $requestor);
+    my $name = $m->scomp('/Elements/ShowUser', user => $requestor);
 
     my $tickets = RT::Model::TicketCollection->new();
     $tickets->from_sql( "Requestor.id = ". $requestor->id ." AND (Status = 'open' OR Status = 'new')" );
@@ -74,7 +74,7 @@ while ( my $requestor = $people->next ) {
 <&|/l, $rows &>This user's %1 highest priority tickets</&>:<br />
 <ul>
 %while (my $w=$tickets->next) {
-<li><a href="<%RT->config->get('WebPath')%><%$DisplayPath%>?id=<%$w->id%>"><%$w->id%>: <%$w->subject%></a> (<%$w->status%>)
+<li><a href="<%RT->config->get('WebPath')%><%$display_path%>?id=<%$w->id%>"><%$w->id%>: <%$w->subject%></a> (<%$w->status%>)
 %}
 </ul>
 
@@ -86,6 +86,6 @@ while ( my $requestor = $people->next ) {
 
 % }
 <%ARGS>
-$Ticket=>undef
-$DisplayPath => "/Ticket/Display.html"
+$ticket=>undef
+$display_path => "/Ticket/Display.html"
 </%ARGS>

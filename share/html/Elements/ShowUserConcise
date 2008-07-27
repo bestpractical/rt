@@ -47,25 +47,25 @@
 %# END BPS TAGGED BLOCK }}}
 %# Released under the terms of version 2 of the GNU Public License
 <%INIT>
-if ($User) {
+if ($user) {
     my $printable;
-    if ( $User->privileged ) {
-             $printable = $User->real_name
-          || $User->nickname
-          || $User->name
-          || $User->email;
+    if ( $user->privileged ) {
+             $printable = $user->real_name
+          || $user->nickname
+          || $user->name
+          || $user->email;
     }
     else {
-             $printable = $User->email
-          || $User->name
-          || $User->real_name
-          || $User->nickname;
+             $printable = $user->email
+          || $user->name
+          || $user->real_name
+          || $user->nickname;
     }
     $m->out( $printable);
 }
 
 </%INIT>
 <%ARGS>
-$User => undef
-$Address => undef
+$user => undef
+$address => undef
 </%ARGS>

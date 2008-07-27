@@ -48,7 +48,7 @@
 <& /Admin/Elements/SystemTabs, subtabs => $tabs, 
     current_tab => 'Admin/Global/CustomFields/index.html', 
     current_subtab => $current_tab, 
-    Title => $Title &>
+    title => $title &>
 <%INIT>
 
 my $tabs = {
@@ -101,5 +101,5 @@ $id => undef
 $current_tab => ''
 $subtabs => undef
 $current_subtab => undef
-$Title => undef
+$title => undef
 </%ARGS>

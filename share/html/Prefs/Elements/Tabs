@@ -49,18 +49,18 @@
     subtabs => $tabs,
     current_tab => 'Prefs/Other.html',
     current_subtab => $current_subtab,
-    Title => $Title &>
+    title => $title &>
 
 <%INIT>
 my $tabs;
-$Searches ||= [$m->comp("/Search/Elements/SearchesForObject", object => RT::System->new())];
+$searches ||= [$m->comp("/Search/Elements/SearchesForObject", object => RT::System->new())];
 
 $tabs->{a} = {
     title => _('Quick search'),
 	path => 'Prefs/Quicksearch.html',
 };
 
-for my $search (@$Searches) {
+for my $search (@$searches) {
     $tabs->{ $search->[0] } = {
         title => $search->[0],
         path  => "Prefs/Search.html?"
@@ -69,8 +69,8 @@ for my $search (@$Searches) {
 }
 </%INIT>
 <%ARGS>
-$GroupObj => undef
+$group_obj => undef
 $current_subtab => undef
-$Title => undef
-$Searches => undef
+$title => undef
+$searches => undef
 </%ARGS>

@@ -45,12 +45,12 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => $title  &>
+<& /Admin/Elements/Header, title => $title  &>
 
 <& /Admin/Elements/GroupTabs, 
-    GroupObj => $Group, 
+    group_obj => $Group, 
     current_tab => $current_tab, 
-    Title => $title &>
+    title => $title &>
 <& /Elements/ListActions, actions => \@results &>
 
 
@@ -77,9 +77,9 @@
 <tr valign="top"><td align="right">
 <% $CF->name %>:
 </td><td>
-<& /Elements/EditCustomField, CustomField => $CF, 
+<& /Elements/EditCustomField, custom_field => $CF, 
                               object => $Group, 
-                              ($Create ? (namePrefix => 'object-RT::Model::Group--CustomField-') 
+                              ($create ? (name_prefix => 'object-RT::Model::Group--CustomField-') 
                                        : () )&>
 </td></tr>
 % }
@@ -89,9 +89,9 @@
 <input type="checkbox" class="checkbox" name="enabled" value="1" <%$enabled_checked%> /> <&|/l&>enabled (Unchecking this box disables this group)</&><br />
 </td>
 </tr>
-% $m->callback( %ARGS, GroupObj => $Group, results => \@results );
+% $m->callback( %ARGS, group_obj => $Group, results => \@results );
 </table>
-<& /Elements/Submit, Label => _('Save Changes'), Reset => 1 &>
+<& /Elements/Submit, label => _('Save Changes'), reset => 1 &>
 </form>
 <%INIT>
 
@@ -100,7 +100,7 @@ my  ($title, @results, $disabled, $enabled_checked);
 
 my $Group = RT::Model::Group->new();
 
-if ($Create) {
+if ($create) {
     $current_tab = 'Admin/Groups/Modify.html?Create=1';
     $title = _("Create a new group");
 } 
@@ -129,7 +129,7 @@ else {
     # If the create failed
     else {
 	$title = _("Create a new group");
-	$Create = 1;
+	$create = 1;
     }    
     
 }
@@ -165,7 +165,7 @@ unless ($Group->disabled()) {
 
 
 <%ARGS>
-$Create => undef
+$create => undef
 $name => undef
 $description => undef
 $set_enabled => undef

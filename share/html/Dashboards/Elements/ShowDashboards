@@ -45,17 +45,17 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc("%1 Dashboards", $Type) &>
+<&| /Widgets/TitleBox, title => loc("%1 Dashboards", $type) &>
 <& SELF:table, %ARGS &>
 </&>
 <%ARGS>
-$Type    => undef
+$type    => undef
 </%ARGS>
 
 <%METHOD table>
 <%ARGS>
-$Dashboards => undef
-$Verbose => 1
+$dashboards => undef
+$verbose => 1
 </%ARGS>
 <%INIT>
 # map each subscription to a dashboard ID
@@ -66,14 +66,14 @@ for my $attr (Jifty->web->current_user->user_object->attributes->named('Subscrip
 }
 </%INIT>
 
-% if (@$Dashboards == 0) {
-%   if ($Verbose) {
+% if (@$dashboards == 0) {
+%   if ($verbose) {
         <p><% loc("No dashboards.") %></p>
 %   }
 % } else {
     <table class="collection-as-table">
         <tr class="collection-as-table">
-% if ($Verbose) {
+% if ($verbose) {
             <th class="collection-as-table"><% loc("#") %></th>
 % }
             <th class="collection-as-table"><% loc("Name") %></th>
@@ -81,14 +81,14 @@ for my $attr (Jifty->web->current_user->user_object->attributes->named('Subscrip
         </tr>
 
 %   my $i = 0;
-%   for my $dashboard (@$Dashboards) {
+%   for my $dashboard (@$dashboards) {
 %       my $url = sprintf '%s/Dashboards/%d/%s',
 %                 RT->config->get('WebPath'),
 %                 $dashboard->id,
 %                 $dashboard->name;
 
         <tr class="collection-as-table <% ++$i % 2 ? 'oddline' : 'evenline' %>">
-% if ($Verbose) {
+% if ($verbose) {
             <td class="collection-as-table">
                 <a href="<% $url %>">
                     <% $dashboard->id %>
@@ -101,7 +101,7 @@ for my $attr (Jifty->web->current_user->user_object->attributes->named('Subscrip
                 </a>
             </td>
             <td class="collection-as-table">
-                <& /Dashboards/Elements/ShowSubscription, Dashboard => $dashboard, Subscription => $subscription_for{$dashboard->id} &>
+                <& /Dashboards/Elements/ShowSubscription, dashboard => $dashboard, subscription => $subscription_for{$dashboard->id} &>
             </td>
         </tr>
 %   }

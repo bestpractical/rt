@@ -49,22 +49,22 @@
 $m->comp(
 	 '/Elements/CollectionList',
 	 %ARGS,
-	 Class => 'RT::Model::TicketCollection'
+	 class => 'RT::Model::TicketCollection'
 	);
 </%INIT>
 <%ARGS>
-$Collection => undef
+$collection => undef
 $query => undef
 $format => RT->config->get('DefaultSearchResultFormat')
 $display_format => undef
 $order => undef
 $order_by => undef
-$Rows => 50
-$Page => 1
-$Title => _('Ticket Search')
-$baseURL => undef
-$AllowSorting => undef
-$ShowNavigation => 1
-$ShowHeader => 1
-$ShowEmpty => 0
+$rows => 50
+$page => 1
+$title => _('Ticket Search')
+$base_url => undef
+$allow_sorting => undef
+$show_navigation => 1
+$show_header => 1
+$show_empty => 0
 </%ARGS>

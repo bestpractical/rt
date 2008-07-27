@@ -45,10 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title=>_("Preferences") &>
+<& /Elements/Header, title=>_("Preferences") &>
 <& /User/Elements/Tabs, 
     current_tab => 'User/Prefs.html', 
-    Title=>_("Preferences") &>
+    title=>_("Preferences") &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -181,7 +181,7 @@
 
 <&|/l&><p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p></&>
 
-<& /Elements/Submit, Label => _('Reset secret authentication token'), name => "ResetAuthToken" &>
+<& /Elements/Submit, label => _('Reset secret authentication token'), name => "ResetAuthToken" &>
 </&>
 </td></tr>
 
@@ -189,7 +189,7 @@
 
 % $m->callback( %ARGS, user_object => $user_object, Callbackname => 'FormEnd' );
 
-<& /Elements/Submit, Label => _('Save Preferences') &>
+<& /Elements/Submit, label => _('Save Preferences') &>
 </form>
 
 
@@ -240,11 +240,11 @@ my  ($code, $msg) = $user_object->set_privileged($privileged);
 }
 
 #TODO: make this report errors properly
-if ((defined $Pass1) and ($Pass1 ne '') and ($Pass1 eq $Pass2) and (!$user_object->password_is($Pass1))) {
+if ((defined $pass1) and ($pass1 ne '') and ($pass1 eq $pass2) and (!$user_object->password_is($pass1))) {
     my ($code, $msg);
-    ($code, $msg) = $user_object->set_password($Pass1);
+    ($code, $msg) = $user_object->set_password($pass1);
     push @results, _('password: %1', _($msg));
-} elsif ( $Pass1 && ($Pass1 ne $Pass2)) {
+} elsif ( $pass1 && ($pass1 ne $pass2)) {
     push @results, _("passwords do not match. Your password has not been changed");
 }
 
@@ -262,7 +262,7 @@ if ((defined $Pass1) and ($Pass1 ne '') and ($Pass1 eq $Pass2) and (!$user_objec
 $id => Jifty->web->current_user->id
 $name  => undef
 $comments  => undef
-$Signature  => undef
+$signature  => undef
 $email  => undef
 $freeform_contact_info => undef
 $organization  => undef
@@ -275,22 +275,22 @@ $set_enabled => undef
 $lang  => undef
 $email_encoding  => undef
 $web_encoding => undef
-$ExternalContactInfoId  => undef
-$ContactInfoSystem  => undef
+$external_contact_info_id  => undef
+$contact_info_system  => undef
 $gecos => undef
-$ExternalAuthId  => undef
+$external_auth_id  => undef
 $auth_system  => undef
-$HomePhone => undef
-$WorkPhone  => undef
-$MobilePhone  => undef
-$PagerPhone  => undef
-$Address1 => undef
-$Address2  => undef
-$City  => undef
-$State  => undef
-$Zip  => undef
-$Country => undef
-$Pass1 => undef
-$Pass2=> undef
-$Create=> undef
+$home_phone => undef
+$work_phone  => undef
+$mobile_phone  => undef
+$pager_phone  => undef
+$address1 => undef
+$address2  => undef
+$city  => undef
+$state  => undef
+$zip  => undef
+$country => undef
+$pass1 => undef
+$pass2=> undef
+$create=> undef
 </%ARGS>

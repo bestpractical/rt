@@ -45,9 +45,9 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| Elements/Wrapper, Title => _('Welcome to RT!') &>
+<&| Elements/Wrapper, title => _('Welcome to RT!') &>
 
-<& Elements/Errors, Errors => \@errors &>
+<& Elements/Errors, errors => \@errors &>
 
 % if ( !$locked) {
 
@@ -72,7 +72,7 @@
 
 <form method="post">
 <input type="hidden" name="Run" value="1" />
-<& /Elements/Submit, Label => _( "Let's go!") &>
+<& /Elements/Submit, label => _( "Let's go!") &>
 </form>
 % }
 </&>
@@ -85,7 +85,7 @@ my $locked;
     if ( $locked ) {
         push @errors, _("Config file %1 is locked", $file);
     }
-    elsif ( $Run ) {
+    elsif ( $run ) {
         $RT::Installer->{InstallConfig} ||= {};
         for my $field  ( qw/DatabaseType DatabaseName DatabaseHost DatabasePort
                 DatabaseUser DatabaseRequireSSL rtname
@@ -106,6 +106,6 @@ my $locked;
 </%init>
 
 <%args>
-$Run => 0
+$run => 0
 </%args>
 

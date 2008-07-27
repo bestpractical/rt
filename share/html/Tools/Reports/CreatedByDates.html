@@ -47,8 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 <%args>
 $queue => undef
-$CreatedBefore => undef
-$CreatedAfter => undef
+$created_before => undef
+$created_after => undef
 </%args>
 <%init>
 my $title = _("Created tickets in period, grouped by status");
@@ -58,37 +58,37 @@ my $after = RT::Date->new();
 my $query = 'Status != "deleted" ';
 
 
-if ($CreatedAfter) {
-    $after->set(format => 'unknown', value => $CreatedAfter);
-    $CreatedAfter = $after->as_string;
+if ($created_after) {
+    $after->set(format => 'unknown', value => $created_after);
+    $created_after = $after->as_string;
 }
-if ($CreatedBefore) {
-    $before->set(format => 'unknown', value => $CreatedBefore);
-    $CreatedBefore = $before->as_string;
+if ($created_before) {
+    $before->set(format => 'unknown', value => $created_before);
+    $created_before = $before->as_string;
 }
 
 
 $q->load_by_cols(name => $queue);
 </%init>
-<& /Elements/Header, Title => $title &>
-<& /Tools/Reports/Elements/Tabs, current_tab => 'Tools/Reports/CreatedByDates.html', Title => $title &>
+<& /Elements/Header, title => $title &>
+<& /Tools/Reports/Elements/Tabs, current_tab => 'Tools/Reports/CreatedByDates.html', title => $title &>
 <form method="post" action="CreatedByDates.html">
-% if ($queue|| $CreatedBefore ||$CreatedAfter) {
+% if ($queue|| $created_before ||$created_after) {
 % # if we have a queue, do the search
 % if ($queue) { $query .= " AND queue = '$queue'"}
-% if ($CreatedBefore) { $query .= " AND Created < '".$before->iso."'"; }
-% if ($CreatedAfter) { $query .= " AND Created > '".$after->iso."'"}
+% if ($created_before) { $query .= " AND Created < '".$before->iso."'"; }
+% if ($created_after) { $query .= " AND Created > '".$after->iso."'"}
 % my $groupby = 'Status';
-<& /Search/Elements/Chart, query => $query, PrimaryGroupBy => $groupby &>
+<& /Search/Elements/Chart, query => $query, primary_group_by => $groupby &>
 % }
 
 <hr />
 
 <br /><&|/l&>Queue</&>: <& /Elements/SelectQueue, name => 'queue', named_values => 1, default => $q->id &>
 <br /><&|/l&>Tickets Created after</&>: 
-<& /Elements/SelectDate, name => 'CreatedAfter', default => ($CreatedAfter) ? $after->iso : ''&>
+<& /Elements/SelectDate, name => 'CreatedAfter', default => ($created_after) ? $after->iso : ''&>
 <br /><&|/l&>Tickets Created before</&>: 
-<& /Elements/SelectDate, name => 'CreatedBefore', default => ($CreatedBefore) ? $before->iso : ''&>
+<& /Elements/SelectDate, name => 'CreatedBefore', default => ($created_before) ? $before->iso : ''&>
 
 <& /Elements/Submit&>
 </form>

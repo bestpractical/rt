@@ -48,7 +48,7 @@
 <script type="text/javascript"><!--
     onLoadHook('createCalendarLink("<% $name %>");');
 --></script>
-<input type="text" id="<% $name %>" name="<% $name %>" value="<% $value %>" size="<% $Size %>" />
+<input type="text" id="<% $name %>" name="<% $name %>" value="<% $value %>" size="<% $size %>" />
 <%init>
 unless ((defined $default) or 
 	($current <= 0)) {
@@ -67,11 +67,11 @@ unless ($name) {
 
 <%args>
 
-$ShowTime => 1
+$show_time => 1
 $menu_prefix=>''
 $current=>time
 $default => ''
 $value => ''
 $name => undef
-$Size => 16
+$size => 16
 </%args>

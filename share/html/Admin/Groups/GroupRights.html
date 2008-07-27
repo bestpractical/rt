@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => _('Modify group rights for group %1', $GroupObj->name) &>
+<& /Admin/Elements/Header, title => _('Modify group rights for group %1', $GroupObj->name) &>
 <& /Admin/Elements/GroupTabs, 
-    GroupObj => $GroupObj, 
+    group_obj => $GroupObj, 
     current_tab => 'Admin/Groups/GroupRights.html?id='.$id, 
-    Title => _('Modify group rights for group %1', $GroupObj->name) &>
+    title => _('Modify group rights for group %1', $GroupObj->name) &>
 <& /Elements/ListActions, actions => \@results &>
 
   <form method="post" action="GroupRights.html">
@@ -93,7 +93,7 @@
 </table>
             
       </&>
-      <& /Elements/Submit, Label => _('Modify Group rights'), Reset => 1 &>
+      <& /Elements/Submit, label => _('Modify Group rights'), reset => 1 &>
       
   </form>
   

@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => _('Modify user rights for queue %1', $queue_obj->name) &>
+<& /Admin/Elements/Header, title => _('Modify user rights for queue %1', $queue_obj->name) &>
 <& /Admin/Elements/QueueTabs, id => $id,
     queue_obj => $queue_obj,                                                      
     current_tab => $current_tab, 
-    Title => _('Modify user rights for queue %1', $queue_obj->name) &>
+    title => _('Modify user rights for queue %1', $queue_obj->name) &>
 <& /Elements/ListActions, actions => \@results &>
 
   <form method="post" action="UserRights.html">
@@ -63,7 +63,7 @@
 % my $group = RT::Model::Group->new();
 % $group->load_acl_equivalence_group($Member->member_obj);
   <tr align="right"> 
-	<td valign="top"><& /Elements/ShowUser, User => $user_object &></td>
+	<td valign="top"><& /Elements/ShowUser, user => $user_object &></td>
 	  <td>
 	    <& /Admin/Elements/SelectRights, principal_id=> $group->principal_id,
         object => $queue_obj  &>
@@ -72,7 +72,7 @@
 % }
       </table>
             
-      <& /Elements/Submit, Label => _('Modify User rights'), Reset => 1 &>
+      <& /Elements/Submit, label => _('Modify User rights'), reset => 1 &>
       
   </form>
   
@@ -106,7 +106,7 @@ $current_tab = 'Admin/Queues/UserRights.html?id='.$queue_obj->id;
 
 <%ARGS>
 $id => undef
-$UserString => undef
-$UserOp => undef
-$UserField => undef
+$user_string => undef
+$user_op => undef
+$user_field => undef
 </%ARGS>

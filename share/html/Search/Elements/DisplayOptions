@@ -130,5 +130,5 @@ $order => undef
 $order_by => undef
 $rows_per_page => undef
 $format => undef
-$GroupBy => 'id'
+$group_by => 'id'
 </%ARGS>

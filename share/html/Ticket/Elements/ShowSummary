@@ -49,40 +49,40 @@
       <tr>
 	<td valign="top" class="boxcontainer">
 	  <&| /Widgets/TitleBox, title => _('The Basics'), 
-		title_href => RT->config->get('WebPath')."/Ticket/Modify.html?id=".$Ticket->id, 
+		title_href => RT->config->get('WebPath')."/Ticket/Modify.html?id=".$ticket->id, 
 		class => 'ticket-info-basics' &>
-	        <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
+	        <& /Ticket/Elements/ShowBasics, ticket => $ticket &>
 	  </&>
 
-% if ($Ticket->queue_obj->ticket_custom_fields->first) {
+% if ($ticket->queue_obj->ticket_custom_fields->first) {
 	  <&| /Widgets/TitleBox, title => _('Custom Fields'), 
-		title_href => RT->config->get('WebPath')."/Ticket/Modify.html?id=".$Ticket->id, 
+		title_href => RT->config->get('WebPath')."/Ticket/Modify.html?id=".$ticket->id, 
 		class => 'ticket-info-cfs'  &> 
-	        <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &>
+	        <& /Ticket/Elements/ShowCustomFields, ticket => $ticket &>
 	  </&>
 % }
 	  <&| /Widgets/TitleBox, title => _('People'), 
-		title_href => RT->config->get('WebPath')."/Ticket/ModifyPeople.html?id=".$Ticket->id, 
+		title_href => RT->config->get('WebPath')."/Ticket/ModifyPeople.html?id=".$ticket->id, 
 		class => 'ticket-info-people' &>
-            <& /Ticket/Elements/ShowPeople, Ticket => $Ticket &>
+            <& /Ticket/Elements/ShowPeople, ticket => $ticket &>
 	  </&>
 
-      <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, Attachments => $Attachments &>
+      <& /Ticket/Elements/ShowAttachments, ticket => $ticket, attachments => $attachments &>
         <br />
-	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
+	  <& /Ticket/Elements/ShowRequestor, ticket => $ticket &>
 
 % $m->callback( %ARGS, Callbackname => 'LeftColumn' );
 	</td>
 	<td valign="top" class="boxcontainer">
 % if ( RT->config->get('EnableReminders') ) {
 	  <&|/Widgets/TitleBox, title => _("Reminders"),
-		title_href => RT->config->get('WebPath')."/Ticket/Reminders.html?id=".$Ticket->id, 
+		title_href => RT->config->get('WebPath')."/Ticket/Reminders.html?id=".$ticket->id, 
 		class => 'ticket-info-reminders' &>
         <table>
         <tr>
         <td>
             <form action="<%RT->config->get('WebPath')%>/Ticket/Display.html" method="post">
-	      <& /Ticket/Elements/Reminders, Ticket => $Ticket, ShowCompleted => 0 &>
+	      <& /Ticket/Elements/Reminders, ticket => $ticket, show_completed => 0 &>
               <div align="right"><input type="submit" class="button" value="Save" /></div>
             </form>
             </td>
@@ -91,18 +91,18 @@
 	  </&>
 % }
 	  <&| /Widgets/TitleBox, title => _("dates"),
-		title_href => RT->config->get('WebPath')."/Ticket/ModifyDates.html?id=".$Ticket->id, 
+		title_href => RT->config->get('WebPath')."/Ticket/ModifyDates.html?id=".$ticket->id, 
 		class => 'ticket-info-dates' &>
-	  <& /Ticket/Elements/ShowDates, Ticket => $Ticket &>
+	  <& /Ticket/Elements/ShowDates, ticket => $ticket &>
 	  </&>
 
 % my (@extra);
-% push @extra, titleright_raw => '<a href="'. RT->config->get('WebPath'). '/Ticket/Graphs/index.html?id='.$Ticket->id.'">'.loc('Graph').'</a>' unless RT->config->get('DisableGraphViz');
+% push @extra, titleright_raw => '<a href="'. RT->config->get('WebPath'). '/Ticket/Graphs/index.html?id='.$ticket->id.'">'.loc('Graph').'</a>' unless RT->config->get('DisableGraphViz');
 
 	  <&| /Widgets/TitleBox, title => _('Links'), 
-		title_href => RT->config->get('WebPath')."/Ticket/ModifyLinks.html?id=".$Ticket->id, 
+		title_href => RT->config->get('WebPath')."/Ticket/ModifyLinks.html?id=".$ticket->id, 
  		class => 'ticket-info-links', @extra &>
-	        <& /Elements/ShowLinks, Ticket => $Ticket &>
+	        <& /Elements/ShowLinks, ticket => $ticket &>
           </&>
 % $m->callback( %ARGS, Callbackname => 'RightColumn' );
 
@@ -110,8 +110,8 @@
       </tr>
     </table>
 <%ARGS>
-$Ticket => undef
-$Attachments => undef
+$ticket => undef
+$attachments => undef
 </%ARGS>
 
 

@@ -87,9 +87,9 @@
 </&>
 
 <& /Elements/Submit,
-    Label => $SubmitLabel,
-    Caption => _("Be sure to save your changes"),
-    Reset => 1,
+    label => $SubmitLabel,
+    caption => _("Be sure to save your changes"),
+    reset => 1,
 &><br />
 
 <&| /Widgets/TitleBox, title => _('User Defined conditions and actions') &>
@@ -123,9 +123,9 @@
 </&>
 
 <& /Elements/Submit,
-    Caption => _("Be sure to save your changes"),
-    Label => $SubmitLabel,
-    Reset => 1,
+    caption => _("Be sure to save your changes"),
+    label => $SubmitLabel,
+    reset => 1,
 &>
 
 </form>

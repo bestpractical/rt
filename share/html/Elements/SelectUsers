@@ -47,22 +47,22 @@
 %# END BPS TAGGED BLOCK }}}
 <select name="UserField">
 % foreach my $col (RT::Model::User->basic_columns) {
-<option <% ($UserField eq $col->[0]) ? 'selected="selected"' : '' %> value="<% $col->[0] %>"><% _($col->[1]) %></option>
+<option <% ($user_field eq $col->[0]) ? 'selected="selected"' : '' %> value="<% $col->[0] %>"><% _($col->[1]) %></option>
 % }
 % while (my $CF = $CFs->next) {
 %   my $val = "CustomField-" . $CF->id;
-<option <% ($UserField eq $val) ? 'selected="selected"' : '' %> value="<% $val %>"><&|/l&>CustomField</&>: <% $CF->name %></option>
+<option <% ($user_field eq $val) ? 'selected="selected"' : '' %> value="<% $val %>"><&|/l&>CustomField</&>: <% $CF->name %></option>
 % }
 </select>
-<& /Elements/SelectMatch, name => 'UserOp', default => $UserOp &>
-<input size="8" name="UserString" value="<% $UserString %>" />
+<& /Elements/SelectMatch, name => 'UserOp', default => $user_op &>
+<input size="8" name="UserString" value="<% $user_string %>" />
 <%INIT>
 my $CFs = RT::Model::CustomFieldCollection->new();
 $CFs->limit_to_child_type('RT::Model::User');
 $CFs->order_by( column => 'name' );
 </%INIT>
 <%ARGS>
-$UserField  => ''
-$UserOp     => ''
-$UserString => ''
+$user_field  => ''
+$user_op     => ''
+$user_string => ''
 </%ARGS>

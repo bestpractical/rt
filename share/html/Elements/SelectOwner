@@ -52,14 +52,14 @@
 
 
 % $default = 0 unless defined $default && $default =~ /^\d+$/;
-% my @formatednames = sort {lc $a->[1] cmp lc $b->[1]} map {[$_, $m->scomp('/Elements/ShowUser', User => $_)]} @users;
+% my @formatednames = sort {lc $a->[1] cmp lc $b->[1]} map {[$_, $m->scomp('/Elements/ShowUser', user => $_)]} @users;
 %foreach my $UserRef ( @formatednames)  {
-%my $User = $UserRef->[0];
-<option <% ( $User->id == $default) ? qq[ selected="selected"] : '' |n %>
+%my $user = $UserRef->[0];
+<option <% ( $user->id == $default) ? qq[ selected="selected"] : '' |n %>
 %if ($value_attribute eq 'id') {
-    value="<%$User->id%>"
+    value="<%$user->id%>"
 %} elsif ($value_attribute eq 'name') {
-    value="<%$User->name%>"
+    value="<%$user->name%>"
 %}
 ><% $UserRef->[1] |n %></option>
 %}
@@ -99,11 +99,11 @@ foreach my $object (@objects) {
         include_system_rights => 1,
         include_superusers   => $isSU
     );
-    while ( my $User = $Users->next() ) {
+    while ( my $user = $Users->next() ) {
         next
-            if ( $User->id == $RT::nobody->id )
+            if ( $user->id == $RT::nobody->id )
             ;    # skip nobody here, so we can make them first later
-        $user_uniq_hash{ $User->id() } = $User;
+        $user_uniq_hash{ $user->id() } = $user;
     }
 }
 if ($default && $default != $RT::nobody->id && !$user_uniq_hash{$default}) {
@@ -126,7 +126,7 @@ $m->callback(
 $queue_obj => undef
 $name => undef
 $default => 0
-$User => undef
+$user => undef
 $ticket_obj => undef
 $default_value => 1
 $default_label => "-"

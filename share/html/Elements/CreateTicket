@@ -46,5 +46,5 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <form action="<% RT->config->get('WebPath') %>/Ticket/Create.html" name="CreateTicketInQueue" id="CreateTicketInQueue">
-<&|/l, $m->scomp('/Elements/SelectNewTicketQueue', OnChange => 'document.CreateTicketInQueue.submit()')&><input type="submit" class="button" value="New ticket in" />&nbsp;%1</&>
+<&|/l, $m->scomp('/Elements/SelectNewTicketQueue', on_change => 'document.CreateTicketInQueue.submit()')&><input type="submit" class="button" value="New ticket in" />&nbsp;%1</&>
 </form>

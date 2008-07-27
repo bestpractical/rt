@@ -45,16 +45,16 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% if (@CustomFields == 0) {
+% if (@custom_fields == 0) {
 <p><i><&|/l&>(None)</&></i></p>
 % } else {
 <table cellspacing="0" cellpadding="2">
 % my $count;
-% foreach my $CustomFieldObj (@CustomFields) {
+% foreach my $CustomFieldObj (@custom_fields) {
 <tr>
-%   if (!$ReadOnly) {
+%   if (!$read_only) {
   <td valign="top">
-<input type="checkbox" class="checkbox" name="object-<%$id%>-CF-<%$CustomFieldObj->id%>" value="1" <% $Checked ? 'checked="checked"' : '' %>
+<input type="checkbox" class="checkbox" name="object-<%$id%>-CF-<%$CustomFieldObj->id%>" value="1" <% $checked ? 'checked="checked"' : '' %>
 />
   </td>
 %   }
@@ -72,17 +72,17 @@
     <i><% $CustomFieldObj->friendly_type_composite %></i>
   </td>
 %  # show 'move up' unless it's the first item
-%  if ($count++ and $Checked) {
+%  if ($count++ and $checked) {
   <td valign="top">
-    [<a href="<%RT->config->get('WebPath')%><% $m->request_comp->path |n %>?id=<%$id%>&SubType=<%$SubType%>&CustomField=<%$CustomFieldObj->id%>&Move=-1"><&|/l&>Move up</&></a>]
+    [<a href="<%RT->config->get('WebPath')%><% $m->request_comp->path |n %>?id=<%$id%>&sub_type=<%$sub_type%>&CustomField=<%$CustomFieldObj->id%>&Move=-1"><&|/l&>Move up</&></a>]
 %  } else {
   <td valign="top" align="right">
 %  }
 
 %  # show 'move down' unless it's the last item
-%  if ($count != @CustomFields and $Checked) {
+%  if ($count != @custom_fields and $checked) {
 %  $m->print(' | ') if $count > 1;
-    [<a href="<%RT->config->get('WebPath')%><% $m->request_comp->path |n %>?id=<%$id%>&SubType=<%$SubType%>&CustomField=<%$CustomFieldObj->id%>&Move=1"><&|/l&>Move down</&></a>]
+    [<a href="<%RT->config->get('WebPath')%><% $m->request_comp->path |n %>?id=<%$id%>&sub_type=<%$sub_type%>&CustomField=<%$CustomFieldObj->id%>&Move=1"><&|/l&>Move down</&></a>]
 %  }
   </td>
 </tr>
@@ -90,9 +90,9 @@
 </table>
 % }
 <%ARGS>
-@CustomFields
+@custom_fields
 $id
-$ReadOnly => 0
-$Checked => 0
-$SubType
+$read_only => 0
+$checked => 0
+$sub_type
 </%ARGS>

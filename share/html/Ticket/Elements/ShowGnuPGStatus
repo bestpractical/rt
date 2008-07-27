@@ -54,15 +54,15 @@
 % }
 </table>
 <%ARGS>
-$Attachment
-$WarnUnsigned => undef
+$attachment
+$warn_unsigned => undef
 $reverify     => 1
 </%ARGS>
 <%INIT>
 my @runs;
-my $needs_unsigned_warning = $WarnUnsigned;
+my $needs_unsigned_warning = $warn_unsigned;
 
-foreach ( $Attachment->split_headers ) {
+foreach ( $attachment->split_headers ) {
     if ( s/^X-RT-GnuPG-Status:\s*//i ) {
         require RT::Crypt::GnuPG;
         push @runs, [ RT::Crypt::GnuPG::parse_status( $_ ) ];
@@ -139,7 +139,7 @@ foreach my $run ( @runs ) {
             # but only if we have key
             my %key = RT::Crypt::GnuPG::get_public_key_info( $line->{'key'} );
             if ( $key{'info'} ) {
-                my ($status, $msg) = $reverify_cb->($Attachment);
+                my ($status, $msg) = $reverify_cb->($attachment);
                 unless ($status) {
                     Jifty->log->error($msg);
                 } else {

@@ -45,16 +45,16 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => $title  &>
+<& /Admin/Elements/Header, title => $title  &>
 <& /Admin/Elements/GroupTabs, 
     id => $id, 
-    GroupObj => $GroupObj,
+    group_obj => $GroupObj,
     current_subtab => $current_tab, 
-    Title => $title &>
+    title => $title &>
 
 <& /Ticket/Elements/ShowHistory,
-    Ticket => $GroupObj,
-    ShowDisplayModes => 0,
+    ticket => $GroupObj,
+    show_display_modes => 0,
 &>
 
 <%INIT>

@@ -45,13 +45,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /SelfService/Elements/Header, Title => _('Open tickets') &>
+<& /SelfService/Elements/Header, title => _('Open tickets') &>
 <& /SelfService/Elements/MyRequests,
     %ARGS,
-    baseURL => RT->config->get('WebPath') ."/SelfService/?",
-    Page    => $Page, 
+    base_url => RT->config->get('WebPath') ."/SelfService/?",
+    page    => $page, 
 &>
 
 <%ARGS>
-$Page => 1
+$page => 1
 </%ARGS>

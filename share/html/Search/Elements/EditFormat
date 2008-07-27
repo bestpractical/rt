@@ -56,37 +56,37 @@
 
 <tr>
 
-<td valign="top"><select size="6" name="SelectDisplayColumns" multiple>
-% foreach my $field ( @$AvailableColumns) {
+<td valign="top"><select size="6" name="select_display_columns" multiple>
+% foreach my $field ( @$available_columns) {
 <option value="<% $field %>"><% _($field) %></option>
 % }
 </select></td>
 
 <td><&|/l&>Link</&>:
-<select name="Link">
+<select name="link">
 <option value="None">-</option>
 <option value="Display"><&|/l&>Display</&></option>
 <option value="Take"><&|/l&>Take</&></option>
 </select>
-<br /><&|/l&>Title</&>: <input name="Title" size="10" />
+<br /><&|/l&>Title</&>: <input name="title" size="10" />
 <br /><&|/l&>Size</&>:
-<select name="Size">
+<select name="size">
 <option value="">-</option>
 <option value="Small"><&|/l&>Small</&></option>
 <option value="Large"><&|/l&>Large</&></option>
 </select>
 <br /><&|/l&>Style</&>:
-<select name="Face">
+<select name="face">
 <option value="">-</option>
 <option value="Bold"><&|/l&>Bold</&></option>
 <option value="Italic"><&|/l&>Italic</&></option>
 </select>
 </td>
 
-<td><input type="submit" class="button" name="AddCol" value=" &rarr; " /></td>
+<td><input type="submit" class="button" name="add_col" value=" &rarr; " /></td>
 
 <td valign="top">
-<select size="4" name="CurrentDisplayColumns">
+<select size="4" name="current_display_columns">
 % my $i=0;
 % foreach my $field ( @$current_format ) {
 <option value="<% $i++ %>><% $field->{Column} %>"><% _( $field->{Column} ) %></option>
@@ -94,9 +94,9 @@
 </select>
 <br />
 <center>
-<input type="submit" class="button" name="ColUp" value=" &uarr; " />
-<input type="submit" class="button" name="ColDown" value=" &darr; " />
-<input type="submit" class="button" name="RemoveCol" value="<%_('Delete')%>" />
+<input type="submit" class="button" name="col_up" value=" &uarr; " />
+<input type="submit" class="button" name="col_down" value=" &darr; " />
+<input type="submit" class="button" name="remove_col" value="<%_('Delete')%>" />
 </center>
 </td>
 
@@ -105,5 +105,5 @@
 
 <%ARGS>
 $current_format => undef
-$AvailableColumns => undef
+$available_columns => undef
 </%ARGS>

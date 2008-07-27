@@ -45,10 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => _("RT at a glance") &>
+<& /Admin/Elements/Header, title => _("RT at a glance") &>
 <& /Admin/Elements/SystemTabs,
     current_tab => 'Admin/Global/MyRT.html',
-    Title => _("RT at a glance"),
+    title => _("RT at a glance"),
 &>
 
 <& /Widgets/SelectionBox:header, nojs => 1 &>
@@ -86,10 +86,10 @@ my ($default_portlets) = $sys->attributes->named('HomepageSettings');
 my @panes = $m->comp(
     '/Admin/Elements/ConfigureMyRT',
     panes  => ['body', 'summary'],
-    Action => 'MyRT.html',
+    action => 'MyRT.html',
     items => \@items,
     current_portlets => $default_portlets->content,
-    OnSave => sub  {
+    on_save => sub  {
         my ( $conf, $pane ) = @_;
 	$default_portlets->set_content( $conf );
         push @actions, _( 'Global portlet %1 saved.', $pane );

@@ -46,11 +46,11 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header,
-    Title => _("Create a new ticket"),
+    title => _("Create a new ticket"),
     onload => "hide(document.getElementById('Ticket-Create-details'));" &>
 <& /Elements/Tabs, 
     current_toptab => "Ticket/Create.html", 
-    Title => _("Create a new ticket"),
+    title => _("Create a new ticket"),
     actions => $actions &>
 <& /Elements/ListActions, actions => \@results &>
 <form action="<% RT->config->get('WebPath') %>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
@@ -84,14 +84,14 @@
 <&|/l&>Requestors</&>:
 </td>
 <td class="value" colspan="5">
-    <& /Elements/EmailInput, name => 'requestors', Size => '40', default => $ARGS{requestors} || Jifty->web->current_user->email &>
+    <& /Elements/EmailInput, name => 'requestors', size => '40', default => $ARGS{requestors} || Jifty->web->current_user->email &>
 </td>
 </tr>
 <tr>
 <td class="label">
 <&|/l&>Cc</&>:
 </td>
-<td class="value" colspan="3"><& /Elements/EmailInput, name => 'cc', Size => '40', default => $ARGS{cc} &></td>
+<td class="value" colspan="3"><& /Elements/EmailInput, name => 'cc', size => '40', default => $ARGS{cc} &></td>
 <td class="comment" colspan="2"><i><font size="-2">
 <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)</&></font></i>
 </td>
@@ -100,7 +100,7 @@
 <td class="label">
 <&|/l&>Admin Cc</&>:
 </td>
-<td class="value" colspan="3"><& /Elements/EmailInput, name => 'admin_cc', Size => '40', default => $ARGS{AdminCc} &></td>
+<td class="value" colspan="3"><& /Elements/EmailInput, name => 'admin_cc', size => '40', default => $ARGS{AdminCc} &></td>
 <td class="comment" colspan="2"><i><font size="-2">
 <&|/l&>(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)</&></font></i>
 </td>
@@ -122,7 +122,7 @@
 % while (my $CF = $TxnCFs->next()) {
 <tr>
 <td class="label"><% $CF->name %>:</td>
-<td><& /Elements/EditCustomField, CustomField => $CF, namePrefix =>
+<td><& /Elements/EditCustomField, custom_field => $CF, name_prefix =>
     "object-RT::Model::Transaction--CustomField-" &><em><% $CF->friendly_type %></em></td>
 </td></tr>
 % }
@@ -161,9 +161,9 @@
 <&|/l&>describe the issue below</&>:<br />
 <& /Elements/Callback, _Callbackname => 'BeforeMessageBox', queue_obj => $queue_obj, %ARGS &>
 % if (exists $ARGS{Content}) {
-<& /Elements/MessageBox, default => $ARGS{Content}, IncludeSignature => 0 &>
+<& /Elements/MessageBox, default => $ARGS{Content}, include_signature => 0 &>
 % } else {
-<& /Elements/MessageBox, QuoteTransaction => $QuoteTransaction &>
+<& /Elements/MessageBox, quote_transaction => $quote_transaction &>
 %}
 
 <br />
@@ -171,7 +171,7 @@
 </tr>
 </table>
 </&>
-<& /Elements/Submit, Label => _("Create")&>
+<& /Elements/Submit, label => _("Create")&>
 </div>
 
 <div id="Ticket-Create-details">
@@ -242,16 +242,15 @@
 </td>
 </tr>
 </table>
-<& /Elements/Submit, Label => _("Create") &>
+<& /Elements/Submit, label => _("Create") &>
 </div>
 </form>
 
 <%INIT>
-
 my $cloneticket_obj;
-if ( $cloneTicket ) {
+if ( $clone_ticket ) {
     $cloneticket_obj = RT::Model::Ticket->new();
-    $cloneticket_obj->load($cloneTicket) or abort(_("Ticket could not be loaded"));
+    $cloneticket_obj->load($clone_ticket) or abort(_("Ticket could not be loaded"));
     
     my $clone = {
         Requestors       => join( ',', $cloneticket_obj->role_group("requestor")->member_emails_as_string ),
@@ -332,7 +331,7 @@ my $TxnCFs = $queue_obj->ticket_transaction_custom_fields();
 
 my $ValidCFs = $m->comp(
     '/Elements/ValidateCustomFields',
-    CustomFields => $CFs,
+    custom_fields => $CFs,
     args_ref => \%ARGS
 );
 
@@ -360,6 +359,7 @@ if ($ARGS{'Attach'}) {			# attachment?
 
     $session{'Attachments'} = { %{$session{'Attachments'} || {}},
 				$ARGS{'Attach'} => $attachment };
+
 }
 # }}}
 
@@ -413,10 +413,10 @@ my $actions = {
 </%INIT>
 
 <%ARGS>
-$DependsOn => undef
-$DependedOnBy => undef
-$MemberOf => undef
-$QuoteTransaction => undef
+$depends_on => undef
+$depended_on_by => undef
+$member_of => undef
+$quote_transaction => undef
 $queue => undef
-$cloneTicket => undef
+$clone_ticket => undef
 </%ARGS>

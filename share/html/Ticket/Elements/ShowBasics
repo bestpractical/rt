@@ -48,40 +48,40 @@
 <table>
   <tr>
     <td class="label id"><&|/l&>id</&>:</td>
-    <td class="value id"><%$Ticket->id %></td>
+    <td class="value id"><%$ticket->id %></td>
   </tr>
   <tr>
     <td class="label status"><&|/l&>Status</&>:</td>
-    <td class="value status"><&|/l&><% $Ticket->status%></&></td>
+    <td class="value status"><&|/l&><% $ticket->status%></&></td>
   </tr>
-% if ($Ticket->time_estimated) {
+% if ($ticket->time_estimated) {
   <tr>
     <td class="label time estimated"><&|/l&>Estimated</&>:</td>
-    <td class="value time estimated"><& ShowTime, minutes => $Ticket->time_estimated &></td>
+    <td class="value time estimated"><& ShowTime, minutes => $ticket->time_estimated &></td>
   </tr>
 % }
-% if ($Ticket->time_worked) {
+% if ($ticket->time_worked) {
   <tr>
     <td class="label time worked"><&|/l&>Worked</&>:</td>
-    <td class="value time worked"><& ShowTime, minutes => $Ticket->time_worked &></td>
+    <td class="value time worked"><& ShowTime, minutes => $ticket->time_worked &></td>
   </tr>
 % }
-% if ($Ticket->time_left) {
+% if ($ticket->time_left) {
   <tr>
     <td class="label time left"><&|/l&>Left</&>:</td>
-    <td class="value time left"><& ShowTime, minutes => $Ticket->time_left &></td>
+    <td class="value time left"><& ShowTime, minutes => $ticket->time_left &></td>
   </tr>
 % }
   <tr>
     <td class="label priority"><&|/l&>Priority</&>:</td>
-    <td class="value priority"><%$Ticket->priority||0%>/<%$Ticket->final_priority||0 %></td>
+    <td class="value priority"><%$ticket->priority||0%>/<%$ticket->final_priority||0 %></td>
   </tr>
   <tr>
     <td class="label queue"><&|/l&>Queue</&>:</td>
-    <td class="value queue"><& ShowQueue, queue_obj => $Ticket->queue_obj &></td>
+    <td class="value queue"><& ShowQueue, queue_obj => $ticket->queue_obj &></td>
   </tr>
-% $m->callback( %ARGS, Callbackname => 'EndOfList', ticket_obj => $Ticket );
+% $m->callback( %ARGS, Callbackname => 'EndOfList', ticket_obj => $ticket );
 </table>
 <%ARGS>
-$Ticket => undef
+$ticket => undef
 </%ARGS>

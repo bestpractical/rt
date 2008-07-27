@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, ShowBar => 0 &>
+<& /Elements/Header, show_bar => 0 &>
 %# From /Elements/Header
 </div>
 <div id="body" class="calpopup">
@@ -56,7 +56,7 @@
   <table>
     <caption>
       <a class="prev" href="CalPopup.html?DisplayedMonth=<%$prev_month%>&DisplayedYear=<%$prev_year%>&field=<%$field%>"><&|/l&>Prev</&></a>
-      <span class="month"><% $months[$DisplayedMonth-1] %> <% $DisplayedYear %></span>
+      <span class="month"><% $months[$displayed_month-1] %> <% $displayed_year %></span>
       <a class="next" href="CalPopup.html?DisplayedMonth=<%$next_month%>&DisplayedYear=<%$next_year%>&field=<%$field%>"><&|/l&>next</&></a>
     </caption>
     <tr>
@@ -69,7 +69,7 @@
 %     foreach my $day (@{$week}) {
       <td>
 %         if ($day) {
-%             my $datestr = sprintf('%04d-%02d-%02d', $DisplayedYear, $DisplayedMonth, $day);
+%             my $datestr = sprintf('%04d-%02d-%02d', $displayed_year, $displayed_month, $day);
         <a href="#" onclick="updateParentField('<% $field %>','<% $datestr %>'); return false;"><% $day %></a>
 %         } else {
         &nbsp;
@@ -98,32 +98,32 @@ push @months, _($_)
   for qw(January February March April May June July August
          September October November December);
 
-unless ($DisplayedYear) {
-    $DisplayedMonth = $today[4] + 1;
-    $DisplayedYear  = ($today[5] + 1900);
+unless ($displayed_year) {
+    $displayed_month = $today[4] + 1;
+    $displayed_year  = ($today[5] + 1900);
 }
 
 my ($prev_year, $next_year, $prev_month, $next_month);
-$prev_month = $next_month = $DisplayedMonth;
-$prev_year  = $next_year  = $DisplayedYear;
+$prev_month = $next_month = $displayed_month;
+$prev_year  = $next_year  = $displayed_year;
 
 $next_month++;
 $prev_month--;
 
-if ($DisplayedMonth == 12) {
+if ($displayed_month == 12) {
     $next_year++;
     $next_month = 1;
 }
-elsif ($DisplayedMonth == 1) {
+elsif ($displayed_month == 1) {
     $prev_month = 12;
     $prev_year--;
 }
 
-my @cal = calendar($DisplayedMonth, $DisplayedYear);
+my @cal = calendar($displayed_month, $displayed_year);
 </%init>
 
 <%args>
 $field => 'none'
-$DisplayedMonth => undef
-$DisplayedYear => undef
+$displayed_month => undef
+$displayed_year => undef
 </%args>

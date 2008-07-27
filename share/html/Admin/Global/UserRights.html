@@ -45,10 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => _('Modify global user rights') &>
+<& /Admin/Elements/Header, title => _('Modify global user rights') &>
 <& /Admin/Elements/SystemTabs, 
     current_tab => 'Admin/Global/UserRights.html',
-    Title => _('Modify global user rights') &>  
+    title => _('Modify global user rights') &>  
 <& /Elements/ListActions, actions => \@results &>
 
   <form method="post" action="UserRights.html">
@@ -60,7 +60,7 @@
 % my $group = RT::Model::Group->new();
 % $group->load_acl_equivalence_group( $user_object );
   <tr align="right">
-	<td valign="top"><& /Elements/ShowUser, User => $user_object &></td>
+	<td valign="top"><& /Elements/ShowUser, user => $user_object &></td>
 	<td><& /Admin/Elements/SelectRights,
         principal_id => $group->principal_id,
         object => RT->system,
@@ -70,7 +70,7 @@
 </table>
 </&>
 
-<& /Elements/Submit, Label => _('Modify User rights'), Reset => 1 &>
+<& /Elements/Submit, label => _('Modify User rights'), reset => 1 &>
       
 </form>
 <%INIT>
@@ -85,7 +85,7 @@
 my $privileged = RT::Model::Group->new();
 $privileged->load_system_internal_group('privileged');
 my $Users = $privileged->user_members_obj();
-$Users->order_by( column => $Userorder_by, order => $Userorder );
+$Users->order_by( column => $Userorder_by, order => $userorder );
 
     
   
@@ -95,5 +95,5 @@ $Users->order_by( column => $Userorder_by, order => $Userorder );
 
 <%ARGS>
 $Userorder_by => 'name'
-$Userorder => 'ASC'
+$userorder => 'ASC'
 </%ARGS>

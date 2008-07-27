@@ -49,7 +49,7 @@
     tabs => $tabs, 
     current_toptab => 'Tools/index.html', 
     current_tab => $current_tab, 
-    Title => $Title &>
+    title => $title &>
 
 <%INIT>
 my $tabs = {
@@ -84,5 +84,5 @@ foreach my $tab ( sort keys %{$tabs} ) {
 $subtabs => undef
 $current_tab => undef
 $current_subtab => undef
-$Title => undef
+$title => undef
 </%ARGS>

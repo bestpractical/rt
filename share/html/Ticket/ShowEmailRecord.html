@@ -46,8 +46,8 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%args>
-$Attachment => undef
-$Transaction => undef
+$attachment => undef
+$transaction => undef
 </%ARGS>
 <%INIT>
 my $show_content = sub  {
@@ -80,16 +80,16 @@ $show = sub  {
 };
 
 my $AttachmentObj = RT::Model::Attachment->new();
-$AttachmentObj->load($Attachment) || abort(_("Attachment '%1' could not be loaded", $Attachment));
+$AttachmentObj->load($attachment) || abort(_("Attachment '%1' could not be loaded", $attachment));
 unless ( $AttachmentObj->id ) {
-    abort(_("Attachment '%1' could not be loaded", $Attachment));
+    abort(_("Attachment '%1' could not be loaded", $attachment));
 }
-unless ($AttachmentObj->transaction_id() == $Transaction ) {
-    abort(_("Attachment '%1' could not be loaded", $Attachment));
+unless ($AttachmentObj->transaction_id() == $transaction ) {
+    abort(_("Attachment '%1' could not be loaded", $attachment));
 }
 
 </%INIT>
-<& /Elements/Header, ShowBar => 0 &>
+<& /Elements/Header, show_bar => 0 &>
 % $show->( $AttachmentObj );
 </body>
 </html>

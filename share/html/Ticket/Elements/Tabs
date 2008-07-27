@@ -45,22 +45,22 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% $m->callback( Ticket => $Ticket, actions=> $actions, tabs => $tabs, %ARGS );
+% $m->callback( Ticket => $ticket, actions=> $actions, tabs => $tabs, %ARGS );
 <& /Elements/Tabs, 
     tabs => $tabs, 
     actions => $actions, 
     current_tab => $current_tab, 
     current_toptab => $current_toptab,
-    Title => $Title &> 
+    title => $title &> 
 <%INIT>
 my $tabs = {};
 my $actions;
 
 my $current_toptab = "Search/Build.html", my $searchtabs = {};
 
-if ($Ticket) {
+if ($ticket) {
 
-    my $id = $Ticket->id();
+    my $id = $ticket->id();
 
     if ( defined $session{'tickets'} ) {
 
@@ -75,7 +75,7 @@ if ($Ticket) {
         }
 
         # Don't display prev links if we're on the first ticket
-        if ( $item_map->{ $Ticket->id }->{prev} ) {
+        if ( $item_map->{ $ticket->id }->{prev} ) {
             $searchtabs->{'_a'} = {
                 class => "nav",
                 path  => "Ticket/Display.html?id=" . $item_map->{first},
@@ -84,17 +84,17 @@ if ($Ticket) {
             $searchtabs->{"_b"} = {
                 class => "nav",
                 path  => "Ticket/Display.html?id="
-                    . $item_map->{ $Ticket->id }->{prev},
+                    . $item_map->{ $ticket->id }->{prev},
                 title => '< ' . _('Prev')
             };
         }
   
         # Don't display next links if we're on the last ticket
-        if ( $item_map->{ $Ticket->id }->{next} ) {
+        if ( $item_map->{ $ticket->id }->{next} ) {
             $searchtabs->{'d'} = {
                 class => "nav",
                 path  => "Ticket/Display.html?id="
-                    . $item_map->{ $Ticket->id }->{next},
+                    . $item_map->{ $ticket->id }->{next},
                 title => _('next') . ' >'
             };
             $searchtabs->{'e'} = {
@@ -107,7 +107,7 @@ if ($Ticket) {
 
     $tabs->{"this"} = {
         class          => "currentnav",
-        path           => "Ticket/Display.html?id=" . $Ticket->id,
+        path           => "Ticket/Display.html?id=" . $ticket->id,
         title          => "#" . $id,
         current_subtab => $current_subtab
     };
@@ -164,9 +164,9 @@ if ($Ticket) {
     $tabs->{'this'}->{"subtabs"} = $ticket_page_tabs;
     $current_tab = "Ticket/Display.html?id=" . $id;
 
-    my %can = ( ModifyTicket => $Ticket->current_user_has_right('ModifyTicket'), );
+    my %can = ( ModifyTicket => $ticket->current_user_has_right('ModifyTicket'), );
 
-    if ( $can{'ModifyTicket'} or $Ticket->current_user_has_right('ReplyToTicket') )
+    if ( $can{'ModifyTicket'} or $ticket->current_user_has_right('ReplyToTicket') )
     {
         $actions->{'F'} = {
             title => _('Reply'),
@@ -175,7 +175,7 @@ if ($Ticket) {
     }
 
     if ( $can{'ModifyTicket'} ) {
-        if ( $Ticket->status ne 'resolved' ) {
+        if ( $ticket->status ne 'resolved' ) {
             $actions->{'G'} = {
                 path =>
                     "Ticket/Update.html?action=comment&DefaultStatus=resolved&id="
@@ -183,7 +183,7 @@ if ($Ticket) {
                 title => _('Resolve')
             };
         }
-        if ( $Ticket->status ne 'open' ) {
+        if ( $ticket->status ne 'open' ) {
             $actions->{'A'} = {
                 path  => "Ticket/Display.html?Status=open&id=" . $id,
                 title => _('Open it')
@@ -191,26 +191,26 @@ if ($Ticket) {
         }
     }
 
-    if ( $Ticket->current_user_has_right('OwnTicket') ) {
-        if ( $Ticket->owner_obj->id == $RT::nobody->id ) {
+    if ( $ticket->current_user_has_right('OwnTicket') ) {
+        if ( $ticket->owner_obj->id == $RT::nobody->id ) {
             $actions->{'B'} = {
                 path  => "Ticket/Display.html?action=take&id=" . $id,
                 title => _('Take'),
                 }
                 if $can{'ModifyTicket'}
-                    or $Ticket->current_user_has_right('TakeTicket');
-        } elsif ( $Ticket->owner_obj->id != Jifty->web->current_user->id ) {
+                    or $ticket->current_user_has_right('TakeTicket');
+        } elsif ( $ticket->owner_obj->id != Jifty->web->current_user->id ) {
             $actions->{'C'} = {
                 path  => "Ticket/Display.html?action=steal&id=" . $id,
                 title => _('Steal'),
                 }
                 if $can{'ModifyTicket'}
-                    or $Ticket->current_user_has_right('StealTicket');
+                    or $ticket->current_user_has_right('StealTicket');
         }
     }
 
     if (   $can{'ModifyTicket'}
-        or $Ticket->current_user_has_right('CommentOnTicket') )
+        or $ticket->current_user_has_right('CommentOnTicket') )
     {
         $actions->{'E'} = {
             title => _('Comment'),
@@ -219,7 +219,7 @@ if ($Ticket) {
     }
 
     $actions->{'_ZZ'}
-        = { html => $m->scomp( '/Ticket/Elements/Bookmark', id => $Ticket->id ),
+        = { html => $m->scomp( '/Ticket/Elements/Bookmark', id => $ticket->id ),
         };
 
 }
@@ -280,8 +280,8 @@ if ($has_query) {
         {
             my $shred_args = $m->comp(
                 '/Elements/QueryString',
-                Search          => 1,
-                Plugin          => 'Tickets',
+                search          => 1,
+                plugin          => 'Tickets',
                 'Tickets:query' => $query_args{'query'},
                 'Tickets:limit' => $query_args{'rows'}
             );
@@ -319,10 +319,10 @@ foreach my $searchtab ( keys %{$searchtabs} ) {
 
   
 <%ARGS>
-$Ticket => undef
+$ticket => undef
 $subtabs => undef
 $current_tab => ''
 $current_subtab => ''
-$Title => undef
+$title => undef
 $rows_per_page => undef
 </%ARGS>

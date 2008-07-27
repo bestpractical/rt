@@ -89,17 +89,17 @@ if ($size) {
 
 # If we haven't been passed in an Attachments object (through the precaching mechanism)
 # then we need to find one
-$Attachments ||= $m->comp('FindAttachments', Ticket => $Ticket);
+$attachments ||= $m->comp('FindAttachments', ticket => $ticket);
 
 my %documents;
-while ( my $attach = $Attachments->next() ) {
+while ( my $attach = $attachments->next() ) {
     next unless ($attach->filename());
    unshift( @{ $documents{ $attach->filename } }, $attach );
 }
 
 </%INIT>
 <%ARGS>
-$Ticket => undef
-$Attachments => undef
+$ticket => undef
+$attachments => undef
 </%ARGS>
 

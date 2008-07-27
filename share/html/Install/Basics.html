@@ -45,20 +45,20 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| Elements/Wrapper, Title => _('Step %1 of %2: ', 3, 7) . _('Customize Basics') &> 
+<&| Elements/Wrapper, title => _('Step %1 of %2: ', 3, 7) . _('Customize Basics') &> 
 
-<& Elements/Errors, Errors => \@errors &>
+<& Elements/Errors, errors => \@errors &>
 
 <p>
 <&|/l&>These configuration options cover some of the basics needed to get RT up and running.  We need to know the name of your RT installation and the domain name where RT will live.  You will also need to set a password for your defauly administrative user.</&>
 </p>
 
 <form method="post">
-<& /Widgets/BulkEdit, Types => \@Types,Meta => $RT::Installer->{Meta},
-    CurrentValue => RT::Installer->current_values(@Types) &>
+<& /Widgets/BulkEdit, types => \@Types,meta => $RT::Installer->{Meta},
+    current_value => RT::Installer->current_values(@Types) &>
 
 <input type="hidden" name="Run" value="1">
-<& /Elements/Submit, Label => _('Next: ') . _('Customize Email Configuration'),Back => 1, BackLabel => _('Back: ' ) . _( 'Customize Database Details') &>
+<& /Elements/Submit, label => _('Next: ') . _('Customize Email Configuration'),back => 1, back_label => _('Back: ' ) . _( 'Customize Database Details') &>
 </form>
 </&>
 
@@ -68,11 +68,11 @@ my @errors;
 
 my @Types = qw/rtname WebDomain WebPort Password/;
 
-if ( $Run ) {
+if ( $run ) {
 
-    $m->comp('/Widgets/BulkProcess', Types => \@Types, Arguments => \%ARGS,
-            Store => $RT::Installer->{InstallConfig},
-            Meta => $RT::Installer->{Meta} );
+    $m->comp('/Widgets/BulkProcess', types => \@Types, arguments => \%ARGS,
+            store => $RT::Installer->{InstallConfig},
+            meta => $RT::Installer->{Meta} );
     
     if ( $ARGS{WebPort} && $ARGS{WebPort} !~ /^\d+$/ ) {
         push @errors, _("Invalid %1: it should be a number", 'WebPort');
@@ -82,7 +82,7 @@ if ( $Run ) {
         push @errors, _("You must enter an Administrative password");
     }
 
-    if ( $Back ) {
+    if ( $back ) {
         RT::Interface::Web::redirect(RT->config->get('WebURL') .
 'Install/DatabaseDetails.html');
     }
@@ -96,6 +96,6 @@ if ( $Run ) {
 </%init>
 
 <%args>
-$Run => undef
-$Back => undef
+$run => undef
+$back => undef
 </%args>

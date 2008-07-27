@@ -46,14 +46,14 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%args>
-@Objects
+@objects
 $dashboards => {}
 </%args>
 <%init>
-# Returns a hash of dashboards associated with @Objects
+# Returns a hash of dashboards associated with @objects
 
-for my $object (@Objects) {
-    my $new_dashboards = $m->comp("/Dashboards/Elements/DashboardsForObject", Object => $object);
+for my $object (@objects) {
+    my $new_dashboards = $m->comp("/Dashboards/Elements/DashboardsForObject", object => $object);
 
     push @{ $dashboards->{$_} }, @{ $new_dashboards->{$_} || [] }
         for qw/personal system/;

@@ -53,31 +53,31 @@
     tabs => $tabs,
     actions => $actions,
     subactions => $subactions,
-    title => $Title,
+    title => $title,
     show_menu => $show_menu,
 &>
 <a name="skipnav" id="skipnav" accesskey="8"></a>
 <%INIT>
 my $action;
 my $basetopactions = {
-	A => { html => $m->scomp('/Elements/CreateTicket')	
+	a => { html => $m->scomp('/Elements/CreateTicket')	
 		},
-	B => { html => $m->scomp('/Elements/SimpleSearch') 
+	b => { html => $m->scomp('/Elements/SimpleSearch') 
 		}
 	};
-my $basetabs = {     A => { title => _('Homepage'),
+my $basetabs = {     a => { title => _('Homepage'),
                            path => '',
                          },
-                    Ab => { title => _('Simple Search'),
+                    ab => { title => _('Simple Search'),
                         path => 'Search/Simple.html'
                          },
-                    B => { title => _('Tickets'),
+                    b => { title => _('Tickets'),
                         path => 'Search/Build.html'
                       },
-                    C => { title => _('Tools'),
+                    c => { title => _('Tools'),
                            path => 'Tools/index.html'
                          },
-                    P => { title => _('Approval'),
+                    p => { title => _('Approval'),
                            path => 'Approvals/'
                          },
                  };
@@ -119,6 +119,6 @@ $topactions => undef
 $tabs => undef
 $actions => undef
 $subactions => undef
-$Title => undef
+$title => undef
 $show_menu => 1
 </%ARGS>

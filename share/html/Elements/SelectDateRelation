@@ -46,15 +46,15 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$name%>">
-<option value="&lt;"><%$Before%></option>
-<option value="="><%$On%></option>
-<option value="&gt;"><%$After%></option>
+<option value="&lt;"><%$before%></option>
+<option value="="><%$on%></option>
+<option value="&gt;"><%$after%></option>
 </select>
 
 <%ARGS>
 $name => undef
 $default => undef
-$Before => _('before')
-$On => 	_('on')
-$After => _('after')
+$before => _('before')
+$on => 	_('on')
+$after => _('after')
 </%ARGS>

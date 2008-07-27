@@ -45,13 +45,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => _("Link ticket #%1", $Ticket->id) &>
+<& /Elements/Header, title => _("Link ticket #%1", $Ticket->id) &>
 <& /Ticket/Elements/Tabs, 
-    Ticket => $Ticket, 
+    ticket => $Ticket, 
     current_tab => "Ticket/ModifyLinks.html?id=".$Ticket->id, 
-    Title => _("Link ticket #%1", $Ticket->id) &>
+    title => _("Link ticket #%1", $Ticket->id) &>
 
-% $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, args_ref => \%ARGS, Ticket => $Ticket);
+% $m->callback(Callbackname => 'BeforeActionList', Actions => \@results, args_ref => \%ARGS, ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="ModifyLinks.html" method="post">
@@ -60,9 +60,9 @@
 % my (@extra);
 % push @extra, titleright_raw => '<a href="'. RT->config->get('WebPath') . '/Ticket/Graphs/index.html?id='.$Ticket->id.'">'.loc('Graph').'</a>' unless RT->config->get('DisableGraphViz');
 <&| /Widgets/TitleBox, title => _('Edit Links'), class=>'ticket-info-links', @extra &>
-<& /Elements/EditLinks, object => $Ticket, Merge => 1 &>
+<& /Elements/EditLinks, object => $Ticket, merge => 1 &>
 </&>
-<& /Elements/Submit, Label => _('Save Changes') &>
+<& /Elements/Submit, label => _('Save Changes') &>
 </form>
 
 

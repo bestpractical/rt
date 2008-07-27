@@ -45,10 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => _('Select a Custom Field') &>
+<& /Admin/Elements/Header, title => _('Select a Custom Field') &>
 <& /Admin/Elements/CustomFieldTabs,
     current_tab => 'Admin/CustomFields/', 
-    Title => _('Select a Custom Field') &>
+    title => _('Select a Custom Field') &>
 
 % my @types;
 % my $prev_lookup = '';
@@ -76,13 +76,13 @@
 <form action="<%RT->config->get('WebPath')%>/Admin/CustomFields/index.html" method="get">
 <&|/l&>Only show custom fields for:</&>
 <select name="Type">
-<option value="" <% !$Type && 'selected="selected"'%> ><% _('(any)') %></option>
+<option value="" <% !$type && 'selected="selected"'%> ><% _('(any)') %></option>
 % for (@types) {
-<option value="<% $_->[1] %>" <% $_->[1] eq $Type && 'selected="selected"'%> ><% $_->[0] %></option>
+<option value="<% $_->[1] %>" <% $_->[1] eq $type && 'selected="selected"'%> ><% $_->[0] %></option>
 % }
 </select>
 <br />
-<input type="checkbox" class="checkbox" name="ShowDisabled" value="1" <% $ShowDisabled && 'checked="checked"' |n%> />
+<input type="checkbox" class="checkbox" name="ShowDisabled" value="1" <% $show_disabled && 'checked="checked"' |n%> />
 <&|/l&>Include disabled custom fields in listing.</&>
 <br />
 
@@ -90,19 +90,19 @@
 </form>
 
 <%args>
-$Type => ''
-$ShowDisabled => 0
+$type => ''
+$show_disabled => 0
 </%args>
 <%INIT>
-$Type ||= $ARGS{'type'} || '';
-if ( !$Type && $ARGS{'type'} ) {
-    $Type ||= $ARGS{'type'};
+$type ||= $ARGS{'type'} || '';
+if ( !$type && $ARGS{'type'} ) {
+    $type ||= $ARGS{'type'};
     Jifty->log->warn("'type' argument is deprecated use 'type' instead");
 }
 
 my $CustomFields = RT::Model::CustomFieldCollection->new();
 $CustomFields->find_all_rows;
-$CustomFields->{'find_disabled_rows'} = 1 if $ShowDisabled;
-$CustomFields->limit_to_lookup_type( $Type ) if $Type;
+$CustomFields->{'find_disabled_rows'} = 1 if $show_disabled;
+$CustomFields->limit_to_lookup_type( $type ) if $type;
 $CustomFields->order_by( { column => 'lookup_type' }, { column => 'name' } );
 </%INIT>

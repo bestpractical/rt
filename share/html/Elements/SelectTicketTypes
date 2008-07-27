@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$name%>">
-%foreach (@Types) {
+%foreach (@types) {
 <option value="<% $_ %>"<% ($_ eq $default) && qq[ selected="selected"] |n %>><&|/l&><% $_ %></&>
 %}
 </select>
@@ -54,5 +54,5 @@
 <%ARGS>
 $name => 'TickType'
 $default => undef
-@Types => qw(Approval Ticket)
+@types => qw(Approval Ticket)
 </%ARGS>

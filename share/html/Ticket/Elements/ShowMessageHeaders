@@ -55,7 +55,7 @@
 </table>
 <%INIT>
 my @headers;
-foreach my $field( RT->config->get('ShowBccHeader')? $Message->_split_headers : $Message->split_headers ) {
+foreach my $field( RT->config->get('ShowBccHeader')? $message->_split_headers : $message->split_headers ) {
     my ($tag, $value) = split /:/, $field, 2;
     next unless $tag && $value;
     push @headers, { Tag => $tag, value => $value };
@@ -64,7 +64,7 @@ foreach my $field( RT->config->get('ShowBccHeader')? $Message->_split_headers : 
 my %display_headers = map { lc($_) => 1 } @display_headers;
 
 $m->callback(
-    message         => $Message,
+    message         => $message,
     headers         => \@headers,
     display_headers => \%display_headers,
 );
@@ -73,17 +73,17 @@ unless ( $display_headers{'_all'} ) {
     @headers = grep $display_headers{ lc $_->{'Tag'} }, @headers;
 }
 
-my $ticket = $Message->transaction_obj->ticket_obj;
+my $ticket = $message->transaction_obj->ticket_obj;
 foreach my $f (@headers) {
     $m->comp('/Elements/MakeClicky', content => \$f->{'Value'}, ticket => $ticket, %ARGS);
 }
 
-if ( $Localize ) {
+if ( $localize ) {
     $_->{'Tag'} = _($_->{'Tag'}) foreach @headers;
 }
 </%INIT>
 <%ARGS>
-$Message => undef
-$Localize => 1
+$message => undef
+$localize => 1
 @display_headers => ('_all')
 </%ARGS>

@@ -47,27 +47,27 @@
 %# END BPS TAGGED BLOCK }}}
 <%args>
 $query => "id > 0"
-$PrimaryGroupBy => 'queue'
-$SecondaryGroupBy => ''
-$ChartStyle => 'bars'
+$primary_group_by => 'queue'
+$secondary_group_by => ''
+$chart_style => 'bars'
 $description => undef
 </%args>
 <%init>
 $ARGS{SecondaryGroupBy} ||= '';
 
-my $title = _( "Search results grouped by %1", $PrimaryGroupBy );
+my $title = _( "Search results grouped by %1", $primary_group_by );
 
 my $saved_search = $m->comp( '/Widgets/SavedSearch:new',
-    SearchType   => 'Chart',
-    SearchFields => [qw(query PrimaryGroupBy SecondaryGroupBy ChartStyle)] );
+    search_type   => 'Chart',
+    search_fields => [qw(query PrimaryGroupBy SecondaryGroupBy ChartStyle)] );
 
 my @actions = $m->comp( '/Widgets/SavedSearch:process', args => \%ARGS, self => $saved_search );
 
 </%init>
-<& /Elements/Header, Title => $title &>
-<& /Ticket/Elements/Tabs, Title => $title &>
+<& /Elements/Header, title => $title &>
+<& /Ticket/Elements/Tabs, title => $title &>
 <& /Elements/ListActions, actions => \@actions &>
 <& /Search/Elements/Chart, %ARGS &>
 
 
-<& /Widgets/SavedSearch:show, %ARGS, Action => 'Chart.html', self => $saved_search, Title => 'Saved charts' &>
+<& /Widgets/SavedSearch:show, %ARGS, action => 'Chart.html', self => $saved_search, title => 'Saved charts' &>

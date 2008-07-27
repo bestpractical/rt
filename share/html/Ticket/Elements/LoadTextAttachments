@@ -51,7 +51,7 @@ my $attachments = RT::Model::AttachmentCollection->new();
 
 $attachments->query_columns( qw(id content content_type transaction_id content_encoding));
 
-if ( $Ticket->current_user_has_right('ShowTicket') ) {
+if ( $ticket->current_user_has_right('ShowTicket') ) {
     my $transactions = $attachments->new_alias('Transactions');
     $attachments->join( alias1 => 'main',
                                            column1 => 'transaction_id',
@@ -73,9 +73,9 @@ if ( $Ticket->current_user_has_right('ShowTicket') ) {
 
     $attachments->limit( alias => $tickets,
                          column => 'effective_id',
-                         value => $Ticket->id() );
+                         value => $ticket->id() );
     # if the user may not see comments do not return them
-    unless ( $Ticket->current_user_has_right('ShowTicketcomments') ) {
+    unless ( $ticket->current_user_has_right('ShowTicketcomments') ) {
         $attachments->limit( alias    => $transactions, column    => 'type', operator => '!=', value    => "comment" );
     }
 
@@ -83,11 +83,11 @@ if ( $Ticket->current_user_has_right('ShowTicket') ) {
     $attachments->limit ( column => 'content_type', operator => 'starts_with', value => 'message/');
     $attachments->limit ( column => 'content_type', operator => '=', value => 'text');
     $attachments->limit ( column => 'Filename', operator => 'IS', value => 'NULL')
-        if RT->config->get('SuppressInlineTextFiles', $Ticket->current_user );
+        if RT->config->get('SuppressInlineTextFiles', $ticket->current_user );
 }
 return ($attachments);
 </%INIT>
 <%ARGS>
-$Ticket => undef
+$ticket => undef
 </%ARGS>
 

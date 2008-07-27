@@ -46,17 +46,17 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$name%>">
-<option value="<%$TrueVal%>" <%$TrueDefault|n%>><%$True%></option>
-<option value="<%$FalseVal%>" <%$FalseDefault|n%>><%$False%></option>
+<option value="<%$true_val%>" <%$TrueDefault|n%>><%$true%></option>
+<option value="<%$false_val%>" <%$FalseDefault|n%>><%$false%></option>
 </select>
 
 <%ARGS>
 $name => undef
-$True => _("is")
+$true => _("is")
 $default => 'true'
-$TrueVal => 1
-$FalseVal => 0
-$False => _("isn't")
+$true_val => 1
+$false_val => 0
+$false => _("isn't")
 </%ARGS>
 
 <%INIT>

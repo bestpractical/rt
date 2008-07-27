@@ -45,13 +45,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% if ($Lite) {
+% if ($lite) {
 %     my $d = RT::Model::Queue->new();
 %     $d->load($default);
-<input name="<%$name%>" size="25" value="<%$d->name%>" class="<%$Class%>" />
+<input name="<%$name%>" size="25" value="<%$d->name%>" class="<%$class%>" />
 % }
 % else {
-<select name="<%$name%>" <% ($OnChange) ? 'onchange="'.$OnChange.'"' : '' |n %> class="<%$Class%>">
+<select name="<%$name%>" <% ($on_change) ? 'onchange="'.$on_change.'"' : '' |n %> class="<%$class%>">
 %     if ($show_null_option) {
   <option value="">-</option>
 %     }
@@ -65,7 +65,7 @@
 >
     <%$queue->{name}%>
 
-%             if ($Verbose and $queue->{description}) {
+%             if ($verbose and $queue->{description}) {
     (<%$queue->{description}%>)
 %             }
   </option>
@@ -73,28 +73,28 @@
 </select>
 % }
 <%args>
-$CheckQueueRight => 'CreateTicket'
+$check_queue_right => 'CreateTicket'
 $show_null_option => 1
-$ShowAllQueues => 1
+$show_all_queues => 1
 $name => undef
-$Verbose => undef
+$verbose => undef
 $named_values => 0
 $default => 0
-$Lite => 0
-$OnChange => undef
-$Class => 'select-queue'
+$lite => 0
+$on_change => undef
+$class => 'select-queue'
 </%args>
 <%init>
 my $cache_key = "SelectQueue---"
                 . Jifty->web->current_user->id
-                . "---$CheckQueueRight---$ShowAllQueues";
+                . "---$check_queue_right---$show_all_queues";
 
-if (not defined $session{$cache_key} and not $Lite) {
+if (not defined $session{$cache_key} and not $lite) {
     my $q = RT::Model::QueueCollection->new();
     $q->find_all_rows;
     
     while (my $queue = $q->next) {
-        if ($ShowAllQueues || $queue->current_user_has_right($CheckQueueRight)) {
+        if ($show_all_queues || $queue->current_user_has_right($check_queue_right)) {
             push @{$session{$cache_key}}, {
                 id          => $queue->id,
                 name        => $queue->name,

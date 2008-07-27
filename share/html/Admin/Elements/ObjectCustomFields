@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/Header, title => $title &>
 <& $objectTabs,
 $id ? (
     id => $object->id, 
@@ -55,7 +55,7 @@ $id ? (
 ) : (
     current_tab => "Admin/Global/CustomFields/${QualifiedType}s.html",
 ),
-    Title => $title
+    title => $title
     &>
 
 <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, object => $object &>
@@ -74,7 +74,7 @@ my $object = $object_type->new();
 
 my $QualifiedType;
 my $FriendlySubTypes;
-if (defined $SubType && $SubType =~/^RT::(.*)$/)  {
+if (defined $sub_type && $sub_type =~/^RT::(.*)$/)  {
     $FriendlySubTypes = RT::Model::CustomField->new()->friendly_lookup_type($object->custom_field_lookup_type);
    $QualifiedType = "$Type-$1"; 
 } else {
@@ -93,7 +93,7 @@ my $title;
 if ($id) {
 $title =  _('Edit Custom Fields for %1', $object->name);
 }
-elsif ($SubType) {
+elsif ($sub_type) {
 
     $title=   _("Modify Custom Fields which apply to %1 for all %2", _(lc($FriendlySubTypes)), _(lc($Types)));
 } else {
@@ -101,11 +101,11 @@ elsif ($SubType) {
 
 }
 my $sub_type_url;
-$sub_type_url = "SubType=$SubType" if $SubType;
+$sub_type_url = "sub_type=$sub_type" if $sub_type;
 
 </%INIT>
 <%ARGS>
 $id => undef
 $object_type
-$SubType => undef
+$sub_type => undef
 </%ARGS>

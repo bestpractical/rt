@@ -46,17 +46,17 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
-$Plugin => ''
+$plugin => ''
 </%ARGS>
-<div id="shredder-plugin-<% $Plugin %>-arguments" class="shredder-form">
+<div id="shredder-plugin-<% $plugin %>-arguments" class="shredder-form">
 <span>Fill arguments:</span><br />
 % foreach my $a( $plugin_obj->support_args ) {
-<span><% $a %>:</span><input type="text" name="<% "$Plugin:$a" %>" value="<% $ARGS{ "$Plugin:$a" } || '' %>" /><br />
+<span><% $a %>:</span><input type="text" name="<% "$plugin:$a" %>" value="<% $ARGS{ "$plugin:$a" } || '' %>" /><br />
 % }
 </div>
 <%INIT>
 use RT::Shredder::Plugin;
 my $plugin_obj = RT::Shredder::Plugin->new;
-my ($status, $msg) = $plugin_obj->load_by_name( $Plugin );
+my ($status, $msg) = $plugin_obj->load_by_name( $plugin );
 die $msg unless $status;
 </%INIT>

@@ -48,30 +48,30 @@
 <&| /Widgets/TitleBox, title => loc('Graph Properties') &>
 
 <% loc('Direction') %> <select name="Direction">
-<option value="TB" <% ($Direction||'TB') eq 'TB'? 'selected="selected"': '' |n %>><% loc('top to bottom') %></option>
-<option value="LR" <% ($Direction||'TB') eq 'LR'? 'selected="selected"': '' |n %>><% loc('left to right') %></option>
+<option value="TB" <% ($direction||'TB') eq 'TB'? 'selected="selected"': '' |n %>><% loc('top to bottom') %></option>
+<option value="LR" <% ($direction||'TB') eq 'LR'? 'selected="selected"': '' |n %>><% loc('left to right') %></option>
 %# XXX: not supported by GraphViz perl module
-%#<option value="BT" <% ($Direction||'TB') eq 'BT'? 'selected="selected"': '' |n %>><% loc('bottom to top') %></option>
-%#<option value="RL" <% ($Direction||'TB') eq 'RL'? 'selected="selected"': '' |n %>><% loc('right to left') %></option>
+%#<option value="BT" <% ($direction||'TB') eq 'BT'? 'selected="selected"': '' |n %>><% loc('bottom to top') %></option>
+%#<option value="RL" <% ($direction||'TB') eq 'RL'? 'selected="selected"': '' |n %>><% loc('right to left') %></option>
 </select><br />
 
 <% loc('Main type of links') %> <select name="LeadingLink">
 % foreach ( @link_types ) {
-<option value="<% $_ %>" <% ($LeadingLink||'Members') eq $_? 'selected="selected"': '' |n %>><% loc($_) %></option>
+<option value="<% $_ %>" <% ($leading_link||'Members') eq $_? 'selected="selected"': '' |n %>><% loc($_) %></option>
 % }
 </select>
 
 <% loc('maximum depth') %> <select name="MaxDepth">
 <option value="0"><% loc('Unlimit') %></option>
 % foreach ( 1..6 ) {
-<option value="<% $_ %>" <% ($MaxDepth||0) == $_? 'selected="selected"': '' %>><% $_ %></option>
+<option value="<% $_ %>" <% ($max_depth||0) == $_? 'selected="selected"': '' %>><% $_ %></option>
 % }
 </select><br />
 
 <% loc('Show as well') %>:
 % foreach my $type ( @link_types ) {
 % my $checked = '';
-% $checked = 'checked="checked"' if grep $type eq $_, @ShowLinks;
+% $checked = 'checked="checked"' if grep $type eq $_, @show_links;
 <input type="checkbox" name="ShowLinks" value="<% $type %>" <% $checked |n %> /><% loc($type) %>
 % }
 <br />
@@ -89,7 +89,7 @@ while ( my ($group, $list) = (splice @tmp, 0, 2) ) {
 
     foreach my $prop ( @$list ) {
         my $selected = '';
-        $selected = 'selected="selected"' if $prop eq ($FillUsing||'');
+        $selected = 'selected="selected"' if $prop eq ($fill_using||'');
 </%PERL>
 <option value="<% $prop %>" <% $selected |n %>><% $prop %></option>
 % } }
@@ -104,31 +104,31 @@ Show link descriptions:
 % }
 
 <%PERL>
-for my $i ( 1..($MaxDepth||6) ) {
+for my $i ( 1..($max_depth||6) ) {
     my @default;
     if ( my $tmp = $ARGS{ 'Level-'. $i .'-Properties' } ) {
         @default = ref $tmp? @$tmp : ($tmp);
     }
 
     $m->comp('SELF:Properties',
-        Level => $i,
-        Available => \@properties,
-        Default => \@default,
+        level => $i,
+        available => \@properties,
+        default => \@default,
     );
 }
 </%PERL>
 
-<& /Elements/Submit, Label => loc('Update Graph'), Name => 'Update' &>
+<& /Elements/Submit, label => loc('Update Graph'), name => 'Update' &>
 
 </&>
 
 <%ARGS>
 $id => undef
-$Direction => 'TB'
-$LeadingLink => 'Members'
-@ShowLinks => ('MemberOf', 'DependsOn', 'RefersTo')
-$MaxDepth => 3
-$FillUsing => ''
+$direction => 'TB'
+$leading_link => 'Members'
+@show_links => ('MemberOf', 'DependsOn', 'RefersTo')
+$max_depth => 3
+$fill_using => ''
 $show_link_descriptions => 0
 </%ARGS>
 <%INIT>
@@ -136,29 +136,29 @@ require RT::Graph::Tickets;
 require RT::Model::Link;
 
 my @link_types = qw(Members MemberOf RefersTo ReferredToBy DependsOn DependedOnBy);
-@ShowLinks = grep $_ ne $LeadingLink, @ShowLinks;
+@show_links = grep $_ ne $leading_link, @show_links;
 </%INIT>
 
 <%METHOD Properties>
 <%ARGS>
-@Available => ()
-@Default   => ()
-$Level     => 1,
+@available => ()
+@default   => ()
+$level     => 1,
 </%ARGS>
 <%INIT>
-my $id = "graph-properties-box-$Level";
+my $id = "graph-properties-box-$level";
 my $class = '';
-$class = 'class="hidden"' if $Level != 1 && !@Default;
+$class = 'class="hidden"' if $level != 1 && !@default;
 </%INIT>
-Show Tickets Properties on <% $Level %> level
+Show Tickets Properties on <% $level %> level
 (<small><a href="#" onclick="hideshow('<% $id %>'); return false;">open/close</a></small>):
 <table id="<% $id %>" <% $class |n %>>
-% while ( my ($group, $list) = (splice @Available, 0, 2) ) {
+% while ( my ($group, $list) = (splice @available, 0, 2) ) {
 <tr><td><% $group %>:</td><td>
 % foreach my $prop ( @$list ) {
 % my $checked = '';
-% $checked = 'checked="checked"' if grep $_ eq $prop, @Default;
-<input type="checkbox" class="checkbox" name="Level-<% $Level %>-Properties" value="<% $prop %>" <% $checked |n %> /><% $prop %>
+% $checked = 'checked="checked"' if grep $_ eq $prop, @default;
+<input type="checkbox" class="checkbox" name="Level-<% $level %>-Properties" value="<% $prop %>" <% $checked |n %> /><% $prop %>
 % }
 </td></tr>
 % }

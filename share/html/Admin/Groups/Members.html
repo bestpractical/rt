@@ -45,10 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => "RT/Admin/Edit the group ". $Group->name &>
-<& /Admin/Elements/GroupTabs, GroupObj => $Group, 
+<& /Admin/Elements/Header, title => "RT/Admin/Edit the group ". $Group->name &>
+<& /Admin/Elements/GroupTabs, group_obj => $Group, 
     current_tab => 'Admin/Groups/Members.html?id='.$id, 
-    Title => "RT/Admin/Edit the group ". $Group->name &>
+    title => "RT/Admin/Edit the group ". $Group->name &>
 <& /Elements/ListActions, actions => \@results &>
 
 
@@ -76,12 +76,12 @@
 <br />
 <&|/l&>Users</&>
 % my $Users = $Group->user_members_obj( Recursively => 0 );
-% $Users->order_by( column => $Userorder_by, order => $Userorder );
+% $Users->order_by( column => $Userorder_by, order => $userorder );
 <ul>
 % while ( my $user = $Users->next ) {
-% $UsersSeen{ $user->id } = 1 if $SkipSeenUsers;
+% $UsersSeen{ $user->id } = 1 if $skip_seen_users;
 <li><input type="checkbox" class="checkbox" name="delete_member-<% $user->principal_object->id %>" value="1" />
-<& '/Elements/ShowUser', User => $user &></li>
+<& '/Elements/ShowUser', user => $user &></li>
 % }
 </ul>
 <&|/l&>Groups</&>
@@ -89,7 +89,7 @@
 % my $GroupMembers = $Group->members_obj;
 % $GroupMembers->limit_to_groups();
 % while ( my $member = $GroupMembers->next ) {
-% $GroupsSeen{ $member->member_id } = 1 if $SkipSeenGroups;
+% $GroupsSeen{ $member->member_id } = 1 if $skip_seen_groups;
 <li><input type="checkbox" class="checkbox" name="delete_member-<% $member->member_id %>" value="1" />
 <% $member->member_obj->object->name %>
 % }
@@ -97,14 +97,14 @@
 % }
 </td>
 <td valign="top">
-<& /Admin/Elements/SelectNewGroupMembers, name => "add_members", Group => $Group,
-    SkipUsers => \%UsersSeen, SkipGroups => \%GroupsSeen &>
+<& /Admin/Elements/SelectNewGroupMembers, name => "add_members", group => $Group,
+    skip_users => \%UsersSeen, skip_groups => \%GroupsSeen &>
 </td>
 </tr>
 </table>
 </&>
 <em><&|/l&>(Check box to delete)</&></em>
-<& /Elements/Submit, Label => _('Modify Members'), Reset => 1 &>
+<& /Elements/Submit, label => _('Modify Members'), reset => 1 &>
 </form>
 
 
@@ -152,7 +152,7 @@ foreach my $member (grep $_, @add_members_users, @add_members_groups) {
 @add_members_groups => ()
 $id => undef
 $Userorder_by => 'name'
-$Userorder => 'ASC'
-$SkipSeenUsers => 1
-$SkipSeenGroups => 1
+$userorder => 'ASC'
+$skip_seen_users => 1
+$skip_seen_groups => 1
 </%ARGS>

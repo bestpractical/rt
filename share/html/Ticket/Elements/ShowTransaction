@@ -45,21 +45,21 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<div class="ticket-transaction <% $type_class %> <% $RowNum % 2 ? 'odd' : 'even' %>">
-% $m->callback( titlebar_cmd => \$titlebar_commands, Transaction => $Transaction, %ARGS, Callbackname => 'ModifyDisplay' );
+<div class="ticket-transaction <% $type_class %> <% $row_num % 2 ? 'odd' : 'even' %>">
+% $m->callback( titlebar_cmd => \$titlebar_commands, Transaction => $transaction, %ARGS, Callbackname => 'ModifyDisplay' );
 
 <table width="100%" cellspacing="0" cellpadding="2" border="0" class="ticket-transaction">
-% $m->callback( titlebar_cmd => \$titlebar_commands, Transaction => $Transaction, %ARGS, Callbackname => 'ModifyCommand' );
+% $m->callback( titlebar_cmd => \$titlebar_commands, Transaction => $transaction, %ARGS, Callbackname => 'ModifyCommand' );
   <tr class="metadata">
     <td rowspan="2" valign="top" class="type">
-      <a name="txn-<% $Transaction->id %>" href="<% $DisplayPath %>#txn-<% $Transaction->id %>">#</a>
-      <% $LastTransaction ? '<a id="lasttrans" name="lasttrans"/>' : ''|n %>
+      <a name="txn-<% $transaction->id %>" href="<% $display_path %>#txn-<% $transaction->id %>">#</a>
+      <% $last_transaction ? '<a id="lasttrans" name="lasttrans"/>' : ''|n %>
     </td>
     <td class="date"><% $transdate|n %></td>
-% my $desc = $Transaction->brief_description;
-% $m->callback( text => \$desc, Transaction => $Transaction, %ARGS, Callbackname => 'ModifyDisplay' );
+% my $desc = $transaction->brief_description;
+% $m->callback( text => \$desc, Transaction => $transaction, %ARGS, Callbackname => 'ModifyDisplay' );
     <td class="description">
-      <% $Transaction->creator_obj->name %> - <% $TicketString %> <% $desc %>
+      <% $transaction->creator_obj->name %> - <% $TicketString %> <% $desc %>
     </td>
     <td class="time-taken"><% $time_taken %></td>
     <td class="actions<% $titlebar_commands ? '': ' hidden'%>"><% $titlebar_commands |n %></td>
@@ -67,15 +67,15 @@
 
   <tr>
     <td colspan="5" class="content">
-% if ( $Attachments->[0] && $Attachments->[0]->id ) {
+% if ( $attachments->[0] && $attachments->[0]->id ) {
 %   if (RT->config->get('GnuPG')->{'enable'}) {
-        <& ShowGnuPGStatus, Attachment => $Attachments->[0], WarnUnsigned => $WarnUnsigned &>
+        <& ShowGnuPGStatus, attachment => $attachments->[0], warn_unsigned => $warn_unsigned &>
 %   }
 % }
-% if ( $Transaction->custom_field_values->count ) {
-      <& /Elements/ShowCustomFields, object => $Transaction &>
+% if ( $transaction->custom_field_values->count ) {
+      <& /Elements/ShowCustomFields, object => $transaction &>
 % }
-% $m->comp('ShowTransactionAttachments', %ARGS, Parent => 0) unless ($Collapsed ||!$ShowBody);
+% $m->comp('ShowTransactionAttachments', %ARGS, parent => 0) unless ($collapsed ||!$show_body);
     </td>
   </tr>
 
@@ -83,23 +83,23 @@
 </div>
 
 <%ARGS>
-$Ticket => undef
-$Transaction => undef
+$ticket => undef
+$transaction => undef
 $show_headers => 0
-$Collapsed => undef
-$ShowTitleBarCommands => 1
-$RowNum => 1
-$DisplayPath => RT->config->get('WebPath')."/Ticket/Display.html?id=".$Ticket->id
-$AttachPath => RT->config->get('WebPath')."/Ticket/Attachment"
-$UpdatePath => RT->config->get('WebPath')."/Ticket/Update.html"
-$ForwardPath => RT->config->get('WebPath')."/Ticket/Forward.html"
-$EncryptionPath => RT->config->get('WebPath')."/Ticket/GnuPG.html"
-$EmailRecordPath => RT->config->get('WebPath')."/Ticket/ShowEmailRecord.html"
-$Attachments => undef
+$collapsed => undef
+$show_title_bar_commands => 1
+$row_num => 1
+$display_path => RT->config->get('WebPath')."/Ticket/Display.html?id=".$ticket->id
+$attach_path => RT->config->get('WebPath')."/Ticket/Attachment"
+$update_path => RT->config->get('WebPath')."/Ticket/Update.html"
+$forward_path => RT->config->get('WebPath')."/Ticket/Forward.html"
+$encryption_path => RT->config->get('WebPath')."/Ticket/GnuPG.html"
+$email_record_path => RT->config->get('WebPath')."/Ticket/ShowEmailRecord.html"
+$attachments => undef
 $attachment_content => undef
-$ShowBody => 1
-$LastTransaction => 0
-$WarnUnsigned => undef
+$show_body => 1
+$last_transaction => 0
+$warn_unsigned => undef
 </%ARGS>
 <%ONCE>
 
@@ -123,10 +123,10 @@ my %class = (
 </%ONCE>
 <%INIT>
 
-my $transdate = $Transaction->created_as_string();
+my $transdate = $transaction->created_as_string();
 $transdate =~ s/\s/&nbsp;/g;
 
-my ($type, $field) = ($Transaction->type, $Transaction->field || '');
+my ($type, $field) = ($transaction->type, $transaction->field || '');
 my $type_class = $class{ $type };
 
 unless ( $type_class ) {
@@ -147,64 +147,64 @@ unless ( $type_class ) {
 }
 
 my $TicketString = '';
-if ( $Ticket->id != $Transaction->ticket ) {
-    $TicketString = "Ticket " . $Transaction->ticket . ": ";
+if ( $ticket->id != $transaction->ticket ) {
+    $TicketString = "Ticket " . $transaction->ticket . ": ";
 }
 
 my $time_taken = '';
-$time_taken = $Transaction->time_taken . " min"
-    if $Transaction->time_taken;
+$time_taken = $transaction->time_taken . " min"
+    if $transaction->time_taken;
 
-unless ($Attachments) { 
-    my $attachments = $Transaction->attachments;
+unless ($attachments) { 
+    my $attachments = $transaction->attachments;
     $attachments->query_columns( qw( id filename content_type headers subject parent content_encoding content_type transaction_id) );
-    $Attachments = $attachments->items_array_ref();
+    $attachments = $attachments->items_array_ref();
 }
 my $titlebar_commands = '';
 
 if ( $type =~ /EmailRecord$/ ) {
 
     $titlebar_commands .=
-        "[<a target=\"_blank\" href=\"$EmailRecordPath?id="
-      . $Transaction->ticket
+        "[<a target=\"_blank\" href=\"$email_record_path?id="
+      . $transaction->ticket
       . "&Transaction="
-      . $Transaction->id
+      . $transaction->id
       . "&Attachment="
-      . ( $Attachments->[0] && $Attachments->[0]->id )
+      . ( $attachments->[0] && $attachments->[0]->id )
       . '">' . _('Show') . "</a>]&nbsp;";
-    $ShowBody = 0;
+    $show_body = 0;
 }
 
 
 # If the transaction has anything attached to it at all
 else {
 
-    if ( $Attachments->[0] && $ShowTitleBarCommands ) {
-        my $ticket = $Transaction->ticket_obj;
+    if ( $attachments->[0] && $show_title_bar_commands ) {
+        my $ticket = $transaction->ticket_obj;
         my $can_modify = $ticket->current_user_has_right('ModifyTicket');
         if ( $can_modify || $ticket->current_user_has_right('ReplyToTicket') ) {
             $titlebar_commands .=
-                "[<a href=\"".$UpdatePath
-              . "?id=" . $Transaction->ticket
-              . "&QuoteTransaction=" . $Transaction->id
+                "[<a href=\"".$update_path
+              . "?id=" . $transaction->ticket
+              . "&QuoteTransaction=" . $transaction->id
               . "&action=respond\">"
               . _('Reply')
               . "</a>]&nbsp;";
         }
         if ( $can_modify || $ticket->current_user_has_right('CommentOnTicket') ) {
             $titlebar_commands .=
-                "[<a href=\"".$UpdatePath."?id="
-              . $Transaction->ticket
+                "[<a href=\"".$update_path."?id="
+              . $transaction->ticket
               . "&QuoteTransaction="
-              . $Transaction->id
+              . $transaction->id
               . "&action=comment\">"
               . _('comment') . "</a>]";
         }
         if ( $ticket->current_user_has_right('ForwardMessage') ) {
             $titlebar_commands .=
-                "[<a href=\"". $ForwardPath
-              . "?id=". $Transaction->ticket
-              . "&QuoteTransaction=". $Transaction->id
+                "[<a href=\"". $forward_path
+              . "?id=". $transaction->ticket
+              . "&QuoteTransaction=". $transaction->id
               . "\">". _('Forward') . "</a>]";
         }
         if ( $can_modify
@@ -213,8 +213,8 @@ else {
             && $ticket->current_user_has_right('ForwardMessage')
         ) {
             $titlebar_commands .=
-                "[<a href=\"". $EncryptionPath
-              . "?id=". $Transaction->id
+                "[<a href=\"". $encryption_path
+              . "?id=". $transaction->id
               . "\">". _('Ecnrypt/Decrypt') . "</a>]";
         }
     }

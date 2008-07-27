@@ -50,28 +50,28 @@
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head>
-<title><%$Title%></title>
+<title><%$title%></title>
 
 
-% if ($Refresh && $Refresh =~ /^(\d+)/ && $1 > 0) {
-    <meta http-equiv="refresh" content="<% $Refresh %>" />
+% if ($refresh && $refresh =~ /^(\d+)/ && $1 > 0) {
+    <meta http-equiv="refresh" content="<% $refresh %>" />
 % }
 
 <link rel="shortcut icon" href="<%RT->config->get('WebImagesURL')%>/favicon.png" type="image/png" />
 <link rel="stylesheet" href="<%RT->config->get('WebPath')%>/NoAuth/css/<% RT->config->get( 'WebDefaultStylesheet', Jifty->web->current_user ) %>/main<% RT->config->get('DevelMode')? '' : '-squished' %>.css" type="text/css" media="all" />
 <link rel="stylesheet" href="<%RT->config->get('WebPath')%>/NoAuth/css/print.css" type="text/css" media="print" />
 
-% for (keys %{$LinkRel || {}}) {
-    <link rel="<% $_ %>" href="<% RT->config->get('WebPath') . $LinkRel->{$_} %>" />
+% for (keys %{$link_rel || {}}) {
+    <link rel="<% $_ %>" href="<% RT->config->get('WebPath') . $link_rel->{$_} %>" />
 % }
 
 
-% if ( $RSSAutoDiscovery ) {
-    <link rel="alternate" href="<%$RSSAutoDiscovery%>" type="application/rss+xml" title="RSS RT Search" />
+% if ( $rss_auto_discovery ) {
+    <link rel="alternate" href="<%$rss_auto_discovery%>" type="application/rss+xml" title="RSS RT Search" />
 % }
 
-% if ($JavaScript) {
-<& HeaderJavascript, focus => $Focus, onload => $onload &>
+% if ($java_script) {
+<& HeaderJavascript, focus => $focus, onload => $onload &>
 % }
 % my $stylesheet_plugin = "/NoAuth/css/". RT->config->get( 'WebDefaultStylesheet', Jifty->web->current_user )."/InHeader";
 % if ($m->comp_exists($stylesheet_plugin) ) {
@@ -82,7 +82,7 @@
 </head>
   <body<% $id && qq[ id="comp-$id"] |n %>>
 
-% if ($ShowBar && Jifty->web->current_user) {
+% if ($show_bar && Jifty->web->current_user) {
 <& /Elements/Logo, %ARGS &>
 
 <div id="quickbar">
@@ -91,7 +91,7 @@
 % if (Jifty->web->current_user->name) {
     <&|/l, "<span>".Jifty->web->current_user->name."</span>" &>Logged in as %1</&>
 %     if ( Jifty->web->current_user->has_right( right => 'ModifySelf', object => RT->system ) ) {
-    | <a href="<%RT->config->get('WebPath')%><%$Prefs%>"><&|/l&>Preferences</&></a>
+    | <a href="<%RT->config->get('WebPath')%><%$prefs%>"><&|/l&>Preferences</&></a>
 %     }
 % } else {
     <&|/l&>Not logged in.</&>
@@ -99,7 +99,7 @@
 % $m->callback( %ARGS );
 % unless (!Jifty->web->current_user->name
 %         or (RT->config->get('WebExternalAuth') and !RT->config->get('WebFallbackToInternalAuth'))) {
-    | <a  href="<%RT->config->get('WebPath')%>/NoAuth/Logout.html<%$URL ? "?URL=".$URL : ''%>"><&|/l&>Logout</&></a>
+    | <a  href="<%RT->config->get('WebPath')%>/NoAuth/Logout.html<%$url ? "?URL=".$url : ''%>"><&|/l&>Logout</&></a>
 % }
   </div>
 % }
@@ -118,17 +118,17 @@ $id =~ s|-$||g;
 </%INIT>
 
 <%ARGS>
-$Prefs => '/Prefs/Other.html'
-#$Focus => 'focus'
-$Focus => ''
-$Title =>  'RT'
-$Code => undef
-$Refresh => 0
-$Why => undef
-$ShowBar => 1
-$URL => undef
-$RSSAutoDiscovery => undef
+$prefs => '/Prefs/Other.html'
+#$focus => 'focus'
+$focus => ''
+$title =>  'RT'
+$code => undef
+$refresh => 0
+$why => undef
+$show_bar => 1
+$url => undef
+$rss_auto_discovery => undef
 $onload => undef
-$LinkRel => undef
-$JavaScript => 1
+$link_rel => undef
+$java_script => 1
 </%ARGS>

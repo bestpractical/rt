@@ -45,17 +45,17 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| Elements/Wrapper, Title => 'Customize email Addresses' &> 
+<&| Elements/Wrapper, title => 'Customize email Addresses' &> 
 
 <& /Elements/ListActions, actions => \@results &>
 
 <form method="post">
-<& /Widgets/BulkEdit, types => \@types,Meta => $RT::Installer->{Meta},
+<& /Widgets/BulkEdit, types => \@types,meta => $RT::Installer->{Meta},
     current_value => RT::Installer->current_values(@types) &>
 
 <input type="hidden" name="Run" value="1">
-<& /Elements/Submit, Label => _('next: email Configuration'), Back => 1,
-    BackLabel => _('Back: Customize Password for Users in RT') &>
+<& /Elements/Submit, label => _('next: email Configuration'), back => 1,
+    back_label => _('Back: Customize Password for Users in RT') &>
 </form>
 </&>
 <%init>
@@ -63,13 +63,13 @@ my @results;
 
 my @types = qw/Owneremail comment_address correspond_address/;
 
-if ( $Run ) {
+if ( $run ) {
 
-    $m->comp('/Widgets/BulkProcess', types => \@types, Arguments => \%ARGS,
-            Store => $RT::Installer->{InstallConfig},
-            Meta => $RT::Installer->{Meta}, KeepUndef => 1 );
+    $m->comp('/Widgets/BulkProcess', types => \@types, arguments => \%ARGS,
+            store => $RT::Installer->{InstallConfig},
+            meta => $RT::Installer->{Meta}, keep_undef => 1 );
 
-    if ( $Back ) {
+    if ( $back ) {
         RT::Interface::Web::redirect(RT->config->get('WebURL') .
 'Install/Password.html');
     }
@@ -83,6 +83,6 @@ if ( $Run ) {
 </%init>
 
 <%args>
-$Run => undef
-$Back => undef
+$run => undef
+$back => undef
 </%args>

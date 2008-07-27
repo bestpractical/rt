@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => _('Modify people related to queue %1', $queue_obj->name) &>
+<& /Elements/Header, title => _('Modify people related to queue %1', $queue_obj->name) &>
 <& /Admin/Elements/QueueTabs, id => $id, 
     queue_obj => $queue_obj,                                                      
     current_tab => $current_tab, 
-    Title => _('Modify people related to queue %1', $queue_obj->name) &>
+    title => _('Modify people related to queue %1', $queue_obj->name) &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -66,11 +66,11 @@
 
 <&|/l&>Cc</&>:
 
-<& /Admin/Elements/EditQueueWatchers, queue_obj => $queue_obj, Watchers => $queue_obj->role_group("cc") &>
+<& /Admin/Elements/EditQueueWatchers, queue_obj => $queue_obj, watchers => $queue_obj->role_group("cc") &>
 
 <&|/l&>Administrative Cc</&>:
 
-<& /Admin/Elements/EditQueueWatchers, queue_obj => $queue_obj, Watchers => $queue_obj->role_group("admin_cc") &>
+<& /Admin/Elements/EditQueueWatchers, queue_obj => $queue_obj, watchers => $queue_obj->role_group("admin_cc") &>
 
 
 </td>
@@ -96,10 +96,10 @@
 <ul>
 % while (my $u = $Users->next ) {
 <li><& /Elements/SelectWatcherType,
-    Scope => 'queue',
+    scope => 'queue',
     name => "Queue-AddWatcher-Principal-". $u->principal_id,
 &>
-<& /Elements/ShowUser, User => $u &></li>
+<& /Elements/ShowUser, user => $u &></li>
 % }
 </ul>
 % }
@@ -113,7 +113,7 @@
 % } elsif ($Groups) {
 <ul>
 % while (my $g = $Groups->next ) {
-<li><&/Elements/SelectWatcherType, Scope=>'queue', name =>
+<li><&/Elements/SelectWatcherType, scope=>'queue', name =>
 "Queue-AddWatcher-Principal-".$g->principal_id &> <%$g->name%>
 (<%$g->description%>)
 % }
@@ -127,7 +127,7 @@
 
 
 
-<& /Elements/Submit, Label => _('Save Changes'), Caption => _("If you've updated anything above, be sure to"), Reset => 1 &>
+<& /Elements/Submit, label => _('Save Changes'), caption => _("If you've updated anything above, be sure to"), reset => 1 &>
 </form>
 
 <%INIT>
@@ -200,13 +200,13 @@ $current_tab = 'Admin/Queues/People.html?id='.$queue_obj->id;
 </%INIT>
 
 <%ARGS>
-$UserField => 'name'
-$UserOp => '='
-$UserString => undef
-$GroupField => 'name'
-$GroupOp => '='
-$GroupString => undef
-$Type => undef
+$user_field => 'name'
+$user_op => '='
+$user_string => undef
+$group_field => 'name'
+$group_op => '='
+$group_string => undef
+$type => undef
 $id => undef
 </%ARGS>
 

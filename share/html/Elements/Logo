@@ -50,17 +50,17 @@
     src="<%$ARGS{'LogoURL'}||RT->config->get('LogoURL')%>"
     alt="<% _("Best Practical Solutions, LLC corporate logo") %>"
     width="177" height="33" /></a>
-% if ( $Showname ) {
+% if ( $showname ) {
     <span class="rtname"><% $name || _("RT for %1", RT->config->get('rtname')) %></span>
 % }
 </div>
 <%INIT>
 if ( exists $ARGS{'show_name'} ) {
     Jifty->log->warn('show_name argument was renamed, use Showname');
-    $Showname = delete $ARGS{'show_name'};
+    $showname = delete $ARGS{'show_name'};
 }
 </%INIT>
 <%ARGS>
-$Showname => 1
+$showname => 1
 $name => undef
 </%ARGS>

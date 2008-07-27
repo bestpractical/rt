@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Tabs,
-    Title          => $Title,
+    title          => $title,
     current_tab    => 'Admin/Tools/',
     subtabs        => $tabs,
     current_subtab => $current_tab,
@@ -78,5 +78,5 @@ $id => undef
 $current_tab => undef
 $subtabs => undef
 $current_subtab => undef
-$Title => undef
+$title => undef
 </%ARGS>

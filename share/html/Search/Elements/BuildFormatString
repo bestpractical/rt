@@ -48,18 +48,18 @@
 <%ARGS>
 $format => RT->config->get('DefaultSearchResultFormat')
 %cfqueues => ()
-$Face => undef
-$Size => undef
-$Link => undef
-$Title => undef
+$face => undef
+$size => undef
+$link => undef
+$title => undef
 
-$AddCol => undef
-$RemoveCol => undef
-$ColUp => undef
-$ColDown => undef
+$add_col => undef
+$remove_col => undef
+$col_up => undef
+$col_down => undef
 
-$SelectDisplayColumns => undef
-$CurrentDisplayColumns => undef
+$select_display_columns => undef
+$current_display_columns => undef
 </%ARGS>
 
 <%init>
@@ -132,8 +132,8 @@ foreach my $field (@format) {
     push @seen, \%column;
 }
 
-if ( $RemoveCol ) {
-    my $index  = $CurrentDisplayColumns;
+if ( $remove_col ) {
+    my $index  = $current_display_columns;
     my $column = $seen[$index];
     if ($index) {
         delete $seen[$index];
@@ -145,9 +145,9 @@ if ( $RemoveCol ) {
         }
     }
 }
-elsif ( $AddCol ) {
-    if ( defined $SelectDisplayColumns ) {
-        my $selected = $SelectDisplayColumns;
+elsif ( $add_col ) {
+    if ( defined $select_display_columns ) {
+        my $selected = $select_display_columns;
         my @columns;
         if (ref($selected) eq 'ARRAY') {
             @columns = @$selected;
@@ -158,50 +158,50 @@ elsif ( $AddCol ) {
             my %column = ();
             $column{Column} = $col;
 
-            if ( $Face eq "Bold" ) {
+            if ( $face eq "Bold" ) {
                 $column{Prefix} .= "<b>";
                 $column{Suffix} .= "</b>";
             }
-            if ( $Face eq "Italic" ) {
+            if ( $face eq "Italic" ) {
                 $column{Prefix} .= "<i>";
                 $column{Suffix} .= "</i>";
             }
-            if ($Size) {
-                $column{Prefix} .= "<" . $m->interp->apply_escapes( $Size,  'h' ) . ">";
-                $column{Suffix} .= "</" . $m->interp->apply_escapes( $Size, 'h' ) . ">";
+            if ($size) {
+                $column{Prefix} .= "<" . $m->interp->apply_escapes( $size,  'h' ) . ">";
+                $column{Suffix} .= "</" . $m->interp->apply_escapes( $size, 'h' ) . ">";
             }
-            if ( $Link eq "Display" ) {
+            if ( $link eq "Display" ) {
                 $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Display.html?id=__id__">};
                 $column{Suffix} .= "</a>";
             }
-            elsif ( $Link eq "Take" ) {
+            elsif ( $link eq "Take" ) {
                 $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Display.html?Action=Take&id=__id__">};
                 $column{Suffix} .= "</a>";
             }
 
-            if ($Title) {
-                $column{Suffix} .= "/TITLE:" . $m->interp->apply_escapes( $Title, 'h' );
+            if ($title) {
+                $column{Suffix} .= "/TITLE:" . $m->interp->apply_escapes( $title, 'h' );
             }
             push @seen, \%column;
         }
     }
 }
-elsif ( $ColUp ) {
-    my $index = $CurrentDisplayColumns;
+elsif ( $col_up ) {
+    my $index = $current_display_columns;
     if ( defined $index && ( $index - 1 ) >= 0 ) {
         my $column = $seen[$index];
         $seen[$index]       = $seen[ $index - 1 ];
         $seen[ $index - 1 ] = $column;
-        $CurrentDisplayColumns     = $index - 1;
+        $current_display_columns     = $index - 1;
     }
 }
-elsif ( $ColDown ) {
-    my $index = $CurrentDisplayColumns;
+elsif ( $col_down ) {
+    my $index = $current_display_columns;
     if ( defined $index && ( $index + 1 ) < scalar @seen ) {
         my $column = $seen[$index];
         $seen[$index]       = $seen[ $index + 1 ];
         $seen[ $index + 1 ] = $column;
-        $CurrentDisplayColumns     = $index + 1;
+        $current_display_columns     = $index + 1;
     }
 }
 

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&|Elements/Wrapper, Title => _('Step %1 of %2: ', 1, 7 ) . _('Choose a database engine') &>
+<&|Elements/Wrapper, title => _('Step %1 of %2: ', 1, 7 ) . _('Choose a database engine') &>
 
 <div class="intro">
 <p>
@@ -63,21 +63,21 @@
 </div>
 
 <form method="post">
-<& /Widgets/BulkEdit, Types => \@Types, Meta => $RT::Installer->{Meta},
-    CurrentValue => RT::Installer->current_values(@Types) &>
+<& /Widgets/BulkEdit, types => \@Types, meta => $RT::Installer->{Meta},
+    current_value => RT::Installer->current_values(@Types) &>
 
 <input type="hidden" name="Run" value="1">
-<& /Elements/Submit, Label => _('Next: ') . _( 'Check your database credentials') &>
+<& /Elements/Submit, label => _('Next: ') . _( 'Check your database credentials') &>
 </form>
 </&>
 <%init>
 
 my @Types = 'DatabaseType';
 
-if ( $Run ) {
+if ( $run ) {
 
-    $m->comp('/Widgets/BulkProcess', Types => \@Types, Arguments => \%ARGS, Meta
-            => $RT::Installer->{Meta}, Store => $RT::Installer->{InstallConfig} );
+    $m->comp('/Widgets/BulkProcess', types => \@Types, arguments => \%ARGS, meta
+            => $RT::Installer->{Meta}, store => $RT::Installer->{InstallConfig} );
 
     RT::Interface::Web::redirect(RT->config->get('WebURL') .  'Install/DatabaseDetails.html');
 }
@@ -86,5 +86,5 @@ if ( $Run ) {
 </%init>
 
 <%args>
-$Run => undef
+$run => undef
 </%args>

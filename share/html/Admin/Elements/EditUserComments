@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => "comments about $name" &>
+<& /Elements/Header, title => "comments about $name" &>
 <&|/l&>These comments aren't generally visible to the user</&>:<br />
 <input type="hidden" class="hidden" name="id" value="<%$id%>" />
 <textarea cols="60" rows="15" wrap="soft" name="comments"><% $user_object->comments %></textarea>

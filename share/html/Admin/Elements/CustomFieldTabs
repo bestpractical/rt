@@ -49,7 +49,7 @@
     current_tab => 'Admin/CustomFields/',
     subtabs => $tabs, 
     current_subtab => $current_tab, 
-    Title => $Title &>
+    title => $title &>
 <%INIT>
 my $tabs;
 
@@ -110,7 +110,7 @@ foreach my $tab (sort keys %{$tabs->{'this'}->{'subtabs'}}) {
 if( $id ) { $current_tab = "Admin/CustomFields/Modify.html?id=" . $id }
 </%INIT>
 <%ARGS>
-$Title => undef
+$title => undef
 $id => undef
 $current_tab => undef
 $subtabs => undef

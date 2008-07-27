@@ -46,27 +46,27 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
-$Class        => 'RT__Model__Ticket'
+$class        => 'RT__Model__Ticket'
 @format       => undef
 $format_string => undef
 @order_by      => ()
 @order        => ()
 $query        => undef
-$Rows         => undef
-$Page         => undef
-$GenericQueryArgs => undef
+$rows         => undef
+$page         => undef
+$generic_query_args => undef
 $maxitems     => undef
 
-$AllowSorting  => undef
-$baseURL       => undef
-@PassArguments => qw(query format rows page order order_by)
+$allow_sorting  => undef
+$base_url       => undef
+@pass_arguments => qw(query format rows page order order_by)
 </%ARGS>
 <tr class="collection-as-table">
 <%PERL>
 
-my $generic_query_args = $GenericQueryArgs || {map { $_ => $ARGS{$_} } @PassArguments};
+$generic_query_args = $generic_query_args || {map { $_ => $ARGS{$_} } @pass_arguments};
 # backward compatibility workaround
-$generic_query_args->{'format'} = $format_string if grep $_ eq 'format', @PassArguments;
+$generic_query_args->{'format'} = $format_string if grep $_ eq 'format', @pass_arguments;
 
 my $item = 0;
 foreach my $col ( @format ) {
@@ -92,9 +92,9 @@ foreach my $col ( @format ) {
 
     $title =~ s/^__(.*)__$/$1/o;
     my $tmp = $m->comp( '/Elements/ColumnMap',
-        Class => $Class,
+        class => $class,
         name  => $title,
-        Attr  => 'title',
+        attr  => 'title',
     );
 
     unless( $tmp ) {
@@ -115,12 +115,12 @@ foreach my $col ( @format ) {
         }
     }
 
-    if ( $AllowSorting and $col->{'attribute'}
+    if ( $allow_sorting and $col->{'attribute'}
         and my $attr = $m->comp(
             "/Elements/ColumnMap",
-            Class => $Class,
+            class => $class,
             name  => $col->{'attribute'},
-            Attr  => 'attribute'
+            attr  => 'attribute'
         )
       )
     {
@@ -129,7 +129,7 @@ foreach my $col ( @format ) {
             if $order_by[0] && $order_by[0] eq $attr;
 
         $m->out(
-            '<a href="' . $baseURL
+            '<a href="' . $base_url
             . $m->comp( '/Elements/QueryString',
                 %$generic_query_args,
                 order_by => $attr, order => $new_order

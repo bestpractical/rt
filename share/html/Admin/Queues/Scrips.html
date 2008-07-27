@@ -45,13 +45,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/Header, title => $title &>
 <& /Admin/Elements/QueueTabs, id => $queue_obj->id, 
     queue_obj => $queue_obj,                                                      
     current_tab => 'Admin/Queues/Scrips.html?id='.$id, 
     current_subtab => 'Admin/Queues/Scrips.html?id='.$id, 
     subtabs => $subtabs, 
-    Title => $title &>
+    title => $title &>
 
 % unless ( $queue_obj->disabled ) { # Global scrips does not apply to disabled queues
 <h2><&|/l&>scrips which apply to all queues</&></h2>

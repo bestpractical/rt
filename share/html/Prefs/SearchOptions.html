@@ -45,10 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => _("Search Preferences") &>
+<& /Elements/Header, title => _("Search Preferences") &>
 <& /User/Elements/Tabs, 
     current_tab => "Prefs/SearchOptions.html",
-    Title => _("Search Preferences")
+    title => _("Search Preferences")
 &>
 <& /Elements/ListActions, actions => \@actions &>
 
@@ -56,13 +56,13 @@
 <input type="hidden" class="hidden" name="format" value="<%$format%>" />
     <& /Search/Elements/DisplayOptions, %ARGS, 
             format=> $format, 
-            AvailableColumns => $AvailableColumns,  
+            available_columns => $AvailableColumns,  
             current_format => $current_format, 
             rows_per_page => $rows_per_page, 
             order_by => $order_by, 
             order => $order &>
 
-<& /Elements/Submit, name => 'SavePreferences', Label => _('Save Changes') &>
+<& /Elements/Submit, name => 'SavePreferences', label => _('Save Changes') &>
 </form>
 <%INIT>
 my @actions;

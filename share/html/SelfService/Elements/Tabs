@@ -51,7 +51,7 @@
     current_tab => $current_tab,
     toptabs => $tabs,
     topactions => $actions,
-    title => $Title
+    title => $title
 &>
 <a name="skipnav" id="skipnav" accesskey="8"></a>
 <%INIT>
@@ -68,10 +68,10 @@ while (my $queue = $queues->next) {
   last if ($queue_count > 1);
 }
 
-if ($Title) {
-$Title = _("RT Self Service") . " / " . $Title;
+if ($title) {
+$title = _("RT Self Service") . " / " . $title;
 } else {
-$Title = _("RT Self Service");
+$title = _("RT Self Service");
 
 }
 my ($tab);
@@ -106,7 +106,7 @@ my $actions = {
 	};
 </%INIT>
 <%ARGS>
-$Title => undef
+$title => undef
 $current_toptab => undef
 $current_tab => undef
 </%ARGS>

@@ -49,6 +49,6 @@
 $id
 </%ARGS>
 <%INIT>
-$m->comp('/Ticket/Elements/Bookmark', id => $id, Toggle => 1);
+$m->comp('/Ticket/Elements/Bookmark', id => $id, toggle => 1);
 $m->abort();
 </%INIT>

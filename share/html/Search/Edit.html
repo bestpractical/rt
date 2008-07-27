@@ -45,29 +45,29 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $title&>
+<& /Elements/Header, title => $title&>
 <& /Ticket/Elements/Tabs, 
     current_tab => "Search/Edit.html?".$query_string, 
-    Title   => $title,
+    title   => $title,
     format  => $format,
     query   => $query,
-    Rows    => $Rows,
+    rows    => $rows,
     order_by => $order_by,
     order   => $order,
-    SavedSearchId => $SavedSearchId,
+    saved_search_id => $saved_search_id,
 &>
 
 <& Elements/NewListActions, actions => \@actions &>
 
 <form method="post" action="Build.html">
-<input type="hidden" class="hidden" name="SavedSearchId" value="<% $SavedSearchId %>" />
+<input type="hidden" class="hidden" name="SavedSearchId" value="<% $saved_search_id %>" />
 <&|/Widgets/TitleBox, title => _('Query'), &>
 <textarea name="query" rows="8" cols="72"><% $query %></textarea>
 </&>
 <&|/Widgets/TitleBox, title => _('format'), &>
 <textarea name="format" rows="8" cols="72"><% $format %></textarea>
 </&>
-<& /Elements/Submit, Label => _("Apply"), Reset => 1, Caption => _("Apply your changes")&>
+<& /Elements/Submit, label => _("Apply"), reset => 1, caption => _("Apply your changes")&>
 </form>
 
 <%INIT>
@@ -76,7 +76,7 @@ $format = $m->comp('/Elements/ScrubHTML', content => $format);
 my $query_string = $m->comp('/Elements/QueryString',
                            query   => $query,
                            format  => $format,
-                           rows_per_page    => $Rows,
+                           rows_per_page    => $rows,
                            order_by => $order_by,
                            order   => $order,
                           );
@@ -85,11 +85,11 @@ my $query_string = $m->comp('/Elements/QueryString',
 
 
 <%ARGS>
-$SavedSearchId => 'new'
+$saved_search_id => 'new'
 
 $query         => ''
 $format        => ''
-$Rows          => '50'
+$rows          => '50'
 $order_by       => 'id'
 $order         => 'ASC'
 

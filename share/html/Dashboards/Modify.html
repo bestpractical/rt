@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $title &>
+<& /Elements/Header, title => $title &>
 <& /Dashboards/Elements/Tabs,
     current_subtab => $current_subtab,
-    Title => $title,
-    $Create ? () : (DashboardObj => $Dashboard),
+    title => $title,
+    $create ? () : (dashboard_obj => $Dashboard),
 &>
 <& /Elements/ListActions, actions => \@results &>
 
@@ -69,12 +69,12 @@
 <tr><td align="right">
 <&|/l&>Privacy</&>:
 </td><td>
-<& /Dashboards/Elements/SelectPrivacy, Name => "Privacy", Objects => \@privacies, Default => $Dashboard->privacy &>
+<& /Dashboards/Elements/SelectPrivacy, name => "Privacy", objects => \@privacies, default => $Dashboard->privacy &>
 </td></tr>
 </table>
-<& /Elements/Submit, Name => 'Save', Label => loc('Save Changes') &>
+<& /Elements/Submit, name => 'Save', label => loc('Save Changes') &>
 % if ($Dashboard->id && $can_delete) {
-<& /Elements/Submit, Name => 'Delete', Label => loc('Delete') &>
+<& /Elements/Submit, name => 'Delete', label => loc('Delete') &>
 % }
 </form>
 <%INIT>
@@ -84,16 +84,16 @@ my ($title, @results);
 my $tried_create = 0;
 
 # user went directly to Modify.html
-$Create = 1 if !$id;
+$create = 1 if !$id;
 
 use RT::Dashboard;
 
 my $Dashboard = RT::Dashboard->new( current_user => Jifty->web->current_user );
-my @privacies = $Dashboard->_privacy_objects(($Create ? 'Create' : 'Modify') => 1);
+my @privacies = $Dashboard->_privacy_objects(($create ? 'Create' : 'Modify') => 1);
 
 abort(loc("Permission denied")) if @privacies == 0;
 
-if ($Create) {
+if ($create) {
     $current_subtab = 'Dashboards/Modify.html?Create=1';
     $title = loc("Create a new dashboard");
 }
@@ -102,7 +102,7 @@ else {
         $tried_create = 1;
 
         my ($val, $msg) = $Dashboard->save(
-            Name    => $ARGS{'Name'},
+            name    => $ARGS{'Name'},
             Privacy => $ARGS{'Privacy'},
         );
 
@@ -124,15 +124,15 @@ else {
     }	
     # If the create failed
     else {
-        $Create = 1;
+        $create = 1;
         $current_subtab = 'Dashboards/Modify.html?Create=1';
         $title = loc("Create a new dashboard");
     }
 }
 
-if (!$Create && !$tried_create && $id && $ARGS{'Save'}) {
+if (!$create && !$tried_create && $id && $ARGS{'Save'}) {
     my ($ok, $msg) = $Dashboard->update(Privacy  => $ARGS{'Privacy'},
-                                        Name     => $ARGS{'Name'});
+                                        name     => $ARGS{'Name'});
 
     if ($ok) {
         push @results, loc("Dashboard updated");
@@ -145,7 +145,7 @@ if (!$Create && !$tried_create && $id && $ARGS{'Save'}) {
 
 my $can_delete = $Dashboard->current_user_can_delete;
 
-if (!$Create && !$tried_create && $id && $ARGS{'Delete'}) {
+if (!$create && !$tried_create && $id && $ARGS{'Delete'}) {
     my ($ok, $msg) = $Dashboard->delete();
     $ok || abort(loc("Couldn't delete dashboard %1: %2", $id, $msg));
 
@@ -156,9 +156,9 @@ if (!$Create && !$tried_create && $id && $ARGS{'Delete'}) {
 </%INIT>
 
 <%ARGS>
-$Create => undef
-$Name => undef
+$create => undef
+$name => undef
 $id => '' unless defined $id
-$Delete => undef
+$delete => undef
 </%ARGS>
 

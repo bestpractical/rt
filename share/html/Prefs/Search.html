@@ -45,12 +45,12 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $title &>
+<& /Elements/Header, title => $title &>
 <& /Prefs/Elements/Tabs,
     current_tab => 'Prefs/MyRT.html',
 #    current_subtab => 'Prefs/Search.html?name='.$m->comp('/Elements/QueryString', name => $ARGS{name}),
     current_subtab => 'Prefs/Search.html?name='.$ARGS{name},
-    Title => $title
+    title => $title
 &>
 <& /Elements/ListActions, actions => \@actions &>
 % if (Jifty->web->current_user->has_right( object=> RT->system, right => 'SuperUser')) {
@@ -58,7 +58,7 @@
   <&|/l&>You can also edit the predefined search itself</&>:
   <a href="<% RT->config->get('WebPath').'/Search/Build.html?'.
 	  $m->comp('/Elements/QueryString',
-		   SavedSearchLoad => 'RT::System-1-SavedSearch-'.$id) %>"><% $search->name %></a>
+		   saved_search_load => 'RT::System-1-SavedSearch-'.$id) %>"><% $search->name %></a>
 </p>
 % }
 
@@ -67,8 +67,8 @@
 <input type="hidden" name="format" value="<%$ARGS{format}%>" class="hidden" />
 
 <& /Search/Elements/DisplayOptions, %$SearchArg, %ARGS,
-   AvailableColumns => $AvailableColumns, current_format => $current_format &>
-<& /Elements/Submit, Caption => _("Save Changes"), Label => _('Save'), name => 'Save'&>
+   available_columns => $AvailableColumns, current_format => $current_format &>
+<& /Elements/Submit, caption => _("Save Changes"), label => _('Save'), name => 'Save'&>
 
 </form>
 

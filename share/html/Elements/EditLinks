@@ -56,7 +56,7 @@
     <td class="value">
 % while (my $link = $object->depends_on->next) {
       <input type="checkbox" class="checkbox" name="delete_link--<%$link->type%>-<%$link->target%>" value="1" />
-        <& ShowLink, URI => $link->target_uri &><br />
+        <& ShowLink, uri => $link->target_uri &><br />
 % }
     </td>
   </tr>
@@ -65,7 +65,7 @@
     <td class="value">
 % while (my $link = $object->depended_on_by->next) {
       <input type="checkbox" class="checkbox" name="delete_link-<%$link->base%>-<%$link->type%>-" value="1" />
-        <& ShowLink, URI => $link->base_uri &><br />
+        <& ShowLink, uri => $link->base_uri &><br />
 % }
     </td>
   </tr>
@@ -74,7 +74,7 @@
     <td class="value">
 % while (my $link = $object->member_of->next) {
       <input type="checkbox" class="checkbox" name="delete_link--<%$link->type%>-<%$link->target%>" value="1" />
-        <& ShowLink, URI => $link->target_uri &><br />
+        <& ShowLink, uri => $link->target_uri &><br />
 % }
     </td>
   </tr>
@@ -83,7 +83,7 @@
     <td class="value">
 % while (my $link = $object->members->next) {
       <input type="checkbox" class="checkbox" name="delete_link-<%$link->base%>-<%$link->type%>-" value="1" />
-        <& ShowLink, URI => $link->base_uri &><br />
+        <& ShowLink, uri => $link->base_uri &><br />
 % }
     </td>
   </tr>
@@ -92,7 +92,7 @@
     <td class="value">
 % while (my $link = $object->refers_to->next) {
       <input type="checkbox" class="checkbox" name="delete_link--<%$link->type%>-<%$link->target%>" value="1" />
-        <& ShowLink, URI => $link->target_uri &><br />
+        <& ShowLink, uri => $link->target_uri &><br />
 %}
     </td>
   </tr>
@@ -103,7 +103,7 @@
 % # Skip reminders
 % next if (UNIVERSAL::isa($link->base_obj, 'RT::Model::Ticket')  && $link->base_obj->type eq 'reminder');
       <input type="checkbox" class="checkbox" name="delete_link-<%$link->base%>-<%$link->type%>-" value="1" />
-        <& ShowLink, URI => $link->base_uri &><br />
+        <& ShowLink, uri => $link->base_uri &><br />
 % }
     </td>
   </tr>
@@ -127,7 +127,7 @@
 <i><&|/l&>Enter objects or URIs to link objects to. Separate multiple entries with spaces.</&></i><br />
 % }
 <table>
-% if ($Merge) {
+% if ($merge) {
   <tr>
     <td class="label"><&|/l&>Merge into</&>:</td>
     <td class="entry"><input name="<%$id%>-MergeInto" /> <i><&|/l&>(only one ticket)</&></i></td>
@@ -174,5 +174,5 @@ if ($object && $object->id) {
       
 <%ARGS>
 $object => undef
-$Merge => 0
+$merge => 0
 </%ARGS>

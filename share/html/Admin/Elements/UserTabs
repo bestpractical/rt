@@ -49,7 +49,7 @@
     subtabs => $tabs,
     current_tab => 'Admin/Users/', 
     current_subtab => $current_tab, 
-    Title => $Title &>
+    title => $title &>
 <%INIT>
 my $tabs;
 if ($id) {
@@ -112,5 +112,5 @@ $id => undef
 $current_tab => undef
 $subtabs => undef
 $current_subtab => undef
-$Title => undef
+$title => undef
 </%ARGS>

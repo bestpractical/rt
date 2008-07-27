@@ -47,9 +47,9 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 my ($valid, @res) = (1, ());
-$CustomFields->goto_first_item;
-while ( my $CF = $CustomFields->next ) {
-    my $field = $namePrefix . $CF->id . "-value";
+$custom_fields->goto_first_item;
+while ( my $CF = $custom_fields->next ) {
+    my $field = $name_prefix . $CF->id . "-value";
 
     my $value;
     if ($args_ref->{"${field}s-magic"} and exists $args_ref->{"${field}s"}) {
@@ -94,7 +94,7 @@ $m->notes('ValidFields', $valid);
 return wantarray? ($valid, @res): $valid;
 </%INIT>
 <%ARGS>
-$CustomFields
+$custom_fields
 $args_ref
-$namePrefix => "object-RT::Model::Ticket--CustomField-"
+$name_prefix => "object-RT::Model::Ticket--CustomField-"
 </%ARGS>

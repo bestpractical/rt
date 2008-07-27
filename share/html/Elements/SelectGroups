@@ -47,22 +47,22 @@
 %# END BPS TAGGED BLOCK }}}
 <select name="GroupField">
 % foreach my $col (RT::Model::Group->basic_columns) {
-<option <% ($GroupField eq $col->[0]) ? 'selected="selected"' : '' %> value="<% $col->[0] %>"><% _($col->[1]) %></option>
+<option <% ($group_field eq $col->[0]) ? 'selected="selected"' : '' %> value="<% $col->[0] %>"><% _($col->[1]) %></option>
 % }
 % while (my $CF = $CFs->next) {
 %   my $val = "CustomField-" . $CF->id;
-<option <% ($GroupField eq $val) ? 'selected="selected"' : '' %> value="<% $val %>"><&|/l&>CustomField</&>: <% $CF->name %></option>
+<option <% ($group_field eq $val) ? 'selected="selected"' : '' %> value="<% $val %>"><&|/l&>CustomField</&>: <% $CF->name %></option>
 % }
 </select>
-<& /Elements/SelectMatch, name => 'GroupOp', default => $GroupOp &>
-<input size="8" name="GroupString" value="<% $GroupString %>" />
+<& /Elements/SelectMatch, name => 'GroupOp', default => $group_op &>
+<input size="8" name="GroupString" value="<% $group_string %>" />
 <%INIT>
 my $CFs = RT::Model::CustomFieldCollection->new();
 $CFs->limit_to_child_type('RT::Model::Group');
 $CFs->order_by( column => 'name' );
 </%INIT>
 <%ARGS>
-$GroupField  => ''
-$GroupOp     => ''
-$GroupString => ''
+$group_field  => ''
+$group_op     => ''
+$group_string => ''
 </%ARGS>

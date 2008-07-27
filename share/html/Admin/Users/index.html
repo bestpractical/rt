@@ -45,10 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => _('Select a user') &>
+<& /Admin/Elements/Header, title => _('Select a user') &>
 <& /Admin/Elements/UserTabs, current_tab => 'Admin/Users/', 
     current_subtab => 'Admin/Users/',
-    Title => _('Select a user') &>
+    title => _('Select a user') &>
 
 <h1><% $caption %></h1>
 <p><&|/l&>Select a user</&>:</p>
@@ -59,12 +59,12 @@
 <& /Elements/CollectionList,
     order_by => 'name',
     order => 'ASC',
-    Rows  => 100,
+    rows  => 100,
     %ARGS,
     format => $format,
-    Collection => $users,
-    AllowSorting => 1,
-    PassArguments => [qw(format Rows Page order order_by UserString UserOp UserField IdLike EmailLike FinddisabledUsers)],
+    collection => $users,
+    allow_sorting => 1,
+    pass_arguments => [qw(format Rows Page order order_by UserString UserOp UserField IdLike EmailLike FinddisabledUsers)],
 &>
 
 % my $ids = join ',', map $_->id, @{ $users->items_array_ref };
@@ -84,7 +84,7 @@
 <input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
 % }
 <&|/l&>Find all users whose</&> <& /Elements/SelectUsers, %ARGS &><br />
-<input type="checkbox" class="checkbox" name="FinddisabledUsers" value="1" <% $FinddisabledUsers? 'checked="checked"': '' %> />
+<input type="checkbox" class="checkbox" name="FinddisabledUsers" value="1" <% $finddisabled_users? 'checked="checked"': '' %> />
 <&|/l&>Include disabled users in search.</&>
 <br />
 <div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
@@ -93,22 +93,22 @@
 <%INIT>
 my $caption;
 my $users = RT::Model::UserCollection->new();
-$users->{'find_disabled_rows'} = 1 if $FinddisabledUsers;
+$users->{'find_disabled_rows'} = 1 if $finddisabled_users;
 
-if ( defined($UserString) && length $UserString ) {
+if ( defined($user_string) && length $user_string ) {
     $caption = _("Users matching search criteria");
-    if ( $UserField =~ /^CustomField-(\d+)/ ) {
+    if ( $user_field =~ /^CustomField-(\d+)/ ) {
         $users->limit_custom_field(
             customfield => $1,
-            operator => $UserOp,
-            value => $UserString,
+            operator => $user_op,
+            value => $user_string,
         ); 
     }
     else {
         $users->limit(
-            column => $UserField,
-            operator => $UserOp,
-            value => $UserString,
+            column => $user_field,
+            operator => $user_op,
+            value => $user_string,
         ); 
     }
 }
@@ -125,11 +125,11 @@ $format ||= q{'<a href="__WebPath__/Admin/Users/Modify.html?id=__id__">__id__</a
 <%ARGS>
 $format => undef,
 
-$UserString => undef
-$UserOp => '='
-$UserField => 'name'
-$IdLike => undef
-$EmailLike => undef
+$user_string => undef
+$user_op => '='
+$user_field => 'name'
+$id_like => undef
+$email_like => undef
 
-$FinddisabledUsers => 0
+$finddisabled_users => 0
 </%ARGS>

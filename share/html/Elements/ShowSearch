@@ -52,7 +52,7 @@
     titleright_href => $customize,
     hideable => $hideable &>
 <& $query_display_component, hideable => $hideable, %$ProcessedSearchArg,
-    ShowNavigation => 0, Class => 'RT::Model::TicketCollection' &>
+    show_navigation => 0, class => 'RT::Model::TicketCollection' &>
 </&>
 <%init>
 my $search;
@@ -62,15 +62,15 @@ my $customize;
 my $query_display_component = '/Elements/CollectionList';
 my $query_link_url = RT->config->get('WebURL').'Search/Results.html';
 
-if ($SavedSearch) {
-    my ( $container_object, $search_id ) = _parse_saved_search($SavedSearch);
+if ($saved_search) {
+    my ( $container_object, $search_id ) = _parse_saved_search($saved_search);
     unless ( $container_object ) {
-        $m->out(loc("Either you have no rights to view saved search %1 or identifier is incorrect", $SavedSearch));
+        $m->out(loc("Either you have no rights to view saved search %1 or identifier is incorrect", $saved_search));
         return;
     }
     $search = $container_object->attributes->with_id($search_id);
     unless ( $search->id && ref( $SearchArg = $search->content ) eq 'HASH' ) {
-         $m->out(loc("Saved Search %1 not found", $SavedSearch)) unless $IgnoreMissing;
+         $m->out(loc("Saved Search %1 not found", $saved_search)) unless $ignore_missing;
         return;
     }
     $SearchArg->{'search_type'} ||= 'Ticket';
@@ -84,7 +84,7 @@ if ($SavedSearch) {
     } else {
         $customize = RT->config->get('WebPath') . '/Search/Build.html?'
             . $m->comp( '/Elements/QueryString',
-            SavedSearchLoad => $SavedSearch );
+            saved_search_load => $saved_search );
     }
 } else {
     ($search) = RT::System->new() ->attributes->named( 'Search - ' . $name );
@@ -136,8 +136,8 @@ my $query_string = '?' . $m->comp( '/Elements/QueryString', %$SearchArg );
 </%init>
 <%ARGS>
 $name          => undef
-$SavedSearch   => undef
+$saved_search   => undef
 %Override      => ()
-$IgnoreMissing => undef
+$ignore_missing => undef
 $hideable      => 1
 </%ARGS>

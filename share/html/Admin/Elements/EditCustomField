@@ -79,11 +79,11 @@
 % if ($CustomFieldObj->id and $CustomFieldObj->type =~ /Select/) {
 <h2><&|/l&>Values</&></h2>
 <font size="-1">
-<& /Admin/Elements/EditCustomFieldValues, CustomField => $CustomFieldObj &>
-<& /Admin/Elements/AddCustomFieldValue, CustomField => $CustomFieldObj &>
+<& /Admin/Elements/EditCustomFieldValues, custom_field => $CustomFieldObj &>
+<& /Admin/Elements/AddCustomFieldValue, custom_field => $CustomFieldObj &>
 </font>
 % }
-<&/Elements/Submit, Label => _('Create') &>
+<&/Elements/Submit, label => _('Create') &>
 </form>
 
 
@@ -94,15 +94,15 @@ my $CustomFieldObj = RT::Model::CustomField->new();
 my $enabled_checked = 'checked="checked"';
 my (@results);
 
-if (! $CustomField ) { 
+if (! $custom_field ) { 
   $title = _("Create a CustomField");
   $id = 'new';
 } else {
 
-    if ($CustomField eq 'new') {
+    if ($custom_field eq 'new') {
       my ($val, $msg) =  $CustomFieldObj->create(queue => $queue, 
                                                  name => $name, 
-                                                 type => $Type,
+                                                 type => $type,
                                                  description => $description,
 						 );
       
@@ -118,7 +118,7 @@ if (! $CustomField ) {
       $CustomFieldObj->set_sort_order($CustomFieldObj->id);
       $title = _('Created CustomField %1', $CustomFieldObj->name()); 
     } else {
-      $CustomFieldObj->load($CustomField) || abort(_('No CustomField'), SuppressHeader => 1);
+      $CustomFieldObj->load($custom_field) || abort(_('No CustomField'), SuppressHeader => 1);
       $title = _('Editing CustomField %1', $CustomFieldObj->name()); 
 
       my @aresults = process_custom_field_updates ( 
@@ -150,8 +150,8 @@ $id = $CustomFieldObj->id;
 $id => undef
 $title => undef
 $queue => undef
-$CustomField => undef
-$Type => undef
+$custom_field => undef
+$type => undef
 $description => undef
 $name => undef
 $set_enabled => undef

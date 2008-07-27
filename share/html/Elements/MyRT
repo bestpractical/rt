@@ -65,15 +65,15 @@
 my %allowed_components = map {$_ => 1} @{RT->config->get('HomepageComponents')};
 
 my $user = Jifty->web->current_user->user_object;
-$Portlets ||= $session{'my_rt_portlets'};
-unless ( $Portlets ) {
+$portlets ||= $session{'my_rt_portlets'};
+unless ( $portlets ) {
     my ($default_portlets) = RT::System->new()->attributes->named('HomepageSettings');
-    $Portlets = $session{'my_rt_portlets'} = $user->preferences(
+    $portlets = $session{'my_rt_portlets'} = $user->preferences(
         HomepageSettings => $default_portlets? $default_portlets->content: {},
     );
 }
 
-my ($body, $summary) = @{$Portlets}{qw(body summary)};
+my ($body, $summary) = @{$portlets}{qw(body summary)};
 unless( $body && @$body ) {
     $body = $summary || [];
     $summary = undef;
@@ -89,9 +89,9 @@ my $show_cb = sub  {
         # XXX: security check etc.
         $m->comp( $name, %{ $entry->{arguments} || {} } );
     } elsif ( $type eq 'system' ) {
-        $m->comp( '/Elements/ShowSearch', name => $name, Override => { Rows => $Rows } );
+        $m->comp( '/Elements/ShowSearch', name => $name, override => { rows => $Rows } );
     } elsif ( $type eq 'saved' ) {
-        $m->comp( '/Elements/ShowSearch', SavedSearch => $name, Override => { Rows => $Rows }, IgnoreMissing => 1 );
+        $m->comp( '/Elements/ShowSearch', saved_search => $name, override => { rows => $Rows }, ignore_missing => 1 );
     } else {
         Jifty->log->error("unknown portlet type '$type'");
     }
@@ -99,5 +99,5 @@ my $show_cb = sub  {
 
 </%INIT>
 <%ARGS>
-$Portlets => undef
+$portlets => undef
 </%ARGS>

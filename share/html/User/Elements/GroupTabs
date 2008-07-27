@@ -49,26 +49,26 @@
     subtabs => $tabs, 
     current_tab => 'User/Groups/', 
     current_subtab => $current_subtab, 
-    Title => $Title &>
+    title => $title &>
 
 <%INIT>
 my $tabs;
-if ( $GroupObj and $GroupObj->id ) {
+if ( $group_obj and $group_obj->id ) {
     $tabs->{"this"} = {
-        title   => $GroupObj->name,
-        path    => "User/Groups/Modify.html?id=" . $GroupObj->id,
+        title   => $group_obj->name,
+        path    => "User/Groups/Modify.html?id=" . $group_obj->id,
         subtabs => {
             Basics => { title => _('Basics'),
-                        path  => "User/Groups/Modify.html?id=" . $GroupObj->id
+                        path  => "User/Groups/Modify.html?id=" . $group_obj->id
             },
 
             Members => { title => _('Members'),
-                         path  => "User/Groups/Members.html?id=" . $GroupObj->id
+                         path  => "User/Groups/Members.html?id=" . $group_obj->id
             },
 
         } };
         $tabs->{'this'}->{'current_subtab'} = $current_subtab;
-         $current_subtab = "User/Groups/Modify.html?id=" . $GroupObj->id,
+         $current_subtab = "User/Groups/Modify.html?id=" . $group_obj->id,
 }
 $tabs->{"A"} = { title => _('Select group'),
                  path  => "User/Groups/index.html" };
@@ -78,7 +78,7 @@ $tabs->{"B"} = { title     => _('New group'),
 
 </%INIT>
 <%ARGS>
-$GroupObj => undef
+$group_obj => undef
 $current_subtab => undef
-$Title => undef
+$title => undef
 </%ARGS>

@@ -45,13 +45,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => $title &>
+<& /Admin/Elements/Header, title => $title &>
 <& /Admin/Elements/GlobalCustomFieldTabs,
     current_tab => "Admin/Global/CustomFields/Queue-Tickets.html",
     current_subtab => "Admin/Global/CustomFields/Queue-Tickets.html",
-    Title => $title
+    title => $title
     &>
-    <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, object_type => 'RT::Model::Queue', object=> $object, SubType => 'RT::Model::Ticket' &>
+    <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, object_type => 'RT::Model::Queue', object=> $object, sub_type => 'RT::Model::Ticket' &>
 <%INIT>
   my $title = _( 'Edit Custom Fields for tickets in all queues');
   my $object = RT::Model::Queue->new();
