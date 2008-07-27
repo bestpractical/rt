@@ -27,13 +27,13 @@ $m->get ($cus_hp);
 $m->content_like (qr'highest priority tickets');
 
 # add Requestor to the fields
-$m->form_name ('build_query');
+$m->form_name('build_query');
 # can't use submit form for mutli-valued select as it uses set_fields
 $m->field (select_display_columns => ['requestors']);
 $m->click_button (name => 'add_col') ;
 
-$m->form_name ('build_query');
-$m->click_button (name => 'Save');
+$m->form_name('build_query');
+$m->click_button (name => 'save');
 
 $m->get( $url );
 $m->content_contains ('customsearch@localhost', 'requestor now displayed ');
@@ -41,12 +41,12 @@ $m->content_contains ('customsearch@localhost', 'requestor now displayed ');
 # now remove Requestor from the fields
 $m->get ($cus_hp);
 
-$m->form_name ('build_query');
+$m->form_name('build_query');
 $m->field (current_display_columns => 'Requestors');
 $m->click_button (name => 'remove_col') ;
 
-$m->form_name ('build_query');
-$m->click_button (name => 'Save');
+$m->form_name('build_query');
+$m->click_button (name => 'save');
 
 $m->get( $url );
 $m->content_lacks ('customsearch@localhost', 'requestor not displayed ');
@@ -59,9 +59,9 @@ $m->content_lacks ('customsearch@localhost', 'requestor not displayed ');
 # queue added during the quicksearch setting will be unticked.
 my $nlinks = $#{$m->find_all_links( text => "General" )};
 $m->get ($cus_qs);
-$m->form_name ('Preferences');
+$m->form_name('preferences');
 $m->untick('Want-General', '1');
-$m->click_button (name => 'Save');
+$m->click_button (name => 'save');
 
 $m->get( $url );
 is ($#{$m->find_all_links( text => "General" )}, $nlinks - 1,
@@ -69,9 +69,9 @@ is ($#{$m->find_all_links( text => "General" )}, $nlinks - 1,
 
 # get it back
 $m->get ($cus_qs);
-$m->form_name ('Preferences');
+$m->form_name('preferences');
 $m->tick('Want-General', '1');
-$m->click_button (name => 'Save');
+$m->click_button (name => 'save');
 
 $m->get( $url );
 is ($#{$m->find_all_links( text => "General" )}, $nlinks,

@@ -68,7 +68,7 @@ END
     $m->follow_link_ok(  text => 'Resolve'  );
     $m->form_number(3);
     $m->field( "update_content" => 'resolve it' );
-    $m->click('SubmitTicket');
+    $m->click('submit_ticket');
     $m->content_like(qr/Message recorded/);
     is_deeply parse_handle($tmp_fh), ['comment', 'status'], 'comment + Resolve';
 }

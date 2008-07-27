@@ -272,7 +272,7 @@ diag "check encrypting of attachments";
     $m->tick( encrypt => 1 );
     $m->field( requestors => 'rt-test@example.com' );
     $m->field( content => 'Some content' );
-    $m->field( Attach => $0 );
+    $m->field( attach => $0 );
     $m->submit;
     $m->content_like(
         qr/You are going to encrypt outgoing email messages/i,

@@ -67,17 +67,17 @@ diag "set the next condition" if $ENV{'TEST_VERBOSE'};
 diag "We're going to delete the owner" if $ENV{'TEST_VERBOSE'};
 {
     $agent->select("clauses", ["0"] );
-    $agent->click("DeleteClause");
+    $agent->click("delete_clause");
     ok $agent->form_name('build_query'), "found the form";
     is get_query_from_form, "queue != 'Regression'", 'correct query';
 }
 
 diag "add a cond with OR and se number by the way" if $ENV{'TEST_VERBOSE'};
 {
-    $agent->field("AndOr", "OR");
+    $agent->field("and_or", "OR");
     $agent->select("id_op", ">");
     $agent->field("value_of_id" => "1234");
-    $agent->click("AddClause");
+    $agent->click("add_clause");
     ok $agent->form_name('build_query'), "found the form again";
     is get_query_from_form, "queue != 'Regression' OR id > 1234",
         "added something as OR, and number not quoted";
@@ -87,7 +87,7 @@ diag "add a cond with OR and se number by the way" if $ENV{'TEST_VERBOSE'};
 
 diag "Move the second one up a level" if $ENV{'TEST_VERBOSE'};
 {
-    $agent->click("Up");
+    $agent->click("up");
     ok $agent->form_name('build_query'), "found the form again";
     is get_query_from_form, "id > 1234 OR queue != 'Regression'", "moved up one";
     is_deeply selected_clauses, ["0"], 'the one we moved up is selected';
@@ -95,7 +95,7 @@ diag "Move the second one up a level" if $ENV{'TEST_VERBOSE'};
 
 diag "Move the second one right" if $ENV{'TEST_VERBOSE'};
 {
-    $agent->click("Right");
+    $agent->click("right");
     ok $agent->form_name('build_query'), "found the form again";
     is get_query_from_form, "queue != 'Regression' OR ( id > 1234 )",
         "moved over to the right (and down)";
@@ -105,7 +105,7 @@ diag "Move the second one right" if $ENV{'TEST_VERBOSE'};
 diag "Move the block up" if $ENV{'TEST_VERBOSE'};
 {
     $agent->select("clauses", ["1"]);
-    $agent->click("Up");
+    $agent->click("up");
     ok $agent->form_name('build_query'), "found the form again";
     is get_query_from_form, "( id > 1234 ) OR queue != 'Regression'", "moved up";
     is_deeply selected_clauses, ["0"], 'the one we moved up is selected';
@@ -115,7 +115,7 @@ diag "Move the block up" if $ENV{'TEST_VERBOSE'};
 diag "Can not move up the top most clause" if $ENV{'TEST_VERBOSE'};
 {
     $agent->select("clauses", ["0"]);
-    $agent->click("Up");
+    $agent->click("up");
     ok $agent->form_name('build_query'), "found the form again";
     $agent->content_like(qr/error: can\S+t move up/, "i shouldn't have been able to hit up");
     is_deeply selected_clauses, ["0"], 'the one we tried to move is selected';
@@ -123,7 +123,7 @@ diag "Can not move up the top most clause" if $ENV{'TEST_VERBOSE'};
 
 diag "Can not move left the left most clause" if $ENV{'TEST_VERBOSE'};
 {
-    $agent->click("Left");
+    $agent->click("left");
     ok($agent->form_name('build_query'), "found the form again");
     $agent->content_like(qr/error: can\S+t move left/, "i shouldn't have been able to hit left");
     is_deeply selected_clauses, ["0"], 'the one we tried to move is selected';
@@ -243,7 +243,7 @@ diag "input a condition, select (several conditions), click delete"
     );
     $agent->select("clauses", [qw(0 1 2)]);
     $agent->field( value_of_id => 10 );
-    $agent->click("DeleteClause");
+    $agent->click("delete_clause");
 
     is( get_query_from_form,
         "id < 10",

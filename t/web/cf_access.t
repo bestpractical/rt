@@ -18,7 +18,7 @@ diag "Create a CF" if $ENV{'TEST_VERBOSE'};
     $m->title_is(q/Select a Custom Field/, 'admin-cf screen');
     $m->follow_link( text => 'Create' );
     $m->submit_form(
-        form_name => "ModifyCustomField",
+        form_name => "modify_custom_field",
         fields => {
             type_composite => 'Image-0',
             lookup_type => 'RT::Model::Queue-RT::Model::Ticket',
@@ -39,7 +39,7 @@ my ( $cf, $cfid, $tid );
     $m->follow_link( text => 'Ticket Custom Fields' );
 
     $m->title_is(q/Edit Custom Fields for General/, 'admin-queue: general cfid');
-    $m->form_name('EditCustomFields');
+    $m->form_name('edit_custom_fields');
 
     # Sort by numeric IDs in names
     my @names = map  { $_->[1] }
@@ -70,17 +70,17 @@ diag "check that we have no the CF on the create"
         if $ENV{'TEST_VERBOSE'};
 {
     $m->submit_form(
-        form_name => "CreateTicketInQueue",
+        form_name => "create_ticket_in_queue",
         fields => { queue => 'General' },
     );
     $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
 
-    my $form = $m->form_name("TicketCreate");
+    my $form = $m->form_name("ticket_create");
     my $upload_field = "object-RT::Model::Ticket--CustomField-$cfid-Upload";
     ok !$form->find_input( $upload_field ), 'no form field on the page';
 
     $m->submit_form(
-        form_name => "TicketCreate",
+        form_name => "ticket_create",
         fields => { subject => 'test' },
     );
     $m->content_like(qr/Ticket \d+ created/, "a ticket is Created succesfully");
@@ -101,17 +101,17 @@ diag "check that we have no the CF on the create"
         if $ENV{'TEST_VERBOSE'};
 {
     $m->submit_form(
-        form_name => "CreateTicketInQueue",
+        form_name => "create_ticket_in_queue",
         fields => { queue => 'General' },
     );
     $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
 
-    my $form = $m->form_name("TicketCreate");
+    my $form = $m->form_name("ticket_create");
     my $upload_field = "object-RT::Model::Ticket--CustomField-$cfid-Upload";
     ok !$form->find_input( $upload_field ), 'no form field on the page';
 
     $m->submit_form(
-        form_name => "TicketCreate",
+        form_name => "ticket_create",
         fields => { subject => 'test' },
     );
     $tid = $1 if $m->content =~ /Ticket (\d+) created/i;
@@ -133,7 +133,7 @@ RT::Test->set_rights(
 diag "create a ticket with an image" if $ENV{'TEST_VERBOSE'};
 {
     $m->submit_form(
-        form_name => "CreateTicketInQueue",
+        form_name => "create_ticket_in_queue",
         fields => { queue => 'General' },
     );
     $m->content_like(qr/Upload multiple images/, 'has a upload image field');
@@ -142,7 +142,7 @@ diag "create a ticket with an image" if $ENV{'TEST_VERBOSE'};
     my $upload_field = "object-RT::Model::Ticket--CustomField-$1-Upload";
 
     $m->submit_form(
-        form_name => "TicketCreate",
+        form_name => "ticket_create",
         fields => {
             $upload_field => ImageFile,
             subject => 'testing img cf creation',
@@ -171,7 +171,7 @@ $m->submit_form(
         value_of_id => $tid,
         value_of_queue => 'General',
     },
-    button => 'AddClause',
+    button => 'add_clause',
 );
 
 $m->form_name('build_query');

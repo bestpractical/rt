@@ -73,7 +73,7 @@ diag "check in read-only mode that queue's props influence create/update ticket 
     foreach my $variant ( @variants ) {
         set_queue_crypt_options( %$variant );
         $m->goto_create_ticket( $queue );
-        $m->form_name('TicketCreate');
+        $m->form_name('ticket_create');
         if ( $variant->{'encrypt'} ) {
             ok $m->value('encrypt', 2), "encrypt tick box is checked";
         } else {
@@ -258,7 +258,7 @@ sub create_a_ticket {
     RT::Test->clean_caught_mails;
 
     $m->goto_create_ticket( $queue );
-    $m->form_name('TicketCreate');
+    $m->form_name('ticket_create');
     $m->field( subject    => 'test' );
     $m->field( requestors => 'rt-test@example.com' );
     $m->field( content    => 'Some content' );
@@ -301,7 +301,7 @@ sub update_ticket {
         }
     }
 
-    $m->click('SubmitTicket');
+    $m->click('submit_ticket');
     is $m->status, 200, "request successful";
     $m->content_like(qr/Message recorded/, 'Message recorded') or diag $m->content;
 

@@ -72,7 +72,7 @@ diag "check that signing doesn't work if there is no key" if $ENV{TEST_VERBOSE};
     $m->tick( sign => 1 );
     $m->field( update_cc => 'rt-test@example.com' );
     $m->field( update_content => 'Some content' );
-    $m->click('SubmitTicket');
+    $m->click('submit_ticket');
     $m->content_like(
         qr/unable to sign outgoing email messages/i,
         'problems with passphrase'
@@ -99,7 +99,7 @@ diag "check that things don't work if there is no key" if $ENV{TEST_VERBOSE};
     $m->tick( encrypt => 1 );
     $m->field( update_cc => 'rt-test@example.com' );
     $m->field( update_content => 'Some content' );
-    $m->click('SubmitTicket');
+    $m->click('submit_ticket');
     $m->content_like(
         qr/You are going to encrypt outgoing email messages/i,
         'problems with keys'
@@ -136,7 +136,7 @@ diag "check that things still doesn't work if key is not trusted" if $ENV{TEST_V
     $m->tick( encrypt => 1 );
     $m->field( update_cc => 'rt-test@example.com' );
     $m->field( update_content => 'Some content' );
-    $m->click('SubmitTicket');
+    $m->click('submit_ticket');
     $m->content_like(
         qr/You are going to encrypt outgoing email messages/i,
         'problems with keys'
@@ -151,7 +151,7 @@ diag "check that things still doesn't work if key is not trusted" if $ENV{TEST_V
     is scalar $input->possible_values, 1, 'one option';
 
     $m->select( 'UseKey-rt-test@example.com' => $fpr1 );
-    $m->click('SubmitTicket');
+    $m->click('submit_ticket');
     $m->content_like(
         qr/You are going to encrypt outgoing email messages/i,
         'problems with keys'
@@ -184,7 +184,7 @@ diag "check that things still doesn't work if two keys are not trusted" if $ENV{
     $m->tick( encrypt => 1 );
     $m->field( update_cc => 'rt-test@example.com' );
     $m->field( update_content => 'Some content' );
-    $m->click('SubmitTicket');
+    $m->click('submit_ticket');
     $m->content_like(
         qr/You are going to encrypt outgoing email messages/i,
         'problems with keys'
@@ -199,7 +199,7 @@ diag "check that things still doesn't work if two keys are not trusted" if $ENV{
     is scalar $input->possible_values, 2, 'two options';
 
     $m->select( 'UseKey-rt-test@example.com' => $fpr1 );
-    $m->click('SubmitTicket');
+    $m->click('submit_ticket');
     $m->content_like(
         qr/You are going to encrypt outgoing email messages/i,
         'problems with keys'
@@ -230,7 +230,7 @@ diag "check that we see key selector even if only one key is trusted but there a
     $m->tick( encrypt => 1 );
     $m->field( update_cc => 'rt-test@example.com' );
     $m->field( update_content => 'Some content' );
-    $m->click('SubmitTicket');
+    $m->click('submit_ticket');
     $m->content_like(
         qr/You are going to encrypt outgoing email messages/i,
         'problems with keys'
@@ -258,7 +258,7 @@ diag "check that key selector works and we can select trusted key" if $ENV{TEST_
     $m->tick( encrypt => 1 );
     $m->field( update_cc => 'rt-test@example.com' );
     $m->field( update_content => 'Some content' );
-    $m->click('SubmitTicket');
+    $m->click('submit_ticket');
     $m->content_like(
         qr/You are going to encrypt outgoing email messages/i,
         'problems with keys'
@@ -273,7 +273,7 @@ diag "check that key selector works and we can select trusted key" if $ENV{TEST_
     is scalar $input->possible_values, 2, 'two options';
 
     $m->select( 'UseKey-rt-test@example.com' => $fpr1 );
-    $m->click('SubmitTicket');
+    $m->click('submit_ticket');
     $m->content_like( qr/Message recorded/i, 'Message recorded' );
 
     my @mail = RT::Test->fetch_caught_mails;
@@ -291,8 +291,8 @@ diag "check encrypting of attachments" if $ENV{TEST_VERBOSE};
     $m->tick( encrypt => 1 );
     $m->field( update_cc => 'rt-test@example.com' );
     $m->field( update_content => 'Some content' );
-    $m->field( Attach => $0 );
-    $m->click('SubmitTicket');
+    $m->field( attach => $0 );
+    $m->click('submit_ticket');
     $m->content_like(
         qr/You are going to encrypt outgoing email messages/i,
         'problems with keys'
@@ -307,7 +307,7 @@ diag "check encrypting of attachments" if $ENV{TEST_VERBOSE};
     is scalar $input->possible_values, 2, 'two options';
 
     $m->select( 'UseKey-rt-test@example.com' => $fpr1 );
-    $m->click('SubmitTicket');
+    $m->click('submit_ticket');
     $m->content_like( qr/Message recorded/i, 'Message recorded' );
 
     my @mail = RT::Test->fetch_caught_mails;

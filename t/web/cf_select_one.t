@@ -20,7 +20,7 @@ diag "Create a CF" if $ENV{'TEST_VERBOSE'};
     $m->title_is(q/Select a Custom Field/, 'admin-cf screen');
     $m->follow_link( text => 'Create' );
     $m->submit_form(
-        form_name => "ModifyCustomField",
+        form_name => "modify_custom_field",
         fields => {
             name          => $cf_name,
             type_composite => 'Select-1',
@@ -28,7 +28,7 @@ diag "Create a CF" if $ENV{'TEST_VERBOSE'};
         },
     );
     $m->content_like( qr/Created/, 'Created CF sucessfully' );
-    $cfid = $m->form_name('ModifyCustomField')->value('id');
+    $cfid = $m->form_name('modify_custom_field')->value('id');
     ok $cfid, "found id of the CF in the form, it's #$cfid";
 }
 
@@ -36,11 +36,11 @@ diag "add 'qwe', 'ASD' and '0' as values to the CF" if $ENV{'TEST_VERBOSE'};
 {
     foreach my $value(qw(qwe ASD 0)) {
         $m->submit_form(
-            form_name => "ModifyCustomField",
+            form_name => "modify_custom_field",
             fields => {
                 "CustomField-". $cfid ."-value-new-name" => $value,
             },
-            button => 'Update',
+            button => 'update',
         );
         $m->content_like( qr/Created/, 'added a value to the CF' ); # or diag $m->content;
     }
@@ -58,7 +58,7 @@ diag "apply the CF to General queue" if $ENV{'TEST_VERBOSE'};
     $m->follow_link( text => 'Ticket Custom Fields' );
     $m->title_is(q/Edit Custom Fields for General/, 'admin-queue: general cfid');
 
-    $m->form_name('EditCustomFields');
+    $m->form_name('edit_custom_fields');
     $m->field( "object-". $queue->id ."-CF-$cfid" => 1 );
     $m->submit;
 

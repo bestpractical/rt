@@ -32,12 +32,12 @@ ok $agent_a->login('user_a', 'password'), 'logged in as user A';
 diag "current user has no right to own, nobody selected as owner on create" if $ENV{TEST_VERBOSE};
 {
     $agent_a->get_ok('/', 'open home page');
-    $agent_a->form_name('CreateTicketInQueue');
+    $agent_a->form_name('create_ticket_in_queue');
     $agent_a->select( 'queue', $queue->id );
     $agent_a->submit;
 
     $agent_a->content_like(qr/Create a new ticket/i, 'opened create ticket page');
-    my $form = $agent_a->form_name('TicketCreate');
+    my $form = $agent_a->form_name('ticket_create');
     is $form->value('owner'), RT->nobody->id, 'correct owner selected';
     ok !grep($_ == $user_a->id, $form->find_input('owner')->possible_values),
         'user A can not own tickets';
@@ -55,12 +55,12 @@ diag "current user has no right to own, nobody selected as owner on create" if $
 diag "user can chose owner of a new ticket" if $ENV{TEST_VERBOSE};
 {
     $agent_a->get_ok('/', 'open home page');
-    $agent_a->form_name('CreateTicketInQueue');
+    $agent_a->form_name('create_ticket_in_queue');
     $agent_a->select( 'queue', $queue->id );
     $agent_a->submit;
 
     $agent_a->content_like(qr/Create a new ticket/i, 'opened create ticket page');
-    my $form = $agent_a->form_name('TicketCreate');
+    my $form = $agent_a->form_name('ticket_create');
     is $form->value('owner'), RT->nobody->id, 'correct owner selected';
 
     ok grep($_ == $user_b->id,  $form->find_input('owner')->possible_values),

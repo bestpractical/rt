@@ -23,11 +23,11 @@ ok $m->login( 'customer' => 'customer' ), "logged in";
 $m->get ( $url."Search/Build.html");
 
 #create a saved search
-$m->form_name ('build_query');
+$m->form_name('build_query');
 
 $m->field ( "value_of_attachment" => 'stupid');
 $m->field ( "saved_search_description" => 'stupid tickets');
-$m->click_button (name => 'SavedSearchSave');
+$m->click_button (name => 'saved_search_save');
 
 $m->get ( $url.'Prefs/MyRT.html' );
 $m->content_like (qr/stupid tickets/, 'saved search listed in rt at a glance items');
