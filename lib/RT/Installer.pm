@@ -313,9 +313,9 @@ sub save_config {
               unless defined $RT::Installer->{InstallConfig}{$_};
 
             # remove obsolete settings we'll add later
-            $content =~ s/^\s* Set \s* \( \s* \$$_ .*$//xm;
+            $content =~ s/^\s* set \s* \( \s* \$$_ .*$//xm;
 
-            $content .= "Set( \$$_, '$RT::Installer->{InstallConfig}{$_}' );\n";
+            $content .= "set( \$$_, '$RT::Installer->{InstallConfig}{$_}' );\n";
         }
         $content .= "1;\n";
         print $fh $content;
