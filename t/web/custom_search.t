@@ -29,8 +29,8 @@ $m->content_like (qr'highest priority tickets');
 # add Requestor to the fields
 $m->form_name ('build_query');
 # can't use submit form for mutli-valued select as it uses set_fields
-$m->field (SelectDisplayColumns => ['requestors']);
-$m->click_button (name => 'AddCol') ;
+$m->field (select_display_columns => ['requestors']);
+$m->click_button (name => 'add_col') ;
 
 $m->form_name ('build_query');
 $m->click_button (name => 'Save');
@@ -42,8 +42,8 @@ $m->content_contains ('customsearch@localhost', 'requestor now displayed ');
 $m->get ($cus_hp);
 
 $m->form_name ('build_query');
-$m->field (CurrentDisplayColumns => 'Requestors');
-$m->click_button (name => 'RemoveCol') ;
+$m->field (current_display_columns => 'Requestors');
+$m->click_button (name => 'remove_col') ;
 
 $m->form_name ('build_query');
 $m->click_button (name => 'Save');

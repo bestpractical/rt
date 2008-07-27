@@ -176,10 +176,10 @@ $m->submit_form(
 
 $m->form_name('build_query');
 
-my $col = ($m->current_form->find_input('SelectDisplayColumns'))[-1];
+my $col = ($m->current_form->find_input('select_display_columns'))[-1];
 $col->value( ($col->possible_values)[-1] );
 
-$m->click('AddCol');
+$m->click('add_col');
 
 $m->form_name('build_query');
 $m->click('do_search');
