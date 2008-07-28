@@ -127,7 +127,7 @@ if ($id or $showall) {
 
 % if (@articles) {
 %   if ($id) {
-<h2><&|/l&>Articles in this topic</&></h2>
+<h2><&|/l, $currtopic->Name&>Articles in [_1]</&></h2>
 %   } elsif ($class) {
 <h2><&|/l&>Articles with no topics</&></h2>
 %   }
@@ -136,10 +136,7 @@ if ($id or $showall) {
 <li><a href="Article/Display.html?id=<% $a->Id %>"><% $a->Name || loc("(no name)") %></a></li>
 %   }
 </ul>
-% } else {
-%#<i><&|/l&>No articles found in this topic</&></i>
 % }
-
 
 <%init>
 my @Actions;
@@ -241,7 +238,7 @@ sub MakeLinks {
         my $topic_info = $topic->Name() || loc("(no name)");
         $topic_info .= ": " . $topic->Description() if $topic->Description;
 
-        if ($haschild) {
+        if ($haschild) { # has topics below it
             $query  = "Topics.html?id=" . $topic->Id . "&class=" . $currclass_id;
             $output = qq(<li><a href="$query">$topic_info</a>);
         } else {
@@ -252,7 +249,9 @@ sub MakeLinks {
         $Articles->Limit( FIELD => 'ObjectType', VALUE => 'RT::FM::Article' );
         $Articles->Limit( FIELD => 'Topic',      VALUE => $topic->Id );
         if ( $Articles->Count ) {
-            $output .= " (" . loc( "[quant,_1,article]", $Articles->Count ) . ")"
+            my $article_text = " (" . loc( "[quant,_1,article]", $Articles->Count ) . ")";
+            my $query  = "Topics.html?id=" . $topic->Id . "&class=$currclass_id&showall=1";
+            $output .= qq(<a href="$query">$article_text</a>);
         }
 
         $output .= "</li>\n";
