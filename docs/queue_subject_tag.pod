@@ -53,4 +53,7 @@ into core.
 3) After upgrade run perl script 'etc/upgrade/3.8-branded-queues-extension'.
 This extension will convert data in the DB into new format.
 
+4) In templates where you were using Tag method (for example
+C<< $Ticket-E<gt>QueueObj-E<gt>Tag >>) replace it with SubjectTag.
+
 =cut
