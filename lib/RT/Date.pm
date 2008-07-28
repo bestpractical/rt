@@ -189,7 +189,7 @@ sub set {
         my $date = Time::ParseDate::parsedate(
             $args{'value'},
             GMT           => 1,
-            UK            => RT->config->get('date_day_before_month'),
+            UK            => RT->config->get('DateDayBeforeMonth'),
             PREFER_PAST   => RT->config->get('AmbiguousDayInPast'),
             PREFER_FUTURE => RT->config->get('AmbiguousDayInFuture'),
         );
@@ -349,7 +349,7 @@ format and timezone.
 
 If the current user didn't choose prefered format then system wide setting is
 used or L</default_format> if the latter is not specified. See config option
-C<date_time_format>.
+C<DateTimeFormat>.
 
 =cut
 
@@ -359,7 +359,7 @@ sub as_string {
 
     return _("Not set") unless $self->unix > 0;
 
-    my $format = RT->config->get( 'date_time_format', $self->current_user )
+    my $format = RT->config->get( 'DateTimeFormat', $self->current_user )
         || 'default_format';
     $format = { format => $format } unless ref $format;
     %args = ( %$format, %args );

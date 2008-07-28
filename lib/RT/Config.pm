@@ -174,7 +174,7 @@ our %META = (
             hints       => "Use fixed-width font to display plaintext messages"
         },
     },
-    date_time_format => {
+    DateTimeFormat => {
         section         => 'Locale',                 #loc
         overridable     => 1,
         widget          => '/Widgets/Form/Select',
@@ -202,7 +202,7 @@ our %META = (
             },
         },
     },
-    default_queue => {
+    DefaultQueue => {
         section         => 'General',
         overridable     => 1,
         widget          => '/Widgets/Form/Select',
