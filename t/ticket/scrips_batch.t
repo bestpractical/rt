@@ -12,7 +12,7 @@ use_ok('RT::Model::Ticket');
 my $queue = RT::Test->load_or_create_queue( name => 'Regression' );
 ok $queue && $queue->id, 'loaded or created queue';
 
-RT->config->set( use_transaction_batch => 1 );
+RT->config->set( UseTransactionBatch => 1 );
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';

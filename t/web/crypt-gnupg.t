@@ -19,8 +19,8 @@ RT::Test->set_mail_catcher;
 
 RT->config->set( LogToScreen => 'debug' );
 RT->config->set( LogStackTraces => 'error' );
-RT->config->set( comment_address => 'general@example.com');
-RT->config->set( correspond_address => 'general@example.com');
+RT->config->set( CommentAddress => 'general@example.com');
+RT->config->set( CorrespondAddress => 'general@example.com');
 RT->config->set( DefaultSearchResultFormat => qq{
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__subject__</a></B>/TITLE:subject',
