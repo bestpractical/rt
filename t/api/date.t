@@ -412,7 +412,7 @@ my $year = (localtime(time))[5] + 1900;
 {
     $current_user->user_object->__set( column => 'timezone', value => '');
     my $date = RT::Date->new(current_user =>  $current_user );
-    is($date->as_string, "Not set", "AsString returns 'Not set'");
+    is($date->as_string, "Not set", "as_string returns 'Not set'");
 
     RT->config->set( DateTimeFormat => '');
     $date->unix(1);
