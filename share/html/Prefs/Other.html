@@ -57,10 +57,10 @@
 <&|/Widgets/TitleBox, title => _( $section ) &>
 % foreach my $option( RT->config->options( Section => $section ) ) {
 % my $meta = RT->config->meta( $option );
-<& $meta->{'Widget'},
+<& $meta->{'widget'},
     default      => 1,
     %{ $m->comp('/Widgets/FinalizeWidgetArguments', widget_arguments =>
-            $meta->{'WidgetArguments'} ) },
+            $meta->{'widget_arguments'} ) },
     name         => $option,
     default_value => scalar RT->config->get( $option ),
     current_value => $preferences->{ $option },

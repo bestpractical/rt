@@ -48,10 +48,10 @@
 <%init>
 for my $type ( @$types ) {
     my $value =
-        $m->comp( $meta->{$type}{Widget} . ':Process', name => $type, 
+        $m->comp( $meta->{$type}{widget} . ':Process', name => $type, 
                 arguments => $arguments, default => $default,
                 default_value => $default_value->{$type},
-                %{ $meta->{$type}{WidgetArguments} },
+                %{ $meta->{$type}{widget_arguments} },
         );
     unless ( $keep_undef || defined $value ) {
         delete $store->{$type};

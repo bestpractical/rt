@@ -46,10 +46,10 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % for my $type ( @$types ) {
-<& $meta->{$type}{'Widget'},
+<& $meta->{$type}{'widget'},
     default      => $default,
     %{ $m->comp('/Widgets/FinalizeWidgetArguments', widget_arguments =>
-            $meta->{$type}{'WidgetArguments'} ) },
+            $meta->{$type}{'widget_arguments'} ) },
     name         => $type,
     exists $current_value->{$type} ? ( current_value => $current_value->{$type} )
         : (),

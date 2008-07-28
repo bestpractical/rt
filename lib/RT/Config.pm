@@ -97,88 +97,88 @@ recommended.
 
 our %META = (
     WebDefaultStylesheet => {
-        Section         => 'General',                #loc
-        Overridable     => 1,
-        Widget          => '/Widgets/Form/Select',
-        WidgetArguments => {
+        section         => 'General',                #loc
+        overridable     => 1,
+        widget          => '/Widgets/Form/Select',
+        widget_arguments => {
             description => 'Theme',                  #loc
                  # XXX: we need support for 'get values callback'
             values => [qw(3.5-default 3.4-compat web2)],
         },
     },
     DefaultSummaryRows => {
-        Section         => 'RT at a glance',          #loc
-        Overridable     => 1,
-        Widget          => '/Widgets/Form/Integer',
-        WidgetArguments => {
+        section         => 'RT at a glance',          #loc
+        overridable     => 1,
+        widget          => '/Widgets/Form/Integer',
+        widget_arguments => {
             description => 'Number of search results',    #loc
         },
     },
     MessageBoxRichText => {
-        Section         => 'General',
-        Overridable     => 1,
-        Widget          => '/Widgets/Form/Boolean',
-        WidgetArguments => {
+        section         => 'General',
+        overridable     => 1,
+        widget          => '/Widgets/Form/Boolean',
+        widget_arguments => {
             description => 'WYSIWYG message composer'     # loc
         }
     },
     MessageBoxWidth => {
-        Section         => 'General',
-        Overridable     => 1,
-        Widget          => '/Widgets/Form/Integer',
-        WidgetArguments => {
+        section         => 'General',
+        overridable     => 1,
+        widget          => '/Widgets/Form/Integer',
+        widget_arguments => {
             description => 'Message box width',           #loc
         },
     },
     MessageBoxHeight => {
-        Section         => 'General',
-        Overridable     => 1,
-        Widget          => '/Widgets/Form/Integer',
-        WidgetArguments => {
+        section         => 'General',
+        overridable     => 1,
+        widget          => '/Widgets/Form/Integer',
+        widget_arguments => {
             description => 'Message box height',          #loc
         },
     },
     MaxInlineBody => {
-        Section => 'Ticket display',    #loc
-        Overridable     => 1,
-        Widget          => '/Widgets/Form/Integer',
-        WidgetArguments => {
+        section => 'Ticket display',    #loc
+        overridable     => 1,
+        widget          => '/Widgets/Form/Integer',
+        widget_arguments => {
             description => 'Maximum inline message length',    #loc
             hints =>
 "Length in characters; Use '0' to show all messages inline, regardless of length" #loc
         },
     },
     OldestTransactionsFirst => {
-        Section         => 'Ticket display', #loc
-        Overridable     => 1,
-        Widget          => '/Widgets/Form/Boolean',
-        WidgetArguments => {
+        section         => 'Ticket display', #loc
+        overridable     => 1,
+        widget          => '/Widgets/Form/Boolean',
+        widget_arguments => {
             description => 'Show oldest transactions first',    #loc
         },
     },
     ShowUnreadMessageNotifications => {
-        Section         => 'Ticket display',
-        Overridable     => 1,
-        Widget          => '/Widgets/Form/Boolean',
-        WidgetArguments => {
+        section         => 'Ticket display',
+        overridable     => 1,
+        widget          => '/Widgets/Form/Boolean',
+        widget_arguments => {
             description => 'Notify me of unread messages',    #loc
         },
 
     },
     PlainTextPre => {
-        Section         => 'Ticket display',
-        Overridable     => 1,
-        Widget          => '/Widgets/Form/Boolean',
-        WidgetArguments => {
+        section         => 'Ticket display',
+        overridable     => 1,
+        widget          => '/Widgets/Form/Boolean',
+        widget_arguments => {
             description => 'Use monospace font',
             hints       => "Use fixed-width font to display plaintext messages"
         },
     },
     date_time_format => {
-        Section         => 'Locale',                 #loc
-        Overridable     => 1,
-        Widget          => '/Widgets/Form/Select',
-        WidgetArguments => {
+        section         => 'Locale',                 #loc
+        overridable     => 1,
+        widget          => '/Widgets/Form/Select',
+        widget_arguments => {
             description => 'Date format',                            #loc
             values       => [qw(default_format RFC2822 ISO W3CDTF)],
             values_label => {
@@ -190,10 +190,10 @@ our %META = (
         },
     },
     Usernameformat => {
-        Section         => 'General',
-        Overridable     => 1,
-        Widget          => '/Widgets/Form/Select',
-        WidgetArguments => {
+        section         => 'General',
+        overridable     => 1,
+        widget          => '/Widgets/Form/Select',
+        widget_arguments => {
             description => 'Username format',
             values      => [qw(concise verbose)],
             values_label  => {
@@ -203,10 +203,10 @@ our %META = (
         },
     },
     default_queue => {
-        Section         => 'General',
-        Overridable     => 1,
-        Widget          => '/Widgets/Form/Select',
-        WidgetArguments => {
+        section         => 'General',
+        overridable     => 1,
+        widget          => '/Widgets/Form/Select',
+        widget_arguments => {
             description => 'default queue',    #loc
             callback    => sub {
                 my $ret = { Values => [], values_label => {} };
@@ -223,11 +223,11 @@ our %META = (
         }
     },
     EmailFrequency => {
-        Section         => 'Mail',                   #loc
-        Overridable     => 1,
+        section         => 'Mail',                   #loc
+        overridable     => 1,
         default         => 'Individual messages',
-        Widget          => '/Widgets/Form/Select',
-        WidgetArguments => {
+        widget          => '/Widgets/Form/Select',
+        widget_arguments => {
             description => 'email delivery',         #loc
             values      => [
                 'Individual messages',               #loc
@@ -239,7 +239,7 @@ our %META = (
     },
     DisableGraphViz => {
         type          => 'SCALAR',
-        PostLoadCheck => sub {
+        post_load_check => sub {
             my $self  = shift;
             my $value = shift;
             return if $value;
@@ -253,7 +253,7 @@ our %META = (
     },
     DisableGD => {
         type          => 'SCALAR',
-        PostLoadCheck => sub {
+        post_load_check => sub {
             my $self  = shift;
             my $value = shift;
             return if $value;
@@ -269,7 +269,7 @@ our %META = (
     GnuPG        => { type => 'HASH' },
     GnuPGOptions => {
         type          => 'HASH',
-        PostLoadCheck => sub {
+        post_load_check => sub {
             my $self    = shift;
             my $gpg     = $self->get('GnuPG');
             my $gpgopts = $self->get('GnuPGOptions');
@@ -467,14 +467,14 @@ sub configs {
     @configs = sort @configs;
     unshift( @configs, 'RT_Config.pm' );
 
-sub PostLoadCheck {
+sub post_load_check {
     my $self = shift;
     foreach my $o (
-        grep $META{$_}{'PostLoadCheck'},
-        $self->options( Overridable => undef )
+        grep $META{$_}{'post_load_check'},
+        $self->options( overridable => undef )
       )
     {
-        $META{$o}->{'PostLoadCheck'}->( $self, $self->get($o) );
+        $META{$o}->{'post_load_check'}->( $self, $self->get($o) );
     }
 }
 
@@ -513,7 +513,7 @@ sub get {
     my ( $self, $name, $user ) = @_;
 
     my $res;
-    if ( $user && $user->id && $META{$name}->{'Overridable'} ) {
+    if ( $user && $user->id && $META{$name}->{'overridable'} ) {
         $user = $user->user_object if $user->isa('RT::CurrentUser');
         my $prefs = $user->preferences( RT->system );
         $res = $prefs->{$name} if $prefs;
@@ -684,17 +684,17 @@ sub sections {
     my $self = shift;
     my %seen;
     return sort
-        grep !$seen{$_}++, map $_->{'Section'} || 'General', values %META;
+        grep !$seen{$_}++, map $_->{'section'} || 'General', values %META;
 }
 
 sub options {
     my $self = shift;
-    my %args = ( Section => undef, Overridable => 1, @_ );
+    my %args = ( section => undef, overridable => 1, @_ );
     my @res  = sort keys %META;
-    @res = grep( ( $META{$_}->{'Section'} || 'General' ) eq $args{'Section'}, @res )
-        if defined $args{'Section'};
-    if ( defined $args{'Overridable'} ) {
-        @res = grep( ( $META{$_}->{'Overridable'} || 0 ) == $args{'Overridable'}, @res );
+    @res = grep( ( $META{$_}->{'section'} || 'General' ) eq $args{'section'}, @res )
+        if defined $args{'section'};
+    if ( defined $args{'overridable'} ) {
+        @res = grep( ( $META{$_}->{'overridable'} || 0 ) == $args{'overridable'}, @res );
     }
     return @res;
 }
