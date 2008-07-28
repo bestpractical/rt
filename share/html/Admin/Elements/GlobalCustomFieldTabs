@@ -68,7 +68,7 @@ my $tabs = {
     C => {
         title => loc('Queues'),
         text => loc('Select custom fields for all queues'),
-        path => 'Queues.html',
+        path => 'Admin/Global/CustomFields/Queues.html',
     },
 
     F => {
