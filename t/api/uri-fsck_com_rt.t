@@ -18,7 +18,7 @@ ok (UNIVERSAL::isa($uri,"RT::URI::fsck_com_rt"), "It's an RT::URI::fsck_com_rt")
 ok ($uri->isa('RT::URI::base'), "It's an RT::URI::base");
 ok ($uri->isa('RT::Base'), "It's an RT::Base");
 
-is ($uri->local_uri_prefix , 'fsck.com-rt://'.RT->config->get('organization'));
+is ($uri->local_uri_prefix , 'fsck.com-rt://'.RT->config->get('Organization'));
 
 
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);

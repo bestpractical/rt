@@ -16,10 +16,10 @@ use_ok('RT::Model::Scrip');
 
 use File::Temp qw/tempfile/;
 my ($fh, $filename) = tempfile( UNLINK => 1, SUFFIX => '.rt');
-my $link_scrips_orig = RT->config->get( 'LinkTransactionsRun1Scrip' );
+my $link_scrips_orig = RT->config->get('LinkTransactionsRun1Scrip');
 RT->config->set( 'LinkTransactionsRun1Scrip', 1 );
 
-my $link_acl_checks_orig = RT->config->get( 'StrictLinkACL' );
+my $link_acl_checks_orig = RT->config->get('StrictLinkACL');
 RT->config->set( 'StrictLinkACL', 1);
 
 my $condition = RT::Model::ScripCondition->new(current_user => RT->system_user );
