@@ -84,6 +84,7 @@ no warnings qw(redefine);
 
 use RT::Model::CustomFieldCollection;
 use Jifty::DBI::Collection::Unique;
+use Text::Naming::Convention qw/renaming/;
 
 # Override jifty default
 sub implicit_clauses { }
@@ -94,61 +95,67 @@ sub implicit_clauses { }
 # metadata.
 
 our %FIELD_METADATA = (
-    status           => [ 'ENUM', ],
-    queue            => [ 'ENUM' => 'Queue', ],
-    type             => [ 'ENUM', ],
-    creator          => [ 'ENUM' => 'User', ],
-    last_updated_by  => [ 'ENUM' => 'User', ],
-    owner            => [ 'WATCHERFIELD' => 'owner', ],
-    effective_id     => [ 'INT', ],
-    id               => [ 'INT', ],
-    initial_priority => [ 'INT', ],
-    final_priority   => [ 'INT', ],
-    priority         => [ 'INT', ],
-    time_left        => [ 'INT', ],
-    time_worked      => [ 'INT', ],
-    time_estimated   => [ 'INT', ],
+    Status           => [ 'ENUM', ],
+    Queue            => [ 'ENUM' => 'Queue', ],
+    Type             => [ 'ENUM', ],
+    Creator          => [ 'ENUM' => 'User', ],
+    LastUpdatedBy  => [ 'ENUM' => 'User', ],
+    Owner            => [ 'WATCHERFIELD' => 'owner', ],
+    EffectiveId     => [ 'INT', ],
+    Id               => [ 'INT', ],
+    InitialPriority => [ 'INT', ],
+    FinalPriority   => [ 'INT', ],
+    Priority         => [ 'INT', ],
+    TimeLeft        => [ 'INT', ],
+    TimeWorked      => [ 'INT', ],
+    TimeEstimated   => [ 'INT', ],
 
     Linked       => ['LINK'],
-    linked_to    => [ 'LINK' => 'To' ],
+    LinkedTo    => [ 'LINK' => 'To' ],
     LinkedFrom   => [ 'LINK' => 'From' ],
     MemberOf     => [ 'LINK' => To => 'MemberOf', ],
     DependsOn    => [ 'LINK' => To => 'DependsOn', ],
     RefersTo     => [ 'LINK' => To => 'RefersTo', ],
-    has_member   => [ 'LINK' => From => 'MemberOf', ],
+    HasMember   => [ 'LINK' => From => 'MemberOf', ],
     DependentOn  => [ 'LINK' => From => 'DependsOn', ],
     DependedOnBy => [ 'LINK' => From => 'DependsOn', ],
     ReferredToBy => [ 'LINK' => From => 'RefersTo', ],
     Told            => [ 'DATE'         => 'Told', ],
-    starts          => [ 'DATE'         => 'starts', ],
+    Starts          => [ 'DATE'         => 'starts', ],
     Started         => [ 'DATE'         => 'Started', ],
     Due             => [ 'DATE'         => 'Due', ],
-    resolved        => [ 'DATE'         => 'resolved', ],
-    last_updated    => [ 'DATE'         => 'last_updated', ],
+    Resolved        => [ 'DATE'         => 'resolved', ],
+    LastUpdated    => [ 'DATE'         => 'last_updated', ],
     Created         => [ 'DATE'         => 'Created', ],
-    subject         => [ 'STRING', ],
-    content         => [ 'TRANSFIELD', ],
-    content_type    => [ 'TRANSFIELD', ],
+    Subject         => [ 'STRING', ],
+    Content         => [ 'TRANSFIELD', ],
+    ContentType    => [ 'TRANSFIELD', ],
     Filename        => [ 'TRANSFIELD', ],
     TransactionDate => [ 'TRANSDATE', ],
-    requestor       => [ 'WATCHERFIELD' => 'requestor', ],
-    requestors      => [ 'WATCHERFIELD' => 'requestor', ],
-    cc              => [ 'WATCHERFIELD' => 'cc', ],
+    Requestor       => [ 'WATCHERFIELD' => 'requestor', ],
+    Requestors      => [ 'WATCHERFIELD' => 'requestor', ],
+    Cc              => [ 'WATCHERFIELD' => 'cc', ],
     AdminCc         => [ 'WATCHERFIELD' => 'admin_cc', ],
-    admin_cc        => [ 'WATCHERFIELD' => 'admin_cc', ],
     Watcher         => [ 'WATCHERFIELD', ],
     QueueCc          => [ 'WATCHERFIELD' => 'Cc'      => 'Queue', ],
     QueueAdminCc     => [ 'WATCHERFIELD' => 'AdminCc' => 'Queue', ],
     QueueWatcher     => [ 'WATCHERFIELD' => undef     => 'Queue', ],
-    CustomFieldvalue => [ 'CUSTOMFIELD', ],
+    CustomFieldValue => [ 'CUSTOMFIELD', ],
     CustomField      => [ 'CUSTOMFIELD', ],
     CF               => [ 'CUSTOMFIELD', ],
     Updated          => [ 'TRANSDATE', ],
-    requestor_group  => [ 'MEMBERSHIPFIELD' => 'requestor', ],
-    cc_group         => [ 'MEMBERSHIPFIELD' => 'cc', ],
-    admin_cc_group   => [ 'MEMBERSHIPFIELD' => 'admin_cc', ],
+    RequestorGroup  => [ 'MEMBERSHIPFIELD' => 'requestor', ],
+    CcGroup         => [ 'MEMBERSHIPFIELD' => 'cc', ],
+    AdminCcGroup   => [ 'MEMBERSHIPFIELD' => 'admin_cc', ],
     WatcherGroup     => [ 'MEMBERSHIPFIELD', ],
 );
+
+# support _ name conventions as well
+for my $field ( keys %FIELD_METADATA ) {
+    $FIELD_METADATA{ renaming( $field, { convention => '_' } ) } =
+      $FIELD_METADATA{$field};
+}
+
 
 # Mapping of Field type to Function
 our %dispatch = (
@@ -212,10 +219,10 @@ sub can_bundle { return \%can_bundle }
 
 # {{{ sub sort_fields
 
-our @SORTcolumns = qw(id Status
+our @SORTcolumns = qw(id status
     queue subject
-    owner Created Due starts Started
-    Told
+    owner created due starts started
+    told
     resolved last_updated priority time_worked time_left);
 
 =head2 sort_fields
@@ -364,7 +371,7 @@ sub _link_limit {
     else {
         $sb->open_paren;
 
-        $sb->_link_limit( 'linked_to', $op, $value, @rest );
+        $sb->_link_limit( 'LinkedTo', $op, $value, @rest );
         $sb->_link_limit(
             'LinkedFrom',
             $op, $value, @rest,
@@ -1759,7 +1766,7 @@ sub limit_linked_to {
     );
 
     $self->limit(
-        column      => 'linked_to',
+        column      => 'LinkedTo',
         base        => undef,
         target      => $args{'target'},
         type        => $args{'type'},
@@ -1800,7 +1807,7 @@ sub limit_linked_from {
     $type = $fromToMap{$type} if exists( $fromToMap{$type} );
 
     $self->limit(
-        column      => 'linked_to',
+        column      => 'LinkedTo',
         target      => undef,
         base        => $args{'base'},
         type        => $type,
@@ -2046,7 +2053,7 @@ sub _restrictions_to_clauses {
 
         # One special case
         # Rewrite linked_to meta field to the real field
-        if ( $field =~ /linked_to/ ) {
+        if ( $field =~ /LinkedTo/ ) {
             $realfield = $field = $restriction->{'type'};
         }
 
