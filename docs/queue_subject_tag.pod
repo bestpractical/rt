@@ -18,7 +18,7 @@ save changes.
 
 Usually you don't need to add some code into templates to
 make subject tags work. A tag will be added in the
-beginning of subject filed right before sending email out.
+beginning of subject right before sending email out.
 
 If you want to subjects to be "prefix [tag] real subject" like
 in default autoreply then you can use the following code in
@@ -69,9 +69,11 @@ into core.
 2) We expect that you have backup of your RT DB around during upgrade.
 
 3) After upgrade run perl script 'etc/upgrade/3.8-branded-queues-extension'.
-This extension will convert data in the DB into new format.
+This script will convert data in the DB into new format.
 
 4) In templates where you were using Tag method (for example
-C<< $Ticket-E<gt>QueueObj-E<gt>Tag >>) replace it with SubjectTag.
+C<< $Ticket-E<gt>QueueObj-E<gt>Tag >>) replace it with
+C<< $Ticket-E<gt>QueueObj-E<gt>SubjectTag >>. Read more in
+L</"Using tag in templates">
 
 =cut
