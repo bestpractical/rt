@@ -82,7 +82,9 @@ my $print_content = sub {
 
     $m->callback( content => $ref, %ARGS );
     $m->comp('/Elements/MakeClicky', content => $ref, ticket => $ticket, %ARGS);
-    $$ref =~ s{$}{<br />}mg if defined $$ref;
+    unless ( RT->Config->Get('PlainTextPre', $session{'CurrentUser'}) ) {
+        $$ref =~ s{$}{<br />}mg if defined $$ref;
+    }
     $m->out( $$ref );
 };
 </%INIT>
