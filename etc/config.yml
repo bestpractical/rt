@@ -4,7 +4,7 @@ framework:
   ApplicationClass: RT
   Applicationname: RT
   ApplicationUUID: EAFC6FF2-5E8D-11DC-9FAD-91A9684ED971
-  ConfigFileVersion: 2
+  ConfigFileVersion: 4
   Database: 
     CheckSchema: 0
     Database: rt4
@@ -29,6 +29,7 @@ framework:
     - CompressedCSSandJS: {}
     - User: {}
     - Authentication::Password: {}
+    - Prototypism: {}
   PubSub: 
     Backend: Memcached
     Enable: ~
