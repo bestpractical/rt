@@ -103,6 +103,13 @@ while ( my $Transaction = $Transactions->Next ) {
     grep { ($_->TransactionId == $Transaction->Id ) && ($trans_content->{$_->Id} = $_)  } @attachment_content;
 
    
+    my $IsLastTransaction = 0;
+    if ( $OldestFirst ) {
+        $IsLastTransaction = $Transactions->IsLast;
+    } else {
+        $IsLastTransaction = 1 if ( $i == 1 );
+    }
+
     #Args is first because we're clobbering the "Attachments" parameter 
     $m->comp( 'ShowTransaction',
             %ARGS,
@@ -113,7 +120,7 @@ while ( my $Transaction = $Transactions->Next ) {
               RowNum               => $i,
               Attachments          => \@trans_attachments,
               AttachmentContent    => $trans_content,
-              LastTransaction      => $Transactions->IsLast
+              LastTransaction      => $IsLastTransaction
  );
 
 # manually flush the content buffer after each txn, so the user sees
@@ -139,11 +146,11 @@ if ($Tickets) {
 
 
 my $OldestFirst = RT->Config->Get( 'OldestTransactionsFirst', $session{'CurrentUser'} );
-$OldestFirst = $OldestFirst? 'ASC': 'DESC';
+my $SortOrder = $OldestFirst? 'ASC': 'DESC';
 $Transactions->OrderByCols( { FIELD => 'Created',
-                              ORDER => $OldestFirst },
+                              ORDER => $SortOrder },
                             { FIELD => 'id',
-                              ORDER => $OldestFirst },
+                              ORDER => $SortOrder },
                           );
 
 my $i;
