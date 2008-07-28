@@ -8,10 +8,28 @@ use different values for different queues.
 
 =head1 CONFIGURATION
 
+=head2 Setting subject tag
+
 Open RT's web UI, goto -E<gt> Configuration -E<gt> Queues
 -E<gt> select a queue -E<gt> set 'subject tag' -E<gt>
 save changes.
 
+=head2 Using tag in templates
+
+Usually you don't need to add some code into templates to
+make subject tags work. A tag will be added in the
+beginning of subject filed right before sending email out.
+
+If you want to subjects to be "prefix [tag] real subject" like
+in default autoreply then you can use the following code in
+templates to place subject tag whenever you want in a template:
+
+    [{ $Ticket->QueueObj->SubjectTag || $rtname } #{$Ticket->id()}]
+
+B<Note> that in the extension from the CPAN Tag method have
+been used when in 3.8 and newer it's SubjectTag, so you have to upgrade
+your templates. Read L</UPGRADING> below.
+    
 =head1 This functionality vs. RT-Extension-BrandedQueues
 
 RT-Extension-BrandedQueues is extension that's available from
