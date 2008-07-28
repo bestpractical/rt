@@ -50,6 +50,7 @@ use warnings;
 
 package RT::Config;
 use File::Spec ();
+use Text::Naming::Convention qw/renaming/;
 
 =head1 name
 
@@ -512,6 +513,11 @@ will result in C<(arg1 => 1, arg2 => 'element of option', 'another_one' => ..., 
 sub get {
     my ( $self, $name, $user ) = @_;
 
+    if ( $name ne 'rtname' && $name !~ /[A-Z]/ ) {
+        # we need to rename it to be UpperCamelCase
+        $name = renaming( $name, { convention => 'UpperCamelCase' } );
+    }
+
     my $res;
     if ( $user && $user->id && $META{$name}->{'overridable'} ) {
         $user = $user->user_object if $user->isa('RT::CurrentUser');
@@ -536,6 +542,11 @@ scalar type.
 
 sub set {
     my ( $self, $name ) = ( shift, shift );
+
+    if ( $name ne 'rtname' && $name !~ /[A-Z]/ ) {
+        # we need to rename it to be UpperCamelCase
+        $name = renaming( $name, { convention => 'UpperCamelCase' } );
+    }
 
     my $old = $OPTIONS{$name};
     my $type = $META{$name}->{'type'} || 'SCALAR';
