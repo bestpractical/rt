@@ -86,7 +86,7 @@ if ( $request_args->{'NewReminder-subject'} ) {
     my $due_obj = RT::Date->new();
     my $date    = Time::ParseDate::parsedate(
         $request_args->{'NewReminder-Due'},
-        UK            => RT->config->get('date_day_before_month'),
+        UK            => RT->config->get('DateDayBeforeMonth'),
         PREFER_PAST   => 0,
         PREFER_FUTURE => 1
     );

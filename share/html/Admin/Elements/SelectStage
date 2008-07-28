@@ -63,7 +63,7 @@ if ( !defined $default || $default eq '') {
     $default = 'transaction_create';
 }
 my @stages = 'transaction_create';
-push @stages, RT->config->get('use_transaction_batch')
+push @stages, RT->config->get('UseTransactionBatch')
             ? 'transaction_batch'
             : ['transaction_batch', 'transaction_batch (DISABLED)'];
 

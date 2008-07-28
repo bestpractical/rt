@@ -221,7 +221,7 @@ sub mail_error {
     my %args = (
         To          => RT->config->get('OwnerEmail'),
         Bcc         => undef,
-        From        => RT->config->get('correspond_address'),
+        From        => RT->config->get('CorrespondAddress'),
         subject     => 'There has been an error',
         explanation => 'Unexplained error',
         mime_obj    => undef,
@@ -504,7 +504,7 @@ sub send_email_using_template {
         to          => undef,
         cc          => undef,
         bcc         => undef,
-        from        => RT->config->get('correspond_address'),
+        from        => RT->config->get('CorrespondAddress'),
         in_reply_to => undef,
         @_
     );
@@ -625,7 +625,7 @@ sub forward_transaction {
         # XXX: what if want to forward txn of other object than ticket?
         $subject = add_subject_tag( $subject, $txn->object_id );
         $from = $txn->object->queue_obj->correspond_address
-            || RT->config->get('correspond_address');
+            || RT->config->get('CorrespondAddress');
     }
     $mail->head->set( subject => "Fwd: $subject" );
     $mail->head->set( From    => $from );
@@ -930,7 +930,7 @@ sub gen_message_id {
         scrip_action => undef,
         @_
     );
-    my $org = RT->config->get('organization');
+    my $org = RT->config->get('Organization');
     my $ticket_id = ( ref $args{'ticket'} ? $args{'ticket'}->id : $args{'ticket'} )
         || 0;
     my $scrip_id = ( ref $args{'Scrip'} ? $args{'Scrip'}->id : $args{'Scrip'} )
@@ -968,7 +968,7 @@ sub set_in_reply_to {
     }
     push @references, @id, @rtid;
     if ( $args{'ticket'} ) {
-        my $pseudo_ref = '<RT-Ticket-' . $args{'ticket'}->id . '@' . RT->config->get('organization') . '>';
+        my $pseudo_ref = '<RT-Ticket-' . $args{'ticket'}->id . '@' . RT->config->get('Organization') . '>';
         push @references, $pseudo_ref
             unless grep $_ eq $pseudo_ref, @references;
     }
@@ -1159,7 +1159,7 @@ sub gateway {
     my $errors_to = parse_errors_to_address_from_head($head);
 
     my $message_id = $head->get('Message-ID')
-        || "<no-message-id-" . time . rand(2000) . '@' . RT->config->get('organization') . '>';
+        || "<no-message-id-" . time . rand(2000) . '@' . RT->config->get('Organization') . '>';
 
     #Pull apart the subject line
     my $subject = $head->get('subject') || '';

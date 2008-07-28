@@ -99,18 +99,18 @@ sub set_return_address {
     my $replyto;
     if ( $args{'is_comment'} ) {
         $replyto = $self->ticket_obj->queue_obj->comment_address
-            || RT->config->get('comment_address');
+            || RT->config->get('CommentAddress');
     } else {
         $replyto = $self->ticket_obj->queue_obj->correspond_address
-            || RT->config->get('correspond_address');
+            || RT->config->get('CorrespondAddress');
     }
 
     unless ( $self->template_obj->mime_obj->head->get('From') ) {
-        if ( RT->config->get('use_friendly_from_line') ) {
+        if ( RT->config->get('UseFriendlyFromLine') ) {
             my $friendly_name = $self->ticket_obj->queue_obj->description
                 || $self->ticket_obj->queue_obj->name;
             $friendly_name =~ s/"/\\"/g;
-            $self->set_header( 'From', sprintf( RT->config->get('friendly_from_line_format'), $self->mime_encode_string( $friendly_name, RT->config->get('EmailOutputEncoding') ), $replyto ), );
+            $self->set_header( 'From', sprintf( RT->config->get('FriendlyFromLineFormat'), $self->mime_encode_string( $friendly_name, RT->config->get('EmailOutputEncoding') ), $replyto ), );
         } else {
             $self->set_header( 'From', $replyto );
         }

@@ -73,10 +73,10 @@
 
 <tr><td align="right"><&|/l&>Reply Address</&>:</td>
 <td><input name="correspond_address" value="<% ($create) ? "" : $queue_obj->correspond_address %>" />
-<br /><span><em><&|/l , RT->config->get('correspond_address')&>(If left blank, will default to %1)</&></em></span></td>
+<br /><span><em><&|/l , RT->config->get('CorrespondAddress')&>(If left blank, will default to %1)</&></em></span></td>
 <td align="right"><&|/l&>comment Address</&>:</td>
 <td><input name="comment_address" value="<% ($create) ? "" : $queue_obj->comment_address %>" />
-<br /><span><em><&|/l , RT->config->get('comment_address')&>(If left blank, will default to %1)</&></em></span></td>
+<br /><span><em><&|/l , RT->config->get('CommentAddress')&>(If left blank, will default to %1)</&></em></span></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Priority starts at</&>:</td>
@@ -116,10 +116,10 @@ value="1" <%$enabled_checked|n%> /></td>
 </td></tr>
 
 % if ( RT->config->get('GnuPG')->{'enable'} ) {
-% if ( my $email = $queue_obj->correspond_address || RT->config->get('correspond_address') ) {
+% if ( my $email = $queue_obj->correspond_address || RT->config->get('CorrespondAddress') ) {
 <tr><td colspan="4"><& /Admin/Elements/ShowKeyInfo, type => 'private', email => $email &></td></tr>
 % }
-% if ( my $email = $queue_obj->comment_address || RT->config->get('comment_address') ) {
+% if ( my $email = $queue_obj->comment_address || RT->config->get('CommentAddress') ) {
 <tr><td colspan="4"><& /Admin/Elements/ShowKeyInfo, type => 'private', email => $email &></td></tr>
 % }
 % }

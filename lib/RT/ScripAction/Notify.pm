@@ -123,9 +123,9 @@ sub set_recipients {
         push( @Bcc, $ticket->queue_obj->role_group("admin_cc")->member_emails );
     }
 
-    if ( RT->config->get('use_friendly_to_line') ) {
+    if ( RT->config->get('UseFriendlyToLine') ) {
         unless (@To) {
-            push @PseudoTo, sprintf RT->config->get('friendly_to_line_format'), $arg, $ticket->id;
+            push @PseudoTo, sprintf RT->config->get('FriendlyToLineFormat'), $arg, $ticket->id;
         }
     }
 

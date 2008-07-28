@@ -632,8 +632,8 @@ sub canonicalize_email {
     # Example: the following rule would treat all email
     # coming from a subdomain as coming from second level domain
     # foo.com
-    if (    my $match = RT->config->get('canonicalize_emailMatch')
-        and my $replace = RT->config->get('canonicalize_emailReplace') )
+    if (    my $match = RT->config->get('CanonicalizeEmailMatch')
+        and my $replace = RT->config->get('CanonicalizeEmailReplace') )
     {
         $email =~ s/$match/$replace/gi;
     }

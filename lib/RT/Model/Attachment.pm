@@ -630,7 +630,7 @@ sub encrypt {
 
     my $queue = $txn->ticket_obj->queue_obj;
     my $encrypt_for;
-    foreach my $address ( grep $_, $queue->correspond_address, $queue->comment_address, RT->config->get('correspond_address'), RT->config->get('comment_address'), ) {
+    foreach my $address ( grep $_, $queue->correspond_address, $queue->comment_address, RT->config->get('CorrespondAddress'), RT->config->get('CommentAddress'), ) {
         my %res = RT::Crypt::GnuPG::get_keys_info( $address, 'private' );
         next if $res{'exit_code'} || !$res{'info'};
         %res = RT::Crypt::GnuPG::get_keys_for_encryption($address);

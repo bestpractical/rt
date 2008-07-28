@@ -559,11 +559,11 @@ sub set_rt_special_headers {
 
         # If there is one, and we can parse it, then base our Message-ID on it
         if (    $msgid
-            and $msgid =~ s/<(rt-.*?-\d+-\d+)\.(\d+)-\d+-\d+\@\QRT->config->get('organization')\E>$/
+            and $msgid =~ s/<(rt-.*?-\d+-\d+)\.(\d+)-\d+-\d+\@\QRT->config->get('Organization')\E>$/
                          "<$1." . $self->ticket_obj->id
                           . "-" . $self->scrip_obj->id
                           . "-" . $self->scrip_action_obj->{_Message_ID}
-                          . "@" . RT->config->get('organization') . ">"/eg
+                          . "@" . RT->config->get('Organization') . ">"/eg
             and $2 == $self->ticket_obj->id
             )
         {
@@ -715,21 +715,21 @@ sub set_return_address {
 
     if ( $args{'is_comment'} ) {
         $replyto = $self->ticket_obj->queue_obj->comment_address
-            || RT->config->get('comment_address');
+            || RT->config->get('CommentAddress');
     } else {
         $replyto = $self->ticket_obj->queue_obj->correspond_address
-            || RT->config->get('correspond_address');
+            || RT->config->get('CorrespondAddress');
     }
 
     unless ( $self->template_obj->mime_obj->head->get('From') ) {
-        if ( RT->config->get('use_friendly_from_line') ) {
+        if ( RT->config->get('UseFriendlyFromLine') ) {
             my $friendly_name = $self->transaction_obj->creator_obj->friendly_name;
             if ( $friendly_name =~ /^"(.*)"$/ ) {    # a quoted string
                 $friendly_name = $1;
             }
 
             $friendly_name =~ s/"/\\"/g;
-            $self->set_header( 'From', sprintf( RT->config->get('friendly_from_line_format'), $self->mime_encode_string( $friendly_name, RT->config->get('EmailOutputEncoding') ), $replyto ), );
+            $self->set_header( 'From', sprintf( RT->config->get('FriendlyFromLineFormat'), $self->mime_encode_string( $friendly_name, RT->config->get('EmailOutputEncoding') ), $replyto ), );
         } else {
             $self->set_header( 'From', $replyto );
         }
@@ -827,7 +827,7 @@ sub set_references_headers {
     # the RT Web UI, and hence we want to *not* append its Message-ID
     # to the References and In-Reply-To.  OR it came from an outside
     # source, and we should treat it as per the RFC
-    my $org = RT->config->get('organization');
+    my $org = RT->config->get('Organization');
     if ( "@msgid" =~ /<(rt-.*?-\d+-\d+)\.(\d+)-0-0\@\Q$org\E>/ ) {
 
         # Make all references which are internal be to version which we
@@ -884,7 +884,7 @@ Returns a fake Message-ID: header for the ticket to allow a base level of thread
 sub pseudo_reference {
 
     my $self       = shift;
-    my $pseudo_ref = '<RT-Ticket-' . $self->ticket_obj->id . '@' . RT->config->get('organization') . '>';
+    my $pseudo_ref = '<RT-Ticket-' . $self->ticket_obj->id . '@' . RT->config->get('Organization') . '>';
     return $pseudo_ref;
 }
 

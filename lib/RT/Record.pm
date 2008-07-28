@@ -1319,7 +1319,7 @@ sub _new_transaction {
     if ( defined $args{'time_taken'} and $self->can('_update_time_taken') ) {
         $self->_update_time_taken( $args{'time_taken'} );
     }
-    if ( RT->config->get('use_transaction_batch') and $transaction ) {
+    if ( RT->config->get('UseTransactionBatch') and $transaction ) {
         push @{ $self->{_transaction_batch} }, $trans
             if $args{'commit_scrips'};
     }

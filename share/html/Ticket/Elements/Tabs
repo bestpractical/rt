@@ -146,7 +146,7 @@ if ($ticket) {
 
     };
 
-    if ( RT->config->get('enableReminders') ) {
+    if ( RT->config->get('EnableReminders') ) {
         $ticket_page_tabs->{_F} = {
             title     => _('Reminders'),
             path      => "Ticket/Reminders.html?id=" . $id,

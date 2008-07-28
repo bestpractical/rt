@@ -876,11 +876,11 @@ sub timezone {
     if ( $context eq 'user' ) {
         $tz = $self->current_user->user_object->timezone;
     } elsif ( $context eq 'server' ) {
-        $tz = RT->config->get('timezone');
+        $tz = RT->config->get('Timezone');
     } else {
         $tz = 'UTC';
     }
-    $tz ||= RT->config->get('timezone') || 'UTC';
+    $tz ||= RT->config->get('Timezone') || 'UTC';
     $tz = 'UTC' if lc $tz eq 'gmt';
     return $tz;
 }

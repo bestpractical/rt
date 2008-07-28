@@ -209,7 +209,7 @@ sub load {
     # thing. be careful to cache all the interim tickets we try so we don't loop forever.
 
     # FIXME: there is no ticket_base_uri option in config
-    my $base_uri = RT->config->get('ticket_base_uri') || '';
+    my $base_uri = RT->config->get('TicketBaseUri') || '';
 
     #If it's a local URI, turn it into a ticket id
     if ( $base_uri && $id =~ /^$base_uri(\d+)$/ ) {
@@ -1754,7 +1754,7 @@ sub _record_note {
     # If this is from an external source, we need to come up with its
     # internal Message-ID now, so all emails sent because of this
     # message have a common Message-ID
-    my $org   = RT->config->get('organization');
+    my $org   = RT->config->get('Organization');
     my $msgid = $args{'mime_obj'}->head->get('Message-ID');
     unless ( defined $msgid
         && $msgid =~ /<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>/ )

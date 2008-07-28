@@ -62,7 +62,7 @@ setting enabled.
 
 
 
-=item C<$organization>
+=item C<$Organization>
 
 You should set this to your organization's DNS domain. For example,
 I<fsck.com> or I<asylum.arkham.ma.us>. It's used by the linking interface to
@@ -70,7 +70,7 @@ guarantee that ticket URIs are unique and easy to construct.
 
 =cut
 
-set($organization , "example.com");
+set($Organization , "example.com");
 
 =item C<$MinimumPasswordLength>
 
@@ -434,41 +434,41 @@ is not 'sendmailpipe', 'sendmail', or 'smtp'
 
 set(@MailParams, ());
 
-=item C<$correspond_address>, C<$comment_address>
+=item C<$CorrespondAddress>, C<$CommentAddress>
 
 RT is designed such that any mail which already has a ticket-id associated
 with it will get to the right place automatically.
 
-C<$correspond_address> and C<$comment_address> are the default addresses
+C<$CorrespondAddress> and C<$CommentAddress> are the default addresses
 that will be listed in From: and Reply-To: headers of correspondence
 and comment mail tracked by RT, unless overridden by a queue-specific
 address.
 
 =cut
 
-set($correspond_address , '');
+set($CorrespondAddress , '');
 
-set($comment_address , '');
+set($CommentAddress , '');
 
 =item C<use_friendly_from_line>
 
 By default, RT sets the outgoing mail's "From:" header to
-"SenderName via RT".  Setting C<$use_friendly_from_line> to 0 disables it.
+"SenderName via RT".  Setting C<$UseFriendlyFromLine> to 0 disables it.
 
 =cut
 
-set($use_friendly_from_line, 1);
+set($UseFriendlyFromLine, 1);
 
-=item C<$friendly_from_line_format>
+=item C<$FriendlyFromLineFormat>
 
 C<sprintf()> format of the friendly 'From:' header; its arguments
 are SenderName and SenderEmailAddress.
 
 =cut
 
-set($friendly_from_line_format, "\"%s via RT\" <%s>");
+set($FriendlyFromLineFormat, "\"%s via RT\" <%s>");
 
-=item C<$use_friendly_to_line>
+=item C<$UseFriendlyToLine>
 
 RT can optionally set a "Friendly" 'To:' header when sending messages to
 Ccs or AdminCcs (rather than having a blank 'To:' header.
@@ -479,16 +479,16 @@ you _must_ disable this option.
 
 =cut
 
-set($use_friendly_to_line, 0);
+set($UseFriendlyToLine, 0);
 
-=item C<$friendly_to_line_format>
+=item C<$FriendlyToLineFormat>
 
 C<sprintf()> format of the friendly 'From:' header; its arguments
 are WatcherType and TicketId.
 
 =cut
 
-set($friendly_to_line_format, "\"%s of ". RT->config->get('rtname') ." Ticket #%s\":;");
+set($FriendlyToLineFormat, "\"%s of ". RT->config->get('rtname') ." Ticket #%s\":;");
 
 =item C<$NotifyActor>
 
