@@ -1078,7 +1078,7 @@ support for TrueType fonts to use this option.
 set($ChartFont, undef);
 
 
-=item C<@Active_MakeClicky>
+=item C<@ActiveMakeClicky>
 
 MakeClicky detects various formats of data in headers and email
 messages, and extends them with supporting links.  By default, RT
@@ -1096,7 +1096,7 @@ See F<share/html/Elements/MakeClicky> for documentation on how to add your own.
 
 =cut
 
-set(@Active_MakeClicky, qw());
+set(@ActiveMakeClicky, qw());
 
 =item C<$DefaultQueue>
 
