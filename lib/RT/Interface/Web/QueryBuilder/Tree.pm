@@ -51,6 +51,8 @@ use strict;
 use warnings;
 
 use base qw/Tree::Simple/;
+use Text::Naming::Convention qw/renaming/;
+
 
 =head1 name
 
@@ -246,7 +248,6 @@ sub parse_sql {
     my @results;
 
     my %field = %{ RT::Model::TicketCollection->new()->columns };
-    my %lcfield = map { ( lc($_) => $_ ) } keys %field;
 
     my $node = $self;
 
@@ -262,9 +263,9 @@ sub parse_sql {
         my ($main_key) = split /[.]/, $key;
 
         my $class;
-        if ( exists $lcfield{ lc $main_key } ) {
-            $class = $field{ $lcfield{ lc $main_key } }->[0];
-            $key =~ s/^[^.]+/ $lcfield{ lc $main_key } /e;
+        if ( exists $field{ $main_key } ) {
+            $class = $field{ $main_key }->[0];
+            $key =~ s/^[^.]+/renaming($main_key,{ convention => '_'})/e;
         }
         unless ($class) {
             push @results,
