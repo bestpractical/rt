@@ -43,7 +43,8 @@ $cgms->Limit(
     ENTRYAGGREGATOR => 'AND',
 );
 
-while ( my $rec = $cgms->Next ) {
+FetchNext( $cgms, 'init' );
+while ( my $rec = FetchNext( $cgms ) ) {
     $RT::Handle->BeginTransaction;
     my ($status) = $rec->Delete;
     unless ($status) {
@@ -51,5 +52,21 @@ while ( my $rec = $cgms->Next ) {
         exit 1;
     }
     $RT::Handle->Commit;
+}
+
+use constant PAGE_SIZE => 1000;
+sub FetchNext {
+    my ($objs, $init) = @_;
+    if ( $init ) {
+        $objs->RowsPerPage( PAGE_SIZE );
+        $objs->FirstPage;
+        return;
+    }
+
+    my $obj = $objs->Next;
+    return $obj if $obj;
+    $objs->RedoSearch;
+    $objs->FirstPage;
+    return $objs->Next;
 }
 
