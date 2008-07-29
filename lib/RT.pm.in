@@ -597,7 +597,7 @@ sub InitPluginPaths {
 
     my @tmp_inc;
     for (@INC) {
-        if ( $_ eq $RT::LocalLibPath) {
+        if ( Cwd::realpath($_) eq $RT::LocalLibPath) {
             push @tmp_inc, $_, @lib_dirs;
         } else {
             push @tmp_inc, $_;
