@@ -51,214 +51,7 @@ use strict;
 use warnings;
 
 require UNIVERSAL::require;
-my %Meta = (
-    DatabaseType => {
-        widget          => '/Widgets/Form/Select',
-        widget_arguments => {
-            description => 'Database type',    # loc
-            default      => 0,
-            values      => [
-                grep {
-                    my $m = 'DBD::' . $_;
-                    $m->require ? 1 : 0
-                  } qw/mysql Pg SQLite Oracle/
-            ],
-            values_label => {
-                mysql  => 'MySQL',             #loc
-                Pg     => 'PostgreSQL',        #loc
-                SQLite => 'SQLite',            #loc
-                Oracle => 'Oracle',            #loc
-            },
-        },
-    },
-    DatabaseHost => {
-        widget          => '/Widgets/Form/String',
-        widget_arguments => {
-            description  => 'Database host',                          #loc
-            default      => 1,
-            default_label => "Keep 'localhost' if you're not sure",    #loc
-            hints =>
-              "The domain name of your database server (like 'db.example.com')."
-            ,                                                         #loc
-        },
-    },
-    DatabasePort => {
-        widget          => '/Widgets/Form/Integer',
-        widget_arguments => {
-            description => 'Database port',                           #loc
-            default     => 1,
-            default_label =>
-              'Leave empty to use the default value for your database',    #loc
-        },
-    },
-    DatabaseName => {
-        widget          => '/Widgets/Form/String',
-        widget_arguments => {
-            description => 'Database name',                                #loc
-        },
-    },
-    DatabaseAdmin => {
-        widget          => '/Widgets/Form/String',
-        widget_arguments => {
-            default => 1,
-            hints =>
-"Leave this alone to use the default dba username for your database type"
-            ,                                                              #loc
-            description  => 'DBA username',                                # loc
-            default_label => '',
-        },
-    },
-    DatabaseAdminPassword => {
-        widget          => '/Widgets/Form/String',
-        widget_arguments => {
-            description  => 'DBA password',                                #loc
-            default_label => "The DBA's database password",                 #loc
-            type         => 'password',
-            hints =>
-"You must provide the dba's password so we can create the RT database and user.",
-        },
-    },
-    DatabaseUser => {
-        widget          => '/Widgets/Form/String',
-        widget_arguments => {
-            description => 'Database username for RT',                     #loc
-            hints =>
-'RT will connect to the database using this user.  It will be created for you.'
-            ,                                                              #loc
-        },
-    },
-    DatabasePassword => {
-        widget          => '/Widgets/Form/String',
-        widget_arguments => {
-            description => 'Database password for RT',                     #loc
-            type        => 'password',
-            hints => 'The password RT should use to connect to the database.',
-        },
-    },
-    DatabaseRequireSSL => {
-        widget          => '/Widgets/Form/Boolean',
-        widget_arguments => {
-            description => 'Use SSL?',                                     # loc
-        },
-    },
-    rtname => {
-        widget          => '/Widgets/Form/String',
-        widget_arguments => {
-            description => 'Site name',                                    #loc
-            hints =>
-'RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)' #loc
-        },
-    },
-    MinimumPasswordLength => {
-        widget          => '/Widgets/Form/Integer',
-        widget_arguments => {
-            description => 'Minimum password length',    #loc
-        },
-    },
-    Password => {
-        widget          => '/Widgets/Form/String',
-        widget_arguments => {
-            description => 'Administrative password',    #loc
-            hints =>
-'RT will create a user called "root" and set this as their password'
-            ,                                            #loc
-            type => 'password',
-        },
-    },
-    OwnerEmail => {
-        widget          => '/Widgets/Form/String',
-        widget_arguments => {
-            description => 'RT Administrator Email',     #loc
-            hints =>
-"When RT can't handle an email message, where should it be forwarded?"
-            ,                                            #loc
-        },
-    },
-    comment_address => {
-        widget          => '/Widgets/Form/String',
-        widget_arguments => {
-            description => 'Comment address',            #loc
-            hints =>
-'the default addresses that will be listed in From: and Reply-To: headers of comment mail.' #loc
-        },
-    },
-    correspond_address => {
-        widget          => '/Widgets/Form/String',
-        widget_arguments => {
-            description => 'Correspond address',    #loc
-            hints =>
-'the default addresses that will be listed in From: and Reply-To: headers of correspondence mail.' #loc
-        },
-    },
-    SendmailPath => {
-        widget          => '/Widgets/Form/String',
-        widget_arguments => {
-            hints       => 'Where to find your sendmail binary.',    #loc
-            description => 'Path to sendmail',                       #loc
-        },
-    },
-    WebDomain => {
-        widget          => '/Widgets/Form/String',
-        widget_arguments => {
-            description => 'Domain name',                            #loc
-            hints =>
-"Don't include http://, just something like 'localhost', 'rt.example.com'"
-            ,                                                        #loc
-        },
-    },
-    WebPort => {
-        widget          => '/Widgets/Form/Integer',
-        widget_arguments => {
-            description => 'Web port',                               #loc
-            hints =>
-              'which port your web server will listen to, e.g. 8080',    #loc
-        },
-    },
-
-);
-
-my $HAS_DATETIME_TZ = eval { require DateTime::TimeZone };
-
-if ($HAS_DATETIME_TZ) {
-    $Meta{Timezone} = {
-        widget          => '/Widgets/Form/Select',
-        widget_arguments => {
-            description => 'Timezone',                                   #loc
-            Callback    => sub {
-                my $ret;
-                $ret->{Values} = [ '', DateTime::TimeZone->all_names ];
-
-                my $has_datetime = eval { require DateTime };
-                if ($has_datetime) {
-                    my $dt = DateTime->now;
-                    for my $tz ( DateTime::TimeZone->all_names ) {
-                        $dt->set_time_zone($tz);
-                        $ret->{ValuesLabel}{$tz} =
-                          $tz . ' ' . $dt->strftime('%z');
-                    }
-                }
-                $ret->{ValuesLabel}{''} = 'System Default';    #loc
-
-                return $ret;
-            },
-        },
-    };
-}
-else {
-    $Meta{Timezone} = {
-        widget          => '/Widgets/Form/String',
-        widget_arguments => {
-            description => 'Timezone',                         #loc
-        },
-    };
-}
-
-sub meta {
-    my $class = shift;
-    my $type  = shift;
-    return $Meta{$type} if $type;
-    return \%Meta;
-}
+use Text::Naming::Convention qw/renaming/;
 
 sub current_value {
     my $class = shift;
@@ -267,8 +60,8 @@ sub current_value {
 
     return undef unless $type;
     return $RT::Installer
-      && exists $RT::Installer->{InstallConfig}{$type}
-      ? $RT::Installer->{InstallConfig}{$type}
+      && exists $RT::Installer->{config}{$type}
+      ? $RT::Installer->{config}{$type}
       : scalar RT->config->get($type);
 }
 
@@ -300,22 +93,28 @@ sub save_config {
     }
 
     # make organization the same as rtname
-    $RT::Installer->{InstallConfig}{organization} =
-      $RT::Installer->{InstallConfig}{rtname};
+    $RT::Installer->{config}{organization} =
+      $RT::Installer->{config}{rtname};
 
     if ( open my $fh, '>', $file ) {
-        for ( keys %{ $RT::Installer->{InstallConfig} } ) {
+        for ( keys %{ $RT::Installer->{config} } ) {
 
             # we don't want to store root's password in config.
-            next if $_ eq 'Password';
+            next if $_ eq 'password';
 
-            $RT::Installer->{InstallConfig}{$_} = ''
-              unless defined $RT::Installer->{InstallConfig}{$_};
+            $RT::Installer->{config}{$_} = ''
+              unless defined $RT::Installer->{config}{$_};
+
+            if ( $_ ne 'rtname' && $_ !~ /[A-Z]/ ) {
+
+                # we need to rename it to be UpperCamelCase
+                $_ = renaming( $_, { convention => 'UpperCamelCase' } );
+            }
 
             # remove obsolete settings we'll add later
             $content =~ s/^\s* set \s* \( \s* \$$_ .*$//xm;
 
-            $content .= "set( \$$_, '$RT::Installer->{InstallConfig}{$_}' );\n";
+            $content .= "set( \$$_, '$RT::Installer->{config}{$_}' );\n";
         }
         $content .= "1;\n";
         print $fh $content;
