@@ -340,11 +340,10 @@ sub build_column_definition {
     $res .= 'NULL';
     my $default = column_info(@info{qw(TABLE_NAME COLUMN_NAME)})->{default};
     if ( defined $default ) {
-        $default = $dbh->quote($default);
-    } else {
-        $default = 'NULL';
+        $res .= ' DEFAULT '. $dbh->quote($default);
+    } elsif ( $info{'NULLABLE'} ) {
+        $res .= ' DEFAULT NULL';
     }
-    $res .= ' DEFAULT '. $default;
     $res .= ' AUTO_INCREMENT' if $info{'mysql_is_auto_increment'};
     return $res;
 }
