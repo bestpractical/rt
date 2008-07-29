@@ -114,6 +114,7 @@ EOF
 
     RT->InstallMode(1);
 } else {
+    RT->InitPluginPaths();
     RT->ConnectToDatabase();
     RT->InitSystemObjects();
     RT->InitClasses();
