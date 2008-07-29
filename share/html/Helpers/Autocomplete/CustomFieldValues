@@ -56,7 +56,7 @@
 <%INIT>
 my ($CustomField, $Value);
 while( my($k, $v) = each %ARGS ) {
-    next unless $k =~ /^Object-.*?-\d*-CustomField-(\d+)-Values$/;
+    next unless $k =~ /^Object-.*?-\d*-CustomField-(\d+)-Values?$/;
     ($CustomField, $Value) = ($1, $v);
     last;
 }
