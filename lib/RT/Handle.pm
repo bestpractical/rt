@@ -102,15 +102,22 @@ Takes nothing.
 sub Connect {
     my $self = shift;
 
-    if ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
+    my $db_type = RT->Config->Get('DatabaseType');
+    if ( $db_type eq 'Oracle' ) {
         $ENV{'NLS_LANG'} = "AMERICAN_AMERICA.AL32UTF8";
         $ENV{'NLS_NCHAR'} = "AL32UTF8";
     }
 
     $self->SUPER::Connect(
-            User => RT->Config->Get('DatabaseUser'),
+        User => RT->Config->Get('DatabaseUser'),
         Password => RT->Config->Get('DatabasePassword'),
-        );
+    );
+
+    if ( $db_type eq 'mysql' ) {
+        my $version = $self->DatabaseVersion;
+        ($version) = $version =~ /^(\d+\.\d+)/;
+        $self->dbh->do("SET NAMES 'utf8'") if $version >= 4.1;
+    }
 
     $self->dbh->{'LongReadLen'} = RT->Config->Get('MaxAttachmentSize');
 }
