@@ -65,26 +65,14 @@
 </p>
 </div>
 
-<form method="post">
-<input type="hidden" value="1" name="run" />
-<& /Elements/Submit, label => 'Finish Installation' &>
-</form>
+<% Jifty->web->form->start %>
+<% Jifty->web->form->next_page( url => '/' ) %>
+<% $action->hidden( 'finish' ) %>
+<% Jifty->web->form->submit( label => _('Finish')) %>
+<% Jifty->web->form->end %>
 
 </&>
 <%init>
-if ( $run ) {
-    RT->install_mode(0);
-    RT->init_system_objects();
-    RT->init();
-
-    my $root = RT::Model::User->new( RT->system_user );
-    $root->load('root');
-    $root->set_password( $RT::Installer->{InstallConfig}{Password} );
-
-    RT::Interface::Web::redirect(RT->config->get('WebURL'));
-}
+my $action = Jifty->web->new_action( class => 'Install' );
+my @fields = 'finish';
 </%init>
-
-<%args>
-$run => undef
-</%args>

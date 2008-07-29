@@ -65,132 +65,110 @@
 
 % }
 
-<form method="post">
-<& /Widgets/BulkEdit, types => \@Types, meta => $RT::Installer->{Meta},
-    current_value => { %{RT::Installer->current_values(@Types)},
-        database_admin =>
-            RT::Installer->current_value( 'DatabaseAdmin' ) ||
-            $RT::Installer->{InstallConfig}{DatabaseAdmin} ||
-            ( $db_type eq 'mysql' ? 'root'
-              : $db_type eq 'Pg' ? 'postgres'
-              : '' ),
-        }
-                    &>
-<input type="hidden" name="run" value="1">
-
-% if ( @results && !@errors ) {
-<& /Elements/Submit, label => _('Next: ') . _('Customize Basics'),
-back => 1, back_label => _('Back: ') . _('Select Database Type'),
-name => 'next' &>
-% } else {
-<& /Elements/Submit, label => _('Check Database Connectivity'),
-back => 1, back_label => _('Back: ') . _('Select Database Type')
-&>
+<% Jifty->web->form->start %>
+<% Jifty->web->form->next_page( url => '/Install/Basics.html' ) %>
+% for my $field ( @fields ) {
+<% $action->form_field( $field ) %>
 % }
-
-</form>
+<% Jifty->web->form->submit( label => 'Next' ) %>
+<% Jifty->web->form->end %>
 </&>
 
 <%init>
-my (@results, @errors);
-my $ConnectionSucceeded;
+my $action = Jifty->web->new_action( class => 'Install' );
+my @fields = 'database_name';
+my $db_type = $RT::Installer->{config}{database_type};
 
-my @Types = 'DatabaseName';
-
-my $db_type = $RT::Installer->{InstallConfig}{DatabaseType};
-
-unless ( $db_type eq 'SQLite' ) {
-    push @Types, 'DatabaseHost', 'DatabasePort', 'DatabaseAdmin',
-        'DatabaseAdminPassword', 'DatabaseUser', 'DatabasePassword';
+if ( $db_type ne 'SQLite' ) {
+    push @fields, 'database_host', 'database_port', 'database_admin',
+         'database_admin_password', 'database_user', 'database_password';
 }
+
 if ( $db_type eq 'Pg' ) {
-    push @Types, 'DatabaseRequireSSL';
+    push @fields, 'DatabaseRequireSSL';
 }
 
 
-if ( $run ) {
-
-    $m->comp('/Widgets/BulkProcess', types => \@Types, arguments => \%ARGS, 
-            store => $RT::Installer->{InstallConfig}, 
-            meta => $RT::Installer->{Meta}, keep_undef => 1 ); 
-    if ( $back ) {
-        RT::Interface::Web::redirect(RT->config->get('WebURL') .
-'Install/DatabaseType.html');
-    }
-    
-    if ( $ARGS{next} ) {
-        RT::Interface::Web::redirect(RT->config->get('WebURL') .
-'Install/Basics.html');
-    }
-    my ( $status, $msg ) = RT::Installer->save_config;
-    if ( $status ) {
-        delete $INC{'RT_SiteConfig.pm'};
-        RT->load_config;
-        RT::Handle->finalize_database_type();
-    # dba connect systemdsn
-        my $dbh = DBI->connect(
-            RT::Handle->system_dsn, $ARGS{database_admin}, $ARGS{database_admin_password}, { RaiseError => 0, PrintError => 0 },
-        );
-    
-        if ( $dbh ) {
-            push @results, _('Connection succeeded');
-            # dba connect dsn, which has table info
-            $dbh = DBI->connect(
-                RT::Handle->DSN, $ARGS{database_admin}, $ARGS{database_admin_password}, { RaiseError => 0, PrintError => 0 },
-            );
-    
-            if ( $dbh ) {
-                # check if table Users exists
-                eval {
-                    my $dbh = DBI->connect(
-                        RT::Handle->DSN,
-                        $ARGS{database_admin},
-                        $ARGS{database_admin_password},
-                        { RaiseError => 1, PrintError => 0 },
-                    );
-
-                    my $sth = $dbh->prepare('select * from Users');
-                };
-
-                unless ( $@ ) {
-    
-                    my $sth = $dbh->prepare('select id from Users where Name=?');
-                    $sth->execute('RT_System'); 
-                    if ( $sth->fetchrow_array ) {
-                        $RT::Installer->{DatabaseAction} = 'none';
-                        push @results, _("%1 appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customez RT by clicking 'Customize Basics' below", $RT::DatabaseName);
-                    }
-                    else {
-                        $RT::Installer->{DatabaseAction} = 'acl,coredata,insert';
-                        push @results, _("%1 already exists and has RT's tables in place, but does not contain RT's metadata. The 'Initialize Database' step later on can insert metadata into this existing database. If this is acceptable, click 'Customize Basics' below to continue customizing RT.", $RT::DatabaseName);
-                    }
-                }
-                else {
-                    $RT::Installer->{DatabaseAction} = 'schema,acl,coredata,insert';
-                    push @results, _("%1 already exists, but does not contain RT's tables or metadata. The 'Initialize Database' step later on can insert tables and metadata into this existing database. if this is acceptable, click 'Customize Basic' below to continue customizing RT.", $RT::DatabaseName );
-                }
-
-            }
-            else {
-                $RT::Installer->{DatabaseAction} =
-    'create,schema,acl,coredata,insert';
-            }
-        }
-        else {
-            $RT::Installer->{DatabaseAction} = 'error';
-            push @errors, _("Failed to connect to database: %1",
-                    $DBI::errstr );
-        }
-    }
-    else {
-        push @results, _($msg);
-    }
-
-}
+my (@results, @errors);
+#my $ConnectionSucceeded;
+#if ( $run ) {
+#
+#    $m->comp('/Widgets/BulkProcess', types => \@Types, arguments => \%ARGS, 
+#            store => $RT::Installer->{InstallConfig}, 
+#            meta => $RT::Installer->{Meta}, keep_undef => 1 ); 
+#    if ( $back ) {
+#        RT::Interface::Web::redirect(RT->config->get('WebURL') .
+#'Install/DatabaseType.html');
+#    }
+#    
+#    if ( $ARGS{next} ) {
+#        RT::Interface::Web::redirect(RT->config->get('WebURL') .
+#'Install/Basics.html');
+#    }
+#    my ( $status, $msg ) = RT::Installer->save_config;
+#    if ( $status ) {
+#        delete $INC{'RT_SiteConfig.pm'};
+#        RT->load_config;
+#        RT::Handle->finalize_database_type();
+#    # dba connect systemdsn
+#        my $dbh = DBI->connect(
+#            RT::Handle->system_dsn, $ARGS{database_admin}, $ARGS{database_admin_password}, { RaiseError => 0, PrintError => 0 },
+#        );
+#    
+#        if ( $dbh ) {
+#            push @results, _('Connection succeeded');
+#            # dba connect dsn, which has table info
+#            $dbh = DBI->connect(
+#                RT::Handle->DSN, $ARGS{database_admin}, $ARGS{database_admin_password}, { RaiseError => 0, PrintError => 0 },
+#            );
+#    
+#            if ( $dbh ) {
+#                # check if table Users exists
+#                eval {
+#                    my $dbh = DBI->connect(
+#                        RT::Handle->DSN,
+#                        $ARGS{database_admin},
+#                        $ARGS{database_admin_password},
+#                        { RaiseError => 1, PrintError => 0 },
+#                    );
+#
+#                    my $sth = $dbh->prepare('select * from Users');
+#                };
+#
+#                unless ( $@ ) {
+#    
+#                    my $sth = $dbh->prepare('select id from Users where Name=?');
+#                    $sth->execute('RT_System'); 
+#                    if ( $sth->fetchrow_array ) {
+#                        $RT::Installer->{DatabaseAction} = 'none';
+#                        push @results, _("%1 appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customez RT by clicking 'Customize Basics' below", $RT::DatabaseName);
+#                    }
+#                    else {
+#                        $RT::Installer->{DatabaseAction} = 'acl,coredata,insert';
+#                        push @results, _("%1 already exists and has RT's tables in place, but does not contain RT's metadata. The 'Initialize Database' step later on can insert metadata into this existing database. If this is acceptable, click 'Customize Basics' below to continue customizing RT.", $RT::DatabaseName);
+#                    }
+#                }
+#                else {
+#                    $RT::Installer->{DatabaseAction} = 'schema,acl,coredata,insert';
+#                    push @results, _("%1 already exists, but does not contain RT's tables or metadata. The 'Initialize Database' step later on can insert tables and metadata into this existing database. if this is acceptable, click 'Customize Basic' below to continue customizing RT.", $RT::DatabaseName );
+#                }
+#
+#            }
+#            else {
+#                $RT::Installer->{DatabaseAction} =
+#    'create,schema,acl,coredata,insert';
+#            }
+#        }
+#        else {
+#            $RT::Installer->{DatabaseAction} = 'error';
+#            push @errors, _("Failed to connect to database: %1",
+#                    $DBI::errstr );
+#        }
+#    }
+#    else {
+#        push @results, _($msg);
+#    }
+#
+#}
 
 </%init>
-
-<%args>
-$run => undef
-$back => undef
-</%args>

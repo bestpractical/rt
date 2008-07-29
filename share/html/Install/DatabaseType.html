@@ -62,29 +62,13 @@
 </p>
 </div>
 
-<form method="post">
-<& /Widgets/BulkEdit, types => \@Types, meta => $RT::Installer->{Meta},
-    current_value => RT::Installer->current_values(@Types) &>
+<% Jifty->web->form->start %>
+<% Jifty->web->form->next_page( url => '/Install/DatabaseDetails.html' ) %>
+<% $action->form_field( 'database_type' ) %>
+<% Jifty->web->form->submit( label => 'Next' ) %>
+<% Jifty->web->form->end %>
 
-<input type="hidden" name="run" value="1">
-<& /Elements/Submit, label => _('Next: ') . _( 'Check your database credentials') &>
-</form>
 </&>
 <%init>
-
-my @Types = 'DatabaseType';
-
-if ( $run ) {
-
-    $m->comp('/Widgets/BulkProcess', types => \@Types, arguments => \%ARGS, meta
-            => $RT::Installer->{Meta}, store => $RT::Installer->{InstallConfig} );
-
-    RT::Interface::Web::redirect(RT->config->get('WebURL') .  'Install/DatabaseDetails.html');
-}
-
-
+my $action = Jifty->web->new_action( class => 'Install' );
 </%init>
-
-<%args>
-$run => undef
-</%args>

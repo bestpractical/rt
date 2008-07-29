@@ -47,55 +47,21 @@
 %# END BPS TAGGED BLOCK }}}
 <&| Elements/Wrapper, title => _('Step %1 of %2: ', 3, 7) . _('Customize Basics') &> 
 
-<& Elements/Errors, errors => \@errors &>
-
 <p>
 <&|/l&>These configuration options cover some of the basics needed to get RT up and running.  We need to know the name of your RT installation and the domain name where RT will live.  You will also need to set a password for your defauly administrative user.</&>
 </p>
 
-<form method="post">
-<& /Widgets/BulkEdit, types => \@Types,meta => $RT::Installer->{Meta},
-    current_value => RT::Installer->current_values(@Types) &>
-
-<input type="hidden" name="run" value="1">
-<& /Elements/Submit, label => _('Next: ') . _('Customize Email Configuration'),back => 1, back_label => _('Back: ' ) . _( 'Customize Database Details') &>
-</form>
+<% Jifty->web->form->start %>
+<% Jifty->web->form->next_page( url => '/Install/Sendmail.html' ) %>
+% for my $field ( @fields ) {
+<% $action->form_field( $field ) %>
+% }
+<% Jifty->web->form->submit( label => _('Email Configuration')) %>
+<% Jifty->web->form->end %>
 </&>
 
 
 <%init>
-my @errors;
-
-my @Types = qw/rtname WebDomain WebPort Password/;
-
-if ( $run ) {
-
-    $m->comp('/Widgets/BulkProcess', types => \@Types, arguments => \%ARGS,
-            store => $RT::Installer->{InstallConfig},
-            meta => $RT::Installer->{Meta} );
-    
-    if ( $ARGS{web_port} && $ARGS{web_port} !~ /^\d+$/ ) {
-        push @errors, _("Invalid %1: it should be a number", 'WebPort');
-    }
-
-    unless ( $ARGS{password} ) {
-        push @errors, _("You must enter an Administrative password");
-    }
-
-    if ( $back ) {
-        RT::Interface::Web::redirect(RT->config->get('WebURL') .
-'Install/DatabaseDetails.html');
-    }
-
-    unless ( @errors ) {
-        RT::Interface::Web::redirect(RT->config->get('WebURL') .
-'Install/Sendmail.html');
-    }
-}
-
+my $action = Jifty->web->new_action( class => 'Install' );
+my @fields = qw/rtname web_domain web_port password/;
 </%init>
-
-<%args>
-$run => undef
-$back => undef
-</%args>

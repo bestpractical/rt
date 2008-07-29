@@ -45,75 +45,27 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| Elements/Wrapper, title => _('Step %1 of %2: ', 5, 7 ) . _('Customize Email Addresses') &> 
-
-<& Elements/Errors, errors => \@errors &>
+<&| Elements/Wrapper, Title => loc('Step [_1] of [_2]: ', 5, 7 ) . loc('Customize Email Addresses') &> 
 
 <p><&|/l&>Help us set up some useful defaults for RT.</&></p>
 
 <p><&|/l&>When RT sends an email it sets the From: and Reply-To: headers so users can add to the conversation by just hitting Reply in their mail client.  It uses different addresses for Replies and Comments.  These can be changed for each of your queues.  These addresses will need to be configured to use the <tt>rt-mailgate</tt> program.</&></p>
 
 <p><&|/l&>By default, RT will use the timezone of your system.  This lets you set a global default for the display of dates and times in RT.  Your users can choose a different Timezone in their preferences.</&></p>
-<form method="post">
-<& /Widgets/BulkEdit, types => \@Types,meta => $RT::Installer->{Meta},
-    current_value => RT::Installer->current_values(@Types)
-&>
 
-<input type="hidden" name="run" value="1">
-<& /Elements/Submit, label => $RT::Installer->{DatabaseAction} eq 'none' ?
-_('Next: ') . _('Finish') : _('Next: ') . _( 'Initialize Database'),
-    back => 1, back_label => _('Back: ' ) . _('Customize Email Configuration') &>
-</form>
+
+<% Jifty->web->form->start %>
+<% Jifty->web->form->next_page( url => 
+        $RT::Installer->{database_action} eq 'none' ?
+        '/Install/Finish.html' : '/Install/Initialize.html' ) %>
+% for my $field ( @fields ) {
+<% $action->form_field( $field ) %>
+% }
+<% Jifty->web->form->submit( label => _('Initialize Database')) %>
+<% Jifty->web->form->end %>
+
 </&>
 <%init>
-my @errors;
-
-my @Types = qw/comment_address correspond_address Timezone/;
-
-if ( $run ) {
-
-    $m->comp('/Widgets/BulkProcess', types => \@Types, arguments => \%ARGS,
-            store => $RT::Installer->{InstallConfig},
-            meta => $RT::Installer->{Meta}, keep_undef => 1 );
-
-    if ( $back ) {
-        RT::Interface::Web::redirect(RT->config->get('WebURL') .
-'Install/Sendmail.html');
-    }
-
-    for ( qw/comment_address correspond_address/ ) {
-        if ( $ARGS{$_} && $ARGS{$_} !~ /.+@.+/ ) {
-            push @errors,
-                _("Invalid %1: '%2' doesn't look like an email address",
-                $_, $ARGS{$_});
-        }
-    }
-
-    unless ( @errors ) {
-        my ( $status, $msg ) = RT::Installer->save_config;
-
-        if ( $status ) {
-            delete $INC{'RT_SiteConfig.pm'};
-            RT->load_config;
-
-            if ( $RT::Installer->{DatabaseAction} ne 'none' ) {
-                RT::Interface::Web::redirect(RT->config->get('WebURL') .
-'Install/Initialize.html');
-            }
-            else {
-                RT::Interface::Web::redirect(RT->config->get('WebURL') .
-'Install/Finish.html');
-            }
-        }
-        else {
-            push @errors, _($msg);
-        }
-    }
-}
-
+my @fields = qw/comment_address correspond_address timezone/;
+my $action = Jifty->web->new_action( class => 'Install' );
 </%init>
-
-<%args>
-$run => undef
-$back => undef
-</%args>

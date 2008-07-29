@@ -45,61 +45,23 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&|Elements/Wrapper, title => _('Step %1 of %2: ', 4, 7 ) . _('Email Configuration') &> 
-
-<& Elements/Errors, errors => \@errors &>
+<&|Elements/Wrapper, Title => loc('Step [_1] of [_2]: ', 4, 7 ) . loc('Email Configuration') &> 
 
 <p>
 <&|/l&>RT can communicate with your users about new tickets or new correspondence on tickets. Tell us where to find sendmail (or a sendmail compatible binary such as the one provided by postifx).  RT also needs to know who to notify when someone sends invalid email.  This must not be an address that feeds back into RT.</&>
 </p>
 
-<form method="post">
-<& /Widgets/BulkEdit, types => \@Types,meta => $RT::Installer->{Meta},
-    current_value => RT::Installer->current_values(@Types)
-&>
+<% Jifty->web->form->start %>
+<% Jifty->web->form->next_page( url => '/Install/Global.html' ) %>
+% for my $field ( @fields ) {
+<% $action->form_field( $field ) %>
+% }
+<% Jifty->web->form->submit( label => _('Customize Global Defaults') ) %>
 
-<input type="hidden" name="run" value="1">
-<& /Elements/Submit, label => _('Next: ') . _( 'Customize Global Defaults'),
-    back => 1, back_label => _('Back: ' ) . _('Customize Basics') &>
-</form>
+<% Jifty->web->form->end %>
+
 </&>
 <%init>
-my @errors;
-
-my @Types = qw/SendmailPath OwnerEmail/;
-
-if ( $run ) {
-
-    $m->comp('/Widgets/BulkProcess', types => \@Types, arguments => \%ARGS,
-            store => $RT::Installer->{InstallConfig},
-            meta => $RT::Installer->{Meta}, keep_undef => 1);
-
-    if ( $back ) {
-        RT::Interface::Web::redirect(RT->config->get('WebURL') .
-'Install/Basics.html');
-    }
-
-
-    unless ( -e $ARGS{sendmail_path} ) {
-        push @errors, _( "%1 doesn't exist.", $ARGS{sendmail_path} );
-    }
-
-    if ( ! $ARGS{owner_email} || $ARGS{owner_email} !~ /.+@.+/ ) {
-        push @errors,
-            _("Invalid %1: that doesn't look like an email address",
-            'Administrator Email');
-    }
-
-
-    unless ( @errors ) {
-        RT::Interface::Web::redirect(RT->config->get('WebURL') .
-'Install/Global.html');
-    }
-}
-
+my $action = Jifty->web->new_action( class => 'Install' );
+my @fields = qw/sendmail_path owner_email/;
 </%init>
-
-<%args>
-$run => undef 
-$back => undef
-</%args>

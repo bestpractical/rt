@@ -70,39 +70,25 @@
 <&|/l&>If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p></&>
 </div>
 
-<form method="post">
-<input type="hidden" name="run" value="1" />
-<& /Elements/Submit, label => _( "Let's go!") &>
-</form>
+<% Jifty->web->form->start %>
+<% Jifty->web->form->next_page( url => '/Install/DatabaseType.html' ) %>
+<% $action->hidden('start') %>
+<% Jifty->web->form->submit(label => _("Let's go") ) %>
+<% Jifty->web->form->end %>
+
 % }
 </&>
 <%init>
 my @errors;
 my $locked;
-    my $file = File::Spec->catfile( $RT::EtcPath, 'RT_SiteConfig.pm' );
-    $locked = 1 unless -w $file;
-    
-    if ( $locked ) {
-        push @errors, _("Config file %1 is locked", $file);
-    }
-    elsif ( $run ) {
-        $RT::Installer->{InstallConfig} ||= {};
-        for my $field  ( qw/DatabaseType DatabaseName DatabaseHost DatabasePort
-                DatabaseUser DatabaseRequireSSL rtname
-                organization TimeZone comment_address correspond_address 
-                SendmailPath WebDomain WebPort/ ) {
-            $RT::Installer->{InstallConfig}{$field} ||= RT->config->get($field);
-        }
+my $file = File::Spec->catfile( $RT::EtcPath, 'RT_SiteConfig.pm' );
+$locked = 1 unless -w $file;
 
-        for my $field ( qw/OwnerEmail Password DatabasePassword
-                DatabaseAdminPassword/ ) {
-            # stuff we don't want to keep null
-            $RT::Installer->{InstallConfig}{$field} = '';
-        }
+if ( $locked ) {
+    push @errors, _("Config file %1 is locked", $file);
+}
 
-        RT::Interface::Web::redirect(RT->config->get('WebURL') .  'Install/DatabaseType.html');
-    
-        }
+my $action = Jifty->web->new_action( class => 'Install' );
 </%init>
 
 <%args>
