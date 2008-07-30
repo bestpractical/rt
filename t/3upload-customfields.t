@@ -3,38 +3,72 @@
 use strict;
 use warnings;
 
-use Test::More tests => 14;
-BEGIN { require 't/utils.pl' }
+use Test::More;
+eval 'use RT::Test; 1'
+    or plan skip_all => 'requires 3.8 to run tests.';
+plan tests => 25;
 
-BEGIN {
-    use RT;
-    RT::LoadConfig;
-    RT::Init;
+{
+my ($ret, $msg) = $RT::Handle->InsertSchema(undef,'etc/');
+ok($ret,"Created Schema: ".($msg||''));
+($ret, $msg) = $RT::Handle->InsertACL(undef,'etc/');
+ok($ret,"Created ACL: ".($msg||''));
 }
-use Test::WWW::Mechanize;
-BEGIN { 
-$RT::WebPort ||= '80';
-$RT::WebPath ||= ''; # Shut up a warning
-};
-use constant BaseURL => "http://localhost:".$RT::WebPort.$RT::WebPath."/";
+
+RT->Config->Set('Plugins',qw(RT::FM));
+
+use RT;
 use constant ImageFile => $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
 use constant ImageFileContent => do {
     local $/;
-    open my $fh, '<', ImageFile or die $!;
+    open my $fh, '<', ImageFile or die ImageFile.$!;
     binmode($fh);
     scalar <$fh>;
 };
 
-my $m = Test::WWW::Mechanize->new;
+use RT::FM::Class;
+use RT::FM::Topic;
+my $class = RT::FM::Class->new($RT::SystemUser);
+my ($ret, $msg) = $class->Create('Name' => 'tlaTestClass-'.$$,
+			      'Description' => 'A general-purpose test class');
+ok($ret, "Test class created");
+
+# Create a hierarchy of test topics
+my $topic1 = RT::FM::Topic->new($RT::SystemUser);
+my $topic11 = RT::FM::Topic->new($RT::SystemUser);
+my $topic12 = RT::FM::Topic->new($RT::SystemUser);
+my $topic2 = RT::FM::Topic->new($RT::SystemUser);
+($ret, $msg) = $topic1->Create('Parent' => 0,
+			      'Name' => 'tlaTestTopic1-'.$$,
+			      'ObjectType' => 'RT::FM::Class',
+			      'ObjectId' => $class->Id);
+ok($ret, "Topic 1 created");
+($ret, $msg) = $topic11->Create('Parent' => $topic1->Id,
+			       'Name' => 'tlaTestTopic1.1-'.$$,
+			       'ObjectType' => 'RT::FM::Class',
+			       'ObjectId' => $class->Id);
+ok($ret, "Topic 1.1 created");
+($ret, $msg) = $topic12->Create('Parent' => $topic1->Id,
+			       'Name' => 'tlaTestTopic1.2-'.$$,
+			       'ObjectType' => 'RT::FM::Class',
+			       'ObjectId' => $class->Id);
+ok($ret, "Topic 1.2 created");
+($ret, $msg) = $topic2->Create('Parent' => 0,
+			      'Name' => 'tlaTestTopic2-'.$$,
+			      'ObjectType' => 'RT::FM::Class',
+			      'ObjectId' => $class->Id);
+ok($ret, "Topic 2 created");
+
+my ($url, $m) = RT::Test->started_ok;
 isa_ok($m, 'Test::WWW::Mechanize');
-ok(1, "Connecting to ".BaseURL);
-$m->get( BaseURL."?user=root;pass=password" );
+ok(1, "Connecting to $url"); 
+$m->get( "$url?user=root;pass=password" );
 $m->content_like(qr/Logout/, 'we did log in');
-$m->follow_link( text => 'Configuration' );
+$m->follow_link_ok( { text => 'Configuration' } );
 $m->title_is(q/RT Administration/, 'admin screen');
-$m->follow_link( text => 'Custom Fields' );
+$m->follow_link_ok( { text => 'Custom Fields' } );
 $m->title_is(q/Select a Custom Field/, 'admin-cf screen');
-$m->follow_link( text => 'New custom field' );
+$m->follow_link_ok( { text => 'Create' } );
 $m->submit_form(
     form_name => "ModifyCustomField",
     fields => {
@@ -57,6 +91,7 @@ my $tcf = pop(@names);
 $m->field( $tcf => 1 );         # Associate the new CF with this queue
 $m->field( $_ => undef ) for @names;    # ...and not any other. ;-)
 $m->submit;
+$m->save_content("3upload.html");
 
 $m->content_like( qr/Object created/, 'TCF added to the queue' );
 $m->follow_link( text => 'RTFM');
