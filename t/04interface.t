@@ -3,30 +3,30 @@
 use strict;
 use warnings;
 
-use Test::More tests => 39;
-BEGIN { require 't/utils.pl' }
+use Test::More;
+eval 'use RT::Test; 1'
+    or plan skip_all => 'requires 3.8 to run tests.';
 
-use lib "/opt/rt3/lib";
-BEGIN {
-    use RT;
-    RT::LoadConfig;
-    RT::Init;
+plan tests => 42;
+
+{
+my ($ret, $msg) = $RT::Handle->InsertSchema(undef,'etc/');
+ok($ret,"Created Schema: ".($msg||''));
+($ret, $msg) = $RT::Handle->InsertACL(undef,'etc/');
+ok($ret,"Created ACL: ".($msg||''));
 }
+
+RT->Config->Set('Plugins',qw(RT::FM));
 
 use RT::CustomField;
 use RT::EmailParser;
 use RT::Queue;
 use RT::Ticket;
-use Test::WWW::Mechanize;
 use_ok 'RT::FM::Class';
 use_ok 'RT::FM::Topic';
 use_ok 'RT::FM::Article';
 
-BEGIN {
-$RT::WebPort ||= '80';
-$RT::WebPath ||= ''; # Shut up a warning
-};
-use constant BaseURL => "http://localhost:".$RT::WebPort.$RT::WebPath."/";
+my ($url, $m) = RT::Test->started_ok;
 
 # Variables to test return values
 my ($ret, $msg);
@@ -156,8 +156,6 @@ ok($ret, "Test ticket for articles created: $msg");
 
 #### Right.  That's our data.  Now begin the real testing.
 
-my $url = BaseURL;
-my $m = Test::WWW::Mechanize->new;
 isa_ok($m, 'Test::WWW::Mechanize');
 ok(1, "Connecting to ".$url);
 $m->get( $url."?user=root;pass=password" );
@@ -167,18 +165,23 @@ $m->content_contains($article3->Name);
 $m->follow_link_ok( {text => $article3->Name}, 'RTFM -> '. $article3->Name );
 $m->title_is("Article #" . $article3->Id . ": " . $article3->Name);
 $m->follow_link_ok( { text => 'Modify'}, 'Article -> Modify' );
+
+{
 $m->content_like(qr/Refers to/, "found links edit box");
-my $turi = 't:'.$ticket->Id;
+my $ticket_id = $ticket->Id;
+my $turi = "t:$ticket_id";
 my $a1uri = 'a:'.$article1->Id;
 $m->submit_form(form_name => 'EditArticle',
 		fields => { $article3->Id.'-RefersTo' => $turi,
 			    'RefersTo-'.$article3->Id => $a1uri }
 		);
-$m->content_like(qr/Link created.*$turi/, "Ticket linkto was created");
-$m->content_like(qr/Link created.*$a1uri/, "Article linkfrom was created");
+
+$m->content_like(qr/Ticket.*$ticket_id/, "Ticket linkto was created");
+$m->content_like(qr/URI.*$a1uri/, "Article linkfrom was created");
+}
 
 # Now try to extract an article from a link.
-$m->get_ok($url."Ticket/Display.html?id=".$ticket->Id, 
+$m->get_ok($url."/Ticket/Display.html?id=".$ticket->Id, 
 	   "Loaded ticket display");
 $m->content_like(qr/Extract Article/, "Article extraction link shows up");
 $m->follow_link_ok( { text => 'Extract Article' }, '-> Extract Article' );
@@ -194,6 +197,7 @@ $m->click();
 $m->title_like(qr/Create a new article/, "got edit page from extraction");
 $m->submit_form(form_name => 'EditArticle');
 $m->title_like(qr/Modify article/);
+$m->save_content("04interface.html");
 $m->follow_link_ok( { text => 'Display' }, '-> Display' );
 $m->content_like(qr/Africa/, "Article content exist");
 $m->content_contains($ticket->Subject,
