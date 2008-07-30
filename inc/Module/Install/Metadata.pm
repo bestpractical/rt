@@ -6,30 +6,18 @@ use Module::Install::Base;
 
 use vars qw{$VERSION $ISCORE @ISA};
 BEGIN {
-	$VERSION = '0.72';
+	$VERSION = '0.70';
 	$ISCORE  = 1;
 	@ISA     = qw{Module::Install::Base};
 }
 
 my @scalar_keys = qw{
-	name
-	module_name
-	abstract
-	author
-	version
-	license
-	distribution_type
-	perl_version
-	tests
-	installdirs
+	name module_name abstract author version license
+	distribution_type perl_version tests installdirs
 };
 
 my @tuple_keys = qw{
-	configure_requires
-	build_requires
-	requires
-	recommends
-	bundles
+	configure_requires build_requires requires recommends bundles
 };
 
 sub Meta            { shift        }
@@ -45,60 +33,33 @@ foreach my $key (@scalar_keys) {
 	};
 }
 
-sub requires {
-	my $self = shift;
-	while ( @_ ) {
-		my $module  = shift or last;
-		my $version = shift || 0;
-		push @{ $self->{values}->{requires} }, [ $module, $version ];
-	}
-	$self->{values}{requires};
-}
+foreach my $key (@tuple_keys) {
+	*$key = sub {
+		my $self = shift;
+		return $self->{values}{$key} unless @_;
 
-sub build_requires {
-	my $self = shift;
-	while ( @_ ) {
-		my $module  = shift or last;
-		my $version = shift || 0;
-		push @{ $self->{values}->{build_requires} }, [ $module, $version ];
-	}
-	$self->{values}{build_requires};
-}
-
-sub configure_requires {
-	my $self = shift;
-	while ( @_ ) {
-		my $module  = shift or last;
-		my $version = shift || 0;
-		push @{ $self->{values}->{configure_requires} }, [ $module, $version ];
-	}
-	$self->{values}{configure_requires};
-}
-
-sub recommends {
-	my $self = shift;
-	while ( @_ ) {
-		my $module  = shift or last;
-		my $version = shift || 0;
-		push @{ $self->{values}->{recommends} }, [ $module, $version ];
-	}
-	$self->{values}{recommends};
-}
-
-sub bundles {
-	my $self = shift;
-	while ( @_ ) {
-		my $module  = shift or last;
-		my $version = shift || 0;
-		push @{ $self->{values}->{bundles} }, [ $module, $version ];
-	}
-	$self->{values}{bundles};
+		my @rv;
+		while (@_) {
+			my $module = shift or last;
+			my $version = shift || 0;
+			if ( $module eq 'perl' ) {
+				$version =~ s{^(\d+)\.(\d+)\.(\d+)}
+				             {$1 + $2/1_000 + $3/1_000_000}e;
+				$self->perl_version($version);
+				next;
+			}
+			my $rv = [ $module, $version ];
+			push @rv, $rv;
+		}
+		push @{ $self->{values}{$key} }, @rv;
+		@rv;
+	};
 }
 
 # Aliases for build_requires that will have alternative
 # meanings in some future version of META.yml.
-sub test_requires      { shift->build_requires(@_) }
-sub install_requires   { shift->build_requires(@_) }
+sub test_requires      { shift->build_requires(@_)  }
+sub install_requires   { shift->build_requires(@_)  }
 
 # Aliases for installdirs options
 sub install_as_core    { $_[0]->installdirs('perl')   }
@@ -119,7 +80,7 @@ sub dynamic_config {
 		warn "You MUST provide an explicit true/false value to dynamic_config, skipping\n";
 		return $self;
 	}
-	$self->{values}{dynamic_config} = $_[0] ? 1 : 0;
+	$self->{'values'}{'dynamic_config'} = $_[0] ? 1 : 0;
 	return $self;
 }
 
@@ -134,21 +95,19 @@ sub all_from {
 		die "all_from: cannot find $file from $name" unless -e $file;
 	}
 
-	# Some methods pull from POD instead of code.
-	# If there is a matching .pod, use that instead
-	my $pod = $file;
-	$pod =~ s/\.pm$/.pod/i;
-	$pod = $file unless -e $pod;
-
-	# Pull the different values
-	$self->name_from($file)         unless $self->name;
 	$self->version_from($file)      unless $self->version;
 	$self->perl_version_from($file) unless $self->perl_version;
-	$self->author_from($pod)        unless $self->author;
-	$self->license_from($pod)       unless $self->license;
-	$self->abstract_from($pod)      unless $self->abstract;
 
-	return 1;
+	# The remaining probes read from POD sections; if the file
+	# has an accompanying .pod, use that instead
+	my $pod = $file;
+	if ( $pod =~ s/\.pm$/.pod/i and -e $pod ) {
+		$file = $pod;
+	}
+
+	$self->author_from($file)   unless $self->author;
+	$self->license_from($file)  unless $self->license;
+	$self->abstract_from($file) unless $self->abstract;
 }
 
 sub provides {
@@ -224,10 +183,10 @@ sub no_index {
 
 sub read {
 	my $self = shift;
-	$self->include_deps( 'YAML::Tiny', 0 );
+	$self->include_deps( 'YAML', 0 );
 
-	require YAML::Tiny;
-	my $data = YAML::Tiny::LoadFile('META.yml');
+	require YAML;
+	my $data = YAML::LoadFile('META.yml');
 
 	# Call methods explicitly in case user has already set some values.
 	while ( my ( $key, $value ) = each %$data ) {
@@ -267,29 +226,16 @@ sub abstract_from {
 	 );
 }
 
-sub name_from {
-	my $self = shift;
-	if (
-		Module::Install::_read($_[0]) =~ m/
-		^ \s*
-		package \s*
-		([\w:]+)
-		\s* ;
-		/ixms
-	) {
-		my $name = $1;
-		$name =~ s{::}{-}g;
-		$self->name($name);
-	} else {
-		die "Cannot determine name from $_[0]\n";
-		return;
-	}
+sub _slurp {
+	local *FH;
+	open FH, "< $_[1]" or die "Cannot open $_[1].pod: $!";
+	do { local $/; <FH> };
 }
 
 sub perl_version_from {
-	my $self = shift;
+	my ( $self, $file ) = @_;
 	if (
-		Module::Install::_read($_[0]) =~ m/
+		$self->_slurp($file) =~ m/
 		^
 		use \s*
 		v?
@@ -297,18 +243,18 @@ sub perl_version_from {
 		\s* ;
 		/ixms
 	) {
-		my $perl_version = $1;
-		$perl_version =~ s{_}{}g;
-		$self->perl_version($perl_version);
+		my $v = $1;
+		$v =~ s{_}{}g;
+		$self->perl_version($1);
 	} else {
-		warn "Cannot determine perl version info from $_[0]\n";
+		warn "Cannot determine perl version info from $file\n";
 		return;
 	}
 }
 
 sub author_from {
-	my $self    = shift;
-	my $content = Module::Install::_read($_[0]);
+	my ( $self, $file ) = @_;
+	my $content = $self->_slurp($file);
 	if ($content =~ m/
 		=head \d \s+ (?:authors?)\b \s*
 		([^\n]*)
@@ -322,14 +268,15 @@ sub author_from {
 		$author =~ s{E<gt>}{>}g;
 		$self->author($author);
 	} else {
-		warn "Cannot determine author info from $_[0]\n";
+		warn "Cannot determine author info from $file\n";
 	}
 }
 
 sub license_from {
-	my $self = shift;
+	my ( $self, $file ) = @_;
+
 	if (
-		Module::Install::_read($_[0]) =~ m/
+		$self->_slurp($file) =~ m/
 		(
 			=head \d \s+
 			(?:licen[cs]e|licensing|copyright|legal)\b
@@ -364,23 +311,8 @@ sub license_from {
 		}
 	}
 
-	warn "Cannot determine license info from $_[0]\n";
+	warn "Cannot determine license info from $file\n";
 	return 'unknown';
-}
-
-sub install_script {
-	my $self = shift;
-	my $args = $self->makemaker_args;
-	my $exe  = $args->{EXE_FILES} ||= [];
-        foreach ( @_ ) {
-		if ( -f $_ ) {
-			push @$exe, $_;
-		} elsif ( -d 'script' and -f "script/$_" ) {
-			push @$exe, "script/$_";
-		} else {
-			die "Cannot find script '$_'";
-		}
-	}
 }
 
 1;

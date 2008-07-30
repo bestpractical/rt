@@ -7,7 +7,7 @@ use ExtUtils::MakeMaker ();
 
 use vars qw{$VERSION $ISCORE @ISA};
 BEGIN {
-	$VERSION = '0.72';
+	$VERSION = '0.70';
 	$ISCORE  = 1;
 	@ISA     = qw{Module::Install::Base};
 }
@@ -63,18 +63,18 @@ sub build_subdirs {
 sub clean_files {
 	my $self  = shift;
 	my $clean = $self->makemaker_args->{clean} ||= {};
-	  %$clean = (
+	%$clean = (
 		%$clean, 
-		FILES => join ' ', grep { length $_ } ($clean->{FILES} || (), @_),
+		FILES => join(' ', grep length, $clean->{FILES}, @_),
 	);
 }
 
 sub realclean_files {
-	my $self      = shift;
+	my $self  = shift;
 	my $realclean = $self->makemaker_args->{realclean} ||= {};
-	  %$realclean = (
+	%$realclean = (
 		%$realclean, 
-		FILES => join ' ', grep { length $_ } ($realclean->{FILES} || (), @_),
+		FILES => join(' ', grep length, $realclean->{FILES}, @_),
 	);
 }
 
@@ -121,8 +121,8 @@ sub write {
 	# Generate the 
 	my $args = $self->makemaker_args;
 	$args->{DISTNAME} = $self->name;
-	$args->{NAME}     = $self->module_name || $self->name;
-	$args->{VERSION}  = $self->version;
+	$args->{NAME}     = $self->module_name || $self->name || $self->determine_NAME($args);
+	$args->{VERSION}  = $self->version || $self->determine_VERSION($args);
 	$args->{NAME}     =~ s/-/::/g;
 	if ( $self->tests ) {
 		$args->{test} = { TESTS => $self->tests };
