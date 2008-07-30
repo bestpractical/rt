@@ -12,6 +12,7 @@ etc/drop_schema.Oracle
 etc/drop_schema.Pg
 etc/initial_data/dyndns
 etc/schema.mysql
+etc/schema.mysql-4.1
 etc/schema.Oracle
 etc/schema.Pg
 etc/upgrade/2.1.0/acl.mysql
@@ -35,6 +36,7 @@ etc/upgrade/2.2.0RC2/content
 etc/upgrade/2.2.0RC2/schema.mysql
 etc/upgrade/2.2.0RC2/schema.Oracle
 etc/upgrade/2.2.0RC2/schema.Pg
+etc/upgrade/schema.mysql-4.0-4.1.pl
 html/Admin/Global/CustomFields/RTFM-Class-RTFM-Article.html
 html/Admin/RTFM/Classes/CustomFields.html
 html/Admin/RTFM/Classes/GroupRights.html
@@ -63,6 +65,7 @@ html/Callbacks/RTFM/Elements/MessageBox/Default
 html/Callbacks/RTFM/Elements/Tabs/Default
 html/Callbacks/RTFM/RTIR/Elements/Tabs/Default
 html/Callbacks/RTFM/SelfService/Elements/Tabs/Default
+html/Callbacks/RTFM/Ticket/Create.html/BeforeCreate
 html/Callbacks/RTFM/Ticket/Create.html/BeforeMessageBox
 html/Callbacks/RTFM/Ticket/Elements/Tabs/Default
 html/Callbacks/RTFM/Ticket/Update.html/BeforeMessageBox
@@ -158,15 +161,15 @@ sbin/factory
 sbin/migrate-2.0-to-2.1
 t/00smoke.t
 t/04interface.t
-t/05cfsearch.pl
+t/05cfsearch.t
 t/2basic_api.t
 t/3upload-customfields.t
 t/Article_Overlay.pm.t
 t/ArticleCollection_Overlay.pm.t
 t/Class_Overlay.pm.t
+t/lib/RT/FM/Test.pm
 t/URI_a.t
 t/URI_fsck_com_rtfm.t
-t/utils.pl
 TODO
 tools/factory.mysql
 tools/factory.pg
