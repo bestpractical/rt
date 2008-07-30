@@ -4,7 +4,6 @@ use strict;
 use warnings;
 
 use Test::More qw(no_plan);
-BEGIN { require 't/utils.pl' }
 
 use RT;
 ok(RT::LoadConfig);
