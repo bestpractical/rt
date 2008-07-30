@@ -172,7 +172,9 @@ sub callback {
     }
 
     my @rv;
-    push @rv, scalar $self->comp( $_, %args ) foreach @$callbacks;
+    # we don't know why but we have to filter undefs as they end up in the list
+    push @rv, scalar $self->comp( $_, %args )
+        foreach grep defined && length, @$callbacks;
     return @rv;
 }
 }
