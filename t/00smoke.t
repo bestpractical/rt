@@ -8,7 +8,6 @@ BEGIN { require 't/utils.pl' }
 
 use RT;
 ok(RT::LoadConfig);
-ok(RT::Init, "Basic initialization and DB connectivity");
 
 use File::Find;
 File::Find::find({wanted => \&wanted}, 'lib');
