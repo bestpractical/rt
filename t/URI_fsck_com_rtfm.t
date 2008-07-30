@@ -3,19 +3,8 @@
 use strict;
 use warnings;
 
-use Test::More;
-eval 'use RT::Test; 1'
-    or plan skip_all => 'requires 3.8 to run tests.';
-plan tests => 11;
-
-{
-my ($ret, $msg) = $RT::Handle->InsertSchema(undef,'etc/');
-ok($ret,"Created Schema: ".($msg||''));
-($ret, $msg) = $RT::Handle->InsertACL(undef,'etc/');
-ok($ret,"Created ACL: ".($msg||''));
-}
-
-RT->Config->Set('Plugins',qw(RT::FM));
+use lib 't/lib';
+use RT::FM::Test tests => 11;
 
 use_ok "RT::URI::fsck_com_rtfm";
 my $uri = RT::URI::fsck_com_rtfm->new( $RT::SystemUser );

@@ -3,7 +3,8 @@
 use strict;
 use warnings;
 
-use Test::More qw(no_plan);
+use lib 't/lib';
+use RT::FM::Test qw(no_plan);
 
 use RT;
 ok(RT::LoadConfig);
