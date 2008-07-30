@@ -50,5 +50,5 @@
 <h1><&|/l&>The page you requested could not be found</&></h1>
 <&|/l&>Please check the URL and try again.</&>
 <%init>
-$r->header_out( Status => '404 File not found' );
+$r->headers_out->{'Status'} = '404 File not found';
 </%init>

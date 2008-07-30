@@ -53,7 +53,7 @@ use Encode ();
 my $path = $m->dhandler_arg;
 
 my $notfound = sub {
-    $r->header_out("Status" => "404 Not Found");
+    $r->headers_out->{'Status'} = '404 Not Found';
     $m->clear_and_abort;
 };
 
@@ -76,7 +76,7 @@ $cu->Load($user);
 my $tickets = RT::Tickets->new( $cu );
 $tickets->FromSQL($search);
 
-$r->header_out("Content-Type" => "text/calendar; charset=utf-8");
+$r->headers_out->{'Content-Type'} = 'text/calendar; charset=utf-8';
 
 my $feed = Data::ICal->new();
 $feed->add_properties('x-wr-calname' => ["RT due dates" => {value => "TEXT"}]);
