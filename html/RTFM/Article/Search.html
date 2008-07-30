@@ -270,14 +270,19 @@ foreach my $date qw(Created< Created> LastUpdated< LastUpdated>) {
     }
 
 }
-foreach my $link ( split ( /\s+/, $RefersTo ) ) {
-    next unless ($link);
-    $articles->LimitRefersTo($link);
+
+if ($RefersTo) {
+    foreach my $link ( split ( /\s+/, $RefersTo ) ) {
+        next unless ($link);
+        $articles->LimitRefersTo($link);
+    }
 }
 
-foreach my $link ( split ( /\s+/, $ReferredToBy ) ) {
-    next unless ($link);
-    $articles->LimitReferredToBy($link);
+if ($ReferredToBy) {
+    foreach my $link ( split ( /\s+/, $ReferredToBy ) ) {
+        next unless ($link);
+        $articles->LimitReferredToBy($link);
+    }
 }
 
 if ($ARGS{'Topics'}) {

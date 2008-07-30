@@ -50,6 +50,7 @@ package RT::URI::fsck_com_rtfm;
 
 use strict;
 use warnings;
+no warnings 'redefine';
 
 use RT::FM::Article;
 use base qw/RT::URI::base/;
