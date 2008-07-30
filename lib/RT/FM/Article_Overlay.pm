@@ -386,13 +386,13 @@ sub AddLink {
     # Disallow parsing of plain numbers in article links.  If they are
     # allowed, they default to being tickets instead of articles, which
     # is counterintuitive.
-    if ($args{'Target'} =~ /^\d+$/) {
+    if ($args{'Target'} =~ /^\d+$/ || $args{'Base'} =~ /^\d+$/) {
         return ( 0, $self->loc("Cannot add link to plain number") );
     }
 
     # Check that we're actually getting a valid URI
     my $uri_obj = RT::URI->new( $self->CurrentUser );
-    $uri_obj->FromURI( $args{'Target'} );
+    $uri_obj->FromURI( $args{'Target'}||$args{'Base'} );
     unless ( $uri_obj->Resolver && $uri_obj->Scheme ) {
         my $msg = $self->loc( "Couldn't resolve '[_1]' into a Link.", $args{'Target'} );
         $RT::Logger->warning( $msg );
