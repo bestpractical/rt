@@ -50,6 +50,19 @@ You can read pod files using perldoc utility that comes with perl.
 1) lib/RT/FM/Introduction.pod - quick overview
 2) lib/RT/FM/Config.pod - RTFM's config options
 
+
+Development
+------------------------------------------------------
+
+If you would like to run RTFM's tests, you need to
+set a few environment variables
+RT_DBA_USER - a user who can create a database on your 
+              RDBMS (such as root on mysql)
+RT_DBA_PASSWORD - the password for RT_DBA_USER
+PERL5LIB - the path to your RT libraries (/opt/rt3/lib)
+
+RT_DBA_USER=user RT_DBA_PASSWORD=password PERL5LIB=/opt/rt3/lib make test
+
 Users should be now have a new "RTFM" menu item RT's top level menu.
 As an administrator, you should go create some "Classes" of articles in RTFM.
 Classes are equivalent to RT's queues. 
