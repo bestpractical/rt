@@ -9,10 +9,12 @@ eval 'use RT::Test; 1'
 
 plan tests => 13;
 
+{
 my ($ret, $msg) = $RT::Handle->InsertSchema(undef,'etc/');
 ok($ret,"Created Schema: ".$msg||'');
 ($ret, $msg) = $RT::Handle->InsertACL(undef,'etc/');
 ok($ret,"Created ACL: ".$msg||'');
+}
 
 RT->Config->Set('Plugins',qw(RT::FM));
 
