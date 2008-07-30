@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use lib 't/lib';
-use RT::FM::Test tests => 25;
+use RT::FM::Test tests => 21;
 
 use RT;
 use constant ImageFile => $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
@@ -16,37 +16,11 @@ use constant ImageFileContent => do {
 };
 
 use RT::FM::Class;
-use RT::FM::Topic;
 my $class = RT::FM::Class->new($RT::SystemUser);
 my ($ret, $msg) = $class->Create('Name' => 'tlaTestClass-'.$$,
 			      'Description' => 'A general-purpose test class');
 ok($ret, "Test class created");
 
-# Create a hierarchy of test topics
-my $topic1 = RT::FM::Topic->new($RT::SystemUser);
-my $topic11 = RT::FM::Topic->new($RT::SystemUser);
-my $topic12 = RT::FM::Topic->new($RT::SystemUser);
-my $topic2 = RT::FM::Topic->new($RT::SystemUser);
-($ret, $msg) = $topic1->Create('Parent' => 0,
-			      'Name' => 'tlaTestTopic1-'.$$,
-			      'ObjectType' => 'RT::FM::Class',
-			      'ObjectId' => $class->Id);
-ok($ret, "Topic 1 created");
-($ret, $msg) = $topic11->Create('Parent' => $topic1->Id,
-			       'Name' => 'tlaTestTopic1.1-'.$$,
-			       'ObjectType' => 'RT::FM::Class',
-			       'ObjectId' => $class->Id);
-ok($ret, "Topic 1.1 created");
-($ret, $msg) = $topic12->Create('Parent' => $topic1->Id,
-			       'Name' => 'tlaTestTopic1.2-'.$$,
-			       'ObjectType' => 'RT::FM::Class',
-			       'ObjectId' => $class->Id);
-ok($ret, "Topic 1.2 created");
-($ret, $msg) = $topic2->Create('Parent' => 0,
-			      'Name' => 'tlaTestTopic2-'.$$,
-			      'ObjectType' => 'RT::FM::Class',
-			      'ObjectId' => $class->Id);
-ok($ret, "Topic 2 created");
 
 my ($url, $m) = RT::Test->started_ok;
 isa_ok($m, 'Test::WWW::Mechanize');
@@ -81,7 +55,6 @@ my $tcf = pop(@names);
 $m->field( $tcf => 1 );         # Associate the new CF with this queue
 $m->field( $_ => undef ) for @names;    # ...and not any other. ;-)
 $m->submit;
-$m->save_content("3upload.html");
 
 $m->content_like( qr/Object created/, 'TCF added to the queue' );
 $m->follow_link( text => 'RTFM');

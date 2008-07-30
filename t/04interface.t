@@ -185,7 +185,6 @@ $m->click();
 $m->title_like(qr/Create a new article/, "got edit page from extraction");
 $m->submit_form(form_name => 'EditArticle');
 $m->title_like(qr/Modify article/);
-$m->save_content("04interface.html");
 $m->follow_link_ok( { text => 'Display' }, '-> Display' );
 $m->content_like(qr/Africa/, "Article content exist");
 $m->content_contains($ticket->Subject,
