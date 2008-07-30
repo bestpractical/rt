@@ -86,6 +86,7 @@ $m->form_number(3);
 my @names = map  { $_->[1] }
             sort { $a->[0] <=> $b->[0] }
             map  { /Object-1-CF-(\d+)/ ? [ $1 => $_ ] : () }
+            grep { $_ }
             map  $_->name, $m->current_form->inputs;
 my $tcf = pop(@names);
 $m->field( $tcf => 1 );         # Associate the new CF with this queue

@@ -11,23 +11,21 @@ plan tests => 13;
 
 {
 my ($ret, $msg) = $RT::Handle->InsertSchema(undef,'etc/');
-ok($ret,"Created Schema: ".$msg||'');
+ok($ret,"Created Schema: ".($msg||''));
 ($ret, $msg) = $RT::Handle->InsertACL(undef,'etc/');
-ok($ret,"Created ACL: ".$msg||'');
+ok($ret,"Created ACL: ".($msg||''));
 }
 
 RT->Config->Set('Plugins',qw(RT::FM));
 
 my $suffix = '-'. $$;
 
-my $CurrentUser = $RT::SystemUser;
-
 use_ok 'RT::FM::Class';
 use_ok 'RT::FM::Article';
 use_ok 'RT::CustomField';
 
 my $classname = 'TestClass';
-my $class = RT::FM::Class->new( $CurrentUser );
+my $class = RT::FM::Class->new( $RT::SystemUser );
 {
     $class->Load( $classname );
     unless ( $class->Id ) {
@@ -44,7 +42,7 @@ my $class = RT::FM::Class->new( $CurrentUser );
 
 # create cf
 my $cfname = 'TestCF'. $suffix;
-my $cf = RT::CustomField->new( $CurrentUser );
+my $cf = RT::CustomField->new( $RT::SystemUser );
 {
     my ($id, $msg) = $cf->Create(
         Name => $cfname,
@@ -73,18 +71,18 @@ my $cf = RT::CustomField->new( $CurrentUser );
 }
 
 my $article1name = 'TestArticle1'.$suffix;
-my $article1 = new RT::FM::Article($CurrentUser);
+my $article1 = new RT::FM::Article($RT::SystemUser);
 $article1->Create( Name => $article1name, Summary => 'Test', Class => $class->Id);
 $article1->AddCustomFieldValue(Field => $cf->Id, Value => 'Value1');
 
 my $article2name = 'TestArticle2'.$suffix;
-my $article2 = new RT::FM::Article($CurrentUser);
+my $article2 = new RT::FM::Article($RT::SystemUser);
 $article2->Create( Name => $article2name, Summary => 'Test', Class => $class->Id);
 $article2->AddCustomFieldValue(Field => $cf->Id, Value => 'Value2');
 
 # search for articles containing 1st value
 {
-    my $articles = RT::FM::ArticleCollection->new( $CurrentUser );
+    my $articles = RT::FM::ArticleCollection->new( $RT::SystemUser );
     $articles->UnLimit;
     $articles->Limit( FIELD => "Class", SUBCLAUSE => 'ClassMatch', VALUE => $class->Id);
     $articles->LimitCustomField( FIELD => $cf->Id, VALUE => 'Value1' );
@@ -92,7 +90,7 @@ $article2->AddCustomFieldValue(Field => $cf->Id, Value => 'Value2');
 }
 
 {
-    my $articles = new RT::FM::ArticleCollection($CurrentUser);
+    my $articles = new RT::FM::ArticleCollection($RT::SystemUser);
     $articles->UnLimit;
     $articles->Limit( FIELD => "Class", SUBCLAUSE => 'ClassMatch', VALUE => $class->Id);
     $articles->LimitCustomField( FIELD => $cf, VALUE => 'Value1' );    
@@ -100,7 +98,7 @@ $article2->AddCustomFieldValue(Field => $cf->Id, Value => 'Value2');
 }
 
 {
-    my $articles = new RT::FM::ArticleCollection($CurrentUser);
+    my $articles = new RT::FM::ArticleCollection($RT::SystemUser);
     $articles->UnLimit( );
     $articles->Limit( FIELD => "Class", SUBCLAUSE => 'ClassMatch', VALUE => $class->Id);
     $articles->LimitCustomField( FIELD => $cf->Name, VALUE => 'Value1' );
