@@ -93,7 +93,7 @@ my $topactions = {
   $m->comp('/Elements/Callback', topactions => $topactions, toptabs => $toptabs, %ARGS);
 
   foreach my $tab (sort keys %{$second_tabs}) {
-    if ($second_tabs->{$tab}->{'path'} eq $current_toptab) {
+    if ($current_toptab && $second_tabs->{$tab}->{'path'} eq $current_toptab) {
       $second_tabs->{$tab}->{"subtabs"} = $tabs;
       $second_tabs->{$tab}->{"current_subtab"} = $current_tab;
     }
