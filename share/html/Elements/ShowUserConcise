@@ -61,7 +61,7 @@ if ($User) {
           || $User->RealName
           || $User->NickName;
     }
-    $m->out( $printable);
+    $m->out( $m->interp->apply_escapes( $printable, 'h' ) );
 }
 
 </%INIT>
