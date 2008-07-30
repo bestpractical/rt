@@ -3,12 +3,19 @@
 use warnings;
 use strict;
 
-use Test::More tests => 41;
-BEGIN { require 't/utils.pl' }
+use Test::More; 
+eval 'use RT::Test; 1'
+    or plan skip_all => 'requires 3.8 to run tests.';
+plan tests => 42;
 
-use_ok('RT');
-RT::LoadConfig();
-RT::Init();
+{
+my ($ret, $msg) = $RT::Handle->InsertSchema(undef,'etc/');
+ok($ret,"Created Schema: ".($msg||''));
+($ret, $msg) = $RT::Handle->InsertACL(undef,'etc/');
+ok($ret,"Created ACL: ".($msg||''));
+}
+
+RT->Config->Set('Plugins',qw(RT::FM));
 
 use_ok 'RT::FM::System';
 my $sys = new RT::FM::System;
