@@ -49,6 +49,8 @@
 <%INIT>
 
 return if $checks_failure; # we're already skipping Create
+return unless ( RT->can('Config') && RT->Config->can('Get') && RT->Config->Get('RTFM_TicketCreate'));
+
 
 my $article = RT::FM::Article->new($session{'CurrentUser'});
 foreach my $arg ( keys %$ARGSRef) {
