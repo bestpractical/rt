@@ -5,7 +5,7 @@ package RT::FM::Test;
 use base qw(Test::More);
 
 eval 'use RT::Test; 1'
-    or Test::More::plan skip_all => 'requires 3.8 to run tests.';
+    or Test::More::plan skip_all => 'requires 3.8 to run tests.  You may need to set PERL5LIB=/path/to/rt/lib';
 
 sub import_extra {
     my $class = shift;
