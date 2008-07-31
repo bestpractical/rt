@@ -3,6 +3,7 @@ use warnings;
 
 package RT::FM::Test;
 use base qw(Test::More);
+use Cwd;
 
 eval 'use RT::Test; 1'
     or Test::More::plan skip_all => 'requires 3.8 to run tests.  You may need to set PERL5LIB=/path/to/rt/lib';
@@ -34,6 +35,13 @@ sub import_extra {
     }
 
     RT->Config->Set('Plugins',qw(RT::FM));
+
+    # we need to lie to RT and have it find RTFM's mason templates 
+    # in the local directory
+    { no warnings 'redefine';
+      my $cwd = getcwd;
+      *RT::Plugin::_BasePath = sub { return $cwd };
+    }
 
 }
 
