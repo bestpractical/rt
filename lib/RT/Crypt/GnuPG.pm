@@ -766,7 +766,7 @@ sub _SignEncryptAttachmentInline {
     } else {
         $entity->bodyhandle( new MIME::Body::File $tmp_fn );
         $entity->effective_type('application/octet-stream');
-        $args{'Data'}->head->mime_attr( $_ => "$filename.pgp" )
+        $entity->head->mime_attr( $_ => "$filename.pgp" )
             foreach (qw(Content-Type.name Content-Disposition.filename));
 
     }
