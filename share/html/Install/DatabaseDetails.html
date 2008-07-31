@@ -65,17 +65,15 @@
 
 % }
 
-<% Jifty->web->form->start %>
-<% Jifty->web->form->next_page( url => '/Install/Basics.html' ) %>
-% for my $field ( @fields ) {
-<% $action->form_field( $field ) %>
-% }
-<% Jifty->web->form->submit( label => 'Next' ) %>
-<% Jifty->web->form->end %>
+<& Elements/Form, fields => \@fields,
+    next => '/Install/Basics.html',
+    next_label => _('Next: ') . _('Customize Basics'),
+    previous => '/Install/DatabaseType.html',
+    previous_label => _('Previous: ') . _('Choose a database engine')
+    &>
 </&>
 
 <%init>
-my $action = Jifty->web->new_action( class => 'Install' );
 my @fields = 'database_name';
 my $db_type = $RT::Installer->{config}{database_type};
 

@@ -65,14 +65,8 @@
 </p>
 </div>
 
-<% Jifty->web->form->start %>
-<% Jifty->web->form->next_page( url => '/' ) %>
-<% $action->hidden( 'finish' ) %>
-<% Jifty->web->form->submit( label => _('Finish')) %>
-<% Jifty->web->form->end %>
-
+<& Elements/Form, fields => 'finish',
+    next => '/',
+    next_label => _('Finish'),
+    &>
 </&>
-<%init>
-my $action = Jifty->web->new_action( class => 'Install' );
-my @fields = 'finish';
-</%init>

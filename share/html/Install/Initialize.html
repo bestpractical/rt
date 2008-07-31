@@ -51,13 +51,10 @@
 <&|/l&>Click "Initialize Database" to create RT's database and insert initial metadata. This may take a few moments</&>
 </div>
 
-<% Jifty->web->form->start %>
-<% Jifty->web->form->next_page( url => '/Install/Finish.html' ) %>
-<% $action->hidden('init') %>
-<% Jifty->web->form->submit( label => _('Initialize Database')) %>
-<% Jifty->web->form->end %>
-
+<& Elements/Form, fields => 'initdb',
+    next => '/Install/Finish.html',
+    next_label => _('Next: ') . _('Finish'),
+    previous => '/Install/Global.html',
+    previous_label => _('Previous: ') . _('Customize Global Defaults')
+    &>
 </&>
-<%init>
-my $action = Jifty->web->new_action( class => 'Install' );
-</%init>

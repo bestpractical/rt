@@ -62,13 +62,7 @@
 </p>
 </div>
 
-<% Jifty->web->form->start %>
-<% Jifty->web->form->next_page( url => '/Install/DatabaseDetails.html' ) %>
-<% $action->form_field( 'database_type' ) %>
-<% Jifty->web->form->submit( label => 'Next' ) %>
-<% Jifty->web->form->end %>
-
+<& Elements/Form, fields => 'database_type',
+    next => '/Install/DatabaseDetails.html',
+    next_label => _('Next: ') . _('Check your database credentials') &>
 </&>
-<%init>
-my $action = Jifty->web->new_action( class => 'Install' );
-</%init>

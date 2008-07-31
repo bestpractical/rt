@@ -51,17 +51,10 @@
 <&|/l&>These configuration options cover some of the basics needed to get RT up and running.  We need to know the name of your RT installation and the domain name where RT will live.  You will also need to set a password for your defauly administrative user.</&>
 </p>
 
-<% Jifty->web->form->start %>
-<% Jifty->web->form->next_page( url => '/Install/Sendmail.html' ) %>
-% for my $field ( @fields ) {
-<% $action->form_field( $field ) %>
-% }
-<% Jifty->web->form->submit( label => _('Email Configuration')) %>
-<% Jifty->web->form->end %>
+<& Elements/Form, fields => [qw/rtname web_domain web_port password/],
+    next => '/Install/Sendmail.html',
+    next_label => _('Next: ') . _('Email Configuration'),
+    previous => '/Install/DatabaseDetails.html',
+    previous_label => _('Previous: ') . _('Check your database credentials' )
+    &>
 </&>
-
-
-<%init>
-my $action = Jifty->web->new_action( class => 'Install' );
-my @fields = qw/rtname web_domain web_port password/;
-</%init>

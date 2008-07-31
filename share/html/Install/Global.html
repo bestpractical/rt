@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| Elements/Wrapper, Title => _('Step %1 of %2: ', 5, 7 ) . _('Customize Email Addresses') &> 
+<&| Elements/Wrapper, title => _('Step %1 of %2: ', 5, 7 ) . _('Customize Global Defaults') &> 
 
 <p><&|/l&>Help us set up some useful defaults for RT.</&></p>
 
@@ -54,18 +54,21 @@
 <p><&|/l&>By default, RT will use the timezone of your system.  This lets you set a global default for the display of dates and times in RT.  Your users can choose a different Timezone in their preferences.</&></p>
 
 
-<% Jifty->web->form->start %>
-<% Jifty->web->form->next_page( url => 
-        $RT::Installer->{database_action} eq 'none' ?
-        '/Install/Finish.html' : '/Install/Initialize.html' ) %>
-% for my $field ( @fields ) {
-<% $action->form_field( $field ) %>
-% }
-<% Jifty->web->form->submit( label => _('Initialize Database')) %>
-<% Jifty->web->form->end %>
-
+<& Elements/Form, fields => [qw/comment_address correspond_address timezone/],
+    next => $next,
+    next_label => _('Next: ') . _($next_label),
+    previous => '/Install/Sendmail.html',
+    previous_label => _('Previous: ') . _('Email Configuration')
+    &>
 </&>
 <%init>
-my @fields = qw/comment_address correspond_address timezone/;
-my $action = Jifty->web->new_action( class => 'Install' );
+my ($next, $next_label );
+if( $RT::Installer->{database_action} eq 'none'  ) {
+    $next = '/Install/Finish.html';
+    $next_label = 'Finish'; #loc
+}
+else {
+    $next = '/Install/Initialize.html';
+    $next_label = 'Initialize Database'; #loc
+}
 </%init>

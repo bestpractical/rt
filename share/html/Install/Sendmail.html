@@ -45,23 +45,16 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&|Elements/Wrapper, Title => _('Step %1 of %2: ', 4, 7 ) . _('Email Configuration') &> 
+<&|Elements/Wrapper, title => _('Step %1 of %2: ', 4, 7 ) . _('Email Configuration') &> 
 
 <p>
 <&|/l&>RT can communicate with your users about new tickets or new correspondence on tickets. Tell us where to find sendmail (or a sendmail compatible binary such as the one provided by postifx).  RT also needs to know who to notify when someone sends invalid email.  This must not be an address that feeds back into RT.</&>
 </p>
 
-<% Jifty->web->form->start %>
-<% Jifty->web->form->next_page( url => '/Install/Global.html' ) %>
-% for my $field ( @fields ) {
-<% $action->form_field( $field ) %>
-% }
-<% Jifty->web->form->submit( label => _('Customize Global Defaults') ) %>
-
-<% Jifty->web->form->end %>
-
+<& Elements/Form, fields => [qw/sendmail_path owner_email/],
+    next => '/Install/Global.html',
+    next_label => _('Next: ') . _('Customize Global Defaults'),
+    previous => '/Install/Basics.html',
+    previous_label => _('Previous: ') . _('Customize Basics')
+    &>
 </&>
-<%init>
-my $action = Jifty->web->new_action( class => 'Install' );
-my @fields = qw/sendmail_path owner_email/;
-</%init>
