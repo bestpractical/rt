@@ -67,6 +67,7 @@
 
 =cut
 
+no warnings 'redefine';
 package RT::FM::ArticleCollection;
 
 use RT::FM::SearchBuilder;

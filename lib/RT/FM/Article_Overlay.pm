@@ -234,7 +234,8 @@ sub ValidateName {
 
     my $temp = RT::FM::Article->new($RT::SystemUser);
     $temp->LoadByCols( Name => $name );
-    if ( $temp->id && $temp->id != $self->id ) {
+    if ( $temp->id && 
+         (!$self->id || ($temp->id != $self->id ))) {
         return (undef);
     }
 

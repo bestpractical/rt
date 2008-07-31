@@ -65,6 +65,7 @@ RT::FM::Article
 
 =cut
 
+no warnings 'redefine';
 package RT::FM::Article;
 use RT::FM::Record; 
 use RT::FM::Class;

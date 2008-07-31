@@ -71,7 +71,7 @@ $m->content_like(qr/Upload multiple images/, 'has a upload image field');
 $tcf =~ /(\d+)$/ or die "Hey this is impossible dude";
 my $upload_field = "Object-RT::FM::Article--CustomField-$1-Upload";
 
-diag("Uploading an image to $upload_field");
+diag("Uploading an image to $upload_field") if $ENV{TEST_VERBOSE};
 
 $m->submit_form(
     form_name => "EditArticle",

@@ -11,6 +11,6 @@ ok(RT::LoadConfig);
 
 use File::Find;
 File::Find::find({wanted => \&wanted}, 'lib');
-sub wanted { /^.*\.pm\z/s && $_ !~ /Overlay/ && ok(require $_, "Requiring '$_'"); }
+sub wanted { /^.*\.pm\z/s && $_ !~ /Overlay/ && require_ok($_) };
 
 
