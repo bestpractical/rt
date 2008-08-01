@@ -235,7 +235,7 @@ sub tmpdir {
     if (-d $tmpdir) {
         return $tmpdir;
     } else {
-        $tmpdir = File::Temp->newdir(TEMPLATE => 'shredderXXXXX');
+        $tmpdir = File::Temp->newdir(TEMPLATE => 'shredderXXXXX', CLEANUP => 0);
         return $tmpdir;
     }
 }
