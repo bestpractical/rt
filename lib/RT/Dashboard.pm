@@ -74,7 +74,7 @@ use warnings;
 use base qw/RT::SharedSetting/;
 
 my %new_rights = (
-    SubscribeDashboard => 'Subscribe to email dashboards', #loc_pair
+    SubscribeDashboard => 'Subscribe to dashboards', #loc_pair
 
     SeeDashboard       => 'View system dashboards', #loc_pair
     CreateDashboard    => 'Create system dashboards', #loc_pair
