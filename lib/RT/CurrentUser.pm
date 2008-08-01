@@ -219,7 +219,7 @@ sub LanguageHandle {
         if ( my $lang = $self->Lang ) {
             push @_, $lang;
         }
-        elsif ( !$self->id || $self->id == $RT::SystemUser->id || $self->id == $RT::Nobody->id ) {
+        elsif ( !$self->id || $self->id == ($RT::SystemUser->id||0) || $self->id == ($RT::Nobody->id||0) ) {
             # don't use ENV magic for system users
             push @_, 'en';
         }
