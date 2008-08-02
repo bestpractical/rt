@@ -50,7 +50,7 @@ package RT::Interface::Email;
 use strict;
 use warnings;
 
-use Mail::Address;
+use Email::Address;
 use MIME::Entity;
 use RT::EmailParser;
 use File::Temp;
@@ -418,7 +418,7 @@ sub send_email {
 
         # duplicate head as we want drop Bcc field
         my $head = $args{'entity'}->head->dup;
-        my @recipients = map $_->address, Mail::Address->parse( map $head->get($_), qw(To Cc Bcc) );
+        my @recipients = map $_->address, Email::Address->parse( map $head->get($_), qw(To Cc Bcc) );
         $head->delete('Bcc');
 
         my $sender = RT->config->get('SMTPFrom')
@@ -695,7 +695,7 @@ sub sign_encrypt {
     }
     return 0 unless @bad_recipients;
 
-    $_->{'address_obj'} = ( Mail::Address->parse( $_->{'Recipient'} ) )[0] foreach @bad_recipients;
+    $_->{'address_obj'} = ( Email::Address->parse( $_->{'Recipient'} ) )[0] foreach @bad_recipients;
 
     foreach my $recipient (@bad_recipients) {
         my $status = send_email_using_template(
@@ -814,7 +814,7 @@ sub parse_cc_addresses_from_head {
 
     my @recipients
         = map lc $_->address,
-        map Mail::Address->parse( $args{'Head'}->get($_) ), qw(To Cc);
+        map Email::Address->parse( $args{'Head'}->get($_) ), qw(To Cc);
 
     my @res;
     foreach my $address (@recipients) {
@@ -888,7 +888,7 @@ sub parse_address_from_header {
 
     # Some broken mailers send:  ""Vincent, Jesse"" <jesse@fsck.com>. Hate
     $Addr =~ s/\"\"(.*?)\"\"/\"$1\"/g;
-    my @Addresses = Mail::Address->parse($Addr);
+    my @Addresses = Email::Address->parse($Addr);
 
     my ($AddrObj) = grep ref $_, @Addresses;
     unless ($AddrObj) {
@@ -918,7 +918,7 @@ sub delete_recipients_from_head {
         $head->set(
             $field => join ', ',
             map $_->format, grep !$skip{ lc $_->address },
-            Mail::Address->parse( $head->get($field) )
+            Email::Address->parse( $head->get($field) )
         );
     }
 }

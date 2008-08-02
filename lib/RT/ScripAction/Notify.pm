@@ -53,7 +53,7 @@ use warnings;
 
 use base qw(RT::ScripAction::SendEmail);
 
-use Mail::Address;
+use Email::Address;
 
 =head2 prepare
 
@@ -86,8 +86,8 @@ sub set_recipients {
 
     if ( $arg =~ /\bOther_?Recipients\b/i ) {
         if ( my $attachment = $self->transaction_obj->attachments->first ) {
-            push @Cc,  map { $_->address } Mail::Address->parse( $attachment->get_header('RT-Send-Cc') );
-            push @Bcc, map { $_->address } Mail::Address->parse( $attachment->get_header('RT-Send-Bcc') );
+            push @Cc,  map { $_->address } Email::Address->parse( $attachment->get_header('RT-Send-Cc') );
+            push @Bcc, map { $_->address } Email::Address->parse( $attachment->get_header('RT-Send-Bcc') );
         }
     }
 

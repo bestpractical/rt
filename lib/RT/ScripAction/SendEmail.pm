@@ -58,7 +58,7 @@ use MIME::Words qw(encode_mimeword);
 
 use RT::EmailParser;
 use RT::Interface::Email;
-use Mail::Address;
+use Email::Address;
 
 =head1 name
 
@@ -238,7 +238,7 @@ sub prepare {
 
 =head2 to
 
-Returns an array of L<Mail::Address> objects containing all the To: recipients for this notification
+Returns an array of L<Email::Address> objects containing all the To: recipients for this notification
 
 =cut
 
@@ -249,7 +249,7 @@ sub to {
 
 =head2 cc
 
-Returns an array of L<Mail::Address> objects containing all the Cc: recipients for this notification
+Returns an array of L<Email::Address> objects containing all the Cc: recipients for this notification
 
 =cut
 
@@ -260,7 +260,7 @@ sub cc {
 
 =head2 bcc
 
-Returns an array of L<Mail::Address> objects containing all the Bcc: recipients for this notification
+Returns an array of L<Email::Address> objects containing all the Bcc: recipients for this notification
 
 =cut
 
@@ -274,7 +274,7 @@ sub _addresses_from_header {
     my $self      = shift;
     my $field     = shift;
     my $header    = $self->template_obj->mime_obj->head->get($field);
-    my @addresses = Mail::Address->parse($header);
+    my @addresses = Email::Address->parse($header);
 
     return (@addresses);
 }
