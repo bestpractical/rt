@@ -7,7 +7,7 @@ AC_REVISION($Revision$)dnl
 
 dnl Setup autoconf
 AC_PREREQ([2.53])
-AC_INIT(RT, 3.8.HEAD, [rt-bugs@bestpractical.com])
+AC_INIT(RT, 3.8.1rc1, [rt-bugs@bestpractical.com])
 AC_CONFIG_SRCDIR([lib/RT.pm.in])
 
 dnl Extract RT version number components
