@@ -512,6 +512,47 @@ sub _SetupMIMEParser {
 
 }
 
+=head2 ParseEmailAddress string
+
+Returns a list of Email::Address objects
+Works around the bug that Email::Address 1.889 and earlier
+doesn't handle local-only email addresses (when users pass
+in just usernames on the RT system in fields that expect
+Email Addresses)
+
+We don't handle the case of 
+bob, fred@bestpractical.com 
+because we don't want to fail parsing
+bob, "Falcone, Fred" <fred@bestpractical.com>
+The next release of Email::Address will have a new method
+we can use that removes the bandaid
+
+=cut
+
+sub ParseEmailAddress {
+    my $self = shift;
+    my $address_string = shift;
+
+    $address_string =~ s/^\s+|\s+$//g;
+
+    my @addresses;
+    # if it looks like a username / local only email
+    if ($address_string !~ /@/ && $address_string =~ /^\w+$/) {
+        my $user = RT::User->new( $RT::SystemUser );
+        my ($id, $msg) = $user->Load($address_string);
+        if ($id) {
+            push @addresses, Email::Address->new($user->Name,$user->EmailAddress);
+        } else {
+            $RT::Logger->error("Unable to parse an email address from $address_string: $msg");
+        }
+    } else {
+        @addresses = Email::Address->parse($address_string);
+    }
+
+    return @addresses;
+
+}
+
 
 sub DESTROY {
     my $self = shift;

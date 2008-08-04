@@ -1037,7 +1037,7 @@ sub AddWatcher {
     return $self->_AddWatcher( %args )
         if $self->CurrentUserHasRight('ModifyTicket');
     if ( $args{'Email'} ) {
-        my ($addr) = Email::Address->parse( $args{'Email'} );
+        my ($addr) = RT::EmailParser->ParseEmailAddress( $args{'Email'} );
         return (0, $self->loc("Couldn't parse address from '[_1]' string", $args{'Email'} ))
             unless $addr;
 
