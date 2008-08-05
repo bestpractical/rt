@@ -58,9 +58,9 @@ $onload => undef
 <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/RichText/fckeditor.js"></script>
 % }
 <script type="text/javascript"><!--
-    onLoadHook("loadTitleBoxStates()");
+    doOnLoad(loadTitleBoxStates);
 % if ( $focus ) {
-    onLoadHook("focusElementById('<% $focus %>')");
+    doOnLoad(function () { focusElementById('<% $focus %>') });
 % }
 
 % if ( RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'})) {
@@ -110,9 +110,9 @@ $onload => undef
             }
         }
     }
-    onLoadHook("ReplaceAllTextareas()");
+    doOnLoad(ReplaceAllTextareas);
 % }
 % if ( $onload ) {
-    onLoadHook("<% $onload |n %>");
+    doOnLoad(<% $onload |n %>);
 % }
 --></script>

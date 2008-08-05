@@ -143,6 +143,9 @@ function set_rollup_state(e,e2,state) {
 
 
 /* onload handlers */
+/* New code should be using doOnLoad which makes use of prototype
+   instead. See HeaderJavascript.  It works better than clobbering
+   window.onload.  Left around in case other code is using them */
 
 var onLoadStack     = new Array();
 var onLoadLastStack = new Array();
@@ -179,6 +182,12 @@ function doOnLoadHooks() {
 }
 
 window.onload = doOnLoadHooks;
+
+/* new onLoad code */
+
+function doOnLoad(handler) {
+    Event.observe(window, 'load', handler);
+}
 
 /* calendar functions */
 
