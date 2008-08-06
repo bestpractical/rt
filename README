@@ -21,8 +21,7 @@ REQUIRED PACKAGES:
 o   Perl 5.8.3 or later (http://www.perl.com).
 
        Perl versions prior to 5.8.3 contain bugs that could result
-       in data corruption. We recommend strongly that you use 5.8.3
-       or newer.
+       in data corruption. RT won't start on older versions.
 
 o   A supported SQL database
 
@@ -33,12 +32,8 @@ o   A supported SQL database
 
 o   Apache version 1.3.x or 2.x (http://httpd.apache.org) 
         with mod_perl -- (http://perl.apache.org ) 
-        or a webserver with FastCGI support (www.fastcgi.com)
-
-        Compiling mod_perl on Apache 1.3.x as a DSO has been known 
-        to have massive stability problems and is not recommended.
-
-        mod_perl 1.x must be built with EVERYTHING=1
+        or with FastCGI -- (www.fastcgi.com)
+        or other webserver with FastCGI support
 
         RT's FastCGI handler needs to access RT's configuration file.
 
@@ -76,6 +71,11 @@ want to read a more comprehensive installation guide at:
     will run as, but you can override that behavior.  Note that the
     default install directory in /opt/rt3 does not work under SELinux's
     default configuration.
+
+    If you're upgrading RT then it worth to read UPGRADING document at this
+    moment. Some extension you're using may have been integrated into
+    core. It's recommended to use new clean directory when you're
+    upgrading to new major release (for example from 3.6.x to 3.8.x).
 
 3   Make sure that RT has everything it needs to run.
 
