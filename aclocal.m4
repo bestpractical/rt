@@ -45,6 +45,11 @@ else
 	AC_SUBST(rt_layout_name)
 	AC_MSG_RESULT($rt_layout_name)
 fi
+if test "x$rt_layout_name" != "xinplace" ; then
+	AC_SUBST([COMMENT_INPLACE_LAYOUT], [""])
+else
+	AC_SUBST([COMMENT_INPLACE_LAYOUT], [# ])
+fi
 ])
 
 dnl
