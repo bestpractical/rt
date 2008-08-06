@@ -430,7 +430,7 @@ sub Create {
             if ( $watcher =~ /^\d+$/ ) {
                 push @{ $args{$type} }, $watcher;
             } else {
-                my @addresses = Email::Address->parse( $watcher );
+                my @addresses = RT::EmailParser->ParseEmailAddress( $watcher );
                 foreach my $address( @addresses ) {
                     my $user = RT::User->new( $RT::SystemUser );
                     my ($uid, $msg) = $user->LoadOrCreateByEmail( $address );
