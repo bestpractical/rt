@@ -72,6 +72,11 @@ want to read a more comprehensive installation guide at:
     default install directory in /opt/rt3 does not work under SELinux's
     default configuration.
 
+    If you're upgrading RT then it worth to read UPGRADING document at this
+    moment. Some extension you're using may have been integrated into
+    core. It's recommended to use new clean directory when you're
+    upgrading to new major release (for example from 3.6.x to 3.8.x).
+
 3   Make sure that RT has everything it needs to run.
 
     Check for missing dependencies by running:
