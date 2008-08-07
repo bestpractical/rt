@@ -17,7 +17,7 @@ you're upgrading then you MUST follow instructions below.
 etc/upgrade/schema.mysql-4.0-4.1.pl that generates SQL queries to upgrade schema of
 the DB. Run it:
 
-    perl etc/upgrade/schema.mysql-4.0-4.1.pl > sql.queries
+    perl etc/upgrade/schema.mysql-4.0-4.1.pl db user pass > sql.queries
 
 5) Check sanity of sql queries or consult with your DBA
 
