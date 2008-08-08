@@ -593,8 +593,12 @@ Push plugins' lib paths into @INC right after F<local/lib>.
 
 =cut
 
+{
+my $PluginPathsInited = 0;
 sub InitPluginPaths {
     my $self = shift || __PACKAGE__;
+
+    return @INC if $PluginPathsInited;
 
     my @lib_dirs = $self->PluginDirs('lib');
 
@@ -606,7 +610,9 @@ sub InitPluginPaths {
             push @tmp_inc, $_;
         }
     }
+    $PluginPathsInited = 1;
     @INC = @tmp_inc;
+}
 }
 
 =head2 InitPlugins
