@@ -115,3 +115,10 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 <pre>
 <% Config::myconfig() %>
 </pre>
+
+<h2><&|/l&>Perl Include Paths (@INC)</&></h2>
+<pre>
+% foreach my $inc (@INC) {
+<% $inc %>
+% }
+</pre>
