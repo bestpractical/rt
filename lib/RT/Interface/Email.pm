@@ -1094,11 +1094,11 @@ sub _LoadPlugins {
     my @mail_plugins = @_;
 
     my @res;
-    foreach (@mail_plugins) {
-        if ( ref($_) eq "CODE" ) {
-            push @res, $_;
-        } elsif ( !ref $_ ) {
-            my $Class = $_;
+    foreach my $plugin (@mail_plugins) {
+        if ( ref($plugin) eq "CODE" ) {
+            push @res, $plugin;
+        } elsif ( !ref $plugin ) {
+            my $Class = $plugin;
             $Class = "RT::Interface::Email::" . $Class
                 unless $Class =~ /^RT::Interface::Email::/;
             $Class->require or
@@ -1111,7 +1111,7 @@ sub _LoadPlugins {
             }
             push @res, $Class;
         } else {
-            $RT::Logger->crit( "$_ - is not class name or code reference");
+            $RT::Logger->crit( "$plugin - is not class name or code reference");
         }
     }
     return @res;
