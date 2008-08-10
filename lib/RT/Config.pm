@@ -340,6 +340,10 @@ Takes no arguments.
 
 sub LoadConfigs {
     my $self    = shift;
+
+    $self->InitConfig( File => 'RT_Config.pm' );
+    $self->LoadConfig( File => 'RT_Config.pm' );
+
     my @configs = $self->Configs;
     $self->InitConfig( File => $_ ) foreach @configs;
     $self->LoadConfig( File => $_ ) foreach @configs;
