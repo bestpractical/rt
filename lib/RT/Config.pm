@@ -399,7 +399,10 @@ sub _LoadConfig {
                 Extension  => $is_ext,
             );
         };
-        local @INC = ( $RT::LocalEtcPath, $RT::EtcPath, @INC );
+        my @etc_dirs = ($RT::LocalEtcPath);
+        push @etc_dirs, RT->PluginDirs('etc') if $is_ext;
+        push @etc_dirs, $RT::EtcPath, @INC;
+        local @INC = @etc_dirs;
         require $args{'File'};
     };
     if ($@) {
