@@ -3,8 +3,9 @@ that may result in RT failures: multiple login requests, binary attachments
 breakage, image custom fields breakage and other.
 
 In order to resolve this issue we've changed our schema for mysql 4.1 and greater
-versions. If you're installing new RT then you can skip this file, but if
-you're upgrading from 4.0 then you MUST follow instructions below.
+versions.  If this is a new install of RT, you can skip this file.  If you
+are upgrading RT and moving from mysql 4.0 to mysql 4.1 or greater, you 
+MUST follow the instructions below.
 
 1) Backup RT database. It's really good to test that you can restore from
    this backup.
