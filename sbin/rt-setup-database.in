@@ -233,7 +233,7 @@ sub action_coredata {
     $RT::Handle->dbh( undef );
     RT::ConnectToDatabase();
     RT::InitLogging();
-    my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'post' );
+    my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'pre' );
     return ($status, $msg) unless $status;
 
     print "Now inserting RT core system objects\n";
@@ -244,7 +244,7 @@ sub action_insert {
     my %args = @_;
     $RT::Handle = new RT::Handle;
     RT::Init();
-    my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'post' );
+    my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'pre' );
     return ($status, $msg) unless $status;
 
     print "Now inserting data\n";
