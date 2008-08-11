@@ -233,7 +233,7 @@ sub action_coredata {
     $RT::Handle->dbh( undef );
     RT::ConnectToDatabase();
     RT::InitLogging();
-    my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'post' );
+    my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'pre' );
     return ($status, $msg) unless $status;
 
     print "Now inserting RT core system objects\n";
@@ -244,7 +244,7 @@ sub action_insert {
     my %args = @_;
     $RT::Handle = new RT::Handle;
     RT::Init();
-    my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'post' );
+    my ($status, $msg) = RT::Handle->CheckCompatibility( $RT::Handle->dbh, 'pre' );
     return ($status, $msg) unless $status;
 
     print "Now inserting data\n";
@@ -269,6 +269,7 @@ sub action_upgrade {
         }
         $upgrading_from = scalar <STDIN>;
         chomp $upgrading_from;
+        $upgrading_from =~ s/\s+//g;
     } while $upgrading_from !~ /^\d+\.\d+\.\d+$/;
 
     my $upgrading_to = $RT::VERSION;
@@ -278,22 +279,55 @@ sub action_upgrade {
     return (1, "The version $upgrading_to you're upgrading to is up to date")
         if RT::Handle::cmp_version( $upgrading_from, $upgrading_to ) == 0;
 
-    opendir my $dh, $base_dir or die "couldn't open dir: $!";
-    my @versions = grep -d "$base_dir/$_" && /\d+\.\d+\.\d+/, readdir $dh;
-    closedir $dh;
-
-    @versions =
-        grep RT::Handle::cmp_version($_, $upgrading_to) <= 0,
-        grep RT::Handle::cmp_version($_, $upgrading_from) > 0,
-        sort RT::Handle::cmp_version @versions;
+    my @versions = get_versions_from_to($base_dir, $upgrading_from, $upgrading_to);
 
     return (1, "No DB changes between $upgrading_from and $upgrading_to")
         unless @versions;
 
-    print "Going to apply following upgrades:\n";
+    print "\nGoing to apply following upgrades:\n";
     print map "* $_\n", @versions;
 
-    print "HI THERE IT'S VERY IMPORTANT TO BACK UP BEFORE THIS STEP\n\n";
+    {
+        my $custom_upgrading_to = undef;
+        do {
+            if ( defined $custom_upgrading_to ) {
+                print "Doesn't match #.#.#: ";
+            } else {
+                print "\nEnter RT version if you want to stop upgrade at some point,\n";
+                print "  or leave it blank if you want apply above upgrades: ";
+            }
+            $custom_upgrading_to = scalar <STDIN>;
+            chomp $custom_upgrading_to;
+            $custom_upgrading_to =~ s/\s+//g;
+            last unless $custom_upgrading_to;
+        } while $custom_upgrading_to !~ /^\d+\.\d+\.\d+$/;
+
+        if ( $custom_upgrading_to ) {
+            return (
+                0, "The version you entered ($custom_upgrading_to) is lower than\n"
+                ."version you're upgrading from ($upgrading_from)"
+            ) if RT::Handle::cmp_version( $upgrading_from, $custom_upgrading_to ) > 0;
+
+            return (1, "The version you're upgrading to is up to date")
+                if RT::Handle::cmp_version( $upgrading_from, $custom_upgrading_to ) == 0;
+
+            if ( RT::Handle::cmp_version( $RT::VERSION, $custom_upgrading_to ) < 0 ) {
+                print "Version you entered is greater than installed ($RT::VERSION).\n";
+                _yesno() or exit(-2);
+            }
+            # ok, checked everything no let's refresh list
+            $upgrading_to = $custom_upgrading_to;
+            @versions = get_versions_from_to($base_dir, $upgrading_from, $upgrading_to);
+
+            return (1, "No DB changes between $upgrading_from and $upgrading_to")
+                unless @versions;
+
+            print "\nGoing to apply following upgrades:\n";
+            print map "* $_\n", @versions;
+        }
+    }
+
+    print "\nHI THERE IT'S VERY IMPORTANT TO BACK UP BEFORE THIS STEP\n\n";
     _yesno() or exit(-2) unless $args{'force'};
 
     foreach my $v ( @versions ) {
@@ -310,6 +344,19 @@ sub action_upgrade {
         }
     }
     return 1;
+}
+
+sub get_versions_from_to {
+    my ($base_dir, $from, $to) = @_;
+
+    opendir my $dh, $base_dir or die "couldn't open dir: $!";
+    my @versions = grep -d "$base_dir/$_" && /\d+\.\d+\.\d+/, readdir $dh;
+    closedir $dh;
+
+    return
+        grep RT::Handle::cmp_version($_, $to) <= 0,
+        grep RT::Handle::cmp_version($_, $from) > 0,
+        sort RT::Handle::cmp_version @versions;
 }
 
 sub error {
