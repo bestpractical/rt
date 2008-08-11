@@ -91,8 +91,14 @@
          push @li, 'post-separator' if $postsep;
          push @li, 'last' if $tab eq $tabs[-1];
          $class->{li} = join ' ', @li;
+
+         my $href = $path;
+         $href = RT->Config->Get('WebPath') .'/'. $href
+            unless $path =~ /^\w+:/;
+         my $target = $page_tabs->{$tab}->{'target'} || '';
+         $target = $m->interp->apply_escapes( $target, 'h' );
 </%perl>
-    <li<% $class->{li} ? qq[ class="$class->{li}"] : ''|n %>><% $count > 1 && !$postsep && "&#183; "|n%><a href="<%RT->Config->Get('WebPath')%>/<%$page_tabs->{$tab}->{'path'}%>"<%$class->{a}|n%><% $class->{a} ? ' name="focus"' : ''|n %>><% $page_tabs->{$tab}->{'title'} %></a></li>
+    <li<% $class->{li} ? qq[ class="$class->{li}"] : ''|n %>><% $count > 1 && !$postsep && "&#183; "|n%><a href="<% $href %>"<%$class->{a}|n%><% $class->{a} ? ' name="focus"' : ''|n %><% $target? " target='$target'": '' |n %>><% $page_tabs->{$tab}->{'title'} %></a></li>
 %
 %         if ($sep) {
     <li class="separator">&#183;&#183;&#183;</li>

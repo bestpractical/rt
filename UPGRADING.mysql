@@ -1,10 +1,10 @@
-In MySQL 4.1 and greater were implemented changes in character set handling
+MySQL 4.1 and greater implemented changes in character set handling
 that may result in RT failures: multiple login requests, binary attachments
 breakage, image custom fields breakage and other.
 
-In order to resolve this issue we've changed schema for mysql 4.1 and greater
+In order to resolve this issue we've changed our schema for mysql 4.1 and greater
 versions. If you're installing new RT then you can skip this file, but if
-you're upgrading then you MUST follow instructions below.
+you're upgrading from 4.0 then you MUST follow instructions below.
 
 1) Backup RT database. It's really good to test that you can restore from
    this backup.

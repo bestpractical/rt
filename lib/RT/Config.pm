@@ -340,6 +340,10 @@ Takes no arguments.
 
 sub LoadConfigs {
     my $self    = shift;
+
+    $self->InitConfig( File => 'RT_Config.pm' );
+    $self->LoadConfig( File => 'RT_Config.pm' );
+
     my @configs = $self->Configs;
     $self->InitConfig( File => $_ ) foreach @configs;
     $self->LoadConfig( File => $_ ) foreach @configs;
@@ -399,7 +403,10 @@ sub _LoadConfig {
                 Extension  => $is_ext,
             );
         };
-        local @INC = ( $RT::LocalEtcPath, $RT::EtcPath, @INC );
+        my @etc_dirs = ($RT::LocalEtcPath);
+        push @etc_dirs, RT->PluginDirs('etc') if $is_ext;
+        push @etc_dirs, $RT::EtcPath, @INC;
+        local @INC = @etc_dirs;
         require $args{'File'};
     };
     if ($@) {
@@ -459,26 +466,26 @@ sub PostLoadCheck {
 
 =head2 Configs
 
-Returns list of the top level configs file names. F<RT_Config.pm> is always
-first, other configs are ordered by name.
+Returns list of config files found in local etc, plugins' etc
+and main etc directories.
 
 =cut
 
 sub Configs {
     my $self    = shift;
+
     my @configs = ();
-    foreach my $path ( $RT::LocalEtcPath, $RT::EtcPath ) {
+    foreach my $path ( $RT::LocalEtcPath, RT->PluginDirs('etc'), $RT::EtcPath ) {
         my $mask = File::Spec->catfile( $path, "*_Config.pm" );
         my @files = glob $mask;
         @files = grep !/^RT_Config\.pm$/,
             grep $_ && /^\w+_Config\.pm$/,
             map { s/^.*[\\\/]//; $_ } @files;
-        push @configs, @files;
+        push @configs, sort @files;
     }
 
-    @configs = sort @configs;
-    unshift( @configs, 'RT_Config.pm' );
-
+    my %seen;
+    @configs = grep !$seen{$_}++, @configs;
     return @configs;
 }
 

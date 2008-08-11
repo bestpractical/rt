@@ -158,8 +158,9 @@ want to read a more comprehensive installation guide at:
 
 8  If you're upgrading from RT 2.0:
 
-    Please upgrade from RT 2.0 to RT 3.2 and then follow the instructions
-    for section 7.
+    Use the RT::Extension::RT2toRT3 module to upgrade to the current RT
+    release.  You can download it from CPAN here:
+    http://search.cpan.org/dist/RT-Extension-RT2toRT3/
 
 9   Configure the email and web gateways, as described below. 
 
