@@ -61,7 +61,8 @@
 % foreach my $var qw(Query Format OrderBy Order Rows Page) {
 <input type="hidden" class="hidden" name="<%$var%>" value="<%$ARGS{$var} || ''%>" />
 %}
-<& /Elements/CollectionList, Query => $Query,
+<& /Elements/CollectionList, 
+    Query => $Query,
     DisplayFormat => $Format,
     Format => $ARGS{'Format'},
     Verbatim => 1,
@@ -207,7 +208,10 @@ $cfs->LimitToQueue($_) for keys %$seen_queues;
 
 
 <%INIT>
-$Rows = $RowsPerPage unless (defined $Rows);
+unless ( defined $Rows ) {
+    $Rows = $RowsPerPage;
+    $ARGS{Rows} = $RowsPerPage;
+}
 my $title = loc("Update multiple tickets");
 
 # Iterate through the ARGS hash and remove anything with a null value.
