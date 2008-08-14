@@ -1,23 +1,22 @@
----
-abstract: 'RT FM Extension'
+--- 
+abstract: RT FM Extension
 author: ~
 distribution_type: module
-generated_by: 'Module::Install version 0.72'
-license: 'GPL version 2'
-meta-spec:
+generated_by: Module::Install version 0.70
+license: GPL version 2
+meta-spec: 
   url: http://module-build.sourceforge.net/META-spec-v1.3.html
   version: 1.3
 name: RTFM
-no_index:
-  directory:
-    - bin
+no_index: 
+  directory: 
     - etc
     - html
     - po
-    - sbin
+    - var
     - inc
     - t
-requires:
+requires: 
   HTML::FormatText: 0
   HTML::TreeBuilder: 0
   RT: 3.004002
@@ -25,4 +24,4 @@ requires:
   Time::ParseDate: 0
   Tree::Simple: 0
   perl: 5.8.3
-version: 2.3.1
+version: 2.4.HEAD
