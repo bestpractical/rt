@@ -92,7 +92,7 @@
          push @li, 'last' if $tab eq $tabs[-1];
          $class->{li} = join ' ', @li;
 
-         my $href = $path;
+         my $href = $page_tabs->{$tab}->{'path'} || "";
          $href = RT->Config->Get('WebPath') .'/'. $href
             unless $path =~ /^\w+:/;
          my $target = $page_tabs->{$tab}->{'target'} || '';
