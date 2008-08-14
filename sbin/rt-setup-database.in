@@ -327,7 +327,7 @@ sub action_upgrade {
         }
     }
 
-    print "\nHI THERE IT'S VERY IMPORTANT TO BACK UP BEFORE THIS STEP\n\n";
+    print "\nIT'S VERY IMPORTANT TO BACK UP BEFORE THIS STEP\n\n";
     _yesno() or exit(-2) unless $args{'force'};
 
     foreach my $v ( @versions ) {
