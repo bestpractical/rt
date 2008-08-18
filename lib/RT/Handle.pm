@@ -319,8 +319,8 @@ sub CreateDatabase {
     elsif ( $db_type eq 'Pg' ) {
         # XXX: as we get external DBH we don't know if RaiseError or PrintError
         # are enabled, so we have to setup it here and restore them back
-        $status = $dbh->do("CREATE DATABASE $db_name WITH ENCODING='UNICODE'")
-            || $dbh->do("CREATE DATABASE $db_name");
+        $status = $dbh->do("CREATE DATABASE $db_name WITH ENCODING='UNICODE' TEMPLATE template0")
+            || $dbh->do("CREATE DATABASE $db_name TEMPLATE template0");
     }
     elsif ( $db_type eq 'Informix' ) {
         local $ENV{'DB_LOCALE'} = 'en_us.utf8';
