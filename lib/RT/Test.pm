@@ -236,6 +236,7 @@ sub bootstrap_db {
     DBIx::SearchBuilder::Record::Cachable->FlushCache;
 }
 
+my @SERVERS;
 sub started_ok {
     require RT::Test::Web;
     if ( $existing_server ) {
@@ -246,6 +247,7 @@ sub started_ok {
     my $s = RT::Interface::Web::Standalone->new($port);
     push @server, $s;
     my $ret = $s->started_ok;
+    @SERVERS = $s->pids;
     $RT::Handle = new RT::Handle;
     $RT::Handle->dbh( undef );
     RT->ConnectToDatabase;
@@ -792,6 +794,12 @@ END {
     my $Test = RT::Test->builder;
     return if $Test->{Original_Pid} != $$;
     if ( $ENV{RT_TEST_PARALLEL} && $created_new_db ) {
+        {
+            kill 'INT', @SERVERS;
+            foreach my $pid (@SERVERS) {
+                waitpid $pid, 0;
+            }
+        }
 
         # Pg doesn't like if you issue a DROP DATABASE while still connected
         my $dbh = $RT::Handle->dbh;
