@@ -62,7 +62,7 @@ if (defined $Subscription) {
     my $hour = $Subscription->SubValue('Hour');
 
     if ($freq eq 'weekly') {
-        my $day = (qw/Monday Tuesday Wednesday Thursday Friday Saturday Sunday/)[$Subscription->SubValue('Dow')];
+        my $day = $Subscription->SubValue('Dow');
         $frequency = loc("weekly (on [_1]) at [_2]", loc($day), $hour);
     }
     elsif ($freq eq 'monthly') {
