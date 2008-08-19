@@ -103,7 +103,7 @@ sub extract_strings_from_code {
     local $/;
     return if ( -d $_ );
     return if ( $File::Find::dir =~ 'lib/blib|lib/t/autogen|var|m4|local|\.svn' );
-    return if ( /\.pot$|\.po$|\.bak$|~|,D|,B$|extract-message-catalog$/ );
+    return if ( /\.pot$|\.po$|\.bak$|~|,D|,B$|extract-message-catalog$|tweak-template-locstring$/ );
     return if ( /^[\.#]/ );
     return if ( -f "$_.in" );
 
