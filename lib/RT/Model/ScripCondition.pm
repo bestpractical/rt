@@ -151,7 +151,7 @@ sub load_condition {
 
 =head2 describe 
 
-Helper method to call the condition module\'s Describe method.
+Helper method to call the condition module's describe method.
 
 =cut
 

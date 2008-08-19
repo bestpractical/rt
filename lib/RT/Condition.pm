@@ -54,9 +54,9 @@
 
     use RT::Condition;
     my $foo = RT::Condition->new( 
-		TransactionObj => $tr, 
-		TicketObj => $ti, 
-		ScripObj => $scr, 
+		transaction_obj => $tr, 
+		ticket_obj => $ti, 
+		scrip_obj => $scr, 
 		Argument => $arg, 
 		Type => $type);
 
@@ -135,9 +135,9 @@ sub argument {
 
 # }}}
 
-# {{{ sub TicketObj
+# {{{ sub ticket_obj
 
-=head2 TicketObj
+=head2 ticket_obj
 
 Return the ticket object we're talking about
 
@@ -150,9 +150,9 @@ sub ticket_obj {
 
 # }}}
 
-# {{{ sub ScripObj
+# {{{ sub scrip_obj
 
-=head2 ScripObj
+=head2 scrip_obj
 
 Return the Scrip object we're talking about
 
@@ -164,9 +164,9 @@ sub scrip_obj {
 }
 
 # }}}
-# {{{ sub TransactionObj
+# {{{ sub transaction_obj
 
-=head2 TransactionObj
+=head2 transaction_obj
 
 Return the transaction object we're talking about
 
@@ -198,7 +198,7 @@ sub applicable_trans_types {
 
 #What does this type of Action does
 
-# {{{ sub Describe
+# {{{ sub describe
 sub describe {
     my $self = shift;
     return ( $self->loc( "No description for %1", ref $self ) );
@@ -210,7 +210,7 @@ sub describe {
 
 #If this rule applies to this transaction, return true.
 
-# {{{ sub IsApplicable
+# {{{ sub is_applicable
 sub is_applicable {
     my $self = shift;
     return (undef);

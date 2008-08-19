@@ -66,10 +66,10 @@ use RT::ScripAction::NotifyGroup;
 
 use base qw(RT::ScripAction::NotifyGroup);
 
-sub SetReturnAddress {
+sub set_return_address {
     my $self = shift;
     $self->{'comment'} = 1;
-    return $self->SUPER::SetReturnAddress( @_, is_comment => 1 );
+    return $self->SUPER::set_return_address( @_, is_comment => 1 );
 }
 
 =head1 AUTHOR

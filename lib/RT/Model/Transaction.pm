@@ -814,7 +814,7 @@ sub brief_description {
 }
 
 %_brief_descriptions = (
-    commentEmailRecord => sub {
+    CommentEmailRecord => sub {
         my $self = shift;
         return _("Outgoing email about a comment recorded");
     },
@@ -1108,7 +1108,7 @@ sub current_user_can_see {
         unless ( $self->current_user_has_right('ShowTicketcomments') ) {
             return 0;
         }
-    } elsif ( $type eq 'commentEmailRecord' ) {
+    } elsif ( $type eq 'CommentEmailRecord' ) {
         unless ( $self->current_user_has_right('ShowTicketcomments')
             && $self->current_user_has_right('ShowOutgoingEmail') )
         {
@@ -1281,7 +1281,7 @@ sub custom_field_lookup_type {
     "RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction";
 }
 
-=item DeferredRecipients($freq, $include_sent )
+=item deferred_recipients($freq, $include_sent )
 
 Takes the following arguments:
 
@@ -1300,7 +1300,7 @@ notifications have been sent.
 
 =cut
 
-sub DeferredRecipients {
+sub deferred_recipients {
     my $self         = shift;
     my $freq         = shift;
     my $include_sent = @_ ? shift : 0;

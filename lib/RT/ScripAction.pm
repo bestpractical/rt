@@ -86,11 +86,11 @@ sub _Init {
     my %args = (
         Argument       => undef,
         CurrentUser    => undef,
-        ScripActionObj => undef,
-        ScripObj       => undef,
-        TemplateObj    => undef,
-        TicketObj      => undef,
-        TransactionObj => undef,
+        scrip_action_obj => undef,
+        scrip_obj       => undef,
+        template_obj    => undef,
+        ticket_obj      => undef,
+        transaction_obj => undef,
         Type           => undef,
 
         @_
@@ -98,18 +98,18 @@ sub _Init {
 
     $self->{'Argument'} = $args{'Argument'};
     $self->current_user( $args{'CurrentUser'} );
-    $self->{'ScripActionObj'} = $args{'ScripActionObj'};
-    $self->{'ScripObj'}       = $args{'ScripObj'};
-    $self->{'TemplateObj'}    = $args{'TemplateObj'};
-    $self->{'TicketObj'}      = $args{'TicketObj'};
-    $self->{'TransactionObj'} = $args{'TransactionObj'};
+    $self->{'scrip_action_obj'} = $args{'scrip_action_obj'};
+    $self->{'scrip_obj'}       = $args{'scrip_obj'};
+    $self->{'template_obj'}    = $args{'template_obj'};
+    $self->{'ticket_obj'}      = $args{'ticket_obj'};
+    $self->{'transaction_obj'} = $args{'transaction_obj'};
     $self->{'Type'}           = $args{'Type'};
 
-    Scalar::Util::weaken( $self->{'ScripActionObj'} );
-    Scalar::Util::weaken( $self->{'ScripObj'} );
-    Scalar::Util::weaken( $self->{'TemplateObj'} );
-    Scalar::Util::weaken( $self->{'TicketObj'} );
-    Scalar::Util::weaken( $self->{'TransactionObj'} );
+    Scalar::Util::weaken( $self->{'scrip_action_obj'} );
+    Scalar::Util::weaken( $self->{'scrip_obj'} );
+    Scalar::Util::weaken( $self->{'template_obj'} );
+    Scalar::Util::weaken( $self->{'ticket_obj'} );
+    Scalar::Util::weaken( $self->{'transaction_obj'} );
 
 }
 
@@ -125,42 +125,42 @@ sub Argument {
 
 # }}}
 
-# {{{ sub TicketObj
-sub TicketObj {
+# {{{ sub ticket_obj
+sub ticket_obj {
     my $self = shift;
-    return ( $self->{'TicketObj'} );
+    return ( $self->{'ticket_obj'} );
 }
 
 # }}}
 
-# {{{ sub TransactionObj
-sub TransactionObj {
+# {{{ sub transaction_obj
+sub transaction_obj {
     my $self = shift;
-    return ( $self->{'TransactionObj'} );
+    return ( $self->{'transaction_obj'} );
 }
 
 # }}}
 
-# {{{ sub TemplateObj
-sub TemplateObj {
+# {{{ sub template_obj
+sub template_obj {
     my $self = shift;
-    return ( $self->{'TemplateObj'} );
+    return ( $self->{'template_obj'} );
 }
 
 # }}}
 
-# {{{ sub ScripObj
-sub ScripObj {
+# {{{ sub scrip_obj
+sub scrip_obj {
     my $self = shift;
-    return ( $self->{'ScripObj'} );
+    return ( $self->{'scrip_obj'} );
 }
 
 # }}}
 
-# {{{ sub ScripActionObj
-sub ScripActionObj {
+# {{{ sub scrip_action_obj
+sub scrip_action_obj {
     my $self = shift;
-    return ( $self->{'ScripActionObj'} );
+    return ( $self->{'scrip_action_obj'} );
 }
 
 # }}}
@@ -187,8 +187,8 @@ sub Commit {
 
 #What does this type of Action does
 
-# {{{ sub Describe
-sub Describe {
+# {{{ sub describe
+sub describe {
     my $self = shift;
     return $self->loc( "No description for %1", ref $self );
 }
@@ -197,8 +197,8 @@ sub Describe {
 
 #Parse the templates, get things ready to go.
 
-# {{{ sub Prepare
-sub Prepare {
+# {{{ sub prepare
+sub prepare {
     my $self = shift;
     return ( 0, $self->loc("Prepare Stubbed") );
 }
@@ -207,8 +207,8 @@ sub Prepare {
 
 #If this rule applies to this transaction, return true.
 
-# {{{ sub IsApplicable
-sub IsApplicable {
+# {{{ sub is_applicable
+sub is_applicable {
     my $self = shift;
     return (undef);
 }
@@ -221,10 +221,10 @@ sub DESTROY {
 
     # We need to clean up all the references that might maybe get
     # oddly circular
-    $self->{'ScripActionObj'} = undef;
-    $self->{'ScripObj'}       = undef;
-    $self->{'TemplateObj'}    = undef $self->{'TicketObj'} = undef;
-    $self->{'TransactionObj'} = undef;
+    $self->{'scrip_action_obj'} = undef;
+    $self->{'scrip_obj'}       = undef;
+    $self->{'template_obj'}    = undef $self->{'ticket_obj'} = undef;
+    $self->{'transaction_obj'} = undef;
 }
 
 # }}}

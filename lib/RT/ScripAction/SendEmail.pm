@@ -507,7 +507,7 @@ sub record_outgoing_mail_transaction {
 
     my $type;
     if ( $self->transaction_obj->type eq 'comment' ) {
-        $type = 'commentEmailRecord';
+        $type = 'CommentEmailRecord';
     } else {
         $type = 'EmailRecord';
     }

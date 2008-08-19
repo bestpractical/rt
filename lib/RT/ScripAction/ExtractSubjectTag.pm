@@ -50,12 +50,12 @@ package RT::ScripAction::ExtractSubjectTag;
 use base 'RT::ScripAction';
 use strict;
 
-sub Describe {
+sub describe {
     my $self = shift;
     return ( ref $self );
 }
 
-sub Prepare {
+sub prepare {
     return (1);
 }
 

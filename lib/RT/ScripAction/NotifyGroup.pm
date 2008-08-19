@@ -70,13 +70,13 @@ require RT::Model::Group;
 
 =head1 METHODS
 
-=head2 SetRecipients
+=head2 set_recipients
 
 Sets the recipients of this message to Groups and/or Users.
 
 =cut
 
-sub SetRecipients {
+sub set_recipients {
     my $self = shift;
 
     my $arg = $self->argument;

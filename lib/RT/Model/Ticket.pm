@@ -2964,7 +2964,7 @@ sub transactions {
                 subclause        => 'acl',
                 column           => 'type',
                 operator         => '!=',
-                value            => "commentEmailRecord",
+                value            => "CommentEmailRecord",
                 entry_aggregator => 'AND'
             );
 

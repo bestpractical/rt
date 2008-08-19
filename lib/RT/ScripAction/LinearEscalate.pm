@@ -146,13 +146,13 @@ our $VERSION = '0.06';
 
 #What does this type of Action does
 
-sub Describe {
+sub describe {
     my $self = shift;
     my $class = ref($self) || $self;
     return "$class will move a ticket's priority toward its final priority.";
 }
 
-sub Prepare {
+sub prepare {
     my $self = shift;
 
     my $ticket = $self->ticket_obj;
