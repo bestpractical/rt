@@ -50,7 +50,7 @@ use warnings;
 
 package RT::ScripAction::UserDefined;
 
-use base qw(RT::ScripAction::Generic);
+use base 'RT::ScripAction';
 
 =head2 prepare
 

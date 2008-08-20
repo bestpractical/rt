@@ -71,11 +71,9 @@ as the ticket heads toward its due date.
 =cut
 
 package RT::ScripAction::EscalatePriority;
-require RT::ScripAction::Generic;
+use base 'RT::ScripAction';
 
 use strict;
-use vars qw/@ISA/;
-@ISA = qw(RT::ScripAction::Generic);
 
 #Do what we need to do and send it out.
 
@@ -156,7 +154,7 @@ sub commit {
     my ( $val, $msg ) = $self->ticket_obj->set_priority( $self->{'prio'} );
 
     unless ($val) {
-        Jifty->log->debug( $self . " $msg\n" );
+        Jifty->log->debug( $self . " $msg" );
     }
 }
 

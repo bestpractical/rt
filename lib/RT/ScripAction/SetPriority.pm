@@ -46,11 +46,9 @@
 #
 # END BPS TAGGED BLOCK }}}
 package RT::ScripAction::SetPriority;
-require RT::ScripAction::Generic;
+use base 'RT::ScripAction';
 
 use strict;
-use vars qw/@ISA/;
-@ISA = qw(RT::ScripAction::Generic);
 
 #Do what we need to do and send it out.
 

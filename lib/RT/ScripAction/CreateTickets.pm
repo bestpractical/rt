@@ -49,9 +49,7 @@ use strict;
 use warnings;
 
 package RT::ScripAction::CreateTickets;
-require RT::ScripAction::Generic;
-
-use base qw(RT::ScripAction::Generic);
+use base 'RT::ScripAction';
 
 use MIME::Entity;
 
@@ -309,16 +307,16 @@ sub prepare {
     my $self = shift;
 
     unless ( $self->template_obj ) {
-        Jifty->log->warn("No template object handed to $self\n");
+        Jifty->log->warn("No template object handed to $self");
     }
 
     unless ( $self->transaction_obj ) {
-        Jifty->log->warn("No transaction object handed to $self\n");
+        Jifty->log->warn("No transaction object handed to $self");
 
     }
 
     unless ( $self->ticket_obj ) {
-        Jifty->log->warn("No ticket object handed to $self\n");
+        Jifty->log->warn("No ticket object handed to $self");
 
     }
 
@@ -631,7 +629,7 @@ sub parse_lines {
             }
         );
 
-        Jifty->log->debug("Workflow: yielding\n$content");
+        Jifty->log->debug("Workflow: yielding $content");
 
         if ($err) {
             Jifty->log->error( "Ticket creation failed: " . $err );
@@ -965,10 +963,10 @@ sub get_update_template {
         }
         $string .= "$type: ";
 
-        my $mode   = $LINKTYPEMAP{$type}->{Mode};
-        my $method = $LINKTYPEMAP{$type}->{Type};
+        my $mode   = $LINKTYPEMAP{$type}->{mode};
+        my $method = $LINKTYPEMAP{$type}->{type};
 
-        my $links;
+        my $links = '';
         while ( my $link = $t->$method->next ) {
             $links .= ", " if $links;
 

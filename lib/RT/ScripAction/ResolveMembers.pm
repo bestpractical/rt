@@ -48,12 +48,10 @@
 # This Action will resolve all members of a resolved group ticket
 
 package RT::ScripAction::ResolveMembers;
-require RT::ScripAction::Generic;
 require RT::Model::LinkCollection;
 
 use strict;
-use vars qw/@ISA/;
-@ISA = qw(RT::ScripAction::Generic);
+use base 'RT::ScripAction';
 
 #Do what we need to do and send it out.
 

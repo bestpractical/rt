@@ -48,7 +48,7 @@
 
 =head1 name
 
-  RT::ScripAction::Generic - a generic baseclass for RT Actions
+  RT::ScripAction::Generic - deprecated, see RT::ScripAction
 
 =head1 SYNOPSIS
 
@@ -56,162 +56,30 @@
 
 =head1 description
 
+This module is provided only for backwards compatibility.
+
 =head1 METHODS
 
 
 =cut
 
-package RT::ScripAction::Generic;
-
 use strict;
-use Scalar::Util;
+use warnings;
+package RT::ScripAction::Generic;
+use base 'RT::ScripAction';
 
-use base qw/RT::Base/;
+eval "require RT::ScripAction::Generic_Vendor";
+die $@ if ( $@ && $@ !~ qr{^Can't locate RT/ScripAction/Generic_Vendor.pm} );
+warn
+"RT::ScripAction::Generic has become RT::ScripAction. Please adjust your deprecated RT::ScripAction::Generic_Vendor file at "
+  . $INC{"RT/ScripAction/Generic_Vendor.pm"}
+  if !$@;
 
-# {{{ sub new
-sub new {
-    my $proto = shift;
-    my $class = ref($proto) || $proto;
-    my $self  = {};
-    bless( $self, $class );
-    $self->_get_current_user(@_);
-    $self->_init(@_);
-    return $self;
-}
-
-# }}}
-
-# {{{ sub _init
-sub _init {
-    my $self = shift;
-    my %args = (
-        argument         => undef,
-        scrip_action_obj => undef,
-        scrip_obj        => undef,
-        template_obj     => undef,
-        ticket_obj       => undef,
-        transaction_obj  => undef,
-        type             => undef,
-
-        @_
-    );
-
-    $self->{'argument'}         = $args{'argument'};
-    $self->{'scrip_action_obj'} = $args{'scrip_action_obj'};
-    $self->{'scrip_obj'}        = $args{'scrip_obj'};
-    $self->{'template_obj'}     = $args{'template_obj'};
-    $self->{'ticket_obj'}       = $args{'ticket_obj'};
-    $self->{'transaction_obj'}  = $args{'transaction_obj'};
-    $self->{'type'}             = $args{'type'};
-
-    Scalar::Util::weaken( $self->{'scrip_action_obj'} );
-    Scalar::Util::weaken( $self->{'scrip_obj'} );
-    Scalar::Util::weaken( $self->{'template_obj'} );
-    Scalar::Util::weaken( $self->{'ticket_obj'} );
-    Scalar::Util::weaken( $self->{'transaction_obj'} );
-
-}
-
-# }}}
-
-# Access Scripwide data
-
-# {{{ sub argument
-sub argument {
-    my $self = shift;
-    return ( $self->{'argument'} );
-}
-
-# }}}
-
-# {{{ sub ticket_obj
-sub ticket_obj {
-    my $self = shift;
-    return ( $self->{'ticket_obj'} );
-}
-
-# }}}
-
-# {{{ sub transaction_obj
-sub transaction_obj {
-    my $self = shift;
-    return ( $self->{'transaction_obj'} );
-}
-
-# }}}
-
-# {{{ sub template_obj
-sub template_obj {
-    my $self = shift;
-    return ( $self->{'template_obj'} );
-}
-
-# }}}
-
-# {{{ sub scrip_obj
-sub scrip_obj {
-    my $self = shift;
-    return ( $self->{'scrip_obj'} );
-}
-
-# }}}
-
-# {{{ sub scrip_action_obj
-sub scrip_action_obj {
-    my $self = shift;
-    return ( $self->{'scrip_action_obj'} );
-}
-
-# }}}
-
-# {{{ sub type
-sub type {
-    my $self = shift;
-    return ( $self->{'type'} );
-}
-
-# }}}
-
-# Scrip methods
-
-#Do what we need to do and send it out.
-
-# {{{ sub commit
-sub commit {
-    my $self = shift;
-    return ( 0, _("Commit Stubbed") );
-}
-
-# }}}
-
-#What does this type of Action does
-
-# {{{ sub describe
-sub describe {
-    my $self = shift;
-    return _( "No description for %1", ref $self );
-}
-
-# }}}
-
-#Parse the templates, get things ready to go.
-
-# {{{ sub prepare
-sub prepare {
-    my $self = shift;
-    return ( 0, _("Prepare Stubbed") );
-}
-
-# }}}
-
-#If this rule applies to this transaction, return true.
-
-# {{{ sub is_applicable
-sub is_applicable {
-    my $self = shift;
-    return (undef);
-}
-
-# }}}
+eval "require RT::ScripAction::Generic_Local";
+die $@ if ( $@ && $@ !~ qr{^Can't locate RT/ScripAction/Generic_Local.pm} );
+warn
+"RT::ScripAction::Generic has become RT::ScripAction. Please adjust your deprecated RT::ScripAction::Generic_Local file at "
+  . $INC{"RT/ScripAction/Generic_Local.pm"}
+  if !$@;
 
 1;

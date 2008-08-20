@@ -49,7 +49,7 @@ use strict;
 use warnings;
 
 package RT::ScripAction::RecordCorrespondence;
-use base qw(RT::ScripAction::Generic);
+use base qw(RT::ScripAction);
 
 =head1 name
 

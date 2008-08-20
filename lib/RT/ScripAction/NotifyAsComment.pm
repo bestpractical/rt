@@ -49,8 +49,8 @@ package RT::ScripAction::NotifyAsComment;
 require RT::ScripAction::Notify;
 
 use strict;
-use vars qw/@ISA/;
-@ISA = qw(RT::ScripAction::Notify);
+use warnings;
+use base qw(RT::ScripAction::Notify);
 
 =head2 set_return_address
 

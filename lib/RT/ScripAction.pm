@@ -75,35 +75,35 @@ sub new {
     my $self  = {};
     bless( $self, $class );
     $self->_init(@_);
-    return $self;
+    return $self
 }
 
 # }}}
 
-# {{{ sub _Init
-sub _Init {
+# {{{ sub _init
+sub _init {
     my $self = shift;
     my %args = (
-        Argument       => undef,
-        CurrentUser    => undef,
+        argument       => undef,
+        current_user    => undef,
         scrip_action_obj => undef,
         scrip_obj       => undef,
         template_obj    => undef,
         ticket_obj      => undef,
         transaction_obj => undef,
-        Type           => undef,
+        type           => undef,
 
         @_
     );
 
-    $self->{'Argument'} = $args{'Argument'};
-    $self->current_user( $args{'CurrentUser'} );
+    $self->{'argument'} = $args{'argument'};
+    $self->current_user( $args{'current_user'} );
     $self->{'scrip_action_obj'} = $args{'scrip_action_obj'};
     $self->{'scrip_obj'}       = $args{'scrip_obj'};
     $self->{'template_obj'}    = $args{'template_obj'};
     $self->{'ticket_obj'}      = $args{'ticket_obj'};
     $self->{'transaction_obj'} = $args{'transaction_obj'};
-    $self->{'Type'}           = $args{'Type'};
+    $self->{'type'}           = $args{'type'};
 
     Scalar::Util::weaken( $self->{'scrip_action_obj'} );
     Scalar::Util::weaken( $self->{'scrip_obj'} );
@@ -117,10 +117,10 @@ sub _Init {
 
 # Access Scripwide data
 
-# {{{ sub Argument
-sub Argument {
+# {{{ sub argument
+sub argument {
     my $self = shift;
-    return ( $self->{'Argument'} );
+    return ( $self->{'argument'} );
 }
 
 # }}}
@@ -166,7 +166,7 @@ sub scrip_action_obj {
 # }}}
 
 # {{{ sub Type
-sub Type {
+sub type {
     my $self = shift;
     return ( $self->{'Type'} );
 }
@@ -177,8 +177,8 @@ sub Type {
 
 #Do what we need to do and send it out.
 
-# {{{ sub Commit
-sub Commit {
+# {{{ sub commit
+sub commit {
     my $self = shift;
     return ( 0, $self->loc("Commit Stubbed") );
 }

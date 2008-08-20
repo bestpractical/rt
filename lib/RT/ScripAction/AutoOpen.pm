@@ -51,7 +51,7 @@ package RT::ScripAction::AutoOpen;
 use strict;
 use warnings;
 
-use base qw(RT::ScripAction::Generic);
+use base qw(RT::ScripAction);
 
 =head1 description
 

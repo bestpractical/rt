@@ -52,13 +52,14 @@ package RT::ScripAction::SendEmail;
 use strict;
 use warnings;
 
-use base qw(RT::ScripAction::Generic);
+use base 'RT::ScripAction';
 
 use MIME::Words qw(encode_mimeword);
 
 use RT::EmailParser;
 use RT::Interface::Email;
 use Email::Address;
+our @EMAIL_RECIPIENT_HEADERS = qw(To Cc Bcc);
 
 =head1 name
 
@@ -68,9 +69,7 @@ RT::ScripAction::AutoReply is a good example subclass.
 
 =head1 SYNOPSIS
 
-  require RT::ScripAction::SendEmail;
-  @ISA  = qw(RT::ScripAction::SendEmail);
-
+  use base 'RT::ScripAction::SendEmail';
 
 =head1 description
 
@@ -101,6 +100,7 @@ activated in the config.
 sub commit {
     my $self = shift;
 
+    $self->defer_digest_recipients() if RT->config->get('RecordOutgoingemail');
     my $message = $self->template_obj->mime_obj;
 
     my $orig_message;
@@ -136,7 +136,9 @@ sub commit {
             );
         }
         $self->record_outgoing_mail_transaction($message);
+        $self->record_deferred_recipients();
     }
+
     return ( abs $ret );
 }
 
@@ -166,10 +168,9 @@ sub prepare {
     $self->remove_inappropriate_recipients();
 
     my %seen;
-    foreach my $type qw(To Cc Bcc) {
-        @{ $self->{$type} }
-            = grep defined && length && !$seen{ lc $_ }++,
-            @{ $self->{$type} };
+    foreach my $type (@EMAIL_RECIPIENT_HEADERS) {
+        @{ $self->{$type} } = grep defined && length && !$seen{ lc $_ }++,
+          @{ $self->{$type} };
     }
 
     # Go add all the Tos, Ccs and Bccs that we need to to the message to
@@ -177,18 +178,13 @@ sub prepare {
 
     # TODO: We should be pulling the recipients out of the template and shove them into To, Cc and Bcc
 
-    $self->set_header( 'To', join( ', ', @{ $self->{'To'} } ) )
-        if ( !$mime_obj->head->get('To')
-        && $self->{'To'}
-        && @{ $self->{'To'} } );
-    $self->set_header( 'Cc', join( ', ', @{ $self->{'Cc'} } ) )
-        if ( !$mime_obj->head->get('Cc')
-        && $self->{'Cc'}
-        && @{ $self->{'Cc'} } );
-    $self->set_header( 'Bcc', join( ', ', @{ $self->{'Bcc'} } ) )
-        if ( !$mime_obj->head->get('Bcc')
-        && $self->{'Bcc'}
-        && @{ $self->{'Bcc'} } );
+    for my $header (@EMAIL_RECIPIENT_HEADERS) {
+
+        $self->set_header( $header, join( ', ', @{ $self->{$header} } ) )
+          if ( !$mime_obj->head->get($header)
+            && $self->{$header}
+            && @{ $self->{$header} } );
+    }
 
     # PseudoTo	(fake to headers) shouldn't get matched for message recipients.
     # If we don't have any 'To' header (but do have other recipients), drop in
@@ -206,15 +202,11 @@ sub prepare {
     $self->set_header( 'Content-Transfer-Encoding', '8bit' );
 
     # For security reasons, we only send out textual mails.
-    my @parts = $mime_obj;
-    while ( my $part = shift @parts ) {
-        if ( $part->is_multipart ) {
-            push @parts, $part->parts;
-        } else {
-            $part->head->mime_attr( "Content-Type" => 'text/plain' )
-                unless RT::I18N::is_textual_content_type( $part->mime_type );
-            $part->head->mime_attr( "Content-Type.charset" => 'utf-8' );
-        }
+    foreach my $part ( grep !$_->is_multipart, $mime_obj->parts_DFS ) {
+        my $type = $part->mime_type || 'text/plain';
+        $type = 'text/plain' unless RT::I18N::is_textual_content_type($type);
+        $part->head->mime_attr( "Content-type"         => $type );
+        $part->head->mime_attr( "Content-type.charset" => 'utf-8' );
     }
 
     RT::I18N::set_mime_entity_to_encoding( $mime_obj, RT->config->get('EmailOutputEncoding'), 'mime_words_ok', );
@@ -244,7 +236,7 @@ Returns an array of L<Email::Address> objects containing all the To: recipients 
 
 sub to {
     my $self = shift;
-    return ( $self->_addresses_from_header('To') );
+    return ( $self->addresses_from_header('To') );
 }
 
 =head2 cc
@@ -255,7 +247,7 @@ Returns an array of L<Email::Address> objects containing all the Cc: recipients 
 
 sub cc {
     my $self = shift;
-    return ( $self->_addresses_from_header('Cc') );
+    return ( $self->addresses_from_header('Cc') );
 }
 
 =head2 bcc
@@ -266,11 +258,11 @@ Returns an array of L<Email::Address> objects containing all the Bcc: recipients
 
 sub bcc {
     my $self = shift;
-    return ( $self->_addresses_from_header('Bcc') );
+    return ( $self->addresses_from_header('Bcc') );
 
 }
 
-sub _addresses_from_header {
+sub addresses_from_header {
     my $self      = shift;
     my $field     = shift;
     my $header    = $self->template_obj->mime_obj->head->get($field);
@@ -304,13 +296,24 @@ sub send_message {
         ticket      => $self->ticket_obj,
         transaction => $self->transaction_obj,
     );
-    return $status unless $status > 0;
+
+    return $status unless ( $status > 0 || exists( $self->{'Deferred'} ) );
 
     my $success = $msgid . " sent ";
-    foreach (qw(To Cc Bcc)) {
+    foreach (@EMAIL_RECIPIENT_HEADERS) {
         my $recipients = $mime_obj->head->get($_);
         $success .= " $_: " . $recipients if $recipients;
     }
+
+    if ( exists $self->{'Deferred'} ) {
+        for (qw(daily weekly susp)) {
+            $success .=
+              "\nBatched email $_ for: "
+              . join( ", ", keys %{ $self->{'Deferred'}->{$_} } )
+              if ( exists $self->{'Deferred'}->{$_} );
+        }
+    }
+
     $success =~ s/\n//g;
 
     Jifty->log->info($success);
@@ -343,14 +346,12 @@ sub add_attachments {
     $attachments->order_by( column => 'id' );
 
     # We want to make sure that we don't include the attachment that's
-    # being sued as the "content" of this message"
+    # being used as the "Content" of this message" unless that attachment's
+    # content type is not like text/...
     my $transaction_content_obj = $self->transaction_obj->content_obj;
 
-    # XXX: this is legacy check of content type looks quite incorrect
-    # to me //ruz
     if (   $transaction_content_obj
-        && $transaction_content_obj->id
-        && $transaction_content_obj->content_type =~ m{text/plain}i )
+        && $transaction_content_obj->content_type =~ m{text/}i )
     {
         $attachments->limit(
             entry_aggregator => 'AND',
@@ -361,8 +362,12 @@ sub add_attachments {
     }
 
     # attach any of this transaction's attachments
+    my $seen_attachment = 0;
     while ( my $attach = $attachments->next ) {
-        $mime_obj->make_multipart('mixed');
+        if ( !$seen_attachment ) {
+            $mime_obj->make_multipart( 'mixed', Force => 1 );
+            $seen_attachment = 1;
+        }
         $self->add_attachment($attach);
     }
 
@@ -594,6 +599,118 @@ sub set_rt_special_headers {
 
 }
 
+sub defer_digest_recipients {
+    my $self = shift;
+    Jifty->log->debug( "Calling SetRecipientDigests for transaction "
+          . $self->transaction_obj . ", id "
+          . $self->transaction_obj->id );
+
+    # The digest attribute will be an array of notifications that need to
+    # be sent for this transaction.  The array will have the following
+    # format for its objects.
+    # $digest_hash -> {daily|weekly|susp} -> address -> {To|Cc|Bcc}
+    #                                     -> sent -> {true|false}
+    # The "sent" flag will be used by the cron job to indicate that it has
+    # run on this transaction.
+    # In a perfect world we might move this hash construction to the
+    # extension module itself.
+    my $digest_hash = {};
+
+    foreach my $mailfield (@EMAIL_RECIPIENT_HEADERS) {
+
+  # If we have a "PseudoTo", the "To" contains it, so we don't need to access it
+        next
+          if ( ( $self->{'PseudoTo'} && @{ $self->{'PseudoTo'} } )
+            && ( $mailfield eq 'To' ) );
+        Jifty->log->debug( "Working on mailfield $mailfield; recipients are "
+              . join( ',', @{ $self->{$mailfield} } ) );
+
+        # Store the 'daily digest' folk in an array.
+        my ( @send_now, @daily_digest, @weekly_digest, @suspended );
+
+        # Have to get the list of addresses directly from the MIME header
+        # at this point.
+        Jifty->log->debug( $self->template_obj->mime_obj->head->as_string );
+        foreach my $rcpt ( map { $_->address }
+            $self->AddressesFromHeader($mailfield) )
+        {
+            next unless $rcpt;
+            my $user_object = RT::Model::User->new(RT->system_user);
+            $user_object->load_by_email($rcpt);
+            if ( !$user_object->id ) {
+
+                # If there's an email address in here without an associated
+                # RT user, pass it on through.
+                Jifty->log->debug(
+"User $rcpt is not associated with an RT user object.  Send mail."
+                );
+                push( @send_now, $rcpt );
+                next;
+            }
+
+            my $mailpref = RT->config->get( 'EmailFrequency', $user_object ) || '';
+            Jifty->log->debug(
+                "Got user mail preference '$mailpref' for user $rcpt");
+
+            if    ( $mailpref =~ /daily/i )   { push( @daily_digest,  $rcpt ) }
+            elsif ( $mailpref =~ /weekly/i )  { push( @weekly_digest, $rcpt ) }
+            elsif ( $mailpref =~ /suspend/i ) { push( @suspended,     $rcpt ) }
+            else                              { push( @send_now,      $rcpt ) }
+        }
+
+        # Reset the relevant mail field.
+        Jifty->log->debug(
+            "Removing deferred recipients from $mailfield: line");
+        if (@send_now) {
+            $self->set_header( $mailfield, join( ', ', @send_now ) );
+        }
+        else {    # No recipients!  Remove the header.
+            $self->template_obj->mime_obj->head->delete($mailfield);
+        }
+
+        # Push the deferred addresses into the appropriate field in
+        # our attribute hash, with the appropriate mail header.
+        Jifty->log->debug(
+            "Setting deferred recipients for attribute creation");
+        $digest_hash->{'daily'}->{$_} = { 'header' => $mailfield, _sent => 0 }
+          for (@daily_digest);
+        $digest_hash->{'weekly'}->{$_} = { 'header' => $mailfield, _sent => 0 }
+          for (@weekly_digest);
+        $digest_hash->{'susp'}->{$_} = { 'header' => $mailfield, _sent => 0 }
+          for (@suspended);
+    }
+
+    if ( scalar keys %$digest_hash ) {
+
+        # Save the hash so that we can add it as an attribute to the
+        # outgoing email transaction.
+        $self->{'Deferred'} = $digest_hash;
+    }
+    else {
+        Jifty->log->debug( "No recipients found for deferred delivery on "
+              . "transaction #"
+              . $self->transaction_obj->id );
+    }
+}
+
+sub record_deferred_recipients {
+    my $self   = shift;
+    my $txn_id = $self->{'OutgoingMailTransaction'};
+    return unless $txn_id;
+
+    my $txn_obj = RT::Model::Transaction->new;
+    $txn_obj->load($txn_id);
+    my ( $ret, $msg ) = $txn_obj->add_attribute(
+        name    => 'DeferredRecipients',
+        Content => $self->{'Deferred'}
+    );
+    Jifty->log->warn(
+        "Unable to add deferred recipients to outgoing transaction: $msg")
+      unless $ret;
+
+    return ( $ret, $msg );
+}
+
 =head2 squelch_mail_to [@ADDRESSES]
 
 Mark ADDRESSES to be removed from list of the recipients. Returns list of the addresses.
@@ -625,19 +742,12 @@ Remove addresses that are RT addresses or that are on this transaction's blackli
 sub remove_inappropriate_recipients {
     my $self = shift;
 
-    my $msgid = $self->template_obj->mime_obj->head->get('Message-Id');
-
-    my @blacklist;
-
-    my @types = qw/To Cc Bcc/;
-
-    # Weed out any RT addresses. We really don't want to talk to ourselves!
-    foreach my $type (@types) {
-        @{ $self->{$type} } = RT::EmailParser::cull_rt_addresses( "", @{ $self->{$type} } );
-    }
+    my @blacklist = ();
 
     # If there are no recipients, don't try to send the message.
     # If the transaction has content and has the header RT-Squelch-Replies-To
+
+    my $msgid = $self->template_obj->mime_obj->head->get('Message-ID');
 
     if ( my $attachment = $self->transaction_obj->attachments->first ) {
         if ( $attachment->get_header('RT-DetectedAutoGenerated') ) {
@@ -649,34 +759,38 @@ sub remove_inappropriate_recipients {
             if ( !RT->config->get('RedistributeAutoGeneratedMessages') ) {
 
                 # Don't send to any watchers.
-                @{ $self->{'To'} }  = ();
-                @{ $self->{'Cc'} }  = ();
-                @{ $self->{'Bcc'} } = ();
+                @{ $self->{$_} } = () for (@EMAIL_RECIPIENT_HEADERS);
 
-                Jifty->log->info( $msgid . " The incoming message was autogenerated. Not redistributing this message based on site configuration.\n" );
+                Jifty->log->info( $msgid
+                      . " The incoming message was autogenerated. "
+                      . "Not redistributing this message based on site configuration."
+                );
             } elsif ( RT->config->get('RedistributeAutoGeneratedMessages') eq 'privileged' ) {
 
                 # Only send to "privileged" watchers.
                 #
 
-                foreach my $type (@types) {
+                foreach my $type (@EMAIL_RECIPIENT_HEADERS) {
 
                     foreach my $addr ( @{ $self->{$type} } ) {
                         my $user = RT::Model::User->new( current_user => RT->system_user );
                         $user->load_by_email($addr);
-                        @{ $self->{$type} } = grep ( !/^\Q$addr\E$/, @{ $self->{$type} } )
-                            if ( !$user->privileged );
+                        push @blacklist, $addr if ( !$user->privileged );
 
                     }
                 }
-                Jifty->log->info( $msgid . " The incoming message was autogenerated. Not redistributing this message to unprivileged users based on site configuration.\n" );
+
+                Jifty->log->info( $msgid
+                      . " The incoming message was autogenerated. "
+                      . "Not redistributing this message to unprivileged users based on site configuration."
+                );
 
             }
 
         }
 
         if ( my $squelch = $attachment->get_header('RT-Squelch-Replies-To') ) {
-            @blacklist = split( /,/, $squelch );
+            push @blacklist, split( /,/, $squelch );
         }
     }
 
@@ -687,11 +801,29 @@ sub remove_inappropriate_recipients {
     # Cycle through the people we're sending to and pull out anyone on the
     # system blacklist
 
-    foreach my $person_to_yank (@blacklist) {
-        $person_to_yank =~ s/\s//g;
-        foreach my $type (@types) {
-            @{ $self->{$type} } = grep !/^\Q$person_to_yank\E$/, @{ $self->{$type} };
+# Trim leading and trailing spaces. # Todo - we should really be canonicalizing all addresses
+    @blacklist = map { s/\s//g; } @blacklist;
+    foreach my $type (@EMAIL_RECIPIENT_HEADERS) {
+        my @addrs;
+        foreach my $addr ( @{ $self->{$type} } ) {
+
+         # Weed out any RT addresses. We really don't want to talk to ourselves!
+         # If we get a reply back, that means it's not an RT address
+            if ( !RT::EmailParser->cull_rt_addresses($addr) ) {
+                Jifty->log->info( $msgid
+                      . "$addr appears to point to this RT instance. Skipping"
+                );
+                next;
+            }
+            if ( grep /^\Q$addr\E$/, @blacklist ) {
+                Jifty->log->info( $msgid
+                      . "$addr was blacklisted for outbound mail on this transaction. Skipping"
+                );
+                next;
+            }
+            push @addrs, $addr;
         }
+        @{ $self->{$type} } = @addrs;
     }
 }
 
@@ -705,7 +837,8 @@ sub set_return_address {
 
     my $self = shift;
     my %args = (
-        is_comment => 0,
+        is_comment    => 0,
+        friendly_name => undef,
         @_
     );
 
@@ -723,9 +856,14 @@ sub set_return_address {
 
     unless ( $self->template_obj->mime_obj->head->get('From') ) {
         if ( RT->config->get('UseFriendlyFromLine') ) {
-            my $friendly_name = $self->transaction_obj->creator_obj->friendly_name;
-            if ( $friendly_name =~ /^"(.*)"$/ ) {    # a quoted string
-                $friendly_name = $1;
+            my $friendly_name = $args{friendly_name};
+
+            unless ($friendly_name) {
+                $friendly_name =
+                  $self->transaction_obj->creator_obj->friendly_name;
+                if ( $friendly_name =~ /^"(.*)"$/ ) {    # a quoted string
+                    $friendly_name = $1;
+                }
             }
 
             $friendly_name =~ s/"/\\"/g;
@@ -754,15 +892,16 @@ sub set_header {
 
     chomp $val;
     chomp $field;
-    $self->template_obj->mime_obj->head->fold_length( $field, 10000 );
-    $self->template_obj->mime_obj->head->replace( $field, $val );
-    return $self->template_obj->mime_obj->head->get($field);
+    my $head = $self->template_obj->mime_obj->head;
+    $head->fold_length( $field, 10000 );
+    $head->replace( $field, $val );
+    return $head->get($field);
 }
 
 =head2 setsubject
 
-This routine sets the subject. it does not add the rt tag. that gets done elsewhere
-If $self->{'subject'} is already defined, it uses that. otherwise, it tries to get
+This routine sets the subject. it does not add the rt tag. That gets done elsewhere
+If subject is already defined via template, it uses that. otherwise, it tries to get
 the transaction's subject.
 
 =cut 
@@ -802,7 +941,13 @@ This routine fixes the RT tag in the subject. It's unlikely that you want to ove
 sub set_subject_token {
     my $self = shift;
 
-    $self->template_obj->mime_obj->head->replace( subject => RT::Interface::Email::add_subject_tag( $self->template_obj->mime_obj->head->get('subject'), $self->ticket_obj->id, ), );
+    my $head = $self->template_obj->mime_obj->head;
+    $head->replace(
+        Subject => RT::Interface::Email::add_subject_tag(
+            Encode::decode_utf8( $head->get('Subject') ),
+            $self->ticket_obj,
+        ),
+    );
 }
 
 =head2 set_referencesheaders
@@ -898,16 +1043,18 @@ sub set_header_as_encoding {
     my $self = shift;
     my ( $field, $enc ) = ( shift, shift );
 
-    if ( $field eq 'From' and RT->config->get('SMTPFrom') ) {
-        $self->template_obj->mime_obj->head->replace( $field, RT->config->get('SMTPFrom') );
+    my $head = $self->template_obj->mime_obj->head;
+
+    if ( lc($field) eq 'from' and RT->config->get('SMTPFrom') ) {
+        $head->replace( $field, RT->config->get('SMTPFrom') );
         return;
     }
 
-    my $value = $self->template_obj->mime_obj->head->get($field);
+    my $value = $head->get($field);
 
     $value = $self->mime_encode_string( $value, $enc );
 
-    $self->template_obj->mime_obj->head->replace( $field, $value );
+    $head->replace( $field, $value );
 
 }
 
@@ -942,7 +1089,7 @@ sub mime_encode_string {
     if ( $max <= 0 ) {
 
         # gives an error...
-        Jifty->log->fatal("Can't encode! Charset or encoding too big.\n");
+        Jifty->log->fatal("Can't encode! Charset or encoding too big.");
         return ($value);
     }
 
