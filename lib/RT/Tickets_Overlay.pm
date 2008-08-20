@@ -90,59 +90,59 @@ use DBIx::SearchBuilder::Unique;
 # metadata.
 
 our %FIELD_METADATA = (
-    Status          => [ 'ENUM', ],
-    Queue           => [ 'ENUM' => 'Queue', ],
-    Type            => [ 'ENUM', ],
-    Creator         => [ 'ENUM' => 'User', ],
-    LastUpdatedBy   => [ 'ENUM' => 'User', ],
-    Owner           => [ 'WATCHERFIELD' => 'Owner', ],
-    EffectiveId     => [ 'INT', ],
-    id              => [ 'ID', ],
-    InitialPriority => [ 'INT', ],
-    FinalPriority   => [ 'INT', ],
-    Priority        => [ 'INT', ],
-    TimeLeft        => [ 'INT', ],
-    TimeWorked      => [ 'INT', ],
-    TimeEstimated   => [ 'INT', ],
+    Status          => [ 'ENUM', ], #loc_left_pair
+    Queue           => [ 'ENUM' => 'Queue', ], #loc_left_pair
+    Type            => [ 'ENUM', ], #loc_left_pair
+    Creator         => [ 'ENUM' => 'User', ], #loc_left_pair
+    LastUpdatedBy   => [ 'ENUM' => 'User', ], #loc_left_pair
+    Owner           => [ 'WATCHERFIELD' => 'Owner', ], #loc_left_pair
+    EffectiveId     => [ 'INT', ], #loc_left_pair
+    id              => [ 'ID', ], #loc_left_pair
+    InitialPriority => [ 'INT', ], #loc_left_pair
+    FinalPriority   => [ 'INT', ], #loc_left_pair
+    Priority        => [ 'INT', ], #loc_left_pair
+    TimeLeft        => [ 'INT', ], #loc_left_pair
+    TimeWorked      => [ 'INT', ], #loc_left_pair
+    TimeEstimated   => [ 'INT', ], #loc_left_pair
 
-    Linked          => [ 'LINK' ],
-    LinkedTo        => [ 'LINK' => 'To' ],
-    LinkedFrom      => [ 'LINK' => 'From' ],
-    MemberOf        => [ 'LINK' => To => 'MemberOf', ],
-    DependsOn       => [ 'LINK' => To => 'DependsOn', ],
-    RefersTo        => [ 'LINK' => To => 'RefersTo', ],
-    HasMember       => [ 'LINK' => From => 'MemberOf', ],
-    DependentOn     => [ 'LINK' => From => 'DependsOn', ],
-    DependedOnBy    => [ 'LINK' => From => 'DependsOn', ],
-    ReferredToBy    => [ 'LINK' => From => 'RefersTo', ],
-    Told             => [ 'DATE'            => 'Told', ],
-    Starts           => [ 'DATE'            => 'Starts', ],
-    Started          => [ 'DATE'            => 'Started', ],
-    Due              => [ 'DATE'            => 'Due', ],
-    Resolved         => [ 'DATE'            => 'Resolved', ],
-    LastUpdated      => [ 'DATE'            => 'LastUpdated', ],
-    Created          => [ 'DATE'            => 'Created', ],
-    Subject          => [ 'STRING', ],
-    Content          => [ 'TRANSFIELD', ],
-    ContentType      => [ 'TRANSFIELD', ],
-    Filename         => [ 'TRANSFIELD', ],
-    TransactionDate  => [ 'TRANSDATE', ],
-    Requestor        => [ 'WATCHERFIELD'    => 'Requestor', ],
-    Requestors       => [ 'WATCHERFIELD'    => 'Requestor', ],
-    Cc               => [ 'WATCHERFIELD'    => 'Cc', ],
-    AdminCc          => [ 'WATCHERFIELD'    => 'AdminCc', ],
-    Watcher          => [ 'WATCHERFIELD', ],
-    QueueCc          => [ 'WATCHERFIELD'    => 'Cc'      => 'Queue', ],
-    QueueAdminCc     => [ 'WATCHERFIELD'    => 'AdminCc' => 'Queue', ],
-    QueueWatcher     => [ 'WATCHERFIELD'    => undef     => 'Queue', ],
-    CustomFieldValue => [ 'CUSTOMFIELD', ],
-    CustomField      => [ 'CUSTOMFIELD', ],
-    CF               => [ 'CUSTOMFIELD', ],
-    Updated          => [ 'TRANSDATE', ],
-    RequestorGroup   => [ 'MEMBERSHIPFIELD' => 'Requestor', ],
-    CCGroup          => [ 'MEMBERSHIPFIELD' => 'Cc', ],
-    AdminCCGroup     => [ 'MEMBERSHIPFIELD' => 'AdminCc', ],
-    WatcherGroup     => [ 'MEMBERSHIPFIELD', ],
+    Linked          => [ 'LINK' ], #loc_left_pair
+    LinkedTo        => [ 'LINK' => 'To' ], #loc_left_pair
+    LinkedFrom      => [ 'LINK' => 'From' ], #loc_left_pair
+    MemberOf        => [ 'LINK' => To => 'MemberOf', ], #loc_left_pair
+    DependsOn       => [ 'LINK' => To => 'DependsOn', ], #loc_left_pair
+    RefersTo        => [ 'LINK' => To => 'RefersTo', ], #loc_left_pair
+    HasMember       => [ 'LINK' => From => 'MemberOf', ], #loc_left_pair
+    DependentOn     => [ 'LINK' => From => 'DependsOn', ], #loc_left_pair
+    DependedOnBy    => [ 'LINK' => From => 'DependsOn', ], #loc_left_pair
+    ReferredToBy    => [ 'LINK' => From => 'RefersTo', ], #loc_left_pair
+    Told             => [ 'DATE'            => 'Told', ], #loc_left_pair
+    Starts           => [ 'DATE'            => 'Starts', ], #loc_left_pair
+    Started          => [ 'DATE'            => 'Started', ], #loc_left_pair
+    Due              => [ 'DATE'            => 'Due', ], #loc_left_pair
+    Resolved         => [ 'DATE'            => 'Resolved', ], #loc_left_pair
+    LastUpdated      => [ 'DATE'            => 'LastUpdated', ], #loc_left_pair
+    Created          => [ 'DATE'            => 'Created', ], #loc_left_pair
+    Subject          => [ 'STRING', ], #loc_left_pair
+    Content          => [ 'TRANSFIELD', ], #loc_left_pair
+    ContentType      => [ 'TRANSFIELD', ], #loc_left_pair
+    Filename         => [ 'TRANSFIELD', ], #loc_left_pair
+    TransactionDate  => [ 'TRANSDATE', ], #loc_left_pair
+    Requestor        => [ 'WATCHERFIELD'    => 'Requestor', ], #loc_left_pair
+    Requestors       => [ 'WATCHERFIELD'    => 'Requestor', ], #loc_left_pair
+    Cc               => [ 'WATCHERFIELD'    => 'Cc', ], #loc_left_pair
+    AdminCc          => [ 'WATCHERFIELD'    => 'AdminCc', ], #loc_left_pair
+    Watcher          => [ 'WATCHERFIELD', ], #loc_left_pair
+    QueueCc          => [ 'WATCHERFIELD'    => 'Cc'      => 'Queue', ], #loc_left_pair
+    QueueAdminCc     => [ 'WATCHERFIELD'    => 'AdminCc' => 'Queue', ], #loc_left_pair
+    QueueWatcher     => [ 'WATCHERFIELD'    => undef     => 'Queue', ], #loc_left_pair
+    CustomFieldValue => [ 'CUSTOMFIELD', ], #loc_left_pair
+    CustomField      => [ 'CUSTOMFIELD', ], #loc_left_pair
+    CF               => [ 'CUSTOMFIELD', ], #loc_left_pair
+    Updated          => [ 'TRANSDATE', ], #loc_left_pair
+    RequestorGroup   => [ 'MEMBERSHIPFIELD' => 'Requestor', ], #loc_left_pair
+    CCGroup          => [ 'MEMBERSHIPFIELD' => 'Cc', ], #loc_left_pair
+    AdminCCGroup     => [ 'MEMBERSHIPFIELD' => 'AdminCc', ], #loc_left_pair
+    WatcherGroup     => [ 'MEMBERSHIPFIELD', ], #loc_left_pair
 );
 
 # Mapping of Field Type to Function

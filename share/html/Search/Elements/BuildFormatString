@@ -96,7 +96,7 @@ my @fields = qw(
     Bookmark
 
     NEWLINE
-);
+); # loc_qw
 
 $m->callback( CallbackOnce => 1, CallbackName => 'SetFieldsOnce', Fields => \@fields );
 
