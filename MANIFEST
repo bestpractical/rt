@@ -11,6 +11,7 @@ etc/drop_schema.mysql
 etc/drop_schema.Oracle
 etc/drop_schema.Pg
 etc/initial_data/dyndns
+etc/RTFM_Config.pm
 etc/schema.mysql
 etc/schema.mysql-4.1
 etc/schema.Oracle
@@ -174,3 +175,4 @@ tools/factory.mysql
 tools/factory.pg
 tools/license_tag
 UPGRADING
+UPGRADING.mysql
