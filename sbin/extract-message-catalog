@@ -175,6 +175,16 @@ sub extract_strings_from_code {
     }
     }
 
+    # Comment-based left pair mark: "..." => ... # loc_left_pair
+    $line = 1;
+    pos($_) = 0;
+    while (m/\G.*?(\w+)\s*=>\s*[^#]+#\s*loc_left_pair\s*$/smg) {
+	my $key = $1;
+	$line += ( () = ( $& =~ /\n/g ) );    # cryptocontext!
+	$key  =~ s/\\'/\'/g;
+	push @{ $FILECAT->{$key} }, [ $filename, $line, '' ];
+    }
+
     # Comment-based pair mark: "..." => "..." # loc_pair
     $line = 1;
     pos($_) = 0;
