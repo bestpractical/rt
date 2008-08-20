@@ -164,6 +164,17 @@ sub extract_strings_from_code {
 	push @{ $FILECAT->{$str} }, [ $filename, $line, '' ];
     }
 
+    # Comment-based qw mark: "qw(...)" # loc_qw
+    $line = 1;
+    pos($_) = 0;
+    while (m/\G.*?(qw\([^)]+\))[\}\)\],;]*\s*\#\s*loc_qw\s*$/smg) {
+    my $str = $1;
+	$line += ( () = ( $& =~ /\n/g ) );    # cryptocontext!
+    foreach my $value (eval($str)) {
+	    push @{ $FILECAT->{$value} }, [ $filename, $line, '' ];
+    }
+    }
+
     # Comment-based pair mark: "..." => "..." # loc_pair
     $line = 1;
     pos($_) = 0;
