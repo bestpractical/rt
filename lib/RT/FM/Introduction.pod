@@ -3,45 +3,116 @@
 
 =head2 Basics
 
-Staff users should be now have a new "RTFM" menu item RT's top level menu.
-As an administrator, you should go create some "Classes" of articles in RTFM.
-Classes are equivalent to RT's queues. Unlike RTFM 1.0, RTFM 2.0 doesn't have a
-single "body" section for each article. Everything is a custom field (except
-for name, summary and some other basic metadata). So, you need to go create
-some custom fields.
+Users should be now have a new "RTFM" menu item RT's top level menu.
+You will need to make some decisions about how to organize your
+articles.  Articles will be organized into one Class and multiple
+Topics.  They will use Custom Fields to store their article data.
+These Custom Fields can be configured on a Class by Class basis.
 
-Once you've created your custom fields, go into your classes and click
-on "Custom Fields" and add the Custom Fields you want to each class.
+=head2 Organization
 
-Grant some ACLs to your users and start creating articles.
+=head3 Classes
 
-You can also bind articles to topics. Topics are created by administrators
-on classes using the 'Topics' submenu of the RTFM class configuration.
-The configuration screen for the class has a tab for 'topics'. Typing the
-name (and optionally description) of the topic, and then clicking the button
-at the appropriate location. This should allow you to build a tree of topics.
-This tree of topics should show up when creating or modifying articles
-in the class. These can be arbitrarily nested categories.
+Classes are equivalent to RT's queues.  They can be created by going
+to RTFM -> Configuration -> Classes -> New Class.  Articles are
+assigned to one Class.  When you create Custom Fields for use in RTFM,
+they will be activated per Class, like Custom Fields are activated per
+Queue in RT.  Each class also controls what information is included
+into a reply (such as the RTFM header and footer) and the Article
+hotlist.
+
+=head3 Topics
+
+You can also use Topics to organize your Articles.  While editing a
+Class, there is a Topic tab for Class specific Topics.  You can create
+global Topics from the Global tab under RTFM -> Configuration.
+
+When editing Topics, type the name (and optionally description) of the
+Topic, and then click the button at the appropriate location in the
+Topic hierarchy. This should allow you to build a tree of Topics. This
+tree of Topics should show up when creating or modifying articles in
+the class. These can be arbitrarily nested.
+
+Global Topics will be available for all Articles, regardless of their
+Class.  Articles can belong to both global and class-specific Topics.
 
 Articles topics can be set from the 'Modify' screen for the article --
 simply select as many topics as you desire from the list at the bottom
 of the screen.
 
-Of course, RTFM integrates with RT.  You can extract the body of a
-ticket into an article. Within RT, you should now see an "Extract to
-article" button in the upper right hand corner of RT's UI when working
-with tickets. When you click that button, RTFM will ask you which
-Class to create your new article in.  Once you click on a class name,
-the Ticket's transactions will be displayed, along with a set of
-select boxes. For each transaction, you can pick which Freeform, Text,
-or WikiText field that transaction should be extracted to. From there
-on in, it's just regular article creation.  And the integration
-doesn't stop there! When replying to or commenting on tickets, there's
-a new UI widget that lets you search for and include RTFM articles in
-your reply. (They're editable, of course).
+=head2 Custom Fields
 
-=head2 Config options
+RTFM doesn't have a single "body" section for each
+article. Everything is a custom field (except for name, summary and
+some other basic metadata). So, you need to create some custom
+fields to hold the Article body and other data.  These Custom Fields
+should have "Applies To" be "RTFM Articles".
 
-You can read about that in F<lib/RT/FM/Config.pod>
+Once you've created your custom fields, go into your classes and click
+on "Custom Fields" and add the Custom Fields you want to each class.
+Alternatively, use the Applies To link from each Custom Field.
+
+=head2 Creating Articles
+
+You can create an article from scratch by going to RTFM -> Articles ->
+New Article and then picking which Class to create the Article under.
+The Summary, Description and Custom Fields will all be searchable when
+including an Article and you can control what Custom Fields end up in
+your Ticket from the Class configuration page.
+
+=head3 Extracting an Article
+
+You can extract the body of a ticket into an article. Within RT, you
+should now see an "Extract to article" button in the upper right hand
+corner of RT's UI when working with tickets. When you click that
+button, RTFM will ask you which Class to create your new article in.
+Once you click on a class name, the Ticket's transactions will be
+displayed, along with a set of select boxes. For each transaction, you
+can pick which Custom Field that transaction should be extracted to.
+From there on in, it's just regular article creation.
+
+=head2 Including an Article
+
+When replying to or commenting on tickets or creating tickets, there
+is a UI widget that lets you search for and include RTFM articles in
+your reply.  (They're editable, of course).  
+
+Articles can be included by searching for them, knowing the Id of the
+article, using the Article Hotlist and using the Queue specific
+dropdown.
+
+=head2 Queue Specific List of Articles 
+
+You can use Topics to organize a set of Queue specific Articles.
+Simply create a global Topic called 'Queues' and then create Topics
+under Queues named after each of your Queues.  Within each Queue named
+Topic, create some Topics and then assign Articles to those
+sub-topics.  This creates a hierarchy like this:
+
+Queues
+\-> General
+    \-> Topic 1
+    \-> Topic 2
+
+If you are replying to a Ticket in the General Queue you will be
+offered a choice of Topic 1 and Topic 2 along with the searching.
+After choosing Topic 1 or Topic 2, you will be given a list of
+relevant articles to choose.
+
+=head2 Article Hotlist
+
+If you enable "All articles in this class are on dropdown on ticket
+reply page" option, there will be a dropdown on the Create or Update
+page which allows users to quickly include Articles.
+
+=head1 Configuration options
+
+=head2 RTFM_Create
+
+Set this to a true value to display the RTFM include interface on the
+Ticket Create page in addition to the Reply/Comment page (Create.html
+in addition to Update.html)
+
+Please note, this only works with RTFM 3.8.1 or greater
 
 =cut
