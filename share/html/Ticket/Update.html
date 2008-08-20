@@ -157,6 +157,7 @@
 % }
 </form>
 <%INIT>
+    $RT::Logger->error("content [$ARGS{UpdateContent}]");
 my $CanRespond = 0;
 my $CanComment = 0;
 my $checks_failure = 0;
@@ -252,6 +253,7 @@ if ( $ARGS{'SubmitTicket'} ) {
     $checks_failure = 1 unless $status;
 }
 
+    $RT::Logger->error("content [$ARGS{UpdateContent}]");
 if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {
     $m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'BeforeDisplay' );
     return $m->comp('Display.html', TicketObj => $TicketObj, %ARGS);
