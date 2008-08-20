@@ -6,7 +6,7 @@ license 'GPLv2';
 requires    'Jifty' => '0.70824';
 
 requires(
-    'Digest::Base' => 0,
+    'Digest::base' => 0,
     'Digest::MD5'                => '2.27',
     'DBI'                        => '1.37',
     'Class::ReturnValue'         => '0.40',
@@ -99,7 +99,7 @@ features(
         'Test::Expect'         => '0.31',
         'XML::Simple',
         'File::Find',
-        'Test::Deep 0',
+        'Test::Deep', => 0,
         'String::ShellQuote'         => '0',
         'Test::HTTP::Server::Simple' => '0.09',
         'Log::Dispatch::Perl',
@@ -164,7 +164,8 @@ features(
     ],
     GPG => [
         -default => 1,
-        'GnuPG::Interface PerlIO::eol'
+        'GnuPG::Interface' => 0,
+        'PerlIO::eol' => 0,
         ]
 
     ,
