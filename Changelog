@@ -14,6 +14,7 @@ BUGS
    using an Article while Replying to Tickets
  * Better error handling in the display and creation of Links
  * Fix sorting of Topics in the different views of Articles
+ * Fix display of Topics and Articles in the Topic view of the system
 
 2.2.2
 
