@@ -14,6 +14,12 @@ It is recommended that you make a backup of your
 After installing 2.4, stop and start your web
 server, clearing your mason cache if necesary.
 
+If you installed an earlier version of RTFM on
+mysql 4.0 and are now upgrading to 4.1 or higher,
+you need to upgrade the database tables types.
+This is similar to the process for RT.
+See UPGRADING.mysql
+
 Upgrade Instructions from 2.1.x
 -----------------------------------------------------
 
