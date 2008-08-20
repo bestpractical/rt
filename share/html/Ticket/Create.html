@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/Header,
     Title => loc("Create a new ticket"),
-    onload => "hide(document.getElementById('Ticket-Create-details'));" &>
+    onload => "function () { hide(document.getElementById('Ticket-Create-details')) }" &>
 <& /Elements/Tabs, 
     current_toptab => "Ticket/Create.html", 
     Title => loc("Create a new ticket"),
