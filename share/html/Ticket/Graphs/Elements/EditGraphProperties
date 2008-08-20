@@ -135,7 +135,7 @@ $ShowLinkDescriptions => 0
 require RT::Graph::Tickets;
 require RT::Link;
 
-my @link_types = qw(Members MemberOf RefersTo ReferredToBy DependsOn DependedOnBy);
+my @link_types = qw(Members MemberOf RefersTo ReferredToBy DependsOn DependedOnBy); #loc_qw
 @ShowLinks = grep $_ ne $LeadingLink, @ShowLinks;
 </%INIT>
 

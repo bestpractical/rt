@@ -154,10 +154,10 @@ sub TicketProperties {
     my $self = shift;
     my $user = shift;
     my @res = (
-        Basics => [qw(Subject Status Queue TimeLeft TimeWorked TimeEstimated)],
-        People => [qw(Owner Requestors Ccs AdminCcs Creator LastUpdatedBy)],
-        Dates  => [qw(Created Starts Started Due Resolved Told LastUpdated)],
-        Links  => [qw(MemberOf Members DependsOn DependedOnBy RefersTo ReferredToBy)],
+        Basics => [qw(Subject Status Queue TimeLeft TimeWorked TimeEstimated)], # loc_qw
+        People => [qw(Owner Requestors Ccs AdminCcs Creator LastUpdatedBy)], # loc_qw
+        Dates  => [qw(Created Starts Started Due Resolved Told LastUpdated)], # loc_qw
+        Links  => [qw(MemberOf Members DependsOn DependedOnBy RefersTo ReferredToBy)], # loc_qw
     );
     my $cfs = RT::CustomFields->new( $user );
     $cfs->LimitToLookupType('RT::Queue-RT::Ticket');
