@@ -105,6 +105,12 @@ If you enable "All articles in this class are on dropdown on ticket
 reply page" option, there will be a dropdown on the Create or Update
 page which allows users to quickly include Articles.
 
+=head2 SelfService Interface
+
+If you grant the Unprivileged user group the right ShowArticle, they
+will get a Search box at the top of their interface.  This allows users
+to look for answer to questions before creating a Ticket.
+
 =head1 Configuration options
 
 =head2 RTFM_Create
