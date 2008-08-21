@@ -60,7 +60,7 @@
 <&| /Widgets/TitleBox, title => loc('Modify people related to ticket #[_1]', $Ticket->Id),   width => "100%", color=> "#333399", class=>'ticket-info-people' &>
 <& Elements/EditPeople, Ticket => $Ticket, UserField => $UserField, UserString => $UserString, UserOp => $UserOp, GroupString => $GroupString, GroupOp => $GroupOp, GroupField => $GroupField &>
 </&>
-<& /Elements/Submit, Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#333399" &>
+<& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#333399" &>
 </form>
 
 <%INIT>
