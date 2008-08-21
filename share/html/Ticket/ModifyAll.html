@@ -158,7 +158,7 @@ $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
 
 
 $m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS );
-my (@wresults, @results,  @dresults, @lresults, @cf_results);
+my @results;
 
 unless ($OnlySearchForPeople or $OnlySearchForGroup ) {
     # There might be two owners. 
@@ -171,9 +171,9 @@ unless ($OnlySearchForPeople or $OnlySearchForGroup ) {
 
     }
 
-    @wresults   = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
-    @cf_results = ProcessObjectCustomFieldUpdates( Object => $Ticket, ARGSRef => \%ARGS);
-    @dresults   = ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
+    push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
+    push @results, ProcessObjectCustomFieldUpdates( Object => $Ticket, ARGSRef => \%ARGS);
+    push @results, ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
 
     if ($ARGS{'UpdateAttachment'}) {
         my $subject = "$ARGS{'UpdateAttachment'}";
@@ -193,12 +193,8 @@ unless ($OnlySearchForPeople or $OnlySearchForGroup ) {
 
     push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef=>\%ARGS );
     push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
-    @lresults   = ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
+    push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
 }
-push @results, @wresults;
-push @results, @dresults;
-push @results, @lresults;
-push @results, @cf_results;
 
 # undef so that TransactionBatch scrips run and update the ticket
 $Ticket = undef;

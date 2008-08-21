@@ -65,18 +65,16 @@
 
 <%INIT>
 
-my (@results, @wresults);
+my @results;
 
 my $Ticket = LoadTicket($id);
 $m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS );
 
 # if we're trying to search for watchers and nothing else
 unless ($OnlySearchForPeople or $OnlySearchForGroup) {
-    @results = ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
-    @wresults = ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
+    push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS);
+    push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
 }
-
-push @results, @wresults;
 </%INIT>
 
 

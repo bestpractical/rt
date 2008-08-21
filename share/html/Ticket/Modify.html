@@ -80,8 +80,7 @@ $m->comp(
 $m->callback( TicketObj => $TicketObj, CustomFields => $CustomFields, ARGSRef => \%ARGS );
 
 my @results = ProcessTicketBasics(TicketObj => $TicketObj, ARGSRef => \%ARGS);
-my @cf_results = ProcessObjectCustomFieldUpdates(Object => $TicketObj, ARGSRef => \%ARGS);
-push (@results, @cf_results);
+push @results, ProcessObjectCustomFieldUpdates(Object => $TicketObj, ARGSRef => \%ARGS);
 
 # undef so that TransactionBatch scrips run and update the ticket
 $TicketObj = undef;
