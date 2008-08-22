@@ -63,8 +63,6 @@ BEGIN {
     # set the version for version checking
     our $VERSION = 2.0;
 
-    @ISA = qw(Exporter);
-
     # your exported package globals go here,
     # as well as any optionally exported functions
     @EXPORT_OK = qw(

@@ -266,7 +266,7 @@ sub create {
     }
 
     if ( exists $args{'include_content_for_value'} ) {
-        $self->set_includecontentforvalue( $args{'include_content_for_value'} );
+        $self->set_include_content_for_value( $args{'include_content_for_value'} );
     }
 
     }
