@@ -69,10 +69,12 @@ RT::Test - RT Testing
 
 To run the rt test suite with coverage support, install L<Devel::Cover> and run:
 
-  make test RT_DBA_USER=.. RT_DBA_PASSWORD=.. HARNESS_PERL_SWITCHES=-MDevel::Cover
- cover -ignore_re '^var/mason_data/' -ignore_re '^t/'
+    make test RT_DBA_USER=.. RT_DBA_PASSWORD=.. HARNESS_PERL_SWITCHES=-MDevel::Cover
+    cover -ignore_re '^var/mason_data/' -ignore_re '^t/'
 
-The coverage tests have DevelMode turned off, and have C<named_component_subs> enabled for L<HTML::Mason> to avoid an optimizer problem in Perl that hides the top-level optree from L<Devel::Cover>.
+The coverage tests have DevelMode turned off, and have
+C<named_component_subs> enabled for L<HTML::Mason> to avoid an optimizer
+problem in Perl that hides the top-level optree from L<Devel::Cover>.
 
 =cut
 
