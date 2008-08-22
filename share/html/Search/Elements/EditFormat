@@ -56,7 +56,7 @@
 
 <tr>
 
-<td valign="top"><select size="6" name="select_display_columns" multiple>
+<td valign="top"><select size="6" name="select_display_columns" multiple="multiple">
 % foreach my $field ( @$available_columns) {
 <option value="<% $field %>"><% _($field) %></option>
 % }

@@ -186,6 +186,8 @@ sub create {
         disabled    => 0,
         lookup_type => '',
         repeated    => 0,
+        link_to_value => '',
+        include_content_for_value => '',
         @_,
     );
 
@@ -253,6 +255,8 @@ sub create {
         disabled    => $args{'disabled'},
         lookup_type => $args{'lookup_type'},
         repeated    => $args{'repeated'},
+        link_to_value => $args{'link_to_value'},
+        include_content_for_value => $args{include_content_for_value},
     );
 
     if ( exists $args{'ValuesClass'} ) {

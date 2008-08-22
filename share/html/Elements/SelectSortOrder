@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$name%>">
 %foreach my $order (@orders) {
-<option value="<%$order%>" <%$order eq $default && 'SELECTED' %>>
+<option value="<%$order%>"<%$order eq $default && qq[ selected="selected"] |n %>>
 <% shift @order_names %>
 </option>
 % }

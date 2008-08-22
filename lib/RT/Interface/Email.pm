@@ -57,8 +57,8 @@ use File::Temp;
 use UNIVERSAL::require;
 
 BEGIN {
-    use Exporter ();
-    use vars qw ( @ISA @EXPORT_OK);
+    use base 'Exporter';
+    use vars qw ( @EXPORT_OK);
 
     # set the version for version checking
     our $VERSION = 2.0;
@@ -148,7 +148,8 @@ sub check_for_suspicious_sender {
     my ( $From, $junk ) = parse_sender_address_from_head($head);
 
     if (   ( $From =~ /^mailer-daemon\@/i )
-        or ( $From =~ /^postmaster\@/i ) )
+        or ( $From =~ /^postmaster\@/i )
+        or ( $From eq "" ) )
     {
         return (1);
 
@@ -170,6 +171,13 @@ sub check_for_auto_generated {
 
     my $Precedence = $head->get("Precedence") || "";
     if ( $Precedence =~ /^(bulk|junk)/i ) {
+        return (1);
+    }
+
+    # Per RFC3834, any Auto-Submitted header which is not "no" means
+    # it is auto-generated.
+    my $AutoSubmitted = $head->get("Auto-Submitted") || "";
+    if ( length $AutoSubmitted and $AutoSubmitted ne "no" ) {
         return (1);
     }
 
@@ -197,7 +205,7 @@ Sends an error message. Takes a param hash:
 
 =item From - sender's address, by default is 'correspond_address';
 
-=item To - reciepient, by default is 'OwnerEmail';
+=item To - recipient, by default is 'OwnerEmail';
 
 =item Bcc - optional Bcc recipients;
 
@@ -316,7 +324,7 @@ sub send_email {
         || $args{'entity'}->head->get('Cc')
         || $args{'entity'}->head->get('Bcc') )
     {
-        Jifty->log->info( $msgid . " No recipients found. Not sending.\n" );
+        Jifty->log->info( $msgid . " No recipients found. Not sending." );
         return -1;
     }
 
@@ -623,8 +631,9 @@ sub forward_transaction {
     } else {
 
         # XXX: what if want to forward txn of other object than ticket?
-        $subject = add_subject_tag( $subject, $txn->object_id );
-        $from = $txn->object->queue_obj->correspond_address
+        my $obj = $txn->object;
+        $subject = add_subject_tag( $subject, $obj );
+        $from = $obj->queue_obj->correspond_address
             || RT->config->get('CorrespondAddress');
     }
     $mail->head->set( subject => "Fwd: $subject" );
@@ -682,7 +691,7 @@ sub sign_encrypt {
         # if the passphrase fails, either you have a bad passphrase
         # or gpg-agent has died.  That should get caught in Create and
         # Update, but at least throw an error here
-        if ( ( $line->{'Operation'} || '' eq 'PassphraseCheck' )
+        if ( ( $line->{'Operation'} || '' ) eq 'PassphraseCheck' 
             && $line->{'Status'} =~ /^(?:BAD|MISSING)$/ )
         {
             Jifty->log->error("$line->{'Status'} PASSPHRASE: $line->{'message'}");
@@ -895,7 +904,11 @@ sub parse_address_from_header {
         return ( undef, undef );
     }
 
-    my $name = ( $AddrObj->phrase || $AddrObj->comment || $AddrObj->address );
+    my $name =
+      (      $AddrObj->name
+          || $AddrObj->phrase
+          || $AddrObj->comment
+          || $AddrObj->address );
 
     #Lets take the from and load a user object.
     my $Address = $AddrObj->address;
@@ -983,27 +996,46 @@ sub set_in_reply_to {
 
 sub parse_ticket_id {
     my $subject = shift;
-    my $id;
 
     my $rtname    = RT->config->get('rtname');
     my $test_name = RT->config->get('EmailsubjectTagRegex')
         || qr/\Q$rtname\E/i;
 
+    my $id;
     if ( $subject =~ s/\[$test_name\s+\#(\d+)\s*\]//i ) {
-        my $id = $1;
-        Jifty->log->debug("Found a ticket ID. It's $id");
-        return $id;
-    } else {
-        return undef;
+        $id = $1;
     }
+    else {
+        foreach my $tag ( RT->system->subject_tag ) {
+            next unless $subject =~ s/\[\Q$tag\E\s+\#(\d+)\s*\]//i;
+            $id = $1;
+            last;
+        }
+    }
+    return undef unless $id;
+
+    Jifty->log->debug("Found a ticket ID. It's $id");
+    return $id;
 }
 
 sub add_subject_tag {
     my $subject = shift;
-    my $id      = shift;
+    my $ticket  = shift;
+    unless ( ref $ticket ) {
+        my $tmp = RT::Model::Ticket->new( current_user => RT->system_user);
+        $tmp->Load($ticket);
+        $ticket = $tmp;
+    }
+    my $id        = $ticket->id;
+    my $queue_tag = $ticket->queue_obj->subject_tag;
 
     my $tag_re = RT->config->get('EmailsubjectTagRegex');
     unless ($tag_re) {
+        my $tag = $queue_tag || RT->config->get('rtname');
+        $tag_re = qr/\Q$tag\E/;
+    }
+    elsif ($queue_tag) {
+        $tag_re = qr/$tag_re|\Q$queue_tag\E/;
         my $rtname = RT->config->get('rtname');
         $tag_re = qr/\Q$rtname\E/o;
     }
@@ -1011,7 +1043,9 @@ sub add_subject_tag {
 
     $subject =~ s/(\r\n|\n|\s)/ /gi;
     chomp $subject;
-    return "[" . RT->config->get('rtname') . " #$id] $subject";
+    return "["
+      . ( $queue_tag || RT->config->get('rtname') )
+      . " #$id] $subject";
 }
 
 =head2 gateway ARGSREF

@@ -85,7 +85,7 @@ my @fields = qw(
     depends_on   depended_on_by
     member_of    members
     parents     children
-    NEWLINE
+    NEWLINE     Bookmark
 );
 
 $m->callback( CallbackOnce => 1, Callbackname => 'set_fields_once', Fields => \@fields );

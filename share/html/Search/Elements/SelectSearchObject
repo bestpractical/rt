@@ -48,13 +48,21 @@
 <%args>
 @objects => undef
 $name => undef
+$object => undef
 </%args>
-<select name="<%$name%>">
+<%init>
+my $default_privacy = '';
+if ( $object && $object->id ) {
+    $default_privacy = ref($object).'-'.$object->id;
+}
+</%init>
+<select id="<%$name%>" name="<%$name%>">
 % foreach my $object (@objects) {
+% my $privacy = ref($object).'-'.$object->id;
 % if (ref($object) eq 'RT::Model::User' && $object->id == Jifty->web->current_user->id) {
-<option value="<%ref($object)%>-<%$object->id%>"><&|/l&>My saved searches</&></option>
+<option value="<%$privacy%>" <% ( $privacy eq $default_privacy ) ? "selected='selected'" : '' |n %> ><&|/l&>My saved searches</&></option>
 % } else {
-<option value="<%ref($object)%>-<%$object->id%>"><&|/l, $object->name&>%1's saved searches</&></option>
+<option value="<%$privacy%>" <% ( $privacy eq $default_privacy ) ? "selected='selected'" : '' |n %> ><&|/l, $object->name&>%1's saved searches</&></option>
 % }
 % }
 </select>

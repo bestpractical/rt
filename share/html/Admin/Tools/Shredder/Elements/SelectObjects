@@ -55,7 +55,7 @@
 <div class="shredder-form">
 <input id="shredder-select-all-objects-checkbox" type="checkbox" name="select_allobjects" onclick="checkAllobjects()" />
 <span>click to check/uncheck all objects at once</span>
-<hr>
+<hr />
 % foreach my $o( @objects ) {
 <& objectCheckBox, object => $o &>
 % }

@@ -45,6 +45,9 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+<br />
+<br />
+
 <&|/l&>add new watchers</&>:<br />
 
 <table>
@@ -55,7 +58,7 @@
 <&|/l&>Username</&>
 </td></tr>
 % while (my $u = $Users->next ) {
-<tr><td><&/Elements/SelectWatcherType, name => "Ticket-AddWatcher-Principal-". $u->principal_id &></td><td><& '/Elements/ShowUser', user => $u &></td></tr>
+<tr><td><&/Elements/SelectWatcherType, name => "Ticket-AddWatcher-Principal-".  $u->principal_id &></td><td><& '/Elements/ShowUser', user => $u, style=>'verbose' &></td></tr>
 % }
 % }
 
@@ -78,17 +81,17 @@
 <tr><td>
 <&/Elements/SelectWatcherType, name => "watcher_type_email1" &>
 </td><td>
-<input name="watcher_address_email1" size="15" />
+<& /Elements/EmailInput, name => 'watcher_address_email1', size => '20' &>
 </td></tr>
 <tr><td>
 <&/Elements/SelectWatcherType, name => "watcher_type_email2" &> 
 </td><td>
-<input name="watcher_address_email2" size="15" />
+<& /Elements/EmailInput, name => 'watcher_address_email2', size => '20' &>
 </td></tr>
 <tr><td>
 <&/Elements/SelectWatcherType, name => "watcher_type_email3" &>
 </td><td>
-<input name="watcher_address_email3" size="15" />
+<& /Elements/EmailInput, name => 'watcher_address_email3', size => '20' &>
 </td></tr>
 </table>
 

@@ -48,6 +48,6 @@
 <%ARGS>
 $object => undef
 </%ARGS>
-<a href="<% RT->config->get('WebbaseURL') %>/Admin/Users/Modify.html?id=<% $object->id %>">
+<a href="<% RT->config->get('WebURL') %>/Admin/Users/Modify.html?id=<% $object->id %>">
 User(id:<% $object->id %>, name: <% $object->name %>)
 </a>

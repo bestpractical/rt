@@ -50,7 +50,7 @@
 $name => undef
 $search_type => 'Ticket',
 </%args>
-<select name="<%$name%>">
+<select id="<%$name%>" name="<%$name%>">
 % foreach my $object (@objects) {
 % if (ref($object) eq 'RT::Model::User' && $object->id == Jifty->web->current_user->id) {
 <option value=""><&|/l&>My saved searches</&></option>

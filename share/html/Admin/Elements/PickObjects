@@ -55,7 +55,8 @@
 %   my $id = "object-".$object->id."-CF-".$id;
 %   if (!$read_only) {
   <td valign="top">
-<input type="checkbox" id="<% $id %>" name="<% $id %>" value="1" <% $checked ? 'CHECKED' : ''%>
+<input type="checkbox" id="<% $id %>" name="<% $id %>" value="1" <% $checked ?
+'checked="checked"' : ''%>
 />
   </td>
 %   }
