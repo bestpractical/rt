@@ -259,8 +259,8 @@ sub load_or_create_queue {
 
 sub load_or_create_custom_field {
     my $self = shift;
-    my %args = ( Disabled => 0, @_ );
-    my $obj  = RT::Model::CustomField->new(RT->system_user);
+    my %args = ( disabled => 0, @_ );
+    my $obj  = RT::Model::CustomField->new( current_user => RT->system_user);
     if ( $args{'name'} ) {
         $obj->load_by_name( name => $args{'name'}, queue => $args{'queue'} );
     }

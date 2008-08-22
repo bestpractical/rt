@@ -68,7 +68,8 @@ sub ticket {
 sub ticket_obj {
     my $self = shift;
     unless ( $self->{'_ticketobj'} ) {
-        $self->{'_ticketobj'} = RT::Model::Ticket->new;
+        $self->{'_ticketobj'} =
+          RT::Model::Ticket->new( current_user => RT->system_user );
         $self->{'_ticketobj'}->load( $self->ticket );
     }
     return $self->{'_ticketobj'};
@@ -82,7 +83,8 @@ Returns an RT::Model::TicketCollection object containing reminders for this obje
 
 sub collection {
     my $self = shift;
-    my $col  = RT::Model::TicketCollection->new;
+    my $col =
+      RT::Model::TicketCollection->new( current_user => RT->system_user );
 
     my $query = 'type = "reminder" AND RefersTo = "' . $self->ticket . '"';
 
@@ -113,14 +115,14 @@ sub add {
         @_
     );
 
-    my $reminder = RT::Model::Ticket->new;
+    my $reminder = RT::Model::Ticket->new( current_user => RT->system_user );
     $reminder->create(
-        subject  => $args{'subject'},
-        owner    => $args{'Owner'},
-        due      => $args{'Due'},
-        RefersTo => $self->ticket,
-        type     => 'reminder',
-        queue    => $self->ticket_obj->queue,
+        subject   => $args{'subject'},
+        owner     => $args{'owner'},
+        due       => $args{'due'},
+        refers_to => $self->ticket,
+        type      => 'reminder',
+        queue     => $self->ticket_obj->queue,
 
     );
     $self->ticket_obj->_new_transaction(

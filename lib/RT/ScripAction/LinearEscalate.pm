@@ -273,11 +273,6 @@ sub Commit {
     return 1;
 }
 
-eval "require RT::ScripAction::LinearEscalate_Vendor";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Action/LinearEscalate_Vendor.pm} );
-eval "require RT::ScripAction::LinearEscalate_Local";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Action/LinearEscalate_Local.pm} );
-
 1;
 
 =head1 AUTHORS
