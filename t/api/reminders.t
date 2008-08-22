@@ -10,9 +10,9 @@ use RT::Test;
 {
 
 # Create test queues
-use_ok ('RT::Queue');
+use_ok ('RT::Model::Queue');
 
-ok(my $testqueue = RT::Queue->new($RT::SystemUser), 'Instantiate RT::Queue');
+ok(my $testqueue = RT::Model::Queue->new(current_user => RT->system_user), 'Instantiate RT::Model::Queue');
 ok($testqueue->create( Name => 'reminders tests'), 'Create new queue: reminders tests');
 isnt($testqueue->Id , 0, 'Success creating queue');
 

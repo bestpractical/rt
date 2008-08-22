@@ -14,26 +14,26 @@ ok($ok, 'ACL test user creation');
 $user_obj->SetName('customer');
 $user_obj->SetPrivileged(1);
 ($ok, $msg) = $user_obj->SetPassword('customer');
-$user_obj->PrincipalObj->GrantRight(Right => 'ModifySelf');
+$user_obj->principal_object->grant_right(Right => 'ModifySelf');
 my $currentuser = RT::CurrentUser->new($user_obj);
 
-my $queue = RT::Queue->new($RT::SystemUser);
+my $queue = RT::Model::Queue->new(current_user => RT->system_user);
 $queue->create(Name => 'SearchQueue'.$$);
 
-$user_obj->PrincipalObj->GrantRight(Right => $_, Object => $queue)
+$user_obj->principal_object->grant_right(Right => $_, Object => $queue)
     for qw/SeeQueue ShowTicket OwnTicket/;
 
 # grant the user all these rights so we can make sure that the group rights
 # are checked and not these as well
-$user_obj->PrincipalObj->GrantRight(Right => $_, Object => $RT::System)
+$user_obj->principal_object->grant_right(Right => $_, Object => $RT::System)
     for qw/SubscribeDashboard CreateOwnDashboard SeeOwnDashboard ModifyOwnDashboard DeleteOwnDashboard/;
 # }}}
 # create and test groups (outer < inner < user) {{{
-my $inner_group = RT::Group->new($RT::SystemUser);
+my $inner_group = RT::Model::Group->new(current_user => RT->system_user);
 ($ok, $msg) = $inner_group->create_user_defined_group(Name => "inner", Description => "inner group");
 ok($ok, "created inner group: $msg");
 
-my $outer_group = RT::Group->new($RT::SystemUser);
+my $outer_group = RT::Model::Group->new(current_user => RT->system_user);
 ($ok, $msg) = $outer_group->create_user_defined_group(Name => "outer", Description => "outer group");
 ok($ok, "created outer group: $msg");
 
@@ -63,7 +63,7 @@ $m->form_name('ModifyDashboard');
 is_deeply([$m->current_form->find_input('Privacy')->possible_values], ["RT::Model::User-" . $user_obj->Id], "the only selectable privacy is user");
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
 
-$user_obj->PrincipalObj->GrantRight(Right => 'CreateGroupDashboard', Object => $inner_group);
+$user_obj->principal_object->grant_right(Right => 'CreateGroupDashboard', Object => $inner_group);
 
 $m->follow_link_ok({text => "New dashboard"});
 $m->form_name('ModifyDashboard');
@@ -90,7 +90,7 @@ $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->content_lacks("inner dashboard", "no SeeGroupDashboard right");
 $m->content_contains("Permission denied");
 
-$user_obj->PrincipalObj->GrantRight(Right => 'SeeGroupDashboard', Object => $inner_group);
+$user_obj->principal_object->grant_right(Right => 'SeeGroupDashboard', Object => $inner_group);
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->content_contains("inner dashboard", "we now have SeeGroupDashboard right");
 $m->content_lacks("Permission denied");

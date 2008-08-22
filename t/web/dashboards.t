@@ -13,14 +13,14 @@ ok($ret, 'ACL test user creation');
 $user_obj->SetName('customer');
 $user_obj->SetPrivileged(1);
 ($ret, $msg) = $user_obj->SetPassword('customer');
-$user_obj->PrincipalObj->GrantRight(Right => 'ModifySelf');
+$user_obj->principal_object->grant_right(Right => 'ModifySelf');
 my $currentuser = RT::CurrentUser->new($user_obj);
 
-my $queue = RT::Queue->new($RT::SystemUser);
+my $queue = RT::Model::Queue->new(current_user => RT->system_user);
 $queue->create(Name => 'SearchQueue'.$$);
-$user_obj->PrincipalObj->GrantRight(Right => 'SeeQueue',   Object => $queue);
-$user_obj->PrincipalObj->GrantRight(Right => 'ShowTicket', Object => $queue);
-$user_obj->PrincipalObj->GrantRight(Right => 'OwnTicket',  Object => $queue);
+$user_obj->principal_object->grant_right(Right => 'SeeQueue',   Object => $queue);
+$user_obj->principal_object->grant_right(Right => 'ShowTicket', Object => $queue);
+$user_obj->principal_object->grant_right(Right => 'OwnTicket',  Object => $queue);
 
 ok $m->login(customer => 'customer'), "logged in";
 
@@ -31,14 +31,14 @@ $m->get_ok($url."Dashboards/Modify.html?Create=1");
 $m->content_contains("Permission denied");
 $m->content_lacks("Save Changes");
 
-$user_obj->PrincipalObj->GrantRight(Right => 'ModifyOwnDashboard', Object => $RT::System);
+$user_obj->principal_object->grant_right(Right => 'ModifyOwnDashboard', Object => $RT::System);
 
 # Modify itself is no longer good enough, you need Create
 $m->get_ok($url."Dashboards/Modify.html?Create=1");
 $m->content_contains("Permission denied");
 $m->content_lacks("Save Changes");
 
-$user_obj->PrincipalObj->GrantRight(Right => 'CreateOwnDashboard', Object => $RT::System);
+$user_obj->principal_object->grant_right(Right => 'CreateOwnDashboard', Object => $RT::System);
 
 $m->get_ok($url."Dashboards/Modify.html?Create=1");
 $m->content_lacks("Permission denied");
@@ -59,7 +59,7 @@ $m->content_lacks('Delete', "Delete button hidden because we lack DeleteOwnDashb
 $m->get_ok($url."Dashboards/index.html");
 $m->content_lacks("different dashboard", "we lack SeeOwnDashboard");
 
-$user_obj->PrincipalObj->GrantRight(Right => 'SeeOwnDashboard', Object => $RT::System);
+$user_obj->principal_object->grant_right(Right => 'SeeOwnDashboard', Object => $RT::System);
 
 $m->get_ok($url."Dashboards/index.html");
 $m->content_contains("different dashboard", "we now have SeeOwnDashboard");
@@ -136,7 +136,7 @@ $m->content_contains("Permission denied");
 RT::Record->FlushCache if RT::Record->can('FlushCache');
 is($user_obj->Attributes->Named('Subscription'), 0, "no subscriptions");
 
-$user_obj->PrincipalObj->GrantRight(Right => 'SubscribeDashboard', Object => $RT::System);
+$user_obj->principal_object->grant_right(Right => 'SubscribeDashboard', Object => $RT::System);
 
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->follow_link_ok({text => "Subscription"});
@@ -163,7 +163,7 @@ $m->content_contains("Modify the subscription to dashboard different dashboard")
 $m->get_ok("/Dashboards/Modify.html?id=$id&Delete=1");
 $m->content_contains("Permission denied", "unable to delete dashboard because we lack DeleteOwnDashboard");
 
-$user_obj->PrincipalObj->GrantRight(Right => 'DeleteOwnDashboard', Object => $RT::System);
+$user_obj->principal_object->grant_right(Right => 'DeleteOwnDashboard', Object => $RT::System);
 
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->content_contains('Delete', "Delete button shows because we have DeleteOwnDashboard");

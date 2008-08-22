@@ -15,10 +15,10 @@ diag "Create a queue CF" if $ENV{'TEST_VERBOSE'};
     $m->title_is(q/Select a Custom Field/, 'admin-cf screen');
     $m->follow_link( text => 'Create' );
     $m->submit_form(
-        form_name => "ModifyCustomField",
+        form_name => "modify_custom_field",
         fields => {
             TypeComposite => 'Freeform-1',
-            LookupType => 'RT::Queue',
+            lookup_type => 'RT::Model::Queue',
             Name => 'QueueCFTest',
             Description => 'QueueCFTest',
         },
@@ -54,9 +54,9 @@ diag "Edit the CF value for default queue" if $ENV{'TEST_VERBOSE'};
     $m->submit_form(
         form_number => 3,
         # The following doesn't want to works :(
-        #with_fields => { 'Object-RT::Queue-1-CustomField-1-Value' },
+        #with_fields => { 'Object-RT::Model::Queue-1-CustomField-1-Value' },
         fields => {
-            'Object-RT::Queue-1-CustomField-1-Value' => 'QueueCFTest content',
+            'Object-RT::Model::Queue-1-CustomField-1-Value' => 'QueueCFTest content',
         },
     );
     $m->content_like( qr/QueueCFTest QueueCFTest content added/, 'Content filed in CF QueueCFTest for default queue' );

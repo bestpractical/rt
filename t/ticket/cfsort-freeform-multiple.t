@@ -7,7 +7,7 @@ use strict;
 use warnings;
 
 use RT::Model::TicketCollection;
-use RT::Queue;
+use RT::Model::Queue;
 use RT::CustomField;
 
 # Test Sorting by custom fields.
@@ -16,7 +16,7 @@ diag "Create a queue to test with." if $ENV{TEST_VERBOSE};
 my $queue_name = "CFSortQueue-$$";
 my $queue;
 {
-    $queue = RT::Queue->new( $RT::SystemUser );
+    $queue = RT::Model::Queue->new(current_user => RT->system_user );
     my ($ret, $msg) = $queue->create(
         Name => $queue_name,
         Description => 'queue for custom field sort testing'

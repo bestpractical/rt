@@ -11,7 +11,7 @@ use RT::Test;
 
 # setup the queue
 
-my $q = RT::Queue->new($RT::SystemUser);
+my $q = RT::Model::Queue->new(current_user => RT->system_user);
 my $queue = 'SearchTests-'.$$;
 $q->create(Name => $queue);
 ok ($q->id, "Created the queue");

@@ -38,7 +38,7 @@ $user_s->SetPrivileged( 1 );
 is(RT::Config->Get('EmailFrequency' => $user_s), 'Suspended');
 
 # Make a testing queue for ourselves.
-my $testq = RT::Queue->new( $RT::SystemUser );
+my $testq = RT::Model::Queue->new(current_user => RT->system_user );
 if( $testq->ValidateName( 'EmailDigest-testqueue' ) ) {
     ( $ret, $msg ) = $testq->create( Name => 'EmailDigest-testqueue' );
     ok( $ret, "Our test queue is created: $msg" );
@@ -48,30 +48,30 @@ if( $testq->ValidateName( 'EmailDigest-testqueue' ) ) {
 }
 
 # Allow anyone to open a ticket on the test queue.
-my $everyone = RT::Group->new( $RT::SystemUser );
+my $everyone = RT::Model::Group->new(current_user => RT->system_user );
 ( $ret, $msg ) = $everyone->LoadSystemInternalGroup( 'Everyone' );
 ok( $ret, "Loaded 'everyone' group: $msg" );
 
-( $ret, $msg ) = $everyone->PrincipalObj->GrantRight( Right => 'CreateTicket',
+( $ret, $msg ) = $everyone->principal_object->grant_right( Right => 'CreateTicket',
 						      Object => $testq );
 ok( $ret || $msg =~ /already has/, "Granted everyone CreateTicket on testq: $msg" );
 
 # Make user_d an admincc for the queue.
-( $ret, $msg ) = $user_d->PrincipalObj->GrantRight( Right => 'AdminQueue',
+( $ret, $msg ) = $user_d->principal_object->grant_right( Right => 'AdminQueue',
 						    Object => $testq );
 ok( $ret || $msg =~ /already has/, "Granted dduser AdminQueue on testq: $msg" );
 ( $ret, $msg ) = $testq->AddWatcher( Type => 'AdminCc',
-			     PrincipalId => $user_d->PrincipalObj->id );
+			     PrincipalId => $user_d->principal_object->id );
 ok( $ret || $msg =~ /already/, "dduser added as a queue watcher: $msg" );
 
 # Give the others queue rights.
-( $ret, $msg ) = $user_n->PrincipalObj->GrantRight( Right => 'AdminQueue',
+( $ret, $msg ) = $user_n->principal_object->grant_right( Right => 'AdminQueue',
 						    Object => $testq );
 ok( $ret || $msg =~ /already has/, "Granted emailnormal right on testq: $msg" );
-( $ret, $msg ) = $user_w->PrincipalObj->GrantRight( Right => 'AdminQueue',
+( $ret, $msg ) = $user_w->principal_object->grant_right( Right => 'AdminQueue',
 						    Object => $testq );
 ok( $ret || $msg =~ /already has/, "Granted emailweekly right on testq: $msg" );
-( $ret, $msg ) = $user_s->PrincipalObj->GrantRight( Right => 'AdminQueue',
+( $ret, $msg ) = $user_s->principal_object->grant_right( Right => 'AdminQueue',
 						    Object => $testq );
 ok( $ret || $msg =~ /already has/, "Granted emailsusp right on testq: $msg" );
 
@@ -86,10 +86,10 @@ ok( $ret, "Ticket $id created: $msg" );
 
 # Make the other users ticket watchers.
 ( $ret, $msg ) = $ticket->AddWatcher( Type => 'Cc',
-		      PrincipalId => $user_n->PrincipalObj->id );
+		      PrincipalId => $user_n->principal_object->id );
 ok( $ret, "Added user_w as a ticket watcher: $msg" );
 ( $ret, $msg ) = $ticket->AddWatcher( Type => 'Cc',
-		      PrincipalId => $user_s->PrincipalObj->id );
+		      PrincipalId => $user_s->principal_object->id );
 ok( $ret, "Added user_s as a ticket watcher: $msg" );
 
 my $obj;

@@ -7,7 +7,7 @@ use strict;
 use warnings;
 
 use RT::Model::TicketCollection;
-use RT::Queue;
+use RT::Model::Queue;
 use RT::CustomField;
 
 #########################################################
@@ -19,7 +19,7 @@ diag "Create a queue to test with." if $ENV{TEST_VERBOSE};
 my $queue_name = "OwnerSortQueue$$";
 my $queue;
 {
-    $queue = RT::Queue->new( $RT::SystemUser );
+    $queue = RT::Model::Queue->new(current_user => RT->system_user );
     my ($ret, $msg) = $queue->create(
         Name => $queue_name,
         Description => 'queue for custom field sort testing'
@@ -39,9 +39,9 @@ foreach my $u (qw(Z A)) {
     );
     ok $uid, "created user #$uid";
 
-    my ($status, $msg) = $user->PrincipalObj->GrantRight( Right => 'OwnTicket', Object => $queue );
+    my ($status, $msg) = $user->principal_object->grant_right( Right => 'OwnTicket', Object => $queue );
     ok $status, "granted right";
-    ($status, $msg) = $user->PrincipalObj->GrantRight( Right => 'CreateTicket', Object => $queue );
+    ($status, $msg) = $user->principal_object->grant_right( Right => 'CreateTicket', Object => $queue );
     ok $status, "granted right";
 
     push @users, $user;

@@ -7,7 +7,7 @@ use strict;
 use warnings;
 
 use RT::Model::TicketCollection;
-use RT::Queue;
+use RT::Model::Queue;
 use RT::CustomField;
 
 #########################################################
@@ -20,7 +20,7 @@ my @qids;
 my @queues;
 # create them in reverse order to avoid false positives
 foreach my $name ( qw(sort-by-queue-Z sort-by-queue-A) ) {
-    my $queue = RT::Queue->new( $RT::SystemUser );
+    my $queue = RT::Model::Queue->new(current_user => RT->system_user );
     my ($ret, $msg) = $queue->create(
         Name => $name ."-$$",
         Description => 'queue to test sorting by queue'
