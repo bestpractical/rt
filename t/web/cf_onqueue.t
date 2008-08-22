@@ -17,10 +17,10 @@ diag "Create a queue CF" if $ENV{'TEST_VERBOSE'};
     $m->submit_form(
         form_name => "modify_custom_field",
         fields => {
-            TypeComposite => 'Freeform-1',
+            type_composite =>  'Freeform-1',
             lookup_type => 'RT::Model::Queue',
-            Name => 'QueueCFTest',
-            Description => 'QueueCFTest',
+            name =>  'QueueCFTest',
+            description =>  'QueueCFTest',
         },
     );
     $m->content_like( qr/Object created/, 'CF QueueCFTest created' );

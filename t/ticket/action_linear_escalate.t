@@ -14,12 +14,12 @@ my $UpdateLastUpdated;
 
 use_ok('RT::Action::LinearEscalate');
 
-my $q = RT::Test->load_or_create_queue( Name => 'Regression' );
+my $q = RT::Test->load_or_create_queue( name =>  'Regression' );
 ok $q && $q->id, 'loaded or created queue';
 
 # rt-cron-tool uses Gecos name to get rt user, so we'd better create one
 my $gecos = RT::Test->load_or_create_user(
-    Name => 'gecos',
+    name =>  'gecos',
     Password => 'password',
     Gecos => ($^O eq 'MSWin32') ? Win32::LoginName() : (getpwuid($<))[0],
 );
@@ -30,7 +30,7 @@ $gecos->principal_object->grant_right( Right => 'SuperUser' );
 
 
 my $user = RT::Test->load_or_create_user(
-    Name => 'user', Password => 'password',
+    name =>  'user', Password => 'password',
 );
 ok $user && $user->id, 'loaded or created user';
 

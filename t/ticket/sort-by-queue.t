@@ -22,8 +22,8 @@ my @queues;
 foreach my $name ( qw(sort-by-queue-Z sort-by-queue-A) ) {
     my $queue = RT::Model::Queue->new(current_user => RT->system_user );
     my ($ret, $msg) = $queue->create(
-        Name => $name ."-$$",
-        Description => 'queue to test sorting by queue'
+        name =>  $name ."-$$",
+        description =>  'queue to test sorting by queue'
     );
     ok($ret, "test queue creation. $msg");
     push @queues, $queue;
@@ -55,14 +55,14 @@ sub run_tests {
         foreach my $order (qw(ASC DESC)) {
             my $error = 0;
             my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user );
-            $tix->FromSQL( $query );
+            $tix->from_sql( $query );
             $tix->OrderBy( FIELD => $test->{'Order'}, ORDER => $order );
 
-            ok($tix->Count, "found ticket(s)")
+            ok($tix->count, "found ticket(s)")
                 or $error = 1;
 
             my ($order_ok, $last) = (1, $order eq 'ASC'? '-': 'zzzzzz');
-            while ( my $t = $tix->Next ) {
+            while ( my $t = $tix->next ) {
                 my $tmp;
                 if ( $order eq 'ASC' ) {
                     $tmp = ((split( /,/, $last))[0] cmp (split( /,/, $t->Subject))[0]);
@@ -81,7 +81,7 @@ sub run_tests {
             if ( $error ) {
                 diag "Wrong SQL query:". $tix->BuildSelectQuery;
                 $tix->GotoFirstItem;
-                while ( my $t = $tix->Next ) {
+                while ( my $t = $tix->next ) {
                     diag sprintf "%02d - %s", $t->id, $t->Subject;
                 }
             }

@@ -21,8 +21,8 @@ my $queue;
 {
     $queue = RT::Model::Queue->new(current_user => RT->system_user );
     my ($ret, $msg) = $queue->create(
-        Name => $queue_name,
-        Description => 'queue for custom field sort testing'
+        name =>  $queue_name,
+        description =>  'queue for custom field sort testing'
     );
     ok($ret, "$queue test queue creation. $msg");
 }
@@ -34,8 +34,8 @@ foreach my $u (qw(Z A)) {
     my $name = $u ."-user-to-test-ordering-$$";
     my $user = RT::Model::User->new(current_user => RT->system_user );
     my ($uid) = $user->create(
-        Name => $name,
-        Privileged => 1,
+        name =>  $name,
+        privileged => 1,
     );
     ok $uid, "created user #$uid";
 
@@ -84,14 +84,14 @@ sub run_tests {
         foreach my $order (qw(ASC DESC)) {
             my $error = 0;
             my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user );
-            $tix->FromSQL( $query );
+            $tix->from_sql( $query );
             $tix->OrderBy( FIELD => $test->{'Order'}, ORDER => $order );
 
-            ok($tix->Count, "found ticket(s)")
+            ok($tix->count, "found ticket(s)")
                 or $error = 1;
 
             my ($order_ok, $last) = (1, $order eq 'ASC'? '-': 'zzzzzz');
-            while ( my $t = $tix->Next ) {
+            while ( my $t = $tix->next ) {
                 my $tmp;
                 if ( $order eq 'ASC' ) {
                     $tmp = ((split( /,/, $last))[0] cmp (split( /,/, $t->Subject))[0]);
@@ -110,7 +110,7 @@ sub run_tests {
             if ( $error ) {
                 diag "Wrong SQL query:". $tix->BuildSelectQuery;
                 $tix->GotoFirstItem;
-                while ( my $t = $tix->Next ) {
+                while ( my $t = $tix->next ) {
                     diag sprintf "%02d - %s", $t->id, $t->Subject;
                 }
             }

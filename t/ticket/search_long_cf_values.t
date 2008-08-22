@@ -54,27 +54,27 @@ ok( $id, $msg );
 
 # we have tickets. start searching
 my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
-$tix->FromSQL("Queue = '$queue' AND CF.SearchTest LIKE 'foo'");
-is($tix->Count, 1, "matched short string foo")
+$tix->from_sql("Queue = '$queue' AND CF.SearchTest LIKE 'foo'");
+is($tix->count, 1, "matched short string foo")
     or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
-$tix->FromSQL("Queue = '$queue' AND CF.SearchTest LIKE 'bar'");
-is($tix->Count, 2, "matched long+short string bar")
+$tix->from_sql("Queue = '$queue' AND CF.SearchTest LIKE 'bar'");
+is($tix->count, 2, "matched long+short string bar")
     or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
-$tix->FromSQL("Queue = '$queue' AND ( CF.SearchTest LIKE 'foo' OR CF.SearchTest LIKE 'bar' )");
-is($tix->Count, 3, "matched short string foo or long+short string bar")
+$tix->from_sql("Queue = '$queue' AND ( CF.SearchTest LIKE 'foo' OR CF.SearchTest LIKE 'bar' )");
+is($tix->count, 3, "matched short string foo or long+short string bar")
     or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
-$tix->FromSQL("Queue = '$queue' AND CF.SearchTest NOT LIKE 'foo' AND CF.SearchTest LIKE 'bar'");
-is($tix->Count, 2, "not matched short string foo and matched long+short string bar")
+$tix->from_sql("Queue = '$queue' AND CF.SearchTest NOT LIKE 'foo' AND CF.SearchTest LIKE 'bar'");
+is($tix->count, 2, "not matched short string foo and matched long+short string bar")
     or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 
 $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
-$tix->FromSQL("Queue = '$queue' AND CF.SearchTest LIKE 'foo' AND CF.SearchTest NOT LIKE 'bar'");
-is($tix->Count, 1, "matched short string foo and not matched long+short string bar")
+$tix->from_sql("Queue = '$queue' AND CF.SearchTest LIKE 'foo' AND CF.SearchTest NOT LIKE 'bar'");
+is($tix->count, 1, "matched short string foo and not matched long+short string bar")
     or diag "wrong results from SQL:\n". $tix->BuildSelectCountQuery;
 

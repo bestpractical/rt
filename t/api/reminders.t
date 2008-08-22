@@ -13,10 +13,10 @@ use RT::Test;
 use_ok ('RT::Model::Queue');
 
 ok(my $testqueue = RT::Model::Queue->new(current_user => RT->system_user), 'Instantiate RT::Model::Queue');
-ok($testqueue->create( Name => 'reminders tests'), 'Create new queue: reminders tests');
+ok($testqueue->create( name =>  'reminders tests'), 'Create new queue: reminders tests');
 isnt($testqueue->Id , 0, 'Success creating queue');
 
-ok($testqueue->create( Name => 'reminders tests 2'), 'Create new queue: reminders tests 2');
+ok($testqueue->create( name =>  'reminders tests 2'), 'Create new queue: reminders tests 2');
 isnt($testqueue->Id , 0, 'Success creating queue');
 
 # Create test ticket
@@ -45,7 +45,7 @@ ok(my ( $add_id, $add_msg, $txnid ) = $t->Reminders->Add(
 my $reminders = $t->Reminders->Collection;
 ok($reminders, 'Loading reminders for this ticket');
 my $found = 0;
-while ( my $reminder = $reminders->Next ) {
+while ( my $reminder = $reminders->next ) {
     next unless $found == 0;
     $found = 1 if ( $reminder->Subject =~ m/TestReminder/ );
 }
@@ -62,7 +62,7 @@ $reminders = $t->Reminders->Collection;
 ok($reminders, 'Loading reminders for this ticket');
 $found = 0;
 my $ok_queue = 0;
-while ( my $reminder = $reminders->Next ) {
+while ( my $reminder = $reminders->next ) {
     next unless $found == 0;
     if ( $reminder->Subject =~ m/TestReminder/ ) {
         $found = 1;
@@ -75,7 +75,7 @@ is($ok_queue, 1, 'Reminder automatically moved to new queue');
 
 # Resolve reminder
 my $r_resolved = 0;
-while ( my $reminder = $reminders->Next ) {
+while ( my $reminder = $reminders->next ) {
     if ( $reminder->Subject =~ m/TestReminder/ ) {
         if ( $reminder->Status ne 'resolved' ) {
             $t->Reminders->Resolve($reminder);

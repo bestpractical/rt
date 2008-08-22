@@ -23,7 +23,7 @@ diag "Create a CF" if $ENV{'TEST_VERBOSE'};
         form_name => "modify_custom_field",
         fields => {
             name          => $cf_name,
-            type_composite => 'Select-1',
+            type_composite =>   'Select-1',
             lookup_type    => 'RT::Model::Queue-RT::Model::Ticket',
         },
     );

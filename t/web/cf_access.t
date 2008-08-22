@@ -20,7 +20,7 @@ diag "Create a CF" if $ENV{'TEST_VERBOSE'};
     $m->submit_form(
         form_name => "modify_custom_field",
         fields => {
-            type_composite => 'Image-0',
+            type_composite =>   'Image-0',
             lookup_type => 'RT::Model::Queue-RT::Model::Ticket',
             name => 'img',
             description => 'img',

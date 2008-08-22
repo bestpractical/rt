@@ -40,7 +40,7 @@ is(RT::Config->Get('EmailFrequency' => $user_s), 'Suspended');
 # Make a testing queue for ourselves.
 my $testq = RT::Model::Queue->new(current_user => RT->system_user );
 if( $testq->ValidateName( 'EmailDigest-testqueue' ) ) {
-    ( $ret, $msg ) = $testq->create( Name => 'EmailDigest-testqueue' );
+    ( $ret, $msg ) = $testq->create( name =>  'EmailDigest-testqueue' );
     ok( $ret, "Our test queue is created: $msg" );
 } else {
     $testq->Load( 'EmailDigest-testqueue' );
@@ -61,7 +61,7 @@ ok( $ret || $msg =~ /already has/, "Granted everyone CreateTicket on testq: $msg
 						    Object => $testq );
 ok( $ret || $msg =~ /already has/, "Granted dduser AdminQueue on testq: $msg" );
 ( $ret, $msg ) = $testq->AddWatcher( Type => 'AdminCc',
-			     PrincipalId => $user_d->principal_object->id );
+			     principal_id => $user_d->principal_object->id );
 ok( $ret || $msg =~ /already/, "dduser added as a queue watcher: $msg" );
 
 # Give the others queue rights.
@@ -86,10 +86,10 @@ ok( $ret, "Ticket $id created: $msg" );
 
 # Make the other users ticket watchers.
 ( $ret, $msg ) = $ticket->AddWatcher( Type => 'Cc',
-		      PrincipalId => $user_n->principal_object->id );
+		      principal_id => $user_n->principal_object->id );
 ok( $ret, "Added user_w as a ticket watcher: $msg" );
 ( $ret, $msg ) = $ticket->AddWatcher( Type => 'Cc',
-		      PrincipalId => $user_s->principal_object->id );
+		      principal_id => $user_s->principal_object->id );
 ok( $ret, "Added user_s as a ticket watcher: $msg" );
 
 my $obj;
@@ -104,7 +104,7 @@ my @notifications;
 my $txns = RT::Transactions->new( $RT::SystemUser );
 $txns->LimitToTicket( $ticket->id );
 my( $c_daily, $c_weekly, $c_susp ) = ( 0, 0, 0 );
-while( my $txn = $txns->Next ) {
+while( my $txn = $txns->next ) {
     my @daily_rcpt = $txn->DeferredRecipients( 'daily' );
     my @weekly_rcpt = $txn->DeferredRecipients('weekly' );
     my @susp_rcpt = $txn->DeferredRecipients(  'susp' );

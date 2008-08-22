@@ -30,28 +30,28 @@ $user_obj->principal_object->grant_right(Right => $_, Object => $RT::System)
 # }}}
 # create and test groups (outer < inner < user) {{{
 my $inner_group = RT::Model::Group->new(current_user => RT->system_user);
-($ok, $msg) = $inner_group->create_user_defined_group(Name => "inner", Description => "inner group");
+($ok, $msg) = $inner_group->create_user_defined_group(Name => "inner", description =>  "inner group");
 ok($ok, "created inner group: $msg");
 
 my $outer_group = RT::Model::Group->new(current_user => RT->system_user);
-($ok, $msg) = $outer_group->create_user_defined_group(Name => "outer", Description => "outer group");
+($ok, $msg) = $outer_group->create_user_defined_group(Name => "outer", description =>  "outer group");
 ok($ok, "created outer group: $msg");
 
-($ok, $msg) = $outer_group->AddMember($inner_group->PrincipalId);
+($ok, $msg) = $outer_group->add_member($inner_group->principal_id);
 ok($ok, "added inner as a member of outer: $msg");
 
-($ok, $msg) = $inner_group->AddMember($user_obj->PrincipalId);
+($ok, $msg) = $inner_group->add_member($user_obj->principal_id);
 ok($ok, "added user as a member of member: $msg");
 
-ok($outer_group->HasMember($inner_group->PrincipalId), "outer has inner");
-ok(!$outer_group->HasMember($user_obj->PrincipalId), "outer doesn't have user directly");
-ok($outer_group->HasMemberRecursively($inner_group->PrincipalId), "outer has inner recursively");
-ok($outer_group->HasMemberRecursively($user_obj->PrincipalId), "outer has user recursively");
+ok($outer_group->has_member($inner_group->principal_id), "outer has inner");
+ok(!$outer_group->has_member($user_obj->principal_id), "outer doesn't have user directly");
+ok($outer_group->has_memberRecursively($inner_group->principal_id), "outer has inner recursively");
+ok($outer_group->has_memberRecursively($user_obj->principal_id), "outer has user recursively");
 
-ok(!$inner_group->HasMember($outer_group->PrincipalId), "inner doesn't have outer");
-ok($inner_group->HasMember($user_obj->PrincipalId), "inner has user");
-ok(!$inner_group->HasMemberRecursively($outer_group->PrincipalId), "inner doesn't have outer, even recursively");
-ok($inner_group->HasMemberRecursively($user_obj->PrincipalId), "inner has user recursively");
+ok(!$inner_group->has_member($outer_group->principal_id), "inner doesn't have outer");
+ok($inner_group->has_member($user_obj->principal_id), "inner has user");
+ok(!$inner_group->has_memberRecursively($outer_group->principal_id), "inner doesn't have outer, even recursively");
+ok($inner_group->has_memberRecursively($user_obj->principal_id), "inner has user recursively");
 # }}}
 
 ok $m->login(customer => 'customer'), "logged in";

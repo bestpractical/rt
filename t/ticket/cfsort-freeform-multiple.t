@@ -18,8 +18,8 @@ my $queue;
 {
     $queue = RT::Model::Queue->new(current_user => RT->system_user );
     my ($ret, $msg) = $queue->create(
-        Name => $queue_name,
-        Description => 'queue for custom field sort testing'
+        name =>  $queue_name,
+        description =>  'queue for custom field sort testing'
     );
     ok($ret, "$queue_name - test queue creation. $msg");
 }
@@ -75,15 +75,15 @@ sub run_tests {
         foreach my $order (qw(ASC DESC)) {
             my $error = 0;
             my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user );
-            $tix->FromSQL( $query );
+            $tix->from_sql( $query );
             $tix->OrderBy( FIELD => $test->{'Order'}, ORDER => $order );
 
-            ok($tix->Count, "found ticket(s)")
+            ok($tix->count, "found ticket(s)")
                 or $error = 1;
 
             my ($order_ok, $last) = (1, $order eq 'ASC'? '-': 'zzzzzz');
             my $last_id = $tix->Last->id;
-            while ( my $t = $tix->Next ) {
+            while ( my $t = $tix->next ) {
                 my $tmp;
                 next if $t->id == $last_id and $t->Subject eq "-"; # Nulls are allowed to come last, in Pg
 
@@ -104,7 +104,7 @@ sub run_tests {
             if ( $error ) {
                 diag "Wrong SQL query:". $tix->BuildSelectQuery;
                 $tix->GotoFirstItem;
-                while ( my $t = $tix->Next ) {
+                while ( my $t = $tix->next ) {
                     diag sprintf "%02d - %s", $t->id, $t->Subject;
                 }
             }
