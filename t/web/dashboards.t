@@ -8,11 +8,11 @@ my ($baseurl, $m) = RT::Test->started_ok;
 my $url = $m->rt_base_url;
 
 my $user_obj = RT::Model::User->new(current_user => RT->system_user);
-my ($ret, $msg) = $user_obj->LoadOrCreateByEmail('customer@example.com');
+my ($ret, $msg) = $user_obj->load_or_create_by_email('customer@example.com');
 ok($ret, 'ACL test user creation');
-$user_obj->SetName('customer');
-$user_obj->SetPrivileged(1);
-($ret, $msg) = $user_obj->SetPassword('customer');
+$user_obj->set_name('customer');
+$user_obj->set_privileged(1);
+($ret, $msg) = $user_obj->set_password('customer');
 $user_obj->principal_object->grant_right(Right => 'ModifySelf');
 my $currentuser = RT::CurrentUser->new($user_obj);
 
@@ -48,7 +48,7 @@ $m->get_ok($url."Dashboards/index.html");
 $m->content_contains("New dashboard", "'New dashboard' link because we now have ModifyOwnDashboard");
 
 $m->follow_link_ok({text => "New dashboard"});
-$m->form_name('ModifyDashboard');
+$m->form_name('modify_dashboard');
 $m->field("Name" => 'different dashboard');
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
 $m->click_button(value => 'Save Changes');
@@ -168,7 +168,7 @@ $user_obj->principal_object->grant_right(Right => 'DeleteOwnDashboard', Object =
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->content_contains('Delete', "Delete button shows because we have DeleteOwnDashboard");
 
-$m->form_name('ModifyDashboard');
+$m->form_name('modify_dashboard');
 $m->click_button(name => 'Delete');
 $m->content_contains("Deleted dashboard $id");
 

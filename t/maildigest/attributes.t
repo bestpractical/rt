@@ -9,30 +9,30 @@ my @users = qw/ emailnormal@example.com emaildaily@example.com emailweekly@examp
 
 my( $ret, $msg );
 my $user_n = RT::Model::User->new(current_user => RT->system_user );
-( $ret, $msg ) = $user_n->LoadOrCreateByEmail( $users[0] );
+( $ret, $msg ) = $user_n->load_or_create_by_email( $users[0] );
 ok( $ret, "user with default email prefs created: $msg" );
-$user_n->SetPrivileged( 1 );
+$user_n->set_privileged( 1 );
 
 my $user_d = RT::Model::User->new(current_user => RT->system_user );
-( $ret, $msg ) = $user_d->LoadOrCreateByEmail( $users[1] );
+( $ret, $msg ) = $user_d->load_or_create_by_email( $users[1] );
 ok( $ret, "user with daily digest email prefs created: $msg" );
 # Set a username & password for testing the interface.
-$user_d->SetPrivileged( 1 );
-$user_d->SetPreferences($RT::System => { %{ $user_d->Preferences( $RT::System ) || {}}, EmailFrequency => 'Daily digest'});
+$user_d->set_privileged( 1 );
+$user_d->set_preferences($RT::System => { %{ $user_d->Preferences( $RT::System ) || {}}, EmailFrequency => 'Daily digest'});
 
 
 
 my $user_w = RT::Model::User->new(current_user => RT->system_user );
-( $ret, $msg ) = $user_w->LoadOrCreateByEmail( $users[2] );
+( $ret, $msg ) = $user_w->load_or_create_by_email( $users[2] );
 ok( $ret, "user with weekly digest email prefs created: $msg" );
-$user_w->SetPrivileged( 1 );
-$user_w->SetPreferences($RT::System => { %{ $user_w->Preferences( $RT::System ) || {}}, EmailFrequency => 'Weekly digest'});
+$user_w->set_privileged( 1 );
+$user_w->set_preferences($RT::System => { %{ $user_w->Preferences( $RT::System ) || {}}, EmailFrequency => 'Weekly digest'});
 
 my $user_s = RT::Model::User->new(current_user => RT->system_user );
-( $ret, $msg ) = $user_s->LoadOrCreateByEmail( $users[3] );
+( $ret, $msg ) = $user_s->load_or_create_by_email( $users[3] );
 ok( $ret, "user with suspended email prefs created: $msg" );
-$user_s->SetPreferences($RT::System => { %{ $user_s->Preferences( $RT::System ) || {}}, EmailFrequency => 'Suspended'});
-$user_s->SetPrivileged( 1 );
+$user_s->set_preferences($RT::System => { %{ $user_s->Preferences( $RT::System ) || {}}, EmailFrequency => 'Suspended'});
+$user_s->set_privileged( 1 );
 
 
 is(RT::Config->Get('EmailFrequency' => $user_s), 'Suspended');
