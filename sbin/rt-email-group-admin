@@ -283,7 +283,7 @@ sub __create_empty {
     require RT::ScripAction;
     my $action = RT::ScripAction->new( RT->system_user );
     $action->create(
-        Name => $name,
+        name =>  $name,
         description => "Created with rt-email-group-admin script",
         ExecModule => $as_comment? 'NotifyGroupAsComment': 'NotifyGroup',
         Argument => '',

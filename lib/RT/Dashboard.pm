@@ -197,7 +197,7 @@ sub search_privacy {
     my $self = shift;
     my ( $type, $id, $desc ) = @_;
     if ( $type eq 'RT::System' ) {
-        return Name => $desc;
+        return name =>  $desc;
     }
 
     return SavedSearch => join( '-', $type, 'SavedSearch', $id );

@@ -894,7 +894,7 @@ set($WebExternalAuto , undef);
 
 If C<$WebExternalAuto> is true, C<$AutoCreate> will be passed to User's
 Create method.  Use it to set defaults, such as creating 
-Unprivileged users with C<{ Privileged => 0 }>
+Unprivileged users with C<{ privileged => 0 }>
 ( Must be a hashref of arguments )
 
 =cut
