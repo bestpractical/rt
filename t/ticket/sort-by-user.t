@@ -6,7 +6,7 @@ use RT::Test;
 use strict;
 use warnings;
 
-use RT::Tickets;
+use RT::Model::TicketCollection;
 use RT::Queue;
 use RT::CustomField;
 
@@ -20,7 +20,7 @@ my $queue_name = "OwnerSortQueue$$";
 my $queue;
 {
     $queue = RT::Queue->new( $RT::SystemUser );
-    my ($ret, $msg) = $queue->Create(
+    my ($ret, $msg) = $queue->create(
         Name => $queue_name,
         Description => 'queue for custom field sort testing'
     );
@@ -32,8 +32,8 @@ my @users;
 # create them in reverse order to avoid false positives
 foreach my $u (qw(Z A)) {
     my $name = $u ."-user-to-test-ordering-$$";
-    my $user = RT::User->new( $RT::SystemUser );
-    my ($uid) = $user->Create(
+    my $user = RT::Model::User->new(current_user => RT->system_user );
+    my ($uid) = $user->create(
         Name => $name,
         Privileged => 1,
     );
@@ -54,10 +54,10 @@ sub add_tix_from_data {
     my @res = ();
     @data = sort { rand(100) <=> rand(100) } @data;
     while (@data) {
-        my $t = RT::Ticket->new($RT::SystemUser);
+        my $t = RT::Model::Ticket->new(current_user => RT->system_user);
         my %args = %{ shift(@data) };
 
-        my ( $id, undef, $msg ) = $t->Create( %args, Queue => $queue->id );
+        my ( $id, undef, $msg ) = $t->create( %args, Queue => $queue->id );
         if ( $args{'Owner'} ) {
             is $t->Owner, $args{'Owner'}, "owner is correct";
         }
@@ -83,7 +83,7 @@ sub run_tests {
 
         foreach my $order (qw(ASC DESC)) {
             my $error = 0;
-            my $tix = RT::Tickets->new( $RT::SystemUser );
+            my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user );
             $tix->FromSQL( $query );
             $tix->OrderBy( FIELD => $test->{'Order'}, ORDER => $order );
 

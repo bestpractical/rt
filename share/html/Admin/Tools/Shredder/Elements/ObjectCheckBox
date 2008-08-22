@@ -48,7 +48,7 @@
 <%ARGS>
 $object => undef
 </%ARGS>
-<input type="checkbox" name="wipeoutobject" value="<% $object->_as_string %>" />
+<input type="checkbox" name="wipeout_object" value="<% $object->_as_string %>" />
 <span>
 % if( $m->comp_exists( $path ) ) {
 % $m->comp( $path, object => $object );

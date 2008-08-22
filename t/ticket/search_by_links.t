@@ -5,7 +5,7 @@ use warnings;
 
 use Test::More tests => 80;
 use RT::Test;
-use RT::Ticket;
+use RT::Model::Ticket;
 
 my $q = RT::Test->load_or_create_queue( Name => 'Regression' );
 ok $q && $q->id, 'loaded or created queue';
@@ -15,10 +15,10 @@ my ($total, @data, @tickets, %test) = (0, ());
 sub add_tix_from_data {
     my @res = ();
     while (@data) {
-        my $t = RT::Ticket->new($RT::SystemUser);
+        my $t = RT::Model::Ticket->new(current_user => RT->system_user);
         my %args = %{ shift(@data) };
-        $args{$_} = $res[ $args{$_} ]->id foreach grep $args{$_}, keys %RT::Ticket::LINKTYPEMAP;
-        my ( $id, undef $msg ) = $t->Create(
+        $args{$_} = $res[ $args{$_} ]->id foreach grep $args{$_}, keys %RT::Model::Ticket::LINKTYPEMAP;
+        my ( $id, undef $msg ) = $t->create(
             Queue => $q->id,
             %args,
         );
@@ -32,7 +32,7 @@ sub add_tix_from_data {
 sub run_tests {
     my $query_prefix = join ' OR ', map 'id = '. $_->id, @tickets;
     foreach my $key ( sort keys %test ) {
-        my $tix = RT::Tickets->new($RT::SystemUser);
+        my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
         $tix->FromSQL( "( $query_prefix ) AND ( $key )" );
 
         my $error = 0;
@@ -83,7 +83,7 @@ sub run_tests {
     'MemberOf   != '. $tickets[1]->id  => { '-' => 1, c => 0, p => 1 },
 );
 {
-    my $tix = RT::Tickets->new($RT::SystemUser);
+    my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
     $tix->FromSQL("Queue = '". $q->id ."'");
     is($tix->Count, $total, "found $total tickets");
 }
@@ -125,7 +125,7 @@ my $pid = $tickets[1]->id;
     "RefersTo != $pid OR  MemberOf != $pid" => { '-' => 1, c => 1, p => 1, rp => 1, rc1 => 1, rc2 => 1 },
 );
 {
-    my $tix = RT::Tickets->new($RT::SystemUser);
+    my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
     $tix->FromSQL("Queue = '". $q->id ."'");
     is($tix->Count, $total, "found $total tickets");
 }

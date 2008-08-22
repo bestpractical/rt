@@ -8,16 +8,16 @@ my ($baseurl, $m) = RT::Test->started_ok;
 
 for my $name ("severity", "fu()n:k/") {
     my $cf = RT::Test->load_or_create_custom_field(
-        Name  => $name,
-        Type  => 'Freeform',
-        Queue => 'General',
+        name  => $name,
+        type  => 'Freeform',
+        queue => 'General',
     );
-    ok($cf->Id, "created a CustomField");
-    is($cf->Name, $name, "correct CF name");
+    ok($cf->id, "created a CustomField");
+    is($cf->name, $name, "correct CF name");
 }
 
-my $queue = RT::Test->load_or_create_queue(Name => 'General');
-ok($queue->Id, "loaded the General queue");
+my $queue = RT::Test->load_or_create_queue(name => 'General');
+ok($queue->id, "loaded the General queue");
 
 $m->post("$baseurl/REST/1.0/ticket/new", [
     user    => 'root',
@@ -42,16 +42,16 @@ $m->post("$baseurl/REST/1.0/ticket/edit", [
     pass    => 'password',
 
     content => $text,
-], Content_Type => 'form-data');
+], content_type => 'form-data');
 
 my ($id) = $m->content =~ /Ticket (\d+) created/;
 ok($id, "got ticket #$id");
 
-my $ticket = RT::Ticket->new($RT::SystemUser);
-$ticket->Load($id);
-is($ticket->Id, $id, "loaded the REST-created ticket");
-is($ticket->Subject, "REST interface", "subject successfully set");
-is($ticket->FirstCustomFieldValue("fu()n:k/"), "maximum", "CF successfully set");
+my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
+$ticket->load($id);
+is($ticket->id, $id, "loaded the REST-created ticket");
+is($ticket->subject, "REST interface", "subject successfully set");
+is($ticket->first_custom_field_value("fu()n:k/"), "maximum", "CF successfully set");
 
 $m->post("$baseurl/REST/1.0/search/ticket", [
     user    => 'root',

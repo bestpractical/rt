@@ -8,13 +8,13 @@ my ($baseurl, $m) = RT::Test->started_ok;
 my $url = $m->rt_base_url;
 
 # merged tickets still show up in search
-my $t1 = RT::Ticket->new($RT::SystemUser);
-$t1->Create(
-    Subject   => 'base ticket'.$$,
-    Queue     => 'general',
-    Owner     => 'root',
-    Requestor => 'customsearch@localhost',
-    MIMEObj   => MIME::Entity->build(
+my $t1 = RT::Model::Ticket->new(current_user => RT->system_user);
+$t1->create(
+    subject   => 'base ticket'.$$,
+    queue     => 'general',
+    owner     => 'root',
+    requestor => 'customsearch@localhost',
+    mime_obj   => MIME::Entity->build(
         From    => 'customsearch@localhost',
         To      => 'rt@localhost',
         Subject => 'base ticket'.$$,
@@ -23,13 +23,13 @@ $t1->Create(
 );
 ok(my $id1 = $t1->id, 'created ticket for custom search');
 
-my $t2 = RT::Ticket->new($RT::SystemUser);
-$t2->Create(
-    Subject   => 'merged away'.$$,
-    Queue     => 'general',
-    Owner     => 'root',
-    Requestor => 'customsearch@localhost',
-    MIMEObj   => MIME::Entity->build(
+my $t2 = RT::Model::Ticket->new(current_user => RT->system_user);
+$t2->create(
+    subject   => 'merged away'.$$,
+    queue     => 'general',
+    owner     => 'root',
+    requestor => 'customsearch@localhost',
+    mime_obj   => MIME::Entity->build(
         From    => 'customsearch@localhost',
         To      => 'rt@localhost',
         Subject => 'merged away'.$$,
@@ -38,7 +38,7 @@ $t2->Create(
 );
 ok(my $id2 = $t2->id, 'created ticket for custom search');
 
-my ($ok, $msg) = $t2->MergeInto($id1);
+my ($ok, $msg) = $t2->merge_into($id1);
 ok($ok, "merge: $msg");
 
 ok($m->login, 'logged in');

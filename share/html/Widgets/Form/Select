@@ -71,7 +71,7 @@ $values_callback   => undef,
 
 $default            => 1,
 @default_value       => (),
-$default_label       => _('Use system default (%1)', join ', ', @default_value),
+$default_label       => _('Use system default (%1)', join ', ', (@default_value||'')),
 
 $alternative      => 0,
 $alternative_label => _('other...'),

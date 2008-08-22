@@ -8,7 +8,7 @@ my ($baseurl, $m) = RT::Test->started_ok;
 my $url = $m->rt_base_url;
 
 # create user and queue {{{
-my $user_obj = RT::User->new($RT::SystemUser);
+my $user_obj = RT::Model::User->new(current_user => RT->system_user);
 my ($ok, $msg) = $user_obj->LoadOrCreateByEmail('customer@example.com');
 ok($ok, 'ACL test user creation');
 $user_obj->SetName('customer');
@@ -18,7 +18,7 @@ $user_obj->PrincipalObj->GrantRight(Right => 'ModifySelf');
 my $currentuser = RT::CurrentUser->new($user_obj);
 
 my $queue = RT::Queue->new($RT::SystemUser);
-$queue->Create(Name => 'SearchQueue'.$$);
+$queue->create(Name => 'SearchQueue'.$$);
 
 $user_obj->PrincipalObj->GrantRight(Right => $_, Object => $queue)
     for qw/SeeQueue ShowTicket OwnTicket/;
@@ -30,11 +30,11 @@ $user_obj->PrincipalObj->GrantRight(Right => $_, Object => $RT::System)
 # }}}
 # create and test groups (outer < inner < user) {{{
 my $inner_group = RT::Group->new($RT::SystemUser);
-($ok, $msg) = $inner_group->CreateUserDefinedGroup(Name => "inner", Description => "inner group");
+($ok, $msg) = $inner_group->create_user_defined_group(Name => "inner", Description => "inner group");
 ok($ok, "created inner group: $msg");
 
 my $outer_group = RT::Group->new($RT::SystemUser);
-($ok, $msg) = $outer_group->CreateUserDefinedGroup(Name => "outer", Description => "outer group");
+($ok, $msg) = $outer_group->create_user_defined_group(Name => "outer", Description => "outer group");
 ok($ok, "created outer group: $msg");
 
 ($ok, $msg) = $outer_group->AddMember($inner_group->PrincipalId);
@@ -60,14 +60,14 @@ $m->get_ok("$url/Dashboards");
 
 $m->follow_link_ok({text => "New dashboard"});
 $m->form_name('ModifyDashboard');
-is_deeply([$m->current_form->find_input('Privacy')->possible_values], ["RT::User-" . $user_obj->Id], "the only selectable privacy is user");
+is_deeply([$m->current_form->find_input('Privacy')->possible_values], ["RT::Model::User-" . $user_obj->Id], "the only selectable privacy is user");
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
 
 $user_obj->PrincipalObj->GrantRight(Right => 'CreateGroupDashboard', Object => $inner_group);
 
 $m->follow_link_ok({text => "New dashboard"});
 $m->form_name('ModifyDashboard');
-is_deeply([$m->current_form->find_input('Privacy')->possible_values], ["RT::User-" . $user_obj->Id, "RT::Group-" . $inner_group->Id], "the only selectable privacies are user and inner group (not outer group)");
+is_deeply([$m->current_form->find_input('Privacy')->possible_values], ["RT::Model::User-" . $user_obj->Id, "RT::Group-" . $inner_group->Id], "the only selectable privacies are user and inner group (not outer group)");
 $m->field("Name" => 'inner dashboard');
 $m->field("Privacy" => "RT::Group-" . $inner_group->Id);
 $m->content_lacks('Delete', "Delete button hidden because we are creating");

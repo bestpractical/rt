@@ -13,20 +13,20 @@ use RT::Test;
 use_ok ('RT::Queue');
 
 ok(my $testqueue = RT::Queue->new($RT::SystemUser), 'Instantiate RT::Queue');
-ok($testqueue->Create( Name => 'reminders tests'), 'Create new queue: reminders tests');
+ok($testqueue->create( Name => 'reminders tests'), 'Create new queue: reminders tests');
 isnt($testqueue->Id , 0, 'Success creating queue');
 
-ok($testqueue->Create( Name => 'reminders tests 2'), 'Create new queue: reminders tests 2');
+ok($testqueue->create( Name => 'reminders tests 2'), 'Create new queue: reminders tests 2');
 isnt($testqueue->Id , 0, 'Success creating queue');
 
 # Create test ticket
-use_ok('RT::Ticket');
+use_ok('RT::Model::Ticket');
 
-my $u = RT::User->new($RT::SystemUser);
+my $u = RT::Model::User->new(current_user => RT->system_user);
 $u->Load("root");
 ok ($u->Id, "Found the root user");
-ok(my $t = RT::Ticket->new($RT::SystemUser), 'Instantiate RT::Ticket');
-ok(my ($id, $msg) = $t->Create( Queue => $testqueue->Id,
+ok(my $t = RT::Model::Ticket->new(current_user => RT->system_user), 'Instantiate RT::Model::Ticket');
+ok(my ($id, $msg) = $t->create( Queue => $testqueue->Id,
                Subject => 'Testing',
                Owner => $u->Id
               ), 'Create sample ticket');

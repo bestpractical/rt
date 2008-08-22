@@ -6,7 +6,7 @@ use RT::Test;
 use strict;
 use warnings;
 
-use RT::Tickets;
+use RT::Model::TicketCollection;
 use RT::Queue;
 use RT::CustomField;
 
@@ -17,7 +17,7 @@ my $queue_name = "CFSortQueue-$$";
 my $queue;
 {
     $queue = RT::Queue->new( $RT::SystemUser );
-    my ($ret, $msg) = $queue->Create(
+    my ($ret, $msg) = $queue->create(
         Name => $queue_name,
         Description => 'queue for custom field sort testing'
     );
@@ -29,7 +29,7 @@ my $cf_name = "Order$$";
 my $cf;
 {
     $cf = RT::CustomField->new( $RT::SystemUser );
-    my ($ret, $msg) = $cf->Create(
+    my ($ret, $msg) = $cf->create(
         Name  => $cf_name,
         Queue => $queue->id,
         Type  => 'FreeformMultiple',
@@ -43,7 +43,7 @@ sub add_tix_from_data {
     my @res = ();
     @data = sort { rand(100) <=> rand(100) } @data;
     while (@data) {
-        my $t = RT::Ticket->new($RT::SystemUser);
+        my $t = RT::Model::Ticket->new(current_user => RT->system_user);
         my %args = %{ shift(@data) };
         my @values = ();
         if ( exists $args{'CF'} && ref $args{'CF'} ) {
@@ -54,7 +54,7 @@ sub add_tix_from_data {
         $args{ 'CustomField-'. $cf->id } = \@values
             if @values;
         my $subject = join(",", sort @values) || '-';
-        my ( $id, undef $msg ) = $t->Create(
+        my ( $id, undef $msg ) = $t->create(
             %args,
             Queue => $queue->id,
             Subject => $subject,
@@ -74,7 +74,7 @@ sub run_tests {
 
         foreach my $order (qw(ASC DESC)) {
             my $error = 0;
-            my $tix = RT::Tickets->new( $RT::SystemUser );
+            my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user );
             $tix->FromSQL( $query );
             $tix->OrderBy( FIELD => $test->{'Order'}, ORDER => $order );
 

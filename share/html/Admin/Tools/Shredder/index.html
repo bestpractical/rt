@@ -49,7 +49,7 @@
 $plugin => ''
 $search => ''
 $wipeout => ''
-@wipeoutobject => ()
+@wipeout_object => ()
 </%ARGS>
 <& /Admin/Elements/Header, title => $title &>
 <& /Admin/Elements/ToolTabs,
@@ -149,7 +149,7 @@ if( $plugin && $wipeout ) { { # use additional block({}) to effectively exit blo
 
     $shredder->add_dump_plugin( object => $backup_plugin );
 
-    $shredder->put_objects( objects => \@WipeoutObject );
+    $shredder->put_objects( objects => \@wipeout_object );
     ($status, $msg) = $plugin_obj->set_resolvers( Shredder => $shredder );
     unless( $status ) {
         push @{ $messages{Errors} }, $msg;

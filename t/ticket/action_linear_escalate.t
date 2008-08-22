@@ -72,8 +72,8 @@ sub create_ticket_as_ok {
     my $due = RT::Date->new($RT::SystemUser);
     $due->Unix(time() + ( 7 * 24 * 60**2 ));
 
-    my $ticket = RT::Ticket->new($user);
-    ($id, $msg) = $ticket->Create( Queue => $q->id,
+    my $ticket = RT::Model::Ticket->new($user);
+    ($id, $msg) = $ticket->create( Queue => $q->id,
                                    Subject => "Escalation test",
                                    Priority => 0,
                                    InitialPriority => 0,

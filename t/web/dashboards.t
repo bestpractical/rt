@@ -7,7 +7,7 @@ my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
 
-my $user_obj = RT::User->new($RT::SystemUser);
+my $user_obj = RT::Model::User->new(current_user => RT->system_user);
 my ($ret, $msg) = $user_obj->LoadOrCreateByEmail('customer@example.com');
 ok($ret, 'ACL test user creation');
 $user_obj->SetName('customer');
@@ -17,7 +17,7 @@ $user_obj->PrincipalObj->GrantRight(Right => 'ModifySelf');
 my $currentuser = RT::CurrentUser->new($user_obj);
 
 my $queue = RT::Queue->new($RT::SystemUser);
-$queue->Create(Name => 'SearchQueue'.$$);
+$queue->create(Name => 'SearchQueue'.$$);
 $user_obj->PrincipalObj->GrantRight(Right => 'SeeQueue',   Object => $queue);
 $user_obj->PrincipalObj->GrantRight(Right => 'ShowTicket', Object => $queue);
 $user_obj->PrincipalObj->GrantRight(Right => 'OwnTicket',  Object => $queue);
@@ -87,7 +87,7 @@ ok($id, "got an ID, $id");
 $dashboard->LoadById($id);
 is($dashboard->Name, "different dashboard");
 
-is($dashboard->Privacy, 'RT::User-' . $user_obj->Id, "correct privacy");
+is($dashboard->Privacy, 'RT::Model::User-' . $user_obj->Id, "correct privacy");
 is($dashboard->PossibleHiddenSearches, 0, "all searches are visible");
 
 my @searches = $dashboard->Searches;
@@ -108,8 +108,8 @@ is(@searches, 2, "two saved searches in the dashboard");
 like($searches[0]->Name, qr/newest unowned tickets/, "correct existing search name");
 like($searches[1]->Name, qr/highest priority tickets I own/, "correct new search name");
 
-my $ticket = RT::Ticket->new($RT::SystemUser);
-$ticket->Create(
+my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
+$ticket->create(
     Queue     => $queue->Id,
 	Requestor => [ $user_obj->Name ],
 	Owner     => $user_obj,

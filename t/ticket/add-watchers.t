@@ -53,9 +53,9 @@ use warnings;
 no warnings 'once';
 
 use RT::Queue;
-use RT::User;
+use RT::Model::User;
 use RT::Group;
-use RT::Ticket;
+use RT::Model::Ticket;
 use RT::CurrentUser;
 
 
@@ -69,12 +69,12 @@ while( my $ace = $acl->Next ) {
 
 # create new queue to be sure we do not mess with rights
 my $queue = RT::Queue->new($RT::SystemUser);
-my ($queue_id) = $queue->Create( Name => 'watcher tests '.$$);
+my ($queue_id) = $queue->create( Name => 'watcher tests '.$$);
 ok( $queue_id, 'queue created for watcher tests' );
 
 # new privileged user to check rights
-my $user = RT::User->new( $RT::SystemUser );
-my ($user_id) = $user->Create( Name => 'watcher'.$$,
+my $user = RT::Model::User->new(current_user => RT->system_user );
+my ($user_id) = $user->create( Name => 'watcher'.$$,
 			   EmailAddress => "watcher$$".'@localhost',
 			   Privileged => 1,
 			   Password => 'qwe123',
@@ -92,11 +92,11 @@ ok(  $user->HasRight( Right => 'ShowTicket',   Object => $queue ), "user can sho
 ok( !$user->HasRight( Right => 'ModifyTicket', Object => $queue ), "user can't modify queue tickets" );
 ok( !$user->HasRight( Right => 'Watch',        Object => $queue ), "user can't watch queue tickets" );
 
-my $ticket = RT::Ticket->new( $RT::SystemUser );
-my ($rv, $msg) = $ticket->Create( Subject => 'watcher tests', Queue => $queue->Name );
+my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
+my ($rv, $msg) = $ticket->create( Subject => 'watcher tests', Queue => $queue->Name );
 ok( $ticket->id, "ticket created" );
 
-my $ticket2 = RT::Ticket->new( $cu );
+my $ticket2 = RT::Model::Ticket->new(current_user => $cu );
 $ticket2->Load( $ticket->id );
 ok( $ticket2->Subject, "ticket load by user" );
 

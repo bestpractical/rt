@@ -41,8 +41,8 @@ diag "set intial simple autoreply template" if $ENV{'TEST_VERBOSE'};
 
 diag "basic test of autoreply" if $ENV{'TEST_VERBOSE'};
 {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
-    $ticket->Create(
+    my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
+    $ticket->create(
         Queue => $queue->id,
         Subject => 'test',
         Requestor => 'root@localhost',
@@ -58,8 +58,8 @@ my $str_ru_support = "\x{43f}\x{43e}\x{434}\x{434}\x{435}\x{440}\x{436}\x{43a}\x
 diag "non-ascii Subject with ascii prefix set in the template"
     if $ENV{'TEST_VERBOSE'};
 {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
-    $ticket->Create(
+    my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
+    $ticket->create(
         Queue => $queue->id,
         Subject => $str_ru_test,
         Requestor => 'root@localhost',
@@ -85,8 +85,8 @@ diag "set non-ascii subject tag for the queue" if $ENV{'TEST_VERBOSE'};
 
 diag "ascii subject with non-ascii subject tag" if $ENV{'TEST_VERBOSE'};
 {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
-    $ticket->Create(
+    my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
+    $ticket->create(
         Queue => $queue->id,
         Subject => 'test',
         Requestor => 'root@localhost',
@@ -106,8 +106,8 @@ diag "ascii subject with non-ascii subject tag" if $ENV{'TEST_VERBOSE'};
 
 diag "non-ascii subject with non-ascii subject tag" if $ENV{'TEST_VERBOSE'};
 {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
-    $ticket->Create(
+    my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
+    $ticket->create(
         Queue => $queue->id,
         Subject => $str_ru_test,
         Requestor => 'root@localhost',
@@ -150,8 +150,8 @@ diag "add non-ascii subject prefix in the autoreply template" if $ENV{'TEST_VERB
 
 diag "ascii subject with non-ascii subject prefix in template" if $ENV{'TEST_VERBOSE'};
 {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
-    $ticket->Create(
+    my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
+    $ticket->create(
         Queue => $queue->id,
         Subject => 'test',
         Requestor => 'root@localhost',
@@ -172,8 +172,8 @@ diag "ascii subject with non-ascii subject prefix in template" if $ENV{'TEST_VER
 diag "non-ascii subject with non-ascii subject prefix in template"
     if $ENV{'TEST_VERBOSE'};
 {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
-    $ticket->Create(
+    my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
+    $ticket->create(
         Queue => $queue->id,
         Subject => $str_ru_test,
         Requestor => 'root@localhost',
@@ -202,8 +202,8 @@ diag "set non-ascii subject tag for the queue" if $ENV{'TEST_VERBOSE'};
 diag "non-ascii subject, non-ascii prefix in template and non-ascii tag"
     if $ENV{'TEST_VERBOSE'};
 {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
-    $ticket->Create(
+    my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
+    $ticket->create(
         Queue => $queue->id,
         Subject => $str_ru_test,
         Requestor => 'root@localhost',
@@ -249,8 +249,8 @@ diag "don't change subject via template" if $ENV{'TEST_VERBOSE'};
 
 diag "non-ascii Subject without changes in template" if $ENV{'TEST_VERBOSE'};
 {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
-    $ticket->Create(
+    my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
+    $ticket->create(
         Queue => $queue->id,
         Subject => $str_ru_test,
         Requestor => 'root@localhost',
@@ -277,8 +277,8 @@ diag "set non-ascii subject tag for the queue" if $ENV{'TEST_VERBOSE'};
 diag "non-ascii Subject without changes in template and with non-ascii subject tag"
     if $ENV{'TEST_VERBOSE'};
 {
-    my $ticket = RT::Ticket->new( $RT::SystemUser );
-    $ticket->Create(
+    my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
+    $ticket->create(
         Queue => $queue->id,
         Subject => $str_ru_test,
         Requestor => 'root@localhost',

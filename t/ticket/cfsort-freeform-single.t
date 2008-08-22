@@ -6,7 +6,7 @@ use RT::Test;
 use strict;
 use warnings;
 
-use RT::Tickets;
+use RT::Model::TicketCollection;
 use RT::Queue;
 use RT::CustomField;
 
@@ -17,7 +17,7 @@ my $queue_name = "CFSortQueue-$$";
 my $queue;
 {
     $queue = RT::Queue->new( $RT::SystemUser );
-    my ($ret, $msg) = $queue->Create(
+    my ($ret, $msg) = $queue->create(
         Name => $queue_name,
         Description => 'queue for custom field sort testing'
     );
@@ -32,7 +32,7 @@ diag "create a CF\n" if $ENV{TEST_VERBOSE};
 {
     $cf_name = $CF{'CF'}{'name'} = "Order$$";
     $CF{'CF'}{'obj'} = RT::CustomField->new( $RT::SystemUser );
-    my ($ret, $msg) = $CF{'CF'}{'obj'}->Create(
+    my ($ret, $msg) = $CF{'CF'}{'obj'}->create(
         Name  => $CF{'CF'}{'name'},
         Queue => $queue->id,
         Type  => 'FreeformSingle',
@@ -46,7 +46,7 @@ sub add_tix_from_data {
     my @res = ();
     @data = sort { rand(100) <=> rand(100) } @data;
     while (@data) {
-        my $t = RT::Ticket->new($RT::SystemUser);
+        my $t = RT::Model::Ticket->new(current_user => RT->system_user);
         my %args = %{ shift(@data) };
 
         my $subject = '-';
@@ -63,7 +63,7 @@ sub add_tix_from_data {
                 if $e eq 'CF';
         }
 
-        my ( $id, undef $msg ) = $t->Create(
+        my ( $id, undef $msg ) = $t->create(
             %args,
             Queue => $queue->id,
             Subject => $subject,
@@ -83,7 +83,7 @@ sub run_tests {
 
         foreach my $order (qw(ASC DESC)) {
             my $error = 0;
-            my $tix = RT::Tickets->new( $RT::SystemUser );
+            my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user );
             $tix->FromSQL( $query );
             $tix->OrderBy( FIELD => $test->{'Order'}, ORDER => $order );
 
@@ -164,7 +164,7 @@ diag "create another CF\n" if $ENV{TEST_VERBOSE};
 {
     $CF{'AnotherCF'}{'name'} = "OrderAnother$$";
     $CF{'AnotherCF'}{'obj'} = RT::CustomField->new( $RT::SystemUser );
-    my ($ret, $msg) = $CF{'AnotherCF'}{'obj'}->Create(
+    my ($ret, $msg) = $CF{'AnotherCF'}{'obj'}->create(
         Name  => $CF{'AnotherCF'}{'name'},
         Queue => $queue->id,
         Type  => 'FreeformSingle',

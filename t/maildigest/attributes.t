@@ -8,12 +8,12 @@ use RT::Test;
 my @users = qw/ emailnormal@example.com emaildaily@example.com emailweekly@example.com emailsusp@example.com /;
 
 my( $ret, $msg );
-my $user_n = RT::User->new( $RT::SystemUser );
+my $user_n = RT::Model::User->new(current_user => RT->system_user );
 ( $ret, $msg ) = $user_n->LoadOrCreateByEmail( $users[0] );
 ok( $ret, "user with default email prefs created: $msg" );
 $user_n->SetPrivileged( 1 );
 
-my $user_d = RT::User->new( $RT::SystemUser );
+my $user_d = RT::Model::User->new(current_user => RT->system_user );
 ( $ret, $msg ) = $user_d->LoadOrCreateByEmail( $users[1] );
 ok( $ret, "user with daily digest email prefs created: $msg" );
 # Set a username & password for testing the interface.
@@ -22,13 +22,13 @@ $user_d->SetPreferences($RT::System => { %{ $user_d->Preferences( $RT::System ) 
 
 
 
-my $user_w = RT::User->new( $RT::SystemUser );
+my $user_w = RT::Model::User->new(current_user => RT->system_user );
 ( $ret, $msg ) = $user_w->LoadOrCreateByEmail( $users[2] );
 ok( $ret, "user with weekly digest email prefs created: $msg" );
 $user_w->SetPrivileged( 1 );
 $user_w->SetPreferences($RT::System => { %{ $user_w->Preferences( $RT::System ) || {}}, EmailFrequency => 'Weekly digest'});
 
-my $user_s = RT::User->new( $RT::SystemUser );
+my $user_s = RT::Model::User->new(current_user => RT->system_user );
 ( $ret, $msg ) = $user_s->LoadOrCreateByEmail( $users[3] );
 ok( $ret, "user with suspended email prefs created: $msg" );
 $user_s->SetPreferences($RT::System => { %{ $user_s->Preferences( $RT::System ) || {}}, EmailFrequency => 'Suspended'});
@@ -40,7 +40,7 @@ is(RT::Config->Get('EmailFrequency' => $user_s), 'Suspended');
 # Make a testing queue for ourselves.
 my $testq = RT::Queue->new( $RT::SystemUser );
 if( $testq->ValidateName( 'EmailDigest-testqueue' ) ) {
-    ( $ret, $msg ) = $testq->Create( Name => 'EmailDigest-testqueue' );
+    ( $ret, $msg ) = $testq->create( Name => 'EmailDigest-testqueue' );
     ok( $ret, "Our test queue is created: $msg" );
 } else {
     $testq->Load( 'EmailDigest-testqueue' );
@@ -77,8 +77,8 @@ ok( $ret || $msg =~ /already has/, "Granted emailsusp right on testq: $msg" );
 
 # Create a ticket with To: Cc: Bcc: fields using our four users.
 my $id;
-my $ticket = RT::Ticket->new( $RT::SystemUser );
-( $id, $ret, $msg ) = $ticket->Create( Queue => $testq->Name,
+my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
+( $id, $ret, $msg ) = $ticket->create( Queue => $testq->Name,
 				       Requestor => [ $user_w->Name ],
 				       Subject => 'Test ticket for RT::Extension::EmailDigest',
 				       );
