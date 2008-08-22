@@ -80,6 +80,7 @@ RT->InitLogging();
 if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
 
 RT::CheckPerlRequirements();
+RT->InitPluginPaths();
 
 my $explicit_port = shift @ARGV;
 my $port = $explicit_port || RT->Config->Get('WebPort') || '8080';
@@ -115,7 +116,6 @@ EOF
 
     RT->InstallMode(1);
 } else {
-    RT->InitPluginPaths();
     RT->ConnectToDatabase();
     RT->InitSystemObjects();
     RT->InitClasses();
