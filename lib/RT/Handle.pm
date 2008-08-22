@@ -143,16 +143,18 @@ sub BuildDSN {
     $db_name = File::Spec->catfile($RT::VarPath, $db_name)
         if $db_type eq 'SQLite' && !File::Spec->file_name_is_absolute($db_name);
 
-
-    $self->SUPER::BuildDSN( Host       => $db_host,
-                                        Database   => $db_name,
-                            Port       => $db_port,
-                            Driver     => $db_type,
-                            RequireSSL => RT->Config->Get('DatabaseRequireSSL'),
-                            DisconnectHandleOnDestroy => 1,
-                          );
-   
-
+    my %args = (
+        Host       => $db_host,
+        Database   => $db_name,
+        Port       => $db_port,
+        Driver     => $db_type,
+        RequireSSL => RT->Config->Get('DatabaseRequireSSL'),
+        DisconnectHandleOnDestroy => 1,
+    );
+    if ( $db_type eq 'Oracle' && $db_host ) {
+        $args{'SID'} = delete $args{'Database'};
+    }
+    $self->SUPER::BuildDSN( %args );
 }
 
 =head2 DSN
