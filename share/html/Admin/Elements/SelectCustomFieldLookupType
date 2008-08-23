@@ -51,7 +51,7 @@
 %}
 </select>
 <%INIT>
-my $cf = RT::Model::CustomField->new();
+my $cf = RT::Model::CustomField->new( current_user => $session{current_user} );
 
 </%INIT>
 <%ARGS>

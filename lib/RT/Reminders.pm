@@ -120,11 +120,11 @@ sub add {
         subject   => $args{'subject'},
         owner     => $args{'owner'},
         due       => $args{'due'},
-        refers_to => $self->ticket,
+        RefersTo => $self->ticket,
         type      => 'reminder',
         queue     => $self->ticket_obj->queue,
-
     );
+    Jifty->log->error( $reminder->id, 'ididid' );
     $self->ticket_obj->_new_transaction(
         type      => 'AddReminder',
         field     => 'RT::Model::Ticket',
@@ -154,16 +154,6 @@ sub resolve {
         field     => 'RT::Model::Ticket',
         new_value => $reminder->id
     );
-}
-
-eval "require RT::Reminders_Vendor";
-if ( $@ && $@ !~ qr{^Can't locate RT/Reminders_Vendor.pm} ) {
-    die $@;
-}
-
-eval "require RT::Reminders_Local";
-if ( $@ && $@ !~ qr{^Can't locate RT/Reminders_Local.pm} ) {
-    die $@;
 }
 
 1;

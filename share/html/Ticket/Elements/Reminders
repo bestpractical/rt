@@ -82,7 +82,7 @@ if ( $request_args->{'update-reminders'} ) {
     }
 }
 
-if ( $request_args->{'NewReminder-subject'} ) {
+if ( $request_args->{'NewReminder-Subject'} ) {
     my $due_obj = RT::Date->new();
     my $date    = Time::ParseDate::parsedate(
         $request_args->{'NewReminder-Due'},
@@ -93,9 +93,9 @@ if ( $request_args->{'NewReminder-subject'} ) {
     $due_obj->set( value => $date, format => 'unix' );
     my ( $add_id, $msg, $txnid ) = $ticket->reminders->add(
 
-        subject => $request_args->{'NewReminder-subject'},
-        Owner   => $request_args->{'NewReminder-Owner'},
-        Due     => $due_obj->iso
+        subject => $request_args->{'NewReminder-Subject'},
+        owner   => $request_args->{'NewReminder-Owner'},
+        due     => $due_obj->iso
     );
 }
 
@@ -155,7 +155,7 @@ $ticket
     name="Complete-Reminder-<%$reminder->id%>" 
     <% $reminder->status eq 'resolved' ? 'checked="checked"' : '' %> 
 /> 
-    <input type="text" size="15" name="Reminder-subject-<% $reminder->id %>" value="<%$reminder->subject%>" /> &bull; 
+    <input type="text" size="15" name="Reminder-Subject-<% $reminder->id %>" value="<%$reminder->subject%>" /> &bull; 
     <& /Elements/SelectOwner, name => 'Reminder-Owner-'.$reminder->id, queue => $ticket->queue_obj, default => $reminder->owner, default_value => 0  &>
     <& /Elements/SelectDate, name => 'Reminder-Due-'.$reminder->id, default => $reminder->due_obj->date &>
     (<%$reminder->due_obj->unix>0  ? $reminder->due_obj->age_as_string : '' %>)<br />

@@ -149,7 +149,7 @@ for my $relation (
     qw(RefersTo ReferredToBy)) {
     my $mode  = $RT::Model::Ticket::LINKTYPEMAP{$relation}->{mode};
     my $type  = $RT::Model::Ticket::LINKTYPEMAP{$relation}->{type};
-    my $other = "Local" . $mode;
+    my $other = "local_" . $mode;
     my $field = $mode eq 'base' ? 'new-' . $type : $type . '-new';
     my $rel = $pascal_to_camel->( $relation );
     $clone->{$field} 
