@@ -128,6 +128,8 @@ our %FRIENDLY_OBJECT_TYPES = ();
 RT::Model::CustomField->_for_object_type( 'RT::Model::Queue-RT::Model::Ticket'                        => "Tickets", );                #loc
 RT::Model::CustomField->_for_object_type( 'RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction' => "Ticket Transactions", );    #loc
 RT::Model::CustomField->_for_object_type( 'RT::Model::User'                                           => "Users", );                  #loc
+RT::Model::CustomField->_for_object_type( 'RT::Model::Queue'
+                      => "Queues", );                 #loc
 RT::Model::CustomField->_for_object_type( 'RT::Model::Group'                                          => "Groups", );                 #loc
 
 our $RIGHTS = {
