@@ -13,14 +13,14 @@ ok($ret, 'ACL test user creation');
 $user_obj->set_name('customer');
 $user_obj->set_privileged(1);
 ($ret, $msg) = $user_obj->set_password('customer');
-$user_obj->principal_object->grant_right(Right => 'ModifySelf');
-my $currentuser = RT::CurrentUser->new($user_obj);
+$user_obj->principal_object->grant_right(right => 'ModifySelf');
+my $currentuser = RT::CurrentUser->new( id => $user_obj->id );
 
 my $queue = RT::Model::Queue->new(current_user => RT->system_user);
-$queue->create(Name => 'SearchQueue'.$$);
-$user_obj->principal_object->grant_right(Right => 'SeeQueue',   Object => $queue);
-$user_obj->principal_object->grant_right(Right => 'ShowTicket', Object => $queue);
-$user_obj->principal_object->grant_right(Right => 'OwnTicket',  Object => $queue);
+$queue->create(name => 'SearchQueue'.$$);
+$user_obj->principal_object->grant_right(right => 'SeeQueue',   object => $queue);
+$user_obj->principal_object->grant_right(right => 'ShowTicket', object => $queue);
+$user_obj->principal_object->grant_right(right => 'OwnTicket',  object => $queue);
 
 ok $m->login(customer => 'customer'), "logged in";
 
@@ -31,14 +31,14 @@ $m->get_ok($url."Dashboards/Modify.html?Create=1");
 $m->content_contains("Permission denied");
 $m->content_lacks("Save Changes");
 
-$user_obj->principal_object->grant_right(Right => 'ModifyOwnDashboard', Object => $RT::System);
+$user_obj->principal_object->grant_right(right => 'ModifyOwnDashboard', object => $RT::System);
 
 # Modify itself is no longer good enough, you need Create
 $m->get_ok($url."Dashboards/Modify.html?Create=1");
 $m->content_contains("Permission denied");
 $m->content_lacks("Save Changes");
 
-$user_obj->principal_object->grant_right(Right => 'CreateOwnDashboard', Object => $RT::System);
+$user_obj->principal_object->grant_right(right => 'CreateOwnDashboard', object => $RT::System);
 
 $m->get_ok($url."Dashboards/Modify.html?Create=1");
 $m->content_lacks("Permission denied");
@@ -48,7 +48,7 @@ $m->get_ok($url."Dashboards/index.html");
 $m->content_contains("New dashboard", "'New dashboard' link because we now have ModifyOwnDashboard");
 
 $m->follow_link_ok({text => "New dashboard"});
-$m->form_name('modify_dashboard');
+$m->form_name( 'modify_dashboard' );
 $m->field("Name" => 'different dashboard');
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
 $m->click_button(value => 'Save Changes');
@@ -59,7 +59,7 @@ $m->content_lacks('Delete', "Delete button hidden because we lack DeleteOwnDashb
 $m->get_ok($url."Dashboards/index.html");
 $m->content_lacks("different dashboard", "we lack SeeOwnDashboard");
 
-$user_obj->principal_object->grant_right(Right => 'SeeOwnDashboard', Object => $RT::System);
+$user_obj->principal_object->grant_right(right => 'SeeOwnDashboard', object => $RT::System);
 
 $m->get_ok($url."Dashboards/index.html");
 $m->content_contains("different dashboard", "we now have SeeOwnDashboard");
@@ -76,7 +76,7 @@ $m->content_contains("Modify the dashboard different dashboard");
 
 $m->follow_link_ok({text => "Queries"});
 $m->content_contains("Modify the queries of dashboard different dashboard");
-$m->form_name('DashboardQueries');
+$m->form_name( 'dashboard_queries' );
 $m->field('Searches-Available' => ["2-RT::System-1"]);
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
@@ -84,36 +84,36 @@ $m->content_contains("Dashboard updated");
 my $dashboard = RT::Dashboard->new($currentuser);
 my ($id) = $m->content =~ /name="id" value="(\d+)"/;
 ok($id, "got an ID, $id");
-$dashboard->LoadById($id);
-is($dashboard->Name, "different dashboard");
+$dashboard->load_by_id($id);
+is($dashboard->name, "different dashboard");
 
-is($dashboard->Privacy, 'RT::Model::User-' . $user_obj->Id, "correct privacy");
-is($dashboard->PossibleHiddenSearches, 0, "all searches are visible");
+is($dashboard->privacy, 'RT::Model::User-' . $user_obj->id, "correct privacy");
+is($dashboard->possible_hidden_searches, 0, "all searches are visible");
 
-my @searches = $dashboard->Searches;
+my @searches = $dashboard->searches;
 is(@searches, 1, "one saved search in the dashboard");
-like($searches[0]->Name, qr/newest unowned tickets/, "correct search name");
+like($searches[0]->name, qr/newest unowned tickets/, "correct search name");
 
-$m->form_name('DashboardQueries');
+$m->form_name( 'dashboard_queries' );
 $m->field('Searches-Available' => ["1-RT::System-1"]);
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
 
-RT::Record->FlushCache if RT::Record->can('FlushCache');
+RT::Record->flush_cache if RT::Record->can('FlushCache');
 $dashboard = RT::Dashboard->new($currentuser);
-$dashboard->LoadById($id);
+$dashboard->load_by_id($id);
 
-@searches = $dashboard->Searches;
+@searches = $dashboard->searches;
 is(@searches, 2, "two saved searches in the dashboard");
-like($searches[0]->Name, qr/newest unowned tickets/, "correct existing search name");
-like($searches[1]->Name, qr/highest priority tickets I own/, "correct new search name");
+like($searches[0]->name, qr/newest unowned tickets/, "correct existing search name");
+like($searches[1]->name, qr/highest priority tickets I own/, "correct new search name");
 
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
 $ticket->create(
-    Queue     => $queue->Id,
-	Requestor => [ $user_obj->Name ],
-	Owner     => $user_obj,
-	Subject   => 'dashboard test',
+    queue     => $queue->id,
+	requestor => [ $user_obj->name ],
+	owner     => $user_obj,
+	subject   => 'dashboard test',
 );
 
 $m->follow_link_ok({text => "Show"});
@@ -129,14 +129,14 @@ $m->content_lacks("Bookmarked Tickets");
 $m->content_contains("dashboard test", "ticket subject");
 
 $m->get_ok("/Dashboards/Subscription.html?DashboardId=$id");
-$m->form_name('SubscribeDashboard');
+$m->form_name( 'subscribe_dashboard' );
 $m->click_button(name => 'Save');
 $m->content_contains("Permission denied");
 
-RT::Record->FlushCache if RT::Record->can('FlushCache');
-is($user_obj->Attributes->Named('Subscription'), 0, "no subscriptions");
+RT::Record->flush_cache if RT::Record->can('FlushCache');
+is($user_obj->attributes->named('Subscription'), 0, "no subscriptions");
 
-$user_obj->principal_object->grant_right(Right => 'SubscribeDashboard', Object => $RT::System);
+$user_obj->principal_object->grant_right(right => 'SubscribeDashboard', object => $RT::System);
 
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->follow_link_ok({text => "Subscription"});
@@ -145,15 +145,15 @@ $m->content_contains("Unowned Tickets");
 $m->content_contains("My Tickets");
 $m->content_lacks("Bookmarked Tickets", "only dashboard queries show up");
 
-$m->form_name('SubscribeDashboard');
+$m->form_name( 'subscribe_dashboard' );
 $m->click_button(name => 'Save');
 $m->content_lacks("Permission denied");
 $m->content_contains("Subscribed to dashboard different dashboard");
 
-RT::Record->FlushCache if RT::Record->can('FlushCache');
+RT::Record->flush_cache if RT::Record->can('FlushCache');
 TODO: {
     local $TODO = "some kind of caching is still happening (it works if I remove the check above)";
-    is($user_obj->Attributes->Named('Subscription'), 1, "we have a subscription");
+    is($user_obj->attributes->named('Subscription'), 1, "we have a subscription");
 };
 
 $m->get_ok("/Dashboards/Modify.html?id=$id");
@@ -163,12 +163,12 @@ $m->content_contains("Modify the subscription to dashboard different dashboard")
 $m->get_ok("/Dashboards/Modify.html?id=$id&Delete=1");
 $m->content_contains("Permission denied", "unable to delete dashboard because we lack DeleteOwnDashboard");
 
-$user_obj->principal_object->grant_right(Right => 'DeleteOwnDashboard', Object => $RT::System);
+$user_obj->principal_object->grant_right(right => 'DeleteOwnDashboard', object => $RT::System);
 
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->content_contains('Delete', "Delete button shows because we have DeleteOwnDashboard");
 
-$m->form_name('modify_dashboard');
+$m->form_name( 'modify_dashboard' );
 $m->click_button(name => 'Delete');
 $m->content_contains("Deleted dashboard $id");
 

@@ -54,17 +54,18 @@ no warnings 'once';
 
 use RT::Model::Queue;
 use RT::Model::User;
-use RT::Group;
+use RT::Model::Group;
 use RT::Model::Ticket;
+use RT::Model::ACE;
 use RT::CurrentUser;
 
 
 # clear all global right
-my $acl = RT::ACL->new($RT::SystemUser);
-$acl->Limit( FIELD => 'RightName', OPERATOR => '!=', VALUE => 'SuperUser' );
-$acl->LimitToObject( $RT::System );
+my $acl = RT::Model::ACECollection->new(current_user => RT->system_user);
+$acl->limit( column => 'right_name', operator => '!=', value => 'SuperUser' );
+$acl->limit_to_object( RT->system );
 while( my $ace = $acl->next ) {
-	$ace->Delete;
+	$ace->delete;
 }
 
 # create new queue to be sure we do not mess with rights
@@ -77,81 +78,81 @@ my $user = RT::Model::User->new(current_user => RT->system_user );
 my ($user_id) = $user->create( name =>  'watcher'.$$,
 			   email => "watcher$$".'@localhost',
 			   privileged => 1,
-			   Password => 'qwe123',
+			   password => 'qwe123',
 			 );
-my $cu= RT::CurrentUser->new($user);
+my $cu= RT::CurrentUser->new( id => $user->id );
 
 # make sure user can see tickets in the queue
 my $principal = $user->principal_object;
 ok( $principal, "principal loaded" );
-$principal->grant_right( Right => 'ShowTicket', Object => $queue );
-$principal->grant_right( Right => 'SeeQueue'  , Object => $queue );
+$principal->grant_right( right => 'ShowTicket', object => $queue );
+$principal->grant_right( right => 'SeeQueue'  , object => $queue );
 
-ok(  $user->HasRight( Right => 'SeeQueue',     Object => $queue ), "user can see queue" );
-ok(  $user->HasRight( Right => 'ShowTicket',   Object => $queue ), "user can show queue tickets" );
-ok( !$user->HasRight( Right => 'ModifyTicket', Object => $queue ), "user can't modify queue tickets" );
-ok( !$user->HasRight( Right => 'Watch',        Object => $queue ), "user can't watch queue tickets" );
+ok(  $user->has_right( right => 'SeeQueue',     object => $queue ), "user can see queue" );
+ok(  $user->has_right( right => 'ShowTicket',   object => $queue ), "user can show queue tickets" );
+ok( !$user->has_right( right => 'ModifyTicket', object => $queue ), "user can't modify queue tickets" );
+ok( !$user->has_right( right => 'Watch',        object => $queue ), "user can't watch queue tickets" );
 
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
-my ($rv, $msg) = $ticket->create( Subject => 'watcher tests', Queue => $queue->Name );
+my ($rv, $msg) = $ticket->create( subject => 'watcher tests', queue => $queue->name );
 ok( $ticket->id, "ticket created" );
 
 my $ticket2 = RT::Model::Ticket->new(current_user => $cu );
-$ticket2->Load( $ticket->id );
-ok( $ticket2->Subject, "ticket load by user" );
+$ticket2->load( $ticket->id );
+ok( $ticket2->subject, "ticket load by user" );
 
 # user can add self to ticket only after getting Watch right
-($rv, $msg) = $ticket2->AddWatcher( Type => 'Cc', principal_id => $user->principal_id );
+($rv, $msg) = $ticket2->add_watcher( type => 'cc', principal_id => $user->principal_id );
 ok( !$rv, "user can't add self as Cc" );
-($rv, $msg) = $ticket2->AddWatcher( Type => 'Requestor', principal_id => $user->principal_id );
+($rv, $msg) = $ticket2->add_watcher( type => 'requestor', principal_id => $user->principal_id );
 ok( !$rv, "user can't add self as Requestor" );
-$principal->grant_right( Right => 'Watch'  , Object => $queue );
-ok(  $user->HasRight( Right => 'Watch',        Object => $queue ), "user can watch queue tickets" );
-($rv, $msg) = $ticket2->AddWatcher( Type => 'Cc', principal_id => $user->principal_id );
+$principal->grant_right( right => 'Watch'  , object => $queue );
+ok(  $user->has_right( right => 'Watch',        object => $queue ), "user can watch queue tickets" );
+($rv, $msg) = $ticket2->add_watcher( type => 'cc', principal_id => $user->principal_id );
 ok(  $rv, "user can add self as Cc by principal_id" );
-($rv, $msg) = $ticket2->AddWatcher( Type => 'Requestor', principal_id => $user->principal_id );
+($rv, $msg) = $ticket2->add_watcher( type => 'requestor', principal_id => $user->principal_id );
 ok(  $rv, "user can add self as Requestor by principal_id" );
 
 # remove user and try adding with Email address
-($rv, $msg) = $ticket->DeleteWatcher( Type => 'Cc',        principal_id => $user->principal_id );
+($rv, $msg) = $ticket->delete_watcher( type => 'cc',        principal_id => $user->principal_id );
 ok( $rv, "watcher removed by principal_id" );
-($rv, $msg) = $ticket->DeleteWatcher( Type => 'Requestor', Email => $user->email );
+($rv, $msg) = $ticket->delete_watcher( type => 'requestor', email => $user->email );
 ok( $rv, "watcher removed by Email" );
 
-($rv, $msg) = $ticket2->AddWatcher( Type => 'Cc', Email => $user->email );
+($rv, $msg) = $ticket2->add_watcher( type => 'cc', email => $user->email );
 ok(  $rv, "user can add self as Cc by Email" );
-($rv, $msg) = $ticket2->AddWatcher( Type => 'Requestor', Email => $user->email );
+($rv, $msg) = $ticket2->add_watcher( type => 'requestor', email => $user->email );
 ok(  $rv, "user can add self as Requestor by Email" );
 
 # Queue watcher tests
-$principal->revoke_right( Right => 'Watch'  , Object => $queue );
-ok( !$user->HasRight( Right => 'Watch',        Object => $queue ), "user queue watch right revoked" );
+$principal->revoke_right( right => 'Watch'  , object => $queue );
+ok( !$user->has_right( right => 'Watch',        object => $queue ), "user queue watch right revoked" );
 
-my $queue2 = RT::Model::Queue->new( $cu );
-($rv, $msg) = $queue2->Load( $queue->id );
+my $queue2 = RT::Model::Queue->new( current_user => $cu );
+($rv, $msg) = $queue2->load( $queue->id );
 ok( $rv, "user loaded queue" );
 
 # user can add self to queue only after getting Watch right
-($rv, $msg) = $queue2->AddWatcher( Type => 'Cc', principal_id => $user->principal_id );
+($rv, $msg) = $queue2->add_watcher( type => 'cc', principal_id => $user->principal_id );
 ok( !$rv, "user can't add self as Cc" );
-($rv, $msg) = $queue2->AddWatcher( Type => 'Requestor', principal_id => $user->principal_id );
+($rv, $msg) = $queue2->add_watcher( type => 'requestor', principal_id => $user->principal_id );
 ok( !$rv, "user can't add self as Requestor" );
-$principal->grant_right( Right => 'Watch'  , Object => $queue );
-ok(  $user->HasRight( Right => 'Watch',        Object => $queue ), "user can watch queue queues" );
-($rv, $msg) = $queue2->AddWatcher( Type => 'Cc', principal_id => $user->principal_id );
+$principal->grant_right( right => 'Watch'  , object => $queue );
+ok(  $user->has_right( right => 'Watch',        object => $queue ), "user can watch queue queues" );
+($rv, $msg) = $queue2->add_watcher( type => 'cc', principal_id => $user->principal_id );
 ok(  $rv, "user can add self as Cc by principal_id" );
-($rv, $msg) = $queue2->AddWatcher( Type => 'Requestor', principal_id => $user->principal_id );
+($rv, $msg) = $queue2->add_watcher( type => 'requestor', principal_id => $user->principal_id );
 ok(  $rv, "user can add self as Requestor by principal_id" );
 
 # remove user and try adding with Email address
-($rv, $msg) = $queue->DeleteWatcher( Type => 'Cc',        principal_id => $user->principal_id );
+($rv, $msg) = $queue->delete_watcher( type => 'cc',        principal_id => $user->principal_id );
 ok( $rv, "watcher removed by principal_id" );
-($rv, $msg) = $queue->DeleteWatcher( Type => 'Requestor', Email => $user->email );
+($rv, $msg) = $queue->delete_watcher( type => 'requestor', email => $user->email );
 ok( $rv, "watcher removed by Email" );
 
-($rv, $msg) = $queue2->AddWatcher( Type => 'Cc', Email => $user->email );
+($rv, $msg) = $queue2->add_watcher( type => 'cc', email => $user->email );
 ok(  $rv, "user can add self as Cc by Email" );
-($rv, $msg) = $queue2->AddWatcher( Type => 'Requestor', Email => $user->email );
+($rv, $msg) = $queue2->add_watcher( type => 'requestor', email => $user->email );
 ok(  $rv, "user can add self as Requestor by Email" );
 
 

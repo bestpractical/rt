@@ -8,7 +8,7 @@ use warnings;
 
 use RT::Model::TicketCollection;
 use RT::Model::Queue;
-use RT::CustomField;
+use RT::Model::CustomField;
 
 # Test Sorting by FreeformSingle custom field.
 
@@ -31,11 +31,11 @@ my $cf_name;
 diag "create a CF\n" if $ENV{TEST_VERBOSE};
 {
     $cf_name = $CF{'CF'}{'name'} = "Order$$";
-    $CF{'CF'}{'obj'} = RT::CustomField->new( $RT::SystemUser );
+    $CF{'CF'}{'obj'} = RT::Model::CustomField->new( current_user => RT->system_user );
     my ($ret, $msg) = $CF{'CF'}{'obj'}->create(
-        Name  => $CF{'CF'}{'name'},
-        Queue => $queue->id,
-        Type  => 'FreeformSingle',
+        name  => $CF{'CF'}{'name'},
+        queue => $queue->id,
+        type  => 'FreeformSingle',
     );
     ok($ret, "Custom Field $CF{'CF'}{'name'} created");
 }
@@ -65,8 +65,8 @@ sub add_tix_from_data {
 
         my ( $id, undef $msg ) = $t->create(
             %args,
-            Queue => $queue->id,
-            Subject => $subject,
+            queue => $queue->id,
+            subject => $subject,
         );
         ok( $id, "ticket created" ) or diag("error: $msg");
         push @res, $t;
@@ -85,36 +85,36 @@ sub run_tests {
             my $error = 0;
             my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user );
             $tix->from_sql( $query );
-            $tix->OrderBy( FIELD => $test->{'Order'}, ORDER => $order );
+            $tix->order_by( field => $test->{'Order'}, order => $order );
 
             ok($tix->count, "found ticket(s)")
                 or $error = 1;
 
             my ($order_ok, $last) = (1, $order eq 'ASC'? '-': 'zzzzzz');
-            my $last_id = $tix->Last->id;
+            my $last_id = $tix->last->id;
             while ( my $t = $tix->next ) {
                 my $tmp;
-                next if $t->id == $last_id and $t->Subject eq "-"; # Nulls are allowed to come last, in Pg
+                next if $t->id == $last_id and $t->subject eq "-"; # Nulls are allowed to come last, in Pg
 
                 if ( $order eq 'ASC' ) {
-                    $tmp = ((split( /,/, $last))[0] cmp (split( /,/, $t->Subject))[0]);
+                    $tmp = ((split( /,/, $last))[0] cmp (split( /,/, $t->subject))[0]);
                 } else {
-                    $tmp = -((split( /,/, $last))[-1] cmp (split( /,/, $t->Subject))[-1]);
+                    $tmp = -((split( /,/, $last))[-1] cmp (split( /,/, $t->subject))[-1]);
                 }
                 if ( $tmp > 0 ) {
                     $order_ok = 0; last;
                 }
-                $last = $t->Subject;
+                $last = $t->subject;
             }
 
             ok( $order_ok, "$order order of tickets is good" )
                 or $error = 1;
 
             if ( $error ) {
-                diag "Wrong SQL query:". $tix->BuildSelectQuery;
-                $tix->GotoFirstItem;
+                diag "Wrong SQL query:". $tix->build_select_query;
+                $tix->goto_first_item;
                 while ( my $t = $tix->next ) {
-                    diag sprintf "%02d - %s", $t->id, $t->Subject;
+                    diag sprintf "%02d - %s", $t->id, $t->subject;
                 }
             }
         }
@@ -123,38 +123,38 @@ sub run_tests {
 
 @data = (
     { },
-    { CF => 'a' },
-    { CF => 'b' },
+    { cf => 'a' },
+    { cf => 'b' },
 );
 @tickets = add_tix_from_data();
 @test = (
-    { Order => "CF.{$cf_name}" },
-    { Order => "CF.$queue_name.{$cf_name}" },
+    { order => "CF.{$cf_name}" },
+    { order => "CF.$queue_name.{$cf_name}" },
 );
 run_tests();
 
 @data = (
     { },
-    { CF => 'aa' },
-    { CF => 'ab' },
+    { cf => 'aa' },
+    { cf => 'ab' },
 );
 @tickets = add_tix_from_data();
 @test = (
-    { Query => "CF.{$cf_name} LIKE 'a'", Order => "CF.{$cf_name}" },
-    { Query => "CF.{$cf_name} LIKE 'a'", Order => "CF.$queue_name.{$cf_name}" },
+    { query => "CF.{$cf_name} LIKE 'a'", order => "CF.{$cf_name}" },
+    { query => "CF.{$cf_name} LIKE 'a'", order => "CF.$queue_name.{$cf_name}" },
 );
 run_tests();
 
 @data = (
-    { Subject => '-', },
-    { Subject => 'a', CF => 'a' },
-    { Subject => 'b', CF => 'b' },
-    { Subject => 'c', CF => 'c' },
+    { subject => '-', },
+    { subject => 'a', cf => 'a' },
+    { subject => 'b', cf => 'b' },
+    { subject => 'c', cf => 'c' },
 );
 @tickets = add_tix_from_data();
 @test = (
-    { Query => "CF.{$cf_name} != 'c'", Order => "CF.{$cf_name}" },
-    { Query => "CF.{$cf_name} != 'c'", Order => "CF.$queue_name.{$cf_name}" },
+    { query => "CF.{$cf_name} != 'c'", order => "CF.{$cf_name}" },
+    { query => "CF.{$cf_name} != 'c'", order => "CF.$queue_name.{$cf_name}" },
 );
 run_tests();
 
@@ -163,28 +163,28 @@ run_tests();
 diag "create another CF\n" if $ENV{TEST_VERBOSE};
 {
     $CF{'AnotherCF'}{'name'} = "OrderAnother$$";
-    $CF{'AnotherCF'}{'obj'} = RT::CustomField->new( $RT::SystemUser );
+    $CF{'AnotherCF'}{'obj'} = RT::Model::CustomField->new( current_user => RT->system_user );
     my ($ret, $msg) = $CF{'AnotherCF'}{'obj'}->create(
-        Name  => $CF{'AnotherCF'}{'name'},
-        Queue => $queue->id,
-        Type  => 'FreeformSingle',
+        name  => $CF{'AnotherCF'}{'name'},
+        queue => $queue->id,
+        type  => 'FreeformSingle',
     );
     ok($ret, "Custom Field $CF{'AnotherCF'}{'name'} created");
 }
 
 # test that order is not affect by other fields (had such problem)
 @data = (
-    { Subject => '-', },
-    { Subject => 'a', CF => 'a', AnotherCF => 'za' },
-    { Subject => 'b', CF => 'b', AnotherCF => 'ya' },
-    { Subject => 'c', CF => 'c', AnotherCF => 'xa' },
+    { subject => '-', },
+    { subject => 'a', cf => 'a', another_cf => 'za' },
+    { subject => 'b', cf => 'b', another_cf => 'ya' },
+    { subject => 'c', cf => 'c', another_cf => 'xa' },
 );
 @tickets = add_tix_from_data();
 @test = (
-    { Order => "CF.{$cf_name}" },
-    { Order => "CF.$queue_name.{$cf_name}" },
-    { Query => "CF.{$cf_name} != 'c'", Order => "CF.{$cf_name}" },
-    { Query => "CF.{$cf_name} != 'c'", Order => "CF.$queue_name.{$cf_name}" },
+    { order => "CF.{$cf_name}" },
+    { order => "CF.$queue_name.{$cf_name}" },
+    { query => "CF.{$cf_name} != 'c'", order => "CF.{$cf_name}" },
+    { query => "CF.{$cf_name} != 'c'", order => "CF.$queue_name.{$cf_name}" },
 );
 run_tests();
 

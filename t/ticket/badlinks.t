@@ -1,19 +1,19 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 12;
 use RT::Test;
+use Test::More tests => 12;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok($m->login, "Logged in");
 
-my $queue = RT::Test->load_or_create_queue(Name => 'General');
-ok($queue->Id, "loaded the General queue");
+my $queue = RT::Test->load_or_create_queue(name => 'General');
+ok($queue->id, "loaded the General queue");
 
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($tid, $txn, $msg) = $ticket->create(
-        Queue => $queue->id,
-        Subject => 'test links',
+        queue => $queue->id,
+        subject => 'test links',
         );
 ok $tid, 'created a ticket #'. $tid or diag "error: $msg";
 

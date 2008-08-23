@@ -8,7 +8,7 @@ use warnings;
 
 use RT::Model::TicketCollection;
 use RT::Model::Queue;
-use RT::CustomField;
+use RT::Model::CustomField;
 
 # Test Sorting by custom fields.
 
@@ -28,11 +28,11 @@ diag "create a CF\n" if $ENV{TEST_VERBOSE};
 my $cf_name = "Order$$";
 my $cf;
 {
-    $cf = RT::CustomField->new( $RT::SystemUser );
+    $cf = RT::Model::CustomField->new( current_user => RT->system_user );
     my ($ret, $msg) = $cf->create(
-        Name  => $cf_name,
-        Queue => $queue->id,
-        Type  => 'FreeformMultiple',
+        name  => $cf_name,
+        queue => $queue->id,
+        type  => 'FreeformMultiple',
     );
     ok($ret, "Custom Field Order created");
 }
@@ -56,8 +56,8 @@ sub add_tix_from_data {
         my $subject = join(",", sort @values) || '-';
         my ( $id, undef $msg ) = $t->create(
             %args,
-            Queue => $queue->id,
-            Subject => $subject,
+            queue => $queue->id,
+            subject => $subject,
         );
         ok( $id, "ticket created" ) or diag("error: $msg");
         push @res, $t;
@@ -76,36 +76,36 @@ sub run_tests {
             my $error = 0;
             my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user );
             $tix->from_sql( $query );
-            $tix->OrderBy( FIELD => $test->{'Order'}, ORDER => $order );
+            $tix->order_by( field => $test->{'Order'}, order => $order );
 
             ok($tix->count, "found ticket(s)")
                 or $error = 1;
 
             my ($order_ok, $last) = (1, $order eq 'ASC'? '-': 'zzzzzz');
-            my $last_id = $tix->Last->id;
+            my $last_id = $tix->last->id;
             while ( my $t = $tix->next ) {
                 my $tmp;
-                next if $t->id == $last_id and $t->Subject eq "-"; # Nulls are allowed to come last, in Pg
+                next if $t->id == $last_id and $t->subject eq "-"; # Nulls are allowed to come last, in Pg
 
                 if ( $order eq 'ASC' ) {
-                    $tmp = ((split( /,/, $last))[0] cmp (split( /,/, $t->Subject))[0]);
+                    $tmp = ((split( /,/, $last))[0] cmp (split( /,/, $t->subject))[0]);
                 } else {
-                    $tmp = -((split( /,/, $last))[-1] cmp (split( /,/, $t->Subject))[-1]);
+                    $tmp = -((split( /,/, $last))[-1] cmp (split( /,/, $t->subject))[-1]);
                 }
                 if ( $tmp > 0 ) {
                     $order_ok = 0; last;
                 }
-                $last = $t->Subject;
+                $last = $t->subject;
             }
 
             ok( $order_ok, "$order order of tickets is good" )
                 or $error = 1;
 
             if ( $error ) {
-                diag "Wrong SQL query:". $tix->BuildSelectQuery;
-                $tix->GotoFirstItem;
+                diag "Wrong SQL query:". $tix->build_select_query;
+                $tix->goto_first_item;
                 while ( my $t = $tix->next ) {
-                    diag sprintf "%02d - %s", $t->id, $t->Subject;
+                    diag sprintf "%02d - %s", $t->id, $t->subject;
                 }
             }
         }
@@ -114,25 +114,25 @@ sub run_tests {
 
 @data = (
     { },
-    { CF => ['b', 'd'] },
-    { CF => ['a', 'c'] },
+    { cf => ['b', 'd'] },
+    { cf => ['a', 'c'] },
 );
 @tickets = add_tix_from_data();
 @test = (
-    { Order => "CF.{$cf_name}" },
-    { Order => "CF.$queue_name.{$cf_name}" },
+    { order => "CF.{$cf_name}" },
+    { order => "CF.$queue_name.{$cf_name}" },
 );
 run_tests();
 
 @data = (
-    { CF => ['m', 'a'] },
-    { CF => ['m'] },
-    { CF => ['m', 'o'] },
+    { cf => ['m', 'a'] },
+    { cf => ['m'] },
+    { cf => ['m', 'o'] },
 );
 @tickets = add_tix_from_data();
 @test = (
-    { Order => "CF.{$cf_name}", Query => "CF.{$cf_name} = 'm'" },
-    { Order => "CF.$queue_name.{$cf_name}", Query => "CF.{$cf_name} = 'm'" },
+    { order => "CF.{$cf_name}", query => "CF.{$cf_name} = 'm'" },
+    { order => "CF.$queue_name.{$cf_name}", query => "CF.{$cf_name} = 'm'" },
 );
 run_tests();
 

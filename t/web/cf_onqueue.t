@@ -15,7 +15,7 @@ diag "Create a queue CF" if $ENV{'TEST_VERBOSE'};
     $m->title_is(q/Select a Custom Field/, 'admin-cf screen');
     $m->follow_link( text => 'Create' );
     $m->submit_form(
-        form_name => "modify_custom_field",
+        form_name => 'modify_custom_field',
         fields => {
             type_composite =>  'Freeform-1',
             lookup_type => 'RT::Model::Queue',
@@ -36,7 +36,7 @@ diag "Apply the new CF globally" if $ENV{'TEST_VERBOSE'};
     $m->title_is(q/Edit Custom Fields for all queues/, 'global custom field for all queues configuration screen');
     $m->content_like( qr/QueueCFTest/, 'CF QueueCFTest displayed on page' );
     $m->submit_form(
-        form_name => "EditCustomFields",
+        form_name => 'edit_custom_fields',
         fields => {
             'Object--CF-1' => '1',
         },

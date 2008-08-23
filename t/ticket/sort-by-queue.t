@@ -8,7 +8,7 @@ use warnings;
 
 use RT::Model::TicketCollection;
 use RT::Model::Queue;
-use RT::CustomField;
+use RT::Model::CustomField;
 
 #########################################################
 # Test sorting by Queue, we sort by its name
@@ -50,13 +50,13 @@ sub run_tests {
     my $query_prefix = join ' OR ', map 'id = '. $_->id, @tickets;
     foreach my $test ( @test ) {
         my $query = join " AND ", map "( $_ )", grep defined && length,
-            $query_prefix, $test->{'Query'};
+            $query_prefix, $test->{'query'};
 
         foreach my $order (qw(ASC DESC)) {
             my $error = 0;
             my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user );
             $tix->from_sql( $query );
-            $tix->OrderBy( FIELD => $test->{'Order'}, ORDER => $order );
+            $tix->order_by( { column => $test->{'order'}, order => $order } );
 
             ok($tix->count, "found ticket(s)")
                 or $error = 1;
@@ -65,24 +65,24 @@ sub run_tests {
             while ( my $t = $tix->next ) {
                 my $tmp;
                 if ( $order eq 'ASC' ) {
-                    $tmp = ((split( /,/, $last))[0] cmp (split( /,/, $t->Subject))[0]);
+                    $tmp = ((split( /,/, $last))[0] cmp (split( /,/, $t->subject))[0]);
                 } else {
-                    $tmp = -((split( /,/, $last))[-1] cmp (split( /,/, $t->Subject))[-1]);
+                    $tmp = -((split( /,/, $last))[-1] cmp (split( /,/, $t->subject))[-1]);
                 }
                 if ( $tmp > 0 ) {
                     $order_ok = 0; last;
                 }
-                $last = $t->Subject;
+                $last = $t->subject;
             }
 
             ok( $order_ok, "$order order of tickets is good" )
                 or $error = 1;
 
             if ( $error ) {
-                diag "Wrong SQL query:". $tix->BuildSelectQuery;
-                $tix->GotoFirstItem;
+                diag "Wrong SQL query:". $tix->build_select_query;
+                $tix->goto_first_item;
                 while ( my $t = $tix->next ) {
-                    diag sprintf "%02d - %s", $t->id, $t->Subject;
+                    diag sprintf "%02d %02d- %s", $t->queue_obj->id, $t->id, $t->subject;
                 }
             }
         }
@@ -90,12 +90,12 @@ sub run_tests {
 }
 
 @data = (
-    { Queue => $qids[0], Subject => 'z' },
-    { Queue => $qids[1], Subject => 'a' },
+    { queue => $qids[0], subject => 'z' },
+    { queue => $qids[1], subject => 'a' },
 );
 @tickets = add_tix_from_data();
 @test = (
-    { Order => "Queue" },
+    { order => "queue" },
 );
 run_tests();
 

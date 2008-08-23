@@ -8,7 +8,7 @@ use warnings;
 
 use RT::Model::TicketCollection;
 use RT::Model::Queue;
-use RT::CustomField;
+use RT::Model::CustomField;
 
 #########################################################
 # Test sorting by Owner, Creator and LastUpdatedBy
@@ -39,9 +39,9 @@ foreach my $u (qw(Z A)) {
     );
     ok $uid, "created user #$uid";
 
-    my ($status, $msg) = $user->principal_object->grant_right( Right => 'OwnTicket', Object => $queue );
+    my ($status, $msg) = $user->principal_object->grant_right( right => 'OwnTicket', object => $queue );
     ok $status, "granted right";
-    ($status, $msg) = $user->principal_object->grant_right( Right => 'CreateTicket', Object => $queue );
+    ($status, $msg) = $user->principal_object->grant_right( right => 'CreateTicket', object => $queue );
     ok $status, "granted right";
 
     push @users, $user;
@@ -57,16 +57,16 @@ sub add_tix_from_data {
         my $t = RT::Model::Ticket->new(current_user => RT->system_user);
         my %args = %{ shift(@data) };
 
-        my ( $id, undef, $msg ) = $t->create( %args, Queue => $queue->id );
+        my ( $id, undef, $msg ) = $t->create( %args, queue => $queue->id );
         if ( $args{'Owner'} ) {
-            is $t->Owner, $args{'Owner'}, "owner is correct";
+            is $t->owner, $args{'Owner'}, "owner is correct";
         }
         if ( $args{'Creator'} ) {
-            is $t->Creator, $args{'Creator'}, "creator is correct";
+            is $t->creator, $args{'Creator'}, "creator is correct";
         }
         # hackish, but simpler
         if ( $args{'LastUpdatedBy'} ) {
-            $t->__Set( Field => 'LastUpdatedBy', Value => $args{'LastUpdatedBy'} );
+            $t->__Set( field => 'LastUpdatedBy', value => $args{'LastUpdatedBy'} );
         }
         ok( $id, "ticket created" ) or diag("error: $msg");
         push @res, $t;
@@ -79,13 +79,13 @@ sub run_tests {
     my $query_prefix = join ' OR ', map 'id = '. $_->id, @tickets;
     foreach my $test ( @test ) {
         my $query = join " AND ", map "( $_ )", grep defined && length,
-            $query_prefix, $test->{'Query'};
+            $query_prefix, $test->{'query'};
 
         foreach my $order (qw(ASC DESC)) {
             my $error = 0;
             my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user );
             $tix->from_sql( $query );
-            $tix->OrderBy( FIELD => $test->{'Order'}, ORDER => $order );
+            $tix->order_by( { column => $test->{'order'}, order => $order } );
 
             ok($tix->count, "found ticket(s)")
                 or $error = 1;
@@ -94,24 +94,24 @@ sub run_tests {
             while ( my $t = $tix->next ) {
                 my $tmp;
                 if ( $order eq 'ASC' ) {
-                    $tmp = ((split( /,/, $last))[0] cmp (split( /,/, $t->Subject))[0]);
+                    $tmp = ((split( /,/, $last))[0] cmp (split( /,/, $t->subject))[0]);
                 } else {
-                    $tmp = -((split( /,/, $last))[-1] cmp (split( /,/, $t->Subject))[-1]);
+                    $tmp = -((split( /,/, $last))[-1] cmp (split( /,/, $t->subject))[-1]);
                 }
                 if ( $tmp > 0 ) {
                     $order_ok = 0; last;
                 }
-                $last = $t->Subject;
+                $last = $t->subject;
             }
 
             ok( $order_ok, "$order order of tickets is good" )
                 or $error = 1;
 
             if ( $error ) {
-                diag "Wrong SQL query:". $tix->BuildSelectQuery;
-                $tix->GotoFirstItem;
+                diag "Wrong SQL query:". $tix->build_select_query;
+                $tix->goto_first_item;
                 while ( my $t = $tix->next ) {
-                    diag sprintf "%02d - %s", $t->id, $t->Subject;
+                    diag sprintf "%02d - %s", $t->id, $t->subject;
                 }
             }
         }
@@ -119,35 +119,35 @@ sub run_tests {
 }
 
 @data = (
-    { Subject => 'Nobody' },
-    { Subject => 'Z', Owner => $uids[0] },
-    { Subject => 'A', Owner => $uids[1] },
+    { subject => 'Nobody' },
+    { subject => 'Z', owner => $uids[0] },
+    { subject => 'A', owner => $uids[1] },
 );
 @tickets = add_tix_from_data();
 @test = (
-    { Order => "Owner" },
+    { order => "Owner" },
 );
 run_tests();
 
 @data = (
-    { Subject => 'RT' },
-    { Subject => 'Z', Creator => $uids[0] },
-    { Subject => 'A', Creator => $uids[1] },
+    { subject => 'RT' },
+    { subject => 'Z', creator => $uids[0] },
+    { subject => 'A', creator => $uids[1] },
 );
 @tickets = add_tix_from_data();
 @test = (
-    { Order => "Creator" },
+    { order => "Creator" },
 );
 run_tests();
 
 @data = (
-    { Subject => 'RT' },
-    { Subject => 'Z', LastUpdatedBy => $uids[0] },
-    { Subject => 'A', LastUpdatedBy => $uids[1] },
+    { subject => 'RT' },
+    { subject => 'Z', last_updated_by => $uids[0] },
+    { subject => 'A', last_updated_by => $uids[1] },
 );
 @tickets = add_tix_from_data();
 @test = (
-    { Order => "LastUpdatedBy" },
+    { order => "last_updated_by" },
 );
 run_tests();
 

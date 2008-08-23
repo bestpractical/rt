@@ -1,36 +1,36 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
+use RT::Test;
 use utf8;
 
 use Test::More;
-use RT::Test;
 
 plan tests => 30;
 
 RT::Test->set_mail_catcher;
 
 my $queue = RT::Test->load_or_create_queue(
-    Name              => 'Regression',
-    CorrespondAddress => 'rt-recipient@example.com',
-    CommentAddress    => 'rt-recipient@example.com',
+    name              => 'Regression',
+    correspond_address => 'rt-recipient@example.com',
+    comment_address    => 'rt-recipient@example.com',
 );
 ok $queue && $queue->id, 'loaded or created queue';
 
 diag "make sure queue has no subject tag" if $ENV{'TEST_VERBOSE'};
 {
-    my ($status, $msg) = $queue->SetSubjectTag( undef );
+    my ($status, $msg) = $queue->set_subject_tag( undef );
     ok $status, "set subject tag for the queue" or diag "error: $msg";
 }
 
 diag "set intial simple autoreply template" if $ENV{'TEST_VERBOSE'};
 {
-    my $template = RT::Template->new( $RT::SystemUser );
-    $template->Load('Autoreply');
+    my $template = RT::Model::Template->new( current_user => RT->system_user );
+    $template->load('Autoreply');
     ok $template->id, "loaded autoreply tempalte";
 
-    my ($status, $msg) = $template->SetContent(
-        "Subject: Autreply { \$Ticket->Subject }\n"
+    my ($status, $msg) = $template->set_content(
+        "Subject: Autreply { \$ticket->subject }\n"
         ."\n"
         ."hi there it's an autoreply.\n"
         ."\n"
@@ -41,11 +41,11 @@ diag "set intial simple autoreply template" if $ENV{'TEST_VERBOSE'};
 
 diag "basic test of autoreply" if $ENV{'TEST_VERBOSE'};
 {
-    my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
+    my $ticket = RT::Model::Ticket->new( current_user => RT->system_user );
     $ticket->create(
-        Queue => $queue->id,
-        Subject => 'test',
-        Requestor => 'root@localhost',
+        queue => $queue->id,
+        subject => 'test',
+        requestor => 'root@localhost',
     );
     my @mails = RT::Test->fetch_caught_mails;
     ok @mails, "got some outgoing emails";
@@ -60,9 +60,9 @@ diag "non-ascii Subject with ascii prefix set in the template"
 {
     my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     $ticket->create(
-        Queue => $queue->id,
-        Subject => $str_ru_test,
-        Requestor => 'root@localhost',
+        queue => $queue->id,
+        subject => $str_ru_test,
+        requestor => 'root@localhost',
     );
     my @mails = RT::Test->fetch_caught_mails;
     ok @mails, "got some outgoing emails";
@@ -79,7 +79,7 @@ diag "non-ascii Subject with ascii prefix set in the template"
 
 diag "set non-ascii subject tag for the queue" if $ENV{'TEST_VERBOSE'};
 {
-    my ($status, $msg) = $queue->SetSubjectTag( $str_ru_support );
+    my ($status, $msg) = $queue->set_subject_tag( $str_ru_support );
     ok $status, "set subject tag for the queue" or diag "error: $msg";
 }
 
@@ -87,9 +87,9 @@ diag "ascii subject with non-ascii subject tag" if $ENV{'TEST_VERBOSE'};
 {
     my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     $ticket->create(
-        Queue => $queue->id,
-        Subject => 'test',
-        Requestor => 'root@localhost',
+        queue => $queue->id,
+        subject => 'test',
+        requestor => 'root@localhost',
     );
     my @mails = RT::Test->fetch_caught_mails;
     ok @mails, "got some outgoing emails";
@@ -108,9 +108,9 @@ diag "non-ascii subject with non-ascii subject tag" if $ENV{'TEST_VERBOSE'};
 {
     my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     $ticket->create(
-        Queue => $queue->id,
-        Subject => $str_ru_test,
-        Requestor => 'root@localhost',
+        queue => $queue->id,
+        subject => $str_ru_test,
+        requestor => 'root@localhost',
     );
     my @mails = RT::Test->fetch_caught_mails;
     ok @mails, "got some outgoing emails";
@@ -129,18 +129,18 @@ diag "non-ascii subject with non-ascii subject tag" if $ENV{'TEST_VERBOSE'};
 
 diag "return back the empty subject tag" if $ENV{'TEST_VERBOSE'};
 {
-    my ($status, $msg) = $queue->SetSubjectTag( undef );
+    my ($status, $msg) = $queue->set_subject_tag( undef );
     ok $status, "set subject tag for the queue" or diag "error: $msg";
 }
 
 diag "add non-ascii subject prefix in the autoreply template" if $ENV{'TEST_VERBOSE'};
 {
-    my $template = RT::Template->new( $RT::SystemUser );
-    $template->Load('Autoreply');
+    my $template = RT::Model::Template->new( current_user => RT->system_user );
+    $template->load('Autoreply');
     ok $template->id, "loaded autoreply tempalte";
 
-    my ($status, $msg) = $template->SetContent(
-        "Subject: $str_ru_autoreply { \$Ticket->Subject }\n"
+    my ($status, $msg) = $template->set_content(
+        "Subject: $str_ru_autoreply { \$ticket->subject }\n"
         ."\n"
         ."hi there it's an autoreply.\n"
         ."\n"
@@ -152,9 +152,9 @@ diag "ascii subject with non-ascii subject prefix in template" if $ENV{'TEST_VER
 {
     my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     $ticket->create(
-        Queue => $queue->id,
-        Subject => 'test',
-        Requestor => 'root@localhost',
+        queue => $queue->id,
+        subject => 'test',
+        requestor => 'root@localhost',
     );
     my @mails = RT::Test->fetch_caught_mails;
     ok @mails, "got some outgoing emails";
@@ -174,9 +174,9 @@ diag "non-ascii subject with non-ascii subject prefix in template"
 {
     my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     $ticket->create(
-        Queue => $queue->id,
-        Subject => $str_ru_test,
-        Requestor => 'root@localhost',
+        queue => $queue->id,
+        subject => $str_ru_test,
+        requestor => 'root@localhost',
     );
     my @mails = RT::Test->fetch_caught_mails;
     ok @mails, "got some outgoing emails";
@@ -195,7 +195,7 @@ diag "non-ascii subject with non-ascii subject prefix in template"
 
 diag "set non-ascii subject tag for the queue" if $ENV{'TEST_VERBOSE'};
 {
-    my ($status, $msg) = $queue->SetSubjectTag( $str_ru_support );
+    my ($status, $msg) = $queue->set_subject_tag( $str_ru_support );
     ok $status, "set subject tag for the queue" or diag "error: $msg";
 }
 
@@ -204,9 +204,9 @@ diag "non-ascii subject, non-ascii prefix in template and non-ascii tag"
 {
     my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     $ticket->create(
-        Queue => $queue->id,
-        Subject => $str_ru_test,
-        Requestor => 'root@localhost',
+        queue => $queue->id,
+        subject => $str_ru_test,
+        requestor => 'root@localhost',
     );
     my @mails = RT::Test->fetch_caught_mails;
     ok @mails, "got some outgoing emails";
@@ -227,18 +227,18 @@ diag "non-ascii subject, non-ascii prefix in template and non-ascii tag"
 
 diag "flush subject tag of the queue" if $ENV{'TEST_VERBOSE'};
 {
-    my ($status, $msg) = $queue->SetSubjectTag( undef );
+    my ($status, $msg) = $queue->set_subject_tag( undef );
     ok $status, "set subject tag for the queue" or diag "error: $msg";
 }
 
 
 diag "don't change subject via template" if $ENV{'TEST_VERBOSE'};
 {
-    my $template = RT::Template->new( $RT::SystemUser );
-    $template->Load('Autoreply');
+    my $template = RT::Model::Template->new( current_user => RT->system_user );
+    $template->load('Autoreply');
     ok $template->id, "loaded autoreply tempalte";
 
-    my ($status, $msg) = $template->SetContent(
+    my ($status, $msg) = $template->set_content(
         "\n"
         ."\n"
         ."hi there it's an autoreply.\n"
@@ -251,9 +251,9 @@ diag "non-ascii Subject without changes in template" if $ENV{'TEST_VERBOSE'};
 {
     my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     $ticket->create(
-        Queue => $queue->id,
-        Subject => $str_ru_test,
-        Requestor => 'root@localhost',
+        queue => $queue->id,
+        subject => $str_ru_test,
+        requestor => 'root@localhost',
     );
     my @mails = RT::Test->fetch_caught_mails;
     ok @mails, "got some outgoing emails";
@@ -270,7 +270,7 @@ diag "non-ascii Subject without changes in template" if $ENV{'TEST_VERBOSE'};
 
 diag "set non-ascii subject tag for the queue" if $ENV{'TEST_VERBOSE'};
 {
-    my ($status, $msg) = $queue->SetSubjectTag( $str_ru_support );
+    my ($status, $msg) = $queue->set_subject_tag( $str_ru_support );
     ok $status, "set subject tag for the queue" or diag "error: $msg";
 }
 
@@ -279,9 +279,9 @@ diag "non-ascii Subject without changes in template and with non-ascii subject t
 {
     my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     $ticket->create(
-        Queue => $queue->id,
-        Subject => $str_ru_test,
-        Requestor => 'root@localhost',
+        queue => $queue->id,
+        subject => $str_ru_test,
+        requestor => 'root@localhost',
     );
     my @mails = RT::Test->fetch_caught_mails;
     ok @mails, "got some outgoing emails";
@@ -302,7 +302,7 @@ sub parse_mail {
     my $mail = shift;
     require RT::EmailParser;
     my $parser = new RT::EmailParser;
-    $parser->ParseMIMEEntityFromScalar( $mail );
-    return $parser->Entity;
+    $parser->parse_mime_entity_from_scalar( $mail );
+    return $parser->entity;
 }
 
