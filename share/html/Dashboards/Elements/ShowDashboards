@@ -62,7 +62,7 @@ $verbose => 1
 my %subscription_for;
 
 for my $attr (Jifty->web->current_user->user_object->attributes->named('Subscription')) {
-    $subscription_for{$attr->sub_value('DashboardId')} = $attr;
+    $subscription_for{$attr->sub_value('dashboard_id')} = $attr;
 }
 </%INIT>
 

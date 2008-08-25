@@ -3,6 +3,7 @@ use strict;
 
 use Test::More tests => 78;
 use RT::Test;
+use RT::Dashboard;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
@@ -31,14 +32,20 @@ $m->get_ok($url."Dashboards/Modify.html?Create=1");
 $m->content_contains("Permission denied");
 $m->content_lacks("Save Changes");
 
-$user_obj->principal_object->grant_right(right => 'ModifyOwnDashboard', object => $RT::System);
+$user_obj->principal_object->grant_right(
+    right  => 'ModifyOwnDashboard',
+    object => RT->system_user
+);
 
 # Modify itself is no longer good enough, you need Create
 $m->get_ok($url."Dashboards/Modify.html?Create=1");
 $m->content_contains("Permission denied");
 $m->content_lacks("Save Changes");
 
-$user_obj->principal_object->grant_right(right => 'CreateOwnDashboard', object => $RT::System);
+$user_obj->principal_object->grant_right(
+    right  => 'CreateOwnDashboard',
+    object => RT->system_user
+);
 
 $m->get_ok($url."Dashboards/Modify.html?Create=1");
 $m->content_lacks("Permission denied");
@@ -49,7 +56,7 @@ $m->content_contains("New dashboard", "'New dashboard' link because we now have 
 
 $m->follow_link_ok({text => "New dashboard"});
 $m->form_name( 'modify_dashboard' );
-$m->field("Name" => 'different dashboard');
+$m->field("name" => 'different dashboard');
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
 $m->click_button(value => 'Save Changes');
 $m->content_lacks("No permission to create dashboards");
@@ -59,7 +66,7 @@ $m->content_lacks('Delete', "Delete button hidden because we lack DeleteOwnDashb
 $m->get_ok($url."Dashboards/index.html");
 $m->content_lacks("different dashboard", "we lack SeeOwnDashboard");
 
-$user_obj->principal_object->grant_right(right => 'SeeOwnDashboard', object => $RT::System);
+$user_obj->principal_object->grant_right(right => 'SeeOwnDashboard', object => RT->system_user);
 
 $m->get_ok($url."Dashboards/index.html");
 $m->content_contains("different dashboard", "we now have SeeOwnDashboard");
@@ -77,11 +84,11 @@ $m->content_contains("Modify the dashboard different dashboard");
 $m->follow_link_ok({text => "Queries"});
 $m->content_contains("Modify the queries of dashboard different dashboard");
 $m->form_name( 'dashboard_queries' );
-$m->field('Searches-Available' => ["2-RT::System-1"]);
+$m->field('searches-Available' => ["2-RT::System-1"]);
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
 
-my $dashboard = RT::Dashboard->new($currentuser);
+my $dashboard = RT::Dashboard->new( current_user => $currentuser);
 my ($id) = $m->content =~ /name="id" value="(\d+)"/;
 ok($id, "got an ID, $id");
 $dashboard->load_by_id($id);
@@ -95,12 +102,12 @@ is(@searches, 1, "one saved search in the dashboard");
 like($searches[0]->name, qr/newest unowned tickets/, "correct search name");
 
 $m->form_name( 'dashboard_queries' );
-$m->field('Searches-Available' => ["1-RT::System-1"]);
+$m->field('searches-Available' => ["1-RT::System-1"]);
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
 
 RT::Record->flush_cache if RT::Record->can('FlushCache');
-$dashboard = RT::Dashboard->new($currentuser);
+$dashboard = RT::Dashboard->new( current_user => $currentuser);
 $dashboard->load_by_id($id);
 
 @searches = $dashboard->searches;
@@ -136,7 +143,7 @@ $m->content_contains("Permission denied");
 RT::Record->flush_cache if RT::Record->can('FlushCache');
 is($user_obj->attributes->named('Subscription'), 0, "no subscriptions");
 
-$user_obj->principal_object->grant_right(right => 'SubscribeDashboard', object => $RT::System);
+$user_obj->principal_object->grant_right(right => 'SubscribeDashboard', object => RT->system_user);
 
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->follow_link_ok({text => "Subscription"});
@@ -163,7 +170,7 @@ $m->content_contains("Modify the subscription to dashboard different dashboard")
 $m->get_ok("/Dashboards/Modify.html?id=$id&Delete=1");
 $m->content_contains("Permission denied", "unable to delete dashboard because we lack DeleteOwnDashboard");
 
-$user_obj->principal_object->grant_right(right => 'DeleteOwnDashboard', object => $RT::System);
+$user_obj->principal_object->grant_right(right => 'DeleteOwnDashboard', object => RT->system_user);
 
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->content_contains('Delete', "Delete button shows because we have DeleteOwnDashboard");

@@ -3,6 +3,7 @@ use strict;
 
 use Test::More tests => 36;
 use RT::Test;
+use RT::Dashboard;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
@@ -25,7 +26,7 @@ $user_obj->principal_object->grant_right(right => $_, object => $queue)
 
 # grant the user all these rights so we can make sure that the group rights
 # are checked and not these as well
-$user_obj->principal_object->grant_right(right => $_, object => $RT::System)
+$user_obj->principal_object->grant_right(right => $_, object => RT->system_user)
     for qw/SubscribeDashboard CreateOwnDashboard SeeOwnDashboard ModifyOwnDashboard DeleteOwnDashboard/;
 # }}}
 # create and test groups (outer < inner < user) {{{
@@ -60,16 +61,17 @@ $m->get_ok("$url/Dashboards");
 
 $m->follow_link_ok({text => "New dashboard"});
 $m->form_name( 'modify_dashboard' );
-is_deeply([$m->current_form->find_input('Privacy')->possible_values], ["RT::Model::User-" . $user_obj->id], "the only selectable privacy is user");
+is_deeply([$m->current_form->find_input('privacy')->possible_values], ["RT::Model::User-" . $user_obj->id], "the only selectable privacy is user");
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
 
 $user_obj->principal_object->grant_right(right => 'CreateGroupDashboard', object => $inner_group);
 
 $m->follow_link_ok({text => "New dashboard"});
 $m->form_name( 'modify_dashboard' );
-is_deeply([$m->current_form->find_input('Privacy')->possible_values], ["RT::Model::User-" . $user_obj->id, "RT::Group-" . $inner_group->id], "the only selectable privacies are user and inner group (not outer group)");
-$m->field("Name" => 'inner dashboard');
-$m->field("Privacy" => "RT::Group-" . $inner_group->id);
+is_deeply([$m->current_form->find_input('privacy')->possible_values],
+        ["RT::Model::User-" . $user_obj->id, "RT::Model::Group-" . $inner_group->id], "the only selectable privacies are user and inner group (not outer group)");
+$m->field("name" => 'inner dashboard');
+$m->field("privacy" => "RT::Model::Group-" . $inner_group->id);
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
 
 $m->click_button(value => 'Save Changes');
@@ -77,13 +79,13 @@ $m->content_lacks("No permission to create dashboards");
 $m->content_contains("Saved dashboard inner dashboard");
 $m->content_lacks('Delete', "Delete button hidden because we lack DeleteDashboard");
 
-my $dashboard = RT::Dashboard->new($currentuser);
+my $dashboard = RT::Dashboard->new(current_user => $currentuser);
 my ($id) = $m->content =~ /name="id" value="(\d+)"/;
 ok($id, "got an ID, $id");
 $dashboard->load_by_id($id);
 is($dashboard->name, "inner dashboard");
 
-is($dashboard->privacy, 'RT::Group-' . $inner_group->id, "correct privacy");
+is($dashboard->privacy, 'RT::Model::Group-' . $inner_group->id, "correct privacy");
 is($dashboard->possible_hidden_searches, 0, "all searches are visible");
 
 $m->get_ok("/Dashboards/Modify.html?id=$id");

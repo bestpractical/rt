@@ -89,12 +89,12 @@ $create = 1 if !$id;
 use RT::Dashboard;
 
 my $Dashboard = RT::Dashboard->new( current_user => Jifty->web->current_user );
-my @privacies = $Dashboard->_privacy_objects(($create ? 'Create' : 'Modify') => 1);
+my @privacies = $Dashboard->_privacy_objects(($create ? 'create' : 'modify') => 1);
 
 abort(loc("Permission denied")) if @privacies == 0;
 
 if ($create) {
-    $current_subtab = 'Dashboards/Modify.html?Create=1';
+    $current_subtab = 'Dashboards/Modify.html?create=1';
     $title = loc("Create a new dashboard");
 }
 else {
@@ -125,7 +125,7 @@ else {
     # If the create failed
     else {
         $create = 1;
-        $current_subtab = 'Dashboards/Modify.html?Create=1';
+        $current_subtab = 'Dashboards/Modify.html?create=1';
         $title = loc("Create a new dashboard");
     }
 }

@@ -76,7 +76,8 @@ if ( $dashboard_obj and $dashboard_obj->id ) {
             },
 
             c_Subscription => { title => loc('Subscription'),
-                                path  => "Dashboards/Subscription.html?DashboardId=" . $dashboard_obj->id
+                                path  =>
+                                    "Dashboards/Subscription.html?dashboard_id=" . $dashboard_obj->id
             },
 
 
@@ -100,11 +101,11 @@ $tabs->{"A"} = { title => loc('Select dashboard'),
                  path  => "Dashboards/index.html" };
 
 my $dashboard = RT::Dashboard->new( current_user => Jifty->web->current_user );
-my @objects = $dashboard->_privacy_objects(Create => 1);
+my @objects = $dashboard->_privacy_objects(create => 1);
 
 if (@objects) {
     $tabs->{"B"} = { title     => loc('New dashboard'),
-                     path      => "Dashboards/Modify.html?Create=1",
+                     path      => "Dashboards/Modify.html?create=1",
                      separator => 1 };
 }
 

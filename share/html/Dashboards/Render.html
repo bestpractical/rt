@@ -87,7 +87,7 @@ my $Loaded = 0;
 
 # try to load the subscription to this id
 for my $sub (Jifty->web->current_user->user_object->attributes->named('Subscription')) {
-    next unless $sub->sub_value('DashboardId') == $id;
+    next unless $sub->sub_value('dashboard_id') == $id;
     $SubscriptionObj = $sub;
     $Loaded = 1;
     last;

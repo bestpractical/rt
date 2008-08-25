@@ -54,7 +54,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="<%RT->config->get('WebPath')%>/Dashboards/Subscription.html" method="post" enctype="multipart/form-data" name="subscribe_dashboard">
-<input type="hidden" class="hidden" name="dashboard_id" value="<% $fields{'DashboardId'} %>" />
+<input type="hidden" class="hidden" name="dashboard_id" value="<% $fields{'dashboard_id'} %>" />
 <table width="100%" border="0">
 <tr>
 
@@ -78,7 +78,7 @@
 <ol>
 %    for my $query (@searches) {
 %       my $name;
-%       if ($query->{Attribute}->name =~ /^Search - (.*)$/) {
+%       if ($query->{attribute}->name =~ /^Search - (.*)$/) {
 %           $name = $1;
 %       } else {
 %           $name = $query->name;
@@ -166,7 +166,7 @@ monthly</input> , on day
 
 <%INIT>
 
-my $current_subtab = 'Dashboards/Subscription.html?DashboardId=' . $dashboard_id;
+my $current_subtab = 'Dashboards/Subscription.html?dashboard_id=' . $dashboard_id;
 
 my ($title, @results);
 my ($val, $msg);
@@ -178,27 +178,27 @@ my $DashboardObj = RT::Dashboard->new( current_user => Jifty->web->current_user 
 
 my $SubscriptionObj = RT::Model::Attribute->new( current_user => Jifty->web->current_user );
 
-# first let's see if we already have a subscription to this DashboardId
+# first let's see if we already have a subscription to this dashboard_id
 for my $sub (Jifty->web->current_user->user_object->attributes->named('Subscription')) {
-    next unless $sub->sub_value('DashboardId') == $dashboard_id;
+    next unless $sub->sub_value('dashboard_id') == $dashboard_id;
     $SubscriptionObj = $sub;
     last;
 }
 
 $dashboard_id = $SubscriptionObj->id
-             ? $SubscriptionObj->sub_value('DashboardId')
+             ? $SubscriptionObj->sub_value('dashboard_id')
              : $ARGS{'dashboard_id'};
 
 ($val, $msg) = $DashboardObj->load_by_id($dashboard_id);
 $val || abort(loc("Couldn't load dashboard %1: %2.", $dashboard_id, $msg));
 
 my %fields = (
-    DashboardId => $dashboard_id,
-    Frequency   => 'daily',
-    Hour        => '06:00',
-    Dow         => 'Monday',
-    Dom         => 1,
-    Rows        => 20,
+    dashboard_id => $dashboard_id,
+    frequency   => 'daily',
+    hour        => '06:00',
+    dow         => 'Monday',
+    dom         => 1,
+    rows        => 20,
 );
 
 # update any fields with the values from the subscription object
@@ -210,7 +210,7 @@ if ($SubscriptionObj->id) {
 
 # finally, update any fields with arguments passed in by the user
 for my $field (keys %fields) {
-    next if $field eq 'DashboardId'; # but this one is immutable
+    next if $field eq 'dashboard_id'; # but this one is immutable
     $fields{$field} = $ARGS{$field}
         if defined($ARGS{$field});
 }
@@ -220,9 +220,9 @@ for my $field (keys %fields) {
 if (defined $ARGS{save}) {
     # update
     if ($SubscriptionObj->id) {
-        $dashboard_id = delete $fields{'DashboardId'}; # immutable
+        $dashboard_id = delete $fields{'dashboard_id'}; # immutable
         ($val, $msg) = $SubscriptionObj->set_sub_values(%fields);
-        $fields{'DashboardId'} = $dashboard_id;
+        $fields{'dashboard_id'} = $dashboard_id;
 
         # not so good to spew base64-encoded data at the user :)
         if ($msg =~ /^Content changed from/) {
@@ -239,9 +239,9 @@ if (defined $ARGS{save}) {
         my ($val, $msg) = $SubscriptionObj->create(
             name        => 'subscription',
             description => 'Subscription to dashboard ' . $dashboard_id,
-            ContentType => 'storable',
-            Object      => Jifty->web->current_user->user_object,
-            Content     => \%fields,
+            content_type => 'storable',
+            object      => Jifty->web->current_user->user_object,
+            content     => \%fields,
         );
         if ($val) {
             push @results, loc("Subscribed to dashboard %1", $DashboardObj->name);
