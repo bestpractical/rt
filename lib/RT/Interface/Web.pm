@@ -298,7 +298,7 @@ sub abort {
         $m->comp( $session{'ErrorDocument'}, Why => $why, %args );
         $m->abort;
     } else {
-        $m->comp( "/Elements/Error", Why => $why, %args );
+        $m->comp( "/Elements/Error", why => $why, %args );
         $m->abort;
     }
 }
