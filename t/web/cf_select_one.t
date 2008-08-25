@@ -27,7 +27,7 @@ diag "Create a CF" if $ENV{'TEST_VERBOSE'};
             lookup_type    => 'RT::Model::Queue-RT::Model::Ticket',
         },
     );
-    $m->content_like( qr/Created/, 'Created CF sucessfully' );
+    $m->content_like( qr/created/, 'Created CF sucessfully' );
     $cfid = $m->form_name('modify_custom_field')->value('id');
     ok $cfid, "found id of the CF in the form, it's #$cfid";
 }
@@ -42,7 +42,7 @@ diag "add 'qwe', 'ASD' and '0' as values to the CF" if $ENV{'TEST_VERBOSE'};
             },
             button => 'update',
         );
-        $m->content_like( qr/Created/, 'added a value to the CF' ); # or diag $m->content;
+        $m->content_like( qr/created/, 'added a value to the CF' ); # or diag $m->content;
     }
 }
 
@@ -62,7 +62,7 @@ diag "apply the CF to General queue" if $ENV{'TEST_VERBOSE'};
     $m->field( "object-". $queue->id ."-CF-$cfid" => 1 );
     $m->submit;
 
-    $m->content_like( qr/Created/, 'TCF added to the queue' );
+    $m->content_like( qr/created/, 'TCF added to the queue' );
 }
 
 my $tid;
