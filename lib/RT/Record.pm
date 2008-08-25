@@ -113,10 +113,10 @@ sub delete {
     my $self = shift;
     my ($rv) = $self->SUPER::delete;
     if ($rv) {
-        return ( $rv, _("object deleted") );
+        return ( $rv, _("Object deleted") );
     } else {
 
-        return ( 0, _("object could not be deleted") );
+        return ( 0, _("Object could not be deleted") );
     }
 }
 
@@ -294,7 +294,7 @@ sub create {
 
     unless ($id) {
         if (wantarray) {
-            return ( $id, _('object could not be Created') );
+            return ( $id, _('Object could not be created') );
         } else {
             return ($id);
         }
@@ -308,7 +308,7 @@ sub create {
     $self->load($id) if ($id);
 
     if (wantarray) {
-        return ( $id, _('object Created') );
+        return ( $id, _('Object created') );
     } else {
         return ($id);
     }

@@ -38,7 +38,7 @@ diag "Apply the new CF globally" if $ENV{'TEST_VERBOSE'};
     $m->submit_form(
         form_name => 'edit_custom_fields',
         fields => {
-            'Object--CF-1' => '1',
+            'object--CF-1' => '1',
         },
     );
     $m->content_like( qr/Object created/, 'CF QueueCFTest enabled globally' );
@@ -54,9 +54,9 @@ diag "Edit the CF value for default queue" if $ENV{'TEST_VERBOSE'};
     $m->submit_form(
         form_number => 3,
         # The following doesn't want to works :(
-        #with_fields => { 'Object-RT::Model::Queue-1-CustomField-1-Value' },
+        #with_fields => { 'object-RT::Model::Queue-1-CustomField-1-value' },
         fields => {
-            'Object-RT::Model::Queue-1-CustomField-1-Value' => 'QueueCFTest content',
+            'object-RT::Model::Queue-1-CustomField-1-value' => 'QueueCFTest content',
         },
     );
     $m->content_like( qr/QueueCFTest QueueCFTest content added/, 'Content filed in CF QueueCFTest for default queue' );

@@ -96,7 +96,7 @@ use Jifty::DBI::Record schema {
     column final_priority   => max_length is 11, type is 'int',      default is '0';
     column default_due_in   => max_length is 11, type is 'int',      default is '0';
     column creator          => references RT::Model::User;
-    column Created          => type is 'timestamp';
+    column created          => type is 'timestamp';
     column last_updated_by  => references RT::Model::User;
     column last_updated     => type is 'timestamp';
     column disabled         => max_length is 6,  type is 'smallint', default is '0';

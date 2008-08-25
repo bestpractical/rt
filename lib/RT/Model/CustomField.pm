@@ -276,7 +276,8 @@ sub create {
     return ( $rv, $msg ) unless exists $args{'queue'};
 
     # Compat code -- create a new ObjectCustomField mapping
-    my $OCF = RT::Model::ObjectCustomField->new;
+    my $OCF =
+      RT::Model::ObjectCustomField->new( current_user => RT->system_user );
     $OCF->create(
         custom_field => $self->id,
         object_id    => $args{'queue'},
