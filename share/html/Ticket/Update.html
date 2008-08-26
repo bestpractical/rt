@@ -173,7 +173,7 @@ unless($DefaultStatus){
 }
 
 if ($DefaultStatus =~ '^new$'){
-        $DefaultStatus='open';
+    $DefaultStatus='open';
 }
 
 if ($DefaultStatus eq 'resolved') {
@@ -206,7 +206,7 @@ $CanComment = 1 if ( $TicketObj->CurrentUserHasRight('CommentOnTicket') or
 # {{{ deal with deleting uploaded attachments
 foreach my $key (keys %ARGS) {
     if ($key =~ m/^DeleteAttach-(.+)$/) {
-    delete $session{'Attachments'}{$1};
+        delete $session{'Attachments'}{$1};
     }
     $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
 }
