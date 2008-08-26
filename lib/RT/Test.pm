@@ -132,11 +132,17 @@ sub import {
     print $config qq{
 Set( \$WebPort , $port);
 Set( \$WebBaseURL , "http://localhost:\$WebPort");
-Set( \$DatabaseName , $dbname);
 Set( \$LogToSyslog , undef);
 Set( \$LogToScreen , "warning");
 Set( \$MailCommand, 'testfile');
 };
+    if ( $ENV{'RT_TEST_DB_SID'} ) { # oracle case
+        print $config "Set( \$DatabaseName , '$ENV{'RT_TEST_DB_SID'}' );\n";
+        print $config "Set( \$DatabaseUser , '$dbname');\n";
+    } else {
+        print $config "Set( \$DatabaseName , '$dbname');\n";
+        print $config "Set( \$DatabaseUser , '${dbname}_user');\n";
+    }
     print $config $args{'config'} if $args{'config'};
     print $config "\n1;\n";
     $ENV{'RT_SITE_CONFIG'} = $config->filename;
