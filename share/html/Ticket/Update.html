@@ -164,7 +164,9 @@ my $title;
 
 my $TicketObj = LoadTicket($id);
 
-$m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'Initial' );
+my @results;
+
+$m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, results => \@results, CallbackName => 'Initial' );
 
 unless($DefaultStatus){
     $DefaultStatus=($ARGS{'Status'} ||$TicketObj->Status());
@@ -236,8 +238,6 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
     delete $session{'Attachments'};
 }
 # }}}
-
-my @results;
 
 my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
 $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
