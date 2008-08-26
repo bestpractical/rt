@@ -466,8 +466,8 @@ sub SignEncryptRFC3156 {
             }
         }
 
-    my ($handles, $handle_list) = _make_gpg_handles(stdin =>IO::Handle::CRLF->new );
-    my %handle = %$handle_list;
+        my ($handles, $handle_list) = _make_gpg_handles(stdin =>IO::Handle::CRLF->new );
+        my %handle = %$handle_list;
 
         $gnupg->passphrase( $args{'Passphrase'} );
 
