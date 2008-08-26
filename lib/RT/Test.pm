@@ -141,7 +141,7 @@ Set( \$MailCommand, 'testfile');
         print $config "Set( \$DatabaseUser , '$dbname');\n";
     } else {
         print $config "Set( \$DatabaseName , '$dbname');\n";
-        print $config "Set( \$DatabaseUser , '${dbname}_user');\n";
+        print $config "Set( \$DatabaseUser , 'u${dbname}');\n";
     }
     print $config $args{'config'} if $args{'config'};
     print $config "\n1;\n";
