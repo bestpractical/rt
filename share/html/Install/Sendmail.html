@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&|Elements/Wrapper, Title => loc('Step [_1] of [_2]: ', 4, 7 ) . loc('Email Configuration') &> 
+<&|Elements/Wrapper, Title => loc('Step [_1] of [_2]', 4, 7 ) .': '. loc('Email Configuration') &> 
 
 <& Elements/Errors, Errors => \@errors &>
 
@@ -59,8 +59,10 @@
 &>
 
 <input type="hidden" name="Run" value="1">
-<& /Elements/Submit, Label => loc('Next: ') . loc( 'Customize Global Defaults'),
-    Back => 1, BackLabel => loc('Back: ' ) . loc('Customize Basics') &>
+<& /Elements/Submit,
+    Label => loc('Next') .': '. loc('Customize Global Defaults'),
+    Back => 1, BackLabel => loc('Back' ) .': '. loc('Customize Basics'),
+&>
 </form>
 </&>
 <%init>

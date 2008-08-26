@@ -273,10 +273,10 @@ $COLUMN_MAP = {
             my $name = $t->OwnerObj->Name;
             my %key = RT::Crypt::GnuPG::GetKeyInfo($t->OwnerObj->EmailAddress);
             if (!defined $key{'info'}) {
-                $name .= loc(" (no pubkey!)");
+                $name .= ' '. loc("(no pubkey!)");
             }
             elsif ($key{'info'}{'TrustLevel'} == 0) {
-                $name .= loc(" (untrusted!)");
+                $name .= ' '. loc("(untrusted!)");
             }
 
             return $name;
