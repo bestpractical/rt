@@ -55,7 +55,7 @@
 
 <form action="Update.html" name="TicketUpdate"
     method="post" enctype="multipart/form-data">
-% $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
+% $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS, Ticket => $TicketObj );
 <input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction}||'' %>" />
 <input type="hidden" class="hidden" name="DefaultStatus" value="<% $DefaultStatus ||''%>" />
 <input type="hidden" class="hidden" name="Action" value="<% $ARGS{Action}||'' %>" />
