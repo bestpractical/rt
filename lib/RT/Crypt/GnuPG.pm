@@ -475,8 +475,11 @@ sub SignEncryptRFC3156 {
             local $SIG{'CHLD'} = 'DEFAULT';
             my $pid = safe_run_child { $gnupg->detach_sign( handles => $handles ) };
             $entity->make_multipart( 'mixed', Force => 1 );
-            $entity->parts(0)->print( $handle{'stdin'} );
-            close $handle{'stdin'};
+            {
+                local $SIG{'PIPE'} = 'IGNORE';
+                $entity->parts(0)->print( $handle{'stdin'} );
+                close $handle{'stdin'};
+            }
             waitpid $pid, 0;
         };
         my $err = $@;
@@ -531,8 +534,11 @@ sub SignEncryptRFC3156 {
                 ? $gnupg->sign_and_encrypt( handles => $handles )
                 : $gnupg->encrypt( handles => $handles ) };
             $entity->make_multipart( 'mixed', Force => 1 );
-            $entity->parts(0)->print( $handle{'stdin'} );
-            close $handle{'stdin'};
+            {
+                local $SIG{'PIPE'} = 'IGNORE';
+                $entity->parts(0)->print( $handle{'stdin'} );
+                close $handle{'stdin'};
+            }
             waitpid $pid, 0;
         };
 
@@ -651,8 +657,11 @@ sub _SignEncryptTextInline {
             ? 'sign_and_encrypt'
             : ($args{'Sign'}? 'clearsign': 'encrypt');
         my $pid = safe_run_child { $gnupg->$method( handles => $handles ) };
-        $entity->bodyhandle->print( $handle{'stdin'} );
-        close $handle{'stdin'};
+        {
+            local $SIG{'PIPE'} = 'IGNORE';
+            $entity->bodyhandle->print( $handle{'stdin'} );
+            close $handle{'stdin'};
+        }
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
@@ -734,8 +743,11 @@ sub _SignEncryptAttachmentInline {
             ? 'sign_and_encrypt'
             : ($args{'Sign'}? 'detach_sign': 'encrypt');
         my $pid = safe_run_child { $gnupg->$method( handles => $handles ) };
-        $entity->bodyhandle->print( $handle{'stdin'} );
-        close $handle{'stdin'};
+        {
+            local $SIG{'PIPE'} = 'IGNORE';
+            $entity->bodyhandle->print( $handle{'stdin'} );
+            close $handle{'stdin'};
+        }
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
@@ -831,8 +843,11 @@ sub SignEncryptContent {
             ? 'sign_and_encrypt'
             : ($args{'Sign'}? 'clearsign': 'encrypt');
         my $pid = safe_run_child { $gnupg->$method( handles => $handles ) };
-        $handle{'stdin'}->print( ${ $args{'Content'} } );
-        close $handle{'stdin'};
+        {
+            local $SIG{'PIPE'} = 'IGNORE';
+            $handle{'stdin'}->print( ${ $args{'Content'} } );
+            close $handle{'stdin'};
+        }
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
@@ -1057,9 +1072,11 @@ sub VerifyAttachment {
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
         my $pid = safe_run_child { $gnupg->verify( handles => $handles, command_args => [ '-', $tmp_fn ] ) };
-        $args{'Signature'}->bodyhandle->print( $handle{'stdin'} );
-        close $handle{'stdin'};
-
+        {
+            local $SIG{'PIPE'} = 'IGNORE';
+            $args{'Signature'}->bodyhandle->print( $handle{'stdin'} );
+            close $handle{'stdin'};
+        }
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
@@ -1099,10 +1116,14 @@ sub VerifyRFC3156 {
     my %res;
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
-        my $pid = safe_run_child { $gnupg->verify( handles => $handles, command_args => [ '-', $tmp_fn ] ) };
-        $args{'Signature'}->bodyhandle->print( $handle{'stdin'} );
-        close $handle{'stdin'};
-
+        my $pid = safe_run_child { $gnupg->verify(
+            handles => $handles, command_args => [ '-', $tmp_fn ]
+        ) };
+        {
+            local $SIG{'PIPE'} = 'IGNORE';
+            $args{'Signature'}->bodyhandle->print( $handle{'stdin'} );
+            close $handle{'stdin'};
+        }
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
@@ -1161,8 +1182,11 @@ sub DecryptRFC3156 {
         local $SIG{'CHLD'} = 'DEFAULT';
         $gnupg->passphrase( $args{'Passphrase'} );
         my $pid = safe_run_child { $gnupg->decrypt( handles => $handles ) };
-        $args{'Data'}->bodyhandle->print( $handle{'stdin'} );
-        close $handle{'stdin'};
+        {
+            local $SIG{'PIPE'} = 'IGNORE';
+            $args{'Data'}->bodyhandle->print( $handle{'stdin'} );
+            close $handle{'stdin'}
+        }
 
         waitpid $pid, 0;
     };
@@ -1412,8 +1436,11 @@ sub DecryptContent {
         local $SIG{'CHLD'} = 'DEFAULT';
         $gnupg->passphrase( $args{'Passphrase'} );
         my $pid = safe_run_child { $gnupg->decrypt( handles => $handles ) };
-        print { $handle{'stdin'} } ${ $args{'Content'} };
-        close $handle{'stdin'};
+        {
+            local $SIG{'PIPE'} = 'IGNORE';
+            print { $handle{'stdin'} } ${ $args{'Content'} };
+            close $handle{'stdin'};
+        }
 
         waitpid $pid, 0;
     };
