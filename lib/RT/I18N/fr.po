@@ -42,10 +42,10 @@ msgid "#"
 msgstr "n°"
 
 #: share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:49 share/html/Ticket/Display.html:54
-#. ($Ticket->id, $Ticket->Subject)
-#. ($link->BaseObj->Id, $link->BaseObj->Subject)
-#. ($ticket->Id, $ticket->Subject)
 #. ($TicketObj->Id, $TicketObj->Subject)
+#. ($Ticket->id, $Ticket->Subject)
+#. ($ticket->Id, $ticket->Subject)
+#. ($link->BaseObj->Id, $link->BaseObj->Subject)
 msgid "#%1: %2"
 msgstr "n°%1 : %2"
 
@@ -117,8 +117,8 @@ msgid "%1 %2 deleted"
 msgstr "%1 %2 supprimé"
 
 #: share/html/Elements/RT__Scrip/ColumnMap:85 share/html/Ticket/Elements/PreviewScrips:66
-#. ($_[0]->loc($_[0]->ConditionObj->Name),            $_[0]->loc($_[0]->ActionObj->Name),            $_[0]->loc($_[0]->TemplateObj->Name),)
 #. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
+#. ($_[0]->loc($_[0]->ConditionObj->Name),            $_[0]->loc($_[0]->ActionObj->Name),            $_[0]->loc($_[0]->TemplateObj->Name),)
 msgid "%1 %2 with template %3"
 msgstr "%1 %2 avec le modèle %3"
 
@@ -128,10 +128,10 @@ msgid "%1 (%2) by %3"
 msgstr "%1 (%2) par %3"
 
 #: share/html/SelfService/Update.html:62 share/html/Ticket/Elements/EditBasics:115 share/html/Ticket/Update.html:69 share/html/Ticket/Update.html:75 share/html/Tools/MyDay.html:68
-#. (loc($Ticket->Status))
 #. (loc($Ticket->Status()))
 #. (loc($TicketObj->Status))
 #. ($TicketObj->OwnerObj->Name)
+#. (loc($Ticket->Status))
 msgid "%1 (Unchanged)"
 msgstr "%1 (inchangé)"
 
@@ -267,7 +267,7 @@ msgstr "%1 supprimé(e)"
 msgid "%1 doesn't exist."
 msgstr "%1 n'existe pas."
 
-#: etc/initialdata:677
+#: NOT FOUND IN SOURCE
 msgid "%1 highest priority tickets I own"
 msgstr "Mes %1 tickets de plus haute priorité"
 
@@ -276,7 +276,7 @@ msgstr "Mes %1 tickets de plus haute priorité"
 msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
 msgstr "%1 est un outil agissant sur les tickets depuis un ordonnanceur externe tel que cron."
 
-#: sbin/rt-email-digest:92
+#: sbin/rt-email-digest:92 sbin/rt-send-digest:69
 #. ($0)
 msgid "%1 is a utility, meant to be run from cron, that dispatches all deferred RT notifications as a per-user digest."
 msgstr "%1 est un utilitaire, destiné a être lancé via cron, qui envoi une compilation par utilisateur des notifications RT en attente."
@@ -301,7 +301,7 @@ msgstr "%1 n'est plus une valeur pour le champs personnalisé %2"
 msgid "%1 min"
 msgstr "%1 min"
 
-#: etc/initialdata:688
+#: NOT FOUND IN SOURCE
 msgid "%1 newest unowned tickets"
 msgstr "Les %1 derniers tickets sans propriétaire"
 
@@ -347,8 +347,8 @@ msgid "%1's dashboards"
 msgstr "Tableaux de bord de %1"
 
 #: share/html/Search/Elements/SearchPrivacy:54 share/html/Search/Elements/SelectSearchObject:65 share/html/Search/Elements/SelectSearchesForObjects:59
-#. ($object->Name)
 #. ($Object->Name)
+#. ($object->Name)
 msgid "%1's saved searches"
 msgstr "Recherches sauvées de %1"
 
@@ -520,7 +520,7 @@ msgstr "<%$field%>"
 msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
 msgstr "<input type=\"submit\" class=\"button\" value=\"Créer un ticket dans\" />&nbsp;%1"
 
-#: docs/design_docs/string-extraction-guide.txt:54 lib/RT/StyleGuide.pod:779
+#: lib/RT/StyleGuide.pod:779
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"submit\" value=\"Créer un ticket dans\">&nbsp;%1"
@@ -529,7 +529,7 @@ msgstr "<input type=\"submit\" value=\"Créer un ticket dans\">&nbsp;%1"
 msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
 msgstr "<p>Tous les flux iCal contiennent un code secret qui vous autorise à y accéder. Si une des URLs de vos flux iCal ont a été révélé à des personnes non souhaitées, vous pouvez obtenir un nouveau code, <b> ceci rendra inaccessibles tous les flux iCal existants</b> ci-dessous.</p>"
 
-#: etc/initialdata:187
+#: NOT FOUND IN SOURCE
 msgid "A blank template"
 msgstr "Un modèle vide"
 
@@ -668,11 +668,11 @@ msgstr "Adresse2"
 msgid "Admin Cc"
 msgstr "Admin Cc"
 
-#: etc/initialdata:264
+#: NOT FOUND IN SOURCE
 msgid "Admin Comment"
 msgstr "Commentaire Admin"
 
-#: etc/initialdata:243
+#: NOT FOUND IN SOURCE
 msgid "Admin Correspondence"
 msgstr "Correspondance Admin "
 
@@ -736,7 +736,7 @@ msgstr "Avancé"
 msgid "Aggregator"
 msgstr "Aggrégateur"
 
-#: etc/initialdata:332
+#: NOT FOUND IN SOURCE
 msgid "All Approvals Passed"
 msgstr "Toutes les approbations obtenues"
 
@@ -785,11 +785,11 @@ msgstr "Approbation #%1 : Notes non enregistrées à cause d'une erreur systèm
 msgid "Approval #%1: Notes recorded"
 msgstr "Approbation #%1 : Notes enregistrées"
 
-#: etc/initialdata:320
+#: NOT FOUND IN SOURCE
 msgid "Approval Passed"
 msgstr "Approbations obtenues"
 
-#: etc/initialdata:343
+#: NOT FOUND IN SOURCE
 msgid "Approval Rejected"
 msgstr "Approbations refusées"
 
@@ -797,8 +797,7 @@ msgstr "Approbations refusées"
 msgid "Approve"
 msgstr "Approuver"
 
-#: etc/initialdata:590 etc/initialdata:592
-#. (# loc	    $note)
+#: NOT FOUND IN SOURCE
 msgid "Approver's notes: %1"
 msgstr "Notes de l'approbateur : %1"
 
@@ -871,11 +870,11 @@ msgstr "Aoû"
 msgid "August"
 msgstr "Août"
 
-#: etc/initialdata:190
+#: NOT FOUND IN SOURCE
 msgid "Autoreply"
 msgstr "RéponseAuto"
 
-#: etc/initialdata:27
+#: NOT FOUND IN SOURCE
 msgid "Autoreply To Requestors"
 msgstr "Réponse automatique aux demandeurs"
 
@@ -936,7 +935,7 @@ msgstr "Assurez-vous de sauvegarder vos modifications"
 msgid "Best Practical Solutions, LLC corporate logo"
 msgstr "Logo d'entreprise de Best Practical Solutions, LLC"
 
-#: etc/initialdata:186
+#: NOT FOUND IN SOURCE
 msgid "Blank"
 msgstr "Vide"
 
@@ -948,7 +947,7 @@ msgstr "Gras"
 msgid "Bookmark"
 msgstr ""
 
-#: etc/initialdata:701 etc/upgrade/3.7.82/content:3
+#: NOT FOUND IN SOURCE
 msgid "Bookmarked Tickets"
 msgstr "Tickets favoris"
 
@@ -1233,7 +1232,7 @@ msgstr "Adresse de réponse"
 msgid "CorrespondAddress"
 msgstr "Addresse de réponse"
 
-#: etc/initialdata:255
+#: NOT FOUND IN SOURCE
 msgid "Correspondence"
 msgstr "Courrier"
 
@@ -1467,8 +1466,8 @@ msgid "Couldn't load ticket '%1'"
 msgstr "Impossible de charger le ticket '%1'"
 
 #: share/html/Ticket/Forward.html:90 share/html/Ticket/GnuPG.html:75
-#. ($id)
 #. ($QuoteTransaction)
+#. ($id)
 msgid "Couldn't load transaction #%1"
 msgstr "Impossible de charger la transaction #%1"
 
@@ -1532,7 +1531,7 @@ msgstr "Pays"
 msgid "Create"
 msgstr "Ajouter"
 
-#: etc/initialdata:90
+#: NOT FOUND IN SOURCE
 msgid "Create Tickets"
 msgstr "Ajouter des tickets"
 
@@ -1590,7 +1589,7 @@ msgstr "Créer et modifier les tableaux de bord"
 msgid "Create dashboards for this group"
 msgstr "Créer des tableaux de bord pour ce groupe"
 
-#: etc/initialdata:92
+#: NOT FOUND IN SOURCE
 msgid "Create new tickets based on this scrip's template"
 msgstr "Ajouter de nouveaux tickets basés sur le modèle de ce scrip"
 
@@ -1907,7 +1906,7 @@ msgstr "Décembre"
 msgid "Decrypt"
 msgstr "Déchiffrer"
 
-#: etc/initialdata:191
+#: NOT FOUND IN SOURCE
 msgid "Default Autoresponse template"
 msgstr "Modèle de réponse automatique par défaut"
 
@@ -1919,15 +1918,15 @@ msgstr "File par défaut"
 msgid "Default Requestor"
 msgstr "Demandeur par défaut"
 
-#: etc/initialdata:265
+#: NOT FOUND IN SOURCE
 msgid "Default admin comment template"
 msgstr "Modèle de commentaire administrateur par défaut"
 
-#: etc/initialdata:244
+#: NOT FOUND IN SOURCE
 msgid "Default admin correspondence template"
 msgstr "Modèle de courrier administrateur par défaut"
 
-#: etc/initialdata:256
+#: NOT FOUND IN SOURCE
 msgid "Default correspondence template"
 msgstr "Modèle de courrier par défaut"
 
@@ -1935,7 +1934,7 @@ msgstr "Modèle de courrier par défaut"
 msgid "Default queue"
 msgstr "File par défaut"
 
-#: etc/initialdata:222
+#: NOT FOUND IN SOURCE
 msgid "Default transaction template"
 msgstr "Modèle de transaction par défaut"
 
@@ -2189,7 +2188,7 @@ msgstr "ERREUR: %1"
 msgid "Easy updating of your open tickets"
 msgstr "Mise à jour facile de vos tickets ouverts"
 
-#: share/html/Elements/Dashboards:50 share/html/Elements/Quicksearch:50 share/html/Elements/ShowSearch:51 share/html/index.html:132
+#: share/html/Elements/Dashboards:50 share/html/Elements/Quicksearch:50 share/html/Elements/ShowSearch:51 share/html/index.html:134
 msgid "Edit"
 msgstr "Modifier"
 
@@ -2293,7 +2292,7 @@ msgstr "Courriel"
 msgid "Email Configuration"
 msgstr "Configuration de l'envoi de courriels"
 
-#: etc/initialdata:423 etc/upgrade/3.7.85/content:4
+#: NOT FOUND IN SOURCE
 msgid "Email Digest"
 msgstr "Compilation de courriels"
 
@@ -2305,7 +2304,7 @@ msgstr "Adresse de courriel utilisée"
 msgid "Email delivery"
 msgstr "Envoi des courriels"
 
-#: etc/initialdata:424 etc/upgrade/3.7.85/content:5
+#: NOT FOUND IN SOURCE
 msgid "Email template for periodic notification digests"
 msgstr "Modèle de courriel pour les envois périodiques (compilation) des notifications"
 
@@ -2399,7 +2398,7 @@ msgstr "Saisir au plus %1 valeurs"
 msgid "Enter up to %1 values with autocompletion"
 msgstr "Saisir jusqu'à %1 valeurs avec complétion automatique"
 
-#: sbin/rt-email-digest:103 share/html/Elements/Login:78 share/html/Install/Elements/Errors:49 share/html/SelfService/Error.html:48 share/html/SelfService/Error.html:49
+#: sbin/rt-email-digest:103 sbin/rt-send-digest:80 share/html/Elements/Login:78 share/html/Install/Elements/Errors:49 share/html/SelfService/Error.html:48 share/html/SelfService/Error.html:49
 msgid "Error"
 msgstr "Erreur"
 
@@ -2419,23 +2418,23 @@ msgstr "Erreur de paramètres pour Ticket->AddWatcher"
 msgid "Error in parameters to Ticket->DeleteWatcher"
 msgstr "Erreur dans les paramètres de Ticket->DeleteWatcher"
 
-#: etc/initialdata:371 etc/upgrade/3.7.10/content:13
+#: NOT FOUND IN SOURCE
 msgid "Error to RT owner: public key"
 msgstr "Erreur au propriétaire RT: clefs publique"
 
-#: etc/initialdata:433 etc/upgrade/3.7.87/content:4
+#: NOT FOUND IN SOURCE
 msgid "Error: Missing dashboard"
 msgstr "Erreur: tableau de bord manquant"
 
-#: etc/initialdata:396 etc/upgrade/3.7.10/content:38
+#: NOT FOUND IN SOURCE
 msgid "Error: bad GnuPG data"
 msgstr "Erreur: mauvaises données GnuPG"
 
-#: etc/initialdata:384 etc/upgrade/3.7.10/content:26
+#: NOT FOUND IN SOURCE
 msgid "Error: no private key"
 msgstr "Erreur: pas de clefs privée"
 
-#: etc/initialdata:362 etc/upgrade/3.7.10/content:4
+#: NOT FOUND IN SOURCE
 msgid "Error: public key"
 msgstr "Erreur: clefs publique"
 
@@ -2475,11 +2474,11 @@ msgstr "StatutÉtendu"
 msgid "Extra info"
 msgstr "Info supplémentaire"
 
-#: etc/initialdata:97
+#: NOT FOUND IN SOURCE
 msgid "Extract Subject Tag"
 msgstr "Extraire la marque de sujet"
 
-#: etc/initialdata:98
+#: NOT FOUND IN SOURCE
 msgid "Extract tags from a Transaction's subject and add them to the Ticket's subject."
 msgstr "Extraire la marque du sujet d'une transaction et l'ajouter au sujet tu ticket."
 
@@ -2525,11 +2524,11 @@ msgstr "Impossible de charger le module %1. (%2)"
 msgid "Failed to load object for %1"
 msgstr "Impossible de charger l'objet pour %1"
 
-#: sbin/rt-email-digest:166
+#: sbin/rt-email-digest:166 sbin/rt-send-digest:143
 msgid "Failed to load template"
 msgstr "Impossible de charger le modèle"
 
-#: sbin/rt-email-digest:174
+#: sbin/rt-email-digest:174 sbin/rt-send-digest:151
 msgid "Failed to parse template"
 msgstr "Impossible d'analyser le modèle"
 
@@ -2613,11 +2612,11 @@ msgstr "Terminer"
 msgid "First"
 msgstr "Premier"
 
-#: docs/design_docs/string-extraction-guide.txt:33 lib/RT/StyleGuide.pod:758
+#: lib/RT/StyleGuide.pod:758
 msgid "Foo Bar Baz"
 msgstr "Foo Bar Baz"
 
-#: docs/design_docs/string-extraction-guide.txt:24 lib/RT/StyleGuide.pod:749
+#: lib/RT/StyleGuide.pod:749
 msgid "Foo!"
 msgstr "Foo ! "
 
@@ -2629,7 +2628,7 @@ msgstr "Forcer la modification"
 msgid "Format"
 msgstr "Format"
 
-#: etc/initialdata:354 etc/upgrade/3.7.15/content:4 share/html/Ticket/Elements/ShowTransaction:208
+#: share/html/Ticket/Elements/ShowTransaction:208
 msgid "Forward"
 msgstr "Suivi"
 
@@ -2829,7 +2828,7 @@ msgstr "Cette utilisateur appartient aux groupes"
 msgid "HasMember"
 msgstr "ÀCommeMembre"
 
-#: etc/initialdata:355 etc/upgrade/3.7.15/content:5
+#: NOT FOUND IN SOURCE
 msgid "Heading of a forwarded message"
 msgstr "En-tête d'un message Transféré"
 
@@ -2837,7 +2836,7 @@ msgstr "En-tête d'un message Transféré"
 msgid "Hello!"
 msgstr "Bonjour !"
 
-#: docs/design_docs/string-extraction-guide.txt:40 lib/RT/StyleGuide.pod:765
+#: lib/RT/StyleGuide.pod:765
 #. ($name)
 msgid "Hello, %1"
 msgstr "Bonjour, %1"
@@ -2889,7 +2888,7 @@ msgstr "Identifiant"
 msgid "Identity"
 msgstr "Identité"
 
-#: etc/initialdata:515
+#: NOT FOUND IN SOURCE
 msgid "If an approval is rejected, reject the original and delete pending approvals"
 msgstr "Si une approbation est refusée, rejette l'original et supprime les approbations en attente"
 
@@ -2913,7 +2912,7 @@ msgstr "Si vous avez déjà un serveur et une base de données RT fonctionnelle,
 msgid "If you've change the Port that RT runs on, you'll need to restart the server in order to log in."
 msgstr "Si vous avez changez le port sur lequel RT est lancé, vous devez redémarrer le serveur pour pouvoir vous connecter."
 
-#: share/html/Admin/Queues/People.html:130 share/html/Ticket/Modify.html:65 share/html/Ticket/ModifyAll.html:131 share/html/Ticket/ModifyPeople.html:63
+#: share/html/Admin/Queues/People.html:130 share/html/Ticket/Modify.html:65 share/html/Ticket/ModifyAll.html:132 share/html/Ticket/ModifyPeople.html:63
 msgid "If you've updated anything above, be sure to"
 msgstr "Si vous avez fait une modification, assurez vous de"
 
@@ -2954,27 +2953,27 @@ msgstr "Inclure la page"
 msgid "Individual messages"
 msgstr "Messages individuels"
 
-#: etc/initialdata:373 etc/upgrade/3.7.10/content:15
+#: NOT FOUND IN SOURCE
 msgid "Inform RT owner that user(s) have problems with public keys"
 msgstr "Informer le propriétaire RT que les utilisateurs ont un problème avec les clefs publiques"
 
-#: etc/initialdata:435 etc/upgrade/3.7.87/content:6
+#: NOT FOUND IN SOURCE
 msgid "Inform user that a dashboard he subscribed to is missing"
 msgstr "Informer l'utilisateur que le tableau de bord souscrit est manquant"
 
-#: etc/initialdata:398 etc/upgrade/3.7.10/content:40
+#: NOT FOUND IN SOURCE
 msgid "Inform user that a message he sent has invalid GnuPG data"
 msgstr "Informer l'utilisateur qu'un message qu'il a envoyé contient des données GnuPG invalides"
 
-#: etc/initialdata:364 etc/upgrade/3.7.10/content:6
+#: NOT FOUND IN SOURCE
 msgid "Inform user that he has problems with public key and couldn't recieve encrypted content"
 msgstr "Informer un utilisateur qu'il a des problèmes avec sa clefs publique et qu'il ne peut recevoir de documents chiffrés"
 
-#: etc/initialdata:410
+#: NOT FOUND IN SOURCE
 msgid "Inform user that his password has been reset"
 msgstr "Informer l'utilisateur que sont mot de passe a été réinitialisé"
 
-#: etc/initialdata:386 etc/upgrade/3.7.10/content:28
+#: NOT FOUND IN SOURCE
 msgid "Inform user that we received an encrypted email and we have no private keys to decrypt"
 msgstr "Informer l'utilisateur qu'il a reçu un message chiffré et que nous n'avons pas de clefs privé pour déchiffrer"
 
@@ -3320,7 +3319,7 @@ msgstr "Connecté en tant que %1"
 msgid "Logged out"
 msgstr "Déconnecté"
 
-#: docs/design_docs/string-extraction-guide.txt:71 lib/RT/StyleGuide.pod:789 share/html/Elements/Login:102 share/html/Elements/Login:70 share/html/Elements/Login:86
+#: lib/RT/StyleGuide.pod:789 share/html/Elements/Login:102 share/html/Elements/Login:70 share/html/Elements/Login:86
 msgid "Login"
 msgstr "Connexion"
 
@@ -3416,7 +3415,7 @@ msgstr "Mar"
 msgid "March"
 msgstr "Mars"
 
-#: share/html/Ticket/Display.html:168
+#: share/html/Ticket/Display.html:170
 msgid "Marked all messages as seen"
 msgstr "Marquer tous les messages comme lus"
 
@@ -3531,7 +3530,7 @@ msgstr "Largeur des boîtes de dialogue"
 msgid "Message could not be recorded"
 msgstr "Le message ne peut être sauvegardé"
 
-#: sbin/rt-email-digest:291
+#: sbin/rt-email-digest:291 sbin/rt-send-digest:268
 msgid "Message for user"
 msgstr "Message pour l'utilisateur"
 
@@ -3906,7 +3905,7 @@ msgstr "Nouveaux liens"
 msgid "New Password"
 msgstr "Nouveau mot de passe"
 
-#: etc/initialdata:301
+#: NOT FOUND IN SOURCE
 msgid "New Pending Approval"
 msgstr "Nouvelles approbations en attente"
 
@@ -4242,71 +4241,71 @@ msgstr "Notes"
 msgid "Notification could not be sent"
 msgstr "Impossible d'envoyer la notification"
 
-#: etc/initialdata:56
+#: NOT FOUND IN SOURCE
 msgid "Notify AdminCcs"
 msgstr "Avertir les AdminCCs"
 
-#: etc/initialdata:52
+#: NOT FOUND IN SOURCE
 msgid "Notify AdminCcs as Comment"
 msgstr "Avertir les AdminCCs par un commentaire"
 
-#: etc/initialdata:48 etc/upgrade/3.1.17/content:6
+#: NOT FOUND IN SOURCE
 msgid "Notify Ccs"
 msgstr "Avertir les Ccs"
 
-#: etc/initialdata:44 etc/upgrade/3.1.17/content:2
+#: NOT FOUND IN SOURCE
 msgid "Notify Ccs as Comment"
 msgstr "Avertir les Ccs par un commentaire"
 
-#: etc/initialdata:83
+#: NOT FOUND IN SOURCE
 msgid "Notify Other Recipients"
 msgstr "Avertir les autres destinataires"
 
-#: etc/initialdata:79
+#: NOT FOUND IN SOURCE
 msgid "Notify Other Recipients as Comment"
 msgstr "Avertir les autres destinataires par un commentaire"
 
-#: etc/initialdata:40
+#: NOT FOUND IN SOURCE
 msgid "Notify Owner"
 msgstr "Avertir l'intervenant"
 
-#: etc/initialdata:36
+#: NOT FOUND IN SOURCE
 msgid "Notify Owner as Comment"
 msgstr "Avertir l'intervenant par un commentaire"
 
-#: etc/initialdata:345
+#: NOT FOUND IN SOURCE
 msgid "Notify Owner of their rejected ticket"
 msgstr "Avertir l'intervenant du rejet de son ticket"
 
-#: etc/initialdata:334
+#: NOT FOUND IN SOURCE
 msgid "Notify Owner of their ticket has been approved by all approvers"
 msgstr "Avertir l'intervenant de l'approbation de son ticket par tous les approbateurs"
 
-#: etc/initialdata:322
+#: NOT FOUND IN SOURCE
 msgid "Notify Owner of their ticket has been approved by some approver"
 msgstr "Avertir l'intervenant de l'approbation de son ticket par un des approbateurs"
 
-#: etc/initialdata:303
+#: NOT FOUND IN SOURCE
 msgid "Notify Owners and AdminCcs of new items pending their approval"
 msgstr "Avertir les intervenants et les AdminCCs de nouveaux éléments attendant leur approbation"
 
-#: etc/initialdata:32
+#: NOT FOUND IN SOURCE
 msgid "Notify Requestors"
 msgstr "Avertir les demandeurs"
 
-#: etc/initialdata:66
+#: NOT FOUND IN SOURCE
 msgid "Notify Requestors and Ccs"
 msgstr "Avertir les demandeurs et les Ccs"
 
-#: etc/initialdata:61
+#: NOT FOUND IN SOURCE
 msgid "Notify Requestors and Ccs as Comment"
 msgstr "Avertir les demandeurs et les CC par un commentaire"
 
-#: etc/initialdata:75
+#: NOT FOUND IN SOURCE
 msgid "Notify Requestors, Ccs and AdminCcs"
 msgstr "Avertir les demandeurs, CCs et AdminCCs"
 
-#: etc/initialdata:71
+#: NOT FOUND IN SOURCE
 msgid "Notify Requestors, Ccs and AdminCcs as Comment"
 msgstr "Avertir les demandeurs, CCs et AdminCCs par un commentaire"
 
@@ -4381,47 +4380,47 @@ msgstr "Téléchargement hors ligne"
 msgid "On %1, %2 wrote:"
 msgstr "Le %1, %2 a écrit :"
 
-#: etc/initialdata:171 etc/upgrade/3.7.1/content:2
+#: NOT FOUND IN SOURCE
 msgid "On Close"
 msgstr "Lors de la fermeture"
 
-#: etc/initialdata:121
+#: NOT FOUND IN SOURCE
 msgid "On Comment"
 msgstr "Lors d'un commentaire"
 
-#: etc/initialdata:114
+#: NOT FOUND IN SOURCE
 msgid "On Correspond"
 msgstr "Lors d'un courrier"
 
-#: etc/initialdata:103
+#: NOT FOUND IN SOURCE
 msgid "On Create"
 msgstr "Lors d'une création"
 
-#: etc/initialdata:142
+#: NOT FOUND IN SOURCE
 msgid "On Owner Change"
 msgstr "Lors d'un changement d'intervenant"
 
-#: etc/initialdata:135 etc/upgrade/3.1.17/content:15
+#: NOT FOUND IN SOURCE
 msgid "On Priority Change"
 msgstr "Lors d'un changement de priorité"
 
-#: etc/initialdata:150
+#: NOT FOUND IN SOURCE
 msgid "On Queue Change"
 msgstr "Lors d'un changement de file"
 
-#: etc/initialdata:176 etc/upgrade/3.7.1/content:7
+#: NOT FOUND IN SOURCE
 msgid "On Reopen"
 msgstr "Lors de la réouverture"
 
-#: etc/initialdata:156
+#: NOT FOUND IN SOURCE
 msgid "On Resolve"
 msgstr "Lors de la résolution/clôture"
 
-#: etc/initialdata:127
+#: NOT FOUND IN SOURCE
 msgid "On Status Change"
 msgstr "Lors d'un changement de statut"
 
-#: etc/initialdata:108
+#: NOT FOUND IN SOURCE
 msgid "On Transaction"
 msgstr "Lors d'une transaction"
 
@@ -4447,7 +4446,7 @@ msgstr "Ne montrer que les approbations pour les demandes créées avant %1"
 msgid "Only show custom fields for:"
 msgstr "Ne montrer que les champs personnalisés pour :"
 
-#: etc/initialdata:94
+#: NOT FOUND IN SOURCE
 msgid "Open Tickets"
 msgstr "Tickets ouverts"
 
@@ -4463,7 +4462,7 @@ msgstr "Ouvrir"
 msgid "Open tickets"
 msgstr "Tickets ouverts"
 
-#: etc/initialdata:95
+#: NOT FOUND IN SOURCE
 msgid "Open tickets on correspondence"
 msgstr "Ouvrir les tickets lors d'une correspondance"
 
@@ -4593,7 +4592,7 @@ msgstr "Mot de passe : %1"
 msgid "Password: Permission Denied"
 msgstr "Mot de passe : non autorisé"
 
-#: etc/initialdata:408
+#: NOT FOUND IN SOURCE
 msgid "PasswordChange"
 msgstr "ChangementDeMotDePasse"
 
@@ -4613,7 +4612,7 @@ msgstr "Chemin pour sendmail"
 msgid "People"
 msgstr "Personnes"
 
-#: etc/initialdata:88
+#: NOT FOUND IN SOURCE
 msgid "Perform a user-defined action"
 msgstr "Réaliser une action définie par l'utilisateur"
 
@@ -4715,11 +4714,11 @@ msgstr "Précédent"
 msgid "Principal %1 not found."
 msgstr "Personne/groupe %1 non trouvé(e)."
 
-#: sbin/rt-email-digest:96
+#: sbin/rt-email-digest:96 sbin/rt-send-digest:73
 msgid "Print the resulting digest messages to STDOUT; don't mail them. Do not mark them as sent"
 msgstr "Afficher la compilation des messages sur la sortie standard (STDOUT); ne pas les envoyer. Ne pas les marquer comme \"envoyés\""
 
-#: sbin/rt-email-digest:98
+#: sbin/rt-email-digest:98 sbin/rt-send-digest:75
 msgid "Print this message"
 msgstr "Imprimer ce message"
 
@@ -4756,7 +4755,7 @@ msgstr "Utilisateurs privilégiés"
 msgid "Processing without transaction, some conditions and actions may fail. Consider using --transaction argument"
 msgstr "Exécution sans transactions, certaines conditions ou actions risquent d'échouer. Vous devriez essayer d'utiliser l'option \"--transaction\""
 
-#: lib/RT/Handle.pm:614
+#: lib/RT/Handle.pm:648
 msgid "Pseudogroup for internal use"
 msgstr "Pseudo groupe pour usage interne"
 
@@ -4803,11 +4802,11 @@ msgstr "File déjà créée"
 msgid "Queue could not be created"
 msgstr "Impossible de créer la file"
 
-#: share/html/Ticket/Create.html:326 share/html/index.html:91 t/clicky.t:24 t/ticket/link_search.t:17
+#: share/html/Ticket/Create.html:326 share/html/index.html:93
 msgid "Queue could not be loaded."
 msgstr "File ne pouvant être chargée."
 
-#: docs/design_docs/string-extraction-guide.txt:83 lib/RT/Queue_Overlay.pm:368 lib/RT/StyleGuide.pod:801
+#: lib/RT/Queue_Overlay.pm:368 lib/RT/StyleGuide.pod:801
 msgid "Queue created"
 msgstr "File créée"
 
@@ -4863,7 +4862,7 @@ msgstr "Création rapide de ticket"
 msgid "RSS"
 msgstr "RSS"
 
-#: docs/design_docs/string-extraction-guide.txt:70 lib/RT/StyleGuide.pod:788
+#: lib/RT/StyleGuide.pod:788
 #. ($RT::VERSION, RT->Config->Get('rtname'))
 msgid "RT %1 for %2"
 msgstr "RT %1 pour %2"
@@ -5143,7 +5142,7 @@ msgstr "Résoudre"
 msgid "Resolve ticket #%1 (%2)"
 msgstr "Résoudre le ticket n°%1 (%2)"
 
-#: etc/initialdata:292 lib/RT/Graph/Tickets.pm:159 lib/RT/Ticket_Overlay.pm:908 lib/RT/Tickets_Overlay.pm:122 share/html/Elements/RT__Ticket/ColumnMap:211 share/html/Elements/RT__Ticket/ColumnMap:236 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:100
+#: lib/RT/Graph/Tickets.pm:159 lib/RT/Ticket_Overlay.pm:908 lib/RT/Tickets_Overlay.pm:122 share/html/Elements/RT__Ticket/ColumnMap:211 share/html/Elements/RT__Ticket/ColumnMap:236 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:100
 msgid "Resolved"
 msgstr "Résolu"
 
@@ -5248,7 +5247,7 @@ msgstr "Sam"
 msgid "Save"
 msgstr "Sauver"
 
-#: share/html/Admin/CustomFields/Modify.html:126 share/html/Admin/Groups/Modify.html:94 share/html/Admin/Queues/Modify.html:127 share/html/Admin/Queues/People.html:130 share/html/Admin/Users/GnuPG.html:75 share/html/Admin/Users/Modify.html:243 share/html/Dashboards/Modify.html:75 share/html/Dashboards/Subscription.html:168 share/html/Prefs/Other.html:78 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:71 share/html/Prefs/SearchOptions.html:65 share/html/SelfService/Prefs.html:60 share/html/Ticket/Elements/PreviewScrips:94 share/html/Ticket/Modify.html:65 share/html/Ticket/ModifyAll.html:130 share/html/Ticket/ModifyDates.html:63 share/html/Ticket/ModifyLinks.html:65 share/html/Ticket/ModifyPeople.html:63 share/html/User/Groups/Modify.html:79
+#: share/html/Admin/CustomFields/Modify.html:126 share/html/Admin/Groups/Modify.html:94 share/html/Admin/Queues/Modify.html:127 share/html/Admin/Queues/People.html:130 share/html/Admin/Users/GnuPG.html:75 share/html/Admin/Users/Modify.html:243 share/html/Dashboards/Modify.html:75 share/html/Dashboards/Subscription.html:168 share/html/Prefs/Other.html:78 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:71 share/html/Prefs/SearchOptions.html:65 share/html/SelfService/Prefs.html:60 share/html/Ticket/Elements/PreviewScrips:94 share/html/Ticket/Modify.html:65 share/html/Ticket/ModifyAll.html:131 share/html/Ticket/ModifyDates.html:63 share/html/Ticket/ModifyLinks.html:65 share/html/Ticket/ModifyPeople.html:63 share/html/User/Groups/Modify.html:79
 msgid "Save Changes"
 msgstr "Enregistrer les modifications"
 
@@ -5275,8 +5274,8 @@ msgid "Saved searches"
 msgstr "Recherches sauvées"
 
 #: share/html/Admin/Global/Scrip.html:79 share/html/Admin/Queues/Scrip.html:86 share/html/Ticket/Elements/PreviewScrips:65
-#. ($id)
 #. ($scrip->id)
+#. ($id)
 msgid "Scrip #%1"
 msgstr "Scrip n°%1"
 
@@ -5493,19 +5492,19 @@ msgstr "Sélections modifiées. Merci de sauver vos modifications"
 msgid "Send email successfully"
 msgstr "Courriel envoyé avec succès"
 
-#: etc/initialdata:76
+#: NOT FOUND IN SOURCE
 msgid "Send mail to all watchers"
 msgstr "Envoyer un courrier à tous les observateurs"
 
-#: etc/initialdata:72
+#: NOT FOUND IN SOURCE
 msgid "Send mail to all watchers as a \"comment\""
 msgstr "Envoyer un mail de commentaire à tous les observateurs"
 
-#: etc/initialdata:67
+#: NOT FOUND IN SOURCE
 msgid "Send mail to requestors and Ccs"
 msgstr "Envoyer un courrier aux demandeurs et aux CCs"
 
-#: etc/initialdata:62
+#: NOT FOUND IN SOURCE
 msgid "Send mail to requestors and Ccs as a comment"
 msgstr "Envoyer un courrier aux demandeurs et aux CCs en tant que commentaire"
 
@@ -5517,31 +5516,31 @@ msgstr "Arguments sendmail"
 msgid "Sendmail bounce arguments"
 msgstr "Arguments de rejet (bounce) pour Sendmail"
 
-#: etc/initialdata:33
+#: NOT FOUND IN SOURCE
 msgid "Sends a message to the requestors"
 msgstr "Envoyer un courrier aux demandeurs"
 
-#: etc/initialdata:80 etc/initialdata:84
+#: NOT FOUND IN SOURCE
 msgid "Sends mail to explicitly listed Ccs and Bccs"
 msgstr "Envoyer un courrier aux CCs et Bccs explicitement indiqués"
 
-#: etc/initialdata:49 etc/upgrade/3.1.17/content:7
+#: NOT FOUND IN SOURCE
 msgid "Sends mail to the Ccs"
 msgstr "Envoyer un courriel en cc"
 
-#: etc/initialdata:45 etc/upgrade/3.1.17/content:3
+#: NOT FOUND IN SOURCE
 msgid "Sends mail to the Ccs as a comment"
 msgstr "Envoyer un courriel en cc pour commentaires"
 
-#: etc/initialdata:57
+#: NOT FOUND IN SOURCE
 msgid "Sends mail to the administrative Ccs"
 msgstr "Envoyer un mail aux AdminCCs"
 
-#: etc/initialdata:53
+#: NOT FOUND IN SOURCE
 msgid "Sends mail to the administrative Ccs as a comment"
 msgstr "Envoyer un mail aux AdminCCs en tant que commentaire"
 
-#: etc/initialdata:37 etc/initialdata:41
+#: NOT FOUND IN SOURCE
 msgid "Sends mail to the owner"
 msgstr "Envoyer un courrier à l'intervenant"
 
@@ -5694,7 +5693,7 @@ msgstr "Taille"
 msgid "Skip Menu"
 msgstr "Passer le menu"
 
-#: sbin/rt-email-digest:287
+#: sbin/rt-email-digest:287 sbin/rt-send-digest:264
 msgid "Skipping disabled user"
 msgstr "Sauter les utilisateurs désactivés"
 
@@ -5714,7 +5713,7 @@ msgstr "Trier"
 msgid "Sorting"
 msgstr "Tri"
 
-#: sbin/rt-email-digest:94
+#: sbin/rt-email-digest:94 sbin/rt-send-digest:71
 msgid "Specify whether this is a daily or weekly run."
 msgstr "Spécifie si le lancement et quotidien ou hebdomadaire."
 
@@ -5750,7 +5749,7 @@ msgstr "État"
 msgid "Status"
 msgstr "Statut"
 
-#: etc/initialdata:278
+#: NOT FOUND IN SOURCE
 msgid "Status Change"
 msgstr "Changement de statut"
 
@@ -5772,13 +5771,13 @@ msgid "StealTicket"
 msgstr "VolerTicket"
 
 #: share/html/Install/Basics.html:48 share/html/Install/DatabaseDetails.html:48 share/html/Install/DatabaseType.html:48 share/html/Install/Finish.html:48 share/html/Install/Global.html:48 share/html/Install/Initialize.html:48 share/html/Install/Sendmail.html:48
-#. (4, 7)
+#. (3, 7)
+#. (2, 7)
+#. (1, 7)
 #. (7, 7)
 #. (5, 7)
 #. (6, 7)
-#. (3, 7)
-#. (1, 7)
-#. (2, 7)
+#. (4, 7)
 msgid "Step %1 of %2: "
 msgstr "Étape %1 sur %2: "
 
@@ -5799,7 +5798,7 @@ msgstr "Sujet"
 msgid "Subject Tag"
 msgstr "Marque de sujet"
 
-#: docs/design_docs/string-extraction-guide.txt:89 lib/RT/StyleGuide.pod:807 lib/RT/Transaction_Overlay.pm:689
+#: lib/RT/StyleGuide.pod:807 lib/RT/Transaction_Overlay.pm:689
 #. ($self->Data)
 msgid "Subject changed to %1"
 msgstr "Sujet modifié en %1"
@@ -5901,15 +5900,15 @@ msgstr "Erreur système. Droit non accordé."
 msgid "System groups"
 msgstr "Groupes systèmes"
 
-#: lib/RT/Handle.pm:666
+#: lib/RT/Handle.pm:700
 msgid "SystemRolegroup for internal use"
 msgstr "SystemRolegroup à usage interne"
 
-#: t/api/currentuser.t:23
+#: NOT FOUND IN SOURCE
 msgid "TEST_STRING"
 msgstr "Chaîne_de_test"
 
-#: etc/initialdata:690 share/html/Search/Elements/EditFormat:69 share/html/Ticket/Elements/Tabs:197
+#: share/html/Search/Elements/EditFormat:69 share/html/Ticket/Elements/Tabs:197
 msgid "Take"
 msgstr "Prendre"
 
@@ -6212,8 +6211,8 @@ msgid "Ticket %1 created in queue '%2'"
 msgstr "Ticket %1 créé dans la file '%2'"
 
 #: share/html/Search/Bulk.html:375 share/html/Tools/MyDay.html:100 share/html/Tools/MyDay.html:91 share/html/Tools/MyDay.html:94
-#. ($Ticket->Id, $_)
 #. ($id, $msg)
+#. ($Ticket->Id, $_)
 msgid "Ticket %1: %2"
 msgstr "Ticket %1 :  %2"
 
@@ -6226,7 +6225,7 @@ msgstr "Champs personnalisés du ticket"
 msgid "Ticket History # %1 %2"
 msgstr "Historique du ticket n°%1 %2"
 
-#: etc/initialdata:293
+#: NOT FOUND IN SOURCE
 msgid "Ticket Resolved"
 msgstr "Ticket résolu"
 
@@ -6262,7 +6261,7 @@ msgstr "Affichage des tickets"
 msgid "Ticket metadata"
 msgstr "Méta-données du ticket"
 
-#: etc/initialdata:279
+#: NOT FOUND IN SOURCE
 msgid "Ticket status changed"
 msgstr "Statut de ticket modifié"
 
@@ -6366,7 +6365,7 @@ msgstr "Outils"
 msgid "Total"
 msgstr "Total"
 
-#: etc/initialdata:221
+#: NOT FOUND IN SOURCE
 msgid "Transaction"
 msgstr "Transaction"
 
@@ -6591,7 +6590,7 @@ msgstr "Télécharger au plus %1 images"
 msgid "Upload your changes"
 msgstr "Envoyer vos changements"
 
-#: sbin/rt-email-digest:88
+#: sbin/rt-email-digest:88 sbin/rt-send-digest:65
 msgid "Usage: "
 msgstr "Utilisation: "
 
@@ -6630,7 +6629,7 @@ msgstr "L'utilisateur %1 ne peut être trouvé."
 msgid "User (created - expire)"
 msgstr "Utilisateur (créé - expire)"
 
-#: etc/initialdata:164 etc/initialdata:87
+#: NOT FOUND IN SOURCE
 msgid "User Defined"
 msgstr "Défini par l'utilisateur"
 
@@ -6793,23 +6792,23 @@ msgstr "Lorsque RT ne peut gérer un courriel, où doit-il être envoyé?"
 msgid "When RT sends an email it sets the From: and Reply-To: headers so users can add to the conversation by just hitting Reply in their mail client.  It uses different addresses for Replies and Comments.  These can be changed for each of your queues.  These addresses will need to be configured to use the <tt>rt-mailgate</tt> program."
 msgstr "Quand RT envoi un email, il positionne le champs expéditeur et le champs Reply-To afin que les utilisateurs puissent participer à la conversation en cliquant simplement sur Répondre dans leur client de courriel. Une adresse différente est utilisée pour les réponses et les commentaires. Celles-ci peuvent-être définies pour chaque file. Ces adresses devront être configurées pour utiliser le programme <tt>rt-mailgate</tt>."
 
-#: etc/initialdata:607
+#: NOT FOUND IN SOURCE
 msgid "When a ticket has been approved by all approvers, add correspondence to the original ticket"
 msgstr "Quand un ticket a été approuvé par tous les approbateurs, ajoute le courrier au ticket source"
 
-#: etc/initialdata:571
+#: NOT FOUND IN SOURCE
 msgid "When a ticket has been approved by any approver, add correspondence to the original ticket"
 msgstr "Quand un ticket a été approuvé par au moins un approbateur, ajoute le courrier au ticket source "
 
-#: etc/initialdata:104
+#: NOT FOUND IN SOURCE
 msgid "When a ticket is created"
 msgstr "Quand un ticket est créé"
 
-#: etc/initialdata:504
+#: NOT FOUND IN SOURCE
 msgid "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"
 msgstr "Quand un ticket d'approbation est créé, informer l'intervenant et l'AdminCC de l'élément attendant leur approbation"
 
-#: etc/initialdata:109
+#: NOT FOUND IN SOURCE
 msgid "When anything happens"
 msgstr "Quand quelque chose arrive"
 
@@ -6817,43 +6816,43 @@ msgstr "Quand quelque chose arrive"
 msgid "When you click on 'Check Database Connectivity' there may be a small delay while RT tries to connect to your database"
 msgstr "Lorsque vous cliquez sur 'Tester la connexion à la base de données' il peut y avoir un peu d'attente le temps que RT se connecte à votre base de données."
 
-#: etc/initialdata:172 etc/upgrade/3.7.1/content:3
+#: NOT FOUND IN SOURCE
 msgid "Whenever a ticket is closed"
 msgstr "Quand un ticket et fermé(désactivé)"
 
-#: etc/initialdata:177 etc/upgrade/3.7.1/content:8
+#: NOT FOUND IN SOURCE
 msgid "Whenever a ticket is reopened"
 msgstr "Quand un ticket est ré-ouvert(activé)"
 
-#: etc/initialdata:157
+#: NOT FOUND IN SOURCE
 msgid "Whenever a ticket is resolved"
 msgstr "Lorsqu'un ticket quelconque est résolu/clos"
 
-#: etc/initialdata:143
+#: NOT FOUND IN SOURCE
 msgid "Whenever a ticket's owner changes"
 msgstr "Lorsqu'un ticket quelconque change d'intervenant"
 
-#: etc/initialdata:136 etc/upgrade/3.1.17/content:16
+#: NOT FOUND IN SOURCE
 msgid "Whenever a ticket's priority changes"
 msgstr "Lorsqu'un ticket change de priorité"
 
-#: etc/initialdata:151
+#: NOT FOUND IN SOURCE
 msgid "Whenever a ticket's queue changes"
 msgstr "Lorsqu'un ticket quelconque change de file"
 
-#: etc/initialdata:128
+#: NOT FOUND IN SOURCE
 msgid "Whenever a ticket's status changes"
 msgstr "Lorsqu'un ticket quelconque change de statut"
 
-#: etc/initialdata:165
+#: NOT FOUND IN SOURCE
 msgid "Whenever a user-defined condition occurs"
 msgstr "Lorsqu'une condition définie par l'utilisateur est satisfaite"
 
-#: etc/initialdata:122
+#: NOT FOUND IN SOURCE
 msgid "Whenever comments come in"
 msgstr "Lorsque un commentaire arrive"
 
-#: etc/initialdata:115
+#: NOT FOUND IN SOURCE
 msgid "Whenever correspondence comes in"
 msgstr "Lorsque un courrier arrive"
 
@@ -6914,7 +6913,7 @@ msgstr "Vous pouvez seulement réaffecter vos ticket ou ceux qui ne sont pas aff
 msgid "You can only take tickets that are unowned"
 msgstr "Vous pouvez uniquement prendre des tickets sans propriétaire"
 
-#: docs/design_docs/string-extraction-guide.txt:47 lib/RT/StyleGuide.pod:772
+#: lib/RT/StyleGuide.pod:772
 #. ($num, $queue)
 msgid "You found %1 tickets in queue %2"
 msgstr "%1 tickets trouvés dans la file %2"
@@ -6951,16 +6950,15 @@ msgstr "Vous voyez cet écran car vous avez démarré RT sans base de données f
 msgid "You're welcome to login again"
 msgstr "Vous êtes invité à vous identifier à nouveau"
 
-#: etc/initialdata:588 etc/initialdata:590
-#. (# loc	    $self->TransactionObj->CreatorObj->Name,)
+#: NOT FOUND IN SOURCE
 msgid "Your request has been approved by %1. Other approvals may still be pending."
 msgstr "Votre demande a été approuvée par %1. D'autres approbations sont peut être toujours en attente."
 
-#: etc/initialdata:626
+#: NOT FOUND IN SOURCE
 msgid "Your request has been approved."
 msgstr "Votre demande a été approuvée."
 
-#: etc/initialdata:531
+#: NOT FOUND IN SOURCE
 msgid "Your request was rejected."
 msgstr "Votre demande a été rejetée."
 
@@ -6993,7 +6991,7 @@ msgstr "autorise le chargement de recherches sauvées"
 msgid "as granted to %1"
 msgstr "comme accordé à %1"
 
-#: share/html/Elements/SelectDateRelation:57 t/api/currentuser.t:28
+#: share/html/Elements/SelectDateRelation:57
 msgid "before"
 msgstr "avant"
 
