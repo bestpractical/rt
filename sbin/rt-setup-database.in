@@ -181,16 +181,6 @@ sub action_create {
 
 sub action_drop {
     my %args = @_;
-    if ( $db_type eq 'Oracle' ) {
-        print <<END;
-
-To delete the tables and sequences of the RT $db_type database by running
-    \@etc/drop.$db_type
-through SQLPlus.
-
-END
-        exit(-1);
-    }
 
     print "Dropping $db_type database $db_name.\n";
     unless ( $args{'force'} ) {
