@@ -24,4 +24,4 @@ requires:
   Time::ParseDate: 0
   Tree::Simple: 0
   perl: 5.8.3
-version: 2.4.0rc1
+version: 2.4.0
