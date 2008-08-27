@@ -1,0 +1,39 @@
+This directory contain files required for the translation
+of RTFM interfaces.
+
+po/rtfm.pot is a template.
+
+To start a new translation, copy the template to po/<lang>.po
+where <lang> is your language, for example ru, pt, pt_BR
+or other.
+
+There are currently no translations to any language, so you 
+may encounter some problems.
+
+Some strings may be missing from the rtfm.pot file.
+Two possible reasons:
+
+1) Template is out of date. 
+
+You can regenerate file using sbin/extract-message-catalog script
+from RT 3.8.2 or newer tarball. If you're still on 3.8.1 you can
+fetch this script from the repository:
+
+    wget http://code.bestpractical.com/bps-public/rt/3.8/trunk/sbin/extract-message-catalog
+
+Change directory to where you unpacked RTFM's sources and run:
+    
+    perl extract-message-catalog
+
+This command will scan all files and update the files in the po
+dir.
+
+2) String is not in .po even after manual update using above
+   command. 
+
+This may happen if a developer forgot to use loc function or /l
+mason component. Usually it's easy to fix. Find the string in the
+source, wrap it into call to the function or the component. You can
+find examples of using these all over the code. Then update message
+catalogs using the directions above.
+

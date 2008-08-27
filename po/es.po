@@ -15,651 +15,969 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.2\n"
 
-#: html/RTFM/Elements/ListArticles:20 html/RTFM/Elements/NewestArticles:22 html/RTFM/Elements/UpdatedArticles:22
+#: html/RTFM/Elements/NewestArticles:52 html/RTFM/Elements/UpdatedArticles:52
 msgid "#"
 msgstr "#"
 
-#: lib/RT/FM/Article_Overlay.pm:976
-#. ($args{'Content'}, $cf->Name)
+#: NOT FOUND IN SOURCE
 msgid "%1 added as a value for %2"
 msgstr "%1 aÃ±adido como valor de %2"
 
-#: lib/RT/FM/Transaction_Overlay.pm:53
-#. ($self->Field , $self->OldContent, $self->NewContent)
+#: NOT FOUND IN SOURCE
 msgid "%1 changed from '%2' to '%3'"
 msgstr "%1 cambiado de '%2' a '%3'"
 
-#: lib/RT/FM/ArticleCFValue_Overlay.pm:82
-#. ($args{'Content'}, $cf->Name, $args{'Article'})
+#: NOT FOUND IN SOURCE
 msgid "%1 is an invalid value for custom field %2 for article %3"
 msgstr "%1 es un valor invÃ¡lido para un campo personalizado %2 para artÃ­culo %3a"
 
-#: html/RTFM/Article/Elements/ShowSearchCriteria:76
-#. ($field->Name)
+#: NOT FOUND IN SOURCE
 msgid "%1 matches"
 msgstr "%1 concuerda"
 
-#: html/RTFM/Elements/UpdatedArticles:19
+#: html/RTFM/Elements/UpdatedArticles:49
 #. ($rows)
 msgid "%1 most recently updated articles"
 msgstr "%1 artÃ­culos recientemente actualizados"
 
-#: html/RTFM/Elements/NewestArticles:19
+#: html/RTFM/Elements/NewestArticles:49
 #. ($rows)
 msgid "%1 newest articles"
 msgstr "%1 artÃ­culos nuevos"
 
-#: lib/RT/FM/Transaction_Overlay.pm:73
-#. ($cf->Name, $self->NewContent)
+#: NOT FOUND IN SOURCE
 msgid "%1 value '%2' added"
 msgstr "Valor %1 : '%2' agregado"
 
-#: lib/RT/FM/Transaction_Overlay.pm:69
-#. ($cf->Name, $self->OldContent, $self->NewContent)
+#: NOT FOUND IN SOURCE
 msgid "%1 value '%2' changed to '%3'"
 msgstr "Valor %1 : '%2' cambiado a '%3'"
 
-#: lib/RT/FM/Transaction_Overlay.pm:76
-#. ($cf->Name, $self->OldContent)
+#: NOT FOUND IN SOURCE
 msgid "%1 value '%2' deleted"
 msgstr "Valor %1 : '%2' eliminado"
 
-#: html/RTFM/Article/Elements/EditLinks:23
+#: html/RTFM/Article/Elements/SelectSavedSearches:56
+#. ($privacies{$privacy}->Name)
+msgid "%1's saved searches"
+msgstr ""
+
+#: html/RTFM/Topics.html:252
+#. ($Articles->Count)
+msgid "%quant(%1,article)"
+msgstr ""
+
+#: html/RTFM/Article/Edit.html:144 html/RTFM/Article/Edit.html:226
+#. ($Class)
+msgid "'%1' isn't a valid class identifier"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "(Check box to delete)"
 msgstr "(Marque la caja para borrar)"
 
-#: html/RTFM/Admin/Elements/EditCustomFieldValues:20
+#: html/RTFM/Article/Elements/EditLinks:53
+msgid "(Check boxes to delete)"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "(Delete)"
 msgstr "(Borrar)"
 
-#: html/RTFM/Elements/ListArticles:38 html/RTFM/Elements/NewestArticles:48 html/RTFM/Elements/UpdatedArticles:36 html/RTFM/Elements/UpdatedArticles:49
+#: html/RTFM/Elements/NewestArticles:67 html/RTFM/Elements/UpdatedArticles:68
 msgid "(no Summary)"
 msgstr "(sin Resumen)"
 
-#: html/RTFM/Elements/ListArticles:31 html/RTFM/Elements/NewestArticles:35
+#: html/Admin/RTFM/Elements/Topics:100 html/RTFM/Article/Elements/EditTopics:60 html/RTFM/Article/Elements/EditTopics:77 html/RTFM/Article/Elements/Preformatted:49 html/RTFM/Article/Elements/Preformatted:50 html/RTFM/Article/Elements/ShowSearchResults:80 html/RTFM/Elements/BeforeMessageBox:102 html/RTFM/Elements/BeforeMessageBox:119 html/RTFM/Elements/BeforeMessageBox:69 html/RTFM/Elements/BeforeMessageBox:81 html/RTFM/Elements/BeforeMessageBox:89 html/RTFM/Elements/NewestArticles:61 html/RTFM/Elements/ShowTopic:52 html/RTFM/Elements/UpdatedArticles:62 html/RTFM/Topics.html:136 html/RTFM/Topics.html:238 html/SelfService/Article/Display.html:49 html/SelfService/Article/Search.html:78 html/SelfService/Article/Search.html:86
 msgid "(no name)"
 msgstr "(sin nombre)"
 
-#: html/RTFM/Article/Create.html:81 html/RTFM/Article/Elements/EditCustomFields:54 html/RTFM/Article/Elements/SearchByCustomField:31
+#: html/RTFM/Article/Elements/SearchByCustomField:56
 msgid "(no value)"
 msgstr "(sin valor)"
 
-#: html/RTFM/Admin/Elements/EditCustomFieldValues:27
+#: NOT FOUND IN SOURCE
 msgid "(no values)"
 msgstr "(sin valores)"
 
-#: html/Callbacks/RTFM/Ticket/Update.html/BeforeMessageBox:37 html/Callbacks/RTFM/Ticket/Update.html/BeforeMessageBox:40
+#: NOT FOUND IN SOURCE
 msgid "(unnamed)"
 msgstr "(sin nombrar)"
 
-#: html/RTFM/Admin/Elements/AddCustomFieldValue:21
+#: html/RTFM/Elements/BeforeMessageBox:67
+msgid "-"
+msgstr ""
+
+#: html/Admin/RTFM/Elements/Topics:109
+msgid "<%$Action%> here"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "Add a value"
 msgstr "Agrega un valor"
 
-#: html/RTFM/Admin/Classes/CustomFields.html:19
+#: NOT FOUND IN SOURCE
 msgid "Admin/Class/CustomFields"
 msgstr "Admin/Clase/CamposPersonalizados"
 
-#: lib/RT/FM/Class_Overlay.pm:58
+#: lib/RT/FM/Class_Overlay.pm:92
 msgid "AdminClass"
 msgstr "ClaseAdmin"
 
-#: lib/RT/FM/CustomField_Overlay.pm:31
+#: NOT FOUND IN SOURCE
 msgid "AdminCustomField"
 msgstr "CampoAdminPersonalizado"
 
-#: lib/RT/FM/CustomField_Overlay.pm:30
+#: lib/RT/FM/Class_Overlay.pm:94
+msgid "AdminTopics"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "AdminValues"
 msgstr "ValoresAdmin"
 
-#: html/RTFM/Article/Elements/ShowSearchCriteria:24
+#: NOT FOUND IN SOURCE
 msgid "Advanced Search Criteria"
 msgstr "Criterio de BÃºsqueda Avanzada"
 
-#: html/RTFM/Admin/Classes/index.html:57
+#: html/RTFM/Article/Elements/ShowSearchCriteria:50 html/RTFM/Article/Elements/ShowSearchCriteria:52
+msgid "Advanced search"
+msgstr ""
+
+#: html/Admin/RTFM/Classes/index.html:83
 msgid "All Classes"
 msgstr "Todas las Clases"
 
-#: html/RTFM/Article/Delete.html:29
+#: html/Admin/RTFM/Classes/Modify.html:76
+msgid "All articles in this class are on dropdown on ticket reply page"
+msgstr ""
+
+#: html/RTFM/Topics.html:52
+msgid "All topics"
+msgstr ""
+
+#: html/RTFM/Article/Elements/ShowSearchCriteria:75
+msgid "Any field"
+msgstr ""
+
+#: html/Callbacks/RTFM/Admin/Elements/CustomFieldTabs/Default:58
+msgid "Applies to"
+msgstr ""
+
+#: html/RTFM/Article/Delete.html:59
 msgid "Are you sure you want to delete this article?"
 msgstr "EstÃ¡ seguro que deseas borrar este artÃ­culo?"
 
-#: html/RTFM/Article/Delete.html:69
+#: html/RTFM/Article/Delete.html:100
 #. ($ArticleObj->Id)
 msgid "Article #%1 deleted"
 msgstr "ArtÃ­culo #%1 borrado"
 
-#: html/RTFM/Article/Display.html:46
-#. ($article->Id, $article->Name)
+#: html/RTFM/Article/Display.html:87 html/SelfService/Article/Display.html:66
+#. ($article->Id, $article->Name || loc("(no name)"))
 msgid "Article #%1: %2"
 msgstr "ArtÃ­culo #%1: %2"
 
-#: lib/RT/FM/Article_Overlay.pm:280
+#: lib/RT/URI/fsck_com_rtfm.pm:206
+#. ($self->Object->id)
+msgid "Article %1"
+msgstr ""
+
+#: lib/RT/FM/Article_Overlay.pm:211
+#. ($self->id)
+msgid "Article %1 created"
+msgstr ""
+
+#: lib/RT/FM/Article_Overlay.pm:319
 msgid "Article Deleted"
 msgstr "ArtÃ­culo Borrado"
 
-#: lib/RT/FM/Transaction_Overlay.pm:80
+#: NOT FOUND IN SOURCE
 msgid "Article created"
 msgstr "ArtÃ­culo creado"
 
-#: html/RTFM/Article/Display.html:35 html/RTFM/Article/Elements/ShowHistory:35
+#: html/RTFM/Article/Display.html:79 html/RTFM/Article/Elements/ShowHistory:65 html/SelfService/Article/Display.html:60
 msgid "Article not found"
 msgstr "ArtÃ­culo no encontrado"
 
-#: html/RTFM/Elements/Tabs:43
+#: html/RTFM/Elements/Tabs:74
 msgid "Articles"
 msgstr "ArtÃ­culos"
 
-#: html/RTFM/Admin/Elements/ClassTabs:29 html/RTFM/Admin/Elements/CustomFieldTabs:38
+#: html/RTFM/Topics.html:130
+#. ($currtopic->Name)
+msgid "Articles in %1"
+msgstr ""
+
+#: html/SelfService/Article/Search.html:65
+#. ($RTFM_Content)
+msgid "Articles matching %1"
+msgstr ""
+
+#: html/RTFM/Topics.html:132
+msgid "Articles with no topics"
+msgstr ""
+
+#: html/Admin/RTFM/Elements/ClassTabs:59 html/RTFM/Article/Display.html:53 html/RTFM/Article/Edit.html:66 html/RTFM/Article/Elements/ShowSearchCriteria:56
 msgid "Basics"
 msgstr "BÃ¡sicos"
 
-#: html/RTFM/Admin/Classes/GroupRights.html:59 html/RTFM/Admin/Classes/UserRights.html:46 html/RTFM/Admin/CustomFields/GroupRights.html:61 html/RTFM/Admin/CustomFields/UserRights.html:46
+#: html/Admin/RTFM/Classes/GroupRights.html:79 html/Admin/RTFM/Classes/UserRights.html:68 html/Admin/RTFM/Global/GroupRights.html:80 html/Admin/RTFM/Global/UserRights.html:66
 msgid "Be sure to save your changes"
 msgstr "AsegÃºrate de grabar tus cambios"
 
-#: lib/RT/FM/Article_Overlay.pm:359
+#: html/RTFM/Article/Search.html:97
+msgid "Bookmarkable link for this search"
+msgstr ""
+
+#: html/RTFM/Topics.html:49 html/RTFM/Topics.html:61
+msgid "Browse by topic"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "Can't link a ticket to itself"
 msgstr "No es posible ligar un caso a si mismo"
 
-#: lib/RT/FM/Article_Overlay.pm:340 lib/RT/FM/Article_Overlay.pm:569
+#: NOT FOUND IN SOURCE
 msgid "Can't specifiy both base and target"
 msgstr "No es posible especificar base y objetivo"
 
-#: html/RTFM/Article/Create.html:46 html/RTFM/Article/Elements/EditBasics:38 html/RTFM/Article/Elements/ShowSearchResults:25
+#: lib/RT/FM/Article_Overlay.pm:391
+msgid "Cannot add link to plain number"
+msgstr ""
+
+#: html/RTFM/Elements/BeforeMessageBox:96
+#. ($QueueObj->Name)
+msgid "Choose from Topics for %1 "
+msgstr ""
+
+#: html/RTFM/Article/Display.html:54 html/RTFM/Article/Elements/EditBasics:57 html/RTFM/Article/Elements/ShowSearchCriteria:59 html/RTFM/Article/Elements/ShowSearchResults:60
 msgid "Class"
 msgstr "Clase"
 
-#: html/RTFM/Admin/Classes/Modify.html:36
+#: html/Admin/RTFM/Classes/Modify.html:63
 msgid "Class Name"
 msgstr "Nombre de la Clase"
 
-#: html/RTFM/Article/Elements/ShowSearchCriteria:30
+#: NOT FOUND IN SOURCE
 msgid "Class is"
 msgstr "La clase es"
 
-#: html/RTFM/Admin/Elements/Tabs:25
+#: html/Admin/RTFM/Elements/Tabs:54
 msgid "Classes"
 msgstr "Clases"
 
-#: html/RTFM/Elements/Tabs:45
+#: html/RTFM/Elements/Tabs:82
 msgid "Configuration"
 msgstr "ConfiguraciÃ³n"
 
-#: lib/RT/FM/ArticleCFValue_Overlay.pm:76
+#: html/RTFM/Article/Display.html:56 html/RTFM/Article/Edit.html:77 html/RTFM/Article/Elements/ShowSearchCriteria:72
+msgid "Content"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "Content not set"
 msgstr "Contenido no establecido"
 
-#: lib/RT/FM/Article_Overlay.pm:962
-#. ($new_value_msg)
+#: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for Article. %1"
 msgstr "No es posible aÃ±adir un nuevo valor de campo personalizable para el artÃ­culo. %1"
 
-#: lib/RT/FM/Article_Overlay.pm:923
-#. ($value_msg)
+#: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for Article. %1 "
 msgstr "No es posible aÃ±adir un nuevo valor de campo personalizable para el artÃ­culo. %1"
 
-#: html/RTFM/Admin/CustomFields/Basics.html:64
-#. ($msg)
+#: NOT FOUND IN SOURCE
 msgid "Could not create CustomField"
 msgstr "No es posible crear campo personalizable"
 
-#: lib/RT/FM/Article_Overlay.pm:973
-#. ($Msg)
+#: html/RTFM/Article/Search.html:193
+#. ($msg)
+msgid "Could not create search: %1"
+msgstr ""
+
+#: html/RTFM/Article/Search.html:233
+#. ($searchname, $msg)
+msgid "Could not delete search %1: %2"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "Couldn't create a transaction: %1"
 msgstr "No es posible crear la transacciÃ³n: %1"
 
-#: lib/RT/FM/CustomField_Overlay.pm:257
+#: NOT FOUND IN SOURCE
 msgid "Couldn't find that value"
 msgstr "No se encontrÃ³ ese valor"
 
-#: html/RTFM/Admin/Classes/GroupRights.html:71 html/RTFM/Admin/Classes/UserRights.html:66 html/RTFM/Admin/CustomFields/UserRights.html:121
+#: html/Admin/RTFM/Classes/GroupRights.html:88 html/Admin/RTFM/Classes/UserRights.html:82
 #. ($id)
 msgid "Couldn't load Class %1"
 msgstr "No es posible cargar la Clase %1"
 
-#: html/RTFM/Admin/CustomFields/GroupRights.html:77
-#. ($id)
+#: NOT FOUND IN SOURCE
 msgid "Couldn't load CustomField %1"
 msgstr "No es posible cargar en campo personalizable %1"
 
-#: lib/RT/FM/Article_Overlay.pm:1018
-#. ($cf->Id, $args{'Content'})
+#: NOT FOUND IN SOURCE
 msgid "Couldn't load custom field %1 value %2 while trying to delete it."
 msgstr "No fue posible cargar el campo personalizable %1 valor %2 cuando se intenta borrar."
 
-#: html/RTFM/Article/Create.html:100 html/RTFM/Article/ExtractFromTicket.html:51
+#: html/Admin/RTFM/Classes/CustomFields.html:53
+#. ($id)
+msgid "Couldn't load object %1"
+msgstr ""
+
+#: lib/RT/FM/Article_Overlay.pm:515
+msgid "Couldn't load topic membership while trying to delete it"
+msgstr ""
+
+#: lib/RT/FM/Article_Overlay.pm:398
+#. ($args{'Target'})
+msgid "Couldn't resolve '%1' into a Link."
+msgstr ""
+
+#: html/RTFM/Article/Edit.html:111 html/RTFM/Article/ExtractFromTicket.html:83 html/RTFM/Article/ExtractIntoClass.html:68 html/RTFM/Article/ExtractIntoTopic.html:60
 msgid "Create"
 msgstr "Crear"
 
-#: html/RTFM/Admin/Classes/Modify.html:63
+#: html/Admin/RTFM/Classes/Modify.html:103
 msgid "Create a Class"
 msgstr "Crear una Clase"
 
-#: html/RTFM/Admin/CustomFields/Basics.html:54
+#: NOT FOUND IN SOURCE
 msgid "Create a CustomField"
 msgstr "Crear un Campo Personalizable"
 
-#: html/RTFM/Article/Create.html:19
+#: html/RTFM/Article/Edit.html:131 html/RTFM/Article/Edit.html:231 html/RTFM/Article/Edit.html:57
 msgid "Create a new article"
 msgstr "Crear un nuevo artÃ­culo"
 
-#: html/RTFM/Elements/CreateArticle:19
+#: html/RTFM/Article/ExtractIntoClass.html:52
+msgid "Create a new article in"
+msgstr ""
+
+#: html/RTFM/Elements/CreateArticle:49
 msgid "Create an article"
 msgstr "Crear un artÃ­culo"
 
-#: html/RTFM/Article/PreCreate.html:20
+#: html/RTFM/Article/PreCreate.html:51
 msgid "Create an article in class..."
 msgstr "Crear un artÃ­culo en la clase..."
 
-#: lib/RT/FM/Class_Overlay.pm:54
+#: lib/RT/FM/Class_Overlay.pm:86
 msgid "Create articles in this class"
 msgstr "Crear artÃ­culos en esta clase"
 
-#: lib/RT/FM/Class_Overlay.pm:54
+#: lib/RT/FM/Class_Overlay.pm:86
 msgid "CreateArticle"
 msgstr "CrearArtÃ­culo"
 
-#: html/RTFM/Article/Elements/ShowSearchResults:26
+#: html/RTFM/Article/Elements/ShowSearchCriteria:100 html/RTFM/Article/Elements/ShowSearchResults:61
 msgid "Created"
 msgstr "Creado"
 
-#: html/RTFM/Admin/CustomFields/Basics.html:66
-#. ($CustomFieldObj->Name())
+#: NOT FOUND IN SOURCE
 msgid "Created CustomField %1"
 msgstr "Crear CampoPersonalizable %1"
 
-#: html/RTFM/Elements/NewestArticles:24 html/RTFM/Elements/UpdatedArticles:24
+#: html/RTFM/Elements/NewestArticles:54 html/RTFM/Elements/UpdatedArticles:54
 msgid "Created by"
 msgstr "Creado por"
 
-#: html/RTFM/Article/Elements/ShowSearchCriteria:52 html/RTFM/Article/Elements/ShowSearchCriteria:57
+#: NOT FOUND IN SOURCE
 msgid "Created during"
 msgstr "Creado durante"
 
-#: html/RTFM/Article/Elements/EditLinks:22
+#: html/RTFM/Article/Search.html:189
+#. ($search->Name)
+msgid "Created search %1"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "Current Relationships"
 msgstr "Relaciones Actuales"
 
-#: html/RTFM/Admin/Elements/ClassTabs:33 html/RTFM/Admin/Elements/Tabs:28 html/RTFM/Article/Display.html:22
+#: html/Admin/RTFM/Elements/ClassTabs:67 html/Admin/RTFM/Elements/Tabs:60
 msgid "Custom Fields"
 msgstr "Campos Personalizables"
 
-#: lib/RT/FM/Article_Overlay.pm:867
-#. ($args{'Field'})
+#: NOT FOUND IN SOURCE
 msgid "Custom field %1 not found"
 msgstr "Campo personalizable %1 no encontrado"
 
-#: lib/RT/FM/Article_Overlay.pm:862
-#. ($args{'Field'})
+#: NOT FOUND IN SOURCE
 msgid "Custom field %1 not valid for that article"
 msgstr "Campo personalizable %1 invÃ¡lido para ese artÃ­culo"
 
-#: lib/RT/FM/ArticleCFValue_Overlay.pm:64
+#: NOT FOUND IN SOURCE
 msgid "Custom field not found"
 msgstr "Campo personalizable no encontrado"
 
-#: lib/RT/FM/CustomField_Overlay.pm:461
-#. ($args{'Content'}, $self->Name)
+#: NOT FOUND IN SOURCE
 msgid "Custom field value %1 could not be found for custom field %2"
 msgstr "El valor del campo personalizable %1 no se encontrÃ³ para el campo personalizable %2"
 
-#: lib/RT/FM/Article_Overlay.pm:951
-#. ($old_value, $new_value->Content)
+#: NOT FOUND IN SOURCE
 msgid "Custom field value changed from '%1' to '%2'"
 msgstr "El valor del campo personalizable cambiÃ³ de '%1' a '%2'"
 
-#: lib/RT/FM/CustomField_Overlay.pm:267
+#: NOT FOUND IN SOURCE
 msgid "Custom field value could not be deleted"
 msgstr "El valor del campo personalizable no pudo ser borrado"
 
-#: lib/RT/FM/CustomField_Overlay.pm:468
+#: NOT FOUND IN SOURCE
 msgid "Custom field value could not be found"
 msgstr "El valor del campo personalizable no pudo ser encontrado"
 
-#: lib/RT/FM/CustomField_Overlay.pm:265 lib/RT/FM/CustomField_Overlay.pm:470
+#: NOT FOUND IN SOURCE
 msgid "Custom field value deleted"
 msgstr "Valor de campo personalizable borrado"
 
-#: html/RTFM/Article/Elements/Tabs:62
+#: html/RTFM/Article/Elements/ShowSearchCriteria:97
+msgid "Dates"
+msgstr ""
+
+#: html/RTFM/Article/Elements/ShowSavedSearches:61 html/RTFM/Article/Elements/Tabs:93
 msgid "Delete"
 msgstr "Borrar"
 
-#: html/RTFM/Article/Delete.html:73
+#: html/RTFM/Article/Delete.html:104
 #. ($ArticleObj->Id)
 msgid "Delete article #%1"
 msgstr "Borrar artÃ­culo #%1"
 
-#: html/RTFM/Admin/Classes/Modify.html:41 html/RTFM/Admin/CustomFields/Basics.html:28 html/RTFM/Admin/Elements/EditCustomFieldValues:22
+#: lib/RT/FM/Class_Overlay.pm:97
+msgid "Delete articles in this class"
+msgstr ""
+
+#: lib/RT/FM/Class_Overlay.pm:97
+msgid "DeleteArticle"
+msgstr ""
+
+#: html/RTFM/Article/Search.html:222
+#. ($searchname)
+msgid "Deleted search %1"
+msgstr ""
+
+#: html/Admin/RTFM/Classes/Modify.html:67 html/Admin/RTFM/Elements/Topics:61
 msgid "Description"
 msgstr "DescripciÃ³n"
 
-#: html/RTFM/Article/Elements/Tabs:39
+#: html/RTFM/Article/Elements/Tabs:69
 msgid "Display"
 msgstr "Mostrar"
 
-#: lib/RT/FM/Class_Overlay.pm:59 lib/RT/FM/CustomField_Overlay.pm:32
+#: lib/RT/FM/Class_Overlay.pm:95
 msgid "Display Access Control List"
 msgstr "Mostrar la lista de control de acceso"
 
-#: html/RTFM/Admin/Classes/CustomFields.html:73
-#. ($ClassObj->Name)
+#: html/SelfService/Article/Display.html:48
+#. ( . $ARGS{id})
+msgid "Display Article "
+msgstr ""
+
+#: html/Admin/RTFM/Classes/CustomFields.html:58
+#. ($Object->Name)
+msgid "Edit Custom Fields for %1"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "Edit Custom Fields for Class %1"
 msgstr "Editar campos personalizables de la clase %1"
 
-#: html/RTFM/Admin/Classes/Modify.html:79
+#: html/Admin/RTFM/Global/Topics.html:56
+msgid "Edit global topic hierarchy"
+msgstr ""
+
+#: html/Admin/RTFM/Classes/Topics.html:60
+#. ($ClassObj->Name)
+msgid "Edit topic hierarchy for %1"
+msgstr ""
+
+#: html/Admin/RTFM/Classes/Modify.html:115
 #. ($ClassObj->Name)
 msgid "Editing Configuration for Class %1"
 msgstr "Editando la ConfiguraciÃ³n de la clase %1"
 
-#: html/RTFM/Admin/CustomFields/Basics.html:70
-#. ($CustomFieldObj->Name())
+#: NOT FOUND IN SOURCE
 msgid "Editing CustomField %1"
 msgstr "Editando Campos Personalizables %1"
 
-#: lib/RT/FM/Article_Overlay.pm:353 lib/RT/FM/Article_Overlay.pm:583
+#: NOT FOUND IN SOURCE
 msgid "Either base or target must be specified"
 msgstr "Ya sea la base o el comentario deben de ser especificados"
 
-#: html/RTFM/Admin/Classes/Modify.html:47
+#: html/Admin/RTFM/Classes/Modify.html:72
 msgid "Enabled (Unchecking this box disables this Class)"
 msgstr "Habilitado (Desmarcar esta caja deshabilita esta Clase)"
 
-#: html/RTFM/Admin/Classes/index.html:61
+#: html/Admin/RTFM/Classes/index.html:87
 msgid "Enabled Classes"
 msgstr "Clases Habilitadas"
 
-#: html/RTFM/Admin/Classes/Modify.html:100
+#: html/Admin/RTFM/Classes/Modify.html:140
 #. (loc_fuzzy($msg))
 msgid "Enabled status %1"
 msgstr "Estado %1 habilitado"
 
-#: html/RTFM/Article/Create.html:88 html/RTFM/Article/Elements/EditLinks:73
+#: NOT FOUND IN SOURCE
 msgid "Enter Articles or URIs to link Articles to. Separate multiple entries with spaces."
 msgstr "Entrar artÃ­culos o URIs para ligar a los artÃ­culos. Separar mÃºltiples entradas con espacios."
 
-#: html/Callbacks/RTFM/Ticket/Elements/Tabs/Default:21
+#: html/RTFM/Article/Elements/EditLinks:50
+msgid "Enter articles, tickets, or other URLs related to this article."
+msgstr ""
+
+#: html/RTFM/Article/Search.html:198
+msgid "Error: cannot change privacy value of existing search"
+msgstr ""
+
+#: html/RTFM/Article/Search.html:161
+#. ($ARGS{'LoadSavedSearch'}, $msg)
+msgid "Error: could not load saved search %1: %2"
+msgstr ""
+
+#: html/RTFM/Article/Search.html:213
+#. ($search->Name, $msg)
+msgid "Error: search %1 not updated: %2"
+msgstr ""
+
+#: html/Callbacks/RTFM/Ticket/Elements/Tabs/Default:51
 msgid "Extract Article"
 msgstr "Extraer ArtÃ­culo"
 
-#: html/RTFM/Article/ExtractIntoClass.html:19
+#: html/RTFM/Article/ExtractIntoClass.html:49 html/RTFM/Article/ExtractIntoTopic.html:49
 #. ($Ticket)
+msgid "Extract a new article from ticket #%1"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "Extract article from ticket #%1"
 msgstr "Extraer un artÃ­culo del caso #%1"
 
-#: html/RTFM/Article/ExtractFromTicket.html:19
+#: html/RTFM/Article/ExtractFromTicket.html:49
 #. ($Ticket, $ClassObj->Name)
 msgid "Extract article from ticket #%1 into class %2"
 msgstr "Extraer un artÃ­culo del caso #%1 a la clase %2"
 
-#: html/RTFM/Admin/Classes/index.html:44
+#: html/RTFM/Article/ExtractFromTicket.html:62
+msgid "Field"
+msgstr ""
+
+#: html/Admin/RTFM/Elements/Tabs:57
+msgid "Global"
+msgstr ""
+
+#: html/Admin/RTFM/Classes/index.html:72
 msgid "Go!"
 msgstr "Ir!"
 
-#: html/RTFM/Admin/Elements/ClassTabs:37 html/RTFM/Admin/Elements/CustomFieldTabs:42
+#: html/Admin/RTFM/Elements/ClassTabs:71 html/Admin/RTFM/Elements/GlobalTabs:59
 msgid "Group Rights"
 msgstr "Derechos del Grupo"
 
-#: html/RTFM/Article/Elements/Tabs:43
+#: html/RTFM/Article/Elements/Tabs:73
 msgid "History"
 msgstr "Historia"
 
-#: html/RTFM/Article/History.html:22
+#: html/RTFM/Article/History.html:52
 #. ($id)
 msgid "History for article #%1"
 msgstr "Historia del artÃ­culo #%1"
 
-#: html/RTFM/Article/Edit.html:33
+#: NOT FOUND IN SOURCE
 msgid "If you've updated anything above, be sure to"
 msgstr "Si ha actualizado algo mÃ¡s arriba, no olvide"
 
-#: html/Callbacks/RTFM/Ticket/Update.html/BeforeMessageBox:34
+#: html/RTFM/Elements/BeforeMessageBox:59
 msgid "Include RTFM article:"
 msgstr "Incluir un artÃ­culo de RTFM:"
 
-#: html/RTFM/Admin/Classes/index.html:42
+#: html/Admin/RTFM/Classes/index.html:71
 msgid "Include disabled classes in listing."
 msgstr "Incluir clases deshabilitadas en el listado."
 
-#: lib/RT/FM/Article_Overlay.pm:248 lib/RT/FM/Article_Overlay.pm:257 lib/RT/FM/Article_Overlay.pm:265 lib/RT/FM/Article_Overlay.pm:274
+#: html/RTFM/Article/Elements/ShowSearchCriteria:141
+msgid "Include subtopics"
+msgstr ""
+
+#: lib/RT/FM/Article_Overlay.pm:277 lib/RT/FM/Article_Overlay.pm:286 lib/RT/FM/Article_Overlay.pm:295 lib/RT/FM/Article_Overlay.pm:304 lib/RT/FM/Article_Overlay.pm:313
 msgid "Internal Error"
 msgstr "Error Interno"
 
-#: lib/RT/FM/Article_Overlay.pm:1031 lib/RT/FM/Article_Overlay.pm:1113
+#: NOT FOUND IN SOURCE
 msgid "Internal error"
 msgstr "Error Interno"
 
-#: lib/RT/FM/Article_Overlay.pm:103
+#: lib/RT/FM/Article_Overlay.pm:207
+#. ($txn_msg)
+msgid "Internal error: %1"
+msgstr ""
+
+#: html/RTFM/Article/Search.html:164
+#. ('LoadSavedSearch')
+msgid "Invalid %1 argument"
+msgstr ""
+
+#: lib/RT/FM/Article_Overlay.pm:104
 msgid "Invalid Class"
 msgstr "Clase invÃ¡lida"
 
-#: lib/RT/FM/ArticleCFValue_Overlay.pm:56
+#: NOT FOUND IN SOURCE
 msgid "Invalid article"
 msgstr "ArtÃ­culo invÃ¡lido"
 
-#: lib/RT/FM/CustomField_Overlay.pm:613 lib/RT/FM/CustomField_Overlay.pm:673 lib/RT/FM/CustomField_Overlay.pm:710
+#: NOT FOUND IN SOURCE
 msgid "Invalid value for class"
 msgstr "Valor invÃ¡lido para la clase"
 
-#: lib/RT/FM/Article_Overlay.pm:372
+#: html/RTFM/Article/Elements/ShowSearchCriteria:108
+msgid "Last updated"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "Link already exists"
 msgstr "La liga ya existe"
 
-#: lib/RT/FM/Article_Overlay.pm:388
+#: NOT FOUND IN SOURCE
 msgid "Link could not be created"
 msgstr "La cola no se pudo crear"
 
-#: lib/RT/FM/Article_Overlay.pm:403 lib/RT/FM/Article_Overlay.pm:405
-#. ($TransString)
+#: NOT FOUND IN SOURCE
 msgid "Link created (%1)"
 msgstr "Liga Creada (%1)"
 
-#: lib/RT/FM/Article_Overlay.pm:599
-#. ($args{'Base'}. " ".$args{'Type'}. " ". $args{'Target'})
+#: NOT FOUND IN SOURCE
 msgid "Link deleted (%1)"
 msgstr "Liga borrada (%1)"
 
-#: lib/RT/FM/Article_Overlay.pm:606
+#: NOT FOUND IN SOURCE
 msgid "Link not found"
 msgstr "Liga no encontrada"
 
-#: html/RTFM/Article/Display.html:26
+#: html/RTFM/Article/Display.html:59 html/RTFM/Article/Edit.html:88 html/RTFM/Article/Elements/ShowSearchCriteria:118
 msgid "Links"
 msgstr "Ligas"
 
-#: html/RTFM/Article/Elements/ShowSearchResults:27
+#: html/RTFM/Article/Elements/ShowSavedSearches:70 html/RTFM/Article/Search.html:68
+msgid "Load"
+msgstr ""
+
+#: html/RTFM/Article/Elements/ShowSavedSearches:68
+msgid "Load a saved search"
+msgstr ""
+
+#: html/RTFM/Article/Search.html:66
+msgid "Load saved search:"
+msgstr ""
+
+#: html/Callbacks/RTFM/Admin/index.html/Default:56
+msgid "Manage RTFM classes and permissions"
+msgstr ""
+
+#: html/RTFM/Article/Elements/ShowSearchResults:62
 msgid "Modified"
 msgstr "Modificado"
 
-#: html/RTFM/Article/Elements/Tabs:55
+#: html/RTFM/Article/Elements/Tabs:86
 msgid "Modify"
 msgstr "Modificar"
 
-#: lib/RT/FM/Class_Overlay.pm:60 lib/RT/FM/CustomField_Overlay.pm:33
+#: lib/RT/FM/Class_Overlay.pm:96
 msgid "Modify Access Control List"
 msgstr "Modificar la lista de control de acceso"
 
-#: html/RTFM/Article/Edit.html:210
+#: html/RTFM/Article/Edit.html:218 html/RTFM/Article/Edit.html:317
 #. ($ArticleObj->Id)
 msgid "Modify article #%1"
 msgstr "Modificar artÃ­culo #%1"
 
-#: html/RTFM/Admin/Classes/GroupRights.html:19 html/RTFM/Admin/Classes/GroupRights.html:25
+#: html/Admin/RTFM/Global/GroupRights.html:50
+msgid "Modify global group rights"
+msgstr ""
+
+#: html/Admin/RTFM/Global/GroupRights.html:54
+msgid "Modify global group rights."
+msgstr ""
+
+#: html/Admin/RTFM/Global/Topics.html:55
+msgid "Modify global topics"
+msgstr ""
+
+#: html/Admin/RTFM/Global/UserRights.html:50
+msgid "Modify global user rights"
+msgstr ""
+
+#: html/Admin/RTFM/Global/UserRights.html:53
+msgid "Modify global user rights."
+msgstr ""
+
+#: html/Admin/RTFM/Classes/GroupRights.html:49 html/Admin/RTFM/Classes/GroupRights.html:54
 #. ($ClassObj->Name)
 msgid "Modify group rights for Class %1"
 msgstr "Modificar los derechos de grupo para la clase %1"
 
-#: html/RTFM/Admin/CustomFields/GroupRights.html:21
-#. ($CustomFieldObj->Name)
+#: NOT FOUND IN SOURCE
 msgid "Modify group rights for custom field %1"
 msgstr "Modificar los derechos de grupo para el campo personalizable %1"
 
-#: lib/RT/FM/Class_Overlay.pm:58
+#: lib/RT/FM/Class_Overlay.pm:92
 msgid "Modify metadata and custom fields for this class"
 msgstr "Modificar metadatos y campos personalizables para esta clase"
 
-#: lib/RT/FM/CustomField_Overlay.pm:31
+#: NOT FOUND IN SOURCE
 msgid "Modify metadata for this custom field"
 msgstr "Modificar metadatos para esta campo personalizable"
 
-#: lib/RT/FM/Class_Overlay.pm:57
+#: lib/RT/FM/Class_Overlay.pm:89
 msgid "Modify or delete articles in this class"
 msgstr "Modificar o borrar artÃ­culos en esta clase"
 
-#: html/RTFM/Admin/Classes/UserRights.html:19 html/RTFM/Admin/Classes/UserRights.html:25
+#: html/RTFM/Article/Search.html:78
+msgid "Modify this search..."
+msgstr ""
+
+#: html/Admin/RTFM/Classes/Topics.html:59
+#. ($ClassObj->Name)
+msgid "Modify topic for %1"
+msgstr ""
+
+#: lib/RT/FM/Class_Overlay.pm:94
+msgid "Modify topic hierarchy associated with this class"
+msgstr ""
+
+#: lib/RT/FM/Class_Overlay.pm:90
+msgid "Modify topics for articles in this class"
+msgstr ""
+
+#: html/Admin/RTFM/Classes/UserRights.html:49 html/Admin/RTFM/Classes/UserRights.html:54
 #. ($ClassObj->Name)
 msgid "Modify user rights for class %1"
 msgstr "Modificar derechos de usuario para la clase %1"
 
-#: html/RTFM/Admin/CustomFields/UserRights.html:21
-#. ($CustomFieldObj->Name)
+#: NOT FOUND IN SOURCE
 msgid "Modify user rights for custom field %1"
 msgstr "Modificar derechos de usuario para el campo personalizable %1"
 
-#: lib/RT/FM/CustomField_Overlay.pm:30
+#: NOT FOUND IN SOURCE
 msgid "Modify values for this custom field"
 msgstr "Modificar valores para este campo personalizable"
 
-#: lib/RT/FM/Class_Overlay.pm:60 lib/RT/FM/CustomField_Overlay.pm:33
+#: lib/RT/FM/Class_Overlay.pm:96
 msgid "ModifyACL"
 msgstr "ModificarACL"
 
-#: lib/RT/FM/Class_Overlay.pm:57
+#: lib/RT/FM/Class_Overlay.pm:89
 msgid "ModifyArticle"
 msgstr "ModificarArticle"
 
-#: html/RTFM/Admin/CustomFields/Basics.html:27 html/RTFM/Admin/Elements/EditCustomFieldValues:22 html/RTFM/Article/Create.html:30 html/RTFM/Article/Elements/EditBasics:22 html/RTFM/Article/Elements/ShowSearchResults:24 html/RTFM/Elements/ListArticles:21 html/RTFM/Elements/NewestArticles:23 html/RTFM/Elements/UpdatedArticles:23
+#: lib/RT/FM/Class_Overlay.pm:90
+msgid "ModifyArticleTopics"
+msgstr ""
+
+#: html/RTFM/Article/Elements/SelectSavedSearches:54
+msgid "My saved searches"
+msgstr ""
+
+#: html/RTFM/Article/Elements/EditBasics:49 html/RTFM/Article/Elements/ShowSearchCriteria:64 html/RTFM/Article/Elements/ShowSearchResults:59 html/RTFM/Elements/NewestArticles:53 html/RTFM/Elements/UpdatedArticles:53
 msgid "Name"
 msgstr "Nombre"
 
-#: html/RTFM/Article/Elements/ShowSearchCriteria:43
+#: lib/RT/FM/Article_Overlay.pm:111
+msgid "Name in use"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "Name matches"
 msgstr "Nombre coincide"
 
-#: html/RTFM/Article/Elements/Tabs:29
+#: html/RTFM/Article/Elements/ShowSavedSearches:55
+msgid "Name:"
+msgstr ""
+
+#: html/RTFM/Article/Elements/Tabs:59
 msgid "New Article"
 msgstr "ArtÃ­culo Nuevo"
 
-#: html/RTFM/Article/Elements/EditLinks:72
+#: NOT FOUND IN SOURCE
 msgid "New Relationships"
 msgstr "Nueva RelaciÃ³n"
 
-#: html/RTFM/Admin/Elements/ClassTabs:52
+#: html/Admin/RTFM/Elements/ClassTabs:84
 msgid "New class"
 msgstr "Nueva Clase"
 
-#: html/RTFM/Admin/Elements/CustomFieldTabs:59
+#: NOT FOUND IN SOURCE
 msgid "New custom field"
 msgstr "Nuevo campo personalizable"
 
-#: html/RTFM/Article/Delete.html:34
+#: html/RTFM/Article/Delete.html:65
 msgid "No"
 msgstr "No"
 
-#: html/RTFM/Admin/Classes/GroupRights.html:67 html/RTFM/Admin/Classes/UserRights.html:62 html/RTFM/Admin/CustomFields/UserRights.html:117
+#: html/SelfService/Article/Search.html:67
+#. ($RTFM_Content)
+msgid "No Articles match %1"
+msgstr ""
+
+#: html/Admin/RTFM/Classes/GroupRights.html:84 html/Admin/RTFM/Classes/UserRights.html:78
 msgid "No Class defined"
 msgstr "Ninguna Clase definida"
 
-#: html/RTFM/Admin/Classes/index.html:28
+#: html/Admin/RTFM/Classes/index.html:56
 msgid "No Classes matching search criteria found."
 msgstr "No existen clases que coincidan con el criterio de bÃºsqueda."
 
-#: html/RTFM/Admin/CustomFields/Basics.html:69
+#: NOT FOUND IN SOURCE
 msgid "No CustomField"
 msgstr "No hay campo personalizable"
 
-#: html/RTFM/Admin/CustomFields/GroupRights.html:73
+#: NOT FOUND IN SOURCE
 msgid "No CustomField defined"
 msgstr "No hay campo personalizable definido"
 
-#: html/RTFM/Elements/Tabs:41 html/RTFM/index.html:19
+#: html/RTFM/Article/Elements/ShowSearchResults:104
+msgid "No articles found."
+msgstr ""
+
+#: html/RTFM/Article/PreCreate.html:64
+msgid "No classes you have access to..."
+msgstr ""
+
+#: html/RTFM/Elements/Tabs:72 html/RTFM/index.html:49
 msgid "Overview"
 msgstr "InformaciÃ³n general"
 
-#: html/RTFM/Article/Display.html:40 html/RTFM/Article/Elements/ShowHistory:40 lib/RT/FM/Article_Overlay.pm:1001 lib/RT/FM/Article_Overlay.pm:107 lib/RT/FM/Article_Overlay.pm:1178 lib/RT/FM/Article_Overlay.pm:234 lib/RT/FM/Article_Overlay.pm:332 lib/RT/FM/Article_Overlay.pm:561 lib/RT/FM/Article_Overlay.pm:701 lib/RT/FM/Article_Overlay.pm:838 lib/RT/FM/Class_Overlay.pm:164 lib/RT/FM/Class_Overlay.pm:242 lib/RT/FM/CustomField_Overlay.pm:127 lib/RT/FM/CustomField_Overlay.pm:222 lib/RT/FM/CustomField_Overlay.pm:251 lib/RT/FM/CustomField_Overlay.pm:616 lib/RT/FM/CustomField_Overlay.pm:676 lib/RT/FM/CustomField_Overlay.pm:713
+#: html/RTFM/Article/Display.html:85 html/RTFM/Article/Elements/ShowHistory:69 html/SelfService/Article/Display.html:64 lib/RT/FM/Article_Overlay.pm:108 lib/RT/FM/Article_Overlay.pm:262 lib/RT/FM/Article_Overlay.pm:367 lib/RT/FM/Article_Overlay.pm:384 lib/RT/FM/Article_Overlay.pm:411 lib/RT/FM/Article_Overlay.pm:463 lib/RT/FM/Article_Overlay.pm:487 lib/RT/FM/Article_Overlay.pm:560 lib/RT/FM/Class_Overlay.pm:154 lib/RT/FM/Class_Overlay.pm:189 lib/RT/FM/Topic_Overlay.pm:110 lib/RT/FM/Topic_Overlay.pm:138 lib/RT/FM/Topic_Overlay.pm:204
 msgid "Permission Denied"
 msgstr "Permiso Denegado"
 
-#: html/RTFM/Elements/QuickSearch:19
+#: lib/RT/FM/Topic_Overlay.pm:85
+msgid "Permission denied"
+msgstr ""
+
+#: html/RTFM/Article/Elements/ShowSavedSearches:56
+msgid "Privacy:"
+msgstr ""
+
+#: html/RTFM/Elements/QuickSearch:48
 msgid "Quick search"
 msgstr "BÃºsqueda rÃ¡pida"
 
-#: html/RTFM/Elements/Tabs:35
+#: html/RTFM/Elements/Tabs:66
 msgid "RT"
 msgstr "RT"
 
-#: html/Callbacks/RTFM/Elements/Tabs/Default:20 html/RTFM/Elements/Tabs:37
+#: html/Callbacks/RTFM/Admin/Elements/Tabs/Default:54 html/Callbacks/RTFM/Admin/index.html/Default:54 html/Callbacks/RTFM/Elements/Tabs/Default:50 html/Callbacks/RTFM/RTIR/Elements/Tabs/Default:53 html/RTFM/Elements/Tabs:68
 msgid "RTFM"
 msgstr "RTFM"
 
-#: html/RTFM/Admin/index.html:19
+#: html/Admin/RTFM/index.html:48 html/Admin/RTFM/index.html:49
 msgid "RTFM Administration"
 msgstr "AdministraciÃ³n de RTFM"
 
-#: html/RTFM/Elements/Error:36
+#: html/Callbacks/RTFM/Admin/Global/CustomFields/index.html/Default:52
+msgid "RTFM Articles"
+msgstr ""
+
+#: html/RTFM/Elements/Error:66
 msgid "RTFM Error"
 msgstr "Error de RTFM"
 
-#: html/RTFM/Article/Create.html:92 html/RTFM/Article/Elements/EditLinks:48 html/RTFM/Article/Elements/EditLinks:76 html/RTFM/Article/Elements/ShowLinks:46
+#: html/RTFM/Article/Elements/ShowSearchCriteria:125
+msgid "Refer to"
+msgstr ""
+
+#: html/RTFM/Article/Elements/EditLinks:84 html/RTFM/Article/Elements/ShowLinks:72 html/RTFM/Article/Elements/ShowSearchCriteria:129
 msgid "Referred to by"
 msgstr "Referido a comprar"
 
-#: html/RTFM/Article/Create.html:90 html/RTFM/Article/Elements/EditLinks:25 html/RTFM/Article/Elements/EditLinks:75 html/RTFM/Article/Elements/ShowLinks:23
+#: html/RTFM/Article/Elements/EditLinks:58 html/RTFM/Article/Elements/ShowLinks:50
 msgid "Refers to"
 msgstr "Se refiere a "
 
-#: html/RTFM/Article/Create.html:87
+#: NOT FOUND IN SOURCE
 msgid "Relationships"
 msgstr "Relaciones"
 
-#: html/RTFM/Admin/CustomFields/GroupRights.html:99
-#. ($object_type)
+#: NOT FOUND IN SOURCE
 msgid "Rights could not be granted for %1"
 msgstr "Los derechos no pueden ser concedidos por %1"
 
-#: html/RTFM/Admin/CustomFields/GroupRights.html:126
-#. ($object_type)
+#: NOT FOUND IN SOURCE
 msgid "Rights could not be revoked for %1"
 msgstr "Los derechos no pueden ser revocados por %1"
 
-#: html/RTFM/Article/Edit.html:33
+#: html/RTFM/Article/Elements/ShowSavedSearches:63
+msgid "Save"
+msgstr ""
+
+#: html/RTFM/Article/Edit.html:111
 msgid "Save Changes"
 msgstr "Grabar Cambios"
 
-#: html/RTFM/Article/Elements/Tabs:26 html/RTFM/Elements/GotoArticle:19
+#: html/RTFM/Article/Elements/ShowSavedSearches:60
+msgid "Save new"
+msgstr ""
+
+#: html/RTFM/Article/Elements/ShowSavedSearches:54
+msgid "Save this search"
+msgstr ""
+
+#: html/RTFM/Article/Elements/ShowSavedSearches:48 html/RTFM/Article/Search.html:65
+msgid "Saved searches"
+msgstr ""
+
+#: html/RTFM/Article/Elements/ShowSearchCriteria:145 html/RTFM/Article/Elements/Tabs:56
 msgid "Search"
 msgstr "Buscar"
 
-#: html/Callbacks/RTFM/Ticket/Update.html/BeforeMessageBox:30
+#: html/RTFM/Article/Search.html:210
+#. ($search->Name)
+msgid "Search %1 updated"
+msgstr ""
+
+#: html/SelfService/Article/Search.html:49 html/SelfService/Elements/SearchArticle:49
+msgid "Search Articles"
+msgstr ""
+
+#: html/RTFM/Elements/GotoArticle:69
+msgid "Search RTFM"
+msgstr ""
+
+#: html/RTFM/Elements/BeforeMessageBox:55 html/SelfService/Article/Search.html:54
 msgid "Search for RTFM articles matching"
 msgstr "Buscar artÃ­culos de RTFM que concuerden"
 
-#: html/RTFM/Article/Search.html:19
+#: html/RTFM/Article/Search.html:49
 msgid "Search for articles"
 msgstr "Buscar artÃ­culos"
 
-#: lib/RT/FM/Class_Overlay.pm:55 lib/RT/FM/Class_Overlay.pm:56
+#: html/RTFM/Article/Elements/ShowSearchResults:53
+msgid "Search results"
+msgstr ""
+
+#: lib/RT/FM/Class_Overlay.pm:87 lib/RT/FM/Class_Overlay.pm:88
 msgid "See articles in this class"
 msgstr "Ver artÃ­culos en esta clase"
 
-#: lib/RT/FM/Class_Overlay.pm:53
+#: lib/RT/FM/Class_Overlay.pm:85
 msgid "See that this class exists"
 msgstr "Ver que esta clase exista"
 
-#: lib/RT/FM/CustomField_Overlay.pm:29
+#: NOT FOUND IN SOURCE
 msgid "See this custom field's name and values"
 msgstr "Ver el nombre y valores de este campo personalizable"
 
-#: lib/RT/FM/Class_Overlay.pm:53
+#: lib/RT/FM/Class_Overlay.pm:85
 msgid "SeeClass"
 msgstr "VerClase"
 
-#: html/RTFM/Admin/Classes/index.html:19
+#: html/Admin/RTFM/Classes/index.html:49
 msgid "Select a Class"
 msgstr "selecciona una Clase"
 
-#: html/RTFM/Admin/CustomFields/index.html:19
+#: NOT FOUND IN SOURCE
 msgid "Select a Custom Field"
 msgstr "Selecciona un campo personalizable"
 
@@ -667,150 +985,240 @@ msgstr "Selecciona un campo personalizable"
 msgid "Select a Custom Fields"
 msgstr "Selecciona un campo personalizable"
 
-#: html/RTFM/Admin/Elements/ClassTabs:49
+#: html/RTFM/Elements/BeforeMessageBox:113
+#. ($included_topic->Name)
+msgid "Select an Article from %1"
+msgstr ""
+
+#: html/RTFM/Elements/BeforeMessageBox:65
+msgid "Select an Article to include"
+msgstr ""
+
+#: html/Admin/RTFM/Elements/ClassTabs:81
 msgid "Select class"
 msgstr "Selecciona una clase"
 
-#: html/RTFM/Admin/Elements/CustomFieldTabs:56
+#: NOT FOUND IN SOURCE
 msgid "Select custom field"
 msgstr "Selecciona un campo personalizable"
 
-#: html/RTFM/Article/Elements/ShowSearchCriteria:65 html/RTFM/Article/Elements/ShowSearchCriteria:68
+#: html/Callbacks/RTFM/Admin/Global/CustomFields/index.html/Default:53
+msgid "Select custom fields for RTFM articles in all classes"
+msgstr ""
+
+#: html/RTFM/Article/ExtractIntoClass.html:63 html/RTFM/Article/ExtractIntoTopic.html:52
+#. ()
+msgid "Select topics for this article"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "Separate multiple URLs with spaces"
 msgstr "Separar URLs mÃºltiples con espacios"
 
-#: html/RTFM/Article/Elements/ShowSearchCriteria:22
+#: html/RTFM/Article/Elements/LinkEntryInstructions:49
+msgid "Separate multiple entries with spaces."
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "Show advanced search options..."
 msgstr "Mostrar opciones de bÃºsqueda avanzadas..."
 
-#: lib/RT/FM/Class_Overlay.pm:59 lib/RT/FM/CustomField_Overlay.pm:32
+#: lib/RT/FM/Class_Overlay.pm:95
 msgid "ShowACL"
 msgstr "MostrarACL"
 
-#: lib/RT/FM/Class_Overlay.pm:55
+#: lib/RT/FM/Class_Overlay.pm:87
 msgid "ShowArticle"
 msgstr "MostrarArtÃ­culo"
 
-#: lib/RT/FM/Class_Overlay.pm:56
+#: lib/RT/FM/Class_Overlay.pm:88
 msgid "ShowArticleHistory"
 msgstr "MostrarHistoriadeArtÃ­culo"
 
-#: lib/RT/FM/CustomField_Overlay.pm:29
+#: NOT FOUND IN SOURCE
 msgid "ShowCustomField"
 msgstr "MostrarCampoPersonalizable"
 
-#: html/RTFM/Admin/CustomFields/Basics.html:31 html/RTFM/Admin/Elements/EditCustomFieldValues:21
+#: NOT FOUND IN SOURCE
 msgid "Sort Order"
 msgstr "Ordenamiento"
 
-#: html/RTFM/Article/Create.html:38 html/RTFM/Article/Elements/EditBasics:30
+#: html/RTFM/Article/Elements/EditBasics:53 html/RTFM/Article/Elements/ShowSearchCriteria:68 html/RTFM/Article/Elements/ShowSearchResults:66
 msgid "Summary"
 msgstr "Resumen"
 
-#: html/RTFM/Article/Elements/ShowSearchCriteria:47
+#: NOT FOUND IN SOURCE
 msgid "Summary matches"
 msgstr "Concordancias del resumen"
 
-#: html/RTFM/Admin/CustomFields/GroupRights.html:125 html/RTFM/Admin/CustomFields/GroupRights.html:98 html/RTFM/Admin/CustomFields/UserRights.html:100 html/RTFM/Admin/CustomFields/UserRights.html:70
+#: NOT FOUND IN SOURCE
 msgid "System Error"
 msgstr "Error del sistema"
 
-#: html/RTFM/Admin/Classes/GroupRights.html:27 html/RTFM/Admin/CustomFields/GroupRights.html:28
+#: html/Admin/RTFM/Classes/GroupRights.html:55 html/Admin/RTFM/Global/GroupRights.html:55
 msgid "System groups"
 msgstr "Grupos del Sistema"
 
-#: lib/RT/FM/CustomField_Overlay.pm:626
+#: NOT FOUND IN SOURCE
 msgid "That is already the current value"
 msgstr "Ese es el valor actual"
 
-#: lib/RT/FM/CustomField_Overlay.pm:260
+#: NOT FOUND IN SOURCE
 msgid "That is not a value for this custom field"
 msgstr "Ese no es un valor para este campo personalizable"
 
-#: lib/RT/FM/Transaction_Overlay.pm:59
-#. ($self->Field , $self->OldContent)
+#: NOT FOUND IN SOURCE
 msgid "This article no longer %1 '%2'"
 msgstr "Este artÃ­culo no es mÃ¡s %1 '%2'"
 
-#: lib/RT/FM/Transaction_Overlay.pm:57
-#. ($self->Field , $self->NewContent)
+#: NOT FOUND IN SOURCE
 msgid "This article now %1 '%2'"
 msgstr "Este artÃ­culo ahora %1 '%2'"
 
-#: lib/RT/FM/CustomField_Overlay.pm:683 lib/RT/FM/CustomField_Overlay.pm:719
+#: NOT FOUND IN SOURCE
 msgid "This custom field does not apply to that class"
 msgstr "Este campo personalizable no se aplica para la clase"
 
-#: lib/RT/FM/Article_Overlay.pm:1116
+#: html/RTFM/Article/ExtractFromTicket.html:63
+msgid "Ticket update"
+msgstr ""
+
+#: html/Admin/RTFM/Elements/Topics:57
+msgid "Topic Name"
+msgstr ""
+
+#: lib/RT/FM/Article_Overlay.pm:473
+msgid "Topic membership added"
+msgstr ""
+
+#: lib/RT/FM/Article_Overlay.pm:508
+msgid "Topic membership removed"
+msgstr ""
+
+#: html/Admin/RTFM/Elements/Topics:136 html/Admin/RTFM/Elements/Topics:148 html/Admin/RTFM/Elements/Topics:170
+msgid "Topic not found"
+msgstr ""
+
+#: html/Admin/RTFM/Elements/ClassTabs:63 html/Admin/RTFM/Elements/GlobalTabs:65 html/RTFM/Article/Display.html:62 html/RTFM/Article/Edit.html:100 html/RTFM/Article/Edit.html:96 html/RTFM/Article/Elements/ShowSearchCriteria:133 html/RTFM/Article/Elements/ShowSearchResults:67 html/RTFM/Elements/Tabs:76
+msgid "Topics"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "Transaction recorded"
 msgstr "TransacciÃ³n grabada"
 
-#: html/RTFM/Admin/CustomFields/Basics.html:29
+#: NOT FOUND IN SOURCE
 msgid "Type"
 msgstr "Tipo"
 
-#: html/RTFM/Article/Delete.html:59 html/RTFM/Article/Edit.html:73
+#: html/RTFM/Article/Elements/LinkEntryInstructions:48
+msgid "Type <b>a:</b> before article numbers and <b>t:</b> before ticket numbers."
+msgstr ""
+
+#: lib/RT/FM/Article_Overlay.pm:476
+msgid "Unable to add topic membership"
+msgstr ""
+
+#: lib/RT/FM/Article_Overlay.pm:504
+#. ($t->TopicObj->Name)
+msgid "Unable to delete topic membership in %1"
+msgstr ""
+
+#: html/RTFM/Article/Delete.html:90 html/RTFM/Article/Edit.html:239
 msgid "Unable to load article"
 msgstr "No es posible cargar el artÃ­culo"
 
-#: html/RTFM/Elements/NewestArticles:42 html/RTFM/Elements/UpdatedArticles:43
+#: html/RTFM/Article/Elements/SelectSavedSearches:60
+msgid "Unnamed search"
+msgstr ""
+
+#: html/RTFM/Article/Elements/ShowSavedSearches:59 html/RTFM/Elements/NewestArticles:63 html/RTFM/Elements/UpdatedArticles:64
 msgid "Update"
 msgstr "Actualizar"
 
-#: html/RTFM/Article/ExtractFromTicket.html:26
+#: html/RTFM/Article/ExtractFromTicket.html:58
+msgid "Use the dropdown menus to select which ticket updates you want to extract into a new article."
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "Use the dropdown menus to select which transactions you want to extract into a new RTFM article"
 msgstr "Utilice los menÃºs en cascada para seleccionar que transacciÃ³n quiere extraer a un nuevo artÃ­culo de RTFM"
 
-#: html/RTFM/Admin/Elements/ClassTabs:40 html/RTFM/Admin/Elements/CustomFieldTabs:46
+#: html/Admin/RTFM/Elements/ClassTabs:75 html/Admin/RTFM/Elements/GlobalTabs:62
 msgid "User Rights"
 msgstr "Derechos de Usuario"
 
-#: html/RTFM/Admin/Classes/GroupRights.html:42 html/RTFM/Admin/CustomFields/GroupRights.html:44
+#: html/Admin/RTFM/Classes/GroupRights.html:66 html/Admin/RTFM/Global/GroupRights.html:67
 msgid "User defined groups"
 msgstr "Grupos definidos por el usuario"
 
-#: lib/RT/FM/ArticleCFValue_Overlay.pm:89
+#: NOT FOUND IN SOURCE
 msgid "Value added"
 msgstr "Valor aÃ±adido"
 
-#: html/RTFM/Admin/CustomFields/Basics.html:35
+#: NOT FOUND IN SOURCE
 msgid "Values"
 msgstr "Valores"
 
-#: html/RTFM/Article/Elements/ShowSearchCriteria:67
+#: html/RTFM/Article/Search.html:179
+msgid "WARNING: Saving search to user-level privacy"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "Which are referred to by "
 msgstr "Que son referenciados por "
 
-#: html/RTFM/Article/Elements/ShowSearchCriteria:64
+#: NOT FOUND IN SOURCE
 msgid "Which refer to"
 msgstr "Que se refiere a"
 
-#: html/RTFM/Article/Delete.html:42
+#: html/RTFM/Article/Delete.html:73
 msgid "Yes"
 msgstr "Si"
 
-#: html/RTFM/Article/Elements/ShowSearchCriteria:36
+#: html/RTFM/Article/ExtractFromTicket.html:59
+msgid "You can insert ticket content into any freeform, text or wiki field."
+msgstr ""
+
+#: html/Callbacks/RTFM/Elements/EditLinks/ExtraLinkInstructions:48
+msgid "You may enter links to RTFM articles as \"a:###\", where ### represents the number of the article."
+msgstr ""
+
+#: html/RTFM/Article/Elements/ShowSearchCriteria:101 html/RTFM/Article/Elements/ShowSearchCriteria:109
+msgid "after"
+msgstr ""
+
+#: html/RTFM/Article/Elements/ShowSearchCriteria:103 html/RTFM/Article/Elements/ShowSearchCriteria:112
+msgid "and before"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "and is not"
 msgstr "y no es"
 
-#: html/RTFM/Article/Elements/ShowSearchCriteria:45 html/RTFM/Article/Elements/ShowSearchCriteria:49 html/RTFM/Article/Elements/ShowSearchCriteria:84
+#: html/RTFM/Article/Elements/ShowSearchCriteria:60 html/RTFM/Article/Elements/ShowSearchCriteria:65 html/RTFM/Article/Elements/ShowSearchCriteria:69 html/RTFM/Article/Elements/ShowSearchCriteria:75 html/RTFM/Article/Elements/ShowSearchCriteria:87
 msgid "and not"
 msgstr "y no"
 
-#: html/RTFM/Article/Elements/ShowSearchResults:23
+#: html/RTFM/Article/Elements/ShowSearchResults:58
 msgid "id"
 msgstr "id"
 
-#: html/RTFM/Article/PreCreate.html:25
+#: html/RTFM/Article/PreCreate.html:60 html/RTFM/Article/Search.html:59
 #. ($Class->Name)
+#. ($class->Name)
 msgid "in class %1"
 msgstr "en la clase %1"
 
-#: html/RTFM/Elements/Error:37
+#: html/RTFM/Article/Elements/ShowSearchCriteria:65 html/RTFM/Article/Elements/ShowSearchCriteria:69 html/RTFM/Article/Elements/ShowSearchCriteria:75 html/RTFM/Article/Elements/ShowSearchCriteria:80
+msgid "matches"
+msgstr ""
+
+#: html/RTFM/Elements/Error:67
 msgid "the calling component did not specify why"
 msgstr "el componente que llama no especifica por quÃ©"
 
-#: html/RTFM/Article/Elements/ShowSearchCriteria:54 html/RTFM/Article/Elements/ShowSearchCriteria:60
+#: NOT FOUND IN SOURCE
 msgid "till"
 msgstr "hasta"
 
