@@ -404,7 +404,8 @@ sub GetWeekday {
     my $self = shift;
     my $dow = shift;
     
-    return $self->loc("$DAYS_OF_WEEK[$dow].") if $DAYS_OF_WEEK[$dow];
+    return $self->loc($DAYS_OF_WEEK[$dow])
+        if $DAYS_OF_WEEK[$dow];
     return '';
 }
 
@@ -419,7 +420,8 @@ sub GetMonth {
     my $self = shift;
     my $mon = shift;
 
-    return $self->loc("$MONTHS[$mon].") if $MONTHS[$mon];
+    return $self->loc($MONTHS[$mon])
+        if $MONTHS[$mon];
     return '';
 }
 
