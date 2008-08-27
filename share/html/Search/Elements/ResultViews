@@ -63,7 +63,7 @@ $short_query_string => undef
 <li><a href="<%RT->config->get('WebPath')%>/Tools/Offline.html<%$short_query_string%>"><&|/l&>Editable text</&></a></li>
 </ul>
 <form method="get" action="<%RT->config->get('WebPath')%>/Search/Chart.html">
-% my %hiddens = (query => $query, format => $format, Rows => $rows, order_by => $order_by, order => $order);
+% my %hiddens = (query => $query, format => $format, rows => $rows, order_by => $order_by, order => $order);
 % foreach my $key (keys(%hiddens)) {
 <input type="hidden" class="hidden" name="<%$key%>" value="<%defined($hiddens{$key})?$hiddens{$key}:''%>" />
 % }
