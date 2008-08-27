@@ -60,7 +60,7 @@ BEGIN {
 
     # your exported package globals go here,
     # as well as any optionally exported functions
-    @EXPORT_OK = qw(&CleanEnv
+    @EXPORT_OK = qw(&clean_env
         &get_current_user &get_message_content &debug &loc);
 }
 
@@ -138,8 +138,8 @@ loaded with that user.  if the current user isn't found, returns a copy of RT::n
         #If the current user is 0, then RT will assume that the User object
         #is that of the currentuser.
 
-        $CurrentUser = RT::CurrentUser->new();
-        $CurrentUser->load_by_gecos($gecos);
+        $CurrentUser = RT::CurrentUser->new( gecos => $gecos );
+        
 
         unless ( $CurrentUser->id ) {
             Jifty->log->debug("No user with a unix login of '$gecos' was found. ");
