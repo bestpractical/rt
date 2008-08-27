@@ -35,29 +35,29 @@ my $user = RT::Test->load_or_create_user(
 ok $user && $user->id, 'loaded or created user';
 
 $user->principal_object->grant_right( right => 'SuperUser' );
-my $current_user = RT::CurrentUser->new( id => RT->system_user->id );
-is( $id, $current_user->id, "Got current user?" );
+my $current_user = RT::CurrentUser->new( id => $user->id );
+is( $user->id, $current_user->id, "Got current user?" );
 
 #defaults
 $RecordTransaction = 0;
 $UpdateLastUpdated = 1;
 my $ticket2 = create_ticket_as_ok($current_user);
 escalate_ticket_ok($ticket2);
-ok( $ticket2->last_updated_by != $user->id, "Set LastUpdated" );
+ok( $ticket2->last_updated_by->id != $user->id, "Set LastUpdated" );
 ok( $ticket2->transactions->last->type =~ /Create/i, "Did not record a transaction" );
 
 $RecordTransaction = 1;
 $UpdateLastUpdated = 1;
 my $ticket1 = create_ticket_as_ok($current_user);
 escalate_ticket_ok($ticket1);
-ok( $ticket1->last_updated_by != $user->id, "Set LastUpdated" );
+ok( $ticket1->last_updated_by->id != $user->id, "Set LastUpdated" );
 ok( $ticket1->transactions->last->type !~ /Create/i, "Recorded a transaction" );
 
 $RecordTransaction = 0;
 $UpdateLastUpdated = 0;
 my $ticket3 = create_ticket_as_ok($current_user);
 escalate_ticket_ok($ticket3);
-ok( $ticket3->last_updated_by == $user->id, "Did not set LastUpdated" );
+ok( $ticket3->last_updated_by->id == $user->id, "Did not set LastUpdated" );
 ok( $ticket3->transactions->last->type =~ /Create/i, "Did not record a transaction" );
 
 1;
@@ -79,10 +79,10 @@ sub create_ticket_as_ok {
                                    final_priority => 50,
                                  );
     ok($id, "Created ticket? ".$id);
-    $ticket->__set( field => 'Created',
+    $ticket->__set( column => 'created',
                     value => $created->iso,
                   );
-    $ticket->__set( field => 'Due',
+    $ticket->__set( column => 'due',
                     value => $due->iso,
                   );
 
@@ -95,6 +95,7 @@ sub escalate_ticket_ok {
     print "$RT::BinPath/rt-crontool --search RT::Search::FromSQL --search-arg \"id = @{[$id]}\" --action RT::ScripAction::LinearEscalate --action-arg \"RecordTransaction:$RecordTransaction; UpdateLastUpdated:$UpdateLastUpdated\"\n";
     print STDERR `$RT::BinPath/rt-crontool --search RT::Search::FromSQL --search-arg "id = @{[$id]}" --action RT::ScripAction::LinearEscalate --action-arg "RecordTransaction:$RecordTransaction; UpdateLastUpdated:$UpdateLastUpdated"`;
 
+    Jifty::DBI::Record::Cachable->flush_cache;
     $ticket->load($id);     # reload, because otherwise we get the cached value
     ok( $ticket->priority != 0, "Escalated ticket" );
 }
