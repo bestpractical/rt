@@ -210,7 +210,7 @@ sub prepare {
     return 1;
 }
 
-sub Commit {
+sub commit {
     my $self = shift;
 
     my $new_value = $self->{'new_priority'};
@@ -249,26 +249,26 @@ sub Commit {
     my ( $val, $msg );
     unless ($record) {
         unless ($update) {
-            ( $val, $msg ) = $ticket->__set(
-                Field => 'Priority',
-                Value => $new_value,
+            $ticket->__set(
+                column => 'priority',
+                value => $new_value,
             );
         }
         else {
-            ( $val, $msg ) = $ticket->_set(
-                Field             => 'Priority',
-                Value             => $new_value,
-                RecordTransaction => 0,
+            $ticket->_set(
+                column             => 'priority',
+                value             => $new_value,
+                record_transaction => 0,
             );
         }
     }
     else {
-        ( $val, $msg ) = $ticket->set_priority($new_value);
+        $ticket->set_priority($new_value);
     }
 
-    unless ($val) {
-        Jifty->log->error("Couldn't set new priority value: $msg");
-        return ( 0, $msg );
+    unless ( $ticket->priority == $new_value ) {
+        Jifty->log->error("Couldn't set new priority value: $new_value");
+        return ( 0 );
     }
     return 1;
 }
