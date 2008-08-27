@@ -51,6 +51,7 @@ use strict;
 package RT;
 
 use RT::CurrentUser;
+use Jifty::Util;
 
 use strict;
 use warnings;
@@ -131,7 +132,7 @@ sub config {
     return $RT::Config;
 }
 
-=head2 Init
+=head2 init
 
 L<Connect to the database /connect_to_database>, L<initilizes system objects /InitSystemobjects>,
 L<preloads classes /InitClasses> 
