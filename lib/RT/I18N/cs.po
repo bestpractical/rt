@@ -10,26 +10,23 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: share/html/Widgets/SavedSearch:117
-#. ($self->{CurrentSearch}{Object}->Description)
+#: NOT FOUND IN SOURCE
 msgid " %1 deleted."
 msgstr "%1 smazán."
 
-#: share/html/Widgets/SavedSearch:94
-#. ($self->{CurrentSearch}{Description}, $args->{SavedSearchDescription})
+#: NOT FOUND IN SOURCE
 msgid " %1 renamed to %2."
 msgstr "%1 přejmenován na %2."
 
-#: share/html/Widgets/SavedSearch:107
-#. ($args->{SavedSearchDescription})
+#: NOT FOUND IN SOURCE
 msgid " %1 saved."
 msgstr "%1 uložen."
 
-#: share/html/Elements/RT__Ticket/ColumnMap:259 share/html/Elements/RT__Ticket/ColumnMap:276
+#: share/html/Elements/RT__Ticket/ColumnMap:259
 msgid " (no pubkey!)"
 msgstr ""
 
-#: share/html/Elements/RT__Ticket/ColumnMap:262 share/html/Elements/RT__Ticket/ColumnMap:279
+#: share/html/Elements/RT__Ticket/ColumnMap:262
 msgid " (untrusted!)"
 msgstr ""
 
@@ -45,20 +42,11 @@ msgstr ""
 msgid "#%1: %2"
 msgstr "#%1: %2"
 
-#: share/html/Elements/ShowSearch:120
+#: NOT FOUND IN SOURCE
 msgid "$1"
 msgstr "$1"
 
-#: lib/RT/Date.pm:407
-msgid "$DAYS_OF_WEEK[$dow]."
-msgstr ""
-
-#: lib/RT/Date.pm:422
-msgid "$MONTHS[$mon]."
-msgstr ""
-
-#: lib/RT/Record.pm:904
-#. ($label)
+#: NOT FOUND IN SOURCE
 msgid "$prefix %1"
 msgstr "$prefix %1"
 
@@ -77,17 +65,17 @@ msgstr "%1 %2"
 msgid "%1 %2 %3"
 msgstr ""
 
-#: lib/RT/Date.pm:577
+#: lib/RT/Date.pm:579
 #. ($wday,$mon,$mday,$year)
 msgid "%1 %2 %3 %4"
 msgstr ""
 
-#: lib/RT/Date.pm:583
+#: lib/RT/Date.pm:585
 #. ($wday,$mon,$mday,$hour,$min,$sec,$year)
 msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr "%1 %3.%2.%7 %4:%5:%6"
 
-#: lib/RT/Record.pm:1676 lib/RT/Transaction_Overlay.pm:636 lib/RT/Transaction_Overlay.pm:679
+#: lib/RT/Record.pm:1686 lib/RT/Transaction_Overlay.pm:636 lib/RT/Transaction_Overlay.pm:679
 #. ($cf->Name, $new_content)
 #. ($field, $self->NewValue)
 #. ($self->Field, $principal->Object->Name)
@@ -99,18 +87,33 @@ msgstr "%1 %2 přidán"
 msgid "%1 %2 ago"
 msgstr "- %1 %2"
 
-#: lib/RT/Record.pm:1683 lib/RT/Transaction_Overlay.pm:643
+#: lib/RT/Record.pm:1693 lib/RT/Transaction_Overlay.pm:643
 #. ($cf->Name, $old_content, $new_content)
 #. ($field, $self->OldValue, $self->NewValue)
 msgid "%1 %2 changed to %3"
 msgstr "%1 %2 změněno na %3"
 
-#: lib/RT/Record.pm:1680 lib/RT/Transaction_Overlay.pm:639 lib/RT/Transaction_Overlay.pm:685
+#: lib/RT/Record.pm:1690 lib/RT/Transaction_Overlay.pm:639 lib/RT/Transaction_Overlay.pm:685
 #. ($cf->Name, $old_content)
 #. ($field, $self->OldValue)
 #. ($self->Field, $principal->Object->Name)
 msgid "%1 %2 deleted"
 msgstr "%1 %2 smazán"
+
+#: share/html/Widgets/SavedSearch:117
+#. (loc($self->{SearchType}), $self->{CurrentSearch}{Object}->Description)
+msgid "%1 %2 deleted."
+msgstr ""
+
+#: share/html/Widgets/SavedSearch:94
+#. (loc($self->{SearchType}), $self->{CurrentSearch}{Description}, $args->{SavedSearchDescription})
+msgid "%1 %2 renamed to %3."
+msgstr ""
+
+#: share/html/Widgets/SavedSearch:107
+#. (loc($self->{SearchType}), $args->{SavedSearchDescription})
+msgid "%1 %2 saved."
+msgstr ""
 
 #: share/html/Elements/RT__Scrip/ColumnMap:85 share/html/Ticket/Elements/PreviewScrips:66
 #. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
@@ -196,17 +199,17 @@ msgstr "%1 RT %2 Copyright 1996-%3 %4."
 msgid "%1 ScripAction loaded"
 msgstr "ScripAction %1 nahrána"
 
-#: lib/RT/Record.pm:1711
+#: lib/RT/Record.pm:1721
 #. ($args{'Value'}, $cf->Name)
 msgid "%1 added as a value for %2"
 msgstr "%1 přidáno jako hodnota pro %2"
 
-#: share/html/Install/DatabaseDetails.html:167
+#: share/html/Install/DatabaseDetails.html:170
 #. ($RT::DatabaseName)
 msgid "%1 already exists and has RT's tables in place, but does not contain RT's metadata. The 'Initialize Database' step later on can insert metadata into this existing database. If this is acceptable, click 'Customize Basics' below to continue customizing RT."
 msgstr ""
 
-#: share/html/Install/DatabaseDetails.html:172
+#: share/html/Install/DatabaseDetails.html:175
 #. ($RT::DatabaseName)
 msgid "%1 already exists, but does not contain RT's tables or metadata. The 'Initialize Database' step later on can insert tables and metadata into this existing database. if this is acceptable, click 'Customize Basic' below to continue customizing RT."
 msgstr ""
@@ -217,7 +220,7 @@ msgstr ""
 msgid "%1 appears to be a local object, but can't be found in the database"
 msgstr "%1 vypadá jako lokální objekt, ale není v databázi"
 
-#: share/html/Install/DatabaseDetails.html:163
+#: share/html/Install/DatabaseDetails.html:166
 #. ($RT::DatabaseName)
 msgid "%1 appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customize RT by clicking 'Customize Basics' below"
 msgstr ""
@@ -228,12 +231,12 @@ msgstr ""
 msgid "%1 by %2"
 msgstr "%1 uživatelem %2"
 
-#: lib/RT/Record.pm:500 lib/RT/Transaction_Overlay.pm:587 lib/RT/Transaction_Overlay.pm:777 lib/RT/Transaction_Overlay.pm:786 lib/RT/Transaction_Overlay.pm:789
-#. ($args{'Field'},            ( $old_val ? "'$old_val'" : $self->loc("(no value)") ),            '"' . $self->__Value( $args{'Field'}) . '"')
+#: lib/RT/Record.pm:500 lib/RT/Transaction_Overlay.pm:587 lib/RT/Transaction_Overlay.pm:778 lib/RT/Transaction_Overlay.pm:787 lib/RT/Transaction_Overlay.pm:792
+#. ($self->loc( $args{'Field'} ),            ( $old_val ? "'$old_val'" : $self->loc("(no value)") ),            '"' . $self->__Value( $args{'Field'}) . '"')
 #. ($self->Field,                ( $self->OldValue ? "'" . $self->OldValue . "'" : $no_value ),                "'" . $self->NewValue . "'")
-#. ($self->Field , $q1->Name , $q2->Name)
-#. ($self->Field, $t2->AsString, $t1->AsString)
-#. ($self->Field, ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'")
+#. ($self->loc($self->Field) , $q1->Name , $q2->Name)
+#. ($self->loc($self->Field), $t2->AsString, $t1->AsString)
+#. ($self->loc($self->Field),                               ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'")
 msgid "%1 changed from %2 to %3"
 msgstr "%1 změněno z %2 na %3"
 
@@ -247,7 +250,7 @@ msgstr ""
 msgid "%1 copy"
 msgstr "kopie %1"
 
-#: lib/RT/Record.pm:908
+#: lib/RT/Record.pm:918
 msgid "%1 could not be set to %2."
 msgstr "%1 nemůže být nastaveno na %2."
 
@@ -266,12 +269,12 @@ msgstr "%1 vytvořen"
 msgid "%1 deleted"
 msgstr "%1 smazán"
 
-#: share/html/Install/Sendmail.html:84
+#: share/html/Install/Sendmail.html:86
 #. ($ARGS{SendmailPath})
 msgid "%1 doesn't exist."
 msgstr ""
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:677
 msgid "%1 highest priority tickets I own"
 msgstr "%1 nejdůležitějších požadavků, které vlastním"
 
@@ -295,7 +298,7 @@ msgstr "%1 již není %2 této fronty."
 msgid "%1 is no longer a %2 for this ticket."
 msgstr ""
 
-#: lib/RT/Record.pm:1768
+#: lib/RT/Record.pm:1778
 #. ($TransactionObj->OldValue, $cf->Name)
 msgid "%1 is no longer a value for custom field %2"
 msgstr ""
@@ -305,7 +308,7 @@ msgstr ""
 msgid "%1 min"
 msgstr "%1 %quant(%1,minuta,minuty,minut,minut)"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:688
 msgid "%1 newest unowned tickets"
 msgstr "%1 nejnovějších nevlastněných požadavků"
 
@@ -361,7 +364,7 @@ msgstr "Uložené dotazy patřící %1"
 msgid "%1: no attachment specified"
 msgstr "%1: neudána příloha"
 
-#: lib/RT/Date.pm:580
+#: lib/RT/Date.pm:582
 #. ($hour,$min,$sec)
 msgid "%1:%2:%3"
 msgstr ""
@@ -469,6 +472,10 @@ msgstr "(prázdná)"
 msgid "(no name listed)"
 msgstr "(žádné jméno nebylo vypsáno)"
 
+#: share/html/Elements/RT__Ticket/ColumnMap:276
+msgid "(no pubkey!)"
+msgstr ""
+
 #: lib/RT/Transaction_Overlay.pm:580 share/html/Admin/Elements/SelectRights:74 share/html/Elements/EditCustomFieldSelect:71 share/html/Elements/SelectCustomFieldValue:53 share/html/Elements/ShowCustomFields:56 share/html/Search/Chart:136 share/html/Search/Elements/Chart:80
 msgid "(no value)"
 msgstr "(bez hodnoty)"
@@ -507,6 +514,10 @@ msgstr ""
 msgid "(untitled)"
 msgstr "(nepojmenováno)"
 
+#: share/html/Elements/RT__Ticket/ColumnMap:279
+msgid "(untrusted!)"
+msgstr ""
+
 #: NOT FOUND IN SOURCE
 msgid "(yyyy/mm/dd)"
 msgstr "(yyyy/mm/dd)"
@@ -531,19 +542,19 @@ msgstr ""
 msgid "1995-11-25T21:59:12Z"
 msgstr ""
 
-#: share/html/Ticket/Elements/ShowBasics:55
+#: NOT FOUND IN SOURCE
 msgid "<% $Ticket->Status%>"
 msgstr "<% $Ticket->Status%>"
 
-#: share/html/Elements/SelectTicketTypes:50
+#: NOT FOUND IN SOURCE
 msgid "<% $_ %>"
 msgstr "<% $_ %>"
 
-#: share/html/Search/Elements/SelectLinks:50
+#: NOT FOUND IN SOURCE
 msgid "<%$_%>"
 msgstr "<%$_%>"
 
-#: share/html/Search/Elements/DisplayOptions:70
+#: NOT FOUND IN SOURCE
 msgid "<%$field%>"
 msgstr "<%$field%>"
 
@@ -561,7 +572,7 @@ msgstr "<input type=\"submit\" value=\"Nový požadavek v\">&nbsp;%1"
 msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:187
 msgid "A blank template"
 msgstr "Prázdný vzor"
 
@@ -716,11 +727,11 @@ msgstr "Adresa2"
 msgid "Admin Cc"
 msgstr "Admin Cc"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:264
 msgid "Admin Comment"
 msgstr "Administrativní komentář"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:243
 msgid "Admin Correspondence"
 msgstr "Administrativní korespondence"
 
@@ -784,7 +795,7 @@ msgstr "Pokročilé"
 msgid "Aggregator"
 msgstr "Operátor"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:332
 msgid "All Approvals Passed"
 msgstr "Všechna schvalování prošla"
 
@@ -833,11 +844,11 @@ msgstr "Schválení #%1: Poznámky neuloženy kvůli systémové chybě"
 msgid "Approval #%1: Notes recorded"
 msgstr "Schválení #%1: Poznámky uloženy"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:320
 msgid "Approval Passed"
 msgstr "Schvalování prošlo"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:343
 msgid "Approval Rejected"
 msgstr "Schvalování odmítnuto"
 
@@ -845,7 +856,8 @@ msgstr "Schvalování odmítnuto"
 msgid "Approve"
 msgstr "Schválit"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:590 etc/initialdata:592
+#. (# loc	    $note)
 msgid "Approver's notes: %1"
 msgstr "Poznámky schvalovatele: %1"
 
@@ -926,11 +938,11 @@ msgstr "srp"
 msgid "August"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:190
 msgid "Autoreply"
 msgstr "Automatická odpověď"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:27
 msgid "Autoreply To Requestors"
 msgstr "Automaticky odpověz žadatelům"
 
@@ -942,12 +954,8 @@ msgstr "Dostupné"
 msgid "BCc"
 msgstr ""
 
-#: share/html/Elements/Submit:96
+#: share/html/Elements/Submit:96 share/html/Install/Basics.html:63 share/html/Install/DatabaseDetails.html:73 share/html/Install/DatabaseDetails.html:89 share/html/Install/Global.html:66 share/html/Install/Initialize.html:62 share/html/Install/Sendmail.html:64
 msgid "Back"
-msgstr ""
-
-#: share/html/Install/Basics.html:61 share/html/Install/DatabaseDetails.html:72 share/html/Install/DatabaseDetails.html:86 share/html/Install/Global.html:65 share/html/Install/Initialize.html:61 share/html/Install/Sendmail.html:63
-msgid "Back: "
 msgstr ""
 
 #: lib/RT/SharedSetting.pm:145
@@ -971,7 +979,7 @@ msgstr "Nezapomeňte uložit své změny"
 msgid "Best Practical Solutions, LLC corporate logo"
 msgstr "Best Practical Solutions, LLC corporate logo"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:186
 msgid "Blank"
 msgstr "Prázdný"
 
@@ -986,6 +994,10 @@ msgstr ""
 #: NOT FOUND IN SOURCE
 msgid "Bookmarkable link"
 msgstr "Uložitelný odkaz"
+
+#: etc/initialdata:701 etc/upgrade/3.7.82/content:3
+msgid "Bookmarked Tickets"
+msgstr ""
 
 #: share/html/Ticket/Elements/ShowHistory:66 share/html/Ticket/Elements/ShowHistory:71
 msgid "Brief headers"
@@ -1049,7 +1061,7 @@ msgstr "Nelze uložit %1"
 msgid "Can't save this search"
 msgstr "Tento dotaz nelze uložit"
 
-#: lib/RT/Record.pm:1249 lib/RT/Record.pm:1329
+#: lib/RT/Record.pm:1259 lib/RT/Record.pm:1339
 msgid "Can't specifiy both base and target"
 msgstr "Nelze zadat zároveň zdroj i cíl"
 
@@ -1090,7 +1102,7 @@ msgstr "Změna hesla"
 msgid "Check All"
 msgstr "Označ vše"
 
-#: share/html/Install/DatabaseDetails.html:85
+#: share/html/Install/DatabaseDetails.html:88
 msgid "Check Database Connectivity"
 msgstr ""
 
@@ -1248,7 +1260,7 @@ msgstr "Správa"
 msgid "Confirm"
 msgstr "Potvrzení"
 
-#: share/html/Install/DatabaseDetails.html:138
+#: share/html/Install/DatabaseDetails.html:141
 msgid "Connection succeeded"
 msgstr ""
 
@@ -1276,7 +1288,7 @@ msgstr ""
 msgid "CorrespondAddress"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:255
 msgid "Correspondence"
 msgstr "Korespondence"
 
@@ -1284,15 +1296,22 @@ msgstr "Korespondence"
 msgid "Correspondence added"
 msgstr "Korespondence zaznamenána"
 
-#: lib/RT/Record.pm:1652 lib/RT/Record.pm:1698
+#: lib/RT/Record.pm:1662 lib/RT/Record.pm:1708
 #. ($value_msg)
 #. ($msg)
 msgid "Could not add new custom field value: %1"
 msgstr "Nelze přidat novou hodnotu uživatelské položky: %1"
 
-#: lib/RT/Ticket_Overlay.pm:2768 lib/RT/Ticket_Overlay.pm:2776 lib/RT/Ticket_Overlay.pm:2793
+#: NOT FOUND IN SOURCE
 msgid "Could not change owner. "
 msgstr "Nelze změnit vlastníka. "
+
+#: lib/RT/Ticket_Overlay.pm:2768 lib/RT/Ticket_Overlay.pm:2776 lib/RT/Ticket_Overlay.pm:2793
+#. ($del_msg)
+#. ($add_msg)
+#. ($msg)
+msgid "Could not change owner: %1"
+msgstr ""
 
 #: share/html/Admin/CustomFields/Modify.html:151
 #. ($msg)
@@ -1388,7 +1407,7 @@ msgstr "Nelze přidat přílohu"
 msgid "Couldn't add member to group"
 msgstr "Do skupiny nelze přidat člena"
 
-#: lib/RT/Record.pm:1708 lib/RT/Record.pm:1760
+#: lib/RT/Record.pm:1718 lib/RT/Record.pm:1770
 #. ($msg)
 #. ($Msg)
 msgid "Couldn't create a transaction: %1"
@@ -1403,7 +1422,7 @@ msgstr ""
 msgid "Couldn't delete dashboard %1: %2"
 msgstr ""
 
-#: lib/RT/Record.pm:917
+#: lib/RT/Record.pm:927
 msgid "Couldn't find row"
 msgstr "Nemohu nalézt řádek"
 
@@ -1579,7 +1598,7 @@ msgstr "Země"
 msgid "Create"
 msgstr "Vytvořit"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:90
 msgid "Create Tickets"
 msgstr "Vytvořit požadavky"
 
@@ -1633,7 +1652,7 @@ msgstr "Vytvořit požadavek"
 msgid "Create dashboards for this group"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:92
 msgid "Create new tickets based on this scrip's template"
 msgstr "Vytvářet požadavky podle tohoto vzoru scripu"
 
@@ -1781,7 +1800,7 @@ msgstr "Uživatelská podmínka"
 msgid "Custom field %1 %2 %3"
 msgstr ""
 
-#: lib/RT/Record.pm:1570
+#: lib/RT/Record.pm:1580
 #. ($args{'Field'})
 msgid "Custom field %1 does not apply to this object"
 msgstr ""
@@ -1796,7 +1815,7 @@ msgstr "Uživatelská položka %1 má hodnotu."
 msgid "Custom field %1 has no value."
 msgstr "Uživatelská položka %1 nemá hodnotu."
 
-#: lib/RT/Record.pm:1559 lib/RT/Record.pm:1741
+#: lib/RT/Record.pm:1569 lib/RT/Record.pm:1751
 #. ($args{'Field'})
 msgid "Custom field %1 not found"
 msgstr "Uživatelská položka %1 nenalezena"
@@ -1836,11 +1855,11 @@ msgstr ""
 msgid "Customize"
 msgstr "Upravit"
 
-#: share/html/Install/Basics.html:48 share/html/Install/DatabaseDetails.html:71 share/html/Install/Sendmail.html:63
+#: share/html/Install/Basics.html:48 share/html/Install/DatabaseDetails.html:72 share/html/Install/Sendmail.html:64
 msgid "Customize Basics"
 msgstr ""
 
-#: share/html/Install/Basics.html:61
+#: share/html/Install/Basics.html:63
 msgid "Customize Database Details"
 msgstr ""
 
@@ -1848,15 +1867,15 @@ msgstr ""
 msgid "Customize Email Addresses"
 msgstr ""
 
-#: share/html/Install/Basics.html:61 share/html/Install/Global.html:65
+#: share/html/Install/Basics.html:62 share/html/Install/Global.html:66
 msgid "Customize Email Configuration"
 msgstr ""
 
-#: share/html/Install/Initialize.html:61
+#: share/html/Install/Initialize.html:62
 msgid "Customize Global"
 msgstr ""
 
-#: share/html/Install/Sendmail.html:62
+#: share/html/Install/Sendmail.html:63
 msgid "Customize Global Defaults"
 msgstr ""
 
@@ -1942,7 +1961,7 @@ msgstr ""
 msgid "Decrypt"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:191
 msgid "Default Autoresponse template"
 msgstr "Implicitní vzor automatické odpovědi"
 
@@ -1954,15 +1973,15 @@ msgstr "Implicitní fronta"
 msgid "Default Requestor"
 msgstr "Implicitní žadatel"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:265
 msgid "Default admin comment template"
 msgstr "Implicitní vzor administrativního komentáře"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:244
 msgid "Default admin correspondence template"
 msgstr "Implicitní vzor administrativní korespondence"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:256
 msgid "Default correspondence template"
 msgstr "Implicitní korespondenční vzor"
 
@@ -1970,7 +1989,7 @@ msgstr "Implicitní korespondenční vzor"
 msgid "Default queue"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:222
 msgid "Default transaction template"
 msgstr "Implicitní transakční vzor"
 
@@ -2199,7 +2218,7 @@ msgstr ""
 msgid "Don't refresh this page."
 msgstr "Neobčerstvovat tuto stránku."
 
-#: lib/RT/Crypt/GnuPG.pm:2105
+#: lib/RT/Crypt/GnuPG.pm:2132
 msgid "Don't trust this key at all"
 msgstr ""
 
@@ -2219,7 +2238,7 @@ msgstr "Termín dokončení"
 msgid "DueRelative"
 msgstr ""
 
-#: share/html/Install/Initialize.html:124 share/html/Install/Initialize.html:87
+#: share/html/Install/Initialize.html:126 share/html/Install/Initialize.html:89
 #. ($msg)
 msgid "ERROR: %1"
 msgstr ""
@@ -2315,7 +2334,7 @@ msgstr "Úprava členství ve vlastní skupině %1"
 msgid "EffectiveId"
 msgstr ""
 
-#: lib/RT/Record.pm:1262 lib/RT/Record.pm:1343 lib/RT/Ticket_Overlay.pm:2230 lib/RT/Ticket_Overlay.pm:2325
+#: lib/RT/Record.pm:1272 lib/RT/Record.pm:1353 lib/RT/Ticket_Overlay.pm:2230 lib/RT/Ticket_Overlay.pm:2325
 msgid "Either base or target must be specified"
 msgstr "Zdroj či cíl musí být zadán"
 
@@ -2332,12 +2351,20 @@ msgstr "Email"
 msgid "Email Configuration"
 msgstr ""
 
+#: etc/initialdata:423 etc/upgrade/3.7.85/content:4
+msgid "Email Digest"
+msgstr ""
+
 #: lib/RT/User_Overlay.pm:169 lib/RT/User_Overlay.pm:560
 msgid "Email address in use"
 msgstr "Emailová adresa je použita"
 
 #: lib/RT/Config.pm:232
 msgid "Email delivery"
+msgstr ""
+
+#: etc/initialdata:424 etc/upgrade/3.7.85/content:5
+msgid "Email template for periodic notification digests"
 msgstr ""
 
 #: share/html/Elements/RT__User/ColumnMap:76
@@ -2454,6 +2481,26 @@ msgstr "Chyba v parametrech do Ticket->AddWatcher"
 msgid "Error in parameters to Ticket->DeleteWatcher"
 msgstr "Chyba v parametrech do Ticket->DeleteWatcher"
 
+#: etc/initialdata:371 etc/upgrade/3.7.10/content:13
+msgid "Error to RT owner: public key"
+msgstr ""
+
+#: etc/initialdata:433 etc/upgrade/3.7.87/content:4
+msgid "Error: Missing dashboard"
+msgstr ""
+
+#: etc/initialdata:396 etc/upgrade/3.7.10/content:38
+msgid "Error: bad GnuPG data"
+msgstr ""
+
+#: etc/initialdata:384 etc/upgrade/3.7.10/content:26
+msgid "Error: no private key"
+msgstr ""
+
+#: etc/initialdata:362 etc/upgrade/3.7.10/content:4
+msgid "Error: public key"
+msgstr ""
+
 #: bin/rt-crontool:335
 msgid "Escalate tickets"
 msgstr "Eskalovat požadavky"
@@ -2494,7 +2541,15 @@ msgstr ""
 msgid "Extra info"
 msgstr "Doplňkové údaje"
 
-#: share/html/Install/DatabaseDetails.html:184
+#: etc/initialdata:97
+msgid "Extract Subject Tag"
+msgstr ""
+
+#: etc/initialdata:98
+msgid "Extract tags from a Transaction's subject and add them to the Ticket's subject."
+msgstr ""
+
+#: share/html/Install/DatabaseDetails.html:187
 #. ($DBI::errstr)
 msgid "Failed to connect to database: %1"
 msgstr ""
@@ -2620,7 +2675,7 @@ msgstr "Najít osoby, jejichž"
 msgid "Find tickets"
 msgstr "Nalézt požadavky"
 
-#: share/html/Install/Finish.html:48 share/html/Install/Global.html:64
+#: share/html/Install/Finish.html:48 share/html/Install/Global.html:65
 msgid "Finish"
 msgstr ""
 
@@ -2644,7 +2699,7 @@ msgstr "Vynutit změnu"
 msgid "Format"
 msgstr "Formát"
 
-#: share/html/Ticket/Elements/ShowTransaction:208
+#: etc/initialdata:354 etc/upgrade/3.7.15/content:4 share/html/Ticket/Elements/ShowTransaction:208
 msgid "Forward"
 msgstr ""
 
@@ -2673,7 +2728,7 @@ msgstr ""
 msgid "Found %quant(%1,ticket)"
 msgstr "Nalezen%quant(%1,,y,o) %numf(%1) %quant(%1,požadavek,požadavky,požadavků)"
 
-#: lib/RT/Record.pm:920
+#: lib/RT/Record.pm:930
 msgid "Found Object"
 msgstr "Nalezen objekt"
 
@@ -2782,7 +2837,7 @@ msgstr ""
 msgid "Graphical charts are not available."
 msgstr ""
 
-#: share/html/Ticket/Elements/AddWatchers:69 share/html/Ticket/Elements/ShowGroupMembers:57 share/html/User/Elements/DelegateRights:101
+#: lib/RT/Record.pm:910 share/html/Ticket/Elements/AddWatchers:69 share/html/Ticket/Elements/ShowGroupMembers:57 share/html/User/Elements/DelegateRights:101
 msgid "Group"
 msgstr "Skupina"
 
@@ -2848,6 +2903,10 @@ msgstr "Skupiny, do nichž uživatel patří"
 msgid "HasMember"
 msgstr ""
 
+#: etc/initialdata:355 etc/upgrade/3.7.15/content:5
+msgid "Heading of a forwarded message"
+msgstr ""
+
 #: lib/RT/Interface/CLI.pm:95 lib/RT/Interface/CLI.pm:95
 msgid "Hello!"
 msgstr "Ahoj!"
@@ -2909,7 +2968,7 @@ msgstr "Identifikátor"
 msgid "Identity"
 msgstr "Identita"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:515
 msgid "If an approval is rejected, reject the original and delete pending approvals"
 msgstr "Odmítni původce a zruš stávající schválení, bylo-li zamítnuto schválení"
 
@@ -2942,11 +3001,11 @@ msgstr "Pokud jste změnili cokoli nahoře, nezapomeňte"
 msgid "If your preferred database isn't listed in the dropdown below, that means RT couldn't find a <i>database driver</i> for it installed locally. You may be able to remedy this by using %1 to download and install DBD::MySQL, DBD::Oracle or DBD::Pg."
 msgstr ""
 
-#: lib/RT/Record.pm:911
+#: lib/RT/Record.pm:921
 msgid "Illegal value for %1"
 msgstr "Neplatná hodnota pro %1"
 
-#: lib/RT/Record.pm:914
+#: lib/RT/Record.pm:924
 msgid "Immutable field"
 msgstr "Neměnná položka"
 
@@ -2982,6 +3041,30 @@ msgstr "Neúplný dotaz"
 msgid "Individual messages"
 msgstr ""
 
+#: etc/initialdata:373 etc/upgrade/3.7.10/content:15
+msgid "Inform RT owner that user(s) have problems with public keys"
+msgstr ""
+
+#: etc/initialdata:435 etc/upgrade/3.7.87/content:6
+msgid "Inform user that a dashboard he subscribed to is missing"
+msgstr ""
+
+#: etc/initialdata:398 etc/upgrade/3.7.10/content:40
+msgid "Inform user that a message he sent has invalid GnuPG data"
+msgstr ""
+
+#: etc/initialdata:364 etc/upgrade/3.7.10/content:6
+msgid "Inform user that he has problems with public key and couldn't recieve encrypted content"
+msgstr ""
+
+#: etc/initialdata:410
+msgid "Inform user that his password has been reset"
+msgstr ""
+
+#: etc/initialdata:386 etc/upgrade/3.7.10/content:28
+msgid "Inform user that we received an encrypted email and we have no private keys to decrypt"
+msgstr ""
+
 #: lib/RT/Tickets_Overlay.pm:1922 share/html/Search/Elements/PickBasics:187
 msgid "Initial Priority"
 msgstr "Počáteční priorita"
@@ -2990,7 +3073,7 @@ msgstr "Počáteční priorita"
 msgid "InitialPriority"
 msgstr "Počáteční priorita"
 
-#: share/html/Install/Global.html:64 share/html/Install/Initialize.html:48 share/html/Install/Initialize.html:60
+#: share/html/Install/Global.html:65 share/html/Install/Initialize.html:48 share/html/Install/Initialize.html:61
 msgid "Initialize Database"
 msgstr ""
 
@@ -3017,17 +3100,17 @@ msgstr "Vnitřní chyba"
 msgid "Internal Error: %1"
 msgstr "Vnitřní chyba: %1"
 
-#: share/html/Install/Global.html:88
+#: share/html/Install/Global.html:90
 #. ($_, $ARGS{$_})
 msgid "Invalid %1: '%2' doesn't look like an email address"
 msgstr ""
 
-#: share/html/Install/Basics.html:78
+#: share/html/Install/Basics.html:81
 #. ('WebPort')
 msgid "Invalid %1: it should be a number"
 msgstr ""
 
-#: share/html/Install/Sendmail.html:90
+#: share/html/Install/Sendmail.html:92
 #. ('Administrator Email')
 msgid "Invalid %1: that doesn't look like an email address"
 msgstr ""
@@ -3040,7 +3123,7 @@ msgstr "Neplatný typ skupiny"
 msgid "Invalid Right"
 msgstr "Neplatné právo"
 
-#: lib/RT/Record.pm:916
+#: lib/RT/Record.pm:926
 msgid "Invalid data"
 msgstr "Neplatná data"
 
@@ -3075,7 +3158,7 @@ msgstr ""
 msgid "Invalid value for %1"
 msgstr "Neplatná hodnota pro %1"
 
-#: lib/RT/Record.pm:1580
+#: lib/RT/Record.pm:1590
 msgid "Invalid value for custom field"
 msgstr "Neplatná hodnota pro uživatelskou položku"
 
@@ -3235,11 +3318,11 @@ msgstr ""
 msgid "Link"
 msgstr "Odkaz"
 
-#: lib/RT/Record.pm:1273
+#: lib/RT/Record.pm:1283
 msgid "Link already exists"
 msgstr "Vazba již existuje"
 
-#: lib/RT/Record.pm:1287
+#: lib/RT/Record.pm:1297
 msgid "Link could not be created"
 msgstr "Vazba nemůže být vytvořena"
 
@@ -3251,7 +3334,7 @@ msgstr "Vazba vytvořena (%1)"
 msgid "Link deleted (%1)"
 msgstr "Vazba zrušena (%1)"
 
-#: lib/RT/Record.pm:1368
+#: lib/RT/Record.pm:1378
 msgid "Link not found"
 msgstr "Vazba nenalezena"
 
@@ -3575,7 +3658,7 @@ msgstr "Minut"
 msgid "Mismatched parentheses"
 msgstr "Nevhodné závorky"
 
-#: lib/RT/Record.pm:918
+#: lib/RT/Record.pm:928
 msgid "Missing a primary key?: %1"
 msgstr "Chybí primární klíč?: %1"
 
@@ -3934,7 +4017,7 @@ msgstr "Nové vazby"
 msgid "New Password"
 msgstr "Nové heslo"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:301
 msgid "New Pending Approval"
 msgstr "Nová probíhající schválení"
 
@@ -4011,17 +4094,13 @@ msgstr "Nový uživatel jména"
 msgid "New watchers"
 msgstr "Nový pozorovatel"
 
-#: share/html/Elements/CollectionListPaging:104 share/html/Helpers/CalPopup.html:60 share/html/Ticket/Elements/Tabs:97
+#: share/html/Elements/CollectionListPaging:104 share/html/Helpers/CalPopup.html:60 share/html/Install/Basics.html:62 share/html/Install/DatabaseDetails.html:72 share/html/Install/DatabaseType.html:70 share/html/Install/Global.html:65 share/html/Install/Global.html:65 share/html/Install/Sendmail.html:63 share/html/Ticket/Elements/Tabs:97
 msgid "Next"
 msgstr "Další"
 
 #: NOT FOUND IN SOURCE
 msgid "Next Page"
 msgstr "Další stránka"
-
-#: share/html/Install/Basics.html:61 share/html/Install/DatabaseDetails.html:71 share/html/Install/DatabaseType.html:70 share/html/Install/Global.html:64 share/html/Install/Global.html:64 share/html/Install/Sendmail.html:62
-msgid "Next: "
-msgstr ""
 
 #: share/html/Elements/RT__User/ColumnMap:71
 msgid "NickName"
@@ -4080,7 +4159,7 @@ msgstr "Žádný vzor"
 msgid "No action"
 msgstr "bez akce"
 
-#: lib/RT/Record.pm:913
+#: lib/RT/Record.pm:923
 msgid "No column specified"
 msgstr "Neudán sloupec"
 
@@ -4214,7 +4293,7 @@ msgstr ""
 msgid "No users matching search criteria found."
 msgstr "Nenalezeni žádní uživatelé odpovídající vyhledávací podmínce."
 
-#: lib/RT/Record.pm:910
+#: lib/RT/Record.pm:920
 msgid "No value sent to _Set!\\n"
 msgstr "Žádná z hodnot nanastavena na _Set!\\n"
 
@@ -4226,7 +4305,7 @@ msgstr "Nikdo"
 msgid "None"
 msgstr ""
 
-#: lib/RT/Record.pm:915
+#: lib/RT/Record.pm:925
 msgid "Nonexistant field?"
 msgstr "Neexistující položka?"
 
@@ -4258,71 +4337,71 @@ msgstr "Poznámky"
 msgid "Notification could not be sent"
 msgstr "Upozornění nemůže být zasláno"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:56
 msgid "Notify AdminCcs"
 msgstr "Zaslat všem AdminCc"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:52
 msgid "Notify AdminCcs as Comment"
 msgstr "Zaslat všem AdminCc jako komentář"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:48 etc/upgrade/3.1.17/content:6
 msgid "Notify Ccs"
 msgstr "Upozornit všechny Cc"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:44 etc/upgrade/3.1.17/content:2
 msgid "Notify Ccs as Comment"
 msgstr "Upozornit všechny Cc jako komentář"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:83
 msgid "Notify Other Recipients"
 msgstr "Zaslat ostatním příjemcům"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:79
 msgid "Notify Other Recipients as Comment"
 msgstr "Zaslat ostatním příjemcům jako komentář"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:40
 msgid "Notify Owner"
 msgstr "Zaslat vlastníkovi"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:36
 msgid "Notify Owner as Comment"
 msgstr "Zaslat vlastníkovi jako komentář"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:345
 msgid "Notify Owner of their rejected ticket"
 msgstr "Upozornění vlastníka o zamítnutí požadavku"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:334
 msgid "Notify Owner of their ticket has been approved by all approvers"
 msgstr "Upozornění vlastníka, že požadavek byl všemi schválen"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:322
 msgid "Notify Owner of their ticket has been approved by some approver"
 msgstr "Upozornění vlastníka, že požadavek byl někým schválen"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:303
 msgid "Notify Owners and AdminCcs of new items pending their approval"
 msgstr "Zaslat vlastníkům a všem AdminCc nové případy očekávající jejich schválení"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:32
 msgid "Notify Requestors"
 msgstr "Zaslat žadatelům"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:66
 msgid "Notify Requestors and Ccs"
 msgstr "Zaslat žadatelům a všem Cc"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:61
 msgid "Notify Requestors and Ccs as Comment"
 msgstr "Zaslat žadatelům a všem Cc jako komentář"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:75
 msgid "Notify Requestors, Ccs and AdminCcs"
 msgstr "Zaslat žadatelům, všem Cc a všem AdminCc"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:71
 msgid "Notify Requestors, Ccs and AdminCcs as Comment"
 msgstr "Zaslat žadatelům, včem Cc a včem AdminCc jako komentář"
 
@@ -4405,39 +4484,47 @@ msgstr "Off-line načtení"
 msgid "On %1, %2 wrote:"
 msgstr "Dne %1, %2 napsal(a):"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:171 etc/upgrade/3.7.1/content:2
+msgid "On Close"
+msgstr ""
+
+#: etc/initialdata:121
 msgid "On Comment"
 msgstr "Při komentáři"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:114
 msgid "On Correspond"
 msgstr "Při korespondenci"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:103
 msgid "On Create"
 msgstr "Při založení"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:142
 msgid "On Owner Change"
 msgstr "Při změně vlastníka"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:135 etc/upgrade/3.1.17/content:15
 msgid "On Priority Change"
 msgstr "Při změně priority"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:150
 msgid "On Queue Change"
 msgstr "Při změně fronty"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:176 etc/upgrade/3.7.1/content:7
+msgid "On Reopen"
+msgstr ""
+
+#: etc/initialdata:156
 msgid "On Resolve"
 msgstr "Při vyřešení"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:127
 msgid "On Status Change"
 msgstr "Při změně stavu"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:108
 msgid "On Transaction"
 msgstr "Při transakci"
 
@@ -4463,7 +4550,7 @@ msgstr "Zobrazit jen schvalování pro požadavky založení před %1"
 msgid "Only show custom fields for:"
 msgstr "Zobrazit jen uživatelské položky pro:"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:94
 msgid "Open Tickets"
 msgstr "Otevřené požadavky"
 
@@ -4479,7 +4566,7 @@ msgstr "Otevřít"
 msgid "Open tickets"
 msgstr "Otevřené požadavky"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:95
 msgid "Open tickets on correspondence"
 msgstr "Otevřít požadavky při korespondenci"
 
@@ -4609,6 +4696,10 @@ msgstr "Heslo: %1"
 msgid "Password: Permission Denied"
 msgstr "Heslo: Přístup odmítnut"
 
+#: etc/initialdata:408
+msgid "PasswordChange"
+msgstr ""
+
 #: share/html/Admin/Users/Modify.html:370
 msgid "Passwords do not match."
 msgstr "Hesla nesouhlasí."
@@ -4625,7 +4716,7 @@ msgstr ""
 msgid "People"
 msgstr "Uživatelé"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:88
 msgid "Perform a user-defined action"
 msgstr "Provedení uživatelem definované akce"
 
@@ -4801,7 +4892,7 @@ msgstr "Tvůrce dotazu"
 msgid "Query:"
 msgstr "Dotaz:"
 
-#: lib/RT/Graph/Tickets.pm:157 lib/RT/Tickets_Overlay.pm:1723 lib/RT/Tickets_Overlay.pm:94 share/html/Elements/QueueSummary:50 share/html/Elements/QuickCreate:56 share/html/Elements/RT__Scrip/ColumnMap:61 share/html/Elements/RT__Ticket/ColumnMap:85 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:56 share/html/Ticket/Create.html:66 share/html/Ticket/Elements/EditBasics:59 share/html/Ticket/Elements/ShowBasics:80 share/html/Tools/Reports/CreatedByDates.html:87 share/html/Tools/Reports/ResolvedByDates.html:88 share/html/Tools/Reports/ResolvedByOwner.html:68 share/html/User/Elements/DelegateRights:103
+#: lib/RT/Graph/Tickets.pm:157 lib/RT/Record.pm:911 lib/RT/Tickets_Overlay.pm:1723 lib/RT/Tickets_Overlay.pm:94 share/html/Elements/QueueSummary:50 share/html/Elements/QuickCreate:56 share/html/Elements/RT__Scrip/ColumnMap:61 share/html/Elements/RT__Ticket/ColumnMap:85 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:56 share/html/Ticket/Create.html:66 share/html/Ticket/Elements/EditBasics:59 share/html/Ticket/Elements/ShowBasics:80 share/html/Tools/Reports/CreatedByDates.html:87 share/html/Tools/Reports/ResolvedByDates.html:88 share/html/Tools/Reports/ResolvedByOwner.html:68 share/html/User/Elements/DelegateRights:103
 msgid "Queue"
 msgstr "Fronta"
 
@@ -5044,17 +5135,17 @@ msgstr ""
 msgid "Refresh this page every %1 minutes."
 msgstr "Obnovit tuto stránku %quant(%1,každou,každé,každých) %numf(%1) %quant(%1,minutu,minuty,minut)."
 
-#: lib/RT/Transaction_Overlay.pm:800
+#: lib/RT/Transaction_Overlay.pm:803
 #. ($ticket->Subject)
 msgid "Reminder '%1' added"
 msgstr "Upomínka '%1' přidána"
 
-#: lib/RT/Transaction_Overlay.pm:813
+#: lib/RT/Transaction_Overlay.pm:816
 #. ($ticket->Subject)
 msgid "Reminder '%1' completed"
 msgstr "Upomínka '%1' ukončena"
 
-#: lib/RT/Transaction_Overlay.pm:806
+#: lib/RT/Transaction_Overlay.pm:809
 #. ($ticket->Subject)
 msgid "Reminder '%1' reopened"
 msgstr "Upomínka '%1' znovuotevřena"
@@ -5154,12 +5245,12 @@ msgstr "Bydliště"
 msgid "Resolve"
 msgstr "Vyřešit"
 
-#: share/html/Ticket/Update.html:178
+#: share/html/Ticket/Update.html:180
 #. ($TicketObj->id, $TicketObj->Subject)
 msgid "Resolve ticket #%1 (%2)"
 msgstr "Vyřešení požadavku #%1 (%2)"
 
-#: lib/RT/Graph/Tickets.pm:159 lib/RT/Ticket_Overlay.pm:908 lib/RT/Tickets_Overlay.pm:122 share/html/Elements/RT__Ticket/ColumnMap:211 share/html/Elements/RT__Ticket/ColumnMap:236 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:100
+#: etc/initialdata:292 lib/RT/Graph/Tickets.pm:159 lib/RT/Ticket_Overlay.pm:908 lib/RT/Tickets_Overlay.pm:122 share/html/Elements/RT__Ticket/ColumnMap:211 share/html/Elements/RT__Ticket/ColumnMap:236 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:100
 msgid "Resolved"
 msgstr "Vyřešen"
 
@@ -5441,7 +5532,7 @@ msgstr "Vidět frontu"
 msgid "Select"
 msgstr ""
 
-#: share/html/Install/DatabaseDetails.html:72 share/html/Install/DatabaseDetails.html:86
+#: share/html/Install/DatabaseDetails.html:73 share/html/Install/DatabaseDetails.html:89
 msgid "Select Database Type"
 msgstr ""
 
@@ -5537,7 +5628,7 @@ msgstr "Výběr uživatele"
 msgid "Selected Custom Fields"
 msgstr "Vybrané uživatelské položky"
 
-#: lib/RT/Crypt/GnuPG.pm:1915
+#: lib/RT/Crypt/GnuPG.pm:1942
 msgid "Selected key either is not trusted or doesn't exist anymore."
 msgstr ""
 
@@ -5553,47 +5644,47 @@ msgstr "Výběr upraven. Prosím uložte si své změny"
 msgid "Send email successfully"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:76
 msgid "Send mail to all watchers"
 msgstr "Zaslat e-mail všem pozorovatelům"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:72
 msgid "Send mail to all watchers as a \"comment\""
 msgstr "Zaslat e-mail všem pozorovatelům jako \"komentář\""
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:67
 msgid "Send mail to requestors and Ccs"
 msgstr "Zaslat e-mail žadatelům a všem Cc"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:62
 msgid "Send mail to requestors and Ccs as a comment"
 msgstr "Zaslat e-mail žadatelům a všem Ccs jako komentář"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:33
 msgid "Sends a message to the requestors"
 msgstr "Posílá zprávu žadatelům"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:80 etc/initialdata:84
 msgid "Sends mail to explicitly listed Ccs and Bccs"
 msgstr "Posílá e-mail všem přesně vyjmenovaným Cc a Bcc"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:49 etc/upgrade/3.1.17/content:7
 msgid "Sends mail to the Ccs"
 msgstr "Posílá e-mail všem Cc"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:45 etc/upgrade/3.1.17/content:3
 msgid "Sends mail to the Ccs as a comment"
 msgstr "Posílá e-mail všem Cc jako komentář"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:57
 msgid "Sends mail to the administrative Ccs"
 msgstr "Posílá e-mail všem administrativním Cc"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:53
 msgid "Sends mail to the administrative Ccs as a comment"
 msgstr "Posílá e-mail všem administrativním Cc jako komentář"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:37 etc/initialdata:41
 msgid "Sends mail to the owner"
 msgstr "Posílá e-mail vlastníkovi"
 
@@ -5806,7 +5897,7 @@ msgstr "Stát"
 msgid "Status"
 msgstr "Stav"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:278
 msgid "Status Change"
 msgstr "Změna stavu"
 
@@ -5835,7 +5926,7 @@ msgstr "Převzít požadavek"
 #. (5, 7)
 #. (6, 7)
 #. (4, 7)
-msgid "Step %1 of %2: "
+msgid "Step %1 of %2"
 msgstr ""
 
 #: lib/RT/Transaction_Overlay.pm:667
@@ -5973,7 +6064,7 @@ msgstr "Skupina systémovýh pravidel pro vnitřní použití"
 msgid "TEST_STRING"
 msgstr "Míchačka na beton"
 
-#: share/html/Search/Elements/EditFormat:69 share/html/Ticket/Elements/Tabs:197
+#: etc/initialdata:690 share/html/Search/Elements/EditFormat:69 share/html/Ticket/Elements/Tabs:197
 msgid "Take"
 msgstr "Vzít"
 
@@ -6040,7 +6131,7 @@ msgstr "Chyba při rozpoznávání vzoru"
 msgid "Templates"
 msgstr "Vzory"
 
-#: lib/RT/CustomField_Overlay.pm:855 lib/RT/Record.pm:909
+#: lib/RT/CustomField_Overlay.pm:855 lib/RT/Record.pm:919
 msgid "That is already the current value"
 msgstr "Toto je již aktuální hodnota"
 
@@ -6140,27 +6231,27 @@ msgstr ""
 msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they haven't been touched in 4 hours:"
 msgstr "Následující příkaz najde všechny aktivní požadavky ve frontě 'general' a nastaví jejich prioritu na 99, pokud nebyly tknuty poslední 4 hodiny:"
 
-#: lib/RT/Crypt/GnuPG.pm:2089
+#: lib/RT/Crypt/GnuPG.pm:2116
 msgid "The key has been disabled"
 msgstr ""
 
-#: lib/RT/Crypt/GnuPG.pm:2095
+#: lib/RT/Crypt/GnuPG.pm:2122
 msgid "The key has been revoked"
 msgstr ""
 
-#: lib/RT/Crypt/GnuPG.pm:2100
+#: lib/RT/Crypt/GnuPG.pm:2127
 msgid "The key has expired"
 msgstr ""
 
-#: lib/RT/Crypt/GnuPG.pm:2133
+#: lib/RT/Crypt/GnuPG.pm:2160
 msgid "The key is fully trusted"
 msgstr ""
 
-#: lib/RT/Crypt/GnuPG.pm:2138
+#: lib/RT/Crypt/GnuPG.pm:2165
 msgid "The key is ultimately trusted"
 msgstr ""
 
-#: lib/RT/Record.pm:912
+#: lib/RT/Record.pm:922
 msgid "The new value has been set."
 msgstr "Nová hodnota nastavena."
 
@@ -6189,7 +6280,7 @@ msgstr ""
 msgid "Theme"
 msgstr ""
 
-#: lib/RT/Crypt/GnuPG.pm:1942
+#: lib/RT/Crypt/GnuPG.pm:1969
 msgid "There are several keys suitable for encryption."
 msgstr ""
 
@@ -6198,15 +6289,15 @@ msgstr ""
 msgid "There are unread messages on this ticket."
 msgstr ""
 
-#: lib/RT/Crypt/GnuPG.pm:2128
+#: lib/RT/Crypt/GnuPG.pm:2155
 msgid "There is marginal trust in this key"
 msgstr ""
 
-#: lib/RT/Crypt/GnuPG.pm:1934
+#: lib/RT/Crypt/GnuPG.pm:1961
 msgid "There is no key suitable for encryption."
 msgstr ""
 
-#: lib/RT/Crypt/GnuPG.pm:1938
+#: lib/RT/Crypt/GnuPG.pm:1965
 msgid "There is one suitable key, but trust level is not set."
 msgstr ""
 
@@ -6256,6 +6347,10 @@ msgstr ""
 msgid "Thu."
 msgstr "čt"
 
+#: lib/RT/Record.pm:908
+msgid "Ticket"
+msgstr ""
+
 #: share/html/Ticket/ModifyAll.html:48 share/html/Ticket/ModifyAll.html:52
 #. ($Ticket->Id, $Ticket->Subject)
 msgid "Ticket #%1 Jumbo update: %2"
@@ -6298,7 +6393,7 @@ msgstr "Uživatelské položky požadavků"
 msgid "Ticket History # %1 %2"
 msgstr "Historie požadavku # %1 %2"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:293
 msgid "Ticket Resolved"
 msgstr "Požadavek vyřešen"
 
@@ -6334,7 +6429,7 @@ msgstr ""
 msgid "Ticket metadata"
 msgstr "Metadata požadavku"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:279
 msgid "Ticket status changed"
 msgstr "Stav požadavku změněn"
 
@@ -6438,11 +6533,11 @@ msgstr "Nástroje"
 msgid "Total"
 msgstr "Celkem"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:221
 msgid "Transaction"
 msgstr "Transakce"
 
-#: lib/RT/Transaction_Overlay.pm:794
+#: lib/RT/Transaction_Overlay.pm:797
 #. ($self->Data)
 msgid "Transaction %1 purged"
 msgstr "Transakce %1 vymazána"
@@ -6463,7 +6558,7 @@ msgstr "Bez udání typu objektu a id nelze volat Transaction->Create"
 msgid "TransactionDate"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:859
+#: lib/RT/Transaction_Overlay.pm:862
 msgid "Transactions are immutable"
 msgstr "Transakce jsou neměnné"
 
@@ -6513,11 +6608,11 @@ msgstr "Neimplementováno"
 msgid "Unix login"
 msgstr "Unixový login"
 
-#: lib/RT/Crypt/GnuPG.pm:2112 lib/RT/Crypt/GnuPG.pm:2117
+#: lib/RT/Crypt/GnuPG.pm:2139 lib/RT/Crypt/GnuPG.pm:2144
 msgid "Unknown (no trust value assigned)"
 msgstr ""
 
-#: lib/RT/Crypt/GnuPG.pm:2122
+#: lib/RT/Crypt/GnuPG.pm:2149
 msgid "Unknown (this value is new to the system)"
 msgstr ""
 
@@ -6601,7 +6696,7 @@ msgstr "Aktualizace požadavku"
 msgid "Update ticket #%1"
 msgstr "Aktualizace požadavku #%1"
 
-#: share/html/Ticket/Update.html:180
+#: share/html/Ticket/Update.html:182
 #. ($TicketObj->id, $TicketObj->Subject)
 msgid "Update ticket #%1 (%2)"
 msgstr "Aktualizace požadavku #%1 (%2)"
@@ -6685,6 +6780,10 @@ msgstr "Další administrativní nástroje RT"
 msgid "Use system default (%1)"
 msgstr ""
 
+#: lib/RT/Record.pm:909
+msgid "User"
+msgstr ""
+
 #: lib/RT/Ticket_Overlay.pm:398
 #. ($args{'Owner'})
 msgid "User '%1' could not be found."
@@ -6694,7 +6793,7 @@ msgstr "Uživatel '%1' nemůže být nalezen"
 msgid "User (created - expire)"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:164 etc/initialdata:87
 msgid "User Defined"
 msgstr "Uživatelem definované"
 
@@ -6861,23 +6960,23 @@ msgstr ""
 msgid "When RT sends an email it sets the From: and Reply-To: headers so users can add to the conversation by just hitting Reply in their mail client.  It uses different addresses for Replies and Comments.  These can be changed for each of your queues.  These addresses will need to be configured to use the <tt>rt-mailgate</tt> program."
 msgstr ""
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:607
 msgid "When a ticket has been approved by all approvers, add correspondence to the original ticket"
 msgstr "Přidat korespondenci k původnímu požadavku, pokud byl požadavek schválen všemi"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:571
 msgid "When a ticket has been approved by any approver, add correspondence to the original ticket"
 msgstr "Přidat korespondenci k původnímu požadavku, pokud byl požadavek kýmkoli schválen"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:104
 msgid "When a ticket is created"
 msgstr "Když je požadavek vytvořen"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:504
 msgid "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"
 msgstr "Upozornit vlastníka a všechny AdminCc, jejichž schválení se očekává, při vytvoření schvalovaného požadavku"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:109
 msgid "When anything happens"
 msgstr "Stane-li se cokoli"
 
@@ -6885,35 +6984,43 @@ msgstr "Stane-li se cokoli"
 msgid "When you click on 'Check Database Connectivity' there may be a small delay while RT tries to connect to your database"
 msgstr ""
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:172 etc/upgrade/3.7.1/content:3
+msgid "Whenever a ticket is closed"
+msgstr ""
+
+#: etc/initialdata:177 etc/upgrade/3.7.1/content:8
+msgid "Whenever a ticket is reopened"
+msgstr ""
+
+#: etc/initialdata:157
 msgid "Whenever a ticket is resolved"
 msgstr "Je-li vyřešen požadavek"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:143
 msgid "Whenever a ticket's owner changes"
 msgstr "Změní-li se vlastník požadavku"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:136 etc/upgrade/3.1.17/content:16
 msgid "Whenever a ticket's priority changes"
 msgstr "Při změně priority požadavku"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:151
 msgid "Whenever a ticket's queue changes"
 msgstr "Změní-li se fronta požadavku"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:128
 msgid "Whenever a ticket's status changes"
 msgstr "Změní-li se stav požadavku"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:165
 msgid "Whenever a user-defined condition occurs"
 msgstr "Splní-li se uživatelská podmínka"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:122
 msgid "Whenever comments come in"
 msgstr "Přijde-li komentář"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:115
 msgid "Whenever correspondence comes in"
 msgstr "Přijde-li korespondence"
 
@@ -6996,7 +7103,7 @@ msgstr "V této frontě nemáte práva vytvářet požadavky."
 msgid "You may not create requests in that queue."
 msgstr "V této frontě nemůžete vytvářet požadavky."
 
-#: share/html/Install/Basics.html:82
+#: share/html/Install/Basics.html:85
 msgid "You must enter an Administrative password"
 msgstr ""
 
@@ -7016,15 +7123,16 @@ msgstr ""
 msgid "You're welcome to login again"
 msgstr "Jste vítáni k dalšímu přihlášení"
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:588 etc/initialdata:590
+#. (# loc	    $self->TransactionObj->CreatorObj->Name,)
 msgid "Your request has been approved by %1. Other approvals may still be pending."
 msgstr "Váš požadavek byl schválen uživatelem %1. Další schválení mohou být ještě očekávána."
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:626
 msgid "Your request has been approved."
 msgstr "Váš požadavek byl schválen."
 
-#: NOT FOUND IN SOURCE
+#: etc/initialdata:531
 msgid "Your request was rejected."
 msgstr "Váš požadavek byl odmítnut."
 
@@ -7134,7 +7242,7 @@ msgstr "chyba: není co přesunout"
 msgid "error: nothing to toggle"
 msgstr "chyba: není co přepnout"
 
-#: lib/RT/Crypt/GnuPG.pm:2134
+#: lib/RT/Crypt/GnuPG.pm:2161
 msgid "full"
 msgstr ""
 
@@ -7171,15 +7279,15 @@ msgstr "je"
 msgid "isn't"
 msgstr "není"
 
-#: lib/RT/Crypt/GnuPG.pm:2090
+#: lib/RT/Crypt/GnuPG.pm:2117
 msgid "key disabled"
 msgstr ""
 
-#: lib/RT/Crypt/GnuPG.pm:2101
+#: lib/RT/Crypt/GnuPG.pm:2128
 msgid "key expired"
 msgstr ""
 
-#: lib/RT/Crypt/GnuPG.pm:2096
+#: lib/RT/Crypt/GnuPG.pm:2123
 msgid "key revoked"
 msgstr ""
 
@@ -7191,7 +7299,7 @@ msgstr ""
 msgid "less than"
 msgstr "menší než"
 
-#: lib/RT/Crypt/GnuPG.pm:2129
+#: lib/RT/Crypt/GnuPG.pm:2156
 msgid "marginal"
 msgstr ""
 
@@ -7240,7 +7348,7 @@ msgstr "bez jména"
 msgid "no value"
 msgstr "bez hodnoty"
 
-#: lib/RT/Crypt/GnuPG.pm:2106 share/html/Admin/Elements/EditQueueWatchers:50 share/html/Ticket/Elements/EditWatchers:51
+#: lib/RT/Crypt/GnuPG.pm:2133 share/html/Admin/Elements/EditQueueWatchers:50 share/html/Ticket/Elements/EditWatchers:51
 msgid "none"
 msgstr "žádný"
 
@@ -7345,7 +7453,7 @@ msgstr "požadavek #%1 %2"
 msgid "top to bottom"
 msgstr ""
 
-#: lib/RT/Crypt/GnuPG.pm:2139
+#: lib/RT/Crypt/GnuPG.pm:2166
 msgid "ultimate"
 msgstr ""
 
