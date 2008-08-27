@@ -92,9 +92,10 @@ else {
     if (!keys(%data)) {
         # GET ticket/new: Return a suitable default form.
         # We get defaults from queue/1 (XXX: What if it isn't there?).
-        my $due = RT::Date->new() ;
-        my $queue = RT::Model::Queue->new() ;
-        my $starts = RT::Date->new() ;
+        my $due = RT::Date->new( current_user => Jifty->web->current_user ) ;
+        my $queue = RT::Model::Queue->new ( current_user =>
+                Jifty->web->current_user ) ;
+        my $starts = RT::Date->new( current_user => Jifty->web->current_user);
         $queue->load(1);
         $due->set_to_now;
         $due->add_days($queue->default_due_in) if $queue->default_due_in;
@@ -102,12 +103,12 @@ else {
 
         return [
             "# Required: id, Queue",
-            [ qw(id queue requestor subject cc AdminCc Owner status priority
-                 initial_priority final_priority time_estimated starts Due Text) ],
+            [ qw(id queue requestor subject cc admin_cc owner status priority
+                 initial_priority final_priority time_estimated starts due text) ],
             {
                 id               => "ticket/new",
                 queue            => $queue->name,
-                Requestor        => Jifty->web->current_user->name,
+                requestor        => Jifty->web->current_user->name,
                 subject          => "",
                 cc               => [],
                 admin_cc          => [],
@@ -119,7 +120,7 @@ else {
                 time_estimated    => 0,
                 starts           => $starts->iso,
                 due              => $due->iso,
-                Text             => "",
+                text             => "",
             },
             0
         ];
@@ -132,7 +133,7 @@ else {
         foreach my $k (keys %data) {
             # flexibly parse any dates
             if ($dates{lc $k}) {
-                my $time = new RT::Date Jifty->web->current_user;
+                my $time = RT::Date->new( current_user => Jifty->web->current_user );
                 $time->set(format => 'unknown', value => $data{$k});
                 $data{$k} = $time->iso;
             }
@@ -142,14 +143,15 @@ else {
             }
             # Set custom field
             elsif ($k =~ /^$cf_spec/) {
-                my $cf = RT::Model::CustomField->new(current_user => RT->system_user );
+                my $cf = RT::Model::CustomField->new(current_user =>
+                        Jifty->web->current_user );
                 my $cfk = $1 || $2;
                 unless($cf->load_by_name( name => $cfk )) {
                     push @comments, "# Invalid custom field name ($cfk)";
                     delete $data{$k};
                     next;
                 }
-                $v{"CustomField-".$cf->id()} = delete $data{$k};
+                $v{"custom_field-".$cf->id()} = delete $data{$k};
             }
             elsif (lc $k eq 'text') {
                 $text = delete $data{$k};
@@ -163,7 +165,7 @@ else {
             $v{mime_obj} =
                 MIME::Entity->build(
                     From => Jifty->web->current_user->email,
-                    subject => $v{subject},
+                    Subject => $v{subject},
                     Data => $text
                 );
         }
@@ -188,29 +190,29 @@ if (!keys(%data)) {
     my ($time, $key, $val, @data);
 
     push @data, [ id    => "ticket/".$ticket->id   ];
-    push @data, [ Queue => $ticket->queue_obj->name ] 
+    push @data, [ queue => $ticket->queue_obj->name ] 
 	if (!%$fields || exists $fields->{lc 'Queue'});
-    push @data, [ Owner => $ticket->owner_obj->name ]
+    push @data, [ owner => $ticket->owner_obj->name ]
 	if (!%$fields || exists $fields->{lc 'Owner'});
-    push @data, [ Creator => $ticket->creator_obj->name ]
+    push @data, [ creator => $ticket->creator_obj->name ]
 	if (!%$fields || exists $fields->{lc 'Creator'});
 
     foreach (qw(subject status priority initial_priority final_priority)) {
 	next unless (!%$fields || (exists $fields->{lc $_}));
-        push @data, [ucfirst $_ => $ticket->$_ ];
+        push @data, [$_ => $ticket->$_ ];
     }
 
     foreach $key (@people) {
         next unless (!%$fields || (exists $fields->{lc $key}));
         
-        push @data, [ ucfirst $key => [ $ticket->role_group($key eq 'requestors' ? 'requestor' : $key)->member_emails ] ];
+        push @data, [ $key => [ $ticket->role_group($key eq 'requestors' ? 'requestor' : $key)->member_emails ] ];
     }
 
     $time = RT::Date->new();
     foreach $key (@dates) {
 	next unless (!%$fields || (exists $fields->{lc $key}));
         $time->set(format => 'sql', value => $ticket->$key);
-        push @data, [ ucfirst $key => $time->as_string ];
+        push @data, [ $key => $time->as_string ];
     }
 
     $time = RT::Date->new();
@@ -218,7 +220,7 @@ if (!keys(%data)) {
 	next unless (!%$fields || (exists $fields->{lc $key}));
         $val = $ticket->$key || 0;
         $val = "$val minutes" if $val;
-        push @data, [ ucfirst $key => $val ];
+        push @data, [ $key => $val ];
     }
 
     # Display custom fields
