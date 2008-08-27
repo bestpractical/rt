@@ -53,7 +53,7 @@
   </tr>
   <tr>
     <td class="label"><&|/l&>Started</&>:</td>
-    <td class="entry"><& /Elements/SelectDate, menu_prefix => 'Started', current => 0 &> (<%$ticket_obj->started_obj->as_string %>)</td>
+    <td class="entry"><& /Elements/SelectDate, menu_prefix => 'started', current => 0 &> (<%$ticket_obj->started_obj->as_string %>)</td>
   </tr>
 
   <tr>
@@ -61,13 +61,13 @@
       <&|/l&>Last Contact</&>:
     </td>
     <td class="entry">
-      <& /Elements/SelectDate, menu_prefix => 'Told', current => 0 &> (<% $ticket_obj->told_obj->as_string %>)
+      <& /Elements/SelectDate, menu_prefix => 'told', current => 0 &> (<% $ticket_obj->told_obj->as_string %>)
     </td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Due</&>:</td>
     <td class="entry">
-      <& /Elements/SelectDate, menu_prefix => 'Due', current => 0 &> (<% $ticket_obj->due_obj->as_string %>)
+      <& /Elements/SelectDate, menu_prefix => 'due', current => 0 &> (<% $ticket_obj->due_obj->as_string %>)
     </td>
   </tr>
 </table>

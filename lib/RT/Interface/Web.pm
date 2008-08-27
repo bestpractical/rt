@@ -1279,24 +1279,24 @@ sub process_ticket_dates {
 
     # {{{ Set date fields
     my @date_fields = qw(
-        Told
-        Resolved
+        told
+        resolved
         starts
-        Started
-        Due
+        started
+        due
     );
 
     #Run through each field in this list. update the value if apropriate
     foreach my $field (@date_fields) {
-        next unless exists $args_ref->{ $field . '_Date' };
-        next if $args_ref->{ $field . '_Date' } eq '';
+        next unless exists $args_ref->{ $field . '_date' };
+        next if $args_ref->{ $field . '_date' } eq '';
 
         my ( $code, $msg );
 
         my $DateObj = RT::Date->new();
         $DateObj->set(
             format => 'unknown',
-            value  => $args_ref->{ $field . '_Date' }
+            value  => $args_ref->{ $field . '_date' }
         );
 
         my $obj = $field . "_obj";

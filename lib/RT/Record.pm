@@ -360,7 +360,7 @@ sub load_by_cols {
 
 # There is room for optimizations in most of those subs:
 
-# {{{ last_updatedObj
+# {{{ last_updated_obj
 
 sub last_updated_obj {
     my $self = shift;
@@ -396,7 +396,7 @@ sub age_as_string {
 
 # }}}
 
-# {{{ last_updatedAsString
+# {{{ last_updated_as_string
 
 # TODO this should be deprecated
 
@@ -490,9 +490,9 @@ sub _set {
 
 # }}}
 
-# {{{ sub _setlast_updated
+# {{{ sub set_last_updated
 
-=head2 _setlast_updated
+=head2 set_last_updated
 
 This routine updates the last_updated and last_updated_by columns of the row in question
 It takes no options. Arguably, this is a bug
@@ -546,11 +546,11 @@ sub creator_obj {
 
 sub last_updated_by_obj {
     my $self = shift;
-    unless ( exists $self->{last_updated_byObj} ) {
-        $self->{'last_updated_byObj'} = RT::Model::User->new;
-        $self->{'last_updated_byObj'}->load( $self->last_updated_by );
+    unless ( exists $self->{last_updated_by_obj} ) {
+        $self->{'last_updated_by_obj'} = RT::Model::User->new;
+        $self->{'last_updated_by_obj'}->load( $self->last_updated_by );
     }
-    return $self->{'last_updated_byObj'};
+    return $self->{'last_updated_by_obj'};
 }
 
 # }}}
