@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$Name%>">
 %foreach (@Types) {
-<option value="<% $_ %>"<% ($_ eq $Default) && qq[ selected="selected"] |n %>><&|/l&><% $_ %></&>
+<option value="<% $_ %>"<% ($_ eq $Default) && qq[ selected="selected"] |n %>><% loc($_) %>
 %}
 </select>
 
