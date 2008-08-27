@@ -4,9 +4,9 @@ FEATURES
 ========
  * SelfService users can search for Articles
  * Global Topics
-   * Queue specific articles using Topics
+   * Queue specific Article Lists using Topics
  * Integration with 3.8
- * RTFM UI now available during Ticket Creation
+ * RTFM UI now available during Ticket Creation (only in 3.8.1 or higher)
 
 BUGS
 ====
