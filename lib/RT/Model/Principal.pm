@@ -167,7 +167,7 @@ sub grant_right {
     }
 
     #ACL check handled in ACE.pm
-    my $ace = RT::Model::ACE->new;
+    my $ace = RT::Model::ACE->new( current_user => RT->system_user );
 
     my $type = $self->_get_principal_type_for_acl();
 
