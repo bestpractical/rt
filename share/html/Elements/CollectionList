@@ -67,7 +67,15 @@ if ( @order_by ) {
 
 $page = 1 unless $page && $page > 0; # workaround problems with Page = '' or undef
 $page = 1 unless $page && $page > 0;    # workaround problems with $page = '' or undef
-$collection->set_page_info($rows ? ( per_page => $rows) : (per_page => 25), current_page => $page);
+
+# $rows => 0 means unlimited. not a cool way to do this, so give it a huge 
+# number
+$collection->set_page_info(
+    defined $rows
+    ? ( per_page => $rows || 1_000_000_000 )
+    : ( per_page => 25 ),
+    current_page => $page
+);
 
 # display_format lets us use a "temporary" format for display, while 
 # still using our original format for next/prev page links.
