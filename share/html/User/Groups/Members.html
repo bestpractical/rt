@@ -125,10 +125,10 @@ if ($key =~ /^delete_member-(\d+)$/) {
 }
 
 # Make sure add_members is always an array
-my @add_membersUsers = (ref $add_membersUsers eq 'ARRAY') ? @{$add_membersUsers} : ($add_membersUsers);
+my @add_member_users = (ref $add_member_users eq 'ARRAY') ? @{$add_member_users} : ($add_member_users);
 my @add_membersGroups = (ref $add_membersGroups eq 'ARRAY') ? @{$add_membersGroups} : ($add_membersGroups);
 
-foreach my $member (@add_membersUsers, @add_membersGroups) {
+foreach my $member (@add_member_users, @add_membersGroups) {
     next unless ($member);
 
     my $principal;
@@ -154,7 +154,7 @@ my $title = _('Editing membership for personal group %1', $Group->name);
 </%INIT>
 
 <%ARGS>
-$add_membersUsers => undef
+$add_member_users => undef
 $add_membersGroups => undef
 $id => undef
 </%ARGS>

@@ -103,7 +103,7 @@ else {
 
         my ($val, $msg) = $Dashboard->save(
             name    => $ARGS{'name'},
-            Privacy => $ARGS{'privacy'},
+            privacy => $ARGS{'privacy'},
         );
 
         if (!$val) {
@@ -131,7 +131,7 @@ else {
 }
 
 if (!$create && !$tried_create && $id && $ARGS{'save'}) {
-    my ($ok, $msg) = $Dashboard->update(Privacy  => $ARGS{'privacy'},
+    my ($ok, $msg) = $Dashboard->update(privacy  => $ARGS{'privacy'},
                                         name     => $ARGS{'name'});
 
     if ($ok) {
