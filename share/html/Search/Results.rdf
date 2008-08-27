@@ -88,8 +88,9 @@ $r->content_type('application/rss+xml');
           title       =>  $Ticket->Subject || loc('No Subject'),
           link        => RT->Config->Get('WebURL')."Ticket/Display.html?id=".$Ticket->id,
           description => $Ticket->Transactions->First->Content,
-          pubDate     => $Ticket->CreatedObj->Date('RFC2822'),
-          author      => $Ticket->CreatorObj->RealName . " <".$Ticket->CreatorObj->EmailAddress.">" || RT->Config->Get('OwnerEmail'),
+          dc          => { creator => $creator_str,
+                           date => $Ticket->CreatedObj->RFC2822,
+                         },
           guid        => $Ticket->Queue . '_' . $Ticket->id,
         );
     }
