@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 % if ( $show ne 'Groups' ) {
 <b><&|/l&>Users</&></b>
-<select multiple="multiple" name="<% $name %>Users" size="10">
+<select multiple="multiple" name="<% $name %>_users" size="10">
 % while ( my $user = $users->next ) {
 % next if $skip_users->{ $user->id };
 <option value="User-<% $user->id %>"><& /Elements/ShowUser, user => $user &></option>
@@ -67,7 +67,8 @@
 % }
 
 <%INIT>
-my $users = RT::Model::UserCollection->new();
+my $users = RT::Model::UserCollection->new( current_user =>
+        Jifty->web->current_user );
 
 $users->limit(
     column           => 'id',

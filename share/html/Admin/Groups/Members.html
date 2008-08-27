@@ -75,8 +75,8 @@
 <br />
 <br />
 <&|/l&>Users</&>
-% my $Users = $Group->user_members_obj( Recursively => 0 );
-% $Users->order_by( column => $Userorder_by, order => $userorder );
+% my $Users = $Group->user_members_obj( recursively => 0 );
+% $Users->order_by( column => $user_order_by, order => $userorder );
 <ul>
 % while ( my $user = $Users->next ) {
 % $UsersSeen{ $user->id } = 1 if $skip_seen_users;
@@ -131,10 +131,12 @@ foreach my $member (grep $_, @add_members_users, @add_members_groups) {
     my $principal;
 
     if ($member =~ /^Group-(\d+)$/) {
-        $principal = RT::Model::Group->new();
+        $principal = RT::Model::Group->new( current_user =>
+                Jifty->web->current_user );
         $principal->load($1);
     } elsif ($member =~ /^User-(\d+)$/) {
-        $principal = RT::Model::User->new();
+        $principal = RT::Model::User->new( current_user =>
+                Jifty->web->current_user);
         $principal->load($1);
     } else {
         next;
@@ -151,7 +153,7 @@ foreach my $member (grep $_, @add_members_users, @add_members_groups) {
 @add_members_users  => ()
 @add_members_groups => ()
 $id => undef
-$Userorder_by => 'name'
+$user_order_by => 'name'
 $userorder => 'ASC'
 $skip_seen_users => 1
 $skip_seen_groups => 1
