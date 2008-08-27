@@ -80,8 +80,8 @@ $m->content_contains("Show");
 
 $m->follow_link_ok({text => "Basics"});
 $m->content_contains("Modify the dashboard different dashboard");
-
 $m->follow_link_ok({text => "Queries"});
+
 $m->content_contains("Modify the queries of dashboard different dashboard");
 $m->form_name( 'dashboard_queries' );
 $m->field('searches-Available' => ["2-RT::System-1"]);
@@ -143,7 +143,7 @@ $m->content_contains("Permission denied");
 RT::Record->flush_cache if RT::Record->can('FlushCache');
 is($user_obj->attributes->named('Subscription'), 0, "no subscriptions");
 
-$user_obj->principal_object->grant_right(right => 'SubscribeDashboard', object => RT->system_user);
+$user_obj->principal_object->grant_right(right => 'SubscribeDashboard', object => RT->system );
 
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->follow_link_ok({text => "Subscription"});
@@ -170,7 +170,7 @@ $m->content_contains("Modify the subscription to dashboard different dashboard")
 $m->get_ok("/Dashboards/Modify.html?id=$id&Delete=1");
 $m->content_contains("Permission denied", "unable to delete dashboard because we lack DeleteOwnDashboard");
 
-$user_obj->principal_object->grant_right(right => 'DeleteOwnDashboard', object => RT->system_user);
+$user_obj->principal_object->grant_right(right => 'DeleteOwnDashboard', object => RT->system );
 
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->content_contains('Delete', "Delete button shows because we have DeleteOwnDashboard");

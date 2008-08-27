@@ -26,8 +26,9 @@ $user_obj->principal_object->grant_right(right => $_, object => $queue)
 
 # grant the user all these rights so we can make sure that the group rights
 # are checked and not these as well
-$user_obj->principal_object->grant_right(right => $_, object => RT->system_user)
+$user_obj->principal_object->grant_right(right => $_, object => RT->system )
     for qw/SubscribeDashboard CreateOwnDashboard SeeOwnDashboard ModifyOwnDashboard DeleteOwnDashboard/;
+
 # }}}
 # create and test groups (outer < inner < user) {{{
 my $inner_group = RT::Model::Group->new(current_user => RT->system_user);
@@ -42,7 +43,7 @@ ok($ok, "created outer group: $msg");
 ok($ok, "added inner as a member of outer: $msg");
 
 ($ok, $msg) = $inner_group->add_member($user_obj->principal_id);
-ok($ok, "added user as a member of member: $msg");
+ok($ok, "added user as a member of inner $msg");
 
 ok($outer_group->has_member($inner_group->principal_id), "outer has inner");
 ok(!$outer_group->has_member($user_obj->principal_id), "outer doesn't have user directly");
