@@ -774,7 +774,8 @@ sub BriefDescription {
             $q1->Load( $self->OldValue );
             my $q2 = new RT::Queue( $self->CurrentUser );
             $q2->Load( $self->NewValue );
-            return $self->loc("[_1] changed from [_2] to [_3]", $self->Field , $q1->Name , $q2->Name);
+            return $self->loc("[_1] changed from [_2] to [_3]",
+                              $self->loc($self->Field) , $q1->Name , $q2->Name);
         }
 
         # Write the date/time change at local time:
@@ -783,10 +784,12 @@ sub BriefDescription {
             $t1->Set(Format => 'ISO', Value => $self->NewValue);
             my $t2 = new RT::Date($self->CurrentUser);
             $t2->Set(Format => 'ISO', Value => $self->OldValue);
-            return $self->loc( "[_1] changed from [_2] to [_3]", $self->Field, $t2->AsString, $t1->AsString );
+            return $self->loc( "[_1] changed from [_2] to [_3]", $self->loc($self->Field), $t2->AsString, $t1->AsString );
         }
         else {
-            return $self->loc( "[_1] changed from [_2] to [_3]", $self->Field, ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'" );
+            return $self->loc( "[_1] changed from [_2] to [_3]",
+                               $self->loc($self->Field),
+                               ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'" );
         }
     },
     PurgeTransaction => sub {
