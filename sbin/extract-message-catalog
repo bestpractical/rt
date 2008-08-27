@@ -59,12 +59,14 @@ use vars qw($DEBUG $FILECAT);
 
 $DEBUG = 1;
 
-@ARGV = (<lib/RT/I18N/*.po>, "lib/RT/I18N/rt.pot") unless @ARGV;
+# po dir is for extensions
+@ARGV = (<lib/RT/I18N/*.po>, <lib/RT/I18N/*.pot>, <po/*.po>, <po/*.pot>) unless @ARGV;
 
 $FILECAT = {};
 
 # extract all strings and stuff them into $FILECAT
-File::Find::find( { wanted => \&extract_strings_from_code, follow => 1 }, qw(bin sbin lib share etc) );
+# scan html dir for extensions
+File::Find::find( { wanted => \&extract_strings_from_code, follow => 1 }, qw(bin sbin lib share html etc) );
 
 # ensure proper escaping and [_1] => %1 transformation
 foreach my $str ( sort keys %{$FILECAT} ) {
@@ -103,7 +105,8 @@ sub extract_strings_from_code {
     local $/;
     return if ( -d $_ );
     return if ( $File::Find::dir =~ 'lib/blib|lib/t/autogen|var|m4|local|\.svn' );
-    return if ( /\.pot$|\.po$|\.bak$|~|,D|,B$|extract-message-catalog$|tweak-template-locstring$/ );
+    return if ( /\.(?:pot|po|bak|gif|png|psd|jpe?g|svg)$/ );
+    return if ( /~|,D|,B$|extract-message-catalog$|tweak-template-locstring$/ );
     return if ( /^[\.#]/ );
     return if ( -f "$_.in" );
 
