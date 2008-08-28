@@ -76,9 +76,11 @@ use Getopt::Long;
 ### after: use lib qw(/home/jesse/svk/3.999-DANGEROUS/lib);
 use lib qw(/home/jesse/svk/3.999-DANGEROUS/local/lib /home/jesse/svk/3.999-DANGEROUS/lib);
 
+use RT;
+BEGIN { RT->init_jifty }
 use RT::Shredder;
 use RT::Shredder::Constants;
-RT::Shredder::Init();
+RT::Shredder::init();
 
 our %opt;
 parse_args();
