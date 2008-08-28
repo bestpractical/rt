@@ -11,7 +11,7 @@ use RT::Model::Queue;
 use RT::Model::CustomField;
 
 #########################################################
-# Test sorting by Queue, we sort by its name
+# Test sorting by queue, we sort by its name
 #########################################################
 
 
@@ -63,6 +63,7 @@ sub run_tests {
 
             my ($order_ok, $last) = (1, $order eq 'ASC'? '-': 'zzzzzz');
             while ( my $t = $tix->next ) {
+                use Data::Dumper;
                 my $tmp;
                 if ( $order eq 'ASC' ) {
                     $tmp = ((split( /,/, $last))[0] cmp (split( /,/, $t->subject))[0]);
@@ -82,7 +83,7 @@ sub run_tests {
                 diag "Wrong SQL query:". $tix->build_select_query;
                 $tix->goto_first_item;
                 while ( my $t = $tix->next ) {
-                    diag sprintf "%02d %02d- %s", $t->queue_obj->id, $t->id, $t->subject;
+                    diag sprintf "%02d- %s", $t->id, $t->subject;
                 }
             }
         }
@@ -98,4 +99,3 @@ sub run_tests {
     { order => "queue" },
 );
 run_tests();
-

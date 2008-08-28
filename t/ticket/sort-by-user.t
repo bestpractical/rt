@@ -11,7 +11,7 @@ use RT::Model::Queue;
 use RT::Model::CustomField;
 
 #########################################################
-# Test sorting by Owner, Creator and LastUpdatedBy
+# Test sorting by owner, creator and last_updated_by
 # we sort by user name
 #########################################################
 
@@ -58,15 +58,15 @@ sub add_tix_from_data {
         my %args = %{ shift(@data) };
 
         my ( $id, undef, $msg ) = $t->create( %args, queue => $queue->id );
-        if ( $args{'Owner'} ) {
-            is $t->owner, $args{'Owner'}, "owner is correct";
+        if ( $args{'owner'} ) {
+            is $t->owner, $args{'owner'}, "owner is correct";
         }
-        if ( $args{'Creator'} ) {
-            is $t->creator, $args{'Creator'}, "creator is correct";
+        if ( $args{'creator'} ) {
+            is $t->creator->id, $args{'creator'}, "creator is correct";
         }
         # hackish, but simpler
-        if ( $args{'LastUpdatedBy'} ) {
-            $t->__Set( field => 'LastUpdatedBy', value => $args{'LastUpdatedBy'} );
+        if ( $args{'last_updated_by'} ) {
+            $t->__set( column => 'last_updated_by', value => $args{'last_updated_by'} );
         }
         ok( $id, "ticket created" ) or diag("error: $msg");
         push @res, $t;
@@ -125,7 +125,7 @@ sub run_tests {
 );
 @tickets = add_tix_from_data();
 @test = (
-    { order => "Owner" },
+    { order => "owner" },
 );
 run_tests();
 
@@ -136,7 +136,7 @@ run_tests();
 );
 @tickets = add_tix_from_data();
 @test = (
-    { order => "Creator" },
+    { order => "creator" },
 );
 run_tests();
 
