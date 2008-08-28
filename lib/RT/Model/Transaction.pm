@@ -508,8 +508,8 @@ sub content {
     my $self = shift;
     my %args = (
         type => $Preferredcontent_type || 'text/plain',
-        Quote => 0,
-        Wrap  => 70,
+        quote => 0,
+        wrap  => 70,
         @_
     );
 

@@ -100,7 +100,7 @@ activated in the config.
 sub commit {
     my $self = shift;
 
-    $self->defer_digest_recipients() if RT->config->get('RecordOutgoingemail');
+    $self->defer_digest_recipients() if RT->config->get('RecordOutgoingEmail');
     my $message = $self->template_obj->mime_obj;
 
     my $orig_message;
@@ -632,10 +632,10 @@ sub defer_digest_recipients {
         # at this point.
         Jifty->log->debug( $self->template_obj->mime_obj->head->as_string );
         foreach my $rcpt ( map { $_->address }
-            $self->AddressesFromHeader($mailfield) )
+            $self->addresses_from_header($mailfield) )
         {
             next unless $rcpt;
-            my $user_object = RT::Model::User->new(RT->system_user);
+            my $user_object = RT::Model::User->new( current_user => RT->system_user);
             $user_object->load_by_email($rcpt);
             if ( !$user_object->id ) {
 
@@ -702,7 +702,7 @@ sub record_deferred_recipients {
     $txn_obj->load($txn_id);
     my ( $ret, $msg ) = $txn_obj->add_attribute(
         name    => 'DeferredRecipients',
-        Content => $self->{'Deferred'}
+        content => $self->{'Deferred'}
     );
     Jifty->log->warn(
         "Unable to add deferred recipients to outgoing transaction: $msg")
