@@ -84,7 +84,7 @@
 %           $name = $query->name;
 %       }
         <li>
-            <% loc($name, $fields{'Rows'}) %>
+            <% loc($name, $fields{'rows'}) %>
         </li>
 %    }
 </ol>
@@ -100,32 +100,33 @@
 <tr><td class="label">
 <&|/l&>Frequency</&>:
 </td><td class="value">
-<input type="radio" name="frequency" value="daily" <% $fields{'Frequency'} eq 'daily' ? 'checked="checked"' : "" %>>
-    daily
-</input><br />
-
-<input type="radio" name="frequency" value="weekly"<% $fields{'Frequency'} eq 'weekly' ? 'checked="checked"' : "" %>>
-weekly</input>, on
+<input type="radio" name="frequency" value="daily" <% $fields{'frequency'} eq
+'daily' ? 'checked="checked"' : "" |n %> />daily
+<br />
+<input type="radio" name="frequency" value="weekly"<% $fields{'frequency'} eq
+'weekly' ? 'checked="checked"' : "" |n %> />weekly
+, on
 <select name="dow">
 %   for my $dow (qw/Monday Tuesday Wednesday Thursday Friday Saturday Sunday/) {
-    <option value="<% $dow %>" <% $fields{'Dow'} eq $dow ? 'selected="selected"' : '' %>><% loc($dow) %></option>
+    <option value="<% $dow %>" <% $fields{'dow'} eq $dow ?
+'selected="selected"' : '' |n %>><% loc($dow) %></option>
 %   }
 </select>
 <br />
 
-<input type="radio" name="frequency" value="monthly"<% $fields{'Frequency'} eq 'monthly' ? 'checked="checked"' : "" %>>
-monthly</input> , on day
+<input type="radio" name="frequency" value="monthly"<% $fields{'frequency'} eq
+'monthly' ? 'checked="checked"' : "" |n %>/>monthly
+, on day
 <select name="dom">
 %   for my $dom (1..31) {
-    <option value="<% $dom %>" <% $fields{'Dom'} == $dom ? 'selected="selected"' : '' %>><% loc($dom) %></option>
+    <option value="<% $dom %>" <% $fields{'dom'} == $dom ?
+'selected="selected"' : '' |n %>><% loc($dom) %></option>
 %   }
 </select>
 <br />
 
-<input type="radio" name="frequency" value="never" <% $fields{'Frequency'} eq 'never' ? 'checked="checked"' : "" %>>
-    never
-</input>
-
+<input type="radio" name="frequency" value="never" <% $fields{'frequency'} eq
+'never' ? 'checked="checked"' : "" |n%>>never
 </td></tr>
 <tr><td class="label">
 <&|/l&>Hour</&>:
@@ -133,7 +134,7 @@ monthly</input> , on day
 <select name="hour">
 % for my $hour (0..23) {
 %     my $formatted = sprintf '%02d:00', $hour;
-%     my $selected = $formatted eq $fields{'Hour'}
+%     my $selected = $formatted eq $fields{'hour'}
 %                  ? 'selected="selected"'
 %                  : '';
 
@@ -147,7 +148,7 @@ monthly</input> , on day
 </td><td class="value">
 <select name="rows">
 %   for my $rows (1, 2, 5, 10, 15, 20, 25, 50, 75, 100, 0) {
-    <option value="<% $rows %>" <% $fields{'Rows'} eq $rows ? 'selected="selected"' : '' %>><% loc($rows || 'Unlimited') %></option>
+    <option value="<% $rows %>" <% $fields{'rows'} eq $rows ? 'selected="selected"' : '' %>><% loc($rows || 'Unlimited') %></option>
 %   }
 </select>
 </td></tr>
@@ -237,7 +238,7 @@ if (defined $ARGS{save}) {
             unless $DashboardObj->current_user_can_subscribe;
 
         my ($val, $msg) = $SubscriptionObj->create(
-            name        => 'subscription',
+            name        => 'Subscription',
             description => 'Subscription to dashboard ' . $dashboard_id,
             content_type => 'storable',
             object      => Jifty->web->current_user->user_object,
