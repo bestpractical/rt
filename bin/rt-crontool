@@ -51,13 +51,13 @@ use Carp;
 
 use lib ("/home/jesse/svk/3.999-DANGEROUS/local/lib", "/home/jesse/svk/3.999-DANGEROUS/lib");
 
-BEGIN { use Jifty; Jifty->new }
-
-package RT;
+use RT;
 
 use Getopt::Long;
 
-use RT::Interface::CLI qw(clean_env get_current_user get_message_content loc);
+BEGIN { RT::init_jifty(); }
+
+use RT::Interface::CLI qw(clean_env get_current_user get_message_content );
 use RT::Model::TicketCollection;
 use RT::Model::Template;
 
