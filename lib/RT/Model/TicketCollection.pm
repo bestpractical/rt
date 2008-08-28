@@ -100,7 +100,7 @@ our %FIELD_METADATA = (
     Type             => [ 'ENUM', ],
     Creator          => [ 'ENUM' => 'User', ],
     LastUpdatedBy  => [ 'ENUM' => 'User', ],
-    Owner            => [ 'WATCHERFIELD' => 'owner', ],
+    Owner            => [ 'WATCHERFIELD' => 'Owner', ],
     EffectiveId     => [ 'INT', ],
     Id               => [ 'INT', ],
     InitialPriority => [ 'INT', ],
@@ -1437,10 +1437,48 @@ sub order_by {
     my @res   = ();
     my $order = 0;
     foreach my $row (@args) {
-        if ( $row->{alias} || ( $row->{column} || '' ) !~ /\./ ) {
+        if ( $row->{alias} ) {
             push @res, $row;
             next;
         }
+        if ( $row->{column} !~ /\./ ) {
+            my $meta = $self->columns->{ $row->{column} };
+            unless ($meta) {
+                push @res, $row;
+                next;
+            }
+
+            if ( $meta->[0] eq 'ENUM' && ( $meta->[1] || '' ) eq 'Queue' ) {
+                my $alias = $self->join(
+                    type   => 'left',
+                    alias1 => 'main',
+                    column1 => $row->{'column'},
+                    table2 => 'Queues',
+                    column2 => 'id',
+                );
+                push @res, { %$row, alias => $alias, column => "name" };
+            }
+            elsif (
+                ( $meta->[0] eq 'ENUM' && ( $meta->[1] || '' ) eq 'User' )
+                || ( $meta->[0] eq 'WATCHERFIELD'
+                    && ( $meta->[1] || '' ) eq 'Owner' )
+              )
+            {
+                my $alias = $self->join(
+                    type   => 'left',
+                    alias1 => 'main',
+                    column1 => $row->{'column'},
+                    table2 => 'Users',
+                    column2 => 'id',
+                );
+                push @res, { %$row, alias => $alias, column => "name" };
+            }
+            else {
+                push @res, $row;
+            }
+            next;
+        }
+
         my ( $field, $subkey ) = split /\./, $row->{column}, 2;
         my $meta = $self->columns->{$field};
         if ( defined $meta->[0] && $meta->[0] eq 'WATCHERFIELD' ) {
