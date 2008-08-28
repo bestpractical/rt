@@ -374,6 +374,11 @@ config-install:
 test: 
 	$(PERL) "-MExtUtils::Command::MM" -e "test_harness($(TEST_VERBOSE), 'lib')" $(TEST_FILES)
 
+parallel-test: test-parallel
+
+test-parallel: 
+	RT_TEST_PARALLEL=1 HARNESS_OPTIONS="j4" $(PERL) "-MExtUtils::Command::MM" -e "test_harness($(TEST_VERBOSE), 'lib')" $(TEST_FILES)
+
 regression-install: config-install
 	$(PERL) -pi -e 's/Set\(\$$DatabaseName.*\);/Set\(\$$DatabaseName, "rt3regression"\);/' $(DESTDIR)$(CONFIG_FILE)
 

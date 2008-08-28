@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| Elements/Wrapper, Title => loc('Step [_1] of [_2]: ', 5, 7 ) . loc('Customize Email Addresses') &> 
+<&| Elements/Wrapper, Title => loc('Step [_1] of [_2]', 5, 7 ) .': '. loc('Customize Email Addresses') &> 
 
 <& Elements/Errors, Errors => \@errors &>
 
@@ -60,9 +60,11 @@
 &>
 
 <input type="hidden" name="Run" value="1">
-<& /Elements/Submit, Label => $RT::Installer->{DatabaseAction} eq 'none' ?
-loc('Next: ') . loc('Finish') : loc('Next: ') . loc( 'Initialize Database'),
-    Back => 1, BackLabel => loc('Back: ' ) . loc('Customize Email Configuration') &>
+<& /Elements/Submit,
+    Label => $RT::Installer->{DatabaseAction} eq 'none' ?
+        loc('Next') .': '. loc('Finish') : loc('Next') .': '. loc('Initialize Database'),
+    Back => 1, BackLabel => loc('Back') .': '. loc('Customize Email Configuration'),
+&>
 </form>
 </&>
 <%init>

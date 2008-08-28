@@ -105,10 +105,12 @@ of perl inside the Text::Template using {} delimiters, but that
 such sections absolutely can not span a ===Create-Ticket boundary.
 
 After each ticket is created, it's stuffed into a hash called %Tickets
-so as to be available during the creation of other tickets during the same 
-ScripAction.  The hash is prepopulated with the ticket which triggered the 
-ScripAction as $Tickets{'TOP'}; you can also access that ticket using the
-shorthand TOP.
+so as to be available during the creation of other tickets during the
+same ScripAction, using the key 'create-identifier', where
+C<identifier> is the id you put after C<===Create-Ticket:>.  The hash
+is prepopulated with the ticket which triggered the ScripAction as
+$Tickets{'TOP'}; you can also access that ticket using the shorthand
+TOP.
 
 A simple example:
 
@@ -163,8 +165,9 @@ A convoluted example
  ENDOFCONTENT
  ===Create-Ticket: two
  Subject: Manager approval
+ Type: approval
  Depended-On-By: TOP
- Refers-On: {$Tickets{"approval"}->Id}
+ Refers-To: {$Tickets{"create-approval"}->Id}
  Queue: ___Approvals
  Content-Type: text/plain
  Content: 

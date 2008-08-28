@@ -98,6 +98,7 @@ use vars qw($Nobody $SystemUser $Handler $r);
 BEGIN {
     RT::LoadConfig();
     if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
+    RT->InitPluginPaths();
 }
 
 

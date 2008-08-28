@@ -143,16 +143,18 @@ sub BuildDSN {
     $db_name = File::Spec->catfile($RT::VarPath, $db_name)
         if $db_type eq 'SQLite' && !File::Spec->file_name_is_absolute($db_name);
 
-
-    $self->SUPER::BuildDSN( Host       => $db_host,
-                                        Database   => $db_name,
-                            Port       => $db_port,
-                            Driver     => $db_type,
-                            RequireSSL => RT->Config->Get('DatabaseRequireSSL'),
-                            DisconnectHandleOnDestroy => 1,
-                          );
-   
-
+    my %args = (
+        Host       => $db_host,
+        Database   => $db_name,
+        Port       => $db_port,
+        Driver     => $db_type,
+        RequireSSL => RT->Config->Get('DatabaseRequireSSL'),
+        DisconnectHandleOnDestroy => 1,
+    );
+    if ( $db_type eq 'Oracle' && $db_host ) {
+        $args{'SID'} = delete $args{'Database'};
+    }
+    $self->SUPER::BuildDSN( %args );
 }
 
 =head2 DSN
@@ -314,13 +316,30 @@ sub CreateDatabase {
         return (1, 'Skipped as SQLite doesn\'t need any action');
     }
     elsif ( $db_type eq 'Oracle' ) {
-        return (1, 'Skipped as we\'re working with Oracle');
+        my $db_user = RT->Config->Get('DatabaseUser');
+        my $db_pass = RT->Config->Get('DatabasePassword');
+        $status = $dbh->do(
+            "CREATE USER $db_user IDENTIFIED BY $db_pass"
+            ." default tablespace USERS"
+            ." temporary tablespace TEMP"
+            ." quota unlimited on USERS"
+        );
+        unless ( $status ) {
+            return $status, "Couldn't create user $db_user identified by $db_pass."
+                ."\nError: ". $dbh->errstr;
+        }
+        $status = $dbh->do( "GRANT connect, resource TO $db_user" );
+        unless ( $status ) {
+            return $status, "Couldn't grant connect and resource to $db_user."
+                ."\nError: ". $dbh->errstr;
+        }
+        return (1, "Created user $db_user. All RT's objects should be in his schema.");
     }
     elsif ( $db_type eq 'Pg' ) {
         # XXX: as we get external DBH we don't know if RaiseError or PrintError
         # are enabled, so we have to setup it here and restore them back
-        $status = $dbh->do("CREATE DATABASE $db_name WITH ENCODING='UNICODE'")
-            || $dbh->do("CREATE DATABASE $db_name");
+        $status = $dbh->do("CREATE DATABASE $db_name WITH ENCODING='UNICODE' TEMPLATE template0")
+            || $dbh->do("CREATE DATABASE $db_name TEMPLATE template0");
     }
     elsif ( $db_type eq 'Informix' ) {
         local $ENV{'DB_LOCALE'} = 'en_us.utf8';
@@ -352,7 +371,13 @@ sub DropDatabase {
     my $db_name = RT->Config->Get('DatabaseName');
 
     if ( $db_type eq 'Oracle' || $db_type eq 'Informix' ) {
-        return (0, "Use etc/drop.$db_type to drop database");
+        my $db_user = RT->Config->Get('DatabaseUser');
+        my $status = $dbh->do( "DROP USER $db_user CASCADE" );
+        unless ( $status ) {
+            return 0, "Couldn't drop user $db_user."
+                ."\nError: ". $dbh->errstr;
+        }
+        return (1, "Successfully dropped user '$db_user' with his schema.");
     }
     elsif ( $db_type eq 'SQLite' ) {
         my $path = $db_name;
@@ -456,6 +481,15 @@ sub InsertSchema {
         }
     }
     close $fh_schema; close $fh_schema_local;
+
+    if ( $db_type eq 'Oracle' ) {
+        my $db_user = RT->Config->Get('DatabaseUser');
+        my $status = $dbh->do( "ALTER SESSION SET CURRENT_SCHEMA=$db_user" );
+        unless ( $status ) {
+            return $status, "Couldn't set current schema to $db_user."
+                ."\nError: ". $dbh->errstr;
+        }
+    }
 
     local $SIG{__WARN__} = sub {};
     my $is_local = 0;

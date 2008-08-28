@@ -494,7 +494,7 @@ sub _Set {
         $msg =
           $self->loc(
             "[_1] changed from [_2] to [_3]",
-            $args{'Field'},
+            $self->loc( $args{'Field'} ),
             ( $old_val ? "'$old_val'" : $self->loc("(no value)") ),
             '"' . $self->__Value( $args{'Field'}) . '"' 
           );
@@ -901,7 +901,17 @@ sub Update {
         # Default to $id, but use name if we can get it.
         my $label = $self->id;
         $label = $self->Name if (UNIVERSAL::can($self,'Name'));
-        push @results, $self->loc( "$prefix [_1]", $label ) . ': '. $msg;
+        # this requires model names to be loc'ed.
+
+=for loc
+
+    "Ticket" # loc
+    "User" # loc
+    "Group" # loc
+    "Queue" # loc
+=cut
+
+        push @results, $self->loc( $prefix ) . " $label: ". $msg;
 
 =for loc
 

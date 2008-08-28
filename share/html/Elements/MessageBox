@@ -71,5 +71,5 @@ $Default          => ''
 $Width            => RT->Config->Get('MessageBoxWidth', $session{'CurrentUser'} ) || 72
 $Height           => RT->Config->Get('MessageBoxHeight', $session{'CurrentUser'} ) || 15
 $Wrap             => RT->Config->Get('MessageBoxWrap') || 'HARD'
-$IncludeSignature => 1
+$IncludeSignature => RT->Config->Get('MessageBoxIncludeSignature');
 </%ARGS>

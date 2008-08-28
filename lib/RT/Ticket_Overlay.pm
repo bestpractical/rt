@@ -2765,7 +2765,7 @@ sub SetOwner {
     my ( $del_id, $del_msg ) = $self->OwnerGroup->MembersObj->First->Delete();
     unless ($del_id) {
         $RT::Handle->Rollback();
-        return ( 0, $self->loc("Could not change owner. ") . $del_msg );
+        return ( 0, $self->loc("Could not change owner: [_1]", $del_msg) );
     }
 
     my ( $add_id, $add_msg ) = $self->OwnerGroup->_AddMember(
@@ -2773,7 +2773,7 @@ sub SetOwner {
                                        InsideTransaction => 1 );
     unless ($add_id) {
         $RT::Handle->Rollback();
-        return ( 0, $self->loc("Could not change owner. ") . $add_msg );
+        return ( 0, $self->loc("Could not change owner: [_1]", $add_msg ) );
     }
 
     # We call set twice with slightly different arguments, so
@@ -2790,7 +2790,7 @@ sub SetOwner {
 
     unless ($val) {
         $RT::Handle->Rollback;
-        return ( 0, $self->loc("Could not change owner. ") . $msg );
+        return ( 0, $self->loc("Could not change owner: [_1]", $msg) );
     }
 
     ($val, $msg) = $self->_NewTransaction(

@@ -51,7 +51,7 @@ package RT::Test;
 use strict;
 use warnings;
 
-use Test::More;
+use base 'Test::More';
 use Socket;
 use File::Temp;
 use File::Spec;
@@ -69,10 +69,12 @@ RT::Test - RT Testing
 
 To run the rt test suite with coverage support, install L<Devel::Cover> and run:
 
-  make test RT_DBA_USER=.. RT_DBA_PASSWORD=.. HARNESS_PERL_SWITCHES=-MDevel::Cover
- cover -ignore_re '^var/mason_data/' -ignore_re '^t/'
+    make test RT_DBA_USER=.. RT_DBA_PASSWORD=.. HARNESS_PERL_SWITCHES=-MDevel::Cover
+    cover -ignore_re '^var/mason_data/' -ignore_re '^t/'
 
-The coverage tests have DevelMode turned off, and have C<named_component_subs> enabled for L<HTML::Mason> to avoid an optimizer problem in Perl that hides the top-level optree from L<Devel::Cover>.
+The coverage tests have DevelMode turned off, and have
+C<named_component_subs> enabled for L<HTML::Mason> to avoid an optimizer
+problem in Perl that hides the top-level optree from L<Devel::Cover>.
 
 =cut
 
@@ -130,11 +132,17 @@ sub import {
     print $config qq{
 Set( \$WebPort , $port);
 Set( \$WebBaseURL , "http://localhost:\$WebPort");
-Set( \$DatabaseName , $dbname);
 Set( \$LogToSyslog , undef);
 Set( \$LogToScreen , "warning");
 Set( \$MailCommand, 'testfile');
 };
+    if ( $ENV{'RT_TEST_DB_SID'} ) { # oracle case
+        print $config "Set( \$DatabaseName , '$ENV{'RT_TEST_DB_SID'}' );\n";
+        print $config "Set( \$DatabaseUser , '$dbname');\n";
+    } else {
+        print $config "Set( \$DatabaseName , '$dbname');\n";
+        print $config "Set( \$DatabaseUser , 'u${dbname}');\n";
+    }
     print $config $args{'config'} if $args{'config'};
     print $config "\n1;\n";
     $ENV{'RT_SITE_CONFIG'} = $config->filename;
@@ -190,7 +198,7 @@ sub bootstrap_db {
     my %args = @_;
 
    unless (defined $ENV{'RT_DBA_USER'} && defined $ENV{'RT_DBA_PASSWORD'}) {
-	BAIL_OUT("RT_DBA_USER and RT_DBA_PASSWORD environment variables need to be set in order to run 'make test'") unless $self->db_requires_no_dba;
+       Test::More::BAIL_OUT("RT_DBA_USER and RT_DBA_PASSWORD environment variables need to be set in order to run 'make test'") unless $self->db_requires_no_dba;
    }
     # bootstrap with dba cred
     my $dbh = _get_dbh(RT::Handle->SystemDSN,
@@ -236,16 +244,18 @@ sub bootstrap_db {
     DBIx::SearchBuilder::Record::Cachable->FlushCache;
 }
 
+my @SERVERS;
 sub started_ok {
     require RT::Test::Web;
     if ( $existing_server ) {
-        ok(1, "using existing server $existing_server");
+        Test::More::ok(1, "using existing server $existing_server");
         RT::Logger->warning( $existing_server);
         return ($existing_server, RT::Test::Web->new);
     }
     my $s = RT::Interface::Web::Standalone->new($port);
     push @server, $s;
     my $ret = $s->started_ok;
+    @SERVERS = $s->pids;
     $RT::Handle = new RT::Handle;
     $RT::Handle->dbh( undef );
     RT->ConnectToDatabase;
@@ -270,7 +280,7 @@ sub open_mailgate_ok {
     my $baseurl = shift;
     my $queue   = shift || 'general';
     my $action  = shift || 'correspond';
-    ok(open(my $mail, "|$RT::BinPath/rt-mailgate --url $baseurl --queue $queue --action $action"), "Opened the mailgate - $!");
+    Test::More::ok(open(my $mail, "|$RT::BinPath/rt-mailgate --url $baseurl --queue $queue --action $action"), "Opened the mailgate - $!");
     return $mail;
 }
 
@@ -279,13 +289,13 @@ sub close_mailgate_ok {
     my $class = shift;
     my $mail  = shift;
     close $mail;
-    is ($? >> 8, 0, "The mail gateway exited normally. yay");
+    Test::More::is ($? >> 8, 0, "The mail gateway exited normally. yay");
 }
 
 sub mailsent_ok {
     my $class = shift;
     my $expected  = shift;
-    is ($mailsent, $expected, "The number of mail sent ($expected) matches. yay");
+    Test::More::is ($mailsent, $expected, "The number of mail sent ($expected) matches. yay");
 }
 
 =head1 UTILITIES
@@ -434,7 +444,7 @@ sub restore_rights {
         my $ace = RT::ACE->new( $RT::SystemUser );
         my ($status, $msg) = $ace->RT::Record::Create( %$entry );
         unless ( $status ) {
-            diag "couldn't create a record: $msg";
+            Test::More::diag "couldn't create a record: $msg";
         }
     }
 }
@@ -537,10 +547,10 @@ sub send_via_mailgate {
     unless ( $status >> 8 ) {
         ($id) = ($gate_result =~ /Ticket:\s*(\d+)/i);
         unless ( $id ) {
-            diag "Couldn't find ticket id in text:\n$gate_result" if $ENV{'TEST_VERBOSE'};
+            Test::More::diag "Couldn't find ticket id in text:\n$gate_result" if $ENV{'TEST_VERBOSE'};
         }
     } else {
-        diag "Mailgate output:\n$gate_result" if $ENV{'TEST_VERBOSE'};
+        Test::More::diag "Mailgate output:\n$gate_result" if $ENV{'TEST_VERBOSE'};
     }
     return ($status, $id);
 }
@@ -578,7 +588,7 @@ sub file_content {
 
     $path = File::Spec->catfile( @$path ) if ref $path eq 'ARRAY';
 
-    diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
+    Test::More::diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
 
     open my $fh, "<:raw", $path
         or do { warn "couldn't open file '$path': $!" unless $args{noexist}; return '' };
@@ -789,9 +799,21 @@ sub trust_gnupg_key {
 }
 
 END {
+    my $Test = RT::Test->builder;
+    return if $Test->{Original_Pid} != $$;
     if ( $ENV{RT_TEST_PARALLEL} && $created_new_db ) {
-        my $dbh =
-          _get_dbh( RT::Handle->DSN, $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD} );
+        {
+            kill 'INT', @SERVERS;
+            foreach my $pid (@SERVERS) {
+                waitpid $pid, 0;
+            }
+        }
+
+        # Pg doesn't like if you issue a DROP DATABASE while still connected
+        my $dbh = $RT::Handle->dbh;
+        $dbh->disconnect if $dbh;
+
+        $dbh = _get_dbh( RT::Handle->SystemDSN, $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD} );
         RT::Handle->DropDatabase( $dbh, Force => 1 );
         $dbh->disconnect;
     }

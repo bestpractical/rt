@@ -86,6 +86,8 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 
 my @results;
 
+$m->callback( ARGSRef => \%ARGS, results => \@results, CallbackName => 'Initial' );
+
 if ( $ARGS{'QuickCreate'} ) {
     my $QueueObj = new RT::Queue($session{'CurrentUser'});
     $QueueObj->Load($ARGS{Queue}) or Abort(loc("Queue could not be loaded."));

@@ -60,7 +60,7 @@
 <&| /Widgets/TitleBox,title => loc('Modify dates for ticket # [_1]', $TicketObj->Id), class=> 'ticket-info-dates' &>
 <& Elements/EditDates, TicketObj => $TicketObj &>
 </&>
-<& /Elements/Submit, Label => loc('Save Changes') &>
+<& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes') &>
 </form>
 
 

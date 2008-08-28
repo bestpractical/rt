@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&|Elements/Wrapper, Title => loc('Step [_1] of [_2]: ', 6, 7) . loc('Initialize Database') &> 
+<&|Elements/Wrapper, Title => loc('Step [_1] of [_2]', 6, 7) .': '. loc('Initialize Database') &> 
 
 <& Elements/Errors, Errors => \@errors &>
 
@@ -57,8 +57,10 @@
 
 <form method="post">
 <input type="hidden" name="Run" value="1">
-<& /Elements/Submit, Label => loc('Initialize Database'), Back => 1,
-    BackLabel => loc('Back: ') . loc('Customize Global') &>
+<& /Elements/Submit,
+    Label => loc('Initialize Database'),
+    Back => 1, BackLabel => loc('Back') .': '. loc('Customize Global'),
+&>
 </form>
 </&>
 <%init>

@@ -840,6 +840,14 @@ Should "rich text" editing be enabled? This option lets your users send html ema
 
 Set($MessageBoxRichText, 1);
 
+=item C<$MessageBoxIncludeSignature>
+
+Should your user's signatures (from their Preferences page) be included in Comments and Replies
+
+=cut
+
+Set($MessageBoxIncludeSignature, 1);
+
 =item C<$WikiImplicitLinks>
 
 Support implicit links in WikiText custom fields?  A true value

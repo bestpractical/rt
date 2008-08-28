@@ -67,7 +67,7 @@
 % if (defined $OrderBy[$o] and $field eq $OrderBy[$o]) {
 selected="selected"
 % }
-><&|/l&><%$field%></&></option>
+><% loc($field) %></option>
 % }
 </select>
 <select name="Order">

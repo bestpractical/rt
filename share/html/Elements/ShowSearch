@@ -117,7 +117,8 @@ $m->callback(
 
 foreach ( $SearchArg, $ProcessedSearchArg ) {
     $_->{'Format'} =~ s/__(Web(?:Path|Base|BaseURL))__/scalar RT->Config->Get($1)/ge;
-    $_->{'Format'} =~ s/__loc\(["']?(\w+)["']?\)__/loc("$1")/ge;
+    # extract-message-catalog would "$1", so we avoid quotes for loc calls
+    $_->{'Format'} =~ s/__loc\(["']?(\w+)["']?\)__/my $f = "$1"; loc($f)/ge;
     if ( $_->{'Query'} =~ /__Bookmarked__/ ) {
         $_->{'Rows'} = 999;
     }

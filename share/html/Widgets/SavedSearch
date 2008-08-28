@@ -91,7 +91,7 @@ if ( $args->{SavedSearchSave} ) {
     if ( my $search = $self->{CurrentSearch}{Object} ) {
         # rename
         $search->SetDescription( $args->{SavedSearchDescription} );
-	push @actions, loc($self->{SearchType}).loc( ' [_1] renamed to [_2].', $self->{CurrentSearch}{Description}, $args->{SavedSearchDescription} );
+	push @actions, loc( '[_1] [_2] renamed to [_3].', loc($self->{SearchType}), $self->{CurrentSearch}{Description}, $args->{SavedSearchDescription} );
     }
     else {
         # new saved search
@@ -104,7 +104,7 @@ if ( $args->{SavedSearchSave} ) {
         );
         if ($ok) {
 	    $self->{CurrentSearch}{Object} = $saved_search->{Attribute};
-            push @actions, loc($self->{SearchType}).loc( ' [_1] saved.', $args->{SavedSearchDescription} );
+            push @actions, loc( '[_1] [_2] saved.', loc($self->{SearchType}), $args->{SavedSearchDescription} );
         } else {
             push @actions,
                 [ loc("Can't save [_1]", loc($self->{SearchType})) . ': ' . loc($search_msg), 0 ];
@@ -114,7 +114,7 @@ if ( $args->{SavedSearchSave} ) {
 
 if ( $args->{SavedSearchDelete} && $self->{CurrentSearch}{Object} ) {
     my ($ok, $msg) = $self->{CurrentSearch}{Object}->Delete;
-    push @actions, $ok ? loc($self->{SearchType}).loc( ' [_1] deleted.', $self->{CurrentSearch}{Object}->Description ) : $msg;
+    push @actions, $ok ? loc( '[_1] [_2] deleted.', loc($self->{SearchType}), $self->{CurrentSearch}{Object}->Description ) : $msg;
     delete $self->{CurrentSearch}{Object};
     delete $self->{SearchId};
 

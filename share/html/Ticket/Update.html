@@ -55,7 +55,7 @@
 
 <form action="Update.html" name="TicketUpdate"
     method="post" enctype="multipart/form-data">
-% $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS );
+% $m->callback( CallbackName => 'FormStart', ARGSRef => \%ARGS, Ticket => $TicketObj );
 <input type="hidden" class="hidden" name="QuoteTransaction" value="<% $ARGS{QuoteTransaction}||'' %>" />
 <input type="hidden" class="hidden" name="DefaultStatus" value="<% $DefaultStatus ||''%>" />
 <input type="hidden" class="hidden" name="Action" value="<% $ARGS{Action}||'' %>" />
@@ -165,14 +165,16 @@ my $title;
 
 my $TicketObj = LoadTicket($id);
 
-$m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'Initial' );
+my @results;
+
+$m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, results => \@results, CallbackName => 'Initial' );
 
 unless($DefaultStatus){
     $DefaultStatus=($ARGS{'Status'} ||$TicketObj->Status());
 }
 
 if ($DefaultStatus =~ '^new$'){
-        $DefaultStatus='open';
+    $DefaultStatus='open';
 }
 
 if ($DefaultStatus eq 'resolved') {
@@ -205,7 +207,7 @@ $CanComment = 1 if ( $TicketObj->CurrentUserHasRight('CommentOnTicket') or
 # {{{ deal with deleting uploaded attachments
 foreach my $key (keys %ARGS) {
     if ($key =~ m/^DeleteAttach-(.+)$/) {
-    delete $session{'Attachments'}{$1};
+        delete $session{'Attachments'}{$1};
     }
     $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
 }
@@ -237,8 +239,6 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
     delete $session{'Attachments'};
 }
 # }}}
-
-my @results;
 
 my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', Arguments => \%ARGS );
 $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
