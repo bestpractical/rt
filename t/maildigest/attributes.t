@@ -18,7 +18,7 @@ my $user_d = RT::Model::User->new( current_user => RT->system_user );
 ok( $ret, "user with daily digest email prefs created: $msg" );
 # Set a username & password for testing the interface.
 $user_d->set_privileged( 1 );
-$user_d->set_preferences($RT::system => { %{ $user_d->preferences( $RT::System ) || {}}, email_frequency => 'Daily digest'});
+$user_d->set_preferences(RT->system => { %{ $user_d->preferences( RT->system ) || {}}, EmailFrequency => 'Daily digest'});
 
 
 
@@ -26,12 +26,12 @@ my $user_w = RT::Model::User->new(current_user => RT->system_user );
 ( $ret, $msg ) = $user_w->load_or_create_by_email( $users[2] );
 ok( $ret, "user with weekly digest email prefs created: $msg" );
 $user_w->set_privileged( 1 );
-$user_w->set_preferences($RT::system => { %{ $user_w->preferences( $RT::System ) || {}}, email_frequency => 'Weekly digest'});
+$user_w->set_preferences(RT->system => { %{ $user_w->preferences( RT->system ) || {}}, EmailFrequency => 'Weekly digest'});
 
 my $user_s = RT::Model::User->new(current_user => RT->system_user );
 ( $ret, $msg ) = $user_s->load_or_create_by_email( $users[3] );
 ok( $ret, "user with suspended email prefs created: $msg" );
-$user_s->set_preferences($RT::system => { %{ $user_s->preferences( $RT::System ) || {}}, email_frequency => 'Suspended'});
+$user_s->set_preferences(RT->system => { %{ $user_s->preferences( RT->system ) || {}}, EmailFrequency => 'Suspended'});
 $user_s->set_privileged( 1 );
 
 
@@ -60,7 +60,7 @@ ok( $ret || $msg =~ /already has/, "Granted everyone CreateTicket on testq: $msg
 ( $ret, $msg ) = $user_d->principal_object->grant_right( right => 'AdminQueue',
 						    object => $testq );
 ok( $ret || $msg =~ /already has/, "Granted dduser AdminQueue on testq: $msg" );
-( $ret, $msg ) = $testq->add_watcher( type => 'AdminCc',
+( $ret, $msg ) = $testq->add_watcher( type => 'admin_cc',
 			     principal_id => $user_d->principal_object->id );
 ok( $ret || $msg =~ /already/, "dduser added as a queue watcher: $msg" );
 
@@ -85,10 +85,10 @@ my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
 ok( $ret, "Ticket $id created: $msg" );
 
 # Make the other users ticket watchers.
-( $ret, $msg ) = $ticket->add_watcher( type => 'Cc',
+( $ret, $msg ) = $ticket->add_watcher( type => 'cc',
 		      principal_id => $user_n->principal_object->id );
 ok( $ret, "Added user_w as a ticket watcher: $msg" );
-( $ret, $msg ) = $ticket->add_watcher( type => 'Cc',
+( $ret, $msg ) = $ticket->add_watcher( type => 'cc',
 		      principal_id => $user_s->principal_object->id );
 ok( $ret, "Added user_s as a ticket watcher: $msg" );
 
@@ -174,5 +174,4 @@ my @results = <$digester>;
 my $content = join ('', @results);
 is ($content, '');
 } 
-
 
