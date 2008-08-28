@@ -272,9 +272,22 @@ sub create {
 
     $attribs{'creator'} ||= $self->current_user->id
         if $self->can('creator') && $self->current_user;
+    $attribs{'last_update_by'} ||= $self->current_user->id
+        if $self->can('last_update_by') && $self->current_user;
 
+# XXX TODO by sunnavy:
+# I found we didn't have created and last_updated here weirdly.
+# maybe one may wish to use the defer schema to give them default
+# values? well, because we have some 'created' columns in different tables, 
+# maybe putting it here is the best practice.
     my $now = RT::Date->new( current_user => $self->current_user );
     $now->set( format => 'unix', value => time );
+
+    $attribs{'created'} ||= $now->iso
+      if $self->can( 'created' ) && $self->current_user;
+    $attribs{'last_updated'} ||= $now->iso
+      if $self->can( 'last_updated' ) && $self->current_user;
+
 
     my ($id) = $self->SUPER::create(%attribs);
     if ( UNIVERSAL::isa( $id, 'Class::ReturnValue' ) ) {
