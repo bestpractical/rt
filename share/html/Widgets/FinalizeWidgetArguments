@@ -49,10 +49,10 @@
     my %args = %$widget_arguments;
 
     %args = (%args, %{ $args{Callback}->() }) if $args{Callback};
-    $args{'description'} = loc( $args{'description'} ) if $args{'description'};
+    $args{'description'} = _( $args{'description'} ) if $args{'description'};
     if ( $args{'ValuesLabel'} ) {
         while (my ($k, $v) = each %{ $args{'ValuesLabel'} } ) {
-            $args{'ValuesLabel'}->{$k} = loc( $args{'ValuesLabel'}->{$k} );
+            $args{'ValuesLabel'}->{$k} = _( $args{'ValuesLabel'}->{$k} );
         }
     }
     return \%args;

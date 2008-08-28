@@ -65,12 +65,12 @@ my $query_link_url = RT->config->get('WebURL').'Search/Results.html';
 if ($saved_search) {
     my ( $container_object, $search_id ) = _parse_saved_search($saved_search);
     unless ( $container_object ) {
-        $m->out(loc("Either you have no rights to view saved search %1 or identifier is incorrect", $saved_search));
+        $m->out(_("Either you have no rights to view saved search %1 or identifier is incorrect", $saved_search));
         return;
     }
     $search = $container_object->attributes->with_id($search_id);
     unless ( $search->id && ref( $SearchArg = $search->content ) eq 'HASH' ) {
-         $m->out(loc("Saved Search %1 not found", $saved_search)) unless $ignore_missing;
+         $m->out(_("Saved Search %1 not found", $saved_search)) unless $ignore_missing;
         return;
     }
     $SearchArg->{'search_type'} ||= 'Ticket';

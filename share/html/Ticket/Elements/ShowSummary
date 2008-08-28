@@ -97,7 +97,7 @@
 	  </&>
 
 % my (@extra);
-% push @extra, titleright_raw => '<a href="'. RT->config->get('WebPath'). '/Ticket/Graphs/index.html?id='.$ticket->id.'">'.loc('Graph').'</a>' unless RT->config->get('DisableGraphViz');
+% push @extra, titleright_raw => '<a href="'. RT->config->get('WebPath'). '/Ticket/Graphs/index.html?id='.$ticket->id.'">'._('Graph').'</a>' unless RT->config->get('DisableGraphViz');
 
 	  <&| /Widgets/TitleBox, title => _('Links'), 
 		title_href => RT->config->get('WebPath')."/Ticket/ModifyLinks.html?id=".$ticket->id, 

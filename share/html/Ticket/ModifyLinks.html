@@ -58,7 +58,7 @@
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
 % $m->callback( Callbackname => 'form_start', args_ref => \%ARGS );
 % my (@extra);
-% push @extra, titleright_raw => '<a href="'. RT->config->get('WebPath') . '/Ticket/Graphs/index.html?id='.$Ticket->id.'">'.loc('Graph').'</a>' unless RT->config->get('DisableGraphViz');
+% push @extra, titleright_raw => '<a href="'. RT->config->get('WebPath') . '/Ticket/Graphs/index.html?id='.$Ticket->id.'">'._('Graph').'</a>' unless RT->config->get('DisableGraphViz');
 <&| /Widgets/TitleBox, title => _('Edit Links'), class=>'ticket-info-links', @extra &>
 <& /Elements/EditLinks, object => $Ticket, merge => 1 &>
 </&>

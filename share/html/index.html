@@ -3,7 +3,7 @@
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <!--
 % $m->out('--'.'>');
-% $m->comp('/Elements/Header', title=>loc("RT at a glance"), refresh => $session{'home_refresh_interval'});
+% $m->comp('/Elements/Header', title=>_("RT at a glance"), refresh => $session{'home_refresh_interval'});
 % if (0) {
 %# -->
 <html><head>
@@ -88,7 +88,7 @@ my @results;
 
 if ( $ARGS{'quick_create'} ) {
     my $queue_obj = new RT::Model::Queue( current_user => Jifty->web->current_user );
-    $queue_obj->load($ARGS{queue}) or abort(loc("Queue could not be loaded."));
+    $queue_obj->load($ARGS{queue}) or abort(_("Queue could not be loaded."));
     
     my $CFs = $queue_obj->ticket_custom_fields();
     

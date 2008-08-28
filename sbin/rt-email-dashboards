@@ -78,7 +78,7 @@ use RT;
 use RT::Interface::Web;
 use RT::Interface::Web::Handler;
 use RT::Dashboard;
-use RT::Interface::CLI qw{ CleanEnv loc };
+use RT::Interface::CLI qw{ CleanEnv };
 
 use Getopt::Long;
 use HTML::Mason;
@@ -114,10 +114,10 @@ if ($opts{'help'}) {
 }
 
 # helper functions
-sub verbose  { print loc(@_), "\n" if $opts{verbose} || $opts{verbose}; 1 }
-sub debug    { print loc(@_), "\n" if $opts{debug}; 1 }
-sub error    { Jifty->log->error(loc(@_)); verbose(@_); 1 }
-sub warning  { Jifty->log->warn(loc(@_)); verbose(@_); 1 }
+sub verbose  { print _(@_), "\n" if $opts{verbose} || $opts{verbose}; 1 }
+sub debug    { print _(@_), "\n" if $opts{debug}; 1 }
+sub error    { Jifty->log->error(_(@_)); verbose(@_); 1 }
+sub warning  { Jifty->log->warn(_(@_)); verbose(@_); 1 }
 
 my $now = $opts{epoch} || time;
 verbose "Using time %1", scalar localtime($now);

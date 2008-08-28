@@ -70,7 +70,7 @@
 % }
 
 <%INIT>
-my $title = loc("Dashboards");
+my $title = _("Dashboards");
 use RT::Dashboard;
 
 my @objs = RT::Dashboard->new( current_user => Jifty->web->current_user )->_privacy_objects;
@@ -78,7 +78,7 @@ my $dashboards = $m->comp("/Dashboards/Elements/DashboardsForObjects", objects =
 
 my @actions;
 if (defined $deleted) {
-    push @actions, loc("Deleted dashboard %1", $deleted);
+    push @actions, _("Deleted dashboard %1", $deleted);
 }
 
 </%INIT>

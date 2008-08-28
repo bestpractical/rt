@@ -201,7 +201,7 @@ sub applicable_trans_types {
 # {{{ sub describe
 sub describe {
     my $self = shift;
-    return ( $self->loc( "No description for %1", ref $self ) );
+    return ( _( "No description for %1", ref $self ) );
 }
 
 # }}}

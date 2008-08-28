@@ -61,27 +61,27 @@ my $COLUMN_MAP = {
         title     => 'Queue',
         value     => sub {
             return $_[0]->queue_obj->name if $_[0]->queue;
-            return $_[0]->loc('Global');
+            return $_[0]->_('Global');
         },
     },
     condition => {
         title     => 'Condition',
-        value     => sub { return $_[0]->loc( $_[0]->scrip_condition_obj->name ) },
+        value     => sub { return $_[0]->_( $_[0]->scrip_condition_obj->name ) },
     },
     action => {
         title     => 'Action',
-        value     => sub { return $_[0]->loc( $_[0]->scrip_action_obj->name ) },
+        value     => sub { return $_[0]->_( $_[0]->scrip_action_obj->name ) },
     },
     template => {
         title     => 'Template',
-        value     => sub { return $_[0]->loc( $_[0]->template_obj->name ) },
+        value     => sub { return $_[0]->_( $_[0]->template_obj->name ) },
     },
     auto_description => {
         title     => 'Condition, Action and Template',
-        value     => sub { return $_[0]->loc( "%1 %2 with template %3",
-            $_[0]->loc($_[0]->condition_obj->name),
-            $_[0]->loc($_[0]->action_obj->name),
-            $_[0]->loc($_[0]->template_obj->name),
+        value     => sub { return $_[0]->_( "%1 %2 with template %3",
+            $_[0]->_($_[0]->condition_obj->name),
+            $_[0]->_($_[0]->action_obj->name),
+            $_[0]->_($_[0]->template_obj->name),
         ) },
     },
 };

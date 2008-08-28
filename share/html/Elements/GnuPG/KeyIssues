@@ -46,10 +46,10 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % if ( @$issues || @$sign_addresses ) {
-<&| /Widgets/TitleBox, title => loc('GnuPG issues') &>
+<&| /Widgets/TitleBox, title => _('GnuPG issues') &>
 
 % if ( @$sign_addresses ) {
-<% loc("The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem addresses are:") %>
+<% _("The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem addresses are:") %>
 <ul>
 % for my $address (@$sign_addresses) {
     <li><% $address %></li>
@@ -58,9 +58,9 @@
 % }
 
 % if (@$issues == 1) {
-<% loc("You are going to encrypt outgoing email messages, but there is a problem with a recipient's public key. You have to fix the problem with the key, disable sending a message to that recipient, or disable encryption.") %>
+<% _("You are going to encrypt outgoing email messages, but there is a problem with a recipient's public key. You have to fix the problem with the key, disable sending a message to that recipient, or disable encryption.") %>
 % } elsif (@$issues > 1) {
-<% loc("You are going to encrypt outgoing email messages, but there are problems with recipients' public keys. You have to fix the problems with the keys, disable sending a message to the recipients with key problems, or disable encryption.") %>
+<% _("You are going to encrypt outgoing email messages, but there are problems with recipients' public keys. You have to fix the problems with the keys, disable sending a message to the recipients with key problems, or disable encryption.") %>
 % }
 
 <ul>

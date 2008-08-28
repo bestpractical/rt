@@ -269,7 +269,7 @@ sub parse_sql {
         }
         unless ($class) {
             push @results,
-              [ $args{'current_user'}->loc( "Unknown field: %1", $key ), -1 ];
+              [ _( "Unknown field: %1", $key ), -1 ];
         }
 
         $value =~ s/'/\\'/g;

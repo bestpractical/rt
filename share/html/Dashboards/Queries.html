@@ -62,7 +62,7 @@
 <tr>
 
 <td valign="top" class="boxcontainer">
-<&| /Widgets/TitleBox, title => loc('Queries') &>
+<&| /Widgets/TitleBox, title => _('Queries') &>
 <table>
 <tr><td>
 <& /Widgets/SelectionBox:show, self => $sel, nojs => 1 &>
@@ -84,8 +84,8 @@ my @results;
 use RT::Dashboard;
 my $Dashboard = new RT::Dashboard( current_user => Jifty->web->current_user );
 my ($ok, $msg) = $Dashboard->load_by_id($id);
-$ok || abort(loc("Couldn't load dashboard %1: %2", $id, $msg));
-my $title = loc("Modify the queries of dashboard %1", $Dashboard->name);
+$ok || abort(_("Couldn't load dashboard %1: %2", $id, $msg));
+my $title = _("Modify the queries of dashboard %1", $Dashboard->name);
 
 my %desc_of;
 my @items;
@@ -137,10 +137,10 @@ my $sel = $m->comp(
         my ($ok, $msg) = $Dashboard->update(searches => $searches);
 
         if ($ok) {
-            push @results, loc("Dashboard updated");
+            push @results, _("Dashboard updated");
         }
         else {
-            push @results, loc("Dashboard could not be updated: %1", $msg);
+            push @results, _("Dashboard could not be updated: %1", $msg);
         }
     },
 );

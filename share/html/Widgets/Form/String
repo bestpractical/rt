@@ -66,7 +66,7 @@ $current_value => '',
 
 $default        => 0,
 $default_value   => '',
-$default_label   => loc( 'Default: %1', $default_value ),
+$default_label   => _( 'Default: %1', $default_value ),
 </%ARGS>
 
 <%METHOD InputOnly>

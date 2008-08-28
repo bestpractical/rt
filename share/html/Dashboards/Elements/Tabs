@@ -67,21 +67,21 @@ if ( $dashboard_obj and $dashboard_obj->id ) {
         path    => $modify,
         current_subtab  => $current_subtab,
         subtabs => {
-            a_Basics => { title => loc('Basics'),
+            a_Basics => { title => _('Basics'),
                           path  => $modify,
             },
 
-            b_Queries => { title => loc('Queries'),
+            b_Queries => { title => _('Queries'),
                            path  => $queries,
             },
 
-            c_Subscription => { title => loc('Subscription'),
+            c_Subscription => { title => _('Subscription'),
                                 path  =>
                                     "Dashboards/Subscription.html?dashboard_id=" . $dashboard_obj->id
             },
 
 
-            z_Preview => { title => loc('Show'),
+            z_Preview => { title => _('Show'),
                            path  => $render,
             },
         }
@@ -97,14 +97,14 @@ if ( $dashboard_obj and $dashboard_obj->id ) {
     $current_subtab = $modify;
 }
 
-$tabs->{"A"} = { title => loc('Select dashboard'),
+$tabs->{"A"} = { title => _('Select dashboard'),
                  path  => "Dashboards/index.html" };
 
 my $dashboard = RT::Dashboard->new( current_user => Jifty->web->current_user );
 my @objects = $dashboard->_privacy_objects(create => 1);
 
 if (@objects) {
-    $tabs->{"B"} = { title     => loc('New dashboard'),
+    $tabs->{"B"} = { title     => _('New dashboard'),
                      path      => "Dashboards/Modify.html?create=1",
                      separator => 1 };
 }

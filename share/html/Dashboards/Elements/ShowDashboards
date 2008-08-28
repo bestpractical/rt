@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc("%1 Dashboards", $type) &>
+<&| /Widgets/TitleBox, title => _("%1 Dashboards", $type) &>
 <& SELF:table, %ARGS &>
 </&>
 <%ARGS>
@@ -68,16 +68,16 @@ for my $attr (Jifty->web->current_user->user_object->attributes->named('Subscrip
 
 % if (@$dashboards == 0) {
 %   if ($verbose) {
-        <p><% loc("No dashboards.") %></p>
+        <p><% _("No dashboards.") %></p>
 %   }
 % } else {
     <table class="collection-as-table">
         <tr class="collection-as-table">
 % if ($verbose) {
-            <th class="collection-as-table"><% loc("#") %></th>
+            <th class="collection-as-table"><% _("#") %></th>
 % }
-            <th class="collection-as-table"><% loc("Name") %></th>
-            <th class="collection-as-table"><% loc("Subscription") %></th>
+            <th class="collection-as-table"><% _("Name") %></th>
+            <th class="collection-as-table"><% _("Subscription") %></th>
         </tr>
 
 %   my $i = 0;

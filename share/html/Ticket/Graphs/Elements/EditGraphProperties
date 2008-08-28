@@ -45,34 +45,34 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc('Graph Properties') &>
+<&| /Widgets/TitleBox, title => _('Graph Properties') &>
 
-<% loc('Direction') %> <select name="direction">
-<option value="TB" <% ($direction||'TB') eq 'TB'? 'selected="selected"': '' |n %>><% loc('top to bottom') %></option>
-<option value="LR" <% ($direction||'TB') eq 'LR'? 'selected="selected"': '' |n %>><% loc('left to right') %></option>
+<% _('Direction') %> <select name="direction">
+<option value="TB" <% ($direction||'TB') eq 'TB'? 'selected="selected"': '' |n %>><% _('top to bottom') %></option>
+<option value="LR" <% ($direction||'TB') eq 'LR'? 'selected="selected"': '' |n %>><% _('left to right') %></option>
 %# XXX: not supported by GraphViz perl module
-%#<option value="BT" <% ($direction||'TB') eq 'BT'? 'selected="selected"': '' |n %>><% loc('bottom to top') %></option>
-%#<option value="RL" <% ($direction||'TB') eq 'RL'? 'selected="selected"': '' |n %>><% loc('right to left') %></option>
+%#<option value="BT" <% ($direction||'TB') eq 'BT'? 'selected="selected"': '' |n %>><% _('bottom to top') %></option>
+%#<option value="RL" <% ($direction||'TB') eq 'RL'? 'selected="selected"': '' |n %>><% _('right to left') %></option>
 </select><br />
 
-<% loc('Main type of links') %> <select name="leading_link">
+<% _('Main type of links') %> <select name="leading_link">
 % foreach ( @link_types ) {
-<option value="<% $_ %>" <% ($leading_link||'Members') eq $_? 'selected="selected"': '' |n %>><% loc($_) %></option>
+<option value="<% $_ %>" <% ($leading_link||'Members') eq $_? 'selected="selected"': '' |n %>><% _($_) %></option>
 % }
 </select>
 
-<% loc('maximum depth') %> <select name="max_depth">
-<option value="0"><% loc('Unlimit') %></option>
+<% _('maximum depth') %> <select name="max_depth">
+<option value="0"><% _('Unlimit') %></option>
 % foreach ( 1..6 ) {
 <option value="<% $_ %>" <% ($max_depth||0) == $_? 'selected="selected"': '' %>><% $_ %></option>
 % }
 </select><br />
 
-<% loc('Show as well') %>:
+<% _('Show as well') %>:
 % foreach my $type ( @link_types ) {
 % my $checked = '';
 % $checked = 'checked="checked"' if grep $type eq $_, @show_links;
-<input type="checkbox" name="show_links" value="<% $type %>" <% $checked |n %> /><% loc($type) %>
+<input type="checkbox" name="show_links" value="<% $type %>" <% $checked |n %> /><% _($type) %>
 % }
 <br />
 
@@ -118,7 +118,7 @@ for my $i ( 1..($max_depth||6) ) {
 }
 </%PERL>
 
-<& /Elements/Submit, label => loc('Update Graph'), name => 'update' &>
+<& /Elements/Submit, label => _('Update Graph'), name => 'update' &>
 
 </&>
 

@@ -72,9 +72,9 @@
 <& /Dashboards/Elements/SelectPrivacy, name => "privacy", objects => \@privacies, default => $Dashboard->privacy &>
 </td></tr>
 </table>
-<& /Elements/Submit, name => 'save', label => loc('Save Changes') &>
+<& /Elements/Submit, name => 'save', label => _('Save Changes') &>
 % if ($Dashboard->id && $can_delete) {
-<& /Elements/Submit, name => 'delete', label => loc('Delete') &>
+<& /Elements/Submit, name => 'delete', label => _('Delete') &>
 % }
 </form>
 <%INIT>
@@ -91,11 +91,11 @@ use RT::Dashboard;
 my $Dashboard = RT::Dashboard->new( current_user => Jifty->web->current_user );
 my @privacies = $Dashboard->_privacy_objects(($create ? 'create' : 'modify') => 1);
 
-abort(loc("Permission denied")) if @privacies == 0;
+abort(_("Permission denied")) if @privacies == 0;
 
 if ($create) {
     $current_subtab = 'Dashboards/Modify.html?create=1';
-    $title = loc("Create a new dashboard");
+    $title = _("Create a new dashboard");
 }
 else {
     if ($id eq 'new') {
@@ -107,7 +107,7 @@ else {
         );
 
         if (!$val) {
-            abort(loc("Dashboard could not be created: %1", $msg));
+            abort(_("Dashboard could not be created: %1", $msg));
         }
 
         push @results, $msg;
@@ -119,14 +119,14 @@ else {
     }
 
     if ($id) {
-        $title = loc("Modify the dashboard %1", $Dashboard->name);
+        $title = _("Modify the dashboard %1", $Dashboard->name);
         $current_subtab = 'Dashboards/Modify.html?id=' . $id;
     }	
     # If the create failed
     else {
         $create = 1;
         $current_subtab = 'Dashboards/Modify.html?create=1';
-        $title = loc("Create a new dashboard");
+        $title = _("Create a new dashboard");
     }
 }
 
@@ -135,10 +135,10 @@ if (!$create && !$tried_create && $id && $ARGS{'save'}) {
                                         name     => $ARGS{'name'});
 
     if ($ok) {
-        push @results, loc("Dashboard updated");
+        push @results, _("Dashboard updated");
     }
     else {
-        push @results, loc("Dashboard could not be updated: %1", $msg);
+        push @results, _("Dashboard could not be updated: %1", $msg);
     }
 
 }
@@ -147,7 +147,7 @@ my $can_delete = $Dashboard->current_user_can_delete;
 
 if (!$create && !$tried_create && $id && $ARGS{'delete'}) {
     my ($ok, $msg) = $Dashboard->delete();
-    $ok || abort(loc("Couldn't delete dashboard %1: %2", $id, $msg));
+    $ok || abort(_("Couldn't delete dashboard %1: %2", $id, $msg));
 
     # put the user back into a useful place with a message
     RT::Interface::Web::redirect(RT->config->get('WebURL')."Dashboards/index.html?deleted=$id");

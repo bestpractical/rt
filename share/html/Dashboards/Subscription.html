@@ -59,7 +59,7 @@
 <tr>
 
 <td valign="top" class="boxcontainer">
-<&| /Widgets/TitleBox, title => loc('Dashboard') &>
+<&| /Widgets/TitleBox, title => _('Dashboard') &>
 
 <table>
 <tr><td class="label">
@@ -84,7 +84,7 @@
 %           $name = $query->name;
 %       }
         <li>
-            <% loc($name, $fields{'rows'}) %>
+            <% _($name, $fields{'rows'}) %>
         </li>
 %    }
 </ol>
@@ -94,7 +94,7 @@
 </table>
 </&>
 
-<&| /Widgets/TitleBox, title => loc('Subscription') &>
+<&| /Widgets/TitleBox, title => _('Subscription') &>
 
 <table>
 <tr><td class="label">
@@ -109,7 +109,7 @@
 <select name="dow">
 %   for my $dow (qw/Monday Tuesday Wednesday Thursday Friday Saturday Sunday/) {
     <option value="<% $dow %>" <% $fields{'dow'} eq $dow ?
-'selected="selected"' : '' |n %>><% loc($dow) %></option>
+'selected="selected"' : '' |n %>><% _($dow) %></option>
 %   }
 </select>
 <br />
@@ -120,7 +120,7 @@
 <select name="dom">
 %   for my $dom (1..31) {
     <option value="<% $dom %>" <% $fields{'dom'} == $dom ?
-'selected="selected"' : '' |n %>><% loc($dom) %></option>
+'selected="selected"' : '' |n %>><% _($dom) %></option>
 %   }
 </select>
 <br />
@@ -148,7 +148,7 @@
 </td><td class="value">
 <select name="rows">
 %   for my $rows (1, 2, 5, 10, 15, 20, 25, 50, 75, 100, 0) {
-    <option value="<% $rows %>" <% $fields{'rows'} eq $rows ? 'selected="selected"' : '' %>><% loc($rows || 'Unlimited') %></option>
+    <option value="<% $rows %>" <% $fields{'rows'} eq $rows ? 'selected="selected"' : '' %>><% _($rows || 'Unlimited') %></option>
 %   }
 </select>
 </td></tr>
@@ -159,9 +159,9 @@
 </table>
 
 % if ($SubscriptionObj->id) {
-    <& /Elements/Submit, name => "save", label => loc('Save Changes') &>
+    <& /Elements/Submit, name => "save", label => _('Save Changes') &>
 % } else {
-    <& /Elements/Submit, name => "save", label => loc('Subscribe') &>
+    <& /Elements/Submit, name => "save", label => _('Subscribe') &>
 % }
 </form>
 
@@ -191,7 +191,7 @@ $dashboard_id = $SubscriptionObj->id
              : $ARGS{'dashboard_id'};
 
 ($val, $msg) = $DashboardObj->load_by_id($dashboard_id);
-$val || abort(loc("Couldn't load dashboard %1: %2.", $dashboard_id, $msg));
+$val || abort(_("Couldn't load dashboard %1: %2.", $dashboard_id, $msg));
 
 my %fields = (
     dashboard_id => $dashboard_id,
@@ -234,7 +234,7 @@ if (defined $ARGS{save}) {
     }
     # create
     else {
-        abort(loc("Unable to subscribe to dashboard %1: Permission denied", $dashboard_id))
+        abort(_("Unable to subscribe to dashboard %1: Permission denied", $dashboard_id))
             unless $DashboardObj->current_user_can_subscribe;
 
         my ($val, $msg) = $SubscriptionObj->create(
@@ -245,21 +245,21 @@ if (defined $ARGS{save}) {
             content     => \%fields,
         );
         if ($val) {
-            push @results, loc("Subscribed to dashboard %1", $DashboardObj->name);
-            push @results, loc("Warning: you have no email address set, so you will not receive this dashboard until you have it set")
+            push @results, _("Subscribed to dashboard %1", $DashboardObj->name);
+            push @results, _("Warning: you have no email address set, so you will not receive this dashboard until you have it set")
                 unless Jifty->web->current_user->email;
         }
         else {
-            push @results, loc('Subscription could not be created: %1', $msg);
+            push @results, _('Subscription could not be created: %1', $msg);
         }
     }
 }
 
 if ($SubscriptionObj->id) {
-    $title = loc("Modify the subscription to dashboard %1", $DashboardObj->name);
+    $title = _("Modify the subscription to dashboard %1", $DashboardObj->name);
 }
 else {
-    $title = loc("Subscribe to dashboard %1", $DashboardObj->name);
+    $title = _("Subscribe to dashboard %1", $DashboardObj->name);
 }
 
 </%INIT>

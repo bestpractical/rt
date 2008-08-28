@@ -53,6 +53,6 @@
     &>
     <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, object_type => 'RT::Model::Queue', object=> $object &>
 <%INIT>
-  my $title = loc( 'Edit Custom Fields for all queues');
+  my $title = _( 'Edit Custom Fields for all queues');
   my $object = RT::Model::Queue->new( current_user => Jifty->web->current_user );
 </%INIT>

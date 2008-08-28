@@ -64,7 +64,7 @@
 <input type="hidden" class="hidden" name="saved_search_id" value="<% $saved_search->{Id} %>" />
 <& /Search/Elements/EditSearches,
     %$saved_search,
-    title         => loc('Manage saved graphs'),
+    title         => _('Manage saved graphs'),
     type          => 'Graph',
     search_fields  => \@save_arguments,
     current_search => { map { $_ => $ARGS{$_} } @save_arguments },
@@ -110,5 +110,5 @@ push @results, $m->comp( '/Search/Elements/EditSearches:Save',
     search_fields => \@save_arguments,
 );
 
-my $title = loc( "Ticket #%1 relationships graph", $id );
+my $title = _( "Ticket #%1 relationships graph", $id );
 </%INIT>

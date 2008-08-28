@@ -108,12 +108,12 @@ sub load {
             $self->{'privacy'} = $privacy;
             $self->post_load();
 
-            return ( 0, $self->loc("Permission denied") )
+            return ( 0, _("Permission denied") )
               unless $self->current_user_can_see;
 
             return (
                 1,
-                $self->loc(
+                _(
                     "Loaded %1 %2", $self->object_name, $self->name
                 )
             );
@@ -123,7 +123,7 @@ sub load {
                 "Could not load attribute " . $id . " for object " . $privacy );
             return (
                 0,
-                $self->loc(
+                _(
                     "Failed to load %1 %2", $self->object_name, $id
                 )
             );
@@ -132,7 +132,7 @@ sub load {
     else {
         Jifty->log->warn( "Could not load object $privacy when loading "
               . $self->object_name );
-        return ( 0, $self->loc( "Could not load object for %1", $privacy ) );
+        return ( 0, _( "Could not load object for %1", $privacy ) );
     }
 }
 
@@ -154,7 +154,7 @@ sub load_by_id {
     if ( !$ok ) {
         return (
             0,
-            $self->loc(
+            _(
                 "Failed to load %1 %2: %3", $self->object_name,
                 $id,                              $msg
             )
@@ -162,7 +162,7 @@ sub load_by_id {
     }
 
     my $privacy = $self->_build_privacy( $attr->object_type, $attr->object_id );
-    return ( 0, $self->loc( "Bad privacy for attribute %1", $id ) )
+    return ( 0, _( "Bad privacy for attribute %1", $id ) )
       if !$privacy;
 
     return $self->load( $privacy, $id );
@@ -201,10 +201,10 @@ sub save {
     my $privacy = $args{'privacy'};
     my $name = $args{'name'}, my $object = $self->_get_object($privacy);
 
-    return ( 0, $self->loc( "Failed to load object for %1", $privacy ) )
+    return ( 0, _( "Failed to load object for %1", $privacy ) )
       unless $object;
 
-    return ( 0, $self->loc("Permission denied") )
+    return ( 0, _("Permission denied") )
       unless $self->current_user_can_create($privacy);
 
     my ( $att_id, $att_msg ) = $self->save_attribute( $object, \%args );
@@ -213,12 +213,12 @@ sub save {
         $self->{'attribute'} = $object->attributes->with_id($att_id);
         $self->{'id'}        = $att_id;
         $self->{'privacy'}   = $privacy;
-        return ( 1, $self->loc( "Saved %1 %2", $self->object_name, $name ) );
+        return ( 1, _( "Saved %1 %2", $self->object_name, $name ) );
     }
     else {
         Jifty->log->error( $self->object_name . " save failure: $att_msg" );
         return ( 0,
-            $self->loc( "Failed to create %1 attribute", $self->object_name )
+            _( "Failed to create %1 attribute", $self->object_name )
         );
     }
 }
@@ -243,31 +243,31 @@ sub update {
     my $self = shift;
     my %args = @_;
 
-    return ( 0, $self->loc( "No %1 loaded", $self->object_name ) )
+    return ( 0, _( "No %1 loaded", $self->object_name ) )
       unless $self->id;
     return ( 0,
-        $self->loc( "Could not load %1 attribute", $self->object_name ) )
+        _( "Could not load %1 attribute", $self->object_name ) )
       unless $self->{'attribute'}->id;
 
-    return ( 0, $self->loc("Permission denied") )
+    return ( 0, _("Permission denied") )
       unless $self->current_user_can_modify;
 
     my ( $status, $msg ) = $self->update_attribute( \%args );
 
     return (
         1,
-        $self->loc(
+        _(
             "%1 update: Nothing changed",
             ucfirst( $self->object_name )
         )
     ) if !defined $msg;
 
     # prevent useless warnings
-    return ( 1, $self->loc("%1 updated"), ucfirst( $self->object_name ) )
+    return ( 1, _("%1 updated"), ucfirst( $self->object_name ) )
       if $msg =~ /That is already the current value/;
 
     return ( $status,
-        $self->loc( "%1 update: %2", ucfirst( $self->object_name ), $msg ) );
+        _( "%1 update: %2", ucfirst( $self->object_name ), $msg ) );
 }
 
 =head2 update_attribute
@@ -288,15 +288,15 @@ where status is true upon success.
 sub delete {
     my $self = shift;
 
-    return ( 0, $self->loc("Permission denied") )
+    return ( 0, _("Permission denied") )
       unless $self->current_user_can_delete;
 
     my ( $status, $msg ) = $self->{'attribute'}->delete;
     if ($status) {
-        return ( 1, $self->loc( "Deleted %1", $self->object_name ) );
+        return ( 1, _( "Deleted %1", $self->object_name ) );
     }
     else {
-        return ( 0, $self->loc( "Delete failed: %1", $msg ) );
+        return ( 0, _( "Delete failed: %1", $msg ) );
     }
 }
 

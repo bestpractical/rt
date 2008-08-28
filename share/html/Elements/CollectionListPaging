@@ -57,10 +57,10 @@ $url_params => undef
 <%INIT>
 $m->out(qq{<div class="paging">});
 if ($pages == 1) {
-  $m->out(loc('Page 1 of 1'));
+  $m->out(_('Page 1 of 1'));
 }
 else{
-$m->out(loc('Page') . ' ');
+$m->out(_('Page') . ' ');
 my $prev = $m->comp(
 		    '/Elements/QueryString',
 		    %$url_params,
@@ -98,10 +98,10 @@ for my $number ( 1 .. $pages ) {
 }
 
 if ($current_page > 1) {
-  $m->out(qq{<a href="$base_url$prev" class="nav">}.loc('Previous') . qq{</a>});
+  $m->out(qq{<a href="$base_url$prev" class="nav">}._('Previous') . qq{</a>});
 }
 if (($current_page * $rows) < $total_found) {
-  $m->out(qq{<a href="$base_url$next" class="nav">}.loc('Next').qq{</a>});
+  $m->out(qq{<a href="$base_url$next" class="nav">}._('Next').qq{</a>});
 }
 }
 $m->out(qq{</div>});
