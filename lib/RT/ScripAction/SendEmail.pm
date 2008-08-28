@@ -548,7 +548,7 @@ sub set_rt_special_headers {
 
     $self->set_subject();
     $self->set_subject_token();
-    $self->set_header_as_encoding( 'subject', RT->config->get('EmailOutputEncoding') )
+    $self->set_header_as_encoding( 'Subject', RT->config->get('EmailOutputEncoding') )
         if ( RT->config->get('EmailOutputEncoding') );
     $self->set_return_address();
     $self->set_references_headers();
@@ -898,7 +898,7 @@ sub set_header {
     return $head->get($field);
 }
 
-=head2 setsubject
+=head2 set_subject
 
 This routine sets the subject. it does not add the rt tag. That gets done elsewhere
 If subject is already defined via template, it uses that. otherwise, it tries to get
@@ -910,7 +910,7 @@ sub set_subject {
     my $self = shift;
     my $subject;
 
-    if ( $self->template_obj->mime_obj->head->get('subject') ) {
+    if ( $self->template_obj->mime_obj->head->get('Subject') ) {
         return ();
     }
 
@@ -919,7 +919,7 @@ sub set_subject {
     if ( $self->{'subject'} ) {
         $subject = $self->{'subject'};
     } elsif ( my $first = $message->first ) {
-        my $tmp = $first->get_header('subject');
+        my $tmp = $first->get_header('Subject');
         $subject = defined $tmp ? $tmp : $self->ticket_obj->subject;
     } else {
         $subject = $self->ticket_obj->subject();
@@ -928,11 +928,11 @@ sub set_subject {
     $subject =~ s/(\r\n|\n|\s)/ /gi;
 
     chomp $subject;
-    $self->set_header( 'subject', $subject );
+    $self->set_header( 'Subject', $subject );
 
 }
 
-=head2 setsubject_token
+=head2 set_subject_token
 
 This routine fixes the RT tag in the subject. It's unlikely that you want to overwrite this.
 
@@ -950,7 +950,7 @@ sub set_subject_token {
     );
 }
 
-=head2 set_referencesheaders
+=head2 set_references_headers
 
 Set References and In-Reply-To headers for this message.
 
