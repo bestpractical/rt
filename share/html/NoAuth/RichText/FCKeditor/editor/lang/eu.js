@@ -45,6 +45,7 @@ RemoveFormat		: "Kendu Formatoa",
 InsertLinkLbl		: "Esteka",
 InsertLink			: "Txertatu/Editatu Esteka",
 RemoveLink			: "Kendu Esteka",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: "Aingura",
 AnchorDelete		: "Ezabatu Aingura",
 InsertImageLbl		: "Irudia",
@@ -73,6 +74,9 @@ BlockJustify		: "Justifikatu",
 DecreaseIndent		: "Txikitu Koska",
 IncreaseIndent		: "Handitu Koska",
 Blockquote			: "Aipamen blokea",
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "Desegin",
 Redo				: "Berregin",
 NumberedListLbl		: "Zenbakidun Zerrenda",
@@ -158,6 +162,7 @@ UnknownToolbarSet	: "Ataza barra \"%1\" taldea ez da existitzen",
 NoActiveX			: "Zure nabigatzailearen segustasun hobespenak editore honen zenbait ezaugarri mugatu ditzake. \"ActiveX kontrolak eta plug-inak\" aktibatu beharko zenituzke, bestela erroreak eta ezaugarrietan mugak egon daitezke.",
 BrowseServerBlocked : "Baliabideen arakatzailea ezin da ireki. Ziurtatu popup blokeatzaileak desgaituta dituzula.",
 DialogBlocked		: "Ezin da elkarrizketa-leihoa ireki. Ziurtatu popup blokeatzaileak desgaituta dituzula.",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "Ados",
@@ -512,5 +517,11 @@ DlgAboutAboutTab	: "Honi buruz",
 DlgAboutBrowserInfoTab	: "Nabigatzailearen Informazioa",
 DlgAboutLicenseTab	: "Lizentzia",
 DlgAboutVersion		: "bertsioa",
-DlgAboutInfo		: "Informazio gehiago eskuratzeko hona joan"
+DlgAboutInfo		: "Informazio gehiago eskuratzeko hona joan",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style"	//MISSING
 };

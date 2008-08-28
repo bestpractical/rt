@@ -44,6 +44,7 @@ RemoveFormat		: "Формат авч хаях",
 InsertLinkLbl		: "Линк",
 InsertLink			: "Линк Оруулах/Засварлах",
 RemoveLink			: "Линк авч хаях",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: "Холбоос Оруулах/Засварлах",
 AnchorDelete		: "Холбоос Авах",
 InsertImageLbl		: "Зураг",
@@ -72,6 +73,9 @@ BlockJustify		: "Блок хэлбэрээр байрлуулах",
 DecreaseIndent		: "Догол мөр нэмэх",
 IncreaseIndent		: "Догол мөр хасах",
 Blockquote			: "Хайрцаглах",
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "Хүчингүй болгох",
 Redo				: "Өмнөх үйлдлээ сэргээх",
 NumberedListLbl		: "Дугаарлагдсан жагсаалт",
@@ -157,6 +161,7 @@ UnknownToolbarSet	: "Багажны хэсэгт \"%1\" оноох, үүсээг
 NoActiveX			: "Таны үзүүлэгч/browser-н хамгаалалтын тохиргоо editor-н зарим боломжийг хязгаарлаж байна. Та \"Run ActiveX controls ба plug-ins\" сонголыг идвэхитэй болго.",
 BrowseServerBlocked : "Нөөц үзүүгч нээж чадсангүй. Бүх popup blocker-г disabled болгоно уу.",
 DialogBlocked		: "Харилцах цонхонд энийг нээхэд боломжгүй ээ. Бүх popup blocker-г disabled болгоно уу.",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -511,5 +516,11 @@ DlgAboutAboutTab	: "Тухай",
 DlgAboutBrowserInfoTab	: "Мэдээлэл үзүүлэгч",
 DlgAboutLicenseTab	: "Лиценз",
 DlgAboutVersion		: "Хувилбар",
-DlgAboutInfo		: "Мэдээллээр туслах"
+DlgAboutInfo		: "Мэдээллээр туслах",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style"	//MISSING
 };

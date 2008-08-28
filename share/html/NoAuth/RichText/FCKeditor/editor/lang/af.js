@@ -44,6 +44,7 @@ RemoveFormat		: "Formaat verweider",
 InsertLinkLbl		: "Skakel",
 InsertLink			: "Skakel byvoeg/verander",
 RemoveLink			: "Skakel verweider",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: "Plekhouer byvoeg/verander",
 AnchorDelete		: "Remove Anchor",	//MISSING
 InsertImageLbl		: "Beeld",
@@ -72,6 +73,9 @@ BlockJustify		: "Blok paradeer",
 DecreaseIndent		: "Paradeering verkort",
 IncreaseIndent		: "Paradeering verleng",
 Blockquote			: "Blockquote",	//MISSING
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "Ont-skep",
 Redo				: "Her-skep",
 NumberedListLbl		: "Genommerde lys",
@@ -157,6 +161,7 @@ UnknownToolbarSet	: "Gereedskaps balk \"%1\" bestaan nie",
 NoActiveX			: "U browser sekuriteit instellings kan die funksies van die editor behinder. U moet die opsie \"Run ActiveX controls and plug-ins\" aktiveer. U ondervinding mag problematies geskiet of sekere funksionaliteit mag verhinder word.",
 BrowseServerBlocked : "Die vorraad venster word geblok! Verseker asseblief dat U die \"popup blocker\" instelling verander.",
 DialogBlocked		: "Die dialoog venster vir verdere informasie word geblok. De-aktiveer asseblief die \"popup blocker\" instellings wat dit behinder.",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -511,5 +516,11 @@ DlgAboutAboutTab	: "Meer oor",
 DlgAboutBrowserInfoTab	: "Blaai Informasie deur",
 DlgAboutLicenseTab	: "Lesensie",
 DlgAboutVersion		: "weergawe",
-DlgAboutInfo		: "Vir meer informasie gaan na "
+DlgAboutInfo		: "Vir meer informasie gaan na ",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style"	//MISSING
 };

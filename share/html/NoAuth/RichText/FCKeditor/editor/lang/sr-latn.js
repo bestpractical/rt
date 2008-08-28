@@ -44,6 +44,7 @@ RemoveFormat		: "Ukloni formatiranje",
 InsertLinkLbl		: "Link",
 InsertLink			: "Unesi/izmeni link",
 RemoveLink			: "Ukloni link",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: "Unesi/izmeni sidro",
 AnchorDelete		: "Remove Anchor",	//MISSING
 InsertImageLbl		: "Slika",
@@ -72,6 +73,9 @@ BlockJustify		: "Obostrano ravnanje",
 DecreaseIndent		: "Smanji levu marginu",
 IncreaseIndent		: "Uvećaj levu marginu",
 Blockquote			: "Blockquote",	//MISSING
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "Poni�ti akciju",
 Redo				: "Ponovi akciju",
 NumberedListLbl		: "Nabrojiva lista",
@@ -157,6 +161,7 @@ UnknownToolbarSet	: "Toolbar \"%1\" ne postoji",
 NoActiveX			: "Your browser's security settings could limit some features of the editor. You must enable the option \"Run ActiveX controls and plug-ins\". You may experience errors and notice missing features.",	//MISSING
 BrowseServerBlocked : "The resources browser could not be opened. Make sure that all popup blockers are disabled.",	//MISSING
 DialogBlocked		: "It was not possible to open the dialog window. Make sure all popup blockers are disabled.",	//MISSING
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -511,5 +516,11 @@ DlgAboutAboutTab	: "O editoru",
 DlgAboutBrowserInfoTab	: "Informacije o pretraživacu",
 DlgAboutLicenseTab	: "License",	//MISSING
 DlgAboutVersion		: "verzija",
-DlgAboutInfo		: "Za više informacija posetite"
+DlgAboutInfo		: "Za više informacija posetite",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style"	//MISSING
 };

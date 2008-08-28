@@ -52,7 +52,12 @@ function OnSpellerControlsLoad( controlsWindow )
 function oSpeller_OnFinished( numberOCorrections )
 {
 	if ( numberOCorrections > 0 )
-		oEditor.FCK.SetData( document.getElementById('txtHtml').value ) ;
+	{
+		oEditor.FCKUndo.SaveUndoStep() ;
+		oEditor.FCK.EditorDocument.body.innerHTML = document.getElementById('txtHtml').value ;
+		if ( oEditor.FCKBrowserInfo.IsIE )
+			oEditor.FCKSelection.Collapse( true ) ;
+	}
 	window.parent.Cancel() ;
 }
 

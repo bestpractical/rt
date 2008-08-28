@@ -44,6 +44,7 @@ RemoveFormat		: "إزالة التنسيقات",
 InsertLinkLbl		: "رابط",
 InsertLink			: "إدراج/تحرير رابط",
 RemoveLink			: "إزالة رابط",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: "إدراج/تحرير إشارة مرجعية",
 AnchorDelete		: "إزالة إشارة مرجعية",
 InsertImageLbl		: "صورة",
@@ -72,6 +73,9 @@ BlockJustify		: "ضبط",
 DecreaseIndent		: "إنقاص المسافة البادئة",
 IncreaseIndent		: "زيادة المسافة البادئة",
 Blockquote			: "اقتباس",
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "تراجع",
 Redo				: "إعادة",
 NumberedListLbl		: "تعداد رقمي",
@@ -157,6 +161,7 @@ UnknownToolbarSet	: "لم أتمكن من العثور على طقم الأدو�
 NoActiveX			: "لتأمين متصفحك يجب أن تحدد بعض مميزات المحرر. يتوجب عليك تمكين الخيار \"Run ActiveX controls and plug-ins\". قد تواجة أخطاء وتلاحظ مميزات مفقودة",
 BrowseServerBlocked : "لايمكن فتح مصدر المتصفح. فضلا يجب التأكد بأن جميع موانع النوافذ المنبثقة معطلة",
 DialogBlocked		: "لايمكن فتح نافذة الحوار . فضلا تأكد من أن  مانع النوافذ المنبثة معطل .",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "موافق",
@@ -511,5 +516,11 @@ DlgAboutAboutTab	: "نبذة",
 DlgAboutBrowserInfoTab	: "معلومات متصفحك",
 DlgAboutLicenseTab	: "الترخيص",
 DlgAboutVersion		: "الإصدار",
-DlgAboutInfo		: "لمزيد من المعلومات تفضل بزيارة"
+DlgAboutInfo		: "لمزيد من المعلومات تفضل بزيارة",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style"	//MISSING
 };

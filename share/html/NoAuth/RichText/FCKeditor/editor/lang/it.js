@@ -44,6 +44,7 @@ RemoveFormat		: "Elimina formattazione",
 InsertLinkLbl		: "Collegamento",
 InsertLink			: "Inserisci/Modifica collegamento",
 RemoveLink			: "Elimina collegamento",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: "Inserisci/Modifica Ancora",
 AnchorDelete		: "Rimuovi Ancora",
 InsertImageLbl		: "Immagine",
@@ -72,6 +73,9 @@ BlockJustify		: "Giustifica",
 DecreaseIndent		: "Riduci rientro",
 IncreaseIndent		: "Aumenta rientro",
 Blockquote			: "Blockquote",	//MISSING
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "Annulla",
 Redo				: "Ripristina",
 NumberedListLbl		: "Elenco numerato",
@@ -157,6 +161,7 @@ UnknownToolbarSet	: "La barra di strumenti \"%1\" non esiste",
 NoActiveX			: "Le impostazioni di sicurezza del tuo browser potrebbero limitare alcune funzionalità dell'editor. Devi abilitare l'opzione \"Esegui controlli e plug-in ActiveX\". Potresti avere errori e notare funzionalità mancanti.",
 BrowseServerBlocked : "Non è possibile aprire la finestra di espolorazione risorse. Verifica che tutti i blocca popup siano bloccati.",
 DialogBlocked		: "Non è possibile aprire la finestra di dialogo. Verifica che tutti i blocca popup siano bloccati.",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -511,5 +516,11 @@ DlgAboutAboutTab	: "Informazioni",
 DlgAboutBrowserInfoTab	: "Informazioni Browser",
 DlgAboutLicenseTab	: "Licenza",
 DlgAboutVersion		: "versione",
-DlgAboutInfo		: "Per maggiori informazioni visitare"
+DlgAboutInfo		: "Per maggiori informazioni visitare",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style"	//MISSING
 };

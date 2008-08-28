@@ -44,6 +44,7 @@ RemoveFormat		: "Odstrániť formátovanie",
 InsertLinkLbl		: "Odkaz",
 InsertLink			: "Vložiť/zmeniť odkaz",
 RemoveLink			: "Odstrániť odkaz",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: "Vložiť/zmeniť kotvu",
 AnchorDelete		: "Remove Anchor",	//MISSING
 InsertImageLbl		: "Obrázok",
@@ -72,6 +73,9 @@ BlockJustify		: "Zarovnať do bloku",
 DecreaseIndent		: "Zmenšiť odsadenie",
 IncreaseIndent		: "Zväčšiť odsadenie",
 Blockquote			: "Blockquote",	//MISSING
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "Späť",
 Redo				: "Znovu",
 NumberedListLbl		: "Číslovanie",
@@ -157,6 +161,7 @@ UnknownToolbarSet	: "Panel nástrojov \"%1\" neexistuje",
 NoActiveX			: "Bezpečnostné nastavenia vášho prehliadača môžu obmedzovať niektoré funkcie editora. Pre ich plnú funkčnosť musíte zapnúť voľbu \"Spúšťať ActiveX moduly a zásuvné moduly\", inak sa môžete stretnúť s chybami a nefunkčnosťou niektorých funkcií.",
 BrowseServerBlocked : "Prehliadač zdrojových prvkov nebolo možné otvoriť. Uistite sa, že máte vypnuté všetky blokovače vyskakujúcich okien.",
 DialogBlocked		: "Dialógové okno nebolo možné otvoriť. Uistite sa, že máte vypnuté všetky blokovače vyskakujúcich okien.",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -511,5 +516,11 @@ DlgAboutAboutTab	: "O aplikáci",
 DlgAboutBrowserInfoTab	: "Informácie o prehliadači",
 DlgAboutLicenseTab	: "Licencia",
 DlgAboutVersion		: "verzia",
-DlgAboutInfo		: "Viac informácií získate na"
+DlgAboutInfo		: "Viac informácií získate na",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style"	//MISSING
 };

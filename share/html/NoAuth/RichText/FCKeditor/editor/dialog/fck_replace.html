@@ -185,7 +185,7 @@ CharacterRange.prototype =
 		var focusNode = domRange.StartNode ;
 		if ( focusNode.nodeType != 1 )
 			focusNode = focusNode.parentNode ;
-		focusNode.scrollIntoView( false ) ;
+		FCKDomTools.ScrollIntoView( focusNode, false ) ;
 		this._cursors = charRange._cursors ;
 	},
 

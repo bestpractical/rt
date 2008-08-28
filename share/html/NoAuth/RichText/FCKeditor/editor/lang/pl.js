@@ -44,6 +44,7 @@ RemoveFormat		: "Usuń formatowanie",
 InsertLinkLbl		: "Hiperłącze",
 InsertLink			: "Wstaw/edytuj hiperłącze",
 RemoveLink			: "Usuń hiperłącze",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: "Wstaw/edytuj kotwicę",
 AnchorDelete		: "Usuń kotwicę",
 InsertImageLbl		: "Obrazek",
@@ -72,6 +73,9 @@ BlockJustify		: "Wyrównaj do lewej i prawej",
 DecreaseIndent		: "Zmniejsz wcięcie",
 IncreaseIndent		: "Zwiększ wcięcie",
 Blockquote			: "Cytat",
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "Cofnij",
 Redo				: "Ponów",
 NumberedListLbl		: "Lista numerowana",
@@ -157,6 +161,7 @@ UnknownToolbarSet	: "Pasek narzędzi \"%1\" nie istnieje",
 NoActiveX			: "Ustawienia zabezpieczeń twojej przeglądarki mogą ograniczyć niektóre funkcje edytora. Musisz włączyć opcję \"Uruchamianie formantów Activex i dodatków plugin\". W przeciwnym wypadku mogą pojawiać się błędy.",
 BrowseServerBlocked : "Nie można otworzyć okno menadżera plików. Upewnij się, że wszystkie blokady wyskakujących okienek są wyłączone.",
 DialogBlocked		: "Nie można otworzyć okna dialogowego. Upewnij się, że wszystkie blokady wyskakujących okienek są wyłączone.",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -511,5 +516,11 @@ DlgAboutAboutTab	: "O ...",
 DlgAboutBrowserInfoTab	: "O przeglądarce",
 DlgAboutLicenseTab	: "Licencja",
 DlgAboutVersion		: "wersja",
-DlgAboutInfo		: "Więcej informacji uzyskasz pod adresem"
+DlgAboutInfo		: "Więcej informacji uzyskasz pod adresem",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style"	//MISSING
 };

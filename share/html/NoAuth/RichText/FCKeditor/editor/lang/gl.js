@@ -44,6 +44,7 @@ RemoveFormat		: "Eliminar Formato",
 InsertLinkLbl		: "Ligazón",
 InsertLink			: "Inserir/Editar Ligazón",
 RemoveLink			: "Eliminar Ligazón",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: "Inserir/Editar Referencia",
 AnchorDelete		: "Remove Anchor",	//MISSING
 InsertImageLbl		: "Imaxe",
@@ -72,6 +73,9 @@ BlockJustify		: "Xustificado",
 DecreaseIndent		: "Disminuir Sangría",
 IncreaseIndent		: "Aumentar Sangría",
 Blockquote			: "Blockquote",	//MISSING
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "Desfacer",
 Redo				: "Refacer",
 NumberedListLbl		: "Lista Numerada",
@@ -157,6 +161,7 @@ UnknownToolbarSet	: "O conxunto de ferramentas \"%1\" non existe",
 NoActiveX			: "As opcións de seguridade do seu navegador poderían limitar algunha das características de editor. Debe activar a opción \"Executar controis ActiveX e plug-ins\". Pode notar que faltan características e experimentar erros",
 BrowseServerBlocked : "Non se poido abrir o navegador de recursos. Asegúrese de que están desactivados os bloqueadores de xanelas emerxentes",
 DialogBlocked		: "Non foi posible abrir a xanela de diálogo. Asegúrese de que están desactivados os bloqueadores de xanelas emerxentes",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -511,5 +516,11 @@ DlgAboutAboutTab	: "Acerca de",
 DlgAboutBrowserInfoTab	: "Información do Navegador",
 DlgAboutLicenseTab	: "Licencia",
 DlgAboutVersion		: "versión",
-DlgAboutInfo		: "Para máis información visitar:"
+DlgAboutInfo		: "Para máis información visitar:",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style"	//MISSING
 };

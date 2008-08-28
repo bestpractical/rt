@@ -44,6 +44,7 @@ RemoveFormat		: "Înlătură formatarea",
 InsertLinkLbl		: "Link (Legătură web)",
 InsertLink			: "Inserează/Editează link (legătură web)",
 RemoveLink			: "Înlătură link (legătură web)",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: "Inserează/Editează ancoră",
 AnchorDelete		: "Şterge ancoră",
 InsertImageLbl		: "Imagine",
@@ -72,6 +73,9 @@ BlockJustify		: "Aliniere în bloc (Block Justify)",
 DecreaseIndent		: "Scade indentarea",
 IncreaseIndent		: "Creşte indentarea",
 Blockquote			: "Citat",
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "Starea anterioară (undo)",
 Redo				: "Starea ulterioară (redo)",
 NumberedListLbl		: "Listă numerotată",
@@ -157,6 +161,7 @@ UnknownToolbarSet	: "Grupul din bara cu opţiuni \"%1\" nu există",
 NoActiveX			: "Setările de securitate ale programului dvs. cu care navigaţi pe internet (browser) pot limita anumite funcţionalităţi ale editorului. Pentru a evita asta, trebuie să activaţi opţiunea \"Run ActiveX controls and plug-ins\". Poate veţi întâlni erori sau veţi observa funcţionalităţi lipsă.",
 BrowseServerBlocked : "The resources browser could not be opened. Asiguraţi-vă că nu e activ niciun \"popup blocker\" (funcţionalitate a programului de navigat (browser) sau a unui plug-in al acestuia de a bloca deschiderea unui noi ferestre).",
 DialogBlocked		: "Nu a fost posibilă deschiderea unei ferestre de dialog. Asiguraţi-vă că nu e activ niciun \"popup blocker\" (funcţionalitate a programului de navigat (browser) sau a unui plug-in al acestuia de a bloca deschiderea unui noi ferestre).",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "Bine",
@@ -511,5 +516,11 @@ DlgAboutAboutTab	: "Despre",
 DlgAboutBrowserInfoTab	: "Informaţii browser",
 DlgAboutLicenseTab	: "Licenţă",
 DlgAboutVersion		: "versiune",
-DlgAboutInfo		: "Pentru informaţii amănunţite, vizitaţi"
+DlgAboutInfo		: "Pentru informaţii amănunţite, vizitaţi",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style"	//MISSING
 };

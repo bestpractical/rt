@@ -44,6 +44,7 @@ RemoveFormat		: "Eemalda vorming",
 InsertLinkLbl		: "Link",
 InsertLink			: "Sisesta link / Muuda linki",
 RemoveLink			: "Eemalda link",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: "Sisesta ankur / Muuda ankrut",
 AnchorDelete		: "Eemalda ankur",
 InsertImageLbl		: "Pilt",
@@ -72,6 +73,9 @@ BlockJustify		: "Rööpjoondus",
 DecreaseIndent		: "Vähenda taanet",
 IncreaseIndent		: "Suurenda taanet",
 Blockquote			: "Blokktsitaat",
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "Võta tagasi",
 Redo				: "Korda toimingut",
 NumberedListLbl		: "Nummerdatud loetelu",
@@ -157,6 +161,7 @@ UnknownToolbarSet	: "Tööriistariba \"%1\" ei eksisteeri",
 NoActiveX			: "Sinu veebisirvija turvalisuse seaded võivad limiteerida mõningaid tekstirdaktori kasutusvõimalusi. Sa peaksid võimaldama valiku \"Run ActiveX controls and plug-ins\" oma veebisirvija seadetes. Muidu võid sa täheldada vigu tekstiredaktori töös ja märgata puuduvaid funktsioone.",
 BrowseServerBlocked : "Ressursside sirvija avamine ebaõnnestus. Võimalda pop-up akende avanemine.",
 DialogBlocked		: "Ei olenud võimalik avada dialoogi akent. Võimalda pop-up akende avanemine.",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -511,5 +516,11 @@ DlgAboutAboutTab	: "Teave",
 DlgAboutBrowserInfoTab	: "Veebisirvija info",
 DlgAboutLicenseTab	: "Litsents",
 DlgAboutVersion		: "versioon",
-DlgAboutInfo		: "Täpsema info saamiseks mine"
+DlgAboutInfo		: "Täpsema info saamiseks mine",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style"	//MISSING
 };
