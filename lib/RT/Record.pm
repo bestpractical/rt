@@ -608,8 +608,8 @@ Takes a potentially large attachment. Returns (content_encoding, EncodedBody) ba
 
 sub _encode_lob {
     my $self     = shift;
-    my $Body     = shift;
-    my $MIMEType = shift;
+    my $body     = shift;
+    my $mime_type = shift;
 
     my $content_encoding = 'none';
 
@@ -619,7 +619,7 @@ sub _encode_lob {
     #if the current attachment contains nulls and the
     #database doesn't support embedded nulls
 
-    if ( RT->config->get('AlwaysUsebase64') ) {
+    if ( RT->config->get('AlwaysUseBase64') ) {
 
         # set a flag telling us to mimencode the attachment
         $content_encoding = 'base64';
@@ -631,21 +631,21 @@ sub _encode_lob {
         # Some databases (postgres) can't handle non-utf8 data
     } elsif (
         0    #   !Jifty->handle->binary_safe_blobs
-        && $MIMEType !~ /text\/plain/gi 
-        && !Encode::is_utf8( $Body, 1 )
+        && $mime_type !~ /text\/plain/gi 
+        && !Encode::is_utf8( $body, 1 )
         )
     {
         $content_encoding = 'quoted-printable';
     }
 
     #if the attachment is larger than the maximum size
-    if ( ($MaxSize) and ( $MaxSize < length($Body) ) ) {
+    if ( ($MaxSize) and ( $MaxSize < length($body) ) ) {
 
         # if we're supposed to truncate large attachments
         if ( RT->config->get('TruncateLongAttachments') ) {
 
             # truncate the attachment to that length.
-            $Body = substr( $Body, 0, $MaxSize );
+            $body = substr( $body, 0, $MaxSize );
 
         }
 
@@ -654,8 +654,8 @@ sub _encode_lob {
 
             # drop the attachment on the floor
             Jifty->log->info(
-                "$self: Dropped an attachment of size " . length($Body) );
-            Jifty->log->info( "It started: " . substr( $Body, 0, 60 ) );
+                "$self: Dropped an attachment of size " . length($body) );
+            Jifty->log->info( "It started: " . substr( $body, 0, 60 ) );
             return ( "none", "Large attachment dropped" );
         }
     }
@@ -664,15 +664,15 @@ sub _encode_lob {
     if ( $content_encoding eq 'base64' ) {
 
         # base64 encode the attachment
-        Encode::_utf8_off($Body);
-        $Body = MIME::Base64::encode_base64($Body);
+        Encode::_utf8_off($body);
+        $body = MIME::Base64::encode_base64($body);
 
     } elsif ( $content_encoding eq 'quoted-printable' ) {
-        Encode::_utf8_off($Body);
-        $Body = MIME::QuotedPrint::encode($Body);
+        Encode::_utf8_off($body);
+        $body = MIME::QuotedPrint::encode($body);
     }
 
-    return ( $content_encoding, $Body );
+    return ( $content_encoding, $body );
 
 }
 

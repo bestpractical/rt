@@ -1021,7 +1021,7 @@ sub add_subject_tag {
     my $ticket  = shift;
     unless ( ref $ticket ) {
         my $tmp = RT::Model::Ticket->new( current_user => RT->system_user);
-        $tmp->load($ticket->id);
+        $tmp->load($ticket);
         $ticket = $tmp;
     }
     my $id        = $ticket->id;
