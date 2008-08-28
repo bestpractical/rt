@@ -123,32 +123,32 @@ ok($val,$msg);
 expect_send("edit ticket/$ticket_id set owner=root", 'Changing owner...');
 expect_like(qr/Ticket $ticket_id updated/, 'Changed owner');
 expect_send("show ticket/$ticket_id -f owner", 'Verifying change...');
-expect_like(qr/Owner: root/, 'Verified change');
+expect_like(qr/owner: root/, 'Verified change');
 # change a ticket's Requestor
 expect_send("edit ticket/$ticket_id set requestors=foo\@example.com", 'Changing Requestor...');
 expect_like(qr/Ticket $ticket_id updated/, 'Changed Requestor');
 expect_send("show ticket/$ticket_id -f requestors", 'Verifying change...');
-expect_like(qr/Requestors: foo\@example.com/, 'Verified change');
+expect_like(qr/requestors: foo\@example.com/, 'Verified change');
 # change a ticket's Cc
 expect_send("edit ticket/$ticket_id set cc=bar\@example.com", 'Changing Cc...');
 expect_like(qr/Ticket $ticket_id updated/, 'Changed Cc');
 expect_send("show ticket/$ticket_id -f cc", 'Verifying change...');
-expect_like(qr/Cc: bar\@example.com/, 'Verified change');
+expect_like(qr/cc: bar\@example.com/, 'Verified change');
 # change a ticket's priority
 expect_send("edit ticket/$ticket_id set priority=10", 'Changing priority...');
 expect_like(qr/Ticket $ticket_id updated/, 'Changed priority');
 expect_send("show ticket/$ticket_id -f priority", 'Verifying change...');
-expect_like(qr/Priority: 10/, 'Verified change');
+expect_like(qr/priority: 10/, 'Verified change');
 # move a ticket to a different queue
 expect_send("edit ticket/$ticket_id set queue=EditedQueue$$", 'Changing queue...');
 expect_like(qr/Ticket $ticket_id updated/, 'Changed queue');
 expect_send("show ticket/$ticket_id -f queue", 'Verifying change...');
-expect_like(qr/Queue: EditedQueue$$/, 'Verified change');
+expect_like(qr/queue: EditedQueue$$/, 'Verified change');
 # cannot move ticket to a nonexistent queue
 expect_send("edit ticket/$ticket_id set queue=nonexistent-$$", 'Changing to nonexistent queue...');
 expect_like(qr/queue does not exist/i, 'Errored out');
 expect_send("show ticket/$ticket_id -f queue", 'Verifying lack of change...');
-expect_like(qr/Queue: EditedQueue$$/, 'Verified lack of change');
+expect_like(qr/queue: EditedQueue$$/, 'Verified lack of change');
 
 # Test reading and setting custom fields without spaces
 expect_send("show ticket/$ticket_id -f CF-myCF$$", 'Checking initial value');
@@ -202,17 +202,17 @@ expect_like(qr/CF\.{my CF$$}: NEW/i, 'Verified change');
 expect_send("edit ticket/$ticket_id set status=stalled", 'Changing status to "stalled"...');
 expect_like(qr/Ticket $ticket_id updated/, 'Changed status');
 expect_send("show ticket/$ticket_id -f status", 'Verifying change...');
-expect_like(qr/Status: stalled/, 'Verified change');
+expect_like(qr/status: stalled/, 'Verified change');
 # resolve a ticket
 expect_send("edit ticket/$ticket_id set status=resolved", 'Changing status to "resolved"...');
 expect_like(qr/Ticket $ticket_id updated/, 'Changed status');
 expect_send("show ticket/$ticket_id -f status", 'Verifying change...');
-expect_like(qr/Status: resolved/, 'Verified change');
+expect_like(qr/status: resolved/, 'Verified change');
 # try to set status to an invalid value
 expect_send("edit ticket/$ticket_id set status=quux", 'Changing status to an invalid value...');
 expect_like(qr/invalid value/i, 'Errored out');
 expect_send("show ticket/$ticket_id -f status", 'Verifying lack of change...');
-expect_like(qr/Status: resolved/, 'Verified change');
+expect_like(qr/status: resolved/, 'Verified change');
 
 # }}}
 
@@ -393,13 +393,13 @@ expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in 
     expect_send("take $steal_ticket_id", 'user tries to take the ticket...');
     expect_like(qr/You can only take tickets that are unowned/, '...and fails.');
     expect_send("show ticket/$steal_ticket_id -f owner", 'Double-checking...');
-    expect_like(qr/Owner: root/, '...no change.');
+    expect_like(qr/owner: root/, '...no change.');
 
     # user steals the ticket
     expect_send("steal $steal_ticket_id", 'user tries to *steal* the ticket...');
     expect_like(qr/Owner changed from root to fooser$$/, '...and succeeds!');
     expect_send("show ticket/$steal_ticket_id -f owner", 'Double-checking...');
-    expect_like(qr/Owner: fooser$$/, '...yup, it worked.');
+    expect_like(qr/owner: fooser$$/, '...yup, it worked.');
     expect_quit();
 
     # log back in as root
