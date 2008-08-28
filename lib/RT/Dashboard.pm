@@ -200,7 +200,7 @@ sub search_privacy {
         return name =>  $desc;
     }
 
-    return SavedSearch => join( '-', $type, 'SavedSearch', $id );
+    return saved_search => join( '-', $type, 'SavedSearch', $id );
 }
 
 =head2 possible_hidden_searches
