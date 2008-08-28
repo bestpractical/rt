@@ -28,26 +28,26 @@ ok $m->login(customer => 'customer'), "logged in";
 $m->get_ok($url."Dashboards/index.html");
 $m->content_lacks("New dashboard", "No 'new dashboard' link because we have no CreateOwnDashboard");
 
-$m->get_ok($url."Dashboards/Modify.html?Create=1");
+$m->get_ok($url."Dashboards/Modify.html?create=1");
 $m->content_contains("Permission denied");
 $m->content_lacks("Save Changes");
 
 $user_obj->principal_object->grant_right(
     right  => 'ModifyOwnDashboard',
-    object => RT->system_user
+    object => RT->system
 );
 
 # Modify itself is no longer good enough, you need Create
-$m->get_ok($url."Dashboards/Modify.html?Create=1");
+$m->get_ok($url."Dashboards/Modify.html?create=1");
 $m->content_contains("Permission denied");
 $m->content_lacks("Save Changes");
 
 $user_obj->principal_object->grant_right(
     right  => 'CreateOwnDashboard',
-    object => RT->system_user
+    object => RT->system
 );
 
-$m->get_ok($url."Dashboards/Modify.html?Create=1");
+$m->get_ok($url."Dashboards/Modify.html?create=1");
 $m->content_lacks("Permission denied");
 $m->content_contains("Save Changes");
 
@@ -66,7 +66,7 @@ $m->content_lacks('Delete', "Delete button hidden because we lack DeleteOwnDashb
 $m->get_ok($url."Dashboards/index.html");
 $m->content_lacks("different dashboard", "we lack SeeOwnDashboard");
 
-$user_obj->principal_object->grant_right(right => 'SeeOwnDashboard', object => RT->system_user);
+$user_obj->principal_object->grant_right(right => 'SeeOwnDashboard', object => RT->system );
 
 $m->get_ok($url."Dashboards/index.html");
 $m->content_contains("different dashboard", "we now have SeeOwnDashboard");
@@ -106,7 +106,7 @@ $m->field('searches-Available' => ["1-RT::System-1"]);
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
 
-RT::Record->flush_cache if RT::Record->can('FlushCache');
+Jifty::DBI::Record::Cachable->flush_cache;
 $dashboard = RT::Dashboard->new( current_user => $currentuser);
 $dashboard->load_by_id($id);
 
@@ -128,6 +128,7 @@ $m->content_contains("20 highest priority tickets I own");
 $m->content_contains("20 newest unowned tickets");
 $m->content_lacks("Bookmarked Tickets");
 $m->content_contains("dashboard test", "ticket subject");
+Jifty->log->error( $m->base );
 
 $m->get_ok("/Dashboards/$id/This fragment left intentionally blank");
 $m->content_contains("20 highest priority tickets I own");
@@ -135,12 +136,12 @@ $m->content_contains("20 newest unowned tickets");
 $m->content_lacks("Bookmarked Tickets");
 $m->content_contains("dashboard test", "ticket subject");
 
-$m->get_ok("/Dashboards/Subscription.html?DashboardId=$id");
+$m->get_ok("/Dashboards/Subscription.html?dashboard_id=$id");
 $m->form_name( 'subscribe_dashboard' );
-$m->click_button(name => 'Save');
+$m->click_button(name => 'save');
 $m->content_contains("Permission denied");
 
-RT::Record->flush_cache if RT::Record->can('FlushCache');
+Jifty::DBI::Record::Cachable->flush_cache;
 is($user_obj->attributes->named('Subscription'), 0, "no subscriptions");
 
 $user_obj->principal_object->grant_right(right => 'SubscribeDashboard', object => RT->system );
@@ -153,11 +154,11 @@ $m->content_contains("My Tickets");
 $m->content_lacks("Bookmarked Tickets", "only dashboard queries show up");
 
 $m->form_name( 'subscribe_dashboard' );
-$m->click_button(name => 'Save');
+$m->click_button(name => 'save');
 $m->content_lacks("Permission denied");
 $m->content_contains("Subscribed to dashboard different dashboard");
 
-RT::Record->flush_cache if RT::Record->can('FlushCache');
+Jifty::DBI::Record::Cachable->flush_cache;
 TODO: {
     local $TODO = "some kind of caching is still happening (it works if I remove the check above)";
     is($user_obj->attributes->named('Subscription'), 1, "we have a subscription");
@@ -167,7 +168,7 @@ $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->follow_link_ok({text => "Subscription"});
 $m->content_contains("Modify the subscription to dashboard different dashboard");
 
-$m->get_ok("/Dashboards/Modify.html?id=$id&Delete=1");
+$m->get_ok("/Dashboards/Modify.html?id=$id&delete=1");
 $m->content_contains("Permission denied", "unable to delete dashboard because we lack DeleteOwnDashboard");
 
 $user_obj->principal_object->grant_right(right => 'DeleteOwnDashboard', object => RT->system );
@@ -176,7 +177,7 @@ $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->content_contains('Delete', "Delete button shows because we have DeleteOwnDashboard");
 
 $m->form_name( 'modify_dashboard' );
-$m->click_button(name => 'Delete');
+$m->click_button(name => 'delete');
 $m->content_contains("Deleted dashboard $id");
 
 $m->get("/Dashboards/Modify.html?id=$id");
