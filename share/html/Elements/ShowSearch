@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&|/Widgets/TitleBox,
-    title => _($search->description, $ProcessedSearchArg->{'Rows'}),
+    title => _($search->description, $ProcessedSearchArg->{'rows'}),
     title_href => $query_link_url.$query_string,
     titleright => $customize ? _('Edit') : '',
     titleright_href => $customize,
@@ -87,9 +87,9 @@ if ($saved_search) {
             saved_search_load => $saved_search );
     }
 } else {
-    ($search) = RT::System->new() ->attributes->named( 'Search - ' . $name );
+    ($search) = RT->system->attributes->named( 'Search - ' . $name );
     unless ( $search && $search->id ) {
-        my (@custom_searches) = RT::System->new()->attributes->named('saved_search');
+        my (@custom_searches) = RT->system->attributes->named('saved_search');
         foreach my $custom (@custom_searches) {
             if ($custom->description eq $name) { $search = $custom; last }
         }
@@ -109,7 +109,7 @@ if ($saved_search) {
 # orginal search's poperties
 $SearchArg ||= {};
 my $ProcessedSearchArg = $SearchArg;
-$ProcessedSearchArg = { %$SearchArg, %Override } if keys %Override;
+$ProcessedSearchArg = { %$SearchArg, %override } if keys %override;
 $m->callback(
     %ARGS,
     Callbackname  => 'modify_search',
@@ -137,7 +137,7 @@ my $query_string = '?' . $m->comp( '/Elements/QueryString', %$SearchArg );
 <%ARGS>
 $name          => undef
 $saved_search   => undef
-%Override      => ()
+%override      => ()
 $ignore_missing => undef
 $hideable      => 1
 </%ARGS>
