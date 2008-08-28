@@ -167,7 +167,7 @@ sub set_mime_entity_to_encoding {
     $charset = 'utf-8' if $charset =~ /^utf-?8$/i;
     $enc     = 'utf-8' if $enc     =~ /^utf-?8$/i;
 
-    set_mime_ehead_to_encoding(
+    set_mime_head_to_encoding(
         $entity->head,
         _find_or_guess_charset( $entity, 1 ) => $enc,
         $preserve_words
@@ -262,6 +262,7 @@ sub decode_mime_words_to_encoding {
     my $enc = shift;
 
     @_ = $str =~ m/(.*?)=\?([^?]+)\?([QqBb])\?([^?]+)\?=([^=]*)/gcs;
+
     return ($str) unless (@_);
 
     # add everything that hasn't matched to the end of the latest
@@ -409,9 +410,9 @@ sub _guess_charset {
 
 # }}}
 
-# {{{ set_mime_ehead_to_encoding
+# {{{ set_mime_head_to_encoding
 
-=head2 set_mime_ehead_to_encoding HEAD OLD_CHARSET NEW_CHARSET
+=head2 set_mime_head_to_encoding HEAD OLD_CHARSET NEW_CHARSET
 
 Converts a MIME Head from one encoding to another. This totally violates the RFC.
 We should never need this. But, Surprise!, MUAs are badly broken and do this kind of stuff
@@ -420,7 +421,7 @@ all the time
 
 =cut
 
-sub set_mime_ehead_to_encoding {
+sub set_mime_head_to_encoding {
     my ( $head, $charset, $enc, $preserve_words ) = ( shift, shift, shift, shift );
 
     $charset = 'utf-8' if $charset eq 'utf8';

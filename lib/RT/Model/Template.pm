@@ -331,7 +331,7 @@ sub parse {
     my $self = shift;
     my ( $rv, $msg );
 
-    if ( $self->content =~ m{^Content-type:\s+text/html\b}im ) {
+    if ( $self->content =~ m{^Content-Type:\s+text/html\b}im ) {
         local $RT::Model::Transaction::Preferredcontent_type = 'text/html';
         ( $rv, $msg ) = $self->_parse(@_);
     }
@@ -466,7 +466,6 @@ sub _parse_content {
 sub _downgrade_from_html {
     my $self        = shift;
     my $orig_entity = $self->mime_obj;
-    die 'hehe';
 
     local $RT::Model::Transaction::Preferredcontent_type = 'text/plain';
 
@@ -476,13 +475,13 @@ sub _downgrade_from_html {
         return;
     }
 
-    $orig_entity->head->mime_attr( "Content-type"         => 'text/html' );
-    $orig_entity->head->mime_attr( "Content-type.charset" => 'utf-8' );
+    $orig_entity->head->mime_attr( "Content-Type"         => 'text/html' );
+    $orig_entity->head->mime_attr( "Content-Type.charset" => 'utf-8' );
     $orig_entity->make_multipart( 'alternative', Force => 1 );
 
     my $new_entity = $self->{mime_obj};
-    $new_entity->head->mime_attr( "Content-type"         => 'text/plain' );
-    $new_entity->head->mime_attr( "Content-type.charset" => 'utf-8' );
+    $new_entity->head->mime_attr( "Content-Type"         => 'text/plain' );
+    $new_entity->head->mime_attr( "Content-Type.charset" => 'utf-8' );
 
     require HTML::formatText;
     require HTML::TreeBuilder;

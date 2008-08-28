@@ -1021,13 +1021,13 @@ sub add_subject_tag {
     my $ticket  = shift;
     unless ( ref $ticket ) {
         my $tmp = RT::Model::Ticket->new( current_user => RT->system_user);
-        $tmp->Load($ticket);
+        $tmp->load($ticket->id);
         $ticket = $tmp;
     }
     my $id        = $ticket->id;
     my $queue_tag = $ticket->queue_obj->subject_tag;
 
-    my $tag_re = RT->config->get('EmailsubjectTagRegex');
+    my $tag_re = RT->config->get('EmailSubjectTagRegex');
     unless ($tag_re) {
         my $tag = $queue_tag || RT->config->get('rtname');
         $tag_re = qr/\Q$tag\E/;

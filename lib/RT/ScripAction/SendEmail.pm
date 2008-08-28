@@ -205,8 +205,8 @@ sub prepare {
     foreach my $part ( grep !$_->is_multipart, $mime_obj->parts_DFS ) {
         my $type = $part->mime_type || 'text/plain';
         $type = 'text/plain' unless RT::I18N::is_textual_content_type($type);
-        $part->head->mime_attr( "Content-type"         => $type );
-        $part->head->mime_attr( "Content-type.charset" => 'utf-8' );
+        $part->head->mime_attr( "Content-Type"         => $type );
+        $part->head->mime_attr( "Content-Type.charset" => 'utf-8' );
     }
 
     RT::I18N::set_mime_entity_to_encoding( $mime_obj, RT->config->get('EmailOutputEncoding'), 'mime_words_ok', );
