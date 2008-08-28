@@ -62,6 +62,7 @@ our $VERSION = '3.7.14';
 our $BASE_PATH        = Jifty::Util->app_root;
 our $EtcPath          = $BASE_PATH . '/etc';
 our $BinPath          = $BASE_PATH . '/bin';
+our $SbinPath          = $BASE_PATH . '/sbin';
 our $VarPath          = $BASE_PATH . '/var';
 our $LocalPath        = $BASE_PATH . '/local';
 our $LocalLibPath     = $BASE_PATH . '/local/lib';
@@ -266,7 +267,7 @@ sub plugins {
     return \@PLUGINS;
 }
 
-=head2 InitPlugins
+=head2 init_plugins
 
 Initialze all Plugins found in the RT configuration file, setting up their lib and HTML::Mason component roots.
 
@@ -310,6 +311,18 @@ sub install_mode {
          $_install_mode = shift;
     }
     return $_install_mode;
+}
+
+=head2 init_jifty
+
+call Jifty->new to init Jifty's stuff.
+nomrally, we need to do it early in BEGIN block
+
+=cut
+
+sub init_jifty {
+    require Jifty;
+    Jifty->new;
 }
 
 =head1 BUGS
