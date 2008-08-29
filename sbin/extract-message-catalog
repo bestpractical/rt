@@ -234,8 +234,34 @@ sub update {
 
         chomp $msgid;
         chomp $msgstr;
-        $msgid  =~ s/^msgid "(.*)"\s*?$/$1/ms    or warn "$msgid in $file";
-        $msgstr =~ s/^msgstr "(.*)"\s*?$/$1/ms or warn "$msgstr  in $file";
+
+        $msgid  =~ s/^msgid "(.*)"\s*?$/$1/m    or warn "$msgid in $file";
+
+        if ( $msgid eq '' ) {
+            # null msgid, msgstr will have head info
+            $msgstr =~ s/^msgstr "(.*)"\s*?$/$1/ms or warn "$msgstr  in $file";
+        }
+        else {
+            $msgstr =~ s/^msgstr "(.*)"\s*?$/$1/m or warn "$msgstr  in $file";
+        }
+
+        if ( $msgid ne ''  ) {
+            for my $msg ( \$msgid, \$msgstr ) {
+                if ( $$msg =~ /\n/ ) {
+                    my @lines = split /\n/, $$msg;
+                    $$msg =
+                      shift @lines;   # first line don't need to handle any more
+                    for (@lines) {
+                        if (/^"(.*)"\s*$/) {
+                            $$msg .= $1;
+                        }
+                    }
+                }
+
+                # convert \\n back to \n
+                $$msg =~ s/(?!\\)\\n/\n/g;
+            }
+        }
 
         $Lexicon{$msgid} = $msgstr;
         $Header{$msgid}  = $msghdr;
