@@ -511,7 +511,7 @@ sub get_header {
     return undef;
 }
 
-=head del_header $TAG
+=head2 del_header $TAG
 
 Delete a field from the attachment's headers.
     
@@ -529,7 +529,7 @@ sub del_header {
     return $self->__set( field => 'headers', value => $newheader );
 }
 
-=head add_header $TAG, $VALUE, ...
+=head2 add_header $TAG, $VALUE, ...
 
 Add one or many fields to the attachment's headers.
 
