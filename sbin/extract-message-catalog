@@ -226,14 +226,21 @@ sub update {
         $msghdr .= shift @lines while ( $lines[0] && $lines[0] !~ /^msgid/ );
         
         my $msgid  = "";
-        $msgid .= shift @lines while ( $lines[0] && $lines[0] =~ /^(msgid|")/ );
+
+# '#~ ' is the prefix of launchpad for msg that's not found the the source
+# we'll remove the prefix later so we can still show them with our own mark
+
+        $msgid .= shift @lines while ( $lines[0] && $lines[0] =~ /^(#~ )?(msgid|")/ );
         my $msgstr = "";
-        $msgstr .= shift @lines while ( $lines[0] && $lines[0] =~ /^(msgstr|")/ );
+        $msgstr .= shift @lines while ( $lines[0] && $lines[0] =~ /^(#~ )?(msgstr|")/ );
 
         last unless $msgid;
 
         chomp $msgid;
         chomp $msgstr;
+
+        $msgid  =~ s/^#~ //mg;
+        $msgstr =~ s/^#~ //mg;
 
         $msgid  =~ s/^msgid "(.*)"\s*?$/$1/m    or warn "$msgid in $file";
 
