@@ -223,7 +223,7 @@ sub update {
     @lines = grep { !/^(#(:|\.)\s*|$)/ } @lines;
     while (@lines) {
         my $msghdr = "";
-        $msghdr .= shift @lines while ( $lines[0] && $lines[0] !~ /^msgid/ );
+        $msghdr .= shift @lines while ( $lines[0] && $lines[0] !~ /^(#~ )?msgid/ );
         
         my $msgid  = "";
 
