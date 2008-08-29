@@ -84,7 +84,7 @@ use Jifty::DBI::Record schema {
         description => max_length is 255,
         type is 'varchar(255)', default is '';
     column type => max_length is 16, type is 'varchar(16)', default is '';
-    column content => type is 'blob', default is '';
+    column content => type is 'text', default is '', filters are 'Jifty::DBI::Filter::utf8';
     column last_updated    => type is 'timestamp';
     column last_updated_by => max_length is 11, type is 'int', default is '0';
     column creator         => max_length is 11, type is 'int', default is '0';
