@@ -110,7 +110,7 @@ features(
 
     ,
     FASTCGI => [
-        -default => 1,
+        -default => 0,
         'CGI'    => '3.38',
         'FCGI',
         'CGI::Fast'
@@ -118,14 +118,14 @@ features(
 
     ,
     SPEEDYCGI => [
-        -default => 1,
+        -default => 0,
         'CGI'    => '3.38',
         'CGI::SpeedyCGI'
         ]
 
     ,
     MODPERL1 => [
-        -default => 1,
+        -default => 0,
         'CGI'    => '3.38',
         'Apache::Request',
         'Apache::DBI' => '0.92'
@@ -133,7 +133,7 @@ features(
 
     ,
     MODPERL2 => [
-        -default => 1,
+        -default => 0,
         'CGI'    => '3.38',
         'Apache::DBI',
         'HTML::Mason' => '1.36',
@@ -147,13 +147,13 @@ features(
 
     ,
     ORACLE => [
-        -default => 1,
+        -default => 0,
         'DBD::Oracle'
         ]
 
     ,
     POSTGRESQL => [
-        -default  => 1,
+        -default  => 0,
         'DBD::Pg' => '1.43',
         ]
 
@@ -176,7 +176,7 @@ features(
 
     ,
     SMTP => [
-        -default    => 1,
+        -default    => 0,
         'Net::SMTP' => 0
         ]
 
