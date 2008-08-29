@@ -6,14 +6,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: (null)\n"
-"PO-Revision-Date: 2008-08-09 03:27+0300\n"
+"POT-Creation-Date: 2008-08-27 13:54+0000\n"
+"PO-Revision-Date: 2008-08-27 14:07+0000\n"
 "Last-Translator: Andrew Kornilov <akornilov@gmail.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 1.11.4\n"
+"X-Launchpad-Export-Date: 2008-08-28 17:12+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " %1 deleted."
@@ -176,10 +177,11 @@ msgstr ""
 msgid "%1 - Specify the condition module you want to use"
 msgstr ""
 
+#, fuzzy
 #: bin/rt-crontool:284
 #. ("--search")
 msgid "%1 - Specify the search module you want to use"
-msgstr ""
+msgstr "%1 - Укажите модуль поиска, который вы хотите использовать"
 
 #: share/html/Dashboards/Elements/ShowDashboards:48
 #. ($Type)
@@ -189,7 +191,7 @@ msgstr "Информационные панели %1"
 #: share/html/Elements/Footer:59
 #. ('&#187;&#124;&#171;', $RT::VERSION, '2008', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 msgid "%1 RT %2 Copyright 1996-%3 %4."
-msgstr ""
+msgstr "%1 RT %2 Все права защищены 1996-%3 %4"
 
 #: lib/RT/ScripAction_Overlay.pm:148
 #. ($self->Id)
@@ -441,7 +443,7 @@ msgstr "'%1' является неверным значением статуса
 
 #: NOT FOUND IN SOURCE
 msgid "'%1' not a recognized action. "
-msgstr "'%1' не является зарегистрированным действием."
+msgstr "'%1' не является зарегистрированным действием. "
 
 #: NOT FOUND IN SOURCE
 msgid "(Check box to delete group member)"
@@ -649,14 +651,6 @@ msgstr ""
 
 #: bin/rt-crontool:120
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
-msgstr ""
-
-#: lib/RT/Config.pm:189
-msgid "1995-11-25 21:59:12"
-msgstr ""
-
-#: lib/RT/Config.pm:190
-msgid "1995-11-25T21:59:12Z"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
@@ -871,7 +865,7 @@ msgstr "Пользователь добавлен как %1 для этой за
 
 #: share/html/Elements/RT__Queue/ColumnMap:70
 msgid "Address"
-msgstr ""
+msgstr "Адрес"
 
 #: share/html/Admin/Users/Modify.html:149 share/html/Elements/RT__User/ColumnMap:106 share/html/User/Prefs.html:139
 msgid "Address1"
@@ -1285,9 +1279,10 @@ msgstr "Множественное изменение заявки"
 msgid "Buy Support"
 msgstr "Купить поддержку"
 
+#, fuzzy
 #: share/html/Install/Global.html:56
 msgid "By default, RT will use the timezone of your system.  This lets you set a global default for the display of dates and times in RT.  Your users can choose a different Timezone in their preferences."
-msgstr ""
+msgstr "По-умолчанию, RT использует системную временную зону. Это позволяет вам установить глобальное умолчание для отображения дат и времен в RT. Ваши пользователи смогут выбирать различные временные зоны в своих настройках."
 
 #: lib/RT/Tickets_Overlay.pm:143
 msgid "CCGroup"
@@ -1297,7 +1292,7 @@ msgstr ""
 msgid "CF"
 msgstr ""
 
-#: share/html/NoAuth/js/util.js:209
+#: NOT FOUND IN SOURCE
 msgid "Calendar"
 msgstr "Календарь"
 
@@ -1382,7 +1377,7 @@ msgstr "Выбрать все"
 
 #: share/html/Install/DatabaseDetails.html:88
 msgid "Check Database Connectivity"
-msgstr ""
+msgstr "Проверьте подключение к базе данных"
 
 #: share/html/SelfService/Update.html:80 share/html/Ticket/Create.html:136 share/html/Ticket/Update.html:114
 msgid "Check box to delete"
@@ -1394,7 +1389,7 @@ msgstr "Выделите права, которые хотите отозват�
 
 #: share/html/Install/DatabaseDetails.html:48 share/html/Install/DatabaseType.html:70
 msgid "Check your database credentials"
-msgstr ""
+msgstr "Проверьте реквизиты доступа к базе данных"
 
 #: share/html/Elements/EditLinks:149 share/html/Elements/EditLinks:82 share/html/Elements/ShowLinks:100 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:233 share/html/Ticket/Elements/BulkLinks:66
 msgid "Children"
@@ -1624,19 +1619,19 @@ msgstr "Корреспонденция не записана"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for ticket. "
-msgstr "Невозможно добавить новое значение дополнительного поля заявки."
+msgstr "Невозможно добавить новое значение дополнительного поля заявки. "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for ticket. %1 "
-msgstr "Невозможно добавить новое значение дополнительного поля заявки. %1"
+msgstr "Невозможно добавить новое значение дополнительного поля заявки. %1 "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value. "
-msgstr "Ошибка добавления нового значения дополнительного поля"
+msgstr "Ошибка добавления нового значения дополнительного поля "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value. %1 "
-msgstr "Ошибка добавления нового значения для дополнительного поля. %1"
+msgstr "Ошибка добавления нового значения для дополнительного поля. %1 "
 
 #: lib/RT/Record.pm:1662 lib/RT/Record.pm:1708
 #. ($value_msg)
@@ -1646,7 +1641,7 @@ msgstr "Ошибка добавления нового значения для �
 
 #: NOT FOUND IN SOURCE
 msgid "Could not change owner. "
-msgstr "Невозможно изменить ответственного."
+msgstr "Невозможно изменить ответственного. "
 
 #: lib/RT/Ticket_Overlay.pm:2768 lib/RT/Ticket_Overlay.pm:2776 lib/RT/Ticket_Overlay.pm:2793
 #. ($del_msg)
@@ -1921,7 +1916,7 @@ msgstr "Ошибка загрузки шаблона #%1"
 msgid "Couldn't load that user (%1)"
 msgstr "Невозможно загрузить этого пользователя (%1)"
 
-#: lib/RT/Action/CreateTickets.pm:451 share/html/SelfService/Display.html:161
+#: lib/RT/Action/CreateTickets.pm:454 share/html/SelfService/Display.html:161
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "Невозможно загрузить заявку '%1'"
@@ -2315,7 +2310,7 @@ msgstr "Невозможно удалить значение дополните�
 
 #: lib/RT/CustomField_Overlay.pm:1075
 msgid "Custom field value could not be found"
-msgstr "Невозможно найти значение дополнительного поля "
+msgstr "Невозможно найти значение дополнительного поля"
 
 #: lib/RT/CustomField_Overlay.pm:1077 lib/RT/CustomField_Overlay.pm:417
 msgid "Custom field value deleted"
@@ -3085,7 +3080,7 @@ msgstr ""
 
 #: bin/rt-crontool:335
 msgid "Escalate tickets"
-msgstr ""
+msgstr "Расширить заявки"
 
 #: NOT FOUND IN SOURCE
 msgid "Estimate"
@@ -3299,11 +3294,11 @@ msgstr "Первая страница"
 
 #: lib/RT/StyleGuide.pod:758
 msgid "Foo Bar Baz"
-msgstr ""
+msgstr "Foo Bar Baz"
 
 #: lib/RT/StyleGuide.pod:749
 msgid "Foo!"
-msgstr ""
+msgstr "Foo!"
 
 #: share/html/Search/Bulk.html:90
 msgid "Force change"
@@ -3608,6 +3603,10 @@ msgstr "Имеется %quant(%1,concrete mixer)."
 #: NOT FOUND IN SOURCE
 msgid "I have [quant,_1,concrete mixer]."
 msgstr "Имеется [quant,_1,concrete mixer]."
+
+#: lib/RT/Config.pm:189
+msgid "ISO"
+msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:1872 share/html/Ticket/Elements/ShowBasics:50
 msgid "Id"
@@ -4897,7 +4896,7 @@ msgstr "Следующая страница"
 
 #: NOT FOUND IN SOURCE
 msgid "Next: "
-msgstr "Вперёд:"
+msgstr "Вперёд: "
 
 #: share/html/Elements/RT__User/ColumnMap:71
 msgid "NickName"
@@ -4954,7 +4953,7 @@ msgstr "Нет шаблона"
 
 #: NOT FOUND IN SOURCE
 msgid "No Ticket specified. Aborting ticket "
-msgstr "Заявка не указана. Отмена."
+msgstr "Заявка не указана. Отмена. "
 
 #: NOT FOUND IN SOURCE
 msgid "No Ticket specified. Aborting ticket modifications\\n\\n"
@@ -5475,7 +5474,7 @@ msgstr "Ответственный"
 #: lib/RT/Ticket_Overlay.pm:633
 #. ($DeferOwner->Name)
 msgid "Owner '%1' does not have rights to own this ticket."
-msgstr "Ответственный %1 не имеет достаточных прав для того, чтобы быть ответственным за эту заявку "
+msgstr "Ответственный %1 не имеет достаточных прав для того, чтобы быть ответственным за эту заявку"
 
 #: lib/RT/Ticket_Overlay.pm:2806
 #. ($OldOwnerObj->Name, $NewOwnerObj->Name)
@@ -5870,6 +5869,10 @@ msgstr "Быстрый поиск"
 #: share/html/Elements/QuickCreate:49
 msgid "Quick ticket creation"
 msgstr "Быстрое создание заявки"
+
+#: lib/RT/Config.pm:188
+msgid "RFC2822"
+msgstr ""
 
 #: share/html/Search/Elements/ResultViews:61
 msgid "RSS"
@@ -6796,7 +6799,7 @@ msgstr "Показать подтвержденные запросы"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:71
 msgid "Show as well"
-msgstr "Отображать также "
+msgstr "Отображать также"
 
 #: share/html/Ticket/Create.html:413
 msgid "Show basics"
@@ -7061,7 +7064,7 @@ msgstr "Ответственный переназначен с %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Stolen from %1 "
-msgstr "Ответственный переназначен с %1"
+msgstr "Ответственный переназначен с %1 "
 
 #: share/html/Search/Elements/EditFormat:78
 msgid "Style"
@@ -7328,7 +7331,7 @@ msgstr "Этот пользователь уже %1 для этой очеред
 #: lib/RT/Ticket_Overlay.pm:1118
 #. ($self->loc($args{'Type'}))
 msgid "That principal is already a %1 for this ticket"
-msgstr "Этот пользователь уже %1 для этой заявки "
+msgstr "Этот пользователь уже %1 для этой заявки"
 
 #: lib/RT/Queue_Overlay.pm:910
 #. ($args{'Type'})
@@ -7352,7 +7355,7 @@ msgstr "Эта заявка имеет неразрешенные зависим
 msgid "That user already has that right"
 msgstr "Пользователь уже имеет это право"
 
-#: lib/RT/Action/CreateTickets.pm:481 lib/RT/Ticket_Overlay.pm:2759
+#: lib/RT/Action/CreateTickets.pm:484 lib/RT/Ticket_Overlay.pm:2759
 msgid "That user already owns that ticket"
 msgstr "Пользователь уже ответственен за эту заявку"
 
@@ -7571,7 +7574,7 @@ msgstr "График взаимосвязей заявки #%1"
 msgid "Ticket #%1: %2"
 msgstr "Заявка #%1: %2"
 
-#: lib/RT/Action/CreateTickets.pm:1121 lib/RT/Action/CreateTickets.pm:1130 lib/RT/Action/CreateTickets.pm:376 lib/RT/Action/CreateTickets.pm:500 lib/RT/Action/CreateTickets.pm:512
+#: lib/RT/Action/CreateTickets.pm:1124 lib/RT/Action/CreateTickets.pm:1133 lib/RT/Action/CreateTickets.pm:379 lib/RT/Action/CreateTickets.pm:503 lib/RT/Action/CreateTickets.pm:515
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
@@ -7843,14 +7846,6 @@ msgstr "Пытаемся удалить право: %1"
 msgid "Tue"
 msgstr "Втр"
 
-#: lib/RT/Config.pm:187
-msgid "Tue Dec 25 21:59:12 1995"
-msgstr ""
-
-#: lib/RT/Config.pm:188
-msgid "Tue, 25 Dec 1995 21:59:12 -0300"
-msgstr ""
-
 #: NOT FOUND IN SOURCE
 msgid "Tue."
 msgstr "Втр."
@@ -7988,7 +7983,7 @@ msgstr "Изменить несколько заявок"
 msgid "Update name"
 msgstr "Изменить имя"
 
-#: lib/RT/Action/CreateTickets.pm:521 lib/RT/Interface/Web.pm:712
+#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:712
 msgid "Update not recorded."
 msgstr "Изменение не записано."
 
@@ -8018,7 +8013,7 @@ msgstr "Изменение заявки #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Изменение заявки #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:519 lib/RT/Interface/Web.pm:711
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:711
 msgid "Update type was neither correspondence nor comment."
 msgstr "Изменение не было ни сообщением, ни комментарием."
 
@@ -8213,7 +8208,7 @@ msgstr "Проверить запрос"
 msgid "Validation"
 msgstr "Проверка корректности"
 
-#: share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
+#: lib/RT/Config.pm:187 share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
 msgid "Values"
 msgstr "Значения"
 
@@ -8232,6 +8227,10 @@ msgstr "Просматривать персональные информацио
 #: lib/RT/Dashboard.pm:79
 msgid "View system dashboards"
 msgstr "Просматривать системные информационные панели"
+
+#: lib/RT/Config.pm:190
+msgid "W3CDTF"
+msgstr ""
 
 #: lib/RT/Config.pm:124
 msgid "WYSIWYG message composer"
@@ -8387,7 +8386,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Which are referred to by "
-msgstr "Которая связана пользователем"
+msgstr "Которая связана пользователем "
 
 #: NOT FOUND IN SOURCE
 msgid "Which refer to"

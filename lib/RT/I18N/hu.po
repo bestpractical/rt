@@ -2,13 +2,16 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
-"POT-Creation-Date: 2002-06-22 06:06+0200\n"
-"PO-Revision-Date: 2005-10-03 13:48-0400\n"
-"Last-Translator: Attila K. Mergl <mergl@astron.hu>\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-08-27 13:54+0000\n"
+"PO-Revision-Date: 2008-08-27 13:32+0000\n"
+"Last-Translator: Attila K. Mergl <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2008-08-28 17:12+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:259
 msgid " (no pubkey!)"
@@ -230,9 +233,7 @@ msgstr "%1 nem állítható %2 re."
 #: lib/RT/Ticket_Overlay.pm:2494
 #. ($self)
 msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
-msgstr ""
-"%1 nem tudta a státuszt lezártra állítani. Az RT adatbázisa talán "
-"inkonzisztens."
+msgstr "%1 nem tudta a státuszt lezártra állítani. Az RT adatbázisa talán inkonzisztens."
 
 #: lib/RT/Transaction_Overlay.pm:560
 #. ($obj_type)
@@ -483,14 +484,6 @@ msgstr ""
 
 #: bin/rt-crontool:120
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
-msgstr ""
-
-#: lib/RT/Config.pm:189
-msgid "1995-11-25 21:59:12"
-msgstr ""
-
-#: lib/RT/Config.pm:190
-msgid "1995-11-25T21:59:12Z"
 msgstr ""
 
 #: share/html/Elements/CreateTicket:49
@@ -904,8 +897,7 @@ msgstr "BCC"
 
 #: share/html/Admin/CustomFields/GroupRights.html:93 share/html/Admin/CustomFields/UserRights.html:74 share/html/Admin/Elements/EditScrip:127 share/html/Admin/Elements/EditScrip:92
 msgid "Be sure to save your changes"
-msgstr ""
-"Ha valamit módosított ne felejtsen el ide kattintani, hogy megtörténjen a"
+msgstr "Ha valamit módosított ne felejtsen el ide kattintani, hogy megtörténjen a"
 
 #: share/html/Elements/Logo:51
 msgid "Best Practical Solutions, LLC corporate logo"
@@ -953,10 +945,6 @@ msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:140
 msgid "CF"
-msgstr ""
-
-#: share/html/NoAuth/js/util.js:209
-msgid "Calendar"
 msgstr ""
 
 #: lib/RT/User_Overlay.pm:1479
@@ -1226,11 +1214,11 @@ msgstr "Válasz hozzáfûzése"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value. "
-msgstr "Az egyéni mezõt nem sikerült hozzáadni."
+msgstr "Az egyéni mezõt nem sikerült hozzáadni. "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value. %1 "
-msgstr "Az egyéni mezõértéket nem sikerült hozzáadni a #%1 problémához"
+msgstr "Az egyéni mezõértéket nem sikerült hozzáadni a #%1 problémához "
 
 #: lib/RT/Record.pm:1662 lib/RT/Record.pm:1708
 #. ($value_msg)
@@ -1459,7 +1447,7 @@ msgstr ""
 msgid "Couldn't load template #%1"
 msgstr ""
 
-#: lib/RT/Action/CreateTickets.pm:451 share/html/SelfService/Display.html:161
+#: lib/RT/Action/CreateTickets.pm:454 share/html/SelfService/Display.html:161
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "A(z) '%1' nem betölthetõ"
@@ -2884,6 +2872,10 @@ msgstr ""
 msgid "I have %quant(%1,concrete mixer)."
 msgstr ""
 
+#: lib/RT/Config.pm:189
+msgid "ISO"
+msgstr ""
+
 #: lib/RT/Tickets_Overlay.pm:1872 share/html/Ticket/Elements/ShowBasics:50
 msgid "Id"
 msgstr "Sorszám"
@@ -2918,8 +2910,7 @@ msgstr ""
 
 #: share/html/Admin/Queues/People.html:130 share/html/Ticket/Modify.html:65 share/html/Ticket/ModifyAll.html:132 share/html/Ticket/ModifyPeople.html:63
 msgid "If you've updated anything above, be sure to"
-msgstr ""
-"Ha valamit módosított, ne felejtsen el ide kattintani, hogy megtörténjen a"
+msgstr "Ha valamit módosított, ne felejtsen el ide kattintani, hogy megtörténjen a"
 
 #: share/html/Install/DatabaseType.html:61
 #. ('<a href="http://search.cpan.org" target="_new">CPAN</a>')
@@ -3333,8 +3324,7 @@ msgstr "Cím"
 
 #: NOT FOUND IN SOURCE
 msgid "Log directory %1 not found or couldn't be written.\\n RT can't run."
-msgstr ""
-"Log-könyvtár %1 nem található, vagy nincs írási joga.\\n Az RT tud elindulni."
+msgstr "Log-könyvtár %1 nem található, vagy nincs írási joga.\\n Az RT tud elindulni."
 
 #: share/html/Elements/Header:92
 #. ("<span>".$session{'CurrentUser'}->Name."</span>")
@@ -4071,9 +4061,7 @@ msgstr "Nincs sor meghatározva"
 
 #: bin/rt-crontool:98
 msgid "No RT user found. Please consult your RT administrator.\\n"
-msgstr ""
-"RT-felhasználó nem található. Vegyew fel a kapcsolatot az RT-"
-"adminisztrátorral.\\n"
+msgstr "RT-felhasználó nem található. Vegyew fel a kapcsolatot az RT-adminisztrátorral.\\n"
 
 #: share/html/Search/Results.rdf:88
 msgid "No Subject"
@@ -4468,8 +4456,7 @@ msgstr "Csak a(z) %1 után létrejött poblémák engedélyezései legyenek lát
 #: share/html/Approvals/Elements/PendingMyApproval:70
 #. ("<input size='15' value='".($created_before->Unix > 0 &&$created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />")
 msgid "Only show approvals for requests created before %1"
-msgstr ""
-"Csak a(z) %1 elõtt létrejött problémák engedélyezései legyenek láthatóak"
+msgstr "Csak a(z) %1 elõtt létrejött problémák engedélyezései legyenek láthatóak"
 
 #: share/html/Admin/CustomFields/index.html:77
 msgid "Only show custom fields for:"
@@ -4895,6 +4882,10 @@ msgstr "Gyors lekérdezés"
 msgid "Quick ticket creation"
 msgstr "Probléma felvétele (gyors)"
 
+#: lib/RT/Config.pm:188
+msgid "RFC2822"
+msgstr ""
+
 #: share/html/Search/Elements/ResultViews:61
 msgid "RSS"
 msgstr ""
@@ -4960,7 +4951,7 @@ msgstr ""
 #: share/html/Elements/Logo:54
 #. (RT->Config->Get('rtname'))
 msgid "RT for %1"
-msgstr " %1  --  Request Tracker "
+msgstr "%1  --  Request Tracker"
 
 #: share/html/Install/index.html:71
 msgid "RT is an enterprise-grade issue tracking system designed to let you intelligently and efficiently manage tasks, issues, requests, defects or anything else that looks like an \"action item.\""
@@ -5258,7 +5249,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Rights could not be revoked for %1"
-msgstr " %1 jogai nem vonhatók vissza"
+msgstr "%1 jogai nem vonhatók vissza"
 
 #: share/html/Admin/Global/GroupRights.html:74 share/html/Admin/Queues/GroupRights.html:76
 msgid "Roles"
@@ -6096,7 +6087,7 @@ msgstr "Ez a sor nem létezik"
 msgid "That ticket has unresolved dependencies"
 msgstr ""
 
-#: lib/RT/Action/CreateTickets.pm:481 lib/RT/Ticket_Overlay.pm:2759
+#: lib/RT/Action/CreateTickets.pm:484 lib/RT/Ticket_Overlay.pm:2759
 msgid "That user already owns that ticket"
 msgstr "Már ez a felhasználó a tulajdonos!"
 
@@ -6287,7 +6278,7 @@ msgstr ""
 msgid "Ticket #%1: %2"
 msgstr "Probléma. %1: %2"
 
-#: lib/RT/Action/CreateTickets.pm:1121 lib/RT/Action/CreateTickets.pm:1130 lib/RT/Action/CreateTickets.pm:376 lib/RT/Action/CreateTickets.pm:500 lib/RT/Action/CreateTickets.pm:512
+#: lib/RT/Action/CreateTickets.pm:1124 lib/RT/Action/CreateTickets.pm:1133 lib/RT/Action/CreateTickets.pm:379 lib/RT/Action/CreateTickets.pm:503 lib/RT/Action/CreateTickets.pm:515
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
@@ -6499,14 +6490,6 @@ msgstr ""
 msgid "Tue"
 msgstr ""
 
-#: lib/RT/Config.pm:187
-msgid "Tue Dec 25 21:59:12 1995"
-msgstr ""
-
-#: lib/RT/Config.pm:188
-msgid "Tue, 25 Dec 1995 21:59:12 -0300"
-msgstr ""
-
 #: NOT FOUND IN SOURCE
 msgid "Tue."
 msgstr "K"
@@ -6616,7 +6599,7 @@ msgstr ""
 msgid "Update multiple tickets"
 msgstr "A kiválasztott problémák frissítése"
 
-#: lib/RT/Action/CreateTickets.pm:521 lib/RT/Interface/Web.pm:712
+#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:712
 msgid "Update not recorded."
 msgstr ""
 
@@ -6638,7 +6621,7 @@ msgstr ""
 msgid "Update ticket #%1 (%2)"
 msgstr "%1. számú (%2) probléma aktualizálása"
 
-#: lib/RT/Action/CreateTickets.pm:519 lib/RT/Interface/Web.pm:711
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:711
 msgid "Update type was neither correspondence nor comment."
 msgstr ""
 
@@ -6801,7 +6784,7 @@ msgstr ""
 msgid "Validation"
 msgstr ""
 
-#: share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
+#: lib/RT/Config.pm:187 share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
 msgid "Values"
 msgstr "Értékek"
 
@@ -6819,6 +6802,10 @@ msgstr ""
 
 #: lib/RT/Dashboard.pm:79
 msgid "View system dashboards"
+msgstr ""
+
+#: lib/RT/Config.pm:190
+msgid "W3CDTF"
 msgstr ""
 
 #: lib/RT/Config.pm:124
@@ -7182,7 +7169,7 @@ msgstr "nagyobb mint"
 #: lib/RT/Group_Overlay.pm:145
 #. ($self->Name)
 msgid "group '%1'"
-msgstr " '%1' csopot"
+msgstr "'%1' csopot"
 
 #: lib/RT/Date.pm:333
 msgid "hours"
@@ -7198,11 +7185,11 @@ msgstr "Sorszám"
 
 #: share/html/Elements/SelectBoolean:55 share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectMatch:59 share/html/Search/Elements/PickCFs:84
 msgid "is"
-msgstr " == "
+msgstr "=="
 
 #: share/html/Elements/SelectBoolean:59 share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectMatch:60 share/html/Search/Elements/PickCFs:85
 msgid "isn't"
-msgstr " nem "
+msgstr "nem"
 
 #: lib/RT/Crypt/GnuPG.pm:2117
 msgid "key disabled"

@@ -1,32 +1,35 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
-"POT-Creation-Date: 2002-05-02 11:36+0800\n"
-"PO-Revision-Date: 2008-07-18 00:41+0900\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-08-27 13:54+0000\n"
+"PO-Revision-Date: 2008-08-27 15:26+0000\n"
 "Last-Translator: Shinji R. Yamane <s-yamane@computer.org>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2008-08-28 17:13+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: JAPAN\n"
-"X-Poedit-Basepath: /usr/local/share/request-tracker3.8/\n"
 "X-Poedit-SearchPath-0: \n"
+"X-Poedit-Basepath: /usr/local/share/request-tracker3.8/\n"
 
 #: NOT FOUND IN SOURCE
 msgid " %1 deleted."
-msgstr "%1 を削除しました。"
+msgstr " %1 を削除しました。"
 
 #: NOT FOUND IN SOURCE
 msgid " %1 renamed to %2."
-msgstr "%1 を %2 に変更しました。"
+msgstr " %1 を %2 に変更しました。"
 
 #: NOT FOUND IN SOURCE
 msgid " %1 saved."
-msgstr "%1 を保存しました。"
+msgstr " %1 を保存しました。"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:259
 msgid " (no pubkey!)"
-msgstr "(公開鍵がありません!)"
+msgstr " (公開鍵がありません!)"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:262
 msgid " (untrusted!)"
@@ -97,7 +100,7 @@ msgstr "%1 %2 前"
 #. ($cf->Name, $old_content, $new_content)
 #. ($field, $self->OldValue, $self->NewValue)
 msgid "%1 %2 changed to %3"
-msgstr "%1 %2 は %3 に変更されました "
+msgstr "%1 %2 は %3 に変更されました"
 
 #: lib/RT/Record.pm:1690 lib/RT/Transaction_Overlay.pm:639 lib/RT/Transaction_Overlay.pm:685
 #. ($cf->Name, $old_content)
@@ -504,11 +507,11 @@ msgstr "-"
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
 msgstr ""
 
-#: lib/RT/Config.pm:189
+#: NOT FOUND IN SOURCE
 msgid "1995-11-25 21:59:12"
 msgstr "1995-11-25 21:59:12"
 
-#: lib/RT/Config.pm:190
+#: NOT FOUND IN SOURCE
 msgid "1995-11-25T21:59:12Z"
 msgstr "1995-11-25T21:59:12Z"
 
@@ -953,7 +956,7 @@ msgstr ""
 msgid "CF"
 msgstr ""
 
-#: share/html/NoAuth/js/util.js:209
+#: NOT FOUND IN SOURCE
 msgid "Calendar"
 msgstr "カレンダ"
 
@@ -1222,7 +1225,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Could not change owner. "
-msgstr "担当者変更ができませんでした"
+msgstr "担当者変更ができませんでした "
 
 #: lib/RT/Ticket_Overlay.pm:2768 lib/RT/Ticket_Overlay.pm:2776 lib/RT/Ticket_Overlay.pm:2793
 #. ($del_msg)
@@ -1441,7 +1444,7 @@ msgstr "scrip#%1をロードできませんでした"
 msgid "Couldn't load template #%1"
 msgstr "テンプレート#%1をロードできませんでした"
 
-#: lib/RT/Action/CreateTickets.pm:451 share/html/SelfService/Display.html:161
+#: lib/RT/Action/CreateTickets.pm:454 share/html/SelfService/Display.html:161
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "チケット'%1'を読み込めませんでした"
@@ -2851,6 +2854,10 @@ msgstr "時間"
 #: lib/RT/Base.pm:136
 #. (6)
 msgid "I have %quant(%1,concrete mixer)."
+msgstr ""
+
+#: lib/RT/Config.pm:189
+msgid "ISO"
 msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:1872 share/html/Ticket/Elements/ShowBasics:50
@@ -4677,7 +4684,7 @@ msgstr "プライバシー情報"
 
 #: share/html/Search/Elements/EditSearches:52
 msgid "Privacy:"
-msgstr "プライバシー情報: "
+msgstr "プライバシー情報:"
 
 #: share/html/Admin/Users/GnuPG.html:69
 msgid "Private Key"
@@ -4798,6 +4805,10 @@ msgstr "かんたん検索"
 #: share/html/Elements/QuickCreate:49
 msgid "Quick ticket creation"
 msgstr "チケット新規作成"
+
+#: lib/RT/Config.pm:188
+msgid "RFC2822"
+msgstr ""
 
 #: share/html/Search/Elements/ResultViews:61
 msgid "RSS"
@@ -5953,7 +5964,7 @@ msgstr "そのキューは存在しません"
 msgid "That ticket has unresolved dependencies"
 msgstr "未解決の依存関係が存在します"
 
-#: lib/RT/Action/CreateTickets.pm:481 lib/RT/Ticket_Overlay.pm:2759
+#: lib/RT/Action/CreateTickets.pm:484 lib/RT/Ticket_Overlay.pm:2759
 msgid "That user already owns that ticket"
 msgstr "そのユーザーはすでにチケットを所有しています"
 
@@ -6144,7 +6155,7 @@ msgstr ""
 msgid "Ticket #%1: %2"
 msgstr "チケット #%1  %2"
 
-#: lib/RT/Action/CreateTickets.pm:1121 lib/RT/Action/CreateTickets.pm:1130 lib/RT/Action/CreateTickets.pm:376 lib/RT/Action/CreateTickets.pm:500 lib/RT/Action/CreateTickets.pm:512
+#: lib/RT/Action/CreateTickets.pm:1124 lib/RT/Action/CreateTickets.pm:1133 lib/RT/Action/CreateTickets.pm:379 lib/RT/Action/CreateTickets.pm:503 lib/RT/Action/CreateTickets.pm:515
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
@@ -6348,11 +6359,11 @@ msgstr ""
 msgid "Tue"
 msgstr "火"
 
-#: lib/RT/Config.pm:187
+#: NOT FOUND IN SOURCE
 msgid "Tue Dec 25 21:59:12 1995"
 msgstr "Tue Dec 25 21:59:12 1995"
 
-#: lib/RT/Config.pm:188
+#: NOT FOUND IN SOURCE
 msgid "Tue, 25 Dec 1995 21:59:12 -0300"
 msgstr "Tue, 25 Dec 1995 21:59:12 -0300"
 
@@ -6457,7 +6468,7 @@ msgstr "フォーマットを更新して検索"
 msgid "Update multiple tickets"
 msgstr "複数のチケットを更新"
 
-#: lib/RT/Action/CreateTickets.pm:521 lib/RT/Interface/Web.pm:712
+#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:712
 msgid "Update not recorded."
 msgstr "更新内容は記録されませんでした"
 
@@ -6475,7 +6486,7 @@ msgstr "チケット #%1 を更新"
 msgid "Update ticket #%1 (%2)"
 msgstr "チケット更新 #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:519 lib/RT/Interface/Web.pm:711
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:711
 msgid "Update type was neither correspondence nor comment."
 msgstr ""
 
@@ -6638,7 +6649,7 @@ msgstr ""
 msgid "Validation"
 msgstr ""
 
-#: share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
+#: lib/RT/Config.pm:187 share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
 msgid "Values"
 msgstr ""
 
@@ -6656,6 +6667,10 @@ msgstr ""
 
 #: lib/RT/Dashboard.pm:79
 msgid "View system dashboards"
+msgstr ""
+
+#: lib/RT/Config.pm:190
+msgid "W3CDTF"
 msgstr ""
 
 #: lib/RT/Config.pm:124
@@ -7124,7 +7139,7 @@ msgstr ""
 #: lib/RT/Group_Overlay.pm:150
 #. ($self->Name, $user->Name)
 msgid "personal group '%1' for user '%2'"
-msgstr "ユーザー　'%2'　のパーソナルグループ　'%1'　"
+msgstr "ユーザー　'%2'　のパーソナルグループ　'%1'"
 
 #: lib/RT/Group_Overlay.pm:158
 #. ($queue->Name, $self->Type)

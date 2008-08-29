@@ -3,13 +3,16 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
-"POT-Creation-Date: 2002-07-08 17:41+0200\n"
-"PO-Revision-Date: 2005-10-03 13:45-0400\n"
-"Last-Translator: Tuukka Vainio <tuukka.vainio@utu.fi>\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-08-27 13:54+0000\n"
+"PO-Revision-Date: 2008-08-27 12:38+0000\n"
+"Last-Translator: Tuukka Vainio <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2008-08-28 17:12+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:259
 msgid " (no pubkey!)"
@@ -413,7 +416,7 @@ msgstr "'%1' ei kelpaa tilan arvoksi"
 
 #: NOT FOUND IN SOURCE
 msgid "'%1' not a recognized action. "
-msgstr "'%1' ei ole tunnettu tapahtuma."
+msgstr "'%1' ei ole tunnettu tapahtuma. "
 
 #: NOT FOUND IN SOURCE
 msgid "(Check box to delete group member)"
@@ -581,14 +584,6 @@ msgstr ""
 
 #: bin/rt-crontool:120
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
-msgstr ""
-
-#: lib/RT/Config.pm:189
-msgid "1995-11-25 21:59:12"
-msgstr ""
-
-#: lib/RT/Config.pm:190
-msgid "1995-11-25T21:59:12Z"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
@@ -1112,10 +1107,6 @@ msgstr ""
 msgid "CF"
 msgstr ""
 
-#: share/html/NoAuth/js/util.js:209
-msgid "Calendar"
-msgstr ""
-
 #: lib/RT/User_Overlay.pm:1479
 msgid "Can not modify system users"
 msgstr "Järjestelmäkäyttäjien muokkaus ei ole sallittua"
@@ -1419,7 +1410,7 @@ msgstr "Vastausta ei tallennettu"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for ticket. "
-msgstr "Uuden tiedon lisääminen kenttään epäonnistui"
+msgstr "Uuden tiedon lisääminen kenttään epäonnistui "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for ticket. %1 "
@@ -1433,7 +1424,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Could not change owner. "
-msgstr "Omistajaa ei voitu vaihtaa."
+msgstr "Omistajaa ei voitu vaihtaa. "
 
 #: lib/RT/Ticket_Overlay.pm:2768 lib/RT/Ticket_Overlay.pm:2776 lib/RT/Ticket_Overlay.pm:2793
 #. ($del_msg)
@@ -1700,7 +1691,7 @@ msgstr ""
 msgid "Couldn't load that user (%1)"
 msgstr "Tämän käyttäjän lataaminen ei onnistunut (%1)"
 
-#: lib/RT/Action/CreateTickets.pm:451 share/html/SelfService/Display.html:161
+#: lib/RT/Action/CreateTickets.pm:454 share/html/SelfService/Display.html:161
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "Tapauksen '%1' lataaminen ei onnistunut"
@@ -3294,6 +3285,10 @@ msgstr ""
 #: lib/RT/Base.pm:136
 #. (6)
 msgid "I have %quant(%1,concrete mixer)."
+msgstr ""
+
+#: lib/RT/Config.pm:189
+msgid "ISO"
 msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:1872 share/html/Ticket/Elements/ShowBasics:50
@@ -5442,6 +5437,10 @@ msgstr ""
 msgid "Quick ticket creation"
 msgstr ""
 
+#: lib/RT/Config.pm:188
+msgid "RFC2822"
+msgstr ""
+
 #: share/html/Search/Elements/ResultViews:61
 msgid "RSS"
 msgstr ""
@@ -5840,7 +5839,7 @@ msgstr "Tulokset"
 
 #: NOT FOUND IN SOURCE
 msgid "Results per page"
-msgstr "Tuloksia sivulle: "
+msgstr "Tuloksia sivulle:"
 
 #: share/html/Ticket/GnuPG.html:59
 msgid "Return back to the ticket"
@@ -6787,7 +6786,7 @@ msgstr "Tapaus sisältää päättämättömiä riippuvuuksia"
 msgid "That user already has that right"
 msgstr "Käyttäjällä on jo tuo oikeus"
 
-#: lib/RT/Action/CreateTickets.pm:481 lib/RT/Ticket_Overlay.pm:2759
+#: lib/RT/Action/CreateTickets.pm:484 lib/RT/Ticket_Overlay.pm:2759
 msgid "That user already owns that ticket"
 msgstr "Käyttäjä omistaa jo tämän tapauksen"
 
@@ -6998,7 +6997,7 @@ msgstr ""
 msgid "Ticket #%1: %2"
 msgstr "Tapaus #%1: %2"
 
-#: lib/RT/Action/CreateTickets.pm:1121 lib/RT/Action/CreateTickets.pm:1130 lib/RT/Action/CreateTickets.pm:376 lib/RT/Action/CreateTickets.pm:500 lib/RT/Action/CreateTickets.pm:512
+#: lib/RT/Action/CreateTickets.pm:1124 lib/RT/Action/CreateTickets.pm:1133 lib/RT/Action/CreateTickets.pm:379 lib/RT/Action/CreateTickets.pm:503 lib/RT/Action/CreateTickets.pm:515
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
@@ -7262,14 +7261,6 @@ msgstr "Yritetään poistaa oikeus: %1"
 msgid "Tue"
 msgstr ""
 
-#: lib/RT/Config.pm:187
-msgid "Tue Dec 25 21:59:12 1995"
-msgstr ""
-
-#: lib/RT/Config.pm:188
-msgid "Tue, 25 Dec 1995 21:59:12 -0300"
-msgstr ""
-
 #: NOT FOUND IN SOURCE
 msgid "Tue."
 msgstr "Ti"
@@ -7395,7 +7386,7 @@ msgstr ""
 msgid "Update name"
 msgstr "Päivitä nimi"
 
-#: lib/RT/Action/CreateTickets.pm:521 lib/RT/Interface/Web.pm:712
+#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:712
 msgid "Update not recorded."
 msgstr "Päivitystä ei tallennettu"
 
@@ -7425,7 +7416,7 @@ msgstr "Päivitä tapaus #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Päivitä tapaus #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:519 lib/RT/Interface/Web.pm:711
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:711
 msgid "Update type was neither correspondence nor comment."
 msgstr "Päivityksen tyyppi ei ollut kirjeenvaihto eikä kommentti."
 
@@ -7624,7 +7615,7 @@ msgstr ""
 msgid "ValueOfQueue"
 msgstr "Tapauksen arvo"
 
-#: share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
+#: lib/RT/Config.pm:187 share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
 msgid "Values"
 msgstr "Arvot"
 
@@ -7642,6 +7633,10 @@ msgstr ""
 
 #: lib/RT/Dashboard.pm:79
 msgid "View system dashboards"
+msgstr ""
+
+#: lib/RT/Config.pm:190
+msgid "W3CDTF"
 msgstr ""
 
 #: lib/RT/Config.pm:124

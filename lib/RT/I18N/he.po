@@ -2,16 +2,20 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
-"PO-Revision-Date: 2005-10-03 13:47-0400\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-08-27 13:54+0000\n"
+"PO-Revision-Date: 2008-08-27 15:09+0000\n"
+"Last-Translator: clkao <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2008-08-28 17:13+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:259
 msgid " (no pubkey!)"
-msgstr ""
+msgstr " (אין מפתח ציבורי!)"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:262
 msgid " (untrusted!)"
@@ -19,7 +23,7 @@ msgstr ""
 
 #: share/html/Dashboards/Elements/ShowDashboards:77 share/html/Elements/RT__Group/ColumnMap:55 share/html/Elements/RT__Queue/ColumnMap:55 share/html/Elements/RT__Scrip/ColumnMap:55 share/html/Elements/RT__Template/ColumnMap:55 share/html/Elements/RT__User/ColumnMap:55
 msgid "#"
-msgstr ""
+msgstr "#"
 
 #: share/html/Approvals/Elements/Approve:50 share/html/Approvals/Elements/ShowDependency:73 share/html/SelfService/Display.html:48 share/html/Ticket/Display.html:49 share/html/Ticket/Display.html:54
 #. ($TicketObj->Id, $TicketObj->Subject)
@@ -61,23 +65,24 @@ msgstr ""
 msgid "%1 %2 added"
 msgstr ""
 
+#, fuzzy
 #: lib/RT/Date.pm:353
 #. ($s, $time_unit)
 msgid "%1 %2 ago"
-msgstr ""
+msgstr "לפני %1 %2"
 
 #: lib/RT/Record.pm:1693 lib/RT/Transaction_Overlay.pm:643
 #. ($cf->Name, $old_content, $new_content)
 #. ($field, $self->OldValue, $self->NewValue)
 msgid "%1 %2 changed to %3"
-msgstr ""
+msgstr "%1 %2 שונה ל%3"
 
 #: lib/RT/Record.pm:1690 lib/RT/Transaction_Overlay.pm:639 lib/RT/Transaction_Overlay.pm:685
 #. ($cf->Name, $old_content)
 #. ($field, $self->OldValue)
 #. ($self->Field, $principal->Object->Name)
 msgid "%1 %2 deleted"
-msgstr ""
+msgstr "%1 %2 נמחק"
 
 #: share/html/Widgets/SavedSearch:117
 #. (loc($self->{SearchType}), $self->{CurrentSearch}{Object}->Description)
@@ -111,7 +116,7 @@ msgstr ""
 #. ($TicketObj->OwnerObj->Name)
 #. (loc($Ticket->Status))
 msgid "%1 (Unchanged)"
-msgstr ""
+msgstr "%1 (לא השתנה)"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 - %2 shown"
@@ -213,7 +218,7 @@ msgstr ""
 #. ($self->loc($self->Field), $t2->AsString, $t1->AsString)
 #. ($self->loc($self->Field),                               ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'")
 msgid "%1 changed from %2 to %3"
-msgstr ""
+msgstr "%1 שונה מ%2 ל%3"
 
 #: share/html/Search/Elements/ResultViews:64
 #. ($m->scomp('SelectChartType', Name => 'ChartStyle'), $m->scomp('SelectGroupBy', Name => 'PrimaryGroupBy', Query => $Query))
@@ -223,11 +228,11 @@ msgstr ""
 #: share/html/Search/Elements/EditSearches:189
 #. ($SavedSearch->{'Object'}->Description)
 msgid "%1 copy"
-msgstr ""
+msgstr "העתק של%1"
 
 #: lib/RT/Record.pm:918
 msgid "%1 could not be set to %2."
-msgstr ""
+msgstr "לא התאפשר לשנות את %1 ל%2"
 
 #: lib/RT/Ticket_Overlay.pm:2494
 #. ($self)
@@ -237,17 +242,17 @@ msgstr ""
 #: lib/RT/Transaction_Overlay.pm:560
 #. ($obj_type)
 msgid "%1 created"
-msgstr ""
+msgstr "%1 נוצר"
 
 #: lib/RT/Transaction_Overlay.pm:565
 #. ($obj_type)
 msgid "%1 deleted"
-msgstr ""
+msgstr "%1 נמחק"
 
 #: share/html/Install/Sendmail.html:86
 #. ($ARGS{SendmailPath})
 msgid "%1 doesn't exist."
-msgstr ""
+msgstr "%1 אינו קיים."
 
 #: etc/initialdata:677
 msgid "%1 highest priority tickets I own"
@@ -499,14 +504,6 @@ msgstr ""
 
 #: bin/rt-crontool:120
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
-msgstr ""
-
-#: lib/RT/Config.pm:189
-msgid "1995-11-25 21:59:12"
-msgstr ""
-
-#: lib/RT/Config.pm:190
-msgid "1995-11-25T21:59:12Z"
 msgstr ""
 
 #: share/html/Elements/CreateTicket:49
@@ -956,10 +953,6 @@ msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:140
 msgid "CF"
-msgstr ""
-
-#: share/html/NoAuth/js/util.js:209
-msgid "Calendar"
 msgstr ""
 
 #: lib/RT/User_Overlay.pm:1479
@@ -1446,7 +1439,7 @@ msgstr ""
 msgid "Couldn't load template #%1"
 msgstr ""
 
-#: lib/RT/Action/CreateTickets.pm:451 share/html/SelfService/Display.html:161
+#: lib/RT/Action/CreateTickets.pm:454 share/html/SelfService/Display.html:161
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr ""
@@ -2900,6 +2893,10 @@ msgstr ""
 #: lib/RT/Base.pm:136
 #. (6)
 msgid "I have %quant(%1,concrete mixer)."
+msgstr ""
+
+#: lib/RT/Config.pm:189
+msgid "ISO"
 msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:1872 share/html/Ticket/Elements/ShowBasics:50
@@ -4704,36 +4701,36 @@ msgstr ""
 
 #: share/html/Elements/Header:94 share/html/Elements/Tabs:94 share/html/SelfService/Elements/Tabs:98 share/html/SelfService/Prefs.html:48 share/html/User/Prefs.html:48 share/html/User/Prefs.html:51
 msgid "Preferences"
-msgstr "מאפיינים"
+msgstr "העדפות"
 
 #: share/html/Admin/Users/MyRT.html:124
 #. ($pane, $UserObj->Name)
 msgid "Preferences %1 for user %2."
-msgstr ""
+msgstr "העדפות %1 עבור המשתמש %2."
 
 #: share/html/Prefs/MyRT.html:149 share/html/Prefs/MyRT.html:94
 #. (loc('summary rows'))
 #. ($pane)
 msgid "Preferences saved for %1."
-msgstr ""
+msgstr "ההעדפות עבור %1 נשמרו."
 
 #: share/html/Admin/Users/MyRT.html:83
 #. ($UserObj->Name)
 msgid "Preferences saved for user %1."
-msgstr ""
+msgstr "ההעדפות עבור המשתמש %1 נשמרו."
 
 #: share/html/Prefs/MyRT.html:101 share/html/Prefs/Other.html:104 share/html/Prefs/Quicksearch.html:91 share/html/Prefs/Search.html:108 share/html/Prefs/SearchOptions.html:84
 msgid "Preferences saved."
-msgstr ""
+msgstr "ההעדפות נשמרו."
 
 #: share/html/Prefs/Other.html:89
 #. (loc_fuzzy($msg))
 msgid "Preferred Key: %1"
-msgstr ""
+msgstr "המפתח המועדף: %1"
 
 #: share/html/Prefs/Other.html:74
 msgid "Preferred key"
-msgstr ""
+msgstr "מפתח מועדף"
 
 #: lib/RT/Action.pm:193
 msgid "Prepare Stubbed"
@@ -4745,7 +4742,7 @@ msgstr "הקודם"
 
 #: share/html/Elements/CollectionListPaging:101
 msgid "Previous"
-msgstr ""
+msgstr "הקודם"
 
 #: NOT FOUND IN SOURCE
 msgid "Previous page"
@@ -4754,7 +4751,7 @@ msgstr "דף קודם"
 #: lib/RT/ACE_Overlay.pm:146 lib/RT/ACE_Overlay.pm:235 lib/RT/ACE_Overlay.pm:340
 #. ($args{'PrincipalId'})
 msgid "Principal %1 not found."
-msgstr ""
+msgstr "העקרון %1 לא נמצא."
 
 #: sbin/rt-email-digest:96 sbin/rt-send-digest:73
 msgid "Print the resulting digest messages to STDOUT; don't mail them. Do not mark them as sent"
@@ -4762,7 +4759,7 @@ msgstr ""
 
 #: sbin/rt-email-digest:98 sbin/rt-send-digest:75
 msgid "Print this message"
-msgstr ""
+msgstr "הדפס הודעה זו"
 
 #: lib/RT/Tickets_Overlay.pm:103 lib/RT/Tickets_Overlay.pm:1896 share/html/Elements/RT__Queue/ColumnMap:66 share/html/Elements/RT__Ticket/ColumnMap:126 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:186 share/html/Ticket/Create.html:187 share/html/Ticket/Elements/EditBasics:97 share/html/Ticket/Elements/ShowBasics:76
 msgid "Priority"
@@ -4898,6 +4895,10 @@ msgstr "חיפוש מהיר"
 
 #: share/html/Elements/QuickCreate:49
 msgid "Quick ticket creation"
+msgstr ""
+
+#: lib/RT/Config.pm:188
+msgid "RFC2822"
 msgstr ""
 
 #: share/html/Search/Elements/ResultViews:61
@@ -6093,7 +6094,7 @@ msgstr ""
 msgid "That ticket has unresolved dependencies"
 msgstr ""
 
-#: lib/RT/Action/CreateTickets.pm:481 lib/RT/Ticket_Overlay.pm:2759
+#: lib/RT/Action/CreateTickets.pm:484 lib/RT/Ticket_Overlay.pm:2759
 msgid "That user already owns that ticket"
 msgstr ""
 
@@ -6288,7 +6289,7 @@ msgstr ""
 msgid "Ticket #%1: %2"
 msgstr ""
 
-#: lib/RT/Action/CreateTickets.pm:1121 lib/RT/Action/CreateTickets.pm:1130 lib/RT/Action/CreateTickets.pm:376 lib/RT/Action/CreateTickets.pm:500 lib/RT/Action/CreateTickets.pm:512
+#: lib/RT/Action/CreateTickets.pm:1124 lib/RT/Action/CreateTickets.pm:1133 lib/RT/Action/CreateTickets.pm:379 lib/RT/Action/CreateTickets.pm:503 lib/RT/Action/CreateTickets.pm:515
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
@@ -6528,14 +6529,6 @@ msgstr ""
 msgid "Tue"
 msgstr ""
 
-#: lib/RT/Config.pm:187
-msgid "Tue Dec 25 21:59:12 1995"
-msgstr ""
-
-#: lib/RT/Config.pm:188
-msgid "Tue, 25 Dec 1995 21:59:12 -0300"
-msgstr ""
-
 #: NOT FOUND IN SOURCE
 msgid "Tue."
 msgstr "שלישי"
@@ -6649,7 +6642,7 @@ msgstr ""
 msgid "Update name"
 msgstr "עדכן שם"
 
-#: lib/RT/Action/CreateTickets.pm:521 lib/RT/Interface/Web.pm:712
+#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:712
 msgid "Update not recorded."
 msgstr ""
 
@@ -6675,7 +6668,7 @@ msgstr ""
 msgid "Update ticket #%1 (%2)"
 msgstr ""
 
-#: lib/RT/Action/CreateTickets.pm:519 lib/RT/Interface/Web.pm:711
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:711
 msgid "Update type was neither correspondence nor comment."
 msgstr ""
 
@@ -6846,7 +6839,7 @@ msgstr ""
 msgid "Validation"
 msgstr ""
 
-#: share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
+#: lib/RT/Config.pm:187 share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
 msgid "Values"
 msgstr ""
 
@@ -6864,6 +6857,10 @@ msgstr ""
 
 #: lib/RT/Dashboard.pm:79
 msgid "View system dashboards"
+msgstr ""
+
+#: lib/RT/Config.pm:190
+msgid "W3CDTF"
 msgstr ""
 
 #: lib/RT/Config.pm:124
@@ -7008,7 +7005,7 @@ msgstr "בכל פעם שתכתובת מגיעה ב"
 
 #: lib/RT/Installer.pm:183
 msgid "Where to find your sendmail binary."
-msgstr ""
+msgstr "היכן נמצאת תוכנת sendmail"
 
 #: share/html/Admin/Tools/Shredder/Elements/SelectObjects:63
 msgid "Wipeout"
@@ -7028,7 +7025,7 @@ msgstr "זמן טיפול"
 
 #: share/html/Widgets/Form/Boolean:77
 msgid "Yes"
-msgstr ""
+msgstr "כן"
 
 #: lib/RT/Ticket_Overlay.pm:2863
 msgid "You already own this ticket"
@@ -7143,7 +7140,7 @@ msgstr "[ללא נושא]"
 
 #: share/html/Search/Elements/DisplayOptions:62
 msgid "[none]"
-msgstr ""
+msgstr "[ללא]"
 
 #: share/html/Elements/SelectDateRelation:59
 msgid "after"
@@ -7151,11 +7148,11 @@ msgstr "אחרי"
 
 #: lib/RT/System.pm:91
 msgid "allow creation of saved searches"
-msgstr ""
+msgstr "אפשר יצירת חיפושים שמורים"
 
 #: lib/RT/System.pm:90
 msgid "allow loading of saved searches"
-msgstr ""
+msgstr "אפשר טעינת חיפושים שמורים"
 
 #: share/html/User/Elements/DelegateRights:82
 #. ($right->PrincipalObj->Object->SelfDescription)
@@ -7197,7 +7194,7 @@ msgstr "התכתבות נשלחה"
 #: share/html/Dashboards/Elements/ShowSubscription:72
 #. ($hour)
 msgid "daily at %1"
-msgstr ""
+msgstr "יומי בשעה %1"
 
 #: lib/RT/Date.pm:337 share/html/Admin/Queues/Modify.html:89
 msgid "days"
@@ -7221,11 +7218,11 @@ msgstr "לא מכיל"
 
 #: share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectMatch:58 share/html/Search/Elements/PickBasics:74
 msgid "doesn't match"
-msgstr ""
+msgstr "לא תואם"
 
 #: share/html/Ticket/ShowEmailRecord.html:62
 msgid "download"
-msgstr ""
+msgstr "הורדה"
 
 #: share/html/Elements/SelectEqualityOperator:61
 msgid "equal to"
@@ -7233,23 +7230,23 @@ msgstr "שווה ל"
 
 #: share/html/Search/Elements/EditQuery:93
 msgid "error: can't move down"
-msgstr ""
+msgstr "שגיאה: לא ניתן להזיז למטה"
 
 #: share/html/Search/Elements/EditQuery:110 share/html/Search/Elements/EditQuery:116
 msgid "error: can't move left"
-msgstr ""
+msgstr "שגיאה: לא ניתן להזיז שמאלה"
 
 #: share/html/Search/Elements/EditQuery:92
 msgid "error: can't move up"
-msgstr ""
+msgstr "שגיאה: לא ניתן להזיז למעלה"
 
 #: share/html/Search/Elements/EditQuery:188
 msgid "error: nothing to delete"
-msgstr ""
+msgstr "שגיאה: אין מה למחוק"
 
 #: share/html/Search/Elements/EditQuery:102 share/html/Search/Elements/EditQuery:129 share/html/Search/Elements/EditQuery:150
 msgid "error: nothing to move"
-msgstr ""
+msgstr "שגיאה: אין מה להזיז"
 
 #: share/html/Search/Elements/EditQuery:208
 msgid "error: nothing to toggle"
@@ -7261,7 +7258,7 @@ msgstr "שם קובץ"
 
 #: lib/RT/Crypt/GnuPG.pm:2161
 msgid "full"
-msgstr ""
+msgstr "מלא"
 
 #: share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectEqualityOperator:61
 msgid "greater than"
@@ -7278,7 +7275,7 @@ msgstr "שעות"
 
 #: share/html/Search/Elements/ResultViews:62
 msgid "iCal"
-msgstr ""
+msgstr "iCal"
 
 #: lib/RT/Tickets_Overlay.pm:100 share/html/Elements/ColumnMap:59 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:56
 msgid "id"
@@ -7294,11 +7291,11 @@ msgstr "הוא לא"
 
 #: lib/RT/Crypt/GnuPG.pm:2117
 msgid "key disabled"
-msgstr ""
+msgstr "מפתח מבוטל"
 
 #: lib/RT/Crypt/GnuPG.pm:2128
 msgid "key expired"
-msgstr ""
+msgstr "מפתח אשר פג תוקפו"
 
 #: lib/RT/Crypt/GnuPG.pm:2123
 msgid "key revoked"
@@ -7306,15 +7303,16 @@ msgstr ""
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:52
 msgid "left to right"
-msgstr ""
+msgstr "שמאל לימין"
 
 #: share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectEqualityOperator:61
 msgid "less than"
 msgstr "פחות מ"
 
+#, fuzzy
 #: lib/RT/Crypt/GnuPG.pm:2156
 msgid "marginal"
-msgstr ""
+msgstr "שולי"
 
 #: share/html/Elements/SelectCustomFieldOperator:61 share/html/Elements/SelectMatch:57 share/html/Search/Elements/PickBasics:73
 msgid "matches"
@@ -7322,7 +7320,7 @@ msgstr "מכיל"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:64
 msgid "maximum depth"
-msgstr ""
+msgstr "עומק מרבי"
 
 #: lib/RT/Date.pm:329
 msgid "min"
@@ -7335,7 +7333,7 @@ msgstr "דקות"
 #: share/html/Dashboards/Elements/ShowSubscription:69
 #. ($Subscription->SubValue('Dom'), $hour)
 msgid "monthly (day %1) at %2"
-msgstr ""
+msgstr "חודשי (ביום %1) בשעה %2"
 
 #: lib/RT/Date.pm:345
 msgid "months"
@@ -7343,7 +7341,7 @@ msgstr "חודשים"
 
 #: share/html/Admin/Elements/ShowKeyInfo:59 share/html/Admin/Elements/ShowKeyInfo:62 share/html/Admin/Elements/ShowKeyInfo:67 share/html/Admin/Elements/ShowKeyInfo:68
 msgid "never"
-msgstr ""
+msgstr "אף פעם"
 
 #: lib/RT/Queue_Overlay.pm:82
 msgid "new"
@@ -7351,11 +7349,11 @@ msgstr "חדש"
 
 #: share/html/Elements/RT__Group/ColumnMap:65 share/html/Elements/RT__Group/ColumnMap:73
 msgid "no"
-msgstr ""
+msgstr "לא"
 
 #: share/html/Admin/Elements/PickCustomFields:66 share/html/Admin/Elements/PickObjects:67
 msgid "no name"
-msgstr ""
+msgstr "אין שם"
 
 #: NOT FOUND IN SOURCE
 msgid "no value"
@@ -7387,17 +7385,17 @@ msgstr ""
 
 #: share/html/Widgets/Form/Select:77
 msgid "other..."
-msgstr ""
+msgstr "אחר..."
 
 #: lib/RT/Group_Overlay.pm:150
 #. ($self->Name, $user->Name)
 msgid "personal group '%1' for user '%2'"
-msgstr ""
+msgstr "קבוצה אישית '%1' למשתמש '%2'"
 
 #: lib/RT/Group_Overlay.pm:158
 #. ($queue->Name, $self->Type)
 msgid "queue %1 %2"
-msgstr ""
+msgstr "תור %1 %2"
 
 #: lib/RT/Queue_Overlay.pm:86
 msgid "rejected"
@@ -7409,11 +7407,11 @@ msgstr "פתור"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:55
 msgid "right to left"
-msgstr ""
+msgstr "ימין לשמאל"
 
 #: lib/RT/Date.pm:325
 msgid "sec"
-msgstr ""
+msgstr "שניות"
 
 #: lib/RT/System.pm:89
 msgid "show Configuration tab"
@@ -7425,29 +7423,30 @@ msgstr "מושהה"
 
 #: share/html/Prefs/MyRT.html:89
 msgid "summary rows"
-msgstr ""
+msgstr "שורות סיכום"
 
 #: lib/RT/Group_Overlay.pm:153
 #. ($self->Type)
 msgid "system %1"
-msgstr ""
+msgstr "מערכת %1"
 
 #: lib/RT/Group_Overlay.pm:164
 #. ($self->Type)
 msgid "system group '%1'"
-msgstr ""
+msgstr "קבוצת מערכת '%1'"
 
 #: share/html/Elements/Error:70 share/html/SelfService/Error.html:65
 msgid "the calling component did not specify why"
-msgstr ""
+msgstr "הרכיב הקורא לא הסביר מדוע"
 
+#, fuzzy
 #: lib/RT/Installer.pm:169
 msgid "the default addresses that will be listed in From: and Reply-To: headers of comment mail."
-msgstr ""
+msgstr "כתובות ברירת המחדל אשר יופיעו בשדות ה\"From\" ו\"Reply-To\" בדואל תגובות."
 
 #: lib/RT/Installer.pm:177
 msgid "the default addresses that will be listed in From: and Reply-To: headers of correspondence mail."
-msgstr ""
+msgstr "כתובות ברירת המחדל אשר יופיעו בשדות ה\"From\" ו\"Reply-To\" בדואל תכתובת."
 
 #: lib/RT/Group_Overlay.pm:161
 #. ($self->Instance, $self->Type)
@@ -7465,21 +7464,21 @@ msgstr ""
 #: lib/RT/Group_Overlay.pm:167
 #. ($self->Id)
 msgid "undescribed group %1"
-msgstr ""
+msgstr "קבוצה ללא תאור %1"
 
 #: lib/RT/Group_Overlay.pm:142
 #. ($user->Object->Name)
 msgid "user %1"
-msgstr ""
+msgstr "משתמש %1"
 
 #: share/html/Dashboards/Elements/ShowSubscription:66
 #. (loc($day), $hour)
 msgid "weekly (on %1) at %2"
-msgstr ""
+msgstr "שבועי (ביום %1) בשעה %2"
 
 #: lib/RT/Date.pm:341
 msgid "weeks"
-msgstr ""
+msgstr "שבועות"
 
 #: lib/RT/Installer.pm:198
 msgid "which port your web server will listen to, e.g. 8080"
@@ -7491,9 +7490,9 @@ msgstr ""
 
 #: lib/RT/Date.pm:349
 msgid "years"
-msgstr ""
+msgstr "שנים"
 
 #: share/html/Elements/RT__Group/ColumnMap:65 share/html/Elements/RT__Group/ColumnMap:73
 msgid "yes"
-msgstr ""
+msgstr "כן"
 

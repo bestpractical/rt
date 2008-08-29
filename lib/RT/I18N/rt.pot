@@ -477,14 +477,6 @@ msgstr ""
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
 msgstr ""
 
-#: lib/RT/Config.pm:189
-msgid "1995-11-25 21:59:12"
-msgstr ""
-
-#: lib/RT/Config.pm:190
-msgid "1995-11-25T21:59:12Z"
-msgstr ""
-
 #: share/html/Elements/CreateTicket:49
 #. ($m->scomp('/Elements/SelectNewTicketQueue', OnChange => 'document.CreateTicketInQueue.submit()'))
 msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
@@ -916,10 +908,6 @@ msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:140
 msgid "CF"
-msgstr ""
-
-#: share/html/NoAuth/js/util.js:209
-msgid "Calendar"
 msgstr ""
 
 #: lib/RT/User_Overlay.pm:1479
@@ -1402,7 +1390,7 @@ msgstr ""
 msgid "Couldn't load template #%1"
 msgstr ""
 
-#: lib/RT/Action/CreateTickets.pm:451 share/html/SelfService/Display.html:161
+#: lib/RT/Action/CreateTickets.pm:454 share/html/SelfService/Display.html:161
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr ""
@@ -2796,6 +2784,10 @@ msgstr ""
 #: lib/RT/Base.pm:136
 #. (6)
 msgid "I have %quant(%1,concrete mixer)."
+msgstr ""
+
+#: lib/RT/Config.pm:189
+msgid "ISO"
 msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:1872 share/html/Ticket/Elements/ShowBasics:50
@@ -4712,6 +4704,10 @@ msgstr ""
 msgid "Quick ticket creation"
 msgstr ""
 
+#: lib/RT/Config.pm:188
+msgid "RFC2822"
+msgstr ""
+
 #: share/html/Search/Elements/ResultViews:61
 msgid "RSS"
 msgstr ""
@@ -5849,7 +5845,7 @@ msgstr ""
 msgid "That ticket has unresolved dependencies"
 msgstr ""
 
-#: lib/RT/Action/CreateTickets.pm:481 lib/RT/Ticket_Overlay.pm:2759
+#: lib/RT/Action/CreateTickets.pm:484 lib/RT/Ticket_Overlay.pm:2759
 msgid "That user already owns that ticket"
 msgstr ""
 
@@ -6036,7 +6032,7 @@ msgstr ""
 msgid "Ticket #%1: %2"
 msgstr ""
 
-#: lib/RT/Action/CreateTickets.pm:1121 lib/RT/Action/CreateTickets.pm:1130 lib/RT/Action/CreateTickets.pm:376 lib/RT/Action/CreateTickets.pm:500 lib/RT/Action/CreateTickets.pm:512
+#: lib/RT/Action/CreateTickets.pm:1124 lib/RT/Action/CreateTickets.pm:1133 lib/RT/Action/CreateTickets.pm:379 lib/RT/Action/CreateTickets.pm:503 lib/RT/Action/CreateTickets.pm:515
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
@@ -6240,14 +6236,6 @@ msgstr ""
 msgid "Tue"
 msgstr ""
 
-#: lib/RT/Config.pm:187
-msgid "Tue Dec 25 21:59:12 1995"
-msgstr ""
-
-#: lib/RT/Config.pm:188
-msgid "Tue, 25 Dec 1995 21:59:12 -0300"
-msgstr ""
-
 #: lib/RT/Ticket_Overlay.pm:904 lib/RT/Tickets_Overlay.pm:1811 lib/RT/Tickets_Overlay.pm:95 share/html/Admin/CustomFields/Modify.html:67 share/html/Admin/Elements/EditCustomField:67 share/html/Elements/RT__Ticket/ColumnMap:148 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/AddWatchers:56 share/html/Ticket/Elements/AddWatchers:67 share/html/Ticket/Elements/AddWatchers:77
 msgid "Type"
 msgstr ""
@@ -6345,7 +6333,7 @@ msgstr ""
 msgid "Update multiple tickets"
 msgstr ""
 
-#: lib/RT/Action/CreateTickets.pm:521 lib/RT/Interface/Web.pm:712
+#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:712
 msgid "Update not recorded."
 msgstr ""
 
@@ -6363,7 +6351,7 @@ msgstr ""
 msgid "Update ticket #%1 (%2)"
 msgstr ""
 
-#: lib/RT/Action/CreateTickets.pm:519 lib/RT/Interface/Web.pm:711
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:711
 msgid "Update type was neither correspondence nor comment."
 msgstr ""
 
@@ -6526,7 +6514,7 @@ msgstr ""
 msgid "Validation"
 msgstr ""
 
-#: share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
+#: lib/RT/Config.pm:187 share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
 msgid "Values"
 msgstr ""
 
@@ -6544,6 +6532,10 @@ msgstr ""
 
 #: lib/RT/Dashboard.pm:79
 msgid "View system dashboards"
+msgstr ""
+
+#: lib/RT/Config.pm:190
+msgid "W3CDTF"
 msgstr ""
 
 #: lib/RT/Config.pm:124

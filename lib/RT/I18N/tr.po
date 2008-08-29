@@ -3,13 +3,16 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
-"POT-Creation-Date: 2007-15-06 22:30+0200\n"
-"PO-Revision-Date: 2007-15-06 22:30+0200\n"
-"Last-Translator: Burak Gürsoy <burak@cpan.org>\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-08-27 13:54+0000\n"
+"PO-Revision-Date: 2008-08-27 13:51+0000\n"
+"Last-Translator: Burak Gürsoy <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2008-08-28 17:12+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " %1 deleted."
@@ -523,14 +526,6 @@ msgstr "--transaction argümanı sadece 'first' veya 'last' olabilir"
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
 msgstr ""
 
-#: lib/RT/Config.pm:189
-msgid "1995-11-25 21:59:12"
-msgstr ""
-
-#: lib/RT/Config.pm:190
-msgid "1995-11-25T21:59:12Z"
-msgstr ""
-
 #: share/html/Elements/CreateTicket:49
 #. ($m->scomp('/Elements/SelectNewTicketQueue', OnChange => 'document.CreateTicketInQueue.submit()'))
 msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
@@ -786,7 +781,7 @@ msgstr "Ve/Veya"
 
 #: share/html/Admin/CustomFields/Modify.html:79 share/html/Admin/Elements/CustomFieldTabs:85
 msgid "Applies to"
-msgstr "Etki edeceği bölümler: "
+msgstr "Etki edeceği bölümler:"
 
 #: share/html/Search/Edit.html:70
 msgid "Apply"
@@ -994,10 +989,6 @@ msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:140
 msgid "CF"
-msgstr ""
-
-#: share/html/NoAuth/js/util.js:209
-msgid "Calendar"
 msgstr ""
 
 #: lib/RT/User_Overlay.pm:1479
@@ -1275,7 +1266,7 @@ msgstr "Yeni özel bölüm eklenemiyor. "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value. %1 "
-msgstr "Yeni özel bölüm eklenemiyor. %1"
+msgstr "Yeni özel bölüm eklenemiyor. %1 "
 
 #: lib/RT/Record.pm:1662 lib/RT/Record.pm:1708
 #. ($value_msg)
@@ -1285,7 +1276,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Could not change owner. "
-msgstr "Sahip değiştirilemiyor."
+msgstr "Sahip değiştirilemiyor. "
 
 #: lib/RT/Ticket_Overlay.pm:2768 lib/RT/Ticket_Overlay.pm:2776 lib/RT/Ticket_Overlay.pm:2793
 #. ($del_msg)
@@ -1508,7 +1499,7 @@ msgstr "Senet #%1 yüklenemedi"
 msgid "Couldn't load template #%1"
 msgstr ""
 
-#: lib/RT/Action/CreateTickets.pm:451 share/html/SelfService/Display.html:161
+#: lib/RT/Action/CreateTickets.pm:454 share/html/SelfService/Display.html:161
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "'%1' bileti yüklenemedi"
@@ -2089,7 +2080,7 @@ msgstr "Reddet"
 
 #: share/html/Elements/EditLinks:141 share/html/Elements/EditLinks:64 share/html/Elements/ShowLinks:80 share/html/Ticket/Create.html:231 share/html/Ticket/Elements/BulkLinks:58 share/html/Ticket/Elements/ShowDependencies:55
 msgid "Depended on by"
-msgstr "Şunun tarafından bağımlılığa sahip: "
+msgstr "Şunun tarafından bağımlılığa sahip:"
 
 #: lib/RT/Graph/Tickets.pm:160 lib/RT/Tickets_Overlay.pm:116 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "DependedOnBy"
@@ -2940,6 +2931,10 @@ msgstr ""
 msgid "I'm lost"
 msgstr "Kayboldum"
 
+#: lib/RT/Config.pm:189
+msgid "ISO"
+msgstr ""
+
 #: lib/RT/Tickets_Overlay.pm:1872 share/html/Ticket/Elements/ShowBasics:50
 msgid "Id"
 msgstr "Numara"
@@ -3587,7 +3582,7 @@ msgstr "Birleştirme başarısız. Durum atanamıyor"
 
 #: share/html/Elements/EditLinks:132 share/html/Ticket/Elements/BulkLinks:50
 msgid "Merge into"
-msgstr "Şununla birleştir: "
+msgstr "Şununla birleştir:"
 
 #: lib/RT/Transaction_Overlay.pm:723
 #. ($value)
@@ -4068,7 +4063,7 @@ msgstr "Yeni kullanıcı"
 
 #: share/html/Admin/Elements/CreateUserCalled:49
 msgid "New user called"
-msgstr "Yeni kullanıcı: "
+msgstr "Yeni kullanıcı:"
 
 #: share/html/Admin/Queues/People.html:78 share/html/Ticket/Elements/EditPeople:52
 msgid "New watchers"
@@ -4949,6 +4944,10 @@ msgstr "Hızlı arama"
 #: share/html/Elements/QuickCreate:49
 msgid "Quick ticket creation"
 msgstr "Hızlı bilet oluşturumu"
+
+#: lib/RT/Config.pm:188
+msgid "RFC2822"
+msgstr ""
 
 #: share/html/Search/Elements/ResultViews:61
 msgid "RSS"
@@ -6163,7 +6162,7 @@ msgstr "Böyle bir kuyruk mevcut değil"
 msgid "That ticket has unresolved dependencies"
 msgstr "Bu bilet, çözümlenmemiş bağımlılıklara sahip"
 
-#: lib/RT/Action/CreateTickets.pm:481 lib/RT/Ticket_Overlay.pm:2759
+#: lib/RT/Action/CreateTickets.pm:484 lib/RT/Ticket_Overlay.pm:2759
 msgid "That user already owns that ticket"
 msgstr "Bu kullanıcı, zaten bu biletin sahibi"
 
@@ -6354,7 +6353,7 @@ msgstr ""
 msgid "Ticket #%1: %2"
 msgstr "Bilet #%1: %2"
 
-#: lib/RT/Action/CreateTickets.pm:1121 lib/RT/Action/CreateTickets.pm:1130 lib/RT/Action/CreateTickets.pm:376 lib/RT/Action/CreateTickets.pm:500 lib/RT/Action/CreateTickets.pm:512
+#: lib/RT/Action/CreateTickets.pm:1124 lib/RT/Action/CreateTickets.pm:1133 lib/RT/Action/CreateTickets.pm:379 lib/RT/Action/CreateTickets.pm:503 lib/RT/Action/CreateTickets.pm:515
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
@@ -6566,14 +6565,6 @@ msgstr ""
 msgid "Tue"
 msgstr ""
 
-#: lib/RT/Config.pm:187
-msgid "Tue Dec 25 21:59:12 1995"
-msgstr ""
-
-#: lib/RT/Config.pm:188
-msgid "Tue, 25 Dec 1995 21:59:12 -0300"
-msgstr ""
-
 #: NOT FOUND IN SOURCE
 msgid "Tue."
 msgstr "Sal."
@@ -6683,7 +6674,7 @@ msgstr ""
 msgid "Update multiple tickets"
 msgstr "Birden çok bileti güncelle"
 
-#: lib/RT/Action/CreateTickets.pm:521 lib/RT/Interface/Web.pm:712
+#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:712
 msgid "Update not recorded."
 msgstr "Güncelleme kaydedilmedi"
 
@@ -6701,7 +6692,7 @@ msgstr "Bileti güncelle: #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Bileti güncelle: #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:519 lib/RT/Interface/Web.pm:711
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:711
 msgid "Update type was neither correspondence nor comment."
 msgstr "Güncelleme türü cevap veya yorum değildi."
 
@@ -6864,7 +6855,7 @@ msgstr "Geçerli Sorgu"
 msgid "Validation"
 msgstr "Geçerlilik"
 
-#: share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
+#: lib/RT/Config.pm:187 share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
 msgid "Values"
 msgstr "Değerler"
 
@@ -6882,6 +6873,10 @@ msgstr ""
 
 #: lib/RT/Dashboard.pm:79
 msgid "View system dashboards"
+msgstr ""
+
+#: lib/RT/Config.pm:190
+msgid "W3CDTF"
 msgstr ""
 
 #: lib/RT/Config.pm:124

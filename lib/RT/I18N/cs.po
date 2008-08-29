@@ -2,25 +2,28 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
-"POT-Creation-Date: 2002-05-02 11:36+0800\n"
-"PO-Revision-Date: 2008-03-27 19:75+0200\n"
-"Last-Translator: Daniel Kastner <kastner@mediso-art.cz>\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-08-27 13:54+0000\n"
+"PO-Revision-Date: 2008-08-27 12:49+0000\n"
+"Last-Translator: Daniel Kastner <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2008-08-28 17:12+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " %1 deleted."
-msgstr "%1 smazán."
+msgstr " %1 smazán."
 
 #: NOT FOUND IN SOURCE
 msgid " %1 renamed to %2."
-msgstr "%1 přejmenován na %2."
+msgstr " %1 přejmenován na %2."
 
 #: NOT FOUND IN SOURCE
 msgid " %1 saved."
-msgstr "%1 uložen."
+msgstr " %1 uložen."
 
 #: share/html/Elements/RT__Ticket/ColumnMap:259
 msgid " (no pubkey!)"
@@ -534,14 +537,6 @@ msgstr "--parametrem požadavku může být pouze 'first' nebo 'last'"
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
 msgstr ""
 
-#: lib/RT/Config.pm:189
-msgid "1995-11-25 21:59:12"
-msgstr ""
-
-#: lib/RT/Config.pm:190
-msgid "1995-11-25T21:59:12Z"
-msgstr ""
-
 #: NOT FOUND IN SOURCE
 msgid "<% $Ticket->Status%>"
 msgstr "<% $Ticket->Status%>"
@@ -1021,10 +1016,6 @@ msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:140
 msgid "CF"
-msgstr ""
-
-#: share/html/NoAuth/js/util.js:209
-msgid "Calendar"
 msgstr ""
 
 #: lib/RT/User_Overlay.pm:1479
@@ -1527,7 +1518,7 @@ msgstr "Nelze načíst scrip  #%1"
 msgid "Couldn't load template #%1"
 msgstr ""
 
-#: lib/RT/Action/CreateTickets.pm:451 share/html/SelfService/Display.html:161
+#: lib/RT/Action/CreateTickets.pm:454 share/html/SelfService/Display.html:161
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "Požadavek '%1' nelze načíst"
@@ -2958,6 +2949,10 @@ msgstr "Mám %quant(%1,míchačku,míchačky,míchaček)"
 #: NOT FOUND IN SOURCE
 msgid "I'm lost"
 msgstr "Jsem ztracen"
+
+#: lib/RT/Config.pm:189
+msgid "ISO"
+msgstr ""
 
 #msgstr "Mám [quant,_1,Míchačku na beton,Míchačky na beton,Míchaček na beton]."
 #: lib/RT/Tickets_Overlay.pm:1872 share/html/Ticket/Elements/ShowBasics:50
@@ -4970,6 +4965,10 @@ msgstr "Rychlé hledání"
 msgid "Quick ticket creation"
 msgstr "Rychlé založení požadavku"
 
+#: lib/RT/Config.pm:188
+msgid "RFC2822"
+msgstr ""
+
 #: share/html/Search/Elements/ResultViews:61
 msgid "RSS"
 msgstr "RSS"
@@ -5381,7 +5380,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Save changes"
-msgstr "Nezapomeňte uložit změny - "
+msgstr "Nezapomeňte uložit změny -"
 
 #: lib/RT/SharedSetting.pm:196
 #. ($self->ObjectName, $name)
@@ -6175,7 +6174,7 @@ msgstr "Tato fronta neexistuje"
 msgid "That ticket has unresolved dependencies"
 msgstr "Tento požadavek má nevyřešené závislosti"
 
-#: lib/RT/Action/CreateTickets.pm:481 lib/RT/Ticket_Overlay.pm:2759
+#: lib/RT/Action/CreateTickets.pm:484 lib/RT/Ticket_Overlay.pm:2759
 msgid "That user already owns that ticket"
 msgstr "Tento uživatel již tento požadavek vlastní"
 
@@ -6366,7 +6365,7 @@ msgstr ""
 msgid "Ticket #%1: %2"
 msgstr "Požadavek #%1: %2"
 
-#: lib/RT/Action/CreateTickets.pm:1121 lib/RT/Action/CreateTickets.pm:1130 lib/RT/Action/CreateTickets.pm:376 lib/RT/Action/CreateTickets.pm:500 lib/RT/Action/CreateTickets.pm:512
+#: lib/RT/Action/CreateTickets.pm:1124 lib/RT/Action/CreateTickets.pm:1133 lib/RT/Action/CreateTickets.pm:379 lib/RT/Action/CreateTickets.pm:503 lib/RT/Action/CreateTickets.pm:515
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
@@ -6570,14 +6569,6 @@ msgstr ""
 msgid "Tue"
 msgstr ""
 
-#: lib/RT/Config.pm:187
-msgid "Tue Dec 25 21:59:12 1995"
-msgstr ""
-
-#: lib/RT/Config.pm:188
-msgid "Tue, 25 Dec 1995 21:59:12 -0300"
-msgstr ""
-
 #: NOT FOUND IN SOURCE
 msgid "Tue."
 msgstr "út"
@@ -6683,7 +6674,7 @@ msgstr ""
 msgid "Update multiple tickets"
 msgstr "Aktualizovat hromadně požadavky"
 
-#: lib/RT/Action/CreateTickets.pm:521 lib/RT/Interface/Web.pm:712
+#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:712
 msgid "Update not recorded."
 msgstr "Aktualizace nezaznamenána"
 
@@ -6701,7 +6692,7 @@ msgstr "Aktualizace požadavku #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Aktualizace požadavku #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:519 lib/RT/Interface/Web.pm:711
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:711
 msgid "Update type was neither correspondence nor comment."
 msgstr "Typ aktualizace nebyl ani korespondence ani komentář."
 
@@ -6864,7 +6855,7 @@ msgstr "Platný dotaz"
 msgid "Validation"
 msgstr "Validace"
 
-#: share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
+#: lib/RT/Config.pm:187 share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
 msgid "Values"
 msgstr "Hodnoty"
 
@@ -6882,6 +6873,10 @@ msgstr ""
 
 #: lib/RT/Dashboard.pm:79
 msgid "View system dashboards"
+msgstr ""
+
+#: lib/RT/Config.pm:190
+msgid "W3CDTF"
 msgstr ""
 
 #: lib/RT/Config.pm:124

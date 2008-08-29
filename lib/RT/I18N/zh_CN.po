@@ -2,12 +2,16 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
-"PO-Revision-Date: 2007-12-09 13:05+0800\n"
-"Last-Translator: Audrey Tang <cpan@audreyt.org>\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-08-27 13:54+0000\n"
+"PO-Revision-Date: 2008-08-27 15:54+0000\n"
+"Last-Translator: Audrey Tang <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2008-08-28 17:13+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " %1 deleted."
@@ -703,14 +707,6 @@ msgstr "--transaction 的值仅能为 'first' 或 'last'"
 
 #: bin/rt-crontool:120
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
-msgstr ""
-
-#: lib/RT/Config.pm:189
-msgid "1995-11-25 21:59:12"
-msgstr ""
-
-#: lib/RT/Config.pm:190
-msgid "1995-11-25T21:59:12Z"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
@@ -1472,7 +1468,7 @@ msgstr "开始签核"
 
 #: NOT FOUND IN SOURCE
 msgid "Begin From "
-msgstr "起始日"
+msgstr "起始日 "
 
 #: share/html/Elements/Logo:51
 msgid "Best Practical Solutions, LLC corporate logo"
@@ -1544,10 +1540,6 @@ msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:140
 msgid "CF"
-msgstr ""
-
-#: share/html/NoAuth/js/util.js:209
-msgid "Calendar"
 msgstr ""
 
 #: lib/RT/User_Overlay.pm:1479
@@ -1945,7 +1937,7 @@ msgstr "未纪录申请单回复"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for ticket. "
-msgstr "不能新增自订字段的值。"
+msgstr "不能新增自订字段的值。 "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for ticket. %1 "
@@ -1953,7 +1945,7 @@ msgstr "不能新增自订字段的值。%1 "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value. "
-msgstr "不能新增自订字段的值。"
+msgstr "不能新增自订字段的值。 "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value. %1 "
@@ -1967,7 +1959,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Could not change owner. "
-msgstr "不能更改承办人。"
+msgstr "不能更改承办人。 "
 
 #: lib/RT/Ticket_Overlay.pm:2768 lib/RT/Ticket_Overlay.pm:2776 lib/RT/Ticket_Overlay.pm:2793
 #. ($del_msg)
@@ -2262,7 +2254,7 @@ msgstr ""
 msgid "Couldn't load that user (%1)"
 msgstr "无法加载该名使用者(%1)"
 
-#: lib/RT/Action/CreateTickets.pm:451 share/html/SelfService/Display.html:161
+#: lib/RT/Action/CreateTickets.pm:454 share/html/SelfService/Display.html:161
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "无法加载申请单 '%1'"
@@ -2441,7 +2433,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Create failed: %1 / %2 / %3 "
-msgstr "新增失败：%1 / %2 / %3"
+msgstr "新增失败：%1 / %2 / %3 "
 
 #: NOT FOUND IN SOURCE
 msgid "Create failed: %1/%2/%3"
@@ -4481,6 +4473,10 @@ msgstr "身分证号"
 #: NOT FOUND IN SOURCE
 msgid "ID Type"
 msgstr "身分类别"
+
+#: lib/RT/Config.pm:189
+msgid "ISO"
+msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:1872 share/html/Ticket/Elements/ShowBasics:50
 msgid "Id"
@@ -6569,10 +6565,6 @@ msgid "Page"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
-msgid "Page #"
-msgstr " "
-
-#: NOT FOUND IN SOURCE
 msgid "Page %1 of %2"
 msgstr "第 %1/%2 页"
 
@@ -7123,6 +7115,10 @@ msgstr "表单一览"
 #: share/html/Elements/QuickCreate:49
 msgid "Quick ticket creation"
 msgstr "快速建立申请单"
+
+#: lib/RT/Config.pm:188
+msgid "RFC2822"
+msgstr ""
 
 #: share/html/Search/Elements/ResultViews:61
 msgid "RSS"
@@ -7719,7 +7715,7 @@ msgstr "星期六"
 
 #: share/html/Prefs/MyRT.html:78 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:71 share/html/Search/Elements/EditSearches:72 share/html/Widgets/SelectionBox:222
 msgid "Save"
-msgstr "储存"
+msgstr "保存"
 
 #: share/html/Admin/CustomFields/Modify.html:126 share/html/Admin/Groups/Modify.html:94 share/html/Admin/Queues/Modify.html:127 share/html/Admin/Queues/People.html:130 share/html/Admin/Users/GnuPG.html:75 share/html/Admin/Users/Modify.html:243 share/html/Dashboards/Modify.html:75 share/html/Dashboards/Subscription.html:168 share/html/Prefs/Other.html:78 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:71 share/html/Prefs/SearchOptions.html:65 share/html/SelfService/Prefs.html:60 share/html/Ticket/Elements/PreviewScrips:94 share/html/Ticket/Modify.html:65 share/html/Ticket/ModifyAll.html:131 share/html/Ticket/ModifyDates.html:63 share/html/Ticket/ModifyLinks.html:65 share/html/Ticket/ModifyPeople.html:63 share/html/User/Groups/Modify.html:79
 msgid "Save Changes"
@@ -7791,7 +7787,7 @@ msgstr "手续"
 
 #: NOT FOUND IN SOURCE
 msgid "Scrips "
-msgstr "讯息通知"
+msgstr "讯息通知 "
 
 #: share/html/Ticket/Update.html:153
 msgid "Scrips and Recipients"
@@ -8695,7 +8691,7 @@ msgstr "模板"
 
 #: NOT FOUND IN SOURCE
 msgid "Templates "
-msgstr "通知模板"
+msgstr "通知模板 "
 
 #: NOT FOUND IN SOURCE
 msgid "Templates for %1\\n"
@@ -8753,7 +8749,7 @@ msgstr "这份申请单有尚未解决的附属申请单"
 msgid "That user already has that right"
 msgstr "使用者已具有该项权限"
 
-#: lib/RT/Action/CreateTickets.pm:481 lib/RT/Ticket_Overlay.pm:2759
+#: lib/RT/Action/CreateTickets.pm:484 lib/RT/Ticket_Overlay.pm:2759
 msgid "That user already owns that ticket"
 msgstr "该使用者已经承办这份申请单"
 
@@ -8976,7 +8972,7 @@ msgstr ""
 msgid "Ticket #%1: %2"
 msgstr "申请单 #%1: %2"
 
-#: lib/RT/Action/CreateTickets.pm:1121 lib/RT/Action/CreateTickets.pm:1130 lib/RT/Action/CreateTickets.pm:376 lib/RT/Action/CreateTickets.pm:500 lib/RT/Action/CreateTickets.pm:512
+#: lib/RT/Action/CreateTickets.pm:1124 lib/RT/Action/CreateTickets.pm:1133 lib/RT/Action/CreateTickets.pm:379 lib/RT/Action/CreateTickets.pm:503 lib/RT/Action/CreateTickets.pm:515
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
@@ -9288,14 +9284,6 @@ msgstr "试图删除某项权限：%1"
 msgid "Tue"
 msgstr "星期二"
 
-#: lib/RT/Config.pm:187
-msgid "Tue Dec 25 21:59:12 1995"
-msgstr ""
-
-#: lib/RT/Config.pm:188
-msgid "Tue, 25 Dec 1995 21:59:12 -0300"
-msgstr ""
-
 #: NOT FOUND IN SOURCE
 msgid "Tue."
 msgstr "星期二"
@@ -9433,7 +9421,7 @@ msgstr "批次更新申请单"
 msgid "Update name"
 msgstr "更新帐号"
 
-#: lib/RT/Action/CreateTickets.pm:521 lib/RT/Interface/Web.pm:712
+#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:712
 msgid "Update not recorded."
 msgstr "更新未被记录"
 
@@ -9463,7 +9451,7 @@ msgstr "更新申请单 #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "更新申请单 #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:519 lib/RT/Interface/Web.pm:711
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:711
 msgid "Update type was neither correspondence nor comment."
 msgstr "更新的内容并非申请单回复也不是评论"
 
@@ -9690,7 +9678,7 @@ msgstr "验证"
 msgid "ValueOfQueue"
 msgstr "选择表单"
 
-#: share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
+#: lib/RT/Config.pm:187 share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
 msgid "Values"
 msgstr "字段值"
 
@@ -9712,6 +9700,10 @@ msgstr ""
 
 #: lib/RT/Dashboard.pm:79
 msgid "View system dashboards"
+msgstr ""
+
+#: lib/RT/Config.pm:190
+msgid "W3CDTF"
 msgstr ""
 
 #: lib/RT/Config.pm:124

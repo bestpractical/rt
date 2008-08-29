@@ -6,13 +6,16 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
-"POT-Creation-Date: 2002-05-02 11:36+0800\n"
-"PO-Revision-Date: 2008-08-20 15:51+0200\n"
-"Last-Translator: Emmanuel Lacour <elacour@easter-eggs.com>\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-08-27 13:54+0000\n"
+"PO-Revision-Date: 2008-08-27 15:21+0000\n"
+"Last-Translator: Emmanuel Lacour <Unknown>\n"
+"Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
+"X-Launchpad-Export-Date: 2008-08-28 17:13+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " %1 deleted."
@@ -510,11 +513,11 @@ msgstr "-"
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
 msgstr "l'argument pour --transaction ne peut être que 'first', 'last' ou 'all'"
 
-#: lib/RT/Config.pm:189
+#: NOT FOUND IN SOURCE
 msgid "1995-11-25 21:59:12"
 msgstr "1995-11-25 21:59:12"
 
-#: lib/RT/Config.pm:190
+#: NOT FOUND IN SOURCE
 msgid "1995-11-25T21:59:12Z"
 msgstr "1995-11-25T21:59:12Z"
 
@@ -693,7 +696,7 @@ msgstr "Commentaire Admin"
 
 #: etc/initialdata:243
 msgid "Admin Correspondence"
-msgstr "Correspondance Admin "
+msgstr "Correspondance Admin"
 
 #: share/html/Admin/Queues/index.html:48 share/html/Admin/Queues/index.html:51
 msgid "Admin queues"
@@ -995,7 +998,7 @@ msgstr ""
 msgid "CF"
 msgstr ""
 
-#: share/html/NoAuth/js/util.js:209
+#: NOT FOUND IN SOURCE
 msgid "Calendar"
 msgstr "Calendrier"
 
@@ -1487,7 +1490,7 @@ msgstr "Impossible de charger le scrip #%1"
 msgid "Couldn't load template #%1"
 msgstr "Impossible de charger le modèle #%1"
 
-#: lib/RT/Action/CreateTickets.pm:451 share/html/SelfService/Display.html:161
+#: lib/RT/Action/CreateTickets.pm:454 share/html/SelfService/Display.html:161
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "Impossible de charger le ticket '%1'"
@@ -1753,7 +1756,7 @@ msgstr "Programme de nettoyage d'action personnalisé"
 
 #: share/html/Admin/Elements/EditScrip:109
 msgid "Custom action preparation code"
-msgstr "Programme de préparation d'action personnalisé "
+msgstr "Programme de préparation d'action personnalisé"
 
 #: share/html/Admin/Elements/EditScrip:102
 msgid "Custom condition"
@@ -2487,7 +2490,7 @@ msgstr "Éxaminer les tickets résolus dans une file, groupés par propriétaire
 
 #: bin/rt-crontool:321
 msgid "Example:"
-msgstr "Exemple : "
+msgstr "Exemple :"
 
 #: share/html/Admin/Elements/ShowKeyInfo:61
 msgid "Expire"
@@ -2645,7 +2648,7 @@ msgstr "Foo Bar Baz"
 
 #: lib/RT/StyleGuide.pod:749
 msgid "Foo!"
-msgstr "Foo ! "
+msgstr "Foo !"
 
 #: share/html/Search/Bulk.html:90
 msgid "Force change"
@@ -2907,6 +2910,10 @@ msgstr "Heures"
 msgid "I have %quant(%1,concrete mixer)."
 msgstr "J'ai %quant(%1, toupie à béton)."
 
+#: lib/RT/Config.pm:189
+msgid "ISO"
+msgstr ""
+
 #: lib/RT/Tickets_Overlay.pm:1872 share/html/Ticket/Elements/ShowBasics:50
 msgid "Id"
 msgstr "Identifiant"
@@ -3119,7 +3126,7 @@ msgstr "Il est suggéré de créer un utilisateur Unix non privilégié apparten
 
 #: bin/rt-crontool:281
 msgid "It takes several arguments:"
-msgstr "Il faut plusieurs paramètres : "
+msgstr "Il faut plusieurs paramètres :"
 
 #: share/html/Search/Elements/EditFormat:82
 msgid "Italic"
@@ -4238,7 +4245,7 @@ msgstr "Aucune"
 
 #: lib/RT/Record.pm:925
 msgid "Nonexistant field?"
-msgstr "Champ inexistant ? "
+msgstr "Champ inexistant ?"
 
 #: share/html/Search/Chart:151 share/html/Search/Elements/Chart:92
 msgid "Not Set"
@@ -4755,7 +4762,7 @@ msgstr "Priorité"
 
 #: share/html/Admin/Queues/Modify.html:82
 msgid "Priority starts at"
-msgstr "La priorité débute à "
+msgstr "La priorité débute à"
 
 #: share/html/Dashboards/Modify.html:70
 msgid "Privacy"
@@ -4884,6 +4891,10 @@ msgstr "Recherche rapide"
 #: share/html/Elements/QuickCreate:49
 msgid "Quick ticket creation"
 msgstr "Création rapide de ticket"
+
+#: lib/RT/Config.pm:188
+msgid "RFC2822"
+msgstr ""
 
 #: share/html/Search/Elements/ResultViews:61
 msgid "RSS"
@@ -5369,7 +5380,7 @@ msgstr "Jeton d'authentification"
 
 #: bin/rt-crontool:315
 msgid "Security:"
-msgstr "Sécurité : "
+msgstr "Sécurité :"
 
 #: share/html/Elements/ShowCustomFields:101
 msgid "See also:"
@@ -5791,7 +5802,7 @@ msgstr "Voler"
 
 #: lib/RT/Queue_Overlay.pm:117
 msgid "Steal tickets"
-msgstr "Voler les tickets "
+msgstr "Voler les tickets"
 
 #: lib/RT/Queue_Overlay.pm:117
 msgid "StealTicket"
@@ -6042,7 +6053,7 @@ msgstr "File inconnue"
 msgid "That ticket has unresolved dependencies"
 msgstr "Ticket ayant des tickets fils ou dépendants non résolus"
 
-#: lib/RT/Action/CreateTickets.pm:481 lib/RT/Ticket_Overlay.pm:2759
+#: lib/RT/Action/CreateTickets.pm:484 lib/RT/Ticket_Overlay.pm:2759
 msgid "That user already owns that ticket"
 msgstr "Cet utilisateur possède déjà ce ticket"
 
@@ -6233,7 +6244,7 @@ msgstr "Graphique des relations pour le ticket n° %1"
 msgid "Ticket #%1: %2"
 msgstr "Ticket n°%1 : %2"
 
-#: lib/RT/Action/CreateTickets.pm:1121 lib/RT/Action/CreateTickets.pm:1130 lib/RT/Action/CreateTickets.pm:376 lib/RT/Action/CreateTickets.pm:500 lib/RT/Action/CreateTickets.pm:512
+#: lib/RT/Action/CreateTickets.pm:1124 lib/RT/Action/CreateTickets.pm:1133 lib/RT/Action/CreateTickets.pm:379 lib/RT/Action/CreateTickets.pm:503 lib/RT/Action/CreateTickets.pm:515
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
@@ -6437,11 +6448,11 @@ msgstr "Confiance"
 msgid "Tue"
 msgstr "Mar"
 
-#: lib/RT/Config.pm:187
+#: NOT FOUND IN SOURCE
 msgid "Tue Dec 25 21:59:12 1995"
 msgstr "Mar Déc 25 21:59:12 1995"
 
-#: lib/RT/Config.pm:188
+#: NOT FOUND IN SOURCE
 msgid "Tue, 25 Dec 1995 21:59:12 -0300"
 msgstr "Mar, 25 Déc 1995 21:59:12 -0300"
 
@@ -6558,7 +6569,7 @@ msgstr "Mettre à jour le format et rechercher"
 msgid "Update multiple tickets"
 msgstr "Mettre à jour plusieurs tickets"
 
-#: lib/RT/Action/CreateTickets.pm:521 lib/RT/Interface/Web.pm:712
+#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:712
 msgid "Update not recorded."
 msgstr "Mise à jour non enregistrée."
 
@@ -6576,7 +6587,7 @@ msgstr "Mettre à jour le ticket n°%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Mettre à jour le ticket n°%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:519 lib/RT/Interface/Web.pm:711
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:711
 msgid "Update type was neither correspondence nor comment."
 msgstr "Le type de mise à jour n'était ni un commentaire ni un courrier."
 
@@ -6739,7 +6750,7 @@ msgstr "Valider la requête"
 msgid "Validation"
 msgstr "Validation"
 
-#: share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
+#: lib/RT/Config.pm:187 share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
 msgid "Values"
 msgstr "Valeurs"
 
@@ -6758,6 +6769,10 @@ msgstr "Voir les tableaux de bord personnels"
 #: lib/RT/Dashboard.pm:79
 msgid "View system dashboards"
 msgstr "Voir les tableaux de bord systèmes"
+
+#: lib/RT/Config.pm:190
+msgid "W3CDTF"
+msgstr ""
 
 #: lib/RT/Config.pm:124
 msgid "WYSIWYG message composer"
@@ -6837,7 +6852,7 @@ msgstr "Quand un ticket a été approuvé par tous les approbateurs, ajoute le c
 
 #: etc/initialdata:571
 msgid "When a ticket has been approved by any approver, add correspondence to the original ticket"
-msgstr "Quand un ticket a été approuvé par au moins un approbateur, ajoute le courrier au ticket source "
+msgstr "Quand un ticket a été approuvé par au moins un approbateur, ajoute le courrier au ticket source"
 
 #: etc/initialdata:104
 msgid "When a ticket is created"

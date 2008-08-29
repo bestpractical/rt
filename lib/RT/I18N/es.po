@@ -2,13 +2,16 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
-"POT-Creation-Date: 2002-05-02 11:36+0800\n"
-"PO-Revision-Date: 2005-10-03 14:25-0400\n"
-"Last-Translator: Tomàs Núñez Lirola <tomasnl@dsl.upc.es>\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-08-27 13:54+0000\n"
+"PO-Revision-Date: 2008-08-27 14:45+0000\n"
+"Last-Translator: Tomàs Núñez Lirola <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2008-08-28 17:13+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:259
 msgid " (no pubkey!)"
@@ -604,14 +607,6 @@ msgstr ""
 
 #: bin/rt-crontool:120
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
-msgstr ""
-
-#: lib/RT/Config.pm:189
-msgid "1995-11-25 21:59:12"
-msgstr ""
-
-#: lib/RT/Config.pm:190
-msgid "1995-11-25T21:59:12Z"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
@@ -1219,10 +1214,6 @@ msgstr ""
 msgid "CF"
 msgstr ""
 
-#: share/html/NoAuth/js/util.js:209
-msgid "Calendar"
-msgstr ""
-
 #: lib/RT/User_Overlay.pm:1479
 msgid "Can not modify system users"
 msgstr "No se pueden modificar los usuarios del sistema"
@@ -1546,7 +1537,7 @@ msgstr "No se pudo añadir un nuevo valor de campo personalizable para el ticket
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value. "
-msgstr "No se pudo añadir nuevo valor de campo personalizado."
+msgstr "No se pudo añadir nuevo valor de campo personalizado. "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value. %1 "
@@ -1839,7 +1830,7 @@ msgstr ""
 msgid "Couldn't load that user (%1)"
 msgstr "No se pudo cargar ese usuario (%1)"
 
-#: lib/RT/Action/CreateTickets.pm:451 share/html/SelfService/Display.html:161
+#: lib/RT/Action/CreateTickets.pm:454 share/html/SelfService/Display.html:161
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "No se pudo cargar el ticket '%1'"
@@ -1973,7 +1964,7 @@ msgstr "Crear una cola"
 
 #: NOT FOUND IN SOURCE
 msgid "Create a queue called"
-msgstr "Crear una cola llamada "
+msgstr "Crear una cola llamada"
 
 #: NOT FOUND IN SOURCE
 msgid "Create a request"
@@ -2002,7 +1993,7 @@ msgstr "Creación fallida: %1 / %2 / %3 "
 
 #: NOT FOUND IN SOURCE
 msgid "Create failed: %1/%2/%3"
-msgstr "Creación fallida: %1 / %2 / %3 "
+msgstr "Creación fallida: %1 / %2 / %3"
 
 #: etc/initialdata:92
 msgid "Create new tickets based on this scrip's template"
@@ -2843,7 +2834,6 @@ msgstr "Campos Personalizables Habilitados"
 msgid "Enabled Queues"
 msgstr "Colas habilitadas"
 
-	
 #: share/html/Admin/Elements/EditCustomField:138 share/html/Admin/Users/Modify.html:356 share/html/User/Groups/Modify.html:140
 #. (loc_fuzzy($msg))
 msgid "Enabled status %1"
@@ -3503,6 +3493,10 @@ msgstr "Tengo [quant,_1,concrete mixer]."
 #: NOT FOUND IN SOURCE
 msgid "I'm lost"
 msgstr "Estoy perdido"
+
+#: lib/RT/Config.pm:189
+msgid "ISO"
+msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:1872 share/html/Ticket/Elements/ShowBasics:50
 msgid "Id"
@@ -4740,7 +4734,7 @@ msgstr "Nuevo observador"
 
 #: NOT FOUND IN SOURCE
 msgid "New window setting"
-msgstr "Establecer nueva ventana "
+msgstr "Establecer nueva ventana"
 
 #: share/html/Elements/CollectionListPaging:104 share/html/Helpers/CalPopup.html:60 share/html/Install/Basics.html:62 share/html/Install/DatabaseDetails.html:72 share/html/Install/DatabaseType.html:70 share/html/Install/Global.html:65 share/html/Install/Global.html:65 share/html/Install/Sendmail.html:63 share/html/Ticket/Elements/Tabs:97
 msgid "Next"
@@ -4809,7 +4803,7 @@ msgstr "No hay plantilla"
 
 #: NOT FOUND IN SOURCE
 msgid "No Ticket specified. Aborting ticket "
-msgstr "No se especificó el ticket. Abortada la transacción"
+msgstr "No se especificó el ticket. Abortada la transacción "
 
 #: NOT FOUND IN SOURCE
 msgid "No Ticket specified. Aborting ticket modifications\\n\\n"
@@ -5713,6 +5707,10 @@ msgstr "Búsqueda rápida"
 #: share/html/Elements/QuickCreate:49
 msgid "Quick ticket creation"
 msgstr "Creación rápida de caso"
+
+#: lib/RT/Config.pm:188
+msgid "RFC2822"
+msgstr ""
 
 #: share/html/Search/Elements/ResultViews:61
 msgid "RSS"
@@ -7135,7 +7133,7 @@ msgstr "Ese ticket tiene dependencias sin resolver"
 msgid "That user already has that right"
 msgstr "Ese usuario ya tiene ese privilegio"
 
-#: lib/RT/Action/CreateTickets.pm:481 lib/RT/Ticket_Overlay.pm:2759
+#: lib/RT/Action/CreateTickets.pm:484 lib/RT/Ticket_Overlay.pm:2759
 msgid "That user already owns that ticket"
 msgstr "Ese usuario ya posee ese ticket"
 
@@ -7354,7 +7352,7 @@ msgstr ""
 msgid "Ticket #%1: %2"
 msgstr "Ticket #%1: %2"
 
-#: lib/RT/Action/CreateTickets.pm:1121 lib/RT/Action/CreateTickets.pm:1130 lib/RT/Action/CreateTickets.pm:376 lib/RT/Action/CreateTickets.pm:500 lib/RT/Action/CreateTickets.pm:512
+#: lib/RT/Action/CreateTickets.pm:1124 lib/RT/Action/CreateTickets.pm:1133 lib/RT/Action/CreateTickets.pm:379 lib/RT/Action/CreateTickets.pm:503 lib/RT/Action/CreateTickets.pm:515
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
@@ -7626,14 +7624,6 @@ msgstr "Intentando borrar el privilegio: %1"
 msgid "Tue"
 msgstr ""
 
-#: lib/RT/Config.pm:187
-msgid "Tue Dec 25 21:59:12 1995"
-msgstr ""
-
-#: lib/RT/Config.pm:188
-msgid "Tue, 25 Dec 1995 21:59:12 -0300"
-msgstr ""
-
 #: NOT FOUND IN SOURCE
 msgid "Tue."
 msgstr "Mar."
@@ -7763,7 +7753,7 @@ msgstr "Actualizar múltiples casos"
 msgid "Update name"
 msgstr "Actualizar nombre"
 
-#: lib/RT/Action/CreateTickets.pm:521 lib/RT/Interface/Web.pm:712
+#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:712
 msgid "Update not recorded."
 msgstr "Actualización no grabada."
 
@@ -7793,7 +7783,7 @@ msgstr "Actualizar ticket #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Actualizar ticket #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:519 lib/RT/Interface/Web.pm:711
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:711
 msgid "Update type was neither correspondence nor comment."
 msgstr "El tipo de actualización no fue ni respuesta ni comentario"
 
@@ -7992,7 +7982,7 @@ msgstr ""
 msgid "ValueOfQueue"
 msgstr "Valor de la cola"
 
-#: share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
+#: lib/RT/Config.pm:187 share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
 msgid "Values"
 msgstr "Valores"
 
@@ -8010,6 +8000,10 @@ msgstr ""
 
 #: lib/RT/Dashboard.pm:79
 msgid "View system dashboards"
+msgstr ""
+
+#: lib/RT/Config.pm:190
+msgid "W3CDTF"
 msgstr ""
 
 #: lib/RT/Config.pm:124
@@ -8553,7 +8547,7 @@ msgstr "notlike"
 
 #: share/html/Elements/SelectDateRelation:58
 msgid "on"
-msgstr "en "
+msgstr "en"
 
 #: lib/RT/Queue_Overlay.pm:83 share/html/SelfService/Elements/MyRequests:81
 msgid "open"

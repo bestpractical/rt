@@ -2,13 +2,16 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
-"POT-Creation-Date: 2002-05-02 11:36+0800\n"
-"PO-Revision-Date: 2008-01-17 13:48-0400\n"
-"Last-Translator: Nicola Murino <nicola.murino@gmail.com>\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-08-27 13:54+0000\n"
+"PO-Revision-Date: 2008-08-27 14:15+0000\n"
+"Last-Translator: Nicola <nicola.murino@gmail.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2008-08-28 17:13+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " %1 deleted."
@@ -210,7 +213,7 @@ msgstr "gli alias %1 necessitano di un TicketId su cui lavorare"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 aliases require a TicketId to work on "
-msgstr "gli alias %1 necessitano di un TicketId su cui lavorare"
+msgstr "gli alias %1 necessitano di un TicketId su cui lavorare "
 
 #: NOT FOUND IN SOURCE
 msgid "%1 aliases require a TicketId to work on (from %2) %3"
@@ -273,9 +276,7 @@ msgstr "%1 non ha potuto iniziare una transazione (%2)\\n"
 #: lib/RT/Ticket_Overlay.pm:2494
 #. ($self)
 msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
-msgstr ""
-"%1 non ho potuto mettere lo stato a risolto. Il database RT potrebbe essere "
-"corrotto."
+msgstr "%1 non ho potuto mettere lo stato a risolto. Il database RT potrebbe essere corrotto."
 
 #: lib/RT/Transaction_Overlay.pm:560
 #. ($obj_type)
@@ -597,13 +598,9 @@ msgstr "(aaaa/mm/gg)"
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
 msgstr "-"
 
-#: lib/RT/Config.pm:189
+#: NOT FOUND IN SOURCE
 msgid "1995-11-25 21:59:12"
 msgstr "-- l'argomento della transazione può essere solo 'primo' o 'ultimo'"
-
-#: lib/RT/Config.pm:190
-msgid "1995-11-25T21:59:12Z"
-msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "25 highest priority tickets I own..."
@@ -790,9 +787,7 @@ msgstr "Aggiungi valori"
 
 #: lib/RT/CustomField_Overlay.pm:114
 msgid "Add, delete and modify custom field values for objects"
-msgstr ""
-"Aggiungi, cancella o modifica il valore dei campi personalizzati per gli "
-"oggetti"
+msgstr "Aggiungi, cancella o modifica il valore dei campi personalizzati per gli oggetti"
 
 #: NOT FOUND IN SOURCE
 msgid "AddNextState"
@@ -954,8 +949,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Always sends a message to the requestors independent of message sender"
-msgstr ""
-"Invia comunque un messaggio al richiedente, anche se è lui stesso il mittente"
+msgstr "Invia comunque un messaggio al richiedente, anche se è lui stesso il mittente"
 
 #: share/html/Search/Elements/EditQuery:60
 msgid "And/Or"
@@ -1143,8 +1137,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Bad transaction number for attachment. %1 should be %2\\n"
-msgstr ""
-"Numero di transazione incorretto per l'allegato. %1 dovrebbe essere %2\\n"
+msgstr "Numero di transazione incorretto per l'allegato. %1 dovrebbe essere %2\\n"
 
 #: share/html/Admin/Elements/CustomFieldTabs:67 share/html/Admin/Elements/GroupTabs:62 share/html/Admin/Elements/QueueTabs:62 share/html/Admin/Elements/UserTabs:60 share/html/Dashboards/Elements/Tabs:70 share/html/Ticket/Elements/Tabs:125 share/html/User/Elements/GroupTabs:61
 msgid "Basics"
@@ -1222,10 +1215,6 @@ msgstr ""
 msgid "CF"
 msgstr ""
 
-#: share/html/NoAuth/js/util.js:209
-msgid "Calendar"
-msgstr ""
-
 #: lib/RT/User_Overlay.pm:1479
 msgid "Can not modify system users"
 msgstr "Gli utenti di sistema non possono essere modificati"
@@ -1253,9 +1242,7 @@ msgstr "Non è possibile collegare un ticket a se stesso"
 
 #: NOT FOUND IN SOURCE
 msgid "Can't merge into a merged ticket. You should never get this error"
-msgstr ""
-"Impossibile unire un ticket ad un ticket già unito. Questo errore non "
-"dovrebbe mai verificarsi"
+msgstr "Impossibile unire un ticket ad un ticket già unito. Questo errore non dovrebbe mai verificarsi"
 
 #: share/html/Widgets/SavedSearch:110
 #. (loc($self->{SearchType}))
@@ -1544,13 +1531,11 @@ msgstr "Corrispondenza non registrata"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for ticket. "
-msgstr ""
-"Impossibile aggiungere un nuovo valore di campo personalizzato al ticket. "
+msgstr "Impossibile aggiungere un nuovo valore di campo personalizzato al ticket. "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for ticket. %1 "
-msgstr ""
-"Impossibile aggiungere un nuovo valore di campo personalizzato al ticket. %1 "
+msgstr "Impossibile aggiungere un nuovo valore di campo personalizzato al ticket. %1 "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value. "
@@ -1673,8 +1658,7 @@ msgstr "Impossibile rimuovere questo gruppo/utente come un %1 per questa coda"
 #: lib/RT/Ticket_Overlay.pm:1254
 #. ($args{'Type'})
 msgid "Could not remove that principal as a %1 for this ticket"
-msgstr ""
-"Impossibile rimuovere questo gruppo/utente come un %1 per questo ticket"
+msgstr "Impossibile rimuovere questo gruppo/utente come un %1 per questo ticket"
 
 #: lib/RT/User_Overlay.pm:129
 msgid "Could not set user info"
@@ -1848,7 +1832,7 @@ msgstr ""
 msgid "Couldn't load that user (%1)"
 msgstr "Impossibile caricare questo utente (%1)"
 
-#: lib/RT/Action/CreateTickets.pm:451 share/html/SelfService/Display.html:161
+#: lib/RT/Action/CreateTickets.pm:454 share/html/SelfService/Display.html:161
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "Impossibile caricare il ticket '%1'"
@@ -2007,7 +1991,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Create failed: %1 / %2 / %3 "
-msgstr "Creazione fallita: %1 / %2 / %3"
+msgstr "Creazione fallita: %1 / %2 / %3 "
 
 #: NOT FOUND IN SOURCE
 msgid "Create failed: %1/%2/%3"
@@ -2047,13 +2031,11 @@ msgstr "Crea, elimina e modifica le code"
 
 #: NOT FOUND IN SOURCE
 msgid "Create, delete and modify the members of any user's personal groups"
-msgstr ""
-"Crea, elimina e modifica gli appartenenti ai gruppi personali di un "
-"qualunque utente"
+msgstr "Crea, elimina e modifica gli appartenenti ai gruppi personali di un qualunque utente"
 
 #: lib/RT/System.pm:84
 msgid "Create, delete and modify the members of personal groups"
-msgstr "Crea, elimina e modifica gli appartenenti ai gruppi personali "
+msgstr "Crea, elimina e modifica gli appartenenti ai gruppi personali"
 
 #: lib/RT/System.pm:85
 msgid "Create, delete and modify users"
@@ -2496,13 +2478,11 @@ msgstr "Ricerca cancellata"
 
 #: NOT FOUND IN SOURCE
 msgid "Deleting this object could break referential integrity"
-msgstr ""
-"La cancellazione di quest'oggetto può danneggiare l'integrità referenziale"
+msgstr "La cancellazione di quest'oggetto può danneggiare l'integrità referenziale"
 
 #: lib/RT/Queue_Overlay.pm:378
 msgid "Deleting this object would break referential integrity"
-msgstr ""
-"La cancellazione di quest'oggetto danneggerebbe l'integrità referenziale"
+msgstr "La cancellazione di quest'oggetto danneggerebbe l'integrità referenziale"
 
 #: lib/RT/User_Overlay.pm:414
 msgid "Deleting this object would violate referential integrity"
@@ -2514,9 +2494,7 @@ msgstr "La cancellazione di quest'oggetto violerebbe l'integrità referenziale"
 
 #: NOT FOUND IN SOURCE
 msgid "Deleting this object would violate referential integrity. That's bad."
-msgstr ""
-"La cancellazione di quest'oggetto violerebbe l'integrità referenziale. Ciò è "
-"male!"
+msgstr "La cancellazione di quest'oggetto violerebbe l'integrità referenziale. Ciò è male!"
 
 #: share/html/Approvals/Elements/Approve:75
 msgid "Deny"
@@ -2726,9 +2704,7 @@ msgstr "Modifica i campi personalizzati per tutte le code"
 
 #: NOT FOUND IN SOURCE
 msgid "Edit Custom Fields for transactions on tickets in all queues"
-msgstr ""
-"Modifica i campi personalizzati per le transazioni sui ticket in tutte le "
-"code"
+msgstr "Modifica i campi personalizzati per le transazioni sui ticket in tutte le code"
 
 #: share/html/Search/Bulk.html:199 share/html/Ticket/ModifyLinks.html:62
 msgid "Edit Links"
@@ -2855,9 +2831,7 @@ msgstr ""
 
 #: share/html/Admin/CustomFields/Modify.html:113 share/html/Admin/Elements/EditCustomField:74
 msgid "Enabled (Unchecking this box disables this custom field)"
-msgstr ""
-"Abilitato (togliere il segno di spunta per disabilitare questo campo "
-"personalizzato)"
+msgstr "Abilitato (togliere il segno di spunta per disabilitare questo campo personalizzato)"
 
 #: share/html/Admin/Groups/Modify.html:89 share/html/User/Groups/Modify.html:76
 msgid "Enabled (Unchecking this box disables this group)"
@@ -3461,8 +3435,7 @@ msgstr "Gruppi"
 
 #: lib/RT/Group_Overlay.pm:990
 msgid "Groups can't be members of their members"
-msgstr ""
-"I gruppi non possono appartenere a gruppi che sono già loro appartenenti"
+msgstr "I gruppi non possono appartenere a gruppi che sono già loro appartenenti"
 
 #: share/html/Admin/Groups/index.html:96
 msgid "Groups matching search criteria"
@@ -3543,6 +3516,10 @@ msgstr "Ho [quant,_1,concrete mixer]."
 #: NOT FOUND IN SOURCE
 msgid "I'm lost"
 msgstr "Mi sono perso..."
+
+#: lib/RT/Config.pm:189
+msgid "ISO"
+msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:1872 share/html/Ticket/Elements/ShowBasics:50
 msgid "Id"
@@ -4040,9 +4017,7 @@ msgstr "Domicilio"
 
 #: NOT FOUND IN SOURCE
 msgid "Log directory %1 not found or couldn't be written.\\n RT can't run."
-msgstr ""
-"Impossibile trovare la directory di log %1 (oppure mancano i permessi di "
-"scrittura).\\n RT non può essere eseguito."
+msgstr "Impossibile trovare la directory di log %1 (oppure mancano i permessi di scrittura).\\n RT non può essere eseguito."
 
 #: share/html/Elements/Header:92
 #. ("<span>".$session{'CurrentUser'}->Name."</span>")
@@ -4128,8 +4103,7 @@ msgstr "Gestione di gruppi e appartenenze"
 
 #: share/html/Admin/index.html:81
 msgid "Manage properties and configuration which apply to all queues"
-msgstr ""
-"Gestione di proprietà e configurazioni che si applicano a tutte le code"
+msgstr "Gestione di proprietà e configurazioni che si applicano a tutte le code"
 
 #: share/html/Admin/index.html:70
 msgid "Manage queues and queue-specific properties"
@@ -4256,9 +4230,7 @@ msgstr "Messaggio"
 
 #: share/html/Ticket/Elements/ShowTransactionAttachments:143
 msgid "Message body not shown because it is too large or is not plain text."
-msgstr ""
-"Il corpo del messaggio non viene mostrato perchè troppo grande o non in "
-"formato testo."
+msgstr "Il corpo del messaggio non viene mostrato perchè troppo grande o non in formato testo."
 
 #: lib/RT/Config.pm:140
 msgid "Message box height"
@@ -4867,7 +4839,7 @@ msgstr "Nessun Modello"
 
 #: NOT FOUND IN SOURCE
 msgid "No Ticket specified. Aborting ticket "
-msgstr "Nessun ticket specificato. Annullo il ticket"
+msgstr "Nessun ticket specificato. Annullo il ticket "
 
 #: share/html/Approvals/Elements/Approve:79
 msgid "No action"
@@ -5117,21 +5089,15 @@ msgstr "invia notifica all'incaricato del ticket respinto"
 
 #: etc/initialdata:334
 msgid "Notify Owner of their ticket has been approved by all approvers"
-msgstr ""
-"invia notifica all'incaricato del ticket che tutte le approvazioni sono "
-"state concesse"
+msgstr "invia notifica all'incaricato del ticket che tutte le approvazioni sono state concesse"
 
 #: etc/initialdata:322
 msgid "Notify Owner of their ticket has been approved by some approver"
-msgstr ""
-"invia notifica all'incaricato del ticket che alcune approvazioni sono state "
-"concesse"
+msgstr "invia notifica all'incaricato del ticket che alcune approvazioni sono state concesse"
 
 #: etc/initialdata:303
 msgid "Notify Owners and AdminCcs of new items pending their approval"
-msgstr ""
-"invia notifica agli incaricati e AdminCc quando è necessario richiedere "
-"nuove approvazione"
+msgstr "invia notifica agli incaricati e AdminCc quando è necessario richiedere nuove approvazione"
 
 #: etc/initialdata:32
 msgid "Notify Requestors"
@@ -5782,6 +5748,10 @@ msgstr "Ricerca veloce"
 msgid "Quick ticket creation"
 msgstr "Creazione veloce di un ticket"
 
+#: lib/RT/Config.pm:188
+msgid "RFC2822"
+msgstr ""
+
 #: share/html/Search/Elements/ResultViews:61
 msgid "RSS"
 msgstr "RSS"
@@ -5886,8 +5856,7 @@ msgstr "RT non ha potuto autenticarti"
 
 #: NOT FOUND IN SOURCE
 msgid "RT couldn't find requestor via its external database lookup"
-msgstr ""
-"RT non è riuscito a trovare il richiedente consultando in database esterno"
+msgstr "RT non è riuscito a trovare il richiedente consultando in database esterno"
 
 #: NOT FOUND IN SOURCE
 msgid "RT couldn't find the queue: %1"
@@ -5944,8 +5913,7 @@ msgstr ""
 
 #: share/html/Search/Simple.html:62
 msgid "RT will look for anything else you enter in ticket subjects."
-msgstr ""
-"Il sistema cercherà qualunque altra cosa inserita nel soggetto dei ticket"
+msgstr "Il sistema cercherà qualunque altra cosa inserita nel soggetto dei ticket"
 
 #: NOT FOUND IN SOURCE
 msgid "RT will process this message as if it were unsigned.\\n"
@@ -6521,9 +6489,7 @@ msgstr "Seleziona i campi personalizzati per i ticket in tutte le code"
 
 #: share/html/Admin/Elements/GlobalCustomFieldTabs:82 share/html/Admin/Global/CustomFields/index.html:91
 msgid "Select custom fields for transactions on tickets in all queues"
-msgstr ""
-"Seleziona i campi personalizzati per le transazioni relative ai ticket in "
-"tutte le code"
+msgstr "Seleziona i campi personalizzati per le transazioni relative ai ticket in tutte le code"
 
 #: share/html/Dashboards/Elements/Tabs:99
 msgid "Select dashboard"
@@ -7216,7 +7182,7 @@ msgstr "Il ticket ha dipendenze non risolte"
 msgid "That user already has that right"
 msgstr "L'utente ha già questo diritto"
 
-#: lib/RT/Action/CreateTickets.pm:481 lib/RT/Ticket_Overlay.pm:2759
+#: lib/RT/Action/CreateTickets.pm:484 lib/RT/Ticket_Overlay.pm:2759
 msgid "That user already owns that ticket"
 msgstr "L'utente ha già il ticket in carico"
 
@@ -7382,8 +7348,7 @@ msgstr "Il ticket %1 %2 (%3)\\n"
 
 #: bin/rt-crontool:316
 msgid "This tool allows the user to run arbitrary perl modules from within RT."
-msgstr ""
-"Questo strumento permette di eseguire qualsiasi modulo perl da dentro RT."
+msgstr "Questo strumento permette di eseguire qualsiasi modulo perl da dentro RT."
 
 #: lib/RT/Transaction_Overlay.pm:325
 msgid "This transaction appears to have no content"
@@ -7433,7 +7398,7 @@ msgstr ""
 msgid "Ticket #%1: %2"
 msgstr "Ticket n°%1: %2"
 
-#: lib/RT/Action/CreateTickets.pm:1121 lib/RT/Action/CreateTickets.pm:1130 lib/RT/Action/CreateTickets.pm:376 lib/RT/Action/CreateTickets.pm:500 lib/RT/Action/CreateTickets.pm:512
+#: lib/RT/Action/CreateTickets.pm:1124 lib/RT/Action/CreateTickets.pm:1133 lib/RT/Action/CreateTickets.pm:379 lib/RT/Action/CreateTickets.pm:503 lib/RT/Action/CreateTickets.pm:515
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
@@ -7679,8 +7644,7 @@ msgstr "Campi personalizzati della transazione"
 
 #: NOT FOUND IN SOURCE
 msgid "Transaction->Create couldn't, as you didn't specify a ticket id"
-msgstr ""
-"Transaction->Create fallita, devi specificare l'identificativo dell'oggetto"
+msgstr "Transaction->Create fallita, devi specificare l'identificativo dell'oggetto"
 
 #: lib/RT/Transaction_Overlay.pm:126
 msgid "Transaction->Create couldn't, as you didn't specify an object type and id"
@@ -7704,14 +7668,6 @@ msgstr "Provo a eliminare un diritto: %1"
 
 #: lib/RT/Date.pm:105 share/html/CalPopup.html:90
 msgid "Tue"
-msgstr ""
-
-#: lib/RT/Config.pm:187
-msgid "Tue Dec 25 21:59:12 1995"
-msgstr ""
-
-#: lib/RT/Config.pm:188
-msgid "Tue, 25 Dec 1995 21:59:12 -0300"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
@@ -7847,7 +7803,7 @@ msgstr "Aggiorna ticket multipli"
 msgid "Update name"
 msgstr "Aggiorna nome"
 
-#: lib/RT/Action/CreateTickets.pm:521 lib/RT/Interface/Web.pm:712
+#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:712
 msgid "Update not recorded."
 msgstr "Aggiornamento non registrato."
 
@@ -7877,7 +7833,7 @@ msgstr "Aggiorna il ticket n°%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Aggiorna il ticket n°%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:519 lib/RT/Interface/Web.pm:711
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:711
 msgid "Update type was neither correspondence nor comment."
 msgstr "Il tipo aggiornamento non era ne' corrispondenza ne' commento."
 
@@ -8076,7 +8032,7 @@ msgstr "Validazione"
 msgid "ValueOfQueue"
 msgstr "ValoreDellaCoda"
 
-#: share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
+#: lib/RT/Config.pm:187 share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
 msgid "Values"
 msgstr "Valori"
 
@@ -8094,6 +8050,10 @@ msgstr ""
 
 #: lib/RT/Dashboard.pm:79
 msgid "View system dashboards"
+msgstr ""
+
+#: lib/RT/Config.pm:190
+msgid "W3CDTF"
 msgstr ""
 
 #: lib/RT/Config.pm:124
@@ -8299,9 +8259,7 @@ msgstr "E' possibile anche modificare la ricerca predefinta stessa"
 
 #: lib/RT/Ticket_Overlay.pm:2745
 msgid "You can only reassign tickets that you own or that are unowned"
-msgstr ""
-"Puoi solo riassegnare ticket che hai in carico, o che non sono ancora "
-"assegnati"
+msgstr "Puoi solo riassegnare ticket che hai in carico, o che non sono ancora assegnati"
 
 #: lib/RT/Ticket_Overlay.pm:2741
 msgid "You can only take tickets that are unowned"

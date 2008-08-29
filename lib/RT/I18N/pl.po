@@ -3,13 +3,16 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
-"POT-Creation-Date: 2007-01-18 11:36+0800\n"
-"PO-Revision-Date: 2005-10-03 14:26-0400\n"
-"Last-Translator: Piotr Śliwa <piotr.sliwa@comarch.pl>\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-08-27 13:54+0000\n"
+"PO-Revision-Date: 2008-08-27 14:37+0000\n"
+"Last-Translator: Piotr Śliwa <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2008-08-28 17:13+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:259
 msgid " (no pubkey!)"
@@ -616,14 +619,6 @@ msgstr ""
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
 msgstr ""
 
-#: lib/RT/Config.pm:189
-msgid "1995-11-25 21:59:12"
-msgstr ""
-
-#: lib/RT/Config.pm:190
-msgid "1995-11-25T21:59:12Z"
-msgstr ""
-
 #: NOT FOUND IN SOURCE
 msgid "25 highest priority tickets I own..."
 msgstr "25 zgłoszeń o najwyższym priorytecie, których właścicielem jest użytkownik..."
@@ -971,7 +966,7 @@ msgstr "I/Lub"
 
 #: share/html/Admin/CustomFields/Modify.html:79 share/html/Admin/Elements/CustomFieldTabs:85
 msgid "Applies to"
-msgstr "Zastosuj do: "
+msgstr "Zastosuj do:"
 
 #: share/html/Search/Edit.html:70
 msgid "Apply"
@@ -1251,10 +1246,6 @@ msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:140
 msgid "CF"
-msgstr ""
-
-#: share/html/NoAuth/js/util.js:209
-msgid "Calendar"
 msgstr ""
 
 #: lib/RT/User_Overlay.pm:1479
@@ -1584,7 +1575,7 @@ msgstr "Korespondencja nie została zapisana"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for ticket. "
-msgstr "Nie udało się wprowadzić nowej wartości pola dla zgłoszenia."
+msgstr "Nie udało się wprowadzić nowej wartości pola dla zgłoszenia. "
 
 #: lib/RT/Record.pm:1662 lib/RT/Record.pm:1708
 #. ($value_msg)
@@ -1594,7 +1585,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Could not change owner. "
-msgstr "Nie udało się zmienić właściciela."
+msgstr "Nie udało się zmienić właściciela. "
 
 #: lib/RT/Ticket_Overlay.pm:2768 lib/RT/Ticket_Overlay.pm:2776 lib/RT/Ticket_Overlay.pm:2793
 #. ($del_msg)
@@ -1828,7 +1819,7 @@ msgstr ""
 #: share/html/Admin/Queues/GroupRights.html:124 share/html/Admin/Queues/UserRights.html:93
 #. ($id)
 msgid "Couldn't load queue %1"
-msgstr " Nie udało się załadować kolejki %1"
+msgstr "Nie udało się załadować kolejki %1"
 
 #: share/html/Admin/Queues/Modify.html:150
 #. ($Name)
@@ -1857,7 +1848,7 @@ msgstr ""
 msgid "Couldn't load that user (%1)"
 msgstr "Nie udało się załadować użytkownika (%1)"
 
-#: lib/RT/Action/CreateTickets.pm:451 share/html/SelfService/Display.html:161
+#: lib/RT/Action/CreateTickets.pm:454 share/html/SelfService/Display.html:161
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "Nie udało się załadować zgłoszenia '%1'"
@@ -2068,7 +2059,7 @@ msgstr "Utwórz, usuń i zmodyfikuj członków którejś z prywatnych grup użyt
 
 #: lib/RT/System.pm:84
 msgid "Create, delete and modify the members of personal groups"
-msgstr " Utwórz, usuń i zmodyfikuj członków prywatnych grup"
+msgstr "Utwórz, usuń i zmodyfikuj członków prywatnych grup"
 
 #: lib/RT/System.pm:85
 msgid "Create, delete and modify users"
@@ -2666,7 +2657,7 @@ msgstr ""
 
 #: share/html/Ticket/Elements/ShowTransactionAttachments:61
 msgid "Download"
-msgstr "Pobierz "
+msgstr "Pobierz"
 
 #: share/html/Admin/Groups/index.html:73 share/html/Admin/Users/index.html:74
 msgid "Download as a tab-delimited file"
@@ -2839,7 +2830,7 @@ msgstr ""
 
 #: lib/RT/User_Overlay.pm:169 lib/RT/User_Overlay.pm:560
 msgid "Email address in use"
-msgstr "Używany adres e-mail "
+msgstr "Używany adres e-mail"
 
 #: lib/RT/Config.pm:232
 msgid "Email delivery"
@@ -2989,7 +2980,7 @@ msgstr "Błąd w określeniu parametrów zgłoszenia -> Dodaj Obserwatora"
 
 #: NOT FOUND IN SOURCE
 msgid "Error in parameters to Ticket->DelWatcher"
-msgstr " Błąd w określeniu parametrów zgłoszenia -> Usuń Obserwatora"
+msgstr "Błąd w określeniu parametrów zgłoszenia -> Usuń Obserwatora"
 
 #: lib/RT/Ticket_Overlay.pm:1221
 msgid "Error in parameters to Ticket->DeleteWatcher"
@@ -3398,7 +3389,7 @@ msgstr "Start!"
 
 #: NOT FOUND IN SOURCE
 msgid "Good pgp sig from %1\\n"
-msgstr "Poprawny podpis pgp dla %1\\n "
+msgstr "Poprawny podpis pgp dla %1\\n"
 
 #: NOT FOUND IN SOURCE
 msgid "Goto page"
@@ -3562,9 +3553,13 @@ msgstr "Posiadam %quant(%1,concrete mixer)."
 msgid "I have [quant,_1,concrete mixer]."
 msgstr "I have [quant,_1,concrete mixer]."
 
+#: lib/RT/Config.pm:189
+msgid "ISO"
+msgstr ""
+
 #: lib/RT/Tickets_Overlay.pm:1872 share/html/Ticket/Elements/ShowBasics:50
 msgid "Id"
-msgstr "Nr "
+msgstr "Nr"
 
 #: share/html/Admin/Users/Modify.html:67 share/html/User/Prefs.html:62
 msgid "Identity"
@@ -4123,7 +4118,7 @@ msgstr ""
 
 #: share/html/Admin/index.html:74
 msgid "Manage custom fields and custom field values"
-msgstr "Administracja polami zdefiniowanymi przez użytkownika "
+msgstr "Administracja polami zdefiniowanymi przez użytkownika"
 
 #: share/html/Admin/index.html:65
 msgid "Manage groups and group membership"
@@ -4879,7 +4874,7 @@ msgstr "Brak szablonu"
 
 #: NOT FOUND IN SOURCE
 msgid "No Ticket specified. Aborting ticket "
-msgstr "Nie określono zgłoszenia. Odrzucenie zgłoszenia"
+msgstr "Nie określono zgłoszenia. Odrzucenie zgłoszenia "
 
 #: NOT FOUND IN SOURCE
 msgid "No Ticket specified. Aborting ticket modifications\\n\\n"
@@ -5688,7 +5683,7 @@ msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:157 lib/RT/Record.pm:911 lib/RT/Tickets_Overlay.pm:1723 lib/RT/Tickets_Overlay.pm:94 share/html/Elements/QueueSummary:50 share/html/Elements/QuickCreate:56 share/html/Elements/RT__Scrip/ColumnMap:61 share/html/Elements/RT__Ticket/ColumnMap:85 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:56 share/html/Ticket/Create.html:66 share/html/Ticket/Elements/EditBasics:59 share/html/Ticket/Elements/ShowBasics:80 share/html/Tools/Reports/CreatedByDates.html:87 share/html/Tools/Reports/ResolvedByDates.html:88 share/html/Tools/Reports/ResolvedByOwner.html:68 share/html/User/Elements/DelegateRights:103
 msgid "Queue"
-msgstr "Kolejka "
+msgstr "Kolejka"
 
 #: share/html/Admin/Queues/CustomField.html:65 share/html/Admin/Queues/Scrip.html:63 share/html/Admin/Queues/Scrips.html:71 share/html/Admin/Queues/Templates.html:67
 #. ($Queue)
@@ -5775,6 +5770,10 @@ msgstr "Szybkie wyszukiwanie"
 #: share/html/Elements/QuickCreate:49
 msgid "Quick ticket creation"
 msgstr "Szybkie tworzenie zgłoszeń"
+
+#: lib/RT/Config.pm:188
+msgid "RFC2822"
+msgstr ""
 
 #: share/html/Search/Elements/ResultViews:61
 msgid "RSS"
@@ -6553,7 +6552,7 @@ msgstr "Wybierz szablon"
 
 #: lib/RT/CustomField_Overlay.pm:62
 msgid "Select up to %1 values"
-msgstr "Choisir un maximum de %1 valeurs "
+msgstr "Choisir un maximum de %1 valeurs"
 
 #: NOT FOUND IN SOURCE
 msgid "Select user"
@@ -6613,7 +6612,7 @@ msgstr "Wysyła wiadomość do zgłaszających"
 
 #: etc/initialdata:80 etc/initialdata:84
 msgid "Sends mail to explicitly listed Ccs and Bccs"
-msgstr "Wysyła e-mail do osób wymienionych w Cc i Bcc "
+msgstr "Wysyła e-mail do osób wymienionych w Cc i Bcc"
 
 #: etc/initialdata:49 etc/upgrade/3.1.17/content:7
 msgid "Sends mail to the Ccs"
@@ -6902,7 +6901,7 @@ msgstr "Województwo"
 
 #: lib/RT/Graph/Tickets.pm:157 lib/RT/Ticket_Overlay.pm:902 lib/RT/Tickets_Overlay.pm:1757 lib/RT/Tickets_Overlay.pm:93 share/html/Elements/RT__Ticket/ColumnMap:104 share/html/Elements/RT__Ticket/ColumnMap:94 share/html/Search/Elements/BuildFormatString:100 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:59 share/html/Ticket/Create.html:70 share/html/Ticket/Elements/EditBasics:55 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Ticket/Update.html:67 share/html/Tools/MyDay.html:67
 msgid "Status"
-msgstr "Status "
+msgstr "Status"
 
 #: etc/initialdata:278
 msgid "Status Change"
@@ -7222,7 +7221,7 @@ msgstr "To zgłoszenie ma niewykonane zgłoszenia zależne"
 msgid "That user already has that right"
 msgstr "Ten użytkownik już posiada to uprawnienie"
 
-#: lib/RT/Action/CreateTickets.pm:481 lib/RT/Ticket_Overlay.pm:2759
+#: lib/RT/Action/CreateTickets.pm:484 lib/RT/Ticket_Overlay.pm:2759
 msgid "That user already owns that ticket"
 msgstr "Ten użytkownik już jest właścicielem tego zgłoszenia"
 
@@ -7441,7 +7440,7 @@ msgstr ""
 msgid "Ticket #%1: %2"
 msgstr "Zgłoszenie nr %1  %2"
 
-#: lib/RT/Action/CreateTickets.pm:1121 lib/RT/Action/CreateTickets.pm:1130 lib/RT/Action/CreateTickets.pm:376 lib/RT/Action/CreateTickets.pm:500 lib/RT/Action/CreateTickets.pm:512
+#: lib/RT/Action/CreateTickets.pm:1124 lib/RT/Action/CreateTickets.pm:1133 lib/RT/Action/CreateTickets.pm:379 lib/RT/Action/CreateTickets.pm:503 lib/RT/Action/CreateTickets.pm:515
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
@@ -7709,14 +7708,6 @@ msgstr "Próba usunięcia uprawnienia: %1"
 msgid "Tue"
 msgstr ""
 
-#: lib/RT/Config.pm:187
-msgid "Tue Dec 25 21:59:12 1995"
-msgstr ""
-
-#: lib/RT/Config.pm:188
-msgid "Tue, 25 Dec 1995 21:59:12 -0300"
-msgstr ""
-
 #: NOT FOUND IN SOURCE
 msgid "Tue."
 msgstr "Wto."
@@ -7749,7 +7740,7 @@ msgstr "Niezaimplementowane"
 
 #: share/html/Admin/Users/Modify.html:91
 msgid "Unix login"
-msgstr " Unix login"
+msgstr "Unix login"
 
 #: NOT FOUND IN SOURCE
 msgid "UnixUsername"
@@ -7854,7 +7845,7 @@ msgstr "Zaktualizuj wiele zgłoszeń jednocześnie"
 msgid "Update name"
 msgstr "Zaktualizuj nazwę"
 
-#: lib/RT/Action/CreateTickets.pm:521 lib/RT/Interface/Web.pm:712
+#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:712
 msgid "Update not recorded."
 msgstr "Aktualizacja nie została zapisana."
 
@@ -7884,7 +7875,7 @@ msgstr "Zaktualizuj zgłoszenie nr %1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Zaktualizuj zgłoszenie nr %1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:519 lib/RT/Interface/Web.pm:711
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:711
 msgid "Update type was neither correspondence nor comment."
 msgstr "Aktualizacja nie dotyczyła korespondencji ani komentarza."
 
@@ -8087,7 +8078,7 @@ msgstr ""
 msgid "ValueOfQueue"
 msgstr "Wartość kolejki"
 
-#: share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
+#: lib/RT/Config.pm:187 share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
 msgid "Values"
 msgstr "Wartości"
 
@@ -8105,6 +8096,10 @@ msgstr ""
 
 #: lib/RT/Dashboard.pm:79
 msgid "View system dashboards"
+msgstr ""
+
+#: lib/RT/Config.pm:190
+msgid "W3CDTF"
 msgstr ""
 
 #: lib/RT/Config.pm:124
@@ -8257,7 +8252,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Which are referred to by "
-msgstr "Które są zgłoszeniami powiązanymi"
+msgstr "Które są zgłoszeniami powiązanymi "
 
 #: NOT FOUND IN SOURCE
 msgid "Which refer to"

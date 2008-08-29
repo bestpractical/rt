@@ -5,13 +5,16 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
-"POT-Creation-Date: 2002-06-22 06:06+0200\n"
-"PO-Revision-Date: 2006-03-21 00:00+0100\n"
-"Last-Translator: Josip Rodin <lokalizacija@linux.hr>\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-08-27 13:54+0000\n"
+"PO-Revision-Date: 2008-08-27 14:07+0000\n"
+"Last-Translator: Josip Rodin <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2008-08-28 17:12+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:259
 msgid " (no pubkey!)"
@@ -190,7 +193,7 @@ msgstr "ScripAction %1 učitano"
 #: lib/RT/Record.pm:1721
 #. ($args{'Value'}, $cf->Name)
 msgid "%1 added as a value for %2"
-msgstr "%1 dodano kao vrijednost za %2 "
+msgstr "%1 dodano kao vrijednost za %2"
 
 #: share/html/Install/DatabaseDetails.html:170
 #. ($RT::DatabaseName)
@@ -564,14 +567,6 @@ msgstr ""
 
 #: bin/rt-crontool:120
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
-msgstr ""
-
-#: lib/RT/Config.pm:189
-msgid "1995-11-25 21:59:12"
-msgstr ""
-
-#: lib/RT/Config.pm:190
-msgid "1995-11-25T21:59:12Z"
 msgstr ""
 
 #: share/html/Elements/CreateTicket:49
@@ -1127,10 +1122,6 @@ msgstr ""
 msgid "CF"
 msgstr ""
 
-#: share/html/NoAuth/js/util.js:209
-msgid "Calendar"
-msgstr ""
-
 #: lib/RT/User_Overlay.pm:1479
 msgid "Can not modify system users"
 msgstr "Sistemski korisnici se ne mogu promijeniti"
@@ -1434,11 +1425,11 @@ msgstr "Zahtjevu se nije mogla dodati nova vrijednost vlastitog polja. "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value. "
-msgstr "Nije se mogla dodati nova vrijednost vlastitog polja"
+msgstr "Nije se mogla dodati nova vrijednost vlastitog polja "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value. %1 "
-msgstr "Nije se mogla dodati nova vrijednost vlastitog polja. %1"
+msgstr "Nije se mogla dodati nova vrijednost vlastitog polja. %1 "
 
 #: lib/RT/Record.pm:1662 lib/RT/Record.pm:1708
 #. ($value_msg)
@@ -1671,7 +1662,7 @@ msgstr ""
 msgid "Couldn't load that user (%1)"
 msgstr "Taj korisnik (%1) nije mogao biti učitan"
 
-#: lib/RT/Action/CreateTickets.pm:451 share/html/SelfService/Display.html:161
+#: lib/RT/Action/CreateTickets.pm:454 share/html/SelfService/Display.html:161
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "Zahtjev '%1' se nije mogao učitati"
@@ -3272,6 +3263,10 @@ msgstr ""
 #: NOT FOUND IN SOURCE
 msgid "I'm lost"
 msgstr "Izgubljen sam"
+
+#: lib/RT/Config.pm:189
+msgid "ISO"
+msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:1872 share/html/Ticket/Elements/ShowBasics:50
 msgid "Id"
@@ -5399,6 +5394,10 @@ msgstr "Brza pretraga"
 msgid "Quick ticket creation"
 msgstr "Brzo pravljenje zahtjeva"
 
+#: lib/RT/Config.pm:188
+msgid "RFC2822"
+msgstr ""
+
 #: share/html/Search/Elements/ResultViews:61
 msgid "RSS"
 msgstr "RSS"
@@ -6720,7 +6719,7 @@ msgstr "Taj zahtjev ima neriješene ovisnosti"
 msgid "That user already has that right"
 msgstr "Taj korisnik vec ima tu ovlast"
 
-#: lib/RT/Action/CreateTickets.pm:481 lib/RT/Ticket_Overlay.pm:2759
+#: lib/RT/Action/CreateTickets.pm:484 lib/RT/Ticket_Overlay.pm:2759
 msgid "That user already owns that ticket"
 msgstr "Taj korisnik vec posjeduje taj zahtjev"
 
@@ -6919,7 +6918,7 @@ msgstr ""
 msgid "Ticket #%1: %2"
 msgstr "Zahtjev br. %1: %2"
 
-#: lib/RT/Action/CreateTickets.pm:1121 lib/RT/Action/CreateTickets.pm:1130 lib/RT/Action/CreateTickets.pm:376 lib/RT/Action/CreateTickets.pm:500 lib/RT/Action/CreateTickets.pm:512
+#: lib/RT/Action/CreateTickets.pm:1124 lib/RT/Action/CreateTickets.pm:1133 lib/RT/Action/CreateTickets.pm:379 lib/RT/Action/CreateTickets.pm:503 lib/RT/Action/CreateTickets.pm:515
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
@@ -7179,14 +7178,6 @@ msgstr ""
 msgid "Tue"
 msgstr ""
 
-#: lib/RT/Config.pm:187
-msgid "Tue Dec 25 21:59:12 1995"
-msgstr ""
-
-#: lib/RT/Config.pm:188
-msgid "Tue, 25 Dec 1995 21:59:12 -0300"
-msgstr ""
-
 #: NOT FOUND IN SOURCE
 msgid "Tue."
 msgstr "Uto"
@@ -7324,7 +7315,7 @@ msgstr "Ažuriraj više zahtjeva"
 msgid "Update name"
 msgstr "Ažuriraj ime"
 
-#: lib/RT/Action/CreateTickets.pm:521 lib/RT/Interface/Web.pm:712
+#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:712
 msgid "Update not recorded."
 msgstr "Ažuriranje nije zabilježeno."
 
@@ -7354,7 +7345,7 @@ msgstr "Ažuriraj zahtjev br. %1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Ažuriraj zahtjev br. %1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:519 lib/RT/Interface/Web.pm:711
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:711
 msgid "Update type was neither correspondence nor comment."
 msgstr "Tip ažuriranja nije bio ni korespondencija ni komentar."
 
@@ -7537,7 +7528,7 @@ msgstr ""
 msgid "ValueOfQueue"
 msgstr "VrijednostKategorije"
 
-#: share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
+#: lib/RT/Config.pm:187 share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
 msgid "Values"
 msgstr "Vrijednosti"
 
@@ -7555,6 +7546,10 @@ msgstr ""
 
 #: lib/RT/Dashboard.pm:79
 msgid "View system dashboards"
+msgstr ""
+
+#: lib/RT/Config.pm:190
+msgid "W3CDTF"
 msgstr ""
 
 #: lib/RT/Config.pm:124
@@ -7707,7 +7702,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Which are referred to by "
-msgstr "Na koje se odnosi"
+msgstr "Na koje se odnosi "
 
 #: NOT FOUND IN SOURCE
 msgid "Which refer to"

@@ -4,17 +4,17 @@
 # Fernando Frota Machado de Morais <frota@cecom.ufmg.br>, 2008.
 msgid ""
 msgstr ""
+"Project-Id-Version: RT 3.8.x\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-08-27 13:54+0000\n"
+"PO-Revision-Date: 2008-08-27 16:15+0000\n"
+"Last-Translator: Fernando Frota Machado de Morais <Unknown>\n"
+"Language-Team: Portugues Brasileiro <pt@li.org>\n"
+"MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"MIME-Version: 1.0\n"
-"PO-Revision-Date: 2008-07-10 21:33-0300\n"
-"Project-Id-Version: RT 3.8.x\n"
-"Language-Team: Portugues Brasileiro <pt@li.org>\n"
-"X-Generator: KBabel 1.11.4\n"
-"MIME-Version: 1.0\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"Last-Translator: Fernando Frota Machado de Morais <frota@cecom.ufmg.br>\n"
-"POT-Creation-Date: 2008-07-07 23:04:29 +0200\n"
+"X-Launchpad-Export-Date: 2008-08-28 17:13+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 "X-Poedit-Country: BRAZIL\n"
 
 #: NOT FOUND IN SOURCE
@@ -35,7 +35,7 @@ msgstr " (sem chave pública!)"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:262
 msgid " (untrusted!)"
-msgstr "(não confiável!)"
+msgstr " (não confiável!)"
 
 #: share/html/Dashboards/Elements/ShowDashboards:77 share/html/Elements/RT__Group/ColumnMap:55 share/html/Elements/RT__Queue/ColumnMap:55 share/html/Elements/RT__Scrip/ColumnMap:55 share/html/Elements/RT__Template/ColumnMap:55 share/html/Elements/RT__User/ColumnMap:55
 msgid "#"
@@ -455,11 +455,11 @@ msgstr "%quant(%1,hora)"
 #: lib/RT/Ticket_Overlay.pm:878
 #. ($args{'Status'})
 msgid "'%1' is an invalid value for status"
-msgstr "'%1' é um valor inválido para estado "
+msgstr "'%1' é um valor inválido para estado"
 
 #: NOT FOUND IN SOURCE
 msgid "'%1' not a recognized action. "
-msgstr "'%1' não é uma ação reconhecida."
+msgstr "'%1' não é uma ação reconhecida. "
 
 #: NOT FOUND IN SOURCE
 msgid "(Check box to delete group member)"
@@ -629,14 +629,6 @@ msgstr "argumento --transaction só pode ser 'first' (primeiro) ou 'last' (últi
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
 msgstr "argumento --transaction só pode ser 'first' (primeiro), 'last' (último) or 'all' (todos)"
 
-#: lib/RT/Config.pm:189
-msgid "1995-11-25 21:59:12"
-msgstr ""
-
-#: lib/RT/Config.pm:190
-msgid "1995-11-25T21:59:12Z"
-msgstr ""
-
 #: NOT FOUND IN SOURCE
 msgid "25 highest priority tickets I own..."
 msgstr "25 tíquetes mais prioritários que possuo..."
@@ -798,7 +790,7 @@ msgstr "Adicionar um scrip a esta fila"
 
 #: share/html/Admin/Global/Scrip.html:85
 msgid "Add a scrip which will apply to all queues"
-msgstr "Adicionar um scrip que se aplicará a todas as filas "
+msgstr "Adicionar um scrip que se aplicará a todas as filas"
 
 #: NOT FOUND IN SOURCE
 msgid "Add and Search"
@@ -1167,7 +1159,7 @@ msgstr "Voltar"
 
 #: NOT FOUND IN SOURCE
 msgid "Back: "
-msgstr "Voltar"
+msgstr "Voltar "
 
 #: NOT FOUND IN SOURCE
 msgid "Bad PGP Signature: %1\\n"
@@ -1262,7 +1254,7 @@ msgstr ""
 msgid "CF"
 msgstr ""
 
-#: share/html/NoAuth/js/util.js:209
+#: NOT FOUND IN SOURCE
 msgid "Calendar"
 msgstr "Calendário"
 
@@ -1589,15 +1581,15 @@ msgstr "Não foi possível adicionar novo valor de campo personalizado para o t�
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for ticket. %1 "
-msgstr "Não foi possível adicionar novo valor de campo personalizado para o tíquete. %1"
+msgstr "Não foi possível adicionar novo valor de campo personalizado para o tíquete. %1 "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value. "
-msgstr "Não foi possível adicionar novo valor do campo personalizado."
+msgstr "Não foi possível adicionar novo valor do campo personalizado. "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value. %1 "
-msgstr "Não foi possível adicionar novo valor do campo personalizado. %1"
+msgstr "Não foi possível adicionar novo valor do campo personalizado. %1 "
 
 #: lib/RT/Record.pm:1662 lib/RT/Record.pm:1708
 #. ($value_msg)
@@ -1842,7 +1834,7 @@ msgstr "Não foi possível carregar objeto %1"
 #: lib/RT/Ticket_Overlay.pm:439
 #. ($msg)
 msgid "Couldn't load or create user: %1"
-msgstr "Não foi possível carregar ou criar o usuário: %1 "
+msgstr "Não foi possível carregar ou criar o usuário: %1"
 
 #: share/html/Admin/Queues/People.html:146
 #. ($id)
@@ -1888,7 +1880,7 @@ msgid "Couldn't load that user (%1)"
 msgstr "Não foi possível carregar este usuário (%1)"
 
 #
-#: lib/RT/Action/CreateTickets.pm:451 share/html/SelfService/Display.html:161
+#: lib/RT/Action/CreateTickets.pm:454 share/html/SelfService/Display.html:161
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "Não foi possível carregar tíquete '%1'"
@@ -2108,7 +2100,7 @@ msgstr "CriarPaineldeIndicadores"
 
 #: lib/RT/Group_Overlay.pm:98
 msgid "CreateGroupDashboard"
-msgstr "CriarPaineldeIndicadoresdeGrupo "
+msgstr "CriarPaineldeIndicadoresdeGrupo"
 
 #: lib/RT/Dashboard.pm:85
 msgid "CreateOwnDashboard"
@@ -3020,7 +3012,7 @@ msgstr "Erro proprietário RT: chave pública"
 
 #: etc/initialdata:433 etc/upgrade/3.7.87/content:4
 msgid "Error: Missing dashboard"
-msgstr "Erro: Falta painel de indicadores "
+msgstr "Erro: Falta painel de indicadores"
 
 #: etc/initialdata:396 etc/upgrade/3.7.10/content:38
 msgid "Error: bad GnuPG data"
@@ -3548,6 +3540,10 @@ msgstr "Eu tenho [quant,_1,concrete mixer]."
 msgid "I'm lost"
 msgstr "Estou perdido"
 
+#: lib/RT/Config.pm:189
+msgid "ISO"
+msgstr ""
+
 #: lib/RT/Tickets_Overlay.pm:1872 share/html/Ticket/Elements/ShowBasics:50
 msgid "Id"
 msgstr "Identificador"
@@ -3574,7 +3570,7 @@ msgstr "Se esta ferramenta estiver com setgid, um usuário local mal-intencionad
 
 #: share/html/Install/index.html:83
 msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p>"
-msgstr "Se você  já tem um servidor RT ativo e o banco de dados, você pode aproveitar estar oportunidade para ter certeza de que seu servidor de banco de dados está rodando e que o servidor RT pode se conectar a ele. Uma vez você tenha feito isto, pare e inicie o servidor RT.</p> "
+msgstr "Se você  já tem um servidor RT ativo e o banco de dados, você pode aproveitar estar oportunidade para ter certeza de que seu servidor de banco de dados está rodando e que o servidor RT pode se conectar a ele. Uma vez você tenha feito isto, pare e inicie o servidor RT.</p>"
 
 #: share/html/Install/Finish.html:60
 msgid "If you've change the Port that RT runs on, you'll need to restart the server in order to log in."
@@ -4800,7 +4796,7 @@ msgstr "Próxima página"
 
 #: NOT FOUND IN SOURCE
 msgid "Next: "
-msgstr "Próximo:"
+msgstr "Próximo: "
 
 #: share/html/Elements/RT__User/ColumnMap:71
 msgid "NickName"
@@ -5550,7 +5546,7 @@ msgstr "Preferências salvas para %1."
 #: share/html/Admin/Users/MyRT.html:83
 #. ($UserObj->Name)
 msgid "Preferences saved for user %1."
-msgstr "Preferências salvas para usuário %1. "
+msgstr "Preferências salvas para usuário %1."
 
 #: share/html/Prefs/MyRT.html:101 share/html/Prefs/Other.html:104 share/html/Prefs/Quicksearch.html:91 share/html/Prefs/Search.html:108 share/html/Prefs/SearchOptions.html:84
 msgid "Preferences saved."
@@ -5757,6 +5753,10 @@ msgstr "Busca rápida"
 #: share/html/Elements/QuickCreate:49
 msgid "Quick ticket creation"
 msgstr "Criação rápida de tíquete"
+
+#: lib/RT/Config.pm:188
+msgid "RFC2822"
+msgstr ""
 
 #: share/html/Search/Elements/ResultViews:61
 msgid "RSS"
@@ -6462,7 +6462,7 @@ msgstr "Selecionar um campo personalizado"
 
 #: share/html/Admin/Elements/GlobalCustomFieldTabs:70 share/html/Admin/Global/CustomFields/index.html:78
 msgid "Select custom fields for all queues"
-msgstr "Selecionar campos personalizados para todas filas "
+msgstr "Selecionar campos personalizados para todas filas"
 
 #: share/html/Admin/Elements/GlobalCustomFieldTabs:64 share/html/Admin/Global/CustomFields/index.html:72
 msgid "Select custom fields for all user groups"
@@ -6803,7 +6803,7 @@ msgstr "Especificar quando esta execução é diária ou semanal"
 
 #: share/html/Search/Elements/ResultViews:60
 msgid "Spreadsheet"
-msgstr "Planilha "
+msgstr "Planilha"
 
 #: share/html/Admin/Elements/EditScrip:81 share/html/Elements/RT__Scrip/ColumnMap:93
 msgid "Stage"
@@ -6891,7 +6891,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Step %1 of %2: "
-msgstr "Passo %1 de %2:"
+msgstr "Passo %1 de %2: "
 
 #: lib/RT/Transaction_Overlay.pm:667
 #. ($Old->Name)
@@ -7066,7 +7066,7 @@ msgstr "Tomado"
 
 #: share/html/Install/DatabaseDetails.html:53
 msgid "Tell us a little about how to find the database RT will be using"
-msgstr "Diga-nos um pouco sobre como encontrar o banco de dados que vai ser usado pelo RT "
+msgstr "Diga-nos um pouco sobre como encontrar o banco de dados que vai ser usado pelo RT"
 
 #: share/html/Admin/Elements/EditScrip:74 share/html/Elements/RT__Scrip/ColumnMap:76 share/html/Tools/Offline.html:79
 msgid "Template"
@@ -7172,7 +7172,7 @@ msgstr "Este tíquete tem dependências não resolvidas"
 msgid "That user already has that right"
 msgstr "Este usuário já tem este direito de acesso"
 
-#: lib/RT/Action/CreateTickets.pm:481 lib/RT/Ticket_Overlay.pm:2759
+#: lib/RT/Action/CreateTickets.pm:484 lib/RT/Ticket_Overlay.pm:2759
 msgid "That user already owns that ticket"
 msgstr "Este usuário já possui este tíquete"
 
@@ -7395,7 +7395,7 @@ msgstr "Gráfico de relacionamentos do tíquete #%1"
 msgid "Ticket #%1: %2"
 msgstr "Tíquete #%1: %2"
 
-#: lib/RT/Action/CreateTickets.pm:1121 lib/RT/Action/CreateTickets.pm:1130 lib/RT/Action/CreateTickets.pm:376 lib/RT/Action/CreateTickets.pm:500 lib/RT/Action/CreateTickets.pm:512
+#: lib/RT/Action/CreateTickets.pm:1124 lib/RT/Action/CreateTickets.pm:1133 lib/RT/Action/CreateTickets.pm:379 lib/RT/Action/CreateTickets.pm:503 lib/RT/Action/CreateTickets.pm:515
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
@@ -7667,11 +7667,11 @@ msgstr "Tentando remover um direito de acesso: %1"
 msgid "Tue"
 msgstr "Ter"
 
-#: lib/RT/Config.pm:187
+#: NOT FOUND IN SOURCE
 msgid "Tue Dec 25 21:59:12 1995"
 msgstr "Ter Dez 25 21:59:12 1995"
 
-#: lib/RT/Config.pm:188
+#: NOT FOUND IN SOURCE
 msgid "Tue, 25 Dec 1995 21:59:12 -0300"
 msgstr "Ter, 25 Dez 1995 21:59:12 -0300"
 
@@ -7804,7 +7804,7 @@ msgstr "Atualizar múltiplos tíquetes"
 msgid "Update name"
 msgstr "Atualizar nome"
 
-#: lib/RT/Action/CreateTickets.pm:521 lib/RT/Interface/Web.pm:712
+#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:712
 msgid "Update not recorded."
 msgstr "Atualização não registrada."
 
@@ -7834,7 +7834,7 @@ msgstr "Atualizar o tíquete #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Atualizar tíquete #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:519 lib/RT/Interface/Web.pm:711
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:711
 msgid "Update type was neither correspondence nor comment."
 msgstr "O tipo da atualização não foi nem correspondência e nem comentário."
 
@@ -7885,7 +7885,7 @@ msgstr "Enviar suas alterações"
 
 #: sbin/rt-email-digest:88 sbin/rt-send-digest:65
 msgid "Usage: "
-msgstr "Uso:"
+msgstr "Uso: "
 
 #: lib/RT/Installer.pm:133
 msgid "Use SSL?"
@@ -7982,7 +7982,7 @@ msgstr "Grupos definidos pelo usuário"
 
 #: share/html/Admin/Users/GnuPG.html:61
 msgid "User has empty email address"
-msgstr "Usuário tem endereço de e-mail vazio "
+msgstr "Usuário tem endereço de e-mail vazio"
 
 #: lib/RT/User_Overlay.pm:488 lib/RT/User_Overlay.pm:508
 msgid "User loaded"
@@ -8033,7 +8033,7 @@ msgstr "Validação"
 msgid "ValueOfQueue"
 msgstr "ValorDaFila"
 
-#: share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
+#: lib/RT/Config.pm:187 share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
 msgid "Values"
 msgstr "Valores"
 
@@ -8043,7 +8043,7 @@ msgstr "Vários relatórios do RT"
 
 #: lib/RT/Group_Overlay.pm:97
 msgid "View dashboards for this group"
-msgstr "Ver indicadores para este grupo "
+msgstr "Ver indicadores para este grupo"
 
 #: lib/RT/Dashboard.pm:84
 msgid "View personal dashboards"
@@ -8052,6 +8052,10 @@ msgstr "Ver indicadores pessoais"
 #: lib/RT/Dashboard.pm:79
 msgid "View system dashboards"
 msgstr "Ver indicadores do sistema"
+
+#: lib/RT/Config.pm:190
+msgid "W3CDTF"
+msgstr ""
 
 #: lib/RT/Config.pm:124
 msgid "WYSIWYG message composer"
@@ -8063,7 +8067,7 @@ msgstr "Aviso. Isto NÃO está assinado!"
 
 #: share/html/Dashboards/Subscription.html:255
 msgid "Warning: you have no email address set, so you will not receive this dashboard until you have it set"
-msgstr "Aviso: você não informou o endereço de e-mail, então você não vai receber estes indicadores até que o tenha informado "
+msgstr "Aviso: você não informou o endereço de e-mail, então você não vai receber estes indicadores até que o tenha informado"
 
 #: lib/RT/Queue_Overlay.pm:107
 msgid "Watch"
@@ -8696,7 +8700,7 @@ msgstr ""
 #: lib/RT/Group_Overlay.pm:167
 #. ($self->Id)
 msgid "undescribed group %1"
-msgstr "grupo %1 sem descrição "
+msgstr "grupo %1 sem descrição"
 
 #: NOT FOUND IN SOURCE
 msgid "undescripbed group %1"

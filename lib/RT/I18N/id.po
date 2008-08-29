@@ -3,13 +3,16 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
-"POT-Creation-Date: \n"
-"PO-Revision-Date: 2005-10-03 13:48-0400\n"
-"Last-Translator: James <james@actionmessage.com>\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-08-27 13:54+0000\n"
+"PO-Revision-Date: 2008-08-27 14:18+0000\n"
+"Last-Translator: James <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=US-ASCII\n"
-"Content-Transfer-Encoding: 7bit\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2008-08-28 17:13+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:259
 msgid " (no pubkey!)"
@@ -519,14 +522,6 @@ msgstr ""
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
 msgstr ""
 
-#: lib/RT/Config.pm:189
-msgid "1995-11-25 21:59:12"
-msgstr ""
-
-#: lib/RT/Config.pm:190
-msgid "1995-11-25T21:59:12Z"
-msgstr ""
-
 #: NOT FOUND IN SOURCE
 msgid "<% $Ticket->Status%>"
 msgstr "<% $Tiket->Status%>"
@@ -945,7 +940,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Available Columns"
-msgstr "Kolom Tersedia "
+msgstr "Kolom Tersedia"
 
 #: share/html/Ticket/Forward.html:73
 msgid "BCc"
@@ -1030,10 +1025,6 @@ msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:140
 msgid "CF"
-msgstr ""
-
-#: share/html/NoAuth/js/util.js:209
-msgid "Calendar"
 msgstr ""
 
 #: lib/RT/User_Overlay.pm:1479
@@ -1315,15 +1306,15 @@ msgstr "Korespondensi sudah ditambah"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for ticket. "
-msgstr "Tidak dapat menambah nilai kolom kustom baru untuk tiket."
+msgstr "Tidak dapat menambah nilai kolom kustom baru untuk tiket. "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value. "
-msgstr "Tidak dapat menambah nilai kolom kustom baru"
+msgstr "Tidak dapat menambah nilai kolom kustom baru "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value. %1 "
-msgstr "Tidak dapat menambah nilai kolom kustom baru"
+msgstr "Tidak dapat menambah nilai kolom kustom baru "
 
 #: lib/RT/Record.pm:1662 lib/RT/Record.pm:1708
 #. ($value_msg)
@@ -1350,7 +1341,7 @@ msgstr "Tidak dapat membuat Kolom Kustom"
 #: share/html/Admin/Elements/EditCustomField:115
 #. ($msg)
 msgid "Could not create CustomField: %1"
-msgstr "Tidak dapat membuat Kolom Kustom:%1 "
+msgstr "Tidak dapat membuat Kolom Kustom:%1"
 
 #: lib/RT/Group_Overlay.pm:438 lib/RT/Group_Overlay.pm:445 share/html/User/Groups/Modify.html:100
 msgid "Could not create group"
@@ -1560,7 +1551,7 @@ msgstr ""
 msgid "Couldn't load that user (%1)"
 msgstr "Tidak dapat memanggil pengguna tersebut (%1)"
 
-#: lib/RT/Action/CreateTickets.pm:451 share/html/SelfService/Display.html:161
+#: lib/RT/Action/CreateTickets.pm:454 share/html/SelfService/Display.html:161
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "Tidak dapat memanggil Tiket '%1'"
@@ -1793,7 +1784,7 @@ msgstr "Hubungan Sekarang"
 
 #: share/html/Admin/Elements/EditScrips:53
 msgid "Current Scrips"
-msgstr "Scrips Sekarang "
+msgstr "Scrips Sekarang"
 
 #: share/html/Admin/Groups/Members.html:62 share/html/User/Groups/Members.html:65
 msgid "Current members"
@@ -2636,7 +2627,7 @@ msgstr "AuthID Eksternal"
 
 #: NOT FOUND IN SOURCE
 msgid "ExternalContactInfoId"
-msgstr " Kontak Info ID Eksternal"
+msgstr "Kontak Info ID Eksternal"
 
 #: share/html/Admin/Users/Modify.html:101
 msgid "Extra info"
@@ -3067,6 +3058,10 @@ msgstr "Saya memiliki %quant (%1,concrete mixer)."
 #: NOT FOUND IN SOURCE
 msgid "I'm lost"
 msgstr "Saya tersesat"
+
+#: lib/RT/Config.pm:189
+msgid "ISO"
+msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:1872 share/html/Ticket/Elements/ShowBasics:50
 msgid "Id"
@@ -4836,7 +4831,7 @@ msgstr "Pager"
 
 #: share/html/Elements/EditLinks:145 share/html/Elements/EditLinks:73 share/html/Elements/ShowLinks:90 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:232 share/html/Ticket/Elements/BulkLinks:62
 msgid "Parents"
-msgstr "Induk "
+msgstr "Induk"
 
 #: share/html/Elements/Login:97 share/html/User/Prefs.html:111
 msgid "Password"
@@ -5142,6 +5137,10 @@ msgstr "Pencarian Cepat"
 msgid "Quick ticket creation"
 msgstr "Pembuatan Tiket Cepat"
 
+#: lib/RT/Config.pm:188
+msgid "RFC2822"
+msgstr ""
+
 #: share/html/Search/Elements/ResultViews:61
 msgid "RSS"
 msgstr "RSS"
@@ -5177,7 +5176,7 @@ msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:94
 msgid "RT Variables"
-msgstr "Variable RT "
+msgstr "Variable RT"
 
 #: lib/RT/Config.pm:112 share/html/Admin/Elements/SystemTabs:73 share/html/Admin/Elements/UserTabs:69 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:51 share/html/Admin/Global/MyRT.html:59 share/html/Admin/Global/index.html:78 share/html/Admin/Users/MyRT.html:68 share/html/Prefs/MyRT.html:67 share/html/Prefs/MyRT.html:84 share/html/User/Elements/Tabs:73 share/html/index.html:6 share/html/index.html:80
 msgid "RT at a glance"
@@ -6262,7 +6261,7 @@ msgstr "Grup Sistem"
 
 #: lib/RT/Handle.pm:700
 msgid "SystemRolegroup for internal use"
-msgstr " GrupAturanSistem yang digunakan untuk internal"
+msgstr "GrupAturanSistem yang digunakan untuk internal"
 
 #: NOT FOUND IN SOURCE
 msgid "TEST_STRING"
@@ -6387,7 +6386,7 @@ msgstr "Antrian ini tidak ada"
 msgid "That ticket has unresolved dependencies"
 msgstr "Tiket ini mempunyai ketergantungan yang belum dapat diselesaikan"
 
-#: lib/RT/Action/CreateTickets.pm:481 lib/RT/Ticket_Overlay.pm:2759
+#: lib/RT/Action/CreateTickets.pm:484 lib/RT/Ticket_Overlay.pm:2759
 msgid "That user already owns that ticket"
 msgstr "Pengguna ini sudah memiliki tiket tersebut"
 
@@ -6582,7 +6581,7 @@ msgstr ""
 msgid "Ticket #%1: %2"
 msgstr "Tiket #%1: %2"
 
-#: lib/RT/Action/CreateTickets.pm:1121 lib/RT/Action/CreateTickets.pm:1130 lib/RT/Action/CreateTickets.pm:376 lib/RT/Action/CreateTickets.pm:500 lib/RT/Action/CreateTickets.pm:512
+#: lib/RT/Action/CreateTickets.pm:1124 lib/RT/Action/CreateTickets.pm:1133 lib/RT/Action/CreateTickets.pm:379 lib/RT/Action/CreateTickets.pm:503 lib/RT/Action/CreateTickets.pm:515
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
@@ -6814,14 +6813,6 @@ msgstr ""
 msgid "Tue"
 msgstr ""
 
-#: lib/RT/Config.pm:187
-msgid "Tue Dec 25 21:59:12 1995"
-msgstr ""
-
-#: lib/RT/Config.pm:188
-msgid "Tue, 25 Dec 1995 21:59:12 -0300"
-msgstr ""
-
 #: NOT FOUND IN SOURCE
 msgid "Tue."
 msgstr "Sel."
@@ -6959,7 +6950,7 @@ msgstr "Perbaharui beberapa tiket"
 msgid "Update name"
 msgstr "Perbaharui nama"
 
-#: lib/RT/Action/CreateTickets.pm:521 lib/RT/Interface/Web.pm:712
+#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:712
 msgid "Update not recorded."
 msgstr "Perbaharui tidak dicatat."
 
@@ -6985,9 +6976,9 @@ msgstr "Perbaharui tiket #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Perbaharui tiket #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:519 lib/RT/Interface/Web.pm:711
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:711
 msgid "Update type was neither correspondence nor comment."
-msgstr " Memperbarui tipe baik korespondensi ataupun  penjelasan."
+msgstr "Memperbarui tipe baik korespondensi ataupun  penjelasan."
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "UpdateStatus"
@@ -7156,7 +7147,7 @@ msgstr "Query yang valid"
 msgid "Validation"
 msgstr ""
 
-#: share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
+#: lib/RT/Config.pm:187 share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
 msgid "Values"
 msgstr "Nilai-nilai"
 
@@ -7174,6 +7165,10 @@ msgstr ""
 
 #: lib/RT/Dashboard.pm:79
 msgid "View system dashboards"
+msgstr ""
+
+#: lib/RT/Config.pm:190
+msgid "W3CDTF"
 msgstr ""
 
 #: lib/RT/Config.pm:124

@@ -1,13 +1,16 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
-"POT-Creation-Date: \n"
-"PO-Revision-Date: 2006-12-20 15:50+0100\n"
-"Last-Translator: Torsten Brumm <tob@brummix.de>\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-08-27 13:54+0000\n"
+"PO-Revision-Date: 2008-08-27 14:33+0000\n"
+"Last-Translator: Torsten Brumm <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2008-08-28 17:13+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:259
 msgid " (no pubkey!)"
@@ -509,14 +512,6 @@ msgstr ""
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
 msgstr ""
 
-#: lib/RT/Config.pm:189
-msgid "1995-11-25 21:59:12"
-msgstr ""
-
-#: lib/RT/Config.pm:190
-msgid "1995-11-25T21:59:12Z"
-msgstr ""
-
 #: NOT FOUND IN SOURCE
 msgid "<% $Ticket->Status%>"
 msgstr "<% $Ticket->Status%>"
@@ -1010,10 +1005,6 @@ msgstr ""
 msgid "CF"
 msgstr ""
 
-#: share/html/NoAuth/js/util.js:209
-msgid "Calendar"
-msgstr ""
-
 #: lib/RT/User_Overlay.pm:1479
 msgid "Can not modify system users"
 msgstr "Kann Systembenutzer nicht ändern"
@@ -1285,7 +1276,7 @@ msgstr "Korrespondenz hinzugefügt"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value. "
-msgstr "Konnte keinen neuen benutzerdefinierten Wert hinzufügen"
+msgstr "Konnte keinen neuen benutzerdefinierten Wert hinzufügen "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value. %1 "
@@ -1522,7 +1513,7 @@ msgstr ""
 msgid "Couldn't load template #%1"
 msgstr ""
 
-#: lib/RT/Action/CreateTickets.pm:451 share/html/SelfService/Display.html:161
+#: lib/RT/Action/CreateTickets.pm:454 share/html/SelfService/Display.html:161
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "Konnte das Anfrage '%1' nicht laden"
@@ -2136,7 +2127,7 @@ msgstr "Setzt jetzt %1 voraus"
 #: lib/RT/Transaction_Overlay.pm:744
 #. ($value)
 msgid "Dependency on %1 deleted"
-msgstr "Setzt %1 nicht mehr voraus "
+msgstr "Setzt %1 nicht mehr voraus"
 
 #: lib/RT/Tickets_Overlay.pm:115
 msgid "DependentOn"
@@ -2973,6 +2964,10 @@ msgstr "Ich habe %quant(%1, Betonmischer)"
 #: NOT FOUND IN SOURCE
 msgid "I'm lost"
 msgstr "Ich bin verwirrt"
+
+#: lib/RT/Config.pm:189
+msgid "ISO"
+msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:1872 share/html/Ticket/Elements/ShowBasics:50
 msgid "Id"
@@ -4992,6 +4987,10 @@ msgstr "Schnellsuche"
 msgid "Quick ticket creation"
 msgstr "Schnelle Anfrageerstellung"
 
+#: lib/RT/Config.pm:188
+msgid "RFC2822"
+msgstr ""
+
 #: share/html/Search/Elements/ResultViews:61
 msgid "RSS"
 msgstr "RSS"
@@ -5612,7 +5611,7 @@ msgstr "Wählen Sie benutzerdefinierte Felder für alle Anfragen in allen Bereic
 
 #: share/html/Admin/Elements/GlobalCustomFieldTabs:82 share/html/Admin/Global/CustomFields/index.html:91
 msgid "Select custom fields for transactions on tickets in all queues"
-msgstr "Wählen Sie benutzerdefinierte Felder für Transaktionen mit Anfragen in allen Bereichen aus "
+msgstr "Wählen Sie benutzerdefinierte Felder für Transaktionen mit Anfragen in allen Bereichen aus"
 
 #: share/html/Dashboards/Elements/Tabs:99
 msgid "Select dashboard"
@@ -5704,7 +5703,7 @@ msgstr "Schickt eine Nachricht an alle CCs"
 
 #: etc/initialdata:45 etc/upgrade/3.1.17/content:3
 msgid "Sends mail to the Ccs as a comment"
-msgstr "Schickt einen Kommentar an alle CCs "
+msgstr "Schickt einen Kommentar an alle CCs"
 
 #: etc/initialdata:57
 msgid "Sends mail to the administrative Ccs"
@@ -6213,7 +6212,7 @@ msgstr "Dieser Bereich existiert nicht"
 msgid "That ticket has unresolved dependencies"
 msgstr "Diese Anfrage hat ungelöste Abhängigkeiten"
 
-#: lib/RT/Action/CreateTickets.pm:481 lib/RT/Ticket_Overlay.pm:2759
+#: lib/RT/Action/CreateTickets.pm:484 lib/RT/Ticket_Overlay.pm:2759
 msgid "That user already owns that ticket"
 msgstr "Diese Anfrage gehört bereits diesem Benutzer"
 
@@ -6404,7 +6403,7 @@ msgstr ""
 msgid "Ticket #%1: %2"
 msgstr "Anfrage #%1: %2"
 
-#: lib/RT/Action/CreateTickets.pm:1121 lib/RT/Action/CreateTickets.pm:1130 lib/RT/Action/CreateTickets.pm:376 lib/RT/Action/CreateTickets.pm:500 lib/RT/Action/CreateTickets.pm:512
+#: lib/RT/Action/CreateTickets.pm:1124 lib/RT/Action/CreateTickets.pm:1133 lib/RT/Action/CreateTickets.pm:379 lib/RT/Action/CreateTickets.pm:503 lib/RT/Action/CreateTickets.pm:515
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
@@ -6616,14 +6615,6 @@ msgstr ""
 msgid "Tue"
 msgstr ""
 
-#: lib/RT/Config.pm:187
-msgid "Tue Dec 25 21:59:12 1995"
-msgstr ""
-
-#: lib/RT/Config.pm:188
-msgid "Tue, 25 Dec 1995 21:59:12 -0300"
-msgstr ""
-
 #: NOT FOUND IN SOURCE
 msgid "Tue."
 msgstr "Di."
@@ -6737,7 +6728,7 @@ msgstr ""
 msgid "Update multiple tickets"
 msgstr "Mehrere Anfragen aktualisieren"
 
-#: lib/RT/Action/CreateTickets.pm:521 lib/RT/Interface/Web.pm:712
+#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:712
 msgid "Update not recorded."
 msgstr "Aktualisierung nicht gespeichert."
 
@@ -6759,7 +6750,7 @@ msgstr "Aktualisiere Anfrage #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Aktualisiere Anfrage #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:519 lib/RT/Interface/Web.pm:711
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:711
 msgid "Update type was neither correspondence nor comment."
 msgstr "Aktualisierungstyp war weder Korrespondenz noch Kommentar."
 
@@ -6922,7 +6913,7 @@ msgstr "Gültige Suche"
 msgid "Validation"
 msgstr "Validierung"
 
-#: share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
+#: lib/RT/Config.pm:187 share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
 msgid "Values"
 msgstr "Werte"
 
@@ -6940,6 +6931,10 @@ msgstr ""
 
 #: lib/RT/Dashboard.pm:79
 msgid "View system dashboards"
+msgstr ""
+
+#: lib/RT/Config.pm:190
+msgid "W3CDTF"
 msgstr ""
 
 #: lib/RT/Config.pm:124
