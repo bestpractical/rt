@@ -60,11 +60,8 @@ use RT::Model::User;
 
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-
     column principal_type => type is 'text';
-    column object_id      => type is 'integer';
     column disabled       => type is 'integer', default is '0';
-
 };
 
 sub table {'Principals'}

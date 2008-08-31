@@ -224,7 +224,6 @@ sub create {
     my $principal_id = $principal->create(
         principal_type => 'User',
         disabled       => $args{'disabled'},
-        object_id      => '0'
     );
 
     # If we couldn't create a principal Id, get the fuck out.
@@ -235,7 +234,6 @@ sub create {
         return ( 0, _('Could not create user') );
     }
 
-    $principal->__set( column => 'object_id', value => $principal_id );
     delete $args{'disabled'};
 
     $self->SUPER::create( id => $principal_id, %args );
@@ -438,7 +436,6 @@ sub _bootstrap_create {
     my $principal = RT::Model::Principal->new( current_user => RT::CurrentUser->new( _bootstrap => 1 ) );
     my ( $principal_id, $pmsg ) = $principal->create(
         principal_type => 'User',
-        object_id      => '0',
         disabled       => '0'
     );
 
@@ -448,7 +445,6 @@ sub _bootstrap_create {
         Jifty->log->fatal( "Couldn't create a Principal on new user create. Strange things are afoot at the circle K: $pmsg" );
         return ( 0, 'Could not create user' );
     }
-    my ( $val, $msg ) = $principal->__set( column => 'object_id', value => $principal_id );
 
     my ( $status, $user_msg ) = $self->SUPER::create(
         id => $principal_id,

@@ -404,9 +404,7 @@ sub _create {
     my $principal = RT::Model::Principal->new;
     my ( $principal_id, $msg ) = $principal->create(
         principal_type => 'Group',
-        object_id      => '0'
     );
-    $principal->__set( column => 'object_id', value => $principal_id );
 
     $self->SUPER::create(
         id          => $principal_id,
