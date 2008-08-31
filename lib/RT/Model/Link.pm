@@ -91,7 +91,6 @@ use Jifty::DBI::Record schema {
 use Carp;
 use RT::URI;
 
-# {{{ sub create
 
 =head2 create PARAMHASH
 
@@ -174,8 +173,6 @@ sub create {
     return ( $id, $msg );
 }
 
-# }}}
-# {{{ sub load_by_params
 
 =head2 load_by_params
 
@@ -220,8 +217,6 @@ sub load_by_params {
     }
 }
 
-# }}}
-# {{{ sub load
 
 =head2 load
 
@@ -245,9 +240,7 @@ sub load {
     }
 }
 
-# }}}
 
-# {{{ target_uri
 
 =head2 target_uri
 
@@ -262,8 +255,6 @@ sub target_uri {
     return ($URI);
 }
 
-# }}}
-# {{{ sub target_obj
 
 =head2 target_obj
 
@@ -274,9 +265,7 @@ sub target_obj {
     return $self->target_uri->object;
 }
 
-# }}}
 
-# {{{ base_uri
 
 =head2 base_uri
 
@@ -291,8 +280,6 @@ sub base_uri {
     return ($URI);
 }
 
-# }}}
-# {{{ sub base_obj
 
 =head2 base_obj
 
@@ -303,7 +290,6 @@ sub base_obj {
     return $self->base_uri->object;
 }
 
-# }}}
 
 1;
 

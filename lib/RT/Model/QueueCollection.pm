@@ -69,7 +69,6 @@ use strict;
 package RT::Model::QueueCollection;
 use base qw/RT::SearchBuilder/;
 
-# {{{ sub _init
 sub _init {
     my $self = shift;
     $self->{'table'}       = "Queues";
@@ -85,9 +84,7 @@ sub _init {
     return ( $self->SUPER::_init(@_) );
 }
 
-# }}}
 
-# {{{ sub _do_search
 
 =head2 _do_search
 
@@ -108,9 +105,7 @@ sub _do_search {
 
 }
 
-# }}}
 
-# {{{ sub limit
 sub limit {
     my $self = shift;
     my %args = (
@@ -120,9 +115,7 @@ sub limit {
     $self->SUPER::limit(%args);
 }
 
-# }}}
 
-# {{{ sub add_record
 
 =head2 add_record
 
@@ -138,7 +131,6 @@ sub add_record {
     $self->SUPER::add_record($Queue);
 }
 
-# }}}
 
 1;
 

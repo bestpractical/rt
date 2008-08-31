@@ -184,9 +184,7 @@ sub create {
 
 }
 
-# }}}
 
-# {{{ Delete
 
 =head2 delete
 
@@ -266,9 +264,7 @@ sub delete {
     return ($err);
 }
 
-# }}}
 
-# {{{ Setdisabled
 
 =head2 setdisabled
 
@@ -345,9 +341,7 @@ sub set_disabled {
     return ($err);
 }
 
-# }}}
 
-# {{{ GroupObj
 
 =head2 group_obj  
 
@@ -362,9 +356,7 @@ sub group_obj {
     return ($principal);
 }
 
-# }}}
 
-# {{{ immediate_parentObj
 
 =head2 immediate_parent_obj  
 
@@ -379,9 +371,7 @@ sub immediate_parent_obj {
     return ($principal);
 }
 
-# }}}
 
-# {{{ MemberObj
 
 =head2 member_obj  
 
@@ -396,5 +386,4 @@ sub member_obj {
     return ($principal);
 }
 
-# }}}
 1;

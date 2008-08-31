@@ -206,15 +206,12 @@ sub limit_by_ticket {
     return;
 }
 
-# {{{ sub new_item
 sub new_item {
     my $self = shift;
     return RT::Model::Attachment->new;
 }
 
-# }}}
 
-# {{{ sub next
 sub next {
     my $self = shift;
 
@@ -233,6 +230,5 @@ sub next {
     return $self->next;
 }
 
-# }}}
 
 1;

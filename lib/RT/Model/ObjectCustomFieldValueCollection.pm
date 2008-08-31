@@ -52,7 +52,6 @@ package RT::Model::ObjectCustomFieldValueCollection;
 
 use base qw/RT::SearchBuilder/;
 
-# {{{ sub limit_to_custom_field
 
 =head2 limit_to_custom_field column
 
@@ -69,9 +68,7 @@ sub limit_to_custom_field {
     );
 }
 
-# }}}
 
-# {{{ sub limit_to_object
 
 =head2 limit_to_object OBJECT
 
@@ -93,7 +90,6 @@ sub limit_to_object {
 
 }
 
-# }}}
 
 =sub has_entry value
 

@@ -74,13 +74,11 @@ Returns a localized string describing the module's function.
 
 =cut
 
-# {{{ sub describe
 sub describe {
     my $self = shift;
     return ( _( "TicketSQL search module", ref $self ) );
 }
 
-# }}}
 
 =head2 prepare
 
@@ -90,7 +88,6 @@ is reduced to those tickets matching the SQL query.
 
 =cut
 
-# {{{ sub prepare
 sub prepare {
     my $self = shift;
 
@@ -98,6 +95,5 @@ sub prepare {
     return (1);
 }
 
-# }}}
 
 1;

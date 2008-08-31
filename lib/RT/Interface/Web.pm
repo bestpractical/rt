@@ -66,7 +66,6 @@ use RT::SavedSearches;
 use URI qw();
 use Digest::MD5 ();
 
-# {{{ escape_utf8
 
 =head2 escape_utf8 SCALARREF
 
@@ -87,9 +86,7 @@ sub escape_utf8 {
     $$ref =~ s/'/&#39;/g;
 }
 
-# }}}
 
-# {{{ escape_uri
 
 =head2 escape_uri SCALARREF
 
@@ -107,9 +104,7 @@ sub escape_uri {
     $$ref =~ s/([^a-zA-Z0-9_.!~*'()-])/uc sprintf("%%%02X", ord($1))/eg;
 }
 
-# }}}
 
-# {{{ web_canonicalize_info
 
 =head2 web_canonicalize_info();
 
@@ -123,9 +118,7 @@ sub web_canonicalize_info {
     return $ENV{'REMOTE_USER'} ? lc $ENV{'REMOTE_USER'} : $ENV{'REMOTE_USER'};
 }
 
-# }}}
 
-# {{{ web_external_auto_info
 
 =head2 web_external_auto_info($user);
 
@@ -163,7 +156,6 @@ sub web_external_auto_info {
     return {%user_info};
 }
 
-# }}}
 
 =head2 redirect URL
 
@@ -267,7 +259,6 @@ package HTML::Mason::Commands;
 
 use vars qw/$r $m %session/;
 
-# {{{ loc
 
 =head2 loc ARRAY
 
@@ -283,9 +274,7 @@ sub loc {
     return _(@_);
 }
 
-# }}}
 
-# {{{ sub abort
 # Error - calls Error and aborts
 sub abort {
     my $why  = shift;
@@ -303,9 +292,7 @@ sub abort {
     }
 }
 
-# }}}
 
-# {{{ sub create_ticket
 
 =head2 create_ticket ARGS
 
@@ -490,9 +477,7 @@ sub create_ticket {
 
 }
 
-# }}}
 
-# {{{ sub load_ticket - loads a ticket
 
 =head2  load_ticket id
 
@@ -522,9 +507,7 @@ sub load_ticket {
     return $Ticket;
 }
 
-# }}}
 
-# {{{ sub process_update_message
 
 =head2 process_update_message
 
@@ -653,9 +636,7 @@ sub process_update_message {
     return @results;
 }
 
-# }}}
 
-# {{{ sub make_mime_entity
 
 =head2 make_mime_entity PARAMHASH
 
@@ -736,9 +717,7 @@ sub make_mime_entity {
 
 }
 
-# }}}
 
-# {{{ sub parse_date_to_iso
 
 =head2 parse_date_to_iso
 
@@ -758,9 +737,7 @@ sub parse_date_to_iso {
     return ( $date_obj->iso );
 }
 
-# }}}
 
-# {{{ sub process_acl_changes
 
 sub process_acl_changes {
     my $ARGSref = shift;
@@ -812,9 +789,7 @@ sub process_acl_changes {
     return (@results);
 }
 
-# }}}
 
-# {{{ sub update_record_obj
 
 =head2 update_record_obj ( args_ref => \%ARGS, object => RT::Record, attributes_ref => \@attribs)
 
@@ -843,9 +818,7 @@ sub update_record_object {
     return (@results);
 }
 
-# }}}
 
-# {{{ sub process_custom_field_updates
 
 sub process_custom_field_updates {
     my %args = (
@@ -898,9 +871,7 @@ sub process_custom_field_updates {
     return (@results);
 }
 
-# }}}
 
-# {{{ sub process_ticket_basics
 
 =head2 process_ticket_basics ( ticket_obj => $Ticket, args_ref => \%ARGS );
 
@@ -970,7 +941,6 @@ sub process_ticket_basics {
     return (@results);
 }
 
-# }}}
 
 sub process_ticket_custom_field_updates {
     my %args = @_;
@@ -1173,7 +1143,6 @@ sub _process_object_custom_field_updates {
     return @results;
 }
 
-# {{{ sub process_ticket_watchers
 
 =head2 process_ticket_watchers ( ticket_obj => $Ticket, args_ref => \%ARGS );
 
@@ -1255,9 +1224,7 @@ sub process_ticket_watchers {
     return (@results);
 }
 
-# }}}
 
-# {{{ sub process_ticket_dates
 
 =head2 process_ticket_dates ( ticket_obj => $Ticket, args_ref => \%ARGS );
 
@@ -1313,9 +1280,7 @@ sub process_ticket_dates {
     return (@results);
 }
 
-# }}}
 
-# {{{ sub process_ticket_links
 
 =head2 process_ticket_links ( ticket_obj => $Ticket, args_ref => \%ARGS );
 
@@ -1345,7 +1310,6 @@ sub process_ticket_links {
     return (@results);
 }
 
-# }}}
 
 sub process_record_links {
     my %args = (

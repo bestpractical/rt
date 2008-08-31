@@ -101,9 +101,7 @@ sub _set {
     return $self->SUPER::_set(@_);
 }
 
-# }}}
 
-# {{{ sub _value
 
 =head2 _value
 
@@ -126,9 +124,7 @@ sub _value {
 
 }
 
-# }}}
 
-# {{{ sub load
 
 =head2 load <identifer>
 
@@ -147,9 +143,7 @@ sub load {
     return $self->load_by_id($identifier);
 }
 
-# }}}
 
-# {{{ sub load_global_template
 
 =head2 load_global_template name
 
@@ -164,9 +158,7 @@ sub load_global_template {
     return ( $self->load_queue_template( queue => 0, name => $id ) );
 }
 
-# }}}
 
-# {{{ sub loadqueue_template
 
 =head2  load_queue_template (queue => QUEUEID, name => name)
 
@@ -186,9 +178,7 @@ sub load_queue_template {
 
 }
 
-# }}}
 
-# {{{ sub create
 
 =head2 create
 
@@ -248,9 +238,7 @@ sub create {
 
 }
 
-# }}}
 
-# {{{ sub delete
 
 =head2 delete
 
@@ -299,7 +287,6 @@ sub mime_obj {
     return ( $self->{'mime_obj'} );
 }
 
-# {{{ sub parse
 
 =head2 parse
 
@@ -399,9 +386,7 @@ sub _parse {
 
 }
 
-# }}}
 
-# {{{ sub _parsecontent
 
 # Perform template substitutions on the template
 
@@ -508,9 +493,7 @@ sub _downgrade_from_html {
     return ( $rv, $msg );
 }
 
-# }}}
 
-# {{{ sub current_user_has_queue_right
 
 =head2 current_user_has_queue_right
 
@@ -523,7 +506,6 @@ sub current_user_has_queue_right {
     return ( $self->queue_obj->current_user_has_right(@_) );
 }
 
-# }}}
 
 sub queue_obj {
     my $self = shift;

@@ -127,7 +127,6 @@ sub available_rights {
     return ($RIGHTS);
 }
 
-# {{{ sub self_description
 
 =head2 self_description
 
@@ -162,9 +161,7 @@ sub self_description {
     }
 }
 
-# }}}
 
-# {{{ sub load
 
 =head2 load ID
 
@@ -187,9 +184,7 @@ sub load {
     }
 }
 
-# }}}
 
-# {{{ sub load_user_defined_group
 
 =head2 load_user_defined_group name
 
@@ -216,9 +211,7 @@ sub load_user_defined_group {
     }
 }
 
-# }}}
 
-# {{{ sub load_acl_equivalence_group
 
 =head2 load_acl_equivalence_group PRINCIPAL
 
@@ -243,9 +236,7 @@ sub load_acl_equivalence_group {
     );
 }
 
-# }}}
 
-# {{{ sub load_personal_group
 
 =head2 load_personal_group {name => name, User => USERID}
 
@@ -269,9 +260,7 @@ sub load_personal_group {
     );
 }
 
-# }}}
 
-# {{{ sub load_system_internal_group
 
 =head2 load_system_internal_group name
 
@@ -291,9 +280,7 @@ sub load_system_internal_group {
     );
 }
 
-# }}}
 
-# {{{ sub load_ticket_role_group
 
 =head2 load_ticket_role_group  { Ticket => TICKET_ID, type => TYPE }
 
@@ -323,9 +310,7 @@ sub load_ticket_role_group {
     Carp::confess("AAA NO ROLE") unless $self->id;
 }
 
-# }}}
 
-# {{{ sub load_queue_role_group
 
 =head2 load_queue_role_group  { queue => Queue_ID, type => TYPE }
 
@@ -353,9 +338,7 @@ sub load_queue_role_group {
     );
 }
 
-# }}}
 
-# {{{ sub load_system_role_group
 
 =head2 load_system_role_group  type
 
@@ -377,9 +360,7 @@ sub load_system_role_group {
     );
 }
 
-# }}}
 
-# {{{ sub create
 
 =head2 create
 
@@ -394,9 +375,7 @@ sub create {
     return ( 0, _('Permission Denied') );
 }
 
-# }}}
 
-# {{{ sub _create
 
 =head2 _create
 
@@ -473,9 +452,7 @@ sub _create {
     return ( $id, _("Group Created") );
 }
 
-# }}}
 
-# {{{ create_userDefinedGroup
 
 =head2 create_user_defined_group { name => "name", description => "description"}
 
@@ -503,9 +480,7 @@ sub create_user_defined_group {
     );
 }
 
-# }}}
 
-# {{{ ccreateacl_equivalence_group
 
 =head2 _createacl_equivalence_group { Principal }
 
@@ -552,9 +527,7 @@ sub _createacl_equivalence_group {
     return ($id);
 }
 
-# }}}
 
-# {{{ CreatePersonalGroup
 
 =head2 create_personal_group { principal_id => PRINCIPAL_ID, name => "name", description => "description"}
 
@@ -600,9 +573,7 @@ sub create_personal_group {
     );
 }
 
-# }}}
 
-# {{{ CreateRoleGroup
 
 =head2 create_role_group { domain => DOMAIN, type =>  TYPE, instance => ID }
 
@@ -639,9 +610,7 @@ sub create_role_group {
     );
 }
 
-# }}}
 
-# {{{ sub delete
 
 =head2 delete
 
@@ -669,7 +638,6 @@ sub delete {
     return ( $self->SUPER::delete(@_) );
 }
 
-# }}}
 
 =head2 setdisabled BOOL
 
@@ -680,7 +648,6 @@ This routine finds all the cached group members that are members of this group  
 
 =cut 
 
-# }}}
 
 sub set_disabled {
     my $self = shift;
@@ -743,14 +710,12 @@ sub set_disabled {
 
 }
 
-# }}}
 
 sub disabled {
     my $self = shift;
     $self->principal_object->disabled(@_);
 }
 
-# {{{ DeepMembersObj
 
 =head2 deep_members_obj
 
@@ -771,9 +736,7 @@ sub deep_members_obj {
 
 }
 
-# }}}
 
-# {{{ members_obj
 
 =head2 members_obj
 
@@ -793,9 +756,7 @@ sub members_obj {
 
 }
 
-# }}}
 
-# {{{ GroupMembersObj
 
 =head2 group_members_obj [recursively => 1]
 
@@ -836,9 +797,7 @@ sub group_members_obj {
     return $groups;
 }
 
-# }}}
 
-# {{{ UserMembersObj
 
 =head2 user_members_obj
 
@@ -879,9 +838,7 @@ sub user_members_obj {
     return ($users);
 }
 
-# }}}
 
-# {{{ member_emails
 
 =head2 member_emails
 
@@ -901,9 +858,7 @@ sub member_emails {
     return ( sort keys %addresses );
 }
 
-# }}}
 
-# {{{ member_emails_as_string
 
 =head2 member_emails_as_string
 
@@ -917,9 +872,7 @@ sub member_emails_as_string {
     return ( join( ', ', $self->member_emails ) );
 }
 
-# }}}
 
-# {{{ add_member
 
 =head2 add_member PRINCIPAL_ID
 
@@ -1028,9 +981,7 @@ sub _add_member {
     }
 }
 
-# }}}
 
-# {{{ has_member
 
 =head2 has_member RT::Model::Principal|id
 
@@ -1075,9 +1026,7 @@ sub has_member {
     }
 }
 
-# }}}
 
-# {{{ has_member_recursively
 
 =head2 has_member_recursively RT::Model::Principal|id
 
@@ -1117,9 +1066,7 @@ sub has_member_recursively {
     }
 }
 
-# }}}
 
-# {{{ delete_member
 
 =head2 delete_member PRINCIPAL_ID
 
@@ -1195,9 +1142,7 @@ sub _delete_member {
     }
 }
 
-# }}}
 
-# {{{ sub _cleanup_invalid_delegations
 
 =head2 _cleanup_invalid_delegations { inside_transaction => undef }
 
@@ -1251,11 +1196,8 @@ sub _cleanup_invalid_delegations {
     return (1);
 }
 
-# }}}
 
-# {{{ ACL Related routines
 
-# {{{ sub _set
 sub _set {
     my $self = shift;
     my %args = (
@@ -1308,7 +1250,6 @@ sub _set {
     }
 }
 
-# }}}
 
 =head2 current_user_has_right RIGHTNAME
 
@@ -1345,9 +1286,7 @@ sub current_user_has_right {
 
 }
 
-# }}}
 
-# {{{ Principal related routines
 
 =head2 principal_object
 
@@ -1381,7 +1320,6 @@ sub principal_id {
     return $self->id;
 }
 
-# }}}
 
 sub basic_columns {
     ( [ name => 'name' ], [ description => 'description' ], );

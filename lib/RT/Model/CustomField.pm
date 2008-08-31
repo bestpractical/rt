@@ -303,7 +303,6 @@ sub load {
     }
 }
 
-# {{{ sub load_by_name
 
 =head2 load_by_name (queue => QUEUEID, name => name)
 
@@ -368,9 +367,7 @@ sub load_by_name {
     return $self->load_by_id( $first->id );
 }
 
-# }}}
 
-# {{{ Dealing with custom field values
 
 =cut
 
@@ -401,7 +398,6 @@ sub values {
     return ($cf_values);
 }
 
-# {{{ AddValue
 
 =head3 AddValue HASH
 
@@ -427,9 +423,7 @@ sub add_value {
     return $newval->create( %args, custom_field => $self->id );
 }
 
-# }}}
 
-# {{{ DeleteValue
 
 =head3 DeleteValue ID
 
@@ -462,7 +456,6 @@ sub delete_value {
     return ( $retval, _("Custom field value deleted") );
 }
 
-# }}}
 
 =head2 validate_queue Queue
 
@@ -485,7 +478,6 @@ sub validate_queue {
     return 1;
 }
 
-# {{{ Types
 
 =head2 types 
 
@@ -497,9 +489,7 @@ sub types {
     return ( keys %FieldTypes );
 }
 
-# }}}
 
-# {{{ IsSelectionType
 
 =head2 is_selection_type 
 
@@ -516,7 +506,6 @@ sub is_selection_type {
     $type =~ /(?:Select|Combobox|Autocomplete)/;
 }
 
-# }}}
 
 =head2 is_external_values
 
@@ -656,7 +645,6 @@ sub _is_valid_regex {
     return ( 0, $err );
 }
 
-# {{{ single_value
 
 =head2 single_value
 
@@ -683,9 +671,7 @@ sub unlimited_values {
     }
 }
 
-# }}}
 
-# {{{ sub current_user_has_right
 
 =head2 current_user_has_right RIGHT
 
@@ -703,9 +689,7 @@ sub current_user_has_right {
     );
 }
 
-# }}}
 
-# {{{ sub _set
 
 sub _set {
     my $self = shift;
@@ -717,9 +701,7 @@ sub _set {
 
 }
 
-# }}}
 
-# {{{ sub _value
 
 =head2 _value
 
@@ -740,8 +722,6 @@ sub _value {
     return $self->__value(@_);
 }
 
-# }}}
-# {{{ sub set_disabled
 
 =head2 setdisabled
 
@@ -751,7 +731,6 @@ Takes a boolean.
 
 =cut
 
-# }}}
 
 =head2 settype_composite
 
@@ -918,7 +897,6 @@ sub remove_from_object {
     return ( $oid, $msg );
 }
 
-# {{{ add_value_for_object
 
 =head2 add_value_for_object HASH
 
@@ -999,9 +977,7 @@ sub add_value_for_object {
 
 }
 
-# }}}
 
-# {{{ MatchPattern
 
 =head2 match_pattern STRING
 
@@ -1017,9 +993,7 @@ sub match_pattern {
     return ( ( defined $_[0] ? $_[0] : '' ) =~ $regex );
 }
 
-# }}}
 
-# {{{ friendly_pattern
 
 =head2 friendly_pattern
 
@@ -1040,9 +1014,7 @@ sub friendly_pattern {
     }
 }
 
-# }}}
 
-# {{{ delete_value_for_object
 
 =head2 delete_value_for_object HASH
 

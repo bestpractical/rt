@@ -48,7 +48,6 @@ use strict;
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-# {{{ Front Material
 
 =head1 SYNOPSIS
 
@@ -112,7 +111,6 @@ use Jifty::DBI::Record schema {
     column disabled         => max_length is 6,   type is 'smallint',     default is '0';
 };
 
-# {{{ LINKTYPEMAP
 # A helper table for links mapping to make it easier
 # to build and parse links between tickets
 
@@ -160,9 +158,7 @@ our %LINKTYPEMAP = (
 
 );
 
-# }}}
 
-# {{{ LINKDIRMAP
 # A helper table for links mapping to make it easier
 # to build and parse links between tickets
 
@@ -186,12 +182,10 @@ our %LINKDIRMAP = (
 
 );
 
-# }}}
 
 sub LINKTYPEMAP { return \%LINKTYPEMAP }
 sub LINKDIRMAP  { return \%LINKDIRMAP }
 
-# {{{ sub load
 
 =head2 load
 
@@ -248,10 +242,8 @@ sub load {
 
 }
 
-# }}}
 
 
-# {{{ sub create
 
 =head2 create (ARGS)
 
@@ -736,11 +728,8 @@ sub create {
     }
 }
 
-# }}}
 
-# {{{ Routines dealing with watchers.
 
-# {{{ _create_role_groups
 
 =head2 _create_role_groups
 
@@ -775,7 +764,6 @@ sub _create_role_groups {
 
 }
 
-# }}}
 
 =head2 role_group("$role")
 
@@ -791,9 +779,7 @@ sub role_group {
     return ($obj);
 }
 
-# }}}
 
-# {{{ sub add_watcher
 
 =head2 add_watcher
 
@@ -928,9 +914,7 @@ sub _add_watcher {
     return ( 1, _( 'Added principal as a %1 for this ticket', _( $args{'type'} ) ) );
 }
 
-# }}}
 
-# {{{ sub delete_watcher
 
 =head2 delete_watcher { type => TYPE, principal_id => PRINCIPAL_ID, email => EMAIL_ADDRESS }
 
@@ -1053,7 +1037,6 @@ sub delete_watcher {
     return ( 1, _( "%1 is no longer a %2 for this ticket.", $principal->object->name, $args{'type'} ) );
 }
 
-# }}}
 
 =head2 squelch_mail_to [EMAIL]
 
@@ -1106,15 +1089,10 @@ sub unsquelch_mail_to {
     return ( $val, $msg );
 }
 
-# {{{ a set of  [foo]AsString subs that will return the various sorts of watchers for a ticket/queue as a comma delineated string
 
-# {{{ Routines that return RT::Watchers objects of requestors, ccs and admin_ccs
 
-# }}}
 
-# {{{ is_watcher,is_requestor
 
-# {{{ sub is_watcher
 # a generic routine to be called by is_requesto
 
 =head2 is_watcher { type => TYPE, principal_id => PRINCIPAL_ID, email => EMAIL }
@@ -1168,9 +1146,7 @@ sub is_watcher {
     return $group->has_member( $args{'principal_id'} );
 }
 
-# }}}
 
-# {{{ sub is_requestor
 
 =head2 is_requestor PRINCIPAL_ID
   
@@ -1188,9 +1164,7 @@ sub is_requestor {
 
 }
 
-# }}}
 
-# {{{ sub is_owner
 
 =head2 is_owner
 
@@ -1220,11 +1194,8 @@ sub is_owner {
     }
 }
 
-# }}}
 
-# }}}
 
-# }}}
 
 =head2 transaction_addresses
 
@@ -1272,9 +1243,7 @@ sub transaction_addresses {
 
 }
 
-# {{{ Routines dealing with queues
 
-# {{{ sub validate_queue
 
 sub validate_queue {
     my $self  = shift;
@@ -1295,9 +1264,7 @@ sub validate_queue {
     }
 }
 
-# }}}
 
-# {{{ sub set_queue
 
 sub set_queue {
     my $self     = shift;
@@ -1364,9 +1331,7 @@ sub set_queue {
     return ( $status, $msg );
 }
 
-# }}}
 
-# {{{ sub queue_obj
 
 =head2 queue_obj
 
@@ -1384,13 +1349,9 @@ sub queue_obj {
     return ($queue_obj);
 }
 
-# }}}
 
-# }}}
 
-# {{{ date printing routines
 
-# {{{ sub due_obj
 
 =head2 due_obj
 
@@ -1413,9 +1374,7 @@ sub due_obj {
     return $time;
 }
 
-# }}}
 
-# {{{ sub resolved_obj
 
 =head2 resolved_obj
 
@@ -1431,9 +1390,7 @@ sub resolved_obj {
     return $time;
 }
 
-# }}}
 
-# {{{ sub set_started
 
 =head2 set_started
 
@@ -1476,9 +1433,7 @@ sub set_started {
 
 }
 
-# }}}
 
-# {{{ sub started_obj
 
 =head2 started_obj
 
@@ -1495,9 +1450,7 @@ sub started_obj {
     return $time;
 }
 
-# }}}
 
-# {{{ sub starts_obj
 
 =head2 starts_obj
 
@@ -1514,9 +1467,7 @@ sub starts_obj {
     return $time;
 }
 
-# }}}
 
-# {{{ sub told_obj
 
 =head2 told_obj
 
@@ -1533,9 +1484,7 @@ sub told_obj {
     return $time;
 }
 
-# }}}
 
-# {{{ sub told_as_string
 
 =head2 told_as_string
 
@@ -1554,9 +1503,7 @@ sub told_as_string {
     }
 }
 
-# }}}
 
-# {{{ sub time_worked_as_string
 
 =head2 time_worked_as_string
 
@@ -1579,13 +1526,9 @@ sub time_worked_as_string {
     return ( $worked->duration_as_string( $self->time_worked * 60 ) );
 }
 
-# }}}
 
-# }}}
 
-# {{{ Routines dealing with correspondence/comments
 
-# {{{ sub comment
 
 =head2 comment
 
@@ -1637,7 +1580,6 @@ sub comment {
     return (@results);
 }
 
-# }}}
 
 =head2 correspond
 
@@ -1695,9 +1637,7 @@ sub correspond {
 
 }
 
-# }}}
 
-# {{{ sub _record_note
 
 =head2 _record_note
 
@@ -1779,11 +1719,8 @@ sub _record_note {
     return ( $Trans, _("Message recorded"), $TransObj );
 }
 
-# }}}
 
-# }}}
 
-# {{{ sub _links
 
 sub _links {
     my $self = shift;
@@ -1826,9 +1763,7 @@ sub _links {
     return ( $self->{"$field$type"} );
 }
 
-# }}}
 
-# {{{ sub delete_link
 
 =head2 delete_link
 
@@ -1930,9 +1865,7 @@ sub delete_link {
     return ( $val, $Msg );
 }
 
-# }}}
 
-# {{{ sub add_link
 
 =head2 add_link
 
@@ -2071,9 +2004,7 @@ sub _add_link {
     return ( $val, $msg );
 }
 
-# }}}
 
-# {{{ sub merge_into
 
 =head2 merge_into
 
@@ -2243,13 +2174,9 @@ sub merge_into {
     return ( 1, _("Merge Successful") );
 }
 
-# }}}
 
-# }}}
 
-# {{{ Routines dealing with ownership
 
-# {{{ sub owner_obj
 
 =head2 owner_obj
 
@@ -2272,9 +2199,7 @@ sub owner_obj {
     return ($owner);
 }
 
-# }}}
 
-# {{{ sub owner_as_string
 
 =head2 owner_as_string
 
@@ -2288,9 +2213,7 @@ sub owner_as_string {
 
 }
 
-# }}}
 
-# {{{ sub set_owner
 
 =head2 set_owner
 
@@ -2431,9 +2354,7 @@ sub set_owner {
     return ( $val, $msg );
 }
 
-# }}}
 
-# {{{ sub take
 
 =head2 take
 
@@ -2446,9 +2367,7 @@ sub take {
     return ( $self->set_owner( $self->current_user->id, 'Take' ) );
 }
 
-# }}}
 
-# {{{ sub untake
 
 =head2 untake
 
@@ -2461,9 +2380,7 @@ sub untake {
     return ( $self->set_owner( RT->nobody->user_object->id, 'Untake' ) );
 }
 
-# }}}
 
-# {{{ sub steal
 
 =head2 steal
 
@@ -2484,13 +2401,9 @@ sub steal {
 
 }
 
-# }}}
 
-# }}}
 
-# {{{ Routines dealing with status
 
-# {{{ sub validate_status
 
 =head2 validate_status STATUS
 
@@ -2512,9 +2425,7 @@ sub validate_status {
 
 }
 
-# }}}
 
-# {{{ sub set_status
 
 =head2 set_status STATUS
 
@@ -2594,11 +2505,8 @@ sub set_status {
     return ( $val, $msg );
 }
 
-# }}}
 
-# {{{ Actions + Routines dealing with transactions
 
-# {{{ sub set_told and _setTold
 
 =head2 set_told ISO  [TIMETAKEN]
 
@@ -2681,7 +2589,6 @@ sub seen_up_to {
     return $txns->first;
 }
 
-# }}}
 
 =head2 transaction_batch
 
@@ -2722,9 +2629,7 @@ sub DESTROY {
     );
 }
 
-# }}}
 
-# {{{ PRIVATE UTILITY METHODS. Mostly needed so Ticket can be a DBIx::Record
 
 sub _set {
     my $self = shift;
@@ -2791,9 +2696,7 @@ sub _set {
     }
 }
 
-# }}}
 
-# {{{ sub _value
 
 =head2 _value
 
@@ -2824,9 +2727,7 @@ sub _value {
 
 }
 
-# }}}
 
-# {{{ sub _update_time_taken
 
 =head2 _update_time_taken
 
@@ -2850,13 +2751,9 @@ sub _update_time_taken {
     return ($Total);
 }
 
-# }}}
 
-# }}}
 
-# {{{ Routines dealing with ACCESS CONTROL
 
-# {{{ sub current_user_has_right
 
 =head2 current_user_has_right
 
@@ -2875,9 +2772,7 @@ sub current_user_has_right {
     );
 }
 
-# }}}
 
-# {{{ sub has_right
 
 =head2 has_right
 
@@ -2913,9 +2808,7 @@ sub has_right {
     );
 }
 
-# }}}
 
-# }}}
 
 =head2 reminders
 
@@ -2935,7 +2828,6 @@ sub reminders {
 
 }
 
-# {{{ sub transactions
 
 =head2 transactions
 
@@ -2974,9 +2866,7 @@ sub transactions {
     return ($transactions);
 }
 
-# }}}
 
-# {{{ transaction_custom_fields
 
 =head2 transaction_custom_fields
 
@@ -2989,9 +2879,7 @@ sub transaction_custom_fields {
     return $self->queue_obj->ticket_transaction_custom_fields;
 }
 
-# }}}
 
-# {{{ sub custom_field_values
 
 =head2 custom_field_values
 
@@ -3021,9 +2909,7 @@ sub custom_field_values {
     return $self->SUPER::custom_field_values( $cf->id );
 }
 
-# }}}
 
-# {{{ sub custom_field_lookup_type
 
 =head2 custom_field_lookup_type
 
@@ -3032,7 +2918,6 @@ RT::Model::CustomField->create() via the 'lookup_type' hash key.
 
 =cut
 
-# }}}
 
 sub custom_field_lookup_type {
     "RT::Model::Queue-RT::Model::Ticket";

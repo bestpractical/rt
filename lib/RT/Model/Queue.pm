@@ -199,7 +199,6 @@ sub available_rights {
     return ($RIGHTS);
 }
 
-# {{{ active_status_array
 
 =head2 active_status_array
 
@@ -217,9 +216,7 @@ sub active_status_array {
     }
 }
 
-# }}}
 
-# {{{ inactive_status_array
 
 =head2 inactive_status_array
 
@@ -237,9 +234,7 @@ sub inactive_status_array {
     }
 }
 
-# }}}
 
-# {{{ StatusArray
 
 =head2 status_array
 
@@ -252,9 +247,7 @@ sub status_array {
     return ( $self->active_status_array(), $self->inactive_status_array() );
 }
 
-# }}}
 
-# {{{ is_valid_status
 
 =head2 is_valid_status value
 
@@ -272,9 +265,7 @@ sub is_valid_status {
 
 }
 
-# }}}
 
-# {{{ is_active_status
 
 =head2 is_active_status value
 
@@ -292,9 +283,7 @@ sub is_active_status {
 
 }
 
-# }}}
 
-# {{{ is_inactive_status
 
 =head2 is_inactive_status value
 
@@ -312,9 +301,7 @@ sub is_inactive_status {
 
 }
 
-# }}}
 
-# {{{ sub create
 
 =head2 create(ARGS)
 
@@ -394,18 +381,14 @@ sub create {
     return ( $id, _("Queue Created") );
 }
 
-# }}}
 
-# {{{ sub delete
 
 sub delete {
     my $self = shift;
     return ( 0, _('Deleting this object would break referential integrity') );
 }
 
-# }}}
 
-# {{{ sub set_disabled
 
 =head2 setdisabled
 
@@ -415,9 +398,7 @@ Takes a boolean.
 
 =cut
 
-# }}}
 
-# {{{ sub load
 
 =head2 load
 
@@ -442,9 +423,7 @@ sub load {
 
 }
 
-# }}}
 
-# {{{ sub validate_name
 
 =head2 validatename name
 
@@ -472,7 +451,6 @@ sub validate_name {
 
 }
 
-# }}}
 
 =head2 set_sign
 
@@ -601,7 +579,6 @@ sub custom_field {
     return ($cf);
 }
 
-# {{{ ticket_custom_fields
 
 =head2 ticket_custom_fields
 
@@ -621,9 +598,7 @@ sub ticket_custom_fields {
     return ($cfs);
 }
 
-# }}}
 
-# {{{ TicketTransactionCustomFields
 
 =head2 ticket_transaction_custom_fields
 
@@ -643,9 +618,7 @@ sub ticket_transaction_custom_fields {
     return ($cfs);
 }
 
-# }}}
 
-# }}}
 
 =head2 _create_queue_groups
 
@@ -825,9 +798,7 @@ sub _add_watcher {
     return ( 1, _( 'Added principal as a %1 for this queue', $args{'type'} ) );
 }
 
-# }}}
 
-# {{{ sub delete_watcher
 
 =head2 delete_watcher { type => TYPE, principal_id => PRINCIPAL_ID }
 
@@ -952,7 +923,6 @@ sub delete_watcher {
     return ( 1, _( "%1 is no longer a %2 for this queue.", $principal->object->name, $args{'type'} ) );
 }
 
-# }}}
 
 =head2 role_group $role
 
@@ -972,9 +942,7 @@ sub role_group {
 
 }
 
-# {{{ IsWatcher, IsCc, is_admin_cc
 
-# {{{ sub is_watcher
 # a generic routine to be called by IsRequestor, IsCc and is_admin_cc
 
 =head2 is_watcher { type => TYPE, principal_id => PRINCIPAL_ID }
@@ -1017,15 +985,10 @@ sub is_watcher {
     return ( $group->has_member_recursively($principal) );
 }
 
-# }}}
 
-# }}}
 
-# }}}
 
-# {{{ ACCESS CONTROL
 
-# {{{ sub _set
 sub _set {
     my $self = shift;
 
@@ -1035,9 +998,7 @@ sub _set {
     return ( $self->SUPER::_set(@_) );
 }
 
-# }}}
 
-# {{{ sub _value
 
 sub _value {
     my $self = shift;
@@ -1049,9 +1010,7 @@ sub _value {
     return ( $self->__value(@_) );
 }
 
-# }}}
 
-# {{{ sub current_user_has_right
 
 =head2 current_user_has_right
 
@@ -1074,9 +1033,7 @@ sub current_user_has_right {
 
 }
 
-# }}}
 
-# {{{ sub has_right
 
 =head2 has_right
 
@@ -1104,8 +1061,6 @@ sub has_right {
     return $principal->has_right( %args, object => ( $self->id ? $self : RT->system ), );
 }
 
-# }}}
 
-# }}}
 
 1;

@@ -54,15 +54,12 @@ use strict;
 
 #What does this type of Action does
 
-# {{{ sub describe
 sub describe {
     my $self = shift;
     return ( ref $self . " will set a ticket's priority to the argument provided." );
 }
 
-# }}}
 
-# {{{ sub prepare
 sub prepare {
 
     # nothing to prepare
@@ -71,7 +68,6 @@ sub prepare {
     return 1;
 }
 
-# }}}
 
 sub commit {
     my $self = shift;

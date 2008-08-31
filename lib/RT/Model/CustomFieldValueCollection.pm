@@ -52,7 +52,6 @@ package RT::Model::CustomFieldValueCollection;
 
 use base qw/RT::SearchBuilder/;
 
-# {{{ sub limit_to_custom_field
 
 =head2 limit_to_custom_field column
 
@@ -70,6 +69,5 @@ sub limit_to_custom_field {
     );
 }
 
-# }}}
 
 1;

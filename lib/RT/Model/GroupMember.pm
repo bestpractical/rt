@@ -87,7 +87,6 @@ use Jifty::DBI::Record schema {
 
 };
 
-# {{{ sub create
 
 =head2 create { Group => undef, Member => undef }
 
@@ -210,9 +209,7 @@ sub create {
     return ($id);
 }
 
-# }}}
 
-# {{{ sub _stash_user
 
 =head2 _stash_user PRINCIPAL
 
@@ -269,9 +266,7 @@ sub _stash_user {
     return ($id);
 }
 
-# }}}
 
-# {{{ sub delete
 
 =head2 delete
 
@@ -345,9 +340,7 @@ sub delete {
 
 }
 
-# }}}
 
-# {{{ sub member_obj
 
 =head2 member_obj
 
@@ -364,9 +357,7 @@ sub member_obj {
     return ( $self->{'Member_obj'} );
 }
 
-# }}}
 
-# {{{ sub group_obj
 
 =head2 group_obj
 
@@ -383,6 +374,5 @@ sub group_obj {
     return ( $self->{'Group_obj'} );
 }
 
-# }}}
 
 1;

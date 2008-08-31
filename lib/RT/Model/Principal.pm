@@ -73,7 +73,6 @@ sub table {'Principals'}
 our $_ACL_CACHE;
 invalidate_acl_cache();
 
-# {{{ is_group
 
 =head2 is_group
 
@@ -90,9 +89,7 @@ sub is_group {
     return undef;
 }
 
-# }}}
 
-# {{{ is_user
 
 =head2 is_user 
 
@@ -110,9 +107,7 @@ sub is_user {
     }
 }
 
-# }}}
 
-# {{{ object
 
 =head2 object
 
@@ -137,11 +132,8 @@ sub object {
 
 }
 
-# }}}
 
-# {{{ ACL Related routines
 
-# {{{ grant_right
 
 =head2 grant_right  { right => RIGHTNAME, object => undef }
 
@@ -183,9 +175,7 @@ sub grant_right {
     );
 }
 
-# }}}
 
-# {{{ revoke_right
 
 =head2 revoke_right { right => "right_name", object => "object" }
 
@@ -232,9 +222,7 @@ sub revoke_right {
     return ( $ace->delete );
 }
 
-# }}}
 
-# {{{ sub _cleanup_invalid_delegations
 
 =head2 sub _cleanup_invalid_delegations { inside_transaction => undef }
 
@@ -267,9 +255,7 @@ sub _cleanup_invalid_delegations {
     return ( $self->object->_cleanup_invalid_delegations(@_) );
 }
 
-# }}}
 
-# {{{ sub has_right
 
 =head2 sub has_right (right => 'right' object => undef)
 
@@ -513,13 +499,9 @@ sub _has_role_right {
     return 0;
 }
 
-# }}}
 
-# }}}
 
-# {{{ ACL caching
 
-# {{{ invalidate_acl_cache
 
 =head2 invalidate_acl_cache
 
@@ -534,11 +516,8 @@ sub invalidate_acl_cache {
     $_ACL_CACHE->expire_after( $lifetime || 60 );
 }
 
-# }}}
 
-# }}}
 
-# {{{ _get_principal_type_for_acl
 
 =head2 _get_principal_type_for_acl
 
@@ -559,9 +538,7 @@ sub _get_principal_type_for_acl {
     return ($type);
 }
 
-# }}}
 
-# {{{ _reference_id
 
 =head2 _reference_id
 
@@ -584,6 +561,5 @@ sub _reference_id {
     return ( ref($scalar) . "-" . $scalar->id );
 }
 
-# }}}
 
 1;

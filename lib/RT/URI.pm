@@ -84,7 +84,6 @@ sub new {
     return ($self);
 }
 
-# {{{ from_object
 
 =head2 from_object <object>
 
@@ -101,9 +100,7 @@ sub from_object {
     return $self->from_uri( $obj->uri );
 }
 
-# }}}
 
-# {{{ FromURI
 
 =head2 from_uri <URI>
 
@@ -145,9 +142,7 @@ sub from_uri {
 
 }
 
-# }}}
 
-# {{{ _GetResolver
 
 =private _GetResolver <scheme>
 
@@ -173,9 +168,7 @@ sub _get_resolver {
 
 }
 
-# }}}
 
-# {{{ scheme
 
 =head2 scheme
 
@@ -190,8 +183,6 @@ sub scheme {
 
 }
 
-# }}}
-# {{{ URI
 
 =head2 URI
 
@@ -206,9 +197,7 @@ sub uri {
 
 }
 
-# }}}
 
-# {{{ object
 
 =head2 object
 
@@ -222,9 +211,7 @@ sub object {
 
 }
 
-# }}}
 
-# {{{ IsLocal
 
 =head2 is_local
 
@@ -237,7 +224,6 @@ sub is_local {
     return $self->resolver->is_local;
 }
 
-# }}}
 
 =head2 as_href
 

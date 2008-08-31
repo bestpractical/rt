@@ -69,7 +69,6 @@ use strict;
 package RT::Model::GroupMemberCollection;
 use base qw/RT::SearchBuilder/;
 
-# {{{ limit_ToUsers
 
 =head2 limit_to_users
 
@@ -98,9 +97,7 @@ sub limit_to_users {
     );
 }
 
-# }}}
 
-# {{{ limit_ToGroups
 
 =head2 limit_to_groups
 
@@ -129,9 +126,7 @@ sub limit_to_groups {
     );
 }
 
-# }}}
 
-# {{{ sub limit_to_members_of_group
 
 =head2 limit_to_members_of_group PRINCIPAL_ID
 
@@ -156,6 +151,5 @@ sub limit_to_members_of_group {
 
 }
 
-# }}}
 
 1;

@@ -68,7 +68,6 @@ use warnings;
 package RT::Model::TemplateCollection;
 use base qw/RT::SearchBuilder/;
 
-# {{{ sub _init
 
 =head2 _init
 
@@ -84,9 +83,7 @@ sub _init {
     return ( $self->SUPER::_init(@_) );
 }
 
-# }}}
 
-# {{{ limit_ToNotInQueue
 
 =head2 limit_to_not_in_queue
 
@@ -105,9 +102,7 @@ sub limit_to_not_in_queue {
     );
 }
 
-# }}}
 
-# {{{ limit_ToGlobal
 
 =head2 limit_to_global
 
@@ -126,9 +121,7 @@ sub limit_to_global {
     );
 }
 
-# }}}
 
-# {{{ limit_ToQueue
 
 =head2 limit_to_queue
 
@@ -147,9 +140,7 @@ sub limit_to_queue {
     );
 }
 
-# }}}
 
-# {{{ sub new_item
 
 =head2 new_item
 
@@ -165,9 +156,7 @@ sub new_item {
     return ($item);
 }
 
-# }}}
 
-# {{{ sub next
 
 =head2 next
 
@@ -206,7 +195,6 @@ sub next {
 
 }
 
-# }}}
 
 1;
 

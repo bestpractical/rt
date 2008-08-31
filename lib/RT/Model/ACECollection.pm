@@ -75,7 +75,6 @@ Hand out the next ACE that was found
 
 =cut
 
-# {{{ limit_to_object
 
 =head2 limit_to_object $object
 
@@ -109,9 +108,7 @@ sub limit_to_object {
 
 }
 
-# }}}
 
-# {{{ limit_Notobject
 
 =head2 limit_notobject $object
 
@@ -147,9 +144,7 @@ sub limitnot_object {
     );
 }
 
-# }}}
 
-# {{{ limit_ToPrincipal
 
 =head2 limit_to_principal { type => undef, id => undef, include_group_membership => undef }
 
@@ -216,9 +211,7 @@ sub limit_to_principal {
     }
 }
 
-# }}}
 
-# {{{ ExcludeDelegatedRights
 
 =head2 exclude_delegated_rights 
 
@@ -232,9 +225,7 @@ sub exclude_delegated_rights {
     $self->delegated_from( id => 0 );
 }
 
-# }}}
 
-# {{{ delegated_by
 
 =head2 delegated_by { id => undef }
 
@@ -260,9 +251,7 @@ sub delegated_by {
 
 }
 
-# }}}
 
-# {{{ delegated_from
 
 =head2 delegated_from { id => undef }
 
@@ -288,9 +277,7 @@ sub delegated_from {
 
 }
 
-# }}}
 
-# {{{ sub next
 sub next {
     my $self = shift;
 
@@ -323,7 +310,6 @@ sub next {
 
 }
 
-# }}}
 
 #wrap around _do_search  so that we can build the hash of returned
 #values
@@ -357,7 +343,6 @@ sub _build_hash {
     }
 }
 
-# {{{ HasEntry
 
 =head2 has_entry
 
@@ -385,5 +370,4 @@ sub has_entry {
     }
 }
 
-# }}}
 1;

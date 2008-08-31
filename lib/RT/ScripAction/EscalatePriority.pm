@@ -79,15 +79,12 @@ use strict;
 
 #What does this type of Action does
 
-# {{{ sub describe
 sub describe {
     my $self = shift;
     return ( ref $self . " will move a ticket's priority toward its final priority." );
 }
 
-# }}}
 
-# {{{ sub prepare
 sub prepare {
     my $self = shift;
 
@@ -147,7 +144,6 @@ sub prepare {
     return 1;
 }
 
-# }}}
 
 sub commit {
     my $self = shift;

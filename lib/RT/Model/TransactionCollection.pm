@@ -69,7 +69,6 @@ use strict;
 package RT::Model::TransactionCollection;
 use base qw/RT::SearchBuilder/;
 
-# {{{ sub _init
 sub _init {
     my $self = shift;
 
@@ -89,7 +88,6 @@ sub _init {
     return ( $self->SUPER::_init(@_) );
 }
 
-# }}}
 
 =head2 limit_to_ticket TICKETID 
 
@@ -129,7 +127,6 @@ sub limit_to_ticket {
 
 }
 
-# {{{ sub next
 sub next {
     my $self = shift;
 
@@ -154,7 +151,6 @@ sub next {
     }
 }
 
-# }}}
 
 1;
 

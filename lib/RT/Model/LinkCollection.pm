@@ -73,7 +73,6 @@ use base qw/RT::SearchBuilder/;
 
 use RT::URI;
 
-# {{{ sub limit
 sub limit {
     my $self = shift;
     my %args = (
@@ -117,9 +116,7 @@ sub limit {
     $self->SUPER::limit(%args);
 }
 
-# }}}
 
-# {{{ limit_RefersTo
 
 =head2 limit_refers_to URI
 
@@ -135,8 +132,6 @@ sub limit_refers_to {
     $self->limit( column => 'target', value => $URI );
 }
 
-# }}}
-# {{{ limit_ReferredToBy
 
 =head2 limit_referred_to_by URI
 
@@ -152,9 +147,7 @@ sub limit_referred_to_by {
     $self->limit( column => 'base', value => $URI );
 }
 
-# }}}
 
-# {{{ Next
 sub next {
     my $self = shift;
 
@@ -177,6 +170,5 @@ sub next {
     }
 }
 
-# }}}
 1;
 

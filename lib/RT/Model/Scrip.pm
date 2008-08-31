@@ -395,7 +395,6 @@ sub is_applicable {
 
 }
 
-# }}}
 
 =head2 prepare
 
@@ -427,9 +426,7 @@ sub prepare {
     return ($return);
 }
 
-# }}}
 
-# {{{ sub commit
 
 =head2 commit
 

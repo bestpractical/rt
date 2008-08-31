@@ -264,9 +264,7 @@ sub limit {
     return $self->SUPER::limit( case_sensitive => 1, %args );
 }
 
-# }}}
 
-# {{{ sub items_order_by
 
 =head2 items_order_by
 
@@ -290,9 +288,7 @@ sub items_order_by {
     return $items;
 }
 
-# }}}
 
-# {{{ sub items_array_ref
 
 =head2 items_array_ref
 
@@ -309,7 +305,6 @@ sub items_array_ref {
     return $self->items_order_by( $self->SUPER::items_array_ref() );
 }
 
-# }}}
 
 1;
 

@@ -57,22 +57,18 @@ use base 'RT::ScripAction';
 
 #What does this type of Action does
 
-# {{{ sub describe
 sub describe {
     my $self = shift;
     return _( "%1 will resolve all members of a resolved group ticket.", ref $self );
 }
 
-# }}}
 
-# {{{ sub prepare
 sub prepare {
 
     # nothing to prepare
     return 1;
 }
 
-# }}}
 
 sub commit {
     my $self = shift;
@@ -97,7 +93,6 @@ sub commit {
 
 # Applicability checked in Commit.
 
-# {{{ sub is_applicable
 sub is_applicable {
     my $self = shift;
     1;

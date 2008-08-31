@@ -63,7 +63,6 @@ sub prepare {
     $self->SUPER::prepare();
 }
 
-# {{{ sub set_recipients
 
 =head2 set_recipients
 
@@ -79,9 +78,7 @@ sub set_recipients {
     return (1);
 }
 
-# }}}
 
-# {{{ sub set_return_address
 
 =head2 set_return_address
 
@@ -102,9 +99,7 @@ sub set_return_address {
 
 }
 
-# }}}
 
-# {{{{ sub set_rt_special_headers
 
 =head2 set_rt_special_headers
 
@@ -120,6 +115,5 @@ sub set_rt_special_headers {
 
 }
 
-# }}}
 
 1;

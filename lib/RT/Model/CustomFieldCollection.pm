@@ -84,7 +84,6 @@ sub ocf_alias {
     return ( $self->{_sql_ocfalias} );
 }
 
-# {{{ sub limit_to_global_or_queue
 
 =head2 limit_to_global_or_queue QUEUEID
 
@@ -99,9 +98,7 @@ sub limit_to_global_or_queue {
     $self->limit_to_lookup_type('RT::Model::Queue-RT::Model::Ticket');
 }
 
-# }}}
 
-# {{{ sub limit_to_queue
 
 =head2 limit_to_queue QUEUEID
 
@@ -124,9 +121,7 @@ sub limit_to_queue {
     $self->limit_to_lookup_type('RT::Model::Queue-RT::Model::Ticket');
 }
 
-# }}}
 
-# {{{ sub limit_to_global
 
 =head2 limit_to_global
 
@@ -148,9 +143,7 @@ sub limit_to_global {
     $self->limit_to_lookup_type('RT::Model::Queue-RT::Model::Ticket');
 }
 
-# }}}
 
-# {{{ sub _do_search
 
 =head2 _do_search
 
@@ -172,9 +165,7 @@ sub _do_search {
 
 }
 
-# }}}
 
-# {{{ sub next
 
 =head2 next
 
@@ -205,7 +196,6 @@ sub next {
 
 }
 
-# }}}
 
 sub limit_to_lookup_type {
     my $self   = shift;

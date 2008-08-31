@@ -106,7 +106,6 @@ If it can't find anything, it returns 'ISO-8859-1'
 
 sub encoding {'utf-8'}
 
-# {{{ set_mime_entity_to_utf8
 
 =head2 set_mime_entity_to_utf8 $entity
 
@@ -119,9 +118,7 @@ sub set_mime_entity_to_utf8 {
     RT::I18N::set_mime_entity_to_encoding( shift, 'utf-8' );
 }
 
-# }}}
 
-# {{{ is_textual_content_type
 
 =head2 is_textual_content_type $type
 
@@ -133,7 +130,6 @@ Currently, it returns true iff $type matches this regular expression
 
     ^(?:text/(?:plain|html)|message/rfc822)\b
 
-# }}}
 
 =cut
 
@@ -142,7 +138,6 @@ sub is_textual_content_type {
     ( $type =~ m{^(?:text/(?:plain|html)|message/rfc822)\b}i ) ? 1 : 0;
 }
 
-# {{{ set_mime_entity_to_encoding
 
 =head2 set_mime_entity_to_encoding $entity, $encoding
 
@@ -234,9 +229,7 @@ sub set_mime_entity_to_encoding {
 # Not turning off the UTF-8 flag in the string will prevent the string
 # from conversion.
 
-# }}}
 
-# {{{ decode_mime_words_to_utf8
 
 =head2 decode_mime_words_to_utf8 $raw
 
@@ -324,9 +317,7 @@ sub decode_mime_words_to_encoding {
     return ($str);
 }
 
-# }}}
 
-# {{{ _find_or_guess_charset
 
 =head2 _find_or_guess_charset MIME::Entity, $head_only
 
@@ -355,9 +346,7 @@ sub _find_or_guess_charset {
     }
 }
 
-# }}}
 
-# {{{ _guess_charset
 
 =head2 _guess_charset STRING
 
@@ -408,9 +397,7 @@ sub _guess_charset {
     return ( $charset || $fallback );
 }
 
-# }}}
 
-# {{{ set_mime_head_to_encoding
 
 =head2 set_mime_head_to_encoding HEAD OLD_CHARSET NEW_CHARSET
 
@@ -456,7 +443,6 @@ sub set_mime_head_to_encoding {
 
 }
 
-# }}}
 
 1;    # End of module.
 

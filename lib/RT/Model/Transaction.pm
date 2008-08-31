@@ -306,7 +306,6 @@ use RT::Model::ScripCollection;
 use HTML::FormatText;
 use HTML::TreeBuilder;
 
-# {{{ sub create
 
 =head2 create
 
@@ -405,7 +404,6 @@ sub create {
     return ( $id, _("Transaction Created") );
 }
 
-# }}}
 
 =head2 scrips
 
@@ -421,7 +419,6 @@ sub scrips {
     return ( $self->{'scrips'} );
 }
 
-# {{{ sub delete
 
 =head2 delete
 
@@ -452,11 +449,8 @@ sub delete {
     return ( $id, $msg );
 }
 
-# }}}
 
-# {{{ Routines dealing with Attachments
 
-# {{{ sub message
 
 =head2 message
 
@@ -484,9 +478,7 @@ sub message {
     return $self->{'message'};
 }
 
-# }}}
 
-# {{{ sub content
 
 =head2 content PARAMHASH
 
@@ -569,7 +561,6 @@ sub content {
     return ($content);
 }
 
-# }}}
 
 =head2 addresses
 
@@ -588,7 +579,6 @@ sub addresses {
 
 }
 
-# {{{ content_obj
 
 =head2 content_obj 
 
@@ -635,9 +625,7 @@ sub content_obj {
     return (undef);
 }
 
-# }}}
 
-# {{{ sub subject
 
 =head2 subject
 
@@ -652,9 +640,7 @@ sub subject {
     return $first->subject;
 }
 
-# }}}
 
-# {{{ sub attachments
 
 =head2 attachments
 
@@ -691,9 +677,7 @@ sub attachments {
     return $self->{'attachments'};
 }
 
-# }}}
 
-# {{{ sub _attach
 
 =head2 _attach
 
@@ -718,13 +702,9 @@ sub _attach {
     return ( $Attachment, $msg || _("Attachment Created") );
 }
 
-# }}}
 
-# }}}
 
-# {{{ Routines dealing with Transaction Attributes
 
-# {{{ sub description
 
 =head2 description
 
@@ -746,9 +726,7 @@ sub description {
     return _( "%1 by %2", $self->brief_description, $self->creator_obj->name );
 }
 
-# }}}
 
-# {{{ sub brief_description
 
 =head2 brief_description
 
@@ -1012,11 +990,8 @@ sub brief_description {
     }
 );
 
-# }}}
 
-# {{{ Utility methods
 
-# {{{ sub is_inbound
 
 =head2 is_inbound
 
@@ -1031,20 +1006,15 @@ sub is_inbound {
     return ( $self->ticket_obj->is_requestor( $self->creator_obj->principal_id ) );
 }
 
-# }}}
 
-# }}}
 
-# {{{ sub _set
 
 sub _set {
     my $self = shift;
     return ( 0, _('Transactions are immutable') );
 }
 
-# }}}
 
-# {{{ sub _value
 
 =head2 _value
 
@@ -1069,9 +1039,7 @@ sub _value {
     return $self->SUPER::_value($field);
 }
 
-# }}}
 
-# {{{ sub current_user_has_right
 
 =head2 current_user_has_right RIGHT
 
@@ -1137,7 +1105,6 @@ sub current_user_can_see {
     return 1;
 }
 
-# }}}
 
 sub ticket {
     my $self = shift;
@@ -1264,9 +1231,7 @@ sub custom_field_values {
     return $self->SUPER::custom_field_values($field);
 }
 
-# }}}
 
-# {{{ sub custom_field_lookup_type
 
 =head2 custom_fieldlookup_type
 
@@ -1275,7 +1240,6 @@ be passed to RT::Model::CustomField->create() via the 'lookup_type' hash key.
 
 =cut
 
-# }}}
 
 sub custom_field_lookup_type {
     "RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction";

@@ -68,15 +68,12 @@ package RT::Search::ActiveTicketsInQueue;
 use strict;
 use base qw(RT::Search);
 
-# {{{ sub describe
 sub describe {
     my $self = shift;
     return ( _( "No description for %1", ref $self ) );
 }
 
-# }}}
 
-# {{{ sub prepare
 sub prepare {
     my $self = shift;
 
@@ -89,7 +86,6 @@ sub prepare {
     return (1);
 }
 
-# }}}
 
 eval "require RT::Search::ActiveTicketsInQueue_Vendor";
 die $@

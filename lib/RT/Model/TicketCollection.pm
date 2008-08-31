@@ -217,7 +217,6 @@ sub can_bundle { return \%can_bundle }
 
 # Bring in the clowns.
 
-# {{{ sub sort_fields
 
 our @SORTcolumns = qw(id status
     queue subject
@@ -236,7 +235,6 @@ sub sort_fields {
     return (@SORTcolumns);
 }
 
-# }}}
 
 # BEGIN SQL STUFF *********************************
 
@@ -1416,7 +1414,6 @@ sub _custom_field_limit {
 
 # End of SQL Stuff -------------------------------------------------
 
-# {{{ Allow sorting on watchers
 
 =head2 order_by ARRAY
 
@@ -1560,7 +1557,6 @@ sub order_by {
     return $self->SUPER::order_by(@res);
 }
 
-# }}}
 
 =head2 limit
 
@@ -1606,9 +1602,7 @@ sub limit {
     return ($index);
 }
 
-# }}}
 
-# {{{ sub limit_queue
 
 =head2 limit_queue
 
@@ -1648,9 +1642,7 @@ sub limit_queue {
 
 }
 
-# }}}
 
-# {{{ sub limit_status
 
 =head2 limit_status
 
@@ -1679,9 +1671,7 @@ sub limit_status {
     );
 }
 
-# }}}
 
-# {{{ sub ignore_type
 
 =head2 ignore_type
 
@@ -1702,9 +1692,7 @@ sub ignore_type {
     $self->{looking_at_type} = 1;
 }
 
-# }}}
 
-# {{{ sub limit_type
 
 =head2 limit_type
 
@@ -1731,11 +1719,8 @@ sub limit_type {
     );
 }
 
-# }}}
 
-# }}}
 
-# }}}
 
 =head2 limit_watcher
 
@@ -1773,15 +1758,10 @@ sub limit_watcher {
     );
 }
 
-# }}}
 
-# }}}
 
-# }}}
 
-# {{{ limit_ing based on links
 
-# {{{ limit_linked_to
 
 =head2 limit_linked_to
 
@@ -1813,9 +1793,7 @@ sub limit_linked_to {
     );
 }
 
-# }}}
 
-# {{{ limit_LinkedFrom
 
 =head2 limit_linked_from
 
@@ -1854,9 +1832,7 @@ sub limit_linked_from {
     );
 }
 
-# }}}
 
-# {{{ limit_member_of
 sub limit_member_of {
     my $self      = shift;
     my $ticket_id = shift;
@@ -1867,9 +1843,7 @@ sub limit_member_of {
     );
 }
 
-# }}}
 
-# {{{ limit_has_member
 sub limit_has_member {
     my $self      = shift;
     my $ticket_id = shift;
@@ -1881,9 +1855,7 @@ sub limit_has_member {
 
 }
 
-# }}}
 
-# {{{ limit_DependsOn
 
 sub limitdepends_on {
     my $self      = shift;
@@ -1896,9 +1868,7 @@ sub limitdepends_on {
 
 }
 
-# }}}
 
-# {{{ limit_depended_on_by
 
 sub limit_depended_on_by {
     my $self      = shift;
@@ -1911,9 +1881,7 @@ sub limit_depended_on_by {
 
 }
 
-# }}}
 
-# {{{ limit_RefersTo
 
 sub limit_refers_to {
     my $self      = shift;
@@ -1926,9 +1894,7 @@ sub limit_refers_to {
 
 }
 
-# }}}
 
-# {{{ limit_ReferredToBy
 
 sub limit_referred_to_by {
     my $self      = shift;
@@ -1940,11 +1906,8 @@ sub limit_referred_to_by {
     );
 }
 
-# }}}
 
-# }}}
 
-# {{{ sub _next_index
 
 =head2 _next_index
 
@@ -1957,13 +1920,9 @@ sub next_index {
     return ( $self->{'restriction_index'}++ );
 }
 
-# }}}
 
-# }}}
 
-# {{{ Core bits to make this a Jifty::DBI object
 
-# {{{ sub _init
 sub _init {
     my $self = shift;
     $self->{'RecalcTicketLimits'}      = 1;
@@ -1980,27 +1939,21 @@ sub _init {
 
 }
 
-# }}}
 
-# {{{ sub count
 sub count {
     my $self = shift;
     $self->_process_restrictions() if ( $self->{'RecalcTicketLimits'} == 1 );
     return ( $self->SUPER::count() );
 }
 
-# }}}
 
-# {{{ sub count_all
 sub count_all {
     my $self = shift;
     $self->_process_restrictions() if ( $self->{'RecalcTicketLimits'} == 1 );
     return ( $self->SUPER::count_all() );
 }
 
-# }}}
 
-# {{{ sub items_array_ref
 
 =head2 items_array_ref
 
@@ -2024,9 +1977,7 @@ sub items_array_ref {
     return ( $self->{'items_array'} );
 }
 
-# }}}
 
-# {{{ sub next
 sub next {
     my $self = shift;
 
@@ -2063,9 +2014,7 @@ sub next {
 
 }
 
-# }}}
 
-# }}}
 
 # Convert a set of oldstyle SB Restrictions to Clauses for RQL
 
@@ -2159,9 +2108,7 @@ sub _restrictions_to_clauses {
     return \%clause;
 }
 
-# }}}
 
-# {{{ sub _process_restrictions
 
 =head2 _process_restrictions PARAMHASH
 
@@ -2253,9 +2200,7 @@ sub item_map {
 
 
 
-# }}}
 
-# }}}
 
 =head2 prep_for_serialization
 

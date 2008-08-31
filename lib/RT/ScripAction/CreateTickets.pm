@@ -284,9 +284,7 @@ my %LINKTYPEMAP = (
 
 );
 
-# {{{ Scrip methods (Commit, Prepare)
 
-# {{{ sub commit
 #Do what we need to do and send it out.
 sub commit {
     my $self = shift;
@@ -299,9 +297,7 @@ sub commit {
     return (1);
 }
 
-# }}}
 
-# {{{ sub prepare
 
 sub prepare {
     my $self = shift;
@@ -328,9 +324,7 @@ sub prepare {
 
 }
 
-# }}}
 
-# }}}
 
 sub create_by_template {
     my $self = shift;

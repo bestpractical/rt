@@ -70,7 +70,6 @@ use warnings;
 package RT::Model::ScripConditionCollection;
 use base qw/RT::SearchBuilder/;
 
-# {{{ sub _init
 sub _init {
     my $self = shift;
     $self->{'table'}       = "ScripConditions";
@@ -78,9 +77,7 @@ sub _init {
     return ( $self->SUPER::_init(@_) );
 }
 
-# }}}
 
-# {{{ sub limit_to_type
 sub limit_to_type {
     my $self = shift;
     my $type = shift;
@@ -102,15 +99,12 @@ sub limit_to_type {
 
 }
 
-# }}}
 
-# {{{ sub new_item
 sub new_item {
     my $self = shift;
     return ( RT::Model::ScripCondition->new );
 }
 
-# }}}
 
 1;
 

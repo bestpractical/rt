@@ -68,7 +68,6 @@ use Scalar::Util;
 
 use base qw/RT::Base/;
 
-# {{{ sub new
 sub new {
     my $proto = shift;
     my $class = ref($proto) || $proto;
@@ -78,9 +77,7 @@ sub new {
     return $self
 }
 
-# }}}
 
-# {{{ sub _init
 sub _init {
     my $self = shift;
     my %args = (
@@ -113,109 +110,85 @@ sub _init {
 
 }
 
-# }}}
 
 # Access Scripwide data
 
-# {{{ sub argument
 sub argument {
     my $self = shift;
     return ( $self->{'argument'} );
 }
 
-# }}}
 
-# {{{ sub ticket_obj
 sub ticket_obj {
     my $self = shift;
     return ( $self->{'ticket_obj'} );
 }
 
-# }}}
 
-# {{{ sub transaction_obj
 sub transaction_obj {
     my $self = shift;
     return ( $self->{'transaction_obj'} );
 }
 
-# }}}
 
-# {{{ sub template_obj
 sub template_obj {
     my $self = shift;
     return ( $self->{'template_obj'} );
 }
 
-# }}}
 
-# {{{ sub scrip_obj
 sub scrip_obj {
     my $self = shift;
     return ( $self->{'scrip_obj'} );
 }
 
-# }}}
 
-# {{{ sub scrip_action_obj
 sub scrip_action_obj {
     my $self = shift;
     return ( $self->{'scrip_action_obj'} );
 }
 
-# }}}
 
-# {{{ sub Type
 sub type {
     my $self = shift;
     return ( $self->{'Type'} );
 }
 
-# }}}
 
 # Scrip methods
 
 #Do what we need to do and send it out.
 
-# {{{ sub commit
 sub commit {
     my $self = shift;
     return ( 0, _("Commit Stubbed") );
 }
 
-# }}}
 
 #What does this type of Action does
 
-# {{{ sub describe
 sub describe {
     my $self = shift;
     return _( "No description for %1", ref $self );
 }
 
-# }}}
 
 #Parse the templates, get things ready to go.
 
-# {{{ sub prepare
 sub prepare {
     my $self = shift;
     return ( 0, _("Prepare Stubbed") );
 }
 
-# }}}
 
 #If this rule applies to this transaction, return true.
 
-# {{{ sub is_applicable
 sub is_applicable {
     my $self = shift;
     return (undef);
 }
 
-# }}}
 
-# {{{ sub DESTROY
 sub DESTROY {
     my $self = shift;
 
@@ -227,7 +200,6 @@ sub DESTROY {
     $self->{'transaction_obj'} = undef;
 }
 
-# }}}
 
 eval "require RT::ScripAction_Vendor";
 die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Action_Vendor.pm} );

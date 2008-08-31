@@ -82,7 +82,6 @@ use warnings;
 
 use base qw/RT::Base/;
 
-# {{{ sub new
 sub new {
     my $proto = shift;
     my $class = ref($proto) || $proto;
@@ -92,9 +91,7 @@ sub new {
     return $self;
 }
 
-# }}}
 
-# {{{ sub _Init
 sub _init {
     my $self = shift;
     my %args = (
@@ -116,11 +113,9 @@ sub _init {
     $self->current_user( $args{'current_user'} );
 }
 
-# }}}
 
 # Access Scripwide data
 
-# {{{ sub Argument
 
 =head2 Argument
 
@@ -133,9 +128,7 @@ sub argument {
     return ( $self->{'argument'} );
 }
 
-# }}}
 
-# {{{ sub ticket_obj
 
 =head2 ticket_obj
 
@@ -148,9 +141,7 @@ sub ticket_obj {
     return ( $self->{'ticket_obj'} );
 }
 
-# }}}
 
-# {{{ sub scrip_obj
 
 =head2 scrip_obj
 
@@ -163,8 +154,6 @@ sub scrip_obj {
     return ( $self->{'scrip_obj'} );
 }
 
-# }}}
-# {{{ sub transaction_obj
 
 =head2 transaction_obj
 
@@ -177,9 +166,7 @@ sub transaction_obj {
     return ( $self->{'transaction_obj'} );
 }
 
-# }}}
 
-# {{{ sub Type
 
 =head2 Type 
 
@@ -192,33 +179,27 @@ sub applicable_trans_types {
     return ( $self->{'applicable_trans_types'} );
 }
 
-# }}}
 
 # Scrip methods
 
 #What does this type of Action does
 
-# {{{ sub describe
 sub describe {
     my $self = shift;
     return ( _( "No description for %1", ref $self ) );
 }
 
-# }}}
 
 #Parse the templates, get things ready to go.
 
 #If this rule applies to this transaction, return true.
 
-# {{{ sub is_applicable
 sub is_applicable {
     my $self = shift;
     return (undef);
 }
 
-# }}}
 
-# {{{ sub DESTROY
 sub DESTROY {
     my $self = shift;
 

@@ -82,7 +82,6 @@ use RT::Model::UserCollection;
 # Jesse wants something that doesn't imply it's a Principals.pm subclass.
 # See comments below for candidats.
 
-# {{{ sub _init
 
 sub implicit_clauses {
     my $self = shift;
@@ -111,7 +110,6 @@ sub implicit_clauses {
 
 }
 
-# }}}
 
 =head2 principals_alias
 
@@ -126,7 +124,6 @@ sub principals_alias {
 
 }
 
-# {{{ LimiToSystemInternalGroups
 
 =head2 limit_to_system_internal_groups
 
@@ -146,9 +143,7 @@ sub limit_to_system_internal_groups {
     #$self->limit(column => 'instance', operator => '=', value => '0');
 }
 
-# }}}
 
-# {{{ LimiToUserDefinedGroups
 
 =head2 limit_to_user_defined Groups
 
@@ -168,9 +163,7 @@ sub limit_to_user_defined_groups {
     #$self->limit(column => 'instance', operator => '=', value => '');
 }
 
-# }}}
 
-# {{{ LimiToPersonalGroups
 
 =head2 limit_to_personal_groups_for PRINCIPAL_ID
 
@@ -191,9 +184,7 @@ sub limit_to_personal_groups_for {
     );
 }
 
-# }}}
 
-# {{{ limit_ToRolesForQueue
 
 =head2 limit_to_roles_for_queue QUEUE_ID
 
@@ -212,9 +203,7 @@ sub limit_to_roles_for_queue {
     $self->limit( column => 'instance', operator => '=', value => $queue );
 }
 
-# }}}
 
-# {{{ limit_ToRolesForTicket
 
 =head2 limit_to_roles_for_ticket Ticket_ID
 
@@ -233,9 +222,7 @@ sub limit_to_roles_for_ticket {
     $self->limit( column => 'instance', operator => '=', value => '$Ticket' );
 }
 
-# }}}
 
-# {{{ limit_ToRolesForSystem
 
 =head2 limit_to_roles_for_system System_ID
 
@@ -252,7 +239,6 @@ sub limit_to_roles_for_system {
     );
 }
 
-# }}}
 
 =head2 with_member {principal_id => PRINCIPAL_ID, recursively => undef}
 
@@ -412,7 +398,6 @@ sub with_role_right {
     return (shift)->RT::Model::UserCollection::who_have_role_right(@_);
 }
 
-# {{{ sub limit_to_enabled
 
 =head2 limit_to_enabled
 
@@ -431,9 +416,7 @@ sub limit_to_enabled {
     );
 }
 
-# }}}
 
-# {{{ sub next
 
 sub next {
     my $self = shift;

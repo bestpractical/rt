@@ -69,7 +69,6 @@ use strict;
 package RT::Model::CachedGroupMemberCollection;
 use base qw/RT::SearchBuilder/;
 
-# {{{ limit_ToUsers
 
 =head2 limit_to_users
 
@@ -98,9 +97,7 @@ sub limit_to_users {
     );
 }
 
-# }}}
 
-# {{{ limit_ToGroups
 
 =head2 limit_to_groups
 
@@ -129,9 +126,7 @@ sub limit_to_groups {
     );
 }
 
-# }}}
 
-# {{{ sub limit_to_members_of_group
 
 =head2 limit_to_members_of_group PRINCIPAL_ID
 
@@ -155,9 +150,7 @@ sub limit_to_members_of_group {
 
 }
 
-# }}}
 
-# {{{ sub limit_to_groups_with_member
 
 =head2 limit_to_groups_with_member PRINCIPAL_ID
 
@@ -182,5 +175,4 @@ sub limit_to_groups_with_member {
 
 }
 
-# }}}
 1;

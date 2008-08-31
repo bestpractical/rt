@@ -69,7 +69,6 @@ sub default_handler_args {
     );
 }
 
-# {{{ sub new
 
 =head2 new
 
@@ -133,6 +132,5 @@ sub cleanup_request {
     }
 }
 
-# }}}
 
 1;

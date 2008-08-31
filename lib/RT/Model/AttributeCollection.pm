@@ -179,7 +179,6 @@ sub delete_entry {
     return ( 1, _('Attribute Deleted') );
 }
 
-# {{{ limit_to_object
 
 =head2 limit_to_object $object
 
@@ -213,6 +212,5 @@ sub limit_to_object {
 
 }
 
-# }}}
 
 1;

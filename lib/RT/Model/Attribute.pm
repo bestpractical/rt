@@ -220,7 +220,6 @@ sub create {
 
 }
 
-# {{{ sub load_by_name_andobject
 
 =head2  load_by_nameAndobject (object => OBJECT, name => name)
 
@@ -246,7 +245,6 @@ sub load_by_name_and_object {
 
 }
 
-# }}}
 
 =head2 _deserializecontent
 

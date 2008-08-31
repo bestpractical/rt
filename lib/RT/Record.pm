@@ -76,7 +76,6 @@ our $_TABLE_ATTR = {};
 use base qw(Jifty::Record);
 use base qw(RT::Base);
 
-# {{{ sub _init
 
 sub table {
     my $class = shift;
@@ -240,7 +239,6 @@ sub first_attribute {
     return ( $self->attributes->named($name) )[0];
 }
 
-# {{{ sub create
 
 =head2  Create PARAMHASH
 
@@ -328,9 +326,7 @@ sub create {
 
 }
 
-# }}}
 
-# {{{ sub load_by_cols
 
 =head2 load_by_cols
 
@@ -367,13 +363,10 @@ sub load_by_cols {
     return $self->SUPER::load_by_cols(%hash);
 }
 
-# }}}
 
-# {{{ Datehandling
 
 # There is room for optimizations in most of those subs:
 
-# {{{ last_updated_obj
 
 sub last_updated_obj {
     my $self = shift;
@@ -383,9 +376,7 @@ sub last_updated_obj {
     return $obj;
 }
 
-# }}}
 
-# {{{ created_obj
 
 sub created_obj {
     my $self = shift;
@@ -396,9 +387,7 @@ sub created_obj {
     return $obj;
 }
 
-# }}}
 
-# {{{ AgeAsString
 #
 # TODO: This should be deprecated
 #
@@ -407,9 +396,7 @@ sub age_as_string {
     return ( $self->created_obj->age_as_string() );
 }
 
-# }}}
 
-# {{{ last_updated_as_string
 
 # TODO this should be deprecated
 
@@ -423,9 +410,7 @@ sub last_updated_as_string {
     }
 }
 
-# }}}
 
-# {{{ CreatedAsString
 #
 # TODO This should be deprecated
 #
@@ -434,9 +419,7 @@ sub created_as_string {
     return ( $self->created_obj->as_string() );
 }
 
-# }}}
 
-# {{{ LongSinceUpdateAsString
 #
 # TODO This should be deprecated
 #
@@ -451,11 +434,8 @@ sub long_since_update_as_string {
     }
 }
 
-# }}}
 
-# }}} Datehandling
 
-# {{{ sub _set
 #
 sub _set {
     my $self = shift;
@@ -501,9 +481,7 @@ sub _set {
 
 }
 
-# }}}
 
-# {{{ sub set_last_updated
 
 =head2 set_last_updated
 
@@ -527,9 +505,7 @@ sub set_last_updated {
     );
 }
 
-# }}}
 
-# {{{ sub creator_obj
 
 =head2 creator_obj
 
@@ -547,9 +523,7 @@ sub creator_obj {
     return ( $self->{'creator_obj'} );
 }
 
-# }}}
 
-# {{{ sub last_updated_by_obj
 
 =head2 last_updated_by_obj
 
@@ -566,9 +540,7 @@ sub last_updated_by_obj {
     return $self->{'last_updated_by_obj'};
 }
 
-# }}}
 
-# {{{ sub URI
 
 =head2 URI
 
@@ -582,7 +554,6 @@ sub uri {
     return ( $uri->uri_for_object($self) );
 }
 
-# }}}
 
 =head2 validatename name
 
@@ -808,11 +779,8 @@ sub update {
     return @results;
 }
 
-# {{{ Routines dealing with Links
 
-# {{{ Link Collections
 
-# {{{ sub members
 
 =head2 members
 
@@ -826,9 +794,7 @@ sub members {
     return ( $self->_links( 'target', 'MemberOf' ) );
 }
 
-# }}}
 
-# {{{ sub member_of
 
 =head2 member_of
 
@@ -842,9 +808,7 @@ sub member_of {
     return ( $self->_links( 'base', 'MemberOf' ) );
 }
 
-# }}}
 
-# {{{ RefersTo
 
 =head2 refers_to
 
@@ -857,9 +821,7 @@ sub refers_to {
     return ( $self->_links( 'base', 'RefersTo' ) );
 }
 
-# }}}
 
-# {{{ ReferredToBy
 
 =head2 referred_to_by
 
@@ -872,9 +834,7 @@ sub referred_to_by {
     return ( $self->_links( 'target', 'RefersTo' ) );
 }
 
-# }}}
 
-# {{{ DependedOnBy
 
 =head2 depended_on_by
 
@@ -887,7 +847,6 @@ sub depended_on_by {
     return ( $self->_links( 'target', 'DependsOn' ) );
 }
 
-# }}}
 
 =head2 has_unresolved_dependencies
 
@@ -926,7 +885,6 @@ sub has_unresolved_dependencies {
     }
 }
 
-# {{{ unresolved_dependencies
 
 =head2 unresolved_dependencies
 
@@ -950,9 +908,7 @@ sub unresolved_dependencies {
 
 }
 
-# }}}
 
-# {{{ AllDependedOnBy
 
 =head2 all_depended_on_by
 
@@ -995,9 +951,7 @@ sub all_depended_on_by {
     }
 }
 
-# }}}
 
-# {{{ DependsOn
 
 =head2 depends_on
 
@@ -1010,9 +964,7 @@ sub depends_on {
     return ( $self->_links( 'base', 'DependsOn' ) );
 }
 
-# }}}
 
-# {{{ sub _links
 
 =head2 links DIRECTION [TYPE]
 
@@ -1052,14 +1004,10 @@ sub _links {
     return ( $self->{"$field$type"} );
 }
 
-# }}}
-
-# }}}
-
-# {{{ sub _add_link
 
 
-# {{{ sub format_type
+
+
 
 =head2 format_type
 
@@ -1077,9 +1025,7 @@ sub format_type {
     return $args{type};
 }
 
-# }}}
 
-# {{{ sub format_link
 
 =head2 format_link
 
@@ -1101,7 +1047,6 @@ sub format_link {
     return $text;
 }
 
-# }}}
 
 =head2 _add_link
 
@@ -1183,9 +1128,7 @@ sub _add_link {
 
 }
 
-# }}}
 
-# {{{ sub _delete_link
 
 =head2 _delete_link
 
@@ -1259,13 +1202,9 @@ sub _delete_link {
     }
 }
 
-# }}}
 
-# }}}
 
-# {{{ Routines dealing with transactions
 
-# {{{ sub _new_transaction
 
 =head2 _new_transaction  PARAMHASH
 
@@ -1339,9 +1278,7 @@ sub _new_transaction {
     return ( $transaction, $msg, $trans );
 }
 
-# }}}
 
-# {{{ sub transactions
 
 =head2 transactions
 
@@ -1368,10 +1305,7 @@ sub transactions {
     return ($transactions);
 }
 
-# }}}
-# }}}
 #
-# {{{ Routines dealing with custom fields
 
 sub custom_fields {
     my $self = shift;
@@ -1415,7 +1349,6 @@ sub custom_field_lookup_type {
     return ref($self);
 }
 
-# {{{ AddCustomFieldValue
 
 =head2 add_custom_field_value { Field => column, value => value }
 
@@ -1606,9 +1539,7 @@ sub _add_custom_field_value {
     }
 }
 
-# }}}
 
-# {{{ DeleteCustomFieldValue
 
 =head2 delete_custom_field_value { Field => column, value => value }
 
@@ -1657,9 +1588,7 @@ sub delete_custom_field_value {
     return ( $transaction_id, _( "%1 is no longer a value for custom field %2", $transaction_obj->old_value, $cf->name ) );
 }
 
-# }}}
 
-# {{{ first_custom_field_value
 
 =head2 first_custom_field_value column
 
@@ -1676,7 +1605,6 @@ sub first_custom_field_value {
     return $first->content;
 }
 
-# {{{ custom_field_values
 
 =head2 custom_field_values column
 
@@ -1739,11 +1667,8 @@ sub load_custom_field_by_identifier {
     return $cf;
 }
 
-# }}}
 
-# }}}
 
-# }}}
 
 sub basic_columns {
 }

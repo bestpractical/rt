@@ -76,7 +76,6 @@ package RT::Search;
 
 use strict;
 
-# {{{ sub new
 sub new {
     my $proto = shift;
     my $class = ref($proto) || $proto;
@@ -86,9 +85,7 @@ sub new {
     return $self;
 }
 
-# }}}
 
-# {{{ sub _init
 sub _init {
     my $self = shift;
     my %args = (
@@ -101,9 +98,7 @@ sub _init {
     $self->{'argument'}   = $args{'argument'};
 }
 
-# }}}
 
-# {{{ sub argument
 
 =head2 argument
 
@@ -116,7 +111,6 @@ sub argument {
     return ( $self->{'argument'} );
 }
 
-# }}}
 
 =head2 tickets_obj 
 
@@ -129,20 +123,16 @@ sub tickets_obj {
     return ( $self->{'tickets_obj'} );
 }
 
-# {{{ sub describe
 sub describe {
     my $self = shift;
     return ( _( "No description for %1", ref $self ) );
 }
 
-# }}}
 
-# {{{ sub prepare
 sub prepare {
     my $self = shift;
     return (1);
 }
 
-# }}}
 
 1;

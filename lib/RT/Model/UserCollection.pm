@@ -69,7 +69,6 @@ use strict;
 package RT::Model::UserCollection;
 use base qw/RT::SearchBuilder/;
 
-# {{{ sub _init
 sub _init {
     my $self = shift;
 
@@ -100,7 +99,6 @@ sub _init {
     return (@result);
 }
 
-# }}}
 
 =head2 principals_alias
 
@@ -115,7 +113,6 @@ sub principals_alias {
 
 }
 
-# {{{ sub _do_search
 
 =head2 _do_search
 
@@ -135,8 +132,6 @@ sub _do_search {
 
 }
 
-# }}}
-# {{{ sub limit_to_enabled
 
 =head2 limit_to_enabled
 
@@ -156,9 +151,7 @@ sub limit_to_enabled {
     );
 }
 
-# }}}
 
-# {{{ limit_to_email
 
 =head2 limit_to_email
 
@@ -173,9 +166,7 @@ sub limit_to_email {
     $self->limit( column => 'email', value => "$addr" );
 }
 
-# }}}
 
-# {{{ member_of_group
 
 =head2 member_of_group PRINCIPAL_ID
 
@@ -208,9 +199,7 @@ sub member_of_group {
     );
 }
 
-# }}}
 
-# {{{ limit_to_privileged
 
 =head2 limit_to_privileged
 
@@ -229,9 +218,7 @@ sub limit_to_privileged {
     $self->member_of_group( $priv->principal_id );
 }
 
-# }}}
 
-# {{{ who_have_right
 
 =head2 who_have_right { right => 'name', object => $rt_object , include_superusers => undef, include_subgroup_members => undef, include_system_rights => undef, equiv_objects => [ ] }
 
@@ -388,7 +375,6 @@ sub who_have_right {
     return;
 }
 
-# }}}
 
 # XXX: should be generalized
 sub who_have_role_right {
@@ -532,7 +518,6 @@ sub who_have_group_right {
     return;
 }
 
-# {{{ who_belong_to_groups
 
 =head2 who_belong_to_groups { Groups => ARRAYREF, include_subgroup_members => 1 }
 
@@ -564,6 +549,5 @@ sub who_belong_to_groups {
     }
 }
 
-# }}}
 
 1;

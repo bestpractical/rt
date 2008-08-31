@@ -78,17 +78,13 @@ sub _init {
     $self->SUPER::_init(%args);
 }
 
-# }}}
 
-# {{{ sub describe
 sub describe {
     my $self = shift;
     return ( _( "No description for %1", ref $self ) );
 }
 
-# }}}
 
-# {{{ sub query_to_sql
 sub query_to_sql {
     my $self     = shift;
     my $query    = shift || $self->argument;
@@ -169,9 +165,7 @@ sub query_to_sql {
     return join " AND ", sort @tql_clauses;
 }
 
-# }}}
 
-# {{{ sub prepare
 sub prepare {
     my $self = shift;
     my $tql  = $self->query_to_sql( $self->argument );
@@ -182,6 +176,5 @@ sub prepare {
     return (1);
 }
 
-# }}}
 
 1;
