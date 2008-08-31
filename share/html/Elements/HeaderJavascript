@@ -49,6 +49,8 @@
 $focus => undef
 $onload => undef
 </%args>
+<% Jifty->web->include_css %>
+<% Jifty->web->include_javascript %> 
 <script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/util.js"></script>
 <script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/titlebox-state.js"></script>
 <script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/ahah.js"></script>
