@@ -73,15 +73,15 @@ use Jifty::DBI::Record schema {
         object_type => max_length is 64, type is 'varchar(64)',
         is mandatory;
     column object_id  => max_length is 11, type is 'int',         is mandatory;
-    column time_taken => max_length is 11, type is 'int',         default is '0';
-    column type       => max_length is 20, type is 'varchar(20)', default is '';
-    column field      => max_length is 40, type is 'varchar(40)', default is '';
+    column time_taken => max_length is 11, type is 'int',         default is 0;
+    column type       => max_length is 20, type is 'varchar(20)', is mandatory;
+    column field      => max_length is 40, type is 'varchar(40)';
     column
         old_value => max_length is 255,
-        type is 'varchar(255)', default is '';
+        type is 'varchar(255)';
     column
         new_value => max_length is 255,
-        type is 'varchar(255)', default is '';
+        type is 'varchar(255)';
     column
         reference_type => max_length is 255,
         type is 'varchar(255)';
@@ -311,10 +311,10 @@ use HTML::TreeBuilder;
 
 Create a new transaction.
 
-This routine should _never_ be called by anything other than RT::Model::Ticket. 
-It should not be called 
-from client code. Ever. Not ever.  If you do this, we will hunt you down and break your kneecaps.
-Then the unpleasant stuff will start.
+This routine should _never_ be called by anything other than API.
+It should not be called from client code. Ever. Not ever.  If you
+do this, we will hunt you down and break your kneecaps. Then
+the unpleasant stuff will start.
 
 TODO: Document what gets passed to this
 
@@ -324,65 +324,52 @@ sub create {
     my $self = shift;
     my %args = (
         id              => undef,
-        time_taken      => 0,
-        type            => 'undefined',
-        data            => '',
+        object_type     => 'RT::Model::Ticket',
+        object_id       => undef,
+        type            => undef,
+        data            => undef,
         field           => undef,
         old_value       => undef,
         new_value       => undef,
-        mime_obj        => undef,
-        activate_scrips => 1,
-        commit_scrips   => 1,
-        object_type     => 'RT::Model::Ticket',
-        object_id       => 0,
         reference_type  => undef,
         old_reference   => undef,
         new_reference   => undef,
+        time_taken      => 0,
+
+        mime_obj        => undef,
+        activate_scrips => 1,
+        commit_scrips   => 1,
         @_
     );
 
-    $args{object_id} ||= $args{ticket};
-
-    #if we didn't specify a ticket, we need to bail
-    unless ( $args{'object_id'} && $args{'object_type'} ) {
-        return ( 0, _( "Transaction->create couldn't, as you didn't specify an object type and id" ) );
+    if ( defined $args{'ticket'} ) {
+        require Carp;
+        Carp::confess('ticket argument is deprecated long time ago, use object_id and object_type pair');
     }
 
-    #lets create our transaction
-    my %params = (
-        type           => $args{'type'},
-        data           => $args{'data'},
-        field          => $args{'field'},
-        old_value      => $args{'old_value'},
-        new_value      => $args{'new_value'},
-        created        => $args{'created'},
-        object_type    => $args{'object_type'},
-        object_id      => $args{'object_id'},
-        reference_type => $args{'reference_type'},
-        old_reference  => $args{'old_reference'},
-        new_reference  => $args{'new_reference'},
-    );
-
-    # Parameters passed in during an import that we probably don't want to touch, otherwise
-    foreach my $attr qw(id creator created last_updated time_taken last_updated_by) {
-        $params{$attr} = $args{$attr} if ( $args{$attr} );
+    if ( my $o = delete $args{'object'} ) {
+        $args{'object_type'} = ref $args{'object'};
+        $args{'object_id'}   = $args{'object'}->id;
     }
 
-    my $id = $self->SUPER::create(%params);
+    my $activate_scrips = delete $args{'activate_scrips'};
+    my $commit_scrips = delete $args{'commit_scrips'};
+    my $mime = delete $args{'mime_obj'};
+
+    my $id = $self->SUPER::create( %args );
     $self->load($id);
-    if ( defined $args{'mime_obj'} ) {
-        my ( $id, $msg ) = $self->_attach( $args{'mime_obj'} );
+
+    if ( defined $mime ) {
+        my ( $id, $msg ) = $self->_attach( $mime );
         unless ($id) {
-            Jifty->log->error("Couldn't add attachment: $msg");
-            return ( 0, _("Couldn't add attachment") );
+            Jifty->log->error("Couldn't add an attachment: $msg");
+            return ( 0, _("Couldn't add an attachment") );
         }
     }
 
     #Provide a way to turn off scrips if we need to
     Jifty->log->debug( 'About to think about scrips for transaction #' . $self->id );
-    if (    $args{'activate_scrips'}
-        and $args{'object_type'} eq 'RT::Model::Ticket' )
-    {
+    if ( $activate_scrips and $args{'object_type'} eq 'RT::Model::Ticket' ) {
         $self->{'scrips'} = RT::Model::ScripCollection->new( current_user => RT->system_user );
 
         Jifty->log->debug( 'About to prepare scrips for transaction #' . $self->id );
@@ -392,12 +379,11 @@ sub create {
             ticket      => $args{'object_id'},
             transaction => $self->id,
         );
-        if ( $args{'commit_scrips'} ) {
+        if ( $commit_scrips ) {
             Jifty->log->debug( 'About to commit scrips for transaction #' . $self->id );
-            $self->{'scrips'}->commit();
+            $self->{'scrips'}->commit;
         } else {
             Jifty->log->debug( 'Skipping commit of scrips for transaction #' . $self->id );
-
         }
     }
 

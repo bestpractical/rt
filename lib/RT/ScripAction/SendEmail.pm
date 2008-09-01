@@ -521,7 +521,7 @@ sub record_outgoing_mail_transaction {
     chomp $msgid;
 
     my ( $id, $msg ) = $transaction->create(
-        ticket          => $self->ticket_obj->id,
+        object          => $self->ticket_obj,
         type            => $type,
         data            => $msgid,
         mime_obj        => $mime_obj,
