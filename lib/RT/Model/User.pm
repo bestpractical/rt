@@ -265,7 +265,6 @@ sub create {
     }
 
     my ( $everyone_id, $everyone_msg ) = $everyone->_add_member(
-        inside_transaction => 1,
         principal_id       => $self->principal_id
     );
     unless ($everyone_id) {
@@ -289,7 +288,6 @@ sub create {
     }
 
     my ( $ac_id, $ac_msg ) = $access_class->_add_member(
-        inside_transaction => 1,
         principal_id       => $self->principal_id
     );
 
@@ -364,7 +362,6 @@ sub set_privileged {
             Jifty->log->fatal( "User " . $self->id . " is neither privileged nor " . "unprivileged. something is drastically wrong." );
         }
         my ( $status, $msg ) = $priv->_add_member(
-            inside_transaction => 1,
             principal_id       => $self->principal_id
         );
         if ($status) {
@@ -388,7 +385,6 @@ sub set_privileged {
             Jifty->log->fatal( "User " . $self->id . " is neither privileged nor " . "unprivileged. something is drastically wrong." );
         }
         my ( $status, $msg ) = $unpriv->_add_member(
-            inside_transaction => 1,
             principal_id       => $self->principal_id
         );
         if ($status) {
@@ -1141,14 +1137,11 @@ sub watched_queues {
 
 }
 
-=head2 _cleanup_invalid_delegations { inside_transaction => undef }
+=head2 _cleanup_invalid_delegations
 
 Revokes all ACE entries delegated by this user which are inconsistent
 with their current delegation rights.  Does not perform permission
 checks.  Should only ever be called from inside the RT library.
-
-If called from inside a transaction, specify a true value for the
-inside_transaction parameter.
 
 Returns a true value if the deletion succeeded; returns a false value
 and logs an internal error if the deletion fails (should not happen).
@@ -1163,7 +1156,6 @@ and logs an internal error if the deletion fails (should not happen).
 sub _cleanup_invalid_delegations {
     my $self = shift;
     my %args = (
-        inside_transaction => undef,
         @_
     );
 
@@ -1172,7 +1164,7 @@ sub _cleanup_invalid_delegations {
         return (undef);
     }
 
-    my $in_trans = $args{inside_transaction};
+    my $in_trans = Jifty->handle->transaction_depth;
 
     return (1)
         if (
@@ -1206,7 +1198,7 @@ sub _cleanup_invalid_delegations {
 
     # Delete all disallowed delegations
     while ( my $ace = $acl_to_del->next() ) {
-        my $ret = $ace->_delete( inside_transaction => 1 );
+        my $ret = $ace->_delete;
         unless ($ret) {
             Jifty->handle->rollback() unless $in_trans;
             Jifty->log->warn( "Couldn't delete delegated ACL entry " . $ace->id );

@@ -253,7 +253,7 @@ sub delete {
             while ( my $delegation = $delegations->next ) {
 
                 # WHACK IT
-                my $del_ret = $delegation->_delete( inside_transaction => 1 );
+                my $del_ret = $delegation->_delete;
                 unless ($del_ret) {
                     Jifty->log->fatal( "Couldn't delete an ACL delegation that we know exists " . $delegation->id );
                     return (undef);
@@ -330,7 +330,7 @@ sub set_disabled {
             while ( my $delegation = $delegations->next ) {
 
                 # WHACK IT
-                my $del_ret = $delegation->_delete( inside_transaction => 1 );
+                my $del_ret = $delegation->_delete;
                 unless ($del_ret) {
                     Jifty->log->fatal( "Couldn't delete an ACL delegation that we know exists " . $delegation->id );
                     return (undef);

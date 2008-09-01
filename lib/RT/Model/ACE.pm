@@ -430,7 +430,7 @@ sub delegate {
 
 
 
-=head2 delete { inside_transaction => undef}
+=head2 delete
 
 Delete this object. This method should ONLY ever be called from RT::Model::User or RT::Model::Group (or from itself)
 If this is being called from within a transaction, specify a true value for the parameter inside_transaction.
@@ -468,12 +468,10 @@ sub delete {
 sub _delete {
     my $self = shift;
     my %args = (
-        inside_transaction => undef,
         @_
     );
 
-    my $inside_transaction = $args{'inside_transaction'};
-
+    my $inside_transaction = Jifty->handle->transaction_depth;
     Jifty->handle->begin_transaction() unless $inside_transaction;
 
     my $delegated_from_this = RT::Model::ACECollection->new( current_user => RT->system_user );
@@ -486,7 +484,7 @@ sub _delete {
     my $delete_succeeded = 1;
     my $submsg;
     while ( my $delegated_ace = $delegated_from_this->next ) {
-        ( $delete_succeeded, $submsg ) = $delegated_ace->_delete( inside_transaction => 1 );
+        ( $delete_succeeded, $submsg ) = $delegated_ace->_delete;
         last unless ($delete_succeeded);
     }
 
@@ -504,7 +502,7 @@ sub _delete {
             or $self->right_name() eq 'SuperUser' )
         )
     {
-        $val = $self->principal_object->_cleanup_invalid_delegations( inside_transaction => 1 );
+        $val = $self->principal_object->_cleanup_invalid_delegations;
     }
 
     if ($val) {

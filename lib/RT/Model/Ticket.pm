@@ -558,7 +558,6 @@ sub create {
     # kill performance, bigtime. It gets kept in lockstep thanks to the magic of transactionalization
     ( $val, $msg ) = $self->role_group("owner")->_add_member(
         principal_id       => $owner->principal_id,
-        inside_transaction => 1
     ) unless $defer_owner;
 
     # {{{ Deal with setting up watchers
@@ -681,7 +680,6 @@ sub create {
         }
         $self->role_group("owner")->_add_member(
             principal_id       => $owner->principal_id,
-            inside_transaction => 1
         );
     }
 
@@ -891,7 +889,6 @@ sub _add_watcher {
 
     my ( $m_id, $m_msg ) = $group->_add_member(
         principal_id       => $principal->id,
-        inside_transaction => 1
     );
     unless ($m_id) {
         Jifty->log->error( "Failed to add "
@@ -2310,7 +2307,6 @@ sub set_owner {
     }
     my ( $add_id, $add_msg ) = $self->role_group("owner")->_add_member(
         principal_id       => $new_owner_obj->principal_id,
-        inside_transaction => 1
     );
     unless ($add_id) {
         Jifty->handle->rollback();

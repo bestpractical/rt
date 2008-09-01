@@ -103,7 +103,6 @@ sub create {
     my %args = (
         group              => undef,
         member             => undef,
-        inside_transaction => undef,
         @_
     );
 
@@ -133,7 +132,8 @@ sub create {
     # TODO what about the groups key cache?
     RT::Model::Principal->invalidate_acl_cache();
 
-    Jifty->handle->begin_transaction() unless ( $args{'inside_transaction'} );
+    my $inside_transaction = Jifty->handle->transaction_depth;
+    Jifty->handle->begin_transaction() unless $inside_transaction;
 
     # We really need to make sure we don't add any members to this group
     # that contain the group itself. that would, um, suck.
@@ -144,11 +144,11 @@ sub create {
         my $member_object = $args{'member'}->object;
         if ( $member_object->has_member_recursively( $args{'group'} ) ) {
             Jifty->log->debug("Adding that group would create a loop");
-            Jifty->handle->rollback() unless ( $args{'inside_transaction'} );
+            Jifty->handle->rollback() unless $inside_transaction;
             return (undef);
         } elsif ( $args{'member'}->id == $args{'group'}->id ) {
             Jifty->log->debug("Can't add a group to itself");
-            Jifty->handle->rollback() unless ( $args{'inside_transaction'} );
+            Jifty->handle->rollback() unless $inside_transaction;
             return (undef);
         }
     }
@@ -159,7 +159,7 @@ sub create {
     );
 
     unless ($id) {
-        Jifty->handle->rollback() unless ( $args{'inside_transaction'} );
+        Jifty->handle->rollback() unless $inside_transaction;
         return (undef);
     }
 
@@ -194,17 +194,17 @@ sub create {
         );
         unless ($other_cached_id) {
             Jifty->log->err( "Couldn't add " . $args{'member'} . " as a submember of a supergroup" );
-            Jifty->handle->rollback() unless ( $args{'inside_transaction'} );
+            Jifty->handle->rollback() unless $inside_transaction;
             return (undef);
         }
     }
 
     unless ($cached_id) {
-        Jifty->handle->rollback() unless ( $args{'inside_transaction'} );
+        Jifty->handle->rollback() unless $inside_transaction;
         return (undef);
     }
 
-    Jifty->handle->commit() unless ( $args{'inside_transaction'} );
+    Jifty->handle->commit() unless $inside_transaction;
 
     return ($id);
 }
@@ -324,7 +324,7 @@ sub delete {
     # Since this deletion may have changed the former member's
     # delegation rights, we need to ensure that no invalid delegations
     # remain.
-    ( $err, $msg ) = $self->member_obj->_cleanup_invalid_delegations( inside_transaction => 1 );
+    ( $err, $msg ) = $self->member_obj->_cleanup_invalid_delegations;
     unless ($err) {
         Jifty->log->warn( "Unable to revoke delegated rights for principal " . $self->id );
         Jifty->handle->rollback();

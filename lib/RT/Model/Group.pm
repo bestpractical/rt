@@ -393,11 +393,11 @@ sub _create {
         domain              => undef,
         type                => undef,
         instance            => '0',
-        inside_transaction  => undef,
         _record_transaction => 1,
         @_
     );
-    Jifty->handle->begin_transaction() unless ( $args{'inside_transaction'} );
+    my $inside_transaction = Jifty->handle->transaction_depth;
+    Jifty->handle->begin_transaction() unless $inside_transaction;
 
     # Groups deal with principal ids, rather than user ids.
     # When creating this group, set up a principal id for it.
@@ -416,13 +416,13 @@ sub _create {
     );
     my $id = $self->id;
     unless ($id) {
-        Jifty->handle->rollback() unless ( $args{'inside_transaction'} );
+        Jifty->handle->rollback() unless $inside_transaction;
         return ( 0, _('Could not create group') );
     }
 
     # If we couldn't create a principal Id, get the fuck out.
     unless ($principal_id) {
-        Jifty->handle->rollback() unless ( $args{'inside_transaction'} );
+        Jifty->handle->rollback() unless $inside_transaction;
         Jifty->log->fatal( "Couldn't create a Principal on new user create. Strange things are afoot at the circle K" );
         return ( 0, _('Could not create group') );
     }
@@ -445,7 +445,7 @@ sub _create {
         $self->_new_transaction( type => "Create" );
     }
 
-    Jifty->handle->commit() unless ( $args{'inside_transaction'} );
+    Jifty->handle->commit() unless $inside_transaction;
 
     return ( $id, _("Group Created") );
 }
@@ -499,7 +499,6 @@ sub _createacl_equivalence_group {
         name               => 'User ' . $princ->object->id,
         description        => 'ACL equiv. for user ' . $princ->object->id,
         instance           => $princ->id,
-        inside_transaction => 1
     );
 
     unless ($id) {
@@ -603,7 +602,6 @@ sub create_role_group {
             domain             => $args{'domain'},
             instance           => $args{'instance'},
             type               => $args{'type'},
-            inside_transaction => 1
         )
     );
 }
@@ -919,13 +917,12 @@ sub add_member {
 # In the dim future, this will all get factored out and life
 # will get better
 
-# takes a paramhash of { principal_id => undef, inside_transaction }
+# takes a paramhash of { principal_id => undef }
 
 sub _add_member {
     my $self = shift;
     my %args = (
         principal_id       => undef,
-        inside_transaction => undef,
         @_
     );
     my $new_member = $args{'principal_id'};
@@ -969,7 +966,6 @@ sub _add_member {
     my $id            = $member_object->create(
         member             => $new_member_obj,
         group              => $self->principal_object,
-        inside_transaction => $args{'inside_transaction'}
     );
     if ($id) {
         return ( 1,
@@ -1142,15 +1138,12 @@ sub _delete_member {
 
 
 
-=head2 _cleanup_invalid_delegations { inside_transaction => undef }
+=head2 _cleanup_invalid_delegations
 
 Revokes all ACE entries delegated by members of this group which are
 inconsistent with their current delegation rights.  Does not perform
 permission checks.  Should only ever be called from inside the RT
 library.
-
-If called from inside a transaction, specify a true value for the
-inside_transaction parameter.
 
 Returns a true value if the deletion succeeded; returns a false value
 and logs an internal error if the deletion fails (should not happen).
@@ -1165,7 +1158,6 @@ and logs an internal error if the deletion fails (should not happen).
 sub _cleanup_invalid_delegations {
     my $self = shift;
     my %args = (
-        inside_transaction => undef,
         @_
     );
 
@@ -1174,7 +1166,7 @@ sub _cleanup_invalid_delegations {
         return (undef);
     }
 
-    my $in_trans = $args{inside_transaction};
+    my $in_trans = Jifty->handle->transaction_depth;
 
     # TODO: Can this be unrolled such that the number of DB queries is constant rather than linear in exploded group size?
     my $members = $self->deep_members_obj();
@@ -1182,7 +1174,6 @@ sub _cleanup_invalid_delegations {
     Jifty->handle->begin_transaction() unless $in_trans;
     while ( my $member = $members->next() ) {
         my $ret = $member->member_obj->_cleanup_invalid_delegations(
-            inside_transaction => 1,
             object             => $args{object}
         );
         unless ($ret) {
