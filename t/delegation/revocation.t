@@ -56,7 +56,7 @@ $ace = RT::Model::ACE->new(current_user => RT::CurrentUser->new( id => $u1->id) 
 ( $ret, $msg ) = $ace->load_by_values(
     right_name     => 'ShowConfigTab',
     object        => RT->system,
-    principal_type => 'Group',
+    type => 'Group',
     principal_id   => $g1->principal_id
 );
 ok( $ret, "Look up ACE to be delegated: $msg" );
@@ -112,7 +112,7 @@ sub clear_acls_and_groups {
     # Revoke all rights granted to our cast
     my $acl = RT::Model::ACECollection->new(current_user => RT->system_user);
     foreach (@principals) {
-	$acl->limit_to_principal(type => $$_->principal_object->principal_type,
+	$acl->limit_to_principal(type => $$_->principal_object->type,
 			       id => $$_->principal_object->id);
     }
     while (my $ace = $acl->next()) {

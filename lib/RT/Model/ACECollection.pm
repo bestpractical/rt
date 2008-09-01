@@ -148,7 +148,7 @@ sub limitnot_object {
 
 =head2 limit_to_principal { type => undef, id => undef, include_group_membership => undef }
 
-Limit the ACL to the principal with principal_id id and principal_type Type
+Limit the ACL to the principal with principal_id id and type Type
 
 Id is not optional.
 Type is.
@@ -184,7 +184,7 @@ sub limit_to_principal {
     } else {
         if ( defined $args{'type'} ) {
             $self->limit(
-                column           => 'principal_type',
+                column           => 'type',
                 operator         => '=',
                 value            => $args{'type'},
                 entry_aggregator => 'OR'
@@ -197,7 +197,7 @@ sub limit_to_principal {
         # to just be the same table. or _maybe_ that we want an object db.
         my $princ = RT::Model::Principal->new( current_user => RT->system_user );
         $princ->load( $args{'id'} );
-        if ( $princ->principal_type eq 'User' ) {
+        if ( $princ->type eq 'User' ) {
             my $group = RT::Model::Group->new( current_user => RT->system_user );
             $group->load_acl_equivalence_group($princ);
             $args{'id'} = $group->principal_id;
@@ -336,7 +336,7 @@ sub _build_hash {
             . $entry->__value('object_id') . "-"
             . $entry->__value('right_name') . "-"
             . $entry->__value('principal_id') . "-"
-            . $entry->__value('principal_type');
+            . $entry->__value('type');
 
         $self->{'as_hash'}->{"$hashkey"} = 1;
 
@@ -356,14 +356,14 @@ sub has_entry {
         right_applies_to => undef,
         right_name       => undef,
         principal_id     => undef,
-        principal_type   => undef,
+        type   => undef,
         @_
     );
 
     #if we haven't done the search yet, do it now.
     $self->_do_search();
 
-    if ( $self->{'as_hash'}->{ $args{'right_scope'} . "-" . $args{'right_applies_to'} . "-" . $args{'right_name'} . "-" . $args{'principal_id'} . "-" . $args{'principal_type'} } == 1 ) {
+    if ( $self->{'as_hash'}->{ $args{'right_scope'} . "-" . $args{'right_applies_to'} . "-" . $args{'right_name'} . "-" . $args{'principal_id'} . "-" . $args{'type'} } == 1 ) {
         return (1);
     } else {
         return (undef);

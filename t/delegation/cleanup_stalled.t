@@ -112,7 +112,7 @@ $ace = RT::Model::ACE->new(
 ( $ret, $msg ) = $ace->load_by_values(
     right_name     => 'ShowConfigTab',
     object         => RT->system,
-    principal_type => 'Group',
+    type => 'Group',
     principal_id   => $g2->principal_id
 );
 ok( $ret, "Look up ACE to be delegated: $msg" );
@@ -200,7 +200,7 @@ $ace = RT::Model::ACE->new(
 ( $ret, $msg ) = $ace->load_by_values(
     right_name     => 'AdminGroup',
     object         => $pg1,
-    principal_type => 'Group',
+    type => 'Group',
     principal_id   => $g2->principal_id
 );
 ok( $ret, "Look up ACE to be delegated: $msg" );
@@ -284,7 +284,7 @@ $ace = RT::Model::ACE->new(
 ( $ret, $msg ) = $ace->load_by_values(
     right_name     => 'AdminGroup',
     object         => $pg1,
-    principal_type => 'Group',
+    type => 'Group',
     principal_id   => $g2->principal_id
 );
 ok( $ret, "Look up ACE to be delegated: $msg" );
@@ -386,7 +386,7 @@ $ace = RT::Model::ACE->new(
 ( $ret, $msg ) = $ace->load_by_values(
     right_name     => 'ShowConfigTab',
     object         => RT->system,
-    principal_type => 'Group',
+    type => 'Group',
     principal_id   => $g2->principal_id
 );
 ok( $ret, "Look up ACE to be delegated: $msg" );
@@ -443,7 +443,7 @@ $ace = RT::Model::ACE->new(
 ( $ret, $msg ) = $ace->load_by_values(
     right_name     => 'DelegateRights',
     object         => RT->system,
-    principal_type => 'Group',
+    type => 'Group',
     principal_id   => $g1->principal_id
 );
 ok( $ret, "Look up ACE to be delegated: $msg" );
@@ -460,7 +460,7 @@ $ace = RT::Model::ACE->new(
 ( $ret, $msg ) = $ace->load_by_values(
     right_name     => 'ShowConfigTab',
     object         => RT->system,
-    principal_type => 'Group',
+    type => 'Group',
     principal_id   => $g2->principal_id
 );
 ok( $ret, "Look up ACE to be delegated: $msg" );
@@ -496,7 +496,7 @@ $ace = RT::Model::ACE->new(
 ( $ret, $msg ) = $ace->load_by_values(
     right_name     => 'DelegateRights',
     object         => RT->system,
-    principal_type => 'Group',
+    type => 'Group',
     principal_id   => $g1->principal_id
 );
 ok( $ret, "Look up ACE to be delegated: $msg" );
@@ -507,7 +507,7 @@ $ace = RT::Model::ACE->new(
 ( $ret, $msg ) = $ace->load_by_values(
     right_name     => 'ShowConfigTab',
     object         => RT->system,
-    principal_type => 'Group',
+    type => 'Group',
     principal_id   => $g2->principal_id
 );
 ok( $ret, "Look up ACE to be delegated: $msg" );
@@ -534,7 +534,7 @@ sub clear_acls_and_groups {
         = RT::Model::ACECollection->new( current_user => RT->system_user );
     foreach (@principals) {
         $acl->limit_to_principal(
-            type => $$_->principal_object->principal_type,
+            type => $$_->principal_object->type,
             id   => $$_->principal_object->id
         );
     }

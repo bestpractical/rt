@@ -222,7 +222,7 @@ sub create {
     # When creating this user, set up a principal id for it.
     my $principal    = RT::Model::Principal->new;
     my $principal_id = $principal->create(
-        principal_type => 'User',
+        type => 'User',
         disabled       => $args{'disabled'},
     );
 
@@ -431,7 +431,7 @@ sub _bootstrap_create {
     # When creating this user, set up a principal id for it.
     my $principal = RT::Model::Principal->new( current_user => RT::CurrentUser->new( _bootstrap => 1 ) );
     my ( $principal_id, $pmsg ) = $principal->create(
-        principal_type => 'User',
+        type => 'User',
         disabled       => '0'
     );
 
@@ -838,8 +838,8 @@ sub principal_object {
     unless ( $obj->id ) {
         Jifty->log->fatal( 'No principal for user #' . $self->id );
         return undef;
-    } elsif ( $obj->principal_type ne 'User' ) {
-        Jifty->log->fatal( 'User #' . $self->id . ' has principal of ' . $obj->principal_type . ' type' );
+    } elsif ( $obj->type ne 'User' ) {
+        Jifty->log->fatal( 'User #' . $self->id . ' has principal of ' . $obj->type . ' type' );
         return undef;
     }
     return $obj;

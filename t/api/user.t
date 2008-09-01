@@ -87,7 +87,7 @@ ok($user->privileged, "User 'root' is privileged again");
 
 ok(my $u = RT::Model::User->new(current_user => RT->system_user));
 ok($u->load(1), "Loaded the first user");
-is($u->principal_object->principal_type, 'User' , "Principal 1 is a user, not a group");
+is($u->principal_object->type, 'User' , "Principal 1 is a user, not a group");
 
 
 }

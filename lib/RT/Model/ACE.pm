@@ -76,7 +76,7 @@ sub table {'ACL'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
     column
-        principal_type => max_length is 25,
+        type => max_length is 25,
         type is 'varchar(25)', default is '';
     column principal_id => references RT::Model::Principal;
     column right_name => max_length is 25, type is 'varchar(25)', default is '';
@@ -120,7 +120,7 @@ use vars qw (
 Load an ACE by specifying a paramhash with the following fields:
 
               principal_id => undef,
-              principal_type => undef,
+              type => undef,
 	      right_name => undef,
 
         And either:
@@ -138,7 +138,7 @@ sub load_by_values {
     my $self = shift;
     my %args = (
         principal_id   => undef,
-        principal_type => undef,
+        type => undef,
         right_name     => undef,
         object         => undef,
         object_id      => undef,
@@ -147,7 +147,7 @@ sub load_by_values {
     );
 
     my $princ_obj;
-    ( $princ_obj, $args{'principal_type'} ) = $self->canonicalize_principal( $args{'principal_id'}, $args{'principal_type'} );
+    ( $princ_obj, $args{'type'} ) = $self->canonicalize_principal( $args{'principal_id'}, $args{'type'} );
 
     unless ( $princ_obj->id ) {
         return ( 0, _( 'Principal %1 not found.', $args{'principal_id'} ) );
@@ -160,7 +160,7 @@ sub load_by_values {
 
     $self->load_by_cols(
         principal_id   => $princ_obj->id,
-        principal_type => $args{'principal_type'},
+        type => $args{'type'},
         right_name     => $args{'right_name'},
         object_type    => $object_type,
         object_id      => $object_id
@@ -183,7 +183,7 @@ sub load_by_values {
 PARAMS is a parameter hash with the following elements:
 
    principal_id => The id of an RT::Model::Principal object
-   principal_type => "User" "Group" or any Role type
+   type => "User" "Group" or any Role type
    right_name => the name of a right. in any case
    delegated_by => The Principal->id of the user delegating the right
    delegated_from => The id of the ACE which this new ACE is delegated from
@@ -211,7 +211,7 @@ sub create {
     my $self = shift;
     my %args = (
         principal_id   => undef,
-        principal_type => undef,
+        type => undef,
         right_name     => undef,
         object         => undef,
         @_
@@ -235,7 +235,7 @@ sub create {
 
     # {{{ Validate the principal
     my $princ_obj;
-    ( $princ_obj, $args{'principal_type'} ) = $self->canonicalize_principal( $args{'principal_id'}, $args{'principal_type'} );
+    ( $princ_obj, $args{'type'} ) = $self->canonicalize_principal( $args{'principal_id'}, $args{'type'} );
 
     unless ( $princ_obj->id ) {
         return ( 0, _( 'Principal %1 not found.', $args{'principal_id'} ) );
@@ -297,7 +297,7 @@ sub create {
     # Make sure the right doesn't already exist.
     $self->load_by_cols(
         principal_id   => $princ_obj->id,
-        principal_type => $args{'principal_type'},
+        type => $args{'type'},
         right_name     => $args{'right_name'},
         object_type    => $args{'object_type'},
         object_id      => $args{'object_id'},
@@ -310,7 +310,7 @@ sub create {
 
     my $id = $self->SUPER::create(
         principal_id   => $princ_obj->id,
-        principal_type => $args{'principal_type'},
+        type => $args{'type'},
         right_name     => $args{'right_name'},
         object_type    => ref( $args{'object'} ),
         object_id      => $args{'object'}->id,
@@ -354,7 +354,7 @@ sub delegate {
         return ( 0, _("Right not loaded.") );
     }
     my $princ_obj;
-    ( $princ_obj, $args{'principal_type'} ) = $self->canonicalize_principal( $args{'principal_id'}, $args{'principal_type'} );
+    ( $princ_obj, $args{'type'} ) = $self->canonicalize_principal( $args{'principal_id'}, $args{'type'} );
 
     unless ( $princ_obj->id ) {
         return ( 0, _( 'Principal %1 not found.', $args{'principal_id'} ) );
@@ -397,7 +397,7 @@ sub delegate {
     # Make sure the right doesn't already exist.
     $delegated_ace->load_by_cols(
         principal_id   => $princ_obj->id,
-        principal_type => 'Group',
+        type => 'Group',
         right_name     => $self->__value('right_name'),
         object_type    => $self->__value('object_type'),
         object_id      => $self->__value('object_id'),
@@ -409,7 +409,7 @@ sub delegate {
     }
     my $id = $delegated_ace->SUPER::create(
         principal_id   => $princ_obj->id,
-        principal_type => 'Group',                         # do we want to hardcode this?
+        type => 'Group',                         # do we want to hardcode this?
         right_name     => $self->__value('right_name'),
         object_type    => $self->__value('object_type'),
         object_id      => $self->__value('object_id'),
@@ -541,7 +541,7 @@ sub _bootstrap_create {
         $user->load( $args{'UserId'} );
         delete $args{'UserId'};
         $args{'principal_id'}   = $user->principal_id;
-        $args{'principal_type'} = 'User';
+        $args{'type'} = 'User';
     }
 
     my $id = $self->SUPER::create(%args);
@@ -658,12 +658,12 @@ sub _value {
 
 
 
-=head2 _canonicalize_principal (principal_id, principal_type)
+=head2 _canonicalize_principal (principal_id, type)
 
 Takes a principal id and an optional principal type.
 
 If the principal is a user, resolves it to the proper acl equivalence group.
-Returns a tuple of  (RT::Model::Principal, principal_type)  for the principal we really want to work with
+Returns a tuple of  (RT::Model::Principal, type)  for the principal we really want to work with
 
 =cut
 

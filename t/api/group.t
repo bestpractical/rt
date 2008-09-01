@@ -92,7 +92,7 @@ is($group_3->has_member_recursively($principal_2), undef, "group 3 has member 2 
 
 ok(my $u = RT::Model::Group->new(current_user => RT->system_user));
 ok($u->load(4), "Loaded the first user");
-is($u->principal_object->principal_type , 'Group' , "Principal 4 is a group");
+is($u->principal_object->type , 'Group' , "Principal 4 is a group");
 
 
 }

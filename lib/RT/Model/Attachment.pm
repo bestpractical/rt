@@ -78,7 +78,8 @@ sub table {'Attachments'}
 use base 'RT::Record';
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column transaction_id => references RT::Model::Transaction;
+    column transaction_id => references RT::Model::Transaction,
+        is mandatory;
     column
         message_id => max_length is 200,
         type is 'varchar(200)', default is '';
@@ -438,8 +439,14 @@ sub addresses {
 
     my %data                 = ();
     my $current_user_address = lc $self->current_user->user_object->email;
-    my $correspond           = lc $self->transaction_obj->ticket_obj->queue_obj->correspond_address;
-    my $comment              = lc $self->transaction_obj->ticket_obj->queue_obj->comment_address;
+
+    my $object = $self->transaction->object;
+    my ($correspond, $comment) = ('', '');
+    if ( $object->can('queue') ) {
+        $correspond = lc $object->queue->correspond_address;
+        $comment    = lc $object->queue->comment_address;
+    }
+
     foreach my $hdr (qw(From To Cc Bcc RT-Send-Cc RT-Send-Bcc)) {
         my @Addresses;
         my $line = $self->get_header($hdr);

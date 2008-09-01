@@ -403,7 +403,7 @@ sub _create {
     # When creating this group, set up a principal id for it.
     my $principal = RT::Model::Principal->new;
     my ( $principal_id, $msg ) = $principal->create(
-        principal_type => 'Group',
+        type => 'Group',
     );
 
     $self->SUPER::create(
@@ -1292,7 +1292,7 @@ sub principal_object {
         $self->{'principal_object'} = RT::Model::Principal->new;
         $self->{'principal_object'}->load_by_cols(
             id             => $self->id,
-            principal_type => 'Group'
+            type => 'Group'
         );
     }
     return $self->{'principal_object'};

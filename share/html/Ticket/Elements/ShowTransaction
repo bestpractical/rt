@@ -147,8 +147,8 @@ unless ( $type_class ) {
 }
 
 my $TicketString = '';
-if ( $ticket->id != $transaction->ticket ) {
-    $TicketString = "Ticket " . $transaction->ticket . ": ";
+if ( $ticket->id != $transaction->object_id ) {
+    $TicketString = "Ticket " . $transaction->object_id . ": ";
 }
 
 my $time_taken = '';
@@ -166,7 +166,7 @@ if ( $type =~ /EmailRecord$/ ) {
 
     $titlebar_commands .=
         "[<a target=\"_blank\" href=\"$email_record_path?id="
-      . $transaction->ticket
+      . $transaction->object_id
       . "&Transaction="
       . $transaction->id
       . "&Attachment="
@@ -180,12 +180,12 @@ if ( $type =~ /EmailRecord$/ ) {
 else {
 
     if ( $attachments->[0] && $show_title_bar_commands ) {
-        my $ticket = $transaction->ticket_obj;
+        my $ticket = $transaction->object;
         my $can_modify = $ticket->current_user_has_right('ModifyTicket');
         if ( $can_modify || $ticket->current_user_has_right('ReplyToTicket') ) {
             $titlebar_commands .=
                 "[<a href=\"".$update_path
-              . "?id=" . $transaction->ticket
+              . "?id=" . $transaction->object_id
               . "&QuoteTransaction=" . $transaction->id
               . "&action=respond\">"
               . _('Reply')
@@ -194,7 +194,7 @@ else {
         if ( $can_modify || $ticket->current_user_has_right('CommentOnTicket') ) {
             $titlebar_commands .=
                 "[<a href=\"".$update_path."?id="
-              . $transaction->ticket
+              . $transaction->object_id
               . "&QuoteTransaction="
               . $transaction->id
               . "&action=comment\">"
@@ -203,7 +203,7 @@ else {
         if ( $ticket->current_user_has_right('ForwardMessage') ) {
             $titlebar_commands .=
                 "[<a href=\"". $forward_path
-              . "?id=". $transaction->ticket
+              . "?id=". $transaction->object_id
               . "&QuoteTransaction=". $transaction->id
               . "\">". _('Forward') . "</a>]";
         }

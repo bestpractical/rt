@@ -92,7 +92,7 @@ sub _init {
     );
     $self->limit(
         alias  => $self->principals_alias,
-        column => 'principal_type',
+        column => 'type',
         value  => 'User',
     );
 
@@ -430,7 +430,7 @@ sub who_have_role_right {
 
     $self->limit(
         alias       => $acl,
-        column      => 'principal_type',
+        column      => 'type',
         value       => "$groups.Type",
         quote_value => 0,
     );
@@ -504,7 +504,7 @@ sub who_have_group_right {
     # Find only members of groups that have the right.
     $self->limit(
         alias  => $acl,
-        column => 'principal_type',
+        column => 'type',
         value  => 'Group',
     );
 

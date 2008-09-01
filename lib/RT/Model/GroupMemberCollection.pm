@@ -91,7 +91,7 @@ sub limit_to_users {
 
     $self->limit(
         alias            => $principals,
-        column           => 'principal_type',
+        column           => 'type',
         value            => 'User',
         entry_aggregator => 'OR',
     );
@@ -120,7 +120,7 @@ sub limit_to_groups {
 
     $self->limit(
         alias            => $principals,
-        column           => 'principal_type',
+        column           => 'type',
         value            => 'Group',
         entry_aggregator => 'OR',
     );

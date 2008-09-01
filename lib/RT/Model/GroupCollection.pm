@@ -104,7 +104,7 @@ sub implicit_clauses {
     # searches in some DBs.
     $self->limit(
         alias  => $self->{'princalias'},
-        column => 'principal_type',
+        column => 'type',
         value  => 'Group',
     );
 

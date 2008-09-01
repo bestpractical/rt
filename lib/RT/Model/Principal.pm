@@ -60,8 +60,14 @@ use RT::Model::User;
 
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column principal_type => type is 'text';
-    column disabled       => type is 'integer', default is '0';
+    column type =>
+        type is 'varchar(10)',
+        max_length is 10,
+        is mandatory;
+    column disabled =>
+        type is 'integer',
+        is mandatory,
+        default is 0;
 };
 
 sub table {'Principals'}
@@ -80,7 +86,7 @@ Returns undef, otherwise
 
 sub is_group {
     my $self = shift;
-    if ( lc( $self->principal_type || '' ) eq 'group' ) {
+    if ( lc( $self->type || '' ) eq 'group' ) {
         return 1;
     }
     return undef;
@@ -97,7 +103,7 @@ Returns undef, otherwise
 
 sub is_user {
     my $self = shift;
-    if ( $self->principal_type eq 'User' ) {
+    if ( $self->type eq 'User' ) {
         return (1);
     } else {
         return undef;
@@ -114,23 +120,11 @@ Returns the user or group associated with this principal
 
 sub object {
     my $self = shift;
-
-    unless ( $self->{'object'} ) {
-        if ( $self->is_user ) {
-            $self->{'object'} = RT::Model::User->new;
-        } elsif ( $self->is_group ) {
-            $self->{'object'} = RT::Model::Group->new;
-        } else {
-            return (undef);
-        }
-        $self->{'object'}->load( $self->id() );
-    }
-    return ( $self->{'object'} );
-
+    my $model = 'RT::Model::'. $self->__value('type');
+    my $obj = $model->new;
+    $obj->load( $self->id );
+    return $obj;
 }
-
-
-
 
 =head2 grant_right  { right => RIGHTNAME, object => undef }
 
@@ -162,13 +156,11 @@ sub grant_right {
 
     # If it's a user, we really want to grant the right to their
     # user equivalence group
-    return (
-        $ace->create(
-            right_name     => $args{'right'},
-            object         => $args{'object'},
-            principal_type => $type,
-            principal_id   => $self->id
-        )
+    return $ace->create(
+        right_name    => $args{'right'},
+        object        => $args{'object'},
+        type          => $type,
+        principal_id  => $self->id,
     );
 }
 
@@ -209,7 +201,7 @@ sub revoke_right {
     $ace->load_by_values(
         right_name     => $args{'right'},
         object         => $args{'object'},
-        principal_type => $type,
+        type => $type,
         principal_id   => $self->id
     );
 
@@ -396,7 +388,7 @@ sub _has_group_right {
         "(ACL.right_name = 'SuperUser' OR ACL.right_name = '$right') "
 
         # Never find disabled groups.
-        . "AND Principals.id = ACL.principal_id " . "AND Principals.principal_type = 'Group' " . "AND Principals.disabled = 0 "
+        . "AND Principals.id = ACL.principal_id " . "AND Principals.type = 'Group' " . "AND Principals.disabled = 0 "
 
         # See if the principal is a member of the group recursively or _is the rightholder_
         # never find recursively disabled group members
@@ -447,13 +439,13 @@ sub _has_role_right {
         . "AND ( Principals.disabled = 0 OR Principals.disabled IS NULL) " . "AND (CachedGroupMembers.disabled = 0 OR CachedGroupMembers.disabled IS NULL )"
 
         # We always grant rights to Groups
-        . "AND Principals.id = Groups.id " . "AND Principals.principal_type = 'Group' "
+        . "AND Principals.id = Groups.id " . "AND Principals.type = 'Group' "
 
         # See if the principal is a member of the group recursively or _is the rightholder_
         # never find recursively disabled group members
         # also, check to see if the right is being granted _directly_ to this principal,
         #  as is the case when we want to look up group rights
-        . "AND Principals.id = CachedGroupMembers.group_id " . "AND CachedGroupMembers.member_id = " . $self->id . " " . "AND ACL.principal_type = Groups.type ";
+        . "AND Principals.id = CachedGroupMembers.group_id " . "AND CachedGroupMembers.member_id = " . $self->id . " " . "AND ACL.type = Groups.type ";
 
     my (@object_clauses);
     foreach my $obj ( @{ $args{'equiv_objects'} } ) {
@@ -526,7 +518,7 @@ sub _get_principal_type_for_acl {
     if ( $self->is_group && $self->object->domain =~ /Role$/ ) {
         $type = $self->object->type;
     } else {
-        $type = $self->principal_type;
+        $type = $self->type;
     }
 
     return ($type);

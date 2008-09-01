@@ -114,13 +114,13 @@ sub _HandleArgument {
         Jifty->log->info("Principal #$instance is disabled => skip");
         return;
     }
-    if ( !$obj->principal_type ) {
+    if ( !$obj->type ) {
         Jifty->log->crit("Principal #$instance has empty type");
     }
-    elsif ( lc $obj->principal_type eq 'user' ) {
+    elsif ( lc $obj->type eq 'user' ) {
         $self->__handle_user_argument( $obj->object );
     }
-    elsif ( lc $obj->principal_type eq 'group' ) {
+    elsif ( lc $obj->type eq 'group' ) {
         $self->__handle_group_argument( $obj->object );
     }
     else {

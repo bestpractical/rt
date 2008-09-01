@@ -733,7 +733,7 @@ sub brief_description {
         return _("No transaction type specified");
     }
 
-    my $obj_type = $self->friendlyobject_type;
+    my $obj_type = $self->friendly_object_type;
 
     if ( $type eq 'Create' ) {
         return ( _( "%1 Created", $obj_type ) );
@@ -1001,7 +1001,6 @@ sub _set {
 }
 
 
-
 =head2 _value
 
 Takes the name of a table column.
@@ -1093,13 +1092,24 @@ sub current_user_can_see {
 
 
 sub ticket {
+    # XXX: too early for deprecation, a lot of usage
+    #require Carp; Carp::confess("use object method instead and check type");
     my $self = shift;
+    unless ( $self->object_type eq 'RT::Model::Ticket' ) {
+        require Carp; Carp::confess("ticket method is called on txn that belongs not to ticket");
+    }
     return $self->object_id;
+
 }
 
 sub ticket_obj {
+    # XXX: too early for deprecation, a lot of usage
+    #require Carp; Carp::confess("use object method instead and check type");
     my $self = shift;
-    return $self->object;
+    unless ( $self->object_type eq 'RT::Model::Ticket' ) {
+        require Carp; Carp::confess("ticket_obj method is called on txn that belongs not to ticket");
+    }
+    return $self->object_id;
 }
 
 sub old_value {
@@ -1135,7 +1145,7 @@ sub object {
     return $object;
 }
 
-sub friendlyobject_type {
+sub friendly_object_type {
     my $self = shift;
     my $type = $self->object_type or return undef;
     $type =~ s/^RT::Model:://;

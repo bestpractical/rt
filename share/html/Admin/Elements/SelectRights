@@ -85,7 +85,7 @@
     # to just be the same table. or _maybe_ that we want an object db.
     my $princ = RT::Model::Principal->new(current_user => RT->system_user);
     $princ->load($principal_id);
-    if ($princ->principal_type eq 'User') {
+    if ($princ->type eq 'User') {
     my $group = RT::Model::Group->new(current_user => RT->system_user);
         $group->load_acl_equivalence_group($princ);
         $principal_id = $group->principal_id;
@@ -112,7 +112,7 @@
 </%INIT>
     
 <%ARGS>
-$principal_type => undef
+$type => undef
 $principal_id => undef
 $object =>undef
 </%ARGS>
