@@ -678,7 +678,7 @@ sub set_disabled {
     my $cached_submembers = RT::Model::CachedGroupMemberCollection->new;
 
     $cached_submembers->limit(
-        column   => 'immediate_parent_id',
+        column   => 'immediate_parent',
         operator => '=',
         value    => $self->id
     );

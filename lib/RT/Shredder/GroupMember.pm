@@ -71,7 +71,7 @@ sub __depends_on {
 
     my $objs = RT::Model::CachedGroupMemberCollection->new;
     $objs->limit( column => 'member_id',           value => $self->member_id );
-    $objs->limit( column => 'immediate_parent_id', value => $self->group_id );
+    $objs->limit( column => 'immediate_parent', value => $self->group_id );
     push( @$list, $objs );
 
     # XXX: right delegations should be cleaned here

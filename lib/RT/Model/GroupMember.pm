@@ -300,7 +300,7 @@ sub delete {
     );
 
     $cached_submembers->limit(
-        column   => 'immediate_parent_id',
+        column   => 'immediate_parent',
         operator => '=',
         value    => $self->group_obj->id
     );

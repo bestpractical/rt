@@ -59,7 +59,7 @@ use Jifty::DBI::Record schema {
     column member_id           => references RT::Model::Principal,
         is mandatory;
     column via                 => references RT::Model::CachedGroupMember;
-    column immediate_parent_id => references RT::Model::CachedGroupMember;
+    column immediate_parent    => references RT::Model::CachedGroupMember;
     column disabled            => type is 'integer', is mandatory, default is '0';
 
 };
@@ -144,7 +144,7 @@ sub create {
     my $id = $self->SUPER::create(
         group_id            => $args{'group'}->id,
         member_id           => $args{'member'}->id,
-        immediate_parent_id => $args{'immediate_parent'}->id,
+        immediate_parent    => $args{'immediate_parent'},
         disabled            => $args{'disabled'},
         via                 => $args{'via'},
     );
@@ -369,7 +369,7 @@ Returns the RT::Model::Principal object for this group immediate_parent
 sub immediate_parent_obj {
     my $self      = shift;
     my $principal = RT::Model::Principal->new;
-    $principal->load( $self->immediate_parent_id );
+    $principal->load( $self->immediate_parent );
     return ($principal);
 }
 
