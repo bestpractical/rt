@@ -54,11 +54,13 @@ use base qw/RT::Record/;
 
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column group_id            => references RT::Model::Group;
-    column member_id           => references RT::Model::Principal;
+    column group_id            => references RT::Model::Group,
+        is mandatory;
+    column member_id           => references RT::Model::Principal,
+        is mandatory;
     column via                 => references RT::Model::CachedGroupMember;
     column immediate_parent_id => references RT::Model::CachedGroupMember;
-    column disabled            => type is 'integer', default is '0';
+    column disabled            => type is 'integer', is mandatory, default is '0';
 
 };
 

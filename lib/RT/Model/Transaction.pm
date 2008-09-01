@@ -70,9 +70,9 @@ use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
 
     column
-        object_type => max_length is 64,
-        type is 'varchar(64)', default is '';
-    column object_id  => max_length is 11, type is 'int',         default is '0';
+        object_type => max_length is 64, type is 'varchar(64)',
+        is mandatory;
+    column object_id  => max_length is 11, type is 'int',         is mandatory;
     column time_taken => max_length is 11, type is 'int',         default is '0';
     column type       => max_length is 20, type is 'varchar(20)', default is '';
     column field      => max_length is 40, type is 'varchar(40)', default is '';
@@ -84,11 +84,11 @@ use Jifty::DBI::Record schema {
         type is 'varchar(255)', default is '';
     column
         reference_type => max_length is 255,
-        type is 'varchar(255)', default is '';
-    column old_reference => max_length is 11,  type is 'int',          default is '0';
-    column new_reference => max_length is 11,  type is 'int',          default is '0';
+        type is 'varchar(255)';
+    column old_reference => max_length is 11,  type is 'int';
+    column new_reference => max_length is 11,  type is 'int';
     column data          => max_length is 255, type is 'varchar(255)', default is '';
-    column creator       => max_length is 11,  type is 'int',          default is '0';
+    column creator       => references RT::Model::User;
     column created       => type is 'timestamp';
 
 };

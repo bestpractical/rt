@@ -63,7 +63,7 @@ use Jifty::DBI::Record schema {
 
     column name       => max_length is 200, type is 'varchar(200)', default is '';
     column type       => max_length is 200, type is 'varchar(200)', default is '';
-    column max_values => max_length is 11,  type is 'int',          default is '0';
+    column max_values => max_length is 11,  type is 'int',          default is 0;
     column pattern    => type is 'text',    default is '';
     column repeated   => max_length is 6,   type is 'smallint',     default is '0';
     column
