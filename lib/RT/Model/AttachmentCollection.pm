@@ -107,7 +107,7 @@ sub transaction_alias {
     my $res = $self->new_alias('Transactions');
     $self->limit(
         entry_aggregator => 'AND',
-        column           => 'transaction_id',
+        column           => 'transaction',
         value            => $res . '.id',
         quote_value      => 0,
     );
@@ -218,7 +218,7 @@ sub next {
     my $Attachment = $self->SUPER::next;
     return $Attachment unless $Attachment;
 
-    my $txn = $Attachment->transaction_obj;
+    my $txn = $Attachment->transaction;
     if ( $txn->__value('type') eq 'comment' ) {
         return $Attachment
             if $txn->current_user_has_right('ShowTicketcomments');

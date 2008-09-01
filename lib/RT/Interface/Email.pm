@@ -549,9 +549,8 @@ sub forward_transaction {
         # main content is not top most entity, we shouldn't loose
         # From/To/Cc headers that are on a top part
         my $attachments = RT::Model::AttachmentCollection->new( current_user => $txn->current_user );
-        $attachments->query_columns(qw(id parent transaction_id headers));
-        $attachments->limit( column => 'transaction_id', value => $txn->id );
-        $attachments->limit( column => 'parent',         value => 0 );
+        $attachments->query_columns(qw(id parent transaction headers));
+        $attachments->limit( column => 'transaction', value => $txn->id );
         $attachments->limit(
             column      => 'parent',
             operator    => 'IS',
@@ -569,7 +568,7 @@ sub forward_transaction {
     }
 
     my $attachments = RT::Model::AttachmentCollection->new( current_user => $txn->current_user );
-    $attachments->limit( column => 'transaction_id', value => $txn->id );
+    $attachments->limit( column => 'transaction', value => $txn->id );
     $attachments->limit(
         column   => 'id',
         operator => '!=',

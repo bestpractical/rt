@@ -113,7 +113,7 @@ sub __relates {
     }
 
     # Transaction
-    my $obj = $self->transaction_obj;
+    my $obj = $self->transaction;
     if ( defined $obj->id ) {
         push( @$list, $obj );
     } else {

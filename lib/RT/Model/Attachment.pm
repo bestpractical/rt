@@ -78,7 +78,7 @@ sub table {'Attachments'}
 use base 'RT::Record';
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column transaction_id => references RT::Model::Transaction;
+    column transaction => references RT::Model::Transaction;
     column
         message_id => max_length is 200,
         type is 'varchar(200)', default is '';
@@ -102,7 +102,7 @@ Create a new attachment. Takes a paramhash:
     
     'Attachment' Should be a single MIME body with optional subparts
     'parent' is an optional id of the parent attachment
-    'transaction_id' is the mandatory id of the transaction this attachment is associated with.;
+    'transaction' is the mandatory id of the transaction this attachment is associated with.;
 
 =cut
 
@@ -110,7 +110,7 @@ sub create {
     my $self = shift;
     my %args = (
         id             => 0,
-        transaction_id => 0,
+        transaction => 0,
         parent         => 0,
         attachment     => undef,
         @_
@@ -120,7 +120,7 @@ sub create {
     my $Attachment = $args{'attachment'};
 
     # if we didn't specify a ticket, we need to bail
-    unless ( $args{'transaction_id'} ) {
+    unless ( $args{'transaction'} ) {
         Jifty->log->fatal( "RT::Model::Attachment->create couldn't, as you didn't specify a transaction" );
         return (0);
     }
@@ -146,7 +146,7 @@ sub create {
     # and we should act accordingly.
     unless ( defined $Attachment->bodyhandle ) {
         my ($id) = $self->SUPER::create(
-            transaction_id => $args{'transaction_id'},
+            transaction => $args{'transaction'},
             parent         => $args{'parent'},
             content_type   => $Attachment->mime_type,
             headers        => $Attachment->head->as_string,
@@ -161,7 +161,7 @@ sub create {
         foreach my $part ( $Attachment->parts ) {
             my $SubAttachment = RT::Model::Attachment->new();
             my ($id) = $SubAttachment->create(
-                transaction_id => $args{'transaction_id'},
+                transaction => $args{'transaction'},
                 parent         => $id,
                 attachment     => $part,
             );
@@ -178,7 +178,7 @@ sub create {
         my ( $content_encoding, $Body ) = $self->_encode_lob( $Attachment->bodyhandle->as_string, $Attachment->mime_type );
 
         my $id = $self->SUPER::create(
-            transaction_id   => $args{'transaction_id'},
+            transaction   => $args{'transaction'},
             content_type     => $Attachment->mime_type,
             content_encoding => $content_encoding,
             parent           => $args{'parent'},
@@ -212,27 +212,17 @@ sub __import {
     return ( $self->SUPER::create(%args) );
 }
 
-=head2 transaction_obj
+=head2 transaction
 
-Returns the transaction object asscoiated with this attachment.
+Returns the L<RT::Model::Transaction> object this attachment is asscoiated to.
 
 =cut
 
 sub transaction_obj {
-    my $self = shift;
-
-    unless ( $self->{_transaction_obj} ) {
-        $self->{_transaction_obj} = RT::Model::Transaction->new;
-        $self->{_transaction_obj}->load( $self->transaction_id );
-    }
-
-    unless ( $self->{_transaction_obj}->id ) {
-        Jifty->log->fatal( "Attachment " . $self->id . " can't find transaction " . $self->transaction_id . " which it is ostensibly part of. That's bad" );
-    }
-    return $self->{_transaction_obj};
+    require Carp; Carp::confess('use transaction method instead of transaction_obj');
 }
 
-=head2 parent_obj
+=head2 parent
 
 Returns a parent's L<RT::Model::Attachment> object if this attachment
 has a parent, otherwise returns undef.
@@ -240,12 +230,7 @@ has a parent, otherwise returns undef.
 =cut
 
 sub parent_obj {
-    my $self = shift;
-    return undef unless $self->parent;
-
-    my $parent = RT::Model::Attachment->new;
-    $parent->load_by_id( $self->parent );
-    return $parent;
+    require Carp; Carp::confess('use parent method instead of parent_obj');
 }
 
 =head2 children
@@ -340,7 +325,7 @@ Returns length of L</content> in bytes.
 sub content_length {
     my $self = shift;
 
-    return undef unless $self->transaction_obj->current_user_can_see;
+    return undef unless $self->transaction->current_user_can_see;
 
     my $len = $self->get_header('Content-Length');
     unless ( defined $len ) {
@@ -393,7 +378,7 @@ sub quote {
 
         $body =~ s/^/> /gm;
 
-        $body = '[' . $self->transaction_obj->creator_obj->name() . ' - ' . $self->transaction_obj->created_as_string() . "]:\n\n" . $body . "\n\n";
+        $body = '[' . $self->transaction->creator_obj->name() . ' - ' . $self->transaction->created_as_string() . "]:\n\n" . $body . "\n\n";
 
     } else {
         $body = "[Non-text message not quoted]\n\n";
@@ -438,8 +423,8 @@ sub addresses {
 
     my %data                 = ();
     my $current_user_address = lc $self->current_user->user_object->email;
-    my $correspond           = lc $self->transaction_obj->ticket_obj->queue_obj->correspond_address;
-    my $comment              = lc $self->transaction_obj->ticket_obj->queue_obj->comment_address;
+    my $correspond           = lc $self->transaction->ticket_obj->queue_obj->correspond_address;
+    my $comment              = lc $self->transaction->ticket_obj->queue_obj->comment_address;
     foreach my $hdr (qw(From To Cc Bcc RT-Send-Cc RT-Send-Bcc)) {
         my @Addresses;
         my $line = $self->get_header($hdr);
@@ -608,7 +593,7 @@ sub _split_headers {
 sub encrypt {
     my $self = shift;
 
-    my $txn = $self->transaction_obj;
+    my $txn = $self->transaction;
     return ( 0, _('Permission Denied') ) unless $txn->current_user_can_see;
     return ( 0, _('Permission Denied') )
         unless $txn->ticket_obj->current_user_has_right('ModifyTicket');
@@ -665,7 +650,7 @@ sub encrypt {
 sub decrypt {
     my $self = shift;
 
-    my $txn = $self->transaction_obj;
+    my $txn = $self->transaction;
     return ( 0, _('Permission Denied') ) unless $txn->current_user_can_see;
     return ( 0, _('Permission Denied') )
         unless $txn->ticket_obj->current_user_has_right('ModifyTicket');
@@ -713,7 +698,7 @@ sub _value {
         return ( $self->__value( $field, @_ ) );
     }
 
-    return undef unless $self->transaction_obj->current_user_can_see;
+    return undef unless $self->transaction->current_user_can_see;
     return $self->__value( $field, @_ );
 }
 

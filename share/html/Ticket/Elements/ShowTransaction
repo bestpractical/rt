@@ -157,7 +157,7 @@ $time_taken = $transaction->time_taken . " min"
 
 unless ($attachments) { 
     my $attachments = $transaction->attachments;
-    $attachments->query_columns( qw( id filename content_type headers subject parent content_encoding content_type transaction_id) );
+    $attachments->query_columns( qw( id filename content_type headers subject parent content_encoding content_type transaction) );
     $attachments = $attachments->items_array_ref();
 }
 my $titlebar_commands = '';
