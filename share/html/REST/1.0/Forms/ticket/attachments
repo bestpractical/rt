@@ -94,7 +94,7 @@ if ($aid) {
 	push @data, [ subject    => $attachment->subject   ];
 	push @data, [ Creator    => $attachment->creator   ];
 	push @data, [ Created    => $attachment->created   ];
-	push @data, [ Transaction    => $attachment->transaction_id   ];
+	push @data, [ Transaction    => $attachment->transaction->id   ];
 	push @data, [ Parent    => $attachment->parent   ];
 	push @data, [ message_id    => $attachment->message_id   ];
 	push @data, [ Filename    => $attachment->filename   ];

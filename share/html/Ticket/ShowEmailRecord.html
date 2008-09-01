@@ -57,7 +57,7 @@ my $show_content = sub  {
         return;
     }
     my $href = RT->config->get('WebPath') .'/Ticket/Attachment/'
-        . $attach->transaction_id .'/'. $attach->id .'/'
+        . $attach->transaction->id .'/'. $attach->id .'/'
         . $m->interp->apply_escapes( $attach->filename, 'u' );
     $m->out( '<a href="'. $href  .'">'. _('download') .'</a>' );
 };
@@ -84,7 +84,7 @@ $AttachmentObj->load($attachment) || abort(_("Attachment '%1' could not be loade
 unless ( $AttachmentObj->id ) {
     abort(_("Attachment '%1' could not be loaded", $attachment));
 }
-unless ($AttachmentObj->transaction_id() == $transaction ) {
+unless ($AttachmentObj->transaction->id == $transaction ) {
     abort(_("Attachment '%1' could not be loaded", $attachment));
 }
 
