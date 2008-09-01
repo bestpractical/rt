@@ -113,14 +113,14 @@ sub __relates {
     }
 
     # Transaction
-    my $obj = $self->transaction;
+    my $obj = $self->transaction_obj;
     if ( defined $obj->id ) {
         push( @$list, $obj );
     } else {
         my $rec = $args{'shredder'}->get_record( object => $self );
         $self = $rec->{'object'};
         $rec->{'state'} |= INVALID;
-        $rec->{'description'} = "Have no related transaction #" . $self->transaction->id . " object";
+        $rec->{'description'} = "Have no related transaction #" . $self->transaction_id . " object";
     }
 
     $deps->_push_dependencies(

@@ -685,7 +685,7 @@ sub _trans_limit {
             alias1  => $self->{_sql_transalias},
             column1 => 'id',
             table2  => RT::Model::AttachmentCollection->new,
-            column2 => 'transaction',
+            column2 => 'transaction_id',
         );
     }
 

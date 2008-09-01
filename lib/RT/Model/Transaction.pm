@@ -468,8 +468,8 @@ sub message {
 
         $self->{'message'} = RT::Model::AttachmentCollection->new();
         $self->{'message'}->limit(
-            column => 'transaction',
-            value  => $self->id,
+            column => 'transaction_id',
+            value  => $self->id
         );
         $self->{'message'}->children_of(0);
     } else {
@@ -665,7 +665,7 @@ sub attachments {
         return $self->{'attachments'};
     }
 
-    $self->{'attachments'}->limit( column => 'transaction', value => $self->id );
+    $self->{'attachments'}->limit( column => 'transaction_id', value => $self->id );
 
     # Get the self->{'attachments'} in the order they're put into
     # the database.  Arguably, we should be returning a tree
@@ -696,8 +696,8 @@ sub _attach {
 
     my $Attachment = RT::Model::Attachment->new;
     my ( $id, $msg ) = $Attachment->create(
-        transaction => $self,
-        attachment  => $mime_object
+        transaction_id => $self->id,
+        attachment     => $mime_object
     );
     return ( $Attachment, $msg || _("Attachment Created") );
 }
