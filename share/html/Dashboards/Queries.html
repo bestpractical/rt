@@ -55,6 +55,10 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
+% if (@searches) {
+<& Elements/HiddenSearches, searches => \@searches, Dashboard => $Dashboard &>
+% }
+
 <form action="<%RT->Config->Get('WebPath')%>/Dashboards/Queries.html" method="post" enctype="multipart/form-data" name="DashboardQueries">
 <input type="hidden" class="hidden" name="id" value="<%$Dashboard->Id%>" />
 <input type="hidden" class="hidden" name="Privacy" value="<%$Dashboard->Privacy%>" />
@@ -146,6 +150,7 @@ my $sel = $m->comp(
 );
 $m->comp('/Widgets/SelectionBox:process', %ARGS, self => $sel, nojs => 1);
 
+my @searches = $Dashboard->PossibleHiddenSearches;
 </%INIT>
 <%ARGS>
 $id => '' unless defined $id
