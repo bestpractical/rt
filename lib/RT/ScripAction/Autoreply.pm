@@ -91,8 +91,8 @@ sub set_return_address {
     my $friendly_name;
 
     if ( RT->config->get('UseFriendlyFromLine') ) {
-        $friendly_name = $self->ticket_obj->queue_obj->description
-          || $self->ticket_obj->queue_obj->name;
+        $friendly_name = $self->ticket_obj->queue->description
+          || $self->ticket_obj->queue->name;
     }
 
     $self->SUPER::set_return_address( @_, friendly_name => $friendly_name );

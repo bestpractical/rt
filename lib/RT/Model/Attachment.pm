@@ -635,7 +635,7 @@ sub encrypt {
         $type = qq{x-application-rt\/gpg-encrypted; original-type="$type"};
     }
 
-    my $queue = $txn->ticket_obj->queue_obj;
+    my $queue = $txn->ticket_obj->queue;
     my $encrypt_for;
     foreach my $address ( grep $_, $queue->correspond_address, $queue->comment_address, RT->config->get('CorrespondAddress'), RT->config->get('CommentAddress'), ) {
         my %res = RT::Crypt::GnuPG::get_keys_info( $address, 'private' );

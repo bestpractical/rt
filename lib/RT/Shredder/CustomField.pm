@@ -101,7 +101,7 @@ sub __relates {
     # Queue
     # Skip if it's global CF
     if ( $self->queue ) {
-        if ( $self->queue_obj && $self->queue_obj->id ) {
+        if ( $self->queue && $self->queue->id ) {
             push( @$list, $obj );
         } else {
             my $rec = $args{'shredder'}->get_record( object => $self );

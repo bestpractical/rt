@@ -100,10 +100,10 @@ sub set_recipients {
         #If we have a To, make the Ccs, Ccs, otherwise, promote them to To
         if (@To) {
             push( @Cc, $ticket->role_group("cc")->member_emails );
-            push( @Cc, $ticket->queue_obj->role_group("cc")->member_emails );
+            push( @Cc, $ticket->queue->role_group("cc")->member_emails );
         } else {
             push( @Cc, $ticket->role_group("cc")->member_emails );
-            push( @To, $ticket->queue_obj->role_group("cc")->member_emails );
+            push( @To, $ticket->queue->role_group("cc")->member_emails );
         }
     }
 
@@ -120,7 +120,7 @@ sub set_recipients {
     }
     if ( $arg =~ /\bAdmin_?Cc\b/i ) {
         push( @Bcc, $ticket->role_group("admin_cc")->member_emails );
-        push( @Bcc, $ticket->queue_obj->role_group("admin_cc")->member_emails );
+        push( @Bcc, $ticket->queue->role_group("admin_cc")->member_emails );
     }
 
     if ( RT->config->get('UseFriendlyToLine') ) {

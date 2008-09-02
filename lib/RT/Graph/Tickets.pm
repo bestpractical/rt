@@ -111,7 +111,7 @@ sub gv_escape($) {
 our ( %fill_cache, @available_colors ) = ();
 
 our %property_cb = (
-    Queue => sub { return $_[0]->queue_obj->name || $_[0]->queue },
+    Queue => sub { return $_[0]->queue->name || $_[0]->queue },
     CF => sub {
         my $values = $_[0]->custom_field_values( $_[1] );
         return join ', ', map $_->content, @{ $values->items_array_ref };

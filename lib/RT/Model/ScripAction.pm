@@ -183,7 +183,7 @@ sub template_obj {
         {
             my $tmptemplate = RT::Model::Template->new;
             my ( $ok, $err ) = $tmptemplate->load_queue_template(
-                queue => $self->{'_ticket_obj'}->queue_obj->id,
+                queue => $self->{'_ticket_obj'}->queue->id,
                 name  => $self->{'template_obj'}->name
             );
 

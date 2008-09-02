@@ -104,8 +104,8 @@ else {
 }
 my $queue_obj;
 if ($template_obj->id()) {
-  $queue = $template_obj->queue;
-  $queue_obj = $template_obj->queue_obj;
+  $queue_obj = $template_obj->queue;
+  $queue = $queue_obj->id;
 
   my @attribs = qw( description content queue name);
   my @aresults = update_record_object( attributes_ref => \@attribs, 

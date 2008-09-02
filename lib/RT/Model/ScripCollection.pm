@@ -312,7 +312,7 @@ sub _find_scrips {
         @_
     );
 
-    $self->limit_to_queue( $self->{'ticket_obj'}->queue_obj->id );    #Limit it to  $Ticket->queue_obj->id
+    $self->limit_to_queue( $self->{'ticket_obj'}->queue->id );    #Limit it to  $Ticket->queue->id
     $self->limit_to_global();
 
     # or to "global"

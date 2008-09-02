@@ -926,7 +926,7 @@ sub get_update_template {
     my $t    = shift;
 
     my $string;
-    $string .= "Queue: " . $t->queue_obj->name . "\n";
+    $string .= "Queue: " . $t->queue->name . "\n";
     $string .= "Subject: " . $t->subject . "\n";
     $string .= "Status: " . $t->status . "\n";
     $string .= "UpdateType: correspond\n";

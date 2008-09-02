@@ -118,7 +118,7 @@ sub commit {
             {
                 $crypt{$argument} = $attachment->get_header("X-RT-$argument");
             } else {
-                $crypt{$argument} = $self->ticket_obj->queue_obj->$argument();
+                $crypt{$argument} = $self->ticket_obj->queue->$argument();
             }
         }
         if ( $crypt{'sign'} || $crypt{'encrypt'} ) {
@@ -218,7 +218,7 @@ sub prepare {
 
     my $attachment = $self->transaction_obj->attachments->first;
     if ( $attachment
-        && !( $attachment->get_header('X-RT-Encrypt') || $self->ticket_obj->queue_obj->encrypt ) )
+        && !( $attachment->get_header('X-RT-Encrypt') || $self->ticket_obj->queue->encrypt ) )
     {
         $attachment->set_header( 'X-RT-Encrypt' => 1 )
             if $attachment->get_header("X-RT-Incoming-Encryption")
@@ -847,10 +847,10 @@ sub set_return_address {
     my $replyto;
 
     if ( $args{'is_comment'} ) {
-        $replyto = $self->ticket_obj->queue_obj->comment_address
+        $replyto = $self->ticket_obj->queue->comment_address
             || RT->config->get('CommentAddress');
     } else {
-        $replyto = $self->ticket_obj->queue_obj->correspond_address
+        $replyto = $self->ticket_obj->queue->correspond_address
             || RT->config->get('CorrespondAddress');
     }
 

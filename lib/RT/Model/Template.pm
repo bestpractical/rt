@@ -78,7 +78,7 @@ sub table {'Templates'}
 use base qw'RT::Record';
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column queue => max_length is 11,  type is 'int',          default is '0';
+    column queue => references RT::Model::Queue;
     column name  => max_length is 200, type is 'varchar(200)', default is '';
     column
         description => max_length is 255,
@@ -86,9 +86,9 @@ use Jifty::DBI::Record schema {
     column type => max_length is 16, type is 'varchar(16)', default is '';
     column content => type is 'text', default is '', filters are 'Jifty::DBI::Filter::utf8';
     column last_updated    => type is 'timestamp';
-    column last_updated_by => max_length is 11, type is 'int', default is '0';
-    column creator         => max_length is 11, type is 'int', default is '0';
+    column last_updated_by => references RT::Model::User;
     column created         => type is 'timestamp';
+    column creator         => references RT::Model::User;
 
 };
 
@@ -503,11 +503,12 @@ Helper function to call the template's queue's current_user_has_queue_right with
 
 sub current_user_has_queue_right {
     my $self = shift;
-    return ( $self->queue_obj->current_user_has_right(@_) );
+    return ( $self->queue->current_user_has_right(@_) );
 }
 
 
 sub queue_obj {
+    require Carp; Carp::confess("deprecated");
     my $self = shift;
     my $q    = RT::Model::Queue->new;
     $q->load( $self->__value('queue') );

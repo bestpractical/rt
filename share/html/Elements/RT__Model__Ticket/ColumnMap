@@ -78,12 +78,12 @@ $COLUMN_MAP = {
     queue => {
         attribute => 'queue',
         title     => 'Queue id',
-        value     => sub { return $_[0]->queue }
+        value     => sub { return $_[0]->queue_id }
     },
     queue_name => {
         attribute => 'queue',
         title     => 'queue',
-        value     => sub  { return $_[0]->queue_obj->name }
+        value     => sub  { return $_[0]->queue->name }
     },
     owner_name => {
         title     => 'Owner',

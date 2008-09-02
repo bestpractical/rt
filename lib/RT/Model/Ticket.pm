@@ -1279,7 +1279,7 @@ sub set_queue {
         return ( 0, _("That queue does not exist") );
     }
 
-    if ( $Newqueue_obj->id == $self->queue_obj->id ) {
+    if ( $Newqueue_obj->id == $self->queue->id ) {
         return ( 0, _('That is the same value') );
     }
     unless (
@@ -1337,6 +1337,7 @@ Takes nothing. returns this ticket's queue object
 =cut
 
 sub queue_obj {
+    require Carp; Carp::carp('deprecated');
     my $self = shift;
 
     my $queue_obj = RT::Model::Queue->new;
@@ -2413,7 +2414,7 @@ sub validate_status {
     my $status = shift;
 
     #Make sure the status passed in is valid
-    unless ( $self->queue_obj->is_valid_status($status) ) {
+    unless ( $self->queue->is_valid_status($status) ) {
         return (undef);
     }
 
@@ -2481,7 +2482,7 @@ sub set_status {
 
     #When we close a ticket, set the 'resolved' attribute to now.
     # It's misnamed, but that's just historical.
-    if ( $self->queue_obj->is_inactive_status( $args{status} ) ) {
+    if ( $self->queue->is_inactive_status( $args{status} ) ) {
         $self->_set(
             column             => 'resolved',
             value              => $now->iso,
@@ -2872,7 +2873,7 @@ sub transactions {
 
 sub transaction_custom_fields {
     my $self = shift;
-    return $self->queue_obj->ticket_transaction_custom_fields;
+    return $self->queue->ticket_transaction_custom_fields;
 }
 
 
@@ -2931,7 +2932,7 @@ This method is called from L<RT::Model::Principal/has_right>.
 
 sub acl_equivalence_objects {
     my $self = shift;
-    return $self->queue_obj;
+    return $self->queue;
 
 }
 

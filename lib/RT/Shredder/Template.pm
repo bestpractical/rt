@@ -93,7 +93,7 @@ sub __relates {
     my $list = [];
 
     # Queue
-    my $obj = $self->queue_obj;
+    my $obj = $self->queue;
     if ( $obj && defined $obj->id ) {
         push( @$list, $obj );
     } else {

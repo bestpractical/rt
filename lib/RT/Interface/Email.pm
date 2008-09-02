@@ -348,7 +348,7 @@ sub send_email {
             {
                 $crypt{$argument} = $attachment->get_header("X-RT-$argument");
             } elsif ( $args{'ticket'} ) {
-                $crypt{$argument} = $args{'ticket'}->queue_obj->$argument();
+                $crypt{$argument} = $args{'ticket'}->queue->$argument();
             }
         }
 
@@ -631,7 +631,7 @@ sub forward_transaction {
         # XXX: what if want to forward txn of other object than ticket?
         my $obj = $txn->object;
         $subject = add_subject_tag( $subject, $obj );
-        $from = $obj->queue_obj->correspond_address
+        $from = $obj->queue->correspond_address
             || RT->config->get('CorrespondAddress');
     }
     $mail->head->set( subject => "Fwd: $subject" );
@@ -1025,7 +1025,7 @@ sub add_subject_tag {
         $ticket = $tmp;
     }
     my $id        = $ticket->id;
-    my $queue_tag = $ticket->queue_obj->subject_tag;
+    my $queue_tag = $ticket->queue->subject_tag;
 
     my $tag_re = RT->config->get('EmailSubjectTagRegex');
     unless ($tag_re) {

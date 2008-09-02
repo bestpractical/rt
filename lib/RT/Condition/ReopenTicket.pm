@@ -68,7 +68,7 @@ sub is_applicable {
         unless $txn->type eq "Status"
             || ( $txn->type eq "Set" && $txn->field eq "Status" );
 
-    my $queue = $self->ticket_obj->queue_obj;
+    my $queue = $self->ticket_obj->queue;
     return 0 unless $queue->is_inactive_status( $txn->old_value );
     return 0 unless $queue->is_active_status( $txn->new_value );
 
