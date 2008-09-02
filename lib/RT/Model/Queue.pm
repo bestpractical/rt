@@ -46,23 +46,11 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-=head1 name
+=head1 NAME
 
-  RT::Model::Queue - an RT queue object
-
-=head1 SYNOPSIS
-
-  use RT::Model::Queue;
-
-=head1 description
-
+RT::Model::Queue - an RT queue object
 
 =head1 METHODS
-
-=begin testing 
-
-use RT::Model::Queue;
-
 
 =cut
 
@@ -82,16 +70,16 @@ sub table {'Queues'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
 
-    column name => max_length is 200, type is 'varchar(200)', default is '';
+    column name => max_length is 200, type is 'varchar(200)', is mandatory, is distinct;
     column
         description => max_length is 255,
         type is 'varchar(255)', default is '';
     column
         correspond_address => max_length is 120,
-        type is 'varchar(120)', default is '';
+        type is 'varchar(120)';
     column
         comment_address => max_length is 120,
-        type is 'varchar(120)', default is '';
+        type is 'varchar(120)';
     column initial_priority => max_length is 11, type is 'int',      default is '0';
     column final_priority   => max_length is 11, type is 'int',      default is '0';
     column default_due_in   => max_length is 11, type is 'int',      default is '0';
@@ -99,7 +87,7 @@ use Jifty::DBI::Record schema {
     column created          => type is 'timestamp';
     column last_updated_by  => references RT::Model::User;
     column last_updated     => type is 'timestamp';
-    column disabled         => max_length is 6,  type is 'smallint', default is '0';
+    column disabled         => max_length is 6, type is 'smallint', is mandatory, default is '0';
 };
 our @DEFAULT_ACTIVE_STATUS   = qw(new open stalled);
 our @DEFAULT_INACTIVE_STATUS = qw(resolved rejected deleted);
@@ -346,33 +334,30 @@ sub create {
         return ( 0, _("No permission to create queues") );
     }
 
-    unless ( $self->validate_name( $args{'name'} ) ) {
-        return ( 0, _('Queue already exists') );
-    }
-
-    my %attrs = map { $_ => 1 } $self->readable_attributes;
+    my $sign = delete $args{'sign'};
+    my $encrypt = delete $args{'encrypt'};
 
     #TODO better input validation
     Jifty->handle->begin_transaction();
-    my $id = $self->SUPER::create( map { $_ => $args{$_} } grep exists $args{$_}, keys %attrs );
+    my $id = $self->SUPER::create( %args );
     unless ($id) {
         Jifty->handle->rollback();
-        return ( 0, _('Queue could not be Created') );
+        return ( 0, _('Queue could not be created') );
     }
 
     my $create_ret = $self->_create_role_groups();
     unless ($create_ret) {
         Jifty->handle->rollback();
-        return ( 0, _('Queue could not be Created') );
+        return ( 0, _('Queue could not be created') );
     }
     Jifty->handle->commit;
 
-    if ( defined $args{'sign'} ) {
+    if ( defined $sign ) {
         my ( $status, $msg ) = $self->set_sign( $args{'sign'} );
         Jifty->log->error("Couldn't set attribute 'sign': $msg")
             unless $status;
     }
-    if ( defined $args{'encrypt'} ) {
+    if ( defined $encrypt ) {
         my ( $status, $msg ) = $self->set_encrypt( $args{'encrypt'} );
         Jifty->log->error("Couldn't set attribute 'encrypt': $msg")
             unless $status;
@@ -422,35 +407,6 @@ sub load {
     return ( $self->id );
 
 }
-
-
-
-=head2 validatename name
-
-Takes a queue name. Returns true if it's an ok name for
-a new queue. Returns undef if there's already a queue by that name.
-
-=cut
-
-sub validate_name {
-    my $self = shift;
-    my $name = shift;
-
-    my $tempqueue = RT::Model::Queue->new( current_user => RT->system_user );
-    $tempqueue->load($name);
-
-    #If this queue exists, return undef
-    if ( $tempqueue->name() && $tempqueue->id != $self->id ) {
-        return (undef);
-    }
-
-    #If the queue doesn't exist, return 1
-    else {
-        return ( $self->SUPER::validate_name($name) );
-    }
-
-}
-
 
 =head2 set_sign
 
@@ -1014,9 +970,13 @@ sub _value {
 
 =head2 current_user_has_right
 
-Takes one argument. A textual string with the name of the right we want to check.
-Returns true if the current user has that right for this queue.
-Returns undef otherwise.
+Takes one argument. A textual string with the name of the right
+we want to check. Returns true if the current user has that right
+for this queue. Returns undef otherwise. If this queue is
+not loaded then check is done on the system level.
+
+See also </has_right>.
+
 
 =cut
 
@@ -1024,35 +984,34 @@ sub current_user_has_right {
     my $self  = shift;
     my $right = shift;
 
-    return (
-        $self->has_right(
-            principal => $self->current_user,
-            right     => $right
-        )
+    return $self->has_right(
+        @_,
+        principal => $self->current_user,
+        right     => $right,
     );
-
 }
-
-
 
 =head2 has_right
 
 Takes a param hash with the fields 'right' and 'principal'.
 Principal defaults to the current user.
+
 Returns true if the principal has that right for this queue.
-Returns undef otherwise.
+Returns false otherwise. If this queue is not loaded then
+check is done on the system level.
+
+See also </current_user_has_right>.
 
 =cut
 
-# TAKES: right and optional "Principal" which defaults to the current user
 sub has_right {
     my $self = shift;
     my %args = (
         right     => undef,
-        principal => $self->current_user,
+        principal => undef,
         @_
     );
-    my $principal = delete $args{'principal'};
+    my $principal = delete( $args{'principal'} ) || $self->current_user;
     unless ($principal) {
         Jifty->log->error("Principal undefined in Queue::has_right");
         return undef;
@@ -1060,7 +1019,5 @@ sub has_right {
 
     return $principal->has_right( %args, object => ( $self->id ? $self : RT->system ), );
 }
-
-
 
 1;
