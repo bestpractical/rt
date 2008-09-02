@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 78;
+use Test::More tests => 96;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -16,11 +16,22 @@ $user_obj->SetPrivileged(1);
 $user_obj->PrincipalObj->GrantRight(Right => 'ModifySelf');
 my $currentuser = RT::CurrentUser->new($user_obj);
 
+my $onlooker = RT::User->new($RT::SystemUser);
+($ret, $msg) = $onlooker->LoadOrCreateByEmail('onlooker@example.com');
+ok($ret, 'ACL test user creation');
+$onlooker->SetName('onlooker');
+$onlooker->SetPrivileged(1);
+($ret, $msg) = $onlooker->SetPassword('onlooker');
+
 my $queue = RT::Queue->new($RT::SystemUser);
 $queue->Create(Name => 'SearchQueue'.$$);
-$user_obj->PrincipalObj->GrantRight(Right => 'SeeQueue',   Object => $queue);
-$user_obj->PrincipalObj->GrantRight(Right => 'ShowTicket', Object => $queue);
-$user_obj->PrincipalObj->GrantRight(Right => 'OwnTicket',  Object => $queue);
+
+for my $user ($user_obj, $onlooker) {
+    $user->PrincipalObj->GrantRight(Right => 'ModifySelf');
+    for my $right (qw/SeeQueue ShowTicket OwnTicket/) {
+        $user->PrincipalObj->GrantRight(Right => $right, Object => $queue);
+    }
+}
 
 ok $m->login(customer => 'customer'), "logged in";
 
@@ -176,3 +187,51 @@ $m->get("/Dashboards/Modify.html?id=$id");
 $m->content_lacks("different dashboard", "dashboard was deleted");
 $m->content_contains("Failed to load dashboard $id");
 
+$user_obj->PrincipalObj->GrantRight(Right => "SuperUser", Object => $RT::System);
+
+# now test that we warn about searches others can't see
+# first create a personal saved search...
+$m->get_ok($url."Search/Build.html");
+$m->follow_link_ok({text => 'Advanced'});
+$m->form_with_fields('Query');
+$m->field(Query => "id > 0");
+$m->submit;
+
+$m->form_with_fields('SavedSearchDescription');
+$m->field(SavedSearchDescription => "personal search");
+$m->click_button(name => "SavedSearchSave");
+
+# then the system-wide dashboard
+$m->get_ok($url."Dashboards/Modify.html?Create=1");
+
+$m->form_name('ModifyDashboard');
+$m->field("Name" => 'system dashboard');
+$m->field("Privacy" => 'RT::System-1');
+$m->content_lacks('Delete', "Delete button hidden because we are creating");
+$m->click_button(value => 'Save Changes');
+$m->content_lacks("No permission to create dashboards");
+$m->content_contains("Saved dashboard system dashboard");
+
+$m->follow_link_ok({text => 'Queries'});
+
+$m->form_name('DashboardQueries');
+$m->field('Searches-Available' => ['8-RT::User-22']); # XXX: :( :(
+$m->click_button(name => 'add');
+$m->content_contains("Dashboard updated");
+
+$m->content_contains("The following queries may not be visible to all users who can see this dashboard.");
+
+$m->follow_link_ok({text => 'Show'});
+$m->content_contains("personal search", "saved search shows up");
+$m->content_contains("dashboard test", "matched ticket shows up");
+
+# make sure the onlooker can't see the search...
+$onlooker->PrincipalObj->GrantRight(Right => 'SeeDashboard', Object => $RT::System);
+
+my $omech = RT::Test::Web->new;
+ok $omech->login(onlooker => 'onlooker'), "logged in";
+$omech->get_ok("/Dashboards");
+
+$omech->follow_link_ok({text => 'system dashboard'});
+$omech->content_lacks("personal search", "saved search doesn't show up");
+$omech->content_lacks("dashboard test", "matched ticket doesn't show up");
