@@ -79,7 +79,7 @@ use base qw'RT::Record';
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
     column queue => references RT::Model::Queue;
-    column name  => max_length is 200, type is 'varchar(200)', default is '';
+    column name  => max_length is 200, type is 'varchar(200)', is mandatory;
     column
         description => max_length is 255,
         type is 'varchar(255)', default is '';
@@ -89,46 +89,16 @@ use Jifty::DBI::Record schema {
     column last_updated_by => references RT::Model::User;
     column created         => type is 'timestamp';
     column creator         => references RT::Model::User;
-
 };
-
-sub _set {
-    my $self = shift;
-
-    unless ( $self->current_user_has_queue_right('ModifyTemplate') ) {
-        return ( 0, _('Permission Denied') );
-    }
-    return $self->SUPER::_set(@_);
-}
-
-
-
-=head2 _value
-
-Takes the name of a table column.
-Returns its value as a string, if the user passes an ACL check
-
-
-
-
-
-=cut
-
-sub _value {
-    my $self = shift;
-
-    unless ( $self->current_user_has_queue_right('ShowTemplate') ) {
-        return undef;
-    }
-    return $self->__value(@_);
-
-}
-
-
 
 =head2 load <identifer>
 
-Load a template, either by number or by name
+Load a template, either by number (id) or by name.
+
+Note that loading by name is ambiguose and can B<randomly> load
+either global or queue template when both exist.
+
+See also L</load_global_template> and L</load_queue_template>.
 
 =cut
 
@@ -143,8 +113,6 @@ sub load {
     return $self->load_by_id($identifier);
 }
 
-
-
 =head2 load_global_template name
 
 Load the global template with the name name
@@ -154,13 +122,10 @@ Load the global template with the name name
 sub load_global_template {
     my $self = shift;
     my $id   = shift;
-
     return ( $self->load_queue_template( queue => 0, name => $id ) );
 }
 
-
-
-=head2  load_queue_template (queue => QUEUEID, name => name)
+=head2 load_queue_template (queue => QUEUEID, name => name)
 
 Loads the queue template named name for queue QUEUE.
 
@@ -175,10 +140,7 @@ sub load_queue_template {
     );
 
     return ( $self->load_by_cols( name => $args{'name'}, queue => $args{'queue'} ) );
-
 }
-
-
 
 =head2 create
 
@@ -188,73 +150,8 @@ description and content should be the template's title and content.
 queue should be 0 for a global template and the queue # for a queue-specific 
 template.
 
-Returns the Template's id # if the create was successful. Returns undef for
-unknown database failure.
-
-
-=cut
-
-sub create {
-    my $self = shift;
-    my %args = (
-        content     => undef,
-        queue       => 0,
-        description => '[no description]',
-        type        => 'Action',             #By default, template are 'Action' templates
-        name        => undef,
-        @_
-    );
-
-    unless ( $args{'queue'} ) {
-        unless (
-            $self->current_user->has_right(
-                right  => 'ModifyTemplate',
-                object => RT->system
-            )
-            )
-        {
-            return ( undef, _('Permission Denied') );
-        }
-        $args{'queue'} = 0;
-    } else {
-        my $queue_obj = RT::Model::Queue->new( current_user => $self->current_user );
-        $queue_obj->load( $args{'queue'} )
-            || return ( undef, _('Invalid queue') );
-
-        unless ( $queue_obj->current_user_has_right('ModifyTemplate') ) {
-            return ( undef, _('Permission Denied') );
-        }
-        $args{'queue'} = $queue_obj->id;
-    }
-
-    my $result = $self->SUPER::create(
-        content     => $args{'content'},
-        queue       => $args{'queue'},
-        description => $args{'description'},
-        name        => $args{'name'},
-    );
-
-    return ($result);
-
-}
-
-
-
-=head2 delete
-
-Delete this template.
-
-=cut
-
-sub delete {
-    my $self = shift;
-
-    unless ( $self->current_user_has_queue_right('ModifyTemplate') ) {
-        return ( 0, _('Permission Denied') );
-    }
-
-    return ( $self->SUPER::delete(@_) );
-}
+Returns the Template's id if the create was successful. Returns undef on error.
+In list context returns a message as well.
 
 =head2 is_empty
  
@@ -493,19 +390,124 @@ sub _downgrade_from_html {
     return ( $rv, $msg );
 }
 
+=head2 rights
 
+=head3 current_user_has_right right
 
-=head2 current_user_has_queue_right
+Returns true if the current user has the right on this template.
+Returns false otherwise.
 
-Helper function to call the template's queue's current_user_has_queue_right with the passed in args.
+See also L</has_right>.
 
 =cut
 
-sub current_user_has_queue_right {
+sub current_user_has_right {
     my $self = shift;
-    return ( $self->queue->current_user_has_right(@_) );
+    my $right = shift;
+    return $self->has_right(
+        @_,
+        principal => $self->current_user,
+        right => $right,
+    );
 }
 
+=head3 has_right right => undef, principal => current_user
+
+Returns true if the principal has the right on this template.
+Returns false otherwise.
+
+Principal is the current user if not specified.
+
+=cut
+
+sub has_right {
+    my $self = shift;
+    my %args = (
+        right     => undef,
+        principal => undef,
+        @_
+    );
+    my $queue = $self->queue;
+    return $queue->has_right( %args )
+        if $queue && $queue->id;
+
+    my $principal = delete( $args{'principal'} ) || $self->current_user;
+    return $principal->has_right( %args, object => RT->system );
+}
+
+=head3 check_create_rights
+
+User needs 'ModifyTemplate' right to create a template.
+
+See also L<Jifty::Record/check_create_rights>.
+
+=cut
+
+sub check_create_rights {
+    my $self = shift;
+    my %args = @_;
+
+    my $right = 'ModifyTemplate';
+    if ( !$args{'queue'} || (ref $args{'queue'} && !$args{'queue'}->id ) ) {
+        return $self->current_user->has_right(
+            right  => $right,
+            object => RT->system,
+        );
+    } elsif ( ref $args{'queue'} ) {
+        return $args{'queue'}->has_right(
+            principal => $self->current_user,
+            right => $right,
+        );
+    } else {
+        my $queue = RT::Model::Queue->new( current_user => $self->current_user );
+        $queue->load( $args{'queue'} );
+        unless ( $queue->id ) {
+            Jifty->log->error(
+                $self->current_user->id ." tried to create a "
+                ."template in a queue '". $args{'queue'} ."' that doesn't exist"
+            );
+            return 0;
+        }
+
+        return $queue->current_user_has_right('ModifyTemplate');
+    }
+}
+
+=head3 check_read_rights
+
+User needs 'ShowTemplate' right to read properties of a template.
+
+See also L<Jifty::Record/check_read_rights>.
+
+=cut
+
+sub check_read_rights {
+    return $_[0]->current_user_has_right('ShowTemplate');
+}
+
+=head3 check_update_rights
+
+User needs 'ModifyTemplate' right to update properties of a template.
+
+See also L<Jifty::Record/check_update_rights>.
+
+=cut
+
+sub check_update_rights {
+    return $_[0]->current_user_has_right('ModifyTemplate');
+}
+
+=head3 check_delete_rights
+
+User needs 'ModifyTemplate' right to delete a template.
+
+See also L<Jifty::Record/check_delete_rights>.
+
+=cut
+
+sub check_delete_rights {
+    return $_[0]->current_user_has_right('ModifyTemplate');
+}
 
 sub queue_obj {
     require Carp; Carp::confess("deprecated");
@@ -514,4 +516,5 @@ sub queue_obj {
     $q->load( $self->__value('queue') );
     return $q;
 }
+
 1;

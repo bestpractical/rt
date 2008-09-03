@@ -166,35 +166,10 @@ Returns the next template that this user can see.
 
 sub next {
     my $self = shift;
-
     my $templ = $self->SUPER::next();
-    if ( ( defined($templ) ) and ( ref($templ) ) ) {
-
-        # If it's part of a queue, and the user can read templates in
-        # that queue, or the user can globally read templates, show it
-        if ($templ->queue && $templ->current_user_has_queue_right('ShowTemplate')
-            or $templ->current_user->has_right(
-                object => RT->system,
-                right  => 'ShowTemplate'
-            )
-            )
-        {
-            return ($templ);
-        }
-
-        #If the user doesn't have the right to show this template
-        else {
-            return ( $self->next() );
-        }
-    }
-
-    #if there never was any template
-    else {
-        return (undef);
-    }
-
+    return $templ unless $templ;
+    return $templ if $templ->current_user_has_right('ShowTemplate');
+    return $self->next;
 }
 
-
 1;
-
