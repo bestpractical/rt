@@ -103,6 +103,15 @@ for ($Dashboard->SearchIds) {
     $desc_of{$name} = $desc;
 }
 
+my @components = @{ RT->Config->Get('HomepageComponents') };
+my %allowed_components = map {$_ => 1} @components;
+
+for my $desc (@components) {
+    my $name = "component-$desc";
+    push @items, [$name, $desc];
+    $desc_of{$name} = $desc;
+}
+
 my $sys = RT::System->new($session{'CurrentUser'});
 my @objs = ($sys);
 
