@@ -96,9 +96,18 @@ my @items;
 my @selected;
 
 # Get the list of queries already in use
-for ($Dashboard->SearchIds) {
-    my ($privacy, $id, $desc) = @$_;
-    my $name = "search-$id-$privacy";
+for my $portlet ($Dashboard->Portlets) {
+    my ($name, $desc);
+
+    if ($portlet->{portlet_type} eq 'search') {
+        $name = join '-', 'search', $portlet->{id}, $portlet->{privacy};
+        $desc = $portlet->{description};
+    }
+    else {
+        $name = join '-', 'component', $portlet->{component};
+        $desc = $portlet->{component};
+    }
+
     push @selected, $name;
     $desc_of{$name} = $desc;
 }
@@ -141,20 +150,30 @@ my $sel = $m->comp(
     OnSubmit  => sub {
         my $self = shift;
 
-        my @searches;
-        # transform list of "SearchID-PrivacyObjType-PrivacyObjID"s to
-        # list of [Privacy, SearchID, Description]s
+        my @portlets;
         for (@{ $self->{Current} }) {
             my $item = $_;
             my $desc = $desc_of{$item};
-            my $type = $1 if $item =~ s/^(\w+)-//;
+            my $portlet_type = $1 if $item =~ s/^(\w+)-//;
 
-            if ($type eq 'search') {
-                push @searches, [ reverse(split /-/, $item, 2), $desc ];
+            if ($portlet_type eq 'search') {
+                my ($search_id, $privacy) = split '-', $item, 2;
+                push @portlets, {
+                    portlet_type => $portlet_type,
+                    privacy      => $privacy,
+                    id           => $search_id,
+                    description  => $desc,
+                };
+            }
+            elsif ($portlet_type eq 'component') {
+                push @portlets, {
+                    portlet_type => $portlet_type,
+                    component    => $item,
+                };
             }
         }
 
-        my ($ok, $msg) = $Dashboard->Update(Searches => \@searches);
+        my ($ok, $msg) = $Dashboard->Update(Portlets => \@portlets);
 
         if ($ok) {
             push @results, loc("Dashboard updated");
