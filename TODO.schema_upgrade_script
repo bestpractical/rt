@@ -7,3 +7,6 @@ Principals.object_id has been dropped
 
 ? Should we drop Templates.type column as it's not used
 Templates.queue - replace 0 with NULLs
+
+Users.EmailAddress -> Users.email 
+Users.email_confirmed is new

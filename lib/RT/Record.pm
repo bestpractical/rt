@@ -1670,9 +1670,6 @@ sub load_custom_field_by_identifier {
 
 
 
-sub basic_columns {
-}
-
 sub wiki_base {
     return RT->config->get('WebPath') . "/index.html?q=";
 }

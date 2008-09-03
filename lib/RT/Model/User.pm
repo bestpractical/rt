@@ -52,20 +52,11 @@ package RT::Model::User;
 
 use base qw/RT::Record/;
 
-=head1 name
+=head1 NAME
 
-  RT::Model::User - RT User object
-
-=head1 SYNOPSIS
-
-  use RT::Model::User;
-
-=head1 description
-
+RT::Model::User - RT User object
 
 =head1 METHODS
-
-
 
 =cut
 
@@ -1394,12 +1385,6 @@ sub set_private_key {
         unless $status;
     return ( $status, _("Unset private key") );
 }
-
-sub basic_columns {
-    ( [ name => 'User Id' ], [ email => 'Email' ], [ real_name => 'name' ], [ organization => 'organization' ], );
-
-}
-
 
 1;
 
