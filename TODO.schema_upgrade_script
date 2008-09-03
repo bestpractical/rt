@@ -1,0 +1,9 @@
+Attachments.parent - replace all 0 values with NULLs
+Attachments.transaction_id - is renamed to 'transaction'
+* this has been reverted as transaction is reserved in SQLite
+
+Principals.principal_type -> Principals.type
+Principals.object_id has been dropped
+
+? Should we drop Templates.type column as it's not used
+Templates.queue - replace 0 with NULLs
