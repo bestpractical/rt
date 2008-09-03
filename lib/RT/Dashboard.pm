@@ -170,30 +170,7 @@ sub Searches {
         my $search = RT::SavedSearch->new($self->CurrentUser);
         $search->Load($_->{privacy}, $_->{id});
         $search
-    } $self->SearchIds;
-}
-
-=head2 SearchIds
-
-Returns a list of hash references
-
-=cut
-
-sub SearchIds {
-    my $self = shift;
-    return grep { $_->{portlet_type} eq 'search' } $self->Portlets;
-}
-
-=head2 SearchPrivacies
-
-Returns a list of array references, each one being suitable to pass to
-/Elements/ShowSearch.
-
-=cut
-
-sub SearchPrivacies {
-    my $self = shift;
-    return map { [$self->SearchPrivacy(@$_)] } $self->SearchIds;
+    } grep { $_->{portlet_type} eq 'search' } $self->Portlets;
 }
 
 =head2 SearchPrivacy Portlet
