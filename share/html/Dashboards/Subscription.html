@@ -71,20 +71,14 @@
 <tr><td class="label">
 <&|/l&>Queries</&>:
 </td><td class="value">
-% my @searches = grep { defined } $DashboardObj->Searches;
-% if (!@searches) {
+% my @portlets = grep { defined } $DashboardObj->Portlets;
+% if (!@portlets) {
 (none)
 % } else {
 <ol class="dashboard-queries">
-%    for my $query (@searches) {
-%       my $name;
-%       if ($query->{Attribute}->Name =~ /^Search - (.*)$/) {
-%           $name = $1;
-%       } else {
-%           $name = $query->Name;
-%       }
+%    for my $portlet (@portlets) {
         <li class="dashboard-query">
-            <% loc($name, $fields{'Rows'}) %>
+            <% loc($portlet->{description}, $fields{'Rows'}) %>
         </li>
 %    }
 </ol>
