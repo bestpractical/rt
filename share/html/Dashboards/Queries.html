@@ -98,7 +98,7 @@ my @selected;
 # Get the list of queries already in use
 for ($Dashboard->SearchIds) {
     my ($privacy, $id, $desc) = @$_;
-    my $name = "$id-$privacy";
+    my $name = "search-$id-$privacy";
     push @selected, $name;
     $desc_of{$name} = $desc;
 }
@@ -115,7 +115,7 @@ for my $object (@objs) {
         my ($desc, $search) = @$_;
         my $SearchType = $search->Content->{'SearchType'} || 'Ticket';
         my $privacy = $Dashboard->_build_privacy($object);
-        my $name = $search->Id . '-' . $privacy;
+        my $name = 'search-' . $search->Id . '-' . $privacy;
         push @items, [$name, $desc];
         $desc_of{$name} = $desc;
     }
@@ -132,13 +132,20 @@ my $sel = $m->comp(
     OnSubmit  => sub {
         my $self = shift;
 
+        my @searches;
         # transform list of "SearchID-PrivacyObjType-PrivacyObjID"s to
         # list of [Privacy, SearchID, Description]s
-        my $searches = [ map {
-            [ reverse(split /-/, $_, 2), $desc_of{$_} ]
-        } @{ $self->{Current} } ];
+        for (@{ $self->{Current} }) {
+            my $item = $_;
+            my $desc = $desc_of{$item};
+            my $type = $1 if $item =~ s/^(\w+)-//;
 
-        my ($ok, $msg) = $Dashboard->Update(Searches => $searches);
+            if ($type eq 'search') {
+                push @searches, [ reverse(split /-/, $item, 2), $desc ];
+            }
+        }
+
+        my ($ok, $msg) = $Dashboard->Update(Searches => \@searches);
 
         if ($ok) {
             push @results, loc("Dashboard updated");
