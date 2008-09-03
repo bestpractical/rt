@@ -173,14 +173,14 @@ sub Searches {
     } grep { $_->{portlet_type} eq 'search' } $self->Portlets;
 }
 
-=head2 SearchPrivacy Portlet
+=head2 ShowSearchName Portlet
 
 Returns an array for one saved search, suitable for passing to
 /Elements/ShowSearch.
 
 =cut
 
-sub SearchPrivacy {
+sub ShowSearchName {
     my $self = shift;
     my $portlet = shift;
 
