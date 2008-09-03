@@ -207,12 +207,11 @@ sub SearchPrivacy {
     my $self = shift;
     my $portlet = shift;
 
-    my ($type, $id, $desc) = @_;
-    if ($type eq 'RT::System') {
-        return Name => $desc;
+    if ($portlet->{privacy} eq 'RT::System') {
+        return Name => $portlet->{description};
     }
 
-    return SavedSearch => join('-', $type, 'SavedSearch', $id);
+    return SavedSearch => join('-', $portlet->{privacy}, 'SavedSearch', $portlet->{id});
 }
 
 =head2 PossibleHiddenSearches
