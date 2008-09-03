@@ -214,6 +214,8 @@ my @sql_commands;
 my ($db_name, $db_user, $db_pass) = (shift, shift, shift);
 my $dbh = DBI->connect("dbi:mysql:$db_name", $db_user, $db_pass, { RaiseError => 1 });
 
+my $version = ($dbh->selectrow_array("show variables like 'version'"))[1];
+($version) = $version =~ /^(\d+\.\d+)/;
 
 push @sql_commands, qq{ALTER DATABASE $db_name DEFAULT CHARACTER SET utf8};
 convert_table($_) foreach @tables;
@@ -350,6 +352,14 @@ sub build_column_definition {
 
 sub column_byte_length {
     my ($table, $column) = @_;
+    if ( $version >= 5.0 ) {
+        return $dbh->selectrow_arrayref(
+            "SELECT CHARACTER_OCTET_LENGTH FROM information_schema.COLUMNS WHERE"
+            ."     TABLE_SCHEMA = ". $dbh->quote($db_name)
+            ." AND TABLE_NAME   = ". $dbh->quote($table)
+            ." AND COLUMN_NAME  = ". $dbh->quote($column)
+        )->[0];
+    }
     return $dbh->selectrow_arrayref("SELECT MAX(LENGTH(". $dbh->quote($column) .")) FROM $table")->[0];
 }
 
