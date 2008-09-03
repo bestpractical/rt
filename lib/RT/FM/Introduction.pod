@@ -113,7 +113,7 @@ to look for answer to questions before creating a Ticket.
 
 =head1 Configuration options
 
-=head2 RTFM_Create
+=head2 RTFM_TicketCreate
 
 Set this to a true value to display the RTFM include interface on the
 Ticket Create page in addition to the Reply/Comment page (Create.html
