@@ -1001,31 +1001,6 @@ sub _set {
 }
 
 
-=head2 _value
-
-Takes the name of a table column.
-Returns its value as a string, if the user passes an ACL check
-
-=cut
-
-sub _value {
-    my $self  = shift;
-    my $field = shift;
-
-    #if the field is public, return it.
-    if ( $field eq 'object_type' ) {
-        return $self->SUPER::_value($field);
-    }
-
-    unless ( $self->current_user_can_see ) {
-        return undef;
-    }
-
-    return $self->SUPER::_value($field);
-}
-
-
-
 =head2 current_user_has_right RIGHT
 
 Calls $self->current_user->has_queue_right for the right passed in here.
@@ -1088,6 +1063,13 @@ sub current_user_can_see {
     }
 
     return 1;
+}
+
+sub check_read_rights {
+    my $self = shift;
+    my $field = shift;
+    return 1 if $field eq 'object_type';
+    return $self->current_user_can_see;
 }
 
 
@@ -1293,4 +1275,5 @@ sub _cache_config {
         'cache_for_sec' => 6000,
     };
 }
+
 1;
