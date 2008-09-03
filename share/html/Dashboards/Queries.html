@@ -55,8 +55,8 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-% if (@searches) {
-<& Elements/HiddenSearches, searches => \@searches, Dashboard => $Dashboard &>
+% if (@hidden_searches) {
+<& Elements/HiddenSearches, searches => \@hidden_searches, Dashboard => $Dashboard &>
 % }
 
 <form action="<%RT->Config->Get('WebPath')%>/Dashboards/Queries.html" method="post" enctype="multipart/form-data" name="DashboardQueries">
@@ -150,7 +150,7 @@ my $sel = $m->comp(
 );
 $m->comp('/Widgets/SelectionBox:process', %ARGS, self => $sel, nojs => 1);
 
-my @searches = $Dashboard->PossibleHiddenSearches;
+my @hidden_searches = $Dashboard->PossibleHiddenSearches;
 </%INIT>
 <%ARGS>
 $id => '' unless defined $id
