@@ -4,14 +4,15 @@
         my $sys = RT::System->new($RT::SystemUser);
 
         my $attrs = RT::Attributes->new( $RT::SystemUser );
-        $attrs->Named('Dashboard');
+        $attrs->UnLimit;
+        my @dashboards = $attrs->Named('Dashboard');
 
-        if ($attrs->Count == 0) {
+        if (@dashboards == 0) {
             $RT::Logger->debug("You have no dashboards. Skipped.");
             return 1;
         }
 
-        while (my $attr = $attrs->Next) {
+        for my $attr (@dashboards) {
             my $props = $attr->Content;
             if (exists $props->{Searches}) {
                 $props->{Portlets} = [ map {
