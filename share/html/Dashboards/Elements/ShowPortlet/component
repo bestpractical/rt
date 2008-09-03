@@ -45,63 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $title, JavaScript => $Preview, ShowBar => $Preview  &>
-
-% if ($Preview) {
-<& /Dashboards/Elements/Tabs,
-    current_subtab => $current_subtab,
-    Title => $title,
-    DashboardObj => $DashboardObj &>
-% }
-
-<table border="0" width="100%">
-<tr valign="top">
-
-<td class="boxcontainer" width="70%">
-<%perl>
-foreach my $portlet ($DashboardObj->Portlets) {
-    my $portlet_type = $portlet->{portlet_type};
-    my $component = "Elements/ShowPortlet/$portlet_type";
-    $m->comp($component,
-        Portlet   => $portlet,
-        Rows      => $rows,
-        Preview   => $Preview,
-        Dashboard => $DashboardObj,
-    );
-}
-</%perl>
-</td>
-
-
-</tr>
-</table>
-
-<%INIT>
-
-my $current_subtab = 'Dashboards/Render.html?id=' . $id;
-
-use RT::Dashboard;
-my $DashboardObj = RT::Dashboard->new($session{'CurrentUser'});
-my ($ok, $msg) = $DashboardObj->LoadById($id);
-Abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg)) if !$ok;
-
-my $SubscriptionObj = RT::Attribute->new($session{'CurrentUser'});
-my $Loaded = 0;
-
-# try to load the subscription to this id
-for my $sub ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription')) {
-    next unless $sub->SubValue('DashboardId') == $id;
-    $SubscriptionObj = $sub;
-    $Loaded = 1;
-    last;
-}
-
-my $rows = $Loaded ? $SubscriptionObj->SubValue('Rows') : 20;
-my $title = loc 'Dashboard [_1]', $DashboardObj->Name;
-
-</%INIT>
-<%ARGS>
-$id => undef
-$Preview => 1
-</%ARGS>
-
+<%args>
+$Dashboard
+$Portlet
+$Rows => 20
+$Preview => 0
+</%args>
+% $m->comp($Portlet->{path});
