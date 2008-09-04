@@ -443,6 +443,9 @@ $0: Set up RT's database
                         To use a local or supplementary datafile, specify it
                         using the '--datadir' option below.
 
+                upgrade Apply all needed schema/acl/content updates (will ask
+                        for version to upgrade from)
+
 --datafile /path/to/datafile
 --datadir /path/to/              Used to specify a path to find the local
                                 database schema and acls to be installed.
