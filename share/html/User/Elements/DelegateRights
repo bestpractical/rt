@@ -96,10 +96,11 @@ while ( my $delegation = $delegations->Next) {
 % }
 <%init>
 
-my $sectionheading = loc("[_1] rights", loc($ObjectType =~ /^RT::(.*)$/));
-# 'System' # loc
-# 'Group'  # loc
-# 'Queue'  # loc
+my ($frendly_type) = ($ObjectType =~ /^RT::(.*)$/);
+my $sectionheading = loc("$frendly_type rights");
+# 'System rights' # loc
+# 'Group rights'  # loc
+# 'Queue rights'  # loc
 
 </%init>
 <%args>
