@@ -91,6 +91,8 @@ sub Describe  {
 sub QueryToSQL {
     my $self     = shift;
     my $query    = shift || $self->Argument;
+    # Trim leading or trailing whitespace
+    $query =~ s/^\s+(.*)\s+$/$1/g;
     my @keywords = split /\s+/, $query;
     my (
         @tql_clauses,  @owner_clauses, @queue_clauses,
