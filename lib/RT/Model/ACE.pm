@@ -86,6 +86,7 @@ use Jifty::DBI::Record schema {
     column object_id => type is 'int', default is '0';
     column delegated_by   => references RT::Model::Principal;
     column delegated_from => references RT::Model::ACE;
+    column delegations => references RT::Model::ACECollection by 'delegated_from';
 };
 
 use vars qw (
@@ -322,7 +323,7 @@ sub create {
     RT::Model::Principal->invalidate_acl_cache();
 
     if ($id) {
-        return ( $id, _('right Granted') );
+        return ( $id, _('Right granted') );
     } else {
         return ( 0, _('System error. Right not granted.') );
     }
@@ -433,89 +434,63 @@ sub delegate {
 =head2 delete
 
 Delete this object. This method should ONLY ever be called from RT::Model::User or RT::Model::Group (or from itself)
-If this is being called from within a transaction, specify a true value for the parameter inside_transaction.
-Really, Jifty::DBI should use and/or fake subtransactions
 
 This routine will also recurse and delete any delegations of this right
 
 =cut
 
-sub delete {
+sub check_delete_rights {
     my $self = shift;
 
-    unless ( $self->id ) {
-        return ( 0, _('Right not loaded.') );
-    }
-
-    # A user can delete an ACE if the current user has the right to modify it and it's not a delegated ACE
-    # or if it's a delegated ACE and it was delegated by the current user
-    unless (
-        (   $self->current_user->has_right(
-                right  => 'ModifyACL',
-                object => $self->object
-            )
-            && $self->__value('delegated_by') == 0
-        )
-        || ( $self->__value('delegated_by') == $self->current_user->id )
-        )
-    {
-        return ( 0, _('Permission Denied') );
-    }
-    $self->_delete(@_);
+    # if it's a delegated ACE then delegator can delete it
+    my $delegated = $self->delegated_by;
+    return 1 if $delegated && ($delegated->id||0) == $self->current_user->id;
+    return $self->current_user->has_right(
+        right  => 'ModifyACL',
+        object => $self->object,
+    );
+    return 1;
 }
 
 # Helper for Delete with no ACL check
-sub _delete {
+sub _delete { return (shift)->__delete( @_ ) }
+sub __delete {
     my $self = shift;
-    my %args = (
-        @_
-    );
 
     my $inside_transaction = Jifty->handle->transaction_depth;
-    Jifty->handle->begin_transaction() unless $inside_transaction;
+    Jifty->handle->begin_transaction unless $inside_transaction;
 
-    my $delegated_from_this = RT::Model::ACECollection->new( current_user => RT->system_user );
-    $delegated_from_this->limit(
-        column   => 'delegated_from',
-        operator => '=',
-        value    => $self->id
-    );
-
-    my $delete_succeeded = 1;
-    my $submsg;
+    my $delegated_from_this = $self->delegations;
     while ( my $delegated_ace = $delegated_from_this->next ) {
-        ( $delete_succeeded, $submsg ) = $delegated_ace->_delete;
-        last unless ($delete_succeeded);
+        my ($status, $msg) = $delegated_ace->__delete;
+        unless ( $status ) {
+            Jifty->handle->rollback() unless $inside_transaction;
+            return ( 0, _('Right could not be revoked') );
+        }
     }
 
-    unless ($delete_succeeded) {
-        Jifty->handle->rollback() unless $inside_transaction;
+    my ($status, $msg) = $self->SUPER::__delete(@_);
+    unless ( $status ) {
+        Jifty->handle->rollback unless $inside_transaction;
         return ( 0, _('Right could not be revoked') );
     }
 
-    my ( $val, $msg ) = $self->SUPER::delete(@_);
-
     # If we're revoking delegation rights (see above), we may need to
     # revoke all rights delegated by the recipient.
-    if ($val
-        and (  $self->right_name() eq 'DelegateRights'
-            or $self->right_name() eq 'SuperUser' )
-        )
-    {
-        $val = $self->principal_object->_cleanup_invalid_delegations;
+    my $right = $self->__value('right_name');
+    if ( $right eq 'DelegateRights' || $right eq 'SuperUser' ) {
+        my ($status) = $self->principal_object->_cleanup_invalid_delegations;
+        unless ( $status ) {
+            Jifty->handle->rollback unless $inside_transaction;
+            return ( 0, _('Right could not be revoked') );
+        }
     }
 
-    if ($val) {
-
-        #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space.
-        # TODO what about the groups key cache?
-        RT::Model::Principal->invalidate_acl_cache();
-        Jifty->handle->commit() unless $inside_transaction;
-        return ( $val, _('Right revoked') );
-    }
-
-    Jifty->handle->rollback() unless $inside_transaction;
-    return ( 0, _('Right could not be revoked') );
+    # Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space.
+    # TODO what about the groups key cache?
+    RT::Model::Principal->invalidate_acl_cache();
+    Jifty->handle->commit unless $inside_transaction;
+    return ( 1, _('Right revoked') );
 }
 
 
@@ -628,7 +603,7 @@ sub principal_object {
 
 sub _set {
     my $self = shift;
-    return ( 0, _("ACEs can only be Created and deleted.") );
+    return ( 0, _("ACEs can only be created and deleted.") );
 }
 
 
