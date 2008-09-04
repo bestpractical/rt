@@ -698,6 +698,8 @@ sub DeferDigestRecipients {
     
 sub RecordDeferredRecipients {
     my $self = shift;
+    return unless exists $self->{'Deferred'};
+
     my $txn_id = $self->{'OutgoingMailTransaction'};
     return unless $txn_id;
 
