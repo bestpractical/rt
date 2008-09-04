@@ -15,17 +15,21 @@
         for my $attr (@dashboards) {
             my $props = $attr->Content;
             if (exists $props->{Searches}) {
-                $props->{Portlets} = [ map {
-                    my ($privacy, $id, $desc) = @$_;
+                $props->{Panes} = {
+                    body => [
+                        map {
+                            my ($privacy, $id, $desc) = @$_;
 
-                    {
-                        portlet_type => 'search',
-                        privacy      => $privacy,
-                        id           => $id,
-                        description  => $desc,
-
-                    }
-                } @{ delete $props->{Searches} } ];
+                            {
+                                portlet_type => 'search',
+                                privacy      => $privacy,
+                                id           => $id,
+                                description  => $desc,
+                                pane         => 'body',
+                            }
+                        } @{ delete $props->{Searches} }
+                    ],
+                };
             }
             my ($status, $msg) = $attr->SetContent( $props );
             $RT::Logger->error($msg) unless $status;

@@ -108,7 +108,7 @@ sub SaveAttribute {
     return $object->AddAttribute(
         'Name'        => 'Dashboard',
         'Description' => $args->{'Name'},
-        'Content'     => {Portlets => $args->{'Portlets'}},
+        'Content'     => {Panes => $args->{'Panes'}},
     );
 }
 
@@ -117,9 +117,9 @@ sub UpdateAttribute {
     my $args = shift;
 
     my ($status, $msg) = (1, undef);
-    if (defined $args->{'Portlets'}) {
+    if (defined $args->{'Panes'}) {
         ($status, $msg) = $self->{'Attribute'}->SetSubValues(
-            Portlets => $args->{'Portlets'},
+            Panes => $args->{'Panes'},
         );
     }
 
@@ -145,6 +145,18 @@ sub UpdateAttribute {
     return ($status, $msg);
 }
 
+=head2 Panes
+
+Returns a hashref of pane name to portlets
+
+=cut
+
+sub Panes {
+    my $self = shift;
+    return unless ref($self->{'Attribute'}) eq 'RT::Attribute';
+    return $self->{'Attribute'}->SubValue('Panes') || {};
+}
+
 =head2 Portlets
 
 Returns the list of this dashboard's portlets, each a hashref with key
@@ -154,8 +166,7 @@ C<portlet_type> being C<search> or C<component>.
 
 sub Portlets {
     my $self = shift;
-    return unless ref($self->{'Attribute'}) eq 'RT::Attribute';
-    return @{ $self->{'Attribute'}->SubValue('Portlets') || [] };
+    return map { @$_ } values %{ $self->Panes };
 }
 
 =head2 Searches
