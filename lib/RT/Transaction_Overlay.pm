@@ -1144,8 +1144,8 @@ sub DeferredRecipients {
    
     for my $user (keys %{$deferred->{$freq}}) {
         if ($deferred->{$freq}->{$user}->{_sent} && !$include_sent) { 
-        delete $deferred->{$freq}->{$user} 
-    } 
+            delete $deferred->{$freq}->{$user} 
+        }
     }
     # Now get our users.  Easy.
     
