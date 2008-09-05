@@ -16,7 +16,7 @@ my @scrips_fired;
 #Were not testing acls here.
 my $everyone = RT::Model::Group->new(current_user => RT->system_user);
 $everyone->load_system_internal_group('Everyone');
-$everyone->principal_object->grant_right( right =>'SuperUser' );
+$everyone->principal->grant_right( right =>'SuperUser' );
 
 
 is (__PACKAGE__, 'main', "We're operating in the main package");
@@ -538,5 +538,5 @@ diag q{regression test for #5248 from rt3.fsck.com} if $ENV{TEST_VERBOSE};
 
 
 # Don't taint the environment
-$everyone->principal_object->revoke_right(right =>'SuperUser');
+$everyone->principal->revoke_right(right =>'SuperUser');
 1;

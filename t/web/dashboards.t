@@ -14,14 +14,14 @@ ok($ret, 'ACL test user creation');
 $user_obj->set_name('customer');
 $user_obj->set_privileged(1);
 ($ret, $msg) = $user_obj->set_password('customer');
-$user_obj->principal_object->grant_right(right => 'ModifySelf');
+$user_obj->principal->grant_right(right => 'ModifySelf');
 my $currentuser = RT::CurrentUser->new( id => $user_obj->id );
 
 my $queue = RT::Model::Queue->new(current_user => RT->system_user);
 $queue->create(name => 'SearchQueue'.$$);
-$user_obj->principal_object->grant_right(right => 'SeeQueue',   object => $queue);
-$user_obj->principal_object->grant_right(right => 'ShowTicket', object => $queue);
-$user_obj->principal_object->grant_right(right => 'OwnTicket',  object => $queue);
+$user_obj->principal->grant_right(right => 'SeeQueue',   object => $queue);
+$user_obj->principal->grant_right(right => 'ShowTicket', object => $queue);
+$user_obj->principal->grant_right(right => 'OwnTicket',  object => $queue);
 
 ok $m->login(customer => 'customer'), "logged in";
 
@@ -32,7 +32,7 @@ $m->get_ok($url."Dashboards/Modify.html?create=1");
 $m->content_contains("Permission denied");
 $m->content_lacks("Save Changes");
 
-$user_obj->principal_object->grant_right(
+$user_obj->principal->grant_right(
     right  => 'ModifyOwnDashboard',
     object => RT->system
 );
@@ -42,7 +42,7 @@ $m->get_ok($url."Dashboards/Modify.html?create=1");
 $m->content_contains("Permission denied");
 $m->content_lacks("Save Changes");
 
-$user_obj->principal_object->grant_right(
+$user_obj->principal->grant_right(
     right  => 'CreateOwnDashboard',
     object => RT->system
 );
@@ -66,7 +66,7 @@ $m->content_lacks('Delete', "Delete button hidden because we lack DeleteOwnDashb
 $m->get_ok($url."Dashboards/index.html");
 $m->content_lacks("different dashboard", "we lack SeeOwnDashboard");
 
-$user_obj->principal_object->grant_right(right => 'SeeOwnDashboard', object => RT->system );
+$user_obj->principal->grant_right(right => 'SeeOwnDashboard', object => RT->system );
 
 $m->get_ok($url."Dashboards/index.html");
 $m->content_contains("different dashboard", "we now have SeeOwnDashboard");
@@ -143,7 +143,7 @@ $m->content_contains("Permission denied");
 Jifty::DBI::Record::Cachable->flush_cache;
 is($user_obj->attributes->named('Subscription'), 0, "no subscriptions");
 
-$user_obj->principal_object->grant_right(right => 'SubscribeDashboard', object => RT->system );
+$user_obj->principal->grant_right(right => 'SubscribeDashboard', object => RT->system );
 
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->follow_link_ok({text => "Subscription"});
@@ -170,7 +170,7 @@ $m->content_contains("Modify the subscription to dashboard different dashboard")
 $m->get_ok("/Dashboards/Modify.html?id=$id&delete=1");
 $m->content_contains("Permission denied", "unable to delete dashboard because we lack DeleteOwnDashboard");
 
-$user_obj->principal_object->grant_right(right => 'DeleteOwnDashboard', object => RT->system );
+$user_obj->principal->grant_right(right => 'DeleteOwnDashboard', object => RT->system );
 
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->content_contains('Delete', "Delete button shows because we have DeleteOwnDashboard");

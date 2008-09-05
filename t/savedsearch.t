@@ -18,16 +18,16 @@ my ($ret, $msg) = $searchuser->create(name => 'searchuser'.$$,
 		    email => "searchuser\@p$$.example.com",
 		    real_name => 'Search user');
 ok($ret, "Created searchuser: $msg");
-$searchuser->principal_object->grant_right(right => 'LoadSavedSearch');
-$searchuser->principal_object->grant_right(right => 'CreateSavedSearch');
-$searchuser->principal_object->grant_right(right => 'ModifySelf');
+$searchuser->principal->grant_right(right => 'LoadSavedSearch');
+$searchuser->principal->grant_right(right => 'CreateSavedSearch');
+$searchuser->principal->grant_right(right => 'ModifySelf');
 
 # This is the group whose searches searchuser should be able to see.
 my $ingroup = RT::Model::Group->new(current_user => RT->system_user);
 $ingroup->create_user_defined_group(name => 'searchgroup1'.$$);
 $ingroup->add_member($searchuser->id);
-$searchuser->principal_object->grant_right(right => 'EditSavedSearches', object => $ingroup);
-$searchuser->principal_object->grant_right(right => 'ShowSavedSearches', object => $ingroup);
+$searchuser->principal->grant_right(right => 'EditSavedSearches', object => $ingroup);
+$searchuser->principal->grant_right(right => 'ShowSavedSearches', object => $ingroup);
 
 # This is the group whose searches searchuser should not be able to see.
 my $outgroup = RT::Model::Group->new(current_user => RT->system_user);
@@ -36,9 +36,9 @@ $outgroup->add_member(RT->system_user->id);
 
 my $queue = RT::Model::Queue->new(current_user => RT->system_user);
 $queue->create(name => 'SearchQueue'.$$);
-$searchuser->principal_object->grant_right(right => 'SeeQueue', object => $queue);
-$searchuser->principal_object->grant_right(right => 'ShowTicket', object => $queue);
-$searchuser->principal_object->grant_right(right => 'OwnTicket', object => $queue);
+$searchuser->principal->grant_right(right => 'SeeQueue', object => $queue);
+$searchuser->principal->grant_right(right => 'ShowTicket', object => $queue);
+$searchuser->principal->grant_right(right => 'OwnTicket', object => $queue);
 
 
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);

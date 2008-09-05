@@ -50,7 +50,7 @@ my $everyone;
 }
 
 RT::Test->set_rights(
-    principal => $everyone->principal_object,
+    principal => $everyone->principal,
     right => ['CreateTicket'],
 );
 

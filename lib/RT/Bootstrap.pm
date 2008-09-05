@@ -168,7 +168,7 @@ sub insert_initial_data {
           #            push @warns, "User 'Nobody' has global OwnTicket right.";
         }
         else {
-            my ( $val, $msg ) = $user->principal_object->grant_right(
+            my ( $val, $msg ) = $user->principal->grant_right(
                 right  => 'OwnTicket',
                 object => RT->system,
             );
@@ -396,7 +396,7 @@ sub insert_data {
             }
 
             # Grant it
-            my ( $return, $msg ) = $princ->principal_object->grant_right(
+            my ( $return, $msg ) = $princ->principal->grant_right(
                 right  => $item->{'right'},
                 object => $object
             );

@@ -432,7 +432,7 @@ sub _get_object {
 
     if ( $obj_type eq 'RT::Model::Group'
         && !$object->has_member_recursively(
-            $self->current_user->principal_object ) )
+            $self->current_user->principal ) )
     {
         Jifty->log->debug( "Permission denied, "
               . $self->current_user->name

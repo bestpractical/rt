@@ -338,12 +338,12 @@ sub set_privileged {
     }
 
     if ($val) {
-        if ( $priv->has_member( $self->principal_object ) ) {
+        if ( $priv->has_member( $self->principal ) ) {
 
             #Jifty->log->debug("That user is already privileged");
             return ( 0, _("That user is already privileged") );
         }
-        if ( $unpriv->has_member( $self->principal_object ) ) {
+        if ( $unpriv->has_member( $self->principal ) ) {
             $unpriv->_delete_member( $self->principal_id );
         } else {
 
@@ -361,12 +361,12 @@ sub set_privileged {
             return ( 0, $msg );
         }
     } else {
-        if ( $unpriv->has_member( $self->principal_object ) ) {
+        if ( $unpriv->has_member( $self->principal ) ) {
 
             #Jifty->log->debug("That user is already unprivileged");
             return ( 0, _("That user is already unprivileged") );
         }
-        if ( $priv->has_member( $self->principal_object ) ) {
+        if ( $priv->has_member( $self->principal ) ) {
             $priv->_delete_member( $self->principal_id );
         } else {
 
@@ -397,7 +397,7 @@ sub privileged {
     my $self = shift;
     my $priv = RT::Model::Group->new;
     $priv->load_system_internal_group('privileged');
-    if ( $priv->has_member( $self->principal_object ) ) {
+    if ( $priv->has_member( $self->principal ) ) {
         return (1);
     } else {
         return (undef);
@@ -793,7 +793,7 @@ sub set_disabled {
     {
         return ( 0, _('Permission Denied') );
     }
-    return $self->principal_object->set_disabled(@_);
+    return $self->principal->set_disabled(@_);
 }
 
 =head2 disabled
@@ -804,19 +804,19 @@ Returns true if user is disabled or false otherwise
 
 sub disabled {
     my $self = shift;
-    return $self->principal_object->disabled(@_);
+    return $self->principal->disabled(@_);
 }
 
-=head2 principal_object 
+=head2 principal 
 
 Returns the principal object for this user. returns an empty RT::Model::Principal
 if there's no principal object matching this user. 
-The response is cached. principal_object should never ever change.
+The response is cached. principal should never ever change.
 
 
 =cut
 
-sub principal_object {
+sub principal {
     my $self = shift;
 
     unless ( $self->id ) {
@@ -923,7 +923,7 @@ Shim around principal_obj->has_right. See L<RT::Model::Principal>.
 
 sub has_right {
     my $self = shift;
-    return $self->principal_object->has_right(@_);
+    return $self->principal->has_right(@_);
 
 }
 

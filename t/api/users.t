@@ -21,7 +21,7 @@ my ($id, $msg) = $RTxUser->create( name => 'RTxUser', comments => "RTx extension
 ok ($id,$msg);
 
 my $group = RT::Model::Group->new(current_user => RT->system_user);
-$group->load_acl_equivalence_group($RTxUser->principal_object);
+$group->load_acl_equivalence_group($RTxUser->principal);
 my $RTxSysObj = {};
 bless $RTxSysObj, 'RTx::System';
 *RTx::System::Id = sub  { 1; };

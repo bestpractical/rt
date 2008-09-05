@@ -2763,7 +2763,7 @@ sub current_user_has_right {
     my $self  = shift;
     my $right = shift;
 
-    return $self->current_user->principal_object->has_right(
+    return $self->current_user->principal->has_right(
         object => $self,
         right  => $right,
     );

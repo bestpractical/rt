@@ -436,9 +436,9 @@ sub _create {
     # cached members. thankfully, we're creating the group now...so it has no members.
     my $cgm = RT::Model::CachedGroupMember->new;
     $cgm->create(
-        group            => $self->principal_object,
-        member           => $self->principal_object,
-        immediate_parent => $self->principal_object
+        group            => $self->principal,
+        member           => $self->principal,
+        immediate_parent => $self->principal
     );
 
     if ( $args{'_record_transaction'} ) {
@@ -510,7 +510,7 @@ sub _createacl_equivalence_group {
     # and so we bypass all sorts of cruft we don't need
     my $aclstash = RT::Model::GroupMember->new;
     my ( $stash_id, $add_msg ) = $aclstash->_stash_user(
-        group  => $self->principal_object,
+        group  => $self->principal,
         member => $princ
     );
 
@@ -664,7 +664,7 @@ sub set_disabled {
         }
     }
     Jifty->handle->begin_transaction();
-    $self->principal_object->set_disabled($val);
+    $self->principal->set_disabled($val);
 
     # Find all occurrences of this member as a member of this group
     # in the cache and nuke them, recursively.
@@ -709,7 +709,7 @@ sub set_disabled {
 
 sub disabled {
     my $self = shift;
-    $self->principal_object->disabled(@_);
+    $self->principal->disabled(@_);
 }
 
 
@@ -955,7 +955,7 @@ sub _add_member {
         );
     }
     if (   $new_member_obj->is_group
-        && $new_member_obj->object->has_member_recursively( $self->principal_object ) )
+        && $new_member_obj->object->has_member_recursively( $self->principal ) )
     {
 
         #This group can't be made to be a member of itself
@@ -965,7 +965,7 @@ sub _add_member {
     my $member_object = RT::Model::GroupMember->new;
     my $id            = $member_object->create(
         member             => $new_member_obj,
-        group              => $self->principal_object,
+        group              => $self->principal,
     );
     if ($id) {
         return ( 1,
@@ -1277,25 +1277,25 @@ sub current_user_has_right {
 
 
 
-=head2 principal_object
+=head2 principal
 
 Returns the principal object for this user. returns an empty RT::Model::Principal
 if there's no principal object matching this user. 
-The response is cached. principal_object should never ever change.
+The response is cached. principal should never ever change.
 
 
 =cut
 
-sub principal_object {
+sub principal {
     my $self = shift;
-    unless ( $self->{'principal_object'} && $self->{'principal_object'}->id ) {
-        $self->{'principal_object'} = RT::Model::Principal->new;
-        $self->{'principal_object'}->load_by_cols(
+    unless ( $self->{'principal'} && $self->{'principal'}->id ) {
+        $self->{'principal'} = RT::Model::Principal->new;
+        $self->{'principal'}->load_by_cols(
             id             => $self->id,
             type => 'Group'
         );
     }
-    return $self->{'principal_object'};
+    return $self->{'principal'};
 }
 
 =head2 principal_id  

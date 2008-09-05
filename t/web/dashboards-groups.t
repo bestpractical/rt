@@ -15,18 +15,18 @@ ok($ok, 'ACL test user creation');
 $user_obj->set_name('customer');
 $user_obj->set_privileged(1);
 ($ok, $msg) = $user_obj->set_password('customer');
-$user_obj->principal_object->grant_right(right => 'ModifySelf');
+$user_obj->principal->grant_right(right => 'ModifySelf');
 my $currentuser = RT::CurrentUser->new( id => $user_obj->id );
 
 my $queue = RT::Model::Queue->new(current_user => RT->system_user);
 $queue->create(name => 'SearchQueue'.$$);
 
-$user_obj->principal_object->grant_right(right => $_, object => $queue)
+$user_obj->principal->grant_right(right => $_, object => $queue)
     for qw/SeeQueue ShowTicket OwnTicket/;
 
 # grant the user all these rights so we can make sure that the group rights
 # are checked and not these as well
-$user_obj->principal_object->grant_right(right => $_, object => RT->system )
+$user_obj->principal->grant_right(right => $_, object => RT->system )
     for qw/SubscribeDashboard CreateOwnDashboard SeeOwnDashboard ModifyOwnDashboard DeleteOwnDashboard/;
 
 # }}}
@@ -65,7 +65,7 @@ $m->form_name( 'modify_dashboard' );
 is_deeply([$m->current_form->find_input('privacy')->possible_values], ["RT::Model::User-" . $user_obj->id], "the only selectable privacy is user");
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
 
-$user_obj->principal_object->grant_right(right => 'CreateGroupDashboard', object => $inner_group);
+$user_obj->principal->grant_right(right => 'CreateGroupDashboard', object => $inner_group);
 
 $m->follow_link_ok({text => "New dashboard"});
 $m->form_name( 'modify_dashboard' );
@@ -93,7 +93,7 @@ $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->content_lacks("inner dashboard", "no SeeGroupDashboard right");
 $m->content_contains("Permission denied");
 
-$user_obj->principal_object->grant_right(right => 'SeeGroupDashboard', object => $inner_group);
+$user_obj->principal->grant_right(right => 'SeeGroupDashboard', object => $inner_group);
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->content_contains("inner dashboard", "we now have SeeGroupDashboard right");
 $m->content_lacks("Permission denied");

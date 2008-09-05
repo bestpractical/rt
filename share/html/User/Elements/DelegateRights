@@ -79,7 +79,7 @@ while ( my $delegation = $delegations->next) {
 <tr class="<%($i%2) && 'oddline'%>">
 <td>
 <% _($right->right_name) %><br />
-<div align="right"><font size="-2" color="#999999"><&|/l, $right->principal_object->object->self_description &>as granted to %1</&></font></div>
+<div align="right"><font size="-2" color="#999999"><&|/l, $right->principal->object->self_description &>as granted to %1</&></font></div>
        </td>
 % while (my $pg = $personalgroups->next) {
 <td align="center">

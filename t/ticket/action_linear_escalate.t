@@ -26,7 +26,7 @@ my $gecos = RT::Test->load_or_create_user(
 ok $gecos && $gecos->id, 'loaded or created gecos user';
 
 # get rid of all right permissions
-$gecos->principal_object->grant_right( right => 'SuperUser' );
+$gecos->principal->grant_right( right => 'SuperUser' );
 
 
 my $user = RT::Test->load_or_create_user(
@@ -34,7 +34,7 @@ my $user = RT::Test->load_or_create_user(
 );
 ok $user && $user->id, 'loaded or created user';
 
-$user->principal_object->grant_right( right => 'SuperUser' );
+$user->principal->grant_right( right => 'SuperUser' );
 my $current_user = RT::CurrentUser->new( id => $user->id );
 is( $user->id, $current_user->id, "Got current user?" );
 

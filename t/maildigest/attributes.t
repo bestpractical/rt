@@ -52,26 +52,26 @@ my $everyone = RT::Model::Group->new(current_user => RT->system_user );
 ( $ret, $msg ) = $everyone->load_system_internal_group( 'Everyone' );
 ok( $ret, "Loaded 'everyone' group: $msg" );
 
-( $ret, $msg ) = $everyone->principal_object->grant_right( right => 'CreateTicket',
+( $ret, $msg ) = $everyone->principal->grant_right( right => 'CreateTicket',
 						      object => $testq );
 ok( $ret || $msg =~ /already has/, "Granted everyone CreateTicket on testq: $msg" );
 
 # Make user_d an admincc for the queue.
-( $ret, $msg ) = $user_d->principal_object->grant_right( right => 'AdminQueue',
+( $ret, $msg ) = $user_d->principal->grant_right( right => 'AdminQueue',
 						    object => $testq );
 ok( $ret || $msg =~ /already has/, "Granted dduser AdminQueue on testq: $msg" );
 ( $ret, $msg ) = $testq->add_watcher( type => 'admin_cc',
-			     principal_id => $user_d->principal_object->id );
+			     principal_id => $user_d->principal->id );
 ok( $ret || $msg =~ /already/, "dduser added as a queue watcher: $msg" );
 
 # Give the others queue rights.
-( $ret, $msg ) = $user_n->principal_object->grant_right( right => 'AdminQueue',
+( $ret, $msg ) = $user_n->principal->grant_right( right => 'AdminQueue',
 						    object => $testq );
 ok( $ret || $msg =~ /already has/, "Granted emailnormal right on testq: $msg" );
-( $ret, $msg ) = $user_w->principal_object->grant_right( right => 'AdminQueue',
+( $ret, $msg ) = $user_w->principal->grant_right( right => 'AdminQueue',
 						    object => $testq );
 ok( $ret || $msg =~ /already has/, "Granted emailweekly right on testq: $msg" );
-( $ret, $msg ) = $user_s->principal_object->grant_right( right => 'AdminQueue',
+( $ret, $msg ) = $user_s->principal->grant_right( right => 'AdminQueue',
 						    object => $testq );
 ok( $ret || $msg =~ /already has/, "Granted emailsusp right on testq: $msg" );
 
@@ -86,10 +86,10 @@ ok( $ret, "Ticket $id created: $msg" );
 
 # Make the other users ticket watchers.
 ( $ret, $msg ) = $ticket->add_watcher( type => 'cc',
-		      principal_id => $user_n->principal_object->id );
+		      principal_id => $user_n->principal->id );
 ok( $ret, "Added user_w as a ticket watcher: $msg" );
 ( $ret, $msg ) = $ticket->add_watcher( type => 'cc',
-		      principal_id => $user_s->principal_object->id );
+		      principal_id => $user_s->principal->id );
 ok( $ret, "Added user_s as a ticket watcher: $msg" );
 
 my $obj;

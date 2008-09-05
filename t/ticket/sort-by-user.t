@@ -39,9 +39,9 @@ foreach my $u (qw(Z A)) {
     );
     ok $uid, "created user #$uid";
 
-    my ($status, $msg) = $user->principal_object->grant_right( right => 'OwnTicket', object => $queue );
+    my ($status, $msg) = $user->principal->grant_right( right => 'OwnTicket', object => $queue );
     ok $status, "granted right";
-    ($status, $msg) = $user->principal_object->grant_right( right => 'CreateTicket', object => $queue );
+    ($status, $msg) = $user->principal->grant_right( right => 'CreateTicket', object => $queue );
     ok $status, "granted right";
 
     push @users, $user;

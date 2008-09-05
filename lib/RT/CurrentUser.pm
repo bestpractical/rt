@@ -171,9 +171,9 @@ sub email { shift->user_object->email }
 sub name  { shift->user_object->name }
 sub real_name  { shift->user_object->real_name }
 
-sub principal_object {
+sub principal {
     my $self = shift;
     Carp::confess unless ( $self->user_object );
-    return $self->user_object->principal_object;
+    return $self->user_object->principal;
 }
 1;

@@ -91,7 +91,7 @@ sub __depends_on {
     $deps->_push_dependency(
         base_object   => $self,
         flags         => DEPENDS_ON | WIPE_AFTER,
-        target_object => $self->principal_object,
+        target_object => $self->principal,
         shredder      => $args{'shredder'}
     );
 
@@ -147,7 +147,7 @@ sub __relates {
     my $list = [];
 
     # Principal
-    my $obj = $self->principal_object;
+    my $obj = $self->principal;
     if ( $obj && defined $obj->id ) {
         push( @$list, $obj );
     } else {
@@ -158,7 +158,7 @@ sub __relates {
     }
 
     $obj = RT::Model::Group->new( current_user => RT->system_user );
-    $obj->load_acl_equivalence_group( $self->principal_object );
+    $obj->load_acl_equivalence_group( $self->principal );
     if ( $obj && defined $obj->id ) {
         push( @$list, $obj );
     } else {

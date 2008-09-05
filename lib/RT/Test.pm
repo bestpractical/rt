@@ -294,7 +294,7 @@ sub store_rights {
 
     my @res;
     while ( my $ace = $acl->next ) {
-        my $obj = $ace->principal_object->object;
+        my $obj = $ace->principal->object;
         if (   $obj->isa('RT::Model::Group')
             && $obj->type eq 'UserEquiv'
             && $obj->instance == RT->nobody->id )
@@ -334,7 +334,7 @@ sub set_rights {
         value    => 'SuperUser'
     );
     while ( my $ace = $acl->next ) {
-        my $obj = $ace->principal_object->object;
+        my $obj = $ace->principal->object;
         if (   $obj->isa('RT::Model::Group')
             && $obj->type eq 'UserEquiv'
             && $obj->instance == RT->nobody->id )
@@ -362,8 +362,8 @@ sub add_rights {
             }
         }
         unless ( $principal->isa('RT::Model::Principal') ) {
-            if ( $principal->can('principal_object') ) {
-                $principal = $principal->principal_object;
+            if ( $principal->can('principal') ) {
+                $principal = $principal->principal;
             }
         }
         my @Rights = ref $e->{'right'} ? @{ $e->{'right'} } : ( $e->{'right'} );

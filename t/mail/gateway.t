@@ -114,7 +114,7 @@ diag "revoke rights tests depend on" if $ENV{'TEST_VERBOSE'};
     ok ($everyone_group->id, "Found group 'everyone'");
 
     foreach( qw(CreateTicket ReplyToTicket CommentOnTicket) ) {
-        $everyone_group->principal_object->revoke_right(right => $_);
+        $everyone_group->principal->revoke_right(right => $_);
     }
 }
 
@@ -255,7 +255,7 @@ EOF
 diag "grant everybody with CreateTicket right" if $ENV{'TEST_VERBOSE'};
 {
     ok( RT::Test->set_rights(
-        { principal => $everyone_group->principal_object,
+        { principal => $everyone_group->principal,
           right => [qw(CreateTicket)],
         },
     ), "Granted everybody the right to create tickets");
@@ -310,7 +310,7 @@ EOF
 diag "grant everyone 'ReplyToTicket' right" if $ENV{'TEST_VERBOSE'};
 {
     ok( RT::Test->set_rights(
-        { principal => $everyone_group->principal_object,
+        { principal => $everyone_group->principal,
           right => [qw(CreateTicket ReplyToTicket)],
         },
     ), "Granted everybody the right to reply to tickets" );
@@ -390,7 +390,7 @@ EOF
 diag "grant everyone 'CommentOnTicket' right" if $ENV{'TEST_VERBOSE'};
 {
     ok( RT::Test->set_rights(
-        { principal => $everyone_group->principal_object,
+        { principal => $everyone_group->principal,
           right => [qw(CreateTicket ReplyToTicket CommentOnTicket)],
         },
     ), "Granted everybody the right to comment on tickets");
@@ -606,7 +606,7 @@ EOF
 }
 
 
-my ($val,$msg) = $everyone_group->principal_object->revoke_right(right => 'CreateTicket');
+my ($val,$msg) = $everyone_group->principal->revoke_right(right => 'CreateTicket');
 ok ($val, $msg);
 
 SKIP: {
@@ -723,7 +723,7 @@ Jifty::DBI::Record::Cachable->flush_cache;
 
 cmp_ok( $tick->owner, '!=', $user->id, "we didn't change owner" );
 
-($status, $msg) = $user->principal_object->grant_right( object => $queue, right => 'ReplyToTicket' );
+($status, $msg) = $user->principal->grant_right( object => $queue, right => 'ReplyToTicket' );
 ok( $status, "successfuly granted right: $msg" );
 my $ace_id = $status;
 ok( $user->has_right( right => 'ReplyToTicket', object => $tick ), "User can reply to ticket" );
@@ -776,12 +776,12 @@ ok( !$user->has_right( right => 'ReplyToTicket', object => $tick ), "User can't 
 my $group = RT::Model::Group->new(current_user => RT->system_user );
 ok( $group->load_queue_role_group( queue => $qid, type=> 'Owner' ), "load queue owners role group" );
 $ace = RT::Model::ACE->new(current_user => RT->system_user );
-($ace_id, $msg) = $group->principal_object->grant_right( right => 'ReplyToTicket', object => $queue );
+($ace_id, $msg) = $group->principal->grant_right( right => 'ReplyToTicket', object => $queue );
 ok( $ace_id, "Granted queue owners role group with ReplyToTicket right" );
 
-($status, $msg) = $user->principal_object->grant_right( object => $queue, right => 'OwnTicket' );
+($status, $msg) = $user->principal->grant_right( object => $queue, right => 'OwnTicket' );
 ok( $status, "successfuly granted right: $msg" );
-($status, $msg) = $user->principal_object->grant_right( object => $queue, right => 'TakeTicket' );
+($status, $msg) = $user->principal->grant_right( object => $queue, right => 'TakeTicket' );
 ok( $status, "successfuly granted right: $msg" );
 
 $! = 0;

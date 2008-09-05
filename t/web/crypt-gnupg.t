@@ -360,8 +360,8 @@ sub strip_headers
 
 # now test the owner_nameKey and RequestorsKey fields
 my $nokey = RT::Test->load_or_create_user(name => 'nokey', email => 'nokey@example.com');
-$nokey->principal_object->grant_right(right => 'CreateTicket');
-$nokey->principal_object->grant_right(right => 'OwnTicket');
+$nokey->principal->grant_right(right => 'CreateTicket');
+$nokey->principal->grant_right(right => 'OwnTicket');
 
 my $tick = RT::Model::Ticket->new(current_user => RT->system_user );
 $tick->create(subject => 'owner lacks pubkey', queue => 'general',

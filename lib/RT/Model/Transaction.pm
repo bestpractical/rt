@@ -348,8 +348,8 @@ sub create {
     }
 
     if ( my $o = delete $args{'object'} ) {
-        $args{'object_type'} = ref $args{'object'};
-        $args{'object_id'}   = $args{'object'}->id;
+        $args{'object_type'} = ref $o;
+        $args{'object_id'}   = $o->id;
     }
 
     my $activate_scrips = delete $args{'activate_scrips'};

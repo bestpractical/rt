@@ -137,7 +137,7 @@ ok ($group->id, "Found the admin_cc object for this ticket");
 $group = RT::Model::Group->new(current_user => RT->system_user);
 ok($group->load_ticket_role_group(ticket => $id, type=> 'owner'));
 ok ($group->id, "Found the owner object for this ticket");
-ok($group->has_member(RT->nobody->user_object->principal_object), "the owner group has the member 'RT_System'");
+ok($group->has_member(RT->nobody->user_object->principal), "the owner group has the member 'RT_System'");
 
 
 

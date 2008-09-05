@@ -79,7 +79,7 @@ use Jifty::DBI::Record schema {
         type => max_length is 25,
         type is 'varchar(25)', default is '';
     column principal_id => references RT::Model::Principal;
-    column right_name => max_length is 25, type is 'varchar(25)', default is '';
+    column right_name => max_length is 25, type is 'varchar(25)', is mandatory;
     column
         object_type => max_length is 25,
         type is 'varchar(25)', default is '';
@@ -377,10 +377,10 @@ sub delegate {
         return ( 0, _("Permission Denied") );
     }
 
-    unless ( $self->principal_object->is_group ) {
+    unless ( $self->principal->is_group ) {
         return ( 0, _("System Error") );
     }
-    unless ( $self->principal_object->object->has_member_recursively( $self->current_user->principal_object ) ) {
+    unless ( $self->principal->object->has_member_recursively( $self->current_user->principal ) ) {
         return ( 0, _("Permission Denied") );
     }
 
@@ -479,7 +479,7 @@ sub __delete {
     # revoke all rights delegated by the recipient.
     my $right = $self->__value('right_name');
     if ( $right eq 'DelegateRights' || $right eq 'SuperUser' ) {
-        my ($status) = $self->principal_object->_cleanup_invalid_delegations;
+        my ($status) = $self->principal->_cleanup_invalid_delegations;
         unless ( $status ) {
             Jifty->handle->rollback unless $inside_transaction;
             return ( 0, _('Right could not be revoked') );
@@ -579,23 +579,14 @@ sub object {
 
 
 
-=head2 principal_object
+=head2 principal
 
-Returns the RT::Model::Principal object for this ACE. 
+Returns the L<RT::Model::Principal> object for this ACE. 
 
 =cut
 
 sub principal_object {
-    my $self = shift;
-
-    my $princ_obj = RT::Model::Principal->new;
-    $princ_obj->load( $self->__value('principal_id') );
-
-    unless ( $princ_obj->id ) {
-        Jifty->log->err( "ACE " . $self->id . " couldn't load its principal object - " . $self->__value('principal_id') );
-    }
-    return ($princ_obj);
-
+    require Carp; Carp::confess("deprecated");
 }
 
 
@@ -613,8 +604,8 @@ sub _value {
 
     if ( $self->__value('delegated_by') eq $self->current_user->id ) {
         return ( $self->__value(@_) );
-    } elsif ( $self->principal_object->is_group
-        && $self->principal_object->object->has_member_recursively( $self->current_user->principal_object ) )
+    } elsif ( $self->principal->is_group
+        && $self->principal->object->has_member_recursively( $self->current_user->principal ) )
     {
         return ( $self->__value(@_) );
     } elsif (
@@ -666,7 +657,7 @@ sub canonicalize_principal {
             Jifty->log->fatal( "No ACL equiv group for princ " . $princ_obj->id );
             return ( RT::Model::Principal->new( current_user => RT->system_user ), undef );
         }
-        $princ_obj  = $equiv_group->principal_object();
+        $princ_obj  = $equiv_group->principal();
         $princ_type = 'Group';
 
     }

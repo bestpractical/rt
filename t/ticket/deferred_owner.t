@@ -23,10 +23,10 @@ ok $owner_role_group->id, 'loaded owners role group of the queue';
 diag "check that deffering owner doesn't regress" if $ENV{'TEST_VERBOSE'};
 {
     RT::Test->set_rights(
-        { principal => $tester->principal_object,
+        { principal => $tester->principal,
           right => [qw(Seequeue ShowTicket CreateTicket OwnTicket)],
         },
-        { principal => $owner_role_group->principal_object,
+        { principal => $owner_role_group->principal,
           object => $queue,
           right => [qw(ModifyTicket)],
         },
@@ -49,7 +49,7 @@ diag "check that previous trick doesn't work without sufficient rights"
     if $ENV{'TEST_VERBOSE'};
 {
     RT::Test->set_rights(
-        { principal => $tester->principal_object,
+        { principal => $tester->principal,
           right => [qw(Seequeue ShowTicket CreateTicket OwnTicket)],
         },
     );
@@ -70,10 +70,10 @@ diag "check that previous trick doesn't work without sufficient rights"
 diag "check that deffering owner really works" if $ENV{'TEST_VERBOSE'};
 {
     RT::Test->set_rights(
-        { principal => $tester->principal_object,
+        { principal => $tester->principal,
           right => [qw(Seequeue ShowTicket CreateTicket)],
         },
-        { principal => $queue->role_group('cc')->principal_object,
+        { principal => $queue->role_group('cc')->principal,
           object => $queue,
           right => [qw(OwnTicket TakeTicket)],
         },
@@ -94,7 +94,7 @@ diag "check that deffering owner really works" if $ENV{'TEST_VERBOSE'};
 diag "check that deffering doesn't work without correct rights" if $ENV{'TEST_VERBOSE'};
 {
     RT::Test->set_rights(
-        { principal => $tester->principal_object,
+        { principal => $tester->principal,
           right => [qw(Seequeue ShowTicket CreateTicket)],
         },
     );

@@ -86,7 +86,7 @@ sub __depends_on {
     $deps->_push_dependency(
         base_object   => $self,
         flags         => DEPENDS_ON | WIPE_AFTER,
-        target_object => $self->principal_object,
+        target_object => $self->principal,
         shredder      => $args{'shredder'}
     );
 
@@ -152,7 +152,7 @@ sub __relates {
     }
 
     # Principal
-    my $obj = $self->principal_object;
+    my $obj = $self->principal;
     if ( $obj && $obj->id ) {
         push( @$list, $obj );
     } else {

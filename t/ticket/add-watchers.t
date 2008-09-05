@@ -83,7 +83,7 @@ my ($user_id) = $user->create( name =>  'watcher'.$$,
 my $cu= RT::CurrentUser->new( id => $user->id );
 
 # make sure user can see tickets in the queue
-my $principal = $user->principal_object;
+my $principal = $user->principal;
 ok( $principal, "principal loaded" );
 $principal->grant_right( right => 'ShowTicket', object => $queue );
 $principal->grant_right( right => 'SeeQueue'  , object => $queue );
