@@ -47,7 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 <& Elements/Header, Title => loc("Create a ticket") &>
 
-<form action="Display.html" method="post" enctype="multipart/form-data">
+<& /Elements/ListActions, actions => \@results &>
+<form action="Create.html" method="post" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="id" value="new" />
 
 <table>
@@ -65,7 +66,7 @@
 <&|/l&>Requestors</&>:
 </td>
 <td class="value">
-<& /Elements/EmailInput, Name => 'Requestors', Size => '20', Default => $session{CurrentUser}->EmailAddress &>
+<& /Elements/EmailInput, Name => 'Requestors', Size => '20', Default => $ARGS{Requestors} || $session{CurrentUser}->EmailAddress &>
 </td>
 </tr>
 <tr>
@@ -73,7 +74,7 @@
 <&|/l&>Cc</&>:
 </td>
 <td class="value">
-<& /Elements/EmailInput, Name => 'Cc', Size => '20' &>
+<& /Elements/EmailInput, Name => 'Cc', Size => '20', Default => $ARGS{Cc} || '' &>
 </td>
 </tr>
 <tr>
@@ -81,7 +82,7 @@
 <&|/l&>Subject</&>:
 </td>
 <td class="value">
-<input name="Subject" size="60" maxsize="200" value="" />
+<input name="Subject" size="60" maxsize="200" value="<%$ARGS{Subject} || ''%>" />
 </td>
 </tr>
 <tr>
@@ -91,6 +92,8 @@
 </tr>
 <tr>
 <td class="label">
+%# FIXME: if failed customfields validation, attachement needs to be choosen
+%# again by user.
 <&|/l&>Attach file</&>:
 </td>
 <td class="value">
@@ -102,7 +105,7 @@
 <tr>
 <td colspan="2">
 <&|/l&>Describe the issue below</&>:<br />
-<& /Elements/MessageBox &>
+<& /Elements/MessageBox, Default => $ARGS{Content} || ''  &>
 </td>
 </tr>
 </table>
@@ -114,6 +117,29 @@
 $Queue => undef
 </%args>
 <%init>
+my @results;
 my $queue_obj = RT::Queue->new($session{'CurrentUser'});
 $queue_obj->Load($Queue);
+my $CFs = $queue_obj->TicketCustomFields();
+my $ValidCFs = $m->comp(
+    '/Elements/ValidateCustomFields',
+    CustomFields => $CFs,
+    ARGSRef => \%ARGS
+);
+
+if ( defined($ARGS{'id'}) and $ARGS{'id'} eq 'new' ) { # new ticket?
+    if ( $ValidCFs ) {
+        $m->comp('Display.html', %ARGS);
+        $RT::Logger->crit("After display call; error is $@");
+        $m->abort();
+    }
+    elsif ( !$ValidCFs ) {
+        # Invalid CFs
+        while (my $CF = $CFs->Next) {
+            my $msg = $m->notes('InvalidField-' . $CF->Id) or next;
+            push @results, $CF->Name . ': ' . $msg;
+        }
+    }
+}
+
 </%init>
