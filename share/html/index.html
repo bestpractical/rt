@@ -108,7 +108,7 @@ if ( $ARGS{'QuickCreate'} ) {
                         Status => 'new',
                         # yes! it's Requestors, not Requestor
                         Requestors => $session{'CurrentUser'}->id,
-                        From => $session{'CurrentUser'}->id,
+                        From => $session{'CurrentUser'}->EmailAddress,
                         Content => $ARGS{'Content'},
                         Subject => $ARGS{'Subject'});
         push @results, $msg;
