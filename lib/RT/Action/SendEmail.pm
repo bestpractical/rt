@@ -1102,7 +1102,7 @@ sub MIMEEncodeString {
 
     return ($value) unless $value =~ /[^\x20-\x7e]/;
 
-    $value =~ s/\s*$//;
+    $value =~ s/\s+$//;
 
     # we need perl string to split thing char by char
     Encode::_utf8_on($value) unless Encode::is_utf8($value);
