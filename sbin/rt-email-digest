@@ -262,7 +262,7 @@ sub build_digest_for_user {
     # behalf?
     my $user_obj = RT::Model::User->new( current_user => RT->system_user );
     $user_obj->load_by_email($user);
-    if ( $user_obj->principal_object->disabled ) {
+    if ( $user_obj->principal->disabled ) {
         print STDERR _("Skipping disabled user") . " $user\n";
         next;
     }

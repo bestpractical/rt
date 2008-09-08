@@ -107,7 +107,7 @@ my $Users = RT::Model::UserCollection->new( current_user => RT->system_user);
 $Users->limit_to_privileged;
 
 while (defined(my $user = $Users->next)) {
-    if ($user->principal_object->disabled) {
+    if ($user->principal->disabled) {
         debug "Skipping over "
             . $user->name
             . " due to having a disabled account.";
