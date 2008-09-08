@@ -48,7 +48,7 @@ diag "grant SuperUser right to everyone" if $ENV{'TEST_VERBOSE'};
     $m->select("grant_right-$everyone_gid-RT::System-1", ['SuperUser']);
     $m->submit;
 
-    $m->content_contains('right Granted', 'got message');
+    $m->content_contains('Right granted', 'got message');
     RT::Model::Principal::invalidate_acl_cache();
     ok($everyone->principal->has_right( right => 'SuperUser', object => RT->system ), 'group has right');
     is_deeply( [get_rights( $m, $everyone_gid, 'RT::System-1' )], ['SuperUser'], 'granted SuperUser right' );
