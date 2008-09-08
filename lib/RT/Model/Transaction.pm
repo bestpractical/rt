@@ -1088,10 +1088,7 @@ sub ticket_obj {
     # XXX: too early for deprecation, a lot of usage
     #require Carp; Carp::confess("use object method instead and check type");
     my $self = shift;
-    unless ( $self->object_type eq 'RT::Model::Ticket' ) {
-        require Carp; Carp::confess("ticket_obj method is called on txn that belongs not to ticket");
-    }
-    return $self->object_id;
+    return $self->object;
 }
 
 sub old_value {
