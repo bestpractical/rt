@@ -98,22 +98,15 @@ recommended.
 =cut
 
 our %META = (
+    # General user overridable options
     WebDefaultStylesheet => {
         Section         => 'General',                #loc
         Overridable     => 1,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             Description => 'Theme',                  #loc
-                 # XXX: we need support for 'get values callback'
+            # XXX: we need support for 'get values callback'
             Values => [qw(3.5-default 3.4-compat web2)],
-        },
-    },
-    DefaultSummaryRows => {
-        Section         => 'RT at a glance',    #loc
-        Overridable     => 1,
-        Widget          => '/Widgets/Form/Integer',
-        WidgetArguments => {
-            Description => 'Number of search results',    #loc
         },
     },
     MessageBoxRichText => {
@@ -148,57 +141,6 @@ our %META = (
             Description => 'Message box height',          #loc
         },
     },
-    MaxInlineBody => {
-        Section         => 'Ticket display',              #loc
-        Overridable     => 1,
-        Widget          => '/Widgets/Form/Integer',
-        WidgetArguments => {
-            Description => 'Maximum inline message length',    #loc
-            Hints =>
-                "Length in characters; Use '0' to show all messages inline, regardless of length" #loc
-        },
-    },
-    OldestTransactionsFirst => {
-        Section         => 'Ticket display',
-        Overridable     => 1,
-        Widget          => '/Widgets/Form/Boolean',
-        WidgetArguments => {
-            Description => 'Show oldest history first',    #loc
-        },
-    },
-    ShowUnreadMessageNotifications => { 
-        Section         => 'Ticket display',
-        Overridable     => 1,
-        Widget          => '/Widgets/Form/Boolean',
-        WidgetArguments => {
-            Description => 'Notify me of unread messages',    #loc
-            },
-
-    },
-    PlainTextPre => {
-	Section         => 'Ticket display',
-	Overridable     => 1,
-        Widget          => '/Widgets/Form/Boolean',
-        WidgetArguments => {
-            Description => 'Use monospace font', #loc
-            Hints       => "Use fixed-width font to display plaintext messages" #loc
-	},
-    },
-    DateTimeFormat => {
-        Section         => 'Locale',                       #loc
-        Overridable     => 1,
-        Widget          => '/Widgets/Form/Select',
-        WidgetArguments => {
-            Description => 'Date format',                            #loc
-            Values      => [qw(DefaultFormat RFC2822 ISO W3CDTF)],
-            ValuesLabel => {
-                DefaultFormat => 'Tue Dec 25 21:59:12 1995',           #loc_left_pair
-                RFC2822       => 'Tue, 25 Dec 1995 21:59:12 -0300',    #loc_left_pair
-                ISO           => '1995-11-25 21:59:12',                #loc_left_pair
-                W3CDTF        => '1995-11-25T21:59:12Z',               #loc_left_pair
-            },
-        },
-    },
     UsernameFormat => {
         Section         => 'General',
         Overridable     => 1,
@@ -231,21 +173,90 @@ our %META = (
             },
         }
     },
-     EmailFrequency => {
+
+    # User overridable options for RT ata a glance
+    DefaultSummaryRows => {
+        Section         => 'RT at a glance',    #loc
+        Overridable     => 1,
+        Widget          => '/Widgets/Form/Integer',
+        WidgetArguments => {
+            Description => 'Number of search results',    #loc
+        },
+    },
+
+    # User overridable options for Ticket displays
+    MaxInlineBody => {
+        Section         => 'Ticket display',              #loc
+        Overridable     => 1,
+        Widget          => '/Widgets/Form/Integer',
+        WidgetArguments => {
+            Description => 'Maximum inline message length',    #loc
+            Hints =>
+            "Length in characters; Use '0' to show all messages inline, regardless of length" #loc
+        },
+    },
+    OldestTransactionsFirst => {
+        Section         => 'Ticket display',
+        Overridable     => 1,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Show oldest history first',    #loc
+        },
+    },
+    ShowUnreadMessageNotifications => { 
+        Section         => 'Ticket display',
+        Overridable     => 1,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Notify me of unread messages',    #loc
+        },
+
+    },
+    PlainTextPre => {
+        Section         => 'Ticket display',
+        Overridable     => 1,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Use monospace font', #loc
+            Hints       => "Use fixed-width font to display plaintext messages" #loc
+        },
+    },
+
+    # User overridable locale options
+    DateTimeFormat => {
+        Section         => 'Locale',                       #loc
+        Overridable     => 1,
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => 'Date format',                            #loc
+            Values      => [qw(DefaultFormat RFC2822 ISO W3CDTF)],
+            ValuesLabel => {
+                DefaultFormat => 'Tue Dec 25 21:59:12 1995',           #loc_left_pair
+                RFC2822       => 'Tue, 25 Dec 1995 21:59:12 -0300',    #loc_left_pair
+                ISO           => '1995-11-25 21:59:12',                #loc_left_pair
+                W3CDTF        => '1995-11-25T21:59:12Z',               #loc_left_pair
+            },
+        },
+    },
+
+    # User overridable mail options
+    EmailFrequency => {
         Section         => 'Mail',                                     #loc
         Overridable     => 1,
-            Default     => 'Individual messages',
+        Default     => 'Individual messages',
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             Description => 'Email delivery',    #loc
             Values      => [
-                'Individual messages',    #loc
-                'Daily digest',           #loc
-                'Weekly digest',          #loc
-                'Suspended'               #loc
+            'Individual messages',    #loc
+            'Daily digest',           #loc
+            'Weekly digest',          #loc
+            'Suspended'               #loc
             ]
-            }
-            },
+        }
+    },
+
+    # Internal config options
     DisableGraphViz => {
         Type            => 'SCALAR',
         PostLoadCheck   => sub {
@@ -278,30 +289,28 @@ our %META = (
     GnuPGOptions => { Type => 'HASH',
         PostLoadCheck => sub {
             my $self = shift;
-    my $gpg = $self->Get('GnuPG');
-    my $gpgopts = $self->Get('GnuPGOptions');
-        unless (-d $gpgopts->{homedir}  && -r _ ) { # no homedir, no gpg
-            $RT::Logger->debug(
-             "RT's GnuPG libraries couldn't successfully read your".
-            " configured GnuPG home directory (".$gpgopts->{homedir}
-            ."). PGP support has been disabled");
-            $gpg->{'Enable'} = 0;
-        }
+            my $gpg = $self->Get('GnuPG');
+            my $gpgopts = $self->Get('GnuPGOptions');
+            unless (-d $gpgopts->{homedir}  && -r _ ) { # no homedir, no gpg
+                $RT::Logger->debug(
+                    "RT's GnuPG libraries couldn't successfully read your".
+                    " configured GnuPG home directory (".$gpgopts->{homedir}
+                    ."). PGP support has been disabled");
+                $gpg->{'Enable'} = 0;
+            }
 
-    
-    if ($gpg->{'Enable'}) {
-        require RT::Crypt::GnuPG;
-        unless (RT::Crypt::GnuPG->Probe()) {
-            $RT::Logger->debug(
-            "RT's GnuPG libraries couldn't successfully execute gpg.".
-            " PGP support has been disabled");
-            $gpg->{'Enable'} = 0;
-        }
-    }
 
-        
-        
-        }},
+            if ($gpg->{'Enable'}) {
+                require RT::Crypt::GnuPG;
+                unless (RT::Crypt::GnuPG->Probe()) {
+                    $RT::Logger->debug(
+                        "RT's GnuPG libraries couldn't successfully execute gpg.".
+                        " PGP support has been disabled");
+                    $gpg->{'Enable'} = 0;
+                }
+            }
+        }
+    },
 );
 my %OPTIONS = ();
 
