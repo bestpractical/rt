@@ -849,7 +849,7 @@ Height of RichText javascript enabled editing boxes (in pixels)
 
 =cut
 
-Set($MessageBoxRightTextHeight, 200);
+Set($MessageBoxRichTextHeight, 200);
 
 =item C<$MessageBoxIncludeSignature>
 
