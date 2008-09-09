@@ -108,8 +108,10 @@ can be set for each config optin:
  Section     - What header this option should be grouped
                under on the user Settings page
  Overridable - Can users change this option
- Widget      - What kind of display widget should be user
-               to present this option to the user
+ SortOrder   - Within a Section, how should the options be sorted
+               for display to the user
+ Widget      - Mason component path to widget that should be user 
+               to display this config option
  WidgetArguments - An argument hash passed to the WIdget
     Description - Friendly description to show the user
     Values      - Arrayref of options (for select Widget)
@@ -131,6 +133,7 @@ our %META = (
     WebDefaultStylesheet => {
         Section         => 'General',                #loc
         Overridable     => 1,
+        SortOrder       => 3,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             Description => 'Theme',                  #loc
@@ -141,6 +144,7 @@ our %META = (
     MessageBoxRichText => {
         Section => 'General',
         Overridable => 1,
+        SortOrder => 4,
         Widget => '/Widgets/Form/Boolean',
         WidgetArguments => {
             Description => 'WYSIWYG message composer' # loc
@@ -149,14 +153,16 @@ our %META = (
     MessageBoxRichTextHeight => {
         Section => 'General',
         Overridable => 1,
+        SortOrder => 5,
         Widget => '/Widgets/Form/Integer',
         WidgetArguments => {
-            Description => 'Height of WYSIWYG message composer' # loc
+            Description => 'WYSIWYG composer height', # loc
         }
     },
     MessageBoxWidth => {
         Section         => 'General',
         Overridable     => 1,
+        SortOrder       => 6,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
             Description => 'Message box width',           #loc
@@ -165,6 +171,7 @@ our %META = (
     MessageBoxHeight => {
         Section         => 'General',
         Overridable     => 1,
+        SortOrder       => 7,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
             Description => 'Message box height',          #loc
@@ -173,6 +180,7 @@ our %META = (
     UsernameFormat => {
         Section         => 'General',
         Overridable     => 1,
+        SortOrder       => 2,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             Description => 'Username format',
@@ -186,6 +194,7 @@ our %META = (
     DefaultQueue => {
         Section         => 'General',
         Overridable     => 1,
+        SortOrder       => 1,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             Description => 'Default queue',    #loc
@@ -217,6 +226,7 @@ our %META = (
     MaxInlineBody => {
         Section         => 'Ticket display',              #loc
         Overridable     => 1,
+        SortOrder       => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
             Description => 'Maximum inline message length',    #loc
@@ -227,6 +237,7 @@ our %META = (
     OldestTransactionsFirst => {
         Section         => 'Ticket display',
         Overridable     => 1,
+        SortOrder       => 2,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
             Description => 'Show oldest history first',    #loc
@@ -235,6 +246,7 @@ our %META = (
     ShowUnreadMessageNotifications => { 
         Section         => 'Ticket display',
         Overridable     => 1,
+        SortOrder       => 3,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
             Description => 'Notify me of unread messages',    #loc
@@ -244,6 +256,7 @@ our %META = (
     PlainTextPre => {
         Section         => 'Ticket display',
         Overridable     => 1,
+        SortOrder       => 4,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
             Description => 'Use monospace font', #loc
@@ -742,7 +755,8 @@ sub Sections {
 sub Options {
     my $self = shift;
     my %args = ( Section => undef, Overridable => 1, @_ );
-    my @res  = sort keys %META;
+    my @res  = sort { ($META{$a}->{SortOrder}||9999) <=> ($META{$b}->{SortOrder}||9999)
+                       || $a cmp $b } keys %META;
     @res = grep( ( $META{$_}->{'Section'} || 'General' ) eq $args{'Section'},
         @res )
         if defined $args{'Section'};
