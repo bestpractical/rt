@@ -97,6 +97,35 @@ recommended.
 
 =cut
 
+=head2 %META
+
+Hash of Config options that may be user overridable
+or may require more logic than should live in RT_*Config.pm
+
+Keyed by config name, there are several properties that
+can be set for each config optin:
+
+ Section     - What header this option should be grouped
+               under on the user Settings page
+ Overridable - Can users change this option
+ Widget      - What kind of display widget should be user
+               to present this option to the user
+ WidgetArguments - An argument hash passed to the WIdget
+    Description - Friendly description to show the user
+    Values      - Arrayref of options (for select Widget)
+    ValuesLabel - Hashref, key is the Value from the Values
+                  list, value is a user friendly description
+                  of the value
+    Callback    - subref that receives no arguments.  It returns
+                  a hashref of items that are added to the rest
+                  of the WidgetArguments
+ PostLoadCheck - subref passed the RT::Config object and the current
+                 setting of the config option.  Can make further checks
+                 (such as seeing if a library is installed) and then change
+                 the setting of this or other options in the Config using 
+                 the RT::Config option.
+=cut
+
 our %META = (
     # General user overridable options
     WebDefaultStylesheet => {
