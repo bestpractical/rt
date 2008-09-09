@@ -263,8 +263,56 @@ our @PLUGINS = ();
 
 sub plugins {
     my $self = shift;
-    @PLUGINS = $self->init_plugins unless (@PLUGINS);
+    unless (@PLUGINS) {
+        $self->init_plugin_paths;
+        @PLUGINS = $self->init_plugins;
+    }
     return \@PLUGINS;
+}
+
+=head2 plugin_dirs
+
+Takes optional subdir (e.g. po, lib, etc.) and return plugins' dirs that exist.
+
+=cut
+
+sub plugin_dirs {
+    my $self = shift;
+    my $subdir = shift;
+
+    my @res;
+    foreach my $plugin (grep $_, RT->config->get('Plugins')) {
+        my $plugindir = $plugin;
+        $plugindir =~ s/::/-/g;
+        my $path = $RT::LocalPluginPath. "/$plugindir";
+        $path .= "/$subdir" if defined $subdir && length $subdir;
+        next unless -d $path;
+        push @res, $path;
+    }
+    return @res;
+}
+
+=head2 init_plugin_paths
+
+Push plugins' lib paths into @INC right after F<local/lib>.
+
+=cut
+
+sub init_plugin_paths {
+    my $self = shift || __PACKAGE__;
+
+    my @lib_dirs = $self->plugin_dirs('lib');
+
+    my @tmp_inc;
+    for (@INC) {
+        if ( Cwd::realpath($_) eq $RT::LocalLibPath) {
+            push @tmp_inc, $_, @lib_dirs;
+        } else {
+            push @tmp_inc, $_;
+        }
+    }
+    my %seen;
+    @INC = grep !$seen{$_}++, @tmp_inc;
 }
 
 =head2 init_plugins
@@ -274,35 +322,15 @@ Initialze all Plugins found in the RT configuration file, setting up their lib a
 =cut
 
 sub init_plugins {
-    my $self = shift;
+    my $self    = shift;
     my @plugins;
-    use RT::Plugin;
-    foreach my $plugin ( RT->config->get('Plugins') ) {
-        next unless $plugin;
-        my $plugindir = $plugin;
-        $plugindir =~ s/::/-/g;
-        unless ( -d $RT::LocalPluginPath . "/$plugindir" ) {
-            Jifty->log->fatal("Plugin $plugindir not found in $RT::LocalPluginPath");
-        }
-
-        # Splice the plugin's lib dir into @INC;
-        my @tmp_inc;
-
-        for (@INC) {
-            if ( $_ eq $RT::LocalLibPath ) {
-                push @tmp_inc, $_, $RT::LocalPluginPath . "/$plugindir";
-            } else {
-                push @tmp_inc, $_;
-            }
-        }
-
-        @INC = @tmp_inc;
+    require RT::Plugin;
+    foreach my $plugin (grep $_, RT->config->get('Plugins')) {
         $plugin->require;
         die $UNIVERSAL::require::ERROR if ($UNIVERSAL::require::ERROR);
-        push @plugins, RT::Plugin->new( name => $plugin );
+        push @plugins, RT::Plugin->new(name =>$plugin);
     }
     return @plugins;
-
 }
 
 sub install_mode {
@@ -339,5 +367,6 @@ L<Jifty::DBI>
 
 
 =cut
+
 
 1;
