@@ -819,6 +819,9 @@ preferences.
 
 Default width: 72, height: 15
 
+These settings only apply to the non-RichText message box.
+See below for Rich Text settings.
+
 =cut
 
 Set($MessageBoxWidth, 72);
@@ -839,6 +842,14 @@ Should "rich text" editing be enabled? This option lets your users send html ema
 =cut
 
 Set($MessageBoxRichText, 1);
+
+=item C<$MessageBoxRichTextHeight>
+
+Height of RichText javascript enabled editing boxes (in pixels)
+
+=cut
+
+Set($MessageBoxRightTextHeight, 200);
 
 =item C<$MessageBoxIncludeSignature>
 

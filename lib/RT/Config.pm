@@ -124,6 +124,14 @@ our %META = (
             Description => 'WYSIWYG message composer' # loc
         }
     },
+    MessageBoxRichTextHeight => {
+        Section => 'General',
+        Overridable => 1,
+        Widget => '/Widgets/Form/Integer',
+        WidgetArguments => {
+            Description => 'Height of WYSIWYG message composer' # loc
+        }
+    },
     MessageBoxWidth => {
         Section         => 'General',
         Overridable     => 1,
