@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2008 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,6 +44,7 @@ RemoveFormat		: "Αφαίρεση Μορφοποίησης",
 InsertLinkLbl		: "Σύνδεσμος (Link)",
 InsertLink			: "Εισαγωγή/Μεταβολή Συνδέσμου (Link)",
 RemoveLink			: "Αφαίρεση Συνδέσμου (Link)",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: "Εισαγωγή/επεξεργασία Anchor",
 AnchorDelete		: "Remove Anchor",	//MISSING
 InsertImageLbl		: "Εικόνα",
@@ -72,6 +73,9 @@ BlockJustify		: "Πλήρης Στοίχιση (Block)",
 DecreaseIndent		: "Μείωση Εσοχής",
 IncreaseIndent		: "Αύξηση Εσοχής",
 Blockquote			: "Blockquote",	//MISSING
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "Αναίρεση",
 Redo				: "Επαναφορά",
 NumberedListLbl		: "Λίστα με Αριθμούς",
@@ -157,6 +161,7 @@ UnknownToolbarSet	: "Η μπάρα εργαλείων \"%1\" δεν υπάρχε
 NoActiveX			: "Οι ρυθμίσεις ασφαλείας του browser σας μπορεί να περιορίσουν κάποιες ρυθμίσεις του προγράμματος. Χρειάζεται να ενεργοποιήσετε την επιλογή \"Run ActiveX controls and plug-ins\". Ίσως παρουσιαστούν λάθη και παρατηρήσετε ελειπείς λειτουργίες.",
 BrowseServerBlocked : "Οι πόροι του browser σας δεν είναι προσπελάσιμοι. Σιγουρευτείτε ότι δεν υπάρχουν ενεργοί popup blockers.",
 DialogBlocked		: "Δεν ήταν δυνατό να ανοίξει το παράθυρο διαλόγου. Σιγουρευτείτε ότι δεν υπάρχουν ενεργοί popup blockers.",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -359,7 +364,6 @@ DlgPasteMsg2	: "Παρακαλώ επικολήστε στο ακόλουθο κ
 DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "Αγνόηση προδιαγραφών γραμματοσειράς",
 DlgPasteRemoveStyles	: "Αφαίρεση προδιαγραφών στύλ",
-DlgPasteCleanBox		: "Κουτί εκαθάρισης",
 
 // Color Picker
 ColorAutomatic	: "Αυτόματο",
@@ -512,5 +516,11 @@ DlgAboutAboutTab	: "Σχετικά",
 DlgAboutBrowserInfoTab	: "Πληροφορίες Browser",
 DlgAboutLicenseTab	: "Άδεια",
 DlgAboutVersion		: "έκδοση",
-DlgAboutInfo		: "Για περισσότερες πληροφορίες"
+DlgAboutInfo		: "Για περισσότερες πληροφορίες",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style"	//MISSING
 };

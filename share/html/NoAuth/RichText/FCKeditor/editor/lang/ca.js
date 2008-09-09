@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2008 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -26,13 +26,13 @@ var FCKLang =
 // Language direction : "ltr" (left to right) or "rtl" (right to left).
 Dir					: "ltr",
 
-ToolbarCollapse		: "Col·lapsa la barra",
-ToolbarExpand		: "Amplia la barra",
+ToolbarCollapse		: "Redueix la barra d'eines",
+ToolbarExpand		: "Amplia la barra d'eines",
 
 // Toolbar Items and Context Menu
 Save				: "Desa",
 NewPage				: "Nova Pàgina",
-Preview				: "Vista Prèvia",
+Preview				: "Visualització prèvia",
 Cut					: "Retalla",
 Copy				: "Copia",
 Paste				: "Enganxa",
@@ -43,7 +43,8 @@ SelectAll			: "Selecciona-ho tot",
 RemoveFormat		: "Elimina Format",
 InsertLinkLbl		: "Enllaç",
 InsertLink			: "Insereix/Edita enllaç",
-RemoveLink			: "Elimina enllaç",
+RemoveLink			: "Elimina l'enllaç",
+VisitLink			: "Obre l'enllaç",
 Anchor				: "Insereix/Edita àncora",
 AnchorDelete		: "Elimina àncora",
 InsertImageLbl		: "Imatge",
@@ -58,26 +59,29 @@ InsertSpecialCharLbl: "Caràcter Especial",
 InsertSpecialChar	: "Insereix caràcter especial",
 InsertSmileyLbl		: "Icona",
 InsertSmiley		: "Insereix icona",
-About				: "Quant a FCKeditor",
+About				: "Quant a l'FCKeditor",
 Bold				: "Negreta",
 Italic				: "Cursiva",
 Underline			: "Subratllat",
 StrikeThrough		: "Barrat",
 Subscript			: "Subíndex",
 Superscript			: "Superíndex",
-LeftJustify			: "Aliniament esquerra",
-CenterJustify		: "Aliniament centrat",
-RightJustify		: "Aliniament dreta",
-BlockJustify		: "Justifica",
-DecreaseIndent		: "Sagna el text",
-IncreaseIndent		: "Treu el sagnat del text",
+LeftJustify			: "Alinia a l'esquerra",
+CenterJustify		: "Centrat",
+RightJustify		: "Alinia a la dreta",
+BlockJustify		: "Justificat",
+DecreaseIndent		: "Redueix el sagnat",
+IncreaseIndent		: "Augmenta el sagnat",
 Blockquote			: "Bloc de cita",
+CreateDiv			: "Crea un contenidor Div",
+EditDiv				: "Edita el contenidor Div",
+DeleteDiv			: "Elimina el contenidor Div",
 Undo				: "Desfés",
 Redo				: "Refés",
 NumberedListLbl		: "Llista numerada",
-NumberedList		: "Aplica o elimina la llista numerada",
+NumberedList		: "Numeració activada/desactivada",
 BulletedListLbl		: "Llista de pics",
-BulletedList		: "Aplica o elimina la llista de pics",
+BulletedList		: "Pics activats/descativats",
 ShowTableBorders	: "Mostra les vores de les taules",
 ShowDetails			: "Mostra detalls",
 Style				: "Estil",
@@ -143,7 +147,7 @@ SelectionFieldProp	: "Propietats del camp de selecció",
 TextareaProp		: "Propietats de l'àrea de text",
 FormProp			: "Propietats del formulari",
 
-FontFormats			: "Normal;Formatejat;Adreça;Encapçalament 1;Encapçalament 2;Encapçalament 3;Encapçalament 4;Encapçalament 5;Encapçalament 6",
+FontFormats			: "Normal;Formatejat;Adreça;Encapçalament 1;Encapçalament 2;Encapçalament 3;Encapçalament 4;Encapçalament 5;Encapçalament 6;Normal (DIV)",
 
 // Alerts and Messages
 ProcessingXHTML		: "Processant XHTML. Si us plau esperi...",
@@ -156,7 +160,8 @@ NotImplemented		: "Mètode no implementat",
 UnknownToolbarSet	: "Conjunt de barra d'eines \"%1\" inexistent",
 NoActiveX			: "Les preferències del navegador poden limitar algunes funcions d'aquest editor. Cal habilitar l'opció \"Executa controls ActiveX i plug-ins\". Poden sorgir errors i poden faltar algunes funcions.",
 BrowseServerBlocked : "El visualitzador de recursos no s'ha pogut obrir. Assegura't de que els bloquejos de finestres emergents estan desactivats.",
-DialogBlocked		: "No ha estat possible obrir una finestra de diàleg. Assegura't de que els bloquejos de finestres emergents estan desactivats.",
+DialogBlocked		: "No ha estat possible obrir una finestra de diàleg. Assegureu-vos que els bloquejos de finestres emergents estan desactivats.",
+VisitLinkBlocked	: "No ha estat possible obrir una nova finestra. Assegureu-vos que els bloquejos de finestres emergents estan desactivats.",
 
 // Dialogs
 DlgBtnOK			: "D'acord",
@@ -359,7 +364,6 @@ DlgPasteMsg2	: "Si us plau, enganxeu dins del següent camp utilitzant el teclat
 DlgPasteSec		: "A causa de la configuració de seguretat del vostre navegador, l'editor no pot accedir al porta-retalls directament. Enganxeu-ho un altre cop en aquesta finestra.",
 DlgPasteIgnoreFont		: "Ignora definicions de font",
 DlgPasteRemoveStyles	: "Elimina definicions d'estil",
-DlgPasteCleanBox		: "Neteja camp",
 
 // Color Picker
 ColorAutomatic	: "Automàtic",
@@ -375,20 +379,20 @@ DlgAnchorErrorName	: "Si us plau, escriviu el nom de l'ancora",
 
 // Speller Pages Dialog
 DlgSpellNotInDic		: "No és al diccionari",
-DlgSpellChangeTo		: "Canvia a",
+DlgSpellChangeTo		: "Reemplaça amb",
 DlgSpellBtnIgnore		: "Ignora",
 DlgSpellBtnIgnoreAll	: "Ignora-les totes",
 DlgSpellBtnReplace		: "Canvia",
 DlgSpellBtnReplaceAll	: "Canvia-les totes",
 DlgSpellBtnUndo			: "Desfés",
-DlgSpellNoSuggestions	: "Cap sugerència",
-DlgSpellProgress		: "Comprovació ortogràfica en progrés",
-DlgSpellNoMispell		: "Comprovació ortogràfica completada",
-DlgSpellNoChanges		: "Comprovació ortogràfica: cap paraulada canviada",
-DlgSpellOneChange		: "Comprovació ortogràfica: una paraula canviada",
-DlgSpellManyChanges		: "Comprovació ortogràfica %1 paraules canviades",
+DlgSpellNoSuggestions	: "Cap suggeriment",
+DlgSpellProgress		: "Verificació ortogràfica en curs...",
+DlgSpellNoMispell		: "Verificació ortogràfica acabada: no hi ha cap paraula mal escrita",
+DlgSpellNoChanges		: "Verificació ortogràfica: no s'ha canviat cap paraula",
+DlgSpellOneChange		: "Verificació ortogràfica: s'ha canviat una paraula",
+DlgSpellManyChanges		: "Verificació ortogràfica: s'han canviat %1 paraules",
 
-IeSpellDownload			: "Comprovació ortogràfica no instal·lada. Voleu descarregar-ho ara?",
+IeSpellDownload			: "Verificació ortogràfica no instal·lada. Voleu descarregar-ho ara?",
 
 // Button Dialog
 DlgButtonText		: "Text (Valor)",
@@ -431,8 +435,8 @@ DlgTextareaRows	: "Files",
 // Text Field Dialog
 DlgTextName			: "Nom",
 DlgTextValue		: "Valor",
-DlgTextCharWidth	: "Amplada de caràcter",
-DlgTextMaxChars		: "Màxim de caràcters",
+DlgTextCharWidth	: "Amplada",
+DlgTextMaxChars		: "Nombre màxim de caràcters",
 DlgTextType			: "Tipus",
 DlgTextTypeText		: "Text",
 DlgTextTypePass		: "Contrasenya",
@@ -452,8 +456,8 @@ DlgLstTypeSquare	: "Quadrat",
 DlgLstTypeNumbers	: "Números (1, 2, 3)",
 DlgLstTypeLCase		: "Lletres minúscules (a, b, c)",
 DlgLstTypeUCase		: "Lletres majúscules (A, B, C)",
-DlgLstTypeSRoman	: "Números romans minúscules (i, ii, iii)",
-DlgLstTypeLRoman	: "Números romans majúscules (I, II, III)",
+DlgLstTypeSRoman	: "Números romans en minúscules (i, ii, iii)",
+DlgLstTypeLRoman	: "Números romans en majúscules (I, II, III)",
 
 // Document Properties Dialog
 DlgDocGeneralTab	: "General",
@@ -502,7 +506,7 @@ DlgDocPreview		: "Vista prèvia",
 // Templates Dialog
 Templates			: "Plantilles",
 DlgTemplatesTitle	: "Contingut plantilles",
-DlgTemplatesSelMsg	: "Si us plau, seleccioneu la plantilla per obrir en l'editor<br>(el contingut actual no serà enregistrat):",
+DlgTemplatesSelMsg	: "Si us plau, seleccioneu la plantilla per obrir a l'editor<br>(el contingut actual no serà enregistrat):",
 DlgTemplatesLoading	: "Carregant la llista de plantilles. Si us plau, espereu...",
 DlgTemplatesNoTpl	: "(No hi ha plantilles definides)",
 DlgTemplatesReplace	: "Reemplaça el contingut actual",
@@ -512,5 +516,11 @@ DlgAboutAboutTab	: "Quant a",
 DlgAboutBrowserInfoTab	: "Informació del navegador",
 DlgAboutLicenseTab	: "Llicència",
 DlgAboutVersion		: "versió",
-DlgAboutInfo		: "Per a més informació aneu a"
+DlgAboutInfo		: "Per a més informació aneu a",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",
+DlgDivAdvancedTab	: "Avançat",
+DlgDivStyle		: "Estil",
+DlgDivInlineStyle	: "Estil en línia"
 };

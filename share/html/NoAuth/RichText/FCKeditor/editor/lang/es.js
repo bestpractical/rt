@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2008 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,6 +44,7 @@ RemoveFormat		: "Eliminar Formato",
 InsertLinkLbl		: "Vínculo",
 InsertLink			: "Insertar/Editar Vínculo",
 RemoveLink			: "Eliminar Vínculo",
+VisitLink			: "Abrir enlace",
 Anchor				: "Referencia",
 AnchorDelete		: "Eliminar Referencia",
 InsertImageLbl		: "Imagen",
@@ -72,6 +73,9 @@ BlockJustify		: "Justificado",
 DecreaseIndent		: "Disminuir Sangría",
 IncreaseIndent		: "Aumentar Sangría",
 Blockquote			: "Cita",
+CreateDiv			: "Crear contenedor (div)",
+EditDiv				: "Editar contenedor (div)",
+DeleteDiv			: "Eliminar contenedor (div)",
 Undo				: "Deshacer",
 Redo				: "Rehacer",
 NumberedListLbl		: "Numeración",
@@ -157,6 +161,7 @@ UnknownToolbarSet	: "Nombre de barra \"%1\" no definido",
 NoActiveX			: "La configuración de las opciones de seguridad de su navegador puede estar limitando algunas características del editor. Por favor active la opción \"Ejecutar controles y complementos de ActiveX \", de lo contrario puede experimentar errores o ausencia de funcionalidades.",
 BrowseServerBlocked : "La ventana de visualización del servidor no pudo ser abierta. Verifique que su navegador no esté bloqueando las ventanas emergentes (pop up).",
 DialogBlocked		: "No se ha podido abrir la ventana de diálogo. Verifique que su navegador no esté bloqueando las ventanas emergentes (pop up).",
+VisitLinkBlocked	: "Nose ha podido abrir la ventana. Asegurese de que todos los bloqueadores de popups están deshabilitados.",
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -359,7 +364,6 @@ DlgPasteMsg2	: "Por favor pegue dentro del cuadro utilizando el teclado (<STRONG
 DlgPasteSec		: "Debido a la configuración de seguridad de su navegador, el editor no tiene acceso al portapapeles. Es necesario que lo pegue de nuevo en esta ventana.",
 DlgPasteIgnoreFont		: "Ignorar definiciones de fuentes",
 DlgPasteRemoveStyles	: "Remover definiciones de estilo",
-DlgPasteCleanBox		: "Borrar el contenido del cuadro",
 
 // Color Picker
 ColorAutomatic	: "Automático",
@@ -512,5 +516,11 @@ DlgAboutAboutTab	: "Acerca de",
 DlgAboutBrowserInfoTab	: "Información de Navegador",
 DlgAboutLicenseTab	: "Licencia",
 DlgAboutVersion		: "versión",
-DlgAboutInfo		: "Para mayor información por favor dirigirse a"
+DlgAboutInfo		: "Para mayor información por favor dirigirse a",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",
+DlgDivAdvancedTab	: "Avanzado",
+DlgDivStyle		: "Estilo",
+DlgDivInlineStyle	: "Estilos CSS"
 };

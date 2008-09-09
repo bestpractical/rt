@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2008 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,6 +44,7 @@ RemoveFormat		: "Remove Format",
 InsertLinkLbl		: "Link",
 InsertLink			: "Insert/Edit Link",
 RemoveLink			: "Remove Link",
+VisitLink			: "Open Link",
 Anchor				: "Insert/Edit Anchor",
 AnchorDelete		: "Remove Anchor",
 InsertImageLbl		: "Image",
@@ -72,6 +73,9 @@ BlockJustify		: "Block Justify",
 DecreaseIndent		: "Decrease Indent",
 IncreaseIndent		: "Increase Indent",
 Blockquote			: "Blockquote",
+CreateDiv			: "Create Div Container",
+EditDiv				: "Edit Div Container",
+DeleteDiv			: "Remove Div Container",
 Undo				: "Undo",
 Redo				: "Redo",
 NumberedListLbl		: "Numbered List",
@@ -157,6 +161,7 @@ UnknownToolbarSet	: "Toolbar set \"%1\" doesn't exist",
 NoActiveX			: "Your browser's security settings could limit some features of the editor. You must enable the option \"Run ActiveX controls and plug-ins\". You may experience errors and notice missing features.",
 BrowseServerBlocked : "The resources browser could not be opened. Make sure that all popup blockers are disabled.",
 DialogBlocked		: "It was not possible to open the dialog window. Make sure all popup blockers are disabled.",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -359,7 +364,6 @@ DlgPasteMsg2	: "Please paste inside the following box using the keyboard (<stron
 DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",
 DlgPasteIgnoreFont		: "Ignore Font Face definitions",
 DlgPasteRemoveStyles	: "Remove Styles definitions",
-DlgPasteCleanBox		: "Clean Up Box",
 
 // Color Picker
 ColorAutomatic	: "Automatic",
@@ -512,5 +516,11 @@ DlgAboutAboutTab	: "About",
 DlgAboutBrowserInfoTab	: "Browser Info",
 DlgAboutLicenseTab	: "License",
 DlgAboutVersion		: "version",
-DlgAboutInfo		: "For further information go to"
+DlgAboutInfo		: "For further information go to",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",
+DlgDivAdvancedTab	: "Advanced",
+DlgDivStyle		: "Style",
+DlgDivInlineStyle	: "Inline Style"
 };

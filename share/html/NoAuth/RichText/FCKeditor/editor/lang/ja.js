@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2008 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,6 +44,7 @@ RemoveFormat		: "フォーマット削除",
 InsertLinkLbl		: "リンク",
 InsertLink			: "リンク挿入/編集",
 RemoveLink			: "リンク削除",
+VisitLink			: "リンクを開く",
 Anchor				: "アンカー挿入/編集",
 AnchorDelete		: "アンカー削除",
 InsertImageLbl		: "イメージ",
@@ -72,6 +73,9 @@ BlockJustify		: "両端揃え",
 DecreaseIndent		: "インデント解除",
 IncreaseIndent		: "インデント",
 Blockquote			: "ブロック引用",
+CreateDiv			: "Div 作成",
+EditDiv				: "Div 編集",
+DeleteDiv			: "Div 削除",
 Undo				: "元に戻す",
 Redo				: "やり直し",
 NumberedListLbl		: "段落番号",
@@ -157,6 +161,7 @@ UnknownToolbarSet	: "ツールバー設定 \"%1\" 存在しません。",
 NoActiveX			: "エラー、警告メッセージなどが発生した場合、ブラウザーのセキュリティ設定によりエディタのいくつかの機能が制限されている可能性があります。セキュリティ設定のオプションで\"ActiveXコントロールとプラグインの実行\"を有効にするにしてください。",
 BrowseServerBlocked : "サーバーブラウザーを開くことができませんでした。ポップアップ・ブロック機能が無効になっているか確認してください。",
 DialogBlocked		: "ダイアログウィンドウを開くことができませんでした。ポップアップ・ブロック機能が無効になっているか確認してください。",
+VisitLinkBlocked	: "新しいウィンドウを開くことができませんでした。ポップアップ・ブロック機能が無効になっているか確認してください。",
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -359,7 +364,6 @@ DlgPasteMsg2	: "キーボード(<STRONG>Ctrl+V</STRONG>)を使用して、次の
 DlgPasteSec		: "ブラウザのセキュリティ設定により、エディタはクリップボード・データに直接アクセスすることができません。このウィンドウは貼り付け操作を行う度に表示されます。",
 DlgPasteIgnoreFont		: "FontタグのFace属性を無視します。",
 DlgPasteRemoveStyles	: "スタイル定義を削除します。",
-DlgPasteCleanBox		: "入力エリアクリア",
 
 // Color Picker
 ColorAutomatic	: "自動",
@@ -512,5 +516,11 @@ DlgAboutAboutTab	: "バージョン情報",
 DlgAboutBrowserInfoTab	: "ブラウザ情報",
 DlgAboutLicenseTab	: "ライセンス",
 DlgAboutVersion		: "バージョン",
-DlgAboutInfo		: "より詳しい情報はこちらで"
+DlgAboutInfo		: "より詳しい情報はこちらで",
+
+// Div Dialog
+DlgDivGeneralTab	: "全般",
+DlgDivAdvancedTab	: "高度な設定",
+DlgDivStyle		: "スタイル",
+DlgDivInlineStyle	: "インラインスタイル"
 };

@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2008 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,6 +44,7 @@ RemoveFormat		: "លប់ចោល ការរចនា",
 InsertLinkLbl		: "ឈ្នាប់",
 InsertLink			: "បន្ថែម/កែប្រែ ឈ្នាប់",
 RemoveLink			: "លប់ឈ្នាប់",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: "បន្ថែម/កែប្រែ យុថ្កា",
 AnchorDelete		: "Remove Anchor",	//MISSING
 InsertImageLbl		: "រូបភាព",
@@ -72,6 +73,9 @@ BlockJustify		: "តំរឹមសងខាង",
 DecreaseIndent		: "បន្ថយការចូលបន្ទាត់",
 IncreaseIndent		: "បន្ថែមការចូលបន្ទាត់",
 Blockquote			: "Blockquote",	//MISSING
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "សារឡើងវិញ",
 Redo				: "ធ្វើឡើងវិញ",
 NumberedListLbl		: "បញ្ជីជាអក្សរ",
@@ -157,6 +161,7 @@ UnknownToolbarSet	: "របាឧបរកណ៍ \"%1\" ពុំមាន ។",
 NoActiveX			: "ការកំណត់សុវត្ថភាពរបស់កម្មវិធីរុករករបស់លោកអ្នក នេះ​អាចធ្វើអោយលោកអ្នកមិនអាចប្រើមុខងារខ្លះរបស់កម្មវិធីតាក់តែងអត្ថបទនេះ ។ លោកអ្នកត្រូវកំណត់អោយ \"ActiveX និង​កម្មវិធីជំនួយក្នុង (plug-ins)\" អោយដំណើរការ ។ លោកអ្នកអាចជួបប្រទះនឹង បញ្ហា ព្រមជាមួយនឹងការបាត់បង់មុខងារណាមួយរបស់កម្មវិធីតាក់តែងអត្ថបទនេះ ។",
 BrowseServerBlocked : "The resources browser could not be opened. Make sure that all popup blockers are disabled.",	//MISSING
 DialogBlocked		: "វីនដូវមិនអាចបើកបានទេ ។ សូមពិនិត្យចំពោះកម្មវិធីបិទ វីនដូវលោត (popup) ថាតើវាដំណើរការរឺទេ ។",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "យល់ព្រម",
@@ -359,7 +364,6 @@ DlgPasteMsg2	: "សូមចំលងអត្ថបទទៅដាក់ក្�
 DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "មិនគិតអំពីប្រភេទពុម្ភអក្សរ",
 DlgPasteRemoveStyles	: "លប់ម៉ូត",
-DlgPasteCleanBox		: "លប់អត្ថបទចេញពីប្រអប់",
 
 // Color Picker
 ColorAutomatic	: "ស្វ័យប្រវត្ត",
@@ -512,5 +516,11 @@ DlgAboutAboutTab	: "អំពី",
 DlgAboutBrowserInfoTab	: "ព៌តមានកម្មវិធីរុករក",
 DlgAboutLicenseTab	: "License",	//MISSING
 DlgAboutVersion		: "ជំនាន់",
-DlgAboutInfo		: "សំរាប់ព៌តមានផ្សេងទៀត សូមទាក់ទង"
+DlgAboutInfo		: "សំរាប់ព៌តមានផ្សេងទៀត សូមទាក់ទង",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style"	//MISSING
 };

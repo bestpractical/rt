@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2008 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,6 +44,7 @@ RemoveFormat		: "Opmaak verwijderen",
 InsertLinkLbl		: "Link",
 InsertLink			: "Link invoegen/wijzigen",
 RemoveLink			: "Link verwijderen",
+VisitLink			: "Link volgen",
 Anchor				: "Interne link",
 AnchorDelete		: "Anker verwijderen",
 InsertImageLbl		: "Afbeelding",
@@ -72,6 +73,9 @@ BlockJustify		: "Uitvullen",
 DecreaseIndent		: "Inspringen verkleinen",
 IncreaseIndent		: "Inspringen vergroten",
 Blockquote			: "Citaatblok",
+CreateDiv			: "DIV aanmaken",
+EditDiv				: "DIV wijzigen",
+DeleteDiv			: "DIV verwijderen",
 Undo				: "Ongedaan maken",
 Redo				: "Opnieuw uitvoeren",
 NumberedListLbl		: "Genummerde lijst",
@@ -157,6 +161,7 @@ UnknownToolbarSet	: "Menubalk \"%1\" bestaat niet.",
 NoActiveX			: "De beveilingsinstellingen van je browser zouden sommige functies van de editor kunnen beperken. De optie \"Activeer ActiveX-elementen en plug-ins\" dient ingeschakeld te worden. Het kan zijn dat er nu functies ontbreken of niet werken.",
 BrowseServerBlocked : "De bestandsbrowser kon niet geopend worden. Zorg ervoor dat pop-up-blokkeerders uit staan.",
 DialogBlocked		: "Kan het dialoogvenster niet weergeven. Zorg ervoor dat pop-up-blokkeerders uit staan.",
+VisitLinkBlocked	: "Het was niet mogelijk een nieuw venster te openen. Controleer of er geen pop-up-blocker aktief is.",
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -359,7 +364,6 @@ DlgPasteMsg2	: "Plak de tekst in het volgende vak gebruik makend van je toetsten
 DlgPasteSec		: "Door de beveiligingsinstellingen van uw browser is het niet mogelijk om direct vanuit het klembord in de editor te plakken. Middels opnieuw plakken in dit venster kunt u de tekst alsnog plakken in de editor.",
 DlgPasteIgnoreFont		: "Negeer \"Font Face\"-definities",
 DlgPasteRemoveStyles	: "Verwijder \"Style\"-definities",
-DlgPasteCleanBox		: "Vak opschonen",
 
 // Color Picker
 ColorAutomatic	: "Automatisch",
@@ -512,5 +516,11 @@ DlgAboutAboutTab	: "Over",
 DlgAboutBrowserInfoTab	: "Browserinformatie",
 DlgAboutLicenseTab	: "Licentie",
 DlgAboutVersion		: "Versie",
-DlgAboutInfo		: "Voor meer informatie ga naar "
+DlgAboutInfo		: "Voor meer informatie ga naar ",
+
+// Div Dialog
+DlgDivGeneralTab	: "Algemeen",
+DlgDivAdvancedTab	: "Geavanceerd",
+DlgDivStyle		: "Style",
+DlgDivInlineStyle	: "Inline Style"
 };

@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2008 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,6 +44,7 @@ RemoveFormat		: "Biçimi Kaldır",
 InsertLinkLbl		: "Köprü",
 InsertLink			: "Köprü Ekle/Düzenle",
 RemoveLink			: "Köprü Kaldır",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: "Çapa Ekle/Düzenle",
 AnchorDelete		: "Remove Anchor",	//MISSING
 InsertImageLbl		: "Resim",
@@ -72,6 +73,9 @@ BlockJustify		: "İki Kenara Yaslanmış",
 DecreaseIndent		: "Sekme Azalt",
 IncreaseIndent		: "Sekme Arttır",
 Blockquote			: "Blockquote",	//MISSING
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "Geri Al",
 Redo				: "Tekrarla",
 NumberedListLbl		: "Numaralı Liste",
@@ -157,6 +161,7 @@ UnknownToolbarSet	: "\"%1\" araç çubuğu öğesi mevcut değil",
 NoActiveX			: "Kullandığınız tarayıcının güvenlik ayarları bazı özelliklerin kullanılmasını engelliyor. Bu özelliklerin çalışması için \"Run ActiveX controls and plug-ins (Activex ve eklentileri çalıştır)\" seçeneğinin aktif yapılması gerekiyor. Kullanılamayan eklentiler ve hatalar konusunda daha fazla bilgi sahibi olun.",
 BrowseServerBlocked : "Kaynak tarayıcısı açılamadı. Tüm \"popup blocker\" programlarının devre dışı olduğundan emin olun. (Yahoo toolbar, Msn toolbar, Google toolbar gibi)",
 DialogBlocked		: "Diyalog açmak mümkün olmadı. Tüm \"Popup Blocker\" programlarının devre dışı olduğundan emin olun.",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "Tamam",
@@ -359,7 +364,6 @@ DlgPasteMsg2	: "Lütfen aşağıdaki kutunun içine yapıştırın. (<STRONG>Ctr
 DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "Yazı Tipi tanımlarını yoksay",
 DlgPasteRemoveStyles	: "Biçem Tanımlarını çıkar",
-DlgPasteCleanBox		: "Temizlik Kutusu",
 
 // Color Picker
 ColorAutomatic	: "Otomatik",
@@ -512,5 +516,11 @@ DlgAboutAboutTab	: "Hakkında",
 DlgAboutBrowserInfoTab	: "Gezgin Bilgisi",
 DlgAboutLicenseTab	: "Lisans",
 DlgAboutVersion		: "sürüm",
-DlgAboutInfo		: "Daha fazla bilgi için:"
+DlgAboutInfo		: "Daha fazla bilgi için:",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style"	//MISSING
 };
