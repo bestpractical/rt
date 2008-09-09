@@ -452,6 +452,23 @@ sub check_delete_rights {
     return 1;
 }
 
+=head2 delete
+
+Delete this record object from the database.
+
+=cut
+
+sub delete {
+    my $self = shift;
+    my ($rv) = $self->SUPER::delete;
+    if ($rv) {
+        return ( $rv, _("Right revoked") );
+    } else {
+
+        return ( 0, _("Right could not be revoked") );
+    }
+}
+
 # Helper for Delete with no ACL check
 sub _delete { return (shift)->__delete( @_ ) }
 sub __delete {
