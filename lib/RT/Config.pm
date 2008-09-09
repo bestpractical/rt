@@ -130,6 +130,40 @@ can be set for each config optin:
 
 our %META = (
     # General user overridable options
+    DefaultQueue => {
+        Section         => 'General',
+        Overridable     => 1,
+        SortOrder       => 1,
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => 'Default queue',    #loc
+            Callback    => sub {
+                my $ret = { Values => [], ValuesLabel => {}};
+                my $q = new RT::Queues($HTML::Mason::Commands::session{'CurrentUser'});
+                $q->UnLimit;
+                while (my $queue = $q->Next) {
+                    next unless $queue->CurrentUserHasRight("CreateTicket");
+                    push @{$ret->{Values}}, $queue->Id;
+                    $ret->{ValuesLabel}{$queue->Id} = $queue->Name;
+                }
+                return $ret;
+            },
+        }
+    },
+    UsernameFormat => {
+        Section         => 'General',
+        Overridable     => 1,
+        SortOrder       => 2,
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => 'Username format',
+            Values      => [qw(concise verbose)],
+            ValuesLabel => {
+                concise => 'Short usernames',
+                verbose => 'Name and email address',
+            },
+        },
+    },
     WebDefaultStylesheet => {
         Section         => 'General',                #loc
         Overridable     => 1,
@@ -177,42 +211,8 @@ our %META = (
             Description => 'Message box height',          #loc
         },
     },
-    UsernameFormat => {
-        Section         => 'General',
-        Overridable     => 1,
-        SortOrder       => 2,
-        Widget          => '/Widgets/Form/Select',
-        WidgetArguments => {
-            Description => 'Username format',
-            Values      => [qw(concise verbose)],
-            ValuesLabel => {
-                concise => 'Short usernames',
-                verbose => 'Name and email address',
-            },
-        },
-    },
-    DefaultQueue => {
-        Section         => 'General',
-        Overridable     => 1,
-        SortOrder       => 1,
-        Widget          => '/Widgets/Form/Select',
-        WidgetArguments => {
-            Description => 'Default queue',    #loc
-            Callback    => sub {
-                my $ret = { Values => [], ValuesLabel => {}};
-                my $q = new RT::Queues($HTML::Mason::Commands::session{'CurrentUser'});
-                $q->UnLimit;
-                while (my $queue = $q->Next) {
-                    next unless $queue->CurrentUserHasRight("CreateTicket");
-                    push @{$ret->{Values}}, $queue->Id;
-                    $ret->{ValuesLabel}{$queue->Id} = $queue->Name;
-                }
-                return $ret;
-            },
-        }
-    },
 
-    # User overridable options for RT ata a glance
+    # User overridable options for RT at a glance
     DefaultSummaryRows => {
         Section         => 'RT at a glance',    #loc
         Overridable     => 1,
