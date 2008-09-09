@@ -68,6 +68,9 @@ $FILECAT = {};
 # scan html dir for extensions
 File::Find::find( { wanted => \&extract_strings_from_code, follow => 1 }, qw(bin sbin lib share html etc) );
 
+# remove msgid with $ in it.  XXX: perhaps give some warnings here
+$FILECAT = { map { $_ => $FILECAT->{$_} } grep { !m/\$/ } keys %$FILECAT };
+
 # ensure proper escaping and [_1] => %1 transformation
 foreach my $str ( sort keys %{$FILECAT} ) {
     my $entry = $FILECAT->{$str};
@@ -105,7 +108,7 @@ sub extract_strings_from_code {
     local $/;
     return if ( -d $_ );
     return if ( $File::Find::dir =~ 'lib/blib|lib/t/autogen|var|m4|local|\.svn' );
-    return if ( /\.(?:pot|po|bak|gif|png|psd|jpe?g|svg)$/ );
+    return if ( /\.(?:pot|po|bak|gif|png|psd|jpe?g|svg|css|js)$/ );
     return if ( /~|,D|,B$|extract-message-catalog$|tweak-template-locstring$/ );
     return if ( /^[\.#]/ );
     return if ( -f "$_.in" );
@@ -223,19 +226,52 @@ sub update {
     @lines = grep { !/^(#(:|\.)\s*|$)/ } @lines;
     while (@lines) {
         my $msghdr = "";
-        $msghdr .= shift @lines while ( $lines[0] && $lines[0] !~ /^msgid/ );
+        $msghdr .= shift @lines while ( $lines[0] && $lines[0] !~ /^(#~ )?msgid/ );
         
         my $msgid  = "";
-        $msgid .= shift @lines while ( $lines[0] && $lines[0] =~ /^(msgid|")/ );
+
+# '#~ ' is the prefix of launchpad for msg that's not found the the source
+# we'll remove the prefix later so we can still show them with our own mark
+
+        $msgid .= shift @lines while ( $lines[0] && $lines[0] =~ /^(#~ )?(msgid|")/ );
         my $msgstr = "";
-        $msgstr .= shift @lines while ( $lines[0] && $lines[0] =~ /^(msgstr|")/ );
+        $msgstr .= shift @lines while ( $lines[0] && $lines[0] =~ /^(#~ )?(msgstr|")/ );
 
         last unless $msgid;
 
         chomp $msgid;
         chomp $msgstr;
-        $msgid  =~ s/^msgid "(.*)"\s*?$/$1/ms    or warn "$msgid in $file";
-        $msgstr =~ s/^msgstr "(.*)"\s*?$/$1/ms or warn "$msgstr  in $file";
+
+        $msgid  =~ s/^#~ //mg;
+        $msgstr =~ s/^#~ //mg;
+
+        $msgid  =~ s/^msgid "(.*)"\s*?$/$1/m    or warn "$msgid in $file";
+
+        if ( $msgid eq '' ) {
+            # null msgid, msgstr will have head info
+            $msgstr =~ s/^msgstr "(.*)"\s*?$/$1/ms or warn "$msgstr  in $file";
+        }
+        else {
+            $msgstr =~ s/^msgstr "(.*)"\s*?$/$1/m or warn "$msgstr  in $file";
+        }
+
+        if ( $msgid ne ''  ) {
+            for my $msg ( \$msgid, \$msgstr ) {
+                if ( $$msg =~ /\n/ ) {
+                    my @lines = split /\n/, $$msg;
+                    $$msg =
+                      shift @lines;   # first line don't need to handle any more
+                    for (@lines) {
+                        if (/^"(.*)"\s*$/) {
+                            $$msg .= $1;
+                        }
+                    }
+                }
+
+                # convert \\n back to \n
+                $$msg =~ s/(?!\\)\\n/\n/g;
+            }
+        }
 
         $Lexicon{$msgid} = $msgstr;
         $Header{$msgid}  = $msghdr;

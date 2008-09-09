@@ -2,12 +2,16 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
-"PO-Revision-Date: 2007-12-09 13:05+0800\n"
-"Last-Translator: Audrey Tang <cpan@audreyt.org>\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-08-29 20:18+0000\n"
+"PO-Revision-Date: 2008-09-06 16:18+0000\n"
+"Last-Translator: Aron Xu <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2008-09-08 01:57+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " %1 deleted."
@@ -395,8 +399,7 @@ msgstr "最新 %1 份送出的申请单..."
 msgid "%1 result(s) found"
 msgstr "找到 %1 项结果"
 
-#: share/html/User/Elements/DelegateRights:99
-#. (loc($ObjectType =~ /^RT::(.*)$/))
+#: NOT FOUND IN SOURCE
 msgid "%1 rights"
 msgstr "%1权限"
 
@@ -635,7 +638,7 @@ msgstr ""
 msgid "(no subject)"
 msgstr "(没有主题)"
 
-#: lib/RT/Transaction_Overlay.pm:580 share/html/Admin/Elements/SelectRights:74 share/html/Elements/EditCustomFieldSelect:71 share/html/Elements/SelectCustomFieldValue:53 share/html/Elements/ShowCustomFields:56 share/html/Search/Chart:136 share/html/Search/Elements/Chart:80
+#: lib/RT/Transaction_Overlay.pm:580 share/html/Admin/Elements/SelectRights:77 share/html/Elements/EditCustomFieldSelect:71 share/html/Elements/SelectCustomFieldValue:53 share/html/Elements/ShowCustomFields:56 share/html/Search/Chart:136 share/html/Search/Elements/Chart:80
 msgid "(no value)"
 msgstr "(无)"
 
@@ -703,14 +706,6 @@ msgstr "--transaction 的值仅能为 'first' 或 'last'"
 
 #: bin/rt-crontool:120
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
-msgstr ""
-
-#: lib/RT/Config.pm:189
-msgid "1995-11-25 21:59:12"
-msgstr ""
-
-#: lib/RT/Config.pm:190
-msgid "1995-11-25T21:59:12Z"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
@@ -1328,7 +1323,7 @@ msgstr "指派自订字段"
 msgid "Attach"
 msgstr "附件"
 
-#: share/html/SelfService/Create.html:94 share/html/Ticket/Create.html:145
+#: share/html/SelfService/Create.html:97 share/html/Ticket/Create.html:145
 msgid "Attach file"
 msgstr "附加档案"
 
@@ -1472,7 +1467,7 @@ msgstr "开始签核"
 
 #: NOT FOUND IN SOURCE
 msgid "Begin From "
-msgstr "起始日"
+msgstr "起始日 "
 
 #: share/html/Elements/Logo:51
 msgid "Best Practical Solutions, LLC corporate logo"
@@ -1489,6 +1484,10 @@ msgstr "生日"
 #: etc/initialdata:186
 msgid "Blank"
 msgstr "空白模板"
+
+#: share/html/Dashboards/Queries.html:143
+msgid "Body"
+msgstr ""
 
 #: share/html/Search/Elements/EditFormat:81
 msgid "Bold"
@@ -1544,10 +1543,6 @@ msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:140
 msgid "CF"
-msgstr ""
-
-#: share/html/NoAuth/js/util.js:209
-msgid "Calendar"
 msgstr ""
 
 #: lib/RT/User_Overlay.pm:1479
@@ -1625,7 +1620,7 @@ msgstr "分类"
 msgid "Category unset"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:101 lib/RT/Tickets_Overlay.pm:132 share/html/Admin/Queues/People.html:67 share/html/Elements/RT__Ticket/ColumnMap:173 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:73 share/html/Ticket/Create.html:92 share/html/Ticket/Elements/EditPeople:74 share/html/Ticket/Elements/ShowPeople:58 share/html/Ticket/Forward.html:70
+#: lib/RT/ACE_Overlay.pm:101 lib/RT/Tickets_Overlay.pm:132 share/html/Admin/Queues/People.html:67 share/html/Elements/RT__Ticket/ColumnMap:173 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:74 share/html/Ticket/Create.html:92 share/html/Ticket/Elements/EditPeople:74 share/html/Ticket/Elements/ShowPeople:58 share/html/Ticket/Forward.html:70
 msgid "Cc"
 msgstr "副本"
 
@@ -1673,7 +1668,7 @@ msgstr ""
 msgid "Check box to delete"
 msgstr "选择欲删除的项目"
 
-#: share/html/Admin/Elements/SelectRights:57
+#: share/html/Admin/Elements/SelectRights:66
 msgid "Check box to revoke right"
 msgstr "选择欲撤消的权利"
 
@@ -1945,7 +1940,7 @@ msgstr "未纪录申请单回复"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for ticket. "
-msgstr "不能新增自订字段的值。"
+msgstr "不能新增自订字段的值。 "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for ticket. %1 "
@@ -1953,7 +1948,7 @@ msgstr "不能新增自订字段的值。%1 "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value. "
-msgstr "不能新增自订字段的值。"
+msgstr "不能新增自订字段的值。 "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value. %1 "
@@ -1967,7 +1962,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Could not change owner. "
-msgstr "不能更改承办人。"
+msgstr "不能更改承办人。 "
 
 #: lib/RT/Ticket_Overlay.pm:2768 lib/RT/Ticket_Overlay.pm:2776 lib/RT/Ticket_Overlay.pm:2793
 #. ($del_msg)
@@ -2186,12 +2181,12 @@ msgstr "无法加载手续。"
 msgid "Couldn't load copy of ticket #%1."
 msgstr "无法加载申请单 %1 的复本。"
 
-#: share/html/Dashboards/Queries.html:87 share/html/Dashboards/Render.html:83
+#: share/html/Dashboards/Queries.html:87 share/html/Dashboards/Render.html:84
 #. ($id, $msg)
 msgid "Couldn't load dashboard %1: %2"
 msgstr ""
 
-#: share/html/Dashboards/Subscription.html:200
+#: share/html/Dashboards/Subscription.html:194
 #. ($DashboardId, $msg)
 msgid "Couldn't load dashboard %1: %2."
 msgstr ""
@@ -2262,7 +2257,7 @@ msgstr ""
 msgid "Couldn't load that user (%1)"
 msgstr "无法加载该名使用者(%1)"
 
-#: lib/RT/Action/CreateTickets.pm:451 share/html/SelfService/Display.html:161
+#: lib/RT/Action/CreateTickets.pm:454 share/html/SelfService/Display.html:161
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "无法加载申请单 '%1'"
@@ -2441,7 +2436,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Create failed: %1 / %2 / %3 "
-msgstr "新增失败：%1 / %2 / %3"
+msgstr "新增失败：%1 / %2 / %3 "
 
 #: NOT FOUND IN SOURCE
 msgid "Create failed: %1/%2/%3"
@@ -2463,7 +2458,7 @@ msgstr ""
 msgid "Create system dashboards"
 msgstr ""
 
-#: share/html/SelfService/Create.html:109
+#: share/html/SelfService/Create.html:112
 msgid "Create ticket"
 msgstr "新增申请单"
 
@@ -2605,7 +2600,7 @@ msgstr "现有视察员"
 msgid "Current members"
 msgstr "现有成员"
 
-#: share/html/Admin/Elements/SelectRights:53
+#: share/html/Admin/Elements/SelectRights:62
 msgid "Current rights"
 msgstr "现有权限"
 
@@ -2771,12 +2766,12 @@ msgstr ""
 msgid "Dashboard could not be created: %1"
 msgstr ""
 
-#: share/html/Dashboards/Modify.html:141 share/html/Dashboards/Queries.html:143
+#: share/html/Dashboards/Modify.html:141 share/html/Dashboards/Queries.html:197
 #. ($msg)
 msgid "Dashboard could not be updated: %1"
 msgstr ""
 
-#: share/html/Dashboards/Modify.html:138 share/html/Dashboards/Queries.html:140
+#: share/html/Dashboards/Modify.html:138 share/html/Dashboards/Queries.html:194
 msgid "Dashboard updated"
 msgstr ""
 
@@ -3161,7 +3156,7 @@ msgstr "递减"
 msgid "Descending"
 msgstr "递减"
 
-#: share/html/SelfService/Create.html:104 share/html/Ticket/Create.html:161
+#: share/html/SelfService/Create.html:107 share/html/Ticket/Create.html:161
 msgid "Describe the issue below"
 msgstr "在以下字段描述主题"
 
@@ -4091,7 +4086,7 @@ msgstr "单一输入"
 msgid "FreeformTime"
 msgstr "时间输入"
 
-#: share/html/Dashboards/Subscription.html:101
+#: share/html/Dashboards/Subscription.html:95
 msgid "Frequency"
 msgstr ""
 
@@ -4244,7 +4239,7 @@ msgstr ""
 msgid "Graphical charts are not available."
 msgstr ""
 
-#: lib/RT/Record.pm:910 share/html/Ticket/Elements/AddWatchers:69 share/html/Ticket/Elements/ShowGroupMembers:57 share/html/User/Elements/DelegateRights:101
+#: lib/RT/Record.pm:910 share/html/Ticket/Elements/AddWatchers:69 share/html/Ticket/Elements/ShowGroupMembers:57
 msgid "Group"
 msgstr "群组"
 
@@ -4345,6 +4340,10 @@ msgstr "群组描述 %1 已改为 %2"
 #: NOT FOUND IN SOURCE
 msgid "Group renamed from %1 to %2"
 msgstr "群组 %1 已改名为 %2"
+
+#: share/html/User/Elements/DelegateRights:102
+msgid "Group rights"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Group with Queue Rights"
@@ -4457,7 +4456,7 @@ msgstr "主页"
 msgid "Hotel Expense"
 msgstr "住宿费"
 
-#: share/html/Dashboards/Subscription.html:131
+#: share/html/Dashboards/Subscription.html:125
 msgid "Hour"
 msgstr ""
 
@@ -4481,6 +4480,10 @@ msgstr "身分证号"
 #: NOT FOUND IN SOURCE
 msgid "ID Type"
 msgstr "身分类别"
+
+#: lib/RT/Config.pm:189
+msgid "ISO"
+msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:1872 share/html/Ticket/Elements/ShowBasics:50
 msgid "Id"
@@ -4875,6 +4878,11 @@ msgstr "上次更新者"
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "LastUpdatedRelative"
 msgstr "上次更新(相对值)"
+
+#: share/html/Dashboards/Subscription.html:153
+#. ($session{'CurrentUser'}->UserObj->EmailAddress)
+msgid "Leave blank to send to your current email address (%1)"
+msgstr ""
 
 #: lib/RT/Installer.pm:88
 msgid "Leave empty to use the default value for your database"
@@ -5542,7 +5550,7 @@ msgstr ""
 msgid "Modify the queue watchers"
 msgstr "更改表单视察员"
 
-#: share/html/Dashboards/Subscription.html:265
+#: share/html/Dashboards/Subscription.html:259
 #. ($DashboardObj->Name)
 msgid "Modify the subscription to dashboard %1"
 msgstr ""
@@ -5732,7 +5740,7 @@ msgid "Name in use"
 msgstr "帐号已有人使用"
 
 #: share/html/Tools/index.html:60
-msgid "Named, shared collection of saved searches"
+msgid "Named, shared collection of portlets"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
@@ -5820,7 +5828,7 @@ msgstr "新增提醒项目："
 msgid "New request"
 msgstr "提出申请单"
 
-#: share/html/Admin/Elements/SelectRights:67
+#: share/html/Admin/Elements/SelectRights:72
 msgid "New rights"
 msgstr "新增权限"
 
@@ -6055,11 +6063,11 @@ msgstr "找不到符合查询条件的表单。"
 msgid "No right specified"
 msgstr ""
 
-#: share/html/Admin/Elements/SelectRights:108
+#: share/html/Admin/Elements/SelectRights:111
 msgid "No rights found"
 msgstr "找不到权限"
 
-#: share/html/Admin/Elements/SelectRights:55
+#: share/html/Admin/Elements/SelectRights:64
 msgid "No rights granted."
 msgstr "没有选定权限"
 
@@ -6569,10 +6577,6 @@ msgid "Page"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
-msgid "Page #"
-msgstr " "
-
-#: NOT FOUND IN SOURCE
 msgid "Page %1 of %2"
 msgstr "第 %1/%2 页"
 
@@ -6826,6 +6830,10 @@ msgstr "职务代码"
 msgid "Position Rank"
 msgstr "职级"
 
+#: share/html/Dashboards/Elements/HiddenSearches:68
+msgid "Possible hidden searches"
+msgstr ""
+
 #: lib/RT/Installer.pm:67
 msgid "PostgreSQL"
 msgstr ""
@@ -6836,7 +6844,7 @@ msgstr "偏好"
 
 #: share/html/Elements/Header:94 share/html/Elements/Tabs:94 share/html/SelfService/Elements/Tabs:98 share/html/SelfService/Prefs.html:48 share/html/User/Prefs.html:48 share/html/User/Prefs.html:51
 msgid "Preferences"
-msgstr "偏好"
+msgstr "首选项"
 
 #: NOT FOUND IN SOURCE
 msgid "Preferences %1 for user %2 ."
@@ -6994,7 +7002,7 @@ msgstr ""
 msgid "Purging stale data: %1"
 msgstr "移除过期数据: %1"
 
-#: share/html/Dashboards/Elements/Tabs:74 share/html/Dashboards/Queries.html:65 share/html/Dashboards/Subscription.html:72
+#: share/html/Dashboards/Elements/Tabs:74 share/html/Dashboards/Subscription.html:72
 msgid "Queries"
 msgstr ""
 
@@ -7010,7 +7018,7 @@ msgstr "建立查询"
 msgid "Query:"
 msgstr "查询："
 
-#: lib/RT/Graph/Tickets.pm:157 lib/RT/Record.pm:911 lib/RT/Tickets_Overlay.pm:1723 lib/RT/Tickets_Overlay.pm:94 share/html/Elements/QueueSummary:50 share/html/Elements/QuickCreate:56 share/html/Elements/RT__Scrip/ColumnMap:61 share/html/Elements/RT__Ticket/ColumnMap:85 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:56 share/html/Ticket/Create.html:66 share/html/Ticket/Elements/EditBasics:59 share/html/Ticket/Elements/ShowBasics:80 share/html/Tools/Reports/CreatedByDates.html:87 share/html/Tools/Reports/ResolvedByDates.html:88 share/html/Tools/Reports/ResolvedByOwner.html:68 share/html/User/Elements/DelegateRights:103
+#: lib/RT/Graph/Tickets.pm:157 lib/RT/Record.pm:911 lib/RT/Tickets_Overlay.pm:1723 lib/RT/Tickets_Overlay.pm:94 share/html/Elements/QueueSummary:50 share/html/Elements/QuickCreate:56 share/html/Elements/RT__Scrip/ColumnMap:61 share/html/Elements/RT__Ticket/ColumnMap:85 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:57 share/html/Ticket/Create.html:66 share/html/Ticket/Elements/EditBasics:59 share/html/Ticket/Elements/ShowBasics:80 share/html/Tools/Reports/CreatedByDates.html:87 share/html/Tools/Reports/ResolvedByDates.html:88 share/html/Tools/Reports/ResolvedByOwner.html:68
 msgid "Queue"
 msgstr "表单"
 
@@ -7080,6 +7088,10 @@ msgstr "未指定表单。"
 msgid "Queue not found"
 msgstr "找不到表单"
 
+#: share/html/User/Elements/DelegateRights:104
+msgid "Queue rights"
+msgstr ""
+
 #: share/html/Elements/GnuPG/SelectKeyForSigning:50 share/html/Elements/GnuPG/SelectKeyForSigning:54
 msgid "Queue's key"
 msgstr ""
@@ -7123,6 +7135,10 @@ msgstr "表单一览"
 #: share/html/Elements/QuickCreate:49
 msgid "Quick ticket creation"
 msgstr "快速建立申请单"
+
+#: lib/RT/Config.pm:188
+msgid "RFC2822"
+msgstr ""
 
 #: share/html/Search/Elements/ResultViews:61
 msgid "RSS"
@@ -7336,7 +7352,7 @@ msgstr "真实姓名"
 msgid "Really reject this ticket?"
 msgstr "您确定要驳回这张申请单吗？"
 
-#: share/html/Dashboards/Subscription.html:156
+#: share/html/Dashboards/Subscription.html:150
 msgid "Recipient"
 msgstr ""
 
@@ -7518,7 +7534,7 @@ msgstr "申请人地址"
 msgid "RequestorGroup"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:158 lib/RT/Tickets_Overlay.pm:131 share/html/Elements/RT__Ticket/ColumnMap:168 share/html/Elements/RT__Ticket/ColumnMap:250 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:65 share/html/Ticket/Create.html:84 share/html/Ticket/Elements/EditPeople:71 share/html/Ticket/Elements/ShowPeople:54
+#: lib/RT/Graph/Tickets.pm:158 lib/RT/Tickets_Overlay.pm:131 share/html/Elements/RT__Ticket/ColumnMap:168 share/html/Elements/RT__Ticket/ColumnMap:250 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:66 share/html/Ticket/Create.html:84 share/html/Ticket/Elements/EditPeople:71 share/html/Ticket/Elements/ShowPeople:54
 msgid "Requestors"
 msgstr "申请人"
 
@@ -7673,7 +7689,7 @@ msgstr "角色"
 msgid "RootApproval"
 msgstr "交由系统管理员签核"
 
-#: share/html/Dashboards/Subscription.html:146
+#: share/html/Dashboards/Subscription.html:140
 msgid "Rows"
 msgstr ""
 
@@ -7719,9 +7735,9 @@ msgstr "星期六"
 
 #: share/html/Prefs/MyRT.html:78 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:71 share/html/Search/Elements/EditSearches:72 share/html/Widgets/SelectionBox:222
 msgid "Save"
-msgstr "储存"
+msgstr "保存"
 
-#: share/html/Admin/CustomFields/Modify.html:126 share/html/Admin/Groups/Modify.html:94 share/html/Admin/Queues/Modify.html:127 share/html/Admin/Queues/People.html:130 share/html/Admin/Users/GnuPG.html:75 share/html/Admin/Users/Modify.html:243 share/html/Dashboards/Modify.html:75 share/html/Dashboards/Subscription.html:168 share/html/Prefs/Other.html:78 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:71 share/html/Prefs/SearchOptions.html:65 share/html/SelfService/Prefs.html:60 share/html/Ticket/Elements/PreviewScrips:94 share/html/Ticket/Modify.html:65 share/html/Ticket/ModifyAll.html:131 share/html/Ticket/ModifyDates.html:63 share/html/Ticket/ModifyLinks.html:65 share/html/Ticket/ModifyPeople.html:63 share/html/User/Groups/Modify.html:79
+#: share/html/Admin/CustomFields/Modify.html:126 share/html/Admin/Groups/Modify.html:94 share/html/Admin/Queues/Modify.html:127 share/html/Admin/Queues/People.html:130 share/html/Admin/Users/GnuPG.html:75 share/html/Admin/Users/Modify.html:243 share/html/Dashboards/Modify.html:75 share/html/Dashboards/Subscription.html:162 share/html/Prefs/Other.html:78 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:71 share/html/Prefs/SearchOptions.html:65 share/html/SelfService/Prefs.html:60 share/html/Ticket/Elements/PreviewScrips:94 share/html/Ticket/Modify.html:65 share/html/Ticket/ModifyAll.html:131 share/html/Ticket/ModifyDates.html:63 share/html/Ticket/ModifyLinks.html:65 share/html/Ticket/ModifyPeople.html:63 share/html/User/Groups/Modify.html:79
 msgid "Save Changes"
 msgstr "储存更改"
 
@@ -7791,7 +7807,7 @@ msgstr "手续"
 
 #: NOT FOUND IN SOURCE
 msgid "Scrips "
-msgstr "讯息通知"
+msgstr "讯息通知 "
 
 #: share/html/Ticket/Update.html:153
 msgid "Scrips and Recipients"
@@ -8235,6 +8251,10 @@ msgstr "显示申请单的评论"
 msgid "Shredder"
 msgstr ""
 
+#: share/html/Dashboards/Queries.html:144
+msgid "Sidebar"
+msgstr ""
+
 #: share/html/Elements/GnuPG/SignEncryptWidget:49
 msgid "Sign"
 msgstr ""
@@ -8436,7 +8456,7 @@ msgstr "样式"
 msgid "Subgroup"
 msgstr "子群组"
 
-#: lib/RT/Graph/Tickets.pm:157 lib/RT/Ticket_Overlay.pm:898 lib/RT/Tickets_Overlay.pm:125 lib/RT/Tickets_Overlay.pm:1839 share/html/Elements/QuickCreate:53 share/html/Elements/RT__Ticket/ColumnMap:99 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:139 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:81 share/html/SelfService/Update.html:67 share/html/Ticket/Create.html:110 share/html/Ticket/Elements/EditBasics:50 share/html/Ticket/Elements/Reminders:128 share/html/Ticket/Forward.html:64 share/html/Ticket/ModifyAll.html:103 share/html/Ticket/Update.html:96
+#: lib/RT/Graph/Tickets.pm:157 lib/RT/Ticket_Overlay.pm:898 lib/RT/Tickets_Overlay.pm:125 lib/RT/Tickets_Overlay.pm:1839 share/html/Elements/QuickCreate:53 share/html/Elements/RT__Ticket/ColumnMap:99 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:139 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:82 share/html/SelfService/Update.html:67 share/html/Ticket/Create.html:110 share/html/Ticket/Elements/EditBasics:50 share/html/Ticket/Elements/Reminders:128 share/html/Ticket/Forward.html:64 share/html/Ticket/ModifyAll.html:103 share/html/Ticket/Update.html:96
 msgid "Subject"
 msgstr "主题"
 
@@ -8462,11 +8482,11 @@ msgstr "送出"
 msgid "Submit Workflow"
 msgstr "送出流程"
 
-#: share/html/Dashboards/Subscription.html:170
+#: share/html/Dashboards/Subscription.html:164
 msgid "Subscribe"
 msgstr ""
 
-#: share/html/Dashboards/Subscription.html:268
+#: share/html/Dashboards/Subscription.html:262
 #. ($DashboardObj->Name)
 msgid "Subscribe to dashboard %1"
 msgstr ""
@@ -8479,16 +8499,16 @@ msgstr ""
 msgid "SubscribeDashboard"
 msgstr ""
 
-#: share/html/Dashboards/Subscription.html:254
+#: share/html/Dashboards/Subscription.html:248
 #. ($DashboardObj->Name)
 msgid "Subscribed to dashboard %1"
 msgstr ""
 
-#: share/html/Dashboards/Elements/ShowDashboards:80 share/html/Dashboards/Elements/Tabs:78 share/html/Dashboards/Subscription.html:97
+#: share/html/Dashboards/Elements/ShowDashboards:80 share/html/Dashboards/Elements/Tabs:78 share/html/Dashboards/Subscription.html:91
 msgid "Subscription"
 msgstr ""
 
-#: share/html/Dashboards/Subscription.html:259
+#: share/html/Dashboards/Subscription.html:253
 #. ($msg)
 msgid "Subscription could not be created: %1"
 msgstr ""
@@ -8533,7 +8553,7 @@ msgstr "自动同步104HRMS"
 msgid "Synchronizing HRMS data.  This may take a while..."
 msgstr "正在同步化 HRMS 人事系统数据。请稍待..."
 
-#: share/html/User/Elements/DelegateRights:100
+#: NOT FOUND IN SOURCE
 msgid "System"
 msgstr "系统"
 
@@ -8549,7 +8569,7 @@ msgstr ""
 msgid "System Defined"
 msgstr "系统定义"
 
-#: lib/RT/ACE_Overlay.pm:355 lib/RT/Interface/Web.pm:863 share/html/Admin/Elements/SelectRights:108
+#: lib/RT/ACE_Overlay.pm:355 lib/RT/Interface/Web.pm:863 share/html/Admin/Elements/SelectRights:111
 msgid "System Error"
 msgstr "系统错误"
 
@@ -8589,6 +8609,10 @@ msgstr "系统错误。无法设定权限。"
 #: share/html/Admin/CustomFields/GroupRights.html:60 share/html/Admin/Global/GroupRights.html:58 share/html/Admin/Groups/GroupRights.html:60 share/html/Admin/Queues/GroupRights.html:59
 msgid "System groups"
 msgstr "系统群组"
+
+#: share/html/User/Elements/DelegateRights:101
+msgid "System rights"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "SystemInternal"
@@ -8695,7 +8719,7 @@ msgstr "模板"
 
 #: NOT FOUND IN SOURCE
 msgid "Templates "
-msgstr "通知模板"
+msgstr "通知模板 "
 
 #: NOT FOUND IN SOURCE
 msgid "Templates for %1\\n"
@@ -8753,7 +8777,7 @@ msgstr "这份申请单有尚未解决的附属申请单"
 msgid "That user already has that right"
 msgstr "使用者已具有该项权限"
 
-#: lib/RT/Action/CreateTickets.pm:481 lib/RT/Ticket_Overlay.pm:2759
+#: lib/RT/Action/CreateTickets.pm:484 lib/RT/Ticket_Overlay.pm:2759
 msgid "That user already owns that ticket"
 msgstr "该使用者已经承办这份申请单"
 
@@ -8820,6 +8844,10 @@ msgstr "下列命令会找到 'general' 表单内所有运作中的申请单，�
 #: NOT FOUND IN SOURCE
 msgid "The following commands were not proccessed:\\n\\n"
 msgstr "以下命令未被执行：\\n\\n"
+
+#: share/html/Dashboards/Elements/HiddenSearches:69
+msgid "The following queries may not be visible to all users who can see this dashboard."
+msgstr ""
 
 #: lib/RT/Crypt/GnuPG.pm:2116
 msgid "The key has been disabled"
@@ -8976,7 +9004,7 @@ msgstr ""
 msgid "Ticket #%1: %2"
 msgstr "申请单 #%1: %2"
 
-#: lib/RT/Action/CreateTickets.pm:1121 lib/RT/Action/CreateTickets.pm:1130 lib/RT/Action/CreateTickets.pm:376 lib/RT/Action/CreateTickets.pm:500 lib/RT/Action/CreateTickets.pm:512
+#: lib/RT/Action/CreateTickets.pm:1124 lib/RT/Action/CreateTickets.pm:1133 lib/RT/Action/CreateTickets.pm:379 lib/RT/Action/CreateTickets.pm:503 lib/RT/Action/CreateTickets.pm:515
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
@@ -9288,14 +9316,6 @@ msgstr "试图删除某项权限：%1"
 msgid "Tue"
 msgstr "星期二"
 
-#: lib/RT/Config.pm:187
-msgid "Tue Dec 25 21:59:12 1995"
-msgstr ""
-
-#: lib/RT/Config.pm:188
-msgid "Tue, 25 Dec 1995 21:59:12 -0300"
-msgstr ""
-
 #: NOT FOUND IN SOURCE
 msgid "Tue."
 msgstr "星期二"
@@ -9313,7 +9333,7 @@ msgstr ""
 msgid "Unable to determine object type or id"
 msgstr ""
 
-#: share/html/Dashboards/Subscription.html:243
+#: share/html/Dashboards/Subscription.html:237
 #. ($DashboardId)
 msgid "Unable to subscribe to dashboard %1: Permission denied"
 msgstr ""
@@ -9433,7 +9453,7 @@ msgstr "批次更新申请单"
 msgid "Update name"
 msgstr "更新帐号"
 
-#: lib/RT/Action/CreateTickets.pm:521 lib/RT/Interface/Web.pm:712
+#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:712
 msgid "Update not recorded."
 msgstr "更新未被记录"
 
@@ -9463,7 +9483,7 @@ msgstr "更新申请单 #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "更新申请单 #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:519 lib/RT/Interface/Web.pm:711
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:711
 msgid "Update type was neither correspondence nor comment."
 msgstr "更新的内容并非申请单回复也不是评论"
 
@@ -9690,7 +9710,7 @@ msgstr "验证"
 msgid "ValueOfQueue"
 msgstr "选择表单"
 
-#: share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
+#: lib/RT/Config.pm:187 share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
 msgid "Values"
 msgstr "字段值"
 
@@ -9714,6 +9734,10 @@ msgstr ""
 msgid "View system dashboards"
 msgstr ""
 
+#: lib/RT/Config.pm:190
+msgid "W3CDTF"
+msgstr ""
+
 #: lib/RT/Config.pm:124
 msgid "WYSIWYG message composer"
 msgstr ""
@@ -9722,7 +9746,7 @@ msgstr ""
 msgid "Warning! This is NOT signed!"
 msgstr ""
 
-#: share/html/Dashboards/Subscription.html:255
+#: share/html/Dashboards/Subscription.html:249
 msgid "Warning: you have no email address set, so you will not receive this dashboard until you have it set"
 msgstr ""
 

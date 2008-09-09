@@ -427,25 +427,39 @@ sub help {
 
 $0: Set up RT's database
 
---action        init    Initialize the database
-                drop    Drop the database.
-                        This will ERASE ALL YOUR DATA
-                insert  Insert data into RT's database.
-                        By default, will use RT's installation data.
-                        To use a local or supplementary datafile, specify it
-                        using the '--datafile' option below.
+--action        init     Initialize the database. This is combination of
+                         multiple actions listed below. Create DB, schema,
+                         setup acl, insert core data and initial data.
 
-                acl     Initialize only the database ACLs
-                        To use a local or supplementary datafile, specify it
-                        using the '--datadir' option below.
+                upgrade  Apply all needed schema/acl/content updates (will ask
+                         for version to upgrade from)
 
-                schema  Initialize only the database schema
-                        To use a local or supplementary datafile, specify it
-                        using the '--datadir' option below.
+                create   Create the database.
+
+                drop     Drop the database.
+                         This will ERASE ALL YOUR DATA
+
+                schema   Initialize only the database schema
+                         To use a local or supplementary datafile, specify it
+                         using the '--datadir' option below.
+
+                acl      Initialize only the database ACLs
+                         To use a local or supplementary datafile, specify it
+                         using the '--datadir' option below.
+
+                coredata Insert data into RT's database. This data is required
+                         for normal functioning of any RT instance.
+
+                insert   Insert data into RT's database.
+                         By default, will use RT's installation data.
+                         To use a local or supplementary datafile, specify it
+                         using the '--datafile' option below.
+
+Several actions can be combined using comma separated list.
 
 --datafile /path/to/datafile
 --datadir /path/to/              Used to specify a path to find the local
-                                database schema and acls to be installed.
+                                 database schema and acls to be installed.
 
 
 --dba                           dba's username

@@ -136,43 +136,32 @@ is( $c_susp, 1, "correct number of suspended messages" );
 # Now let's actually run the daily and weekly digest tool to make sure we generate those
 
 # the first time get the content
-{open (my $digester, "-|", $RT::SbinPath."/rt-email-digest --mode daily --print");
-my @results = <$digester>;
-my $content = join ('', @results);
-like($content, qr/in the last day/);
-} {
+email_digest_like( '--mode daily --print', qr/in the last day/ );
 # The second time run it for real so we make sure that we get RT to mark the txn as sent
-open (my $digester, "-|", $RT::SbinPath."/rt-email-digest --mode daily");
-my @results = <$digester>;
-my $content = join ('', @results);
-like($content, qr/maildaily\@/);
-close($digester);
-}
+email_digest_like( '--mode daily', qr/maildaily\@/ );
 # now we should have nothing to do, so no content.
-{open (my $digester, "-|", $RT::SbinPath."/rt-email-digest --mode daily --print");
-my @results = <$digester>;
-my $content = join ('', @results);
-is ($content, '');
-} 
+email_digest_like( '--mode daily --print', '' );
 
 # the first time get the content
-{open (my $digester, "-|", $RT::SbinPath."/rt-email-digest --mode weekly --print");
-my @results = <$digester>;
-my $content = join ('', @results);
-like($content, qr/in the last seven days/);
-} {
+email_digest_like( '--mode weekly --print', qr/in the last seven days/ );
 # The second time run it for real so we make sure that we get RT to mark the txn as sent
-open (my $digester, "-|", $RT::SbinPath."/rt-email-digest --mode weekly");
-my @results = <$digester>;
-my $content = join ('', @results);
-like($content, qr/mailweekly\@/);
-close($digester);
-}
+email_digest_like( '--mode weekly', qr/mailweekly\@/ );
 # now we should have nothing to do, so no content.
-{open (my $digester, "-|", $RT::SbinPath."/rt-email-digest --mode weekly --print");
-my @results = <$digester>;
-my $content = join ('', @results);
-is ($content, '');
-} 
+email_digest_like( '--mode weekly --print', '' );
 
+sub email_digest_like {
+    my $arg = shift;
+    my $pattern = shift;
 
+    my $perl = $^X . ' ' . join ' ', map { "-I$_" } @INC;
+    open my $digester, "-|", "$perl $RT::SbinPath/rt-email-digest $arg";
+    my @results = <$digester>;
+    my $content = join '', @results;
+    if ( ref $pattern && ref $pattern eq 'Regexp' ) {
+        like($content, $pattern);
+    }
+    else {
+        is( $content, $pattern );
+    }
+    close $digester;
+}

@@ -200,9 +200,14 @@ sub _FieldToFunction {
             @args{qw(ALIAS FIELD)} = ($ticket_cf_alias, 'Content');
         }
     } elsif ( $field =~ /^(?:Watcher|(Requestor|Cc|AdminCc))$/ ) {
-        my $type = $1;
-        my ($g_alias, $gm_alias, $u_alias) = $self->_WatcherJoin( $type );
-        @args{qw(ALIAS FIELD)} = ($u_alias, 'Name');
+        my $type = $1 || '';
+        if ( my $u_alias = $self->{"_sql_report_watcher_users_alias_$type"} ) {
+            @args{qw(ALIAS FIELD)} = ($u_alias, 'Name');
+        } else {
+            my ($g_alias, $gm_alias, $u_alias) = $self->_WatcherJoin( $type );
+            @args{qw(ALIAS FIELD)} = ($u_alias, 'Name');
+            $self->{"_sql_report_watcher_users_alias_$type"} = $u_alias;
+        }
     }
     return %args;
 }

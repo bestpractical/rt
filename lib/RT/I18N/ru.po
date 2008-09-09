@@ -6,14 +6,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: (null)\n"
-"PO-Revision-Date: 2008-08-09 03:27+0300\n"
+"POT-Creation-Date: 2008-08-29 20:18+0000\n"
+"PO-Revision-Date: 2008-08-29 21:23+0000\n"
 "Last-Translator: Andrew Kornilov <akornilov@gmail.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 1.11.4\n"
+"X-Launchpad-Export-Date: 2008-09-08 01:56+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: NOT FOUND IN SOURCE
 msgid " %1 deleted."
@@ -176,10 +177,11 @@ msgstr ""
 msgid "%1 - Specify the condition module you want to use"
 msgstr ""
 
+#, fuzzy
 #: bin/rt-crontool:284
 #. ("--search")
 msgid "%1 - Specify the search module you want to use"
-msgstr ""
+msgstr "%1 - Укажите модуль поиска, который вы хотите использовать"
 
 #: share/html/Dashboards/Elements/ShowDashboards:48
 #. ($Type)
@@ -189,7 +191,7 @@ msgstr "Информационные панели %1"
 #: share/html/Elements/Footer:59
 #. ('&#187;&#124;&#171;', $RT::VERSION, '2008', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 msgid "%1 RT %2 Copyright 1996-%3 %4."
-msgstr ""
+msgstr "%1 RT %2 Все права защищены 1996-%3 %4"
 
 #: lib/RT/ScripAction_Overlay.pm:148
 #. ($self->Id)
@@ -353,8 +355,7 @@ msgstr "%1 не отображается"
 msgid "%1 objects"
 msgstr "%1 объектов"
 
-#: share/html/User/Elements/DelegateRights:99
-#. (loc($ObjectType =~ /^RT::(.*)$/))
+#: NOT FOUND IN SOURCE
 msgid "%1 rights"
 msgstr "Права %1"
 
@@ -441,7 +442,7 @@ msgstr "'%1' является неверным значением статуса
 
 #: NOT FOUND IN SOURCE
 msgid "'%1' not a recognized action. "
-msgstr "'%1' не является зарегистрированным действием."
+msgstr "'%1' не является зарегистрированным действием. "
 
 #: NOT FOUND IN SOURCE
 msgid "(Check box to delete group member)"
@@ -589,7 +590,7 @@ msgstr ""
 msgid "(no subject)"
 msgstr "(нет темы)"
 
-#: lib/RT/Transaction_Overlay.pm:580 share/html/Admin/Elements/SelectRights:74 share/html/Elements/EditCustomFieldSelect:71 share/html/Elements/SelectCustomFieldValue:53 share/html/Elements/ShowCustomFields:56 share/html/Search/Chart:136 share/html/Search/Elements/Chart:80
+#: lib/RT/Transaction_Overlay.pm:580 share/html/Admin/Elements/SelectRights:77 share/html/Elements/EditCustomFieldSelect:71 share/html/Elements/SelectCustomFieldValue:53 share/html/Elements/ShowCustomFields:56 share/html/Search/Chart:136 share/html/Search/Elements/Chart:80
 msgid "(no value)"
 msgstr "(нет значения)"
 
@@ -649,14 +650,6 @@ msgstr ""
 
 #: bin/rt-crontool:120
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
-msgstr ""
-
-#: lib/RT/Config.pm:189
-msgid "1995-11-25 21:59:12"
-msgstr ""
-
-#: lib/RT/Config.pm:190
-msgid "1995-11-25T21:59:12Z"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
@@ -871,7 +864,7 @@ msgstr "Пользователь добавлен как %1 для этой за
 
 #: share/html/Elements/RT__Queue/ColumnMap:70
 msgid "Address"
-msgstr ""
+msgstr "Адрес"
 
 #: share/html/Admin/Users/Modify.html:149 share/html/Elements/RT__User/ColumnMap:106 share/html/User/Prefs.html:139
 msgid "Address1"
@@ -1119,7 +1112,7 @@ msgstr "НазначатьДополнительныеПоля"
 msgid "Attach"
 msgstr "Вложение"
 
-#: share/html/SelfService/Create.html:94 share/html/Ticket/Create.html:145
+#: share/html/SelfService/Create.html:97 share/html/Ticket/Create.html:145
 msgid "Attach file"
 msgstr "Вложить файл"
 
@@ -1249,6 +1242,10 @@ msgstr "Двоичный"
 msgid "Blank"
 msgstr "Пустой"
 
+#: share/html/Dashboards/Queries.html:143
+msgid "Body"
+msgstr ""
+
 #: share/html/Search/Elements/EditFormat:81
 msgid "Bold"
 msgstr "Жирный"
@@ -1285,9 +1282,10 @@ msgstr "Множественное изменение заявки"
 msgid "Buy Support"
 msgstr "Купить поддержку"
 
+#, fuzzy
 #: share/html/Install/Global.html:56
 msgid "By default, RT will use the timezone of your system.  This lets you set a global default for the display of dates and times in RT.  Your users can choose a different Timezone in their preferences."
-msgstr ""
+msgstr "По-умолчанию, RT использует системную временную зону. Это позволяет вам установить глобальное умолчание для отображения дат и времен в RT. Ваши пользователи смогут выбирать различные временные зоны в своих настройках."
 
 #: lib/RT/Tickets_Overlay.pm:143
 msgid "CCGroup"
@@ -1297,7 +1295,7 @@ msgstr ""
 msgid "CF"
 msgstr ""
 
-#: share/html/NoAuth/js/util.js:209
+#: NOT FOUND IN SOURCE
 msgid "Calendar"
 msgstr "Календарь"
 
@@ -1360,7 +1358,7 @@ msgstr "Категория"
 msgid "Category unset"
 msgstr "Категория не задана"
 
-#: lib/RT/ACE_Overlay.pm:101 lib/RT/Tickets_Overlay.pm:132 share/html/Admin/Queues/People.html:67 share/html/Elements/RT__Ticket/ColumnMap:173 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:73 share/html/Ticket/Create.html:92 share/html/Ticket/Elements/EditPeople:74 share/html/Ticket/Elements/ShowPeople:58 share/html/Ticket/Forward.html:70
+#: lib/RT/ACE_Overlay.pm:101 lib/RT/Tickets_Overlay.pm:132 share/html/Admin/Queues/People.html:67 share/html/Elements/RT__Ticket/ColumnMap:173 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:74 share/html/Ticket/Create.html:92 share/html/Ticket/Elements/EditPeople:74 share/html/Ticket/Elements/ShowPeople:58 share/html/Ticket/Forward.html:70
 msgid "Cc"
 msgstr "Копия"
 
@@ -1382,19 +1380,19 @@ msgstr "Выбрать все"
 
 #: share/html/Install/DatabaseDetails.html:88
 msgid "Check Database Connectivity"
-msgstr ""
+msgstr "Проверьте подключение к базе данных"
 
 #: share/html/SelfService/Update.html:80 share/html/Ticket/Create.html:136 share/html/Ticket/Update.html:114
 msgid "Check box to delete"
 msgstr "Выделите пункты для удаления"
 
-#: share/html/Admin/Elements/SelectRights:57
+#: share/html/Admin/Elements/SelectRights:66
 msgid "Check box to revoke right"
 msgstr "Выделите права, которые хотите отозвать"
 
 #: share/html/Install/DatabaseDetails.html:48 share/html/Install/DatabaseType.html:70
 msgid "Check your database credentials"
-msgstr ""
+msgstr "Проверьте реквизиты доступа к базе данных"
 
 #: share/html/Elements/EditLinks:149 share/html/Elements/EditLinks:82 share/html/Elements/ShowLinks:100 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:233 share/html/Ticket/Elements/BulkLinks:66
 msgid "Children"
@@ -1624,19 +1622,19 @@ msgstr "Корреспонденция не записана"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for ticket. "
-msgstr "Невозможно добавить новое значение дополнительного поля заявки."
+msgstr "Невозможно добавить новое значение дополнительного поля заявки. "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for ticket. %1 "
-msgstr "Невозможно добавить новое значение дополнительного поля заявки. %1"
+msgstr "Невозможно добавить новое значение дополнительного поля заявки. %1 "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value. "
-msgstr "Ошибка добавления нового значения дополнительного поля"
+msgstr "Ошибка добавления нового значения дополнительного поля "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value. %1 "
-msgstr "Ошибка добавления нового значения для дополнительного поля. %1"
+msgstr "Ошибка добавления нового значения для дополнительного поля. %1 "
 
 #: lib/RT/Record.pm:1662 lib/RT/Record.pm:1708
 #. ($value_msg)
@@ -1646,7 +1644,7 @@ msgstr "Ошибка добавления нового значения для �
 
 #: NOT FOUND IN SOURCE
 msgid "Could not change owner. "
-msgstr "Невозможно изменить ответственного."
+msgstr "Невозможно изменить ответственного. "
 
 #: lib/RT/Ticket_Overlay.pm:2768 lib/RT/Ticket_Overlay.pm:2776 lib/RT/Ticket_Overlay.pm:2793
 #. ($del_msg)
@@ -1845,12 +1843,12 @@ msgstr "Невозможно загрузить скриплеты."
 msgid "Couldn't load copy of ticket #%1."
 msgstr "Невозможно загрузить копию заявки #%1."
 
-#: share/html/Dashboards/Queries.html:87 share/html/Dashboards/Render.html:83
+#: share/html/Dashboards/Queries.html:87 share/html/Dashboards/Render.html:84
 #. ($id, $msg)
 msgid "Couldn't load dashboard %1: %2"
 msgstr "Невозможно загрузить информационную панель %1: %2"
 
-#: share/html/Dashboards/Subscription.html:200
+#: share/html/Dashboards/Subscription.html:194
 #. ($DashboardId, $msg)
 msgid "Couldn't load dashboard %1: %2."
 msgstr "Невозможно загрузить информационную панель %1: %2."
@@ -1921,7 +1919,7 @@ msgstr "Ошибка загрузки шаблона #%1"
 msgid "Couldn't load that user (%1)"
 msgstr "Невозможно загрузить этого пользователя (%1)"
 
-#: lib/RT/Action/CreateTickets.pm:451 share/html/SelfService/Display.html:161
+#: lib/RT/Action/CreateTickets.pm:454 share/html/SelfService/Display.html:161
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "Невозможно загрузить заявку '%1'"
@@ -2102,7 +2100,7 @@ msgstr "Создавать пользовательские информацио
 msgid "Create system dashboards"
 msgstr "Создавать системные информационные панели"
 
-#: share/html/SelfService/Create.html:109
+#: share/html/SelfService/Create.html:112
 msgid "Create ticket"
 msgstr "Создать заявку"
 
@@ -2220,7 +2218,7 @@ msgstr "Текущие скриплеты"
 msgid "Current members"
 msgstr "Текущие пользователи"
 
-#: share/html/Admin/Elements/SelectRights:53
+#: share/html/Admin/Elements/SelectRights:62
 msgid "Current rights"
 msgstr "Текущие права"
 
@@ -2315,7 +2313,7 @@ msgstr "Невозможно удалить значение дополните�
 
 #: lib/RT/CustomField_Overlay.pm:1075
 msgid "Custom field value could not be found"
-msgstr "Невозможно найти значение дополнительного поля "
+msgstr "Невозможно найти значение дополнительного поля"
 
 #: lib/RT/CustomField_Overlay.pm:1077 lib/RT/CustomField_Overlay.pm:417
 msgid "Custom field value deleted"
@@ -2378,12 +2376,12 @@ msgstr "Информационная панель"
 msgid "Dashboard could not be created: %1"
 msgstr "Невозможно создать информационную панель: %1"
 
-#: share/html/Dashboards/Modify.html:141 share/html/Dashboards/Queries.html:143
+#: share/html/Dashboards/Modify.html:141 share/html/Dashboards/Queries.html:197
 #. ($msg)
 msgid "Dashboard could not be updated: %1"
 msgstr "Невозможно изменить информационную панель: %1"
 
-#: share/html/Dashboards/Modify.html:138 share/html/Dashboards/Queries.html:140
+#: share/html/Dashboards/Modify.html:138 share/html/Dashboards/Queries.html:194
 msgid "Dashboard updated"
 msgstr "Информационная панель изменена"
 
@@ -2656,7 +2654,7 @@ msgstr "По убыванию"
 msgid "Descending"
 msgstr "В порядке убывания"
 
-#: share/html/SelfService/Create.html:104 share/html/Ticket/Create.html:161
+#: share/html/SelfService/Create.html:107 share/html/Ticket/Create.html:161
 msgid "Describe the issue below"
 msgstr "Опишите проблему"
 
@@ -3085,7 +3083,7 @@ msgstr ""
 
 #: bin/rt-crontool:335
 msgid "Escalate tickets"
-msgstr ""
+msgstr "Расширить заявки"
 
 #: NOT FOUND IN SOURCE
 msgid "Estimate"
@@ -3299,11 +3297,11 @@ msgstr "Первая страница"
 
 #: lib/RT/StyleGuide.pod:758
 msgid "Foo Bar Baz"
-msgstr ""
+msgstr "Foo Bar Baz"
 
 #: lib/RT/StyleGuide.pod:749
 msgid "Foo!"
-msgstr ""
+msgstr "Foo!"
 
 #: share/html/Search/Bulk.html:90
 msgid "Force change"
@@ -3350,7 +3348,7 @@ msgstr "Найден объект"
 msgid "FreeformContactInfo"
 msgstr "FreeformContactInfo"
 
-#: share/html/Dashboards/Subscription.html:101
+#: share/html/Dashboards/Subscription.html:95
 msgid "Frequency"
 msgstr "Периодичность"
 
@@ -3471,7 +3469,7 @@ msgstr "Настройки графика"
 msgid "Graphical charts are not available."
 msgstr "Графические диаграммы недоступны."
 
-#: lib/RT/Record.pm:910 share/html/Ticket/Elements/AddWatchers:69 share/html/Ticket/Elements/ShowGroupMembers:57 share/html/User/Elements/DelegateRights:101
+#: lib/RT/Record.pm:910 share/html/Ticket/Elements/AddWatchers:69 share/html/Ticket/Elements/ShowGroupMembers:57
 msgid "Group"
 msgstr "Группа"
 
@@ -3524,6 +3522,10 @@ msgstr "Группа не найдена.\\n"
 #: NOT FOUND IN SOURCE
 msgid "Group not specified.\\n"
 msgstr "Не задана группа.\\n"
+
+#: share/html/User/Elements/DelegateRights:102
+msgid "Group rights"
+msgstr ""
 
 #: lib/RT/CustomField_Overlay.pm:1116 share/html/Admin/Elements/GlobalCustomFieldTabs:63 share/html/Admin/Elements/SelectNewGroupMembers:60 share/html/Admin/Elements/Tabs:58 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:87 share/html/Admin/Queues/People.html:108 share/html/Admin/index.html:63 share/html/User/Groups/Members.html:90
 msgid "Groups"
@@ -3592,7 +3594,7 @@ msgstr "Домашний телефон"
 msgid "Homepage"
 msgstr "В начало"
 
-#: share/html/Dashboards/Subscription.html:131
+#: share/html/Dashboards/Subscription.html:125
 msgid "Hour"
 msgstr "Час"
 
@@ -3608,6 +3610,10 @@ msgstr "Имеется %quant(%1,concrete mixer)."
 #: NOT FOUND IN SOURCE
 msgid "I have [quant,_1,concrete mixer]."
 msgstr "Имеется [quant,_1,concrete mixer]."
+
+#: lib/RT/Config.pm:189
+msgid "ISO"
+msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:1872 share/html/Ticket/Elements/ShowBasics:50
 msgid "Id"
@@ -3961,6 +3967,11 @@ msgstr "ПоследнийРазИзменено"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "LastUpdatedRelative"
+msgstr ""
+
+#: share/html/Dashboards/Subscription.html:153
+#. ($session{'CurrentUser'}->UserObj->EmailAddress)
+msgid "Leave blank to send to your current email address (%1)"
 msgstr ""
 
 #: lib/RT/Installer.pm:88
@@ -4593,7 +4604,7 @@ msgstr "Изменить запросы информационной панел�
 msgid "Modify the queue watchers"
 msgstr "Изменить очередь наблюдателей"
 
-#: share/html/Dashboards/Subscription.html:265
+#: share/html/Dashboards/Subscription.html:259
 #. ($DashboardObj->Name)
 msgid "Modify the subscription to dashboard %1"
 msgstr "Изменить подписки информационной панели %1"
@@ -4763,6 +4774,10 @@ msgid "Name matches"
 msgstr "Совпадение имён"
 
 #: share/html/Tools/index.html:60
+msgid "Named, shared collection of portlets"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "Named, shared collection of saved searches"
 msgstr "Именованные, общедоступные наборы сохранённых запросов"
 
@@ -4843,7 +4858,7 @@ msgstr "Новое напоминание:"
 msgid "New request"
 msgstr "Новый запрос"
 
-#: share/html/Admin/Elements/SelectRights:67
+#: share/html/Admin/Elements/SelectRights:72
 msgid "New rights"
 msgstr "Новые права"
 
@@ -4897,7 +4912,7 @@ msgstr "Следующая страница"
 
 #: NOT FOUND IN SOURCE
 msgid "Next: "
-msgstr "Вперёд:"
+msgstr "Вперёд: "
 
 #: share/html/Elements/RT__User/ColumnMap:71
 msgid "NickName"
@@ -4954,7 +4969,7 @@ msgstr "Нет шаблона"
 
 #: NOT FOUND IN SOURCE
 msgid "No Ticket specified. Aborting ticket "
-msgstr "Заявка не указана. Отмена."
+msgstr "Заявка не указана. Отмена. "
 
 #: NOT FOUND IN SOURCE
 msgid "No Ticket specified. Aborting ticket modifications\\n\\n"
@@ -5066,11 +5081,11 @@ msgstr "Очереди, удовлетворяющие условию поиск
 msgid "No right specified"
 msgstr "Право не указано"
 
-#: share/html/Admin/Elements/SelectRights:108
+#: share/html/Admin/Elements/SelectRights:111
 msgid "No rights found"
 msgstr "Права не найдены"
 
-#: share/html/Admin/Elements/SelectRights:55
+#: share/html/Admin/Elements/SelectRights:64
 msgid "No rights granted."
 msgstr "Права не выданы."
 
@@ -5475,7 +5490,7 @@ msgstr "Ответственный"
 #: lib/RT/Ticket_Overlay.pm:633
 #. ($DeferOwner->Name)
 msgid "Owner '%1' does not have rights to own this ticket."
-msgstr "Ответственный %1 не имеет достаточных прав для того, чтобы быть ответственным за эту заявку "
+msgstr "Ответственный %1 не имеет достаточных прав для того, чтобы быть ответственным за эту заявку"
 
 #: lib/RT/Ticket_Overlay.pm:2806
 #. ($OldOwnerObj->Name, $NewOwnerObj->Name)
@@ -5633,6 +5648,10 @@ msgstr "Заполнитель"
 msgid "Please check the URL and try again."
 msgstr ""
 
+#: share/html/Dashboards/Elements/HiddenSearches:68
+msgid "Possible hidden searches"
+msgstr ""
+
 #: lib/RT/Installer.pm:67
 msgid "PostgreSQL"
 msgstr ""
@@ -5765,7 +5784,7 @@ msgstr "Псевдогруппы для внутреннего использо�
 msgid "Public key '0x%1' is required to verify signature"
 msgstr ""
 
-#: share/html/Dashboards/Elements/Tabs:74 share/html/Dashboards/Queries.html:65 share/html/Dashboards/Subscription.html:72
+#: share/html/Dashboards/Elements/Tabs:74 share/html/Dashboards/Subscription.html:72
 msgid "Queries"
 msgstr "Очереди"
 
@@ -5781,7 +5800,7 @@ msgstr "Построитель запроса"
 msgid "Query:"
 msgstr "Запрос:"
 
-#: lib/RT/Graph/Tickets.pm:157 lib/RT/Record.pm:911 lib/RT/Tickets_Overlay.pm:1723 lib/RT/Tickets_Overlay.pm:94 share/html/Elements/QueueSummary:50 share/html/Elements/QuickCreate:56 share/html/Elements/RT__Scrip/ColumnMap:61 share/html/Elements/RT__Ticket/ColumnMap:85 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:56 share/html/Ticket/Create.html:66 share/html/Ticket/Elements/EditBasics:59 share/html/Ticket/Elements/ShowBasics:80 share/html/Tools/Reports/CreatedByDates.html:87 share/html/Tools/Reports/ResolvedByDates.html:88 share/html/Tools/Reports/ResolvedByOwner.html:68 share/html/User/Elements/DelegateRights:103
+#: lib/RT/Graph/Tickets.pm:157 lib/RT/Record.pm:911 lib/RT/Tickets_Overlay.pm:1723 lib/RT/Tickets_Overlay.pm:94 share/html/Elements/QueueSummary:50 share/html/Elements/QuickCreate:56 share/html/Elements/RT__Scrip/ColumnMap:61 share/html/Elements/RT__Ticket/ColumnMap:85 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:57 share/html/Ticket/Create.html:66 share/html/Ticket/Elements/EditBasics:59 share/html/Ticket/Elements/ShowBasics:80 share/html/Tools/Reports/CreatedByDates.html:87 share/html/Tools/Reports/ResolvedByDates.html:88 share/html/Tools/Reports/ResolvedByOwner.html:68
 msgid "Queue"
 msgstr "Очередь"
 
@@ -5831,6 +5850,10 @@ msgstr "Очередь не указана."
 msgid "Queue not found"
 msgstr "Очередь не найдена"
 
+#: share/html/User/Elements/DelegateRights:104
+msgid "Queue rights"
+msgstr ""
+
 #: share/html/Elements/GnuPG/SelectKeyForSigning:50 share/html/Elements/GnuPG/SelectKeyForSigning:54
 msgid "Queue's key"
 msgstr "Ключ для очереди"
@@ -5870,6 +5893,10 @@ msgstr "Быстрый поиск"
 #: share/html/Elements/QuickCreate:49
 msgid "Quick ticket creation"
 msgstr "Быстрое создание заявки"
+
+#: lib/RT/Config.pm:188
+msgid "RFC2822"
+msgstr ""
 
 #: share/html/Search/Elements/ResultViews:61
 msgid "RSS"
@@ -6067,7 +6094,7 @@ msgstr "Полное имя"
 msgid "RealName"
 msgstr "ПолноеИмя"
 
-#: share/html/Dashboards/Subscription.html:156
+#: share/html/Dashboards/Subscription.html:150
 msgid "Recipient"
 msgstr ""
 
@@ -6225,7 +6252,7 @@ msgstr "Адрес Автора заявки"
 msgid "RequestorGroup"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:158 lib/RT/Tickets_Overlay.pm:131 share/html/Elements/RT__Ticket/ColumnMap:168 share/html/Elements/RT__Ticket/ColumnMap:250 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:65 share/html/Ticket/Create.html:84 share/html/Ticket/Elements/EditPeople:71 share/html/Ticket/Elements/ShowPeople:54
+#: lib/RT/Graph/Tickets.pm:158 lib/RT/Tickets_Overlay.pm:131 share/html/Elements/RT__Ticket/ColumnMap:168 share/html/Elements/RT__Ticket/ColumnMap:250 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:66 share/html/Ticket/Create.html:84 share/html/Ticket/Elements/EditPeople:71 share/html/Ticket/Elements/ShowPeople:54
 msgid "Requestors"
 msgstr "Авторы заявок"
 
@@ -6360,7 +6387,7 @@ msgstr "Невозможно отозвать права %1"
 msgid "Roles"
 msgstr "Псевдо-группы"
 
-#: share/html/Dashboards/Subscription.html:146
+#: share/html/Dashboards/Subscription.html:140
 msgid "Rows"
 msgstr "Строк"
 
@@ -6392,7 +6419,7 @@ msgstr "Суб."
 msgid "Save"
 msgstr "Сохранить"
 
-#: share/html/Admin/CustomFields/Modify.html:126 share/html/Admin/Groups/Modify.html:94 share/html/Admin/Queues/Modify.html:127 share/html/Admin/Queues/People.html:130 share/html/Admin/Users/GnuPG.html:75 share/html/Admin/Users/Modify.html:243 share/html/Dashboards/Modify.html:75 share/html/Dashboards/Subscription.html:168 share/html/Prefs/Other.html:78 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:71 share/html/Prefs/SearchOptions.html:65 share/html/SelfService/Prefs.html:60 share/html/Ticket/Elements/PreviewScrips:94 share/html/Ticket/Modify.html:65 share/html/Ticket/ModifyAll.html:131 share/html/Ticket/ModifyDates.html:63 share/html/Ticket/ModifyLinks.html:65 share/html/Ticket/ModifyPeople.html:63 share/html/User/Groups/Modify.html:79
+#: share/html/Admin/CustomFields/Modify.html:126 share/html/Admin/Groups/Modify.html:94 share/html/Admin/Queues/Modify.html:127 share/html/Admin/Queues/People.html:130 share/html/Admin/Users/GnuPG.html:75 share/html/Admin/Users/Modify.html:243 share/html/Dashboards/Modify.html:75 share/html/Dashboards/Subscription.html:162 share/html/Prefs/Other.html:78 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:71 share/html/Prefs/SearchOptions.html:65 share/html/SelfService/Prefs.html:60 share/html/Ticket/Elements/PreviewScrips:94 share/html/Ticket/Modify.html:65 share/html/Ticket/ModifyAll.html:131 share/html/Ticket/ModifyDates.html:63 share/html/Ticket/ModifyLinks.html:65 share/html/Ticket/ModifyPeople.html:63 share/html/User/Groups/Modify.html:79
 msgid "Save Changes"
 msgstr "Сохранить изменения"
 
@@ -6796,7 +6823,7 @@ msgstr "Показать подтвержденные запросы"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:71
 msgid "Show as well"
-msgstr "Отображать также "
+msgstr "Отображать также"
 
 #: share/html/Ticket/Create.html:413
 msgid "Show basics"
@@ -6868,6 +6895,10 @@ msgstr "ПоказыватьКомментарииЗаявки"
 
 #: share/html/Admin/Elements/ToolTabs:60 share/html/Admin/Tools/Shredder/index.html:78 share/html/Ticket/Elements/Tabs:290
 msgid "Shredder"
+msgstr ""
+
+#: share/html/Dashboards/Queries.html:144
+msgid "Sidebar"
 msgstr ""
 
 #: share/html/Elements/GnuPG/SignEncryptWidget:49
@@ -7061,13 +7092,13 @@ msgstr "Ответственный переназначен с %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Stolen from %1 "
-msgstr "Ответственный переназначен с %1"
+msgstr "Ответственный переназначен с %1 "
 
 #: share/html/Search/Elements/EditFormat:78
 msgid "Style"
 msgstr "Стиль"
 
-#: lib/RT/Graph/Tickets.pm:157 lib/RT/Ticket_Overlay.pm:898 lib/RT/Tickets_Overlay.pm:125 lib/RT/Tickets_Overlay.pm:1839 share/html/Elements/QuickCreate:53 share/html/Elements/RT__Ticket/ColumnMap:99 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:139 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:81 share/html/SelfService/Update.html:67 share/html/Ticket/Create.html:110 share/html/Ticket/Elements/EditBasics:50 share/html/Ticket/Elements/Reminders:128 share/html/Ticket/Forward.html:64 share/html/Ticket/ModifyAll.html:103 share/html/Ticket/Update.html:96
+#: lib/RT/Graph/Tickets.pm:157 lib/RT/Ticket_Overlay.pm:898 lib/RT/Tickets_Overlay.pm:125 lib/RT/Tickets_Overlay.pm:1839 share/html/Elements/QuickCreate:53 share/html/Elements/RT__Ticket/ColumnMap:99 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:139 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:82 share/html/SelfService/Update.html:67 share/html/Ticket/Create.html:110 share/html/Ticket/Elements/EditBasics:50 share/html/Ticket/Elements/Reminders:128 share/html/Ticket/Forward.html:64 share/html/Ticket/ModifyAll.html:103 share/html/Ticket/Update.html:96
 msgid "Subject"
 msgstr "Тема"
 
@@ -7097,11 +7128,11 @@ msgstr "Отправить запрос"
 msgid "Submit Workflow"
 msgstr "Отправить последовательность действий"
 
-#: share/html/Dashboards/Subscription.html:170
+#: share/html/Dashboards/Subscription.html:164
 msgid "Subscribe"
 msgstr "Подписаться"
 
-#: share/html/Dashboards/Subscription.html:268
+#: share/html/Dashboards/Subscription.html:262
 #. ($DashboardObj->Name)
 msgid "Subscribe to dashboard %1"
 msgstr "Подписаться на содержимое информационной панели %1"
@@ -7114,16 +7145,16 @@ msgstr "Подписываться на содержимое информаци�
 msgid "SubscribeDashboard"
 msgstr "ПодписыватьсяНаИнформационнуюПанель"
 
-#: share/html/Dashboards/Subscription.html:254
+#: share/html/Dashboards/Subscription.html:248
 #. ($DashboardObj->Name)
 msgid "Subscribed to dashboard %1"
 msgstr "Подписан на содержимое информационной панели %1"
 
-#: share/html/Dashboards/Elements/ShowDashboards:80 share/html/Dashboards/Elements/Tabs:78 share/html/Dashboards/Subscription.html:97
+#: share/html/Dashboards/Elements/ShowDashboards:80 share/html/Dashboards/Elements/Tabs:78 share/html/Dashboards/Subscription.html:91
 msgid "Subscription"
 msgstr "Подписка"
 
-#: share/html/Dashboards/Subscription.html:259
+#: share/html/Dashboards/Subscription.html:253
 #. ($msg)
 msgid "Subscription could not be created: %1"
 msgstr "Невозможно создать подписку: %1"
@@ -7164,7 +7195,7 @@ msgstr "Администратор"
 msgid "Suspended"
 msgstr "Приостановлена"
 
-#: share/html/User/Elements/DelegateRights:100
+#: NOT FOUND IN SOURCE
 msgid "System"
 msgstr "Системные"
 
@@ -7176,7 +7207,7 @@ msgstr "Системная конфигурация"
 msgid "System Default"
 msgstr "Системные настройки"
 
-#: lib/RT/ACE_Overlay.pm:355 lib/RT/Interface/Web.pm:863 share/html/Admin/Elements/SelectRights:108
+#: lib/RT/ACE_Overlay.pm:355 lib/RT/Interface/Web.pm:863 share/html/Admin/Elements/SelectRights:111
 msgid "System Error"
 msgstr "Системная ошибка"
 
@@ -7212,6 +7243,10 @@ msgstr "Системная ошибка. Невозможно выдать пр�
 #: share/html/Admin/CustomFields/GroupRights.html:60 share/html/Admin/Global/GroupRights.html:58 share/html/Admin/Groups/GroupRights.html:60 share/html/Admin/Queues/GroupRights.html:59
 msgid "System groups"
 msgstr "Системные группы"
+
+#: share/html/User/Elements/DelegateRights:101
+msgid "System rights"
+msgstr ""
 
 #: lib/RT/Handle.pm:700
 msgid "SystemRolegroup for internal use"
@@ -7328,7 +7363,7 @@ msgstr "Этот пользователь уже %1 для этой очеред
 #: lib/RT/Ticket_Overlay.pm:1118
 #. ($self->loc($args{'Type'}))
 msgid "That principal is already a %1 for this ticket"
-msgstr "Этот пользователь уже %1 для этой заявки "
+msgstr "Этот пользователь уже %1 для этой заявки"
 
 #: lib/RT/Queue_Overlay.pm:910
 #. ($args{'Type'})
@@ -7352,7 +7387,7 @@ msgstr "Эта заявка имеет неразрешенные зависим
 msgid "That user already has that right"
 msgstr "Пользователь уже имеет это право"
 
-#: lib/RT/Action/CreateTickets.pm:481 lib/RT/Ticket_Overlay.pm:2759
+#: lib/RT/Action/CreateTickets.pm:484 lib/RT/Ticket_Overlay.pm:2759
 msgid "That user already owns that ticket"
 msgstr "Пользователь уже ответственен за эту заявку"
 
@@ -7419,6 +7454,10 @@ msgstr "Нижеследующая команда найдет все актив
 #: NOT FOUND IN SOURCE
 msgid "The following commands were not proccessed:\\n\\n"
 msgstr "Эти команды не были выполнены:\\n\\n"
+
+#: share/html/Dashboards/Elements/HiddenSearches:69
+msgid "The following queries may not be visible to all users who can see this dashboard."
+msgstr ""
 
 #: lib/RT/Crypt/GnuPG.pm:2116
 msgid "The key has been disabled"
@@ -7571,7 +7610,7 @@ msgstr "График взаимосвязей заявки #%1"
 msgid "Ticket #%1: %2"
 msgstr "Заявка #%1: %2"
 
-#: lib/RT/Action/CreateTickets.pm:1121 lib/RT/Action/CreateTickets.pm:1130 lib/RT/Action/CreateTickets.pm:376 lib/RT/Action/CreateTickets.pm:500 lib/RT/Action/CreateTickets.pm:512
+#: lib/RT/Action/CreateTickets.pm:1124 lib/RT/Action/CreateTickets.pm:1133 lib/RT/Action/CreateTickets.pm:379 lib/RT/Action/CreateTickets.pm:503 lib/RT/Action/CreateTickets.pm:515
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
@@ -7843,14 +7882,6 @@ msgstr "Пытаемся удалить право: %1"
 msgid "Tue"
 msgstr "Втр"
 
-#: lib/RT/Config.pm:187
-msgid "Tue Dec 25 21:59:12 1995"
-msgstr ""
-
-#: lib/RT/Config.pm:188
-msgid "Tue, 25 Dec 1995 21:59:12 -0300"
-msgstr ""
-
 #: NOT FOUND IN SOURCE
 msgid "Tue."
 msgstr "Втр."
@@ -7868,7 +7899,7 @@ msgstr "Тип изменён с '%1' на '%2'"
 msgid "Unable to determine object type or id"
 msgstr ""
 
-#: share/html/Dashboards/Subscription.html:243
+#: share/html/Dashboards/Subscription.html:237
 #. ($DashboardId)
 msgid "Unable to subscribe to dashboard %1: Permission denied"
 msgstr "Невозможно подписаться на содержимое информационной панели %1: Нет доступа"
@@ -7988,7 +8019,7 @@ msgstr "Изменить несколько заявок"
 msgid "Update name"
 msgstr "Изменить имя"
 
-#: lib/RT/Action/CreateTickets.pm:521 lib/RT/Interface/Web.pm:712
+#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:712
 msgid "Update not recorded."
 msgstr "Изменение не записано."
 
@@ -8018,7 +8049,7 @@ msgstr "Изменение заявки #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Изменение заявки #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:519 lib/RT/Interface/Web.pm:711
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:711
 msgid "Update type was neither correspondence nor comment."
 msgstr "Изменение не было ни сообщением, ни комментарием."
 
@@ -8213,7 +8244,7 @@ msgstr "Проверить запрос"
 msgid "Validation"
 msgstr "Проверка корректности"
 
-#: share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
+#: lib/RT/Config.pm:187 share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
 msgid "Values"
 msgstr "Значения"
 
@@ -8233,6 +8264,10 @@ msgstr "Просматривать персональные информацио
 msgid "View system dashboards"
 msgstr "Просматривать системные информационные панели"
 
+#: lib/RT/Config.pm:190
+msgid "W3CDTF"
+msgstr ""
+
 #: lib/RT/Config.pm:124
 msgid "WYSIWYG message composer"
 msgstr "WYSIWYG компоновщик сообщения"
@@ -8241,7 +8276,7 @@ msgstr "WYSIWYG компоновщик сообщения"
 msgid "Warning! This is NOT signed!"
 msgstr "Внимание! Это НЕ подписано!"
 
-#: share/html/Dashboards/Subscription.html:255
+#: share/html/Dashboards/Subscription.html:249
 msgid "Warning: you have no email address set, so you will not receive this dashboard until you have it set"
 msgstr "Внимание: вы не указали ваш адрес email, поэтому вы не будете получать содержимое данной информационной панели до тех пор, пока не укажете"
 
@@ -8387,7 +8422,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Which are referred to by "
-msgstr "Которая связана пользователем"
+msgstr "Которая связана пользователем "
 
 #: NOT FOUND IN SOURCE
 msgid "Which refer to"

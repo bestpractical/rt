@@ -1,0 +1,41 @@
+@Final = (
+    sub {
+        $RT::Logger->debug("Going to adjust dashboards");
+        my $sys = RT::System->new($RT::SystemUser);
+
+        my $attrs = RT::Attributes->new( $RT::SystemUser );
+        $attrs->UnLimit;
+        my @dashboards = $attrs->Named('Dashboard');
+
+        if (@dashboards == 0) {
+            $RT::Logger->debug("You have no dashboards. Skipped.");
+            return 1;
+        }
+
+        for my $attr (@dashboards) {
+            my $props = $attr->Content;
+            if (exists $props->{Searches}) {
+                $props->{Panes} = {
+                    body => [
+                        map {
+                            my ($privacy, $id, $desc) = @$_;
+
+                            {
+                                portlet_type => 'search',
+                                privacy      => $privacy,
+                                id           => $id,
+                                description  => $desc,
+                                pane         => 'body',
+                            }
+                        } @{ delete $props->{Searches} }
+                    ],
+                };
+            }
+            my ($status, $msg) = $attr->SetContent( $props );
+            $RT::Logger->error($msg) unless $status;
+        }
+
+        $RT::Logger->debug("Fixed.");
+        return 1;
+    },
+);

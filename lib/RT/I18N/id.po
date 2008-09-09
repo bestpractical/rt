@@ -3,13 +3,16 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
-"POT-Creation-Date: \n"
-"PO-Revision-Date: 2005-10-03 13:48-0400\n"
-"Last-Translator: James <james@actionmessage.com>\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-08-29 20:18+0000\n"
+"PO-Revision-Date: 2008-08-29 20:34+0000\n"
+"Last-Translator: clkao <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=US-ASCII\n"
-"Content-Transfer-Encoding: 7bit\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Launchpad-Export-Date: 2008-09-08 01:56+0000\n"
+"X-Generator: Launchpad (build Unknown)\n"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:259
 msgid " (no pubkey!)"
@@ -301,8 +304,7 @@ msgstr "%1 tiket terbaru yang belum dimiliki..."
 msgid "%1 objects"
 msgstr "%1 objek"
 
-#: share/html/User/Elements/DelegateRights:99
-#. (loc($ObjectType =~ /^RT::(.*)$/))
+#: NOT FOUND IN SOURCE
 msgid "%1 rights"
 msgstr "hak-hak %1"
 
@@ -469,7 +471,7 @@ msgstr "(tidak ada nama yang terdaftar)"
 msgid "(no pubkey!)"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:580 share/html/Admin/Elements/SelectRights:74 share/html/Elements/EditCustomFieldSelect:71 share/html/Elements/SelectCustomFieldValue:53 share/html/Elements/ShowCustomFields:56 share/html/Search/Chart:136 share/html/Search/Elements/Chart:80
+#: lib/RT/Transaction_Overlay.pm:580 share/html/Admin/Elements/SelectRights:77 share/html/Elements/EditCustomFieldSelect:71 share/html/Elements/SelectCustomFieldValue:53 share/html/Elements/ShowCustomFields:56 share/html/Search/Chart:136 share/html/Search/Elements/Chart:80
 msgid "(no value)"
 msgstr "(Tidak ada nilai)"
 
@@ -517,14 +519,6 @@ msgstr ""
 
 #: bin/rt-crontool:120
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
-msgstr ""
-
-#: lib/RT/Config.pm:189
-msgid "1995-11-25 21:59:12"
-msgstr ""
-
-#: lib/RT/Config.pm:190
-msgid "1995-11-25T21:59:12Z"
 msgstr ""
 
 #: NOT FOUND IN SOURCE
@@ -882,7 +876,7 @@ msgstr "Menentukan Kolom Kustom"
 msgid "Attach"
 msgstr "Melampirkan"
 
-#: share/html/SelfService/Create.html:94 share/html/Ticket/Create.html:145
+#: share/html/SelfService/Create.html:97 share/html/Ticket/Create.html:145
 msgid "Attach file"
 msgstr "Melampirkan file"
 
@@ -945,7 +939,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Available Columns"
-msgstr "Kolom Tersedia "
+msgstr "Kolom Tersedia"
 
 #: share/html/Ticket/Forward.html:73
 msgid "BCc"
@@ -987,6 +981,10 @@ msgstr "Binary"
 #: etc/initialdata:186
 msgid "Blank"
 msgstr "Kosong"
+
+#: share/html/Dashboards/Queries.html:143
+msgid "Body"
+msgstr ""
 
 #: share/html/Search/Elements/EditFormat:81
 msgid "Bold"
@@ -1030,10 +1028,6 @@ msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:140
 msgid "CF"
-msgstr ""
-
-#: share/html/NoAuth/js/util.js:209
-msgid "Calendar"
 msgstr ""
 
 #: lib/RT/User_Overlay.pm:1479
@@ -1095,7 +1089,7 @@ msgstr ""
 msgid "Category unset"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:101 lib/RT/Tickets_Overlay.pm:132 share/html/Admin/Queues/People.html:67 share/html/Elements/RT__Ticket/ColumnMap:173 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:73 share/html/Ticket/Create.html:92 share/html/Ticket/Elements/EditPeople:74 share/html/Ticket/Elements/ShowPeople:58 share/html/Ticket/Forward.html:70
+#: lib/RT/ACE_Overlay.pm:101 lib/RT/Tickets_Overlay.pm:132 share/html/Admin/Queues/People.html:67 share/html/Elements/RT__Ticket/ColumnMap:173 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:74 share/html/Ticket/Create.html:92 share/html/Ticket/Elements/EditPeople:74 share/html/Ticket/Elements/ShowPeople:58 share/html/Ticket/Forward.html:70
 msgid "Cc"
 msgstr "Cc"
 
@@ -1123,7 +1117,7 @@ msgstr ""
 msgid "Check box to delete"
 msgstr "Klik kotak ini untuk hapus"
 
-#: share/html/Admin/Elements/SelectRights:57
+#: share/html/Admin/Elements/SelectRights:66
 msgid "Check box to revoke right"
 msgstr "Klik kotak ini untuk menghilangkan hak-hak"
 
@@ -1315,15 +1309,15 @@ msgstr "Korespondensi sudah ditambah"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for ticket. "
-msgstr "Tidak dapat menambah nilai kolom kustom baru untuk tiket."
+msgstr "Tidak dapat menambah nilai kolom kustom baru untuk tiket. "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value. "
-msgstr "Tidak dapat menambah nilai kolom kustom baru"
+msgstr "Tidak dapat menambah nilai kolom kustom baru "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value. %1 "
-msgstr "Tidak dapat menambah nilai kolom kustom baru"
+msgstr "Tidak dapat menambah nilai kolom kustom baru "
 
 #: lib/RT/Record.pm:1662 lib/RT/Record.pm:1708
 #. ($value_msg)
@@ -1350,7 +1344,7 @@ msgstr "Tidak dapat membuat Kolom Kustom"
 #: share/html/Admin/Elements/EditCustomField:115
 #. ($msg)
 msgid "Could not create CustomField: %1"
-msgstr "Tidak dapat membuat Kolom Kustom:%1 "
+msgstr "Tidak dapat membuat Kolom Kustom:%1"
 
 #: lib/RT/Group_Overlay.pm:438 lib/RT/Group_Overlay.pm:445 share/html/User/Groups/Modify.html:100
 msgid "Could not create group"
@@ -1492,12 +1486,12 @@ msgstr "Tidak dapat memanggil Kolom Kustom %1"
 msgid "Couldn't load copy of ticket #%1."
 msgstr ""
 
-#: share/html/Dashboards/Queries.html:87 share/html/Dashboards/Render.html:83
+#: share/html/Dashboards/Queries.html:87 share/html/Dashboards/Render.html:84
 #. ($id, $msg)
 msgid "Couldn't load dashboard %1: %2"
 msgstr ""
 
-#: share/html/Dashboards/Subscription.html:200
+#: share/html/Dashboards/Subscription.html:194
 #. ($DashboardId, $msg)
 msgid "Couldn't load dashboard %1: %2."
 msgstr ""
@@ -1560,7 +1554,7 @@ msgstr ""
 msgid "Couldn't load that user (%1)"
 msgstr "Tidak dapat memanggil pengguna tersebut (%1)"
 
-#: lib/RT/Action/CreateTickets.pm:451 share/html/SelfService/Display.html:161
+#: lib/RT/Action/CreateTickets.pm:454 share/html/SelfService/Display.html:161
 #. ($id)
 msgid "Couldn't load ticket '%1'"
 msgstr "Tidak dapat memanggil Tiket '%1'"
@@ -1697,7 +1691,7 @@ msgstr ""
 msgid "Create system dashboards"
 msgstr ""
 
-#: share/html/SelfService/Create.html:109
+#: share/html/SelfService/Create.html:112
 msgid "Create ticket"
 msgstr "Buat Tiket"
 
@@ -1793,13 +1787,13 @@ msgstr "Hubungan Sekarang"
 
 #: share/html/Admin/Elements/EditScrips:53
 msgid "Current Scrips"
-msgstr "Scrips Sekarang "
+msgstr "Scrips Sekarang"
 
 #: share/html/Admin/Groups/Members.html:62 share/html/User/Groups/Members.html:65
 msgid "Current members"
 msgstr "Anggota Sekarang"
 
-#: share/html/Admin/Elements/SelectRights:53
+#: share/html/Admin/Elements/SelectRights:62
 msgid "Current rights"
 msgstr "Hak-hak Sekarang"
 
@@ -1945,12 +1939,12 @@ msgstr ""
 msgid "Dashboard could not be created: %1"
 msgstr ""
 
-#: share/html/Dashboards/Modify.html:141 share/html/Dashboards/Queries.html:143
+#: share/html/Dashboards/Modify.html:141 share/html/Dashboards/Queries.html:197
 #. ($msg)
 msgid "Dashboard could not be updated: %1"
 msgstr ""
 
-#: share/html/Dashboards/Modify.html:138 share/html/Dashboards/Queries.html:140
+#: share/html/Dashboards/Modify.html:138 share/html/Dashboards/Queries.html:194
 msgid "Dashboard updated"
 msgstr ""
 
@@ -2207,7 +2201,7 @@ msgstr ""
 msgid "Descending"
 msgstr "Turun"
 
-#: share/html/SelfService/Create.html:104 share/html/Ticket/Create.html:161
+#: share/html/SelfService/Create.html:107 share/html/Ticket/Create.html:161
 msgid "Describe the issue below"
 msgstr "Gambarkan persoalan dibawah ini"
 
@@ -2636,7 +2630,7 @@ msgstr "AuthID Eksternal"
 
 #: NOT FOUND IN SOURCE
 msgid "ExternalContactInfoId"
-msgstr " Kontak Info ID Eksternal"
+msgstr "Kontak Info ID Eksternal"
 
 #: share/html/Admin/Users/Modify.html:101
 msgid "Extra info"
@@ -2841,7 +2835,7 @@ msgstr "Freeform"
 msgid "FreeformContactInfo"
 msgstr "FreeformContactInfo"
 
-#: share/html/Dashboards/Subscription.html:101
+#: share/html/Dashboards/Subscription.html:95
 msgid "Frequency"
 msgstr ""
 
@@ -2946,7 +2940,7 @@ msgstr ""
 msgid "Graphical charts are not available."
 msgstr ""
 
-#: lib/RT/Record.pm:910 share/html/Ticket/Elements/AddWatchers:69 share/html/Ticket/Elements/ShowGroupMembers:57 share/html/User/Elements/DelegateRights:101
+#: lib/RT/Record.pm:910 share/html/Ticket/Elements/AddWatchers:69 share/html/Ticket/Elements/ShowGroupMembers:57
 msgid "Group"
 msgstr "Grup"
 
@@ -2983,6 +2977,10 @@ msgstr "Grup tidak memiliki anggota terseperti ini"
 #: lib/RT/Group_Overlay.pm:964 lib/RT/Queue_Overlay.pm:789 lib/RT/Queue_Overlay.pm:864 lib/RT/Ticket_Overlay.pm:1113 lib/RT/Ticket_Overlay.pm:1193
 msgid "Group not found"
 msgstr "Grup tidak ditemukan"
+
+#: share/html/User/Elements/DelegateRights:102
+msgid "Group rights"
+msgstr ""
 
 #: lib/RT/CustomField_Overlay.pm:1116 share/html/Admin/Elements/GlobalCustomFieldTabs:63 share/html/Admin/Elements/SelectNewGroupMembers:60 share/html/Admin/Elements/Tabs:58 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:87 share/html/Admin/Queues/People.html:108 share/html/Admin/index.html:63 share/html/User/Groups/Members.html:90
 msgid "Groups"
@@ -3051,7 +3049,7 @@ msgstr "Telepon Rumah"
 msgid "Homepage"
 msgstr "Homepage"
 
-#: share/html/Dashboards/Subscription.html:131
+#: share/html/Dashboards/Subscription.html:125
 msgid "Hour"
 msgstr ""
 
@@ -3067,6 +3065,10 @@ msgstr "Saya memiliki %quant (%1,concrete mixer)."
 #: NOT FOUND IN SOURCE
 msgid "I'm lost"
 msgstr "Saya tersesat"
+
+#: lib/RT/Config.pm:189
+msgid "ISO"
+msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:1872 share/html/Ticket/Elements/ShowBasics:50
 msgid "Id"
@@ -3400,6 +3402,11 @@ msgstr "Pembaharuan Terakhir Oleh"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "LastUpdatedRelative"
+msgstr ""
+
+#: share/html/Dashboards/Subscription.html:153
+#. ($session{'CurrentUser'}->UserObj->EmailAddress)
+msgid "Leave blank to send to your current email address (%1)"
 msgstr ""
 
 #: lib/RT/Installer.pm:88
@@ -3976,7 +3983,7 @@ msgstr ""
 msgid "Modify the queue watchers"
 msgstr "Mengubah pengamat antrian"
 
-#: share/html/Dashboards/Subscription.html:265
+#: share/html/Dashboards/Subscription.html:259
 #. ($DashboardObj->Name)
 msgid "Modify the subscription to dashboard %1"
 msgstr ""
@@ -4130,7 +4137,7 @@ msgid "Name in use"
 msgstr "Nama yang digunakan"
 
 #: share/html/Tools/index.html:60
-msgid "Named, shared collection of saved searches"
+msgid "Named, shared collection of portlets"
 msgstr ""
 
 #: share/html/Ticket/Elements/ShowDates:80
@@ -4202,7 +4209,7 @@ msgstr "Antrian Baru"
 msgid "New reminder:"
 msgstr ""
 
-#: share/html/Admin/Elements/SelectRights:67
+#: share/html/Admin/Elements/SelectRights:72
 msgid "New rights"
 msgstr "Hak-hak Baru"
 
@@ -4401,11 +4408,11 @@ msgstr "Antrian yang sesuai dengan kriteria pencarian tidak ditemukan."
 msgid "No right specified"
 msgstr ""
 
-#: share/html/Admin/Elements/SelectRights:108
+#: share/html/Admin/Elements/SelectRights:111
 msgid "No rights found"
 msgstr "Tidak ada hak-hak yang ditemukan"
 
-#: share/html/Admin/Elements/SelectRights:55
+#: share/html/Admin/Elements/SelectRights:64
 msgid "No rights granted."
 msgstr "Tidak ada hak-hak yang diberikan."
 
@@ -4836,7 +4843,7 @@ msgstr "Pager"
 
 #: share/html/Elements/EditLinks:145 share/html/Elements/EditLinks:73 share/html/Elements/ShowLinks:90 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:232 share/html/Ticket/Elements/BulkLinks:62
 msgid "Parents"
-msgstr "Induk "
+msgstr "Induk"
 
 #: share/html/Elements/Login:97 share/html/User/Prefs.html:111
 msgid "Password"
@@ -4930,6 +4937,10 @@ msgstr "Nomor Telepon"
 
 #: share/html/dhandler:51
 msgid "Please check the URL and try again."
+msgstr ""
+
+#: share/html/Dashboards/Elements/HiddenSearches:68
+msgid "Possible hidden searches"
 msgstr ""
 
 #: lib/RT/Installer.pm:67
@@ -5048,7 +5059,7 @@ msgstr "Pseudogroup digunakan untuk internal"
 msgid "Public key '0x%1' is required to verify signature"
 msgstr ""
 
-#: share/html/Dashboards/Elements/Tabs:74 share/html/Dashboards/Queries.html:65 share/html/Dashboards/Subscription.html:72
+#: share/html/Dashboards/Elements/Tabs:74 share/html/Dashboards/Subscription.html:72
 msgid "Queries"
 msgstr ""
 
@@ -5064,7 +5075,7 @@ msgstr "Pembuat Query"
 msgid "Query:"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:157 lib/RT/Record.pm:911 lib/RT/Tickets_Overlay.pm:1723 lib/RT/Tickets_Overlay.pm:94 share/html/Elements/QueueSummary:50 share/html/Elements/QuickCreate:56 share/html/Elements/RT__Scrip/ColumnMap:61 share/html/Elements/RT__Ticket/ColumnMap:85 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:56 share/html/Ticket/Create.html:66 share/html/Ticket/Elements/EditBasics:59 share/html/Ticket/Elements/ShowBasics:80 share/html/Tools/Reports/CreatedByDates.html:87 share/html/Tools/Reports/ResolvedByDates.html:88 share/html/Tools/Reports/ResolvedByOwner.html:68 share/html/User/Elements/DelegateRights:103
+#: lib/RT/Graph/Tickets.pm:157 lib/RT/Record.pm:911 lib/RT/Tickets_Overlay.pm:1723 lib/RT/Tickets_Overlay.pm:94 share/html/Elements/QueueSummary:50 share/html/Elements/QuickCreate:56 share/html/Elements/RT__Scrip/ColumnMap:61 share/html/Elements/RT__Ticket/ColumnMap:85 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:57 share/html/Ticket/Create.html:66 share/html/Ticket/Elements/EditBasics:59 share/html/Ticket/Elements/ShowBasics:80 share/html/Tools/Reports/CreatedByDates.html:87 share/html/Tools/Reports/ResolvedByDates.html:88 share/html/Tools/Reports/ResolvedByOwner.html:68
 msgid "Queue"
 msgstr "Antrian"
 
@@ -5101,6 +5112,10 @@ msgstr ""
 #: lib/RT/CustomField_Overlay.pm:198 share/html/SelfService/Display.html:129
 msgid "Queue not found"
 msgstr "Antrian tidak dapat ditemukan"
+
+#: share/html/User/Elements/DelegateRights:104
+msgid "Queue rights"
+msgstr ""
 
 #: share/html/Elements/GnuPG/SelectKeyForSigning:50 share/html/Elements/GnuPG/SelectKeyForSigning:54
 msgid "Queue's key"
@@ -5142,6 +5157,10 @@ msgstr "Pencarian Cepat"
 msgid "Quick ticket creation"
 msgstr "Pembuatan Tiket Cepat"
 
+#: lib/RT/Config.pm:188
+msgid "RFC2822"
+msgstr ""
+
 #: share/html/Search/Elements/ResultViews:61
 msgid "RSS"
 msgstr "RSS"
@@ -5177,7 +5196,7 @@ msgstr ""
 
 #: share/html/Admin/Tools/Configuration.html:94
 msgid "RT Variables"
-msgstr "Variable RT "
+msgstr "Variable RT"
 
 #: lib/RT/Config.pm:112 share/html/Admin/Elements/SystemTabs:73 share/html/Admin/Elements/UserTabs:69 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:51 share/html/Admin/Global/MyRT.html:59 share/html/Admin/Global/index.html:78 share/html/Admin/Users/MyRT.html:68 share/html/Prefs/MyRT.html:67 share/html/Prefs/MyRT.html:84 share/html/User/Elements/Tabs:73 share/html/index.html:6 share/html/index.html:80
 msgid "RT at a glance"
@@ -5254,7 +5273,7 @@ msgstr "Nama Asli"
 msgid "RealName"
 msgstr "Nama Asli"
 
-#: share/html/Dashboards/Subscription.html:156
+#: share/html/Dashboards/Subscription.html:150
 msgid "Recipient"
 msgstr ""
 
@@ -5396,7 +5415,7 @@ msgstr "Pemohon"
 msgid "RequestorGroup"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:158 lib/RT/Tickets_Overlay.pm:131 share/html/Elements/RT__Ticket/ColumnMap:168 share/html/Elements/RT__Ticket/ColumnMap:250 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:65 share/html/Ticket/Create.html:84 share/html/Ticket/Elements/EditPeople:71 share/html/Ticket/Elements/ShowPeople:54
+#: lib/RT/Graph/Tickets.pm:158 lib/RT/Tickets_Overlay.pm:131 share/html/Elements/RT__Ticket/ColumnMap:168 share/html/Elements/RT__Ticket/ColumnMap:250 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:66 share/html/Ticket/Create.html:84 share/html/Ticket/Elements/EditPeople:71 share/html/Ticket/Elements/ShowPeople:54
 msgid "Requestors"
 msgstr "Pemohon"
 
@@ -5527,7 +5546,7 @@ msgstr "Hak-hak tidak dapat dihilangkan untuk %1"
 msgid "Roles"
 msgstr "Aturan"
 
-#: share/html/Dashboards/Subscription.html:146
+#: share/html/Dashboards/Subscription.html:140
 msgid "Rows"
 msgstr ""
 
@@ -5559,7 +5578,7 @@ msgstr "Sab."
 msgid "Save"
 msgstr "Simpan"
 
-#: share/html/Admin/CustomFields/Modify.html:126 share/html/Admin/Groups/Modify.html:94 share/html/Admin/Queues/Modify.html:127 share/html/Admin/Queues/People.html:130 share/html/Admin/Users/GnuPG.html:75 share/html/Admin/Users/Modify.html:243 share/html/Dashboards/Modify.html:75 share/html/Dashboards/Subscription.html:168 share/html/Prefs/Other.html:78 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:71 share/html/Prefs/SearchOptions.html:65 share/html/SelfService/Prefs.html:60 share/html/Ticket/Elements/PreviewScrips:94 share/html/Ticket/Modify.html:65 share/html/Ticket/ModifyAll.html:131 share/html/Ticket/ModifyDates.html:63 share/html/Ticket/ModifyLinks.html:65 share/html/Ticket/ModifyPeople.html:63 share/html/User/Groups/Modify.html:79
+#: share/html/Admin/CustomFields/Modify.html:126 share/html/Admin/Groups/Modify.html:94 share/html/Admin/Queues/Modify.html:127 share/html/Admin/Queues/People.html:130 share/html/Admin/Users/GnuPG.html:75 share/html/Admin/Users/Modify.html:243 share/html/Dashboards/Modify.html:75 share/html/Dashboards/Subscription.html:162 share/html/Prefs/Other.html:78 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:71 share/html/Prefs/SearchOptions.html:65 share/html/SelfService/Prefs.html:60 share/html/Ticket/Elements/PreviewScrips:94 share/html/Ticket/Modify.html:65 share/html/Ticket/ModifyAll.html:131 share/html/Ticket/ModifyDates.html:63 share/html/Ticket/ModifyLinks.html:65 share/html/Ticket/ModifyPeople.html:63 share/html/User/Groups/Modify.html:79
 msgid "Save Changes"
 msgstr "Simpan Perubahan"
 
@@ -5989,6 +6008,10 @@ msgstr "Tampilkan Komentar Tiket"
 msgid "Shredder"
 msgstr ""
 
+#: share/html/Dashboards/Queries.html:144
+msgid "Sidebar"
+msgstr ""
+
 #: share/html/Elements/GnuPG/SignEncryptWidget:49
 msgid "Sign"
 msgstr ""
@@ -6142,7 +6165,7 @@ msgstr "Dicuri dari %1 "
 msgid "Style"
 msgstr "Gaya"
 
-#: lib/RT/Graph/Tickets.pm:157 lib/RT/Ticket_Overlay.pm:898 lib/RT/Tickets_Overlay.pm:125 lib/RT/Tickets_Overlay.pm:1839 share/html/Elements/QuickCreate:53 share/html/Elements/RT__Ticket/ColumnMap:99 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:139 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:81 share/html/SelfService/Update.html:67 share/html/Ticket/Create.html:110 share/html/Ticket/Elements/EditBasics:50 share/html/Ticket/Elements/Reminders:128 share/html/Ticket/Forward.html:64 share/html/Ticket/ModifyAll.html:103 share/html/Ticket/Update.html:96
+#: lib/RT/Graph/Tickets.pm:157 lib/RT/Ticket_Overlay.pm:898 lib/RT/Tickets_Overlay.pm:125 lib/RT/Tickets_Overlay.pm:1839 share/html/Elements/QuickCreate:53 share/html/Elements/RT__Ticket/ColumnMap:99 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:139 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:82 share/html/SelfService/Update.html:67 share/html/Ticket/Create.html:110 share/html/Ticket/Elements/EditBasics:50 share/html/Ticket/Elements/Reminders:128 share/html/Ticket/Forward.html:64 share/html/Ticket/ModifyAll.html:103 share/html/Ticket/Update.html:96
 msgid "Subject"
 msgstr "Subjek"
 
@@ -6164,11 +6187,11 @@ msgstr ""
 msgid "Submit"
 msgstr "Submit"
 
-#: share/html/Dashboards/Subscription.html:170
+#: share/html/Dashboards/Subscription.html:164
 msgid "Subscribe"
 msgstr ""
 
-#: share/html/Dashboards/Subscription.html:268
+#: share/html/Dashboards/Subscription.html:262
 #. ($DashboardObj->Name)
 msgid "Subscribe to dashboard %1"
 msgstr ""
@@ -6181,16 +6204,16 @@ msgstr ""
 msgid "SubscribeDashboard"
 msgstr ""
 
-#: share/html/Dashboards/Subscription.html:254
+#: share/html/Dashboards/Subscription.html:248
 #. ($DashboardObj->Name)
 msgid "Subscribed to dashboard %1"
 msgstr ""
 
-#: share/html/Dashboards/Elements/ShowDashboards:80 share/html/Dashboards/Elements/Tabs:78 share/html/Dashboards/Subscription.html:97
+#: share/html/Dashboards/Elements/ShowDashboards:80 share/html/Dashboards/Elements/Tabs:78 share/html/Dashboards/Subscription.html:91
 msgid "Subscription"
 msgstr ""
 
-#: share/html/Dashboards/Subscription.html:259
+#: share/html/Dashboards/Subscription.html:253
 #. ($msg)
 msgid "Subscription could not be created: %1"
 msgstr ""
@@ -6223,7 +6246,7 @@ msgstr "PenggunaSuper"
 msgid "Suspended"
 msgstr ""
 
-#: share/html/User/Elements/DelegateRights:100
+#: NOT FOUND IN SOURCE
 msgid "System"
 msgstr "Sistem"
 
@@ -6235,7 +6258,7 @@ msgstr "Konfigurasi Sistem"
 msgid "System Default"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:355 lib/RT/Interface/Web.pm:863 share/html/Admin/Elements/SelectRights:108
+#: lib/RT/ACE_Overlay.pm:355 lib/RT/Interface/Web.pm:863 share/html/Admin/Elements/SelectRights:111
 msgid "System Error"
 msgstr "Kesalahan Sistem"
 
@@ -6260,9 +6283,13 @@ msgstr "Kesalahan sistem. Hak-hak tidak dapat diberikan."
 msgid "System groups"
 msgstr "Grup Sistem"
 
+#: share/html/User/Elements/DelegateRights:101
+msgid "System rights"
+msgstr ""
+
 #: lib/RT/Handle.pm:700
 msgid "SystemRolegroup for internal use"
-msgstr " GrupAturanSistem yang digunakan untuk internal"
+msgstr "GrupAturanSistem yang digunakan untuk internal"
 
 #: NOT FOUND IN SOURCE
 msgid "TEST_STRING"
@@ -6387,7 +6414,7 @@ msgstr "Antrian ini tidak ada"
 msgid "That ticket has unresolved dependencies"
 msgstr "Tiket ini mempunyai ketergantungan yang belum dapat diselesaikan"
 
-#: lib/RT/Action/CreateTickets.pm:481 lib/RT/Ticket_Overlay.pm:2759
+#: lib/RT/Action/CreateTickets.pm:484 lib/RT/Ticket_Overlay.pm:2759
 msgid "That user already owns that ticket"
 msgstr "Pengguna ini sudah memiliki tiket tersebut"
 
@@ -6446,6 +6473,10 @@ msgstr "Perintah berikut ini akan menemukan seluruh tiket yang aktif di dalam an
 #: NOT FOUND IN SOURCE
 msgid "The following commands were not proccessed:\\n\\n"
 msgstr "Perintah berikut ini tidak akan dijalankan:\\n\\n"
+
+#: share/html/Dashboards/Elements/HiddenSearches:69
+msgid "The following queries may not be visible to all users who can see this dashboard."
+msgstr ""
 
 #: lib/RT/Crypt/GnuPG.pm:2116
 msgid "The key has been disabled"
@@ -6582,7 +6613,7 @@ msgstr ""
 msgid "Ticket #%1: %2"
 msgstr "Tiket #%1: %2"
 
-#: lib/RT/Action/CreateTickets.pm:1121 lib/RT/Action/CreateTickets.pm:1130 lib/RT/Action/CreateTickets.pm:376 lib/RT/Action/CreateTickets.pm:500 lib/RT/Action/CreateTickets.pm:512
+#: lib/RT/Action/CreateTickets.pm:1124 lib/RT/Action/CreateTickets.pm:1133 lib/RT/Action/CreateTickets.pm:379 lib/RT/Action/CreateTickets.pm:503 lib/RT/Action/CreateTickets.pm:515
 #. ($T::Tickets{$template_id}->Id)
 #. ($T::Tickets{$template_id}->id)
 #. ($ticket->Id)
@@ -6814,14 +6845,6 @@ msgstr ""
 msgid "Tue"
 msgstr ""
 
-#: lib/RT/Config.pm:187
-msgid "Tue Dec 25 21:59:12 1995"
-msgstr ""
-
-#: lib/RT/Config.pm:188
-msgid "Tue, 25 Dec 1995 21:59:12 -0300"
-msgstr ""
-
 #: NOT FOUND IN SOURCE
 msgid "Tue."
 msgstr "Sel."
@@ -6839,7 +6862,7 @@ msgstr ""
 msgid "Unable to determine object type or id"
 msgstr ""
 
-#: share/html/Dashboards/Subscription.html:243
+#: share/html/Dashboards/Subscription.html:237
 #. ($DashboardId)
 msgid "Unable to subscribe to dashboard %1: Permission denied"
 msgstr ""
@@ -6959,7 +6982,7 @@ msgstr "Perbaharui beberapa tiket"
 msgid "Update name"
 msgstr "Perbaharui nama"
 
-#: lib/RT/Action/CreateTickets.pm:521 lib/RT/Interface/Web.pm:712
+#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:712
 msgid "Update not recorded."
 msgstr "Perbaharui tidak dicatat."
 
@@ -6985,9 +7008,9 @@ msgstr "Perbaharui tiket #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Perbaharui tiket #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:519 lib/RT/Interface/Web.pm:711
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:711
 msgid "Update type was neither correspondence nor comment."
-msgstr " Memperbarui tipe baik korespondensi ataupun  penjelasan."
+msgstr "Memperbarui tipe baik korespondensi ataupun  penjelasan."
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "UpdateStatus"
@@ -7156,7 +7179,7 @@ msgstr "Query yang valid"
 msgid "Validation"
 msgstr ""
 
-#: share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
+#: lib/RT/Config.pm:187 share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
 msgid "Values"
 msgstr "Nilai-nilai"
 
@@ -7176,6 +7199,10 @@ msgstr ""
 msgid "View system dashboards"
 msgstr ""
 
+#: lib/RT/Config.pm:190
+msgid "W3CDTF"
+msgstr ""
+
 #: lib/RT/Config.pm:124
 msgid "WYSIWYG message composer"
 msgstr ""
@@ -7184,7 +7211,7 @@ msgstr ""
 msgid "Warning! This is NOT signed!"
 msgstr ""
 
-#: share/html/Dashboards/Subscription.html:255
+#: share/html/Dashboards/Subscription.html:249
 msgid "Warning: you have no email address set, so you will not receive this dashboard until you have it set"
 msgstr ""
 

@@ -102,7 +102,6 @@ activated in the config.
 sub Commit {
     my $self = shift;
 
-
     $self->DeferDigestRecipients() if RT->Config->Get('RecordOutgoingEmail');
     my $message = $self->TemplateObj->MIMEObj;
 
@@ -190,7 +189,7 @@ sub Prepare {
         && $self->{$header}
         && @{ $self->{$header} } );
 }
-    # PseudoTo	(fake to headers) shouldn't get matched for message recipients.
+    # PseudoTo (fake to headers) shouldn't get matched for message recipients.
     # If we don't have any 'To' header (but do have other recipients), drop in
     # the pseudo-to header.
     $self->SetHeader( 'To', join( ', ', @{ $self->{'PseudoTo'} } ) )
@@ -313,18 +312,18 @@ sub SendMessage {
     );
 
      
-    return $status unless ($status > 0 || exists ($self->{'Deferred'}));;
+    return $status unless ($status > 0 || exists $self->{'Deferred'});
 
     my $success = $msgid . " sent ";
     foreach (@EMAIL_RECIPIENT_HEADERS) {
         my $recipients = $MIMEObj->head->get($_);
         $success .= " $_: " . $recipients if $recipients;
     }
-	
-    
+
     if( exists $self->{'Deferred'} ) {
         for (qw(daily weekly susp)) {
-            $success .= "\nBatched email $_ for: ". join(", ",keys % {$self->{'Deferred'}->{$_}} ) if (exists $self->{'Deferred'}->{$_});
+            $success .= "\nBatched email $_ for: ". join(", ", keys %{ $self->{'Deferred'}{ $_ } } )
+                if exists $self->{'Deferred'}{ $_ };
         }
     }
 
@@ -697,19 +696,23 @@ sub DeferDigestRecipients {
 
 
     
-sub  RecordDeferredRecipients {
-	my $self = shift;
-	my $txn_id = $self->{'OutgoingMailTransaction'};
-	return unless $txn_id;
-	
-	my $txn_obj = RT::Transaction->new( $self->CurrentUser );
-	$txn_obj->Load( $txn_id );
-    my( $ret, $msg ) = $txn_obj->AddAttribute( Name => 'DeferredRecipients',
-					      Content => $self->{'Deferred'});
-	$RT::Logger->warning( "Unable to add deferred recipients to outgoing transaction: $msg" ) 
-	    unless $ret;
+sub RecordDeferredRecipients {
+    my $self = shift;
+    return unless exists $self->{'Deferred'};
 
-        return ($ret,$msg);
+    my $txn_id = $self->{'OutgoingMailTransaction'};
+    return unless $txn_id;
+
+    my $txn_obj = RT::Transaction->new( $self->CurrentUser );
+    $txn_obj->Load( $txn_id );
+    my( $ret, $msg ) = $txn_obj->AddAttribute(
+        Name => 'DeferredRecipients',
+        Content => $self->{'Deferred'}
+    );
+    $RT::Logger->warning( "Unable to add deferred recipients to outgoing transaction: $msg" ) 
+        unless $ret;
+
+    return ($ret,$msg);
 }
 
 =head2 SquelchMailTo [@ADDRESSES]
@@ -1099,7 +1102,7 @@ sub MIMEEncodeString {
 
     return ($value) unless $value =~ /[^\x20-\x7e]/;
 
-    $value =~ s/\s*$//;
+    $value =~ s/\s+$//;
 
     # we need perl string to split thing char by char
     Encode::_utf8_on($value) unless Encode::is_utf8($value);

@@ -256,7 +256,8 @@ sub StripContent {
 
     # Find the signature
     my $sig = $args{'CurrentUser'}->UserObj->Signature || '';
-    $sig =~ s/^\s*|\s*$//g;
+    $sig =~ s/^\s+//;
+    $sig =~ s/\s+$//;
 
     # Check for plaintext sig
     return '' if not $html and $content =~ /^\s*(--)?\s*\Q$sig\E\s*$/;
@@ -1453,7 +1454,7 @@ sub ProcessRecordLinks {
 
             for my $luri ( split ( / /, $ARGSRef->{ $Record->Id . "-$linktype" } ) ) {
                 next unless $luri;
-                $luri =~ s/\s*$//;    # Strip trailing whitespace
+                $luri =~ s/\s+$//;    # Strip trailing whitespace
                 my ( $val, $msg ) = $Record->AddLink( Target => $luri,
                                                       Type   => $linktype );
                 push @results, $msg;

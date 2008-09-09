@@ -108,7 +108,7 @@ sub SaveAttribute {
     return $object->AddAttribute(
         'Name'        => 'Dashboard',
         'Description' => $args->{'Name'},
-        'Content'     => {Searches => $args->{'Searches'}},
+        'Content'     => {Panes => $args->{'Panes'}},
     );
 }
 
@@ -117,9 +117,9 @@ sub UpdateAttribute {
     my $args = shift;
 
     my ($status, $msg) = (1, undef);
-    if (defined $args->{'Searches'}) {
+    if (defined $args->{'Panes'}) {
         ($status, $msg) = $self->{'Attribute'}->SetSubValues(
-            Searches => $args->{'Searches'},
+            Panes => $args->{'Panes'},
         );
     }
 
@@ -145,6 +145,30 @@ sub UpdateAttribute {
     return ($status, $msg);
 }
 
+=head2 Panes
+
+Returns a hashref of pane name to portlets
+
+=cut
+
+sub Panes {
+    my $self = shift;
+    return unless ref($self->{'Attribute'}) eq 'RT::Attribute';
+    return $self->{'Attribute'}->SubValue('Panes') || {};
+}
+
+=head2 Portlets
+
+Returns the list of this dashboard's portlets, each a hashref with key
+C<portlet_type> being C<search> or C<component>.
+
+=cut
+
+sub Portlets {
+    my $self = shift;
+    return map { @$_ } values %{ $self->Panes };
+}
+
 =head2 Searches
 
 Returns a list of loaded saved searches
@@ -154,52 +178,28 @@ Returns a list of loaded saved searches
 sub Searches {
     my $self = shift;
     return map {
-               my $search = RT::SavedSearch->new($self->CurrentUser);
-               $search->Load($_->[0], $_->[1]);
-               $search
-           } $self->SearchIds;
+        my $search = RT::SavedSearch->new($self->CurrentUser);
+        $search->Load($_->{privacy}, $_->{id});
+        $search
+    } grep { $_->{portlet_type} eq 'search' } $self->Portlets;
 }
 
-=head2 SearchIds
-
-Returns a list of array references, each being a saved-search privacy, ID, and
-description
-
-=cut
-
-sub SearchIds {
-    my $self = shift;
-    return unless ref($self->{'Attribute'}) eq 'RT::Attribute';
-    return @{ $self->{'Attribute'}->SubValue('Searches') || [] };
-}
-
-=head2 SearchPrivacies
-
-Returns a list of array references, each one being suitable to pass to
-/Elements/ShowSearch.
-
-=cut
-
-sub SearchPrivacies {
-    my $self = shift;
-    return map { [$self->SearchPrivacy(@$_)] } $self->SearchIds;
-}
-
-=head2 SearchPrivacy TYPE, ID, DESC
+=head2 ShowSearchName Portlet
 
 Returns an array for one saved search, suitable for passing to
 /Elements/ShowSearch.
 
 =cut
 
-sub SearchPrivacy {
+sub ShowSearchName {
     my $self = shift;
-    my ($type, $id, $desc) = @_;
-    if ($type eq 'RT::System') {
-        return Name => $desc;
+    my $portlet = shift;
+
+    if ($portlet->{privacy} eq 'RT::System') {
+        return Name => $portlet->{description};
     }
 
-    return SavedSearch => join('-', $type, 'SavedSearch', $id);
+    return SavedSearch => join('-', $portlet->{privacy}, 'SavedSearch', $portlet->{id});
 }
 
 =head2 PossibleHiddenSearches

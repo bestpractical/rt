@@ -45,44 +45,33 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% unless ( $values->Count ) {
-<p><em><&|/l&>(no values)</&></em></p>
-%    return;
-% }
-
-<table>
-
-<tr>
-<th>&nbsp;</th>
-<th><&|/l&>Sort</&></th>
-<th><&|/l&>Name</&></th>
-<th><&|/l&>Description</&></th>
-% if ($CustomField->Type ne 'Combobox') {
-<th><&|/l&>Category</&></th>
-% }
-</tr>
-
-% while ( my $value = $values->Next ) {
-% my $paramtag = "CustomField-". $CustomField->Id ."-Value-". $value->Id;
-<tr>
-<td><input type="checkbox" class="checkbox" name="Delete-<% $paramtag %>" /></td>
-<td><input type="text" size="3" name="<% $paramtag %>-SortOrder" value="<% $value->SortOrder %>" /></td>
-<td><input type="text" size="25" name="<% $paramtag %>-Name" value="<% $value->Name %>" /></td>
-<td><input type="text" size="45" name="<% $paramtag %>-Description" value="<% $value->Description %>" /></td>
-% if ( $CustomField->Type ne 'Combobox' ) {
-<td><input type="text" size="10" name="<% $paramtag %>-Category" 
-    value="<% $value->Category || '' %>" /></td>
-% }
-</tr>
-% }
-
-</table>
-<i><&|/l&>(Check box to delete)</&></i>
+<%args>
+@searches
+$Dashboard
+</%args>
 <%init>
+my @display;
 
-my $values = $CustomField->ValuesObj();
+for my $search (@searches) {
+    if ($search->Name eq 'SavedSearch') {
+        push @display, $search->Description;
+    }
+    elsif ($search->Name =~ m/^Search - (.*)/) {
+        push @display, $1;
+    }
+    else {
+        push @display, $search->Name;
+    }
+}
 
 </%init>
-<%args>
-$CustomField => undef
-</%args>
+<&| /Widgets/TitleBox, title => loc('Possible hidden searches') &>
+<p><% loc("The following queries may not be visible to all users who can see this dashboard.") %></p>
+
+<ul>
+% for (@display) {
+    <li><% $_ %></li>
+% }
+</ul>
+</&>
+

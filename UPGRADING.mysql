@@ -11,7 +11,7 @@ If you're migrating from MySQL 4.0 to MySQL 4.1 and newer then you MUST follow
 instructions at the bottom of this file.
 
 If you're upgrading RT from versions prior to 3.8.0 then you MUST follow
-instructions below.
+instructions below even if your old RT was installed on MySQL 4.1 or newer.
 
 === Upgrading RT from versions prior to 3.8.0 ===
 
