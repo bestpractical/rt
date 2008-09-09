@@ -55,34 +55,6 @@ use Time::ParseDate;
 use Time::HiRes;
 use HTML::Entities;
 use HTML::Scrubber;
-use RT::Interface::Web::Handler;
-use RT::Interface::Web::Request;
-use File::Path qw( rmtree );
-use File::Glob qw( bsd_glob );
-use File::Spec::Unix;
-
-sub default_handler_args {
-    (   comp_root => [ [ local => $RT::MasonLocalComponentRoot ], ( map { [ "plugin-" . $_->name => $_->component_root ] } @{ RT->plugins } ), [ standard => $RT::MasonComponentRoot ] ],
-        error_format => ( RT->config->get('DevelMode') ? 'html' : 'brief' ),
-        request_class => 'RT::Interface::Web::Request',
-        named_component_subs => $INC{'Devel/Cover.pm'} ? 1 : 0,
-    );
-}
-
-
-=head2 new
-
-  Constructs a web handler of the appropriate class.
-  Takes options to pass to the constructor.
-
-=cut
-
-sub new {
-    my $class = shift;
-    my $self  = {};
-    bless $self, $class;
-    return $self;
-}
 
 =head2 cleanup_request
 
@@ -129,6 +101,113 @@ sub cleanup_request {
         require RT::Crypt::GnuPG;
         RT::Crypt::GnuPG::use_key_for_encryption();
         RT::Crypt::GnuPG::use_key_for_signing(undef);
+    }
+}
+
+package Jifty::View::Mason::Handler;
+{
+    no warnings 'redefine';
+    my $oldsub = \&config;
+    *config = sub {
+        my %config = $oldsub->();
+        push @{ $config{comp_root} },
+          [ local => $RT::MasonLocalComponentRoot ];
+        for my $plugin ( @{ RT->plugins } ) {
+            push @{ $config{comp_root} },
+              [ 'plugin-' . $plugin->name => $plugin->component_root ];
+        }
+        %config = ( 
+            %config,
+            error_format => ( RT->config->get('DevelMode') ? 'html' : 'brief' ),
+            named_component_subs => $INC{'Devel/Cover.pm'} ? 1 : 0,
+        );
+        return %config;
+    };
+}
+
+package HTML::Mason::Request::Jifty;
+{
+=head2 callback
+
+Method replaces deprecated component C<Element/Callback>.
+
+Takes hash with optional C<CallbackPage>, C<Callbackname>
+and C<CallbackOnce> arguments, other arguments are passed
+throught to callback components.
+
+=over4
+
+=item CallbackPage
+
+Page path relative to the root, leading slash is mandatory.
+By default is equal to path of the caller component.
+
+=item Callbackname
+
+name of the callback. C<Default> is used unless specified.
+
+=item CallbackOnce
+
+By default is false, otherwise runs callbacks only once per
+process of the server. Such callbacks can be used to fill
+structures.
+
+=back
+
+Searches for callback components in
+F<< /Callbacks/<any dir>/CallbackPage/Callbackname >>, for
+example F</Callbacks/MyExtension/autohandler/Default> would
+be called as default callback for F</autohandler>.
+
+=cut
+    no warnings 'redefine';
+    my %cache  = ();
+    my %called = ();
+
+    sub callback {
+        my ( $self, %args ) = @_;
+
+        my $name = delete $args{'Callbackname'} || 'Default';
+        my $page = delete $args{'CallbackPage'} || $self->callers(0)->path;
+        unless ($page) {
+            Jifty->log->error("Couldn't get a page name for callbacks");
+            return;
+        }
+
+        my $CacheKey = "$page--$name";
+        return 1 if delete $args{'CallbackOnce'} && $called{$CacheKey};
+        $called{$CacheKey} = 1;
+
+        my $callbacks = $cache{$CacheKey};
+        unless ($callbacks) {
+            $callbacks = [];
+            my $path = "/Callbacks/*$page/$name";
+            my @roots
+                = map $_->[1], $HTML::Mason::VERSION <= 1.28
+                ? $self->interp->resolver->comp_root_array
+                : $self->interp->comp_root_array;
+
+            my %seen;
+            @$callbacks = (
+                sort grep defined && length,
+
+                # Skip backup files, files without a leading package name,
+                # and files we've already seen
+                grep !$seen{$_}++
+                    && !m{/\.}
+                    && !m{~$}
+                    && m{^/Callbacks/[^/]+\Q$page/$name\E$},
+                map $self->interp->resolver->glob_path( $path, $_ ),
+                @roots
+            );
+
+            $cache{$CacheKey} = $callbacks
+                unless RT->config->get('DevelMode');
+        }
+
+        my @rv;
+        push @rv, scalar $self->comp( $_, %args ) foreach @$callbacks;
+        return @rv;
     }
 }
 
