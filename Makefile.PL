@@ -46,7 +46,7 @@ features(
 
     'Mason' => [
         -default            => 1,
-        'HTML::Mason'       => 1.36,
+        'HTML::Mason'       => 1.40,
         'Errno'             => 0,
         'Digest::MD5'       => 2.27,
         'CGI::Cookie'       => 1.20,
@@ -136,7 +136,7 @@ features(
         -default => 0,
         'CGI'    => '3.38',
         'Apache::DBI',
-        'HTML::Mason' => '1.36',
+        'HTML::Mason' => '1.40',
         ]
 
     ,
