@@ -80,7 +80,6 @@
 % $m->callback( %ARGS, Callbackname => 'head' );
 
 </head>
-% Jifty->handler->stash->{'in_body'} = 1;
   <body<% $id && qq[ id="comp-$id"] |n %>>
 
 % if ($show_bar && Jifty->web->current_user) {
