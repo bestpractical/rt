@@ -58,10 +58,6 @@
 % unless ( $no_wrap ) {
 <& /Elements/Footer, %{Jifty->web->request->arguments} &>
 % }
-
-</body>
-% Jifty->handler->stash->{'in_body'} = 0;
-</html>
 <%args>
 $prefs => '/Prefs/Other.html'
 $focus => ''
