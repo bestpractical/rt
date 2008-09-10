@@ -353,6 +353,10 @@ sub init_jifty {
     Jifty->new;
 }
 
+Jifty->web->add_javascript(
+    qw( titlebox-state.js )
+);
+
 Jifty::Web->add_trigger(
     name      => 'after_include_javascript',
     callback  => sub {
