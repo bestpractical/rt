@@ -57,4 +57,7 @@ alias RT::View::Admin::Groups under 'admin/groups/';
 require RT::View::Admin::Users;
 alias RT::View::Admin::Users under 'admin/groups/';
 
+
+__PACKAGE__->use_mason_wrapper;
+
 1;
