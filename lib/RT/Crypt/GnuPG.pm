@@ -520,11 +520,11 @@ sub SignEncryptRFC3156 {
             map Email::Address->parse( $entity->head->get( $_ ) ),
             qw(To Cc Bcc);
 
-        my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
+        my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
         binmode $tmp_fh, ':raw';
 
-    my ($handles, $handle_list) = _make_gpg_handles(stdout => $tmp_fh);
-    my %handle = %$handle_list;
+        my ($handles, $handle_list) = _make_gpg_handles(stdout => $tmp_fh);
+        my %handle = %$handle_list;
         $handles->options( 'stdout'  )->{'direct'} = 1;
         $gnupg->passphrase( $args{'Passphrase'} ) if $args{'Sign'};
 
@@ -641,7 +641,7 @@ sub _SignEncryptTextInline {
 
     my %res;
 
-    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
+    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
     binmode $tmp_fh, ':raw';
 
     my ($handles, $handle_list) = _make_gpg_handles(stdout => $tmp_fh);
@@ -729,7 +729,7 @@ sub _SignEncryptAttachmentInline {
 
     my %res;
 
-    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
+    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
     binmode $tmp_fh, ':raw';
 
     my ($handles, $handle_list) = _make_gpg_handles(stdout => $tmp_fh);
@@ -829,7 +829,7 @@ sub SignEncryptContent {
 
     my %res;
 
-    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
+    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
     binmode $tmp_fh, ':raw';
 
     my ($handles, $handle_list) = _make_gpg_handles(stdout => $tmp_fh);
@@ -1060,7 +1060,7 @@ sub VerifyAttachment {
         meta_interactive => 0,
     );
 
-    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
+    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
     binmode $tmp_fh, ':raw';
     $args{'Data'}->bodyhandle->print( $tmp_fh );
     $tmp_fh->flush;
@@ -1105,7 +1105,7 @@ sub VerifyRFC3156 {
         meta_interactive => 0,
     );
 
-    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
+    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
     binmode $tmp_fh, ':raw:eol(CRLF?)';
     $args{'Data'}->print( $tmp_fh );
     $tmp_fh->flush;
@@ -1170,7 +1170,7 @@ sub DecryptRFC3156 {
     $args{'Passphrase'} = GetPassphrase()
         unless defined $args{'Passphrase'};
 
-    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
+    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
     binmode $tmp_fh, ':raw';
 
     my ($handles, $handle_list) = _make_gpg_handles(stdout => $tmp_fh);
@@ -1247,7 +1247,7 @@ sub DecryptInline {
     $args{'Passphrase'} = GetPassphrase()
         unless defined $args{'Passphrase'};
 
-    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
+    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
     binmode $tmp_fh, ':raw';
 
     my $io = $args{'Data'}->open('r');
@@ -1256,7 +1256,7 @@ sub DecryptInline {
     }
 
     my ($had_literal, $in_block) = ('', 0);
-    my ($block_fh, $block_fn) = File::Temp::tempfile();
+    my ($block_fh, $block_fn) = File::Temp::tempfile( UNLINK => 1 );
     binmode $block_fh, ':raw';
 
     my %res;
@@ -1279,7 +1279,7 @@ sub DecryptInline {
             }
             print $tmp_fh "-----END OF PART-----\n" if $had_literal;
 
-            ($block_fh, $block_fn) = File::Temp::tempfile();
+            ($block_fh, $block_fn) = File::Temp::tempfile( UNLINK => 1 );
             binmode $block_fh, ':raw';
             $in_block = 0;
         }
@@ -1309,7 +1309,7 @@ sub _DecryptInlineBlock {
     );
     my $gnupg = $args{'GnuPG'};
 
-    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
+    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
     binmode $tmp_fh, ':raw';
 
     my ($handles, $handle_list) = _make_gpg_handles(
@@ -1378,7 +1378,7 @@ sub DecryptAttachment {
     $args{'Passphrase'} = GetPassphrase()
         unless defined $args{'Passphrase'};
 
-    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
+    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
     binmode $tmp_fh, ':raw';
     $args{'Data'}->bodyhandle->print( $tmp_fh );
     seek $tmp_fh, 0, 0;
@@ -1423,7 +1423,7 @@ sub DecryptContent {
     $args{'Passphrase'} = GetPassphrase()
         unless defined $args{'Passphrase'};
 
-    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
+    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
     binmode $tmp_fh, ':raw';
 
     my ($handles, $handle_list) = _make_gpg_handles(
