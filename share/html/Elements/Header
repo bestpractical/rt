@@ -87,19 +87,20 @@
 
 <div id="quickbar">
   <div id="quick-personal">
-    <span class="hide"><a href="#skipnav"><&|/l&>Skip Menu</&></a> | </span>
+    <span class="hide"><a href="#skipnav"><% _('Skip Menu') %></a> | </span>
 % if (Jifty->web->current_user->name) {
-    <&|/l, "<span>".Jifty->web->current_user->name."</span>" &>Logged in as %1</&>
+  <% _('Logged in as %1', "<span>".Jifty->web->current_user->name."</span>") |n%>
 %     if ( Jifty->web->current_user->has_right( right => 'ModifySelf', object => RT->system ) ) {
-    | <a href="<%RT->config->get('WebPath')%><%$prefs%>"><&|/l&>Preferences</&></a>
+    | <a href="<%RT->config->get('WebPath')%><%$prefs%>"><% _('Preferences') %></a>
 %     }
 % } else {
-    <&|/l&>Not logged in.</&>
+    <% _('Not logged in.') %>
 % }
 % $m->callback( %ARGS );
 % unless (!Jifty->web->current_user->name
 %         or (RT->config->get('WebExternalAuth') and !RT->config->get('WebFallbackToInternalAuth'))) {
-    | <a  href="<%RT->config->get('WebPath')%>/NoAuth/Logout.html<%$url ? "?URL=".$url : ''%>"><&|/l&>Logout</&></a>
+    | <a  href="<%RT->config->get('WebPath')%>/NoAuth/Logout.html<%$url ?
+"?URL=".$url : ''%>"><% _('Logout') %></a>
 % }
   </div>
 % }
