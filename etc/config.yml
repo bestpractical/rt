@@ -30,6 +30,8 @@ framework:
     - User: {}
     - Authentication::Password: {}
     - Prototypism: {}
+    - I18N:
+        js: 1
   PubSub: 
     Backend: Memcached
     Enable: ~

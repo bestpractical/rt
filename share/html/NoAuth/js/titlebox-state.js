@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 function createCookie(name,value,days) {
-    var path = "<%RT->config->get('WebPath')%>" ? "<%RT->config->get('WebPath')%>" : "/";
+    var path = RT.WebPath;
 
     if (days) {
         var date = new Date();

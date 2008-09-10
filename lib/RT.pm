@@ -353,6 +353,17 @@ sub init_jifty {
     Jifty->new;
 }
 
+Jifty::Web->add_trigger(
+    name      => 'after_include_javascript',
+    callback  => sub {
+        my $webpath = RT->config->get('WebPath') || '/';
+        Jifty->web->out(
+            qq{<script type="text/javascript">RT = {};RT.WebPath = '$webpath';</script>}
+        );
+    },
+);
+
+
 =head1 BUGS
 
 Please report them to rt-bugs@bestpractical.com, if you know what's
