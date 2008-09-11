@@ -173,4 +173,20 @@ sub warning_like {
     return Test::More::like($warnings[0], $re, $name);
 }
 
+sub no_warnings_ok {
+    my $self = shift;
+    my $name = shift || "no warnings emitted";
+
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    my @warnings = $self->get_warnings;
+
+    Test::More::is(@warnings, 0, $name);
+    for (@warnings) {
+        Test::More::diag("got warning: $_");
+    }
+
+    return @warnings == 0 ? 1 : 0;
+}
+
 1;
