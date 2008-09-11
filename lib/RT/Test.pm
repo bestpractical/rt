@@ -116,11 +116,12 @@ BEGIN {
 };
 
 use RT::Interface::Web::Standalone;
-use Test::HTTP::Server::Simple;
+use Test::HTTP::Server::Simple::StashWarnings;
 use Test::WWW::Mechanize;
 use File::Path 'mkpath';
 
-unshift @RT::Interface::Web::Standalone::ISA, 'Test::HTTP::Server::Simple';
+unshift @RT::Interface::Web::Standalone::ISA, 'Test::HTTP::Server::Simple::StashWarnings';
+sub RT::Interface::Web::Standalone::test_warning_path { "/__test_warnings" }
 
 my @server;
 
