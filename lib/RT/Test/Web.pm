@@ -160,16 +160,17 @@ sub warning_like {
     my @warnings = $self->get_warnings;
     if (@warnings == 0) {
         Test::More::fail("no warnings emitted; expected 1");
+        return 0;
     }
     elsif (@warnings > 1) {
         Test::More::fail(scalar(@warnings) . " warnings emitted; expected 1");
         for (@warnings) {
             Test::More::diag("got warning: $_");
         }
+        return 0;
     }
-    else {
-        Test::More::like($warnings[0], $re, $name);
-    }
+
+    return Test::More::like($warnings[0], $re, $name);
 }
 
 1;
