@@ -194,13 +194,13 @@ function ComboBox_ListDisableBlur(e) {
 function ComboBox_ListItemSelect(e) {
     if( this.options.length > 0 ) {
         var text = this.Container.Text;
-        var old_value = text.value;
-        var new_value = this.options[ this.selectedIndex ].text;
-        text.value = new_value;
+        var oldValue = text.value;
+        var newValue = this.options[ this.selectedIndex ].text;
+        text.value = newValue;
         if ( typeof( text.createTextRange ) != "undefined" ) {
-            if (new_value != old_value) {
+            if (newValue != oldValue) {
                 var rNew = text.createTextRange();
-                rNew.moveStart('character', old_value.length) ;
+                rNew.moveStart('character', oldValue.length) ;
                 rNew.select();
             }
         }
@@ -220,18 +220,18 @@ function ComboBox_ShowList(e) {
         this.style.width = ( this.Container.offsetWidth ) + "px";
         this.style.top = '1.2em';//( this.Container.offsetHeight + ComboBox_RecursiveOffsetTop(this.Container,true) ) + "px";
         this.style.left = '0px';// ( ComboBox_RecursiveOffsetLeft(this.Container,true) + 1 ) + "px";
-        ComboBox_setVisibility(this,true);
+        ComboBox_SetVisibility(this,true);
         this.focus();
         this.IsShowing = true;
     }
 }
 function ComboBox_HideList(e) {
     if( this.IsShowing ) {
-                    ComboBox_setVisibility(this,false);
+                    ComboBox_SetVisibility(this,false);
         this.IsShowing = false;
     }
 }
-function ComboBox_setVisibility(theList, isVisible) {
+function ComboBox_SetVisibility(theList, isVisible) {
     setVisibility(theList, isVisible);
 }
 function ComboBox_RecursiveOffsetTop(thisObject,isFirst) {

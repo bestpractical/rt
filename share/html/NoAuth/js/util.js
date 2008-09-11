@@ -116,8 +116,7 @@ function delClass(id, value) {
 function rollup(id) {
     var e   = $(id);
     var e2  = e.parentNode;
-    
-    if ( e.className.match(/\bhidden\b/)) {
+    if (e.className.match(/\bhidden\b/)) {
         set_rollup_state(e,e2,'shown');
         createCookie(id,1,365);
     }
@@ -183,6 +182,7 @@ window.onload = doOnLoadHooks;
 /* calendar functions */
 
 function openCalWindow(field) {
+
     var objWindow = window.open(RT.WebPath+'/Helpers/CalPopup.html?field='+field, 
                                 'RT_Calendar', 
                                 'height=235,width=285,scrollbars=1');
@@ -193,11 +193,11 @@ function createCalendarLink(input) {
     var e = $(input);
     if (e) {
         var link = document.createElement('a');
-        link.set_attribute('href', '#');
+        link.setAttribute('href', '#');
         $(link).observe('click', function(ev) { openCalWindow(input); ev.stop(); });
         //link.setAttribute('onclick', "openCalWindow('"+input+"'); return false;");
 
-        var text = document.createTextNode(_("Calendar"));
+        var text = document.createTextNode('<% _("Calendar") %>');
         link.appendChild(text);
 
         var space = document.createTextNode(' ');
@@ -273,7 +273,7 @@ function showShredderPluginTab( plugin )
 	}
 }
 
-function checkAllobjects()
+function checkAllObjects()
 {
 	var check = $('shredder-select-all-objects-checkbox').checked;
 	var elements = $('shredder-search-form').elements;

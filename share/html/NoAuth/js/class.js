@@ -1,7 +1,7 @@
 /* by TKirby, released under GPL */
 
- function _ClassSetup(object) {
-  this.prototype	= object;
+ function _ClassSetup(Object) {
+  this.prototype	= Object;
   return this;
  }
  
