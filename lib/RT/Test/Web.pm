@@ -137,4 +137,17 @@ sub goto_create_ticket {
     return 1;
 }
 
+sub get_warnings {
+    my $self = shift;
+    my $server_class = 'RT::Interface::Web::Standalone';
+
+    my $url = $server_class->test_warning_path;
+
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+    return unless $self->get_ok($url);
+
+    my @warnings = $server_class->decode_warnings($self->content);
+    return @warnings;
+}
+
 1;
