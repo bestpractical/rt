@@ -1,7 +1,8 @@
 use strict;
 use warnings;
 use RT;
-use Test::More tests => 26;
+use Test::More tests => 27;
+use Test::Warn;
 use RT::User;
 use RT::Group;
 use RT::Ticket;
@@ -142,7 +143,11 @@ is($tickets->Count, 1, "Found a ticket");
 
 # This should fail -- no permission.
 my $loadedsearch4 = RT::SavedSearch->new($curruser);
-$loadedsearch4->Load($othersearch->Privacy, $othersearch->Id);
+
+warning_like {
+    $loadedsearch4->Load($othersearch->Privacy, $othersearch->Id);
+} qr/Could not load object RT::Group-\d+ when loading search/;
+
 isnt($loadedsearch4->Id, $othersearch->Id, "Did not load othersearch");
 
 # Try to update an existing search.
