@@ -383,7 +383,10 @@ L<Jifty::DBI>
 
 =cut
 
-#XXX TODO RT pages don't play well with Halo right now
-*Jifty::Plugin::Halo::is_proscribed = sub { 1 };
+{
+    #XXX TODO RT pages don't play well with Halo right now
+    no warnings 'redefine';
+    *Jifty::Plugin::Halo::is_proscribed = sub { 1 };
+}
 
 1;
