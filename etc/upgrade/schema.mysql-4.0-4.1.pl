@@ -353,15 +353,14 @@ sub build_column_definition {
 sub column_byte_length {
     my ($table, $column) = @_;
     if ( $version >= 5.0 ) {
-        my ($char, $octet) = @{ $dbh->selectrow_arrayref(
-            "SELECT CHARACTER_MAXIMUM_LENGTH, CHARACTER_OCTET_LENGTH FROM information_schema.COLUMNS WHERE"
+        return $dbh->selectrow_arrayref(
+            "SELECT CHARACTER_OCTET_LENGTH FROM information_schema.COLUMNS WHERE"
             ."     TABLE_SCHEMA = ". $dbh->quote($db_name)
             ." AND TABLE_NAME   = ". $dbh->quote($table)
             ." AND COLUMN_NAME  = ". $dbh->quote($column)
-        ) };
-        return $octet if $octet == $char;
+        )->[0];
     }
-    return $dbh->selectrow_arrayref("SELECT MAX(LENGTH(". $dbh->quote_identifier($column) .")) FROM $table")->[0];
+    return $dbh->selectrow_arrayref("SELECT MAX(LENGTH(". $dbh->quote($column) .")) FROM $table")->[0];
 }
 
 sub column_info {
