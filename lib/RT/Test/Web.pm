@@ -150,4 +150,26 @@ sub get_warnings {
     return @warnings;
 }
 
+sub warning_like {
+    my $self = shift;
+    my $re   = shift;
+    my $name = shift;
+
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    my @warnings = $self->get_warnings;
+    if (@warnings == 0) {
+        Test::More::fail("no warnings emitted; expected 1");
+    }
+    elsif (@warnings > 1) {
+        Test::More::fail(scalar(@warnings) . " warnings emitted; expected 1");
+        for (@warnings) {
+            Test::More::diag("got warning: $_");
+        }
+    }
+    else {
+        Test::More::like($warnings[0], $re, $name);
+    }
+}
+
 1;
