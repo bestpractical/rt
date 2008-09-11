@@ -76,7 +76,7 @@ function hideshow(id) { return toggleVisibility( id ) }
 function toggleVisibility(id) {
     var e = $(id);
 
-    if ( e.classname.match( /\bhidden\b/ ) )
+    if ( e.className.match( /\bhidden\b/ ) )
         show(e);
     else
         hide(e);
@@ -101,14 +101,14 @@ function switchVisibility(id1, id2) {
 
 function addClass(id, value) {
     var e = $(id);
-    if ( e.classname.match( new RegExp('\b'+ value +'\b') ) )
+    if ( e.className.match( new RegExp('\b'+ value +'\b') ) )
         return;
-    e.classname += e.classname? ' '+value : value;
+    e.className += e.className? ' '+value : value;
 }
 
 function delClass(id, value) {
     var e = $(id);
-    e.classname = e.classname.replace( new RegExp('\\s?\\b'+ value +'\\b', 'g'), '' );
+    e.className = e.className.replace( new RegExp('\\s?\\b'+ value +'\\b', 'g'), '' );
 }
 
 /* Rollups */
@@ -117,7 +117,7 @@ function rollup(id) {
     var e   = $(id);
     var e2  = e.parentNode;
     
-    if (e.classname.match(/\bhidden\b/)) {
+    if ( e.className.match(/\bhidden\b/)) {
         set_rollup_state(e,e2,'shown');
         createCookie(id,1,365);
     }
