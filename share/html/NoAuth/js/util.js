@@ -197,7 +197,7 @@ function createCalendarLink(input) {
         $(link).observe('click', function(ev) { openCalWindow(input); ev.stop(); });
         //link.setAttribute('onclick', "openCalWindow('"+input+"'); return false;");
 
-        var text = document.createTextNode('<% _("Calendar") %>');
+        var text = document.createTextNode('_("Calendar")');
         link.appendChild(text);
 
         var space = document.createTextNode(' ');
