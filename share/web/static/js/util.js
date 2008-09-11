@@ -1,3 +1,4 @@
+/*
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
@@ -45,6 +46,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+*/
 /* $(...)
     Returns DOM node or array of nodes (if more then one argument passed).
     If argument is node object allready then do nothing.

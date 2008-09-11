@@ -30,4 +30,3 @@ function ahahDone(url, target, delay) {
   }
 }
 
-% $m->abort();
