@@ -3,7 +3,7 @@
 use strict;
 use File::Spec ();
 use Test::Expect;
-use Test::More tests => 241;
+use Test::More tests => 243;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -333,6 +333,12 @@ my $merge_ticket_B = $1;
 ok($merge_ticket_B, "Got second ticket to merge id=$merge_ticket_B");
 expect_send("merge $merge_ticket_B $merge_ticket_A", 'Merging the tickets...');
 expect_like(qr/Merge completed/, 'Merged the tickets');
+
+TODO: {
+    local $TODO = "we generate a spurious warning here";
+    $m->no_warnings_ok;
+}
+
 expect_send("show ticket/$merge_ticket_A/history", 'Checking merge on first ticket');
 expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in first ticket');
 expect_send("show ticket/$merge_ticket_B/history", 'Checking merge on second ticket');
