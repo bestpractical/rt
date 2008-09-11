@@ -1,4 +1,4 @@
-use Test::More  tests => '17';
+use Test::More tests => 18;
 
 use strict;
 use warnings;
@@ -6,6 +6,7 @@ use warnings;
 use_ok('RT');
 use_ok('RT::Ticket');
 use RT::Test;
+use Test::Warn;
 
 
 my $tester = RT::Test->load_or_create_user(
@@ -98,13 +99,18 @@ diag "check that deffering doesn't work without correct rights" if $ENV{'TEST_VE
           Right => [qw(SeeQueue ShowTicket CreateTicket)],
         },
     );
+
     my $ticket = RT::Ticket->new( $tester );
     # set tester as Cc, Cc role group has right to own and take tickets
-    my ($tid, $txn_id, $msg) = $ticket->Create(
-        Queue => $queue->id,
-        Owner => $tester->id,
-        Cc    => 'tester@localhost',
-    );
+    my ($tid, $txn_id, $msg);
+    warning_like {
+        ($tid, $txn_id, $msg) = $ticket->Create(
+            Queue => $queue->id,
+            Owner => $tester->id,
+            Cc    => 'tester@localhost',
+        );
+    } qr/User .* was proposed as a ticket owner but has no rights to own tickets in General/;
+
     diag $msg if $msg && $ENV{'TEST_VERBOSE'};
     ok $tid, "created a ticket";
     like $ticket->CcAddresses, qr/tester\@localhost/, 'tester is in the cc list';
