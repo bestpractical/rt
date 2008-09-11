@@ -215,7 +215,7 @@ $m->content_contains("Saved dashboard system dashboard");
 $m->follow_link_ok({text => 'Queries'});
 
 $m->form_name('Dashboard-Searches-body');
-$m->field('Searches-body-Available' => ['search-8-RT::User-22']); # XXX: :( :(
+$m->field('Searches-body-Available' => ['search-7-RT::User-22']); # XXX: :( :(
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
 
