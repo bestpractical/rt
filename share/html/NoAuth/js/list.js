@@ -13,7 +13,7 @@ Class("list").define({
 	 var doc	= this.xml.responseXML;
 	 var nNode	= null;
 	 if(doc.childNodes[0].nodename=="parseerror") alert("Parse Error.");
-	 doc		= doc.getElementsByTagname("list")[0];
+	 doc		= doc.getElementsByTagName("list")[0];
 	 for(i=0;i<doc.childNodes.length;i++) {
 	     if(doc.childNodes[i].childNodes.length>0) {
 		 nNode	= document.createElement("option");

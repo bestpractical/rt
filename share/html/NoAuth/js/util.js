@@ -225,7 +225,7 @@ function updateParentField(field, value) {
 }
 
 function setCheckbox(form, name, val) {
-    var myfield = form.getElementsByTagname('input');
+    var myfield = form.getElementsByTagName('input');
     for ( var i = 0; i < myfield.length; i++ ) {
         if ( name && myfield[i].name != name ) continue;
         if ( myfield[i].type != 'checkbox' ) continue;
