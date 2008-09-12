@@ -51,8 +51,6 @@
     title => $title,
     dashboard_obj => $Dashboard &>
 
-<& /Widgets/SelectionBox:header, nojs => 1 &>
-
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="<%RT->config->get('WebPath')%>/Dashboards/Queries.html" method="post" enctype="multipart/form-data" name="dashboard_queries">

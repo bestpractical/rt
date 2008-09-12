@@ -49,9 +49,6 @@
 %# 
 %# SYNOPSIS
 %#
-%# include javascript:
-%# <& /Widgets/SelectionBox:header &>
-%#
 %# <%init>:
 %# my $sel = $m->comp ('/Widgets/SelectionBox:new',
 %#		  Action => me.html',
@@ -72,16 +69,6 @@
 %#
 %# if the SelectionBox is Created with AutoSave option, OnSubmit will be called
 %# on every button clicked in non-js mode.
-<%method header>
-% unless ($nojs) {
-<script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/class.js"></script>
-<script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/list.js"></script>
-% }
-<%ARGS>
-$nojs => 0
-</%ARGS>
-</%method>
-
 <%method new>
 <%init>
 $ARGS{_item_map} = {map {$_->[0] => $_->[1]} @{$ARGS{available}}};

@@ -53,7 +53,6 @@
 %       my $id = $name_prefix . $custom_field->id;
 %       my $out = $m->scomp('SELF:options', %ARGS, selected_ref => \$selected, category_ref => \@category);
 %       if (@category) {
-<script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/js/cascaded.js"></script>
 %#      XXX - Hide this select from w3m?
       <select onchange="filter_cascade('<% $id %>-values', this.value)" name="<% $id %>-category">
         <option value=""<% !$selected && qq[ selected="selected"] |n %>><&|/l&>-</&></option>
