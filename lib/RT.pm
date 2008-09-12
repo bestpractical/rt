@@ -354,7 +354,7 @@ sub init_jifty {
 }
 
 Jifty->web->add_javascript(
-    qw( titlebox-state.js util.js ahah.js )
+    qw( titlebox-state.js util.js ahah.js fckeditor.js )
 );
 
 Jifty::Web->add_trigger(

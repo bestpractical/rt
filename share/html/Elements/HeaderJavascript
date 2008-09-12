@@ -51,9 +51,6 @@ $onload => undef
 </%args>
 <% Jifty->web->include_css %>
 <% Jifty->web->include_javascript %> 
-% if ( RT->config->get('MessageBoxRichText',  Jifty->web->current_user) ) {
-<script type="text/javascript" src="<%RT->config->get('WebPath')%>/NoAuth/RichText/fckeditor.js"></script>
-% }
 <script type="text/javascript"><!--
     onLoadHook("loadTitleBoxStates()");
 % if ( $focus ) {
