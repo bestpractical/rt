@@ -83,7 +83,7 @@
 % Jifty->handler->stash->{'in_body'} = 1;
   <body<% $id && qq[ id="comp-$id"] |n %>>
 
-% if ($show_bar && Jifty->web->current_user) {
+% if ($show_bar && Jifty->web->current_user->user_object) {
 <& /Elements/Logo, %ARGS &>
 
 <div id="quickbar">
