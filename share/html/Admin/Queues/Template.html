@@ -79,14 +79,14 @@ my $subtabs = {
   		     	path => "Admin/Queues/Templates.html?id=$queue"
 			   },
 		 B => { title => _('New template'),
-  		     	path => "Admin/Queues/Template.html?Create=1&queue=$queue",
+  		     	path => "Admin/Queues/Template.html?create=1&queue=$queue",
 			separator => 1,
 			   }
 	      };
 
 if ($create) {
   $title = _("Create a template");
-  $current_subtab = "Admin/Queues/Template.html?Create=1&queue=".$queue;
+  $current_subtab = "Admin/Queues/Template.html?create=1&queue=".$queue;
 }
 
 else {

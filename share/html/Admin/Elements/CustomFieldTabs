@@ -93,7 +93,7 @@ if (Jifty->web->current_user->has_right( object => RT->system, right => 'AdminCu
                         path => "Admin/CustomFields/",
                            };
   $tabs->{"B"} = { title => _('Create'),
-                        path => "Admin/CustomFields/Modify.html?Create=1",
+                        path => "Admin/CustomFields/Modify.html?create=1",
                         separator => 1,
                            };
 }

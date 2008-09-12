@@ -77,7 +77,7 @@ $tabs->{"this"} = { class => "currentnav",
 $tabs->{"A"} = { title => _('Select'),
                  path  => "Admin/Groups/", };
 $tabs->{"B"} = { title     => _('Create'),
-                 path      => "Admin/Groups/Modify.html?Create=1",
+                 path      => "Admin/Groups/Modify.html?create=1",
 		 separator => 1, };
 
 # Now let callbacks add their extra tabs

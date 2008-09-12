@@ -84,7 +84,7 @@ if (Jifty->web->current_user->has_right( object => RT->system, right => 'AdminUs
   		     	path => "Admin/Users/",
 			   };
   $tabs->{"B"} = { title => _('Create'),
-  		     	path => "Admin/Users/Modify.html?Create=1",
+  		     	path => "Admin/Users/Modify.html?create=1",
 		separator => 1,
 	};
 }

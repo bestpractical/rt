@@ -73,7 +73,7 @@ if ( $group_obj and $group_obj->id ) {
 $tabs->{"A"} = { title => _('Select group'),
                  path  => "User/Groups/index.html" };
 $tabs->{"B"} = { title     => _('New group'),
-                 path      => "User/Groups/Modify.html?Create=1",
+                 path      => "User/Groups/Modify.html?create=1",
                  separator => 1 };
 
 </%INIT>

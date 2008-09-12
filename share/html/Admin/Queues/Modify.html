@@ -139,7 +139,7 @@ $queue_obj->load( $id ) if !$id || $id eq 'new';
 $enabled_checked = 'checked="checked"';
 
 if ($create) {
-    $current_tab = 'Admin/Queues/Modify.html?Create=1';
+    $current_tab = 'Admin/Queues/Modify.html?create=1';
     $title = _("Create a queue");
 } else {
     if ( defined $id && $id eq 'new' ) {
