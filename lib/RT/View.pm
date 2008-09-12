@@ -60,4 +60,28 @@ alias RT::View::Admin::Users under 'admin/groups/';
 
 __PACKAGE__->use_mason_wrapper;
 
+template login_widget => sub {
+
+    outs_raw('</div>'); # End of div#quickbar from /Elements/Header
+    my ( $action, $next ) = get( 'action', 'next' );
+    $action ||= new_action( class => 'Login' );
+    $next ||= Jifty::Continuation->new(
+        request => Jifty::Request->new( path => "/" ) );
+    unless ( Jifty->web->current_user->id ) {
+        div {
+            attr { id => 'body', class => 'login-body' };
+            div {
+                attr { id => 'login-box' };
+                Jifty->web->form->start( call => $next );
+                render_param( $action, 'email', focus => 1 );
+                render_param( $action, $_ ) for (qw(password remember));
+                form_return( label => _(q{Login}), submit => $action );
+                Jifty->web->form->end();
+            };
+        };
+    } else {
+        outs( _("You're already logged in.") );
+    }
+};
+
 1;
