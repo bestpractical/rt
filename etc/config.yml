@@ -28,7 +28,8 @@ framework:
     - ErrorTemplates: {}
     - CompressedCSSandJS: {}
     - User: {}
-    - Authentication::Password: {}
+    - Authentication::Password:
+        login_by: username
     - Prototypism: {}
     - I18N:
         js: 1
