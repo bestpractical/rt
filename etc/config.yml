@@ -32,6 +32,12 @@ framework:
     - Prototypism: {}
     - I18N:
         js: 1
+    - IEFixes:
+        js:
+          - IE7
+          - IE8
+          - ie7-recalc
+          - ie7-squish
   PubSub: 
     Backend: Memcached
     Enable: ~
