@@ -83,13 +83,13 @@
 % Jifty->handler->stash->{'in_body'} = 1;
   <body<% $id && qq[ id="comp-$id"] |n %>>
 
-% if ($show_bar && Jifty->web->current_user->user_object) {
+% if ($show_bar && Jifty->web->current_user) {
 <& /Elements/Logo, %ARGS &>
 
 <div id="quickbar">
   <div id="quick-personal">
     <span class="hide"><a href="#skipnav"><% _('Skip Menu') %></a> | </span>
-% if (Jifty->web->current_user->name) {
+% if (Jifty->web->current_user->user_object && Jifty->web->current_user->name) {
   <% _('Logged in as %1', "<span>".Jifty->web->current_user->name."</span>") |n%>
 %     if ( Jifty->web->current_user->has_right( right => 'ModifySelf', object => RT->system ) ) {
     | <a href="<%RT->config->get('WebPath')%><%$prefs%>"><% _('Preferences') %></a>
@@ -98,7 +98,7 @@
     <% _('Not logged in.') %>
 % }
 % $m->callback( %ARGS );
-% unless (!Jifty->web->current_user->name
+% unless (!(Jifty->web->current_user->user_object && Jifty->web->current_user->name )
 %         or (RT->config->get('WebExternalAuth') and !RT->config->get('WebFallbackToInternalAuth'))) {
     | <a  href="<%RT->config->get('WebPath')%>/NoAuth/Logout.html<%$url ?
 "?URL=".$url : ''%>"><% _('Logout') %></a>
