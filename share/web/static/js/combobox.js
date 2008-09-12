@@ -1,3 +1,4 @@
+/*
 %# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
@@ -45,6 +46,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+*/
 function ComboBox_InitWith(n) {
     if ( typeof( window.addEventListener ) != "undefined" ) {
         window.addEventListener("load", ComboBox_Init(n), false);

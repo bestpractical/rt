@@ -1,4 +1,4 @@
-%# BEGIN BPS TAGGED BLOCK {{{
+/*%# BEGIN BPS TAGGED BLOCK {{{
 %# 
 %# COPYRIGHT:
 %# 
@@ -45,6 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+*/
 function filter_cascade (id, val) {
     var select = document.getElementById(id);
     if (!select) { return };
