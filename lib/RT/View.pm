@@ -73,7 +73,7 @@ template login_widget => sub {
             div {
                 attr { id => 'login-box' };
                 Jifty->web->form->start( call => $next );
-                render_param( $action, 'email', focus => 1 );
+                render_param( $action, 'username', focus => 1 );
                 render_param( $action, $_ ) for (qw(password remember));
                 form_return( label => _(q{Login}), submit => $action );
                 Jifty->web->form->end();
