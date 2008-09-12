@@ -6,13 +6,15 @@ use warnings;
 # your database in etc/config.yml.
 
 BEGIN {
+    use Test::More;
     unless (@ARGV) {
-        print "1..1\nok 1\nDone\n";
-        exit 0;
+        plan skip_all => 'this will ruin your database in etc/config.yml';
+    }
+    else {
+        plan tests => 5;
     }
 }
 
-use Test::More tests => 5;
 BEGIN {
     use RT;
     use lib $RT::LocalLibPath; # plugin need this path in @INC
