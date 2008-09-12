@@ -46,32 +46,6 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-use RT::Util;
-
-if (RT->install_mode) {
-  if  ( $m->base_comp->path =~ RT->config->get('WebNoAuthRegex') ) {
-    $m->call_next();
-  }
-  elsif ( $m->request_comp->path !~ '^(/+)Install/' ) {
-    RT::Interface::Web::redirect(RT->config->get('WebURL')."Install/index.html");
-    } else {
-        $m->call_next();
-    }
-    return;
-}
-  
-
-# This code canonicalize_s time inputs in hours into minutes
-foreach my $field ( keys %ARGS ) {
-    next unless $field =~ /^(.*)-TimeUnits$/i && $ARGS{ $1 };
-    my $local = $1;
-    $ARGS{$local} =~ s{\b (?: (\d+) \s+ )? (\d+)/(\d+) \b}
-                      {($1 || 0) + $3 ? $2 / $3 : 0}xe;
-    if ( $ARGS{$field} && $ARGS{$field} =~ /hours/i ) {
-        $ARGS{$local} *= 60;
-    }
-    delete $ARGS{$field};
-}
 
 $m->call_next();
 

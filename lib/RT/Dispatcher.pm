@@ -64,6 +64,18 @@ before qr/.*/ => run {
 };
 
 before qr/.*/ => run {
+    if ( RT->install_mode ) {
+        my $path = Jifty->web->request->path;
+        if (   $path !~ RT->config->get('WebNoAuthRegex')
+            && $path !~ m{^(/+)Install/} && $path !~ m{^/+log(in|out)} )
+        {
+            RT::Interface::Web::redirect(
+                RT->config->get('WebURL') . "Install/index.html" );
+        }
+    }
+}
+
+before qr/.*/ => run {
     if ( int RT->config->get('AutoLogoff') ) {
         my $now = int( time / 60 );
 
@@ -128,6 +140,24 @@ before qr/(.*)/ => run {
         elsif ( $path !~ '^(/+)SelfService/' ) {
             RT::Interface::Web::redirect( RT->config->get('WebURL') . "SelfService/" );
         }
+    }
+
+}
+
+before qr/.*/ => run {
+
+    my $args = Jifty->web->request->arguments;
+
+    # This code canonicalize_s time inputs in hours into minutes
+    foreach my $field ( keys %$args ) {
+        next unless $field =~ /^(.*)-TimeUnits$/i && $args->{$1};
+        my $local = $1;
+        $args->{$local} =~ s{\b (?: (\d+) \s+ )? (\d+)/(\d+) \b}
+                      {($1 || 0) + $3 ? $2 / $3 : 0}xe;
+        if ( $args->{$field} && $args->{$field} =~ /hours/i ) {
+            $args->{$local} *= 60;
+        }
+        delete $args->{$field};
     }
 
 }
