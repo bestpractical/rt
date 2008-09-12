@@ -1,6 +1,14 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
+
+# XXX TODO temporarily not run this test by default because this will ruin
+# your database in etc/config.yml.
+
+BEGIN {
+    exit 0 unless @ARGV > 0; 
+}
+
 use Test::More tests => 5;
 BEGIN {
     use RT;
