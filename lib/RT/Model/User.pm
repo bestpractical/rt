@@ -1386,4 +1386,10 @@ sub set_private_key {
     return ( $status, _("Unset private key") );
 }
 
+sub basic_columns {
+    ( [ name => 'User Id' ], [ email => 'Email' ], [ real_name => 'name' ], [ organization => 'organization' ], );
+
+}
+
+
 1;

@@ -1309,6 +1309,11 @@ sub principal_id {
     return $self->id;
 }
 
+
+sub basic_columns {
+    ( [ name => 'name' ], [ description => 'description' ], );
+}
+
 1;
 
 =head1 AUTHOR
