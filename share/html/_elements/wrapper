@@ -46,18 +46,11 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 
-%# temporarily disable head and footer in login and logout page
-%# or this will cause never-stop redirections
-
-% unless ( $no_wrap ) {
 <& /Elements/Header, %{Jifty->web->request->arguments} &>
-% }
 
 <% $m->content |n%>
 
-% unless ( $no_wrap ) {
 <& /Elements/Footer, %{Jifty->web->request->arguments} &>
-% }
 <%args>
 $prefs => '/Prefs/Other.html'
 $focus => ''
@@ -72,12 +65,7 @@ $onload => undef
 $link_rel => undef
 $java_script => 1
 
-$no_wrap => 0
 # below are footer's args
 $debug => 0
 $menu => 1
 </%args>
-
-<%init>
-$no_wrap = 1 if Jifty->web->request->path =~ m{^/log(in|out)};
-</%init>
