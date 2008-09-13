@@ -84,14 +84,14 @@ my $basetabs = {     a => { title => _('Homepage'),
 
 if (Jifty->web->current_user->has_right( right => 'ShowConfigTab', 
 				       object => RT->system )) {
-    $basetabs->{E} = { title => _('Configuration'),
+    $basetabs->{e} = { title => _('Configuration'),
                        path => 'Admin/',
 		     };
 }
 
 if (Jifty->web->current_user->has_right( right => 'ModifySelf', 
 				       object => RT->system )) {
-    $basetabs->{K} = { title => _('Preferences'),
+    $basetabs->{k} = { title => _('Preferences'),
                        path => 'Prefs/Other.html'
 		     };
 }
