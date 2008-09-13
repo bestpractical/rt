@@ -3,7 +3,7 @@ use inc::Module::Install;
 name        'RT';
 version     '3.99_01';
 license 'GPLv2';
-requires    'Jifty' => '0.70824';
+requires    'Jifty' => '0.80913';
 
 requires(
     'Digest::base' => 0,
