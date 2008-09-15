@@ -81,7 +81,7 @@ sub login {
 
     my $moniker = $self->moniker_for('RT::Action::Login');
 
-    $self->fill_in_action( $moniker, email => $user, password => $pass );
+    $self->fill_in_action( $moniker, username => $user, password => $pass );
     $self->submit();
     unless ( $self->status == 200 ) {
         Test::More::diag( "error: status is " . $self->status );

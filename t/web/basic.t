@@ -31,7 +31,7 @@ my $password = "password";
 ok($moniker, "Found the moniker $moniker");
 
     ok( $agent->fill_in_action($moniker
-            , email => $username, password => $password), "Filled in the login box");
+            , username => $username, password => $password), "Filled in the login box");
 $agent->submit();
 is($agent->{'status'}, 200, "Fetched the page ok");
 ok( $agent->content =~ /Logout/i, "Found a logout link");
