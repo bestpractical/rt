@@ -98,7 +98,7 @@ before qr/.*/ => run {
         moniker   => 'login',
         class     => 'Login',
         arguments => {
-            email    => Jifty->web->request->arguments->{'user'},
+            username    => Jifty->web->request->arguments->{'user'},
             password => Jifty->web->request->arguments->{'pass'}
         }
         )->run
@@ -110,7 +110,6 @@ before qr/.*/ => run {
 before qr'^/(?!login)' => run {
     tangent '/login'
         unless ( Jifty->web->current_user->id
-        || Jifty->web->request->path =~ m{^/NoAuth}
         || Jifty->web->request->path =~ m{^/Elements/Header$}
         || Jifty->web->request->path =~ m{^/Elements/Footer$}
         || Jifty->web->request->path =~ m{^/Elements/Logo$}
