@@ -110,6 +110,7 @@ before qr/.*/ => run {
 before qr'^/(?!login)' => run {
     tangent '/login'
         unless ( Jifty->web->current_user->id
+        || Jifty->web->request->path =~ RT->config->get('WebNoAuthRegex')
         || Jifty->web->request->path =~ m{^/Elements/Header$}
         || Jifty->web->request->path =~ m{^/Elements/Footer$}
         || Jifty->web->request->path =~ m{^/Elements/Logo$}
