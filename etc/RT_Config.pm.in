@@ -729,7 +729,7 @@ EmailAddress.
 
 =cut
 
-  Set($UsernameFormat, 'concise');
+Set($UsernameFormat, 'concise');
 
 
 =item C<$WebPath>
