@@ -1,0 +1,23 @@
+.hide { display: none; } 
+.clear { display: none;}
+
+
+
+
+
+a {
+  color: #000;
+  text-decoration: none;
+}
+
+
+div#body a:visited {
+    color: #666;
+
+}
+
+a:hover  {
+  text-decoration: underline;
+}
+
+textarea:focus, input:focus {   background-color: #ffd; }

@@ -1,0 +1,50 @@
+#body.calpopup {
+    margin-left: 1em;
+    margin-top: 1em;
+} 
+
+#body.calpopup a {
+    font-size: 0.8em;
+}
+
+.calendar {
+    text-align: center;
+    margin: 0 0 0 0;
+}
+
+.calendar td, .calendar th { padding: 0.1em 0.1em 0.1em 0.1em; }
+
+.calendar caption .month {
+    font-size: 1.5em;
+    padding: 0 0.25em 0 0.25em;
+}
+
+
+div.autocomplete {
+    position: absolute;
+    background-color: white;
+    border: 1px solid #888;
+    margin: 0px;
+    padding: 0px;
+}
+div.autocomplete ul {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+}
+div.autocomplete ul li.selected {
+    background-color: #0088cc;
+    color: #eee;
+}
+div.autocomplete ul li {
+    list-style-type: none;
+    display: block;
+    margin: 0;
+    padding: 2px;
+}
+
+.comment { 
+ padding-left: 0.5em;
+ color: #999;
+
+}
