@@ -58,7 +58,6 @@
 % }
 
 <link rel="shortcut icon" href="<%RT->config->get('WebImagesURL')%>/favicon.png" type="image/png" />
-<link rel="stylesheet" href="<%RT->config->get('WebPath')%>/NoAuth/css/<% RT->config->get( 'WebDefaultStylesheet', Jifty->web->current_user ) %>/main<% RT->config->get('DevelMode')? '' : '-squished' %>.css" type="text/css" media="all" />
 <link rel="stylesheet" href="<%RT->config->get('WebPath')%>/NoAuth/css/print.css" type="text/css" media="print" />
 
 % for (keys %{$link_rel || {}}) {
