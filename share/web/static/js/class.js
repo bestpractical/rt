@@ -5,7 +5,7 @@
   return this;
  }
  
- function RTClass(name) {
+ function TkirbyClass(name) {
   var _newclass_;
   eval("window."+name+"	= new Function('this."+name+".apply(this,arguments);');");
   eval("window."+name+".define = _ClassSetup;");

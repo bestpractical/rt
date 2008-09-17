@@ -1,6 +1,6 @@
 /* by TKirby, released under GPL */
 /* Define the "list" Class */
-RTClass("list").define({
+TkirbyClass("list").define({
  name : null,
  xml  : null,
  sels : null,
