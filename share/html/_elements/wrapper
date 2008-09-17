@@ -46,15 +46,15 @@
 %#
 %# END BPS TAGGED BLOCK }}}
 
-<& /Elements/Header, %{Jifty->web->request->arguments} &>
+<& /Elements/Header, %{Jifty->web->request->arguments}, %ARGS &>
 
 <% $m->content |n%>
 
-<& /Elements/Footer, %{Jifty->web->request->arguments} &>
+<& /Elements/Footer, %{Jifty->web->request->arguments}, %ARGS &>
 <%args>
 $prefs => '/Prefs/Other.html'
 $focus => ''
-$title =>  'RT'
+$title => 'RT'
 $code => undef
 $refresh => 0
 $why => undef
