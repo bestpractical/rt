@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => $title&>
+<&| /_elements/wrapper, title => $title&>
 <& /Ticket/Elements/Tabs, 
     current_tab => "Search/Edit.html?".$query_string, 
     title   => $title,
@@ -70,6 +70,7 @@
 <& /Elements/Submit, label => _("Apply"), reset => 1, caption => _("Apply your changes")&>
 </form>
 
+</&>
 <%INIT>
 my $title = _("Edit Query");
 $format = $m->comp('/Elements/ScrubHTML', content => $format);

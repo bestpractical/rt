@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => $title &>
+<&| /_elements/wrapper, title => $title &>
 <& /Ticket/Elements/Tabs, 
     ticket => $ticket_obj, 
     title=> $title &>
@@ -157,6 +157,7 @@
 
 % }
 </form>
+</&>
 <%INIT>
 my $CanRespond = 0;
 my $Cancomment = 0;

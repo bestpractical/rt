@@ -64,10 +64,11 @@ my $saved_search = $m->comp( '/Widgets/SavedSearch:new',
 my @actions = $m->comp( '/Widgets/SavedSearch:process', args => \%ARGS, self => $saved_search );
 
 </%init>
-<& /Elements/Header, title => $title &>
+<&| /_elements/wrapper, title => $title &>
 <& /Ticket/Elements/Tabs, title => $title &>
 <& /Elements/ListActions, actions => \@actions &>
 <& /Search/Elements/Chart, %ARGS &>
 
 
 <& /Widgets/SavedSearch:show, %ARGS, action => 'Chart.html', self => $saved_search, title => 'Saved charts' &>
+</&>

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => $title &>
+<&| /_elements/wrapper, title => $title &>
 <& /Prefs/Elements/Tabs,
     current_tab => 'Prefs/MyRT.html',
     current_subtab => 'Prefs/Quicksearch.html',
@@ -67,6 +67,7 @@ checked="checked"
 
 </form>
 
+</&>
 <%INIT>
 my @actions;
 my $title = _("Customize").' '._("Quick search");

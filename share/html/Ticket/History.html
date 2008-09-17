@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => _("Ticket History # %1 %2", $Ticket->id, $Ticket->subject) &>
+<&| /_elements/wrapper, title => _("Ticket History # %1 %2", $Ticket->id, $Ticket->subject) &>
 <& /Ticket/Elements/Tabs, 
     ticket => $Ticket, current_tab => 'Ticket/History.html?id='.$Ticket->id, 
     title => _("Ticket History # %1 %2", $Ticket->id, $Ticket->subject) &>
@@ -65,6 +65,7 @@
 
 % $m->callback( %ARGS, Callbackname => 'after_show_history', ticket => $Ticket, current_tab => 'Ticket/History.html?id=' . $Ticket->id );
 
+</&>
 <%ARGS>
 $id => undef
 </%ARGS>

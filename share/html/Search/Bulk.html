@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => $title &>
+<&| /_elements/wrapper, title => $title &>
 <& /Ticket/Elements/Tabs, 
     current_tab => "Search/Bulk.html",
     title => $title,
@@ -206,6 +206,7 @@ $cfs->limit_to_queue($_) for keys %$seen_queues;
 </form>
 
 
+</&>
 <%INIT>
 $rows = $rows_per_page unless (defined $rows);
 my $title = _("Update multiple tickets");

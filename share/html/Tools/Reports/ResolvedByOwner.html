@@ -53,7 +53,7 @@ my $title = _("Resolved tickets, grouped by owner");
 my $q = RT::Model::Queue->new();
 $q->load_by_cols(name => $queue);
 </%init>
-<& /Elements/Header, title => $title &>
+<&| /_elements/wrapper, title => $title &>
 <& /Tools/Reports/Elements/Tabs, current_tab => '/Tools/Reports/ResolvedByOwner.html', title => $title &>
 <form method="post" action="ResolvedByOwner.html">
 % if ($queue) {
@@ -68,3 +68,4 @@ $q->load_by_cols(name => $queue);
 <&|/l&>Queue</&>: <& /Elements/SelectQueue, name => 'queue', named_values => 1, default => $q->id &>
 <& /Elements/Submit&>
 </form>
+</&>

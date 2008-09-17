@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => _("Offline upload") &>
+<&| /_elements/wrapper, title => _("Offline upload") &>
 <& Elements/Tabs, 
     current_tab => "Tools/Offline.html", 
     title => _("Offline edits") &>
@@ -94,6 +94,7 @@
 <& /Elements/Submit, name => 'update_tickets', label => _('Upload'), caption => _("Upload your changes"), color => "#993333" &>
 
 </form>
+</&>
 <%args>
 $requestoraddress => ''
 $qname => undef

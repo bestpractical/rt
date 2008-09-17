@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => $title &>
+<&| /_elements/wrapper, title => $title &>
 <& /Dashboards/Elements/Tabs,
     current_subtab => 'Dashboards/index.html',
     title => $title &>
@@ -69,6 +69,7 @@
     &>
 % }
 
+</&>
 <%INIT>
 my $title = _("Dashboards");
 use RT::Dashboard;

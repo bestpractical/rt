@@ -70,7 +70,7 @@ if ($created_before) {
 
 $q->load_by_cols(name => $queue);
 </%init>
-<& /Elements/Header, title => $title &>
+<&| /_elements/wrapper, title => $title &>
 <& /Tools/Reports/Elements/Tabs, current_tab => 'Tools/Reports/CreatedByDates.html', title => $title &>
 <form method="post" action="CreatedByDates.html">
 % if ($queue|| $created_before ||$created_after) {
@@ -92,3 +92,4 @@ $q->load_by_cols(name => $queue);
 
 <& /Elements/Submit&>
 </form>
+</&>

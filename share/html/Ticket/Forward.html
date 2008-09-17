@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => $Title &>
+<&| /_elements/wrapper, title => $Title &>
 <& /Ticket/Elements/Tabs, 
     ticket => $ticket_obj, 
     title  => $Title,
@@ -78,6 +78,7 @@
 <& /Elements/Submit, label => _('Forward Message and Return'), name => 'forward_and_return' &>
 <& /Elements/Submit, label => _('Forward Message'), name => 'forward' &>
 </form>
+</&>
 <%INIT>
 my $ticket_obj = load_ticket($id);
 $id = $ARGS{'id'} = $ticket_obj->id;

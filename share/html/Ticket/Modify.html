@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => _('Modify ticket #%1', $ticket_obj->id) &>
+<&| /_elements/wrapper, title => _('Modify ticket #%1', $ticket_obj->id) &>
 <& /Ticket/Elements/Tabs, 
     ticket => $ticket_obj, current_subtab => "Ticket/Modify.html?id=".$ticket_obj->id, 
     title => _('Modify ticket #%1', $ticket_obj->id) &>
@@ -64,6 +64,7 @@
 
 <& /Elements/Submit, label => _('Save Changes'), caption => _("If you've updated anything above, be sure to"), color => "#993333" &>
 </form>
+</&>
 <%INIT>
   
 my $ticket_obj = load_ticket($id);

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => $title &>
+<&| /_elements/wrapper, title => $title &>
 <& /Dashboards/Elements/Tabs,
     current_subtab => $current_subtab,
     title => $title,
@@ -74,6 +74,7 @@
 
 </form>
 
+</&>
 <%INIT>
 
 my $current_subtab = 'Dashboards/Queries.html?id=' . $id;

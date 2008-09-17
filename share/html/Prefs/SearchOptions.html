@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => _("Search Preferences") &>
+<&| /_elements/wrapper, title => _("Search Preferences") &>
 <& /User/Elements/Tabs, 
     current_tab => "Prefs/SearchOptions.html",
     title => _("Search Preferences")
@@ -64,6 +64,7 @@
 
 <& /Elements/Submit, name => 'save_preferences', label => _('Save Changes') &>
 </form>
+</&>
 <%INIT>
 my @actions;
 

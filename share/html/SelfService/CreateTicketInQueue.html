@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& Elements/Header, title => _("Create a ticket") &>
+<&| _elements/wrapper, title => _("Create a ticket") &>
 
 <h1><&|/l&>Select a queue for your new ticket</&></h1>
 
@@ -57,6 +57,7 @@
 <dd><%$queue->description%></dd>
 % }
 </dl>
+</&>
 <%init>
 my $queues = RT::Model::QueueCollection->new();
 $queues->find_all_rows;

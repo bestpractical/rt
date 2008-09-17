@@ -3,7 +3,6 @@
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <!--
 % $m->out('--'.'>');
-% $m->comp('/Elements/Header', title=>_("RT at a glance"), refresh => $session{'home_refresh_interval'});
 % if (0) {
 %# -->
 <html><head>
@@ -75,6 +74,8 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+
+<&| /_elements/wrapper, title=>_("RT at a glance"), refresh => $session{'home_refresh_interval'} &>
 <& /Elements/Tabs, 
     current_toptab => '', 
     title=>_("RT at a glance"),
@@ -82,6 +83,7 @@ If you need commercial support, please contact us at sales@bestpractical.com.
     &>
 <& /Elements/ListActions, actions => \@results &>    
 <& /Elements/MyRT &>
+</&>
 <%init>
 
 my @results;

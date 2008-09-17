@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => $title, java_script => $preview, show_bar => $preview  &>
+<&| /_elements/wrapper, title => $title, java_script => $preview, show_bar => $preview  &>
 
 % if ($preview) {
 <& /Dashboards/Elements/Tabs,
@@ -73,6 +73,7 @@
 </tr>
 </table>
 
+</&>
 <%INIT>
 
 my $current_subtab = 'Dashboards/Render.html?id=' . $id;

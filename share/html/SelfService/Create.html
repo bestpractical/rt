@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& Elements/Header, title => _("Create a ticket") &>
+<&| _elements/wrapper, title => _("Create a ticket") &>
 
 <form action="Display.html" method="post" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="id" value="new" />
@@ -110,6 +110,7 @@
 
 
 </form>
+</&>
 <%args>
 $queue => undef
 </%args>

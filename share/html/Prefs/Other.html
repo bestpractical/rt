@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => $title &>
+<&| /_elements/wrapper, title => $title &>
 <& /User/Elements/Tabs, 
     current_tab => 'Prefs/Other.html',
     title => $title,
@@ -77,6 +77,7 @@
 
 <& /Elements/Submit, name => 'update', label => _('Save Changes') &>
 </form>
+</&>
 <%INIT>
 my @results;
 my $title = _("Settings");

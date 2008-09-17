@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 
-<& /Elements/Header, title => $title &>
+<&| /_elements/wrapper, title => $title &>
 <& /Ticket/Elements/Tabs,
     ticket => $txn->ticket_obj,
     current_tab => 'Ticket/Encrypt.html?id='. $id,
@@ -64,6 +64,7 @@
     name  => ($encrypted? 'Decrypt': 'encrypt'),
 &>
 </form>
+</&>
 <%ARGS>
 $id => undef
 $encrypt => 0

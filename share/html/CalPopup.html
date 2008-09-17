@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header &>
+<&| /_elements/wrapper &>
 <script>
 function updateParent(strItem) {
     window.opener.document.getElementById('<%$field%>').value = strItem;
@@ -83,6 +83,7 @@ function updateParent(strItem) {
 </div>
 </div>
 
+</&>
 <%init>
 use Calendar::Simple;
 my @today = localtime(time());

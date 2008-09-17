@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => _('Modify people related to queue %1', $queue_obj->name) &>
+<&| /_elements/wrapper, title => _('Modify people related to queue %1', $queue_obj->name) &>
 <& /Admin/Elements/QueueTabs, id => $id, 
     queue_obj => $queue_obj,                                                      
     current_tab => $current_tab, 
@@ -130,6 +130,7 @@
 <& /Elements/Submit, label => _('Save Changes'), caption => _("If you've updated anything above, be sure to"), reset => 1 &>
 </form>
 
+</&>
 <%INIT>
 
 my $current_tab;

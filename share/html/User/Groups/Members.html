@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => $title &>
+<&| /_elements/wrapper, title => $title &>
 <& /User/Elements/GroupTabs, 
     group_obj => $Group, 
     current_subtab => "User/Groups/Members.html?id=".$Group->id, 
@@ -104,6 +104,7 @@
 </form>
 
 
+</&>
 <%INIT>
 
 my $Group = RT::Model::Group->new();

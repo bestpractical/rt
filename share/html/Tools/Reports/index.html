@@ -45,12 +45,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => _('Reports') &>
+<&| /_elements/wrapper, title => _('Reports') &>
 <& /Tools/Reports/Elements/Tabs, title => _('Reports') &>
 <& /Elements/ListMenu, items => $tabs &>
 
 % $m->callback;
 
+</&>
 <%init>
 
 my $tabs = {

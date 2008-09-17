@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => _("Delegate rights") &>
+<&| /_elements/wrapper, title => _("Delegate rights") &>
 <& /User/Elements/Tabs, 
     current_tab => 'User/Delegation.html', 
     title => _("Delegate rights") &>
@@ -59,6 +59,7 @@
 
 <& /Elements/Submit, label => _('Modify rights') &>
 </form>
+</&>
 <%INIT>
 
 my (@results, $arg);

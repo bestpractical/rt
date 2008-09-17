@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title=>_("Preferences") &>
+<&| /_elements/wrapper, title=>_("Preferences") &>
 <& /User/Elements/Tabs, 
     current_tab => 'User/Prefs.html', 
     title=>_("Preferences") &>
@@ -193,6 +193,7 @@
 </form>
 
 
+</&>
 <%INIT>
 
 my $user_object = RT::Model::User->new();

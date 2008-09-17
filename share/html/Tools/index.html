@@ -45,12 +45,13 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => _("Tools") &>
+<&| /_elements/wrapper, title => _("Tools") &>
 <& Elements/Tabs, 
     current_tab => "Tools/index.html", 
     title => _("Tools") &>
 <& /Elements/ListMenu, items => $tabs &>
 
+</&>
 <%init>
 
 my $tabs = {

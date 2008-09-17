@@ -65,10 +65,10 @@
 %#   to things like parse_query correctly not quoting numbers in numerical fields, while the "add"
 %#   action does quote it (this breaks SQLite).
 %#
-<& /Elements/Header, title => $title &>
+<&| /_elements/wrapper, title => _("Query Builder") &>
 <& /Ticket/Elements/Tabs, 
     current_tab => "Search/Build.html?".$query_string, 
-    title => $title,
+    title => _("Query Builder"),
     %query,
     saved_search_id => $saved_search{'id'},
 &>
@@ -115,10 +115,9 @@
 
 </form>
 
+</&>
 <%INIT>
 use RT::Interface::Web::QueryBuilder::Tree;
-
-my $title = _("Query Builder");
 
 my %query;
 for( qw(query format order_by order rows_per_page) ) {

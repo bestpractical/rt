@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => _("My approvals") &>
+<&| /_elements/wrapper, title => _("My approvals") &>
 <& /Approvals/Elements/Tabs, title => _("My approvals") &>
 
 <& /Elements/ListActions, actions => \@actions &>
@@ -53,6 +53,7 @@
 <& Elements/PendingMyApproval, %ARGS &>
 <& /Elements/Submit, label => _('Go!') &>
 </form>
+</&>
 <%init>
 
 my (@actions);

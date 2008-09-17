@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => _("Reminder ticket #%1", $Ticket->id) &>
+<&| /_elements/wrapper, title => _("Reminder ticket #%1", $Ticket->id) &>
 <& /Ticket/Elements/Tabs, 
     ticket => $Ticket, 
     current_tab => "Ticket/Reminders.html?id=".$Ticket->id, 
@@ -64,6 +64,7 @@
 </form>
 
 
+</&>
 <%INIT>
   
 my $Ticket = load_ticket($id);

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title =>  $title &>
+<&| /_elements/wrapper, title =>  $title &>
 
 <& Elements/Tabs, 
     current_tab => "Approvals/Display.html", 
@@ -61,6 +61,7 @@
 </form>
 <& Elements/ShowDependency, ticket => $Ticket &>
 
+</&>
 <%init>
 my $Ticket = load_ticket($id);
 
