@@ -5,7 +5,7 @@
   return this;
  }
  
- function Class(name) {
+ function RTClass(name) {
   var _newclass_;
   eval("window."+name+"	= new Function('this."+name+".apply(this,arguments);');");
   eval("window."+name+".define = _ClassSetup;");
