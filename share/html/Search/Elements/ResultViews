@@ -61,6 +61,8 @@ $ShortQueryString => undef
 <li><a href="<%$RSSFeedURL%>"><&|/l&>RSS</&></a></li>
 <li><a href="<%RT->Config->Get('WebURL')%>/NoAuth/iCal/<% $ical_path %>"><% loc('iCal') %></a></li>
 <li><a href="<%RT->Config->Get('WebPath')%>/Tools/Offline.html<%$ShortQueryString%>"><&|/l&>Editable text</&></a></li>
+% # Now let callbacks add their extra tools
+% $m->callback( %ARGS, CallbackName => 'AfterTools' );
 </ul>
 <form method="get" action="<%RT->Config->Get('WebPath')%>/Search/Chart.html">
 % my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order);
