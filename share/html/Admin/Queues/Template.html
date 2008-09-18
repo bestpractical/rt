@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, title => $title &>
+<&| /Admin/Elements/Header, title => $title &>
 <& /Admin/Elements/QueueTabs, id => $queue, 
     queue_obj => $queue_obj,
      current_tab => 'Admin/Queues/Templates.html?id='.$queue,
@@ -69,6 +69,7 @@ $template_obj->description, content => $template_obj->content &>
 </form>
 
 
+</&>
 <%INIT>
 
 my $template_obj = RT::Model::Template->new();

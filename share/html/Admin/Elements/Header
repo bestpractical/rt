@@ -45,8 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, %ARGS &>
+<&| /_elements/wrapper, %ARGS &>
 
+<% $m->content |n%>
+
+</&>
 <%ARGS>
 $title => undef
 </%ARGS>

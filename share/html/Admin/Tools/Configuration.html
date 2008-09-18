@@ -45,6 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+</&>
 <%init>
 require  Module::Versions::Report;
 my $title = _('System Configuration');
@@ -54,7 +55,7 @@ unless (Jifty->web->current_user->has_right( object=> RT->system, right => 'Supe
 
 
 </%init>
-<& /Admin/Elements/Header, title => $title &>
+<&| /Admin/Elements/Header, title => $title &>
 <& /Admin/Elements/ToolTabs, 
     current_tab => 'Admin/Tools/Configuration.html',
     current_subtab => 'Admin/Tools/Configuration.html', 

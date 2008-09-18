@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, title => $title &>
+<&| /Admin/Elements/Header, title => $title &>
 <& /Admin/Elements/GroupTabs, current_tab => 'Admin/Groups/',
     current_subtab => 'Admin/Groups/', 
     title => $title &>
@@ -82,6 +82,7 @@
 <&|/l&>Find groups whose</&> <& /Elements/SelectGroups &><br />
 <div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
 </form>
+</&>
 <%INIT>
 my $Groups = RT::Model::GroupCollection->new();
 $Groups->limit_to_user_defined_groups();

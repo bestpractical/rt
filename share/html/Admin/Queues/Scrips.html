@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, title => $title &>
+<&| /Admin/Elements/Header, title => $title &>
 <& /Admin/Elements/QueueTabs, id => $queue_obj->id, 
     queue_obj => $queue_obj,                                                      
     current_tab => 'Admin/Queues/Scrips.html?id='.$id, 
@@ -59,6 +59,7 @@
 <br />
 % }
 <& /Admin/Elements/EditScrips, title => $title, %ARGS &>
+</&>
 <%init>
 my $queue_obj = RT::Model::Queue->new();
 $queue_obj->load($id);

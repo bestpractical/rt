@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % $m->callback( %ARGS, tabs => $tabs );
-<& /Admin/Elements/Header, title => $title &>
+<&| /Admin/Elements/Header, title => $title &>
 <& /Admin/Elements/GlobalCustomFieldTabs, title => $title &>
 
 <ul>
@@ -57,6 +57,7 @@
 % }
 </ul>
 
+</&>
 <%INIT>
 my $title = _("Global custom field configuration");
 

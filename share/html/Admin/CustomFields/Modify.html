@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, title => $title &>
+<&| /Admin/Elements/Header, title => $title &>
 <& /Admin/Elements/CustomFieldTabs,
     id => $CustomFieldObj->id ,
     current_tab => $current_tab,
@@ -126,6 +126,7 @@
 <& /Elements/Submit, name => 'update', label => $id eq 'new'? _('Create'): _('Save Changes') &>
 
 </form>
+</&>
 <%INIT>
 my ($title, @results, $disabled);
 

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, title => _("RT at a glance") &>
+<&| /Admin/Elements/Header, title => _("RT at a glance") &>
 <& /Admin/Elements/SystemTabs,
     current_tab => 'Admin/Global/MyRT.html',
     title => _("RT at a glance"),
@@ -58,6 +58,7 @@
 <& /Widgets/SelectionBox:show, self => $pane, nojs => 1 &></&>
 <br />
 % }
+</&>
 <%init>
 my @actions;
 

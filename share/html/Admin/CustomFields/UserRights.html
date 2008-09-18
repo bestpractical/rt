@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, title => $title &>
+<&| /Admin/Elements/Header, title => $title &>
 <& /Admin/Elements/CustomFieldTabs, id => $id, 
 current_tab => "Admin/CustomFields/UserRights.html?id=".$id,
 title => $title, &>
@@ -75,6 +75,7 @@ title => $title, &>
       
   </form>
   
+</&>
 <%INIT>
  
 #Update the acls.

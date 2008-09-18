@@ -45,13 +45,14 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+</&>
 <%ARGS>
 $plugin => ''
 $search => ''
 $wipeout => ''
 @wipeout_object => ()
 </%ARGS>
-<& /Admin/Elements/Header, title => $title &>
+<&| /Admin/Elements/Header, title => $title &>
 <& /Admin/Elements/ToolTabs,
     current_tab => 'Admin/Tools/Shredder',
     current_subtab => 'Admin/Tools/Shredder',

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, title => "RT/Admin/Edit the group ". $Group->name &>
+<&| /Admin/Elements/Header, title => "RT/Admin/Edit the group ". $Group->name &>
 <& /Admin/Elements/GroupTabs, group_obj => $Group, 
     current_tab => 'Admin/Groups/Members.html?id='.$id, 
     title => "RT/Admin/Edit the group ". $Group->name &>
@@ -108,6 +108,7 @@
 </form>
 
 
+</&>
 <%INIT>
 
 my $Group = new RT::Model::Group();

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, title => $title &>
+<&| /Admin/Elements/Header, title => $title &>
 <& /Admin/Elements/SystemTabs, 
     current_tab => 'Admin/Global/Templates.html', 
     current_subtab => $current_subtab, 
@@ -71,6 +71,7 @@ $template_obj->description, content => $template_obj->content &>
 
 
 
+</&>
 <%INIT>
 
 my $template_obj = RT::Model::Template->new();

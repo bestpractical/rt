@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, title => _('Modify global user rights') &>
+<&| /Admin/Elements/Header, title => _('Modify global user rights') &>
 <& /Admin/Elements/SystemTabs, 
     current_tab => 'Admin/Global/UserRights.html',
     title => _('Modify global user rights') &>  
@@ -73,6 +73,7 @@
 <& /Elements/Submit, label => _('Modify User rights'), reset => 1 &>
       
 </form>
+</&>
 <%INIT>
  
   #Update the acls.

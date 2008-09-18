@@ -45,13 +45,14 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, title => $title &>
+<&| /Admin/Elements/Header, title => $title &>
 <& /Admin/Elements/GlobalCustomFieldTabs,
     current_tab => "Admin/Global/CustomFields/Queues.html",
     current_subtab => "Admin/Global/CustomFields/Queues.html",
     title => $title
     &>
     <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, object_type => 'RT::Model::Queue', object=> $object &>
+</&>
 <%INIT>
   my $title = _( 'Edit Custom Fields for all queues');
   my $object = RT::Model::Queue->new( current_user => Jifty->web->current_user );

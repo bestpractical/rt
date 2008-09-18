@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, title => $title  &>
+<&| /Admin/Elements/Header, title => $title  &>
 
 <& /Admin/Elements/GroupTabs, 
     group_obj => $Group, 
@@ -93,6 +93,7 @@
 </table>
 <& /Elements/Submit, label => _('Save Changes'), reset => 1 &>
 </form>
+</&>
 <%INIT>
 
 my $current_tab;

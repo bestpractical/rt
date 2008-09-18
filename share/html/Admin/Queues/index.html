@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, title => _("Admin queues") &>
+<&| /Admin/Elements/Header, title => _("Admin queues") &>
 <& /Admin/Elements/QueueTabs, current_tab => 'Admin/Queues/', 
     current_subtab => 'Admin/Queues/', 
     title => _("Admin queues") &>
@@ -73,6 +73,7 @@
 <div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
 </form>
 
+</&>
 <%INIT>
 my ($queue, $caption);
 my $queues = RT::Model::QueueCollection->new();

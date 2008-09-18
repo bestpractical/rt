@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, title => _('Modify group rights for queue %1', $queue_obj->name) &>
+<&| /Admin/Elements/Header, title => _('Modify group rights for queue %1', $queue_obj->name) &>
 <& /Admin/Elements/QueueTabs, id => $id, 
     queue_obj => $queue_obj,                                                      
     current_tab => $current_tab, 
@@ -110,6 +110,7 @@
       
   </form>
   
+</&>
 <%INIT>
  
   #Update the acls.

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, title => $title &>
+<&| /Admin/Elements/Header, title => $title &>
 <& /Admin/Elements/SystemTabs, 
     current_tab => 'Admin/Global/Scrips.html', 
     current_subtab => $current_subtab, 
@@ -55,6 +55,7 @@
 <& /Elements/ListActions, actions => \@results &>
 <& /Admin/Elements/EditScrip, title => $title,  %ARGS, id => $id &>
 
+</&>
 <%init>
 my $subtabs = {
     A => {

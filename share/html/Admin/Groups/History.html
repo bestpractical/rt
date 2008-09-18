@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, title => $title  &>
+<&| /Admin/Elements/Header, title => $title  &>
 <& /Admin/Elements/GroupTabs, 
     id => $id, 
     group_obj => $GroupObj,
@@ -57,6 +57,7 @@
     show_display_modes => 0,
 &>
 
+</&>
 <%INIT>
 my $current_tab = 'Admin/Groups/History.html?id='.$id;
 my $GroupObj = RT::Model::Group->new();

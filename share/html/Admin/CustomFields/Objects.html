@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, title => $title &>
+<&| /Admin/Elements/Header, title => $title &>
 <& /Admin/Elements/CustomFieldTabs,
     id => $id,
     current_tab => "Admin/CustomFields/Objects.html?id=".$id,
@@ -66,6 +66,7 @@
 <& /Elements/Submit, check_all => 1, clear_all => 1 &>
 </form>
 
+</&>
 <%INIT>
 my $CF = RT::Model::CustomField->new();
 $CF->load($id) if ($id);

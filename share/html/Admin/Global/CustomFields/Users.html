@@ -45,13 +45,14 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, title => $title &>
+<&| /Admin/Elements/Header, title => $title &>
 <& /Admin/Elements/GlobalCustomFieldTabs,
     current_tab => "Admin/Global/CustomFields/Users.html",
     current_subtab => "Admin/Global/CustomFields/Users.html",
     title => $title
     &>
     <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, object_type => 'RT::Model::User', object=> $object &>
+</&>
 <%INIT>
   my $title = _( 'Edit Custom Fields for all users');
   my $object = RT::Model::User->new();
