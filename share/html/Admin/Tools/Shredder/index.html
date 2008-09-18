@@ -45,7 +45,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-</&>
 <%ARGS>
 $plugin => ''
 $search => ''
@@ -73,6 +72,7 @@ $wipeout => ''
 <& Elements/Selectobjects, objects => \@objs &>
 % }
 </form>
+</&>
 <%INIT>
 
 require RT::Shredder;
