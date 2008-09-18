@@ -6,18 +6,14 @@ use warnings;
 use RT::Test; use Test::More;
 use Test::Deep;
 use File::Spec;
-BEGIN {
-    my $shredder_utils = RT::Test::get_relocatable_file('utils.pl',
-        File::Spec->curdir());
-    require $shredder_utils;
-}
-init_db();
+use RT::Test::Shredder;
+RT::Test::Shredder::init_db();
 
 plan tests => 22;
 
 ### nested membership check
 {
-	create_savepoint('clean');
+	RT::Test::Shredder::create_savepoint('clean');
 	my $pgroup = RT::Model::Group->new(current_user => RT->system_user );
 	my ($pgid) = $pgroup->create_user_defined_group( name => 'Parent group' );
 	ok( $pgid, "Created parent group" );
@@ -31,14 +27,14 @@ plan tests => 22;
 	my ($status, $msg) = $pgroup->add_member( $cgroup->id );
 	ok( $status, "added child group to parent") or diag "error: $msg";
 	
-	create_savepoint('bucreate'); # before user create
+	RT::Test::Shredder::create_savepoint('bucreate'); # before user create
 	my $user = RT::Model::User->new(current_user => RT->system_user );
 	my $uid;
 	($uid, $msg) = $user->create( name => 'new user', privileged => 1, disabled => 0 );
 	ok( $uid, "Created new user $msg " ) or diag "error: $msg";
 	is( $user->id, $uid, "id is correct" );
 	
-	create_savepoint('buadd'); # before group add
+	RT::Test::Shredder::create_savepoint('buadd'); # before group add
 	($status, $msg) = $cgroup->add_member( $user->id );
 	ok( $status, "added user to child group") or diag "error: $msg";
 	
@@ -47,23 +43,23 @@ plan tests => 22;
 	$members->limit( column => 'group_id', value => $cgid );
 	is( $members->count, 1, "find membership record" );
 	
-	my $shredder = shredder_new();
+	my $shredder = RT::Test::Shredder::shredder_new();
 	$shredder->put_objects( objects => $members );
 	$shredder->wipeout_all();
-	cmp_deeply( dump_current_and_savepoint('buadd'), "current DB equal to savepoint");
+	cmp_deeply( RT::Test::Shredder::dump_current_and_savepoint('buadd'), "current DB equal to savepoint");
 	
 	$shredder->put_objects( objects => $user );
 	$shredder->wipeout_all();
-	cmp_deeply( dump_current_and_savepoint('bucreate'), "current DB equal to savepoint");
+	cmp_deeply( RT::Test::Shredder::dump_current_and_savepoint('bucreate'), "current DB equal to savepoint");
 	
 	$shredder->put_objects( objects => [$pgroup, $cgroup] );
 	$shredder->wipeout_all();
-	cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
+	cmp_deeply( RT::Test::Shredder::dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
 ### deleting member of the ticket Owner role group
 {
-	restore_savepoint('clean');
+	RT::Test::Shredder::restore_savepoint('clean');
 
 	my $user = RT::Model::User->new(current_user => RT->system_user );
 	my ($uid, $msg) = $user->create( name => 'new user', privileged => 1, disabled => 0 );
@@ -90,7 +86,7 @@ plan tests => 22;
 	is( $ticket->owner, $user->id, "owner successfuly set") or diag( "error: $msg" );
 
 	my $member = $ticket->owner_obj;
-	my $shredder = shredder_new();
+	my $shredder = RT::Test::Shredder::shredder_new();
 	$shredder->put_objects( objects => $member );
 	$shredder->wipeout_all();
 

@@ -6,11 +6,7 @@ use warnings;
 use RT::Test; use Test::More;
 use Test::Deep;
 use File::Spec;
-BEGIN {
-    my $shredder_utils = RT::Test::get_relocatable_file('utils.pl',
-        File::Spec->curdir());
-    require $shredder_utils;
-}
+use RT::Test::Shredder;
 
 my @PLUGINS = sort qw(Attachments Base Objects SQLDump Summary Tickets Users);
 plan tests => 7 + 3 * @PLUGINS;

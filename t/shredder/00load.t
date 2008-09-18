@@ -5,11 +5,7 @@ use Test::More tests => 11;
 
 use RT::Test;
 
-BEGIN {
-    my $shredder_utils = RT::Test::get_relocatable_file('utils.pl',
-        File::Spec->curdir());
-    require $shredder_utils;
-}
+use RT::Test::Shredder;
 
 use_ok("RT::Shredder");
 

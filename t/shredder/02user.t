@@ -6,16 +6,12 @@ use warnings;
 use RT::Test; use Test::More;
 use Test::Deep;
 use File::Spec;
-BEGIN {
-    my $shredder_utils = RT::Test::get_relocatable_file('utils.pl',
-        File::Spec->curdir());
-    require $shredder_utils;
-}
-init_db();
+use RT::Test::Shredder;
+RT::Test::Shredder::init_db();
 
 plan tests => 8;
 
-create_savepoint('clean');
+RT::Test::Shredder::create_savepoint('clean');
 
 my $queue = RT::Model::Queue->new(current_user => RT->system_user );
 my ($qid) = $queue->load( 'General' );
@@ -25,14 +21,14 @@ my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
 my ($tid) = $ticket->create( queue => $qid, subject => 'test' );
 ok( $tid, "ticket Created" );
 
-create_savepoint('bucreate'); # berfore user create
+RT::Test::Shredder::create_savepoint('bucreate'); # berfore user create
 my $user = RT::Model::User->new(current_user => RT->system_user );
 my ($uid, $msg) = $user->create( name => 'new user', privileged => 1, disabled => 0 );
 ok( $uid, "Created new user" ) or diag "error: $msg";
 is( $user->id, $uid, "id is correct" );
 # HACK: set ticket props to enable VARIABLE dependencies
 $ticket->__set( column => 'last_updated_by', value => $uid );
-create_savepoint('aucreate'); # after user create
+RT::Test::Shredder::create_savepoint('aucreate'); # after user create
 
 {
     my $resolver = sub  {
@@ -44,19 +40,19 @@ create_savepoint('aucreate'); # after user create
             $t->__set( column => $method, value => $resolver_uid );
         }
     };
-    my $shredder = shredder_new();
+    my $shredder = RT::Test::Shredder::shredder_new();
     $shredder->put_resolver( base_class => 'RT::Model::User', code => $resolver );
     $shredder->wipeout( object => $user );
-    cmp_deeply( dump_current_and_savepoint('bucreate'), "current DB equal to savepoint");
+    cmp_deeply( RT::Test::Shredder::dump_current_and_savepoint('bucreate'), "current DB equal to savepoint");
 }
 
 {
-    restore_savepoint('aucreate');
+    RT::Test::Shredder::restore_savepoint('aucreate');
     my $user = RT::Model::User->new(current_user => RT->system_user );
     $user->load($uid);
     ok($user->id, "loaded user after restore");
-    my $shredder = shredder_new();
+    my $shredder = RT::Test::Shredder::shredder_new();
     eval { $shredder->wipeout( object => $user ) };
     ok($@, "wipeout throw exception if no resolvers");
-    cmp_deeply( dump_current_and_savepoint('aucreate'), "current DB equal to savepoint");
+    cmp_deeply( RT::Test::Shredder::dump_current_and_savepoint('aucreate'), "current DB equal to savepoint");
 }

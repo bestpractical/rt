@@ -5,17 +5,14 @@ use warnings;
 
 use RT::Test; use Test::More;
 use File::Spec;
-BEGIN {
-    my $shredder_utils = RT::Test::get_relocatable_file('utils.pl',
-        File::Spec->curdir());
-    require $shredder_utils;
-}
 use Test::Deep;
-init_db();
+use RT::Test::Shredder;
+
+RT::Test::Shredder::init_db();
 
 plan tests => 3;
 
-create_savepoint();
+RT::Test::Shredder::create_savepoint();
 
 use RT::Model::TicketCollection;
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
@@ -26,7 +23,7 @@ $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
 my ($status, $msg) = $ticket->load( $id );
 ok( $id, "load ticket" ) or diag( "error: $msg" );
 
-my $shredder = shredder_new();
+my $shredder = RT::Test::Shredder::shredder_new();
 $shredder->wipeout( object => $ticket );
 
-cmp_deeply( dump_current_and_savepoint(), "current DB equal to savepoint");
+cmp_deeply( RT::Test::Shredder::dump_current_and_savepoint(), "current DB equal to savepoint");

@@ -6,18 +6,14 @@ use warnings;
 use RT::Test; use Test::More;
 use Test::Deep;
 use File::Spec;
-BEGIN {
-    my $shredder_utils = RT::Test::get_relocatable_file('utils.pl',
-        File::Spec->curdir());
-    require $shredder_utils;
-}
-init_db();
+use RT::Test::Shredder;
+RT::Test::Shredder::init_db();
 
 plan tests => 7;
 
 diag 'global template' if $ENV{'TEST_VERBOSE'};
 {
-	create_savepoint('clean');
+	RT::Test::Shredder::create_savepoint('clean');
     my $template = RT::Model::Template->new(current_user => RT->system_user );
     my ($id, $msg) = $template->create(
         name => 'my template',
@@ -25,15 +21,15 @@ diag 'global template' if $ENV{'TEST_VERBOSE'};
     );
     ok($id, 'Created template') or diag "error: $msg";
 
-	my $shredder = shredder_new();
+	my $shredder = RT::Test::Shredder::shredder_new();
 	$shredder->put_objects( objects => $template );
 	$shredder->wipeout_all;
-	cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
+	cmp_deeply( RT::Test::Shredder::dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
 diag 'local template' if $ENV{'TEST_VERBOSE'};
 {
-	create_savepoint('clean');
+	RT::Test::Shredder::create_savepoint('clean');
     my $template = RT::Model::Template->new(current_user => RT->system_user );
     my ($id, $msg) = $template->create(
         name => 'my template',
@@ -42,15 +38,15 @@ diag 'local template' if $ENV{'TEST_VERBOSE'};
     );
     ok($id, 'Created template') or diag "error: $msg";
 
-	my $shredder = shredder_new();
+	my $shredder = RT::Test::Shredder::shredder_new();
 	$shredder->put_objects( objects => $template );
 	$shredder->wipeout_all;
-	cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
+	cmp_deeply( RT::Test::Shredder::dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
 diag 'template used in scrip' if $ENV{'TEST_VERBOSE'};
 {
-	create_savepoint('clean');
+	RT::Test::Shredder::create_savepoint('clean');
     my $template = RT::Model::Template->new(current_user => RT->system_user );
     my ($id, $msg) = $template->create(
         name => 'my template',
@@ -69,8 +65,8 @@ diag 'template used in scrip' if $ENV{'TEST_VERBOSE'};
     );
     ok($id, 'Created scrip') or diag "error: $msg";
 
-	my $shredder = shredder_new();
+	my $shredder = RT::Test::Shredder::shredder_new();
 	$shredder->put_objects( objects => $template );
 	$shredder->wipeout_all;
-	cmp_deeply( dump_current_and_savepoint('clean'), "current DB equal to savepoint");
+	cmp_deeply( RT::Test::Shredder::dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
