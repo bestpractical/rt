@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&/Elements/Header, title => $title &>
+<&| /_elements/wrapper, title => $title &>
 <& /Elements/PageLayout,
     title => $title,
     toptabs => { a => { title => _('Install RT'),
@@ -59,8 +59,7 @@
 &>
 <a name="skipnav" id="skipnav" accesskey="8"></a>
 <% $m->content() |n%>
-<& /Elements/Footer &>
-% $m->abort;
+</&>
 <%args>
 $title => 'Install RT'
 </%args>
