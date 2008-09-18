@@ -1,5 +1,4 @@
-#!/usr/bin/perl
-
+package RT::Test::Shredder;
 use strict;
 use warnings;
 
