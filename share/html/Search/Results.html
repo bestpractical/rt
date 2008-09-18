@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, title => $title, refresh => $session{'tickets_refresh_interval'}, 
+<&| /_elements/wrapper, title => $title, refresh => $session{'tickets_refresh_interval'}, 
     rss_auto_discovery => $RSSFeedURL,
     link_rel => \%link_rel &>
 <& /Ticket/Elements/Tabs, 
@@ -93,6 +93,7 @@
 
 % $m->callback( query_string => $query_string, Callbackname => 'search_actions' );
 </div>
+</&>
 <%INIT>
 # Read from user preferences
 my $prefs = Jifty->web->current_user->user_object->preferences("SearchDisplay") || {};

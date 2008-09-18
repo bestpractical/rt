@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header,
+<&| /_elements/wrapper,
     title => _("Create a new ticket"),
     onload => "hide(document.getElementById('Ticket-Create-details'));" &>
 <& /Elements/Tabs, 
@@ -246,6 +246,7 @@
 </div>
 </form>
 
+</&>
 <%INIT>
 my $cloneticket_obj;
 if ( $clone_ticket ) {
