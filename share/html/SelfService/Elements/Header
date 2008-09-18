@@ -45,5 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, %ARGS, prefs => '/SelfService/Prefs.html' &>
+<&| /_elements/wrapper, %ARGS, prefs => '/SelfService/Prefs.html' &>
 <& /SelfService/Elements/Tabs, %ARGS &>
+<% $m->content |n %>
+</&>

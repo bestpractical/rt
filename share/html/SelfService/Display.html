@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /SelfService/Elements/Header, title => _('#%1: %2', $Ticket->id, $Ticket->subject) &>
+<&| /SelfService/Elements/Header, title => _('#%1: %2', $Ticket->id, $Ticket->subject) &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -85,6 +85,7 @@
 
 
 
+</&>
 <%INIT>
 
 my ( $field, @results );

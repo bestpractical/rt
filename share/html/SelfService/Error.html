@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /SelfService/Elements/Header, title => _('Error') &>
+<&| /SelfService/Elements/Header, title => _('Error') &>
 <h2 class="title"><%_('Error')%></h2>
 <&| /Widgets/TitleBox, title => $title &>
 <%$why%>
@@ -58,6 +58,7 @@
 </html>
 
 
+</&>
 <%args>
 $code => undef
 $details => undef

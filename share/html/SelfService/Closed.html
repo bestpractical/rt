@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /SelfService/Elements/Header, title => _('Closed tickets') &>
+<&| /SelfService/Elements/Header, title => _('Closed tickets') &>
 
 <& /SelfService/Elements/MyRequests,
     %ARGS,
@@ -55,6 +55,7 @@
 	page            => $page,
 &>
 
+</&>
 <%ARGS>
 $page => 1
 </%ARGS>
