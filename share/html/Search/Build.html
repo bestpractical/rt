@@ -295,7 +295,6 @@ $session{'CurrentSearchHash'} = {
 
 if ( $ARGS{'do_search'} ) {
     $m->comp( 'Results.html', %query );
-    $m->comp( '/Elements/Footer' );
     $m->abort;
 }
 
