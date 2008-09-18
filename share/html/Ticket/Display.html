@@ -45,8 +45,8 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| /_elements/wrapper, 
-    title => _("#%1: %2", $ticket_obj->id, $ticket_obj->subject),
+<& /Elements/Header,
+    title => _("#%1: %2", $ticket_obj->id, $ticket_obj->subject), 
     link_rel => \%link_rel &>
 <& /Ticket/Elements/Tabs, 
     ticket => $ticket_obj, 
@@ -83,7 +83,7 @@
 %     Callbackname => 'after_show_history',
 % );
 
-</&>
+% $m->comp('/Elements/Footer');
 <%ARGS>
 $id => undef
 $ticket_obj => undef
