@@ -1408,7 +1408,7 @@ sub set_started {
     }
 
     #We create a date object to catch date weirdness
-    my $time_obj = RT::Date->new( $self->current_user() );
+    my $time_obj = RT::Date->new( current_user => $self->current_user() );
     if ($time) {
         $time_obj->set( format => 'ISO', value => $time );
     } else {
@@ -1421,7 +1421,7 @@ sub set_started {
     #We need $TicketAsSystem, in case the current user doesn't have
     #ShowTicket
     #
-    my $TicketAsSystem = RT::Model::Ticket->new( RT->system_user );
+    my $TicketAsSystem = RT::Model::Ticket->new( current_user => RT->system_user );
     $TicketAsSystem->load( $self->id );
     if ( $TicketAsSystem->status eq 'new' ) {
         $TicketAsSystem->set_status('open');
