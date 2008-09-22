@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| /_elements/wrapper, show_bar => 0 &>
+<& /Elements/Header, show_bar => 0 &>
 %# From /Elements/Header
 </div>
 <div id="body" class="calpopup">
@@ -55,9 +55,11 @@
 <div class="calendar">
   <table>
     <caption>
-      <a class="prev" href="CalPopup.html?DisplayedMonth=<%$prev_month%>&DisplayedYear=<%$prev_year%>&field=<%$field%>"><&|/l&>Prev</&></a>
+      <a class="prev"
+      href="CalPopup.html?displayed_month=<%$prev_month%>&displayed_year=<%$prev_year%>&field=<%$field%>"><&|/l&>Prev</&></a>
       <span class="month"><% $months[$displayed_month-1] %> <% $displayed_year %></span>
-      <a class="next" href="CalPopup.html?DisplayedMonth=<%$next_month%>&DisplayedYear=<%$next_year%>&field=<%$field%>"><&|/l&>next</&></a>
+      <a class="next"
+      href="CalPopup.html?displayed_month=<%$next_month%>&displayed_year=<%$next_year%>&field=<%$field%>"><&|/l&>next</&></a>
     </caption>
     <tr>
 % foreach my $wday (@weekdays) {
@@ -85,7 +87,6 @@
 </html>
 % $m->abort();
 
-</&>
 <%init>
 use Calendar::Simple;
 my @today = localtime(time());
