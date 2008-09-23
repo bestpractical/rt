@@ -59,6 +59,12 @@ my $mailsent;
 
 my @server;
 
+BEGIN {
+    for (qw/LC_CTYPE LC_ALL LANG LC_MESSAGES/) {
+        $ENV{$_} = '' if $ENV{$_};
+    }
+}
+
 =head1 NAME
 
 RT::Test - RT Testing
