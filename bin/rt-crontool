@@ -49,8 +49,6 @@
 use strict;
 use Carp;
 
-use lib ("/home/jesse/svk/3.999-DANGEROUS/local/lib", "/home/jesse/svk/3.999-DANGEROUS/lib");
-
 use RT;
 
 use Getopt::Long;
