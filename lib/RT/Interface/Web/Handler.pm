@@ -137,8 +137,12 @@ sub InitSessionDir {
 =cut
 
 sub NewApacheHandler {
-    require HTML::Mason::ApacheHandler;
-    return NewHandler('HTML::Mason::ApacheHandler', args_method => "CGI", @_);
+    require RT::Interface::Web::Mason::ApacheHandler;
+    return NewHandler(
+        'RT::Interface::Web::Mason::ApacheHandler',
+        args_method => "CGI",
+        @_
+    );
 }
 
 # }}}
@@ -152,8 +156,8 @@ sub NewApacheHandler {
 =cut
 
 sub NewCGIHandler {
-    require HTML::Mason::CGIHandler;
-    return NewHandler('HTML::Mason::CGIHandler', @_);
+    require RT::Interface::Web::Mason::CGIHandler;
+    return NewHandler('RT::Interface::Web::Mason::CGIHandler', @_);
 }
 
 sub NewHandler {
