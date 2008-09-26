@@ -48,45 +48,60 @@
 use warnings;
 use strict;
 
-package RT::View;
+package RT::View::Ticket;
 use Jifty::View::Declare -base;
-
-require RT::View::Admin::Groups;
-alias RT::View::Admin::Groups under 'admin/groups/';
-
-require RT::View::Admin::Users;
-alias RT::View::Admin::Users under 'admin/groups/';
-
-require RT::View::Ticket;
-alias RT::View::Ticket under 'ticket/';
-
 
 __PACKAGE__->use_mason_wrapper;
 
-template login_widget => sub {
 
-    outs_raw('</div>'); # End of div#quickbar from /Elements/Header
-    my ( $action, $next ) = get( 'action', 'next' );
-    $action ||= new_action( class => 'Login' );
-    $next ||= Jifty::Continuation->new(
-        request => Jifty::Request->new( path => "/" ) );
-    unless ( Jifty->web->current_user->id ) {
-        div {
-            attr { id => 'body', class => 'login-body' };
-            div {
-                attr { id => 'login-box' };
-                Jifty->web->form->start( call => $next );
-                my $plugin = Jifty->find_plugin(
-                    'Jifty::Plugin::Authentication::Password' );
-                render_param( $action, $plugin->{login_by}, focus => 1 );
-                render_param( $action, $_ ) for (qw(password remember));
-                form_return( label => _(q{Login}), submit => $action );
-                Jifty->web->form->end();
-            };
-        };
-    } else {
-        outs( _("You're already logged in.") );
+template '_elements/edit_links' => sub {
+    h1 { 'Hi here' };
+    my $ticket = HTML::Mason::Commands::load_ticket(get('id'));
+    h2 { $ticket->subject };
+    my $delete_links = new_action(class => 'BulkUpdateLinks');
+    form {
+#        $delete_links->hidden('delete' => 1)->render;
+        render_param($delete_links => 'delete', default_value => 1, render_as => 'hidden');
+        input { { type is 'hidden', class is 'hidden', name is 'id', value is $ticket->id } }; # remove later.
+
+        h3 { _("Current Links") };
+
+        show('_edit_link_type', _('Depends on'), $ticket->depends_on, $delete_links, 'target_uri');
+
+        show('_edit_link_type', _('Depended on by'), $ticket->depended_on_by, $delete_links, 'base_uri');
+
+        show('_edit_link_type', _('Parents'), $ticket->member_of, $delete_links, 'target_uri');
+
+        form_submit( label => _('Save Changes') );
+    };
+};
+
+private template '_elements/_edit_link_type' => sub {
+    my ($self, $type, $collection, $delete_links, $link_target) = @_;
+    h4 { $type.':' };
+
+    while (my $link = $collection->next) {
+        warn $link->id;
+        render_param( $delete_links => 'ids',
+                      value => $link->id,
+                      render_as => 'checkbox',
+                      checked => 0 );
+        m_comp('/Elements/ShowLink', { uri => $link->$link_target });
     }
 };
+
+sub m_comp {
+    my ($template, $args)= @_;
+    my $mason = Jifty->handler->view('Jifty::View::Mason::Handler');
+    my $orig_out = $mason->interp->out_method || Jifty::View->can('out_method');
+
+    my $buf = '';
+    $mason->interp->out_method(\$buf);
+    $mason->handle_comp($template, $args);
+    $mason->interp->out_method($orig_out);
+
+    Template::Declare->buffer->append($buf);
+    return '';
+}
 
 1;
