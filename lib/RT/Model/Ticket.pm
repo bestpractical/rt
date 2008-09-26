@@ -99,10 +99,22 @@ use Jifty::DBI::Record schema {
     column time_worked      => max_length is 11,  type is 'int',          default is '0';
     column time_left        => max_length is 11,  type is 'int',          default is '0';
     column status           => max_length is 10,  type is 'varchar(10)',  default is '';
-    column told             => type is 'timestamp';
-    column starts           => type is 'timestamp';
-    column started          => type is 'timestamp';
-    column due              => type is 'timestamp';
+    column told             => type is 'timestamp',
+        filters are qw( Jifty::Filter::DateTime Jifty::DBI::Filter::DateTime),
+        render_as 'DateTime',
+        label is _('Last Contact');
+    column starts           => type is 'timestamp',
+        filters are qw( Jifty::Filter::DateTime Jifty::DBI::Filter::DateTime),
+        render_as 'DateTime',
+        label is _('Starts');
+    column started          => type is 'timestamp',
+        filters are qw( Jifty::Filter::DateTime Jifty::DBI::Filter::DateTime),
+        render_as 'DateTime',
+        label is _('Started');
+    column due              => type is 'timestamp',
+        filters are qw( Jifty::Filter::DateTime Jifty::DBI::Filter::DateTime),
+        render_as 'DateTime',
+        label is _('Due');
     column resolved         => type is 'timestamp';
     column last_updated_by  => references RT::Model::User;
     column last_updated     => type is 'timestamp';
