@@ -113,6 +113,8 @@ $onload => undef
 
 <script type="text/javascript">
     jQuery(document).ready(function (){ 
-        jQuery("input.datetime").datepicker();
+            if ( jQuery('input.datetime') ) {
+                jQuery("input.datetime").datepicker();
+            }
     });
 </script>
