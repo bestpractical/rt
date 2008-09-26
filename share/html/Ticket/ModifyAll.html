@@ -54,8 +54,9 @@
 % $m->callback(Callbackname => 'before_action_list', Actions => \@results, args_ref => \%ARGS, ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" action="ModifyAll.html" enctype="multipart/form-data">
-% $m->callback( Callbackname => 'form_start', args_ref => \%ARGS );
+<% Jifty->web->render_messages %>
+<% Jifty->web->form->start( submit_to => '?id=' . $Ticket->id ) %>
+%#<form method="post" action="ModifyAll.html" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
 
 <&| /Widgets/TitleBox, title => _('Modify ticket # %1', $Ticket->id) &>
@@ -65,12 +66,13 @@
 
 <br />
 
-<&| /Widgets/TitleBox, title => _('dates') &>
-<& Elements/EditDates, ticket_obj => $Ticket &>
+<&| /Widgets/TitleBox, title => _('Date') &>
+% for my $field ( qw/starts started told due/ ) {
+<% $date_action->form_field( $field ) %>
+% }
 </&>
 
 <br />
-
 
 <&| /Widgets/TitleBox, title => _('People') &>
 <& Elements/EditPeople, ticket => $Ticket, user_field => $user_field, user_string => $user_string, user_op => $user_op &>
@@ -129,13 +131,11 @@
 <& /Elements/Submit, 
     label => _('Save Changes'), 
     caption => _("If you've updated anything above, be sure to"), color => "#333399" &>
-</form>
+<% Jifty->web->form->end %>
+%#</form>
 
 </&>
 <%INIT>
-
-use Data::Dumper;
-Jifty->log->error( Dumper \%ARGS );
 
 my $Ticket = load_ticket($id);
 my $CustomFields = $Ticket->queue_obj->ticket_custom_fields();
@@ -174,7 +174,6 @@ unless ($only_search_for_people or $only_search_for_group ) {
 
     @wresults   = process_ticket_watchers( ticket_obj => $Ticket, args_ref => \%ARGS);
     @cf_results = process_object_custom_field_updates( object => $Ticket, args_ref => \%ARGS);
-    @dresults   = process_ticket_dates( ticket_obj => $Ticket, args_ref => \%ARGS);
 
     if ($ARGS{'update_attachment'}) {
         my $subject = "$ARGS{'update_attachment'}";
@@ -203,6 +202,7 @@ push @results, @cf_results;
 # undef so that transaction_batch scrips run and update the ticket
 $Ticket = undef;
 $Ticket = load_ticket($id);
+my $date_action = Jifty->web->new_action( class => 'TicketUpdateDates', record => $Ticket );
 
 # If they've gone and moved the ticket to somewhere they can't see, etc...
 # TODO: display the results, even if we can't display the ticket.
