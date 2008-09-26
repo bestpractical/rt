@@ -72,8 +72,6 @@
 % if ($Group->MembersObj->Count == 0 ) {
 <em><&|/l&>(No members)</&></em>
 % } else {
-<br />
-<br />
 <&|/l&>Users</&>
 % my $Users = $Group->UserMembersObj( Recursively => 0 );
 % $Users->OrderBy( FIELD => $UserOrderBy, ORDER => $UserOrder );
