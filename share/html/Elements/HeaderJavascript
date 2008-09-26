@@ -110,3 +110,9 @@ $onload => undef
     onLoadHook("<% $onload |n %>");
 % }
 --></script>
+
+<script type="text/javascript">
+    jQuery(document).ready(function (){ 
+        jQuery("input.datetime").datepicker();
+    });
+</script>
