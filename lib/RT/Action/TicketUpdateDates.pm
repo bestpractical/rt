@@ -23,8 +23,20 @@ sub take_action {
                 value  => $value,
             );
 
+# the date is not real utc, we set it as utc to get rid of user timezone
+# convert, since record->$obj already get converted, it's wrong to convert
+# it too.
+            my $fake_utc_date = RT::Date->new();
+            $fake_utc_date->set(
+                format => 'unknown',
+                value  => $value,
+                timezone => 'UTC',
+            );
+
             my $obj = $field . '_obj';
-            if ( $date->unix != $self->record->$obj()->unix() ) {
+            if ( $fake_utc_date->unix != $self->record->$obj()->unix() ) {
+                Jifty->log->error( $date->iso, ' ', $self->record->$obj->iso
+                        );
                 my $set = "set_$field";
                 my ( $status, $msg ) = $self->record->$set( $date->iso );
                 unless ($status) {
