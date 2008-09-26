@@ -416,7 +416,7 @@ msgstr "(Entrer le numéro du ticket ou son URL, séparés par des espaces)"
 #. (RT->Config->Get('CorrespondAddress'))
 #. (RT->Config->Get('CommentAddress'))
 msgid "(If left blank, will default to %1)"
-msgstr "(Si à laissé blanc, le défaut sera %1)"
+msgstr "(Si vide, le défaut sera %1)"
 
 #: share/html/Admin/Elements/EditCustomFields:76 share/html/Admin/Elements/ListGlobalCustomFields:55
 msgid "(No custom fields)"
