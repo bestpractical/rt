@@ -72,6 +72,12 @@ template '_elements/edit_links' => sub {
 
         show('_edit_link_type', _('Parents'), $ticket->member_of, $delete_links, 'target_uri');
 
+        show('_edit_link_type', _('Children'), $ticket->members, $delete_links, 'base_uri');
+
+        show('_edit_link_type', _('Refers to'), $ticket->refers_to, $delete_links, 'target_uri');
+
+        show('_edit_link_type', _('Referred to by'), $ticket->referred_to_by, $delete_links, 'base_uri');
+
         form_submit( label => _('Save Changes') );
     };
 };
@@ -82,10 +88,11 @@ private template '_elements/_edit_link_type' => sub {
 
     while (my $link = $collection->next) {
         warn $link->id;
-        render_param( $delete_links => 'ids',
-                      value => $link->id,
-                      render_as => 'checkbox',
-                      checked => 0 );
+        Jifty::Web::Form::Field->new( action => $delete_links,
+                                      name => 'ids',
+                                      render_as => 'Checkbox',
+                                      value => $link->id,
+                                      checked => 0 )->render_widget;
         m_comp('/Elements/ShowLink', { uri => $link->$link_target });
     }
 };
