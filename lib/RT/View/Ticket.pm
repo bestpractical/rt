@@ -53,48 +53,52 @@ use Jifty::View::Declare -base;
 
 __PACKAGE__->use_mason_wrapper;
 
-
 template '_elements/edit_links' => sub {
-    h1 { 'Hi here' };
-    my $ticket = HTML::Mason::Commands::load_ticket(get('id'));
-    h2 { $ticket->subject };
-    my $delete_links = new_action(class => 'BulkUpdateLinks');
-    form {
-#        $delete_links->hidden('delete' => 1)->render;
-        render_param($delete_links => 'delete', default_value => 1, render_as => 'hidden');
+    my $ticket = HTML::Mason::Commands::load_ticket( get('id') );
+
+    div { { class is 'ticket-links-current' };
+        h3 { _("Current Links") };
+        my $delete_links = new_action( class => 'BulkUpdateLinks' );
+        $delete_links->register; # don't need this if we open form{} with jifty
+        render_param( $delete_links => 'delete', default_value => 1, render_as => 'hidden' );
         input { { type is 'hidden', class is 'hidden', name is 'id', value is $ticket->id } }; # remove later.
 
-        h3 { _("Current Links") };
+        table { tbody {
 
-        show('_edit_link_type', _('Depends on'), $ticket->depends_on, $delete_links, 'target_uri');
+                show( '_edit_link_type', _('Depends on'), $ticket->depends_on, $delete_links, 'target_uri' );
 
-        show('_edit_link_type', _('Depended on by'), $ticket->depended_on_by, $delete_links, 'base_uri');
+                show( '_edit_link_type', _('Depended on by'), $ticket->depended_on_by, $delete_links, 'base_uri' );
 
-        show('_edit_link_type', _('Parents'), $ticket->member_of, $delete_links, 'target_uri');
+                show( '_edit_link_type', _('Parents'), $ticket->member_of, $delete_links, 'target_uri' );
 
-        show('_edit_link_type', _('Children'), $ticket->members, $delete_links, 'base_uri');
+                show( '_edit_link_type', _('Children'), $ticket->members, $delete_links, 'base_uri' );
 
-        show('_edit_link_type', _('Refers to'), $ticket->refers_to, $delete_links, 'target_uri');
+                show( '_edit_link_type', _('Refers to'), $ticket->refers_to, $delete_links, 'target_uri' );
 
-        show('_edit_link_type', _('Referred to by'), $ticket->referred_to_by, $delete_links, 'base_uri');
+                show( '_edit_link_type', _('Referred to by'), $ticket->referred_to_by, $delete_links, 'base_uri' );
 
-        form_submit( label => _('Save Changes') );
+                row { cell {}; cell { i { _('(Check box to delete)') } } };
+        } };
+
     };
 };
 
 private template '_elements/_edit_link_type' => sub {
     my ($self, $type, $collection, $delete_links, $link_target) = @_;
-    h4 { $type.':' };
-
-    while (my $link = $collection->next) {
-        warn $link->id;
-        Jifty::Web::Form::Field->new( action => $delete_links,
-                                      name => 'ids',
-                                      render_as => 'Checkbox',
-                                      value => $link->id,
-                                      checked => 0 )->render_widget;
-        m_comp('/Elements/ShowLink', { uri => $link->$link_target });
-    }
+    row {
+        cell { { class is 'labeltop' }; $type };
+        cell { { class is 'value' };
+            while (my $link = $collection->next) {
+                Jifty::Web::Form::Field->new( action => $delete_links,
+                                              name => 'ids',
+                                              render_as => 'Checkbox',
+                                              value => $link->id,
+                                              checked => 0 )->render_widget;
+                m_comp('/Elements/ShowLink', { uri => $link->$link_target });
+                br {};
+            }
+        }
+    };
 };
 
 sub m_comp {

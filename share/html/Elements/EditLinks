@@ -45,76 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<table width="100%">
-  <tr>
-    <td valign="top" width="50%">
-      <h3><&|/l&>Current Links</&></h3>
 
-<table>
-  <tr>
-    <td class="labeltop"><&|/l&>Depends on</&>:</td>
-    <td class="value">
-% while (my $link = $object->depends_on->next) {
-      <input type="checkbox" class="checkbox" name="delete_link--<%$link->type%>-<%$link->target%>" value="1" />
-        <& ShowLink, uri => $link->target_uri &><br />
-% }
-    </td>
-  </tr>
-  <tr>
-    <td class="labeltop"><&|/l&>Depended on by</&>:</td>
-    <td class="value">
-% while (my $link = $object->depended_on_by->next) {
-      <input type="checkbox" class="checkbox" name="delete_link-<%$link->base%>-<%$link->type%>-" value="1" />
-        <& ShowLink, uri => $link->base_uri &><br />
-% }
-    </td>
-  </tr>
-  <tr>
-    <td class="labeltop"><&|/l&>Parents</&>:</td>
-    <td class="value">
-% while (my $link = $object->member_of->next) {
-      <input type="checkbox" class="checkbox" name="delete_link--<%$link->type%>-<%$link->target%>" value="1" />
-        <& ShowLink, uri => $link->target_uri &><br />
-% }
-    </td>
-  </tr>
-  <tr>
-    <td class="labeltop"><&|/l&>Children</&>:</td>
-    <td class="value">
-% while (my $link = $object->members->next) {
-      <input type="checkbox" class="checkbox" name="delete_link-<%$link->base%>-<%$link->type%>-" value="1" />
-        <& ShowLink, uri => $link->base_uri &><br />
-% }
-    </td>
-  </tr>
-  <tr>
-    <td class="labeltop"><&|/l&>Refers to</&>:</td>
-    <td class="value">
-% while (my $link = $object->refers_to->next) {
-      <input type="checkbox" class="checkbox" name="delete_link--<%$link->type%>-<%$link->target%>" value="1" />
-        <& ShowLink, uri => $link->target_uri &><br />
-%}
-    </td>
-  </tr>
-  <tr>
-    <td class="labeltop"><&|/l&>Referred to by</&>:</td>
-    <td class="value">
-% while (my $link = $object->referred_to_by->next) {
-% # Skip reminders
-% next if (UNIVERSAL::isa($link->base_obj, 'RT::Model::Ticket')  && $link->base_obj->type eq 'reminder');
-      <input type="checkbox" class="checkbox" name="delete_link-<%$link->base%>-<%$link->type%>-" value="1" />
-        <& ShowLink, uri => $link->base_uri &><br />
-% }
-    </td>
-  </tr>
-  <tr>
-    <td></td>
-    <td><i><&|/l&>(Check box to delete)</&></i></td>
-  </tr>
-</table>
-			    
-</td>
-<td valign="top">
+% Jifty->web->region( name => 'modify_links', path => '/ticket/_elements/edit_links', arguments => { ticket => $object->id } );
+
+<div class="ticket-links-new">
 <h3><&|/l&>New Links</&></h3>
 % if (ref($object) eq 'RT::Model::Ticket') {
 <i><&|/l&>Enter tickets or URIs to link tickets to. Separate multiple entries with spaces.</&>
@@ -159,9 +93,9 @@
   </tr>
 % $m->callback( Callbackname => 'new_link' );
 </table>
-</td>
-</tr>
-</table>
+</div>
+
+<div class="divclear">
 
 <%INIT>
 my $id;

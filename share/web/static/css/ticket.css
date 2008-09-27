@@ -162,3 +162,8 @@ div#ticket-history .messagebody .messagebody{
   color: #666
 }
 
+
+.ticket-info-links .ticket-links-current, .ticket-info-links .ticket-links-new {
+  width: 50%;
+  float: left;
+}

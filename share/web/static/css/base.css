@@ -1,7 +1,7 @@
 .hide { display: none; } 
 .clear { display: none;}
 
-
+.divclear { clear: both; }
 
 
 
