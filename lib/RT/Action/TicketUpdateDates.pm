@@ -35,20 +35,35 @@ sub take_action {
 
             my $obj = $field . '_obj';
             if ( $fake_utc_date->unix != $self->record->$obj()->unix() ) {
-                Jifty->log->error( $date->iso, ' ', $self->record->$obj->iso
-                        );
+                my $old = $self->record->$obj;
                 my $set = "set_$field";
                 my ( $status, $msg ) = $self->record->$set( $date->iso );
-                unless ($status) {
+                if ($status) {
+                    $self->result->content(
+                        $field,
+                        _(
+                            "%1 changed from %2 to %3",
+                            $field,
+                            $old->unix
+                            ? $old->iso
+                            : _('Not Set'),
+                            $fake_utc_date->unix ? $fake_utc_date->iso
+                            : _('Not Set')
+                        )
+                    );
+                }
+                else {
                     $self->result->failure(
-                        _( 'Update [_1] failed: [_2]', $field, $msg ) );
+                        _( 'Update %1 failed: %2', $field, $msg ) );
                     last;
                 }
             }
         }
     }
 
-    $self->report_success unless $self->result->failure;
+    unless ( $self->result->failure ) {
+        $self->report_success;
+    }
     return 1;
 }
 
