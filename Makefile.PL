@@ -31,6 +31,7 @@ requires(
     'Tree::Simple'               => '1.04',
     'UNIVERSAL::require'         => 0,
     'Regexp::Common'             => 0,
+    'Regexp::Common::Email::Address'             => 0,
     'Scalar::Util'               => 0,
     'Module::Versions::Report'   => '1.05',
     'Cache::Simple::TimedExpiry' => 0,
