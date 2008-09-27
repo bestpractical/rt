@@ -54,7 +54,6 @@
 % $m->callback(Callbackname => 'before_action_list', Actions => \@results, args_ref => \%ARGS, ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
 
-<% Jifty->web->render_messages %>
 <% Jifty->web->form->start( submit_to => '?id=' . $Ticket->id ) %>
 %#<form method="post" action="ModifyAll.html" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
@@ -139,6 +138,7 @@
 
 my $Ticket = load_ticket($id);
 my $CustomFields = $Ticket->queue_obj->ticket_custom_fields();
+my $date_action = Jifty->web->new_action( class => 'TicketUpdateDates', record => $Ticket );
 
 # call this to show up hints of valid cf values.
 $m->comp(
@@ -194,6 +194,9 @@ unless ($only_search_for_people or $only_search_for_group ) {
     push @results, process_ticket_basics( ticket_obj => $Ticket, args_ref => \%ARGS );
 }
     @lresults   = process_ticket_links( ticket_obj => $Ticket, args_ref => \%ARGS);
+
+@dresults = $date_action->get_results;
+
 push @results, @wresults;
 push @results, @dresults;
 push @results, @lresults;
@@ -202,7 +205,6 @@ push @results, @cf_results;
 # undef so that transaction_batch scrips run and update the ticket
 $Ticket = undef;
 $Ticket = load_ticket($id);
-my $date_action = Jifty->web->new_action( class => 'TicketUpdateDates', record => $Ticket );
 
 # If they've gone and moved the ticket to somewhere they can't see, etc...
 # TODO: display the results, even if we can't display the ticket.

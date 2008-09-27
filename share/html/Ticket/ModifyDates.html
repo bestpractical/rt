@@ -52,7 +52,8 @@
     title => _('Modify dates for #%1', $ticket_obj->id) &> 
 % $m->callback(Callbackname => 'before_action_list', args_ref => \%ARGS, ticket => $ticket_obj);
 
-<% Jifty->web->render_messages %>
+<& /Elements/ListActions, actions => \@results &>
+
 <% Jifty->web->form->start( submit_to => '?id=' . $ticket_obj->id ) %>
 <&| /Widgets/TitleBox,title => _('Modify dates for ticket # %1', $ticket_obj->id), class=> 'ticket-info-dates' &>
 % for my $field ( @fields ) {
@@ -69,6 +70,7 @@ my @fields = qw/starts started told due/;
 my $ticket_obj = load_ticket($id);
 my $action = Jifty->web->new_action( class => 'TicketUpdateDates', record =>
         $ticket_obj );
+my @results = $action->get_results;
 </%INIT>
 
 <%ARGS>
