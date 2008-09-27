@@ -74,4 +74,16 @@ sub report_success {
     $self->result->message( _('Dates Updated') );
 }
 
+sub get_results {
+    my $self          = shift;
+    my $result = {Jifty->web->response->results}->{$self->moniker};
+    my @results;
+    if ($result) {
+        for my $type ( sort keys %{ $result->content } ) {
+            push @results, $result->content->{$type};
+        }
+    }
+    return @results;
+}
+
 1;
