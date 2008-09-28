@@ -1,4 +1,4 @@
-package RT::Action::TicketUpdateDates;
+package RT::Action::UpdateTicket;
 use strict;
 use warnings;
 
