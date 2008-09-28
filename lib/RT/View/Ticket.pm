@@ -58,8 +58,9 @@ template '_elements/edit_links' => sub {
 
     div { { class is 'ticket-links-current' };
         h3 { _("Current Links") };
-        my $delete_links = new_action( class => 'BulkUpdateLinks' );
-        $delete_links->register; # don't need this if we open form{} with jifty
+        my $delete_links = new_action( class => 'BulkUpdateLinks', moniker => 'delete-links' );
+        $delete_links->register
+            unless Jifty->web->form->is_open; # don't need this if we open form{} with jifty
         render_param( $delete_links => 'delete', default_value => 1, render_as => 'hidden' );
         input { { type is 'hidden', class is 'hidden', name is 'id', value is $ticket->id } }; # remove later.
 
