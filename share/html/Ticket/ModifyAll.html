@@ -159,7 +159,7 @@ $Cancomment = 1 if ( $Ticket->current_user_has_right('CommentOnTicket') or
 
 
 $m->callback( ticket_obj => $Ticket, args_ref => \%ARGS );
-my (@wresults, @results,  @dresults, @lresults, @cf_results);
+my (@wresults, @results, @lresults, @cf_results);
 
 unless ($only_search_for_people or $only_search_for_group ) {
     # There might be two owners. 
@@ -195,7 +195,7 @@ unless ($only_search_for_people or $only_search_for_group ) {
 }
     @lresults   = process_ticket_links( ticket_obj => $Ticket, args_ref => \%ARGS);
 
-@dresults = $action->detailed_messages;
+my @dresults = get_jifty_messages();
 
 push @results, @wresults;
 push @results, @dresults;

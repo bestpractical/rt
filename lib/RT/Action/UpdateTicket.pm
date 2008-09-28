@@ -6,6 +6,8 @@ use base qw/Jifty::Action::Record::Update/;
 
 sub record_class { 'RT::Model::Ticket' }
 
+use constant report_detailed_messages => 1;
+
 =head2 take_action
 
 =cut
@@ -29,29 +31,6 @@ sub take_action {
     }
 
     $self->SUPER::take_action;
-    return 1;
-}
-
-sub report_success {
-    my $self = shift;
-
-    # Your success message here
-    $self->result->message( _('Dates Updated') );
-}
-
-sub detailed_messages {
-    my $self          = shift;
-    my $result = {Jifty->web->response->results}->{$self->moniker};
-    my @results;
-    if ($result) {
-        for my $type ( sort keys %{ $result->content->{detailed_messages} } ) {
-            push @results, $result->content->{detailed_messages}{$type};
-        }
-    }
-    return @results;
-}
-
-sub report_detailed_messages {
     return 1;
 }
 

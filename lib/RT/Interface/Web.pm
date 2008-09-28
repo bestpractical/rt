@@ -1459,4 +1459,22 @@ sub _parse_saved_search {
     return ( _load_container_object( $obj_type, $obj_id ), $search_id );
 }
 
+=head2 get_jifty_messages
+
+=cut
+
+sub get_jifty_messages {
+    my $results = { Jifty->web->response->results };
+    return map { _detailed_messages($results->{$_}) } sort keys %$results;
+}
+
+sub _detailed_messages {
+    my $result = shift;
+    my $msg = $result->content('detailed_messages')
+        or return $result->message;
+
+    return map { $msg->{$_} } sort keys %$msg;
+}
+
+
 1;
