@@ -764,6 +764,21 @@ sub BriefDescription {
             return ( $self->Data );
         }
     },
+    Told => sub {
+        my $self = shift;
+        if ( $self->Field eq 'Told' ) {
+            my $t1 = new RT::Date($self->CurrentUser);
+            $t1->Set(Format => 'ISO', Value => $self->NewValue);
+            my $t2 = new RT::Date($self->CurrentUser);
+            $t2->Set(Format => 'ISO', Value => $self->OldValue);
+            return $self->loc( "[_1] changed from [_2] to [_3]", $self->loc($self->Field), $t2->AsString, $t1->AsString );
+        }
+        else {
+            return $self->loc( "[_1] changed from [_2] to [_3]",
+                               $self->loc($self->Field),
+                               ($self->OldValue? "'".$self->OldValue ."'" : $self->loc("(no value)")) , "'". $self->NewValue."'" );
+        }
+    },
     Set => sub {
         my $self = shift;
         if ( $self->Field eq 'Password' ) {
