@@ -67,7 +67,7 @@
 
 <&| /Widgets/TitleBox, title => _('Date') &>
 % for my $field ( qw/starts started told due/ ) {
-<% $date_action->form_field( $field ) %>
+<% $action->form_field( $field ) %>
 % }
 </&>
 
@@ -138,7 +138,7 @@
 
 my $Ticket = load_ticket($id);
 my $CustomFields = $Ticket->queue_obj->ticket_custom_fields();
-my $date_action = Jifty->web->new_action( class => 'TicketUpdateDates', record => $Ticket );
+my $action = Jifty->web->new_action( class => 'UpdateTicket', record => $Ticket );
 
 # call this to show up hints of valid cf values.
 $m->comp(
@@ -195,7 +195,7 @@ unless ($only_search_for_people or $only_search_for_group ) {
 }
     @lresults   = process_ticket_links( ticket_obj => $Ticket, args_ref => \%ARGS);
 
-@dresults = $date_action->get_results;
+@dresults = $action->get_results;
 
 push @results, @wresults;
 push @results, @dresults;
