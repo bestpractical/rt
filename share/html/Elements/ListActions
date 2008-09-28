@@ -78,6 +78,8 @@ if ($actions_pointer &&  ref( $session{'Actions'}->{$actions_pointer} ) eq 'ARRA
     }
     grep $_, @actions;
 
+push @actions, get_jifty_messages();
+
 return unless @actions;
 
 </%init>
