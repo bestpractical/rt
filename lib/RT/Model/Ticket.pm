@@ -2670,6 +2670,15 @@ sub _set {
     #Take care of the old value we really don't want to get in an ACL loop.
     # so ask the super::_value
     my $Old = $self->SUPER::_value( $args{'column'} );
+    if ( $args{'column'} =~ /due|starts|started|told/ ) {
+    # we want the real value in db, without filter
+        my $date = RT::Date->new();
+        $date->set(
+            format => 'unknown',
+            value  => $Old,
+        );
+        $Old = $date->iso;
+    }
 
     if ( $Old && $args{'value'} && $Old eq $args{'value'} ) {
 
