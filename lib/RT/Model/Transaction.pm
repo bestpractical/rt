@@ -778,15 +778,15 @@ sub brief_description {
 }
 
 %_brief_descriptions = (
-    CommentEmailRecord => sub {
+    comment_email_record => sub {
         my $self = shift;
         return _("Outgoing email about a comment recorded");
     },
-    EmailRecord => sub {
+    email_record => sub {
         my $self = shift;
         return _("Outgoing email recorded");
     },
-    Correspond => sub {
+    correspond => sub {
         my $self = shift;
         return _("Correspondence added");
     },
@@ -813,15 +813,15 @@ sub brief_description {
             return _( "%1 %2 changed to %3", $field, $self->old_value, $self->new_value );
         }
     },
-    Untake => sub {
+    untake => sub {
         my $self = shift;
         return _("Untaken");
     },
-    Take => sub {
+    take => sub {
         my $self = shift;
         return _("Taken");
     },
-    Force => sub {
+    force => sub {
         my $self = shift;
         my $Old  = RT::Model::User->new;
         $Old->load( $self->old_value );
@@ -830,19 +830,19 @@ sub brief_description {
 
         return _( "Owner forcibly changed from %1 to %2", $Old->name, $New->name );
     },
-    Steal => sub {
+    steal => sub {
         my $self = shift;
         my $Old  = RT::Model::User->new;
         $Old->load( $self->old_value );
         return _( "Stolen from %1", $Old->name );
     },
-    Give => sub {
+    give => sub {
         my $self = shift;
         my $New  = RT::Model::User->new;
         $New->load( $self->new_value );
         return _( "Given to %1", $New->name );
     },
-    AddWatcher => sub {
+    add_watcher => sub {
         my $self      = shift;
         my $principal = RT::Model::Principal->new;
         $principal->load( $self->new_value );
@@ -858,7 +858,7 @@ sub brief_description {
         my $self = shift;
         return _( "subject changed to %1", $self->data );
     },
-    AddLink => sub {
+    add_link => sub {
         my $self = shift;
         my $value;
         if ( $self->new_value ) {
@@ -919,7 +919,7 @@ sub brief_description {
             return ( $self->data );
         }
     },
-    Set => sub {
+    set => sub {
         my $self = shift;
         if ( $self->field eq 'password' ) {
             return _('password changed');
@@ -932,7 +932,7 @@ sub brief_description {
         }
 
         # Write the date/time change at local time:
-        elsif ( $self->field =~ /Due|starts|Started|Told/i ) {
+        elsif ( $self->field =~ /due|starts|started|told/i ) {
             my $t1 = RT::Date->new();
             $t1->set( format => 'ISO', value => $self->new_value );
             my $t2 = RT::Date->new();
@@ -950,24 +950,24 @@ sub brief_description {
             );
         }
     },
-    PurgeTransaction => sub {
+    purge_transaction => sub {
         my $self = shift;
         return _( "Transaction %1 purged", $self->data );
     },
-    AddReminder => sub {
+    add_reminder => sub {
         my $self   = shift;
         my $ticket = RT::Model::Ticket->new;
         $ticket->load( $self->new_value );
         return _( "Reminder '%1' added", $ticket->subject );
     },
-    OpenReminder => sub {
+    open_reminder => sub {
         my $self   = shift;
         my $ticket = RT::Model::Ticket->new;
         $ticket->load( $self->new_value );
         return _( "Reminder '%1' reopened", $ticket->subject );
 
     },
-    ResolveReminder => sub {
+    resolve_reminder => sub {
         my $self   = shift;
         my $ticket = RT::Model::Ticket->new;
         $ticket->load( $self->new_value );
