@@ -70,7 +70,7 @@ my @fields = qw/starts started told due/;
 my $ticket_obj = load_ticket($id);
 my $action = Jifty->web->new_action( class => 'UpdateTicket', record =>
         $ticket_obj );
-my @results = $action->get_results;
+my @results = $action->detailed_messages;
 </%INIT>
 
 <%ARGS>
