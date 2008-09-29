@@ -251,7 +251,7 @@ push @CHECKS, 'GMs -> Groups, Members' => sub {
         'GroupMembers', 'GroupId' => 'Groups', 'id',
         action => sub {
             my $id = shift;
-            return unless prompt_delete( 'GroupMembers', $msg );
+            return unless prompt( 'Delete', 'GroupMembers', $msg );
 
             delete_record( 'GroupMembers', $id );
             $redo_check{'CGM vs. GM'} = 1;
@@ -261,7 +261,7 @@ push @CHECKS, 'GMs -> Groups, Members' => sub {
         'GroupMembers', 'MemberId' => 'Principals', 'id',
         action => sub {
             my $id = shift;
-            return unless prompt_delete( 'GroupMembers', $msg );
+            return unless prompt( 'Delete', 'GroupMembers', $msg );
 
             delete_record( 'GroupMembers', $id );
             $redo_check{'CGM vs, GM'} = 1;
@@ -278,8 +278,8 @@ push @CHECKS, 'CGM vs. GM' => sub {
         join_condition     => 't.ImmediateParentId = t.GroupId AND t.Via = t.id',
         action => sub {
             my $id = shift;
-            return unless prompt_create(
-                'direct GM->CGM',
+            return unless prompt(
+                'Create', 'direct GM->CGM',
                 "Found a record in GroupMembers that has no direct duplicate in CachedGroupMembers table."
             );
 
@@ -302,9 +302,10 @@ push @CHECKS, 'CGM vs. GM' => sub {
         condition     => 's.ImmediateParentId = s.GroupId AND s.Via = s.id AND s.GroupId != s.MemberId',
         action => sub {
             my $id = shift;
-            return unless prompt_delete(
-                'CGM->GM',
-                "Found a record in CachedGroupMembers for a (Group, Member) pair that doesn't exist in GroupMembers table."
+            return unless prompt(
+                'Delete', 'CGM->GM',
+                "Found a record in CachedGroupMembers for a (Group, Member) pair"
+                ." that doesn't exist in GroupMembers table."
             );
 
             delete_record( 'CachedGroupMembers', $id );
@@ -318,9 +319,10 @@ push @CHECKS, 'CGM vs. GM' => sub {
         join_condition     => 't.ImmediateParentId = t.GroupId AND t.Via = t.id',
         action => sub {
             my $id = shift;
-            return unless prompt_create(
-                'direct G->CGM',
-                "Found a record in Groups that has no direct duplicate in CachedGroupMembers table."
+            return unless prompt(
+                'Create', 'direct G->CGM',
+                "Found a record in Groups that has no direct"
+                ." duplicate in CachedGroupMembers table."
             );
 
             my $g = RT::Group->new( $RT::SystemUser );
@@ -345,8 +347,8 @@ push @CHECKS, 'CGM vs. GM' => sub {
         condition => "s.GroupId = s.MemberId",
         action => sub {
             my $id = shift;
-            return unless prompt_delete(
-                'CGM->Group',
+            return unless prompt(
+                'Delete', 'CGM->Group',
                 "Found a record in CachedGroupMembers for a group that doesn't exist."
             );
 
@@ -360,8 +362,8 @@ push @CHECKS, 'CGM vs. GM' => sub {
         CachedGroupMembers => 'id',
         action => sub {
             my $id = shift;
-            return unless prompt_delete(
-                'CGM.Via->CGM',
+            return unless prompt(
+                'Delete', 'CGM.Via->CGM',
                 "Found a record in CachedGroupMembers with Via referencing not existing record."
             );
 
@@ -378,8 +380,8 @@ push @CHECKS, 'CGM vs. GM' => sub {
         condition => 's.ImmediateParentId != s.GroupId',
         action => sub {
             my $id = shift;
-            return unless prompt_delete(
-                'CGM.{ImmediateParentId,MemberId}->CGM.{GroupId, MemberId}',
+            return unless prompt(
+                'Delete', 'CGM.{ImmediateParentId,MemberId}->CGM.{GroupId, MemberId}',
                 "Found a record in CachedGroupMembers that referencing not existant record in CachedGroupMembers table."
             );
 
@@ -396,8 +398,8 @@ push @CHECKS, 'CGM vs. GM' => sub {
         condition => 's.ImmediateParentId != s.GroupId',
         action => sub {
             my $id = shift;
-            return unless prompt_delete(
-                'CGM.{GroupId, ImmediateParentId}->CGM.{GroupId, MemberId}',
+            return unless prompt(
+                'Delete', 'CGM.{GroupId, ImmediateParentId}->CGM.{GroupId, MemberId}',
                 "Found a record in CachedGroupMembers that referencing not existant record in CachedGroupMembers table."
             );
 
@@ -430,8 +432,8 @@ END
 
         my $action = sub {
             my %props = @_;
-            return unless prompt_create(
-                'recursive CGMs',
+            return unless prompt(
+                'Create', 'recursive CGMs',
                 "Found records in CachedGroupMembers table without recursive duplicates."
             );
             my $cgm = create_record( 'CachedGroupMembers', %props );
@@ -739,7 +741,8 @@ sub create_record {
 }
 
 { my %cached_answer;
-sub prompt_delete {
+sub prompt {
+    my $action = shift;
     my $token = shift;
     my $msg = shift;
 
@@ -749,24 +752,7 @@ sub prompt_delete {
     return $cached_answer{ $token } if exists $cached_answer{ $token };
 
     print $msg, "\n";
-    print "Delete ALL records with the same defect? [N]: ";
-    my $a = <STDIN>;
-    return $cached_answer{ $token } = 1 if $a =~ /^(y|yes)$/i;
-    return $cached_answer{ $token } = 0;
-} }
-
-{ my %cached_answer;
-sub prompt_create {
-    my $token = shift;
-    my $msg = shift;
-
-    return 0 unless $opt{'resolve'};
-    return 1 if $opt{'force'};
-
-    return $cached_answer{ $token } if exists $cached_answer{ $token };
-
-    print $msg, "\n";
-    print "Create ALL records with the same defect? [N]: ";
+    print "$action ALL records with the same defect? [N]: ";
     my $a = <STDIN>;
     return $cached_answer{ $token } = 1 if $a =~ /^(y|yes)$/i;
     return $cached_answer{ $token } = 0;
