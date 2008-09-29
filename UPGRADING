@@ -16,6 +16,13 @@ accidentally damage your database and lose data or worse.
 
 *******
 
+UPGRADING FROM 3.8.1 and earlier - Changes:
+
+= Rights changes =
+
+Now, if you want any user to be able to access the Approvals tools (a.k.a.  the
+Approvals tab), you must grant that user the "ShowApprovalsTab" right.
+
 UPGRADING FROM 3.8.0 and earlier - Changes:
 
 Searches for bookmarked tickets have been reimplemented and syntax has

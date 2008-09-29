@@ -77,9 +77,6 @@ my $basetabs = {     A => { title => loc('Homepage'),
                     C => { title => loc('Tools'),
                            path => 'Tools/index.html'
                          },
-                    P => { title => loc('Approval'),
-                           path => 'Approvals/'
-                         },
                  };
 
 if ($session{'CurrentUser'}->HasRight( Right => 'ShowConfigTab', 
@@ -94,6 +91,13 @@ if ($session{'CurrentUser'}->HasRight( Right => 'ModifySelf',
     $basetabs->{K} = { title => loc('Preferences'),
                        path => 'Prefs/Other.html'
 		     };
+}
+
+if ($session{'CurrentUser'}->HasRight( Right => 'ShowApprovalsTab',
+                        Object => $RT::System )) {
+    $basetabs->{P} = { title => loc('Approval'),
+                        path => 'Approvals/'
+            };
 }
 
 if (!defined $toptabs) {
