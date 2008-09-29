@@ -600,6 +600,68 @@ push @CHECKS, Attributes => sub {
     }
 };
 
+# Fix situations when Creator or LastUpdatedBy references ACL equivalence
+# group of a user instead of user
+push @CHECKS, 'FIX: LastUpdatedBy and Creator' => sub {
+    my %fix = ();
+    foreach my $model ( @models ) {
+        my $class = "RT::$model";
+        my $object = $class->new( $RT::SystemUser );
+        foreach my $column ( qw(LastUpdatedBy Creator) ) {
+            next unless $object->_Accessible( $column, 'auto' );
+
+            my $table = m2t($model);
+            my $query = <<END;
+SELECT m.id, g.id, g.Instance
+FROM
+    Groups g JOIN $table m
+WHERE
+    g.Domain = ?
+    AND g.Type = ?
+    AND g.id = m.$column
+END
+            my $action = sub {
+                my ($gid, $uid) = @_;
+                return unless prompt(
+                    Update => 'FIX: LastUpdatedBy and Creator',
+                    "Looks like there were a bug in old versions of RT back in 2006\n"
+                    ."that has been fixed. If other checks are ok then it's ok to update\n"
+                    ."these records to point them to users instead of groups"
+                );
+                $fix{ $gid } = $uid;
+            };
+
+            my $sth = execute_query( $query, 'ACLEquivalence', 'UserEquiv' );
+            while ( my ($rid, $gid, $uid) = $sth->fetchrow_array ) {
+                print STDERR "Record #$rid in $table refers to ACL equivalence group #$gid of user #$uid\n";
+                print STDERR "when must reference user.\n";
+                $action->( $gid, $uid );
+                if ( keys( %fix ) > 1000 ) {
+                    $sth->finish;
+                    last;
+                }
+            }
+        }
+    }
+
+    if ( keys %fix ) {
+        foreach my $model ( @models ) {
+            my $class = "RT::$model";
+            my $object = $class->new( $RT::SystemUser );
+            foreach my $column ( qw(LastUpdatedBy Creator) ) {
+                next unless $object->_Accessible( $column, 'auto' );
+
+                my $table = m2t($model);
+                my $query = "UPDATE $table SET $column = ? WHERE $column = ?";
+                while ( my ($gid, $uid) = each %fix ) {
+                    execute_query( $query, $uid, $gid );
+                }
+            }
+        }
+        $redo_check{'FIX: LastUpdatedBy and Creator'} = 1;
+    }
+};
+
 push @CHECKS, 'LastUpdatedBy and Creator' => sub {
     foreach my $model ( @models ) {
         my $class = "RT::$model";
