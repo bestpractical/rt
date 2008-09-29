@@ -676,7 +676,7 @@ push @CHECKS, 'LastUpdatedBy and Creator' => sub {
 };
 my %CHECKS = @CHECKS;
 
-@do_check = keys %CHECKS;
+@do_check = do { my $i = 1; grep $i++%2, @CHECKS };
 
 while ( my $check = shift @do_check ) {
     $CHECKS{ $check }->();
