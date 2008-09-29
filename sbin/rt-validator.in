@@ -528,9 +528,10 @@ push @CHECKS, 'Transactions -> other' => sub {
     );
     # Reminders
     check_integrity(
-        'Transactions', 'NewValue' => 'Queues', 'id',
-        condition   => 's.Type IN (?, ?, ?)',
-        bind_values => [ 'AddReminder', 'OpenReminder', 'ResolveReminder' ],
+        'Transactions', 'NewValue' => 'Tickets', 'id',
+        join_condition => 't.Type = ?',
+        condition      => 's.Type IN (?, ?, ?)',
+        bind_values    => [ 'reminder', 'AddReminder', 'OpenReminder', 'ResolveReminder' ],
     );
 };
 
