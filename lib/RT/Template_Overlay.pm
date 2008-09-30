@@ -346,13 +346,10 @@ sub _Parse {
         $content = "\n".$content;
     }
 
-    # Re-use the MIMEParser setup code from RT::EmailParser, which
-    # tries to use tmpdirs, falling back to in-memory parsing. But we
-    # don't stick the RT::EmailParser into a lexical because it cleans
-    # out the tmpdir it makes on DESTROY
     my $parser = MIME::Parser->new();
-    $self->{rtparser} = RT::EmailParser->new;
-    $self->{rtparser}->_SetupMIMEParser($parser);
+    $parser->output_to_core(1);
+    $parser->tmp_to_core(1);
+    $parser->use_inner_files(1);
 
     ### Should we forgive normally-fatal errors?
     $parser->ignore_errors(1);
@@ -438,7 +435,6 @@ sub _ParseContent {
 sub _DowngradeFromHTML {
     my $self = shift;
     my $orig_entity = $self->MIMEObj;
-    die 'hehe';
 
     local $RT::Transaction::PreferredContentType = 'text/plain';
 
