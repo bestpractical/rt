@@ -3,7 +3,9 @@ package RT::Interface::Web::Mason::ApacheHandler;
 use strict;
 use warnings;
 
-use base qw(HTML::Mason::ApacheHandler);
+# use base fails here (see rt3.fsck.com#12555)
+require HTML::Mason::ApacheHandler;
+our @ISA = qw(HTML::Mason::ApacheHandler);
 use RT::Interface::Web::Mason::HandlerMixin;
 
 sub handle_request {
