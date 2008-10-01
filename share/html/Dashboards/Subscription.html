@@ -95,20 +95,24 @@
 <&|/l&>Frequency</&>:
 </td><td class="value">
 <input type="radio" name="Frequency" value="daily" <% $fields{'Frequency'} eq 'daily' ? 'checked="checked"' : "" %>>
-    daily
+    <&|/l&>daily</&>
 </input><br />
 
 <input type="radio" name="Frequency" value="weekly"<% $fields{'Frequency'} eq 'weekly' ? 'checked="checked"' : "" %>>
-weekly</input>, on
+<&|/l&>weekly</&></input>, <&|/l&>on</&>
 <select name="Dow">
-%   for my $dow (qw/Monday Tuesday Wednesday Thursday Friday Saturday Sunday/) {
-    <option value="<% $dow %>" <% $fields{'Dow'} eq $dow ? 'selected="selected"' : '' %>><% loc($dow) %></option>
-%   }
+    <option value="Monday" <% $fields{'Dow'} eq 'Monday' ? 'selected="selected"' : '' %>><&|/l&>Monday</&></option>
+    <option value="Tuesday" <% $fields{'Dow'} eq 'Tuesday' ? 'selected="selected"' : '' %>><&|/l&>Tuesday</&></option>
+    <option value="Wednesday" <% $fields{'Dow'} eq 'Wednesday' ? 'selected="selected"' : '' %>><&|/l&>Wednesday</&></option>
+    <option value="Thursday" <% $fields{'Dow'} eq 'Thursday' ? 'selected="selected"' : '' %>><&|/l&>Thursday</&></option>
+    <option value="Friday" <% $fields{'Dow'} eq 'Friday' ? 'selected="selected"' : '' %>><&|/l&>Friday</&></option>
+    <option value="Saturday" <% $fields{'Dow'} eq 'Saturday' ? 'selected="selected"' : '' %>><&|/l&>Saturday</&></option>
+    <option value="Sunday" <% $fields{'Dow'} eq 'Sunday' ? 'selected="selected"' : '' %>><&|/l&>Sunday</&></option>
 </select>
 <br />
 
 <input type="radio" name="Frequency" value="monthly"<% $fields{'Frequency'} eq 'monthly' ? 'checked="checked"' : "" %>>
-monthly</input> , on day
+<&|/l&>monthly</&></input> , <&|/l&>on day</&>
 <select name="Dom">
 %   for my $dom (1..31) {
     <option value="<% $dom %>" <% $fields{'Dom'} == $dom ? 'selected="selected"' : '' %>><% loc($dom) %></option>
@@ -117,7 +121,7 @@ monthly</input> , on day
 <br />
 
 <input type="radio" name="Frequency" value="never" <% $fields{'Frequency'} eq 'never' ? 'checked="checked"' : "" %>>
-    never
+    <&|/l&>never</&>
 </input>
 
 </td></tr>
@@ -134,7 +138,7 @@ monthly</input> , on day
     <option value="<% $formatted %>" <%$selected%>><% $formatted %></option>
 % }
 </select>
-(in <%$timezone%>)
+(<%$timezone%>)
 </td></tr>
 <tr><td class="label">
 <&|/l&>Rows</&>:
