@@ -668,6 +668,10 @@ return 0; # ignore $passed;
     { UserId => 'root',        # - principalid
       Right  => 'SuperUser', },
 
+    { GroupDomain => 'SystemInternal',
+      GroupType => 'privileged',
+      Right  => 'ShowApprovalsTab', },
+
 );
 
 # Predefined searches

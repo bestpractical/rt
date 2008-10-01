@@ -1,3 +1,9 @@
+@ACL = (
+    { GroupDomain => 'SystemInternal',
+      GroupType => 'privileged',
+      Right  => 'ShowApprovalsTab', },
+);
+
 @Final = (
     sub {
         $RT::Logger->debug("Going to adjust dashboards");
