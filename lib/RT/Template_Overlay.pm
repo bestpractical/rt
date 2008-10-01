@@ -312,13 +312,7 @@ sub Parse {
         ($rv, $msg) = $self->_Parse(@_);
     }
 
-    # We only HTMLify things if the template includes at least one Transaction->Content call.
-    return ($rv, $msg) unless $rv and $self->Content =~ /->\s*Content\b/;
-    
-
-    my $orig_entity = $self->MIMEObj;
     my $mime_type   = $self->MIMEObj->mime_type;
-
     if (defined $mime_type and $mime_type eq 'text/html') {
         $self->_DowngradeFromHTML(@_);
     }
