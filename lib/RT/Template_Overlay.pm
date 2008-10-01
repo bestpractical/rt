@@ -430,21 +430,13 @@ sub _DowngradeFromHTML {
     my $self = shift;
     my $orig_entity = $self->MIMEObj;
 
-    local $RT::Transaction::PreferredContentType = 'text/plain';
-
-    my ($rv, $msg) = $self->_Parse(@_);
-    if (!$rv) {
-        $self->{MIMEObj} = $orig_entity;
-        return;
-    }
+    my $new_entity = $orig_entity->dup; # this will fail badly if we go away from InCore parsing
+    $new_entity->head->mime_attr( "Content-Type" => 'text/plain' );
+    $new_entity->head->mime_attr( "Content-Type.charset" => 'utf-8' );
 
     $orig_entity->head->mime_attr( "Content-Type" => 'text/html' );
     $orig_entity->head->mime_attr( "Content-Type.charset" => 'utf-8' );
     $orig_entity->make_multipart('alternative', Force => 1);
-
-    my $new_entity = $self->{MIMEObj};
-    $new_entity->head->mime_attr( "Content-Type" => 'text/plain' );
-    $new_entity->head->mime_attr( "Content-Type.charset" => 'utf-8' );
 
     require HTML::FormatText;
     require HTML::TreeBuilder;
@@ -458,7 +450,8 @@ sub _DowngradeFromHTML {
     $orig_entity->add_part($new_entity, 0); # plain comes before html
     $self->{MIMEObj} = $orig_entity;
 
-    return ($rv, $msg);
+    return;
+
 }
 
 =head2 CurrentUserHasQueueRight
