@@ -107,7 +107,7 @@ if ( $ARGS{'QuickCreate'} ) {
                         Owner => $ARGS{'Owner'},
                         Status => 'new',
                         # yes! it's Requestors, not Requestor
-                        Requestors => $session{'CurrentUser'}->id,
+                        Requestors => $ARGS{'Requestors'},
                         From => $session{'CurrentUser'}->EmailAddress,
                         Content => $ARGS{'Content'},
                         Subject => $ARGS{'Subject'});
