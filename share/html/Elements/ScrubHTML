@@ -59,7 +59,8 @@ $scrubber->default(
         face   => 1,
         size   => 1,
         target => 1,
-        style  => qr{^color: rgb\(\d+, \d+, \d+\)},
+        style  => qr{^(?:(?:color:\s*rgb\(\d+,\s*\d+,\s*\d+\))|
+                         (?:text-align:\s*))}ix,
     }
 );
 $scrubber->deny(qw[*]);
