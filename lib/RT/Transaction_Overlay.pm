@@ -293,7 +293,7 @@ sub Content {
     );
 
     my $content;
-    if ( my $content_obj = $self->ContentObj ) {
+    if ( my $content_obj = $self->ContentObj( Type => $args{Type} ) ) {
         $content = $content_obj->Content ||'';
 
         if ( lc $content_obj->ContentType eq 'text/html' ) {
@@ -384,6 +384,8 @@ Returns the RT::Attachment object which contains the content for this Transactio
 
 sub ContentObj {
     my $self = shift;
+    my %args = ( Type => $PreferredContentType || 'text/plain',
+                 @_ );
 
     # If we don't have any content, return undef now.
     # Get the set of toplevel attachments to this transaction.
@@ -399,7 +401,7 @@ sub ContentObj {
 
     elsif ( $Attachment->ContentType =~ '^multipart/' ) {
         my $plain_parts = $Attachment->Children;
-        $plain_parts->ContentType( VALUE => ($PreferredContentType || 'text/plain') );
+        $plain_parts->ContentType( VALUE => $args{Type} );
         $plain_parts->LimitNotEmpty;
 
         # If we actully found a part, return its content
