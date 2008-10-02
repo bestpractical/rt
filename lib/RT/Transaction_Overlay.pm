@@ -276,10 +276,11 @@ returns undef.
 Takes a paramhash.  If the $args{'Quote'} parameter is set, wraps this message 
 at $args{'Wrap'}.  $args{'Wrap'} defaults to 70.
 
-If $args{'Type'} is set to C<text/html>, plain texts are upgraded to HTML.
-Otherwise, HTML texts are downgraded to plain text.  If $args{'Type'} is
-missing, it defaults to the value of C<$RT::Transaction::PreferredContentType>,
-if that's missing too, defaults to 'text/plain'.
+If $args{'Type'} is set to C<text/html>, this will return an HTML 
+part of the message, if available.  Otherwise it looks for a text/plain
+part. If $args{'Type'} is missing, it defaults to the value of 
+C<$RT::Transaction::PreferredContentType>, if that's missing too, 
+defaults to 'text/plain'.
 
 =cut
 
@@ -307,7 +308,7 @@ sub Content {
                     HTML::TreeBuilder->new_from_content( $content )
                 );
             }
-	}
+        }
         else {
             $content =~ s/\n-- \n.*?$//s if $args{'Quote'};
             if ($args{Type} eq 'text/html') {
