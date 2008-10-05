@@ -2,6 +2,7 @@ package RT::Action::BulkUpdateLinks;
 use Jifty::Action::Record::Bulk;
 use base 'Jifty::Action::Record::Bulk';
 
+__PACKAGE__->actions([]);
 __PACKAGE__->add_action('RT::Action::DeleteLink' => { trigger => 'delete', final => 1 });
 __PACKAGE__->add_action('RT::Action::UpdateLink');
 
