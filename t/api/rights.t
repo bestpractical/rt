@@ -98,7 +98,7 @@ ok( !$user->has_right( right => 'ReplyToTicket', object => $queue ), "user can't
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($ticket_id) = $ticket->create( queue => $queue_id, subject => 'test');
 ok( $ticket_id, 'new ticket Created' );
-is( $ticket->owner, RT->nobody->id, 'owner of the new ticket is nobody' );
+is( $ticket->owner->id, RT->nobody->id, 'owner of the new ticket is nobody' );
 
 my $status;
 ($status, $msg) = $user->principal->grant_right( object => $queue, right => 'OwnTicket' );
@@ -107,7 +107,7 @@ ok( $user->has_right( right => 'OwnTicket', object => $queue ), "user can own ti
 
 ($status, $msg) = $ticket->set_owner( $user_id );
 ok( $status, "successfuly set owner: $msg" );
-is( $ticket->owner, $user_id, "set correct owner" );
+is( $ticket->owner->id, $user_id, "set correct owner" );
 
 ok( $user->has_right( right => 'ReplyToTicket', object => $ticket ), "user is owner and can reply to ticket" );
 
