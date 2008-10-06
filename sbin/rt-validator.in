@@ -334,7 +334,7 @@ push @CHECKS, 'GMs -> Groups, Members' => sub {
         'GroupMembers', 'GroupId' => 'Groups', 'id',
         action => sub {
             my $id = shift;
-            return unless prompt( 'Delete', 'GroupMembers', $msg );
+            return unless prompt( 'Delete', $msg );
 
             delete_record( 'GroupMembers', $id );
         },
@@ -343,7 +343,7 @@ push @CHECKS, 'GMs -> Groups, Members' => sub {
         'GroupMembers', 'MemberId' => 'Principals', 'id',
         action => sub {
             my $id = shift;
-            return unless prompt( 'Delete', 'GroupMembers', $msg );
+            return unless prompt( 'Delete', $msg );
 
             delete_record( 'GroupMembers', $id );
         },
@@ -360,7 +360,7 @@ push @CHECKS, 'CGM vs. GM' => sub {
         action => sub {
             my $id = shift;
             return unless prompt(
-                'Create', 'direct GM->CGM',
+                'Create',
                 "Found a record in GroupMembers that has no direct duplicate in CachedGroupMembers table."
             );
 
@@ -384,7 +384,7 @@ push @CHECKS, 'CGM vs. GM' => sub {
         action => sub {
             my $id = shift;
             return unless prompt(
-                'Delete', 'CGM->GM',
+                'Delete',
                 "Found a record in CachedGroupMembers for a (Group, Member) pair"
                 ." that doesn't exist in GroupMembers table."
             );
@@ -400,7 +400,7 @@ push @CHECKS, 'CGM vs. GM' => sub {
         action => sub {
             my $id = shift;
             return unless prompt(
-                'Create', 'direct G->CGM',
+                'Create',
                 "Found a record in Groups that has no direct"
                 ." duplicate in CachedGroupMembers table."
             );
@@ -428,7 +428,7 @@ push @CHECKS, 'CGM vs. GM' => sub {
         action => sub {
             my $id = shift;
             return unless prompt(
-                'Delete', 'CGM->Group',
+                'Delete',
                 "Found a record in CachedGroupMembers for a group that doesn't exist."
             );
 
@@ -442,7 +442,7 @@ push @CHECKS, 'CGM vs. GM' => sub {
         action => sub {
             my $id = shift;
             return unless prompt(
-                'Delete', 'CGM.Via->CGM',
+                'Delete',
                 "Found a record in CachedGroupMembers with Via referencing not existing record."
             );
 
@@ -459,7 +459,7 @@ push @CHECKS, 'CGM vs. GM' => sub {
         action => sub {
             my $id = shift;
             return unless prompt(
-                'Delete', 'CGM.{ImmediateParentId,MemberId}->CGM.{GroupId, MemberId}',
+                'Delete',
                 "Found a record in CachedGroupMembers that referencing not existant record in CachedGroupMembers table."
             );
 
@@ -476,7 +476,7 @@ push @CHECKS, 'CGM vs. GM' => sub {
         action => sub {
             my $id = shift;
             return unless prompt(
-                'Delete', 'CGM.{GroupId, ImmediateParentId}->CGM.{GroupId, MemberId}',
+                'Delete',
                 "Found a record in CachedGroupMembers that referencing not existant record in CachedGroupMembers table."
             );
 
@@ -509,7 +509,7 @@ END
         my $action = sub {
             my %props = @_;
             return unless prompt(
-                'Create', 'recursive CGMs',
+                'Create',
                 "Found records in CachedGroupMembers table without recursive duplicates."
             );
             my $cgm = create_record( 'CachedGroupMembers', %props );
@@ -699,7 +699,7 @@ END
             my $action = sub {
                 my ($gid, $uid) = @_;
                 return unless prompt(
-                    Update => 'FIX: LastUpdatedBy and Creator',
+                    'Update',
                     "Looks like there were a bug in old versions of RT back in 2006\n"
                     ."that has been fixed. If other checks are ok then it's ok to update\n"
                     ."these records to point them to users instead of groups"
@@ -884,8 +884,9 @@ sub execute_query {
 { my %cached_answer;
 sub prompt {
     my $action = shift;
-    my $token = shift;
     my $msg = shift;
+
+    my $token = join ':', caller;
 
     return 0 unless $opt{'resolve'};
     return 1 if $opt{'force'};
