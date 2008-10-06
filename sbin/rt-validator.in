@@ -583,6 +583,7 @@ push @CHECKS, 'Tickets -> other' => sub {
     check_integrity(
         'Tickets', 'Owner' => 'Users', 'id',
     );
+    # XXX: check that owner is only member of owner role group
 };
 
 
