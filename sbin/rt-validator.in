@@ -161,6 +161,43 @@ my @models = qw(
     User
 );
 
+my %redo_on;
+$redo_on{'Delete'} = {
+    ACL => [],
+
+    Attributes => [],
+
+    Links => [],
+
+    CustomFields => [],
+    CustomFieldValues => [],
+    ObjectCustomFields => [],
+    ObjectCustomFieldValues => [],
+
+    Queues => [],
+
+    Scrips => [],
+    ScripActions => [],
+    ScripConditions => [],
+    Templates => [],
+
+    Tickets => [ 'Tickets -> other' ],
+    Transactions => [ 'Attachments -> other' ],
+
+    Principals => ['User <-> ACL equivalence group', 'GMs -> Groups, Members' ],
+    Users => ['User <-> ACL equivalence group', 'GMs -> Groups, Members' ],
+    Groups => ['User <-> ACL equivalence group', 'GMs -> Groups, Members', 'CGM vs. GM' ],
+
+    GroupMembers => [ 'CGM vs. GM' ],
+    CachedGroupMembers => [ 'CGM vs. GM' ],
+};
+$redo_on{'Create'} = {
+    Principals => ['User <-> ACL equivalence group', 'GMs -> Groups, Members' ],
+    Groups => ['User <-> ACL equivalence group', 'GMs -> Groups, Members', 'CGM vs. GM' ],
+    GroupMembers => [ 'CGM vs. GM' ],
+    CachedGroupMembers => [ 'CGM vs. GM' ],
+};
+
 { my %cache = ();
 sub m2t($) {
     my $model = shift;
@@ -268,7 +305,6 @@ push @CHECKS, 'GMs -> Groups, Members' => sub {
             return unless prompt( 'Delete', 'GroupMembers', $msg );
 
             delete_record( 'GroupMembers', $id );
-            $redo_check{'CGM vs. GM'} = 1;
         },
     );
     check_integrity(
@@ -278,7 +314,6 @@ push @CHECKS, 'GMs -> Groups, Members' => sub {
             return unless prompt( 'Delete', 'GroupMembers', $msg );
 
             delete_record( 'GroupMembers', $id );
-            $redo_check{'CGM vs, GM'} = 1;
         },
     );
 };
@@ -323,7 +358,6 @@ push @CHECKS, 'CGM vs. GM' => sub {
             );
 
             delete_record( 'CachedGroupMembers', $id );
-            $redo_check{'CGM vs. GM'} = 1;
         },
     );
     # each group should have a CGM record where MemberId == GroupId
@@ -367,7 +401,6 @@ push @CHECKS, 'CGM vs. GM' => sub {
             );
 
             delete_record( 'CachedGroupMembers', $id );
-            $redo_check{'CGM vs. GM'} = 1;
         },
     );
     # Via
@@ -382,7 +415,6 @@ push @CHECKS, 'CGM vs. GM' => sub {
             );
 
             delete_record( 'CachedGroupMembers', $id );
-            $redo_check{'CGM vs. GM'} = 1;
         },
     );
 
@@ -400,7 +432,6 @@ push @CHECKS, 'CGM vs. GM' => sub {
             );
 
             delete_record( 'CachedGroupMembers', $id );
-            $redo_check{'CGM vs. GM'} = 1;
         },
     );
 
@@ -418,7 +449,6 @@ push @CHECKS, 'CGM vs. GM' => sub {
             );
 
             delete_record( 'CachedGroupMembers', $id );
-            $redo_check{'CGM vs. GM'} = 1;
         },
     );
 
@@ -799,7 +829,14 @@ sub delete_record {
     my ($table, $id) = (@_);
     print "Deleting record #$id in $table\n" if $opt{'verbose'};
     my $query = "DELETE FROM $table WHERE id = ?";
+    $redo_check{ $_ } = 1 foreach @{ $redo_on{'Delete'}{ $table } || [] };
     return execute_query( $query, $id );
+}
+
+sub create_record {
+    print "Creating a record in $_[0]\n" if $opt{'verbose'};
+    $redo_check{ $_ } = 1 foreach @{ $redo_on{'Create'}{ $_[0] } || [] };
+    return $RT::Handle->Insert( @_ );
 }
 
 sub execute_query {
@@ -810,11 +847,6 @@ sub execute_query {
     my $sth = $dbh->prepare( $query ) or die "couldn't prepare $query\n\tError: ". $dbh->errstr;
     $sth->execute( @binds ) or die "couldn't execute $query\n\tError: ". $sth->errstr;
     return $sth;
-}
-
-sub create_record {
-    print "Creating a record in $_[0]\n" if $opt{'verbose'};
-    return $RT::Handle->Insert( @_ );
 }
 
 { my %cached_answer;
