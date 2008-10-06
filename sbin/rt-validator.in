@@ -85,6 +85,7 @@ GetOptions(
 );
 
 usage() unless $opt{'check'};
+usage_warning() if $opt{'resolve'} && !$opt{'force'};
 
 sub usage {
     print STDERR <<END;
@@ -109,6 +110,19 @@ records or ressurect accidentally deleted.
 
 END
     exit 1;
+}
+
+sub usage_warning {
+    print <<END;
+This utility can fix some issues with DB by creating or updating. In some
+cases there is no enough data to resurect a missing record then records which
+refers to missing can be deleted. It's up to you to decide what to do.
+
+In any case it's highly recommended to have a backup before resolving anything.
+
+Press enter to continue.
+END
+    <>;
 }
 
 use RT;
