@@ -49,7 +49,7 @@ diag "current user has no right to own, nobody selected as owner on create" if $
     my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     $ticket->load( $id );
     ok $ticket->id, 'loaded the ticket';
-    is $ticket->owner, RT->nobody->id, 'correct owner';
+    is $ticket->owner->id, RT->nobody->id, 'correct owner';
 }
 
 diag "user can chose owner of a new ticket" if $ENV{TEST_VERBOSE};
@@ -75,7 +75,7 @@ diag "user can chose owner of a new ticket" if $ENV{TEST_VERBOSE};
     my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     $ticket->load( $id );
     ok $ticket->id, 'loaded the ticket';
-    is $ticket->owner, $user_b->id, 'correct owner';
+    is $ticket->owner->id, $user_b->id, 'correct owner';
 }
 
 my $agent_b = RT::Test::Web->new;
@@ -90,7 +90,7 @@ diag "user A can not change owner after create" if $ENV{TEST_VERBOSE};
         subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
-    is $ticket->owner, $user_b->id, 'correct owner';
+    is $ticket->owner->id, $user_b->id, 'correct owner';
 
     # try the following group of tests twice with different agents(logins)
     my $test_cb = sub  {
@@ -111,7 +111,7 @@ diag "user A can not change owner after create" if $ENV{TEST_VERBOSE};
         my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
         $ticket->load( $id );
         ok $ticket->id, 'loaded the ticket';
-        is $ticket->owner, $user_b->id, 'correct owner';
+        is $ticket->owner->id, $user_b->id, 'correct owner';
     };
 
     $test_cb->($agent_a);
@@ -128,7 +128,7 @@ diag "on reply correct owner is selected" if $ENV{TEST_VERBOSE};
         subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
-    is $ticket->owner, $user_b->id, 'correct owner';
+    is $ticket->owner->id, $user_b->id, 'correct owner';
 
     $agent_a->goto_ticket( $id );
     $agent_a->follow_link_ok(text => 'Reply');
@@ -140,7 +140,7 @@ diag "on reply correct owner is selected" if $ENV{TEST_VERBOSE};
     $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     $ticket->load( $id );
     ok $ticket->id, 'loaded the ticket';
-    is $ticket->owner, $user_b->id, 'correct owner';
+    is $ticket->owner->id, $user_b->id, 'correct owner';
 }
 
 ok( RT::Test->set_rights(
@@ -156,7 +156,7 @@ diag "Couldn't take without coresponding right" if $ENV{TEST_VERBOSE};
         subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
-    is $ticket->owner, RT->nobody->id, 'correct owner';
+    is $ticket->owner->id, RT->nobody->id, 'correct owner';
 
     $agent_a->goto_ticket( $id );
     ok !($agent_a->find_all_links( text => 'Take' ))[0],
@@ -174,7 +174,7 @@ diag "Couldn't steal without coresponding right" if $ENV{TEST_VERBOSE};
         subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
-    is $ticket->owner, $user_b->id, 'correct owner';
+    is $ticket->owner->id, $user_b->id, 'correct owner';
 
     $agent_a->goto_ticket( $id );
     ok !($agent_a->find_all_links( text => 'Steal' ))[0],
@@ -195,7 +195,7 @@ diag "TakeTicket require OwnTicket to work" if $ENV{TEST_VERBOSE};
         subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
-    is $ticket->owner, RT->nobody->id, 'correct owner';
+    is $ticket->owner->id, RT->nobody->id, 'correct owner';
 
     $agent_a->goto_ticket( $id );
     ok !($agent_a->find_all_links( text => 'Take' ))[0],
@@ -217,7 +217,7 @@ diag "TakeTicket+OwnTicket work" if $ENV{TEST_VERBOSE};
         subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
-    is $ticket->owner, RT->nobody->id, 'correct owner';
+    is $ticket->owner->id, RT->nobody->id, 'correct owner';
 
     $agent_a->goto_ticket( $id );
     ok !($agent_a->find_all_links( text => 'Steal' ))[0],
@@ -227,7 +227,7 @@ diag "TakeTicket+OwnTicket work" if $ENV{TEST_VERBOSE};
     $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     $ticket->load( $id );
     ok $ticket->id, 'loaded the ticket';
-    is $ticket->owner, $user_a->id, 'correct owner';
+    is $ticket->owner->id, $user_a->id, 'correct owner';
 }
 
 diag "TakeTicket+OwnTicket don't work when owner is not nobody" if $ENV{TEST_VERBOSE};
@@ -239,7 +239,7 @@ diag "TakeTicket+OwnTicket don't work when owner is not nobody" if $ENV{TEST_VER
         subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
-    is $ticket->owner, $user_b->id, 'correct owner';
+    is $ticket->owner->id, $user_b->id, 'correct owner';
 
     $agent_a->goto_ticket( $id );
     ok !($agent_a->find_all_links( text => 'Take' ))[0],
@@ -262,7 +262,7 @@ diag "StealTicket require OwnTicket to work" if $ENV{TEST_VERBOSE};
         subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
-    is $ticket->owner, $user_b->id, 'correct owner';
+    is $ticket->owner->id, $user_b->id, 'correct owner';
 
     $agent_a->goto_ticket( $id );
     ok !($agent_a->find_all_links( text => 'Steal' ))[0],
@@ -285,7 +285,7 @@ diag "StealTicket+OwnTicket work" if $ENV{TEST_VERBOSE};
         subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
-    is $ticket->owner, $user_b->id, 'correct owner';
+    is $ticket->owner->id, $user_b->id, 'correct owner';
 
     $agent_a->goto_ticket( $id );
     ok !($agent_a->find_all_links( text => 'Take' ))[0],
@@ -295,7 +295,7 @@ diag "StealTicket+OwnTicket work" if $ENV{TEST_VERBOSE};
     $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     $ticket->load( $id );
     ok $ticket->id, 'loaded the ticket';
-    is $ticket->owner, $user_a->id, 'correct owner';
+    is $ticket->owner->id, $user_a->id, 'correct owner';
 }
 
 diag "StealTicket+OwnTicket don't work when owner is nobody" if $ENV{TEST_VERBOSE};
@@ -306,7 +306,7 @@ diag "StealTicket+OwnTicket don't work when owner is nobody" if $ENV{TEST_VERBOS
         subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
-    is $ticket->owner, RT->nobody->id, 'correct owner';
+    is $ticket->owner->id, RT->nobody->id, 'correct owner';
 
     $agent_a->goto_ticket( $id );
     ok !($agent_a->find_all_links( text => 'Steal' ))[0],
@@ -328,7 +328,7 @@ diag "no Steal link when owner nobody" if $ENV{TEST_VERBOSE};
         subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
-    is $ticket->owner, RT->nobody->id, 'correct owner';
+    is $ticket->owner->id, RT->nobody->id, 'correct owner';
 
     $agent_a->goto_ticket( $id );
     ok !($agent_a->find_all_links( text => 'Steal' ))[0],
@@ -346,7 +346,7 @@ diag "no Take link when owner is not nobody" if $ENV{TEST_VERBOSE};
         subject => 'test',
     );
     ok $id, 'created a ticket #'. $id or diag "error: $msg";
-    is $ticket->owner, $user_b->id, 'correct owner';
+    is $ticket->owner->id, $user_b->id, 'correct owner';
 
     $agent_a->goto_ticket( $id );
     ok !($agent_a->find_all_links( text => 'Take' ))[0],

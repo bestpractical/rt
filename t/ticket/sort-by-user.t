@@ -59,7 +59,7 @@ sub add_tix_from_data {
 
         my ( $id, undef, $msg ) = $t->create( %args, queue => $queue->id );
         if ( $args{'owner'} ) {
-            is $t->owner, $args{'owner'}, "owner is correct";
+            is $t->owner->id, $args{'owner'}, "owner is correct";
         }
         if ( $args{'creator'} ) {
             is $t->creator->id, $args{'creator'}, "creator is correct";

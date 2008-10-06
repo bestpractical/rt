@@ -83,7 +83,7 @@ plan tests => 22;
 	ok( $id, "load ticket" ) or diag( "error: $msg" );
 	($status, $msg) = $ticket->set_owner( $user->id );
 	ok( $status, "owner successfuly set") or diag( "error: $msg" );
-	is( $ticket->owner, $user->id, "owner successfuly set") or diag( "error: $msg" );
+	is( $ticket->owner->id, $user->id, "owner successfuly set") or diag( "error: $msg" );
 
 	my $member = $ticket->owner_obj;
 	my $shredder = RT::Test::Shredder::shredder_new();
@@ -93,6 +93,6 @@ plan tests => 22;
 	$ticket = RT::Model::Ticket->new(current_user => RT->system_user );
 	($status, $msg) = $ticket->load( $id );
 	ok( $id, "load ticket" ) or diag( "error: $msg" );
-	is( $ticket->owner, RT->nobody->id, "owner switched back to nobody" );
+	is( $ticket->owner->id, RT->nobody->id, "owner switched back to nobody" );
 	is( $ticket->owner_obj->id, RT->nobody->id, "and owner role group member is nobody");
 }
