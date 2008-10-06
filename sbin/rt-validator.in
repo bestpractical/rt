@@ -264,12 +264,31 @@ push @CHECKS, 'User <-> ACL equivalence group' => sub {
         'Users', 'id' => 'Groups', 'Instance',
         join_condition   => 't.Domain = ? AND t.Type = ?',
         bind_values => [ 'ACLEquivalence',  'UserEquiv' ],
+        action => sub {
+            my $id = shift;
+            return unless prompt(
+                'Create', "Found an user that has no ACL equivalence group."
+            );
+
+            my $gid = create_record( 'Groups',
+                Domain => 'ACLEquivalence', Type => 'UserEquiv', Instance => $id,
+            );
+            $redo_check{'CGM vs. GM'} = 1;
+        },
     );
     # from group to user
     check_integrity(
         'Groups', 'Instance' => 'Users', 'id',
         condition   => 's.Domain = ? AND s.Type = ?',
         bind_values => [ 'ACLEquivalence',  'UserEquiv' ],
+        action => sub {
+            my $id = shift;
+            return unless prompt(
+                'Delete', "Found an user ACL equivalence group, but there is no user."
+            );
+
+            delete_record( 'Groups', $id );
+        },
     );
     # one ACL equiv group for each user
     check_uniqueness(
@@ -294,6 +313,14 @@ push @CHECKS, 'Queues <-> Role Groups' => sub {
         'Groups', 'Instance' => 'Queues', 'id',
         condition   => 's.Domain = ?',
         bind_values => [ 'RT::Queue-Role' ],
+        action => sub {
+            my $id = shift;
+            return unless prompt(
+                'Delete', "Found role group of not existant queue."
+            );
+
+            delete_record( 'Groups', $id );
+        },
     );
 };
 
@@ -311,6 +338,14 @@ push @CHECKS, 'Tickets <-> Role Groups' => sub {
         'Groups', 'Instance' => 'Tickets', 'id',
         condition   => 's.Domain = ?',
         bind_values => [ 'RT::Ticket-Role' ],
+        action => sub {
+            my $id = shift;
+            return unless prompt(
+                'Delete', "Found a role group of not existant ticket."
+            );
+
+            delete_record( 'Groups', $id );
+        },
     );
 };
 
@@ -532,6 +567,15 @@ END
 push @CHECKS, 'Tickets -> other' => sub {
     check_integrity(
         'Tickets', 'EffectiveId' => 'Tickets', 'id',
+        action => sub {
+            my $id = shift;
+            return unless prompt(
+                'Delete',
+                "Found a ticket that's been merged into a ticket that don't exist anymore."
+            );
+
+            delete_record( 'Tickets', $id );
+        },
     );
     check_integrity(
         'Tickets', 'Queue' => 'Queues', 'id',
@@ -548,6 +592,14 @@ push @CHECKS, 'Transactions -> other' => sub {
             'Transactions', 'ObjectId' => m2t($model), 'id',
             condition   => 's.ObjectType = ?',
             bind_values => [ "RT::$model" ],
+            action => sub {
+                my $id = shift;
+                return unless prompt(
+                    'Delete', "Found a transaction without object."
+                );
+
+                delete_record( 'Transactions', $id );
+            },
         );
     }
     # type = CustomField
