@@ -211,17 +211,49 @@ my (@do_check, %redo_check);
 
 my @CHECKS;
 foreach my $table ( qw(Users Groups) ) {
-    push @CHECKS, "Principals<->$table" => sub {
+    push @CHECKS, "$table -> Principals" => sub {
+        my $msg = "A record in $table refers not existing record in Principals."
+            ." The script can either create missing record in Principals"
+            ." or delete record in $table.";
+        my ($type) = ($table =~ /^(.*)s$/);
         check_integrity(
             $table, 'id' => 'Principals', 'id',
-            join_condition   => 't.PrincipalType = ?',
-            bind_values => [ $table =~ /^(.*)s$/ ],
+            join_condition => 't.PrincipalType = ?',
+            bind_values => [ $type ],
+            action => sub {
+                my $id = shift;
+                return unless my $a = prompt_action( ['Delete', 'create'], $msg );
+
+                if ( $a eq 'd' ) {
+                    delete_record( $table, $id );
+                }
+                elsif ( $a eq 'c' ) {
+                    my $principal_id = create_record( 'Principals',
+                        id => $id, PrincipalType => $type, ObjectId => $id, Disabled => 0
+                    );
+                }
+                else {
+                    die "Unknown action '$a'";
+                }
+            },
         );
+    };
+
+    push @CHECKS, "Principals -> $table" => sub {
+        my $msg = "A record in Principals refers not existing record in $table."
+            ." In some cases it's possible to resurrect manually such records,"
+            ." but this utility can only delete";
 
         check_integrity(
             'Principals', 'id' => $table, 'id',
             condition   => 's.PrincipalType = ?',
             bind_values => [ $table =~ /^(.*)s$/ ],
+            action => sub {
+                my $id = shift;
+                return unless prompt( 'Delete', $msg );
+
+                delete_record( 'Principals', $id );
+            },
         );
     };
 }
@@ -865,6 +897,28 @@ sub prompt {
     my $a = <STDIN>;
     return $cached_answer{ $token } = 1 if $a =~ /^(y|yes)$/i;
     return $cached_answer{ $token } = 0;
+} }
+
+{ my %cached_answer;
+sub prompt_action {
+    my $actions = shift;
+    my $msg = shift;
+
+    my $token = join ':', caller;
+
+    return '' unless $opt{'resolve'};
+    return '' if $opt{'force'};
+    return $cached_answer{ $token } if exists $cached_answer{ $token };
+
+    print $msg, "\n";
+    print join( ' or ', @$actions ) ." ALL records with the same defect? [do nothing]: ";
+    my $a = <STDIN>;
+    chomp $a;
+    return $cached_answer{ $token } = '' unless $a;
+    foreach ( grep rindex(lc $_, lc $a, 0) == 0, @$actions ) {
+        return $cached_answer{ $token } = lc substr $a, 0, 1;
+    }
+    return $cached_answer{ $token } = '';
 } }
 
 1;
