@@ -105,7 +105,9 @@ sub _compute_possible_queues {
     
     my $queues;
     while (my $queue = $q->next) {
-        if ($queue->current_user_has_right('CreateTicket')) {
+        if (   $queue->current_user_has_right('CreateTicket')
+            || $queue->id eq $self->record->queue->id )
+        {
             push @$queues, { display => $queue->name, value => $queue->id };
         }
     }
