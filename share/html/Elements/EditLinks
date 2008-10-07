@@ -60,39 +60,10 @@
 % } else {
 <i><&|/l&>Enter objects or URIs to link objects to. Separate multiple entries with spaces.</&></i><br />
 % }
-<table>
-% if ($merge) {
-  <tr>
-    <td class="label"><&|/l&>Merge into</&>:</td>
-    <td class="entry"><input name="<%$id%>-MergeInto" /> <i><&|/l&>(only one ticket)</&></i></td>
-  </tr>
-% }
-  <tr>
-    <td class="label"><&|/l&>Depends on</&>:</td>
-    <td class="entry"><input name="<%$id%>-DependsOn" /></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Depended on by</&>:</td>
-    <td class="entry"><input name="DependsOn-<%$id%>" /></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Parents</&>:</td>
-    <td class="entry"><input name="<%$id%>-MemberOf" /></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Children</&>:</td>
-    <td class="entry"> <input name="MemberOf-<%$id%>" /></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Refers to</&>:</td>
-    <td class="entry"><input name="<%$id%>-RefersTo" /></td>
-  </tr>
-  <tr>
-    <td class="label"><&|/l&>Referred to by</&>:</td>
-    <td class="entry"> <input name="RefersTo-<%$id%>" /></td>
-  </tr>
-% $m->callback( Callbackname => 'new_link' );
-</table>
+% for my $field ( qw/id merge_into depends_on depended_on_by member_of has_member refers_to referred_to_by/ ) {
+% if ( $field ne 'merge_into' || $merge ) {
+<% $action->form_field( $field ) %>
+% } }
 </div>
 
 <div class="divclear">
@@ -104,6 +75,9 @@ if ($object && $object->id) {
 } else {
     $id = 'new';
 }
+
+my $action = Jifty->web->new_action( class => 'RT::Action::CreateTicketLinks' );
+
 </%INIT>
       
 <%ARGS>
