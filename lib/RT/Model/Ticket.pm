@@ -147,7 +147,7 @@ our %LINKTYPEMAP = (
         type => 'MemberOf',
         mode => 'base',
     },
-    has_member => {
+    HasMember => {
         type => 'MemberOf',
         mode => 'base',
     },
