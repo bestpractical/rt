@@ -54,7 +54,7 @@
 % $m->callback(Callbackname => 'before_action_list', Actions => \@results, args_ref => \%ARGS, ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="ModifyLinks.html" method="post">
+<% Jifty->web->form->start( submit_to => '?id=' . $Ticket->id ) %>
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
 % $m->callback( Callbackname => 'form_start', args_ref => \%ARGS );
 % my (@extra);
