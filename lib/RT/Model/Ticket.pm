@@ -181,7 +181,7 @@ our %LINKTYPEMAP = (
 our %LINKDIRMAP = (
     MemberOf => {
         base   => 'MemberOf',
-        target => 'has_member',
+        target => 'HasMember',
     },
     RefersTo => {
         base   => 'RefersTo',
