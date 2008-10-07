@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test; use Test::More tests => 91;
+use RT::Test; use Test::More tests => 93;
 
 
 my $queue = RT::Test->load_or_create_queue( name => 'Regression' );
@@ -99,8 +99,13 @@ diag "user A can not change owner after create" if $ENV{TEST_VERBOSE};
         diag("Going to ticket $id");
         $agent->follow_link_ok(text => 'Basics');
         my $form = $agent->form_number(3);
-        is $form->value('owner'), $user_b->id, 'correct owner selected';
-        $agent->select('owner', RT->nobody->id);
+        is $agent->action_field_value(
+            $agent->moniker_for('RT::Action::UpdateTicket'), 'owner'
+          ),
+          $user_b->id, 'correct owner selected';
+        $agent->fill_in_action_ok(
+            $agent->moniker_for("RT::Action::UpdateTicket"),
+            owner => RT->nobody->id );
         $agent->submit;
 
         $agent->content_like(
