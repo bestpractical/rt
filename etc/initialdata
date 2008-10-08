@@ -211,7 +211,7 @@ in the subject line of all future correspondence about this issue. To do so,
 you may reply to this message.
 
                         Thank you,
-                        {$ticket->queue_obj->correspond_address()}
+                        {$ticket->queue->correspond_address}
 
 -------------------------------------------------------------------------
 {$transaction->content()}
@@ -226,7 +226,7 @@ you may reply to this message.
 
 {$transaction->created_as_string}: Request {$ticket->id} was acted upon.
 Transaction: {$transaction->description}
-       Queue: {$ticket->queue_obj->name}
+       Queue: {$ticket->queue->name}
      Subject: {$transaction->subject || $ticket->subject || "(No subject given)"}
        owner: {$ticket->owner_obj->name}
   requestors: {$ticket->role_group("requestor")->member_emails_as_string}
@@ -526,7 +526,7 @@ my $rejected = 0;
 my $links = $self->ticket_obj->depended_on_by;
 foreach my $link (@{ $links->items_array_ref }) {
     my $obj = $link->base_obj;
-    if ($obj->queue_obj->is_active_status($obj->status)) {
+    if ($obj->queue->is_active_status($obj->status)) {
 	if ($obj->type eq 'ticket') {
 	    $obj->comment(
 		content	=> _("Your request was rejected."),
@@ -552,7 +552,7 @@ foreach my $link (@{ $links->items_array_ref }) {
 $links = $self->ticket_obj->depends_on;
 foreach my $link (@{ $links->items_array_ref }) {
     my $obj = $link->target_obj;
-    if ($obj->queue_obj->is_active_status($obj->status)) {
+    if ($obj->queue->is_active_status($obj->status)) {
 	$obj->set_status(
 	    Status	=> 'deleted',
 	    Force	=> 1,

@@ -56,7 +56,7 @@ is($found, 1, 'Reminder successfully added');
 # Change queue
 ok (my ($move_val, $move_msg) = $t->set_queue('reminders tests 2'), 'Moving ticket from queue "reminders tests" to "reminders tests 2"');
 
-is ($t->queue_obj->name, 'reminders tests 2', 'Ticket successfully moved');
+is ($t->queue->name, 'reminders tests 2', 'Ticket successfully moved');
 
 # Check that the new reminder is still there and moved to the new queue
 $reminders = $t->reminders->collection;
@@ -67,7 +67,7 @@ while ( my $reminder = $reminders->next ) {
     next unless $found == 0;
     if ( $reminder->subject =~ m/TestReminder/ ) {
         $found = 1;
-        $ok_queue = 1 if ( $reminder->queue_obj->name eq 'reminders tests 2' );
+        $ok_queue = 1 if ( $reminder->queue->name eq 'reminders tests 2' );
     }
 }
 is($found, 1, 'Reminder successfully added');
