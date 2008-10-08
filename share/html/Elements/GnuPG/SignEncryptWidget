@@ -97,7 +97,7 @@ $ticket_obj => undef
 <%INIT>
 return unless $self;
 
-$queue_obj ||= $ticket_obj->queue_obj if $ticket_obj;
+$queue_obj ||= $ticket_obj->queue if $ticket_obj;
 
 foreach ( qw(sign encrypt) ) {
     $self->{ $_ } = $m->comp( '/Widgets/Form/Boolean:Process',
@@ -122,7 +122,7 @@ return 1 unless $self;
 my $checks_failure = 0;
 
 if ( $self->{'sign'} ) {
-    $queue_obj ||= $ticket_obj->queue_obj
+    $queue_obj ||= $ticket_obj->queue
         if $ticket_obj;
 
     my $address = $self->{'sign_using'};

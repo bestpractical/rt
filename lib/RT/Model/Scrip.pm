@@ -522,7 +522,7 @@ sub has_right {
     if ( $self->SUPER::_value('queue') ) {
         return $args{'principal'}->has_right(
             right  => $args{'right'},
-            object => $self->queue_obj
+            object => $self->queue
         );
     } else {
         return $args{'principal'}->has_right(

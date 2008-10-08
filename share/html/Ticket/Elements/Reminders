@@ -133,7 +133,7 @@ $ticket
 <tr class="input-row">
 <td class="label">
 <label class="horizontal" for="NewReminder-Owner" ><&|/l&>Owner</&>:</label></td><td class="value">
-<& /Elements/SelectOwner, name => 'NewReminder-Owner', queue_obj => $ticket->queue_obj, default=>Jifty->web->current_user->id, default_value => 0 &>
+<& /Elements/SelectOwner, name => 'NewReminder-Owner', queue_obj => $ticket->queue, default=>Jifty->web->current_user->id, default_value => 0 &>
 </td>
 </tr>
 <tr class="input-row">
@@ -156,7 +156,7 @@ $ticket
     <% $reminder->status eq 'resolved' ? 'checked="checked"' : '' %> 
 /> 
     <input type="text" size="15" name="Reminder-Subject-<% $reminder->id %>" value="<%$reminder->subject%>" /> &bull; 
-    <& /Elements/SelectOwner, name => 'Reminder-Owner-'.$reminder->id, queue => $ticket->queue_obj, default => $reminder->owner, default_value => 0  &>
+    <& /Elements/SelectOwner, name => 'Reminder-Owner-'.$reminder->id, queue => $ticket->queue, default => $reminder->owner, default_value => 0  &>
     <& /Elements/SelectDate, name => 'Reminder-Due-'.$reminder->id, default => $reminder->due_obj->date &>
     (<%$reminder->due_obj->unix>0  ? $reminder->due_obj->age_as_string : '' %>)<br />
 </%method>

@@ -71,7 +71,7 @@
 <& /Elements/SelectOwner,
      name         => "owner",
      ticket_obj    => $ticket_obj,
-     queue_obj     => $ticket_obj->queue_obj,
+     queue_obj     => $ticket_obj->queue,
      default_label => _("%1 (Unchanged)", $ticket_obj->owner_obj->name),
      default      => $ARGS{'owner'}
  &>
