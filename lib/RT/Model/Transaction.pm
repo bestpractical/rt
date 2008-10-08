@@ -1088,7 +1088,7 @@ sub current_user_can_see {
 sub check_read_rights {
     my $self = shift;
     my $field = shift;
-    return 1 if $field eq 'object_type';
+    return 1 if defined $field && $field eq 'object_type';
     return $self->current_user_can_see;
 }
 
