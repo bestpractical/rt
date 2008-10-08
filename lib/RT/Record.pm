@@ -1182,11 +1182,11 @@ sub _delete_link {
     if ( $link->id ) {
         my $basetext = $self->format_link(
             object   => $link->base_obj,
-            FallBack => $args{base}
+            fall_back => $args{base}
         );
         my $targettext = $self->format_link(
             object   => $link->target_obj,
-            FallBack => $args{target}
+            fall_back => $args{target}
         );
         my $typetext = $self->format_type( type => $args{type} );
         my $linkid = $link->id;
