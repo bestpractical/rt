@@ -54,7 +54,7 @@
 	        <& /Ticket/Elements/ShowBasics, ticket => $ticket &>
 	  </&>
 
-% if ($ticket->queue_obj->ticket_custom_fields->first) {
+% if ($ticket->queue->ticket_custom_fields->first) {
 	  <&| /Widgets/TitleBox, title => _('Custom Fields'), 
 		title_href => RT->config->get('WebPath')."/Ticket/Modify.html?id=".$ticket->id, 
 		class => 'ticket-info-cfs'  &> 

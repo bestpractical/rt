@@ -60,7 +60,7 @@ my $COLUMN_MAP = {
     queue => {
         title     => 'Queue',
         value     => sub {
-            return $_[0]->queue_obj->name if $_[0]->queue;
+            return $_[0]->queue->name if $_[0]->queue;
             return $_[0]->_('Global');
         },
     },

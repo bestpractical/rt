@@ -251,7 +251,7 @@ my $seen_queues = {};
 while ( my $ticket = $Tickets->next ) {
     next if $seen_queues->{ $ticket->queue }++;
 
-    my $custom_fields = $ticket->queue_obj->ticket_custom_fields;
+    my $custom_fields = $ticket->queue->ticket_custom_fields;
     while ( my $field = $custom_fields->next ) {
         $fields->{ $field->id } = $field;
     }
@@ -276,7 +276,7 @@ while ( my $Ticket = $Tickets->next ) {
 
     #Update the links
     $ARGS{'id'} = $Ticket->id;
-    $queues{ $Ticket->queue_obj->id }++;
+    $queues{ $Ticket->queue->id }++;
 
     my @updateresults, process_update_message(
             ticket_obj => $Ticket,

@@ -74,7 +74,7 @@ time_left initial_priority final_priority/;
 my $ticket_obj = load_ticket($id);
 my $action = Jifty->web->new_action( class => 'UpdateTicket', record =>
         $ticket_obj );
-my $CustomFields = $ticket_obj->queue_obj->ticket_custom_fields();
+my $CustomFields = $ticket_obj->queue->ticket_custom_fields();
 
 # call this to show up hints of valid cf values.
 $m->comp(

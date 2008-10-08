@@ -1219,7 +1219,7 @@ sub custom_field_values {
             my $CFs = RT::Model::CustomFieldCollection->new;
             $CFs->limit( column => 'name', value => $field );
             $CFs->limit_to_lookup_type( $self->custom_field_lookup_type );
-            $CFs->limit_to_global_or_object_id( $self->object->queue_obj->id );
+            $CFs->limit_to_global_or_object_id( $self->object->queue->id );
             $field = $CFs->first->id if $CFs->first;
         }
     }

@@ -137,7 +137,7 @@
 <%INIT>
 
 my $Ticket = load_ticket($id);
-my $CustomFields = $Ticket->queue_obj->ticket_custom_fields();
+my $CustomFields = $Ticket->queue->ticket_custom_fields();
 my $action = Jifty->web->new_action( class => 'UpdateTicket', record => $Ticket );
 
 # call this to show up hints of valid cf values.

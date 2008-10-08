@@ -87,7 +87,7 @@ while ( my $Ticket = $Tickets->next()) {
         }
     }
 
-    my $cfs = $Ticket->queue_obj->ticket_custom_fields();
+    my $cfs = $Ticket->queue->ticket_custom_fields();
     while (my $cf = $cfs->next) {
         $known_cfs{$cf->id} = $cf->name;
         my @content;

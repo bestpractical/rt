@@ -138,7 +138,7 @@ sub write_down_scrip {
     $props->{'Action'}    = $args{'object'}->scrip_action->name;
     $props->{'Condition'} = $args{'object'}->scrip_condition->name;
     $props->{'template'}  = $args{'object'}->template_obj->name;
-    $props->{'queue'}     = $args{'object'}->queue_obj->name || 'global';
+    $props->{'queue'}     = $args{'object'}->queue->name || 'global';
 
     return $self->_write_down_hash( $args{'object'}, $props );
 }
