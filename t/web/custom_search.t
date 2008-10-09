@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 10;
+use Test::More tests => 11;
 use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 my $url = $m->rt_base_url;
@@ -44,7 +44,12 @@ $m->content_contains ('customsearch@localhost', 'requestor now displayed ');
 $m->get ($cus_hp);
 
 $m->form_name ('BuildQuery');
-$m->field (CurrentDisplayColumns => 'Requestors');
+
+my $cdc = $m->current_form->find_input('CurrentDisplayColumns');
+my ($requestor_value) = grep { /Requestor/ } $cdc->possible_values;
+ok($requestor_value, "got the requestor value");
+
+$m->field (CurrentDisplayColumns => $requestor_value);
 $m->click_button (name => 'RemoveCol') ;
 
 $m->form_name ('BuildQuery');
@@ -60,7 +65,6 @@ $m->content_lacks ('customsearch@localhost', 'requestor not displayed ');
 # since ticked quese are wanted, we do the invesrsion.  So any
 # queue added during the quicksearch setting will be unticked.
 my $nlinks = $#{$m->find_all_links( text => "General" )};
-warn $nlinks;
 $m->get ($cus_qs);
 $m->form_name ('Preferences');
 $m->untick('Want-General', '1');

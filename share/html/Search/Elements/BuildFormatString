@@ -143,7 +143,8 @@ foreach my $field (@format) {
 }
 
 if ( $RemoveCol ) {
-    my $index  = $CurrentDisplayColumns;
+    # we do this regex match to avoid a non-numeric warning
+    my ($index) = $CurrentDisplayColumns =~ /^(\d+)/;
     my $column = $seen[$index];
     if ($index) {
         delete $seen[$index];
