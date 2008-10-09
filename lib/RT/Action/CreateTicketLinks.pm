@@ -27,7 +27,6 @@ use Jifty::Action schema {
 
 =cut
 
-
 sub take_action {
     my $self = shift;
     my %map  = (
@@ -51,23 +50,24 @@ sub take_action {
                     target => $value,
                     type   => $type,
                 );
-                $self->result->content('detailed_messages')->{$field} .= $msg;
+                push @{ $self->result->content('detailed_messages')->{$field} },
+                  $msg;
             }
-            for my $value ( split /\s+/, $self->argument_value( $map{$field} ) ) {
+            for my $value ( split /\s+/, $self->argument_value( $map{$field} ) )
+            {
                 next unless $value;
                 my ( $val, $msg ) = $ticket->add_link(
                     base => $value,
                     type => $type,
                 );
-                $self->result->content('detailed_messages')->{ $map{field} } .=
-                  "$msg.";
+                push @{ $self->result->content('detailed_messages')->{ $map{$field} } }, $msg;
             }
         }
 
         # now we handle merge_into stuff
         if ( my $merge_into = $self->argument_value('merge_into') ) {
             $merge_into =~ s/\s+//g;
-            my ( $val, $msg ) = $ticket->merge_into( $merge_into );
+            my ( $val, $msg ) = $ticket->merge_into($merge_into);
             $self->result->content('detailed_messages')->{'merge_into'} = $msg;
         }
     }

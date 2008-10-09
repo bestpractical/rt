@@ -29,8 +29,7 @@ sub take_action {
                         target => $value,
                         type   => $type,
                     );
-                    $self->result->content('detailed_messages')->{$field} .=
-                      $msg;
+                    push @{ $self->result->content('detailed_messages')->{$field} }, $msg;
                 }
             }
             if ( my $v = $self->argument_value( $map{$field} ) ) {
@@ -39,7 +38,7 @@ sub take_action {
                         base => $value,
                         type => $type,
                     );
-                    $self->result->content('detailed_messages')->{ $map{field} } .= "$msg.";
+                    push @{ $self->result->content('detailed_messages')->{ $map{$field} } }, $msg;
                 }
             }
         }
