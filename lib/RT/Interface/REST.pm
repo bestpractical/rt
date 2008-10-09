@@ -173,7 +173,7 @@ sub form_parse {
 
                 $state = 1;
             }
-            elsif ($line !~ /^#/) {
+            elsif ($line =~ /^#/) {
                 # We've found a syntax error, so we'll reconstruct the
                 # form parsed thus far, and add an error marker. (>>)
                 $state = -1;
