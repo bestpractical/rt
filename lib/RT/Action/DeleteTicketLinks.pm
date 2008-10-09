@@ -25,6 +25,7 @@ sub take_action {
             my $type = renaming( $field, { convention => 'UpperCamelCase' } );
             if ( my $v = $self->argument_value($field) ) {
                 for my $value ( ref $v eq 'ARRAY' ? @$v : $v ) {
+                    next unless $value;
                     my ( $val, $msg ) = $ticket->delete_link(
                         target => $value,
                         type   => $type,
@@ -34,6 +35,7 @@ sub take_action {
             }
             if ( my $v = $self->argument_value( $map{$field} ) ) {
                 for my $value ( ref $v eq 'ARRAY' ? @$v : $v ) {
+                    next unless $value;
                     my ( $val, $msg ) = $ticket->delete_link(
                         base => $value,
                         type => $type,
