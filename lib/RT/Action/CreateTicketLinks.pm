@@ -45,7 +45,7 @@ sub take_action {
         for my $field ( keys %map ) {
             my $type = renaming( $field, { convention => 'UpperCamelCase' } );
 
-            for my $value ( split / /, $self->argument_value($field) ) {
+            for my $value ( split /\s+/, $self->argument_value($field) ) {
                 next unless $value;
                 my ( $val, $msg ) = $ticket->add_link(
                     target => $value,
@@ -53,7 +53,7 @@ sub take_action {
                 );
                 $self->result->content('detailed_messages')->{$field} .= $msg;
             }
-            for my $value ( split / /, $self->argument_value( $map{$field} ) ) {
+            for my $value ( split /\s+/, $self->argument_value( $map{$field} ) ) {
                 next unless $value;
                 my ( $val, $msg ) = $ticket->add_link(
                     base => $value,
