@@ -57,37 +57,25 @@ use warnings;
 sub Groupings {
     my $self = shift;
     my %args = (@_);
-    my @fields = qw(
-        Owner
-        Requestor
-        Cc
-        AdminCc
-        Watcher
-        Creator
-        LastUpdatedBy
+    my @fields = map {$_, $_} qw(
         Status
         Queue
-        DueDaily
-        DueMonthly
-        DueAnnually
-        ResolvedDaily
-        ResolvedMonthly
-        ResolvedAnnually
-        CreatedDaily
-        CreatedMonthly
-        CreatedAnnually
-        LastUpdatedDaily
-        LastUpdatedMonthly
-        LastUpdatedAnnually
-        StartedDaily
-        StartedMonthly
-        StartedAnnually
-        StartsDaily
-        StartsMonthly
-        StartsAnnually
     );
 
-    @fields = map {$_, $_} @fields;
+    foreach my $type ( qw(Owner Creator LastUpdatedBy Requestor Cc AdminCc Watcher) ) {
+        push @fields, $type.' '.$_, $type.'.'.$_ foreach qw(
+            Name EmailAddress RealName NickName Organization Lang City Country Timezone
+        );
+    }
+
+    push @fields, map {$_, $_} qw(
+        DueDaily DueMonthly DueAnnually
+        ResolvedDaily ResolvedMonthly ResolvedAnnually
+        CreatedDaily CreatedMonthly CreatedAnnually
+        LastUpdatedDaily LastUpdatedMonthly LastUpdatedAnnually
+        StartedDaily StartedMonthly StartedAnnually
+        StartsDaily StartsMonthly StartsAnnually
+    );
 
     my $queues = $args{'Queues'};
     if ( !$queues && $args{'Query'} ) {
@@ -199,13 +187,25 @@ sub _FieldToFunction {
             my ($ticket_cf_alias, $cf_alias) = $self->_CustomFieldJoin($cf->id, $cf->id, $cf_name);
             @args{qw(ALIAS FIELD)} = ($ticket_cf_alias, 'Content');
         }
-    } elsif ( $field =~ /^(?:Watcher|(Requestor|Cc|AdminCc))$/ ) {
+    } elsif ( $field =~ /^(?:(Owner|Creator|LastUpdatedBy))(?:\.(.*))?$/ ) {
         my $type = $1 || '';
+        my $column = $2 || 'Name';
+        my $u_alias = $self->Join(
+            TYPE   => 'LEFT',
+            ALIAS1 => 'main',
+            FIELD1 => $type,
+            TABLE2 => 'Users',
+            FIELD2 => 'id',
+        );
+        @args{qw(ALIAS FIELD)} = ($u_alias, $column);
+    } elsif ( $field =~ /^(?:Watcher|(Requestor|Cc|AdminCc))(?:\.(.*))?$/ ) {
+        my $type = $1 || '';
+        my $column = $2 || 'Name';
         if ( my $u_alias = $self->{"_sql_report_watcher_users_alias_$type"} ) {
-            @args{qw(ALIAS FIELD)} = ($u_alias, 'Name');
+            @args{qw(ALIAS FIELD)} = ($u_alias, $column);
         } else {
             my ($g_alias, $gm_alias, $u_alias) = $self->_WatcherJoin( $type );
-            @args{qw(ALIAS FIELD)} = ($u_alias, 'Name');
+            @args{qw(ALIAS FIELD)} = ($u_alias, $column);
             $self->{"_sql_report_watcher_users_alias_$type"} = $u_alias;
         }
     }
