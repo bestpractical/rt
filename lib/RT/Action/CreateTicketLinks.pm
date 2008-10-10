@@ -39,8 +39,7 @@ sub take_action {
     if ( $self->argument_value('id') ) {
         my $ticket =
           RT::Model::Ticket->new( current_user => Jifty->web->current_user );
-        my $id = $self->argument_value('id');
-        $ticket->load($id);
+        $ticket->load($self->argument_value('id'));
         for my $field ( keys %map ) {
             my $type = renaming( $field, { convention => 'UpperCamelCase' } );
 
