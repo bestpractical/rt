@@ -312,6 +312,8 @@ sub Parse {
         ($rv, $msg) = $self->_Parse(@_);
     }
 
+    return ($rv, $msg) unless $rv;
+
     my $mime_type   = $self->MIMEObj->mime_type;
     if (defined $mime_type and $mime_type eq 'text/html') {
         $self->_DowngradeFromHTML(@_);
