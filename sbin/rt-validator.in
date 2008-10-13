@@ -115,8 +115,8 @@ END
 sub usage_warning {
     print <<END;
 This utility can fix some issues with DB by creating or updating. In some
-cases there is no enough data to resurect a missing record then records which
-refers to missing can be deleted. It's up to you to decide what to do.
+cases there is no enough data to resurect a missing record, but records which
+refers to a missing can be deleted. It's up to you to decide what to do.
 
 In any case it's highly recommended to have a backup before resolving anything.
 
@@ -181,12 +181,12 @@ $redo_on{'Delete'} = {
     ScripConditions => [],
     Templates => [],
 
-    Tickets => [ 'Tickets -> other' ],
+    Tickets => [ 'Tickets -> other', 'Tickets <-> Role Groups' ],
     Transactions => [ 'Attachments -> other' ],
 
     Principals => ['User <-> ACL equivalence group', 'GMs -> Groups, Members' ],
-    Users => ['User <-> ACL equivalence group', 'GMs -> Groups, Members' ],
-    Groups => ['User <-> ACL equivalence group', 'GMs -> Groups, Members', 'CGM vs. GM' ],
+    Users => ['User <-> ACL equivalence group', 'GMs -> Groups, Members', 'Principals -> Users' ],
+    Groups => ['User <-> ACL equivalence group', 'GMs -> Groups, Members', 'CGM vs. GM', 'Principals -> Groups' ],
 
     GroupMembers => [ 'CGM vs. GM' ],
     CachedGroupMembers => [ 'CGM vs. GM' ],
@@ -197,6 +197,20 @@ $redo_on{'Create'} = {
     GroupMembers => [ 'CGM vs. GM' ],
     CachedGroupMembers => [ 'CGM vs. GM' ],
 };
+
+my %describe_cb;
+%describe_cb = (
+    Attachments => sub {
+        my $row = shift;
+        my $txn_id = $row->{transactionid};
+        my $res = 'Attachment #'. $row->{id} .' -> Txn #'. $txn_id;
+        return $res .', '. describe( 'Transactions', $txn_id );
+    },
+    Transactions => sub {
+        my $row = shift;
+        return 'Transaction #'. $row->{id} .' -> object '. $row->{objecttype} .' #'. $row->{objectid};
+    },
+);
 
 { my %cache = ();
 sub m2t($) {
@@ -273,7 +287,6 @@ push @CHECKS, 'User <-> ACL equivalence group' => sub {
             my $gid = create_record( 'Groups',
                 Domain => 'ACLEquivalence', Type => 'UserEquiv', Instance => $id,
             );
-            $redo_check{'CGM vs. GM'} = 1;
         },
     );
     # from group to user
@@ -407,8 +420,7 @@ push @CHECKS, 'CGM vs. GM' => sub {
                 ImmediateParentId => $gm->GroupId, Via => undef,
                 Disabled => 0, # XXX: we should check integrity of Disabled field
             );
-            execute_query( "UPDATE CachedGroupMembers SET Via = ? WHERE id = ?", $cgm, $cgm );
-            $redo_check{'CGM vs. GM'} = 1;
+            update_records( "CachedGroupMembers", { id => $cgm }, { Via => $cgm } );
         },
     );
     # all first level CGM records should have a GM record
@@ -449,8 +461,7 @@ push @CHECKS, 'CGM vs. GM' => sub {
                 ImmediateParentId => $id, Via => undef,
                 Disabled => $g->Disabled,
             );
-            execute_query( "UPDATE CachedGroupMembers SET Via = ? WHERE id = ?", $cgm, $cgm );
-            $redo_check{'CGM vs. GM'} = 1;
+            update_records( "CachedGroupMembers", { id => $cgm }, { Via => $cgm } );
         },
     );
 
@@ -548,7 +559,6 @@ END
                 "Found records in CachedGroupMembers table without recursive duplicates."
             );
             my $cgm = create_record( 'CachedGroupMembers', %props );
-            $redo_check{'CGM vs. GM'} = 1;
         };
 
         my $sth = execute_query( $query );
@@ -614,46 +624,103 @@ push @CHECKS, 'Transactions -> other' => sub {
         'Transactions', 'OldValue' => 'Users', 'id',
         condition   => 's.Type IN (?, ?, ?, ?, ?)',
         bind_values => [ qw(Take Untake Force Steal Give) ],
+        action => sub {
+            my $id = shift;
+            return unless prompt(
+                'Delete', "Found a transaction regarding changes of Owner,"
+                ." but User with id stored in OldValue column doesn't exist anymore."
+            );
+
+            delete_record( 'Transactions', $id );
+        },
     );
     check_integrity(
         'Transactions', 'NewValue' => 'Users', 'id',
         condition   => 's.Type IN (?, ?, ?, ?, ?)',
         bind_values => [ qw(Take Untake Force Steal Give) ],
+        action => sub {
+            my $id = shift;
+            return unless prompt(
+                'Delete', "Found a transaction regarding changes of Owner,"
+                ." but User with id stored in NewValue column doesn't exist anymore."
+            );
+
+            delete_record( 'Transactions', $id );
+        },
     );
     # type = DelWatcher
     check_integrity(
         'Transactions', 'OldValue' => 'Users', 'id',
         condition   => 's.Type = ?',
         bind_values => [ 'DelWatcher' ],
+        action => sub {
+            my $id = shift;
+            return unless prompt(
+                'Delete', "Found a transaction describing watchers change,"
+                ." but User with id stored in OldValue column doesn't exist anymore."
+            );
+
+            delete_record( 'Transactions', $id );
+        },
     );
     # type = AddWatcher
     check_integrity(
         'Transactions', 'NewValue' => 'Users', 'id',
         condition   => 's.Type = ?',
         bind_values => [ 'AddWatcher' ],
+        action => sub {
+            my $id = shift;
+            return unless prompt(
+                'Delete', "Found a transaction describing watchers change,"
+                ." but User with id stored in NewValue column doesn't exist anymore."
+            );
+
+            delete_record( 'Transactions', $id );
+        },
     );
-    # type = DeleteLink
-    check_integrity(
-        'Transactions', 'OldValue' => 'Links', 'id',
-        condition   => 's.Type = ?',
-        bind_values => [ 'DeleteLink' ],
-    );
-    # type = AddLink
-    check_integrity(
-        'Transactions', 'NewValue' => 'Links', 'id',
-        condition   => 's.Type = ?',
-        bind_values => [ 'AddLink' ],
-    );
+
+# XXX: Links need more love, uri is stored instead of id
+#    # type = DeleteLink
+#    check_integrity(
+#        'Transactions', 'OldValue' => 'Links', 'id',
+#        condition   => 's.Type = ?',
+#        bind_values => [ 'DeleteLink' ],
+#    );
+#    # type = AddLink
+#    check_integrity(
+#        'Transactions', 'NewValue' => 'Links', 'id',
+#        condition   => 's.Type = ?',
+#        bind_values => [ 'AddLink' ],
+#    );
+
     # type = Set, Field = Queue
     check_integrity(
         'Transactions', 'NewValue' => 'Queues', 'id',
         condition   => 's.Type = ? AND s.Field = ?',
         bind_values => [ 'Set', 'Queue' ],
+        action => sub {
+            my $id = shift;
+            return unless prompt(
+                'Delete', "Found a transaction describing queue change,"
+                ." but Queue with id stored in NewValue column doesn't exist anymore."
+            );
+
+            delete_record( 'Transactions', $id );
+        },
     );
     check_integrity(
         'Transactions', 'OldValue' => 'Queues', 'id',
         condition   => 's.Type = ? AND s.Field = ?',
         bind_values => [ 'Set', 'Queue' ],
+        action => sub {
+            my $id = shift;
+            return unless prompt(
+                'Delete', "Found a transaction describing queue change,"
+                ." but Queue with id stored in OldValue column doesn't exist anymore."
+            );
+
+            delete_record( 'Transactions', $id );
+        },
     );
     # Reminders
     check_integrity(
@@ -667,12 +734,24 @@ push @CHECKS, 'Transactions -> other' => sub {
 # Attachments
 push @CHECKS, 'Attachments -> other' => sub {
     check_integrity(
-        Attachments  => 'TransactionId',
-        Transactions => 'id',
+        Attachments  => 'TransactionId', Transactions => 'id',
+        action => sub {
+            my $id = shift;
+            return unless prompt(
+                'Delete', "Found an attachment without a transaction."
+            );
+            delete_record( 'Attachments', $id );
+        },
     );
     check_integrity(
-        Attachments => 'Parent',
-        Attachments => 'id',
+        Attachments => 'Parent', Attachments => 'id',
+        action => sub {
+            my $id = shift;
+            return unless prompt(
+                'Delete', "Found an sub-attachment without its parent attachment."
+            );
+            delete_record( 'Attachments', $id );
+        },
     );
     check_integrity(
         Attachments => 'Parent',
@@ -762,8 +841,8 @@ END
 
             my $sth = execute_query( $query, 'ACLEquivalence', 'UserEquiv' );
             while ( my ($rid, $gid, $uid) = $sth->fetchrow_array ) {
-                print STDERR "Record #$rid in $table refers to ACL equivalence group #$gid of user #$uid\n";
-                print STDERR "when must reference user.\n";
+                print STDERR "Record #$rid in $table refers to ACL equivalence group #$gid of user #$uid";
+                print STDERR " when must reference user.\n";
                 $action->( $gid, $uid );
                 if ( keys( %fix ) > 1000 ) {
                     $sth->finish;
@@ -777,13 +856,13 @@ END
         foreach my $model ( @models ) {
             my $class = "RT::$model";
             my $object = $class->new( $RT::SystemUser );
+            my $table = $object->Table;
             foreach my $column ( qw(LastUpdatedBy Creator) ) {
                 next unless $object->_Accessible( $column, 'auto' );
 
-                my $table = m2t($model);
                 my $query = "UPDATE $table SET $column = ? WHERE $column = ?";
                 while ( my ($gid, $uid) = each %fix ) {
-                    execute_query( $query, $uid, $gid );
+                    update_records( $table, { $column => $gid }, { $column => $uid } );
                 }
             }
         }
@@ -795,11 +874,25 @@ push @CHECKS, 'LastUpdatedBy and Creator' => sub {
     foreach my $model ( @models ) {
         my $class = "RT::$model";
         my $object = $class->new( $RT::SystemUser );
-        if ( $object->_Accessible( 'LastUpdatedBy', 'auto' ) ) {
-            check_integrity( $object->Table, 'LastUpdatedBy' => 'Users', 'id' );
-        }
-        if ( $object->_Accessible( 'Creator', 'auto' ) ) {
-            check_integrity( $object->Table, 'Creator' => 'Users', 'id' );
+        my $table = $object->Table;
+        foreach my $column ( qw(LastUpdatedBy Creator) ) {
+            next unless $object->_Accessible( $column, 'auto' );
+            check_integrity(
+                $table, $column => 'Users', 'id',
+                action => sub {
+                    my ($id, %prop) = @_;
+                    return unless my $replace_with = prompt_integer(
+                        'Replace',
+                        "Column $column should point to a user, but there is record #$id in table $table\n"
+                        ."where it's not true. It's ok to replace these wrong references with id of any user.\n"
+                        ."Note that id you enter is not checked. You can peak any user from your DB, but it's\n"
+                        ."may be better to create a special user for this, for example 'user_that_has_been_deleted'\n"
+                        ."or something like that.",
+                        "$table.$column -> user #$prop{$column}"
+                    );
+                    update_records( $table, { $column => $prop{$column} }, { $column => $replace_with } );
+                },
+            );
         }
     }
 };
@@ -831,7 +924,9 @@ sub check_integrity {
 
     my $query = "SELECT s.id, ". join(', ', map "s.$_", @scols)
         ." FROM $stable s LEFT JOIN $ttable t"
-        ." ON (". join(' AND ', map columns_eq_cond('s', $stable, $scols[$_] => 't', $ttable, $tcols[$_]), (0..(@scols-1))) .")"
+        ." ON (". join(
+            ' AND ', map columns_eq_cond('s', $stable, $scols[$_] => 't', $ttable, $tcols[$_]), (0..(@scols-1))
+        ) .")"
         . ($args{'join_condition'}? " AND ( $args{'join_condition'} )": "")
         ." WHERE t.id IS NULL"
         ." AND ". join(' AND ', map "s.$_ IS NOT NULL", @scols);
@@ -856,8 +951,21 @@ sub check_integrity {
         for ( my $i = 0; $i < @scols; $i++ ) {
             print STDERR "\t$scols[$i] => '$set[$i]' => $tcols[$i]\n";
         }
-        $args{'action'}->( $sid ) if $args{'action'};
+        print STDERR "\t". describe( $stable, $sid ) ."\n";
+        $args{'action'}->( $sid, map { $scols[$_] => $set[$_] } (0 .. (@scols-1)) ) if $args{'action'};
     }
+}
+
+sub describe {
+    my ($table, $id) = @_;
+    return '' unless my $cb = $describe_cb{ $table };
+
+    my $row = load_record( $table, $id );
+    unless ( $row->{id} ) {
+        $table =~ s/s$//;
+        return "$table doesn't exist";
+    }
+    return $cb->( $row );
 }
 
 sub columns_eq_cond {
@@ -910,6 +1018,12 @@ sub check_uniqueness {
     }
 }
 
+sub load_record {
+    my ($table, $id) = @_;
+    my $sth = execute_query( "SELECT * FROM $table WHERE id = ?", $id );
+    return $sth->fetchrow_hashref('NAME_lc');
+}
+
 sub delete_record {
     my ($table, $id) = (@_);
     print "Deleting record #$id in $table\n" if $opt{'verbose'};
@@ -922,6 +1036,24 @@ sub create_record {
     print "Creating a record in $_[0]\n" if $opt{'verbose'};
     $redo_check{ $_ } = 1 foreach @{ $redo_on{'Create'}{ $_[0] } || [] };
     return $RT::Handle->Insert( @_ );
+}
+
+sub update_records {
+    my $table = shift;
+    my $where = shift;
+    my $what = shift;
+
+    my (@where_cols, @where_binds);
+    while ( my ($k, $v) = each %$where ) { push @where_cols, $k; push @where_binds, $v; }
+
+    my (@what_cols, @what_binds);
+    while ( my ($k, $v) = each %$what ) { push @what_cols, $k; push @what_binds, $v; }
+
+    print "Updating record(s) in $table\n" if $opt{'verbose'};
+    my $query = "UPDATE $table SET ". join(', ', map "$_ = ?", @what_cols)
+        ." WHERE ". join(', ', map "$_ = ?", @where_cols);
+    $redo_check{ $_ } = 1 foreach @{ $redo_on{'Update'}{ $table } || [] };
+    return execute_query( $query, @what_binds, @where_binds );
 }
 
 sub execute_query {
@@ -938,8 +1070,7 @@ sub execute_query {
 sub prompt {
     my $action = shift;
     my $msg = shift;
-
-    my $token = join ':', caller;
+    my $token = shift || join ':', caller;
 
     return 0 unless $opt{'resolve'};
     return 1 if $opt{'force'};
@@ -957,8 +1088,7 @@ sub prompt {
 sub prompt_action {
     my $actions = shift;
     my $msg = shift;
-
-    my $token = join ':', caller;
+    my $token = shift || join ':', caller;
 
     return '' unless $opt{'resolve'};
     return '' if $opt{'force'};
@@ -973,6 +1103,23 @@ sub prompt_action {
         return $cached_answer{ $token } = lc substr $a, 0, 1;
     }
     return $cached_answer{ $token } = '';
+} }
+
+{ my %cached_answer;
+sub prompt_integer {
+    my $action = shift;
+    my $msg = shift;
+    my $token = shift || join ':', caller;
+
+    return 0 unless $opt{'resolve'};
+    return 0 if $opt{'force'};
+
+    return $cached_answer{ $token } if exists $cached_answer{ $token };
+
+    print $msg, "\n";
+    print "$action ALL records with the same defect? [0]: ";
+    my $a = <STDIN>; chomp $a; $a = int($a);
+    return $cached_answer{ $token } = $a;
 } }
 
 1;
