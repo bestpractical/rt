@@ -45,6 +45,8 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+% $m->callback(CallbackName => 'Begin');
+
 %# Import the 3.5 styles we want to build off of...
 @import "../3.5-default/logo.css";
 @import "../3.5-default/misc.css";
@@ -53,6 +55,8 @@
 @import "../3.5-default/login.css";
 @import "../3.5-default/quickbar.css";
 @import "../3.5-default/ticket.css";
+
+% $m->callback(CallbackName => 'Post3.5');
 
 %# ...and then import the 3.4 compat styles afterwards so they can cascade
 @import "nav.css";
@@ -66,4 +70,6 @@
 @import "login.css";
 @import "quickbar.css";
 @import "misc.css";
+
+% $m->callback(CallbackName => 'End');
 

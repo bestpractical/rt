@@ -45,6 +45,8 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+% $m->callback(CallbackName => 'Begin');
+
 @import "misc.css";
 @import "login.css";
 @import "logo.css";
@@ -60,3 +62,6 @@
 @import "footer.css";
 @import "ticket-search.css";
 @import "local.css";
+
+% $m->callback(CallbackName => 'End');
+

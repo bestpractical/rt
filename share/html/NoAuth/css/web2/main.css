@@ -45,6 +45,8 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+% $m->callback(CallbackName => 'Begin');
+
 @import "yui-fonts.css";
 @import "base.css";
 
@@ -61,4 +63,6 @@
 @import "tools.css";
 @import "admin.css";
 @import "misc.css";
+
+% $m->callback(CallbackName => 'End');
 
