@@ -46,36 +46,29 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-=head1 name
+=head1 NAME
 
-  RT::Model::Scrip - an RT Scrip object
-
-=head1 SYNOPSIS
-
-  use RT::Model::Scrip;
-
-=head1 description
-
+RT::Model::Scrip - an RT Scrip object
 
 =head1 METHODS
 
 
 =cut
 
+use strict;
+use warnings;
+
 package RT::Model::Scrip;
 
-use strict;
-no warnings qw(redefine);
-
 use base qw'RT::Record';
+
 sub table {'Scrips'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-
     column queue                     => references RT::Model::Queue;
-    column template                  => references RT::Model::Template;
-    column scrip_action              => references RT::Model::ScripAction;
-    column scrip_condition           => references RT::Model::ScripCondition;
+    column template                  => references RT::Model::Template, is mandatory;
+    column scrip_action              => references RT::Model::ScripAction, is mandatory;
+    column scrip_condition           => references RT::Model::ScripCondition, is mandatory;
     column stage                     => type is 'varchar(32)', default is 'TransactionCreate';
     column description               => type is 'text';
     column custom_prepare_code       => type is 'text';
