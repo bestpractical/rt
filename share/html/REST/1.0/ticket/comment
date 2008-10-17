@@ -150,7 +150,7 @@ unless ($ticket->id) {
 unless ($ticket->current_user_has_right('ModifyTicket') ||
         ($action eq "comment" &&
          $ticket->current_user_has_right("CommentOnTicket")) ||
-        ($action eq "Correspond" &&
+        ($action eq "correspond" &&
          $ticket->current_user_has_right("ReplyToTicket")))
 {
     $output = "You are not allowed to $action on ticket $object.\n";

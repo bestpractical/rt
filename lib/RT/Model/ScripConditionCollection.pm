@@ -89,7 +89,7 @@ sub limit_to_type {
     $self->limit(
         entry_aggregator => 'OR',
         column           => 'type',
-        value            => "Correspond"
+        value            => "correspond"
     ) if $type eq "Create";
     $self->limit(
         entry_aggregator => 'OR',

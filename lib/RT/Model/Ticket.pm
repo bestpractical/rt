@@ -1212,7 +1212,7 @@ sub is_owner {
 
 =head2 transaction_addresses
 
-Returns a composite hashref of the results of L<RT::Model::Transaction/Addresses> for all this ticket's Create, comment or Correspond transactions.
+Returns a composite hashref of the results of L<RT::Model::Transaction/Addresses> for all this ticket's Create, comment or correspond transactions.
 The keys are C<To>, C<cc> and C<Bcc>. The values are lists of C<Email::Address> objects.
 
 NOTE: For performance reasons, this method might want to skip transactions and go straight for attachments. But to make that work right, we're going to need to go and walk around the access control in Attachment.pm's sub _value.
@@ -1224,7 +1224,7 @@ sub transaction_addresses {
     my $txns = $self->transactions;
 
     my %addresses = ();
-    foreach my $type (qw(Create comment Correspond)) {
+    foreach my $type (qw(Create comment correspond)) {
         $txns->limit(
             column           => 'type',
             operator         => '=',
@@ -1631,7 +1631,7 @@ sub correspond {
         return ( 0, _("Permission Denied"), undef );
     }
 
-    $args{'note_type'} = 'Correspond';
+    $args{'note_type'} = 'correspond';
     if ( $args{'dry_run'} ) {
         Jifty->handle->begin_transaction();
         $args{'commit_scrips'} = 0;
@@ -1670,7 +1670,7 @@ sub _record_note {
         sign           => undef,
         mime_obj       => undef,
         content        => undef,
-        note_type      => 'Correspond',
+        note_type      => 'correspond',
         time_taken     => 0,
         commit_scrips  => 1,
         @_
@@ -2591,7 +2591,7 @@ sub seen_up_to {
 
     my $txns = $self->transactions;
     $txns->limit( column => 'type',    value    => 'comment' );
-    $txns->limit( column => 'type',    value    => 'Correspond' );
+    $txns->limit( column => 'type',    value    => 'correspond' );
     $txns->limit( column => 'creator', operator => '!=', value => $uid );
     $txns->limit(
         column   => 'created',
@@ -2878,7 +2878,7 @@ sub transactions {
                 subclause        => 'acl',
                 column           => 'type',
                 operator         => '!=',
-                value            => "CommentEmailRecord",
+                value            => "comment_email_record",
                 entry_aggregator => 'AND'
             );
 

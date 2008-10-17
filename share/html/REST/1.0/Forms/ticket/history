@@ -84,7 +84,7 @@ if ( defined $arglist[0] && $arglist[0] eq 'type') {
 }
 
 if ($type) {
-    # Create, Set, Status, Correspond, comment, Give, Steal, Take, Told
+    # Create, Set, Status, correspond, comment, Give, Steal, Take, Told
     # CustomField, add_link, DeleteLink, AddWatcher, del_watcher
     if ($args =~ /^links?$/) {
         $trans->limit(column => 'type', operator => 'LIKE', value => '%Link');

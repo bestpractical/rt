@@ -160,7 +160,7 @@ EOF
 
     my $transactions = $tick->transactions;
     $transactions->order_by({ column => 'id', order => 'DESC' });
-    $transactions->limit( column => 'type', operator => '!=', value => 'EmailRecord');
+    $transactions->limit( column => 'type', operator => '!=', value => 'email_record');
     my $txn = $transactions->first;
     isa_ok ($txn, 'RT::Model::Transaction');
     is ($txn->type, 'Create', "correct type");
@@ -194,7 +194,7 @@ EOF
 
     my $transactions = $tick->transactions;
     $transactions->order_by({ column => 'id', order => 'DESC' });
-    $transactions->limit( column => 'type', operator => '!=', value => 'EmailRecord');
+    $transactions->limit( column => 'type', operator => '!=', value => 'email_record');
     my $txn = $transactions->first;
     isa_ok ($txn, 'RT::Model::Transaction');
     is ($txn->type, 'Create', "correct type");
@@ -357,10 +357,10 @@ EOF
 
     my $transactions = $tick->transactions;
     $transactions->order_by({ column => 'id', order => 'DESC' });
-    $transactions->limit( column => 'type', operator => '!=', value => 'EmailRecord');
+    $transactions->limit( column => 'type', operator => '!=', value => 'email_record');
     my $txn = $transactions->first;
     isa_ok ($txn, 'RT::Model::Transaction');
-    is ($txn->type, 'Correspond', "correct type");
+    is ($txn->type, 'correspond', "correct type");
 
     my $attachment = $txn->attachments->first;
     isa_ok ($attachment, 'RT::Model::Attachment');
@@ -440,7 +440,7 @@ EOF
     $transactions->limit(
         column => 'type',
         operator => 'NOT ENDSWITH',
-        value => 'EmailRecord',
+        value => 'email_record',
         entry_aggregator => 'AND',
     );
     my $txn = $transactions->first;
@@ -670,7 +670,7 @@ $tick->load( $id );
 is( $tick->id, $id, "load correct ticket #$id");
 is( $tick->owner_obj->email, 'root@localhost', 'successfuly take ticket via email');
 my $txns = $tick->transactions;
-$txns->limit( column => 'type', value => 'Correspond');
+$txns->limit( column => 'type', value => 'correspond');
 $txns->order_by( column => 'id', order => 'DESC' );
 # +1 because of auto open
 is( $tick->transactions->count, 6, 'no superfluous transactions');

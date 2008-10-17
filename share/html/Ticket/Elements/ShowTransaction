@@ -105,7 +105,7 @@ $warn_unsigned => undef
 
 my %class = (
     Create     => 'message',
-    Correspond => 'message',
+    correspond => 'message',
     comment    => 'message',
 
     AddWatcher => 'people',
@@ -162,7 +162,7 @@ unless ($attachments) {
 }
 my $titlebar_commands = '';
 
-if ( $type =~ /EmailRecord$/ ) {
+if ( $type =~ /email_record$/ ) {
 
     $titlebar_commands .=
         "[<a target=\"_blank\" href=\"$email_record_path?id="

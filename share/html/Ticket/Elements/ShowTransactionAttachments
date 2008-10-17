@@ -177,7 +177,7 @@ $parent_obj => undef
 </%ARGS>
 <%INIT>
 my @display_headers=qw(_all);
-if ( $transaction->type =~ /EmailRecord$/ ) {
+if ( $transaction->type =~ /email_record$/ ) {
     @display_headers = qw(To Cc Bcc);
 }
 

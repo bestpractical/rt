@@ -736,7 +736,7 @@ sub brief_description {
 
     if ( $type eq 'Create' ) {
         return ( _( "%1 Created", $obj_type ) );
-    } elsif ( $type =~ /Status/ ) {
+    } elsif ( $type =~ /Status/i ) {
         if ( $self->field eq 'Status' ) {
             if ( $self->new_value eq 'deleted' ) {
                 return ( _( "%1 deleted", $obj_type ) );
@@ -1040,13 +1040,13 @@ sub current_user_can_see {
         unless ( $self->current_user_has_right('ShowTicketcomments') ) {
             return 0;
         }
-    } elsif ( $type eq 'CommentEmailRecord' ) {
+    } elsif ( $type eq 'comment_email_record' ) {
         unless ( $self->current_user_has_right('ShowTicketcomments')
             && $self->current_user_has_right('ShowOutgoingEmail') )
         {
             return 0;
         }
-    } elsif ( $type eq 'EmailRecord' ) {
+    } elsif ( $type eq 'email_record' ) {
         unless ( $self->current_user_has_right('ShowOutgoingEmail') ) {
             return 0;
         }

@@ -60,7 +60,6 @@ RT::I18N->init();
 
 before qr/.*/ => run {
     RT::init_system_objects();
-
 };
 
 before qr/.*/ => run {

@@ -70,7 +70,7 @@ $scrip_action->commit() if $result;
 =head2 prepare
 
 Check for the existence of a Transaction.  If a Transaction already
-exists, and is of type "comment" or "Correspond", abort because that
+exists, and is of type "comment" or "correspond", abort because that
 will give us a loop.
 
 =cut

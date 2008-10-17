@@ -435,7 +435,7 @@ Attaches a ticket with ID to the message.
 
 Each ticket is attached as multipart entity and all its messages and attachments
 are attached as sub entities in order of creation, but only if transaction type
-is Create or Correspond.
+is Create or correspond.
 
 =cut
 
@@ -454,7 +454,7 @@ sub add_ticket {
     $attachs->limit(
         alias  => $txn_alias,
         column => 'type',
-        value  => 'Correspond'
+        value  => 'correspond'
     );
     $attachs->limit_by_ticket($tid);
     $attachs->limit_not_empty;
@@ -512,9 +512,9 @@ sub record_outgoing_mail_transaction {
 
     my $type;
     if ( $self->transaction_obj->type eq 'comment' ) {
-        $type = 'CommentEmailRecord';
+        $type = 'comment_email_record';
     } else {
-        $type = 'EmailRecord';
+        $type = 'email_record';
     }
 
     my $msgid = $mime_obj->head->get('Message-ID');

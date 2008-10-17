@@ -71,7 +71,7 @@ $scrip_action->commit() if $result;
 =head2 prepare
 
 Check for the existence of a Transaction.  If a Transaction already
-exists, and is of type "comment" or "Correspond", abort because that
+exists, and is of type "comment" or "correspond", abort because that
 will give us a loop.
 
 =cut
@@ -88,9 +88,9 @@ sub prepare {
 
 =head2 commit
 
-Create a Transaction by calling the ticket's Correspond method on our
+Create a Transaction by calling the ticket's correspond method on our
 parsed Template, which may have an RT-Send-Cc or RT-Send-Bcc header.
-The Transaction will be of type Correspond.  This Transaction can then
+The Transaction will be of type correspond.  This Transaction can then
 be used by the scrips that actually send the email.
 
 =cut
