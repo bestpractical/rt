@@ -68,8 +68,9 @@ before qr/.*/ => run {
         if (   $path !~ RT->config->get('WebNoAuthRegex')
             && $path !~ m{^(/+)Install/} && $path !~ m{^/+log(in|out)} )
         {
-            RT::Interface::Web::redirect(
-                RT->config->get('WebURL') . "Install/index.html" );
+            Jifty->web->redirect(
+                RT->config->get('WebURL') . "Install/index.html"
+            );
         }
     }
 }
@@ -135,12 +136,12 @@ before qr/(.*)/ => run {
 
         # if the user is trying to access a ticket, redirect them
         if ( $path =~ '^(/+)Ticket/Display.html' && get('id') ) {
-            RT::Interface::Web::redirect( RT->config->get('WebURL') . "SelfService/Display.html?id=" . get('id') );
+            Jifty->web->redirect( RT->config->get('WebURL') . "SelfService/Display.html?id=" . get('id') );
         }
 
         # otherwise, drop the user at the SelfService default page
         elsif ( $path !~ '^(/+)SelfService/' ) {
-            RT::Interface::Web::redirect( RT->config->get('WebURL') . "SelfService/" );
+            Jifty->web->redirect( RT->config->get('WebURL') . "SelfService/" );
         }
     }
 
