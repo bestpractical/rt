@@ -6,3 +6,8 @@ things we ripped out that need to be added back
     external auth
     autocreate of users
 
+RT has some inconsistency in recording of Status changes,
+some time it could be (Type = Status, Field = Status) or
+(Type = Set, Field = Status). I think it should be fixed
+to the latter.
+
