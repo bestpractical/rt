@@ -727,8 +727,7 @@ sub brief_description {
         return ( _("Permission Denied") );
     }
 
-    my $type = $self->type;    #cache this, rather than calling it 30 times
-
+    my $type = $self->type;
     unless ( defined $type ) {
         return _("No transaction type specified");
     }
@@ -741,39 +740,24 @@ sub brief_description {
         if ( $self->field eq 'Status' ) {
             if ( $self->new_value eq 'deleted' ) {
                 return ( _( "%1 deleted", $obj_type ) );
-            } else {
-                return ( _( "Status changed from %1 to %2", "'" . _( $self->old_value ) . "'", "'" . _( $self->new_value ) . "'" ) );
-
             }
         }
-
-        # Generic:
-        my $no_value = _("(no value)");
-        return (
-            _(  "%1 changed from %2 to %3",
-                $self->field,
-                (   $self->old_value
-                    ? "'" . $self->old_value . "'"
-                    : $no_value
-                ),
-                "'" . $self->new_value . "'"
-            )
-        );
     }
-
-    if ( my $code = $_brief_descriptions{$type} ) {
+    elsif ( my $code = $_brief_descriptions{$type} ) {
         return $code->($self);
+    } else {
+        warn "No description callback for transaction of type '$type'";
     }
 
+    # Generic:
+    my $no_value = _("(no value)");
+    my $old = $self->old_value;
+    my $new = $self->new_value;
     return _(
-        "Default: %1/%2 changed from %3 to %4",
-        $type,
+        "%1 changed from %2 to %3",
         $self->field,
-        (   $self->old_value
-            ? "'" . $self->old_value . "'"
-            : _("(no value)")
-        ),
-        "'" . $self->new_value . "'"
+        ( defined $old && length $old? "'$old'": $no_value ),
+        ( defined $new && length $new? "'$new'": $no_value ),
     );
 }
 
