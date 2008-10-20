@@ -105,6 +105,154 @@ private template '_elements/_edit_link_type' => sub {
     };
 };
 
+template '_elements/edit_cfs' => sub {
+    my ( $ticket, $queue, $cfs );
+    if ( get('id') ) {
+        $ticket = HTML::Mason::Commands::load_ticket( get('id') );
+        $cfs    = $ticket->custom_fields;
+    }
+    elsif ( get('queue') ) {
+        my $queue =
+          RT::Model::Queue->new( current_user => Jifty->web->current_user );
+        $queue->load( get('queue') );
+        $cfs = $queue->ticket_custom_fields;
+    }
+
+    my $edit_cfs = new_action(
+        class   => 'EditTicketCFs',
+        moniker => 'edit-ticket-cfs'
+    );
+    if ($ticket) {
+        render_param(
+            $edit_cfs     => 'id',
+            default_value => $ticket->id,
+            render_as     => 'hidden',
+        );
+    }
+
+    table {
+        tbody {
+            while ( my $cf = $cfs->next ) {
+                next unless $cf->current_user_has_right('ModifyCustomField');
+                row {
+                    cell {
+                        { class is 'labeltop' };
+                        Jifty->web->out( $cf->name );
+                        br {};
+                        i  { $cf->friendly_type };
+                        i  { $cf->type };
+                    };
+                    cell {
+                        { class is 'value' };
+                        my $values;
+                        if ($ticket) {
+                            $values = $ticket->custom_field_values( $cf->id );
+                        }
+
+                        if ( $cf->type =~ /text/ ) {
+                            if ($values) {
+                                while ( my $value = $values->next ) {
+                                    Jifty::Web::Form::Field->new(
+                                        action        => $edit_cfs,
+                                        name          => $cf->id,
+                                        render_as     => 'Textarea',
+                                        default_value => $value->content,
+                                    )->render_widget;
+                                    br {};
+                                }
+                            }
+                            if (
+                                $cf->max_values == 0
+                                || (   $values
+                                    && $values->count < $cf->max_values )
+                                || !$values
+                              )
+                            {
+                                Jifty::Web::Form::Field->new(
+                                    action    => $edit_cfs,
+                                    name      => $cf->id,
+                                    render_as => 'Textarea',
+                                )->render_widget;
+                                br {};
+                            }
+                        }
+                        elsif ( $cf->type eq 'Binary' ) {
+                            if ($values) {
+                                while ( my $value = $values->next ) {
+                                    Jifty::Web::Form::Field->new(
+                                        action    => $edit_cfs,
+                                        name      => 'delete_' . $value->id,
+                                        render_as => 'Checkbox',
+                                    )->render_widget;
+                                    Jifty->web->out( $value->content );
+                                    br {};
+                                }
+                            }
+
+                            if (
+                                $cf->max_values == 0
+                                || (   $values
+                                    && $values->count < $cf->max_values )
+                                || !$values
+                              )
+                            {
+                                Jifty::Web::Form::Field->new(
+                                    action    => $edit_cfs,
+                                    name      => $cf->id,
+                                    render_as => 'Upload',
+                                )->render_widget;
+                                br {};
+                            }
+                        }
+                        elsif ( $cf->type eq 'Freeform' ) {
+                            Jifty::Web::Form::Field->new(
+                                action    => $edit_cfs,
+                                name      => $cf->id,
+                                render_as => $cf->max_values == 1 ? 'Text'
+                                : 'Textarea',
+                                default_value => $values
+                                ? (
+                                    join "\n",
+                                    map $_->content,
+                                    @{ $values->items_array_ref }
+                                  )
+                                : '',
+                            )->render_widget;
+                            br {};
+                        }
+                        elsif ( $cf->type eq 'Select' ) {
+                            Jifty::Web::Form::Field->new(
+                                action        => $edit_cfs,
+                                name          => $cf->id,
+                                render_as     => 'Select',
+                                multiple      => !$cf->single_value,
+                                default_value => $values
+                                ? (
+                                    [
+                                        map $_->content,
+                                        @{ $values->items_array_ref }
+                                    ]
+                                  )
+                                : '',
+                            )->render_widget;
+                            br {};
+                        }
+                        elsif ( $cf->type eq 'Combobox' ) {
+                            Jifty::Web::Form::Field->new(
+                                action         => $edit_cfs,
+                                name           => $cf->id,
+                                render_as      => 'Combobox',
+                                default_values => $values,
+                            )->render_widget;
+                            br {};
+                        }
+                    }
+                }
+            }
+        }
+    };
+};
+
 sub m_comp {
     my ($template, $args)= @_;
     my $mason = Jifty->handler->view('Jifty::View::Mason::Handler');
