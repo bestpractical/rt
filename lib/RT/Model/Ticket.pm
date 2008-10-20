@@ -1781,7 +1781,7 @@ sub _links {
 
 =head2 delete_link
 
-Delete a link. takes a paramhash of base, target, Type, silent,
+Delete a link. takes a paramhash of base, target, type, silent,
 silent_base and silent_target. Either base or target must be null.
 The null value will be replaced with this ticket\'s id.
 
