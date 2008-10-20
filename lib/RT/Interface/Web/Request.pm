@@ -167,6 +167,10 @@ sub callback {
             map $self->interp->resolver->glob_path($path, $_),
             @roots
         );
+        foreach my $comp (keys %seen) {
+            next unless $seen{$comp} > 1;
+            $RT::Logger->error("Found more than one occurrence of the $comp callback.  This may cause only one of the callbacks to run.  Look for the duplicate Callback in your @roots");
+        }
 
         $cache{ $CacheKey } = $callbacks unless RT->Config->Get('DevelMode');
     }
