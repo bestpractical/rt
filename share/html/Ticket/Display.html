@@ -119,6 +119,17 @@ if ($ARGS{'id'} eq 'new') {
         Attachments => delete $session{'Attachments'},
         %ARGS,
     );
+#XXX bloody hack, should have a better way
+    my %cf_args;
+    for my $arg ( keys %ARGS ) {
+        if ( $arg =~ /J:A:F-(\d+)-edit-ticket-cfs/ ) {
+            $cf_args{$1} = $ARGS{$arg};
+        }
+    }
+    my $cf_action = RT::Action::EditTicketCFs->new( arguments => { id =>
+            $ticket_obj->id, %cf_args } );
+    $cf_action->take_action;
+
     unless ( $ticket_obj->current_user_has_right('ShowTicket') ) {
         abort("No permission to view newly Created ticket #".$ticket_obj->id.".");
     }
