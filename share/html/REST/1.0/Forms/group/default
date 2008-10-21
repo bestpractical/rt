@@ -1,0 +1,203 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%#  
+%# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC 
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/copyleft/gpl.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+%# REST/1.0/Forms/group/default
+%#
+<%ARGS>
+$id
+$format => 's'
+$fields => undef # these are the fields passed to the rt "-f" flag.
+$changes => {}
+</%ARGS>
+<%perl>
+my @comments;
+my ($c, $o, $k, $e) = ("", [], {}, 0);
+my %data = %$changes;
+my $group = new RT::Group $session{CurrentUser};
+my @fields = qw(Name Description);
+my %fields = map { lc $_ => $_ } @fields;
+
+if ($id ne 'new') {
+    $group->Load($id);
+    if (!$group->Id) {
+        return [ "# Group $id does not exist.", [], {}, 1 ];
+    }
+}
+else {
+    if (%data == 0) {
+        return [
+            "# Required: Name",
+            [ qw(id Name Description) ],
+            {
+                id => "group/new",
+                Name => "",
+                Description => ""
+            },
+            0
+        ];
+    }
+    else {
+        my %v;
+        my %create = %fields;
+        $create{name}         = "Name";
+        $create{description}   = "Description";
+        # Do any fields need to be excluded here?
+
+        foreach my $k (keys %data) {
+            if (exists $create{lc $k}) {
+                $v{$create{lc $k}} = delete $data{$k};
+            }
+        }
+
+        $group->CreateUserDefinedGroup(%v);
+        unless ($group->Id) {
+            return [ "# Could not create group.", [], {}, 1 ];
+        }
+
+        $id = $group->Id;
+        delete $data{id};
+        push(@comments, "# Group $id created.");
+        goto DONE if %data == 0;
+    }
+}
+
+if (%data == 0) {
+    my @data;
+
+    push @data, [ id => "group/".$group->Id ];
+    push @data, [ Name => $group->Name ];
+    push @data, [ Description => $group->Description ];
+
+
+    # Members
+    my $gms = [];
+    my $GroupMembers = $group->MembersObj();
+    while ( my $mo = $GroupMembers->Next() ) {
+        if ( $mo->MemberObj->IsGroup ) {
+            my $us = $mo->MemberObj->Object->UserMembersObj();
+            my @users;
+            while ( my $u = $us->Next() ) {
+                push @users, $u->RealName . ' <' . $u->EmailAddress . '>';
+            }
+            push @$gms,
+                'GROUP ['
+                . $mo->MemberObj->Object->Name . ']' . ' ('
+                . join( ';', @users ) . ')';
+        } elsif ( $mo->MemberObj->IsUser ) {
+            push @$gms,
+                $mo->MemberObj->Object->RealName . ' <'
+                . $mo->MemberObj->Object->EmailAddress . '>';
+        }
+    }
+    push @data, [ Members => $gms ];
+
+    # Custom fields
+    my $CustomFields = $group->CustomFields;
+    while ( my $CustomField = $CustomFields->Next() ) {
+        next
+            unless ( !%$fields
+            || exists $fields->{ lc "CF-" . $CustomField->Name } );
+        next unless $CustomField->CurrentUserHasRight('SeeCustomField');
+        my $CFvalues = $group->CustomFieldValues( $CustomField->Id );
+        my @CFvalues;
+        while ( my $CFvalue = $CFvalues->Next() ) {
+            push @CFvalues, $CFvalue->Content;
+        }
+        push @data, [ "CF-" . $CustomField->Name => \@CFvalues ];
+    }
+
+    my %k = map {@$_} @data;
+    $o = [ map {$_->[0]} @data ];
+    $k = \%k;
+}
+else {
+    my ($get, $set, $key, $val, $n, $s);
+
+    foreach $key (keys %data) {
+        $val = $data{$key};
+        $key = lc $key;
+        $n = 1;
+
+        if ($key eq 'name' || $key eq 'description' || exists $fields{$key})
+        {
+            if (exists $fields{$key}) {
+                $key = $fields{$key};
+            }
+            else {
+                $key = "Description" if $key eq 'description';
+                $key = "Name" if $key eq 'name';
+            }
+            $set = "Set$key";
+
+            next if $val eq $group->$key;
+            ($n, $s) = $group->$set($val);
+        }
+        elsif ($key ne 'id') {
+            $n = 0;
+            $s = "Unknown field.";
+        }
+
+    SET:
+        if ($n == 0) {
+            $e = 1;
+            push @comments, "# $key: $s";
+            unless (@$o) {
+                my %o = keys %$changes;
+                delete @o{"id", @fields};
+                @$o = ("id", @fields, keys %o);
+                $k = $changes;
+            }
+        }
+    }
+
+    push(@comments, "# Group $id updated.") unless $n == 0;
+}
+
+DONE:
+$c ||= join("\n", @comments) if @comments;
+return [ $c, $o, $k, $e ];
+</%perl>
