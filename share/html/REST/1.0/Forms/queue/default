@@ -50,6 +50,7 @@
 <%ARGS>
 $id
 $format => 's'
+$fields => undef # these are the fields passed to the rt "-f" flag.
 $changes => {}
 </%ARGS>
 <%perl>
@@ -122,6 +123,21 @@ if ( keys %data == 0) {
     push @data, [ id => "queue/".$queue->Id ];
     foreach my $key (@fields) {
         push @data, [ $key => $queue->$key ];
+    }
+
+    # Custom fields
+    my $CustomFields = $queue->CustomFields;
+    while ( my $CustomField = $CustomFields->Next() ) {
+        next
+            unless ( !%$fields
+            || exists $fields->{ lc "CF-" . $CustomField->Name } );
+        next unless $CustomField->CurrentUserHasRight('SeeCustomField');
+        my $CFvalues = $queue->CustomFieldValues( $CustomField->Id );
+        my @CFvalues;
+        while ( my $CFvalue = $CFvalues->Next() ) {
+            push @CFvalues, $CFvalue->Content;
+        }
+        push @data, [ "CF-" . $CustomField->Name => \@CFvalues ];
     }
 
     my %k = map {@$_} @data;
