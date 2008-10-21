@@ -69,16 +69,7 @@ sub take_action {
             my $values     = $ticket->custom_field_values( $cf->id );
             my $new_values = $args->{$cfid};
 
-            if ( $cf->type =~ /text/i ) {
-                $new_values =~ s/\r+\n/\n/g;
-                $new_values =~ s/^\s+//g;
-                $new_values =~ s/\s+$//g;
-                $ticket->add_custom_field_value(
-                    field => $cfid,
-                    value => $new_values,
-                );
-            }
-            elsif ( $cf->type eq 'Binary' ) {
+            if ( $cf->type eq 'Binary' ) {
                 next unless $new_values;
                 my $cgi_object  = Jifty->handler->cgi;
                 my $upload_info = $cgi_object->uploadInfo($new_values);
@@ -95,20 +86,22 @@ sub take_action {
             }
             else {
 
-               # now we deal with values like 'two', 'three' or [ 'foo', 'bar' ]
                 unless ( ref $new_values ) {
-                    $new_values = [
-                        grep length,
-                        map {
-                            s/\r+\n/\n/g;
-                            s/^\s+//;
-                            s/\s+$//;
-                            $_;
-                          }
-                          grep defined,
-                        split /\r*\n/,
-                        $new_values
-                    ];
+                    $new_values =~ s/\r+\n/\n/g;
+                    $new_values =~ s/^\s+//g;
+                    $new_values =~ s/\s+$//g;
+
+                    # wikitext or text
+                    if ( $cf->type =~ /text/i ) {
+                        $new_values = [$new_values];
+                    }
+                    else {
+
+                        # freeform or select values like 'two', 'three'
+                        $new_values = [
+                            grep defined && length, split /\r*\n/, $new_values
+                        ];
+                    }
                 }
 
                 if ($values) {
