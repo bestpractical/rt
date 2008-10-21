@@ -180,8 +180,10 @@ template '_elements/edit_cfs' => sub {
                             if ($values) {
                                 while ( my $value = $values->next ) {
                                     Jifty::Web::Form::Field->new(
-                                        action    => $edit_cfs,
-                                        name      => 'delete_' . $value->id,
+                                        action => $edit_cfs,
+                                        name   => 'delete_'
+                                          . $cf->id . '_'
+                                          . $value->id,
                                         render_as => 'Checkbox',
                                     )->render_widget;
                                     Jifty->web->out( $value->content );

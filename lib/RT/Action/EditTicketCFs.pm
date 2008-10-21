@@ -48,13 +48,12 @@ sub take_action {
         # deal with files to be deleted
         my @to_be_deleted = grep { /delete_/ && $args->{$_} } keys %$args;
         for my $tbd (@to_be_deleted) {
-            if ( $tbd =~ /delete_(\d+)/ ) {
-                my $id = $1;
-                my $ocfv =
-                  RT::Model::ObjectCustomFieldValue->new(
-                    current_user => Jifty->web->current_user );
-                $ocfv->load_by_id($id);
-                $ocfv->delete;
+            if ( $tbd =~ /delete_(\d+)_(\d+)/ ) {
+                my ( $cfid, $ocfvid ) = ( $1, $2 );
+                $ticket->delete_custom_field_value(
+                    field    => $cfid,
+                    value_id => $ocfvid,
+                );
             }
         }
 
@@ -123,7 +122,10 @@ sub take_action {
                             next;
                         }
                         $delete_flag ||= 1;
-                        $old_cf->delete;
+                        $ticket->delete_custom_field_value(
+                            field    => $cfid,
+                            value_id => $old_cf->id,
+                        );
                     }
                 }
                 for my $new_value (@$new_values) {
