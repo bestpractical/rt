@@ -142,7 +142,8 @@ elsif ($object eq 'edit' ||                             # $REST/edit
             my ($type, $id);
 
             # Look for matching types in the ID, form, and URL.
-            $type = exists $k->{type} ? $k->{type} : $utype;
+            $type = $utype || $k->{id};
+            $type =~ s|^([^/]+)/\d+$|$1| if !$utype;
             $type =~ s|^(?:$utype)?|$utype/| if $utype;
             $type =~ s|/$|| if $type;
 
