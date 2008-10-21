@@ -86,9 +86,7 @@ $m->comp(
 # Now let callbacks have a chance at editing %ARGS
 $m->callback( ticket_obj => $ticket_obj, custom_fields => $CustomFields, args_ref => \%ARGS );
 
-my @results;
-my @cf_results = process_object_custom_field_updates(object => $ticket_obj, args_ref => \%ARGS);
-push (@results, @cf_results);
+my @results = ();
 
 # undef so that transaction_batch scrips run and update the ticket
 $ticket_obj = undef;
