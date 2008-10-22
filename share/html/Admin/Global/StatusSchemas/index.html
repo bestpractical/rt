@@ -28,18 +28,6 @@ my $title = _("Modify system status schemas");
 use RT::StatusSchema;
 my @list = RT::StatusSchema->new->list;
 
-my $subtabs = {
-    A => {
-        title => _('Select scrip'),
-        path => "Admin/Global/Scrips.html",
-    },
-    B => {
-        title => _('New scrip'),
-        path => "Admin/Global/Scrip.html?create=1&queue=0",
-        separator => 1,
-    }
-};
-
 my @results;
 if ( $create ) {
     my $schema = new RT::StatusSchema;
