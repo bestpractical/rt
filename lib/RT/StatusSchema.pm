@@ -29,6 +29,7 @@ our %STATUS_SCHEMAS_CACHE;
 #            }
 #        }
 #    }
+
 =head1 NAME
 
 RT::StatusSchema - class to access and manipulate status schemas
@@ -58,8 +59,7 @@ sub new {
     my $proto = shift;
     my $self = bless {}, ref($proto) || $proto;
 
-    $self->fill_status_schemas_cache
-        unless keys %STATUS_SCHEMAS_CACHE;
+    $self->fill_cache unless keys %STATUS_SCHEMAS_CACHE;
 
     return $self;
 }
@@ -98,8 +98,7 @@ Returns sorted list of the schemas' names.
 sub list {
     my $self = shift;
 
-    $self->fill_status_schemas_cache
-        unless keys %STATUS_SCHEMAS_CACHE;
+    $self->fill_cache unless keys %STATUS_SCHEMAS_CACHE;
 
     return sort grep length, keys %STATUS_SCHEMAS_CACHE;
 }
@@ -321,6 +320,7 @@ sub create {
         active => undef,
         inactive => undef,
         transitions => undef,
+        actions => undef,
         @_
     );
     @{ $self }{qw(name data)} = (undef, undef);
@@ -331,17 +331,13 @@ sub create {
     return (0, _('Already exist'))
         if $STATUS_SCHEMAS_CACHE{ $name };
 
-    $STATUS_SCHEMAS{ $name } = \%args;
-    my ($status, $msg) = $RT::System->set_attribute(
-        name => 'StatusSchemas',
-        description => 'all system status schemas',
-        content => \%STATUS_SCHEMAS,
-    );
-    $self->fill_status_schemas_cache;
-    return ($status, _("Couldn't store schema")) unless $status;
+    foreach my $method (qw(_set_statuses _set_transitions _set_actions)) {
+        my ($status, $msg) = $self->$method( %args, name => $name );
+        return ($status, $msg) unless $status;
+    }
 
-    $self->{'name'} = $name;
-    $self->{'data'} = $STATUS_SCHEMAS_CACHE{ $name };
+    my ($status, $msg) = $self->_store_schemas( $name );
+    return ($status, $msg) unless $status;
 
     return (1, _('Created a new status schema'));
 }
@@ -356,66 +352,51 @@ sub set_statuses {
     );
 
     my $name = $self->name or return (0, _("Status schema is not loaded"));
-    $STATUS_SCHEMAS{ $name }{ $_ } = $args{ $_ }
-        foreach qw(initial active inactive);
 
-    my ($status, $msg) = $RT::System->set_attribute(
-        name => 'StatusSchemas',
-        description => 'all system status schemas',
-        content => \%STATUS_SCHEMAS,
-    );
-    $self->fill_status_schemas_cache;
-    $self->load( $name );
-    return ($status, _("Couldn't store schema")) unless $status;
+    my ($status, $msg) = $self->_set_statuses( %args, name => $name );
+    return ($status, $msg) unless $status;
+
+    ($status, $msg) = $self->_store_schemas( $name );
+    return ($status, $msg) unless $status;
 
     return (1, _('Updated schema'));
 }
 
 sub set_transitions {
     my $self = shift;
-    my %args = (
-        @_
-    );
+    my %args = @_;
 
     my $name = $self->name or return (0, _("Status schema is not loaded"));
 
-    $STATUS_SCHEMAS{ $name }{ 'transitions' } = \%args;
-
-    my ($status, $msg) = $RT::System->set_attribute(
-        name => 'StatusSchemas',
-        description => 'all system status schemas',
-        content => \%STATUS_SCHEMAS,
+    my ($status, $msg) = $self->_set_transitions(
+        transitions => \%args, name => $name
     );
-    $self->fill_status_schemas_cache;
-    $self->load( $name );
-    return ($status, _("Couldn't store schema")) unless $status;
+    return ($status, $msg) unless $status;
+
+    ($status, $msg) = $self->_store_schemas( $name );
+    return ($status, $msg) unless $status;
 
     return (1, _('Updated schema with transitions data'));
 }
 
 sub set_actions {
     my $self = shift;
-    my %args = (
-        @_
-    );
+    my %args = @_;
 
     my $name = $self->name or return (0, _("Status schema is not loaded"));
 
-    $STATUS_SCHEMAS{ $name }{ 'actions' } = \%args;
-
-    my ($status, $msg) = $RT::System->set_attribute(
-        name => 'StatusSchemas',
-        description => 'all system status schemas',
-        content => \%STATUS_SCHEMAS,
+    my ($status, $msg) = $self->_set_actions(
+        actions => \%args, name => $name
     );
-    $self->fill_status_schemas_cache;
-    $self->load( $name );
-    return ($status, _("Couldn't store schema")) unless $status;
+    return ($status, $msg) unless $status;
+
+    ($status, $msg) = $self->_store_schemas( $name );
+    return ($status, $msg) unless $status;
 
     return (1, _('Updated schema with actions data'));
 }
 
-sub fill_status_schemas_cache {
+sub fill_cache {
     my $self = shift;
     my $map = $RT::System->first_attribute('StatusSchemas')
         or return;
@@ -450,8 +431,7 @@ sub fill_status_schemas_cache {
 
 sub for_localization {
     my $self = shift;
-    $self->fill_status_schemas_cache
-        unless keys %STATUS_SCHEMAS_CACHE;
+    $self->fill_cache unless keys %STATUS_SCHEMAS_CACHE;
 
     my @res = ();
 
@@ -466,6 +446,65 @@ sub for_localization {
 
     my %seen;
     return grep !$seen{lc $_}++, @res;
+}
+
+sub _store_schemas {
+    my $self = shift;
+    my $name = shift;
+    my ($status, $msg) = $RT::System->set_attribute(
+        name => 'StatusSchemas',
+        description => 'all system status schemas',
+        content => \%STATUS_SCHEMAS,
+    );
+    $self->fill_cache;
+    $self->load( $name );
+    return ($status, _("Couldn't store schema")) unless $status;
+    return 1;
+}
+
+sub _set_statuses {
+    my $self = shift;
+    my %args = @_;
+
+    my @all;
+    my %tmp = (
+        initial  => [],
+        active   => [],
+        inactive => [],
+    );
+    foreach my $type ( qw(initial active inactive) ) {
+        foreach my $status ( grep defined && length, @{ $args{ $type } || [] } ) {
+            return (0, _('Status should contain ASCII characters only. Translate via po files.'))
+                unless $status =~ /^[a-zA-Z0-9.,! ]+$/;
+            return (0, _('Statuses must be unique in one schema'))
+                if grep lc($_) eq lc($status), @all;
+            push @all, $status;
+            push @{ $tmp{ $type } }, $status;
+        }
+    }
+
+    $STATUS_SCHEMAS{ $args{'name'} }{ $_ } = $tmp{ $_ }
+        foreach qw(initial active inactive);
+
+    return 1;
+}
+
+sub _set_transitions {
+    my $self = shift;
+    my %args = @_;
+
+    # XXX, TODO: more tests on data
+    $STATUS_SCHEMAS{ $args{'name'} }{'transitions'} = $args{'transitions'};
+    return 1;
+}
+
+sub _set_actions {
+    my $self = shift;
+    my %args = @_;
+
+    # XXX, TODO: more tests on data
+    $STATUS_SCHEMAS{ $args{'name'} }{'actions'} = $args{'actions'};
+    return 1;
 }
 
 1;
