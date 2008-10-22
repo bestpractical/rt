@@ -448,4 +448,24 @@ sub fill_status_schemas_cache {
     return;
 }
 
+sub for_localization {
+    my $self = shift;
+    $self->fill_status_schemas_cache
+        unless keys %STATUS_SCHEMAS_CACHE;
+
+    my @res = ();
+
+    push @res, @{ $STATUS_SCHEMAS_CACHE{''}{''} || [] };
+    foreach my $schema ( values %STATUS_SCHEMAS ) {
+        push @res,
+            grep defined && length,
+            map $_->[0],
+            grep ref($_),
+            values %{ $schema->{'actions'} || {} };
+    }
+
+    my %seen;
+    return grep !$seen{lc $_}++, @res;
+}
+
 1;
