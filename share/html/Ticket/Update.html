@@ -66,7 +66,7 @@
 
 <tr><td class="label"><&|/l&>Status</&>:</td>
 <td>
-<& /Elements/SelectStatus, name=>"status", default_label => _("%1 (Unchanged)", _($ticket_obj->status)), default => $ARGS{'status'} || ($ticket_obj->status eq $default_status ? undef : $default_status)&>
+<& /Elements/SelectStatus, name=>"status", default_label => _("%1 (Unchanged)", _($ticket_obj->status)), default => $ARGS{'status'} || ($ticket_obj->status eq $default_status ? undef : $default_status), ticket => $ticket_obj &>
 <span class="label"><&|/l&>Owner</&>:</span>
 <& /Elements/SelectOwner,
      name         => "owner",

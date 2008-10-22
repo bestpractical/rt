@@ -70,7 +70,7 @@
 <td class="label"><&|/l&>Status</&>:
 </td>
 <td class="value">
-<& /Elements/SelectStatus, name => "status", default => $ARGS{status}||'new', default_value => 0 &>
+<& /Elements/SelectStatus, name => "status", queue => $queue_obj, default => $ARGS{status}||'new', default_value => 0 &>
 </td>
 <td class="label">
 <&|/l&>Owner</&>:

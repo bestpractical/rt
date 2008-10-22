@@ -64,10 +64,13 @@ href="<%RT->config->get('WebPath')%>/Ticket/Display.html?id=<%$Ticket->id%>"><%$
 <td rowspan="2"><span class="label"><&|/l&>Comments</&>:<br /></span><textarea name="update_content-<%$Ticket->id%>" rows="5"
 cols="60"></textarea></td></tr>
 <tr <%$class|n%>>
-<td><span class="label"><&|/l&>Status</&>:</span> <& /Elements/SelectStatus, name=> 'UpdateStatus-'.$Ticket->id, 
-				  default_label => _("%1 (Unchanged)",_($Ticket->status())) &></td>
-                  </tr>
-
+<td><span class="label"><&|/l&>Status</&>:</span>
+<& /Elements/SelectStatus,
+    name => 'UpdateStatus-'.$Ticket->id,
+    ticket => $Ticket,
+    default_label => _("%1 (Unchanged)",_($Ticket->status())),
+&>
+</td></tr>
 % }
 </table>
 <& /Elements/Submit, label => _('Record all updates') ,  reset => 1, reset_label => _('Clear')&>
