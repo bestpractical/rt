@@ -18,7 +18,7 @@ is($q->status_schema->is_valid('f00'), 0, 'f00 is not a valid status');
 {
 
 my $q = RT::Model::Queue->new(current_user => RT->system_user);
-is($q->status_schema->is_active('new'), 1, 'New is a Active status');
+is($q->status_schema->is_active('open'), 1, 'Open is a Active status');
 is($q->status_schema->is_active('rejected'), 0, 'Rejected is an inactive status');
 is($q->status_schema->is_active('f00'), 0, 'f00 is not a Active status');
 
