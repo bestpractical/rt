@@ -16,6 +16,10 @@ my $parent_subtabs = {
         title => _('Localization'),
         path => "$base/Localization.html",
     },
+    C => {
+        title => _('Mappings'),
+        path => "$base/Mappings.html",
+    },
 };
 
 if ( $schema ) {
@@ -23,7 +27,7 @@ if ( $schema ) {
     $current_tab .= "?$qs_name";
 
     $parent_subtab = "$base/Modify.html?$qs_name";
-    $parent_subtabs->{'C'} = {
+    $parent_subtabs->{'E'} = {
         title          => $schema->name,
         path           => $parent_subtab,
         separator      => 1,

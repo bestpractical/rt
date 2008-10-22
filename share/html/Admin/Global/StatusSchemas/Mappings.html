@@ -1,0 +1,84 @@
+<&| /Admin/Elements/Header, title => $title &>
+
+<& Elements/Tabs,
+    title       => $title,
+    current_tab => 'Admin/Global/StatusSchemas/Mappings.html',
+&>
+
+<& /Elements/ListActions, actions => \@results &>
+
+%#<&|/l>Mapping between schemas is required when you want to move tickets between queues with different schemas.</&>
+
+% unless ( @list > 1 ) {
+%#<&|/l>Only one status schema.</&>
+% } else {
+<form action="<% RT->config->get('WebPath') %>/Admin/Global/StatusSchemas/Mappings.html" method="post">
+<& /Widgets/Form/Select,
+    name          => 'from',
+    description   => _('From'),
+    values        => \@list,
+    current_value => $from,
+    default       => 0,
+&>
+<& /Widgets/Form/Select,
+    name          => 'to',
+    description   => _('To'),
+    values        => \@list,
+    current_value => $from,
+    default       => 0,
+&>
+
+<& /Elements/Submit, label => _('Select'), name => 'select' &>
+</form>
+% }
+
+% if ( $from && $to ) {
+<form action="<% RT->config->get('WebPath') %>/Admin/Global/StatusSchemas/Mappings.html" method="post">
+<input type="hidden" name="from" value=<% $from %> />
+<input type="hidden" name="to" value=<% $to %> />
+
+% foreach my $status ( $from_schema->valid ) {
+<% $status %> -
+<& /Widgets/Form/Select,
+    name          => "from @ $status ->",
+    description   => _('To'),
+    values        => [ $to_schema->valid ],
+    default       => 0,
+    empty         => 0,
+&></br>
+% }
+
+<& /Elements/Submit, label => _('Update'), name => 'update' &>
+</form>
+% }
+
+</&>
+
+<%INIT>
+my $title = _("Modify mapping between status schemas");
+
+use RT::StatusSchema;
+my @list = RT::StatusSchema->new->list;
+
+my @results;
+my ($from_schema, $to_schema);
+if ( $from ) {
+    $from_schema = RT::StatusSchema->load( $from );
+    $from_schema = $from = undef unless $from_schema;
+}
+if ( $to ) {
+    $to_schema = RT::StatusSchema->load( $to );
+    $to_schema = $to = undef unless $to_schema;
+}
+
+if ( $update && $from_schema && $to_schema ) {
+    my $schema = new RT::StatusSchema;
+}
+
+</%INIT>
+<%ARGS>
+$from   => undef
+$to     => undef
+$update => undef 
+$select => undef 
+</%ARGS>
