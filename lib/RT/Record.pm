@@ -898,7 +898,7 @@ sub unresolved_dependencies {
     my $self = shift;
     my $deps = RT::Model::TicketCollection->new;
 
-    my @live_statuses = RT::Model::Queue->status_schema->active();
+    my @live_statuses = RT::Model::Queue->status_schema->valid('initial', 'active');
     foreach my $status (@live_statuses) {
         $deps->limit_status( value => $status );
     }
