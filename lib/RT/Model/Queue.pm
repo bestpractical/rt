@@ -62,6 +62,7 @@ package RT::Model::Queue;
 use RT::Model::GroupCollection;
 use RT::Model::ACECollection;
 use RT::Interface::Email;
+use RT::StatusSchema;
 
 use base qw/RT::Record/;
 
@@ -80,6 +81,11 @@ use Jifty::DBI::Record schema {
     column
         comment_address => max_length is 120,
         type is 'varchar(120)';
+    column
+        status_schema => max_length is 120,
+        type is 'varchar(120)',
+        default is 'default',
+        is mandatory;
     column initial_priority => max_length is 11, type is 'int',      default is '0';
     column final_priority   => max_length is 11, type is 'int',      default is '0';
     column default_due_in   => max_length is 11, type is 'int',      default is '0';
@@ -405,7 +411,19 @@ sub load {
     }
 
     return ( $self->id );
+}
 
+=head2 status_schema
+
+=cut
+
+sub status_schema {
+    my $self = shift;
+    my $res = RT::StatusSchema->load(
+        (ref $self && $self->id) ? $self->__value('status_schema') : ''
+    );
+    Jifty->log->error("Status schema doesn't exist") unless $res;
+    return $res;
 }
 
 =head2 set_sign
