@@ -122,13 +122,23 @@ Returns an array of all valid statuses for the current schema.
 Statuses are not sorted alphabetically, instead initial goes first,
 then active and then inactive.
 
+Takes optional list of status types, from 'initial', 'active' or
+'inactive'. For example:
+
+    $schema->valid('initial', 'active');
+
 =cut
 
 sub valid {
     my $self = shift;
-    my $type = shift;
-
-    return @{ $self->{'data'}{ $type || '' } || [] };
+    my @types = @_;
+    unless ( @types ) {
+        return @{ $self->{'data'}{''} || [] };
+    }
+    
+    my @res;
+    push @res, @{ $self->{'data'}{ $_ } || [] } foreach @types;
+    return @res;
 }
 
 =head3 is_valid
@@ -136,12 +146,20 @@ sub valid {
 Takes a status and returns true if value is a valid status for the current
 schema. Otherwise, returns false.
 
+Takes optional list of status types after the status, so it's possible check
+validity in particular sets, for example:
+
+    # returns true if status is valid and from initial or active set
+    $schema->is_valid('some_status', 'initial', 'active');
+
+See also </valid>.
+
 =cut
 
 sub is_valid {
     my $self  = shift;
     my $value = lc shift;
-    return scalar grep lc($_) eq $value, $self->valid;
+    return scalar grep lc($_) eq $value, $self->valid( @_ );
 }
 
 =head3 initial
