@@ -278,7 +278,7 @@ sub delete {
 
 
 
-=head2 setdisabled
+=head2 set_disabled
 
 Takes a boolean.
 1 will cause this queue to no longer be available for tickets.
