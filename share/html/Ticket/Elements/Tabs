@@ -175,18 +175,31 @@ if ($ticket) {
     }
 
     if ( $can{'ModifyTicket'} ) {
-        if ( $ticket->status ne 'resolved' ) {
-            $actions->{'G'} = {
-                path =>
-                    "Ticket/Update.html?action=comment&DefaultStatus=resolved&id="
-                    . $id,
-                title => _('Resolve')
-            };
-        }
-        if ( $ticket->status ne 'open' ) {
-            $actions->{'A'} = {
-                path  => "Ticket/Display.html?Status=open&id=" . $id,
-                title => _('Open it')
+        my $current = $ticket->status;
+        my $schema = $ticket->queue->status_schema;
+        my $i = 1;
+        foreach my $next ( $schema->transitions( $current ) ) {
+            my $action = $schema->transition_action( $current => $next );
+            next if $action eq 'hide';
+
+            my $path = 'Ticket/';
+            if ( $action ) {
+                $path .= "Update.html?". $m->comp(
+                    '/Elements/QueryString',
+                    action => $action,
+                    default_status => $next,
+                    id => $id
+                );
+            } else {
+                $path .= "Display.html?". $m->comp(
+                    '/Elements/QueryString',
+                    Status => $next,
+                    id => $id
+                );
+            }
+            $actions->{'G'. $i++} = {
+                path => $path,
+                title => _( $schema->transition_label( $current => $next ) ),
             };
         }
     }
