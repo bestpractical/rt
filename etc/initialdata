@@ -724,6 +724,40 @@ return 0; # ignore $passed;
 	  { type => 'component', name => 'Dashboards' },
 	  { type => 'component', name => 'RefreshHomepage' },
 	]
+      },
     },
-}
+    { name => 'StatusSchemas',
+      description => 'all system status schemas',
+      content => {
+        default => {
+            initial  => ['new'],
+            active   => ['open', 'stalled'],
+            inactive => ['resolved', 'rejected', 'deleted'],
+            transitions => {
+                new      => [qw(open resolved rejected deleted)],
+                open     => [qw(stalled resolved rejected deleted)],
+                stalled  => [qw(open)],
+                resolved => [qw(open)],
+                rejected => [qw(open)],
+                deleted  => [qw(open)],
+            },
+            actions => {
+                'new -> open'     => ['Open It', 'respond'],
+                'new -> resolved' => ['Resolve', 'comment'],
+                'new -> rejected' => ['Reject',  'respond'],
+                'new -> deleted'  => ['Delete',  ''],
+
+                'open -> stalled'  => ['Stall',   'comment'],
+                'open -> resolved' => ['Resolve', 'comment'],
+                'open -> rejected' => ['Reject',  'respond'],
+                'open -> deleted'  => ['Delete',  'hide'],
+
+                'stalled -> open'  => ['Open It',  ''],
+                'resolved -> open' => ['Re-open',  'comment'],
+                'rejected -> open' => ['Re-open',  'comment'],
+                'deleted -> open'  => ['Undelete', ''],
+            },
+        }
+      },
+    },
 );
