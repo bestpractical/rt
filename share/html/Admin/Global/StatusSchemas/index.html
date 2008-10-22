@@ -1,9 +1,8 @@
 <&| /Admin/Elements/Header, title => $title &>
 
-<& /Admin/Elements/SystemTabs,
-    current_tab => 'Admin/Global/StatusSchemas/index.html', 
-    current_subtab => 'Admin/Global/StatusSchemas/index.html', 
-    title => $title,
+<& Elements/Tabs,
+    title       => $title,
+    current_tab => 'Admin/Global/StatusSchemas/index.html',
 &>
 
 <& /Elements/ListActions, actions => \@results &>

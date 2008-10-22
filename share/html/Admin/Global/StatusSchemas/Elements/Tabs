@@ -1,17 +1,32 @@
 <& /Admin/Elements/SystemTabs,
     title          => $title,
     current_tab    => "$base/index.html",
-    current_subtab => "$base/Modify.html?$qs_name",
-    subtabs        => $subtabs,
+    subtabs        => $parent_subtabs,
+    current_subtab => $parent_subtab,
 &>
 <%INIT>
 my $base = "Admin/Global/StatusSchemas";
-my $qs_name = $m->comp( '/Elements/QueryString', name => $schema->name );
-$current_tab .= "?$qs_name";
-my $subtabs = {
+my $parent_subtab;
+my $parent_subtabs = {
     A => {
-        title => _("Status schema '%1'", $schema->name),
-        path  => "$base/Modify.html?$qs_name",
+        title => _('Select') .'/'. _('Create'),
+        path => "$base/index.html",
+    },
+    B => {
+        title => _('Localization'),
+        path => "$base/Localization.html",
+    },
+};
+
+if ( $schema ) {
+    my $qs_name = $m->comp( '/Elements/QueryString', name => $schema->name );
+    $current_tab .= "?$qs_name";
+
+    $parent_subtab = "$base/Modify.html?$qs_name";
+    $parent_subtabs->{'C'} = {
+        title          => $schema->name,
+        path           => $parent_subtab,
+        separator      => 1,
         current_subtab => $current_tab,
         subtabs => {
             A => {
@@ -27,13 +42,15 @@ my $subtabs = {
                 path  => "$base/Interface.html?$qs_name",
             },
         },
-    },
-};
+    };
+}
+else {
+    $parent_subtab = $current_tab;
+}
 
 </%INIT>
-
 <%ARGS>
-$schema
-$title => undef
-$current_tab => 'Admin/Global/StatusSchemas/Modify.html'
+$schema      => undef
+$title       => undef
+$current_tab => undef
 </%ARGS>
