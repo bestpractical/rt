@@ -1,0 +1,62 @@
+<&| /Admin/Elements/Header, title => $title &>
+
+<& /Admin/Elements/SystemTabs,
+    current_tab => 'Admin/Global/StatusSchemas/index.html', 
+    current_subtab => 'Admin/Global/StatusSchemas/index.html', 
+    title => $title,
+&>
+
+<& /Elements/ListActions, actions => \@results &>
+
+<ul>
+% foreach my $schema ( @list ) {
+<li><a href="<% RT->config->get('WebPath') %>/Admin/Global/StatusSchemas/Modify.html?<% $m->comp( '/Elements/QueryString', name => $schema ) %>"><% $schema %></a></li>
+% }
+</ul>
+
+<form action="<% RT->config->get('WebPath') %>/Admin/Global/StatusSchemas/index.html" method="post">
+
+Status schema name: <input name="name" value="" /><br />
+
+<& /Elements/Submit, caption => _('Create a new status schema'), label => _('Create'), name => 'create' &>
+</form>
+
+</&>
+
+<%INIT>
+my $title = _("Modify system status schemas");
+
+use RT::StatusSchema;
+my @list = RT::StatusSchema->new->list;
+
+my $subtabs = {
+    A => {
+        title => _('Select scrip'),
+        path => "Admin/Global/Scrips.html",
+    },
+    B => {
+        title => _('New scrip'),
+        path => "Admin/Global/Scrip.html?create=1&queue=0",
+        separator => 1,
+    }
+};
+
+my @results;
+if ( $create ) {
+    my $schema = new RT::StatusSchema;
+    my ($status, $msg) = $schema->create( name => $name );
+    push @results, $msg if $msg;
+    if ( $status ) {
+        Jifty->web->redirect(
+            RT->config->get('WebPath')
+            . '/Admin/Global/StatusSchemas/Modify.html?'
+            . $m->comp( '/Elements/QueryString', name => $schema->name )
+        );
+    }
+}
+
+</%INIT>
+<%ARGS>
+$name => undef
+$create => undef 
+</%ARGS>

@@ -1,0 +1,59 @@
+<&| /Admin/Elements/Header, title => $title &>
+
+<& Elements/Tabs,
+    title       => $title,
+    schema      => $schema,
+    current_tab => 'Admin/Global/StatusSchemas/Modify.html',
+&>
+
+<& /Elements/ListActions, actions => \@results &>
+
+<form action="<% RT->config->get('WebPath') %>/Admin/Global/StatusSchemas/Modify.html" method="post">
+<input type="hidden" name="name" value="<% $name %>" />
+
+% foreach my $type (qw(Initial Active Inactive)) { # loc
+% my $method = lc $type;
+<% _($type) %>: <input name="<% $method %>" value="<% $ARGS{ $method } || join ', ', $schema->$method() %>" size="40" /><br />
+% }
+
+<& /Elements/Submit, label => _('Update'), name => 'update' &>
+</form>
+
+</&>
+
+<%INIT>
+my $title = _("Modify system status schemas", $name);
+
+use RT::StatusSchema;
+my $schema = RT::StatusSchema->new->load( $name );
+unless ( $schema ) {
+    Jifty->web->redirect(
+        RT->config->get('WebPath')
+        . '/Admin/Global/StatusSchemas/index.html'
+    );
+}
+
+my @results;
+if ( $update ) {
+    my %tmp;
+    foreach my $type ( qw(initial active inactive) ) {
+        $tmp{ $type } = [
+            grep length && defined,
+            map { s/^\s+//; s/\s+$//; $_}
+            split /\s*,\s*/,
+            $ARGS{ $type } || ''
+        ];
+    }
+    my ($status, $msg) = $schema->set_statuses( %tmp );
+    push @results, $msg if $msg;
+
+    foreach my $type ( qw(initial active inactive) ) {
+        $ARGS{ $type } = join ', ', $schema->$type();
+    }
+}
+
+</%INIT>
+<%ARGS>
+$name => undef
+$update => undef
+</%ARGS>

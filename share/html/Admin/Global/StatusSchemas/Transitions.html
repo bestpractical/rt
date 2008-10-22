@@ -1,0 +1,63 @@
+<&| /Admin/Elements/Header, title => $title &>
+
+<& Elements/Tabs,
+    title       => $title,
+    schema      => $schema,
+    current_tab => 'Admin/Global/StatusSchemas/Transitions.html',
+&>
+
+<& /Elements/ListActions, actions => \@results &>
+
+<form action="<% RT->config->get('WebPath') %>/Admin/Global/StatusSchemas/Transitions.html" method="post">
+<input type="hidden" name="name" value="<% $name %>" />
+
+<table>
+<tr><th><% _('From') %></th><th rowspan="<% @valid + 1 %>">&rarr;</th><th colspan="<% @valid + 0 %>"><% _('To (check valid transitions)') %></th></tr>
+% foreach my $from ( @valid ) {
+<tr><th><% _($from) %></th>
+% foreach my $to ( @valid ) {
+% my $checked = grep $_ eq $to, $schema->transitions( $from );
+% if ( $from ne $to ) {
+<td><nobr><input type="checkbox" name="<% $from .'->' %>" value="<% $to %>" <% $checked? 'checked="checked"': '' |n %> />&nbsp;<% _($to) %></nobr></td>
+% } else {
+<td>&nbsp;</td>
+% }
+% } }
+</table>
+
+<& /Elements/Submit, label => _('Update'), name => 'update' &>
+</form>
+
+</&>
+
+<%INIT>
+my $title = _("Modify transitions for schema '%1'", $name);
+
+use RT::StatusSchema;
+my $schema = RT::StatusSchema->new->load( $name );
+unless ( $schema ) {
+    Jifty->web->redirect(
+        RT->config->get('WebPath')
+        . '/Admin/Global/StatusSchemas/index.html'
+    );
+}
+
+my @valid = $schema->valid;
+
+my @results;
+if ( $update ) {
+    my %tmp;
+    foreach my $status ( @valid ) {
+        my $v = $ARGS{ $status .'->' };
+        my @list = grep $schema->is_valid( $_ ), $v? ( ref $v? @{ $v }: ($v) ): ();
+        $tmp{ $status } = \@list;
+    }
+    my ($status, $msg) = $schema->set_transitions( %tmp );
+    push @results, $msg if $msg;
+}
+
+</%INIT>
+<%ARGS>
+$name => undef
+$update => undef
+</%ARGS>
