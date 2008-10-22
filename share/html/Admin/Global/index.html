@@ -52,36 +52,41 @@
 <& /Elements/ListMenu, items => $tabs &>
 </&>
 <%INIT>
-  my $tabs = {
-                
-               A => { title => _('Scrips'),
-                           text => _('Modify scrips which apply to all queues'),
-                           path => '/Admin/Global/Scrips.html',
-                         },
-               B => { title => _('Templates'),
-                        text => _('Edit system templates'),
-                        path => '/Admin/Global/Templates.html',
-                      },
-              
-                F => { title => _('Custom Fields'),
-                text => _('Modify global custom fields'),
-                        path => '/Admin/Global/CustomFields/index.html',
-                        },
-
-                G => { title => _('Group rights'),
-                                text => _('Modify global group rights'),
-                                path => '/Admin/Global/GroupRights.html',
-                      },
-                H => { title => _('User rights'),
-                                text => _('Modify global user rights'),
-                                path => '/Admin/Global/UserRights.html',
-                      },
-                I => { title => _('RT at a glance'),
-                                text => _('Modify the default "RT at a glance" view'),
-                                path => '/Admin/Global/MyRT.html',
-                      },
-
-
-
+my $tabs = {
+    A => {
+        title => _('Scrips'),
+        text  => _('Modify scrips which apply to all queues'),
+        path  => '/Admin/Global/Scrips.html',
+    },
+    B => {
+        title => _('Templates'),
+        text  => _('Edit system templates'),
+        path  => '/Admin/Global/Templates.html',
+    },
+    C => {
+        title => _('Status Schemas'),
+        text  => _('Modify system status schemas'),
+        path  => '/Admin/Global/StatusSchemas/index.html',
+    },
+    F => {
+        title => _('Custom Fields'),
+        text  => _('Modify global custom fields'),
+        path  => '/Admin/Global/CustomFields/index.html',
+    },
+    G => {
+        title => _('Group rights'),
+        text  => _('Modify global group rights'),
+        path  => '/Admin/Global/GroupRights.html',
+    },
+    H => {
+        title => _('User rights'),
+        text  => _('Modify global user rights'),
+        path  => '/Admin/Global/UserRights.html',
+    },
+    I => {
+        title => _('RT at a glance'),
+        text  => _('Modify the default "RT at a glance" view'),
+        path  => '/Admin/Global/MyRT.html',
+    },
 };
 </%INIT>

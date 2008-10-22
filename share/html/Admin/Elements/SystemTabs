@@ -59,6 +59,9 @@
                B => { title => _('Templates'),
                         path => 'Admin/Global/Templates.html',
                       },
+                C => { title => _('Status Schemas'),
+                        path => 'Admin/Global/StatusSchemas/index.html',
+                        },
               
                 F => { title => _('Custom Fields'),
                         path => 'Admin/Global/CustomFields/index.html',
