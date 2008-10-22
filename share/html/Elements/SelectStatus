@@ -54,12 +54,22 @@
 <option value="<%$status%>"<% (defined $default && $status eq $default) && qq[ selected="selected"] |n %>><%_($status)%></option>
 % }
 </select>
-<%ONCE>
-my $queue = RT::Model::Queue->new();
-my @status = $queue->status_array();
-</%ONCE>
+<%INIT>
+my @status;
+if ( $ticket ) {
+    @status = $ticket->queue->status_schema->transitions( $ticket->status );
+}
+elsif ( $queue && $queue->id ) {
+    @status = $queue->status_schema->valid;
+}
+else {
+    @status = RT::Model::Queue->status_schema->valid;
+}
+</%INIT>
 <%ARGS>
 $name => undef
+$ticket => undef
+$queue => undef
 $default => ''
 $skip_deleted => 0
 $default_value => 1
