@@ -79,7 +79,7 @@ sub prepare {
 
     $self->tickets_obj->limit_queue( value => $self->argument );
 
-    foreach my $status ( RT::Model::Queue->active_status_array() ) {
+    foreach my $status ( RT::Model::Queue->status_schema->active() ) {
         $self->tickets_obj->limit_status( value => $status );
     }
 

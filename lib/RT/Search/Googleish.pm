@@ -111,7 +111,7 @@ sub query_to_sql {
 
         # Is there a status with this name?
         elsif ( $Queue = RT::Model::Queue->new( current_user => $self->tickets_obj->current_user )
-            and $Queue->is_valid_status($key) )
+            and $Queue->status_schema->is_valid($key) )
         {
             push @status_clauses, "Status = '" . $key . "'";
         }
@@ -154,7 +154,7 @@ sub query_to_sql {
     push @tql_clauses, join( " OR ", sort @owner_clauses );
     if ( !@status_clauses ) {
         push @tql_clauses,
-          join( " OR ", map "Status = '$_'", RT::Model::Queue->active_status_array() );
+          join( " OR ", map "Status = '$_'", RT::Model::Queue->status_schema->active() );
     }
     else {
         push @tql_clauses, join( " OR ", sort @status_clauses );

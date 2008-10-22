@@ -890,7 +890,7 @@ sub has_unresolved_dependencies {
 
 Returns an RT::Model::TicketCollection object of tickets which this ticket depends on
 and which have a status of new, open or stalled. (That list comes from
-RT::Model::Queue->active_status_array
+RT::Model::Queue->status_schema->active
 
 =cut
 
@@ -898,7 +898,7 @@ sub unresolved_dependencies {
     my $self = shift;
     my $deps = RT::Model::TicketCollection->new;
 
-    my @live_statuses = RT::Model::Queue->active_status_array();
+    my @live_statuses = RT::Model::Queue->status_schema->active();
     foreach my $status (@live_statuses) {
         $deps->limit_status( value => $status );
     }

@@ -118,10 +118,11 @@ sub _compute_possible_queues {
 sub _compute_possible_statuses {
     my $self = shift;
 
+    my $record = $self->record;
     return [
         map { { display => $_, value => $_ } }
-          RT::Model::Queue->active_status_array,
-        RT::Model::Queue->inactive_status_array
+        $record->status,
+        $record->queue->status_schema->transitions( $record->status )
     ];
 }
 

@@ -374,7 +374,7 @@ sub create {
         return ( 0, 0, _( "No permission to create tickets in the queue '%1'", $queue_obj->name ) );
     }
 
-    unless ( $queue_obj->is_valid_status( $args{'status'} ) ) {
+    unless ( $queue_obj->status_schema->is_valid( $args{'status'} ) ) {
         return ( 0, 0, _('Invalid value for status') );
     }
 
@@ -426,7 +426,7 @@ sub create {
     }
 
     #If the status is an inactive status, set the resolved date
-    elsif ( $queue_obj->is_inactive_status( $args{'status'} ) ) {
+    elsif ( $queue_obj->status_schema->is_inactive( $args{'status'} ) ) {
         Jifty->log->debug( "Got a " . $args{'status'} . "(inactive) ticket with undefined resolved date. Setting to now." );
         $Resolved->set_to_now;
     }
@@ -2393,8 +2393,6 @@ sub untake {
     return ( $self->set_owner( RT->nobody->user_object->id, 'Untake' ) );
 }
 
-
-
 =head2 steal
 
 A convenience method to change the owner of the current ticket to the
@@ -2414,10 +2412,6 @@ sub steal {
 
 }
 
-
-
-
-
 =head2 validate_status STATUS
 
 Takes a string. Returns true if that status is a valid status for this ticket.
@@ -2425,18 +2419,19 @@ Returns false otherwise.
 
 =cut
 
-sub validate_status {
-    my $self   = shift;
-    my $status = shift;
-
-    #Make sure the status passed in is valid
-    unless ( $self->queue->is_valid_status($status) ) {
-        return (undef);
-    }
-
-    return (1);
-
-}
+# XXX, FIXME: disable this for a while, as it conflicts with status schemas
+#sub validate_status {
+#    my $self   = shift;
+#    my $status = shift;
+#
+#    #Make sure the status passed in is valid
+#    unless ( $self->queue->status_schema->is_valid($status) ) {
+#        return (undef);
+#    }
+#
+#    return (1);
+#
+#}
 
 
 
@@ -2478,7 +2473,7 @@ sub set_status {
         return ( 0, _('That ticket has unresolved dependencies') );
     }
 
-    unless ( $self->validate_status( $args{'status'} ) ) {
+    unless ( $self->queue->status_schema->is_valid( $args{'status'} ) ) {
         return ( 0, _( "'%1' is an invalid value for status", $args{'status'} ) );
     }
 
@@ -2498,7 +2493,7 @@ sub set_status {
 
     #When we close a ticket, set the 'resolved' attribute to now.
     # It's misnamed, but that's just historical.
-    if ( $self->queue->is_inactive_status( $args{status} ) ) {
+    if ( $self->queue->status_schema->is_inactive( $args{status} ) ) {
         $self->_set(
             column             => 'resolved',
             value              => $now->iso,

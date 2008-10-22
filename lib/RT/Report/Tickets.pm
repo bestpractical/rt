@@ -242,7 +242,7 @@ sub add_empty_rows {
     if ( $self->{'_group_by_field'} eq 'status' ) {
         my %has = map { $_->__value('status') => 1 } @{ $self->items_array_ref || [] };
 
-        foreach my $status ( grep !$has{$_}, RT::Model::Queue->new->status_array ) {
+        foreach my $status ( grep !$has{$_}, RT::Model::Queue->status_schema->valid ) {
 
             my $record = $self->new_item;
             $record->load_from_hash(
