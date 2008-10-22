@@ -2472,7 +2472,7 @@ sub set_status {
     }
 
     if (   !$args{force}
-        && $schema->is_inactive( $args{'status'} ) )
+        && $schema->is_inactive( $args{'status'} )
         && $self->has_unresolved_dependencies )
     {
         return ( 0, _('That ticket has unresolved dependencies') );
