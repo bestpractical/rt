@@ -9,8 +9,8 @@ use RT;
 
 use RT::Model::Queue;
 my $q = RT::Model::Queue->new(current_user => RT->system_user);
-is($q->is_valid_status('new'), 1, 'New is a valid status');
-is($q->is_valid_status('f00'), 0, 'f00 is not a valid status');
+is($q->status_schema->is_valid('new'), 1, 'New is a valid status');
+is($q->status_schema->is_valid('f00'), 0, 'f00 is not a valid status');
 
 
 }
@@ -18,9 +18,9 @@ is($q->is_valid_status('f00'), 0, 'f00 is not a valid status');
 {
 
 my $q = RT::Model::Queue->new(current_user => RT->system_user);
-is($q->is_active_status('new'), 1, 'New is a Active status');
-is($q->is_active_status('rejected'), 0, 'Rejected is an inactive status');
-is($q->is_active_status('f00'), 0, 'f00 is not a Active status');
+is($q->status_schema->is_active('new'), 1, 'New is a Active status');
+is($q->status_schema->is_active('rejected'), 0, 'Rejected is an inactive status');
+is($q->status_schema->is_active('f00'), 0, 'f00 is not a Active status');
 
 
 }
@@ -28,9 +28,9 @@ is($q->is_active_status('f00'), 0, 'f00 is not a Active status');
 {
 
 my $q = RT::Model::Queue->new(current_user => RT->system_user);
-is($q->is_inactive_status('new'), 0, 'New is a Active status');
-is($q->is_inactive_status('rejected'), 1, 'rejeected is an Inactive status');
-is($q->is_inactive_status('f00'), 0, 'f00 is not a Active status');
+is($q->status_schema->is_inactive('new'), 0, 'New is a Active status');
+is($q->status_schema->is_inactive('rejected'), 1, 'rejeected is an Inactive status');
+is($q->status_schema->is_inactive('f00'), 0, 'f00 is not a Active status');
 
 
 }
