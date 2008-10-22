@@ -55,7 +55,7 @@ my ( @active, @inactive, @not_tickets );
 for my $link ( @{ $ticket->depends_on->items_array_ref } ) {
     my $target = $link->target_obj;
     if ( $target && $target->isa('RT::Model::Ticket') ) {
-        if ( $target->queue->is_inactive_status( $target->status ) ) {
+        if ( $target->queue->status_schema->is_inactive( $target->status ) ) {
             push( @inactive, $link->target_uri );
         }
         else {
