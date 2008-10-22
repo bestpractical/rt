@@ -416,7 +416,7 @@ sub create {
     my $started = RT::Date->new();
     if ( defined $args{'started'} ) {
         $started->set( format => 'ISO', value => $args{'started'} );
-    } elsif ( $args{'status'} ne 'new' ) {
+    } elsif ( !$queue_obj->status_schema->is_initial( $args{'status'} ) ) {
         $started->set_to_now;
     }
 
@@ -2466,24 +2466,23 @@ sub set_status {
         }
     }
 
-    if (   !$args{Force}
-        && ( $args{'status'} eq 'resolved' )
+    my $schema = $self->queue->status_schema;
+    unless ( $schema->is_valid( $args{'status'} ) ) {
+        return ( 0, _( "'%1' is an invalid value for status", $args{'status'} ) );
+    }
+
+    if (   !$args{force}
+        && $schema->is_inactive( $args{'status'} ) )
         && $self->has_unresolved_dependencies )
     {
         return ( 0, _('That ticket has unresolved dependencies') );
     }
 
-    unless ( $self->queue->status_schema->is_valid( $args{'status'} ) ) {
-        return ( 0, _( "'%1' is an invalid value for status", $args{'status'} ) );
-    }
-
     my $now = RT::Date->new;
     $now->set_to_now();
 
-    #If we're changing the status from new, record that we've started
-    if ( $self->status eq 'new' && $args{status} ne 'new' ) {
-
-        #Set the started time to "now"
+    #If we're changing the status from intial to non-initial, record that we've started
+    if ( $schema->is_initial( $self->status ) && !$schema->is_initial( $args{status} ) )  {
         $self->_set(
             column             => 'started',
             value              => $now->iso,
@@ -2493,7 +2492,7 @@ sub set_status {
 
     #When we close a ticket, set the 'resolved' attribute to now.
     # It's misnamed, but that's just historical.
-    if ( $self->queue->status_schema->is_inactive( $args{status} ) ) {
+    if ( $schema->is_inactive( $args{status} ) ) {
         $self->_set(
             column             => 'resolved',
             value              => $now->iso,
@@ -2512,9 +2511,6 @@ sub set_status {
 
     return ( $val, $msg );
 }
-
-
-
 
 =head2 set_told ISO  [TIMETAKEN]
 
