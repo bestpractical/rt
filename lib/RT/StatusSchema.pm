@@ -100,7 +100,7 @@ sub list {
 
     $self->fill_cache unless keys %STATUS_SCHEMAS_CACHE;
 
-    return sort grep length, keys %STATUS_SCHEMAS_CACHE;
+    return sort grep length && $_ ne '__maps__', keys %STATUS_SCHEMAS_CACHE;
 }
 
 =head2 name
@@ -505,6 +505,74 @@ sub _set_actions {
     # XXX, TODO: more tests on data
     $STATUS_SCHEMAS{ $args{'name'} }{'actions'} = $args{'actions'};
     return 1;
+}
+
+sub from_set {
+    my $self = shift;
+    my $status = shift;
+    foreach my $set ( qw(initial active inactive) ) {
+        return $set if $self->is_valid( $status, $set );
+    }
+    return '';
+}
+
+sub map {
+    my $from = shift;
+    my $to = shift;
+    $to = RT::StatusSchema->load( $to ) unless ref $to;
+    return $STATUS_SCHEMAS{'__maps__'}{ $from->name .' -> '. $to->name } || {};
+}
+
+sub set_map {
+    my $self = shift;
+    my $to = shift;
+    $to = RT::StatusSchema->load( $to ) unless ref $to;
+    my %map = @_;
+    $map{ lc $_ } = delete $map{ $_ } foreach keys %map;
+
+    return (0, _("Status schema is not loaded"))
+        unless $self->name;
+
+    return (0, _("Status schema is not loaded"))
+        unless $to->name;
+
+
+    $STATUS_SCHEMAS{'__maps__'}{ $self->name .' -> '. $to->name } = \%map;
+
+    my ($status, $msg) = $self->_store_schemas( $self->name );
+    return ($status, $msg) unless $status;
+
+    return (1, _('Updated schema with actions data'));
+}
+
+sub has_map {
+    my $self = shift;
+    my $map = $self->map( @_ );
+    return 0 unless $map && keys %$map;
+    return 0 unless grep defined && length, values %$map;
+    return 1;
+}
+
+sub no_maps {
+    my $self = shift;
+    my @list = $self->list;
+    my @res;
+    foreach my $from ( @list ) {
+        foreach my $to ( @list ) {
+            next if $from eq $to;
+            push @res, $from, $to
+                unless RT::StatusSchema->load( $from )->has_map( $to );
+        }
+    }
+    return @res;
+}
+
+sub queues {
+    my $self = shift;
+    use RT::Model::QueueCollection;
+    my $queues = new RT::Model::QueueCollection;
+    $queues->limit( column => 'status_schema', value => $self->name );
+    return $queues;
 }
 
 1;
