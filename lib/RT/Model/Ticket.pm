@@ -2437,11 +2437,11 @@ Returns false otherwise.
 
 =head2 set_status STATUS
 
-Set this ticket\'s status. STATUS can be one of: new, open, stalled, resolved, rejected or deleted.
+Set this ticket's status.
 
-Alternatively, you can pass in a list of named parameters (Status => STATUS, Force => FORCE).  If FORCE is true, ignore unresolved dependencies and force a status change.
-
-
+Alternatively, you can pass in a list of named parameters
+(status => STATUS, force => FORCE).  If FORCE is true,
+ignore unresolved dependencies and force a status change.
 
 =cut
 
