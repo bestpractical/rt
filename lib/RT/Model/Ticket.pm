@@ -1308,6 +1308,17 @@ sub set_queue {
         return ( 0, _("You may not create requests in that queue.") );
     }
 
+    my $new_status;
+    my $schema = $self->queue->status_schema;
+    if ( $schema->name ne $Newqueue_obj->status_schema->name ) {
+        unless ( $schema->has_map( $Newqueue_obj->status_schema ) ) {
+            return ( 0, _("There is no mapping for statuses between these queues. Contact your system administrator.") );
+        }
+        $new_status = $schema->map( $Newqueue_obj )->{ $self->status };
+        return ( 0, _("Mapping between queues' status schemas is incomplete. Contact your system administrator.") )
+            unless $new_status;
+    }
+
     unless (
         $self->owner_obj->has_right(
             right  => 'OwnTicket',
@@ -1338,6 +1349,11 @@ sub set_queue {
                   . $reminder->id . ': '
                   . $msg )
               unless $status;
+        }
+        if ( $new_status ) {
+            my ($status, $msg) = $self->set_status( status => $new_status, force => 1 );
+            Jifty->log->error( 'Status change failed on queue chabge: ' $msg )
+                unless $status;
         }
     }
 
