@@ -7,11 +7,16 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<ul>
+<table>
+<tr><th><% _('Schema') %></th><th><% _('Statuses') %></th><th><% _('Queues') %></th></tr>
 % foreach my $schema ( @list ) {
-<li><a href="<% RT->config->get('WebPath') %>/Admin/Global/StatusSchemas/Modify.html?<% $m->comp( '/Elements/QueryString', name => $schema ) %>"><% $schema %></a></li>
+% my $obj = RT::StatusSchema->load( $schema );
+<tr>
+<td><a href="<% RT->config->get('WebPath') %>/Admin/Global/StatusSchemas/Summary.html?<% $m->comp( '/Elements/QueryString', name => $schema ) %>"><% $schema %></a></td>
+<td><% join ', ', map _($_), $obj->valid %></td>
+<td><% join ', ', map $_->name, @{ $obj->queues->items_array_ref } %></td>
 % }
-</ul>
+</table>
 
 <form action="<% RT->config->get('WebPath') %>/Admin/Global/StatusSchemas/index.html" method="post">
 
