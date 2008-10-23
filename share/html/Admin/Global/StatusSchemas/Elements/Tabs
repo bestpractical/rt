@@ -26,7 +26,7 @@ if ( $schema ) {
     my $qs_name = $m->comp( '/Elements/QueryString', name => $schema->name );
     $current_tab .= "?$qs_name";
 
-    $parent_subtab = "$base/Modify.html?$qs_name";
+    $parent_subtab = "$base/Summary.html?$qs_name";
     $parent_subtabs->{'E'} = {
         title          => $schema->name,
         path           => $parent_subtab,
@@ -34,14 +34,18 @@ if ( $schema ) {
         current_subtab => $current_tab,
         subtabs => {
             A => {
-                title => _("Statuses"),
-                path  => "$base/Modify.html?$qs_name",
+                title => _("Summary"),
+                path  => "$base/Summary.html?$qs_name",
             },
             B => {
+                title => _("Statuses"),
+                path  => "$base/Statuses.html?$qs_name",
+            },
+            C => {
                 title => _("Transitions"),
                 path  => "$base/Transitions.html?$qs_name",
             },
-            C => {
+            D => {
                 title => _("Interface"),
                 path  => "$base/Interface.html?$qs_name",
             },
