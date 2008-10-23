@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT::Test;
-use Test::More tests => 12;
+use Test::More tests => 18;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok($m->login, "Logged in");
@@ -21,14 +21,15 @@ $m->goto_ticket($tid);
 
 $m->follow_link_ok( { text => 'Links' }, "Followed link to Links" );
 
-ok $m->form_with_fields("$tid-DependsOn"), "found the form";
 my $not_a_ticket_url = "http://example.com/path/to/nowhere";
-$m->field("$tid-DependsOn", $not_a_ticket_url);
-$m->field("DependsOn-$tid", $not_a_ticket_url);
-$m->field("$tid-MemberOf", $not_a_ticket_url);
-$m->field("MemberOf-$tid", $not_a_ticket_url);
-$m->field("$tid-RefersTo", $not_a_ticket_url);
-$m->field("RefersTo-$tid", $not_a_ticket_url);
+my $moniker = $m->moniker_for('RT::Action::CreateTicketLinks');
+
+for my $field (
+    qw/depends_on depended_on_by member_of has_member refers_to referred_to_by/
+  )
+{
+    $m->fill_in_action_ok( $moniker, $field => $not_a_ticket_url );
+}
 $m->submit;
 
 foreach my $type ("depends on", "member of", "refers to") {
