@@ -1352,7 +1352,7 @@ sub set_queue {
         }
         if ( $new_status ) {
             my ($status, $msg) = $self->set_status( status => $new_status, force => 1 );
-            Jifty->log->error( 'Status change failed on queue chabge: ' $msg )
+            Jifty->log->error( 'Status change failed on queue change: ' . $msg )
                 unless $status;
         }
     }
