@@ -1,0 +1,89 @@
+<&| /Admin/Elements/Header, title => $title &>
+
+<& Elements/Tabs,
+    title       => $title,
+    schema      => $schema,
+    current_tab => 'Admin/Global/StatusSchemas/Summary.html',
+&>
+
+<&| /Widgets/TitleBox, title => _('Statuses') &>
+% unless ( $schema->valid ) {
+<p><&|/l&>This schema has no statuses defined, quite useless.</&></p>
+% } else {
+<ul>
+% foreach my $set( qw(initial active inactive) ) {
+<li><% _($set) %>: <ul>
+% foreach my $status( $schema->$set() ) {
+<li><% _($status) %></li>
+% }
+</ul></li>
+% }
+</ul>
+% }
+<br /><a href="<% $url_base %>/Statuses.html?<% $qs_name %>"><% _('Modify statuses') %></a>
+</&>
+
+<&| /Widgets/TitleBox, title => _('Queues') &>
+%# XXX, TODO: use ListCollection
+% my $queues = $schema->queues;
+<ul>
+% while ( my $queue = $queues->next ) {
+<li><% $queue->name %></li>
+% }
+</ul>
+</&>
+
+% return unless $schema->valid;
+
+<&| /Widgets/TitleBox, title => _('Transitions') &>
+% my %transitions = $schema->transitions;
+<ul>
+% foreach my $from ( $schema->valid ) {
+<li><% _($from) %>&rarr;<ul>
+% foreach my $to ( @{ $transitions{ $from } || [] } ) {
+<li><% _($to) %>
+% my $label  = $schema->transition_label( $from => $to );
+- <% _( "labeled '%1'", _($label) ) %>
+% my $action = $schema->transition_action( $from => $to );
+% if ( $action eq 'hide' ) {
+<% _( "and hidden from UI") %>
+% } elsif ( $action eq 'comment' ) {
+<% _( "and comment page is shown") %>
+% } elsif ( $action eq 'respond' ) {
+<% _( "and correspond page is shown") %>
+% } else {
+<% _( "and no additional interface is shown") %>
+% }
+</li>
+% }
+</ul>
+% }
+</ul>
+
+<br /><a href="<% $url_base %>/Transitions.html?<% $qs_name %>"><% _('Modify transitions') %></a>
+<br /><a href="<% $url_base %>/Interface.html?<% $qs_name %>"><% _('Modify actions and labels') %></a>
+</&>
+
+<& Elements/MissingMaps, schema => $schema &>
+
+</&>
+<%INIT>
+my $url_base = RT->config->get('WebPath') ."/Admin/Global/StatusSchemas";
+use RT::StatusSchema;
+my $schema = RT::StatusSchema->load( $name );
+unless ( $schema ) {
+    Jifty->web->redirect(
+        RT->config->get('WebPath')
+        . '/Admin/Global/StatusSchemas/index.html'
+    );
+}
+my $qs_name = $m->comp( '/Elements/QueryString', name => $schema->name );
+my $title = _("'%1' status schema summary", $name);
+
+
+my @all_maps = RT::StatusSchema->list;
+
+</%INIT>
+<%ARGS>
+$name => undef
+</%ARGS>
