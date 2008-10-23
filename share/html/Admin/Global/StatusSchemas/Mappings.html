@@ -7,12 +7,14 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-%#<&|/l>Mapping between schemas is required when you want to move tickets between queues with different schemas.</&>
+<&|/l&>Mapping between schemas is required when you want to move tickets between queues with different schemas.</&>
 
 % unless ( @list > 1 ) {
-%#<&|/l>Only one status schema.</&>
+<&|/l&>Only one status schema.</&>
 % } else {
-<form action="<% RT->config->get('WebPath') %>/Admin/Global/StatusSchemas/Mappings.html" method="post">
+<& Elements/MissingMaps &>
+
+<form action="<% RT->config->get('WebPath') %>/Admin/Global/StatusSchemas/Mappings.html" method="get">
 <& /Widgets/Form/Select,
     name          => 'from',
     description   => _('From'),
@@ -24,7 +26,7 @@
     name          => 'to',
     description   => _('To'),
     values        => \@list,
-    current_value => $from,
+    current_value => $to,
     default       => 0,
 &>
 
@@ -37,21 +39,47 @@
 <input type="hidden" name="from" value=<% $from %> />
 <input type="hidden" name="to" value=<% $to %> />
 
+<&|/Widgets/TitleBox, title => "$from -> $to" &>
+% unless ( $from_schema->has_map( $to ) ) {
+<&|/l&>Don't forget to save your changes as this mapping is only suggested defaults.</&>
+% }
 % foreach my $status ( $from_schema->valid ) {
-<% $status %> -
+% my $current = $from_schema->map( $to_schema )->{ lc $status };
+% $current = $status if !$current && $to_schema->is_valid( $status );
+% $current = ($to_schema->valid( $from_schema->from_set( $status ) ))[0] unless $current;
 <& /Widgets/Form/Select,
     name          => "from @ $status ->",
-    description   => _('To'),
+    description   => _($status) .' -> ',
     values        => [ $to_schema->valid ],
     default       => 0,
     empty         => 0,
+    current_value => $current,
 &></br>
 % }
+</&>
+
+<&|/Widgets/TitleBox, title => "$to -> $from" &>
+% unless ( $to_schema->has_map( $from ) ) {
+<&|/l&>Don't forget to save your changes as this mapping is only suggested defaults.</&>
+% }
+% foreach my $status ( $to_schema->valid ) {
+% my $current = $to_schema->map( $from_schema )->{ lc $status };
+% $current = $status if !$current && $from_schema->is_valid( $status );
+% $current = ($from_schema->valid( $to_schema->from_set( $status ) ))[0] unless $current;
+<& /Widgets/Form/Select,
+    name          => "to @ $status ->",
+    description   => _($status) .' -> ',
+    values        => [ $from_schema->valid ],
+    default       => 0,
+    empty         => 0,
+    current_value => $current,
+&></br>
+% }
+</&>
 
 <& /Elements/Submit, label => _('Update'), name => 'update' &>
 </form>
 % }
-
 </&>
 
 <%INIT>
@@ -72,13 +100,25 @@ if ( $to ) {
 }
 
 if ( $update && $from_schema && $to_schema ) {
-    my $schema = new RT::StatusSchema;
+    my %map = ();
+    foreach my $s ( $from_schema->valid ) {
+        $map{ lc $s } = $ARGS{"from @ $s ->"};
+    }
+    my ($status, $msg) = $from_schema->set_map( $to_schema, %map );
+    push @results, $msg if $msg;
+
+    %map = ();
+    foreach my $s ( $to_schema->valid ) {
+        $map{ lc $s } = $ARGS{"to @ $s ->"};
+    }
+    ($status, $msg) = $to_schema->set_map( $from_schema, %map );
+    push @results, $msg if $msg;
 }
 
 </%INIT>
 <%ARGS>
 $from   => undef
 $to     => undef
-$update => undef 
-$select => undef 
+$update => undef
+$select => undef
 </%ARGS>
