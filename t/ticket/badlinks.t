@@ -19,7 +19,11 @@ ok $tid, 'created a ticket #'. $tid or diag "error: $msg";
 
 $m->goto_ticket($tid);
 
+open my $fh, '>', '/tmp/t.html';
+print $fh $m->content;
 $m->follow_link_ok( { text => 'Links' }, "Followed link to Links" );
+close $fh;
+exit 0;
 
 my $not_a_ticket_url = "http://example.com/path/to/nowhere";
 my $moniker = $m->moniker_for('RT::Action::CreateTicketLinks');
