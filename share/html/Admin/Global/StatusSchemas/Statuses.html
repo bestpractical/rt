@@ -3,12 +3,12 @@
 <& Elements/Tabs,
     title       => $title,
     schema      => $schema,
-    current_tab => 'Admin/Global/StatusSchemas/Modify.html',
+    current_tab => 'Admin/Global/StatusSchemas/Statuses.html',
 &>
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<% RT->config->get('WebPath') %>/Admin/Global/StatusSchemas/Modify.html" method="post">
+<form action="<% RT->config->get('WebPath') %>/Admin/Global/StatusSchemas/Statuses.html" method="post">
 <input type="hidden" name="name" value="<% $name %>" />
 
 % foreach my $type (qw(Initial Active Inactive)) { # loc
