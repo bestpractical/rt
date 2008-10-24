@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
-use RT::Test; use Test::More tests => 19;
+use RT::Test; use Test::More tests => 20;
 use HTTP::Request::Common;
 use HTTP::Cookies;
 use LWP;
@@ -39,7 +39,7 @@ $agent->get($url."Ticket/Create.html?queue=1");
 is ($agent->{'status'}, 200, "Loaded Create.html");
 $agent->form_number(3);
 # Start with a string containing characters in latin1
-my $string = "I18N Web Testing æøå";
+my $string = "I18N Web Testing Ã¦Ã¸Ã¥";
 Encode::from_to($string, 'iso-8859-1', 'utf8');
 $agent->field('subject' => "Ticket with utf8 body");
 $agent->field('content' => $string);
@@ -52,7 +52,7 @@ $agent->get($url."Ticket/Create.html?queue=1");
 is ($agent->{'status'}, 200, "Loaded Create.html");
 $agent->form_number(3);
 # Start with a string containing characters in latin1
-$string = "I18N Web Testing æøå";
+$string = "I18N Web Testing Ã¦Ã¸Ã¥";
 Encode::from_to($string, 'iso-8859-1', 'utf8');
 $agent->field('subject' => $string);
 $agent->field('content' => "Ticket with utf8 subject");
@@ -62,9 +62,10 @@ like( $agent->{'content'}, qr{$string} , "Found the content");
 
 # Update time worked in hours
 $agent->follow_link( text_regex => qr/Basics/ );
-$agent->submit_form( form_number => 3,
-    fields => { time_worked => 5, 'time_worked-TimeUnits' => "hours" }
-);
+my $moniker = $agent->moniker_for('RT::Action::UpdateTicket');
+$agent->fill_in_action_ok( $moniker, 'time_worked' => '5h' );
+$agent->submit;
+
 
 TODO: {
     local $TODO = "We don't handle time worked units yet";
