@@ -48,7 +48,9 @@
 <table>
   <tr>
     <td class="label"><&|/l&>Owner</&>:</td>
-    <td class="value"><& /Elements/ShowUser, User => $Ticket->OwnerObj, Ticket => $Ticket &></td>
+% my $owner = $Ticket->OwnerObj;
+    <td class="value"><& /Elements/ShowUser, User => $owner, Ticket => $Ticket &>
+    <& /Elements/ShowUserEmailFrequency, User => $owner, Ticket => $Ticket &></td>
   </tr>
   <tr>
     <td class="labeltop"><&|/l&>Requestors</&>:</td>
@@ -63,6 +65,8 @@
     <td class="value"><& ShowGroupMembers, Group => $Ticket->AdminCc, Ticket => $Ticket &></td>
   </tr>
 </table>
+<%INIT>
+</%INIT>
 <%ARGS>
 $Ticket => undef
 </%ARGS>

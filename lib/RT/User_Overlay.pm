@@ -562,6 +562,47 @@ sub SetEmailAddress {
 
 }
 
+=head2 EmailFrequency
+
+Takes optional Ticket argument in paramhash. Returns 'no email',
+'squelched', 'daily', 'weekly' or empty string depending on
+user preferences.
+
+=over 4
+
+=item 'no email' - user has no email, so can not recieve notifications.
+
+=item 'squelched' - returned only when Ticket argument is provided and
+notifications to the user has been supressed for this ticket.
+
+=item 'daily' - retruned when user recieve daily messages digest instead
+of immediate delivery.
+
+=item 'weekly' - previous, but weekly.
+
+=item empty string returned otherwise.
+
+=back
+
+=cut
+
+sub EmailFrequency {
+    my $self = shift;
+    my %args = (
+        Ticket => undef,
+        @_
+    );
+    return '' unless $self->id && $self->id != $RT::Nobody->id
+        && $self->id != $RT::SystemUser->id;
+    return 'no email' unless my $email = $self->EmailAddress;
+    return 'squelched' if $args{'Ticket'} &&
+        grep lc $email eq lc $_->Content, $args{'Ticket'}->SquelchMailTo;
+    my $frequency = RT->Config->Get( 'EmailFrequency', $self ) || '';
+    return 'daily' if $frequency =~ /daily/i;
+    return 'weekly' if $frequency =~ /weekly/i;
+    return '';
+}
+
 =head2 CanonicalizeEmailAddress ADDRESS
 
 CanonicalizeEmailAddress converts email addresses into canonical form.
@@ -1640,7 +1681,6 @@ sub BasicColumns {
     [ Organization => 'Organization' ],
     );
 }
-
 
 1;
 

@@ -1,0 +1,9 @@
+(<% loc($frequency) %>)
+<%INIT>
+my $frequency = $User->EmailFrequency( Ticket => $Ticket );
+return unless $frequency;
+</%INIT>
+<%ARGS>
+$User
+$Ticket => undef
+</%ARGS>
