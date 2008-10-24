@@ -62,8 +62,8 @@ like( $agent->{'content'}, qr{$string} , "Found the content");
 
 # Update time worked in hours
 $agent->follow_link( text_regex => qr/Basics/ );
-my $moniker = $agent->moniker_for('RT::Action::UpdateTicket');
-$agent->fill_in_action_ok( $moniker, 'time_worked' => '5h' );
+my $basic_moniker = $agent->moniker_for('RT::Action::UpdateTicket');
+$agent->fill_in_action_ok( $basic_moniker, 'time_worked' => '5h' );
 $agent->submit;
 
 
