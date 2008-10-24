@@ -1868,7 +1868,7 @@ sub delete_link {
 
     unless ( $args{ 'silent_' . $direction } ) {
         my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
-            type       => 'DeleteLink',
+            type       => 'delete_link',
             field      => $LINKDIRMAP{ $args{'type'} }->{$direction},
             old_value  => $remote_uri->uri || $remote_link,
             time_taken => 0
@@ -1881,7 +1881,7 @@ sub delete_link {
     {
         my $OtherObj = $remote_uri->object;
         my ( $val, $Msg ) = $OtherObj->_new_transaction(
-            type  => 'DeleteLink',
+            type  => 'delete_link',
             field => $direction eq 'target'
             ? $LINKDIRMAP{ $args{'type'} }->{base}
             : $LINKDIRMAP{ $args{'type'} }->{target},

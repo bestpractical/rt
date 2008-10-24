@@ -48,11 +48,11 @@ my $commit_code = <<END;
 	Jifty->log->debug("Data is \$data");
 	
 	open \$file, ">$filename" or die "couldn't open $filename";
-	if (\$self->transaction_obj->type eq 'AddLink') {
+	if (\$self->transaction_obj->type eq 'add_link') {
 	    Jifty->log->debug("add_link");
 	    print \$file \$data+1, "\n";
 	}
-	elsif (\$self->transaction_obj->type eq 'DeleteLink') {
+	elsif (\$self->transaction_obj->type eq 'delete_link') {
 	    Jifty->log->debug("delete_link");
 	    print \$file \$data-1, "\n";
 	}
@@ -78,7 +78,7 @@ my $scrip = RT::Model::Scrip->new(current_user => RT->system_user);
                           template       => $template->id,
                           stage          => 'TransactionCreate',
                           queue          => 0,
-                  custom_is_applicable_code => '$self->transaction_obj->type =~ /(Add|Delete)Link/;',
+                  custom_is_applicable_code => '$self->transaction_obj->type =~ /(add|delete)_link/;',
                        custom_prepare_code => '1;',
                        custom_commit_code  => $commit_code,
                            );
@@ -223,7 +223,7 @@ ok($id,$msg);
 is(link_count($filename), 1, "scrips ok");
 
 my $transactions = $ticket2->transactions;
-$transactions->limit( column => 'type', value => 'AddLink' );
+$transactions->limit( column => 'type', value => 'add_link' );
 is( $transactions->count, 1, "Transaction found in other ticket" );
 is( $transactions->first->field , 'ReferredToBy');
 is( $transactions->first->new_value , $ticket->uri );
@@ -232,7 +232,7 @@ is( $transactions->first->new_value , $ticket->uri );
 ok($id,$msg);
 is(link_count($filename), 0, "scrips ok");
 $transactions = $ticket2->transactions;
-$transactions->limit( column => 'type', value => 'DeleteLink' );
+$transactions->limit( column => 'type', value => 'delete_link' );
 is( $transactions->count, 1, "Transaction found in other ticket" );
 is( $transactions->first->field , 'ReferredToBy');
 is( $transactions->first->old_value , $ticket->uri );
@@ -252,11 +252,11 @@ ok($id,$msg);
 is(link_count($filename), 0, "scrips ok");
 {
     my $transactions = $ticket->transactions;
-    $transactions->limit( column => 'type', value => 'AddLink' );
+    $transactions->limit( column => 'type', value => 'add_link' );
     is( $transactions->count, 2, "Still two txns on the base" );
 
     $transactions = $ticket2->transactions;
-    $transactions->limit( column => 'type', value => 'AddLink' );
+    $transactions->limit( column => 'type', value => 'add_link' );
     is( $transactions->count, 2, "Still two txns on the target" );
 
 }
@@ -269,11 +269,11 @@ ok($id,$msg);
 is(link_count($filename), 1, "scrips ok");
 {
     my $transactions = $ticket->transactions;
-    $transactions->limit( column => 'type', value => 'AddLink' );
+    $transactions->limit( column => 'type', value => 'add_link' );
     is( $transactions->count, 2, "still five txn on the base" );
 
     $transactions = $ticket2->transactions;
-    $transactions->limit( column => 'type', value => 'AddLink' );
+    $transactions->limit( column => 'type', value => 'add_link' );
     is( $transactions->count, 3, "+1 txn on the target" );
 
 }
@@ -286,11 +286,11 @@ ok($id,$msg);
 is(link_count($filename), 1, "scrips ok");
 {
     my $transactions = $ticket->transactions;
-    $transactions->limit( column => 'type', value => 'AddLink' );
+    $transactions->limit( column => 'type', value => 'add_link' );
     is( $transactions->count, 3, "+1 txn on the base" );
 
     $transactions = $ticket2->transactions;
-    $transactions->limit( column => 'type', value => 'AddLink' );
+    $transactions->limit( column => 'type', value => 'add_link' );
     is( $transactions->count, 3, "three txns on the target" );
 }
 ($id,$msg) =$ticket->delete_link(type => 'RefersTo', target => $ticket2->id, silent_target => 1);
