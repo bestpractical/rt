@@ -63,8 +63,12 @@
 <td colspan="3"><input name="name" value="<% ($create) ? "" : $queue_obj->name %>" /></td>
 </tr>
 
-<tr><td align="right"><&|/l&>description</&>:</td>
+<tr><td align="right"><&|/l&>Description</&>:</td>
 <td colspan="3"><input name="description" value="<% ($create) ? "" : $queue_obj->description %>" size="60" /></td>
+</tr>
+
+<tr><td align="right"><&|/l&>Status schema</&>:</td>
+<td colspan="3"><& /Admin/Elements/SelectStatusSchema, default => $create? '' : $queue_obj->status_schema  &></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Subject Tag</&>:</td>
@@ -158,7 +162,8 @@ if ($create) {
 }
 if ( $queue_obj->id ) {
     my @attribs= qw(description correspond_address comment_address name
-        initial_priority final_priority default_due_in sign encrypt subject_tag disabled);
+        initial_priority final_priority default_due_in sign encrypt
+        status_schema subject_tag disabled);
 
     # we're asking about enabled on the web page but really care about disabled
     if ( $set_enabled ) {

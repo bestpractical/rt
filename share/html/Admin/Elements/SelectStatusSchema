@@ -1,0 +1,13 @@
+<select name="<% $name %>">
+% for my $schema ( @list ) {
+<option value="<% $schema %>" <% $schema eq $default? 'selected="selected"' : '' |n %>><% $schema %></option>
+% }
+</select>
+<%INIT>
+my @list = RT::StatusSchema->list;
+$default = $default->name if ref $default;
+</%INIT>
+<%ARGS>
+$default => ''
+$name    => 'status_schema'
+</%ARGS>
