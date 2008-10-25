@@ -10,6 +10,7 @@ my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
 
 my $cf_name = 'test select one value';
+my $cf_moniker = 'edit-ticket-cfs';
 
 my $cfid;
 diag "Create a CF" if $ENV{'TEST_VERBOSE'};
@@ -94,12 +95,12 @@ diag "check that values of the CF are case insensetive(asd vs. ASD)"
     $m->title_like(qr/Modify ticket/i, 'modify ticket');
     $m->content_like(qr/\Q$cf_name/, 'CF on the page');
 
-    my $value = $m->form_number(3)->value("object-RT::Model::Ticket-$tid-CustomField-$cfid-values");
+    my $value = $m->form_number(3)->value("J:A:F-$cfid-$cf_moniker");
     is lc $value, 'asd', 'correct value is selected';
     $m->submit;
     $m->content_unlike(qr/\Q$cf_name\E.*?changed/mi, 'field is not changed');
 
-    $value = $m->form_number(3)->value("object-RT::Model::Ticket-$tid-CustomField-$cfid-values");
+    $value = $m->form_number(3)->value("J:A:F-$cfid-$cf_moniker");
     is lc $value, 'asd', 'the same value is still selected';
     my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     $ticket->load( $tid );
@@ -116,14 +117,14 @@ diag "check that 0 is ok value of the CF"
     $m->title_like(qr/Modify ticket/i, 'modify ticket');
     $m->content_like(qr/\Q$cf_name/, 'CF on the page');
 
-    my $value = $m->form_number(3)->value("object-RT::Model::Ticket-$tid-CustomField-$cfid-values");
+    my $value = $m->form_number(3)->value("J:A:F-$cfid-$cf_moniker");
     is lc $value, 'asd', 'correct value is selected';
-    $m->select("object-RT::Model::Ticket-$tid-CustomField-$cfid-values" => 0 );
+    $m->select("J:A:F-$cfid-$cf_moniker" => 0 );
     $m->submit;
     $m->content_like(qr/\Q$cf_name\E.*?changed/mi, 'field is changed');
     $m->content_unlike(qr/0 is no longer a value for custom field/mi, 'no bad message in results');
 
-    $value = $m->form_number(3)->value("object-RT::Model::Ticket-$tid-CustomField-$cfid-values");
+    $value = $m->form_number(3)->value("J:A:F-$cfid-$cf_moniker");
     is lc $value, '0', 'new value is selected';
 
     my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
@@ -141,13 +142,13 @@ diag "check that we can set empty value when the current is 0"
     $m->title_like(qr/Modify ticket/i, 'modify ticket');
     $m->content_like(qr/\Q$cf_name/, 'CF on the page');
 
-    my $value = $m->form_number(3)->value("object-RT::Model::Ticket-$tid-CustomField-$cfid-values");
+    my $value = $m->form_number(3)->value("J:A:F-$cfid-$cf_moniker");
     is lc $value, '0', 'correct value is selected';
-    $m->select("object-RT::Model::Ticket-$tid-CustomField-$cfid-values" => '' );
+    $m->select("J:A:F-$cfid-$cf_moniker" => '' );
     $m->submit;
     $m->content_like(qr/0 is no longer a value for custom field/mi, '0 is no longer a value');
 
-    $value = $m->form_number(3)->value("object-RT::Model::Ticket-$tid-CustomField-$cfid-values");
+    $value = $m->form_number(3)->value("J:A:F-$cfid-$cf_moniker");
     is $value, '', '(no value) is selected';
 
     my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
