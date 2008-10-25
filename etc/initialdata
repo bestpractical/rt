@@ -731,7 +731,7 @@ return 0; # ignore $passed;
       content => {
         default => {
             initial  => ['new'],
-            active   => ['open', 'stalled'],
+            active   => [ 'new', 'open', 'stalled'],
             inactive => ['resolved', 'rejected', 'deleted'],
             transitions => {
                 new      => [qw(open resolved rejected deleted)],
