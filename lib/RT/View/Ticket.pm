@@ -176,7 +176,7 @@ template '_elements/edit_cfs' => sub {
                                 br {};
                             }
                         }
-                        elsif ( $cf->type eq 'Binary' ) {
+                        elsif ( $cf->type eq 'Binary' || $cf->type eq 'Image' ) {
                             if ($values) {
                                 while ( my $value = $values->next ) {
                                     Jifty::Web::Form::Field->new(

@@ -30,6 +30,7 @@ sub available_values {
     return $available;
 }
 
+
 =head2 take_action
 
 =cut
@@ -69,7 +70,7 @@ sub take_action {
             my $values     = $ticket->custom_field_values( $cf->id );
             my $new_values = $args->{$cfid};
 
-            if ( $cf->type eq 'Binary' ) {
+            if ( $cf->type eq 'Binary' || $cf->type eq 'Image' ) {
                 next unless $new_values;
                 my $cgi_object  = Jifty->handler->cgi;
                 my $upload_info = $cgi_object->uploadInfo($new_values);
