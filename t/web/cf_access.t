@@ -10,6 +10,8 @@ use constant ImageFileContent => RT::Test->file_content(ImageFile);
 
 ok $m->login, 'logged in';
 
+my $cf_moniker = 'edit-ticket-cfs';
+
 diag "Create a CF" if $ENV{'TEST_VERBOSE'};
 {
     $m->follow_link( text => 'Configuration' );
@@ -76,8 +78,8 @@ diag "check that we have no the CF on the create"
     $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
 
     my $form = $m->form_name("ticket_create");
-    my $upload_field = "object-RT::Model::Ticket--CustomField-$cfid-Upload";
-    ok !$form->find_input( $upload_field ), 'no form field on the page';
+
+    ok !$form->find_input( "J:A:F-$cfid-$cf_moniker" ), 'no form field on the page';
 
     $m->submit_form(
         form_name => "ticket_create",
@@ -107,8 +109,7 @@ diag "check that we have no the CF on the create"
     $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
 
     my $form = $m->form_name("ticket_create");
-    my $upload_field = "object-RT::Model::Ticket--CustomField-$cfid-Upload";
-    ok !$form->find_input( $upload_field ), 'no form field on the page';
+    ok !$form->find_input( "J:A:F-$cfid-$cf_moniker" ), 'no form field on the page';
 
     $m->submit_form(
         form_name => "ticket_create",
@@ -120,8 +121,7 @@ diag "check that we have no the CF on the create"
     $m->follow_link( text => 'Custom Fields' );
     $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
     $form = $m->form_number(3);
-    $upload_field = "object-RT::Model::Ticket-$tid-CustomField-$cfid-Upload";
-    ok !$form->find_input( $upload_field ), 'no form field on the page';
+    ok !$form->find_input( "J:A:F-$cfid-$cf_moniker" ), 'no form field on the page';
 }
 
 RT::Test->set_rights(
@@ -139,12 +139,10 @@ diag "create a ticket with an image" if $ENV{'TEST_VERBOSE'};
     $m->content_like(qr/Upload multiple images/, 'has a upload image field');
 
     $cfid =~ /(\d+)$/ or die "Hey this is impossible dude";
-    my $upload_field = "object-RT::Model::Ticket--CustomField-$1-Upload";
-
     $m->submit_form(
         form_name => "ticket_create",
         fields => {
-            $upload_field => ImageFile,
+            "J:A:F-$1-$cf_moniker" => ImageFile,
             subject => 'testing img cf creation',
         },
     );
