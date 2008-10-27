@@ -169,7 +169,7 @@ while (defined(my $user = $Users->Next)) {
         }
 
         my $email = $subscription->SubValue('Recipient')
-                 || email_of($user);
+                 || $user->EmailAddress;
 
         eval { send_dashboard($currentuser, $email, $subscription) };
         error 'Caught exception: ' . $@ if $@;
@@ -331,13 +331,6 @@ sub build_email {
     }
 
     return $entity;
-}
-
-sub email_of {
-    my $user = shift;
-    return $user->EmailAddress if $user->EmailAddress;
-    return $user->Name if $user->Name =~ /\S@\S/;
-    return undef;
 }
 
 sub get_from {
