@@ -113,34 +113,49 @@ sub take_action {
                     }
                 }
 
+                my $not_add;
                 if ($values) {
                     my $delete_flag;
-                    foreach my $old_cf ( @{ $values->items_array_ref } ) {
-                        if (   !$delete_flag
-                            && @$new_values
-                            && $old_cf->content eq $new_values->[0] )
-                        {
-                            shift @$new_values;
-                            next;
+
+                    if (   $cf->max_values == 1
+                        && $values->count == 1
+                        && @$new_values == 1 )
+                    {
+# add_custom_field_value later can handle this
+                        $not_add = 1
+                          if $new_values->[0] eq $values->first->content;
+                    }
+                    else {
+                        foreach my $old_cf ( @{ $values->items_array_ref } ) {
+                            if (   !$delete_flag
+                                && @$new_values
+                                && $old_cf->content eq $new_values->[0] )
+                            {
+                                shift @$new_values;
+                                next;
+                            }
+                            $delete_flag ||= 1;
+                            my ( $val, $msg ) =
+                              $ticket->delete_custom_field_value(
+                                field    => $cfid,
+                                value_id => $old_cf->id,
+                              );
+                            Jifty->log->error($msg) unless $val;
+                            push @{ $self->result->content('detailed_messages')
+                                  ->{ $cf->name } }, $msg;
                         }
-                        $delete_flag ||= 1;
-                        my ( $val, $msg ) = $ticket->delete_custom_field_value(
-                            field    => $cfid,
-                            value_id => $old_cf->id,
+                    }
+                }
+                for my $new_value (@$new_values) {
+                    unless ($not_add) {
+                        my ( $val, $msg ) = $ticket->add_custom_field_value(
+                            field => $cfid,
+                            value => $new_value,
                         );
                         Jifty->log->error($msg) unless $val;
                         push @{ $self->result->content('detailed_messages')
                               ->{ $cf->name } }, $msg;
                     }
-                }
-                for my $new_value (@$new_values) {
-                    my ( $val, $msg ) = $ticket->add_custom_field_value(
-                        field => $cfid,
-                        value => $new_value,
-                    );
-                    Jifty->log->error($msg) unless $val;
-                    push @{ $self->result->content('detailed_messages')
-                          ->{ $cf->name } }, $msg;
                 }
             }
         }
