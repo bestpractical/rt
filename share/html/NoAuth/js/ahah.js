@@ -9,9 +9,23 @@ function ahah(url, target, delay) {
   } else if (window.ActiveXObject) {
     req = new ActiveXObject("Microsoft.XMLHTTP");
   }
+
+  var use_get;
+  if ( /webkit/i.test( navigator.userAgent ) ) {
+      // seems safari has weird problem with post: 
+      // it does remove the old content of target
+      // while doesn't replace that with new content
+      use_get = 1;
+  }
+
   if (req != undefined) {
     req.onreadystatechange = function() {ahahDone(url, target, delay);};
-    req.open("GET", url, true);
+    if ( use_get == 1 ) {
+        req.open("GET", url, true);
+    }
+    else{
+        req.open("POST", url, true);
+    }
     req.send("");
   }
 }  
