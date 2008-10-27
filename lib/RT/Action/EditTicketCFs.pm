@@ -30,7 +30,6 @@ sub available_values {
     return $available;
 }
 
-
 =head2 take_action
 
 =cut
@@ -51,10 +50,17 @@ sub take_action {
         for my $tbd (@to_be_deleted) {
             if ( $tbd =~ /delete_(\d+)_(\d+)/ ) {
                 my ( $cfid, $ocfvid ) = ( $1, $2 );
-                $ticket->delete_custom_field_value(
+                my $cf =
+                  RT::Model::CustomField->new(
+                    current_user => Jifty->web->current_user );
+                $cf->load_by_id($cfid);
+                my ( $val, $msg ) = $ticket->delete_custom_field_value(
                     field    => $cfid,
                     value_id => $ocfvid,
                 );
+                Jifty->log->error($msg) unless $val;
+                push @{ $self->result->content('detailed_messages')
+                      ->{ $cf->name } }, $msg;
             }
         }
 
@@ -78,12 +84,15 @@ sub take_action {
                 $filename =~ s#^.*[\\/]##;
                 binmode($new_values);
 
-                $ticket->add_custom_field_value(
+                my ( $val, $msg ) = $ticket->add_custom_field_value(
                     field         => $cfid,
                     value         => $filename,
                     large_content => do { local $/; scalar <$new_values> },
                     content_type  => $upload_info->{'Content-Type'},
                 );
+                Jifty->log->error($msg) unless $val;
+                push @{ $self->result->content('detailed_messages')
+                      ->{ $cf->name } }, $msg;
             }
             else {
 
@@ -99,9 +108,8 @@ sub take_action {
                     else {
 
                         # freeform or select values like 'two', 'three'
-                        $new_values = [
-                            grep defined && length, split /\r*\n/, $new_values
-                        ];
+                        $new_values = [ grep defined && length, split /\r*\n/,
+                            $new_values ];
                     }
                 }
 
@@ -116,17 +124,23 @@ sub take_action {
                             next;
                         }
                         $delete_flag ||= 1;
-                        $ticket->delete_custom_field_value(
+                        my ( $val, $msg ) = $ticket->delete_custom_field_value(
                             field    => $cfid,
                             value_id => $old_cf->id,
                         );
+                        Jifty->log->error($msg) unless $val;
+                        push @{ $self->result->content('detailed_messages')
+                              ->{ $cf->name } }, $msg;
                     }
                 }
                 for my $new_value (@$new_values) {
-                    $ticket->add_custom_field_value(
+                    my ( $val, $msg ) = $ticket->add_custom_field_value(
                         field => $cfid,
                         value => $new_value,
                     );
+                    Jifty->log->error($msg) unless $val;
+                    push @{ $self->result->content('detailed_messages')
+                          ->{ $cf->name } }, $msg;
                 }
             }
         }
