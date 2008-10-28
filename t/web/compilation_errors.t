@@ -5,6 +5,7 @@ use RT::Test;
 use Test::More;
 my $tests = 2;
 find ( sub { wanted() and $tests += 4 } , 'share/html/');
+find ( sub { /\.html$/ and $tests += 4 } , 'share/html/Install');
 plan tests => $tests;
 use HTTP::Request::Common;
 use HTTP::Cookies;
@@ -30,10 +31,14 @@ like( $agent->{'content'} , qr/Logout/i, "Found a logout link");
 
 
 use File::Find;
-find ( sub { wanted() and test_get($File::Find::name) } , 'share/html/');
+# we take out pages below Install/ because those pages will set install_mode,
+# which will redirect any page out Install/ to Install/index.html
+find ( sub { wanted() and test_get($File::Find::name) } , 'share/html');
+find ( sub { /\.html$/ and test_get($File::Find::name) } , 'share/html/Install');
 
 sub wanted {
-        -f  && /\.html$/ && $_ !~ /Logout.html$/;
+        -f  && /\.html$/ && $_ !~ /Logout.html$/ && $File::Find::name !~
+            m{share/html/Install/};
 }
 
 sub test_get {
