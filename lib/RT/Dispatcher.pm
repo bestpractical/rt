@@ -69,7 +69,7 @@ before qr/.*/ => run {
             && $path !~ m{^(/+)Install/} && $path !~ m{^/+log(in|out)} )
         {
             Jifty->web->redirect(
-                RT->config->get('WebURL') . "Install/index.html"
+                RT->config->get('WebPath') . "Install/index.html"
             );
         }
     }
