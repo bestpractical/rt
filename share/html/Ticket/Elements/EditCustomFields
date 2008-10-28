@@ -53,9 +53,6 @@
 % if ( $i % 2 ) {
 <tr>
 % }
-<td width="50%">
-<table>
-  <tr id="CF-<%$CustomField->id%>-EditRow">
     <td class="labeltop">
       <b><%$CustomField->Name%></b><br />
       <i><%$CustomField->FriendlyType%></i>
@@ -72,9 +69,6 @@
         <em style="color: red"><% $msg %></em>
 %  }
     </td>
-  </tr>
-</table>
-</td>
 
 % unless ( $i % 2 ) {
 </tr>
