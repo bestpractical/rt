@@ -703,7 +703,7 @@ Set($StatementLog, undef);
 =item C<$WebDefaultStylesheet>
 
 This determines the default stylesheet the RT web interface will use.
-RT ships with two valid values by default:
+RT ships with several themes by default:
 
   web2            The totally new, default layout for RT 3.8
   3.5-default     RT 3.5 and 3.6 original layout
