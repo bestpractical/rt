@@ -340,6 +340,7 @@ our %META = (
                     " configured GnuPG home directory (".$gpgopts->{homedir}
                     ."). PGP support has been disabled");
                 $gpg->{'Enable'} = 0;
+                return;
             }
 
 
