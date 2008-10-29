@@ -332,6 +332,7 @@ our %META = (
         PostLoadCheck => sub {
             my $self = shift;
             my $gpg = $self->Get('GnuPG');
+            return unless $gpg->{'Enable'};
             my $gpgopts = $self->Get('GnuPGOptions');
             unless (-d $gpgopts->{homedir}  && -r _ ) { # no homedir, no gpg
                 $RT::Logger->debug(
@@ -342,14 +343,12 @@ our %META = (
             }
 
 
-            if ($gpg->{'Enable'}) {
-                require RT::Crypt::GnuPG;
-                unless (RT::Crypt::GnuPG->Probe()) {
-                    $RT::Logger->debug(
-                        "RT's GnuPG libraries couldn't successfully execute gpg.".
-                        " PGP support has been disabled");
-                    $gpg->{'Enable'} = 0;
-                }
+            require RT::Crypt::GnuPG;
+            unless (RT::Crypt::GnuPG->Probe()) {
+                $RT::Logger->debug(
+                    "RT's GnuPG libraries couldn't successfully execute gpg.".
+                    " PGP support has been disabled");
+                $gpg->{'Enable'} = 0;
             }
         }
     },
