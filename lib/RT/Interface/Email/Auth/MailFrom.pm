@@ -162,7 +162,7 @@ sub GetCurrentUser {
         unless ( $everyone->PrincipalObj->HasRight( Object => $args{'Queue'},
                                                     Right  => 'CreateTicket' )
                  || $unpriv->PrincipalObj->HasRight( Object => $args{'Queue'},
-                                                     Right  => 'ModifyTicket' ) )
+                                                     Right  => 'CreateTicket' ) )
         {
             $RT::Logger->debug("Unprivileged users have no right to create ticket in queue '$qname'");
             return ( $args{'CurrentUser'}, 0 );
