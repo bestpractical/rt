@@ -209,3 +209,7 @@ div#ticket-history .messagebody .messagebody{
   color: #666
 }
 
+table.ticket-summary td.boxcontainer:first-child {
+  width: 50%;
+}
+
