@@ -319,7 +319,11 @@ sub LoadByName {
 
     # We only want one entry.
     $CFs->RowsPerPage(1);
-    return (0, $self->loc("Not found")) unless my $first = $CFs->First;
+
+    # version before 3.8 just returns 0, so we need to test if wantarray to be
+    # backward compatible.
+    return wantarray ? (0, $self->loc("Not found")) : 0 unless my $first = $CFs->First;
+
     return $self->LoadById( $first->id );
 }
 
