@@ -48,25 +48,24 @@
 <div class="ticket-transaction <% $type_class %> <% $RowNum % 2 ? 'odd' : 'even' %>">
 % $m->callback( titlebar_cmd => \$titlebar_commands, Transaction => $Transaction, %ARGS, CallbackName => 'ModifyDisplay' );
 
-<table width="100%" cellspacing="0" cellpadding="2" border="0" class="ticket-transaction">
+<div class="ticket-transaction">
 % $m->callback( titlebar_cmd => \$titlebar_commands, Transaction => $Transaction, %ARGS, CallbackName => 'ModifyCommand' );
-  <tr class="metadata">
-    <td rowspan="2" valign="top" class="type">
+  <div class="metadata">
+    <span class="type">
       <a name="txn-<% $Transaction->Id %>" href="<% $DisplayPath %>#txn-<% $Transaction->Id %>">#</a>
-      <% $LastTransaction ? '<a id="lasttrans" name="lasttrans"/>' : ''|n %>
-    </td>
-    <td class="date"><% $transdate|n %></td>
+      <% $LastTransaction ? '<a id="lasttrans" name="lasttrans"></a>' : ''|n %>
+    </span>
+    <span class="date"><% $transdate|n %></span>
 % my $desc = $Transaction->BriefDescription;
 % $m->callback( text => \$desc, Transaction => $Transaction, %ARGS, CallbackName => 'ModifyDisplay' );
-    <td class="description">
+    <span class="description">
       <% $Transaction->CreatorObj->Name %> - <% $TicketString %> <% $desc %>
-    </td>
-    <td class="time-taken"><% $TimeTaken %></td>
-    <td class="actions<% $titlebar_commands ? '': ' hidden'%>"><% $titlebar_commands |n %></td>
-  </tr>
+    </span>
+    <span class="time-taken"><% $TimeTaken %></span>
+    <span class="actions<% $titlebar_commands ? '': ' hidden'%>"><% $titlebar_commands |n %></span>
+  </div>
 
-  <tr>
-    <td colspan="5" class="content">
+    <div class="content">
 % if ( $Attachments->[0] && $Attachments->[0]->id ) {
 %   if (RT->Config->Get('GnuPG')->{'Enable'}) {
         <& ShowGnuPGStatus, Attachment => $Attachments->[0], WarnUnsigned => $WarnUnsigned &>
@@ -76,10 +75,9 @@
       <& /Elements/ShowCustomFields, Object => $Transaction &>
 % }
 % $m->comp('ShowTransactionAttachments', %ARGS, Parent => 0) unless ($Collapsed ||!$ShowBody);
-    </td>
-  </tr>
+    </div>
 
-</table>
+</div>
 </div>
 
 <%ARGS>
