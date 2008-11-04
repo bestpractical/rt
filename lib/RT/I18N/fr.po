@@ -2481,7 +2481,7 @@ msgstr "Estimé"
 
 #: share/html/Tools/Reports/index.html:70
 msgid "Examine tickets created in a queue between two dates"
-msgstr "Éxaminer les tickets créer dans une file entre deux dates"
+msgstr "Éxaminer les tickets créés dans une file entre deux dates"
 
 #: share/html/Tools/Reports/index.html:65
 msgid "Examine tickets resolved in a queue between two dates"
@@ -2935,7 +2935,7 @@ msgstr "Si une approbation est refusée, rejette l'original et supprime les appr
 
 #: share/html/Tools/Offline.html:75
 msgid "If no Requestor is specified, create tickets with this requestor."
-msgstr "SI aucun demandeur n'est spécifié, créer les tickets pour ce demandeur."
+msgstr "Si aucun demandeur n'est spécifié, créer les tickets pour ce demandeur."
 
 #: share/html/Tools/Offline.html:66
 msgid "If no queue is specified, create tickets in this queue."
