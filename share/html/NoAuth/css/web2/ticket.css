@@ -117,6 +117,7 @@ div#ticket-history div.content {
  padding-right: 1em;
  padding-bottom: 0.7em;
  font-size: 1.1em;
+ margin-left: 1.5em;
 }
 
 .ticket-transaction .messagebody {
@@ -125,7 +126,6 @@ div#ticket-history div.content {
  margin-top: 0.5em;
  padding-top: 0.5em;
  border-top: 1px solid #ccc;
- margin-left: 2em;
  overflow: auto;
  min-height: 2.5em;
 }
