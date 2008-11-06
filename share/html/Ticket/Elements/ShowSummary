@@ -68,7 +68,7 @@
 	  </&>
 
       <& /Ticket/Elements/ShowAttachments, Ticket => $Ticket, Attachments => $Attachments &>
-        <br />
+
 	  <& /Ticket/Elements/ShowRequestor, Ticket => $Ticket &>
 
 % $m->callback( %ARGS, CallbackName => 'LeftColumn' );
