@@ -142,6 +142,13 @@ div.results .titlebox-content {
 
 } 
 
+.cflabel {
+ text-align: right;
+ font-size: 0.8em;
+ padding-right: .5em;
+ width: 25%;
+}
+
 .labeltop, .label, .value {
   padding-top: 0.25em;
 }
