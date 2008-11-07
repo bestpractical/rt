@@ -83,7 +83,7 @@
         <td>
             <form action="<%RT->Config->Get('WebPath')%>/Ticket/Display.html" method="post">
 	      <& /Ticket/Elements/Reminders, Ticket => $Ticket, ShowCompleted => 0 &>
-              <div align="right"><input type="submit" class="button" value="Save" /></div>
+              <div align="right"><input type="submit" class="button" value="<&|/l&>Save</&>" /></div>
             </form>
             </td>
             </tr>

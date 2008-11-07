@@ -6985,7 +6985,7 @@ msgstr "Vous n'êtes pas un utilisateur autorisé"
 #: share/html/Ticket/Elements/ShowUpdateStatus:51
 #. (RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id. "#txn-".$txn->id, RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id ."&MarkAsSeen=1".  "#txn-".$txn->id)
 msgid "You can <a href=\"%1\">jump to the first unread message</a> or <a href=\"%2\">jump to the first unread message and mark all messages as seen</a>."
-msgstr "Vous pouvew <a href=\"%1\">aller au premier message non-lu</a> ou <a href=\"%2\">aller au premier message non-lu et marquer tous les messages comme lus</a>."
+msgstr "Vous pouvez <a href=\"%1\">aller au premier message non-lu</a> ou <a href=\"%2\">aller au premier message non-lu et marquer tous les messages comme lus</a>."
 
 #: share/html/Prefs/Search.html:58
 msgid "You can also edit the predefined search itself"

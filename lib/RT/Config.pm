@@ -156,11 +156,11 @@ our %META = (
         SortOrder       => 2,
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
-            Description => 'Username format',
+            Description => 'Username format', # loc
             Values      => [qw(concise verbose)],
             ValuesLabel => {
-                concise => 'Short usernames',
-                verbose => 'Name and email address',
+                concise => 'Short usernames', # loc_left_pair
+                verbose => 'Name and email address', # loc_left_pair
             },
         },
     },

@@ -45,11 +45,11 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => loc("[_1] Dashboards", $Type) &>
+<&| /Widgets/TitleBox, title => $Title &>
 <& SELF:table, %ARGS &>
 </&>
 <%ARGS>
-$Type    => undef
+$Title   => undef
 </%ARGS>
 
 <%METHOD table>
