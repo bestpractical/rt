@@ -69,18 +69,11 @@ margin-right:auto;margin-left:auto;
 
 #login-box .input-row .label {
 
- position: absolute;
- left:0em;
- width: 5.5em;
+ float: left;
+ width: 8em;
  text-align: right;
  font-weight: bold;
 
 
-}
-
-
-#login-box .input-row .input {
- position: absolute;
- left:6em;
 }
 
