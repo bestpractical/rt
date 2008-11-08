@@ -47,41 +47,35 @@
 %# END BPS TAGGED BLOCK }}}
 <& Elements/Header, Title => loc("Create a ticket") &>
 
-<form action="Display.html" method="post" enctype="multipart/form-data">
+<& /Elements/ListActions, actions => \@results &>
+
+<form action="<% $RT::WebPath %>/SelfService/Create.html" method="post" enctype="multipart/form-data" name="TicketCreate">
 <input type="hidden" class="hidden" name="id" value="new" />
 
 <table>
 <tr>
-<td class="label">
-<&|/l&>Queue</&>:
-</td>
+<td class="label"><&|/l&>Queue</&>:</td>
 <td class="value">
-    <input type="hidden" class="hidden" name="Queue" value="<%$queue_obj->id%>" />
-    <strong><%$queue_obj->Name%></strong> (<%$queue_obj->Description%>)
+    <input type="hidden" class="hidden" name="Queue" value="<% $queue_obj->id %>" />
+    <strong><% $queue_obj->Name %></strong> (<%$queue_obj->Description || ''%>)
 </td>
 </tr>
 <tr>
-<td class="label">
-<&|/l&>Requestors</&>:
-</td>
+<td class="label"><&|/l&>Requestors</&>:</td>
 <td class="value">
-<input name="Requestors" value="<%$session{CurrentUser}->EmailAddress%>" size="20" />
+<input name="Requestors" value="<% $ARGS{'Requestors'} || $session{CurrentUser}->EmailAddress %>" size="20" />
 </td>
 </tr>
 <tr>
-<td class="label">
-<&|/l&>Cc</&>:
-</td>
+<td class="label"><&|/l&>Cc</&>:</td>
 <td class="value">
- <input name="Cc" size="20" />
+<input name="Cc" size="20" value="<% $ARGS{'Cc'} || '' %>" />
 </td>
 </tr>
 <tr>
-<td class="label">
-<&|/l&>Subject</&>:
-</td>
+<td class="label"><&|/l&>Subject</&>:</td>
 <td class="value">
-<input name="Subject" size="60" maxsize="200" value="" />
+<input name="Subject" size="60" maxsize="200" value="<% $ARGS{'Subject'} || '' %>" />
 </td>
 </tr>
 <tr>
@@ -90,9 +84,7 @@
     </td>
 </tr>
 <tr>
-<td class="label">
-<&|/l&>Attach file</&>:
-</td>
+<td class="label"><&|/l&>Attach file</&>:</td>
 <td class="value">
 <input name="Attach" type="file" />
 </td>
@@ -100,7 +92,11 @@
 <tr>
 <td colspan="2">
 <&|/l&>Describe the issue below</&>:<br />
+% if (exists $ARGS{Content}) {
+<& /Elements/MessageBox, Default => $ARGS{Content}, IncludeSignature => 0 &>
+% } else {
 <& /Elements/MessageBox &>
+% }
 </td>
 </tr>
 </table>
@@ -113,5 +109,69 @@ $Queue => undef
 </%args>
 <%init>
 my $queue_obj = RT::Queue->new($session{'CurrentUser'});
-$queue_obj->Load($Queue);
+$queue_obj->Load($Queue) || Abort(loc("Queue could not be loaded."));
+$queue_obj->Disabled && Abort(loc("Cannot create tickets in a disabled queue."));
+
+my ($checks_failure, $skip_create, @results) = (0, 0, ());
+$skip_create = 1 unless ($ARGS{'id'}||'') eq 'new';
+
+$m->comp('/Elements/Callback',
+    QueueObj => $queue_obj, ARGSRef => \%ARGS,
+    skip_create => \$skip_create, checks_failure => \$checks_failure,
+    results => \@results
+);
+
+$skip_create = 1 if exists $ARGS{'AddMoreAttach'};
+
+# deal with deleting uploaded attachments
+foreach my $key (keys %ARGS) {
+    if ($key =~ m/^DeleteAttach-(.+)$/) {
+	delete $session{'Attachments'}{$1};
+    }
+    $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
+}
+
+# store the uploaded attachment in session
+if ( $ARGS{'Attach'} ) { # attachment?
+    $session{'Attachments'} = {} unless defined $session{'Attachments'};
+
+    my $subject = "$ARGS{'Attach'}";
+
+    # strip leading directories
+    $subject =~ s#^.*[\\/]##;
+
+    my $attachment = MakeMIMEEntity(
+        Subject             => $subject,
+        Body                => "",
+        AttachmentFieldName => 'Attach'
+    );
+
+    $session{'Attachments'} = { %{$session{'Attachments'} || {}},
+				$ARGS{'Attach'} => $attachment };
+}
+
+unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
+    delete $session{'Attachments'};
+}
+
+my $CFs = $queue_obj->TicketCustomFields;
+my $ValidCFs = $m->comp(
+    '/Elements/ValidateCustomFields',
+    CustomFields => $CFs,
+    ARGSRef => \%ARGS
+);
+unless ( $ValidCFs ) {
+    $checks_failure = 1;
+    while ( my $CF = $CFs->Next ) {
+        my $msg = $m->notes('InvalidField-' . $CF->Id) or next;
+        push @results, $CF->Name . ': ' . $msg
+            if ($ARGS{'id'}||'') eq 'new';
+    }
+}
+
+if ( !$checks_failure && !$skip_create ) {
+    $m->comp('Display.html', %ARGS);
+    $RT::Logger->crit("After display call; error is $@");
+    $m->abort();
+}
 </%init>
