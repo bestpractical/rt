@@ -106,6 +106,7 @@ div#body {
 
 #topactions #CreateTicketInQueue {
  text-align: right; 
+ float: left;
 
 }
 #topactions #simple-search {
