@@ -1015,12 +1015,12 @@ AddWatcher takes a parameter hash. The keys are as follows:
 
 Type        One of Requestor, Cc, AdminCc
 
-PrinicpalId The RT::Principal id of the user or group that's being added as a watcher
+PrincipalId The RT::Principal id of the user or group that's being added as a watcher
 
 Email       The email address of the new watcher. If a user with this 
             email address can't be found, a new nonprivileged user will be created.
 
-If the watcher you\'re trying to set has an RT account, set the Owner paremeter to their User Id. Otherwise, set the Email parameter to their Email address.
+If the watcher you\'re trying to set has an RT account, set the PrincipalId paremeter to their User Id. Otherwise, set the Email parameter to their Email address.
 
 =cut
 
