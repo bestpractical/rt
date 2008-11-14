@@ -366,12 +366,23 @@ sub AddAttachments {
     if (   $transaction_content_obj
         && $transaction_content_obj->ContentType =~ m{text/}i )
     {
-        $attachments->Limit(
-            ENTRYAGGREGATOR => 'AND',
-            FIELD           => 'id',
-            OPERATOR        => '!=',
-            VALUE           => $transaction_content_obj->id,
-        );
+        # If this was part of a multipart/alternative, skip all of the kids
+        my $parent = $transaction_content_obj->ParentObj;
+        if ($parent and $parent->Id and $parent->ContentType eq "multipart/alternative") {
+            $attachments->Limit(
+                ENTRYAGGREGATOR => 'AND',
+                FIELD           => 'parent',
+                OPERATOR        => '!=',
+                VALUE           => $parent->Id,
+            );
+        } else {
+            $attachments->Limit(
+                ENTRYAGGREGATOR => 'AND',
+                FIELD           => 'id',
+                OPERATOR        => '!=',
+                VALUE           => $transaction_content_obj->Id,
+            );
+        }
     }
 
     # attach any of this transaction's attachments
