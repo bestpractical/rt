@@ -293,6 +293,12 @@ sub build_email {
             $cid_of{$uri} = time() . $$ . int(rand(1e6));
             my ($data, $filename, $mimetype, $encoding) = get_resource($uri);
 
+            # downgrade non-text strings, because all strings are utf8 by
+            # default, which is wrong for non-text strings.
+            if ( $mimetype !~ m{text/} ) {
+                utf8::downgrade( $data, 1 ) or warning "downgrade $data failed";
+            }
+
             push @parts, MIME::Entity->build(
                 Top          => 0,
                 Data         => $data,
