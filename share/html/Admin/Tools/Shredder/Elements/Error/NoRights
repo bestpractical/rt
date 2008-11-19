@@ -51,7 +51,5 @@
 	current_subtab => 'Admin/Tools/Shredder',
 	Title => 'Error',
 &>
-<div class="error">
-You don't have <b>SuperUser</b> right.
-</div>
+<div class="error"><% loc("You don't have <b>SuperUser</b> right.") %></div>
 
