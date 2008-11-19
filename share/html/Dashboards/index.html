@@ -53,7 +53,7 @@
 <& /Elements/ListActions, actions => \@actions &>
 
 <& /Dashboards/Elements/ShowDashboards,
-    Title      => loc('Personnal Dashboards'),
+    Title      => loc('Personal Dashboards'),
     Dashboards => [sort { $a->Id <=> $b->Id } @{ $dashboards->{personal} || [] }],
 &>
 
