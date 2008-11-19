@@ -249,7 +249,8 @@ sub convert_column {
     }
 
     my $collation = column_info($table, $column)->{'collation'};
-    my $current_charset = $collation? (split /_/, $collation)[0]: 'binary';
+    # mysql 4.1 returns literal NULL instead of undef
+    my $current_charset = $collation && $collation ne 'NULL'? (split /_/, $collation)[0]: 'binary';
     return if $required_charset eq $current_charset;
 
     if ( $required_charset eq 'binary' ) {
