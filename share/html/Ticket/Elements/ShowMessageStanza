@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % if ( ref $Message ) {
-%    $m->out($pon);
+%    $m->out('<pre>') if $plain_text_pre && !$Depth;
 <div class="message-stanza-depth-<% $Depth %>">
 <%perl>
 my $para = '';
@@ -65,14 +65,12 @@ foreach my $stanza ( @$Message) {
 $print_content->( \$para ) if length $para;
 </%perl>
 </div>
-%$m->out($poff);
+% $m->out('</pre>') if $plain_text_pre && !$Depth;
 % } else {
 %       $print_content->( \$Message );
 % }
 <%INIT>
-my ($pon, $poff) = (RT->Config->Get('PlainTextPre', $session{'CurrentUser'}) && $Depth == 0)
-                            ? ('<pre>', '</pre>')
-                            : ('', '');
+my $plain_text_pre = RT->Config->Get('PlainTextPre', $session{'CurrentUser'});
 
 my $ticket = $Transaction ? $Transaction->TicketObj : undef;
 
@@ -82,7 +80,7 @@ my $print_content = sub {
 
     $m->callback( content => $ref, %ARGS );
     $m->comp('/Elements/MakeClicky', content => $ref, ticket => $ticket, %ARGS);
-    unless ( RT->Config->Get('PlainTextPre', $session{'CurrentUser'}) ) {
+    unless ( $plain_text_pre ) {
         $$ref =~ s{$}{<br />}mg if defined $$ref;
     }
     $m->out( $$ref );
