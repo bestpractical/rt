@@ -350,19 +350,19 @@ foreach my $key (keys %ARGS) {
 if ($ARGS{'Attach'}) {			# attachment?
     $session{'Attachments'} = {} unless defined $session{'Attachments'};
 
-    my $subject = "$ARGS{'Attach'}";
-
-    # strip leading directories
-    $subject =~ s#^.*[\\/]##;
+    my $file_path = Encode::decode_utf8("$ARGS{'Attach'}");
+    my ($file_name) = $file_path =~ m{([\\/]+)$};
 
     my $attachment = MakeMIMEEntity(
-        Subject             => $subject,
+        Subject             => $file_name,
         Body                => "",
         AttachmentFieldName => 'Attach'
     );
 
-    $session{'Attachments'} = { %{$session{'Attachments'} || {}},
-				$ARGS{'Attach'} => $attachment };
+    $session{'Attachments'} = {
+        %{$session{'Attachments'} || {}},
+	$file_path => $attachment,
+    };
 }
 # }}}
 
