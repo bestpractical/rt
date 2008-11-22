@@ -81,7 +81,7 @@ my $print_content = sub {
     $m->callback( content => $ref, %ARGS );
     $m->comp('/Elements/MakeClicky', content => $ref, ticket => $ticket, %ARGS);
     unless ( $plain_text_pre ) {
-        $$ref =~ s{$}{<br />}mg if defined $$ref;
+        $$ref =~ s{(?=\r*\n)}{<br />}g if defined $$ref;
     }
     $m->out( $$ref );
 };
