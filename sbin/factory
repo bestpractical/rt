@@ -49,6 +49,8 @@
 use strict;
 use DBI;
 
+die "Usage: $0 database namespace" if @ARGV != 2;
+
 my $database  = shift;
 my $namespace = shift;
 
