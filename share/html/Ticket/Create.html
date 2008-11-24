@@ -248,6 +248,8 @@
 </form>
 
 <%INIT>
+$m->callback( CallbackName => "Init", ARGSRef => \%ARGS );
+my $Queue = $ARGS{Queue};
 
 my $CloneTicketObj;
 if ( $CloneTicket ) {
@@ -423,6 +425,5 @@ $DependsOn => undef
 $DependedOnBy => undef
 $MemberOf => undef
 $QuoteTransaction => undef
-$Queue => undef
 $CloneTicket => undef
 </%ARGS>
