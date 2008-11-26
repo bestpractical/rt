@@ -885,7 +885,7 @@ push @CHECKS, 'LastUpdatedBy and Creator' => sub {
                         ."or something like that.",
                         "$table.$column -> user #$prop{$column}"
                     );
-                    update_records( $table, { $column => $prop{$column} }, { $column => $replace_with } );
+                    update_records( $table, { id => $id, $column => $prop{$column} }, { $column => $replace_with } );
                 },
             );
         }
