@@ -45,30 +45,46 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% if ( ref $Message ) {
-%    $m->out('<pre>') if $plain_text_pre && !$Depth;
-<div class="message-stanza-depth-<% $Depth %>">
 <%perl>
-my $para = '';
-foreach my $stanza ( @$Message) {
-    if ( ref $stanza eq "ARRAY" ) {
+if ( ref $Message ) {
+    $m->out('<pre>') if $plain_text_pre && !$Depth;
+    $m->out( qq{<div class="message-stanza-depth-$Depth">} );
+
+    my @stack;
+    my $para = '';
+    my $i = 0;
+
+    AGAIN: foreach ( ; $i < @$Message; $i++ ) {
+        my $stanza = $Message->[$i];
+        if ( ref $stanza eq "HASH" ) {
+            $para .= ( defined $stanza->{raw} ? $stanza->{raw} : '') ."\n";
+        }
+        next unless ref $stanza eq "ARRAY";
+
         $print_content->( \$para ); $para = '';
-        $m->comp( 'ShowMessageStanza',
-                  Depth   => $Depth + 1,
-                  Transaction => $Transaction,
-                  Message => $stanza );
+
+        $Depth++;
+        push @stack, [$Message, $i+1];
+        ($Message, $i) = ($stanza, -1);
+        $m->out( qq{<div class="message-stanza-depth-$Depth">} );
     }
-    elsif ( ref $stanza eq "HASH" ) {
-        $para .= ( defined $stanza->{raw} ? $stanza->{raw} : '') ."\n";
+    if ( length $para ) {
+        $print_content->( \$para ); $para = '';
     }
+
+    if ( @stack ) {
+        ($Message, $i) = @{ pop @stack };
+        $Depth--;
+        $m->out('</div>');
+        goto AGAIN;
+    }
+
+    $m->out('</div>');
+    $m->out('</pre>') if $plain_text_pre && !$Depth;
+} else {
+      $print_content->( \$Message );
 }
-$print_content->( \$para ) if length $para;
 </%perl>
-</div>
-% $m->out('</pre>') if $plain_text_pre && !$Depth;
-% } else {
-%       $print_content->( \$Message );
-% }
 <%INIT>
 my $plain_text_pre = RT->Config->Get('PlainTextPre', $session{'CurrentUser'});
 
