@@ -243,6 +243,7 @@ sub CleanSlate {
         _sql_trattachalias
         _sql_u_watchers_alias_for_sort
         _sql_u_watchers_aliases
+        _sql_current_user_can_see_applied
     );
 }
 
@@ -2632,35 +2633,236 @@ sub Next {
 
     $self->_ProcessRestrictions() if ( $self->{'RecalcTicketLimits'} == 1 );
 
-    my $Ticket = $self->SUPER::Next();
-    if ( ( defined($Ticket) ) and ( ref($Ticket) ) ) {
+    my $Ticket = $self->SUPER::Next;
+    return $Ticket unless $Ticket;
 
-        if ( $Ticket->__Value('Status') eq 'deleted'
-            && !$self->{'allow_deleted_search'} )
-        {
-            return ( $self->Next() );
-        }
-
-        # Since Ticket could be granted with more rights instead
-        # of being revoked, it's ok if queue rights allow
-        # ShowTicket.  It seems need another query, but we have
-        # rights cache in Principal::HasRight.
-        elsif ( $Ticket->CurrentUserHasRight('ShowTicket') )
-        {
-            return ($Ticket);
-        }
-
-        #If the user doesn't have the right to show this ticket
-        else {
-            return ( $self->Next() );
-        }
+    if ( $Ticket->__Value('Status') eq 'deleted'
+        && !$self->{'allow_deleted_search'} )
+    {
+        return $self->Next;
     }
-
-    #if there never was any ticket
+    elsif ( RT->Config->Get('UseSQLForACLChecks') ) {
+        # if we found a ticket with this option enabled then
+        # all tickets we found are ACLed, cache this fact
+        my $key = join ";:;", $self->CurrentUser->id, 'ShowTicket', 'RT::Ticket-'. $Ticket->id;
+        $RT::Principal::_ACL_CACHE->set( $key => 1 );
+        return $Ticket;
+    }
+    elsif ( $Ticket->CurrentUserHasRight('ShowTicket') ) {
+        # has rights
+        return $Ticket;
+    }
     else {
-        return (undef);
+        # If the user doesn't have the right to show this ticket
+        return $self->Next;
+    }
+}
+
+sub _DoSearch {
+    my $self = shift;
+    $self->CurrentUserCanSee if RT->Config->Get('UseSQLForACLChecks');
+    return $self->SUPER::_DoSearch( @_ );
+}
+
+sub _DoCount {
+    my $self = shift;
+    $self->CurrentUserCanSee if RT->Config->Get('UseSQLForACLChecks');
+    return $self->SUPER::_DoCount( @_ );
+}
+
+sub _RolesCanSee {
+    my $self = shift;
+
+    my $cache_key = 'RolesHasRight;:;ShowTicket';
+ 
+    if ( my $cached = $RT::Principal::_ACL_CACHE->fetch( $cache_key ) ) {
+        return %$cached;
     }
 
+    my $ACL = RT::ACL->new( $RT::SystemUser );
+    $ACL->Limit( FIELD => 'RightName', VALUE => 'ShowTicket' );
+    $ACL->Limit( FIELD => 'PrincipalType', OPERATOR => '!=', VALUE => 'Group' );
+    my $principal_alias = $ACL->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'PrincipalId',
+        TABLE2 => 'Principals',
+        FIELD2 => 'id',
+    );
+    $ACL->Limit( ALIAS => $principal_alias, FIELD => 'Disabled', VALUE => 0 );
+
+    my %res = ();
+    while ( my $ACE = $ACL->Next ) {
+        my $role = $ACE->PrincipalType;
+        my $type = $ACE->ObjectType;
+        if ( $type eq 'RT::System' ) {
+            $res{ $role } = 1;
+        }
+        elsif ( $type eq 'RT::Queue' ) {
+            next if $res{ $role } && !ref $res{ $role };
+            push @{ $res{ $role } ||= [] }, $ACE->ObjectId;
+        }
+        else {
+            $RT::Logger->error('ShowTicket right is granted on unsupported object');
+        }
+    }
+    $RT::Principal::_ACL_CACHE->set( $cache_key => \%res );
+    return %res;
+}
+
+sub _DirectlyCanSeeIn {
+    my $self = shift;
+    my $id = $self->CurrentUser->id;
+
+    my $cache_key = 'User-'. $id .';:;ShowTicket;:;DirectlyCanSeeIn';
+    if ( my $cached = $RT::Principal::_ACL_CACHE->fetch( $cache_key ) ) {
+        return @$cached;
+    }
+
+    my $ACL = RT::ACL->new( $RT::SystemUser );
+    $ACL->Limit( FIELD => 'RightName', VALUE => 'ShowTicket' );
+    my $principal_alias = $ACL->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'PrincipalId',
+        TABLE2 => 'Principals',
+        FIELD2 => 'id',
+    );
+    $ACL->Limit( ALIAS => $principal_alias, FIELD => 'Disabled', VALUE => 0 );
+    my $cgm_alias = $ACL->Join(
+        ALIAS1 => 'main',
+        FIELD1 => 'PrincipalId',
+        TABLE2 => 'CachedGroupMembers',
+        FIELD2 => 'GroupId',
+    );
+    $ACL->Limit( ALIAS => $cgm_alias, FIELD => 'MemberId', VALUE => $id );
+    $ACL->Limit( ALIAS => $cgm_alias, FIELD => 'Disabled', VALUE => 0 );
+
+    my @res = ();
+    while ( my $ACE = $ACL->Next ) {
+        my $type = $ACE->ObjectType;
+        if ( $type eq 'RT::System' ) {
+            # If user is direct member of a group that has the right
+            # on the system then he can see any ticket
+            $RT::Principal::_ACL_CACHE->set( $cache_key => [-1] );
+            return (-1);
+        }
+        elsif ( $type eq 'RT::Queue' ) {
+            push @res, $ACE->ObjectId;
+        }
+        else {
+            $RT::Logger->error('ShowTicket right is granted on unsupported object');
+        }
+    }
+    $RT::Principal::_ACL_CACHE->set( $cache_key => \@res );
+    return @res;
+}
+
+sub CurrentUserCanSee {
+    my $self = shift;
+    return if $self->{'_sql_current_user_can_see_applied'};
+
+    return $self->{'_sql_current_user_can_see_applied'} = 1
+        if $self->CurrentUser->UserObj->HasRight(
+            Right => 'SuperUser', Object => $RT::System
+        );
+
+    my $id = $self->CurrentUser->id;
+
+    my @direct_queues = $self->_DirectlyCanSeeIn;
+    return $self->{'_sql_current_user_can_see_applied'} = 1
+        if @direct_queues && $direct_queues[0] == -1;
+
+    my %roles = $self->_RolesCanSee;
+    {
+        my %skip = map { $_ => 1 } @direct_queues;
+        foreach my $role ( keys %roles ) {
+            next unless ref $roles{ $role };
+
+            my @queues = grep !$skip{$_}, @{ $roles{ $role } };
+            if ( @queues ) {
+                $roles{ $role } = \@queues;
+            } else {
+                delete $roles{ $role };
+            }
+        }
+    }
+
+    {
+        my $join_roles = keys %roles;
+        $join_roles = 0 if $join_roles == 1 && $roles{'Owner'};
+        my ($role_group_alias, $cgm_alias);
+        if ( $join_roles ) {
+            $role_group_alias = $self->_RoleGroupsJoin( New => 1 );
+            $cgm_alias = $self->_GroupMembersJoin( GroupsAlias => $role_group_alias );
+            $self->SUPER::Limit(
+                LEFTJOIN   => $cgm_alias,
+                FIELD      => 'MemberId',
+                OPERATOR   => '=',
+                VALUE      => $id,
+            );
+        }
+        my $limit_queues = sub {
+            my $ea = shift;
+            my @queues = @_;
+
+            return unless @queues;
+            if ( @queues == 1 ) {
+                $self->_SQLLimit(
+                    ALIAS => 'main',
+                    FIELD => 'Queue',
+                    VALUE => $_[0],
+                    ENTRYAGGREGATOR => $ea,
+                );
+            } else {
+                $self->_OpenParen;
+                foreach my $q ( @queues ) {
+                    $self->_SQLLimit(
+                        ALIAS => 'main',
+                        FIELD => 'Queue',
+                        VALUE => $q,
+                        ENTRYAGGREGATOR => $ea,
+                    );
+                    $ea = 'OR';
+                }
+                $self->_CloseParen;
+            }
+            return 1;
+        };
+
+        $self->_OpenParen;
+        my $ea = 'AND';
+        $ea = 'OR' if $limit_queues->( $ea, @direct_queues );
+        while ( my ($role, $queues) = each %roles ) {
+            $self->_OpenParen;
+            if ( $role eq 'Owner' ) {
+                $self->_SQLLimit(
+                    FIELD           => 'Owner',
+                    VALUE           => $id,
+                    ENTRYAGGREGATOR => $ea,
+                );
+            }
+            else {
+                $self->_SQLLimit(
+                    ALIAS           => $cgm_alias,
+                    FIELD           => 'MemberId',
+                    OPERATOR        => 'IS NOT',
+                    VALUE           => 'NULL',
+                    QUOTEVALUE      => 0,
+                    ENTRYAGGREGATOR => $ea,
+                );
+                $self->_SQLLimit(
+                    ALIAS           => $role_group_alias,
+                    FIELD           => 'Type',
+                    VALUE           => $role,
+                    ENTRYAGGREGATOR => 'AND',
+                );
+            }
+            $limit_queues->( 'AND', @$queues ) if ref $queues;
+            $ea = 'OR' if $ea eq 'AND';
+            $self->_CloseParen;
+        }
+        $self->_CloseParen;
+    }
+    return $self->{'_sql_current_user_can_see_applied'} = 1;
 }
 
 # }}}

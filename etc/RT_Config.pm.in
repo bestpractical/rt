@@ -160,6 +160,20 @@ set C<$DatabaseRequireSSL> to 1 to turn on SSL communication
 
 Set($DatabaseRequireSSL , undef);
 
+=item C<$UseSQLForACLChecks>
+
+In RT for ages ACL are checked after search what in some situtations
+result in empty search pages and wrong count of tickets.
+
+Set C<$UseSQLForACLChecks> to 1 to use SQL and get rid of these problems.
+
+However, this option is beta. In some cases it result in performance
+improvements, but some setups can not handle it.
+
+=cut
+
+Set($UseSQLForACLChecks, undef);
+
 =back
 
 =head1 Incoming Mail Gateway Configuration
