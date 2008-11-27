@@ -384,6 +384,7 @@ dnl Binaries that should be +x
 AC_CONFIG_FILES([
                  etc/upgrade/3.8-branded-queues-extension
                  etc/upgrade/3.8-ical-extension
+                 sbin/rt-attributes-viewer
                  sbin/rt-dump-database
                  sbin/rt-setup-database
                  sbin/rt-test-dependencies
