@@ -325,7 +325,8 @@ sub _BuildHash {
     my $self = shift;
 
     while (my $entry = $self->Next) {
-       my $hashkey = $entry->ObjectType . "-" .  $entry->ObjectId . "-" .  $entry->RightName . "-" .  $entry->PrincipalId . "-" .  $entry->PrincipalType;
+        my $hashkey = join '-', map $entry->__Value( $_ ),
+            qw(ObjectType ObjectId RightName PrincipalId PrincipalType);
 
         $self->{'as_hash'}->{"$hashkey"} =1;
 
