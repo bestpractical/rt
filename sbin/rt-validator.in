@@ -1046,7 +1046,7 @@ sub update_records {
 
     print "Updating record(s) in $table\n" if $opt{'verbose'};
     my $query = "UPDATE $table SET ". join(', ', map "$_ = ?", @what_cols)
-        ." WHERE ". join(', ', map "$_ = ?", @where_cols);
+        ." WHERE ". join(' AND ', map "$_ = ?", @where_cols);
     $redo_check{ $_ } = 1 foreach @{ $redo_on{'Update'}{ $table } || [] };
     return execute_query( $query, @what_binds, @where_binds );
 }
