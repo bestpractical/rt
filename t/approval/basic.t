@@ -7,7 +7,8 @@ BEGIN {
     eval { require Email::Abstract; require Test::Email; 1 }
         or plan skip_all => 'require Email::Abstract and Test::Email';
 }
-plan tests => 22;
+
+plan tests => 28;
 
 use RT;
 use RT::Test;
@@ -29,9 +30,13 @@ $q->Load('___Approvals');
 
 $q->SetDisabled(0);
 
-my ($val, $msg) = $user_a->PrincipalObj->GrantRight(Object =>$q, Right => 'OwnTicket');
-($val, $msg) = $user_b->PrincipalObj->GrantRight(Object =>$q, Right => 'OwnTicket');
+my ($val, $msg);
+($val, $msg) = $user_a->PrincipalObj->GrantRight(Object =>$q, Right => $_)
+    for qw(ModifyTicket OwnTicket ShowTicket);
+($val, $msg) = $user_b->PrincipalObj->GrantRight(Object =>$q, Right => $_)
+    for qw(ModifyTicket OwnTicket ShowTicket);
 
+# XXX: we need to make the first approval ticket open so notification is sent.
 my $approvals = 
 '===Create-Ticket: for-CFO
 Queue: ___Approvals
@@ -66,7 +71,7 @@ $apptemp->Create( Content => $approvals, Name => "PO Approvals", Queue => "0");
 
 ok($apptemp->Id);
 
-my $q = RT::Queue->new($RT::SystemUser);
+$q = RT::Queue->new($RT::SystemUser);
 $q->Create(Name => 'PO');
 ok ($q->Id, "Created PO queue");
 
@@ -99,6 +104,19 @@ ok ($tid,$tmsg);
 
 is ($t->ReferredToBy->Count,2, "referred to by the two tickets");
 
+# open the approval tickets that are ready for approval
+mail_ok {
+    for my $ticket ($t->AllDependsOn) {
+        next if $ticket->Type ne 'approval' && $ticket->Status ne 'new';
+        next if $ticket->HasUnresolvedDependencies( Type => 'approval' );
+        $ticket->SetStatus('open');
+    }
+} { from => qr/RT System/,
+    to => 'cfo@company.com',
+    subject => qr/New Pending Approval: CFO Approval/,
+    body => qr/pending your approval/
+};
+
 my $deps = $t->DependsOn;
 is ($deps->Count, 1, "The ticket we created depends on one other ticket");
 my $dependson_ceo= $deps->First->TargetObj;
@@ -113,12 +131,28 @@ ok ($dependson_cfo->Id, "It depends on a real ticket");
 like($dependson_cfo->Subject, qr/CFO Approval for PO.*stationary/);
 
 is_deeply([ $t->Status, $dependson_cfo->Status, $dependson_ceo->Status ],
-          [ 'new', 'new', 'new']);
+          [ 'new', 'open', 'new'], 'tickets in correct state');
 
-$dependson_cfo->SetStatus( Status => 'resolved' );
+mail_ok {
+    my $cfo = RT::CurrentUser->new;
+    $cfo->Load( $user_a );
+
+    $dependson_cfo->CurrentUser($cfo);
+    my ($ok, $msg) = $dependson_cfo->SetStatus( Status => 'resolved' );
+    ok($ok, "cfo can approve - $msg");
+
+} { from => qr/RT System/,
+    to => 'ceo@company.com',
+    subject => qr/New Pending Approval: PO approval request for PO/,
+    body => qr/pending your approval/
+},{ from => qr/CFO via RT/,
+    to => 'minion@company.com',
+    subject => qr/Ticket Approved:/,
+    body => qr/approved by CFO/
+};
 
 is ($t->DependsOn->Count, 1, "still depends only on the CEO approval");
 is ($t->ReferredToBy->Count,2, "referred to by the two tickets");
 
 is_deeply([ $t->Status, $dependson_cfo->Status, $dependson_ceo->Status ],
-          [ 'new', 'resolved', 'open']);
+          [ 'new', 'resolved', 'open'], 'ticket state after cfo approval');

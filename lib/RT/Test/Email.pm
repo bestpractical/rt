@@ -51,10 +51,15 @@ sub mail_ok (&@) {
         my $msg = shift @msgs
             or ok(0, 'Expecting message but none found.'), next;
 
+        $msg =~ s/^\s*//gs; # XXX: for some reasons, message from template has leading newline
+        # XXX: use Test::Email directly?
         my $te = Email::Abstract->new($msg)->cast('MIME::Entity');
-        diag $te->as_string;
         bless $te, 'Test::Email';
         $te->ok($spec, "email matched");
+        my $Test = Test::More->builder;
+        if (!($Test->summary)[$Test->current_test-1]) {
+            diag $te->as_string;
+        }
     }
     RT::Test->clean_caught_mails;
 }
