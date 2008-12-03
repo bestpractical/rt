@@ -1,11 +1,20 @@
 
 use strict;
 use warnings;
-use Test::More; 
-plan tests => 20;
+use Test::More;
+
+BEGIN {
+    eval { require Email::Abstract; require Test::Email; 1 }
+        or plan skip_all => 'require Email::Abstract and Test::Email';
+}
+plan tests => 22;
+
 use RT;
 use RT::Test;
+use RT::Test::Email;
+
 RT->Config->Set( LogToScreen => 'debug' );
+
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my ($user_a, $user_b) = (RT::User->new($RT::SystemUser), RT::User->new($RT::SystemUser));
@@ -73,9 +82,18 @@ ok ($scrip->ConditionObj->Id, "Created the scrip condition");
 ok ($scrip->ActionObj->Id, "Created the scrip action");
 
 my $t = RT::Ticket->new($RT::SystemUser);
-my($tid, $ttrans, $tmsg) = $t->Create(Subject => "PO for stationary",
-           Owner => "root", Requestor => 'minion',
-           Queue => $q->Id);
+my ($tid, $ttrans, $tmsg);
+
+mail_ok {
+    ($tid, $ttrans, $tmsg) =
+        $t->Create(Subject => "PO for stationary",
+                   Owner => "root", Requestor => 'minion',
+                   Queue => $q->Id);
+} { from => qr/PO via RT/,
+    to => 'minion@company.com',
+    subject => qr/PO for stationary/,
+    body => qr/automatically generated in response/
+};
 
 ok ($tid,$tmsg);
 
@@ -97,7 +115,7 @@ like($dependson_cfo->Subject, qr/CFO Approval for PO.*stationary/);
 is_deeply([ $t->Status, $dependson_cfo->Status, $dependson_ceo->Status ],
           [ 'new', 'new', 'new']);
 
-$dependson_cfo->SetStatus( Status => 'resolved' );#, Force => 1);
+$dependson_cfo->SetStatus( Status => 'resolved' );
 
 is ($t->DependsOn->Count, 1, "still depends only on the CEO approval");
 is ($t->ReferredToBy->Count,2, "referred to by the two tickets");
