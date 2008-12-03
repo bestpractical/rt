@@ -457,7 +457,7 @@ sub InsertSchema {
     unless ( $file ) {
         return (0, "Couldn't find schema file(s) '$file*'");
     }
-    unless ( -f $file || -r $file ) {
+    unless ( -f $file && -r $file ) {
         return (0, "File '$file' doesn't exist or couldn't be read");
     }
 
