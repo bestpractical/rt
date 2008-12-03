@@ -65,10 +65,11 @@ END {
     # do cleanup in that case.
     return if $Test->{Original_Pid} != $$;
 
-    if (scalar RT::Test->fetch_caught_mails) {
-        diag ((scalar RT::Test->fetch_caught_mails)." uncaught notification email at end of test: ");
+    my @mail = RT::Test->fetch_caught_mails;
+    if (scalar @mail) {
+        diag ((scalar @mail)." uncaught notification email at end of test: ");
         diag "From: @{[ $_->header('From' ) ]}, Subject: @{[ $_->header('Subject') ]}"
-            for RT::Test->fetch_caught_mails;
+            for @mail;
         die;
     }
 }
