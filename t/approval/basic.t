@@ -18,6 +18,8 @@ $user_c->Create( Name => 'minion', Privileged => 1, EmailAddress => 'minion@comp
 my $q = RT::Queue->new($RT::SystemUser);
 $q->Load('___Approvals');
 
+$q->SetDisabled(0);
+
 my ($val, $msg) = $user_a->PrincipalObj->GrantRight(Object =>$q, Right => 'OwnTicket');
 ($val, $msg) = $user_b->PrincipalObj->GrantRight(Object =>$q, Right => 'OwnTicket');
 
