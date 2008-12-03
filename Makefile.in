@@ -172,6 +172,7 @@ SYSTEM_BINARIES		=	rt-dump-database \
 
 ETC_FILES		=	acl.Informix \
 			acl.Pg \
+			acl.Pg-8.2 \
 			acl.Oracle \
 			acl.mysql \
 			acl.Sybase \

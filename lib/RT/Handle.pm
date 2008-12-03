@@ -411,8 +411,10 @@ sub InsertACL {
     my $path;
     if ( -d $base_path ) {
         $path = File::Spec->catfile( $base_path, "acl.$db_type");
+        $path = $self->GetVersionFile($dbh, $path);
+
         $path = File::Spec->catfile( $base_path, "acl")
-            unless -e $path;
+            unless $path && -e $path;
         return (0, "Couldn't find ACLs for $db_type")
             unless -e $path;
     } else {
