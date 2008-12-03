@@ -1095,27 +1095,54 @@ dependency search.
 
 sub AllDependedOnBy {
     my $self = shift;
-    my $dep = $self->DependedOnBy;
+    return $self->_AllLinkedTickets( LinkType => 'DependsOn',
+                                     Direction => 'Target', @_ );
+}
+
+=head2 AllDependsOn
+
+Returns an array of RT::Ticket objects which this ticket (directly or
+indirectly) depends on; takes an optional 'Type' argument in the param
+hash, which will limit returned tickets to that type, as well as cause
+tickets with that type to serve as 'leaf' nodes that stops the
+recursive dependency search.
+
+=cut
+
+sub AllDependsOn {
+    my $self = shift;
+    return $self->_AllLinkedTickets( LinkType => 'DependsOn',
+                                     Direction => 'Base', @_ );
+}
+
+sub _AllLinkedTickets {
+    my $self = shift;
+
     my %args = (
+        LinkType  => undef,
+        Direction => undef,
         Type   => undef,
 	_found => {},
 	_top   => 1,
         @_
     );
 
+    my $dep = $self->_Links( $args{Direction}, $args{LinkType});
     while (my $link = $dep->Next()) {
-	next unless ($link->BaseURI->IsLocal());
-	next if $args{_found}{$link->BaseObj->Id};
+        my $uri = $args{Direction} eq 'Target' ? $link->BaseURI : $link->TargetURI;
+	next unless ($uri->IsLocal());
+        my $obj = $args{Direction} eq 'Target' ? $link->BaseObj : $link->TargetObj;
+	next if $args{_found}{$obj->Id};
 
 	if (!$args{Type}) {
-	    $args{_found}{$link->BaseObj->Id} = $link->BaseObj;
-	    $link->BaseObj->AllDependedOnBy( %args, _top => 0 );
+	    $args{_found}{$obj->Id} = $obj;
+	    $obj->_AllLinkedTickets( %args, _top => 0 );
 	}
-	elsif ($link->BaseObj->Type eq $args{Type}) {
-	    $args{_found}{$link->BaseObj->Id} = $link->BaseObj;
+	elsif ($obj->Type eq $args{Type}) {
+	    $args{_found}{$obj->Id} = $obj;
 	}
 	else {
-	    $link->BaseObj->AllDependedOnBy( %args, _top => 0 );
+	    $obj->_AllLinkedTickets( %args, _top => 0 );
 	}
     }
 
