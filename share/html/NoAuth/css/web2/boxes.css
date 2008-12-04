@@ -170,7 +170,7 @@
   margin-top: 0.5em;
   width: 20px;
 
-  background: url(<%RT->Config->Get('WebPath')%>/NoAuth/images//css/rollup-arrow.gif) no-repeat center center;
+  background: url(<%RT->Config->Get('WebPath')%>/NoAuth/images/css/rollup-arrow.gif) no-repeat center center;
 
   position: absolute;
   top: -1em;
@@ -178,7 +178,6 @@
   float: left;
 
   padding: 11px 0 0 0;
-  height: 0 !important;
   overflow: hidden;
 }
 
