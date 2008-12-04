@@ -61,7 +61,7 @@
 </p>
 
 <p>
-<&|/l, RT::Installer->ConfigFile &>The settings you've chosen are stored in [_1].  You can edit this file to refine your configuration further. You can prevent this installation wizard from being shown again by running `<tt>chmod -w '[_1]'</tt>`.</&>
+<&|/l, RT::Installer->ConfigFile &>The settings you've chosen are stored in [_1].</&>
 </p>
 </div>
 
@@ -79,6 +79,9 @@ if ( $Run ) {
     RT->InitClasses();
     RT->InitPlugins();
 
+    system( 'chmod -w ' . RT::Installer->ConfigFile ) &&
+        $RT::Logger->error(
+                'failed to make ' . RT::Installer->ConfigFile . ' readonly' );
     my $root = RT::User->new( $RT::SystemUser );
     $root->Load('root');
     $root->SetPassword( $RT::Installer->{InstallConfig}{Password} );
