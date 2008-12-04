@@ -57,7 +57,7 @@
 <p>
 <&|/l&>When you click on 'Check Database Connectivity' there may be a small delay while RT tries to connect to your database</&>
 
-% } else {
+% } elsif ( @results ) {
 <& /Elements/ListActions, actions => \@results &>
 
 <p>
