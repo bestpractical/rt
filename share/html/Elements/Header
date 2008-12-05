@@ -97,10 +97,7 @@
     <&|/l&>Not logged in.</&>
 % }
 % $m->callback( %ARGS );
-% unless (!$session{'CurrentUser'}->Name
-%         or (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth'))) {
-    | <a  href="<%RT->Config->Get('WebPath')%>/NoAuth/Logout.html<%$URL ? "?URL=".$URL : ''%>"><&|/l&>Logout</&></a>
-% }
+<& Logout, %ARGS &>
   </div>
 % }
 
