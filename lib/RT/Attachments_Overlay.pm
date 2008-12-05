@@ -165,18 +165,13 @@ sub LimitNotEmpty {
         VALUE           => 'NULL',
         QUOTEVALUE      => 0,
     );
+
+    # http://rt3.fsck.com/Ticket/Display.html?id=12483
     if ( RT->Config->Get('DatabaseType') ne 'Oracle' ) {
         $self->Limit(
             ENTRYAGGREGATOR => 'AND',
             FIELD           => 'Content',
             OPERATOR        => '!=',
-            VALUE           => '',
-        );
-    } else {
-        $self->Limit(
-            ENTRYAGGREGATOR => 'AND',
-            FIELD           => 'Content',
-            OPERATOR        => 'NOT MATCHES',
             VALUE           => '',
         );
     }
