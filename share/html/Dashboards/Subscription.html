@@ -109,6 +109,13 @@
     <option value="Saturday" <% $fields{'Dow'} eq 'Saturday' ? 'selected="selected"' : '' %>><&|/l&>Saturday</&></option>
     <option value="Sunday" <% $fields{'Dow'} eq 'Sunday' ? 'selected="selected"' : '' %>><&|/l&>Sunday</&></option>
 </select>
+<&|/l&>every</&>
+<select name="Fow">
+% for my $f ( qw/1 2 3 4/ ) {
+    <option value="<%$f%>" <% $fields{'Fow'} == $f ? 'selected="selected"' : '' %>><% $f %></option>
+% }
+</select>
+<&|/l&>weeks</&>
 <br />
 
 <input type="radio" name="Frequency" value="monthly"<% $fields{'Frequency'} eq 'monthly' ? 'checked="checked"' : "" %>>
@@ -205,6 +212,8 @@ my %fields = (
     Dom         => 1,
     Rows        => 20,
     Recipient   => '',
+    Fow         => 1,
+    LastSent    => 0,
 );
 
 # update any fields with the values from the subscription object
@@ -220,7 +229,6 @@ for my $field (keys %fields) {
     $fields{$field} = $ARGS{$field}
         if defined($ARGS{$field});
 }
-
 # this'll be defined on submit
 if (defined $ARGS{Save}) {
     # update
