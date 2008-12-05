@@ -779,16 +779,17 @@ sub MakeMIMEEntity {
             # Prefer the cached name first over CGI.pm stringification.
             my $filename = $RT::Mason::CGI::Filename;
             $filename = "$filehandle" unless defined($filename);
-                           
-            $filename =~ s#^.*[\\/]##;
+            $filename = Encode::decode_utf8($filename);
+            $filename =~ s{^.*[\\/]}{};
 
-
-            
             $Message->attach(
                 Type     => $uploadinfo->{'Content-Type'},
-                Filename => Encode::decode_utf8($filename),
+                Filename => $filename,
                 Data     => \@content,
             );
+            if ( !$args{'Subject'} && !(defined $args{'Body'} && length $args{'Body'}) ) {
+                $Message->head->set( 'Subject' => $filename );
+            }
         }
     }
 

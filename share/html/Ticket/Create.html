@@ -350,17 +350,11 @@ foreach my $key (keys %ARGS) {
 
 # {{{ store the uploaded attachment in session
 if ($ARGS{'Attach'}) {			# attachment?
-    $session{'Attachments'} = {} unless defined $session{'Attachments'};
-
-    my $file_path = Encode::decode_utf8("$ARGS{'Attach'}");
-    my ($file_name) = $file_path =~ m{([\\/]+)$};
-
     my $attachment = MakeMIMEEntity(
-        Subject             => $file_name,
-        Body                => "",
         AttachmentFieldName => 'Attach'
     );
 
+    my $file_path = Encode::decode_utf8("$ARGS{'Attach'}");
     $session{'Attachments'} = {
         %{$session{'Attachments'} || {}},
 	$file_path => $attachment,
