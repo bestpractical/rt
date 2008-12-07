@@ -111,7 +111,7 @@ mail_ok {
 } { from => qr/RT System/,
     to => 'cfo@company.com',
     subject => qr/New Pending Approval: CFO Approval/,
-    body => qr/pending your approval/
+    body => qr/pending your approval.*Your approval is requested.*Blah/s
 };
 
 my $deps = $t->DependsOn;
@@ -149,7 +149,7 @@ mail_ok {
 } { from => qr/RT System/,
     to => 'ceo@company.com',
     subject => qr/New Pending Approval: PO approval request for PO/,
-    body => qr/pending your approval/
+    body => qr/pending your approval.*CFO approved.*ok with that\?/s
 },{ from => qr/RT System/,
     to => 'minion@company.com',
     subject => qr/Ticket Approved:/,

@@ -15,7 +15,35 @@ sub Prepare {
 
 sub Commit {
     my $self = shift;
+    my ($top) = $self->TicketObj->AllDependedOnBy( Type => 'ticket' );
+    my $t = $self->TicketObj->Transactions;
+    my $to;
+    while ( my $o = $t->Next ) {
+        $to = $o, last if $o->Type eq 'Create';
+    }
+
+    # XXX: this makes the owner incorrect so notify owner won't work
+    # local $self->{TicketObj} = $top;
+
+    # first txn entry of the approval ticket
+    local $self->{TransactionObj} = $to;
     $self->RunScripAction('Notify Owner', 'New Pending Approval', @_);
+
+    return;
+
+    # this generates more correct content of the message, but not sure
+    # if ccmessageto is the right way to do this.
+    my $template = RT::Template->new($self->CurrentUser);
+    $template->Load('New Pending Approval')
+        or die;
+
+    my ( $result, $msg ) = $template->Parse(
+        TicketObj => $top,
+        TransactionObj => $to,
+    );
+    $self->TicketObj->Comment( CcMessageTo => $self->TicketObj->OwnerObj->EmailAddress,
+                               MIMEObj => $template->MIMEObj );
+
 }
 
 1;
