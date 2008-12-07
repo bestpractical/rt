@@ -141,14 +141,14 @@ mail_ok {
     my ($ok, $msg) = $dependson_cfo->SetStatus( Status => 'resolved' );
     ok($ok, "cfo can approve - $msg");
 
-} { from => qr/CFO via RT/,
-    to => 'minion@company.com',
-    subject => qr/Ticket Approved:/,
-    body => qr/approved by CFO/
-},{ from => qr/RT System/,
+} { from => qr/RT System/,
     to => 'ceo@company.com',
     subject => qr/New Pending Approval: PO approval request for PO/,
     body => qr/pending your approval/
+},{ from => qr/CFO via RT/,
+    to => 'minion@company.com',
+    subject => qr/Ticket Approved:/,
+    body => qr/approved by CFO/
 };
 
 is ($t->DependsOn->Count, 1, "still depends only on the CEO approval");

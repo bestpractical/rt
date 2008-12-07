@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use base 'RT::Approval::Rule';
 
-use constant Description => "If an approval is rejected, reject the original and delete pending approvals"; # loc
+use constant Description => "Notify Owner of their ticket has been approved by some or all approvers"; # loc
 
 sub Prepare {
     my $self = shift;
@@ -12,28 +12,49 @@ sub Prepare {
     $self->OnStatusChange('resolved');
 }
 
-sub Commit {    # XXX: from custom prepare code
+sub Commit {
     my $self = shift;
     my $note;
     my $t = $self->TicketObj->Transactions;
+
     while ( my $o = $t->Next ) {
         $note .= $o->Content . "\n" if $o->ContentObj
                 and $o->Content !~ /Default Approval/;
     }
+    my ($Approval) = $self->TicketObj->AllDependedOnBy( Type => 'ticket' );
+    my $links  = $self->TicketObj->DependedOnBy;
+    my $passed = 0;
 
-    foreach my $obj ( $self->TicketObj->AllDependedOnBy( Type => 'ticket' ) ) {
-        $obj->Comment(
+    while ( my $link = $links->Next ) {
+        my $obj = $link->BaseObj;
+        next if ( $obj->HasUnresolvedDependencies( Type => 'approval' ) );
+
+        if ( $obj->Type eq 'ticket' ) {
+            $obj->Comment(
+                Content => $self->loc("Your request has been approved."),
+            );
+            $passed = 1;
+        }
+        elsif ( $obj->Type eq 'approval' ) {
+            $obj->SetStatus( Status => 'open', Force => 1 );
+        }
+    }
+
+    unless ($passed) {
+        $Approval->Comment(
             Content => $self->loc( "Your request has been approved by [_1]. Other approvals may still be pending.", # loc
                 $self->TransactionObj->CreatorObj->Name,
                 ) . "\n" . $self->loc( "Approver's notes: [_1]",    # loc
                 $note
                 ),
         );
-        $T::Approval = $self->TicketObj; # so we can access it inside templates
-        $self->{TicketObj} = $obj; # we want the original id in the token line
     }
 
-    $self->RunScripAction('Notify Requestors', 'Approval Passed');
+    $T::Approval = $self->TicketObj; # so we can access it inside templates
+    $self->RunScripAction('Notify Requestors',
+                          $passed ? 'All Approvals Passed' : 'Approval Passed',
+                          TicketObj => $Approval,
+                      );
 }
 
 1;

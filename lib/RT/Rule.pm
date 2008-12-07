@@ -46,6 +46,7 @@ sub RunScripAction {
                                            %args,
                                        );
 
+    # XXX: fix template to allow additional arguments to be passed from here
     $action->{'TemplateObj'} = $t;
     $action->{'ScripObj'} = RT::Scrip->new($self->CurrentUser); # Stub. sendemail action really wants a scripobj available
     $action->Prepare or return;
