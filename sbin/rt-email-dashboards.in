@@ -160,13 +160,10 @@ while (defined(my $user = $Users->Next)) {
             # if weekly, correct day of week?
             if ( $subscription->SubValue('Frequency') eq 'weekly' ) {
                 next if $subscription->SubValue('Dow') ne $dow;
-                my $counter = $subscription->SubValue('Counter') || 0;
+                my $last_sent = $subscription->SubValue('LastSent') || 0;
                 my $fow       = $subscription->SubValue('Fow') || 1;
-                if ( $counter % $fow ) {
-                    $subscription->SetSubValues( Counter => $counter+1 )
-                      unless $opts{'dryrun'};
-                    next;
-                }
+                # minus 120s in case of time inaccuracy when running cron
+                next if ( ( $now - $last_sent ) < 7 * 24 * 3600 * $fow - 120); 
             }
 
             # if monthly, correct day of month?
@@ -183,9 +180,8 @@ while (defined(my $user = $Users->Next)) {
             error 'Caught exception: ' . $@;
         }
         else {
-            $subscription->SetSubValues(
-                Counter => $subscription->SubValue('Counter') + 1 )
-              unless $opts{'dryrun'};
+            # update LastSent if dashboard is sent successfully.
+            $subscription->SetSubValues(LastSent => $now) unless $opts{'dryrun'};
         }
     }
 }
