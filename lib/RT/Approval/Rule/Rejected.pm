@@ -15,26 +15,29 @@ sub Prepare {
 
 sub Commit {    # XXX: from custom prepare code
     my $self = shift;
+    if ( my ($rejected) =
+        $self->TicketObj->AllDependedOnBy( Type => 'ticket' ) ) {
+        my $template = RT::Template->new( $self->CurrentUser );
+        $template->Load('Approval Rejected')
+            or die;
 
-    my $rejected = 0;
-    my $links    = $self->TicketObj->DependedOnBy;
+        my ( $result, $msg ) = $template->Parse(
+            TicketObj => $rejected,
+            Approval  => $self->TicketObj,
+            Notes     => '',
+        );
+
+        $rejected->Correspond( MIMEObj => $template->MIMEObj );
+        $rejected->SetStatus(
+            Status => 'rejected',
+            Force  => 1,
+        );
+    }
+    my $links = $self->TicketObj->DependedOnBy;
     foreach my $link ( @{ $links->ItemsArrayRef } ) {
         my $obj = $link->BaseObj;
         if ( $obj->QueueObj->IsActiveStatus( $obj->Status ) ) {
-            if ( $obj->Type eq 'ticket' ) {
-                $obj->Comment(
-                    Content => $self->loc("Your request was rejected."),
-                );
-                $obj->SetStatus(
-                    Status => 'rejected',
-                    Force  => 1,
-                );
-
-                $T::Approval = $self->TicketObj; # so we can access it inside templates
-                $self->{TicketObj} = $obj; # we want the original id in the token line
-                $rejected = 1;
-            }
-            else {
+            if ( $obj->Type eq 'approval' ) {
                 $obj->SetStatus(
                     Status => 'deleted',
                     Force  => 1,
@@ -54,8 +57,6 @@ sub Commit {    # XXX: from custom prepare code
         }
     }
 
-    return $self->RunScripAction('Notify Requestors', 'Approvals Rejected')
-        if $rejected;
 }
 
 1;

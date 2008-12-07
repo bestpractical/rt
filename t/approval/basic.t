@@ -8,7 +8,7 @@ BEGIN {
         or plan skip_all => 'require Email::Abstract and Test::Email';
 }
 
-plan tests => 33;
+plan tests => 38;
 
 use RT;
 use RT::Test;
@@ -183,3 +183,41 @@ mail_ok {
     subject => qr/Ticket Approved:/,
     body => qr/approved by CEO.*Its Owner may now start to act on it.*notes: And consumed they will be/s
 };
+
+is_deeply([ $t->Status, $dependson_cfo->Status, $dependson_ceo->Status ],
+          [ 'new', 'resolved', 'resolved'], 'ticket state after ceo approval');
+
+$dependson_cfo->_Set(
+    Field => 'Status',
+    Value => 'open');
+
+$dependson_ceo->_Set(
+    Field => 'Status',
+    Value => 'new');
+
+mail_ok {
+    my $cfo = RT::CurrentUser->new;
+    $cfo->Load( $users{cfo} );
+
+    $dependson_cfo->CurrentUser($cfo);
+    my $notes = MIME::Entity->build(
+        Data => [ 'sorry, out of resources.' ]
+    );
+    RT::I18N::SetMIMEEntityToUTF8($notes); # convert text parts into utf-8
+
+#    my ( $notesval, $notesmsg ) = $dependson_cfo->Correspond( MIMEObj => $notes );
+#    ok($notesval, $notesmsg);
+
+    my ($ok, $msg) = $dependson_cfo->SetStatus( Status => 'rejected' );
+    ok($ok, "cfo can approve - $msg");
+
+} { from => qr/RT System/,
+    to => 'minion@company.com',
+    subject => qr/Ticket Rejected: PO for stationary/,
+    body => qr/rejected by CFO/
+};
+
+$t->Load($t->id);$dependson_ceo->Load($dependson_ceo->id);
+is_deeply([ $t->Status, $dependson_cfo->Status, $dependson_ceo->Status ],
+          [ 'rejected', 'rejected', 'deleted'], 'ticket state after cfo rejection');
+
