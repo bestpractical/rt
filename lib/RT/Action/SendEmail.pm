@@ -302,7 +302,7 @@ sub SendMessage {
             . $self->TicketObj->id . "/"
             . $self->TransactionObj->id
             . " - Scrip "
-            . $self->ScripObj->id . " "
+            . ($self->ScripObj->id || '#rule'). " "
             . ( $self->ScripObj->Description || '' ) );
 
     my $status = RT::Interface::Email::SendEmail(
