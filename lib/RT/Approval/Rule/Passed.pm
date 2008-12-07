@@ -18,43 +18,33 @@ sub Commit {
     my $t = $self->TicketObj->Transactions;
 
     while ( my $o = $t->Next ) {
-        $note .= $o->Content . "\n" if $o->ContentObj
-                and $o->Content !~ /Default Approval/;
+        next unless $o->Type eq 'Correspond';
+        $note .= $o->Content . "\n" if $o->ContentObj;
     }
-    my ($Approval) = $self->TicketObj->AllDependedOnBy( Type => 'ticket' );
+    my ($top) = $self->TicketObj->AllDependedOnBy( Type => 'ticket' );
     my $links  = $self->TicketObj->DependedOnBy;
-    my $passed = 0;
 
     while ( my $link = $links->Next ) {
         my $obj = $link->BaseObj;
-        next if ( $obj->HasUnresolvedDependencies( Type => 'approval' ) );
+        next unless $obj->Type eq 'approval';
+        next if $obj->HasUnresolvedDependencies( Type => 'approval' );
 
-        if ( $obj->Type eq 'ticket' ) {
-            $obj->Comment(
-                Content => $self->loc("Your request has been approved."),
-            );
-            $passed = 1;
-        }
-        elsif ( $obj->Type eq 'approval' ) {
-            $obj->SetStatus( Status => 'open', Force => 1 );
-        }
+        $obj->SetStatus( Status => 'open', Force => 1 );
     }
 
-    unless ($passed) {
-        $Approval->Comment(
-            Content => $self->loc( "Your request has been approved by [_1]. Other approvals may still be pending.", # loc
-                $self->TransactionObj->CreatorObj->Name,
-                ) . "\n" . $self->loc( "Approver's notes: [_1]",    # loc
-                $note
-                ),
-        );
-    }
+    my $passed = !$top->HasUnresolvedDependencies( Type => 'approval' );
+    my $template = RT::Template->new($self->CurrentUser);
+    $template->Load($passed ? 'All Approvals Passed' : 'Approval Passed')
+        or die;
 
-    $T::Approval = $self->TicketObj; # so we can access it inside templates
-    $self->RunScripAction('Notify Requestors',
-                          $passed ? 'All Approvals Passed' : 'Approval Passed',
-                          TicketObj => $Approval,
-                      );
+    my ($result, $msg) = $template->Parse(
+        TicketObj => $top,
+        Approval => $self->TicketObj,
+        Notes => $note,
+    );
+
+    $top->Correspond( MIMEObj => $template->MIMEObj );
+    return;
 }
 
 1;

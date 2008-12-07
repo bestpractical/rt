@@ -8,7 +8,7 @@ BEGIN {
         or plan skip_all => 'require Email::Abstract and Test::Email';
 }
 
-plan tests => 28;
+plan tests => 29;
 
 use RT;
 use RT::Test;
@@ -138,6 +138,14 @@ mail_ok {
     $cfo->Load( $user_a );
 
     $dependson_cfo->CurrentUser($cfo);
+    my $notes = MIME::Entity->build(
+        Data => [ 'Resources exist to be consumed.' ]
+    );
+    RT::I18N::SetMIMEEntityToUTF8($notes); # convert text parts into utf-8
+
+    my ( $notesval, $notesmsg ) = $dependson_cfo->Correspond( MIMEObj => $notes );
+    ok($notesval, $notesmsg);
+
     my ($ok, $msg) = $dependson_cfo->SetStatus( Status => 'resolved' );
     ok($ok, "cfo can approve - $msg");
 
@@ -145,10 +153,10 @@ mail_ok {
     to => 'ceo@company.com',
     subject => qr/New Pending Approval: PO approval request for PO/,
     body => qr/pending your approval/
-},{ from => qr/CFO via RT/,
+},{ from => qr/RT System/,
     to => 'minion@company.com',
     subject => qr/Ticket Approved:/,
-    body => qr/approved by CFO/
+    body => qr/approved by CFO.*notes: Resources exist to be consumed/s
 };
 
 is ($t->DependsOn->Count, 1, "still depends only on the CEO approval");

@@ -326,6 +326,8 @@ Greetings,
 
 Your ticket has been approved by { eval { $Approval->OwnerObj->Name } }.
 Other approvals may be pending.
+
+Approver\'s notes: { $Notes }
 '
     },
     {  Queue       => '___Approvals',
@@ -336,7 +338,10 @@ Other approvals may be pending.
 
 Greetings,
 
-Your ticket has been approved.  Its Owner may now start to act on it.
+Your ticket has been approved by { eval { $Approval->OwnerObj->Name } }.
+Its Owner may now start to act on it.
+
+Approver\'s notes: { $Notes }
 '
     },
     {  Queue       => '___Approvals',
@@ -348,6 +353,8 @@ Your ticket has been approved.  Its Owner may now start to act on it.
 Greetings,
 
 Your ticket has been rejected by { eval { $Approval->OwnerObj->Name } }.
+
+Approver\'s notes: { $Notes }
 '
     },
     {  Queue       => 0,
