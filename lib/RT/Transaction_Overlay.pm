@@ -78,10 +78,10 @@ use vars qw( %_BriefDescriptions $PreferredContentType );
 
 use RT::Attachments;
 use RT::Scrips;
+use RT::Ruleset;
 
 use HTML::FormatText;
 use HTML::TreeBuilder;
-
 
 # {{{ sub Create 
 
@@ -172,9 +172,21 @@ sub Create {
             Ticket      => $args{'ObjectId'},
             Transaction => $self->id,
         );
+
+       # Entry point of the rule system
+       my $ticket = RT::Ticket->new($RT::SystemUser);
+       $ticket->Load($args{'ObjectId'});
+       my $rules = RT::Ruleset->FindAllRules(
+            Stage       => 'TransactionCreate',
+            Type        => $args{'Type'},
+            TicketObj   => $ticket,
+            TransactionObj => $self,
+       );
+
         if ($args{'CommitScrips'} ) {
             $RT::Logger->debug('About to commit scrips for transaction #' .$self->Id);
             $self->{'scrips'}->Commit();
+            RT::Ruleset->CommitRules($rules);
         }
     }
 
