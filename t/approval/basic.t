@@ -8,7 +8,7 @@ BEGIN {
         or plan skip_all => 'require Email::Abstract and Test::Email';
 }
 
-plan tests => 29;
+plan tests => 33;
 
 use RT;
 use RT::Test;
@@ -18,23 +18,20 @@ RT->Config->Set( LogToScreen => 'debug' );
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
-my ($user_a, $user_b) = (RT::User->new($RT::SystemUser), RT::User->new($RT::SystemUser));
-my ($user_c) = RT::User->new($RT::SystemUser);
-
-$user_a->Create( Name => 'CFO', Privileged => 1, EmailAddress => 'cfo@company.com');
-$user_b->Create( Name => 'CEO', Privileged => 1, EmailAddress => 'ceo@company.com');
-$user_c->Create( Name => 'minion', Privileged => 1, EmailAddress => 'minion@company.com');
-
 my $q = RT::Queue->new($RT::SystemUser);
 $q->Load('___Approvals');
-
 $q->SetDisabled(0);
 
-my ($val, $msg);
-($val, $msg) = $user_a->PrincipalObj->GrantRight(Object =>$q, Right => $_)
-    for qw(ModifyTicket OwnTicket ShowTicket);
-($val, $msg) = $user_b->PrincipalObj->GrantRight(Object =>$q, Right => $_)
-    for qw(ModifyTicket OwnTicket ShowTicket);
+my %users;
+for my $user_name (qw(minion cfo ceo )) {
+    my $user = $users{$user_name} = RT::User->new($RT::SystemUser);
+    $user->Create( Name => uc($user_name),
+                   Privileged => 1,
+                   EmailAddress => $user_name.'@company.com');
+    my ($val, $msg);
+    ($val, $msg) = $user->PrincipalObj->GrantRight(Object =>$q, Right => $_)
+        for qw(ModifyTicket OwnTicket ShowTicket);
+}
 
 # XXX: we need to make the first approval ticket open so notification is sent.
 my $approvals = 
@@ -135,7 +132,7 @@ is_deeply([ $t->Status, $dependson_cfo->Status, $dependson_ceo->Status ],
 
 mail_ok {
     my $cfo = RT::CurrentUser->new;
-    $cfo->Load( $user_a );
+    $cfo->Load( $users{cfo} );
 
     $dependson_cfo->CurrentUser($cfo);
     my $notes = MIME::Entity->build(
@@ -164,3 +161,25 @@ is ($t->ReferredToBy->Count,2, "referred to by the two tickets");
 
 is_deeply([ $t->Status, $dependson_cfo->Status, $dependson_ceo->Status ],
           [ 'new', 'resolved', 'open'], 'ticket state after cfo approval');
+
+mail_ok {
+    my $ceo = RT::CurrentUser->new;
+    $ceo->Load( $users{ceo} );
+
+    $dependson_ceo->CurrentUser($ceo);
+    my $notes = MIME::Entity->build(
+        Data => [ 'And consumed they will be.' ]
+    );
+    RT::I18N::SetMIMEEntityToUTF8($notes); # convert text parts into utf-8
+
+    my ( $notesval, $notesmsg ) = $dependson_ceo->Correspond( MIMEObj => $notes );
+    ok($notesval, $notesmsg);
+
+    my ($ok, $msg) = $dependson_ceo->SetStatus( Status => 'resolved' );
+    ok($ok, "ceo can approve - $msg");
+
+} { from => qr/RT System/,
+    to => 'minion@company.com',
+    subject => qr/Ticket Approved:/,
+    body => qr/approved by CEO.*Its Owner may now start to act on it.*notes: And consumed they will be/s
+};
