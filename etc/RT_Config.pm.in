@@ -656,7 +656,7 @@ From lowest to highest priority, the levels are:
 
 =cut
 
-Set($LogToSyslog    , 'debug');
+Set($LogToSyslog    , 'info');
 Set($LogToScreen    , 'info');
 
 =item C<$LogToFile>, C<$LogDir>, C<$LogToFileNamed>
