@@ -75,7 +75,7 @@ my %Meta = (
         WidgetArguments => {
             Description => 'Database host', #loc
             Default => 1,
-            DefaultLabel => "Keep 'localhost' if you're not sure. Set it as blank means connect via socket", #loc
+            DefaultLabel => "Keep 'localhost' if you're not sure. Leave blank to connect locally over a socket", #loc
             Hints => "The domain name of your database server (like 'db.example.com').",       #loc
         },
     },
