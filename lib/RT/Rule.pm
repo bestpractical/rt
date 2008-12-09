@@ -30,16 +30,19 @@ sub OnStatusChange {
     $self->TransactionObj->NewValue eq $value
 }
 
-
 sub RunScripAction {
     my ($self, $scrip_action, $template, %args) = @_;
     my $ScripAction = RT::ScripAction->new($self->CurrentUser);
     $ScripAction->Load($scrip_action) or die ;
-    my $t = RT::Template->new($self->CurrentUser);
 
-    # XXX: load per-queue template
-#    $template->LoadQueueTemplate( Queue => ..., ) || $template->LoadGlobalTemplate(...)
-    $t->Load($template) or die;
+    unless (ref($template)) {
+        # XXX: load per-queue template
+        #    $template->LoadQueueTemplate( Queue => ..., ) || $template->LoadGlobalTemplate(...)
+
+        my $t = RT::Template->new($self->CurrentUser);
+        $t->Load($template) or die;
+        $template = $t;
+    }
 
     my $action = $ScripAction->LoadAction( TransactionObj => $self->TransactionObj,
                                            TicketObj => $self->TicketObj,
@@ -47,7 +50,7 @@ sub RunScripAction {
                                        );
 
     # XXX: fix template to allow additional arguments to be passed from here
-    $action->{'TemplateObj'} = $t;
+    $action->{'TemplateObj'} = $template;
     $action->{'ScripObj'} = RT::Scrip->new($self->CurrentUser); # Stub. sendemail action really wants a scripobj available
     $action->Prepare or return;
     $action->Commit;
