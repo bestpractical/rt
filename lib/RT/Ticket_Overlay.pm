@@ -3164,6 +3164,15 @@ sub DESTROY {
         TransactionObj => $batch->[0],
         Type           => join( ',', map $_->Type, grep defined, @{$batch} )
     );
+
+    # Entry point of the rule system
+    my $rules = RT::Ruleset->FindAllRules(
+        Stage          => 'TransactionBatch',
+        TicketObj      => $self,
+        TransactionObj => $batch->[0],
+        Type           => join( ',', map $_->Type, grep defined, @{$batch} )
+    );
+    RT::Ruleset->CommitRules($rules);
 }
 
 # }}}

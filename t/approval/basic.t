@@ -8,14 +8,14 @@ BEGIN {
         or plan skip_all => 'require Email::Abstract and Test::Email';
 }
 
-plan tests => 38;
+plan tests => 37;
 
 use RT;
 use RT::Test;
 use RT::Test::Email;
 
 RT->Config->Set( LogToScreen => 'debug' );
-
+RT->Config->Set( UseTransactionBatch => 1 );
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $q = RT::Queue->new($RT::SystemUser);
@@ -91,7 +91,11 @@ mail_ok {
         $t->Create(Subject => "PO for stationary",
                    Owner => "root", Requestor => 'minion',
                    Queue => $q->Id);
-} { from => qr/PO via RT/,
+} { from => qr/RT System/,
+    to => 'cfo@company.com',
+    subject => qr/New Pending Approval: CFO Approval/,
+    body => qr/pending your approval.*Your approval is requested.*Blah/s
+},{ from => qr/PO via RT/,
     to => 'minion@company.com',
     subject => qr/PO for stationary/,
     body => qr/automatically generated in response/
@@ -100,19 +104,6 @@ mail_ok {
 ok ($tid,$tmsg);
 
 is ($t->ReferredToBy->Count,2, "referred to by the two tickets");
-
-# open the approval tickets that are ready for approval
-mail_ok {
-    for my $ticket ($t->AllDependsOn) {
-        next if $ticket->Type ne 'approval' && $ticket->Status ne 'new';
-        next if $ticket->HasUnresolvedDependencies( Type => 'approval' );
-        $ticket->SetStatus('open');
-    }
-} { from => qr/RT System/,
-    to => 'cfo@company.com',
-    subject => qr/New Pending Approval: CFO Approval/,
-    body => qr/pending your approval.*Your approval is requested.*Blah/s
-};
 
 my $deps = $t->DependsOn;
 is ($deps->Count, 1, "The ticket we created depends on one other ticket");

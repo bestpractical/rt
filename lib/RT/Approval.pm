@@ -10,6 +10,7 @@ RT::Ruleset->Add(
         'RT::Approval::Rule::NewPending',
         'RT::Approval::Rule::Rejected',
         'RT::Approval::Rule::Passed',
+        'RT::Approval::Rule::Created',
     ]);
 
 1;
