@@ -131,9 +131,14 @@ foreach my $column (@Format) {
         }
         s/\n/<br \/>/gs for @out;
     }
-    $m->out( 'align="'   . $align . '"' ) if $align;
-    $m->out( 'style="'   . $style . '"' ) if $style;
-    $m->out( 'colspan="' . $span  . '"' ) if $span;
+
+    $m->out( 'align="'   . $m->interp->apply_escapes( $align => 'h' ) . '"' )
+        if $align;
+    $m->out( 'style="'   . $m->interp->apply_escapes( $style => 'h' ) . '"' )
+        if $style;
+    $m->out( 'colspan="' . $m->interp->apply_escapes( $span  => 'h' ) . '"' )
+        if $span;
+
     $m->out('>');
     $m->out(@out) if @out;
     $m->out( '</td>' . "\n" );

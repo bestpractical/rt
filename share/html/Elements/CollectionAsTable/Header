@@ -91,7 +91,8 @@ foreach my $col ( @Format ) {
     $item += ($span || 1);
 
     $m->out('<th class="collection-as-table"');
-    $m->out(' colspan="' . $span . '"') if $span;
+    $m->out('colspan="' . $m->interp->apply_escapes($span  => 'h') . '"')
+        if $span;
     $m->out('>');
 
     $title =~ s/^__(.*)__$/$1/o;
