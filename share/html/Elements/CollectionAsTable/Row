@@ -76,12 +76,14 @@ foreach my $column (@Format) {
         next;
     }
 
-    $item++;
     my $class = $column->{class} ? encode_entities( $column->{class}, q{'"&<>} ) : 'collection-as-table';
     $m->out(qq{<td class="$class" });
 
     my $align = $column->{align};
     my $style = $column->{style};
+    my $span  = $column->{span};
+
+    $item += ($span || 1);
 
     my @out;
     foreach my $subcol ( @{ $column->{output} } ) {
@@ -129,8 +131,9 @@ foreach my $column (@Format) {
         }
         s/\n/<br \/>/gs for @out;
     }
-    $m->out( 'align="' . $align . '"' ) if $align;
-    $m->out( 'style="' . $style . '"' ) if $style;
+    $m->out( 'align="'   . $align . '"' ) if $align;
+    $m->out( 'style="'   . $style . '"' ) if $style;
+    $m->out( 'colspan="' . $span  . '"' ) if $span;
     $m->out('>');
     $m->out(@out) if @out;
     $m->out( '</td>' . "\n" );

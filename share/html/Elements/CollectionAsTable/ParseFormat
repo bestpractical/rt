@@ -77,6 +77,9 @@ while ($Format =~ /($RE{delimited}{-delim=>qq{\'"}}|[{}\w.]+)/go) {
     if ( $col =~ s!/ALIGN:([^\/]+)!!io ) {
         $colref->{'align'} = $1;
     }
+    if ( $col =~ s!/SPAN:([^\/]+)!!io ) {
+        $colref->{'span'} = $1;
+    }
     if ( $col =~ /__(.*?)__/io ) {
         my @subcols;
         while ( $col =~ s/^(.*?)__(.*?)__//o ) {

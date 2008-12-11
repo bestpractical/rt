@@ -87,9 +87,12 @@ foreach my $col ( @Format ) {
         next;
     }
 
-    $item++;
+    my $span = $col->{'span'};
+    $item += ($span || 1);
 
-    $m->out('<th class="collection-as-table">');
+    $m->out('<th class="collection-as-table"');
+    $m->out(' colspan="' . $span . '"') if $span;
+    $m->out('>');
 
     $title =~ s/^__(.*)__$/$1/o;
     my $tmp = $m->comp( '/Elements/ColumnMap',
