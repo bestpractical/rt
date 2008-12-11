@@ -44,4 +44,41 @@
         $RT::Logger->debug("Fixed.");
         return 1;
     },
+    sub {
+        my $approvals_q = RT::Queue->new( $RT::SystemUser );
+        $approvals_q->Load('___Approvals');
+        unless ( $approvals_q->id ) {
+            $RT::Logger->error("You have no approvals queue.");
+            return 1;
+        }
+
+        require File::Temp;
+        my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( 'rt-approvals-scrips-XXXX', CLEANUP => 0 );
+        unless ( $tmp_fh ) {
+            $RT::Logger->error("Couldn't create temporary file.");
+            return 0;
+        }
+
+        $RT::Logger->warning(
+            "IMPORTANT: We're going to delete all scrips in Approvals queue"
+            ." and save them in '$tmp_fn' file."
+        );
+
+        require Data::Dumper;
+
+        my $scrips = RT::Scrips->new( $RT::SystemUser );
+        $scrips->LimitToQueue( $approvals_q->id );
+        while ( my $scrip = $scrips->Next ) {
+            my %tmp =
+                map { $tmp->{ $_ } = $scrip->_Value( $_ ) }
+                $scrip->ReadableAttributes;
+
+            print $tmp_fh Data::Dumper::Dumper( \%tmp );
+
+            my ($status, $msg) = $scrip->Delete;
+            unless ( $status ) {
+                $RT::Logger->error( "Couldn't delete scrip: $msg");
+            }
+        }
+    },
 );
