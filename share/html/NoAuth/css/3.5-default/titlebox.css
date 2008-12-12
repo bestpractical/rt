@@ -155,3 +155,8 @@
 .titlebox .titlebox-content hr.clear {
     visibility: hidden;
 }
+
+.titlebox .titlebox-title .left {
+    position: relative;
+}
+
