@@ -33,15 +33,12 @@ sub Commit {
     }
 
     my $passed = !$top->HasUnresolvedDependencies( Type => 'approval' );
-    my $template = RT::Template->new($self->CurrentUser);
-    $template->Load($passed ? 'All Approvals Passed' : 'Approval Passed')
-        or die;
-
-    my ($result, $msg) = $template->Parse(
+    my $template = $self->GetTemplate(
+        $passed ? 'All Approvals Passed' : 'Approval Passed',
         TicketObj => $top,
         Approval => $self->TicketObj,
         Notes => $note,
-    );
+    ) or die;
 
     $top->Correspond( MIMEObj => $template->MIMEObj );
     return;

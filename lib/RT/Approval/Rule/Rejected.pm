@@ -17,15 +17,11 @@ sub Commit {    # XXX: from custom prepare code
     my $self = shift;
     if ( my ($rejected) =
         $self->TicketObj->AllDependedOnBy( Type => 'ticket' ) ) {
-        my $template = RT::Template->new( $self->CurrentUser );
-        $template->Load('Approval Rejected')
-            or die;
-
-        my ( $result, $msg ) = $template->Parse(
-            TicketObj => $rejected,
-            Approval  => $self->TicketObj,
-            Notes     => '',
-        );
+        my $template = $self->GetTemplate('Approval Rejected',
+                                          TicketObj => $rejected,
+                                          Approval  => $self->TicketObj,
+                                          Notes     => '')
+            or return;
 
         $rejected->Correspond( MIMEObj => $template->MIMEObj );
         $rejected->SetStatus(

@@ -33,13 +33,13 @@ sub Commit {
 
     # this generates more correct content of the message, but not sure
     # if ccmessageto is the right way to do this.
-    my $template = RT::Template->new($self->CurrentUser);
-    $template->Load('New Pending Approval')
-        or die;
+    my $template = $self->GetTemplate('New Pending Approval',
+                                      TicketObj => $top,
+                                      TransactionObj => $to)
+        or return;
 
     my ( $result, $msg ) = $template->Parse(
         TicketObj => $top,
-        TransactionObj => $to,
     );
     $self->TicketObj->Comment( CcMessageTo => $self->TicketObj->OwnerObj->EmailAddress,
                                MIMEObj => $template->MIMEObj );
