@@ -34,7 +34,7 @@ sub Commit {
 
     my $passed = !$top->HasUnresolvedDependencies( Type => 'approval' );
     my $template = $self->GetTemplate(
-        $passed ? 'All Approvals Passed' : 'Approval Passed',
+        $passed ? 'RT All Approvals Passed' : 'RT Approval Passed',
         TicketObj => $top,
         Approval => $self->TicketObj,
         Notes => $note,
