@@ -298,7 +298,7 @@ further questions or concerns, please respond to this message.
 '
     },
     {  Queue       => '___Approvals',
-       Name        => "RT New Pending Approval",    # loc
+       Name        => "New Pending Approval",    # loc
        Description =>
          "Notify Owners and AdminCcs of new items pending their approval", # loc
        Content => 'Subject: New Pending Approval: {$Ticket->Subject}
@@ -317,7 +317,7 @@ batch-process all your pending approvals.
 '
     },
     {  Queue       => '___Approvals',
-       Name        => "RT Approval Passed",    # loc
+       Name        => "Approval Passed",    # loc
        Description =>
          "Notify Requestor of their ticket has been approved by some approver", # loc
        Content => 'Subject: Ticket Approved: {$Ticket->Subject}
@@ -331,7 +331,7 @@ Approver\'s notes: { $Notes }
 '
     },
     {  Queue       => '___Approvals',
-       Name        => "RT All Approvals Passed",    # loc
+       Name        => "All Approvals Passed",    # loc
        Description =>
          "Notify Requestor of their ticket has been approved by all approvers", # loc
        Content => 'Subject: Ticket Approved: {$Ticket->Subject}
@@ -345,7 +345,7 @@ Approver\'s notes: { $Notes }
 '
     },
     {  Queue       => '___Approvals',
-       Name        => "RT Approval Rejected",    # loc
+       Name        => "Approval Rejected",    # loc
        Description =>
          "Notify Owner of their rejected ticket", # loc
        Content => 'Subject: Ticket Rejected: {$Ticket->Subject}
@@ -358,7 +358,7 @@ Approver\'s notes: { $Notes }
 '
     },
     {  Queue       => '___Approvals',
-       Name        => "RT Approval Ready for Owner",    # loc
+       Name        => "Approval Ready for Owner",    # loc
        Description =>
          "Notify Owner of their ticket has been approved and is ready to be acted on", # loc
        Content => 'Subject: Ticket Approved: {$Ticket->Subject}
