@@ -1,11 +1,11 @@
 MySQL 4.1 and greater implemented changes in character set handling
 that may result in RT failures: multiple login requests, binary attachments
-breakage, image custom fields breakage and other.
+breakage, image custom fields breakage and more.
 
-In order to resolve this issue we've changed our schema for mysql 4.1 and greater
-versions.
+In order to resolve this issue we've changed our schema for MySQL 4.1 and
+greater versions.
 
-If you're installing new RT then you can skip this file.
+If you're installing a new RT then you can skip this file.
 
 If you're migrating from MySQL 4.0 to MySQL 4.1 and newer then you MUST follow
 instructions at the bottom of this file.
@@ -15,68 +15,65 @@ instructions below even if your old RT was installed on MySQL 4.1 or newer.
 
 === Upgrading RT from versions prior to 3.8.0 ===
 
-1) Backup RT database. It's really good to test that you can restore from
-   this backup.
+1) Backup RT's database. Test that you can restore from this backup.
 
-2) Follow instructions in the README file to the step 7).
+2) Follow instructions in the README file to step 7.
 
-3) Apply changes described in the seven step, but only up to version 3.8.0.
+3) Apply changes described in step 7, but only up to version 3.8.0.
 
-4) Apply mysql 4.0->4.1 schema changes. RT tarball has script
-etc/upgrade/schema.mysql-4.0-4.1.pl that generates SQL queries to upgrade schema of
-the DB. Run it:
+4) Apply the MySQL 4.0->4.1 schema changes. Included in RT is the script
+etc/upgrade/schema.mysql-4.0-4.1.pl that generates SQL queries to upgrade the database's schema. Run it:
 
     perl etc/upgrade/schema.mysql-4.0-4.1.pl db user pass > sql.queries
 
-5) Check sanity of sql queries yourself or consult with your DBA
+5) Check sanity of the SQL queries yourself or consult with your DBA.
 
-6) Apply queries. Note that this step can take a while. May require additional
-   space on your hard drive comparable with size of your tables.
+6) Apply the queries. Note that this step can take a while. It may require
+additional space on your hard drive comparable with size of your tables.
 
     mysql -u root -p rt3 < sql.queries
 
-NOTE that 'rt3' is the default name of the RT DB, change it in the command above
-if you're using different name.
+NOTE that 'rt3' is the default name of the RT database, change it in the
+command above if you're using a different name.
 
-This step shouldn't produce any errors or warnings, but if you see some then revert
-DB from backup you made at step 1) and send report to the
+This step should not produce any errors or warnings. If you see any, restore
+your database from the backup you made at step 1) and send a report to the
 rt-users@lists.bestpractical.com mailing list.
 
-7) Return to the step 7 from README and apply other upgrade scripts and follow
+7) Continue from step 7 in the README and apply other upgrade scripts and follow
 other steps.
 
 8) Test everything. The most important parts you have to test:
-* binary attachments, like docs, pdfs, images and other
+* binary attachments, like docs, PDFs, and images
 * binary custom fields
-* everything that may contain not ascii characters
+* everything that may contain characters other than ASCII
 
 === Migrating from MySQL 4.0 to MySQL 4.1 and newer ===
 
-Many people want to do migrate from one server and upgrade RT in one step
-what is really not that good idea as become more complicated, more time consuming,
-more chances to fail, much harder to debug.
+Upgrading both MySQL and RT at the same time is a bad idea. The process becomes
+more complicated, more time consuming, greater chance to fail, and much harder
+to debug.
 
-It's better to split in two steps. At first upgrade mysql from 4.0 to 4.1 or newer.
-Test for a while that everything works just fine. There are some rules you must
-remeber in this case:
+It's better to perform the upgrade in two steps. First upgrade MySQL from 4.0
+to 4.1 or newer. Remember the following:
 
-* don't use utf8 as default mysql's character set, it's default in some
-  distributives
-* import/export mysql dumps using binary character set
+* Don't use utf8 as MySQL's character set. This is the default in some
+  Linux distributions.
+* import/export MySQL dumps using binary character set.
 
-When you're sure that everything is fine. You can upgrade RT using instructions
-above.
+When you're sure that everything is fine, you may upgrade RT using the
+instructions above.
 
-If you still want to make upgrade of mysql and RT at once, then you can do the
-following:
+If you still want to upgrade MySQL and RT simultaneously, then you can
+do the following:
 
-1) Install new RT on mysql 4.1 or newer.
-2) Test that this new clean RT works on this new DB server.
-3) Dump DB from mysql 4.0.
-4) Configure mysql 4.1 and newer to use latin1 as default character set
+1) Install a new RT on MySQL 4.1 or newer.
+2) Test that this new clean RT works on this new database.
+3) Dump the database from MySQL 4.0.
+4) Configure MySQL 4.1 and newer to use Latin1 as default character set
    everywhere.
-5) Import dump into new mysql server replacing your empty DB you created
-   at step 1.
-6) At this point you have RT 3.8.x code base pointing to not upraged DB then
-   you can upgrade RT using instructions above.
+5) Import the dump into the new MySQL server, replacing your empty database you
+   created at step 1.
+6) At this point you have RT 3.8.x code base using an old database. You can
+   upgrade RT using the instructions above.
 
