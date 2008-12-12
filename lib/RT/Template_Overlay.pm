@@ -322,7 +322,7 @@ If this is not what you need, inspect C<< $Ticket->Requestors >>.
 
 A localization function. See L<Locale::Maketext>.
 
-=item 
+=back 
 
 =cut
 
