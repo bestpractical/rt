@@ -1,5 +1,33 @@
 =head1 Templates
 
+Each template is split into two sections. A block of headers and a body. These
+sections are separated by a blank line.
+
+=head2 Headers
+
+Your template may specify arbitrary email headers. Each header is a name, a
+colon, then a value. So, for example, to specify a subject, you can use:
+
+    Subject: Thanks for your bug report.
+
+=head3 Special Headers
+
+=over
+
+=item Content-Type: text/html
+
+The special header "Content-Type: text/html" tells RT that the template should
+be parsed as HTML. RT will automatically make the outgoing message multipart.
+That way, recipients who can read only plaintext email will receive something
+readable, while users with clients which can display HTML will receive the full
+experience.
+
+We welcome contributions of HTML-ization of builtin templates.
+
+=back
+
+=head2 Variables
+
 The variables that your templates may use include:
 
 =over 4
