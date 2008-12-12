@@ -14,6 +14,9 @@ Before making any changes to your database, always ensure that you have a
 complete current backup. If you don't have a current backup, you could 
 accidentally damage your database and lose data or worse.
 
+If you are using MySQL, please read the instructions in UPGRADING.mysql as
+well.
+
 *******
 
 UPGRADING FROM 3.8.1 and earlier - Changes:

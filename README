@@ -121,8 +121,9 @@ want to read a more comprehensive installation guide at:
 
 7   If you're upgrading from RT 3.0 or newer:
 
-     Read through the UPGRADING document included in this distribution.
-     
+     Read through the UPGRADING document included in this distribution. If
+     you're using MySQL, read through UPGRADING.mysql as well.
+
      It includes special upgrade instructions that will help you get this
      new version of RT up and running smoothly.
 
