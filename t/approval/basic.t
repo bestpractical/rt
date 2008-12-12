@@ -8,7 +8,7 @@ BEGIN {
         or plan skip_all => 'require Email::Abstract and Test::Email';
 }
 
-plan tests => 37;
+plan tests => 38;
 
 use RT;
 use RT::Test;
@@ -172,8 +172,13 @@ mail_ok {
 } { from => qr/RT System/,
     to => 'minion@company.com',
     subject => qr/Ticket Approved:/,
-    body => qr/approved by CEO.*Its Owner may now start to act on it.*notes: And consumed they will be/s
+    body => qr/approved by CEO.*Its Owner may now start to act on it.*notes: And consumed they will be/s,
+}, { from => qr'CEO via RT',
+     to => 'root@localhost',
+     subject => qr/Ticket Approved/,
+     body => qr/The ticket has been approved, you may now start to act on it/,
 };
+
 
 is_deeply([ $t->Status, $dependson_cfo->Status, $dependson_ceo->Status ],
           [ 'new', 'resolved', 'resolved'], 'ticket state after ceo approval');

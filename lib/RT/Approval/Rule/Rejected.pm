@@ -20,9 +20,7 @@ sub Commit {    # XXX: from custom prepare code
         my $template = $self->GetTemplate('RT Approval Rejected',
                                           TicketObj => $rejected,
                                           Approval  => $self->TicketObj,
-                                          Notes     => '')
-;
-        warn "hate software " unless $template->Id;
+                                          Notes     => '');
 
         $rejected->Correspond( MIMEObj => $template->MIMEObj );
         $rejected->SetStatus(

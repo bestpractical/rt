@@ -41,6 +41,12 @@ sub Commit {
     ) or die;
 
     $top->Correspond( MIMEObj => $template->MIMEObj );
+
+    if ($passed) {
+        $self->RunScripAction('Notify Owner', 'RT Approval Ready for Owner',
+                              TicketObj => $top);
+    }
+
     return;
 }
 
