@@ -1,0 +1,31 @@
+=head1 Templates
+
+The variables that your templates may use include:
+
+=over 4
+
+=item C<$Transaction>
+
+The transaction object.
+
+=item C<$rtname>
+
+The value of the "rtname" config variable.
+
+=item C<$Ticket>
+
+The ticket object. This is only set during a ticket transaction.
+
+=item C<$Requestor>
+
+This is not an object, but the name of the first requestor on the ticket.
+If this is not what you need, inspect C<< $Ticket->Requestors >>.
+
+=item C<loc("text")>
+
+A localization function. See L<Locale::Maketext>.
+
+=back
+
+=cut
+

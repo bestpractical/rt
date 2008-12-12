@@ -297,33 +297,6 @@ TransactionObj are not mandatory, but highly recommended.
 It returns a tuple of (val, message). If val is false, the message contains
 an error message.
 
-The variables that your templates may use include:
-
-=over 4
-
-=item C<$Transaction>
-
-The transaction object.
-
-=item C<$rtname>
-
-The value of the "rtname" config variable.
-
-=item C<$Ticket>
-
-The ticket object. This is only set during a ticket transaction.
-
-=item C<$Requestor>
-
-This is not an object, but the name of the first requestor on the ticket.
-If this is not what you need, inspect C<< $Ticket->Requestors >>.
-
-=item C<loc>
-
-A localization function. See L<Locale::Maketext>.
-
-=back 
-
 =cut
 
 sub Parse {
