@@ -181,7 +181,7 @@ expect_send("edit ticket/$ticket_id set 'CF-my CF$$=VALUE' ", 'Changing CF...');
 expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
 expect_send("show ticket/$ticket_id -f 'CF-my CF$$'", 'Checking new value');
 expect_like(qr/CF\.{my CF$$}: VALUE/i, 'Verified change');
-expect_send("ls 'id = $ticket_id' -f 'CF-my CF$$'", 'Checking new value');
+expect_send("ls -l 'id = $ticket_id' -f 'CF-my CF$$'", 'Checking new value');
 expect_like(qr/CF\.{my CF$$}: VALUE/i, 'Verified change');
 
 expect_send("show ticket/$ticket_id -f 'CF.{my CF$$}'", 'Checking initial value');
@@ -190,7 +190,7 @@ expect_send("edit ticket/$ticket_id set 'CF.{my CF$$}=NEW' ", 'Changing CF...');
 expect_like(qr/Ticket $ticket_id updated/, 'Changed cf');
 expect_send("show ticket/$ticket_id -f 'CF.{my CF$$}'", 'Checking new value');
 expect_like(qr/CF\.{my CF$$}: NEW/i, 'Verified change');
-expect_send("ls 'id = $ticket_id' -f 'CF.{my CF$$}'", 'Checking new value');
+expect_send("ls -l 'id = $ticket_id' -f 'CF.{my CF$$}'", 'Checking new value');
 expect_like(qr/CF\.{my CF$$}: NEW/i, 'Verified change');
 
 # ...
@@ -223,7 +223,7 @@ expect_like(qr/$ticket_id: new ticket/, 'Found our ticket');
 expect_send("ls -l -t ticket -o +id \"Status='resolved'\"", 'Listing resolved tickets verbosely...');
 expect_like(qr/id: ticket\/$ticket_id/, 'Found our ticket');
 # show ticket
-expect_send("show -t ticket $ticket_id", 'Showing our ticket...');
+expect_send("show -s -t ticket $ticket_id", 'Showing our ticket...');
 expect_like(qr/id: ticket\/$ticket_id/, 'Got our ticket');
 # show ticket history
 expect_send("show ticket/$ticket_id/history", 'Showing our ticket\'s history...');
@@ -236,14 +236,14 @@ TODO: {
     expect_like(qr/Ticket created by root/, 'Got our history');
 }
 # get attachments from a ticket
-expect_send("show ticket/$ticket_id/attachments", 'Showing ticket attachments...');
+expect_send("show -s ticket/$ticket_id/attachments", 'Showing ticket attachments...');
 expect_like(qr/id: ticket\/$ticket_id\/attachments/, 'Got our ticket\'s attachments');
 expect_like(qr/Attachments: \d+: \(Unnamed\) \(\S+ \/ \d+\w+\)/, 'Our ticket has an attachment');
 expect_handle->before() =~ /Attachments: (\d+): \(Unnamed\) \((\S+)/;
 my $attachment_id = $1;
 my $attachment_type = $2;
 ok($attachment_id, "Got attachment id=$attachment_id $attachment_type");
-expect_send("show ticket/$ticket_id/attachments/$attachment_id", "Showing attachment $attachment_id...");
+expect_send("show -s ticket/$ticket_id/attachments/$attachment_id", "Showing attachment $attachment_id...");
 expect_like(qr/ContentType: $attachment_type/, 'Got the attachment');
 
 # }}}
@@ -430,7 +430,7 @@ expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in 
         # create link
         expect_send("link $link1_id $reln $link2_id", "Link by $reln...");
         expect_like(qr/Created link $link1_id $reln $link2_id/, 'Linked');
-        expect_send("show ticket/$link1_id/links", "Checking creation of $reln...");
+        expect_send("show -s ticket/$link1_id/links", "Checking creation of $reln...");
         expect_like(qr/$display_relns{$reln}: [\w\d\.\-]+:\/\/[\w\d\.]+\/ticket\/$link2_id/, "Created link $reln");
 
         # delete link
