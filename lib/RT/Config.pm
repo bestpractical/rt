@@ -126,6 +126,7 @@ can be set for each config optin:
                  (such as seeing if a library is installed) and then change
                  the setting of this or other options in the Config using 
                  the RT::Config option.
+
 =cut
 
 our %META = (
