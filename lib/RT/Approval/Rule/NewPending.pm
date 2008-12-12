@@ -27,13 +27,13 @@ sub Commit {
 
     # first txn entry of the approval ticket
     local $self->{TransactionObj} = $to;
-    $self->RunScripAction('Notify Owner', 'RT New Pending Approval', @_);
+    $self->RunScripAction('Notify Owner', 'New Pending Approval', @_);
 
     return;
 
     # this generates more correct content of the message, but not sure
     # if ccmessageto is the right way to do this.
-    my $template = $self->GetTemplate('RT New Pending Approval',
+    my $template = $self->GetTemplate('New Pending Approval',
                                       TicketObj => $top,
                                       TransactionObj => $to)
         or return;

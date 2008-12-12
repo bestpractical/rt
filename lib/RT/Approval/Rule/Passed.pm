@@ -34,7 +34,7 @@ sub Commit {
 
     my $passed = !$top->HasUnresolvedDependencies( Type => 'approval' );
     my $template = $self->GetTemplate(
-        $passed ? 'RT All Approvals Passed' : 'RT Approval Passed',
+        $passed ? 'All Approvals Passed' : 'Approval Passed',
         TicketObj => $top,
         Approval => $self->TicketObj,
         Notes => $note,
@@ -43,7 +43,7 @@ sub Commit {
     $top->Correspond( MIMEObj => $template->MIMEObj );
 
     if ($passed) {
-        $self->RunScripAction('Notify Owner', 'RT Approval Ready for Owner',
+        $self->RunScripAction('Notify Owner', 'Approval Ready for Owner',
                               TicketObj => $top);
     }
 

@@ -17,7 +17,7 @@ sub Commit {    # XXX: from custom prepare code
     my $self = shift;
     if ( my ($rejected) =
         $self->TicketObj->AllDependedOnBy( Type => 'ticket' ) ) {
-        my $template = $self->GetTemplate('RT Approval Rejected',
+        my $template = $self->GetTemplate('Approval Rejected',
                                           TicketObj => $rejected,
                                           Approval  => $self->TicketObj,
                                           Notes     => '');
