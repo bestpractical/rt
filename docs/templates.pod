@@ -20,7 +20,8 @@ The special header "Content-Type: text/html" tells RT that the template should
 be parsed as HTML. RT will automatically make the outgoing message multipart.
 That way, recipients who can read only plaintext email will receive something
 readable, while users with clients which can display HTML will receive the full
-experience.
+experience. Please be aware that HTML support in mail clients varies greatly,
+much more so than different web browsers.
 
 We welcome contributions of HTML-ization of builtin templates.
 
