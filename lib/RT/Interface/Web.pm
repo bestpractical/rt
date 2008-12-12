@@ -198,7 +198,8 @@ sub Redirect {
             $uri->scheme('http');
         }
 
-        $uri->host( $ENV{'HTTP_HOST'} );
+        # [rt3.fsck.com #12716] Apache recommends use of $SERVER_HOST
+        $uri->host( $ENV{'SERVER_HOST'} || $ENV{'HTTP_HOST'} );
         $uri->port( $ENV{'SERVER_PORT'} );
     }
 
