@@ -1,7 +1,109 @@
+@Initial = (
+    sub {
+        $RT::Logger->warning(
+            "Going to add [OLD] prefix to all temlates in approvals queue."
+            ." If you never used approvals then you can delete all these"
+            ." templates with [OLD] prefix. Leave new there may be you will"
+            ." want to use approvals some time."
+        );
+
+        my $approvals_q = RT::Queue->new( $RT::SystemUser );
+        $approvals_q->Load('___Approvals');
+        unless ( $approvals_q->id ) {
+            $RT::Logger->error("You have no approvals queue.");
+            return 1;
+        }
+
+        my $templates = RT::Templates->new( $RT::SystemUser );
+        $templates->LimitToQueue( $approvals_q->id );
+        while ( my $tmpl = $templates->Next ) {
+            my ($status, $msg) = $tmpl->SetName( "[OLD] ". $tmpl->Name );
+            unless ( $status ) {
+                $RT::Logger->error("Couldn't rename template #". $tmpl->id .": $msg");
+            }
+        }
+        return 1;
+    },
+);
 @ACL = (
     { GroupDomain => 'SystemInternal',
       GroupType => 'privileged',
       Right  => 'ShowApprovalsTab', },
+);
+
+@Templates = (
+    {  Queue       => '___Approvals',
+       Name        => "New Pending Approval",    # loc
+       Description =>
+         "Notify Owners and AdminCcs of new items pending their approval", # loc
+       Content => 'Subject: New Pending Approval: {$Ticket->Subject}
+
+Greetings,
+
+There is a new item pending your approval: "{$Ticket->Subject()}", 
+a summary of which appears below.
+
+Please visit {RT->Config->Get(\'WebURL\')}Approvals/Display.html?id={$Ticket->id}
+to approve or reject this ticket, or {RT->Config->Get(\'WebURL\')}Approvals/ to
+batch-process all your pending approvals.
+
+-------------------------------------------------------------------------
+{$Transaction->Content()}
+'
+    },
+    {  Queue       => '___Approvals',
+       Name        => "Approval Passed",    # loc
+       Description =>
+         "Notify Requestor of their ticket has been approved by some approver", # loc
+       Content => 'Subject: Ticket Approved: {$Ticket->Subject}
+
+Greetings,
+
+Your ticket has been approved by { eval { $Approval->OwnerObj->Name } }.
+Other approvals may be pending.
+
+Approver\'s notes: { $Notes }
+'
+    },
+    {  Queue       => '___Approvals',
+       Name        => "All Approvals Passed",    # loc
+       Description =>
+         "Notify Requestor of their ticket has been approved by all approvers", # loc
+       Content => 'Subject: Ticket Approved: {$Ticket->Subject}
+
+Greetings,
+
+Your ticket has been approved by { eval { $Approval->OwnerObj->Name } }.
+Its Owner may now start to act on it.
+
+Approver\'s notes: { $Notes }
+'
+    },
+    {  Queue       => '___Approvals',
+       Name        => "Approval Rejected",    # loc
+       Description =>
+         "Notify Owner of their rejected ticket", # loc
+       Content => 'Subject: Ticket Rejected: {$Ticket->Subject}
+
+Greetings,
+
+Your ticket has been rejected by { eval { $Approval->OwnerObj->Name } }.
+
+Approver\'s notes: { $Notes }
+'
+    },
+    {  Queue       => '___Approvals',
+       Name        => "Approval Ready for Owner",    # loc
+       Description =>
+         "Notify Owner of their ticket has been approved and is ready to be acted on", # loc
+       Content => 'Subject: Ticket Approved: {$Ticket->Subject}
+
+Greetings,
+
+The ticket has been approved, you may now start to act on it.
+
+'
+    },
 );
 
 @Final = (
