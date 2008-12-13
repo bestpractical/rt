@@ -414,7 +414,6 @@ sub _ParseContent {
 
     my $is_broken = 0;
     my $retval = $template->fill_in(
-        PACKAGE => 'T',
         HASH => \%args,
         BROKEN => sub {
             my (%args) = @_;

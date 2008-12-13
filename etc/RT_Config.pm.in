@@ -1375,7 +1375,7 @@ others' existence.
 
 =cut
 
-Set($UseTransactionBatch, 0);
+Set($UseTransactionBatch, 1);
 
 =item C<@CustomFieldValuesSources>
 

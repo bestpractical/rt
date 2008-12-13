@@ -319,24 +319,29 @@ batch-process all your pending approvals.
     {  Queue       => '___Approvals',
        Name        => "Approval Passed",    # loc
        Description =>
-         "Notify Owner of their ticket has been approved by some approver", # loc
+         "Notify Requestor of their ticket has been approved by some approver", # loc
        Content => 'Subject: Ticket Approved: {$Ticket->Subject}
 
 Greetings,
 
 Your ticket has been approved by { eval { $Approval->OwnerObj->Name } }.
 Other approvals may be pending.
+
+Approver\'s notes: { $Notes }
 '
     },
     {  Queue       => '___Approvals',
        Name        => "All Approvals Passed",    # loc
        Description =>
-         "Notify Owner of their ticket has been approved by all approvers", # loc
+         "Notify Requestor of their ticket has been approved by all approvers", # loc
        Content => 'Subject: Ticket Approved: {$Ticket->Subject}
 
 Greetings,
 
-Your ticket has been approved.  Its Owner may now start to act on it.
+Your ticket has been approved by { eval { $Approval->OwnerObj->Name } }.
+Its Owner may now start to act on it.
+
+Approver\'s notes: { $Notes }
 '
     },
     {  Queue       => '___Approvals',
@@ -348,6 +353,20 @@ Your ticket has been approved.  Its Owner may now start to act on it.
 Greetings,
 
 Your ticket has been rejected by { eval { $Approval->OwnerObj->Name } }.
+
+Approver\'s notes: { $Notes }
+'
+    },
+    {  Queue       => '___Approvals',
+       Name        => "Approval Ready for Owner",    # loc
+       Description =>
+         "Notify Owner of their ticket has been approved and is ready to be acted on", # loc
+       Content => 'Subject: Ticket Approved: {$Ticket->Subject}
+
+Greetings,
+
+The ticket has been approved, you may now start to act on it.
+
 '
     },
     {  Queue       => 0,
@@ -501,167 +520,6 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
        ScripCondition => 'On Transaction',
        ScripAction    => 'Extract Subject Tag',
        Template       => 'Blank' },
-    {  Description => "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval",    # loc
-       Queue          => '___Approvals',
-       ScripCondition => 'User Defined',
-       CustomIsApplicableCode => q[
-	    $self->TicketObj->Type eq 'approval'	and
-	    $self->TransactionObj->Field eq 'Status'	and
-	    $self->TransactionObj->NewValue eq 'open'   and
-	    eval { $T::Approving = ($self->TicketObj->AllDependedOnBy( Type => 'ticket' ))[0] }
-       ],
-       ScripAction    => 'Notify Owner',
-       Template       => 'New Pending Approval' },
-    {  Description => "If an approval is rejected, reject the original and delete pending approvals",    # loc
-       Queue            => '___Approvals',
-       ScripCondition   => 'On Status Change',
-       ScripAction      => 'User Defined',
-       CustomPrepareCode => q[
-# ------------------------------------------------------------------- #
-return(0) unless ( lc($self->TransactionObj->NewValue) eq "rejected" or
-	           lc($self->TransactionObj->NewValue) eq "deleted" );
-
-my $rejected = 0;
-my $links = $self->TicketObj->DependedOnBy;
-foreach my $link (@{ $links->ItemsArrayRef }) {
-    my $obj = $link->BaseObj;
-    if ($obj->QueueObj->IsActiveStatus($obj->Status)) {
-	if ($obj->Type eq 'ticket') {
-	    $obj->Comment(
-		Content	=> $self->loc("Your request was rejected."),
-	    );
-	    $obj->SetStatus(
-		Status	=> 'rejected',
-		Force	=> 1,
-	    );
-
-	    $T::Approval = $self->TicketObj; # so we can access it inside templates
-	    $self->{TicketObj} = $obj;  # we want the original id in the token line
-	    $rejected = 1;
-	}
-	else {
-	    $obj->SetStatus(
-		Status	=> 'deleted',
-		Force	=> 1,
-	    );
-	}
-    }
-}
-
-$links = $self->TicketObj->DependsOn;
-foreach my $link (@{ $links->ItemsArrayRef }) {
-    my $obj = $link->TargetObj;
-    if ($obj->QueueObj->IsActiveStatus($obj->Status)) {
-	$obj->SetStatus(
-	    Status	=> 'deleted',
-	    Force	=> 1,
-	);
-    }
-}
-
-# Now magically turn myself into a Requestor Notify object...
-require RT::Action::Notify; bless($self, 'RT::Action::Notify');
-$self->{Argument} = 'Requestor'; $self->Prepare;
-
-return $rejected;
-# ------------------------------------------------------------------- #
-	],
-       CustomCommitCode => '"never needed"',
-       Template          => 'Approval Rejected', },
-    {  Description => "When a ticket has been approved by any approver, add correspondence to the original ticket", # loc
-       Queue             => '___Approvals',
-       ScripCondition    => 'On Resolve',
-       ScripAction       => 'User Defined',
-       CustomPrepareCode => q[
-# ------------------------------------------------------------------- #
-return(0) unless ($self->TicketObj->Type eq 'approval');
-
-my $note;
-my $t = $self->TicketObj->Transactions;
-while (my $o = $t->Next) {
-    $note .= $o->Content . "\n" if $o->ContentObj
-	    and $o->Content !~ /Default Approval/;
-}
-
-foreach my $obj ($self->TicketObj->AllDependedOnBy( Type => 'ticket' )) {
-    $obj->Comment(
-	Content => $self->loc( "Your request has been approved by [_1]. Other approvals may still be pending.", # loc
-	    $self->TransactionObj->CreatorObj->Name,
-	) . "\n" . $self->loc( "Approver's notes: [_1]", # loc
-	    $note
-	),
-    );
-    $T::Approval = $self->TicketObj; # so we can access it inside templates
-    $self->{TicketObj} = $obj;  # we want the original id in the token line
-}
-
-# Now magically turn myself into a Requestor Notify object...
-require RT::Action::Notify; bless($self, 'RT::Action::Notify');
-$self->{Argument} = 'Requestor'; $self->Prepare;
-
-return 1;
-# ------------------------------------------------------------------- #
-	],
-       CustomCommitCode => '"never needed"',
-       Template => 'Approval Passed' },
-    {  Description => "When a ticket has been approved by all approvers, add correspondence to the original ticket", # loc
-       Queue             => '___Approvals',
-       ScripCondition    => 'On Resolve',
-       ScripAction       => 'User Defined',
-       CustomPrepareCode  => q[
-# ------------------------------------------------------------------- #
-# Find all the tickets that depend on this (that this is approving)
-
-my $Ticket = $self->TicketObj;
-my @TOP    = $Ticket->AllDependedOnBy( Type => 'ticket' );
-my $links  = $Ticket->DependedOnBy;
-my $passed = 0;
-
-while (my $link = $links->Next) {
-    my $obj = $link->BaseObj;
-    next if ($obj->HasUnresolvedDependencies( Type => 'approval' ));
-
-    if ($obj->Type eq 'ticket') {
-	$obj->Comment(
-	    Content	=> $self->loc("Your request has been approved."),
-	);
-	$T::Approval  = $Ticket;    # so we can access it inside templates
-	$self->{TicketObj} = $obj;  # we want the original id in the token line
-	$passed = 1;
-    }
-    elsif ($obj->Type eq 'approval') {
-	$obj->SetStatus( Status => 'open', Force => 1 );
-    }
-    elsif (RT->Config->Get('UseCodeTickets') and $obj->Type eq 'code') {
-        #XXX: RT->Config->Get('UseCodeTickets') used only once here!!!
-	my $code = $obj->Transactions->First->Content;
-	my $rv;
-
-	foreach my $TOP (@TOP) {
-	    local $@;
-	    $rv++ if eval $code;
-	    $RT::Logger->error("Cannot eval code: $@") if $@;
-	}
-
-	if ($rv or !@TOP) {
-	    $obj->SetStatus( Status	=> 'resolved', Force	=> 1,);
-	}
-	else {
-	    $obj->SetStatus( Status	=> 'rejected', Force	=> 1,);
-	}
-    }
-}
-
-# Now magically turn myself into a Requestor Notify object...
-require RT::Action::Notify; bless($self, 'RT::Action::Notify');
-$self->{Argument} = 'Requestor'; $self->Prepare;
-
-return 0; # ignore $passed;
-# ------------------------------------------------------------------- #
-	],
-       CustomCommitCode => '"never needed"',
-       Template => 'All Approvals Passed', },
-
 );
 
 @ACL = (

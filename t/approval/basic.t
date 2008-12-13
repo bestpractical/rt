@@ -8,33 +8,30 @@ BEGIN {
         or plan skip_all => 'require Email::Abstract and Test::Email';
 }
 
-plan tests => 28;
+plan tests => 38;
 
 use RT;
 use RT::Test;
 use RT::Test::Email;
 
 RT->Config->Set( LogToScreen => 'debug' );
-
+RT->Config->Set( UseTransactionBatch => 1 );
 my ($baseurl, $m) = RT::Test->started_ok;
-
-my ($user_a, $user_b) = (RT::User->new($RT::SystemUser), RT::User->new($RT::SystemUser));
-my ($user_c) = RT::User->new($RT::SystemUser);
-
-$user_a->Create( Name => 'CFO', Privileged => 1, EmailAddress => 'cfo@company.com');
-$user_b->Create( Name => 'CEO', Privileged => 1, EmailAddress => 'ceo@company.com');
-$user_c->Create( Name => 'minion', Privileged => 1, EmailAddress => 'minion@company.com');
 
 my $q = RT::Queue->new($RT::SystemUser);
 $q->Load('___Approvals');
-
 $q->SetDisabled(0);
 
-my ($val, $msg);
-($val, $msg) = $user_a->PrincipalObj->GrantRight(Object =>$q, Right => $_)
-    for qw(ModifyTicket OwnTicket ShowTicket);
-($val, $msg) = $user_b->PrincipalObj->GrantRight(Object =>$q, Right => $_)
-    for qw(ModifyTicket OwnTicket ShowTicket);
+my %users;
+for my $user_name (qw(minion cfo ceo )) {
+    my $user = $users{$user_name} = RT::User->new($RT::SystemUser);
+    $user->Create( Name => uc($user_name),
+                   Privileged => 1,
+                   EmailAddress => $user_name.'@company.com');
+    my ($val, $msg);
+    ($val, $msg) = $user->PrincipalObj->GrantRight(Object =>$q, Right => $_)
+        for qw(ModifyTicket OwnTicket ShowTicket);
+}
 
 # XXX: we need to make the first approval ticket open so notification is sent.
 my $approvals = 
@@ -94,7 +91,11 @@ mail_ok {
         $t->Create(Subject => "PO for stationary",
                    Owner => "root", Requestor => 'minion',
                    Queue => $q->Id);
-} { from => qr/PO via RT/,
+} { from => qr/RT System/,
+    to => 'cfo@company.com',
+    subject => qr/New Pending Approval: CFO Approval/,
+    body => qr/pending your approval.*Your approval is requested.*Blah/s
+},{ from => qr/PO via RT/,
     to => 'minion@company.com',
     subject => qr/PO for stationary/,
     body => qr/automatically generated in response/
@@ -103,19 +104,6 @@ mail_ok {
 ok ($tid,$tmsg);
 
 is ($t->ReferredToBy->Count,2, "referred to by the two tickets");
-
-# open the approval tickets that are ready for approval
-mail_ok {
-    for my $ticket ($t->AllDependsOn) {
-        next if $ticket->Type ne 'approval' && $ticket->Status ne 'new';
-        next if $ticket->HasUnresolvedDependencies( Type => 'approval' );
-        $ticket->SetStatus('open');
-    }
-} { from => qr/RT System/,
-    to => 'cfo@company.com',
-    subject => qr/New Pending Approval: CFO Approval/,
-    body => qr/pending your approval/
-};
 
 my $deps = $t->DependsOn;
 is ($deps->Count, 1, "The ticket we created depends on one other ticket");
@@ -135,20 +123,28 @@ is_deeply([ $t->Status, $dependson_cfo->Status, $dependson_ceo->Status ],
 
 mail_ok {
     my $cfo = RT::CurrentUser->new;
-    $cfo->Load( $user_a );
+    $cfo->Load( $users{cfo} );
 
     $dependson_cfo->CurrentUser($cfo);
+    my $notes = MIME::Entity->build(
+        Data => [ 'Resources exist to be consumed.' ]
+    );
+    RT::I18N::SetMIMEEntityToUTF8($notes); # convert text parts into utf-8
+
+    my ( $notesval, $notesmsg ) = $dependson_cfo->Correspond( MIMEObj => $notes );
+    ok($notesval, $notesmsg);
+
     my ($ok, $msg) = $dependson_cfo->SetStatus( Status => 'resolved' );
     ok($ok, "cfo can approve - $msg");
 
 } { from => qr/RT System/,
     to => 'ceo@company.com',
     subject => qr/New Pending Approval: PO approval request for PO/,
-    body => qr/pending your approval/
-},{ from => qr/CFO via RT/,
+    body => qr/pending your approval.*CFO approved.*ok with that\?/s
+},{ from => qr/RT System/,
     to => 'minion@company.com',
     subject => qr/Ticket Approved:/,
-    body => qr/approved by CFO/
+    body => qr/approved by CFO.*notes: Resources exist to be consumed/s
 };
 
 is ($t->DependsOn->Count, 1, "still depends only on the CEO approval");
@@ -156,3 +152,68 @@ is ($t->ReferredToBy->Count,2, "referred to by the two tickets");
 
 is_deeply([ $t->Status, $dependson_cfo->Status, $dependson_ceo->Status ],
           [ 'new', 'resolved', 'open'], 'ticket state after cfo approval');
+
+mail_ok {
+    my $ceo = RT::CurrentUser->new;
+    $ceo->Load( $users{ceo} );
+
+    $dependson_ceo->CurrentUser($ceo);
+    my $notes = MIME::Entity->build(
+        Data => [ 'And consumed they will be.' ]
+    );
+    RT::I18N::SetMIMEEntityToUTF8($notes); # convert text parts into utf-8
+
+    my ( $notesval, $notesmsg ) = $dependson_ceo->Correspond( MIMEObj => $notes );
+    ok($notesval, $notesmsg);
+
+    my ($ok, $msg) = $dependson_ceo->SetStatus( Status => 'resolved' );
+    ok($ok, "ceo can approve - $msg");
+
+} { from => qr/RT System/,
+    to => 'minion@company.com',
+    subject => qr/Ticket Approved:/,
+    body => qr/approved by CEO.*Its Owner may now start to act on it.*notes: And consumed they will be/s,
+}, { from => qr'CEO via RT',
+     to => 'root@localhost',
+     subject => qr/Ticket Approved/,
+     body => qr/The ticket has been approved, you may now start to act on it/,
+};
+
+
+is_deeply([ $t->Status, $dependson_cfo->Status, $dependson_ceo->Status ],
+          [ 'new', 'resolved', 'resolved'], 'ticket state after ceo approval');
+
+$dependson_cfo->_Set(
+    Field => 'Status',
+    Value => 'open');
+
+$dependson_ceo->_Set(
+    Field => 'Status',
+    Value => 'new');
+
+mail_ok {
+    my $cfo = RT::CurrentUser->new;
+    $cfo->Load( $users{cfo} );
+
+    $dependson_cfo->CurrentUser($cfo);
+    my $notes = MIME::Entity->build(
+        Data => [ 'sorry, out of resources.' ]
+    );
+    RT::I18N::SetMIMEEntityToUTF8($notes); # convert text parts into utf-8
+
+#    my ( $notesval, $notesmsg ) = $dependson_cfo->Correspond( MIMEObj => $notes );
+#    ok($notesval, $notesmsg);
+
+    my ($ok, $msg) = $dependson_cfo->SetStatus( Status => 'rejected' );
+    ok($ok, "cfo can approve - $msg");
+
+} { from => qr/RT System/,
+    to => 'minion@company.com',
+    subject => qr/Ticket Rejected: PO for stationary/,
+    body => qr/rejected by CFO/
+};
+
+$t->Load($t->id);$dependson_ceo->Load($dependson_ceo->id);
+is_deeply([ $t->Status, $dependson_cfo->Status, $dependson_ceo->Status ],
+          [ 'rejected', 'rejected', 'deleted'], 'ticket state after cfo rejection');
+
