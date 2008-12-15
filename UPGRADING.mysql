@@ -22,9 +22,9 @@ instructions below even if your old RT was installed on MySQL 4.1 or newer.
 3) Apply changes described in step 7, but only up to version 3.8.0.
 
 4) Apply the MySQL 4.0->4.1 schema changes. Included in RT is the script
-etc/upgrade/fix-schema.mysql-4.0-4.1.pl that generates SQL queries to upgrade the database's schema. Run it:
+etc/upgrade/upgrade-mysql-schema.pl that generates SQL queries to upgrade the database's schema. Run it:
 
-    perl etc/upgrade/fix-schema.mysql-4.0-4.1.pl db user pass > sql.queries
+    perl etc/upgrade/upgrade-mysql-schema.pl db user pass > sql.queries
 
 5) Check sanity of the SQL queries yourself or consult with your DBA.
 
