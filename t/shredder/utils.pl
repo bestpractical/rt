@@ -149,7 +149,7 @@ sub _init_db
     }
     my $rt_setup_database = RT::Test::get_relocatable_file(
         'rt-setup-database', (File::Spec->updir(), File::Spec->updir(), 'sbin'));
-    my $cmd =  "$^X $rt_setup_database --action init";
+    my $cmd =  "$^X $rt_setup_database --action init 2>&1";
 
     my ($child_out, $child_in);
     my $pid = open2($child_out, $child_in, $cmd);

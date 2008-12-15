@@ -17,8 +17,6 @@ eval 'use GnuPG::Interface; 1' or plan skip_all => 'GnuPG required.';
 
 RT::Test->set_mail_catcher;
 
-RT->Config->Set( LogToScreen => 'debug' );
-RT->Config->Set( LogStackTraces => 'error' );
 RT->Config->Set( CommentAddress => 'general@example.com');
 RT->Config->Set( CorrespondAddress => 'general@example.com');
 RT->Config->Set( DefaultSearchResultFormat => qq{

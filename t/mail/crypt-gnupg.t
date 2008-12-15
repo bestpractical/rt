@@ -12,9 +12,6 @@ plan skip_all => 'gpg executable is required.'
 
 plan tests => 92;
 
-RT->Config->Set( LogToScreen => 'debug' );
-RT->Config->Set( LogStackTraces => 'error' );
-
 use File::Spec ();
 use Cwd;
 
