@@ -46,10 +46,23 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
+
 my $parent_args = $m->caller_args(-1);
+
+my $name_prefix = '';
+$name_prefix = $ARGS{'Name'} .'-'
+    if $ARGS{'Name'}
+    && grep rindex($_, "$ARGS{'Name'}-RTFM-", 0) == 0,
+        keys %$parent_args;
+
 foreach my $arg ( keys %$parent_args ) {
+    next if $name_prefix && substr($arg, 0, length($name_prefix)) ne $name_prefix;
+
     my $article = RT::FM::Article->new($session{'CurrentUser'});
-    $article->LoadByInclude( Field => $arg, Value => $parent_args->{$arg} );
+    $article->LoadByInclude(
+        Field => substr($arg, length($name_prefix)),
+        Value => $parent_args->{$arg},
+    );
     next unless $article && $article->id;
 
     my $Ticket = $ARGS{Ticket};

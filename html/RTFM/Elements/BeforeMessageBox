@@ -53,17 +53,17 @@
 <table>
 <tr>
 <td><&|/l&>Search for RTFM articles matching</&></td>
-<td><input size=20 name="RTFM_Content" /></td>
+<td><input size=20 name="<% $name_prefix %>RTFM_Content" /></td>
 </tr>
 <tr>
 <td><&|/l&>Include RTFM article:</&></td>
-<td><input size=20 name="RTFM-Include-Article-Named" /></td>
+<td><input size=20 name="<% $name_prefix %>RTFM-Include-Article-Named" /></td>
 <td><input type="submit" value="Go" /></td>
 </tr>
 % if ($hotlist->Count) {
 <tr>
 <td><&|/l&>Select an Article to include</&></td>
-<td><select name="RTFM-Include-Article-Named-Hotlist">
+<td><select name="<% $name_prefix %>RTFM-Include-Article-Named-Hotlist">
 <option value="" selected><&|/l&>-</&></option>
 % while (my $article = $hotlist->Next) {
 <option value="<% $article->Id %>"><%$article->Name|| loc('(no name)')%>: <%$article->Summary%></option>
@@ -79,7 +79,7 @@
 <tr>
 <td>&nbsp;</td>
 <td><%$article->Name|| loc('(no name)')%>: <%$article->Summary%></td>
-<td><input type="submit" name="RTFM-Include-Article-<%$article->Id%>" value="Go" /></td>
+<td><input type="submit" name="<% $name_prefix %>RTFM-Include-Article-<%$article->Id%>" value="Go" /></td>
 </tr>
 % }
 % while (my $article = $articles_basics->Next) {
@@ -87,7 +87,7 @@
 <tr>
 <td>&nbsp;</td>
 <td><%$article->Name || loc('(no name)')%>: <%$article->Summary%></td>
-<td><input type="submit" name="RTFM-Include-Article-<%$article->Id%>" value="Go" /></td>
+<td><input type="submit" name="<% $name_prefix %>RTFM-Include-Article-<%$article->Id%>" value="Go" /></td>
 </tr>
 % }
 % if ( @$topics ) {
@@ -96,7 +96,7 @@
 <&|/l, $QueueObj->Name &>Choose from Topics for [_1] </&>
 </td>
 <td>
-<select name="RTFM-Include-Topic">
+<select name="<% $name_prefix %>RTFM-Include-Topic">
 <option value="" selected>-</option>
 % for ( @$topics ) { 
 <option value="<% $_->{id} %>"><%'&nbsp;' x $_->{depth} . ($_->{name}|| loc('(no name)')) |n%>
@@ -107,13 +107,13 @@
 <td><input type="submit" value="Go" /></td>
 </tr>
 
-% if ( $ARGS{'RTFM-Include-Topic'} ) {
+% if ( $ARGS{$name_prefix .'RTFM-Include-Topic'} ) {
 <tr>
 <td>
 <&|/l, $included_topic->Name &>Select an Article from [_1]</&>
 </td>
 <td>
-<select name="RTFM-Include-Article">
+<select name="<% $name_prefix %>RTFM-Include-Article">
 <option value="" selected>-</option>
 % while ( my $art = $topic_articles->Next ) {
 <option value="<% $art->id %>"><%$art->Name||loc('(no name)')%>: <%$art->Summary%></option>
@@ -130,9 +130,14 @@
 </table>
 
 <%init>
+my $name_prefix = '';
+if ( $ARGS{'MessageBoxName'} ) {
+    $name_prefix = $ARGS{'MessageBoxName'} .'-';
+}
+
 # convert RTFM-Include-Article => $id to RTFM-Include-Article-$id
-if ( $ARGS{'RTFM-Include-Article'} ) {
-    $ARGS{"RTFM-Include-Article-$ARGS{'RTFM-Include-Article'}"}++;
+if ( my $tmp = $ARGS{$name_prefix ."RTFM-Include-Article"} ) {
+    $ARGS{$name_prefix ."RTFM-Include-Article-$tmp"}++;
 }
 
 my %uri;
@@ -140,12 +145,16 @@ if ( $ARGS{id} && $ARGS{id} ne 'new' ) {
     $uri{$_}++ for split ' ', ($ARGS{$ARGS{'id'}.'-RefersTo'} || '');
 
     foreach my $arg (keys %ARGS) {
+        next if $name_prefix && substr($arg, 0, length($name_prefix)) ne $name_prefix;
+
         my $article = RT::FM::Article->new($session{'CurrentUser'});
-        $article->LoadByInclude( Field => $arg, Value => $ARGS{$arg} );
+        $article->LoadByInclude(
+            Field => substr($arg, length($name_prefix)),
+            Value => $ARGS{$arg},
+        );
         if ($article->Id) {
             $uri{$article->URI}++;
         }
-
     }
 }
 
@@ -154,19 +163,20 @@ use RT::FM::ArticleCollection;
 my $articles_content =
   RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
 my $articles_basics = RT::FM::ArticleCollection->new( $session{'CurrentUser'} );
-if ( $ARGS{'RTFM_Content'} ) {
-    $articles_content->LimitCustomField( VALUE => $ARGS{'RTFM_Content'},
-                                                OPERATOR => 'LIKE' );
+if ( my $tmp = $ARGS{ $name_prefix ."RTFM_Content" } ) {
+    $articles_content->LimitCustomField(
+        VALUE => $tmp, OPERATOR => 'LIKE'
+    );
 
     $articles_basics->Limit( SUBCLAUSE       => 'all',
                              FIELD           => 'Name',
                              OPERATOR        => 'LIKE',
-                             VALUE           => $ARGS{'RTFM_Content'},
+                             VALUE           => $tmp,
                              ENTRYAGGREGATOR => "OR" );
     $articles_basics->Limit( SUBCLAUSE       => 'all',
                              FIELD           => 'Summary',
                              OPERATOR        => 'LIKE',
-                             VALUE           => $ARGS{'RTFM_Content'},
+                             VALUE           => $tmp,
                              ENTRYAGGREGATOR => "OR" );
 }
 
@@ -214,10 +224,10 @@ if ( $top_topic->id ) {
         # store all topics below $queue_topic to $topics
         topics( $queue_topic, $topics, 0 );
         
-        if ( $ARGS{'RTFM-Include-Topic'}  ) {
+        if ( my $tmp = $ARGS{ $name_prefix .'RTFM-Include-Topic'}  ) {
             $included_topic = RT::FM::Topic->new( $session{CurrentUser} );
-            $included_topic->Load($ARGS{'RTFM-Include-Topic'});
-            $topic_articles->LimitTopics( $ARGS{'RTFM-Include-Topic'} );
+            $included_topic->Load( $tmp );
+            $topic_articles->LimitTopics( $tmp );
             $topic_articles->OrderBy( FIELD => 'Name' );
         }
     }
