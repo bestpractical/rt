@@ -627,7 +627,7 @@ sub LoadByInclude {
         return $self->Load( $1 );
     } elsif ( $Field =~ /^RTFM-Include-Article-Named/ && $Value ) {
         if ( $Value =~ /\D/ ) {
-            return $self->LoadByCols( Field => $Value );
+            return $self->LoadByCols( Name => $Value );
         } else {
             return $self->LoadByCols( id => $Value );
         }
