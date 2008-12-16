@@ -439,6 +439,7 @@ sub InitClasses {
     require RT::ObjectCustomFieldValues;
     require RT::Attributes;
     require RT::Dashboard;
+    require RT::Approval;
 
     # on a cold server (just after restart) people could have an object
     # in the session, as we deserialize it so we never call constructor

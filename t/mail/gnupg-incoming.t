@@ -23,7 +23,6 @@ my $homedir = RT::Test::get_abs_relocatable_dir(File::Spec->updir(),
 # catch any outgoing emails
 RT::Test->set_mail_catcher;
 
-RT->Config->Set( LogToScreen => 'debug' );
 RT->Config->Set( 'GnuPG',
                  Enable => 1,
                  OutgoingMessagesFormat => 'RFC' );

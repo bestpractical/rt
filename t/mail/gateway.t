@@ -678,7 +678,7 @@ is( $tick->Transactions->Count, 6, 'no superfluous transactions');
 is( $txns->First->Subject, "[$RT::rtname \#$id] correspondence", 'successfuly add correspond within take via email' );
 
 $! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action resolve --debug"), "Opened the mailgate - $!");
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action resolve"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: root\@localhost
 Subject: [@{[RT->Config->Get('rtname')]} \#$id] test

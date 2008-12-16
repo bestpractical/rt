@@ -17,7 +17,6 @@ use Cwd 'getcwd';
 my $homedir = RT::Test::get_abs_relocatable_dir(File::Spec->updir(),
     qw(data gnupg keyrings));
 
-RT->Config->Set( LogToScreen => 'debug' );
 RT->Config->Set( 'GnuPG',
                  Enable => 1,
                  OutgoingMessagesFormat => 'RFC' );
