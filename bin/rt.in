@@ -1502,37 +1502,7 @@ sub vsplit {
         # XXX: This should become a real parser, à la Text::ParseWords.
         $line =~ s/^\s+//;
         $line =~ s/\s+$//;
-        my ( $a, $b ) = split /,/, $line, 2;
-
-        while ($a) {
-            no warnings 'uninitialized';
-            if ( $a =~ /^'/ ) {
-                my $s = $a;
-                while ( $a !~ /'$/ || (   $a !~ /(\\\\)+'$/
-                            && $a =~ /(\\)+'$/ )) {
-                    ( $a, $b ) = split /,/, $b, 2;
-                    $s .= ',' . $a;
-                }
-                push @words, $s;
-            }
-            elsif ( $a =~ /^q{/ ) {
-                my $s = $a;
-                while ( $a !~ /}$/ ) {
-                    ( $a, $b ) =
-                      split /,/, $b, 2;
-                    $s .= ',' . $a;
-                }
-                $s =~ s/^q{/'/;
-                $s =~ s/}/'/;
-                push @words, $s;
-            }
-            else {
-                push @words, $a;
-            }
-            ( $a, $b ) = split /,/, $b, 2;
-        }
-
-
+        push @words, split /\s*,\s*/, $line;
     }
 
     return \@words;
