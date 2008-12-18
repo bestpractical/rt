@@ -2663,7 +2663,7 @@ msgstr "Format"
 
 #: etc/initialdata:354 etc/upgrade/3.7.15/content:4 share/html/Ticket/Elements/ShowTransaction:208
 msgid "Forward"
-msgstr "Suivi"
+msgstr "Transfert"
 
 #: share/html/Ticket/Forward.html:79
 msgid "Forward Message"
@@ -4551,7 +4551,7 @@ msgstr "Tickets propres"
 
 #: lib/RT/Queue_Overlay.pm:112
 msgid "OwnTicket"
-msgstr "PrendreTicket"
+msgstr "GérerTicket"
 
 #: lib/RT/ACE_Overlay.pm:99 lib/RT/Graph/Tickets.pm:158 lib/RT/Tickets_Overlay.pm:2112 lib/RT/Tickets_Overlay.pm:98 share/html/Elements/QuickCreate:58 share/html/Elements/RT__Ticket/ColumnMap:269 share/html/Elements/RT__Ticket/ColumnMap:89 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Create.html:76 share/html/Ticket/Elements/EditBasics:63 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:135 share/html/Ticket/Elements/ShowPeople:50 share/html/Ticket/Update.html:70
 msgid "Owner"
