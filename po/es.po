@@ -108,10 +108,6 @@ msgstr "(sin nombrar)"
 msgid "-"
 msgstr ""
 
-#: html/Admin/RTFM/Elements/Topics:109
-msgid "<%$Action%> here"
-msgstr ""
-
 #: NOT FOUND IN SOURCE
 msgid "Add a value"
 msgstr "Agrega un valor"
@@ -1205,8 +1201,8 @@ msgid "id"
 msgstr "id"
 
 #: html/RTFM/Article/PreCreate.html:60 html/RTFM/Article/Search.html:59
-#. ($Class->Name)
 #. ($class->Name)
+#. ($Class->Name)
 msgid "in class %1"
 msgstr "en la clase %1"
 

@@ -1,7 +1,7 @@
 #line 1
 package Module::Install::Base;
 
-$VERSION = '0.70';
+$VERSION = '0.77';
 
 # Suspend handler for "redefined" warnings
 BEGIN {
@@ -45,6 +45,8 @@ sub admin {
     $_[0]->_top->{admin} or Module::Install::Base::FakeAdmin->new;
 }
 
+#line 101
+
 sub is_admin {
     $_[0]->admin->VERSION;
 }
@@ -67,4 +69,4 @@ BEGIN {
 
 1;
 
-#line 138
+#line 146

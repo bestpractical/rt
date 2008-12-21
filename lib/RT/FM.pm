@@ -58,3 +58,4 @@ our $VERSION = '2.4.HEAD';
 use RT::FM::System;
 our $System = RT::FM::System->new( $RT::SystemUser );
 
+1;

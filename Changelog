@@ -1,3 +1,16 @@
+2.4.1
+
+FEATURES
+========
+ * Allow to have more then one message box on a page, for example
+   RTIR has such pages.
+
+BUGS
+====
+
+ * Fix search by name of an article
+ * Fix doc, config option RTFM_TicketCreate was spelled wrong
+
 2.4.0
 
 FEATURES
