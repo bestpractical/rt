@@ -52,9 +52,10 @@ use 5.8.3;
 use strict;
 use warnings;
 
-our $VERSION = '2.4.HEAD';
+our $VERSION = '2.4.0rc1';
 
 # Create a system object for RTFM
 use RT::FM::System;
 our $System = RT::FM::System->new( $RT::SystemUser );
 
+1;
