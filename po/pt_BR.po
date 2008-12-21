@@ -64,7 +64,7 @@ msgstr "(sem valor)"
 msgid "-"
 msgstr ""
 
-#: html/Admin/RTFM/Elements/Topics:109
+#: NOT FOUND IN SOURCE
 msgid "<%$Action%> here"
 msgstr "<%$Action%> aqui"
 
@@ -865,8 +865,8 @@ msgid "id"
 msgstr "id"
 
 #: html/RTFM/Article/PreCreate.html:60 html/RTFM/Article/Search.html:59
-#. ($Class->Name)
 #. ($class->Name)
+#. ($Class->Name)
 msgid "in class %1"
 msgstr "na classe %1"
 
