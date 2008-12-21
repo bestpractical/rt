@@ -154,6 +154,8 @@ META.yml
 po/es.po
 po/fr.po
 po/pt_BR.po
+po/README
+po/rtfm.pot
 po/ru.po
 po/zh_tw.po
 README
