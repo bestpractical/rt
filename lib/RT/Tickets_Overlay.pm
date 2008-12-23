@@ -1344,6 +1344,13 @@ sub _CustomFieldLimit {
         $null_columns_ok = 1;
     }
 
+    my $fix_op = sub {
+        my $op = shift;
+        return $op unless RT->Config->Get('DatabaseType') eq 'Oracle';
+        return 'MATCHES' if $op eq '=';
+        return 'NOT MATCHES' if $op eq '!=';
+    };
+
     my $cfkey = $cfid ? $cfid : "$queue.$field";
     my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
 
@@ -1358,7 +1365,7 @@ sub _CustomFieldLimit {
         $self->_SQLLimit(
             ALIAS      => $TicketCFs,
             FIELD      => $column,
-            OPERATOR   => $op,
+            OPERATOR   => ($column ne 'LargeContent'? $op : $fix_op->($op)),
             VALUE      => $value,
             %rest
         );
@@ -1392,7 +1399,7 @@ sub _CustomFieldLimit {
         $self->_SQLLimit(
             ALIAS => $TicketCFs,
             FIELD => 'LargeContent',
-            OPERATOR => $op,
+            OPERATOR => $fix_op->($op),
             VALUE => $value,
             ENTRYAGGREGATOR => 'AND',
         );
