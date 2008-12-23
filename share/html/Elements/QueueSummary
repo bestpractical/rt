@@ -69,11 +69,10 @@
 % }
 </table>
 <%INIT>
-
-unless ( $conditions ) {
-    foreach my $status (RT::Queue->ActiveStatusArray()) {
-        $conditions->{$status}->{cond} = "Status = $status";
-        $conditions->{$status}->{name} = "$status";
+# Ensure sane default
+unless ( @$conditions ) {
+    foreach (RT::Queue->ActiveStatusArray()) {
+        push @$conditions, { cond => "Status = '$_'", name => loc($_) };
     }
 }
 

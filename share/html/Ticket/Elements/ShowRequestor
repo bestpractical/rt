@@ -46,6 +46,12 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%PERL>
+# Unsure sane default
+unless ( @$conditions ) {
+    foreach (RT::Queue->ActiveStatusArray()) {
+        push @$conditions, { cond => "Status = '$_'", name => loc($_) };
+    }
+}
 my $rows = 10;
 my $has_right_adminusers = $session{'CurrentUser'}->HasRight(Object => $RT::System, Right => 'AdminUsers');
 my $people = $Ticket->Requestors->UserMembersObj;
@@ -54,7 +60,7 @@ while ( my $requestor = $people->Next ) {
     my $name = $m->scomp('/Elements/ShowUser', User => $requestor);
 
     my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
-    $tickets->FromSQL( "Requestor.id = ". $requestor->id ." AND (".join( " OR ", @$conditions).")" );
+    $tickets->FromSQL( "Requestor.id = ". $requestor->id ." AND (".join( " OR ", map $_->{cond}, @$conditions).")" );
     $tickets->RowsPerPage( $rows );
     $tickets->OrderBy( FIELD => 'Priority', ORDER => 'DESC' );
 </%PERL>
@@ -88,5 +94,5 @@ while ( my $requestor = $people->Next ) {
 <%ARGS>
 $Ticket=>undef
 $DisplayPath => "/Ticket/Display.html"
-$conditions => [ map "Status = '$_'", RT::Queue->ActiveStatusArray() ]
+$conditions => []
 </%ARGS>
