@@ -55,6 +55,9 @@ use base 'Test::More';
 use Socket;
 use File::Temp;
 use File::Spec;
+
+our @EXPORT = qw(is_empty);
+
 my $config;
 our ($existing_server, $port, $dbname);
 my $mailsent;
@@ -184,6 +187,16 @@ Set( \$MailCommand, 'testfile');
     mkpath [ $RT::MasonSessionDir ]
         if RT->Config->Get('DatabaseType');
 
+    __PACKAGE__->export_to_level(1, @EXPORT);
+
+}
+
+sub is_empty($;$) {
+    my ($v, $d) = shift;
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+    return Test::More::ok(1, $d) unless defined $v;
+    return Test::More::ok(1, $d) unless length $v;
+    return Test::More::is($v, '', $d);
 }
 
 my $created_new_db;    # have we created new db? mainly for parallel testing
