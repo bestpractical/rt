@@ -58,7 +58,7 @@
 %   my $name = $queue->{Name};
 %   $name =~ s/'/\\'/g;
 %   my $queue_cond = "Queue = '$name' AND ";
-%   my $all_q = $queue_cond . '(' . join( " OR ", map "Status = '$_'", RT::Queue->ActiveStatusArray()) . ')';
+%   my $all_q = $queue_cond . "(".join( " OR ", map $_->{cond}, @$conditions).")";
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
 <td><a href="<% RT->Config->Get('WebPath') %>/Search/Results.html?Query=<% $all_q |u,n %>" title="<% $queue->{Description} %>"><% $queue->{Name} %></a></td>
 %   for my $condition (@$conditions) {
@@ -69,6 +69,15 @@
 % }
 </table>
 <%INIT>
+
+unless ( $conditions ) {
+    foreach my $status (RT::Queue->ActiveStatusArray()) {
+        $conditions->{$status}->{cond} = "Status = $status";
+        $conditions->{$status}->{name} = "$status";
+    }
+}
+
+
 my @queues;
 
 if ($cache && exists $session{$cache}) {
