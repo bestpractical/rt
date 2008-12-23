@@ -54,7 +54,7 @@ while ( my $requestor = $people->Next ) {
     my $name = $m->scomp('/Elements/ShowUser', User => $requestor);
 
     my $tickets = RT::Tickets->new( $session{'CurrentUser'} );
-    $tickets->FromSQL( "Requestor.id = ". $requestor->id ." AND (Status = 'open' OR Status = 'new')" );
+    $tickets->FromSQL( "Requestor.id = ". $requestor->id ." AND (".join( " OR ", @$conditions).")" );
     $tickets->RowsPerPage( $rows );
     $tickets->OrderBy( FIELD => 'Priority', ORDER => 'DESC' );
 </%PERL>
@@ -88,4 +88,5 @@ while ( my $requestor = $people->Next ) {
 <%ARGS>
 $Ticket=>undef
 $DisplayPath => "/Ticket/Display.html"
+$conditions => [ map "Status = '$_'", RT::Queue->ActiveStatusArray() ]
 </%ARGS>
