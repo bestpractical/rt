@@ -76,7 +76,8 @@ my $scrip = RT::Scrip->new($RT::SystemUser);
 my ($sval, $smsg) =$scrip->Create( ScripCondition => 'On Create',
                 ScripAction => 'Create Tickets',
                 Template => 'PO Approvals',
-                Queue => $q->Id);
+                Queue => $q->Id,
+                Description => 'Create Approval Tickets');
 ok ($sval, $smsg);
 ok ($scrip->Id, "Created the scrip");
 ok ($scrip->TemplateObj->Id, "Created the scrip template");
