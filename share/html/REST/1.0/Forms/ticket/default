@@ -229,8 +229,21 @@ if (!keys(%data)) {
 
         my $vals = $ticket->CustomFieldValues($cf->Id());
         my @out = ();
-        while (my $v = $vals->Next()) {
-            push @out, $v->Content;
+        if ( $cf->SingleValue ) {
+            my $v = $vals->Next;
+            push @out, $v->Content if $v;
+        }
+        else {
+            while (my $v = $vals->Next()) {
+                my $content = $v->Content;
+                $content =~ s/'/\\'/g;
+                if ( $v->Content =~ /,/ ) {
+                    push @out, q{'} . $content . q{'};
+                }
+                else {
+                    push @out, $content;
+                }
+            }
         }
         push @data, [ ('CF.{' . $cf->Name . '}') => join ',', @out ];
     }
@@ -327,9 +340,77 @@ else {
                 $s = "Unknown custom field.";
             }
             else {
-                ($n, $s) = $ticket->AddCustomFieldValue(
+                my $vals = $ticket->CustomFieldValues($cf->id);
+
+                if ( $cf->SingleValue ) {
+                    my $old = $vals->Next;
+                    if ( $old ) {
+                        if ( $val ne $old->Content ) {
+                            $old->Delete;
+                            ($n, $s) = $ticket->AddCustomFieldValue(
+                                 Field => $cf, Value => $val );
+                            $s =~ s/^# // if defined $s;
+                        }
+                    }
+                    else {
+                        ($n, $s) = $ticket->AddCustomFieldValue(
                              Field => $cf, Value => $val );
-                $s =~ s/^# // if defined $s;
+                        $s =~ s/^# // if defined $s;
+                    }
+                }
+                else {
+                    my @new;
+                    my ( $a, $b ) = split /,/, $val, 2;
+                    while ($a) {
+                        no warnings 'uninitialized';
+                        if ( $a =~ /^'/ ) {
+                            my $s = $a;
+                            while ( $a !~ /'$/ || ( $a !~ /(\\\\)+'$/
+                                            && $a =~ /(\\)+'$/ ) ) {
+                                ( $a, $b ) = split /,/, $b, 2;
+                                $s .= ',' . $a;
+                            }
+                            $s =~ s/^'//;
+                            $s =~ s/'$//;
+                            $s =~ s/\\'/'/g;
+                            push @new, $s;
+                        }
+                        elsif ( $a =~ /^q{/ ) {
+                            my $s = $a;
+                            while ( $a !~ /}$/ ) {
+                                ( $a, $b ) = split /,/, $b, 2;
+                                $s .= ',' . $a;
+                            }
+                            $s =~ s/^q{//;
+                            $s =~ s/}//;
+                            push @new, $s;
+                        }
+                        else {
+                            push @new, $a;
+                        }
+                        ( $a, $b ) = split /,/, $b, 2;
+                    }
+
+                    my %new;
+                    $new{$_}++ for @new;
+
+                    while (my $v = $vals->Next()) {
+                        my $c = $v->Content;
+                        if ( $new{$c} ) {
+                            $new{$c}--;
+                        }
+                        else {
+                            $v->Delete();
+                        }
+                    }
+                    for ( @new ) {
+                        while ( $new{$_} && $new{$_}-- ) {
+                            ($n, $s) = $ticket->AddCustomFieldValue(
+                                Field => $cf, Value => $_ );
+                            $s =~ s/^# // if defined $s;
+                        }
+                    }
+                }
             }
         }
         elsif ($key ne 'id' && $key ne 'type' && $key ne 'creator') {
