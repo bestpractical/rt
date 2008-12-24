@@ -204,6 +204,8 @@ Arguments: ARGS is a hash of named parameters.  Valid parameters are:
   Requestor -  A reference to a list of  email addresses or RT user Names
   Cc  - A reference to a list of  email addresses or Names
   AdminCc  - A reference to a  list of  email addresses or Names
+  SquelchMailTo - A reference to a list of email addresses - 
+                  who should this ticket not mail
   Type -- The ticket\'s type. ignore this for now
   Owner -- This ticket\'s owner. either an RT::User object or this user\'s id
   Subject -- A string describing the subject of the ticket
@@ -246,6 +248,7 @@ sub Create {
         Requestor          => undef,
         Cc                 => undef,
         AdminCc            => undef,
+        SquelchMailTo      => undef,
         Type               => 'ticket',
         Owner              => undef,
         Subject            => '',
@@ -544,7 +547,14 @@ sub Create {
             push @non_fatal_errors, $self->loc("Couldn't set [_1] watcher: [_2]", $type, $msg)
                 unless $val;
         }
+    } 
+
+    if ($args{'SquelchMailTo'}) {
+       my @squelch = ref( $args{'SquelchMailTo'} ) ? @{ $args{'SquelchMailTo'} }
+        : $args{'SquelchMailTo'};
+        $self->_SquelchMailTo( @squelch );
     }
+
 
     # }}}
 
@@ -1287,14 +1297,22 @@ sub SquelchMailTo {
         unless ( $self->CurrentUserHasRight('ModifyTicket') ) {
             return undef;
         }
-        my $attr = shift;
-        $self->AddAttribute( Name => 'SquelchMailTo', Content => $attr )
-          unless grep { $_->Content eq $attr }
-          $self->Attributes->Named('SquelchMailTo');
+    } else {
+        unless ( $self->CurrentUserHasRight('ShowTicket') ) {
+            return undef;
+        }
 
     }
-    unless ( $self->CurrentUserHasRight('ShowTicket') ) {
-        return undef;
+    return $self->_SquelchMailTo(@_);
+}
+
+sub _SquelchMailTo {
+    my $self = shift;
+    if (@_) {
+        my $attr = shift;
+        $self->AddAttribute( Name => 'SquelchMailTo', Content => $attr )
+            unless grep { $_->Content eq $attr }
+                $self->Attributes->Named('SquelchMailTo');
     }
     my @attributes = $self->Attributes->Named('SquelchMailTo');
     return (@attributes);

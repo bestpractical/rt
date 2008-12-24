@@ -2,8 +2,7 @@
 use strict;
 use warnings;
 use Test::More; 
-plan tests => 85;
-use Data::Dumper;
+plan tests => 87;
 use RT;
 use RT::Test;
 
@@ -155,12 +154,19 @@ ok($group->HasMember($RT::SystemUser->UserObj->PrincipalObj), "the owner group h
 {
 
 my $t = RT::Ticket->new($RT::SystemUser);
-ok($t->Create(Queue => 'general', Subject => 'SquelchTest'));
+ok($t->Create(Queue => 'general', Subject => 'SquelchTest', SquelchMailTo => 'nobody@example.com'));
 
-is(scalar $t->SquelchMailTo, 0, "The ticket has no squelched recipients");
+my @returned = $t->SquelchMailTo();
+is($#returned, 0, "The ticket has one squelched recipients");
 
-my @returned = $t->SquelchMailTo('nobody@example.com');
+my ($ret, $msg) = $t->UnsquelchMailTo('nobody@example.com');
+ok($ret, "Removed nobody as a squelched recipient - ".$msg);
+@returned = $t->SquelchMailTo();
+is($#returned, -1, "The ticket has no squelched recipients". join(',',@returned));
 
+
+
+@returned = $t->SquelchMailTo('nobody@example.com');
 is($#returned, 0, "The ticket has one squelched recipients");
 
 my @names = $t->Attributes->Names;
