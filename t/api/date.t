@@ -63,8 +63,7 @@ my $current_user;
     is($date->Timezone, 'UTC', "the deafult value is always UTC");
     
     $current_user->UserObj->__Set( Field => 'Timezone', Value => '');
-    is($current_user->UserObj->Timezone,
-       '',
+    is_empty($current_user->UserObj->Timezone,
        "successfuly changed user's timezone");
     is($date->Timezone('user'),
        'Africa/Ouagadougou',

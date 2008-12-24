@@ -59,7 +59,7 @@ ok ($id, $msg);
 # can we change the address back to "";  
 ($id,$msg) = $u7->SetEmailAddress('');
 ok ($id, $msg);
-is ($u7->EmailAddress, '');
+is_empty ($u7->EmailAddress);
 
 
 
