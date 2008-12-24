@@ -810,8 +810,9 @@ sub RemoveInappropriateRecipients {
     # Cycle through the people we're sending to and pull out anyone on the
     # system blacklist
 
-    # Trim leading and trailing spaces. # Todo - we should really be canonicalizing all addresses
-    s/\s//g foreach @blacklist;
+    # Trim leading and trailing spaces. 
+    @blacklist = map { RT::User->CanonicalizeEmailAddress( $_->address ) } Email::Address->parse(join(', ', grep {defined} @blacklist));
+
     foreach my $type (@EMAIL_RECIPIENT_HEADERS) {
         my @addrs;
         foreach my $addr ( @{ $self->{$type} } ) {
