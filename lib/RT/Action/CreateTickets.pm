@@ -762,6 +762,7 @@ sub ParseLines {
         TimeLeft        => $args{'timeleft'},
         InitialPriority => $args{'initialpriority'} || 0,
         FinalPriority   => $args{'finalpriority'} || 0,
+        SquelchMailTo   => $args{'squelchmailto'},
         Type            => $args{'type'},
     );
 
