@@ -394,9 +394,9 @@ sub Create {
     #If we've been handed something else, try to load the user.
     elsif ( $args{'Owner'} ) {
         $Owner = RT::User->new( $self->CurrentUser );
-        $args{'Owner'} =~ /^\S+@\S+$/
-            ? $Owner->LoadByEmail($args{'Owner'})
-            : $Owner->Load( $args{'Owner'} );
+        $Owner->Load( $args{'Owner'} );
+        $Owner->LoadByEmail( $args{'Owner'} )
+            unless $Owner->Id;
         unless ( $Owner->Id ) {
             push @non_fatal_errors,
                 $self->loc("Owner could not be set.") . " "
