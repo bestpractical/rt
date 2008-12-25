@@ -296,6 +296,10 @@ sub started_ok {
 
 sub _get_dbh {
     my ($dsn, $user, $pass) = @_;
+    if ( $dsn =~ /Oracle/i ) {
+        $ENV{'NLS_LANG'} = "AMERICAN_AMERICA.AL32UTF8";
+        $ENV{'NLS_NCHAR'} = "AL32UTF8";
+    }
     my $dbh = DBI->connect(
         $dsn, $user, $pass,
         { RaiseError => 0, PrintError => 1 },
