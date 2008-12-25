@@ -1561,16 +1561,18 @@ sub OrderByCols {
                $order = "DESC" if $o =~ /asc/i;
            }
 
-           # Unowned
-           # Else
+           # Ticket.Owner    1 0 X
+           # Unowned Tickets 0 1 X
+           # Else            0 0 X
 
-           # Ticket.Owner  1 0 0
-           my $ownerId = $self->CurrentUser->Id;
-           push @res, { %$row, FIELD => "Owner=$ownerId", ORDER => $order } ;
-
-           # Unowned Tickets 0 1 0
-           my $nobodyId = $RT::Nobody->Id;
-           push @res, { %$row, FIELD => "Owner=$nobodyId", ORDER => $order } ;
+           foreach my $uid ( $self->CurrentUser->Id, $RT::Nobody->Id ) {
+               if ( RT->Config->Get('DatabaseType') eq 'Oracle' ) {
+                   my $f = ($row->{'ALIAS'} || 'main') .'.Owner';
+                   push @res, { %$row, ALIAS => '', FIELD => "CASE WHEN $f=$uid THEN 1 ELSE 0 END", ORDER => $order } ;
+               } else {
+                   push @res, { %$row, FIELD => "Owner=$uid", ORDER => $order } ;
+               }
+           }
 
            push @res, { %$row, FIELD => "Priority", ORDER => $order } ;
        }
