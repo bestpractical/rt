@@ -1349,6 +1349,7 @@ sub _CustomFieldLimit {
         return $op unless RT->Config->Get('DatabaseType') eq 'Oracle';
         return 'MATCHES' if $op eq '=';
         return 'NOT MATCHES' if $op eq '!=';
+        return $op;
     };
 
     my $cfkey = $cfid ? $cfid : "$queue.$field";
