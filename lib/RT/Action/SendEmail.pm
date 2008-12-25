@@ -936,12 +936,13 @@ sub SetSubject {
         my $tmp = $first->GetHeader('Subject');
         $subject = defined $tmp ? $tmp : $self->TicketObj->Subject;
     } else {
-        $subject = $self->TicketObj->Subject();
+        $subject = $self->TicketObj->Subject;
     }
-
-    $subject =~ s/(\r\n|\n|\s)/ /gi;
-
+    $subject = '' unless defined $subject;
     chomp $subject;
+
+    $subject =~ s/(\r\n|\n|\s)/ /g;
+
     $self->SetHeader( 'Subject', $subject );
 
 }
