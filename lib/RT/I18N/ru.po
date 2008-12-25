@@ -150,12 +150,12 @@ msgstr "%1 - Аргумент для передачи в %2"
 #: bin/rt-crontool:312
 #. ("--verbose")
 msgid "%1 - Output status updates to STDOUT"
-msgstr ""
+msgstr "%1 - Выводить обновления статуса на STDOUT"
 
 #: bin/rt-crontool:303
 #. ("--template-id")
 msgid "%1 - Specify id of the template you want to use"
-msgstr ""
+msgstr "%1 - Укажите id шаблона, который вы хотите использовать"
 
 #: bin/rt-crontool:306
 #. ("--transaction")
@@ -170,7 +170,7 @@ msgstr ""
 #: bin/rt-crontool:309
 #. ("--transaction-type")
 msgid "%1 - Specify the comma separated list of transactions' types you want to use"
-msgstr ""
+msgstr "%1 - Укажите в списке, разделенным запятыми, типы транзакций, которые вы хотите использовать"
 
 #: bin/rt-crontool:291
 #. ("--condition")
@@ -218,12 +218,12 @@ msgstr "%1 псевдонимы требуют идентификатор зая
 #: share/html/Install/DatabaseDetails.html:170
 #. ($RT::DatabaseName)
 msgid "%1 already exists and has RT's tables in place, but does not contain RT's metadata. The 'Initialize Database' step later on can insert metadata into this existing database. If this is acceptable, click 'Customize Basics' below to continue customizing RT."
-msgstr ""
+msgstr "%1 уже существует и имеет таблицы от RT, но не содержит метаданных. Запуск этапа 'Инициализация БД' позже сможет вставить метаданные в существующую БД. Если это приемлемо, кликните 'Настроить Основные Параметры' ниже для продолжения настройки RT"
 
 #: share/html/Install/DatabaseDetails.html:175
 #. ($RT::DatabaseName)
 msgid "%1 already exists, but does not contain RT's tables or metadata. The 'Initialize Database' step later on can insert tables and metadata into this existing database. if this is acceptable, click 'Customize Basic' below to continue customizing RT."
-msgstr ""
+msgstr "%1 уже существует, но не имеет таблицы от RT или метаданных. Запуск этапа 'Инициализация БД' позже сможет вставить метаданные в существующую БД. Если это приемлемо, кликните 'Настроить Основные Параметры' ниже для продолжения настройки RT"
 
 #: lib/RT/Link_Overlay.pm:134 lib/RT/Link_Overlay.pm:142
 #. ($args{'Base'})
@@ -234,7 +234,7 @@ msgstr "%1 является локальным объектом, но не на�
 #: share/html/Install/DatabaseDetails.html:166
 #. ($RT::DatabaseName)
 msgid "%1 appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customize RT by clicking 'Customize Basics' below"
-msgstr ""
+msgstr "%1 похоже полностью инициализирована. Мы не будем создавать таблицы или вставлять метаданные, но вы можете продолжить настройку RT кликнув 'Настроить Основные Параметры' ниже"
 
 #: lib/RT/Transaction_Overlay.pm:531 share/html/Ticket/Elements/ShowDates:80
 #. ($self->BriefDescription , $self->CreatorObj->Name)
@@ -308,7 +308,7 @@ msgstr "%1 заявок с наивысшими приоритетами, соз
 #: bin/rt-crontool:279
 #. ($0)
 msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
-msgstr ""
+msgstr "%1 утилита для воздействия на заявки из внешнего планировщика, такого как cron."
 
 #: sbin/rt-email-digest:92 sbin/rt-send-digest:69
 #. ($0)
@@ -1252,7 +1252,7 @@ msgstr "Жирный"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "Bookmark"
-msgstr ""
+msgstr "Закладка"
 
 #: NOT FOUND IN SOURCE
 msgid "Bookmarkable URL for this search"
@@ -1400,7 +1400,7 @@ msgstr "Потомки"
 
 #: share/html/Install/DatabaseType.html:48
 msgid "Choose a database engine"
-msgstr ""
+msgstr "Выберите движок БД"
 
 #: NOT FOUND IN SOURCE
 msgid "Choose a date"
@@ -1424,7 +1424,7 @@ msgstr "Нажмите \"Завершить инсталляцию\" для за
 
 #: share/html/Install/Initialize.html:54
 msgid "Click \"Initialize Database\" to create RT's database and insert initial metadata. This may take a few moments"
-msgstr ""
+msgstr "Кликните \"Инициализировать БД\" для создания базы данных RT и вставки метаданных. Это может занять немного времени"
 
 #: share/html/Helpers/CalPopup.html:53
 msgid "Close window"
@@ -1488,7 +1488,7 @@ msgstr "Комментарии заявки"
 
 #: share/html/Elements/RT__Queue/ColumnMap:89
 msgid "CommentAddress"
-msgstr ""
+msgstr "АдресДляКомментариев"
 
 #: lib/RT/Queue_Overlay.pm:111
 msgid "CommentOnTicket"
@@ -1549,12 +1549,12 @@ msgstr "Условие не найдено"
 
 #: share/html/Elements/RT__Scrip/ColumnMap:80
 msgid "Condition, Action and Template"
-msgstr ""
+msgstr "Условие, Действие и Шаблон"
 
 #: share/html/Install/index.html:106
 #. ($file)
 msgid "Config file %1 is locked"
-msgstr ""
+msgstr "Конфигурационный файл %1 заблокирован"
 
 #: share/html/Elements/Tabs:87
 msgid "Configuration"
@@ -1566,7 +1566,7 @@ msgstr "Подтвердить"
 
 #: share/html/Install/DatabaseDetails.html:141
 msgid "Connection succeeded"
-msgstr ""
+msgstr "Соединение выполнено"
 
 #: NOT FOUND IN SOURCE
 msgid "ContactInfoSystem"
@@ -1586,7 +1586,7 @@ msgstr "Тип-Содержания"
 
 #: lib/RT/Tickets_Overlay.pm:127
 msgid "ContentType"
-msgstr ""
+msgstr "ТипСодержания"
 
 #: NOT FOUND IN SOURCE
 msgid "Coould not create group"
@@ -1651,7 +1651,7 @@ msgstr "Невозможно изменить ответственного. "
 #. ($add_msg)
 #. ($msg)
 msgid "Could not change owner: %1"
-msgstr ""
+msgstr "Невозможно изменить владельца: %1"
 
 #: share/html/Admin/CustomFields/Modify.html:151
 #. ($msg)
@@ -1792,7 +1792,7 @@ msgstr "Невозможно найти строку"
 
 #: bin/rt-crontool:166
 msgid "Couldn't find suitable transaction, skipping"
-msgstr ""
+msgstr "Невозможно найти подходящую транзакцию, пропускаем"
 
 #: lib/RT/Group_Overlay.pm:978
 msgid "Couldn't find that principal"
@@ -2158,7 +2158,7 @@ msgstr "Создана"
 
 #: share/html/Elements/ColumnMap:76
 msgid "Created By"
-msgstr ""
+msgstr "Создана:"
 
 #: share/html/Admin/CustomFields/Modify.html:153 share/html/Admin/Elements/EditCustomField:119
 #. ($CustomFieldObj->Name())
@@ -2188,7 +2188,7 @@ msgstr "Создано заявок за период, с группировко
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "CreatedBy"
-msgstr ""
+msgstr "Создана:"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "CreatedRelative"
@@ -2325,7 +2325,7 @@ msgstr "ДополнительноеПоле"
 
 #: lib/RT/Tickets_Overlay.pm:138
 msgid "CustomFieldValue"
-msgstr ""
+msgstr "ЗначениеДополнительногоПоля"
 
 #: share/html/Prefs/MyRT.html:84 share/html/Prefs/Quicksearch.html:72 share/html/Prefs/Search.html:77
 msgid "Customize"
@@ -2333,35 +2333,35 @@ msgstr "Настроить"
 
 #: share/html/Install/Basics.html:48 share/html/Install/DatabaseDetails.html:72 share/html/Install/Sendmail.html:64
 msgid "Customize Basics"
-msgstr ""
+msgstr "Настроить Основные Параметры"
 
 #: share/html/Install/Basics.html:63
 msgid "Customize Database Details"
-msgstr ""
+msgstr "Настроить параметры БД"
 
 #: share/html/Install/Global.html:48
 msgid "Customize Email Addresses"
-msgstr ""
+msgstr "Изменение Email'ов"
 
 #: share/html/Install/Basics.html:62 share/html/Install/Global.html:66
 msgid "Customize Email Configuration"
-msgstr ""
+msgstr "Изменить конфигурацию электронной почты"
 
 #: share/html/Install/Initialize.html:62
 msgid "Customize Global"
-msgstr ""
+msgstr "Настроить Общие"
 
 #: share/html/Install/Sendmail.html:63
 msgid "Customize Global Defaults"
-msgstr ""
+msgstr "Настройка Параметров по умолчанию"
 
 #: lib/RT/Installer.pm:109
 msgid "DBA password"
-msgstr ""
+msgstr "пароль администратора БД"
 
 #: lib/RT/Installer.pm:102
 msgid "DBA username"
-msgstr ""
+msgstr "имя пользователя БД"
 
 #: lib/RT/Config.pm:235
 msgid "Daily digest"
@@ -2395,27 +2395,27 @@ msgstr "Ошибка данных"
 
 #: lib/RT/Installer.pm:76
 msgid "Database host"
-msgstr ""
+msgstr "сервер (хост) БД"
 
 #: lib/RT/Installer.pm:94
 msgid "Database name"
-msgstr ""
+msgstr "Имя БД"
 
 #: lib/RT/Installer.pm:125
 msgid "Database password for RT"
-msgstr ""
+msgstr "Пароль для доступа RT к базе данных"
 
 #: lib/RT/Installer.pm:85
 msgid "Database port"
-msgstr ""
+msgstr "Порт БД"
 
 #: lib/RT/Installer.pm:58
 msgid "Database type"
-msgstr ""
+msgstr "Тип БД"
 
 #: lib/RT/Installer.pm:118
 msgid "Database username for RT"
-msgstr ""
+msgstr "Имя пользователя для доступа RT к базе даных"
 
 #: lib/RT/Config.pm:184
 msgid "Date format"
@@ -2720,7 +2720,7 @@ msgstr "Наименование домена"
 
 #: lib/RT/Installer.pm:191
 msgid "Don't include http://, just something like 'localhost', 'rt.example.com'"
-msgstr ""
+msgstr "Не используйте http://, только типа 'localhost', 'rt.example.com'"
 
 #: share/html/Elements/Refresh:53
 msgid "Don't refresh this page."
@@ -2974,7 +2974,7 @@ msgstr "Шифровать по умолчанию"
 
 #: share/html/Ticket/Elements/ShowTransaction:218
 msgid "Encrypt/Decrypt"
-msgstr ""
+msgstr "Зашифровать/Расшифровать"
 
 #: share/html/Ticket/GnuPG.html:103
 #. ($id, $txn->Ticket)
@@ -3063,23 +3063,23 @@ msgstr "Ошибка в параметрах Ticket->DeleteWatcher"
 
 #: etc/initialdata:371 etc/upgrade/3.7.10/content:13
 msgid "Error to RT owner: public key"
-msgstr ""
+msgstr "Ошибка к владельцу RT:  публичный ключ"
 
 #: etc/initialdata:433 etc/upgrade/3.7.87/content:4
 msgid "Error: Missing dashboard"
-msgstr ""
+msgstr "Ошибка: Отсутствует информационная панель"
 
 #: etc/initialdata:396 etc/upgrade/3.7.10/content:38
 msgid "Error: bad GnuPG data"
-msgstr ""
+msgstr "Ошибка: неверные данные GnuPG"
 
 #: etc/initialdata:384 etc/upgrade/3.7.10/content:26
 msgid "Error: no private key"
-msgstr ""
+msgstr "Ошибка: нет секретного ключа"
 
 #: etc/initialdata:362 etc/upgrade/3.7.10/content:4
 msgid "Error: public key"
-msgstr ""
+msgstr "Ошибка: нет публичного ключа"
 
 #: bin/rt-crontool:335
 msgid "Escalate tickets"
@@ -3119,7 +3119,7 @@ msgstr "Истекает"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "ExtendedStatus"
-msgstr ""
+msgstr "РасширенныйСтатус"
 
 #: NOT FOUND IN SOURCE
 msgid "ExternalAuthId"
@@ -3570,7 +3570,7 @@ msgstr "Здравствуйте, %1"
 
 #: share/html/Install/Global.html:52
 msgid "Help us set up some useful defaults for RT."
-msgstr ""
+msgstr "Помогите нам установить некоторые полезные умолчания для RT"
 
 #: share/html/Admin/Elements/GroupTabs:72 share/html/Admin/Elements/UserTabs:66 share/html/Ticket/Elements/ShowHistory:55 share/html/Ticket/Elements/Tabs:121
 msgid "History"
@@ -3641,11 +3641,11 @@ msgstr "Если бы эта программа имела установлен�
 
 #: share/html/Install/index.html:83
 msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p>"
-msgstr ""
+msgstr "Если у вас уже есть работающий RT сервер и база данных, вы можете воспользоваться этим, чтобы убедиться в работоспособности сервера БД и в правильности соединения c RT. После этого остановите и снова запустите сервер RT.</p>"
 
 #: share/html/Install/Finish.html:60
 msgid "If you've change the Port that RT runs on, you'll need to restart the server in order to log in."
-msgstr ""
+msgstr "Если вы изменили Порт на котором работает RT, вам необходимо перезапустить сервер для входа в систему."
 
 #: share/html/Admin/Queues/People.html:130 share/html/Ticket/Modify.html:65 share/html/Ticket/ModifyAll.html:132 share/html/Ticket/ModifyPeople.html:63
 msgid "If you've updated anything above, be sure to"
@@ -3654,7 +3654,7 @@ msgstr "После любых изменений необходимо"
 #: share/html/Install/DatabaseType.html:61
 #. ('<a href="http://search.cpan.org" target="_new">CPAN</a>')
 msgid "If your preferred database isn't listed in the dropdown below, that means RT couldn't find a <i>database driver</i> for it installed locally. You may be able to remedy this by using %1 to download and install DBD::MySQL, DBD::Oracle or DBD::Pg."
-msgstr ""
+msgstr "Если вы предпочитаете БД, отсутствующую в нижеследующем списке, то это значит, что RT не может найти <i>драйвер базы данных</i> установленный локально. Вы можете исправить это используя %1 для загрузки и установки DBD::MySQL, DBD::Oracle или DBD::Pg."
 
 #: lib/RT/Record.pm:921
 msgid "Illegal value for %1"
@@ -3702,27 +3702,27 @@ msgstr "Отдельные сообщения"
 
 #: etc/initialdata:373 etc/upgrade/3.7.10/content:15
 msgid "Inform RT owner that user(s) have problems with public keys"
-msgstr ""
+msgstr "Проинформируйте владельца RT, что у пользователя(ей) есть проблемы с публичными ключами"
 
 #: etc/initialdata:435 etc/upgrade/3.7.87/content:6
 msgid "Inform user that a dashboard he subscribed to is missing"
-msgstr ""
+msgstr "Проинформируйте пользователя, что информационная панель, на которую он подписался, отсутствует"
 
 #: etc/initialdata:398 etc/upgrade/3.7.10/content:40
 msgid "Inform user that a message he sent has invalid GnuPG data"
-msgstr ""
+msgstr "Проинформируйте пользователя, что посланное им сообщение содержит неверные данные GnuPG"
 
 #: etc/initialdata:364 etc/upgrade/3.7.10/content:6
 msgid "Inform user that he has problems with public key and couldn't recieve encrypted content"
-msgstr ""
+msgstr "Проинформируйте пользователя, что у него возникли проблемы с публичным ключом и он не может получить зашифрованное содержимое"
 
 #: etc/initialdata:410
 msgid "Inform user that his password has been reset"
-msgstr ""
+msgstr "Проинформируйте пользователя, что его пароль сброшен"
 
 #: etc/initialdata:386 etc/upgrade/3.7.10/content:28
 msgid "Inform user that we received an encrypted email and we have no private keys to decrypt"
-msgstr ""
+msgstr "Проинформируйте пользователя, что мы получили зашифрованный email и у нас нет секретных ключей для расшифровки"
 
 #: lib/RT/Tickets_Overlay.pm:1922 share/html/Search/Elements/PickBasics:187
 msgid "Initial Priority"
@@ -3734,7 +3734,7 @@ msgstr "НачальныйПриоритет"
 
 #: share/html/Install/Global.html:65 share/html/Install/Initialize.html:48 share/html/Install/Initialize.html:61
 msgid "Initialize Database"
-msgstr ""
+msgstr "Инициализировать Базу Данных"
 
 #: lib/RT/ScripAction_Overlay.pm:131
 msgid "Input error"
@@ -3748,7 +3748,7 @@ msgstr "Ввод должен соответствовать %1"
 
 #: share/html/Install/Elements/Wrapper:51
 msgid "Install RT"
-msgstr ""
+msgstr "Установить RT"
 
 #: lib/RT/Ticket_Overlay.pm:3227
 msgid "Internal Error"
@@ -3903,7 +3903,7 @@ msgstr "Июнь"
 
 #: lib/RT/Installer.pm:78
 msgid "Keep 'localhost' if you're not sure"
-msgstr ""
+msgstr "Оставьте 'localhost', если вы не уверены"
 
 #: NOT FOUND IN SOURCE
 msgid "Keyword"
@@ -3919,7 +3919,7 @@ msgstr "Язык"
 
 #: share/html/Install/index.html:56
 msgid "Language."
-msgstr ""
+msgstr "Язык."
 
 #: share/html/Search/Elements/EditFormat:76
 msgid "Large"
@@ -3951,7 +3951,7 @@ msgstr "Последнее изменение"
 
 #: share/html/Elements/ColumnMap:91
 msgid "Last Updated By"
-msgstr ""
+msgstr "Последнее изменение:"
 
 #: share/html/Search/Elements/PickBasics:116
 msgid "Last updated by"
@@ -3976,7 +3976,7 @@ msgstr ""
 
 #: lib/RT/Installer.pm:88
 msgid "Leave empty to use the default value for your database"
-msgstr ""
+msgstr "Оставьте пустым для использования значения по умолчания для вашей базы данных"
 
 #: lib/RT/Installer.pm:101
 msgid "Leave this alone to use the default dba username for your database type"
@@ -4004,7 +4004,7 @@ msgstr "Предоставить пользователю права"
 
 #: share/html/Install/index.html:86
 msgid "Let's go!"
-msgstr ""
+msgstr "Вперед!"
 
 #: NOT FOUND IN SOURCE
 msgid "Limiting owner to %1 %2"
@@ -4053,15 +4053,15 @@ msgstr "Связать значения с"
 
 #: lib/RT/Tickets_Overlay.pm:108
 msgid "Linked"
-msgstr ""
+msgstr "Связано"
 
 #: lib/RT/Tickets_Overlay.pm:110
 msgid "LinkedFrom"
-msgstr ""
+msgstr "СвязаноОт"
 
 #: lib/RT/Tickets_Overlay.pm:109
 msgid "LinkedTo"
-msgstr ""
+msgstr "СвязаноС"
 
 #: lib/RT/Ticket_Overlay.pm:604
 msgid "Linking. Permission denied"
@@ -4137,7 +4137,7 @@ msgstr "Завершить работу"
 
 #: lib/RT/CustomField_Overlay.pm:845
 msgid "Lookup type mismatch"
-msgstr ""
+msgstr "Несовпадение типа поиска"
 
 #: lib/RT/Config.pm:227
 msgid "Mail"
@@ -4245,7 +4245,7 @@ msgstr "Май"
 
 #: share/html/Elements/RT__Group/ColumnMap:61
 msgid "Member"
-msgstr ""
+msgstr "Участник"
 
 #: lib/RT/Transaction_Overlay.pm:720
 #. ($value)
@@ -4344,7 +4344,7 @@ msgstr "Невозможно записать сообщение"
 
 #: sbin/rt-email-digest:291 sbin/rt-send-digest:268
 msgid "Message for user"
-msgstr ""
+msgstr "Сообщения пользователю"
 
 #: NOT FOUND IN SOURCE
 msgid "Message recipients"
@@ -4360,7 +4360,7 @@ msgstr "Сообщения об этой заявке не будет отпра
 
 #: lib/RT/Installer.pm:146
 msgid "Minimum password length"
-msgstr ""
+msgstr "Минимальная длина пароля"
 
 #: share/html/Elements/SelectTimeUnits:49
 msgid "Minutes"
@@ -4961,7 +4961,7 @@ msgstr "Пользователь RT не найден. Пожалуйста, о�
 
 #: share/html/Search/Results.rdf:88
 msgid "No Subject"
-msgstr ""
+msgstr "Нет Темы"
 
 #: share/html/Admin/Global/Template.html:99 share/html/Admin/Queues/Template.html:99
 msgid "No Template"
@@ -5408,7 +5408,7 @@ msgstr "Открытые заявки"
 
 #: share/html/Elements/MakeClicky:58
 msgid "Open URL"
-msgstr ""
+msgstr "Открыть ссылку"
 
 #: share/html/Ticket/Elements/Tabs:188
 msgid "Open it"
@@ -5512,7 +5512,7 @@ msgstr "Ответственный"
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "OwnerName"
-msgstr ""
+msgstr "ИмяОтветственного"
 
 #: share/html/Elements/CollectionListPaging:63
 msgid "Page"
@@ -5582,7 +5582,7 @@ msgstr "Пароль: доступ запрещен"
 
 #: etc/initialdata:408
 msgid "PasswordChange"
-msgstr ""
+msgstr "ИзменениеПароля"
 
 #: share/html/Admin/Users/Modify.html:370
 msgid "Passwords do not match."
@@ -5594,7 +5594,7 @@ msgstr "Пароли не совпадают. Ваш пароль не был и
 
 #: lib/RT/Installer.pm:184
 msgid "Path to sendmail"
-msgstr ""
+msgstr "Путь к sendmail'у"
 
 #: share/html/Ticket/Elements/ShowSummary:64 share/html/Ticket/Elements/Tabs:134 share/html/Ticket/ModifyAll.html:75
 msgid "People"
@@ -5646,7 +5646,7 @@ msgstr "Заполнитель"
 
 #: share/html/dhandler:51
 msgid "Please check the URL and try again."
-msgstr ""
+msgstr "Проверьте, пожалуйста, адрес и попробуйте еще раз."
 
 #: share/html/Dashboards/Elements/HiddenSearches:68
 msgid "Possible hidden searches"
@@ -5782,7 +5782,7 @@ msgstr "Псевдогруппы для внутреннего использо�
 #: share/html/Ticket/Elements/ShowGnuPGStatus:150
 #. ($line->{'Key'})
 msgid "Public key '0x%1' is required to verify signature"
-msgstr ""
+msgstr "Публичный ключ '0x%1' необходим для проверки подписи"
 
 #: share/html/Dashboards/Elements/Tabs:74 share/html/Dashboards/Subscription.html:72
 msgid "Queries"
@@ -5860,7 +5860,7 @@ msgstr "Ключ для очереди"
 
 #: lib/RT/Tickets_Overlay.pm:136
 msgid "QueueAdminCc"
-msgstr ""
+msgstr "АдминистративнаяКопияОчереди"
 
 #: lib/RT/Tickets_Overlay.pm:135
 msgid "QueueCc"
@@ -5868,11 +5868,11 @@ msgstr ""
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "QueueName"
-msgstr ""
+msgstr "ИмяОчереди"
 
 #: lib/RT/Tickets_Overlay.pm:137
 msgid "QueueWatcher"
-msgstr ""
+msgstr "НаблюдательОчереди"
 
 #: share/html/Admin/Elements/GlobalCustomFieldTabs:69 share/html/Admin/Elements/Tabs:61 share/html/Admin/Global/CustomFields/index.html:77 share/html/Admin/index.html:68
 msgid "Queues"
@@ -5982,7 +5982,7 @@ msgstr "Обзор RT для пользователя %1"
 
 #: share/html/Install/Sendmail.html:53
 msgid "RT can communicate with your users about new tickets or new correspondence on tickets. Tell us where to find sendmail (or a sendmail compatible binary such as the one provided by postifx).  RT also needs to know who to notify when someone sends invalid email.  This must not be an address that feeds back into RT."
-msgstr ""
+msgstr "RT может взаимодействовать с вашими пользователями по новым заявкам или новой корреспонденции по заявкам. Укажите нам где найти sendmail (или sendmail-совместимый бинарник, например используемый   postfix'ом). RT также необходимо знать кого нужно извещать,  когда  кто-то отсылает неверную почту. Это не должен быть адрес для обратной связи с RT."
 
 #: share/html/Admin/CustomFields/Modify.html:104
 msgid "RT can include content from another web service when showing this custom field."
@@ -6051,11 +6051,11 @@ msgstr "RT считает, что это сообщение может быть 
 
 #: lib/RT/Installer.pm:119
 msgid "RT will connect to the database using this user.  It will be created for you."
-msgstr ""
+msgstr "RT будет соединяться с базой данных под этим пользователем. Он будет создан для вас."
 
 #: lib/RT/Installer.pm:153
 msgid "RT will create a user called \"root\" and set this as their password"
-msgstr ""
+msgstr "RT создаст  пользователя \"root\" и установит это в качестве его пароля"
 
 #: share/html/Search/Simple.html:62
 msgid "RT will look for anything else you enter in ticket subjects."
@@ -6071,11 +6071,11 @@ msgstr "RT заменит <tt>__id__</tt> и <tt>__CustomField__</tt> идент
 
 #: lib/RT/Installer.pm:140
 msgid "RT will use this string to uniquely identify your installation and looks for it in the subject of emails to decide what ticket a message applies to.  We recommend that you set this to your internet domain. (ex: example.com)"
-msgstr ""
+msgstr "RT будет использовать эту строку для однозначной идентификации вашей инсталляции и будет искать её в теме писем для решения какой заявке это сообщение принадлежит. Мы рекомендуем, чтобы вы прописали здесь ваш интернет домен. Например: example.com"
 
 #: share/html/Install/DatabaseType.html:52
 msgid "RT works with a number of different databases. <b>MySQL</b>, <b>PostgreSQL</b>, <b>Oracle</b> and <b>SQLite</b> are all supported."
-msgstr ""
+msgstr "RT умеет работать со значительным количеством Баз Данных. <b>MySQL</b>, <b>PostgreSQL</b>, <b>Oracle</b> и <b>SQLite</b> также  поддерживаются."
 
 #: NOT FOUND IN SOURCE
 msgid "RT's email command mode requires PGP authentication.  Either you didn't sign your message, or your signature could not be verified."
@@ -6096,7 +6096,7 @@ msgstr "ПолноеИмя"
 
 #: share/html/Dashboards/Subscription.html:150
 msgid "Recipient"
-msgstr ""
+msgstr "Получатель"
 
 #: share/html/Tools/MyDay.html:73
 msgid "Record all updates"
@@ -6132,7 +6132,7 @@ msgstr "На неё ссылаются"
 
 #: lib/RT/Graph/Tickets.pm:160 lib/RT/Tickets_Overlay.pm:117 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "ReferredToBy"
-msgstr ""
+msgstr "НаНеёСсылаются"
 
 #: share/html/Elements/EditLinks:153 share/html/Elements/EditLinks:91 share/html/Elements/SelectLinkType:51 share/html/Elements/ShowLinks:104 share/html/Ticket/Create.html:234 share/html/Ticket/Elements/BulkLinks:70
 msgid "Refers to"
@@ -6250,7 +6250,7 @@ msgstr "Адрес Автора заявки"
 
 #: lib/RT/Tickets_Overlay.pm:142
 msgid "RequestorGroup"
-msgstr ""
+msgstr "ГруппаАвтораЗаявки"
 
 #: lib/RT/Graph/Tickets.pm:158 lib/RT/Tickets_Overlay.pm:131 share/html/Elements/RT__Ticket/ColumnMap:168 share/html/Elements/RT__Ticket/ColumnMap:250 share/html/Search/Elements/BuildFormatString:100 share/html/SelfService/Create.html:66 share/html/Ticket/Create.html:84 share/html/Ticket/Elements/EditPeople:71 share/html/Ticket/Elements/ShowPeople:54
 msgid "Requestors"
@@ -6602,7 +6602,7 @@ msgstr "Выбрать"
 
 #: share/html/Install/DatabaseDetails.html:73 share/html/Install/DatabaseDetails.html:89
 msgid "Select Database Type"
-msgstr ""
+msgstr "Выберите тип базы данных"
 
 #: share/html/Admin/CustomFields/index.html:48 share/html/Admin/CustomFields/index.html:51
 msgid "Select a Custom Field"
@@ -6630,7 +6630,7 @@ msgstr "Выберите пользователя"
 
 #: share/html/Install/index.html:59
 msgid "Select another language"
-msgstr ""
+msgstr "Выберите другой язык"
 
 #: NOT FOUND IN SOURCE
 msgid "Select custom field"
@@ -6811,7 +6811,7 @@ msgstr "Показать результаты"
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:153
 #. ($Level)
 msgid "Show Tickets Properties on %1 level"
-msgstr ""
+msgstr "Показать Свойства Заявко на %1 уровне"
 
 #: NOT FOUND IN SOURCE
 msgid "Show advanced search options..."
@@ -6895,7 +6895,7 @@ msgstr "ПоказыватьКомментарииЗаявки"
 
 #: share/html/Admin/Elements/ToolTabs:60 share/html/Admin/Tools/Shredder/index.html:78 share/html/Ticket/Elements/Tabs:290
 msgid "Shredder"
-msgstr ""
+msgstr "Зачистка"
 
 #: share/html/Dashboards/Queries.html:144
 msgid "Sidebar"
@@ -6943,7 +6943,7 @@ msgstr "Одно значение"
 
 #: lib/RT/Installer.pm:139
 msgid "Site name"
-msgstr ""
+msgstr "Имя сайта"
 
 #: share/html/Search/Elements/EditFormat:72
 msgid "Size"
@@ -6955,7 +6955,7 @@ msgstr "Пропустить меню"
 
 #: sbin/rt-email-digest:287 sbin/rt-send-digest:264
 msgid "Skipping disabled user"
-msgstr ""
+msgstr "Пропускаем октлюченного пользователя"
 
 #: share/html/Search/Elements/EditFormat:75
 msgid "Small"
@@ -6991,7 +6991,7 @@ msgstr "Сортировка"
 
 #: sbin/rt-email-digest:94 sbin/rt-send-digest:71
 msgid "Specify whether this is a daily or weekly run."
-msgstr ""
+msgstr "Укажите, когда "
 
 #: share/html/Search/Elements/ResultViews:60
 msgid "Spreadsheet"
@@ -7278,7 +7278,7 @@ msgstr "Задача"
 
 #: share/html/Install/DatabaseDetails.html:53
 msgid "Tell us a little about how to find the database RT will be using"
-msgstr ""
+msgstr "Расскажите нам немного о "
 
 #: share/html/Admin/Elements/EditScrip:74 share/html/Elements/RT__Scrip/ColumnMap:76 share/html/Tools/Offline.html:79
 msgid "Template"
@@ -7433,7 +7433,7 @@ msgstr "Копия заявки"
 
 #: lib/RT/Installer.pm:110
 msgid "The DBA's database password"
-msgstr ""
+msgstr "Пароль администратора  БД"
 
 #: lib/RT/ACE_Overlay.pm:102
 msgid "The administrative CC of a ticket"
@@ -7445,7 +7445,7 @@ msgstr "Комментарий записан"
 
 #: lib/RT/Installer.pm:79
 msgid "The domain name of your database server (like 'db.example.com')."
-msgstr ""
+msgstr "Доменное имя вашего сервера базы данных (например  'db.example.com')"
 
 #: bin/rt-crontool:325
 msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they haven't been touched in 4 hours:"
@@ -7498,11 +7498,11 @@ msgstr "Автор заявки"
 #: share/html/Install/Finish.html:64
 #. (RT::Installer->ConfigFile)
 msgid "The settings you've chosen are stored in %1.  You can edit this file to refine your configuration further. You can prevent this installation wizard from being shown again by running `<tt>chmod -w '%1'</tt>`."
-msgstr ""
+msgstr "Выбранные вами настройки сохранены в %1. Вы можете отредактировать это файл для  уточнения вашей конфигурации позже. Вы можете предотвратитьзапуск этого помощника инсталляции в следующий раз, запустив `<tt>chmod -w '%1'</tt>`."
 
 #: share/html/Elements/GnuPG/KeyIssues:52
 msgid "The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem addresses are:"
-msgstr ""
+msgstr "Системе не удалось подписать исходящую почту. Обычно, это означает, что слово-пароль неверно указано или, что GPG-агент не запущен. Пожалуйста, уведомите вашего системного администратора как можно скорее. Проблемные адреса:"
 
 #: lib/RT/Config.pm:106
 msgid "Theme"
@@ -7535,7 +7535,7 @@ msgstr "Эти комментарии не показываются обыкно
 
 #: share/html/Install/Basics.html:53
 msgid "These configuration options cover some of the basics needed to get RT up and running.  We need to know the name of your RT installation and the domain name where RT will live.  You will also need to set a password for your default administrative user."
-msgstr ""
+msgstr "Эти опции конфигурации позволяют задать некоторые базовые настройки, необходимые для успешного запуска RT. Нам необходимо знать имя вашей инсталляции RT и имя домена, где будет жить RT. Вам также необходимо будет установить пароль для вашего пользователя с административными правами по умолчанию."
 
 #: lib/RT/CustomField_Overlay.pm:889
 msgid "This custom field does not apply to that object"
@@ -7548,7 +7548,7 @@ msgstr "Это возможность доступна только для си�
 #: lib/RT/Interface/Web/Session.pm:277
 #. ($RT::MasonSessionDir)
 msgid "This may mean that that the directory '%1' isn't writable or a database table is missing or corrupt."
-msgstr ""
+msgstr "Это может означать, что каталог '%1' не доступен для записи или таблица базы данных отсутствует или повреждена."
 
 #: share/html/Ticket/Elements/PreviewScrips:58
 msgid "This message will be sent to..."
@@ -7786,11 +7786,11 @@ msgstr "Время в работе"
 
 #: lib/RT/Graph/Tickets.pm:157 lib/RT/Tickets_Overlay.pm:107 share/html/Search/Elements/BuildFormatString:100
 msgid "TimeEstimated"
-msgstr ""
+msgstr "РасчётноеВремя"
 
 #: lib/RT/Graph/Tickets.pm:157 lib/RT/Tickets_Overlay.pm:104 share/html/Search/Elements/BuildFormatString:100
 msgid "TimeLeft"
-msgstr ""
+msgstr "ОсталосьВремени"
 
 #: lib/RT/Graph/Tickets.pm:157 lib/RT/Ticket_Overlay.pm:903 lib/RT/Tickets_Overlay.pm:105 share/html/Search/Elements/BuildFormatString:100
 msgid "TimeWorked"
@@ -7864,7 +7864,7 @@ msgstr "Транзакция->Создать невозможно, так как
 
 #: lib/RT/Tickets_Overlay.pm:129
 msgid "TransactionDate"
-msgstr ""
+msgstr "ДатаТранзакции"
 
 #: lib/RT/Transaction_Overlay.pm:862
 msgid "Transactions are immutable"
@@ -7897,7 +7897,7 @@ msgstr "Тип изменён с '%1' на '%2'"
 
 #: share/html/Search/Elements/EditSearches:255
 msgid "Unable to determine object type or id"
-msgstr ""
+msgstr "Невозможно определить тип объекта или идентификатор"
 
 #: share/html/Dashboards/Subscription.html:237
 #. ($DashboardId)
@@ -8055,7 +8055,7 @@ msgstr "Изменение не было ни сообщением, ни ком�
 
 #: share/html/Search/Elements/BuildFormatString:100
 msgid "UpdateStatus"
-msgstr ""
+msgstr "СтатусИзменения"
 
 #: lib/RT/CustomField_Overlay.pm:1190 lib/RT/Ticket_Overlay.pm:907 lib/RT/Tickets_Overlay.pm:141 share/html/Elements/SelectDateType:56 share/html/Ticket/Elements/ShowDates:79
 msgid "Updated"
@@ -8100,11 +8100,11 @@ msgstr "Загрузить ваши изменения."
 
 #: sbin/rt-email-digest:88 sbin/rt-send-digest:65
 msgid "Usage: "
-msgstr ""
+msgstr "Использование:"
 
 #: lib/RT/Installer.pm:133
 msgid "Use SSL?"
-msgstr ""
+msgstr "Использовать SSL?"
 
 #: share/html/Widgets/Form/Boolean:68
 #. ($DefaultValue? loc('Yes'): loc('No'))
@@ -8117,7 +8117,7 @@ msgstr ""
 
 #: lib/RT/Config.pm:175
 msgid "Use monospace font"
-msgstr ""
+msgstr "Использовать моноширинный шрифт "
 
 #: share/html/Admin/index.html:86
 msgid "Use other RT administrative tools"
@@ -8130,7 +8130,7 @@ msgstr "Использовать системное значение по умо
 
 #: lib/RT/Record.pm:909
 msgid "User"
-msgstr ""
+msgstr "Пользователь"
 
 #: NOT FOUND IN SOURCE
 msgid "User %1 %2: %3\\n"
@@ -8290,7 +8290,7 @@ msgstr "НаблюдатьАдминистративнойКопией"
 
 #: lib/RT/Tickets_Overlay.pm:134
 msgid "Watcher"
-msgstr ""
+msgstr "Наблюдатель"
 
 #: NOT FOUND IN SOURCE
 msgid "Watcher loaded"
@@ -8298,7 +8298,7 @@ msgstr "Наблюдатель загружен"
 
 #: lib/RT/Tickets_Overlay.pm:145
 msgid "WatcherGroup"
-msgstr ""
+msgstr "ГруппаНаблюдателя"
 
 #: share/html/Admin/Elements/QueueTabs:65
 msgid "Watchers"
@@ -8306,15 +8306,15 @@ msgstr "Наблюдатели"
 
 #: share/html/Install/DatabaseDetails.html:55
 msgid "We need to know the name of the database RT will use and where to find it.  We also need to know the username and password of the user RT should use. RT can create the database and user for you, which is why we ask for the username and password of a user with DBA privileges.  During step 6 of the installation process we will use this information to create and initialize RT's database."
-msgstr ""
+msgstr "Нам необходимо знать имя базы данных, которую будет использовать RT и её местонахождение. Также, нам необходимо знать имя пользователя RT и его пароль. RT может создать базу данных для вас, поэтому нам необходимо знать и имя пользователя с привилегиями администратора базы данных, а также его пароль. Во время этапа 6 инсталляции мы используем эту информацию для создания и инициализации базы данных RT."
 
 #: share/html/Install/DatabaseDetails.html:64
 msgid "We were able to find your database and connect as the DBA.  You can click on 'Customize Basics' to continue customizing RT."
-msgstr ""
+msgstr "Нам удалось найти вашу БД и подсоединиться к ней с правами администратора  БД. Вы можете  кликнуть 'Настроить Основные Параметры' для продолжения настройки RT"
 
 #: lib/RT/Installer.pm:197
 msgid "Web port"
-msgstr ""
+msgstr "Порт веб-сервера"
 
 #: NOT FOUND IN SOURCE
 msgid "WebEncoding"
@@ -8342,15 +8342,15 @@ msgstr "Сделано сегодня"
 
 #: share/html/Install/index.html:67
 msgid "What is RT?"
-msgstr ""
+msgstr "Что такое RT?"
 
 #: lib/RT/Installer.pm:161
 msgid "When RT can't handle an email message, where should it be forwarded?"
-msgstr ""
+msgstr "Когда RT не может обработать почтовое сообщение, куда оно должно быть переадресовано?"
 
 #: share/html/Install/Global.html:54
 msgid "When RT sends an email it sets the From: and Reply-To: headers so users can add to the conversation by just hitting Reply in their mail client.  It uses different addresses for Replies and Comments.  These can be changed for each of your queues.  These addresses will need to be configured to use the <tt>rt-mailgate</tt> program."
-msgstr ""
+msgstr "Когда RT отсылает почту, он устанавливает заголовки От: и Ответить:  так, чтобы пользователи могли добавить к обсуждению простым нажатием Ответить в их почтовом клиенте. Он использует различные адреса для Ответов и Комментариев. Они могут быть изменены для каждой из ваших очередей. Эти адреса понадобятся при  дальнейшем конфигурировании с целью использования программы <tt>rt-mailgate</tt>."
 
 #: etc/initialdata:607
 msgid "When a ticket has been approved by all approvers, add correspondence to the original ticket"
@@ -8374,7 +8374,7 @@ msgstr "Когда что-либо произойдет"
 
 #: share/html/Install/DatabaseDetails.html:58
 msgid "When you click on 'Check Database Connectivity' there may be a small delay while RT tries to connect to your database"
-msgstr ""
+msgstr "Когда вы нажимаете  'Check Database Connectivity' "
 
 #: etc/initialdata:172 etc/upgrade/3.7.1/content:3
 msgid "Whenever a ticket is closed"
@@ -8458,11 +8458,11 @@ msgstr "Вы уже ответственный за эту заявку"
 
 #: share/html/Elements/GnuPG/KeyIssues:63
 msgid "You are going to encrypt outgoing email messages, but there are problems with recipients' public keys. You have to fix the problems with the keys, disable sending a message to the recipients with key problems, or disable encryption."
-msgstr ""
+msgstr "Вы собираетесь зашифровать исходящее почтовое сообщение, но есть некоторые проблемы с публичными ключами получателей. Вы должны исправить ситуацию с ключами, отключить отсылку сообщения к получателям по поводу проблемы с ключами или отключить шифрование."
 
 #: share/html/Elements/GnuPG/KeyIssues:61
 msgid "You are going to encrypt outgoing email messages, but there is a problem with a recipient's public key. You have to fix the problem with the key, disable sending a message to that recipient, or disable encryption."
-msgstr ""
+msgstr "Вы собираетесь зашифровать исходящее почтовое сообщение, но есть некоторые проблемы с публичным ключом получателя. Вы должны исправить ситуацию с ключем, отключить отсылку сообщения к этому получателю по поводу проблемы с ключем или отключить шифрование."
 
 #: share/html/autohandler:228 share/html/autohandler:236
 msgid "You are not an authorized user"
@@ -8635,7 +8635,7 @@ msgstr "корреспонденция отправлена"
 #: share/html/Dashboards/Elements/ShowSubscription:72
 #. ($hour)
 msgid "daily at %1"
-msgstr ""
+msgstr "ежедневно в %1"
 
 #: lib/RT/Date.pm:337 share/html/Admin/Queues/Modify.html:89
 msgid "days"
@@ -8789,7 +8789,7 @@ msgstr "изменения\\n\\n"
 #: share/html/Dashboards/Elements/ShowSubscription:69
 #. ($Subscription->SubValue('Dom'), $hour)
 msgid "monthly (day %1) at %2"
-msgstr ""
+msgstr "ежемесячно (по дням: %1) в %2"
 
 #: lib/RT/Date.pm:345
 msgid "months"
@@ -8825,7 +8825,7 @@ msgstr "не равно"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:83
 msgid "nothing"
-msgstr ""
+msgstr "ничего"
 
 #: NOT FOUND IN SOURCE
 msgid "notlike"
@@ -8841,11 +8841,11 @@ msgstr "открыта"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:154
 msgid "open/close"
-msgstr ""
+msgstr "открыть/закрыть"
 
 #: share/html/Widgets/Form/Select:77
 msgid "other..."
-msgstr ""
+msgstr "другое..."
 
 #: lib/RT/Group_Overlay.pm:150
 #. ($self->Name, $user->Name)
@@ -8909,11 +8909,11 @@ msgstr "вызывающий компонент не указал причину
 
 #: lib/RT/Installer.pm:169
 msgid "the default addresses that will be listed in From: and Reply-To: headers of comment mail."
-msgstr ""
+msgstr "адреса по умолчанию, которые будут показаны в заголовках От: и Ответить: письма с комментарием."
 
 #: lib/RT/Installer.pm:177
 msgid "the default addresses that will be listed in From: and Reply-To: headers of correspondence mail."
-msgstr ""
+msgstr "адреса по умолчанию, которые будут показаны в заголовках От: и Ответить: письма с корреспонденцией"
 
 #: NOT FOUND IN SOURCE
 msgid "ticket #%1"
@@ -8957,7 +8957,7 @@ msgstr "пользователь %1"
 #: share/html/Dashboards/Elements/ShowSubscription:66
 #. (loc($day), $hour)
 msgid "weekly (on %1) at %2"
-msgstr ""
+msgstr "еженедельно (по %1) в %2"
 
 #: lib/RT/Date.pm:341
 msgid "weeks"
@@ -8965,7 +8965,7 @@ msgstr "недель"
 
 #: lib/RT/Installer.pm:198
 msgid "which port your web server will listen to, e.g. 8080"
-msgstr ""
+msgstr "на каком порту ваш веб-сервер будет работать, напр. 8080"
 
 #: share/html/Ticket/Elements/ShowTransactionAttachments:63
 msgid "with headers"
