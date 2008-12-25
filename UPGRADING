@@ -21,6 +21,24 @@ well.
 
 UPGRADING FROM 3.8.1 and earlier - Changes:
 
+= Oracle configuration =
+
+$DatabaseName is used as SID, so RT can connect without environment variables
+or tnsnames.ora file. Because of this change your RT instance may loose ability
+to connect to your DB, you have to update options and restart your web server.
+Example configuration:
+
+    Set($DatabaseType, 'Oracle');
+    Set($DatabaseHost, '192.168.0.1');
+    # undefined port => will try both 1526 and 1521
+    Set($DatabasePort, undef);
+    # ORACLE SID
+    Set($DatabaseName, 'XE');
+    # user for RT in Oracle, RT's tables in his schema
+    Set($DatabaseUser, 'test');
+    # above user's password
+    Set($DatabasePassword, 'test');
+
 = Rights changes =
 
 Now, if you want any user to be able to access the Approvals tools (a.k.a.  the
