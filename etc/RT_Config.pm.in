@@ -145,7 +145,8 @@ Set($DatabasePassword , '@DB_RT_PASS@');
 
 =item C<$DatabaseName>
 
-The name of the RT's database on your database server
+The name of the RT's database on your database server. For Oracle
+it's SID, DB objects are created in L<$DatabaseUser>'s schema.
 
 =cut
 
