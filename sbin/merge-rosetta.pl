@@ -43,7 +43,7 @@ for (<$dir/rt/*.po>) {
     # don't want empty vales to override ours.
     # don't want fuzzy flag as when uploading to rosetta again it's not accepted by rosetta.
     foreach my $msgid ($ext->msgids) {
-        my $entry = $po_orig->{"\"$msgid\""} or next;
+        my $entry = $po_orig->{Locale::PO->quote($msgid)} or next;
         my $msgstr = $entry->dequote($entry->{msgstr}) or next;
         $ext->set_msgstr($msgid, $msgstr)
             if $ext->msgstr($msgid) eq '' && $msgstr;
