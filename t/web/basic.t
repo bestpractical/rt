@@ -40,8 +40,8 @@ $agent->get($url."Ticket/Create.html?Queue=1");
 is ($agent->{'status'}, 200, "Loaded Create.html");
 $agent->form_number(3);
 # Start with a string containing characters in latin1
-my $string = "I18N Web Testing æøå";
-Encode::from_to($string, 'iso-8859-1', 'utf8');
+my $string;
+$string = Encode::decode_utf8("I18N Web Testing Ã¦Ã¸Ã¥");
 $agent->field('Subject' => "Ticket with utf8 body");
 $agent->field('Content' => $string);
 ok($agent->submit(), "Created new ticket with $string as Content");
@@ -53,8 +53,7 @@ $agent->get($url."Ticket/Create.html?Queue=1");
 is ($agent->{'status'}, 200, "Loaded Create.html");
 $agent->form_number(3);
 # Start with a string containing characters in latin1
-$string = "I18N Web Testing æøå";
-Encode::from_to($string, 'iso-8859-1', 'utf8');
+$string = Encode::decode_utf8("I18N Web Testing Ã¦Ã¸Ã¥");
 $agent->field('Subject' => $string);
 $agent->field('Content' => "Ticket with utf8 subject");
 ok($agent->submit(), "Created new ticket with $string as Subject");
