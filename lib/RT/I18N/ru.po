@@ -6,14 +6,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-12-16 06:59+0000\n"
-"PO-Revision-Date: 2008-12-16 00:44+0000\n"
-"Last-Translator: Andrew Kornilov <akornilov@gmail.com>\n"
+"POT-Creation-Date: 2008-12-25 22:46+0000\n"
+"PO-Revision-Date: 2008-12-25 22:20+0000\n"
+"Last-Translator: ruz <ruz@bestpractical.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-12-16 15:42+0000\n"
+"X-Launchpad-Export-Date: 2008-12-26 04:04+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: NOT FOUND IN SOURCE
@@ -316,7 +316,7 @@ msgstr "%1 утилита для воздействия на заявки из �
 #: sbin/rt-email-digest:92 sbin/rt-send-digest:69
 #. ($0)
 msgid "%1 is a utility, meant to be run from cron, that dispatches all deferred RT notifications as a per-user digest."
-msgstr ""
+msgstr "%1 -- утилита, запускаемая из cron, которая доставляет все отложенные почтовые уведомления отдельным пользователям в виде \"дайджеста\"."
 
 #: lib/RT/Queue_Overlay.pm:921
 #. ($principal->Object->Name, $args{'Type'})
@@ -587,7 +587,7 @@ msgstr "(нет имени)"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:276
 msgid "(no pubkey!)"
-msgstr ""
+msgstr "(нет открытого ключа!)"
 
 #: NOT FOUND IN SOURCE
 msgid "(no subject)"
@@ -641,7 +641,7 @@ msgstr "(без названия)"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:279
 msgid "(untrusted!)"
-msgstr ""
+msgstr "(недоверенный!)"
 
 #: NOT FOUND IN SOURCE
 msgid "(yyyy/mm/dd)"
@@ -679,7 +679,7 @@ msgstr "<input type=\"submit\" value=\"Создать заявку в очере
 
 #: share/html/User/Prefs.html:182
 msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
-msgstr ""
+msgstr "<p>Все iCal-каналы включают в себя секретный токен, позволяющий вас авторизовать. Если URL iCal-канала был раскрыт, Вы можете получить новый токен, <b>аннулирующий все iCal-каналы</b> ниже.</p>"
 
 #: etc/initialdata:187
 msgid "A blank template"
@@ -1389,7 +1389,7 @@ msgstr "Выбрать все"
 
 #: share/html/Install/DatabaseDetails.html:88
 msgid "Check Database Connectivity"
-msgstr "Проверьте подключение к базе данных"
+msgstr "Проверить подключение к базе данных"
 
 #: share/html/SelfService/Update.html:80 share/html/Ticket/Create.html:136 share/html/Ticket/Update.html:114
 msgid "Check box to delete"
@@ -1493,7 +1493,7 @@ msgstr "Комментарий не записан"
 
 #: lib/RT/Queue_Overlay.pm:111
 msgid "Comment on tickets"
-msgstr "Комментарии заявки"
+msgstr "Комментировать заявки"
 
 #: share/html/Elements/RT__Queue/ColumnMap:89
 msgid "CommentAddress"
@@ -2342,7 +2342,7 @@ msgstr "Настроить"
 
 #: share/html/Install/Basics.html:48 share/html/Install/DatabaseDetails.html:72 share/html/Install/Sendmail.html:64
 msgid "Customize Basics"
-msgstr "Изменить базове настройки"
+msgstr "Изменить базовые настройки"
 
 #: share/html/Install/Basics.html:63
 msgid "Customize Database Details"
@@ -2918,7 +2918,7 @@ msgstr "Email"
 
 #: share/html/Install/Sendmail.html:48
 msgid "Email Configuration"
-msgstr ""
+msgstr "Настройка эл.почты"
 
 #: etc/initialdata:442 etc/upgrade/3.7.85/content:4
 msgid "Email Digest"
@@ -2934,7 +2934,7 @@ msgstr "Доставка почты"
 
 #: etc/initialdata:443 etc/upgrade/3.7.85/content:5
 msgid "Email template for periodic notification digests"
-msgstr ""
+msgstr "Шаблон эл.почты для периодических уведомлений в виде \"дайджестов\""
 
 #: share/html/Elements/RT__User/ColumnMap:76
 msgid "EmailAddress"
@@ -3096,7 +3096,7 @@ msgstr "Ошибка: нет публичного ключа"
 
 #: bin/rt-crontool:335
 msgid "Escalate tickets"
-msgstr "Расширить заявки"
+msgstr "Эскалировать приоритет заявки"
 
 #: NOT FOUND IN SOURCE
 msgid "Estimate"
@@ -3399,7 +3399,7 @@ msgstr "Взять шаблон из файла"
 
 #: share/html/Install/index.html:76
 msgid "Getting started"
-msgstr ""
+msgstr "Начало работы"
 
 #: NOT FOUND IN SOURCE
 msgid "Getting the current user from a pgp sig\\n"
@@ -3550,7 +3550,7 @@ msgstr "Не задана группа.\\n"
 
 #: share/html/User/Elements/DelegateRights:102
 msgid "Group rights"
-msgstr ""
+msgstr "Права групп"
 
 #: lib/RT/CustomField_Overlay.pm:1120 share/html/Admin/Elements/GlobalCustomFieldTabs:63 share/html/Admin/Elements/SelectNewGroupMembers:61 share/html/Admin/Elements/Tabs:58 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:85 share/html/Admin/Queues/People.html:108 share/html/Admin/index.html:63 share/html/User/Groups/Members.html:90
 msgid "Groups"
@@ -6587,7 +6587,7 @@ msgstr "Параметры поиска"
 #: share/html/Search/Chart.html:58
 #. (loc($PrimaryGroupBy))
 msgid "Search results grouped by %1"
-msgstr "Группировать результаты поиска по %1"
+msgstr "Сгруппировать результаты поиска по %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Search update: %1"
@@ -7061,7 +7061,7 @@ msgstr "Сортировка"
 
 #: sbin/rt-email-digest:94 sbin/rt-send-digest:71
 msgid "Specify whether this is a daily or weekly run."
-msgstr "Укажите, когда "
+msgstr "Укажите, когда"
 
 #: share/html/Search/Elements/ResultViews:60
 msgid "Spreadsheet"
@@ -7356,7 +7356,7 @@ msgstr "Задача"
 
 #: share/html/Install/DatabaseDetails.html:53
 msgid "Tell us a little about how to find the database RT will be using"
-msgstr "Расскажите нам немного о "
+msgstr "Расскажите нам немного о"
 
 #: share/html/Admin/Elements/EditScrip:74 share/html/Elements/RT__Scrip/ColumnMap:76 share/html/Tools/Offline.html:79
 msgid "Template"
@@ -7806,7 +7806,7 @@ msgstr "Модуль поиска TicketSQL"
 
 #: lib/RT/CustomField_Overlay.pm:1116 share/html/Admin/Elements/GlobalCustomFieldTabs:75 share/html/Admin/Global/CustomFields/index.html:83 share/html/Elements/Tabs:74 share/html/Search/Chart:113 share/html/Search/Elements/Chart:118
 msgid "Tickets"
-msgstr "Расширенный поиск"
+msgstr "Заявки"
 
 #: lib/RT/Tickets_Overlay.pm:2265
 #. ($self->loc( $args{'TYPE'} ),            $args{'BASE'},)
@@ -8186,7 +8186,7 @@ msgstr "Загрузить ваши изменения."
 
 #: sbin/rt-email-digest:88 sbin/rt-send-digest:65
 msgid "Usage: "
-msgstr "Использование:"
+msgstr "Использование: "
 
 #: lib/RT/Installer.pm:133
 msgid "Use SSL?"
@@ -8199,11 +8199,11 @@ msgstr "Использовать значение по умолчанию (%1)"
 
 #: lib/RT/Config.pm:264
 msgid "Use fixed-width font to display plaintext messages"
-msgstr ""
+msgstr "Использовать моноширинный шрифт для отображения текстовых сообщений"
 
 #: lib/RT/Config.pm:263
 msgid "Use monospace font"
-msgstr "Использовать моноширинный шрифт "
+msgstr "Использовать моноширинный шрифт"
 
 #: share/html/Admin/index.html:86
 msgid "Use other RT administrative tools"
@@ -8400,7 +8400,7 @@ msgstr "Наблюдатели"
 
 #: share/html/Install/DatabaseDetails.html:64
 msgid "We are able to find your database and connect as the DBA.  You can click on 'Customize Basics' to continue customizing RT."
-msgstr ""
+msgstr "Система установки нашла БД и подключилась как администратор БД. Вы можете нажать \"Изменить базовые настройки\" ниже для продолжения настройки RT."
 
 #: share/html/Install/DatabaseDetails.html:55
 msgid "We need to know the name of the database RT will use and where to find it.  We also need to know the username and password of the user RT should use. RT can create the database and user for you, which is why we ask for the username and password of a user with DBA privileges.  During step 6 of the installation process we will use this information to create and initialize RT's database."
@@ -8424,7 +8424,7 @@ msgstr "Срд."
 
 #: share/html/Dashboards/Subscription.html:106
 msgid "Wednesday"
-msgstr ""
+msgstr "Среда"
 
 #: lib/RT/Config.pm:296
 msgid "Weekly digest"
@@ -8472,15 +8472,15 @@ msgstr "Когда что-либо произойдет"
 
 #: share/html/Install/DatabaseDetails.html:58
 msgid "When you click on 'Check Database Connectivity' there may be a small delay while RT tries to connect to your database"
-msgstr "Когда вы нажимаете  'Check Database Connectivity' "
+msgstr "Когда вы нажимаете  'Check Database Connectivity'"
 
 #: etc/initialdata:172 etc/upgrade/3.7.1/content:3
 msgid "Whenever a ticket is closed"
-msgstr ""
+msgstr "При закрытии заявки"
 
 #: etc/initialdata:177 etc/upgrade/3.7.1/content:8
 msgid "Whenever a ticket is reopened"
-msgstr ""
+msgstr "Когда заявка открыта заново"
 
 #: etc/initialdata:157
 msgid "Whenever a ticket is resolved"
@@ -8569,7 +8569,7 @@ msgstr "Вы неавторизованный пользователь"
 #: share/html/Ticket/Elements/ShowUpdateStatus:51
 #. (RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id. "#txn-".$txn->id, RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id ."&MarkAsSeen=1".  "#txn-".$txn->id)
 msgid "You can <a href=\"%1\">jump to the first unread message</a> or <a href=\"%2\">jump to the first unread message and mark all messages as seen</a>."
-msgstr ""
+msgstr "Вы можете <a href=\"%1\">перейти к первому непрочитаному сообщению</a> или <a href=\"%2\">перейти к первому непрочитаному сообщению и отметить все сообщения как прочитанные</a>."
 
 #: NOT FOUND IN SOURCE
 msgid "You can access it with the Download button on the right."
@@ -8589,7 +8589,7 @@ msgstr "Вы можете назначать себя ответственным
 
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoRights:54
 msgid "You don't have <b>SuperUser</b> right."
-msgstr ""
+msgstr "У вас нет прав <b>Суперпользователя</b>."
 
 #: NOT FOUND IN SOURCE
 msgid "You don't have permission to view that ticket.\\n"
@@ -8614,19 +8614,19 @@ msgstr "Вы не должны создавать запросы в этой о�
 
 #: share/html/Install/Basics.html:85
 msgid "You must enter an Administrative password"
-msgstr ""
+msgstr "Вы должны ввести пароль администратора."
 
 #: share/html/Install/Finish.html:56
 msgid "You should be taken directly to a login page. You'll be able to log in with username of <tt>root</tt> and the password you set earlier."
-msgstr ""
+msgstr "Вы будете перенаправлены на страницу входа в систему. Вы сможете войти под именем <tt>root</tt> и паролем, который вы установили ранее."
 
 #: share/html/Install/DatabaseType.html:55
 msgid "You should choose the database you or your local database administrator is most comfortable with."
-msgstr ""
+msgstr "Вы должны выбрать СУБД с которой вам или вашему администратору БД будет удобнее работать."
 
 #: share/html/Install/index.html:79
 msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>Let's go!</i> below, RT will guide you through setting up your RT server and database."
-msgstr ""
+msgstr "Вы видите этот экран так как сервер RT запущен без настроенной БД. Вероятнее всего это первый запуск RT. Если вы нажмёте <i>Поехали!</i> ниже, система установки RT проведёт Вас  через все шаги, необходимые для настройки сервера и БД RT."
 
 #: share/html/NoAuth/Logout.html:59
 msgid "You're welcome to login again"
@@ -8743,7 +8743,7 @@ msgstr "корреспонденция отправлена"
 
 #: share/html/Dashboards/Subscription.html:98
 msgid "daily"
-msgstr ""
+msgstr "ежедневно"
 
 #: share/html/Dashboards/Elements/ShowSubscription:72
 #. ($hour)
@@ -8909,7 +8909,7 @@ msgstr "изменения\\n\\n"
 
 #: share/html/Dashboards/Subscription.html:122
 msgid "monthly"
-msgstr ""
+msgstr "ежемесячно"
 
 #: share/html/Dashboards/Elements/ShowSubscription:69
 #. ($Subscription->SubValue('Dom'), $hour)
@@ -8958,7 +8958,7 @@ msgstr "неравно"
 
 #: share/html/Admin/Tools/Shredder/index.html:161
 msgid "objects were successfuly removed"
-msgstr ""
+msgstr "объекты были успешно удалены"
 
 #: share/html/Dashboards/Subscription.html:102 share/html/Elements/SelectDateRelation:58
 msgid "on"
@@ -8991,7 +8991,7 @@ msgstr ""
 
 #: share/html/Admin/Tools/Shredder/index.html:181
 msgid "plugin returned empty list"
-msgstr ""
+msgstr "плагин вернул пустой список"
 
 #: lib/RT/Group_Overlay.pm:158
 #. ($queue->Name, $self->Type)
@@ -9016,7 +9016,7 @@ msgstr "сек"
 
 #: share/html/Admin/Tools/Shredder/index.html:183
 msgid "see object list below"
-msgstr ""
+msgstr "см. список объектов ниже"
 
 #: lib/RT/System.pm:90
 msgid "show Approvals tab"
@@ -9109,7 +9109,7 @@ msgstr ""
 
 #: share/html/Dashboards/Subscription.html:102
 msgid "weekly"
-msgstr ""
+msgstr "еженедельно"
 
 #: share/html/Dashboards/Elements/ShowSubscription:66
 #. (loc($day), $hour)
