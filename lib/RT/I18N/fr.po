@@ -868,7 +868,7 @@ msgstr "Fichier attaché"
 
 #: share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:52
 msgid "Attachment"
-msgstr ""
+msgstr "Attachement"
 
 #: share/html/Ticket/ShowEmailRecord.html:83 share/html/Ticket/ShowEmailRecord.html:85 share/html/Ticket/ShowEmailRecord.html:88
 #. ($Attachment)
@@ -1292,7 +1292,7 @@ msgstr "Impossible de changer l'intervenant. "
 #. ($add_msg)
 #. ($msg)
 msgid "Could not change owner: %1"
-msgstr "Il n'est pas possible de changer le propriétaire : %1"
+msgstr "Impossible de changer le propriétaire : %1"
 
 #: share/html/Admin/CustomFields/Modify.html:151
 #. ($msg)
@@ -2686,7 +2686,7 @@ msgstr "Format"
 
 #: etc/initialdata:373 etc/upgrade/3.7.15/content:4 share/html/Ticket/Elements/ShowTransaction:206
 msgid "Forward"
-msgstr "Suivi"
+msgstr "Transfert"
 
 #: share/html/Ticket/Forward.html:79
 msgid "Forward Message"
@@ -2727,7 +2727,7 @@ msgstr "Ven"
 
 #: share/html/Dashboards/Subscription.html:108
 msgid "Friday"
-msgstr ""
+msgstr "Vendredi"
 
 #: share/html/Ticket/Elements/ShowHistory:68 share/html/Ticket/Elements/ShowHistory:74
 msgid "Full headers"
@@ -3906,7 +3906,7 @@ msgstr "Lun"
 
 #: share/html/Dashboards/Subscription.html:104
 msgid "Monday"
-msgstr ""
+msgstr "Lundi"
 
 #: share/html/Ticket/Elements/ShowRequestor:70
 #. ($name)
@@ -4454,7 +4454,7 @@ msgstr "Le type d'objet ne correspond pas"
 
 #: share/html/Admin/Tools/Shredder/Elements/SelectObjects:53
 msgid "Objects list is empty"
-msgstr ""
+msgstr "La liste d'objets est vide"
 
 #: lib/RT/Date.pm:97
 msgid "Oct"
@@ -4606,7 +4606,7 @@ msgstr "Tickets propres"
 
 #: lib/RT/Queue_Overlay.pm:112
 msgid "OwnTicket"
-msgstr "PrendreTicket"
+msgstr "GérerTicket"
 
 #: lib/RT/ACE_Overlay.pm:99 lib/RT/Graph/Tickets.pm:158 lib/RT/Tickets_Overlay.pm:2131 lib/RT/Tickets_Overlay.pm:98 share/html/Elements/QuickCreate:58 share/html/Elements/RT__Ticket/ColumnMap:269 share/html/Elements/RT__Ticket/ColumnMap:89 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Create.html:76 share/html/Ticket/Elements/EditBasics:63 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:135 share/html/Ticket/Elements/ShowPeople:50 share/html/Ticket/Update.html:70
 msgid "Owner"
@@ -4735,7 +4735,7 @@ msgstr "Accès refusé"
 
 #: share/html/Dashboards/index.html:56
 msgid "Personal Dashboards"
-msgstr ""
+msgstr "Tableaux de bord personnels"
 
 #: share/html/User/Elements/Tabs:64
 msgid "Personal Groups"
@@ -5362,7 +5362,7 @@ msgstr "Sam"
 
 #: share/html/Dashboards/Subscription.html:109
 msgid "Saturday"
-msgstr ""
+msgstr "Samedi"
 
 #: share/html/Prefs/MyRT.html:78 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:71 share/html/Search/Elements/EditSearches:72 share/html/Ticket/Elements/ShowSummary:86 share/html/Ticket/Reminders.html:63 share/html/Widgets/SelectionBox:222
 msgid "Save"
@@ -5392,7 +5392,7 @@ msgstr "Recherche sauvée %1 non trouvée"
 
 #: share/html/Search/Chart.html:73
 msgid "Saved charts"
-msgstr ""
+msgstr "Graphiques sauvés"
 
 #: share/html/Search/Elements/EditSearches:135 share/html/Widgets/SavedSearch:159
 msgid "Saved searches"
@@ -5740,7 +5740,7 @@ msgstr "AfficherACL"
 
 #: lib/RT/System.pm:90
 msgid "ShowApprovalsTab"
-msgstr ""
+msgstr "VoirOngletApprobations"
 
 #: lib/RT/System.pm:89
 msgid "ShowConfigTab"
@@ -5999,7 +5999,7 @@ msgstr "Dim"
 
 #: share/html/Dashboards/Subscription.html:110
 msgid "Sunday"
-msgstr ""
+msgstr "Dimanche"
 
 #: lib/RT/System.pm:79
 msgid "SuperUser"
@@ -6019,7 +6019,7 @@ msgstr "Configuration système"
 
 #: share/html/Dashboards/index.html:61
 msgid "System Dashboards"
-msgstr ""
+msgstr "Tableaux de bord système"
 
 #: lib/RT/Installer.pm:225 share/html/Elements/SelectTimezone:71
 msgid "System Default"
@@ -6268,7 +6268,7 @@ msgstr "Le demandeur d'un ticket"
 #: share/html/Install/Finish.html:64
 #. (RT::Installer->ConfigFile)
 msgid "The settings you've chosen are stored in %1."
-msgstr ""
+msgstr "La configuration choisie est stockée dans %1."
 
 #: NOT FOUND IN SOURCE
 msgid "The settings you've chosen are stored in %1.  You can edit this file to refine your configuration further. You can prevent this installation wizard from being shown again by running `<tt>chmod -w '%1'</tt>`."
@@ -6347,7 +6347,7 @@ msgstr "Jeu"
 
 #: share/html/Dashboards/Subscription.html:107
 msgid "Thursday"
-msgstr ""
+msgstr "Jeudi"
 
 #: lib/RT/Record.pm:908 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52
 msgid "Ticket"
@@ -6582,7 +6582,7 @@ msgstr "Mar, 25 Déc 1995 21:59:12 -0300"
 
 #: share/html/Dashboards/Subscription.html:105
 msgid "Tuesday"
-msgstr ""
+msgstr "Mardi"
 
 #: lib/RT/Ticket_Overlay.pm:916 lib/RT/Tickets_Overlay.pm:1830 lib/RT/Tickets_Overlay.pm:95 share/html/Admin/CustomFields/Modify.html:67 share/html/Admin/Elements/EditCustomField:67 share/html/Elements/RT__Ticket/ColumnMap:148 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/AddWatchers:56 share/html/Ticket/Elements/AddWatchers:67 share/html/Ticket/Elements/AddWatchers:77
 msgid "Type"
@@ -6859,7 +6859,7 @@ msgstr "Nom d'utilisateur"
 
 #: lib/RT/Config.pm:160
 msgid "Username format"
-msgstr ""
+msgstr "Format de nom d'utilisateur"
 
 #: lib/RT/CustomField_Overlay.pm:1118 share/html/Admin/Elements/GlobalCustomFieldTabs:57 share/html/Admin/Elements/SelectNewGroupMembers:49 share/html/Admin/Elements/Tabs:55 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:75 share/html/Admin/Queues/People.html:91 share/html/Admin/index.html:58 share/html/User/Groups/Members.html:81
 msgid "Users"
@@ -6908,7 +6908,7 @@ msgstr ""
 
 #: lib/RT/Config.pm:194
 msgid "WYSIWYG composer height"
-msgstr ""
+msgstr "Hauteur de l'éditeur WYSIWYG"
 
 #: lib/RT/Config.pm:185
 msgid "WYSIWYG message composer"
@@ -6964,7 +6964,7 @@ msgstr "Mer"
 
 #: share/html/Dashboards/Subscription.html:106
 msgid "Wednesday"
-msgstr ""
+msgstr "Mercredi"
 
 #: lib/RT/Config.pm:296
 msgid "Weekly digest"
@@ -7113,7 +7113,7 @@ msgstr "Vous pouvez uniquement prendre des tickets sans propriétaire"
 
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoRights:54
 msgid "You don't have <b>SuperUser</b> right."
-msgstr ""
+msgstr "Vous n'avez pas les droits <b>SuperUtilisateur</b>."
 
 #: lib/RT/StyleGuide.pod:772
 #. ($num, $queue)
@@ -7195,7 +7195,7 @@ msgstr "comme accordé à %1"
 
 #: share/html/Search/Elements/SelectChartType:54
 msgid "bar"
-msgstr ""
+msgstr "barres"
 
 #: share/html/Elements/SelectDateRelation:57
 msgid "before"
@@ -7207,7 +7207,7 @@ msgstr "de bas en haut"
 
 #: share/html/Admin/Tools/Shredder/Elements/SelectObjects:57
 msgid "click to check/uncheck all objects at once"
-msgstr ""
+msgstr "cliquer pour sélectionner/désélectionner tous les objets en une fois"
 
 #: share/html/SelfService/Closed.html:53
 msgid "closed"
@@ -7215,7 +7215,7 @@ msgstr "fermé"
 
 #: share/html/Dashboards/Subscription.html:98
 msgid "daily"
-msgstr ""
+msgstr "quotidien"
 
 #: share/html/Dashboards/Elements/ShowSubscription:72
 #. ($hour)
@@ -7272,11 +7272,11 @@ msgstr "erreur : rien à commuter"
 
 #: share/html/Dashboards/Subscription.html:112
 msgid "every"
-msgstr ""
+msgstr "tous les"
 
 #: share/html/Admin/Tools/Shredder/index.html:173
 msgid "executed plugin successfuly"
-msgstr ""
+msgstr "greffons exécuté avec succès"
 
 #: lib/RT/Crypt/GnuPG.pm:2169
 msgid "full"
@@ -7353,7 +7353,7 @@ msgstr "minutes"
 
 #: share/html/Dashboards/Subscription.html:122
 msgid "monthly"
-msgstr ""
+msgstr "mensuel"
 
 #: share/html/Dashboards/Elements/ShowSubscription:69
 #. ($Subscription->SubValue('Dom'), $hour)
@@ -7394,7 +7394,7 @@ msgstr "aucun"
 
 #: share/html/Admin/Tools/Shredder/index.html:161
 msgid "objects were successfuly removed"
-msgstr ""
+msgstr "les objets ont été supprimés avec succès"
 
 #: share/html/Dashboards/Subscription.html:102 share/html/Elements/SelectDateRelation:58
 msgid "on"
@@ -7402,7 +7402,7 @@ msgstr "Le"
 
 #: share/html/Dashboards/Subscription.html:122
 msgid "on day"
-msgstr ""
+msgstr "le jour"
 
 #: lib/RT/Queue_Overlay.pm:83 share/html/SelfService/Elements/MyRequests:81
 msgid "open"
@@ -7427,11 +7427,11 @@ msgstr "groupe personnel '%1' pour l'utilisateur '%2'"
 
 #: share/html/Search/Elements/SelectChartType:55
 msgid "pie"
-msgstr ""
+msgstr "camember"
 
 #: share/html/Admin/Tools/Shredder/index.html:181
 msgid "plugin returned empty list"
-msgstr ""
+msgstr "le greffon a retourné une liste vide"
 
 #: lib/RT/Group_Overlay.pm:158
 #. ($queue->Name, $self->Type)
@@ -7456,11 +7456,11 @@ msgstr "sec"
 
 #: share/html/Admin/Tools/Shredder/index.html:183
 msgid "see object list below"
-msgstr ""
+msgstr "voir la liste d'objets ci-dessous"
 
 #: lib/RT/System.pm:90
 msgid "show Approvals tab"
-msgstr ""
+msgstr "montrer l'onglet Approbations"
 
 #: lib/RT/System.pm:89
 msgid "show Configuration tab"
@@ -7521,7 +7521,7 @@ msgstr "utilisateur %1"
 
 #: lib/RT/Config.pm:164
 msgid "verbose"
-msgstr ""
+msgstr "verbeux"
 
 #: NOT FOUND IN SOURCE
 msgid "web port"
@@ -7529,7 +7529,7 @@ msgstr "port du serveur web"
 
 #: share/html/Dashboards/Subscription.html:102
 msgid "weekly"
-msgstr ""
+msgstr "Hebdomadaire"
 
 #: share/html/Dashboards/Elements/ShowSubscription:66
 #. (loc($day), $hour)
