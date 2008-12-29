@@ -16,6 +16,9 @@ sub handle_cgi_object {
                            -Content_length => (-s $file) );
         open my $fh, "<$file" or die "Can't open $file: $!";
         binmode($fh);
+
+        # Read 16384 byte chunks instead of splitting on newlines (so it works
+        # better for binary files)
         local $/ = \16384;
         print $_ while <$fh>;
         close $fh;
