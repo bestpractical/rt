@@ -12,15 +12,12 @@ sub handle_cgi_object {
     my ($self, $cgi) = @_;
 
     if (my ($file, $type) = $self->image_file_request($cgi->path_info)) {
-        print "HTTP/1.0 200 OK\x0d\x0a";
-        print "Content-Type: $type\x0d\x0a";
-        print "Content-Length: " . (-s $file) . "\x0d\x0a\x0d\x0a";
+        print $cgi->header(-type => $type,
+                           -Content_length => (-s $file) );
         open my $fh, "<$file" or die "Can't open $file: $!";
         binmode($fh);
-        {
-            local $/ = \16384;
-            print $_ while <$fh>;
-        }
+        local $/ = \16384;
+        print $_ while <$fh>;
         close $fh;
         return;
     }
