@@ -17,6 +17,9 @@ sub handle_request {
         $r->content_type($type);
         open my $fh, "<$file" or die "Can't open $file: $!";
         binmode($fh);
+
+        # Read 16384 byte chunks instead of splitting on newlines (so it works
+        # better for binary files)
         local $/ = \16384;
         $r->print($_) while <$fh>;
         return;
