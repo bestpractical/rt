@@ -51,8 +51,6 @@ my $arg = $m->dhandler_arg;
 my $file = dirname($m->current_comp->source_file) . '/FCKeditor/' . $arg;
 return $m->decline unless -f $file && -r _;
 
-&RT::Interface::Web::StaticFileHeaders();
-
 my $suffix = $1 if $file =~ /([^.]+)$/;
 
 my $type = {qw(
@@ -65,14 +63,7 @@ my $type = {qw(
     png     image/png
 )}->{$suffix} || 'application/octet-stream';
 
-$r->content_type($type);
-open my $fh, '<:utf8', $file or die "couldn't open file: $!";
-binmode($fh);
-{
-    local $/ = \16384;
-    $m->out($_) while (<$fh>);
-    $m->flush_buffer;
-}
-close $fh;
+RT::Interface::Web->SendStaticFile( File => $file, Type => $type );
+
 $m->abort;
 </%INIT>
