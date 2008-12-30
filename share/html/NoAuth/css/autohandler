@@ -46,32 +46,14 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%init>
-RT::Interface::Web::StaticFileHeaders();
-my $type;
 my $file = $m->base_comp->source_file;
 
 if ($file =~ /\.(gif|png|jpe?g)$/i) {
-    $type = "image/$1";
-    $type =~ s/jpg/jpeg/gi;
-
-
-die "file $file not found" unless -f $file && -r _;
-
-$r->content_type($type);
-open my $fh, "<$file" or die "couldn't open file: $!";
-binmode($fh);
-{
-    local $/ = \16384;
-    $m->out($_) while (<$fh>);
-    $m->flush_buffer;
-}
-close $fh;
-$m->abort;
+    $m->comp( '/Elements/SendStaticFile', File => $file );
 } else {
-
-$r->content_type('text/css') ;
-$m->call_next();
-return();
+    RT::Interface::Web::StaticFileHeaders();
+    $r->content_type('text/css') ;
+    $m->call_next();
+    return();
 }
-
 </%init>
