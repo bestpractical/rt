@@ -247,6 +247,8 @@ sub SendStaticFile {
     my $file = $args{File};
     my $type = $args{Type};
 
+    $self->StaticFileHeaders();
+
     unless ( $type ) {
         if ($file =~ /\.(gif|png|jpe?g)$/i) {
             $type = "image/$1";

@@ -49,7 +49,7 @@
 my $file = $m->base_comp->source_file;
 
 if ($file =~ /\.(gif|png|jpe?g)$/i) {
-    $m->comp( '/Elements/SendStaticFile', File => $file );
+    RT::Interface::Web->SendStaticFile( File => $file );
 } else {
     RT::Interface::Web::StaticFileHeaders();
     $r->content_type('text/css') ;
