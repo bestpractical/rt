@@ -12,16 +12,15 @@ sub handle_cgi_object {
     my ($self, $cgi) = @_;
 
     if (my ($file, $type) = $self->image_file_request($cgi->path_info)) {
-        print $cgi->header(-type => $type,
-                           -Content_length => (-s $file) );
-        open my $fh, "<$file" or die "Can't open $file: $!";
-        binmode($fh);
+        # Mason will pick the component off of the pathinfo 
+        # and we need to trick it into taking arguments since other
+        # options like handle_comp don't take args and exec needs
+        # us to set up $m and $r by hand
+        $cgi->param(-name => 'File', -value => $file);
+        $cgi->param(-name => 'Type', -value => $type);
+        $cgi->path_info('/NoAuth/SendStaticFile');
+        $self->SUPER::handle_cgi_object($cgi);
 
-        # Read 16384 byte chunks instead of splitting on newlines (so it works
-        # better for binary files)
-        local $/ = \16384;
-        print $_ while <$fh>;
-        close $fh;
         return;
     }
 

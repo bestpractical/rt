@@ -1,0 +1,3 @@
+%# shim for CGIHandler to avoid tripping the autohandler
+%# on things in NoAuth
+<& /Elements/SendStaticFile, %ARGS &>

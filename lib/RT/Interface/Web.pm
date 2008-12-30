@@ -237,6 +237,34 @@ sub StaticFileHeaders {
     # $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = $date->RFC2616;
 }
 
+=head2 SendStaticFile 
+
+=cut
+
+sub SendStaticFile {
+    my $self = shift;
+    my %args = @_;
+    my $file = $args{File};
+    my $type = $args{Type};
+
+    unless ( $type ) {
+        if ($file =~ /\.(gif|png|jpe?g)$/i) {
+            $type = "image/$1";
+            $type =~ s/jpg/jpeg/gi;
+        }
+        $type ||= "application/octet-stream";
+    }
+    $HTML::Mason::Commands::r->content_type($type);
+    open my $fh, "<$file" or die "couldn't open file: $!";
+    binmode($fh);
+    {
+        local $/ = \16384;
+        $HTML::Mason::Commands::m->out($_) while (<$fh>);
+        $HTML::Mason::Commands::m->flush_buffer;
+    }
+    close $fh;
+}
+
 sub StripContent {
     my %args    = @_;
     my $content = $args{Content};
