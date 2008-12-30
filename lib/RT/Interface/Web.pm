@@ -239,6 +239,14 @@ sub StaticFileHeaders {
 
 =head2 SendStaticFile 
 
+Takes a File => path and a Type => Content-type
+
+If Type isn't provided and File is an image, it will
+figure out a sane Content-type, otherwise it will
+send application/octet-stream
+
+Will set caching headers using StaticFileHeaders
+
 =cut
 
 sub SendStaticFile {
