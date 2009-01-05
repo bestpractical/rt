@@ -4,13 +4,13 @@ msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-12-25 22:46+0000\n"
-"PO-Revision-Date: 2008-12-16 15:08+0000\n"
-"Last-Translator: clkao <Unknown>\n"
+"PO-Revision-Date: 2008-12-28 10:59+0000\n"
+"Last-Translator: liujiang <liujiang_1966@163.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-12-26 04:06+0000\n"
+"X-Launchpad-Export-Date: 2009-01-05 14:22+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: NOT FOUND IN SOURCE
@@ -7715,7 +7715,7 @@ msgstr "权限撤消完毕"
 msgid "Rights"
 msgstr "权限及代理人"
 
-#: lib/RT/Interface/Web.pm:867
+#: lib/RT/Interface/Web.pm:905
 #. ($object_type)
 msgid "Rights could not be granted for %1"
 msgstr "无法将权限赋予 %1"
@@ -8645,7 +8645,7 @@ msgstr ""
 msgid "System Defined"
 msgstr "系统定义"
 
-#: lib/RT/ACE_Overlay.pm:355 lib/RT/Interface/Web.pm:866 share/html/Admin/Elements/SelectRights:111
+#: lib/RT/ACE_Overlay.pm:355 lib/RT/Interface/Web.pm:904 share/html/Admin/Elements/SelectRights:111
 msgid "System Error"
 msgstr "系统错误"
 
@@ -9537,7 +9537,7 @@ msgstr "批次更新申请单"
 msgid "Update name"
 msgstr "更新帐号"
 
-#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:714
+#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:752
 msgid "Update not recorded."
 msgstr "更新未被记录"
 
@@ -9567,7 +9567,7 @@ msgstr "更新申请单 #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "更新申请单 #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:713
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:751
 msgid "Update type was neither correspondence nor comment."
 msgstr "更新的内容并非申请单回复也不是评论"
 
@@ -9707,7 +9707,7 @@ msgstr "使用者设定"
 msgid "User Shift"
 msgstr "员工班别"
 
-#: lib/RT/Interface/Web.pm:1241
+#: lib/RT/Interface/Web.pm:1279
 #. ($cf->Name, ref $args{'Object'}, $args{'Object'}->id)
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr "使用者试图在 %2 对象 #%3 的自订字段 %1 上执行未知的更新操作"

@@ -10,7 +10,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-12-26 04:06+0000\n"
+"X-Launchpad-Export-Date: 2009-01-05 14:24+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: NOT FOUND IN SOURCE
@@ -7707,7 +7707,7 @@ msgstr "權限撤消完畢"
 msgid "Rights"
 msgstr "權限及代理人"
 
-#: lib/RT/Interface/Web.pm:867
+#: lib/RT/Interface/Web.pm:905
 #. ($object_type)
 msgid "Rights could not be granted for %1"
 msgstr "無法將權限賦予 %1"
@@ -8637,7 +8637,7 @@ msgstr ""
 msgid "System Defined"
 msgstr "系統定義"
 
-#: lib/RT/ACE_Overlay.pm:355 lib/RT/Interface/Web.pm:866 share/html/Admin/Elements/SelectRights:111
+#: lib/RT/ACE_Overlay.pm:355 lib/RT/Interface/Web.pm:904 share/html/Admin/Elements/SelectRights:111
 msgid "System Error"
 msgstr "系統錯誤"
 
@@ -9529,7 +9529,7 @@ msgstr "批次更新申請單"
 msgid "Update name"
 msgstr "更新帳號"
 
-#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:714
+#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:752
 msgid "Update not recorded."
 msgstr "更新未被記錄"
 
@@ -9559,7 +9559,7 @@ msgstr "更新申請單 #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "更新申請單 #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:713
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:751
 msgid "Update type was neither correspondence nor comment."
 msgstr "更新的內容並非申請單回覆也不是評論"
 
@@ -9699,7 +9699,7 @@ msgstr "使用者設定"
 msgid "User Shift"
 msgstr "員工班別"
 
-#: lib/RT/Interface/Web.pm:1241
+#: lib/RT/Interface/Web.pm:1279
 #. ($cf->Name, ref $args{'Object'}, $args{'Object'}->id)
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr "使用者試圖在 %2 物件 #%3 的自訂欄位 %1 上執行未知的更新操作"

@@ -7,13 +7,13 @@ msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-12-25 22:46+0000\n"
-"PO-Revision-Date: 2008-12-25 22:20+0000\n"
-"Last-Translator: ruz <ruz@bestpractical.com>\n"
+"PO-Revision-Date: 2008-12-26 14:48+0000\n"
+"Last-Translator: Max Kosmach <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-12-26 04:04+0000\n"
+"X-Launchpad-Export-Date: 2009-01-05 14:22+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: NOT FOUND IN SOURCE
@@ -6427,7 +6427,7 @@ msgstr "Право отозвано"
 msgid "Rights"
 msgstr "Права"
 
-#: lib/RT/Interface/Web.pm:867
+#: lib/RT/Interface/Web.pm:905
 #. ($object_type)
 msgid "Rights could not be granted for %1"
 msgstr "Невозможно выдать права для %1"
@@ -7153,7 +7153,7 @@ msgstr "ПереназначатьЗаявкуСебе"
 #. (6, 7)
 #. (4, 7)
 msgid "Step %1 of %2"
-msgstr ""
+msgstr "Шаг %1 из %2"
 
 #: lib/RT/Transaction_Overlay.pm:682
 #. ($Old->Name)
@@ -7285,7 +7285,7 @@ msgstr ""
 msgid "System Default"
 msgstr "Системные настройки"
 
-#: lib/RT/ACE_Overlay.pm:355 lib/RT/Interface/Web.pm:866 share/html/Admin/Elements/SelectRights:111
+#: lib/RT/ACE_Overlay.pm:355 lib/RT/Interface/Web.pm:904 share/html/Admin/Elements/SelectRights:111
 msgid "System Error"
 msgstr "Системная ошибка"
 
@@ -8105,7 +8105,7 @@ msgstr "Изменить несколько заявок"
 msgid "Update name"
 msgstr "Изменить имя"
 
-#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:714
+#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:752
 msgid "Update not recorded."
 msgstr "Изменение не записано."
 
@@ -8135,7 +8135,7 @@ msgstr "Изменение заявки #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Изменение заявки #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:713
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:751
 msgid "Update type was neither correspondence nor comment."
 msgstr "Изменение не было ни сообщением, ни комментарием."
 
@@ -8263,7 +8263,7 @@ msgstr "Логин"
 msgid "User Rights"
 msgstr "Права пользователя"
 
-#: lib/RT/Interface/Web.pm:1241
+#: lib/RT/Interface/Web.pm:1279
 #. ($cf->Name, ref $args{'Object'}, $args{'Object'}->id)
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr "Пользователь запросил изменение неизвестного типа для дополнительного поля %1 для объекта %2  #%3"
