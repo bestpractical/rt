@@ -11,7 +11,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=US-ASCII\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-12-26 04:05+0000\n"
+"X-Launchpad-Export-Date: 2009-01-05 14:23+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:259
@@ -5584,7 +5584,7 @@ msgstr "Hak-hak tidak dapat dihilangkan"
 msgid "Rights"
 msgstr "Hak-hak"
 
-#: lib/RT/Interface/Web.pm:867
+#: lib/RT/Interface/Web.pm:905
 #. ($object_type)
 msgid "Rights could not be granted for %1"
 msgstr "Hak-hak tidak dapat diberikan untuk %1"
@@ -6334,7 +6334,7 @@ msgstr ""
 msgid "System Default"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:355 lib/RT/Interface/Web.pm:866 share/html/Admin/Elements/SelectRights:111
+#: lib/RT/ACE_Overlay.pm:355 lib/RT/Interface/Web.pm:904 share/html/Admin/Elements/SelectRights:111
 msgid "System Error"
 msgstr "Kesalahan Sistem"
 
@@ -7066,7 +7066,7 @@ msgstr "Perbaharui beberapa tiket"
 msgid "Update name"
 msgstr "Perbaharui nama"
 
-#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:714
+#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:752
 msgid "Update not recorded."
 msgstr "Perbaharui tidak dicatat."
 
@@ -7092,7 +7092,7 @@ msgstr "Perbaharui tiket #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Perbaharui tiket #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:713
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:751
 msgid "Update type was neither correspondence nor comment."
 msgstr "Memperbarui tipe baik korespondensi ataupun  penjelasan."
 
@@ -7200,7 +7200,7 @@ msgstr "ID Pengguna"
 msgid "User Rights"
 msgstr "Hak Pengguna"
 
-#: lib/RT/Interface/Web.pm:1241
+#: lib/RT/Interface/Web.pm:1279
 #. ($cf->Name, ref $args{'Object'}, $args{'Object'}->id)
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr "Pengguna akan ditanya mengenai tipe pembaharuan yang tidak dikenal untuk kolom kustom %1 untuk %2 objek #%3"

@@ -4,13 +4,13 @@ msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-12-25 22:46+0000\n"
-"PO-Revision-Date: 2008-12-16 13:57+0000\n"
-"Last-Translator: clkao <Unknown>\n"
+"PO-Revision-Date: 2008-12-27 15:21+0000\n"
+"Last-Translator: Angelo Turetta <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2008-12-26 04:06+0000\n"
+"X-Launchpad-Export-Date: 2009-01-05 14:22+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: NOT FOUND IN SOURCE
@@ -190,7 +190,7 @@ msgstr "%1 - Specificare la ricerca da utilizzare"
 #: share/html/Dashboards/index.html:67
 #. ($group)
 msgid "%1 DashBoards"
-msgstr ""
+msgstr "Cruscotti del gruppo %1"
 
 #: share/html/Elements/Footer:59
 #. ('&#187;&#124;&#171;', $RT::VERSION, '2008', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
@@ -222,7 +222,7 @@ msgstr "gli alias %1 necessitano di un TicketId per lavorare con (da %2) %3"
 #: share/html/Install/DatabaseDetails.html:170
 #. ($RT::DatabaseName)
 msgid "%1 already exists and has RT's tables in place, but does not contain RT's metadata. The 'Initialize Database' step later on can insert metadata into this existing database. If this is acceptable, click 'Customize Basics' below to continue customizing RT."
-msgstr "Il database %1 esiste già e contiene le tabelle di RT, ma non contiene i metadati di sistema. Il passo 'Inizializza Database' può inserire i metadati mancanti all'interno del database esistente. Clicca 'Modifica dati base' qui sotto se vuoi continuare la configurazione."
+msgstr "Il database %1 esiste già e contiene le tabelle di RT, ma non contiene i metadati di sistema. Il passo 'Inizializza Database' può inserire i metadati mancanti all'interno del database esistente. Clicca 'Configurazione di base' qui sotto se vuoi continuare la configurazione."
 
 #: share/html/Install/DatabaseDetails.html:175
 #. ($RT::DatabaseName)
@@ -238,7 +238,7 @@ msgstr "%1 sembra essere un oggetto locale, ma non è presente nel database"
 #: share/html/Install/DatabaseDetails.html:166
 #. ($RT::DatabaseName)
 msgid "%1 appears to be fully initialized.  We won't need to create any tables or insert metadata, but you can continue to customize RT by clicking 'Customize Basics' below"
-msgstr "Il database %1 appare già correttamente inizializzato. Non è necessario creare tabelle o inserire metadati di sistema, ma puoi ugualmente cliccare 'Modifica dati base' qui sotto per completare la configurazione."
+msgstr "Il database %1 appare già correttamente inizializzato. Non è necessario creare tabelle o inserire metadati di sistema, ma puoi ugualmente cliccare 'Configurazione di base' qui sotto per completare la configurazione."
 
 #: lib/RT/Transaction_Overlay.pm:546 share/html/Ticket/Elements/ShowDates:80
 #. ($self->BriefDescription , $self->CreatorObj->Name)
@@ -976,7 +976,7 @@ msgstr "Approvazione ottenuta"
 
 #: etc/initialdata:361 etc/upgrade/3.8.2/content:96
 msgid "Approval Ready for Owner"
-msgstr ""
+msgstr "Approvazione pronta per l'Incaricato"
 
 #: etc/initialdata:348 etc/upgrade/3.8.2/content:83
 msgid "Approval Rejected"
@@ -1036,7 +1036,7 @@ msgstr "File allegato"
 
 #: share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:52
 msgid "Attachment"
-msgstr ""
+msgstr "Allegato"
 
 #: share/html/Ticket/ShowEmailRecord.html:83 share/html/Ticket/ShowEmailRecord.html:85 share/html/Ticket/ShowEmailRecord.html:88
 #. ($Attachment)
@@ -2206,7 +2206,7 @@ msgstr "Personalizza"
 
 #: share/html/Install/Basics.html:48 share/html/Install/DatabaseDetails.html:72 share/html/Install/Sendmail.html:64
 msgid "Customize Basics"
-msgstr "Modifica dati base"
+msgstr "Configurazione di base"
 
 #: share/html/Install/Basics.html:63
 msgid "Customize Database Details"
@@ -2617,7 +2617,7 @@ msgstr "Scarica come file separato da TAB"
 
 #: share/html/Admin/Tools/Shredder/Elements/DumpFileLink:49
 msgid "Download dumpfile"
-msgstr ""
+msgstr "Download archivio oggetti eliminati"
 
 #: lib/RT/Graph/Tickets.pm:159 lib/RT/Ticket_Overlay.pm:921 lib/RT/Tickets_Overlay.pm:121 share/html/Elements/RT__Ticket/ColumnMap:198 share/html/Elements/RT__Ticket/ColumnMap:231 share/html/Elements/SelectDateType:55 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Create.html:216 share/html/Ticket/Elements/EditDates:68 share/html/Ticket/Elements/Reminders:140 share/html/Ticket/Elements/ShowDates:66
 msgid "Due"
@@ -3070,7 +3070,7 @@ msgstr "Origine dei valori del campo:"
 
 #: share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:52
 msgid "FileName"
-msgstr ""
+msgstr "NomeFile"
 
 #: lib/RT/Tickets_Overlay.pm:128 share/html/Elements/SelectAttachmentField:52
 msgid "Filename"
@@ -3078,7 +3078,7 @@ msgstr "Nome file"
 
 #: share/html/Admin/Tools/Shredder/Elements/PluginArguments:52
 msgid "Fill arguments"
-msgstr ""
+msgstr "Specifica i seguenti parametri"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:81
 msgid "Fill boxes with color using"
@@ -3243,7 +3243,7 @@ msgstr "Ven."
 
 #: share/html/Dashboards/Subscription.html:108
 msgid "Friday"
-msgstr ""
+msgstr "Venerdì"
 
 #: share/html/Ticket/Elements/ShowHistory:68 share/html/Ticket/Elements/ShowHistory:74
 msgid "Full headers"
@@ -3808,7 +3808,7 @@ msgstr "Mantieni 'locahost' in caso di dubbi"
 
 #: lib/RT/Installer.pm:78
 msgid "Keep 'localhost' if you're not sure. Leave blank to connect locally over a socket"
-msgstr ""
+msgstr "Se sei indeciso, lascia 'localhost'. Lascia il campo vuoto per connettere il DB usando un socket locale"
 
 #: NOT FOUND IN SOURCE
 msgid "Keyword"
@@ -4594,7 +4594,7 @@ msgstr "Lun."
 
 #: share/html/Dashboards/Subscription.html:104
 msgid "Monday"
-msgstr ""
+msgstr "Lunedì"
 
 #: share/html/Ticket/Elements/ShowRequestor:70
 #. ($name)
@@ -4660,7 +4660,7 @@ msgstr "Nome già usato"
 
 #: share/html/Tools/index.html:60
 msgid "Named, shared collection of portlets"
-msgstr ""
+msgstr "Insieme di portlet condiviso, identificato da un nome"
 
 #: NOT FOUND IN SOURCE
 msgid "Named, shared collection of saved searches"
@@ -5092,7 +5092,7 @@ msgstr "invia notifica all'incaricato del ticket respinto"
 
 #: etc/initialdata:363 etc/upgrade/3.8.2/content:98
 msgid "Notify Owner of their ticket has been approved and is ready to be acted on"
-msgstr ""
+msgstr "Notifica all'Incaricato l'approvazione del ticket, che ora può seguire il suo corso"
 
 #: NOT FOUND IN SOURCE
 msgid "Notify Owner of their ticket has been approved by all approvers"
@@ -5104,7 +5104,7 @@ msgstr "invia notifica all'incaricato del ticket che alcune approvazioni sono st
 
 #: lib/RT/Approval/Rule/Created.pm:9 lib/RT/Approval/Rule/Passed.pm:7
 msgid "Notify Owner of their ticket has been approved by some or all approvers"
-msgstr ""
+msgstr "Notifica all'Incaricato l'approvazione del ticket parziale o completa"
 
 #: etc/initialdata:303 etc/upgrade/3.8.2/content:38
 msgid "Notify Owners and AdminCcs of new items pending their approval"
@@ -5112,11 +5112,11 @@ msgstr "invia notifica agli incaricati e AdminCc quando è necessario richiedere
 
 #: etc/initialdata:336 etc/upgrade/3.8.2/content:71
 msgid "Notify Requestor of their ticket has been approved by all approvers"
-msgstr ""
+msgstr "Notifica al Richiedente il completamento dell'approvazione del ticket"
 
 #: etc/initialdata:322 etc/upgrade/3.8.2/content:57
 msgid "Notify Requestor of their ticket has been approved by some approver"
-msgstr ""
+msgstr "Notifica al Richiedente l'approvazione parziale del ticket"
 
 #: etc/initialdata:32
 msgid "Notify Requestors"
@@ -5190,7 +5190,7 @@ msgstr "Tipo oggetto non corrisponde"
 
 #: share/html/Admin/Tools/Shredder/Elements/SelectObjects:53
 msgid "Objects list is empty"
-msgstr ""
+msgstr "La lista oggetti è vuota"
 
 #: lib/RT/Date.pm:97
 msgid "Oct"
@@ -5507,7 +5507,7 @@ msgstr "Permesso negato"
 
 #: share/html/Dashboards/index.html:56
 msgid "Personal Dashboards"
-msgstr ""
+msgstr "Dashboard Personale"
 
 #: share/html/User/Elements/Tabs:64
 msgid "Personal Groups"
@@ -6235,7 +6235,7 @@ msgstr "Diritto revocato"
 msgid "Rights"
 msgstr "Diritti"
 
-#: lib/RT/Interface/Web.pm:867
+#: lib/RT/Interface/Web.pm:905
 #. ($object_type)
 msgid "Rights could not be granted for %1"
 msgstr "I diritti per %1 non possono essere concessi"
@@ -6282,7 +6282,7 @@ msgstr "Sab."
 
 #: share/html/Dashboards/Subscription.html:109
 msgid "Saturday"
-msgstr ""
+msgstr "Sabato"
 
 #: share/html/Prefs/MyRT.html:78 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:71 share/html/Search/Elements/EditSearches:72 share/html/Ticket/Elements/ShowSummary:86 share/html/Ticket/Reminders.html:63 share/html/Widgets/SelectionBox:222
 msgid "Save"
@@ -6316,7 +6316,7 @@ msgstr "Ricerca salvata %1 non trovata"
 
 #: share/html/Search/Chart.html:73
 msgid "Saved charts"
-msgstr ""
+msgstr "Grafici salvati"
 
 #: NOT FOUND IN SOURCE
 msgid "Saved search %1"
@@ -6716,7 +6716,7 @@ msgstr "MostraACL"
 
 #: lib/RT/System.pm:90
 msgid "ShowApprovalsTab"
-msgstr ""
+msgstr "MostraPannelloApprovazione"
 
 #: lib/RT/System.pm:89
 msgid "ShowConfigTab"
@@ -6753,7 +6753,7 @@ msgstr "Distruttore di ticket"
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoStorage:58
 #. ($Path)
 msgid "Shredder needs a directory to write dumps to. Please check that you have <span class=\"file-path\">%1</span> and it is writable by your web server."
-msgstr ""
+msgstr "Lo Shredder necessita di una cartella sul disco del server per archiviare gli oggetti eliminati dal database. Verifica che la cartella <span class=\"file-path\">%1</span> esista, e che sia scrivibile dall'utente impersonato dal server web."
 
 #: share/html/Dashboards/Queries.html:144
 msgid "Sidebar"
@@ -7027,7 +7027,7 @@ msgstr "Dom."
 
 #: share/html/Dashboards/Subscription.html:110
 msgid "Sunday"
-msgstr ""
+msgstr "Domenica"
 
 #: lib/RT/System.pm:79
 msgid "SuperUser"
@@ -7047,13 +7047,13 @@ msgstr "Configurazione del sistema"
 
 #: share/html/Dashboards/index.html:61
 msgid "System Dashboards"
-msgstr ""
+msgstr "Dashboard Sistema"
 
 #: lib/RT/Installer.pm:225 share/html/Elements/SelectTimezone:71
 msgid "System Default"
 msgstr "Predefinito di sistema"
 
-#: lib/RT/ACE_Overlay.pm:355 lib/RT/Interface/Web.pm:866 share/html/Admin/Elements/SelectRights:111
+#: lib/RT/ACE_Overlay.pm:355 lib/RT/Interface/Web.pm:904 share/html/Admin/Elements/SelectRights:111
 msgid "System Error"
 msgstr "Errore di sistema"
 
@@ -7336,7 +7336,7 @@ msgstr "Il richiedente del ticket"
 #: share/html/Install/Finish.html:64
 #. (RT::Installer->ConfigFile)
 msgid "The settings you've chosen are stored in %1."
-msgstr ""
+msgstr "Le impostazioni scelte sono salvate in %1"
 
 #: NOT FOUND IN SOURCE
 msgid "The settings you've chosen are stored in %1.  You can edit this file to refine your configuration further. You can prevent this installation wizard from being shown again by running `<tt>chmod -w '%1'</tt>`."
@@ -7427,7 +7427,7 @@ msgstr "Gio."
 
 #: share/html/Dashboards/Subscription.html:107
 msgid "Thursday"
-msgstr ""
+msgstr "Giovedì"
 
 #: lib/RT/Record.pm:908 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52
 msgid "Ticket"
@@ -7730,7 +7730,7 @@ msgstr "Mar."
 
 #: share/html/Dashboards/Subscription.html:105
 msgid "Tuesday"
-msgstr ""
+msgstr "Martedì"
 
 #: lib/RT/Ticket_Overlay.pm:916 lib/RT/Tickets_Overlay.pm:1830 lib/RT/Tickets_Overlay.pm:95 share/html/Admin/CustomFields/Modify.html:67 share/html/Admin/Elements/EditCustomField:67 share/html/Elements/RT__Ticket/ColumnMap:148 share/html/Search/Elements/BuildFormatString:100 share/html/Ticket/Elements/AddWatchers:56 share/html/Ticket/Elements/AddWatchers:67 share/html/Ticket/Elements/AddWatchers:77
 msgid "Type"
@@ -7857,7 +7857,7 @@ msgstr "Aggiorna ticket multipli"
 msgid "Update name"
 msgstr "Aggiorna nome"
 
-#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:714
+#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:752
 msgid "Update not recorded."
 msgstr "Aggiornamento non registrato."
 
@@ -7887,7 +7887,7 @@ msgstr "Aggiorna il ticket n°%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Aggiorna il ticket n°%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:713
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:751
 msgid "Update type was neither correspondence nor comment."
 msgstr "Il tipo aggiornamento non era ne' corrispondenza ne' commento."
 
@@ -8015,7 +8015,7 @@ msgstr "Username"
 msgid "User Rights"
 msgstr "Diritti dell'utente"
 
-#: lib/RT/Interface/Web.pm:1241
+#: lib/RT/Interface/Web.pm:1279
 #. ($cf->Name, ref $args{'Object'}, $args{'Object'}->id)
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr "L'utente ha richiesto un aggiornamento di tipo sconosciuto sul campo personalizzato %1 per %2 l'oggetto n°%3"
@@ -8063,7 +8063,7 @@ msgstr "Username"
 
 #: lib/RT/Config.pm:160
 msgid "Username format"
-msgstr ""
+msgstr "Formato Nome Utente"
 
 #: lib/RT/CustomField_Overlay.pm:1118 share/html/Admin/Elements/GlobalCustomFieldTabs:57 share/html/Admin/Elements/SelectNewGroupMembers:49 share/html/Admin/Elements/Tabs:55 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:75 share/html/Admin/Queues/People.html:91 share/html/Admin/index.html:58 share/html/User/Groups/Members.html:81
 msgid "Users"
@@ -8116,7 +8116,7 @@ msgstr "W3CDTF"
 
 #: lib/RT/Config.pm:194
 msgid "WYSIWYG composer height"
-msgstr ""
+msgstr "altezza dell'editor WYSIWYG"
 
 #: lib/RT/Config.pm:185
 msgid "WYSIWYG message composer"
@@ -8156,7 +8156,7 @@ msgstr "Osservatori"
 
 #: share/html/Install/DatabaseDetails.html:64
 msgid "We are able to find your database and connect as the DBA.  You can click on 'Customize Basics' to continue customizing RT."
-msgstr ""
+msgstr "La connessione al database come amministratore è stata verificata con successo. Ora puoi cliccare 'Configurazione di base' per continuare la configurazione di RT."
 
 #: share/html/Install/DatabaseDetails.html:55
 msgid "We need to know the name of the database RT will use and where to find it.  We also need to know the username and password of the user RT should use. RT can create the database and user for you, which is why we ask for the username and password of a user with DBA privileges.  During step 6 of the installation process we will use this information to create and initialize RT's database."
@@ -8184,7 +8184,7 @@ msgstr "Mer."
 
 #: share/html/Dashboards/Subscription.html:106
 msgid "Wednesday"
-msgstr ""
+msgstr "Mercoledì"
 
 #: lib/RT/Config.pm:296
 msgid "Weekly digest"
@@ -8337,7 +8337,7 @@ msgstr "E' possibile prendere in carico solo i ticket non assegnati"
 
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoRights:54
 msgid "You don't have <b>SuperUser</b> right."
-msgstr ""
+msgstr "Non hai diritti di <b>Super Utente</b>"
 
 #: NOT FOUND IN SOURCE
 msgid "You don't have permission to view that ticket.\\n"
@@ -8435,7 +8435,7 @@ msgstr "come concesso a %1"
 
 #: share/html/Search/Elements/SelectChartType:54
 msgid "bar"
-msgstr ""
+msgstr "barra"
 
 #: share/html/Elements/SelectDateRelation:57
 msgid "before"
@@ -8451,7 +8451,7 @@ msgstr "dal basso verso l'alto"
 
 #: share/html/Admin/Tools/Shredder/Elements/SelectObjects:57
 msgid "click to check/uncheck all objects at once"
-msgstr ""
+msgstr "clicca per selezionare/deselezionare tutti gli oggetti in una sola volta"
 
 #: share/html/SelfService/Closed.html:53
 msgid "closed"
@@ -8479,7 +8479,7 @@ msgstr "corrispondenza inviata"
 
 #: share/html/Dashboards/Subscription.html:98
 msgid "daily"
-msgstr ""
+msgstr "quotidianamente"
 
 #: share/html/Dashboards/Elements/ShowSubscription:72
 #. ($hour)
@@ -8552,11 +8552,11 @@ msgstr "errore: niente da invertire"
 
 #: share/html/Dashboards/Subscription.html:112
 msgid "every"
-msgstr ""
+msgstr "ogni"
 
 #: share/html/Admin/Tools/Shredder/index.html:173
 msgid "executed plugin successfuly"
-msgstr ""
+msgstr "plugin eseguito con successo"
 
 #: NOT FOUND IN SOURCE
 msgid "false"
@@ -8641,7 +8641,7 @@ msgstr "minuti"
 
 #: share/html/Dashboards/Subscription.html:122
 msgid "monthly"
-msgstr ""
+msgstr "mensilmente"
 
 #: share/html/Dashboards/Elements/ShowSubscription:69
 #. ($Subscription->SubValue('Dom'), $hour)
@@ -8686,7 +8686,7 @@ msgstr "nulla"
 
 #: share/html/Admin/Tools/Shredder/index.html:161
 msgid "objects were successfuly removed"
-msgstr ""
+msgstr "oggetti rimossi con successo"
 
 #: share/html/Dashboards/Subscription.html:102 share/html/Elements/SelectDateRelation:58
 msgid "on"
@@ -8694,7 +8694,7 @@ msgstr "il"
 
 #: share/html/Dashboards/Subscription.html:122
 msgid "on day"
-msgstr ""
+msgstr "al giorno"
 
 #: lib/RT/Queue_Overlay.pm:83 share/html/SelfService/Elements/MyRequests:81
 msgid "open"
@@ -8715,11 +8715,11 @@ msgstr "Gruppo personale '%1' per l'utente '%2'"
 
 #: share/html/Search/Elements/SelectChartType:55
 msgid "pie"
-msgstr ""
+msgstr "torta"
 
 #: share/html/Admin/Tools/Shredder/index.html:181
 msgid "plugin returned empty list"
-msgstr ""
+msgstr "il plugin ha restituito una lista vuota"
 
 #: lib/RT/Group_Overlay.pm:158
 #. ($queue->Name, $self->Type)
@@ -8744,11 +8744,11 @@ msgstr "sec"
 
 #: share/html/Admin/Tools/Shredder/index.html:183
 msgid "see object list below"
-msgstr ""
+msgstr "vedi lista oggetti sottostante"
 
 #: lib/RT/System.pm:90
 msgid "show Approvals tab"
-msgstr ""
+msgstr "Mostra pannello approvazione"
 
 #: lib/RT/System.pm:89
 msgid "show Configuration tab"
@@ -8821,11 +8821,11 @@ msgstr "utente %1"
 
 #: lib/RT/Config.pm:164
 msgid "verbose"
-msgstr ""
+msgstr "prolisso"
 
 #: share/html/Dashboards/Subscription.html:102
 msgid "weekly"
-msgstr ""
+msgstr "settimanalmente"
 
 #: share/html/Dashboards/Elements/ShowSubscription:66
 #. (loc($day), $hour)
