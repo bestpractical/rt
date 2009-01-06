@@ -40,21 +40,22 @@ is ($agent->{'status'}, 200, "Loaded Create.html");
 $agent->form_number(3);
 # Start with a string containing characters in latin1
 my $string = "I18N Web Testing æøå";
-Encode::from_to($string, 'iso-8859-1', 'utf8');
+my $web_string = $string;
+Encode::from_to($web_string, 'iso-8859-1', 'utf8');
 $agent->field('subject' => "Ticket with utf8 body");
-$agent->field('content' => $string);
+$agent->field('content' => $web_string);
 ok($agent->submit(), "Created new ticket with $string as content");
 like( $agent->{'content'}, qr{$string} , "Found the content");
 ok($agent->{redirected_uri}, "Did redirection");
-
 
 $agent->get($url."Ticket/Create.html?queue=1");
 is ($agent->{'status'}, 200, "Loaded Create.html");
 $agent->form_number(3);
 # Start with a string containing characters in latin1
 $string = "I18N Web Testing æøå";
-Encode::from_to($string, 'iso-8859-1', 'utf8');
-$agent->field('subject' => $string);
+$web_string = $string;
+Encode::from_to($web_string, 'iso-8859-1', 'utf8');
+$agent->field('subject' => $web_string);
 $agent->field('content' => "Ticket with utf8 subject");
 ok($agent->submit(), "Created new ticket with $string as subject");
 
@@ -66,11 +67,7 @@ my $basic_moniker = $agent->moniker_for('RT::Action::UpdateTicket');
 $agent->fill_in_action_ok( $basic_moniker, 'time_worked' => '5h' );
 $agent->submit;
 
-
-TODO: {
-    local $TODO = "We don't handle time worked units yet";
     like ($agent->{'content'}, qr/to &#39;300&#39;/, "5 hours is 300 minutes");
-}
 # }}}
 
 # {{{ query Builder tests

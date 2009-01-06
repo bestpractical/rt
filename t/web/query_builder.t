@@ -199,9 +199,7 @@ diag "click advanced, enter 'C1 OR ( C2 AND C3 )', apply, aggregators should sta
 
 # create a custom field with nonascii name and try to add a condition
 
-TODO: {
-   local $TODO = "4.0 custom fields with non-ascii names currently explode. note sure why.";
-{
+
     my $cf = RT::Model::CustomField->new(current_user => RT->system_user );
     $cf->load_by_name( name => "\x{442}", queue => 0 );
     if ( $cf->id ) {
@@ -218,14 +216,15 @@ TODO: {
     ok( $response->is_success, "Fetched " . $url."Search/Build.html" );
 
     ok($agent->form_name('build_query'), "found the form once");
-    print ($agent->content());
     #$agent->field("ValueOf'CF.{\321\202}'", "\321\201");
     $agent->submit();
+TODO: {
+   local $TODO = "4.0 custom fields with non-ascii names currently explode. note sure why.";
     is( get_query_from_form,
         "'CF.{\321\202}' LIKE '\321\201'",
         "no changes, no duplicate condition with badly encoded text"
     );
-}
+
 
 };
 

@@ -33,7 +33,7 @@ ok(my ($id, $msg) = $t->create( queue => $testqueue->id,
 isnt($id , 0, 'Success creating ticket');
 
 # Add reminder
-my $due_obj = RT::Date->new( $RT::SystemUser );
+my $due_obj = RT::Date->new( RT->system_user);
 $due_obj->set_to_now;
 ok(my ( $add_id, $add_msg, $txnid ) = $t->reminders->add(
     subject => 'TestReminder',
