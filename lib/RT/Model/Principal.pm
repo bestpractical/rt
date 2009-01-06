@@ -213,35 +213,6 @@ sub revoke_right {
 
 
 
-=head2 sub _cleanup_invalid_delegations
-
-Revokes all ACE entries delegated by this principal which are
-inconsistent with this principal's current delegation rights.  Does
-not perform permission checks, but takes no action and returns success
-if this principal still retains DelegateRights.  Should only ever be
-called from inside the RT library.
-
-If this principal is a group, recursively calls this method on each
-cached user member of itself.
-
-Returns a true value if the deletion succeeded; returns a false value
-and logs an internal error if the deletion fails (should not happen).
-
-=cut
-
-# This is currently just a stub for the methods of the same name in
-# RT::Model::User and RT::Model::Group.
-
-sub _cleanup_invalid_delegations {
-    my $self = shift;
-    unless ( $self->id ) {
-        Jifty->log->warn("Principal not loaded.");
-        return (undef);
-    }
-    return ( $self->object->_cleanup_invalid_delegations(@_) );
-}
-
-
 
 =head2 sub has_right (right => 'right' object => undef)
 

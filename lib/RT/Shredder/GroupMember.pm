@@ -74,7 +74,6 @@ sub __depends_on {
     $objs->limit( column => 'immediate_parent', value => $self->group_id );
     push( @$list, $objs );
 
-    # XXX: right delegations should be cleaned here
 
     $deps->_push_dependencies(
         base_object    => $self,

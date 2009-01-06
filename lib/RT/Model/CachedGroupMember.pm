@@ -244,35 +244,17 @@ sub delete {
         my $acl = RT::Model::ACECollection->new( current_user => RT->system_user );
         $acl->limit_to_principal( id => $self->group_id );
 
-        while ( my $this_ace = $acl->next() ) {
-
-            #       Find all ACEs which $self-MemberObj has delegated from $this_ace
-            my $delegations = RT::Model::ACECollection->new( current_user => RT->system_user );
-            $delegations->delegated_from( id => $this_ace->id );
-            $delegations->delegated_by( id => $self->member_id );
-
-            # For each delegation
-            while ( my $delegation = $delegations->next ) {
-
-                # WHACK IT
-                my $del_ret = $delegation->_delete;
-                unless ($del_ret) {
-                    Jifty->log->fatal( "Couldn't delete an ACL delegation that we know exists " . $delegation->id );
-                    return (undef);
-                }
-            }
-        }
     }
     return ($err);
 }
 
 
 
-=head2 setdisabled
+=head2 set_disabled
 
-Setdisableds the current CachedGroupMember from the group it's in and cascades 
-the Setdisabled to all submembers. This routine could be completely excised if
-mysql supported foreign keys with cascading Setdisableds.
+disables the current CachedGroupMember from the group it's in and cascades 
+the set_disabled to all submembers. This routine could be completely excised if
+mysql supported foreign keys with cascading deletes.
 
 =cut 
 
@@ -321,24 +303,6 @@ sub set_disabled {
         my $acl = RT::Model::ACECollection->new( current_user => RT->system_user );
         $acl->limit_to_principal( id => $self->group_id );
 
-        while ( my $this_ace = $acl->next() ) {
-
-            #       Find all ACEs which $self-MemberObj has delegated from $this_ace
-            my $delegations = RT::Model::ACECollection->new( current_user => RT->system_user );
-            $delegations->delegated_from( id => $this_ace->id );
-            $delegations->delegated_by( id => $self->member_id );
-
-            # For each delegation,  blow away the delegation
-            while ( my $delegation = $delegations->next ) {
-
-                # WHACK IT
-                my $del_ret = $delegation->_delete;
-                unless ($del_ret) {
-                    Jifty->log->fatal( "Couldn't delete an ACL delegation that we know exists " . $delegation->id );
-                    return (undef);
-                }
-            }
-        }
     }
     return ($err);
 }

@@ -321,16 +321,6 @@ sub delete {
         return (undef);
     }
 
-    # Since this deletion may have changed the former member's
-    # delegation rights, we need to ensure that no invalid delegations
-    # remain.
-    ( $err, $msg ) = $self->member_obj->_cleanup_invalid_delegations;
-    unless ($err) {
-        Jifty->log->warn( "Unable to revoke delegated rights for principal " . $self->id );
-        Jifty->handle->rollback();
-        return (undef);
-    }
-
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space.
     # TODO what about the groups key cache?
     RT::Model::Principal->invalidate_acl_cache();

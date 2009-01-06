@@ -84,9 +84,6 @@ use Jifty::DBI::Record schema {
         object_type => max_length is 25,
         type is 'varchar(25)', default is '';
     column object_id => type is 'int', default is '0';
-    column delegated_by   => references RT::Model::Principal;
-    column delegated_from => references RT::Model::ACE;
-    column delegations => references RT::Model::ACECollection by 'delegated_from';
 };
 
 use vars qw (
@@ -186,8 +183,6 @@ PARAMS is a parameter hash with the following elements:
    principal_id => The id of an RT::Model::Principal object
    type => "User" "Group" or any Role type
    right_name => the name of a right. in any case
-   delegated_by => The Principal->id of the user delegating the right
-   delegated_from => The id of the ACE which this new ACE is delegated from
 
 
     Either:
@@ -302,8 +297,6 @@ sub create {
         right_name     => $args{'right_name'},
         object_type    => $args{'object_type'},
         object_id      => $args{'object_id'},
-        delegated_by   => 0,
-        delegated_from => 0,
     );
     if ( $self->id ) {
         return ( 0, _('That principal already has that right') );
@@ -315,8 +308,6 @@ sub create {
         right_name     => $args{'right_name'},
         object_type    => ref( $args{'object'} ),
         object_id      => $args{'object'}->id,
-        delegated_by   => 0,
-        delegated_from => 0,
     );
 
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space.
@@ -329,122 +320,15 @@ sub create {
     }
 }
 
-
-
-=head2 delegate <PARAMS>
-
-This routine delegates the current ACE to a principal specified by the
-B<principal_id>  parameter.
-
-Returns an error if the current user doesn't have the right to be delegated
-or doesn't have the right to delegate rights.
-
-Always returns a tuple of (ReturnValue, Message)
-
-
-=cut
-
-sub delegate {
-    my $self = shift;
-    my %args = (
-        principal_id => undef,
-        @_
-    );
-
-    unless ( $self->id ) {
-        return ( 0, _("Right not loaded.") );
-    }
-    my $princ_obj;
-    ( $princ_obj, $args{'type'} ) = $self->canonicalize_principal( $args{'principal_id'}, $args{'type'} );
-
-    unless ( $princ_obj->id ) {
-        return ( 0, _( 'Principal %1 not found.', $args{'principal_id'} ) );
-    }
-
-    # }}}
-
-    # {{{ Check the ACL
-
-    # First, we check to se if the user is delegating rights and
-    # they have the permission to
-    unless (
-        $self->current_user->has_right(
-            right  => 'DelegateRights',
-            object => $self->object
-        )
-        )
-    {
-        return ( 0, _("Permission Denied") );
-    }
-
-    unless ( $self->principal->is_group ) {
-        return ( 0, _("System Error") );
-    }
-    unless ( $self->principal->object->has_member_recursively( $self->current_user->principal ) ) {
-        return ( 0, _("Permission Denied") );
-    }
-
-    # }}}
-
-    my $concurrency_check = RT::Model::ACE->new( current_user => RT->system_user );
-    $concurrency_check->load( $self->id );
-    unless ( $concurrency_check->id ) {
-        Jifty->log->fatal("Trying to delegate a right which had already been deleted");
-        return ( 0, _('Permission Denied') );
-    }
-
-    my $delegated_ace = RT::Model::ACE->new;
-
-    # Make sure the right doesn't already exist.
-    $delegated_ace->load_by_cols(
-        principal_id   => $princ_obj->id,
-        type => 'Group',
-        right_name     => $self->__value('right_name'),
-        object_type    => $self->__value('object_type'),
-        object_id      => $self->__value('object_id'),
-        delegated_by   => $self->current_user->id,
-        delegated_from => $self->id
-    );
-    if ( $delegated_ace->id ) {
-        return ( 0, _('That principal already has that right') );
-    }
-    my $id = $delegated_ace->SUPER::create(
-        principal_id   => $princ_obj->id,
-        type => 'Group',                         # do we want to hardcode this?
-        right_name     => $self->__value('right_name'),
-        object_type    => $self->__value('object_type'),
-        object_id      => $self->__value('object_id'),
-        delegated_by   => $self->current_user->id,
-        delegated_from => $self->id
-    );
-
-    #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space.
-    # TODO what about the groups key cache?
-    RT::Model::Principal->invalidate_acl_cache();
-
-    if ( $id > 0 ) {
-        return ( $id, _('right Delegated') );
-    } else {
-        return ( 0, _('System error. Right not delegated.') );
-    }
-}
-
-
-
 =head2 delete
 
 Delete this object. This method should ONLY ever be called from RT::Model::User or RT::Model::Group (or from itself)
-
-This routine will also recurse and delete any delegations of this right
 
 =cut
 
 sub check_delete_rights {
     my $self = shift;
 
-    # if it's a delegated ACE then delegator can delete it
-    my $delegated = $self->delegated_by;
-    return 1 if $delegated && ($delegated->id||0) == $self->current_user->id;
     return $self->current_user->has_right(
         right  => 'ModifyACL',
         object => $self->object,
@@ -477,30 +361,10 @@ sub __delete {
     my $inside_transaction = Jifty->handle->transaction_depth;
     Jifty->handle->begin_transaction unless $inside_transaction;
 
-    my $delegated_from_this = $self->delegations;
-    while ( my $delegated_ace = $delegated_from_this->next ) {
-        my ($status, $msg) = $delegated_ace->__delete;
-        unless ( $status ) {
-            Jifty->handle->rollback() unless $inside_transaction;
-            return ( 0, _('Right could not be revoked') );
-        }
-    }
-
     my ($status, $msg) = $self->SUPER::__delete(@_);
     unless ( $status ) {
         Jifty->handle->rollback unless $inside_transaction;
         return ( 0, _('Right could not be revoked') );
-    }
-
-    # If we're revoking delegation rights (see above), we may need to
-    # revoke all rights delegated by the recipient.
-    my $right = $self->__value('right_name');
-    if ( $right eq 'DelegateRights' || $right eq 'SuperUser' ) {
-        my ($status) = $self->principal->_cleanup_invalid_delegations;
-        unless ( $status ) {
-            Jifty->handle->rollback unless $inside_transaction;
-            return ( 0, _('Right could not be revoked') );
-        }
     }
 
     # Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space.
@@ -610,9 +474,7 @@ sub _set {
 sub _value {
     my $self = shift;
 
-    if ( $self->__value('delegated_by') eq $self->current_user->id ) {
-        return ( $self->__value(@_) );
-    } elsif ( $self->principal->is_group
+    if ( $self->principal->is_group
         && $self->principal->object->has_member_recursively( $self->current_user->principal ) )
     {
         return ( $self->__value(@_) );

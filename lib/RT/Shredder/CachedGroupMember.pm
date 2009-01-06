@@ -73,27 +73,6 @@ sub __depends_on {
     $objs->limit( column => 'id', operator => '!=', value => $self->id );
     push( @$list, $objs );
 
-    # principal lost group membership and lost some rights which he could delegate to
-    # some body
-
-    # XXX: Here is problem cause has_member_recursively would return true allways
-    # cause we didn't delete anything yet. :(
-    # if pricipal is not member anymore(could be via other groups) then proceed
-    if ( $self->group_obj->object->has_member_recursively( $self->member_obj ) ) {
-        my $acl = RT::Model::ACECollection->new;
-        $acl->limit_to_principal( id => $self->group_id );
-
-        # look into all rights that have group
-        while ( my $ace = $acl->next ) {
-            my $delegations = RT::Model::ACECollection->new;
-            $delegations->delegated_from( id => $ace->id );
-            $delegations->delegated_by( id => $self->member_id );
-            push( @$list, $delegations );
-        }
-    }
-
-    # XXX: Do we need to delete records if user lost right 'DelegateRights'?
-
     $deps->_push_dependencies(
         base_object    => $self,
         flags          => DEPENDS_ON,

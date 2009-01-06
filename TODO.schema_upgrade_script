@@ -1,3 +1,6 @@
+Remove any rights granted by way of a delegation
+remove delegation parameters
+
 Attachments.parent - replace all 0 values with NULLs
 Attachments.transaction_id - is renamed to 'transaction'
 * this has been reverted as transaction is reserved in SQLite

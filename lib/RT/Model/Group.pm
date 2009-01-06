@@ -92,7 +92,6 @@ use vars qw/$RIGHTS/;
 $RIGHTS = {
     AdminGroup           => 'Modify group metadata or delete group',                       # loc_pair
     AdminGroupMembership => 'Modify membership roster for this group',                     # loc_pair
-    DelegateRights       => "Delegate specific rights which have been granted to you.",    # loc_pair
     ModifyOwnMembership  => 'join or leave this group',                                    # loc_pair
     EditSavedSearches    => 'Edit saved searches for this group',                          # loc_pair
     ShowSavedSearches    => 'Display saved searches for this group',                       # loc_pair
@@ -528,9 +527,7 @@ sub _createacl_equivalence_group {
 
 =head2 create_personal_group { principal_id => PRINCIPAL_ID, name => "name", description => "description"}
 
-A helper subroutine which creates a personal group. Generally,
-personal groups are used for ACL delegation and adding to ticket roles
-principal_id defaults to the current user's principal id.
+A helper subroutine which creates a personal group.
 
 Returns a tuple of (Id, Message).  If id is 0, the create failed
 
@@ -629,7 +626,6 @@ sub delete {
     # Remove this group from anything it's a member of.
     # Remove all cached members of this group
     # Remove any rights granted to this group
-    # remove any rights delegated by way of this group
 
     return ( $self->SUPER::delete(@_) );
 }
@@ -1137,53 +1133,6 @@ sub _delete_member {
 }
 
 
-
-=head2 _cleanup_invalid_delegations
-
-Revokes all ACE entries delegated by members of this group which are
-inconsistent with their current delegation rights.  Does not perform
-permission checks.  Should only ever be called from inside the RT
-library.
-
-Returns a true value if the deletion succeeded; returns a false value
-and logs an internal error if the deletion fails (should not happen).
-
-=cut
-
-# XXX Currently there is a _cleanup_invalid_delegations method in both
-# RT::Model::User and RT::Model::Group.  If the recursive cleanup call for groups is
-# ever unrolled and merged, this code will probably want to be
-# factored out into RT::Model::Principal.
-
-sub _cleanup_invalid_delegations {
-    my $self = shift;
-    my %args = (
-        @_
-    );
-
-    unless ( $self->id ) {
-        Jifty->log->warn("Group not loaded.");
-        return (undef);
-    }
-
-    my $in_trans = Jifty->handle->transaction_depth;
-
-    # TODO: Can this be unrolled such that the number of DB queries is constant rather than linear in exploded group size?
-    my $members = $self->deep_members_obj();
-    $members->limit_to_users();
-    Jifty->handle->begin_transaction() unless $in_trans;
-    while ( my $member = $members->next() ) {
-        my $ret = $member->member_obj->_cleanup_invalid_delegations(
-            object             => $args{object}
-        );
-        unless ($ret) {
-            Jifty->handle->rollback() unless $in_trans;
-            return (undef);
-        }
-    }
-    Jifty->handle->commit() unless $in_trans;
-    return (1);
-}
 
 
 
