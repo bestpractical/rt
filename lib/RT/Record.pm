@@ -1331,7 +1331,7 @@ sub _lookup_id {
         # Convert FooBar into foo_bar
         $class =~ s/.([[:upper:]])/_$1/g;
 
-        my $method = lc($class) . "_obj";
+        my $method = lc($class);
         $object = $object->$method;
     }
 

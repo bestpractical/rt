@@ -602,19 +602,10 @@ Returns the L<RT::Model::Principal> object for this ACE.
 
 =cut
 
-sub principal_object {
-    require Carp; Carp::confess("deprecated");
-}
-
-
-
-
 sub _set {
     my $self = shift;
     return ( 0, _("ACEs can only be created and deleted.") );
 }
-
-
 
 sub _value {
     my $self = shift;
@@ -638,10 +629,7 @@ sub _value {
     }
 }
 
-
-
-
-=head2 _canonicalize_principal (principal_id, type)
+=head2 canonicalize_principal (principal_id, type)
 
 Takes a principal id and an optional principal type.
 

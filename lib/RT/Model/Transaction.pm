@@ -1084,7 +1084,7 @@ sub ticket {
     unless ( $self->object_type eq 'RT::Model::Ticket' ) {
         require Carp; Carp::confess("ticket method is called on txn that belongs not to ticket");
     }
-    return $self->object_id;
+    return $self->object;
 
 }
 
@@ -1195,7 +1195,7 @@ sub custom_field_values {
     my $self  = shift;
     my $field = shift;
 
-    if ( UNIVERSAL::can( $self->object, 'queue_obj' ) ) {
+    if ( $self->object->can( 'queue' )) {
 
         # XXX: $field could be undef when we want fetch values for all CFs
         #      do we want to cover this situation somehow here?

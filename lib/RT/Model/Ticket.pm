@@ -1362,27 +1362,6 @@ sub set_queue {
 
 
 
-=head2 queue_obj
-
-Takes nothing. returns this ticket's queue object
-
-=cut
-
-sub queue_obj {
-    require Carp; Carp::carp('deprecated');
-    my $self = shift;
-
-    my $queue_obj = RT::Model::Queue->new;
-
-    #We call __value so that we can avoid the ACL decision and some deep recursion
-    my ($result) = $queue_obj->load( $self->__value('queue') );
-    return ($queue_obj);
-}
-
-
-
-
-
 =head2 due_obj
 
   Returns an RT::Date object containing this ticket's due date
