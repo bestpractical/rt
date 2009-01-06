@@ -5,6 +5,7 @@ use warnings;
 
 use lib 't/lib';
 use RT::FM::Test tests => 21;
+$RT::Test::SKIP_REQUEST_WORK_AROUND = 1;
 
 use RT;
 use constant ImageFile => $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
