@@ -243,7 +243,7 @@ sub find_transactions {
         my $queue  = $txn->ticket_obj->queue->name;
         # Xxx todo - may clobber if two queues have the same name
         foreach my $user ( $txn->deferred_recipients($frequency) ) {
-            $all_digest->{$user}->{$queue}->{$ticket}->{ $txn->id } = $txn->content_obj;
+            $all_digest->{$user}->{$queue}->{$ticket->id}->{ $txn->id } = $txn->content_obj;
             $sent_transactions->{$user}->{ $txn->id } = $txn;
         }
     }
@@ -274,12 +274,12 @@ sub build_digest_for_user {
         foreach my $ticket ( sort keys %{ $user_digest->{$queue} } ) {
             my $tkt_txns   = $user_digest->{$queue}->{$ticket};
             my $ticket_obj = RT::Model::Ticket->new( current_user => RT->system_user );
-            $ticket_obj->load($ticket->id);
+            $ticket_obj->load($ticket);
 
             # Spit out the index entry for this ticket.
             my $ticket_title = sprintf(
                 "#%d %s [%s]\t%s\n",
-                $ticket->id, $ticket_obj->status, $ticket_obj->owner_obj->name,
+                $ticket, $ticket_obj->status, $ticket_obj->owner_obj->name,
                 $ticket_obj->subject
             );
             $contents_list .= $ticket_title;
