@@ -23,7 +23,8 @@
              description => 'A system-internal queue for the approvals system',
              disabled    => 2, } );
 
-my $approvals_id = do {
+use Scalar::Defer 'lazy';
+my $approvals_id = lazy {
     my $queue = RT::Model::Queue->new;
     $queue->load_by_cols(name => "___Approvals");
     $queue->id;
