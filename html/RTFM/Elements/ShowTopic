@@ -2,7 +2,7 @@
 %# 
 %# COPYRIGHT:
 %#  
-%# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC 
+%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC 
 %#                                          <sales@bestpractical.com>
 %# 
 %# (Except where explicitly superseded by other copyright notices)
@@ -45,7 +45,6 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-
 % for (@path) {
 %# this isn't always a class, it can be the system object
 % my $class_id = ($_->ObjectType eq 'RT::FM::Class' ? $_->ObjectId : 0 );
