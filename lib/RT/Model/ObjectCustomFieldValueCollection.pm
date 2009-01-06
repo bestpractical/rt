@@ -91,7 +91,7 @@ sub limit_to_object {
 }
 
 
-=sub has_entry value
+=head2 has_entry value
 
 If this collection has an entry with content that eq value then
 returns the entry, otherwise returns undef.
