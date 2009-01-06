@@ -23,6 +23,12 @@
              description => 'A system-internal queue for the approvals system',
              disabled    => 2, } );
 
+my $approvals_id = do {
+    my $queue = RT::Model::Queue->new;
+    $queue->load_by_cols(name => "___Approvals");
+    $queue->id;
+};
+
 @scrip_actions = (
 
     {  name        => 'Autoreply To requestors',    # loc
@@ -298,7 +304,7 @@ According to our records, your request has been resolved. If you have any
 further questions or concerns, please respond to this message.
 '
     },
-    {  queue       => '___Approvals',
+    {  queue       => $approvals_id,
        name        => "New Pending Approval",    # loc
        description =>
          "Notify owners and admin_ccs of new items pending their approval", # loc
@@ -317,7 +323,7 @@ batch-process all your pending approvals.
 {$transaction->content()}
 '
     },
-    {  queue       => '___Approvals',
+    {  queue       => $approvals_id,
        name        => "Approval Passed",    # loc
        description =>
          "Notify owner of their ticket has been approved by some approver", # loc
@@ -329,7 +335,7 @@ Your ticket has been approved by { eval { $Approval->owner_obj->name } }.
 Other approvals may be pending.
 '
     },
-    {  queue       => '___Approvals',
+    {  queue       => $approvals_id,
        name        => "All Approvals Passed",    # loc
        description =>
          "Notify owner of their ticket has been approved by all approvers", # loc
@@ -340,7 +346,7 @@ Greetings,
 Your ticket has been approved.  Its owner may now start to act on it.
 '
     },
-    {  queue       => '___Approvals',
+    {  queue       => $approvals_id,
        name        => "Approval Rejected",    # loc
        description =>
          "Notify owner of their rejected ticket", # loc
@@ -503,7 +509,7 @@ Hour:         { $subscription_obj->sub_value('Hour') }
        ScripAction    => 'Extract Subject Tag',
        Template       => 'Blank' },
     {  description => "When an approval ticket is Created, notify the owner and admin_cc of the item awaiting their approval",    # loc
-       queue          => '___Approvals',
+       queue          => $approvals_id,
        scrip_condition => 'User Defined',
        custom_is_applicable_code => q[
 	    $self->ticket_obj->type eq 'approval'	and
@@ -514,7 +520,7 @@ Hour:         { $subscription_obj->sub_value('Hour') }
        scrip_action    => 'Notify owner',
        template       => 'New Pending Approval' },
     {  description => "If an approval is rejected, reject the original and delete pending approvals",    # loc
-       queue            => '___Approvals',
+       queue            => $approvals_id,
        scrip_condition   => 'On Status Change',
        scrip_action      => 'User Defined',
        custom_prepare_code => q[
@@ -570,7 +576,7 @@ return $rejected;
        custom_commit_code => '"never needed"',
        template          => 'Approval Rejected', },
     {  description => "When a ticket has been approved by any approver, add correspondence to the original ticket", # loc
-       queue             => '___Approvals',
+       queue             => $approvals_id,
        scrip_condition    => 'On Resolve',
        scrip_action       => 'User Defined',
        custom_prepare_code => q[
@@ -606,7 +612,7 @@ return 1;
        custom_commit_code => '"never needed"',
        template => 'Approval Passed' },
     {  description => "When a ticket has been approved by all approvers, add correspondence to the original ticket", # loc
-       queue             => '___Approvals',
+       queue             => $approvals_id,
        scrip_condition    => 'On Resolve',
        scrip_action       => 'User Defined',
        custom_prepare_code  => q[
