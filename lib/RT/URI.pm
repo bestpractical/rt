@@ -144,7 +144,7 @@ sub from_uri {
 
 
 
-=private _GetResolver <scheme>
+=for private _GetResolver <scheme>
 
 Gets an RT URI resolver for the scheme <scheme>. 
 Falls back to a null resolver. RT::URI::base.
@@ -235,7 +235,7 @@ sub as_href {
     return $self->resolver->href;
 }
 
-=head Resolver
+=head2 resolver
 
 Returns this URI's URI resolver object
 
