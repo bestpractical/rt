@@ -201,7 +201,7 @@ sub insert_initial_data {
     }
 }
 
-=head insert_data
+=head2 insert_data
 
 =cut
 
