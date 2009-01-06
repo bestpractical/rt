@@ -274,12 +274,12 @@ sub build_digest_for_user {
         foreach my $ticket ( sort keys %{ $user_digest->{$queue} } ) {
             my $tkt_txns   = $user_digest->{$queue}->{$ticket};
             my $ticket_obj = RT::Model::Ticket->new( current_user => RT->system_user );
-            $ticket_obj->load($ticket);
+            $ticket_obj->load($ticket->id);
 
             # Spit out the index entry for this ticket.
             my $ticket_title = sprintf(
                 "#%d %s [%s]\t%s\n",
-                $ticket, $ticket_obj->status, $ticket_obj->owner_obj->name,
+                $ticket->id, $ticket_obj->status, $ticket_obj->owner_obj->name,
                 $ticket_obj->subject
             );
             $contents_list .= $ticket_title;
@@ -292,7 +292,7 @@ sub build_digest_for_user {
                 # $msg contains an RT::Model::Attachment with our outgoing
                 # message.  Print a few headers for clarity's sake.
                 $contents_body .= "From: " . $msg->get_header('From') . "\n";
-                my $date = $msg->get_header('Date ');
+                my $date = $msg->get_header('Date');
                 unless ($date) {
                     my $txn_obj = RT::Model::Transaction->new( current_user => RT->system_user );
                     $txn_obj->load($txn);
