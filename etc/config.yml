@@ -17,7 +17,7 @@ framework:
   DevelMode: 1
   L10N: 
     PoDir: share/po
-  LogLevel: ERROR
+  LogLevel: DEBUG
   Mailer: Sendmail
   MailerArgs: []
 
@@ -32,7 +32,7 @@ framework:
         login_by: username
     - Prototypism: {}
     - I18N:
-        js: 1
+        js: 0
     - IEFixes:
         js:
           - IE7
