@@ -457,7 +457,7 @@ sub _Create {
 
 
     if ( $args{'_RecordTransaction'} ) {
-	$self->_NewTransaction( Type => "Create" );
+	    $self->_NewTransaction( Type => "Create" );
     }
 
     $RT::Handle->Commit() unless ($args{'InsideTransaction'});
