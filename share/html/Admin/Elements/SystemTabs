@@ -76,6 +76,9 @@
 
 };
 
+# Use current $tabs as $subtabs if there is no $subtabs for this tab
+$subtabs = ($subtabs) ? $subtabs : $tabs;
+
   # Now let callbacks add their extra tabs
   $m->callback( %ARGS, tabs => $tabs );
 
