@@ -86,7 +86,10 @@ if ($id) {
 			},	
 		 I => { title => loc('User Rights'),
 			  path => "Admin/Queues/UserRights.html?id=".$id,
-			}
+			},
+			J => { title => loc('History'),
+			  path  => "Admin/Queues/History.html?id=" . $QueueObj->id 
+			},
         }
         };
 }

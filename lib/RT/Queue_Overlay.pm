@@ -325,6 +325,7 @@ sub Create {
         DefaultDueIn      => 0,
         Sign              => undef,
         Encrypt           => undef,
+        _RecordTransaction => 1,
         @_
     );
 
@@ -351,6 +352,9 @@ sub Create {
     unless ($create_ret) {
         $RT::Handle->Rollback();
         return ( 0, $self->loc('Queue could not be created') );
+    }
+    if ( $args{'_RecordTransaction'} ) {
+        $self->_NewTransaction( Type => "Create" );
     }
     $RT::Handle->Commit;
 
