@@ -1122,10 +1122,28 @@ user will fail. The user will appear in no user listings.
 
 sub SetDisabled {
     my $self = shift;
+    my $val = shift;
     unless ( $self->CurrentUser->HasRight(Right => 'AdminUsers', Object => $RT::System) ) {
         return (0, $self->loc('Permission Denied'));
     }
-    return $self->PrincipalObj->SetDisabled(@_);
+
+    $RT::Handle->BeginTransaction();
+    my $set_err = $self->PrincipalObj->SetDisabled($val);
+    unless ($set_err) {
+        $RT::Handle->Rollback();
+        $RT::Logger->warning("Couldn't ".($val == 1) ? "disable" : "enable"." user ".$self->PrincipalObj->Id);
+        return (undef);
+    }
+    $self->_NewTransaction( Type => ($val == 1) ? "Disabled" : "Enabled" );
+
+    $RT::Handle->Commit();
+
+    if ( $val == 1 ) {
+        return (1, $self->loc("User disabled"));
+    } else {
+        return (1, $self->loc("User enabled"));
+    }
+
 }
 
 =head2 Disabled

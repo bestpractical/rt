@@ -714,6 +714,8 @@ This routine finds all the cached group members that are members of this group  
         }
     }
 
+    $self->_NewTransaction( Type => ($val == 1) ? "Disabled" : "Enabled" );
+
     $RT::Handle->Commit();
     if ( $val == 1 ) {
         return (1, $self->loc("Group disabled"));

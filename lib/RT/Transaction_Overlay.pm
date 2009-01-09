@@ -574,6 +574,12 @@ sub BriefDescription {
     if ( $type eq 'Create' ) {
         return ( $self->loc( "[_1] created", $obj_type ) );
     }
+    elsif ( $type eq 'Enabled' ) {
+        return ( $self->loc( "[_1] enabled", $obj_type ) );
+    }
+    elsif ( $type eq 'Disabled' ) {
+        return ( $self->loc( "[_1] disabled", $obj_type ) );
+    }
     elsif ( $type =~ /Status/ ) {
         if ( $self->Field eq 'Status' ) {
             if ( $self->NewValue eq 'deleted' ) {
