@@ -129,7 +129,7 @@ use Jifty::DBI::Record schema {
 
 use Jifty::Plugin::User::Mixin::Model::User;    # name, email, email_confirmed
 use Jifty::Plugin::Authentication::Password::Mixin::Model::User;
-use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata; # created_by, created_on, updated_by and updated_on
+#use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata; # created_by, created_on, updated_by and updated_on
 
 # XXX TODO, merging params should 'just work' but does not
 __PACKAGE__->column('email')->writable(1);
