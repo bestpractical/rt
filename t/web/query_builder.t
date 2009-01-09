@@ -212,7 +212,7 @@ diag "click advanced, enter 'C1 OR ( C2 AND C3 )', apply, aggregators should sta
         );
         ok($return, 'Created CF') or diag "error: $msg";
     }
-    my $response = $agent->get($url."Search/Build.html?new_query=1");
+    $response = $agent->get($url."Search/Build.html?new_query=1");
     ok( $response->is_success, "Fetched " . $url."Search/Build.html" );
 
     ok($agent->form_name('build_query'), "found the form once");
