@@ -19,10 +19,11 @@ instructions below even if your old RT was installed on MySQL 4.1 or newer.
 
 2) Follow instructions in the README file to step 7.
 
-3) Apply changes described in step 7, but only up to version 3.8.0.
+3) Apply changes described in step 7, but only up to version 3.7.87.
 
-4) Apply the MySQL 4.0->4.1 schema changes. Included in RT is the script
-etc/upgrade/upgrade-mysql-schema.pl that generates SQL queries to upgrade the database's schema. Run it:
+4) Apply the RT 3.8 schema upgrades. Included in RT is the script
+etc/upgrade/upgrade-mysql-schema.pl that generates SQL queries to 
+upgrade the database's schema. Run it:
 
     perl etc/upgrade/upgrade-mysql-schema.pl db user pass > sql.queries
 
@@ -40,8 +41,8 @@ This step should not produce any errors or warnings. If you see any, restore
 your database from the backup you made at step 1) and send a report to the
 rt-users@lists.bestpractical.com mailing list.
 
-7) Continue from step 7 in the README and apply other upgrade scripts and follow
-other steps.
+7) Continue from step 7 in the README and apply other upgrades and 
+follow the remaining steps.
 
 8) Test everything. The most important parts you have to test:
 * binary attachments, like docs, PDFs, and images
