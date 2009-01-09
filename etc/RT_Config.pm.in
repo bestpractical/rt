@@ -737,9 +737,9 @@ Set($WebDefaultStylesheet, 'web2');
 
 =item C<$UsernameFormat>
 
-This determines how user info is displayed. Concise will show one of 
+This determines how user info is displayed. 'concise' will show one of 
 either NickName, RealName, Name or EmailAddress, depending on what exists 
-and whether the user is privileged or not. Verbose will show RealName and
+and whether the user is privileged or not. 'verbose' will show RealName and
 EmailAddress.
 
 =cut
