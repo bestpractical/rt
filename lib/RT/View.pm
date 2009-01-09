@@ -55,7 +55,7 @@ require RT::View::Admin::Groups;
 alias RT::View::Admin::Groups under 'admin/groups/';
 
 require RT::View::Admin::Users;
-alias RT::View::Admin::Users under 'admin/groups/';
+alias RT::View::Admin::Users under 'admin/users/';
 
 require RT::View::Ticket;
 alias RT::View::Ticket under 'ticket/';
