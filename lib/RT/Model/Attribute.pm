@@ -74,6 +74,8 @@ use Jifty::DBI::Record schema {
 
 };
 
+use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata; # created_by, created_on, updated_by and updated_on
+
 =head1 name
 
   RT::Model::Attribute 

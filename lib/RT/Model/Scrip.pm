@@ -75,6 +75,7 @@ use Jifty::DBI::Record schema {
     column custom_commit_code        => type is 'text';
     column custom_is_applicable_code => type is 'text';
 };
+use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata; # created_by, created_on, updated_by and updated_on
 
 =head2 create
 
