@@ -90,7 +90,7 @@
             </table>
 	  </&>
 % }
-	  <&| /Widgets/TitleBox, title => _("dates"),
+	  <&| /Widgets/TitleBox, title => _("Dates"),
 		title_href => RT->config->get('WebPath')."/Ticket/ModifyDates.html?id=".$ticket->id, 
 		class => 'ticket-info-dates' &>
 	  <& /Ticket/Elements/ShowDates, ticket => $ticket &>
