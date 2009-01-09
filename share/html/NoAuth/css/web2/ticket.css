@@ -81,8 +81,8 @@ div#ticket-history {
 
 .ticket-transaction div.metadata  span.type {
  text-align: center;
- position: absolute;
- margin: 0.25em;
+ float: left;
+ margin: 0.25em 0.70em 0.25em 0.25em;
  width: 1em;
  height: 1.25em;
  padding: 0.75em 0 0 0;
@@ -98,7 +98,6 @@ div#ticket-history span.type a {
 
 
 div#ticket-history span.date {
- margin-left: 2em;
  width: 10em;
 }
 
