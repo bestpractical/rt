@@ -61,7 +61,6 @@ sub display_columns {qw(id name description)}
 sub _current_collection {
     my $self = shift;
     my $c    = $self->SUPER::_current_collection();
-    warn $c;
     $c->limit_to_user_defined_groups();
     return $c;
 }
