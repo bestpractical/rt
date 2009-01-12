@@ -50,12 +50,14 @@ use strict;
 
 package RT::View::Admin::Users;
 use Jifty::View::Declare -base;
-use base 'Jifty::View::Declare::CRUD';
+use base 'RT::View::CRUD';
 
-__PACKAGE__->use_mason_wrapper;
+use constant object_type     => 'User';
+use constant display_columns => qw(id name email);
 
-sub per_page        {50}
-sub object_type     {'User'}
-sub display_columns {qw(id name email)}
+use constant tab_url         => '/Admin/Elements/UserTabs';
+use constant current_tab     => 'Admin/Users/';
+use constant current_subtab  => 'Admin/Users/';
 
 1;
+
