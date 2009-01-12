@@ -59,9 +59,9 @@ use constant per_page => 50;
 template 'index.html' => page {
     my $self = shift;
 
-    render_mason(__PACKAGE__->tab_url, {
-        current_tab    => __PACKAGE__->current_tab,
-        current_subtab => __PACKAGE__->current_subtab,
+    render_mason($self->tab_url, {
+        current_tab    => $self->current_tab,
+        current_subtab => $self->current_subtab,
         title          => $self->object_type,
     });
 
