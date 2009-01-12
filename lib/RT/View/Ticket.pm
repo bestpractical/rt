@@ -98,7 +98,7 @@ private template '_elements/_edit_link_type' => sub {
                     : $link->target,
                     checked => 0
                 )->render_widget;
-                m_comp( '/Elements/ShowLink', { uri => $link->$link_target } );
+                render_mason( '/Elements/ShowLink', { uri => $link->$link_target } );
                 br {};
             }
         }
@@ -254,19 +254,5 @@ template '_elements/edit_cfs' => sub {
         }
     };
 };
-
-sub m_comp {
-    my ($template, $args)= @_;
-    my $mason = Jifty->handler->view('Jifty::View::Mason::Handler');
-    my $orig_out = $mason->interp->out_method || Jifty::View->can('out_method');
-
-    my $buf = '';
-    $mason->interp->out_method(\$buf);
-    $mason->handle_comp($template, $args);
-    $mason->interp->out_method($orig_out);
-
-    Template::Declare->buffer->append($buf);
-    return '';
-}
 
 1;
