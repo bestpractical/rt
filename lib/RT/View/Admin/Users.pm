@@ -57,7 +57,6 @@ use constant display_columns => qw(id name email);
 
 use constant tab_url         => '/Admin/Elements/UserTabs';
 use constant current_tab     => 'Admin/Users/';
-use constant current_subtab  => 'Admin/Users/';
 
 1;
 

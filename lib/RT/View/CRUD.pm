@@ -56,6 +56,10 @@ __PACKAGE__->use_mason_wrapper;
 
 use constant per_page => 50;
 
+use constant tab_url     => '/Elements/Tabs';
+use constant current_tab => '';
+sub current_subtab { shift->current_tab(@_) }
+
 template 'index.html' => page {
     my $self = shift;
 

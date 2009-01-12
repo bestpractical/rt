@@ -55,7 +55,6 @@ use base 'RT::View::CRUD';
 use constant object_type    => 'Group';
 use constant tab_url        => '/Admin/Elements/GroupTabs';
 use constant current_tab    => 'Admin/Groups/';
-use constant current_subtab => 'Admin/Groups/';
 
 use constant display_columns => qw(id name description);
 
