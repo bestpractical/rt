@@ -272,12 +272,14 @@ our %META = (
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             Description => 'Date format',                            #loc
-            Values      => [qw(DefaultFormat RFC2822 ISO W3CDTF)],
-            ValuesLabel => {
-                DefaultFormat => 'Tue Dec 25 21:59:12 1995',           #loc_left_pair
-                RFC2822       => 'Tue, 25 Dec 1995 21:59:12 -0300',    #loc_left_pair
-                ISO           => '1995-11-25 21:59:12',                #loc_left_pair
-                W3CDTF        => '1995-11-25T21:59:12Z',               #loc_left_pair
+            Callback => sub { my $ret = { Values => [], ValuesLabel => {}};
+                              my $date = new RT::Date($HTML::Mason::Commands::session{'CurrentUser'});
+                              $date->Set;
+                              foreach my $value (qw(DefaultFormat RFC2822 ISO W3CDTF)) { #loc_qw
+                                 push @{$ret->{Values}}, $value;
+                                 $ret->{ValuesLabel}{$value} = $date->$value();
+                              }
+                              return $ret;
             },
         },
     },
