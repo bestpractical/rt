@@ -1296,8 +1296,8 @@ Set($DateTimeFormat, 'DefaultFormat');
 
 =item C<$DateDayBeforeMonth>
 
-Set this to 1 if your local date convention looks like "dd/mm/yy"
-instead of "mm/dd/yy".
+Set this to 1 if your local date convention looks like "dd/mm/yy" instead of
+"mm/dd/yy". Used only for parsing, not for displaying dates.
 
 =cut
 
