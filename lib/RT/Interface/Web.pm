@@ -1148,6 +1148,15 @@ sub _ProcessObjectCustomFieldUpdates {
     my $cf = $args{'CustomField'};
     my $cf_type = $cf->Type;
 
+    # Remove blank Values since the magic field will take care of this. Sometimes
+    # the browser gives you a blank value which causes CFs to be processed twice
+    if ( defined $args{'ARGS'}->{'Values'}
+        && !length $args{'ARGS'}->{'Values'}
+        && $args{'ARGS'}->{'Values-Magic'}
+    ) {
+        delete $args{'ARGS'}->{'Values'};
+    }
+
     my @results;
     foreach my $arg ( keys %{ $args{'ARGS'} } ) {
         # skip category argument
