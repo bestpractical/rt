@@ -70,7 +70,7 @@
 my $CF = RT::CustomField->new($session{'CurrentUser'});
 $CF->Load($id) or Abort(loc("Could not load CustomField [_1]"), $id);
 my $LookupType = $CF->LookupType || '';
-$LookupType =~ /^(.*?)-/ ||
+$LookupType =~ /^([^-]+)/ ||
      Abort(loc("Object of type [_1] cannot take custom fields", $LookupType));
 
 my $Class = $1;
@@ -92,6 +92,12 @@ $CollectionClass = $Class.'Collection';
 my $title = loc('Modify associated objects for [_1]', $CF->Name);
 
 my $Objects = $CollectionClass->new($session{'CurrentUser'});
+
+# If CF is a Group CF, only display user-defined groups
+if ($Class eq 'RT::Group') {
+    $Objects->LimitToUserDefinedGroups;
+}
+
 my (@results);
 my (@AssignedObjs, @UnassignedObjs);
 
