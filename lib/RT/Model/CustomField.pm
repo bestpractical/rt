@@ -76,14 +76,12 @@ use Jifty::DBI::Record schema {
     column disabled        => max_length is 6, type is 'smallint', default is '0';
 };
 
-use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata
-  user_class => 'RT::Model::Principal',
-  map        => {
+use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
     created_by => 'creator',
     created_on => 'created',
     updated_by => 'last_updated_by',
     updated_on => 'last_updated'
-  };
+};
 
 
 our %FieldTypes = (

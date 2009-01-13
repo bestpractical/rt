@@ -129,14 +129,12 @@ use Jifty::DBI::Record schema {
 
 use Jifty::Plugin::User::Mixin::Model::User;    # name, email, email_confirmed
 use Jifty::Plugin::Authentication::Password::Mixin::Model::User;
-use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata
-  user_class => 'RT::Model::Principal',
-  map        => {
+use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
     created_by => 'creator',
     created_on => 'created',
     updated_by => 'last_updated_by',
     updated_on => 'last_updated'
-  };
+};
 
 # XXX TODO, merging params should 'just work' but does not
 __PACKAGE__->column('email')->writable(1);
@@ -443,6 +441,7 @@ sub _bootstrap_create {
 
     my ( $status, $user_msg ) = $self->SUPER::create(
 # we need to feed creator and last_updated_by since current user doesn't have id yet
+# and principal id *should* be the same as user id
             creator => $principal_id, 
             last_updated_by => $principal_id,
         id => $principal_id,

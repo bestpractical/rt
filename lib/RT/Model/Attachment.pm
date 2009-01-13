@@ -94,12 +94,10 @@ use Jifty::DBI::Record schema {
     column headers          => type is 'blob', default is '';
 
 };
-use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata
-  user_class => 'RT::Model::Principal',
-  map        => {
+use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
     created_by => 'creator',
     created_on => 'created',
-  };
+};
 
 =head2 create
 
