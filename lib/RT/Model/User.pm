@@ -125,16 +125,18 @@ use Jifty::DBI::Record schema {
     column timezone => max_length is 50,  type is 'varchar(50)',  default is '';
     column pgp_key   => type is 'text';
 
-#    column creator => references RT::Model::User, render_as 'hidden';
-#    column last_updated_by => references RT::Model::User, render_as 'hidden';
-#    column created => type is 'timestamp', render_as 'hidden';
-#    column last_updated => type is 'timestamp', render_as 'hidden';
 };
 
 use Jifty::Plugin::User::Mixin::Model::User;    # name, email, email_confirmed
 use Jifty::Plugin::Authentication::Password::Mixin::Model::User;
-# TODO ActorMetadata can't work in User
-# use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata; # created_by, created_on, updated_by and updated_on
+use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata
+  user_class => 'RT::Model::Principal',
+  map        => {
+    created_by => 'creator',
+    created_on => 'created',
+    updated_by => 'last_updated_by',
+    updated_on => 'last_updated'
+  };
 
 # XXX TODO, merging params should 'just work' but does not
 __PACKAGE__->column('email')->writable(1);
@@ -440,8 +442,11 @@ sub _bootstrap_create {
     }
 
     my ( $status, $user_msg ) = $self->SUPER::create(
+# we need to feed creator and last_updated_by since current user doesn't have id yet
+            creator => $principal_id, 
+            last_updated_by => $principal_id,
         id => $principal_id,
-        %args, password => '*NO-PASSWORD*'
+        %args, password => '*NO-PASSWORD*',
     );
     unless ($status) {
         die $user_msg;
@@ -1323,6 +1328,5 @@ sub basic_columns {
     ( [ name => 'User Id' ], [ email => 'Email' ], [ real_name => 'name' ], [ organization => 'organization' ], );
 
 }
-
 
 1;
