@@ -88,13 +88,7 @@ for my $link ( @{ $Ticket->DependsOn->ItemsArrayRef } ) {
   </tr>
   <tr>
     <td class="labeltop"><&|/l&>Parents</&>: (<a href="<%$clone->{'MemberOf-new'}%>"><% loc('Create') %></a>)</td>
-    <td class="value">
-<ul>
-% while (my $Link = $Ticket->MemberOf->Next) {
-<li><& ShowLink, URI => $Link->TargetURI &></li>
-% }
-</ul>
-    </td>
+    <td class="value"><& /Ticket/Elements/ShowParents, Ticket => $Ticket &></td>
   </tr>
   <tr>
     <td class="labeltop"><&|/l&>Children</&>: (<a href="<%$clone->{'new-MemberOf'}%>"><% loc('Create') %></a>)</td>
