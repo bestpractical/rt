@@ -1284,6 +1284,7 @@ section in perldoc F<lib/RT/Date.pm> for more options.  This option can
 be overridden by users in their preferences.
 Some examples:
 
+C<Set($DateTimeFormat, 'LocalizedDateTime');>
 C<Set($DateTimeFormat, { Format => 'ISO', Seconds => 0 });>
 C<Set($DateTimeFormat, 'RFC2822');>
 C<Set($DateTimeFormat, { Format => 'RFC2822', Seconds => 0, DayOfWeek => 0 });>

@@ -275,7 +275,7 @@ our %META = (
             Callback => sub { my $ret = { Values => [], ValuesLabel => {}};
                               my $date = new RT::Date($HTML::Mason::Commands::session{'CurrentUser'});
                               $date->Set;
-                              foreach my $value (qw(DefaultFormat RFC2822 ISO W3CDTF)) { #loc_qw
+                              foreach my $value ($date->Formatters) {
                                  push @{$ret->{Values}}, $value;
                                  $ret->{ValuesLabel}{$value} = $date->$value();
                               }

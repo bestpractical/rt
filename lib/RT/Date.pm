@@ -109,6 +109,18 @@ our @DAYS_OF_WEEK = (
     'Sat', # loc
 );
 
+our @FORMATTERS = (
+    'DefaultFormat', # loc
+    'ISO',           # loc
+    'W3CDTF',        # loc
+    'RFC2822',       # loc
+    'RFC2616',       # loc
+    'iCal',          # loc
+);
+if ( eval 'use DateTime qw(); 1;' && eval 'use DateTime::Locale qw(); 1;' ) {
+    push @FORMATTERS, 'LocalizedDateTime'; # loc
+}
+
 =head2 new
 
 Object constructor takes one argument C<RT::CurrentUser> object.
@@ -554,6 +566,19 @@ Formatters may also add own arguments to the list, for example
 in RFC2822 format day of time in output is optional so it
 understand boolean argument C<DayOfTime>.
 
+=head3 Formatters
+
+Returns an array of available formatters.
+
+=cut
+
+sub Formatters
+{
+    my $self = shift;
+
+    return @FORMATTERS;
+}
+
 =head3 DefaultFormat
 
 =cut
@@ -583,6 +608,72 @@ sub DefaultFormat
     } else {
         return $self->loc('[_1] [_2] [_3] [_4]:[_5]:[_6] [_7]',
                           $wday,$mon,$mday,$hour,$min,$sec,$year);
+    }
+}
+
+=head3 LocalizedDateTime
+
+Returns date and time as string, with user localization.
+
+Supports arguments: C<DateFormat> and C<TimeFormat> which may contains date and
+time format as specified in DateTime::Locale (default to full_date_format and
+medium_time_format), C<AbbrDay> and C<AbbrMonth> which may be set to 0 if
+you want full Day/Month names instead of abbreviated ones.
+
+Require optionnal DateTime::Locale module.
+
+=cut
+
+sub LocalizedDateTime
+{
+    my $self = shift;
+    my %args = ( Date => 1,
+                 Time => 1,
+                 Timezone => '',
+                 DateFormat => 'full_date_format',
+                 TimeFormat => 'medium_time_format',
+                 AbbrDay => 1,
+                 AbbrMonth => 1,
+                 @_,
+               );
+
+    return $self->loc("DateTime module missing") unless ( eval 'use DateTime qw(); 1;' );
+    return $self->loc("DateTime::Locale module missing") unless ( eval 'use DateTime::Locale qw(); 1;' );
+    my $date_format = $args{'DateFormat'};
+    my $time_format = $args{'TimeFormat'};
+
+    my $lang = $self->CurrentUser->UserObj->Lang || 'en';
+
+    my $formatter = DateTime::Locale->load($lang);
+    $date_format = $formatter->$date_format;
+    $time_format = $formatter->$time_format;
+    $date_format =~ s/\%A/\%a/g if ( $args{'AbbrDay'} );
+    $date_format =~ s/\%B/\%b/g if ( $args{'AbbrMonth'} );
+
+    my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) =
+                            $self->Localtime($args{'Timezone'});
+    $mon++;
+    my $tz = $self->Timezone($args{'Timezone'});
+
+    # FIXME : another way to call this module without conflict with local
+    # DateTime method?
+    my $dt = new DateTime::( locale => $lang,
+                            time_zone => $tz,
+                            year => $year,
+                            month => $mon,
+                            day => $mday,
+                            hour => $hour,
+                            minute => $min,
+                            second => $sec,
+                            nanosecond => 0,
+                          );
+
+    if ( $args{'Date'} && !$args{'Time'} ) {
+        return $dt->strftime($date_format);
+    } elsif ( !$args{'Date'} && $args{'Time'} ) {
+        return $dt->strftime($time_format);
+    } else {
+        return $dt->strftime($date_format) . " " . $dt->strftime($time_format);
     }
 }
 
