@@ -89,12 +89,17 @@ use Jifty::DBI::Record schema {
     column initial_priority => max_length is 11, type is 'int',      default is '0';
     column final_priority   => max_length is 11, type is 'int',      default is '0';
     column default_due_in   => max_length is 11, type is 'int',      default is '0';
-    column creator          => references RT::Model::User;
-    column created          => type is 'timestamp';
-    column last_updated_by  => references RT::Model::User;
-    column last_updated     => type is 'timestamp';
     column disabled         => max_length is 6, type is 'smallint', is mandatory, default is '0';
 };
+use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata 
+no_user_refs => 1,
+map => {
+    created_by => 'creator',
+    created_on => 'created',
+    updated_by => 'last_updated_by',
+    updated_on => 'last_updated'
+};
+
 our @DEFAULT_ACTIVE_STATUS   = qw(new open stalled);
 our @DEFAULT_INACTIVE_STATUS = qw(resolved rejected deleted);
 

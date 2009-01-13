@@ -120,12 +120,15 @@ use Jifty::DBI::Record schema {
         render_as 'DateTime',
         label is _('Due');
     column resolved         => type is 'timestamp';
-    column last_updated_by  => references RT::Model::User;
-    column last_updated     => type is 'timestamp';
-    column creator          => references RT::Model::User;
-    column created          => type is 'timestamp';
     column disabled         => max_length is 6,   type is 'smallint',     default is '0';
 };
+use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
+    created_by => 'creator',
+    created_on => 'created',
+    updated_by => 'last_updated_by',
+    updated_on => 'last_updated'
+};
+
 
 # A helper table for links mapping to make it easier
 # to build and parse links between tickets

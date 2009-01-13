@@ -80,12 +80,14 @@ use Jifty::DBI::Record schema {
     column description     => type is 'text';
     column exec_module     => type is 'text';
     column argument        => type is 'text';
-    column creator         => references RT::Model::User;
-    column created         => type is 'timestamp';
-    column last_updated_by => references RT::Model::User;
-    column last_updated    => type is 'timestamp';
-
 };
+use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
+    created_by => 'creator',
+    created_on => 'created',
+    updated_by => 'last_updated_by',
+    updated_on => 'last_updated'
+};
+
 
 =head2 create
 

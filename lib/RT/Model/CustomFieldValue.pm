@@ -53,18 +53,21 @@ use base qw/RT::Record/;
 sub table {'CustomFieldValues'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column creator         => references RT::Model::User;
-    column last_updated_by => references RT::Model::User;
     column sort_order      => type is 'int', max_length is 11, default is '0';
     column custom_field    => type is 'int', max_length is 11, default is '0';
-    column created         => type is 'timestamp';
-    column last_updated    => type is 'timestamp';
     column name            => type is 'varchar(200)', max_length is 200, default is '';
     column
         description => type is 'varchar(255)',
         max_length is 255, default is '';
 
 };
+use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
+    created_by => 'creator',
+    created_on => 'created',
+    updated_by => 'last_updated_by',
+    updated_on => 'last_updated'
+};
+
 
 =head2 validatename
 

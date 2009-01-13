@@ -61,23 +61,27 @@ use Jifty::DBI::Record schema {
         content_type => type is 'varchar(80)',
         max_length is 80, default is '';
     column large_content => type is 'blob', default is '';
-    column creator => references RT::Model::User;
     column object_id => type is 'int', max_length is 11, default is '0';
-    column last_updated_by => references RT::Model::User;
     column disabled        => type is 'smallint', max_length is 6, default is '0';
     column sort_order      => type is 'int', max_length is 11, default is '0';
-    column created         => type is 'timestamp';
     column custom_field    => references RT::Model::CustomField;
     column content         => type is 'varchar(255)', max_length is 255, default is '';
     column
         content_encoding => type is 'varchar(80)',
         max_length is 80, default is '';
-    column last_updated => type is 'timestamp';
     column
         object_type => type is 'varchar(255)',
         max_length is 255, default is '';
 
 };
+
+use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
+    created_by => 'creator',
+    created_on => 'created',
+    updated_by => 'last_updated_by',
+    updated_on => 'last_updated'
+};
+
 
 sub create {
     my $self = shift;

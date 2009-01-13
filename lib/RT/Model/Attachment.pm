@@ -92,10 +92,14 @@ use Jifty::DBI::Record schema {
     column content  => type is 'blob',    default is '';
     column content_encoding => type is 'blob', default is '';
     column headers          => type is 'blob', default is '';
-    column creator          => references RT::Model::Principal;
-    column created          => type is 'timestamp';
 
 };
+use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata
+  user_class => 'RT::Model::Principal',
+  map        => {
+    created_by => 'creator',
+    created_on => 'created',
+  };
 
 =head2 create
 

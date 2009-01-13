@@ -125,11 +125,16 @@ use Jifty::DBI::Record schema {
     column timezone => max_length is 50,  type is 'varchar(50)',  default is '';
     column pgp_key   => type is 'text';
 
+#    column creator => references RT::Model::User, render_as 'hidden';
+#    column last_updated_by => references RT::Model::User, render_as 'hidden';
+#    column created => type is 'timestamp', render_as 'hidden';
+#    column last_updated => type is 'timestamp', render_as 'hidden';
 };
 
 use Jifty::Plugin::User::Mixin::Model::User;    # name, email, email_confirmed
 use Jifty::Plugin::Authentication::Password::Mixin::Model::User;
-#use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata; # created_by, created_on, updated_by and updated_on
+# TODO ActorMetadata can't work in User
+# use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata; # created_by, created_on, updated_by and updated_on
 
 # XXX TODO, merging params should 'just work' but does not
 __PACKAGE__->column('email')->writable(1);

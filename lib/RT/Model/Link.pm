@@ -80,12 +80,15 @@ use Jifty::DBI::Record schema {
     column base   => type is 'varchar(240)', max_length is 240, default is '';
     column local_base      => type is 'int';                                            #references RT::Model::Ticket;
     column local_target    => type is 'int';                                            #references RT::Model::Ticket;
-    column creator         => references RT::Model::User;
     column type            => type is 'varchar(20)', max_length is 20, default is '';
-    column last_updated_by => references RT::Model::User;
-    column created         => type is 'timestamp';
-    column last_updated    => type is 'timestamp';
 
+};
+use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata 
+map => {
+    created_by => 'creator',
+    created_on => 'created',
+    updated_by => 'last_updated_by',
+    updated_on => 'last_updated'
 };
 
 use Carp;

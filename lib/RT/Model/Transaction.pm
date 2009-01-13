@@ -88,9 +88,10 @@ use Jifty::DBI::Record schema {
     column old_reference => max_length is 11,  type is 'int';
     column new_reference => max_length is 11,  type is 'int';
     column data          => max_length is 255, type is 'varchar(255)', default is '';
-    column creator       => references RT::Model::User;
-    column created       => type is 'timestamp';
-
+};
+use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
+    created_by => 'creator',
+    created_on => 'created',
 };
 
 =head2 object_type

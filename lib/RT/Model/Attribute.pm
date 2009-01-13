@@ -73,8 +73,12 @@ use Jifty::DBI::Record schema {
     column content => type is 'blob', default is '';
 
 };
-
-use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata; # created_by, created_on, updated_by and updated_on
+use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
+    created_by => 'creator',
+    created_on => 'created',
+    updated_by => 'last_updated_by',
+    updated_on => 'last_updated'
+};
 
 =head1 name
 
