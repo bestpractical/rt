@@ -459,7 +459,6 @@ sub _set {
     }
 
     my $old_val = $self->__value( $args{'column'} );
-    $self->set_last_updated();
     my $ret = $self->SUPER::_set(
         column          => $args{'column'},
         value           => $args{'value'},
@@ -1265,8 +1264,6 @@ sub _new_transaction {
     $self->load( $self->id );
 
     Jifty->log->warn($msg) unless $transaction;
-
-    $self->set_last_updated;
 
     if ( defined $args{'time_taken'} and $self->can('_update_time_taken') ) {
         $self->_update_time_taken( $args{'time_taken'} );
