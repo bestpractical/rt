@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <ul>
 % while (my $link = $member_of->Next) {
-<li><& /Elements/ShowLink, URI => $link->BaseURI &><br />
+<li><& /Elements/ShowLink, URI => $link->TargetURI &><br />
 % }
 </ul>
 <%INIT>
