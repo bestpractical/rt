@@ -8,6 +8,11 @@ use Text::Naming::Convention qw/renaming/;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 
+use Jifty::Everything;
+BEGIN {
+    Jifty->new();
+}
+
 my %args;
 
 confess "unknown option"
@@ -96,9 +101,6 @@ s/(?<!INSERT INTO )`(\w+)`/'`' . ($name_changes{renaming( $1)} || renaming($1)) 
 
 # need to add a row for the default status schema in Attributes and update
 # part columns of that table
-use Jifty;
-Jifty->new();
-
 use RT::Model::AttributeCollection;
 my $collection =
   RT::Model::AttributeCollection->new( current_user => RT->system_user );
