@@ -171,5 +171,23 @@ my @results = $attribute->create(
     }
 );
 
-# TODO: update auth_token and password columns in Users
 
+use RT::Model::UserCollection;
+my $user_collection =
+  RT::Model::UserCollection->new( current_user => RT->system_user );
+
+while ( my $user = $user_collection->next ) {
+    my $name = $user->name;
+    $user->__set( column => 'email_confirmed', value => 1 )
+      unless $name eq 'RT_System';
+
+# generate auth_token column
+    $user->regenerate_auth_token;
+
+#   this is for attribute, no idea why to add this to attribute
+#    $user->generate_auth_token;
+
+    # TODO what's the best way to (re)set password?
+    $user->__set( column => 'password', value => 'password' )
+      if $name eq 'root';
+}
