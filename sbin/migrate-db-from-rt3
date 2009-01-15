@@ -1,0 +1,171 @@
+#!/usr/bin/perl 
+use strict;
+use warnings;
+use Getopt::Long;
+use Carp;
+use Text::Naming::Convention qw/renaming/;
+
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+
+my %args;
+
+confess "unknown option"
+  unless GetOptions( \%args, 'db-type=s', 'db-name-rt3=s', 'db-name-rt4=s',
+    'dba=s', 'help' );
+
+my $USAGE = <<'END';
+before run, please backup your dbs
+
+run: ./sbin/migrate-db-from-rt3
+
+options: 
+
+help: print this usage
+db-type: db's type, mysql, Pg or SQLite
+db-name-rt3: db name of rt3
+db-name-rt4: db name of rt4
+dba: database administrator
+END
+
+if ( $args{'help'} ) {
+    print $USAGE;
+    exit 0;
+}
+
+$args{'db-type'}     ||= 'mysql';
+$args{'db-name-rt3'} ||= 'rt3';
+$args{'db-name-rt4'} ||= 'rt4';
+
+my %name_changes = (
+    nick_name           => 'nickname',
+    email_address       => 'email',
+    principal_type      => 'type',
+    immediate_parent_id => 'immediate_parent'
+);
+
+if ( $args{'db-type'} eq 'mysql' ) {
+    $args{'dba'} ||= 'root';
+
+    # make a tmp rt3 db, with to-be-dropped columns dropped
+    my $tmp_rt3_db = "tmp_$args{'db-name-rt3'}_for_migration";
+    my $dump_data  = `mysqldump -u $args{'dba'} $args{'db-name-rt3'}`;
+    $dump_data .= 'alter table ACL drop column DelegatedBy;' . "\n";
+    $dump_data .= 'alter table ACL drop column DelegatedFrom;' . "\n";
+    $dump_data .= 'alter table Principals drop column ObjectId;' . "\n";
+    $dump_data .= 'alter table Templates drop column Language;' . "\n";
+    $dump_data .= 'alter table Templates drop column TranslationOf;' . "\n";
+    $dump_data .= 'alter table Scrips drop column ConditionRules;' . "\n";
+    $dump_data .= 'alter table Scrips drop column ActionRules;' . "\n";
+
+    my $run_sql = sub {
+        my $db  = shift;
+        my @sql = @_;
+        open my $fh, '|-', "mysql -u $args{'dba'} $db" or die $!;
+        print $fh $_ for @sql;
+        close $fh;
+    };
+
+    $run_sql->( '',          "create database $tmp_rt3_db;\n" );
+    $run_sql->( $tmp_rt3_db, $dump_data );
+
+    my $out =
+`mysqldump -u $args{'dba'} $tmp_rt3_db --complete-insert --no-create-info`;
+    my @inserts = grep { /^INSERT INTO/ } split /\n/, $out;
+    die "no inserts found" unless @inserts;
+
+    for my $insert (@inserts) {
+
+        # e.g. RT::Group -> RT::Model::Group
+        $insert =~ s/'RT::(?!System|ScripAction)(\w+)\b/'RT::Model::$1/g;
+        $insert =~ s/'Owner'/'owner'/g;
+        $insert =~ s/'Requestor'/'requestor'/g;
+        $insert =~ s/'Cc'/'cc'/g;
+        $insert =~ s/'AdminCc'/'admin_cc'/g;
+        $insert =~
+s/(?<!INSERT INTO )`(\w+)`/'`' . ($name_changes{renaming( $1)} || renaming($1)) . '`'/ge;
+    }
+    $run_sql->( $args{'db-name-rt4'}, @inserts );
+    $run_sql->( '',                   "drop database $tmp_rt3_db\n" );
+
+    # set up proper values for new added columns
+    # Queue.status_schema: 'default' # this is done automatically by rt4
+
+
+}
+
+# need to add a row for the default status schema in Attributes and update
+# part columns of that table
+use Jifty;
+Jifty->new();
+
+use RT::Model::AttributeCollection;
+my $collection =
+  RT::Model::AttributeCollection->new( current_user => RT->system_user );
+$collection->unlimit;
+while ( my $attr = $collection->next ) {
+    my $desc = $attr->description;
+    $desc =~ s/\[_(\d)\]/%$1/g; # [_1] => %1
+    $attr->set_description($desc);
+
+    my $content = $attr->content;
+
+    next unless ref $content && ref $content eq 'HASH';
+    for my $k ( keys %$content ) {
+        my $v = $content->{$k};
+        delete $content->{$k};
+        $content->{ renaming $k} = $v;
+    }
+    my $format = $content->{'format'};
+    if ( $format ) {
+        # update for the name convention changes
+        $format =~ s/__(?!WebPath)(\w+)__/'__' . renaming($1) . '__'/eg;
+        $format =~ s/TITLE:Subject/TITLE:subject/g;
+        $format =~ s/(,\s*|^\s*)(\w+)(?=\s*,|\s*$)/$1 . renaming($2)/eg;
+        $content->{'format'} = $format;
+    }
+    $attr->set_content($content);
+}
+
+# add default status schema
+use RT::Model::Attribute;
+my $attribute = RT::Model::Attribute->new( current_user => RT->system_user );
+my @results = $attribute->create(
+    name        => 'StatusSchemas',
+    object      => RT->system,
+    description => 'all system status schemas',
+    content     => {
+        default => {
+            initial     => ['new'],
+            active      => [ 'open', 'stalled' ],
+            inactive    => [ 'resolved', 'rejected', 'deleted' ],
+            transitions => {
+                new      => [qw(open resolved rejected deleted)],
+                open     => [qw(stalled resolved rejected deleted)],
+                stalled  => [qw(open)],
+                resolved => [qw(open)],
+                rejected => [qw(open)],
+                deleted  => [qw(open)],
+            },
+            actions => {
+                'new -> open'     => [ 'Open It', 'respond' ],
+                'new -> resolved' => [ 'Resolve', 'comment' ],
+                'new -> rejected' => [ 'Reject',  'respond' ],
+                'new -> deleted'  => [ 'Delete',  '' ],
+
+                'open -> stalled'  => [ 'Stall',   'comment' ],
+                'open -> resolved' => [ 'Resolve', 'comment' ],
+                'open -> rejected' => [ 'Reject',  'respond' ],
+                'open -> deleted'  => [ 'Delete',  'hide' ],
+
+                'stalled -> open'  => [ 'Open It',  '' ],
+                'resolved -> open' => [ 'Re-open',  'comment' ],
+                'rejected -> open' => [ 'Re-open',  'comment' ],
+                'deleted -> open'  => [ 'Undelete', '' ],
+            },
+        }
+    }
+);
+
+# TODO: update auth_token and password columns in Users
+
