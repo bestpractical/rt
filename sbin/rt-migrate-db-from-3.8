@@ -21,8 +21,10 @@ confess "unknown option"
 
 my $USAGE = <<'END';
 before run, please backup your dbs
+and we need to set up a basic rt4 db with the cmd:
+$ jifty schema --setup --no-bootstrap
 
-run: ./sbin/migrate-db-from-rt3
+then run: ./sbin/migrate-db-from-rt3
 
 options: 
 
