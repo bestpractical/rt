@@ -736,6 +736,37 @@ sub has_password {
     return 1;
 }
 
+=head3 password_is
+
+Checks if the user's password matches the provided I<PASSWORD>.
+
+=cut
+
+sub password_is {
+    my $self = shift;
+    my $pass = shift;
+
+    return undef unless $self->__value('password');
+    my ($hash, $salt) = @{$self->__value('password')};
+    return 1 if ( $hash eq Digest::MD5::md5_hex($pass . $salt) );
+
+    #  if it's a historical password we say ok.
+    my $value = $self->__raw_value('password');
+
+    my $md5 = Digest::MD5->new;
+    $md5->add($pass);
+    if (   $md5->hexdigest eq $value
+        || $value eq crypt( $pass, $value )
+        || $value eq $md5->b64digest )
+    {
+        $self->set_password($pass); # to update password in the new way
+        return 1;
+    }
+
+    return undef;
+
+}
+
 =head3 generate_auth_token
 
 Generate a random authentication string for the user.
