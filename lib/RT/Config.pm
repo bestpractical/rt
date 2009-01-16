@@ -447,7 +447,7 @@ sub _LoadConfig {
     my $self = shift;
     my %args = ( File => '', @_ );
 
-    my $is_ext = $args{'File'} =~ /^(?!RT_)(?:(.*)_)(?:Site)?Config/ ? $1 : 0;
+    my $is_ext = $args{'File'} =~ /^(?!RT_)(?:(.*)_)(?:Site)?Config/ ? $1 : '';
     my $is_site = $args{'File'} =~ /SiteConfig/ ? 1 : 0;
 
     eval {
@@ -669,7 +669,37 @@ sub SetFromConfig {
     # if option is already set we have to check where
     # it comes from and may be ignore it
     if ( exists $OPTIONS{$name} ) {
-        return 1 if !$args{'SiteConfig'};
+        if ( $args{'SiteConfig'} && $args{'Extension'} ) {
+            # if it's site config of an extension then it can only
+            # override options that came from its main config
+            if ( $args{'Extension'} ne $META{$name}->{'Source'}{'Extension'} ) {
+                my %source = %{ $META{$name}->{'Source'} };
+                warn
+                    "Change of config option '$name' at $args{'File'} line $args{'Line'} has been ignored."
+                    ." This option earlier has been set in $source{'File'} line $source{'Line'}."
+                    ." To overide this option use ". ($source{'Extension'}||'RT')
+                    ." site config."
+                ;
+                return 1;
+            }
+        } elsif ( !$args{'SiteConfig'} && $META{$name}->{'Source'}{'SiteConfig'} ) {
+            # if it's core config then we can override any option that came from another
+            # core config, but not site config
+
+            my %source = %{ $META{$name}->{'Source'} };
+            if ( $source{'Extension'} ne $args{'Extension'} ) {
+                # as a site config is loaded earlier then its base config
+                # then we warn only on different extensions, for example
+                # RTIR's options is set in main site config or RTFM's
+                warn
+                    "Change of config option '$name' at $args{'File'} line $args{'Line'} has been ignored."
+                    ." It's may be ok, but we want you to be aware."
+                    ." This option earlier has been set in $source{'File'} line $source{'Line'}."
+                ;
+            }
+
+            return 1;
+        }
     }
 
     $META{$name}->{'Type'} = $type;
