@@ -447,7 +447,7 @@ sub _LoadConfig {
     my $self = shift;
     my %args = ( File => '', @_ );
 
-    my $is_ext = $args{'File'} !~ /^RT_(?:Site)?Config/ ? 1 : 0;
+    my $is_ext = $args{'File'} =~ /^(?!RT_)(?:(.*)_)(?:Site)?Config/ ? $1 : 0;
     my $is_site = $args{'File'} =~ /SiteConfig/ ? 1 : 0;
 
     eval {
