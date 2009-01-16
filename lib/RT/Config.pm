@@ -110,7 +110,7 @@ can be set for each config optin:
  Overridable - Can users change this option
  SortOrder   - Within a Section, how should the options be sorted
                for display to the user
- Widget      - Mason component path to widget that should be user 
+ Widget      - Mason component path to widget that should be used 
                to display this config option
  WidgetArguments - An argument hash passed to the WIdget
     Description - Friendly description to show the user
@@ -555,10 +555,12 @@ sub Configs {
 
 Takes name of the option as argument and returns its current value.
 
-In the case of a user-overridable option, first checks the user's preferences before looking for site-wide configuration.
+In the case of a user-overridable option, first checks the user's
+preferences before looking for site-wide configuration.
 
-Returns values from RT_SiteConfig, RT_Config and then the %META hash of configuration variables's "Default" for this config variable, in that order.
-
+Returns values from RT_SiteConfig, RT_Config and then the %META hash
+of configuration variables's "Default" for this config variable,
+in that order.
 
 Returns different things in scalar and array contexts. For scalar
 options it's not that important, however for arrays and hash it's.
@@ -614,7 +616,7 @@ sub Set {
         { no warnings 'once'; no strict 'refs'; @{"RT::$name"} = (@_); }
     } elsif ( $type eq 'HASH' ) {
         $OPTIONS{$name} = {@_};
-        { no warnings 'once';  no strict 'refs'; %{"RT::$name"} = (@_); }
+        { no warnings 'once'; no strict 'refs'; %{"RT::$name"} = (@_); }
     } else {
         $OPTIONS{$name} = shift;
         {no warnings 'once'; no strict 'refs'; ${"RT::$name"} = $OPTIONS{$name}; }
@@ -770,18 +772,5 @@ sub Options {
     }
     return @res;
 }
-
-=head3 Type
-
-=cut
-
-sub Type {
-    my $self = shift;
-    my $name = shift;
-}
-
-=head3 IsOverridable
-
-=cut
 
 1;
