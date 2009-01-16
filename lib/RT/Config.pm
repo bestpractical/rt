@@ -759,16 +759,26 @@ sub Sections {
 
 sub Options {
     my $self = shift;
-    my %args = ( Section => undef, Overridable => 1, @_ );
-    my @res  = sort { ($META{$a}->{SortOrder}||9999) <=> ($META{$b}->{SortOrder}||9999)
-                       || $a cmp $b } keys %META;
+    my %args = ( Section => undef, Overridable => 1, Sorted => 1, @_ );
+    my @res  = keys %META;
+    
     @res = grep( ( $META{$_}->{'Section'} || 'General' ) eq $args{'Section'},
-        @res )
-        if defined $args{'Section'};
+        @res 
+    ) if defined $args{'Section'};
+
     if ( defined $args{'Overridable'} ) {
         @res
             = grep( ( $META{$_}->{'Overridable'} || 0 ) == $args{'Overridable'},
             @res );
+    }
+
+    if ( $args{'Sorted'} ) {
+        @res = sort {
+            ($META{$a}->{SortOrder}||9999) <=> ($META{$b}->{SortOrder}||9999)
+            || $a cmp $b 
+        } @res;
+    } else {
+        @res = sort { $a cmp $b } @res;
     }
     return @res;
 }
