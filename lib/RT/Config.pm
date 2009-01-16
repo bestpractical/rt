@@ -666,7 +666,11 @@ sub SetFromConfig {
         $type = $META{$name}->{'Type'} || 'SCALAR';
     }
 
-    return 1 if exists $OPTIONS{$name} && !$args{'SiteConfig'};
+    # if option is already set we have to check where
+    # it comes from and may be ignore it
+    if ( exists $OPTIONS{$name} ) {
+        return 1 if !$args{'SiteConfig'};
+    }
 
     $META{$name}->{'Type'} = $type;
     foreach (qw(Package File Line SiteConfig Extension)) {
