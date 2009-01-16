@@ -71,23 +71,41 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 
 <h2><&|/l&>RT Config</&></h2>
 <table>
-% foreach my $key ( RT->Config->Options( Overridable => undef ) ) {
-% my $val = RT->Config->Get( $key );
-% next unless defined $val;
-<tr><td><% $key %></td>
-<td>
+<%PERL>
+foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
+    my $val = RT->Config->Get( $key );
+    next unless defined $val;
+
+    my $meta = RT->Config->Meta( $key );
+    my $description = '';
+    if ( $meta->{'Source'}{'Extension'} && $meta->{'Source'}{'SiteConfig'} ) {
+        $description = loc("[_1] site config", $meta->{'Source'}{'Extension'});
+    }
+    elsif ( $meta->{'Source'}{'Extension'} ) {
+        $description = loc("[_1] core config", $meta->{'Source'}{'Extension'});
+    }
+    elsif ( $meta->{'Source'}{'SiteConfig'} ) {
+        $description = loc("site config");
+    }
+    else {
+        $description = loc("core config");
+    }
+</%PERL>
+<tr><th><% $key %></th>
+<td rowspan="2">\
 % if ( $key =~ /Password(?!Length)/i ) { 
-<em>Password not printed</em>
+<em>Password not printed</em>\
 % } elsif ( !ref $val ) {
-<% $val %>
+<% "$val" %>\
 % } elsif ( ref $val eq 'ARRAY' ) {
-<% join ', ', @$val %>
+<% join ', ', @$val %>\
 % } elsif ( ref $val eq 'HASH' ) {
-<% join ', ', %$val %>
+<% join ', ', %$val %>\
 % } else {
-<% ref $val %>
+<% ref $val %>\
 % }
 </td></tr>
+<tr><td><% $description %></td></tr>
 % }
 </table>
 
@@ -97,7 +115,7 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
 % my %config_opt = map { $_ => 1 } RT->Config->Options( Overridable => undef );
 % foreach my $key ( sort keys %{*RT::} ) {
 % next if !${'RT::'.$key} || ref ${'RT::'.$key} || $config_opt{ $key };
-<tr><td>RT::<% $key %></td>
+<tr><th>RT::<% $key %></th>
 <td>
 % if ( $key =~ /Password(?!Length)/i ) { 
 <em>Password not printed</em>
