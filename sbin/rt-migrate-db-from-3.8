@@ -61,17 +61,6 @@ my $tables_no_change = 'Attachments  Attributes CachedGroupMembers CustomFieldVa
 if ( $args{'db-type'} eq 'mysql' ) {
     $args{'dba'} ||= 'root';
 
-    # make a tmp rt3 db, with to-be-dropped columns dropped
-    my $tmp_rt3_db = "tmp_$args{'db-name-rt3'}_for_migration";
-    my $dump_data  = `mysqldump -u $args{'dba'} $args{'db-name-rt3'} $tables_need_change`;
-    $dump_data .= 'alter table ACL drop column DelegatedBy;' . "\n";
-    $dump_data .= 'alter table ACL drop column DelegatedFrom;' . "\n";
-    $dump_data .= 'alter table Principals drop column ObjectId;' . "\n";
-    $dump_data .= 'alter table Templates drop column Language;' . "\n";
-    $dump_data .= 'alter table Templates drop column TranslationOf;' . "\n";
-    $dump_data .= 'alter table Scrips drop column ConditionRules;' . "\n";
-    $dump_data .= 'alter table Scrips drop column ActionRules;' . "\n";
-
     my $run_sql = sub {
         my $db  = shift;
         my @sql = @_;
@@ -80,8 +69,27 @@ if ( $args{'db-type'} eq 'mysql' ) {
         close $fh;
     };
 
+    # make a tmp rt3 db, with to-be-dropped columns dropped
+    my $tmp_rt3_db = "tmp_$args{'db-name-rt3'}_for_migration";
     $run_sql->( '',          "create database $tmp_rt3_db;\n" );
-    $run_sql->( $tmp_rt3_db, $dump_data );
+
+# copy tables need to change to $tmp_rt3_db
+    system(
+        "mysqldump -u $args{'dba'} $args{'db-name-rt3'} $tables_need_change |
+      mysql -u $args{'dba'} $tmp_rt3_db"
+    ) && die $!;
+
+    # now we alert tables
+    my @alter_sql = (
+        'alter table ACL drop column DelegatedBy;',
+        'alter table ACL drop column DelegatedFrom;',
+        'alter table Principals drop column ObjectId;',
+        'alter table Templates drop column Language;',
+        'alter table Templates drop column TranslationOf;',
+        'alter table Scrips drop column ConditionRules;',
+        'alter table Scrips drop column ActionRules;'
+    );
+    $run_sql->( $tmp_rt3_db, @alter_sql );
 
     my $insert = sub {
         my $input_cmd = shift;
