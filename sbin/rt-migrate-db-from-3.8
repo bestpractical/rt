@@ -8,18 +8,14 @@ use Text::Naming::Convention qw/renaming/;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 
-use Jifty::Everything;
-BEGIN {
-    Jifty->new();
-}
-
 my %args;
 
-confess "unknown option"
-  unless GetOptions( \%args, 'db-type=s', 'db-name-rt3=s', 'db-name-rt4=s',
-    'dba=s', 'help' );
+BEGIN {
+    confess "unknown option"
+      unless GetOptions( \%args, 'db-type=s', 'db-name-rt3=s', 'db-name-rt4=s',
+        'dba=s', 'help' );
 
-my $USAGE = <<'END';
+    my $USAGE = <<'END';
 before run, please backup your dbs
 and we need to set up a basic rt4 db with the cmd:
 $ jifty schema --setup --no-bootstrap
@@ -35,10 +31,15 @@ db-name-rt4: db name of rt4
 dba: database administrator
 END
 
-if ( $args{'help'} ) {
-    print $USAGE;
-    exit 0;
+    if ( $args{'help'} ) {
+        print $USAGE;
+        exit 0;
+    }
+
+    use Jifty::Everything;
+    Jifty->new();
 }
+
 
 $args{'db-type'}     ||= 'mysql';
 $args{'db-name-rt3'} ||= 'rt3';
