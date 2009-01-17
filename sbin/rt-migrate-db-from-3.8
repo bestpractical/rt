@@ -51,12 +51,19 @@ my %name_changes = (
     immediate_parent_id => 'immediate_parent',
 );
 
+my @tables = qw/ACL Attachments  Attributes CachedGroupMembers CustomFieldValues
+CustomFields GroupMembers Groups Links ObjectCustomFieldValues ObjectCustomFields    Principals  Queues ScripActions ScripConditions Scrips Templates Tickets
+Transactions Users sessions/;
+
+my $tables_need_change = 'ACL Principals Templates Scrips';
+my $tables_no_change = 'Attachments  Attributes CachedGroupMembers CustomFieldValues CustomFields GroupMembers Groups Links ObjectCustomFieldValues ObjectCustomFields    Queues ScripActions ScripConditions Tickets Transactions Users sessions';
+
 if ( $args{'db-type'} eq 'mysql' ) {
     $args{'dba'} ||= 'root';
 
     # make a tmp rt3 db, with to-be-dropped columns dropped
     my $tmp_rt3_db = "tmp_$args{'db-name-rt3'}_for_migration";
-    my $dump_data  = `mysqldump -u $args{'dba'} $args{'db-name-rt3'}`;
+    my $dump_data  = `mysqldump -u $args{'dba'} $args{'db-name-rt3'} $tables_need_change`;
     $dump_data .= 'alter table ACL drop column DelegatedBy;' . "\n";
     $dump_data .= 'alter table ACL drop column DelegatedFrom;' . "\n";
     $dump_data .= 'alter table Principals drop column ObjectId;' . "\n";
@@ -76,24 +83,36 @@ if ( $args{'db-type'} eq 'mysql' ) {
     $run_sql->( '',          "create database $tmp_rt3_db;\n" );
     $run_sql->( $tmp_rt3_db, $dump_data );
 
-    open my $fh, '-|',
-      "mysqldump -u $args{'dba'} $tmp_rt3_db --complete-insert --no-create-info"
-      or die $!;
+    my $insert = sub {
+        my $input_cmd = shift;
 
-    while ( <$fh> ) {
-        next unless /^INSERT INTO/;
-        my $insert = $_;
+        open my $fh, '-|', $input_cmd or die $!;
 
-        # e.g. RT::Group -> RT::Model::Group
-        $insert =~ s/'RT::(?!System|ScripAction)(\w+)\b/'RT::Model::$1/g;
-        $insert =~ s/'Owner'/'owner'/g;
-        $insert =~ s/'Requestor'/'requestor'/g;
-        $insert =~ s/'Cc'/'cc'/g;
-        $insert =~ s/'AdminCc'/'admin_cc'/g;
-        $insert =~
+        while (<$fh>) {
+            next unless /^INSERT INTO/;
+            my $insert = $_;
+
+            # e.g. RT::Group -> RT::Model::Group
+            $insert =~ s/'RT::(?!System|ScripAction)(\w+)\b/'RT::Model::$1/g;
+            $insert =~ s/'Owner'/'owner'/g;
+            $insert =~ s/'Requestor'/'requestor'/g;
+            $insert =~ s/'Cc'/'cc'/g;
+            $insert =~ s/'AdminCc'/'admin_cc'/g;
+            $insert =~
 s/(?<!INSERT INTO )`(\w+)`/'`' . ($name_changes{renaming( $1)} || renaming($1)) . '`'/ge;
-        $run_sql->( $args{'db-name-rt4'}, $insert );
-    }
+            $run_sql->( $args{'db-name-rt4'}, $insert );
+        }
+    };
+
+# insert unchanged(actually, no so changed) tables from origion db
+    $insert->(
+"mysqldump -u $args{'dba'} $args{'db-name-rt3'} --complete-insert --no-create-info $tables_no_change"
+    );
+
+# import changed tables form tmp db
+    $insert->(
+"mysqldump -u $args{'dba'} $tmp_rt3_db --complete-insert --no-create-info"
+    );
 
     $run_sql->( '',                   "drop database $tmp_rt3_db\n" );
 
