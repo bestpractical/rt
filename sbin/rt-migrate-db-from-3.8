@@ -135,7 +135,7 @@ s/(?<!INSERT INTO )`(\w+)`/'`' . ($name_changes{renaming( $1)} || renaming($1)) 
     # Queue.status_schema: 'default' # this is done automatically by rt4
 }
 
-print "updating attributes db\n";
+print "updating table Attributes\n";
 # need to add a row for the default status schema in Attributes and update
 # part columns of that table
 use RT::Model::AttributeCollection;
@@ -166,7 +166,6 @@ while ( my $attr = $collection->next ) {
     $attr->set_content($content);
 }
 
-print "updating table Attributes\n";
 # add default status schema
 use RT::Model::Attribute;
 my $attribute = RT::Model::Attribute->new( current_user => RT->system_user );
