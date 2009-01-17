@@ -48,7 +48,7 @@ my %name_changes = (
     nick_name           => 'nickname',
     email_address       => 'email',
     principal_type      => 'type',
-    immediate_parent_id => 'immediate_parent'
+    immediate_parent_id => 'immediate_parent',
 );
 
 if ( $args{'db-type'} eq 'mysql' ) {
@@ -76,12 +76,13 @@ if ( $args{'db-type'} eq 'mysql' ) {
     $run_sql->( '',          "create database $tmp_rt3_db;\n" );
     $run_sql->( $tmp_rt3_db, $dump_data );
 
-    my $out =
-`mysqldump -u $args{'dba'} $tmp_rt3_db --complete-insert --no-create-info`;
-    my @inserts = grep { /^INSERT INTO/ } split /\n/, $out;
-    die "no inserts found" unless @inserts;
+    open my $fh, '-|',
+      "mysqldump -u $args{'dba'} $tmp_rt3_db --complete-insert --no-create-info"
+      or die $!;
 
-    for my $insert (@inserts) {
+    while ( <$fh> ) {
+        next unless /^INSERT INTO/;
+        my $insert = $_;
 
         # e.g. RT::Group -> RT::Model::Group
         $insert =~ s/'RT::(?!System|ScripAction)(\w+)\b/'RT::Model::$1/g;
@@ -91,14 +92,13 @@ if ( $args{'db-type'} eq 'mysql' ) {
         $insert =~ s/'AdminCc'/'admin_cc'/g;
         $insert =~
 s/(?<!INSERT INTO )`(\w+)`/'`' . ($name_changes{renaming( $1)} || renaming($1)) . '`'/ge;
+        $run_sql->( $args{'db-name-rt4'}, $insert );
     }
-    $run_sql->( $args{'db-name-rt4'}, @inserts );
+
     $run_sql->( '',                   "drop database $tmp_rt3_db\n" );
 
     # set up proper values for new added columns
     # Queue.status_schema: 'default' # this is done automatically by rt4
-
-
 }
 
 # need to add a row for the default status schema in Attributes and update
