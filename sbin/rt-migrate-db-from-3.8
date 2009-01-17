@@ -71,13 +71,16 @@ if ( $args{'db-type'} eq 'mysql' ) {
 
     # make a tmp rt3 db, with to-be-dropped columns dropped
     my $tmp_rt3_db = "tmp_$args{'db-name-rt3'}_for_migration";
+    print "creating database $tmp_rt3_db\n";
     $run_sql->( '',          "create database $tmp_rt3_db;\n" );
+    print "created database $tmp_rt3_db with success\n";
 
-# copy tables need to change to $tmp_rt3_db
+    print "copying tables need to alter( $tables_need_change ) to $tmp_rt3_db\n";
     system(
         "mysqldump -u $args{'dba'} $args{'db-name-rt3'} $tables_need_change |
       mysql -u $args{'dba'} $tmp_rt3_db"
     ) && die $!;
+    print "copied tables need to alter with success!\n";
 
     # now we alert tables
     my @alter_sql = (
@@ -89,7 +92,9 @@ if ( $args{'db-type'} eq 'mysql' ) {
         'alter table Scrips drop column ConditionRules;',
         'alter table Scrips drop column ActionRules;'
     );
+    print "altering the copied tables\n";
     $run_sql->( $tmp_rt3_db, @alter_sql );
+    print "altered the copied tables with success\n";
 
     my $insert = sub {
         my $input_cmd = shift;
@@ -112,6 +117,7 @@ s/(?<!INSERT INTO )`(\w+)`/'`' . ($name_changes{renaming( $1)} || renaming($1)) 
         }
     };
 
+    print "inserting data to $args{'db-name-rt4'}\n";
 # insert unchanged(actually, no so changed) tables from origion db
     $insert->(
 "mysqldump -u $args{'dba'} $args{'db-name-rt3'} --complete-insert --no-create-info $tables_no_change"
@@ -121,6 +127,7 @@ s/(?<!INSERT INTO )`(\w+)`/'`' . ($name_changes{renaming( $1)} || renaming($1)) 
     $insert->(
 "mysqldump -u $args{'dba'} $tmp_rt3_db --complete-insert --no-create-info"
     );
+    print "inserted data to $args{'db-name-rt4'} with success\n";
 
     $run_sql->( '',                   "drop database $tmp_rt3_db\n" );
 
@@ -128,6 +135,7 @@ s/(?<!INSERT INTO )`(\w+)`/'`' . ($name_changes{renaming( $1)} || renaming($1)) 
     # Queue.status_schema: 'default' # this is done automatically by rt4
 }
 
+print "updating attributes db\n";
 # need to add a row for the default status schema in Attributes and update
 # part columns of that table
 use RT::Model::AttributeCollection;
@@ -158,6 +166,7 @@ while ( my $attr = $collection->next ) {
     $attr->set_content($content);
 }
 
+print "updating table Attributes\n";
 # add default status schema
 use RT::Model::Attribute;
 my $attribute = RT::Model::Attribute->new( current_user => RT->system_user );
@@ -198,7 +207,10 @@ my @results = $attribute->create(
     }
 );
 
+print "updated attributes with success\n";
 
+
+print "updating table Users\n";
 use RT::Model::UserCollection;
 my $user_collection =
   RT::Model::UserCollection->new( current_user => RT->system_user );
@@ -208,6 +220,7 @@ while ( my $user = $user_collection->next ) {
     $user->__set( column => 'email_confirmed', value => 1 )
       unless $name eq 'RT_System';
 }
+print "updated table Users with success\n";
 
-print "migrate succeeded!\n"
+print "migrated with success!\n"
 
