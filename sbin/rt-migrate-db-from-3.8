@@ -12,8 +12,7 @@ my %args;
 
 BEGIN {
     confess "unknown option"
-      unless GetOptions( \%args, 'db-type=s', 'db-name-rt3=s', 'db-name-rt4=s',
-        'dba=s', 'help' );
+      unless GetOptions( \%args, 'db-name-rt3=s', 'help' );
 
     my $USAGE = <<'END';
 before run, please backup your dbs
@@ -25,10 +24,7 @@ then run: ./sbin/migrate-db-from-rt3
 options: 
 
 help: print this usage
-db-type: db's type, mysql, Pg or SQLite
-db-name-rt3: db name of rt3
-db-name-rt4: db name of rt4
-dba: database administrator
+db-name-rt3: db name of rt3, default is 'rt3'
 END
 
     if ( $args{'help'} ) {
@@ -41,9 +37,10 @@ END
 }
 
 
-$args{'db-type'}     ||= 'mysql';
-$args{'db-name-rt3'} ||= 'rt3';
-$args{'db-name-rt4'} ||= 'rt4';
+my $db_name_rt3 = $args{'db-name-rt3'} || 'rt3';
+my $db_type = Jifty->config->framework('Database')->{'Driver'};
+my $db_name_rt4 = Jifty->config->framework('Database')->{'Database'};
+my $db_user = Jifty->config->framework('Database')->{'User'};
 
 my %name_changes = (
     nick_name           => 'nickname',
@@ -59,27 +56,27 @@ Transactions Users sessions/;
 my $tables_need_change = 'ACL Principals Templates Scrips';
 my $tables_no_change = 'Attachments  Attributes CachedGroupMembers CustomFieldValues CustomFields GroupMembers Groups Links ObjectCustomFieldValues ObjectCustomFields    Queues ScripActions ScripConditions Tickets Transactions Users sessions';
 
-if ( $args{'db-type'} eq 'mysql' ) {
-    $args{'dba'} ||= 'root';
+if ( $db_type eq 'mysql' ) {
+    $db_user ||= 'root';
 
     my $run_sql = sub {
         my $db  = shift;
         my @sql = @_;
-        open my $fh, '|-', "mysql -u $args{'dba'} $db" or die $!;
+        open my $fh, '|-', "mysql -u $db_user $db" or die $!;
         print $fh $_ for @sql;
         close $fh;
     };
 
     # make a tmp rt3 db, with to-be-dropped columns dropped
-    my $tmp_rt3_db = "tmp_$args{'db-name-rt3'}_for_migration";
+    my $tmp_rt3_db = "tmp_${db_name_rt3}_for_migration";
     print "creating database $tmp_rt3_db\n";
     $run_sql->( '',          "create database $tmp_rt3_db;\n" );
     print "created database $tmp_rt3_db with success\n";
 
     print "copying tables need to alter( $tables_need_change ) to $tmp_rt3_db\n";
     system(
-        "mysqldump -u $args{'dba'} $args{'db-name-rt3'} $tables_need_change |
-      mysql -u $args{'dba'} $tmp_rt3_db"
+        "mysqldump -u $db_user $db_name_rt3 $tables_need_change |
+      mysql -u $db_user $tmp_rt3_db"
     ) && die $!;
     print "copied tables need to alter with success!\n";
 
@@ -114,21 +111,21 @@ if ( $args{'db-type'} eq 'mysql' ) {
             $insert =~ s/'AdminCc'/'admin_cc'/g;
             $insert =~
 s/(?<!INSERT INTO )`(\w+)`/'`' . ($name_changes{renaming( $1)} || renaming($1)) . '`'/ge;
-            $run_sql->( $args{'db-name-rt4'}, $insert );
+            $run_sql->( $db_name_rt4, $insert );
         }
     };
 
-    print "inserting data to $args{'db-name-rt4'}\n";
+    print "inserting data to $db_name_rt4\n";
 # insert unchanged(actually, no so changed) tables from origion db
     $insert->(
-"mysqldump -u $args{'dba'} $args{'db-name-rt3'} --complete-insert --no-create-info $tables_no_change"
+"mysqldump -u $db_user $db_name_rt3 --complete-insert --no-create-info $tables_no_change"
     );
 
 # import changed tables form tmp db
     $insert->(
-"mysqldump -u $args{'dba'} $tmp_rt3_db --complete-insert --no-create-info"
+"mysqldump -u $db_user $tmp_rt3_db --complete-insert --no-create-info"
     );
-    print "inserted data to $args{'db-name-rt4'} with success\n";
+    print "inserted data to $db_name_rt4 with success\n";
 
     $run_sql->( '',                   "drop database $tmp_rt3_db\n" );
 
