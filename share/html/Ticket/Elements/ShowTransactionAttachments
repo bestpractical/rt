@@ -142,7 +142,15 @@ unless ( ($message->GetHeader('Content-Disposition')||"") =~ /attachment/i ) {
 
     # if it's an image, show it as an image
     elsif ( RT->Config->Get('ShowTransactionImages') and  $message->ContentType =~ /^image\//i ) {
-        $m->out('<img src="'
+        my $filename =  $message->Filename || loc('(untitled)');
+        $m->out('<img'
+              . ' alt="'
+              . $filename
+              . '"' 
+              . ' title="'
+              . $filename
+              . '"' 
+              . ' src="'
               . $AttachPath . '/'
               . $Transaction->Id . '/'
               . $message->Id
