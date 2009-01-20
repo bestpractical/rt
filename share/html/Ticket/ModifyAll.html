@@ -220,6 +220,9 @@ unless ($OnlySearchForPeople or $OnlySearchForGroup or $ARGS{'AddMoreAttach'} ) 
     # Add session attachments if any to be processed by ProcessUpdateMessage
     $ARGS{'UpdateAttachments'} = $session{'Attachments'} if ( $session{'Attachments'} );
     push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef=>\%ARGS );
+    # Cleanup WebUI
+    delete $session{'Attachments'};
+
     push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
     push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
 }
