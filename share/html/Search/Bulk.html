@@ -146,7 +146,20 @@
     &><em><% $CF->FriendlyType %></em></td>
 </td></tr>
 % } # end if while
- <tr><td align="right"><&|/l&>Attach</&>:</td><td><input name="UpdateAttachment" type="file" /></td></tr>
+% if (exists $session{'Attachments'}) {
+<tr><td><&|/l&>Attached file</&>:</td>
+<td>
+<&|/l&>Check box to delete</&><br />
+% foreach my $attach_name (keys %{$session{'Attachments'}}) {
+<input type="checkbox" class="checkbox" name="DeleteAttach-<%$attach_name%>" value="1" /><%$attach_name%><br />
+% } # end of foreach
+</td>
+</tr>
+% } # end of if
+
+ <tr><td align="right"><&|/l&>Attach</&>:</td><td><input name="Attach" type="file" />
+    <input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" />
+    <input type="hidden" class="hidden" name="UpdateAttach" value="1" /></td></tr>
  <tr><td class="labeltop"><&|/l&>Message</&>:</td><td>
  <& /Elements/MessageBox, Name=>"UpdateContent"&>
  </td></tr>
@@ -219,6 +232,35 @@ map ( $ARGS{$_} =~ /^$/ && ( delete $ARGS{$_} ), keys %ARGS );
 
 my (@results);
 
+# {{{ deal with deleting uploaded attachments
+foreach my $key (keys %ARGS) {
+    if ($key =~ m/^DeleteAttach-(.+)$/) {
+        delete $session{'Attachments'}{$1};
+    }
+    $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
+}
+# }}}
+
+# {{{ store the uploaded attachment in session
+if ($ARGS{'Attach'}) {            # attachment?
+    my $attachment = MakeMIMEEntity(
+        AttachmentFieldName => 'Attach'
+    );
+
+    my $file_path = Encode::decode_utf8("$ARGS{'Attach'}");
+    $session{'Attachments'} = {
+        %{$session{'Attachments'} || {}},
+        $file_path => $attachment,
+    };
+}
+# }}}
+
+# delete temporary storage entry to make WebUI clean
+unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
+    delete $session{'Attachments'};
+}
+# }}}
+
 $Page ||= 1;
 
 $Format ||= RT->Config->Get('DefaultSearchResultFormat');
@@ -273,108 +315,115 @@ my $cf_del_keys;
 my $cf_add_keys;
 @$cf_add_keys = grep { /^Bulk-Add-CustomField/ } keys %ARGS;
 
+unless ( $ARGS{'AddMoreAttach'} ) {
+    # Add session attachments if any to be processed by ProcessUpdateMessage
+    $ARGS{'UpdateAttachments'} = $session{'Attachments'} if ( $session{'Attachments'} );
 
-while ( my $Ticket = $Tickets->Next ) {
-    next unless ( $ARGS{ "UpdateTicket" . $Ticket->Id } );
+    while ( my $Ticket = $Tickets->Next ) {
+        next unless ( $ARGS{ "UpdateTicket" . $Ticket->Id } );
 
-    #Update the links
-    $ARGS{'id'} = $Ticket->id;
-    $queues{ $Ticket->QueueObj->Id }++;
+        #Update the links
+        $ARGS{'id'} = $Ticket->id;
+        $queues{ $Ticket->QueueObj->Id }++;
 
-    my @updateresults, ProcessUpdateMessage(
-            TicketObj => $Ticket,
-            ARGSRef   => \%ARGS,
+        my @updateresults, ProcessUpdateMessage(
+                TicketObj => $Ticket,
+                ARGSRef   => \%ARGS,
+            );
+
+        #Update the basics.
+        my @basicresults =
+          ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
+        my @dateresults =
+          ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS );
+
+        #Update the watchers
+        my @watchresults =
+          ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS );
+
+        foreach my $type qw(MergeInto DependsOn MemberOf RefersTo) {
+            $ARGS{ $Ticket->id . "-" . $type } = $ARGS{"Ticket-$type"};
+            $ARGS{ $type . "-" . $Ticket->id } = $ARGS{"$type-Ticket"};
+        }
+        @linkresults =
+          ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS );
+        foreach my $type qw(MergeInto DependsOn MemberOf RefersTo) {
+            delete $ARGS{ $type . "-" . $Ticket->id };
+            delete $ARGS{ $Ticket->id . "-" . $type };
+        }
+
+        my @cfresults;
+
+        foreach my $list ( $cf_add_keys, $cf_del_keys ) {
+            next unless $list->[0];
+
+
+            my $op;
+            if ( $list->[0] =~ /Add/ ) {
+                $op = 'add';
+
+            }
+            elsif ( $list->[0] =~ /Del/ ) {
+                $op = 'del';
+            }
+            else {
+                $RT::Logger->crit(
+                    "Got an op that was neither add nor delete. can never happen"
+                      . $list->[0] );
+                last;
+            }
+
+            foreach my $key (@$list) {
+                my ( $cfid, $cf );
+                next if $key =~ /CustomField-(\d+)-Category$/;
+                if ( $key =~ /CustomField-(\d+)-/ ) {
+                    $cfid = $1;
+                    $cf   = RT::CustomField->new( $session{'CurrentUser'} );
+                    $cf->Load($cfid);
+                }
+                else {next}
+                my @values =
+                  ref( $ARGS{$key} ) eq 'ARRAY'
+                  ? @{ $ARGS{$key} }
+                  : ( $ARGS{$key} );
+                map { s/(\r\n|\r)/\n/g; } @values;    # fix the newlines
+                     # now break the multiline values into multivalues
+                @values = map { split( /\n/, $_ ) } @values
+                  unless ( $cf->SingleValue );
+
+                my $current_values = $Ticket->CustomFieldValues($cfid);
+                foreach my $value (@values) {
+                    if ( $op eq 'del' && $current_values->HasEntry($value) ) {
+                        my ( $id, $msg ) = $Ticket->DeleteCustomFieldValue(
+                            Field => $cfid,
+                            Value => $value
+                        );
+                        push @cfresults, $msg;
+                    }
+
+                    elsif ( $op eq 'add' && !$current_values->HasEntry($value) ) {
+                        my ( $id, $msg ) = $Ticket->AddCustomFieldValue(
+                            Field => $cfid,
+                            Value => $value
+                        );
+                        push @cfresults, $msg;
+                    }
+                }
+            }
+        }
+        my @tempresults = (
+            @watchresults,  @basicresults, @dateresults,
+            @updateresults, @linkresults,  @cfresults
         );
 
-    #Update the basics.
-    my @basicresults =
-      ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
-    my @dateresults =
-      ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS );
+        @tempresults =
+          map { loc( "Ticket [_1]: [_2]", $Ticket->Id, $_ ) } @tempresults;
 
-    #Update the watchers
-    my @watchresults =
-      ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS );
-
-    foreach my $type qw(MergeInto DependsOn MemberOf RefersTo) {
-        $ARGS{ $Ticket->id . "-" . $type } = $ARGS{"Ticket-$type"};
-        $ARGS{ $type . "-" . $Ticket->id } = $ARGS{"$type-Ticket"};
-    }
-    @linkresults =
-      ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS );
-    foreach my $type qw(MergeInto DependsOn MemberOf RefersTo) {
-        delete $ARGS{ $type . "-" . $Ticket->id };
-        delete $ARGS{ $Ticket->id . "-" . $type };
+        @results = ( @results, @tempresults );
     }
 
-    my @cfresults;
-
-    foreach my $list ( $cf_add_keys, $cf_del_keys ) {
-        next unless $list->[0];
-
-
-        my $op;
-        if ( $list->[0] =~ /Add/ ) {
-            $op = 'add';
-
-        }
-        elsif ( $list->[0] =~ /Del/ ) {
-            $op = 'del';
-        }
-        else {
-            $RT::Logger->crit(
-                "Got an op that was neither add nor delete. can never happen"
-                  . $list->[0] );
-            last;
-        }
-
-        foreach my $key (@$list) {
-            my ( $cfid, $cf );
-            next if $key =~ /CustomField-(\d+)-Category$/;
-            if ( $key =~ /CustomField-(\d+)-/ ) {
-                $cfid = $1;
-                $cf   = RT::CustomField->new( $session{'CurrentUser'} );
-                $cf->Load($cfid);
-            }
-            else {next}
-            my @values =
-              ref( $ARGS{$key} ) eq 'ARRAY'
-              ? @{ $ARGS{$key} }
-              : ( $ARGS{$key} );
-            map { s/(\r\n|\r)/\n/g; } @values;    # fix the newlines
-                 # now break the multiline values into multivalues
-            @values = map { split( /\n/, $_ ) } @values
-              unless ( $cf->SingleValue );
-
-            my $current_values = $Ticket->CustomFieldValues($cfid);
-            foreach my $value (@values) {
-                if ( $op eq 'del' && $current_values->HasEntry($value) ) {
-                    my ( $id, $msg ) = $Ticket->DeleteCustomFieldValue(
-                        Field => $cfid,
-                        Value => $value
-                    );
-                    push @cfresults, $msg;
-                }
-
-                elsif ( $op eq 'add' && !$current_values->HasEntry($value) ) {
-                    my ( $id, $msg ) = $Ticket->AddCustomFieldValue(
-                        Field => $cfid,
-                        Value => $value
-                    );
-                    push @cfresults, $msg;
-                }
-            }
-        }
-    }
-    my @tempresults = (
-        @watchresults,  @basicresults, @dateresults,
-        @updateresults, @linkresults,  @cfresults
-    );
-
-    @tempresults =
-      map { loc( "Ticket [_1]: [_2]", $Ticket->Id, $_ ) } @tempresults;
-
-    @results = ( @results, @tempresults );
+    # Cleanup WebUI
+    delete $session{'Attachments'};
 }
 
 my $TxnCFs = RT::CustomFields->new( $session{CurrentUser} );
