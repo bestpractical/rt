@@ -114,9 +114,22 @@
 </td></tr>
 %    } # end if while
 % } # end of if
+% if (exists $session{'Attachments'}) {
+<tr><td><&|/l&>Attached file</&>:</td>
+<td>
+<&|/l&>Check box to delete</&><br />
+% foreach my $attach_name (keys %{$session{'Attachments'}}) {
+<input type="checkbox" class="checkbox" name="DeleteAttach-<%$attach_name%>" value="1" /><%$attach_name%><br />
+% } # end of foreach
+</td>
+</tr>
+% } # end of if
+
   <tr>
     <td class="label"><&|/l&>Attach</&>:</td>
-    <td class="entry"><input name="UpdateAttachment" type="file" /></td>
+    <td class="entry"><input name="Attach" type="file" />
+    <input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" />
+    <input type="hidden" class="hidden" name="UpdateAttach" value="1" /></td>
   </tr>
   <tr>
     <td class="labeltop"><&|/l&>Content</&>:</td>
@@ -156,11 +169,40 @@ $CanRespond = 1 if ( $Ticket->CurrentUserHasRight('ReplyToTicket') or
 $CanComment = 1 if ( $Ticket->CurrentUserHasRight('CommentOnTicket') or
                      $Ticket->CurrentUserHasRight('ModifyTicket') );
 
+# {{{ deal with deleting uploaded attachments
+foreach my $key (keys %ARGS) {
+    if ($key =~ m/^DeleteAttach-(.+)$/) {
+        delete $session{'Attachments'}{$1};
+    }
+    $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
+}
+# }}}
+
+# {{{ store the uploaded attachment in session
+if ($ARGS{'Attach'}) {            # attachment?
+    my $attachment = MakeMIMEEntity(
+        AttachmentFieldName => 'Attach'
+    );
+
+    my $file_path = Encode::decode_utf8("$ARGS{'Attach'}");
+    $session{'Attachments'} = {
+        %{$session{'Attachments'} || {}},
+        $file_path => $attachment,
+    };
+}
+# }}}
+
+# delete temporary storage entry to make WebUI clean
+unless (keys %{$session{'Attachments'}} and $ARGS{'UpdateAttach'}) {
+    delete $session{'Attachments'};
+}
+# }}}
+
 
 $m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS );
 my @results;
 
-unless ($OnlySearchForPeople or $OnlySearchForGroup ) {
+unless ($OnlySearchForPeople or $OnlySearchForGroup or $ARGS{'AddMoreAttach'} ) {
     # There might be two owners. 
     if ( ref ($ARGS{'Owner'} )) {
         my @owners =@{$ARGS{'Owner'}};
@@ -174,16 +216,9 @@ unless ($OnlySearchForPeople or $OnlySearchForGroup ) {
     push @results, ProcessTicketWatchers( TicketObj => $Ticket, ARGSRef => \%ARGS);
     push @results, ProcessObjectCustomFieldUpdates( Object => $Ticket, ARGSRef => \%ARGS);
     push @results, ProcessTicketDates( TicketObj => $Ticket, ARGSRef => \%ARGS);
-
-    if ($ARGS{'UpdateAttachment'}) {
-        my $attachment = MakeMIMEEntity(
-            AttachmentFieldName => 'UpdateAttachment'
-        );
-        my $file_path = Encode::decode_utf8("$ARGS{'UpdateAttachment'}");
-        $ARGS{'UpdateAttachments'}->{ $file_path } = $attachment;
-        delete $ARGS{'UpdateAttachment'};
-    }
-
+    
+    # Add session attachments if any to be processed by ProcessUpdateMessage
+    $ARGS{'UpdateAttachments'} = $session{'Attachments'} if ( $session{'Attachments'} );
     push @results, ProcessUpdateMessage( TicketObj => $Ticket, ARGSRef=>\%ARGS );
     push @results, ProcessTicketBasics( TicketObj => $Ticket, ARGSRef => \%ARGS );
     push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS);
