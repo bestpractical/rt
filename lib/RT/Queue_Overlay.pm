@@ -399,7 +399,7 @@ sub SetDisabled {
     my $val = shift;
 
     $RT::Handle->BeginTransaction();
-    my $set_err = $self->PrincipalObj->SetDisabled($val);
+    my $set_err = $self->SUPER::SetDisabled($val);
     unless ($set_err) {
         $RT::Handle->Rollback();
         $RT::Logger->warning("Couldn't ".($val == 1) ? "disable" : "enable"." queue ".$self->PrincipalObj->Id);
