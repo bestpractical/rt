@@ -36,19 +36,19 @@ use Jifty::Action schema {
         },
         default is defer { RT->config->get( 'database_type' ) };
     param database_host =>
-        label is 'Database host',
+        label is 'Database host', # loc
         hints is "The domain name of your database server (like 'db.example.com')", #loc
         default is defer {
             RT->config->get('database_host')
         };
 
     param database_port =>
-        label is 'Database port',
+        label is 'Database port', # loc
         hints is 'Leave empty to use the default value for your database',    #loc
         default is defer { RT->config->get('database_port') };
 
     param database_name =>
-        label is 'Database name',
+        label is 'Database name', #loc
         default is defer {
             RT->config->get('database_name')
         };
