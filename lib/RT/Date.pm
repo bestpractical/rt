@@ -188,7 +188,7 @@ sub set {
         # so we parse date as GMT and later apply offset, this only
         # should be applied to absolute times, so compensate shift in NOW
         my $now = time;
-        $now += ( $self->Localtime( $args{timezone}, $now ) )[9];
+        $now += ( $self->localtime( $args{timezone}, $now ) )[9];
         my $date = Time::ParseDate::parsedate(
             $args{'value'},
             GMT           => 1,
@@ -736,6 +736,12 @@ See </Output formatters> for description of arguments.
 
 sub ical {
     my $self = shift;
+    my %args = ( 
+        date => 1, 
+        time => 1, 
+        @_, 
+    ); 
+    
     my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $ydaym, $isdst, $offset )
       = $self->localtime("UTC");
 

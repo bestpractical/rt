@@ -208,11 +208,11 @@ creation of a trouble ticket regarding:
 a summary of which appears below.
 
 There is no need to reply to this message right now.  Your ticket has been
-assigned an ID of [{$Ticket->queue_obj->SubjectTag || $rtname} #{$Ticket->id()}].
+assigned an ID of [{$ticket->queue->subject_tag || $rtname} #{$ticket->id()}].
 
 Please include the string:
 
-         [{$Ticket->queue_obj->SubjectTag || $rtname} #{$Ticket->id}]
+         [{$ticket->queue->subject_tag || $rtname} #{$ticket->id}]
 
 in the subject line of all future correspondence about this issue. To do so, 
 you may reply to this message.
@@ -369,9 +369,9 @@ Approver\'s notes: { $Notes }
     },
     {  queue       => '___Approvals',
        name        => "Approval Ready for Owner",    # loc
-       Description =>
+       description =>
          "Notify Owner of their ticket has been approved and is ready to be acted on", # loc
-       Content => 'Subject: Ticket Approved: {$Ticket->Subject}
+       content => 'Subject: Ticket Approved: {$ticket->Subject}
 
 Greetings,
 
@@ -527,15 +527,15 @@ Hour:         { $subscription_obj->sub_value('Hour') }
        scrip_action    => 'Notify requestors',
        template       => 'resolved' },
     {  description    => "On transaction, add any tags in the transaction's subject to the ticket's subject",
-       ScripCondition => 'On Transaction',
-       ScripAction    => 'Extract Subject Tag',
-       Template       => 'Blank' },
+       scrip_condition => 'On Transaction',
+       scrip_action    => 'Extract Subject Tag',
+       template       => 'Blank' },
 {
     queue       => 0,
     name        => "Error: Missing dashboard",    # loc
-    Description =>
+    description =>
       "Inform user that a dashboard he subscribed to is missing", # loc
-    Content => q{Subject: [{RT->config->get('rtname')}] Missing dashboard!
+    content => q{Subject: [{RT->config->get('rtname')}] Missing dashboard!
 
 Greetings,
 
