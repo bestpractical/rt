@@ -930,7 +930,7 @@ Set($WebExternalAuth, undef);
 
 =item C<$WebFallbackToInternalAuth>
 
-If C<$WebFallbackToInternalAuth> is undefined, the user is allowed a chance
+If C<$WebFallbackToInternalAuth> is defined, the user is allowed a chance
 of fallback to the login screen, even if REMOTE_USER failed.
 
 =cut
