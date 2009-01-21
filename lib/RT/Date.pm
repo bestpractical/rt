@@ -185,14 +185,10 @@ sub set {
         require Time::ParseDate;
 
         # the module supports only legacy timezones like PDT or EST...
-        # so we parse date as GMT and later apply offset, this only
-        # should be applied to absolute times, so compensate shift in NOW
-        my $now = time;
-        $now += ( $self->Localtime( $args{timezone}, $now ) )[9];
+        # so we parse date as GMT and later apply offset
         my $date = Time::ParseDate::parsedate(
             $args{'value'},
             GMT           => 1,
-            NOW           => $now,
             UK            => RT->config->get('DateDayBeforeMonth'),
             PREFER_PAST   => RT->config->get('AmbiguousDayInPast'),
             PREFER_FUTURE => RT->config->get('AmbiguousDayInFuture'),
@@ -383,8 +379,7 @@ sub get_weekday {
     my $self = shift;
     my $dow  = shift;
 
-    return _( $DAYS_OF_WEEK[$dow] )
-      if $DAYS_OF_WEEK[$dow];
+    return _("$DAYS_OF_WEEK[$dow].") if $DAYS_OF_WEEK[$dow];
     return '';
 }
 
@@ -399,8 +394,7 @@ sub get_month {
     my $self = shift;
     my $mon  = shift;
 
-    return _( $MONTHS[$mon] )
-      if $MONTHS[$mon];
+    return _("$MONTHS[$mon].") if $MONTHS[$mon];
     return '';
 }
 
@@ -725,45 +719,34 @@ sub rfc2616 {
     return $res;
 }
 
-=head4 ical
+=head4 iCal
 
-Returns the object's date and time in iCalendar format,
-
-Supports arguments: C<Date> and C<Time>.
-See </Output formatters> for description of arguments.
+Returns the date and time formatted as an ICalendar string -- that is,
+C<yyyymmddThhmmssZ>
 
 =cut
 
-sub ical {
+sub iCal {
     my $self = shift;
     my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $ydaym, $isdst, $offset )
       = $self->localtime("UTC");
 
-    #the month needs incrementing, as gmtime returns 0-11
-    $mon++;
-
-    my $res;
-    if ( $args{'date'} && !$args{'time'} ) {
-        $res = sprintf( '%04d%02d%02d', $year, $mon, $mday );
-    }
-    elsif ( !$args{'date'} && $args{'time'} ) {
-        $res = sprintf( 'T%02d%02d%02dZ', $hour, $min, $sec );
-    }
-    else {
-        $res = sprintf( '%04d%02d%02dT%02d%02d%02dZ',
-            $year, $mon, $mday, $hour, $min, $sec );
-    }
-    return $res;
-    
+    return sprintf( '%04d%02d%02dT%02d%02d%02dZ',
+        $year, $mon, $mday, $hour, $min, $sec );
 }
 
-=head4 ical_date
+=head4 iCalDate
 
 Returns the date formatted as an ICalendar string -- that is, C<yyyymmddZ>
 
 =cut
 
-sub ical_date { return (shift)->ical( time => 0, @_ ) }
+sub iCalDate {
+    my $self = shift;
+    my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $ydaym, $isdst, $offset )
+      = $self->localtime("UTC");
+    return sprintf( '%04d%02d%02dZ', $year, $mon, $mday );
+}
 
 sub _split_offset {
     my ( $self, $offset ) = @_;
@@ -776,7 +759,7 @@ sub _split_offset {
 
 =head2 timezones handling
 
-=head3 localtime $context [$time]
+=head3 Localtime $context [$time]
 
 Takes one mandatory argument C<$context>, which determines whether
 we want "user local", "system" or "UTC" time. Also, takes optional

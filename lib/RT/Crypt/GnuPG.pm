@@ -436,11 +436,6 @@ sub sign_encrypt_rfc3156 {
 
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
-
-    # handling passphrase in GnuPGOptions
-    $args{'passphrase'} = delete $opt{'passphrase'}
-      if !defined $args{'passphrase'};
-
     $opt{'digest-algo'} ||= 'SHA1';
     $opt{'default_key'} = $args{'signer'}
         if $args{'sign'} && $args{'signer'};
@@ -451,6 +446,10 @@ sub sign_encrypt_rfc3156 {
     );
 
     my $entity = $args{'entity'};
+
+    # handling passphrase in GnuPGOptions
+    $args{'passphrase'} = delete $opt{'passphrase'}
+        if !defined $args{'passphrase'};
 
     if ( $args{'sign'} && !defined $args{'passphrase'} ) {
         $args{'passphrase'} = get_passphrase( address => $args{'signer'} );
@@ -480,11 +479,8 @@ sub sign_encrypt_rfc3156 {
             my $pid = 
                safe_run_child { $gnupg->detach_sign( handles => $handles ) };
             $entity->make_multipart( 'mixed', Force => 1 );
-            {
-                local $SIG{'PIPE'} = 'IGNORE';
-                $entity->parts(0)->print( $handle{'stdin'} );
-                close $handle{'stdin'};
-            }
+            $entity->parts(0)->print( $handle{'stdin'} );
+            close $handle{'stdin'};
             waitpid $pid, 0;
         };
         my $err       = $@;
@@ -526,7 +522,7 @@ sub sign_encrypt_rfc3156 {
             use_key_for_encryption($_) || $_, grep !$seen{$_}++, map
             $_->address, map Email::Address->parse( $entity->head->get($_) ), qw(To Cc Bcc);
 
-        my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile( UNLINK => 1 );
+        my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile();
         binmode $tmp_fh, ':raw';
 
         my ( $handles, $handle_list ) = _make_gpg_handles( stdout => $tmp_fh );
@@ -542,11 +538,8 @@ sub sign_encrypt_rfc3156 {
                     : $gnupg->encrypt( handles => $handles );
             };
             $entity->make_multipart( 'mixed', Force => 1 );
-            {
-                local $SIG{'PIPE'} = 'IGNORE';
-                $entity->parts(0)->print( $handle{'stdin'} );
-                close $handle{'stdin'};
-            }
+            $entity->parts(0)->print( $handle{'stdin'} );
+            close $handle{'stdin'};
             waitpid $pid, 0;
         };
 
@@ -625,11 +618,6 @@ sub _sign_encrypt_text_inline {
 
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
-
-    # handling passphrase in GnupGOptions
-    $args{'passphrase'} = delete $opt{'passphrase'}
-      if !defined( $args{'passphrase'} );
-
     $opt{'digest-algo'} ||= 'SHA1';
     $opt{'default_key'} = $args{'signer'}
         if $args{'sign'} && $args{'signer'};
@@ -638,6 +626,10 @@ sub _sign_encrypt_text_inline {
         armor            => 1,
         meta_interactive => 0,
     );
+
+    # handling passphrase in GnupGOptions
+    $args{'passphrase'} = delete $opt{'passphrase'}
+        if !defined( $args{'passphrase'} );
 
     if ( $args{'sign'} && !defined $args{'passphrase'} ) {
         $args{'passphrase'} = get_passphrase( address => $args{'signer'} );
@@ -651,7 +643,7 @@ sub _sign_encrypt_text_inline {
 
     my %res;
 
-    my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile( UNLINK => 1 );
+    my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
 
     my ( $handles, $handle_list ) = _make_gpg_handles( stdout => $tmp_fh );
@@ -668,11 +660,8 @@ sub _sign_encrypt_text_inline {
             ? 'sign_and_encrypt'
             : ( $args{'sign'} ? 'clearsign' : 'encrypt' );
         my $pid = safe_run_child { $gnupg->$method( handles => $handles ) };
-        {
-            local $SIG{'PIPE'} = 'IGNORE';
-            $entity->bodyhandle->print( $handle{'stdin'} );
-            close $handle{'stdin'};
-        }
+        $entity->bodyhandle->print( $handle{'stdin'} );
+        close $handle{'stdin'};
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
@@ -717,11 +706,6 @@ sub sign_encrypt_attachment_inline {
 
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
-
-    # handling passphrase in GnupGOptions
-    $args{'passphrase'} = delete $opt{'passphrase'}
-      if !defined( $args{'passphrase'} );
-
     $opt{'digest-algo'} ||= 'SHA1';
     $opt{'default_key'} = $args{'signer'}
         if $args{'sign'} && $args{'signer'};
@@ -730,6 +714,10 @@ sub sign_encrypt_attachment_inline {
         armor            => 1,
         meta_interactive => 0,
     );
+
+    # handling passphrase in GnupGOptions
+    $args{'passphrase'} = delete $opt{'passphrase'}
+        if !defined( $args{'passphrase'} );
 
     if ( $args{'sign'} && !defined $args{'passphrase'} ) {
         $args{'passphrase'} = get_passphrase( address => $args{'signer'} );
@@ -744,7 +732,7 @@ sub sign_encrypt_attachment_inline {
 
     my %res;
 
-    my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile( UNLINK => 1 );
+    my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
 
     my ( $handles, $handle_list ) = _make_gpg_handles( stdout => $tmp_fh );
@@ -759,11 +747,8 @@ sub sign_encrypt_attachment_inline {
             ? 'sign_and_encrypt'
             : ( $args{'sign'} ? 'detach_sign' : 'encrypt' );
         my $pid = safe_run_child { $gnupg->$method( handles => $handles ) };
-        {
-            local $SIG{'PIPE'} = 'IGNORE';
-            $entity->bodyhandle->print( $handle{'stdin'} );
-            close $handle{'stdin'};
-        }
+        $entity->bodyhandle->print( $handle{'stdin'} );
+        close $handle{'stdin'};
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
@@ -797,7 +782,7 @@ sub sign_encrypt_attachment_inline {
     } else {
         $entity->bodyhandle( new MIME::Body::File $tmp_fn );
         $entity->effective_type('application/octet-stream');
-        $entity->head->mime_attr( $_ => "$filename.pgp" ) foreach (qw(Content-Type.name Content-Disposition.filename));
+        $args{'data'}->head->mime_attr( $_ => "$filename.pgp" ) foreach (qw(Content-Type.name Content-Disposition.filename));
 
     }
     $entity->{'__store_tmp_handle_to_avoid_early_cleanup'} = $tmp_fh;
@@ -822,11 +807,6 @@ sub sign_encrypt_content {
 
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
-
-    # handling passphrase in GnupGOptions
-    $args{'passphrase'} = delete $opt{'passphrase'}
-      if !defined( $args{'passphrase'} );
-
     $opt{'digest-algo'} ||= 'SHA1';
     $opt{'default_key'} = $args{'signer'}
         if $args{'sign'} && $args{'signer'};
@@ -835,6 +815,10 @@ sub sign_encrypt_content {
         armor            => 1,
         meta_interactive => 0,
     );
+
+    # handling passphrase in GnupGOptions
+    $args{'passphrase'} = delete $opt{'passphrase'}
+        if !defined( $args{'passphrase'} );
 
     if ( $args{'sign'} && !defined $args{'passphrase'} ) {
         $args{'passphrase'} = get_passphrase( address => $args{'signer'} );
@@ -848,7 +832,7 @@ sub sign_encrypt_content {
 
     my %res;
 
-    my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile( UNLINK => 1 );
+    my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
 
     my ( $handles, $handle_list ) = _make_gpg_handles( stdout => $tmp_fh );
@@ -863,11 +847,8 @@ sub sign_encrypt_content {
             ? 'sign_and_encrypt'
             : ( $args{'sign'} ? 'clearsign' : 'encrypt' );
         my $pid = safe_run_child { $gnupg->$method( handles => $handles ) };
-        {
-            local $SIG{'PIPE'} = 'IGNORE';
-            $handle{'stdin'}->print( ${ $args{'content'} } );
-            close $handle{'stdin'};
-        }
+        $handle{'stdin'}->print( ${ $args{'content'} } );
+        close $handle{'stdin'};
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
@@ -1076,7 +1057,7 @@ sub verify_attachment {
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init( _prepare_gnupg_options(%opt), meta_interactive => 0, );
 
-    my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile( UNLINK => 1 );
+    my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
     $args{'data'}->bodyhandle->print($tmp_fh);
     $tmp_fh->flush;
@@ -1093,11 +1074,9 @@ sub verify_attachment {
                 command_args => [ '-', $tmp_fn ]
             );
         };
-        {
-            local $SIG{'PIPE'} = 'IGNORE';
-            $args{'signature'}->bodyhandle->print( $handle{'stdin'} );
-            close $handle{'stdin'};
-        }
+        $args{'signature'}->bodyhandle->print( $handle{'stdin'} );
+        close $handle{'stdin'};
+
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
@@ -1123,7 +1102,7 @@ sub verify_rfc3156 {
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init( _prepare_gnupg_options(%opt), meta_interactive => 0, );
 
-    my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile( UNLINK => 1 );
+    my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw:eol(CRLF?)';
     $args{'data'}->print($tmp_fh);
     $tmp_fh->flush;
@@ -1140,11 +1119,9 @@ sub verify_rfc3156 {
                 command_args => [ '-', $tmp_fn ]
             );
         };
-        {
-            local $SIG{'PIPE'} = 'IGNORE';
-            $args{'signature'}->bodyhandle->print( $handle{'stdin'} );
-            close $handle{'stdin'};
-        }
+        $args{'signature'}->bodyhandle->print( $handle{'stdin'} );
+        close $handle{'stdin'};
+
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
@@ -1173,11 +1150,6 @@ sub decrypt_rfc3156 {
 
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
-
-    # handling passphrase in GnupGOptions
-    $args{'passphrase'} = delete $opt{'passphrase'}
-      if !defined( $args{'passphrase'} );
-
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init( _prepare_gnupg_options(%opt), meta_interactive => 0, );
 
@@ -1186,10 +1158,14 @@ sub decrypt_rfc3156 {
         RT::EmailParser->_decode_body( $args{'data'} );
     }
 
+    # handling passphrase in GnupGOptions
+    $args{'passphrase'} = delete $opt{'passphrase'}
+        if !defined( $args{'passphrase'} );
+
     $args{'passphrase'} = get_passphrase()
         unless defined $args{'passphrase'};
 
-    my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile( UNLINK => 1 );
+    my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
 
     my ( $handles, $handle_list ) = _make_gpg_handles(
@@ -1203,11 +1179,8 @@ sub decrypt_rfc3156 {
         local $SIG{'CHLD'} = 'DEFAULT';
         $gnupg->passphrase( $args{'passphrase'} );
         my $pid = safe_run_child { $gnupg->decrypt( handles => $handles ) };
-        {
-            local $SIG{'PIPE'} = 'IGNORE';
-            $args{'data'}->bodyhandle->print( $handle{'stdin'} );
-            close $handle{'stdin'}
-        }
+        $args{'data'}->bodyhandle->print( $handle{'stdin'} );
+        close $handle{'stdin'};
 
         waitpid $pid, 0;
     };
@@ -1250,11 +1223,6 @@ sub decrypt_inline {
     );
     my $gnupg = new GnuPG::Interface;
     my %opt = RT->config->get('GnuPGOptions');
-
-    # handling passphrase in GnuPGOptions
-    $args{'passphrase'} = delete $opt{'passphrase'}
-        if !defined($args{'passphrase'});
-
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init(
         _prepare_gnupg_options( %opt ),
@@ -1266,10 +1234,14 @@ sub decrypt_inline {
         RT::EmailParser->_decode_body($args{'data'});
     }
 
+    # handling passphrase in GnuPGOptions
+    $args{'passphrase'} = delete $opt{'passphrase'}
+        if !defined($args{'passphrase'});
+
     $args{'passphrase'} = get_passphrase()
         unless defined $args{'passphrase'};
 
-    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
+    my ($tmp_fh, $tmp_fn) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
 
     my $io = $args{'data'}->open('r');
@@ -1278,7 +1250,7 @@ sub decrypt_inline {
     }
 
     my ($had_literal, $in_block) = ('', 0);
-    my ($block_fh, $block_fn) = File::Temp::tempfile( UNLINK => 1 );
+    my ($block_fh, $block_fn) = File::Temp::tempfile();
     binmode $block_fh, ':raw';
 
     my %res;
@@ -1301,7 +1273,7 @@ sub decrypt_inline {
             }
             print $tmp_fh "-----END OF PART-----\n" if $had_literal;
 
-            ($block_fh, $block_fn) = File::Temp::tempfile( UNLINK => 1 );
+            ($block_fh, $block_fn) = File::Temp::tempfile();
             binmode $block_fh, ':raw';
             $in_block = 0;
         }
@@ -1382,11 +1354,6 @@ sub decrypt_attachment {
 
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
-
-    # handling passphrase in GnuPGOptions
-    $args{'passphrase'} = delete $opt{'passphrase'}
-      if !defined( $args{'passphrase'} );
-
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init( _prepare_gnupg_options(%opt),
         meta_interactive => 0, );
@@ -1396,10 +1363,14 @@ sub decrypt_attachment {
         RT::EmailParser->_decode_body( $args{'data'} );
     }
 
+    # handling passphrase in GnuPGOptions
+    $args{'passphrase'} = delete $opt{'passphrase'}
+      if !defined( $args{'passphrase'} );
+
     $args{'passphrase'} = get_passphrase()
       unless defined $args{'passphrase'};
 
-    my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile( UNLINK => 1 );
+    my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
     $args{'data'}->bodyhandle->print($tmp_fh);
     seek $tmp_fh, 0, 0;
@@ -1430,18 +1401,17 @@ sub decrypt_content {
 
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
+    $opt{'digest-algo'} ||= 'SHA1';
+    $gnupg->options->hash_init( _prepare_gnupg_options(%opt), meta_interactive => 0, );
 
     # handling passphrase in GnuPGOptions
     $args{'passphrase'} = delete $opt{'passphrase'}
         if !defined( $args{'passphrase'} );
 
-    $opt{'digest-algo'} ||= 'SHA1';
-    $gnupg->options->hash_init( _prepare_gnupg_options(%opt), meta_interactive => 0, );
-
     $args{'passphrase'} = get_passphrase()
         unless defined $args{'passphrase'};
 
-    my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile( UNLINK => 1 );
+    my ( $tmp_fh, $tmp_fn ) = File::Temp::tempfile();
     binmode $tmp_fh, ':raw';
 
     my ( $handles, $handle_list ) = _make_gpg_handles( stdout => $tmp_fh );
@@ -2034,7 +2004,6 @@ sub get_keys_info {
 
     my $gnupg = new GnuPG::Interface;
     my %opt   = RT->config->get('GnuPGOptions');
-
     $opt{'digest-algo'} ||= 'SHA1';
     $opt{'with-colons'}     = undef;    # parseable format
     $opt{'fingerprint'}     = undef;    # show fingerprint
@@ -2386,24 +2355,12 @@ sub probe {
 
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
-        my $pid = safe_run_child {
-            $gnupg->wrap_call( commands => ['--version'], handles => $handles );
-        };
+        my $pid = safe_run_child { $gnupg->version( handles => $handles ) };
         close $handle{'stdin'};
         waitpid $pid, 0;
     };
-    if ($@) {
-        Jifty->log->debug(
-            "Probe for GPG failed." . " Couldn't run `gpg --version`: " . $@ );
-        return 0;
-    }
-    if ($?) {
-        Jifty->log->debug( "Probe for GPG failed."
-              . " Process exitted with code "
-              . ( $? >> 8 )
-              . ( $? & 127 ? ( " as recieved signal " . ( $? & 127 ) ) : '' ) );
-        return 0;
-    }
+    return 0 if $@;
+    return 0 if $?;
     return 1;
 }
 

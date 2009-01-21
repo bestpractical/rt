@@ -108,8 +108,7 @@ sub save_attribute {
     return $object->add_attribute(
         'name'        => 'Dashboard',
         'description' => $args->{'name'},
-        'content'     => { Panes => $args->{'panes'} },
-        
+        'content'     => { Searches => $args->{'searches'} },
     );
 }
 
@@ -118,9 +117,10 @@ sub update_attribute {
     my $args = shift;
 
     my ( $status, $msg ) = ( 1, undef );
-    if ( defined $args->{'panes'} ) {
+    if ( defined $args->{'searches'} ) {
         ( $status, $msg ) =
-          $self->{'attribute'}->set_sub_values( panes => $args->{'panes'}, );
+          $self->{'attribute'}
+          ->set_sub_values( searches => $args->{'searches'}, );
     }
 
     if ( $status && $args->{'name'} ) {
@@ -141,35 +141,9 @@ sub update_attribute {
             ( $status, $msg ) = $attr->set_object_id($new_obj_id);
         }
         $self->{'privacy'} = $args->{'privacy'} if $status;
-            
     }
 
     return ( $status, $msg );
-}
-
-=head2 panes
-
-Returns a hashref of pane name to portlets
-
-=cut
-
-sub panes {
-    my $self = shift;
-    return unless ref( $self->{'attribute'} ) eq 'RT::Model::Attribute';
-    return $self->{'attribute'}->sub_value('panes') || {};
-    
-}
-
-=head2 portlets
-
-Returns the list of this dashboard's portlets, each a hashref with key
-C<portlet_type> being C<search> or C<component>.
-
-=cut
-
-sub portlets {
-    my $self = shift;
-    return map { @$_ } values %{ $self->panes };
 }
 
 =head2 searches
@@ -181,32 +155,53 @@ Returns a list of loaded saved searches
 sub searches {
     my $self = shift;
     return map {
-        my $search = RT::SavedSearch->new;
-        $search->load( $_->{privacy}, $_->{id} );
+        my $search = RT::SavedSearch->new( current_user => $self->current_user );
+        $search->load( $_->[0], $_->[1] );
         $search
-    } grep { $_->{portlet_type} eq 'search' } $self->portlets;
+    } $self->search_ids;
 }
 
-=head2 show_search_name portlet
+=head2 search_ids
+
+Returns a list of array references, each being a saved-search privacy, ID, and
+description
+
+=cut
+
+sub search_ids {
+    my $self = shift;
+    return unless ref( $self->{'attribute'} ) eq 'RT::Model::Attribute';
+    return @{ $self->{'attribute'}->sub_value('searches') || [] };
+}
+
+=head2 search_privacies
+
+Returns a list of array references, each one being suitable to pass to
+/Elements/ShowSearch.
+
+=cut
+
+sub search_privacies {
+    my $self = shift;
+    return map { [ $self->search_privacy(@$_) ] } $self->search_ids;
+}
+
+=head2 search_privacy TYPE, ID, DESC
 
 Returns an array for one saved search, suitable for passing to
 /Elements/ShowSearch.
 
 =cut
 
-sub show_search_name {
-    my $self    = shift;
-    my $portlet = shift;
-
-    if ( $portlet->{privacy} eq 'RT::System' ) {
-        return name => $portlet->{description};
+sub search_privacy {
+    my $self = shift;
+    my ( $type, $id, $desc ) = @_;
+    if ( $type eq 'RT::System' ) {
+        return name =>  $desc;
     }
 
-    return saved_search =>
-      join( '-', $portlet->{privacy}, 'SavedSearch', $portlet->{id} );
+    return saved_search => join( '-', $type, 'SavedSearch', $id );
 }
-
-
 
 =head2 possible_hidden_searches
 
@@ -224,8 +219,8 @@ sub possible_hidden_searches {
 }
 
 # _privacy_objects: returns a list of objects that can be used to load
-# dashboards from. If the modify parameter is true, then check modify rights.
-# If the create parameter is true, then check create rights. Otherwise, check
+# dashboards from. If the Modify parameter is true, then check modify rights.
+# If the Create parameter is true, then check create rights. Otherwise, check
 # read rights.
 
 sub _privacy_objects {

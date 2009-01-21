@@ -17,14 +17,14 @@ use Jifty::Param::Schema;
 use Jifty::Action schema {
     param 'start';
     param database_type =>
-        label is 'Database type', # loc
+        label is 'Database type',
         render as 'Select',
         available are defer {
             my %map = (
-                mysql  => 'MySQL',         #loc
-                Pg     => 'PostgreSQL',    #loc
-                SQLite => 'SQLite',        #loc
-                Oracle => 'Oracle',        #loc
+                mysql  => 'MySQL',
+                Pg     => 'PostgreSQL',
+                SQLite => 'SQLite',
+                Oracle => 'Oracle',
             );
 
             for ( keys %map ) {
@@ -36,19 +36,19 @@ use Jifty::Action schema {
         },
         default is defer { RT->config->get( 'database_type' ) };
     param database_host =>
-        label is 'Database host', # loc
+        label is 'Database host',
         hints is "The domain name of your database server (like 'db.example.com')", #loc
         default is defer {
             RT->config->get('database_host')
         };
 
     param database_port =>
-        label is 'Database port', # loc
+        label is 'Database port',
         hints is 'Leave empty to use the default value for your database',    #loc
         default is defer { RT->config->get('database_port') };
 
     param database_name =>
-        label is 'Database name', #loc
+        label is 'Database name',
         default is defer {
             RT->config->get('database_name')
         };

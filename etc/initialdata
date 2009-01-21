@@ -208,11 +208,11 @@ creation of a trouble ticket regarding:
 a summary of which appears below.
 
 There is no need to reply to this message right now.  Your ticket has been
-assigned an ID of [{$Ticket->queue_obj->SubjectTag || $rtname} #{$Ticket->id()}].
+assigned an ID of [{RT->config->get(\'rtname\')} #{$ticket->id()}].
 
 Please include the string:
 
-         [{$Ticket->queue_obj->SubjectTag || $rtname} #{$Ticket->id}]
+         [{RT->config->get(\'rtname\')} #{$ticket->id}]
 
 in the subject line of all future correspondence about this issue. To do so, 
 you may reply to this message.
@@ -327,31 +327,24 @@ batch-process all your pending approvals.
     {  queue       => $approvals_id,
        name        => "Approval Passed",    # loc
        description =>
-         "Notify Requestor of their ticket has been approved by some approver", # loc
+         "Notify owner of their ticket has been approved by some approver", # loc
        content => 'Subject: Ticket Approved: {$ticket->subject}
 
 Greetings,
 
 Your ticket has been approved by { eval { $Approval->owner_obj->name } }.
 Other approvals may be pending.
-
-Approver\'s notes: { $Notes }
-
 '
     },
     {  queue       => $approvals_id,
        name        => "All Approvals Passed",    # loc
        description =>
-         "Notify Requestor of their ticket has been approved by all approvers", # loc
-
+         "Notify owner of their ticket has been approved by all approvers", # loc
        content => 'Subject: Ticket Approved: {$ticket->subject}
 
 Greetings,
 
-Your ticket has been approved by { eval { $Approval->owner_obj->name } }.
-Its Owner may now start to act on it.
-
-Approver\'s notes: { $Notes }
+Your ticket has been approved.  Its owner may now start to act on it.
 '
     },
     {  queue       => $approvals_id,
@@ -363,20 +356,6 @@ Approver\'s notes: { $Notes }
 Greetings,
 
 Your ticket has been rejected by { eval { $Approval->owner_obj->name } }.
-
-Approver\'s notes: { $Notes }
-'
-    },
-    {  queue       => '___Approvals',
-       name        => "Approval Ready for Owner",    # loc
-       Description =>
-         "Notify Owner of their ticket has been approved and is ready to be acted on", # loc
-       Content => 'Subject: Ticket Approved: {$Ticket->Subject}
-
-Greetings,
-
-The ticket has been approved, you may now start to act on it.
-
 '
     },
     {  queue       => 0,
@@ -530,39 +509,173 @@ Hour:         { $subscription_obj->sub_value('Hour') }
        ScripCondition => 'On Transaction',
        ScripAction    => 'Extract Subject Tag',
        Template       => 'Blank' },
-{
-    queue       => 0,
-    name        => "Error: Missing dashboard",    # loc
-    Description =>
-      "Inform user that a dashboard he subscribed to is missing", # loc
-    Content => q{Subject: [{RT->config->get('rtname')}] Missing dashboard!
+    {  description => "When an approval ticket is Created, notify the owner and admin_cc of the item awaiting their approval",    # loc
+       queue          => $approvals_id,
+       scrip_condition => 'User Defined',
+       custom_is_applicable_code => q[
+	    $self->ticket_obj->type eq 'approval'	and
+	    $self->transaction_obj->field eq 'Status'	and
+	    $self->transaction_obj->new_value eq 'open'   and
+	    eval { $T::Approving = ($self->ticket_obj->all_depended_on_by( type => 'ticket' ))[0] }
+       ],
+       scrip_action    => 'Notify owner',
+       template       => 'New Pending Approval' },
+    {  description => "If an approval is rejected, reject the original and delete pending approvals",    # loc
+       queue            => $approvals_id,
+       scrip_condition   => 'On Status Change',
+       scrip_action      => 'User Defined',
+       custom_prepare_code => q[
+# ------------------------------------------------------------------- #
+return(0) unless ( lc($self->transaction_obj->new_value) eq "rejected" or
+	           lc($self->transaction_obj->new_value) eq "deleted" );
 
-Greetings,
+my $rejected = 0;
+my $links = $self->ticket_obj->depended_on_by;
+foreach my $link (@{ $links->items_array_ref }) {
+    my $obj = $link->base_obj;
+    if ($obj->queue->is_active_status($obj->status)) {
+	if ($obj->type eq 'ticket') {
+	    $obj->comment(
+		content	=> _("Your request was rejected."),
+	    );
+	    $obj->set_status(
+		Status	=> 'rejected',
+		Force	=> 1,
+	    );
 
-You are subscribed to a dashboard that is currently missing. Most likely, the dashboard was deleted.
-
-RT will remove this subscription as it is no longer useful. Here's the information RT had about your subscription:
-
-DashboardID:  { $subscription_obj->sub_value('Dashboardid') }
-Frequency:    { $subscription_obj->sub_value('Frequency') }
-Hour:         { $subscription_obj->sub_value('Hour') }
-{
-    $subscription_obj->sub_value('Frequency') eq 'weekly'
-    ? "Day of week:  " . $subscription_obj->sub_value('Dow')
-    : $subscription_obj->sub_value('Frequency') eq 'monthly'
-      ? "Day of month: " . $subscription_obj->sub_value('Dom')
-      : ''
+	    $T::Approval = $self->ticket_obj; # so we can access it inside templates
+	    $self->{ticket_obj} = $obj;  # we want the original id in the token line
+	    $rejected = 1;
+	}
+	else {
+	    $obj->set_status(
+		Status	=> 'deleted',
+		Force	=> 1,
+	    );
+	}
+    }
 }
+
+$links = $self->ticket_obj->depends_on;
+foreach my $link (@{ $links->items_array_ref }) {
+    my $obj = $link->target_obj;
+    if ($obj->queue->is_active_status($obj->status)) {
+	$obj->set_status(
+	    Status	=> 'deleted',
+	    Force	=> 1,
+	);
+    }
 }
-},
+
+# Now magically turn myself into a requestor Notify object...
+require RT::ScripAction::Notify; bless($self, 'RT::ScripAction::Notify');
+$self->{argument} = 'requestor'; $self->prepare;
+
+return $rejected;
+# ------------------------------------------------------------------- #
+	],
+       custom_commit_code => '"never needed"',
+       template          => 'Approval Rejected', },
+    {  description => "When a ticket has been approved by any approver, add correspondence to the original ticket", # loc
+       queue             => $approvals_id,
+       scrip_condition    => 'On Resolve',
+       scrip_action       => 'User Defined',
+       custom_prepare_code => q[
+# ------------------------------------------------------------------- #
+return(0) unless ($self->ticket_obj->type eq 'approval');
+
+my $note;
+my $t = $self->ticket_obj->transactions;
+while (my $o = $t->next) {
+    $note .= $o->content . "\n" if $o->content_obj
+	    and $o->content !~ /Default Approval/;
+}
+
+foreach my $obj ($self->ticket_obj->all_depended_on_by( type => 'ticket' )) {
+    $obj->comment(
+	content => _( "Your request has been approved by %1. Other approvals may still be pending.", # loc
+	    $self->transaction_obj->creator_obj->name,
+	) . "\n" . _( "Approver's notes: %1", # loc
+	    $note
+	),
+    );
+    $T::Approval = $self->ticket_obj; # so we can access it inside templates
+    $self->{ticket_obj} = $obj;  # we want the original id in the token line
+}
+
+# Now magically turn myself into a requestor Notify object...
+require RT::ScripAction::Notify; bless($self, 'RT::ScripAction::Notify');
+$self->{argument} = 'requestor'; $self->prepare;
+
+return 1;
+# ------------------------------------------------------------------- #
+	],
+       custom_commit_code => '"never needed"',
+       template => 'Approval Passed' },
+    {  description => "When a ticket has been approved by all approvers, add correspondence to the original ticket", # loc
+       queue             => $approvals_id,
+       scrip_condition    => 'On Resolve',
+       scrip_action       => 'User Defined',
+       custom_prepare_code  => q[
+# ------------------------------------------------------------------- #
+# Find all the tickets that depend on this (that this is approving)
+
+my $ticket = $self->ticket_obj;
+my @TOP    = $ticket->all_depended_on_by( type => 'ticket' );
+my $links  = $ticket->depended_on_by;
+my $passed = 0;
+
+while (my $link = $links->next) {
+    my $obj = $link->base_obj;
+    next if ($obj->has_unresolved_dependencies( type => 'approval' ));
+
+    if ($obj->type eq 'ticket') {
+	$obj->comment(
+	    content	=> _("Your request has been approved."),
+	);
+	$T::Approval  = $ticket;    # so we can access it inside templates
+	$self->{ticket_obj} = $obj;  # we want the original id in the token line
+	$passed = 1;
+    }
+    elsif ($obj->type eq 'approval') {
+	$obj->set_status( Status => 'open', Force => 1 );
+    }
+    elsif (RT->config->get('UseCodeTickets') and $obj->type eq 'code') {
+        #XXX: RT->config->get('UseCodeTickets') used only once here!!!
+	my $code = $obj->transactions->first->content;
+	my $rv;
+
+	foreach my $TOP (@TOP) {
+	    local $@;
+	    $rv++ if eval $code;
+	    Jifty->log->error("Cannot eval code: $@") if $@;
+	}
+
+	if ($rv or !@TOP) {
+	    $obj->set_status( Status	=> 'resolved', Force	=> 1,);
+	}
+	else {
+	    $obj->set_status( Status	=> 'rejected', Force	=> 1,);
+	}
+    }
+}
+
+# Now magically turn myself into a requestor Notify object...
+require RT::ScripAction::Notify; bless($self, 'RT::ScripAction::Notify');
+$self->{argument} = 'requestor'; $self->prepare;
+
+return 0; # ignore $passed;
+# ------------------------------------------------------------------- #
+	],
+       custom_commit_code => '"never needed"',
+       template => 'All Approvals Passed', },
+
 );
 
 @ACL = (
     { user_id => 'root',        # - principalid
       right  => 'SuperUser', },
-    { GroupDomain => 'SystemInternal',
-      GroupType => 'privileged',
-      Right  => 'ShowApprovalsTab', },
+
 );
 
 # Predefined searches
@@ -598,7 +711,7 @@ Hour:         { $subscription_obj->sub_value('Hour') }
       { format => q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
                 . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__subject__</a>/TITLE:subject',}
                 . q{priority, queue_name, extended_status, bookmark},
-        query   => "__Bookmarked__",
+        query   => "__Bookmarks__",
         order_by => 'LastUpdated',
         order   => 'DESC' },
     },

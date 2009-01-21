@@ -154,16 +154,12 @@ foreach my $field (qw(MemberOf DependsOn RefersTo)) {
 sub TicketProperties {
     my $self = shift;
     my $user = shift;
-    my @res = (
-        Basics => [qw(Subject Status queue TimeLeft TimeWorked TimeEstimated)]
-        ,    # loc_qw
-        People => [qw(Owner Requestors Ccs AdminCcs Creator LastUpdatedBy)]
-        ,    # loc_qw
-        Dates => [qw(Created Starts Started Due Resolved Told LastUpdated)]
-        ,    # loc_qw
+    my @res  = (
+        Basics => [qw(Subject Status Queue TimeLeft TimeWorked TimeEstimated)],
+        People => [qw(Owner Requestors Ccs AdminCcs Creator LastUpdatedBy)],
+        Dates  => [qw(Created Starts Started Due Resolved Told LastUpdated)],
         Links =>
-          [qw(MemberOf Members DependsOn DependedOnBy RefersTo ReferredToBy)]
-        ,    # loc_qw
+          [qw(MemberOf Members DependsOn DependedOnBy RefersTo ReferredToBy)],
     );
     my $cfs = RT::Model::CustomFieldCollection->new($user);
     $cfs->limit_to_lookup_type('RT::Model::Queue-RT::Model::Ticket');
