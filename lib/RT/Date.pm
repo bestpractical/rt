@@ -589,6 +589,7 @@ sub DefaultFormat
     my %args = ( Date => 1,
                  Time => 1,
                  Timezone => '',
+                 Seconds => 1,
                  @_,
                );
     
@@ -603,11 +604,21 @@ sub DefaultFormat
         return $self->loc('[_1] [_2] [_3] [_4]',
                           $wday,$mon,$mday,$year);
     } elsif( !$args{'Date'} && $args{'Time'} ) {
-        return $self->loc('[_1]:[_2]:[_3]',
-                          $hour,$min,$sec);
+        if( $args{'Seconds'} ) {
+            return $self->loc('[_1]:[_2]:[_3]',
+                              $hour,$min,$sec);
+        } else {
+            return $self->loc('[_1]:[_2]',
+                              $hour,$min);
+        }
     } else {
-        return $self->loc('[_1] [_2] [_3] [_4]:[_5]:[_6] [_7]',
-                          $wday,$mon,$mday,$hour,$min,$sec,$year);
+        if( $args{'Seconds'} ) {
+            return $self->loc('[_1] [_2] [_3] [_4]:[_5]:[_6] [_7]',
+                              $wday,$mon,$mday,$hour,$min,$sec,$year);
+        } else {
+            return $self->loc('[_1] [_2] [_3] [_4]:[_5] [_6]',
+                              $wday,$mon,$mday,$hour,$min,$year);
+        }
     }
 }
 
