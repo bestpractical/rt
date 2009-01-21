@@ -17,14 +17,14 @@ use Jifty::Param::Schema;
 use Jifty::Action schema {
     param 'start';
     param database_type =>
-        label is 'Database type',
+        label is 'Database type', # loc
         render as 'Select',
         available are defer {
             my %map = (
-                mysql  => 'MySQL',
-                Pg     => 'PostgreSQL',
-                SQLite => 'SQLite',
-                Oracle => 'Oracle',
+                mysql  => 'MySQL',         #loc
+                Pg     => 'PostgreSQL',    #loc
+                SQLite => 'SQLite',        #loc
+                Oracle => 'Oracle',        #loc
             );
 
             for ( keys %map ) {
