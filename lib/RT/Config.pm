@@ -434,7 +434,7 @@ sub LoadConfig {
     if ( $args{'File'} eq 'RT_SiteConfig.pm'
         and my $site_config = $ENV{RT_SITE_CONFIG} )
     {
-        $self->_LoadConfig( %args, File => $site_config, SiteConfig => 1 );
+        $self->_LoadConfig( %args, File => $site_config );
     } else {
         $self->_LoadConfig(%args);
     }
@@ -447,9 +447,13 @@ sub _LoadConfig {
     my $self = shift;
     my %args = ( File => '', @_ );
 
-    my $is_ext = $args{'File'} =~ /^(?!RT_)(?:(.*)_)(?:Site)?Config/ ? $1 : '';
-    my $is_site = $args{SiteConfig} ? 1 : 
-                    $args{'File'} =~ /SiteConfig/ ? 1 : 0;
+    my ($is_ext, $is_site);
+    if ( $args{'File'} eq ($ENV{RT_SITE_CONFIG}||'') ) {
+        ($is_ext, $is_site) = ('', 1);
+    } else {
+        $is_ext = $args{'File'} =~ /^(?!RT_)(?:(.*)_)(?:Site)?Config/ ? $1 : '';
+        $is_site = $args{'File'} =~ /SiteConfig/ ? 1 : 0;
+    }
 
     eval {
         package RT;
