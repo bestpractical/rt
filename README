@@ -15,13 +15,13 @@ us at sales@bestpractical.com.
      March, 2005
 
 
-REQUIRED PACKAGES:
-------------------
+REQUIRED PACKAGES
+-----------------
 
 o   Perl 5.8.3 or later (http://www.perl.com).
 
-       Perl versions prior to 5.8.3 contain bugs that could result
-       in data corruption. RT won't start on older versions.
+        Perl versions prior to 5.8.3 contain bugs that could result
+        in data corruption. RT won't start on older versions.
 
 o   A supported SQL database
 
@@ -30,21 +30,21 @@ o   A supported SQL database
                               Oracle 9iR2 or later.
                               SQLite 3.0. (Not recommended for production)
 
-o   Apache version 1.3.x or 2.x (http://httpd.apache.org) 
-        with mod_perl -- (http://perl.apache.org ) 
+o   Apache version 1.3.x or 2.x (http://httpd.apache.org)
+        with mod_perl -- (http://perl.apache.org )
         or with FastCGI -- (www.fastcgi.com)
         or other webserver with FastCGI support
 
         RT's FastCGI handler needs to access RT's configuration file.
 
-o    Various and sundry perl modules
-	A tool included with RT takes care of the installation of
-	most of these automatically during the install process.
+o   Various and sundry perl modules
+        A tool included with RT takes care of the installation of
+        most of these automatically during the install process.
 
-	The tool supplied with RT uses Perl's CPAN system
-	(http://www.cpan.org) to install modules. Some operating
-	systems package all or some of the modules required, and
-	you may be better off installing the modules that way.
+        The tool supplied with RT uses Perl's CPAN system
+        (http://www.cpan.org) to install modules. Some operating
+        systems package all or some of the modules required, and
+        you may be better off installing the modules that way.
 
 
 GENERAL INSTALLATION
@@ -61,7 +61,7 @@ want to read a more comprehensive installation guide at:
 
        tar xzvf rt.tar.gz -C /tmp
 
-2   Run the "configure" script. 
+2   Run the "configure" script.
 
        ./configure --help to see the list of options
        ./configure (with the flags you want)
@@ -81,7 +81,7 @@ want to read a more comprehensive installation guide at:
 
     Check for missing dependencies by running:
 
-       make testdeps        
+       make testdeps
 
 4   If the script reports any missing dependencies, install them by hand
     or run the following command as a user who has permission to install perl
@@ -93,29 +93,29 @@ want to read a more comprehensive installation guide at:
     so it may be necessary to install them manually.
 
 5   Check to make sure everything was installed properly.
-     
+
        make testdeps
 
      It might sometimes be necessary to run "make fixdeps" several times
      to install all necessary perl modules.
 
 6   If this is a new installation:
-     
+
      As a user with permission to install RT in your chosen directory, type:
 
-       make install   
-                    
+       make install
+
      Set up etc/RT_SiteConfig.pm in your RT installation directory.
-     You'll need to add any values you need to change from the defaults 
+     You'll need to add any values you need to change from the defaults
      in etc/RT_Config.pm
 
      As a user with permission to read RT's configuration file, type:
-     
-       make initialize-database 
+
+       make initialize-database
 
      If the make fails, type:
-     
-       make dropdb 
+
+       make dropdb
 
      and start over from step 6
 
@@ -128,18 +128,18 @@ want to read a more comprehensive installation guide at:
      new version of RT up and running smoothly.
 
      As a user with permission to install RT in your chosen installation
-     directory, type: 
+     directory, type:
 
-       make upgrade    
+       make upgrade
 
      This will install new binaries, config files and libraries without
-     overwriting your RT database. 
+     overwriting your RT database.
 
      Update etc/RT_SiteConfig.pm in your RT installation directory.
-     You'll need to add any new values you need to change from the defaults 
+     You'll need to add any new values you need to change from the defaults
      in etc/RT_Config.pm
 
-     You may also need to update RT's database.  You can do this with 
+     You may also need to update RT's database.  You can do this with
      the rt-setup-database tool.  Replace root with the name of the dba
      user on your database (root is the default for MySQL).
 
@@ -163,11 +163,11 @@ want to read a more comprehensive installation guide at:
     release.  You can download it from CPAN here:
     http://search.cpan.org/dist/RT-Extension-RT2toRT3/
 
-9   Configure the email and web gateways, as described below. 
+9   Configure the email and web gateways, as described below.
 
-    NOTE: root's password for the web interface is "password" 
+    NOTE: root's password for the web interface is "password"
     (without the quotes).  Not changing this is a SECURITY risk!
- 
+
 10  Set up automated recurring tasks (cronjobs):
 
     To generate email digest messages, you must arrange for the provided
@@ -198,9 +198,9 @@ SETTING UP THE WEB INTERFACE
 RT's web interface is based around HTML::Mason, which works well with
 the mod_perl perl interpreter within Apache httpd and FastCGI.
 
-Once you've set up the web interface, consider setting up automatic 
+Once you've set up the web interface, consider setting up automatic
 logout for inactive sessions. For more information about how to do that,
-run 
+run
     perldoc /path/to/rt/sbin/rt-clean-sessions
 
 
@@ -274,7 +274,7 @@ it knows where to find RT:
 FastCGI
 -------
 
-Installation with FastCGI is a little bit more complex and is documented 
+Installation with FastCGI is a little bit more complex and is documented
 in detail at http://wiki.bestpractical.com/index.cgi?FastCGIConfiguration
 
 In the most basic configuration, you can set up your webserver to run
@@ -283,7 +283,7 @@ can read RT's configuration file.  It's important to understand the security
 implications of this configuration, which are discussed in the document
 mentioned above.
 
-To install RT with FastCGI, you'll need to add a few lines to your 
+To install RT with FastCGI, you'll need to add a few lines to your
 Apache configuration file telling it about RT:
 
 
@@ -304,7 +304,7 @@ FastCgiServer /opt/rt3/bin/mason_handler.fcgi -idle-timeout 120
 
 
 
-SETTING UP THE MAIL GATEWAY 
+SETTING UP THE MAIL GATEWAY
 ---------------------------
 
 To let email flow to your RT server, you need to add a few lines of
@@ -333,7 +333,7 @@ are available at http://www.bestpractical.com or by writing to
 <sales@bestpractical.com>.
 
 If you're interested in having RT extended or customized or would like more
-information about commercial support options, please send email to 
+information about commercial support options, please send email to
 <sales@bestpractical.com> to discuss rates and availability.
 
 
@@ -341,21 +341,21 @@ information about commercial support options, please send email to
 RT WEBSITE
 ----------
 
-For current information about RT, check out the RT website at 
-     http://www.bestpractical.com/  
+For current information about RT, check out the RT website at
+     http://www.bestpractical.com/
 
-You'll find screenshots, a pointer to the current version of RT, contributed 
+You'll find screenshots, a pointer to the current version of RT, contributed
 patches, and lots of other great stuff.
 
 
 
 RT-USERS MAILING LIST
---------------------
+---------------------
 
 To keep up to date on the latest RT tips, techniques and extensions,
 you probably want to join the rt-users mailing list.  Send a message to:
 
-      rt-users-request@lists.bestpractical.com 
+      rt-users-request@lists.bestpractical.com
 
 with the body of the message consisting of only the word:
 
