@@ -56,39 +56,29 @@ use warnings;
 sub groupings {
     my $self   = shift;
     my %args   = (@_);
-    my @fields = qw(
-        owner
+    my @fields = map { $_, $_ } qw(
         status
-      Requestor
-      Cc
-      AdminCc
-      Watcher
-      Creator
-      LastUpdatedBy
         queue
-        DueDaily
-        DueMonthly
-        DueAnnually
-        ResolvedDaily
-        ResolvedMonthly
-        ResolvedAnnually
-        CreatedDaily
-        CreatedMonthly
-        CreatedAnnually
-        last_updatedDaily
-        last_updatedMonthly
-        last_updatedAnnually
-        StartedDaily
-        StartedMonthly
-        StartedAnnually
-        startsDaily
-        startsMonthly
-        startsAnnually
     );
 
-    @fields = map { $_, $_ } @fields;
+    foreach
+      my $type (qw(owner creator last_updated_by requestor cc admin_cc watcher))
+    {
+        push @fields, $type . ' ' . $_, $type . '.' . $_ foreach qw(
+          name email real_name nickname organization lang city country timezone
+        );
+    }
 
-    my $queues = $args{'Queues'};
+    push @fields, map { $_, $_ } qw(
+      due_daily due_monthly due_annually resolved_daily resolved_monthly
+      resolved_annually created_daily created_monthly created_annually
+      last_updated_daily last_updated_monthly last_updated_annually
+      started_daily started_monthly started_annually starts_daily
+      starts_monthly starts_annually
+    );
+    
+
+    my $queues = $args{'queues'};
     if ( !$queues && $args{'query'} ) {
         require RT::Interface::Web::QueryBuilder::Tree;
         my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
@@ -178,16 +168,16 @@ sub _field_to_function {
 
     my $field = $args{'column'};
 
-    if ( $field =~ /^(.*)(Daily|Monthly|Annually)$/ ) {
+    if ( $field =~ /^(.*)_(daily|monthly|annually)$/ ) {
         my ( $field, $grouping ) = ( $1, $2 );
-        if ( $grouping =~ /Daily/ ) {
+        if ( $grouping =~ /daily/ ) {
             $args{'function'} = "SUBSTR($field,1,10)";
-        } elsif ( $grouping =~ /Monthly/ ) {
+        } elsif ( $grouping =~ /monthly/ ) {
             $args{'function'} = "SUBSTR($field,1,7)";
-        } elsif ( $grouping =~ /Annually/ ) {
+        } elsif ( $grouping =~ /annually/ ) {
             $args{'function'} = "SUBSTR($field,1,4)";
         }
-    } elsif ( $field =~ /^(?:CF|CustomField)\.{(.*)}$/ ) {    #XXX: use CFDecipher method
+    } elsif ( $field =~ /^(?:cf|custom_field)\.{(.*)}$/ ) {    #XXX: use CFDecipher method
         my $cf_name = $1;
         my $cf      = RT::Model::CustomField->new;
         $cf->load($cf_name);
@@ -198,10 +188,34 @@ sub _field_to_function {
             @args{qw(alias column)} = ( $ticket_cf_alias, 'content' );
         }
     }
-    elsif ( $field =~ /^(?:Watcher|(Requestor|Cc|AdminCc))$/ ) {
+    elsif ( $field =~ /^(?:watcher|(requestor|cc|admin_cc))$/ ) {
         my $type = $1;
         my ( $g_alias, $gm_alias, $u_alias ) = $self->_watcherjoin($type);
         @args{qw(alias column)} = ( $u_alias, 'name' );
+    }
+    elsif ( $field =~ /^(?:(owner|creator|last_updated_by))(?:\.(.*))?$/ ) {
+        my $type   = $1 || '';
+        my $column = $2 || 'name';
+        my $u_alias = $self->join(
+            type$1=>$2'left',
+            alias1 => 'main',
+            column1 => $type,
+            table2 => 'Users',
+            column2 => 'id',
+        );
+        @args{qw(alias column)} = ( $u_alias, $column );
+    }
+    elsif ( $field =~ /^(?:watcher|(requestor|cc|admin_cc))(?:\.(.*))?$/ ) {
+        my $type   = $1 || '';
+        my $column = $2 || 'name';
+        if ( my $u_alias = $self->{"_sql_report_watcher_users_alias_$type"} ) {
+            @args{qw(alias column)} = ( $u_alias, $column );
+        }
+        else {
+            my ( $g_alias, $gm_alias, $u_alias ) = $self->_watcher_join($type);
+            @args{qw(alias column)} = ( $u_alias, $column );
+            $self->{"_sql_report_watcher_users_alias_$type"} = $u_alias;
+        }
     }
     return %args;
 }
