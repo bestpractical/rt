@@ -61,7 +61,9 @@ sub get_ok {
     if ( $url =~ m{^/} ) {
         $url = $self->rt_base_url . $url;
     }
-    return $self->SUPER::get_ok( $url, @_ );
+    my $rv = $self->SUPER::get_ok( $url, @_ );
+    Test::More::diag "Couldn't get $url" unless $rv;
+    return $rv;
 }
 
 sub rt_base_url {
@@ -131,6 +133,58 @@ sub goto_create_ticket {
     $self->submit;
 
     return 1;
+}
+
+sub get_warnings {
+    my $self         = shift;
+    my $server_class = 'RT::Interface::Web::Standalone';
+
+    my $url = $server_class->test_warning_path;
+
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+    return unless $self->get_ok($url);
+
+    my @warnings = $server_class->decode_warnings( $self->content );
+    return @warnings;
+}
+
+sub warning_like {
+    my $self = shift;
+    my $re   = shift;
+    my $name = shift;
+
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    my @warnings = $self->get_warnings;
+    if ( @warnings == 0 ) {
+        Test::More::fail("no warnings emitted; expected 1");
+        return 0;
+    }
+    elsif ( @warnings > 1 ) {
+        Test::More::fail( scalar(@warnings) . " warnings emitted; expected 1" );
+        for (@warnings) {
+            Test::More::diag("got warning: $_");
+        }
+        return 0;
+    }
+
+    return Test::More::like( $warnings[0], $re, $name );
+}
+
+sub no_warnings_ok {
+    my $self = shift;
+    my $name = shift || "no warnings emitted";
+
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
+    my @warnings = $self->get_warnings;
+
+    Test::More::is( @warnings, 0, $name );
+    for (@warnings) {
+        Test::More::diag("got warning: $_");
+    }
+
+    return @warnings == 0 ? 1 : 0;
 }
 
 1;
