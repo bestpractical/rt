@@ -452,7 +452,7 @@ sub _set {
     # $ret is a Class::Returnvalue object. as such, in a boolean context, it's a bool
     # we want to change the standard "success" message
     if ($status) {
-        $msg = _( "%1 changed from %2 to %3", $args{'column'}, ( $old_val ? "'$old_val'" : _("(no value)") ), '"' . ( $self->__value( $args{'column'} ) || 'weird undefined value' ) . '"' );
+        $msg = _( "%1 changed from %2 to %3", _($args{'column'}), ( $old_val ? "'$old_val'" : _("(no value)") ), '"' . ( $self->__value( $args{'column'} ) || 'weird undefined value' ) . '"' );
     } else {
 
         $msg = _($msg);
@@ -735,7 +735,18 @@ sub update {
         # Default to $id, but use name if we can get it.
         my $label = $self->id;
         $label = $self->name if ( UNIVERSAL::can( $self, 'name' ) );
-        push @results, _( "$prefix %1", $label ) . ': ' . $msg;
+
+        # this requires model names to be loc'ed.
+
+=for loc
+
+    "Ticket" # loc
+    "User" # loc
+    "Group" # loc
+    "Queue" # loc
+=cut
+
+        push @results, _($prefix) . " $label: " . $msg;
 
 =for loc
 
@@ -902,26 +913,63 @@ dependency search.
 
 sub all_depended_on_by {
     my $self = shift;
-    my $dep  = $self->depended_on_by;
+    return $self->_all_linked_tickets(
+        link_type  => 'DependsOn',
+        direction => 'target',
+        @_
+    );
+}
+
+=head2 all_depends_on
+
+Returns an array of RT::Model::Ticket objects which this ticket (directly or
+indirectly) depends on; takes an optional 'type' argument in the param
+hash, which will limit returned tickets to that type, as well as cause
+tickets with that type to serve as 'leaf' nodes that stops the
+recursive dependency search.
+
+=cut
+
+sub all_depends_on {
+    my $self = shift;
+    return $self->_all_linked_tickets(
+        link_type  => 'DependsOn',
+        direction => 'base',
+        @_
+    );
+}
+
+sub _all_linked_tickets {
+    my $self = shift;
     my %args = (
-        type   => undef,
-        _found => {},
-        _top   => 1,
+        link_type  => undef,
+        direction => undef,
+        type      => undef,
+        _found    => {},
+        _top      => 1,
         @_
     );
 
+    my $dep = $self->_Links( $args{direction}, $args{link_type} );
     while ( my $link = $dep->next() ) {
-        next unless ( $link->base_uri->is_local() );
-        next if $args{_found}{ $link->base_obj->id };
+        my $uri =
+          $args{direction} eq 'target' ? $link->base_uri : $link->targetURI;
+        next unless ( $uri->is_local() );
+        my $obj =
+          $args{direction} eq 'target' ? $link->base_obj : $link->target_obj;
+        next if $args{_found}{ $obj->id };
 
         if ( !$args{'type'} ) {
-            $args{_found}{ $link->base_obj->id } = $link->base_obj;
-            $link->base_obj->all_depended_on_by( %args, _top => 0 );
-        } elsif ( $link->base_obj->type eq $args{'type'} ) {
-            $args{_found}{ $link->base_obj->id } = $link->base_obj;
-        } else {
-            $link->base_obj->all_depended_on_by( %args, _top => 0 );
+            $args{_found}{ $obj->id } = $obj;
+            $obj->_all_linked_tickets( %args, _top => 0 );
         }
+        elsif ( $obj->type eq $args{type} ) {
+            $args{_found}{ $obj->id } = $obj;
+        }
+        else {
+            $obj->_all_linked_tickets( %args, _top => 0 );
+          }
+        
     }
 
     if ( $args{_top} ) {
@@ -1159,6 +1207,17 @@ sub _delete_link {
     );
 
     #it's a real link.
+    if ( $link->id ) {
+        my $basetext = $self->format_link(
+            object   => $link->base_obj,
+            FallBack => $args{base}
+        );
+        my $targettext = $self->format_link(
+            object   => $link->target_obj,
+            FallBack => $args{target}
+        );
+        my $typetext = $self->format_type( type => $args{type} );
+    
     if ( $link->id ) {
         my $basetext = $self->format_link(
             object   => $link->base_obj,
