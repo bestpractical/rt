@@ -96,10 +96,82 @@ recommended.
 
 =cut
 
+=head2 %META
+
+Hash of Config options that may be user overridable
+or may require more logic than should live in RT_*Config.pm
+
+Keyed by config name, there are several properties that
+can be set for each config optin:
+
+ Section     - What header this option should be grouped
+               under on the user Settings page
+ Overridable - Can users change this option
+ Sortorder   - Within a Section, how should the options be sorted
+               for display to the user
+ Widget      - Mason component path to widget that should be user 
+               to display this config option
+ WidgetArguments - An argument hash passed to the Widget
+    Description - Friendly description to show the user
+    Values      - Arrayref of options (for select Widget)
+    values_label - Hashref, key is the Value from the Values
+                  list, value is a user friendly description
+                  of the value
+    Callback    - subref that receives no arguments.  It returns
+                  a hashref of items that are added to the rest
+                  of the WidgetArguments
+ PostLoadCheck - subref passed the RT::Config object and the current
+                 setting of the config option.  Can make further checks
+                 (such as seeing if a library is installed) and then change
+                 the setting of this or other options in the Config using 
+                 the RT::Config option.
+
+=cut
+
+
+
 our %META = (
+    # General user overridable options
+    DefaultQueue => {
+        Section         => 'General',
+        Overridable     => 1,
+        Sortorder       => 1,
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => 'default queue',    #loc
+            Callback    => sub {
+                my $ret = { values => [], values_label => {} };
+                my $q = new RT::Model::Queues(
+                    $HTML::Mason::Commands::session{'current_user'} );
+                $q->Unlimit;
+                while ( my $queue = $q->next ) {
+                    next unless $queue->current_user_has_right("CreateTicket");
+                    push @{ $ret->{values} }, $queue->id;
+                    $ret->{values_label}{ $queue->id } = $queue->name;
+                }
+                return $ret;
+            },
+        }
+    },
+    UsernameFormat => {
+        Section         => 'General',
+        Overridable     => 1,
+        Sortorder       => 2,
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => 'Username format',       # loc
+            Values      => [qw(concise verbose)],
+            values_label => {
+                concise => 'Short usernames',           # loc_left_pair
+                verbose => 'Name and email address',    # loc_left_pair
+            },
+        },
+    },
+        
     WebDefaultStylesheet => {
         section         => 'General',                #loc
         overridable     => 1,
+        sortorder       => 3,
         widget          => '/Widgets/Form/Select',
         widget_arguments => {
             description => 'Theme',                  #loc
@@ -118,30 +190,55 @@ our %META = (
     MessageBoxRichText => {
         section         => 'General',
         overridable     => 1,
+        sortorder       => 4,
         widget          => '/Widgets/Form/Boolean',
         widget_arguments => {
             description => 'WYSIWYG message composer'     # loc
         }
     },
+    MessageBoxRichTextHeight => {
+        section         => 'General',
+        overridable     => 1,
+        sortorder       => 5,
+        widget          => '/Widgets/Form/Integer',
+        widget_arguments => {
+            description => 'WYSIWYG composer height',    # loc
+        }
+    },
     MessageBoxWidth => {
         section         => 'General',
         overridable     => 1,
+        sortorder       => 6,
         widget          => '/Widgets/Form/Integer',
         widget_arguments => {
-            description => 'Message box width',           #loc
+            description => 'Message box width',          #loc
         },
     },
     MessageBoxHeight => {
         section         => 'General',
         overridable     => 1,
+        sortorder       => 7,
         widget          => '/Widgets/Form/Integer',
         widget_arguments => {
-            description => 'Message box height',          #loc
+            description => 'Message box height',         #loc
         },
     },
+
+    # User overridable options for RT at a glance
+    DefaultSummaryRows => {
+        section         => 'RT at a glance',             #loc
+        overridable     => 1,
+        widget          => '/Widgets/Form/Integer',
+        widget_arguments => {
+            Description => 'Number of search results',    #loc
+        },
+    },
+
+    # User overridable options for Ticket displays
     MaxInlineBody => {
         section => 'Ticket display',    #loc
         overridable     => 1,
+        sortorder       => 1,
         widget          => '/Widgets/Form/Integer',
         widget_arguments => {
             description => 'Maximum inline message length',    #loc
@@ -152,6 +249,7 @@ our %META = (
     OldestTransactionsFirst => {
         section         => 'Ticket display', #loc
         overridable     => 1,
+        sortorder       => 2,
         widget          => '/Widgets/Form/Boolean',
         widget_arguments => {
             description => 'Show oldest transactions first',    #loc
@@ -160,6 +258,7 @@ our %META = (
     ShowUnreadMessageNotifications => {
         section         => 'Ticket display',
         overridable     => 1,
+        sortorder       => 3,
         widget          => '/Widgets/Form/Boolean',
         widget_arguments => {
             description => 'Notify me of unread messages',    #loc
@@ -169,6 +268,7 @@ our %META = (
     PlainTextPre => {
         section         => 'Ticket display',
         overridable     => 1,
+        sortorder       => 4,
         widget          => '/Widgets/Form/Boolean',
         widget_arguments => {
             description => 'Use monospace font',
@@ -190,39 +290,6 @@ our %META = (
             },
         },
     },
-    Usernameformat => {
-        section         => 'General',
-        overridable     => 1,
-        widget          => '/Widgets/Form/Select',
-        widget_arguments => {
-            description => 'Username format',
-            values      => [qw(concise verbose)],
-            values_label  => {
-                concise => 'Short usernames',
-                verbose => 'Name and email address',
-            },
-        },
-    },
-    DefaultQueue => {
-        section         => 'General',
-        overridable     => 1,
-        widget          => '/Widgets/Form/Select',
-        widget_arguments => {
-            description => 'default queue',    #loc
-            callback    => sub {
-                my $ret = { Values => [], values_label => {} };
-                my $q = new RT::Model::Queues(
-                    $HTML::Mason::Commands::session{'current_user'} );
-                $q->unlimit;
-                while ( my $queue = $q->next ) {
-                    next unless $queue->current_user_has_right("CreateTicket");
-                    push @{ $ret->{Values} }, $queue->id;
-                    $ret->{values_label}{ $queue->id } = $queue->name;
-                }
-                return $ret;
-            },
-        }
-    },
     EmailFrequency => {
         section         => 'Mail',                   #loc
         overridable     => 1,
@@ -238,6 +305,8 @@ our %META = (
             ]
         }
     },
+
+    # Internal config options
     DisableGraphViz => {
         type          => 'SCALAR',
         post_load_check => sub {
@@ -267,12 +336,14 @@ our %META = (
         },
     },
     MailPlugins  => { type => 'ARRAY' },
+    Plugins      => { type => 'ARRAY' },
     GnuPG        => { type => 'HASH' },
     GnuPGOptions => {
         type          => 'HASH',
         post_load_check => sub {
-            my $self    = shift;
-            my $gpg     = $self->get('GnuPG');
+            my $self = shift;
+            my $gpg  = $self->get('GnuPG');
+            return unless $gpg->{'enable'};
             my $gpgopts = $self->get('GnuPGOptions');
             unless ( -d $gpgopts->{homedir} && -r _ ) {    # no homedir, no gpg
                 Jifty->log->debug(
@@ -281,18 +352,15 @@ our %META = (
                       . $gpgopts->{homedir}
                       . "). PGP support has been disabled" );
                 $gpg->{'enable'} = 0;
+                return;
             }
-
-            if ( $gpg->{'enable'} ) {
-                require RT::Crypt::GnuPG;
-                unless ( RT::Crypt::GnuPG->probe() ) {
-                    Jifty->log->debug(
-"RT's GnuPG libraries couldn't successfully execute gpg."
-                          . " PGP support has been disabled" );
-                    $gpg->{'enable'} = 0;
-                }
+            require RT::Crypt::GnuPG;
+            unless ( RT::Crypt::GnuPG->probe() ) {
+                Jifty->log->debug(
+                    "RT's GnuPG libraries couldn't successfully execute gpg."
+                      . " PGP support has been disabled" );
+                $gpg->{'enable'} = 0;
             }
-
           }
     },
 );
@@ -338,7 +406,11 @@ Do nothin right now.
 =cut
 
 sub load_configs {
-    my $self    = shift;
+    my $self = shift;
+
+    $self->init_config( File => 'RT_Config.pm' );
+    $self->load_config( File => 'RT_Config.pm' );
+
     my @configs = $self->configs;
     $self->init_config( File => $_ ) foreach @configs;
     $self->load_config( File => $_ ) foreach @configs;
@@ -398,8 +470,11 @@ sub _load_config {
                 Extension  => $is_ext,
             );
         };
-        local @INC = ( $RT::LocalEtcPath, $RT::EtcPath, @INC );
-        require $args{'File'};
+        my @etc_dirs = ($RT::LocalEtcPath);
+        push @etc_dirs, RT->PluginDirs('etc') if $is_ext;
+        push @etc_dirs, $RT::EtcPath, @INC;
+        local @INC = @etc_dirs;
+        require $args{'file'};
     };
     if ($@) {
         return 1 if $is_site && $@ =~ qr{^Can't locate \Q$args{File}};
@@ -450,23 +525,31 @@ EOF
 
 =head2 configs
 
-Returns list of the top level configs file names. F<RT_Config.pm> is always
-first, other configs are ordered by name.
+Returns list of config files found in local etc, plugins' etc
+and main etc directories.
+
 
 =cut
 
 sub configs {
-    my $self    = shift;
+    my $self = shift;
+
+    
     my @configs = ();
-    foreach my $path ( $RT::LocalEtcPath, $RT::EtcPath ) {
+    foreach my $path ( $RT::LocalEtcPath, RT->plugin_dirs('etc'), $RT::EtcPath )
+    {
         my $mask = File::Spec->catfile( $path, "*_Config.pm" );
         my @files = glob $mask;
         @files = grep !/^RT_Config\.pm$/, grep $_ && /^\w+_Config\.pm$/, map { s/^.*[\\\/]//; $_ } @files;
-        push @configs, @files;
+        push @configs, sort @files;
+        
     }
 
-    @configs = sort @configs;
-    unshift( @configs, 'RT_Config.pm' );
+    my %seen;
+    @configs = grep !$seen{$_}++, @configs;
+    
+    return @configs;
+}
 
 sub post_load_check {
     my $self = shift;
@@ -477,9 +560,6 @@ sub post_load_check {
     {
         $META{$o}->{'post_load_check'}->( $self, $self->get($o) );
     }
-}
-
-    return @configs;
 }
 
 =head2 get
@@ -701,7 +781,12 @@ sub sections {
 sub options {
     my $self = shift;
     my %args = ( section => undef, overridable => 1, @_ );
-    my @res  = sort keys %META;
+    my @res  = sort {
+        ( $META{$a}->{sortorder} || 9999 )
+          <=> ( $META{$b}->{sortorder} || 9999 )
+          || $a cmp $b
+    } keys %META;
+    
     @res = grep( ( $META{$_}->{'section'} || 'General' ) eq $args{'section'}, @res )
         if defined $args{'section'};
     if ( defined $args{'overridable'} ) {
