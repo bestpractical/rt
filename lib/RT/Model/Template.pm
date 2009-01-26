@@ -199,6 +199,11 @@ sub mime_obj {
  It returns a tuple of (val, message)
  If val is 0, the message contains an error message
 
+Note that content of the template is UTF-8, but L<MIME::Parser> is not
+good at handling it and all data of the entity should be treated as
+octets and converted to perl strings using Encode::decode_utf8 or
+something else.
+
 =cut
 
 =head2 parse
@@ -227,11 +232,9 @@ sub parse {
         ( $rv, $msg ) = $self->_parse(@_);
     }
 
-# We only HTMLify things if the template includes at least one Transaction->content call.
-    return ( $rv, $msg ) unless $rv and $self->content =~ /->\s*Content\b/;
-
-    my $orig_entity = $self->mime_obj;
-    my $mime_type   = $self->mime_obj->mime_type;
+    return ( $rv, $msg ) unless $rv;
+    
+    my $mime_type = $self->mime_obj->mime_type;
 
     if ( defined $mime_type and $mime_type eq 'text/html' ) {
         $self->_downgrade_from_html(@_);
@@ -265,9 +268,13 @@ sub _parse {
     # don't stick the RT::EmailParser into a lexical because it cleans
     # out the tmpdir it makes on DESTROY
     my $parser = MIME::Parser->new();
+    $parser->output_to_core(1);
+    $parser->tmp_to_core(1);
+    $parser->use_inner_files(1);
+    
+    
     $self->{rtparser} = RT::EmailParser->new;
     $self->{rtparser}->_setup_mime_parser($parser);
-
 
     ### Should we forgive normally-fatal errors?
     $parser->ignore_errors(1);
@@ -275,6 +282,7 @@ sub _parse {
     # MIME::Parser doesn't play well with perl strings
     utf8::encode($content);
     $self->{'mime_obj'} = eval { $parser->parse_data( \$content ) };
+    
     if ( my $error = $@ || $parser->last_error ) {
         Jifty->log->error("$error");
         return ( 0, $error );
@@ -352,14 +360,11 @@ sub _parse_content {
 sub _downgrade_from_html {
     my $self        = shift;
     my $orig_entity = $self->mime_obj;
+# this will fail badly if we go away from InCore parsing
+    my $new_entity = $orig_entity->dup;    
 
-    local $RT::Model::Transaction::Preferredcontent_type = 'text/plain';
-
-    my ( $rv, $msg ) = $self->_parse(@_);
-    if ( !$rv ) {
-        $self->{mime_obj} = $orig_entity;
-        return;
-    }
+    $new_entity->head->mime_attr( "Content-type"         => 'text/plain' );
+    $new_entity->head->mime_attr( "Content-type.charset" => 'utf-8' );
 
     $orig_entity->head->mime_attr( "Content-Type"         => 'text/html' );
     $orig_entity->head->mime_attr( "Content-Type.charset" => 'utf-8' );
@@ -391,7 +396,8 @@ sub _downgrade_from_html {
     $orig_entity->add_part( $new_entity, 0 );    # plain comes before html
     $self->{mime_obj} = $orig_entity;
 
-    return ( $rv, $msg );
+    return;
+
 }
 
 =head2 rights
