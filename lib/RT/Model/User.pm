@@ -607,6 +607,51 @@ sub validate_email {
     }
 }
 
+=head2 email_frequency
+
+Takes optional Ticket argument in paramhash. Returns 'no email',
+'squelched', 'daily', 'weekly' or empty string depending on
+user preferences.
+
+=over 4
+
+=item 'no email' - user has no email, so can not recieve notifications.
+
+=item 'squelched' - returned only when Ticket argument is provided and
+notifications to the user has been supressed for this ticket.
+
+=item 'daily' - retruned when user recieve daily messages digest instead
+of immediate delivery.
+
+=item 'weekly' - previous, but weekly.
+
+=item empty string returned otherwise.
+
+=back
+
+=cut
+
+sub email_frequency {
+    my $self = shift;
+    my %args = (
+        ticket => undef,
+        @_
+    );
+    return ''
+      unless $self->id
+          && $self->id != $RT::Nobody->id
+          && $self->id != RT->system_user->id;
+    return 'no email' unless my $email = $self->email;
+    return 'squelched'
+      if $args{'ticket'}
+          && grep lc $email eq lc $_->content, $args{'ticket'}->squelch_mail_to;
+    my $frequency = RT->config->get( 'EmailFrequency', $self ) || '';
+    return 'daily'  if $frequency =~ /daily/i;
+    return 'weekly' if $frequency =~ /weekly/i;
+    return '';
+}
+
+
 
 =head2 canonicalize_email ADDRESS
 
