@@ -95,59 +95,59 @@ sub implicit_clauses { }
 # metadata.
 
 our %FIELD_METADATA = (
-    Status           => [ 'ENUM', ],
-    Queue            => [ 'ENUM' => 'Queue', ],
-    Type             => [ 'ENUM', ],
-    Creator          => [ 'ENUM' => 'User', ],
-    LastUpdatedBy  => [ 'ENUM' => 'User', ],
-    Owner            => [ 'WATCHERFIELD' => 'Owner', ],
-    EffectiveId     => [ 'INT', ],
-    Id               => [ 'INT', ],
-    InitialPriority => [ 'INT', ],
-    FinalPriority   => [ 'INT', ],
-    Priority         => [ 'INT', ],
-    TimeLeft        => [ 'INT', ],
-    TimeWorked      => [ 'INT', ],
-    TimeEstimated   => [ 'INT', ],
-
-    Linked       => ['LINK'],
-    LinkedTo    => [ 'LINK' => 'To' ],
-    LinkedFrom   => [ 'LINK' => 'From' ],
-    MemberOf     => [ 'LINK' => To => 'MemberOf', ],
-    DependsOn    => [ 'LINK' => To => 'DependsOn', ],
-    RefersTo     => [ 'LINK' => To => 'RefersTo', ],
-    HasMember   => [ 'LINK' => From => 'MemberOf', ],
-    DependentOn  => [ 'LINK' => From => 'DependsOn', ],
-    DependedOnBy => [ 'LINK' => From => 'DependsOn', ],
-    ReferredToBy => [ 'LINK' => From => 'RefersTo', ],
-    Told            => [ 'DATE'         => 'Told', ],
-    Starts          => [ 'DATE'         => 'starts', ],
-    Started         => [ 'DATE'         => 'Started', ],
-    Due             => [ 'DATE'         => 'Due', ],
-    Resolved        => [ 'DATE'         => 'resolved', ],
-    LastUpdated    => [ 'DATE'         => 'last_updated', ],
-    Created         => [ 'DATE'         => 'Created', ],
-    Subject         => [ 'STRING', ],
-    Content         => [ 'TRANSFIELD', ],
-    ContentType    => [ 'TRANSFIELD', ],
-    Filename        => [ 'TRANSFIELD', ],
-    TransactionDate => [ 'TRANSDATE', ],
-    Requestor       => [ 'WATCHERFIELD' => 'requestor', ],
-    Requestors      => [ 'WATCHERFIELD' => 'requestor', ],
-    Cc              => [ 'WATCHERFIELD' => 'cc', ],
-    AdminCc         => [ 'WATCHERFIELD' => 'admin_cc', ],
-    Watcher         => [ 'WATCHERFIELD', ],
-    QueueCc          => [ 'WATCHERFIELD' => 'Cc'      => 'Queue', ],
-    QueueAdminCc     => [ 'WATCHERFIELD' => 'AdminCc' => 'Queue', ],
-    QueueWatcher     => [ 'WATCHERFIELD' => undef     => 'Queue', ],
-    CustomFieldValue => [ 'CUSTOMFIELD', ],
-    CustomField      => [ 'CUSTOMFIELD', ],
-    CF               => [ 'CUSTOMFIELD', ],
-    Updated          => [ 'TRANSDATE', ],
-    RequestorGroup  => [ 'MEMBERSHIPFIELD' => 'requestor', ],
-    CcGroup         => [ 'MEMBERSHIPFIELD' => 'cc', ],
-    AdminCcGroup   => [ 'MEMBERSHIPFIELD' => 'admin_cc', ],
-    WatcherGroup     => [ 'MEMBERSHIPFIELD', ],
+    Status           => [ 'ENUM', ],                            #loc_left_pair
+    Queue            => [ 'ENUM' => 'Queue', ],                 #loc_left_pair
+    Type             => [ 'ENUM', ],                            #loc_left_pair
+    Creator          => [ 'ENUM' => 'User', ],                  #loc_left_pair
+    LastUpdatedBy  => [ 'ENUM' => 'User', ],                    #loc_left_pair
+    Owner            => [ 'WATCHERFIELD' => 'Owner', ],         #loc_left_pair
+    EffectiveId     => [ 'INT', ],                              #loc_left_pair
+    Id               => [ 'INT', ],                             #loc_left_pair
+    InitialPriority => [ 'INT', ],                              #loc_left_pair
+    FinalPriority   => [ 'INT', ],                              #loc_left_pair
+    Priority         => [ 'INT', ],                             #loc_left_pair
+    TimeLeft        => [ 'INT', ],                              #loc_left_pair
+    TimeWorked      => [ 'INT', ],                              #loc_left_pair
+    TimeEstimated   => [ 'INT', ],                              #loc_left_pair
+                                                                               
+    Linked       => ['LINK'],                                   #loc_left_pair
+    LinkedTo    => [ 'LINK' => 'To' ],                          #loc_left_pair
+    LinkedFrom   => [ 'LINK' => 'From' ],                       #loc_left_pair
+    MemberOf     => [ 'LINK' => To => 'MemberOf', ],            #loc_left_pair
+    DependsOn    => [ 'LINK' => To => 'DependsOn', ],           #loc_left_pair
+    RefersTo     => [ 'LINK' => To => 'RefersTo', ],            #loc_left_pair
+    HasMember   => [ 'LINK' => From => 'MemberOf', ],           #loc_left_pair
+    DependentOn  => [ 'LINK' => From => 'DependsOn', ],         #loc_left_pair
+    DependedOnBy => [ 'LINK' => From => 'DependsOn', ],         #loc_left_pair
+    ReferredToBy => [ 'LINK' => From => 'RefersTo', ],          #loc_left_pair
+    Told            => [ 'DATE'         => 'Told', ],           #loc_left_pair
+    Starts          => [ 'DATE'         => 'starts', ],         #loc_left_pair
+    Started         => [ 'DATE'         => 'Started', ],        #loc_left_pair
+    Due             => [ 'DATE'         => 'Due', ],            #loc_left_pair
+    Resolved        => [ 'DATE'         => 'resolved', ],       #loc_left_pair
+    LastUpdated    => [ 'DATE'         => 'last_updated', ],    #loc_left_pair
+    Created         => [ 'DATE'         => 'Created', ],        #loc_left_pair
+    Subject         => [ 'STRING', ],                           #loc_left_pair
+    Content         => [ 'TRANSFIELD', ],                       #loc_left_pair
+    ContentType    => [ 'TRANSFIELD', ],                        #loc_left_pair
+    Filename        => [ 'TRANSFIELD', ],                       #loc_left_pair
+    TransactionDate => [ 'TRANSDATE', ],                        #loc_left_pair
+    Requestor       => [ 'WATCHERFIELD' => 'requestor', ],      #loc_left_pair
+    Requestors      => [ 'WATCHERFIELD' => 'requestor', ],      #loc_left_pair
+    Cc              => [ 'WATCHERFIELD' => 'cc', ],             #loc_left_pair
+    AdminCc         => [ 'WATCHERFIELD' => 'admin_cc', ],       #loc_left_pair
+    Watcher         => [ 'WATCHERFIELD', ],                      #loc_left_pair
+    QueueCc          => [ 'WATCHERFIELD' => 'Cc'      => 'Queue', ], #loc_left_pair
+    QueueAdminCc     => [ 'WATCHERFIELD' => 'AdminCc' => 'Queue', ],  #loc_left_pair
+    QueueWatcher     => [ 'WATCHERFIELD' => undef     => 'Queue', ], #loc_left_pair
+    CustomFieldValue => [ 'CUSTOMFIELD', ],                     #loc_left_pair
+    CustomField      => [ 'CUSTOMFIELD', ],                     #loc_left_pair
+    CF               => [ 'CUSTOMFIELD', ],                     #loc_left_pair
+    Updated          => [ 'TRANSDATE', ],                       #loc_left_pair
+    RequestorGroup  => [ 'MEMBERSHIPFIELD' => 'requestor', ],   #loc_left_pair
+    CcGroup         => [ 'MEMBERSHIPFIELD' => 'cc', ],          #loc_left_pair
+    AdminCcGroup   => [ 'MEMBERSHIPFIELD' => 'admin_cc', ],     #loc_left_pair
+    WatcherGroup     => [ 'MEMBERSHIPFIELD', ],                 #loc_left_pair
 );
 
 # support _ name conventions as well
@@ -161,6 +161,7 @@ for my $field ( keys %FIELD_METADATA ) {
 our %dispatch = (
     ENUM            => \&_enum_limit,
     INT             => \&_int_limit,
+    ID              => \&_id_limit,
     LINK            => \&_link_limit,
     DATE            => \&_date_limit,
     STRING          => \&_string_limit,
@@ -250,6 +251,7 @@ sub clean_slate {
         _sql_trattachalias
         _sql_u_watchers_alias_for_sort
         _sql_u_watchers_aliases
+        _sql_current_user_can_see_applied
     );
 }
 
@@ -266,6 +268,61 @@ Jifty::DBI::limit.
 Essentially they are an expanded/broken out (and much simplified)
 version of what ProcessRestrictions used to do.  They're also much
 more clearly delineated by the type of field being processed.
+
+=head2 _id_limit
+
+Handle ID field.
+
+=cut
+
+sub _id_limit {
+    my ( $sb, $field, $op, $value, @rest ) = @_;
+
+    return $sb->_int_limit( $field, $op, $value, @rest )
+      unless $value eq '__Bookmarked__';
+
+    die "Invalid operator $op for __Bookmarked__ search on $field"
+      unless $op =~ /^(=|!=)$/;
+
+    my @bookmarks = do {
+        my $tmp = $sb->current_user->user_object->first_attribute('Bookmarks');
+        $tmp = $tmp->content if $tmp;
+        $tmp ||= {};
+        grep $_, keys %$tmp;
+    };
+
+    return $sb->_sql_limit(
+        column    => $field,
+        operator => $op,
+        value    => 0,
+        @rest,
+    ) unless @bookmarks;
+
+    # as bookmarked tickets can be merged we have to use a join
+    # but it should be pretty lightweight
+    my $tickets_alias = $sb->join(
+        type => 'left',
+        alias1 => 'main',
+        column1 => 'id',
+        table2 => 'Tickets',
+        column2 => 'effective_id',
+    );
+    $sb->_open_paren;
+    my $first = 1;
+    my $ea = $op eq '=' ? 'OR' : 'AND';
+    foreach my $id ( sort @bookmarks ) {
+        $sb->_sql_limit(
+            alias    => $tickets_alias,
+            column    => 'id',
+            operator => $op,
+            value    => $id,
+            $first ? (@rest) : ( entry_aggregator => $ea )
+        );
+    }
+    $sb->_close_paren;
+}
+
+
 
 =head2 _enum_limit
 
@@ -926,7 +983,8 @@ sub _role_groupsjoin {
         leftjoin => $groups,
         alias    => $groups,
         column   => 'domain',
-        value    => 'RT::Model::Ticket-Role',
+        value    => 'RT::' . $args{'class'} . '-Role',
+        
     );
     $self->SUPER::limit(
         leftjoin => $groups,
@@ -935,7 +993,8 @@ sub _role_groupsjoin {
         value    => $args{'type'},
     ) if $args{'type'};
 
-    $self->{'_sql_role_group_aliases'}{ $args{'type'} } = $groups
+    $self->{'_sql_role_group_aliases'}{ $args{'class'} . '-' . $args{'type'} } =
+      $groups
         unless $args{'new'};
 
     return $groups;
@@ -1303,6 +1362,14 @@ sub _custom_field_limit {
     # otherwise end up with a redundant clause.
 
     my $null_columns_ok;
+    my $fix_op = sub {
+        my $op = shift;
+        return $op unless RT->config->get('DatabaseType') eq 'Oracle';
+        return 'MATCHES'     if $op eq '=';
+        return 'NOT MATCHES' if $op eq '!=';
+        return $op;
+    };
+    
     if ( ( $op =~ /^NOT LIKE$/i ) or ( $op eq '!=' ) ) {
         $null_columns_ok = 1;
     }
@@ -1332,7 +1399,7 @@ sub _custom_field_limit {
         $self->_sql_limit(
             alias    => $TicketCFs,
             column    => $column,
-            operator => $op,
+            operator => ( $column ne 'large_content' ? $op : $fix_op->($op) ),
             value    => $value,
             %rest
             );
@@ -1342,6 +1409,7 @@ sub _custom_field_limit {
             alias    => $TicketCFs,
             column    => 'content',
             operator => $op,
+            
             value    => $value,
             %rest
         );
@@ -1366,7 +1434,7 @@ sub _custom_field_limit {
         $self->_sql_limit(
             alias           => $TicketCFs,
             column           => 'large_content',
-            operator        => $op,
+            operator        => $fix_op->($op),
             value           => $value,
             entry_aggregator => 'AND',
         );
@@ -1983,37 +2051,246 @@ sub next {
 
     $self->_process_restrictions() if ( $self->{'RecalcTicketLimits'} == 1 );
 
-    my $Ticket = $self->SUPER::next();
-    if ( ( defined($Ticket) ) and ( ref($Ticket) ) ) {
-
-        if ( $Ticket->__value('status') eq 'deleted'
-            && !$self->{'allow_deleted_search'} )
-        {
-            return ( $self->next() );
-        }
-
-        # Since Ticket could be granted with more rights instead
-        # of being revoked, it's ok if queue rights allow
-        # ShowTicket.  It seems need another query, but we have
-        # rights cache in Principal::has_right.
-        elsif ( $Ticket->current_user_has_right('ShowTicket') )
-        {
-            return ($Ticket);
-        }
-
-        #If the user doesn't have the right to show this ticket
-        else {
-            return ( $self->next() );
-        }
+    my $Ticket = $self->SUPER::next;
+    return $Ticket unless $Ticket;
+    if ( $Ticket->__value('Status') eq 'deleted'
+        && !$self->{'allow_deleted_search'} )
+    {
+        return $self->next;
     }
-
-    #if there never was any ticket
+    elsif ( RT->config->get('UseSQLForACLChecks') ) {
+    
+        # if we found a ticket with this option enabled then
+        # all tickets we found are ACLed, cache this fact
+        my $key = join ";:;", $self->current_user->id, 'ShowTicket',
+          'RT::Model::Ticket-' . $Ticket->id;
+        $RT::Principal::_ACL_CACHE->set( $key => 1 );
+        return $Ticket;
+    }
+    elsif ( $Ticket->current_user_has_right('ShowTicket') ) {
+        # has rights
+        return $Ticket;
+    }
     else {
-        return (undef);
-    }
 
+        # If the user doesn't have the right to show this ticket
+        return $self->next;
+    }
 }
 
+sub _do_search {
+    my $self = shift;
+    $self->current_user_can_see if RT->config->get('UseSQLForACLChecks');
+    return $self->SUPER::_do_search(@_);
+}
+
+sub _docount {
+    my $self = shift;
+    $self->current_user_can_see if RT->config->get('UseSQLForACLChecks');
+    return $self->SUPER::_docount(@_);
+}
+
+
+sub _roles_can_see {
+    my $self = shift;
+    my $cache_key = 'Roleshas_right;:;ShowTicket';
+
+    if ( my $cached = $RT::Principal::_ACL_CACHE->fetch($cache_key) ) {
+        return %$cached;
+    }
+
+    my $ACL = RT::ACL->new(RT->system_user);
+    $ACL->limit( column => 'right_name', value => 'ShowTicket' );
+    $ACL->limit( column => 'type', operator => '!=', value => 'Group' );
+    my $principal_alias = $ACL->join(
+        alias1 => 'main',
+        column1 => 'principal_id',
+        table2 => 'Principals',
+        column2 => 'id',
+    );
+    $ACL->limit( alias => $principal_alias, column => 'disabled', value => 0 );
+
+    my %res = ();
+    while ( my $ACE = $ACL->next ) {
+        my $role = $ACE->principal_type;
+        my $type = $ACE->object_type;
+        if ( $type eq 'RT::System' ) {
+            $res{$role} = 1;
+        }
+        elsif ( $type eq 'RT::Model::Queue' ) {
+            next if $res{$role} && !ref $res{$role};
+            push @{ $res{$role} ||= [] }, $ACE->objectid;
+        }
+        else {
+            Jifty->log->error(
+                'ShowTicket right is granted on unsupported object');
+        }
+    }
+    $RT::Principal::_ACL_CACHE->set( $cache_key => \%res );
+    return %res;
+}
+ 
+sub _directly_can_see_in {
+    my $self = shift;
+    my $id   = $self->current_user->id;
+
+    my $cache_key = 'User-' . $id . ';:;ShowTicket;:;DirectlyCanSeeIn';
+    if ( my $cached = $RT::Principal::_ACL_CACHE->fetch($cache_key) ) {
+        return @$cached;
+    }
+
+    my $ACL = RT::ACL->new(RT->system_user);
+    $ACL->limit( column => 'right_name', value => 'ShowTicket' );
+    my $principal_alias = $ACL->join(
+        alias1 => 'main',
+        column1 => 'principal_id',
+        table2 => 'Principals',
+        column2 => 'id',
+    );
+    $ACL->limit( alias => $principal_alias, column => 'disabled', value => 0 );
+    my $cgm_alias = $ACL->join(
+        alias1 => 'main',
+        column1 => 'principal_id',
+        table2 => 'CachedGroupMembers',
+        column2 => 'group_id',
+    );
+    $ACL->limit( alias => $cgm_alias, column => 'member_id', value => $id );
+    $ACL->limit( alias => $cgm_alias, column => 'disabled', value => 0 );
+
+    my @res = ();
+    while ( my $ACE = $ACL->next ) {
+        my $type = $ACE->object_type;
+        if ( $type eq 'RT::System' ) {
+
+            # If user is direct member of a group that has the right
+            # on the system then he can see any ticket
+            $RT::Principal::_ACL_CACHE->set( $cache_key => [-1] );
+            return (-1);
+        }
+        elsif ( $type eq 'RT::Model::Queue' ) {
+            push @res, $ACE->object_id;
+        }
+         else {
+            Jifty->log->error(
+                'ShowTicket right is granted on unsupported object');
+        }
+    }
+    $RT::Principal::_ACL_CACHE->set( $cache_key => \@res );
+    return @res;
+}
+
+sub current_user_can_see {
+    my $self = shift;
+    return if $self->{'_sql_current_user_can_see_applied'};
+
+    return $self->{'_sql_current_user_can_see_applied'} = 1
+      if $self->current_user->user_object->has_right(
+        right  => 'SuperUser',
+        object => RT->system
+      );
+
+    my $id = $self->current_user->id;
+
+    my @direct_queues = $self->_directly_can_see_in;
+    return $self->{'_sql_current_user_can_see_applied'} = 1
+      if @direct_queues && $direct_queues[0] == -1;
+
+    my %roles = $self->_roles_can_see;
+    {
+        my %skip = map { $_ => 1 } @direct_queues;
+        foreach my $role ( keys %roles ) {
+            next unless ref $roles{$role};
+
+            my @queues = grep !$skip{$_}, @{ $roles{$role} };
+            if (@queues) {
+                $roles{$role} = \@queues;
+            }
+            else {
+                delete $roles{$role};
+            }
+        }
+    }
+
+    {
+        my $join_roles = keys %roles;
+        $join_roles = 0 if $join_roles == 1 && $roles{'Owner'};
+        my ( $role_group_alias, $cgm_alias );
+        if ($join_roles) {
+            $role_group_alias = $self->_role_groupsjoin( New => 1 );
+            $cgm_alias =
+              $self->_group_membersjoin( groups_alias => $role_group_alias );
+            $self->SUPER::limit(
+                leftjoin => $cgm_alias,
+                column    => 'member_id',
+                operator => '=',
+                value    => $id,
+            );
+        }
+        my $limit_queues = sub {
+            my $ea     = shift;
+            my @queues = @_;
+
+            return unless @queues;
+            if ( @queues == 1 ) {
+                $self->_sql_limit(
+                    alias           => 'main',
+                    column           => 'queue',
+                    value           => $_[0],
+                    entry_aggregator => $ea,
+                );
+            }
+            else {
+                $self->_open_paren;
+                foreach my $q (@queues) {
+                    $self->_sql_limit(
+                        alias           => 'main',
+                        column           => 'queue',
+                        value           => $q,
+                        entry_aggregator => $ea,
+                    );
+                    $ea = 'OR';
+                }
+                $self->_close_paren;
+            }
+            return 1;
+        };
+
+        $self->_open_paren;
+        my $ea = 'AND';
+        $ea = 'OR' if $limit_queues->( $ea, @direct_queues );
+        while ( my ( $role, $queues ) = each %roles ) {
+            $self->_open_paren;
+            if ( $role eq 'Owner' ) {
+                $self->_sql_limit(
+                    column           => 'Owner',
+                    value           => $id,
+                    entry_aggregator => $ea,
+                );
+            }
+            else {
+                $self->_sql_limit(
+                    alias           => $cgm_alias,
+                    column           => 'member_id',
+                    operator        => 'IS NOT',
+                    value           => 'NULL',
+                    quote_value      => 0,
+                    entry_aggregator => $ea,
+                );
+                $self->_sql_limit(
+                    alias           => $role_group_alias,
+                    column           => 'type',
+                    value           => $role,
+                    entry_aggregator => 'AND',
+                );
+            }
+            $limit_queues->( 'AND', @$queues ) if ref $queues;
+            $ea = 'OR' if $ea eq 'AND';
+            $self->_close_paren;
+        }
+        $self->_close_paren;
+    }
+    return $self->{'_sql_current_user_can_see_applied'} = 1;
+}
 
 
 # Convert a set of oldstyle SB Restrictions to Clauses for RQL
