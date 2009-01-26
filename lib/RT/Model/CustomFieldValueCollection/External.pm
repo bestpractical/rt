@@ -79,6 +79,10 @@ This method should return an array reference of hash references.  The
 hash references should contain keys for C<name>, C<description>, and
 C<sort_order>.
 
+=head1 SEE ALSO
+
+L<docs/creating_external_custom_fields.pod>
+
 =cut
 
 # XXX What's the use of table?
