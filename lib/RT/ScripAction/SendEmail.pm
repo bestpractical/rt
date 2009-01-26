@@ -186,7 +186,7 @@ sub prepare {
             && @{ $self->{$header} } );
     }
 
-    # PseudoTo	(fake to headers) shouldn't get matched for message recipients.
+    # PseudoTo (fake to headers) shouldn't get matched for message recipients.
     # If we don't have any 'To' header (but do have other recipients), drop in
     # the pseudo-to header.
     $self->set_header( 'To', join( ', ', @{ $self->{'PseudoTo'} } ) )
@@ -289,7 +289,10 @@ sub send_message {
 
     $self->scrip_action_obj->{_Message_ID}++;
 
-    Jifty->log->info( $msgid . " #" . $self->ticket_obj->id . "/" . $self->transaction_obj->id . " - Scrip " . $self->scrip_obj->id . " " . ( $self->scrip_obj->description || '' ) );
+    Jifty->log->info( $msgid . " #" . $self->ticket_obj->id . "/" .
+            $self->transaction_obj->id . " - Scrip "
+            . ( $self->scrip_obj->id || '#rule' ) . " "
+            . ( $self->scrip_obj->description || '' ) );
 
     my $status = RT::Interface::Email::send_email(
         entity      => $mime_obj,
@@ -297,7 +300,8 @@ sub send_message {
         transaction => $self->transaction_obj,
     );
 
-    return $status unless ( $status > 0 || exists( $self->{'Deferred'} ) );
+    return $status unless ( $status > 0 || exists $self->{'Deferred'} );
+    
 
     my $success = $msgid . " sent ";
     foreach (@EMAIL_RECIPIENT_HEADERS) {
@@ -309,8 +313,8 @@ sub send_message {
         for (qw(daily weekly susp)) {
             $success .=
               "\nBatched email $_ for: "
-              . join( ", ", keys %{ $self->{'Deferred'}->{$_} } )
-              if ( exists $self->{'Deferred'}->{$_} );
+              . join( ", ", keys %{ $self->{'Deferred'}{$_} } )
+              if exists $self->{'Deferred'}{$_};
         }
     }
 
@@ -353,12 +357,27 @@ sub add_attachments {
     if (   $transaction_content_obj
         && $transaction_content_obj->content_type =~ m{text/}i )
     {
-        $attachments->limit(
-            entry_aggregator => 'AND',
-            column           => 'id',
-            operator         => '!=',
-            value            => $transaction_content_obj->id,
-        );
+        # If this was part of a multipart/alternative, skip all of the kids
+        my $parent = $transaction_content_obj->parent_obj;
+        if (    $parent
+            and $parent->id
+            and $parent->ContentType eq "multipart/alternative" )
+        {
+            $attachments->limit(
+                entry_aggregator => 'AND',
+                column           => 'parent',
+                operator        => '!=',
+                value           => $parent->id,
+            );
+        }
+        else {
+            $attachments->limit(
+                entry_aggregator => 'AND',
+                column           => 'id',
+                operator        => '!=',
+                value           => $transaction_content_obj->id,
+            );
+        }
     }
 
     # attach any of this transaction's attachments
@@ -695,6 +714,8 @@ sub defer_digest_recipients {
 
 sub record_deferred_recipients {
     my $self   = shift;
+    return unless exists $self->{'Deferred'};
+    
     my $txn_id = $self->{'OutgoingMailTransaction'};
     return unless $txn_id;
 
@@ -802,7 +823,8 @@ sub remove_inappropriate_recipients {
     # system blacklist
 
 # Trim leading and trailing spaces. # Todo - we should really be canonicalizing all addresses
-    @blacklist = map { s/\s//g; } @blacklist;
+    s/\s//g foreach @blacklist;
+    
     foreach my $type (@EMAIL_RECIPIENT_HEADERS) {
         my @addrs;
         foreach my $addr ( @{ $self->{$type} } ) {
