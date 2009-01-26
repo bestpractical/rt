@@ -2195,7 +2195,7 @@ Returns list of tickets' ids that's been merged into this ticket.
 sub merged {
     my $self = shift;
 
-    my $mergees = s->new;
+    my $mergees = RT::Model::TicketCollection->new;
     $mergees->limit(
         column    => 'effective_id',
         operator => '=',
@@ -2366,7 +2366,7 @@ sub set_owner {
         return ( 0, _("Could not change owner: %1", $msg ) );
     }
 
-    my ( $val, $msg ) = $self->_new_transaction(
+    ( my $val, $msg ) = $self->_new_transaction(
         type       => $Type,
         field      => 'owner',
         new_value  => $new_owner_obj->id,
@@ -2702,7 +2702,7 @@ sub _set {
     if ( $args{'update_ticket'} ) {
 
         #Set the new value
-        my $return = $self->SUPER::_set(
+        $return = $self->SUPER::_set(
             column => $args{'column'},
             value  => $args{'value'}
         );
@@ -2803,14 +2803,6 @@ sub current_user_has_right {
         right  => $right,
     );
 
-    # Entry point of the rule system
-    my $rules = RT::Ruleset->find_all_rules(
-        stage          => 'TransactionBatch',
-        ticket_obj      => $self,
-        transaction_obj => $batch->[0],
-        type           => join( ',', map $_->type, grep defined, @{$batch} )
-    );
-    RT::Ruleset->commit_rules($rules);
 }
 
 

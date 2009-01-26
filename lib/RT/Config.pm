@@ -390,8 +390,8 @@ sub _init { return; }
 
 sub init_config {
     my $self = shift;
-    my %args = ( File => '', @_ );
-    $args{'File'} =~ s/(?<=Config)(?=\.pm$)/Meta/;
+    my %args = ( file => '', @_ );
+    $args{'file'} =~ s/(?<=Config)(?=\.pm$)/Meta/;
     return 1;
 }
 
@@ -408,18 +408,18 @@ Do nothin right now.
 sub load_configs {
     my $self = shift;
 
-    $self->init_config( File => 'RT_Config.pm' );
-    $self->load_config( File => 'RT_Config.pm' );
+    $self->init_config( file => 'RT_Config.pm' );
+    $self->load_config( file => 'RT_Config.pm' );
 
     my @configs = $self->configs;
-    $self->init_config( File => $_ ) foreach @configs;
-    $self->load_config( File => $_ ) foreach @configs;
+    $self->init_config( file => $_ ) foreach @configs;
+    $self->load_config( file => $_ ) foreach @configs;
     return;
 }
 
 =head1 load_config
 
-Takes param hash with C<File> field.
+Takes param hash with C<file> field.
 First, the site configuration file is loaded, in order to establish
 overall site settings like hostname and name of RT instance.
 Then, the core configuration file is loaded to set fallback values
@@ -434,26 +434,26 @@ overriding you have to copy original value from core config file.
 
 sub load_config {
     my $self = shift;
-    my %args = ( File => '', @_ );
-    $args{'File'} =~ s/(?<!Site)(?=Config\.pm$)/Site/;
-    if ( $args{'File'} eq 'RT_SiteConfig.pm'
+    my %args = ( file => '', @_ );
+    $args{'file'} =~ s/(?<!Site)(?=Config\.pm$)/Site/;
+    if ( $args{'file'} eq 'RT_SiteConfig.pm'
         and my $site_config = $ENV{RT_SITE_CONFIG} )
     {
-        $self->_load_config( %args, File => $site_config );
+        $self->_load_config( %args, file => $site_config );
     } else {
         $self->_load_config(%args);
     }
-    $args{'File'} =~ s/Site(?=Config\.pm$)//;
+    $args{'file'} =~ s/Site(?=Config\.pm$)//;
     $self->_load_config(%args);
     return 1;
 }
 
 sub _load_config {
     my $self = shift;
-    my %args = ( File => '', @_ );
+    my %args = ( file => '', @_ );
 
-    my $is_ext = $args{'File'} !~ /^RT_(?:Site)?Config/ ? 1 : 0;
-    my $is_site = $args{'File'} =~ /SiteConfig/ ? 1 : 0;
+    my $is_ext = $args{'file'} !~ /^RT_(?:Site)?Config/ ? 1 : 0;
+    my $is_site = $args{'file'} =~ /SiteConfig/ ? 1 : 0;
 
     eval {
         package RT;
@@ -461,25 +461,25 @@ sub _load_config {
             my ( $opt_ref, @args ) = @_;
             my ( $pack, $file, $line ) = caller;
             return $self->set_from_config(
-                Option     => $opt_ref,
+                option     => $opt_ref,
                 value      => [@args],
-                Package    => $pack,
-                File       => $file,
-                Line       => $line,
-                SiteConfig => $is_site,
-                Extension  => $is_ext,
+                package    => $pack,
+                file       => $file,
+                line       => $line,
+                site_config => $is_site,
+                extension  => $is_ext,
             );
         };
         my @etc_dirs = ($RT::LocalEtcPath);
-        push @etc_dirs, RT->PluginDirs('etc') if $is_ext;
+        push @etc_dirs, RT->plugin_dirs('etc') if $is_ext;
         push @etc_dirs, $RT::EtcPath, @INC;
         local @INC = @etc_dirs;
         require $args{'file'};
     };
     if ($@) {
-        return 1 if $is_site && $@ =~ qr{^Can't locate \Q$args{File}};
-        if ( $is_site || $@ !~ qr{^Can't locate \Q$args{File}} ) {
-            die qq{Couldn't load RT config file $args{'File'}:\n\n$@};
+        return 1 if $is_site && $@ =~ qr{^Can't locate \Q$args{file}};
+        if ( $is_site || $@ !~ qr{^Can't locate \Q$args{file}} ) {
+            die qq{Couldn't load RT config file $args{'file'}:\n\n$@};
         }
 
         my $username = getpwuid($>);
@@ -487,7 +487,7 @@ sub _load_config {
 
         my ( $file_path, $fileuid, $filegid );
         foreach ( $RT::LocalEtcPath, $RT::EtcPath, @INC ) {
-            my $tmp = File::Spec->catfile( $_, $args{File} );
+            my $tmp = File::Spec->catfile( $_, $args{file} );
             ( $fileuid, $filegid ) = ( stat($tmp) )[ 4, 5 ];
             if ( defined $fileuid ) {
                 $file_path = $tmp;
@@ -663,21 +663,21 @@ sub _return_value {
 sub set_from_config {
     my $self = shift;
     my %args = (
-        Option     => undef,
+        option     => undef,
         value      => [],
-        Package    => 'RT',
-        File       => '',
-        Line       => 0,
-        SiteConfig => 1,
-        Extension  => 0,
+        package    => 'RT',
+        file       => '',
+        line       => 0,
+        site_config => 1,
+        extension  => 0,
         @_
     );
 
-    unless ( $args{'File'} ) {
-        ( $args{'Package'}, $args{'File'}, $args{'Line'} ) = caller(1);
+    unless ( $args{'file'} ) {
+        ( $args{'package'}, $args{'file'}, $args{'line'} ) = caller(1);
     }
 
-    my $opt = $args{'Option'};
+    my $opt = $args{'option'};
 
     my $type;
     my $name = $self->__getname_by_ref($opt);
@@ -689,10 +689,10 @@ sub set_from_config {
         $type = $META{$name}->{'type'} || 'SCALAR';
     }
 
-    return 1 if exists $OPTIONS{$name} && !$args{'SiteConfig'};
+    return 1 if exists $OPTIONS{$name} && !$args{'site_config'};
 
     $META{$name}->{'type'} = $type;
-    foreach (qw(Package File Line SiteConfig Extension)) {
+    foreach (qw(package file line site_config extension)) {
         $META{$name}->{'Source'}->{$_} = $args{$_};
     }
     $self->set( $name, @{ $args{'value'} } );
