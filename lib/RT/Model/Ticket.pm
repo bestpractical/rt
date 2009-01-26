@@ -239,14 +239,14 @@ sub load {
         my ( $ticketid, $msg ) = $self->load_by_id($id);
 
         unless ( $self->id ) {
-            Jifty->log->fatal("$self tried to load a bogus ticket: $id");
+            Jifty->log->debug("$self tried to load a bogus ticket: $id");
             return (undef);
         }
     }
 
     #It's not a URI. It's not a numerical ticket ID. Punt!
     else {
-        Jifty->log->warn("Tried to load a bogus ticket id: '$id'");
+        Jifty->log->debug("Tried to load a bogus ticket id: '$id'");
         return (undef);
     }
 
@@ -809,7 +809,7 @@ prinicpal_id The RT::Model::Principal id of the user or group that's being added
 email       The email address of the new watcher. If a user with this 
             email address can't be found, a new nonprivileged user will be created.
 
-If the watcher you\'re trying to set has an RT account, set the Owner paremeter to their User Id. Otherwise, set the email parameter to their email address.
+If the watcher you\'re trying to set has an RT account, set the principal_id paremeter to their User Id. Otherwise, set the email parameter to their email address.
 
 =cut
 
@@ -2186,7 +2186,28 @@ sub merge_into {
     return ( 1, _("Merge Successful") );
 }
 
+=head2 merged
 
+Returns list of tickets' ids that's been merged into this ticket.
+
+=cut
+
+sub merged {
+    my $self = shift;
+
+    my $mergees = s->new;
+    $mergees->limit(
+        column    => 'effective_id',
+        operator => '=',
+        value    => $self->id,
+    );
+    $mergees->limit(
+        column    => 'id',
+        operator => '!=',
+        value    => $self->id,
+    );
+    return map $_->id, @{ $mergees->ItemsArrayRef || [] };
+}
 
 
 
@@ -2315,23 +2336,23 @@ sub set_owner {
     # Delete the owner in the owner group, then add a new one
     # TODO: is this safe? it's not how we really want the API to work
     # for most things, but it's fast.
-    my ( $del_id, ) = $self->role_group("owner")->members_obj->first->delete();
+    my ( $del_id, $del_msg ) = $self->role_group("owner")->members_obj->first->delete();
     unless ($del_id) {
         Jifty->handle->rollback();
-        return ( 0, _("Could not change owner. ") . $del_id );
+        return ( 0, _("Could not change owner. %1", $del_msg ));
     }
     my ( $add_id, $add_msg ) = $self->role_group("owner")->_add_member(
         principal_id       => $new_owner_obj->principal_id,
     );
     unless ($add_id) {
         Jifty->handle->rollback();
-        return ( 0, _("Could not change owner. ") . $add_msg );
+        return ( 0, _( "Could not change owner: %1", $add_msg ) );
     }
 
     # We call set twice with slightly different arguments, so
     # as to not have an SQL transaction span two RT transactions
 
-    my ($return) = $self->_set(
+    my ($return, $msg) = $self->_set(
         column             => 'owner',
         value              => $new_owner_obj->id,
         record_transaction => 0,
@@ -2342,7 +2363,7 @@ sub set_owner {
 
     if ( ref($return) and !$return ) {
         Jifty->handle->rollback;
-        return ( 0, _("Could not change owner. ") . $return );
+        return ( 0, _("Could not change owner: %1", $msg ) );
     }
 
     my ( $val, $msg ) = $self->_new_transaction(
@@ -2781,6 +2802,15 @@ sub current_user_has_right {
         object => $self,
         right  => $right,
     );
+
+    # Entry point of the rule system
+    my $rules = RT::Ruleset->find_all_rules(
+        stage          => 'TransactionBatch',
+        ticket_obj      => $self,
+        transaction_obj => $batch->[0],
+        type           => join( ',', map $_->type, grep defined, @{$batch} )
+    );
+    RT::Ruleset->commit_rules($rules);
 }
 
 
