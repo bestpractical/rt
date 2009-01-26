@@ -55,6 +55,8 @@ use MIME::Entity;
 use RT::EmailParser;
 use File::Temp;
 use UNIVERSAL::require;
+use Mail::Mailer ();
+
 
 BEGIN {
     use base 'Exporter';
@@ -364,6 +366,9 @@ sub send_email {
     }
 
     my $mail_command = RT->config->get('MailCommand');
+    if ( $mail_command eq 'testfile' ) {
+        $Mail::Mailer::testfile::config{outfile} = File::Temp->new;
+    }
 
     # if it is a sub routine, we just return it;
     return $mail_command->( $args{'entity'} )
@@ -895,7 +900,8 @@ sub parse_address_from_header {
 
     # Some broken mailers send:  ""Vincent, Jesse"" <jesse@fsck.com>. Hate
     $Addr =~ s/\"\"(.*?)\"\"/\"$1\"/g;
-    my @Addresses = Email::Address->parse($Addr);
+    my @Addresses = RT::EmailParser->parse_email($Addr);
+    
 
     my ($AddrObj) = grep ref $_, @Addresses;
     unless ($AddrObj) {
@@ -1086,11 +1092,12 @@ sub _load_plugins {
     my @mail_plugins = @_;
 
     my @res;
-    foreach (@mail_plugins) {
-        if ( ref($_) eq "CODE" ) {
-            push @res, $_;
-        } elsif ( !ref $_ ) {
-            my $Class = $_;
+    foreach my $plugin (@mail_plugins) {
+        if ( ref($plugin) eq "CODE" ) {
+            push @res, $plugin;
+         }
+        elsif ( !ref $plugin ) {
+            my $Class = $plugin;
             $Class = "RT::Interface::Email::" . $Class
                 unless $Class =~ /^RT::Interface::Email::/;
             $Class->require
@@ -1103,7 +1110,7 @@ sub _load_plugins {
             }
             push @res, $Class;
         } else {
-            Jifty->log->fatal("$_ - is not class name or code reference");
+            Jifty->log->fatal("$plugin - is not class name or code reference");
         }
     }
     return @res;
