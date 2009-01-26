@@ -192,7 +192,7 @@ sub create {
         disabled    => 0,
         lookup_type => '',
         repeated    => 0,
-        link_to_value => '',
+        link_value_to => '',
         include_content_for_value => '',
         @_,
     );
@@ -261,12 +261,22 @@ sub create {
         disabled    => $args{'disabled'},
         lookup_type => $args{'lookup_type'},
         repeated    => $args{'repeated'},
-        link_to_value => $args{'link_to_value'},
+        link_value_to => $args{'link_value_to'},
         include_content_for_value => $args{include_content_for_value},
     );
 
-    if ( exists $args{'ValuesClass'} ) {
-        $self->set_values_class( $args{'ValuesClass'} );
+    if ( exists $args{'link_value_to'} ) {
+        $self->set_link_value_to( $args{'link_value_to'} );
+    }
+
+    if ( exists $args{'include_content_for_value'} ) {
+        $self->set_include_content_for_value( $args{'include_content_for_value'} );
+    }
+
+    
+
+    if ( exists $args{'values_class'} ) {
+        $self->set_values_class( $args{'values_class'} );
     if ( exists $args{'link_value_to'} ) {
         $self->set_linkvalueto( $args{'link_value_to'} );
     }
@@ -311,6 +321,9 @@ sub load {
 =head2 load_by_name (queue => QUEUEID, name => name)
 
 Loads the Custom field named name.
+
+Will load a Disabled Custom column even if there is a non-disabled Custom Field
+with the same Name.
 
 Will load a Disabled Custom column even if there is a non-disabled Custom Field
 with the same Name.
@@ -367,7 +380,12 @@ sub load_by_name {
 
     # We only want one entry.
     $CFs->rows_per_page(1);
-    return ( 0, _("Not found") ) unless my $first = $CFs->first;
+
+    # version before 3.8 just returns 0, so we need to test if wantarray to be
+    # backward compatible.
+    return wantarray ? ( 0, _("Not found") ) : 0
+      unless my $first = $CFs->first;
+
     return $self->load_by_id( $first->id );
 }
 
