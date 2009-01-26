@@ -144,6 +144,12 @@ sub create {
 
     #Get the filename
     my $filename = $Attachment->head->recommended_filename;
+    # MIME::Head doesn't support perl strings well and can return
+    # octets which later will be double encoded in low-level code
+    my $head = $Attachment->head->as_string;
+    utf8::decode($head);
+
+    
 
     # If a message has no bodyhandle, that means that it has subparts (or appears to)
     # and we should act accordingly.
@@ -152,7 +158,7 @@ sub create {
             transaction_id => $args{'transaction_id'},
             parent         => $args{'parent'},
             content_type   => $Attachment->mime_type,
-            headers        => $Attachment->head->as_string,
+            headers        => $head,
             message_id     => $message_id,
             subject        => $subject,
         );
@@ -185,7 +191,7 @@ sub create {
             content_type     => $Attachment->mime_type,
             content_encoding => $content_encoding,
             parent           => $args{'parent'},
-            headers          => $Attachment->head->as_string,
+            headers          => $head,
             subject          => $subject,
             content          => $Body,
             filename         => $filename,
