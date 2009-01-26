@@ -56,7 +56,7 @@ our @EXPORT = qw/safe_run_child/;
 sub safe_run_child (&) {
     local @ENV{ 'LANG', 'LC_ALL' } = ( 'C', 'C' );
 
-    return shift->() if $ENV{'MOD_PERL'};
+    return shift->() if $ENV{'MOD_PERL'} || $CGI::SpeedyCGI::i_am_speedy;
 
     # We need to reopen stdout temporarily, because in FCGI
     # environment, stdout is tied to FCGI::Stream, and the child
