@@ -303,6 +303,8 @@ use vars qw( %_brief_descriptions $Preferredcontent_type );
 
 use RT::Model::AttachmentCollection;
 use RT::Model::ScripCollection;
+use RT::Ruleset;
+
 
 use HTML::FormatText;
 use HTML::TreeBuilder;
@@ -380,9 +382,23 @@ sub create {
             ticket      => $args{'object_id'},
             transaction => $self->id,
         );
+
+        # Entry point of the rule system
+        my $ticket = RT::Model::Ticket->new( current_user => RT->system_user );
+        $ticket->load( $args{'object_id'} );
+        my $rules = RT::Ruleset->find_all_rules(
+            Stage          => 'TransactionCreate',
+            type           => $args{'type'},
+            ticket_obj      => $ticket,
+            transaction_obj => $self,
+        );
+
+        
         if ( $commit_scrips ) {
             Jifty->log->debug( 'About to commit scrips for transaction #' . $self->id );
             $self->{'scrips'}->commit;
+            RT::Ruleset->commitRules($rules);
+            
         } else {
             Jifty->log->debug( 'Skipping commit of scrips for transaction #' . $self->id );
         }
@@ -476,10 +492,11 @@ returns undef.
 Takes a paramhash.  If the $args{'Quote'} parameter is set, wraps this message 
 at $args{'Wrap'}.  $args{'Wrap'} defaults to 70.
 
-If $args{'type'} is set to C<text/html>, plain texts are upgraded to HTML.
-Otherwise, HTML texts are downgraded to plain text.  If $args{'type'} is
-missing, it defaults to the value of C<$RT::Model::Transaction::Preferredcontent_type>,
-if that's missing too, defaults to 'text/plain'.
+If $args{'type'} is set to C<text/html>, this will return an HTML 
+part of the message, if available.  Otherwise it looks for a text/plain
+part. If $args{'type'} is missing, it defaults to the value of 
+C<$RT::Transaction::Preferredcontent_type>, if that's missing too, 
+defaults to 'text/plain'.
 
 =cut
 
@@ -493,7 +510,7 @@ sub content {
     );
 
     my $content;
-    if ( my $content_obj = $self->content_obj ) {
+    if ( my $content_obj = $self->content_obj( type => $args{type} ) ) {
         $content = $content_obj->content || '';
 
         if ( lc $content_obj->content_type eq 'text/html' ) {
@@ -575,6 +592,10 @@ Returns the RT::Model::Attachment object which contains the content for this Tra
 
 sub content_obj {
     my $self = shift;
+    my %args = (
+        type => $Preferredcontent_type || 'text/plain',
+        @_
+    );
 
     # If we don't have any content, return undef now.
     # Get the set of toplevel attachments to this transaction.
@@ -590,7 +611,7 @@ sub content_obj {
 
     elsif ( $Attachment->content_type =~ '^multipart/' ) {
         my $plain_parts = $Attachment->children;
-        $plain_parts->content_type( value => ( $Preferredcontent_type || 'text/plain' ) );
+        $plain_parts->content_type( value => $args{type} );
         $plain_parts->limit_not_empty;
 
         # If we actully found a part, return its content
