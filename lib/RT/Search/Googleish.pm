@@ -86,8 +86,11 @@ sub describe {
 
 
 sub query_to_sql {
-    my $self     = shift;
-    my $query    = shift || $self->argument;
+    my $self = shift;
+    my $query = shift || $self->argument;
+
+    # Trim leading or trailing whitespace
+    $query =~ s/^\s+(.*)\s+$/$1/g;
     my @keywords = split /\s+/, $query;
     my ( @tql_clauses, @owner_clauses, @queue_clauses, @user_clauses, @id_clauses, @status_clauses );
     my ( $Queue, $User );
