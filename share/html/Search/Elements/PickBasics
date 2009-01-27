@@ -50,16 +50,6 @@
 % }
 <%INIT>
 
-# Queues to give to SelectOwner to restrict it
-my @OwnerQueues;
-my $Queues = RT::Queues->new( $session{'CurrentUser'} );
-$Queues->UnLimit;
-while ( my $Queue = $Queues->Next() ) {
-    my $Can = $session{CurrentUser}->HasRight( Right => 'SeeQueue', Object => $Queue )
-              || $session{CurrentUser}->HasRight( Right => 'ShowTicket', Object => $Queue );
-    push( @OwnerQueues, $Queue ) if ( $Can );
-}
-
 my @lines = (
     {
         Name => 'id',
@@ -134,7 +124,7 @@ my @lines = (
         Value => {
             Type => 'component',
             Path => '/Elements/SelectOwner',
-            Arguments => { ValueAttribute => 'Name', QueueObj => @OwnerQueues },
+            Arguments => { ValueAttribute => 'Name' },
         },
     },
     {
