@@ -88,8 +88,8 @@ if ( $Run ) {
 
     if ( ! $ARGS{OwnerEmail} || $ARGS{OwnerEmail} !~ /.+@.+/ ) {
         push @errors,
-            loc("Invalid [_1]: that doesn't look like an email address",
-            'Administrator Email');
+            loc("Invalid %1: '%2' doesn't look like an email address",
+            'Administrator Email', $ARGS{OwnerEmail} );
     }
 
 

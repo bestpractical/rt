@@ -26,7 +26,7 @@ msgstr " %1 переименована в %2."
 
 #: NOT FOUND IN SOURCE
 msgid " %1 saved."
-msgstr " %1 сохранен."
+msgstr " %1 сохранён."
 
 #: share/html/Elements/RT__Ticket/ColumnMap:259
 msgid " (no pubkey!)"
@@ -776,7 +776,7 @@ msgstr "Добавить критерий"
 
 #: share/html/Ticket/Create.html:149 share/html/Ticket/Update.html:122
 msgid "Add More Files"
-msgstr "Добавить еще файлы"
+msgstr "Добавить ещё файлы"
 
 #: NOT FOUND IN SOURCE
 msgid "Add Next State"
@@ -2215,10 +2215,6 @@ msgstr "Криптография"
 msgid "Current Links"
 msgstr "Текущие связи"
 
-#: NOT FOUND IN SOURCE
-msgid "Current Relationships"
-msgstr "Текущие взаимосвязи"
-
 #: share/html/Admin/Elements/EditScrips:53
 msgid "Current Scrips"
 msgstr "Текущие скриплеты"
@@ -2829,10 +2825,6 @@ msgstr "Редактировать связи"
 msgid "Edit Query"
 msgstr "Редактировать запрос"
 
-#: NOT FOUND IN SOURCE
-msgid "Edit Relationships"
-msgstr "Редактировать взаимосвязи"
-
 #: share/html/Ticket/Elements/Tabs:265
 msgid "Edit Search"
 msgstr "Редактировать запрос"
@@ -3097,10 +3089,6 @@ msgstr "Ошибка: нет публичного ключа"
 #: bin/rt-crontool:335
 msgid "Escalate tickets"
 msgstr "Эскалировать приоритет заявки"
-
-#: NOT FOUND IN SOURCE
-msgid "Estimate"
-msgstr "Расчётно"
 
 #: share/html/Ticket/Elements/ShowBasics:59
 msgid "Estimated"
@@ -3429,7 +3417,7 @@ msgstr "Конфигурирование общих дополнительных
 #: share/html/Admin/Global/MyRT.html:95
 #. ($pane)
 msgid "Global portlet %1 saved."
-msgstr "Общий портлет %1 сохранен."
+msgstr "Общий портлет %1 сохранён."
 
 #: share/html/Admin/Elements/SelectTemplate:61
 #. (loc($Template->Name))
@@ -3807,10 +3795,6 @@ msgstr "Недопустимый тип группы"
 msgid "Invalid Right"
 msgstr "Недопустимое право"
 
-#: NOT FOUND IN SOURCE
-msgid "Invalid Type"
-msgstr "Недопустимый тип"
-
 #: lib/RT/Record.pm:926
 msgid "Invalid data"
 msgstr "Недопустимые данные"
@@ -3822,10 +3806,6 @@ msgstr "Неверный объект"
 #: lib/RT/Ticket_Overlay.pm:389
 msgid "Invalid owner object"
 msgstr "Неверный объект ответственного"
-
-#: NOT FOUND IN SOURCE
-msgid "Invalid owner. Defaulting to 'nobody'."
-msgstr "Несуществующий ответственный. Используем 'nobody'."
 
 #: lib/RT/CustomField_Overlay.pm:208 lib/RT/CustomField_Overlay.pm:597
 #. ($msg)
@@ -3942,10 +3922,6 @@ msgstr "Язык"
 msgid "Language"
 msgstr "Язык"
 
-#: share/html/Install/index.html:56
-msgid "Language."
-msgstr "Язык."
-
 #: share/html/Search/Elements/EditFormat:76
 msgid "Large"
 msgstr "Большой"
@@ -3958,17 +3934,9 @@ msgstr "В конец"
 msgid "Last Contact"
 msgstr "Последний контакт"
 
-#: NOT FOUND IN SOURCE
-msgid "Last Contact</a>"
-msgstr "Последний контакт</a>"
-
 #: share/html/Elements/SelectDateType:52
 msgid "Last Contacted"
 msgstr "Последний контакт"
-
-#: NOT FOUND IN SOURCE
-msgid "Last Notified"
-msgstr "Последнее уведомление"
 
 #: share/html/Elements/ColumnMap:81 share/html/Elements/ColumnMap:86 share/html/Elements/SelectDateType:53
 msgid "Last Updated"
@@ -4029,7 +3997,7 @@ msgstr "Предоставить пользователю права"
 
 #: share/html/Install/index.html:86
 msgid "Let's go!"
-msgstr "Вперед!"
+msgstr "Вперёд!"
 
 #: NOT FOUND IN SOURCE
 msgid "Limiting owner to %1 %2"
@@ -4834,14 +4802,6 @@ msgstr "Новый пароль"
 msgid "New Pending Approval"
 msgstr "Новое ожидающее подтверждение"
 
-#: NOT FOUND IN SOURCE
-msgid "New Query"
-msgstr "Новый запрос"
-
-#: NOT FOUND IN SOURCE
-msgid "New Relationships"
-msgstr "Новые связи"
-
 #: share/html/Ticket/Elements/Tabs:261
 msgid "New Search"
 msgstr "Новый поиск"
@@ -4930,18 +4890,6 @@ msgstr "Новые настройки окна"
 #: share/html/Elements/CollectionListPaging:104 share/html/Helpers/CalPopup.html:60 share/html/Install/Basics.html:62 share/html/Install/DatabaseDetails.html:72 share/html/Install/DatabaseType.html:70 share/html/Install/Global.html:65 share/html/Install/Global.html:65 share/html/Install/Sendmail.html:63 share/html/Ticket/Elements/Tabs:97
 msgid "Next"
 msgstr "Вперёд"
-
-#: NOT FOUND IN SOURCE
-msgid "Next Page"
-msgstr "Следующая страница"
-
-#: NOT FOUND IN SOURCE
-msgid "Next page"
-msgstr "Следующая страница"
-
-#: NOT FOUND IN SOURCE
-msgid "Next: "
-msgstr "Вперёд: "
 
 #: share/html/Elements/RT__User/ColumnMap:71
 msgid "NickName"
@@ -5185,10 +5133,6 @@ msgstr "Не установлено"
 #: lib/RT/CustomField_Overlay.pm:325
 msgid "Not found"
 msgstr "Не найдено"
-
-#: NOT FOUND IN SOURCE
-msgid "Not logged in"
-msgstr "Не вошли в систему"
 
 #: share/html/Elements/Header:97
 msgid "Not logged in."
@@ -5627,7 +5571,7 @@ msgstr "Пароль: %1"
 
 #: lib/RT/User_Overlay.pm:922
 msgid "Password: Permission Denied"
-msgstr "Пароль: доступ запрещен"
+msgstr "Пароль: доступ запрещён"
 
 #: etc/initialdata:427
 msgid "PasswordChange"
@@ -5669,10 +5613,6 @@ msgstr "Доступ запрещён"
 msgid "Permission denied"
 msgstr "Доступ запрещён"
 
-#: NOT FOUND IN SOURCE
-msgid "Permissions denied"
-msgstr "Доступы запрещены"
-
 #: share/html/Dashboards/index.html:56
 msgid "Personal Dashboards"
 msgstr ""
@@ -5699,7 +5639,7 @@ msgstr "Заполнитель"
 
 #: share/html/dhandler:51
 msgid "Please check the URL and try again."
-msgstr "Проверьте, пожалуйста, адрес и попробуйте еще раз."
+msgstr "Проверьте, пожалуйста, адрес и попробуйте ещё раз."
 
 #: share/html/Dashboards/Elements/HiddenSearches:68
 msgid "Possible hidden searches"
@@ -6016,10 +5956,6 @@ msgstr "RT получил свое собственное сообщение (%1
 msgid "RT Self Service"
 msgstr "Ваш RT"
 
-#: NOT FOUND IN SOURCE
-msgid "RT Self Service / Closed Tickets"
-msgstr "Ваш RT / Закрытые заявки"
-
 #: share/html/Admin/Tools/Configuration.html:94
 msgid "RT Variables"
 msgstr "Переменные RT"
@@ -6211,10 +6147,6 @@ msgstr "Обновлять"
 #. ($value/60)
 msgid "Refresh this page every %1 minutes."
 msgstr "Обновлять эту страницу каждые %1 минут."
-
-#: NOT FOUND IN SOURCE
-msgid "Relationships"
-msgstr "Взаимосвязи"
 
 #: lib/RT/Transaction_Overlay.pm:833
 #. ($ticket->Subject)
@@ -6780,10 +6712,6 @@ msgstr "Выбранные объекты"
 #: share/html/Widgets/SelectionBox:220
 msgid "Selections modified. Please save your changes"
 msgstr "Выбор изменён. Пожалуйста, сохраните ваши изменения"
-
-#: NOT FOUND IN SOURCE
-msgid "Self Service"
-msgstr "Ваш RT"
 
 #: lib/RT/Interface/Email.pm:655
 msgid "Send email successfully"
@@ -7854,17 +7782,9 @@ msgstr "Осталось времени"
 msgid "Time Worked"
 msgstr "Время в работе"
 
-#: NOT FOUND IN SOURCE
-msgid "Time left"
-msgstr "Осталось времени"
-
 #: share/html/Elements/Footer:54
 msgid "Time to display"
 msgstr "Время генерации страницы"
-
-#: NOT FOUND IN SOURCE
-msgid "Time worked"
-msgstr "Время в работе"
 
 #: lib/RT/Graph/Tickets.pm:157 lib/RT/Tickets_Overlay.pm:107 share/html/Search/Elements/BuildFormatString:100
 msgid "TimeEstimated"
@@ -8626,7 +8546,7 @@ msgstr "Вы должны выбрать СУБД с которой вам ил�
 
 #: share/html/Install/index.html:79
 msgid "You're seeing this screen because you started up an RT server without a working database. Most likely, this is the first time you're running RT.  If you click <i>Let's go!</i> below, RT will guide you through setting up your RT server and database."
-msgstr "Вы видите этот экран так как сервер RT запущен без настроенной БД. Вероятнее всего это первый запуск RT. Если вы нажмёте <i>Поехали!</i> ниже, система установки RT проведёт Вас  через все шаги, необходимые для настройки сервера и БД RT."
+msgstr "Вы видите этот экран так как сервер RT запущен без настроенной БД. Вероятнее всего это первый запуск RT. Если вы нажмёте <i>Поехали!</i> ниже, система установки RT проведёт Вас через все шаги, необходимые для настройки сервера и БД RT."
 
 #: share/html/NoAuth/Logout.html:59
 msgid "You're welcome to login again"
@@ -8983,7 +8903,7 @@ msgstr "другое..."
 #: lib/RT/Group_Overlay.pm:150
 #. ($self->Name, $user->Name)
 msgid "personal group '%1' for user '%2'"
-msgstr "пользовательская группа '%1' для пользователя '%2'"
+msgstr "пользовательская группа '%1' пользователя '%2'"
 
 #: share/html/Search/Elements/SelectChartType:55
 msgid "pie"
