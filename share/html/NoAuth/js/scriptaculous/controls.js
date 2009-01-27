@@ -1,3 +1,9 @@
+// LOCAL BEST PRACTICAL MODIFICATIONS
+// lines 218 and 224, removing scrollIntoView
+// Leaving these in causes autocomplete lists to flip out and jump
+// the screen around if the length of the returned list is anywhere 
+// near the size of the viewport
+//
 // script.aculo.us controls.js v1.8.2, Tue Nov 18 18:30:58 +0100 2008
 
 // Copyright (c) 2005-2008 Thomas Fuchs (http://script.aculo.us, http://mir.aculo.us)
@@ -213,13 +219,13 @@ Autocompleter.Base = Class.create({
   markPrevious: function() {
     if(this.index > 0) this.index--;
       else this.index = this.entryCount-1;
-    this.getEntry(this.index).scrollIntoView(true);
+    //this.getEntry(this.index).scrollIntoView(true);
   },
 
   markNext: function() {
     if(this.index < this.entryCount-1) this.index++;
       else this.index = 0;
-    this.getEntry(this.index).scrollIntoView(false);
+    //this.getEntry(this.index).scrollIntoView(false);
   },
 
   getEntry: function(index) {
