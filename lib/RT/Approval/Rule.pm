@@ -52,7 +52,7 @@ use warnings;
 
 use base 'RT::Rule';
 
-use constant _Queue => '___Approvals';
+use constant _queue => '___Approvals';
 
 sub prepare {
     my $self = shift;

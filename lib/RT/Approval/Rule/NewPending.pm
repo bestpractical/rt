@@ -51,7 +51,7 @@ use strict;
 use warnings;
 use base 'RT::Approval::Rule';
 
-use constant Description => "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"; # loc
+use constant description => "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"; # loc
 
 sub prepare {
     my $self = shift;
