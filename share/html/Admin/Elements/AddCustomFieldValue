@@ -61,8 +61,8 @@
 % my $paramtag = "CustomField-". $custom_field->id ."-value-new";
 <tr>
 <td><input type="text" size="3"  name="<% $paramtag %>-sort_order"   /></td>
-<td><input type="text" size="30" name="<% $paramtag %>-name"        /></td>
-<td><input type="text" size="50" name="<% $paramtag %>-description" /></td>
+<td><input type="text" size="25" name="<% $paramtag %>-name"        /></td>
+<td><input type="text" size="45" name="<% $paramtag %>-description" /></td>
 % if ( $custom_field->type ne 'Combobox' ) {
 <td><input type="text" size="10" name="<% $paramtag %>-category"    /></td>
 % }
