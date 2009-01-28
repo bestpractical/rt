@@ -397,7 +397,7 @@ sub create {
         if ( $commit_scrips ) {
             Jifty->log->debug( 'About to commit scrips for transaction #' . $self->id );
             $self->{'scrips'}->commit;
-            RT::Ruleset->commitRules($rules);
+            RT::Ruleset->commit_rules($rules);
             
         } else {
             Jifty->log->debug( 'Skipping commit of scrips for transaction #' . $self->id );
