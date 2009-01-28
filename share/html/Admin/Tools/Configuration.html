@@ -115,4 +115,11 @@ unless (Jifty->web->current_user->has_right( object=> RT->system, right => 'Supe
 <pre>
 <% Config::myconfig() %>
 </pre>
+
+<h2><&|/l&>Perl Include Paths (@INC)</&></h2>
+<pre>
+% foreach my $inc (@INC) {
+<% $inc %>
+% }
+</pre>
 </&>
