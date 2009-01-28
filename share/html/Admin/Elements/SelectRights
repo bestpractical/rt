@@ -48,20 +48,25 @@
 <input type="hidden" class="hidden" name="check_acl"  value="<%$ACLDesc%>" />
      <table border="0">
 <tr>
-<td valign="top" width="180" align="left"> 
-%  my %current_rights;
+<td valign="top" width="180" align="left">
+<%PERL>
+my %current_rights;
+my @pairs;
+while ( my $ace = $acl_obj->next ) {
+    my $right = $ace->right_name;
+    $current_rights{ $right } = 1;
+    push @pairs, [$right, _($right)];
+}
+@pairs = sort { $a->[1] cmp $b->[1] } @pairs;
+</%PERL>
 <h3><&|/l&>Current rights</&></h3>
-% if ($ACLObj->count() == 0) {
-<i><&|/l&>No rights granted.</&></i> <br />    
+% unless ( @pairs ) {
+<i><&|/l&>No rights granted.</&></i> <br />
 % } else {
-<i>(<&|/l&>Check box to revoke right</&>)</i> <br />
-% while (my $right = $ACLObj->next()) {
-% if ($right->right_name) {
-% $current_rights{$right->right_name} = 1;
-<input type="checkbox" class="checkbox" value="<% $right->right_name %>" name="revoke_right-<%$ACLDesc%>" /> <% _($right->right_name) %><br />
-% }
-%  }
-% }
+<i>(<&|/l&>Check box to revoke right</&>)</i><br />
+% foreach my $pair ( @pairs ) {
+<input type="checkbox" class="checkbox" value="<% $pair->[0] %>" name="revoke_right-<% $ACLDesc %>" />&nbsp;<% $pair->[1] %><br />
+% } }
 </td>
 <td valign="top">
 <h3><&|/l&>New rights</&></h3> 
@@ -77,7 +82,7 @@
 </tr>
 </table>
 <%INIT>
-    my ($right, $ACLDesc, $AppliesTo, %Rights);
+    my ($ACLDesc, $AppliesTo, %Rights);
 
     # if the principal id points to a user, we really want to point
     # to their ACL equivalence group. The machinations we're going through
