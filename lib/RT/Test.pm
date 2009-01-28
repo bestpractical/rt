@@ -53,6 +53,24 @@ use base qw/Jifty::Test/;
 use Test::More;
 use File::Temp;
 use File::Spec;
+our $SKIP_REQUEST_WORK_AROUND = 0;
+
+use HTTP::Request::Common ();
+use Hook::LexWrap;
+wrap 'HTTP::Request::Common::form_data', post => sub {
+    return if $SKIP_REQUEST_WORK_AROUND;
+    my $data = $_[-1];
+    if ( ref $data ) {
+        $data->[0] = Encode::encode_utf8( $data->[0] );
+    }
+    else {
+        $_[-1] = Encode::encode_utf8( $_[-1] );
+    }
+};
+
+our @EXPORT = qw(is_empty);
+
+
 my $config;
 our ( $existing_server, $port );
 my $mailsent;
@@ -75,10 +93,12 @@ RT::Test - RT Testing
 
 To run the rt test suite with coverage support, install L<Devel::Cover> and run:
 
-  make test RT_DBA_USER=.. RT_DBA_PASSWORD=.. HARNESS_PERL_SWITCHES=-MDevel::Cover
- cover -ignore_re 'var/mason/.*'
+    make test RT_DBA_USER=.. RT_DBA_PASSWORD=.. HARNESS_PERL_SWITCHES=-MDevel::Cover
+    cover -ignore_re '^var/mason_data/' -ignore_re '^t/'
 
-The coverage tests have DevelMode turned off, and have C<named_component_subs> enabled for L<HTML::Mason> to avoid an optimizer problem in Perl that hides the top-level optree from L<Devel::Cover>.
+The coverage tests have DevelMode turned off, and have
+C<named_component_subs> enabled for L<HTML::Mason> to avoid an optimizer
+problem in Perl that hides the top-level optree from L<Devel::Cover>.
 
 =cut
 
@@ -441,6 +461,50 @@ sub send_via_mailgate {
         diag "Mailgate output:\n$gate_result" if $ENV{'TEST_VERBOSE'};
     }
     return ( $status, $id );
+}
+
+=head2 get_relocatable_dir
+
+Takes a path relative to the location of the test file that is being
+run and returns a path that takes the invocation path into account.
+
+e.g. RT::Test::get_relocatable_dir(File::Spec->updir(), 'data', 'emails')
+
+=cut
+
+sub get_relocatable_dir {
+    ( my $volume, my $directories, my $file ) = File::Spec->splitpath($0);
+    if ( File::Spec->file_name_is_absolute($directories) ) {
+        return File::Spec->catdir( $directories, @_ );
+    }
+    else {
+        return File::Spec->catdir( File::Spec->curdir(), $directories, @_ );
+    }
+}
+
+=head2 get_relocatable_file
+
+Same as get_relocatable_dir, but takes a file and a path instead
+of just a path.
+
+e.g. RT::Test::get_relocatable_file('test-email',
+        (File::Spec->updir(), 'data', 'emails'))
+
+=cut
+
+sub get_relocatable_file {
+    my $file = shift;
+    return File::Spec->catfile( get_relocatable_dir(@_), $file );
+}
+
+sub get_abs_relocatable_dir {
+    ( my $volume, my $directories, my $file ) = File::Spec->splitpath($0);
+    if ( File::Spec->file_name_is_absolute($directories) ) {
+        return File::Spec->catdir( $directories, @_ );
+    }
+    else {
+        return File::Spec->catdir( Cwd->getcwd(), $directories, @_ );
+    }
 }
 
 sub import_gnupg_key {
