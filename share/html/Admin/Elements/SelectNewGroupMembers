@@ -47,6 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 % if ( $show ne 'Groups' ) {
 <b><&|/l&>Users</&></b>
+<br />
 <select multiple="multiple" name="<% $name %>_users" size="10">
 % while ( my $user = $users->next ) {
 % next if $skip_users->{ $user->id };
@@ -58,6 +59,7 @@
 
 % if ( $show ne 'Users' ) {
 <b><&|/l&>Groups</&></b>
+<br />
 <select multiple="multiple" name="<% $name %>Groups" size="10">
 % while ( my $group = $groups->next ) {
 % next if $skip_groups->{ $group->id };
