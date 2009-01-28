@@ -161,7 +161,7 @@ if( $plugin && $wipeout ) { { # use additional block({}) to effectively exit blo
 
     $catch_non_fatals->() && last if $@;
 
-    push @{ $messages{Success} }, 'objects were successfuly removed';
+    push @{ $messages{Success} }, _('objects were successfuly removed');
 
 } }
 
@@ -174,7 +174,7 @@ if( $plugin && ( $search || $wipeout ) ) { { # use additional block({}) to effec
         $search = ''; @objs = ();
         last;
     }
-    push @{ $messages{Success} }, 'executed plugin successfuly';
+    push @{ $messages{Success} }, _('executed plugin successfuly');
 
     my $shredder = new RT::Shredder;
     foreach my $o( grep defined, splice @objs ) {
@@ -182,9 +182,9 @@ if( $plugin && ( $search || $wipeout ) ) { { # use additional block({}) to effec
           $catch_non_fatals->() && last if $@;
     }
     unless( @objs ) {
-        push @{ $messages{Success} }, 'plugin returned empty list';
+        push @{ $messages{Success} }, _('plugin returned empty list');
     } else {
-        push @{ $messages{Success} }, 'see object list below';
+        push @{ $messages{Success} }, _('see object list below');
     }
 } }
 </%INIT>
