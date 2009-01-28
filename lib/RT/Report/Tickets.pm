@@ -190,24 +190,25 @@ sub _FieldToFunction {
     } elsif ( $field =~ /^(?:(Owner|Creator|LastUpdatedBy))(?:\.(.*))?$/ ) {
         my $type = $1 || '';
         my $column = $2 || 'Name';
-        my $u_alias = $self->Join(
-            TYPE   => 'LEFT',
-            ALIAS1 => 'main',
-            FIELD1 => $type,
-            TABLE2 => 'Users',
-            FIELD2 => 'id',
-        );
+        my $u_alias = $self->{"_sql_report_${type}_users_${column}"}
+            ||= $self->Join(
+                TYPE   => 'LEFT',
+                ALIAS1 => 'main',
+                FIELD1 => $type,
+                TABLE2 => 'Users',
+                FIELD2 => 'id',
+            );
         @args{qw(ALIAS FIELD)} = ($u_alias, $column);
     } elsif ( $field =~ /^(?:Watcher|(Requestor|Cc|AdminCc))(?:\.(.*))?$/ ) {
         my $type = $1 || '';
         my $column = $2 || 'Name';
-        if ( my $u_alias = $self->{"_sql_report_watcher_users_alias_$type"} ) {
-            @args{qw(ALIAS FIELD)} = ($u_alias, $column);
-        } else {
-            my ($g_alias, $gm_alias, $u_alias) = $self->_WatcherJoin( $type );
-            @args{qw(ALIAS FIELD)} = ($u_alias, $column);
+        my $u_alias = $self->{"_sql_report_watcher_users_alias_$type"};
+        unless ( $u_alias ) {
+            my ($g_alias, $gm_alias);
+            ($g_alias, $gm_alias, $u_alias) = $self->_WatcherJoin( $type );
             $self->{"_sql_report_watcher_users_alias_$type"} = $u_alias;
         }
+        @args{qw(ALIAS FIELD)} = ($u_alias, $column);
     }
     return %args;
 }
