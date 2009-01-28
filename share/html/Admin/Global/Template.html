@@ -66,7 +66,7 @@
 <& /Admin/Elements/ModifyTemplate, name => $template_obj->name, description => 
 $template_obj->description, content => $template_obj->content &>
 
-<& /Elements/Submit, label => _('Create'), reset => 1 &>
+<& /Elements/Submit, Label => $SubmitLabel, Reset => 1 &>
 </form>
 
 
@@ -75,7 +75,8 @@ $template_obj->description, content => $template_obj->content &>
 <%INIT>
 
 my $template_obj = RT::Model::Template->new();
-my  ($title, @results, $current_subtab);
+my  ($title, @results, $current_subtab, $SubmitLabel);
+
 
 my $subtabs = {
 		 A => { title => _('Select template'),
@@ -90,6 +91,7 @@ my $subtabs = {
 if ($create) {
   $current_subtab = "Admin/Global/Template.html?create=1&queue=0";
   $title = _("Create a template");
+  $SubmitLabel = _('Create');
 }
 
 else {
@@ -102,7 +104,7 @@ else {
        $template_obj->load($template) || abort(_('No Template'));
     }
      $title = _('Modify template %1', _($template_obj->name())); 
-  
+     $SubmitLabel = _('Update');
     
 }
 if ($template_obj->id()) {
