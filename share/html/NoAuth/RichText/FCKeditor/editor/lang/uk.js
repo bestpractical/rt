@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2008 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,6 +44,7 @@ RemoveFormat		: "Прибрати форматування",
 InsertLinkLbl		: "Посилання",
 InsertLink			: "Вставити/Редагувати посилання",
 RemoveLink			: "Знищити посилання",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: "Вставити/Редагувати якір",
 AnchorDelete		: "Remove Anchor",	//MISSING
 InsertImageLbl		: "Зображення",
@@ -72,6 +73,9 @@ BlockJustify		: "По ширині",
 DecreaseIndent		: "Зменшити відступ",
 IncreaseIndent		: "Збільшити відступ",
 Blockquote			: "Blockquote",	//MISSING
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "Повернути",
 Redo				: "Повторити",
 NumberedListLbl		: "Нумерований список",
@@ -157,6 +161,7 @@ UnknownToolbarSet	: "Панель інструментів \"%1\" не існу�
 NoActiveX			: "Настройки безпеки вашого браузера можуть обмежувати деякі властивості редактора. Ви повинні включити опцію \"Запускати елементи управління ACTIVEX і плугіни\". Ви можете бачити помилки і помічати відсутність можливостей.",
 BrowseServerBlocked : "Ресурси браузера не можуть бути відкриті. Перевірте що блокування спливаючих вікон вимкнені.",
 DialogBlocked		: "Не можливо відкрити вікно діалогу. Перевірте що блокування спливаючих вікон вимкнені.",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "ОК",
@@ -359,7 +364,6 @@ DlgPasteMsg2	: "Будь-ласка, вставте з буфера обміну
 DlgPasteSec		: "Редактор не може отримати прямий доступ до буферу обміну у зв'язку з налаштуваннями вашого браузера. Вам потрібно вставити інформацію повторно в це вікно.",
 DlgPasteIgnoreFont		: "Ігнорувати налаштування шрифтів",
 DlgPasteRemoveStyles	: "Видалити налаштування стилів",
-DlgPasteCleanBox		: "Очистити область",
 
 // Color Picker
 ColorAutomatic	: "Автоматичний",
@@ -512,5 +516,11 @@ DlgAboutAboutTab	: "Про програму",
 DlgAboutBrowserInfoTab	: "Інформація браузера",
 DlgAboutLicenseTab	: "Ліцензія",
 DlgAboutVersion		: "Версія",
-DlgAboutInfo		: "Додаткову інформацію дивіться на "
+DlgAboutInfo		: "Додаткову інформацію дивіться на ",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style"	//MISSING
 };

@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2008 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -45,8 +45,9 @@ RemoveFormat		: "Kendu Formatoa",
 InsertLinkLbl		: "Esteka",
 InsertLink			: "Txertatu/Editatu Esteka",
 RemoveLink			: "Kendu Esteka",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: "Aingura",
-AnchorDelete		: "Remove Anchor",	//MISSING
+AnchorDelete		: "Ezabatu Aingura",
 InsertImageLbl		: "Irudia",
 InsertImage			: "Txertatu/Editatu Irudia",
 InsertFlashLbl		: "Flasha",
@@ -72,7 +73,10 @@ RightJustify		: "Lerrokatu Eskuman",
 BlockJustify		: "Justifikatu",
 DecreaseIndent		: "Txikitu Koska",
 IncreaseIndent		: "Handitu Koska",
-Blockquote			: "Blockquote",	//MISSING
+Blockquote			: "Aipamen blokea",
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "Desegin",
 Redo				: "Berregin",
 NumberedListLbl		: "Zenbakidun Zerrenda",
@@ -106,27 +110,27 @@ SelectionField	: "Hautespen Eremua",
 ImageButton		: "Irudi Botoia",
 
 FitWindow		: "Maximizatu editorearen tamaina",
-ShowBlocks		: "Show Blocks",	//MISSING
+ShowBlocks		: "Blokeak erakutsi",
 
 // Context Menu
 EditLink			: "Aldatu Esteka",
 CellCM				: "Gelaxka",
 RowCM				: "Errenkada",
 ColumnCM			: "Zutabea",
-InsertRowAfter		: "Insert Row After",	//MISSING
-InsertRowBefore		: "Insert Row Before",	//MISSING
+InsertRowAfter		: "Txertatu Lerroa Ostean",
+InsertRowBefore		: "Txertatu Lerroa Aurretik",
 DeleteRows			: "Ezabatu Errenkadak",
-InsertColumnAfter	: "Insert Column After",	//MISSING
-InsertColumnBefore	: "Insert Column Before",	//MISSING
+InsertColumnAfter	: "Txertatu Zutabea Ostean",
+InsertColumnBefore	: "Txertatu Zutabea Aurretik",
 DeleteColumns		: "Ezabatu Zutabeak",
-InsertCellAfter		: "Insert Cell After",	//MISSING
-InsertCellBefore	: "Insert Cell Before",	//MISSING
+InsertCellAfter		: "Txertatu Gelaxka Ostean",
+InsertCellBefore	: "Txertatu Gelaxka Aurretik",
 DeleteCells			: "Kendu Gelaxkak",
 MergeCells			: "Batu Gelaxkak",
-MergeRight			: "Merge Right",	//MISSING
-MergeDown			: "Merge Down",	//MISSING
-HorizontalSplitCell	: "Split Cell Horizontally",	//MISSING
-VerticalSplitCell	: "Split Cell Vertically",	//MISSING
+MergeRight			: "Elkartu Eskumara",
+MergeDown			: "Elkartu Behera",
+HorizontalSplitCell	: "Banatu Gelaxkak Horizontalki",
+VerticalSplitCell	: "Banatu Gelaxkak Bertikalki",
 TableDelete			: "Ezabatu Taula",
 CellProperties		: "Gelaxkaren Ezaugarriak",
 TableProperties		: "Taularen Ezaugarriak",
@@ -158,6 +162,7 @@ UnknownToolbarSet	: "Ataza barra \"%1\" taldea ez da existitzen",
 NoActiveX			: "Zure nabigatzailearen segustasun hobespenak editore honen zenbait ezaugarri mugatu ditzake. \"ActiveX kontrolak eta plug-inak\" aktibatu beharko zenituzke, bestela erroreak eta ezaugarrietan mugak egon daitezke.",
 BrowseServerBlocked : "Baliabideen arakatzailea ezin da ireki. Ziurtatu popup blokeatzaileak desgaituta dituzula.",
 DialogBlocked		: "Ezin da elkarrizketa-leihoa ireki. Ziurtatu popup blokeatzaileak desgaituta dituzula.",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "Ados",
@@ -272,7 +277,7 @@ DlgLnkPopTop		: "Goiko Posizioa",
 DlnLnkMsgNoUrl		: "Mesedez URL esteka idatzi",
 DlnLnkMsgNoEMail	: "Mesedez ePosta helbidea idatzi",
 DlnLnkMsgNoAnchor	: "Mesedez aingura bat aukeratu",
-DlnLnkMsgInvPopName	: "The popup name must begin with an alphabetic character and must not contain spaces",	//MISSING
+DlnLnkMsgInvPopName	: "Popup lehioaren izenak karaktere alfabetiko batekin hasi behar du eta eta ezin du zuriunerik izan",
 
 // Color Dialog
 DlgColorTitle		: "Kolore Aukeraketa",
@@ -333,7 +338,7 @@ DlgCellBorderColor	: "Ertzako Kolorea",
 DlgCellBtnSelect	: "Aukertau...",
 
 // Find and Replace Dialog
-DlgFindAndReplaceTitle	: "Find and Replace",	//MISSING
+DlgFindAndReplaceTitle	: "Bilatu eta Ordeztu",
 
 // Find Dialog
 DlgFindTitle		: "Bilaketa",
@@ -357,10 +362,9 @@ PasteAsText		: "Testu Arrunta bezala Itsatsi",
 PasteFromWord	: "Word-etik itsatsi",
 
 DlgPasteMsg2	: "Mesedez teklatua erabilita (<STRONG>Ctrl+V</STRONG>) ondorego eremuan testua itsatsi eta <STRONG>OK</STRONG> sakatu.",
-DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
+DlgPasteSec		: "Nabigatzailearen segurtasun ezarpenak direla eta, editoreak ezin du arbela zuzenean erabili. Leiho honetan berriro itsatsi behar duzu.",
 DlgPasteIgnoreFont		: "Letra Motaren definizioa ezikusi",
 DlgPasteRemoveStyles	: "Estilo definizioak kendu",
-DlgPasteCleanBox		: "Testu-eremua Garbitu",
 
 // Color Picker
 ColorAutomatic	: "Automatikoa",
@@ -394,9 +398,9 @@ IeSpellDownload			: "Zuzentzaile ortografikoa ez dago instalatuta. Deskargatu na
 // Button Dialog
 DlgButtonText		: "Testua (Balorea)",
 DlgButtonType		: "Mota",
-DlgButtonTypeBtn	: "Button",	//MISSING
-DlgButtonTypeSbm	: "Submit",	//MISSING
-DlgButtonTypeRst	: "Reset",	//MISSING
+DlgButtonTypeBtn	: "Botoia",
+DlgButtonTypeSbm	: "Bidali",
+DlgButtonTypeRst	: "Garbitu",
 
 // Checkbox and Radio Button Dialogs
 DlgCheckboxName		: "Izena",
@@ -445,7 +449,7 @@ DlgHiddenValue	: "Balorea",
 // Bulleted List Dialog
 BulletedListProp	: "Buletdun Zerrendaren Ezarpenak",
 NumberedListProp	: "Zenbakidun Zerrendaren Ezarpenak",
-DlgLstStart			: "Start",	//MISSING
+DlgLstStart			: "Hasiera",
 DlgLstType			: "Mota",
 DlgLstTypeCircle	: "Zirkulua",
 DlgLstTypeDisc		: "Diskoa",
@@ -468,16 +472,16 @@ DlgDocLangDirLTR	: "Ezkerretik eskumara (LTR)",
 DlgDocLangDirRTL	: "Eskumatik ezkerrera (RTL)",
 DlgDocLangCode		: "Hizkuntzaren Kodea",
 DlgDocCharSet		: "Karaktere Multzoaren Kodeketa",
-DlgDocCharSetCE		: "Central European",	//MISSING
-DlgDocCharSetCT		: "Chinese Traditional (Big5)",	//MISSING
-DlgDocCharSetCR		: "Cyrillic",	//MISSING
-DlgDocCharSetGR		: "Greek",	//MISSING
-DlgDocCharSetJP		: "Japanese",	//MISSING
-DlgDocCharSetKR		: "Korean",	//MISSING
-DlgDocCharSetTR		: "Turkish",	//MISSING
-DlgDocCharSetUN		: "Unicode (UTF-8)",	//MISSING
-DlgDocCharSetWE		: "Western European",	//MISSING
-DlgDocCharSetOther	: "Beste Karaktere Multzoaren Kodeketa",
+DlgDocCharSetCE		: "Erdialdeko Europakoa",
+DlgDocCharSetCT		: "Txinatar Tradizionala (Big5)",
+DlgDocCharSetCR		: "Zirilikoa",
+DlgDocCharSetGR		: "Grekoa",
+DlgDocCharSetJP		: "Japoniarra",
+DlgDocCharSetKR		: "Korearra",
+DlgDocCharSetTR		: "Turkiarra",
+DlgDocCharSetUN		: "Unicode (UTF-8)",
+DlgDocCharSetWE		: "Mendebaldeko Europakoa",
+DlgDocCharSetOther	: "Beste Karaktere Multzoko Kodeketa",
 
 DlgDocDocType		: "Document Type Goiburua",
 DlgDocDocTypeOther	: "Beste Document Type Goiburua",
@@ -506,12 +510,18 @@ DlgTemplatesTitle	: "Eduki Txantiloiak",
 DlgTemplatesSelMsg	: "Mesedez txantiloia aukeratu editorean kargatzeko<br>(orain dauden edukiak galduko dira):",
 DlgTemplatesLoading	: "Txantiloiak kargatzen. Itxaron mesedez...",
 DlgTemplatesNoTpl	: "(Ez dago definitutako txantiloirik)",
-DlgTemplatesReplace	: "Replace actual contents",	//MISSING
+DlgTemplatesReplace	: "Ordeztu oraingo edukiak",
 
 // About Dialog
 DlgAboutAboutTab	: "Honi buruz",
 DlgAboutBrowserInfoTab	: "Nabigatzailearen Informazioa",
 DlgAboutLicenseTab	: "Lizentzia",
 DlgAboutVersion		: "bertsioa",
-DlgAboutInfo		: "Informazio gehiago eskuratzeko hona joan"
+DlgAboutInfo		: "Informazio gehiago eskuratzeko hona joan",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style"	//MISSING
 };
