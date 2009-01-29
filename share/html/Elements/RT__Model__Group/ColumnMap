@@ -52,13 +52,13 @@ $attr => undef
 <%ONCE>
 my $COLUMN_MAP = {
     id => {
-        title     => '#',
+        title     => '#', # loc
         attribute => 'id',
         align     => 'right',
         value     => sub  { return $_[0]->id },
     },
     has_member => {
-        title     => 'Member',
+        title     => 'Member', # loc
         value     => sub  {
             my $group = $_[0];
             my $uid   = $_[2] || return '';
@@ -66,18 +66,25 @@ my $COLUMN_MAP = {
         },
     },
     has_member_recursively => {
-        title     => 'Recursive member',
+        title     => 'Recursive member', # loc
         value     => sub  {
             my $group = $_[0];
             my $uid   = $_[2] || return '';
             return $group->has_member_recursively( $uid )? $_[0]->_('yes'): $_[0]->_('no');
         },
     },
-};
+    name => {
+        title     => 'name', # loc
+	attribute => 'name',
+	value     => sub { return $_[0]->name() },
+    },
+    description => {
+        title     => 'description', # loc
+	attribute => 'description',
+	value     => sub { return $_[0]->description() },
+    },
 
-foreach my $col( qw(name description) ) {
-    $COLUMN_MAP->{ $col } = { attribute => $col, value => sub  { return $_[0]->$col() } };
-}
+};
 
 </%ONCE>
 <%INIT>
