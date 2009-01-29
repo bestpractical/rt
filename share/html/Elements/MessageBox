@@ -71,5 +71,5 @@ $default          => ''
 $width            => RT->config->get('MessageBoxWidth', Jifty->web->current_user ) || 72
 $height           => RT->config->get('MessageBoxHeight', Jifty->web->current_user ) || 15
 $wrap             => RT->config->get('MessageBoxWrap') || 'HARD'
-$include_signature => 1
+$include_signature => RT->config->get('MessageBoxIncludeSignature')
 </%ARGS>
