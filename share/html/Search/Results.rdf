@@ -67,11 +67,12 @@ $r->content_type('application/rss+xml');
         use XML::RSS;
         my $rss = new XML::RSS (version => '1.0');
         $rss->channel(
-          title        => RT->config->get('rtname').": Syndicated Search",
+          title        => RT->config->get('rtname').": Search" . $ARGS{'Query'},
           link         => RT->config->get('WebURL'),
           description  => "",
           dc => {
           },
+          generator    => "RT v" . $RT::VERSION,
           syn => {
             updatePeriod     => "hourly",
             updateFrequency  => "1",
@@ -84,13 +85,14 @@ $r->content_type('application/rss+xml');
         my $creator_str = $m->scomp('/Elements/ShowUser', user => $Ticket->creator_obj);
         $creator_str =~ s/[\r\n]//g;
         $rss->add_item(
-          title       =>  $Ticket->subject,
+          title       =>  $Ticket->subject || _('No Subject'),
           link        => RT->config->get('WebURL')."Ticket/Display.html?id=".$Ticket->id,
           description => $Ticket->transactions->first->content,
           dc => {
-            subject  => ($Ticket->subject  || _('No subject')),
             creator  => $creator_str,
+            date => $Ticket->created_obj->rfc2822,
           },
+          guid        => $Ticket->queue . '_' . $Ticket->id,
         );
     }
 $m->out($rss->as_string);
