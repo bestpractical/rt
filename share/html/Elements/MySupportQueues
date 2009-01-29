@@ -49,6 +49,12 @@
 <& /Elements/QueueSummary,
    cache => 'my_support_queues',
    queue_filter => sub  { $_->is_watcher( role => 'admin_cc', principal_id => Jifty->web->current_user->id) },
-   conditions => [ {cond => "Status = 'new'",  name => _('new')  },
-		   {cond => "Status = 'open'", name => _('open') }] &>
+   conditions => \@conditions,
+&>
 </&>
+<%INIT>
+my @conditions = ();
+foreach ( RT::Model::Queue->active_status_array ) {
+    push @conditions, { cond => "Status = '$_'", name => _($_) };
+}
+</%INIT>
