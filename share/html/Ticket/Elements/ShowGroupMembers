@@ -49,7 +49,8 @@
 
 % my $Users = $group->user_members_obj( recursively => $recursively );
 % while ( my $user = $Users->next ) {
-<& /Elements/ShowUser, user => $user, ticket => $ticket &><br />
+<& /Elements/ShowUser, user => $user, ticket => $Ticket &>
+<& /Elements/ShowUserEmailFrequency, user => $user, ticket => $Ticket &><br />
 % }
 % my $Groups = $group->group_members_obj( recursively => $recursively );
 % $Groups->limit_to_user_defined_groups;
