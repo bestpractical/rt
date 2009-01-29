@@ -45,34 +45,48 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% if ( ref $message ) {
-%    $m->out($pon);
-<div class="message-stanza-depth-<% $depth %>">
 <%perl>
-my $para = '';
-foreach my $stanza ( @$message) {
-    if ( ref $stanza eq "ARRAY" ) {
+if ( ref $Message ) {
+    $m->out('<pre>') if $plain_text_pre && !$Depth;
+    $m->out( qq{<div class="message-stanza-depth-$Depth">} );
+
+    my @stack;
+    my $para = '';
+    my $i = 0;
+
+    AGAIN: foreach ( ; $i < @$Message; $i++ ) {
+        my $stanza = $Message->[$i];
+        if ( ref $stanza eq "HASH" ) {
+            $para .= ( defined $stanza->{raw} ? $stanza->{raw} : '') ."\n";
+        }
+        next unless ref $stanza eq "ARRAY";
+
         $print_content->( \$para ); $para = '';
-        $m->comp( 'ShowMessageStanza',
-                  depth   => $depth + 1,
-                  transaction => $transaction,
-                  message => $stanza );
+
+        $Depth++;
+        push @stack, [$Message, $i+1];
+        ($Message, $i) = ($stanza, -1);
+        $m->out( qq{<div class="message-stanza-depth-$Depth">} );
     }
-    elsif ( ref $stanza eq "HASH" ) {
-        $para .= ( defined $stanza->{raw} ? $stanza->{raw} : '') ."\n";
+    if ( length $para ) {
+        $print_content->( \$para ); $para = '';
     }
+
+    if ( @stack ) {
+        ($Message, $i) = @{ pop @stack };
+        $Depth--;
+        $m->out('</div>');
+        goto AGAIN;
+    }
+
+    $m->out('</div>');
+    $m->out('</pre>') if $plain_text_pre && !$Depth;
+} else {
+      $print_content->( \$Message );
 }
-$print_content->( \$para ) if length $para;
 </%perl>
-</div>
-%$m->out($poff);
-% } else {
-%       $print_content->( \$message );
-% }
 <%INIT>
-my ($pon, $poff) = (RT->config->get('PlainTextPre', Jifty->web->current_user) && $depth == 0)
-                            ? ('<pre>', '</pre>')
-                            : ('', '');
+my $plain_text_pre = RT->config->get('PlainTextPre', Jifty->web->current_user);
 
 my $ticket = $transaction ? $transaction->ticket_obj : undef;
 
@@ -82,7 +96,9 @@ my $print_content = sub  {
 
     $m->callback( content => $ref, %ARGS );
     $m->comp('/Elements/MakeClicky', content => $ref, ticket => $ticket, %ARGS);
-    $$ref =~ s{$}{<br />}mg if defined $$ref;
+    unless ( $plain_text_pre ) {
+        $$ref =~ s{(?=\r*\n)}{<br />}g if defined $$ref;
+    }
     $m->out( $$ref );
 };
 </%INIT>
