@@ -56,11 +56,19 @@
 </div>
 <%init>
 
+# backward compatibility, don't use array in new code, but use keyed hash
+if ( ref( $session{'Actions'} ) eq 'ARRAY' ) {
+    unshift @actions, @{ delete $session{'Actions'} };
+}
+
+if ( ref( $session{'Actions'}{''} ) eq 'ARRAY' ) {
+    unshift @actions, @{ delete $session{'Actions'}{''} };
+}
+
 my $actions_pointer = $m->request_args->{'results'};
 
 if ($actions_pointer &&  ref( $session{'Actions'}->{$actions_pointer} ) eq 'ARRAY' ) {
-    unshift @actions, @{ $session{'Actions'}->{$actions_pointer} };
-    delete $session{'Actions'}->{$actions_pointer};
+    unshift @actions, @{ delete $session{'Actions'}->{$actions_pointer} };
 }
 
 # XXX: run callbacks per row really crazy idea
