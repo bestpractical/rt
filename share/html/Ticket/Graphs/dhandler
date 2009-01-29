@@ -65,7 +65,7 @@ unless ( $ticket->id ) {
 require RT::Graph::Tickets;
 my $graph = RT::Graph::Tickets->ticket_links(
     %ARGS,
-    Ticket => $ticket,
+    ticket => $ticket,
 );
 
 $r->content_type( 'image/png' );
