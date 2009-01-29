@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| Elements/Wrapper, Title => loc('Step [_1] of [_2]', 2, 7 ) .': '. loc('Check your database credentials') &> 
+<&| Elements/Wrapper, Title => loc('Step [_1] of [_2]', 2, 7 ) .': '. loc('Check Database Credentials') &> 
 
 % if ( @errors ) {
 <& Elements/Errors, Errors => \@errors &>
@@ -86,7 +86,7 @@
                     &>
 <& /Elements/Submit,
     Label => loc('Check Database Connectivity'),
-    Back => 1, BackLabel => loc('Back') .': '. loc('Select Database Type'),
+    Back => 1, BackLabel => loc('Back') .': '. loc('Choose Database Engine'),
 &>
 % }
 
