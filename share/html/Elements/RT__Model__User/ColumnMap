@@ -69,7 +69,7 @@ my $COLUMN_MAP = {
     },
     nickname => {
         title     => 'NickName', # loc
-	attribute => 'nickName',
+	attribute => 'nickname',
 	value     => sub { return $_[0]->nickname() },
     },
     email => {
