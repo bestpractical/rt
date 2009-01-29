@@ -163,9 +163,11 @@ if ($ARGS{'id'} eq 'new') {
     delete $session{'Attachments'};
 
     #Process status updates
-    push @Actions, process_ticket_watchers(args_ref => \%ARGS, ticket_obj => $ticket_obj );
-    push @Actions, process_ticket_basics(   args_ref => \%ARGS, ticket_obj => $ticket_obj );
-    push @Actions, process_ticket_links(    args_ref => \%ARGS, ticket_obj => $ticket_obj );
+    push @Actions, process_ticket_watchers(args_ref => \%ARGS, ticket_obj => $ticket_obj);
+    push @Actions, process_ticket_basics(args_ref => \%ARGS, ticket_obj => $ticket_obj);
+    push @Actions, process_ticket_links(args_ref => \%ARGS, ticket_obj => $ticket_obj);
+    push @Actions, process_ticket_dates(args_ref => \%ARGS, ticket_obj => $ticket_obj);
+    push @Actions, process_object_custom_field_updates(args_ref => \%ARGS, ticket_obj => $ticket_obj);
 
     # XXX: we shouldn't block actions here if user has no right to see the ticket,
     # but we should allow him to see actions he has done
