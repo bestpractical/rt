@@ -54,19 +54,19 @@
     dashboard_obj => $DashboardObj &>
 % }
 
+<table class="dashboard">
 <table border="0" width="100%">
 <tr valign="top">
 
-<td class="boxcontainer" width="70%">
-% foreach ($DashboardObj->search_ids) {
-%   my ($type, $id, $desc) = @$_;
-%   my @for_showsearch = $DashboardObj->search_privacy(@$_);
-    <& /Elements/ShowSearch,
-        @for_showsearch,
-        override => { rows => $rows },
-        ignore_missing => 1,
-        hideable => $preview,
-    &>
+<td class="boxcontainer">
+% $show_cb->($_) foreach @{ $panes{body} || [] };
+</td>
+
+% if (@{ $panes{sidebar} || [] }) {
+<td class="boxcontainer">
+% $show_cb->($_) foreach @{ $panes{sidebar} || [] };
+</td>
+
 % }
 </td>
 
@@ -95,7 +95,21 @@ for my $sub (Jifty->web->current_user->user_object->attributes->named('Subscript
 }
 
 my $rows = $Loaded ? $SubscriptionObj->sub_value('Rows') : 20;
-my $title = $DashboardObj->name;
+my $title = _( 'Dashboard %1', $dashboard_obj->name );
+
+my %panes = %{ $dashboard_obj->panes };
+
+my $show_cb = sub {
+    my $portlet = shift;
+    my $portlet_type = $portlet->{portlet_type};
+    my $component = "Elements/ShowPortlet/$portlet_type";
+    $m->comp($component,
+        portlet   => $portlet,
+        rows      => $rows,
+        preview   => $Preview,
+        dashboard => $dashboard_obj,
+    );
+};
 
 </%INIT>
 <%ARGS>
