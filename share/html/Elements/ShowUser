@@ -48,7 +48,7 @@
 %# Released under the terms of version 2 of the GNU Public License
 <%INIT>
 # $user is an RT::Model::User object
-# $address is email::Address object
+# $address is Email::Address object
 if ( !$user && $address ) {
     $user = RT::Model::User->new;
     $user->load_by_email( $address->address );
