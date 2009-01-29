@@ -268,6 +268,9 @@ sub take_action {
             my $root = RT::Model::User->new( RT->system_user );
             $root->load('root');
             $root->set_password( $RT::Installer->{config}{password} );
+            system( 'chmod -w ' . RT::Installer->config_file )
+              && Jifty->log->error(
+                'failed to make ' . RT::Installer->config_file . ' readonly' );
             last;
         }
 
