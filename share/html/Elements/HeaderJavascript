@@ -52,9 +52,9 @@ $onload => undef
 <% Jifty->web->include_css %>
 <% Jifty->web->include_javascript %> 
 <script type="text/javascript"><!--
-    onLoadHook("loadTitleBoxStates()");
+    doOnLoad(loadTitleBoxStates);
 % if ( $focus ) {
-    onLoadHook("focusElementById('<% $focus %>')");
+    doOnLoad(function () { focusElementByid('<% $focus %>') });
 % }
 
 % if ( RT->config->get('MessageBoxRichText',  Jifty->web->current_user)) {
@@ -98,16 +98,16 @@ $onload => undef
                 typeField.setAttribute('value', 'text/html');
                 textArea.parentNode.appendChild(typeField);
 
-                var oFCKeditor = new FCKeditor( textArea.name ) ;
+                var oFCKeditor = new FCKeditor( textArea.name, '100%', <% RT->config->get('MessageBoxRichTextHeight') %> );
                 oFCKeditor.BasePath = "<%RT->config->get('WebPath')%>/NoAuth/RichText/";
                 oFCKeditor.ReplaceTextarea();
             }
         }
     }
-    onLoadHook("ReplaceAllTextareas()");
+    doOnLoad(ReplaceAllTextareas);
 % }
 % if ( $onload ) {
-    onLoadHook("<% $onload |n %>");
+    doOnLoad(<% $onload |n %>);
 % }
 --></script>
 
