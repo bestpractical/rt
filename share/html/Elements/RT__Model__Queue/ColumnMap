@@ -52,7 +52,7 @@ $attr => undef
 <%ONCE>
 my $COLUMN_MAP = {
     id => {
-        title     => '#',
+        title     => '#', # loc
         attribute => 'id',
         align     => 'right',
         value     => sub  { return $_[0]->id },
@@ -63,18 +63,50 @@ my $COLUMN_MAP = {
         value     => sub  { return $_[0]->disabled? _('disabled'): _('enabled') },
     },
     priority => {
+        title     => 'Priority', # loc
         value     => sub  { return $_[0]->initial_priority .'-'. $_[0]->final_priority },
     },
     address  => {
+        title     => 'Address', # loc
         value     => sub  { return ($_[0]->correspond_address||'-') .'/'. ($_[0]->comment_address||'-') },
     },
-
+    name => {
+        title     => 'name', # loc
+	attribute => 'name',
+	value     => sub { return $_[0]->name() },
+    },
+    description => {
+        title     => 'description', # loc
+	attribute => 'description',
+	value     => sub { return $_[0]->description() },
+    },
+    correspond_address => {
+        title     => 'correspond_address', # loc
+	attribute => 'correspond_address',
+	value     => sub { return $_[0]->correspond_address() },
+    },
+    comment_address => {
+        title     => 'comment_address', # loc
+	attribute => 'comment_address',
+	value     => sub { return $_[0]->comment_address() },
+    },
+    initial_priority => {
+        title     => 'initial_priority', # loc
+	attribute => 'initial_priority',
+	value     => sub { return $_[0]->initial_priority() },
+    },
+    final_priority => {
+        title     => 'final_priority', # loc
+	attribute => 'final_priority',
+	value     => sub { return $_[0]->final_priority() },
+    },
+    default_due_in => {
+        title     => 'default_due_in', # loc
+	attribute => 'default_due_in',
+	value     => sub { return $_[0]->default_due_in() },
+    },
 
 };
-foreach my $col(qw(name description correspond_address comment_address initial_priority final_priority default_due_in)) {
-    $COLUMN_MAP->{$col} = { attribute => $col, value => sub { return $_[0]->$col() } };
-}
-
 </%ONCE>
 <%INIT>
 $m->callback( COLUMN_MAP => $COLUMN_MAP, Callbackname => 'column_map', CallbackOnce => 1 );
