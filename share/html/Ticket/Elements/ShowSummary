@@ -68,7 +68,6 @@
 	  </&>
 
       <& /Ticket/Elements/ShowAttachments, ticket => $ticket, attachments => $attachments &>
-        <br />
 	  <& /Ticket/Elements/ShowRequestor, ticket => $ticket &>
 
 % $m->callback( %ARGS, Callbackname => 'left_column' );
@@ -83,7 +82,7 @@
         <td>
             <form action="<%RT->config->get('WebPath')%>/Ticket/Display.html" method="post">
 	      <& /Ticket/Elements/Reminders, ticket => $ticket, show_completed => 0 &>
-              <div align="right"><input type="submit" class="button" value="Save" /></div>
+              <div align="right"><input type="submit" class="button" value="<&|/l&>Save</&>" /></div>
             </form>
             </td>
             </tr>
