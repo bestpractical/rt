@@ -45,6 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+% if ( @headers ) {
 <table>
 % foreach my $header (@headers) {
   <tr>
@@ -53,6 +54,7 @@
   </tr>
 % }
 </table>
+% }
 <%INIT>
 my @headers;
 foreach my $field( RT->config->get('ShowBccHeader')? $message->_split_headers : $message->split_headers ) {
