@@ -103,6 +103,13 @@ while ( my $Transaction = $Transactions->next ) {
     grep { ($_->transaction_id == $Transaction->id ) && ($trans_content->{$_->id} = $_)  } @attachment_content;
 
    
+    my $IsLastTransaction = 0;
+    if ( $OldestFirst ) {
+        $IsLastTransaction = $Transactions->is_last;
+    } else {
+        $IsLastTransaction = 1 if ( $i == 1 );
+    }
+
     #Args is first because we're clobbering the "Attachments" parameter 
     $m->comp( 'ShowTransaction',
             %ARGS,
@@ -113,7 +120,7 @@ while ( my $Transaction = $Transactions->next ) {
               row_num               => $i,
               attachments          => \@trans_attachments,
               attachment_content    => $trans_content,
-              last_transaction      => $Transactions->is_last
+              last_transaction      => $IsLastTransactions,
  );
 
 # manually flush the content buffer after each txn, so the user sees
@@ -125,8 +132,8 @@ $m->flush_buffer();
 </div>
 % if ($show_display_modes or $show_title) {
 <& /Widgets/TitleBoxEnd &>
-% }
 </div>
+% }
 <%INIT>
 my $Transactions = RT::Model::TransactionCollection->new();
 if ($tickets) {
@@ -139,11 +146,11 @@ if ($tickets) {
 
 
 my $OldestFirst = RT->config->get( 'OldestTransactionsFirst', Jifty->web->current_user );
-$OldestFirst = $OldestFirst? 'ASC': 'DESC';
+my $Sortorder = $OldestFirst? 'ASC': 'DESC';
 $Transactions->order_by( { column => 'Created',
-                              order => $OldestFirst },
+                              order => $Sortorder },
                             { column => 'id',
-                              order => $OldestFirst },
+                              order => $Sortorder },
                           );
 
 my $i;
