@@ -71,20 +71,14 @@
 <tr><td class="label">
 <&|/l&>Queries</&>:
 </td><td class="value">
-% my @searches = grep { defined } $DashboardObj->searches;
-% if (!@searches) {
-(none)
+% my @portlets = grep { defined } $dashboard_obj->Portlets;
+% if (!@portlets) {
+(<&|/l&>none</&>)
 % } else {
-<ol>
-%    for my $query (@searches) {
-%       my $name;
-%       if ($query->{attribute}->name =~ /^Search - (.*)$/) {
-%           $name = $1;
-%       } else {
-%           $name = $query->name;
-%       }
-        <li>
-            <% _($name, $fields{'rows'}) %>
+<ol class="dashboard-queries">
+%    for my $portlet (@portlets) {
+        <li class="dashboard-query">
+            <% _($portlet->{description}, $fields{'Rows'}) %>
         </li>
 %    }
 </ol>
@@ -101,22 +95,31 @@
 <&|/l&>Frequency</&>:
 </td><td class="value">
 <input type="radio" name="frequency" value="daily" <% $fields{'frequency'} eq
-'daily' ? 'checked="checked"' : "" |n %> />daily
+'daily' ? 'checked="checked"' : "" |n %> />
+    <&|/l&>daily</&>
 <br />
 <input type="radio" name="frequency" value="weekly"<% $fields{'frequency'} eq
-'weekly' ? 'checked="checked"' : "" |n %> />weekly
-, on
+'weekly' ? 'checked="checked"' : "" |n %> />
+<&|/l&>weekly</&></input>, <&|/l&>on</&>
 <select name="dow">
-%   for my $dow (qw/Monday Tuesday Wednesday Thursday Friday Saturday Sunday/) {
-    <option value="<% $dow %>" <% $fields{'dow'} eq $dow ?
-'selected="selected"' : '' |n %>><% _($dow) %></option>
-%   }
+    <option value="Monday" <% $fields{'Dow'} eq 'Monday' ? 'selected="selected"' : '' %>><&|/l&>Monday</&></option>
+    <option value="Tuesday" <% $fields{'Dow'} eq 'Tuesday' ? 'selected="selected"' : '' %>><&|/l&>Tuesday</&></option>
+    <option value="Wednesday" <% $fields{'Dow'} eq 'Wednesday' ? 'selected="selected"' : '' %>><&|/l&>Wednesday</&></option>
+    <option value="Thursday" <% $fields{'Dow'} eq 'Thursday' ? 'selected="selected"' : '' %>><&|/l&>Thursday</&></option>
+    <option value="Friday" <% $fields{'Dow'} eq 'Friday' ? 'selected="selected"' : '' %>><&|/l&>Friday</&></option>
+    <option value="Saturday" <% $fields{'Dow'} eq 'Saturday' ? 'selected="selected"' : '' %>><&|/l&>Saturday</&></option>
+    <option value="Sunday" <% $fields{'Dow'} eq 'Sunday' ? 'selected="selected"' : '' %>><&|/l&>Sunday</&></option>
 </select>
+<&|/l&>weeks</&>
+<select name="Fow">
+% for my $f ( qw/1 2 3 4/ ) {
+    <option value="<%$f%>" <% $fields{'Fow'} == $f ? 'selected="selected"' : '' %>><% $f %></option>
+% }
 <br />
 
 <input type="radio" name="frequency" value="monthly"<% $fields{'frequency'} eq
-'monthly' ? 'checked="checked"' : "" |n %>/>monthly
-, on day
+'monthly' ? 'checked="checked"' : "" |n %>/>
+<&|/l&>monthly</&></input> , <&|/l&>on day</&>
 <select name="dom">
 %   for my $dom (1..31) {
     <option value="<% $dom %>" <% $fields{'dom'} == $dom ?
@@ -126,7 +129,8 @@
 <br />
 
 <input type="radio" name="frequency" value="never" <% $fields{'frequency'} eq
-'never' ? 'checked="checked"' : "" |n%>>never
+'never' ? 'checked="checked"' : "" |n%>>
+    <&|/l&>never</&>
 </td></tr>
 <tr><td class="label">
 <&|/l&>Hour</&>:
@@ -151,6 +155,13 @@
     <option value="<% $rows %>" <% $fields{'rows'} eq $rows ? 'selected="selected"' : '' %>><% _($rows || 'Unlimited') %></option>
 %   }
 </select>
+</td></tr>
+
+<tr><td class="label">
+<&|/l&>Recipient</&>:
+</td><td class="value">
+<input name="Recipient" id="Recipient" size="30" value="<%$fields{Recipient} ? $fields{Recipient} : ''%>" />
+<div class="hints"><% _("Leave blank to send to your current email address (%1)", Jifty->web->current_user->user_object->email) %></div>
 </td></tr>
 </table>
 </&>
@@ -201,6 +212,9 @@ my %fields = (
     dow         => 'Monday',
     dom         => 1,
     rows        => 20,
+    recipient   => '',
+    fow         => 1,
+    counter     => 0,
 );
 
 # update any fields with the values from the subscription object
@@ -216,8 +230,6 @@ for my $field (keys %fields) {
     $fields{$field} = $ARGS{$field}
         if defined($ARGS{$field});
 }
-
-
 # this'll be defined on submit
 if (defined $ARGS{save}) {
     # update
@@ -248,7 +260,7 @@ if (defined $ARGS{save}) {
         if ($val) {
             push @results, _("Subscribed to dashboard %1", $DashboardObj->name);
             push @results, _("Warning: you have no email address set, so you will not receive this dashboard until you have it set")
-                unless Jifty->web->current_user->email;
+                unless Jifty->web->current_user->email || $fields{recipient};
         }
         else {
             push @results, _('Subscription could not be created: %1', $msg);
@@ -271,5 +283,6 @@ $hour        => undef
 $dow         => undef
 $dom         => undef
 $rows        => undef
+$recipient   => undef
 </%ARGS>
 
