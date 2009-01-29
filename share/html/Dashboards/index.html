@@ -53,19 +53,20 @@
 <& /Elements/ListActions, actions => \@actions &>
 
 <& /Dashboards/Elements/ShowDashboards,
-    type       => "Personal",
+    title      => _('Personal Dashboards'),
     dashboards => [sort { $a->id <=> $b->id } @{ $dashboards->{personal} || [] }],
 &>
 
 <& /Dashboards/Elements/ShowDashboards,
-    type => "System",
+    title      => _('System Dashboards'),
     dashboards => [sort { $a->id <=> $b->id } @{ $dashboards->{system} || [] }],
 &>
 
 % for my $group (sort keys %{ $dashboards->{group} || {} }) {
     <& /Dashboards/Elements/ShowDashboards,
-        type       => $group,
+        title      => _('%1 DashBoards', $group),
         dashboards => [sort { $a->id <=> $b->id } @{ $dashboards->{group}{$group} || [] }],
+        
     &>
 % }
 
