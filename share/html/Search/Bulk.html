@@ -208,7 +208,11 @@ $cfs->limit_to_queue($_) for keys %$seen_queues;
 
 </&>
 <%INIT>
-$rows = $rows_per_page unless (defined $rows);
+unless ( defined $rows ) {
+    $rows = $rows_per_page;
+    $ARGS{rows} = $rows_per_page;
+}
+
 my $title = _("Update multiple tickets");
 
 # Iterate through the ARGS hash and remove anything with a null value.
