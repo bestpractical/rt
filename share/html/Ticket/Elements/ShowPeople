@@ -48,7 +48,8 @@
 <table>
   <tr>
     <td class="label"><&|/l&>Owner</&>:</td>
-    <td class="value"><& /Elements/ShowUser, user => $ticket->owner_obj, ticket => $ticket &></td>
+    <td class="value"><& /Elements/ShowUser, user => $ticket->owner_obj, ticket => $ticket &>
+    <& /Elements/ShowUserEmailFrequency, User => $owner, Ticket => $Ticket &></td></td>
   </tr>
   <tr>
     <td class="labeltop"><&|/l&>Requestors</&>:</td>
@@ -63,6 +64,8 @@
     <td class="value"><& ShowGroupMembers, group => $ticket->role_group("admin_cc"), ticket => $ticket &></td>
   </tr>
 </table>
+<%INIT>
+</%INIT>
 <%ARGS>
 $ticket => undef
 </%ARGS>
