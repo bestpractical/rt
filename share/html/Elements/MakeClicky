@@ -125,20 +125,28 @@ foreach my $type ( @types ) {
 </%ONCE>
 <%ARGS>
 $content => undef
+$html => undef
 </%ARGS>
 <%INIT>
 return unless defined $$content;
 unless ( $regexp ) {
-    RT::Interface::Web::escape_utf8( $content );
+    RT::Interface::Web::EscapeUTF8( $content ) unless $html;
     return;
 }
 
 my $pos = 0;
 while ( $$content =~ /($regexp)/gsio ) {
     my $match = $1;
+    next if $` =~ /href=(?:&quot;|")$/;
     my $skipped_len = pos($$content) - $pos - length($match);
     if ( $skipped_len > 0 ) {
-        my $plain = $escaper->( substr( $$content, $pos, $skipped_len ) );
+        my $plain;
+        if ( $html ) {
+            $plain = substr( $$content, $pos, $skipped_len );
+        }
+        else {
+            $plain = $escaper->( substr( $$content, $pos, $skipped_len ) )
+        }
         substr( $$content, $pos, $skipped_len ) = $plain;
         $pos += length($plain);
     }
@@ -151,7 +159,8 @@ while ( $$content =~ /($regexp)/gsio ) {
     pos($$content) = ( $pos += length($plain) );
 
 }
-substr( $$content, $pos ) = $escaper->( substr( $$content, $pos ) ) unless $pos == length $$content;
+substr( $$content, $pos ) = $escaper->( substr( $$content, $pos ) ) unless
+($pos == length $$content) || $html;
 
 pos($$content) = 0;
 
