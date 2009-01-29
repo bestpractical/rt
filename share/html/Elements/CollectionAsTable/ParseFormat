@@ -65,6 +65,8 @@ while ($format =~ /($RE{delimited}{-delim=>qq{\'"}}|[{}\w.]+)/go) {
         title => '',
     };
 
+    $m->callback(callbackname => 'PreColumn', column => $colref, col => \$col);
+
     if ( $col =~ s!/STYLE:([^/]+)!!io ) {
         $colref->{'style'} = $1;
     }
@@ -76,6 +78,9 @@ while ($format =~ /($RE{delimited}{-delim=>qq{\'"}}|[{}\w.]+)/go) {
     }
     if ( $col =~ s!/ALIGN:([^\/]+)!!io ) {
         $colref->{'align'} = $1;
+    }
+    if ( $col =~ s!/SPAN:([^\/]+)!!io ) {
+        $colref->{'span'} = $1;
     }
     if ( $col =~ /__(.*?)__/io ) {
         my @subcols;
@@ -99,7 +104,12 @@ while ($format =~ /($RE{delimited}{-delim=>qq{\'"}}|[{}\w.]+)/go) {
         $colref->{'attribute'} = $1;
     }
 
+    $m->callback(callbackname => 'PostColumn', column => $colref, col => \$col);
+
     push @Columns, $colref;
 }
-    return(@Columns);
+
+$m->callback(callbackname => 'PostProcess', columns => \@Columns, format => $format);
+
+return(@Columns);
 </%init>
