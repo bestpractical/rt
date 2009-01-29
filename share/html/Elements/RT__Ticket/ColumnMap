@@ -175,7 +175,7 @@ $COLUMN_MAP = {
         value     => sub { return $_[0]->Cc->MemberEmailAddressesAsString }
     },
     AdminCc => {
-        loc       => ('AdminCc'),
+        title     => 'AdminCc', # loc
         attribute => 'AdminCc.EmailAddress',
         value     => sub { return $_[0]->AdminCc->MemberEmailAddressesAsString }
     },
