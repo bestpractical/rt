@@ -48,7 +48,6 @@
 <%INIT>
 if ($m->dhandler_arg =~ /^(\d+)/) {
     $m->comp('/Dashboards/Render.html', id => $1, %ARGS);
-    $m->abort;
 }
 else {
     $m->decline;
