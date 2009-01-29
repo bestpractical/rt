@@ -158,9 +158,10 @@ unless (@keys && @values) {
 }
 
 my %data;
-foreach my $key (@keys) { $data{$key} = shift @values; }
-my @sorted_keys = sort @keys;
-my @sorted_values = map { $data{$_}} @sorted_keys;
+my %loc_keys;
+foreach my $key (@keys) { $data{$key} = shift @values; $loc_keys{$key} = _($key); }
+my @sorted_keys = map { $loc_keys{$_}} sort { $loc_keys{$a} cmp $loc_keys{$b} } keys %loc_keys;
+my @sorted_values = map { $data{$_}} sort { $loc_keys{$a} cmp $loc_keys{$b} } keys %loc_keys;
 
 my $plot = $chart->plot( [ [@sorted_keys], [@sorted_values] ] ) or die $chart->error;
 $m->comp( 'SELF:Plot', plot => $plot, %ARGS );
