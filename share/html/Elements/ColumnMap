@@ -59,36 +59,37 @@ my $COLUMN_MAP = {
         attribute => 'id',
         align     => 'right',
         value     => sub  { return $_[0]->id }
+        title    => 'id', # loc
     },
 
     created => {
         attribute => 'Created',
-        title     => 'Created',
+        title     => 'Created', # loc
         value     => sub  { return $_[0]->created_obj->as_string }
     },
     created_relative => {
         attribute => 'Created',
-        title     => 'Created',
+        title     => 'Created', # loc
         value     => sub  { return $_[0]->created_obj->age_as_string }
     },
     created_by => {
         attribute => 'CreatedBy',
-        title => 'Created By',
+        title => 'Created By', # loc
         value     => sub  { return $_[0]->creator_obj->name }
     },
     last_updated => {
         attribute => 'last_updated',
-        title     => 'Last Updated',
+        title     => 'Last Updated', # loc
         value     => sub  { return $_[0]->last_updated_obj->as_string }
     },
     last_updated_relative => {
         attribute => 'last_updated',
-        title     => 'Last Updated',
+        title     => 'Last Updated', # loc
         value     => sub  { return $_[0]->last_updated_obj->age_as_string }
     },
     last_updated_by => {
         attribute => 'last_updated_by',
-        title     => 'Last Updated By',
+        title     => 'Last Updated By', # loc
         value     => sub  { return $_[0]->last_updated_by_obj->name }
     },
 
