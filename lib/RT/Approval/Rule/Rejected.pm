@@ -77,9 +77,9 @@ sub commit {    # XXX: from custom prepare code
         );
     }
     my $links = $self->ticket_obj->depended_on_by;
-    foreach my $link ( @{ $links->items_array_ref } ) {
+    foreach my $link ( @$links ) {
         my $obj = $link->base_obj;
-        if ( $obj->queue->is_active_status( $obj->status ) ) {
+        unless ( $obj->queue->status_schema->is_inactive( $obj->status ) ) {
             if ( $obj->type eq 'approval' ) {
                 $obj->set_status(
                     status => 'deleted',
@@ -90,9 +90,9 @@ sub commit {    # XXX: from custom prepare code
     }
 
     $links = $self->ticket_obj->depends_on;
-    foreach my $link ( @{ $links->items_array_ref } ) {
+    foreach my $link ( @$links ) {
         my $obj = $link->target_obj;
-        if ( $obj->queue->is_active_status( $obj->status ) ) {
+        unless ( $obj->queue->status_schema->is_inactive( $obj->status ) ) {
             $obj->set_status(
                 status => 'deleted',
                 force  => 1,

@@ -66,7 +66,7 @@ sub commit {
     my $t = $self->ticket_obj->transactions;
 
     while ( my $o = $t->next ) {
-        next unless $o->type eq 'Correspond';
+        next unless $o->type eq 'correspond';
         $note .= $o->content . "\n" if $o->content_obj;
     }
     my ($top) = $self->ticket_obj->all_depended_on_by( Type => 'ticket' );
