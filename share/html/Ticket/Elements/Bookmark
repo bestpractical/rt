@@ -53,7 +53,7 @@ $bookmarks ||= {};
 my $bookmarked = $bookmarks->{ $id }; # we still not sure if it's undef
 
 my @ids;
-if ( $Toggle || !$bookmarked ) {
+if ( $toggle || !$bookmarked ) {
     my $ticket = RT::Model::Ticket->new;
     $ticket->load( $id );
     return unless $id = $ticket->id;
