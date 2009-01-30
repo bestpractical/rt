@@ -153,9 +153,6 @@ unless ( ($message->get_header('Content-Disposition')||"") =~ /attachment/i ) {
         $m->out( '<p>' .
             _( 'Message body not shown because it is too large or is not plain text.' ) .
             '</p>'
-      
-        $m->out(
-            _( 'Message body not shown because it is too large or is not plain text.' )
         );
     }
 }
