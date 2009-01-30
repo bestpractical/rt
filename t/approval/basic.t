@@ -14,8 +14,8 @@ use RT;
 use RT::Test;
 use RT::Test::Email;
 
-RT->Config->Set( log_to_screen => 'debug' );
-RT->Config->Set( use_transaction_batch => 1 );
+RT->config->set( log_to_screen => 'debug' );
+RT->config->set( use_transaction_batch => 1 );
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $q = RT::Model::Queue->new( current_user => RT->system_user );
@@ -29,7 +29,7 @@ for my $user_name (qw(minion cfo ceo )) {
                    privileged => 1,
                    email => $user_name.'@company.com');
     my ($val, $msg);
-    ($val, $msg) = $user->principal_obj->grant_right(object =>$q, right => $_)
+    ($val, $msg) = $user->principal->grant_right(object =>$q, right => $_)
         for qw(ModifyTicket OwnTicket ShowTicket);
 }
 
@@ -39,12 +39,12 @@ my $approvals =
 Queue: ___Approvals
 Type: approval
 Owner: CFO
-Requestors: {$Tickets{"TOP"}->Requestors}
+Requestors: {$Tickets{"TOP"}->role_group("requestor")->member_emails_as_string}
 Refers-To: TOP
-Subject: CFO Approval for PO: {$Tickets{"TOP"}->id} - {$Tickets{"TOP"}->Subject}
+Subject: CFO Approval for PO: {$Tickets{"TOP"}->id} - {$Tickets{"TOP"}->subject}
 Due: {time + 86400}
 Content-Type: text/plain
-Content: Your approval is requested for the PO ticket {$Tickets{"TOP"}->id}: {$Tickets{"TOP"}->Subject}
+Content: Your approval is requested for the PO ticket {$Tickets{"TOP"}->id}: {$Tickets{"TOP"}->subject}
 Blah
 Blah
 ENDOFCONTENT
@@ -52,8 +52,8 @@ ENDOFCONTENT
 Queue: ___Approvals
 Type: approval
 Owner: CEO
-Requestors: {$Tickets{"TOP"}->Requestors}
-Subject: PO approval request for {$Tickets{"TOP"}->Subject}
+Requestors: {$Tickets{"TOP"}->role_group("requestor")->member_emails_as_string}
+Subject: PO approval request for {$Tickets{"TOP"}->subject}
 Refers-To: TOP
 Depends-On: for-CFO
 Depended-On-By: {$Tickets{"TOP"}->id}
@@ -69,11 +69,11 @@ $apptemp->create( content => $approvals, name => "PO Approvals", queue => "0");
 ok($apptemp->id);
 
 $q = RT::Model::Queue->new(current_user => RT->system_user);
-$q->create(Name => 'PO');
+$q->create(name => 'PO');
 ok ($q->id, "Created PO queue");
 
 my $scrip = RT::Model::Scrip->new(current_user => RT->system_user);
-my ($sval, $smsg) =$scrip->create( ScripCondition => 'On Create',
+my ($sval, $smsg) =$scrip->create( scrip_condition => 'On Create',
                 scrip_action => 'Create Tickets',
                 template => 'PO Approvals',
                 queue => $q->id,
@@ -81,8 +81,8 @@ my ($sval, $smsg) =$scrip->create( ScripCondition => 'On Create',
 ok ($sval, $smsg);
 ok ($scrip->id, "Created the scrip");
 ok ($scrip->template_obj->id, "Created the scrip template");
-ok ($scrip->condition_obj->id, "Created the scrip condition");
-ok ($scrip->action_obj->id, "Created the scrip action");
+ok ($scrip->scrip_condition->id, "Created the scrip condition");
+ok ($scrip->scrip_action->id, "Created the scrip action");
 
 my $t = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($tid, $ttrans, $tmsg);
@@ -123,8 +123,7 @@ is_deeply([ $t->status, $dependson_cfo->status, $dependson_ceo->status ],
           [ 'new', 'open', 'new'], 'tickets in correct state');
 
 mail_ok {
-    my $cfo = RT::CurrentUser->new;
-    $cfo->load( $users{cfo} );
+    my $cfo = RT::CurrentUser->new(id => $users{cfo}->id);
 
     $dependson_cfo->current_user($cfo);
     my $notes = MIME::Entity->build(
@@ -135,7 +134,7 @@ mail_ok {
     my ( $notesval, $notesmsg ) = $dependson_cfo->correspond( mime_obj => $notes );
     ok($notesval, $notesmsg);
 
-    my ($ok, $msg) = $dependson_cfo->set_status( Status => 'resolved' );
+    my ($ok, $msg) = $dependson_cfo->set_status( status => 'resolved' );
     ok($ok, "cfo can approve - $msg");
 
 } { from => qr/RT System/,
@@ -155,16 +154,15 @@ is_deeply([ $t->status, $dependson_cfo->status, $dependson_ceo->status ],
           [ 'new', 'resolved', 'open'], 'ticket state after cfo approval');
 
 mail_ok {
-    my $ceo = RT::CurrentUser->new;
-    $ceo->load( $users{ceo} );
+    my $ceo = RT::CurrentUser->new(id => $users{ceo}->id);
 
-    $dependson_ceo->CurrentUser($ceo);
+    $dependson_ceo->current_user($ceo);
     my $notes = MIME::Entity->build(
         Data => [ 'And consumed they will be.' ]
     );
     RT::I18N::set_mime_entity_to_utf8($notes); # convert text parts into utf-8
 
-    my ( $notesval, $notesmsg ) = $dependson_ceo->Correspond( mime_obj => $notes );
+    my ( $notesval, $notesmsg ) = $dependson_ceo->correspond( mime_obj => $notes );
     ok($notesval, $notesmsg);
 
     my ($ok, $msg) = $dependson_ceo->set_status( status => 'resolved' );
@@ -193,10 +191,9 @@ $dependson_ceo->_set(
     value => 'new');
 
 mail_ok {
-    my $cfo = RT::CurrentUser->new;
-    $cfo->load( $users{cfo} );
+    my $cfo = RT::CurrentUser->new(id => $users{cfo}->id);
 
-    $dependson_cfo->CurrentUser($cfo);
+    $dependson_cfo->current_user($cfo);
     my $notes = MIME::Entity->build(
         Data => [ 'sorry, out of resources.' ]
     );
