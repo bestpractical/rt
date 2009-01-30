@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
-use RT::Test; use Test::More tests => 20;
+use RT::Test; use Test::More tests => 21;
 use HTTP::Request::Common;
 use HTTP::Cookies;
 use LWP;
@@ -70,6 +70,25 @@ $agent->submit;
     like ($agent->{'content'}, qr/to &#39;300&#39;/, "5 hours is 300 minutes");
 # }}}
 
+# {{{ test an image
+
+TODO: {
+    todo_skip("Need to handle mason trying to compile images",1);
+$agent->get( $url."NoAuth/images/test.png" );
+my $file = RT::Test::get_relocatable_file(
+  File::Spec->catfile(
+    qw(.. .. share html NoAuth images test.png)
+  )
+);
+is(
+    length($agent->content),
+    -s $file,
+    "got a file of the correct size ($file)",
+);
+}
+# }}}
+
+    
 # {{{ query Builder tests
 #
 # XXX: hey-ho, we have these tests in t/web/query-builder
