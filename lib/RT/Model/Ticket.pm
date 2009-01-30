@@ -2206,7 +2206,7 @@ sub merged {
         operator => '!=',
         value    => $self->id,
     );
-    return map $_->id, @{ $mergees->ItemsArrayRef || [] };
+    return map $_->id, @{ $mergees->items_array_ref || [] };
 }
 
 
