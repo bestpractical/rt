@@ -59,12 +59,17 @@ use vars qw($DEBUG $FILECAT);
 
 $DEBUG = 1;
 
-@ARGV = <lib/RT/I18N/*.po> unless @ARGV;
+# po dir is for extensions
+@ARGV = (<lib/RT/I18N/*.po>, <lib/RT/I18N/*.pot>, <po/*.po>, <po/*.pot>) unless @ARGV;
 
 $FILECAT = {};
 
 # extract all strings and stuff them into $FILECAT
-File::Find::find( { wanted => \&extract_strings_from_code, follow => 1 }, '.' );
+# scan html dir for extensions
+File::Find::find( { wanted => \&extract_strings_from_code, follow => 1 }, qw(bin sbin lib share html etc) );
+
+# remove msgid with $ in it.  XXX: perhaps give some warnings here
+$FILECAT = { map { $_ => $FILECAT->{$_} } grep { !m/\$/ } keys %$FILECAT };
 
 # ensure proper escaping and %1 => %1 transformation
 foreach my $str ( sort keys %{$FILECAT} ) {
@@ -83,11 +88,13 @@ foreach my $str ( sort keys %{$FILECAT} ) {
 
 # update all Language dictionaries
 foreach my $dict (@ARGV) {
+    $dict = "lib/RT/I18N/$dict.pot" if ( $dict eq 'rt' );
     $dict = "lib/RT/I18N/$dict.po" unless -f $dict or $dict =~ m!/!;
 
     my $lang = $dict;
     $lang =~ s|.*/||;
     $lang =~ s|\.po$||;
+    $lang =~ s|\.pot$||;
 
     update($lang, $dict);
 }
@@ -101,7 +108,8 @@ sub extract_strings_from_code {
     local $/;
     return if ( -d $_ );
     return if ( $File::Find::dir =~ 'lib/blib|lib/t/autogen|var|m4|local|\.svn' );
-    return if ( /\.po$|\.bak$|~|,D|,B$|extract-message-catalog$/ );
+    return if ( /\.(?:pot|po|bak|gif|png|psd|jpe?g|svg|css|js)$/ );
+    return if ( /~|,D|,B$|extract-message-catalog$|tweak-template-locstring$/ );
     return if ( /^[\.#]/ );
     return if ( -f "$_.in" );
 
@@ -156,6 +164,7 @@ sub extract_strings_from_code {
     $line = 1;
     pos($_) = 0;
     while (m/\G.*?($RE{delimited}{-delim=>q{'"}}{-keep})[\}\)\],;]*\s*\#\s*loc\s*$/smg) {
+        
 	my $str = substr($1, 1, -1);
 	$line += ( () = ( $& =~ /\n/g ) );    # cryptocontext!
 	$str  =~ s/\\'/\'/g;
@@ -197,19 +206,52 @@ sub update {
     @lines = grep { !/^(#(:|\.)\s*|$)/ } @lines;
     while (@lines) {
         my $msghdr = "";
-        $msghdr .= shift @lines while ( $lines[0] && $lines[0] !~ /^msgid/ );
+        $msghdr .= shift @lines while ( $lines[0] && $lines[0] !~ /^(#~ )?msgid/ );
         
         my $msgid  = "";
-        $msgid .= shift @lines while ( $lines[0] && $lines[0] =~ /^(msgid|")/ );
+
+# '#~ ' is the prefix of launchpad for msg that's not found the the source
+# we'll remove the prefix later so we can still show them with our own mark
+
+        $msgid .= shift @lines while ( $lines[0] && $lines[0] =~ /^(#~ )?(msgid|")/ );
         my $msgstr = "";
-        $msgstr .= shift @lines while ( $lines[0] && $lines[0] =~ /^(msgstr|")/ );
+        $msgstr .= shift @lines while ( $lines[0] && $lines[0] =~ /^(#~ )?(msgstr|")/ );
 
         last unless $msgid;
 
         chomp $msgid;
         chomp $msgstr;
-        $msgid  =~ s/^msgid "(.*)"\s*?$/$1/ms    or warn "$msgid in $file";
-        $msgstr =~ s/^msgstr "(.*)"\s*?$/$1/ms or warn "$msgstr  in $file";
+
+        $msgid  =~ s/^#~ //mg;
+        $msgstr =~ s/^#~ //mg;
+
+        $msgid  =~ s/^msgid "(.*)"\s*?$/$1/m    or warn "$msgid in $file";
+
+        if ( $msgid eq '' ) {
+            # null msgid, msgstr will have head info
+            $msgstr =~ s/^msgstr "(.*)"\s*?$/$1/ms or warn "$msgstr  in $file";
+        }
+        else {
+            $msgstr =~ s/^msgstr "(.*)"\s*?$/$1/m or warn "$msgstr  in $file";
+        }
+
+        if ( $msgid ne ''  ) {
+            for my $msg ( \$msgid, \$msgstr ) {
+                if ( $$msg =~ /\n/ ) {
+                    my @lines = split /\n/, $$msg;
+                    $$msg =
+                      shift @lines;   # first line don't need to handle any more
+                    for (@lines) {
+                        if (/^"(.*)"\s*$/) {
+                            $$msg .= $1;
+                        }
+                    }
+                }
+
+                # convert \\n back to \n
+                $$msg =~ s/(?!\\)\\n/\n/g;
+            }
+        }
 
         $Lexicon{$msgid} = $msgstr;
         $Header{$msgid}  = $msghdr;
@@ -266,6 +308,23 @@ sub escape {
     $text =~ s/\b_(\d+)/%$1/;
     return $text;
 }
+
+sub fmt {
+    my $str = shift;
+    return "\"$str\"\n" unless $str =~ /\n/;
+
+    my $multi_line = ($str =~ /\n(?!\z)/);
+    $str =~ s/\n/\\n"\n"/g;
+
+    if ($str =~ /\n"$/) {
+        chop $str;
+    }
+    else {
+        $str .= "\"\n";
+    }
+    return $multi_line ? qq(""\n"$str) : qq("$str);
+}
+
 
 sub fmt {
     my $str = shift;
