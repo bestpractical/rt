@@ -1,4 +1,4 @@
-use Test::More  tests => '17';
+use Test::More tests => 18;
 
 use strict;
 use warnings;
@@ -6,6 +6,7 @@ use warnings;
 use_ok('RT');
 use_ok('RT::Model::Ticket');
 use RT::Test;
+use Test::Warn;
 
 
 my $tester = RT::Test->load_or_create_user(
@@ -34,11 +35,16 @@ diag "check that deffering owner doesn't regress" if $ENV{'TEST_VERBOSE'};
     my $ticket = RT::Model::Ticket->new(current_user => $tester );
     # tester is owner, owner has right to modify owned tickets,
     # this right is required to set somebody as Admincc
-    my ($tid, $txn_id, $msg) = $ticket->create(
-        queue   => $queue->id,
-        owner   => $tester->id,
-        admin_cc => 'root@localhost',
-    );
+    my ($tid, $txn_id, $msg);
+    warning_like {
+        ($tid, $txn_id, $msg) = $ticket->create(
+            queue => $queue->id,
+            owner => $tester->id,
+            cc    => 'tester@localhost',
+        );
+    } qr/User .* was proposed as a ticket owner but has no rights to own tickets in General/;
+
+    
     diag $msg if $msg && $ENV{'TEST_VERBOSE'};
     ok $tid, "created a ticket";
     is $ticket->owner->id, $tester->id, 'correct owner';
