@@ -1,7 +1,10 @@
 #!/usr/bin/perl
 
 use warnings; use strict;
-use RT::Test; use Test::More tests => 164;
+use RT::Test;
+use Test::MockTime qw(set_fixed_time restore_time);
+
+use Test::More tests => 166;
 
 use RT::Model::User;
 use Test::Warn;
@@ -312,6 +315,17 @@ my $year = (localtime(time))[5] + 1900;
 
     $date->set(format => 'unknown', value => '2005-11-28 15:10:00', timezone => 'utc' );
     is($date->iso, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
+
+    # test relative dates
+    {
+        set_fixed_time("2005-11-28T15:10:00Z");
+        $date->set(format => 'unknown', value => 'now');
+        is($date->ISO, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
+
+        $date->set(format => 'unknown', value => '1 day ago');
+        is($date->ISO, '2005-11-27 15:10:00', "YYYY-DD-MM hh:mm:ss");
+        restore_time();
+    }
 
     RT->config->set( Timezone => 'UTC' );
     $date->set(format => 'unknown', value => '2005-11-28 15:10:00');
