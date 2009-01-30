@@ -950,7 +950,7 @@ sub _all_linked_tickets {
         @_
     );
 
-    my $dep = $self->_Links( $args{direction}, $args{link_type} );
+    my $dep = $self->_links( $args{direction}, $args{link_type} );
     while ( my $link = $dep->next() ) {
         my $uri =
           $args{direction} eq 'target' ? $link->base_uri : $link->targetURI;
