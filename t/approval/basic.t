@@ -16,6 +16,7 @@ use RT::Test::Email;
 
 RT->config->set( log_to_screen => 'debug' );
 RT->config->set( use_transaction_batch => 1 );
+RT->config->set( UseTansactionBatch => 1 );
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $q = RT::Model::Queue->new( current_user => RT->system_user );
@@ -39,7 +40,6 @@ my $approvals =
 Queue: ___Approvals
 Type: approval
 Owner: CFO
-Requestors: {$Tickets{"TOP"}->role_group("requestor")->member_emails_as_string}
 Refers-To: TOP
 Subject: CFO Approval for PO: {$Tickets{"TOP"}->id} - {$Tickets{"TOP"}->subject}
 Due: {time + 86400}
@@ -52,7 +52,6 @@ ENDOFCONTENT
 Queue: ___Approvals
 Type: approval
 Owner: CEO
-Requestors: {$Tickets{"TOP"}->role_group("requestor")->member_emails_as_string}
 Subject: PO approval request for {$Tickets{"TOP"}->subject}
 Refers-To: TOP
 Depends-On: for-CFO
@@ -90,7 +89,7 @@ my ($tid, $ttrans, $tmsg);
 mail_ok {
     ($tid, $ttrans, $tmsg) =
         $t->create(subject => "PO for stationary",
-                   owner => "root", requestor => 'minion',
+                   owner => "root", requestor => $users{minion}->email,
                    queue => $q->id);
 } { from => qr/RT System/,
     to => 'cfo@company.com',

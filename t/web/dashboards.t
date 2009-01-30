@@ -27,10 +27,10 @@ $onlooker->set_privileged(1);
 my $queue = RT::Model::Queue->new(current_user => RT->system_user);
 $queue->create(name => 'SearchQueue'.$$);
 
-for my $user ($user_object, $onlooker) {
-    $user->principal_obj->grant_right(right => 'ModifySelf');
+for my $user ($user_obj, $onlooker) {
+    $user->principal->grant_right(right => 'ModifySelf');
     for my $right (qw/SeeQueue ShowTicket OwnTicket/) {
-        $user->principal_obj->grant_right(right => $right, object => $queue);
+        $user->principal->grant_right(right => $right, object => $queue);
     }
 }
 
@@ -57,7 +57,7 @@ $m->content_lacks("Save Changes");
 
 $m->warning_like(qr/Permission denied/, "got a permission denied warning");
 
-$user_object->principal_obj->grant_right(right => 'ModifyOwnDashboard', object => RT->system);
+$user_obj->principal->grant_right(right => 'ModifyOwnDashboard', object => RT->system);
 # Modify itself is no longer good enough, you need Create
 $m->get_ok($url."Dashboards/Modify.html?Create=1");
 $m->content_contains("Permission denied");
@@ -116,9 +116,6 @@ my ($id) = $m->content =~ /name="id" value="(\d+)"/;
 ok($id, "got an ID, $id");
 $dashboard->load_by_id($id);
 is($dashboard->name, "different dashboard");
-
-is($dashboard->privacy, 'RT::Model::User-' . $user_object->id, "correct privacy");
-is($dashboard->possible_hidden_searches, 0, "all searches are visible");
 
 is($dashboard->privacy, 'RT::Model::User-' . $user_obj->id, "correct privacy");
 is($dashboard->possible_hidden_searches, 0, "all searches are visible");
@@ -213,7 +210,7 @@ $m->content_lacks("different dashboard", "dashboard was deleted");
 $m->content_contains("Failed to load dashboard $id");
 $m->warning_like(qr/Failed to load dashboard.*Couldn't find row/, "the dashboard was deleted");
 
-$user_object->principal_obj->grant_right(right => "SuperUser", object => RT->system);
+$user_obj->principal->grant_right(right => "SuperUser", object => RT->system);
 
 # now test that we warn about searches others can't see
 # first create a personal saved search...
@@ -252,7 +249,7 @@ $m->content_contains("personal search", "saved search shows up");
 $m->content_contains("dashboard test", "matched ticket shows up");
 
 # make sure the onlooker can't see the search...
-$onlooker->principal_obj->grant_right(right => 'SeeDashboard', object => RT->system);
+$onlooker->principal->grant_right(right => 'SeeDashboard', object => RT->system);
 
 my $omech = RT::Test::Web->new;
 ok $omech->login(onlooker => 'onlooker'), "logged in";

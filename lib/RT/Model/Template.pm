@@ -370,10 +370,6 @@ sub _downgrade_from_html {
     $orig_entity->head->mime_attr( "Content-Type.charset" => 'utf-8' );
     $orig_entity->make_multipart( 'alternative', Force => 1 );
 
-    my $new_entity = $self->{mime_obj};
-    $new_entity->head->mime_attr( "Content-Type"         => 'text/plain' );
-    $new_entity->head->mime_attr( "Content-Type.charset" => 'utf-8' );
-
     require HTML::formatText;
     require HTML::TreeBuilder;
     $new_entity->bodyhandle(

@@ -148,6 +148,8 @@ sub init {
 
     init_system_objects();
     init_plugins();
+    # enable approval subsystem
+    require RT::Approval;
 }
 
 # Signal handlers

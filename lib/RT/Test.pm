@@ -111,6 +111,7 @@ sub setup {
 
     $self->_setup_config(@$args);
     RT::init_system_objects();
+    RT::init();
 }
 
 sub _setup_config {

@@ -332,10 +332,10 @@ batch-process all your pending approvals.
 
 Greetings,
 
-Your ticket has been approved by { eval { $Approval->owner_obj->name } }.
+Your ticket has been approved by { eval { $Approval->owner->name } }.
 Other approvals may be pending.
 
-Approver\'s notes: { $Notes }
+Approver\'s notes: { $notes }
 
 '
     },
@@ -348,10 +348,10 @@ Approver\'s notes: { $Notes }
 
 Greetings,
 
-Your ticket has been approved by { eval { $Approval->owner_obj->name } }.
+Your ticket has been approved by { eval { $Approval->owner->name } }.
 Its Owner may now start to act on it.
 
-Approver\'s notes: { $Notes }
+Approver\'s notes: { $notes }
 '
     },
     {  queue       => $approvals_id,
@@ -371,7 +371,7 @@ Approver\'s notes: { $Notes }
        name        => "Approval Ready for Owner",    # loc
        description =>
          "Notify Owner of their ticket has been approved and is ready to be acted on", # loc
-       content => 'Subject: Ticket Approved: {$ticket->Subject}
+       content => 'Subject: Ticket Approved: {$ticket->subject}
 
 Greetings,
 

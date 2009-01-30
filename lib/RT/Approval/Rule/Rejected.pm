@@ -65,13 +65,13 @@ sub commit {    # XXX: from custom prepare code
     my $self = shift;
     if ( my ($rejected) =
         $self->ticket_obj->all_depended_on_by( type => 'ticket' ) ) {
-        my $template = $self->GetTemplate('Approval Rejected',
+        my $template = $self->get_template('Approval Rejected',
                                           ticket_obj => $rejected,
                                           approval  => $self->ticket_obj,
                                           notes     => '');
 
-        $rejected->Correspond( mime_obj => $template->mime_obj );
-        $rejected->SetStatus(
+        $rejected->correspond( mime_obj => $template->mime_obj );
+        $rejected->set_status(
             status => 'rejected',
             force  => 1,
         );
@@ -79,7 +79,7 @@ sub commit {    # XXX: from custom prepare code
     my $links = $self->ticket_obj->depended_on_by;
     foreach my $link ( @{ $links->items_array_ref } ) {
         my $obj = $link->base_obj;
-        if ( $obj->queue_obj->is_active_status( $obj->status ) ) {
+        if ( $obj->queue->is_active_status( $obj->status ) ) {
             if ( $obj->type eq 'approval' ) {
                 $obj->set_status(
                     status => 'deleted',
@@ -92,7 +92,7 @@ sub commit {    # XXX: from custom prepare code
     $links = $self->ticket_obj->depends_on;
     foreach my $link ( @{ $links->items_array_ref } ) {
         my $obj = $link->target_obj;
-        if ( $obj->queue_obj->is_active_status( $obj->status ) ) {
+        if ( $obj->queue->is_active_status( $obj->status ) ) {
             $obj->set_status(
                 status => 'deleted',
                 force  => 1,

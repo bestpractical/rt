@@ -387,12 +387,11 @@ sub create {
         my $ticket = RT::Model::Ticket->new( current_user => RT->system_user );
         $ticket->load( $args{'object_id'} );
         my $rules = RT::Ruleset->find_all_rules(
-            Stage          => 'TransactionCreate',
+            stage          => 'TransactionCreate',
             type           => $args{'type'},
             ticket_obj      => $ticket,
             transaction_obj => $self,
         );
-
         
         if ( $commit_scrips ) {
             Jifty->log->debug( 'About to commit scrips for transaction #' . $self->id );

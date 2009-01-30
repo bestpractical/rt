@@ -2053,7 +2053,7 @@ sub next {
 
     my $Ticket = $self->SUPER::next;
     return $Ticket unless $Ticket;
-    if ( $Ticket->__value('Status') eq 'deleted'
+    if ( $Ticket->__value('status') eq 'deleted'
         && !$self->{'allow_deleted_search'} )
     {
         return $self->next;

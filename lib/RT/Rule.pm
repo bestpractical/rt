@@ -49,14 +49,14 @@
 package RT::Rule;
 use strict;
 use warnings;
-use base 'RT::Action';
+use base 'RT::ScripAction';
 
 use constant _stage => 'TransactionCreate';
 use constant _queue => undef;
 
 sub prepare {
     my $self = shift;
-    return (0) if $self->_queue && $self->ticket_obj->queue_obj->name ne $self->_queue;
+    return (0) if $self->_queue && $self->ticket_obj->queue->name ne $self->_queue;
     return 1;
 }
 
@@ -73,21 +73,20 @@ sub describe {
 sub on_status_change {
     my ($self, $value) = @_;
 
-    $self->transaction_obj->type eq 'Status' and
-    $self->transaction_obj->field eq 'Status' and
+    $self->transaction_obj->type eq 'status' and
+    $self->transaction_obj->field eq 'status' and
     $self->transaction_obj->new_value eq $value
 }
 
 sub run_scrip_action {
     my ($self, $scrip_action, $template, %args) = @_;
-    my $ScripAction = RT::ScripAction->new( current_user => $self->current_user);
+    my $ScripAction = RT::Model::ScripAction->new( current_user => $self->current_user);
     $ScripAction->load($scrip_action) or die ;
-
     unless (ref($template)) {
         # XXX: load per-queue template
         #    $template->LoadQueueTemplate( Queue => ..., ) || $template->LoadGlobalTemplate(...)
 
-        my $t = RT::Template->new( current_user => $self->current_user);
+        my $t = RT::Model::Template->new( current_user => $self->current_user);
         $t->load($template) or die;
         $template = $t;
     }
@@ -99,7 +98,7 @@ sub run_scrip_action {
 
     # XXX: fix template to allow additional arguments to be passed from here
     $action->{'template_obj'} = $template;
-    $action->{'scrip_obj'} = RT::Scrip->new( current_user => $self->current_user); # Stub. sendemail action really wants a scripobj available
+    $action->{'scrip_obj'} = RT::Model::Scrip->new( current_user => $self->current_user); # Stub. sendemail action really wants a scripobj available
     $action->prepare or return;
     $action->commit;
 
