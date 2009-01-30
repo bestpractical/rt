@@ -54,7 +54,7 @@
 </&>
 <%INIT>
 my @conditions = ();
-foreach ( RT::Model::Queue->active_status_array ) {
+foreach ( RT::Model::Queue->status_schema->valid('initial', 'active') ) {
     push @conditions, { cond => "Status = '$_'", name => _($_) };
 }
 </%INIT>

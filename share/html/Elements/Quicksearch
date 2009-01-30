@@ -59,7 +59,7 @@
 my $unwanted = Jifty->web->current_user->user_object->preferences('QuickSearch', {});
 
 my @conditions = ();
-foreach ( RT::Model::Queue->active_status_array ) {
+foreach ( RT::Model::Queue->status_schema->valid('initial', 'active') ) {
     push @conditions, { cond => "Status = '$_'", name => _($_) };
 }
 </%INIT>
