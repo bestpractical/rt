@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 78;
+use Test::More tests => 110;
 use RT::Test;
 use RT::Dashboard;
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -17,16 +17,29 @@ $user_obj->set_privileged(1);
 $user_obj->principal->grant_right(right => 'ModifySelf');
 my $currentuser = RT::CurrentUser->new( id => $user_obj->id );
 
+my $onlooker = RT::Model::User->new(current_user => RT->system_user);
+($ret, $msg) = $onlooker->load_or_create_by_email('onlooker@example.com');
+ok($ret, 'ACL test user creation');
+$onlooker->set_name('onlooker');
+$onlooker->set_privileged(1);
+($ret, $msg) = $onlooker->set_password('onlooker');
+
 my $queue = RT::Model::Queue->new(current_user => RT->system_user);
 $queue->create(name => 'SearchQueue'.$$);
-$user_obj->principal->grant_right(right => 'SeeQueue',   object => $queue);
-$user_obj->principal->grant_right(right => 'ShowTicket', object => $queue);
-$user_obj->principal->grant_right(right => 'OwnTicket',  object => $queue);
+
+for my $user ($user_object, $onlooker) {
+    $user->principal_obj->grant_right(right => 'ModifySelf');
+    for my $right (qw/SeeQueue ShowTicket OwnTicket/) {
+        $user->principal_obj->grant_right(right => $right, object => $queue);
+    }
+}
 
 ok $m->login(customer => 'customer'), "logged in";
 
 $m->get_ok($url."Dashboards/index.html");
 $m->content_lacks("New dashboard", "No 'new dashboard' link because we have no CreateOwnDashboard");
+
+$m->no_warnings_ok;
 
 $m->get_ok($url."Dashboards/Modify.html?create=1");
 $m->content_contains("Permission denied");
@@ -41,6 +54,16 @@ $user_obj->principal->grant_right(
 $m->get_ok($url."Dashboards/Modify.html?create=1");
 $m->content_contains("Permission denied");
 $m->content_lacks("Save Changes");
+
+$m->warning_like(qr/Permission denied/, "got a permission denied warning");
+
+$user_object->principal_obj->grant_right(right => 'ModifyOwnDashboard', object => RT->system);
+# Modify itself is no longer good enough, you need Create
+$m->get_ok($url."Dashboards/Modify.html?Create=1");
+$m->content_contains("Permission denied");
+$m->content_lacks("Save Changes");
+
+$m->warning_like(qr/Permission denied/, "got a permission denied warning");
 
 $user_obj->principal->grant_right(
     right  => 'CreateOwnDashboard',
@@ -83,7 +106,7 @@ $m->content_contains("Modify the dashboard different dashboard");
 $m->follow_link_ok({text => "Queries"});
 
 $m->content_contains("Modify the queries of dashboard different dashboard");
-$m->form_name( 'dashboard_queries' );
+$m->form_name( 'dashboard-searches-body' );
 $m->field('searches-Available' => ["2-RT::System-1"]);
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
@@ -94,6 +117,9 @@ ok($id, "got an ID, $id");
 $dashboard->load_by_id($id);
 is($dashboard->name, "different dashboard");
 
+is($dashboard->privacy, 'RT::Model::User-' . $user_object->id, "correct privacy");
+is($dashboard->possible_hidden_searches, 0, "all searches are visible");
+
 is($dashboard->privacy, 'RT::Model::User-' . $user_obj->id, "correct privacy");
 is($dashboard->possible_hidden_searches, 0, "all searches are visible");
 
@@ -101,8 +127,9 @@ my @searches = $dashboard->searches;
 is(@searches, 1, "one saved search in the dashboard");
 like($searches[0]->name, qr/newest unowned tickets/, "correct search name");
 
-$m->form_name( 'dashboard_queries' );
-$m->field('searches-Available' => ["1-RT::System-1"]);
+$m->form_name('dashboard-searches-body');
+$m->field('searches-body-available' => ["search-1-RT::System-1"]);
+
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
 
@@ -139,6 +166,7 @@ $m->get_ok("/Dashboards/Subscription.html?dashboard_id=$id");
 $m->form_name( 'subscribe_dashboard' );
 $m->click_button(name => 'save');
 $m->content_contains("Permission denied");
+$m->warning_like(qr/Unable to subscribe to dashboard.*Permission denied/, "got a permission denied warning when trying to subscribe to a dashboard");
 
 Jifty::DBI::Record::Cachable->flush_cache;
 is($user_obj->attributes->named('Subscription'), 0, "no subscriptions");
@@ -169,6 +197,7 @@ $m->content_contains("Modify the subscription to dashboard different dashboard")
 
 $m->get_ok("/Dashboards/Modify.html?id=$id&delete=1");
 $m->content_contains("Permission denied", "unable to delete dashboard because we lack DeleteOwnDashboard");
+$m->warning_like(qr/Couldn't delete dashboard.*Permission denied/, "got a permission denied warning when trying to delete the dashboard");
 
 $user_obj->principal->grant_right(right => 'DeleteOwnDashboard', object => RT->system );
 
@@ -182,4 +211,56 @@ $m->content_contains("Deleted dashboard $id");
 $m->get("/Dashboards/Modify.html?id=$id");
 $m->content_lacks("different dashboard", "dashboard was deleted");
 $m->content_contains("Failed to load dashboard $id");
+$m->warning_like(qr/Failed to load dashboard.*Couldn't find row/, "the dashboard was deleted");
+
+$user_object->principal_obj->grant_right(right => "SuperUser", object => RT->system);
+
+# now test that we warn about searches others can't see
+# first create a personal saved search...
+$m->get_ok($url."Search/Build.html");
+$m->follow_link_ok({text => 'Advanced'});
+$m->form_with_fields('Query');
+$m->field(Query => "id > 0");
+$m->submit;
+
+$m->form_with_fields('saved_search_description');
+$m->field(saved_search_description => "personal search");
+$m->click_button(name => "saved_search_save");
+
+# then the system-wide dashboard
+$m->get_ok($url."Dashboards/Modify.html?create=1");
+
+$m->form_name('ModifyDashboard');
+$m->field("name" => 'system dashboard');
+$m->field("privacy" => 'RT::System-1');
+$m->content_lacks('Delete', "Delete button hidden because we are creating");
+$m->click_button(value => 'Save Changes');
+$m->content_lacks("No permission to create dashboards");
+$m->content_contains("Saved dashboard system dashboard");
+
+$m->follow_link_ok({text => 'Queries'});
+
+$m->form_name('dashboard-searches-body');
+$m->field('searches-body-available' => ['search-7-RT::Model::User-22']); # XXX: :( :(
+$m->click_button(name => 'add');
+$m->content_contains("Dashboard updated");
+
+$m->content_contains("The following queries may not be visible to all users who can see this dashboard.");
+
+$m->follow_link_ok({text => 'Show'});
+$m->content_contains("personal search", "saved search shows up");
+$m->content_contains("dashboard test", "matched ticket shows up");
+
+# make sure the onlooker can't see the search...
+$onlooker->principal_obj->grant_right(right => 'SeeDashboard', object => RT->system);
+
+my $omech = RT::Test::Web->new;
+ok $omech->login(onlooker => 'onlooker'), "logged in";
+$omech->get_ok("/Dashboards");
+
+$omech->follow_link_ok({text => 'system dashboard'});
+$omech->content_lacks("personal search", "saved search doesn't show up");
+$omech->content_lacks("dashboard test", "matched ticket doesn't show up");
+
+$m->warning_like(qr/User .* tried to load container user /, "can't see other users' personal searches");
 
