@@ -639,7 +639,7 @@ sub email_frequency {
     );
     return ''
       unless $self->id
-          && $self->id != $RT::Nobody->id
+          && $self->id != RT->nobody->id
           && $self->id != RT->system_user->id;
     return 'no email' unless my $email = $self->email;
     return 'squelched'
