@@ -97,7 +97,6 @@
     <% _('Not logged in.') %>
 % }
 % $m->callback( %ARGS );
-<& Logout, %ARGS &>
   </div>
 % }
 
