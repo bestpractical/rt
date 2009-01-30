@@ -52,8 +52,7 @@
   <div class="metadata">
     <span class="type">
       <a name="txn-<% $transaction->id %>" href="<% $display_path %>#txn-<% $transaction->id %>">#</a>
-      <% $last_transaction ? '<a id="lasttrans" name="lasttrans"/>' : ''|n %>
-      <% $LastTransaction ? '<a id="lasttrans" name="lasttrans"></a>' : ''|n %>
+      <% $last_transaction ? '<a id="lasttrans" name="lasttrans"></a>' : ''|n %>
     </span>
     <span class="date"><% $transdate|n %></span>
 % my $desc = $transaction->brief_description;
@@ -61,7 +60,7 @@
     <span class="description">
       <% $transaction->creator_obj->name %> - <% $TicketString %> <% $desc %>
     </span>
-    <span class="time-taken"><% $TimeTaken %></span>
+    <span class="time-taken"><% $time_taken %></span>
     <span class="actions<% $titlebar_commands ? '': ' hidden'%>"><% $titlebar_commands |n %></span>
   </div>
 

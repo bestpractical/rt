@@ -120,7 +120,7 @@ while ( my $Transaction = $Transactions->next ) {
               row_num               => $i,
               attachments          => \@trans_attachments,
               attachment_content    => $trans_content,
-              last_transaction      => $IsLastTransactions,
+              last_transaction      => $IsLastTransaction,
  );
 
 # manually flush the content buffer after each txn, so the user sees

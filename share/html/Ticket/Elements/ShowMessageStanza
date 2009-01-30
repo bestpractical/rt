@@ -46,16 +46,16 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%perl>
-if ( ref $Message ) {
-    $m->out('<pre>') if $plain_text_pre && !$Depth;
-    $m->out( qq{<div class="message-stanza-depth-$Depth">} );
+if ( ref $message ) {
+    $m->out('<pre>') if $plain_text_pre && !$depth;
+    $m->out( qq{<div class="message-stanza-depth-$depth">} );
 
     my @stack;
     my $para = '';
     my $i = 0;
 
-    AGAIN: foreach ( ; $i < @$Message; $i++ ) {
-        my $stanza = $Message->[$i];
+    AGAIN: foreach ( ; $i < @$message; $i++ ) {
+        my $stanza = $message->[$i];
         if ( ref $stanza eq "HASH" ) {
             $para .= ( defined $stanza->{raw} ? $stanza->{raw} : '') ."\n";
         }
@@ -63,26 +63,26 @@ if ( ref $Message ) {
 
         $print_content->( \$para ); $para = '';
 
-        $Depth++;
-        push @stack, [$Message, $i+1];
-        ($Message, $i) = ($stanza, -1);
-        $m->out( qq{<div class="message-stanza-depth-$Depth">} );
+        $depth++;
+        push @stack, [$message, $i+1];
+        ($message, $i) = ($stanza, -1);
+        $m->out( qq{<div class="message-stanza-depth-$depth">} );
     }
     if ( length $para ) {
         $print_content->( \$para ); $para = '';
     }
 
     if ( @stack ) {
-        ($Message, $i) = @{ pop @stack };
-        $Depth--;
+        ($message, $i) = @{ pop @stack };
+        $depth--;
         $m->out('</div>');
         goto AGAIN;
     }
 
     $m->out('</div>');
-    $m->out('</pre>') if $plain_text_pre && !$Depth;
+    $m->out('</pre>') if $plain_text_pre && !$depth;
 } else {
-      $print_content->( \$Message );
+      $print_content->( \$message );
 }
 </%perl>
 <%INIT>

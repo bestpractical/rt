@@ -67,7 +67,7 @@ foreach my $message ( grep $_->__value('parent') == $parent, @$attachments ) {
 </div>
 %   }
 % # If there is sub-messages, open a dedicated div
-% if ( scalar ( grep $_->__value('Parent') == $message->id, @$Attachments ) ) {
+% if ( scalar ( grep $_->__value('Parent') == $message->id, @$attachments ) ) {
 <div class="messageattachments">
 % } else {
 
@@ -118,7 +118,7 @@ unless ( ($message->get_header('Content-Disposition')||"") =~ /attachment/i ) {
             # if it's a text/html clean the body and show it
             if ( $message->content_type =~ m{^text/(?:html|enriched)$}i ) {
                 $content = $m->comp( '/Elements/ScrubHTML', Content => $content );
-                if ( $message->ContentType eq 'text/html' ) {
+                if ( $message->content_type eq 'text/html' ) {
                     $m->comp('/Elements/MakeClicky', 
                             content => \$content, html => 1 );
                 }
