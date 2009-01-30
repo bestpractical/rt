@@ -320,10 +320,10 @@ my $year = (localtime(time))[5] + 1900;
     {
         set_fixed_time("2005-11-28T15:10:00Z");
         $date->set(format => 'unknown', value => 'now');
-        is($date->ISO, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
+        is($date->iso, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 
         $date->set(format => 'unknown', value => '1 day ago');
-        is($date->ISO, '2005-11-27 15:10:00', "YYYY-DD-MM hh:mm:ss");
+        is($date->iso, '2005-11-27 15:10:00', "YYYY-DD-MM hh:mm:ss");
         restore_time();
     }
 
