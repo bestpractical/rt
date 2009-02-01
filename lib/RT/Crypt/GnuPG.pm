@@ -1269,6 +1269,9 @@ sub DecryptInline {
     while ( defined(my $str = $io->getline) ) {
         if ( $in_block && $str =~ /-----END PGP (?:MESSAGE|SIGNATURE)-----/ ) {
             print $block_fh $str;
+            $in_block--;
+            next if $in_block > 0;
+
             seek $block_fh, 0, 0;
 
             my ($res_fh, $res_fn);
@@ -1289,8 +1292,11 @@ sub DecryptInline {
             binmode $block_fh, ':raw';
             $in_block = 0;
         }
-        elsif ( $in_block || $str =~ /-----BEGIN PGP (SIGNED )?MESSAGE-----/ ) {
-            $in_block = 1;
+        elsif ( $str =~ /-----BEGIN PGP (SIGNED )?MESSAGE-----/ ) {
+            $in_block++;
+            print $block_fh $str;
+        }
+        elsif ( $in_block ) {
             print $block_fh $str;
         }
         else {

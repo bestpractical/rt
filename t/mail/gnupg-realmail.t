@@ -10,7 +10,7 @@ plan skip_all => 'GnuPG required.'
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
 
-plan tests => 176;
+plan tests => 183;
 
 use Digest::MD5 qw(md5_hex);
 
@@ -62,6 +62,14 @@ for my $usage (qw/signed encrypted signed&encrypted/) {
             eval { email_ok($eid, $usage, $format, $attachment) };
         }
     }
+}
+
+$eid = 18;
+{
+    my ($usage, $format, $attachment) = ('signed', 'inline', 'plain');
+    ++$eid;
+    diag "Email $eid: $usage, $attachment email with $format format" if $ENV{TEST_VERBOSE};
+    eval { email_ok($eid, $usage, $format, $attachment) };
 }
 
 sub email_ok {
