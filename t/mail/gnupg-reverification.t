@@ -10,7 +10,7 @@ plan skip_all => 'GnuPG required.'
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
 
-plan tests => 111;
+plan tests => 120;
 
 use File::Temp qw(tempdir);
 my $homedir = tempdir( CLEANUP => 1 );
