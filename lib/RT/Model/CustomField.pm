@@ -278,7 +278,7 @@ sub create {
     if ( exists $args{'values_class'} ) {
         $self->set_values_class( $args{'values_class'} );
     if ( exists $args{'link_value_to'} ) {
-        $self->set_linkvalueto( $args{'link_value_to'} );
+        $self->set_link_value_to( $args{'link_value_to'} );
     }
 
     if ( exists $args{'include_content_for_value'} ) {
