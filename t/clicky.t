@@ -18,13 +18,13 @@ my ($baseurl, $m) = RT::Test->started_ok;
 
 use_ok('MIME::Entity');
 
-my $CurrentUser = RT->system_user;
+my $current_user = RT->system_user;
 
-my $queue = RT::Model::Queue->new( current_user => $CurrentUser );
+my $queue = RT::Model::Queue->new( current_user => $current_user );
 $queue->load('General') || abort(_("Queue could not be loaded."));
 
 my $message = MIME::Entity->build(
-    subject => 'test',
+    Subject => 'test',
     Data    => <<END,
 If you have some problems with RT you could find help
 on http://wiki.bestpractical.com or subscribe to
@@ -35,7 +35,7 @@ Best regards. BestPractical Team.
 END
 );
 
-my $ticket = RT::Model::Ticket->new( current_user => $CurrentUser );
+my $ticket = RT::Model::Ticket->new( current_user => $current_user );
 my ($id) = $ticket->create(
     subject => 'test',
     queue => $queue->id,
@@ -88,7 +88,7 @@ my ($id) = $ticket->create(
     mime_obj => $message,
 );
 ok( $id,                                   "We created a ticket #$id" );
-ok( $ticket->transactions->first->Content, "Has some content" );
+ok( $ticket->transactions->first->content, "Has some content" );
 
 ok $m->login, 'logged in';
 ok $m->goto_ticket($id), 'opened diplay page of the ticket';
