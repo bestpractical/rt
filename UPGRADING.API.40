@@ -3,3 +3,5 @@
 calling ->get or ->set, we can use both conventions. convention saved in file is
 FooBar. 
 * txn->type should be foo_bar
+* values of callback_name should stay camel case, since they are also the file  names
+
