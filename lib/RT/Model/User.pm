@@ -1322,8 +1322,8 @@ Return the friendly name
 
 sub friendly_name {
     my $self = shift;
-    return $self->real_name if defined( $self->real_name );
-    return $self->name      if defined( $self->name );
+    return $self->real_name if $self->real_name;
+    return $self->name      if $self->name;
     return "";
 }
 
