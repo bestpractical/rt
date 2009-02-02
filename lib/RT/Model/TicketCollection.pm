@@ -983,8 +983,9 @@ sub _role_groupsjoin {
         leftjoin => $groups,
         alias    => $groups,
         column   => 'domain',
-        value    => 'RT::' . $args{'class'} . '-Role',
-        
+        value => 'RT::Model::'
+          . renaming( $args{'class'}, { convention => 'UpperCamelCase' } )
+          . '-Role',
     );
     $self->SUPER::limit(
         leftjoin => $groups,
