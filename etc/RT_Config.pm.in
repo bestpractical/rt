@@ -600,12 +600,21 @@ signatures instead of 'RFC' (GPG/MIME: RFC3156 and RFC1847) format.
 If you want to allow people to encrypt attachments inside the DB then
 set C<AllowEncryptDataInDB> to true
 
+Set C<RejectOnMissingPrivateKey> to false if you don't want to reject
+emails encrypted for key RT doesn't have and can not decrypt.
+
+Set C<RejectOnBadData> to false if you don't want to reject letters
+with incorrect GnuPG data.
+
 =cut
 
 Set( %GnuPG,
     Enable => @RT_GPG@,
     OutgoingMessagesFormat => 'RFC', # Inline
     AllowEncryptDataInDB   => 0,
+
+    RejectOnMissingPrivateKey => 1,
+    RejectOnBadData           => 1,
 );
 
 =item C<%GnuPGOptions>

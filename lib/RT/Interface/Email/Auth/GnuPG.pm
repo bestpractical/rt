@@ -149,13 +149,13 @@ sub HandleErrors {
         unless ( $sent_once{'NoPrivateKey'} ) {
             unless ( CheckNoPrivateKey( Message => $args{'Message'}, Status => \@status ) ) {
                 $sent_once{'NoPrivateKey'}++;
-                $reject = 1;
+                $reject = 1 if RT->Config->Get('GnuPG')->{'RejectOnMissingPrivateKey'};
             }
         }
         unless ( $sent_once{'BadData'} ) {
             unless ( CheckBadData( Message => $args{'Message'}, Status => \@status ) ) {
                 $sent_once{'BadData'}++;
-                $reject = 1;
+                $reject = 1 if RT->Config->Get('GnuPG')->{'RejectOnBadData'};
             }
         }
     }
