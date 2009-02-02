@@ -608,51 +608,6 @@ sub find_executable {
     return undef;
 }
 
-=head2 get_relocatable_dir
-
-Takes a path relative to the location of the test file that is being
-run and returns a path that takes the invocation path into account.
-
-e.g. RT::Test::get_relocatable_dir(File::Spec->updir(), 'data', 'emails')
-
-=cut
-
-sub get_relocatable_dir {
-    ( my $volume, my $directories, my $file ) = File::Spec->splitpath($0);
-    if ( File::Spec->file_name_is_absolute($directories) ) {
-        return File::Spec->catdir( $directories, @_ );
-    }
-    else {
-        return File::Spec->catdir( File::Spec->curdir(), $directories, @_ );
-    }
-}
-
-=head2 get_relocatable_file
-
-Same as get_relocatable_dir, but takes a file and a path instead
-of just a path.
-
-e.g. RT::Test::get_relocatable_file('test-email',
-        (File::Spec->updir(), 'data', 'emails'))
-
-=cut
-
-sub get_relocatable_file {
-    my $file = shift;
-    return File::Spec->catfile( get_relocatable_dir(@_), $file );
-}
-
-sub get_abs_relocatable_dir {
-    ( my $volume, my $directories, my $file ) = File::Spec->splitpath($0);
-    if ( File::Spec->file_name_is_absolute($directories) ) {
-        return File::Spec->catdir( $directories, @_ );
-    }
-    else {
-        return File::Spec->catdir( Cwd->getcwd(), $directories, @_ );
-    }
-}
-
-
 sub lsign_gnupg_key {
     my $self = shift;
     my $key  = shift;
