@@ -55,7 +55,7 @@
 <& /Elements/ListActions, actions => \@results &>
 <form action="<% RT->config->get('WebPath') %>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="ticket_create">
 <input type="hidden" class="hidden" name="id" value="new" />
-% $m->callback( callback_name => 'form_start', args_ref => \%ARGS );
+% $m->callback( callback_name => 'FormStart', args_ref => \%ARGS );
 % if ($gnupg_widget) {
 <& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 % }

@@ -89,7 +89,7 @@ my @fields = qw(
     NEWLINE     Bookmark
 ); # loc_qw
 
-$m->callback( callback_once => 1, callback_name => 'set_fields_once', Fields => \@fields );
+$m->callback( callback_once => 1, callback_name => 'SetFieldsOnce', Fields => \@fields );
 
 my $CustomFields = RT::Model::CustomFieldCollection->new( current_user => Jifty->web->current_user);
 foreach my $id (keys %cfqueues) {

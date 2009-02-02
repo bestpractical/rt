@@ -141,7 +141,7 @@ my $COLUMN_MAP = {
 
 </%ONCE>
 <%INIT>
-$m->callback( COLUMN_MAP => $COLUMN_MAP, callback_name => 'once', callback_once => 1 );
+$m->callback( COLUMN_MAP => $COLUMN_MAP, callback_name => 'Once', callback_once => 1 );
 $m->callback( COLUMN_MAP => $COLUMN_MAP );
 
 # first deal with class specific things

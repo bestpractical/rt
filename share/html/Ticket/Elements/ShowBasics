@@ -80,7 +80,7 @@
     <td class="label queue"><&|/l&>Queue</&>:</td>
     <td class="value queue"><& ShowQueue, queue_obj => $ticket->queue &></td>
   </tr>
-% $m->callback( %ARGS, callback_name => 'end_of_list', ticket_obj => $ticket );
+% $m->callback( %ARGS, callback_name => 'EndOfList', ticket_obj => $ticket );
 </table>
 <%ARGS>
 $ticket => undef

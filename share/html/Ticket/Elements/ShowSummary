@@ -70,7 +70,7 @@
       <& /Ticket/Elements/ShowAttachments, ticket => $ticket, attachments => $attachments &>
 	  <& /Ticket/Elements/ShowRequestor, ticket => $ticket &>
 
-% $m->callback( %ARGS, callback_name => 'left_column' );
+% $m->callback( %ARGS, callback_name => 'LeftColumn' );
 	</td>
 	<td valign="top" class="boxcontainer">
 % if ( RT->config->get('EnableReminders') ) {
@@ -103,7 +103,7 @@
  		class => 'ticket-info-links', @extra &>
 	        <& /Elements/ShowLinks, ticket => $ticket &>
           </&>
-% $m->callback( %ARGS, callback_name => 'right_column' );
+% $m->callback( %ARGS, callback_name => 'RightColumn' );
 
 	</td>
       </tr>

@@ -51,7 +51,7 @@
     current_tab => "Ticket/ModifyAll.html?id=".$Ticket->id, 
     title => _("Ticket #%1 Jumbo update: %2", $Ticket->id, $Ticket->subject) &>
 
-% $m->callback(callback_name => 'before_action_list', actions => \@results, args_ref => \%ARGS, ticket => $Ticket);
+% $m->callback(callback_name => 'BeforeActionList', actions => \@results, args_ref => \%ARGS, ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
 
 <% Jifty->web->form->start( submit_to => '?id=' . $Ticket->id ) %>

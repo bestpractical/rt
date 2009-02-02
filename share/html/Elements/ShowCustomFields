@@ -71,7 +71,7 @@
 </table>
 <%INIT>
 my $CustomFields = $object->custom_fields;
-$m->callback( callback_name => 'massage_custom_fields', CustomFields => $CustomFields );
+$m->callback( callback_name => 'MassageCustomFields', CustomFields => $CustomFields );
 
 my $print_value = sub  {
     my ($cf, $value) = @_;
@@ -83,7 +83,7 @@ my $print_value = sub  {
 Jifty->log->debug("$comp");
 Jifty->log->debug($cf->id);
     $m->callback(
-        callback_name => 'show_componentname',
+        callback_name => 'ShowComponentname',
         name         => \$comp,
         CustomField  => $cf,
         object       => $object,

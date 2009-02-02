@@ -137,6 +137,6 @@ my $COLUMN_MAP = {
 
 </%ONCE>
 <%INIT>
-$m->callback( COLUMN_MAP => $COLUMN_MAP, callback_name => 'column_map', callback_once => 1 );
+$m->callback( COLUMN_MAP => $COLUMN_MAP, callback_name => 'ColumnMap', callback_once => 1 );
 return get_column_map_entry( Map => $COLUMN_MAP, name => $name, Attribute => $attr );
 </%INIT>

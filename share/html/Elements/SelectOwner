@@ -85,7 +85,7 @@ my %user_uniq_hash;
 $m->callback(
     %ARGS,
     objects      => \@objects,
-    callback_name => 'update_objectList'
+    callback_name => 'UpdateObjectList'
 );
 
 my $isSU = Jifty->web->current_user
@@ -117,7 +117,7 @@ unshift( @users, $RT::nobody );
 $m->callback(
     %ARGS,
     objects      => \@objects,
-    callback_name => 'update_objectList'
+    callback_name => 'UpdateObjectList'
 );
 
 </%INIT>
