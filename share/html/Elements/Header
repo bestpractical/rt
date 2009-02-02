@@ -76,7 +76,7 @@
 % if ($m->comp_exists($stylesheet_plugin) ) {
 <& $stylesheet_plugin &>
 % }
-% $m->callback( %ARGS, Callbackname => 'head' );
+% $m->callback( %ARGS, callback_name => 'head' );
 
 </head>
 % Jifty->handler->stash->{'in_body'} = 1;

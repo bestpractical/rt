@@ -91,7 +91,7 @@ while ( my $Transaction = $Transactions->next ) {
         %ARGS,
         transaction   => $Transaction,
         skip          => \$skip,
-        Callbackname  => 'skip_transaction',
+        callback_name  => 'skip_transaction',
     );
     next if $skip;
 

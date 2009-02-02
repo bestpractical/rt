@@ -158,7 +158,7 @@ $redo_on{'Delete'} = {
     Queues => [],
 
     Scrips => [],
-    ScripActions => [],
+    Scripactions => [],
     ScripConditions => [],
     Templates => [],
 

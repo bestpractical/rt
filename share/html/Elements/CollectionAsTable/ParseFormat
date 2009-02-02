@@ -65,7 +65,7 @@ while ($format =~ /($RE{delimited}{-delim=>qq{\'"}}|[{}\w.]+)/go) {
         title => '',
     };
 
-    $m->callback(callbackname => 'PreColumn', column => $colref, col => \$col);
+    $m->callback(callback_name => 'PreColumn', column => $colref, col => \$col);
 
     if ( $col =~ s!/STYLE:([^/]+)!!io ) {
         $colref->{'style'} = $1;
@@ -104,12 +104,12 @@ while ($format =~ /($RE{delimited}{-delim=>qq{\'"}}|[{}\w.]+)/go) {
         $colref->{'attribute'} = $1;
     }
 
-    $m->callback(callbackname => 'PostColumn', column => $colref, col => \$col);
+    $m->callback(callback_name => 'PostColumn', column => $colref, col => \$col);
 
     push @Columns, $colref;
 }
 
-$m->callback(callbackname => 'PostProcess', columns => \@Columns, format => $format);
+$m->callback(callback_name => 'PostProcess', columns => \@Columns, format => $format);
 
 return(@Columns);
 </%init>

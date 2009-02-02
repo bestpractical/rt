@@ -55,7 +55,7 @@
 <& /Elements/ListActions, actions => \@results &>
 <form action="<% RT->config->get('WebPath') %>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="ticket_create">
 <input type="hidden" class="hidden" name="id" value="new" />
-% $m->callback( Callbackname => 'form_start', args_ref => \%ARGS );
+% $m->callback( callback_name => 'form_start', args_ref => \%ARGS );
 % if ($gnupg_widget) {
 <& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 % }
@@ -159,7 +159,7 @@
 <tr>
 <td colspan="6">
 <&|/l&>describe the issue below</&>:<br />
-% $m->callback( %ARGS, queue_obj => $queue_obj, callbackname => 'BeforeMessageBox' );
+% $m->callback( %ARGS, queue_obj => $queue_obj, callback_name => 'BeforeMessageBox' );
 % if (exists $ARGS{content}) {
 <& /Elements/MessageBox, default => $ARGS{content}, include_signature => 0 &>
 % } else {
@@ -248,7 +248,7 @@
 
 </&>
 <%INIT>
-$m->callback( callbackname => "Init", args_ref => \%ARGS );
+$m->callback( callback_name => "Init", args_ref => \%ARGS );
 my $queue = $ARGS{queue};
 
 my $cloneticket_obj;
@@ -386,7 +386,7 @@ if ( !exists $ARGS{'add_more_attach'} && ($ARGS{'id'}||'') eq 'new' ) {
 }
 
 my $skip_create = 0;
-$m->callback( callbackname => 'BeforeCreate', args_ref => \%ARGS, skip_create => \$skip_create, 
+$m->callback( callback_name => 'BeforeCreate', args_ref => \%ARGS, skip_create => \$skip_create, 
               checks_failure => $checks_failure, results => \@results );
 
 if ((!exists $ARGS{'add_more_attach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} eq 'new')) { # new ticket?

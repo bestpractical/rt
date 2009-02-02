@@ -62,7 +62,7 @@ $short_query_string => undef
 <li><a href="<%RT->config->get('WebURL')%>/NoAuth/iCal/<% $ical_path %>"><% _('iCal') %></a></li>
 <li><a href="<%RT->config->get('WebPath')%>/Tools/Offline.html<%$short_query_string%>"><&|/l&>Editable text</&></a></li>
 % # Now let callbacks add their extra tools
-% $m->callback( %ARGS, callbackname => 'AfterTools' );
+% $m->callback( %ARGS, callback_name => 'AfterTools' );
 
 </ul>
 <form method="get" action="<%RT->config->get('WebPath')%>/Search/Chart.html">

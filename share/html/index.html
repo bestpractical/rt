@@ -87,7 +87,7 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 <%init>
 
 my @results;
-$m->callback( args_ref => \%ARGS, results => \@results, callbackname => 'Initial' );
+$m->callback( args_ref => \%ARGS, results => \@results, callback_name => 'Initial' );
 
 if ( $ARGS{'quick_create'} ) {
     my $queue_obj = new RT::Model::Queue( current_user => Jifty->web->current_user );

@@ -107,7 +107,7 @@
 
 
 
-% $m->callback( Callbackname => 'end_of_list', ticket_obj => $ticket_obj, %ARGS );
+% $m->callback( callback_name => 'end_of_list', ticket_obj => $ticket_obj, %ARGS );
 </table>
 
 <%INIT>

@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 $ARGS{'callback_page'} = delete $ARGS{'page'} || $m->callers(1)->path;
-$ARGS{'callbackname'} = delete $ARGS{'_Callbackname'};
+$ARGS{'callback_name'} = delete $ARGS{'_callback_name'};
 Jifty->log->debug("$ARGS{'callback_page'} calls old style callback, use \$m->callback");
 return $m->callback( %ARGS );
 </%INIT>
