@@ -332,7 +332,7 @@ batch-process all your pending approvals.
 
 Greetings,
 
-Your ticket has been approved by { eval { $Approval->owner->name } }.
+Your ticket has been approved by { eval { $approval->owner->name } }.
 Other approvals may be pending.
 
 Approver\'s notes: { $notes }
@@ -348,7 +348,7 @@ Approver\'s notes: { $notes }
 
 Greetings,
 
-Your ticket has been approved by { eval { $Approval->owner->name } }.
+Your ticket has been approved by { eval { $approval->owner->name } }.
 Its Owner may now start to act on it.
 
 Approver\'s notes: { $notes }
@@ -362,9 +362,9 @@ Approver\'s notes: { $notes }
 
 Greetings,
 
-Your ticket has been rejected by { eval { $Approval->owner_obj->name } }.
+Your ticket has been rejected by { eval { $approval->owner_obj->name } }.
 
-Approver\'s notes: { $Notes }
+Approver\'s notes: { $notes }
 '
     },
     {  queue       => '___Approvals',
