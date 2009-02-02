@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 
 use warnings; use strict;
-use RT::Test;
 use Test::MockTime qw(set_fixed_time restore_time);
+use RT::Test;
 
 use Test::More tests => 166;
 
