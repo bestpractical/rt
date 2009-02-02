@@ -16,7 +16,6 @@ use RT::Test::Email;
 
 RT->config->set( log_to_screen => 'debug' );
 RT->config->set( use_transaction_batch => 1 );
-RT->config->set( UseTansactionBatch => 1 );
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $q = RT::Model::Queue->new( current_user => RT->system_user );
