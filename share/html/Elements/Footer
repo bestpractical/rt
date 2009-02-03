@@ -75,7 +75,6 @@
   </body>
 % Jifty->handler->stash->{'in_body'} = 0;
 </html>
-% $m->abort();
 
 <%ARGS>
 $debug => 0
