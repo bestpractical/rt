@@ -313,7 +313,7 @@ sub strip_content {
     return $content unless $sigonly;
 
     # Find the signature
-    my $sig = $args{'current_user'}->user_object->Signature || '';
+    my $sig = $args{'current_user'}->user_object->signature || '';
     $sig =~ s/^\s+//;
     $sig =~ s/\s+$//;
 
@@ -321,7 +321,7 @@ sub strip_content {
     return '' if not $html and $content =~ /^\s*(--)?\s*\Q$sig\E\s*$/;
 
     # Check for html-formatted sig
-    RT::Interface::Web::EscapeUTF8( \$sig );
+    RT::Interface::Web::escape_utf8( \$sig );
     return ''
       if $html
           and $content =~
@@ -717,7 +717,7 @@ sub process_update_message {
 
 =head2 make_mime_entity PARAMHASH
 
-Takes a paramhash subject, Body and AttachmentFieldname.
+Takes a paramhash subject, body and attachment_field_name.
 
 Also takes Form, cc and type as optional paramhash keys.
 
@@ -732,7 +732,7 @@ sub make_mime_entity {
         from                => undef,
         cc                  => undef,
         body                => undef,
-        AttachmentFieldname => undef,
+        attachment_field_name => undef,
         type                => undef,
         @_,
     );
@@ -759,11 +759,11 @@ sub make_mime_entity {
         );
     }
 
-    if ( $args{'AttachmentFieldname'} ) {
+    if ( $args{'attachment_field_name'} ) {
 
         my $cgi_object = Jifty->handler->cgi;
 
-        if ( my $filehandle = $cgi_object->upload( $args{'AttachmentFieldname'} ) ) {
+        if ( my $filehandle = $cgi_object->upload( $args{'attachment_field_name'} ) ) {
 
             my ( @content, $buffer );
             while ( my $bytesread = read( $filehandle, $buffer, 4096 ) ) {
