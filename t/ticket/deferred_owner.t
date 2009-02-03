@@ -40,7 +40,7 @@ diag "check that deffering owner doesn't regress" if $ENV{'TEST_VERBOSE'};
         ($tid, $txn_id, $msg) = $ticket->create(
             queue => $queue->id,
             owner => $tester->id,
-            cc    => 'tester@localhost',
+            admin_cc    => 'root@localhost',
         );
     } qr/User .* was proposed as a ticket owner but has no rights to own tickets in General/;
 
@@ -62,9 +62,9 @@ diag "check that previous trick doesn't work without sufficient rights"
     my $ticket = RT::Model::Ticket->new(current_user => $tester );
     # tester is owner, owner has right to modify owned tickets,
     # this right is required to set somebody as Admincc
-    my ($tid, $txn_id, $msg) = $ticket->create(
-        queue   => $queue->id,
-        owner   => $tester->id,
+    my ( $tid, $txn_id, $msg ) = $ticket->create(
+        queue    => $queue->id,
+        owner    => $tester->id,
         admin_cc => 'root@localhost',
     );
     diag $msg if $msg && $ENV{'TEST_VERBOSE'};
