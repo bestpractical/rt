@@ -163,7 +163,7 @@ EOF
     $transactions->limit( column => 'type', operator => '!=', value => 'email_record');
     my $txn = $transactions->first;
     isa_ok ($txn, 'RT::Model::Transaction');
-    is ($txn->type, 'Create', "correct type");
+    is ($txn->type, 'create', "correct type");
 
     my $attachment = $txn->attachments->first;
     isa_ok ($attachment, 'RT::Model::Attachment');
@@ -197,7 +197,7 @@ EOF
     $transactions->limit( column => 'type', operator => '!=', value => 'email_record');
     my $txn = $transactions->first;
     isa_ok ($txn, 'RT::Model::Transaction');
-    is ($txn->type, 'Create', "correct type");
+    is ($txn->type, 'create', "correct type");
 
     my $attachment = $txn->attachments->first;
     isa_ok ($attachment, 'RT::Model::Attachment');
