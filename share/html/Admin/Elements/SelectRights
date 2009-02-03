@@ -71,7 +71,7 @@ while ( my $ace = $acl_obj->next ) {
 <td valign="top">
 <h3><&|/l&>New rights</&></h3> 
 <select size="5" multiple="multiple" name="grant_right-<%$ACLDesc%>">
-% foreach $right (sort keys %Rights) {
+% foreach my $right (sort keys %Rights) {
 % next if $current_rights{$right};
       <option value="<%$right%>"  
 	><% _($right) %></option>
@@ -97,13 +97,13 @@ while ( my $ace = $acl_obj->next ) {
     }
 
 
-    my $ACLObj = RT::Model::ACECollection->new();
+    my $acl_obj = RT::Model::ACECollection->new();
     my $ACE = RT::Model::ACE->new();
 
 
-    $ACLObj->limit_to_object( $object);
-    $ACLObj->limit_to_principal( id => $principal_id);
-    $ACLObj->order_by(column=>'right_name'); 
+    $acl_obj->limit_to_object( $object);
+    $acl_obj->limit_to_principal( id => $principal_id);
+    $acl_obj->order_by(column=>'right_name'); 
 
     if (ref($object) && UNIVERSAL::can($object, 'available_rights')) { 
         %Rights = %{$object->available_rights};
