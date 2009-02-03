@@ -755,7 +755,7 @@ sub brief_description {
 
     my $obj_type = $self->friendly_object_type;
 
-    if ( $type eq 'Create' ) {
+    if ( $type eq 'create' ) {
         return ( _( "%1 Created", $obj_type ) );
     } elsif ( $type =~ /Status/i ) {
         if ( $self->field eq 'Status' ) {

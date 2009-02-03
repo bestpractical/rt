@@ -59,7 +59,7 @@ sub prepare {
     my $self = shift;
     return unless $self->SUPER::prepare();
 
-    $self->transaction_obj->type eq 'Create' &&
+    $self->transaction_obj->type eq 'create' &&
     !$self->ticket_obj->has_unresolved_dependencies( type => 'approval' );
 }
 

@@ -441,7 +441,7 @@ sub _create {
     );
 
     if ( $args{'_record_transaction'} ) {
-        $self->_new_transaction( type => "Create" );
+        $self->_new_transaction( type => "create" );
     }
 
     Jifty->handle->commit() unless $inside_transaction;

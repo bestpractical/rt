@@ -296,7 +296,7 @@ sub create {
     }
 
     if ($record_transaction) {
-        $self->_new_transaction( type => "Create" );
+        $self->_new_transaction( type => "create" );
     }
 
     Jifty->handle->commit;

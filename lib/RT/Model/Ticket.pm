@@ -636,9 +636,9 @@ sub create {
     # {{{ Deal with setting up links
 
     # TODO: Adding link may fire scrips on other end and those scrips
-    # could create transactions on this ticket before 'Create' transaction.
+    # could create transactions on this ticket before 'create' transaction.
     #
-    # We should implement different schema: record 'Create' transaction,
+    # We should implement different schema: record 'create' transaction,
     # create links and only then fire create transaction's scrips.
     #
     # Ideal variant: add all links without firing scrips, record create
@@ -706,7 +706,7 @@ sub create {
 
         # {{{ Add a transaction for the create
         my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
-            type          => "Create",
+            type          => "create",
             time_taken    => $args{'time_worked'},
             mime_obj      => $args{'mime_obj'},
             commit_scrips => !$args{'dry_run'},

@@ -67,7 +67,7 @@ sub commit {
     my $t = $self->ticket_obj->transactions;
     my $to;
     while ( my $o = $t->next ) {
-        $to = $o, last if $o->type eq 'Create';
+        $to = $o, last if $o->type eq 'create';
     }
 
     # XXX: this makes the owner incorrect so notify owner won't work
