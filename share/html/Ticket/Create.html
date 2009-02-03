@@ -350,7 +350,6 @@ foreach my $key (keys %ARGS) {
 # {{{ store the uploaded attachment in session
 if ($ARGS{'attach'}) {			# attachment?
     my $attachment = make_mime_entity(
-        subject             => $subject,
         attachment_field_name => 'attach'
     );
     my $file_path = Encode::decode_utf8("$ARGS{'attach'}");
