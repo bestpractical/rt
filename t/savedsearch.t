@@ -147,12 +147,11 @@ is($tickets->count, 1, "Found a ticket");
 
 # This should fail -- no permission.
 
+my $loadedsearch4 = RT::SavedSearch->new(current_user => $curruser);
+
 warning_like {
     $loadedsearch4->load($othersearch->privacy, $othersearch->id);
 } qr/Could not load object RT::Model::Group-\d+ when loading search/;
-
-my $loadedsearch4 = RT::SavedSearch->new(current_user => $curruser);
-$loadedsearch4->load($othersearch->privacy, $othersearch->id);
 isnt($loadedsearch4->id, $othersearch->id, "Did not load othersearch");
 
 # Try to update an existing search.
