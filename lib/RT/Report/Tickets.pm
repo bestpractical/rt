@@ -197,10 +197,10 @@ sub _field_to_function {
         my $type   = $1 || '';
         my $column = $2 || 'name';
         my $u_alias = $self->join(
-            type$1=>$2'left',
-            alias1 => 'main',
+            type    => 'left',
+            alias1  => 'main',
             column1 => $type,
-            table2 => 'Users',
+            table2  => 'Users',
             column2 => 'id',
         );
         @args{qw(alias column)} = ( $u_alias, $column );
