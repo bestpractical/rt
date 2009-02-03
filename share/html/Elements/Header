@@ -97,6 +97,11 @@
     <% _('Not logged in.') %>
 % }
 % $m->callback( %ARGS );
+% unless (!(Jifty->web->current_user->user_object && Jifty->web->current_user->name )
+%         or (RT->config->get('WebExternalAuth') and !RT->config->get('WebFallbackToInternalAuth'))) {
+    | <a  href="<%RT->config->get('WebPath')%>/NoAuth/Logout.html<%$url ?
+"?URL=".$url : ''%>"><% _('Logout') %></a>
+% }
   </div>
 % }
 
