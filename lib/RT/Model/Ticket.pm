@@ -499,7 +499,7 @@ sub create {
             if ( $watcher =~ /^\d+$/ ) {
                 push @{ $args{$type} }, $watcher;
             } else {
-                my @addresses = Email::Address->parse($watcher);
+                my @addresses = RT::EmailParser->parse_email_address($watcher);
                 foreach my $address (@addresses) {
                     my $user = RT::Model::User->new( current_user => RT->system_user );
                     my ( $uid, $msg ) = $user->load_or_create_by_email($address);
@@ -827,7 +827,7 @@ sub add_watcher {
         if $self->current_user_has_right('ModifyTicket');
 
     if ( $args{'email'} ) {
-        my ($addr) = Email::Address->parse( $args{'email'} );
+        my ($addr) = RT::EmailParser->parse_email_address( $args{'email'} );
         return ( 0, _( "Couldn't parse address from '%1' string", $args{'email'} ) ) unless $addr;
 
         if ( lc $self->current_user->user_object->email eq lc RT::Model::User->canonicalize_email( $addr->address ) ) {

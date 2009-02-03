@@ -900,7 +900,7 @@ sub parse_address_from_header {
 
     # Some broken mailers send:  ""Vincent, Jesse"" <jesse@fsck.com>. Hate
     $Addr =~ s/\"\"(.*?)\"\"/\"$1\"/g;
-    my @Addresses = Email::Address->parse($Addr);
+    my @Addresses = RT::EmailParser->parse_email_address($Addr);
     
 
     my ($AddrObj) = grep ref $_, @Addresses;
