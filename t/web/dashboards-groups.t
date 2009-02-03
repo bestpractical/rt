@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 36;
+use Test::More tests => 40;
 use RT::Test;
 use RT::Dashboard;
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -89,9 +89,13 @@ is($dashboard->name, "inner dashboard");
 is($dashboard->privacy, 'RT::Model::Group-' . $inner_group->id, "correct privacy");
 is($dashboard->possible_hidden_searches, 0, "all searches are visible");
 
+$m->no_warnings_ok;
+
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->content_lacks("inner dashboard", "no SeeGroupDashboard right");
 $m->content_contains("Permission denied");
+
+$m->warning_like(qr/Permission denied/, "got a permission denied warning");
 
 $user_obj->principal->grant_right(right => 'SeeGroupDashboard', object => $inner_group);
 $m->get_ok("/Dashboards/Modify.html?id=$id");
