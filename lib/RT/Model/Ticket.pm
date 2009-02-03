@@ -1199,11 +1199,11 @@ sub is_owner {
     #   }
 
     #Tickets won't yet have owners when they're being created.
-    unless ( $self->owner_obj->id ) {
+    unless ( $self->owner->id ) {
         return (undef);
     }
 
-    if ( $person->id == $self->owner_obj->id ) {
+    if ( $person->id == $self->owner->id ) {
         return (1);
     } else {
         return (undef);
@@ -1323,7 +1323,7 @@ sub set_queue {
     }
 
     unless (
-        $self->owner_obj->has_right(
+        $self->owner->has_right(
             right  => 'OwnTicket',
             object => $Newqueue_obj
         )
@@ -2242,7 +2242,7 @@ Returns the owner's email address
 
 sub owner_as_string {
     my $self = shift;
-    return ( $self->owner_obj->email );
+    return ( $self->owner->email );
 
 }
 
@@ -2268,7 +2268,7 @@ sub set_owner {
     $self->set_last_updated();    # lock the ticket
     $self->load( $self->id );     # in case $self changed while waiting for lock
 
-    my $old_owner_obj = $self->owner_obj;
+    my $old_owner_obj = $self->owner;
 
     my $new_owner_obj = RT::Model::User->new;
     $new_owner_obj->load($NewOwner);

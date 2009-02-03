@@ -939,7 +939,7 @@ sub get_update_template {
     $string .= "starts: " . $t->starts_obj->as_string . "\n";
     $string .= "Started: " . $t->started_obj->as_string . "\n";
     $string .= "Resolved: " . $t->resolved_obj->as_string . "\n";
-    $string .= "Owner: " . $t->owner_obj->name . "\n";
+    $string .= "Owner: " . $t->owner->name . "\n";
     $string .= "Requestor: " . $t->role_group("requestor")->member_emails_as_string . "\n";
     $string .= "Cc: " . $t->role_group("cc")->member_emails_as_string . "\n";
     $string .= "AdminCc: " . $t->role_group("admin_cc")->member_emails_as_string . "\n";

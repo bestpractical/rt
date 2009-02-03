@@ -89,7 +89,7 @@ sub commit {
     my ( $result, $msg ) = $template->parse(
         ticket_obj => $top,
     );
-    $self->ticket_obj->comment( cc_message_to => $self->ticket_obj->owner_obj->email, mime_obj => $template->mime_obj );
+    $self->ticket_obj->comment( cc_message_to => $self->ticket_obj->owner->email, mime_obj => $template->mime_obj );
 
 }
 

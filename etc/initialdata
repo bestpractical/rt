@@ -235,7 +235,7 @@ you may reply to this message.
 Transaction: {$transaction->description}
        Queue: {$ticket->queue->name}
      Subject: {$transaction->subject || $ticket->subject || "(No subject given)"}
-       owner: {$ticket->owner_obj->name}
+       owner: {$ticket->owner->name}
   requestors: {$ticket->role_group("requestor")->member_emails_as_string}
       Status: {$ticket->status}
  Ticket <URL: {RT->config->get(\'WebURL\')}Ticket/Display.html?id={$ticket->id} >
@@ -362,7 +362,7 @@ Approver\'s notes: { $notes }
 
 Greetings,
 
-Your ticket has been rejected by { eval { $approval->owner_obj->name } }.
+Your ticket has been rejected by { eval { $approval->owner->name } }.
 
 Approver\'s notes: { $notes }
 '

@@ -107,14 +107,14 @@ sub set_recipients {
         }
     }
 
-    if ( $arg =~ /\bOwner\b/i && $ticket->owner_obj->id != RT->nobody->id ) {
+    if ( $arg =~ /\bOwner\b/i && $ticket->owner->id != RT->nobody->id ) {
 
         # If we're not sending to Ccs or requestors,
         # then the Owner can be the To.
         if (@To) {
-            push( @Bcc, $ticket->owner_obj->email );
+            push( @Bcc, $ticket->owner->email );
         } else {
-            push( @To, $ticket->owner_obj->email );
+            push( @To, $ticket->owner->email );
         }
 
     }
