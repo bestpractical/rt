@@ -361,7 +361,7 @@ sub add_attachments {
         my $parent = $transaction_content_obj->parent_obj;
         if (    $parent
             and $parent->id
-            and $parent->ContentType eq "multipart/alternative" )
+            and $parent->content_type eq "multipart/alternative" )
         {
             $attachments->limit(
                 entry_aggregator => 'AND',
