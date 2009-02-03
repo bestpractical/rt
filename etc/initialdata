@@ -598,7 +598,7 @@ Hour:         { $subscription_obj->sub_value('Hour') }
       { format => q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__id__</a>/TITLE:#',}
                 . q{'<a href="__WebPath__/Ticket/Display.html?id=__id__">__subject__</a>/TITLE:subject',}
                 . q{priority, queue_name, extended_status, bookmark},
-        query   => "__Bookmarked__",
+        query   => "id = '__Bookmarked__'",
         order_by => 'LastUpdated',
         order   => 'DESC' },
     },
