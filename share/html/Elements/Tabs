@@ -93,7 +93,7 @@ if (Jifty->web->current_user->has_right( right => 'ModifySelf',
 		     };
 }
 
-if (Jifty->web->current_user->has_right( Right => 'ShowApprovalsTab',
+if (Jifty->web->current_user->has_right( right => 'ShowApprovalsTab',
                         object => RT->system )) {
     $basetabs->{p} = { title => _('Approval'),
                         path => 'Approvals/'
