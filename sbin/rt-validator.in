@@ -650,7 +650,7 @@ push @CHECKS, 'Transactions -> other' => sub {
     );
     # type = DelWatcher
     check_integrity(
-        'Transactions', 'OldValue' => 'Users', 'id',
+        'Transactions', 'OldValue' => 'Principals', 'id',
         condition   => 's.Type = ?',
         bind_values => [ 'DelWatcher' ],
         action => sub {
@@ -665,7 +665,7 @@ push @CHECKS, 'Transactions -> other' => sub {
     );
     # type = AddWatcher
     check_integrity(
-        'Transactions', 'NewValue' => 'Users', 'id',
+        'Transactions', 'NewValue' => 'Principals', 'id',
         condition   => 's.Type = ?',
         bind_values => [ 'AddWatcher' ],
         action => sub {
