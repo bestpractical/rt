@@ -141,7 +141,7 @@ sub create {
     $Attachment->make_singlepart;
 
     # Get the subject
-    my $subject = $Attachment->head->get( 'subject', 0 );
+    my $subject = $Attachment->head->get( 'Subject', 0 );
     defined($subject) or $subject = '';
     chomp($subject);
 
