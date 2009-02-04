@@ -46,8 +46,8 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%init>
-$m->call_next(%ARGS) if Jifty->web->current_user->user_obj->has_right(
+$m->call_next(%ARGS) if Jifty->web->current_user->has_right(
     right => 'ShowApprovalsTab',
-    object => $RT::System,
+    object => RT->system,
 );
 </%init>
