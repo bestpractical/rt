@@ -113,7 +113,10 @@ $COLUMN_MAP = {
                     return \'<em>', loc('(pending approval)'), \'</em>';
                 }
                 else {
-                    return \'<em>', loc('(pending [quant,_1,other ticket])',$count), \'</em>';
+                    my $Query = "DependedOnBy = " . $Ticket->id;
+                    my $SearchURL = RT->Config->Get('WebPath') . '/Search/Results.html?' . $m->comp('/Elements/QueryString', Query => $Query);
+
+                    return \'<a href="',$SearchURL,\'">', loc('(pending [quant,_1,other ticket])',$count), \'</a>';
                 }
             }
             else {
