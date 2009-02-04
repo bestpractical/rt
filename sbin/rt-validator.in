@@ -130,7 +130,7 @@ RT::LoadConfig();
 RT::Init();
 
 my $dbh = $RT::Handle->dbh;
-my $db_type = $RT::DatabaseType;
+my $db_type = RT->Config->Get('DatabaseType');
 
 my %TYPE = (
     'Transactions.Field'    => 'text',
