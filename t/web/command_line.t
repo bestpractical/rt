@@ -76,8 +76,8 @@ expect_like(qr/Queue \d+ created/, 'Created the queue');
 expect_handle->before() =~ /Queue (\d+) created/;
 my $queue_id = $1;
 ok($queue_id, "Got queue id=$queue_id");
-# updating users
-expect_send("edit queue/$queue_id set name='EditedQueue$$'", 'Editing the queue');
+# updating users, with old arg format "Name"
+expect_send("edit queue/$queue_id set Name='EditedQueue$$'", 'Editing the queue');
 expect_like(qr/Queue $queue_id updated/, 'Edited the queue');
 expect_send("show queue/$queue_id", 'Showing the queue...');
 expect_like(qr/id: queue\/$queue_id/, 'Saw the queue');
