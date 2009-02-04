@@ -360,7 +360,7 @@ sub abort {
         && $session{'ErrorDocumentType'} )
     {
         $r->content_type( $session{'ErrorDocumentType'} );
-        $m->comp( $session{'ErrorDocument'}, Why => $why, %args );
+        $m->comp( $session{'ErrorDocument'}, why => $why, %args );
         $m->abort;
     } else {
         $m->comp( "/Elements/Error", why => $why, %args );
