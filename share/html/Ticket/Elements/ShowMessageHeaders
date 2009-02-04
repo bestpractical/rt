@@ -49,8 +49,8 @@
 <table>
 % foreach my $header (@headers) {
   <tr>
-    <td align="right" class="message-header-key"><% $header->{'Tag'} %>:</td>
-    <td class="message-header-value"><% $header->{'Value'} | n %></td>
+    <td align="right" class="message-header-key"><% $header->{'tag'} %>:</td>
+    <td class="message-header-value"><% $header->{'value'} | n %></td>
   </tr>
 % }
 </table>
@@ -60,7 +60,7 @@ my @headers;
 foreach my $field( RT->config->get('ShowBccHeader')? $message->_split_headers : $message->split_headers ) {
     my ($tag, $value) = split /:/, $field, 2;
     next unless $tag && $value;
-    push @headers, { Tag => $tag, value => $value };
+    push @headers, { tag => $tag, value => $value };
 }
 
 my %display_headers = map { lc($_) => 1 } @display_headers;
@@ -72,16 +72,16 @@ $m->callback(
 );
 
 unless ( $display_headers{'_all'} ) {
-    @headers = grep $display_headers{ lc $_->{'Tag'} }, @headers;
+    @headers = grep $display_headers{ lc $_->{'tag'} }, @headers;
 }
 
 my $ticket = $message->transaction_obj->ticket_obj;
 foreach my $f (@headers) {
-    $m->comp('/Elements/MakeClicky', content => \$f->{'Value'}, ticket => $ticket, %ARGS);
+    $m->comp('/Elements/MakeClicky', content => \$f->{'value'}, ticket => $ticket, %ARGS);
 }
 
 if ( $localize ) {
-    $_->{'Tag'} = _($_->{'Tag'}) foreach @headers;
+    $_->{'tag'} = _($_->{'tag'}) foreach @headers;
 }
 </%INIT>
 <%ARGS>
