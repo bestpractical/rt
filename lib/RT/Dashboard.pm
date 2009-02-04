@@ -108,8 +108,7 @@ sub save_attribute {
     return $object->add_attribute(
         'name'        => 'Dashboard',
         'description' => $args->{'name'},
-        'content'     => { Panes => $args->{'panes'} },
-        
+        'content'     => { panes => $args->{'panes'} },
     );
 }
 

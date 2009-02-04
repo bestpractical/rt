@@ -51,6 +51,7 @@
 package RT::Interface::REST;
 use strict;
 use RT;
+use Text::Naming::Convention qw/renaming/;
 
 BEGIN {
     use base 'Exporter';
@@ -222,13 +223,15 @@ sub form_compose {
             my ( @lines, $key );
 
             foreach $key (@$o) {
+                my $renamed_key = $key eq 'id' ? 'id' :
+                  renaming( $key, { convention => 'UpperCamelCase' } );
                 my ( $line, $sp, $v );
                 my @values
                     = ( ref $k->{$key} eq 'ARRAY' )
                     ? @{ $k->{$key} }
                     : $k->{$key};
 
-                $sp = " " x ( length("$key: ") );
+                $sp = " " x ( length("$renamed_key: ") );
                 $sp = " " x 4 if length($sp) > 16;
 
                 foreach $v (@values) {
@@ -243,17 +246,17 @@ sub form_compose {
                         } elsif ( @lines && $lines[-1] !~ /\n\n$/ ) {
                             $lines[-1] .= "\n";
                         }
-                        push @lines, "$key: $v\n\n";
+                        push @lines, "$renamed_key: $v\n\n";
                     } elsif ( $line
                         && length($line) + length($v) - rindex( $line, "\n" ) >= 70 )
                     {
                         $line .= ",\n$sp$v";
                     } else {
-                        $line = $line ? "$line, $v" : "$key: $v";
+                        $line = $line ? "$line, $v" : "$renamed_key: $v";
                     }
                 }
 
-                $line = "$key:" unless @values;
+                $line = "$renamed_key:" unless @values;
                 if ($line) {
                     if ( $line =~ /\n/ ) {
                         if ( @lines && $lines[-1] !~ /\n\n$/ ) {

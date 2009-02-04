@@ -51,7 +51,7 @@ use strict;
 use warnings;
 use base 'RT::Approval::Rule';
 
-use constant _stage => 'TransactionBatch';
+use constant _stage => 'transaction_batch';
 
 use constant description => "Notify Owner of their ticket has been approved by some or all approvers"; # loc
 

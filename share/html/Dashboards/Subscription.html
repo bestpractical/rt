@@ -49,7 +49,7 @@
 <& /Dashboards/Elements/Tabs,
     current_subtab => $current_subtab,
     title => $title,
-    dashboard_obj => $DashboardObj &>
+    dashboard_obj => $dashboard_obj &>
 
 <& /Elements/ListActions, actions => \@results &>
 
@@ -65,20 +65,20 @@
 <tr><td class="label">
 <&|/l&>Dashboard</&>:
 </td><td class="value">
-<% $DashboardObj->name %>
+<% $dashboard_obj->name %>
 </td></tr>
 
 <tr><td class="label">
 <&|/l&>Queries</&>:
 </td><td class="value">
-% my @portlets = grep { defined } $dashboard_obj->Portlets;
+% my @portlets = grep { defined } $dashboard_obj->portlets;
 % if (!@portlets) {
 (<&|/l&>none</&>)
 % } else {
 <ol class="dashboard-queries">
 %    for my $portlet (@portlets) {
         <li class="dashboard-query">
-            <% _($portlet->{description}, $fields{'Rows'}) %>
+            <% _($portlet->{description}, $fields{'rows'}) %>
         </li>
 %    }
 </ol>
@@ -187,7 +187,7 @@ my $Loaded = 0;
 my $timezone = Jifty->web->current_user->user_object->timezone || RT->config->get('Timezone');
 
 use RT::Dashboard;
-my $DashboardObj = RT::Dashboard->new( current_user => Jifty->web->current_user );
+my $dashboard_obj = RT::Dashboard->new( current_user => Jifty->web->current_user );
 
 my $SubscriptionObj = RT::Model::Attribute->new( current_user => Jifty->web->current_user );
 
@@ -202,7 +202,7 @@ $dashboard_id = $SubscriptionObj->id
              ? $SubscriptionObj->sub_value('dashboard_id')
              : $ARGS{'dashboard_id'};
 
-($val, $msg) = $DashboardObj->load_by_id($dashboard_id);
+($val, $msg) = $dashboard_obj->load_by_id($dashboard_id);
 $val || abort(_("Couldn't load dashboard %1: %2.", $dashboard_id, $msg));
 
 my %fields = (
@@ -248,7 +248,7 @@ if (defined $ARGS{save}) {
     # create
     else {
         abort(_("Unable to subscribe to dashboard %1: Permission denied", $dashboard_id))
-            unless $DashboardObj->current_user_can_subscribe;
+            unless $dashboard_obj->current_user_can_subscribe;
 
         my ($val, $msg) = $SubscriptionObj->create(
             name        => 'Subscription',
@@ -258,7 +258,7 @@ if (defined $ARGS{save}) {
             content     => \%fields,
         );
         if ($val) {
-            push @results, _("Subscribed to dashboard %1", $DashboardObj->name);
+            push @results, _("Subscribed to dashboard %1", $dashboard_obj->name);
             push @results, _("Warning: you have no email address set, so you will not receive this dashboard until you have it set")
                 unless Jifty->web->current_user->email || $fields{recipient};
         }
@@ -269,10 +269,10 @@ if (defined $ARGS{save}) {
 }
 
 if ($SubscriptionObj->id) {
-    $title = _("Modify the subscription to dashboard %1", $DashboardObj->name);
+    $title = _("Modify the subscription to dashboard %1", $dashboard_obj->name);
 }
 else {
-    $title = _("Subscribe to dashboard %1", $DashboardObj->name);
+    $title = _("Subscribe to dashboard %1", $dashboard_obj->name);
 }
 
 </%INIT>

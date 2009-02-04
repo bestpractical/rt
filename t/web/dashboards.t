@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 110;
+use Test::More tests => 113;
 use RT::Test;
 use RT::Dashboard;
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -106,8 +106,8 @@ $m->content_contains("Modify the dashboard different dashboard");
 $m->follow_link_ok({text => "Queries"});
 
 $m->content_contains("Modify the queries of dashboard different dashboard");
-$m->form_name( 'dashboard-searches-body' );
-$m->field('searches-Available' => ["2-RT::System-1"]);
+$m->form_name( 'Dashboard-Searches-body' );
+$m->field('Searches-body-Available' => ["search-2-RT::System-1"]);
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
 
@@ -124,8 +124,8 @@ my @searches = $dashboard->searches;
 is(@searches, 1, "one saved search in the dashboard");
 like($searches[0]->name, qr/newest unowned tickets/, "correct search name");
 
-$m->form_name('dashboard-searches-body');
-$m->field('searches-body-available' => ["search-1-RT::System-1"]);
+$m->form_name('Dashboard-Searches-body');
+$m->field('Searches-body-Available' => ["search-1-RT::System-1"]);
 
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
@@ -216,8 +216,8 @@ $user_obj->principal->grant_right(right => "SuperUser", object => RT->system);
 # first create a personal saved search...
 $m->get_ok($url."Search/Build.html");
 $m->follow_link_ok({text => 'Advanced'});
-$m->form_with_fields('Query');
-$m->field(Query => "id > 0");
+$m->form_with_fields('query');
+$m->field(query => "id > 0");
 $m->submit;
 
 $m->form_with_fields('saved_search_description');
@@ -227,7 +227,7 @@ $m->click_button(name => "saved_search_save");
 # then the system-wide dashboard
 $m->get_ok($url."Dashboards/Modify.html?create=1");
 
-$m->form_name('ModifyDashboard');
+$m->form_name('modify_dashboard');
 $m->field("name" => 'system dashboard');
 $m->field("privacy" => 'RT::System-1');
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
@@ -237,8 +237,8 @@ $m->content_contains("Saved dashboard system dashboard");
 
 $m->follow_link_ok({text => 'Queries'});
 
-$m->form_name('dashboard-searches-body');
-$m->field('searches-body-available' => ['search-7-RT::Model::User-22']); # XXX: :( :(
+$m->form_name('Dashboard-Searches-body');
+$m->field('Searches-body-Available' => ['search-7-RT::Model::User-22']); # XXX: :( :(
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
 

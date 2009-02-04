@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test; use Test::More tests => 11;
+use RT::Test; use Test::More tests => 12;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 my $url = $m->rt_base_url;
@@ -44,7 +44,7 @@ $m->get ($cus_hp);
 $m->form_name('build_query');
 
 my $cdc = $m->current_form->find_input('current_display_columns');
-my ($requestor_value) = grep { /Requestor/ } $cdc->possible_values;
+my ($requestor_value) = grep { /requestor/ } $cdc->possible_values;
 ok($requestor_value, "got the requestor value");
 
 $m->field (current_display_columns => $requestor_value);

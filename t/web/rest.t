@@ -35,7 +35,7 @@ push @lines, "CF.{severity}: explosive"; # new style
 
 $text = join "\n", @lines;
 
-ok($text =~ s/subject:\s*$/subject: REST interface/m, "successfully replaced subject");
+ok($text =~ s/Subject:\s*$/Subject: REST interface/m, "successfully replaced subject");
 
 $m->post("$baseurl/REST/1.0/ticket/edit", [
     user    => 'root',
@@ -63,10 +63,10 @@ $m->post("$baseurl/REST/1.0/search/ticket", [
 # the fields are interpreted server-side a hash (why?), so we can't depend
 # on order
 for ("id: ticket/1",
-     "subject: REST interface",
+     "Subject: REST interface",
      "CF.{fu()n:k/}: maximum",
      "CF.{severity}: explosive",
-     "status: new") {
+     "Status: new") {
         $m->content_contains($_);
 }
 

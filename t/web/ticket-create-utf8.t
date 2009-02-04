@@ -40,8 +40,8 @@ ok $m->login, 'logged in';
 {
     ok $m->goto_create_ticket( $q ), "go to create ticket";
     $m->form_number(3);
-    $m->field( Subject => $ru_test );
-    $m->field( Content => $ru_support );
+    $m->field( subject => $ru_test );
+    $m->field( content => $ru_support );
     $m->submit;
 
     $m->content_like( 

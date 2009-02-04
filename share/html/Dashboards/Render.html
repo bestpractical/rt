@@ -51,7 +51,7 @@
 <& /Dashboards/Elements/Tabs,
     current_subtab => $current_subtab,
     title => $title,
-    dashboard_obj => $DashboardObj &>
+    dashboard_obj => $dashboard_obj &>
 % }
 
 <table class="dashboard">
@@ -79,8 +79,8 @@
 my $current_subtab = 'Dashboards/Render.html?id=' . $id;
 
 use RT::Dashboard;
-my $DashboardObj = RT::Dashboard->new( current_user => Jifty->web->current_user );
-my ($ok, $msg) = $DashboardObj->load_by_id($id);
+my $dashboard_obj = RT::Dashboard->new( current_user => Jifty->web->current_user );
+my ($ok, $msg) = $dashboard_obj->load_by_id($id);
 abort(_("Couldn't load dashboard %1: %2", $id, $msg)) if !$ok;
 
 my $SubscriptionObj = RT::Model::Attribute->new( current_user => Jifty->web->current_user );
@@ -106,7 +106,7 @@ my $show_cb = sub {
     $m->comp($component,
         portlet   => $portlet,
         rows      => $rows,
-        preview   => $Preview,
+        preview   => $preview,
         dashboard => $dashboard_obj,
     );
 };

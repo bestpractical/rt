@@ -47,13 +47,3 @@ Log::Log4perl in Jifty, seems Test::Warn can't capture the warning any more.
 ( I dig a bit, they all play with $SIG{__WARN__}, which I think they collapse )
 
 suggestion please
-
-2. 
-
-obra said: REST/1.0 should serve and accept the formats it did for RT 3.8
-we changed the cases of keys before, I think we need to change them back
-e.g. show ticket/1 -f subject currently shows
-    subject: work
-we need to change it back to:
-    Subject: work
-
