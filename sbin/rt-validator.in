@@ -497,10 +497,11 @@ push @CHECKS, 'CGM vs. GM' => sub {
     );
 
     # for every CGM where ImmediateParentId != GroupId there should be
-    # matching parent record 
+    # matching parent record (first level) 
     check_integrity(
-        CachedGroupMembers => ['ImmediateParentId', 'MemberId', 'Via'],
-        CachedGroupMembers => ['GroupId', 'MemberId', 'id'],
+        CachedGroupMembers => ['ImmediateParentId', 'MemberId'],
+        CachedGroupMembers => ['GroupId', 'MemberId'],
+        join_condition => 't.Via = t.id',
         condition => 's.ImmediateParentId != s.GroupId',
         action => sub {
             my $id = shift;
@@ -516,8 +517,8 @@ push @CHECKS, 'CGM vs. GM' => sub {
     # for every CGM where ImmediateParentId != GroupId there should be
     # matching "grand" parent record
     check_integrity(
-        CachedGroupMembers => ['GroupId', 'ImmediateParentId'],
-        CachedGroupMembers => ['GroupId', 'MemberId'],
+        CachedGroupMembers => ['GroupId', 'ImmediateParentId', 'Via'],
+        CachedGroupMembers => ['GroupId', 'MemberId', 'id'],
         condition => 's.ImmediateParentId != s.GroupId',
         action => sub {
             my $id = shift;
@@ -531,25 +532,23 @@ push @CHECKS, 'CGM vs. GM' => sub {
     );
 
     # CHECK recursive records:
-    # if we have G1 - (M1 == G2) - M2 then we should have G1 - M2 record with
-    # Via = CGM2.id and IP = CGM2.G
-    # Disabled field should be fixed separatedly
+    # if we have CGM1 (G1,M1,V1,IP1) then for every GM2(G2, M2), where G2 == M1,
+    # we should have CGM3 where G3 = G1, M3 = M2, V3 = ID1, IP3 = M1
     {
         my $query = <<END;
-SELECT grand.GroupId, parent.MemberId, parent.id AS Via,
-    parent.GroupId AS ImmediateParentId, grand.Disabled, parent.Disabled
+SELECT cgm1.GroupId, gm2.MemberId, cgm1.id AS Via,
+    cgm1.MemberId AS ImmediateParentId, cgm1.Disabled
 FROM
-    CachedGroupMembers grand
-    CROSS JOIN CachedGroupMembers parent
-    LEFT JOIN CachedGroupMembers grand_child ON (
-        grand_child.GroupId = grand.GroupId
-        AND grand_child.MemberId = parent.MemberId
-        AND grand_child.Via = parent.id
-        AND grand_child.ImmediateParentId = parent.GroupId )
-WHERE grand.GroupId != grand.MemberId
-AND parent.GroupId != parent.MemberId
-AND parent.GroupId = grand.MemberId
-AND grand_child.id IS NULL
+    CachedGroupMembers cgm1
+    CROSS JOIN GroupMembers gm2
+    LEFT JOIN CachedGroupMembers cgm3 ON (
+            cgm3.GroupId           = cgm1.GroupId
+        AND cgm3.MemberId          = gm2.MemberId
+        AND cgm3.Via               = cgm1.id
+        AND cgm3.ImmediateParentId = cgm1.MemberId )
+WHERE cgm1.GroupId != cgm1.MemberId
+AND gm2.GroupId = cgm1.MemberId
+AND cgm3.id IS NULL
 END
 
         my $action = sub {
@@ -562,12 +561,12 @@ END
         };
 
         my $sth = execute_query( $query );
-        while ( my ($g, $m, $via, $ip, $gdis, $pdis) = $sth->fetchrow_array ) {
-            print STDERR "Principal #$m is member of #$ip when #$ip is member of #$g,\n";
-            print STDERR "but there is no cached GM record that $m is member of #$g.\n";
+        while ( my ($g, $m, $via, $ip, $dis) = $sth->fetchrow_array ) {
+            print STDERR "Principal #$m is member of #$ip when #$ip is member of #$g,";
+            print STDERR " but there is no cached GM record that $m is member of #$g.\n";
             $action->(
                 GroupId => $g, MemberId => $m, Via => $via,
-                ImmediateParentId => $ip, Disabled => $gdis || $pdis,
+                ImmediateParentId => $ip, Disabled => $dis,
             );
         }
     }
