@@ -51,8 +51,6 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head>
 <title><%$title%></title>
-
-
 % if ($refresh && $refresh =~ /^(\d+)/ && $1 > 0) {
     <meta http-equiv="refresh" content="<% $refresh %>" />
 % }
@@ -106,6 +104,7 @@
 % }
 
 <%INIT>
+$r->content_type('text/html; charset=utf-8');
 $r->headers_out->{'Pragma'} = 'no-cache';
 $r->headers_out->{'Cache-control'} = 'no-cache';
 
