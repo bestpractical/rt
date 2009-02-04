@@ -78,9 +78,11 @@ use Jifty::DBI::Record schema {
     column field      => max_length is 40, type is 'varchar(40)';
     column
         old_value => max_length is 255,
+        filters are 'Jifty::DBI::Filter::utf8',
         type is 'varchar(255)';
     column
         new_value => max_length is 255,
+        filters are 'Jifty::DBI::Filter::utf8',
         type is 'varchar(255)';
     column
         reference_type => max_length is 255,
