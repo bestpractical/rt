@@ -56,7 +56,7 @@ for my $search (@searches) {
     if ($search->name eq 'SavedSearch') {
         push @display, $search->description;
     }
-    elsif ($search->Name =~ m/^Search - (.*)/) {
+    elsif ($search->name =~ m/^Search - (.*)/) {
         push @display, $1;
     }
     else {

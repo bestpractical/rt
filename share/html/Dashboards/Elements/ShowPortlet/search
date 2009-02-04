@@ -52,7 +52,7 @@ $rows => 20
 $preview => 0
 </%args>
 <%init>
-my @for_showsearch = $Dashboard->show_search_name($portlet);
+my @for_showsearch = $dashboard->show_search_name($portlet);
 </%init>
 
 <& /Elements/ShowSearch,

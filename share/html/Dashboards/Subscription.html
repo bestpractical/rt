@@ -71,14 +71,14 @@
 <tr><td class="label">
 <&|/l&>Queries</&>:
 </td><td class="value">
-% my @portlets = grep { defined } $dashboard_obj->Portlets;
+% my @portlets = grep { defined } $dashboard_obj->portlets;
 % if (!@portlets) {
 (<&|/l&>none</&>)
 % } else {
 <ol class="dashboard-queries">
 %    for my $portlet (@portlets) {
         <li class="dashboard-query">
-            <% _($portlet->{description}, $fields{'Rows'}) %>
+            <% _($portlet->{description}, $fields{'rows'}) %>
         </li>
 %    }
 </ol>

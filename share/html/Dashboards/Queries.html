@@ -54,7 +54,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 % if (@hidden_searches) {
-<& Elements/HiddenSearches, searches => \@hidden_searches, Dashboard => $Dashboard &>
+<& Elements/HiddenSearches, searches => \@hidden_searches, dashboard => $Dashboard &>
 % }
 
 <table width="100%" border="0">
@@ -63,7 +63,7 @@
 <form action="Queries.html" name="Dashboard-<%$pane->{name}%>" method="post" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="id" value="<%$Dashboard->id%>" />
 <input type="hidden" class="hidden" name="privacy" value="<%$Dashboard->privacy%>" />
-<&| /Widgets/TitleBox, title => $pane->{DisplayName} &>
+<&| /Widgets/TitleBox, title => $pane->{display_name} &>
     <& /Widgets/SelectionBox:show, self => $pane, nojs => 1 &>
 </&>
 </form>
