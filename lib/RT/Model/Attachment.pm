@@ -94,8 +94,7 @@ use Jifty::DBI::Record schema {
       filters are 'Jifty::DBI::Filter::utf8';
     column
       content => type is 'blob',
-      default is '',
-      filters are 'Jifty::DBI::Filter::utf8';
+      default is '';
     column content_encoding => type is 'blob', default is '';
     column
       headers => type is 'blob',
