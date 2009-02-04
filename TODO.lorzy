@@ -1,0 +1,52 @@
+*** scrip actions
+
+* scrip action =>
+
+    {  name        => 'Autoreply To requestors',    # loc
+       description =>
+'Always sends a message to the requestors independent of message sender' ,                                            # loc
+       exec_module => 'Autoreply',  # scripaction::autoreply 
+       argument   => 'requestor' }, # passed over to scripaction
+
+
+* script condition =>
+
+    { name                 => 'On Create', # referenced by scrip objects
+      description          => 'When a ticket is Created',
+      applicable_trans_types => 'Create', # matched in Scrip::is_applicable
+      exec_module           => 'AnyTransaction', }, # a module
+
+* scrip =>
+
+
+    {  description    => 'On Create Autoreply To requestors',
+       scrip_condition => 'On Create',  # reference to script_condition objects
+       scrip_action    => 'AutoReply To requestors',
+       template       => 'AutoReply' },
+
+script::condition: exec_mode for matching
+
+
+# to return a testing closure for a simplified trans_type and field etc matching?
+
+*** lorzy 
+
+* Lorzy::Dispatcher: registered rule, may have to have two instances for both Stages.
+
+
+* for queue exceptions, we can simply insert some sort of 
+
+
+* lorzy code improvements:  control flow handling like return, exception
+
+Per-rule entry:
+
+ - on_condition (make it chained filters?), any of:
+
+   - RT.Condition("On Create", $transaction_obj)
+   - lorzy::Lambda:
+     - $transaction_obj->type eq 'create'
+
+ - commit
+   - run_scrip_action("AutoReply", "requestor")
+   - RT.Action.SendEmail( template => 'autoreply', etc etc )
