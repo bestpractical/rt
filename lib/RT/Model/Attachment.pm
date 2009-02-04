@@ -88,10 +88,18 @@ use Jifty::DBI::Record schema {
         content_type => max_length is 200,
         type is 'varchar(200)', default is '';
     column filename => max_length is 255, type is 'varchar(255)', default is '';
-    column subject  => max_length is 255, type is 'varchar(255)', default is '';
-    column content  => type is 'blob',    default is '';
+    column
+      subject => max_length is 255,
+      type is 'varchar(255)', default is '',
+      filters are 'Jifty::DBI::Filter::utf8';
+    column
+      content => type is 'blob',
+      default is '';
     column content_encoding => type is 'blob', default is '';
-    column headers          => type is 'blob', default is '';
+    column
+      headers => type is 'blob',
+      default is '',
+      filters are 'Jifty::DBI::Filter::utf8';
 
 };
 use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
@@ -132,7 +140,7 @@ sub create {
     $Attachment->make_singlepart;
 
     # Get the subject
-    my $subject = $Attachment->head->get( 'subject', 0 );
+    my $subject = $Attachment->head->get( 'Subject', 0 );
     defined($subject) or $subject = '';
     chomp($subject);
 
