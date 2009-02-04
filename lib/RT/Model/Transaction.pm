@@ -757,8 +757,8 @@ sub brief_description {
 
     if ( $type eq 'create' ) {
         return ( _( "%1 Created", $obj_type ) );
-    } elsif ( $type =~ /Status/i ) {
-        if ( $self->field eq 'Status' ) {
+    } elsif ( $type eq 'status' ) {
+        if ( $self->field eq 'status' ) {
             if ( $self->new_value eq 'deleted' ) {
                 return ( _( "%1 deleted", $obj_type ) );
             }

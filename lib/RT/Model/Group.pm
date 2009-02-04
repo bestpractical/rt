@@ -1141,7 +1141,7 @@ sub _set {
     my %args = (
         column             => undef,
         value              => undef,
-        transaction_type   => 'Set',
+        transaction_type   => 'set',
         record_transaction => 1,
         @_
     );

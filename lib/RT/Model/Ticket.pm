@@ -2253,7 +2253,7 @@ sub owner_as_string {
 Takes two arguments:
      the id or name of the owner 
 and  (optionally) the type of the SetOwner Transaction. It defaults
-to 'Give'.  'Steal' is also a valid option.
+to 'give'.  'steal' is also a valid option.
 
 
 =cut
@@ -2261,7 +2261,7 @@ to 'Give'.  'Steal' is also a valid option.
 sub set_owner {
     my $self     = shift;
     my $NewOwner = shift;
-    my $Type     = shift || "Give";
+    my $Type     = shift || "give";
 
     Jifty->handle->begin_transaction();
 
