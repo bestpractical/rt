@@ -51,7 +51,7 @@ use strict;
 use warnings;
 use base 'RT::ScripAction';
 
-use constant _stage => 'TransactionCreate';
+use constant _stage => 'transaction_create';
 use constant _queue => undef;
 
 sub prepare {

@@ -377,7 +377,7 @@ sub create {
 
         Jifty->log->debug( 'About to prepare scrips for transaction #' . $self->id );
         $self->{'scrips'}->prepare(
-            stage       => 'TransactionCreate',
+            stage       => 'transaction_create',
             type        => $args{'type'},
             ticket      => $args{'object_id'},
             transaction => $self->id,
@@ -387,7 +387,7 @@ sub create {
         my $ticket = RT::Model::Ticket->new( current_user => RT->system_user );
         $ticket->load( $args{'object_id'} );
         my $rules = RT::Ruleset->find_all_rules(
-            stage          => 'TransactionCreate',
+            stage          => 'transaction_create',
             type           => $args{'type'},
             ticket_obj      => $ticket,
             transaction_obj => $self,

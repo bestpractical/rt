@@ -7438,7 +7438,7 @@ msgid "transaction_batch"
 msgstr "批次更动时"
 
 #: NOT FOUND IN SOURCE
-msgid "TransactionCreate"
+msgid "transaction_create"
 msgstr "新增更动时"
 
 #: lib/RT/Transaction_Overlay.pm:870
