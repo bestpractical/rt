@@ -55,7 +55,22 @@ $Description => undef
 <%init>
 $ARGS{SecondaryGroupBy} ||= '';
 
-my $title = loc( "Search results grouped by [_1]", loc($PrimaryGroupBy) );
+# FIXME: should be factored with RT::Report::Tickets::Label :(
+my $PrimaryGroupByLabel;
+if ( $PrimaryGroupBy =~ /^(?:CF|CustomField)\.{(.*)}$/ ) {
+    my $cf = $1;
+    if ( $cf =~ /\D/ ) {
+        $PrimaryGroupByLabel = loc( "custom field '[_1]'", $cf );
+    } else {
+        my $obj = RT::CustomField->new( $session{'CurrentUser'} );
+        $obj->Load( $cf );
+        $PrimaryGroupByLabel = loc( "custom field '[_1]'", $obj->Name );
+    }
+} else {
+    $PrimaryGroupByLabel = loc( $PrimaryGroupBy );
+}
+
+my $title = loc( "Search results grouped by [_1]", $PrimaryGroupByLabel );
 
 my $saved_search = $m->comp( '/Widgets/SavedSearch:new',
     SearchType   => 'Chart',
