@@ -67,7 +67,7 @@ foreach my $message ( grep $_->__value('parent') == $parent, @$attachments ) {
 </div>
 %   }
 % # If there is sub-messages, open a dedicated div
-% if ( scalar ( grep $_->__value('Parent') == $message->id, @$attachments ) ) {
+% if ( scalar ( grep $_->__value('parent') == $message->id, @$attachments ) ) {
 <div class="messageattachments">
 % } else {
 
