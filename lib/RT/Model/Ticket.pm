@@ -2309,8 +2309,8 @@ sub set_owner {
 
     # If we're not stealing and the ticket has an owner and it's not
     # the current user
-    if (    $Type ne 'Steal'
-        and $Type ne 'Force'
+    if (    $Type ne 'steal'
+        and $Type ne 'force'
         and $old_owner_obj->id != RT->nobody->id
         and $old_owner_obj->id != $self->current_user->id )
     {
@@ -2396,7 +2396,7 @@ A convenince method to set the ticket's owner to the current user
 
 sub take {
     my $self = shift;
-    return ( $self->set_owner( $self->current_user->id, 'Take' ) );
+    return ( $self->set_owner( $self->current_user->id, 'take' ) );
 }
 
 
@@ -2409,7 +2409,7 @@ Convenience method to set the owner to 'nobody' if the current user is the owner
 
 sub untake {
     my $self = shift;
-    return ( $self->set_owner( RT->nobody->user_object->id, 'Untake' ) );
+    return ( $self->set_owner( RT->nobody->user_object->id, 'untake' ) );
 }
 
 =head2 steal
@@ -2425,7 +2425,7 @@ sub steal {
     if ( $self->is_owner( $self->current_user ) ) {
         return ( 0, _("You already own this ticket") );
     } else {
-        return ( $self->set_owner( $self->current_user->id, 'Steal' ) );
+        return ( $self->set_owner( $self->current_user->id, 'steal' ) );
 
     }
 
