@@ -114,6 +114,8 @@ $COLUMN_MAP = {
                 }
                 else {
                     my $Query = "DependedOnBy = " . $Ticket->id;
+                    $Query .= " AND (" . join(" OR ", map { "Status = '$_'" } RT::Queue->ActiveStatusArray) . ")";
+
                     my $SearchURL = RT->Config->Get('WebPath') . '/Search/Results.html?' . $m->comp('/Elements/QueryString', Query => $Query);
 
                     return \'<a href="',$SearchURL,\'">', loc('(pending [quant,_1,other ticket])',$count), \'</a>';
