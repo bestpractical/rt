@@ -178,7 +178,7 @@ ETC_FILES		=	acl.Informix \
 			schema.Informix \
 			schema.Pg \
 			schema.Oracle \
-			schema.mysql \
+			schema.mysql-4.0 \
 			schema.mysql-4.1 \
 			schema.Sybase \
 			schema.SQLite \
