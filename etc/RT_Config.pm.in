@@ -688,14 +688,12 @@ Set($LogToFileNamed , "rt.log");    #log to rt.log
 
 =item C<$LogStackTraces>
 
-If set to a log level then logging will include stack
-traces for messages with level equal to or greater than
-specified.
+If set to a log level then logging will include stack traces for
+messages with level equal to or greater than specified.
 
-NOTICE: Stack traces include parameters that functions or methods
-were called wiht. It is possible for stack trace logging to reveal
-sensitive information such as passwords or ticket content in your
-logs.
+NOTICE: Stack traces include parameters supplied to functions or
+methods. It is possible for stack trace logging to reveal sensitive
+information such as passwords or ticket content in your logs.
 
 =cut
 
