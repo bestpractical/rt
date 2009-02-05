@@ -55,7 +55,6 @@
 % }
 
 <table class="dashboard">
-<table border="0" width="100%">
 <tr valign="top">
 
 <td class="boxcontainer">
@@ -68,8 +67,6 @@
 </td>
 
 % }
-</td>
-
 </tr>
 </table>
 
@@ -94,7 +91,7 @@ for my $sub (Jifty->web->current_user->user_object->attributes->named('Subscript
     last;
 }
 
-my $rows = $Loaded ? $SubscriptionObj->sub_value('Rows') : 20;
+my $rows = $Loaded ? $SubscriptionObj->sub_value('rows') : 20;
 my $title = _( 'Dashboard %1', $dashboard_obj->name );
 
 my %panes = %{ $dashboard_obj->panes };
