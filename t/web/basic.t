@@ -39,11 +39,9 @@ $agent->get($url."/Ticket/Create.html?queue=1");
 is ($agent->{'status'}, 200, "Loaded Create.html");
 $agent->form_number(3);
 # Start with a string containing characters in latin1
-my $string = "I18N Web Testing æøå";
-my $web_string = $string;
-Encode::from_to($web_string, 'iso-8859-1', 'utf8');
+my $string = Encode::decode_utf8("I18N Web Testing æøå");
 $agent->field('subject' => "Ticket with utf8 body");
-$agent->field('content' => $web_string);
+$agent->field('content' => $string);
 ok($agent->submit(), "Created new ticket with $string as content");
 like( $agent->{'content'}, qr{$string} , "Found the content");
 ok($agent->{redirected_uri}, "Did redirection");
@@ -52,10 +50,8 @@ $agent->get($url."/Ticket/Create.html?queue=1");
 is ($agent->{'status'}, 200, "Loaded Create.html");
 $agent->form_number(3);
 # Start with a string containing characters in latin1
-$string = "I18N Web Testing æøå";
-$web_string = $string;
-Encode::from_to($web_string, 'iso-8859-1', 'utf8');
-$agent->field('subject' => $web_string);
+$string = Encode::decode_utf8("I18N Web Testing æøå");
+$agent->field('subject' => $string);
 $agent->field('content' => "Ticket with utf8 subject");
 ok($agent->submit(), "Created new ticket with $string as subject");
 
