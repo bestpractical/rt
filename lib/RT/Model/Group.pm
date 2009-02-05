@@ -441,7 +441,7 @@ sub _create {
     );
 
     if ( $args{'_record_transaction'} ) {
-        $self->_new_transaction( type => "Create" );
+        $self->_new_transaction( type => "create" );
     }
 
     Jifty->handle->commit() unless $inside_transaction;
@@ -1141,7 +1141,7 @@ sub _set {
     my %args = (
         column             => undef,
         value              => undef,
-        transaction_type   => 'Set',
+        transaction_type   => 'set',
         record_transaction => 1,
         @_
     );

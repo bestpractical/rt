@@ -47,7 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 <&| _elements/wrapper, title => _("Create a ticket") &>
 
-<form action="Display.html" method="post" enctype="multipart/form-data">
+<& /Elements/ListActions, actions => \@results &>
+<form action="Create.html" method="post" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="id" value="new" />
 
 <table>
@@ -65,7 +66,7 @@
 <&|/l&>Requestors</&>:
 </td>
 <td class="value">
-<& /Elements/EmailInput, name => 'requestors', size => '20', default => Jifty->web->current_user->email &>
+<& /Elements/EmailInput, name => 'requestors', size => '20', default => $ARGS{requestors} || Jifty->web->current_user->email &>
 </td>
 </tr>
 <tr>
@@ -73,7 +74,7 @@
 <&|/l&>Cc</&>:
 </td>
 <td class="value">
-<& /Elements/EmailInput, name => 'cc', size => '20' &>
+<& /Elements/EmailInput, name => 'cc', size => '20', default => $ARGS{cc} || '' &>
 </td>
 </tr>
 <tr>
@@ -81,16 +82,18 @@
 <&|/l&>subject</&>:
 </td>
 <td class="value">
-<input name="subject" size="60" maxsize="200" value="" />
+<input name="subject" size="60" maxsize="200" value="<%$ARGS{subject} || ''%>" />
 </td>
 </tr>
 <tr>
     <td colspan="2">
-        <& /Ticket/Elements/EditCustomFields, queue_obj => $queue_obj &>
+        <& /Ticket/Elements/EditCustomFields, %ARGS, queue_obj => $queue_obj &>
     </td>
 </tr>
 <tr>
 <td class="label">
+%# FIXME: if failed customfields validation, attachement needs to be choosen
+%# again by user.
 <&|/l&>Attach file</&>:
 </td>
 <td class="value">
@@ -102,7 +105,7 @@
 <tr>
 <td colspan="2">
 <&|/l&>describe the issue below</&>:<br />
-<& /Elements/MessageBox &>
+<& /Elements/MessageBox, default => $ARGS{content} || '' &>
 </td>
 </tr>
 </table>
@@ -115,6 +118,29 @@
 $queue => undef
 </%args>
 <%init>
+my @results;
 my $queue_obj = RT::Model::Queue->new();
 $queue_obj->load($queue);
+my $CFs = $queue_obj->ticket_custom_fields();
+my $ValidCFs = $m->comp(
+    '/Elements/ValidateCustomFields',
+    custom_fields => $CFs,
+    args_ref => \%ARGS
+);
+
+if ( defined($ARGS{'id'}) and $ARGS{'id'} eq 'new' ) { # new ticket?
+    if ( $ValidCFs ) {
+        $m->comp('Display.html', %ARGS);
+        Jifty->log->fatal("After display call; error is $@");
+        $m->abort();
+    }
+    elsif ( !$ValidCFs ) {
+        # Invalid CFs
+        while (my $CF = $CFs->next) {
+            my $msg = $m->notes('InvalidField-' . $CF->id) or next;
+            push @results, $CF->name . ': ' . $msg;
+        }
+    }
+}
+
 </%init>

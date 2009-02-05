@@ -1,0 +1,7 @@
+* all the method names must use foo_bar, so do keys of method arguments
+* config vars can be both FooBar or foo_bar, we should support both, i.e. when
+calling ->get or ->set, we can use both conventions. convention saved in file is
+FooBar. 
+* txn->type should be foo_bar
+* values of callback_name should stay camel case, since they are also the file  names
+

@@ -11,3 +11,39 @@ some time it could be (Type = Status, Field = Status) or
 (Type = Set, Field = Status). I think it should be fixed
 to the latter.
 
+
+things need to do or fix before releasing alpha.
+
+0.
+
+with current Jifty version, I got a very weird problem, in the top actions,
+current output is( I removed unrelative output ):
+
+<label accesskey="9">
+  <select name="queue" onchange="document.CreateTicketInQueue.submit()"
+class="select-queue">
+  <option value="1" > General </option>
+</select>
+<form action="/Ticket/Create.html" name="create_ticket_in_queue"
+id="CreateTicketInQueue">
+<input type="submit" class="button" value="New ticket in" />&nbsp;
+</label>
+
+<div id="topactions">
+<span class="topaction" id="topaction-a">
+</form>
+</span>
+</div>
+
+it seems the call $m->scomp('/Elements/CreateTicket') in Elements/Tabs makes
+some output instead of returning it, all the part above <div> should go into
+the "topaction-a" span element, and so on.
+I bet it's Jifty's problem but not 100% sure, Jifty gurus, SOS!
+
+1. 
+
+3.8.2 starts to use Test::Warn to test the warning output, but since we use
+Log::Log4perl in Jifty, seems Test::Warn can't capture the warning any more.
+( I dig a bit, they all play with $SIG{__WARN__}, which I think they collapse )
+
+suggestion please

@@ -76,7 +76,7 @@ my $scrip = RT::Model::Scrip->new(current_user => RT->system_user);
                           scrip_condition => $condition->id,
                           scrip_action    => $action->id,
                           template       => $template->id,
-                          stage          => 'TransactionCreate',
+                          stage          => 'transaction_create',
                           queue          => 0,
                   custom_is_applicable_code => '$self->transaction_obj->type =~ /(add|delete)_link/;',
                        custom_prepare_code => '1;',

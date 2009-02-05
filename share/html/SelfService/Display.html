@@ -102,22 +102,15 @@ my $Ticket = RT::Model::Ticket->new();
 if ( $ARGS{'attach'} ) {    # attachment?
     $session{'Attachments'} = {} unless defined $session{'Attachments'};
 
-    my $subject = "$ARGS{'attach'}";
-
-    # since CGI.pm deutf8izes the magic field, we need to add it back.
-    Encode::_utf8_on($subject);
-
-    # strip leading directories
-    $subject =~ s#^.*[\\/]##;
-
     my $attachment = make_mime_entity(
-        subject             => $subject,
-        AttachmentFieldname => 'attach',
+        attachment_field_name => 'attach',
     );
 
-    $session{'Attachments'} =
-    { %{ $session{'Attachments'} || {} },
-        $ARGS{'attach'} => $attachment };
+    my $file_path = Encode::decode_utf8("$ARGS{'Attach'}");
+    $session{'Attachments'} = {
+        %{ $session{'Attachments'} || {} },
+        $file_path => $attachment,
+    };
 }
 
 if ( defined ($id[0]) && $id[0] eq 'new' ) {

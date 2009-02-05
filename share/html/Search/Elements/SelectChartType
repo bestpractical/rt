@@ -51,6 +51,8 @@ $default => 'bar'
 </%args>
 <select id="<%$name%>" name="<%$name%>">
 % foreach my $option qw(bar pie) {
+% # 'bar' # loc
+% # 'pie' # loc
 <option value="<%$option%>"<% $option eq $default ? qq[ selected="selected"] : '' |n %>><%_($option)%></option>
 % }
 </select>

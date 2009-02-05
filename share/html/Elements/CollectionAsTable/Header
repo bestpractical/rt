@@ -86,9 +86,13 @@ foreach my $col ( @format ) {
         next;
     }
 
-    $item++;
+    my $span = $col->{'span'};
+    $item += ($span || 1);
 
-    $m->out('<th class="collection-as-table">');
+    $m->out('<th class="collection-as-table"');
+    $m->out('colspan="' . $m->interp->apply_escapes($span  => 'h') . '"')
+        if $span;
+    $m->out('>');
 
     $title =~ s/^__(.*)__$/$1/o;
     my $tmp = $m->comp( '/Elements/ColumnMap',
@@ -98,7 +102,7 @@ foreach my $col ( @format ) {
     );
 
     unless( $tmp ) {
-        $title = $m->interp->apply_escapes( _($title), 'h' );
+        $title = $m->comp('/Elements/ScrubHTML', content => $title);
     } else {
         if ( UNIVERSAL::isa( $tmp, 'CODE' ) ) {
             my @tmp = $tmp->( $title );
@@ -134,11 +138,11 @@ foreach my $col ( @format ) {
                 %$generic_query_args,
                 order_by => $attr, order => $new_order
             )
-            . '">'. $title .'</a>'
+            . '">'. _($title) .'</a>'
         );
     }
     else {
-        $m->out( $title );
+        $m->out( _($title) );
     }
     $m->out('</th>');
 }

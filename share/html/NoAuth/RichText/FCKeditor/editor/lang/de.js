@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2008 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,6 +44,7 @@ RemoveFormat		: "Formatierungen entfernen",
 InsertLinkLbl		: "Link",
 InsertLink			: "Link einfügen/editieren",
 RemoveLink			: "Link entfernen",
+VisitLink			: "Link aufrufen",
 Anchor				: "Anker einfügen/editieren",
 AnchorDelete		: "Anker entfernen",
 InsertImageLbl		: "Bild",
@@ -72,6 +73,9 @@ BlockJustify		: "Blocksatz",
 DecreaseIndent		: "Einzug verringern",
 IncreaseIndent		: "Einzug erhöhen",
 Blockquote			: "Zitatblock",
+CreateDiv			: "Erzeuge Div Block",
+EditDiv				: "Bearbeite Div Block",
+DeleteDiv			: "Entferne Div Block",
 Undo				: "Rückgängig",
 Redo				: "Wiederherstellen",
 NumberedListLbl		: "Nummerierte Liste",
@@ -157,6 +161,7 @@ UnknownToolbarSet	: "Menüleiste \"%1\" existiert nicht",
 NoActiveX			: "Die Sicherheitseinstellungen Ihres Browsers beschränken evtl. einige Funktionen des Editors. Aktivieren Sie die Option \"ActiveX-Steuerelemente und Plugins ausführen\" in den Sicherheitseinstellungen, um diese Funktionen nutzen zu können",
 BrowseServerBlocked : "Ein Auswahlfenster konnte nicht geöffnet werden. Stellen Sie sicher, das alle Popup-Blocker ausgeschaltet sind.",
 DialogBlocked		: "Das Dialog-Fenster konnte nicht geöffnet werden. Stellen Sie sicher, das alle Popup-Blocker ausgeschaltet sind.",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -359,7 +364,6 @@ DlgPasteMsg2	: "Bitte fügen Sie den Text in der folgenden Box über die Tastatu
 DlgPasteSec		: "Aufgrund von Sicherheitsbeschränkungen Ihres Browsers kann der Editor nicht direkt auf die Zwischenablage zugreifen. Bitte fügen Sie den Inhalt erneut in diesem Fenster ein.",
 DlgPasteIgnoreFont		: "Ignoriere Schriftart-Definitionen",
 DlgPasteRemoveStyles	: "Entferne Style-Definitionen",
-DlgPasteCleanBox		: "Inhalt aufräumen",
 
 // Color Picker
 ColorAutomatic	: "Automatisch",
@@ -512,5 +516,11 @@ DlgAboutAboutTab	: "Über",
 DlgAboutBrowserInfoTab	: "Browser-Info",
 DlgAboutLicenseTab	: "Lizenz",
 DlgAboutVersion		: "Version",
-DlgAboutInfo		: "Für weitere Informationen siehe"
+DlgAboutInfo		: "Für weitere Informationen siehe",
+
+// Div Dialog
+DlgDivGeneralTab	: "Allgemein",
+DlgDivAdvancedTab	: "Erweitert",
+DlgDivStyle		: "Style",
+DlgDivInlineStyle	: "Inline Style"
 };

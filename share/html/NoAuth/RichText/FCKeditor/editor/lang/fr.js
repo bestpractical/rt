@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2008 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,6 +44,7 @@ RemoveFormat		: "Supprimer le format",
 InsertLinkLbl		: "Lien",
 InsertLink			: "Insérer/modifier le lien",
 RemoveLink			: "Supprimer le lien",
+VisitLink			: "Suivre le lien",
 Anchor				: "Insérer/modifier l'ancre",
 AnchorDelete		: "Supprimer l'ancre",
 InsertImageLbl		: "Image",
@@ -72,6 +73,9 @@ BlockJustify		: "Texte justifié",
 DecreaseIndent		: "Diminuer le retrait",
 IncreaseIndent		: "Augmenter le retrait",
 Blockquote			: "Citation",
+CreateDiv			: "Créer Balise Div",
+EditDiv				: "Modifier Balise Div",
+DeleteDiv			: "Supprimer Balise Div",
 Undo				: "Annuler",
 Redo				: "Refaire",
 NumberedListLbl		: "Liste numérotée",
@@ -157,6 +161,7 @@ UnknownToolbarSet	: "La barre d'outils \"%1\" n'existe pas",
 NoActiveX			: "Les paramètres de sécurité de votre navigateur peuvent limiter quelques fonctionnalités de l'éditeur. Veuillez activer l'option \"Exécuter les contrôles ActiveX et les plug-ins\". Il se peut que vous rencontriez des erreurs et remarquiez quelques limitations.",
 BrowseServerBlocked : "Le navigateur n'a pas pu être ouvert. Assurez-vous que les bloqueurs de popups soient désactivés.",
 DialogBlocked		: "La fenêtre de dialogue n'a pas pu s'ouvrir. Assurez-vous que les bloqueurs de popups soient désactivés.",
+VisitLinkBlocked	: "Impossible d'ouvrir une nouvelle fenêtre. Assurez-vous que les bloqueurs de popups soient désactivés.",
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -246,7 +251,7 @@ DlgLnkUpload		: "Télécharger",
 DlgLnkBtnUpload		: "Envoyer sur le serveur",
 
 DlgLnkTarget		: "Destination",
-DlgLnkTargetFrame	: "<cadre>",
+DlgLnkTargetFrame	: "<Cadre>",
 DlgLnkTargetPopup	: "<fenêtre popup>",
 DlgLnkTargetBlank	: "Nouvelle fenêtre (_blank)",
 DlgLnkTargetParent	: "Fenêtre mère (_parent)",
@@ -359,7 +364,6 @@ DlgPasteMsg2	: "Veuillez coller dans la zone ci-dessous en utilisant le clavier 
 DlgPasteSec		: "A cause des paramètres de sécurité de votre navigateur, l'éditeur ne peut accéder au presse-papier directement. Vous devez coller à nouveau le contenu dans cette fenêtre.",
 DlgPasteIgnoreFont		: "Ignorer les polices de caractères",
 DlgPasteRemoveStyles	: "Supprimer les styles",
-DlgPasteCleanBox		: "Effacer le contenu",
 
 // Color Picker
 ColorAutomatic	: "Automatique",
@@ -471,7 +475,7 @@ DlgDocCharSetCE		: "Europe Centrale",
 DlgDocCharSetCT		: "Chinois Traditionnel (Big5)",
 DlgDocCharSetCR		: "Cyrillique",
 DlgDocCharSetGR		: "Grec",
-DlgDocCharSetJP		: "Japanais",
+DlgDocCharSetJP		: "Japonais",
 DlgDocCharSetKR		: "Coréen",
 DlgDocCharSetTR		: "Turc",
 DlgDocCharSetUN		: "Unicode (UTF-8)",
@@ -510,7 +514,13 @@ DlgTemplatesReplace	: "Remplacer tout le contenu",
 // About Dialog
 DlgAboutAboutTab	: "A propos de",
 DlgAboutBrowserInfoTab	: "Navigateur",
-DlgAboutLicenseTab	: "License",
-DlgAboutVersion		: "version",
-DlgAboutInfo		: "Pour plus d'informations, aller à"
+DlgAboutLicenseTab	: "Licence",
+DlgAboutVersion		: "Version",
+DlgAboutInfo		: "Pour plus d'informations, aller à",
+
+// Div Dialog
+DlgDivGeneralTab	: "Général",
+DlgDivAdvancedTab	: "Avancé",
+DlgDivStyle		: "Style",
+DlgDivInlineStyle	: "Attribut Style"
 };

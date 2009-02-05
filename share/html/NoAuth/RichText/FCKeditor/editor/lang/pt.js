@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2008 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,6 +44,7 @@ RemoveFormat		: "Eliminar Formato",
 InsertLinkLbl		: "Hiperligação",
 InsertLink			: "Inserir/Editar Hiperligação",
 RemoveLink			: "Eliminar Hiperligação",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: " Inserir/Editar Âncora",
 AnchorDelete		: "Remove Anchor",	//MISSING
 InsertImageLbl		: "Imagem",
@@ -72,6 +73,9 @@ BlockJustify		: "Justificado",
 DecreaseIndent		: "Diminuir Avanço",
 IncreaseIndent		: "Aumentar Avanço",
 Blockquote			: "Blockquote",	//MISSING
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "Anular",
 Redo				: "Repetir",
 NumberedListLbl		: "Numeração",
@@ -157,6 +161,7 @@ UnknownToolbarSet	: "Nome de barra \"%1\" não definido",
 NoActiveX			: "As definições de segurança do navegador podem limitar algumas potencalidades do editr. Deve activar a opção \"Executar controlos e extensões ActiveX\". Pode ocorrer erros ou verificar que faltam potencialidades.",
 BrowseServerBlocked : "Não foi possível abrir o navegador de recursos. Certifique-se que todos os bloqueadores de popup estão desactivados.",
 DialogBlocked		: "Não foi possível abrir a janela de diálogo. Certifique-se que todos os bloqueadores de popup estão desactivados.",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -359,7 +364,6 @@ DlgPasteMsg2	: "Por favor, cole dentro da seguinte caixa usando o teclado (<STRO
 DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "Ignorar da definições do Tipo de Letra ",
 DlgPasteRemoveStyles	: "Remover as definições de Estilos",
-DlgPasteCleanBox		: "Caixa de Limpeza",
 
 // Color Picker
 ColorAutomatic	: "Automático",
@@ -512,5 +516,11 @@ DlgAboutAboutTab	: "Acerca",
 DlgAboutBrowserInfoTab	: "Informação do Nevegador",
 DlgAboutLicenseTab	: "Licença",
 DlgAboutVersion		: "versão",
-DlgAboutInfo		: "Para mais informações por favor dirija-se a"
+DlgAboutInfo		: "Para mais informações por favor dirija-se a",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style"	//MISSING
 };

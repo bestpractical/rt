@@ -89,7 +89,7 @@ foreach ( qw(queue action) ) {
 };
 
 if ( ($opts{'extension'} || '') =~ /^(?:action|queue|ticket)$/i ) {
-    $args{ lc $opts{'extension'} } = $ENV{'EXTENSION'};
+    $args{ lc $opts{'extension'} } = $ENV{'EXTENSION'} || $opts{$opts{'extension'}};
 } elsif ( $opts{'extension'} && $ENV{'EXTENSION'} ) {
     print STDERR "Value of the --extension argument is not action, queue or ticket"
         .", but environment variable EXTENSION is also defined. The former is ignored.\n";

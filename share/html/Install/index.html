@@ -49,7 +49,19 @@
 
 <& Elements/Errors, errors => \@errors &>
 
-% if ( !$locked) {
+% return if $locked;
+<form method="post">
+
+<h1><% _('Language.') %></h1>
+
+<div class="select-lang">
+<&|/l&>Select another language</&>:
+<& /Elements/SelectLang,
+    name => 'lang',
+    default => $lang_handle? $lang_handle->language_tag : undef,
+&>
+<input type="submit" class="button" name="change_lang" value="<% _('Change') %>" />
+</div>
 
 <h1><% _('What is RT?') %></h1>
 
@@ -73,21 +85,40 @@
 <& Elements/Form, fields => 'start', 
     next => '/Install/DatabaseType.html',
     next_label => _("Let's go") &>
-% }
 </&>
 <%init>
 my @errors;
 my $locked;
 my $file = File::Spec->catfile( $RT::EtcPath, 'RT_SiteConfig.pm' );
-$locked = 1 unless -w $file;
+if ( ! -e $file ) {
+    # write a blank RT_SiteConfig.pm
+    open my $fh, '>', $file or die $!;
+    close $fh;
+}
+elsif ( ! -w $file ) {
+    $locked = 1;
+}
 
 if ( $locked ) {
     push @errors, _("Config file %1 is locked", $file);
 }
 
+if ( $change_lang && $lang ) {
+    # hackish, but works
+    Jifty->web->current_user = RT::CurrentUser->new;
+    Jifty->web->current_user->language_handle( $lang );
+}
+
+my $lang_handle = do { local $@;
+    eval {
+        (Jifty->web->current_user || RT::CurrentUser->new(RT->system_user->id))
+            ->language_handle
+    }
+};
 </%init>
 
 <%args>
-$run => 0
+$change_lang => undef
+$lang => undef
 </%args>
 

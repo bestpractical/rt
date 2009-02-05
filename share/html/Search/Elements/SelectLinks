@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$name%>">
 % foreach (@fields) {
-<option value="<%$_%>"><&|/l&><%$_%></&></option>
+<option value="<%$_%>"><% _($_) %></option>
 % }
 </select>
 <%ARGS>

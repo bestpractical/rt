@@ -77,17 +77,17 @@ my $LinkCallback = sub  {
 $COLUMN_MAP = {
     queue => {
         attribute => 'queue',
-        title     => 'Queue id',
+        title     => 'Queue id', # loc
         value     => sub { return $_[0]->queue_id }
     },
     queue_name => {
         attribute => 'queue',
-        title     => 'queue',
+        title     => 'queue', # loc
         value     => sub  { return $_[0]->queue->name }
     },
     owner_name => {
         title     => 'Owner',
-        attribute => 'Owner',
+        attribute => 'Owner', # loc
         value     => sub  { return $_[0]->owner_obj->name }
     },
     status => {
@@ -95,11 +95,12 @@ $COLUMN_MAP = {
         value     => sub  { return _($_[0]->status) }
     },
     subject => {
+        title     => 'Subject', # loc
         attribute => 'subject',
         value => sub  { return $_[0]->subject || "(" . _('No subject') . ")" }
     },
     extended_status => {
-        title     => 'Status',
+        title     => 'Status', # loc
         attribute => 'Status',
         value     => sub  {
             my $Ticket = shift;
@@ -121,71 +122,79 @@ $COLUMN_MAP = {
           }
     },
     priority => {
-        attribute => 'Priority',
+        attribute => 'priority',
+        title     => 'Priority', # loc
         value     => sub  { return $_[0]->priority }
     },
     initial_priority => {
         attribute => 'initial_priority',
-        name => 'Initial Priority',
+        title     => 'initial_priority', # loc
+        name      => 'Initial Priority',
         value     => sub  { return $_[0]->initial_priority }
     },
     final_priority => {
+        title     => 'final_priority', # loc
         attribute => 'final_priority',
-        name => 'Final Priority',
+        name      => 'Final Priority',
         value     => sub  { return $_[0]->final_priority }
     },
     effective_id => {
+        title     => 'effective_id', # loc
         attribute => 'effective_id',
         value     => sub  { return $_[0]->effective_id }
     },
     type => {
+        title     => 'type', # loc
         attribute => 'type',
         value     => sub  { return $_[0]->type }
     },
     time_worked => {
         attribute => 'time_worked',
-        title => 'Time Worked',
+        title => 'Time Worked', # loc
         value     => sub  { return $_[0]->time_worked }
     },
     time_left => {
         attribute => 'time_left',
-        title     => 'Time Left',
+        title     => 'Time Left', # loc
         value     => sub  { return $_[0]->time_left }
     },
     time_estimated => {
         attribute => 'time_estimated',
-        title => 'Time Estimated',
+        title => 'Time Estimated', # loc
         value     => sub  { return $_[0]->time_estimated }
     },
     requestors => {
+        title     => 'Requestors', # loc
         attribute => 'Requestor.email',
         value => sub  { return $_[0]->role_group("requestor")->member_emails_as_string }
     },
     cc => {
+        title     => 'cc', # loc
         attribute => 'Cc.email',
         value => sub  { return $_[0]->role_group("cc")->member_emails_as_string }
     },
     admin_cc => {
+        title       => 'admin_cc', # loc
         attribute => 'AdminCc.email',
         value => sub  { return $_[0]->role_group("admin_cc")->member_emails_as_string }
     },
     starts_relative => {
-        title     => 'starts',
+        title     => 'Starts', # loc
         attribute => 'starts',
         value     => sub  { return $_[0]->starts_obj->age_as_string }
     },
     started_relative => {
-        title     => 'Started',
+        title     => 'Started', # loc
         attribute => 'Started',
         value     => sub  { return $_[0]->started_obj->age_as_string }
     },
     told_relative => {
-        title     => 'Told',
+        title     => 'Told', # loc
         attribute => 'Told',
         value     => sub  { return $_[0]->told_obj->age_as_string }
     },
     due_relative => {
-        title     => 'Due',
+        title     => 'Due', # loc
         attribute => 'Due',
         value     => sub  { 
             my $date = $_[0]->due_obj;
@@ -198,32 +207,37 @@ $COLUMN_MAP = {
         }
     },
     resolved_relative => {
-        title     => 'resolved',
+        title     => 'Resolved', # loc
         attribute => 'resolved',
         value     => sub  { return $_[0]->resolved_obj->age_as_string }
     },
     starts => {
+        title     => 'Starts', # loc
         attribute => 'starts',
         value     => sub  { return $_[0]->starts_obj->as_string }
     },
     started => {
+        title     => 'Started', # loc
         attribute => 'Started',
         value     => sub  { return $_[0]->started_obj->as_string }
     },
     told => {
+        title     => 'Told', # loc
         attribute => 'Told',
         value     => sub  { return $_[0]->told_obj->as_string }
     },
     due => {
+        title     => 'Due', # loc
         attribute => 'Due',
         value     => sub  { return $_[0]->due_obj->as_string }
     },
     resolved => {
+        title     => 'Resolved', # loc
         attribute => 'resolved',
         value     => sub  { return $_[0]->resolved_obj->as_string }
     },
     update_status => {
-        title => _('New messages'),
+        title => 'New messages', # loc
         value => sub  {
             my $txn = $_[0]->seen_up_to or return $_[0]->_('No');
             return \('<a href="'. RT->config->get('WebPath') .'/Ticket/Display.html?id='
@@ -232,7 +246,7 @@ $COLUMN_MAP = {
         },
     },
     key_requestors => {
-        title     => 'Requestors',
+        title     => 'Requestors', # loc
         attribute => 'Requestor.email',
         value => sub  {
             my $t = shift;
@@ -251,17 +265,17 @@ $COLUMN_MAP = {
         }
     },
     key_owner_name => {
-        title     => 'Owner',
+        title     => 'Owner', # loc
         attribute => 'Owner',
         value     => sub  {
             my $t = shift;
             my $name = $t->owner_obj->name;
             my %key = RT::Crypt::GnuPG::get_key_info($t->owner_obj->email);
             if (!defined $key{'info'}) {
-                $name .= _(" (no pubkey!)");
+                $name .= ' '. _("(no pubkey!)");
             }
             elsif ($key{'info'}{'trust_level'} == 0) {
-                $name .= _(" (untrusted!)");
+                $name .= ' '. _("(untrusted!)");
             }
 
             return $name;
@@ -278,7 +292,7 @@ $COLUMN_MAP = {
     },
     '_CHECKBOX' => {
         attribute => 'checkbox',
-        title => _('Update'),
+        title => 'Update', # loc
         align     => 'right',
         value     => sub { return \('<input type="checkbox" class="checkbox" name="UpdateTicket'.$_[0]->id.'" value="1" checked="checked" />') }
     },
@@ -328,8 +342,8 @@ else {
 }
 </%ONCE>
 <%init>
-$m->callback( COLUMN_MAP => $COLUMN_MAP, Callbackname => 'once', CallbackOnce => 1 );
+$m->callback( COLUMN_MAP => $COLUMN_MAP, callback_name => 'Once', callback_once => 1 );
 # backward compatibility
-$m->callback( COLUMN_MAP => $COLUMN_MAP, Callbackname => 'column_map' );
+$m->callback( COLUMN_MAP => $COLUMN_MAP, callback_name => 'ColumnMap' );
 return get_column_map_entry( Map => $COLUMN_MAP, name => $name, Attribute => $attr );
 </%init>

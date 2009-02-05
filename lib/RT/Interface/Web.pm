@@ -186,7 +186,8 @@ sub redirect {
             $uri->scheme('http');
         }
 
-        $uri->host( $ENV{'HTTP_HOST'} );
+        # [rt3.fsck.com #12716] Apache recommends use of $SERVER_HOST
+        $uri->host( $ENV{'SERVER_HOST'} || $ENV{'HTTP_HOST'} );
         $uri->port( $ENV{'SERVER_PORT'} );
     }
 
@@ -255,6 +256,81 @@ sub strip_content {
     return $content;
 }
 
+=head2 send_static_file 
+
+Takes a File => path and a type => Content-type
+
+If type isn't provided and File is an image, it will
+figure out a sane Content-type, otherwise it will
+send application/octet-stream
+
+Will set caching headers using StaticFileHeaders
+
+=cut
+
+sub send_static_file {
+    my $self = shift;
+    my %args = @_;
+    my $file = $args{file};
+    my $type = $args{type};
+
+    $self->static_file_headers();
+
+    unless ($type) {
+        if ( $file =~ /\.(gif|png|jpe?g)$/i ) {
+            $type = "image/$1";
+            $type =~ s/jpg/jpeg/gi;
+        }
+        $type ||= "application/octet-stream";
+    }
+    $HTML::Mason::Commands::r->content_type($type);
+    open my $fh, "<$file" or die "couldn't open file: $!";
+    binmode($fh);
+    {
+        local $/ = \16384;
+        $HTML::Mason::Commands::m->out($_) while (<$fh>);
+        $HTML::Mason::Commands::m->flush_buffer;
+    }
+    close $fh;
+}
+
+sub strip_content {
+    my %args    = @_;
+    my $content = $args{content};
+    my $html    = ( ( $args{content_type} || '' ) eq "text/html" );
+    my $sigonly = $args{strip_signature};
+
+    # Save us from undef warnings
+    return '' unless defined $content;
+
+    # Make the content have no 'weird' newlines in it
+    $content =~ s/\r+\n/\n/g;
+
+    # Filter empty content when type is text/html
+    return '' if $html && $content =~ m{^\s*(?:<br[^>]*/?>)*\s*$}s;
+
+    # If we aren't supposed to strip the sig, just bail now.
+    return $content unless $sigonly;
+
+    # Find the signature
+    my $sig = $args{'current_user'}->user_object->signature || '';
+    $sig =~ s/^\s+//;
+    $sig =~ s/\s+$//;
+
+    # Check for plaintext sig
+    return '' if not $html and $content =~ /^\s*(--)?\s*\Q$sig\E\s*$/;
+
+    # Check for html-formatted sig
+    RT::Interface::Web::escape_utf8( \$sig );
+    return ''
+      if $html
+          and $content =~
+          m{^\s*<p>\s*(--)?\s*<br[^>]*?/?>\s*\Q$sig\E\s*</p>\s*$}s;
+
+    # Pass it through
+    return $content;
+}
+
 package HTML::Mason::Commands;
 
 use vars qw/$r $m %session/;
@@ -284,7 +360,7 @@ sub abort {
         && $session{'ErrorDocumentType'} )
     {
         $r->content_type( $session{'ErrorDocumentType'} );
-        $m->comp( $session{'ErrorDocument'}, Why => $why, %args );
+        $m->comp( $session{'ErrorDocument'}, why => $why, %args );
         $m->abort;
     } else {
         $m->comp( "/Elements/Error", why => $why, %args );
@@ -608,6 +684,7 @@ sub process_update_message {
     );
 
     unless ( $args{'args_ref'}->{'UpdateIgnoreAddressCheckboxes'} ) {
+        
         foreach my $key ( keys %{ $args{args_ref} } ) {
             next unless $key =~ /^Update(cc|Bcc)-(.*)$/;
 
@@ -640,7 +717,7 @@ sub process_update_message {
 
 =head2 make_mime_entity PARAMHASH
 
-Takes a paramhash subject, Body and AttachmentFieldname.
+Takes a paramhash subject, body and attachment_field_name.
 
 Also takes Form, cc and type as optional paramhash keys.
 
@@ -650,13 +727,12 @@ Also takes Form, cc and type as optional paramhash keys.
 
 sub make_mime_entity {
 
-    #TODO document what else this takes.
     my %args = (
         subject             => undef,
         from                => undef,
         cc                  => undef,
         body                => undef,
-        AttachmentFieldname => undef,
+        attachment_field_name => undef,
         type                => undef,
         @_,
     );
@@ -683,11 +759,11 @@ sub make_mime_entity {
         );
     }
 
-    if ( $args{'AttachmentFieldname'} ) {
+    if ( $args{'attachment_field_name'} ) {
 
         my $cgi_object = Jifty->handler->cgi;
 
-        if ( my $filehandle = $cgi_object->upload( $args{'AttachmentFieldname'} ) ) {
+        if ( my $filehandle = $cgi_object->upload( $args{'attachment_field_name'} ) ) {
 
             my ( @content, $buffer );
             while ( my $bytesread = read( $filehandle, $buffer, 4096 ) ) {
@@ -699,14 +775,21 @@ sub make_mime_entity {
             # Prefer the cached name first over CGI.pm stringification.
             my $filename = $RT::Mason::CGI::Filename;
             $filename = "$filehandle" unless defined($filename);
-
-            $filename =~ s#^.*[\\/]##;
+            $filename = Encode::decode_utf8($filename);
+            $filename =~ s{^.*[\\/]}{};
+            
 
             $Message->attach(
                 Type     => $uploadinfo->{'Content-Type'},
-                Filename => Encode::decode_utf8($filename),
+                Filename => $filename,
                 Data     => \@content,
             );
+            if (   !$args{'subject'}
+                && !( defined $args{'body'} && length $args{'body'} ) )
+            {
+                $Message->head->set( 'Subject' => $filename );
+            }
+            
         }
     }
 
@@ -1352,7 +1435,8 @@ sub process_record_links {
 
             for my $luri ( split( / /, $args_ref->{ $Record->id . "-$linktype" } ) ) {
                 next unless $luri;
-                $luri =~ s/\s*$//;    # Strip trailing whitespace
+                $luri =~ s/\s+$//;    # Strip trailing whitespace
+                    
                 my ( $val, $msg ) = $Record->add_link(
                     target => $luri,
                     type   => $linktype

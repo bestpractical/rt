@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test; use Test::More tests => 11;
+use RT::Test; use Test::More tests => 12;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 my $url = $m->rt_base_url;
@@ -20,7 +20,7 @@ my $t_link = $m->find_link( text => "for custom search".$$ );
 like ($t_link->url, qr/$id/, 'link to the ticket we Created');
 
 $m->content_lacks ('customsearch@localhost', 'requestor not displayed ');
-$m->get ( $url.'Prefs/MyRT.html' );
+$m->get ( $url.'/Prefs/MyRT.html' );
 my $cus_hp = $m->find_link( text => "My Tickets" );
 my $cus_qs = $m->find_link( text => "Quick search" );
 $m->get ($cus_hp);
@@ -42,7 +42,12 @@ $m->content_contains ('customsearch@localhost', 'requestor now displayed ');
 $m->get ($cus_hp);
 
 $m->form_name('build_query');
-$m->field (current_display_columns => 'Requestors');
+
+my $cdc = $m->current_form->find_input('current_display_columns');
+my ($requestor_value) = grep { /requestor/ } $cdc->possible_values;
+ok($requestor_value, "got the requestor value");
+
+$m->field (current_display_columns => $requestor_value);
 $m->click_button (name => 'remove_col') ;
 
 $m->form_name('build_query');

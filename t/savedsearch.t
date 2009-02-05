@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test; use Test::More tests => 26;
+use RT::Test; use Test::More tests => 27;
 use RT::Model::User;
 use RT::Model::Group;
 use RT::Model::Ticket;
@@ -9,6 +9,9 @@ use RT::Model::Queue;
 use_ok('RT::SavedSearch');
 use_ok('RT::SavedSearches');
 
+
+use Test::Warn;
+use RT::Test::Warnings;
 
 # Set up some infrastructure.  These calls are tested elsewhere.
 
@@ -144,8 +147,12 @@ $tickets->from_sql($loadedsearch3->get_parameter('query'));
 is($tickets->count, 1, "Found a ticket");
 
 # This should fail -- no permission.
+
 my $loadedsearch4 = RT::SavedSearch->new(current_user => $curruser);
-$loadedsearch4->load($othersearch->privacy, $othersearch->id);
+
+warning_like {
+    $loadedsearch4->load($othersearch->privacy, $othersearch->id);
+} qr/Could not load object RT::Model::Group-\d+ when loading search/;
 isnt($loadedsearch4->id, $othersearch->id, "Did not load othersearch");
 
 # Try to update an existing search.

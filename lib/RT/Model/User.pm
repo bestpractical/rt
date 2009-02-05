@@ -296,7 +296,7 @@ sub create {
     }
 
     if ($record_transaction) {
-        $self->_new_transaction( type => "Create" );
+        $self->_new_transaction( type => "create" );
     }
 
     Jifty->handle->commit;
@@ -606,6 +606,51 @@ sub validate_email {
         return (1);
     }
 }
+
+=head2 email_frequency
+
+Takes optional Ticket argument in paramhash. Returns 'no email',
+'squelched', 'daily', 'weekly' or empty string depending on
+user preferences.
+
+=over 4
+
+=item 'no email' - user has no email, so can not recieve notifications.
+
+=item 'squelched' - returned only when Ticket argument is provided and
+notifications to the user has been supressed for this ticket.
+
+=item 'daily' - retruned when user recieve daily messages digest instead
+of immediate delivery.
+
+=item 'weekly' - previous, but weekly.
+
+=item empty string returned otherwise.
+
+=back
+
+=cut
+
+sub email_frequency {
+    my $self = shift;
+    my %args = (
+        ticket => undef,
+        @_
+    );
+    return ''
+      unless $self->id
+          && $self->id != RT->nobody->id
+          && $self->id != RT->system_user->id;
+    return 'no email' unless my $email = $self->email;
+    return 'squelched'
+      if $args{'ticket'}
+          && grep lc $email eq lc $_->content, $args{'ticket'}->squelch_mail_to;
+    my $frequency = RT->config->get( 'EmailFrequency', $self ) || '';
+    return 'daily'  if $frequency =~ /daily/i;
+    return 'weekly' if $frequency =~ /weekly/i;
+    return '';
+}
+
 
 
 =head2 canonicalize_email ADDRESS
@@ -1175,7 +1220,7 @@ sub _set {
     my %args = (
         column             => undef,
         value              => undef,
-        transaction_type   => 'Set',
+        transaction_type   => 'set',
         record_transaction => 1,
         @_
     );
@@ -1277,8 +1322,8 @@ Return the friendly name
 
 sub friendly_name {
     my $self = shift;
-    return $self->real_name if defined( $self->real_name );
-    return $self->name      if defined( $self->name );
+    return $self->real_name if $self->real_name;
+    return $self->name      if $self->name;
     return "";
 }
 

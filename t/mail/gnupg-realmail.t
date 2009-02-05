@@ -18,7 +18,6 @@ use Digest::MD5 qw(md5_hex);
 use File::Temp qw(tempdir);
 my $homedir = tempdir( CLEANUP => 1 );
 
-RT->config->set( LogToScreen => 'debug' );
 RT->config->set( 'GnuPG',
                  enable => 1,
                  outgoing_messages_format => 'RFC' );

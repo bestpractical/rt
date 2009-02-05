@@ -162,7 +162,7 @@ sub get_current_user {
                 )
                 || $unpriv->principal->has_right(
                     object => $args{'queue'},
-                    right  => 'ModifyTicket'
+                    right  => 'CreateTicket'
                 )
                 )
             {

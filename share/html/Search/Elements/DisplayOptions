@@ -67,7 +67,7 @@
 % if (defined $order_by[$o] and $field eq $order_by[$o]) {
 selected="selected"
 % }
-><&|/l&><%$field%></&></option>
+><% _($field) %></option>
 % }
 </select>
 <select name="order">
@@ -103,7 +103,7 @@ selected="selected"
 <%INIT>
 my $tickets = RT::Model::TicketCollection->new();
 my %fields = %{$tickets->columns};
-map { $fields{$_}->[0] =~ /^(?:ENUM|INT|DATE|STRING)$/ || delete $fields{$_} } keys %fields;
+map { $fields{$_}->[0] =~ /^(?:ENUM|INT|DATE|STRING|ID)$/ || delete $fields{$_} } keys %fields;
 delete $fields{'effective_id'};
 $fields{'Owner'} = 1;
 $fields{ $_ . '.email' } = 1 foreach( qw(Requestor Cc AdminCc) );

@@ -64,7 +64,7 @@ RT::Shredder - Permanently wipeout data from RT
 
 =head1 description
 
-RT::Shredder is extention to RT which allows you to permanently wipeout
+RT::Shredder is extension to RT which allows you to permanently wipeout
 data from the RT database.  Shredder supports the wiping of almost
 all RT objects (Tickets, Transactions, Attachments, Users...).
 

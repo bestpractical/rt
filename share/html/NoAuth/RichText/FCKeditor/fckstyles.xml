@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!--
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2008 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -38,10 +38,10 @@
 	<Style name="Heading 4" element="h4" />
 	<Style name="Heading 5" element="h5" />
 	<Style name="Heading 6" element="h6" />
-	<Style name="paragraph" element="p" />
+	<Style name="Paragraph" element="p" />
 	<Style name="Document Block" element="div" />
 	<Style name="Preformatted Text" element="pre" />
-	<Style name="address" element="address" />
+	<Style name="Address" element="address" />
 	-->
 
 	<!-- Inline Styles -->
@@ -49,16 +49,16 @@
 	<!--
 	# These are core styles available as toolbar buttons.
 
-	<Style name="bold" element="b">
+	<Style name="Bold" element="b">
 		<Override element="strong" />
 	</Style>
-	<Style name="italic" element="i">
+	<Style name="Italic" element="i">
 		<Override element="em" />
 	</Style>
-	<Style name="underline" element="u" />
-	<Style name="strikethrough" element="strike" />
-	<Style name="subscript" element="sub" />
-	<Style name="superscript" element="sup" />
+	<Style name="Underline" element="u" />
+	<Style name="Strikethrough" element="strike" />
+	<Style name="Subscript" element="sub" />
+	<Style name="Superscript" element="sup" />
 	-->
 
 	<Style name="Marker: Yellow" element="span">
@@ -68,17 +68,14 @@
 		<Style name="background-color" value="Lime" />
 	</Style>
 
-	<Style name="Strong Emphasis" element="strong" />
-	<Style name="emphasis" element="em" />
-
-	<Style name="big" element="big" />
-	<Style name="small" element="small" />
-	<Style name="typewriter" element="tt" />
+	<Style name="Big" element="big" />
+	<Style name="Small" element="small" />
+	<Style name="Typewriter" element="tt" />
 
 	<Style name="Computer Code" element="code" />
 	<Style name="Keyboard Phrase" element="kbd" />
 	<Style name="Sample Text" element="samp" />
-	<Style name="variable" element="var" />
+	<Style name="Variable" element="var" />
 
 	<Style name="Deleted Text" element="del" />
 	<Style name="Inserted Text" element="ins" />

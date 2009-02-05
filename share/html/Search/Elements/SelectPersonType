@@ -63,16 +63,18 @@
 <%INIT>
 my @types;
 if ($scope =~ 'queue') {
-   @types = qw(Cc AdminCc);
+   @types = qw(cc admin_cc);
 }
 elsif ($suffix eq 'Group') {
-   @types = qw(Requestor Cc AdminCc Watcher Owner QueueCc QueueAdminCc QueueWatcher);
+   @types = qw(requestor cc admin_cc watcher);
 }
 else { 
-   @types = qw(Requestor Cc AdminCc Watcher Owner);
+   @types = qw(requestor cc admin_cc watcher owner queue_cc queue_admin_cc
+           queue_watcher);
 }
 
-my @subtypes = qw(email name real_name Nickname organization Address1 Address2 WorkPhone HomePhone MobilePhone PagerPhone id);
+my @subtypes = qw(email name real_name nickname organization address1 address2
+        work_phone home_phone mobile_phone pager_phone id);
 
 </%INIT>
 <%ARGS>

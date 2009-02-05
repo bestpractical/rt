@@ -77,7 +77,7 @@ Then you can add the followoing scrip to your Bugs queue:
     Condition: On Create
     Action:    Notify developers
     Template:  Transaction
-    Stage:     TransactionCreate
+    Stage:     transaction_create
 
 Your development team will be notified on every new ticket in the queue.
 

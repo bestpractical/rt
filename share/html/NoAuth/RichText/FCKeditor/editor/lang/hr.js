@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2008 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,6 +44,7 @@ RemoveFormat		: "Ukloni formatiranje",
 InsertLinkLbl		: "Link",
 InsertLink			: "Ubaci/promijeni link",
 RemoveLink			: "Ukloni link",
+VisitLink			: "Otvori link",
 Anchor				: "Ubaci/promijeni sidro",
 AnchorDelete		: "Ukloni sidro",
 InsertImageLbl		: "Slika",
@@ -72,6 +73,9 @@ BlockJustify		: "Blok poravnanje",
 DecreaseIndent		: "Pomakni ulijevo",
 IncreaseIndent		: "Pomakni udesno",
 Blockquote			: "Blockquote",
+CreateDiv			: "Napravi Div kontejner",
+EditDiv				: "Uredi Div kontejner",
+DeleteDiv			: "Ukloni Div kontejner",
 Undo				: "Poništi",
 Redo				: "Ponovi",
 NumberedListLbl		: "Brojčana lista",
@@ -157,6 +161,7 @@ UnknownToolbarSet	: "Traka s alatima \"%1\" ne postoji",
 NoActiveX			: "Vaše postavke pretraživača mogle bi ograničiti neke od mogućnosti editora. Morate uključiti opciju \"Run ActiveX controls and plug-ins\" u postavkama. Ukoliko to ne učinite, moguće su razliite greške tijekom rada.",
 BrowseServerBlocked : "Pretraivač nije moguće otvoriti. Provjerite da li je uključeno blokiranje pop-up prozora.",
 DialogBlocked		: "Nije moguće otvoriti novi prozor. Provjerite da li je uključeno blokiranje pop-up prozora.",
+VisitLinkBlocked	: "Nije moguće otvoriti novi prozor. Provjerite da li je uključeno blokiranje pop-up prozora.",
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -359,7 +364,6 @@ DlgPasteMsg2	: "Molimo zaljepite unutar doljnjeg okvira koristeći tipkovnicu (<
 DlgPasteSec		: "Zbog sigurnosnih postavki Vašeg pretraživača, editor nema direktan pristup Vašem međuspremniku. Potrebno je ponovno zalijepiti tekst u ovaj prozor.",
 DlgPasteIgnoreFont		: "Zanemari definiciju vrste fonta",
 DlgPasteRemoveStyles	: "Ukloni definicije stilova",
-DlgPasteCleanBox		: "Očisti okvir",
 
 // Color Picker
 ColorAutomatic	: "Automatski",
@@ -512,5 +516,11 @@ DlgAboutAboutTab	: "O FCKEditoru",
 DlgAboutBrowserInfoTab	: "Podaci o pretraživaču",
 DlgAboutLicenseTab	: "Licenca",
 DlgAboutVersion		: "inačica",
-DlgAboutInfo		: "Za više informacija posjetite"
+DlgAboutInfo		: "Za više informacija posjetite",
+
+// Div Dialog
+DlgDivGeneralTab	: "Općenito",
+DlgDivAdvancedTab	: "Napredno",
+DlgDivStyle		: "Stil",
+DlgDivInlineStyle	: "Stil u redu"
 };

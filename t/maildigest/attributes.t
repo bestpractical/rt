@@ -87,7 +87,7 @@ ok( $ret, "Ticket $id created: $msg" );
 # Make the other users ticket watchers.
 ( $ret, $msg ) = $ticket->add_watcher( type => 'cc',
 		      principal_id => $user_n->principal->id );
-ok( $ret, "Added user_w as a ticket watcher: $msg" );
+ok( $ret, "Added user_n as a ticket watcher: $msg" );
 ( $ret, $msg ) = $ticket->add_watcher( type => 'cc',
 		      principal_id => $user_s->principal->id );
 ok( $ret, "Added user_s as a ticket watcher: $msg" );

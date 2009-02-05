@@ -77,9 +77,6 @@ my $basetabs = {     a => { title => _('Homepage'),
                     c => { title => _('Tools'),
                            path => 'Tools/index.html'
                          },
-                    p => { title => _('Approval'),
-                           path => 'Approvals/'
-                         },
                  };
 
 if (Jifty->web->current_user->has_right( right => 'ShowConfigTab', 
@@ -94,6 +91,13 @@ if (Jifty->web->current_user->has_right( right => 'ModifySelf',
     $basetabs->{k} = { title => _('Preferences'),
                        path => 'Prefs/Other.html'
 		     };
+}
+
+if (Jifty->web->current_user->has_right( right => 'ShowApprovalsTab',
+                        object => RT->system )) {
+    $basetabs->{p} = { title => _('Approval'),
+                        path => 'Approvals/'
+            };
 }
 
 if (!defined $toptabs) {

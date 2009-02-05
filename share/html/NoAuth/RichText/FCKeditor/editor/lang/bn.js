@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2008 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,6 +44,7 @@ RemoveFormat		: "ফরমেট সরাও",
 InsertLinkLbl		: "লিংকের যুক্ত করার লেবেল",
 InsertLink			: "লিংক যুক্ত কর",
 RemoveLink			: "লিংক সরাও",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: "নোঙ্গর",
 AnchorDelete		: "Remove Anchor",	//MISSING
 InsertImageLbl		: "ছবির লেবেল যুক্ত কর",
@@ -72,6 +73,9 @@ BlockJustify		: "ব্লক জাস্টিফাই",
 DecreaseIndent		: "ইনডেন্ট কমাও",
 IncreaseIndent		: "ইনডেন্ট বাড়াও",
 Blockquote			: "Blockquote",	//MISSING
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "আনডু",
 Redo				: "রি-ডু",
 NumberedListLbl		: "সাংখ্যিক লিস্টের লেবেল",
@@ -157,6 +161,7 @@ UnknownToolbarSet	: "টুলবার সেট \"%1\" এর অস্তি�
 NoActiveX			: "আপনার ব্রাউজারের সুরক্ষা সেটিংস কারনে এডিটরের কিছু ফিচার পাওয়া নাও যেতে পারে। আপনাকে অবশ্যই \"Run ActiveX controls and plug-ins\" এনাবেল করে নিতে হবে। আপনি ভুলভ্রান্তি কিছু কিছু ফিচারের অনুপস্থিতি উপলব্ধি করতে পারেন।",
 BrowseServerBlocked : "রিসোর্স ব্রাউজার খোলা গেল না। নিশ্চিত করুন যে সব পপআপ ব্লকার বন্ধ করা আছে।",
 DialogBlocked		: "ডায়ালগ ইউন্ডো খোলা গেল না। নিশ্চিত করুন যে সব পপআপ ব্লকার বন্ধ করা আছে।",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "ওকে",
@@ -359,7 +364,6 @@ DlgPasteMsg2	: "অনুগ্রহ করে নীচের বাক্স�
 DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "ফন্ট ফেস ডেফিনেশন ইগনোর করুন",
 DlgPasteRemoveStyles	: "স্টাইল ডেফিনেশন সরিয়ে দিন",
-DlgPasteCleanBox		: "বাক্স পরিষ্কার করুন",
 
 // Color Picker
 ColorAutomatic	: "অটোমেটিক",
@@ -512,5 +516,11 @@ DlgAboutAboutTab	: "কে বানিয়েছে",
 DlgAboutBrowserInfoTab	: "ব্রাউজারের ব্যাপারে তথ্য",
 DlgAboutLicenseTab	: "লাইসেন্স",
 DlgAboutVersion		: "ভার্সন",
-DlgAboutInfo		: "আরও তথ্যের জন্য যান"
+DlgAboutInfo		: "আরও তথ্যের জন্য যান",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style"	//MISSING
 };

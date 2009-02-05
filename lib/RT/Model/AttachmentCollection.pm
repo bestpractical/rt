@@ -162,12 +162,16 @@ sub limit_not_empty {
         value            => 'NULL',
         quote_value      => 0,
     );
-    $self->limit(
-        entry_aggregator => 'AND',
-        column           => 'content',
-        operator         => '!=',
-        value            => '',
-    );
+
+    # http://rt3.fsck.com/Ticket/Display.html?id=12483
+    if ( RT->config->get('DatabaseType') ne 'Oracle' ) {
+        $self->limit(
+            entry_aggregator => 'AND',
+            column           => 'content',
+            operator        => '!=',
+            value           => '',
+        );
+    }
     return;
 }
 

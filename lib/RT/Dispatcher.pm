@@ -114,6 +114,7 @@ before qr'^/(?!login)' => run {
         || Jifty->web->request->path =~ m{^/Elements/Header$}
         || Jifty->web->request->path =~ m{^/Elements/Footer$}
         || Jifty->web->request->path =~ m{^/Elements/Logo$}
+        || Jifty->web->request->path =~ m{^/__jifty/test_warnings$}
         || Jifty->web->request->path =~ m{^/__jifty/(css|js)} );
 };
 

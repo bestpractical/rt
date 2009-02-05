@@ -209,10 +209,9 @@ $txns->limit(column => 'object_type', value => 'RT::Model::Ticket');
 $txns->limit(column => 'type', operator => '!=',  value => 'email_record');
 
 my $give  = $txns->first;
-is($give->type, 'Give');
+is($give->type, 'give');
 
-
-is($give-> new_value , $root->id , "Stolen from root");
+is($give->new_value , $root->id , "Stolen from root");
 is($give->old_value , RT->system_user->id , "Stolen by the systemuser");
 
 

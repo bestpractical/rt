@@ -51,7 +51,7 @@
     title => $title
 &>
 
-% $m->callback( %ARGS, Callbackname => 'pre_form' );
+% $m->callback( %ARGS, callback_name => 'PreForm' );
 
 <div id="SimpleSearchForm">
 <form action="Simple.html" method="get">
@@ -69,7 +69,7 @@
 
 </form>
 
-% $m->callback( %ARGS, Callbackname => 'post_form' );
+% $m->callback( %ARGS, callback_name => 'PostForm' );
 
 </div>
 
@@ -79,23 +79,23 @@ my $title = _("Search for tickets");
 use RT::Search::Googleish;
 
 if ($q) {
-    my $tickets = RT::Model::TicketCollection->new();
-    if ($q =~ /^(\d+)$/) {
-        RT::Interface::Web::redirect(RT->config->get('WebURL')."Ticket/Display.html?id=".$q);
+    my $tickets = RT::Model::TicketCollection->new(current_user => Jifty->web->current_user);
+    if ($q =~ /^#?(\d+)$/) {
+        RT::Interface::Web::redirect(RT->config->get('WebURL')."Ticket/Display.html?id=".$1);
     }
 
-    $m->callback( %ARGS, query => \$q, Callbackname => 'modify_query' );
+    $m->callback( %ARGS, query => \$q, callback_name => 'ModifyQuery' );
 
-    if ($q =~ /^(\d+)$/) {
-        RT::Interface::Web::redirect(RT->config->get('WebURL')."Ticket/Display.html?id=".$q);
+    if ($q =~ /^#?(\d+)$/) {
+        RT::Interface::Web::redirect(RT->config->get('WebURL')."Ticket/Display.html?id=".$1);
     }
 
     my %args = (
-        Argument   => $q,
-        TicketsObj => $tickets,
+        argument   => $q,
+        tickets_obj => $tickets,
     );
 
-    $m->callback( %ARGS, Callbackname => 'search_args', args => \%args);
+    $m->callback( %ARGS, callback_name => 'SearchArgs', args => \%args);
 
     my $search = RT::Search::Googleish->new(%args);
 

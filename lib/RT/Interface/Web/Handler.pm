@@ -129,22 +129,22 @@ package Jifty::View::Mason::Handler;
 
 Method replaces deprecated component C<Element/Callback>.
 
-Takes hash with optional C<CallbackPage>, C<Callbackname>
-and C<CallbackOnce> arguments, other arguments are passed
+Takes hash with optional C<callback_page>, C<callback_name>
+and C<callback_once> arguments, other arguments are passed
 throught to callback components.
 
 =over 4
 
-=item CallbackPage
+=item callback_page
 
 Page path relative to the root, leading slash is mandatory.
 By default is equal to path of the caller component.
 
-=item Callbackname
+=item callback_name
 
 name of the callback. C<Default> is used unless specified.
 
-=item CallbackOnce
+=item callback_once
 
 By default is false, otherwise runs callbacks only once per
 process of the server. Such callbacks can be used to fill
@@ -153,7 +153,7 @@ structures.
 =back
 
 Searches for callback components in
-F<< /Callbacks/<any dir>/CallbackPage/Callbackname >>, for
+F<< /Callbacks/<any dir>/callback_page/callback_name >>, for
 example F</Callbacks/MyExtension/autohandler/Default> would
 be called as default callback for F</autohandler>.
 
@@ -168,15 +168,15 @@ be called as default callback for F</autohandler>.
     sub callback {
         my ( $self, %args ) = @_;
 
-        my $name = delete $args{'Callbackname'} || 'Default';
-        my $page = delete $args{'CallbackPage'} || $self->callers(0)->path;
+        my $name = delete $args{'callback_name'} || 'Default';
+        my $page = delete $args{'callback_page'} || $self->callers(0)->path;
         unless ($page) {
             Jifty->log->error("Couldn't get a page name for callbacks");
             return;
         }
 
         my $CacheKey = "$page--$name";
-        return 1 if delete $args{'CallbackOnce'} && $called{$CacheKey};
+        return 1 if delete $args{'callback_once'} && $called{$CacheKey};
         $called{$CacheKey} = 1;
 
         my $callbacks = $cache{$CacheKey};

@@ -144,8 +144,12 @@ sub init {
 
     #    CheckPerlRequirements();
     #Get a database connection
+    init_plugin_paths();
+
     init_system_objects();
     init_plugins();
+    # enable approval subsystem
+    require RT::Approval;
 }
 
 # Signal handlers

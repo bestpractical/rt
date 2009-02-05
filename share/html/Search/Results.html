@@ -56,7 +56,7 @@
     rows => $rows,
     order_by => $order_by,
     order => $order,
-    saved_searchid => $saved_searchid &>
+    saved_search_id => $saved_search_id &>
 <& /Elements/CollectionList, 
     query => $query,
     allow_sorting => 1,
@@ -91,7 +91,7 @@
     short_querystring => $short_querystring,
 &>
 
-% $m->callback( query_string => $query_string, Callbackname => 'search_actions' );
+% $m->callback( query_string => $query_string, callback_name => 'SearchActions' );
 </div>
 </&>
 <%INIT>
@@ -193,5 +193,5 @@ $rows => undef
 $page => 1
 $order_by => undef
 $order => undef
-$saved_searchid => undef
+$saved_search_id => undef
 </%ARGS>

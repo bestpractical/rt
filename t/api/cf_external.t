@@ -19,8 +19,8 @@ ok( $qid, "Created queue" );
 my %arg = ( name        => $q->name,
             type        => 'Select',
             queue       => $q->id,
-            MaxValues   => 1,
-            ValuesClass => VALUES_CLASS );
+            max_values   => 1,
+            values_class => VALUES_CLASS );
 
 my $cf = new('RT::Model::CustomField' );
 isa_ok( $cf, 'RT::Model::CustomField' );

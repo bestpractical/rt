@@ -52,21 +52,91 @@ $attr => undef
 <%ONCE>
 my $COLUMN_MAP = {
     id => {
-        title     => '#',
+        title     => '#', # loc
         attribute => 'id',
         align     => 'right',
         value     => sub  { return $_[0]->id },
     },
-};
+    name => {
+        title     => 'name', # loc
+	attribute => 'name',
+	value     => sub { return $_[0]->name() },
+    },
+    real_name => {
+        title     => 'real_name', # loc
+	attribute => 'real_name',
+	value     => sub { return $_[0]->real_name() },
+    },
+    nickname => {
+        title     => 'NickName', # loc
+	attribute => 'nickname',
+	value     => sub { return $_[0]->nickname() },
+    },
+    email => {
+        title     => 'email', # loc
+	attribute => 'email',
+	value     => sub { return $_[0]->email() },
+    },
+    organization => {
+        title     => 'Organization', # loc
+	attribute => 'organization',
+	value     => sub { return $_[0]->organization() },
+    },
+    home_phone => {
+        title     => 'HomePhone', # loc
+	attribute => 'home_phone',
+	value     => sub { return $_[0]->home_phone() },
+    },
+    work_phone => {
+        title     => 'WorkPhone', # loc
+	attribute => 'work_phone',
+	value     => sub { return $_[0]->work_phone() },
+    },
+    mobile_phone => {
+        title     => 'MobilePhone', # loc
+	attribute => 'mobile_phone',
+	value     => sub { return $_[0]->mobile_phone() },
+    },
+    pager_phone => {
+        title     => 'PagerPhone', # loc
+	attribute => 'pager_phone',
+	value     => sub { return $_[0]->pager_phone() },
+    },
+    address1 => {
+        title     => 'Address1', # loc
+	attribute => 'address1',
+	value     => sub { return $_[0]->address1() },
+    },
+    Address2 => {
+        title     => 'Address2', # loc
+	attribute => 'address2',
+	value     => sub { return $_[0]->address2() },
+    },
+    city => {
+        title     => 'City', # loc
+	attribute => 'city',
+	value     => sub { return $_[0]->city() },
+    },
+    state => {
+        title     => 'State', # loc
+	attribute => 'state',
+	value     => sub { return $_[0]->state() },
+    },
+    zip => {
+        title     => 'Zip', # loc
+	attribute => 'zip',
+	value     => sub { return $_[0]->zip() },
+    },
+    country => {
+        title     => 'country', # loc
+	attribute => 'country',
+	value     => sub { return $_[0]->country() },
+    },
 
-foreach my $col(qw(name real_name nickname email organization 
-    HomePhone WorkPhone MobilePhone PagerPhone Address1 Address2 City State Zip Country))
-{
-    $COLUMN_MAP->{ $col } = { attribute => $col, value => sub { return $_[0]->$col() } };
-}
+};
 
 </%ONCE>
 <%INIT>
-$m->callback( COLUMN_MAP => $COLUMN_MAP, Callbackname => 'column_map', CallbackOnce => 1 );
+$m->callback( COLUMN_MAP => $COLUMN_MAP, callback_name => 'ColumnMap', callback_once => 1 );
 return get_column_map_entry( Map => $COLUMN_MAP, name => $name, Attribute => $attr );
 </%INIT>

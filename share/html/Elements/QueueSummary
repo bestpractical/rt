@@ -58,7 +58,8 @@
 %   my $name = $queue->{name};
 %   $name =~ s/'/\\'/g;
 %   my $queue_cond = "Queue = '$name' AND ";
-%   my $all_q = $queue_cond . "(Status = 'open' OR Status = 'new' OR Status = 'stalled')";
+%   my $all_q = $queue_cond . '(' . join( " OR ", map "Status = '$_'",
+%   RT::Model::Queue->status_schema->valid('initial', 'active' )) . ')';
 <tr class="<% $i%2 ? 'oddline' : 'evenline'%>" >
 <td><a href="<% RT->config->get('WebPath') %>/Search/Results.html?query=<% $all_q |u,n %>" title="<% $queue->{description} %>"><% $queue->{name} %></a></td>
 %   for my $condition (@$conditions) {
@@ -79,7 +80,7 @@ else {
     $Queues->find_all_rows();
     @queues = grep $queue_filter->($_), @{$Queues->items_array_ref};
 
-    $m->callback( Callbackname => 'filter', Queues => \@queues );
+    $m->callback( callback_name => 'Filter', Queues => \@queues );
 
     @queues = map { {
         id          => $_->id,

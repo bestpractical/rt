@@ -71,7 +71,7 @@ $values_callback   => undef,
 
 $default            => 1,
 @default_value       => (),
-$default_label       => _('Use system default (%1)', join ', ', (@default_value||'')),
+$default_label       => undef
 
 $alternative      => 0,
 $alternative_label => _('other...'),
@@ -89,7 +89,7 @@ $multiple         => 0,
 % foreach my $v( @values ) {
 % my $selected = '';
 % $selected = 'selected="selected"' if delete $current_value{ $v };
-<option value="<% $v %>" <% $selected |n %>><% $values_label{ $v } || $v %></option>
+<option value="<% $v %>" <% $selected |n %>><% _($values_label{ $v } || $v) %></option>
 % }
 
 % if ( $alternative ) {
@@ -115,6 +115,9 @@ if ( $values_callback ) {
         %values_label = %$values;
         @values = keys %values_label;
     }
+}
+unless (defined $default_label ) {
+    $default_label = _('Use system default (%1)', join ', ', map{ _($values_label{$_} || $_) } @default_value);
 }
 </%INIT>
 </%METHOD>

@@ -154,6 +154,11 @@ sub next {
     my $Link = $self->SUPER::next();
     return $Link unless $Link && ref $Link;
 
+    # skip very invalid Link records
+    unless ( $Link->target && $Link->base ) {
+        return $self->next;
+    }
+
     # Skip links to local objects thast are deleted
     if (    $Link->target_uri->is_local
         and UNIVERSAL::isa( $Link->target_obj, "RT::Model::Ticket" )

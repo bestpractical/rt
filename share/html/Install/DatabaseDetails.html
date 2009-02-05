@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| Elements/Wrapper, title => _('Step %1 of %2: ', 2, 7 ) . _('Check your database credentials') &> 
+<&| Elements/Wrapper, title => _('Step %1 of %2: ', 2, 7 ) . _('Check Database Credentials') &> 
 
 % if ( @errors ) {
 <& Elements/Errors, errors => \@errors &>
@@ -69,7 +69,7 @@
     next => '/Install/Basics.html',
     next_label => _('Next: ') . _('Customize Basics'),
     previous => '/Install/DatabaseType.html',
-    previous_label => _('Previous: ') . _('Choose a database engine')
+    previous_label => _('Previous: ') . _('Choose Database Engine')
     &>
 </&>
 

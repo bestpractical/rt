@@ -50,12 +50,12 @@
     ticket => $ticket_obj, 
     title=> $title &>
     
-% $m->callback(Callbackname => 'before_action_list', args_ref => \%ARGS, ticket => $ticket_obj);
+% $m->callback(callback_name => 'BeforeActionList', args_ref => \%ARGS, ticket => $ticket_obj);
 <& /Elements/ListActions, actions => \@results &>
 
 <form action="Update.html" name="ticket_update"
     method="post" enctype="multipart/form-data">
-% $m->callback( Callbackname => 'form_start', args_ref => \%ARGS );
+% $m->callback( callback_name => 'FormStart', args_ref => \%ARGS, ticket => $ticket_obj );
 <input type="hidden" class="hidden" name="quote_transaction" value="<% $ARGS{quote_transaction}||'' %>" />
 <input type="hidden" class="hidden" name="default_status" value="<% $default_status ||''%>" />
 <input type="hidden" class="hidden" name="action" value="<% $ARGS{action}||'' %>" />
@@ -79,7 +79,7 @@
 <& /Elements/SelectTimeUnits, name => 'update_time_worked'&>
 </td></tr>
 % my $skip;
-% $m->callback( %ARGS, Callbackname => 'before_update_type', skip => \$skip );
+% $m->callback( %ARGS, callback_name => 'BeforeUpdateType', skip => \$skip );
 % if (!$skip) {
 <input type="hidden" class="hidden" name="id" value="<%$ticket_obj->id%>" /><br />
 % }
@@ -133,7 +133,7 @@
 % }
 
 <tr><td class="label" valign="top"><&|/l&>Message</&>:</td><td>
-% $m->callback( %ARGS, Callbackname => 'before_message_box' );
+% $m->callback( %ARGS, callback_name => 'BeforeMessageBox' );
 % if (exists $ARGS{update_content}) {
 % # preserve QuoteTransaction so we can use it to set up sane references/in/reply to
 % my $temp = $ARGS{'quote_transaction'};
@@ -166,14 +166,16 @@ my $title;
 
 my $ticket_obj = load_ticket($id);
 
-$m->callback( ticket => $ticket_obj, args_ref => \%ARGS, Callbackname => 'initial' );
+my @results;
+
+$m->callback( ticket => $ticket_obj, args_ref => \%ARGS, results => \@results, callback_name => 'Initial' );
 
 unless($default_status){
     $default_status=($ARGS{'status'} ||$ticket_obj->status());
 }
 
 if ($default_status =~ '^new$'){
-        $default_status='open';
+    $default_status='open';
 }
 
 if ($default_status eq 'resolved') {
@@ -206,7 +208,7 @@ $Cancomment = 1 if ( $ticket_obj->current_user_has_right('CommentOnTicket') or
 # {{{ deal with deleting uploaded attachments
 foreach my $key (keys %ARGS) {
     if ($key =~ m/^DeleteAttach-(.+)$/) {
-    delete $session{'Attachments'}{$1};
+        delete $session{'Attachments'}{$1};
     }
     $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
 }
@@ -214,21 +216,15 @@ foreach my $key (keys %ARGS) {
 
 # {{{ store the uploaded attachment in session
 if ($ARGS{'attach'}) {            # attachment?
-    $session{'Attachments'} = {} unless defined $session{'Attachments'};
-
-    my $subject = "$ARGS{'attach'}";
-    # since CGI.pm deutf8izes the magic field, we need to add it back.
-    Encode::_utf8_on($subject);
-    # strip leading directories
-    $subject =~ s#^.*[\\/]##;
-
     my $attachment = make_mime_entity(
-        filename             => $subject,
-        AttachmentFieldname => 'attach'
+        attachment_field_name => 'attach'
     );
 
-    $session{'Attachments'} = { %{$session{'Attachments'} || {}},
-                $ARGS{'attach'} => $attachment };
+    my $file_path = Encode::decode_utf8("$ARGS{'Attach'}");
+    $session{'Attachments'} = {
+        %{$session{'Attachments'} || {}},
+        $file_path => $attachment,
+    };
 }
 # }}}
 
@@ -237,8 +233,6 @@ unless (keys %{$session{'Attachments'}} and $ARGS{'update_attach'}) {
     delete $session{'Attachments'};
 }
 # }}}
-
-my @results;
 
 my $gnupg_widget = $m->comp('/Elements/GnuPG/SignEncryptWidget:new', arguments => \%ARGS );
 $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
@@ -254,7 +248,7 @@ if ( $ARGS{'submit_ticket'} ) {
 }
 
 if ( !$checks_failure && exists $ARGS{submit_ticket} ) {
-    $m->callback( ticket => $ticket_obj, args_ref => \%ARGS, Callbackname => 'before_display' );
+    $m->callback( ticket => $ticket_obj, args_ref => \%ARGS, callback_name => 'BeforeDisplay' );
     return $m->comp('Display.html', ticket_obj => $ticket_obj, %ARGS);
 }
 

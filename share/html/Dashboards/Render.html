@@ -51,25 +51,22 @@
 <& /Dashboards/Elements/Tabs,
     current_subtab => $current_subtab,
     title => $title,
-    dashboard_obj => $DashboardObj &>
+    dashboard_obj => $dashboard_obj &>
 % }
 
-<table border="0" width="100%">
+<table class="dashboard">
 <tr valign="top">
 
-<td class="boxcontainer" width="70%">
-% foreach ($DashboardObj->search_ids) {
-%   my ($type, $id, $desc) = @$_;
-%   my @for_showsearch = $DashboardObj->search_privacy(@$_);
-    <& /Elements/ShowSearch,
-        @for_showsearch,
-        override => { rows => $rows },
-        ignore_missing => 1,
-        hideable => $preview,
-    &>
-% }
+<td class="boxcontainer">
+% $show_cb->($_) foreach @{ $panes{body} || [] };
 </td>
 
+% if (@{ $panes{sidebar} || [] }) {
+<td class="boxcontainer">
+% $show_cb->($_) foreach @{ $panes{sidebar} || [] };
+</td>
+
+% }
 </tr>
 </table>
 
@@ -79,8 +76,8 @@
 my $current_subtab = 'Dashboards/Render.html?id=' . $id;
 
 use RT::Dashboard;
-my $DashboardObj = RT::Dashboard->new( current_user => Jifty->web->current_user );
-my ($ok, $msg) = $DashboardObj->load_by_id($id);
+my $dashboard_obj = RT::Dashboard->new( current_user => Jifty->web->current_user );
+my ($ok, $msg) = $dashboard_obj->load_by_id($id);
 abort(_("Couldn't load dashboard %1: %2", $id, $msg)) if !$ok;
 
 my $SubscriptionObj = RT::Model::Attribute->new( current_user => Jifty->web->current_user );
@@ -94,8 +91,22 @@ for my $sub (Jifty->web->current_user->user_object->attributes->named('Subscript
     last;
 }
 
-my $rows = $Loaded ? $SubscriptionObj->sub_value('Rows') : 20;
-my $title = $DashboardObj->name;
+my $rows = $Loaded ? $SubscriptionObj->sub_value('rows') : 20;
+my $title = _( 'Dashboard %1', $dashboard_obj->name );
+
+my %panes = %{ $dashboard_obj->panes };
+
+my $show_cb = sub {
+    my $portlet = shift;
+    my $portlet_type = $portlet->{portlet_type};
+    my $component = "Elements/ShowPortlet/$portlet_type";
+    $m->comp($component,
+        portlet   => $portlet,
+        rows      => $rows,
+        preview   => $preview,
+        dashboard => $dashboard_obj,
+    );
+};
 
 </%INIT>
 <%ARGS>

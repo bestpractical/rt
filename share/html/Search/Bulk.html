@@ -54,7 +54,7 @@
     rows => $rows,
     order_by => $order_by,
     order => $order,
-    saved_searchid => $saved_searchid &>
+    saved_search_id => $saved_search_id &>
 
 <& /Elements/ListActions, actions => \@results &>
 <form method="post" action="<% RT->config->get('WebPath') %>/Search/Bulk.html" enctype="multipart/form-data">
@@ -74,7 +74,7 @@
     class => 'RT::Model::TicketCollection'
    &>
 
-% $m->callback(Callbackname => 'after_ticket_list', args_ref => \%ARGS);
+% $m->callback(callback_name => 'AfterTicketList', args_ref => \%ARGS);
 
 <hr />
 
@@ -208,7 +208,11 @@ $cfs->limit_to_queue($_) for keys %$seen_queues;
 
 </&>
 <%INIT>
-$rows = $rows_per_page unless (defined $rows);
+unless ( defined $rows ) {
+    $rows = $rows_per_page;
+    $ARGS{rows} = $rows_per_page;
+}
+
 my $title = _("Update multiple tickets");
 
 # Iterate through the ARGS hash and remove anything with a null value.
@@ -387,5 +391,5 @@ $rows_per_page => undef
 $order => 'ASC'
 $order_by => 'id'
 $query => undef
-$saved_searchid => undef
+$saved_search_id => undef
 </%args>

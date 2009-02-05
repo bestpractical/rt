@@ -60,7 +60,7 @@ my $user = Jifty->web->current_user->user_object;
 my $SearchArg;
 my $customize;
 my $query_display_component = '/Elements/CollectionList';
-my $query_link_url = RT->config->get('WebPath').'Search/Results.html';
+my $query_link_url = RT->config->get('WebPath').'/Search/Results.html';
 
 if ($saved_search) {
     my ( $container_object, $search_id ) = _parse_saved_search($saved_search);
@@ -112,9 +112,9 @@ my $ProcessedSearchArg = $SearchArg;
 $ProcessedSearchArg = { %$SearchArg, %override } if keys %override;
 $m->callback(
     %ARGS,
-    Callbackname  => 'modify_search',
-    OriginalSearch => $SearchArg,
-    Search         => $ProcessedSearchArg,
+    callback_name  => 'ModifySearch',
+    original_search => $SearchArg,
+    search         => $ProcessedSearchArg,
 );
 
 foreach ( $SearchArg, $ProcessedSearchArg ) {

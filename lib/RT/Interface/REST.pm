@@ -51,6 +51,7 @@
 package RT::Interface::REST;
 use strict;
 use RT;
+use Text::Naming::Convention qw/renaming/;
 
 BEGIN {
     use base 'Exporter';
@@ -178,7 +179,7 @@ LINE:
                 vpush( $k, $f, join( "\n", @v ) );
 
                 $state = 1;
-            } elsif ( $line !~ /^#/ ) {
+            } elsif ( $line =~ /^#/ ) {
 
                 # We've found a syntax error, so we'll reconstruct the
                 # form parsed thus far, and add an error marker. (>>)
@@ -222,13 +223,15 @@ sub form_compose {
             my ( @lines, $key );
 
             foreach $key (@$o) {
+                my $renamed_key = $key eq 'id' ? 'id' :
+                  renaming( $key, { convention => 'UpperCamelCase' } );
                 my ( $line, $sp, $v );
                 my @values
                     = ( ref $k->{$key} eq 'ARRAY' )
                     ? @{ $k->{$key} }
                     : $k->{$key};
 
-                $sp = " " x ( length("$key: ") );
+                $sp = " " x ( length("$renamed_key: ") );
                 $sp = " " x 4 if length($sp) > 16;
 
                 foreach $v (@values) {
@@ -243,17 +246,17 @@ sub form_compose {
                         } elsif ( @lines && $lines[-1] !~ /\n\n$/ ) {
                             $lines[-1] .= "\n";
                         }
-                        push @lines, "$key: $v\n\n";
+                        push @lines, "$renamed_key: $v\n\n";
                     } elsif ( $line
                         && length($line) + length($v) - rindex( $line, "\n" ) >= 70 )
                     {
                         $line .= ",\n$sp$v";
                     } else {
-                        $line = $line ? "$line, $v" : "$key: $v";
+                        $line = $line ? "$line, $v" : "$renamed_key: $v";
                     }
                 }
 
-                $line = "$key:" unless @values;
+                $line = "$renamed_key:" unless @values;
                 if ($line) {
                     if ( $line =~ /\n/ ) {
                         if ( @lines && $lines[-1] !~ /\n\n$/ ) {
@@ -296,7 +299,9 @@ sub vsplit {
     my ($val) = @_;
     my ( $line, $word, @words );
 
-    foreach $line ( map { split /\n/ } ( ref $val eq 'ARRAY' ) ? @$val : $val ) {
+    foreach $line ( map { split /\n/ }
+            ( ref $val eq 'ARRAY' ) ? @$val : ( $val || '' ) )
+    {
 
         # XXX: This should become a real parser, ? la Text::ParseWords.
         $line =~ s/^\s+//;

@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
-use RT::Test; use Test::More tests => 20;
+use RT::Test; use Test::More tests => 21;
 use HTTP::Request::Common;
 use HTTP::Cookies;
 use LWP;
@@ -35,27 +35,23 @@ ok($moniker, "Found the moniker $moniker");
 $agent->submit();
 is($agent->{'status'}, 200, "Fetched the page ok");
 ok( $agent->content =~ /Logout/i, "Found a logout link");
-$agent->get($url."Ticket/Create.html?queue=1");
+$agent->get($url."/Ticket/Create.html?queue=1");
 is ($agent->{'status'}, 200, "Loaded Create.html");
 $agent->form_number(3);
 # Start with a string containing characters in latin1
-my $string = "I18N Web Testing æøå";
-my $web_string = $string;
-Encode::from_to($web_string, 'iso-8859-1', 'utf8');
+my $string = Encode::decode_utf8("I18N Web Testing æøå");
 $agent->field('subject' => "Ticket with utf8 body");
-$agent->field('content' => $web_string);
+$agent->field('content' => $string);
 ok($agent->submit(), "Created new ticket with $string as content");
 like( $agent->{'content'}, qr{$string} , "Found the content");
 ok($agent->{redirected_uri}, "Did redirection");
 
-$agent->get($url."Ticket/Create.html?queue=1");
+$agent->get($url."/Ticket/Create.html?queue=1");
 is ($agent->{'status'}, 200, "Loaded Create.html");
 $agent->form_number(3);
 # Start with a string containing characters in latin1
-$string = "I18N Web Testing æøå";
-$web_string = $string;
-Encode::from_to($web_string, 'iso-8859-1', 'utf8');
-$agent->field('subject' => $web_string);
+$string = Encode::decode_utf8("I18N Web Testing æøå");
+$agent->field('subject' => $string);
 $agent->field('content' => "Ticket with utf8 subject");
 ok($agent->submit(), "Created new ticket with $string as subject");
 
@@ -70,12 +66,31 @@ $agent->submit;
     like ($agent->{'content'}, qr/to &#39;300&#39;/, "5 hours is 300 minutes");
 # }}}
 
+# {{{ test an image
+
+TODO: {
+    todo_skip("Need to handle mason trying to compile images",1);
+$agent->get( $url."/NoAuth/images/test.png" );
+my $file = RT::Test::get_relocatable_file(
+  File::Spec->catfile(
+    qw(.. .. share html NoAuth images test.png)
+  )
+);
+is(
+    length($agent->content),
+    -s $file,
+    "got a file of the correct size ($file)",
+);
+}
+# }}}
+
+    
 # {{{ query Builder tests
 #
 # XXX: hey-ho, we have these tests in t/web/query-builder
 # TODO: move everything about QB there
 
-my $response = $agent->get($url."Search/Build.html");
+my $response = $agent->get($url."/Search/Build.html");
 ok( $response->is_success, "Fetched " . $url."Search/Build.html" );
 
 # Parsing TicketSQL

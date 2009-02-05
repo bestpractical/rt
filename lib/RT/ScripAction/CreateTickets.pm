@@ -61,7 +61,7 @@ to an externally supplied template.
 =head1 SYNOPSIS
 
  ===Create-Ticket codereview
- Subject: Code review for {$Tickets{'TOP'}->subject}
+ Subject: Code review for {$tickets{'TOP'}->subject}
  Depended-On-By: TOP
  Content: Someone has Created a ticket. you should review and approve it,
  so they can finish their work
@@ -101,16 +101,18 @@ Text::Template object, which means that you can embed snippets
 of perl inside the Text::Template using {} delimiters, but that 
 such sections absolutely can not span a ===Create-Ticket boundary.
 
-After each ticket is Created, it's stuffed into a hash called %Tickets
-so as to be available during the creation of other tickets during the same 
-ScripAction.  The hash is prepopulated with the ticket which triggered the 
-ScripAction as $Tickets{'TOP'}; you can also access that ticket using the
-shorthand TOP.
+After each ticket is Created, it's stuffed into a hash called %tickets
+so as to be available during the creation of other tickets during the
+same ScripAction, using the key 'create-identifier', where
+C<identifier> is the id you put after C<===Create-Ticket:>.  The hash
+is prepopulated with the ticket which triggered the ScripAction as
+$tickets{'TOP'}; you can also access that ticket using the shorthand
+TOP.
 
 A simple example:
 
  ===Create-Ticket: codereview
- Subject: Code review for {$Tickets{'TOP'}->subject}
+ Subject: Code review for {$tickets{'TOP'}->subject}
  Depended-On-By: TOP
  Content: Someone has Created a ticket. you should review and approve it,
  so they can finish their work
@@ -151,17 +153,18 @@ A convoluted example
  AdminCc: {join ("\nAdminCc: ",@admins) }
  Depended-On-By: TOP
  Refers-To: TOP
- Subject: Approval for ticket: {$Tickets{"TOP"}->id} - {$Tickets{"TOP"}->subject}
+ Subject: Approval for ticket: {$tickets{"TOP"}->id} - {$tickets{"TOP"}->subject}
  Due: {time + 86400}
  Content-Type: text/plain
- Content: Your approval is requested for the ticket {$Tickets{"TOP"}->id}: {$Tickets{"TOP"}->subject}
+ Content: Your approval is requested for the ticket {$tickets{"TOP"}->id}: {$tickets{"TOP"}->subject}
  Blah
  Blah
  ENDOFCONTENT
  ===Create-Ticket: two
  Subject: Manager approval
+ type: approval
  Depended-On-By: TOP
- Refers-On: {$Tickets{"approval"}->id}
+ Refers-To: {$tickets{"create-approval"}->id}
  Queue: ___Approvals
  Content-Type: text/plain
  Content: 
@@ -936,7 +939,7 @@ sub get_update_template {
     $string .= "starts: " . $t->starts_obj->as_string . "\n";
     $string .= "Started: " . $t->started_obj->as_string . "\n";
     $string .= "Resolved: " . $t->resolved_obj->as_string . "\n";
-    $string .= "Owner: " . $t->owner_obj->name . "\n";
+    $string .= "Owner: " . $t->owner->name . "\n";
     $string .= "Requestor: " . $t->role_group("requestor")->member_emails_as_string . "\n";
     $string .= "Cc: " . $t->role_group("cc")->member_emails_as_string . "\n";
     $string .= "AdminCc: " . $t->role_group("admin_cc")->member_emails_as_string . "\n";

@@ -239,14 +239,14 @@ sub load {
         my ( $ticketid, $msg ) = $self->load_by_id($id);
 
         unless ( $self->id ) {
-            Jifty->log->fatal("$self tried to load a bogus ticket: $id");
+            Jifty->log->debug("$self tried to load a bogus ticket: $id");
             return (undef);
         }
     }
 
     #It's not a URI. It's not a numerical ticket ID. Punt!
     else {
-        Jifty->log->warn("Tried to load a bogus ticket id: '$id'");
+        Jifty->log->debug("Tried to load a bogus ticket id: '$id'");
         return (undef);
     }
 
@@ -499,7 +499,7 @@ sub create {
             if ( $watcher =~ /^\d+$/ ) {
                 push @{ $args{$type} }, $watcher;
             } else {
-                my @addresses = Email::Address->parse($watcher);
+                my @addresses = RT::EmailParser->parse_email_address($watcher);
                 foreach my $address (@addresses) {
                     my $user = RT::Model::User->new( current_user => RT->system_user );
                     my ( $uid, $msg ) = $user->load_or_create_by_email($address);
@@ -636,9 +636,9 @@ sub create {
     # {{{ Deal with setting up links
 
     # TODO: Adding link may fire scrips on other end and those scrips
-    # could create transactions on this ticket before 'Create' transaction.
+    # could create transactions on this ticket before 'create' transaction.
     #
-    # We should implement different schema: record 'Create' transaction,
+    # We should implement different schema: record 'create' transaction,
     # create links and only then fire create transaction's scrips.
     #
     # Ideal variant: add all links without firing scrips, record create
@@ -706,7 +706,7 @@ sub create {
 
         # {{{ Add a transaction for the create
         my ( $Trans, $Msg, $TransObj ) = $self->_new_transaction(
-            type          => "Create",
+            type          => "create",
             time_taken    => $args{'time_worked'},
             mime_obj      => $args{'mime_obj'},
             commit_scrips => !$args{'dry_run'},
@@ -809,7 +809,7 @@ prinicpal_id The RT::Model::Principal id of the user or group that's being added
 email       The email address of the new watcher. If a user with this 
             email address can't be found, a new nonprivileged user will be created.
 
-If the watcher you\'re trying to set has an RT account, set the Owner paremeter to their User Id. Otherwise, set the email parameter to their email address.
+If the watcher you\'re trying to set has an RT account, set the principal_id paremeter to their User Id. Otherwise, set the email parameter to their email address.
 
 =cut
 
@@ -827,7 +827,7 @@ sub add_watcher {
         if $self->current_user_has_right('ModifyTicket');
 
     if ( $args{'email'} ) {
-        my ($addr) = Email::Address->parse( $args{'email'} );
+        my ($addr) = RT::EmailParser->parse_email_address( $args{'email'} );
         return ( 0, _( "Couldn't parse address from '%1' string", $args{'email'} ) ) unless $addr;
 
         if ( lc $self->current_user->user_object->email eq lc RT::Model::User->canonicalize_email( $addr->address ) ) {
@@ -1199,11 +1199,11 @@ sub is_owner {
     #   }
 
     #Tickets won't yet have owners when they're being created.
-    unless ( $self->owner_obj->id ) {
+    unless ( $self->owner->id ) {
         return (undef);
     }
 
-    if ( $person->id == $self->owner_obj->id ) {
+    if ( $person->id == $self->owner->id ) {
         return (1);
     } else {
         return (undef);
@@ -1323,7 +1323,7 @@ sub set_queue {
     }
 
     unless (
-        $self->owner_obj->has_right(
+        $self->owner->has_right(
             right  => 'OwnTicket',
             object => $Newqueue_obj
         )
@@ -2186,7 +2186,28 @@ sub merge_into {
     return ( 1, _("Merge Successful") );
 }
 
+=head2 merged
 
+Returns list of tickets' ids that's been merged into this ticket.
+
+=cut
+
+sub merged {
+    my $self = shift;
+
+    my $mergees = RT::Model::TicketCollection->new;
+    $mergees->limit(
+        column    => 'effective_id',
+        operator => '=',
+        value    => $self->id,
+    );
+    $mergees->limit(
+        column    => 'id',
+        operator => '!=',
+        value    => $self->id,
+    );
+    return map $_->id, @{ $mergees->items_array_ref || [] };
+}
 
 
 
@@ -2221,7 +2242,7 @@ Returns the owner's email address
 
 sub owner_as_string {
     my $self = shift;
-    return ( $self->owner_obj->email );
+    return ( $self->owner->email );
 
 }
 
@@ -2232,7 +2253,7 @@ sub owner_as_string {
 Takes two arguments:
      the id or name of the owner 
 and  (optionally) the type of the SetOwner Transaction. It defaults
-to 'Give'.  'Steal' is also a valid option.
+to 'give'.  'steal' is also a valid option.
 
 
 =cut
@@ -2240,14 +2261,14 @@ to 'Give'.  'Steal' is also a valid option.
 sub set_owner {
     my $self     = shift;
     my $NewOwner = shift;
-    my $Type     = shift || "Give";
+    my $Type     = shift || "give";
 
     Jifty->handle->begin_transaction();
 
     $self->set_last_updated();    # lock the ticket
     $self->load( $self->id );     # in case $self changed while waiting for lock
 
-    my $old_owner_obj = $self->owner_obj;
+    my $old_owner_obj = $self->owner;
 
     my $new_owner_obj = RT::Model::User->new;
     $new_owner_obj->load($NewOwner);
@@ -2288,8 +2309,8 @@ sub set_owner {
 
     # If we're not stealing and the ticket has an owner and it's not
     # the current user
-    if (    $Type ne 'Steal'
-        and $Type ne 'Force'
+    if (    $Type ne 'steal'
+        and $Type ne 'force'
         and $old_owner_obj->id != RT->nobody->id
         and $old_owner_obj->id != $self->current_user->id )
     {
@@ -2315,23 +2336,23 @@ sub set_owner {
     # Delete the owner in the owner group, then add a new one
     # TODO: is this safe? it's not how we really want the API to work
     # for most things, but it's fast.
-    my ( $del_id, ) = $self->role_group("owner")->members_obj->first->delete();
+    my ( $del_id, $del_msg ) = $self->role_group("owner")->members_obj->first->delete();
     unless ($del_id) {
         Jifty->handle->rollback();
-        return ( 0, _("Could not change owner. ") . $del_id );
+        return ( 0, _("Could not change owner. %1", $del_msg ));
     }
     my ( $add_id, $add_msg ) = $self->role_group("owner")->_add_member(
         principal_id       => $new_owner_obj->principal_id,
     );
     unless ($add_id) {
         Jifty->handle->rollback();
-        return ( 0, _("Could not change owner. ") . $add_msg );
+        return ( 0, _( "Could not change owner: %1", $add_msg ) );
     }
 
     # We call set twice with slightly different arguments, so
     # as to not have an SQL transaction span two RT transactions
 
-    my ($return) = $self->_set(
+    my ($return, $msg) = $self->_set(
         column             => 'owner',
         value              => $new_owner_obj->id,
         record_transaction => 0,
@@ -2342,10 +2363,10 @@ sub set_owner {
 
     if ( ref($return) and !$return ) {
         Jifty->handle->rollback;
-        return ( 0, _("Could not change owner. ") . $return );
+        return ( 0, _("Could not change owner: %1", $msg ) );
     }
 
-    my ( $val, $msg ) = $self->_new_transaction(
+    ( my $val, $msg ) = $self->_new_transaction(
         type       => $Type,
         field      => 'owner',
         new_value  => $new_owner_obj->id,
@@ -2375,7 +2396,7 @@ A convenince method to set the ticket's owner to the current user
 
 sub take {
     my $self = shift;
-    return ( $self->set_owner( $self->current_user->id, 'Take' ) );
+    return ( $self->set_owner( $self->current_user->id, 'take' ) );
 }
 
 
@@ -2388,7 +2409,7 @@ Convenience method to set the owner to 'nobody' if the current user is the owner
 
 sub untake {
     my $self = shift;
-    return ( $self->set_owner( RT->nobody->user_object->id, 'Untake' ) );
+    return ( $self->set_owner( RT->nobody->user_object->id, 'untake' ) );
 }
 
 =head2 steal
@@ -2404,7 +2425,7 @@ sub steal {
     if ( $self->is_owner( $self->current_user ) ) {
         return ( 0, _("You already own this ticket") );
     } else {
-        return ( $self->set_owner( $self->current_user->id, 'Steal' ) );
+        return ( $self->set_owner( $self->current_user->id, 'steal' ) );
 
     }
 
@@ -2627,8 +2648,17 @@ sub DESTROY {
         stage           => 'transaction_batch',
         ticket_obj      => $self,
         transaction_obj => $batch->[0],
-        type            => join( ',', ( map { $_->type } @{$batch} ) )
+        type            => join( ',', map $_->type, grep defined, @{$batch} )
     );
+
+    # Entry point of the rule system
+    my $rules = RT::Ruleset->find_all_rules(
+        stage           => 'transaction_batch',
+        ticket_obj      => $self,
+        transaction_obj => $batch->[0],
+        type            => join( ',', map $_->type, grep defined, @{$batch} )
+    );
+    RT::Ruleset->commit_rules($rules);
 }
 
 
@@ -2681,7 +2711,7 @@ sub _set {
     if ( $args{'update_ticket'} ) {
 
         #Set the new value
-        my $return = $self->SUPER::_set(
+        $return = $self->SUPER::_set(
             column => $args{'column'},
             value  => $args{'value'}
         );
@@ -2781,6 +2811,7 @@ sub current_user_has_right {
         object => $self,
         right  => $right,
     );
+
 }
 
 
