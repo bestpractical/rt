@@ -20,7 +20,7 @@ my $t_link = $m->find_link( text => "for custom search".$$ );
 like ($t_link->url, qr/$id/, 'link to the ticket we Created');
 
 $m->content_lacks ('customsearch@localhost', 'requestor not displayed ');
-$m->get ( $url.'Prefs/MyRT.html' );
+$m->get ( $url.'/Prefs/MyRT.html' );
 my $cus_hp = $m->find_link( text => "My Tickets" );
 my $cus_qs = $m->find_link( text => "Quick search" );
 $m->get ($cus_hp);
