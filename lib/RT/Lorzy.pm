@@ -8,6 +8,7 @@ use Lorzy::Evaluator;
 RT::Ruleset->add( name => 'Lorzy', rules => ['RT::Lorzy::Dispatcher'] );
 our $EVAL = Lorzy::Evaluator->new();
 $EVAL->load_package($_) for qw(Str Native);
+$EVAL->load_package('RT', 'RT::Lorzy::Package::RT');
 
 sub evaluate {
     my ($self, $code, %args) = @_;
@@ -40,7 +41,7 @@ sub on_condition {
 
 sub commit {
     my ($self, $ticket_obj, $transaction_obj) = @_;
-    return RT::Lorzy->evaluate( $self->action, ticket => $ticket_obj);
+    return RT::Lorzy->evaluate( $self->action, ticket => $ticket_obj, transaction => $transaction_obj);
 }
 
 1;

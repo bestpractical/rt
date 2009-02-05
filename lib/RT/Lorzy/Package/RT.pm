@@ -30,4 +30,21 @@ __PACKAGE__->defun( 'Condition.Applicable',
     },
 );
 
+__PACKAGE__->defun( 'ScripAction.Run',
+    signature => {
+        'name'     => Lorzy::FunctionArgument->new( name => 'name' ),
+        'template' => Lorzy::FunctionArgument->new( name => 'template' ),
+        'ticket'   => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Model::Ticket' ),
+        'transaction' => Lorzy::FunctionArgument->new( name => 'transaction', type => 'RT::Model::Transaction' ),
+    },
+    native => sub {
+        my $args   = shift;
+        my $rule = RT::Rule->new( current_user => $args->{ticket}->current_user,
+                                  ticket_obj => $args->{ticket},
+                                  transaction_obj => $args->{transaction}
+                              );
+        $rule->run_scrip_action(@{$args}{qw(name template)});
+    },
+);
+
 1;
