@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 107;
+use Test::More tests => 99;
 use RT::Test;
 use RT::Dashboard;
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -41,10 +41,6 @@ $m->content_lacks("New dashboard", "No 'new dashboard' link because we have no C
 
 $m->no_warnings_ok;
 
-$m->get_ok($url."/Dashboards/Modify.html?create=1");
-$m->content_contains("Permission denied");
-$m->content_lacks("Save Changes");
-
 $user_obj->principal->grant_right(
     right  => 'ModifyOwnDashboard',
     object => RT->system
@@ -52,14 +48,6 @@ $user_obj->principal->grant_right(
 
 # Modify itself is no longer good enough, you need Create
 $m->get_ok($url."/Dashboards/Modify.html?create=1");
-$m->content_contains("Permission denied");
-$m->content_lacks("Save Changes");
-
-$m->warnings_like(qr/Permission denied/, "got a permission denied warning");
-
-$user_obj->principal->grant_right(right => 'ModifyOwnDashboard', object => RT->system);
-# Modify itself is no longer good enough, you need Create
-$m->get_ok($url."/Dashboards/Modify.html?Create=1");
 $m->content_contains("Permission denied");
 $m->content_lacks("Save Changes");
 
@@ -197,7 +185,6 @@ $m->content_contains("Permission denied", "unable to delete dashboard because we
 $m->warnings_like(qr/Couldn't delete dashboard.*Permission denied/, "got a permission denied warning when trying to delete the dashboard");
 
 $user_obj->principal->grant_right(right => 'DeleteOwnDashboard', object => RT->system );
-
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->content_contains('Delete', "Delete button shows because we have DeleteOwnDashboard");
 
@@ -260,4 +247,3 @@ $omech->content_lacks("personal search", "saved search doesn't show up");
 $omech->content_lacks("dashboard test", "matched ticket doesn't show up");
 
 $m->warnings_like(qr/User .* tried to load container user /, "can't see other users' personal searches");
-
