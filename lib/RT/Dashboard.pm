@@ -242,7 +242,7 @@ sub _privacy_objects {
     push @objects, $CurrentUser->user_object
       if $self->current_user->has_right(
         right  => "${prefix}OwnDashboard",
-        object => RT->system_user,
+        object => RT->system,
       );
 
     my $groups = RT::Model::GroupCollection->new( current_user => $CurrentUser );
@@ -262,7 +262,7 @@ sub _privacy_objects {
     push @objects, RT::System->new( current_user => $CurrentUser )
       if $CurrentUser->has_right(
         right  => "${prefix}Dashboard",
-        object => RT->system_user,
+        object => RT->system,
       );
 
     return @objects;

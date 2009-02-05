@@ -54,7 +54,7 @@
     rows => $rows,
     order_by => $order_by,
     order => $order,
-    saved_searchid => $saved_searchid &>
+    saved_search_id => $saved_search_id &>
 
 <& /Elements/ListActions, actions => \@results &>
 <form method="post" action="<% RT->config->get('WebPath') %>/Search/Bulk.html" enctype="multipart/form-data">
@@ -391,5 +391,5 @@ $rows_per_page => undef
 $order => 'ASC'
 $order_by => 'id'
 $query => undef
-$saved_searchid => undef
+$saved_search_id => undef
 </%args>

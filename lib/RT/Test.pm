@@ -155,7 +155,7 @@ sub started_ok {
         return ( $existing_server, RT::Test::Web->new );
     }
     my $server = Jifty::Test->make_server;
-    $RT::Test::server_url = $server->started_ok . "/";
+    $RT::Test::server_url = $server->started_ok;
 
     return ( $RT::Test::server_url, RT::Test::Web->new );
 }

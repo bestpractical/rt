@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 113;
+use Test::More tests => 99;
 use RT::Test;
 use RT::Dashboard;
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -36,14 +36,10 @@ for my $user ($user_obj, $onlooker) {
 
 ok $m->login(customer => 'customer'), "logged in";
 
-$m->get_ok($url."Dashboards/index.html");
+$m->get_ok($url."/Dashboards/index.html");
 $m->content_lacks("New dashboard", "No 'new dashboard' link because we have no CreateOwnDashboard");
 
 $m->no_warnings_ok;
-
-$m->get_ok($url."Dashboards/Modify.html?create=1");
-$m->content_contains("Permission denied");
-$m->content_lacks("Save Changes");
 
 $user_obj->principal->grant_right(
     right  => 'ModifyOwnDashboard',
@@ -51,30 +47,22 @@ $user_obj->principal->grant_right(
 );
 
 # Modify itself is no longer good enough, you need Create
-$m->get_ok($url."Dashboards/Modify.html?create=1");
+$m->get_ok($url."/Dashboards/Modify.html?create=1");
 $m->content_contains("Permission denied");
 $m->content_lacks("Save Changes");
 
-$m->warning_like(qr/Permission denied/, "got a permission denied warning");
-
-$user_obj->principal->grant_right(right => 'ModifyOwnDashboard', object => RT->system);
-# Modify itself is no longer good enough, you need Create
-$m->get_ok($url."Dashboards/Modify.html?Create=1");
-$m->content_contains("Permission denied");
-$m->content_lacks("Save Changes");
-
-$m->warning_like(qr/Permission denied/, "got a permission denied warning");
+$m->warnings_like(qr/Permission denied/, "got a permission denied warning");
 
 $user_obj->principal->grant_right(
     right  => 'CreateOwnDashboard',
     object => RT->system
 );
 
-$m->get_ok($url."Dashboards/Modify.html?create=1");
+$m->get_ok($url."/Dashboards/Modify.html?create=1");
 $m->content_lacks("Permission denied");
 $m->content_contains("Save Changes");
 
-$m->get_ok($url."Dashboards/index.html");
+$m->get_ok($url."/Dashboards/index.html");
 $m->content_contains("New dashboard", "'New dashboard' link because we now have ModifyOwnDashboard");
 
 $m->follow_link_ok({text => "New dashboard"});
@@ -86,12 +74,12 @@ $m->content_lacks("No permission to create dashboards");
 $m->content_contains("Saved dashboard different dashboard");
 $m->content_lacks('Delete', "Delete button hidden because we lack DeleteOwnDashboard");
 
-$m->get_ok($url."Dashboards/index.html");
+$m->get_ok($url."/Dashboards/index.html");
 $m->content_lacks("different dashboard", "we lack SeeOwnDashboard");
 
 $user_obj->principal->grant_right(right => 'SeeOwnDashboard', object => RT->system );
 
-$m->get_ok($url."Dashboards/index.html");
+$m->get_ok($url."/Dashboards/index.html");
 $m->content_contains("different dashboard", "we now have SeeOwnDashboard");
 $m->content_lacks("Permission denied");
 
@@ -163,7 +151,7 @@ $m->get_ok("/Dashboards/Subscription.html?dashboard_id=$id");
 $m->form_name( 'subscribe_dashboard' );
 $m->click_button(name => 'save');
 $m->content_contains("Permission denied");
-$m->warning_like(qr/Unable to subscribe to dashboard.*Permission denied/, "got a permission denied warning when trying to subscribe to a dashboard");
+$m->warnings_like(qr/Unable to subscribe to dashboard.*Permission denied/, "got a permission denied warning when trying to subscribe to a dashboard");
 
 Jifty::DBI::Record::Cachable->flush_cache;
 is($user_obj->attributes->named('Subscription'), 0, "no subscriptions");
@@ -194,10 +182,9 @@ $m->content_contains("Modify the subscription to dashboard different dashboard")
 
 $m->get_ok("/Dashboards/Modify.html?id=$id&delete=1");
 $m->content_contains("Permission denied", "unable to delete dashboard because we lack DeleteOwnDashboard");
-$m->warning_like(qr/Couldn't delete dashboard.*Permission denied/, "got a permission denied warning when trying to delete the dashboard");
+$m->warnings_like(qr/Couldn't delete dashboard.*Permission denied/, "got a permission denied warning when trying to delete the dashboard");
 
 $user_obj->principal->grant_right(right => 'DeleteOwnDashboard', object => RT->system );
-
 $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->content_contains('Delete', "Delete button shows because we have DeleteOwnDashboard");
 
@@ -208,13 +195,13 @@ $m->content_contains("Deleted dashboard $id");
 $m->get("/Dashboards/Modify.html?id=$id");
 $m->content_lacks("different dashboard", "dashboard was deleted");
 $m->content_contains("Failed to load dashboard $id");
-$m->warning_like(qr/Failed to load dashboard.*Couldn't find row/, "the dashboard was deleted");
+$m->warnings_like(qr/Failed to load dashboard.*Couldn't find row/, "the dashboard was deleted");
 
 $user_obj->principal->grant_right(right => "SuperUser", object => RT->system);
 
 # now test that we warn about searches others can't see
 # first create a personal saved search...
-$m->get_ok($url."Search/Build.html");
+$m->get_ok($url."/Search/Build.html");
 $m->follow_link_ok({text => 'Advanced'});
 $m->form_with_fields('query');
 $m->field(query => "id > 0");
@@ -225,7 +212,7 @@ $m->field(saved_search_description => "personal search");
 $m->click_button(name => "saved_search_save");
 
 # then the system-wide dashboard
-$m->get_ok($url."Dashboards/Modify.html?create=1");
+$m->get_ok($url."/Dashboards/Modify.html?create=1");
 
 $m->form_name('modify_dashboard');
 $m->field("name" => 'system dashboard');
@@ -238,7 +225,7 @@ $m->content_contains("Saved dashboard system dashboard");
 $m->follow_link_ok({text => 'Queries'});
 
 $m->form_name('Dashboard-Searches-body');
-$m->field('Searches-body-Available' => ['search-7-RT::Model::User-22']); # XXX: :( :(
+$m->field('Searches-body-Available' => ['search-8-RT::Model::User-22']); # XXX: :( :(
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
 
@@ -259,5 +246,4 @@ $omech->follow_link_ok({text => 'system dashboard'});
 $omech->content_lacks("personal search", "saved search doesn't show up");
 $omech->content_lacks("dashboard test", "matched ticket doesn't show up");
 
-$m->warning_like(qr/User .* tried to load container user /, "can't see other users' personal searches");
-
+$m->warnings_like(qr/User .* tried to load container user /, "can't see other users' personal searches");

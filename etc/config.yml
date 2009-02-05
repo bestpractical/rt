@@ -39,6 +39,7 @@ framework:
           - IE8
           - ie7-recalc
           - ie7-squish
+    - TestServerWarnings: {}
   PubSub: 
     Backend: Memcached
     Enable: ~

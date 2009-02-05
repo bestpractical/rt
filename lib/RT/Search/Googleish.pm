@@ -74,7 +74,7 @@ sub _init {
     my $self = shift;
     my %args = @_;
 
-    $self->{'Queues'} = delete( $args{'Queues'} ) || [];
+    $self->{'queues'} = delete( $args{'queues'} ) || [];
     $self->SUPER::_init(%args);
 }
 
@@ -145,7 +145,7 @@ sub query_to_sql {
     }
 
     # restrict to any queues requested by the caller
-    for my $queue ( @{ $self->{'Queues'} } ) {
+    for my $queue ( @{ $self->{'queues'} } ) {
         my $queue_obj = RT::Model::Queue->new( current_user => $self->tickets_obj->current_user );
         $queue_obj->load($queue) or next;
         my $quoted_queue = $Queue->name;
@@ -158,7 +158,8 @@ sub query_to_sql {
     if ( !@status_clauses ) {
         push @tql_clauses,
           join( " OR ", map "Status = '$_'",
-                  RT::Model::Queue->status_schema->active() );
+                  RT::Model::Queue->status_schema->valid( 'initial', 'active'
+                      ) );
     }
     else {
         push @tql_clauses, join( " OR ", sort @status_clauses );

@@ -11,6 +11,7 @@ use_ok('RT::SavedSearches');
 
 
 use Test::Warn;
+use RT::Test::Warnings;
 
 # Set up some infrastructure.  These calls are tested elsewhere.
 
