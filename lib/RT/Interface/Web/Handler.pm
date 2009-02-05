@@ -125,8 +125,6 @@ package Jifty::View::Mason::Handler;
     };
 }
 
-package HTML::Mason::Request::Jifty;
-{
 =head2 callback
 
 Method replaces deprecated component C<Element/Callback>.
@@ -160,6 +158,9 @@ example F</Callbacks/MyExtension/autohandler/Default> would
 be called as default callback for F</autohandler>.
 
 =cut
+{
+    package Jifty::View::Mason::Request;
+
     no warnings 'redefine';
     my %cache  = ();
     my %called = ();
