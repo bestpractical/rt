@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 113;
+use Test::More tests => 107;
 use RT::Test;
 use RT::Dashboard;
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -55,7 +55,7 @@ $m->get_ok($url."Dashboards/Modify.html?create=1");
 $m->content_contains("Permission denied");
 $m->content_lacks("Save Changes");
 
-$m->warning_like(qr/Permission denied/, "got a permission denied warning");
+$m->warnings_like(qr/Permission denied/, "got a permission denied warning");
 
 $user_obj->principal->grant_right(right => 'ModifyOwnDashboard', object => RT->system);
 # Modify itself is no longer good enough, you need Create
@@ -63,7 +63,7 @@ $m->get_ok($url."Dashboards/Modify.html?Create=1");
 $m->content_contains("Permission denied");
 $m->content_lacks("Save Changes");
 
-$m->warning_like(qr/Permission denied/, "got a permission denied warning");
+$m->warnings_like(qr/Permission denied/, "got a permission denied warning");
 
 $user_obj->principal->grant_right(
     right  => 'CreateOwnDashboard',
@@ -163,7 +163,7 @@ $m->get_ok("/Dashboards/Subscription.html?dashboard_id=$id");
 $m->form_name( 'subscribe_dashboard' );
 $m->click_button(name => 'save');
 $m->content_contains("Permission denied");
-$m->warning_like(qr/Unable to subscribe to dashboard.*Permission denied/, "got a permission denied warning when trying to subscribe to a dashboard");
+$m->warnings_like(qr/Unable to subscribe to dashboard.*Permission denied/, "got a permission denied warning when trying to subscribe to a dashboard");
 
 Jifty::DBI::Record::Cachable->flush_cache;
 is($user_obj->attributes->named('Subscription'), 0, "no subscriptions");
@@ -194,7 +194,7 @@ $m->content_contains("Modify the subscription to dashboard different dashboard")
 
 $m->get_ok("/Dashboards/Modify.html?id=$id&delete=1");
 $m->content_contains("Permission denied", "unable to delete dashboard because we lack DeleteOwnDashboard");
-$m->warning_like(qr/Couldn't delete dashboard.*Permission denied/, "got a permission denied warning when trying to delete the dashboard");
+$m->warnings_like(qr/Couldn't delete dashboard.*Permission denied/, "got a permission denied warning when trying to delete the dashboard");
 
 $user_obj->principal->grant_right(right => 'DeleteOwnDashboard', object => RT->system );
 
@@ -208,7 +208,7 @@ $m->content_contains("Deleted dashboard $id");
 $m->get("/Dashboards/Modify.html?id=$id");
 $m->content_lacks("different dashboard", "dashboard was deleted");
 $m->content_contains("Failed to load dashboard $id");
-$m->warning_like(qr/Failed to load dashboard.*Couldn't find row/, "the dashboard was deleted");
+$m->warnings_like(qr/Failed to load dashboard.*Couldn't find row/, "the dashboard was deleted");
 
 $user_obj->principal->grant_right(right => "SuperUser", object => RT->system);
 
@@ -259,5 +259,5 @@ $omech->follow_link_ok({text => 'system dashboard'});
 $omech->content_lacks("personal search", "saved search doesn't show up");
 $omech->content_lacks("dashboard test", "matched ticket doesn't show up");
 
-$m->warning_like(qr/User .* tried to load container user /, "can't see other users' personal searches");
+$m->warnings_like(qr/User .* tried to load container user /, "can't see other users' personal searches");
 

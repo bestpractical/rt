@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 40;
+use Test::More tests => 38;
 use RT::Test;
 use RT::Dashboard;
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -95,7 +95,7 @@ $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->content_lacks("inner dashboard", "no SeeGroupDashboard right");
 $m->content_contains("Permission denied");
 
-$m->warning_like(qr/Permission denied/, "got a permission denied warning");
+$m->warnings_like(qr/Permission denied/, "got a permission denied warning");
 
 $user_obj->principal->grant_right(right => 'SeeGroupDashboard', object => $inner_group);
 $m->get_ok("/Dashboards/Modify.html?id=$id");
