@@ -25,7 +25,7 @@ diag "check that deffering owner doesn't regress" if $ENV{'TEST_VERBOSE'};
 {
     RT::Test->set_rights(
         { principal => $tester->principal,
-          right => [qw(Seequeue ShowTicket CreateTicket OwnTicket)],
+          right => [qw(SeeQueue ShowTicket CreateTicket OwnTicket)],
         },
         { principal => $owner_role_group->principal,
           object => $queue,
@@ -35,14 +35,11 @@ diag "check that deffering owner doesn't regress" if $ENV{'TEST_VERBOSE'};
     my $ticket = RT::Model::Ticket->new(current_user => $tester );
     # tester is owner, owner has right to modify owned tickets,
     # this right is required to set somebody as Admincc
-    my ($tid, $txn_id, $msg);
-    warning_like {
-        ($tid, $txn_id, $msg) = $ticket->create(
-            queue => $queue->id,
-            owner => $tester->id,
-            admin_cc    => 'root@localhost',
-        );
-    } qr/User .* was proposed as a ticket owner but has no rights to own tickets in General/;
+    my ( $tid, $txn_id, $msg ) = $ticket->create(
+        queue    => $queue->id,
+        owner    => $tester->id,
+        admin_cc => 'root@localhost',
+    );
 
     
     diag $msg if $msg && $ENV{'TEST_VERBOSE'};
@@ -101,16 +98,21 @@ diag "check that deffering doesn't work without correct rights" if $ENV{'TEST_VE
 {
     RT::Test->set_rights(
         { principal => $tester->principal,
-          right => [qw(Seequeue ShowTicket CreateTicket)],
+          right => [qw(SeeQueue ShowTicket CreateTicket)],
         },
     );
     my $ticket = RT::Model::Ticket->new(current_user => $tester );
     # set tester as cc, cc role group has right to own and take tickets
-    my ($tid, $txn_id, $msg) = $ticket->create(
-        queue => $queue->id,
-        owner => $tester->id,
-        cc    => 'tester@localhost',
-    );
+    
+    my ( $tid, $txn_id, $msg );
+    warning_like {
+        ( $tid, $txn_id, $msg ) = $ticket->create(
+            queue => $queue->id,
+            owner => $tester->id,
+            cc    => 'tester@localhost',
+        );
+    }
+qr/User .* was proposed as a ticket owner but has no rights to own tickets in General/;
     diag $msg if $msg && $ENV{'TEST_VERBOSE'};
     ok $tid, "created a ticket";
     like $ticket->role_group("cc")->member_emails_as_string, qr/tester\@localhost/, 'tester is in the cc list';
