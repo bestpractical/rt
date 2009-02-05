@@ -25,7 +25,9 @@ ok( $id, $msg );
 
 use_ok("RT::Search::Googleish");
 
-my $active_statuses = join( " OR ", map "Status = '$_'", RT::Model::Queue->status_schema->active());
+my $active_statuses = join( " OR ",
+    map "Status = '$_'",
+    RT::Model::Queue->status_schema->valid( 'initial', 'active' ) );
 
 my $tickets = RT::Model::TicketCollection->new(current_user => RT->system_user);
 my $quick = RT::Search::Googleish->new(argument => "",
