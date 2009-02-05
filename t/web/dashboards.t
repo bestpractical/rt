@@ -36,12 +36,12 @@ for my $user ($user_obj, $onlooker) {
 
 ok $m->login(customer => 'customer'), "logged in";
 
-$m->get_ok($url."Dashboards/index.html");
+$m->get_ok($url."/Dashboards/index.html");
 $m->content_lacks("New dashboard", "No 'new dashboard' link because we have no CreateOwnDashboard");
 
 $m->no_warnings_ok;
 
-$m->get_ok($url."Dashboards/Modify.html?create=1");
+$m->get_ok($url."/Dashboards/Modify.html?create=1");
 $m->content_contains("Permission denied");
 $m->content_lacks("Save Changes");
 
@@ -51,7 +51,7 @@ $user_obj->principal->grant_right(
 );
 
 # Modify itself is no longer good enough, you need Create
-$m->get_ok($url."Dashboards/Modify.html?create=1");
+$m->get_ok($url."/Dashboards/Modify.html?create=1");
 $m->content_contains("Permission denied");
 $m->content_lacks("Save Changes");
 
@@ -59,7 +59,7 @@ $m->warnings_like(qr/Permission denied/, "got a permission denied warning");
 
 $user_obj->principal->grant_right(right => 'ModifyOwnDashboard', object => RT->system);
 # Modify itself is no longer good enough, you need Create
-$m->get_ok($url."Dashboards/Modify.html?Create=1");
+$m->get_ok($url."/Dashboards/Modify.html?Create=1");
 $m->content_contains("Permission denied");
 $m->content_lacks("Save Changes");
 
@@ -70,11 +70,11 @@ $user_obj->principal->grant_right(
     object => RT->system
 );
 
-$m->get_ok($url."Dashboards/Modify.html?create=1");
+$m->get_ok($url."/Dashboards/Modify.html?create=1");
 $m->content_lacks("Permission denied");
 $m->content_contains("Save Changes");
 
-$m->get_ok($url."Dashboards/index.html");
+$m->get_ok($url."/Dashboards/index.html");
 $m->content_contains("New dashboard", "'New dashboard' link because we now have ModifyOwnDashboard");
 
 $m->follow_link_ok({text => "New dashboard"});
@@ -86,12 +86,12 @@ $m->content_lacks("No permission to create dashboards");
 $m->content_contains("Saved dashboard different dashboard");
 $m->content_lacks('Delete', "Delete button hidden because we lack DeleteOwnDashboard");
 
-$m->get_ok($url."Dashboards/index.html");
+$m->get_ok($url."/Dashboards/index.html");
 $m->content_lacks("different dashboard", "we lack SeeOwnDashboard");
 
 $user_obj->principal->grant_right(right => 'SeeOwnDashboard', object => RT->system );
 
-$m->get_ok($url."Dashboards/index.html");
+$m->get_ok($url."/Dashboards/index.html");
 $m->content_contains("different dashboard", "we now have SeeOwnDashboard");
 $m->content_lacks("Permission denied");
 
@@ -214,7 +214,7 @@ $user_obj->principal->grant_right(right => "SuperUser", object => RT->system);
 
 # now test that we warn about searches others can't see
 # first create a personal saved search...
-$m->get_ok($url."Search/Build.html");
+$m->get_ok($url."/Search/Build.html");
 $m->follow_link_ok({text => 'Advanced'});
 $m->form_with_fields('query');
 $m->field(query => "id > 0");
@@ -225,7 +225,7 @@ $m->field(saved_search_description => "personal search");
 $m->click_button(name => "saved_search_save");
 
 # then the system-wide dashboard
-$m->get_ok($url."Dashboards/Modify.html?create=1");
+$m->get_ok($url."/Dashboards/Modify.html?create=1");
 
 $m->form_name('modify_dashboard');
 $m->field("name" => 'system dashboard');

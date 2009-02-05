@@ -35,7 +35,7 @@ ok($moniker, "Found the moniker $moniker");
 $agent->submit();
 is($agent->{'status'}, 200, "Fetched the page ok");
 ok( $agent->content =~ /Logout/i, "Found a logout link");
-$agent->get($url."Ticket/Create.html?queue=1");
+$agent->get($url."/Ticket/Create.html?queue=1");
 is ($agent->{'status'}, 200, "Loaded Create.html");
 $agent->form_number(3);
 # Start with a string containing characters in latin1
@@ -48,7 +48,7 @@ ok($agent->submit(), "Created new ticket with $string as content");
 like( $agent->{'content'}, qr{$string} , "Found the content");
 ok($agent->{redirected_uri}, "Did redirection");
 
-$agent->get($url."Ticket/Create.html?queue=1");
+$agent->get($url."/Ticket/Create.html?queue=1");
 is ($agent->{'status'}, 200, "Loaded Create.html");
 $agent->form_number(3);
 # Start with a string containing characters in latin1
@@ -74,7 +74,7 @@ $agent->submit;
 
 TODO: {
     todo_skip("Need to handle mason trying to compile images",1);
-$agent->get( $url."NoAuth/images/test.png" );
+$agent->get( $url."/NoAuth/images/test.png" );
 my $file = RT::Test::get_relocatable_file(
   File::Spec->catfile(
     qw(.. .. share html NoAuth images test.png)
@@ -94,7 +94,7 @@ is(
 # XXX: hey-ho, we have these tests in t/web/query-builder
 # TODO: move everything about QB there
 
-my $response = $agent->get($url."Search/Build.html");
+my $response = $agent->get($url."/Search/Build.html");
 ok( $response->is_success, "Fetched " . $url."Search/Build.html" );
 
 # Parsing TicketSQL
