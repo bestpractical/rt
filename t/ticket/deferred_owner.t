@@ -7,7 +7,7 @@ use_ok('RT');
 use_ok('RT::Model::Ticket');
 use RT::Test;
 use Test::Warn;
-
+use RT::Test::Warnings;
 
 my $tester = RT::Test->load_or_create_user(
     email => 'tester@localhost',
