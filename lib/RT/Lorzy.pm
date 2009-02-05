@@ -35,12 +35,11 @@ sub new {
 
 sub on_condition {
     my ($self, $ticket_obj, $transaction_obj) = @_;
-    return RT::Lorzy->evaluate( $self->condition, ticket => $ticket_obj);
+    return RT::Lorzy->evaluate( $self->condition, ticket => $ticket_obj, transaction => $transaction_obj);
 }
 
 sub commit {
     my ($self, $ticket_obj, $transaction_obj) = @_;
-    warn "==> committing action $ticket_obj";
     return RT::Lorzy->evaluate( $self->action, ticket => $ticket_obj);
 }
 

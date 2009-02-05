@@ -367,7 +367,6 @@ sub is_applicable {
 
             # Load the scrip's Condition object
             $condition->load_condition(
-                scrip_obj       => $self,
                 ticket_obj      => $args{'ticket_obj'},
                 transaction_obj => $transaction_obj,
             );

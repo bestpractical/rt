@@ -107,7 +107,7 @@ my $approvals_id = lazy {
 @scrip_conditions = (
     { name                 => 'On Create',                                # loc
       description          => 'When a ticket is Created',                 # loc
-      applicable_trans_types => 'Create',
+      applicable_trans_types => 'create',
       exec_module           => 'AnyTransaction', },
 
     { name                 => 'On Transaction',                           # loc
