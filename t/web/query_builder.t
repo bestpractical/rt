@@ -25,7 +25,7 @@ ok $agent->login, "logged in";
 
 # {{{ Query Builder tests
 
-my $response = $agent->get($url."Search/Build.html");
+my $response = $agent->get($url."/Search/Build.html");
 ok $response->is_success, "Fetched ". $url ."Search/Build.html";
 
 sub get_query_from_form {
@@ -144,7 +144,7 @@ diag "Add a condition into a nested block" if $ENV{'TEST_VERBOSE'};
 diag "click advanced, enter 'C1 OR ( C2 AND C3 )', apply, aggregators should stay the same."
     if $ENV{'TEST_VERBOSE'};
 {
-    my $response = $agent->get($url."Search/Edit.html");
+    my $response = $agent->get($url."/Search/Edit.html");
     ok( $response->is_success, "Fetched /Search/Edit.html" );
     ok($agent->form_number(3), "found the form");
     $agent->field("query", "Status = 'new' OR ( Status = 'open' AND subject LIKE 'office' )");
@@ -212,8 +212,8 @@ diag "click advanced, enter 'C1 OR ( C2 AND C3 )', apply, aggregators should sta
         );
         ok($return, 'Created CF') or diag "error: $msg";
     }
-    $response = $agent->get($url."Search/Build.html?new_query=1");
-    ok( $response->is_success, "Fetched " . $url."Search/Build.html" );
+    $response = $agent->get($url."/Search/Build.html?new_query=1");
+    ok( $response->is_success, "Fetched " . $url."/Search/Build.html" );
 
     ok($agent->form_name('build_query'), "found the form once");
     $agent->field("ValueOf'CF.{\x{442}}'", "\x{441}");
@@ -232,7 +232,7 @@ TODO: {
 diag "input a condition, select (several conditions), click delete"
     if $ENV{'TEST_VERBOSE'};
 {
-    my $response = $agent->get( $url."Search/Edit.html" );
+    my $response = $agent->get( $url."/Search/Edit.html" );
     ok $response->is_success, "Fetched /Search/Edit.html";
     ok $agent->form_number(3), "found the form";
     $agent->field("query", "( Status = 'new' OR Status = 'open' )");
