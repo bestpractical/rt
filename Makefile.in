@@ -167,7 +167,8 @@ SYSTEM_BINARIES		=	rt-dump-database \
 				rt-server \
 				rt-test-dependencies \
 				rt-clean-sessions \
-				rt-shredder
+				rt-shredder \
+				rt-validator
 
 
 ETC_FILES		=	acl.Informix \
