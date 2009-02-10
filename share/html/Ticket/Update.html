@@ -100,6 +100,7 @@
 
 % if (my $TxnCFs = $TicketObj->TransactionCustomFields) {
 %    while (my $CF = $TxnCFs->Next()) {
+%        next unless $CF->CurrentUserHasRight('ModifyCustomField');
 <tr>
 <td class="label"><% $CF->Name %>:</td>
 <td><& /Elements/EditCustomField, CustomField => $CF, NamePrefix =>
