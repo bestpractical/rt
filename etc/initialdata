@@ -530,31 +530,6 @@ Hour:         { $subscription_obj->sub_value('Hour') }
        scrip_condition => 'On Transaction',
        scrip_action    => 'Extract Subject Tag',
        template       => 'Blank' },
-{
-    queue       => 0,
-    name        => "Error: Missing dashboard",    # loc
-    description =>
-      "Inform user that a dashboard he subscribed to is missing", # loc
-    content => q{Subject: [{RT->config->get('rtname')}] Missing dashboard!
-
-Greetings,
-
-You are subscribed to a dashboard that is currently missing. Most likely, the dashboard was deleted.
-
-RT will remove this subscription as it is no longer useful. Here's the information RT had about your subscription:
-
-DashboardID:  { $subscription_obj->sub_value('Dashboardid') }
-Frequency:    { $subscription_obj->sub_value('Frequency') }
-Hour:         { $subscription_obj->sub_value('Hour') }
-{
-    $subscription_obj->sub_value('Frequency') eq 'weekly'
-    ? "Day of week:  " . $subscription_obj->sub_value('Dow')
-    : $subscription_obj->sub_value('Frequency') eq 'monthly'
-      ? "Day of month: " . $subscription_obj->sub_value('Dom')
-      : ''
-}
-}
-},
 );
 
 @ACL = (
