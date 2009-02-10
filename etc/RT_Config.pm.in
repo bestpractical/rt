@@ -259,7 +259,10 @@ Set($ParseNewMessageForTicketCcs , undef);
 =item C<$RTAddressRegexp> 
 
 C<$RTAddressRegexp> is used to make sure RT doesn't add itself as a ticket CC if
-the setting above is enabled.
+the setting above is enabled.  It is important that you set this to a 
+regular expression that matches all addresses used by your RT.  This lets RT
+avoid sending mail to itself.  It will also hide RT addresses from the list of 
+"One-time Cc" and Bcc lists on ticket reply.
 
 =cut
 
