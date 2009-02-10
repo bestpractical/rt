@@ -821,11 +821,10 @@ push @CHECKS, 'FIX: LastUpdatedBy and Creator' => sub {
             my $query = <<END;
 SELECT m.id, g.id, g.Instance
 FROM
-    Groups g JOIN $table m
+    Groups g JOIN $table m ON g.id = m.$column
 WHERE
     g.Domain = ?
     AND g.Type = ?
-    AND g.id = m.$column
 END
             my $action = sub {
                 my ($gid, $uid) = @_;
