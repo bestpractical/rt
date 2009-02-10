@@ -27,7 +27,8 @@ sub new {
         # XXX: signature compat check
         $self->action( Lorzy::Lambda::Native->new( body => $self->action,
                                                    signature => 
-        { ticket => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Ticket' ) }
+        { ticket => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Model::Ticket' ),
+          transaction => Lorzy::FunctionArgument->new( name => 'transaction', type => 'RT::Model::Transaction' ) }
 
                                                ) );
     }
