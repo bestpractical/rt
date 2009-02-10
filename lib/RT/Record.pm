@@ -1889,15 +1889,9 @@ sub LoadCustomFieldByIdentifier {
     return $cf;
 }
 
+sub ACLEquivalenceObjects { } 
 
-# }}}
-
-# }}}
-
-# }}}
-
-sub BasicColumns {
-}
+sub BasicColumns { }
 
 sub WikiBase {
     return RT->Config->Get('WebPath'). "/index.html?q=";
