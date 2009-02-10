@@ -96,12 +96,12 @@ sub run_validator {
     DBIx::SearchBuilder::Record::Cachable->FlushCache;
     ok !$group2->HasMemberRecursively( $group1->id ), "has no member, broken DB";
 
-    my ($ecode, $res) = run_validator(resolve => 1);
+    ($ecode, $res) = run_validator(resolve => 1);
 
     ok $group2->HasMember( $group1->id ), "has member";
     ok $group2->HasMemberRecursively( $group1->id ), "has member";
 
-    my ($ecode, $res) = run_validator();
+    ($ecode, $res) = run_validator();
     is $res, '', 'empty result';
 }
 
@@ -130,7 +130,7 @@ sub run_validator {
 
     ok !$groups[1]->HasMemberRecursively( $groups[0]->id ), "has no member, broken DB";
 
-    my ($ecode, $res) = run_validator(resolve => 1);
+    ($ecode, $res) = run_validator(resolve => 1);
 
     for ( my $i = 1; $i < @groups; $i++ ) {
         ok $groups[$i]->HasMember( $groups[$i-1]->id ), "has member";
@@ -138,7 +138,7 @@ sub run_validator {
             foreach 0..$i-1;
     }
 
-    my ($ecode, $res) = run_validator();
+    ($ecode, $res) = run_validator();
     is $res, '', 'empty result';
 }
 
