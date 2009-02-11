@@ -107,8 +107,9 @@ private template '_elements/_edit_link_type' => sub {
 
 template '_elements/edit_cfs' => sub {
     my ( $ticket, $queue, $cfs );
-    if ( get('id') ) {
-        $ticket = HTML::Mason::Commands::load_ticket( get('id') );
+    my $id = get('id');
+    if ( $id && $id ne 'new' ) {
+        $ticket = HTML::Mason::Commands::load_ticket( $id );
         $cfs    = $ticket->custom_fields;
     }
     elsif ( get('queue') ) {
