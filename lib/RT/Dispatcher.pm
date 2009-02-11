@@ -175,6 +175,11 @@ on qr{^/Dashboards/(\d+)} => run {
     show( '/Dashboards/Render.html' );
 };
 
+on qr{^/Ticket/Graphs/(\d+)} => run {
+    Jifty->web->request->argument( id => $1 );
+    show( '/Ticket/Graphs/Render' );
+};
+
 # Backward compatibility with old RT URLs
 
 before '/NoAuth/Logout.html' => run { redirect '/logout' };
