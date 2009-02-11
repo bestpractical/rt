@@ -95,11 +95,11 @@ my $id = $ARGS{'id'};
 my $ticket = load_ticket( $id );
 $ARGS{'id'} = $id = $ticket->id;
 
-$ARGS{'leading_link'} ||= 'Members';
+$ARGS{'leading_link'} ||= 'members';
 if ( $ARGS{'show_links'} && !ref $ARGS{'show_links'} ) {
     $ARGS{'show_links'} = [$ARGS{'show_links'}];
 } elsif ( !$ARGS{'show_links'} ) {
-    $ARGS{'show_links'} = [ qw(MemberOf DependsOn RefersTo) ];
+    $ARGS{'show_links'} = [ qw(member_of depends_on refers_to) ];
 }
 $ARGS{'show_links'} = [ grep $_ ne $ARGS{'leading_link'}, @{ $ARGS{'show_links'} } ];
 $ARGS{'max_depth'} = 3 unless defined $ARGS{'max_depth'} && length $ARGS{'max_depth'};
