@@ -296,7 +296,7 @@ my $seen_queues = {};
 while ( my $ticket = $Tickets->Next ) {
     next if $seen_queues->{ $ticket->Queue }++;
 
-    my $custom_fields = $ticket->QueueObj->TicketCustomFields;
+    my $custom_fields = $ticket->CustomFields;
     while ( my $field = $custom_fields->Next ) {
         $fields->{ $field->id } = $field;
     }

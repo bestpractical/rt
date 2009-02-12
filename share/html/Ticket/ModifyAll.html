@@ -150,7 +150,7 @@
 
 
 my $Ticket = LoadTicket($id);
-my $CustomFields = $Ticket->QueueObj->TicketCustomFields();
+my $CustomFields = $Ticket->CustomFields;
 
 # call this to show up hints of valid cf values.
 $m->comp(
