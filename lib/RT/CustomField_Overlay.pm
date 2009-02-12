@@ -653,8 +653,6 @@ sub UnlimitedValues {
 
 # }}}
 
-# {{{ sub CurrentUserHasRight
-
 =head2 CurrentUserHasRight RIGHT
 
 Helper function to call the custom field's queue's CurrentUserHasRight with the passed in args.
@@ -671,8 +669,39 @@ sub CurrentUserHasRight {
     );
 }
 
-# }}}
+=head2 ACLEquivalenceObjects
 
+Returns list of objects via which users can get rights on this custom field. For custom fields
+these objects can be set using L<ContextObject|/"ContextObject and SetContextObject">.
+
+=cut
+
+sub ACLEquivalenceObjects {
+    my $self = shift;
+
+    my $ctx = $self->ContextObject
+        or return;;
+    return ($ctx, $ctx->ACLEquivalenceObjects);
+}
+
+=head2 ContextObject and SetContextObject
+
+Set or get a context for this object. It can be ticket, queue or another object
+this CF applies to. Used for ACL control, for example SeeCustomField can be granted on
+queue level to allow people to see all fields applied to the queue.
+
+=cut
+
+sub SetContextObject {
+    my $self = shift;
+    return $self->{'context_object'} = shift;
+}
+  
+sub ContextObject {
+    my $self = shift;
+    return $self->{'context_object'};
+}
+  
 # {{{ sub _Set
 
 sub _Set {
