@@ -195,7 +195,7 @@ sub RevokeRight {
 
     my $self = shift;
     my %args = (
-        Right      => undef,
+        Right  => undef,
         Object => undef,
         @_
     );
@@ -208,17 +208,14 @@ sub RevokeRight {
     my $type = $self->_GetPrincipalTypeForACL();
 
     my $ace = RT::ACE->new( $self->CurrentUser );
-    $ace->LoadByValues(
+    my ($status, $msg) = $ace->LoadByValues(
         RightName     => $args{'Right'},
-        Object    => $args{'Object'},
+        Object        => $args{'Object'},
         PrincipalType => $type,
         PrincipalId   => $self->Id
     );
-
-    unless ( $ace->Id ) {
-        return ( 0, $self->loc("ACE not found") );
-    }
-    return ( $ace->Delete );
+    return ($status, $msg) unless $status;
+    return $ace->Delete;
 }
 
 # }}}
