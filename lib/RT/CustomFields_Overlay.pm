@@ -182,25 +182,32 @@ Returns the next custom field that this user can see.
 sub Next {
     my $self = shift;
     
-    
     my $CF = $self->SUPER::Next();
-    if ((defined($CF)) and (ref($CF))) {
+    return $CF unless $CF;
 
-	if ($CF->CurrentUserHasRight('SeeCustomField')) {
-	    return($CF);
-	}
-	
-	#If the user doesn't have the right to show this queue
-	else {	
-	    return($self->Next());
-	}
-    }
-    #if there never was any queue
-    else {
-	return(undef);
-    }	
-    
+    $CF->SetContextOject( $self->ContextObject );
+
+    return $self->Next unless $CF->CurrentUserHasRight('SeeCustomField');
+    return $CF;
 }
+
+sub SetContextObject {
+    my $self = shift;
+    return $self->{'context_object'} = shift;
+}
+  
+sub ContextObject {
+    my $self = shift;
+    return $self->{'context_object'};
+}
+
+sub NewItem {
+    my $self = shift;
+    my $res = RT::CustomField->new($self->CurrentUser);
+    $res->SetContextObject($self->ContextObject);
+    return $res;
+}
+
 # }}}
 
 sub LimitToLookupType  {
@@ -255,6 +262,6 @@ sub LimitToGlobalOrObjectId {
     #$self->OrderBy( ALIAS => $class_cfs , FIELD => "SortOrder", ORDER => 'ASC');
 
 }
-  
+
 1;
 
