@@ -215,6 +215,11 @@ table.queue-summary td, td.collection-as-table {
 .titlebox .titlebox .titlebox-title .right{
     top: 0.25em;
 }
+
+.combobox {
+    float: left;
+}
+
 .combobox .combo-button {
     color: ButtonText;
     padding: 0;
