@@ -152,29 +152,25 @@ A helper function which calls RT::ACE->Create
 
 sub GrantRight {
     my $self = shift;
-    my %args = ( Right => undef,
-                Object => undef,
-                @_);
-
-
-    unless ($args{'Right'}) {
-        return(0, $self->loc("Invalid Right"));
-    }
-
+    my %args = (
+        Right => undef,
+        Object => undef,
+        @_
+    );
 
     #ACL check handled in ACE.pm
     my $ace = RT::ACE->new( $self->CurrentUser );
-
 
     my $type = $self->_GetPrincipalTypeForACL();
 
     # If it's a user, we really want to grant the right to their 
     # user equivalence group
-        return ( $ace->Create(RightName => $args{'Right'},
-                          Object => $args{'Object'},
-                          PrincipalType =>  $type,
-                          PrincipalId => $self->Id
-                          ) );
+    return $ace->Create(
+        RightName     => $args{'Right'},
+        Object        => $args{'Object'},
+        PrincipalType => $type,
+        PrincipalId   => $self->Id,
+    );
 }
 # }}}
 
