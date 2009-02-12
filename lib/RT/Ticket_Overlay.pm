@@ -3510,6 +3510,7 @@ sub CustomFieldValues {
     return $self->SUPER::CustomFieldValues( $field ) if !$field || $field =~ /^\d+$/;
 
     my $cf = RT::CustomField->new( $self->CurrentUser );
+    $cf->SetContextObject( $self );
     $cf->LoadByNameAndQueue( Name => $field, Queue => $self->Queue );
     unless ( $cf->id ) {
         $cf->LoadByNameAndQueue( Name => $field, Queue => 0 );

@@ -1523,11 +1523,13 @@ sub Transactions {
 sub CustomFields {
     my $self = shift;
     my $cfs  = RT::CustomFields->new( $self->CurrentUser );
-
+    
+    $cfs->SetContextObject( $self );
     # XXX handle multiple types properly
     $cfs->LimitToLookupType( $self->CustomFieldLookupType );
     $cfs->LimitToGlobalOrObjectId(
-        $self->_LookupId( $self->CustomFieldLookupType ) );
+        $self->_LookupId( $self->CustomFieldLookupType )
+    );
 
     return $cfs;
 }
@@ -1872,17 +1874,20 @@ sub LoadCustomFieldByIdentifier {
     my $self = shift;
     my $field = shift;
     
-    my $cf = RT::CustomField->new($self->CurrentUser);
-
+    my $cf;
     if ( UNIVERSAL::isa( $field, "RT::CustomField" ) ) {
+        $cf = RT::CustomField->new($self->CurrentUser);
+        $cf->SetContextObject( $self );
         $cf->LoadById( $field->id );
     }
     elsif ($field =~ /^\d+$/) {
         $cf = RT::CustomField->new($self->CurrentUser);
+        $cf->SetContextObject( $self );
         $cf->LoadById($field);
     } else {
 
         my $cfs = $self->CustomFields($self->CurrentUser);
+        $cfs->SetContextObject( $self );
         $cfs->Limit(FIELD => 'Name', VALUE => $field, CASESENSITIVE => 0);
         $cf = $cfs->First || RT::CustomField->new($self->CurrentUser);
     }
