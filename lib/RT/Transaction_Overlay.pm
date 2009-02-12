@@ -979,6 +979,7 @@ sub CurrentUserCanSee {
     # Make sure the user can see the custom field before showing that it changed
     elsif ( $type eq 'CustomField' and my $cf_id = $self->__Value('Field') ) {
         my $cf = RT::CustomField->new( $self->CurrentUser );
+        $cf->SetContextObject( $self->Object );
         $cf->Load( $cf_id );
         return 0 unless $cf->CurrentUserHasRight('SeeCustomField');
     }
