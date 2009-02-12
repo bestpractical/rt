@@ -435,9 +435,8 @@ sub SendEmail {
 
         # duplicate head as we want drop Bcc field
         my $head = $args{'Entity'}->head->dup;
-        my @recipients = map $_->address, Email::Address->parse(
-            map $head->get($_), qw(To Cc Bcc)
-        );
+        my @recipients = map $_->address, map 
+            Email::Address->parse($head->get($_)), qw(To Cc Bcc);                       
         $head->delete('Bcc');
 
         my $sender = RT->Config->Get('SMTPFrom')
