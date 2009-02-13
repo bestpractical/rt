@@ -168,6 +168,8 @@ sub _FieldToFunction {
 
     if ($field =~ /^(.*)(Daily|Monthly|Annually)$/) {
         my ($field, $grouping) = ($1, $2);
+        # Pg 8.3 requires explicit casting
+        $field .= '::text' if RT->Config->Get('DatabaseType') eq 'Pg';
         if ( $grouping =~ /Daily/ ) {
             $args{'FUNCTION'} = "SUBSTR($field,1,10)";
         }
