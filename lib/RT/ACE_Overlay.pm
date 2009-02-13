@@ -136,6 +136,14 @@ sub LoadByValues {
                  ObjectType    => undef,
                  @_ );
 
+    if ( $args{'RightName'} ) {
+        my $canonic_name = $self->CanonicalizeRightName( $args{'RightName'} );
+        unless ( $canonic_name ) {
+            return ( 0, $self->loc("Invalid right. Couldn't canonicalize right '[_1]'", $args{'RightName'}) );
+        }
+        $args{'RightName'} = $canonic_name;
+    }
+
     my $princ_obj;
     ( $princ_obj, $args{'PrincipalType'} ) =
       $self->_CanonicalizePrincipal( $args{'PrincipalId'},
