@@ -540,6 +540,20 @@ sub _BootstrapCreate {
 
 # {{{ sub CanonicalizeRightName
 
+sub RightName {
+    my $self = shift;
+    my $val = $self->_Value('RightName');
+    return $val unless $val;
+
+    my $available = $self->Object->AvailableRights;
+    foreach my $right ( keys %$available ) {
+        return $right if $val eq $self->CanonicalizeRightName($right);
+    }
+
+    $RT::Logger->crit("Invalid right. Couldn't canonicalize right '$val'");
+    return $val;
+}
+
 =head2 CanonicalizeRightName <RIGHT>
 
 Takes a queue or system right name in any case and returns it in
@@ -547,10 +561,19 @@ the correct case. If it's not found, will return undef.
 
 =cut
 
+our %CANONICRIGHTNAMES = ();
+{ my $keys_cached = 0;
 sub CanonicalizeRightName {
     my $self  = shift;
-    return $LOWERCASERIGHTNAMES{ lc shift };
-}
+    unless ( $keys_cached == keys %LOWERCASERIGHTNAMES ) {
+        foreach my $right ( values %LOWERCASERIGHTNAMES ) {
+            $right =~ s/s$//i;
+            $CANONICRIGHTNAMES{ lc $right } = $right;
+            $CANONICRIGHTNAMES{ lc $right .'s' } = $right;
+        }
+    }
+    return $CANONICRIGHTNAMES{ lc shift };
+} }
 
 # }}}
 

@@ -1494,7 +1494,7 @@ sub _CleanupInvalidDelegations {
                  IncludeGroupMembership => 1);
     $deleg_acl->Limit( FIELD => 'RightName',
                OPERATOR => '=',
-               VALUE => 'DelegateRights' );
+               VALUE => 'DelegateRight' );
     my @allowed_deleg_objects = map {$_->Object()}
     @{$deleg_acl->ItemsArrayRef()};
 
