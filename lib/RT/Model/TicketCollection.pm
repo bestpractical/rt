@@ -102,7 +102,7 @@ our %FIELD_METADATA = (
     LastUpdatedBy  => [ 'ENUM' => 'User', ],                    #loc_left_pair
     Owner            => [ 'WATCHERFIELD' => 'owner', ],         #loc_left_pair
     EffectiveId     => [ 'INT', ],                              #loc_left_pair
-    Id               => [ 'INT', ],                             #loc_left_pair
+    Id               => [ 'ID', ],                             #loc_left_pair
     InitialPriority => [ 'INT', ],                              #loc_left_pair
     FinalPriority   => [ 'INT', ],                              #loc_left_pair
     Priority         => [ 'INT', ],                             #loc_left_pair
