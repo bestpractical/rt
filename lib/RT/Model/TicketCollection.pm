@@ -100,7 +100,7 @@ our %FIELD_METADATA = (
     Type             => [ 'ENUM', ],                            #loc_left_pair
     Creator          => [ 'ENUM' => 'User', ],                  #loc_left_pair
     LastUpdatedBy  => [ 'ENUM' => 'User', ],                    #loc_left_pair
-    Owner            => [ 'WATCHERFIELD' => 'Owner', ],         #loc_left_pair
+    Owner            => [ 'WATCHERFIELD' => 'owner', ],         #loc_left_pair
     EffectiveId     => [ 'INT', ],                              #loc_left_pair
     Id               => [ 'INT', ],                             #loc_left_pair
     InitialPriority => [ 'INT', ],                              #loc_left_pair
@@ -2217,7 +2217,7 @@ sub current_user_can_see {
         $join_roles = 0 if $join_roles == 1 && $roles{'Owner'};
         my ( $role_group_alias, $cgm_alias );
         if ($join_roles) {
-            $role_group_alias = $self->_role_groupsjoin( New => 1 );
+            $role_group_alias = $self->_role_groupsjoin( new => 1 );
             $cgm_alias =
               $self->_group_membersjoin( groups_alias => $role_group_alias );
             $self->SUPER::limit(
