@@ -1527,7 +1527,7 @@ sub order_by {
             elsif (
                 ( $meta->[0] eq 'ENUM' && ( $meta->[1] || '' ) eq 'User' )
                 || ( $meta->[0] eq 'WATCHERFIELD'
-                    && ( $meta->[1] || '' ) eq 'Owner' )
+                    && ( $meta->[1] || '' ) eq 'owner' )
               )
             {
                 my $alias = $self->join(
