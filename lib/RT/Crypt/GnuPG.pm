@@ -2365,7 +2365,11 @@ sub Probe {
         );
         return 0;
     }
-    if ( $? ) {
+
+# on some systems gpg exits with code 2, but still 100% functional,
+# it's general error system error or incorrect command, command is correct,
+# but there is no way to get actuall error
+    if ( $? && ($? >> 8) != 2 ) {
         $RT::Logger->debug(
             "Probe for GPG failed."
             ." Process exitted with code ". ($? >> 8)
