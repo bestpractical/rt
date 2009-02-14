@@ -80,9 +80,15 @@
 </tr>
 
 <tr><td align="right"><&|/l&>Priority starts at</&>:</td>
-<td><input name="InitialPriority" value="<% ($Create) ? "" : $QueueObj->InitialPriority %>" /></td>
+<td><& /Elements/SelectPriority,
+    Name => "InitialPriority",
+    Default => $Create? 0: $QueueObj->InitialPriority,
+&></td>
 <td align="right"><&|/l&>Over time, priority moves toward</&>:</td>
-<td><input name="FinalPriority" value="<% ($Create) ? "" : $QueueObj->FinalPriority %>" /></td>
+<td><& /Elements/SelectPriority,
+    Name => "FinalPriority",
+    Default => $Create? 0: $QueueObj->FinalPriority,
+&></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Requests should be due in</&>:</td>

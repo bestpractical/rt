@@ -95,14 +95,17 @@
 
   <tr>
       <td class="label"><&|/l&>Priority</&>:</td>
-      <td class="value"><input name="Priority" 
-        value="<%$TicketObj->Priority || ''|h%>" size="5" /></td>
+      <td class="value"><& /Elements/SelectPriority,
+          Default => $TicketObj->Priority,
+      &></td>
     </tr>
 
   <tr>
       <td class="label"><&|/l&>Final Priority</&>:</td>
-      <td class="value"><input name="FinalPriority" 
-            value="<%$TicketObj->FinalPriority || '' |h%>" size="5" /></td>
+      <td class="value"><& /Elements/SelectPriority,
+          Name => "FinalPriority",
+          Default => $TicketObj->FinalPriority,
+      &></td>
     </tr>
 
 

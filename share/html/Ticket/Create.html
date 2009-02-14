@@ -184,8 +184,16 @@
 		title_class=> 'inverse',  
 		color => "#993333" &>
 <table border="0">
-<tr><td class="label"><&|/l&>Priority</&>:</td><td><input size="3" name="InitialPriority" value="<% $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->InitialPriority %>" /></td></tr>
-<tr><td class="label"><&|/l&>Final Priority</&>:</td><td><input size="3" name="FinalPriority" value="<% $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->FinalPriority %>" /></td></tr>
+<tr><td class="label"><&|/l&>Priority</&>:</td>
+<td><& /Elements/SelectPriority,
+    Name => "InitialPriority",
+    Default => $ARGS{InitialPriority} ? $ARGS{InitialPriority} : $QueueObj->InitialPriority,
+&></td></tr>
+<tr><td class="label"><&|/l&>Final Priority</&>:</td>
+<td><& /Elements/SelectPriority,
+    Name => "FinalPriority",
+    Default => $ARGS{FinalPriority} ? $ARGS{FinalPriority} : $QueueObj->FinalPriority,
+&></td></tr>
 <tr><td class="label"><&|/l&>Time Estimated</&>:</td>
 <td>
 <input size="3" name="TimeEstimated" value="<%$ARGS{TimeEstimated} || ''%>" />
