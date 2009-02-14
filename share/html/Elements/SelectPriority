@@ -1,0 +1,8 @@
+<input name="<% $Name %>" value="<% $Default %>" size="5" />
+<%ARGS>
+$Name => 'Priority'
+$Default => ''
+</%ARGS>
+<%INIT>
+$Default = '' unless defined $Default;
+</%INIT>
