@@ -2351,6 +2351,7 @@ sub Probe {
     my ($handles, $handle_list) = _make_gpg_handles();
     my %handle = %$handle_list;
 
+    local $@;
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
         my $pid = safe_run_child { $gnupg->wrap_call( commands => ['--version' ], handles => $handles ) };
