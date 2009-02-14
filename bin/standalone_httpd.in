@@ -124,6 +124,15 @@ EOF
     RT->InitPlugins();
 }
 
+{
+    my ($status, $msg) = RT::Handle->CheckCompatibility(
+        $RT::Handle->dbh, 'post'
+    );
+    unless ( $status ) {
+        print STDERR $msg, "\n\n";
+        exit -1;
+    }
+}
 
 
 require RT::Interface::Web::Standalone;
