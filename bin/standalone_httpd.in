@@ -122,9 +122,7 @@ EOF
     RT->InitSystemObjects();
     RT->InitClasses();
     RT->InitPlugins();
-}
 
-{
     my ($status, $msg) = RT::Handle->CheckCompatibility(
         $RT::Handle->dbh, 'post'
     );
@@ -133,7 +131,6 @@ EOF
         exit -1;
     }
 }
-
 
 require RT::Interface::Web::Standalone;
 my $server = RT::Interface::Web::Standalone->new;
