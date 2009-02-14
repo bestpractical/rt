@@ -38,8 +38,8 @@ $owner_role->LoadQueueRoleGroup( Type => 'Owner', Queue => $queue->id );
 
 ok( RT::Test->set_rights(
     { Principal => $tester, Right => [qw(SeeQueue ShowTicket CreateTicket ReplyToTicket Watch OwnTicket TakeTicket)] },
-    { Principal => $cc_role, Object => $queue, Right => [qw(SeeCustomField)] },
-    { Principal => $owner_role, Object => $queue, Right => [qw(ModifyCustomField)] },
+    { Principal => $cc_role, Object => $queue, Right => [qw(SeeCustomFields)] },
+    { Principal => $owner_role, Object => $queue, Right => [qw(ModifyCustomFields)] },
 ), 'set rights');
 
 {
