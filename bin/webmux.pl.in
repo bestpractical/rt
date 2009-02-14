@@ -101,9 +101,23 @@ BEGIN {
     RT->InitPluginPaths();
 }
 
+{
+    require RT::Handle;
+    my $dsn = RT::Handle->DSN;
+    my $user = RT->Config->Get('DatabaseUser');
+    my $pass = RT->Config->Get('DatabasePassword');
+
+    my $dbh = DBI->connect(
+        $dsn, $user, $pass,
+        { RaiseError => 0, PrintError => 0 },
+    );
+    if ( $dbh ) {
+        my ($status, $msg) = RT::Handle->CheckCompatibility( $dbh, 'post' );
+        die $msg unless $status;
+    }
+}
 
 {
-
     package HTML::Mason::Commands;
     use vars qw(%session);
 }
