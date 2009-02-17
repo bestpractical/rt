@@ -181,6 +181,10 @@ function doOnLoadHooks() {
 
 window.onload = doOnLoadHooks;
 
+function doOnLoad(handler) {
+    Event.observe(window, 'load', handler);
+}
+
 /* other utils */
 
 function focusElementById(id) {
