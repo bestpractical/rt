@@ -18,17 +18,13 @@ my $eval = Lorzy::Evaluator->new();
 $eval->load_package($_) for qw(Str Native);
 $eval->load_package('RT', 'RT::Lorzy::Package::RT');
 
-my $tree    = [ { name => 'IfThen',
-                  args => { if_true => { name => 'True' },
-                            if_false => { name => 'False' },
-                            condition => { name => 'RT.Condition.Applicable',
-                                args => {
-                                    name => "On Create",
-                                    ticket => { name => 'Symbol', args => { symbol => 'ticket' }},
-                                    transaction => { name => 'Symbol', args => { symbol => 'transaction' }},
-                                    }
-                            }
-                        } } ];
+my $tree    = [ { name => 'RT.Condition.Applicable',
+                  args => {
+                      name => "On Create",
+                      ticket => { name => 'Symbol', args => { symbol => 'ticket' }},
+                      transaction => { name => 'Symbol', args => { symbol => 'transaction' }},
+                  }
+              } ];
 
 my $builder = Lorzy::Builder->new();
 my $on_created  = $builder->defun(

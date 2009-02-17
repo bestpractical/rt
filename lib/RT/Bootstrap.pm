@@ -457,31 +457,40 @@ sub insert_data {
         #print "done.\n";
     }
     if (@Scrips) {
-
-        #print "Creating scrips...";
-
+        # XXX: put into RT::Model::Rules
+        require RT::Lorzy;
+        require Lorzy::Builder;
+        my $sigs = { ticket => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Model::Ticket' ),
+                     transaction => Lorzy::FunctionArgument->new( name => 'transaction', type => 'RT::Model::Transaction' ) };
+        my $builder = Lorzy::Builder->new();
         for my $item (@Scrips) {
-            my $new_entry = RT::Model::Scrip->new( current_user => RT->system_user );
+            my $condition  = $builder->defun(
+                ops => [{ name => 'RT.Condition.Applicable',
+                          args => {
+                              name => $item->{scrip_condition},
+                              ticket => { name => 'Symbol', args => { symbol => 'ticket' }},
+                              transaction => { name => 'Symbol', args => { symbol => 'transaction' } }
+                          } }
+                    ],
+                signature => $sigs,
 
-            my @queues
-                = ref $item->{'queue'} eq 'ARRAY'
-                ? @{ $item->{'queue'} }
-                : $item->{'queue'} || 0;
-            push @queues, 0 unless @queues;    # add global queue at least
+            );
 
-            foreach my $q (@queues) {
-                my ( $return, $msg ) = $new_entry->create( %$item, queue => $q );
-                if ($return) {
+            my $action  = $builder->defun(
+                ops => [ { name => 'RT.ScripAction.Run',
+                           args => {
+                               name => $item->{scrip_action},
+                               template => $item->{template},
+                               ticket => { name => 'Symbol', args => { symbol => 'ticket' }},
+                               transaction => { name => 'Symbol', args => { symbol => 'transaction' }},
+                           } } ],
+                signature => $sigs);
 
-                    #print $return. ".";
-                } else {
-
-                    #print "(Error: $msg)\n";
-                }
-            }
+            RT::Lorzy::Dispatcher->add_rule(
+                RT::Lorzy::Rule->new( { condition => $condition,
+                                        action => $action } )
+                );
         }
-
-        #print "done.\n";
     }
 
     if (@Attributes) {

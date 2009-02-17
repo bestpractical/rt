@@ -304,7 +304,6 @@ sub table {'Transactions'}
 use vars qw( %_brief_descriptions $Preferredcontent_type );
 
 use RT::Model::AttachmentCollection;
-use RT::Model::ScripCollection;
 use RT::Ruleset;
 
 
@@ -375,16 +374,6 @@ sub create {
     #Provide a way to turn off scrips if we need to
     Jifty->log->debug( 'About to think about scrips for transaction #' . $self->id );
     if ( $activate_scrips and $args{'object_type'} eq 'RT::Model::Ticket' ) {
-        $self->{'scrips'} = RT::Model::ScripCollection->new( current_user => RT->system_user );
-
-        Jifty->log->debug( 'About to prepare scrips for transaction #' . $self->id );
-        $self->{'scrips'}->prepare(
-            stage       => 'transaction_create',
-            type        => $args{'type'},
-            ticket      => $args{'object_id'},
-            transaction => $self->id,
-        );
-
         # Entry point of the rule system
         my $ticket = RT::Model::Ticket->new( current_user => RT->system_user );
         $ticket->load( $args{'object_id'} );
@@ -397,7 +386,6 @@ sub create {
         
         if ( $commit_scrips ) {
             Jifty->log->debug( 'About to commit scrips for transaction #' . $self->id );
-            $self->{'scrips'}->commit;
             RT::Ruleset->commit_rules($rules);
             
         } else {

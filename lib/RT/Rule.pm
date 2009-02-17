@@ -98,7 +98,6 @@ sub run_scrip_action {
 
     # XXX: fix template to allow additional arguments to be passed from here
     $action->{'template_obj'} = $template;
-    $action->{'scrip_obj'} = RT::Model::Scrip->new( current_user => $self->current_user); # Stub. sendemail action really wants a scripobj available
     $action->prepare or return;
     $action->commit;
 

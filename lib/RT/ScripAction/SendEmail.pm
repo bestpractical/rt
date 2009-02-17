@@ -291,8 +291,8 @@ sub send_message {
 
     Jifty->log->info( $msgid . " #" . $self->ticket_obj->id . "/" .
             $self->transaction_obj->id . " - Scrip "
-            . ( $self->scrip_obj->id || '#rule' ) . " "
-            . ( $self->scrip_obj->description || '' ) );
+            . ( '#rule' ) . " ");
+
 
     my $status = RT::Interface::Email::send_email(
         entity      => $mime_obj,
@@ -585,7 +585,7 @@ sub set_rt_special_headers {
         if (    $msgid
             and $msgid =~ s/<(rt-.*?-\d+-\d+)\.(\d+)-\d+-\d+\@\QRT->config->get('Organization')\E>$/
                          "<$1." . $self->ticket_obj->id
-                          . "-" . $self->scrip_obj->id
+                          . "-" . '#rule'
                           . "-" . $self->scrip_action_obj->{_Message_ID}
                           . "@" . RT->config->get('Organization') . ">"/eg
             and $2 == $self->ticket_obj->id
@@ -596,7 +596,7 @@ sub set_rt_special_headers {
             $self->set_header(
                 'Message-ID' => RT::Interface::Email::gen_message_id(
                     ticket       => $self->ticket_obj,
-                    scrip        => $self->scrip_obj,
+                    scrip        => '#rule',
                     scrip_action => $self->scrip_action_obj
                 ),
             );
@@ -1003,7 +1003,7 @@ sub set_references_headers {
         for ( @references, @in_reply_to ) {
             s/<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>$/
           "<$1." . $self->ticket_obj->id .
-             "-" . $self->scrip_obj->id .
+             "-" . '#rule',
              "-" . $self->scrip_action_obj->{_Message_ID} .
              "@" . $org . ">"/eg
         }
