@@ -142,45 +142,6 @@ function set_rollup_state(e,e2,state) {
     }
 }
 
-
-/* onload handlers */
-
-var onLoadStack     = new Array();
-var onLoadLastStack = new Array();
-var onLoadExecuted  = 0;
-
-function onLoadHook(commandStr) {
-    if(typeof(commandStr) == "string") {
-        onLoadStack[ onLoadStack.length ] = commandStr;
-        return true;
-    }
-    return false;
-}
-
-// some things *really* need to be done after everything else
-function onLoadLastHook(commandStr) {
-    if(typeof(commandStr) == "string"){
-        onLoadLastStack[onLoadLastStack.length] = commandStr;
-        return true;
-    }
-    return false;
-}
-
-function doOnLoadHooks() {
-    if(onLoadExecuted) return;
-
-    var i;
-    for ( i in onLoadStack ) { 
-        eval( onLoadStack[i] );
-    }
-    for ( i in onLoadLastStack ) { 
-        eval( onLoadLastStack[i] );
-    }
-    onLoadExecuted = 1;
-}
-
-window.onload = doOnLoadHooks;
-
 function doOnLoad(handler) {
     Event.observe(window, 'load', handler);
 }
