@@ -145,22 +145,22 @@ if ( $self->{'encrypt'} ) {
 
     if ( $operation eq 'update' ) {
         # skip any email addresses that we won't be sending mail to
-        my %squelch = $m->comp(
-            '/Ticket/Elements/PreviewScrips:SquelchRecipients',
-            %$self,
-            ticket_obj => $ticket_obj
-        );
-
-        @recipients = $m->comp(
-            '/Ticket/Elements/PreviewScrips:GetRecipients',
-            %$self, ticket_obj => $ticket_obj
-        );
+#        my %squelch = $m->comp(
+#            '/Ticket/Elements/PreviewScrips:SquelchRecipients',
+#            %$self,
+#            ticket_obj => $ticket_obj
+#        );
+#
+#        @recipients = $m->comp(
+#            '/Ticket/Elements/PreviewScrips:GetRecipients',
+#            %$self, ticket_obj => $ticket_obj
+#        );
     }
     elsif ( $operation eq 'create' ) {
-        @recipients = $m->comp(
-            '/Ticket/Elements/PreviewScrips:GetRecipientsOnCreate',
-            %$self,
-        );
+#        @recipients = $m->comp(
+#            '/Ticket/Elements/PreviewScrips:GetRecipientsOnCreate',
+#            %$self,
+#        );
     }
     else {
         Jifty->log->fatal('Incorrect operation: '. $operation );

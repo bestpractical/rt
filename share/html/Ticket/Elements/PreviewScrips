@@ -50,6 +50,8 @@ $ticket_obj => undef
 
 </%args>
 <%init>
+###### XXX: this needs to be ported to introspect lorzy
+return;
 my %squelch = $m->comp('SELF:SquelchRecipients', %ARGS);
 my $object = $squelch{'object'};
 my @non_recipients = @{ $squelch{'emails'} };
