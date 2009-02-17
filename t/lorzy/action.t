@@ -50,17 +50,12 @@ my $auto_reply  = $builder->defun(
           transaction => Lorzy::FunctionArgument->new( name => 'transaction', type => 'RT::Model::Transaction' ) }
 );
 
+RT::Lorzy::Dispatcher->reset_rules;
+
 RT::Lorzy::Dispatcher->add_rule(
     RT::Lorzy::Rule->new( { condition => $on_created,
                             action => $auto_reply } )
 );
-
-# remove all existing scrips
-# XXX: disable the builtin lorzy rules here for test once it's enabled by core.
-my $scrips = RT::Model::ScripCollection->new( current_user => RT->system_user);
-$scrips->unlimit;
-$_->delete for @{$scrips};
-
 
 my $queue = RT::Model::Queue->new(current_user => RT->system_user);
 my ($queue_id) = $queue->create( name =>  'lorzy');
