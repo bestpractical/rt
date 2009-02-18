@@ -192,7 +192,10 @@ my @lines = (
             Type => 'component',
             Path => '/Elements/SelectEqualityOperator',
         },
-        Value => { Type => 'text', Size => 5 }
+        Value => {
+            Type => 'component',
+            Path => '/Elements/SelectPriority',
+        },
     },
     {
         Name => 'Links',
