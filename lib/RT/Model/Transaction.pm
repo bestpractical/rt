@@ -375,7 +375,7 @@ sub create {
     Jifty->log->debug( 'About to think about scrips for transaction #' . $self->id );
     if ( $activate_scrips and $args{'object_type'} eq 'RT::Model::Ticket' ) {
         # Entry point of the rule system
-        my $ticket = RT::Model::Ticket->new( current_user => RT->system_user );
+        my $ticket = RT::Model::Ticket->new;
         $ticket->load( $args{'object_id'} );
         my $rules = RT::Ruleset->find_all_rules(
             stage          => 'transaction_create',

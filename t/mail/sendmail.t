@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use RT::Test; use Test::More tests => 131;
+use RT::Test; use Test::More tests => 129;
 use File::Spec ();
 
 
@@ -199,9 +199,7 @@ sub utf8_redef_sendmessage {
         my $self = shift;
         my $MIME = shift;
 
-        my $scrip = $self->scrip_obj->id;
-        ok(1, $self->scrip_obj->scrip_condition->name . " ".$self->scrip_obj->scrip_action->name);
-        main::_fired_scrip($self->scrip_obj);
+        main::_fired_scrip("#rule");
         $MIME->make_singlepart;
         main::is( ref($MIME) , \'MIME::Entity\',
                   "hey, look. it\'s a mime entity" );
@@ -226,9 +224,7 @@ sub iso8859_redef_sendmessage {
         my $self = shift;
         my $MIME = shift;
 
-        my $scrip = $self->scrip_obj->id;
-        ok(1, $self->scrip_obj->scrip_condition->name . " ".$self->scrip_obj->scrip_action->name);
-        main::_fired_scrip($self->scrip_obj);
+        main::_fired_scrip("#rule");
         $MIME->make_singlepart;
         main::is( ref($MIME) , \'MIME::Entity\',
                   "hey, look. it\'s a mime entity" );

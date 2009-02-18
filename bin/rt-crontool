@@ -109,7 +109,6 @@ if ($template_id) {
     $template_obj = RT::Model::Template->new( current_user => $CurrentUser );
     $template_obj->load($template_id);
 }
-my $void_scrip = RT::Model::Scrip->new( current_user => $CurrentUser );
 my $void_scrip_action = RT::Model::ScripAction->new( current_user => $CurrentUser );
 
 #At the appointed time:
@@ -159,7 +158,6 @@ sub process {
         my $condition_obj = $condition->new(
             transaction_obj => $transaction,
             ticket_obj      => $ticket,
-            scrip_obj       => $void_scrip,
             template_obj    => $template_obj,
             argument       => $condition_arg,
             current_user    => $CurrentUser,
@@ -177,7 +175,6 @@ sub process {
         transaction_obj => $transaction,
         template_obj    => $template_obj,
         argument       => $action_arg,
-        scrip_obj       => $void_scrip,
         scrip_action_obj => $void_scrip_action,
         current_user    => $CurrentUser,
     );
