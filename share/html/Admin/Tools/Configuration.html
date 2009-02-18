@@ -128,6 +128,20 @@ foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
 % }
 </table>
 
+<h2><&|/l&>RT Size</&></h2>
+<table>
+<%PERL>
+for my $type (qw/Ticket Queue Transaction User Group/) {
+    my $class = 'RT::' . $type . 's';
+    my $collection = $class->new($RT::SystemUser);
+    $collection->UnLimit;
+    my $count = $collection->CountAll;
+</%PERL>
+<tr><th><% $type %>s</th>
+<td><% $count %></td></tr>
+% }
+</table>
+
 <h2><&|/l&>Perl configuration</&></h2>
 % require Config;
 <pre>
