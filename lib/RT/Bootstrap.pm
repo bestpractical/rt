@@ -460,36 +460,14 @@ sub insert_data {
         # XXX: put into RT::Model::Rules
         require RT::Lorzy;
         require Lorzy::Builder;
-        my $sigs = { ticket => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Model::Ticket' ),
-                     transaction => Lorzy::FunctionArgument->new( name => 'transaction', type => 'RT::Model::Transaction' ) };
-        my $builder = Lorzy::Builder->new();
-        for my $item (@Scrips) {
-            my $condition  = $builder->defun(
-                ops => [{ name => 'RT.Condition.Applicable',
-                          args => {
-                              name => $item->{scrip_condition},
-                              ticket => { name => 'Symbol', args => { symbol => 'ticket' }},
-                              transaction => { name => 'Symbol', args => { symbol => 'transaction' } }
-                          } }
-                    ],
-                signature => $sigs,
-
+        for my $item (sort { $a->{description} cmp $b->{description} } @Scrips) {
+            my $rule = RT::Lorzy->create_scripish(
+                $item->{scrip_condition},
+                $item->{scrip_action},
+                $item->{template},
             );
 
-            my $action  = $builder->defun(
-                ops => [ { name => 'RT.ScripAction.Run',
-                           args => {
-                               name => $item->{scrip_action},
-                               template => $item->{template},
-                               ticket => { name => 'Symbol', args => { symbol => 'ticket' }},
-                               transaction => { name => 'Symbol', args => { symbol => 'transaction' }},
-                           } } ],
-                signature => $sigs);
-
-            RT::Lorzy::Dispatcher->add_rule(
-                RT::Lorzy::Rule->new( { condition => $condition,
-                                        action => $action } )
-                );
+            RT::Lorzy::Dispatcher->add_rule( $rule );
         }
     }
 

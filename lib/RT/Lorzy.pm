@@ -16,6 +16,59 @@ sub evaluate {
     return $ret;
 }
 
+sub create_scripish {
+    my ( $class, $scrip_condition, $scrip_action, $template, $queue ) = @_;
+    my $sigs = { ticket => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Model::Ticket' ),
+        transaction => Lorzy::FunctionArgument->new( name => 'transaction', type => 'RT::Model::Transaction' ) };
+    my $builder = Lorzy::Builder->new();
+
+    my $tree = {
+        name => 'RT.Condition.Applicable',
+        args => {
+            name => $scrip_condition,
+            ticket => { name => 'Symbol', args => { symbol => 'ticket' } },
+            transaction => { name => 'Symbol', args => { symbol => 'transaction' } }
+        } };
+
+    if ($queue) {
+
+        $tree = { name => 'And',
+                  args => { nodes =>
+                                [ { name => 'Str.Eq',
+                                    args => {
+                                        arg1 => $queue,
+                                        arg2 => { name => 'Native.Invoke',
+                                                  args => { obj => { name => 'Native.Invoke',
+                                                                     args => { obj => { name => 'Symbol', args => { symbol => 'ticket' }},
+                                                                               method => 'queue',
+                                                                               args => { name => 'List',  nodes => []} } },
+                                                            method => 'id',
+                                                            args => { name => 'List',  nodes => []} },
+                                              },
+                                    }},
+                                  $tree ] } };
+    }
+
+    my $condition = $builder->defun(
+        ops => [ $tree ],
+        signature => $sigs,
+    );
+
+    my $action = $builder->defun(
+        ops => [ { name => 'RT.ScripAction.Run',
+                args => {
+                    name     => $scrip_action,
+                    template => $template,
+                    ticket => { name => 'Symbol', args => { symbol => 'ticket' } },
+                    transaction => { name => 'Symbol', args => { symbol => 'transaction' } },
+                    } } ],
+        signature => $sigs );
+
+    RT::Lorzy::Rule->new(
+        { condition => $condition,
+            action => $action } )
+}
+
 package RT::Lorzy::Rule;
 use base 'Class::Accessor::Fast';
 __PACKAGE__->mk_accessors(qw(condition action));
