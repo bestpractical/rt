@@ -170,6 +170,16 @@ after qr/.*/ => run {
     RT::Interface::Web::Handler::cleanup_request();
 };
 
+on qr{^/Dashboards/(\d+)} => run {
+    Jifty->web->request->argument( id => $1 );
+    show( '/Dashboards/Render.html' );
+};
+
+on qr{^/Ticket/Graphs/(\d+)} => run {
+    Jifty->web->request->argument( id => $1 );
+    show( '/Ticket/Graphs/Render' );
+};
+
 # Backward compatibility with old RT URLs
 
 before '/NoAuth/Logout.html' => run { redirect '/logout' };

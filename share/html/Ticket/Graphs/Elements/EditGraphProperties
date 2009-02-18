@@ -57,7 +57,7 @@
 
 <% _('Main type of links') %> <select name="leading_link">
 % foreach ( @link_types ) {
-<option value="<% $_ %>" <% ($leading_link||'Members') eq $_? 'selected="selected"': '' |n %>><% _($_) %></option>
+<option value="<% $_ %>" <% ($leading_link||'members') eq $_? 'selected="selected"': '' |n %>><% _($_) %></option>
 % }
 </select>
 
@@ -106,7 +106,7 @@ while ( my ($group, $list) = (splice @tmp, 0, 2) ) {
 <%PERL>
 for my $i ( 1..($max_depth||6) ) {
     my @default;
-    if ( my $tmp = $ARGS{ 'Level-'. $i .'-Properties' } ) {
+    if ( my $tmp = $ARGS{ 'level-'. $i .'-properties' } ) {
         @default = ref $tmp? @$tmp : ($tmp);
     }
 
@@ -125,8 +125,8 @@ for my $i ( 1..($max_depth||6) ) {
 <%ARGS>
 $id => undef
 $direction => 'TB'
-$leading_link => 'Members'
-@show_links => ('MemberOf', 'DependsOn', 'RefersTo')
+$leading_link => 'members'
+@show_links => ('member_of', 'depends_on', 'refers_to')
 $max_depth => 3
 $fill_using => ''
 $show_link_descriptions => 0
@@ -135,7 +135,8 @@ $show_link_descriptions => 0
 require RT::Graph::Tickets;
 require RT::Model::Link;
 
-my @link_types = qw(Members MemberOf RefersTo ReferredToBy DependsOn DependedOnBy); #loc_qw
+my @link_types = qw(members member_of refers_to referred_to_by depends_on
+depended_on_by); #loc_qw
 @show_links = grep $_ ne $leading_link, @show_links;
 </%INIT>
 
@@ -150,7 +151,7 @@ my $id = "graph-properties-box-$level";
 my $class = '';
 $class = 'class="hidden"' if $level != 1 && !@default;
 </%INIT>
-<% _('Show Tickets Properties on %1 level', $Level) %>
+<% _('Show Tickets Properties on %1 level', $level) %>
 (<small><a href="#" onclick="hideshow('<% $id %>'); return false;"><% _('open/close') %></a></small>):
 <table id="<% $id %>" <% $class |n %>>
 % while ( my ($group, $list) = (splice @available, 0, 2) ) {
@@ -158,7 +159,7 @@ $class = 'class="hidden"' if $level != 1 && !@default;
 % foreach my $prop ( @$list ) {
 % my $checked = '';
 % $checked = 'checked="checked"' if grep $_ eq $prop, @default;
-<input type="checkbox" class="checkbox" name="Level-<% $Level %>-Properties" value="<% $prop %>" <% $checked |n %> /><% _($prop) %>
+<input type="checkbox" class="checkbox" name="level-<% $level %>-properties" value="<% $prop %>" <% $checked |n %> /><% _($prop) %>
 % }
 </td></tr>
 % }

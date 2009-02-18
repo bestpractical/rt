@@ -46,15 +46,6 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-my $arg = $m->dhandler_arg;
-
-my $id;
-if ( $arg =~ m{^(\d+)$}i ) {
-    ($id) = ($1);
-} else {
-    return $m->abort( 404 );
-}
-
 my $ticket = RT::Model::Ticket->new( current_user => Jifty->web->current_user );
 $ticket->load( $id );
 unless ( $ticket->id ) {
@@ -78,3 +69,6 @@ $m->out( $png );
 $m->abort;
 
 </%INIT>
+<%ARGS>
+$id
+</%ARGS>

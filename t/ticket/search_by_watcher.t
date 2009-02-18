@@ -133,24 +133,6 @@ run_tests();
     'Subject NOT LIKE "x" OR Requestor != "not-exist@example.com"' =>
         { xy => 1, x => 1, y => 1, '-' => 1, z => 1 },
 
-# group of cases when user doesn't exist in DB at all
-    'Subject LIKE "x" AND Requestor = "not-exist@example.com"' =>
-        { xy => 0, x => 0, y => 0, '-' => 0, z => 0 },
-    'Subject NOT LIKE "x" AND Requestor = "not-exist@example.com"' =>
-        { xy => 0, x => 0, y => 0, '-' => 0, z => 0 },
-    'Subject LIKE "x" AND Requestor != "not-exist@example.com"' =>
-        { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
-    'Subject NOT LIKE "x" AND Requestor != "not-exist@example.com"' =>
-        { xy => 0, x => 0, y => 1, '-' => 1, z => 1 },
-#    'Subject LIKE "x" OR Requestor = "not-exist@example.com"' =>
-#        { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
-#    'Subject NOT LIKE "x" OR Requestor = "not-exist@example.com"' =>
-#        { xy => 0, x => 0, y => 1, '-' => 1, z => 1 },
-    'Subject LIKE "x" OR Requestor != "not-exist@example.com"' =>
-        { xy => 1, x => 1, y => 1, '-' => 1, z => 1 },
-    'Subject NOT LIKE "x" OR Requestor != "not-exist@example.com"' =>
-        { xy => 1, x => 1, y => 1, '-' => 1, z => 1 },
-
     'Subject LIKE "z" AND (Requestor = "x@example.com" OR Requestor = "y@example.com")' =>
         { xy => 0, x => 0, y => 0, '-' => 0, z => 0 },
     'Subject NOT LIKE "z" AND (Requestor = "x@example.com" OR Requestor = "y@example.com")' =>
