@@ -91,10 +91,12 @@ sub run_scrip_action {
         $template = $t;
     }
 
-    my $action = $ScripAction->load_action( transaction_obj => $self->transaction_obj,
-                                           ticket_obj => $self->ticket_obj,
-                                           %args,
-                                       );
+    my $action = $ScripAction->load_action(
+        transaction_obj         => $self->transaction_obj,
+        ticket_obj              => $self->ticket_obj,
+        source_scripaction_name => $scrip_action,
+        %args,
+    );
 
     # XXX: fix template to allow additional arguments to be passed from here
     $action->{'template_obj'} = $template;

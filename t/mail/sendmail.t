@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use RT::Test; use Test::More tests => 129;
+use RT::Test; use Test::More tests => 117;
 use File::Spec ();
 
 
@@ -27,7 +27,7 @@ is (__PACKAGE__, 'main', "We're operating in the main package");
         my $self = shift;
         my $MIME = shift;
 
-        main::_fired_scrip($self->scrip_obj);
+        main::_fired_scrip('#rule');
         main::is(ref($MIME) , 'MIME::Entity', "hey, look. it's a mime entity");
     }
 }
@@ -301,7 +301,7 @@ sub text_html_redef_sendmessage {
     eval 'sub RT::ScripAction::SendEmail::send_message { 
                 my $self = shift;
                 my $MIME = shift;
-                return (1) unless ($self->scrip_obj->scrip_action->name eq "Notify AdminCcs" );
+                return (1) unless ($self->hints->{source_scripaction_name} eq "Notify AdminCcs" );
                 is ($MIME->parts, 0, "generated correspondence mime entity
                         does not have parts");
                 is ($MIME->head->mime_type , "text/plain", "The mime type is a plain");
@@ -365,7 +365,7 @@ sub text_plain_russian_redef_sendmessage {
     eval 'sub RT::ScripAction::SendEmail::send_message { 
                 my $self = shift; 
                 my $MIME = shift; 
-                return (1) unless ($self->scrip_obj->scrip_action->name eq "Notify AdminCcs" );
+                return (1) unless ($self->hints->{source_scripaction_name} eq "Notify AdminCcs" );
                 is ($MIME->head->mime_type , "text/plain", "The only part is text/plain ");
                  my $subject  = $MIME->head->get("subject");
                 chomp($subject);
@@ -408,7 +408,7 @@ sub text_plain_nested_redef_sendmessage {
     eval 'sub RT::ScripAction::SendEmail::send_message { 
                 my $self = shift; 
                 my $MIME = shift; 
-                return (1) unless ($self->scrip_obj->scrip_action->name eq "Notify AdminCcs" );
+                return (1) unless ($self->hints->{source_scripaction_name} eq "Notify AdminCcs" );
                 is ($MIME->head->mime_type , "multipart/mixed", "It is a mixed multipart");
                  my $subject  =  $MIME->head->get("subject");
                  $subject  = MIME::Base64::decode_base64( $subject);
