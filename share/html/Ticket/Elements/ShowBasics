@@ -74,7 +74,7 @@
 % }
   <tr>
     <td class="label priority"><&|/l&>Priority</&>:</td>
-    <td class="value priority"><%$Ticket->Priority||0%>/<%$Ticket->FinalPriority||0 %></td>
+    <td class="value priority"><& ShowPriority, Ticket => $Ticket &></td>
   </tr>
   <tr>
     <td class="label queue"><&|/l&>Queue</&>:</td>
