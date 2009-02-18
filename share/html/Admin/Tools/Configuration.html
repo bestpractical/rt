@@ -131,7 +131,7 @@ foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
 <h2><&|/l&>RT Size</&></h2>
 <table>
 <%PERL>
-for my $type (qw/Ticket Queue Transaction User Group/) {
+for my $type (qw/Ticket Queue Transaction Group/) {
     my $class = 'RT::' . $type . 's';
     my $collection = $class->new($RT::SystemUser);
     $collection->UnLimit;
@@ -140,6 +140,20 @@ for my $type (qw/Ticket Queue Transaction User Group/) {
 <tr><th><% $type %>s</th>
 <td><% $count %></td></tr>
 % }
+
+<%PERL>
+my $users = RT::Users->new($RT::SystemUser);
+$users->UnLimit;
+my $user_count = $users->CountAll;
+
+$users->LimitToPrivileged;
+my $privileged_count = $users->CountAll;
+my $unprivileged_count = $user_count - $privileged_count;
+</%PERL>
+<tr><th>Privileged Users</th>
+<td><% $privileged_count %></td></tr>
+<tr><th>Unprivileged Users</th>
+<td><% $unprivileged_count %></td></tr>
 </table>
 
 <h2><&|/l&>Perl configuration</&></h2>
