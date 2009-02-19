@@ -49,6 +49,11 @@
 # Find all the attachments which have parent $Parent
 # For each of these attachments
 foreach my $message ( grep $_->__Value('Parent') == $Parent, @$Attachments ) {
+
+    if (RT->Config->Get('GnuPG')->{'Enable'}) {
+        $m->comp( 'ShowGnuPGStatus', Attachment => $message, WarnUnsigned => $WarnUnsigned );
+    }
+
     $m->comp( 'ShowMessageHeaders',
               Message        => $message,
               DisplayHeaders => \@DisplayHeaders,
@@ -67,7 +72,7 @@ foreach my $message ( grep $_->__Value('Parent') == $Parent, @$Attachments ) {
 </div>
 %   }
 
-% # If there is sub-messages, open a dedicated div
+%# If there is sub-messages, open a dedicated div
 % if ( scalar ( grep $_->__Value('Parent') == $message->id, @$Attachments ) ) {
 <div class="messageattachments">
 % } else {
@@ -103,6 +108,7 @@ $AttachmentContent => {}
 $ShowBody => 1
 $Parent => 0
 $ParentObj => undef
+$WarnUnsigned => 0
 </%ARGS>
 <%INIT>
 my @DisplayHeaders=qw(_all);
@@ -135,7 +141,12 @@ my $render_attachment = sub {
     my $message = shift;
 
     # if it has a content-disposition: attachment, don't show inline
-    return if ($message->GetHeader('Content-Disposition')||"") =~ /attachment/i;
+    my $disposition = $message->GetHeader('Content-Disposition');
+    if ( $disposition && $disposition =~ /attachment/i && $disposition !~ /^\s*inline/ ) {
+        $disposition = 'attachemnt';
+    } else {
+        $disposition = 'inline';
+    }
 
     # If it's text
     if ( $message->ContentType =~ m{^(text|message)}i ) {
@@ -146,6 +157,10 @@ my $render_attachment = sub {
         }
         elsif ( $max_size && $message->ContentLength > $max_size ) {
             $m->out('<p>'. loc( 'Message body not shown because it is too large.' ) .'</p>');
+            return;
+        }
+        elsif ( $disposition ne 'inline' ) {
+            $m->out('<p>'. loc( 'Message body is not shown because sender requested not to inline it.' ) .'</p>');
             return;
         }
 
@@ -206,6 +221,11 @@ my $render_attachment = sub {
 
     # if it's an image, show it as an image
     elsif ( RT->Config->Get('ShowTransactionImages') and  $message->ContentType =~ /^image\//i ) {
+        if ( $disposition ne 'inline' ) {
+            $m->out('<p>'. loc( 'Message body is not shown because sender requested not to inline it.' ) .'</p>');
+            return;
+        }
+
         my $filename =  $message->Filename || loc('(untitled)');
         $m->out('<img'
               . ' alt="'
