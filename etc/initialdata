@@ -110,18 +110,18 @@ my $approvals_id = lazy {
 @scrip_conditions = (
     { name                 => 'On Create',                                # loc
       description          => 'When a ticket is Created',                 # loc
-      applicable_trans_types => 'Create',
+      applicable_trans_types => 'create',
       exec_module           => 'AnyTransaction', },
 
     { name                 => 'On Transaction',                           # loc
       description          => 'When anything happens',                    # loc
-      applicable_trans_types => 'Any',
+      applicable_trans_types => 'any',
       exec_module           => 'AnyTransaction', },
     {
 
       name                 => 'On Correspond',                             # loc
       description          => 'Whenever correspondence comes in',          # loc
-      applicable_trans_types => 'Correspond',
+      applicable_trans_types => 'correspond',
       exec_module           => 'AnyTransaction', },
 
     {
@@ -134,7 +134,7 @@ my $approvals_id = lazy {
 
       name                 => 'On Status Change',                          # loc
       description          => 'Whenever a ticket\'s status changes',       # loc
-      applicable_trans_types => 'Status',
+      applicable_trans_types => 'status',
       exec_module           => 'AnyTransaction',
 
     },
@@ -142,14 +142,14 @@ my $approvals_id = lazy {
 
       name                 => 'On priority Change',                       # loc
       description          => 'Whenever a ticket\'s priority changes',    # loc
-      applicable_trans_types => 'Set',
+      applicable_trans_types => 'set',
       exec_module           => 'priorityChange',
     },
     {
 
       name                 => 'On owner Change',                           # loc
       description          => 'Whenever a ticket\'s owner changes',        # loc
-      applicable_trans_types => 'Any',
+      applicable_trans_types => 'any',
       exec_module           => 'OwnerChange',
 
     },
@@ -157,13 +157,13 @@ my $approvals_id = lazy {
 
       name                 => 'On queue Change',                           # loc
       description          => 'Whenever a ticket\'s queue changes',        # loc
-      applicable_trans_types => 'Set',
+      applicable_trans_types => 'set',
       exec_module           => 'QueueChange',
 
     },
     {  name                 => 'On Resolve',                               # loc
        description          => 'Whenever a ticket is resolved',            # loc
-       applicable_trans_types => 'Status',
+       applicable_trans_types => 'status',
        exec_module           => 'StatusChange',
        argument             => 'resolved'
 
@@ -171,19 +171,19 @@ my $approvals_id = lazy {
 
     {  name                 => 'User Defined',                             # loc
        description          => 'Whenever a user-defined condition occurs', # loc
-       applicable_trans_types => 'Any',
+       applicable_trans_types => 'any',
        exec_module           => 'UserDefined'
 
     },
 
     {  name                 => 'On Close',                                 # loc
        description          => 'Whenever a ticket is closed', # loc
-       applicable_trans_types => 'Status,Set',
+       applicable_trans_types => 'status,set',
        exec_module           => 'CloseTicket',
     },
     {  name                 => 'On Reopen',                                # loc
        description          => 'Whenever a ticket is reopened', # loc
-       applicable_trans_types => 'Status,Set',
+       applicable_trans_types => 'status,set',
        exec_module           => 'ReopenTicket',
     },
 
