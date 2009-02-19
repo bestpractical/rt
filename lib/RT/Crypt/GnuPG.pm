@@ -1064,6 +1064,13 @@ sub VerifyAttachment {
         meta_interactive => 0,
     );
 
+    foreach ( $args{'Data'}, $args{'Signature'} ) {
+        next unless $_->bodyhandle->is_encoded;
+
+        require RT::EmailParser;
+        RT::EmailParser->_DecodeBody($_);
+    }
+
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
     binmode $tmp_fh, ':raw';
     $args{'Data'}->bodyhandle->print( $tmp_fh );
@@ -1075,7 +1082,9 @@ sub VerifyAttachment {
     my %res;
     eval {
         local $SIG{'CHLD'} = 'DEFAULT';
-        my $pid = safe_run_child { $gnupg->verify( handles => $handles, command_args => [ '-', $tmp_fn ] ) };
+        my $pid = safe_run_child { $gnupg->verify(
+            handles => $handles, command_args => [ '-', $tmp_fn ]
+        ) };
         {
             local $SIG{'PIPE'} = 'IGNORE';
             $args{'Signature'}->bodyhandle->print( $handle{'stdin'} );
