@@ -10,7 +10,7 @@ plan skip_all => 'GnuPG required.'
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
 
-plan tests => 183;
+plan tests => 197;
 
 use Digest::MD5 qw(md5_hex);
 
@@ -97,16 +97,27 @@ sub email_ok {
     my $txn = $tick->Transactions->First;
     my ($msg, @attachments) = @{$txn->Attachments->ItemsArrayRef};
 
-    if ($usage =~ /encrypted/) {
-        is( $msg->GetHeader('X-RT-Incoming-Encryption'),
-            'Success',
-            "$eid: recorded incoming mail that is encrypted"
-        );
-        is( $msg->GetHeader('X-RT-Privacy'),
-            'PGP',
-            "$eid: recorded incoming mail that is encrypted"
-        );
+    is( $msg->GetHeader('X-RT-Privacy'),
+        'PGP',
+        "$eid: recorded incoming mail that is encrypted"
+    );
 
+    if ($usage =~ /encrypted/) {
+        if ( $format eq 'MIME' || $attachment eq 'plain' ) {
+            is( $msg->GetHeader('X-RT-Incoming-Encryption'),
+                'Success',
+                "$eid: recorded incoming mail that is encrypted"
+            );
+        } else {
+            is( $attachments[0]->GetHeader('X-RT-Incoming-Encryption'),
+                'Success',
+                "$eid: recorded incoming mail that is encrypted"
+            );
+            is( $attachments[1]->GetHeader('X-RT-Incoming-Encryption'),
+                'Success',
+                "$eid: recorded incoming mail that is encrypted"
+            );
+        }
         like( $attachments[0]->Content, qr/ID:$eid/,
                 "$eid: incoming mail did NOT have original body"
         );
@@ -122,10 +133,23 @@ sub email_ok {
     }
 
     if ($usage =~ /signed/) {
-        is( $msg->GetHeader('X-RT-Incoming-Signature'),
-            'RT Test <rt-test@example.com>',
-            "$eid: recorded incoming mail that is signed"
-        );
+# XXX: FIXME: TODO: 6-signed-inline-with-attachment should be re-generated as it's actually RFC format
+        if ( $format eq 'MIME' || $attachment eq 'plain' || ($format eq 'inline' && $attachment =~ /binary/ && $usage !~ /encrypted/) ) {
+            is( $msg->GetHeader('X-RT-Incoming-Signature'),
+                'RT Test <rt-test@example.com>',
+                "$eid: recorded incoming mail that is signed"
+            );
+        }
+        else {
+            is( $attachments[0]->GetHeader('X-RT-Incoming-Signature'),
+                'RT Test <rt-test@example.com>',
+                "$eid: recorded incoming mail that is signed"
+            );
+            is( $attachments[1]->GetHeader('X-RT-Incoming-Signature'),
+                'RT Test <rt-test@example.com>',
+                "$eid: recorded incoming mail that is signed"
+            );
+        }
     }
     else {
         is( $msg->GetHeader('X-RT-Incoming-Signature'),
