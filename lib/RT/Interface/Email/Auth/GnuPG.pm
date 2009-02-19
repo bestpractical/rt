@@ -107,28 +107,29 @@ sub GetCurrentUser {
         Data        => ${ $args{'RawMessageRef'} },
     );
 
-    $args{'Message'}->head->add( 'X-RT-GnuPG-Status' => $_->{'status'} )
-        foreach @res;
     $args{'Message'}->head->add( 'X-RT-Privacy' => 'PGP' );
 
-    # XXX: first entity only for now
-    if (@res) {
+    foreach my $part ( $args{'Message'}->parts_DFS ) {
         my $decrypted;
-        my @status = RT::Crypt::GnuPG::ParseStatus( $res[0]->{'status'} );
-        for (@status) {
-            if ( $_->{Operation} eq 'Decrypt' && $_->{Status} eq 'DONE' ) {
-                $decrypted = 1;
-            }
-            if ( $_->{Operation} eq 'Verify' && $_->{Status} eq 'DONE' ) {
-                $args{'Message'}->head->add(
-                    'X-RT-Incoming-Signature' => $_->{UserString}
-                );
+
+        my $status = $part->head->get( 'X-RT-GnuPG-Status' );
+        if ( $status ) {
+            for ( RT::Crypt::GnuPG::ParseStatus( $status ) ) {
+                if ( $_->{Operation} eq 'Decrypt' && $_->{Status} eq 'DONE' ) {
+                    $decrypted = 1;
+                }
+                if ( $_->{Operation} eq 'Verify' && $_->{Status} eq 'DONE' ) {
+                    $part->head->add(
+                        'X-RT-Incoming-Signature' => $_->{UserString}
+                    );
+                }
             }
         }
 
-        $args{'Message'}->head->add( 'X-RT-Incoming-Encryption' => $decrypted
-            ? 'Success'
-            : 'Not encrypted' );
+        $part->head->add(
+            'X-RT-Incoming-Encryption' => 
+                $decrypted ? 'Success' : 'Not encrypted'
+        );
     }
 
     return 1;
