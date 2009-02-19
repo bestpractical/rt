@@ -953,17 +953,29 @@ sub FindProtectedParts {
     }
 
     # attachments signed with signature in another part
-    my @file_indices =
-        grep {$entity->parts($_)->head->recommended_filename}
-        grep {$entity->parts($_)->effective_type eq 'application/pgp-signature'}
-            0 .. $entity->parts - 1;
+    my @file_indices;
+    foreach my $i ( 0 .. $entity->parts - 1 ) {
+        my $part = $entity->parts($i);
+
+        # we can not associate a signature within an attachment
+        # without file names
+        my $fname = $part->head->recommended_filename;
+        next unless $fname;
+
+        if ( $part->effective_type eq 'application/pgp-signature' ) {
+            push @file_indices, $i;
+        }
+        elsif ( $fname =~ /\.sig$/i && $part->effective_type eq 'application/octet-stream' ) {
+            push @file_indices, $i;
+        }
+    }
 
     my (@res, %skip);
     foreach my $i ( @file_indices ) {
         my $sig_part = $entity->parts($i);
         $skip{"$sig_part"}++;
         my $sig_name = $sig_part->head->recommended_filename;
-        my ($file_name) = $sig_name =~ /^(.*?)(?:.sig)?$/;
+        my ($file_name) = $sig_name =~ /^(.*?)(?:\.sig)?$/;
 
         my ($data_part_idx) =
             grep $file_name eq ($entity->parts($_)->head->recommended_filename||''),
@@ -976,12 +988,12 @@ sub FindProtectedParts {
         my $data_part_in = $entity->parts($data_part_idx);
 
         $skip{"$data_part_in"}++;
-        $RT::Logger->debug("Found signature in attachment '$sig_name' of attachment '$file_name'");
+        $RT::Logger->debug("Found signature (in '$sig_name') of attachment '$file_name'");
         push @res, {
             Type      => 'signed',
             Format    => 'Attachment',
-            Top     => $entity,
-            Data    => $data_part_in,
+            Top       => $entity,
+            Data      => $data_part_in,
             Signature => $sig_part,
         };
     }
