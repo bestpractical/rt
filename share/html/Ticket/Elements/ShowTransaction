@@ -156,7 +156,7 @@ $TimeTaken = $Transaction->TimeTaken . " min"
 unless ($Attachments) { 
     my $attachments = $Transaction->Attachments;
     $attachments->Columns( qw( Id Filename ContentType Headers Subject Parent ContentEncoding ContentType TransactionId) );
-    $Attachments = $attachments->ItemsArrayRef();
+    $ARGS{'Attachments'} = $Attachments = $attachments->ItemsArrayRef();
 }
 my $titlebar_commands = '';
 
