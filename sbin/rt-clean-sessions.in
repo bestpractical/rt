@@ -75,7 +75,7 @@ BEGIN {
 
 use Getopt::Long;
 my %opt;
-GetOptions( \%opt, "older=s", "debug", "help");
+GetOptions( \%opt, "older=s", "debug", "help", "skip-user");
 
 
 if ( $opt{help} ) {
@@ -124,7 +124,8 @@ if( $opt{'older'} or my $alogoff = int RT->Config->Get('AutoLogoff') ) {
     RT::Interface::Web::Session->ClearOld( $min );
 }
 
-RT::Interface::Web::Session->ClearByUser;
+RT::Interface::Web::Session->ClearByUser
+    unless $opt{'skip-user'};
 
 exit(0);
 
@@ -142,6 +143,7 @@ rt-clean-sessions - clean old and duplicate RT sessions
     rt-clean sessions --debug
     rt-clean sessions --older 10D
     rt-clean sessions --debug --older 1M
+    rt-clean sessions --older 10D --skip-user
 
 =head1 DESCRIPTION
 
@@ -153,7 +155,9 @@ Script is safe because data in the sessions is temporary and can be deleted.
 
 =head1 OPTIONS
 
-=head2 older
+=over 4
+
+=item older
 
 Date interval in the C<< <NUM>[<unit>] >> format. Default unit is D(ays),
 H(our), M(onth) and Y(ear) are also supported.
@@ -161,9 +165,17 @@ H(our), M(onth) and Y(ear) are also supported.
 For exmaple: C<rt-clean sessions --older 1M> would delete all sessions that are
 older than 1 month.
 
-=head2 debug
+=item skip-user
+
+By default only one session per user left in the DB, so users that have
+sessions on multiple computers or in different browsers will be logged out.
+Use this option to avoid this.
+
+=item debug
 
 Turn on debug output.
+
+=back
 
 =head1 NOTES
 
