@@ -1,6 +1,6 @@
 @Final = (
     sub {
-        $RT::Logger->debug("Going to adjust 'Bookmarked Tickets'");
+        $RT::Logger->debug("Going to canonicalize ACLs in the DB");
         my $sys = RT::System->new($RT::SystemUser);
 
         my $acl = RT::ACL->new( $RT::SystemUser );
