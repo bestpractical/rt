@@ -761,6 +761,25 @@ EmailAddress.
 
 Set($UsernameFormat, 'concise');
 
+=item C<$WebDomain>
+
+Domain name of the RT server, eg 'www.example.com'. It should not contain
+anything else, but server name.
+
+=cut
+
+Set( $WebDomain, 'localhost' );
+
+=item C<$WebPort>
+
+If we're running as a superuser, run on port 80
+Otherwise, pick a high port for this user.
+
+443 is default port for https protocol.
+
+=cut
+
+Set($WebPort, 80);# + ($< * 7274) % 32766 + ($< && 1024));
 
 =item C<$WebPath>
 
@@ -768,7 +787,7 @@ If you're putting the web ui somewhere other than at the root of
 your server, you should set C<$WebPath> to the path you'll be 
 serving RT at.
 
-C<$WebPath> requires a leading / but no trailing /.
+C<$WebPath> requires a leading / but no trailing /, or it can be blank.
 
 In most cases, you should leave C<$WebPath> set to '' (an empty value).
 
@@ -776,31 +795,27 @@ In most cases, you should leave C<$WebPath> set to '' (an empty value).
 
 Set($WebPath, "");
 
-=item C<$WebPort>
-
-If we're running as a superuser, run on port 80
-Otherwise, pick a high port for this user.
-
-=cut
-
-Set($WebPort, 80);# + ($< * 7274) % 32766 + ($< && 1024));
-
-=item C<$WebDomain>
-
-you know what domain name is, right? ;)
-
-=cut
-
-Set( $WebDomain, 'localhost' );
-
 =item C<$WebBaseURL>, C<$WebURL>
 
-This is the Scheme, server and port for constructing urls to webrt
-C<$WebBaseURL> doesn't need a trailing /
+Usually you don't want to set these options. The only obviouse reason is
+RT accessible via https protocol on non standard port, eg
+'https://rt.example.com:9999'. In all other cases these options are computed
+using C<$WebDomain>, C<$WebPort> and C<$WebPath>.
+
+C<$WebBaseURL> is the scheme, server and port (eg 'http://rt.example.com')
+for constructing urls to the web UI. C<$WebBaseURL> doesn't need a trailing /.
+
+C<$WebURL> is the C<$WebBaseURL>, C<$WebPath> and trailing /, for example:
+'http://www.example.com/rt/'.
 
 =cut
 
-Set($WebBaseURL, 'http://' . RT->Config->Get('WebDomain') . ':' . RT->Config->Get('WebPort'));
+my $port = RT->Config->Get('WebPort');
+Set($WebBaseURL,
+    ($port == 443? 'https': 'http') .'://'
+    . RT->Config->Get('WebDomain')
+    . ($port != 80 && $port != 443? ":$port" : '')
+);
 
 Set($WebURL, RT->Config->Get('WebBaseURL') . RT->Config->Get('WebPath') . "/");
 
