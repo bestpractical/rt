@@ -173,7 +173,6 @@ The following switches will tell the tool to check for specific dependencies
     --with-sqlite       Database interface and driver for SQLite (unsupported)
 
     --with-standalone   Libraries needed to support the standalone simple pure perl server
-    --with-forking      Libraries needed to support the standalone forking pure perl server
     --with-fastcgi      Libraries needed to support the fastcgi handler
     --with-speedycgi    Libraries needed to support the speedycgi handler
     --with-modperl1     Libraries needed to support the modperl 1 handler
