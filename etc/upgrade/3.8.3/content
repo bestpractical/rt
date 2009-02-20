@@ -1,0 +1,25 @@
+@Final = (
+    sub {
+        $RT::Logger->debug("Going to adjust 'Bookmarked Tickets'");
+        my $sys = RT::System->new($RT::SystemUser);
+
+        my $acl = RT::ACL->new( $RT::SystemUser );
+        $acl->UnLimit;
+        while ( my $ace = $acl->Next ) {
+            my $old = $ace->__Value('RightName');
+            my $new = $old;
+            $new =~ s/s$//i;
+            next if $new eq $old;
+
+            my ($status, $msg) = $ace->__Set( Field => 'RightName', Value => $new );
+            $RT::Logger->error( "Couldn't change right name: $msg" )
+                unless $status;
+        }
+
+        $RT::Logger->debug("Canonicalized ACLs in the DB.");
+        return 1;
+    },
+);
+
+
+
