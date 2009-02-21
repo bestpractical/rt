@@ -203,6 +203,10 @@ sub Redirect {
         $uri->port( $ENV{'SERVER_PORT'} );
     }
 
+    # not sure why, but on some systems without this call mason doesn't
+    # set status to 302, but 200 instead and people see blank pages
+    $HTML::Mason::Commands::r->status(302);
+
     # Perlbal expects a status message, but Mason's default redirect status 
     # doesn't provide one. See also rt.cpan.org #36689.
     $HTML::Mason::Commands::m->redirect($uri->canonical, "302 Found");
