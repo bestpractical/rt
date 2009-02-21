@@ -161,16 +161,16 @@ sub handler {
     shift @ARGV if ($ARGV[0] eq 'rt');    # ignore a leading 'rt'
     if (@ARGV && exists $actions{$ARGV[0]}) {
         $action = shift @ARGV;
-        $actions{$action}->($action);
+        return $actions{$action}->($action);
     }
     else {
         print STDERR "rt: Unknown command '@ARGV'.\n";
         print STDERR "rt: For help, run 'rt help'.\n";
+        return 1;
     }
 }
 
-handler();
-exit;
+exit handler();
 
 # Handler functions.
 # ------------------
@@ -190,10 +190,12 @@ sub shell {
 
 sub version {
     print "rt $VERSION\n";
+    return;
 }
 
 sub logout {
     submit("$REST/logout") if defined $session->cookie;
+    return;
 }
 
 sub quit {
@@ -203,7 +205,7 @@ sub quit {
 
 my %help;
 sub help {
-    my ($action, $type) = @_;
+    my ($action, $type, $rv) = @_;
     my $key;
 
     # What help topics do we know about?
@@ -252,6 +254,7 @@ sub help {
     }
 
     print STDERR $help{$key}, "\n\n";
+    return $rv;
 }
 
 # Displays a list of objects that match some specified condition.
@@ -344,7 +347,7 @@ sub list {
         $bad = 1;
     }
     #return help("list", $type) if $bad;
-    return suggest_help("list", $type) if $bad;
+    return suggest_help("list", $type, $bad) if $bad;
 
     print "Query:$q\n" if ! $rawprint;
     my $r = submit("$REST/search/$type", { query => $q, %data });
@@ -354,6 +357,7 @@ sub list {
         my $forms = Form::parse($r->content);
         prettylist ($forms);
     }
+    return;
 }
 
 # Displays selected information about a single object.
@@ -427,7 +431,7 @@ sub show {
         $bad = 1;
     }
     #return help("show", $type) if $bad;
-    return suggest_help("show", $type) if $bad;
+    return suggest_help("show", $type, $bad) if $bad;
 
     my $r = submit("$REST/show", { id => \@objects, %data });
     my $c = $r->content;
@@ -446,6 +450,7 @@ sub show {
         my $forms = Form::parse($c);
         prettyshow ($forms);
     }
+    return;
 }
 
 # To create a new object, we ask the server for a form with the defaults
@@ -554,7 +559,7 @@ sub edit {
         @objects = ("$type/new") if defined($type);
     }
     #return help($action, $type) if $bad;
-    return suggest_help($action, $type) if $bad;
+    return suggest_help($action, $type, $bad) if $bad;
 
     # We need a form to make changes to. We usually ask the server for
     # one, but we can avoid that if we are fed one on STDIN, or if the
@@ -669,6 +674,7 @@ EDIT:
         }
         print $r->content;
     }
+    return;
 }
 
 # handler for special edit commands. A valid edit command is constructed and
@@ -713,7 +719,7 @@ sub setcommand {
         $bad = 1;
         whine "unrecognized action $action.";
     }
-    return help("edit") if $bad;
+    return help("edit", undef, $bad) if $bad;
     @ARGV = ( $id, "set", $what );
     print "Executing: rt edit @ARGV\n";
     return edit("edit");
@@ -829,6 +835,7 @@ sub comment {
 
     my $r = submit("$REST/ticket/$id/comment", \%data);
     print $r->content;
+    return;
 }
 
 # Merge one ticket into another.
@@ -856,10 +863,11 @@ sub merge {
         $bad = 1;
     }
     #return help("merge", "ticket") if $bad;
-    return suggest_help("merge", "ticket") if $bad;
+    return suggest_help("merge", "ticket", $bad) if $bad;
 
     my $r = submit("$REST/ticket/$id[0]/merge/$id[1]");
     print $r->content;
+    return;
 }
 
 # Link one ticket to another.
@@ -906,10 +914,11 @@ sub link {
         whine "Too $bad arguments specified.";
         $bad = 1;
     }
-    return suggest_help("link", $type) if $bad;
+    return suggest_help("link", $type, $bad) if $bad;
  
     my $r = submit("$REST/$type/link", \%data);
     print $r->content;
+    return;
 }
 
 # Take/steal a ticket
@@ -944,10 +953,11 @@ sub take {
         whine "Too $bad arguments specified.";
         $bad = 1;
     }
-    return suggest_help("take", "ticket") if $bad;
+    return suggest_help("take", "ticket", $bad) if $bad;
 
     my $r = submit("$REST/ticket/$id/take", \%data);
     print $r->content;
+    return;
 }
 
 # Grant/revoke a user's rights.
@@ -960,6 +970,7 @@ sub grant {
     }
 
     $revoke = 1 if $cmd->{action} eq 'revoke';
+    return;
 }
 
 # Client <-> Server communication.
@@ -1611,10 +1622,11 @@ sub is_object_spec {
 }
 
 sub suggest_help {
-    my ($action, $type) = @_;
+    my ($action, $type, $rv) = @_;
 
     print STDERR "rt: For help, run 'rt help $action'.\n" if defined $action;
     print STDERR "rt: For help, run 'rt help $type'.\n" if defined $type;
+    return $rv;
 }
 
 sub str2time {
