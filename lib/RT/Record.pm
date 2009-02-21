@@ -727,7 +727,8 @@ sub update {
             my $object = $attribute . "_obj";
             next if ( $self->can($object) && $self->$object->name eq $value );
         };
-        next if ( $value eq ( $self->$attribute() || '' ) );
+        my $current_value = $self->$attribute();
+        next if ( $value eq ( defined $current_value ? $current_value : '' ) );
         my $method = "set_$attribute";
         my ( $code, $msg ) = $self->$method($value);
         my ($prefix) = ref($self) =~ /RT(?:.*)::(\w+)/;
