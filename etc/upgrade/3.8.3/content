@@ -1,3 +1,14 @@
+@ScripConditions = (
+    {  Name                 => 'On Reject',                                # loc
+       Description          => 'Whenever a ticket is rejected',            # loc
+       ApplicableTransTypes => 'Status',
+       ExecModule           => 'StatusChange',
+       Argument             => 'rejected'
+
+    },
+);
+
+
 @Final = (
     sub {
         $RT::Logger->debug("Going to canonicalize ACLs in the DB");

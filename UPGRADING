@@ -19,6 +19,10 @@ well.
 
 *******
 
+UPGRADING FROM 3.8.2 and earlier - Changes:
+
+New scrip condition 'On Reject'.
+
 UPGRADING FROM 3.8.1 and earlier - Changes:
 
 = Oracle configuration =

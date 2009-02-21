@@ -160,7 +160,13 @@
        Argument             => 'resolved'
 
     },
+    {  Name                 => 'On Reject',                                # loc
+       Description          => 'Whenever a ticket is rejected',            # loc
+       ApplicableTransTypes => 'Status',
+       ExecModule           => 'StatusChange',
+       Argument             => 'rejected'
 
+    },
     {  Name                 => 'User Defined',                             # loc
        Description          => 'Whenever a user-defined condition occurs', # loc
        ApplicableTransTypes => 'Any',
