@@ -115,7 +115,7 @@ to configure error messages sent to users.
 
 Read about GnuPG integration in `perldoc docs/gnupg_integration.pod`.
 
-New scrip actions 'On Close' and 'On Reopen'.
+New scrip conditions 'On Close' and 'On Reopen'.
 
 UPGRADING FROM 3.5.7 and earlier - Changes:
 
