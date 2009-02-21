@@ -5,7 +5,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-12-25 22:46+0000\n"
 "PO-Revision-Date: 2008-12-28 10:53+0000\n"
-"Last-Translator: Paco Molinero <paco@byasl.com>\n"
+"Last-Translator: Margarita Manterola <margamanterola@gmail.com>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -193,15 +193,15 @@ msgstr "$1 añadido como un valor de %2"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 aliases require a TicketId to work on"
-msgstr "%1 alias requieren un TicketId en el que trabajar"
+msgstr "%1 alias requieren un identificador de caso en el que trabajar"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 aliases require a TicketId to work on "
-msgstr "%1 alias requieren un TicketId en el que trabajar "
+msgstr "%1 alias requieren un identificador de caso en el que trabajar "
 
 #: NOT FOUND IN SOURCE
 msgid "%1 aliases require a TicketId to work on (from %2) %3"
-msgstr "%1 alias requieren un TicketId en el que trabajar (de %2) %3"
+msgstr "%1 alias requieren un identificador de caso en el que trabajar (de %2) %3"
 
 #: share/html/Install/DatabaseDetails.html:170
 #. ($RT::DatabaseName)
@@ -291,12 +291,12 @@ msgstr "Los %1 tickets de mayor prioridad que poseo..."
 
 #: NOT FOUND IN SOURCE
 msgid "%1 highest priority tickets I requested..."
-msgstr "Los %1 tickets de mayor prioridad que he pedido"
+msgstr "Los %1 casos de mayor prioridad que he pedido"
 
 #: bin/rt-crontool:279
 #. ($0)
 msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
-msgstr "$1 es una herramienta para actuar sobre los tickets con una herramienta de planificación externa, como crom"
+msgstr "%1 es una herramienta para actuar sobre los casos con una herramienta de planificación externa, como cron."
 
 #: sbin/rt-email-digest:92 sbin/rt-send-digest:69
 #. ($0)
@@ -311,7 +311,7 @@ msgstr "%1 ha dejado de ser un %2 para esta cola."
 #: lib/RT/Ticket_Overlay.pm:1278
 #. ($principal->Object->Name,                         $args{'Type'})
 msgid "%1 is no longer a %2 for this ticket."
-msgstr "%1 ha dejado de ser un %2 para este ticket."
+msgstr "%1 ha dejado de ser un %2 para este caso."
 
 #: lib/RT/Record.pm:1805
 #. ($TransactionObj->OldValue, $cf->Name)
@@ -368,7 +368,7 @@ msgstr "%1 se creó sin CurrentUser\\n"
 #: lib/RT/Action/ResolveMembers.pm:64
 #. (ref $self)
 msgid "%1 will resolve all members of a resolved group ticket."
-msgstr "%1 resolverá todos los miembros de un grupo de tickets resueltos."
+msgstr "%1 resolverá todos los miembros de un grupo de casos resueltos."
 
 #: NOT FOUND IN SOURCE
 msgid "%1 will stall a [local] BASE if it's dependent [or member] of a linked up request."
@@ -434,7 +434,7 @@ msgstr "(Marque la caja para borrar al miembro del grupo)"
 
 #: NOT FOUND IN SOURCE
 msgid "(Check box to delete scrip)"
-msgstr "(Marque la caja para borrar el scrip)"
+msgstr "(Marque la caja para borrar la acción)"
 
 #: share/html/Admin/Elements/EditCustomFieldValues:80 share/html/Admin/Elements/EditQueueWatchers:66 share/html/Admin/Elements/EditScrips:67 share/html/Admin/Elements/EditTemplates:69 share/html/Admin/Groups/Members.html:104 share/html/Elements/EditLinks:112 share/html/Ticket/Elements/EditPeople:69 share/html/User/Groups/Members.html:78
 msgid "(Check box to delete)"
@@ -460,7 +460,7 @@ msgstr "(Entrar ids o URLs de casos, separados por espacios)"
 #. (RT->Config->Get('CorrespondAddress'))
 #. (RT->Config->Get('CommentAddress'))
 msgid "(If left blank, will default to %1)"
-msgstr "(Si se deja vacio, pasara por defecto a %1)"
+msgstr "(Si se deja vacío, pasará por omisión a %1)"
 
 #: NOT FOUND IN SOURCE
 msgid "(No Value)"
@@ -476,7 +476,7 @@ msgstr "(Sin miembros)"
 
 #: share/html/Admin/Elements/EditScrips:69 share/html/Admin/Elements/ListGlobalScrips:49
 msgid "(No scrips)"
-msgstr "(Sin scrips)"
+msgstr "(Sin acciones)"
 
 #: share/html/Admin/Elements/EditTemplates:54
 msgid "(No templates)"
@@ -564,7 +564,7 @@ msgstr "(sin valores)"
 
 #: share/html/Elements/EditLinks:133 share/html/Ticket/Elements/BulkLinks:51
 msgid "(only one ticket)"
-msgstr "(solo un ticket)"
+msgstr "(sólo un caso)"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:116
 #. ($count)
@@ -581,7 +581,7 @@ msgstr "(pendiente de otra Recopilación)"
 
 #: NOT FOUND IN SOURCE
 msgid "(pending other tickets)"
-msgstr "(pendiente de otros tickets)"
+msgstr "(pendiente de otros casos)"
 
 #: share/html/Admin/Users/Modify.html:73
 msgid "(required)"
@@ -610,11 +610,11 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "25 highest priority tickets I own..."
-msgstr "Los 25 tickets de mayor prioridad que poseo..."
+msgstr "Los 25 casos de mayor prioridad que poseo..."
 
 #: NOT FOUND IN SOURCE
 msgid "25 highest priority tickets I requested..."
-msgstr "Los 25 tickets de mayor prioridad que he solicitado..."
+msgstr "Los 25 casos de mayor prioridad que he solicitado..."
 
 #: NOT FOUND IN SOURCE
 msgid "<% $Ticket->Status%>"
@@ -632,7 +632,7 @@ msgstr "<input type=\"submit\" class=\"button\" value=\"Nuevo caso en\" />&nbsp;
 #: lib/RT/StyleGuide.pod:779
 #. ($m->scomp('/Elements/SelectNewTicketQueue'))
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
-msgstr "<input type=\"submit\" value=\"Nuevo ticket en\">&nbsp;%1"
+msgstr "<input type=\"submit\" value=\"Nuevo caso en\">&nbsp;%1"
 
 #: share/html/User/Prefs.html:182
 msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
@@ -676,7 +676,7 @@ msgstr "Y"
 
 #: NOT FOUND IN SOURCE
 msgid "Aborting to avoid unintended ticket modifications.\\n"
-msgstr "Abortando para prevenir modificaciones no intencionadas al ticket\\n"
+msgstr "Abortando para prevenir modificaciones no intencionadas al caso\\n"
 
 #: share/html/User/Elements/Tabs:61
 msgid "About me"
@@ -757,15 +757,15 @@ msgstr "Añadir una seleccion de palabra clave a esta cola"
 
 #: NOT FOUND IN SOURCE
 msgid "Add a new a global scrip"
-msgstr "Añadir un nuevo scrip global"
+msgstr "Añadir una nueva acción global"
 
 #: NOT FOUND IN SOURCE
 msgid "Add a scrip to this queue"
-msgstr "Añadir un scrip a esta cola"
+msgstr "Añadir una acción a esta cola"
 
 #: share/html/Admin/Global/Scrip.html:85
 msgid "Add a scrip which will apply to all queues"
-msgstr "Añadir un scrip que se aplicará a todas las colas"
+msgstr "Añadir una acción que se aplicará a todas las colas"
 
 #: NOT FOUND IN SOURCE
 msgid "Add and Search"
@@ -773,7 +773,7 @@ msgstr "Añadir y Buscar"
 
 #: share/html/Search/Bulk.html:131
 msgid "Add comments or replies to selected tickets"
-msgstr "Añadir comentarios o respuestas a los tickets seleccionados"
+msgstr "Añadir comentarios o respuestas a los casos seleccionados"
 
 #: share/html/Admin/Groups/Members.html:65 share/html/User/Groups/Members.html:62
 msgid "Add members"
@@ -815,7 +815,7 @@ msgstr "Principal ha sido añadido como %1 para esta cola"
 #: lib/RT/Ticket_Overlay.pm:1150
 #. ($self->loc($args{'Type'}))
 msgid "Added principal as a %1 for this ticket"
-msgstr "Principal ha sido añadido como %1 para este ticket"
+msgstr "Principal ha sido añadido como %1 para este caso"
 
 #: share/html/Elements/RT__Queue/ColumnMap:70
 msgid "Address"
@@ -1247,7 +1247,7 @@ msgstr "No se puede encontrar una búsqueda guardada para trabajar"
 
 #: lib/RT/Link_Overlay.pm:150
 msgid "Can't link a ticket to itself"
-msgstr "No se puede ligar un ticket a sí mismo"
+msgstr "No se puede ligar un caso a sí mismo"
 
 #: NOT FOUND IN SOURCE
 msgid "Can't merge into a merged ticket. You should never get this error"
@@ -1401,7 +1401,7 @@ msgstr "Comentario no grabado"
 
 #: lib/RT/Queue_Overlay.pm:111
 msgid "Comment on tickets"
-msgstr "Comentario sobre los tickets"
+msgstr "Comentario sobre los casos"
 
 #: share/html/Elements/RT__Queue/ColumnMap:89
 msgid "CommentAddress"
@@ -1539,11 +1539,11 @@ msgstr "Correspondencia no guardada"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for ticket. "
-msgstr "No se pudo añadir un nuevo valor de campo personalizable para el ticket. "
+msgstr "No se pudo añadir un nuevo valor de campo personalizable para el caso."
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value for ticket. %1 "
-msgstr "No se pudo añadir un nuevo valor de campo personalizable para el ticket. %1 "
+msgstr "No se pudo añadir un nuevo valor de campo personalizable para el caso. %1 "
 
 #: NOT FOUND IN SOURCE
 msgid "Could not add new custom field value. "
@@ -1596,7 +1596,7 @@ msgstr "No fue posible crear un caso en la cola deshabilitada \"%1\""
 
 #: lib/RT/Ticket_Overlay.pm:288 lib/RT/Ticket_Overlay.pm:823
 msgid "Could not create ticket. Queue not set"
-msgstr "No se pudo crear el ticket. Cola no seleccionada"
+msgstr "No se pudo crear el caso. Cola no seleccionada"
 
 #: lib/RT/User_Overlay.pm:189 lib/RT/User_Overlay.pm:203 lib/RT/User_Overlay.pm:212 lib/RT/User_Overlay.pm:221 lib/RT/User_Overlay.pm:230 lib/RT/User_Overlay.pm:244 lib/RT/User_Overlay.pm:254 lib/RT/User_Overlay.pm:402
 msgid "Could not create user"
@@ -1608,7 +1608,7 @@ msgstr "No se pudo crear un observador para el solicitante"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not find a ticket with id %1"
-msgstr "No se pudo encontrar un ticket con identificador $1"
+msgstr "No se pudo encontrar un caso con identificador %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not find group %1."
@@ -1656,7 +1656,7 @@ msgstr "No se pudo hacer ese principal un %1 para esta cola"
 #: lib/RT/Ticket_Overlay.pm:1139
 #. ($self->loc($args{'Type'}))
 msgid "Could not make that principal a %1 for this ticket"
-msgstr "No se pudo hacer ese principal un %1 para este ticket"
+msgstr "No se pudo hacer ese principal un %1 para este caso"
 
 #: lib/RT/Queue_Overlay.pm:918
 #. ($args{'Type'})
@@ -1666,7 +1666,7 @@ msgstr "No se pudo quitar ese principal como un %1 para esta cola"
 #: lib/RT/Ticket_Overlay.pm:1266
 #. ($args{'Type'})
 msgid "Could not remove that principal as a %1 for this ticket"
-msgstr "No se pudo quitar ese principal como un %1 para este ticket"
+msgstr "No se pudo quitar ese principal como un %1 para este caso"
 
 #: lib/RT/User_Overlay.pm:129
 msgid "Could not set user info"
@@ -1757,7 +1757,7 @@ msgstr "No se pudo cargar el archivo de configuración de RT '%1' %2"
 
 #: NOT FOUND IN SOURCE
 msgid "Couldn't load Scrips."
-msgstr "No se pudieron cargar los Scrips."
+msgstr "No se pudieron cargar las acciones."
 
 #: lib/RT/Ticket_Overlay.pm:1727
 #. ($self->Id)
@@ -1820,7 +1820,7 @@ msgstr "No fue posible cargar la cola '%1'"
 
 #: NOT FOUND IN SOURCE
 msgid "Couldn't load scrip"
-msgstr "No se pudo cargar el scrip"
+msgstr "No se pudo cargar la acción"
 
 #: share/html/Admin/Elements/EditScrip:141 share/html/Admin/Elements/EditScrip:185
 #. ($id)
@@ -1843,7 +1843,7 @@ msgstr "No se pudo cargar ese usuario (%1)"
 #: lib/RT/Action/CreateTickets.pm:454 share/html/SelfService/Display.html:153
 #. ($id)
 msgid "Couldn't load ticket '%1'"
-msgstr "No se pudo cargar el ticket '%1'"
+msgstr "No se pudo cargar el caso '%1'"
 
 #: share/html/Ticket/Forward.html:90 share/html/Ticket/GnuPG.html:75
 #. ($QuoteTransaction)
@@ -1913,7 +1913,7 @@ msgstr "Crear"
 
 #: etc/initialdata:90
 msgid "Create Tickets"
-msgstr "Crear Tickets"
+msgstr "Crear Casos"
 
 #: share/html/Admin/CustomFields/Modify.html:136 share/html/Admin/Elements/EditCustomField:98
 msgid "Create a CustomField"
@@ -1938,7 +1938,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Create a new global scrip"
-msgstr "Crear un nuevo scrip global"
+msgstr "Crear un nueva acción global"
 
 #: share/html/Admin/Groups/Modify.html:105 share/html/Admin/Groups/Modify.html:131
 msgid "Create a new group"
@@ -1954,7 +1954,7 @@ msgstr "Crear una nueva cola"
 
 #: NOT FOUND IN SOURCE
 msgid "Create a new scrip"
-msgstr "Crear un nuevo scrip"
+msgstr "Crear una nueva acción"
 
 #: NOT FOUND IN SOURCE
 msgid "Create a new template"
@@ -1962,7 +1962,7 @@ msgstr "Crear una nueva plantilla"
 
 #: share/html/Ticket/Create.html:49 share/html/Ticket/Create.html:53 share/html/Ticket/Create.html:64
 msgid "Create a new ticket"
-msgstr "Crear un nuevo ticket"
+msgstr "Crear un nuevo caso"
 
 #: share/html/Admin/Users/Modify.html:256 share/html/Admin/Users/Modify.html:320
 msgid "Create a new user"
@@ -1983,7 +1983,7 @@ msgstr "Crear una solicitud"
 #: share/html/Admin/Queues/Scrip.html:91
 #. ($QueueObj->Name)
 msgid "Create a scrip for queue %1"
-msgstr "Crear un scrip para la cola %1"
+msgstr "Crear una acción para la cola %1"
 
 #: share/html/Admin/Global/Template.html:87 share/html/Admin/Queues/Template.html:88
 msgid "Create a template"
@@ -2007,7 +2007,7 @@ msgstr "Creación fallida: %1 / %2 / %3"
 
 #: etc/initialdata:92
 msgid "Create new tickets based on this scrip's template"
-msgstr "Crear nuevos tickets basados en esta plantilla de scrip"
+msgstr "Crear nuevos casos basados en la plantilla de esta acción"
 
 #: lib/RT/Dashboard.pm:85
 msgid "Create personal dashboards"
@@ -2019,11 +2019,11 @@ msgstr ""
 
 #: share/html/SelfService/Create.html:112
 msgid "Create ticket"
-msgstr "Crear ticket"
+msgstr "Crear caso"
 
 #: lib/RT/Queue_Overlay.pm:109
 msgid "Create tickets in this queue"
-msgstr "Crear tickets en esta cola"
+msgstr "Crear casos en esta cola"
 
 #: share/html/Tools/index.html:65
 msgid "Create tickets offline"
@@ -2117,7 +2117,7 @@ msgstr "Relaciones actuales"
 
 #: share/html/Admin/Elements/EditScrips:53
 msgid "Current Scrips"
-msgstr "Scrips actuales"
+msgstr "Acciones actuales"
 
 #: share/html/Admin/Groups/Members.html:62 share/html/User/Groups/Members.html:65
 msgid "Current members"
@@ -2348,31 +2348,31 @@ msgstr "Desencriptar"
 
 #: NOT FOUND IN SOURCE
 msgid "Default Autoresponse Template"
-msgstr "Plantilla de autorespuesta por defecto"
+msgstr "Plantilla de autorespuesta predeterminada"
 
 #: etc/initialdata:191
 msgid "Default Autoresponse template"
-msgstr "Plantilla de autorespuesta por defect"
+msgstr "Plantilla de autorespuesta predeterminada"
 
 #: share/html/Tools/Offline.html:62
 msgid "Default Queue"
-msgstr "Cola por Defecto"
+msgstr "Cola predeterminada"
 
 #: share/html/Tools/Offline.html:71
 msgid "Default Requestor"
-msgstr "Solicitante por Defecto"
+msgstr "Solicitante predeterminado"
 
 #: etc/initialdata:265
 msgid "Default admin comment template"
-msgstr "Plantilla de comentario de admin por defecto"
+msgstr "Plantilla de comentario de admin predeterminada"
 
 #: etc/initialdata:244
 msgid "Default admin correspondence template"
-msgstr "Plantilla de correspondencia de admin por defecto"
+msgstr "Plantilla de correspondencia de admin predeterminada"
 
 #: etc/initialdata:256
 msgid "Default correspondence template"
-msgstr "Plantilla de correspondencia por defecto"
+msgstr "Plantilla de correspondencia predeterminada"
 
 #: lib/RT/Config.pm:140
 msgid "Default queue"
@@ -2380,7 +2380,7 @@ msgstr "Cola por defecto"
 
 #: etc/initialdata:222
 msgid "Default transaction template"
-msgstr "Plantilla de trasacciones por defecto"
+msgstr "Plantilla de trasacciones predeterminada"
 
 #: share/html/Widgets/Form/Integer:71 share/html/Widgets/Form/String:69
 #. ($DefaultValue)
@@ -2390,7 +2390,7 @@ msgstr "Predeterminado: %1"
 #: lib/RT/Transaction_Overlay.pm:620
 #. ($type,        $self->Field,        (            $self->OldValue            ? "'" . $self->OldValue . "'"            : $self->loc("(no value)")        ),        "'" . $self->NewValue . "'")
 msgid "Default: %1/%2 changed from %3 to %4"
-msgstr "Por defecto: %1/%2 ha cambiado de %3 a %4"
+msgstr "Por omisión: %1/%2 ha cambiado de %3 a %4"
 
 #: share/html/Elements/RT__Queue/ColumnMap:104
 msgid "DefaultDueIn"
@@ -2443,7 +2443,7 @@ msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:114
 msgid "Delete tickets"
-msgstr "Borrar tickets"
+msgstr "Borrar casos"
 
 #: share/html/Search/Bulk.html:169
 msgid "Delete values"
@@ -2593,11 +2593,11 @@ msgstr "Mostrar Columnas"
 
 #: lib/RT/Queue_Overlay.pm:99
 msgid "Display Scrip templates for this queue"
-msgstr "Mostrar plantillas de scrip para esta cola"
+msgstr "Mostrar plantillas de acciones para esta cola"
 
 #: lib/RT/Queue_Overlay.pm:102
 msgid "Display Scrips for this queue"
-msgstr "Mostrar scrips para esta cola"
+msgstr "Mostrar acciones para esta cola"
 
 #: NOT FOUND IN SOURCE
 msgid "Display mode"
@@ -2609,7 +2609,7 @@ msgstr "Mostrar búsquedas guardadas para este grupo"
 
 #: NOT FOUND IN SOURCE
 msgid "Display ticket #%1"
-msgstr "Despliega ticket #%1"
+msgstr "Despliega caso #%1"
 
 #: share/html/Elements/Footer:64
 msgid "Distributed under version 2 <a href=\"http://www.gnu.org/copyleft/gpl.html\"> of the GNU GPL.</a>"
@@ -2670,7 +2670,7 @@ msgstr "ERROR: %1"
 
 #: NOT FOUND IN SOURCE
 msgid "ERROR: Couldn't load ticket '%1': %2.\\n"
-msgstr "ERROR: No se pudo cargar el ticket '%1': %2.\\n"
+msgstr "ERROR: No se pudo cargar el caso '%1': %2.\\n"
 
 #: share/html/Tools/index.html:75
 msgid "Easy updating of your open tickets"
@@ -2908,7 +2908,7 @@ msgstr "Entrar colas o URIs para linkar a las colas. Separar múltiples entradas
 
 #: share/html/Elements/EditLinks:120 share/html/Search/Bulk.html:200
 msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
-msgstr "Ingrese los números de ticket o las URL que llevan hacia el ticket. Separe multiples entradas con espacios"
+msgstr "Ingrese los números de caso o las URI que enlazan a casos. Separe multiples entradas con espacios"
 
 #: lib/RT/CustomField_Overlay.pm:67
 msgid "Enter up to %1 values"
@@ -2996,7 +2996,7 @@ msgstr "Examinar tickets resueltos en una cola, agrupados por propietario"
 
 #: bin/rt-crontool:321
 msgid "Example:"
-msgstr "Ejemplo"
+msgstr "Ejemplo:"
 
 #: share/html/Admin/Elements/ShowKeyInfo:61
 msgid "Expire"
@@ -3162,7 +3162,7 @@ msgstr "Encontrar grupos cuyo"
 
 #: NOT FOUND IN SOURCE
 msgid "Find new/open tickets"
-msgstr "Encontrar tickets nuevos/abiertos"
+msgstr "Encontrar casos nuevos/abiertos"
 
 #: share/html/Admin/Queues/People.html:80 share/html/Ticket/Elements/EditPeople:53
 msgid "Find people whose"
@@ -3170,7 +3170,7 @@ msgstr "Encontrar gente que"
 
 #: share/html/Search/Results.html:149
 msgid "Find tickets"
-msgstr "Encontrar tickets"
+msgstr "Encontrar casos"
 
 #: share/html/Install/Finish.html:48 share/html/Install/Global.html:65
 msgid "Finish"
@@ -3231,7 +3231,7 @@ msgstr ""
 #: share/html/Search/Results.html:147
 #. ($ticketcount)
 msgid "Found %quant(%1,ticket)"
-msgstr "Encontrado %quant(%1,ticket)"
+msgstr "Mostrando %quant(%1,caso)"
 
 #: lib/RT/Record.pm:930
 msgid "Found Object"
@@ -3364,7 +3364,7 @@ msgstr "Ir a página"
 
 #: share/html/Elements/GotoTicket:49 share/html/SelfService/Elements/GotoTicket:49
 msgid "Goto ticket"
-msgstr "Ir a ticket"
+msgstr "Ir al caso"
 
 #: share/html/Ticket/Elements/ShowSummary:99 share/html/Ticket/ModifyLinks.html:61
 msgid "Graph"
@@ -3954,7 +3954,7 @@ msgstr "Vincular caso #%1"
 
 #: NOT FOUND IN SOURCE
 msgid "Link ticket %1"
-msgstr "Enlazar ticket %1"
+msgstr "Enlazar caso %1"
 
 #: share/html/Admin/CustomFields/Modify.html:93
 msgid "Link values to"
@@ -4323,11 +4323,11 @@ msgstr "Modificar Derechos"
 
 #: lib/RT/Queue_Overlay.pm:97
 msgid "Modify Scrip templates for this queue"
-msgstr "Modificar plantillas Sript para esta cola"
+msgstr "Modificar plantillas de acciones para esta cola"
 
 #: lib/RT/Queue_Overlay.pm:100
 msgid "Modify Scrips for this queue"
-msgstr "Modificar Scrips para esta cola"
+msgstr "Modificar acciones para esta cola"
 
 #: NOT FOUND IN SOURCE
 msgid "Modify System ACLS"
@@ -4353,7 +4353,7 @@ msgstr "Modificar un campo personalizable que se aplique a todas las colas"
 #: share/html/Admin/Queues/Scrip.html:84
 #. ($QueueObj->Name)
 msgid "Modify a scrip for queue %1"
-msgstr "Modificar un scrip para la cola %1"
+msgstr "Modificar una acción para la cola %1"
 
 #: share/html/Admin/Global/Scrip.html:77
 msgid "Modify a scrip that applies to all queues"
@@ -4380,7 +4380,7 @@ msgstr "Modificar fechas para #%1"
 #: share/html/Ticket/ModifyDates.html:60
 #. ($TicketObj->Id)
 msgid "Modify dates for ticket # %1"
-msgstr "Modificar fechas para ticket # %1"
+msgstr "Modificar fechas para caso # %1"
 
 #: share/html/Admin/Global/index.html:66
 msgid "Modify global custom fields"
@@ -4463,7 +4463,7 @@ msgstr "Modificar acciones para la cola %1"
 
 #: share/html/Admin/Global/Scrips.html:67 share/html/Admin/Global/index.html:57
 msgid "Modify scrips which apply to all queues"
-msgstr "Modificar scrips que se aplican a todas las colas"
+msgstr "Modificar acciones que se aplican a todas las colas"
 
 #: lib/RT/Dashboard.pm:81
 msgid "Modify system dashboards"
@@ -4514,16 +4514,16 @@ msgstr "Modificar el usuario %1"
 #: share/html/Ticket/ModifyAll.html:61
 #. ($Ticket->Id)
 msgid "Modify ticket # %1"
-msgstr "Modificar el ticket # %1"
+msgstr "Modificar el caso # %1"
 
 #: share/html/Ticket/Modify.html:48 share/html/Ticket/Modify.html:51 share/html/Ticket/Modify.html:60
 #. ($TicketObj->Id)
 msgid "Modify ticket #%1"
-msgstr "Modificar el ticket #%1"
+msgstr "Modificar el caso #%1"
 
 #: lib/RT/Queue_Overlay.pm:113
 msgid "Modify tickets"
-msgstr "Modificar tickets"
+msgstr "Modificar casos"
 
 #: share/html/Admin/CustomFields/UserRights.html:99
 #. ($CustomFieldObj->Name)
@@ -4741,7 +4741,7 @@ msgstr "Nuevos privilegios"
 
 #: share/html/Admin/Global/Scrip.html:65 share/html/Admin/Global/Scrips.html:62 share/html/Admin/Queues/Scrip.html:73 share/html/Admin/Queues/Scrips.html:78
 msgid "New scrip"
-msgstr "Nuevo scrip"
+msgstr "Nueva Acción"
 
 #: NOT FOUND IN SOURCE
 msgid "New search"
@@ -4757,7 +4757,7 @@ msgstr "Nuevo caso"
 
 #: lib/RT/Ticket_Overlay.pm:2476
 msgid "New ticket doesn't exist"
-msgstr "El ticket nuevo no existe"
+msgstr "El caso nuevo no existe"
 
 #: NOT FOUND IN SOURCE
 msgid "New user"
@@ -4846,7 +4846,7 @@ msgstr "No se especificó el ticket. Abortada la transacción "
 
 #: NOT FOUND IN SOURCE
 msgid "No Ticket specified. Aborting ticket modifications\\n\\n"
-msgstr "No se especificó ticket. Abortando las modificaciones al ticket\\n\\n"
+msgstr "No se especificó el caso. Abortando las modificaciones al caso\\n\\n"
 
 #: share/html/Approvals/Elements/Approve:79
 msgid "No action"
@@ -4912,7 +4912,7 @@ msgstr "No tiene privilegios para crear colas"
 #: lib/RT/Ticket_Overlay.pm:306 lib/RT/Ticket_Overlay.pm:836
 #. ($QueueObj->Name)
 msgid "No permission to create tickets in the queue '%1'"
-msgstr "No tiene privilegios para crear tickets en la cola '%1'"
+msgstr "No tiene privilegios para crear casos en la cola '%1'"
 
 #: NOT FOUND IN SOURCE
 msgid "No permission to create users"
@@ -4920,7 +4920,7 @@ msgstr "No tiene privilegios para crear usuarios"
 
 #: share/html/SelfService/Display.html:203
 msgid "No permission to display that ticket"
-msgstr "No tiene privilegios para mostrar el ticket"
+msgstr "No tiene privilegios para ver el caso"
 
 #: share/html/Search/Elements/EditSearches:231
 msgid "No permission to save system-wide searches"
@@ -4932,7 +4932,7 @@ msgstr "Sin autorización para establecer preferencias"
 
 #: share/html/SelfService/Update.html:119
 msgid "No permission to view update ticket"
-msgstr "Sin permiso para ver la actualización del ticket"
+msgstr "No tiene privilegios para ver la actualización del caso"
 
 #: lib/RT/Queue_Overlay.pm:837 lib/RT/Ticket_Overlay.pm:1184
 msgid "No principal specified"
@@ -4980,7 +4980,7 @@ msgstr "Clave inexistente o no es apropiada para firmar"
 
 #: NOT FOUND IN SOURCE
 msgid "No ticket id specified"
-msgstr "No se especificó el identificador del ticket"
+msgstr "No se especificó el identificador del caso"
 
 #: share/html/Search/Chart:101
 msgid "No tickets found."
@@ -5214,11 +5214,11 @@ msgstr "Desconectado"
 
 #: share/html/Tools/Offline.html:51
 msgid "Offline edits"
-msgstr ""
+msgstr "Ediciones fuera de línea"
 
 #: share/html/Tools/Offline.html:48
 msgid "Offline upload"
-msgstr ""
+msgstr "Carga fuera de línea"
 
 #: lib/RT/Transaction_Overlay.pm:360
 #. ($self->CreatedAsString, $self->CreatorObj->Name)
@@ -5280,12 +5280,12 @@ msgstr "CC una vez"
 #: share/html/Approvals/Elements/PendingMyApproval:72
 #. ("<input size='15' value='".( $created_after->Unix >0 && $created_after->ISO)."' name='CreatedAfter' id='CreatedAfter' />")
 msgid "Only show approvals for requests created after %1"
-msgstr "Solo muestra aprobaciones para solicitudes creadas despues de %1"
+msgstr "Mostrar sólo aprobaciones para solicitudes creadas despues de %1"
 
 #: share/html/Approvals/Elements/PendingMyApproval:70
 #. ("<input size='15' value='".($created_before->Unix > 0 &&$created_before->ISO)."' name='CreatedBefore' id='CreatedBefore' />")
 msgid "Only show approvals for requests created before %1"
-msgstr "Solo muestra aprobaciones para solicitudes creadas antes de %1"
+msgstr "Mostrar sólo aprobaciones para solicitudes creadas antes de %1"
 
 #: share/html/Admin/CustomFields/index.html:77
 msgid "Only show custom fields for:"
@@ -5317,15 +5317,15 @@ msgstr "Casos abiertos"
 
 #: NOT FOUND IN SOURCE
 msgid "Open tickets (from listing) in a new window"
-msgstr "Tickets abiertos (del listado) en una nueva ventana"
+msgstr "Abrir casos (del listado) en una nueva ventana"
 
 #: NOT FOUND IN SOURCE
 msgid "Open tickets (from listing) in another window"
-msgstr "Tickets abiertos (del listado) en otra ventana"
+msgstr "Abrir casos (del listado) en otra ventana"
 
 #: etc/initialdata:95
 msgid "Open tickets on correspondence"
-msgstr "Open tickets on correspondence"
+msgstr "Abrir casos al corresponder"
 
 #: share/html/Prefs/MyRT.html:74
 msgid "Options"
@@ -5350,7 +5350,7 @@ msgstr "Organización"
 #: share/html/Approvals/Elements/Approve:55
 #. ($approving->Id, $approving->Subject)
 msgid "Originating ticket: #%1"
-msgstr "Ticket originario: #%1"
+msgstr "Caso originario: #%1"
 
 #: lib/RT/Transaction_Overlay.pm:626
 msgid "Outgoing email about a comment recorded"
@@ -5362,11 +5362,11 @@ msgstr "Email saliente grabado"
 
 #: share/html/Admin/Queues/Modify.html:84
 msgid "Over time, priority moves toward"
-msgstr "Pasada la fecha de gracia, la prioridad se mueve a"
+msgstr "Pasado el tiempo, la prioridad se mueve a"
 
 #: lib/RT/Queue_Overlay.pm:112
 msgid "Own tickets"
-msgstr "Tickets poseidos"
+msgstr "Casos propios"
 
 #: lib/RT/Queue_Overlay.pm:112
 msgid "OwnTicket"
@@ -5850,7 +5850,7 @@ msgstr "Autoservicio RT"
 
 #: NOT FOUND IN SOURCE
 msgid "RT Self Service / Closed Tickets"
-msgstr "RT AutoServicio / Tickets cerrados"
+msgstr "RT AutoServicio / Casos cerrados"
 
 #: share/html/Admin/Tools/Configuration.html:94
 msgid "RT Variables"
@@ -6095,7 +6095,7 @@ msgstr "Responder a solicitantes"
 
 #: lib/RT/Queue_Overlay.pm:110
 msgid "Reply to tickets"
-msgstr "Responder a los tickets"
+msgstr "Responder a los casos"
 
 #: lib/RT/Queue_Overlay.pm:110
 msgid "ReplyToTicket"
@@ -6161,7 +6161,7 @@ msgstr "Resolver"
 #: share/html/Ticket/Update.html:180
 #. ($TicketObj->id, $TicketObj->Subject)
 msgid "Resolve ticket #%1 (%2)"
-msgstr "Resolver ticket #%1 (%2)"
+msgstr "Resolver caso #%1 (%2)"
 
 #: etc/initialdata:292 lib/RT/Graph/Tickets.pm:159 lib/RT/Ticket_Overlay.pm:920 lib/RT/Tickets_Overlay.pm:122 share/html/Elements/RT__Ticket/ColumnMap:211 share/html/Elements/RT__Ticket/ColumnMap:236 share/html/Elements/SelectDateType:51 share/html/Search/Elements/BuildFormatString:100
 msgid "Resolved"
@@ -6342,7 +6342,7 @@ msgstr "Búsquedas guardadas"
 #. ($scrip->id)
 #. ($id)
 msgid "Scrip #%1"
-msgstr "Scrip #%1"
+msgstr "Acción #%1"
 
 #: lib/RT/Scrip_Overlay.pm:167
 msgid "Scrip Created"
@@ -6720,11 +6720,11 @@ msgstr "Mostrar solicitudes esperando otras aprobaciones"
 
 #: NOT FOUND IN SOURCE
 msgid "Show ticket private commentary"
-msgstr "Mostrar ticket en un comentario privado"
+msgstr "Mostrar caso en un comentario privado"
 
 #: NOT FOUND IN SOURCE
 msgid "Show ticket summaries"
-msgstr "Mostrar resumen del ticket"
+msgstr "Mostrar resumen del caso"
 
 #: lib/RT/Queue_Overlay.pm:93
 msgid "ShowACL"
@@ -6785,11 +6785,11 @@ msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:107
 msgid "Sign up as a ticket Requestor or ticket or queue Cc"
-msgstr "Validarse como solicitante de ticket o ticket o cola Cc"
+msgstr "Validarse como solicitante de caso o CC del caso o cola"
 
 #: lib/RT/Queue_Overlay.pm:108
 msgid "Sign up as a ticket or queue AdminCc"
-msgstr "Validarse como ticket o cola AdminCc"
+msgstr "Validarse como AdminCc del caso o cola"
 
 #: share/html/Admin/Users/Modify.html:234 share/html/User/Prefs.html:172
 msgid "Signature"
@@ -7116,7 +7116,7 @@ msgstr "TEST_STRING"
 
 #: etc/initialdata:552 share/html/Search/Elements/EditFormat:69 share/html/Ticket/Elements/Tabs:197
 msgid "Take"
-msgstr "Coger"
+msgstr "Tomar"
 
 #: lib/RT/Queue_Overlay.pm:115
 msgid "Take tickets"
@@ -7128,7 +7128,7 @@ msgstr "CogerCaso"
 
 #: lib/RT/Transaction_Overlay.pm:667
 msgid "Taken"
-msgstr "Cogido"
+msgstr "Tomado"
 
 #: share/html/Install/DatabaseDetails.html:53
 msgid "Tell us a little about how to find the database RT will be using"
@@ -7213,7 +7213,7 @@ msgstr "Ese principal ya es un %1 para esta cola"
 #: lib/RT/Ticket_Overlay.pm:1130
 #. ($self->loc($args{'Type'}))
 msgid "That principal is already a %1 for this ticket"
-msgstr "Ese principal ya es un %1 para este ticket"
+msgstr "Ese principal ya es un %1 para este caso"
 
 #: lib/RT/Queue_Overlay.pm:910
 #. ($args{'Type'})
@@ -7223,7 +7223,7 @@ msgstr "Ese principal no es un %1 para esta cola"
 #: lib/RT/Ticket_Overlay.pm:1252
 #. ($args{'Type'})
 msgid "That principal is not a %1 for this ticket"
-msgstr "Ese principal no es un %1 para este ticket"
+msgstr "Ese principal no es un %1 para este caso"
 
 #: lib/RT/Ticket_Overlay.pm:1701
 msgid "That queue does not exist"
@@ -7231,7 +7231,7 @@ msgstr "Esa cola no existe"
 
 #: lib/RT/Ticket_Overlay.pm:2957
 msgid "That ticket has unresolved dependencies"
-msgstr "Ese ticket tiene dependencias sin resolver"
+msgstr "Ese caso tiene dependencias sin resolver"
 
 #: NOT FOUND IN SOURCE
 msgid "That user already has that right"
@@ -7239,7 +7239,7 @@ msgstr "Ese usuario ya tiene ese privilegio"
 
 #: lib/RT/Action/CreateTickets.pm:484 lib/RT/Ticket_Overlay.pm:2779
 msgid "That user already owns that ticket"
-msgstr "Ese usuario ya posee ese ticket"
+msgstr "Ese usuario ya posee ese caso"
 
 #: lib/RT/Ticket_Overlay.pm:2722
 msgid "That user does not exist"
@@ -7267,7 +7267,7 @@ msgstr "Este usuario ya no tiene privilegios"
 
 #: lib/RT/Ticket_Overlay.pm:2772
 msgid "That user may not own tickets in that queue"
-msgstr "Ese usuario puede no poseer tickets en esa cola"
+msgstr "Ese usuario puede no poseer casos en esa cola"
 
 #: lib/RT/Link_Overlay.pm:224
 msgid "That's not a numerical id"
@@ -7279,7 +7279,7 @@ msgstr "Lo básico"
 
 #: lib/RT/ACE_Overlay.pm:101
 msgid "The CC of a ticket"
-msgstr "El CC de un ticket"
+msgstr "El CC de un caso"
 
 #: lib/RT/Installer.pm:110
 msgid "The DBA's database password"
@@ -7287,7 +7287,7 @@ msgstr ""
 
 #: lib/RT/ACE_Overlay.pm:102
 msgid "The administrative CC of a ticket"
-msgstr "El CC administrativo de un ticket"
+msgstr "El CC administrativo de un caso"
 
 #: NOT FOUND IN SOURCE
 msgid "The comment has been recorded"
@@ -7299,7 +7299,7 @@ msgstr ""
 
 #: bin/rt-crontool:325
 msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they haven't been touched in 4 hours:"
-msgstr "El siguiente comando encontrará todos los tickets activos en la cola 'general' y pondra su prioridad a 99 si no han sido tocados en 4 horas:"
+msgstr "El siguiente comando encontrará todos los casos activos en la cola 'general' y pondrá su prioridad a 99 si no han sido tocados en 4 horas:"
 
 #: NOT FOUND IN SOURCE
 msgid "The following commands were not proccessed:\\n\\n"
@@ -7335,7 +7335,7 @@ msgstr "Ha sido establecido el nuevo valor"
 
 #: lib/RT/ACE_Overlay.pm:99
 msgid "The owner of a ticket"
-msgstr "El propietario de un ticket"
+msgstr "El propietario de un caso"
 
 #: share/html/dhandler:50
 msgid "The page you requested could not be found"
@@ -7343,7 +7343,7 @@ msgstr "La página solicitada no se encuentra"
 
 #: lib/RT/ACE_Overlay.pm:100
 msgid "The requestor of a ticket"
-msgstr "El solicitante de un ticket"
+msgstr "El solicitante de un caso"
 
 #: share/html/Install/Finish.html:64
 #. (RT::Installer->ConfigFile)
@@ -7406,7 +7406,7 @@ msgstr "Este mensaje sera enviado a..."
 
 #: NOT FOUND IN SOURCE
 msgid "This ticket %1 %2 (%3)\\n"
-msgstr "Este ticket %1 %2 (%3)"
+msgstr "Este caso %1 %2 (%3)\\n"
 
 #: bin/rt-crontool:316
 msgid "This tool allows the user to run arbitrary perl modules from within RT."
@@ -7419,7 +7419,7 @@ msgstr "Parece que esta transacción no tiene contenido"
 #: share/html/Ticket/Elements/ShowRequestor:80
 #. ($rows)
 msgid "This user's %1 highest priority tickets"
-msgstr "Los %1 tickets de mayor prioridad de este usuario"
+msgstr "Los %1 casos de mayor prioridad de este usuario"
 
 #: NOT FOUND IN SOURCE
 msgid "This user's 25 highest priority tickets"
@@ -7443,7 +7443,7 @@ msgstr "Caso/Ticket"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket # %1  %2"
-msgstr "Ticket # %1  %2"
+msgstr "Caso # %1  %2"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket # %1 Jumbo update: %2"
@@ -7452,7 +7452,7 @@ msgstr "Actualización Jumbo para el ticket # %1: %2"
 #: share/html/Ticket/ModifyAll.html:48 share/html/Ticket/ModifyAll.html:52
 #. ($Ticket->Id, $Ticket->Subject)
 msgid "Ticket #%1 Jumbo update: %2"
-msgstr "Actualización Jumbo para el ticket #%1: %2"
+msgstr "Actualización Jumbo para el caso #%1: %2"
 
 #: share/html/Ticket/Graphs/index.html:113
 #. ($id)
@@ -7462,7 +7462,7 @@ msgstr "Grafo de relaciones del caso #%1"
 #: share/html/Approvals/Elements/ShowDependency:69
 #. ($link->BaseObj->Id, $link->BaseObj->Subject)
 msgid "Ticket #%1: %2"
-msgstr "Ticket #%1: %2"
+msgstr "Caso #%1: %2"
 
 #: lib/RT/Action/CreateTickets.pm:1125 lib/RT/Action/CreateTickets.pm:1134 lib/RT/Action/CreateTickets.pm:379 lib/RT/Action/CreateTickets.pm:503 lib/RT/Action/CreateTickets.pm:515
 #. ($T::Tickets{$template_id}->Id)
@@ -7474,17 +7474,17 @@ msgstr "Caso %1"
 #: lib/RT/Ticket_Overlay.pm:672 lib/RT/Ticket_Overlay.pm:696
 #. ($self->Id, $QueueObj->Name)
 msgid "Ticket %1 created in queue '%2'"
-msgstr "Ticket %1 creado en la cola '%2'"
+msgstr "Caso %1 creado en la cola '%2'"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket %1 loaded\\n"
-msgstr "Ticket %1 cargado\\n"
+msgstr "Caso %1 cargado\\n"
 
 #: share/html/Search/Bulk.html:375 share/html/Tools/MyDay.html:100 share/html/Tools/MyDay.html:91 share/html/Tools/MyDay.html:94
 #. ($id, $msg)
 #. ($Ticket->Id, $_)
 msgid "Ticket %1: %2"
-msgstr "Ticket %1: %2"
+msgstr "Caso %1: %2"
 
 #: share/html/Admin/Elements/QueueTabs:76
 msgid "Ticket Custom Fields"
@@ -7493,15 +7493,15 @@ msgstr "Campos Personalizables de Caso"
 #: share/html/Ticket/History.html:48 share/html/Ticket/History.html:51
 #. ($Ticket->Id, $Ticket->Subject)
 msgid "Ticket History # %1 %2"
-msgstr "Historial del ticket # %1 %2"
+msgstr "Historial del caso # %1 %2"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket Id"
-msgstr "Id del ticket:"
+msgstr "Id del caso:"
 
 #: etc/initialdata:293
 msgid "Ticket Resolved"
-msgstr "Ticket resuelto"
+msgstr "Caso resuelto"
 
 #: share/html/Elements/CollectionList:166 share/html/Elements/TicketList:64
 msgid "Ticket Search"
@@ -7513,19 +7513,19 @@ msgstr "Transacciones del Caso"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket attachment"
-msgstr "Archivos adjuntos del ticket"
+msgstr "Archivos adjuntos del caso"
 
 #: lib/RT/Tickets_Overlay.pm:2045
 msgid "Ticket content"
-msgstr "Contenido del ticket"
+msgstr "Contenido del caso"
 
 #: lib/RT/Tickets_Overlay.pm:2094
 msgid "Ticket content type"
-msgstr "Tipo de contenido del ticket"
+msgstr "Tipo de contenido del caso"
 
 #: lib/RT/Ticket_Overlay.pm:494 lib/RT/Ticket_Overlay.pm:507 lib/RT/Ticket_Overlay.pm:518 lib/RT/Ticket_Overlay.pm:680
 msgid "Ticket could not be created due to an internal error"
-msgstr "No se pudo crear el ticket debido a un error interno"
+msgstr "No se pudo crear el caso debido a un error interno"
 
 #: share/html/Ticket/Create.html:257
 msgid "Ticket could not be loaded"
@@ -7537,7 +7537,7 @@ msgstr "Caso creado"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket creation failed"
-msgstr "Creación del ticket fallida"
+msgstr "Falló la creación del caso"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket deleted"
@@ -7549,7 +7549,7 @@ msgstr "Visualizar caso"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket id not found"
-msgstr "Id de ticket no encontrada"
+msgstr "Id de caso no encontrada"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket killed"
@@ -7565,7 +7565,7 @@ msgstr "Caso no encontrado"
 
 #: etc/initialdata:279
 msgid "Ticket status changed"
-msgstr "Estado del ticket cambiado"
+msgstr "Estado del caso modificado"
 
 #: NOT FOUND IN SOURCE
 msgid "Ticket watchers"
@@ -7875,7 +7875,7 @@ msgstr "Actualización no grabada."
 
 #: NOT FOUND IN SOURCE
 msgid "Update selected tickets"
-msgstr "Actualizar tickets seleccionados"
+msgstr "Actualizar casos seleccionados"
 
 #: NOT FOUND IN SOURCE
 msgid "Update signature"
@@ -7883,21 +7883,21 @@ msgstr "Actualizar firma"
 
 #: share/html/Ticket/ModifyAll.html:87
 msgid "Update ticket"
-msgstr "Actualizar ticket"
+msgstr "Actualizar caso"
 
 #: NOT FOUND IN SOURCE
 msgid "Update ticket # %1"
-msgstr "Actualización de ticket # %1"
+msgstr "Actualizar caso # %1"
 
 #: share/html/SelfService/Update.html:114 share/html/SelfService/Update.html:49
 #. ($Ticket->id)
 msgid "Update ticket #%1"
-msgstr "Actualizar ticket #%1"
+msgstr "Actualizar caso #%1"
 
 #: share/html/Ticket/Update.html:182
 #. ($TicketObj->id, $TicketObj->Subject)
 msgid "Update ticket #%1 (%2)"
-msgstr "Actualizar ticket #%1 (%2)"
+msgstr "Actualizar caso #%1 (%2)"
 
 #: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:751
 msgid "Update type was neither correspondence nor comment."
@@ -8144,7 +8144,7 @@ msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:107
 msgid "Watch"
-msgstr "Observar"
+msgstr "Watch"
 
 #: lib/RT/Queue_Overlay.pm:108
 msgid "WatchAsAdminCc"
@@ -8220,15 +8220,15 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "When a ticket has been approved by all approvers, add correspondence to the original ticket"
-msgstr "Cuando un ticket ha sido aprobado por todos los aprobadores, añadir correspondencia al ticket original"
+msgstr "Cuando un caso ha sido aprobado por todos los aprobadores, añadir correspondencia al caso original"
 
 #: NOT FOUND IN SOURCE
 msgid "When a ticket has been approved by any approver, add correspondence to the original ticket"
-msgstr "Cuando un ticket ha sido aprobado por cualquier aprobador, añadir correspondencia al ticket original"
+msgstr "Cuando un caso ha sido aprobado por cualquier aprobador, añadir correspondencia al caso original"
 
 #: etc/initialdata:104
 msgid "When a ticket is created"
-msgstr "Cuando un ticket se crea"
+msgstr "Al crear un caso"
 
 #: lib/RT/Approval/Rule/NewPending.pm:7
 msgid "When an approval ticket is created, notify the Owner and AdminCc of the item awaiting their approval"
@@ -8252,11 +8252,11 @@ msgstr "Cuando un ticket es vuelto a abrir"
 
 #: etc/initialdata:157
 msgid "Whenever a ticket is resolved"
-msgstr "Siempre que un ticket este sin resolver"
+msgstr "Al resolver un caso"
 
 #: etc/initialdata:143
 msgid "Whenever a ticket's owner changes"
-msgstr "Siempre que el propietario de un ticket cambie"
+msgstr "Al cambiar el propietario de un caso"
 
 #: etc/initialdata:136 etc/upgrade/3.1.17/content:16
 msgid "Whenever a ticket's priority changes"
@@ -8264,11 +8264,11 @@ msgstr "Siempre que la prioridad de un ticket cambie"
 
 #: etc/initialdata:151
 msgid "Whenever a ticket's queue changes"
-msgstr "Siempre que la cola de un ticket cambie"
+msgstr "Al cambiar la cola de un caso"
 
 #: etc/initialdata:128
 msgid "Whenever a ticket's status changes"
-msgstr "Siempre que el estado de un ticket cambie"
+msgstr "Al cambiar el estado de un caso"
 
 #: etc/initialdata:165
 msgid "Whenever a user-defined condition occurs"
@@ -8280,7 +8280,7 @@ msgstr "Siempre que venga algún comentario"
 
 #: etc/initialdata:115
 msgid "Whenever correspondence comes in"
-msgstr "Siempre que venga correspondencia"
+msgstr "Al recibir correspondencia"
 
 #: lib/RT/Installer.pm:183
 msgid "Where to find your sendmail binary."
@@ -8345,7 +8345,7 @@ msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "You don't have permission to view that ticket.\\n"
-msgstr "No tiene permiso para ver ese ticket.\\n"
+msgstr "No tiene permiso para ver ese caso.\\n"
 
 #: lib/RT/StyleGuide.pod:772
 #. ($num, $queue)
@@ -8358,7 +8358,7 @@ msgstr "Se ha desconectado del sistema RT"
 
 #: share/html/SelfService/Display.html:128
 msgid "You have no permission to create tickets in that queue."
-msgstr "No tiene permiso para crear tickets en esa cola."
+msgstr "No tiene permiso para crear casos en esa cola."
 
 #: lib/RT/Ticket_Overlay.pm:1714
 msgid "You may not create requests in that queue."
@@ -8807,7 +8807,7 @@ msgstr ""
 #: lib/RT/Group_Overlay.pm:161
 #. ($self->Instance, $self->Type)
 msgid "ticket #%1 %2"
-msgstr "ticket #%1 %2"
+msgstr "caso #%1 %2"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:51
 msgid "top to bottom"
