@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use warnings;
 use strict;
-use RT::Test; use Test::More tests => 13;
+use RT::Test; use Test::More tests => 10;
 
 
 
@@ -21,7 +21,7 @@ my @cf_args = (name => $q->name, type => 'Combobox', queue => $q->id);
 
 works($cf->create(@cf_args));
 
-# Set some CFVs with category markers
+# Set some CFVs
 
 my $t = new( 'RT::Model::Ticket');
 my ($id,undef,$msg) = $t->create(queue => $q->id, subject => 'CF Test');
@@ -29,21 +29,18 @@ works($id,$msg);
 
 sub add_works {
     works(
-        $cf->add_value(name => $_[0], description => $_[0], category => $_[1])
+        $cf->add_value(name => $_[0], description => $_[0] )
     );
 };
 
-add_works('value1', '1. category A');
+add_works('value1');
 add_works('value2');
-add_works('value3', '1.1. A-sub one');
-add_works('value4', '1.2. A-sub two');
-add_works('value5', '');
+add_works('value3');
+add_works('value4');
+add_works('value5');
 
 my $cfv = $cf->values->first;
 is ($cf->values->count,5, "got 5 values");
 is($cfv->name, 'value1', "We got the first value");
-is($cfv->category, '1. category A');
-works($cfv->set_category('1. category AAA'));
-is($cfv->category, '1. category AAA');
 
 1;

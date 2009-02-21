@@ -331,7 +331,6 @@ while ( my $Ticket = $Tickets->next ) {
 
         foreach my $key (@$list) {
             my ( $cfid, $cf );
-            next if $key =~ /CustomField-(\d+)-Category$/;
             if ( $key =~ /CustomField-(\d+)-/ ) {
                 $cfid = $1;
                 $cf   = RT::Model::CustomField->new();
