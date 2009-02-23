@@ -135,10 +135,10 @@ if ($ARGS{'id'} eq 'new') {
     }
 
     $ARGS{'UpdateContent'} =~ s/\r\n/\n/g if defined $ARGS{'UpdateContent'};
-    if ( defined $ARGS{'UpdateContent'}
+    if ( ( defined $ARGS{'UpdateContent'}
         && $ARGS{'UpdateContent'} ne ''
 	    && $ARGS{'UpdateContent'} ne "-- \n"
-	       . $session{'CurrentUser'}->UserObj->Signature )
+	       . $session{'CurrentUser'}->UserObj->Signature ) || $session{'Attachments'} )
     {
 	    $ARGS{UpdateAttachments} = $session{'Attachments'};
 	    ProcessUpdateMessage(
