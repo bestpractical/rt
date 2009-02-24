@@ -308,7 +308,8 @@ sub LoadByName {
 
     my $CFs = RT::CustomFields->new( $self->CurrentUser );
     $CFs->SetContextObject( $self->ContextObject );
-    $CFs->Limit( FIELD => 'Name', VALUE => $args{'Name'}, CASESENSITIVE => 0);
+    my $field = $args{'Name'} =~ /\D/? 'Name' : 'id';
+    $CFs->Limit( FIELD => $field, VALUE => $args{'Name'}, CASESENSITIVE => 0);
     # Don't limit to queue if queue is 0.  Trying to do so breaks
     # RT::Group type CFs.
     if ( defined $args{'Queue'} ) {
