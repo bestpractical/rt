@@ -350,6 +350,32 @@ sub Query {
 }
 
 
+sub ClassifySQLOperation {
+    my $self = shift;
+    my $op = shift;
+
+    my $is_negative = 0;
+    if ( $op eq '!=' || $op =~ /\bNOT\b/i ) {
+        $is_negative = 1;
+    }
+
+    my $is_null = 0;
+    if ( 'is not' eq lc($op) || 'is' eq lc($op) ) {
+        $is_null = 1;
+    }
+
+    my %inv = (
+        '=' => '!=', '!=' => '=', '<>' => '=',
+        '>' => '<=', '<' => '>=', '>=' => '<', '<=' => '>',
+        'is' => 'IS NOT', 'is not' => 'IS',
+        'like' => 'NOT LIKE', 'not like' => 'LIKE',
+        'matches' => 'NOT MATCHES', 'not matches' => 'MATCHES',
+        'startswith' => 'NOT STARTSWITH', 'not startswith' => 'STARTSWITH',
+        'endswith' => 'NOT ENDSWITH', 'not endswith' => 'ENDSWITH',
+    );
+
+    return ($is_negative, $is_null, $inv{lc $op});
+}
 
 1;
 
