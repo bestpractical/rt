@@ -1204,7 +1204,7 @@ sub _CustomFieldDecipher {
             $queue = 0;
         }
     }
-    else {
+    elsif ( $field =~ /\D/ ) {
         $queue = '';
         my $cfs = RT::CustomFields->new( $self->CurrentUser );
         $cfs->Limit( FIELD => 'Name', VALUE => $field );
@@ -1217,6 +1217,10 @@ sub _CustomFieldDecipher {
         if ( $cf ) {
             $cf = undef if $cfs->Next;
         }
+    }
+    else {
+        $cf = RT::CustomField->new( $self->CurrentUser );
+        $cf->Load( $field );
     }
 
     return ($queue, $field, $cf, $column);
