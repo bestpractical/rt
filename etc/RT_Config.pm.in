@@ -1215,6 +1215,14 @@ queue selection boxes on the web interface.
 
 #Set($DefaultQueue, 'General');
 
+=item C<$DefaultTimeUnitsToHours>
+
+Use this to set the default units for time entry to hours instead of minutes.
+
+=cut
+
+Set($DefaultTimeUnitsToHours, 0);
+
 =back
 
 =head1 L<Net::Server> (rt-server) Configuration
