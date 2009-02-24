@@ -1345,16 +1345,12 @@ sub _CustomFieldLimit {
     ($queue, $field, $cf, $column) = $self->_CustomFieldDecipher( $field );
     $cfid = $cf ? $cf->id  : 0 ;
 
-
 # If we're trying to find custom fields that don't match something, we
 # want tickets where the custom field has no value at all.  Note that
 # we explicitly don't include the "IS NULL" case, since we would
 # otherwise end up with a redundant clause.
 
-    my $null_columns_ok;
-    if ( ( $op =~ /^NOT LIKE$/i ) or ( $op eq '!=' ) ) {
-        $null_columns_ok = 1;
-    }
+    my ($negative_op, $null_op, $inv_op) = $self->ClassifySQLOperation( $op );
 
     my $fix_op = sub {
         my $op = shift;
@@ -1364,96 +1360,160 @@ sub _CustomFieldLimit {
         return $op;
     };
 
+    my $single_value = !$cf || !$cfid || $cf->SingleValue;
+
     my $cfkey = $cfid ? $cfid : "$queue.$field";
-    my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
 
-    $self->_OpenParen;
-
-    $self->_OpenParen;
-
-    $self->_OpenParen;
-    # if column is defined then deal only with it
-    # otherwise search in Content and in LargeContent
-    if ( $column ) {
+    if ( $null_op && !$column ) {
+        # IS[ NOT] NULL without column is the same as has[ no] any CF value,
+        # we can reuse our default joins for this operation
+        # with column specified we have different situation
+        my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
+        $self->_OpenParen;
         $self->_SQLLimit(
-            ALIAS      => $TicketCFs,
-            FIELD      => $column,
-            OPERATOR   => ($column ne 'LargeContent'? $op : $fix_op->($op)),
-            VALUE      => $value,
+            ALIAS    => $TicketCFs,
+            FIELD    => 'id',
+            OPERATOR => $op,
+            VALUE    => $value,
             %rest
         );
+        $self->_SQLLimit(
+            ALIAS      => $CFs,
+            FIELD      => 'Name',
+            OPERATOR   => 'IS NOT',
+            VALUE      => 'NULL',
+            QUOTEVALUE => 0,
+            ENTRYAGGREGATOR => 'AND',
+        ) if $CFs;
+        $self->_CloseParen;
+    }
+    elsif ( !$negative_op || $single_value ) {
+        $cfkey .= '.'. $self->{'_sql_multiple_cfs_index'}++ unless $single_value;
+        my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
+
+        $self->_OpenParen;
+
+        $self->_OpenParen;
+
+        $self->_OpenParen;
+        # if column is defined then deal only with it
+        # otherwise search in Content and in LargeContent
+        if ( $column ) {
+            $self->_SQLLimit(
+                ALIAS      => $TicketCFs,
+                FIELD      => $column,
+                OPERATOR   => ($column ne 'LargeContent'? $op : $fix_op->($op)),
+                VALUE      => $value,
+                %rest
+            );
+        }
+        else {
+            $self->_SQLLimit(
+                ALIAS      => $TicketCFs,
+                FIELD      => 'Content',
+                OPERATOR   => $op,
+                VALUE      => $value,
+                %rest
+            );
+
+            $self->_OpenParen;
+            $self->_OpenParen;
+            $self->_SQLLimit(
+                ALIAS      => $TicketCFs,
+                FIELD      => 'Content',
+                OPERATOR   => '=',
+                VALUE      => '',
+                ENTRYAGGREGATOR => 'OR'
+            );
+            $self->_SQLLimit(
+                ALIAS      => $TicketCFs,
+                FIELD      => 'Content',
+                OPERATOR   => 'IS',
+                VALUE      => 'NULL',
+                ENTRYAGGREGATOR => 'OR'
+            );
+            $self->_CloseParen;
+            $self->_SQLLimit(
+                ALIAS => $TicketCFs,
+                FIELD => 'LargeContent',
+                OPERATOR => $fix_op->($op),
+                VALUE => $value,
+                ENTRYAGGREGATOR => 'AND',
+            );
+            $self->_CloseParen;
+        }
+        $self->_CloseParen;
+
+        # XXX: if we join via CustomFields table then
+        # because of order of left joins we get NULLs in
+        # CF table and then get nulls for those records
+        # in OCFVs table what result in wrong results
+        # as decifer method now tries to load a CF then
+        # we fall into this situation only when there
+        # are more than one CF with the name in the DB.
+        # the same thing applies to order by call.
+        # TODO: reorder joins T <- OCFVs <- CFs <- OCFs if
+        # we want treat IS NULL as (not applies or has
+        # no value)
+        $self->_SQLLimit(
+            ALIAS      => $CFs,
+            FIELD      => 'Name',
+            OPERATOR   => 'IS NOT',
+            VALUE      => 'NULL',
+            QUOTEVALUE => 0,
+            ENTRYAGGREGATOR => 'AND',
+        ) if $CFs;
+        $self->_CloseParen;
+
+        if ($negative_op) {
+            $self->_SQLLimit(
+                ALIAS           => $TicketCFs,
+                FIELD           => $column || 'Content',
+                OPERATOR        => 'IS',
+                VALUE           => 'NULL',
+                QUOTEVALUE      => 0,
+                ENTRYAGGREGATOR => 'OR',
+            );
+        }
+
+        $self->_CloseParen;
     }
     else {
-        $self->_SQLLimit(
-            ALIAS      => $TicketCFs,
-            FIELD      => 'Content',
-            OPERATOR   => $op,
-            VALUE      => $value,
-            %rest
-        );
+        $cfkey .= '.'. $self->{'_sql_multiple_cfs_index'}++;
+        my ($TicketCFs, $CFs) = $self->_CustomFieldJoin( $cfkey, $cfid, $field );
 
-        $self->_OpenParen;
-        $self->_OpenParen;
+        # reverse operation
+        $op =~ s/!|NOT\s+//i;
+
+        # if column is defined then deal only with it
+        # otherwise search in Content and in LargeContent
+        if ( $column ) {
+            $self->SUPER::Limit(
+                LEFTJOIN   => $TicketCFs,
+                ALIAS      => $TicketCFs,
+                FIELD      => $column,
+                OPERATOR   => ($column ne 'LargeContent'? $op : $fix_op->($op)),
+                VALUE      => $value,
+            );
+        }
+        else {
+            $self->SUPER::Limit(
+                LEFTJOIN   => $TicketCFs,
+                ALIAS      => $TicketCFs,
+                FIELD      => 'Content',
+                OPERATOR   => $op,
+                VALUE      => $value,
+            );
+        }
         $self->_SQLLimit(
+            %rest,
             ALIAS      => $TicketCFs,
-            FIELD      => 'Content',
-            OPERATOR   => '=',
-            VALUE      => '',
-            ENTRYAGGREGATOR => 'OR'
-        );
-        $self->_SQLLimit(
-            ALIAS      => $TicketCFs,
-            FIELD      => 'Content',
+            FIELD      => 'id',
             OPERATOR   => 'IS',
             VALUE      => 'NULL',
-            ENTRYAGGREGATOR => 'OR'
-        );
-        $self->_CloseParen;
-        $self->_SQLLimit(
-            ALIAS => $TicketCFs,
-            FIELD => 'LargeContent',
-            OPERATOR => $fix_op->($op),
-            VALUE => $value,
-            ENTRYAGGREGATOR => 'AND',
-        );
-        $self->_CloseParen;
-    }
-    $self->_CloseParen;
-
-    # XXX: if we join via CustomFields table then
-    # because of order of left joins we get NULLs in
-    # CF table and then get nulls for those records
-    # in OCFVs table what result in wrong results
-    # as decifer method now tries to load a CF then
-    # we fall into this situation only when there
-    # are more than one CF with the name in the DB.
-    # the same thing applies to order by call.
-    # TODO: reorder joins T <- OCFVs <- CFs <- OCFs if
-    # we want treat IS NULL as (not applies or has
-    # no value)
-    $self->_SQLLimit(
-        ALIAS      => $CFs,
-        FIELD      => 'Name',
-        OPERATOR   => 'IS NOT',
-        VALUE      => 'NULL',
-        QUOTEVALUE => 0,
-        ENTRYAGGREGATOR => 'AND',
-    ) if $CFs;
-    $self->_CloseParen;
-
-    if ($null_columns_ok) {
-        $self->_SQLLimit(
-            ALIAS           => $TicketCFs,
-            FIELD           => $column || 'Content',
-            OPERATOR        => 'IS',
-            VALUE           => 'NULL',
-            QUOTEVALUE      => 0,
-            ENTRYAGGREGATOR => 'OR',
+            QUOTEVALUE => 0,
         );
     }
-
-    $self->_CloseParen;
-
 }
 
 # End Helper Functions
