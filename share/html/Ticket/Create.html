@@ -118,15 +118,7 @@
 <& /Ticket/Elements/EditCustomFields, %ARGS, QueueObj => $QueueObj &>
 </td>
 </tr>
-% if ($TxnCFs->Count) {
-% while (my $CF = $TxnCFs->Next()) {
-<tr>
-<td class="label"><% $CF->Name %>:</td>
-<td><& /Elements/EditCustomField, CustomField => $CF, NamePrefix =>
-    "Object-RT::Transaction--CustomField-" &><em><% $CF->FriendlyType %></em></td>
-</td></tr>
-% }
-% }
+<& /Ticket/Elements/EditTransactionCustomFields, %ARGS, QueueObj => $QueueObj &>
 <tr>
 % if (exists $session{'Attachments'}) {
 <td class="label">
@@ -340,7 +332,6 @@ $m->callback( QueueObj => $QueueObj, ARGSRef => \%ARGS );
 $QueueObj->Disabled && Abort(loc("Cannot create tickets in a disabled queue."));
 
 my $CFs = $QueueObj->TicketCustomFields();
-my $TxnCFs = $QueueObj->TicketTransactionCustomFields();
 
 my $ValidCFs = $m->comp(
     '/Elements/ValidateCustomFields',

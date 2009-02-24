@@ -97,17 +97,7 @@
 
 <& /Ticket/Elements/UpdateCc, %ARGS, TicketObj => $TicketObj &>
 
-
-% if (my $TxnCFs = $TicketObj->TransactionCustomFields) {
-%    while (my $CF = $TxnCFs->Next()) {
-%        next unless $CF->CurrentUserHasRight('ModifyCustomField');
-<tr>
-<td class="label"><% $CF->Name %>:</td>
-<td><& /Elements/EditCustomField, CustomField => $CF, NamePrefix =>
-    "Object-RT::Transaction--CustomField-" &><em><% $CF->FriendlyType %></em></td>
-</tr>
-%    } # end if while
-% } # end of if
+<& /Ticket/Elements/EditTransactionCustomFields, %ARGS, TicketObj => $TicketObj &>
 
 % if (exists $session{'Attachments'}) {
 <tr><td><&|/l&>Attached file</&>:</td>
