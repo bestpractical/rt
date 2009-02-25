@@ -1365,29 +1365,6 @@ sub set_queue {
 
 
 
-=head2 due_obj
-
-  Returns an RT::Date object containing this ticket's due date
-
-=cut
-
-sub due_obj {
-    my $self = shift;
-
-    my $time = RT::Date->new();
-
-    # -1 is RT::Date slang for never
-    if ( my $due = $self->due ) {
-        $time->set( format => 'sql', value => $due );
-    } else {
-        $time->set( format => 'unix', value => -1 );
-    }
-
-    return $time;
-}
-
-
-
 =head2 set_started
 
 Takes a date in ISO format or undef

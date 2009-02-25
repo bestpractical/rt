@@ -67,7 +67,7 @@
   <tr>
     <td class="label"><&|/l&>Due</&>:</td>
     <td class="entry">
-      <& /Elements/SelectDate, menu_prefix => 'due', current => 0 &> (<% $ticket_obj->due_obj->as_string %>)
+      <& /Elements/SelectDate, menu_prefix => 'due', current => 0 &> (<% $ticket_obj->due %>)
     </td>
   </tr>
 </table>

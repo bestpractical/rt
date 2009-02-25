@@ -935,7 +935,7 @@ sub get_update_template {
     $string .= "UpdateType: correspond\n";
     $string .= "Content: \n";
     $string .= "ENDOFCONTENT\n";
-    $string .= "Due: " . $t->due_obj->as_string . "\n";
+    $string .= "Due: " . $t->due . "\n";
     $string .= "Starts: " . $t->starts . "\n";
     $string .= "Started: " . $t->started . "\n";
     $string .= "Resolved: " . $t->resolved . "\n";
@@ -986,7 +986,7 @@ sub get_base_template {
     $string .= "Queue: " . $t->queue . "\n";
     $string .= "Subject: " . $t->subject . "\n";
     $string .= "Status: " . $t->status . "\n";
-    $string .= "Due: " . $t->due_obj->epoch . "\n";
+    $string .= "Due: " . $t->due->epoch . "\n";
     $string .= "Starts: " . $t->starts->epoch . "\n";
     $string .= "Started: " . $t->started->epoch . "\n";
     $string .= "Resolved: " . $t->resolved->epoch . "\n";

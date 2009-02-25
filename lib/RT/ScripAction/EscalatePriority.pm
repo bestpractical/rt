@@ -95,7 +95,7 @@ sub prepare {
     }
 
     #compute the number of days until the ticket is due
-    my $due = $self->ticket_obj->due_obj();
+    my $due = $self->ticket_obj->due;
 
     # If we don't have a due date, adjust the priority by one
     # until we hit the final priority

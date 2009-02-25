@@ -86,7 +86,7 @@ $feed->add_properties('method'   => ['publish']);
 $feed->add_properties('prodid'   => ["-//" . RT->config->get('rtname') ."//"]);
 
 while (my $t = $tickets->next) {
-    next unless $t->due_obj->epoch > 0;
+    next unless $t->due->epoch > 0;
 
     my $starttime = $t->starts->epoch > 0 ? $t->starts : $t->created;
 
@@ -108,8 +108,8 @@ while (my $t = $tickets->next) {
     );
     $end->add_properties(
         summary   => "Due: ".$t->subject,
-        dtstart   => $t->due_obj->iCalDate,
-        dtend     => $t->due_obj->iCalDate,
+        dtstart   => $t->due->iCalDate,
+        dtend     => $t->due->iCalDate,
     );
 
     $feed->add_entry($start);
