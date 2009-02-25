@@ -114,7 +114,7 @@ if ($opts{'help'}) {
 }
 
 # helper functions
-sub verbose  { print loc(@_), "\n" if $opts{verbose} || $opts{verbose}; 1 }
+sub verbose  { print loc(@_), "\n" if $opts{debug} || $opts{verbose}; 1 }
 sub debug    { print loc(@_), "\n" if $opts{debug}; 1 }
 sub error    { $RT::Logger->error(loc(@_)); verbose(@_); 1 }
 sub warning  { $RT::Logger->warning(loc(@_)); verbose(@_); 1 }
