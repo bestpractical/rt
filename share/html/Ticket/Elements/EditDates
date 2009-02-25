@@ -53,7 +53,7 @@
   </tr>
   <tr>
     <td class="label"><&|/l&>Started</&>:</td>
-    <td class="entry"><& /Elements/SelectDate, menu_prefix => 'started', current => 0 &> (<%$ticket_obj->started_obj->as_string %>)</td>
+    <td class="entry"><& /Elements/SelectDate, menu_prefix => 'started', current => 0 &> (<%$ticket_obj->started %>)</td>
   </tr>
 
   <tr>

@@ -56,7 +56,7 @@
   </tr>
   <tr>
     <td class="label date started"><&|/l&>Started</&>:</td>
-    <td class="value date started"><% $ticket->started_obj->as_string %></td>
+    <td class="value date started"><% $ticket->started %></td>
   </tr>
   <tr>
     <td class="label date told"><a href="<% RT->config->get('WebPath') %>/Ticket/Display.html?id=<% $ticket->id %>&Action=SetTold"><&|/l&>Last Contact</&></a>:</td>
