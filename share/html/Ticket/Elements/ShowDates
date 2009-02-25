@@ -51,7 +51,7 @@
     <td class="value date Created"><% $ticket->created_obj->as_string %></td>
   </tr>
   <tr>
-    <td class="label date starts"><&|/l&>starts</&>:</td>
+    <td class="label date starts"><&|/l&>Starts</&>:</td>
     <td class="value date starts"><% $ticket->starts_obj->as_string %></td>
   </tr>
   <tr>
