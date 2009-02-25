@@ -157,7 +157,7 @@ sub prepare {
 
     my $ticket = $self->ticket_obj;
 
-    my $due = $ticket->due_obj->unix;
+    my $due = $ticket->due_obj->epoch;
     unless ( $due > 0 ) {
         Jifty->log->debug('Due is not set. Not escalating.');
         return 1;

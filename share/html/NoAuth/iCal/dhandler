@@ -86,9 +86,9 @@ $feed->add_properties('method'   => ['publish']);
 $feed->add_properties('prodid'   => ["-//" . RT->config->get('rtname') ."//"]);
 
 while (my $t = $tickets->next) {
-    next unless $t->due_obj->unix > 0;
+    next unless $t->due_obj->epoch > 0;
 
-    my $starttime = $t->starts->unix > 0 ? $t->starts : $t->created;
+    my $starttime = $t->starts->epoch > 0 ? $t->starts : $t->created;
 
     my $now = RT::Date->new; $now->set_to_now;
     my $start = Data::ICal::Entry::Event->new;

@@ -68,8 +68,8 @@ If the due date is before "now" return true
 
 sub is_applicable {
     my $self = shift;
-    if (    $self->ticket_obj->due_obj->unix > 0
-        and $self->ticket_obj->due_obj->unix < time() )
+    if (    $self->ticket_obj->due_obj->epoch > 0
+        and $self->ticket_obj->due_obj->epoch < time() )
     {
         return (1);
     } else {

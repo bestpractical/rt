@@ -65,7 +65,7 @@
   <tr>
     <td class="label date due"><&|/l&>Due</&>:</td>
 % my $due = $ticket->due_obj;
-% if ( $due && $due->unix > 0 && $due->diff < 0 ) {
+% if ( $due && $due->epoch > 0 && $due->diff < 0 ) {
     <td class="value date due"><span class="overdue"><% $due->as_string  %></span></td>
 % } else {
     <td class="value date due"><% $due->as_string  %></td>

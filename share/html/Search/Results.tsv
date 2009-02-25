@@ -77,7 +77,7 @@ $r->content_type('application/vnd.ms-excel');
 while ( my $Ticket = $Tickets->next()) {
     my $row;
     foreach my $attr (@attrs) {
-        if ($attr =~ /(.*)->iso$/ and $Ticket->$1->unix <= 0) {
+        if ($attr =~ /(.*)->iso$/ and $Ticket->$1->epoch <= 0) {
             $row->{$attr} = "";
         } else {
             my $method = '$Ticket->'.$attr.'()';

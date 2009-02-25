@@ -1349,8 +1349,8 @@ sub process_ticket_dates {
         );
 
         my $obj = $field . "_obj";
-        if (    ( defined $DateObj->unix )
-            and ( $DateObj->unix != $Ticket->$obj()->unix() ) )
+        if (    ( defined $DateObj->epoch )
+            and ( $DateObj->epoch != $Ticket->$obj->epoch ) )
         {
             my $method = "set_$field";
             my ( $code, $msg ) = $Ticket->$method( $DateObj->iso );
