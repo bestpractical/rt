@@ -2536,10 +2536,13 @@ sub DESTROY {
     my $batch = $self->transaction_batch or return;
     return unless @$batch;
 
+    my $ticket = RT::Model::Ticket->new( current_user => RT::CurrentUser->superuser );
+    $ticket->load( $self->id );
+
     # Entry point of the rule system
     my $rules = RT::Ruleset->find_all_rules(
         stage           => 'transaction_batch',
-        ticket_obj      => $self,
+        ticket_obj      => $ticket,
         transaction_obj => $batch->[0],
         type            => join( ',', map $_->type, grep defined, @{$batch} )
     );
