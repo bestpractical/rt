@@ -65,12 +65,12 @@ my $COLUMN_MAP = {
     created => {
         attribute => 'Created',
         title     => 'Created', # loc
-        value     => sub  { return $_[0]->created_obj->as_string }
+        value     => sub  { return $_[0]->created }
     },
     created_relative => {
         attribute => 'Created',
         title     => 'Created', # loc
-        value     => sub  { return $_[0]->created_obj->age_as_string }
+        value     => sub  { return $_[0]->created->age_as_string }
     },
     created_by => {
         attribute => 'CreatedBy',

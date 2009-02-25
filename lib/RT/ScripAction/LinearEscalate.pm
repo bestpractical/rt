@@ -188,7 +188,7 @@ sub prepare {
     # increment priority according to the formula
 
     my $starts = $ticket->starts_obj->unix;
-    $starts = $ticket->created_obj->unix unless $starts > 0;
+    $starts = $ticket->created->epoch unless $starts > 0;
     my $now = time;
 
     # do nothing if we didn't reach starts or created date

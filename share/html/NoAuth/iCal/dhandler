@@ -88,7 +88,7 @@ $feed->add_properties('prodid'   => ["-//" . RT->config->get('rtname') ."//"]);
 while (my $t = $tickets->next) {
     next unless $t->due_obj->unix > 0;
 
-    my $starttime = $t->starts_obj->unix > 0 ? $t->starts_obj : $t->created_obj;
+    my $starttime = $t->starts_obj->unix > 0 ? $t->starts_obj : $t->created;
 
     my $now = RT::Date->new; $now->set_to_now;
     my $start = Data::ICal::Entry::Event->new;
@@ -97,7 +97,7 @@ while (my $t = $tickets->next) {
         url       => RT->config->get('WebURL') . "?q=".$t->id,
         organizer => $t->owner_obj->name,
         dtstamp   => $now->iCal,
-        created   => $t->created_obj->iCal,
+        created   => $t->created->iCal,
        'last-modified' => $t->last_updated_obj->iCal,
     ) for $start, $end;
 

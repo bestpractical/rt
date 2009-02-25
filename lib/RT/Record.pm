@@ -359,22 +359,12 @@ sub last_updated_obj {
 
 
 
-sub created_obj {
-    my $self = shift;
-    my $obj  = RT::Date->new();
-
-    $obj->set( format => 'sql', value => $self->created );
-
-    return $obj;
-}
-
-
 #
 # TODO: This should be deprecated
 #
 sub age_as_string {
     my $self = shift;
-    return ( $self->created_obj->age_as_string() );
+    return ( $self->created->age_as_string() );
 }
 
 
