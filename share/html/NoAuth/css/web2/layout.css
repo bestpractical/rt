@@ -198,9 +198,8 @@ div#quickbar {
 
 }
 div#quick-personal {
-    position: absolute;
-    right: 1em;
-    top: 1em;
+    float: right;
+    margin-right: 1em;
 }
 
 
