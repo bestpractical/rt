@@ -119,7 +119,11 @@ use Jifty::DBI::Record schema {
         filters are qw( Jifty::Filter::DateTime Jifty::DBI::Filter::DateTime),
         render_as 'DateTime',
         label is _('Due');
-    column resolved         => type is 'timestamp';
+    column resolved         => type is 'timestamp',
+        filters are qw( Jifty::Filter::DateTime Jifty::DBI::Filter::DateTime),
+        render_as 'DateTime',
+        label is _('Closed');
+    ;
     column disabled         => max_length is 6,   type is 'smallint',     default is '0';
 };
 use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
