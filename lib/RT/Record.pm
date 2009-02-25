@@ -1629,4 +1629,23 @@ sub wiki_base {
     return RT->config->get('WebPath') . "/index.html?q=";
 }
 
+=head2 _get_current_user
+
+This overridden version of C<_get_current_user> allows user object to
+be coerced into CurrentUser object during C<Model->new( current_user => $u)>.
+
+=cut
+
+sub _get_current_user {
+    my ($self, %args) = @_;
+    return if ( ref($self) && $self->current_user );
+
+    if ( my $cu = $args{'current_user'}) {
+        $args{'current_user'} = RT::CurrentUser->new(user_object => $cu)
+            if $cu->isa('RT::Model::User');
+    }
+
+    return $self->SUPER::_get_current_user(%args);
+}
+
 1;
