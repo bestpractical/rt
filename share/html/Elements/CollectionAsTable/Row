@@ -76,7 +76,9 @@ foreach my $column (@format) {
         next;
     }
 
-    my $css_class = $column->{class} ? encode_entities( $column->{class}, q{'"&<>} ) : 'collection-as-table';
+    my $css_class = $column->{class}
+                  ? encode_entities( $column->{class}, q{'"&<>} ) # vim: '
+                  : 'collection-as-table';
     $m->out(qq{<td class="$css_class" });
 
     my $align = $column->{align};
