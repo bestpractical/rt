@@ -73,7 +73,7 @@
   </tr>
   <tr>
     <td class="label date resolved"><&|/l&>Closed</&>:</td>
-    <td class="value date resolved"><% $ticket->resolved_obj->as_string  %></td>
+    <td class="value date resolved"><% $ticket->resolved  %></td>
   </tr>
   <tr>
     <td class="label date updated"><&|/l&>Updated</&>:</td>

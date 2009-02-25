@@ -1388,22 +1388,6 @@ sub due_obj {
 
 
 
-=head2 resolved_obj
-
-  Returns an RT::Date object of this ticket's 'resolved' time.
-
-=cut
-
-sub resolved_obj {
-    my $self = shift;
-
-    my $time = RT::Date->new();
-    $time->set( format => 'sql', value => $self->resolved );
-    return $time;
-}
-
-
-
 =head2 set_started
 
 Takes a date in ISO format or undef

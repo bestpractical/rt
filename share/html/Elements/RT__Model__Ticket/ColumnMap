@@ -209,7 +209,7 @@ $COLUMN_MAP = {
     resolved_relative => {
         title     => 'Resolved', # loc
         attribute => 'resolved',
-        value     => sub  { return $_[0]->resolved_obj->age }
+        value     => sub  { return $_[0]->resolved->age }
     },
     starts => {
         title     => 'Starts', # loc
@@ -234,7 +234,7 @@ $COLUMN_MAP = {
     resolved => {
         title     => 'Resolved', # loc
         attribute => 'resolved',
-        value     => sub  { return $_[0]->resolved_obj->as_string }
+        value     => sub  { return $_[0]->resolved }
     },
     update_status => {
         title => 'New messages', # loc

@@ -938,7 +938,7 @@ sub get_update_template {
     $string .= "Due: " . $t->due_obj->as_string . "\n";
     $string .= "Starts: " . $t->starts . "\n";
     $string .= "Started: " . $t->started_obj->as_string . "\n";
-    $string .= "Resolved: " . $t->resolved_obj->as_string . "\n";
+    $string .= "Resolved: " . $t->resolved . "\n";
     $string .= "Owner: " . $t->owner->name . "\n";
     $string .= "Requestor: " . $t->role_group("requestor")->member_emails_as_string . "\n";
     $string .= "Cc: " . $t->role_group("cc")->member_emails_as_string . "\n";
@@ -989,7 +989,7 @@ sub get_base_template {
     $string .= "Due: " . $t->due_obj->epoch . "\n";
     $string .= "Starts: " . $t->starts->epoch . "\n";
     $string .= "Started: " . $t->started_obj->epoch . "\n";
-    $string .= "Resolved: " . $t->resolved_obj->epoch . "\n";
+    $string .= "Resolved: " . $t->resolved->epoch . "\n";
     $string .= "Owner: " . $t->owner . "\n";
     $string .= "Requestor: " . $t->role_group("requestor")->member_emails_as_string . "\n";
     $string .= "Cc: " . $t->role_group("cc")->member_emails_as_string . "\n";

@@ -96,7 +96,7 @@ ok( $t->create(queue => 'General', Due => '2002-05-21 00:00:00', ReferredToBy =>
 ok ( my $id = $t->id, "Got ticket id");
 like ($t->refers_to->first->target , qr/fsck.com/, "Got refers to");
 like ($t->referred_to_by->first->base , qr/cpan.org/, "Got referredtoby");
-is ($t->resolved_obj->epoch, 0, "It hasn't been resolved - ". $t->resolved_obj->epoch);
+is ($t->resolved->epoch, 0, "It hasn't been resolved - ". $t->resolved->epoch);
 
 
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
