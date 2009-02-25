@@ -345,78 +345,6 @@ sub load_by_cols {
 }
 
 
-
-# There is room for optimizations in most of those subs:
-
-
-sub last_updated_obj {
-    my $self = shift;
-    my $obj  = RT::Date->new();
-
-    $obj->set( format => 'sql', value => $self->last_updated );
-    return $obj;
-}
-
-
-
-sub created_obj {
-    my $self = shift;
-    my $obj  = RT::Date->new();
-
-    $obj->set( format => 'sql', value => $self->created );
-
-    return $obj;
-}
-
-
-#
-# TODO: This should be deprecated
-#
-sub age_as_string {
-    my $self = shift;
-    return ( $self->created_obj->age_as_string() );
-}
-
-
-
-# TODO this should be deprecated
-
-sub last_updated_as_string {
-    my $self = shift;
-    if ( $self->last_updated ) {
-        return ( $self->last_updated_obj->as_string() );
-
-    } else {
-        return "never";
-    }
-}
-
-
-#
-# TODO This should be deprecated
-#
-sub created_as_string {
-    my $self = shift;
-    return ( $self->created_obj->as_string() );
-}
-
-
-#
-# TODO This should be deprecated
-#
-sub long_since_update_as_string {
-    my $self = shift;
-    if ( $self->last_updated ) {
-
-        return ( $self->last_updated_obj->age_as_string() );
-
-    } else {
-        return "never";
-    }
-}
-
-
-
 #
 sub _set {
     my $self = shift;
@@ -727,7 +655,8 @@ sub update {
             my $object = $attribute . "_obj";
             next if ( $self->can($object) && $self->$object->name eq $value );
         };
-        next if ( $value eq ( $self->$attribute() || '' ) );
+        my $current_value = $self->$attribute();
+        next if ( $value eq ( defined $current_value ? $current_value : '' ) );
         my $method = "set_$attribute";
         my ( $code, $msg ) = $self->$method($value);
         my ($prefix) = ref($self) =~ /RT(?:.*)::(\w+)/;
@@ -1698,6 +1627,25 @@ sub load_custom_field_by_identifier {
 
 sub wiki_base {
     return RT->config->get('WebPath') . "/index.html?q=";
+}
+
+=head2 _get_current_user
+
+This overridden version of C<_get_current_user> allows user object to
+be coerced into CurrentUser object during C<Model->new( current_user => $u)>.
+
+=cut
+
+sub _get_current_user {
+    my ($self, %args) = @_;
+    return if ( ref($self) && $self->current_user );
+
+    if ( my $cu = $args{'current_user'}) {
+        $args{'current_user'} = RT::CurrentUser->new(user_object => $cu)
+            if $cu->isa('RT::Model::User');
+    }
+
+    return $self->SUPER::_get_current_user(%args);
 }
 
 1;

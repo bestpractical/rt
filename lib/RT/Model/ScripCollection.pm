@@ -345,7 +345,7 @@ sub _find_scrips {
         alias            => $ConditionsAlias,
         column           => 'applicable_trans_types',
         operator         => 'LIKE',
-        value            => "Any",
+        value            => "any",
         entry_aggregator => 'OR',
     );
 

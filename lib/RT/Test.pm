@@ -127,6 +127,7 @@ set( \$WebPort , $port);
 set( \$WebbaseURL , "http://localhost:\$WebPort");
 set( \$LogToScreen , "debug");
 set( \$LogStackTraces , "warning");
+set( \$MailCommand, 'testfile' );
 };
     print $config $args{'config'} if $args{'config'};
     print $config "\n1;\n";

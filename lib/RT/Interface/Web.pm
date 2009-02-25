@@ -481,7 +481,7 @@ sub create_ticket {
     }
 
     foreach my $arg ( keys %ARGS ) {
-        next if $arg =~ /-(?:magic|category)$/;
+        next if $arg =~ /-(?:magic)$/;
 
         if ( $arg =~ /^object-RT::Model::Transaction--CustomField-/ ) {
             $create_args{$arg} = $ARGS{$arg};
@@ -1099,7 +1099,6 @@ sub _process_object_custom_field_updates {
 
     my @results;
     foreach my $arg ( keys %{ $args{'ARGS'} } ) {
-        next if $arg =~ /category$/;
 
         # since http won't pass in a form element with a null value, we need
         # to fake it
@@ -1350,8 +1349,8 @@ sub process_ticket_dates {
         );
 
         my $obj = $field . "_obj";
-        if (    ( defined $DateObj->unix )
-            and ( $DateObj->unix != $Ticket->$obj()->unix() ) )
+        if (    ( defined $DateObj->epoch )
+            and ( $DateObj->epoch != $Ticket->$obj->epoch ) )
         {
             my $method = "set_$field";
             my ( $code, $msg ) = $Ticket->$method( $DateObj->iso );

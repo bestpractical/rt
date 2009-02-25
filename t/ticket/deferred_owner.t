@@ -1,4 +1,4 @@
-use Test::More tests => 18;
+use Test::More tests => 19;
 
 use strict;
 use warnings;
@@ -57,6 +57,7 @@ diag "check that previous trick doesn't work without sufficient rights"
         },
     );
     my $ticket = RT::Model::Ticket->new(current_user => $tester );
+    isa_ok($ticket->current_user, 'RT::CurrentUser');
     # tester is owner, owner has right to modify owned tickets,
     # this right is required to set somebody as Admincc
     my ( $tid, $txn_id, $msg ) = $ticket->create(

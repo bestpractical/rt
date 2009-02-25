@@ -691,7 +691,7 @@ sub parse_lines {
             $dateobj->set( format => 'unix', value => $args{$date} );
         } else {
             eval { $dateobj->set( format => 'iso', value => $args{$date} ); };
-            if ( $@ or $dateobj->unix <= 0 ) {
+            if ( $@ or $dateobj->epoch <= 0 ) {
                 $dateobj->set( format => 'unknown', value => $args{$date} );
             }
         }
@@ -935,10 +935,10 @@ sub get_update_template {
     $string .= "UpdateType: correspond\n";
     $string .= "Content: \n";
     $string .= "ENDOFCONTENT\n";
-    $string .= "Due: " . $t->due_obj->as_string . "\n";
-    $string .= "starts: " . $t->starts_obj->as_string . "\n";
-    $string .= "Started: " . $t->started_obj->as_string . "\n";
-    $string .= "Resolved: " . $t->resolved_obj->as_string . "\n";
+    $string .= "Due: " . $t->due . "\n";
+    $string .= "Starts: " . $t->starts . "\n";
+    $string .= "Started: " . $t->started . "\n";
+    $string .= "Resolved: " . $t->resolved . "\n";
     $string .= "Owner: " . $t->owner->name . "\n";
     $string .= "Requestor: " . $t->role_group("requestor")->member_emails_as_string . "\n";
     $string .= "Cc: " . $t->role_group("cc")->member_emails_as_string . "\n";
@@ -986,10 +986,10 @@ sub get_base_template {
     $string .= "Queue: " . $t->queue . "\n";
     $string .= "Subject: " . $t->subject . "\n";
     $string .= "Status: " . $t->status . "\n";
-    $string .= "Due: " . $t->due_obj->unix . "\n";
-    $string .= "starts: " . $t->starts_obj->unix . "\n";
-    $string .= "Started: " . $t->started_obj->unix . "\n";
-    $string .= "Resolved: " . $t->resolved_obj->unix . "\n";
+    $string .= "Due: " . $t->due->epoch . "\n";
+    $string .= "Starts: " . $t->starts->epoch . "\n";
+    $string .= "Started: " . $t->started->epoch . "\n";
+    $string .= "Resolved: " . $t->resolved->epoch . "\n";
     $string .= "Owner: " . $t->owner . "\n";
     $string .= "Requestor: " . $t->role_group("requestor")->member_emails_as_string . "\n";
     $string .= "Cc: " . $t->role_group("cc")->member_emails_as_string . "\n";
