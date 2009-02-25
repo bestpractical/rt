@@ -1429,27 +1429,6 @@ sub set_started {
 
 }
 
-
-
-=head2 told_as_string
-
-A convenience method that returns told_obj->as_string
-
-TODO: This should be deprecated
-
-=cut
-
-sub told_as_string {
-    my $self = shift;
-    if ( $self->told ) {
-        return $self->told_obj->as_string();
-    } else {
-        return ("Never");
-    }
-}
-
-
-
 =head2 time_worked_as_string
 
 Returns the amount of time worked on this ticket as a Text String
