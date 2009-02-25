@@ -378,29 +378,6 @@ sub age_as_string {
 }
 
 
-
-# TODO this should be deprecated
-
-sub last_updated_as_string {
-    my $self = shift;
-    if ( $self->last_updated ) {
-        return ( $self->last_updated_obj->as_string() );
-
-    } else {
-        return "never";
-    }
-}
-
-
-#
-# TODO This should be deprecated
-#
-sub created_as_string {
-    my $self = shift;
-    return ( $self->created_obj->as_string() );
-}
-
-
 #
 # TODO This should be deprecated
 #

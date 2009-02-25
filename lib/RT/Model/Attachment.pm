@@ -410,7 +410,7 @@ sub quote {
 
         $body =~ s/^/> /gm;
 
-        $body = '[' . $self->transaction_obj->creator_obj->name() . ' - ' . $self->transaction_obj->created_as_string() . "]:\n\n" . $body . "\n\n";
+        $body = '[' . $self->transaction_obj->creator_obj->name() . ' - ' . $self->transaction_obj->created . "]:\n\n" . $body . "\n\n";
 
     } else {
         $body = "[Non-text message not quoted]\n\n";

@@ -231,7 +231,7 @@ you may reply to this message.
        content     => 'RT-Attach-Message: yes
 
 
-{$transaction->created_as_string}: Request {$ticket->id} was acted upon.
+{$transaction->created}: Request {$ticket->id} was acted upon.
 Transaction: {$transaction->description}
        Queue: {$ticket->queue->name}
      Subject: {$transaction->subject || $ticket->subject || "(No subject given)"}
