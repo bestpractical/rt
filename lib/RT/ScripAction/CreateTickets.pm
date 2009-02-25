@@ -936,7 +936,7 @@ sub get_update_template {
     $string .= "Content: \n";
     $string .= "ENDOFCONTENT\n";
     $string .= "Due: " . $t->due_obj->as_string . "\n";
-    $string .= "starts: " . $t->starts_obj->as_string . "\n";
+    $string .= "Starts: " . $t->starts . "\n";
     $string .= "Started: " . $t->started_obj->as_string . "\n";
     $string .= "Resolved: " . $t->resolved_obj->as_string . "\n";
     $string .= "Owner: " . $t->owner->name . "\n";
@@ -987,7 +987,7 @@ sub get_base_template {
     $string .= "Subject: " . $t->subject . "\n";
     $string .= "Status: " . $t->status . "\n";
     $string .= "Due: " . $t->due_obj->unix . "\n";
-    $string .= "starts: " . $t->starts_obj->unix . "\n";
+    $string .= "Starts: " . $t->starts->epoch . "\n";
     $string .= "Started: " . $t->started_obj->unix . "\n";
     $string .= "Resolved: " . $t->resolved_obj->unix . "\n";
     $string .= "Owner: " . $t->owner . "\n";

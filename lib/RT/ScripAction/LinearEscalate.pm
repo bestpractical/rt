@@ -187,7 +187,7 @@ sub prepare {
     # now we know we have a due date. for every day that passes,
     # increment priority according to the formula
 
-    my $starts = $ticket->starts_obj->unix;
+    my $starts = $ticket->starts->epoch;
     $starts = $ticket->created->epoch unless $starts > 0;
     my $now = time;
 

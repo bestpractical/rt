@@ -52,7 +52,7 @@
   </tr>
   <tr>
     <td class="label date starts"><&|/l&>Starts</&>:</td>
-    <td class="value date starts"><% $ticket->starts_obj->as_string %></td>
+    <td class="value date starts"><% $ticket->starts %></td>
   </tr>
   <tr>
     <td class="label date started"><&|/l&>Started</&>:</td>
