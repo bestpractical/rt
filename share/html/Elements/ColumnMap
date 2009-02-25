@@ -70,7 +70,7 @@ my $COLUMN_MAP = {
     created_relative => {
         attribute => 'Created',
         title     => 'Created', # loc
-        value     => sub  { return $_[0]->created->age_as_string }
+        value     => sub  { return $_[0]->created->age }
     },
     created_by => {
         attribute => 'CreatedBy',
@@ -85,7 +85,7 @@ my $COLUMN_MAP = {
     last_updated_relative => {
         attribute => 'last_updated',
         title     => 'Last Updated', # loc
-        value     => sub  { return $_[0]->last_updated->age_as_string }
+        value     => sub  { return $_[0]->last_updated->age }
     },
     last_updated_by => {
         attribute => 'last_updated_by',

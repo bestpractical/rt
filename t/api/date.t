@@ -495,7 +495,7 @@ my $year = (localtime(time))[5] + 1900;
 { # AgeAsString
     my $date = RT::Date->new(current_user => RT->system_user);
     $date->set_to_now;
-    my $diff = $date->age_as_string;
+    my $diff = $date->age;
     like($diff, qr/^(0 sec|[1-5] sec ago)$/, 'close enought');
 }
 

@@ -345,34 +345,6 @@ sub load_by_cols {
 }
 
 
-
-# There is room for optimizations in most of those subs:
-
-#
-# TODO: This should be deprecated
-#
-sub age_as_string {
-    my $self = shift;
-    return ( $self->created->age_as_string() );
-}
-
-
-#
-# TODO This should be deprecated
-#
-sub long_since_update_as_string {
-    my $self = shift;
-    if ( $self->last_updated ) {
-
-        return ( $self->last_updated->age_as_string() );
-
-    } else {
-        return "never";
-    }
-}
-
-
-
 #
 sub _set {
     my $self = shift;

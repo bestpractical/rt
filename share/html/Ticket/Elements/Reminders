@@ -158,7 +158,7 @@ $ticket
     <input type="text" size="15" name="Reminder-Subject-<% $reminder->id %>" value="<%$reminder->subject%>" /> &bull; 
     <& /Elements/SelectOwner, name => 'Reminder-Owner-'.$reminder->id, queue => $ticket->queue, default => $reminder->owner, default_value => 0  &>
     <& /Elements/SelectDate, name => 'Reminder-Due-'.$reminder->id, default => $reminder->due_obj->date &>
-    (<%$reminder->due_obj->unix>0  ? $reminder->due_obj->age_as_string : '' %>)<br />
+    (<%$reminder->due_obj->unix>0  ? $reminder->due_obj->age : '' %>)<br />
 </%method>
 <%method ShowEntry>
 <%args>
@@ -172,5 +172,5 @@ $ticket
 /> 
     <%$reminder->subject%> &bull; 
     <%$reminder->owner_obj->name%>
-    <%$reminder->due_obj->unix>0  ? "&bull; ". $reminder->due_obj->age_as_string : '' |n%><br />
+    <%$reminder->due_obj->unix>0  ? "&bull; ". $reminder->due_obj->age : '' |n%><br />
 </%method>

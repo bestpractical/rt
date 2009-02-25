@@ -181,17 +181,17 @@ $COLUMN_MAP = {
     starts_relative => {
         title     => 'Starts', # loc
         attribute => 'starts',
-        value     => sub  { return $_[0]->starts_obj->age_as_string }
+        value     => sub  { return $_[0]->starts_obj->age }
     },
     started_relative => {
         title     => 'Started', # loc
         attribute => 'Started',
-        value     => sub  { return $_[0]->started_obj->age_as_string }
+        value     => sub  { return $_[0]->started_obj->age }
     },
     told_relative => {
         title     => 'Told', # loc
         attribute => 'Told',
-        value     => sub  { return $_[0]->told_obj->age_as_string }
+        value     => sub  { return $_[0]->told_obj->age }
     },
     due_relative => {
         title     => 'Due', # loc
@@ -200,16 +200,16 @@ $COLUMN_MAP = {
             my $date = $_[0]->due_obj;
             # Highlight the date if it was due in the past, and it's still active
             if ( $date && $date->unix > 0 && $date->diff < 0 && $_[0]->queue->status_schema->is_active($_[0]->status)) {
-                return (\'<span class="overdue">' , $date->age_as_string , \'</span>');
+                return (\'<span class="overdue">' , $date->age , \'</span>');
             } else {
-                return $date->age_as_string;
+                return $date->age;
             }
         }
     },
     resolved_relative => {
         title     => 'Resolved', # loc
         attribute => 'resolved',
-        value     => sub  { return $_[0]->resolved_obj->age_as_string }
+        value     => sub  { return $_[0]->resolved_obj->age }
     },
     starts => {
         title     => 'Starts', # loc
