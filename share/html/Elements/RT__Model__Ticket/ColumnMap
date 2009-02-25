@@ -191,7 +191,7 @@ $COLUMN_MAP = {
     told_relative => {
         title     => 'Told', # loc
         attribute => 'Told',
-        value     => sub  { return $_[0]->told_obj->age }
+        value     => sub  { return $_[0]->told->age }
     },
     due_relative => {
         title     => 'Due', # loc
@@ -224,7 +224,7 @@ $COLUMN_MAP = {
     told => {
         title     => 'Told', # loc
         attribute => 'Told',
-        value     => sub  { return $_[0]->told_obj->as_string }
+        value     => sub  { return $_[0]->told }
     },
     due => {
         title     => 'Due', # loc

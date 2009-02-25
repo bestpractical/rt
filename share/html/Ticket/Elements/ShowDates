@@ -60,7 +60,7 @@
   </tr>
   <tr>
     <td class="label date told"><a href="<% RT->config->get('WebPath') %>/Ticket/Display.html?id=<% $ticket->id %>&Action=SetTold"><&|/l&>Last Contact</&></a>:</td>
-    <td class="value date told"><% $ticket->told_obj->as_string %></td>
+    <td class="value date told"><% $ticket->told %></td>
   </tr>
   <tr>
     <td class="label date due"><&|/l&>Due</&>:</td>

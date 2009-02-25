@@ -61,7 +61,7 @@
       <&|/l&>Last Contact</&>:
     </td>
     <td class="entry">
-      <& /Elements/SelectDate, menu_prefix => 'told', current => 0 &> (<% $ticket_obj->told_obj->as_string %>)
+      <& /Elements/SelectDate, menu_prefix => 'told', current => 0 &> (<% $ticket_obj->told %>)
     </td>
   </tr>
   <tr>

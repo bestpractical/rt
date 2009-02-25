@@ -1431,23 +1431,6 @@ sub set_started {
 
 
 
-=head2 told_obj
-
-  Returns an RT::Date object which contains this ticket's 
-'told' time.
-
-=cut
-
-sub told_obj {
-    my $self = shift;
-
-    my $time = RT::Date->new();
-    $time->set( format => 'sql', value => $self->told );
-    return $time;
-}
-
-
-
 =head2 told_as_string
 
 A convenience method that returns told_obj->as_string
