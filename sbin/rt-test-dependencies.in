@@ -215,6 +215,7 @@ File::Spec 0.8
 HTML::Entities 
 HTML::Scrubber 0.08
 Log::Dispatch 2.0
+Sys::Syslog 0.16
 Locale::Maketext 1.06
 Locale::Maketext::Lexicon 0.32
 Locale::Maketext::Fuzzy
