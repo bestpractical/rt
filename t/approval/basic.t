@@ -69,17 +69,15 @@ $q = RT::Model::Queue->new(current_user => RT->system_user);
 $q->create(name => 'PO');
 ok ($q->id, "Created PO queue");
 
-my $scrip = RT::Model::Scrip->new(current_user => RT->system_user);
-my ($sval, $smsg) =$scrip->create( scrip_condition => 'On Create',
-                scrip_action => 'Create Tickets',
-                template => 'PO Approvals',
-                queue => $q->id,
-                description => 'Create Approval Tickets');
-ok ($sval, $smsg);
-ok ($scrip->id, "Created the scrip");
-ok ($scrip->template_obj->id, "Created the scrip template");
-ok ($scrip->scrip_condition->id, "Created the scrip condition");
-ok ($scrip->scrip_action->id, "Created the scrip action");
+# XXX: limit to one queue
+my $rule = RT::Lorzy->create_scripish(
+    'On Create',
+    'Create Tickets',
+    'PO Approvals',
+    $q->id,
+);
+
+RT::Lorzy::Dispatcher->add_rule( $rule );
 
 my $t = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($tid, $ttrans, $tmsg);
