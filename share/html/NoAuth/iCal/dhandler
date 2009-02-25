@@ -98,7 +98,7 @@ while (my $t = $tickets->next) {
         organizer => $t->owner_obj->name,
         dtstamp   => $now->iCal,
         created   => $t->created->iCal,
-       'last-modified' => $t->last_updated_obj->iCal,
+       'last-modified' => $t->last_updated->iCal,
     ) for $start, $end;
 
     $start->add_properties(

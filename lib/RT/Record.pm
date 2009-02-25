@@ -348,17 +348,6 @@ sub load_by_cols {
 
 # There is room for optimizations in most of those subs:
 
-
-sub last_updated_obj {
-    my $self = shift;
-    my $obj  = RT::Date->new();
-
-    $obj->set( format => 'sql', value => $self->last_updated );
-    return $obj;
-}
-
-
-
 #
 # TODO: This should be deprecated
 #
@@ -375,7 +364,7 @@ sub long_since_update_as_string {
     my $self = shift;
     if ( $self->last_updated ) {
 
-        return ( $self->last_updated_obj->age_as_string() );
+        return ( $self->last_updated->age_as_string() );
 
     } else {
         return "never";
