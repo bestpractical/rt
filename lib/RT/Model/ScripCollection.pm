@@ -283,7 +283,7 @@ sub setup_source_objects {
     } else {
         $self->{'ticket_obj'} = RT::Model::Ticket->new;
         $self->{'ticket_obj'}->load( $args{'ticket'} )
-            || Jifty->log->err("$self couldn't load ticket $args{'ticket'}");
+            || Jifty->log->error("$self couldn't load ticket $args{'ticket'}");
     }
 
     if ( ( $self->{'transaction_obj'} = $args{'transaction_obj'} ) ) {
@@ -291,7 +291,7 @@ sub setup_source_objects {
     } else {
         $self->{'transaction_obj'} = RT::Model::Transaction->new;
         $self->{'transaction_obj'}->load( $args{'transaction'} )
-            || Jifty->log->err("$self couldn't load transaction $args{'transaction'}");
+            || Jifty->log->error("$self couldn't load transaction $args{'transaction'}");
     }
 }
 
