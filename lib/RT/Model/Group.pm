@@ -78,6 +78,12 @@ use Jifty::DBI::Record schema {
     column type        => type is 'varchar(64)';
     column instance    => type is 'integer';
 
+    column gm =>
+        references RT::Model::GroupMemberCollection
+        by 'group_id';
+    column cgm =>
+        references RT::Model::CachedGroupMemberCollection
+        by 'group_id';
 };
 
 sub table {'Groups'}
