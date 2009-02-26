@@ -113,11 +113,13 @@ div#body {
     float: right;
 }
 
-#topactions #simple-search input.button {
-    width: 5em;
-}
 #topactions #simple-search .field{
  margin-left: 1em;
+ color: #787;
+ }
+
+#topactions #simple-search .field:focus {
+ color: #000;
  }
 
 div#footer {
