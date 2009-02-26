@@ -92,17 +92,21 @@ use Jifty::DBI::Record schema {
     column resolution       => max_length is 11,  type is 'int',          default is '0';
     column owner            => references RT::Model::User;
     column subject          => max_length is 200, type is 'varchar(200)', default is '';
+
     column initial_priority => max_length is 11,  type is 'int',          default is '0';
     column final_priority   => max_length is 11,  type is 'int',          default is '0';
     column priority         => max_length is 11,  type is 'int',          default is '0';
+
     column time_estimated   => max_length is 11,  type is 'int',
            default is '0', label is _( 'time estimated( in minutes )' );
     column time_worked      => max_length is 11,  type is 'int',
            default is '0', label is _( 'time worked( in minutes )' );
     column time_left        => max_length is 11,  type is 'int',
            default is '0', label is _('time left( in minutes )');
+
     column status           => max_length is 10,  type is 'varchar(10)',
            default is '', render_as 'Select';
+
     column told             => type is 'timestamp',
         filters are qw( Jifty::Filter::DateTime Jifty::DBI::Filter::DateTime),
         render_as 'DateTime',
@@ -123,7 +127,7 @@ use Jifty::DBI::Record schema {
         filters are qw( Jifty::Filter::DateTime Jifty::DBI::Filter::DateTime),
         render_as 'DateTime',
         label is _('Closed');
-    ;
+
     column disabled         => max_length is 6,   type is 'smallint',     default is '0';
 };
 use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
