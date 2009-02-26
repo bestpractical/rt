@@ -58,18 +58,18 @@ my $url = sprintf '%s/Dashboards/Subscription.html?dashboard_id=%d',
 my $frequency = _("None");
 
 if (defined $subscription) {
-    my $freq = $subscription->sub_value('Frequency');
-    my $hour = $subscription->sub_value('Hour');
+    my $freq = $subscription->sub_value('frequency');
+    my $hour = $subscription->sub_value('hour');
 
     if ($freq eq 'weekly') {
-        my $day = (qw/Monday Tuesday Wednesday Thursday Friday Saturday Sunday/)[$subscription->sub_value('Dow')];
-        $frequency = _("%1 (on %2) at %3", $freq, $day, $hour);
+        my $day = $subscription->sub_value('dow');
+        $frequency = _("weekly (on %1) at %2", _($day), $hour);
     }
     elsif ($freq eq 'monthly') {
-        $frequency = _("%1 (day %2) at %3", $freq, $subscription->sub_value('Dom'), $hour);
+        $frequency = _("monthly (day %1) at %2", $subscription->sub_value('dom'), $hour);
     } 
     elsif ($freq eq 'daily') {
-        $frequency = _("%1 at %2", $freq, $hour);
+        $frequency = _("daily at %1", $hour);
     }
 }
 </%INIT>

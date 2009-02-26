@@ -111,63 +111,65 @@ sub gv_escape($) {
 our ( %fill_cache, @available_colors ) = ();
 
 our %property_cb = (
-    Queue => sub { return $_[0]->queue->name || $_[0]->queue },
-    CF => sub {
+    queue => sub { return $_[0]->queue->name || $_[0]->queue },
+    cf => sub {
         my $values = $_[0]->custom_field_values( $_[1] );
         return join ', ', map $_->content, @{ $values->items_array_ref };
     },
 );
-foreach my $field (qw(Subject Status TimeLeft TimeWorked TimeEstimated)) {
+foreach my $field (qw(subject status time_left time_worked time_estimated)) {
     $property_cb{$field} = sub { return $_[0]->$field },;
 }
-foreach my $field (qw(Creator LastUpdatedBy Owner)) {
+foreach my $field (qw(creator last_updated_by owner)) {
     $property_cb{$field} = sub {
-        my $method = $field . 'Obj';
-        return $_[0]->$method->name;
+        return $_[0]->$field->name;
     };
 }
-foreach my $field (qw(Requestor Cc AdminCc)) {
+foreach my $field (qw(requestor cc admin_cc)) {
     $property_cb{ $field . "s" } = sub {
-        my $method = $field . 'Addresses';
-        return $_[0]->$method;
+        return $_[0]->role_group( $field )->member_emails;
     };
 }
-foreach my $field (qw(Told Starts Started Due Resolved LastUpdated Created)) {
+foreach my $field (qw(told starts started due resolved last_updated created)) {
     $property_cb{$field} = sub {
-        my $method = $field . 'Obj';
+        my $method = $field . '_obj';
         return $_[0]->$method->as_string;
     };
 }
-foreach my $field (qw(Members DependedOnBy ReferredToBy)) {
+foreach my $field (qw(members depended_on_by referred_to_by)) {
     $property_cb{$field} = sub {
         return join ', ', map $_->base_obj->id,
           @{ $_[0]->$field->items_array_ref };
     };
 }
-foreach my $field (qw(MemberOf DependsOn RefersTo)) {
+foreach my $field (qw(member_of depends_on refersTo)) {
     $property_cb{$field} = sub {
         return join ', ', map $_->target_obj->id,
           @{ $_[0]->$field->items_array_ref };
     };
 }
 
-sub TicketProperties {
+sub ticket_properties {
     my $self = shift;
     my $user = shift;
-    my @res  = (
-        Basics => [qw(Subject Status Queue TimeLeft TimeWorked TimeEstimated)],
-        People => [qw(Owner Requestors Ccs AdminCcs Creator LastUpdatedBy)],
-        Dates  => [qw(Created Starts Started Due Resolved Told LastUpdated)],
-        Links =>
-          [qw(MemberOf Members DependsOn DependedOnBy RefersTo ReferredToBy)],
+    my @res = (
+        basics => [qw(subject status queue time_left time_worked time_estimated)]
+        ,    # loc_qw
+        people => [qw(owner requestors ccs admin_ccs creator last_updated_by)]
+        ,    # loc_qw
+        dates => [qw(created starts started due resolved told last_updated)]
+        ,    # loc_qw
+        links =>
+          [qw(member_of members depends_on depended_on_by refers_to referred_to_by)]
+        ,    # loc_qw
     );
-    my $cfs = RT::Model::CustomFieldCollection->new($user);
+    my $cfs = RT::Model::CustomFieldCollection->new(current_user => $user);
     $cfs->limit_to_lookup_type('RT::Model::Queue-RT::Model::Ticket');
-    $cfs->order_by( field => 'Name' );
+    $cfs->order_by( field => 'name' );
     my ( $first, %seen ) = (1);
     while ( my $cf = $cfs->next ) {
         next if $seen{ lc $cf->name }++;
-        next if $cf->type eq 'Image';
+        next if $cf->type eq 'image';
         if ($first) {
             push @res, 'CustomFields', [];
             $first = 0;
@@ -177,7 +179,7 @@ sub TicketProperties {
     return @res;
 }
 
-sub _SplitProperty {
+sub _split_property {
     my $self     = shift;
     my $property = shift;
     my ( $key, @subkeys ) = split /\./, $property;
@@ -188,17 +190,17 @@ sub _SplitProperty {
     return $key, @subkeys;
 }
 
-sub _PropertiesToFields {
+sub _properties_to_fields {
     my $self = shift;
     my %args = (
-        Ticket       => undef,
-        Graph        => undef,
-        CurrentDepth => 1,
+        ticket       => undef,
+        graph        => undef,
+        current_depth => 1,
         @_
     );
 
     my @properties;
-    if ( my $tmp = $args{ 'Level-' . $args{'CurrentDepth'} . '-Properties' } ) {
+    if ( my $tmp = $args{ 'level-' . $args{'current_depth'} . '-properties' } ) {
         @properties = ref $tmp ? @$tmp : ($tmp);
     }
 
@@ -213,45 +215,45 @@ sub _PropertiesToFields {
         }
         push @fields,
           ( $subkeys[0] || $key ) . ': '
-          . $property_cb{$key}->( $args{'Ticket'}, @subkeys );
+          . $property_cb{$key}->( $args{'ticket'}, @subkeys );
     }
 
     return @fields;
 }
 
-sub AddTicket {
+sub add_ticket {
     my $self = shift;
     my %args = (
-        Ticket       => undef,
-        Properties   => [],
-        Graph        => undef,
-        CurrentDepth => 1,
+        ticket       => undef,
+        properties   => [],
+        graph        => undef,
+        current_depth => 1,
         @_
     );
 
     my %node_style = (
         style => 'filled,rounded',
-        %{ $ticket_status_style{ $args{'Ticket'}->status } || {} },
-        URL => $RT::WebPath . '/Ticket/Display.html?id=' . $args{'Ticket'}->id,
+        %{ $ticket_status_style{ $args{'ticket'}->status } || {} },
+        URL => $RT::WebPath . '/Ticket/Display.html?id=' . $args{'ticket'}->id,
         tooltip =>
-          gv_escape( $args{'Ticket'}->subject || '#' . $args{'Ticket'}->id ),
+          gv_escape( $args{'ticket'}->subject || '#' . $args{'ticket'}->id ),
     );
 
     my @fields = $self->_properties_to_fields(%args);
     if (@fields) {
-        unshift @fields, $args{'Ticket'}->id;
+        unshift @fields, $args{'ticket'}->id;
         my $label = join ' | ', map { s/(?=[{}|])/\\/g; $_ } @fields;
         $label = "{ $label }"
-          if ( $args{'Direction'} || 'TB' ) =~ /^(?:TB|BT)$/;
+          if ( $args{'direction'} || 'TB' ) =~ /^(?:TB|BT)$/;
         $node_style{'label'} = gv_escape($label);
         $node_style{'shape'} = 'record';
     }
 
-    if ( $args{'FillUsing'} ) {
-        my ( $key, @subkeys ) = $self->_split_property( $args{'FillUsing'} );
+    if ( $args{'fill_using'} ) {
+        my ( $key, @subkeys ) = $self->_split_property( $args{'fill_using'} );
         my $value;
         if ( $property_cb{$key} ) {
-            $value = $property_cb{$key}->( $args{'Ticket'}, @subkeys );
+            $value = $property_cb{$key}->( $args{'ticket'}, @subkeys );
         }
         else {
             Jifty->log->error("Couldn't find property callback for '$key'");
@@ -270,35 +272,35 @@ sub AddTicket {
         }
     }
 
-    $args{'Graph'}->add_node( $args{'Ticket'}->id, %node_style );
+    $args{'graph'}->add_node( $args{'ticket'}->id, %node_style );
 }
 
-sub TicketLinks {
+sub ticket_links {
     my $self = shift;
     my %args = (
-        Ticket => undef,
+        ticket => undef,
 
-        Graph     => undef,
-        Direction => 'TB',
-        Seen      => undef,
-        SeenEdge  => undef,
+        graph     => undef,
+        direction => 'TB',
+        seen      => undef,
+        seen_edge  => undef,
 
-        LeadingLink => 'Members',
-        ShowLinks   => [],
+        leading_link => 'members',
+        show_links   => [],
 
-        MaxDepth     => 0,
-        CurrentDepth => 1,
+        max_depth     => 0,
+        current_depth => 1,
 
         show_link_descriptions => 0,
         @_
     );
-    unless ( $args{'Graph'} ) {
-        $args{'Graph'} = GraphViz->new(
-            name    => 'ticket_links_' . $args{'Ticket'}->id,
+    unless ( $args{'graph'} ) {
+        $args{'graph'} = GraphViz->new(
+            name    => 'ticket_links_' . $args{'ticket'}->id,
             bgcolor => "transparent",
 
             # TODO: patch GraphViz to support all posible RDs
-            rankdir => ( $args{'Direction'} || "TB" ) eq "LR",
+            rankdir => ( $args{'direction'} || "TB" ) eq "LR",
             node => {
                 shape     => 'box',
                 style     => 'filled,rounded',
@@ -309,24 +311,24 @@ sub TicketLinks {
         @available_colors = @fill_colors;
     }
 
-    $args{'Seen'} ||= {};
-    return $args{'Graph'} if $args{'Seen'}{ $args{'Ticket'}->id }++;
+    $args{'seen'} ||= {};
+    return $args{'graph'} if $args{'seen'}{ $args{'ticket'}->id }++;
 
     $self->add_ticket(%args);
 
-    return $args{'Graph'}
-      if $args{'MaxDepth'} && $args{'CurrentDepth'} >= $args{'MaxDepth'};
+    return $args{'graph'}
+      if $args{'max_depth'} && $args{'current_depth'} >= $args{'max_depth'};
 
-    $args{'SeenEdge'} ||= {};
+    $args{'seen_edge'} ||= {};
 
     my $show_link_descriptions = $args{'show_link_descriptions'}
       && RT::Model::Link->can('description');
 
-    foreach my $type ( $args{'LeadingLink'}, @{ $args{'ShowLinks'} } ) {
-        my $links = $args{'Ticket'}->$type();
+    foreach my $type ( $args{'leading_link'}, @{ $args{'show_links'} } ) {
+        my $links = $args{'ticket'}->$type();
         $links->goto_first_item;
         while ( my $link = $links->next ) {
-            next if $args{'SeenEdge'}{ $link->id }++;
+            next if $args{'seen_edge'}{ $link->id }++;
 
             my $target = $link->target_obj;
             next unless $target && $target->isa('RT::Model::Ticket');
@@ -334,22 +336,22 @@ sub TicketLinks {
             my $base = $link->base_obj;
             next unless $base && $base->isa('RT::Model::Ticket');
 
-            my $next = $target->id == $args{'Ticket'}->id ? $base : $target;
+            my $next = $target->id == $args{'ticket'}->id ? $base : $target;
 
             $self->ticket_links(
                 %args,
-                Ticket => $next,
-                $type eq $args{'LeadingLink'}
-                ? ( CurrentDepth => $args{'CurrentDepth'} + 1 )
+                ticket => $next,
+                $type eq $args{'leading_link'}
+                ? ( current_depth => $args{'current_depth'} + 1 )
                 : (
-                    MaxDepth     => $args{'CurrentDepth'} + 1,
-                    CurrentDepth => $args{'CurrentDepth'} + 1
+                    max_depth     => $args{'current_depth'} + 1,
+                    current_depth => $args{'current_depth'} + 1
                 ),
             );
 
             my $desc;
             $desc = $link->description if $show_link_descriptions;
-            $args{'Graph'}->add_edge(
+            $args{'graph'}->add_edge(
 
                 # we revers order of member links to get better layout
                 $link->type eq 'MemberOf'
@@ -361,7 +363,7 @@ sub TicketLinks {
         }
     }
 
-    return $args{'Graph'};
+    return $args{'graph'};
 }
 
 1;

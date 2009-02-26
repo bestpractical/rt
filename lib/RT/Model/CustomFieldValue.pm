@@ -83,7 +83,6 @@ sub create {
         name         => '',
         description  => '',
         sort_order   => 0,
-        category     => '',
         @_,
     );
 
@@ -107,41 +106,7 @@ sub create {
     );
     return ( $id, $msg ) unless $id;
 
-    if ( defined $args{'category'} && length $args{'category'} ) {
-
-        # $self would be loaded at this stage
-        my ( $status, $msg ) = $self->set_category( $args{'category'} );
-        unless ($status) {
-            Jifty->log->error("Couldn't set category: $msg");
-        }
-    }
-
     return ( $id, $msg );
-}
-
-sub category {
-    my $self = shift;
-    my $attr = $self->first_attribute('category') or return undef;
-    return $attr->content;
-}
-
-sub set_category {
-    my $self     = shift;
-    my $category = shift;
-    if ( defined $category && length $category ) {
-        return $self->set_attribute(
-            name    => 'category',
-            content => $category,
-        );
-    } else {
-        my ( $status, $msg ) = $self->delete_attribute('category');
-        unless ($status) {
-            Jifty->log->warn("Couldn't delete atribute: $msg");
-        }
-
-        # return true even if there was no category
-        return ( 1, _('category unset') );
-    }
 }
 
 sub validate_name {

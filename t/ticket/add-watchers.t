@@ -45,7 +45,7 @@
 # 
 # END BPS TAGGED BLOCK }}}
 
-use Test::More tests => 28;
+use Test::More tests => 32;
 use RT::Test;
 
 use strict;
@@ -124,6 +124,18 @@ ok(  $rv, "user can add self as Cc by Email" );
 ($rv, $msg) = $ticket2->add_watcher( type => 'requestor', email => $user->email );
 ok(  $rv, "user can add self as Requestor by Email" );
 
+# remove user and try adding by username
+# This worked in 3.6 and is a regression in 3.8
+($rv, $msg) = $ticket->delete_watcher( type => 'cc', email => $user->email );
+ok( $rv, "watcher removed by email" );
+($rv, $msg) = $ticket->delete_watcher( type => 'requestor', email => $user->email );
+ok( $rv, "watcher removed by email" );
+
+($rv, $msg) = $ticket2->add_watcher( type => 'cc', email => $user->name );
+ok(  $rv, "user can add self as Cc by username" );
+($rv, $msg) = $ticket2->add_watcher( type => 'requestor', email => $user->name );
+ok(  $rv, "user can add self as Requestor by username" );
+
 # Queue watcher tests
 $principal->revoke_right( right => 'Watch'  , object => $queue );
 ok( !$user->has_right( right => 'Watch',        object => $queue ), "user queue watch right revoked" );
@@ -154,5 +166,4 @@ ok( $rv, "watcher removed by Email" );
 ok(  $rv, "user can add self as Cc by Email" );
 ($rv, $msg) = $queue2->add_watcher( type => 'requestor', email => $user->email );
 ok(  $rv, "user can add self as Requestor by Email" );
-
 

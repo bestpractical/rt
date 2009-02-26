@@ -51,18 +51,18 @@
     current_tab => "Ticket/ModifyLinks.html?id=".$Ticket->id, 
     title => _("Link ticket #%1", $Ticket->id) &>
 
-% $m->callback(Callbackname => 'before_action_list', Actions => \@results, args_ref => \%ARGS, ticket => $Ticket);
+% $m->callback(callback_name => 'BeforeActionList', actions => \@results, args_ref => \%ARGS, ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
 
 <% Jifty->web->form->start( submit_to => '?id=' . $Ticket->id ) %>
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
-% $m->callback( Callbackname => 'form_start', args_ref => \%ARGS );
+% $m->callback( callback_name => 'FormStart', args_ref => \%ARGS );
 % my (@extra);
 % push @extra, titleright_raw => '<a href="'. RT->config->get('WebPath') . '/Ticket/Graphs/index.html?id='.$Ticket->id.'">'._('Graph').'</a>' unless RT->config->get('DisableGraphViz');
 <&| /Widgets/TitleBox, title => _('Edit Links'), class=>'ticket-info-links', @extra &>
 <& /Elements/EditLinks, object => $Ticket, merge => 1 &>
 </&>
-<& /Elements/Submit, label => _('Save Changes') &>
+<& /Elements/Submit, name => 'submit_ticket', label => _('Save Changes') &>
 </form>
 
 

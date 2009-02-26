@@ -64,7 +64,7 @@ END
     $m->goto_create_ticket( $queue );
     $m->form_number(3);
     $m->submit;
-    is_deeply parse_handle($tmp_fh), ['Create'], 'Create';
+    is_deeply parse_handle($tmp_fh), ['create'], 'create';
     $m->follow_link_ok(  text => 'Resolve'  );
     $m->form_number(3);
     $m->field( "update_content" => 'resolve it' );

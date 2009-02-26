@@ -53,27 +53,24 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%RT->config->get('WebPath')%>/Dashboards/Queries.html" method="post" enctype="multipart/form-data" name="dashboard_queries">
+% if (@hidden_searches) {
+<& Elements/HiddenSearches, searches => \@hidden_searches, dashboard => $Dashboard &>
+% }
+
+<table width="100%" border="0">
+% for my $pane (@panes) {
+<tr><td valign="top" class="boxcontainer">
+<form action="Queries.html" name="Dashboard-<%$pane->{name}%>" method="post" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="id" value="<%$Dashboard->id%>" />
 <input type="hidden" class="hidden" name="privacy" value="<%$Dashboard->privacy%>" />
-<table width="100%" border="0">
-<tr>
-
-<td valign="top" class="boxcontainer">
-<&| /Widgets/TitleBox, title => _('Queries') &>
-<table>
-<tr><td>
-<& /Widgets/SelectionBox:show, self => $sel, nojs => 1 &>
-</td></tr>
-</table>
+<&| /Widgets/TitleBox, title => $pane->{display_name} &>
+    <& /Widgets/SelectionBox:show, self => $pane, nojs => 1 &>
 </&>
-
-</td>
-</tr>
-</table>
-
 </form>
+</td></tr>
+% }
 
+</table>
 </&>
 <%INIT>
 
@@ -88,13 +85,33 @@ my $title = _("Modify the queries of dashboard %1", $Dashboard->name);
 
 my %desc_of;
 my @items;
-my @selected;
+my %selected;
 
 # Get the list of queries already in use
-for ($Dashboard->search_ids) {
-    my ($privacy, $id, $desc) = @$_;
-    my $name = "$id-$privacy";
-    push @selected, $name;
+do {
+    my $panes = $Dashboard->panes;
+    for my $pane (keys %$panes) {
+        for my $portlet (@{ $panes->{$pane} }) {
+            my $name;
+            if ($portlet->{portlet_type} eq 'search') {
+                $name = join '-', 'search', $portlet->{id}, $portlet->{privacy};
+            }
+            else {
+                $name = join '-', 'component', $portlet->{component};
+            }
+
+            push @{ $selected{$pane} }, $name;
+            $desc_of{$name} = $portlet->{description};
+        }
+    }
+};
+
+my @components = @{ RT->config->get('HomepageComponents') };
+my %allowed_components = map {$_ => 1} @components;
+
+for my $desc (@components) {
+    my $name = "component-$desc";
+    push @items, [$name, $desc];
     $desc_of{$name} = $desc;
 }
 
@@ -110,40 +127,80 @@ for my $object (@objs) {
         my ($desc, $search) = @$_;
         my $SearchType = $search->content->{'SearchType'} || 'Ticket';
         my $privacy = $Dashboard->_build_privacy($object);
-        my $name = $search->id . '-' . $privacy;
+        my $name = 'search-' . $search->id . '-' . $privacy;
         push @items, [$name, $desc];
         $desc_of{$name} = $desc;
     }
 }
 
-# Create a selectionbox widget for those queries
-my $sel = $m->comp(
-    '/Widgets/SelectionBox:new',
-    action    => 'Dashboards/Queries.html',
-    name      => "searches",
-    available => \@items,
-    selected  => \@selected,
-    auto_save  => 1,
-    on_submit  => sub {
-        my $self = shift;
-
-        # transform list of "SearchID-PrivacyObjType-PrivacyObjID"s to
-        # list of [Privacy, SearchID, description]s
-        my $searches = [ map {
-            [ reverse(split /-/, $_, 2), $desc_of{$_} ]
-        } @{ $self->{Current} } ];
-
-        my ($ok, $msg) = $Dashboard->update(searches => $searches);
-
-        if ($ok) {
-            push @results, _("Dashboard updated");
-        }
-        else {
-            push @results, _("Dashboard could not be updated: %1", $msg);
-        }
-    },
+# Create selectionbox widgets for those queries
+my %pane_name = (
+    'body'    => _('Body'),
+    'sidebar' => _('Sidebar'),
 );
-$m->comp('/Widgets/SelectionBox:process', %ARGS, self => $sel, nojs => 1);
+
+my @panes;
+for my $pane (keys %pane_name) {
+    my $sel = $m->comp(
+        '/Widgets/SelectionBox:new',
+        action      => 'Queries.html',
+        name        => "Searches-$pane",
+        display_name => $pane_name{$pane},
+        available   => \@items,
+        selected    => $selected{$pane},
+        auto_save    => 1,
+        on_submit    => sub {
+            my $self = shift;
+
+            my @portlets;
+            for (@{ $self->{Current} }) {
+                my $item = $_;
+                my $desc = $desc_of{$item};
+                my $portlet_type = $1 if $item =~ s/^(\w+)-//;
+
+                if ($portlet_type eq 'search') {
+                    my ($search_id, $privacy) = split '-', $item, 2;
+                    push @portlets, {
+                        portlet_type => $portlet_type,
+                        privacy      => $privacy,
+                        id           => $search_id,
+                        description  => $desc,
+                        pane         => $pane,
+                    };
+                }
+                elsif ($portlet_type eq 'component') {
+                    push @portlets, {
+                        portlet_type => $portlet_type,
+                        component    => $item,
+                        path         => "/Elements/$item",
+                        description  => $item,
+                        pane         => $pane,
+                    };
+                }
+            }
+
+            # we want to keep all the other panes the same
+            my $panes = $Dashboard->panes;
+            $panes->{$pane} = \@portlets;
+
+            my ($ok, $msg) = $Dashboard->update(panes => $panes);
+
+            if ($ok) {
+                push @results, _("Dashboard updated");
+            }
+            else {
+                push @results, _("Dashboard could not be updated: %1", $msg);
+            }
+        },
+    );
+
+    push @panes, $sel;
+}
+
+$m->comp('/Widgets/SelectionBox:process', %ARGS, self => $_, nojs => 1)
+    for @panes;
+
+my @hidden_searches = $Dashboard->possible_hidden_searches;
 
 </%INIT>
 <%ARGS>

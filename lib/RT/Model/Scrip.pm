@@ -69,7 +69,7 @@ use Jifty::DBI::Record schema {
     column template                  => references RT::Model::Template, is mandatory;
     column scrip_action              => references RT::Model::ScripAction, is mandatory;
     column scrip_condition           => references RT::Model::ScripCondition, is mandatory;
-    column stage                     => type is 'varchar(32)', default is 'TransactionCreate';
+    column stage                     => type is 'varchar(32)', default is 'transaction_create';
     column description               => type is 'text';
     column custom_prepare_code       => type is 'text';
     column custom_commit_code        => type is 'text';
@@ -110,7 +110,7 @@ sub create {
         template                  => 0,                     # name or id
         scrip_action              => 0,                     # name or id
         scrip_condition           => 0,                     # name or id
-        stage                     => 'TransactionCreate',
+        stage                     => 'transaction_create',
         description               => undef,
         custom_prepare_code       => undef,
         custom_commit_code        => undef,
@@ -318,7 +318,7 @@ Calls the  Condition object\'s is_applicable method
 Upon success, returns the applicable Transaction object.
 Otherwise, undef is returned.
 
-If the Scrip is in the TransactionCreate stage (the usual case), only test
+If the Scrip is in the transaction_create stage (the usual case), only test
 the associated Transaction object to see if it is applicable.
 
 For Scrips in the transaction_batch stage, test all Transaction objects
@@ -341,7 +341,7 @@ sub is_applicable {
         Jifty->log->debug( "In the eval for stage " . $self->stage );
         my @Transactions;
 
-        if ( $self->stage eq 'TransactionCreate' ) {
+        if ( $self->stage eq 'transaction_create' ) {
 
             # Only look at our current Transaction
             @Transactions = ( $args{'transaction_obj'} );

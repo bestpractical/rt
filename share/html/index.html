@@ -87,6 +87,7 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 <%init>
 
 my @results;
+$m->callback( args_ref => \%ARGS, results => \@results, callback_name => 'Initial' );
 
 if ( $ARGS{'quick_create'} ) {
     my $queue_obj = new RT::Model::Queue( current_user => Jifty->web->current_user );
@@ -107,8 +108,8 @@ if ( $ARGS{'quick_create'} ) {
                         owner => $ARGS{'owner'},
                         status => 'new',
                         # yes! it's Requestors, not Requestor
-                        requestors => Jifty->web->current_user->id,
-                        from => Jifty->web->current_user->id,
+                        requestors => $ARGS{'requestors'},
+                        from => Jifty->web->current_user->email,
                         content => $ARGS{'content'},
                         subject => $ARGS{'subject'});
         push @results, $msg;

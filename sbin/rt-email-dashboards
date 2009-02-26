@@ -143,6 +143,13 @@ while (defined(my $user = $Users->next)) {
             # if weekly, correct day of week?
             if ($subscription->sub_value('frequency') eq 'weekly') {
                 next if $subscription->sub_value('dow') ne $dow;
+                my $counter = $subscription->sub_value('counter') || 0;
+                my $fow       = $subscription->sub_value('Fow') || 1;
+                if ( $counter % $fow ) {
+                    $subscription->set_sub_values( counter => $counter+1 )
+                      unless $opts{'dryrun'};
+                    next;
+                }
             }
 
             # if monthly, correct day of month?
@@ -151,13 +158,24 @@ while (defined(my $user = $Users->next)) {
             }
         }
 
-        eval { send_dashboard($currentuser, $subscription) };
-        error 'Caught exception: ' . $@ if $@;
+        my $email = $subscription->sub_value('recipient')
+                 || $user->email;
+
+        eval { send_dashboard($currentuser, $email, $subscription) };
+        if ( $@ ) {
+            error 'Caught exception: ' . $@;
+        }
+        else {
+            $subscription->set_sub_values(
+                counter => $subscription->sub_value('counter') + 1 )
+              unless $opts{'dryrun'};
+        }
     }
 }
 
 sub send_dashboard {
-    my ($currentuser, $subscription) = @_;
+    my ($currentuser, $email, $subscription) = @_;
+    
 
     my $rows = $subscription->sub_value('rows');
 
@@ -207,7 +225,7 @@ sub send_dashboard {
     if ($opts{'dryrun'}) {
         print << "SUMMARY";
     Dashboard: @{[ $dashboard->name ]}
-    User:   @{[ $currentuser->name ]} <@{[ email_of($currentuser) ]}>
+    User:   @{[ $currentuser->name ]} <$email>
 SUMMARY
         return;
     }
@@ -216,7 +234,7 @@ SUMMARY
     my $contents = run_component(
         '/Dashboards/Render.html',
         id      => $dashboard->id,
-        Preview => 0,
+        preview => 0,
     );
 
     for (@{ RT->config->get('EmailDashboardRemove') || [] }) {
@@ -230,11 +248,13 @@ SUMMARY
         RT->config->get('WebURL') . '/Dashboards/Render.html',
     );
 
-    email_dashboard($currentuser, $dashboard, $subscription, $contents);
+    email_dashboard($currentuser, $email, $dashboard, $subscription, $contents);
+    
 }
 
 sub email_dashboard {
-    my ($currentuser, $dashboard, $subscription, $content) = @_;
+    my ($currentuser, $email, $dashboard, $subscription, $content) = @_;
+    
 
     verbose 'Sending dashboard "%1" to user %2 <%3>',
             $dashboard->name,
@@ -246,20 +266,18 @@ sub email_dashboard {
         ucfirst($subscription->sub_value('Frequency')),
         $dashboard->name;
 
-    my $entity = build_email(
-        $content, $from, email_of($currentuser), $subject,
-    );
+    my $entity = build_email($content, $from, $email, $subject);
 
     my $ok = RT::Interface::Email::send_email(
         entity => $entity,
     );
 
     debug "Done sending dashboard to %1 <%2>",
-          $currentuser->name, email_of($currentuser)
+          $currentuser->name, $email
               and return if $ok;
 
     error 'Failed to email dashboard to user %1 <%2>',
-          $currentuser->name, email_of($currentuser);
+          $currentuser->name, $email;
 }
 
 sub build_email {
@@ -275,6 +293,12 @@ sub build_email {
 
             $cid_of{$uri} = time() . $$ . int(rand(1e6));
             my ($data, $filename, $mimetype, $encoding) = get_resource($uri);
+
+            # downgrade non-text strings, because all strings are utf8 by
+            # default, which is wrong for non-text strings.
+            if ( $mimetype !~ m{text/} ) {
+                utf8::downgrade( $data, 1 ) or warning "downgrade $data failed";
+            }
 
             push @parts, MIME::Entity->build(
                 Top          => 0,
@@ -314,13 +338,6 @@ sub build_email {
     }
 
     return $entity;
-}
-
-sub email_of {
-    my $user = shift;
-    return $user->email if $user->email;
-    return $user->name if $user->name =~ /\S@\S/;
-    return undef;
 }
 
 sub get_from {
@@ -434,6 +451,13 @@ sub get_resource {
     #If all else fails then some conservative and general-purpose defaults are:
     $mimetype ||= 'application/octet-stream';
     $encoding ||= 'base64';
+
+    debug "Resource %1: length=%2 filename='%3' mimetype='%4', encoding='%5'",
+        $uri,
+        length($content),
+        $filename,
+        $mimetype,
+        $encoding;
 
     debug "Resource %1: length=%2 filename='%3' mimetype='%4', encoding='%5'",
         $uri,

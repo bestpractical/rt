@@ -86,7 +86,7 @@ Option has been deprecated, use plugin C<objects> instead.
 
 =head2 --plugin '<plugin name>[=<arg>,<val>[;<arg>,<val>]...]'
 
-You can use plugins to select RT objects with variouse conditions.
+You can use plugins to select RT objects with various conditions.
 See also --plugin list and --plugin help options.
 
 =head2 --plugin list

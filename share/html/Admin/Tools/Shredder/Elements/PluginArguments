@@ -49,9 +49,9 @@
 $plugin => ''
 </%ARGS>
 <div id="shredder-plugin-<% $plugin %>-arguments" class="shredder-form">
-<span>Fill arguments:</span><br />
+<span><% _('Fill arguments') %>:</span><br />
 % foreach my $a( $plugin_obj->support_args ) {
-<span><% $a %>:</span><input type="text" name="<% "$plugin:$a" %>" value="<% $ARGS{ "$plugin:$a" } || '' %>" /><br />
+<span><% _($a) %>:</span><input type="text" name="<% "$plugin:$a" %>" value="<% $ARGS{ "$plugin:$a" } || '' %>" /><br />
 % }
 </div>
 <%INIT>

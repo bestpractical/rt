@@ -45,7 +45,8 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| /Admin/Elements/Header, title => "RT/Admin/Edit the group ". $Group->name &>
+<&| /Admin/Elements/Header, title => _('RT/Admin/Edit the group %1', $Group->name) &>
+
 <& /Admin/Elements/GroupTabs, group_obj => $Group, 
     current_tab => 'Admin/Groups/Members.html?id='.$id, 
     title => "RT/Admin/Edit the group ". $Group->name &>
@@ -72,8 +73,6 @@
 % if ($Group->members_obj->count == 0 ) {
 <em><&|/l&>(No members)</&></em>
 % } else {
-<br />
-<br />
 <&|/l&>Users</&>
 % my $Users = $Group->user_members_obj( recursively => 0 );
 % $Users->order_by( column => $user_order_by, order => $userorder );

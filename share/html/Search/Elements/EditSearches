@@ -100,7 +100,7 @@ my $is_dirty = sub {
     my %arg = (
         Query       => {},
         SavedSearch => {},
-        SearchFields => [qw(Query format order_by order rows_per_page)],
+        SearchFields => [qw(query format order_by order rows_per_page)],
         @_
     );
 
@@ -182,7 +182,7 @@ elsif ( $ARGS{'saved_search_delete'} ) {
     push @results, _("Deleted saved search");
 }
 elsif ( $ARGS{'saved_search_copy'} ) {
-    my ($container, $id ) = _parse_saved_search( $ARGS{'saved_searchid'} );
+    my ($container, $id ) = _parse_saved_search( $ARGS{'saved_search_id'} );
     $saved_search->{'object'} = $container->attributes->withid( $id );
     if ( $ARGS{'saved_search_description'} && $ARGS{'saved_search_description'} ne $saved_search->{'object'}->description ) {
         $saved_search->{'description'} = $ARGS{'saved_search_description'};
@@ -210,7 +210,7 @@ return @results;
 <%ARGS>
 $query        => {}
 $saved_search  => {}
-@search_fields => qw(Query format order_by order rows_per_page)
+@search_fields => qw(query format order_by order rows_per_page)
 </%ARGS>
 <%INIT>
 

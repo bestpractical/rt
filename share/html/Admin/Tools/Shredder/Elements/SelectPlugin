@@ -52,9 +52,9 @@ $plugin => ''
 <div class="shredder-form">
 <span>Select plugin: </span>
 <select name="plugin" onchange="showShredderPluginTab(this.value);">
-<option value="">(no value)</option>
+<option value=""><% _('(no value)') %></option>
 % foreach my $p( keys %plugins ) {
-<option value="<% $p %>" <% ($p eq $plugin)? 'selected="selected"': '' %>><% $p %></option>
+<option value="<% $p %>" <% ($p eq $Plugin)? 'selected="selected"': '' %>><% _($p) %></option>
 % }
 </select>
 </div>

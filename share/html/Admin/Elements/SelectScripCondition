@@ -47,11 +47,11 @@
 %# END BPS TAGGED BLOCK }}}
 <select name="<%$name%>">
 <option value="" 
-<% ! defined $default && qq[ selected="selected"] %>
+<% ! defined $default && qq[ selected="selected"] |n %>
 >-</option>
 %while  (my $scrip_condition = $scrip_conditions->next) {
 <option value="<%$scrip_condition->id%>"
-<% defined $default && $scrip_condition->id == $default && qq[ selected="selected"] %>
+<% defined $default && $scrip_condition->id == $default && qq[ selected="selected"] |n %>
 ><% _($scrip_condition->name) %>
 </option>
 %}

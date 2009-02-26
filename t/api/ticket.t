@@ -96,7 +96,7 @@ ok( $t->create(queue => 'General', Due => '2002-05-21 00:00:00', ReferredToBy =>
 ok ( my $id = $t->id, "Got ticket id");
 like ($t->refers_to->first->target , qr/fsck.com/, "Got refers to");
 like ($t->referred_to_by->first->base , qr/cpan.org/, "Got referredtoby");
-is ($t->resolved_obj->unix, 0, "It hasn't been resolved - ". $t->resolved_obj->unix);
+is ($t->resolved->epoch, 0, "It hasn't been resolved - ". $t->resolved->epoch);
 
 
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
@@ -209,10 +209,9 @@ $txns->limit(column => 'object_type', value => 'RT::Model::Ticket');
 $txns->limit(column => 'type', operator => '!=',  value => 'email_record');
 
 my $give  = $txns->first;
-is($give->type, 'Give');
+is($give->type, 'give');
 
-
-is($give-> new_value , $root->id , "Stolen from root");
+is($give->new_value , $root->id , "Stolen from root");
 is($give->old_value , RT->system_user->id , "Stolen by the systemuser");
 
 

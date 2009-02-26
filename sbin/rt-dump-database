@@ -139,7 +139,7 @@ foreach my $class (@classes) {
 	# next if $obj-> # skip default names
 	foreach my $field (sort keys %fields) {
 	    my $value = $obj->__value($field);
-	    $rv->{$field} = $value if length($value);
+	    $rv->{$field} = $value if ( defined ($value) && length($value) );
 	}
 	delete $rv->{disabled} unless $rv->{disabled};
 

@@ -114,6 +114,7 @@ before qr'^/(?!login)' => run {
         || Jifty->web->request->path =~ m{^/Elements/Header$}
         || Jifty->web->request->path =~ m{^/Elements/Footer$}
         || Jifty->web->request->path =~ m{^/Elements/Logo$}
+        || Jifty->web->request->path =~ m{^/__jifty/test_warnings$}
         || Jifty->web->request->path =~ m{^/__jifty/(css|js)} );
 };
 
@@ -167,6 +168,16 @@ before qr/.*/ => run {
 
 after qr/.*/ => run {
     RT::Interface::Web::Handler::cleanup_request();
+};
+
+on qr{^/Dashboards/(\d+)} => run {
+    Jifty->web->request->argument( id => $1 );
+    show( '/Dashboards/Render.html' );
+};
+
+on qr{^/Ticket/Graphs/(\d+)} => run {
+    Jifty->web->request->argument( id => $1 );
+    show( '/Ticket/Graphs/Render' );
 };
 
 # Backward compatibility with old RT URLs

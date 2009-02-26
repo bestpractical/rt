@@ -16,7 +16,6 @@ plan tests => 111;
 use File::Temp qw(tempdir);
 my $homedir = tempdir( CLEANUP => 1 );
 
-RT->config->set( LogToScreen => 'debug' );
 RT->config->set( 'GnuPG',
                  enable => 1,
                  outgoing_messages_format => 'RFC' );

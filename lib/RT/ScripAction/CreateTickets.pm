@@ -61,7 +61,7 @@ to an externally supplied template.
 =head1 SYNOPSIS
 
  ===Create-Ticket codereview
- Subject: Code review for {$Tickets{'TOP'}->subject}
+ Subject: Code review for {$tickets{'TOP'}->subject}
  Depended-On-By: TOP
  Content: Someone has Created a ticket. you should review and approve it,
  so they can finish their work
@@ -101,16 +101,18 @@ Text::Template object, which means that you can embed snippets
 of perl inside the Text::Template using {} delimiters, but that 
 such sections absolutely can not span a ===Create-Ticket boundary.
 
-After each ticket is Created, it's stuffed into a hash called %Tickets
-so as to be available during the creation of other tickets during the same 
-ScripAction.  The hash is prepopulated with the ticket which triggered the 
-ScripAction as $Tickets{'TOP'}; you can also access that ticket using the
-shorthand TOP.
+After each ticket is Created, it's stuffed into a hash called %tickets
+so as to be available during the creation of other tickets during the
+same ScripAction, using the key 'create-identifier', where
+C<identifier> is the id you put after C<===Create-Ticket:>.  The hash
+is prepopulated with the ticket which triggered the ScripAction as
+$tickets{'TOP'}; you can also access that ticket using the shorthand
+TOP.
 
 A simple example:
 
  ===Create-Ticket: codereview
- Subject: Code review for {$Tickets{'TOP'}->subject}
+ Subject: Code review for {$tickets{'TOP'}->subject}
  Depended-On-By: TOP
  Content: Someone has Created a ticket. you should review and approve it,
  so they can finish their work
@@ -151,17 +153,18 @@ A convoluted example
  AdminCc: {join ("\nAdminCc: ",@admins) }
  Depended-On-By: TOP
  Refers-To: TOP
- Subject: Approval for ticket: {$Tickets{"TOP"}->id} - {$Tickets{"TOP"}->subject}
+ Subject: Approval for ticket: {$tickets{"TOP"}->id} - {$tickets{"TOP"}->subject}
  Due: {time + 86400}
  Content-Type: text/plain
- Content: Your approval is requested for the ticket {$Tickets{"TOP"}->id}: {$Tickets{"TOP"}->subject}
+ Content: Your approval is requested for the ticket {$tickets{"TOP"}->id}: {$tickets{"TOP"}->subject}
  Blah
  Blah
  ENDOFCONTENT
  ===Create-Ticket: two
  Subject: Manager approval
+ type: approval
  Depended-On-By: TOP
- Refers-On: {$Tickets{"approval"}->id}
+ Refers-To: {$tickets{"create-approval"}->id}
  Queue: ___Approvals
  Content-Type: text/plain
  Content: 
@@ -688,7 +691,7 @@ sub parse_lines {
             $dateobj->set( format => 'unix', value => $args{$date} );
         } else {
             eval { $dateobj->set( format => 'iso', value => $args{$date} ); };
-            if ( $@ or $dateobj->unix <= 0 ) {
+            if ( $@ or $dateobj->epoch <= 0 ) {
                 $dateobj->set( format => 'unknown', value => $args{$date} );
             }
         }
@@ -932,11 +935,11 @@ sub get_update_template {
     $string .= "UpdateType: correspond\n";
     $string .= "Content: \n";
     $string .= "ENDOFCONTENT\n";
-    $string .= "Due: " . $t->due_obj->as_string . "\n";
-    $string .= "starts: " . $t->starts_obj->as_string . "\n";
-    $string .= "Started: " . $t->started_obj->as_string . "\n";
-    $string .= "Resolved: " . $t->resolved_obj->as_string . "\n";
-    $string .= "Owner: " . $t->owner_obj->name . "\n";
+    $string .= "Due: " . $t->due . "\n";
+    $string .= "Starts: " . $t->starts . "\n";
+    $string .= "Started: " . $t->started . "\n";
+    $string .= "Resolved: " . $t->resolved . "\n";
+    $string .= "Owner: " . $t->owner->name . "\n";
     $string .= "Requestor: " . $t->role_group("requestor")->member_emails_as_string . "\n";
     $string .= "Cc: " . $t->role_group("cc")->member_emails_as_string . "\n";
     $string .= "AdminCc: " . $t->role_group("admin_cc")->member_emails_as_string . "\n";
@@ -983,10 +986,10 @@ sub get_base_template {
     $string .= "Queue: " . $t->queue . "\n";
     $string .= "Subject: " . $t->subject . "\n";
     $string .= "Status: " . $t->status . "\n";
-    $string .= "Due: " . $t->due_obj->unix . "\n";
-    $string .= "starts: " . $t->starts_obj->unix . "\n";
-    $string .= "Started: " . $t->started_obj->unix . "\n";
-    $string .= "Resolved: " . $t->resolved_obj->unix . "\n";
+    $string .= "Due: " . $t->due->epoch . "\n";
+    $string .= "Starts: " . $t->starts->epoch . "\n";
+    $string .= "Started: " . $t->started->epoch . "\n";
+    $string .= "Resolved: " . $t->resolved->epoch . "\n";
     $string .= "Owner: " . $t->owner . "\n";
     $string .= "Requestor: " . $t->role_group("requestor")->member_emails_as_string . "\n";
     $string .= "Cc: " . $t->role_group("cc")->member_emails_as_string . "\n";

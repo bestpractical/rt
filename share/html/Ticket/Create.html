@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /_elements/wrapper,
     title => _("Create a new ticket"),
-    onload => "hide(document.getElementById('Ticket-Create-details'));" &>
+    onload => "function () { hide(document.getElementById('Ticket-Create-details')) }" &>
 <& /Elements/Tabs, 
     current_toptab => "Ticket/Create.html", 
     title => _("Create a new ticket"),
@@ -55,7 +55,7 @@
 <& /Elements/ListActions, actions => \@results &>
 <form action="<% RT->config->get('WebPath') %>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="ticket_create">
 <input type="hidden" class="hidden" name="id" value="new" />
-% $m->callback( Callbackname => 'form_start', args_ref => \%ARGS );
+% $m->callback( callback_name => 'FormStart', args_ref => \%ARGS );
 % if ($gnupg_widget) {
 <& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 % }
@@ -159,7 +159,7 @@
 <tr>
 <td colspan="6">
 <&|/l&>describe the issue below</&>:<br />
-<& /Elements/Callback, _Callbackname => 'before_message_box', queue_obj => $queue_obj, %ARGS &>
+% $m->callback( %ARGS, queue_obj => $queue_obj, callback_name => 'BeforeMessageBox' );
 % if (exists $ARGS{content}) {
 <& /Elements/MessageBox, default => $ARGS{content}, include_signature => 0 &>
 % } else {
@@ -248,6 +248,9 @@
 
 </&>
 <%INIT>
+$m->callback( callback_name => "Init", args_ref => \%ARGS );
+my $queue = $ARGS{queue};
+
 my $cloneticket_obj;
 if ( $clone_ticket ) {
     $cloneticket_obj = RT::Model::Ticket->new();
@@ -346,21 +349,15 @@ foreach my $key (keys %ARGS) {
 
 # {{{ store the uploaded attachment in session
 if ($ARGS{'attach'}) {			# attachment?
-    $session{'Attachments'} = {} unless defined $session{'Attachments'};
-
-    my $subject = "$ARGS{'attach'}";
-
-    # strip leading directories
-    $subject =~ s#^.*[\\/]##;
-
     my $attachment = make_mime_entity(
-        subject             => $subject,
-        AttachmentFieldname => 'attach'
+        attachment_field_name => 'attach'
     );
-
-    $session{'Attachments'} = { %{$session{'Attachments'} || {}},
-				$ARGS{'attach'} => $attachment };
-
+    my $file_path = Encode::decode_utf8("$ARGS{'attach'}");
+    $session{'Attachments'} = {
+        %{$session{'Attachments'} || {}},
+	$file_path => $attachment,
+    };
+    
 }
 # }}}
 
@@ -387,9 +384,13 @@ if ( !exists $ARGS{'add_more_attach'} && ($ARGS{'id'}||'') eq 'new' ) {
     $checks_failure = 1 unless $status;
 }
 
+my $skip_create = 0;
+$m->callback( callback_name => 'BeforeCreate', args_ref => \%ARGS, skip_create => \$skip_create, 
+              checks_failure => $checks_failure, results => \@results );
 
 if ((!exists $ARGS{'add_more_attach'}) and (defined($ARGS{'id'}) and $ARGS{'id'} eq 'new')) { # new ticket?
-    if ( $ValidCFs && !$checks_failure ) {
+    if ( $ValidCFs && !$checks_failure && !$skip_create ) {
+        
         $m->comp('Display.html', %ARGS);
         Jifty->log->fatal("After display call; error is $@");
         $m->abort();
@@ -418,6 +419,5 @@ $depends_on => undef
 $depended_on_by => undef
 $member_of => undef
 $quote_transaction => undef
-$queue => undef
 $clone_ticket => undef
 </%ARGS>

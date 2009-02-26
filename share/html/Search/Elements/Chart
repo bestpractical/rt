@@ -94,9 +94,10 @@ if ( $primary_group_by =~ /(Daily|Monthly|Annually)$/ ) {
 }
 
 my %data;
-foreach my $key (@keys) { $data{$key} = shift @values; }
-my @sorted_keys = sort @keys;
-my @sorted_values = map { $data{$_}} @sorted_keys;
+my %loc_keys;
+foreach my $key (@keys) { $data{$key} = shift @values; $loc_keys{$key} = _($key); }
+my @sorted_keys = map { $loc_keys{$_}} sort { $loc_keys{$a} cmp $loc_keys{$b} } keys %loc_keys;
+my @sorted_values = map { $data{$_}} sort { $loc_keys{$a} cmp $loc_keys{$b} } keys %loc_keys;
 
 
 my $query_string = $m->comp('/Elements/QueryString', %ARGS);
@@ -112,7 +113,7 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 
 <table class="collection-as-table">
 <tr>
-<th class="collection-as-table"><% $tix->label($primary_group_by) %>
+<th class="collection-as-table"><% _($tix->label($primary_group_by)) %>
 </th>
 <th class="collection-as-table"><&|/l&>Tickets</&>
 </th>

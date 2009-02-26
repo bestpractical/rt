@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2008 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,6 +44,7 @@ RemoveFormat		: "Fjern formatering",
 InsertLinkLbl		: "Hyperlink",
 InsertLink			: "Indsæt/rediger hyperlink",
 RemoveLink			: "Fjern hyperlink",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: "Indsæt/rediger bogmærke",
 AnchorDelete		: "Remove Anchor",	//MISSING
 InsertImageLbl		: "Indsæt billede",
@@ -72,6 +73,9 @@ BlockJustify		: "Lige margener",
 DecreaseIndent		: "Formindsk indrykning",
 IncreaseIndent		: "Forøg indrykning",
 Blockquote			: "Blockquote",	//MISSING
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "Fortryd",
 Redo				: "Annuller fortryd",
 NumberedListLbl		: "Talopstilling",
@@ -157,6 +161,7 @@ UnknownToolbarSet	: "Værktøjslinjen \"%1\" eksisterer ikke!",
 NoActiveX			: "Din browsers sikkerhedsindstillinger begrænser nogle af editorens muligheder.<br>Slå \"Kør ActiveX-objekter og plug-ins\" til, ellers vil du opleve fejl og manglende muligheder.",
 BrowseServerBlocked : "Browseren kunne ikke åbne de nødvendige ressourcer!<br>Slå pop-up blokering fra.",
 DialogBlocked		: "Dialogvinduet kunne ikke åbnes!<br>Slå pop-up blokering fra.",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -359,7 +364,6 @@ DlgPasteMsg2	: "Indsæt i feltet herunder (<STRONG>Ctrl+V</STRONG>) og klik <STR
 DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "Ignorer font definitioner",
 DlgPasteRemoveStyles	: "Ignorer typografi",
-DlgPasteCleanBox		: "Slet indhold",
 
 // Color Picker
 ColorAutomatic	: "Automatisk",
@@ -512,5 +516,11 @@ DlgAboutAboutTab	: "Om",
 DlgAboutBrowserInfoTab	: "Generelt",
 DlgAboutLicenseTab	: "Licens",
 DlgAboutVersion		: "version",
-DlgAboutInfo		: "For yderlig information gå til"
+DlgAboutInfo		: "For yderlig information gå til",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style"	//MISSING
 };

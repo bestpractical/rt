@@ -46,27 +46,25 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <div class="ticket-transaction <% $type_class %> <% $row_num % 2 ? 'odd' : 'even' %>">
-% $m->callback( titlebar_cmd => \$titlebar_commands, Transaction => $transaction, %ARGS, Callbackname => 'modify_display' );
-
-<table width="100%" cellspacing="0" cellpadding="2" border="0" class="ticket-transaction">
-% $m->callback( titlebar_cmd => \$titlebar_commands, Transaction => $transaction, %ARGS, Callbackname => 'modify_command' );
-  <tr class="metadata">
-    <td rowspan="2" valign="top" class="type">
+% $m->callback( titlebar_cmd => \$titlebar_commands, transaction => $transaction, %ARGS, callback_name => 'ModifyDisplay' );
+<div class="ticket-transaction">
+% $m->callback( titlebar_cmd => \$titlebar_commands, transaction => $transaction, %ARGS, callback_name => 'ModifyCommand' );
+  <div class="metadata">
+    <span class="type">
       <a name="txn-<% $transaction->id %>" href="<% $display_path %>#txn-<% $transaction->id %>">#</a>
-      <% $last_transaction ? '<a id="lasttrans" name="lasttrans"/>' : ''|n %>
-    </td>
-    <td class="date"><% $transdate|n %></td>
+      <% $last_transaction ? '<a id="lasttrans" name="lasttrans"></a>' : ''|n %>
+    </span>
+    <span class="date"><% $transdate|n %></span>
 % my $desc = $transaction->brief_description;
-% $m->callback( text => \$desc, Transaction => $transaction, %ARGS, Callbackname => 'modify_display' );
-    <td class="description">
+% $m->callback( text => \$desc, transaction => $transaction, %ARGS, callback_name => 'ModifyDisplay' );
+    <span class="description">
       <% $transaction->creator_obj->name %> - <% $TicketString %> <% $desc %>
-    </td>
-    <td class="time-taken"><% $time_taken %></td>
-    <td class="actions<% $titlebar_commands ? '': ' hidden'%>"><% $titlebar_commands |n %></td>
-  </tr>
+    </span>
+    <span class="time-taken"><% $time_taken %></span>
+    <span class="actions<% $titlebar_commands ? '': ' hidden'%>"><% $titlebar_commands |n %></span>
+  </div>
 
-  <tr>
-    <td colspan="5" class="content">
+    <div class="content">
 % if ( $attachments->[0] && $attachments->[0]->id ) {
 %   if (RT->config->get('GnuPG')->{'enable'}) {
         <& ShowGnuPGStatus, attachment => $attachments->[0], warn_unsigned => $warn_unsigned &>
@@ -76,10 +74,10 @@
       <& /Elements/ShowCustomFields, object => $transaction &>
 % }
 % $m->comp('ShowTransactionAttachments', %ARGS, parent => 0) unless ($collapsed ||!$show_body);
-    </td>
-  </tr>
+    </div>
 
-</table>
+</div>
+
 </div>
 
 <%ARGS>
@@ -123,7 +121,7 @@ my %class = (
 </%ONCE>
 <%INIT>
 
-my $transdate = $transaction->created_as_string();
+my $transdate = $transaction->created;
 $transdate =~ s/\s/&nbsp;/g;
 
 my ($type, $field) = ($transaction->type, $transaction->field || '');
@@ -215,7 +213,7 @@ else {
             $titlebar_commands .=
                 "[<a href=\"". $encryption_path
               . "?id=". $transaction->id
-              . "\">". _('Ecnrypt/Decrypt') . "</a>]";
+              . "\">". _('Encrypt/Decrypt') . "</a>]";
         }
     }
 }

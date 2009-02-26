@@ -57,9 +57,6 @@
 <th><&|/l&>Sort</&></th>
 <th><&|/l&>name</&></th>
 <th><&|/l&>description</&></th>
-% if ($custom_field->type ne 'Combobox') {
-<th><&|/l&>category</&></th>
-% }
 </tr>
 
 % while ( my $value = $values->next ) {
@@ -67,12 +64,8 @@
 <tr>
 <td><input type="checkbox" class="checkbox" name="Delete-<% $paramtag %>" /></td>
 <td><input type="text" size="3" name="<% $paramtag %>-sort_order" value="<% $value->sort_order %>" /></td>
-<td><input type="text" size="30" name="<% $paramtag %>-name" value="<% $value->name %>" /></td>
-<td><input type="text" size="50" name="<% $paramtag %>-description" value="<% $value->description %>" /></td>
-% if ( $custom_field->type ne 'Combobox' ) {
-<td><input type="text" size="10" name="<% $paramtag %>-category" value="<%
-    $value->category || '' %>" /></td>
-% }
+<td><input type="text" size="25" name="<% $paramtag %>-name" value="<% $value->name %>" /></td>
+<td><input type="text" size="45" name="<% $paramtag %>-description" value="<% $value->description %>" /></td>
 </tr>
 % }
 

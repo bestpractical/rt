@@ -85,10 +85,11 @@ my @fields = qw(
     depends_on   depended_on_by
     member_of    members
     parents     children
+    Bookmark
     NEWLINE     Bookmark
-);
+); # loc_qw
 
-$m->callback( CallbackOnce => 1, Callbackname => 'set_fields_once', Fields => \@fields );
+$m->callback( callback_once => 1, callback_name => 'SetFieldsOnce', Fields => \@fields );
 
 my $CustomFields = RT::Model::CustomFieldCollection->new( current_user => Jifty->web->current_user);
 foreach my $id (keys %cfqueues) {
@@ -133,7 +134,9 @@ foreach my $field (@format) {
 }
 
 if ( $remove_col ) {
-    my $index  = $current_display_columns;
+    # we do this regex match to avoid a non-numeric warning
+    my ($index) = $current_display_columns =~ /^(\d+)/;
+    
     my $column = $seen[$index];
     if ($index) {
         delete $seen[$index];

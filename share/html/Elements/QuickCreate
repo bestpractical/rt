@@ -61,7 +61,12 @@
 <option value="<%RT->nobody->id%>"><%_('Nobody')%></option>
 </select>
 </td>
-</tr><tr class="input-row">
+</tr>
+<tr class="input-row">
+    <td class="label"><&|/l&>Requestors</&>:</td>
+    <td colspan="3" class="value"><& /Elements/EmailInput, name => 'requestors', Size => '40', default => $ARGS{requestors} || Jifty->web->current_user->email &></td>
+</tr>
+<tr class="input-row">
 <td class="labeltop"><&|/l&>Content</&>:</td>
 <td colspan="3" class="value"><textarea name="content" cols="50" rows="3"></textarea></td></tr>
 </table>

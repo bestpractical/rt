@@ -70,7 +70,8 @@
         default => $CustomFieldObj->type_composite, &>
 </td></tr>
 
-% if ( $CustomFieldObj->id and $CustomFieldObj->is_selection_type and RT->config->get('CustomFieldValuesSources') ) {
+% if ( $CustomFieldObj->id and $CustomFieldObj->is_selection_type and RT->config->get('CustomFieldValuesSources') and ( scalar(@{RT->config->get('CustomFieldValuesSources')}) > 0 ) ) {
+    
 <tr><td class="label"><&|/l&>Field values source:</&></td><td>
 <& /Admin/Elements/EditCustomFieldValuesSource, custom_field => $CustomFieldObj &>
 </td></tr>
@@ -146,8 +147,8 @@ else {
             lookup_type    => $lookup_type,
             description   => $description,
             pattern       => $pattern,
-            LinkValueTo   => $link_value_to,
-            IncludeContentForValue => $include_content_for_value,
+            link_value_to   => $link_value_to,
+            include_content_for_value => $include_content_for_value,
         );
         $m->comp( "/Elements/Error", why => _( "Could not create CustomField", $msg ) ) unless $val;
         push @results, $msg;
@@ -183,7 +184,7 @@ if ( $ARGS{'update'} && $id ne 'new' ) {
     # Update any existing values
     my $values = $CustomFieldObj->values_obj;
     while ( my $value = $values->next ) {
-        foreach my $attr qw(name description sort_order category) {
+        foreach my $attr qw(name description sort_order ) {
             my $param = "$paramtag-". $value->id ."-". $attr;
             next unless exists $ARGS{$param};
             next if ($value->$attr()||'') eq ($ARGS{$param}||'');
@@ -198,7 +199,7 @@ if ( $ARGS{'update'} && $id ne 'new' ) {
     if ( defined $ARGS{ $paramtag ."-new-name" } && length $ARGS{ $paramtag ."-new-name" } ) {
         my ($id, $msg) = $CustomFieldObj->add_value(
             map { $_ => $ARGS{ $paramtag ."-new-$_" } }
-                qw( name description sort_order category )
+                qw( name description sort_order )
         );
         push (@results, $msg);
     }
@@ -215,7 +216,7 @@ my @CFvalidations = (
     '(?#Year)^[12]\d{3}$',
 );
 
-$m->callback(Callbackname => 'validation_patterns', values => \@CFvalidations);
+$m->callback(callback_name => 'ValidationPatterns', values => \@CFvalidations);
 
 
 </%INIT>

@@ -1,4 +1,4 @@
-#!/usr/bin/env perl -w
+#!/usr/bin/env perl
 # BEGIN BPS TAGGED BLOCK {{{
 # 
 # COPYRIGHT:
@@ -50,6 +50,7 @@
 # Abhijit Menon-Sen <ams@wiw.org>
 
 use strict;
+use warnings;
 
 # This program is intentionally written to have as few non-core module
 # dependencies as possible. It should stay that way.
@@ -60,6 +61,17 @@ use Text::ParseWords;
 use HTTP::Request::Common;
 use HTTP::Headers;
 use Term::ReadLine;
+use Time::Local; # used in prettyshow
+
+# strong (GSSAPI based) authentication is supported if the server does provide
+# it and the perl modules GSSAPI and LWP::Authen::Negotiate are installed
+# it can be suppressed by setting externalauth=0 (default is undef)
+eval { require GSSAPI };
+my $no_strong_auth = 'missing perl module GSSAPI';
+if ( ! $@ ) {
+    eval {require LWP::Authen::Negotiate};
+    $no_strong_auth = $@ ? 'missing perl module LWP::Authen::Negotiate' : 0;
+}
 
 # We derive configuration information from hardwired defaults, dotfiles,
 # and the RT* environment variables (in increasing order of precedence).
@@ -75,15 +87,23 @@ my %config = (
         user         => eval{(getpwuid($<))[0]} || $ENV{USER} || $ENV{USERNAME},
         passwd       => undef,
         server       => 'http://localhost/',
-        query        => undef,
-        orderby      => undef,
-        externalauth => undef,
+        query        => "Status!='resolved' and Status!='rejected'",
+        order_by      => 'id',
+        queue        => undef,
+# to protect against unlimited searches a better choice would be
+#       queue        => 'Unknown_Queue',
+# setting externalauth => undef will try GSSAPI auth if the corresponding perl
+# modules are installed, externalauth => 0 is the backward compatible choice 
+        externalauth => 0,
+        
     ),
     config_from_file($ENV{RTCONFIG} || ".rtrc"),
     config_from_env()
 );
 my $session = new Session("$HOME/.rt_sessions");
 my $REST = "$config{server}/REST/1.0";
+$no_strong_auth = 'switched off by externalauth=0'
+    if defined $config{externalauth};
 
 my $prompt = 'rt> ';
 
@@ -122,6 +142,8 @@ my %handlers = (
     grant       => ["grant", "revoke"],
     take        => ["take", "steal", "untake"],
     quit        => ["quit", "exit"],
+    setcommand  => ["del", "delete", "give", "res", "resolve",
+                    "subject"],
 );
 
 my %actions;
@@ -243,6 +265,9 @@ sub list {
          $data{order_by} = $config{order_by};
     } 
     my $bad = 0;
+    my $rawprint = 0;
+    my $reverse_sort = 0;
+    my $queue = $config{queue};
 
     while (@ARGV) {
         $_ = shift @ARGV;
@@ -258,6 +283,13 @@ sub list {
         }
         elsif (/^-([isl])$/) {
             $data{format} = $1;
+            $rawprint = 1;
+        }
+        elsif (/^-q$/) {
+            $queue = shift @ARGV;
+        }
+        elsif (/^-r$/) {
+            $reverse_sort = 1;
         }
         elsif (/^-f$/) {
             if ($ARGV[0] !~ /^(?:(?:$field,)*$field)$/) {
@@ -265,6 +297,8 @@ sub list {
                 $bad = 1; last;
             }
             $data{fields} = shift @ARGV;
+            $data{format} = 's' if ! $data{format};
+            $rawprint = 1;
         }
         elsif (!defined $q && !/^-/) {
             $q = $_;
@@ -275,10 +309,35 @@ sub list {
             $bad = 1; last;
         }
     }
+    if ( ! $rawprint and ! exists $data{format} ) {
+        $data{format} = 'l';
+    }
+    if ( $reverse_sort and $data{order_by} =~ /^-/ ) {
+        $data{order_by} =~ s/^-/+/;
+    } elsif ($reverse_sort) {
+        $data{order_by} =~ s/^\+?(.*)/-$1/;
+    }
+
     if (!defined $q) {
         $q = $config{query}; 
     }
     
+    $q =~ s/^#//; # get rid of leading hash
+    if ($q =~ /^\d+$/) {
+        # only digits, must be an id, formulate a correct query
+        $q = "id=$q" if $q =~ /^\d+$/;
+    } else {
+        # a string only, take it as an owner or requestor (quoting done later)
+        $q = "(Owner=$q or Requestor like $q) and $config{query}"
+             if $q =~ /^[\w\-]+$/;
+        # always add a query for a specific queue or (comma separated) queues
+        $queue =~ s/,/ or Queue=/g if $queue;
+        $q .= " and (Queue=$queue)" if $queue and $q and $q !~ /Queue\s*=/i
+            and $q !~ /id\s*=/i;
+    }
+    # correctly quote strings in a query
+    $q =~ s/(=|like\s)\s*([^'\d\s]\S*)\b/$1\'$2\'/g;
+
     $type ||= "ticket";
     unless ($type && defined $q) {
         my $item = $type ? "query string" : "object type";
@@ -288,8 +347,14 @@ sub list {
     #return help("list", $type) if $bad;
     return suggest_help("list", $type) if $bad;
 
+    print "Query:$q\n" if ! $rawprint;
     my $r = submit("$REST/search/$type", { query => $q, %data });
-    print $r->content;
+    if ( $rawprint ) {
+        print $r->content;
+    } else {
+        my $forms = Form::parse($r->content);
+        prettylist ($forms);
+    }
 }
 
 # Displays selected information about a single object.
@@ -298,10 +363,12 @@ sub show {
     my ($type, @objects, %data);
     my $slurped = 0;
     my $bad = 0;
+    my $rawprint = 0;
+    my $histspec;
 
     while (@ARGV) {
         $_ = shift @ARGV;
-
+        s/^#// if /^#\d+/; # get rid of leading hash
         if (/^-t$/) {
             $bad = 1, last unless defined($type = get_type_argument());
         }
@@ -310,6 +377,7 @@ sub show {
         }
         elsif (/^-([isl])$/) {
             $data{format} = $1;
+            $rawprint = 1;
         }
         elsif (/^-$/ && !$slurped) {
             chomp(my @lines = <STDIN>);
@@ -328,15 +396,31 @@ sub show {
                 $bad = 1; last;
             }
             $data{fields} = shift @ARGV;
+            # option f requires short raw listing format
+            $data{format} = 's';
+            $rawprint = 1;
+        }
+        elsif (/^\d+$/ and my $spc2 = is_object_spec("ticket/$_", $type)) {
+            push @objects, $spc2;
+            $histspec = is_object_spec("ticket/$_/history", $type);
+        }
+        elsif (/^\d+\// and my $spc3 = is_object_spec("ticket/$_", $type)) {
+            push @objects, $spc3;
+            $rawprint = 1 if $_ =~ /\/content$/;
         }
         elsif (my $spec = is_object_spec($_, $type)) {
             push @objects, $spec;
+            $rawprint = 1 if $_ =~ /\/content$/ or $_ !~ /^ticket/;
         }
         else {
             my $datum = /^-/ ? "option" : "argument";
             whine "Unrecognised $datum '$_'.";
             $bad = 1; last;
         }
+    }
+    if ( ! $rawprint ) {
+        push @objects, $histspec if $histspec;
+        $data{format} = 'l' if ! exists $data{format};
     }
 
     unless (@objects) {
@@ -353,8 +437,16 @@ sub show {
     # show ticket/id/attachments/id/content > foo.tar.gz
     if ($r->content_type !~ /^text\//) {
         chomp($c);
+        $rawprint = 1;
     }
-    print $c;
+    if ( $rawprint ) {
+        print $c;
+    } else {
+        # I do not know how to get more than one form correctly returned
+        $c =~ s!^RT/[\d\.]+ 200 Ok$!--!mg;
+        my $forms = Form::parse($c);
+        prettyshow ($forms);
+    }
 }
 
 # To create a new Object, we ask the server for a form with the defaults
@@ -376,6 +468,7 @@ sub edit {
     
     while (@ARGV) {
         $_ = shift @ARGV;
+        s/^#// if /^#\d+/; # get rid of leading hash
 
         if    (/^-e$/) { $edit = 1 }
         elsif (/^-i$/) { $input = 1 }
@@ -430,6 +523,9 @@ sub edit {
                 $bad = 1; last;
             }
             $cl = $vars;
+        }
+        elsif (/^\d+$/ and my $spc2 = is_object_spec("ticket/$_", $type)) {
+            push @objects, $spc2;
         }
         elsif (my $spec = is_object_spec($_, $type)) {
             push @objects, $spec;
@@ -576,6 +672,54 @@ EDIT:
     }
 }
 
+# handler for special edit commands. A valid edit command is constructed and
+# further work is delegated to the edit handler
+
+sub setcommand {
+    my ($action) = @_;
+    my ($id, $bad, $what);
+    if ( @ARGV ) {
+        $_ = shift @ARGV;
+        $id = $1 if (m|^(?:ticket/)?($idlist)$|);
+    }
+    if ( ! $id ) {
+        $bad = 1;
+        whine "No ticket number specified.";
+    }
+    if ( @ARGV ) {
+        if ($action eq 'subject') {
+            my $subject = '"'.join (" ", @ARGV).'"';
+            @ARGV = ();
+            $what = "subject=$subject";
+        } elsif ($action eq 'give') {
+            my $owner = shift @ARGV;
+            $what = "owner=$owner";
+        }
+    } else {
+        if ( $action eq 'delete' or $action eq 'del' ) {
+            $what = "status=deleted";
+        } elsif ($action eq 'resolve' or $action eq 'res' ) {
+            $what = "status=resolved";
+        } elsif ($action eq 'take' ) {
+            $what = "owner=$config{user}";
+        } elsif ($action eq 'untake') {
+            $what = "owner=Nobody";
+        }
+    }
+    if (@ARGV) {
+        $bad = 1;
+        whine "Extraneous arguments for action $action: @ARGV.";
+    }
+    if ( ! $what ) {
+        $bad = 1;
+        whine "unrecognized action $action.";
+    }
+    return help("edit") if $bad;
+    @ARGV = ( $id, "set", $what );
+    print "Executing: rt edit @ARGV\n";
+    return edit("edit");
+}
+
 # We roll "comment" and "correspond" into the same handler.
 
 sub comment {
@@ -696,6 +840,7 @@ sub merge {
 
     while (@ARGV) {
         $_ = shift @ARGV;
+        s/^#// if /^#\d+/; # get rid of leading hash
 
         if (/^\d+$/) {
             push @id, $_;
@@ -854,12 +999,23 @@ sub submit {
         $data = $content;
     }
 
-
+    # Should we send authentication information to start a new session?
+    my $how = $config{server} =~ /^https/ ? 'over SSL' : 'unencrypted';
+    (my $server = $config{server}) =~ s/^.*\/\/([^\/]+)\/?/$1/;
     if ($config{externalauth}) {
         $h->authorization_basic($config{user}, $config{passwd} || read_passwd() );
-    } elsif (!defined $session->cookie) {
-        push @$data, ( user => $config{user} );
-        push @$data, ( pass => $config{passwd} || read_passwd() );
+        print "   Password will be sent to $server $how\n",
+              "   Press CTRL-C now if you do not want to continue\n"
+            if ! $config{passwd};
+    } elsif ( $no_strong_auth ) {
+        if (!defined $session->cookie) {
+            print "   Strong encryption not available, $no_strong_auth\n",
+                  "   Password will be sent to $server $how\n",
+                  "   Press CTRL-C now if you do not want to continue\n"
+                if ! $config{passwd};
+            push @$data, ( user => $config{user} );
+            push @$data, ( pass => $config{passwd} || read_passwd() );
+        }
     }
 
     # Now, we construct the request.
@@ -1058,7 +1214,7 @@ sub submit {
 sub Form::parse {
     my $state = 0;
     my @forms = ();
-    my @lines = split /\n/, $_[0];
+    my @lines = split /\n/, $_[0] if $_[0];
     my ($c, $o, $k, $e) = ("", [], {}, "");
 
     LINE:
@@ -1214,7 +1370,8 @@ sub Form::compose {
 sub config_from_env {
     my %env;
 
-    foreach my $k ("DEBUG", "USER", "PASSWD", "SERVER", "QUERY", "order_by") {
+    foreach my $k (qw(EXTERNALAUTH DEBUG USER PASSWD SERVER QUERY order_by)) {
+
         if (exists $ENV{"RT$k"}) {
             $env{lc $k} = $ENV{"RT$k"};
         }
@@ -1266,7 +1423,8 @@ sub parse_config_file {
             chomp;
             next if (/^#/ || /^\s*$/);
 
-            if (/^(externalauth|user|passwd|server|query|orderby)\s+(.*)\s?$/) {
+            if (/^(externalauth|user|passwd|server|query|order_by|queue)\s+(.*)\s?$/) {
+
                 $cfg{$1} = $2;
             }
             else {
@@ -1431,6 +1589,121 @@ sub suggest_help {
     print STDERR "rt: For help, run 'rt help $type'.\n" if defined $type;
 }
 
+sub str2time {
+    # simplified procedure for parsing date, avoid loading Date::Parse
+    my %month = (Jan => 0, Feb => 1, Mar => 2, Apr => 3, May =>  4, Jun =>  5,
+                 Jul => 6, Aug => 7, Sep => 8, Oct => 9, Nov => 10, Dec => 11);
+    $_ = shift;
+    my ($mon, $day, $hr, $min, $sec, $yr, $monstr);
+    if ( /(\w{3})\s+(\d\d?)\s+(\d\d):(\d\d):(\d\d)\s+(\d{4})/ ) {
+        ($monstr, $day, $hr, $min, $sec, $yr) = ($1, $2, $3, $4, $5, $6);
+        $mon = $month{$monstr} if exists $month{$monstr};
+    } elsif ( /(\d{4})-(\d\d)-(\d\d)\s+(\d\d):(\d\d):(\d\d)/ ) {
+        ($yr, $mon, $day, $hr, $min, $sec) = ($1, $2, $3, $4, $5, $6);
+    }
+    if ( $yr and defined $mon and $day and defined $hr and defined $sec ) {
+        return timelocal($sec,$min,$hr,$day,$mon,$yr);
+    } else {
+        print "Unknown date format in parsedate: $_\n";
+        return undef;
+    }
+}
+
+sub date_diff {
+    my ($old, $new) = @_;
+    $new = time() if ! $new;
+    $old = str2time($old) if $old !~ /^\d+$/;
+    $new = str2time($new) if $new !~ /^\d+$/;
+    return "???" if ! $old or ! $new;
+
+    my %seconds = (min => 60,
+                   hr  => 60*60,
+                   day => 60*60*24,
+                   wk  => 60*60*24*7,
+                   mth => 60*60*24*30,
+                   yr  => 60*60*24*365);
+
+    my $diff = $new - $old;
+    my $what = 'sec';
+    my $howmuch = $diff;
+    for ( sort {$seconds{$a} <=> $seconds{$b}} keys %seconds) {
+        last if $diff < $seconds{$_};
+        $what = $_;
+        $howmuch = int($diff/$seconds{$_});
+    }
+    return "$howmuch $what";
+}
+
+sub prettyshow {
+    my $forms = shift;
+    my ($form) = grep { exists $_->[2]->{Queue} } @$forms;
+    my $k = $form->[2];
+    # dates are in local time zone
+    if ( $k ) {
+        print "Date: $k->{Created}\n";
+        print "From: $k->{requestors}\n";
+        print "Cc: $k->{cc}\n" if $k->{cc};
+        print "X-AdminCc: $k->{AdminCc}\n" if $k->{AdminCc};
+        print "X-Queue: $k->{Queue}\n";
+        print "Subject: [rt #$k->{id}] $k->{Subject}\n\n";
+    }
+    # dates in these attributes are in GMT and will be converted
+    foreach my $form (@$forms) {
+        my ($c, $o, $k, $e) = @$form;
+        next if ! $k->{id} or exists $k->{Queue};
+        if ( exists $k->{Created} ) {
+            my ($y,$m,$d,$hh,$mm,$ss) = ($k->{Created} =~ /(\d\d\d\d)-(\d\d)-(\d\d) (\d\d):(\d\d):(\d\d)/);
+            $m--;
+            my $created = localtime(timegm($ss,$mm,$hh,$d,$m,$y));
+            if ( exists $k->{Description} ) {
+                print "===> $k->{Description} on $created\n";
+            }
+        }
+        print "$k->{Content}\n" if exists $k->{Content} and
+                                   $k->{Content} !~ /to have no content$/ and
+                                   $k->{type} ne 'email_record';
+        print "$k->{Attachments}\n" if exists $k->{Attachments} and
+                                   $k->{Attachments};
+    }
+}
+
+sub prettylist {
+    my $forms = shift;
+    my $heading = "Ticket Owner queue    Age   Told Status Requestor Subject\n";
+    $heading .= '-' x 80 . "\n";
+    my (@open, @me);
+    foreach my $form (@$forms) {
+        my ($c, $o, $k, $e) = @$form;
+        next if ! $k->{id};
+        print $heading if $heading;
+        $heading = '';
+        my $id = $k->{id};
+        $id =~ s!^ticket/!!;
+        my $owner = $k->{Owner} eq 'Nobody' ? '' : $k->{Owner};
+        $owner = substr($owner, 0, 5);
+        my $queue = substr($k->{Queue}, 0, 5);
+        my $subject = substr($k->{Subject}, 0, 30);
+        my $age = date_diff($k->{Created});
+        my $told = $k->{Told} eq 'Not set' ? '' : date_diff($k->{Told});
+        my $status = substr($k->{Status}, 0, 6);
+        my $requestor = substr($k->{requestors}, 0, 9);
+        my $line = sprintf "%6s %5s %5s %6s %6s %-6s %-9s %-30s\n",
+            $id, $owner, $queue, $age, $told, $status, $requestor, $subject;
+        if ( $k->{Owner} eq 'Nobody' ) {
+            push @open, $line;
+        } elsif ($k->{Owner} eq $config{user} ) {
+            push @me, $line;
+        } else {
+            print $line;
+        }
+    }
+    print "No matches found\n" if $heading;
+    printf "========== my %2d open tickets ==========\n", scalar @me if @me;
+    print @me if @me;
+    printf "========== %2d unowned tickets ==========\n", scalar @open if @open;
+    print @open if @open;
+}
+
 __DATA__
 
 Title: intro
@@ -1526,8 +1799,23 @@ Text:
         - passwd <passwd>       RT user's password.
         - query <RT Query>      Default RT Query for list action
         - order_by <order>       Default RT order for list action
+        - queue <queuename>     default RT queue for list action
+        - externalauth <0|1>    Use HTTP Basic authentication
+         explicitely setting externalauth to 0 inhibits also GSSAPI based
+         authentication, if LWP::Authen::Negotiate (and GSSAPI) is installed
+        
 
         Blank and #-commented lines are ignored.
+
+    Sample configuration file contents:
+
+         server  https://rt.somewhere.com/
+         # more than one queue can be given (by adding a query expression)
+         queue helpdesk or queue=support
+         query Status != resolved and Owner=myaccount
+
+
+        
 
     Environment variables:
 
@@ -1536,6 +1824,7 @@ Text:
 
         - RTUSER
         - RTPASSWD
+        - RTEXTERNALAUTH
         - RTSERVER
         - RTDEBUG       Numeric debug level. (Set to 3 for full logs.)
         - RTCONFIG      Specifies a name other than ".rtrc" for the
@@ -1567,8 +1856,12 @@ Text:
     "user/root,1-3,5,7-10,ams" is a list of ten users; the same list
     can also be written as "user/ams,root,1,2,3,5,7,8-10".
     
+    If just a number is given as object specification it will be
+    interpreted as ticket/<number>
+
     Examples:
 
+        1                   # the same as ticket/1
         ticket/1
         ticket/1/attachments
         ticket/1/attachments/3
@@ -1605,6 +1898,22 @@ Text:
 
         - rt help <action>      (action-specific details)
         - rt help types         (a list of possible types)
+
+    The following actions on tickets are also possible:
+
+        - comment       Add comments to a ticket
+        - correspond    Add comments to a ticket
+        - merge         Merge one ticket into another
+        - link          Link one ticket to another
+        - take          Take a ticket (steal and untake are possible as well)
+
+    For several edit set subcommands that are frequently used abbreviations
+    have been introduced. These abbreviations are:
+
+        - delete or del  delete a ticket           (edit set status=deleted)
+        - resolve or res resolve a ticket          (edit set status=resolved)
+        - subject        change subject of ticket  (edit set subject=string)
+        - give           give a ticket to somebody (edit set owner=user)
 
 --
 
@@ -1644,6 +1953,13 @@ Text:
         - merge
         - comment
         - correspond
+        - take
+        - steal
+        - untake
+        - give
+        - resolve
+        - delete
+        - subject
 
     Attributes:
 
@@ -1702,6 +2018,83 @@ Text:
 
 --
 
+Title: subject
+Text:
+
+    Syntax:
+
+        rt subject <id> <new subject text>
+
+    Change the subject of a ticket whose ticket id is given.
+
+--
+
+Title: give
+Text:
+
+    Syntax:
+
+        rt give <id> <accountname>
+
+    Give a ticket whose ticket id is given to another user.
+
+--
+
+Title: steal
+Text:
+
+        rt steal <id> 
+
+    Steal a ticket whose ticket id is given, i.e. set the owner to myself.
+
+--
+
+Title: take
+Text:
+
+    Syntax:
+
+        rt take <id>
+
+    Take a ticket whose ticket id is given, i.e. set the owner to myself.
+
+--
+
+Title: untake
+Text:
+
+    Syntax:
+
+        rt untake <id>
+
+    Untake a ticket whose ticket id is given, i.e. set the owner to Nobody.
+
+--
+
+Title: resolve
+Title: res
+Text:
+
+    Syntax:
+
+        rt resolve <id>
+
+    Resolves a ticket whose ticket id is given.
+
+--
+
+Title: delete
+Title: del
+Text:
+
+    Syntax:
+
+        rt delete <id>
+
+    Deletes a ticket whose ticket id is given.
+
+--
+
 Title: logout
 Text:
 
@@ -1740,25 +2133,31 @@ Text:
         The following options control how much information is displayed
         about each matching object:
 
-        -i      Numeric IDs only. (Useful for |rt edit -; see examples.)
-        -s      Short description.
-        -l      Longer description.
-
-        In addition,
+        -i             Numeric IDs only. (Useful for |rt edit -; see examples.)
+        -s             Short description.
+        -l             Longer description.
+        -f <field[s]   Display only the fields listed and the ticket id
         
-        -o +/-<field>   orders the returned list by the specified field.
-        -S var=val      Submits the specified variable with the request.
-        -t type         Specifies the type of object to look for. (The
-                        default is "ticket".)
+        In addition,
 
+        -o +/-<field>  orders the returned list by the specified field.
+        -r             reversed order (useful if a default was given)
+        -q queue[s]    restricts the query to the queue[s] given
+                       multiple queues are separated by comma
+        -S var=val     Submits the specified variable with the request.
+        -t type        Specifies the type of object to look for. (The
+                       default is "ticket".)
+        
     Examples:
 
-        rt ls "Priority > 5 and Status='new'"
-        rt ls -o +subject "Priority > 5 and Status='new'"
-        rt ls -o -Created "Priority > 5 and Status='new'"
+        rt ls "Priority > 5 and Status=new"
+        rt ls -o +Subject "Priority > 5 and Status=new"
+        rt ls -o -Created "Priority > 5 and Status=new"
         rt ls -i "Priority > 5"|rt edit - set status=resolved
         rt ls -t ticket "subject like '[PATCH]%'"
-
+        rt ls -q systems
+        rt ls -f owner,subject
+        
 --
 
 Title: show
@@ -1775,11 +2174,23 @@ Text:
     that refers to the links for tickets 1-3). Consult "rt help <type>"
     and "rt help objects" for further details.
 
+    If only a number is given it will be interpreted as the objects
+    ticket/number and ticket/number/history
+
     This command writes a set of forms representing the requested object
     data to STDOUT.
 
     Options:
 
+        The following options control how much information is displayed
+        about each matching object:
+
+        Without any formatting options prettyprinted output is generated.
+        Giving any of the two options below reverts to raw output.
+        -s      Short description (history and attachments only).
+        -l      Longer description (history and attachments only).
+
+        In addition,
         -               Read IDs from STDIN instead of the command-line.
         -t type         Specifies object type.
         -f a,b,c        Restrict the display to the specified fields.
@@ -1794,6 +2205,7 @@ Text:
         rt show ticket/3/history
         rt show -v ticket/3/history
         rt show -t user 2
+        rt show 2
 
 --
 
@@ -1809,6 +2221,8 @@ Text:
                                        del field=value [field=value] ...
 
     Edits information corresponding to the specified objects.
+
+    A purely numeric object id nnn is translated into ticket/nnn
 
     If, instead of "edit", an action of "new" or "create" is specified,
     then a new Object is Created. In this case, no numeric object IDs
@@ -1945,6 +2359,35 @@ Text:
     
     (XXX: I'm going to have to write it, aren't I?)
 
+    Until it exists here a short description of important constructs:
+
+    The two simple forms of query expressions are the constructs
+    Attribute like Value and
+    Attribute = Value or Attribute != Value
+
+    Whether attributes can be matched using like or using = is built into RT.
+    The attributes id, Queue, Owner Priority and Status require the = or !=
+    tests.
+
+    If Value is a string it must be quoted and may contain the wildcard
+    character %. If the string does not contain white space, the quoting
+    may however be omitted, it will be added automatically when parsing
+    the input.
+
+    Simple query expressions can be combined using and, or and parentheses
+    can be used to group expressions.
+
+    As a special case a standalone string (which would not form a correct
+    query) is transformed into (Owner='string' or Requestor like 'string%')
+    and added to the default query, i.e. the query is narrowed down.
+
+    If no Queue=name clause is contained in the query, a default clause
+    Queue=$config{queue} is added.
+
+    Examples:
+    Status!='resolved' and Status!='rejected'
+    (Owner='myaccount' or Requestor like 'myaccount%') and Status!='resolved'
+
 --
 
 Title: form
@@ -1999,10 +2442,43 @@ Title: example
 Title: examples
 Text:
 
-    This section will be filled in with useful examples, once it becomes
-    more clear what examples may be useful.
+    some useful examples
 
-    For the moment, please consult examples provided with each action.
+    All the following list requests will be restricted to the default queue.
+    That can be changed by adding the option -q queuename
+
+    List all tickets that are not rejected/resolved
+        rt ls
+    List all tickets that are new and do not have an owner
+        rt ls "status=new and owner=nobody"
+    List all tickets which I have sent or of which I am the owner
+        rt ls myaccount
+    List all attributes for the ticket 6977 (ls -l instead of ls)
+        rt ls -l 6977
+    Show the content of ticket 6977
+        rt show 6977
+    Show all attributes in the ticket and in the history of the ticket
+        rt show -l 6977
+    Comment a ticket (mail is sent to all queue watchers, i.e. AdminCc's)
+        rt comment 6977
+        This will open an editor and lets you add text (attribute Text:)
+        Other attributes may be changed as well, but usually don't do that.
+    Correspond a ticket (like comment, but mail is also sent to requestors)
+        rt correspond 6977
+    Edit a ticket (generic change, interactive using the editor)
+        rt edit 6977
+    Change the owner of a ticket non interactively
+        rt edit 6977 set owner=myaccount
+        or
+        rt give 6977 account
+        or
+        rt take 6977
+    Change the status of a ticket
+        rt edit 6977 set status=resolved
+        or
+        rt resolve 6977
+    Change the status of all tickets I own to resolved !!!
+        rt ls -i owner=myaccount | rt edit - set status=resolved
 
 --
 

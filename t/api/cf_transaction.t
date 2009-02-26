@@ -16,7 +16,7 @@ my ($id,$msg) = $q->create( name => 'TxnCFTest'.$$);
 ok($id,$msg);
 
 my $cf = RT::Model::CustomField->new(current_user => RT->system_user);
-($id,$msg) = $cf->create(name => 'Txnfreeform-'.$$, type => 'Freeform', MaxValues => '0', lookup_type => RT::Model::Transaction->custom_field_lookup_type );
+($id,$msg) = $cf->create(name => 'Txnfreeform-'.$$, type => 'Freeform', max_values => '0', lookup_type => RT::Model::Transaction->custom_field_lookup_type );
 
 ok($id,$msg);
 
@@ -38,7 +38,7 @@ $trans->load($transid);
 
 is($trans->object_id,$id);
 is ($trans->object_type, 'RT::Model::Ticket');
-is ($trans->type, 'Create');
+is ($trans->type, 'create');
 my $txncfs = $trans->custom_fields;
 is ($txncfs->count, 1, "We have one custom field");
 my $txn_cf = $txncfs->first;

@@ -62,12 +62,18 @@ foreach my $message ( grep $_->__value('parent') == $parent, @$attachments ) {
 % if ( $downloadable_headers && !$message->filename && $message->content_type =~ /text/  ) {
  / <a href="<% $attach_path %>/WithHeaders/<% $message->id %>"><% _('with headers') %></a>
 % }
-<br/>
+<br />
 <span class="downloadcontenttype"><% $message->content_type %> <% $size_to_str->( $size ) %></span>
 </div>
 %   }
+% # If there is sub-messages, open a dedicated div
+% if ( scalar ( grep $_->__value('parent') == $message->id, @$attachments ) ) {
+<div class="messageattachments">
+% } else {
 
 <div class="messagebody">
+%}
+    
 <%PERL>
 # {{{ if it has a content-disposition: attachment, don't show inline
 unless ( ($message->get_header('Content-Disposition')||"") =~ /attachment/i ) {
@@ -111,7 +117,12 @@ unless ( ($message->get_header('Content-Disposition')||"") =~ /attachment/i ) {
 
             # if it's a text/html clean the body and show it
             if ( $message->content_type =~ m{^text/(?:html|enriched)$}i ) {
-                $m->out( $m->comp( '/Elements/ScrubHTML', content => $content ) );
+                $content = $m->comp( '/Elements/ScrubHTML', Content => $content );
+                if ( $message->content_type eq 'text/html' ) {
+                    $m->comp('/Elements/MakeClicky', 
+                            content => \$content, html => 1 );
+                }
+                $m->out( $content );
             }
 
             # if it's a text/plain show the body
@@ -139,8 +150,9 @@ unless ( ($message->get_header('Content-Disposition')||"") =~ /attachment/i ) {
               . '/" />' );
     }
     elsif ( $message->content_length > 0 ) {
-        $m->out(
-            _( 'Message body not shown because it is too large or is not plain text.' )
+        $m->out( '<p>' .
+            _( 'Message body not shown because it is too large or is not plain text.' ) .
+            '</p>'
         );
     }
 }

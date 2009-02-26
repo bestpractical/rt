@@ -76,12 +76,17 @@ foreach my $column (@format) {
         next;
     }
 
-    $item++;
-    my $css_class = $column->{class} ? encode_entities( $column->{class}, q{'"&<>} ) : 'collection-as-table';
+    my $css_class = $column->{class}
+                  ? encode_entities( $column->{class}, q{'"&<>} ) # vim: '
+                  : 'collection-as-table';
     $m->out(qq{<td class="$css_class" });
 
     my $align = $column->{align};
     my $style = $column->{style};
+    my $span  = $column->{span};
+
+    $item += ($span || 1);
+    
 
     my @out;
     foreach my $subcol ( @{ $column->{output} } ) {
@@ -119,9 +124,21 @@ foreach my $column (@format) {
             # All HTML snippets are returned by the callback function
             # as scalar references.  Data fetched from the objects are
             # plain scalars, and needs to be escaped properly.
-            push @out, grep defined && length,
-                map { ref($_) ? $$_ : $m->interp->apply_escapes( $_ => 'h' ) }
-                $value->( $record, $i );
+            for my $out ($value->($record, $i)) {
+                # Objects with stringification overload should be treated as
+                # regular strings.
+                $out = "$out" if overload::Method($out, q{""});
+
+                if (ref($out)) {
+                    $out = $$out
+                }
+                else {
+                    $out = $m->interp->apply_escapes($out => 'h');
+                }
+
+                push @out, $out if defined($out) && length($out);
+            }
+
         } elsif ( defined $value && length $value ) {
 
             # Simple value; just escape it.
@@ -129,8 +146,14 @@ foreach my $column (@format) {
         }
         s/\n/<br \/>/gs for @out;
     }
-    $m->out( 'align="' . $align . '"' ) if $align;
-    $m->out( 'style="' . $style . '"' ) if $style;
+
+    $m->out( 'align="'   . $m->interp->apply_escapes( $align => 'h' ) . '"' )
+        if $align;
+    $m->out( 'style="'   . $m->interp->apply_escapes( $style => 'h' ) . '"' )
+        if $style;
+    $m->out( 'colspan="' . $m->interp->apply_escapes( $span  => 'h' ) . '"' )
+        if $span;
+
     $m->out('>');
     $m->out(@out) if @out;
     $m->out( '</td>' . "\n" );

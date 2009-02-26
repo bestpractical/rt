@@ -45,10 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<script type="text/javascript"><!--
-    onLoadHook('createCalendarLink("<% $name %>");');
---></script>
-<input type="text" id="<% $name %>" name="<% $name %>" value="<% $value %>" size="<% $size %>" />
+<input type="text" id="<% $name %>" name="<% $name %>" class="datetime" value="<% $value %>" size="<% $size %>" />
 <%init>
 unless ((defined $default) or 
 	($current <= 0)) {

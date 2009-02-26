@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2008 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,6 +44,7 @@ RemoveFormat		: "Panaikinti formatą",
 InsertLinkLbl		: "Nuoroda",
 InsertLink			: "Įterpti/taisyti nuorodą",
 RemoveLink			: "Panaikinti nuorodą",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: "Įterpti/modifikuoti žymę",
 AnchorDelete		: "Remove Anchor",	//MISSING
 InsertImageLbl		: "Vaizdas",
@@ -72,6 +73,9 @@ BlockJustify		: "Lygiuoti abi puses",
 DecreaseIndent		: "Sumažinti įtrauką",
 IncreaseIndent		: "Padidinti įtrauką",
 Blockquote			: "Blockquote",	//MISSING
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "Atšaukti",
 Redo				: "Atstatyti",
 NumberedListLbl		: "Numeruotas sąrašas",
@@ -157,6 +161,7 @@ UnknownToolbarSet	: "Mygtukų juostos rinkinys \"%1\" neegzistuoja",
 NoActiveX			: "Jūsų naršyklės saugumo nuostatos gali riboti kai kurias redaktoriaus savybes. Jūs turite aktyvuoti opciją \"Run ActiveX controls and plug-ins\". Kitu atveju Jums bus pranešama apie klaidas ir trūkstamas savybes.",
 BrowseServerBlocked : "Neįmanoma atidaryti naujo naršyklės lango. Įsitikinkite, kad iškylančių langų blokavimo programos neveiksnios.",
 DialogBlocked		: "Neįmanoma atidaryti dialogo lango. Įsitikinkite, kad iškylančių langų blokavimo programos neveiksnios.",
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "OK",
@@ -359,7 +364,6 @@ DlgPasteMsg2	: "Žemiau esančiame įvedimo lauke įdėkite tekstą, naudodami k
 DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "Ignoruoti šriftų nustatymus",
 DlgPasteRemoveStyles	: "Pašalinti stilių nustatymus",
-DlgPasteCleanBox		: "Trinti įvedimo lauką",
 
 // Color Picker
 ColorAutomatic	: "Automatinis",
@@ -512,5 +516,11 @@ DlgAboutAboutTab	: "Apie",
 DlgAboutBrowserInfoTab	: "Naršyklės informacija",
 DlgAboutLicenseTab	: "License",	//MISSING
 DlgAboutVersion		: "versija",
-DlgAboutInfo		: "Papildomą informaciją galima gauti"
+DlgAboutInfo		: "Papildomą informaciją galima gauti",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style"	//MISSING
 };

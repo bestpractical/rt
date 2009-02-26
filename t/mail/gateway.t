@@ -163,7 +163,7 @@ EOF
     $transactions->limit( column => 'type', operator => '!=', value => 'email_record');
     my $txn = $transactions->first;
     isa_ok ($txn, 'RT::Model::Transaction');
-    is ($txn->type, 'Create', "correct type");
+    is ($txn->type, 'create', "correct type");
 
     my $attachment = $txn->attachments->first;
     isa_ok ($attachment, 'RT::Model::Attachment');
@@ -197,7 +197,7 @@ EOF
     $transactions->limit( column => 'type', operator => '!=', value => 'email_record');
     my $txn = $transactions->first;
     isa_ok ($txn, 'RT::Model::Transaction');
-    is ($txn->type, 'Create', "correct type");
+    is ($txn->type, 'create', "correct type");
 
     my $attachment = $txn->attachments->first;
     isa_ok ($attachment, 'RT::Model::Attachment');
@@ -677,7 +677,7 @@ is( $tick->transactions->count, 6, 'no superfluous transactions');
 is( $txns->first->subject, "[$RT::rtname \#$id] correspondence", 'successfuly add correspond within take via email' );
 
 $! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action resolve --debug"), "Opened the mailgate - $!");
+ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action resolve"), "Opened the mailgate - $!");
 print MAIL <<EOF;
 From: root\@localhost
 Subject: [@{[RT->config->get('rtname')]} \#$id] test

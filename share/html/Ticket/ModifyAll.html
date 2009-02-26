@@ -51,7 +51,7 @@
     current_tab => "Ticket/ModifyAll.html?id=".$Ticket->id, 
     title => _("Ticket #%1 Jumbo update: %2", $Ticket->id, $Ticket->subject) &>
 
-% $m->callback(Callbackname => 'before_action_list', Actions => \@results, args_ref => \%ARGS, ticket => $Ticket);
+% $m->callback(callback_name => 'BeforeActionList', actions => \@results, args_ref => \%ARGS, ticket => $Ticket);
 <& /Elements/ListActions, actions => \@results &>
 
 <% Jifty->web->form->start( submit_to => '?id=' . $Ticket->id ) %>
@@ -65,7 +65,7 @@
 
 <br />
 
-<&| /Widgets/TitleBox, title => _('Date') &>
+<&| /Widgets/TitleBox, title => _('Date'), class => 'ticket-info-dates' &>
 % for my $field ( qw/starts started told due/ ) {
 <% $action->form_field( $field ) %>
 % }
@@ -73,8 +73,8 @@
 
 <br />
 
-<&| /Widgets/TitleBox, title => _('People') &>
-<& Elements/EditPeople, ticket => $Ticket, user_field => $user_field, user_string => $user_string, user_op => $user_op &>
+<&| /Widgets/TitleBox, title => _('People'), class => 'ticket-info-people' &>
+<& Elements/EditPeople, ticket => $Ticket, user_field => $user_field, user_string => $user_string, user_op => $user_op, group_string => $group_string, group_op => $group_op, group_field => $group_field &>
 </&>
 
 <br />
@@ -128,6 +128,7 @@
   
 
 <& /Elements/Submit, 
+    name    => 'submit_ticket',
     label => _('Save Changes'), 
     caption => _("If you've updated anything above, be sure to"), color => "#333399" &>
 <% Jifty->web->form->end %>
@@ -159,7 +160,7 @@ $Cancomment = 1 if ( $Ticket->current_user_has_right('CommentOnTicket') or
 
 
 $m->callback( ticket_obj => $Ticket, args_ref => \%ARGS );
-my (@wresults, @results, @lresults, @cf_results);
+my @results;
 
 unless ($only_search_for_people or $only_search_for_group ) {
     # There might be two owners. 
@@ -172,32 +173,22 @@ unless ($only_search_for_people or $only_search_for_group ) {
 
     }
 
-    @wresults   = process_ticket_watchers( ticket_obj => $Ticket, args_ref => \%ARGS);
-    @cf_results = process_object_custom_field_updates( object => $Ticket, args_ref => \%ARGS);
+    push @results, process_ticket_watchers( ticket_obj => $Ticket, args_ref => \%ARGS);
+    push @results, process_object_custom_field_updates( object => $Ticket, args_ref => \%ARGS);
 
     if ($ARGS{'update_attachment'}) {
-        my $subject = "$ARGS{'update_attachment'}";
-        # since CGI.pm deutf8izes the magic field, we need to add it back.
-        Encode::_utf8_on($subject);
-        # strip leading directories
-        $subject =~ s#^.*[\\/]##;
-
         my $attachment = make_mime_entity(
-           subject             => $subject,
-           AttachmentFieldname => 'update_attachment'
+           attachment_field_name => 'update_attachment'
         );
+        my $file_path = Encode::decode_utf8("$ARGS{'UpdateAttachment'}");
+        $ARGS{'update_attachments'}->{ $file_path } = $attachment;
         delete $ARGS{'update_attachment'};
-        $ARGS{'update_attachments'}->{ $subject } = $attachment;
     }
 
     push @results, process_update_message( ticket_obj => $Ticket, args_ref=>\%ARGS );
     push @results, process_ticket_basics( ticket_obj => $Ticket, args_ref => \%ARGS );
 }
-    @lresults   = process_ticket_links( ticket_obj => $Ticket, args_ref => \%ARGS);
-
-push @results, @wresults;
-push @results, @lresults;
-push @results, @cf_results;
+    push @results, process_ticket_links( ticket_obj => $Ticket, args_ref => \%ARGS);
 
 # undef so that transaction_batch scrips run and update the ticket
 $Ticket = undef;

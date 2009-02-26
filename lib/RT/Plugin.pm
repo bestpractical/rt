@@ -59,7 +59,8 @@ RT::Plugin
 
 =head2 new
 
-Instantiate a new RT::Plugin object. Takes a paramhash. currently the only key it cares about is 'name', the name of this plugin.
+Instantiate a new L<RT::Plugin> object. Takes a paramhash. currently the only key
+it cares about is 'name', the name of this plugin.
 
 =cut
 
@@ -81,6 +82,24 @@ sub name {
     return $self->{name};
 }
 
+=head2 path
+
+Takes a name of sub directory and returns its full path, for example:
+
+    my $plugin_etc_dir = $plugin->path('etc');
+
+See also L</component_root>, L</po_dir> and other shortcut methods.
+
+=cut
+
+sub path {
+    my $self = shift;
+    my $sub  = shift;
+    return $self->_base_path . "/$sub";
+}
+
+
+
 sub _base_path {
     my $self = shift;
     my $base = $self->{'name'};
@@ -92,15 +111,12 @@ sub _base_path {
 
 =head2 component_root
 
-Returns the directory this plugin has installed its HTML::Mason templates into
+Returns the directory this plugin has installed its L<HTML::Mason> templates into
+
 
 =cut
 
-sub component_root {
-    my $self = shift;
-
-    return $self->_base_path . "/html";
-}
+sub component_root { return $_[0]->path('html') }
 
 =head2 po_dir
 
@@ -108,10 +124,6 @@ Returns the directory this plugin has installed its message catalogs into.
 
 =cut
 
-sub po_dir {
-    my $self = shift;
-    return $self->_base_path . "/po";
-
-}
+sub po_dir { return $_[0]->path('po') }
 
 1;

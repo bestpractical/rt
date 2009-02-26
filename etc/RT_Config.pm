@@ -160,6 +160,20 @@ set C<$DatabaseRequireSSL> to 1 to turn on SSL communication
 
 set($DatabaseRequireSSL , undef);
 
+=item C<$UseSQLForACLChecks>
+
+In RT for ages ACL are checked after search what in some situtations
+result in empty search pages and wrong count of tickets.
+
+Set C<$UseSQLForACLChecks> to 1 to use SQL and get rid of these problems.
+
+However, this option is beta. In some cases it result in performance
+improvements, but some setups can not handle it.
+
+=cut
+
+set($UseSQLForACLChecks, undef);
+
 =back
 
 =head1 Incoming Mail Gateway Configuration
@@ -450,7 +464,17 @@ set($CorrespondAddress , '');
 
 set($CommentAddress , '');
 
-=item C<use_friendly_from_line>
+=item C<$DashboardAddress>
+
+The email address from which RT will send dashboards. If none is set, then
+C<$owneremail> will be used.
+
+=cut
+
+set($DashboardAddress, '');
+
+
+=item C<$use_friendly_from_line>
 
 By default, RT sets the outgoing mail's "From:" header to
 "SenderName via RT".  Setting C<$UseFriendlyFromLine> to 0 disables it.
@@ -548,6 +572,16 @@ To change this set the following option to true value.
 
 set($ShowBccHeader, 0);
 
+=item C<$DashboardSubject>
+
+Lets you set the subject of dashboards. Arguments are the frequency (Daily,
+Weekly, Monthly) of the dashboard and the dashboard's name. %1 for the name
+of the dashboard.
+
+=cut
+
+set($DashboardSubject, '%s Dashboard: %s');
+
 =back
 
 =head1 GnuPG Configuration
@@ -623,7 +657,7 @@ From lowest to highest priority, the levels are:
 
 =cut
 
-set($LogToSyslog    , 'debug');
+set($LogToSyslog    , 'info');
 set($LogToScreen    , 'info');
 
 =item C<$LogToFile>, C<$LogDir>, C<$LogToFileNamed>
@@ -684,10 +718,11 @@ set($StatementLog, undef);
 =item C<$WebDefaultStylesheet>
 
 This determines the default stylesheet the RT web interface will use.
-RT ships with two valid values by default:
+RT ships with several themes by default:
 
-  3.5-default     The totally new, default layout for RT 3.5
-  3.4-compat      A 3.4 compatibility stylesheet to make RT 3.5 look
+  web2            The totally new, default layout for RT 3.8
+  3.5-default     RT 3.5 and 3.6 original layout
+  3.4-compat      A 3.4 compatibility stylesheet to make RT look
                   (mostly) like 3.4
 
 This value actually specifies a directory in F<share/html/NoAuth/css/>
@@ -709,7 +744,7 @@ EmailAddress.
 
 =cut
 
-  set($UsernameFormat, 'concise');
+set($UsernameFormat, 'concise');
 
 
 =item C<$WebPath>
@@ -780,6 +815,17 @@ What portion of RT's URLspace should not require authentication.
 
 set($WebNoAuthRegex, qr{^ (?:/+NoAuth/ | /+REST/\d+\.\d+/NoAuth/) }x );
 
+=item C<$SelfServiceRegex>
+
+What portion of RT's URLspace should be accessible to Unprivileged users
+This does not override the redirect from F</Ticket/Display.html> to
+F</SelfService/Display.html> when Unprivileged users attempt to access
+ticked displays
+
+=cut
+
+set($SelfServiceRegex, qr!^(?:/+SelfService/)!x );
+
 =item C<$MessageBoxWidth>, C<$MessageBoxHeight>
 
 For message boxes, set the entry box width, height and what type of
@@ -787,6 +833,9 @@ wrapping to use.  These options can be overridden by users in their
 preferences.
 
 Default width: 72, height: 15
+
+These settings only apply to the non-RichText message box.
+See below for Rich Text settings.
 
 =cut
 
@@ -808,6 +857,22 @@ Should "rich text" editing be enabled? This option lets your users send html ema
 =cut
 
 set($MessageBoxRichText, 1);
+
+=item C<$MessageBoxRichTextHeight>
+
+Height of RichText javascript enabled editing boxes (in pixels)
+
+=cut
+
+set($MessageBoxRichTextHeight, 200);
+
+=item C<$MessageBoxIncludeSignature>
+
+Should your user's signatures (from their Preferences page) be included in comments and Replies
+
+=cut
+
+set($MessageBoxIncludeSignature, 1);
 
 =item C<$WikiImplicitLinks>
 
@@ -989,6 +1054,18 @@ inline. Set this variable to 0 if you'd like to disable that behaviour
 
 set($ShowTransactionImages, 1);
 
+=item C<$PlainTextPre>
+
+Normally plaintext attachments are displayed as HTML with line
+breaks preserved.  This causes space- and tab-based formatting not
+to be displayed correctly.  By setting $PlainTextPre they'll be
+displayed using <pre> instead so such formatting works, but they'll
+use a monospaced font.
+
+=cut
+
+set($PlainTextPre, 0);
+
 
 =item C<$ShowUnreadMessageNotifications>
 
@@ -1009,7 +1086,8 @@ customized homepage ("RT at a glance").
 
 =cut
 
-set($HomepageComponents, [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues MyReminders RefreshHomepage)]);
+set($HomepageComponents, [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards)]);
+
 
 =item C<@MasonParameters>
 
@@ -1056,7 +1134,7 @@ from being displayed in-line when viewing a ticket's history.
 
 set($SuppressInlineTextFiles, undef);
 
-=item C<DontSearchFileAttachments>
+=item C<$DontSearchFileAttachments>
 
 If C<$DontSearchFileAttachments> is set to a true value, then uploaded
 files (attachments with file names) are not searched during full-content
@@ -1299,7 +1377,7 @@ others' existence.
 
 =cut
 
-set($UseTransactionBatch, 0);
+set($UseTransactionBatch, 1);
 
 =item C<@CustomFieldValuesSources>
 

@@ -57,7 +57,7 @@ use strict;
 use warnings;
 use File::Spec ();
 use vars qw($Config $System $nobody $Handle $_install_mode);
-our $VERSION = '3.7.14';
+our $VERSION = '3.999.0';
 
 our $BASE_PATH        = Jifty::Util->app_root;
 our $EtcPath          = $BASE_PATH . '/etc';
@@ -144,8 +144,12 @@ sub init {
 
     #    CheckPerlRequirements();
     #Get a database connection
+    init_plugin_paths();
+
     init_system_objects();
     init_plugins();
+    # enable approval subsystem
+    require RT::Approval;
 }
 
 # Signal handlers

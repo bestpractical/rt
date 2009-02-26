@@ -17,9 +17,6 @@ use File::Temp qw(tempdir);
 
 RT::Test->set_mail_catcher;
 
-RT->config->set( LogToScreen => 'debug' );
-RT->config->set( LogStackTraces => 'error' );
-
 use_ok('RT::Crypt::GnuPG');
 
 RT->config->set( GnuPG =>

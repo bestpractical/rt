@@ -102,6 +102,25 @@ and log an error.
 
 =cut
 
+sub new {
+    my $class = shift;
+    if ($#_ == 0 && ref $_[0] && ref $_[0] eq 'RT::Model::User') {
+        unshift @_, 'user_object';
+    }
+    $class->SUPER::new(@_);
+}
+
+sub _init {
+    my $self = shift;
+    my %args = @_;
+    if ($args{user_object}) {
+        $self->user_object($args{user_object});
+        return 1;
+    }
+
+    return $self->SUPER::_init(@_);
+}
+
 sub create {
     my $self = shift;
     Jifty->log->error('RT::CurrentUser is read-only, RT::Model::User for manipulation');

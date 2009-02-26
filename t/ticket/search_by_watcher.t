@@ -142,11 +142,6 @@ run_tests();
     'Subject NOT LIKE "z" OR (Requestor = "x@example.com" OR Requestor = "y@example.com")' =>
         { xy => 1, x => 1, y => 1, '-' => 1, z => 0 },
 
-    
-        'requestor = "x@example.com" AND requestor = "y@example.com"'
-            => { xy => 1, x => 0, y => 0, '-' => 0, z => 0 },
-    
-    
     );
 run_tests();
 
@@ -154,6 +149,8 @@ run_tests();
 TODO: {
     local $TODO = "we can't generate this query yet";
     %test = (
+        'requestor = "x@example.com" AND requestor = "y@example.com"'
+            => { xy => 1, x => 0, y => 0, '-' => 0, z => 0 },
         'subject LIKE "x" OR requestor = "not-exist@example.com"' =>
             { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
         'subject NOT LIKE "x" OR requestor = "not-exist@example.com"' =>

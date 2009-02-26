@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2007 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2008 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,6 +44,7 @@ RemoveFormat		: "Изтрий форматирането",
 InsertLinkLbl		: "Връзка",
 InsertLink			: "Добави/Редактирай връзка",
 RemoveLink			: "Изтрий връзка",
+VisitLink			: "Open Link",	//MISSING
 Anchor				: "Добави/Редактирай котва",
 AnchorDelete		: "Remove Anchor",	//MISSING
 InsertImageLbl		: "Изображение",
@@ -72,6 +73,9 @@ BlockJustify		: "Двустранно подравняване",
 DecreaseIndent		: "Намали отстъпа",
 IncreaseIndent		: "Увеличи отстъпа",
 Blockquote			: "Blockquote",	//MISSING
+CreateDiv			: "Create Div Container",	//MISSING
+EditDiv				: "Edit Div Container",	//MISSING
+DeleteDiv			: "Remove Div Container",	//MISSING
 Undo				: "Отмени",
 Redo				: "Повтори",
 NumberedListLbl		: "Нумериран списък",
@@ -157,6 +161,7 @@ UnknownToolbarSet	: "Панелът \"%1\" не съществува",
 NoActiveX			: "Your browser's security settings could limit some features of the editor. You must enable the option \"Run ActiveX controls and plug-ins\". You may experience errors and notice missing features.",	//MISSING
 BrowseServerBlocked : "The resources browser could not be opened. Make sure that all popup blockers are disabled.",	//MISSING
 DialogBlocked		: "It was not possible to open the dialog window. Make sure all popup blockers are disabled.",	//MISSING
+VisitLinkBlocked	: "It was not possible to open a new window. Make sure all popup blockers are disabled.",	//MISSING
 
 // Dialogs
 DlgBtnOK			: "ОК",
@@ -359,7 +364,6 @@ DlgPasteMsg2	: "Вмъкнете тук съдъжанието с клавиат
 DlgPasteSec		: "Because of your browser security settings, the editor is not able to access your clipboard data directly. You are required to paste it again in this window.",	//MISSING
 DlgPasteIgnoreFont		: "Игнорирай шрифтовите дефиниции",
 DlgPasteRemoveStyles	: "Изтрий стиловите дефиниции",
-DlgPasteCleanBox		: "Изчисти",
 
 // Color Picker
 ColorAutomatic	: "По подразбиране",
@@ -512,5 +516,11 @@ DlgAboutAboutTab	: "За",
 DlgAboutBrowserInfoTab	: "Информация за браузъра",
 DlgAboutLicenseTab	: "License",	//MISSING
 DlgAboutVersion		: "версия",
-DlgAboutInfo		: "За повече информация посетете"
+DlgAboutInfo		: "За повече информация посетете",
+
+// Div Dialog
+DlgDivGeneralTab	: "General",	//MISSING
+DlgDivAdvancedTab	: "Advanced",	//MISSING
+DlgDivStyle		: "Style",	//MISSING
+DlgDivInlineStyle	: "Inline Style"	//MISSING
 };

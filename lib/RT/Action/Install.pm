@@ -17,14 +17,14 @@ use Jifty::Param::Schema;
 use Jifty::Action schema {
     param 'start';
     param database_type =>
-        label is 'Database type',
+        label is 'Database type', # loc
         render as 'Select',
         available are defer {
             my %map = (
-                mysql  => 'MySQL',
-                Pg     => 'PostgreSQL',
-                SQLite => 'SQLite',
-                Oracle => 'Oracle',
+                mysql  => 'MySQL',         #loc
+                Pg     => 'PostgreSQL',    #loc
+                SQLite => 'SQLite',        #loc
+                Oracle => 'Oracle',        #loc
             );
 
             for ( keys %map ) {
@@ -36,19 +36,19 @@ use Jifty::Action schema {
         },
         default is defer { RT->config->get( 'database_type' ) };
     param database_host =>
-        label is 'Database host',
+        label is 'Database host', # loc
         hints is "The domain name of your database server (like 'db.example.com')", #loc
         default is defer {
             RT->config->get('database_host')
         };
 
     param database_port =>
-        label is 'Database port',
+        label is 'Database port', # loc
         hints is 'Leave empty to use the default value for your database',    #loc
         default is defer { RT->config->get('database_port') };
 
     param database_name =>
-        label is 'Database name',
+        label is 'Database name', #loc
         default is defer {
             RT->config->get('database_name')
         };
@@ -268,6 +268,9 @@ sub take_action {
             my $root = RT::Model::User->new( RT->system_user );
             $root->load('root');
             $root->set_password( $RT::Installer->{config}{password} );
+            system( 'chmod -w ' . RT::Installer->config_file )
+              && Jifty->log->error(
+                'failed to make ' . RT::Installer->config_file . ' readonly' );
             last;
         }
 

@@ -3,7 +3,7 @@ RUZ:
 don't get why null_reference is record method instead of column property,
 naming is not obvious, as well.
 
-check_create_rights and refernces don't play well together as you have to
+check_create_rights and references don't play well together as you have to
 write a lot of code of additional checks.
 
 As well, you can not return another error code - validation is not applied at

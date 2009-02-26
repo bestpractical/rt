@@ -196,14 +196,9 @@ sub DESTROY {
     # oddly circular
     $self->{'scrip_action_obj'} = undef;
     $self->{'scrip_obj'}       = undef;
-    $self->{'template_obj'}    = undef $self->{'ticket_obj'} = undef;
+    $self->{'template_obj'}    = undef;
+    $self->{'ticket_obj'} = undef;
     $self->{'transaction_obj'} = undef;
 }
-
-
-eval "require RT::ScripAction_Vendor";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Action_Vendor.pm} );
-eval "require RT::ScripAction_Local";
-die $@ if ( $@ && $@ !~ qr{^Can't locate RT/Action_Local.pm} );
 
 1;

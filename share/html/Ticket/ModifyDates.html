@@ -50,7 +50,7 @@
     ticket => $ticket_obj, 
     current_tab => "Ticket/ModifyDates.html?id=".$ticket_obj->id, 
     title => _('Modify dates for #%1', $ticket_obj->id) &> 
-% $m->callback(Callbackname => 'before_action_list', args_ref => \%ARGS, ticket => $ticket_obj);
+% $m->callback(callback_name => 'BeforeActionList', args_ref => \%ARGS, ticket => $ticket_obj);
 
 <& /Elements/ListActions &>
 
