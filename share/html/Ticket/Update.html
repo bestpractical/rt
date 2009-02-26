@@ -75,8 +75,12 @@
     DefaultLabel => loc("[_1] (Unchanged)", $TicketObj->OwnerObj->Name),
     Default      => $ARGS{'Owner'}
 &>
-<span class="label"><&|/l&>Worked</&>:</span><input size="4" name="UpdateTimeWorked" value="<% $ARGS{UpdateTimeWorked}||'' %>" /> 
-<& /Elements/SelectTimeUnits, Name => 'UpdateTimeWorked'&>
+<span class="label"><&|/l&>Worked</&>:</span>
+<& /Elements/EditTimeValue,
+    Name => 'UpdateTimeWorkd',
+    Default => $ARGS{UpdateTimeWorked}||'',
+    InUnits => $ARGS{'UpdateTimeWorked-TimeUnits'}||'minutes',
+&>
 </td></tr>
 % my $skip;
 % $m->callback( %ARGS, CallbackName => 'BeforeUpdateType', skip => \$skip );

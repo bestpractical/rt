@@ -73,23 +73,28 @@
   <tr>
       <td class="label"><&|/l&>Time Estimated</&>:</td>
       <td class="value">
-        <input name="TimeEstimated" 
-            value="<% $TimeEstimated || '' |h%>" size="5" />
-        <& /Elements/SelectTimeUnits, Name =>'TimeEstimated' &>
+        <& /Elements/EditTimeValue,
+            Name => 'TimeEstimated',
+            Default => $TicketObj->TimeEstimated,
+        &>
       </td>
     </tr>
   <tr>
     <td class="label"><&|/l&>Time Worked</&>:</td>
     <td class="value">
-      <input name="TimeWorked" value="<% $TimeWorked || '' |h%>" size="5" />
-      <& /Elements/SelectTimeUnits, Name =>'TimeWorked' &>
+        <& /Elements/EditTimeValue,
+            Name => 'TimeWorked',
+            Default => $TicketObj->TimeWorked,
+        &>
     </td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Time Left</&>:</td>
     <td class="value">
-        <input name="TimeLeft" value="<%$TimeLeft || ''|h%>" size="5" />
-        <& /Elements/SelectTimeUnits, Name =>'TimeLeft' &>
+        <& /Elements/EditTimeValue,
+            Name => 'TimeLeft',
+            Default => $TicketObj->TimeLeft,
+        &>
       </td>
     </tr>
 
@@ -117,18 +122,6 @@
 #It's hard to do this inline, so we'll preload the html of the selectstatus in here.
 my $SelectStatus = $m->scomp("/Elements/SelectStatus", Name => 'Status', DefaultLabel => loc("[_1] (Unchanged)",loc($TicketObj->Status)));
 my $SelectQueue = $m->scomp("/Elements/SelectQueue", Name => 'Queue', Default =>$TicketObj->QueueObj->Id);
-
-my $TimeEstimated = $TicketObj->TimeEstimated;
-my $TimeWorked = $TicketObj->TimeWorked;
-my $TimeLeft = $TicketObj->TimeLeft;
-
-# Convert these values from minutes to hours
-if (RT->Config->Get('DefaultTimeUnitsToHours')) {
-    for ($TimeEstimated, $TimeWorked, $TimeLeft) {
-        # Do some rounding since 0.166666666666667 is pretty unhelpful
-        $_ = sprintf '%.3g', $_ / 60;
-    }
-}
 
 </%INIT>
 <%ARGS>
