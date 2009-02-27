@@ -23,6 +23,7 @@ sub add_tix_from_data {
             %{ shift(@data) },
         );
         ok( $id, "ticket Created" ) or diag("error: $msg");
+
         push @res, $t;
         $total++;
     }
@@ -30,10 +31,10 @@ sub add_tix_from_data {
 }
 
 sub run_tests {
-    my $query_prefix = join ' OR ', map 'id = '. $_->id, @tickets;
+    my $query_prefix = join ' OR ', map '.id = '. $_->id, @tickets;
     foreach my $key ( sort keys %test ) {
         my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
-        $tix->from_sql( "( $query_prefix ) AND ( $key )" );
+        $tix->tisql->query( "( $query_prefix ) AND ( $key )" );
 
         my $error = 0;
 
@@ -61,30 +62,29 @@ sub run_tests {
     { subject => 'z', requestor => 'z@example.com' },
 );
 %test = (
-    'requestor = "x@example.com"'  => { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
-    'requestor != "x@example.com"' => { xy => 0, x => 0, y => 1, '-' => 1, z => 1 },
+    '.watchers{"requestor"}.email = "x@example.com"'  => { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
+    '.watchers{"requestor"}.email != "x@example.com"' => { xy => 0, x => 0, y => 1, '-' => 1, z => 1 },
 
-    'requestor = "y@example.com"'  => { xy => 1, x => 0, y => 1, '-' => 0, z => 0 },
-    'requestor != "y@example.com"' => { xy => 0, x => 1, y => 0, '-' => 1, z => 1 },
+    '.watchers{"requestor"}.email = "y@example.com"'  => { xy => 1, x => 0, y => 1, '-' => 0, z => 0 },
+    '.watchers{"requestor"}.email != "y@example.com"' => { xy => 0, x => 1, y => 0, '-' => 1, z => 1 },
 
-    'requestor LIKE "@example.com"'     => { xy => 1, x => 1, y => 1, '-' => 0, z => 1 },
-    'requestor NOT LIKE "@example.com"' => { xy => 0, x => 0, y => 0, '-' => 1, z => 0 },
+    '.watchers{"requestor"}.email LIKE "@example.com"'     => { xy => 1, x => 1, y => 1, '-' => 0, z => 1 },
+    '.watchers{"requestor"}.email NOT LIKE "@example.com"' => { xy => 0, x => 0, y => 0, '-' => 1, z => 0 },
 
-    'requestor IS NULL'            => { xy => 0, x => 0, y => 0, '-' => 1, z => 0 },
-    'requestor IS NOT NULL'        => { xy => 1, x => 1, y => 1, '-' => 0, z => 1 },
+    'has no .watchers{"requestor"}'            => { xy => 0, x => 0, y => 0, '-' => 1, z => 0 },
+    'has .watchers{"requestor"}'         => { xy => 1, x => 1, y => 1, '-' => 0, z => 1 },
 
-# this test is a todo, we run it later
-#    'requestor = "x@example.com" AND requestor = "y@example.com"'   => { xy => 1, x => 0, y => 0, '-' => 0, z => 0 },
-    'requestor = "x@example.com" OR requestor = "y@example.com"'    => { xy => 1, x => 1, y => 1, '-' => 0, z => 0 },
+    '.watchers{"requestor"}.email = "x@example.com" AND .watchers{"requestor"}.email = "y@example.com"'   => { xy => 1, x => 0, y => 0, '-' => 0, z => 0 },
+    '.watchers{"requestor"}.email = "x@example.com" OR .watchers{"requestor"}.email = "y@example.com"'    => { xy => 1, x => 1, y => 1, '-' => 0, z => 0 },
 
-    'requestor != "x@example.com" AND requestor != "y@example.com"' => { xy => 0, x => 0, y => 0, '-' => 1, z => 1 },
-    'requestor != "x@example.com" OR requestor != "y@example.com"'  => { xy => 0, x => 1, y => 1, '-' => 1, z => 1 },
+    '.watchers{"requestor"}.email != "x@example.com" AND .watchers{"requestor"}.email != "y@example.com"' => { xy => 0, x => 0, y => 0, '-' => 1, z => 1 },
+    '.watchers{"requestor"}.email != "x@example.com" OR .watchers{"requestor"}.email != "y@example.com"'  => { xy => 0, x => 1, y => 1, '-' => 1, z => 1 },
 
-    'requestor = "x@example.com" AND requestor != "y@example.com"'  => { xy => 0, x => 1, y => 0, '-' => 0, z => 0 },
-    'requestor = "x@example.com" OR requestor != "y@example.com"'   => { xy => 1, x => 1, y => 0, '-' => 1, z => 1 },
+    '.watchers{"requestor"}.email = "x@example.com" AND .watchers{"requestor"}.email != "y@example.com"'  => { xy => 0, x => 1, y => 0, '-' => 0, z => 0 },
+    '.watchers{"requestor"}.email = "x@example.com" OR .watchers{"requestor"}.email != "y@example.com"'   => { xy => 1, x => 1, y => 0, '-' => 1, z => 1 },
 
-    'requestor != "x@example.com" AND requestor = "y@example.com"'  => { xy => 0, x => 0, y => 1, '-' => 0, z => 0 },
-    'requestor != "x@example.com" OR requestor = "y@example.com"'   => { xy => 1, x => 0, y => 1, '-' => 1, z => 1 },
+    '.watchers{"requestor"}.email != "x@example.com" AND .watchers{"requestor"}.email = "y@example.com"'  => { xy => 0, x => 0, y => 1, '-' => 0, z => 0 },
+    '.watchers{"requestor"}.email != "x@example.com" OR .watchers{"requestor"}.email = "y@example.com"'   => { xy => 1, x => 0, y => 1, '-' => 1, z => 1 },
 );
 @tickets = add_tix_from_data();
 {
@@ -97,67 +97,54 @@ run_tests();
 # mixing searches by watchers with other conditions
 # http://rt3.fsck.com/Ticket/Display.html?id=9322
 %test = (
-    'Subject LIKE "x" AND Requestor = "y@example.com"' =>
+    '.subject LIKE "x" AND .watchers{"requestor"}.email = "y@example.com"' =>
         { xy => 1, x => 0, y => 0, '-' => 0, z => 0 },
-    'Subject NOT LIKE "x" AND Requestor = "y@example.com"' =>
+    '.subject NOT LIKE "x" AND .watchers{"requestor"}.email = "y@example.com"' =>
         { xy => 0, x => 0, y => 1, '-' => 0, z => 0 },
-    'Subject LIKE "x" AND Requestor != "y@example.com"' =>
+    '.subject LIKE "x" AND .watchers{"requestor"}.email != "y@example.com"' =>
         { xy => 0, x => 1, y => 0, '-' => 0, z => 0 },
-    'Subject NOT LIKE "x" AND Requestor != "y@example.com"' =>
+    '.subject NOT LIKE "x" AND .watchers{"requestor"}.email != "y@example.com"' =>
         { xy => 0, x => 0, y => 0, '-' => 1, z => 1 },
 
-    'Subject LIKE "x" OR Requestor = "y@example.com"' =>
+    '.subject LIKE "x" OR .watchers{"requestor"}.email = "y@example.com"' =>
         { xy => 1, x => 1, y => 1, '-' => 0, z => 0 },
-    'Subject NOT LIKE "x" OR Requestor = "y@example.com"' =>
+    '.subject NOT LIKE "x" OR .watchers{"requestor"}.email = "y@example.com"' =>
         { xy => 1, x => 0, y => 1, '-' => 1, z => 1 },
-    'Subject LIKE "x" OR Requestor != "y@example.com"' =>
+    '.subject LIKE "x" OR .watchers{"requestor"}.email != "y@example.com"' =>
         { xy => 1, x => 1, y => 0, '-' => 1, z => 1 },
-    'Subject NOT LIKE "x" OR Requestor != "y@example.com"' =>
+    '.subject NOT LIKE "x" OR .watchers{"requestor"}.email != "y@example.com"' =>
         { xy => 0, x => 1, y => 1, '-' => 1, z => 1 },
 
-# group of cases when user doesn't exist in DB at all
-    'Subject LIKE "x" AND Requestor = "not-exist@example.com"' =>
+# group of cases when user doesnt exist in DB at all
+    '.subject LIKE "x" AND .watchers{"requestor"}.email = "not-exist@example.com"' =>
         { xy => 0, x => 0, y => 0, '-' => 0, z => 0 },
-    'Subject NOT LIKE "x" AND Requestor = "not-exist@example.com"' =>
+    '.subject NOT LIKE "x" AND .watchers{"requestor"}.email = "not-exist@example.com"' =>
         { xy => 0, x => 0, y => 0, '-' => 0, z => 0 },
-    'Subject LIKE "x" AND Requestor != "not-exist@example.com"' =>
+    '.subject LIKE "x" AND .watchers{"requestor"}.email != "not-exist@example.com"' =>
         { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
-    'Subject NOT LIKE "x" AND Requestor != "not-exist@example.com"' =>
+    '.subject NOT LIKE "x" AND .watchers{"requestor"}.email != "not-exist@example.com"' =>
         { xy => 0, x => 0, y => 1, '-' => 1, z => 1 },
-#    'Subject LIKE "x" OR Requestor = "not-exist@example.com"' =>
-#        { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
-#    'Subject NOT LIKE "x" OR Requestor = "not-exist@example.com"' =>
-#        { xy => 0, x => 0, y => 1, '-' => 1, z => 1 },
-    'Subject LIKE "x" OR Requestor != "not-exist@example.com"' =>
+    '.subject LIKE "x" OR .watchers{"requestor"}.email = "not-exist@example.com"' =>
+        { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
+    '.subject NOT LIKE "x" OR .watchers{"requestor"}.email = "not-exist@example.com"' =>
+        { xy => 0, x => 0, y => 1, '-' => 1, z => 1 },
+    '.subject LIKE "x" OR .watchers{"requestor"}.email != "not-exist@example.com"' =>
         { xy => 1, x => 1, y => 1, '-' => 1, z => 1 },
-    'Subject NOT LIKE "x" OR Requestor != "not-exist@example.com"' =>
+    '.subject NOT LIKE "x" OR .watchers{"requestor"}.email != "not-exist@example.com"' =>
         { xy => 1, x => 1, y => 1, '-' => 1, z => 1 },
 
-    'Subject LIKE "z" AND (Requestor = "x@example.com" OR Requestor = "y@example.com")' =>
+    '.subject LIKE "z" AND (.watchers{"requestor"}.email = "x@example.com" OR .watchers{"requestor"}.email = "y@example.com")' =>
         { xy => 0, x => 0, y => 0, '-' => 0, z => 0 },
-    'Subject NOT LIKE "z" AND (Requestor = "x@example.com" OR Requestor = "y@example.com")' =>
+    '.subject NOT LIKE "z" AND (.watchers{"requestor"}.email = "x@example.com" OR .watchers{"requestor"}.email = "y@example.com")' =>
         { xy => 1, x => 1, y => 1, '-' => 0, z => 0 },
-    'Subject LIKE "z" OR (Requestor = "x@example.com" OR Requestor = "y@example.com")' =>
+    '.subject LIKE "z" OR (.watchers{"requestor"}.email = "x@example.com" OR .watchers{"requestor"}.email = "y@example.com")' =>
         { xy => 1, x => 1, y => 1, '-' => 0, z => 1 },
-    'Subject NOT LIKE "z" OR (Requestor = "x@example.com" OR Requestor = "y@example.com")' =>
+    '.subject NOT LIKE "z" OR (.watchers{"requestor"}.email = "x@example.com" OR .watchers{"requestor"}.email = "y@example.com")' =>
         { xy => 1, x => 1, y => 1, '-' => 1, z => 0 },
 
     );
 run_tests();
 
-
-TODO: {
-    local $TODO = "we can't generate this query yet";
-    %test = (
-        'requestor = "x@example.com" AND requestor = "y@example.com"'
-            => { xy => 1, x => 0, y => 0, '-' => 0, z => 0 },
-        'subject LIKE "x" OR requestor = "not-exist@example.com"' =>
-            { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
-        'subject NOT LIKE "x" OR requestor = "not-exist@example.com"' =>
-            { xy => 0, x => 0, y => 1, '-' => 1, z => 1 },
-    );
-    run_tests();
-}
 
 @data = (
     { subject => 'xy', cc => ['x@example.com'], requestor => [ 'y@example.com' ] },
@@ -169,24 +156,24 @@ TODO: {
     { subject => '-z', cc => [],                requestor => [ 'z@example.com' ] },
 );
 %test = (
-    'cc = "x@example.com" AND requestor = "y@example.com"' =>
+    '.watchers{"cc"}.email = "x@example.com" AND .watchers{"requestor"}.email = "y@example.com"' =>
         { xy => 1, 'x-' => 0, '-y' => 0, '-' => 0, zz => 0, 'z-' => 0, '-z' => 0 },
-    'cc = "x@example.com" OR requestor = "y@example.com"' =>
+    '.watchers{"cc"}.email = "x@example.com" OR .watchers{"requestor"}.email = "y@example.com"' =>
         { xy => 1, 'x-' => 1, '-y' => 1, '-' => 0, zz => 0, 'z-' => 0, '-z' => 0 },
 
-    'cc != "x@example.com" AND requestor = "y@example.com"' =>
+    '.watchers{"cc"}.email != "x@example.com" AND .watchers{"requestor"}.email = "y@example.com"' =>
         { xy => 0, 'x-' => 0, '-y' => 1, '-' => 0, zz => 0, 'z-' => 0, '-z' => 0 },
-    'cc != "x@example.com" OR requestor = "y@example.com"' =>
+    '.watchers{"cc"}.email != "x@example.com" OR .watchers{"requestor"}.email = "y@example.com"' =>
         { xy => 1, 'x-' => 0, '-y' => 1, '-' => 1, zz => 1, 'z-' => 1, '-z' => 1 },
 
-    'cc IS NULL AND requestor = "y@example.com"' =>
+    'has no .watchers{"cc"} AND .watchers{"requestor"}.email = "y@example.com"' =>
         { xy => 0, 'x-' => 0, '-y' => 1, '-' => 0, zz => 0, 'z-' => 0, '-z' => 0 },
-    'cc IS NULL OR requestor = "y@example.com"' =>
+    'has no .watchers{"cc"} OR .watchers{"requestor"}.email = "y@example.com"' =>
         { xy => 1, 'x-' => 0, '-y' => 1, '-' => 1, zz => 0, 'z-' => 0, '-z' => 1 },
 
-    'cc IS NOT NULL AND requestor = "y@example.com"' =>
+    'has .watchers{"cc"} AND .watchers{"requestor"}.email = "y@example.com"' =>
         { xy => 1, 'x-' => 0, '-y' => 0, '-' => 0, zz => 0, 'z-' => 0, '-z' => 0 },
-    'cc IS NOT NULL OR requestor = "y@example.com"' =>
+    'has .watchers{"cc"} OR .watchers{"requestor"}.email = "y@example.com"' =>
         { xy => 1, 'x-' => 1, '-y' => 1, '-' => 0, zz => 1, 'z-' => 1, '-z' => 0 },
 );
 @tickets = add_tix_from_data();
@@ -197,9 +184,8 @@ TODO: {
 }
 run_tests();
 
-
 # owner is special watcher because reference is duplicated in two places,
-# owner was an ENUM field now it's WATCHERFIELD, but should support old
+# owner was an ENUM field now its WATCHERFIELD, but should support old
 # style ENUM searches for backward compatibility
 my $nobody = RT->nobody();
 {
