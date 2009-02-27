@@ -129,7 +129,30 @@ use Jifty::DBI::Record schema {
         label is _('Closed');
 
     column disabled         => max_length is 6,   type is 'smallint',     default is '0';
+
+    column role_groups =>
+        references RT::Model::GroupCollection
+        by tisql => 'role_groups.instance = .id'
+            .' AND role_groups.domain = "RT::Model::Ticket-Role"'
+            .' AND role_groups.type = %1';
+
+    column watchers =>
+        references RT::Model::UserCollection
+        by tisql => 'watchers.id = .role_groups{%1}.gm.member_id';
+
+    column recursive_watchers =>
+        references RT::Model::UserCollection
+        by tisql => 'recursive_watchers.id = .role_groups{%1}.cgm.member_id';
+
+    column groups_watching =>
+        references RT::Model::GroupCollection
+        by tisql => 'groups_watching.id = .role_groups{%1}.gm.member_id';
+
+    column recursive_groups_watching =>
+        references RT::Model::GroupCollection
+        by tisql => 'recursive_groups_watching.id = .role_groups{%1}.cgm.member_id';
 };
+
 use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
     created_by => 'creator',
     created_on => 'created',
