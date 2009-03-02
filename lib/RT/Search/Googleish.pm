@@ -67,8 +67,11 @@ Use the argument passed in as a "Google-style" set of keywords
 package RT::Search::Googleish;
 
 use strict;
+use warnings;
 use base qw(RT::Search);
 
+use Regexp::Common qw/delimited/;
+my $re_delim = qr[$RE{delimited}{-delim=>qq{\'\"}}];
 
 # sub _Init {{{
 sub _Init {
@@ -91,9 +94,10 @@ sub Describe  {
 sub QueryToSQL {
     my $self     = shift;
     my $query    = shift || $self->Argument;
-    # Trim leading or trailing whitespace
-    $query =~ s/^\s+(.*)\s+$/$1/g;
-    my @keywords = split /\s+/, $query;
+
+    my @keywords = grep length, map { s/^\s+//; s/\s+$//; $_ }
+        split /((?:fultext:)?$re_delim|\s+)/o, $query;
+
     my (
         @tql_clauses,  @owner_clauses, @queue_clauses,
         @user_clauses, @id_clauses,    @status_clauses
@@ -102,11 +106,21 @@ sub QueryToSQL {
     for my $key (@keywords) {
 
         # Is this a ticket number? If so, go to it.
+        # But look into subject as well
         if ( $key =~ m/^\d+$/ ) {
-            push @id_clauses, "id = '$key'";
+            push @id_clauses, "id = '$key'", "Subject LIKE '$key'";
         }
 
-        elsif ($key =~ /^fulltext:(.*?)$/i) {
+        # if it's quoted string then search it "as is" in subject or fulltext
+        elsif ( $key =~ /^(fulltext:)?($re_delim)$/io ) {
+            if ( $1 ) {
+                push @tql_clauses, "Content LIKE $2";
+            } else {
+                push @tql_clauses, "Subject LIKE $2";
+            }
+        }
+
+        elsif ( $key =~ /^fulltext:(.*?)$/i ) {
             $key = $1;
             $key =~ s/['\\].*//g;
             push @tql_clauses, "Content LIKE '$key'";
