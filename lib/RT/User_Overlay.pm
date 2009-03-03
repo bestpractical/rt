@@ -166,8 +166,8 @@ sub Create {
         $TempUser->Load( $args{'Name'} );
         return ( 0, $self->loc('Name in use') ) if ( $TempUser->Id );
 
-        return ( 0, $self->loc('Email address in use') )
-          unless ( $self->ValidateEmailAddress( $args{'EmailAddress'} ) );
+        my ($val, $message) = $self->ValidateEmailAddress( $args{'EmailAddress'} );
+        return (0, $message) unless ( $val );
     }
     else {
         $RT::Logger->warning( "$self couldn't check for pre-existing users");
@@ -530,13 +530,18 @@ sub ValidateEmailAddress {
     # if the email address is null, it's always valid
     return (1) if ( !$Value || $Value eq "" );
 
+    # We only allow one valid email address
+    my @addresses = Email::Address->parse($Value);
+    return ( 0, $self->loc('Invalid syntax for email address') ) unless ( ( scalar (@addresses) == 1 ) && ( $addresses[0]->address ) );
+
+
     my $TempUser = RT::User->new($RT::SystemUser);
     $TempUser->LoadByEmail($Value);
 
     if ( $TempUser->id && ( !$self->id || $TempUser->id != $self->id ) )
     {    # if we found a user with that address
             # it's invalid to set this user's address to it
-        return (undef);
+        return ( 0, $self->loc('Email address in use') );
     }
     else {    #it's a valid email address
         return (1);
@@ -554,10 +559,11 @@ sub SetEmailAddress {
     my $self = shift;
     my $Value = shift;
 
-    if ( $self->ValidateEmailAddress( $Value ) ) {
+    my ($val, $message) = $self->ValidateEmailAddress( $Value );
+    if ( $val ) {
         return $self->_Set( Field => 'EmailAddress', Value => $Value );
     } else {
-        return ( 0, $self->loc('Email address in use') )
+        return ( 0, $message )
     }
 
 }

@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Test::More; 
-plan tests => 105;
+plan tests => 108;
 use RT;
 use RT::Test;
 
@@ -61,7 +61,20 @@ ok ($id, $msg);
 ok ($id, $msg);
 is_empty ($u7->EmailAddress);
 
+# Make sur we can't create a user with multiple email adresses separated by comma
+my $u8 = RT::User->new($RT::SystemUser);
+($id, $msg) = $u8->Create(Name => 'CreateTest8'.$$, EmailAddress => $$.'create-test-81@example.com, '.$$.'create-test-82@example.com');
+ok (!$id, $msg);
 
+# Make sur we can't create a user with multiple email adresses separated by space
+my $u9 = RT::User->new($RT::SystemUser);
+($id, $msg) = $u9->Create(Name => 'CreateTest9'.$$, EmailAddress => $$.'create-test-91@example.com '.$$.'create-test-92@example.com');
+ok (!$id, $msg);
+
+# Make sur we can't create a user with invalid email address
+my $u10 = RT::User->new($RT::SystemUser);
+($id, $msg) = $u10->Create(Name => 'CreateTest10'.$$, EmailAddress => $$.'create-test10}@[.com');
+ok (!$id, $msg);
 
 }
 
