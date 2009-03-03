@@ -81,14 +81,14 @@ passwords. Setting it to 0 disables this check.
 
 set($MinimumPasswordLength , "5");
 
-=item C<$Timezone>
+=item C<$TimeZone>
 
-C<$Timezone> is used to convert times entered by users into GMT and back again
-It should be set to a timezone recognized by your local unix box.
+C<$TimeZone> is used to convert times entered by users into GMT and back again
+It should be set to a time zone recognized by L<DateTime::TimeZone>.
 
 =cut
 
-set($Timezone , 'US/Eastern');
+set($TimeZone, 'America/New_York');
 
 =back
 

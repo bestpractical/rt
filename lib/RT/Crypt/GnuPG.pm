@@ -2231,7 +2231,7 @@ sub _parse_date {
     if ( $value =~ /^\d+$/ ) {
         $obj->set( value => $value );
     } else {
-        $obj->set( format => 'unknown', value => $value, timezone => 'utc' );
+        $obj->set( format => 'unknown', value => $value, time_zone => 'UTC' );
     }
     return $obj;
 }

@@ -534,7 +534,7 @@ sub _date_limit {
         # particular single day.  in the database, we need to check for >
         # and < the edges of that day.
 
-        $date->set_to_midnight( timezone => 'server' );
+        $date->set_to_midnight( time_zone => 'server' );
         my $daystart = $date->iso;
         $date->add_day;
         my $dayend = $date->iso;
@@ -635,7 +635,7 @@ sub _trans_date_limit {
         # particular single day.  in the database, we need to check for >
         # and < the edges of that day.
 
-        $date->set_to_midnight( timezone => 'server' );
+        $date->set_to_midnight( time_zone => 'server' );
         my $daystart = $date->iso;
         $date->add_day;
         my $dayend = $date->iso;
