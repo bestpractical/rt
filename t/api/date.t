@@ -12,9 +12,10 @@ use Test::Warn;
 use_ok('RT::DateTime');
 
 {
-    my $date = RT::DateTime->now(current_user => RT->system_user);
+    my $system = RT->system_user;
+    my $date = RT::DateTime->now(current_user => $system);
     isa_ok($date, 'RT::DateTime', "constructor returned RT::DateTime oject");
-    is($date->current_user, RT->system_user, "correctly set the datetime's current_user");
+    is($date->current_user, $system, "correctly set the datetime's current_user");
 }
 
 {
