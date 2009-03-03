@@ -61,6 +61,7 @@ ok ($id, $msg);
 ok ($id, $msg);
 is_empty ($u7->EmailAddress);
 
+RT->Config->Set('ValidateUserEmailAddresses' => 1);
 # Make sur we can't create a user with multiple email adresses separated by comma
 my $u8 = RT::User->new($RT::SystemUser);
 ($id, $msg) = $u8->Create(Name => 'CreateTest8'.$$, EmailAddress => $$.'create-test-81@example.com, '.$$.'create-test-82@example.com');
@@ -75,6 +76,7 @@ ok (!$id, $msg);
 my $u10 = RT::User->new($RT::SystemUser);
 ($id, $msg) = $u10->Create(Name => 'CreateTest10'.$$, EmailAddress => $$.'create-test10}@[.com');
 ok (!$id, $msg);
+RT->Config->Set('ValidateUserEmailAddresses' => undef);
 
 }
 
