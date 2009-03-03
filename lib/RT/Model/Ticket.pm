@@ -203,7 +203,7 @@ use Jifty::DBI::Record schema {
             return query =>
                 (!exists $phs->{'recursive'} || exists $phs->{'recursive'})
                 ? 'groups_watching.id = .role_groups{type => %role}.cgm.member_id'
-                ? 'groups_watching.id = .role_groups{type => %role}.gm.member_id';
+                : 'groups_watching.id = .role_groups{type => %role}.gm.member_id';
         };
 
     column links =>
