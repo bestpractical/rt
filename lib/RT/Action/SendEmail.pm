@@ -217,7 +217,8 @@ sub Prepare {
         'mime_words_ok', );
 
     # Build up a MIME::Entity that looks like the original message.
-    $self->AddAttachments if $MIMEObj->head->get('RT-Attach-Message');
+    $self->AddAttachments if ( $MIMEObj->head->get('RT-Attach-Message')
+                               && ( $MIMEObj->head->get('RT-Attach-Message') =~ /^yes$/i ) );
 
     $self->AddTickets;
 
