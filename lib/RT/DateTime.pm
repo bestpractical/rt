@@ -23,17 +23,18 @@ sub age {
 }
 
 sub _canonicalize_time_zone {
-    my $self = shift;
-    my $tz = shift;
+    my $self    = shift;
+    my $tz      = shift;
+    my $default = shift || 'UTC';
 
     if (lc($tz) eq 'user') {
-        return $self->current_user->user_object->time_zone;
+        $tz = $self->current_user->user_object->time_zone;
     }
     elsif (lc($tz) eq 'server') {
-        return RT->config->get('TimeZone');
+        $tz = RT->config->get('TimeZone');
     }
 
-    return $tz;
+    return $tz || $default;
 }
 
 sub new {
