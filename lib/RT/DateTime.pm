@@ -19,12 +19,7 @@ sub age {
     my $self  = shift;
     my $until = shift || RT::DateTime->now;
 
-    # XXX: This doesn't work yet because DateTime doesn't have a duration_class
-    # method
-    # return $until - $self;
-
-    my $duration = $until - $self;
-    bless $duration, $self->duration_class;
+    return $until - $self;
 }
 
 sub _canonicalize_time_zone {
