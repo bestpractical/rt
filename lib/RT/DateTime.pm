@@ -27,5 +27,36 @@ sub age {
     bless $duration, $self->duration_class;
 }
 
+sub _canonicalize_time_zone {
+    my $self = shift;
+    my $tz = shift;
+
+    if (lc($tz) eq 'user') {
+        return $self->current_user->time_zone;
+    }
+    elsif (lc($tz) eq 'server') {
+        return RT->config->get('TimeZone');
+    }
+
+    return $tz;
+}
+
+sub new {
+    my $self = shift;
+    my %args = @_;
+
+    $args{time_zone} = $self->_canonicalize_time_zone($args{time_zone})
+        if defined $args{time_zone};
+
+    return $self->SUPER::new(%args);
+}
+
+sub set_time_zone {
+    my $self = shift;
+    my $tz   = shift;
+
+    return $self->SUPER::set_time_zone($self->_canonicalize_time_zone($tz));
+}
+
 1;
 
