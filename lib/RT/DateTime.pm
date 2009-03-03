@@ -32,7 +32,7 @@ sub _canonicalize_time_zone {
     my $tz = shift;
 
     if (lc($tz) eq 'user') {
-        return $self->current_user->time_zone;
+        return $self->current_user->user_object->time_zone;
     }
     elsif (lc($tz) eq 'server') {
         return RT->config->get('TimeZone');
