@@ -62,29 +62,37 @@ sub run_tests {
     { subject => 'z', requestor => 'z@example.com' },
 );
 %test = (
-    '.watchers{"requestor"}.email = "x@example.com"'  => { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
-    '.watchers{"requestor"}.email != "x@example.com"' => { xy => 0, x => 0, y => 1, '-' => 1, z => 1 },
+    '.watchers{role => "requestor"}.email = "x@example.com"'  => { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
+    '.watchers{role => "requestor"}.email != "x@example.com"' => { xy => 0, x => 0, y => 1, '-' => 1, z => 1 },
 
-    '.watchers{"requestor"}.email = "y@example.com"'  => { xy => 1, x => 0, y => 1, '-' => 0, z => 0 },
-    '.watchers{"requestor"}.email != "y@example.com"' => { xy => 0, x => 1, y => 0, '-' => 1, z => 1 },
+    '.watchers{role => "requestor"}.email = "y@example.com"'  => { xy => 1, x => 0, y => 1, '-' => 0, z => 0 },
+    '.watchers{role => "requestor"}.email != "y@example.com"' => { xy => 0, x => 1, y => 0, '-' => 1, z => 1 },
 
-    '.watchers{"requestor"}.email LIKE "@example.com"'     => { xy => 1, x => 1, y => 1, '-' => 0, z => 1 },
-    '.watchers{"requestor"}.email NOT LIKE "@example.com"' => { xy => 0, x => 0, y => 0, '-' => 1, z => 0 },
+    '.watchers{role => "requestor"}.email LIKE "@example.com"'     => { xy => 1, x => 1, y => 1, '-' => 0, z => 1 },
+    '.watchers{role => "requestor"}.email NOT LIKE "@example.com"' => { xy => 0, x => 0, y => 0, '-' => 1, z => 0 },
 
-    'has no .watchers{"requestor"}'            => { xy => 0, x => 0, y => 0, '-' => 1, z => 0 },
-    'has .watchers{"requestor"}'         => { xy => 1, x => 1, y => 1, '-' => 0, z => 1 },
+    'has no .watchers{role => "requestor"}'            => { xy => 0, x => 0, y => 0, '-' => 1, z => 0 },
+    'has    .watchers{role => "requestor"}'         => { xy => 1, x => 1, y => 1, '-' => 0, z => 1 },
 
-    '.watchers{"requestor"}.email = "x@example.com" AND .watchers{"requestor"}.email = "y@example.com"'   => { xy => 1, x => 0, y => 0, '-' => 0, z => 0 },
-    '.watchers{"requestor"}.email = "x@example.com" OR .watchers{"requestor"}.email = "y@example.com"'    => { xy => 1, x => 1, y => 1, '-' => 0, z => 0 },
+    '.watchers{role => "requestor"}.email = "x@example.com" AND .watchers{role => "requestor"}.email = "y@example.com"'
+        => { xy => 1, x => 0, y => 0, '-' => 0, z => 0 },
+    '.watchers{role => "requestor"}.email = "x@example.com" OR .watchers{role => "requestor"}.email = "y@example.com"'
+        => { xy => 1, x => 1, y => 1, '-' => 0, z => 0 },
 
-    '.watchers{"requestor"}.email != "x@example.com" AND .watchers{"requestor"}.email != "y@example.com"' => { xy => 0, x => 0, y => 0, '-' => 1, z => 1 },
-    '.watchers{"requestor"}.email != "x@example.com" OR .watchers{"requestor"}.email != "y@example.com"'  => { xy => 0, x => 1, y => 1, '-' => 1, z => 1 },
+    '.watchers{role => "requestor"}.email != "x@example.com" AND .watchers{role => "requestor"}.email != "y@example.com"'
+        => { xy => 0, x => 0, y => 0, '-' => 1, z => 1 },
+    '.watchers{role => "requestor"}.email != "x@example.com" OR .watchers{role => "requestor"}.email != "y@example.com"'
+        => { xy => 0, x => 1, y => 1, '-' => 1, z => 1 },
 
-    '.watchers{"requestor"}.email = "x@example.com" AND .watchers{"requestor"}.email != "y@example.com"'  => { xy => 0, x => 1, y => 0, '-' => 0, z => 0 },
-    '.watchers{"requestor"}.email = "x@example.com" OR .watchers{"requestor"}.email != "y@example.com"'   => { xy => 1, x => 1, y => 0, '-' => 1, z => 1 },
+    '.watchers{role => "requestor"}.email = "x@example.com" AND .watchers{role => "requestor"}.email != "y@example.com"'
+        => { xy => 0, x => 1, y => 0, '-' => 0, z => 0 },
+    '.watchers{role => "requestor"}.email = "x@example.com" OR .watchers{role => "requestor"}.email != "y@example.com"'
+        => { xy => 1, x => 1, y => 0, '-' => 1, z => 1 },
 
-    '.watchers{"requestor"}.email != "x@example.com" AND .watchers{"requestor"}.email = "y@example.com"'  => { xy => 0, x => 0, y => 1, '-' => 0, z => 0 },
-    '.watchers{"requestor"}.email != "x@example.com" OR .watchers{"requestor"}.email = "y@example.com"'   => { xy => 1, x => 0, y => 1, '-' => 1, z => 1 },
+    '.watchers{role => "requestor"}.email != "x@example.com" AND .watchers{role => "requestor"}.email = "y@example.com"'
+        => { xy => 0, x => 0, y => 1, '-' => 0, z => 0 },
+    '.watchers{role => "requestor"}.email != "x@example.com" OR .watchers{role => "requestor"}.email = "y@example.com"'
+        => { xy => 1, x => 0, y => 1, '-' => 1, z => 1 },
 );
 @tickets = add_tix_from_data();
 {
@@ -97,49 +105,49 @@ run_tests();
 # mixing searches by watchers with other conditions
 # http://rt3.fsck.com/Ticket/Display.html?id=9322
 %test = (
-    '.subject LIKE "x" AND .watchers{"requestor"}.email = "y@example.com"' =>
+    '.subject LIKE "x" AND .watchers{role => "requestor"}.email = "y@example.com"' =>
         { xy => 1, x => 0, y => 0, '-' => 0, z => 0 },
-    '.subject NOT LIKE "x" AND .watchers{"requestor"}.email = "y@example.com"' =>
+    '.subject NOT LIKE "x" AND .watchers{role => "requestor"}.email = "y@example.com"' =>
         { xy => 0, x => 0, y => 1, '-' => 0, z => 0 },
-    '.subject LIKE "x" AND .watchers{"requestor"}.email != "y@example.com"' =>
+    '.subject LIKE "x" AND .watchers{role => "requestor"}.email != "y@example.com"' =>
         { xy => 0, x => 1, y => 0, '-' => 0, z => 0 },
-    '.subject NOT LIKE "x" AND .watchers{"requestor"}.email != "y@example.com"' =>
+    '.subject NOT LIKE "x" AND .watchers{role => "requestor"}.email != "y@example.com"' =>
         { xy => 0, x => 0, y => 0, '-' => 1, z => 1 },
 
-    '.subject LIKE "x" OR .watchers{"requestor"}.email = "y@example.com"' =>
+    '.subject LIKE "x" OR .watchers{role => "requestor"}.email = "y@example.com"' =>
         { xy => 1, x => 1, y => 1, '-' => 0, z => 0 },
-    '.subject NOT LIKE "x" OR .watchers{"requestor"}.email = "y@example.com"' =>
+    '.subject NOT LIKE "x" OR .watchers{role => "requestor"}.email = "y@example.com"' =>
         { xy => 1, x => 0, y => 1, '-' => 1, z => 1 },
-    '.subject LIKE "x" OR .watchers{"requestor"}.email != "y@example.com"' =>
+    '.subject LIKE "x" OR .watchers{role => "requestor"}.email != "y@example.com"' =>
         { xy => 1, x => 1, y => 0, '-' => 1, z => 1 },
-    '.subject NOT LIKE "x" OR .watchers{"requestor"}.email != "y@example.com"' =>
+    '.subject NOT LIKE "x" OR .watchers{role => "requestor"}.email != "y@example.com"' =>
         { xy => 0, x => 1, y => 1, '-' => 1, z => 1 },
 
 # group of cases when user doesnt exist in DB at all
-    '.subject LIKE "x" AND .watchers{"requestor"}.email = "not-exist@example.com"' =>
+    '.subject LIKE "x" AND .watchers{role => "requestor"}.email = "not-exist@example.com"' =>
         { xy => 0, x => 0, y => 0, '-' => 0, z => 0 },
-    '.subject NOT LIKE "x" AND .watchers{"requestor"}.email = "not-exist@example.com"' =>
+    '.subject NOT LIKE "x" AND .watchers{role => "requestor"}.email = "not-exist@example.com"' =>
         { xy => 0, x => 0, y => 0, '-' => 0, z => 0 },
-    '.subject LIKE "x" AND .watchers{"requestor"}.email != "not-exist@example.com"' =>
+    '.subject LIKE "x" AND .watchers{role => "requestor"}.email != "not-exist@example.com"' =>
         { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
-    '.subject NOT LIKE "x" AND .watchers{"requestor"}.email != "not-exist@example.com"' =>
+    '.subject NOT LIKE "x" AND .watchers{role => "requestor"}.email != "not-exist@example.com"' =>
         { xy => 0, x => 0, y => 1, '-' => 1, z => 1 },
-    '.subject LIKE "x" OR .watchers{"requestor"}.email = "not-exist@example.com"' =>
+    '.subject LIKE "x" OR .watchers{role => "requestor"}.email = "not-exist@example.com"' =>
         { xy => 1, x => 1, y => 0, '-' => 0, z => 0 },
-    '.subject NOT LIKE "x" OR .watchers{"requestor"}.email = "not-exist@example.com"' =>
+    '.subject NOT LIKE "x" OR .watchers{role => "requestor"}.email = "not-exist@example.com"' =>
         { xy => 0, x => 0, y => 1, '-' => 1, z => 1 },
-    '.subject LIKE "x" OR .watchers{"requestor"}.email != "not-exist@example.com"' =>
+    '.subject LIKE "x" OR .watchers{role => "requestor"}.email != "not-exist@example.com"' =>
         { xy => 1, x => 1, y => 1, '-' => 1, z => 1 },
-    '.subject NOT LIKE "x" OR .watchers{"requestor"}.email != "not-exist@example.com"' =>
+    '.subject NOT LIKE "x" OR .watchers{role => "requestor"}.email != "not-exist@example.com"' =>
         { xy => 1, x => 1, y => 1, '-' => 1, z => 1 },
 
-    '.subject LIKE "z" AND (.watchers{"requestor"}.email = "x@example.com" OR .watchers{"requestor"}.email = "y@example.com")' =>
+    '.subject LIKE "z" AND (.watchers{role => "requestor"}.email = "x@example.com" OR .watchers{role => "requestor"}.email = "y@example.com")' =>
         { xy => 0, x => 0, y => 0, '-' => 0, z => 0 },
-    '.subject NOT LIKE "z" AND (.watchers{"requestor"}.email = "x@example.com" OR .watchers{"requestor"}.email = "y@example.com")' =>
+    '.subject NOT LIKE "z" AND (.watchers{role => "requestor"}.email = "x@example.com" OR .watchers{role => "requestor"}.email = "y@example.com")' =>
         { xy => 1, x => 1, y => 1, '-' => 0, z => 0 },
-    '.subject LIKE "z" OR (.watchers{"requestor"}.email = "x@example.com" OR .watchers{"requestor"}.email = "y@example.com")' =>
+    '.subject LIKE "z" OR (.watchers{role => "requestor"}.email = "x@example.com" OR .watchers{role => "requestor"}.email = "y@example.com")' =>
         { xy => 1, x => 1, y => 1, '-' => 0, z => 1 },
-    '.subject NOT LIKE "z" OR (.watchers{"requestor"}.email = "x@example.com" OR .watchers{"requestor"}.email = "y@example.com")' =>
+    '.subject NOT LIKE "z" OR (.watchers{role => "requestor"}.email = "x@example.com" OR .watchers{role => "requestor"}.email = "y@example.com")' =>
         { xy => 1, x => 1, y => 1, '-' => 1, z => 0 },
 
     );
@@ -156,24 +164,24 @@ run_tests();
     { subject => '-z', cc => [],                requestor => [ 'z@example.com' ] },
 );
 %test = (
-    '.watchers{"cc"}.email = "x@example.com" AND .watchers{"requestor"}.email = "y@example.com"' =>
+    '.watchers{role => "cc"}.email = "x@example.com" AND .watchers{role => "requestor"}.email = "y@example.com"' =>
         { xy => 1, 'x-' => 0, '-y' => 0, '-' => 0, zz => 0, 'z-' => 0, '-z' => 0 },
-    '.watchers{"cc"}.email = "x@example.com" OR .watchers{"requestor"}.email = "y@example.com"' =>
+    '.watchers{role => "cc"}.email = "x@example.com" OR .watchers{role => "requestor"}.email = "y@example.com"' =>
         { xy => 1, 'x-' => 1, '-y' => 1, '-' => 0, zz => 0, 'z-' => 0, '-z' => 0 },
 
-    '.watchers{"cc"}.email != "x@example.com" AND .watchers{"requestor"}.email = "y@example.com"' =>
+    '.watchers{role => "cc"}.email != "x@example.com" AND .watchers{role => "requestor"}.email = "y@example.com"' =>
         { xy => 0, 'x-' => 0, '-y' => 1, '-' => 0, zz => 0, 'z-' => 0, '-z' => 0 },
-    '.watchers{"cc"}.email != "x@example.com" OR .watchers{"requestor"}.email = "y@example.com"' =>
+    '.watchers{role => "cc"}.email != "x@example.com" OR .watchers{role => "requestor"}.email = "y@example.com"' =>
         { xy => 1, 'x-' => 0, '-y' => 1, '-' => 1, zz => 1, 'z-' => 1, '-z' => 1 },
 
-    'has no .watchers{"cc"} AND .watchers{"requestor"}.email = "y@example.com"' =>
+    'has no .watchers{role => "cc"} AND .watchers{role => "requestor"}.email = "y@example.com"' =>
         { xy => 0, 'x-' => 0, '-y' => 1, '-' => 0, zz => 0, 'z-' => 0, '-z' => 0 },
-    'has no .watchers{"cc"} OR .watchers{"requestor"}.email = "y@example.com"' =>
+    'has no .watchers{role => "cc"} OR .watchers{role => "requestor"}.email = "y@example.com"' =>
         { xy => 1, 'x-' => 0, '-y' => 1, '-' => 1, zz => 0, 'z-' => 0, '-z' => 1 },
 
-    'has .watchers{"cc"} AND .watchers{"requestor"}.email = "y@example.com"' =>
+    'has .watchers{role => "cc"} AND .watchers{role => "requestor"}.email = "y@example.com"' =>
         { xy => 1, 'x-' => 0, '-y' => 0, '-' => 0, zz => 0, 'z-' => 0, '-z' => 0 },
-    'has .watchers{"cc"} OR .watchers{"requestor"}.email = "y@example.com"' =>
+    'has .watchers{role => "cc"} OR .watchers{role => "requestor"}.email = "y@example.com"' =>
         { xy => 1, 'x-' => 1, '-y' => 1, '-' => 0, zz => 1, 'z-' => 1, '-z' => 0 },
 );
 @tickets = add_tix_from_data();
@@ -190,30 +198,28 @@ run_tests();
 my $nobody = RT->nobody();
 {
     my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
-    $tix->from_sql("Queue = '$queue' AND Owner = '". $nobody->id ."'");
+    $tix->from_sql(".queue.name = '$queue' AND .owner = '". $nobody->id ."'");
     ok($tix->count, "found ticket(s)");
 }
 {
     my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
-    $tix->from_sql("Queue = '$queue' AND Owner = '". $nobody->name ."'");
+    $tix->from_sql(".queue.name = '$queue' AND .owner.name = '". $nobody->name ."'");
     ok($tix->count, "found ticket(s)");
 }
 {
     my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
-    $tix->from_sql("Queue = '$queue' AND Owner != '". $nobody->id ."'");
+    $tix->from_sql(".queue.name = '$queue' AND .owner.id != '". $nobody->id ."'");
+    is($tix->count, 0, "found ticket(s)") or diag "wrong sql: ". $tix->build_select_query;
+}
+{
+    my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
+    $tix->from_sql(".queue.name = '$queue' AND .owner.name != '". $nobody->name ."'");
     is($tix->count, 0, "found ticket(s)");
 }
 {
     my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
-    $tix->from_sql("Queue = '$queue' AND Owner != '". $nobody->name ."'");
-    is($tix->count, 0, "found ticket(s)");
-}
-
-{
-    my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
-    $tix->from_sql("Queue = '$queue' AND Owner.name LIKE 'nob'");
+    $tix->from_sql(".queue.name = '$queue' AND .owner.name LIKE 'nob'");
     ok($tix->count, "found ticket(s)");
-
 }
 
 {
@@ -230,7 +236,7 @@ my $nobody = RT->nobody();
     $total--;
 
     my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
-    $tix->from_sql("Queue = '$queue' AND Owner = 'Nobody'");
+    $tix->from_sql(".queue.name = '$queue' AND .owner.name = 'Nobody'");
     is($tix->count, $total, "found ticket(s)");
 }
 
@@ -260,9 +266,9 @@ my $nobody = RT->nobody();
     my $u_bravo_id = $u->id;
 
     my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
-    $tix->from_sql("Queue = '$queue' AND
-                   ( Owner = '$u_alpha_id' OR
-                     Owner = '$u_bravo_id' )"
+    $tix->from_sql(".queue.name = '$queue' AND
+                   ( .owner.id = '$u_alpha_id' OR
+                     .owner.id = '$u_bravo_id' )"
                  );
     is($tix->count, 2, "found ticket(s)");
 }
