@@ -525,8 +525,7 @@ sub _date_limit {
     die "Incorrect Meta Data for $field"
         unless ( defined $meta->[1] );
 
-    my $date = RT::Date->new();
-    $date->set( format => 'unknown', value => $value );
+    my $date = RT::DateTime->new_from_string($value);
 
     if ( $op eq "=" ) {
 
@@ -625,8 +624,7 @@ sub _trans_date_limit {
         );
     }
 
-    my $date = RT::Date->new();
-    $date->set( format => 'unknown', value => $value );
+    my $date = RT::DateTime->new_from_string($value);
 
     $sb->open_paren;
     if ( $op eq "=" ) {

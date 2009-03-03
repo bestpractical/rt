@@ -42,7 +42,6 @@ my $current_user;
     is($date->time_zone->name, 'UTC', "dropped all timzones to UTC");
     is($date->set_time_zone('user')->time_zone->name, 'UTC', "dropped all timzones to UTC");
     is($date->set_time_zone('server')->time_zone->name, 'UTC', "dropped all timzones to UTC");
-    is($date->set_time_zone('unknown')->time_zone->name, 'UTC', "with wrong context returns UTC");
 
     $current_user->user_object->__set( column => 'time_zone', value => 'Europe/Moscow');
     is($current_user->user_object->time_zone,
@@ -51,7 +50,7 @@ my $current_user;
     is($date->set_time_zone('user')->time_zone->name,
        'Europe/Moscow',
        "in user context returns user's time_zone");
-    is($date->time_zone->name, 'UTC', "the deafult value is always UTC");
+    is($date->time_zone->name, 'UTC', "the default value is always UTC");
     is($date->set_time_zone('server')->time_zone->name, 'UTC', "wasn't changed");
 
     RT->config->set( TimeZone => 'Africa/Ouagadougou' );
@@ -61,7 +60,7 @@ my $current_user;
     is($date->set_time_zone('user')->time_zone->name,
        'Europe/Moscow',
        "in user context still returns user's time_zone");
-    is($date->time_zone->name, 'UTC', "the deafult value is always UTC");
+    is($date->time_zone->name, 'UTC', "the default value is always UTC");
 
     $current_user->user_object->__set( column => 'time_zone', value => '');
     is($current_user->user_object->time_zone,
@@ -70,7 +69,7 @@ my $current_user;
     is($date->set_time_zone('user')->time_zone->name,
        'Africa/Ouagadougou',
        "in user context returns time zone of the server if user's one is not defined");
-    is($date->time_zone->name, 'UTC', "the deafult value is always UTC");
+    is($date->time_zone->name, 'UTC', "the default value is always UTC");
 
     RT->config->set( TimeZone => 'GMT' );
     is($date->set_time_zone('server')->time_zone->name,

@@ -394,13 +394,11 @@ sub create_ticket {
 
     my $due;
     if ( defined $ARGS{'Due'} and $ARGS{'Due'} =~ /\S/ ) {
-        $due = new RT::Date( current_user => Jifty->web->current_user );
-        $due->set( format => 'unknown', value => $ARGS{'Due'} );
+        $due = RT::DateTime->new_from_string($ARGS{'Due'});
     }
     my $starts;
     if ( defined $ARGS{'Starts'} and $ARGS{'Starts'} =~ /\S/ ) {
-        $starts = new RT::Date( current_user => Jifty->web->current_user );
-        $starts->set( format => 'unknown', value => $ARGS{'Starts'} );
+        $starts = RT::DateTime->new_from_string($ARGS{'Starts'});
     }
 
     my $sigless = RT::Interface::Web::strip_content(
@@ -812,12 +810,7 @@ Returns an ISO date and time in GMT
 sub parse_date_to_iso {
     my $date = shift;
 
-    my $date_obj = RT::Date->new();
-    $date_obj->set(
-        format => 'unknown',
-        value  => $date
-    );
-    return ( $date_obj->iso );
+    return RT::DateTime->new_from_string($date)->iso;
 }
 
 
@@ -1342,11 +1335,8 @@ sub process_ticket_dates {
 
         my ( $code, $msg );
 
-        my $DateObj = RT::Date->new();
-        $DateObj->set(
-            format => 'unknown',
-            value  => $args_ref->{ $field . '_date' }
-        );
+        my $date = $args_ref->{ $field . '_date' };
+        my $DateObj = RT::DateTime->new_from_string($date);
 
         my $obj = $field . "_obj";
         if (    ( defined $DateObj->epoch )

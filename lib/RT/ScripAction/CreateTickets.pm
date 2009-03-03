@@ -685,17 +685,9 @@ sub parse_lines {
     }
 
     foreach my $date qw(due starts started resolved) {
-        my $dateobj = RT::Date->new;
         next unless $args{$date};
-        if ( $args{$date} =~ /^\d+$/ ) {
-            $dateobj->set( format => 'unix', value => $args{$date} );
-        } else {
-            eval { $dateobj->set( format => 'iso', value => $args{$date} ); };
-            if ( $@ or $dateobj->epoch <= 0 ) {
-                $dateobj->set( format => 'unknown', value => $args{$date} );
-            }
-        }
-        $args{$date} = $dateobj->iso;
+        my $dt = RT::DateTime->new_from_string($args{$date});
+        $args{$date} = $dt->iso;
     }
 
     $args{'requestor'} ||= $self->ticket_obj->role_group("requestor")->member_emails
