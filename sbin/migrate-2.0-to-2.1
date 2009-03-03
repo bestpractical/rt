@@ -240,6 +240,7 @@ while ( my $article = $articles->Next ) {
 
 # record transactions
 #
+use RT::FM::TransactionCollection;
 my $txns = RT::FM::TransactionCollection->new($RT::SystemUser);
 $txns->UnLimit();
 
