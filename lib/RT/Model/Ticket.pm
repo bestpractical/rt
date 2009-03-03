@@ -82,6 +82,54 @@ use MIME::Entity;
 
 sub table {'Tickets'}
 
+# A helper table for links mapping to make it easier
+# to build and parse links between tickets
+
+our %LINKTYPEMAP = (
+    MemberOf => {
+        type => 'MemberOf',
+        mode => 'target',
+    },
+    Parents => {
+        type => 'MemberOf',
+        mode => 'target',
+    },
+    Members => {
+        type => 'MemberOf',
+        mode => 'base',
+    },
+    Children => {
+        type => 'MemberOf',
+        mode => 'base',
+    },
+    HasMember => {
+        type => 'MemberOf',
+        mode => 'base',
+    },
+    RefersTo => {
+        type => 'RefersTo',
+        mode => 'target',
+    },
+    ReferredToBy => {
+        type => 'RefersTo',
+        mode => 'base',
+    },
+    DependsOn => {
+        type => 'DependsOn',
+        mode => 'target',
+    },
+    DependedOnBy => {
+        type => 'DependsOn',
+        mode => 'base',
+    },
+    MergedInto => {
+        type => 'MergedInto',
+        mode => 'target',
+    },
+
+);
+
+
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
 
@@ -151,6 +199,47 @@ use Jifty::DBI::Record schema {
     column recursive_groups_watching =>
         references RT::Model::GroupCollection
         by tisql => 'recursive_groups_watching.id = .role_groups{%1}.cgm.member_id';
+
+    column links =>
+        references RT::Model::LinkCollection
+        by tisql => sub {
+            my %args = (
+                parser => undef,
+                tisql => undef,
+                placeholders => undef,
+                @_
+            );
+
+            my $types = $args{'placeholders'}{'type'};
+            unless ( $types ) {
+                return query => '(links.local_base = .id OR links.local_target = .id) AND links.type = %type';
+            }
+            
+            my $mode = '';
+            for my $type ( splice @$types ) {
+                die "'$type' is not correct type of a link for ticket"
+                    unless my $meta = $LINKTYPEMAP{ $type };
+
+                if ( $mode && $mode ne $meta->{'mode'} ) {
+                    die "Can not mix link types with different direction in one join";
+                }
+                $mode = $meta->{'mode'};
+                push @$types, $meta->{'type'};
+            }
+
+            if ( $mode eq 'base' ) {
+                return query => 'links.local_target = .id AND links.type = %type';
+            }
+            else {
+                return query => 'links.local_base = .id AND links.type = %type';
+            }
+        };
+    column links_to =>
+        references RT::Model::LinkCollection
+        by tisql => 'links.local_base = .id AND links.type = %type';
+    column links_from =>
+        references RT::Model::LinkCollection
+        by tisql => 'links.local_target = .id AND links.type = %type';
 };
 
 use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
@@ -159,54 +248,6 @@ use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
     updated_by => 'last_updated_by',
     updated_on => 'last_updated'
 };
-
-
-# A helper table for links mapping to make it easier
-# to build and parse links between tickets
-
-our %LINKTYPEMAP = (
-    MemberOf => {
-        type => 'MemberOf',
-        mode => 'target',
-    },
-    Parents => {
-        type => 'MemberOf',
-        mode => 'target',
-    },
-    Members => {
-        type => 'MemberOf',
-        mode => 'base',
-    },
-    Children => {
-        type => 'MemberOf',
-        mode => 'base',
-    },
-    HasMember => {
-        type => 'MemberOf',
-        mode => 'base',
-    },
-    RefersTo => {
-        type => 'RefersTo',
-        mode => 'target',
-    },
-    ReferredToBy => {
-        type => 'RefersTo',
-        mode => 'base',
-    },
-    DependsOn => {
-        type => 'DependsOn',
-        mode => 'target',
-    },
-    DependedOnBy => {
-        type => 'DependsOn',
-        mode => 'base',
-    },
-    MergedInto => {
-        type => 'MergedInto',
-        mode => 'target',
-    },
-
-);
 
 
 # A helper table for links mapping to make it easier
