@@ -125,6 +125,17 @@ use Jifty::DBI::Record schema {
     column timezone => max_length is 50,  type is 'varchar(50)',  default is '';
     column pgp_key   => type is 'text';
 
+    column member_of =>
+        references RT::Model::Group
+        by tisql => sub {
+            my %args = (@_);
+            my $phs = $args{'placeholders'};
+            return query =>
+                (!exists $phs->{'recursive'} || exists $phs->{'recursive'})
+                ? 'member_of.cgm.user_id = .id'
+                : 'member_of.gm.user_id  = .id';
+        };
+
 };
 
 use Jifty::Plugin::User::Mixin::Model::User;    # name, email, email_confirmed

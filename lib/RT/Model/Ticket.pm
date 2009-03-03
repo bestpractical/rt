@@ -182,23 +182,29 @@ use Jifty::DBI::Record schema {
         references RT::Model::GroupCollection
         by tisql => 'role_groups.instance = .id'
             .' AND role_groups.domain = "RT::Model::Ticket-Role"'
-            .' AND role_groups.type = %1';
+            .' AND role_groups.type = %type';
 
     column watchers =>
         references RT::Model::UserCollection
-        by tisql => 'watchers.id = .role_groups{%1}.gm.member_id';
-
-    column recursive_watchers =>
-        references RT::Model::UserCollection
-        by tisql => 'recursive_watchers.id = .role_groups{%1}.cgm.member_id';
+        by tisql => sub {
+            my %args = (@_);
+            my $phs = $args{'placeholders'};
+            return query =>
+                (!exists $phs->{'recursive'} || exists $phs->{'recursive'})
+                ? 'watchers.id = .role_groups{type => %role}.cgm.member_id'
+                : 'watchers.id = .role_groups{type => %role}.gm.member_id';
+        };
 
     column groups_watching =>
         references RT::Model::GroupCollection
-        by tisql => 'groups_watching.id = .role_groups{%1}.gm.member_id';
-
-    column recursive_groups_watching =>
-        references RT::Model::GroupCollection
-        by tisql => 'recursive_groups_watching.id = .role_groups{%1}.cgm.member_id';
+        by tisql => sub {
+            my %args = (@_);
+            my $phs = $args{'placeholders'};
+            return query =>
+                (!exists $phs->{'recursive'} || exists $phs->{'recursive'})
+                ? 'groups_watching.id = .role_groups{type => %role}.cgm.member_id'
+                ? 'groups_watching.id = .role_groups{type => %role}.gm.member_id';
+        };
 
     column links =>
         references RT::Model::LinkCollection
