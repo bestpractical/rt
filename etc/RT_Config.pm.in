@@ -313,6 +313,16 @@ template for the rejection message.
 
 Set($SenderMustExistInExternalDatabase , undef);
 
+=item C<$ValidateUserEmailAddresses>
+
+If C<$ValidateUserEmailAddresses> is true, RT will refuse to create users with
+an invalid email address (as specified in RFC 2822) or with an email address
+made of multiple email adresses.
+
+=cut
+
+Set($ValidateUserEmailAddresses, undef);
+
 =item C<@MailPlugins>
 
 C<@MailPlugins> is a list of auth plugins for L<RT::Interface::Email>

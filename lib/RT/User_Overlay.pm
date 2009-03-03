@@ -530,9 +530,11 @@ sub ValidateEmailAddress {
     # if the email address is null, it's always valid
     return (1) if ( !$Value || $Value eq "" );
 
-    # We only allow one valid email address
-    my @addresses = Email::Address->parse($Value);
-    return ( 0, $self->loc('Invalid syntax for email address') ) unless ( ( scalar (@addresses) == 1 ) && ( $addresses[0]->address ) );
+    if ( RT->Config->Get('ValidateUserEmailAddresses') ) {
+        # We only allow one valid email address
+        my @addresses = Email::Address->parse($Value);
+        return ( 0, $self->loc('Invalid syntax for email address') ) unless ( ( scalar (@addresses) == 1 ) && ( $addresses[0]->address ) );
+    }
 
 
     my $TempUser = RT::User->new($RT::SystemUser);
