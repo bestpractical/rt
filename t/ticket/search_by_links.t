@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 80;
+use Test::More tests => 76;
 use RT::Test;
 use RT::Model::Ticket;
 
@@ -30,10 +30,10 @@ sub add_tix_from_data {
 }
 
 sub run_tests {
-    my $query_prefix = join ' OR ', map 'id = '. $_->id, @tickets;
+    my @ids = map $_->id, @tickets;
     foreach my $key ( sort keys %test ) {
         my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
-        $tix->from_sql( "( $query_prefix ) AND ( $key )" );
+        $tix->tisql->query( "( $key ) AND .id = ?", [ @ids ] );
 
         my $error = 0;
 
@@ -49,7 +49,7 @@ sub run_tests {
         }
         ok( $good_tickets, "all tickets are good with '$key'" ) or $error = 1;
 
-        diag "Wrong SQL query for '$key':". $tix->BuildSelectQuery if $error;
+        diag "Wrong SQL query for '$key':". $tix->build_select_query if $error;
     }
 }
 
@@ -61,26 +61,27 @@ sub run_tests {
 );
 @tickets = add_tix_from_data();
 %test = (
-    'Linked     IS NOT NULL'  => { '-' => 0, c => 1, p => 1 },
-    'Linked     IS     NULL'  => { '-' => 1, c => 0, p => 0 },
-    'LinkedTo   IS NOT NULL'  => { '-' => 0, c => 1, p => 0 },
-    'LinkedTo   IS     NULL'  => { '-' => 1, c => 0, p => 1 },
-    'LinkedFrom IS NOT NULL'  => { '-' => 0, c => 0, p => 1 },
-    'LinkedFrom IS     NULL'  => { '-' => 1, c => 1, p => 0 },
+    'has    .links'       => { '-' => 0, c => 1, p => 1 },
+    'has no .links'       => { '-' => 1, c => 0, p => 0 },
+    'has    .links_to'    => { '-' => 0, c => 1, p => 0 },
+    'has no .links_to'    => { '-' => 1, c => 0, p => 1 },
+    'has    .links_from'  => { '-' => 0, c => 0, p => 1 },
+    'has no .links_from'  => { '-' => 1, c => 1, p => 0 },
 
-    'has_member  IS NOT NULL'  => { '-' => 0, c => 0, p => 1 },
-    'has_member  IS     NULL'  => { '-' => 1, c => 1, p => 0 },
-    'MemberOf   IS NOT NULL'  => { '-' => 0, c => 1, p => 0 },
-    'MemberOf   IS     NULL'  => { '-' => 1, c => 0, p => 1 },
+    'has    .links{type => "HasMember"}'  => { '-' => 0, c => 0, p => 1 },
+    'has no .links{type => "HasMember"}'  => { '-' => 1, c => 1, p => 0 },
+    'has    .links{type => "MemberOf"}'    => { '-' => 0, c => 1, p => 0 },
+    'has no .links{type => "MemberOf"}'    => { '-' => 1, c => 0, p => 1 },
 
-    'RefersTo   IS NOT NULL'  => { '-' => 0, c => 0, p => 0 },
-    'RefersTo   IS     NULL'  => { '-' => 1, c => 1, p => 1 },
+    'has    .links{type => "RefersTo"}'    => { '-' => 0, c => 0, p => 0 },
+    'has no .links{type => "RefersTo"}'    => { '-' => 1, c => 1, p => 1 },
 
-    'Linked      = '. $tickets[0]->id  => { '-' => 0, c => 0, p => 0 },
-    'Linked     != '. $tickets[0]->id  => { '-' => 1, c => 1, p => 1 },
+# TODO:
+#    '.linked      = '. $tickets[0]->id  => { '-' => 0, c => 0, p => 0 },
+#    '.linked     != '. $tickets[0]->id  => { '-' => 1, c => 1, p => 1 },
 
-    'MemberOf    = '. $tickets[1]->id  => { '-' => 0, c => 1, p => 0 },
-    'MemberOf   != '. $tickets[1]->id  => { '-' => 1, c => 0, p => 1 },
+    '.links{type => "MemberOf"}.local_target     = '. $tickets[1]->id  => { '-' => 0, c => 1, p => 0 },
+    '.links{type => "MemberOf"}.local_target    != '. $tickets[1]->id  => { '-' => 1, c => 0, p => 1 },
 );
 {
     my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
@@ -101,28 +102,44 @@ run_tests();
 @tickets = add_tix_from_data();
 my $pid = $tickets[1]->id;
 %test = (
-    'RefersTo IS NOT NULL'  => { '-' => 0, c => 0, p => 0, rp => 1, rc1 => 1, rc2 => 1 },
-    'RefersTo IS     NULL'  => { '-' => 1, c => 1, p => 1, rp => 0, rc1 => 0, rc2 => 0 },
+    'has    .links{type => "RefersTo"}' => { '-' => 0, c => 0, p => 0, rp => 1, rc1 => 1, rc2 => 1 },
+    'has no .links{type => "RefersTo"}' => { '-' => 1, c => 1, p => 1, rp => 0, rc1 => 0, rc2 => 0 },
 
-    'RefersTo IS NOT NULL AND MemberOf IS NOT NULL'  => { '-' => 0, c => 0, p => 0, rp => 0, rc1 => 0, rc2 => 0 },
-    'RefersTo IS NOT NULL AND MemberOf IS     NULL'  => { '-' => 0, c => 0, p => 0, rp => 1, rc1 => 1, rc2 => 1 },
-    'RefersTo IS     NULL AND MemberOf IS NOT NULL'  => { '-' => 0, c => 1, p => 0, rp => 0, rc1 => 0, rc2 => 0 },
-    'RefersTo IS     NULL AND MemberOf IS     NULL'  => { '-' => 1, c => 0, p => 1, rp => 0, rc1 => 0, rc2 => 0 },
+    'has    .links{type => "RefersTo"} AND has    .links{type => "MemberOf"}'
+        => { '-' => 0, c => 0, p => 0, rp => 0, rc1 => 0, rc2 => 0 },
+    'has    .links{type => "RefersTo"} AND has no .links{type => "MemberOf"}'
+        => { '-' => 0, c => 0, p => 0, rp => 1, rc1 => 1, rc2 => 1 },
+    'has no .links{type => "RefersTo"} AND has    .links{type => "MemberOf"}'
+        => { '-' => 0, c => 1, p => 0, rp => 0, rc1 => 0, rc2 => 0 },
+    'has no .links{type => "RefersTo"} AND has no .links{type => "MemberOf"}'
+        => { '-' => 1, c => 0, p => 1, rp => 0, rc1 => 0, rc2 => 0 },
 
-    'RefersTo IS NOT NULL OR  MemberOf IS NOT NULL'  => { '-' => 0, c => 1, p => 0, rp => 1, rc1 => 1, rc2 => 1 },
-    'RefersTo IS NOT NULL OR  MemberOf IS     NULL'  => { '-' => 1, c => 0, p => 1, rp => 1, rc1 => 1, rc2 => 1 },
-    'RefersTo IS     NULL OR  MemberOf IS NOT NULL'  => { '-' => 1, c => 1, p => 1, rp => 0, rc1 => 0, rc2 => 0 },
-    'RefersTo IS     NULL OR  MemberOf IS     NULL'  => { '-' => 1, c => 1, p => 1, rp => 1, rc1 => 1, rc2 => 1 },
+    'has    .links{type => "RefersTo"} OR  has    .links{type => "MemberOf"}'
+        => { '-' => 0, c => 1, p => 0, rp => 1, rc1 => 1, rc2 => 1 },
+    'has    .links{type => "RefersTo"} OR  has no .links{type => "MemberOf"}'
+        => { '-' => 1, c => 0, p => 1, rp => 1, rc1 => 1, rc2 => 1 },
+    'has no .links{type => "RefersTo"} OR  has    .links{type => "MemberOf"}'
+        => { '-' => 1, c => 1, p => 1, rp => 0, rc1 => 0, rc2 => 0 },
+    'has no .links{type => "RefersTo"} OR  has no .links{type => "MemberOf"}'
+        => { '-' => 1, c => 1, p => 1, rp => 1, rc1 => 1, rc2 => 1 },
 
-    "RefersTo  = $pid AND MemberOf  = $pid" => { '-' => 0, c => 0, p => 0, rp => 0, rc1 => 0, rc2 => 0 },
-    "RefersTo  = $pid AND MemberOf != $pid" => { '-' => 0, c => 0, p => 0, rp => 1, rc1 => 0, rc2 => 0 },
-    "RefersTo != $pid AND MemberOf  = $pid" => { '-' => 0, c => 1, p => 0, rp => 0, rc1 => 0, rc2 => 0 },
-    "RefersTo != $pid AND MemberOf != $pid" => { '-' => 1, c => 0, p => 1, rp => 0, rc1 => 1, rc2 => 1 },
+    ".links{type => 'RefersTo'}.local_target  = $pid AND .links{type => 'MemberOf'}.local_target  = $pid"
+        => { '-' => 0, c => 0, p => 0, rp => 0, rc1 => 0, rc2 => 0 },
+    ".links{type => 'RefersTo'}.local_target  = $pid AND .links{type => 'MemberOf'}.local_target != $pid"
+        => { '-' => 0, c => 0, p => 0, rp => 1, rc1 => 0, rc2 => 0 },
+    ".links{type => 'RefersTo'}.local_target != $pid AND .links{type => 'MemberOf'}.local_target  = $pid"
+        => { '-' => 0, c => 1, p => 0, rp => 0, rc1 => 0, rc2 => 0 },
+    ".links{type => 'RefersTo'}.local_target != $pid AND .links{type => 'MemberOf'}.local_target != $pid"
+        => { '-' => 1, c => 0, p => 1, rp => 0, rc1 => 1, rc2 => 1 },
 
-    "RefersTo  = $pid OR  MemberOf  = $pid" => { '-' => 0, c => 1, p => 0, rp => 1, rc1 => 0, rc2 => 0 },
-    "RefersTo  = $pid OR  MemberOf != $pid" => { '-' => 1, c => 0, p => 1, rp => 1, rc1 => 1, rc2 => 1 },
-    "RefersTo != $pid OR  MemberOf  = $pid" => { '-' => 1, c => 1, p => 1, rp => 0, rc1 => 1, rc2 => 1 },
-    "RefersTo != $pid OR  MemberOf != $pid" => { '-' => 1, c => 1, p => 1, rp => 1, rc1 => 1, rc2 => 1 },
+    ".links{type => 'RefersTo'}.local_target  = $pid OR  .links{type => 'MemberOf'}.local_target  = $pid"
+        => { '-' => 0, c => 1, p => 0, rp => 1, rc1 => 0, rc2 => 0 },
+    ".links{type => 'RefersTo'}.local_target  = $pid OR  .links{type => 'MemberOf'}.local_target != $pid"
+        => { '-' => 1, c => 0, p => 1, rp => 1, rc1 => 1, rc2 => 1 },
+    ".links{type => 'RefersTo'}.local_target != $pid OR  .links{type => 'MemberOf'}.local_target  = $pid"
+        => { '-' => 1, c => 1, p => 1, rp => 0, rc1 => 1, rc2 => 1 },
+    ".links{type => 'RefersTo'}.local_target != $pid OR  .links{type => 'MemberOf'}.local_target != $pid"
+        => { '-' => 1, c => 1, p => 1, rp => 1, rc1 => 1, rc2 => 1 },
 );
 {
     my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
