@@ -218,7 +218,7 @@ sub Prepare {
 
     # Build up a MIME::Entity that looks like the original message.
     $self->AddAttachments if ( $MIMEObj->head->get('RT-Attach-Message')
-                               && ( $MIMEObj->head->get('RT-Attach-Message') =~ /^yes$/i ) );
+                               && ( $MIMEObj->head->get('RT-Attach-Message') !~ /^(n|no|0|off|false)$/i ) );
 
     $self->AddTickets;
 
