@@ -45,9 +45,10 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<textarea class="messagebox" cols="<% $Width %>" rows="<% $Height %>" wrap="<% $Wrap %>" name="<% $Name %>">\
+<textarea class="messagebox" cols="<% $Width %>" rows="<% $Height %>" wrap="<% $Wrap %>" name="<% $Name %>" id="<% $Name %>">\
 % $m->callback( %ARGS );
 <% $Default || '' %><% $message %><% $signature %></textarea>
+% $m->callback( %ARGS, CallbackName => 'AfterTextArea' );
 <%INIT>
 
 my $message = '';
