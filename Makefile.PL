@@ -42,7 +42,6 @@ requires(
     'Devel::StackTrace'          => '1.19',
     'Text::Naming::Convention'   => 0,
     'DateTime'                   => '0.46',
-    'DateTime::Format::Mail'     => '0.30',
 );
 
 features(
