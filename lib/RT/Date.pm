@@ -897,7 +897,7 @@ sub timezone {
 
     my $tz;
     if ( $context eq 'user' ) {
-        $tz = $self->current_user->user_object->timezone;
+        $tz = $self->current_user->user_object->time_zone;
     } elsif ( $context eq 'server' ) {
         $tz = RT->config->get('Timezone');
     } else {
