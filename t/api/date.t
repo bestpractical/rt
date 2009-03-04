@@ -37,10 +37,11 @@ my $current_user;
     );
     ok($uid, "user was Created") or diag("error: $msg");
     $current_user = RT::CurrentUser->new(id => $user->id);
+    Jifty->web->current_user($current_user);
 }
 
 {
-    my $date = RT::DateTime->now(current_user => $current_user );
+    my $date = RT::DateTime->now;
     is($date->time_zone->name, 'UTC', "dropped all timzones to UTC");
     is($date->set_time_zone('user')->time_zone->name, 'UTC', "dropped all timzones to UTC");
     is($date->set_time_zone('server')->time_zone->name, 'UTC', "dropped all timzones to UTC");
@@ -101,13 +102,13 @@ my $current_user;
 
 { # positive time zone
     $current_user->user_object->__set( column => 'time_zone', value => 'Europe/Moscow');
-    my $date = RT::DateTime->now( current_user => $current_user );
-    $date->set( format => 'ISO', time_zone => 'utc', value => '2005-01-01 15:10:00' );
-    is($date->iso( time_zone => 'user' ), '2005-01-01 18:10:00', "ISO");
+    my $date = RT::DateTime->new_from_string('2005-01-01 15:10:00');
+    is($date->iso, '2005-01-01 15:10:00', "user timezone");
+    is($date->iso(time_zone => 'system'), '2005-01-01 12:10:00', "system timezone");
     is($date->rfc2822( time_zone => 'user' ), 'Sat, 1 Jan 2005 18:10:00 +0300', "RFC2822");
 
     # DST
-    $date = RT::DateTime->now(current_user =>  $current_user );
+    $date = RT::DateTime->now;
     $date->set( format => 'ISO', time_zone => 'utc', value => '2005-07-01 15:10:00' );
     is($date->iso( time_zone => 'user' ), '2005-07-01 19:10:00', "ISO");
     is($date->rfc2822( time_zone => 'user' ), 'Fri, 1 Jul 2005 19:10:00 +0400', "RFC2822");
@@ -115,13 +116,13 @@ my $current_user;
 
 { # negative time zone
     $current_user->user_object->__set( column => 'time_zone', value => 'America/New_York');
-    my $date = RT::DateTime->now( current_user => $current_user );
+    my $date = RT::DateTime->now;
     $date->set( format => 'ISO', time_zone => 'utc', value => '2005-01-01 15:10:00' );
     is($date->iso( time_zone => 'user' ), '2005-01-01 10:10:00', "ISO");
     is($date->rfc2822( time_zone => 'user' ), 'Sat, 1 Jan 2005 10:10:00 -0500', "RFC2822");
 
     # DST
-    $date = RT::DateTime->now( current_user =>  $current_user );
+    $date = RT::DateTime->now;
     $date->set( format => 'ISO', time_zone => 'utc', value => '2005-07-01 15:10:00' );
     is($date->iso( time_zone => 'user' ), '2005-07-01 11:10:00', "ISO");
     is($date->rfc2822( time_zone => 'user' ), 'Fri, 1 Jul 2005 11:10:00 -0400', "RFC2822");
@@ -207,7 +208,7 @@ my $year = (localtime(time))[5] + 1900;
     is($date->iso, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 
     $current_user->user_object->__set( column => 'time_zone', value => 'Europe/Moscow');
-    $date = RT::DateTime->now( current_user => $current_user );
+    $date = RT::DateTime->now;
     $date->set(format => 'datemanip', value => '2005-11-28 15:10:00');
     is($date->iso, '2005-11-28 12:10:00', "YYYY-DD-MM hh:mm:ss");
 }
@@ -236,7 +237,7 @@ my $year = (localtime(time))[5] + 1900;
     is($date->iso, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 
     $current_user->user_object->__set( column => 'time_zone', value => 'Europe/Moscow');
-    $date = RT::DateTime->now( current_user => $current_user );
+    $date = RT::DateTime->now;
     $date->set(format => 'unknown', value => '2005-11-28 15:10:00');
     is($date->iso, '2005-11-28 12:10:00', "YYYY-DD-MM hh:mm:ss");
     $date->set(format => 'unknown', value => '2005-11-28 15:10:00', time_zone => 'server' );
