@@ -42,6 +42,7 @@ requires(
     'Devel::StackTrace'          => '1.19',
     'Text::Naming::Convention'   => 0,
     'DateTime'                   => '0.46',
+    'DateTime::Format::W3CDTF'   => '0.04',
 );
 
 features(
