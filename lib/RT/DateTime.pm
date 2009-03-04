@@ -65,23 +65,20 @@ sub rfc2822 {
 sub iso {
     my $self = shift;
     my %args = (
-        date => 1,
-        time => 1,
+        time_zone => undef,
         @_,
     );
 
-    if ($args{time} && $args{date}) {
-        return join ' ', $self->ymd('-'), $self->hms(':');
-    }
-    elsif ($args{date}) {
-        return $self->ymd('-');
-    }
-    elsif ($args{time}) {
-        return $self->hms(':');
+    my $clone;
+    if ($args{time_zone}) {
+        $clone = $self->clone;
+        $clone->set_time_zone($args{time_zone});
     }
     else {
-        return '';
+        $clone = $self;
     }
+
+    return join ' ', $clone->ymd('-'), $clone->hms(':');
 }
 
 1;
