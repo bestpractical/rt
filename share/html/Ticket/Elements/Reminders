@@ -76,7 +76,7 @@ if ( $request_args->{'update-reminders'} ) {
             $reminder->set_owner( $request_args->{ 'Reminder-Owner-' . $reminder->id } , "Force" ) ;
         }
 
-        if ( exists( $request_args->{ 'Reminder-Due-' . $reminder->id } ) && ( $reminder->due->date ne $request_args->{ 'Reminder-Due-' . $reminder->id } )) {
+        if ( exists( $request_args->{ 'Reminder-Due-' . $reminder->id } ) && ( $reminder->due->ymd ne $request_args->{ 'Reminder-Due-' . $reminder->id } )) {
             $reminder->set_due( $request_args->{ 'Reminder-Due-' . $reminder->id } ) ;
         }
     }
@@ -157,7 +157,7 @@ $ticket
 /> 
     <input type="text" size="15" name="Reminder-Subject-<% $reminder->id %>" value="<%$reminder->subject%>" /> &bull; 
     <& /Elements/SelectOwner, name => 'Reminder-Owner-'.$reminder->id, queue => $ticket->queue, default => $reminder->owner, default_value => 0  &>
-    <& /Elements/SelectDate, name => 'Reminder-Due-'.$reminder->id, default => $reminder->due->date &>
+    <& /Elements/SelectDate, name => 'Reminder-Due-'.$reminder->id, default => $reminder->due->ymd &>
     (<%$reminder->due->epoch>0  ? $reminder->due->age : '' %>)<br />
 </%method>
 <%method ShowEntry>

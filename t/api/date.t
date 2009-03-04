@@ -120,53 +120,21 @@ my $current_user;
        "RFC2822 format without date part");
 
     is($date->iso(date => 0, seconds => 0),
-       '00:00',
+       '15:10',
        "ISO format without date part and seconds");
     is($date->w3cdtf(date => 0, seconds => 0),
-       '1970-01-01T00:00Z',
+       '2005-11-28T15:10Z',
        "W3CDTF format without seconds, but we ship date part even if date is false");
     is($date->rfc2822(date => 0, seconds => 0),
-       '00:00 +0000',
+       '15:10 -0000',
        "RFC2822 format without date part and seconds");
 
     is($date->rfc2822(day_of_week => 0),
-       '1 Jan 1970 00:00:00 +0000',
+       '28 Nov 2005 15:10:00 -0000',
        "RFC2822 format without 'day of week' part");
     is($date->rfc2822(day_of_week => 0, date => 0),
-       '00:00:00 +0000',
+       '15:10:00 -0000',
        "RFC2822 format without 'day of week' and date parts(corner case test)");
-
-    is($date->date,
-       '1970-01-01',
-       "the default format for the 'date' method is ISO");
-    is($date->date(format => 'W3CDTF'),
-       '1970-01-01',
-       "'date' method, W3CDTF format");
-    is($date->date(format => 'RFC2822'),
-       'Thu, 1 Jan 1970',
-       "'date' method, RFC2822 format");
-    is($date->date(time => 1),
-       '1970-01-01',
-       "'date' method doesn't pass through 'time' argument");
-    is($date->date(date => 0),
-       '1970-01-01',
-       "'date' method overrides 'date' argument");
-
-    is($date->time,
-       '00:00:00',
-       "the default format for the 'time' method is ISO");
-    is($date->time(format => 'W3CDTF'),
-       '1970-01-01T00:00:00Z',
-       "'time' method, W3CDTF format, date part is required by w3c doc");
-    is($date->time(format => 'RFC2822'),
-       '00:00:00 +0000',
-       "'time' method, RFC2822 format");
-    is($date->time(date => 1),
-       '00:00:00',
-       "'time' method doesn't pass through 'date' argument");
-    is($date->time(time => 0),
-       '00:00:00',
-       "'time' method overrides 'time' argument");
 }
 
 
