@@ -57,12 +57,7 @@ sub set_time_zone {
     return $self->SUPER::set_time_zone($self->_canonicalize_time_zone($tz));
 }
 
-sub rfc2822 {
-    my $self = shift;
-    return $self->strftime('%a, %d %b %Y %H:%M:%S %z');
-}
-
-sub iso {
+sub _canonicalize_self {
     my $self = shift;
     my %args = (
         time_zone => undef,
@@ -73,12 +68,22 @@ sub iso {
     if ($args{time_zone}) {
         $clone = $self->clone;
         $clone->set_time_zone($args{time_zone});
-    }
-    else {
-        $clone = $self;
+        return $clone;
     }
 
-    return join ' ', $clone->ymd('-'), $clone->hms(':');
+    return $self;
+}
+
+sub rfc2822 {
+    my $self = _canonicalize_self(@_);
+
+    return $self->strftime('%a, %d %b %Y %H:%M:%S %z');
+}
+
+sub iso {
+    my $self = _canonicalize_self(@_);
+
+    return join ' ', $self->ymd('-'), $self->hms(':');
 }
 
 1;
