@@ -11,6 +11,8 @@ use Test::Warn;
 
 use_ok('RT::DateTime');
 
+set_fixed_time("2005-11-28T15:10:00Z");
+
 {
     my $system = RT->system_user;
     my $date = RT::DateTime->now(current_user => $system);
@@ -90,14 +92,8 @@ my $current_user;
 
 {
     my $date = RT::DateTime->now(current_user => RT->system_user);
-    is($date->epoch, 0, "new date returns 0 in Unix format");
-    is($date->get, '1970-01-01 00:00:00', "default is ISO format");
-    is($date->get(format =>'SomeBadFormat'),
-       '1970-01-01 00:00:00',
-       "don't know format, return ISO format");
-    is($date->get(format =>'W3CDTF'),
-       '1970-01-01T00:00:00Z',
-       "W3CDTF format with defaults");
+    is($date, '2005-11-28 15:10:00', "default is ISO format");
+    is($date->W3CDTF, '2005-11-28T15:10:00Z', "W3CDTF format");
 
     is($date->get(format =>'RFC2822'),
        'Thu, 1 Jan 1970 00:00:00 +0000',
@@ -316,16 +312,12 @@ my $year = (localtime(time))[5] + 1900;
     $date->set(format => 'unknown', value => '2005-11-28 15:10:00', time_zone => 'utc' );
     is($date->iso, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 
-    # test relative dates
-    {
-        set_fixed_time("2005-11-28T15:10:00Z");
-        $date->set(format => 'unknown', value => 'now');
-        is($date->iso, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
+    # relative dates
+    $date->set(format => 'unknown', value => 'now');
+    is($date->iso, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 
-        $date->set(format => 'unknown', value => '1 day ago');
-        is($date->iso, '2005-11-27 15:10:00', "YYYY-DD-MM hh:mm:ss");
-        restore_time();
-    }
+    $date->set(format => 'unknown', value => '1 day ago');
+    is($date->iso, '2005-11-27 15:10:00', "YYYY-DD-MM hh:mm:ss");
 
     RT->config->set( TimeZone => 'UTC' );
     $date->set(format => 'unknown', value => '2005-11-28 15:10:00');
