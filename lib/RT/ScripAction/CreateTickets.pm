@@ -686,8 +686,8 @@ sub parse_lines {
 
     foreach my $date qw(due starts started resolved) {
         next unless $args{$date};
-        my $dt = RT::DateTime->new_from_string($args{$date});
-        $args{$date} = $dt->iso;
+        my $dt = RT::DateTime->new_from_string(delete $args{$date});
+        $args{$date} = $dt->iso if $dt;
     }
 
     $args{'requestor'} ||= $self->ticket_obj->role_group("requestor")->member_emails
