@@ -109,10 +109,12 @@ my $current_user;
     is($date->rfc2822( time_zone => 'server' ), 'Sat, 01 Jan 2005 12:10:00 +0000', "RFC2822 in server time zone");
 
     # DST
-    $date = RT::DateTime->now;
-    $date->set( format => 'ISO', time_zone => 'utc', value => '2005-07-01 15:10:00' );
+    $date = RT::DateTime->new_from_string('2005-07-01 15:10:00', time_zone => 'UTC');
     is($date->iso( time_zone => 'user' ), '2005-07-01 19:10:00', "ISO");
-    is($date->rfc2822( time_zone => 'user' ), 'Fri, 1 Jul 2005 19:10:00 +0400', "RFC2822");
+    is($date->rfc2822( time_zone => 'user' ), 'Fri, 01 Jul 2005 19:10:00 +0400', "RFC2822");
+
+    is($date->iso( time_zone => 'server' ), '2005-07-01 15:10:00', "ISO");
+    is($date->rfc2822( time_zone => 'server' ), 'Fri, 01 Jul 2005 15:10:00 +0000', "RFC2822");
 }
 
 { # negative time zone
