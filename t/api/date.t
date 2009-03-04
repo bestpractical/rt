@@ -93,7 +93,6 @@ my $current_user;
 {
     my $date = RT::DateTime->now(current_user => RT->system_user);
     is($date, '2005-11-28 15:10:00', "default is ISO format");
-    is($date->w3cdtf, '2005-11-28T15:10:00Z', "W3CDTF format");
 
     is($date->rfc2822,
        'Mon, 28 Nov 2005 15:10:00 -0000',
@@ -105,9 +104,6 @@ my $current_user;
 
     TODO: {
         local $TODO = "time => 0 not supported for DateTime::Format methods";
-        is($date->w3cdtf(time => 0),
-            '2005-11-28',
-            "W3CDTF format without time part");
         is($date->rfc2822(time => 0),
             'Mon, 28 Nov 2005',
             "RFC2822 format without time part");
@@ -116,10 +112,6 @@ my $current_user;
     is($date->iso(date => 0),
        '15:10:00',
        "ISO format without date part");
-
-    is($date->w3cdtf(date => 0),
-       '2005-11-28T15:10:00Z',
-       "W3CDTF format is incorrect without date part");
 
     TODO: {
         local $TODO = "date => 0 not supported for rfc2822";
@@ -133,9 +125,6 @@ my $current_user;
         is($date->iso(date => 0, seconds => 0),
             '15:10',
             "ISO format without date part and seconds");
-        is($date->w3cdtf(date => 0, seconds => 0),
-            '2005-11-28T15:10Z',
-            "W3CDTF format without seconds, but we ship date part even if date is false");
         is($date->rfc2822(date => 0, seconds => 0),
             '15:10 -0000',
             "RFC2822 format without date part and seconds");
@@ -158,14 +147,12 @@ my $current_user;
     my $date = RT::DateTime->now( current_user => $current_user );
     $date->set( format => 'ISO', time_zone => 'utc', value => '2005-01-01 15:10:00' );
     is($date->iso( time_zone => 'user' ), '2005-01-01 18:10:00', "ISO");
-    is($date->w3cdtf( time_zone => 'user' ), '2005-01-01T18:10:00+03:00', "W3C DTF");
     is($date->rfc2822( time_zone => 'user' ), 'Sat, 1 Jan 2005 18:10:00 +0300', "RFC2822");
 
     # DST
     $date = RT::DateTime->now(current_user =>  $current_user );
     $date->set( format => 'ISO', time_zone => 'utc', value => '2005-07-01 15:10:00' );
     is($date->iso( time_zone => 'user' ), '2005-07-01 19:10:00', "ISO");
-    is($date->w3cdtf( time_zone => 'user' ), '2005-07-01T19:10:00+04:00', "W3C DTF");
     is($date->rfc2822( time_zone => 'user' ), 'Fri, 1 Jul 2005 19:10:00 +0400', "RFC2822");
 }
 
@@ -174,14 +161,12 @@ my $current_user;
     my $date = RT::DateTime->now( current_user => $current_user );
     $date->set( format => 'ISO', time_zone => 'utc', value => '2005-01-01 15:10:00' );
     is($date->iso( time_zone => 'user' ), '2005-01-01 10:10:00', "ISO");
-    is($date->w3cdtf( time_zone => 'user' ), '2005-01-01T10:10:00-05:00', "W3C DTF");
     is($date->rfc2822( time_zone => 'user' ), 'Sat, 1 Jan 2005 10:10:00 -0500', "RFC2822");
 
     # DST
     $date = RT::DateTime->now( current_user =>  $current_user );
     $date->set( format => 'ISO', time_zone => 'utc', value => '2005-07-01 15:10:00' );
     is($date->iso( time_zone => 'user' ), '2005-07-01 11:10:00', "ISO");
-    is($date->w3cdtf( time_zone => 'user' ), '2005-07-01T11:10:00-04:00', "W3C DTF");
     is($date->rfc2822( time_zone => 'user' ), 'Fri, 1 Jul 2005 11:10:00 -0400', "RFC2822");
 }
 
@@ -482,7 +467,7 @@ my $year = (localtime(time))[5] + 1900;
 }
 
 #TODO: AsString
-#TODO: RFC2822, W3CDTF with time zones
+#TODO: RFC2822 with time zones
 
 exit(0);
 

@@ -57,13 +57,6 @@ sub set_time_zone {
     return $self->SUPER::set_time_zone($self->_canonicalize_time_zone($tz));
 }
 
-use DateTime::Format::W3CDTF;
-my $W3CDTF_formatter = DateTime::Format::W3CDTF->new;
-sub w3cdtf {
-    my $self = shift;
-    $W3CDTF_formatter->format_datetime($self);
-}
-
 use DateTime::Format::Mail;
 my $RFC2822_formatter = DateTime::Format::Mail->new;
 sub rfc2822 {
