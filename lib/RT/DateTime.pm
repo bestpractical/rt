@@ -33,7 +33,7 @@ sub _canonicalize_time_zone {
 
     # if the user time zone is requested and the user has none, use the server's
     # time zone
-    if (!$tz || lc($tz) eq 'server') {
+    if (!$tz || lc($tz) eq 'server' || lc($tz) eq 'system') {
         $tz = RT->config->get('TimeZone');
     }
 
