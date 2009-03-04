@@ -183,10 +183,6 @@ my $current_user;
 }
 
 { # set+datemanip format(time::ParseDate)
-    my $date = RT::DateTime->now(current_user => RT->system_user);
-    $date->set(format => 'unknown', value => 'weird date');
-    is($date->epoch, 0, "date was wrong");
-
     RT->config->set( TimeZone => 'Europe/Moscow' );
     $date->set(format => 'datemanip', value => '2005-11-28 15:10:00');
     is($date->iso, '2005-11-28 12:10:00', "YYYY-DD-MM hh:mm:ss");
@@ -202,10 +198,6 @@ my $current_user;
 }
 
 { # set+unknown format(time::ParseDate)
-    my $date = RT::DateTime->now(current_user => RT->system_user);
-    $date->set(format => 'unknown', value => 'weird date');
-    is($date->epoch, 0, "date was wrong");
-
     RT->config->set( TimeZone => 'Europe/Moscow' );
     $date->set(format => 'unknown', value => '2005-11-28 15:10:00');
     is($date->iso, '2005-11-28 12:10:00', "YYYY-DD-MM hh:mm:ss");
@@ -234,88 +226,6 @@ my $current_user;
     is($date->iso, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 }
 
-{ # SetToMidnight
-    my $date = RT::DateTime->now(current_user => RT->system_user);
-
-    RT->config->set( TimeZone => 'Europe/Moscow' );
-    $date->set(format => 'ISO', value => '2005-11-28 15:10:00');
-    $date->set_to_midnight;
-    is($date->iso, '2005-11-28 00:00:00', "default is utc");
-    $date->set(format => 'ISO', value => '2005-11-28 15:10:00');
-    $date->set_to_midnight(time_zone => 'utc');
-    is($date->iso, '2005-11-28 00:00:00', "utc context");
-    $date->set(format => 'ISO', value => '2005-11-28 15:10:00');
-    $date->set_to_midnight(time_zone => 'user');
-    is($date->iso, '2005-11-27 21:00:00', "user context, user has no preference, fallback to server");
-    $date->set(format => 'ISO', value => '2005-11-28 15:10:00');
-    $date->set_to_midnight(time_zone => 'server');
-    is($date->iso, '2005-11-27 21:00:00', "server context");
-
-    $current_user->user_object->__set( column => 'time_zone', value => 'Europe/Moscow');
-    $date = RT::DateTime->now(current_user =>  $current_user );
-    $date->set(format => 'ISO', value => '2005-11-28 15:10:00');
-    $date->set_to_midnight;
-    is($date->iso, '2005-11-28 00:00:00', "default is utc");
-    $date->set(format => 'ISO', value => '2005-11-28 15:10:00');
-    $date->set_to_midnight(time_zone => 'utc');
-    is($date->iso, '2005-11-28 00:00:00', "utc context");
-    $date->set(format => 'ISO', value => '2005-11-28 15:10:00');
-    $date->set_to_midnight(time_zone => 'user');
-    is($date->iso, '2005-11-27 21:00:00', "user context");
-    $date->set_to_midnight(time_zone => 'server');
-    is($date->iso, '2005-11-27 21:00:00', "server context");
-
-    RT->config->set( TimeZone => 'UTC' );
-}
-
-{ # set_to_now
-    my $date = RT::DateTime->now(current_user => RT->system_user);
-    my $time = time;
-    $date->set_to_now;
-    ok($date->epoch >= $time, 'close enough');
-    ok($date->epoch < $time+5, 'difference is less than five seconds');
-}
-
-{
-    my $date = RT::DateTime->now(current_user => RT->system_user);
-    
-    $date->epoch(0);
-    $date->add_seconds;
-    is($date->iso, '1970-01-01 00:00:00', "nothing changed");
-    $date->add_seconds(0);
-    is($date->iso, '1970-01-01 00:00:00', "nothing changed");
-    
-    $date->epoch(0);
-    $date->add_seconds(5);
-    is($date->iso, '1970-01-01 00:00:05', "added five seconds");
-    $date->add_seconds(-2);
-    is($date->iso, '1970-01-01 00:00:03', "substracted two seconds");
-    
-    $date->epoch(0);
-    $date->add_seconds(3661);
-    is($date->iso, '1970-01-01 01:01:01', "added one hour, minute and a second");
-
-# XXX: TODO, doesn't work with Test::Warn
-#    TODO: {
-#        local $TODO = "BUG or subject to change Date handling to support unix time <= 0";
-#        $date->epoch(0);
-#        $date->add_seconds(-2);
-#        ok($date->epoch > 0);
-#    }
-
-    $date->epoch(0);
-    $date->add_day;
-    is($date->iso, '1970-01-02 00:00:00', "added one day");
-    $date->add_days(2);
-    is($date->iso, '1970-01-04 00:00:00', "added two days");
-    $date->add_days(-1);
-    is($date->iso, '1970-01-03 00:00:00', "substructed one day");
-    
-    $date->epoch(0);
-    $date->add_days(31);
-    is($date->iso, '1970-02-01 00:00:00', "added one month");
-}
-
 {
     $current_user->user_object->__set( column => 'time_zone', value => '');
     my $date = RT::DateTime->now(current_user =>  $current_user );
@@ -324,9 +234,6 @@ my $current_user;
     RT->config->set( DateTimeFormat => '');
     $date->epoch(1);
     is($date->as_string, 'Thu Jan 01 00:00:01 1970', "correct string");
-    is($date->as_string(date => 0), '00:00:01', "correct string");
-    is($date->as_string(time => 0), 'Thu Jan 01 1970', "correct string");
-    is($date->as_string(date => 0, time => 0), 'Thu Jan 01 00:00:01 1970', "invalid input");
 
     RT->config->set( DateTimeFormat => 'RFC2822' );
     $date->epoch(1);
