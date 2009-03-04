@@ -64,5 +64,12 @@ sub W3CDTF {
     $W3CDTF_formatter->format_datetime($self);
 }
 
+use DateTime::Format::Mail;
+my $RFC2822_formatter = DateTime::Format::Mail->new;
+sub rfc2822 {
+    my $self = shift;
+    $RFC2822_formatter->format_datetime($self);
+}
+
 1;
 

@@ -43,6 +43,7 @@ requires(
     'Text::Naming::Convention'   => 0,
     'DateTime'                   => '0.46',
     'DateTime::Format::W3CDTF'   => '0.04',
+    'DateTime::Format::Mail'     => '0.30',
 );
 
 features(
