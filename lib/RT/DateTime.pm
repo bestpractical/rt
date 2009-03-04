@@ -12,7 +12,7 @@ sub _stringify {
     my $self = shift;
 
     return "unset" if $self->epoch == 0;
-    return join ' ', $self->ymd('-'), $self->hms(':');
+    return $self->iso;
 }
 
 sub age {
@@ -69,6 +69,11 @@ my $RFC2822_formatter = DateTime::Format::Mail->new;
 sub rfc2822 {
     my $self = shift;
     $RFC2822_formatter->format_datetime($self);
+}
+
+sub iso {
+    my $self = shift;
+    join ' ', $self->ymd('-'), $self->hms(':');
 }
 
 1;
