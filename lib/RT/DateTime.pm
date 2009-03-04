@@ -12,7 +12,7 @@ sub _stringify {
     my $self = shift;
 
     return "unset" if $self->epoch == 0;
-    return $self->SUPER::_stringify(@_);
+    return join ' ', $self->ymd('-'), $self->hms(':');
 }
 
 sub age {
