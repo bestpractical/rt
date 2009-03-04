@@ -73,7 +73,24 @@ sub rfc2822 {
 
 sub iso {
     my $self = shift;
-    join ' ', $self->ymd('-'), $self->hms(':');
+    my %args = (
+        date => 1,
+        time => 1,
+        @_,
+    );
+
+    if ($args{time} && $args{date}) {
+        return join ' ', $self->ymd('-'), $self->hms(':');
+    }
+    elsif ($args{date}) {
+        return $self->ymd('-');
+    }
+    elsif ($args{time}) {
+        return $self->hms(':');
+    }
+    else {
+        return '';
+    }
 }
 
 1;
