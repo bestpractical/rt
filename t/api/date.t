@@ -105,7 +105,8 @@ my $current_user;
     my $date = RT::DateTime->new_from_string('2005-01-01 15:10:00');
     is($date->iso, '2005-01-01 15:10:00', "user timezone");
     is($date->iso(time_zone => 'system'), '2005-01-01 12:10:00', "system timezone");
-    is($date->rfc2822( time_zone => 'user' ), 'Sat, 1 Jan 2005 18:10:00 +0300', "RFC2822");
+    is($date->rfc2822( time_zone => 'user' ), 'Sat, 01 Jan 2005 15:10:00 +0300', "RFC2822 in user time zone");
+    is($date->rfc2822( time_zone => 'server' ), 'Sat, 01 Jan 2005 12:10:00 +0000', "RFC2822 in server time zone");
 
     # DST
     $date = RT::DateTime->now;
