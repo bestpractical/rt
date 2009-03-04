@@ -30,7 +30,10 @@ sub _canonicalize_time_zone {
     if (lc($tz) eq 'user') {
         $tz = $self->current_user->user_object->time_zone;
     }
-    elsif (lc($tz) eq 'server') {
+
+    # if the user time zone is requested and the user has none, use the server's
+    # time zone
+    if (!$tz || lc($tz) eq 'server') {
         $tz = RT->config->get('TimeZone');
     }
 
