@@ -93,52 +93,9 @@ my $current_user;
 {
     my $date = RT::DateTime->now(current_user => RT->system_user);
     is($date, '2005-11-28 15:10:00', "default is ISO format");
-
     is($date->rfc2822,
-       'Mon, 28 Nov 2005 15:10:00 -0000',
+       'Mon, 28 Nov 2005 15:10:00 +0000',
        "RFC2822 format with defaults");
-
-    is($date->iso(time => 0),
-       '2005-11-28',
-       "ISO format without time part");
-
-    TODO: {
-        local $TODO = "time => 0 not supported for DateTime::Format methods";
-        is($date->rfc2822(time => 0),
-            'Mon, 28 Nov 2005',
-            "RFC2822 format without time part");
-    };
-
-    is($date->iso(date => 0),
-       '15:10:00',
-       "ISO format without date part");
-
-    TODO: {
-        local $TODO = "date => 0 not supported for rfc2822";
-        is($date->rfc2822(date => 0),
-            '15:10:00 -0000',
-            "RFC2822 format without date part");
-    };
-
-    TODO: {
-        local $TODO = "seconds => 0 not supported for format methods";
-        is($date->iso(date => 0, seconds => 0),
-            '15:10',
-            "ISO format without date part and seconds");
-        is($date->rfc2822(date => 0, seconds => 0),
-            '15:10 -0000',
-            "RFC2822 format without date part and seconds");
-    };
-
-    TODO: {
-        local $TODO = "day_of_week => 0 not supported for format methods";
-        is($date->rfc2822(day_of_week => 0),
-            '28 Nov 2005 15:10:00 -0000',
-            "RFC2822 format without 'day of week' part");
-        is($date->rfc2822(day_of_week => 0, date => 0),
-            '15:10:00 -0000',
-            "RFC2822 format without 'day of week' and date parts(corner case test)");
-    };
 }
 
 
