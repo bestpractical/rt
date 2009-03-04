@@ -119,40 +119,25 @@ my $current_user;
 
 { # negative time zone
     $current_user->user_object->__set( column => 'time_zone', value => 'America/New_York');
-    my $date = RT::DateTime->now;
-    $date->set( format => 'ISO', time_zone => 'utc', value => '2005-01-01 15:10:00' );
+    my $date = RT::DateTime->new_from_string('2005-01-01 15:10:00', time_zone => 'UTC');
     is($date->iso( time_zone => 'user' ), '2005-01-01 10:10:00', "ISO");
-    is($date->rfc2822( time_zone => 'user' ), 'Sat, 1 Jan 2005 10:10:00 -0500', "RFC2822");
+    is($date->rfc2822( time_zone => 'user' ), 'Sat, 01 Jan 2005 10:10:00 -0500', "RFC2822");
 
     # DST
-    $date = RT::DateTime->now;
-    $date->set( format => 'ISO', time_zone => 'utc', value => '2005-07-01 15:10:00' );
+    $date = RT::DateTime->new_from_string('2005-07-01 15:10:00', time_zone => 'UTC' );
     is($date->iso( time_zone => 'user' ), '2005-07-01 11:10:00', "ISO");
-    is($date->rfc2822( time_zone => 'user' ), 'Fri, 1 Jul 2005 11:10:00 -0400', "RFC2822");
+    is($date->rfc2822( time_zone => 'user' ), 'Fri, 01 Jul 2005 11:10:00 -0400', "RFC2822");
 }
-
- # bad format
-    my $date = RT::DateTime->now(current_user => RT->system_user);
-    $date->set( format => 'bad' );
-    is($date->epoch, undef, "bad format");
-
 
 { # setting value via Unix method
-    my $date = RT::DateTime->now(current_user => RT->system_user);
-    $date->epoch(1);
+    my $date = RT::DateTime->from_epoch(epoch => 1, time_zone => 'UTC');
+    is($date->time_zone->name, 'UTC', "time_zone set correctly");
     is($date->iso, '1970-01-01 00:00:01', "correct value");
 
-    foreach (undef, 0, ''){
-        $date->epoch(1);
-        is($date->iso, '1970-01-01 00:00:01', "correct value");
-
-        $date->set(format => 'unix', value => $_);
-        is($date->iso, '1970-01-01 00:00:00', "Set a date to midnight 1/1/1970 GMT due to wrong call");
-        is($date->epoch, 0, "unix is 0 => unset");
-    }
+    $date = RT::DateTime->from_epoch(epoch => 1);
+    is($date->time_zone->name, 'America/New_York', "time_zone defaults to user's");
+    is($date->iso, '1969-12-31 19:00:01', "correct value");
 }
-
-my $year = (localtime(time))[5] + 1900;
 
 { # set+ISO format
     my $date = RT::DateTime->now(current_user => RT->system_user);
@@ -170,22 +155,22 @@ my $year = (localtime(time))[5] + 1900;
     is($date->iso, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss+00");
 
     $date->set(format => 'ISO', value => '11-28 15:10:00');
-    is($date->iso, $year .'-11-28 15:10:00', "DD-MM hh:mm:ss");
+    is($date->iso, '2005-11-28 15:10:00', "DD-MM hh:mm:ss");
 
     $date->set(format => 'ISO', value => '11-28 15:10:00+00');
-    is($date->iso, $year .'-11-28 15:10:00', "DD-MM hh:mm:ss+00");
+    is($date->iso, '2005-11-28 15:10:00', "DD-MM hh:mm:ss+00");
 
     $date->set(format => 'ISO', value => '20051128151000');
     is($date->iso, '2005-11-28 15:10:00', "YYYYDDMMhhmmss");
 
     $date->set(format => 'ISO', value => '1128151000');
-    is($date->iso, $year .'-11-28 15:10:00', "DDMMhhmmss");
+    is($date->iso, '2005-11-28 15:10:00', "DDMMhhmmss");
 
     $date->set(format => 'ISO', value => '2005112815:10:00');
     is($date->iso, '2005-11-28 15:10:00', "YYYYDDMMhh:mm:ss");
 
     $date->set(format => 'ISO', value => '112815:10:00');
-    is($date->iso, $year .'-11-28 15:10:00', "DDMMhh:mm:ss");
+    is($date->iso, '2005-11-28 15:10:00', "DDMMhh:mm:ss");
 
     $date->set(format => 'ISO', value => '2005-13-28 15:10:00');
     is($date->epoch, 0, "wrong month value");
