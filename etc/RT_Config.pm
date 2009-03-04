@@ -1280,18 +1280,19 @@ set($EmailOutputEncoding, 'utf-8');
 
 =item C<$DateTimeFormat>
 
-You can choose date and time format.  See "Output formatters"
-section in perldoc F<lib/RT/Date.pm> for more options.  This option can
-be overridden by users in their preferences.
+You can choose date and time format. This takes a L<DateTime/strftime> format
+specification. See L<DateTime/strftime_Patterns> for a full list of variables.
+
+This option can be overridden by users in their preferences.
+
 Some examples:
 
-C<set($DateTimeFormat, { Format => 'ISO', Seconds => 0 });>
-C<set($DateTimeFormat, 'RFC2822');>
-C<set($DateTimeFormat, { Format => 'RFC2822', Seconds => 0, DayOfWeek => 0 });>
+C<set($DateTimeFormat, '%a, %d %b %Y %H:%M:%S %z');> # RFC2822
+C<set($DateTimeFormat, '%Y-%m-%d %H:%M:%S');> # ISO
 
 =cut
 
-set($DateTimeFormat, 'DefaultFormat');
+set($DateTimeFormat, '%Y-%m-%d %H:%M:%S');
 
 # Next two options are for Time::ParseDate
 

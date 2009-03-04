@@ -12,7 +12,7 @@ sub _stringify {
     my $self = shift;
 
     return "unset" if $self->epoch == 0;
-    return $self->iso;
+    return $self->strftime(RT->config->get('DateTimeFormat'));
 }
 
 sub age {
