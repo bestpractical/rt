@@ -100,23 +100,23 @@ my $current_user;
        "RFC2822 format with defaults");
 
     is($date->iso(time => 0),
-       '1970-01-01',
+       '2005-11-28',
        "ISO format without time part");
     is($date->w3cdtf(time => 0),
-       '1970-01-01',
+       '2005-11-28',
        "W3CDTF format without time part");
     is($date->rfc2822(time => 0),
-       'Thu, 1 Jan 1970',
+       'Mon, 28 Nov 2005',
        "RFC2822 format without time part");
 
     is($date->iso(date => 0),
-       '00:00:00',
+       '15:10:00',
        "ISO format without date part");
     is($date->w3cdtf(date => 0),
-       '1970-01-01T00:00:00Z',
+       '2005-11-28T15:10:00Z',
        "W3CDTF format is incorrect without date part");
     is($date->rfc2822(date => 0),
-       '00:00:00 +0000',
+       '15:10:00 -0000',
        "RFC2822 format without date part");
 
     is($date->iso(date => 0, seconds => 0),
@@ -167,19 +167,6 @@ my $current_user;
     is($date->time(time => 0),
        '00:00:00',
        "'time' method overrides 'time' argument");
-
-    is($date->date_time,
-       '1970-01-01 00:00:00',
-       "the default format for the 'DateTime' method is ISO");
-    is($date->date_time(format =>'W3CDTF'),
-       '1970-01-01T00:00:00Z',
-       "'DateTime' method, W3CDTF format");
-    is($date->date_time(format =>'RFC2822'),
-       'Thu, 1 Jan 1970 00:00:00 +0000',
-       "'DateTime' method, RFC2822 format");
-    is($date->date_time(date => 0, time => 0),
-       '1970-01-01 00:00:00',
-       "the 'DateTime' method overrides both 'date' and 'time' arguments");
 }
 
 
