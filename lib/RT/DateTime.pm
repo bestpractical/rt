@@ -59,7 +59,7 @@ sub set_time_zone {
 
 use DateTime::Format::W3CDTF;
 my $W3CDTF_formatter = DateTime::Format::W3CDTF->new;
-sub W3CDTF {
+sub w3cdtf {
     my $self = shift;
     $W3CDTF_formatter->format_datetime($self);
 }

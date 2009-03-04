@@ -93,10 +93,10 @@ my $current_user;
 {
     my $date = RT::DateTime->now(current_user => RT->system_user);
     is($date, '2005-11-28 15:10:00', "default is ISO format");
-    is($date->W3CDTF, '2005-11-28T15:10:00Z', "W3CDTF format");
+    is($date->w3cdtf, '2005-11-28T15:10:00Z', "W3CDTF format");
 
-    is($date->get(format =>'RFC2822'),
-       'Thu, 1 Jan 1970 00:00:00 +0000',
+    is($date->rfc2822,
+       'Mon, 28 Nov 2005 15:10:00 -0000',
        "RFC2822 format with defaults");
 
     is($date->iso(time => 0),
