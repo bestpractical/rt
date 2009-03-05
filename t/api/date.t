@@ -290,26 +290,6 @@ my $current_user;
     like($diff, qr/^(0 sec|[1-5] sec ago)$/, 'close enought');
 }
 
-{ # GetWeekday
-    my $date = RT::DateTime->now(current_user => RT->system_user);
-    is($date->get_weekday(7),  '',    '7 and greater are invalid');
-    is($date->get_weekday(6),  'Sat', '6 is Saturday');
-    is($date->get_weekday(0),  'Sun', '0 is Sunday');
-    is($date->get_weekday(-1), 'Sat', '-1 is Saturday');
-    is($date->get_weekday(-7), 'Sun', '-7 is Sunday');
-    is($date->get_weekday(-8), '',    '-8 and lesser are invalid');
-}
-
-{ # GetMonth
-    my $date = RT::DateTime->now(current_user => RT->system_user);
-    is($date->get_month(12),  '',     '12 and greater are invalid');
-    is($date->get_month(11),  'Dec', '11 is December');
-    is($date->get_month(0),   'Jan', '0 is January');
-    is($date->get_month(-1),  'Dec', '11 is December');
-    is($date->get_month(-12), 'Jan', '0 is January');
-    is($date->get_month(-13),  '',    '-13 and lesser are invalid');
-}
-
 #TODO: AsString
 #TODO: RFC2822 with time zones
 
