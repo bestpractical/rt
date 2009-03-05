@@ -701,8 +701,8 @@ sub members {
     my %args = ( recursively => 0, @_ );
 
     my $class = $args{'recursively'}
-        ? RT::Model::CachedGroupMemberCollection
-        : RT::Model::GroupMemberCollection;
+        ? 'RT::Model::CachedGroupMemberCollection'
+        : 'RT::Model::GroupMemberCollection';
 
     #If we don't have rights, don't include any results
     # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
