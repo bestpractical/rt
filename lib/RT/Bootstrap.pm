@@ -361,13 +361,13 @@ sub insert_data {
                 } elsif ( $item->{'GroupDomain'} eq 'SystemInternal' ) {
                     $princ->load_system_internal_group( $item->{'GroupType'} );
                 } elsif ( $item->{'GroupDomain'} eq 'RT::System-Role' ) {
-                    $princ->load_system_role_group( $item->{'GroupType'} );
+                    $princ->create_role_group( object => RT->system, type => $item->{'GroupType'} );
                 } elsif ( $item->{'GroupDomain'} eq 'RT::Model::Queue-Role'
                     && $item->{'queue'} )
                 {
-                    $princ->load_queue_role_group(
-                        type  => $item->{'GroupType'},
-                        queue => $object->id
+                    $princ->create_role_group(
+                        object => $object,
+                        type   => $item->{'GroupType'},
                     );
                 } else {
                     $princ->load( $item->{'group_id'} );
