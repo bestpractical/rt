@@ -33,7 +33,7 @@ sub _stringify {
     elsif ($delta{minutes}) {
         ($count, $unit) = ($self->in_units('minutes'), 'min');
     }
-    elsif ($delta{seconds}) {
+    else {
         ($count, $unit) = ($self->in_units('seconds'), 'sec');
     }
 
