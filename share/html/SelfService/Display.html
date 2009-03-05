@@ -47,6 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 <& /SelfService/Elements/Header, Title => loc('#[_1]: [_2]', $Ticket->id, $Ticket->Subject) &>
 
+% $m->callback(CallbackName => 'BeforeActionList', %ARGS, Actions => \@results, ARGSRef => \%ARGS, Ticket => $Ticket );
+
 <& /Elements/ListActions, actions => \@results &>
 
   <table width="100%" class="ticketsummary" >

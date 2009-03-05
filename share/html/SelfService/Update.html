@@ -49,6 +49,7 @@
     Title =>loc('Update ticket #[_1]', $Ticket->id) 
 &>
 
+% $m->callback(CallbackName => 'BeforeForm', %ARGS, ARGSRef => \%ARGS, Ticket => $Ticket );
 
 <form action="Display.html" method="post" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="UpdateType" value="response" />
