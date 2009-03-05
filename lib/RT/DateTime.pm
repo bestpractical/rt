@@ -57,6 +57,21 @@ sub set_time_zone {
     return $self->SUPER::set_time_zone($self->_canonicalize_time_zone($tz));
 }
 
+sub new_from_string {
+    my $class  = shift;
+    my $string = shift;
+    my %args = (
+        time_zone => undef,
+        @_,
+    );
+
+    if ($args{time_zone}) {
+        $args{time_zone} = $class->_canonicalize_time_zone($args{time_zone});
+    }
+
+    return $class->SUPER::new_from_string($string, %args);
+}
+
 sub _canonicalize_self {
     my $self = shift;
     my %args = (
