@@ -30,7 +30,7 @@ sub take_action {
         my $value = $self->argument_value($field);
         if ( defined $value ) {
 
-            # convert date to be as utc
+            # convert date to be as UTC
             my $date = RT::Date->new_from_string($value);
             $self->argument_value( $field, $date->iso );
         }
