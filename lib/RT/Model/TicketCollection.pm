@@ -969,6 +969,7 @@ sub _role_groupsjoin {
 
     # we always have watcher groups for ticket, so we use INNER join
     my $groups = $self->join(
+        type             => 'LEFT',
         alias1           => 'main',
         column1          => $args{'class'} eq 'queue' ? 'queue' : 'id', 
         table2           => RT::Model::GroupCollection->new,
