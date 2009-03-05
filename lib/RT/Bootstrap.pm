@@ -182,21 +182,7 @@ sub insert_initial_data {
     # system role groups
     foreach my $name (qw(owner requestor cc admin_cc)) {
         my $group = RT::Model::Group->new( current_user => RT->system_user );
-        $group->load_system_role_group($name);
-        if ( $group->id ) {
-
-            #            push @warns, "System role '$name' already exists.";
-            next;
-        }
-
-        $group = RT::Model::Group->new( current_user => RT->system_user );
-        my ( $val, $msg ) = $group->_create(
-            type        => $name,
-            domain      => 'RT::System-Role',
-            description => 'SystemRolegroup for internal use',    # loc
-            name        => '',
-            instance    => '',
-        );
+        my ( $val, $msg ) = $group->create_role_group( object => RT->system, type => $name);
         return ( $val, $msg ) unless $val;
     }
 }
