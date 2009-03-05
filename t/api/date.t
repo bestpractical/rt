@@ -278,17 +278,14 @@ my $current_user;
     }
 }
 
-{ # Diff
-    my $date = RT::DateTime->now(current_user => RT->system_user);
-    $date->set_to_now;
-    my $diff = $date->diff;
-    ok($diff <= 0, 'close enought');
-    ok($diff > -5, 'close enought');
+{ # difference
+    my $date = RT::DateTime->now;
+    my $duration = RT::DateTime->now - $date;
+    like($duration, qr/^\d+ sec$/, 'close enough');
 }
 
-{ # AgeAsString
+{ # age
     my $date = RT::DateTime->now(current_user => RT->system_user);
-    $date->set_to_now;
     my $diff = $date->age;
     like($diff, qr/^(0 sec|[1-5] sec ago)$/, 'close enought');
 }
