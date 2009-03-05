@@ -502,8 +502,7 @@ sub create {
     foreach my $type ( $self->roles ) {
 
         $args{$type} = [ $args{$type} ] unless ref $args{$type};
-        foreach my $watcher ( splice @{ $args{$type} } ) {
-            next unless $watcher;
+        foreach my $watcher ( grep $_, splice @{ $args{$type} } ) {
             if ( $watcher =~ /^\d+$/ ) {
                 push @{ $args{$type} }, $watcher;
             } else {
@@ -573,9 +572,9 @@ sub create {
         return ( 0, 0, _("Ticket could not be created due to an internal error") );
     }
 
-    my $create_groups_ret = $self->_create_role_groups();
-    unless ($create_groups_ret) {
-        Jifty->log->fatal( "Couldn't create ticket groups for ticket " . $self->id . ". aborting ticket creation." );
+    my ($owner_group, $msg) = $self->create_role_group('owner');
+    unless ( $owner_group ) {
+        Jifty->log->fatal( "Aborting ticket creation because of above error." );
         Jifty->handle->rollback();
         return ( 0, 0, _("Ticket could not be created due to an internal error") );
     }
@@ -583,8 +582,8 @@ sub create {
     # Set the owner in the Groups table
     # We denormalize it into the Ticket table too because doing otherwise would
     # kill performance, bigtime. It gets kept in lockstep thanks to the magic of transactionalization
-    ( $val, $msg ) = $self->role_group("owner")->_add_member(
-        principal_id       => $owner->principal_id,
+    ( $val, $msg ) = $owner_group->_add_member(
+        principal_id => $owner->principal_id,
     ) unless $defer_owner;
 
     # {{{ Deal with setting up watchers
@@ -705,7 +704,7 @@ sub create {
             $self->__set( column => 'owner', value => $owner->id );
 
         }
-        $self->role_group("owner")->_add_member(
+        $owner_group->_add_member(
             principal_id       => $owner->principal_id,
         );
     }
@@ -770,25 +769,22 @@ It will return true on success and undef on failure.
 
 sub roles { return ( "cc", "admin_cc", "requestor" ); }
 
-sub _create_role_groups {
+sub create_role_group {
     my $self = shift;
+    my $type = shift;
 
-    foreach my $type ( 'owner', $self->roles ) {
-        my $type_obj = RT::Model::Group->new;
-        my ( $id, $msg ) = $type_obj->create_role_group(
-            domain   => 'RT::Model::Ticket-Role',
-            instance => $self->id,
-            type     => $type
-        );
-        unless ($id) {
-            Jifty->log->error( "Couldn't create a ticket group of type '$type' for ticket " . $self->id . ": " . $msg );
-            return (undef);
-        }
+    my $group = RT::Model::Group->new;
+    my ($id, $msg) = $group->create_role_group(
+        object => $self,
+        type   => $type,
+    );
+    unless ($id) {
+        Jifty->log->error( "Couldn't create '$type' role group for ticket #" . $self->id . ": ". $msg );
+        return (undef, $msg);
     }
-    return (1);
 
+    return ($group, $msg);
 }
-
 
 =head2 role_group("$role")
 
@@ -799,8 +795,9 @@ A constructor which returns an RT::Model::Group object containing the owner of t
 sub role_group {
     my $self = shift;
     my $role = shift;
-    my $obj  = RT::Model::Group->new;
-    $obj->load_ticket_role_group( ticket => $self->id, type => $role );
+
+    my $obj = RT::Model::Group->new;
+    $obj->load_role_group( object => $self, type => $role );
     return ($obj);
 }
 
@@ -896,26 +893,25 @@ sub _add_watcher {
 
     # If we can't find this watcher, we need to bail.
     unless ( $principal->id ) {
-        Jifty->log->error( "Could not load create a user with the email address '" . $args{'email'} . "' to add as a watcher for ticket " . $self->id );
+        Jifty->log->error(
+            "Could not load or create a user with the email address '" . $args{'email'} . "'"
+            ." to add as a watcher for ticket " . $self->id 
+        );
         return ( 0, _("Could not find or create that user") );
     }
 
     my $group = RT::Model::Group->new;
-    $group->load_ticket_role_group(
+    $group->create_role_group(
+        object => $self,
         type   => $args{'type'},
-        ticket => $self->id
     );
-    unless ( $group->id ) {
-        return ( 0, _("Group not found") );
-    }
 
     if ( $group->has_member($principal) ) {
-
         return ( 0, _( 'That principal is already a %1 for this ticket', _( $args{'type'} ) ) );
     }
 
     my ( $m_id, $m_msg ) = $group->_add_member(
-        principal_id       => $principal->id,
+        principal_id => $principal->id,
     );
     unless ($m_id) {
         Jifty->log->error( "Failed to add "
@@ -984,15 +980,6 @@ sub delete_watcher {
         return ( 0, _("Could not find that principal") );
     }
 
-    my $group = RT::Model::Group->new;
-    $group->load_ticket_role_group(
-        type   => $args{'type'},
-        ticket => $self->id
-    );
-    unless ( $group->id ) {
-        return ( 0, _("Group not found") );
-    }
-
     # {{{ Check ACLS
     #If the watcher we're trying to add is for the current user
     if ( $self->current_user->id == $principal->id ) {
@@ -1035,7 +1022,12 @@ sub delete_watcher {
 
     # see if this user is already a watcher.
 
-    unless ( $group->has_member($principal) ) {
+    my $group = RT::Model::Group->new;
+    $group->load_role_group(
+        object => $self,
+        type   => $args{'type'},
+    );
+    unless ( $group->id && $group->has_member($principal) ) {
         return ( 0, _( 'That principal is not a %1 for this ticket', $args{'type'} ) );
     }
 
@@ -1146,10 +1138,11 @@ sub is_watcher {
 
     # Load the relevant group.
     my $group = RT::Model::Group->new;
-    $group->load_ticket_role_group(
+    $group->load_role_group(
+        object => $self,
         type   => $args{'type'},
-        ticket => $self->id
     );
+    return 0 unless $group->id;
 
     # Find the relevant principal.
     if ( !$args{principal_id} && $args{email} ) {
