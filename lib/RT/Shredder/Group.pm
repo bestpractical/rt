@@ -106,7 +106,7 @@ sub __depends_on {
     push( @$list, $objs );
 
     # Cached group members records
-    push( @$list, $self->deep_members_obj );
+    push( @$list, $self->members( recursively => 1 ) );
 
     # Cached group member records group belongs to
     $objs = RT::Model::GroupMemberCollection->new;

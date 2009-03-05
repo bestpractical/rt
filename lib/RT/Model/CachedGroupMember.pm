@@ -164,7 +164,7 @@ sub create {
     return $id if $args{'member'}->id == $args{'group'}->id;
 
     if ( $args{'member'}->is_group() ) {
-        my $GroupMembers = $args{'member'}->object->members_obj();
+        my $GroupMembers = $args{'member'}->object->members;
         while ( my $member = $GroupMembers->next() ) {
             my $cached_member = RT::Model::CachedGroupMember->new;
             my $c_id          = $cached_member->create(

@@ -71,7 +71,7 @@
 % }
 </ul>
 <%INIT>
-my $Members = $watchers->members_obj;
+my $Members = $watchers->members;
 </%INIT>
 <%ARGS>
 $ticket_obj => undef

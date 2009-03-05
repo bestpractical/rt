@@ -111,7 +111,7 @@ sub __depends_on {
             return
                 unless lc( $group->domain || '' ) eq 'rt::model::ticket-role';
 
-            return if $group->members_obj->count > 1;
+            return if $group->members->count > 1;
 
             my $group_member = $args{'base_object'};
 

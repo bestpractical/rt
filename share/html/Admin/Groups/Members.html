@@ -70,7 +70,7 @@
 <tr>
 <td valign="top">
 
-% if ($Group->members_obj->count == 0 ) {
+% if ($Group->members->count == 0 ) {
 <em><&|/l&>(No members)</&></em>
 % } else {
 <&|/l&>Users</&>
@@ -85,7 +85,7 @@
 </ul>
 <&|/l&>Groups</&>
 <ul>
-% my $GroupMembers = $Group->members_obj;
+% my $GroupMembers = $Group->members;
 % $GroupMembers->limit_to_groups();
 % while ( my $member = $GroupMembers->next ) {
 % $GroupsSeen{ $member->member_id } = 1 if $skip_seen_groups;

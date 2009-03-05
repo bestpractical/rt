@@ -689,38 +689,25 @@ sub disabled {
 }
 
 
-=head2 deep_members_obj
+=head2 members
 
-Returns an RT::Model::CachedGroupMemberCollection object of this group's members,
-including all members of subgroups.
-
-=cut
-
-sub deep_members_obj {
-    my $self        = shift;
-    my $members_obj = RT::Model::CachedGroupMemberCollection->new;
-
-    #If we don't have rights, don't include any results
-    # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
-    $members_obj->limit_to_members_of_group( $self->id );
-
-    return ($members_obj);
-}
-
-
-
-=head2 members_obj
-
-Returns an RT::Model::GroupMemberCollection object of this group's direct members.
+Returns either an L<RT::Model::GroupMemberCollection> or L<RT::Model::CachedGroupMemberCollection>
+object depending on 'recursively' argument of this group's members.
 
 =cut
 
-sub members_obj {
+sub members {
     my $self = shift;
-    my $members_obj = RT::Model::GroupMemberCollection->new( current_user => $self->current_user );
+    my %args = ( recursively => 0, @_ );
+
+    my $class = $args{'recursively'}
+        ? RT::Model::CachedGroupMemberCollection
+        : RT::Model::GroupMemberCollection;
 
     #If we don't have rights, don't include any results
     # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
+
+    my $res = $self->new( current_user => $self->current_user );
     $members_obj->limit_to_members_of_group( $self->id );
 
     return ($members_obj);
@@ -807,8 +794,6 @@ sub user_members_obj {
 
     return ($users);
 }
-
-
 
 =head2 member_emails
 

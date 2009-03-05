@@ -2037,7 +2037,7 @@ sub merge_into {
     #add all of this ticket's watchers to that ticket.
     foreach my $watcher_type ( $self->roles ) {
 
-        my $people = $self->role_group($watcher_type)->members_obj;
+        my $people = $self->role_group($watcher_type)->members;
 
         while ( my $watcher = $people->next ) {
 
@@ -2226,7 +2226,7 @@ sub set_owner {
     # Delete the owner in the owner group, then add a new one
     # TODO: is this safe? it's not how we really want the API to work
     # for most things, but it's fast.
-    my ( $del_id, $del_msg ) = $self->role_group("owner")->members_obj->first->delete();
+    my ( $del_id, $del_msg ) = $self->role_group("owner")->members->first->delete();
     unless ($del_id) {
         Jifty->handle->rollback();
         return ( 0, _("Could not change owner. %1", $del_msg ));

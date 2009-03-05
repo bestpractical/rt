@@ -95,7 +95,7 @@ $CustomFieldObj->load($id) || $m->comp("/Elements/Error", why => _("Couldn't loa
 # Find out which users we want to display ACL selects for
 my $privileged = RT::Model::Group->new();
 $privileged->load_system_internal_group('privileged');
-my $Users = $privileged->members_obj();
+my $Users = $privileged->members;
 
 my $title = _('Modify user rights for custom field %1', $CustomFieldObj->name);
   
