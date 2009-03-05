@@ -195,63 +195,63 @@ my $current_user;
 { # set+datemanip format(time::ParseDate)
     RT->config->set( TimeZone => 'Europe/Moscow' );
     my $date = RT::DateTime->new_from_string('2005-11-28 15:10:00');
-    is($date->iso, '2005-11-28 12:10:00', "YYYY-DD-MM hh:mm:ss");
+    is($date, '2005-11-28 12:10:00', "YYYY-DD-MM hh:mm:ss");
 
     RT->config->set( TimeZone => 'UTC' );
     $date = RT::DateTime->new_from_string('2005-11-28 15:10:00');
-    is($date->iso, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
+    is($date, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 
     $current_user->user_object->__set( column => 'time_zone', value => 'Europe/Moscow');
     $date = RT::DateTime->new_from_string('2005-11-28 15:10:00');
-    is($date->iso, '2005-11-28 12:10:00', "YYYY-DD-MM hh:mm:ss");
+    is($date, '2005-11-28 12:10:00', "YYYY-DD-MM hh:mm:ss");
 }
 
 { # set+unknown format(time::ParseDate)
     RT->config->set( TimeZone => 'Europe/Moscow' );
     my $date = RT::DateTime->new_from_string('2005-11-28 15:10:00');
-    is($date->iso, '2005-11-28 12:10:00', "YYYY-DD-MM hh:mm:ss");
+    is($date, '2005-11-28 12:10:00', "YYYY-DD-MM hh:mm:ss");
 
     $date = RT::DateTime->new_from_string('2005-11-28 15:10:00', time_zone => 'UTC' );
-    is($date->iso, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
+    is($date, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 
     # relative dates
     $date = RT::DateTime->new_from_string('now');
-    is($date->iso, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
+    is($date, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 
     $date = RT::DateTime->new_from_string('1 day ago');
-    is($date->iso, '2005-11-27 15:10:00', "YYYY-DD-MM hh:mm:ss");
+    is($date, '2005-11-27 15:10:00', "YYYY-DD-MM hh:mm:ss");
 
     RT->config->set( TimeZone => 'UTC' );
     $date = RT::DateTime->new_from_string('2005-11-28 15:10:00');
-    is($date->iso, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
+    is($date, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 
     $current_user->user_object->__set( column => 'time_zone', value => 'Europe/Moscow');
     $date = RT::DateTime->now;
     $date = RT::DateTime->new_from_string('2005-11-28 15:10:00');
-    is($date->iso, '2005-11-28 12:10:00', "YYYY-DD-MM hh:mm:ss");
+    is($date, '2005-11-28 12:10:00', "YYYY-DD-MM hh:mm:ss");
     $date = RT::DateTime->new_from_string('2005-11-28 15:10:00', time_zone => 'server' );
-    is($date->iso, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
+    is($date, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
     $date = RT::DateTime->new_from_string('2005-11-28 15:10:00', time_zone => 'UTC' );
-    is($date->iso, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
+    is($date, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 }
 
 {
     $current_user->user_object->__set( column => 'time_zone', value => '');
-    my $date = RT::DateTime->now(current_user =>  $current_user );
-    is($date->as_string, "Not set", "as_string returns 'Not set'");
+    my $date = RT::DateTime->from_epoch(epoch => 0);
+    is($date, "unset", "epoch 0 returns 'unset'");
 
     RT->config->set( DateTimeFormat => '');
     $date->epoch(1);
-    is($date->as_string, 'Thu Jan 01 00:00:01 1970', "correct string");
+    is($date, 'Thu Jan 01 00:00:01 1970', "correct string");
 
     RT->config->set( DateTimeFormat => 'RFC2822' );
     $date->epoch(1);
-    is($date->as_string, 'Thu, 1 Jan 1970 00:00:01 +0000', "correct string");
+    is($date, 'Thu, 1 Jan 1970 00:00:01 +0000', "correct string");
 
     RT->config->set( DateTimeFormat => { format => 'RFC2822', seconds => 0 } );
     $date->epoch(1);
-    is($date->as_string, 'Thu, 1 Jan 1970 00:00 +0000', "correct string");
-    is($date->as_string(seconds => 1), 'Thu, 1 Jan 1970 00:00:01 +0000', "correct string");
+    is($date, 'Thu, 1 Jan 1970 00:00 +0000', "correct string");
+    is($date, 'Thu, 1 Jan 1970 00:00:01 +0000', "correct string");
 }
 
 { # DurationAsString
