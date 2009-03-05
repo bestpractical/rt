@@ -260,7 +260,6 @@ sub load_personal_group {
 }
 
 
-
 =head2 load_system_internal_group name
 
 Loads a Pseudo group from the database. The only argument is
@@ -280,86 +279,42 @@ sub load_system_internal_group {
 }
 
 
+=head2 load_role_group { object => OBJ, domain => DOMAIN, type => TYPE, instance => ID }
 
-=head2 load_ticket_role_group  { Ticket => TICKET_ID, type => TYPE }
+Loads a role group of an object (ticket, queue, system or other) from the database. 
+Takes the following arguments:
 
-Loads a ticket group from the database. 
+=over 4
 
-Takes a param hash with 2 parameters:
+=item type - the name of the role, such as "requestor", "cc", "admin_cc", "owner" or other.
 
-    Ticket is the TicketId we're curious about
-    type is the type of Group we're trying to load: 
-        requestor, cc, admin_cc, owner
+=item object - any object that may have roles, used to calculate domain and instance.
+
+=item domain - if object is not provided. Valid values are 'RT::Model::Ticket',
+'RT::Model::Queue' or 'RT::System'.
+
+=item instance - if object is not provided. Is the id of the ticket or queue in question.
+
+=back
 
 =cut
 
-sub load_ticket_role_group {
+sub load_role_group {
     my $self = shift;
     my %args = (
-        ticket => '0',
-        type   => undef,
+        domain   => undef,
+        instance => undef,
+        type     => undef,
         @_
     );
+    $self->_object_to_domain_instance(\%args);
+
     $self->load_by_cols(
-        domain   => 'RT::Model::Ticket-Role',
-        instance => $args{'ticket'},
-        type     => $args{'type'}
-    );
-
-    Carp::confess("AAA NO ROLE") unless $self->id;
-}
-
-
-
-=head2 load_queue_role_group  { queue => Queue_ID, type => TYPE }
-
-Loads a queue group from the database. 
-
-Takes a param hash with 2 parameters:
-
-    queue is the QueueId we're curious about
-    type is the type of Group we're trying to load: 
-        requestor, cc, admin_cc, owner
-
-=cut
-
-sub load_queue_role_group {
-    my $self = shift;
-    my %args = (
-        queue => undef,
-        type  => undef,
-        @_
-    );
-    $self->load_by_cols(
-        domain   => 'RT::Model::Queue-Role',
-        instance => $args{'queue'},
-        type     => $args{'type'}
+        domain   => $args{'domain'},
+        instance => $args{'instance'},
+        type     => $args{'type'},
     );
 }
-
-
-
-=head2 load_system_role_group  type
-
-Loads a System group from the database. 
-
-Takes a single param: type
-
-    type is the type of Group we're trying to load: 
-        requestor, cc, admin_cc, owner
-
-=cut
-
-sub load_system_role_group {
-    my $self = shift;
-    my $type = shift;
-    $self->load_by_cols(
-        domain => 'RT::System-Role',
-        type   => $type
-    );
-}
-
-
 
 =head2 create
 
@@ -569,38 +524,63 @@ sub create_personal_group {
 
 
 
-=head2 create_role_group { domain => DOMAIN, type =>  TYPE, instance => ID }
+=head2 create_role_group { object => OBJ, domain => DOMAIN, type => TYPE, instance => ID }
 
-A helper subroutine which creates a  ticket group. (What RT 2.0 called Ticket watchers)
-type is one of ( "requestor" || "cc" || "admin_cc" || "owner") 
-domain is one of (RT::Model::Ticket-Role || RT::Model::Queue-Role || RT::System-Role)
-instance is the id of the ticket or queue in question
+A helper subroutine which creates a role group. Takes the following arguments:
 
-This routine expects to be called from {Ticket||Queue}->create_ticket_groups _inside of a transaction_
+=over 4
 
-Returns a tuple of (Id, Message).  If id is 0, the create failed
+=item type - the name of the role, such as "requestor", "cc", "admin_cc", "owner" or other.
+
+=item object - any object that may have roles, used to calculate domain and instance.
+
+=item domain - if object is not provided. Valid values are 'RT::Model::Ticket-Role',
+'RT::Model::Queue-Role' or 'RT::System-Role'
+
+=item instance - if object is not provided. Is the id of the ticket or queue in question.
+
+=back
+
+Group created if it doesn't exist, otherwise it's just loaded.
+
+Returns a tuple of (Id, Message).  If id is a false value, the create failed
 
 =cut
 
 sub create_role_group {
     my $self = shift;
     my %args = (
+        domain   => undef,
         instance => undef,
         type     => undef,
-        domain   => undef,
         @_
     );
-    unless ( $args{'type'} =~ /^(?:cc|admin_cc|requestor|owner)$/ ) {
-        return ( 0, _("Invalid Group type") );
+    $self->_object_to_domain_instance(\%args);
+
+    $self->load_by_cols(
+        domain   => $args{'domain'},
+        instance => $args{'instance'},
+        type     => $args{'type'},
+    );
+    if ( my $id = $self->id ) {
+        return ($id, "Found existing role group");
     }
 
-    return (
-        $self->_create(
-            domain             => $args{'domain'},
-            instance           => $args{'instance'},
-            type               => $args{'type'},
-        )
+    return $self->_create(
+        domain   => $args{'domain'},
+        instance => $args{'instance'},
+        type     => $args{'type'},
     );
+}
+
+sub _object_to_domain_instance {
+    my $self = shift;
+    my $args = shift;
+    my $type = shift || '-Role';
+    if ( my $obj = delete $args->{'object'} ) {
+        $args->{'domain'} = ref( $obj ) . $type;
+        $args->{'instance'} = $obj->id;
+    }
 }
 
 
@@ -725,7 +705,6 @@ sub deep_members_obj {
     $members_obj->limit_to_members_of_group( $self->id );
 
     return ($members_obj);
-
 }
 
 
@@ -745,7 +724,6 @@ sub members_obj {
     $members_obj->limit_to_members_of_group( $self->id );
 
     return ($members_obj);
-
 }
 
 
