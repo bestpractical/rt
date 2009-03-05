@@ -118,7 +118,7 @@ if (%data == 0) {
     my $GroupMembers = $group->members;
     while ( my $mo = $GroupMembers->next() ) {
         if ( $mo->member_obj->is_group ) {
-            my $us = $mo->member_obj->object->user_members_obj();
+            my $us = $mo->member_obj->object->user_members;
             my @users;
             while ( my $u = $us->next() ) {
                 push @users, $u->real_name . ' <' . $u->email . '>';

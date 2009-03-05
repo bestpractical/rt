@@ -805,7 +805,7 @@ sub member_emails {
     my $self = shift;
 
     my %addresses;
-    my $members = $self->user_members_obj();
+    my $members = $self->user_members;
     while ( my $member = $members->next ) {
         $addresses{ $member->email } = 1;
     }

@@ -324,7 +324,7 @@ sub _parse_content {
     $args{'ticket'} = delete $args{'ticket_obj'} if $args{'ticket_obj'};
     $args{'transaction'} = delete $args{'transaction_obj'}
         if $args{'transaction_obj'};
-    $args{'requestor'} = eval { $args{'ticket'}->role_group("requestor")->user_members_obj->first->name; }
+    $args{'requestor'} = eval { $args{'ticket'}->role_group("requestor")->user_members->first->name; }
         if $args{'ticket'};
     $args{'rtname'} = RT->config->get('rtname');
     if ( $args{'ticket'} ) {

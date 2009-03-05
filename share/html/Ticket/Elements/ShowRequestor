@@ -48,7 +48,7 @@
 <%PERL>
 my $rows = 10;
 my $has_right_adminusers = Jifty->web->current_user->has_right(object => RT->system, right => 'AdminUsers');
-my $people = $ticket->role_group("requestor")->user_members_obj;
+my $people = $ticket->role_group("requestor")->user_members;
 while ( my $requestor = $people->next ) {
     next if $requestor->privileged;
     my $name = $m->scomp('/Elements/ShowUser', user => $requestor);

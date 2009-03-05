@@ -145,7 +145,7 @@ sub __HandleGroupArgument {
     my $self = shift;
     my $obj  = shift;
 
-    my $members = $obj->user_members_obj;
+    my $members = $obj->user_members;
     while ( my $m = $members->next ) {
         $self->__handle_user_argument($m);
     }
