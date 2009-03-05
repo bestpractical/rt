@@ -708,11 +708,10 @@ sub members {
     # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
 
     my $res = $self->new( current_user => $self->current_user );
-    $members_obj->limit_to_members_of_group( $self->id );
+    $res->limit_to_members_of_group( $self->id );
 
-    return ($members_obj);
+    return $res;
 }
-
 
 
 =head2 group_members_obj [recursively => 1]
