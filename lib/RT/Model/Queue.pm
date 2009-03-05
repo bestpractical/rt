@@ -648,16 +648,12 @@ sub _add_watcher {
     }
 
     my $group = RT::Model::Group->new;
-    $group->load_queue_role_group(
-        type  => $args{'type'},
-        queue => $self->id
+    $group->create_role_group( # XXX: error checks 
+        object => $self,
+        type   => $args{'type'},
     );
-    unless ( $group->id ) {
-        return ( 0, _("Group not found") );
-    }
 
     if ( $group->has_member($principal) ) {
-
         return ( 0, _( 'That principal is already a %1 for this queue', $args{'type'} ) );
     }
 
@@ -727,15 +723,6 @@ sub delete_watcher {
         return ( 0, _("Could not find that principal") );
     }
 
-    my $group = RT::Model::Group->new;
-    $group->load_queue_role_group(
-        type  => $args{'type'},
-        queue => $self->id
-    );
-    unless ( $group->id ) {
-        return ( 0, _("Group not found") );
-    }
-
     my $can_modify_queue = $self->current_user_has_right('ModifyQueueWatchers');
 
     # {{{ Check ACLS
@@ -781,6 +768,14 @@ sub delete_watcher {
 
     # see if this user is already a watcher.
 
+    my $group = RT::Model::Group->new;
+    $group->load_role_group(
+        object => $self,
+        type   => $args{'type'},
+    );
+    unless ( $group->id ) {
+        return ( 0, _( 'That principal is not a %1 for this queue', $args{'type'} ) );
+    }
     unless ( $group->has_member($principal) ) {
         return ( 0, _( 'That principal is not a %1 for this queue', $args{'type'} ) );
     }
@@ -812,10 +807,9 @@ sub role_group {
     my $role  = shift;
     my $group = RT::Model::Group->new;
     if ( $self->current_user_has_right('SeeQueue') ) {
-        $group->load_queue_role_group( type => $role, queue => $self->id );
+        $group->load_role_group( type => $role, object => $self );
     }
     return ($group);
-
 }
 
 
@@ -845,10 +839,11 @@ sub is_watcher {
 
     # Load the relevant group.
     my $group = RT::Model::Group->new;
-    $group->load_queue_role_group(
-        type  => $args{'type'},
-        queue => $self->id
+    $group->load_role_group(
+        object => $self,
+        type   => $args{'type'},
     );
+    return 0 unless $group->id;
 
     # Ask if it has the member in question
 
