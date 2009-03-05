@@ -707,7 +707,7 @@ sub members {
     #If we don't have rights, don't include any results
     # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
 
-    my $res = $self->new( current_user => $self->current_user );
+    my $res = $class->new( current_user => $self->current_user );
     $res->limit_to_members_of_group( $self->id );
 
     return $res;
