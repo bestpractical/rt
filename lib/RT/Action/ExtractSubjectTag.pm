@@ -73,9 +73,14 @@ sub Commit {
 
     my $match   = RT->Config->Get('ExtractSubjectTagMatch');
     my $nomatch = RT->Config->Get('ExtractSubjectTagNoMatch');
-    while ( $TransactionSubject =~ /($match)/g ) {
+    TAGLIST: while ( $TransactionSubject =~ /($match)/g ) {
         my $tag = $1;
         next if $tag =~ /$nomatch/;
+        foreach my $subject_tag ( RT->System->SubjectTag ) {
+            if ($tag =~ /\[\Q$subject_tag\E\s+\#(\d+)\s*\]/) {
+                next TAGLIST;
+            }
+        }
         $TicketSubject .= " $tag" unless ( $TicketSubject =~ /\Q$tag\E/ );
     }
 
