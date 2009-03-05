@@ -278,24 +278,6 @@ my $current_user;
     }
 }
 
-{ # DiffAsString
-    my $date = RT::DateTime->now(current_user => RT->system_user);
-    is($date->diff_as_string(1), '', 'no diff, wrong input');
-    is($date->diff_as_string(-1), '', 'no diff, wrong input');
-    is($date->diff_as_string('qwe'), '', 'no diff, wrong input');
-
-    $date->epoch(2);
-    is($date->diff_as_string(-1), '', 'no diff, wrong input');
-
-    is($date->diff_as_string(3), '1 sec ago', 'diff: 1 sec ago');
-    is($date->diff_as_string(1), '1 sec', 'diff: 1 sec');
-
-    my $ndate = RT::DateTime->now(current_user => RT->system_user);
-    is($date->diff_as_string($ndate), '', 'no diff, wrong input');
-    $ndate->epoch(3);
-    is($date->diff_as_string($ndate), '1 sec ago', 'diff: 1 sec ago');
-}
-
 { # Diff
     my $date = RT::DateTime->now(current_user => RT->system_user);
     $date->set_to_now;
