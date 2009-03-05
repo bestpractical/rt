@@ -714,7 +714,7 @@ sub members {
 }
 
 
-=head2 group_members_obj [recursively => 1]
+=head2 group_members [recursively => 1]
 
 Returns an L<RT::Model::GroupCollection> object of this group's members.
 By default returns groups including all subgroups, but
@@ -725,7 +725,7 @@ may contain as well system groups, personal and other.
 
 =cut
 
-sub group_members_obj {
+sub group_members {
     my $self = shift;
     my %args = ( recursively => 1, @_ );
 
@@ -755,7 +755,7 @@ sub group_members_obj {
 
 
 
-=head2 user_members_obj
+=head2 user_members
 
 Returns an L<RT::Model::UserCollection> object of this group's members, by default
 returns users including all members of subgroups, but could be
@@ -763,7 +763,7 @@ changed with C<recursively> named argument.
 
 =cut
 
-sub user_members_obj {
+sub user_members {
     my $self = shift;
     my %args = ( recursively => 1, @_ );
 
