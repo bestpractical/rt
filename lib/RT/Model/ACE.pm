@@ -475,7 +475,7 @@ sub _value {
     my $self = shift;
 
     if ( $self->principal->is_group
-        && $self->principal->object->has_member_recursively( $self->current_user->principal ) )
+        && $self->principal->object->has_member( $self->current_user->principal, recursively => 1 ) )
     {
         return ( $self->__value(@_) );
     } elsif (

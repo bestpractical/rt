@@ -914,7 +914,7 @@ sub _add_member {
         );
     }
     if (   $new_member_obj->is_group
-        && $new_member_obj->object->has_member_recursively( $self->principal ) )
+        && $new_member_obj->object->has_member( $self->principal, recursively => 1 ) )
     {
 
         #This group can't be made to be a member of itself
@@ -935,11 +935,12 @@ sub _add_member {
 }
 
 
+=head2 has_member
 
-=head2 has_member RT::Model::Principal|id
+Takes an L<RT::Model::Principal> object or its id and optional 'recursively'
+argument. Returns id of a GroupMember or CachedGroupMember record if that user
+is a member of this group. By default lookup is not recursive.
 
-Takes an L<RT::Model::Principal> object or its id returns a GroupMember id if that user is a 
-member of this group.
 Returns undef if the user isn't a member of the group or if the current
 user doesn't have permission to find out. Arguably, it should differentiate
 between ACL failure and non membership.
@@ -949,6 +950,10 @@ between ACL failure and non membership.
 sub has_member {
     my $self      = shift;
     my $principal = shift;
+    my %args      = (
+        recursively => 0,
+        @_
+    );
 
     my $id;
     if ( UNIVERSAL::isa( $principal, 'RT::Model::Principal' ) ) {
@@ -966,7 +971,11 @@ sub has_member {
     }
     return undef unless $id;
 
-    my $member_obj = RT::Model::GroupMember->new;
+    my $class = $args{'recursively'}
+        ? 'RT::Model::GroupMember'
+        : 'RT::Model::CachedGroupMember';
+
+    my $member_obj = new $class;
     $member_obj->load_by_cols(
         member_id => $id,
         group_id  => $self->id
@@ -978,47 +987,6 @@ sub has_member {
         return (undef);
     }
 }
-
-
-
-=head2 has_member_recursively RT::Model::Principal|id
-
-Takes an L<RT::Model::Principal> object or its id and returns true if that user is a member of 
-this group.
-Returns undef if the user isn't a member of the group or if the current
-user doesn't have permission to find out. Arguably, it should differentiate
-between ACL failure and non membership.
-
-=cut
-
-sub has_member_recursively {
-    my $self = shift;
-    my $principal = shift || '';
-
-    my $id;
-    if ( UNIVERSAL::isa( $principal, 'RT::Model::Principal' ) ) {
-        $id = $principal->id;
-    } elsif ( $principal =~ /^\d+$/ ) {
-        $id = $principal;
-    } else {
-        Jifty->log->error( "Group::has_member_recursively was called with an argument that" . " isn't an RT::Model::Principal or id. It's $principal" );
-        return (undef);
-    }
-    return undef unless $id;
-
-    my $member_obj = RT::Model::CachedGroupMember->new;
-    $member_obj->load_by_cols(
-        member_id => $id,
-        group_id  => $self->id
-    );
-
-    if ( my $member_id = $member_obj->id ) {
-        return $member_id;
-    } else {
-        return (undef);
-    }
-}
-
 
 
 =head2 delete_member PRINCIPAL_ID
@@ -1236,3 +1204,4 @@ Jesse Vincent, jesse@bestpractical.com
 
 RT
 
+=cut

@@ -238,7 +238,7 @@ sub delete {
 
     # Unless $self->group_obj still has the member recursively $self->member_obj
     # (Since we deleted the database row above, $self no longer counts)
-    unless ( $self->group_obj->object->has_member_recursively( $self->member_id ) ) {
+    unless ( $self->group_obj->object->has_member( $self->member_id, recursively => 1 ) ) {
 
         #   Find all ACEs granted to $self->group_id
         my $acl = RT::Model::ACECollection->new( current_user => RT->system_user );
@@ -297,7 +297,7 @@ sub set_disabled {
 
     # Unless $self->group_obj still has the member recursively $self->member_obj
     # (Since we Setdisabledd the database row above, $self no longer counts)
-    unless ( $self->group_obj->object->has_member_recursively( $self->member_id ) ) {
+    unless ( $self->group_obj->object->has_member( $self->member_id, recursively => 1 ) ) {
 
         #   Find all ACEs granted to $self->group_id
         my $acl = RT::Model::ACECollection->new( current_user => RT->system_user );

@@ -853,7 +853,7 @@ sub is_watcher {
         return (undef);
     }
 
-    return ( $group->has_member_recursively($principal) );
+    return $group->has_member( $principal, recursively => 1 );
 }
 
 

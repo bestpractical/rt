@@ -142,7 +142,7 @@ sub create {
 
     if ( $args{'member'}->is_group ) {
         my $member_object = $args{'member'}->object;
-        if ( $member_object->has_member_recursively( $args{'group'} ) ) {
+        if ( $member_object->has_member( $args{'group'}, recursively => 1 ) ) {
             Jifty->log->debug("Adding that group would create a loop");
             Jifty->handle->rollback() unless $inside_transaction;
             return (undef);
