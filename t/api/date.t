@@ -4,7 +4,7 @@ use warnings; use strict;
 use Test::MockTime qw(set_fixed_time restore_time);
 use RT::Test;
 
-use Test::More tests => 165;
+use Test::More tests => 87;
 
 use RT::Model::User;
 use Test::Warn;
