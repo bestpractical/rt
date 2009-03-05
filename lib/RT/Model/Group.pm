@@ -725,7 +725,7 @@ may contain as well system groups, personal and other.
 
 =cut
 
-sub group_members {
+sub group_members_obj {
     my $self = shift;
     my %args = ( recursively => 1, @_ );
 
@@ -763,7 +763,7 @@ changed with C<recursively> named argument.
 
 =cut
 
-sub user_members {
+sub user_members_obj {
     my $self = shift;
     my %args = ( recursively => 1, @_ );
 
