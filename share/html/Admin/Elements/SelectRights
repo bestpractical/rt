@@ -72,7 +72,7 @@ while ( my $ace = $ACLObj->Next ) {
 <h3><&|/l&>New rights</&></h3> 
 <select size="5" multiple="multiple" name="GrantRight-<%$ACLDesc%>">
 % foreach my $pair (sort { $a->[1] cmp $b->[1] } map [$_, loc($_)], grep !$current_rights{$_}, keys %Rights) {
-      <option value="<% $pair->[0] %>"><% $pair->[1] %></option>
+      <option value="<% $pair->[0] %>" title="<% loc($Rights{$pair->[0]}) %>"><% $pair->[1] %></option>
 % }
 <option value="" selected="selected"><&|/l&>(no value)</&></option>
 </select>
