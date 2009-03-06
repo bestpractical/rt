@@ -69,7 +69,13 @@ sub new_from_string {
         $args{time_zone} = $class->_canonicalize_time_zone($args{time_zone});
     }
 
-    return $class->SUPER::new_from_string($string, %args);
+    my $dt = $class->SUPER::new_from_string($string, %args);
+
+    if (!defined($dt)) {
+        return RT::DateTime->from_epoch(epoch => 0);
+    }
+
+    return $dt;
 }
 
 sub _canonicalize_self {
