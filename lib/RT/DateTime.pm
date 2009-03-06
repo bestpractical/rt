@@ -80,6 +80,13 @@ sub new_from_string {
     return $dt;
 }
 
+sub strftime {
+    my $self = shift;
+
+    return 'unset' if $self->is_unset;
+    return $self->SUPER::strftime(@_);
+}
+
 sub _canonicalize_self {
     my $self = shift;
     my %args = (
