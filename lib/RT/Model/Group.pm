@@ -970,13 +970,13 @@ sub has_member {
     return undef unless $id;
 
     my $class = $args{'recursively'}
-        ? 'RT::Model::GroupMember'
-        : 'RT::Model::CachedGroupMember';
+        ? 'RT::Model::CachedGroupMember'
+        : 'RT::Model::GroupMember';
 
     my $member_obj = new $class;
     $member_obj->load_by_cols(
         member_id => $id,
-        group_id  => $self->id
+        group_id  => $self->id,
     );
 
     if ( my $member_id = $member_obj->id ) {

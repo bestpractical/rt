@@ -25,9 +25,9 @@ is($ng->id , $group->id, "Loaded the right group");
 
 ok (($id,$msg) = $ng->add_member('1'), "Added a member to the group");
 ok($id, $msg);
-ok (($id,$msg) = $ng->add_member('2' ), "Added a member to the group");
+ok (($id,$msg) = $ng->add_member('2'), "Added a member to the group");
 ok($id, $msg);
-ok (($id,$msg) = $ng->add_member('3' ), "Added a member to the group");
+ok (($id,$msg) = $ng->add_member('3'), "Added a member to the group");
 ok($id, $msg);
 
 # Group 1 now has members 1, 2 ,3
