@@ -106,7 +106,7 @@ sub rfc2822 {
 sub iso {
     my $self = _canonicalize_self(@_);
 
-    return join ' ', $self->ymd('-'), $self->hms(':');
+    return $self->strftime('%Y-%m-%d %H:%M:%S');
 }
 
 1;
