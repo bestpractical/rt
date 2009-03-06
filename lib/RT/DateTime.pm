@@ -8,12 +8,7 @@ use RT::DateTime::Duration;
 
 use constant duration_class => 'RT::DateTime::Duration';
 
-sub _stringify {
-    my $self = shift;
-
-    return "unset" if $self->is_unset;
-    return $self->strftime(RT->config->get('DateTimeFormat'));
-}
+sub _stringify { shift->config_format }
 
 sub is_unset { shift->epoch == 0 }
 
@@ -114,6 +109,12 @@ sub iso {
     my $self = _canonicalize_self(@_);
 
     return $self->strftime('%Y-%m-%d %H:%M:%S');
+}
+
+sub config_format {
+    my $self = _canonicalize_self(@_);
+
+    return $self->strftime(RT->config->get('DateTimeFormat'));
 }
 
 1;
