@@ -635,6 +635,9 @@ sub InsertInitialData {
     }
 
     # system groups
+    # $self->loc('Everyone'); # For the string extractor to get a string to localize
+    # $self->loc('Privileged'); # For the string extractor to get a string to localize
+    # $self->loc('Unprivileged'); # For the string extractor to get a string to localize
     foreach my $name (qw(Everyone Privileged Unprivileged)) {
         my $group = RT::Group->new( $RT::SystemUser );
         $group->LoadSystemInternalGroup( $name );
