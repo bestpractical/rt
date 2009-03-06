@@ -69,14 +69,23 @@ sub Commit {
         next unless $o->Type eq 'Correspond';
         $note .= $o->Content . "\n" if $o->ContentObj;
     }
+
     my ($top) = $self->TicketObj->AllDependedOnBy( Type => 'ticket' );
     my $links  = $self->TicketObj->DependedOnBy;
 
     while ( my $link = $links->Next ) {
         my $obj = $link->BaseObj;
         next unless $obj->Type eq 'approval';
-        next if $obj->HasUnresolvedDependencies( Type => 'approval' );
 
+        for my $other ($obj->AllDependsOn( Type => 'approval' )) {
+            if ( $other->QueueObj->IsActiveStatus( $other->Status ) ) {
+                $other->__Set(
+                    Field => 'Status',
+                    Value => 'deleted',
+                );
+            }
+
+        }
         $obj->SetStatus( Status => 'open', Force => 1 );
     }
 
