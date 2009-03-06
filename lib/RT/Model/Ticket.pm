@@ -1906,7 +1906,7 @@ current user. Even if it's owned by another user.
 sub steal {
     my $self = shift;
 
-    if ( $self->is_owner( $self->current_user ) ) {
+    if ( $self->owner->id == $self->current_user->id ) {
         return ( 0, _("You already own this ticket") );
     } else {
         return ( $self->set_owner( $self->current_user->id, 'steal' ) );
