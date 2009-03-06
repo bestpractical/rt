@@ -4,7 +4,7 @@ use warnings; use strict;
 use Test::MockTime qw(set_fixed_time restore_time);
 use RT::Test;
 
-use Test::More tests => 87;
+use Test::More tests => 89;
 
 use RT::Model::User;
 use Test::Warn;
@@ -141,7 +141,9 @@ my $current_user;
 
 { # set+ISO format
     my $date = RT::DateTime->new_from_string('weird date');
-    is($date, undef, "unparseable date returns undef");
+    isa_ok($date, 'RT::DateTime');
+    is($date, 'unset', "unparseable date returns an 'unset' RT::DateTime");
+    ok($date->is_unset, "unparseable date is_unset");
 
     $date = RT::DateTime->new_from_string('2005-11-28 15:10:00');
     is($date, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
@@ -183,10 +185,10 @@ my $current_user;
     };
 
     $date = RT::DateTime->new_from_string('2005-13-28 15:10:00');
-    ok(!$date, "wrong month value");
+    ok($date->is_unset, "wrong month value");
 
     $date = RT::DateTime->new_from_string('2005-00-28 15:10:00');
-    ok(!$date, "wrong month value");
+    ok($date->is_unset, "wrong month value");
 
     $date = RT::DateTime->new_from_string('1960-01-28 15:10:00');
     is($date, '1960-01-28 15:10:00', "we can support pre-1970s dates now");
