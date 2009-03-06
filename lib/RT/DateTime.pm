@@ -11,9 +11,11 @@ use constant duration_class => 'RT::DateTime::Duration';
 sub _stringify {
     my $self = shift;
 
-    return "unset" if $self->epoch == 0;
+    return "unset" if $self->is_unset;
     return $self->strftime(RT->config->get('DateTimeFormat'));
 }
+
+sub is_unset { shift->epoch == 0 }
 
 sub age {
     my $self  = shift;
