@@ -62,7 +62,7 @@ my $testuser = RT::Model::User->new(current_user => RT->system_user);
 ok ($id,$msg);
 
 my $global_admin_cc = RT::Model::Group->new(current_user => RT->system_user);
-$global_admin_cc->load_system_role_group('admin_cc');
+$global_admin_cc->load_role_group(object => RT->system, type => 'admin_cc');
 ok($global_admin_cc->id, "Found the global admincc group");
 my $groups = RT::Model::GroupCollection->new(current_user => RT->system_user);
 $groups->with_right(right => 'OwnTicket', object => $q);

@@ -754,7 +754,6 @@ sub group_members {
 }
 
 
-
 =head2 user_members
 
 Returns an L<RT::Model::UserCollection> object of this group's members, by default
@@ -794,10 +793,10 @@ sub user_members {
     return ($users);
 }
 
+
 =head2 member_emails
 
 Returns an array of the email addresses of all of this group's members
-
 
 =cut
 
