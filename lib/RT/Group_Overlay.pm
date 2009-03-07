@@ -184,7 +184,6 @@ sub Load {
     my $self       = shift;
     my $identifier = shift || return undef;
 
-    #if it's an int, load by id. otherwise, load by name.
     if ( $identifier !~ /\D/ ) {
         $self->SUPER::LoadById($identifier);
     }
