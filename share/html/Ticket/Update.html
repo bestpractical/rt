@@ -63,6 +63,7 @@
 <& /Elements/GnuPG/SignEncryptWidget:ShowIssues, self => $gnupg_widget &>
 
 <table width="100%" border="0">
+% $m->callback(CallbackName => 'AfterTableOpens', ARGSRef => \%ARGS, Ticket => $TicketObj);
 
 <tr><td class="label"><&|/l&>Status</&>:</td>
 <td>
