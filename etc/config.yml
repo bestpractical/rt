@@ -10,7 +10,7 @@ framework:
     Database: rt4
     Driver: mysql
     Host: localhost
-    password: ''
+    Password: ''
     RecordBaseClass: Jifty::DBI::Record::Cachable
     User: root
     Version: 0.0.1
