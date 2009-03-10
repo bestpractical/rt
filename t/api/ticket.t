@@ -1,12 +1,7 @@
 
 use strict;
 use warnings;
-use RT::Test; use Test::More; 
-plan tests => 88;
-use Data::Dumper;
-use RT;
-
-
+use RT::Test tests => 88, l10n => 1;
 
 {
 
@@ -134,7 +129,7 @@ ok (!$group->id, "Not found the cc object for this ticket");
 
 $group = RT::Model::Group->new(current_user => RT->system_user);
 ok($group->load_role_group(object => $ticket, type=> 'admin_cc'));
-ok ($group->id, "Not found the admin_cc object for this ticket");
+ok (!$group->id, "Not found the admin_cc object for this ticket");
 
 $group = RT::Model::Group->new(current_user => RT->system_user);
 ok($group->load_role_group(object => $ticket, type=> 'owner'));
