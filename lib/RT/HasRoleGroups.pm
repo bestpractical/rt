@@ -92,13 +92,18 @@ sub add_watcher {
 #XXX: check if role is valid
 
     if ( $args{'email'} ) {
-        my $user = RT::Model::User->new;
-        $user->load_by_email( $args{'email'} );
-        if ( $user->id ) {
-            $args{'principal_id'} = $user->id;
-            delete $args{'email'};
-        } else {
-            delete $args{'principal_id'};
+        my ( $addr ) = RT::EmailParser->parse_email_address( $args{email} );
+        if ($addr) {
+            $args{'email'} = $addr->address;
+            my $user = RT::Model::User->new;
+            $user->load_by_email( $args{'email'} );
+            if ( $user->id ) {
+                $args{'principal_id'} = $user->id;
+                delete $args{'email'};
+            }
+            else {
+                delete $args{'principal_id'};
+            }
         }
     }
 
