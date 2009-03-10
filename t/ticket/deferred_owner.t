@@ -1,11 +1,9 @@
-use Test::More tests => 19;
-
 use strict;
 use warnings;
+use RT::Test tests => 20;
 
 use_ok('RT');
 use_ok('RT::Model::Ticket');
-use RT::Test;
 use Test::Warn;
 use RT::Test::Warnings;
 
@@ -16,6 +14,9 @@ ok $tester && $tester->id, 'loaded or created user';
 
 my $queue = RT::Test->load_or_create_queue( name => 'General' );
 ok $queue && $queue->id, 'loaded or created queue';
+
+my ( $ret, $msg ) = $queue->create_role_group( 'cc' );
+ok $ret, "created cc group: $msg";
 
 my $owner_role_group = RT::Model::Group->new(current_user => RT->system_user );
 $owner_role_group->create_role_group( type => 'owner', object => $queue );
@@ -119,6 +120,4 @@ qr/User .* was proposed as a ticket owner but has no rights to own tickets in Ge
     like $ticket->role_group("cc")->member_emails_as_string, qr/tester\@localhost/, 'tester is in the cc list';
     isnt $ticket->owner->id, $tester->id, 'tester is also owner';
 }
-
-
 
