@@ -1123,7 +1123,11 @@ sub correspond {
 
     #Set the last told date to now if this isn't mail from the requestor.
     #TODO: Note that this will wrongly ack mail from any non-requestor as a "told"
-    $self->set_told unless ( $self->is_requestor( $self->current_user->id ) );
+    $self->set_told
+      unless $self->is_watcher(
+              type         => 'requestor',
+              principal_id => $self->current_user->id,
+      );
 
     if ( $args{'dry_run'} ) {
         Jifty->handle->rollback();

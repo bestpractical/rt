@@ -1016,7 +1016,10 @@ Returns false otherwise
 sub is_inbound {
     my $self = shift;
     $self->object_type eq 'RT::Model::Ticket' or return undef;
-    return ( $self->ticket_obj->is_requestor( $self->creator_obj->principal_id ) );
+    return $self->ticket_obj->is_watcher(
+        type         => 'requestor',
+        principal_id => $self->creator_obj->principal_id,
+    );
 }
 
 
