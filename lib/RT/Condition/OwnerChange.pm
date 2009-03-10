@@ -59,7 +59,7 @@ If we're changing the owner return true, otherwise return false
 
 sub is_applicable {
     my $self = shift;
-    if ( ( $self->transaction_obj->field || '' ) eq 'owner' ) {
+    if ( ( $self->transaction->field || '' ) eq 'owner' ) {
         return (1);
     } else {
         return (undef);

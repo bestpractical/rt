@@ -222,7 +222,7 @@ sub next {
     my $Attachment = $self->SUPER::next;
     return $Attachment unless $Attachment;
 
-    my $txn = $Attachment->transaction_obj;
+    my $txn = $Attachment->transaction;
     if ( $txn->__value('type') eq 'comment' ) {
         return $Attachment
             if $txn->current_user_has_right('ShowTicketcomments');

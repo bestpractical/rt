@@ -80,7 +80,7 @@ return unless @runs or $needs_unsigned_warning;
 my $reverify_cb = sub  {
     my $top = shift;
 
-    my $txn = $top->transaction_obj;
+    my $txn = $top->transaction;
     unless ( $txn && $txn->id ) {
         return (0, "Couldn't get transaction of attachment #". $top->id);
     }

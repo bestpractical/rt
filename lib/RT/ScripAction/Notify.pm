@@ -85,7 +85,7 @@ sub set_recipients {
     my ( @To, @PseudoTo, @Cc, @Bcc );
 
     if ( $arg =~ /\bOther_?Recipients\b/i ) {
-        if ( my $attachment = $self->transaction_obj->attachments->first ) {
+        if ( my $attachment = $self->transaction->attachments->first ) {
             push @Cc,  map { $_->address } Email::Address->parse( $attachment->get_header('RT-Send-Cc') );
             push @Bcc, map { $_->address } Email::Address->parse( $attachment->get_header('RT-Send-Bcc') );
         }
@@ -129,7 +129,7 @@ sub set_recipients {
         }
     }
 
-    my $creator = $self->transaction_obj->creator_obj->email() || '';
+    my $creator = $self->transaction->creator_obj->email() || '';
 
     #Strip the sender out of the To, Cc and AdminCc and set the
     # recipients fields used to build the message by the superclass.

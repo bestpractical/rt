@@ -309,7 +309,7 @@ sub prepare {
         Jifty->log->warn("No template object handed to $self");
     }
 
-    unless ( $self->transaction_obj ) {
+    unless ( $self->transaction ) {
         Jifty->log->warn("No transaction object handed to $self");
 
     }

@@ -58,7 +58,7 @@ the Priority Obj
 
 sub is_applicable {
     my $self = shift;
-    if ( $self->transaction_obj->field eq 'priority' ) {
+    if ( $self->transaction->field eq 'priority' ) {
         return (1);
     } else {
         return (undef);

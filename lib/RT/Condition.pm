@@ -161,7 +161,7 @@ Return the transaction object we're talking about
 
 =cut
 
-sub transaction_obj {
+sub transaction {
     my $self = shift;
     return ( $self->{'transaction_obj'} );
 }

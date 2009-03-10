@@ -63,7 +63,7 @@ options.
 sub is_applicable {
     my $self = shift;
 
-    my $txn = $self->transaction_obj;
+    my $txn = $self->transaction;
     return 0
         unless $txn->type eq "status"
             || ( $txn->type eq "set" && $txn->field eq "status" );

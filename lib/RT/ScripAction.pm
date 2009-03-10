@@ -125,7 +125,7 @@ sub ticket_obj {
 }
 
 
-sub transaction_obj {
+sub transaction {
     my $self = shift;
     return ( $self->{'transaction_obj'} );
 }
