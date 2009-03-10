@@ -54,7 +54,7 @@ diag "check that previous trick doesn't work without sufficient rights"
 {
     RT::Test->set_rights(
         { principal => $tester->principal,
-          right => [qw(Seequeue ShowTicket CreateTicket OwnTicket)],
+          right => [qw(SeeQueue ShowTicket CreateTicket OwnTicket)],
         },
     );
     my $ticket = RT::Model::Ticket->new(current_user => $tester );
@@ -76,7 +76,7 @@ diag "check that deffering owner really works" if $ENV{'TEST_VERBOSE'};
 {
     RT::Test->set_rights(
         { principal => $tester->principal,
-          right => [qw(Seequeue ShowTicket CreateTicket)],
+          right => [qw(SeeQueue ShowTicket CreateTicket)],
         },
         { principal => $queue->role_group('cc')->principal,
           object => $queue,
@@ -118,6 +118,6 @@ qr/User .* was proposed as a ticket owner but has no rights to own tickets in Ge
     diag $msg if $msg && $ENV{'TEST_VERBOSE'};
     ok $tid, "created a ticket";
     like $ticket->role_group("cc")->member_emails_as_string, qr/tester\@localhost/, 'tester is in the cc list';
-    isnt $ticket->owner->id, $tester->id, 'tester is also owner';
+    isnt $ticket->owner->id, $tester->id, 'tester is not owner';
 }
 
