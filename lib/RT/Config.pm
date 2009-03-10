@@ -212,15 +212,54 @@ our %META = (
             Description => 'Message box height',          #loc
         },
     },
+    SearchResultsRefreshInterval => {
+        Section         => 'General',                       #loc
+        Overridable     => 1,
+        SortOrder       => 8,
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => 'Search results refresh interval',                            #loc
+            Values      => [qw(0 120 300 600 1200 3600 7200)],
+            ValuesLabel => {
+                0 => "Don't refresh search results.",           #loc_left_pair
+                120 => "Refresh search results every 2 minutes.",
+                300 => "Refresh search results every 5 minutes.",
+                600 => "Refresh search results every 10 minutes.",
+                1200 => "Refresh search results every 20 minutes.",
+                3600 => "Refresh search results every 60 minutes.",
+                7200 => "Refresh search results every 120 minutes.",
+            },  
+        },  
+    },
 
     # User overridable options for RT at a glance
     DefaultSummaryRows => {
         Section         => 'RT at a glance',    #loc
         Overridable     => 1,
+        SortOrder       => 1,
         Widget          => '/Widgets/Form/Integer',
         WidgetArguments => {
             Description => 'Number of search results',    #loc
         },
+    },
+    HomePageRefreshInterval => {
+        Section         => 'RT at a glance',                       #loc
+        Overridable     => 1,
+        SortOrder       => 2,
+        Widget          => '/Widgets/Form/Select',
+        WidgetArguments => {
+            Description => 'Home page refresh interval',                #loc
+            Values      => [qw(0 120 300 600 1200 3600 7200)],
+            ValuesLabel => {
+                0 => "Don't refresh home page.",           #loc_left_pair
+                120 => "Refresh home page every 2 minutes.",
+                300 => "Refresh home page every 5 minutes.",
+                600 => "Refresh home page every 10 minutes.",
+                1200 => "Refresh home page every 20 minutes.",
+                3600 => "Refresh home page every 60 minutes.",
+                7200 => "Refresh home page every 120 minutes.",
+            },  
+        },  
     },
 
     # User overridable options for Ticket displays

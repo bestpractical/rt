@@ -45,7 +45,8 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $title, Refresh => $session{'tickets_refresh_interval'}, 
+<& /Elements/Header, Title => $title,
+    Refresh => $session{'tickets_refresh_interval'} || RT->Config->Get('SearchResultsRefreshInterval', $session{'CurrentUser'} ),
     RSSAutoDiscovery => $RSSFeedURL,
     LinkRel => \%link_rel &>
 <& /Ticket/Elements/Tabs, 
@@ -75,7 +76,7 @@
 % foreach my $key (keys(%hiddens)) {
 <input type="hidden" class="hidden" name="<%$key%>" value="<% defined($hiddens{$key})?$hiddens{$key}:'' %>" />
 % }
-<& /Elements/Refresh, Name => 'TicketsRefreshInterval', Default => $session {'tickets_refresh_interval'} &>
+<& /Elements/Refresh, Name => 'TicketsRefreshInterval', Default => $session{'tickets_refresh_interval'}||RT->Config->Get('SearchResultsRefreshInterval', $session{'CurrentUser'}) &>
 <input type="submit" class="button" value="<&|/l&>Change</&>" />
 </form>
 </div>

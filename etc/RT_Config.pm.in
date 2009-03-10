@@ -1075,6 +1075,24 @@ results on the frontpage.
 
 Set($DefaultSummaryRows, 10);
 
+=item C<$HomePageRefreshInterval>
+
+C<$HomePageRefreshInterval> is default number of seconds to refresh the RT
+home page. Choose from [0, 120, 300, 600, 1200, 3600, 7200].
+
+=cut
+
+Set($HomePageRefreshInterval, 0);
+
+=item C<$SearchResultsRefreshInterval>
+
+C<$SearchResultsRefreshInterval> is default number of seconds to refresh
+search results in RT. Choose from [0, 120, 300, 600, 1200, 3600, 7200].
+
+=cut
+
+Set($SearchResultsRefreshInterval, 0);
+
 =item C<$OldestTransactionsFirst>
 
 By default, RT shows newest transactions at the bottom of the ticket
