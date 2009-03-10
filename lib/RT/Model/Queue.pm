@@ -253,11 +253,6 @@ sub create {
         return ( 0, _('Queue could not be created') );
     }
 
-    # create role groups
-    foreach my $type ( 'owner', $self->roles ) {
-        $self->create_role_group($type);
-    }
-
     Jifty->handle->commit;
 
     if ( defined $sign ) {
