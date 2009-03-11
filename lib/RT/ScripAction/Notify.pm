@@ -55,6 +55,50 @@ use base qw(RT::ScripAction::SendEmail);
 
 use Email::Address;
 
+=head1 NAME
+
+RT::ScripAction::Notify - notify recipients
+
+=head1 DESCRIPTION
+
+This scrip action notifies various recipients by email. List of
+recipients is controlled using argument of the action.
+
+=head1 ARGUMENT
+
+Comma separated list of entries, where each entry can be in the following format:
+
+    [{queue, ticket} ] <recipient> [ as {to, cc, bcc}]
+
+As recipient the following can be used:
+
+=over 4
+
+=item 'other recipients' - one time recipients, there are two boxes on reply/comment
+pages where users can put these recipients.
+
+=item 'owner' - owner of the ticket.
+
+=item 'some role' - any role in the system. Without prefix members of both queue's
+and ticket's role groups are notified. Either 'queue' or 'ticket' prefix can be used
+to notify only one group, for example:
+
+    ticket requestor
+
+=back
+
+Each entry may define the way mail delivered: 'to', 'cc' or 'bcc', by default
+it's 'to'. For example:
+
+    owner as to
+    admin cc as cc
+
+Complete example:
+
+    requestor, owner as cc, other recipients, ticket cc as cc
+
+=head1 METHODS
+
 =head2 prepare
 
 Set up the relevant recipients, then call our parent.
@@ -63,8 +107,8 @@ Set up the relevant recipients, then call our parent.
 
 sub prepare {
     my $self = shift;
-    $self->set_recipients();
-    $self->SUPER::prepare();
+    $self->set_recipients;
+    $self->SUPER::prepare;
 }
 
 =head2 set_recipients
@@ -79,72 +123,95 @@ sub set_recipients {
 
     my $ticket = $self->ticket_obj;
 
-    my $arg = $self->argument;
-    $arg =~ s/\bAll\b/Owner,Requestor,AdminCc,Cc/i;
-
-    my ( @To, @PseudoTo, @Cc, @Bcc );
-
-    if ( $arg =~ /\bOther_?Recipients\b/i ) {
-        if ( my $attachment = $self->transaction->attachments->first ) {
-            push @Cc,  map { $_->address } Email::Address->parse( $attachment->get_header('RT-Send-Cc') );
-            push @Bcc, map { $_->address } Email::Address->parse( $attachment->get_header('RT-Send-Bcc') );
+    my %recipients = (
+        to  => [], mandatory_to  => [],
+        cc  => [], mandatory_cc  => [],
+        bcc => [], mandatory_bcc => [],
+    );
+    foreach my $block ( $self->parse_argument ) {
+        if ( $block->{'recipient'} eq 'other recipients' ) {
+            if ( my $attachment = $self->transaction->attachments->first ) {
+                push @{ $recipients{'mandatory_cc'} ||= [] },
+                    map $_->address, Email::Address->parse( $attachment->get_header('RT-Send-Cc') );
+                push @{ $recipients{'mandatory_bcc'} ||= [] },
+                    map $_->address, Email::Address->parse( $attachment->get_header('RT-Send-Bcc') );
+            }
+        }
+        elsif ( $block->{'recipient'} eq 'owner' ) {
+            if ( $ticket->owner->id != RT->nobody->id ) {
+                push @{ $recipients{ $block->{'in'} } }, $ticket->owner->email;
+            }
+        }
+        else {
+            my $in = $recipients{ $block->{'in'} };
+            if ( ($block->{'mode'} || 'queue') eq 'queue' ) {
+                push @$in, $ticket->queue->role_group( $block->{'recipient'} )->member_emails;
+            }
+            if ( ($block->{'mode'} || 'ticket') eq 'ticket' ) {
+                push @$in, $ticket->role_group( $block->{'recipient'} )->member_emails;
+            }
         }
     }
 
-    if ( $arg =~ /\bRequestor\b/i ) {
-        push @To, $ticket->role_group("requestor")->member_emails;
-    }
-
-    if ( $arg =~ /\bCc\b/i ) {
-
-        #If we have a To, make the Ccs, Ccs, otherwise, promote them to To
-        if (@To) {
-            push( @Cc, $ticket->role_group("cc")->member_emails );
-            push( @Cc, $ticket->queue->role_group("cc")->member_emails );
-        } else {
-            push( @Cc, $ticket->role_group("cc")->member_emails );
-            push( @To, $ticket->queue->role_group("cc")->member_emails );
+    my $skip = '';
+    unless ( RT->config->get('NotifyActor') ) {
+        if ( my $creator = $self->transaction->creator_obj->email ) {
+            $skip = lc $creator;
         }
     }
 
-    if ( $arg =~ /\bOwner\b/i && $ticket->owner->id != RT->nobody->id ) {
 
-        # If we're not sending to Ccs or requestors,
-        # then the Owner can be the To.
-        if (@To) {
-            push( @Bcc, $ticket->owner->email );
-        } else {
-            push( @To, $ticket->owner->email );
+    my %seen;
+    foreach my $type ( qw(to cc bcc) ) {
+        # delete empty
+        @{ $recipients{ $type } } = grep defined && length, @{ $recipients{ $type } };
+
+        # skip actor
+        @{ $recipients{ $type } } = grep lc($_) ne $skip, @{ $recipients{ $type } }
+            if $skip;
+
+        # merge mandatory
+        @{ $recipients{ $type } } = grep defined && length, @{ delete $recipients{ "mandatory_$type" } };
+
+        # skip duplicates
+        @{ $recipients{ $type } } = grep !$seen{ lc $_ }++, @{ $recipients{ $type } };
+    }
+
+    unless ( @{ $recipients{'to'} } ) {
+        $recipients{'to'} = delete $recipients{'cc'};
+    }
+
+    if ( my $format = RT->config->get('UseFriendlyToLine') ) {
+        unless ( @{ $recipients{'to'} } ) {
+            push @{ $self->{'PseudoTo'} ||= [] }, sprintf $format, $self->argument, $ticket->id;
         }
-
-    }
-    if ( $arg =~ /\bAdmin_?Cc\b/i ) {
-        push( @Bcc, $ticket->role_group("admin_cc")->member_emails );
-        push( @Bcc, $ticket->queue->role_group("admin_cc")->member_emails );
     }
 
-    if ( RT->config->get('UseFriendlyToLine') ) {
-        unless (@To) {
-            push @PseudoTo, sprintf RT->config->get('FriendlyToLineFormat'), $arg, $ticket->id;
+    @{ $self }{qw(To Cc Bcc)} = @recipients{ qw(to cc bcc) };
+
+}
+
+my $re_entry = qr{(?:(ticket|queue)\s+)?([^,])+?(?:\s+as\s+(to|cc|bcc))?}i;
+
+sub parse_argument {
+    my $self = shift;
+
+    my @res;
+
+    my @parts = grep length, map { s/^\s+//; s/\s+$//; $_ } split /,/, $self->argument;
+    foreach ( @parts ) {
+        unless ( /^$re_entry$/o ) {
+            Jifty->log->error("couldn't parse argument $_");
+            next;
         }
+        my ($mode, $recipient, $in) = ($1||'', $2, $3 || 'to');
+        for ( $mode, $recipient, $in ) {
+            s/^\s+//; s/\s+$//; s/\s+/ /g;
+            $_ = lc $_;
+        }
+        push @res, { mode => $mode, recipient => $recipient, in => $in };
     }
-
-    my $creator = $self->transaction->creator_obj->email() || '';
-
-    #Strip the sender out of the To, Cc and AdminCc and set the
-    # recipients fields used to build the message by the superclass.
-    # unless a flag is set
-    if ( RT->config->get('NotifyActor') ) {
-        @{ $self->{'To'} }  = @To;
-        @{ $self->{'Cc'} }  = @Cc;
-        @{ $self->{'Bcc'} } = @Bcc;
-    } else {
-        @{ $self->{'To'} }  = grep { lc $_ ne lc $creator } @To;
-        @{ $self->{'Cc'} }  = grep { lc $_ ne lc $creator } @Cc;
-        @{ $self->{'Bcc'} } = grep { lc $_ ne lc $creator } @Bcc;
-    }
-    @{ $self->{'PseudoTo'} } = @PseudoTo;
-
+    return @res;
 }
 
 1;
