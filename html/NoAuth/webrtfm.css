@@ -61,6 +61,10 @@
     margin-left: 1em;
 }
 
+.label h2 {
+    text-align: left;
+}
+
 <%init>
 # only works on RT 3.6.1 and newer
 eval { RT::Interface::Web::StaticFileHeaders() }; 
