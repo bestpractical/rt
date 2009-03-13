@@ -122,6 +122,11 @@ div#body {
  color: #000;
  }
 
+#topactions #GotoTicket {
+ text-align: right; 
+
+}
+
 div#footer {
  position: absolute;
  right: 0;
