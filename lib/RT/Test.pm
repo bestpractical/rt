@@ -536,8 +536,8 @@ sub set_mail_catcher {
     my $catcher = sub {
         my $MIME = shift;
 
-        open my $handle, '>>', $RT::TEST::MAILBOX_CATCHER
-          or die "Unable to open $MAILBOX_CATCHER for appending: $!";
+        open my $handle, '>>', $RT::Test::MAILBOX_CATCHER
+          or die "Unable to open $RT::Test::MAILBOX_CATCHER for appending: $!";
 
         $MIME->print($handle);
         print $handle "%% split me! %%\n";
