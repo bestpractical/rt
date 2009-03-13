@@ -56,6 +56,10 @@
 #cfs .emphasized    td { font-weight: bold;    color: #c00; font-size: 11pt; }
 #cfs .emphasized    th { font-weight: bolder;  color: #c00; font-size: 13pt; } 
 
+#topactions #ArticleSearch {
+    float: right;
+    margin-left: 1em;
+}
 
 <%init>
 # only works on RT 3.6.1 and newer
