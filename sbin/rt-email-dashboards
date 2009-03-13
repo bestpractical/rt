@@ -121,7 +121,7 @@ while (defined(my $user = $Users->next)) {
         next;
     }
 
-    my ($hour, $dow, $dom) = hour_dow_dom_in($user->time_zone || RT->config->get('TimeZone'));
+    my ($hour, $dow, $dom) = hour_dow_dom_in($user->timezone || RT->config->get('Timezone'));
     $hour .= ':00';
     debug "Checking %1's subscriptions: hour %2, dow %3, dom %4",
           $user->name, $hour, $dow, $dom;
@@ -494,7 +494,7 @@ dashboards. A dashboard is a set of saved searches, the subscription controls
 how often that dashboard is sent and how it's displayed.
 
 Each subscription has an hour, and possibly day of week or day of month. These
-are taken to be in the user's time zone if available, UTC otherwise.
+are taken to be in the user's timezone if available, UTC otherwise.
 
 =head1 SETUP
 

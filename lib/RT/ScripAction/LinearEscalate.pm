@@ -157,7 +157,7 @@ sub prepare {
 
     my $ticket = $self->ticket_obj;
 
-    my $due = $ticket->due->epoch;
+    my $due = $ticket->due_obj->unix;
     unless ( $due > 0 ) {
         Jifty->log->debug('Due is not set. Not escalating.');
         return 1;
@@ -187,8 +187,8 @@ sub prepare {
     # now we know we have a due date. for every day that passes,
     # increment priority according to the formula
 
-    my $starts = $ticket->starts->epoch;
-    $starts = $ticket->created->epoch unless $starts > 0;
+    my $starts = $ticket->starts_obj->unix;
+    $starts = $ticket->created_obj->unix unless $starts > 0;
     my $now = time;
 
     # do nothing if we didn't reach starts or created date

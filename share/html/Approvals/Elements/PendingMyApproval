@@ -63,9 +63,9 @@
 <input type="checkbox" class="checkbox" value="1" name="show_rejected" <% defined($ARGS{'show_rejected'}) && $ARGS{'show_rejected'} && qq[checked="checked"] |n%> /> <&|/l&>Show denied requests</&><br />
 <input type="checkbox" class="checkbox" value="1" name="show_dependent" <% defined($ARGS{'show_dependent'}) && $ARGS{'show_dependent'} && qq[checked="checked"] |n%> /> <&|/l&>Show requests awaiting other approvals</&><br />
 
-<&|/l,"<input size='15' value='".($Created_before->epoch > 0 &&$Created_before->iso)."' name='created_before' id='CreatedBefore' class='datetime' />"&>Only show approvals for requests Created before %1</&><br />
+<&|/l,"<input size='15' value='".($Created_before->unix > 0 &&$Created_before->iso)."' name='created_before' id='CreatedBefore' class='datetime' />"&>Only show approvals for requests Created before %1</&><br />
 
-<&|/l, "<input size='15' value='".( $Created_after->epoch >0 && $Created_after->iso)."' name='created_after' id='CreatedAfter' class='datetime' />"&>Only show approvals for requests Created after %1</&>
+<&|/l, "<input size='15' value='".( $Created_after->unix >0 && $Created_after->iso)."' name='created_after' id='CreatedAfter' class='datetime' />"&>Only show approvals for requests Created after %1</&>
 </&>
 
 <%init>

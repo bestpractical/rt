@@ -122,7 +122,7 @@ use Jifty::DBI::Record schema {
     column state    => max_length is 100, type is 'varchar(100)', default is '';
     column zip      => max_length is 16,  type is 'varchar(16)',  default is '';
     column country  => max_length is 50,  type is 'varchar(50)',  default is '';
-    column time_zone => max_length is 50,  type is 'varchar(50)',  default is '';
+    column timezone => max_length is 50,  type is 'varchar(50)',  default is '';
     column pgp_key   => type is 'text';
 
 };

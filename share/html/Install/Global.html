@@ -51,10 +51,10 @@
 
 <p><&|/l&>When RT sends an email it sets the From: and Reply-To: headers so users can add to the conversation by just hitting Reply in their mail client.  It uses different addresses for Replies and Comments.  These can be changed for each of your queues.  These addresses will need to be configured to use the <tt>rt-mailgate</tt> program.</&></p>
 
-<p><&|/l&>By default, RT will use the time zone of your system.  This lets you set a global default for the display of dates and times in RT.  Your users can choose a different time zone in their preferences.</&></p>
+<p><&|/l&>By default, RT will use the timezone of your system.  This lets you set a global default for the display of dates and times in RT.  Your users can choose a different Timezone in their preferences.</&></p>
 
 
-<& Elements/Form, fields => [qw/comment_address correspond_address time_zone/],
+<& Elements/Form, fields => [qw/comment_address correspond_address timezone/],
     next => $next,
     next_label => _('Next: ') . _($next_label),
     previous => '/Install/Sendmail.html',
