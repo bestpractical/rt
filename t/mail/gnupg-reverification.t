@@ -16,16 +16,24 @@ plan tests => 111;
 use File::Temp qw(tempdir);
 my $homedir = tempdir( CLEANUP => 1 );
 
-RT->config->set( 'GnuPG',
-                 enable => 1,
-                 outgoing_messages_format => 'RFC' );
+RT->config->set(
+    'GnuPG',
+    {
+        enable                   => 1,
+        outgoing_messages_format => 'RFC',
+    }
+);
 
-RT->config->set( 'GnuPGOptions',
-                 homedir => $homedir,
-                 passphrase => 'rt-test',
-                 'no-permission-warning' => undef);
+RT->config->set(
+    'GnuPGOptions',
+    {
+        homedir                 => $homedir,
+        passphrase              => 'rt-test',
+        'no-permission-warning' => undef,
+    }
+);
 
-RT->config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
+RT->config->set( 'MailPlugins' => ['Auth::MailFrom', 'Auth::GnuPG'] );
 
 
 diag "load Everyone group" if $ENV{'TEST_VERBOSE'};

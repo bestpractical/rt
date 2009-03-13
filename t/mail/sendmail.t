@@ -342,7 +342,8 @@ is (count_attachs($tick) ,1 , "Has one attachment, presumably a text-html and a 
 
 # {{{ test a message containing a russian subject and NO content type
 
-RT->config->set( EmailInputEncodings => 'koi8-r', RT->config->get('EmailInputEncodings') );
+RT->config->set( EmailInputEncodings => ['koi8-r',
+        @{RT->config->get('EmailInputEncodings')}] );
 RT->config->set( EmailOutputEncoding => 'koi8-r' );
 my $russian_subject_email = RT::Test::get_relocatable_file(
     'russian-subject-no-content-type', (File::Spec->updir(), 'data', 'emails'));
@@ -378,9 +379,9 @@ sub text_plain_russian_redef_sendmessage {
                  ';
 }
 
-my @input_encodings = RT->config->get('EmailInputEncodings');
+my @input_encodings = @{RT->config->get('EmailInputEncodings')};
 shift @input_encodings;
-RT->config->set(EmailInputEncodings => @input_encodings );
+RT->config->set(EmailInputEncodings => [@input_encodings] );
 RT->config->set(EmailOutputEncoding => 'utf-8');
 # }}}
 

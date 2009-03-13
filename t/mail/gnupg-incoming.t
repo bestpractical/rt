@@ -24,15 +24,23 @@ RT::Test->set_mail_catcher;
 
 
 RT->config->set( LogToScreen => 'debug' );
-RT->config->set( 'GnuPG',
-                 enable => 1,
-                 outgoing_messages_format => 'RFC' );
+RT->config->set(
+    'GnuPG',
+    {
+        enable                   => 1,
+        outgoing_messages_format => 'RFC',
+    }
+);
 
-RT->config->set( 'GnuPGOptions',
-                 homedir => $homedir,
-                 'no-permission-warning' => undef);
+RT->config->set(
+    'GnuPGOptions',
+    {
+        homedir                 => $homedir,
+        'no-permission-warning' => undef
+    }
+);
 
-RT->config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
+RT->config->set( 'MailPlugins' => ['Auth::MailFrom', 'Auth::GnuPG'] );
 
 my ($baseurl, $m) = RT::Test->started_ok;
 

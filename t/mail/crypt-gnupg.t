@@ -22,13 +22,20 @@ mkdir $homedir;
 use_ok('RT::Crypt::GnuPG');
 use_ok('MIME::Entity');
 
-RT->config->set( 'GnuPG',
-                 enable => 1,
-                 outgoing_messages_format => 'RFC' );
+RT->config->set(
+    'GnuPG',
+    {
+        enable                   => 1,
+        outgoing_messages_format => 'RFC',
+    }
+);
 
-RT->config->set( 'GnuPGOptions',
-                 homedir => $homedir,
-                 'no-permission-warning' => undef,
+RT->config->set(
+    'GnuPGOptions',
+    {
+        homedir                 => $homedir,
+        'no-permission-warning' => undef,
+    },
 );
 
 

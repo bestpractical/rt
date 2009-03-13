@@ -461,7 +461,7 @@ sub send_email {
             $ENV{'PERL_MAILERS'} = RT->config->get('SendmailPath');
             push @mailer_args, split( /\s+/, RT->config->get('SendmailArguments') );
         } else {
-            push @mailer_args, RT->config->get('MailParams');
+            push @mailer_args, @{RT->config->get('MailParams')};
         }
 
         unless ( $args{'entity'}->send(@mailer_args) ) {
@@ -1002,8 +1002,13 @@ sub parse_ticket_id {
     my $subject = shift;
 
     my $rtname    = RT->config->get('rtname');
-    my $test_name = RT->config->get('EmailsubjectTagRegex')
-        || qr/\Q$rtname\E/i;
+    my $test_name = RT->config->get('EmailSubjectTagRegex');
+    if ($test_name) {
+        $test_name = qr/$test_name/;
+    }
+    else {
+        $test_name = qr/\Q$rtname\E/i;
+    }
 
     my $id;
     if ( $subject =~ s/\[$test_name\s+\#(\d+)\s*\]//i ) {
@@ -1038,6 +1043,7 @@ sub add_subject_tag {
         my $tag = $queue_tag || RT->config->get('rtname');
         $tag_re = qr/\Q$tag\E/;
     }
+
     elsif ($queue_tag) {
         $tag_re = qr/$tag_re|\Q$queue_tag\E/;
         my $rtname = RT->config->get('rtname');
@@ -1153,7 +1159,7 @@ sub gateway {
         return ( 0, "Failed to parse this message. Something is likely badly wrong with the message" );
     }
 
-    my @mail_plugins = grep $_, RT->config->get('MailPlugins');
+    my @mail_plugins = grep $_, @{RT->config->get('MailPlugins')};
     push @mail_plugins, "Auth::MailFrom" unless @mail_plugins;
     @mail_plugins = _load_plugins(@mail_plugins);
 

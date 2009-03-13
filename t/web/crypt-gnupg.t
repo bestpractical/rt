@@ -34,16 +34,24 @@ use File::Temp qw(tempdir);
 my $homedir = tempdir( CLEANUP => 1 );
 use_ok('RT::Crypt::GnuPG');
 
-RT->config->set( 'GnuPG',
-                 enable => 1,
-                 outgoing_messages_format => 'RFC' );
+RT->config->set(
+    'GnuPG',
+    {
+        enable                   => 1,
+        outgoing_messages_format => 'RFC',
+    }
+);
 
-RT->config->set( 'GnuPGOptions',
-                 homedir => $homedir,
-                 passphrase => 'recipient',
-                  'no-permission-warning' => undef,
-                  'trust-model' => 'always');
-RT->config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
+RT->config->set(
+    'GnuPGOptions',
+    {
+        homedir                 => $homedir,
+        passphrase              => 'recipient',
+        'no-permission-warning' => undef,
+        'trust-model'           => 'always',
+    }
+);
+RT->config->set( 'MailPlugins' => ['Auth::MailFrom', 'Auth::GnuPG'] );
 RT::Test->import_gnupg_key('recipient@example.com', 'public');
 RT::Test->import_gnupg_key('recipient@example.com', 'secret');
 RT::Test->import_gnupg_key('general@example.com', 'public');

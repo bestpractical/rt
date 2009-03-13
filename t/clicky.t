@@ -6,7 +6,7 @@ use warnings;
 use RT::Test; use Test::More;
 
 
-my %clicky = map { $_ => 1 } grep $_, RT->config->get('ActiveMakeClicky');
+my %clicky = map { $_ => 1 } grep $_, @{RT->config->get('ActiveMakeClicky')};
 if ( keys %clicky ) {
     plan tests => 14;
 } else {

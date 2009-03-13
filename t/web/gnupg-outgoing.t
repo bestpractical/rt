@@ -19,18 +19,22 @@ RT::Test->set_mail_catcher;
 
 use_ok('RT::Crypt::GnuPG');
 
-RT->config->set( GnuPG =>
-    enable => 1,
-    outgoing_messages_format => 'RFC',
+RT->config->set(
+    GnuPG => {
+        enable                   => 1,
+        outgoing_messages_format => 'RFC',
+    }
 );
 
-RT->config->set( GnuPGOptions =>
-    homedir => scalar tempdir( CLEANUP => 1 ),
-    passphrase => 'rt-test',
-    'no-permission-warning' => undef,
-    'trust-model' => 'always',
+RT->config->set(
+    GnuPGOptions => {
+        homedir                 => scalar tempdir( CLEANUP => 1 ),
+        passphrase              => 'rt-test',
+        'no-permission-warning' => undef,
+        'trust-model'           => 'always',
+    }
 );
-RT->config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
+RT->config->set( 'MailPlugins' => [ 'Auth::MailFrom', 'Auth::GnuPG' ] );
 
 RT::Test->import_gnupg_key('rt-recipient@example.com');
 RT::Test->import_gnupg_key('rt-test@example.com', 'public');
