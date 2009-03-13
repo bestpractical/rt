@@ -150,7 +150,9 @@ while (defined(my $user = $Users->Next)) {
     for my $subscription ($user->Attributes->Named('Subscription')) {
 
         if (!$opts{all}) {
-            debug "Checking against subscription with frequency [_1], hour [_2], dow [_3], dom [_4]", $subscription->SubValue('Frequency'), $subscription->SubValue('Hour'), $subscription->SubValue('Dow'), $subscription->SubValue('Dom');
+            debug "Checking against subscription with frequency [_1], hour [_2], dow [_3], dom [_4]",
+                $subscription->SubValue('Frequency'), $subscription->SubValue('Hour'),
+                $subscription->SubValue('Dow'), $subscription->SubValue('Dom');
 
             next if $subscription->SubValue('Frequency') eq 'never';
 
@@ -360,14 +362,18 @@ sub get_from {
 {
     my $mason;
     my $outbuf = '';
+    my $data_dir = '';
 
     sub mason {
         unless ($mason) {
             debug "Creating Mason object.";
+            require File::Temp;
+            $data_dir = File::Temp->newdir;
             $mason = HTML::Mason::Interp->new(
                 RT::Interface::Web::Handler->DefaultHandlerArgs,
                 out_method => \$outbuf,
                 autohandler_name => '', # disable forced login and more
+                data_dir => $data_dir,  # user may have no permissions on default dir
             );
         }
         return $mason;
