@@ -115,9 +115,7 @@ have not been set already.
 =cut
 
 sub load_config {
-    require RT::Config;
-    $Config = RT::Config->new();
-    $Config->load_configs;
+    $Config = RT::Model::Config->new;
 
     #    require RT::I18N;
 
