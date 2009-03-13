@@ -367,13 +367,17 @@ sub get_from {
     sub mason {
         unless ($mason) {
             debug "Creating Mason object.";
+
+            # user may not have permissions on the data directory, so create a
+            # new one
             require File::Temp;
             $data_dir = File::Temp->newdir;
+
             $mason = HTML::Mason::Interp->new(
                 RT::Interface::Web::Handler->DefaultHandlerArgs,
                 out_method => \$outbuf,
                 autohandler_name => '', # disable forced login and more
-                data_dir => $data_dir,  # user may have no permissions on default dir
+                data_dir => "$data_dir", # stringify since Mason doesn't
             );
         }
         return $mason;
