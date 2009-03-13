@@ -67,6 +67,8 @@
 <option value="None">-</option>
 <option value="Display"><&|/l&>Display</&></option>
 <option value="Take"><&|/l&>Take</&></option>
+<option value="Respond"><&|/l&>Respond</&></option>
+<option value="Comment"><&|/l&>Comment</&></option>
 </select>
 <br /><&|/l&>Title</&>: <input name="Title" size="10" />
 <br /><&|/l&>Size</&>:
