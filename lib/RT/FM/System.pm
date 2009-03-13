@@ -144,4 +144,13 @@ for compatibility. dummy method
 sub Load {
     return(1);
 }
+
+=head2 ACLEquivalenceObjects
+
+There are no rights granted globally from other objects
+
+=cut
+
+sub ACLEquivalenceObjects { } 
+
 1;
