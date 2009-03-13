@@ -162,11 +162,16 @@ AC_ARG_WITH(db-rt-host,
 AC_SUBST(DB_RT_HOST)
 
 dnl DB_DATABASE_ADMIN
+if test "$DB_TYPE" = "Pg" ; then
+        DB_DBA="postgres"
+else
+        DB_DBA="root"
+fi
 AC_ARG_WITH(db-dba,
 	    AC_HELP_STRING([--with-db-dba=DBA],
-	    		   [name of database administrator (default: root)]),
+	    		   [name of database administrator (default: root or postgres)]),
             DB_DBA=$withval,
-            DB_DBA=root)
+            DB_DBA="$DB_DBA")
 AC_SUBST(DB_DBA)
 
 dnl DB_DATABASE
