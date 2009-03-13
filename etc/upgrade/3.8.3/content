@@ -30,6 +30,51 @@
         $RT::Logger->debug("Canonicalized ACLs in the DB.");
         return 1;
     },
+    sub {
+        $RT::Logger->debug("Going to correct descriptions of notify actions in the DB");
+        my $sys = RT::System->new($RT::SystemUser);
+
+        my $actions = RT::ScripActions->new( $RT::SystemUser );
+        $actions->Limit(
+            FIELD => 'ExecModule',
+            VALUE => 'Notify',
+        );
+        $actions->Limit(
+            FIELD => 'Argument',
+            VALUE => 'All',
+        );
+        while ( my $action = $actions->Next ) {
+            my ($status, $msg) = $action->__Set( Field => 'Name', Value => 'Notify Owner, Requestors, Ccs and AdminCcs' );
+            $RT::Logger->warning( "Couldn't change action name: $msg" )
+                unless $status;
+
+            ($status, $msg) = $action->__Set( Field => 'Description', Value => 'Send mail to owner and all watchers' );
+            $RT::Logger->warning( "Couldn't change action description: $msg" )
+                unless $status;
+        }
+
+        $actions = RT::ScripActions->new( $RT::SystemUser );
+        $actions->Limit(
+            FIELD => 'ExecModule',
+            VALUE => 'NotifyAsComment',
+        );
+        $actions->Limit(
+            FIELD => 'Argument',
+            VALUE => 'All',
+        );
+        while ( my $action = $actions->Next ) {
+            my ($status, $msg) = $action->__Set( Field => 'Name', Value => 'Notify Owner, Requestors, Ccs and AdminCcs as Comment' );
+            $RT::Logger->warning( "Couldn't change action name: $msg" )
+                unless $status;
+
+            ($status, $msg) = $action->__Set( Field => 'Description', Value => 'Send mail to owner and all watchers as a "comment"' );
+            $RT::Logger->warning( "Couldn't change action description: $msg" )
+                unless $status;
+        }
+
+        $RT::Logger->debug("Corrected descriptions of notify actions in the DB.");
+        return 1;
+    },
 );
 
 
