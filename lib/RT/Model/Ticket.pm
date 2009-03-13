@@ -123,7 +123,11 @@ use Jifty::DBI::Record schema {
         filters are qw( Jifty::Filter::DateTime Jifty::DBI::Filter::DateTime),
         render_as 'DateTime',
         label is _('Due');
-    column resolved         => type is 'timestamp';
+    column resolved         => type is 'timestamp',
+        filters are qw( Jifty::Filter::DateTime Jifty::DBI::Filter::DateTime),
+        render_as 'DateTime',
+        label is _('Closed');
+
     column disabled         => max_length is 6,   type is 'smallint',     default is '0';
 };
 use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
@@ -956,45 +960,6 @@ sub set_queue {
 
 
 
-=head2 due_obj
-
-  Returns an RT::Date object containing this ticket's due date
-
-=cut
-
-sub due_obj {
-    my $self = shift;
-
-    my $time = RT::Date->new();
-
-    # -1 is RT::Date slang for never
-    if ( my $due = $self->due ) {
-        $time->set( format => 'sql', value => $due );
-    } else {
-        $time->set( format => 'unix', value => -1 );
-    }
-
-    return $time;
-}
-
-
-
-=head2 resolved_obj
-
-  Returns an RT::Date object of this ticket's 'resolved' time.
-
-=cut
-
-sub resolved_obj {
-    my $self = shift;
-
-    my $time = RT::Date->new();
-    $time->set( format => 'sql', value => $self->resolved );
-    return $time;
-}
-
-
-
 =head2 set_started
 
 Takes a date in ISO format or undef
@@ -1035,78 +1000,6 @@ sub set_started {
     return ( $self->_set( column => 'started', value => $time_obj->iso ) );
 
 }
-
-
-
-=head2 started_obj
-
-  Returns an RT::Date object which contains this ticket's 
-'started' time.
-
-=cut
-
-sub started_obj {
-    my $self = shift;
-
-    my $time = RT::Date->new();
-    $time->set( format => 'sql', value => $self->started );
-    return $time;
-}
-
-
-
-=head2 starts_obj
-
-  Returns an RT::Date object which contains this ticket's 
-'starts' time.
-
-=cut
-
-sub starts_obj {
-    my $self = shift;
-
-    my $time = RT::Date->new();
-    $time->set( format => 'sql', value => $self->starts );
-    return $time;
-}
-
-
-
-=head2 told_obj
-
-  Returns an RT::Date object which contains this ticket's 
-'told' time.
-
-=cut
-
-sub told_obj {
-    my $self = shift;
-
-    my $time = RT::Date->new();
-    $time->set( format => 'sql', value => $self->told );
-    return $time;
-}
-
-
-
-=head2 told_as_string
-
-A convenience method that returns told_obj->as_string
-
-TODO: This should be deprecated
-
-=cut
-
-sub told_as_string {
-    my $self = shift;
-    if ( $self->told ) {
-        return $self->told_obj->as_string();
-    } else {
-        return ("Never");
-    }
-}
-
-
 
 =head2 time_worked_as_string
 
@@ -2288,15 +2181,6 @@ sub _set {
     #Take care of the old value we really don't want to get in an ACL loop.
     # so ask the super::_value
     my $Old = $self->SUPER::_value( $args{'column'} );
-    if ( $args{'column'} =~ /due|starts|started|told/ ) {
-    # we want the real value in db, without filter
-        my $date = RT::Date->new();
-        $date->set(
-            format => 'unknown',
-            value  => $Old,
-        );
-        $Old = $date->iso;
-    }
 
     if ( $Old && $args{'value'} && $Old eq $args{'value'} ) {
 
