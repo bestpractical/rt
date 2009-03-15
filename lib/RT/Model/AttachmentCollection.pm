@@ -164,7 +164,7 @@ sub limit_not_empty {
     );
 
     # http://rt3.fsck.com/Ticket/Display.html?id=12483
-    if ( RT->config->get('DatabaseType') ne 'Oracle' ) {
+    if ( Jifty->config->framework('Database')->{'Driver'} ne 'Oracle' ) {
         $self->limit(
             entry_aggregator => 'AND',
             column           => 'content',

@@ -69,26 +69,32 @@ RT config option to switch to local SQLite database.
 sub rewrite_rtconfig {
 
     # database
-    config_set( '$DatabaseType',       'SQLite' );
-    config_set( '$DatabaseHost',       'localhost' );
-    config_set( '$DatabaseRTHost',     'localhost' );
-    config_set( '$DatabasePort',       '' );
-    config_set( '$DatabaseUser',       'rt_user' );
-    config_set( '$Databasepassword',   'rt_pass' );
-    config_set( '$DatabaseRequireSSL', undef );
+#    config_set( 'DatabaseType',       'SQLite' );
+#    config_set( 'DatabaseHost',       'localhost' );
+#    config_set( 'DatabaseRTHost',     'localhost' );
+#    config_set( 'DatabasePort',       '' );
+#    config_set( 'DatabaseUser',       'rt_user' );
+#    config_set( 'Databasepassword',   'rt_pass' );
+#    config_set( 'DatabaseRequireSSL', undef );
+#
+#    # database file name
+#    config_set( 'DatabaseName', db_name() );
+    Jifty->config->{'framework'}{'Database'}{'Driver'}   = 'SQLite';
+    Jifty->config->{'framework'}{'Database'}{'Host'}     = 'localhost';
+    Jifty->config->{'framework'}{'Database'}{'Port'}     = 'SQLite';
+    Jifty->config->{'framework'}{'Database'}{'User'}     = 'rt_user';
+    Jifty->config->{'framework'}{'Database'}{'Password'} = 'rt_pass';
 
-    # database file name
-    config_set( '$Databasename', db_name() );
 
     # generic logging
-    config_set( '$LogToSyslog',    undef );
-    config_set( '$LogToScreen',    'error' );
-    config_set( '$LogStackTraces', 'crit' );
+    config_set( 'LogToSyslog',    undef );
+    config_set( 'LogToScreen',    'error' );
+    config_set( 'LogStackTraces', 'crit' );
 
     # logging to standalone file
-    config_set( '$LogToFile', 'debug' );
+    config_set( 'LogToFile', 'debug' );
     my $fname = File::Spec->catfile( create_tmpdir(), test_name() . ".log" );
-    config_set( '$LogToFilenamed', $fname );
+    config_set( 'LogToFilenamed', $fname );
 }
 
 =head3 config_set
@@ -97,7 +103,6 @@ sub rewrite_rtconfig {
 
 sub config_set {
     my $opt = shift;
-    $opt =~ s/^[\$\%\@]//;
     RT->config->set( $opt, @_ );
 }
 

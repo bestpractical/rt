@@ -548,7 +548,7 @@ sub set_mail_catcher {
 
 sub db_requires_no_dba {
     my $self    = shift;
-    my $db_type = RT->config->get('DatabaseType');
+    my $db_type = Jifty->config->framework('Database')->{'Driver'};
     return 1 if $db_type eq 'SQLite';
 }
 

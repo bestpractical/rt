@@ -1362,7 +1362,7 @@ sub _custom_field_limit {
     my $null_columns_ok;
     my $fix_op = sub {
         my $op = shift;
-        return $op unless RT->config->get('DatabaseType') eq 'Oracle';
+        return $op unless Jifty->config->framework('Database')->{'Driver'} eq 'Oracle';
         return 'MATCHES'     if $op eq '=';
         return 'NOT MATCHES' if $op eq '!=';
         return $op;

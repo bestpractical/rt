@@ -71,14 +71,6 @@ sub run {
         'custom_field_values_sources'  => [],
         'dashboard_address'            => '',
         'dashboard_subject'            => '%s Dashboard: %s',
-        'database_host'                => 'localhost',
-        'database_name'                => 'rt3',
-        'database_password'            => 'rt_pass',
-        'database_port'                => '',
-        'database_require_ssl'         => undef,
-        'database_rt_host'             => 'localhost',
-        'database_type'                => 'SQLite',
-        'database_user'                => 'rt_user',
         'date_day_before_month'        => 1,
         'date_time_format'             => '%Y-%m-%d %H:%M:%S',
         'default_queue'                => 'General',
@@ -653,8 +645,6 @@ sub insert_data {
             print "(Error: $@)\n" if $@;
         }
     }
-
-    my $db_type = RT->config->get('DatabaseType');
 
     #print "Done setting up database content.\n";
 }

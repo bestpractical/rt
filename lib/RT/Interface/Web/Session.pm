@@ -82,7 +82,7 @@ sub class {
 
     my $class 
         = RT->config->get('WebSessionClass')
-        || $self->backends->{ RT->config->get('DatabaseType') }
+        || $self->backends->{ Jifty->config->framework('Database')->{'Driver'} }
         || 'Apache::Session::File';
     eval "require $class";
     die $@ if $@;
@@ -112,7 +112,7 @@ new session objects.
 
 sub attributes {
 
-    return $_[0]->backends->{ RT->config->get('DatabaseType') }
+    return $_[0]->backends->{ Jifty->config->framework('Database')->{'Driver'} }
         ? {
         Handle      => Jifty->handle->dbh,
         LockHandle  => Jifty->handle->dbh,
