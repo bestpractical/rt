@@ -75,7 +75,6 @@ sub run {
         'date_time_format'             => '%Y-%m-%d %H:%M:%S',
         'default_queue'                => 'General',
         'default_summary_rows'         => 10,
-        'devel_mode'                   => '1',
         'dont_search_file_attachments' => undef,
         'drop_long_attachments'        => undef,
         'email_input_encodings'        => [ 'utf-8', 'iso-8859-1', 'us-ascii' ],
