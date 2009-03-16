@@ -173,7 +173,7 @@ sub set {
             #now that we've parsed it, deal with the case where everything was 0
             return $self->unix(0) if $mon < 0 || $mon > 11;
 
-            my $tz = lc $args{'format'} eq 'datemanip' ? 'user' : 'UTC';
+            my $tz = lc $args{'format'} eq 'datemanip' ? 'user' : 'utc';
             $self->unix( $self->time_local( $tz, $sec, $min, $hours, $mday, $mon, $year ) );
 
             $self->unix(0) unless $self->unix > 0;
@@ -223,7 +223,7 @@ sub set_to_now {
     return $_[0]->unix(time);
 }
 
-=head2 set_to_midnight [timezone => 'UTC']
+=head2 set_to_midnight [timezone => 'utc']
 
 Sets the date to midnight (at the beginning of the day).
 Returns the unixtime at midnight.
@@ -715,7 +715,7 @@ sub rfc2616 {
         date => 1,
         time => 1,
         @_,
-        timezone    => 'UTC',
+        timezone    => 'utc',
         seconds     => 1,
         day_of_week => 1,
     );
@@ -834,9 +834,9 @@ You may pass $wday, $yday and $isdst, these are ignored.
 
 If you pass C<$offset> as ninth argument, it's used instead of
 C<$context>. It's done such way as code 
-C<$self->time_local('UTC', $self->localtime('server'))> doesn't
+C<$self->time_local('utc', $self->localtime('server'))> doesn't
 makes much sense and most probably would produce unexpected
-result, so the method ignore 'UTC' context and uses offset
+result, so the method ignore 'utc' context and uses offset
 returned by L<Localtime> method.
 
 =cut
@@ -869,7 +869,7 @@ sub time_local {
 
 Returns the timezone name.
 
-Takes one argument, C<$context> argument which could be C<user>, C<server> or C<UTC>.
+Takes one argument, C<$context> argument which could be C<user>, C<server> or C<utc>.
 
 =over
 
@@ -881,7 +881,7 @@ Default value is C<user> that mean it returns current user's timezone value.
 
 If context is C<server> it returns value of the C<timezone> RT config option.
 
-=item UTC
+=item  utc
 
 If both server's and user's timezone names are undefined returns 'UTC'.
 
@@ -893,11 +893,11 @@ sub timezone {
     my $self    = shift;
     my $context = lc(shift);
 
-    $context = 'UTC' unless $context =~ /^(?:UTC|server|user)$/i;
+    $context = 'utc' unless $context =~ /^(?:utc|server|user)$/i;
 
     my $tz;
     if ( $context eq 'user' ) {
-        $tz = $self->current_user->user_object->time_zone;
+        $tz = $self->current_user->user_object->timezone;
     } elsif ( $context eq 'server' ) {
         $tz = RT->config->get('timezone');
     } else {

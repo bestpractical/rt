@@ -181,60 +181,60 @@ $COLUMN_MAP = {
     starts_relative => {
         title     => 'Starts', # loc
         attribute => 'starts',
-        value     => sub  { return $_[0]->starts->age }
+        value     => sub  { return $_[0]->starts_obj->age_as_string }
     },
     started_relative => {
         title     => 'Started', # loc
         attribute => 'Started',
-        value     => sub  { return $_[0]->started->age }
+        value     => sub  { return $_[0]->started_obj->age_as_string }
     },
     told_relative => {
         title     => 'Told', # loc
         attribute => 'Told',
-        value     => sub  { return $_[0]->told->age }
+        value     => sub  { return $_[0]->told_obj->age_as_string }
     },
     due_relative => {
         title     => 'Due', # loc
         attribute => 'Due',
         value     => sub  { 
-            my $date = $_[0]->due;
+            my $date = $_[0]->due_obj;
             # Highlight the date if it was due in the past, and it's still active
-            if ( $date && $date->epoch > 0 && $date->diff < 0 && $_[0]->queue->status_schema->is_active($_[0]->status)) {
-                return (\'<span class="overdue">' , $date->age , \'</span>');
+            if ( $date && $date->unix > 0 && $date->diff < 0 && $_[0]->queue->status_schema->is_active($_[0]->status)) {
+                return (\'<span class="overdue">' , $date->age_as_string , \'</span>');
             } else {
-                return $date->age;
+                return $date->age_as_string;
             }
         }
     },
     resolved_relative => {
         title     => 'Resolved', # loc
         attribute => 'resolved',
-        value     => sub  { return $_[0]->resolved->age }
+        value     => sub  { return $_[0]->resolved_obj->age_as_string }
     },
     starts => {
         title     => 'Starts', # loc
         attribute => 'starts',
-        value     => sub  { return $_[0]->starts }
+        value     => sub  { return $_[0]->starts_obj->as_string }
     },
     started => {
         title     => 'Started', # loc
         attribute => 'Started',
-        value     => sub  { return $_[0]->started }
+        value     => sub  { return $_[0]->started_obj->as_string }
     },
     told => {
         title     => 'Told', # loc
         attribute => 'Told',
-        value     => sub  { return $_[0]->told }
+        value     => sub  { return $_[0]->told_obj->as_string }
     },
     due => {
         title     => 'Due', # loc
         attribute => 'Due',
-        value     => sub  { return $_[0]->due }
+        value     => sub  { return $_[0]->due_obj->as_string }
     },
     resolved => {
         title     => 'Resolved', # loc
         attribute => 'resolved',
-        value     => sub  { return $_[0]->resolved }
+        value     => sub  { return $_[0]->resolved_obj->as_string }
     },
     update_status => {
         title => 'New messages', # loc

@@ -2224,11 +2224,16 @@ sub _parse_date {
     # never
     return $value unless $value;
 
-    return RT::DateTime->new_from_string(
-        $value,
-        current_user => RT->system_user,
-        time_zone    => 'UTC',
-    );
+    require RT::Date;
+    my $obj = RT::Date->new( current_user => RT->system_user );
+
+    # unix time
+    if ( $value =~ /^\d+$/ ) {
+        $obj->set( value => $value );
+    } else {
+        $obj->set( format => 'unknown', value => $value, timezone => 'utc' );
+    }
+    return $obj;
 }
 
 sub delete_key {

@@ -224,7 +224,8 @@ $m->content_contains("Saved dashboard system dashboard");
 $m->follow_link_ok({text => 'Queries'});
 
 $m->form_name('Dashboard-Searches-body');
-$m->field('Searches-body-Available' => ['search-8-RT::Model::User-22']); # XXX: :( :(
+my ( $personal_search_option ) = $m->content =~ /(search-\d+-RT::Model::User-\d+)/;
+$m->field('Searches-body-Available' => [$personal_search_option]);
 $m->click_button(name => 'add');
 $m->content_contains("Dashboard updated");
 

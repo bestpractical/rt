@@ -71,17 +71,17 @@ my %known_cfs;
 
 my @attrs = qw( id queue_obj->name subject status time_estimated time_worked time_left priority final_priority owner_obj->name 
                 requestors->member_emails_as_string cc->member_emails_as_string admin_cc->member_emails_as_string
-                due->iso told->iso created->iso resolved->iso last_updated->iso);
+                due_obj->iso told_obj->iso created_obj->iso resolved_obj->iso last_updated_obj->iso);
 
 $r->content_type('application/vnd.ms-excel');
 while ( my $Ticket = $Tickets->next()) {
     my $row;
     foreach my $attr (@attrs) {
-        if ($attr =~ /(.*)->iso$/ and $Ticket->$1->epoch <= 0) {
+        if ($attr =~ /(.*)->iso$/ and $Ticket->$1->unix <= 0) {
             $row->{$attr} = "";
         } else {
             my $method = '$Ticket->'.$attr.'()';
-            $method =~ s/->iso\(\)$/->iso( time_zone => 'user' )/;
+            $method =~ s/->iso\(\)$/->iso( Timezone => 'user' )/;
             $row->{$attr} = eval $method;
             if ($@) {die "Failed to find $attr - ". $@}; 
         }

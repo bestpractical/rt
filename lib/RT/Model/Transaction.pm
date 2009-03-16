@@ -560,7 +560,7 @@ sub content {
         }
 
         $content =~ s/^/> /gm;
-        $content = _( "On %1, %2 wrote:", $self->created, $self->creator_obj->name ) . "\n$content\n\n";
+        $content = _( "On %1, %2 wrote:", $self->created_as_string, $self->creator_obj->name ) . "\n$content\n\n";
     }
 
     return ($content);

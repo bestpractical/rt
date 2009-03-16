@@ -525,7 +525,8 @@ sub _date_limit {
     die "Incorrect Meta Data for $field"
         unless ( defined $meta->[1] );
 
-    my $date = RT::DateTime->new_from_string($value);
+    my $date = RT::Date->new();
+    $date->set( format => 'unknown', value => $value );
 
     if ( $op eq "=" ) {
 
@@ -533,9 +534,10 @@ sub _date_limit {
         # particular single day.  in the database, we need to check for >
         # and < the edges of that day.
 
-        $date->truncate(to => 'day')->set_time_zone('server');
+        $date->set_to_midnight( timezone => 'server' );
         my $daystart = $date->iso;
-        my $dayend = $date->add(days => 1)->iso;
+        $date->add_day;
+        my $dayend = $date->iso;
 
         $sb->open_paren;
 
@@ -623,7 +625,8 @@ sub _trans_date_limit {
         );
     }
 
-    my $date = RT::DateTime->new_from_string($value);
+    my $date = RT::Date->new();
+    $date->set( format => 'unknown', value => $value );
 
     $sb->open_paren;
     if ( $op eq "=" ) {
@@ -632,9 +635,10 @@ sub _trans_date_limit {
         # particular single day.  in the database, we need to check for >
         # and < the edges of that day.
 
-        $date->truncate(to => 'day')->set_time_zone('server');
+        $date->set_to_midnight( timezone => 'server' );
         my $daystart = $date->iso;
-        my $dayend = $date->add(days => 1)->iso;
+        $date->add_day;
+        my $dayend = $date->iso;
 
         $sb->_sql_limit(
             alias          => $sb->{_sql_transalias},

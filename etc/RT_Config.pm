@@ -81,14 +81,14 @@ passwords. Setting it to 0 disables this check.
 
 set($MinimumPasswordLength , "5");
 
-=item C<$TimeZone>
+=item C<$Timezone>
 
-C<$TimeZone> is used to convert times entered by users into GMT and back again
-It should be set to a time zone recognized by L<DateTime::TimeZone>.
+C<$Timezone> is used to convert times entered by users into GMT and back again
+It should be set to a timezone recognized by your local unix box.
 
 =cut
 
-set($TimeZone, 'America/New_York');
+set($Timezone , 'US/Eastern');
 
 =back
 
@@ -1280,19 +1280,18 @@ set($EmailOutputEncoding, 'utf-8');
 
 =item C<$DateTimeFormat>
 
-You can choose date and time format. This takes a L<DateTime/strftime> format
-specification. See L<DateTime/strftime_Patterns> for a full list of variables.
-
-This option can be overridden by users in their preferences.
-
+You can choose date and time format.  See "Output formatters"
+section in perldoc F<lib/RT/Date.pm> for more options.  This option can
+be overridden by users in their preferences.
 Some examples:
 
-C<set($DateTimeFormat, '%a, %d %b %Y %H:%M:%S %z');> # RFC2822
-C<set($DateTimeFormat, '%Y-%m-%d %H:%M:%S');> # ISO
+C<set($DateTimeFormat, { Format => 'ISO', Seconds => 0 });>
+C<set($DateTimeFormat, 'RFC2822');>
+C<set($DateTimeFormat, { Format => 'RFC2822', Seconds => 0, DayOfWeek => 0 });>
 
 =cut
 
-set($DateTimeFormat, '%Y-%m-%d %H:%M:%S');
+set($DateTimeFormat, 'DefaultFormat');
 
 # Next two options are for Time::ParseDate
 
