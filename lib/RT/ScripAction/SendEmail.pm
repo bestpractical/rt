@@ -105,7 +105,7 @@ sub commit {
 
     my $orig_message;
     if (   RT->config->get('record_outgoing_email')
-        && RT->config->get('gnu_pg')->{'enable'} )
+        && RT->config->get('gnupg')->{'enable'} )
     {
 
         # it's hacky, but we should know if we're going to crypt things

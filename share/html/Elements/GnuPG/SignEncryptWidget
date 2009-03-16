@@ -66,7 +66,7 @@ return unless $self;
 $arguments => {}
 </%ARGS>
 <%INIT>
-return undef unless RT->config->get('gnu_pg')->{'enable'};
+return undef unless RT->config->get('gnupg')->{'enable'};
 
 require RT::Crypt::GnuPG;
 return { %$arguments };

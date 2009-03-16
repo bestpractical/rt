@@ -333,7 +333,7 @@ $COLUMN_MAP->{'CF'} = $COLUMN_MAP->{'custom_field'};
 
 # if no GPG support, then key_owner_name and key_requestors fall back to the regular
 # versions
-if (RT->config->get('gnu_pg')->{'enable'}) {
+if (RT->config->get('gnupg')->{'enable'}) {
     require RT::Crypt::GnuPG;
 }
 else {

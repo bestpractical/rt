@@ -19,7 +19,7 @@ use File::Temp qw(tempdir);
 my $homedir = tempdir( CLEANUP => 1 );
 
 RT->config->set(
-    'gnu_pg',
+    'gnupg',
     {
         enable                   => 1,
         outgoing_messages_format => 'RFC',
@@ -27,7 +27,7 @@ RT->config->set(
 );
 
 RT->config->set(
-    'gnu_pg_options',
+    'gnupg_options',
     {
         homedir                 => $homedir,
         passphrase              => 'rt-test',

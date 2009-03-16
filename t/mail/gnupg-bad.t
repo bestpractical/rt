@@ -18,7 +18,7 @@ my $homedir = RT::Test::get_abs_relocatable_dir(File::Spec->updir(),
     qw(data gnupg keyrings));
 
 RT->config->set(
-    'gnu_pg',
+    'gnupg',
     {
         enable                   => 1,
         outgoing_messages_format => 'RFC',
@@ -26,7 +26,7 @@ RT->config->set(
 );
 
 RT->config->set(
-    'gnu_pg_options',
+    'gnupg_options',
     {
         homedir                 => $homedir,
         passphrase              => 'test',

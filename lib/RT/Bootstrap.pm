@@ -85,12 +85,12 @@ sub run {
         'forward_from_user'            => 0,
         'friendly_from_line_format'    => '"%s via RT" <%s>',
         'friendly_to_line_format'      => '"%s of {{rtname}} Ticket #%s":;',
-        'gnu_pg'                       => {
+        'gnupg'                       => {
             enable                   => 1,
             outgoing_messages_format => 'RFC',    # Inline
             allow_encrypt_data_in_db => 0,
         },
-        'gnu_pg_options' => {
+        'gnupg_options' => {
 
             #    homedir => '/home/jesse/svk/3.999-DANGEROUS/var/data/gpg',
 

@@ -82,7 +82,7 @@ $id         => undef
 $update     => undef
 </%ARGS>
 <%INIT>
-return unless RT->config->get('gnu_pg')->{'enable'};
+return unless RT->config->get('gnupg')->{'enable'};
 
 require RT::Crypt::GnuPG;
 

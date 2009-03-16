@@ -59,7 +59,7 @@ $name => 'sign_using',
 $user => undef,
 </%ARGS>
 <%INIT>
-return unless RT->config->get('gnu_pg')->{'enable'};
+return unless RT->config->get('gnupg')->{'enable'};
 
 my $user_key = $user->private_key;
 </%INIT>

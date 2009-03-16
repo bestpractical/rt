@@ -20,14 +20,14 @@ RT::Test->set_mail_catcher;
 use_ok('RT::Crypt::GnuPG');
 
 RT->config->set(
-    gnu_pg => {
+    gnupg => {
         enable                   => 1,
         outgoing_messages_format => 'RFC',
     }
 );
 
 RT->config->set(
-    gnu_pg_options => {
+    gnupg_options => {
         homedir                 => scalar tempdir( CLEANUP => 1 ),
         passphrase              => 'rt-test',
         'no-permission-warning' => undef,
@@ -150,7 +150,7 @@ foreach my $queue_set ( @variants ) {
 # like we are on another side recieve emails
 # ------------------------------------------------------------------------------
 
-unlink $_ foreach glob( RT->config->get('gnu_pg_options')->{'homedir'} ."/*" );
+unlink $_ foreach glob( RT->config->get('gnupg_options')->{'homedir'} ."/*" );
 RT::Test->import_gnupg_key('rt-recipient@example.com', 'public');
 RT::Test->import_gnupg_key('rt-test@example.com');
 

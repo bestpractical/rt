@@ -97,7 +97,7 @@ sub cleanup_request {
     require RT::ScripAction::SendEmail;
     RT::ScripAction::SendEmail->clean_slate;
 
-    if ( RT->config->get('gnu_pg')->{'enable'} ) {
+    if ( RT->config->get('gnupg')->{'enable'} ) {
         require RT::Crypt::GnuPG;
         RT::Crypt::GnuPG::use_key_for_encryption();
         RT::Crypt::GnuPG::use_key_for_signing(undef);

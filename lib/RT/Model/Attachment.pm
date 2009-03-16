@@ -636,9 +636,9 @@ sub encrypt {
     return ( 0, _('Permission Denied') )
         unless $txn->ticket_obj->current_user_has_right('ModifyTicket');
     return ( 0, _('GnuPG integration is disabled') )
-        unless RT->config->get('gnu_pg')->{'enable'};
+        unless RT->config->get('gnupg')->{'enable'};
     return ( 0, _('Attachments encryption is disabled') )
-        unless RT->config->get('gnu_pg')->{'allow_encrypt_data_in_db'};
+        unless RT->config->get('gnupg')->{'allow_encrypt_data_in_db'};
 
     require RT::Crypt::GnuPG;
 
@@ -693,7 +693,7 @@ sub decrypt {
     return ( 0, _('Permission Denied') )
         unless $txn->ticket_obj->current_user_has_right('ModifyTicket');
     return ( 0, _('GnuPG integration is disabled') )
-        unless RT->config->get('gnu_pg')->{'enable'};
+        unless RT->config->get('gnupg')->{'enable'};
 
     require RT::Crypt::GnuPG;
 

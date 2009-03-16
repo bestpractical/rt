@@ -23,7 +23,7 @@ use_ok('RT::Crypt::GnuPG');
 use_ok('MIME::Entity');
 
 RT->config->set(
-    'gnu_pg',
+    'gnupg',
     {
         enable                   => 1,
         outgoing_messages_format => 'RFC',
@@ -31,7 +31,7 @@ RT->config->set(
 );
 
 RT->config->set(
-    'gnu_pg_options',
+    'gnupg_options',
     {
         homedir                 => $homedir,
         'no-permission-warning' => undef,

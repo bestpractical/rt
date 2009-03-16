@@ -105,7 +105,7 @@
 </td></tr>
 % }
 
-% if ( RT->config->get('gnu_pg')->{'enable'} ) {
+% if ( RT->config->get('gnupg')->{'enable'} ) {
 <tr><td align="right"><input type="checkbox" class="checkbox" name="sign" value="1" <% $queue_obj->sign? 'checked="checked"': '' |n%> /></td>
 <td><&|/l&>sign by default</&></td>
 <td align="right"><input type="checkbox" class="checkbox" name="encrypt" value="1" <% $queue_obj->encrypt? 'checked="checked"': '' |n%> /></td>
@@ -119,7 +119,7 @@ value="1" <%$enabled_checked|n%> /></td>
 % $m->callback( %ARGS, queue_obj => $queue_obj, results => \@results );
 </td></tr>
 
-% if ( RT->config->get('gnu_pg')->{'enable'} ) {
+% if ( RT->config->get('gnupg')->{'enable'} ) {
 % if ( my $email = $queue_obj->correspond_address || RT->config->get('correspond_address') ) {
 <tr><td colspan="4"><& /Admin/Elements/ShowKeyInfo, type => 'private', email => $email &></td></tr>
 % }

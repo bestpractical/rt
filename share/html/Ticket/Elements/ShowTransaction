@@ -66,7 +66,7 @@
 
     <div class="content">
 % if ( $attachments->[0] && $attachments->[0]->id ) {
-%   if (RT->config->get('gnu_pg')->{'enable'}) {
+%   if (RT->config->get('gnupg')->{'enable'}) {
         <& ShowGnuPGStatus, attachment => $attachments->[0], warn_unsigned => $warn_unsigned &>
 %   }
 % }
@@ -206,8 +206,8 @@ else {
               . "\">". _('Forward') . "</a>]";
         }
         if ( $can_modify
-            && RT->config->get('gnu_pg')->{'enable'}
-            && RT->config->get('gnu_pg')->{'allow_encrypt_data_in_db'}
+            && RT->config->get('gnupg')->{'enable'}
+            && RT->config->get('gnupg')->{'allow_encrypt_data_in_db'}
             && $ticket->current_user_has_right('ForwardMessage')
         ) {
             $titlebar_commands .=
