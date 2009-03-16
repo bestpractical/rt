@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
-$format => RT->config->get('DefaultSearchResultFormat')
+$format => RT->config->get('default_search_result_format')
 %cfqueues => ()
 $face => undef
 $size => undef
@@ -114,7 +114,7 @@ $m->callback( Fields => \@fields, args_ref => \%ARGS );
 
 my ( @seen);
 
-$format ||= RT->config->get('DefaultSearchResultFormat');
+$format ||= RT->config->get('default_search_result_format');
 my @format = split( /,\s*/, $format );
 foreach my $field (@format) {
     my %column = ();

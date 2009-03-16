@@ -70,7 +70,7 @@
 % my $ids = join ',', map $_->id, @{ $users->items_array_ref };
 % if ( $ids ) {
 <div align="right"><em>
-(<a href="<%RT->config->get('WebPath')%>/Download/Tabular/User/<% $ids %>/Users.tsv">
+(<a href="<%RT->config->get('web_path')%>/Download/Tabular/User/<% $ids %>/Users.tsv">
 <&|/l&>Download as a tab-delimited file</&>
 </a>)</em></div>
 % }
@@ -78,7 +78,7 @@
 <br /><br />
 % }
 
-<form method="post" action="<% RT->config->get('WebPath') %>/Admin/Users/index.html">
+<form method="post" action="<% RT->config->get('web_path') %>/Admin/Users/index.html">
 % foreach my $field( qw(format Rows Page order order_by) ) {
 %     next unless defined $ARGS{ $field } && length $ARGS{ $field };
 <input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />

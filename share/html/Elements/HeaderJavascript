@@ -57,7 +57,7 @@ $onload => undef
     doOnLoad(function () { focusElementByid('<% $focus %>') });
 % }
 
-% if ( RT->config->get('MessageBoxRichText',  Jifty->web->current_user)) {
+% if ( RT->config->get('message_box_rich_text',  Jifty->web->current_user)) {
     function ReplaceAllTextareas() {
         if (!FCKeditor_IsCompatibleBrowser())
             return false;
@@ -98,8 +98,8 @@ $onload => undef
                 typeField.setAttribute('value', 'text/html');
                 textArea.parentNode.appendChild(typeField);
 
-                var oFCKeditor = new FCKeditor( textArea.name, '100%', <% RT->config->get('MessageBoxRichTextHeight') %> );
-                oFCKeditor.BasePath = "<%RT->config->get('WebPath')%>/NoAuth/RichText/";
+                var oFCKeditor = new FCKeditor( textArea.name, '100%', <% RT->config->get('message_box_rich_text_height') %> );
+                oFCKeditor.BasePath = "<%RT->config->get('web_path')%>/NoAuth/RichText/";
                 oFCKeditor.ReplaceTextarea();
             }
         }

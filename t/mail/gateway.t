@@ -611,7 +611,7 @@ ok ($val, $msg);
 
 SKIP: {
 skip "Advanced mailgate actions require an unsafe configuration", 47
-    unless RT->config->get('UnsafeEmailCommands');
+    unless RT->config->get('unsafe_email_commands');
 
 # create new queue to be shure we don't mess with rights
 use RT::Model::Queue;

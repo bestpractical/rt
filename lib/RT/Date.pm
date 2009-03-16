@@ -193,9 +193,9 @@ sub set {
             $args{'value'},
             GMT           => 1,
             NOW           => $now,
-            UK            => RT->config->get('DateDayBeforeMonth'),
-            PREFER_PAST   => RT->config->get('AmbiguousDayInPast'),
-            PREFER_FUTURE => RT->config->get('AmbiguousDayInFuture'),
+            UK            => RT->config->get('date_day_before_month'),
+            PREFER_PAST   => RT->config->get('ambiguous_day_in_past'),
+            PREFER_FUTURE => RT->config->get('ambiguous_day_in_future'),
         );
 
         # apply timezone offset
@@ -363,7 +363,7 @@ sub as_string {
 
     return _("Not set") unless $self->unix > 0;
 
-    my $format = RT->config->get( 'DateTimeFormat', $self->current_user )
+    my $format = RT->config->get( 'date_time_format', $self->current_user )
         || 'default_format';
     $format = { format => $format } unless ref $format;
     %args = ( %$format, %args );
@@ -899,11 +899,11 @@ sub timezone {
     if ( $context eq 'user' ) {
         $tz = $self->current_user->user_object->time_zone;
     } elsif ( $context eq 'server' ) {
-        $tz = RT->config->get('Timezone');
+        $tz = RT->config->get('timezone');
     } else {
         $tz = 'UTC';
     }
-    $tz ||= RT->config->get('Timezone') || 'UTC';
+    $tz ||= RT->config->get('timezone') || 'UTC';
     $tz = 'UTC' if lc $tz eq 'gmt';
     return $tz;
 }

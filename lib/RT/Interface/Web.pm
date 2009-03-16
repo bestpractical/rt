@@ -169,13 +169,13 @@ a cached DBI statement handle twice at the same time.
 sub redirect {
     my $redir_to   = shift;
     my $uri        = URI->new($redir_to);
-    my $server_uri = URI->new( RT->config->get('WebURL') );
+    my $server_uri = URI->new( RT->config->get('web_url') );
 
     # If the user is coming in via a non-canonical
     # hostname, don't redirect them to the canonical host,
     # it will just upset them (and invalidate their credentials)
     # don't do this if $RT::CanoniaclRedirectURLs is true
-    if (   !RT->config->get('CanonicalizeRedirectURLs')
+    if (   !RT->config->get('canonicalize_redirect_ur_ls')
         && $uri->host eq $server_uri->host
         && $uri->port eq $server_uri->port )
     {

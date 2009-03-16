@@ -54,7 +54,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%RT->config->get('WebPath')%>/Admin/Users/Modify.html" method="post" enctype="multipart/form-data">
+<form action="<%RT->config->get('web_path')%>/Admin/Users/Modify.html" method="post" enctype="multipart/form-data">
 %if ($create) {
 <input type="hidden" class="hidden" name="id" value="new" />
 % } else {
@@ -114,7 +114,7 @@
 <input type="hidden" class="hidden" name="set_privileged" value="1" />
 <input type="checkbox" class="checkbox" name="privileged" value="1" <%$privilegedChecked%> /> <&|/l&>Let this user be granted rights</&><br />
 		    
-% unless (RT->config->get('WebExternalAuth') and !RT->config->get('WebFallbackToInternalAuth')) {
+% unless (RT->config->get('web_external_auth') and !RT->config->get('web_fallback_to_internal_auth')) {
 <table>
 <tr>
 <td align="right">

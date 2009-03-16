@@ -636,9 +636,9 @@ sub encrypt {
     return ( 0, _('Permission Denied') )
         unless $txn->ticket_obj->current_user_has_right('ModifyTicket');
     return ( 0, _('GnuPG integration is disabled') )
-        unless RT->config->get('GnuPG')->{'enable'};
+        unless RT->config->get('gnu_pg')->{'enable'};
     return ( 0, _('Attachments encryption is disabled') )
-        unless RT->config->get('GnuPG')->{'allow_encrypt_data_in_db'};
+        unless RT->config->get('gnu_pg')->{'allow_encrypt_data_in_db'};
 
     require RT::Crypt::GnuPG;
 
@@ -653,7 +653,7 @@ sub encrypt {
 
     my $queue = $txn->ticket_obj->queue;
     my $encrypt_for;
-    foreach my $address ( grep $_, $queue->correspond_address, $queue->comment_address, RT->config->get('CorrespondAddress'), RT->config->get('CommentAddress'), ) {
+    foreach my $address ( grep $_, $queue->correspond_address, $queue->comment_address, RT->config->get('correspond_address'), RT->config->get('comment_address'), ) {
         my %res = RT::Crypt::GnuPG::get_keys_info( $address, 'private' );
         next if $res{'exit_code'} || !$res{'info'};
         %res = RT::Crypt::GnuPG::get_keys_for_encryption($address);
@@ -693,7 +693,7 @@ sub decrypt {
     return ( 0, _('Permission Denied') )
         unless $txn->ticket_obj->current_user_has_right('ModifyTicket');
     return ( 0, _('GnuPG integration is disabled') )
-        unless RT->config->get('GnuPG')->{'enable'};
+        unless RT->config->get('gnu_pg')->{'enable'};
 
     require RT::Crypt::GnuPG;
 

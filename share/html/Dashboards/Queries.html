@@ -106,7 +106,7 @@ do {
     }
 };
 
-my @components = @{ RT->config->get('HomepageComponents') };
+my @components = @{ RT->config->get('homepage_components') };
 my %allowed_components = map {$_ => 1} @components;
 
 for my $desc (@components) {

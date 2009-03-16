@@ -57,7 +57,7 @@ $wipeout => ''
     current_subtab => 'Admin/Tools/Shredder',
     title => $title,
 &>
-<form id="shredder-search-form" action="<% RT->config->get('WebPath') %>/Admin/Tools/Shredder/" method="GET">
+<form id="shredder-search-form" action="<% RT->config->get('web_path') %>/Admin/Tools/Shredder/" method="GET">
 <div id="shredder-select-plugin">
 <& /Elements/ListActions, actions => $messages{'Errors'} &>
 <& /Elements/ListActions, actions => $messages{'Success'} &>

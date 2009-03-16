@@ -73,7 +73,7 @@
 </ul>
 % }
 
-<form action="<%RT->config->get('WebPath')%>/Admin/CustomFields/index.html" method="get">
+<form action="<%RT->config->get('web_path')%>/Admin/CustomFields/index.html" method="get">
 <&|/l&>Only show custom fields for:</&>
 <select name="type">
 <option value="" <% !$type && 'selected="selected"'%> ><% _('(any)') %></option>

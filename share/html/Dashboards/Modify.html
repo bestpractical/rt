@@ -53,7 +53,7 @@
 &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%RT->config->get('WebPath')%>/Dashboards/Modify.html" method="post" enctype="multipart/form-data" name="modify_dashboard">
+<form action="<%RT->config->get('web_path')%>/Dashboards/Modify.html" method="post" enctype="multipart/form-data" name="modify_dashboard">
 
 %unless ($Dashboard->id) {
 <input type="hidden" class="hidden" name="id" value="new" />
@@ -151,7 +151,7 @@ if (!$create && !$tried_create && $id && $ARGS{'delete'}) {
     $ok || abort(_("Couldn't delete dashboard %1: %2", $id, $msg));
 
     # put the user back into a useful place with a message
-    RT::Interface::Web::redirect(RT->config->get('WebURL')."Dashboards/index.html?deleted=$id");
+    RT::Interface::Web::redirect(RT->config->get('web_url')."Dashboards/index.html?deleted=$id");
 
 }
 </%INIT>

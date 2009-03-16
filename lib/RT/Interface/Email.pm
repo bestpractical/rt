@@ -227,9 +227,9 @@ log, by default we log it as errorical.
 
 sub mail_error {
     my %args = (
-        To          => RT->config->get('OwnerEmail'),
+        To          => RT->config->get('owner_email'),
         Bcc         => undef,
-        From        => RT->config->get('CorrespondAddress'),
+        From        => RT->config->get('correspond_address'),
         subject     => 'There has been an error',
         explanation => 'Unexplained error',
         mime_obj    => undef,
@@ -335,7 +335,7 @@ sub send_email {
         $args{'ticket'} = $args{'transaction'}->object;
     }
 
-    if ( RT->config->get('GnuPG')->{'enable'} ) {
+    if ( RT->config->get('gnu_pg')->{'enable'} ) {
         my %crypt;
 
         my $attachment;
@@ -365,7 +365,7 @@ sub send_email {
         $args{'entity'}->head->set( 'date', $date->rfc2822( time_zone => 'server' ) );
     }
 
-    my $mail_command = RT->config->get('MailCommand');
+    my $mail_command = RT->config->get('mail_command');
     if ( $mail_command eq 'testfile' ) {
         $Mail::Mailer::testfile::config{outfile} = File::Temp->new;
     }
@@ -375,15 +375,15 @@ sub send_email {
         if UNIVERSAL::isa( $mail_command, 'CODE' );
 
     if ( $mail_command eq 'sendmailpipe' ) {
-        my $path = RT->config->get('SendmailPath');
-        my $args = RT->config->get('SendmailArguments');
-        $args .= ' ' . RT->config->get('SendmailBounceArguments')
+        my $path = RT->config->get('sendmail_path');
+        my $args = RT->config->get('sendmail_arguments');
+        $args .= ' ' . RT->config->get('sendmail_bounce_arguments')
             if $args{'bounce'};
 
         # VERP
         if (    $args{'transaction'}
-            and my $prefix = RT->config->get('VERPPrefix')
-            and my $domain = RT->config->get('VERPDomain') )
+            and my $prefix = RT->config->get('verp_prefix')
+            and my $domain = RT->config->get('verp_domain') )
         {
             my $from = $args{'transaction'}->creator_obj->email;
             $from =~ s/@/=/g;
@@ -420,7 +420,7 @@ sub send_email {
         require Net::SMTP;
         my $smtp = do {
             local $@;
-            eval { Net::SMTP->new( Host => RT->config->get('SMTPServer'), Debug => RT->config->get('SMTPDebug'), ); };
+            eval { Net::SMTP->new( Host => RT->config->get('smtp_server'), Debug => RT->config->get('smtp_debug'), ); };
         };
         unless ($smtp) {
             Jifty->log->fatal("Could not connect to SMTP server.");
@@ -432,7 +432,7 @@ sub send_email {
         my @recipients = map $_->address, Email::Address->parse( map $head->get($_), qw(To Cc Bcc) );
         $head->delete('Bcc');
 
-        my $sender = RT->config->get('SMTPFrom')
+        my $sender = RT->config->get('smtp_from')
             || $args{'entity'}->head->get('From');
         chomp $sender;
 
@@ -458,10 +458,10 @@ sub send_email {
 
         my @mailer_args = ($mail_command);
         if ( $mail_command eq 'sendmail' ) {
-            $ENV{'PERL_MAILERS'} = RT->config->get('SendmailPath');
-            push @mailer_args, split( /\s+/, RT->config->get('SendmailArguments') );
+            $ENV{'PERL_MAILERS'} = RT->config->get('sendmail_path');
+            push @mailer_args, split( /\s+/, RT->config->get('sendmail_arguments') );
         } else {
-            push @mailer_args, @{RT->config->get('MailParams')};
+            push @mailer_args, @{RT->config->get('mail_params')};
         }
 
         unless ( $args{'entity'}->send(@mailer_args) ) {
@@ -515,7 +515,7 @@ sub send_email_using_template {
         to          => undef,
         cc          => undef,
         bcc         => undef,
-        from        => RT->config->get('CorrespondAddress'),
+        from        => RT->config->get('correspond_address'),
         in_reply_to => undef,
         @_
     );
@@ -629,7 +629,7 @@ sub forward_transaction {
 
     my $from;
     my $subject = $txn->subject || $txn->object->subject;
-    if ( RT->config->get('ForwardFromUser') ) {
+    if ( RT->config->get('forward_from_user') ) {
         $from = $txn->current_user->user_object->email;
     } else {
 
@@ -637,12 +637,12 @@ sub forward_transaction {
         my $obj = $txn->object;
         $subject = add_subject_tag( $subject, $obj );
         $from = $obj->queue->correspond_address
-            || RT->config->get('CorrespondAddress');
+            || RT->config->get('correspond_address');
     }
     $mail->head->set( subject => "Fwd: $subject" );
     $mail->head->set( From    => $from );
 
-    my $status = RT->config->get('ForwardFromUser')
+    my $status = RT->config->get('forward_from_user')
 
         # never sign if we forward from User
         ? send_email( entity => $mail, transaction => $txn, sign => 0 )
@@ -725,7 +725,7 @@ sub sign_encrypt {
     }
 
     my $status = send_email_using_template(
-        to        => RT->config->get('OwnerEmail'),
+        to        => RT->config->get('owner_email'),
         template  => 'Error to RT owner: public key',
         arguments => {
             bad_recipients  => \@bad_recipients,
@@ -947,7 +947,7 @@ sub gen_message_id {
         scrip_action => undef,
         @_
     );
-    my $org = RT->config->get('Organization');
+    my $org = RT->config->get('organization');
     my $ticket_id = ( ref $args{'ticket'} ? $args{'ticket'}->id : $args{'ticket'} )
         || 0;
     my $scrip_id = ( ref $args{'Scrip'} ? $args{'Scrip'}->id : $args{'Scrip'} )
@@ -985,7 +985,7 @@ sub set_in_reply_to {
     }
     push @references, @id, @rtid;
     if ( $args{'ticket'} ) {
-        my $pseudo_ref = '<RT-Ticket-' . $args{'ticket'}->id . '@' . RT->config->get('Organization') . '>';
+        my $pseudo_ref = '<RT-Ticket-' . $args{'ticket'}->id . '@' . RT->config->get('organization') . '>';
         push @references, $pseudo_ref
             unless grep $_ eq $pseudo_ref, @references;
     }
@@ -1002,7 +1002,7 @@ sub parse_ticket_id {
     my $subject = shift;
 
     my $rtname    = RT->config->get('rtname');
-    my $test_name = RT->config->get('EmailSubjectTagRegex');
+    my $test_name = RT->config->get('email_subject_tag_regex');
     if ($test_name) {
         $test_name = qr/$test_name/;
     }
@@ -1038,7 +1038,7 @@ sub add_subject_tag {
     my $id        = $ticket->id;
     my $queue_tag = $ticket->queue->subject_tag;
 
-    my $tag_re = RT->config->get('EmailSubjectTagRegex');
+    my $tag_re = RT->config->get('email_subject_tag_regex');
     unless ($tag_re) {
         my $tag = $queue_tag || RT->config->get('rtname');
         $tag_re = qr/\Q$tag\E/;
@@ -1159,7 +1159,7 @@ sub gateway {
         return ( 0, "Failed to parse this message. Something is likely badly wrong with the message" );
     }
 
-    my @mail_plugins = grep $_, @{RT->config->get('MailPlugins')};
+    my @mail_plugins = grep $_, @{RT->config->get('mail_plugins')};
     push @mail_plugins, "Auth::MailFrom" unless @mail_plugins;
     @mail_plugins = _load_plugins(@mail_plugins);
 
@@ -1204,7 +1204,7 @@ sub gateway {
     my $errors_to = parse_errors_to_address_from_head($head);
 
     my $message_id = $head->get('Message-ID')
-        || "<no-message-id-" . time . rand(2000) . '@' . RT->config->get('Organization') . '>';
+        || "<no-message-id-" . time . rand(2000) . '@' . RT->config->get('organization') . '>';
 
     #Pull apart the subject line
     my $subject = $head->get('subject') || '';
@@ -1338,7 +1338,7 @@ sub gateway {
         my @Cc;
         my @requestors = ( $CurrentUser->id );
 
-        if ( RT->config->get('ParseNewMessageForTicketCcs') ) {
+        if ( RT->config->get('parse_new_message_for_ticket_ccs') ) {
             @Cc = parse_cc_addresses_from_head(
                 head         => $head,
                 current_user => $CurrentUser,
@@ -1389,7 +1389,7 @@ sub gateway {
 
     # }}}
 
-    my $unsafe_actions = RT->config->get('UnsafeEmailCommands');
+    my $unsafe_actions = RT->config->get('unsafe_email_commands');
     foreach my $action (@actions) {
 
         #   If the action is comment, add a comment.
@@ -1478,7 +1478,7 @@ sub _no_authorized_user_found {
 
     # Notify the RT Admin of the failure.
     mail_error(
-        To          => RT->config->get('OwnerEmail'),
+        To          => RT->config->get('owner_email'),
         subject     => "Could not load a valid user",
         explanation => <<EOT,
 RT could not load a valid user, and RT's configuration does not allow
@@ -1493,7 +1493,7 @@ EOT
     );
 
     # Also notify the requestor that his request has been dropped.
-    if ( $args{'requestor'} ne RT->config->get('OwnerEmail') ) {
+    if ( $args{'requestor'} ne RT->config->get('owner_email') ) {
         mail_error(
             to          => $args{'requestor'},
             subject     => "Could not load a valid user",
@@ -1542,7 +1542,7 @@ sub _handle_machine_generated_mail {
 
     my $SquelchReplies = 0;
 
-    my $owner_mail = RT->config->get('OwnerEmail');
+    my $owner_mail = RT->config->get('owner_email');
 
     #If the message is autogenerated, we need to know, so we can not
     # send mail to the sender
@@ -1556,7 +1556,7 @@ sub _handle_machine_generated_mail {
         Jifty->log->fatal( "RT Received mail (" . $args{message_id} . ") from itself." );
 
         #Should we mail it to RTOwner?
-        if ( RT->config->get('LoopsToRTOwner') ) {
+        if ( RT->config->get('loops_to_rt_owner') ) {
             mail_error(
                 to          => $owner_mail,
                 subject     => "RT Bounce: " . $args{'subject'},
@@ -1567,7 +1567,7 @@ sub _handle_machine_generated_mail {
 
         #Do we actually want to store it?
         return ( 0, $errors_to, "Message Bounced", $IsALoop )
-            unless RT->config->get('StoreLoops');
+            unless RT->config->get('store_loops');
     }
 
     # Squelch replies if necessary

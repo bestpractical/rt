@@ -746,7 +746,7 @@ sub _trans_limit {
 
     #Search for the right field
     if ( $field eq 'content'
-        and RT->config->get('DontSearchFileAttachments') )
+        and RT->config->get('dont_search_file_attachments') )
     {
         $self->_sql_limit(
             alias            => $self->{_sql_trattachalias},
@@ -2056,7 +2056,7 @@ sub next {
     {
         return $self->next;
     }
-    elsif ( RT->config->get('UseSQLForACLChecks') ) {
+    elsif ( RT->config->get('use_sql_for_acl_checks') ) {
     
         # if we found a ticket with this option enabled then
         # all tickets we found are ACLed, cache this fact
@@ -2078,13 +2078,13 @@ sub next {
 
 sub _do_search {
     my $self = shift;
-    $self->current_user_can_see if RT->config->get('UseSQLForACLChecks');
+    $self->current_user_can_see if RT->config->get('use_sql_for_acl_checks');
     return $self->SUPER::_do_search(@_);
 }
 
 sub _docount {
     my $self = shift;
-    $self->current_user_can_see if RT->config->get('UseSQLForACLChecks');
+    $self->current_user_can_see if RT->config->get('use_sql_for_acl_checks');
     return $self->SUPER::_docount(@_);
 }
 

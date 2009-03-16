@@ -361,7 +361,7 @@ sub _guess_charset {
     return $fallback unless defined $_[0] && length $_[0];
 
     my $charset;
-    my @encodings = @{RT->config->get('EmailInputEncodings')};
+    my @encodings = @{RT->config->get('email_input_encodings')};
     if ( @encodings and eval { require Encode::Guess; 1 } ) {
         Encode::Guess->set_suspects(@encodings);
         my $decoder = Encode::Guess->guess( $_[0] );
@@ -377,7 +377,7 @@ sub _guess_charset {
                     if $matched{'utf8'};    # one and only normalization
 
                 foreach my $suspect (
-                        @{RT->config->get('EmailInputEncodings')} ) {
+                        @{RT->config->get('email_input_encodings')} ) {
                     next unless $matched{$suspect};
                     Jifty->log->debug("Encode::Guess ambiguous ($decoder); using $suspect");
                     $charset = $suspect;

@@ -123,9 +123,9 @@ sub set_recipients {
         push( @Bcc, $ticket->queue->role_group("admin_cc")->member_emails );
     }
 
-    if ( RT->config->get('UseFriendlyToLine') ) {
+    if ( RT->config->get('use_friendly_to_line') ) {
         unless (@To) {
-            push @PseudoTo, sprintf RT->config->get('FriendlyToLineFormat'), $arg, $ticket->id;
+            push @PseudoTo, sprintf RT->config->get('friendly_to_line_format'), $arg, $ticket->id;
         }
     }
 
@@ -134,7 +134,7 @@ sub set_recipients {
     #Strip the sender out of the To, Cc and AdminCc and set the
     # recipients fields used to build the message by the superclass.
     # unless a flag is set
-    if ( RT->config->get('NotifyActor') ) {
+    if ( RT->config->get('notify_actor') ) {
         @{ $self->{'To'} }  = @To;
         @{ $self->{'Cc'} }  = @Cc;
         @{ $self->{'Bcc'} } = @Bcc;

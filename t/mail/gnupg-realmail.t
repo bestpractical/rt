@@ -19,7 +19,7 @@ use File::Temp qw(tempdir);
 my $homedir = tempdir( CLEANUP => 1 );
 
 RT->config->set(
-    'GnuPG',
+    'gnu_pg',
     {
         enable                   => 1,
         outgoing_messages_format => 'RFC',
@@ -27,7 +27,7 @@ RT->config->set(
 );
 
 RT->config->set(
-    'GnuPGOptions',
+    'gnu_pg_options',
     {
         homedir                 => $homedir,
         passphrase              => 'rt-test',
@@ -35,7 +35,7 @@ RT->config->set(
     }
 );
 
-RT->config->set( 'MailPlugins' => ['Auth::MailFrom', 'Auth::GnuPG'] );
+RT->config->set( 'mail_plugins' => ['Auth::MailFrom', 'Auth::GnuPG'] );
 
 RT::Test->import_gnupg_key('rt-recipient@example.com');
 RT::Test->import_gnupg_key('rt-test@example.com', 'public');

@@ -493,12 +493,12 @@ sub _encode_lob {
     my $content_encoding = 'none';
 
     #get the max attachment length from RT
-    my $MaxSize = RT->config->get('MaxAttachmentSize');
+    my $MaxSize = RT->config->get('max_attachment_size');
 
     #if the current attachment contains nulls and the
     #database doesn't support embedded nulls
 
-    if ( RT->config->get('AlwaysUseBase64') ) {
+    if ( RT->config->get('always_use_base64') ) {
 
         # set a flag telling us to mimencode the attachment
         $content_encoding = 'base64';
@@ -521,7 +521,7 @@ sub _encode_lob {
     if ( ($MaxSize) and ( $MaxSize < length($body) ) ) {
 
         # if we're supposed to truncate large attachments
-        if ( RT->config->get('TruncateLongAttachments') ) {
+        if ( RT->config->get('truncate_long_attachments') ) {
 
             # truncate the attachment to that length.
             $body = substr( $body, 0, $MaxSize );
@@ -529,7 +529,7 @@ sub _encode_lob {
         }
 
         # elsif we're supposed to drop large attachments on the floor,
-        elsif ( RT->config->get('DropLongAttachments') ) {
+        elsif ( RT->config->get('drop_long_attachments') ) {
 
             # drop the attachment on the floor
             Jifty->log->info(
@@ -1226,7 +1226,7 @@ sub _new_transaction {
     if ( defined $args{'time_taken'} and $self->can('_update_time_taken') ) {
         $self->_update_time_taken( $args{'time_taken'} );
     }
-    if ( RT->config->get('UseTransactionBatch') and $transaction ) {
+    if ( RT->config->get('use_transaction_batch') and $transaction ) {
         push @{ $self->{_transaction_batch} }, $trans
             if $args{'commit_scrips'};
     }
@@ -1626,7 +1626,7 @@ sub load_custom_field_by_identifier {
 
 
 sub wiki_base {
-    return RT->config->get('WebPath') . "/index.html?q=";
+    return RT->config->get('web_path') . "/index.html?q=";
 }
 
 =head2 _get_current_user

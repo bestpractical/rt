@@ -66,7 +66,7 @@
 
     <div class="content">
 % if ( $attachments->[0] && $attachments->[0]->id ) {
-%   if (RT->config->get('GnuPG')->{'enable'}) {
+%   if (RT->config->get('gnu_pg')->{'enable'}) {
         <& ShowGnuPGStatus, attachment => $attachments->[0], warn_unsigned => $warn_unsigned &>
 %   }
 % }
@@ -87,12 +87,12 @@ $show_headers => 0
 $collapsed => undef
 $show_title_bar_commands => 1
 $row_num => 1
-$display_path => RT->config->get('WebPath')."/Ticket/Display.html?id=".$ticket->id
-$attach_path => RT->config->get('WebPath')."/Ticket/Attachment"
-$update_path => RT->config->get('WebPath')."/Ticket/Update.html"
-$forward_path => RT->config->get('WebPath')."/Ticket/Forward.html"
-$encryption_path => RT->config->get('WebPath')."/Ticket/GnuPG.html"
-$email_record_path => RT->config->get('WebPath')."/Ticket/ShowEmailRecord.html"
+$display_path => RT->config->get('web_path')."/Ticket/Display.html?id=".$ticket->id
+$attach_path => RT->config->get('web_path')."/Ticket/Attachment"
+$update_path => RT->config->get('web_path')."/Ticket/Update.html"
+$forward_path => RT->config->get('web_path')."/Ticket/Forward.html"
+$encryption_path => RT->config->get('web_path')."/Ticket/GnuPG.html"
+$email_record_path => RT->config->get('web_path')."/Ticket/ShowEmailRecord.html"
 $attachments => undef
 $attachment_content => undef
 $show_body => 1
@@ -206,8 +206,8 @@ else {
               . "\">". _('Forward') . "</a>]";
         }
         if ( $can_modify
-            && RT->config->get('GnuPG')->{'enable'}
-            && RT->config->get('GnuPG')->{'allow_encrypt_data_in_db'}
+            && RT->config->get('gnu_pg')->{'enable'}
+            && RT->config->get('gnu_pg')->{'allow_encrypt_data_in_db'}
             && $ticket->current_user_has_right('ForwardMessage')
         ) {
             $titlebar_commands .=

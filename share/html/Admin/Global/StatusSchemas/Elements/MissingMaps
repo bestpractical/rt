@@ -1,7 +1,7 @@
 <&|/Widgets/TitleBox, title => _("No mappings between following schemas") &>
 <ul>
 % while ( my ($f, $t) = splice @maps, 0, 2 ) {
-<li><a href="<% RT->config->get('WebPath') %>/Admin/Global/StatusSchemas/Mappings.html?<% $m->comp('/Elements/QueryString', from => $f, to => $t ) %>"><% $f %>&rarr;<% $t %></a></li>
+<li><a href="<% RT->config->get('web_path') %>/Admin/Global/StatusSchemas/Mappings.html?<% $m->comp('/Elements/QueryString', from => $f, to => $t ) %>"><% $f %>&rarr;<% $t %></a></li>
 % }
 </ul>
 </&>

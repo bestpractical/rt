@@ -65,13 +65,13 @@
     rows => $rows,
     page => $page,
     format => $format,
-    base_url => RT->config->get('WebPath')."/Search/Results.html?",
+    base_url => RT->config->get('web_path')."/Search/Results.html?",
     class => 'RT::Model::TicketCollection',
 
    &>
 % my %hiddens = (query => $query, format => $format, rows => $rows, order_by => $order_by, order => $order, HideResults => $hide_results, page => $page );
 <div align="right" class="refresh">
-<form method="get" action="<%RT->config->get('WebPath')%>/Search/Results.html">
+<form method="get" action="<%RT->config->get('web_path')%>/Search/Results.html">
 % foreach my $key (keys(%hiddens)) {
 <input type="hidden" class="hidden" name="<%$key%>" value="<% defined($hiddens{$key})?$hiddens{$key}:'' %>" />
 % }
@@ -99,7 +99,7 @@
 my $prefs = Jifty->web->current_user->user_object->preferences("SearchDisplay") || {};
 # These variables are what define a search_hash; this is also
 # where we give sane defaults.
-$format      ||= $prefs->{'format'} || RT->config->get('DefaultSearchResultFormat');
+$format      ||= $prefs->{'format'} || RT->config->get('default_search_result_format');
 $order       ||= $prefs->{'order'} || 'ASC';
 $order_by     ||= $prefs->{'order_by'} || 'id';
 
@@ -158,7 +158,7 @@ my $query_string = "?".$m->comp('/Elements/QueryString',
                                page => $page);
 my $short_querystring = "?".$m->comp('/Elements/QueryString', query => $query);
 my $RSSQueryString = "?".$m->comp('/Elements/QueryString', query => $query, order => $order, order_by => $order_by);
-my $RSSFeedURL = RT->config->get('WebPath')."/Search/Results.rdf$RSSQueryString";
+my $RSSFeedURL = RT->config->get('web_path')."/Search/Results.rdf$RSSQueryString";
 
 if ($ARGS{'tickets_refresh_interval'}) {
 	$session{'tickets_refresh_interval'} = $ARGS{'tickets_refresh_interval'};
@@ -176,7 +176,7 @@ my $genpage = sub {
         page    => shift(@_),
     );
 };
-my $BaseURL = RT->config->get('WebPath')."/Search/Results.html?";
+my $BaseURL = RT->config->get('web_path')."/Search/Results.html?";
 $link_rel{first} = $BaseURL . $genpage->(1)         if $page > 1;
 $link_rel{prev}  = $BaseURL . $genpage->($page - 1) if $page > 1;
 $link_rel{next}  = $BaseURL . $genpage->($page + 1) if ($page * $rows) < $ticketcount;

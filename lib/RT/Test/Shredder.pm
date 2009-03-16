@@ -129,7 +129,7 @@ use IPC::Open2;
 sub _init_db {
 
     foreach (qw(Type Host Port Name User password)) {
-        $ENV{ "RT_DB_" . uc $_ } = RT->config->get("Database$_");
+        $ENV{ "RT_DB_" . uc $_ } = RT->config->get("database$_");
     }
     my $rt_setup_database =
       RT::Test::get_relocatable_file( 'rt-setup-database',

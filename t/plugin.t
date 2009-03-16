@@ -20,7 +20,7 @@ BEGIN {
     use lib $RT::LocalLibPath; # plugin need this path in @INC
     RT->load_config;
     $RT::LocalPluginPath = $RT::BASE_PATH . "/t/plugins";
-    RT->config->set( 'Plugins', 'RT::Extension::Test' );
+    RT->config->set( 'plugins', 'RT::Extension::Test' );
     ok( RT->plugins->[0]->name, 'RT-Extension-Test' );
 }
 

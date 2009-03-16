@@ -290,7 +290,7 @@ sub is_rt_address {
 
     # Example: the following rule would tell RT not to Cc
     #   "tickets@noc.example.com"
-    my $address_re = RT->config->get('RTAddressRegexp');
+    my $address_re = RT->config->get('rt_address_regexp');
     if ( defined $address_re && $address =~ /$address_re/i ) {
         return 1;
     }

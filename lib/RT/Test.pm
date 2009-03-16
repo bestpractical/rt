@@ -543,7 +543,7 @@ sub set_mail_catcher {
         print $handle "%% split me! %%\n";
         close $handle;
     };
-    RT->config->set( MailCommand => $catcher );
+    RT->config->set( mail_command => $catcher );
 }
 
 sub db_requires_no_dba {
@@ -607,7 +607,7 @@ sub lsign_gnupg_key {
     require RT::Crypt::GnuPG;
     require GnuPG::Interface;
     my $gnupg = new GnuPG::Interface;
-    my %opt   = %{RT->config->get('GnuPGOptions')};
+    my %opt   = %{RT->config->get('gnu_pg_options')};
     $gnupg->options->hash_init( RT::Crypt::GnuPG::_prepare_gnupg_options(%opt), meta_interactive => 0, );
 
     my %handle;
@@ -665,7 +665,7 @@ sub trust_gnupg_key {
     require RT::Crypt::GnuPG;
     require GnuPG::Interface;
     my $gnupg = new GnuPG::Interface;
-    my %opt   = %{RT->config->get('GnuPGOptions')};
+    my %opt   = %{RT->config->get('gnu_pg_options')};
     $gnupg->options->hash_init( RT::Crypt::GnuPG::_prepare_gnupg_options(%opt), meta_interactive => 0, );
 
     my %handle;

@@ -155,7 +155,7 @@ sub send_digest {
     }
 
     # Set our sender and recipient.
-    $digest_template->mime_obj->head->replace( 'From', RT->config->get('CorrespondAddress') );
+    $digest_template->mime_obj->head->replace( 'From', RT->config->get('correspond_address') );
     $digest_template->mime_obj->head->replace( 'To',   $to );
 
     if ($print) {

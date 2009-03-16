@@ -60,7 +60,7 @@ while ( my $requestor = $people->next ) {
 </%PERL>
 
 <&| /Widgets/TitleBox,
-    title_href => $has_right_adminusers? RT->config->get('WebPath')."/Admin/Users/Modify.html?id=".$requestor->id: undef,
+    title_href => $has_right_adminusers? RT->config->get('web_path')."/Admin/Users/Modify.html?id=".$requestor->id: undef,
     title_raw => _("More about %1", $name),
     class => 'ticket-info-requestor'
 &>
@@ -74,7 +74,7 @@ while ( my $requestor = $people->next ) {
 <&|/l, $rows &>This user's %1 highest priority tickets</&>:<br />
 <ul>
 %while (my $w=$tickets->next) {
-<li><a href="<%RT->config->get('WebPath')%><%$display_path%>?id=<%$w->id%>"><%$w->id%>: <%$w->subject%></a> (<%$w->status%>)
+<li><a href="<%RT->config->get('web_path')%><%$display_path%>?id=<%$w->id%>"><%$w->id%>: <%$w->subject%></a> (<%$w->status%>)
 %}
 </ul>
 

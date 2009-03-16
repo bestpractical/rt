@@ -57,15 +57,15 @@ $short_query_string => undef
 
 </%args>
 <ul class="search-result-views">
-<li><a href="<%RT->config->get('WebPath')%>/Search/Results.tsv<%$query_string%>"><&|/l&>Spreadsheet</&></a></li>
+<li><a href="<%RT->config->get('web_path')%>/Search/Results.tsv<%$query_string%>"><&|/l&>Spreadsheet</&></a></li>
 <li><a href="<%$rss_feed_url%>"><&|/l&>RSS</&></a></li>
-<li><a href="<%RT->config->get('WebURL')%>/NoAuth/iCal/<% $ical_path %>"><% _('iCal') %></a></li>
-<li><a href="<%RT->config->get('WebPath')%>/Tools/Offline.html<%$short_query_string%>"><&|/l&>Editable text</&></a></li>
+<li><a href="<%RT->config->get('web_url')%>/NoAuth/iCal/<% $ical_path %>"><% _('iCal') %></a></li>
+<li><a href="<%RT->config->get('web_path')%>/Tools/Offline.html<%$short_query_string%>"><&|/l&>Editable text</&></a></li>
 % # Now let callbacks add their extra tools
 % $m->callback( %ARGS, callback_name => 'AfterTools' );
 
 </ul>
-<form method="get" action="<%RT->config->get('WebPath')%>/Search/Chart.html">
+<form method="get" action="<%RT->config->get('web_path')%>/Search/Chart.html">
 % my %hiddens = (query => $query, format => $format, rows => $rows, order_by => $order_by, order => $order);
 % foreach my $key (keys(%hiddens)) {
 <input type="hidden" class="hidden" name="<%$key%>" value="<%defined($hiddens{$key})?$hiddens{$key}:''%>" />

@@ -122,7 +122,7 @@ if ( $ARGS{'quick_create'} ) {
 
 
 if ( $ARGS{'q'} ) {
-    RT::Interface::Web::redirect(RT->config->get('WebURL')."Search/Simple.html?q=".$m->interp->apply_escapes($ARGS{q}));
+    RT::Interface::Web::redirect(RT->config->get('web_url')."Search/Simple.html?q=".$m->interp->apply_escapes($ARGS{q}));
 }
 
 if ($ARGS{'home_refresh_interval'}) {

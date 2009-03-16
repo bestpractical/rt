@@ -238,7 +238,7 @@ Transaction: {$transaction->description}
        owner: {$ticket->owner->name}
   requestors: {$ticket->role_group("requestor")->member_emails_as_string}
       Status: {$ticket->status}
- Ticket <URL: {RT->config->get(\'WebURL\')}Ticket/Display.html?id={$ticket->id} >
+ Ticket <URL: {RT->config->get(\'web_url\')}Ticket/Display.html?id={$ticket->id} >
 
 
 {$transaction->content()}
@@ -253,7 +253,7 @@ Transaction: {$transaction->description}
       content     => 'RT-Attach-Message: yes
 
 
-<URL: {RT->config->get(\'WebURL\')}Ticket/Display.html?id={$ticket->id} >
+<URL: {RT->config->get(\'web_url\')}Ticket/Display.html?id={$ticket->id} >
 
 {$transaction->content()}
 '
@@ -275,7 +275,7 @@ Transaction: {$transaction->description}
 'Subject: [comment] {my $s=($transaction->subject||$ticket->subject); $s =~ s/\\[comment\\]//g; $s =~ s/^Re//i; $s;}
 
 
-{RT->config->get(\'WebURL\')}Ticket/Display.html?id={$ticket->id}
+{RT->config->get(\'web_url\')}Ticket/Display.html?id={$ticket->id}
 This is a comment.  It is not sent to the requestor(s):
 
 {$transaction->content()}
@@ -288,7 +288,7 @@ This is a comment.  It is not sent to the requestor(s):
        content     => 'Subject: Status Changed to: {$transaction->new_value}
 
 
-{RT->config->get(\'WebURL\')}Ticket/Display.html?id={$ticket->id}
+{RT->config->get(\'web_url\')}Ticket/Display.html?id={$ticket->id}
 
 {$transaction->content()}
 '
@@ -316,8 +316,8 @@ Greetings,
 There is a new item pending your approval: "{$ticket->subject()}", 
 a summary of which appears below.
 
-Please visit {RT->config->get(\'WebURL\')}Approvals/Display.html?id={$ticket->id}
-to approve or reject this ticket, or {RT->config->get(\'WebURL\')}Approvals/ to
+Please visit {RT->config->get(\'web_url\')}Approvals/Display.html?id={$ticket->id}
+to approve or reject this ticket, or {RT->config->get(\'web_url\')}Approvals/ to
 batch-process all your pending approvals.
 
 -------------------------------------------------------------------------
@@ -441,7 +441,7 @@ You sent us a message that we cannot handle due to corrupted GnuPG signature or 
 
 Greetings,
 
-Someone at {$ENV{'REMOTE_ADDR'}} requested a password reset for you on {RT->config->get('WebURL')}
+Someone at {$ENV{'REMOTE_ADDR'}} requested a password reset for you on {RT->config->get('web_url')}
 
 Your new password is:
   {$Newpassword}

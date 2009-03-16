@@ -31,7 +31,7 @@ sub _canonicalize_time_zone {
     # if the user time zone is requested and the user has none, use the server's
     # time zone
     if (!$tz || lc($tz) eq 'server' || lc($tz) eq 'system') {
-        $tz = RT->config->get('TimeZone');
+        $tz = RT->config->get('time_zone');
     }
 
     return $tz || $default;
@@ -114,7 +114,7 @@ sub iso {
 sub config_format {
     my $self = _canonicalize_self(@_);
 
-    return $self->strftime(RT->config->get('DateTimeFormat'));
+    return $self->strftime(RT->config->get('date_time_format'));
 }
 
 1;

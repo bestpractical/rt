@@ -55,7 +55,7 @@
 <& /Elements/ListActions, actions => \@results &>
 
 
-<form action="<%RT->config->get('WebPath')%>/User/Groups/Modify.html" method="post">
+<form action="<%RT->config->get('web_path')%>/User/Groups/Modify.html" method="post">
 
 %unless ($Group->id) {
 <input type="hidden" class="hidden" name="id" value="new" />

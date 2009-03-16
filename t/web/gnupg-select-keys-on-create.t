@@ -20,22 +20,22 @@ RT::Test->set_mail_catcher;
 use_ok('RT::Crypt::GnuPG');
 
 RT->config->set(
-    GnuPG => {
+    gnu_pg => {
         enable                   => 1,
         outgoing_messages_format => 'RFC',
     }
 );
 
 RT->config->set(
-    GnuPGOptions => {
+    gnu_pg_options => {
         homedir                 => scalar tempdir( CLEANUP => 0 ),
         passphrase              => 'rt-test',
         'no-permission-warning' => undef,
     }
 );
-diag "GnuPG --homedir ". RT->config->get('GnuPGOptions')->{'homedir'} if $ENV{TEST_VERBOSE};
+diag "GnuPG --homedir ". RT->config->get('gnu_pg_options')->{'homedir'} if $ENV{TEST_VERBOSE};
 
-RT->config->set( 'MailPlugins' => [ 'Auth::MailFrom', 'Auth::GnuPG' ] );
+RT->config->set( 'mail_plugins' => [ 'Auth::MailFrom', 'Auth::GnuPG' ] );
 
 my $queue = RT::Test->load_or_create_queue(
     name              => 'Regression',

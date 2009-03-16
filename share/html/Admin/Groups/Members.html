@@ -55,7 +55,7 @@
 
 <&| /Widgets/TitleBox, title => _('Editing membership for group %1', $Group->name) &>
 
-<form action="<% RT->config->get('WebPath') %>/Admin/Groups/Members.html" method="post">
+<form action="<% RT->config->get('web_path') %>/Admin/Groups/Members.html" method="post">
 <input type="hidden" class="hidden" name="id" value="<%$Group->id%>" />
 <table width="100%">
 <tr>

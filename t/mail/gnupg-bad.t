@@ -18,7 +18,7 @@ my $homedir = RT::Test::get_abs_relocatable_dir(File::Spec->updir(),
     qw(data gnupg keyrings));
 
 RT->config->set(
-    'GnuPG',
+    'gnu_pg',
     {
         enable                   => 1,
         outgoing_messages_format => 'RFC',
@@ -26,7 +26,7 @@ RT->config->set(
 );
 
 RT->config->set(
-    'GnuPGOptions',
+    'gnu_pg_options',
     {
         homedir                 => $homedir,
         passphrase              => 'test',
@@ -34,7 +34,7 @@ RT->config->set(
     }
 );
 
-RT->config->set( 'MailPlugins' => ['Auth::MailFrom', 'Auth::GnuPG'] );
+RT->config->set( 'mail_plugins' => ['Auth::MailFrom', 'Auth::GnuPG'] );
 
 my ($baseurl, $m) = RT::Test->started_ok;
 

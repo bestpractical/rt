@@ -16,11 +16,11 @@ use_ok('RT::Model::Scrip');
 
 use File::Temp qw/tempfile/;
 my ($fh, $filename) = tempfile( UNLINK => 1, SUFFIX => '.rt');
-my $link_scrips_orig = RT->config->get('LinkTransactionsRun1Scrip');
-RT->config->set( 'LinkTransactionsRun1Scrip', 1 );
+my $link_scrips_orig = RT->config->get('link_transactions_run1_scrip');
+RT->config->set( 'link_transactions_run1_scrip', 1 );
 
-my $link_acl_checks_orig = RT->config->get('StrictLinkACL');
-RT->config->set( 'StrictLinkACL', 1);
+my $link_acl_checks_orig = RT->config->get('strict_link_acl');
+RT->config->set( 'strict_link_acl', 1);
 
 my $condition = RT::Model::ScripCondition->new(current_user => RT->system_user );
 $condition->load('User Defined');
@@ -115,7 +115,7 @@ diag('Create tickets without rights to link') if $ENV{'TEST_VERBOSE'};
 diag('Create tickets with rights checks on one end of a link') if $ENV{'TEST_VERBOSE'};
 {
     # on q2 we have no rights, but use checking one only on thing
-    RT->config->set( StrictLinkACL => 0 );
+    RT->config->set( strict_link_acl => 0 );
     my $parent = RT::Model::Ticket->new(current_user => RT->system_user );
     my ($id,$tid,$msg) = $parent->create( subject => 'Link test 1', queue => $q2->id );
     ok($id,$msg);
@@ -127,7 +127,7 @@ diag('Create tickets with rights checks on one end of a link') if $ENV{'TEST_VER
     is($child->_links('target')->count, 0, 'link was Created only one');
     # no scrip run on second ticket accroding to config option
     is(link_count($filename), undef, "scrips ok");
-    RT->config->set( StrictLinkACL => 1 );
+    RT->config->set( strict_link_acl => 1 );
 }
 
 ($id,$msg) = $u1->principal->grant_right ( object => $q1, right => 'ModifyTicket');
@@ -153,7 +153,7 @@ diag('try to add link without rights') if $ENV{'TEST_VERBOSE'};
 diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
 {
     # on q2 we have no rights, but use checking one only on thing
-    RT->config->set( StrictLinkACL => 0 );
+    RT->config->set( strict_link_acl => 0 );
     my $parent = RT::Model::Ticket->new(current_user => RT->system_user );
     my ($id,$tid,$msg) = $parent->create( subject => 'Link test 1', queue => $q2->id );
     ok($id,$msg);
@@ -169,7 +169,7 @@ diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
     $child->current_user( $creator );
 
     # turn off feature and try to delete link, we should fail
-    RT->config->set( StrictLinkACL => 1 );
+    RT->config->set( strict_link_acl => 1 );
     ($id, $msg) = $child->add_link(type => 'MemberOf', target => $parent->id);
     ok(!$id, $msg);
     is(link_count($filename), 1, "scrips ok");
@@ -179,14 +179,14 @@ diag('add link with rights only on base') if $ENV{'TEST_VERBOSE'};
     $child->current_user( $creator );
 
     # try to delete link, we should success as feature is active
-    RT->config->set( StrictLinkACL => 0 );
+    RT->config->set( strict_link_acl => 0 );
     ($id, $msg) = $child->delete_link(type => 'MemberOf', target => $parent->id);
     ok($id, $msg);
     is(link_count($filename), 0, "scrips ok");
     $child->current_user( RT->system_user );
     $child->_links('base')->_do_count;
     is($child->_links('base')->count, 0, 'link was deleted');
-    RT->config->set( StrictLinkACL => 1 );
+    RT->config->set( strict_link_acl => 1 );
 }
 
 my $tid;
@@ -237,7 +237,7 @@ is( $transactions->count, 1, "Transaction found in other ticket" );
 is( $transactions->first->field , 'ReferredToBy');
 is( $transactions->first->old_value , $ticket->uri );
 
-RT->config->set( LinkTransactionsRun1Scrip => 0 );
+RT->config->set( link_transactions_run1_scrip => 0 );
 
 ($id,$msg) =$ticket->add_link(type => 'RefersTo', target => $ticket2->id);
 ok($id,$msg);
@@ -299,8 +299,8 @@ is(link_count($filename), 0, "scrips ok");
 
 
 # restore
-RT->config->set( LinkTransactionsRun1Scrip => $link_scrips_orig );
-RT->config->set( StrictLinkACL => $link_acl_checks_orig );
+RT->config->set( link_transactions_run1_scrip => $link_scrips_orig );
+RT->config->set( strict_link_acl => $link_acl_checks_orig );
 
 {
     my $Scrips = RT::Model::ScripCollection->new(current_user => RT->system_user );

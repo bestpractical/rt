@@ -90,14 +90,14 @@ sub cleanup_request {
     # Consistency is imprived, too.
     RT::Model::Principal->invalidate_acl_cache();
     Jifty::DBI::Record::Cachable->flush_cache
-        if ( RT->config->get('WebFlushDbCacheEveryRequest')
+        if ( RT->config->get('web_flush_db_cache_every_request')
         and UNIVERSAL::can( 'Jifty::DBI::Record::Cachable' => 'flush_cache' ) );
 
     # cleanup global squelching of the mails
     require RT::ScripAction::SendEmail;
     RT::ScripAction::SendEmail->clean_slate;
 
-    if ( RT->config->get('GnuPG')->{'enable'} ) {
+    if ( RT->config->get('gnu_pg')->{'enable'} ) {
         require RT::Crypt::GnuPG;
         RT::Crypt::GnuPG::use_key_for_encryption();
         RT::Crypt::GnuPG::use_key_for_signing(undef);

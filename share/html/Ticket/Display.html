@@ -202,7 +202,7 @@ if (@Actions) {
     push @{ $session{"Actions"}->{$key} ||= [] }, @Actions;
     $session{'i'}++;
 
-    RT::Interface::Web::redirect( RT->config->get('WebURL') . "Ticket/Display.html?id=" . $ticket_obj->id . "&results=" . $key );
+    RT::Interface::Web::redirect( RT->config->get('web_url') . "Ticket/Display.html?id=" . $ticket_obj->id . "&results=" . $key );
 }
 
 my $attachments = $m->comp('Elements/FindAttachments', ticket => $ticket_obj, tickets => $Tickets);

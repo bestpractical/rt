@@ -54,7 +54,7 @@
 % $i++;
 % if ($reminder->refers_to->first) {
 % my $ticket= $reminder->refers_to->first->target_obj;
-<tr class="<%$i%2 ? 'evenline' : 'oddline'%>"><td><a href="<%RT->config->get('WebPath')%>/Ticket/Display.html?id=<%$ticket->id%>"><%$reminder->subject%></a><br />
+<tr class="<%$i%2 ? 'evenline' : 'oddline'%>"><td><a href="<%RT->config->get('web_path')%>/Ticket/Display.html?id=<%$ticket->id%>"><%$reminder->subject%></a><br />
 <blockquote>
 #<%$ticket->id%>: <%$ticket->subject%><br />
 <%$reminder->owner_obj->name %>  <%$reminder->due->epoch >0 ? '&bull; '.$reminder->due->age : '' |n %>
@@ -66,7 +66,7 @@
 </&>
 
 <%init>
-return unless RT->config->get('EnableReminders');
+return unless RT->config->get('enable_reminders');
 my $reminders = RT::Model::TicketCollection->new();
 $reminders->from_sql('(Owner = "Nobody" OR Owner = "'.Jifty->web->current_user->name.'")' .
     ' AND type = "reminder" AND (Status = "new" OR Status = "open")'); 

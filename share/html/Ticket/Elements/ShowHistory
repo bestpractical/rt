@@ -145,7 +145,7 @@ if ($tickets) {
 }
 
 
-my $OldestFirst = RT->config->get( 'OldestTransactionsFirst', Jifty->web->current_user );
+my $OldestFirst = RT->config->get( 'oldest_transactions_first', Jifty->web->current_user );
 my $Sortorder = $OldestFirst? 'ASC': 'DESC';
 $Transactions->order_by( { column => 'Created',
                               order => $Sortorder },
@@ -159,7 +159,7 @@ $attachment_content ||= $m->comp('/Ticket/Elements/LoadTextAttachments', ticket 
 
 </%INIT>
 <%ARGS>
-$uri_file => RT->config->get('WebPath')."/Ticket/Display.html"
+$uri_file => RT->config->get('web_path')."/Ticket/Display.html"
 $ticket => undef
 $tickets => undef
 $attachments => undef

@@ -107,7 +107,7 @@ $m->callback(
 
 # Filter
 my %active;
-$active{$_}++ for @{RT->config->get('ActiveMakeClicky')};
+$active{$_}++ for @{RT->config->get('active_make_clicky')};
 @types = grep $active{$_->{name}}, @types;
 
 # Build up the whole match

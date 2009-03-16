@@ -55,7 +55,7 @@
 
 
 
-<form action="<%RT->config->get('WebPath')%>/Admin/Groups/Modify.html" method="post" enctype="multipart/form-data">
+<form action="<%RT->config->get('web_path')%>/Admin/Groups/Modify.html" method="post" enctype="multipart/form-data">
 
 %unless ($Group->id) {
 <input type="hidden" class="hidden" name="id" value="new" />

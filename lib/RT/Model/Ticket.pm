@@ -230,7 +230,7 @@ sub load {
     # thing. be careful to cache all the interim tickets we try so we don't loop forever.
 
     # FIXME: there is no ticket_base_uri option in config
-    my $base_uri = RT->config->get('TicketBaseUri') || '';
+    my $base_uri = RT->config->get('ticket_base_uri') || '';
 
     #If it's a local URI, turn it into a ticket id
     if ( $base_uri && $id =~ /^$base_uri(\d+)$/ ) {
@@ -659,7 +659,7 @@ sub create {
 
             # Check rights on the other end of the link if we must
             # then run _add_link that doesn't check for ACLs
-            if ( RT->config->get('StrictLinkACL') ) {
+            if ( RT->config->get('strict_link_acl') ) {
                 my ( $val, $msg, $obj ) = $self->_get_ticket_from_uri( URI => $link );
                 unless ($val) {
                     push @non_fatal_errors, $msg;
@@ -1194,7 +1194,7 @@ sub _record_note {
     # If this is from an external source, we need to come up with its
     # internal Message-ID now, so all emails sent because of this
     # message have a common Message-ID
-    my $org   = RT->config->get('Organization');
+    my $org   = RT->config->get('organization');
     my $msgid = $args{'mime_obj'}->head->get('Message-ID');
     unless ( defined $msgid
         && $msgid =~ /<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>/ )
@@ -1298,7 +1298,7 @@ sub delete_link {
     #check acls
     my $right = 0;
     $right++ if $self->current_user_has_right('ModifyTicket');
-    if ( !$right && RT->config->get('StrictLinkACL') ) {
+    if ( !$right && RT->config->get('strict_link_acl') ) {
         return ( 0, _("Permission Denied") );
     }
 
@@ -1312,8 +1312,8 @@ sub delete_link {
     {
         $right++;
     }
-    if (   ( !RT->config->get('StrictLinkACL') && $right == 0 )
-        || ( RT->config->get('StrictLinkACL') && $right < 2 ) )
+    if (   ( !RT->config->get('strict_link_acl') && $right == 0 )
+        || ( RT->config->get('strict_link_acl') && $right < 2 ) )
     {
         return ( 0, _("Permission Denied") );
     }
@@ -1356,7 +1356,7 @@ sub delete_link {
             ? $LINKDIRMAP{ $args{'type'} }->{base}
             : $LINKDIRMAP{ $args{'type'} }->{target},
             old_value       => $self->uri,
-            activate_scrips => !RT->config->get('LinkTransactionsRun1Scrip'),
+            activate_scrips => !RT->config->get('link_transactions_run1_scrip'),
             time_taken      => 0,
         );
         Jifty->log->error("Couldn't create transaction: $Msg") unless $val;
@@ -1397,7 +1397,7 @@ sub add_link {
 
     my $right = 0;
     $right++ if $self->current_user_has_right('ModifyTicket');
-    if ( !$right && RT->config->get('StrictLinkACL') ) {
+    if ( !$right && RT->config->get('strict_link_acl') ) {
         return ( 0, _("Permission Denied") );
     }
 
@@ -1411,8 +1411,8 @@ sub add_link {
     {
         $right++;
     }
-    if (   ( !RT->config->get('StrictLinkACL') && $right == 0 )
-        || ( RT->config->get('StrictLinkACL') && $right < 2 ) )
+    if (   ( !RT->config->get('strict_link_acl') && $right == 0 )
+        || ( RT->config->get('strict_link_acl') && $right < 2 ) )
     {
         return ( 0, _("Permission Denied") );
     }
@@ -1495,7 +1495,7 @@ sub _add_link {
             ? $LINKDIRMAP{ $args{'type'} }->{base}
             : $LINKDIRMAP{ $args{'type'} }->{target},
             new_value       => $self->uri,
-            activate_scrips => !RT->config->get('LinkTransactionsRun1Scrip'),
+            activate_scrips => !RT->config->get('link_transactions_run1_scrip'),
             time_taken      => 0,
         );
         Jifty->log->error("Couldn't create transaction: $msg") unless $val;

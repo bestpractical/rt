@@ -411,7 +411,7 @@ sub sign_encrypt {
             Email::Address->parse( $entity->head->get($_) ), qw(To Cc Bcc) ];
     }
 
-    my $format = lc RT->config->get('GnuPG')->{'outgoing_messages_format'}
+    my $format = lc RT->config->get('gnu_pg')->{'outgoing_messages_format'}
         || 'RFC';
     if ( $format eq 'inline' ) {
         return sign_encrypt_inline(%args);
@@ -435,7 +435,7 @@ sub sign_encrypt_rfc3156 {
     );
 
     my $gnupg = new GnuPG::Interface;
-    my %opt   = %{RT->config->get('GnuPGOptions')};
+    my %opt   = %{RT->config->get('gnu_pg_options')};
 
     # handling passphrase in GnuPGOptions
     $args{'passphrase'} = delete $opt{'passphrase'}
@@ -624,7 +624,7 @@ sub _sign_encrypt_text_inline {
     return unless $args{'sign'} || $args{'encrypt'};
 
     my $gnupg = new GnuPG::Interface;
-    my %opt   = %{RT->config->get('GnuPGOptions')};
+    my %opt   = %{RT->config->get('gnu_pg_options')};
 
     # handling passphrase in GnupGOptions
     $args{'passphrase'} = delete $opt{'passphrase'}
@@ -716,7 +716,7 @@ sub sign_encrypt_attachment_inline {
     return unless $args{'sign'} || $args{'encrypt'};
 
     my $gnupg = new GnuPG::Interface;
-    my %opt   = %{RT->config->get('GnuPGOptions')};
+    my %opt   = %{RT->config->get('gnu_pg_options')};
 
     # handling passphrase in GnupGOptions
     $args{'passphrase'} = delete $opt{'passphrase'}
@@ -821,7 +821,7 @@ sub sign_encrypt_content {
     return unless $args{'sign'} || $args{'encrypt'};
 
     my $gnupg = new GnuPG::Interface;
-    my %opt   = %{RT->config->get('GnuPGOptions')};
+    my %opt   = %{RT->config->get('gnu_pg_options')};
 
     # handling passphrase in GnupGOptions
     $args{'passphrase'} = delete $opt{'passphrase'}
@@ -1072,7 +1072,7 @@ sub verify_attachment {
     my %args = ( data => undef, signature => undef, top => undef, @_ );
 
     my $gnupg = new GnuPG::Interface;
-    my %opt   = %{RT->config->get('GnuPGOptions')};
+    my %opt   = %{RT->config->get('gnu_pg_options')};
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init( _prepare_gnupg_options(%opt), meta_interactive => 0, );
 
@@ -1119,7 +1119,7 @@ sub verify_rfc3156 {
     my %args = ( data => undef, signature => undef, top => undef, @_ );
 
     my $gnupg = new GnuPG::Interface;
-    my %opt   = %{RT->config->get('GnuPGOptions')};
+    my %opt   = %{RT->config->get('gnu_pg_options')};
     $opt{'digest-algo'} ||= 'SHA1';
     $gnupg->options->hash_init( _prepare_gnupg_options(%opt), meta_interactive => 0, );
 
@@ -1172,7 +1172,7 @@ sub decrypt_rfc3156 {
     );
 
     my $gnupg = new GnuPG::Interface;
-    my %opt   = %{RT->config->get('GnuPGOptions')};
+    my %opt   = %{RT->config->get('gnu_pg_options')};
 
     # handling passphrase in GnupGOptions
     $args{'passphrase'} = delete $opt{'passphrase'}
@@ -1249,7 +1249,7 @@ sub decrypt_inline {
         @_
     );
     my $gnupg = new GnuPG::Interface;
-    my %opt = %{RT->config->get('GnuPGOptions')};
+    my %opt = %{RT->config->get('gnu_pg_options')};
 
     # handling passphrase in GnuPGOptions
     $args{'passphrase'} = delete $opt{'passphrase'}
@@ -1381,7 +1381,7 @@ sub decrypt_attachment {
     );
 
     my $gnupg = new GnuPG::Interface;
-    my %opt   = %{RT->config->get('GnuPGOptions')};
+    my %opt   = %{RT->config->get('gnu_pg_options')};
 
     # handling passphrase in GnuPGOptions
     $args{'passphrase'} = delete $opt{'passphrase'}
@@ -1429,7 +1429,7 @@ sub decrypt_content {
     );
 
     my $gnupg = new GnuPG::Interface;
-    my %opt   = %{RT->config->get('GnuPGOptions')};
+    my %opt   = %{RT->config->get('gnu_pg_options')};
 
     # handling passphrase in GnuPGOptions
     $args{'passphrase'} = delete $opt{'passphrase'}
@@ -2033,7 +2033,7 @@ sub get_keys_info {
     }
 
     my $gnupg = new GnuPG::Interface;
-    my %opt   = %{RT->config->get('GnuPGOptions')};
+    my %opt   = %{RT->config->get('gnu_pg_options')};
 
     $opt{'digest-algo'} ||= 'SHA1';
     $opt{'with-colons'}     = undef;    # parseable format
@@ -2088,7 +2088,7 @@ sub get_keys_info {
 sub parse_keys_info {
     my @lines = @_;
 
-    my %gpg_opt = %{RT->config->get('GnuPGOptions')};
+    my %gpg_opt = %{RT->config->get('gnu_pg_options')};
 
     my @res = ();
     foreach my $line (@lines) {
@@ -2235,7 +2235,7 @@ sub delete_key {
     my $key = shift;
 
     my $gnupg = new GnuPG::Interface;
-    my %opt   = %{RT->config->get('GnuPGOptions')};
+    my %opt   = %{RT->config->get('gnu_pg_options')};
     $gnupg->options->hash_init( _prepare_gnupg_options(%opt), meta_interactive => 0, );
 
     my ( $handles, $handle_list ) = _make_gpg_handles();
@@ -2285,7 +2285,7 @@ sub import_key {
     my $key = shift;
 
     my $gnupg = new GnuPG::Interface;
-    my %opt   = %{RT->config->get('GnuPGOptions')};
+    my %opt   = %{RT->config->get('gnu_pg_options')};
     $gnupg->options->hash_init( _prepare_gnupg_options(%opt), meta_interactive => 0, );
 
     my ( $handles, $handle_list ) = _make_gpg_handles();
@@ -2369,7 +2369,7 @@ properly (and false otherwise).
 
 sub probe {
     my $gnupg = new GnuPG::Interface;
-    my %opt   = %{RT->config->get('GnuPGOptions')};
+    my %opt   = %{RT->config->get('gnu_pg_options')};
     $gnupg->options->hash_init(
         _prepare_gnupg_options(%opt),
         armor            => 1,

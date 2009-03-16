@@ -49,8 +49,8 @@
 <&| /Widgets/TitleBox, title => _('New messages'), title_href => "#txn-". $txn->id &>
 <&|/l, &>There are unread messages on this ticket.</&>
 <&|/l, 
- RT->config->get('WebPath') ."/Ticket/Display.html?id=". $ticket->id. "#txn-".$txn->id,
- RT->config->get('WebPath') ."/Ticket/Display.html?id=". $ticket->id ."&mark_as_seen=1".  "#txn-".$txn->id
+ RT->config->get('web_path') ."/Ticket/Display.html?id=". $ticket->id. "#txn-".$txn->id,
+ RT->config->get('web_path') ."/Ticket/Display.html?id=". $ticket->id ."&mark_as_seen=1".  "#txn-".$txn->id
  
  &>You can <a href="%1">jump to the first unread message</a> or <a href="%2">jump to the first unread message and mark all messages as seen</a>.</&>
 </&>
@@ -59,6 +59,6 @@
 $ticket
 </%ARGS>
 <%INIT>
-return unless (RT->config->get( 'ShowUnreadMessageNotifications', Jifty->web->current_user));
+return unless (RT->config->get( 'show_unread_message_notifications', Jifty->web->current_user));
 my $txn = $ticket->seen_up_to or return;
 </%INIT>

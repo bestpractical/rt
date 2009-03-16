@@ -17,9 +17,9 @@ eval 'use GnuPG::Interface; 1' or plan skip_all => 'GnuPG required.';
 
 RT::Test->set_mail_catcher;
 
-RT->config->set( CommentAddress => 'general@example.com');
-RT->config->set( CorrespondAddress => 'general@example.com');
-RT->config->set( DefaultSearchResultFormat => qq{
+RT->config->set( comment_address => 'general@example.com');
+RT->config->set( correspond_address => 'general@example.com');
+RT->config->set( default_search_result_format => qq{
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__subject__</a></B>/TITLE:subject',
    'OO-__owner_name__-O',
@@ -35,7 +35,7 @@ my $homedir = tempdir( CLEANUP => 1 );
 use_ok('RT::Crypt::GnuPG');
 
 RT->config->set(
-    'GnuPG',
+    'gnu_pg',
     {
         enable                   => 1,
         outgoing_messages_format => 'RFC',
@@ -43,7 +43,7 @@ RT->config->set(
 );
 
 RT->config->set(
-    'GnuPGOptions',
+    'gnu_pg_options',
     {
         homedir                 => $homedir,
         passphrase              => 'recipient',
@@ -51,7 +51,7 @@ RT->config->set(
         'trust-model'           => 'always',
     }
 );
-RT->config->set( 'MailPlugins' => ['Auth::MailFrom', 'Auth::GnuPG'] );
+RT->config->set( 'mail_plugins' => ['Auth::MailFrom', 'Auth::GnuPG'] );
 RT::Test->import_gnupg_key('recipient@example.com', 'public');
 RT::Test->import_gnupg_key('recipient@example.com', 'secret');
 RT::Test->import_gnupg_key('general@example.com', 'public');

@@ -120,7 +120,7 @@ with the content:
   $actions => {}
   </%ARGS>
   <%INIT>
-  my $web_path = RT->config->get('WebPath');
+  my $web_path = RT->config->get('web_path');
   
   # action that takes ticket ID as argument and returns link to the ticket
   $actions->{'link_ticket'} = sub  {

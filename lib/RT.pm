@@ -283,7 +283,7 @@ sub plugin_dirs {
     my $subdir = shift;
 
     my @res;
-#    foreach my $plugin ( grep $_, RT->config->get('Plugins') ) {
+#    foreach my $plugin ( grep $_, RT->config->get('plugins') ) {
     foreach my $plugin ( grep $_, () ) {
         my $plugindir = $plugin;
         $plugindir =~ s/::/-/g;
@@ -328,7 +328,7 @@ sub init_plugins {
     my $self    = shift;
     my @plugins;
     require RT::Plugin;
-#    foreach my $plugin (grep $_, RT->config->get('Plugins')) {
+#    foreach my $plugin (grep $_, RT->config->get('plugins')) {
     foreach my $plugin (grep $_, () ) {
         $plugin->require;
         die $UNIVERSAL::require::ERROR if ($UNIVERSAL::require::ERROR);
@@ -365,7 +365,7 @@ Jifty->web->add_javascript(
 Jifty::Web->add_trigger(
     name      => 'after_include_javascript',
     callback  => sub {
-        my $webpath = RT->config->get('WebPath') || '/';
+        my $webpath = RT->config->get('web_path') || '/';
         Jifty->web->out(
             qq{<script type="text/javascript">RT = {};RT.WebPath = '$webpath';</script>}
         );

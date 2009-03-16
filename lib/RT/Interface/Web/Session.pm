@@ -81,7 +81,7 @@ sub class {
     my $self = shift;
 
     my $class 
-        = RT->config->get('WebSessionClass')
+        = RT->config->get('web_session_class')
         || $self->backends->{ Jifty->config->framework('Database')->{'Driver'} }
         || 'Apache::Session::File';
     eval "require $class";

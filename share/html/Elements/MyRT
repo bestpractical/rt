@@ -62,7 +62,7 @@
 <%INIT>
 
 # XXX: we don't use this, but should.
-my %allowed_components = map {$_ => 1} @{RT->config->get('HomepageComponents')};
+my %allowed_components = map {$_ => 1} @{RT->config->get('homepage_components')};
 
 my $user = Jifty->web->current_user->user_object;
 $portlets ||= $session{'my_rt_portlets'};
@@ -79,7 +79,7 @@ unless( $body && @$body ) {
     $summary = undef;
 }
 $summary = undef unless $summary && @$summary;
-my $Rows = $user->preferences( 'SummaryRows', ( RT->config->get('DefaultSummaryRows') || 10 ) );
+my $Rows = $user->preferences( 'SummaryRows', ( RT->config->get('default_summary_rows') || 10 ) );
 
 my $show_cb = sub  {
     my $entry = shift;

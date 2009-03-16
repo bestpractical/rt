@@ -73,7 +73,7 @@ my @non_recipients = @{ $squelch{'emails'} };
 % }
 </ul>
 % }
-% if (RT->config->get('PreviewScripMessages')) {
+% if (RT->config->get('preview_scrip_messages')) {
 <textarea cols="80" rows="5">
 <%$scrip->scrip_action->template_obj->mime_obj->as_string%>
 </textarea>
