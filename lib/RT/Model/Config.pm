@@ -49,7 +49,6 @@ use warnings;
 use strict;
 package RT::Model::Config;
 use base qw/RT::Record/;
-use Text::Naming::Convention qw/renaming/;
 
 sub table {'Configs'}
 
@@ -84,7 +83,6 @@ sub get {
         }
     }
 
-    $name = renaming($name);
     my $config = RT::Model::Config->new;
     my ( $ret, $msg ) = $config->load_by_cols( name => $name );
     if ($ret) {
@@ -102,7 +100,6 @@ sub set {
     my $self  = shift;
     my $name  = shift;
     my $value = shift;
-    $name = renaming( $name );
 
     my $config = RT::Model::Config->new( current_user => RT->system_user );
     my ( $ret, $msg ) = $config->load_by_cols( name => $name );
@@ -116,3 +113,4 @@ sub set {
 }
 
 1;
+
