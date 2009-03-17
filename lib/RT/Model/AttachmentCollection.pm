@@ -212,7 +212,7 @@ sub limit_by_ticket {
 
 sub new_item {
     my $self = shift;
-    return RT::Model::Attachment->new;
+    return RT::Model::Attachment->new( current_user => $self->current_user );
 }
 
 
@@ -222,7 +222,7 @@ sub next {
     my $Attachment = $self->SUPER::next;
     return $Attachment unless $Attachment;
 
-    my $txn = $Attachment->transaction_obj;
+    my $txn = $Attachment->transaction;
     if ( $txn->__value('type') eq 'comment' ) {
         return $Attachment
             if $txn->current_user_has_right('ShowTicketcomments');

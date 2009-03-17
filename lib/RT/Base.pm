@@ -46,11 +46,10 @@
 #
 # END BPS TAGGED BLOCK }}}
 package RT::Base;
-use Carp         ();
-use Scalar::Util ();
 use base qw/Jifty::Object/;
 
 use strict;
+use warnings;
 
 =head1 name
 

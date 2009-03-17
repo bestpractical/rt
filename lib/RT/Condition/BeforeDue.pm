@@ -66,8 +66,8 @@ sub is_applicable {
 
     my $cur = RT::Date->new( RT->system_user );
     $cur->set_to_now();
-    my $due = $self->ticket_obj->due;
-    return (undef) if $due->epoch <= 0;
+    my $due = $self->ticket_obj->due_obj;
+    return (undef) if $due->unix <= 0;
 
     my $diff = $due->diff($cur);
     if ( $diff >= 0 and $diff <= $elapse ) {

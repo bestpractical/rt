@@ -135,7 +135,7 @@ $m->flush_buffer();
 </div>
 % }
 <%INIT>
-my $Transactions = RT::Model::TransactionCollection->new();
+my $Transactions = RT::Model::TransactionCollection->new( current_user => Jifty->web->current_user );
 if ($tickets) {
     while (my $t = $tickets->next) {
         $Transactions->limit_to_ticket($t->id);

@@ -73,7 +73,7 @@ sub _compute_possible_owners {
     );
 
     foreach my $object (@objects) {
-        my $Users = RT::Model::UserCollection->new;
+        my $Users = RT::Model::UserCollection->new( current_user => $self->current_user );
         $Users->who_have_right(
             right                 => 'OwnTicket',
             object                => $object,
@@ -100,7 +100,7 @@ sub _compute_possible_owners {
 sub _compute_possible_queues {
     my $self = shift;
 
-    my $q = RT::Model::QueueCollection->new();
+    my $q = RT::Model::QueueCollection->new( current_user => $self->current_user );
     $q->find_all_rows;
     
     my $queues;

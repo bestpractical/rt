@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <ul>
 % while ( my $GroupMember = $GroupMembers->next ) {
-%    my $Group = RT::Model::Group->new();
+%    my $Group = RT::Model::Group->new( current_user => Jifty->web->current_user );
 %    $Group->load($GroupMember->group_id) or next;
 %    if ($Group->domain eq 'UserDefined') {
 <li><a href="<%RT->config->get('WebPath')%>/Admin/Groups/Modify.html?id=<% $Group->id %>"><% $Group->name %></a></li>
@@ -57,7 +57,7 @@
 % }
 </ul>
 <%INIT>
-my $GroupMembers = RT::Model::GroupMemberCollection->new();
+my $GroupMembers = RT::Model::GroupMemberCollection->new( current_user => Jifty->web->current_user );
 $GroupMembers->limit( column => 'member_id', value => $user_object->id );
 my $alias = $GroupMembers->join(
     type => 'left',

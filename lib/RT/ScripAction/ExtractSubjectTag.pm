@@ -61,7 +61,7 @@ sub prepare {
 
 sub Commit {
     my $self            = shift;
-    my $Transaction     = $self->transaction_obj;
+    my $Transaction     = $self->transaction;
     my $FirstAttachment = $Transaction->attachments->first;
     return 1 unless ($FirstAttachment);
 

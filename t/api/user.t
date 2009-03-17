@@ -101,6 +101,10 @@ my $rootq = RT::Model::Queue->new(current_user => RT::CurrentUser->new( id => $r
 $rootq->load(1);
 ok($rootq->id, "Loaded the first queue");
 
+for my $role ( qw/owner requestor cc admin_cc/ ) {
+    $rootq->create_role_group( $role );
+}
+
 ok ($rootq->current_user->has_right(right=> 'CreateTicket', object => $rootq), "Root can create tickets");
 
 my $new_user = RT::Model::User->new(current_user => RT->system_user);

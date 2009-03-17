@@ -55,7 +55,7 @@
     else {
         abort("Corrupted attachment URL.");
     }
-     my $AttachmentObj = RT::Model::Attachment->new();
+     my $AttachmentObj = RT::Model::Attachment->new( current_user => Jifty->web->current_user );
      $AttachmentObj->load($attach) || abort("Attachment '$attach' could not be loaded");
 
 

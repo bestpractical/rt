@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % if ($lite) {
-%     my $d = RT::Model::Queue->new();
+%     my $d = RT::Model::Queue->new( current_user => Jifty->web->current_user );
 %     $d->load($default);
 <input name="<%$name%>" size="25" value="<%$d->name%>" class="<%$class%>" />
 % }
@@ -90,7 +90,7 @@ my $cache_key = "SelectQueue---"
                 . "---$check_queue_right---$show_all_queues";
 
 if (not defined $session{$cache_key} and not $lite) {
-    my $q = RT::Model::QueueCollection->new();
+    my $q = RT::Model::QueueCollection->new( current_user => Jifty->web->current_user );
     $q->find_all_rows;
     
     while (my $queue = $q->next) {

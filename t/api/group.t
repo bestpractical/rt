@@ -25,9 +25,9 @@ is($ng->id , $group->id, "Loaded the right group");
 
 ok (($id,$msg) = $ng->add_member('1'), "Added a member to the group");
 ok($id, $msg);
-ok (($id,$msg) = $ng->add_member('2' ), "Added a member to the group");
+ok (($id,$msg) = $ng->add_member('2'), "Added a member to the group");
 ok($id, $msg);
-ok (($id,$msg) = $ng->add_member('3' ), "Added a member to the group");
+ok (($id,$msg) = $ng->add_member('3'), "Added a member to the group");
 ok($id, $msg);
 
 # Group 1 now has members 1, 2 ,3
@@ -62,7 +62,7 @@ ok($id, $msg);
 # g3 now has 1, g2->{1, g1->{1,2,3}}
 
 is($group_3->has_member($principal_2), undef, "group 3 doesn't have member 2");
-ok($group_3->has_member_recursively($principal_2), "group 3 has member 2 recursively");
+ok($group_3->has_member($principal_2, recursively => 1), "group 3 has member 2 recursively");
 ok($ng->has_member($principal_2) , "group ".$ng->id." has member 2");
 my ($delid , $delmsg) =$ng->delete_member($principal_2->id);
 isnt ($delid ,0, "Sucessfully deleted it-".$delid."-".$delmsg);
@@ -78,10 +78,10 @@ isnt ($delid ,0, "Sucessfully deleted it-".$delid."-".$delmsg);
 # g3 now has  1, g2->{1, g1->{1, 3}}
 
 ok(!$ng->has_member($principal_2)  , "group ".$ng->id." no longer has member 2");
-is($group_3->has_member_recursively($principal_2), undef, "group 3 doesn't have member 2");
-is($group_2->has_member_recursively($principal_2), undef, "group 2 doesn't have member 2");
+is($group_3->has_member($principal_2, recursively => 1), undef, "group 3 doesn't have member 2");
+is($group_2->has_member($principal_2, recursively => 1), undef, "group 2 doesn't have member 2");
 is($ng->has_member($principal_2), undef, "group 1 doesn't have member 2");;
-is($group_3->has_member_recursively($principal_2), undef, "group 3 has member 2 recursively");
+is($group_3->has_member($principal_2, recursively => 1), undef, "group 3 has member 2 recursively");
 
 # }}}
 

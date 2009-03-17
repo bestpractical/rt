@@ -48,36 +48,36 @@
 <table>
   <tr>
     <td class="label date Created"><&|/l&>Created</&>:</td>
-    <td class="value date Created"><% $ticket->created %></td>
+    <td class="value date Created"><% $ticket->created_obj->as_string %></td>
   </tr>
   <tr>
     <td class="label date starts"><&|/l&>Starts</&>:</td>
-    <td class="value date starts"><% $ticket->starts %></td>
+    <td class="value date starts"><% $ticket->starts_obj->as_string %></td>
   </tr>
   <tr>
     <td class="label date started"><&|/l&>Started</&>:</td>
-    <td class="value date started"><% $ticket->started %></td>
+    <td class="value date started"><% $ticket->started_obj->as_string %></td>
   </tr>
   <tr>
     <td class="label date told"><a href="<% RT->config->get('WebPath') %>/Ticket/Display.html?id=<% $ticket->id %>&Action=SetTold"><&|/l&>Last Contact</&></a>:</td>
-    <td class="value date told"><% $ticket->told %></td>
+    <td class="value date told"><% $ticket->told_obj->as_string %></td>
   </tr>
   <tr>
     <td class="label date due"><&|/l&>Due</&>:</td>
-% my $due = $ticket->due;
-% if ( $due && $due->epoch > 0 && $due->diff < 0 ) {
-    <td class="value date due"><span class="overdue"><% $due %></span></td>
+% my $due = $ticket->due_obj;
+% if ( $due && $due->unix > 0 && $due->diff < 0 ) {
+    <td class="value date due"><span class="overdue"><% $due->as_string  %></span></td>
 % } else {
-    <td class="value date due"><% $due %></td>
+    <td class="value date due"><% $due->as_string  %></td>
 % }
   </tr>
   <tr>
     <td class="label date resolved"><&|/l&>Closed</&>:</td>
-    <td class="value date resolved"><% $ticket->resolved  %></td>
+    <td class="value date resolved"><% $ticket->resolved_obj->as_string  %></td>
   </tr>
   <tr>
     <td class="label date updated"><&|/l&>Updated</&>:</td>
-% my $UpdatedString = $ticket->last_updated ? _("%1 by %2", $ticket->last_updated, $ticket->last_updated_by_obj->name) : _("Never");
+% my $UpdatedString = $ticket->last_updated ? _("%1 by %2", $ticket->last_updated_as_string, $ticket->last_updated_by_obj->name) : _("Never");
 % if ($updated_link) {
     <td class="value date updated"><a href="#lasttrans"><% $UpdatedString | h %></a></td>
 % } else {

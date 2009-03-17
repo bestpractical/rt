@@ -182,21 +182,7 @@ sub insert_initial_data {
     # system role groups
     foreach my $name (qw(owner requestor cc admin_cc)) {
         my $group = RT::Model::Group->new( current_user => RT->system_user );
-        $group->load_system_role_group($name);
-        if ( $group->id ) {
-
-            #            push @warns, "System role '$name' already exists.";
-            next;
-        }
-
-        $group = RT::Model::Group->new( current_user => RT->system_user );
-        my ( $val, $msg ) = $group->_create(
-            type        => $name,
-            domain      => 'RT::System-Role',
-            description => 'SystemRolegroup for internal use',    # loc
-            name        => '',
-            instance    => '',
-        );
+        my ( $val, $msg ) = $group->create_role_group( object => RT->system, type => $name);
         return ( $val, $msg ) unless $val;
     }
 }
@@ -375,13 +361,13 @@ sub insert_data {
                 } elsif ( $item->{'GroupDomain'} eq 'SystemInternal' ) {
                     $princ->load_system_internal_group( $item->{'GroupType'} );
                 } elsif ( $item->{'GroupDomain'} eq 'RT::System-Role' ) {
-                    $princ->load_system_role_group( $item->{'GroupType'} );
+                    $princ->create_role_group( object => RT->system, type => $item->{'GroupType'} );
                 } elsif ( $item->{'GroupDomain'} eq 'RT::Model::Queue-Role'
                     && $item->{'queue'} )
                 {
-                    $princ->load_queue_role_group(
-                        type  => $item->{'GroupType'},
-                        queue => $object->id
+                    $princ->create_role_group(
+                        object => $object,
+                        type   => $item->{'GroupType'},
                     );
                 } else {
                     $princ->load( $item->{'group_id'} );

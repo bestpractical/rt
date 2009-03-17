@@ -50,7 +50,7 @@
 %}
 <%INIT>
 my ($Group);
-my $Groups = RT::Model::GroupCollection->new();
+my $Groups = RT::Model::GroupCollection->new( current_user => Jifty->web->current_user );
 $Groups->find_all_rows;
 </%INIT>
 <%ARGS>

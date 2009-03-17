@@ -62,7 +62,7 @@ my $cf_spec = RT::Interface::REST->custom_field_spec(1);
 my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 my %data   = %$changes;
-my $ticket = RT::Model::Ticket->new() ;
+my $ticket = RT::Model::Ticket->new( current_user => Jifty->web->current_user ) ;
 my @dates  = qw(created starts started due resolved told last_updated);
 my @people = qw(requestors cc admin_cc);
 my @create = qw(queue requestor subject cc admin_cc owner status priority

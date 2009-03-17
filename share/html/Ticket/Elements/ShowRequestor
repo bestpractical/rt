@@ -48,12 +48,12 @@
 <%PERL>
 my $rows = 10;
 my $has_right_adminusers = Jifty->web->current_user->has_right(object => RT->system, right => 'AdminUsers');
-my $people = $ticket->role_group("requestor")->user_members_obj;
+my $people = $ticket->role_group("requestor")->user_members;
 while ( my $requestor = $people->next ) {
     next if $requestor->privileged;
     my $name = $m->scomp('/Elements/ShowUser', user => $requestor);
 
-    my $tickets = RT::Model::TicketCollection->new();
+    my $tickets = RT::Model::TicketCollection->new( current_user => Jifty->web->current_user );
     $tickets->from_sql( "Requestor.id = ". $requestor->id ." AND (Status = 'open' OR Status = 'new')" );
     $tickets->rows_per_page( $rows );
     $tickets->order_by( column => 'Priority', order => 'DESC' );

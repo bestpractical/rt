@@ -72,14 +72,14 @@
 </td>
 <td valign="top">
 
-% if ($Group->members_obj->count == 0 ) {
+% if ($Group->members->count == 0 ) {
 <em><&|/l&>(No members)</&></em>
 % } else {
 <em><&|/l&>(Check box to delete)</&></em>
 <br />
 <br />
 <&|/l&>Users</&>
-% my $UserMembers = $Group->members_obj;
+% my $UserMembers = $Group->members;
 % $UserMembers->limit_to_users();
 <ul>
 % while (my $member = $UserMembers->next()) {
@@ -89,7 +89,7 @@
 </ul>
 <&|/l&>Groups</&>
 <ul>
-% my $GroupMembers = $Group->members_obj;
+% my $GroupMembers = $Group->members;
 % $GroupMembers->limit_to_groups();
 % while (my $member = $GroupMembers->next()) {
 <li><input type="checkbox" class="checkbox" name="delete_member-<%$member->member_id%>" value="1" />
@@ -107,7 +107,7 @@
 </&>
 <%INIT>
 
-my $Group = RT::Model::Group->new();
+my $Group = RT::Model::Group->new( current_user => Jifty->web->current_user );
 $Group->load($id) ;
 
 unless ($Group->id) {
@@ -135,10 +135,10 @@ foreach my $member (@add_member_users, @add_membersGroups) {
     my $principal;
 
     if ($member =~ /^Group-(\d+)$/) {
-        $principal = RT::Model::Group->new();
+        $principal = RT::Model::Group->new( current_user => Jifty->web->current_user );
         $principal->load($1);
     } elsif ($member =~ /^User-(\d+)$/) {
-        $principal = RT::Model::User->new();
+        $principal = RT::Model::User->new( current_user => Jifty->web->current_user );
         $principal->load($1);
     } else {
         next;

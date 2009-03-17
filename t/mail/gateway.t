@@ -774,7 +774,7 @@ ok( !$user->has_right( right => 'ReplyToTicket', object => $tick ), "User can't 
 
 
 my $group = RT::Model::Group->new(current_user => RT->system_user );
-ok( $group->load_queue_role_group( queue => $qid, type=> 'Owner' ), "load queue owners role group" );
+ok( $group->create_role_group( object => $queue, type=> 'owner' ), "load queue owners role group" );
 $ace = RT::Model::ACE->new(current_user => RT->system_user );
 ($ace_id, $msg) = $group->principal->grant_right( right => 'ReplyToTicket', object => $queue );
 ok( $ace_id, "Granted queue owners role group with ReplyToTicket right" );

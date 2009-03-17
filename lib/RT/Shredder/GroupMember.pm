@@ -69,7 +69,7 @@ sub __depends_on {
     my $deps = $args{'dependencies'};
     my $list = [];
 
-    my $objs = RT::Model::CachedGroupMemberCollection->new;
+    my $objs = RT::Model::CachedGroupMemberCollection->new( current_user => $self->current_user );
     $objs->limit( column => 'member_id',           value => $self->member_id );
     $objs->limit( column => 'immediate_parent', value => $self->group_id );
     push( @$list, $objs );
@@ -111,7 +111,7 @@ sub __depends_on {
             return
                 unless lc( $group->domain || '' ) eq 'rt::model::ticket-role';
 
-            return if $group->members_obj->count > 1;
+            return if $group->members->count > 1;
 
             my $group_member = $args{'base_object'};
 

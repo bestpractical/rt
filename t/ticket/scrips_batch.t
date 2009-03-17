@@ -1,11 +1,7 @@
-
-
-use RT::Test;
-use Test::More  tests => '20';
-
 use strict;
 use warnings;
 
+use RT::Test tests => 20, l10n => 1;
 use_ok('RT');
 use_ok('RT::Model::Ticket');
 

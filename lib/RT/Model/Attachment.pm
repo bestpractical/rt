@@ -176,7 +176,7 @@ sub create {
         }
 
         foreach my $part ( $Attachment->parts ) {
-            my $SubAttachment = RT::Model::Attachment->new();
+            my $SubAttachment = RT::Model::Attachment->new( current_user => $self->current_user );
             my ($id) = $SubAttachment->create(
                 transaction_id => $args{'transaction_id'},
                 parent         => $id,
@@ -235,11 +235,12 @@ Returns the transaction object asscoiated with this attachment.
 
 =cut
 
-sub transaction_obj {
+sub transaction {
     my $self = shift;
 
     unless ( $self->{_transaction_obj} ) {
-        $self->{_transaction_obj} = RT::Model::Transaction->new;
+        $self->{_transaction_obj} =
+          RT::Model::Transaction->new( current_user => $self->current_user );
         $self->{_transaction_obj}->load( $self->transaction_id );
     }
 
@@ -260,7 +261,7 @@ sub parent_obj {
     my $self = shift;
     return undef unless $self->parent;
 
-    my $parent = RT::Model::Attachment->new;
+    my $parent = RT::Model::Attachment->new( current_user => $self->current_user );
     $parent->load_by_id( $self->parent );
     return $parent;
 }
@@ -276,7 +277,7 @@ C<parent>.
 sub children {
     my $self = shift;
 
-    my $kids = RT::Model::AttachmentCollection->new;
+    my $kids = RT::Model::AttachmentCollection->new( current_user => $self->current_user );
     $kids->children_of( $self->id );
     return ($kids);
 }
@@ -357,7 +358,7 @@ Returns length of L</content> in bytes.
 sub content_length {
     my $self = shift;
 
-    return undef unless $self->transaction_obj->current_user_can_see;
+    return undef unless $self->transaction->current_user_can_see;
 
     my $len = $self->get_header('Content-Length');
     unless ( defined $len ) {
@@ -410,7 +411,7 @@ sub quote {
 
         $body =~ s/^/> /gm;
 
-        $body = '[' . $self->transaction_obj->creator_obj->name() . ' - ' . $self->transaction_obj->created . "]:\n\n" . $body . "\n\n";
+        $body = '[' . $self->transaction->creator_obj->name() . ' - ' . $self->transaction->created_as_string() . "]:\n\n" . $body . "\n\n";
 
     } else {
         $body = "[Non-text message not quoted]\n\n";
@@ -631,7 +632,7 @@ sub _split_headers {
 sub encrypt {
     my $self = shift;
 
-    my $txn = $self->transaction_obj;
+    my $txn = $self->transaction;
     return ( 0, _('Permission Denied') ) unless $txn->current_user_can_see;
     return ( 0, _('Permission Denied') )
         unless $txn->ticket_obj->current_user_has_right('ModifyTicket');
@@ -688,7 +689,7 @@ sub encrypt {
 sub decrypt {
     my $self = shift;
 
-    my $txn = $self->transaction_obj;
+    my $txn = $self->transaction;
     return ( 0, _('Permission Denied') ) unless $txn->current_user_can_see;
     return ( 0, _('Permission Denied') )
         unless $txn->ticket_obj->current_user_has_right('ModifyTicket');
@@ -736,7 +737,7 @@ sub _value {
         return ( $self->__value( $field, @_ ) );
     }
 
-    return undef unless $self->transaction_obj->current_user_can_see;
+    return undef unless $self->transaction->current_user_can_see;
     return $self->__value( $field, @_ );
 }
 

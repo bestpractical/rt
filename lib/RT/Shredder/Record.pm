@@ -136,7 +136,7 @@ sub __depends_on {
     push( @$list, $objs );
 
     # Transactions
-    $objs = RT::Model::TransactionCollection->new;
+    $objs = RT::Model::TransactionCollection->new( current_user => $self->current_user );
     $objs->limit( column => 'object_type', value => ref $self );
     $objs->limit( column => 'object_id',   value => $self->id );
     push( @$list, $objs );
@@ -155,7 +155,7 @@ sub __depends_on {
     }
 
     # ACE records
-    $objs = RT::Model::ACECollection->new;
+    $objs = RT::Model::ACECollection->new( current_user => $self->current_user );
     $objs->limit_to_object($self);
     push( @$list, $objs );
 
@@ -179,7 +179,7 @@ sub __relates {
     my $list = [];
 
     if ( $self->can('creator') ) {
-        my $obj = RT::Model::Principal->new;
+        my $obj = RT::Model::Principal->new( current_user => $self->current_user );
         $obj->load( $self->creator );
 
         if ( $obj && defined $obj->id ) {
@@ -193,7 +193,7 @@ sub __relates {
     }
 
     if ( $self->can('last_updated_by') ) {
-        my $obj = RT::Model::Principal->new;
+        my $obj = RT::Model::Principal->new( current_user => $self->current_user );
         $obj->load( $self->last_updated_by );
 
         if ( $obj && defined $obj->id ) {

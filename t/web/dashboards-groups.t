@@ -1,8 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 38;
-use RT::Test;
+use RT::Test tests => 38, l10n => 1;
 use RT::Dashboard;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -47,13 +46,13 @@ ok($ok, "added user as a member of inner $msg");
 
 ok($outer_group->has_member($inner_group->principal_id), "outer has inner");
 ok(!$outer_group->has_member($user_obj->principal_id), "outer doesn't have user directly");
-ok($outer_group->has_member_recursively($inner_group->principal_id), "outer has inner recursively");
-ok($outer_group->has_member_recursively($user_obj->principal_id), "outer has user recursively");
+ok($outer_group->has_member($inner_group->principal_id, recursively => 1), "outer has inner recursively");
+ok($outer_group->has_member($user_obj->principal_id, recursively => 1), "outer has user recursively");
 
 ok(!$inner_group->has_member($outer_group->principal_id), "inner doesn't have outer");
 ok($inner_group->has_member($user_obj->principal_id), "inner has user");
-ok(!$inner_group->has_member_recursively($outer_group->principal_id), "inner doesn't have outer, even recursively");
-ok($inner_group->has_member_recursively($user_obj->principal_id), "inner has user recursively");
+ok(!$inner_group->has_member($outer_group->principal_id, recursively => 1), "inner doesn't have outer, even recursively");
+ok($inner_group->has_member($user_obj->principal_id, recursively =>1), "inner has user recursively");
 # }}}
 
 ok $m->login(customer => 'customer'), "logged in";

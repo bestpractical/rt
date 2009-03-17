@@ -136,19 +136,19 @@ Returns a user-readable description of what this group is for and what it's name
 sub self_description {
     my $self = shift;
     if ( $self->domain eq 'ACLEquivalence' ) {
-        my $user = RT::Model::Principal->new;
+        my $user = RT::Model::Principal->new( current_user => $self->current_user );
         $user->load( $self->instance );
         return _( "user %1", $user->object->name );
     } elsif ( $self->domain eq 'UserDefined' ) {
         return _( "group '%1'", $self->name );
     } elsif ( $self->domain eq 'Personal' ) {
-        my $user = RT::Model::User->new;
+        my $user = RT::Model::User->new( current_user => $self->current_user );
         $user->load( $self->instance );
         return _( "personal group '%1' for user '%2'", $self->name, $user->name );
     } elsif ( $self->domain eq 'RT::System-Role' ) {
         return _( "system %1", $self->type );
     } elsif ( $self->domain eq 'RT::Model::Queue-Role' ) {
-        my $queue = RT::Model::Queue->new;
+        my $queue = RT::Model::Queue->new( current_user => $self->current_user );
         $queue->load( $self->instance );
         return _( "queue %1 %2", $queue->name, $self->type );
     } elsif ( $self->domain eq 'RT::Model::Ticket-Role' ) {
@@ -260,7 +260,6 @@ sub load_personal_group {
 }
 
 
-
 =head2 load_system_internal_group name
 
 Loads a Pseudo group from the database. The only argument is
@@ -280,86 +279,42 @@ sub load_system_internal_group {
 }
 
 
+=head2 load_role_group { object => OBJ, domain => DOMAIN, type => TYPE, instance => ID }
 
-=head2 load_ticket_role_group  { Ticket => TICKET_ID, type => TYPE }
+Loads a role group of an object (ticket, queue, system or other) from the database. 
+Takes the following arguments:
 
-Loads a ticket group from the database. 
+=over 4
 
-Takes a param hash with 2 parameters:
+=item type - the name of the role, such as "requestor", "cc", "admin_cc", "owner" or other.
 
-    Ticket is the TicketId we're curious about
-    type is the type of Group we're trying to load: 
-        requestor, cc, admin_cc, owner
+=item object - any object that may have roles, used to calculate domain and instance.
+
+=item domain - if object is not provided. Valid values are 'RT::Model::Ticket',
+'RT::Model::Queue' or 'RT::System'.
+
+=item instance - if object is not provided. Is the id of the ticket or queue in question.
+
+=back
 
 =cut
 
-sub load_ticket_role_group {
+sub load_role_group {
     my $self = shift;
     my %args = (
-        ticket => '0',
-        type   => undef,
+        domain   => undef,
+        instance => undef,
+        type     => undef,
         @_
     );
+    $self->_object_to_domain_instance(\%args);
+
     $self->load_by_cols(
-        domain   => 'RT::Model::Ticket-Role',
-        instance => $args{'ticket'},
-        type     => $args{'type'}
-    );
-
-    Carp::confess("AAA NO ROLE") unless $self->id;
-}
-
-
-
-=head2 load_queue_role_group  { queue => Queue_ID, type => TYPE }
-
-Loads a queue group from the database. 
-
-Takes a param hash with 2 parameters:
-
-    queue is the QueueId we're curious about
-    type is the type of Group we're trying to load: 
-        requestor, cc, admin_cc, owner
-
-=cut
-
-sub load_queue_role_group {
-    my $self = shift;
-    my %args = (
-        queue => undef,
-        type  => undef,
-        @_
-    );
-    $self->load_by_cols(
-        domain   => 'RT::Model::Queue-Role',
-        instance => $args{'queue'},
-        type     => $args{'type'}
+        domain   => $args{'domain'},
+        instance => $args{'instance'},
+        type     => $args{'type'},
     );
 }
-
-
-
-=head2 load_system_role_group  type
-
-Loads a System group from the database. 
-
-Takes a single param: type
-
-    type is the type of Group we're trying to load: 
-        requestor, cc, admin_cc, owner
-
-=cut
-
-sub load_system_role_group {
-    my $self = shift;
-    my $type = shift;
-    $self->load_by_cols(
-        domain => 'RT::System-Role',
-        type   => $type
-    );
-}
-
-
 
 =head2 create
 
@@ -400,7 +355,7 @@ sub _create {
 
     # Groups deal with principal ids, rather than user ids.
     # When creating this group, set up a principal id for it.
-    my $principal = RT::Model::Principal->new;
+    my $principal = RT::Model::Principal->new( current_user => $self->current_user );
     my ( $principal_id, $msg ) = $principal->create(
         type => 'Group',
     );
@@ -433,7 +388,7 @@ sub _create {
 
     # in the ordinary case, this would fail badly because it would recurse and add all the members of this group as
     # cached members. thankfully, we're creating the group now...so it has no members.
-    my $cgm = RT::Model::CachedGroupMember->new;
+    my $cgm = RT::Model::CachedGroupMember->new( current_user => $self->current_user );
     $cgm->create(
         group            => $self->principal,
         member           => $self->principal,
@@ -507,7 +462,7 @@ sub _createacl_equivalence_group {
 
     # We use stashuser so we don't get transactions inside transactions
     # and so we bypass all sorts of cruft we don't need
-    my $aclstash = RT::Model::GroupMember->new;
+    my $aclstash = RT::Model::GroupMember->new( current_user => $self->current_user );
     my ( $stash_id, $add_msg ) = $aclstash->_stash_user(
         group  => $self->principal,
         member => $princ
@@ -569,38 +524,63 @@ sub create_personal_group {
 
 
 
-=head2 create_role_group { domain => DOMAIN, type =>  TYPE, instance => ID }
+=head2 create_role_group { object => OBJ, domain => DOMAIN, type => TYPE, instance => ID }
 
-A helper subroutine which creates a  ticket group. (What RT 2.0 called Ticket watchers)
-type is one of ( "requestor" || "cc" || "admin_cc" || "owner") 
-domain is one of (RT::Model::Ticket-Role || RT::Model::Queue-Role || RT::System-Role)
-instance is the id of the ticket or queue in question
+A helper subroutine which creates a role group. Takes the following arguments:
 
-This routine expects to be called from {Ticket||Queue}->create_ticket_groups _inside of a transaction_
+=over 4
 
-Returns a tuple of (Id, Message).  If id is 0, the create failed
+=item type - the name of the role, such as "requestor", "cc", "admin_cc", "owner" or other.
+
+=item object - any object that may have roles, used to calculate domain and instance.
+
+=item domain - if object is not provided. Valid values are 'RT::Model::Ticket-Role',
+'RT::Model::Queue-Role' or 'RT::System-Role'
+
+=item instance - if object is not provided. Is the id of the ticket or queue in question.
+
+=back
+
+Group created if it doesn't exist, otherwise it's just loaded.
+
+Returns a tuple of (Id, Message).  If id is a false value, the create failed
 
 =cut
 
 sub create_role_group {
     my $self = shift;
     my %args = (
+        domain   => undef,
         instance => undef,
         type     => undef,
-        domain   => undef,
         @_
     );
-    unless ( $args{'type'} =~ /^(?:cc|admin_cc|requestor|owner)$/ ) {
-        return ( 0, _("Invalid Group type") );
+    $self->_object_to_domain_instance(\%args);
+
+    $self->load_by_cols(
+        domain   => $args{'domain'},
+        instance => $args{'instance'},
+        type     => $args{'type'},
+    );
+    if ( my $id = $self->id ) {
+        return ($id, "Found existing role group");
     }
 
-    return (
-        $self->_create(
-            domain             => $args{'domain'},
-            instance           => $args{'instance'},
-            type               => $args{'type'},
-        )
+    return $self->_create(
+        domain   => $args{'domain'},
+        instance => $args{'instance'},
+        type     => $args{'type'},
     );
+}
+
+sub _object_to_domain_instance {
+    my $self = shift;
+    my $args = shift;
+    my $type = shift || '-Role';
+    if ( my $obj = delete $args->{'object'} ) {
+        $args->{'domain'} = ref( $obj ) . $type;
+        $args->{'instance'} = $obj->id;
+    }
 }
 
 
@@ -671,7 +651,7 @@ sub set_disabled {
     # a member of A, will delete C as a member of A without touching
     # C as a member of B
 
-    my $cached_submembers = RT::Model::CachedGroupMemberCollection->new;
+    my $cached_submembers = RT::Model::CachedGroupMemberCollection->new( current_user => $self->current_user );
 
     $cached_submembers->limit(
         column   => 'immediate_parent',
@@ -709,48 +689,32 @@ sub disabled {
 }
 
 
-=head2 deep_members_obj
+=head2 members
 
-Returns an RT::Model::CachedGroupMemberCollection object of this group's members,
-including all members of subgroups.
-
-=cut
-
-sub deep_members_obj {
-    my $self        = shift;
-    my $members_obj = RT::Model::CachedGroupMemberCollection->new;
-
-    #If we don't have rights, don't include any results
-    # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
-    $members_obj->limit_to_members_of_group( $self->id );
-
-    return ($members_obj);
-
-}
-
-
-
-=head2 members_obj
-
-Returns an RT::Model::GroupMemberCollection object of this group's direct members.
+Returns either an L<RT::Model::GroupMemberCollection> or L<RT::Model::CachedGroupMemberCollection>
+object depending on 'recursively' argument of this group's members.
 
 =cut
 
-sub members_obj {
+sub members {
     my $self = shift;
-    my $members_obj = RT::Model::GroupMemberCollection->new( current_user => $self->current_user );
+    my %args = ( recursively => 0, @_ );
+
+    my $class = $args{'recursively'}
+        ? 'RT::Model::CachedGroupMemberCollection'
+        : 'RT::Model::GroupMemberCollection';
 
     #If we don't have rights, don't include any results
     # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
-    $members_obj->limit_to_members_of_group( $self->id );
 
-    return ($members_obj);
+    my $res = $class->new( current_user => $self->current_user );
+    $res->limit_to_members_of_group( $self->id );
 
+    return $res;
 }
 
 
-
-=head2 group_members_obj [recursively => 1]
+=head2 group_members [recursively => 1]
 
 Returns an L<RT::Model::GroupCollection> object of this group's members.
 By default returns groups including all subgroups, but
@@ -761,11 +725,11 @@ may contain as well system groups, personal and other.
 
 =cut
 
-sub group_members_obj {
+sub group_members {
     my $self = shift;
     my %args = ( recursively => 1, @_ );
 
-    my $groups = RT::Model::GroupCollection->new;
+    my $groups = RT::Model::GroupCollection->new( current_user => $self->current_user );
     my $members_table = $args{'recursively'} ? 'CachedGroupMembers' : 'GroupMembers';
 
     my $members_alias = $groups->new_alias($members_table);
@@ -790,8 +754,7 @@ sub group_members_obj {
 }
 
 
-
-=head2 user_members_obj
+=head2 user_members
 
 Returns an L<RT::Model::UserCollection> object of this group's members, by default
 returns users including all members of subgroups, but could be
@@ -799,7 +762,7 @@ changed with C<recursively> named argument.
 
 =cut
 
-sub user_members_obj {
+sub user_members {
     my $self = shift;
     my %args = ( recursively => 1, @_ );
 
@@ -808,7 +771,7 @@ sub user_members_obj {
 
     my $members_table = $args{'recursively'} ? 'CachedGroupMembers' : 'GroupMembers';
 
-    my $users         = RT::Model::UserCollection->new;
+    my $users         = RT::Model::UserCollection->new( current_user => $self->current_user );
     my $members_alias = $users->new_alias($members_table);
     $users->join(
         alias1  => $members_alias,
@@ -831,11 +794,9 @@ sub user_members_obj {
 }
 
 
-
 =head2 member_emails
 
 Returns an array of the email addresses of all of this group's members
-
 
 =cut
 
@@ -843,7 +804,7 @@ sub member_emails {
     my $self = shift;
 
     my %addresses;
-    my $members = $self->user_members_obj();
+    my $members = $self->user_members;
     while ( my $member = $members->next ) {
         $addresses{ $member->email } = 1;
     }
@@ -931,7 +892,7 @@ sub _add_member {
         Jifty->log->fatal("_add_member called with a parameter that's not an integer.");
     }
 
-    my $new_member_obj = RT::Model::Principal->new;
+    my $new_member_obj = RT::Model::Principal->new( current_user => $self->current_user );
     $new_member_obj->load($new_member);
 
     unless ( $new_member_obj->id ) {
@@ -951,14 +912,14 @@ sub _add_member {
         );
     }
     if (   $new_member_obj->is_group
-        && $new_member_obj->object->has_member_recursively( $self->principal ) )
+        && $new_member_obj->object->has_member( $self->principal, recursively => 1 ) )
     {
 
         #This group can't be made to be a member of itself
         return ( 0, _("Groups can't be members of their members") );
     }
 
-    my $member_object = RT::Model::GroupMember->new;
+    my $member_object = RT::Model::GroupMember->new( current_user => $self->current_user );
     my $id            = $member_object->create(
         member             => $new_member_obj,
         group              => $self->principal,
@@ -972,11 +933,12 @@ sub _add_member {
 }
 
 
+=head2 has_member
 
-=head2 has_member RT::Model::Principal|id
+Takes an L<RT::Model::Principal> object or its id and optional 'recursively'
+argument. Returns id of a GroupMember or CachedGroupMember record if that user
+is a member of this group. By default lookup is not recursive.
 
-Takes an L<RT::Model::Principal> object or its id returns a GroupMember id if that user is a 
-member of this group.
 Returns undef if the user isn't a member of the group or if the current
 user doesn't have permission to find out. Arguably, it should differentiate
 between ACL failure and non membership.
@@ -986,6 +948,10 @@ between ACL failure and non membership.
 sub has_member {
     my $self      = shift;
     my $principal = shift;
+    my %args      = (
+        recursively => 0,
+        @_
+    );
 
     my $id;
     if ( UNIVERSAL::isa( $principal, 'RT::Model::Principal' ) ) {
@@ -993,7 +959,6 @@ sub has_member {
     } elsif ( $principal =~ /^\d+$/ ) {
         $id = $principal;
     } else {
-        Carp::cluck;
         Jifty->log->error(
             "Group::has_member was called with an argument that"
               . " isn't an RT::Model::Principal or id. It's "
@@ -1003,10 +968,14 @@ sub has_member {
     }
     return undef unless $id;
 
-    my $member_obj = RT::Model::GroupMember->new;
+    my $class = $args{'recursively'}
+        ? 'RT::Model::CachedGroupMember'
+        : 'RT::Model::GroupMember';
+
+    my $member_obj = new $class;
     $member_obj->load_by_cols(
         member_id => $id,
-        group_id  => $self->id
+        group_id  => $self->id,
     );
 
     if ( my $member_id = $member_obj->id ) {
@@ -1015,47 +984,6 @@ sub has_member {
         return (undef);
     }
 }
-
-
-
-=head2 has_member_recursively RT::Model::Principal|id
-
-Takes an L<RT::Model::Principal> object or its id and returns true if that user is a member of 
-this group.
-Returns undef if the user isn't a member of the group or if the current
-user doesn't have permission to find out. Arguably, it should differentiate
-between ACL failure and non membership.
-
-=cut
-
-sub has_member_recursively {
-    my $self = shift;
-    my $principal = shift || '';
-
-    my $id;
-    if ( UNIVERSAL::isa( $principal, 'RT::Model::Principal' ) ) {
-        $id = $principal->id;
-    } elsif ( $principal =~ /^\d+$/ ) {
-        $id = $principal;
-    } else {
-        Jifty->log->error( "Group::has_member_recursively was called with an argument that" . " isn't an RT::Model::Principal or id. It's $principal" );
-        return (undef);
-    }
-    return undef unless $id;
-
-    my $member_obj = RT::Model::CachedGroupMember->new;
-    $member_obj->load_by_cols(
-        member_id => $id,
-        group_id  => $self->id
-    );
-
-    if ( my $member_id = $member_obj->id ) {
-        return $member_id;
-    } else {
-        return (undef);
-    }
-}
-
 
 
 =head2 delete_member PRINCIPAL_ID
@@ -1108,7 +1036,7 @@ sub _delete_member {
     my $self      = shift;
     my $member_id = shift;
 
-    my $member_obj = RT::Model::GroupMember->new;
+    my $member_obj = RT::Model::GroupMember->new( current_user => $self->current_user );
 
     $member_obj->load_by_cols(
         member_id => $member_id,
@@ -1238,7 +1166,7 @@ The response is cached. principal should never ever change.
 sub principal {
     my $self = shift;
     unless ( $self->{'principal'} && $self->{'principal'}->id ) {
-        $self->{'principal'} = RT::Model::Principal->new;
+        $self->{'principal'} = RT::Model::Principal->new( current_user => $self->current_user );
         $self->{'principal'}->load_by_cols(
             id             => $self->id,
             type => 'Group'
@@ -1273,3 +1201,4 @@ Jesse Vincent, jesse@bestpractical.com
 
 RT
 
+=cut

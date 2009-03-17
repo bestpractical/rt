@@ -109,7 +109,7 @@ sub commit {
     {
 
         # it's hacky, but we should know if we're going to crypt things
-        my $attachment = $self->transaction_obj->attachments->first;
+        my $attachment = $self->transaction->attachments->first;
 
         my %crypt;
         foreach my $argument (qw(sign encrypt)) {
@@ -154,7 +154,7 @@ sub prepare {
     my ( $result, $message ) = $self->template_obj->parse(
         argument        => $self->argument,
         ticket_obj      => $self->ticket_obj,
-        transaction_obj => $self->transaction_obj
+        transaction_obj => $self->transaction
     );
     if ( !$result ) {
         return (undef);
@@ -216,7 +216,7 @@ sub prepare {
 
     $self->add_tickets;
 
-    my $attachment = $self->transaction_obj->attachments->first;
+    my $attachment = $self->transaction->attachments->first;
     if ( $attachment
         && !( $attachment->get_header('X-RT-Encrypt') || $self->ticket_obj->queue->encrypt ) )
     {
@@ -290,14 +290,14 @@ sub send_message {
     $self->scrip_action_obj->{_Message_ID}++;
 
     Jifty->log->info( $msgid . " #" . $self->ticket_obj->id . "/" .
-            $self->transaction_obj->id . " - Scrip "
+            $self->transaction->id . " - Scrip "
             . ( '#rule' ) . " ");
 
 
     my $status = RT::Interface::Email::send_email(
         entity      => $mime_obj,
         ticket      => $self->ticket_obj,
-        transaction => $self->transaction_obj,
+        transaction => $self->transaction,
     );
 
     return $status unless ( $status > 0 || exists $self->{'Deferred'} );
@@ -342,7 +342,7 @@ sub add_attachments {
     my $attachments = RT::Model::AttachmentCollection->new( current_user => RT->system_user );
     $attachments->limit(
         column => 'transaction_id',
-        value  => $self->transaction_obj->id
+        value  => $self->transaction->id
     );
 
     # Don't attach anything blank
@@ -352,7 +352,7 @@ sub add_attachments {
     # We want to make sure that we don't include the attachment that's
     # being used as the "Content" of this message" unless that attachment's
     # content type is not like text/...
-    my $transaction_content_obj = $self->transaction_obj->content_obj;
+    my $transaction_content_obj = $self->transaction->content_obj;
 
     if (   $transaction_content_obj
         && $transaction_content_obj->content_type =~ m{text/}i )
@@ -411,7 +411,7 @@ sub add_attachment {
         Filename => defined( $attach->filename )
         ? $self->mime_encode_string( $attach->filename, RT->config->get('EmailOutputEncoding') )
         : undef,
-        'RT-Attachment:' => $self->ticket_obj->id . "/" . $self->transaction_obj->id . "/" . $attach->id,
+        'RT-Attachment:' => $self->ticket_obj->id . "/" . $self->transaction->id . "/" . $attach->id,
         Encoding         => '-SUGGEST',
     );
 }
@@ -525,12 +525,12 @@ sub record_outgoing_mail_transaction {
 
     RT::I18N::set_mime_entity_to_encoding( $mime_obj, 'utf-8', 'mime_words_ok' );
 
-    my $transaction = RT::Model::Transaction->new( current_user => $self->transaction_obj->current_user );
+    my $transaction = RT::Model::Transaction->new( current_user => $self->transaction->current_user );
 
     # XXX: TODO -> Record attachments as references to things in the attachments table, maybe.
 
     my $type;
-    if ( $self->transaction_obj->type eq 'comment' ) {
+    if ( $self->transaction->type eq 'comment' ) {
         $type = 'comment_email_record';
     } else {
         $type = 'email_record';
@@ -576,7 +576,7 @@ sub set_rt_special_headers {
 
         # Get Message-ID for this txn
         my $msgid = "";
-        if ( my $msg = $self->transaction_obj->message->first ) {
+        if ( my $msg = $self->transaction->message->first ) {
             $msgid = $msg->get_header("RT-Message-ID")
                 || $msg->get_header("Message-ID");
         }
@@ -612,7 +612,7 @@ sub set_rt_special_headers {
 
     # XXX, TODO: use /ShowUser/ShowUserEntry(or something like that) when it would be
     #            refactored into user's method.
-    if ( my $email = $self->transaction_obj->creator_obj->email ) {
+    if ( my $email = $self->transaction->creator_obj->email ) {
         $self->set_header( 'RT-Originator', $email );
     }
 
@@ -621,8 +621,8 @@ sub set_rt_special_headers {
 sub defer_digest_recipients {
     my $self = shift;
     Jifty->log->debug( "Calling SetRecipientDigests for transaction "
-          . $self->transaction_obj . ", id "
-          . $self->transaction_obj->id );
+          . $self->transaction . ", id "
+          . $self->transaction->id );
 
     # The digest attribute will be an array of notifications that need to
     # be sent for this transaction.  The array will have the following
@@ -708,7 +708,7 @@ sub defer_digest_recipients {
     else {
         Jifty->log->debug( "No recipients found for deferred delivery on "
               . "transaction #"
-              . $self->transaction_obj->id );
+              . $self->transaction->id );
     }
 }
 
@@ -719,7 +719,7 @@ sub record_deferred_recipients {
     my $txn_id = $self->{'OutgoingMailTransaction'};
     return unless $txn_id;
 
-    my $txn_obj = RT::Model::Transaction->new;
+    my $txn_obj = RT::Model::Transaction->new( current_user => $self->transaction->current_user );
     $txn_obj->load($txn_id);
     my ( $ret, $msg ) = $txn_obj->add_attribute(
         name    => 'DeferredRecipients',
@@ -770,7 +770,7 @@ sub remove_inappropriate_recipients {
 
     my $msgid = $self->template_obj->mime_obj->head->get('Message-ID');
 
-    if ( my $attachment = $self->transaction_obj->attachments->first ) {
+    if ( my $attachment = $self->transaction->attachments->first ) {
         if ( $attachment->get_header('RT-DetectedAutoGenerated') ) {
 
             # What do we want to do with this? It's probably (?) a bounce
@@ -882,7 +882,7 @@ sub set_return_address {
 
             unless ($friendly_name) {
                 $friendly_name =
-                  $self->transaction_obj->creator_obj->friendly_name;
+                  $self->transaction->creator_obj->friendly_name;
                 if ( $friendly_name =~ /^"(.*)"$/ ) {    # a quoted string
                     $friendly_name = $1;
                 }
@@ -936,7 +936,7 @@ sub set_subject {
         return ();
     }
 
-    my $message = $self->transaction_obj->attachments;
+    my $message = $self->transaction->attachments;
     $message->rows_per_page(1);
     if ( $self->{'subject'} ) {
         $subject = $self->{'subject'};
@@ -982,7 +982,7 @@ sub set_references_headers {
     my $self = shift;
     my ( @in_reply_to, @references, @msgid );
 
-    if ( my $top = $self->transaction_obj->message->first ) {
+    if ( my $top = $self->transaction->message->first ) {
         @in_reply_to = split( /\s+/m, $top->get_header('In-Reply-To') || '' );
         @references  = split( /\s+/m, $top->get_header('References')  || '' );
         @msgid       = split( /\s+/m, $top->get_header('Message-ID')  || '' );

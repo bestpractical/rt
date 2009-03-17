@@ -72,7 +72,7 @@ sub __depends_on {
 
         # delete user entry after ACL equiv group
         # in other case we will get deep recursion
-        my $objs = RT::Model::User->new;
+        my $objs = RT::Model::User->new( current_user => $self->current_user );
         $objs->load( $self->instance );
         $deps->_push_dependency(
             base_object   => $self,
@@ -91,12 +91,12 @@ sub __depends_on {
     );
 
     # Group members records
-    my $objs = RT::Model::GroupMemberCollection->new;
+    my $objs = RT::Model::GroupMemberCollection->new( current_user => $self->current_user );
     $objs->limit_to_members_of_group( $self->principal_id );
     push( @$list, $objs );
 
     # Group member records group belongs to
-    $objs = RT::Model::GroupMemberCollection->new;
+    $objs = RT::Model::GroupMemberCollection->new( current_user => $self->current_user );
     $objs->limit(
         value            => $self->principal_id,
         column           => 'member_id',
@@ -106,10 +106,10 @@ sub __depends_on {
     push( @$list, $objs );
 
     # Cached group members records
-    push( @$list, $self->deep_members_obj );
+    push( @$list, $self->members( recursively => 1 ) );
 
     # Cached group member records group belongs to
-    $objs = RT::Model::GroupMemberCollection->new;
+    $objs = RT::Model::GroupMemberCollection->new( current_user => $self->current_user );
     $objs->limit(
         value            => $self->principal_id,
         column           => 'member_id',
@@ -139,7 +139,7 @@ sub __relates {
 
     # Equivalence group id inconsistent without User
     if ( $self->domain eq 'ACLEquivalence' ) {
-        my $obj = RT::Model::User->new;
+        my $obj = RT::Model::User->new( current_user => $self->current_user );
         $obj->load( $self->instance );
         if ( $obj->id ) {
             push( @$list, $obj );

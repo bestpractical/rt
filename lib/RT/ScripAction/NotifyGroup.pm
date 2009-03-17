@@ -90,7 +90,7 @@ sub set_recipients {
         $self->_handle_argument($_);
     }
 
-    my $creator = $self->transaction_obj->creator_obj->email();
+    my $creator = $self->transaction->creator_obj->email();
     unless ($RT::NotifyActor) {
         @{ $self->{'To'} } = grep ( !/^\Q$creator\E$/, @{ $self->{'To'} } );
     }
@@ -145,7 +145,7 @@ sub __HandleGroupArgument {
     my $self = shift;
     my $obj  = shift;
 
-    my $members = $obj->user_members_obj;
+    my $members = $obj->user_members;
     while ( my $m = $members->next ) {
         $self->__handle_user_argument($m);
     }

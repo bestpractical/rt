@@ -73,9 +73,9 @@ sub describe {
 sub on_status_change {
     my ($self, $value) = @_;
 
-    $self->transaction_obj->type eq 'status' and
-    $self->transaction_obj->field eq 'status' and
-    $self->transaction_obj->new_value eq $value
+    $self->transaction->type eq 'status' and
+    $self->transaction->field eq 'status' and
+    $self->transaction->new_value eq $value
 }
 
 sub run_scrip_action {
@@ -92,7 +92,7 @@ sub run_scrip_action {
     }
 
     my $action = $ScripAction->load_action(
-        transaction_obj         => $self->transaction_obj,
+        transaction_obj         => $self->transaction,
         ticket_obj              => $self->ticket_obj,
         source_scripaction_name => $scrip_action,
         %args,

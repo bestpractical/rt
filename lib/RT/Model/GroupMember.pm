@@ -142,7 +142,7 @@ sub create {
 
     if ( $args{'member'}->is_group ) {
         my $member_object = $args{'member'}->object;
-        if ( $member_object->has_member_recursively( $args{'group'} ) ) {
+        if ( $member_object->has_member( $args{'group'}, recursively => 1 ) ) {
             Jifty->log->debug("Adding that group would create a loop");
             Jifty->handle->rollback() unless $inside_transaction;
             return (undef);
@@ -163,7 +163,7 @@ sub create {
         return (undef);
     }
 
-    my $cached_member = RT::Model::CachedGroupMember->new;
+    my $cached_member = RT::Model::CachedGroupMember->new( current_user => $self->current_user );
     my $cached_id     = $cached_member->create(
         member           => $args{'member'},
         group            => $args{'group'},
@@ -173,7 +173,7 @@ sub create {
 
     #and popuplate the CachedGroupMembers of all the groups that group is part of .
 
-    my $cgm = RT::Model::CachedGroupMemberCollection->new;
+    my $cgm = RT::Model::CachedGroupMemberCollection->new( current_user => $self->current_user );
 
     #When adding a member to a group, we need to go back
     # find things which have the current group as a member.
@@ -185,7 +185,7 @@ sub create {
         my $via       = $parent_member->id;
         my $group_id  = $parent_member->group_id;
 
-        my $other_cached_member = RT::Model::CachedGroupMember->new;
+        my $other_cached_member = RT::Model::CachedGroupMember->new( current_user => $self->current_user );
         my $other_cached_id     = $other_cached_member->create(
             member           => $args{'member'},
             group            => $parent_member->group_obj,
@@ -251,7 +251,7 @@ sub _stash_user {
         return (undef);
     }
 
-    my $cached_member = RT::Model::CachedGroupMember->new;
+    my $cached_member = RT::Model::CachedGroupMember->new( current_user => $self->current_user );
     my $cached_id     = $cached_member->create(
         member           => $args{'member'},
         group            => $args{'group'},
@@ -291,7 +291,7 @@ sub delete {
     # a member of A, will delete C as a member of A without touching
     # C as a member of B
 
-    my $cached_submembers = RT::Model::CachedGroupMemberCollection->new;
+    my $cached_submembers = RT::Model::CachedGroupMemberCollection->new( current_user => $self->current_user );
 
     $cached_submembers->limit(
         column   => 'member_id',
@@ -341,7 +341,7 @@ Returns an RT::Model::Principal object for the Principal specified by $self->pri
 sub member_obj {
     my $self = shift;
     unless ( defined( $self->{'Member_obj'} ) ) {
-        $self->{'Member_obj'} = RT::Model::Principal->new;
+        $self->{'Member_obj'} = RT::Model::Principal->new( current_user => $self->current_user );
         $self->{'Member_obj'}->load( $self->member_id ) if ( $self->member_id );
     }
     return ( $self->{'Member_obj'} );
@@ -358,7 +358,7 @@ Returns an RT::Model::Principal object for the Group specified in $self->group_i
 sub group_obj {
     my $self = shift;
     unless ( defined( $self->{'Group_obj'} ) ) {
-        $self->{'Group_obj'} = RT::Model::Principal->new;
+        $self->{'Group_obj'} = RT::Model::Principal->new( current_user => $self->current_user );
         $self->{'Group_obj'}->load( $self->group_id );
     }
     return ( $self->{'Group_obj'} );

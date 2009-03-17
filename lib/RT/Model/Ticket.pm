@@ -66,7 +66,7 @@ This module lets you manipulate RT\'s ticket object.
 =cut
 
 package RT::Model::Ticket;
-use base qw/RT::Record/;
+use base qw/RT::HasRoleGroups RT::Record/;
 
 use RT::Model::Queue;
 use RT::Model::User;
@@ -92,17 +92,21 @@ use Jifty::DBI::Record schema {
     column resolution       => max_length is 11,  type is 'int',          default is '0';
     column owner            => references RT::Model::User;
     column subject          => max_length is 200, type is 'varchar(200)', default is '';
+
     column initial_priority => max_length is 11,  type is 'int',          default is '0';
     column final_priority   => max_length is 11,  type is 'int',          default is '0';
     column priority         => max_length is 11,  type is 'int',          default is '0';
+
     column time_estimated   => max_length is 11,  type is 'int',
            default is '0', label is _( 'time estimated( in minutes )' );
     column time_worked      => max_length is 11,  type is 'int',
            default is '0', label is _( 'time worked( in minutes )' );
     column time_left        => max_length is 11,  type is 'int',
            default is '0', label is _('time left( in minutes )');
+
     column status           => max_length is 10,  type is 'varchar(10)',
            default is '', render_as 'Select';
+
     column told             => type is 'timestamp',
         filters are qw( Jifty::Filter::DateTime Jifty::DBI::Filter::DateTime),
         render_as 'DateTime',
@@ -122,8 +126,7 @@ use Jifty::DBI::Record schema {
     column resolved         => type is 'timestamp',
         filters are qw( Jifty::Filter::DateTime Jifty::DBI::Filter::DateTime),
         render_as 'DateTime',
-        label is _('Closed');
-    ;
+        label is _('Resolved');
     column disabled         => max_length is 6,   type is 'smallint',     default is '0';
 };
 use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
@@ -463,7 +466,7 @@ sub create {
 
     #If we've been handed something else, try to load the user.
     elsif ( $args{'owner'} ) {
-        $owner = RT::Model::User->new;
+        $owner = RT::Model::User->new( current_user => $self->current_user );
         $owner->load( $args{'owner'} );
         unless ( $owner->id ) {
             push @non_fatal_errors, _("Owner could not be set.") . " " . _( "User '%1' could not be found.", $args{'owner'} );
@@ -487,7 +490,7 @@ sub create {
 
     #If we haven't been handed a valid owner, make it nobody.
     unless ( defined($owner) && $owner->id ) {
-        $owner = RT::Model::User->new();
+        $owner = RT::Model::User->new( current_user => $self->current_user );
         $owner->load( RT->nobody->id );
     }
 
@@ -498,8 +501,7 @@ sub create {
     foreach my $type ( $self->roles ) {
 
         $args{$type} = [ $args{$type} ] unless ref $args{$type};
-        foreach my $watcher ( splice @{ $args{$type} } ) {
-            next unless $watcher;
+        foreach my $watcher ( grep $_, splice @{ $args{$type} } ) {
             if ( $watcher =~ /^\d+$/ ) {
                 push @{ $args{$type} }, $watcher;
             } else {
@@ -569,9 +571,9 @@ sub create {
         return ( 0, 0, _("Ticket could not be created due to an internal error") );
     }
 
-    my $create_groups_ret = $self->_create_role_groups();
-    unless ($create_groups_ret) {
-        Jifty->log->fatal( "Couldn't create ticket groups for ticket " . $self->id . ". aborting ticket creation." );
+    ((my $owner_group), $msg) = $self->create_role_group('owner');
+    unless ( $owner_group ) {
+        Jifty->log->fatal( "Aborting ticket creation because of above error." );
         Jifty->handle->rollback();
         return ( 0, 0, _("Ticket could not be created due to an internal error") );
     }
@@ -579,8 +581,8 @@ sub create {
     # Set the owner in the Groups table
     # We denormalize it into the Ticket table too because doing otherwise would
     # kill performance, bigtime. It gets kept in lockstep thanks to the magic of transactionalization
-    ( $val, $msg ) = $self->role_group("owner")->_add_member(
-        principal_id       => $owner->principal_id,
+    ( $val, $msg ) = $owner_group->_add_member(
+        principal_id => $owner->principal_id,
     ) unless $defer_owner;
 
     # {{{ Deal with setting up watchers
@@ -701,7 +703,7 @@ sub create {
             $self->__set( column => 'owner', value => $owner->id );
 
         }
-        $self->role_group("owner")->_add_member(
+        $owner_group->_add_member(
             principal_id       => $owner->principal_id,
         );
     }
@@ -752,311 +754,7 @@ sub create {
 
 
 
-=head2 _create_role_groups
-
-Create the ticket groups and links for this ticket. 
-This routine expects to be called from Ticket->create _inside of a transaction_
-
-It will create four groups for this ticket: requestor, cc, admin_cc and Owner.
-
-It will return true on success and undef on failure.
-
-
-=cut
-
 sub roles { return ( "cc", "admin_cc", "requestor" ); }
-
-sub _create_role_groups {
-    my $self = shift;
-
-    foreach my $type ( 'owner', $self->roles ) {
-        my $type_obj = RT::Model::Group->new;
-        my ( $id, $msg ) = $type_obj->create_role_group(
-            domain   => 'RT::Model::Ticket-Role',
-            instance => $self->id,
-            type     => $type
-        );
-        unless ($id) {
-            Jifty->log->error( "Couldn't create a ticket group of type '$type' for ticket " . $self->id . ": " . $msg );
-            return (undef);
-        }
-    }
-    return (1);
-
-}
-
-
-=head2 role_group("$role")
-
-A constructor which returns an RT::Model::Group object containing the owner of this ticket.
-
-=cut
-
-sub role_group {
-    my $self = shift;
-    my $role = shift;
-    my $obj  = RT::Model::Group->new;
-    $obj->load_ticket_role_group( ticket => $self->id, type => $role );
-    return ($obj);
-}
-
-
-
-=head2 add_watcher
-
-add_watcher takes a parameter hash. The keys are as follows:
-
-Type        One of requestor, cc, admin_cc
-
-prinicpal_id The RT::Model::Principal id of the user or group that's being added as a watcher
-
-email       The email address of the new watcher. If a user with this 
-            email address can't be found, a new nonprivileged user will be created.
-
-If the watcher you\'re trying to set has an RT account, set the principal_id paremeter to their User Id. Otherwise, set the email parameter to their email address.
-
-=cut
-
-sub add_watcher {
-    my $self = shift;
-    my %args = (
-        type         => undef,
-        principal_id => undef,
-        email        => undef,
-        @_
-    );
-
-    # ModifyTicket works in any case
-    return $self->_add_watcher(%args)
-        if $self->current_user_has_right('ModifyTicket');
-
-    if ( $args{'email'} ) {
-        my ($addr) = RT::EmailParser->parse_email_address( $args{'email'} );
-        return ( 0, _( "Couldn't parse address from '%1' string", $args{'email'} ) ) unless $addr;
-
-        if ( lc $self->current_user->user_object->email eq lc RT::Model::User->canonicalize_email( $addr->address ) ) {
-            $args{'principal_id'} = $self->current_user->id;
-            delete $args{'email'};
-        }
-    }
-
-    # If the watcher isn't the current user then the current user has no right
-    # bail
-    unless ( $args{'principal_id'}
-        && $self->current_user->id == $args{'principal_id'} )
-    {
-        return ( 0, _("Permission Denied") );
-    }
-
-    #  If it's an admin_cc and they don't have 'WatchAsadmin_cc', bail
-    if ( $args{'type'} eq 'admin_cc' ) {
-        unless ( $self->current_user_has_right('WatchAsadmin_cc') ) {
-            return ( 0, _('Permission Denied') );
-        }
-    }
-
-    #  If it's a requestor or cc and they don't have 'Watch', bail
-    elsif ( $args{'type'} eq 'cc' || $args{'type'} eq 'requestor' ) {
-        unless ( $self->current_user_has_right('Watch') ) {
-            return ( 0, _('Permission Denied') );
-        }
-    } else {
-        Jifty->log->warn("add_watcher got passed a bogus type");
-        return ( 0, _('Error in parameters to Ticket->add_watcher') );
-    }
-
-    return $self->_add_watcher(%args);
-}
-
-#This contains the meat of add_watcher. but can be called from a routine like
-# Create, which doesn't need the additional acl check
-sub _add_watcher {
-    my $self = shift;
-    my %args = (
-        type         => undef,
-        silent       => undef,
-        principal_id => undef,
-        email        => undef,
-        @_
-    );
-
-    my $principal = RT::Model::Principal->new;
-    if ( $args{'email'} ) {
-        my $user = RT::Model::User->new( current_user => RT->system_user );
-        my ( $pid, $msg ) = $user->load_or_create_by_email( $args{'email'} );
-        $args{'principal_id'} = $pid if $pid;
-    }
-    if ( $args{'principal_id'} ) {
-        $principal->load( $args{'principal_id'} );
-    }
-
-    # If we can't find this watcher, we need to bail.
-    unless ( $principal->id ) {
-        Jifty->log->error( "Could not load create a user with the email address '" . $args{'email'} . "' to add as a watcher for ticket " . $self->id );
-        return ( 0, _("Could not find or create that user") );
-    }
-
-    my $group = RT::Model::Group->new;
-    $group->load_ticket_role_group(
-        type   => $args{'type'},
-        ticket => $self->id
-    );
-    unless ( $group->id ) {
-        return ( 0, _("Group not found") );
-    }
-
-    if ( $group->has_member($principal) ) {
-
-        return ( 0, _( 'That principal is already a %1 for this ticket', _( $args{'type'} ) ) );
-    }
-
-    my ( $m_id, $m_msg ) = $group->_add_member(
-        principal_id       => $principal->id,
-    );
-    unless ($m_id) {
-        Jifty->log->error( "Failed to add "
-              . $principal->id
-              . " as a member of group "
-              . $group->id . ": "
-              . $m_msg );
-
-        return ( 0, _( 'Could not make that principal a %1 for this ticket', _( $args{'type'} ) ) );
-    }
-
-    unless ( $args{'silent'} ) {
-        $self->_new_transaction(
-            type      => 'AddWatcher',
-            new_value => $principal->id,
-            field     => $args{'type'}
-        );
-    }
-
-    return ( 1, _( 'Added principal as a %1 for this ticket', _( $args{'type'} ) ) );
-}
-
-
-
-=head2 delete_watcher { type => TYPE, principal_id => PRINCIPAL_ID, email => EMAIL_ADDRESS }
-
-
-Deletes a ticket watcher.  Takes two arguments:
-
-Type  (one of requestor,cc,admin_cc)
-
-and one of
-
-principal_id (an RT::Model::Principal id of the watcher you want to remove)
-    OR
-email (the email address of an existing wathcer)
-
-
-=cut
-
-sub delete_watcher {
-    my $self = shift;
-
-    my %args = (
-        type         => undef,
-        principal_id => undef,
-        email        => undef,
-        @_
-    );
-
-    unless ( $args{'principal_id'} || $args{'email'} ) {
-        return ( 0, _("No principal specified") );
-    }
-    my $principal = RT::Model::Principal->new;
-    if ( $args{'principal_id'} ) {
-
-        $principal->load( $args{'principal_id'} );
-    } else {
-        my $user = RT::Model::User->new;
-        $user->load_by_email( $args{'email'} );
-        $principal->load( $user->id );
-    }
-
-    # If we can't find this watcher, we need to bail.
-    unless ( $principal->id ) {
-        return ( 0, _("Could not find that principal") );
-    }
-
-    my $group = RT::Model::Group->new;
-    $group->load_ticket_role_group(
-        type   => $args{'type'},
-        ticket => $self->id
-    );
-    unless ( $group->id ) {
-        return ( 0, _("Group not found") );
-    }
-
-    # {{{ Check ACLS
-    #If the watcher we're trying to add is for the current user
-    if ( $self->current_user->id == $principal->id ) {
-
-        #  If it's an admin_cc and they don't have
-        #   'WatchAsadmin_cc' or 'ModifyTicket', bail
-        if ( $args{'type'} eq 'admin_cc' ) {
-            unless ( $self->current_user_has_right('ModifyTicket')
-                or $self->current_user_has_right('WatchAsadmin_cc') )
-            {
-                return ( 0, _('Permission Denied') );
-            }
-        }
-
-        #  If it's a requestor or cc and they don't have
-        #   'Watch' or 'ModifyTicket', bail
-        elsif (( $args{'type'} eq 'cc' )
-            or ( $args{'type'} eq 'requestor' ) )
-        {
-            unless ( $self->current_user_has_right('ModifyTicket')
-                or $self->current_user_has_right('Watch') )
-            {
-                return ( 0, _('Permission Denied') );
-            }
-        } else {
-            Jifty->log->warn("$self -> delete_watcher got passed a bogus type");
-            return ( 0, _('Error in parameters to Ticket->delete_watcher') );
-        }
-    }
-
-    # If the watcher isn't the current user
-    # and the current user  doesn't have 'ModifyTicket' bail
-    else {
-        unless ( $self->current_user_has_right('ModifyTicket') ) {
-            return ( 0, _("Permission Denied") );
-        }
-    }
-
-    # }}}
-
-    # see if this user is already a watcher.
-
-    unless ( $group->has_member($principal) ) {
-        return ( 0, _( 'That principal is not a %1 for this ticket', $args{'type'} ) );
-    }
-
-    my ( $m_id, $m_msg ) = $group->_delete_member( $principal->id );
-    unless ($m_id) {
-        Jifty->log->error( "Failed to delete "
-              . $principal->id
-              . " as a member of group "
-              . $group->id . ": "
-              . $m_msg );
-
-        return ( 0, _( 'Could not remove that principal as a %1 for this ticket', $args{'type'} ) );
-    }
-
-    unless ( $args{'silent'} ) {
-        $self->_new_transaction(
-            type      => 'del_watcher',
-            old_value => $principal->id,
-            field     => $args{'type'}
-        );
-    }
-
-    return ( 1, _( "%1 is no longer a %2 for this ticket.", $principal->object->name, $args{'type'} ) );
-}
-
 
 =head2 squelch_mail_to [EMAIL]
 
@@ -1108,114 +806,6 @@ sub unsquelch_mail_to {
     );
     return ( $val, $msg );
 }
-
-
-
-
-
-# a generic routine to be called by is_requesto
-
-=head2 is_watcher { type => TYPE, principal_id => PRINCIPAL_ID, email => EMAIL }
-
-Takes a param hash with the attributes type and either principal_id or email
-
-Type is one of requestor, cc, admin_cc and Owner
-
-principal_id is an RT::Model::Principal id, and email is an email address.
-
-Returns true if the specified principal (or the one corresponding to the
-specified address) is a member of the group type for this ticket.
-
-XX TODO: This should be Memoized. 
-
-=cut
-
-sub is_watcher {
-    my $self = shift;
-
-    my %args = (
-        type         => 'requestor',
-        principal_id => undef,
-        email        => undef,
-        @_
-    );
-
-    # Load the relevant group.
-    my $group = RT::Model::Group->new;
-    $group->load_ticket_role_group(
-        type   => $args{'type'},
-        ticket => $self->id
-    );
-
-    # Find the relevant principal.
-    if ( !$args{principal_id} && $args{email} ) {
-
-        # Look up the specified user.
-        my $user = RT::Model::User->new;
-        $user->load_by_email( $args{email} );
-        if ( $user->id ) {
-            $args{principal_id} = $user->principal_id;
-        } else {
-
-            # A non-existent user can't be a group member.
-            return 0;
-        }
-    }
-
-    # Ask if it has the member in question
-    return $group->has_member( $args{'principal_id'} );
-}
-
-
-
-=head2 is_requestor PRINCIPAL_ID
-  
-Takes an L<RT::Model::Principal> id.
-
-Returns true if the principal is a requestor of the current ticket.
-
-=cut
-
-sub is_requestor {
-    my $self   = shift;
-    my $person = shift;
-
-    return ( $self->is_watcher( type => 'requestor', principal_id => $person ) );
-
-}
-
-
-
-=head2 is_owner
-
-  Takes an RT::Model::User object. Returns true if that user is this ticket's owner.
-returns undef otherwise
-
-=cut
-
-sub is_owner {
-    my $self   = shift;
-    my $person = shift;
-
-    # no ACL check since this is used in acl decisions
-    # unless ($self->current_user_has_right('ShowTicket')) {
-    #    return(undef);
-    #   }
-
-    #Tickets won't yet have owners when they're being created.
-    unless ( $self->owner->id ) {
-        return (undef);
-    }
-
-    if ( $person->id == $self->owner->id ) {
-        return (1);
-    } else {
-        return (undef);
-    }
-}
-
-
-
 
 =head2 transaction_addresses
 
@@ -1274,7 +864,7 @@ sub validate_queue {
         return (1);
     }
 
-    my $queue_obj = RT::Model::Queue->new;
+    my $queue_obj = RT::Model::Queue->new( current_user => $self->current_user );
     my $id        = $queue_obj->load($value);
 
     if ($id) {
@@ -1295,7 +885,7 @@ sub set_queue {
         return ( 0, _("Permission Denied") );
     }
 
-    my $Newqueue_obj = RT::Model::Queue->new;
+    my $Newqueue_obj = RT::Model::Queue->new( current_user => $self->current_user );
     $Newqueue_obj->load($NewQueue);
 
     unless ( $Newqueue_obj->id() ) {
@@ -1369,6 +959,45 @@ sub set_queue {
 
 
 
+=head2 due_obj
+
+  Returns an RT::Date object containing this ticket's due date
+
+=cut
+
+sub due_obj {
+    my $self = shift;
+
+    my $time = RT::Date->new();
+
+    # -1 is RT::Date slang for never
+    if ( my $due = $self->due ) {
+        $time->set( format => 'sql', value => $due );
+    } else {
+        $time->set( format => 'unix', value => -1 );
+    }
+
+    return $time;
+}
+
+
+
+=head2 resolved_obj
+
+  Returns an RT::Date object of this ticket's 'resolved' time.
+
+=cut
+
+sub resolved_obj {
+    my $self = shift;
+
+    my $time = RT::Date->new();
+    $time->set( format => 'sql', value => $self->resolved );
+    return $time;
+}
+
+
+
 =head2 set_started
 
 Takes a date in ISO format or undef
@@ -1409,6 +1038,78 @@ sub set_started {
     return ( $self->_set( column => 'started', value => $time_obj->iso ) );
 
 }
+
+
+
+=head2 started_obj
+
+  Returns an RT::Date object which contains this ticket's 
+'started' time.
+
+=cut
+
+sub started_obj {
+    my $self = shift;
+
+    my $time = RT::Date->new();
+    $time->set( format => 'sql', value => $self->started );
+    return $time;
+}
+
+
+
+=head2 starts_obj
+
+  Returns an RT::Date object which contains this ticket's 
+'starts' time.
+
+=cut
+
+sub starts_obj {
+    my $self = shift;
+
+    my $time = RT::Date->new();
+    $time->set( format => 'sql', value => $self->starts );
+    return $time;
+}
+
+
+
+=head2 told_obj
+
+  Returns an RT::Date object which contains this ticket's 
+'told' time.
+
+=cut
+
+sub told_obj {
+    my $self = shift;
+
+    my $time = RT::Date->new();
+    $time->set( format => 'sql', value => $self->told );
+    return $time;
+}
+
+
+
+=head2 told_as_string
+
+A convenience method that returns told_obj->as_string
+
+TODO: This should be deprecated
+
+=cut
+
+sub told_as_string {
+    my $self = shift;
+    if ( $self->told ) {
+        return $self->told_obj->as_string();
+    } else {
+        return ("Never");
+    }
+}
+
+
 
 =head2 time_worked_as_string
 
@@ -1532,7 +1233,11 @@ sub correspond {
 
     #Set the last told date to now if this isn't mail from the requestor.
     #TODO: Note that this will wrongly ack mail from any non-requestor as a "told"
-    $self->set_told unless ( $self->is_requestor( $self->current_user->id ) );
+    $self->set_told
+      unless $self->is_watcher(
+              type         => 'requestor',
+              principal_id => $self->current_user->id,
+      );
 
     if ( $args{'dry_run'} ) {
         Jifty->handle->rollback();
@@ -1640,7 +1345,7 @@ sub _links {
         if ( $self->current_user_has_right('ShowTicket') ) {
 
             # Maybe this ticket is a merged ticket
-            my $Tickets = RT::Model::TicketCollection->new();
+            my $Tickets = RT::Model::TicketCollection->new( current_user => $self->current_user );
 
             # at least to myself
             $self->{"$field$type"}->limit(
@@ -2040,22 +1745,25 @@ sub merge_into {
     #add all of this ticket's watchers to that ticket.
     foreach my $watcher_type ( $self->roles ) {
 
-        my $people = $self->role_group($watcher_type)->members_obj;
+        my $group = $self->role_group($watcher_type);
+        if ( $group->id ) {
+            my $people = $group->members;
 
-        while ( my $watcher = $people->next ) {
+            while ( my $watcher = $people->next ) {
 
-            my ( $val, $msg ) = $MergeInto->_add_watcher(
-                type         => $watcher_type,
-                silent       => 1,
-                principal_id => $watcher->member_id
-            );
-            Jifty->log->warn($msg) unless ($val);
+                my ( $val, $msg ) = $MergeInto->_add_watcher(
+                    type         => $watcher_type,
+                    silent       => 1,
+                    principal_id => $watcher->member_id
+                );
+                Jifty->log->warn($msg) unless ($val);
+            }
         }
 
     }
 
     #find all of the tickets that were merged into this ticket.
-    my $old_mergees = RT::Model::TicketCollection->new();
+    my $old_mergees = RT::Model::TicketCollection->new( current_user => $self->current_user );
     $old_mergees->limit(
         column   => 'effective_id',
         operator => '=',
@@ -2088,7 +1796,7 @@ Returns list of tickets' ids that's been merged into this ticket.
 sub merged {
     my $self = shift;
 
-    my $mergees = RT::Model::TicketCollection->new;
+    my $mergees = RT::Model::TicketCollection->new( current_user => $self->current_user );
     $mergees->limit(
         column    => 'effective_id',
         operator => '=',
@@ -2118,7 +1826,7 @@ sub owner_obj {
     #get deep recursion. if we need ACLs here, we need
     #an equiv without ACLs
 
-    my $owner = RT::Model::User->new();
+    my $owner = RT::Model::User->new( current_user => $self->current_user );
     $owner->load( $self->__value('owner') );
 
     #Return the owner object
@@ -2163,7 +1871,7 @@ sub set_owner {
 
     my $old_owner_obj = $self->owner;
 
-    my $new_owner_obj = RT::Model::User->new;
+    my $new_owner_obj = RT::Model::User->new( current_user => $self->current_user );
     $new_owner_obj->load($NewOwner);
     unless ( $new_owner_obj->id ) {
         Jifty->handle->rollback();
@@ -2229,7 +1937,7 @@ sub set_owner {
     # Delete the owner in the owner group, then add a new one
     # TODO: is this safe? it's not how we really want the API to work
     # for most things, but it's fast.
-    my ( $del_id, $del_msg ) = $self->role_group("owner")->members_obj->first->delete();
+    my ( $del_id, $del_msg ) = $self->role_group("owner")->members->first->delete();
     unless ($del_id) {
         Jifty->handle->rollback();
         return ( 0, _("Could not change owner. %1", $del_msg ));
@@ -2315,7 +2023,7 @@ current user. Even if it's owned by another user.
 sub steal {
     my $self = shift;
 
-    if ( $self->is_owner( $self->current_user ) ) {
+    if ( $self->owner->id == $self->current_user->id ) {
         return ( 0, _("You already own this ticket") );
     } else {
         return ( $self->set_owner( $self->current_user->id, 'steal' ) );
@@ -2738,6 +2446,36 @@ sub has_right {
     );
 }
 
+sub current_user_can_modify_watchers {
+    my $self = shift;
+    my %args = (
+        action       => 'add',
+        type         => undef,
+        principal_id => undef,
+        email        => undef,
+        @_
+    );
+
+    # ModifyTicket works in any case
+    return 1 if $self->current_user_has_right('ModifyTicket');
+
+    # if it's a new user in the system then user must have ModifyTicket
+    return 0 unless $args{'principal_id'};
+    # If the watcher isn't the current user then the current user has no right
+    return 0 unless $self->current_user->id == $args{'principal_id'};
+
+    #  If it's an admin_cc and they don't have 'WatchAsadmin_cc', bail
+    if ( $args{'type'} eq 'admin_cc' ) {
+        return 0 unless $self->current_user_has_right('WatchAsadmin_cc');
+    }
+
+    #  otherwise check 'Watch'
+    else {
+        return 0 unless $self->current_user_has_right('Watch');
+    }
+    return 1;
+}
+
 
 
 =head2 reminders
@@ -2768,7 +2506,7 @@ sub reminders {
 sub transactions {
     my $self = shift;
 
-    my $transactions = RT::Model::TransactionCollection->new;
+    my $transactions = RT::Model::TransactionCollection->new( current_user => $self->current_user );
 
     #If the user has no rights, return an empty object
     if ( $self->current_user_has_right('ShowTicket') ) {
@@ -2826,14 +2564,14 @@ sub custom_field_values {
     return $self->SUPER::custom_field_values($field)
       if !$field || $field =~ /^\d+$/;
 
-    my $cf = RT::Model::CustomField->new;
+    my $cf = RT::Model::CustomField->new( current_user => $self->current_user );
     $cf->load_by_name_and_queue( name => $field, queue => $self->queue );
     unless ( $cf->id ) {
         $cf->load_by_name_and_queue( name => $field, queue => 0 );
     }
 
     # If we didn't find a valid cfid, give up.
-    return RT::Model::ObjectCustomFieldValueCollection->new()
+    return RT::Model::ObjectCustomFieldValueCollection->new( current_user => $self->current_user )
       unless $cf->id;
 
     return $self->SUPER::custom_field_values( $cf->id );

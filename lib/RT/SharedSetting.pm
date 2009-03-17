@@ -382,7 +382,7 @@ sub is_visible_to {
 
             # then any principal that is a member of the setting's group can see
             # the setting
-            return $setting_group->has_member_recursively($to_id);
+            return $setting_group->has_member( $to_id, recursively => 1 );
         }
     }
 
@@ -431,8 +431,8 @@ sub _get_object {
     }
 
     if ( $obj_type eq 'RT::Model::Group'
-        && !$object->has_member_recursively(
-            $self->current_user->principal ) )
+        && !$object->has_member(
+            $self->current_user->principal, recursively => 1 ) )
     {
         Jifty->log->debug( "Permission denied, "
               . $self->current_user->name

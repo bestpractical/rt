@@ -57,7 +57,7 @@
 
 </&>
 <%INIT>
-my $queue_obj = RT::Model::Queue->new();
+my $queue_obj = RT::Model::Queue->new( current_user => Jifty->web->current_user );
 $queue_obj->load($id);
 
 my ($title, $current_subtab);

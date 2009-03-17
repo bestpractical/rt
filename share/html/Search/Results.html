@@ -118,7 +118,7 @@ if ( !defined($rows) ) {
 
 my ($title, $ticketcount);
 $session{'i'}++;
-$session{'tickets'} = RT::Model::TicketCollection->new() ;
+$session{'tickets'} = RT::Model::TicketCollection->new( current_user => Jifty->web->current_user ) ;
 $session{'tickets'}->from_sql($query) if ($query);
 
 if ($order_by =~ /\|/) {
