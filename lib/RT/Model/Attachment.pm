@@ -259,11 +259,8 @@ has a parent, otherwise returns undef.
 
 sub parent_obj {
     my $self = shift;
-    return undef unless $self->parent;
-
-    my $parent = RT::Model::Attachment->new( current_user => $self->current_user );
-    $parent->load_by_id( $self->parent );
-    return $parent;
+    return undef unless $self->parent->id;
+    return $self->parent;
 }
 
 =head2 children
