@@ -59,6 +59,7 @@ RT::Test->import_gnupg_key('general@example.com', 'secret');
 RT::Test->import_gnupg_key('general@example.com.2', 'public');
 RT::Test->import_gnupg_key('general@example.com.2', 'secret');
 
+my $rtname = RT->config->get('rtname');
 ok(my $user = RT::Model::User->new(current_user => RT->system_user));
 ok($user->load('root'), "Loaded user 'root'");
 $user->set_email('recipient@example.com');
@@ -144,7 +145,7 @@ MAIL
     );
 
     like($attachments[0]->content, qr/Some content/, "RT's mail includes copy of ticket text");
-    like($attachments[0]->content, qr/$RT::rtname/, "RT's mail includes this instance's name");
+    like($attachments[0]->content, qr/$rtname/, "RT's mail includes this instance's name");
 }
 
 $m->get("$baseurl/Admin/Queues/Modify.html?id=$qid");
@@ -216,7 +217,7 @@ MAIL
     );
 
     like($attachments[0]->content, qr/Some other content/, "RT's mail includes copy of ticket text");
-    like($attachments[0]->content, qr/$RT::rtname/, "RT's mail includes this instance's name");
+    like($attachments[0]->content, qr/$rtname/, "RT's mail includes this instance's name");
 }
 
 $m->get("$baseurl/Admin/Queues/Modify.html?id=$qid");
@@ -289,7 +290,7 @@ MAIL
     );
 
     like($attachments[0]->content, qr/Some final\? content/, "RT's mail includes copy of ticket text");
-    like($attachments[0]->content, qr/$RT::rtname/, "RT's mail includes this instance's name");
+    like($attachments[0]->content, qr/$rtname/, "RT's mail includes this instance's name");
 }
 
 RT::Test->fetch_caught_mails;
@@ -354,7 +355,7 @@ MAIL
     );
 
     like($attachments[0]->content, qr/Thought you had me figured out didya/, "RT's mail includes copy of ticket text");
-    like($attachments[0]->content, qr/$RT::rtname/, "RT's mail includes this instance's name");
+    like($attachments[0]->content, qr/$rtname/, "RT's mail includes this instance's name");
 }
 
 sub strip_headers
