@@ -55,7 +55,7 @@ $changes => undef
 <%INIT>
 my @data;
 $format ||= 's';
-my $ticket = RT::Model::Ticket->new();
+my $ticket = RT::Model::Ticket->new( current_user => Jifty->web->current_user );
 $ticket->load($id);
 if (!$ticket->id) {
     return [ "# Ticket $id does not exist.", [], {}, 1 ];
@@ -97,7 +97,7 @@ if ($changes) {
             foreach my $nkey (@{vsplit($val)}) {
                 if ($nkey =~ /^\d+$/) {
                     my $uri = RT::URI->new();
-                    my $tick = RT::Model::Ticket->new();
+                    my $tick = RT::Model::Ticket->new( current_user => Jifty->web->current_user );
                     $tick->load($nkey);
                     if ($tick->id) {
                         $nkey = $uri->from_object($tick);

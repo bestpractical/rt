@@ -719,7 +719,7 @@ sub record_deferred_recipients {
     my $txn_id = $self->{'OutgoingMailTransaction'};
     return unless $txn_id;
 
-    my $txn_obj = RT::Model::Transaction->new;
+    my $txn_obj = RT::Model::Transaction->new( current_user => $self->transaction->current_user );
     $txn_obj->load($txn_id);
     my ( $ret, $msg ) = $txn_obj->add_attribute(
         name    => 'DeferredRecipients',

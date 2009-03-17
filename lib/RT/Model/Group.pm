@@ -136,19 +136,19 @@ Returns a user-readable description of what this group is for and what it's name
 sub self_description {
     my $self = shift;
     if ( $self->domain eq 'ACLEquivalence' ) {
-        my $user = RT::Model::Principal->new;
+        my $user = RT::Model::Principal->new( current_user => $self->current_user );
         $user->load( $self->instance );
         return _( "user %1", $user->object->name );
     } elsif ( $self->domain eq 'UserDefined' ) {
         return _( "group '%1'", $self->name );
     } elsif ( $self->domain eq 'Personal' ) {
-        my $user = RT::Model::User->new;
+        my $user = RT::Model::User->new( current_user => $self->current_user );
         $user->load( $self->instance );
         return _( "personal group '%1' for user '%2'", $self->name, $user->name );
     } elsif ( $self->domain eq 'RT::System-Role' ) {
         return _( "system %1", $self->type );
     } elsif ( $self->domain eq 'RT::Model::Queue-Role' ) {
-        my $queue = RT::Model::Queue->new;
+        my $queue = RT::Model::Queue->new( current_user => $self->current_user );
         $queue->load( $self->instance );
         return _( "queue %1 %2", $queue->name, $self->type );
     } elsif ( $self->domain eq 'RT::Model::Ticket-Role' ) {
@@ -355,7 +355,7 @@ sub _create {
 
     # Groups deal with principal ids, rather than user ids.
     # When creating this group, set up a principal id for it.
-    my $principal = RT::Model::Principal->new;
+    my $principal = RT::Model::Principal->new( current_user => $self->current_user );
     my ( $principal_id, $msg ) = $principal->create(
         type => 'Group',
     );
@@ -388,7 +388,7 @@ sub _create {
 
     # in the ordinary case, this would fail badly because it would recurse and add all the members of this group as
     # cached members. thankfully, we're creating the group now...so it has no members.
-    my $cgm = RT::Model::CachedGroupMember->new;
+    my $cgm = RT::Model::CachedGroupMember->new( current_user => $self->current_user );
     $cgm->create(
         group            => $self->principal,
         member           => $self->principal,
@@ -462,7 +462,7 @@ sub _createacl_equivalence_group {
 
     # We use stashuser so we don't get transactions inside transactions
     # and so we bypass all sorts of cruft we don't need
-    my $aclstash = RT::Model::GroupMember->new;
+    my $aclstash = RT::Model::GroupMember->new( current_user => $self->current_user );
     my ( $stash_id, $add_msg ) = $aclstash->_stash_user(
         group  => $self->principal,
         member => $princ
@@ -651,7 +651,7 @@ sub set_disabled {
     # a member of A, will delete C as a member of A without touching
     # C as a member of B
 
-    my $cached_submembers = RT::Model::CachedGroupMemberCollection->new;
+    my $cached_submembers = RT::Model::CachedGroupMemberCollection->new( current_user => $self->current_user );
 
     $cached_submembers->limit(
         column   => 'immediate_parent',
@@ -729,7 +729,7 @@ sub group_members {
     my $self = shift;
     my %args = ( recursively => 1, @_ );
 
-    my $groups = RT::Model::GroupCollection->new;
+    my $groups = RT::Model::GroupCollection->new( current_user => $self->current_user );
     my $members_table = $args{'recursively'} ? 'CachedGroupMembers' : 'GroupMembers';
 
     my $members_alias = $groups->new_alias($members_table);
@@ -771,7 +771,7 @@ sub user_members {
 
     my $members_table = $args{'recursively'} ? 'CachedGroupMembers' : 'GroupMembers';
 
-    my $users         = RT::Model::UserCollection->new;
+    my $users         = RT::Model::UserCollection->new( current_user => $self->current_user );
     my $members_alias = $users->new_alias($members_table);
     $users->join(
         alias1  => $members_alias,
@@ -892,7 +892,7 @@ sub _add_member {
         Jifty->log->fatal("_add_member called with a parameter that's not an integer.");
     }
 
-    my $new_member_obj = RT::Model::Principal->new;
+    my $new_member_obj = RT::Model::Principal->new( current_user => $self->current_user );
     $new_member_obj->load($new_member);
 
     unless ( $new_member_obj->id ) {
@@ -919,7 +919,7 @@ sub _add_member {
         return ( 0, _("Groups can't be members of their members") );
     }
 
-    my $member_object = RT::Model::GroupMember->new;
+    my $member_object = RT::Model::GroupMember->new( current_user => $self->current_user );
     my $id            = $member_object->create(
         member             => $new_member_obj,
         group              => $self->principal,
@@ -1036,7 +1036,7 @@ sub _delete_member {
     my $self      = shift;
     my $member_id = shift;
 
-    my $member_obj = RT::Model::GroupMember->new;
+    my $member_obj = RT::Model::GroupMember->new( current_user => $self->current_user );
 
     $member_obj->load_by_cols(
         member_id => $member_id,
@@ -1166,7 +1166,7 @@ The response is cached. principal should never ever change.
 sub principal {
     my $self = shift;
     unless ( $self->{'principal'} && $self->{'principal'}->id ) {
-        $self->{'principal'} = RT::Model::Principal->new;
+        $self->{'principal'} = RT::Model::Principal->new( current_user => $self->current_user );
         $self->{'principal'}->load_by_cols(
             id             => $self->id,
             type => 'Group'

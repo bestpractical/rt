@@ -813,7 +813,7 @@ sub _watcher_limit {
     # search by id and name at the same time, this is workaround
     # to preserve backward compatibility
     if ( lc $field eq 'owner' && !$rest{subkey} && $op =~ /^!?=$/ ) {
-        my $o = RT::Model::User->new;
+        my $o = RT::Model::User->new( current_user => $self->current_user );
         $o->load($value);
         $self->_sql_limit(
             column   => 'owner',
@@ -856,7 +856,7 @@ sub _watcher_limit {
         # "X = 'Y'" matches more then one user so we try to fetch two records and
         # do the right thing when there is only one exist and semi-working solution
         # otherwise.
-        my $users_obj = RT::Model::UserCollection->new;
+        my $users_obj = RT::Model::UserCollection->new( current_user => $self->current_user );
         $users_obj->limit(
             column   => $rest{subkey},
             operator => $op,
@@ -1206,7 +1206,7 @@ sub _custom_field_decipher {
 
     my $cf;
     if ($queue) {
-        my $q = RT::Model::Queue->new;
+        my $q = RT::Model::Queue->new( current_user => $self->current_user );
         $q->load($queue);
 
         if ( $q->id ) {
@@ -1693,7 +1693,7 @@ sub limit_queue {
 
     #TODO  value should also take queue objects
     if ( defined $args{'value'} && $args{'value'} !~ /^\d+$/ ) {
-        my $queue = RT::Model::Queue->new();
+        my $queue = RT::Model::Queue->new( current_user => $self->current_user );
         $queue->load( $args{'value'} );
         $args{'value'} = $queue->id;
     }

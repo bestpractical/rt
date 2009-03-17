@@ -176,7 +176,7 @@ sub create {
         }
 
         foreach my $part ( $Attachment->parts ) {
-            my $SubAttachment = RT::Model::Attachment->new();
+            my $SubAttachment = RT::Model::Attachment->new( current_user => $self->current_user );
             my ($id) = $SubAttachment->create(
                 transaction_id => $args{'transaction_id'},
                 parent         => $id,
@@ -239,7 +239,8 @@ sub transaction {
     my $self = shift;
 
     unless ( $self->{_transaction_obj} ) {
-        $self->{_transaction_obj} = RT::Model::Transaction->new;
+        $self->{_transaction_obj} =
+          RT::Model::Transaction->new( current_user => $self->current_user );
         $self->{_transaction_obj}->load( $self->transaction_id );
     }
 
@@ -260,7 +261,7 @@ sub parent_obj {
     my $self = shift;
     return undef unless $self->parent;
 
-    my $parent = RT::Model::Attachment->new;
+    my $parent = RT::Model::Attachment->new( current_user => $self->current_user );
     $parent->load_by_id( $self->parent );
     return $parent;
 }
@@ -276,7 +277,7 @@ C<parent>.
 sub children {
     my $self = shift;
 
-    my $kids = RT::Model::AttachmentCollection->new;
+    my $kids = RT::Model::AttachmentCollection->new( current_user => $self->current_user );
     $kids->children_of( $self->id );
     return ($kids);
 }

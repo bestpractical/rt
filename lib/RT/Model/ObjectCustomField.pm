@@ -85,7 +85,7 @@ sub create {
 
     #XXX: Where is ACL check for 'AssignCustomFields'?
 
-    my $objectCFs = RT::Model::ObjectCustomFieldCollection->new;
+    my $objectCFs = RT::Model::ObjectCustomFieldCollection->new( current_user => $self->current_user );
     $objectCFs->limit_to_object_id( $args{'object_id'} );
     $objectCFs->limit_to_custom_field( $cf->id );
     $objectCFs->limit_to_lookup_type( $cf->lookup_type );
@@ -116,7 +116,7 @@ sub create {
 sub delete {
     my $self = shift;
 
-    my $objectCFs = RT::Model::ObjectCustomFieldCollection->new;
+    my $objectCFs = RT::Model::ObjectCustomFieldCollection->new( current_user => $self->current_user );
     $objectCFs->limit_to_object_id( $self->object_id );
     $objectCFs->limit_to_lookup_type( $self->custom_field_obj->lookup_type );
 
@@ -134,7 +134,7 @@ sub delete {
 sub custom_field_obj {
     my $self = shift;
     my $id   = shift || $self->custom_field;
-    my $CF   = RT::Model::CustomField->new;
+    my $CF   = RT::Model::CustomField->new( current_user => $self->current_user );
     $CF->load($id);
     return $CF;
 }

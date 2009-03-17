@@ -66,13 +66,13 @@
 <%INIT>
 
 
-my $PrimaryTemplates = RT::Model::TemplateCollection->new();
+my $PrimaryTemplates = RT::Model::TemplateCollection->new( current_user => Jifty->web->current_user );
 if ($queue != 0) {
 $PrimaryTemplates->limit_to_queue($queue);
 $PrimaryTemplates->order_by(column => 'name');
 }
 
-my $OtherTemplates = RT::Model::TemplateCollection->new();
+my $OtherTemplates = RT::Model::TemplateCollection->new( current_user => Jifty->web->current_user );
 $OtherTemplates->limit_to_global($default_queue);
 $OtherTemplates->order_by(column => 'name');
 

@@ -50,7 +50,7 @@
 # $user is an RT::Model::User object
 # $address is Email::Address object
 if ( !$user && $address ) {
-    $user = RT::Model::User->new;
+    $user = RT::Model::User->new( current_user => Jifty->web->current_user );
     $user->load_by_email( $address->address );
     unless ( $user->id ) {
         $m->comp( '/Elements/ShowUserVerbose', address => $address );
