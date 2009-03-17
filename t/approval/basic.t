@@ -8,7 +8,7 @@ BEGIN {
         or plan skip_all => 'require Email::Abstract and Test::Email';
 }
 
-plan tests => 37;
+plan tests => 32;
 
 use RT;
 use RT::Test;
@@ -87,14 +87,14 @@ mail_ok {
         $t->create(subject => "PO for stationary",
                    owner => "root", requestor => $users{minion}->email,
                    queue => $q->id);
-} { from => qr/RT System/,
-    to => 'cfo@company.com',
-    subject => qr/New Pending Approval: CFO Approval/,
-    body => qr/pending your approval.*Your approval is requested.*Blah/s
-},{ from => qr/PO via RT/,
+} { from => qr/PO via RT/,
     to => 'minion@company.com',
     subject => qr/PO for stationary/,
     body => qr/automatically generated in response/
+},{ from => qr/RT System/,
+    to => 'cfo@company.com',
+    subject => qr/New Pending Approval: CFO Approval/,
+    body => qr/pending your approval.*Your approval is requested.*Blah/s
 };
 
 ok ($tid,$tmsg);
