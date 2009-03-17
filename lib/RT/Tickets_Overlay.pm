@@ -2849,6 +2849,7 @@ sub CurrentUserCanSee {
 
     my $id = $self->CurrentUser->id;
 
+    # directly can see in all queues then we have nothing to do
     my @direct_queues = $self->_DirectlyCanSeeIn;
     return $self->{'_sql_current_user_can_see_applied'} = 1
         if @direct_queues && $direct_queues[0] == -1;
@@ -2865,6 +2866,38 @@ sub CurrentUserCanSee {
             } else {
                 delete $roles{ $role };
             }
+        }
+    }
+
+# there is no global watchers, only queues and tickes, if at
+# some point we will add global roles then it's gonna blow
+# the idea here is that if the right is set globaly for a role
+# and user plays this role for a queue directly not a ticket
+# then we have to check in advance
+    if ( my @tmp = grep $_ ne 'Owner' && !ref $roles{ $_ }, keys %roles ) {
+
+        my $groups = RT::Groups->new( $RT::SystemUser );
+        $groups->Limit( FIELD => 'Domain', VALUE => 'RT::Queue-Role' );
+        foreach ( @tmp ) {
+            $groups->Limit( FIELD => 'Type', VALUE => $_ );
+        }
+        my $principal_alias = $groups->Join(
+            ALIAS1 => 'main',
+            FIELD1 => 'id',
+            TABLE2 => 'Principals',
+            FIELD2 => 'id',
+        );
+        $groups->Limit( ALIAS => $principal_alias, FIELD => 'Disabled', VALUE => 0 );
+        my $cgm_alias = $groups->Join(
+            ALIAS1 => 'main',
+            FIELD1 => 'id',
+            TABLE2 => 'CachedGroupMembers',
+            FIELD2 => 'GroupId',
+        );
+        $groups->Limit( ALIAS => $cgm_alias, FIELD => 'MemberId', VALUE => $id );
+        $groups->Limit( ALIAS => $cgm_alias, FIELD => 'Disabled', VALUE => 0 );
+        while ( my $group = $groups->Next ) {
+            push @direct_queues, $group->Instance;
         }
     }
 
