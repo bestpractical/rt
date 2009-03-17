@@ -217,7 +217,7 @@ sub create {
 
     # Groups deal with principal ids, rather than user ids.
     # When creating this user, set up a principal id for it.
-    my $principal    = RT::Model::Principal->new;
+    my $principal    = RT::Model::Principal->new( current_user => $self->current_user );
     my $principal_id = $principal->create(
         type => 'User',
         disabled       => $args{'disabled'},
@@ -244,7 +244,7 @@ sub create {
         return ( 0, _('Could not create user') );
     }
 
-    my $aclstash = RT::Model::Group->new;
+    my $aclstash = RT::Model::Group->new( current_user => $self->current_user );
     my $stash_id = $aclstash->_createacl_equivalence_group($principal);
 
     unless ($stash_id) {
@@ -253,7 +253,7 @@ sub create {
         return ( 0, _('Could not create user') );
     }
 
-    my $everyone = RT::Model::Group->new;
+    my $everyone = RT::Model::Group->new( current_user => $self->current_user );
     $everyone->load_system_internal_group('Everyone');
     unless ( $everyone->id ) {
         Jifty->log->fatal("Could not load Everyone group on user creation.");
@@ -271,7 +271,7 @@ sub create {
         return ( 0, _('Could not create user') );
     }
 
-    my $access_class = RT::Model::Group->new;
+    my $access_class = RT::Model::Group->new( current_user => $self->current_user );
     if ($privileged) {
         $access_class->load_system_internal_group('privileged');
     } else {
@@ -328,7 +328,7 @@ sub set_privileged {
     {
         return ( 0, _('No permission to create users') );
     }
-    my $priv = RT::Model::Group->new;
+    my $priv = RT::Model::Group->new( current_user => $self->current_user );
     $priv->load_system_internal_group('privileged');
 
     unless ( $priv->id ) {
@@ -336,7 +336,7 @@ sub set_privileged {
         return ( 0, _("Failed to find 'privileged' users pseudogroup.") );
     }
 
-    my $unpriv = RT::Model::Group->new;
+    my $unpriv = RT::Model::Group->new( current_user => $self->current_user );
     $unpriv->load_system_internal_group('Unprivileged');
     unless ( $unpriv->id ) {
         Jifty->log->fatal("Could not find unprivileged pseudogroup");
@@ -401,7 +401,7 @@ Returns true if this user is privileged. Returns undef otherwise.
 
 sub privileged {
     my $self = shift;
-    my $priv = RT::Model::Group->new;
+    my $priv = RT::Model::Group->new( current_user => $self->current_user );
     $priv->load_system_internal_group('privileged');
     if ( $priv->has_member( $self->principal ) ) {
         return (1);
@@ -458,7 +458,7 @@ sub _bootstrap_create {
         return ( 0, 'Could not create user' );    #never loc this
     }
 
-    my $aclstash = RT::Model::Group->new;
+    my $aclstash = RT::Model::Group->new( current_user => $self->current_user );
 
     my $stash_id = $aclstash->_createacl_equivalence_group($principal);
 
@@ -910,7 +910,7 @@ sub principal {
         return undef;
     }
 
-    my $obj = RT::Model::Principal->new;
+    my $obj = RT::Model::Principal->new( current_user => $self->current_user );
     $obj->load_by_id( $self->id );
     unless ( $obj->id ) {
         Jifty->log->fatal( 'No principal for user #' . $self->id );
@@ -958,7 +958,7 @@ sub has_group_right {
     );
 
     if ( defined $args{'group'} ) {
-        $args{'group_obj'} = RT::Model::Group->new;
+        $args{'group_obj'} = RT::Model::Group->new( current_user => $self->current_user );
         $args{'group_obj'}->load( $args{'group'} );
     }
 
@@ -986,7 +986,7 @@ user is a member.
 
 sub own_groups {
     my $self   = shift;
-    my $groups = RT::Model::GroupCollection->new;
+    my $groups = RT::Model::GroupCollection->new( current_user => $self->current_user );
     $groups->limit_to_user_defined_groups;
     $groups->with_member(
         principal_id => $self->id,
@@ -1103,7 +1103,7 @@ sub preferences {
     my $name    = _prefname(shift);
     my $default = shift;
 
-    my $attr = RT::Model::Attribute->new;
+    my $attr = RT::Model::Attribute->new( current_user => $self->current_user );
     $attr->load_by_name_and_object( object => $self, name => $name );
 
     my $content = $attr->id ? $attr->content : undef;
@@ -1136,7 +1136,7 @@ sub set_preferences {
     return ( 0, _("No permission to set preferences") )
       unless $self->current_user_can_modify('Preferences');
 
-    my $attr = RT::Model::Attribute->new;
+    my $attr = RT::Model::Attribute->new( current_user => $self->current_user );
     $attr->load_by_name_and_object( object => $self, name => $name );
     if ( $attr->id ) {
         return $attr->set_content($value);
@@ -1162,7 +1162,7 @@ sub watched_queues {
 
     Jifty->log->debug( 'WatcheQueues got user ' . $self->name );
 
-    my $watched_queues = RT::Model::QueueCollection->new;
+    my $watched_queues = RT::Model::QueueCollection->new( current_user => $self->current_user );
 
     my $group_alias = $watched_queues->join(
         alias1  => 'main',

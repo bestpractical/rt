@@ -61,7 +61,7 @@ while( my($k, $v) = each %ARGS ) {
     last;
 }
 $m->abort unless $CustomField;
-my $CustomFieldObj = RT::Model::CustomField->new();
+my $CustomFieldObj = RT::Model::CustomField->new( current_user => Jifty->web->current_user );
 $CustomFieldObj->load( $CustomField );
 my $values = $CustomFieldObj->values;
 $values->limit(

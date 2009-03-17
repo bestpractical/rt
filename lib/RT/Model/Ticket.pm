@@ -126,8 +126,7 @@ use Jifty::DBI::Record schema {
     column resolved         => type is 'timestamp',
         filters are qw( Jifty::Filter::DateTime Jifty::DBI::Filter::DateTime),
         render_as 'DateTime',
-        label is _('Closed');
-
+        label is _('Resolved');
     column disabled         => max_length is 6,   type is 'smallint',     default is '0';
 };
 use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
@@ -467,7 +466,7 @@ sub create {
 
     #If we've been handed something else, try to load the user.
     elsif ( $args{'owner'} ) {
-        $owner = RT::Model::User->new;
+        $owner = RT::Model::User->new( current_user => $self->current_user );
         $owner->load( $args{'owner'} );
         unless ( $owner->id ) {
             push @non_fatal_errors, _("Owner could not be set.") . " " . _( "User '%1' could not be found.", $args{'owner'} );
@@ -491,7 +490,7 @@ sub create {
 
     #If we haven't been handed a valid owner, make it nobody.
     unless ( defined($owner) && $owner->id ) {
-        $owner = RT::Model::User->new();
+        $owner = RT::Model::User->new( current_user => $self->current_user );
         $owner->load( RT->nobody->id );
     }
 
@@ -865,7 +864,7 @@ sub validate_queue {
         return (1);
     }
 
-    my $queue_obj = RT::Model::Queue->new;
+    my $queue_obj = RT::Model::Queue->new( current_user => $self->current_user );
     my $id        = $queue_obj->load($value);
 
     if ($id) {
@@ -886,7 +885,7 @@ sub set_queue {
         return ( 0, _("Permission Denied") );
     }
 
-    my $Newqueue_obj = RT::Model::Queue->new;
+    my $Newqueue_obj = RT::Model::Queue->new( current_user => $self->current_user );
     $Newqueue_obj->load($NewQueue);
 
     unless ( $Newqueue_obj->id() ) {
@@ -1235,7 +1234,7 @@ sub _links {
         if ( $self->current_user_has_right('ShowTicket') ) {
 
             # Maybe this ticket is a merged ticket
-            my $Tickets = RT::Model::TicketCollection->new();
+            my $Tickets = RT::Model::TicketCollection->new( current_user => $self->current_user );
 
             # at least to myself
             $self->{"$field$type"}->limit(
@@ -1635,22 +1634,25 @@ sub merge_into {
     #add all of this ticket's watchers to that ticket.
     foreach my $watcher_type ( $self->roles ) {
 
-        my $people = $self->role_group($watcher_type)->members;
+        my $group = $self->role_group($watcher_type);
+        if ( $group->id ) {
+            my $people = $group->members;
 
-        while ( my $watcher = $people->next ) {
+            while ( my $watcher = $people->next ) {
 
-            my ( $val, $msg ) = $MergeInto->_add_watcher(
-                type         => $watcher_type,
-                silent       => 1,
-                principal_id => $watcher->member_id
-            );
-            Jifty->log->warn($msg) unless ($val);
+                my ( $val, $msg ) = $MergeInto->_add_watcher(
+                    type         => $watcher_type,
+                    silent       => 1,
+                    principal_id => $watcher->member_id
+                );
+                Jifty->log->warn($msg) unless ($val);
+            }
         }
 
     }
 
     #find all of the tickets that were merged into this ticket.
-    my $old_mergees = RT::Model::TicketCollection->new();
+    my $old_mergees = RT::Model::TicketCollection->new( current_user => $self->current_user );
     $old_mergees->limit(
         column   => 'effective_id',
         operator => '=',
@@ -1683,7 +1685,7 @@ Returns list of tickets' ids that's been merged into this ticket.
 sub merged {
     my $self = shift;
 
-    my $mergees = RT::Model::TicketCollection->new;
+    my $mergees = RT::Model::TicketCollection->new( current_user => $self->current_user );
     $mergees->limit(
         column    => 'effective_id',
         operator => '=',
@@ -1713,7 +1715,7 @@ sub owner_obj {
     #get deep recursion. if we need ACLs here, we need
     #an equiv without ACLs
 
-    my $owner = RT::Model::User->new();
+    my $owner = RT::Model::User->new( current_user => $self->current_user );
     $owner->load( $self->__value('owner') );
 
     #Return the owner object
@@ -1758,7 +1760,7 @@ sub set_owner {
 
     my $old_owner_obj = $self->owner;
 
-    my $new_owner_obj = RT::Model::User->new;
+    my $new_owner_obj = RT::Model::User->new( current_user => $self->current_user );
     $new_owner_obj->load($NewOwner);
     unless ( $new_owner_obj->id ) {
         Jifty->handle->rollback();
@@ -2389,7 +2391,7 @@ sub reminders {
 sub transactions {
     my $self = shift;
 
-    my $transactions = RT::Model::TransactionCollection->new;
+    my $transactions = RT::Model::TransactionCollection->new( current_user => $self->current_user );
 
     #If the user has no rights, return an empty object
     if ( $self->current_user_has_right('ShowTicket') ) {
@@ -2447,14 +2449,14 @@ sub custom_field_values {
     return $self->SUPER::custom_field_values($field)
       if !$field || $field =~ /^\d+$/;
 
-    my $cf = RT::Model::CustomField->new;
+    my $cf = RT::Model::CustomField->new( current_user => $self->current_user );
     $cf->load_by_name_and_queue( name => $field, queue => $self->queue );
     unless ( $cf->id ) {
         $cf->load_by_name_and_queue( name => $field, queue => 0 );
     }
 
     # If we didn't find a valid cfid, give up.
-    return RT::Model::ObjectCustomFieldValueCollection->new()
+    return RT::Model::ObjectCustomFieldValueCollection->new( current_user => $self->current_user )
       unless $cf->id;
 
     return $self->SUPER::custom_field_values( $cf->id );

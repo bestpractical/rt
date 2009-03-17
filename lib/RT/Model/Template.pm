@@ -518,7 +518,7 @@ sub check_delete_rights {
 sub queue_obj {
     require Carp; Carp::confess("deprecated");
     my $self = shift;
-    my $q    = RT::Model::Queue->new;
+    my $q    = RT::Model::Queue->new( current_user => $self->current_user );
     $q->load( $self->__value('queue') );
     return $q;
 }

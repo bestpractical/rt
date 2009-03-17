@@ -56,6 +56,6 @@
 %   }
 
 <%init>
-my $CustomFields = RT::Model::CustomFieldCollection->new();
+my $CustomFields = RT::Model::CustomFieldCollection->new( current_user => Jifty->web->current_user );
 $CustomFields->limit_to_global();
 </%INIT>

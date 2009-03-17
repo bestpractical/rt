@@ -253,7 +253,7 @@ my $queue = $ARGS{queue};
 
 my $cloneticket_obj;
 if ( $clone_ticket ) {
-    $cloneticket_obj = RT::Model::Ticket->new();
+    $cloneticket_obj = RT::Model::Ticket->new( current_user => Jifty->web->current_user );
     $cloneticket_obj->load($clone_ticket) or abort(_("Ticket could not be loaded"));
     
     my $clone = {
@@ -323,7 +323,7 @@ if ( $clone_ticket ) {
         }
 }
 my @results;
-my $queue_obj = RT::Model::Queue->new();
+my $queue_obj = RT::Model::Queue->new( current_user => Jifty->web->current_user );
 $queue_obj->load($queue) || abort(_("Queue could not be loaded."));
 
 $m->callback( queue_obj => $queue_obj, args_ref => \%ARGS );

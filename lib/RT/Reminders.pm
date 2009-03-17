@@ -124,7 +124,6 @@ sub add {
         type      => 'reminder',
         queue     => $self->ticket_obj->queue,
     );
-    Jifty->log->error( $reminder->id, 'ididid' );
     $self->ticket_obj->_new_transaction(
         type      => 'AddReminder',
         field     => 'RT::Model::Ticket',

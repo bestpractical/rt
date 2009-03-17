@@ -171,7 +171,7 @@ sub set_recipients {
             if $skip;
 
         # merge mandatory
-        @{ $recipients{ $type } } = grep defined && length, @{ delete $recipients{ "mandatory_$type" } };
+        push @{ $recipients{ $type } }, grep defined && length, @{ delete $recipients{ "mandatory_$type" } };
 
         # skip duplicates
         @{ $recipients{ $type } } = grep !$seen{ lc $_ }++, @{ $recipients{ $type } };
@@ -191,7 +191,7 @@ sub set_recipients {
 
 }
 
-my $re_entry = qr{(?:(ticket|queue)\s+)?([^,])+?(?:\s+as\s+(to|cc|bcc))?}i;
+my $re_entry = qr{(?:(ticket|queue)\s+)?([^,]+?)(?:\s+as\s+(to|cc|bcc))?}i;
 
 sub parse_argument {
     my $self = shift;

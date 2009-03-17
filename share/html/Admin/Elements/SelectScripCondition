@@ -58,7 +58,7 @@
 </select>
 
 <%INIT>
-my $scrip_conditions = RT::Model::ScripConditionCollection->new();
+my $scrip_conditions = RT::Model::ScripConditionCollection->new( current_user => Jifty->web->current_user );
 $scrip_conditions->find_all_rows;
 $scrip_conditions->order_by(column => 'name');
 

@@ -381,9 +381,9 @@ sub create_ticket {
 
     my (@Actions);
 
-    my $Ticket = RT::Model::Ticket->new();
+    my $Ticket = RT::Model::Ticket->new( current_user => Jifty->web->current_user );
 
-    my $Queue = RT::Model::Queue->new();
+    my $Queue = RT::Model::Queue->new( current_user => Jifty->web->current_user );
     unless ( $Queue->load( $ARGS{'queue'} ) ) {
         abort('Queue not found');
     }
@@ -489,7 +489,7 @@ sub create_ticket {
         elsif ( $arg =~ /^object-RT::Model::Ticket--CustomField-(\d+)/ ) {
             my $cfid = $1;
 
-            my $cf = RT::Model::CustomField->new();
+            my $cf = RT::Model::CustomField->new( current_user => Jifty->web->current_user );
             $cf->load($cfid);
             unless ( $cf->id ) {
                 Jifty->log->error( "Couldn't load custom field #" . $cfid );
@@ -573,7 +573,7 @@ sub load_ticket {
         abort("No ticket specified");
     }
 
-    my $Ticket = RT::Model::Ticket->new();
+    my $Ticket = RT::Model::Ticket->new( current_user => Jifty->web->current_user );
     $Ticket->load($id);
     unless ( $Ticket->id ) {
         abort("Could not load ticket $id");
@@ -642,7 +642,8 @@ sub process_update_message {
     );
 
     $Message->head->add( 'Message-ID' => RT::Interface::Email::gen_message_id( Ticket => $args{'ticket_obj'}, ) );
-    my $old_txn = RT::Model::Transaction->new();
+    my $old_txn =
+      RT::Model::Transaction->new( current_user => Jifty->web->current_user );
     if ( $args{args_ref}->{'quote_transaction'} ) {
         $old_txn->load( $args{args_ref}->{'quote_transaction'} );
     } else {
@@ -837,7 +838,7 @@ sub process_acl_changes {
         @Rights = grep $_, @Rights;
         next unless @Rights;
 
-        my $principal = RT::Model::Principal->new();
+        my $principal = RT::Model::Principal->new( current_user => Jifty->web->current_user );
         $principal->load($principal_id);
 
         my $obj;
@@ -1066,7 +1067,7 @@ sub process_object_custom_field_updates {
             }
 
             foreach my $cf ( keys %{ $custom_fields_to_mod{$class}{$id} } ) {
-                my $CustomFieldObj = RT::Model::CustomField->new();
+                my $CustomFieldObj = RT::Model::CustomField->new( current_user => Jifty->web->current_user );
                 $CustomFieldObj->load_by_id($cf);
                 unless ( $CustomFieldObj->id ) {
                     Jifty->log->warn("Couldn't load custom field #$cf");

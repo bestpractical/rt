@@ -54,7 +54,7 @@ $format => undef
 $fields => undef
 </%ARGS>
 <%INIT>
-my $trans = RT::Model::TransactionCollection->new();
+my $trans = RT::Model::TransactionCollection->new( current_user => Jifty->web->current_user );
 my ($c, $o, $k, $e) = ("", [], {} , "");
 
 chomp $args;
@@ -65,7 +65,7 @@ $trans->limit(column => 'id', operator => '=', value => $tid);
 
 if ($tid) {
     my @data;
-    my $t = RT::Model::Transaction->new();
+    my $t = RT::Model::Transaction->new( current_user => Jifty->web->current_user );
     $t->load($tid);
     if ($format eq "l") {
       push @data, [ id    => $t->id   ];
@@ -89,7 +89,7 @@ if ($tid) {
        	if (!%$fields || exists $fields->{lc 'content'});
       
       if (!%$fields || exists $fields->{lc 'content'}) {    
-  	    my $creator = RT::Model::User->new();
+  	    my $creator = RT::Model::User->new( current_user => Jifty->web->current_user );
   	    $creator->load($t->creator);
   	    push @data, [ Creator    => $creator->name   ];
       }

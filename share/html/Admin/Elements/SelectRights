@@ -97,8 +97,8 @@ while ( my $ace = $acl_obj->next ) {
     }
 
 
-    my $acl_obj = RT::Model::ACECollection->new();
-    my $ACE = RT::Model::ACE->new();
+    my $acl_obj = RT::Model::ACECollection->new( current_user => Jifty->web->current_user );
+    my $ACE = RT::Model::ACE->new( current_user => Jifty->web->current_user );
 
 
     $acl_obj->limit_to_object( $object);

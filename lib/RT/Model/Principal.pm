@@ -197,7 +197,7 @@ sub revoke_right {
     #ACL check handled in ACE.pm
     my $type = $self->_get_principal_type_for_acl();
 
-    my $ace = RT::Model::ACE->new;
+    my $ace = RT::Model::ACE->new( current_user => $self->current_user );
     $ace->load_by_values(
         right_name     => $args{'right'},
         object         => $args{'object'},
