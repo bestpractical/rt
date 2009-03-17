@@ -2251,7 +2251,7 @@ sub DESTROY {
     my $rules = RT::Ruleset->find_all_rules(
         stage           => 'transaction_batch',
         ticket_obj      => $ticket,
-        transaction_obj => $batch->[0],
+        transaction     => $batch->[0],
         type            => join( ',', map $_->type, grep defined, @{$batch} )
     );
     RT::Ruleset->commit_rules($rules);

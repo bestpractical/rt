@@ -17,7 +17,7 @@ sub prepare {
     my ($self, %args) = @_;
     for (@$rules) {
         push @{$self->{prepared}}, $_
-            if $_->on_condition( $self->ticket_obj, $self->transaction_obj );
+            if $_->on_condition( $self->ticket_obj, $self->transaction );
     }
     return scalar @{$self->{prepared}};
 }
@@ -25,7 +25,7 @@ sub prepare {
 sub commit {
     my ($self, %args) = @_;
     for ( @{$self->{prepared}} ) {
-        $_->commit( $self->ticket_obj, $self->transaction_obj );
+        $_->commit( $self->ticket_obj, $self->transaction );
     }
 }
 
