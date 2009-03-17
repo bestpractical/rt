@@ -80,6 +80,21 @@ sub on_status_change {
 
 sub run_scrip_action {
     my ($self, $scrip_action, $template, %args) = @_;
+    my $action = $self->_get_scrip_action($scrip_action, $template, %args);
+    $action->prepare or return;
+    $action->commit;
+}
+
+sub scrip_action_hints {
+    my ($self, $scrip_action, $template, $callback, %args) = @_;
+    my $action = $self->_get_scrip_action($scrip_action, $template, %args);
+    $action->prepare or return;
+    $action->hints($callback);
+}
+
+sub _get_scrip_action {
+    my ($self, $scrip_action, $template, %args) = @_;
+
     my $ScripAction = RT::Model::ScripAction->new( current_user => $self->current_user);
     $ScripAction->load($scrip_action) or die ;
     unless (ref($template)) {
@@ -100,9 +115,7 @@ sub run_scrip_action {
 
     # XXX: fix template to allow additional arguments to be passed from here
     $action->{'template_obj'} = $template;
-    $action->prepare or return;
-    $action->commit;
-
+    return $action;
 }
 
 1;

@@ -377,17 +377,15 @@ sub create {
         # Entry point of the rule system
         my $ticket = RT::Model::Ticket->new( current_user => RT::CurrentUser->superuser );
         $ticket->load( $args{'object_id'} );
-        my $rules = RT::Ruleset->find_all_rules(
+        $self->{'active_rules'} = RT::Ruleset->find_all_rules(
             stage          => 'transaction_create',
             type           => $args{'type'},
             ticket_obj      => $ticket,
             transaction_obj => $self,
         );
-        
         if ( $commit_scrips ) {
             Jifty->log->debug( 'About to commit scrips for transaction #' . $self->id );
-            RT::Ruleset->commit_rules($rules);
-            
+            RT::Ruleset->commit_rules($self->{'active_rules'});
         } else {
             Jifty->log->debug( 'Skipping commit of scrips for transaction #' . $self->id );
         }
@@ -406,8 +404,14 @@ Scrips do not get persisted to the database with transactions.
 
 =cut
 
+sub rules {
+    my $self = shift;
+    return $self->{active_rules};
+}
+
 sub scrips {
     my $self = shift;
+    Carp::confess "obsoleted";
     return ( $self->{'scrips'} );
 }
 

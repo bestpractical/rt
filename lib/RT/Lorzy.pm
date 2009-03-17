@@ -64,14 +64,27 @@ sub create_scripish {
                     } } ],
         signature => $sigs );
 
+    my $hints = $builder->defun(
+        ops => [ { name => 'RT.ScripAction.Hints',
+                args => {
+                    name     => $scrip_action,
+                    template => $template,
+                    ticket => { name => 'Symbol', args => { symbol => 'ticket' } },
+                    callback => { name => 'Symbol', args => { symbol => 'callback' } },
+                    transaction => { name => 'Symbol', args => { symbol => 'transaction' } },
+                    } } ],
+        signature => {%$sigs,
+                      callback => Lorzy::FunctionArgument->new( name => 'callback', type => 'CODE' ) } );
+
     RT::Lorzy::Rule->new(
-        { condition => $condition,
-            action => $action } )
+        { condition     => $condition,
+          collect_hints => $hints,
+          action        => $action } )
 }
 
 package RT::Lorzy::Rule;
 use base 'Class::Accessor::Fast';
-__PACKAGE__->mk_accessors(qw(condition action));
+__PACKAGE__->mk_accessors(qw(condition action collect_hints));
 
 sub new {
     my $class = shift;
@@ -91,6 +104,12 @@ sub new {
 sub on_condition {
     my ($self, $ticket_obj, $transaction_obj) = @_;
     return RT::Lorzy->evaluate( $self->condition, ticket => $ticket_obj, transaction => $transaction_obj);
+}
+
+sub hints {
+    my ($self, $ticket_obj, $transaction_obj, $hints) = @_;
+    return unless $self->collect_hints;
+    return RT::Lorzy->evaluate( $self->collect_hints, ticket => $ticket_obj, transaction => $transaction_obj, callback => 1);
 }
 
 sub commit {

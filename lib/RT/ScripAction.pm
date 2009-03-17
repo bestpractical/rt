@@ -102,10 +102,10 @@ sub _init {
     $self->{'type'}           = $args{'type'};
     $self->{'hints'}          = $args{'hints'};
 
-    Scalar::Util::weaken( $self->{'scrip_action_obj'} );
+#    Scalar::Util::weaken( $self->{'scrip_action_obj'} );
     Scalar::Util::weaken( $self->{'template_obj'} );
     Scalar::Util::weaken( $self->{'ticket_obj'} );
-    Scalar::Util::weaken( $self->{'transaction_obj'} );
+    Scalar::Util::weaken( $self->{'transaction'} );
 
 }
 
