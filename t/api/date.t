@@ -21,7 +21,7 @@ use_ok('RT::Date');
     # set timezone in all places to UTC
     RT->system_user->user_object->__set(column => 'timezone', value => 'UTC')
                                 if RT->system_user->user_object->timezone;
-    RT->config->set( Timezone => 'UTC' );
+    RT->config->set( timezone => 'UTC' );
 }
 
 my $current_user;
@@ -53,7 +53,7 @@ my $current_user;
     is($date->timezone, 'UTC', "the deafult value is always UTC");
     is($date->timezone('server'), 'UTC', "wasn't changed");
 
-    RT->config->set( Timezone => 'Africa/Ouagadougou' );
+    RT->config->set( timezone => 'Africa/Ouagadougou' );
     is($date->timezone('server'),
        'Africa/Ouagadougou',
        "timezone of the RT server was changed");
@@ -71,12 +71,12 @@ my $current_user;
        "in user context returns timezone of the server if user's one is not defined");
     is($date->timezone, 'UTC', "the deafult value is always UTC");
 
-    RT->config->set( Timezone => 'GMT' );
+    RT->config->set( timezone => 'GMT' );
     is($date->timezone('server'),
        'UTC',
        "timezone is GMT which one is alias for UTC");
 
-    RT->config->set( Timezone => '' );
+    RT->config->set( timezone => '' );
     is($date->timezone, 'UTC', "dropped all timzones to UTC");
     is($date->timezone('user'),
        'UTC',
@@ -85,7 +85,7 @@ my $current_user;
        'UTC',
        "timezone of the server is not defined so UTC");
 
-    RT->config->set( Timezone => 'UTC' );
+    RT->config->set( timezone => 'UTC' );
 }
 
 {
@@ -290,11 +290,11 @@ my $year = (localtime(time))[5] + 1900;
     $date->set(format => 'unknown', value => 'weird date');
     is($date->unix, 0, "date was wrong");
 
-    RT->config->set( Timezone => 'Europe/Moscow' );
+    RT->config->set( timezone => 'Europe/Moscow' );
     $date->set(format => 'datemanip', value => '2005-11-28 15:10:00');
     is($date->iso, '2005-11-28 12:10:00', "YYYY-DD-MM hh:mm:ss");
 
-    RT->config->set( Timezone => 'UTC' );
+    RT->config->set( timezone => 'UTC' );
     $date->set(format => 'datemanip', value => '2005-11-28 15:10:00');
     is($date->iso, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 
@@ -309,7 +309,7 @@ my $year = (localtime(time))[5] + 1900;
     $date->set(format => 'unknown', value => 'weird date');
     is($date->unix, 0, "date was wrong");
 
-    RT->config->set( Timezone => 'Europe/Moscow' );
+    RT->config->set( timezone => 'Europe/Moscow' );
     $date->set(format => 'unknown', value => '2005-11-28 15:10:00');
     is($date->iso, '2005-11-28 12:10:00', "YYYY-DD-MM hh:mm:ss");
 
@@ -327,7 +327,7 @@ my $year = (localtime(time))[5] + 1900;
         restore_time();
     }
 
-    RT->config->set( Timezone => 'UTC' );
+    RT->config->set( timezone => 'UTC' );
     $date->set(format => 'unknown', value => '2005-11-28 15:10:00');
     is($date->iso, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 
@@ -344,7 +344,7 @@ my $year = (localtime(time))[5] + 1900;
 { # SetToMidnight
     my $date = RT::Date->new(current_user => RT->system_user);
 
-    RT->config->set( Timezone => 'Europe/Moscow' );
+    RT->config->set( timezone => 'Europe/Moscow' );
     $date->set(format => 'ISO', value => '2005-11-28 15:10:00');
     $date->set_to_midnight;
     is($date->iso, '2005-11-28 00:00:00', "default is utc");
@@ -372,7 +372,7 @@ my $year = (localtime(time))[5] + 1900;
     $date->set_to_midnight(timezone => 'server');
     is($date->iso, '2005-11-27 21:00:00', "server context");
 
-    RT->config->set( Timezone => 'UTC' );
+    RT->config->set( timezone => 'UTC' );
 }
 
 { # set_to_now
@@ -428,18 +428,18 @@ my $year = (localtime(time))[5] + 1900;
     my $date = RT::Date->new(current_user =>  $current_user );
     is($date->as_string, "Not set", "as_string returns 'Not set'");
 
-    RT->config->set( DateTimeFormat => '');
+    RT->config->set( date_time_format => '');
     $date->unix(1);
     is($date->as_string, 'Thu Jan 01 00:00:01 1970', "correct string");
     is($date->as_string(date => 0), '00:00:01', "correct string");
     is($date->as_string(time => 0), 'Thu Jan 01 1970', "correct string");
     is($date->as_string(date => 0, time => 0), 'Thu Jan 01 00:00:01 1970', "invalid input");
 
-    RT->config->set( DateTimeFormat => 'RFC2822' );
+    RT->config->set( date_time_format => 'RFC2822' );
     $date->unix(1);
     is($date->as_string, 'Thu, 1 Jan 1970 00:00:01 +0000', "correct string");
 
-    RT->config->set( DateTimeFormat => { format => 'RFC2822', seconds => 0 } );
+    RT->config->set( date_time_format => { format => 'RFC2822', seconds => 0 } );
     $date->unix(1);
     is($date->as_string, 'Thu, 1 Jan 1970 00:00 +0000', "correct string");
     is($date->as_string(seconds => 1), 'Thu, 1 Jan 1970 00:00:01 +0000', "correct string");

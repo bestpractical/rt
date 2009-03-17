@@ -185,7 +185,7 @@ my $current_subtab = 'Dashboards/Subscription.html?dashboard_id=' . $dashboard_i
 my ($title, @results);
 my ($val, $msg);
 my $Loaded = 0;
-my $timezone = Jifty->web->current_user->user_object->timezone || RT->config->get('time_zone');
+my $timezone = Jifty->web->current_user->user_object->timezone || RT->config->get('timezone');
 
 use RT::Dashboard;
 my $dashboard_obj = RT::Dashboard->new( current_user => Jifty->web->current_user );

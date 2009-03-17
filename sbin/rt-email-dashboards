@@ -121,7 +121,7 @@ while (defined(my $user = $Users->next)) {
         next;
     }
 
-    my ($hour, $dow, $dom) = hour_dow_dom_in($user->timezone || RT->config->get('time_zone'));
+    my ($hour, $dow, $dom) = hour_dow_dom_in($user->timezone || RT->config->get('timezone'));
     $hour .= ':00';
     debug "Checking %1's subscriptions: hour %2, dow %3, dom %4",
           $user->name, $hour, $dow, $dom;
