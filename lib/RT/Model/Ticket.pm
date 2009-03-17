@@ -1745,16 +1745,19 @@ sub merge_into {
     #add all of this ticket's watchers to that ticket.
     foreach my $watcher_type ( $self->roles ) {
 
-        my $people = $self->role_group($watcher_type)->members;
+        my $group = $self->role_group($watcher_type);
+        if ( $group->id ) {
+            my $people = $group->members;
 
-        while ( my $watcher = $people->next ) {
+            while ( my $watcher = $people->next ) {
 
-            my ( $val, $msg ) = $MergeInto->_add_watcher(
-                type         => $watcher_type,
-                silent       => 1,
-                principal_id => $watcher->member_id
-            );
-            Jifty->log->warn($msg) unless ($val);
+                my ( $val, $msg ) = $MergeInto->_add_watcher(
+                    type         => $watcher_type,
+                    silent       => 1,
+                    principal_id => $watcher->member_id
+                );
+                Jifty->log->warn($msg) unless ($val);
+            }
         }
 
     }
