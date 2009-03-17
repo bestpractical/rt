@@ -253,7 +253,7 @@ abort( _("No search to operate on.") ) unless ($Tickets);
 my $fields      = {};
 my $seen_queues = {};
 while ( my $ticket = $Tickets->next ) {
-    next if $seen_queues->{ $ticket->queue }++;
+    next if $seen_queues->{ $ticket->queue->id }++;
 
     my $custom_fields = $ticket->queue->ticket_custom_fields;
     while ( my $field = $custom_fields->next ) {
