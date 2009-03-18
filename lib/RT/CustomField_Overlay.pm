@@ -682,7 +682,7 @@ sub ACLEquivalenceObjects {
     my $self = shift;
 
     my $ctx = $self->ContextObject
-        or return;;
+        or return;
     return ($ctx, $ctx->ACLEquivalenceObjects);
 }
 

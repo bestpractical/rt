@@ -11,6 +11,7 @@
 
 @Final = (
     sub {
+        require Lingua::EN::Inflect::Number;
         $RT::Logger->debug("Going to canonicalize ACLs in the DB");
         my $sys = RT::System->new($RT::SystemUser);
 
@@ -18,8 +19,7 @@
         $acl->UnLimit;
         while ( my $ace = $acl->Next ) {
             my $old = $ace->__Value('RightName');
-            my $new = $old;
-            $new =~ s/s$//i;
+            my $new = Lingua::EN::Inflect::Number::to_S( $old );
             next if $new eq $old;
 
             my ($status, $msg) = $ace->__Set( Field => 'RightName', Value => $new );

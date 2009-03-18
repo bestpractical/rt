@@ -70,6 +70,8 @@ use RT::Principals;
 use RT::Queues;
 use RT::Groups;
 
+use Lingua::EN::Inflect::Number;
+
 use vars qw (
   %LOWERCASERIGHTNAMES
   %OBJECT_TYPES
@@ -567,9 +569,9 @@ sub CanonicalizeRightName {
     my $self  = shift;
     unless ( $keys_cached == keys %LOWERCASERIGHTNAMES ) {
         foreach my $right ( values %LOWERCASERIGHTNAMES ) {
-            $right =~ s/s$//i;
+            $right = Lingua::EN::Inflect::Number::to_S( $right );
             $CANONICRIGHTNAMES{ lc $right } = $right;
-            $CANONICRIGHTNAMES{ lc $right .'s' } = $right;
+            $CANONICRIGHTNAMES{ lc Lingua::EN::Inflect::Number::to_PL( $right ) } = $right;
         }
     }
     return $CANONICRIGHTNAMES{ lc shift };
