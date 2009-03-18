@@ -336,6 +336,7 @@ sub create {
         starts              => undef,
         started             => undef,
         resolved            => undef,
+        told                => undef,
         mime_obj            => undef,
         _record_transaction => 1,
         dry_run             => 0,
@@ -434,6 +435,12 @@ sub create {
     if ( defined $args{'resolved'} ) {
         $Resolved->set( format => 'ISO', value => $args{'resolved'} );
     }
+
+    my $told = RT::Date->new();
+    if ( defined $args{'told'} ) {
+        $told->set( format => 'ISO', value => $args{'told'} );
+    }
+
 
     #If the status is an inactive status, set the resolved date
     elsif ( $queue_obj->status_schema->is_inactive( $args{'status'} ) ) {
@@ -536,6 +543,7 @@ sub create {
         starts           => $starts->iso,
         started          => $started->iso,
         resolved         => $Resolved->iso,
+        told             => $told->iso,
         due              => $due->iso
     );
 
