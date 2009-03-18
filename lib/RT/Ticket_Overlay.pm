@@ -2782,7 +2782,12 @@ sub SetOwner {
     # Delete the owner in the owner group, then add a new one
     # TODO: is this safe? it's not how we really want the API to work
     # for most things, but it's fast.
-    my ( $del_id, $del_msg ) = $self->OwnerGroup->MembersObj->First->Delete();
+    my ( $del_id, $del_msg );
+    for my $owner (@{$self->OwnerGroup->MembersObj->ItemsArrayRef}) {
+        ($del_id, $del_msg) = $owner->Delete();
+        last unless ($del_id);
+    }
+
     unless ($del_id) {
         $RT::Handle->Rollback();
         return ( 0, $self->loc("Could not change owner: [_1]", $del_msg) );
