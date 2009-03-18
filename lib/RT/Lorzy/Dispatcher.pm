@@ -31,8 +31,6 @@ sub commit {
 
 sub hints {
     my ($self, $callback) = @_;
-    warn "... hi hints".$self->transaction->object;
-    warn "... hi hints".$self->transaction;
     return unless $self->transaction->object;
     for ( @{$self->{prepared}} ) {
         $_->hints( $self->transaction->object, $self->transaction, $callback );

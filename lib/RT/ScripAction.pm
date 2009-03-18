@@ -179,6 +179,11 @@ sub prepare {
     return ( 0, _("Prepare Stubbed") );
 }
 
+sub hints {
+    my ($self, $callback) = @_;
+    return;
+}
+
 
 #If this rule applies to this transaction, return true.
 

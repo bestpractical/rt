@@ -39,11 +39,7 @@ sub hints_callback {
 }
 
 for (@{$txn->rules}) {
-    warn $_;
-#    warn Dumper($_);
     $_->hints(\&hints_callback);
 }
 
-warn Dumper($preview);
-
-use Data::Dumper;
+warn Dumper($preview);use Data::Dumper;

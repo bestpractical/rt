@@ -109,7 +109,7 @@ sub on_condition {
 sub hints {
     my ($self, $ticket_obj, $transaction_obj, $hints) = @_;
     return unless $self->collect_hints;
-    return RT::Lorzy->evaluate( $self->collect_hints, ticket => $ticket_obj, transaction => $transaction_obj, callback => 1);
+    return RT::Lorzy->evaluate( $self->collect_hints, ticket => $ticket_obj, transaction => $transaction_obj, callback => $hints);
 }
 
 sub commit {
