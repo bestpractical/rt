@@ -116,6 +116,12 @@ sub config_format {
     return $self->strftime(RT->config->get('DateTimeFormat'));
 }
 
+sub date {
+    my $self = _canonicalize_self(@_);
+
+    return $self->ymd('-'); # XXX: should figure something out from config
+}
+
 sub is_unset { shift->epoch == 0 }
 
 sub new_unset { RT::DateTime->from_epoch(epoch => 0) }
