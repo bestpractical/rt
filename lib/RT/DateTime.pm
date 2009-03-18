@@ -10,8 +10,6 @@ use constant duration_class => 'RT::DateTime::Duration';
 
 sub _stringify { shift->config_format }
 
-sub is_unset { shift->epoch == 0 }
-
 sub age {
     my $self  = shift;
     my $until = shift || RT::DateTime->now;
@@ -28,8 +26,8 @@ sub _canonicalize_time_zone {
         $tz = $self->current_user->user_object->time_zone;
     }
 
-    # if the user time zone is requested and the user has none, use the server's
-    # time zone
+    # if the "user" time zone is requested and the user has none, use the
+    # "server" time zone
     if (!$tz || lc($tz) eq 'server' || lc($tz) eq 'system') {
         $tz = RT->config->get('TimeZone');
     }
@@ -68,8 +66,9 @@ sub new_from_string {
 
     my $dt = $class->SUPER::new_from_string($string, %args);
 
+    # always return a valid RT::DateTime object
     if (!defined($dt)) {
-        return RT::DateTime->from_epoch(epoch => 0);
+        return RT::DateTime->new_unset;
     }
 
     return $dt;
@@ -116,6 +115,10 @@ sub config_format {
 
     return $self->strftime(RT->config->get('DateTimeFormat'));
 }
+
+sub is_unset { shift->epoch == 0 }
+
+sub new_unset { RT::DateTime->from_epoch(epoch => 0) }
 
 1;
 
