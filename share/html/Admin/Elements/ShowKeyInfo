@@ -56,16 +56,16 @@
 % }
 
 <tr><th><% _('Created') %>:</th>
-<td><% $res{'info'}{'created'}? $res{'info'}{'created'}->as_string( Time => 0 ): _('never') %></td></tr>
+<td><% $res{'info'}{'created'}? $res{'info'}{'created'}->date : _('never') %></td></tr>
 
 <tr><th><% _('Expire') %>:</th>
-<td><% $res{'info'}{'expire'}? $res{'info'}{'expire'}->as_string( Time => 0 ): _('never') %></td></tr>
+<td><% $res{'info'}{'expire'}? $res{'info'}{'expire'}->date : _('never') %></td></tr>
 
 % foreach my $uinfo( @{ $res{'info'}{'user'} } ) {
 <tr><th><% _('User (Created - expire)') %>:</th>
 <td><% $uinfo->{'string'} %>\
-(<% $uinfo->{'created'}? $uinfo->{'created'}->as_string( Time => 0 ): _('never') %> - \
-<% $uinfo->{'expire'}? $uinfo->{'expire'}->as_string( Time => 0 ): _('never') %>)
+(<% $uinfo->{'created'}? $uinfo->{'created'}->date : _('never') %> - \
+<% $uinfo->{'expire'}? $uinfo->{'expire'}->date : _('never') %>)
 </td></tr>
 % }
 
