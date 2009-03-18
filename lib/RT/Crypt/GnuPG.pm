@@ -54,7 +54,6 @@ use IO::Handle;
 use GnuPG::Interface;
 use RT::EmailParser ();
 use RT::Util 'safe_run_child';
-use RT::DateTime;
 
 =head1 name
 
