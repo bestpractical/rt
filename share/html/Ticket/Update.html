@@ -150,8 +150,7 @@
 
 
 <& /Elements/Submit, label => _('Update Ticket'), name => 'submit_ticket' &>
-%# XXX previewscrips disabled for now
-% if (0 && $ticket_obj->current_user_has_right('ShowOutgoingEmail')) {
+% if ($ticket_obj->current_user_has_right('ShowOutgoingEmail')) {
 <&|/Widgets/TitleBox, title => _('Scrips and Recipients') &>
 <& /Ticket/Elements/PreviewScrips, ticket_obj => $ticket_obj, %ARGS &>
 </&>

@@ -46,25 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 
-% unless ( $Scrips->count ) {
 <p><i><&|/l&>(No scrips)</&></i></p>
-% } else {
-<& /Elements/CollectionList,
-    order_by => 'description',
-    order => 'ASC',
-    rows  => 0,
-    %ARGS,
-    format => $format,
-    collection => $Scrips,
-    show_header => 0,
-&>
-% }
 
 <%init>
-my $format = q{'<a href="__WebPath__/Admin/Global/Scrip.html?id=__id__&Queue=0">__id__</a>/TITLE:#'}
-    .q{,'<a href="__WebPath__/Admin/Global/Scrip.html?id=__id__&Queue=0">__Autodescription__</a>/TITLE:Condition, Action and Template'}
-    .q{__NEWLINE__,'','<small>__description__</small>'};
-
-my $Scrips = RT::Model::ScripCollection->new( current_user => Jifty->web->current_user );
-$Scrips->limit_to_global;
 </%init>
