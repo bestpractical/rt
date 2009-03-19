@@ -71,7 +71,6 @@ use base qw/RT::HasRoleGroups RT::Record/;
 use RT::Model::Queue;
 use RT::Model::User;
 use RT::Model::LinkCollection;
-use RT::Date;
 use RT::Model::CustomFieldCollection;
 use RT::Model::TicketCollection;
 use RT::Model::TransactionCollection;
@@ -411,36 +410,48 @@ sub create {
     # than assuming it's in ISO format.
 
     #Set the due date. if we didn't get fed one, use the queue default due in
-    my $due = RT::Date->new();
+    my $due;
     if ( defined $args{'due'} ) {
-        $due->set( format => 'ISO', value => $args{'due'} );
+        $due = RT::DateTime->new_from_string($args{'due'});
     } elsif ( my $due_in = $queue_obj->default_due_in ) {
-        $due->set_to_now;
-        $due->add_days($due_in);
+        $due = RT::DateTime->now;
+        $due->add(days => $due_in);
+    } else {
+        $due = RT::DateTime->new_unset;
     }
 
-    my $starts = RT::Date->new();
+    my $starts;
     if ( defined $args{'starts'} ) {
-        $starts->set( format => 'ISO', value => $args{'starts'} );
+        $starts = RT::DateTime->new_from_string($args{'starts'});
+    } else {
+        $starts = RT::DateTime->new_unset;
     }
 
-    my $started = RT::Date->new();
+    my $started;
     if ( defined $args{'started'} ) {
-        $started->set( format => 'ISO', value => $args{'started'} );
+        $started = RT::DateTime->new_from_string($args{'started'});
     } elsif ( !$queue_obj->status_schema->is_initial( $args{'status'} ) ) {
-        $started->set_to_now;
+        $started = RT::DateTime->now;
+    }
+    else {
+        $started = RT::DateTime->new_unset;
     }
 
-    my $resolved = RT::Date->new();
+    my $resolved;
     if ( defined $args{'resolved'} ) {
-        $resolved->set( format => 'ISO', value => $args{'resolved'} );
+        $resolved = RT::DateTime->new_from_string($args{'resolved'});
+    }
+    else {
+        $resolved = RT::DateTime->new_unset;
     }
 
-    my $told = RT::Date->new();
+    my $told;
     if ( defined $args{'told'} ) {
-        $told->set( format => 'ISO', value => $args{'told'} );
+        $told = RT::DateTime->new_from_string($args{'told'});
     }
-
+    else {
+        $told = RT::DateTime->new_unset;
+    }
 
     #If the status is an inactive status, set the resolved date
     elsif ( $queue_obj->status_schema->is_inactive( $args{'status'} ) ) {
@@ -985,11 +996,11 @@ sub set_started {
     }
 
     #We create a date object to catch date weirdness
-    my $time_obj = RT::Date->new( current_user => $self->current_user() );
+    my $time_obj;
     if ($time) {
-        $time_obj->set( format => 'ISO', value => $time );
+        $time_obj = RT::DateTime->new_from_string($time);
     } else {
-        $time_obj->set_to_now();
+        $time_obj = RT::DateTime->now;
     }
 
     #Now that we're starting, open this ticket
@@ -1021,17 +1032,8 @@ sub time_worked_as_string {
     #This is not really a date object, but if we diff a number of seconds
     #vs the epoch, we'll get a nice description of time worked.
 
-    my $worked = RT::Date->new();
-
-    #return the  #of minutes worked turned into seconds and written as
-    # a simple text string
-
-    return ( $worked->duration_as_string( $self->time_worked * 60 ) );
+    return RT::DateTime::Duration->new(minutes => $self->time_worked)->as_string;
 }
-
-
-
-
 
 =head2 comment
 
@@ -2044,14 +2046,11 @@ sub set_told {
         return ( 0, _("Permission Denied") );
     }
 
-    my $datetold = RT::Date->new();
+    my $datetold;
     if ($told) {
-        $datetold->set(
-            format => 'iso',
-            value  => $told
-        );
+        $datetold = RT::DateTime->new_from_string($told);
     } else {
-        $datetold->set_to_now();
+        $datetold = RT::DateTime->now;
     }
 
     return (
