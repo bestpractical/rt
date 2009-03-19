@@ -359,9 +359,7 @@ sub send_email {
     }
 
     unless ( $args{'entity'}->head->get('date') ) {
-        require RT::Date;
-        my $date = RT::Date->new( current_user => RT->system_user );
-        $date->set_to_now;
+        my $date = RT::DateTime->now;
         $args{'entity'}->head->set( 'date', $date->rfc2822( time_zone => 'server' ) );
     }
 
