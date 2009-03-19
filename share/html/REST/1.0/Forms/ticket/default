@@ -92,14 +92,14 @@ else {
     if (!keys(%data)) {
         # GET ticket/new: Return a suitable default form.
         # We get defaults from queue/1 (XXX: What if it isn't there?).
-        my $due = RT::Date->new( current_user => Jifty->web->current_user ) ;
         my $queue = RT::Model::Queue->new ( current_user =>
                 Jifty->web->current_user ) ;
-        my $starts = RT::Date->new( current_user => Jifty->web->current_user);
         $queue->load(1);
-        $due->set_to_now;
-        $due->add_days($queue->default_due_in) if $queue->default_due_in;
-        $starts->set_to_now;
+
+        my $due = RT::DateTime->now;
+        $due->add(days => $queue->default_due_in) if $queue->default_due_in;
+
+        my $starts = RT::DateTime->now;
 
         return [
             "# Required: id, Queue",
@@ -133,8 +133,7 @@ else {
         foreach my $k (keys %data) {
             # flexibly parse any dates
             if ($dates{lc $k}) {
-                my $time = RT::Date->new( current_user => Jifty->web->current_user );
-                $time->set(format => 'unknown', value => $data{$k});
+                my $time = RT::DateTime->new_from_string($data{$k});
                 $data{$k} = $time->iso;
             }
 
@@ -187,7 +186,7 @@ else {
 
 # Now we know we're dealing with an existing ticket.
 if (!keys(%data)) {
-    my ($time, $key, $val, @data);
+    my ($key, $val, @data);
 
     push @data, [ id    => "ticket/".$ticket->id   ];
     push @data, [ queue => $ticket->queue->name ] 
@@ -208,14 +207,13 @@ if (!keys(%data)) {
         push @data, [ $key => [ $ticket->role_group($key eq 'requestors' ? 'requestor' : $key)->member_emails ] ];
     }
 
-    $time = RT::Date->new();
     foreach $key (@dates) {
-	next unless (!%$fields || (exists $fields->{lc $key}));
-        $time->set(format => 'sql', value => $ticket->$key);
+        next unless (!%$fields || (exists $fields->{lc $key}));
+
+        my $time = RT::DateTime->new_from_string($ticket->$key);
         push @data, [ $key => $time->as_string ];
     }
 
-    $time = RT::Date->new();
     foreach $key (qw(time_estimated time_worked time_left)) {
 	next unless (!%$fields || (exists $fields->{lc $key}));
         $val = $ticket->$key || 0;
@@ -278,12 +276,11 @@ else {
             $key = $dates{$key};
             $set = "set_$key";
 
-            my $time = RT::Date->new() ;
-            $time->set(format => 'sql', value => $ticket->$key);
+            my $time = RT::DateTime->new_from_string($ticket->$key);
             next if ($val =~ /^not set$/i || $val eq $time->as_string);
 
-            $time->set(format => 'unknown', value => $val);
-            ($n, $s) = $ticket->$set($time->iso);
+            $time = RT::DateTime->new_from_string($val);
+            ($n, $s) = $ticket->$set($time);
         }
         elsif (exists $people{$key}) {
             $key = $people{$key};
