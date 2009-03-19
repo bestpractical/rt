@@ -106,6 +106,16 @@ sub rfc2822 {
     return $self->strftime('%a, %d %b %Y %H:%M:%S %z');
 }
 
+sub rfc2616 {
+    my $self = _canonicalize_self(@_);
+
+    # Always in UTC!
+    my $in_utc = $self->clone;
+    $in_utc->set_time_zone('UTC');
+
+    return $in_utc->strftime('%a, %d %b %Y %H:%M:%S GMT');
+}
+
 sub iso {
     my $self = _canonicalize_self(@_);
 
