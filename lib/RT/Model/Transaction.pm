@@ -926,24 +926,6 @@ sub brief_description {
             return ( $self->data );
         }
     },
-    told => sub {
-        my $self = shift;
-        if ( $self->field eq 'told' ) {
-            my $old = RT::DateTime->new_from_string($self->new_value);
-            my $new = RT::DateTime->new_from_string($self->old_value);
-            return _( "%1 changed from %2 to %3", $self->field, $old, $new );
-        } else {
-            return _(
-                "%1 changed from %2 to %3",
-                $self->field,
-                (   $self->old_value
-                    ? "'" . $self->old_value . "'"
-                    : _("(no value)")
-                ),
-                "'" . $self->new_value . "'"
-            );
-        }
-    },
     set => sub {
         my $self = shift;
         if ( $self->field eq 'password' ) {
@@ -957,12 +939,10 @@ sub brief_description {
         }
 
         # Write the date/time change at local time:
-        elsif ( $self->field =~ /due|starts|started/i ) {
-            my $t1 = RT::Date->new();
-            $t1->set( format => 'ISO', value => $self->new_value );
-            my $t2 = RT::Date->new();
-            $t2->set( format => 'ISO', value => $self->old_value );
-            return _( "%1 changed from %2 to %3", $self->field, $t2->as_string, $t1->as_string );
+        elsif ( $self->field =~ /due|starts|started|told/i ) {
+            my $old = RT::DateTime->new_from_string($self->new_value);
+            my $new = RT::DateTime->new_from_string($self->old_value);
+            return _( "%1 changed from %2 to %3", $self->field, $old, $new );
         } else {
             return _(
                 "%1 changed from %2 to %3",
