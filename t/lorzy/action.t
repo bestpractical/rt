@@ -53,8 +53,10 @@ my $auto_reply  = $builder->defun(
 RT::Lorzy::Dispatcher->reset_rules;
 
 RT::Lorzy::Dispatcher->add_rule(
-    RT::Lorzy::Rule->new( { condition => $on_created,
-                            action => $auto_reply } )
+    RT::Lorzy::RuleFactory->make_factory
+    ( { condition => $on_created,
+        _stage => 'transaction_create',
+        action => $auto_reply } )
 );
 
 my $queue = RT::Model::Queue->new(current_user => RT->system_user);

@@ -63,8 +63,10 @@ use RT::Lorzy;
 my $action_is_run = 0;
 
 RT::Lorzy::Dispatcher->add_rule(
-    RT::Lorzy::Rule->new( { condition => $is_open,
-                            action => sub { $action_is_run++ } } )
+    RT::Lorzy::RuleFactory->make_factory
+            ( { condition => $is_open,
+                _stage => 'transaction_create',
+                action => sub { $action_is_run++ } } )
 );
 
 $ticket->comment(content => 'lorzy lorzy in the code');
