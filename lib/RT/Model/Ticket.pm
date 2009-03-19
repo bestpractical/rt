@@ -1995,14 +1995,13 @@ sub set_status {
         return ( 0, _('That ticket has unresolved dependencies') );
     }
 
-    my $now = RT::Date->new;
-    $now->set_to_now();
+    my $now = RT::DateTime->now;
 
     #If we're changing the status from intial to non-initial, record that we've started
     if ( $schema->is_initial( $self->status ) && !$schema->is_initial( $args{status} ) )  {
         $self->_set(
             column             => 'started',
-            value              => $now->iso,
+            value              => $now,
             record_transaction => 0
         );
     }
@@ -2012,7 +2011,7 @@ sub set_status {
     if ( $schema->is_inactive( $args{status} ) ) {
         $self->_set(
             column             => 'resolved',
-            value              => $now->iso,
+            value              => $now,
             record_transaction => 0
         );
     }
@@ -2074,14 +2073,11 @@ Updates the told without a transaction or acl check. Useful when we're sending r
 sub _set_told {
     my $self = shift;
 
-    my $now = RT::Date->new();
-    $now->set_to_now();
-
     #use __set to get no ACLs ;)
     return (
         $self->__set(
             column => 'told',
-            value  => $now->iso
+            value  => RT::DateTime->now(),
         )
     );
 }
