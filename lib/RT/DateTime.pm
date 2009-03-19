@@ -39,6 +39,8 @@ sub new {
     my $self = shift;
     my %args = @_;
 
+    return $self->new_unset if @_ == 0;
+
     $args{time_zone} = $self->_canonicalize_time_zone($args{time_zone})
         if defined $args{time_zone};
 
