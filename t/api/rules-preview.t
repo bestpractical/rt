@@ -10,6 +10,7 @@ my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
 $ticket->create(
 	queue => $queue->id,
 	requestor => 'root@localhost',
+	cc => 'moosecc@example.org',
 	subject => 'scrip preview test',
 );
 
@@ -18,6 +19,7 @@ ok($ticket->id, "Created the ticket ok");
 our $DEBUG=1;
 
 my ( $txn_id, $description, $txn ) = $ticket->correspond(
+    cc_message_to => 'onetime@example.org',
     content       => 'test dry run and previews',
     time_taken    => '10',
     dry_run       => 1,
@@ -25,21 +27,20 @@ my ( $txn_id, $description, $txn ) = $ticket->correspond(
 
 ok($txn_id, 'created txn');
 
-diag $txn;
-diag $description;
-diag $txn_id;
-
 my $preview = {};
-
-sub hints_callback {
-    my ($action_class, $description, $key, $value) = @_;
-    if ($action_class eq 'SendEmail') {
-        push @{$preview->{$description}{$key} ||= []}, $value;
-    }
-}
-
 for (@{$txn->rules}) {
-    $_->hints(\&hints_callback);
+    my $hints = $_->hints;
+    next unless $hints->{class} eq 'SendEmail';
+    $preview->{$hints->{description}} = $hints->{recipients};
 }
 
-warn Dumper($preview);use Data::Dumper;
+is_deeply($preview,
+          { 'On Correspond Notify Other Recipients' =>
+            { to => [], cc => [], bcc => [] },
+            'On Correspond Notify requestors and ccs' =>
+            { to => [ 'root@localhost' ],
+              cc => [ 'moosecc@example.org' ],
+              bcc => [] },
+            'On Correspond Notify admin_ccs' =>
+            { to => [], cc => [], bcc => [] } }
+      );

@@ -228,6 +228,20 @@ sub prepare {
     return $result;
 }
 
+=head2 hints
+
+=cut
+
+sub hints {
+    my ($self) = @_;
+
+    return { class => 'SendEmail',
+             recipients => { to =>  [$self->to],
+                             cc =>  [$self->cc],
+                             bcc => [$self->bcc],
+                         } };
+}
+
 =head2 to
 
 Returns an array of L<Email::Address> objects containing all the To: recipients for this notification

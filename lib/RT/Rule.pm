@@ -86,10 +86,10 @@ sub run_scrip_action {
 }
 
 sub scrip_action_hints {
-    my ($self, $scrip_action, $template, $callback, %args) = @_;
+    my ($self, $scrip_action, $template, %args) = @_;
     my $action = $self->_get_scrip_action($scrip_action, $template, %args);
     $action->prepare or return;
-    $action->hints($callback);
+    $action->hints();
 }
 
 sub _get_scrip_action {

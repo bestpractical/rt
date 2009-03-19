@@ -84,7 +84,6 @@ sub _init {
         argument       => undef,
         current_user    => undef,
         scrip_action_obj => undef,
-        hints            => {},
         template_obj    => undef,
         ticket_obj      => undef,
         transaction_obj => undef,
@@ -100,11 +99,10 @@ sub _init {
     $self->{'ticket_obj'}      = $args{'ticket_obj'};
     $self->{'transaction_obj'} = $args{'transaction_obj'};
     $self->{'type'}           = $args{'type'};
-    $self->{'hints'}          = $args{'hints'};
 
 #    Scalar::Util::weaken( $self->{'scrip_action_obj'} );
     Scalar::Util::weaken( $self->{'template_obj'} );
-    Scalar::Util::weaken( $self->{'ticket_obj'} );
+#    Scalar::Util::weaken( $self->{'ticket_obj'} );
     Scalar::Util::weaken( $self->{'transaction'} );
 
 }
@@ -133,12 +131,6 @@ sub transaction {
 sub template_obj {
     my $self = shift;
     return ( $self->{'template_obj'} );
-}
-
-
-sub hints {
-    my $self = shift;
-    return ( $self->{'hints'} );
 }
 
 
@@ -180,10 +172,9 @@ sub prepare {
 }
 
 sub hints {
-    my ($self, $callback) = @_;
-    return;
+    my ($self) = @_;
+    return { class => 'General' };
 }
-
 
 #If this rule applies to this transaction, return true.
 
@@ -199,7 +190,6 @@ sub DESTROY {
     # We need to clean up all the references that might maybe get
     # oddly circular
     $self->{'scrip_action_obj'} = undef;
-    $self->{'hints'}       = undef;
     $self->{'template_obj'}    = undef;
     $self->{'ticket_obj'} = undef;
     $self->{'transaction_obj'} = undef;

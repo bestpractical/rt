@@ -451,6 +451,7 @@ sub insert_data {
                 $item->{scrip_condition},
                 $item->{scrip_action},
                 $item->{template},
+                $item->{description},
             );
 
             RT::Lorzy::Dispatcher->add_rule( $rule );

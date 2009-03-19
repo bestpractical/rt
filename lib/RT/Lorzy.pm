@@ -4,8 +4,9 @@ use warnings;
 
 use RT::Ruleset;
 use Lorzy::Evaluator;
+use RT::Lorzy::Dispatcher;
 
-RT::Ruleset->add( name => 'Lorzy', rules => ['RT::Lorzy::Dispatcher'] );
+RT::Ruleset->register( RT::Lorzy::Dispatcher->new );
 our $EVAL = Lorzy::Evaluator->new();
 $EVAL->load_package($_) for qw(Str Native);
 $EVAL->load_package('RT', 'RT::Lorzy::Package::RT');
@@ -17,7 +18,7 @@ sub evaluate {
 }
 
 sub create_scripish {
-    my ( $class, $scrip_condition, $scrip_action, $template, $queue ) = @_;
+    my ( $class, $scrip_condition, $scrip_action, $template, $description, $queue ) = @_;
     my $sigs = { ticket => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Model::Ticket' ),
         transaction => Lorzy::FunctionArgument->new( name => 'transaction', type => 'RT::Model::Transaction' ) };
     my $builder = Lorzy::Builder->new();
@@ -70,23 +71,24 @@ sub create_scripish {
                     name     => $scrip_action,
                     template => $template,
                     ticket => { name => 'Symbol', args => { symbol => 'ticket' } },
-                    callback => { name => 'Symbol', args => { symbol => 'callback' } },
                     transaction => { name => 'Symbol', args => { symbol => 'transaction' } },
                     } } ],
-        signature => {%$sigs,
-                      callback => Lorzy::FunctionArgument->new( name => 'callback', type => 'CODE' ) } );
+        signature => $sigs );
 
-    RT::Lorzy::Rule->new(
+    RT::Lorzy::RuleFactory->make_factory(
         { condition     => $condition,
           collect_hints => $hints,
-          action        => $action } )
+          action        => $action,
+          description   => $description,
+          _stage        => 'transaction_create',
+      } )
 }
 
-package RT::Lorzy::Rule;
+package RT::Lorzy::RuleFactory;
 use base 'Class::Accessor::Fast';
-__PACKAGE__->mk_accessors(qw(condition action collect_hints));
+__PACKAGE__->mk_accessors(qw(description condition action collect_hints _stage));
 
-sub new {
+sub make_factory {
     my $class = shift;
     my $self = $class->SUPER::new(@_);
     if (ref($self->action) eq 'CODE') {
@@ -101,20 +103,48 @@ sub new {
     return $self;
 }
 
-sub on_condition {
-    my ($self, $ticket_obj, $transaction_obj) = @_;
-    return RT::Lorzy->evaluate( $self->condition, ticket => $ticket_obj, transaction => $transaction_obj);
+sub new {
+    my $self = shift;
+    return RT::Lorzy::Rule->new( @_, factory => $self);
 }
 
+package RT::Lorzy::Rule;
+use base 'RT::Rule';
+use base 'Class::Accessor::Fast';
+
+__PACKAGE__->mk_accessors(qw(factory));
+sub _init {
+    my $self = shift;
+    my %args = @_;
+    $self->SUPER::_init(%args);
+    $self->factory($args{factory});
+}
+
+sub prepare {
+    my ($self, %args) = @_;
+    return RT::Lorzy->evaluate( $self->factory->condition,
+                                ticket => $self->ticket_obj,
+                                transaction => $self->transaction);
+}
+
+sub description { $_[0]->factory->description }
+
 sub hints {
-    my ($self, $ticket_obj, $transaction_obj, $hints) = @_;
-    return unless $self->collect_hints;
-    return RT::Lorzy->evaluate( $self->collect_hints, ticket => $ticket_obj, transaction => $transaction_obj, callback => $hints);
+    my ($self) = @_;
+    return unless $self->factory->collect_hints;
+    my $hints = RT::Lorzy->evaluate( $self->factory->collect_hints,
+                                     ticket => $self->ticket_obj,
+                                     transaction => $self->transaction);
+
+    return { description => $self->description,
+             %$hints };
 }
 
 sub commit {
-    my ($self, $ticket_obj, $transaction_obj) = @_;
-    return RT::Lorzy->evaluate( $self->action, ticket => $ticket_obj, transaction => $transaction_obj);
+    my ($self, %args) = @_;
+    return RT::Lorzy->evaluate( $self->factory->action,
+                                ticket => $self->ticket_obj,
+                                transaction => $self->transaction);
 }
 
 1;

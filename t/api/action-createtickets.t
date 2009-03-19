@@ -58,7 +58,9 @@ ok ($q->id, "Created workflow test queue");
 my $rule = RT::Lorzy->create_scripish(
     'On Transaction',
     'Create Tickets',
-    'Approvals', $q->id);
+    'Approvals',
+    'Create approval tickets',
+     $q->id);
 
 RT::Lorzy::Dispatcher->add_rule( $rule );
 

@@ -60,6 +60,7 @@ my @RULE_SETS;
 sub find_all_rules {
     my ($class, %args) = @_;
     my $current_user = $args{ticket_obj}->current_user;
+
     return [
         grep { $_->prepare }
         map { $_->new(current_user => $current_user, %args) }
@@ -74,12 +75,17 @@ sub commit_rules {
         for @$rules;
 }
 
+sub register {
+    my ($class, $ruleset) = @_;
+    push @RULE_SETS, $ruleset;
+}
+
 sub add {
     my ($class, %args) = @_;
     for (@{$args{rules}}) {
         $_->require or die $UNIVERSAL::require::ERROR;
     }
-    push @RULE_SETS, $class->new(\%args);
+    $class->register($class->new(\%args));
 }
 
 1;

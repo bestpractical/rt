@@ -51,7 +51,6 @@ __PACKAGE__->defun( 'ScripAction.Hints',
     signature => {
         'name'     => Lorzy::FunctionArgument->new( name => 'name' ),
         'template' => Lorzy::FunctionArgument->new( name => 'template' ),
-        'callback' => Lorzy::FunctionArgument->new( name => 'callback' ),
         'ticket'   => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Model::Ticket' ),
         'transaction' => Lorzy::FunctionArgument->new( name => 'transaction', type => 'RT::Model::Transaction' ),
     },
@@ -61,7 +60,7 @@ __PACKAGE__->defun( 'ScripAction.Hints',
                                   ticket_obj => $args->{ticket},
                                   transaction_obj => $args->{transaction}
                               );
-        $rule->scrip_action_hints(@{$args}{qw(name template callback)});
+        $rule->scrip_action_hints(@{$args}{qw(name template)});
     },
 );
 
