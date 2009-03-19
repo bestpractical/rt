@@ -90,7 +90,7 @@ while (my $t = $tickets->next) {
 
     my $starttime = $t->starts->epoch > 0 ? $t->starts : $t->created;
 
-    my $now = RT::Date->new; $now->set_to_now;
+    my $now   = RT::DateTime->now;
     my $start = Data::ICal::Entry::Event->new;
     my $end   = Data::ICal::Entry::Event->new;
     $_->add_properties(
