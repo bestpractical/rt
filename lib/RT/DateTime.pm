@@ -122,6 +122,16 @@ sub iso {
     return $self->strftime('%Y-%m-%d %H:%M:%S');
 }
 
+sub iCal {
+    my $self = _canonicalize_self(@_);
+
+    # Always in UTC!
+    my $in_utc = $self->clone;
+    $in_utc->set_time_zone('UTC');
+
+    return $in_utc->strftime('%Y%m%dT%H%M%SZ');
+}
+
 sub config_format {
     my $self = _canonicalize_self(@_);
 
