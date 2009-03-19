@@ -47,6 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 <input type="text" id="<% $name %>" name="<% $name %>" class="datetime" value="<% $value %>" size="<% $size %>" />
 <%init>
+undef $default if ref($default) && !$default->is_set;
+
 if (!defined($default) && $current > 0) {
 	my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) =
                                             localtime($current);
