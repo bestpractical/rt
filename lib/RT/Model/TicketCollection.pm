@@ -533,7 +533,7 @@ sub _date_limit {
         # particular single day.  in the database, we need to check for >
         # and < the edges of that day.
 
-        $date->truncate(to => 'day')->set_time_zone('server');
+        $date->truncate(to => 'day')->set_time_zone('UTC');
         my $daystart = $date->iso;
         my $dayend = $date->add(days => 1)->iso;
 
@@ -632,7 +632,7 @@ sub _trans_date_limit {
         # particular single day.  in the database, we need to check for >
         # and < the edges of that day.
 
-        $date->truncate(to => 'day')->set_time_zone('server');
+        $date->truncate(to => 'day')->set_time_zone('UTC');
         my $daystart = $date->iso;
         my $dayend = $date->add(days => 1)->iso;
 

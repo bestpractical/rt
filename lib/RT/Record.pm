@@ -66,7 +66,6 @@ package RT::Record;
 use strict;
 use warnings;
 
-use RT::Date;
 use RT::Model::User;
 use RT::Model::AttributeCollection;
 use RT::Model::Attribute;
@@ -400,12 +399,11 @@ It takes no options. Arguably, this is a bug
 
 sub set_last_updated {
     my $self = shift;
-    my $now = RT::Date->new( current_user => $self->current_user );
-    $now->set_to_now();
+    my $now = RT::DateTime->now;
 
     my ( $msg, $val ) = $self->__set(
         column => 'last_updated',
-        value  => $now->iso
+        value  => $now,
     );
     ( $msg, $val ) = $self->__set(
         column => 'last_updated_by',

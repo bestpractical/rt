@@ -48,8 +48,6 @@
 package RT::Condition::BeforeDue;
 use base 'RT::Condition';
 
-use RT::Date;
-
 use strict;
 
 sub is_applicable {
@@ -64,8 +62,7 @@ sub is_applicable {
     }
     my $elapse = $e{'d'} * 24 * 60 * 60 + $e{'h'} * 60 * 60 + $e{'m'} * 60 + $e{'s'};
 
-    my $cur = RT::Date->new( RT->system_user );
-    $cur->set_to_now();
+    my $cur = RT::DateTime->now;
     my $due = $self->ticket_obj->due;
     return (undef) if $due->epoch <= 0;
 

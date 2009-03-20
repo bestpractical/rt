@@ -10,8 +10,6 @@ use constant duration_class => 'RT::DateTime::Duration';
 
 sub _stringify { shift->config_format }
 
-sub is_unset { shift->epoch == 0 }
-
 sub age {
     my $self  = shift;
     my $until = shift || RT::DateTime->now;
@@ -28,8 +26,8 @@ sub _canonicalize_time_zone {
         $tz = $self->current_user->user_object->time_zone;
     }
 
-    # if the user time zone is requested and the user has none, use the server's
-    # time zone
+    # if the "user" time zone is requested and the user has none, use the
+    # "server" time zone
     if (!$tz || lc($tz) eq 'server' || lc($tz) eq 'system') {
         $tz = RT->config->get('TimeZone');
     }
@@ -40,6 +38,8 @@ sub _canonicalize_time_zone {
 sub new {
     my $self = shift;
     my %args = @_;
+
+    return $self->new_unset if @_ == 0;
 
     $args{time_zone} = $self->_canonicalize_time_zone($args{time_zone})
         if defined $args{time_zone};
@@ -68,8 +68,9 @@ sub new_from_string {
 
     my $dt = $class->SUPER::new_from_string($string, %args);
 
+    # always return a valid RT::DateTime object
     if (!defined($dt)) {
-        return RT::DateTime->from_epoch(epoch => 0);
+        return RT::DateTime->new_unset;
     }
 
     return $dt;
@@ -105,10 +106,30 @@ sub rfc2822 {
     return $self->strftime('%a, %d %b %Y %H:%M:%S %z');
 }
 
+sub rfc2616 {
+    my $self = _canonicalize_self(@_);
+
+    # Always in UTC!
+    my $in_utc = $self->clone;
+    $in_utc->set_time_zone('UTC');
+
+    return $in_utc->strftime('%a, %d %b %Y %H:%M:%S GMT');
+}
+
 sub iso {
     my $self = _canonicalize_self(@_);
 
     return $self->strftime('%Y-%m-%d %H:%M:%S');
+}
+
+sub iCal {
+    my $self = _canonicalize_self(@_);
+
+    # Always in UTC!
+    my $in_utc = $self->clone;
+    $in_utc->set_time_zone('UTC');
+
+    return $in_utc->strftime('%Y%m%dT%H%M%SZ');
 }
 
 sub config_format {
@@ -116,6 +137,16 @@ sub config_format {
 
     return $self->strftime(RT->config->get('DateTimeFormat'));
 }
+
+sub date {
+    my $self = _canonicalize_self(@_);
+
+    return $self->ymd('-'); # XXX: should figure something out from config
+}
+
+sub is_unset { shift->epoch == 0 }
+
+sub new_unset { RT::DateTime->from_epoch(epoch => 0) }
 
 1;
 
