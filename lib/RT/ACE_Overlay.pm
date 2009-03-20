@@ -573,6 +573,7 @@ sub CanonicalizeRightName {
             $CANONICRIGHTNAMES{ lc $right } = $right;
             $CANONICRIGHTNAMES{ lc Lingua::EN::Inflect::Number::to_PL( $right ) } = $right;
         }
+        $keys_cached = keys %LOWERCASERIGHTNAMES;
     }
     return $CANONICRIGHTNAMES{ lc shift };
 } }
