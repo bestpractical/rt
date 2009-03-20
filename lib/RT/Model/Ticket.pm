@@ -406,9 +406,6 @@ sub create {
         unless defined $args{'priority'};
 
     # {{{ Dates
-    #TODO we should see what sort of due date we're getting, rather +
-    # than assuming it's in ISO format.
-
     #Set the due date. if we didn't get fed one, use the queue default due in
     my $due;
     if ( defined $args{'due'} ) {
@@ -550,11 +547,11 @@ sub create {
         time_estimated   => $args{'time_estimated'},
         time_left        => $args{'time_left'},
         type             => $args{'type'},
-        starts           => $starts->iso,
-        started          => $started->iso,
-        resolved         => $resolved->iso,
-        told             => $told->iso,
-        due              => $due->iso
+        starts           => $starts,
+        started          => $started,
+        resolved         => $resolved,
+        told             => $told,
+        due              => $due,
     );
 
     # Parameters passed in during an import that we probably don't want to touch, otherwise
