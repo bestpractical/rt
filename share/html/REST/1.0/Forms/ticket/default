@@ -209,9 +209,7 @@ if (!keys(%data)) {
 
     foreach $key (@dates) {
         next unless (!%$fields || (exists $fields->{lc $key}));
-
-        my $time = RT::DateTime->new_from_string($ticket->$key);
-        push @data, [ $key => $time->iso ];
+        push @data, [ $key => $ticket->$key->iso ];
     }
 
     foreach $key (qw(time_estimated time_worked time_left)) {
