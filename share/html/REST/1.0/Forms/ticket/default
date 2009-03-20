@@ -211,7 +211,7 @@ if (!keys(%data)) {
         next unless (!%$fields || (exists $fields->{lc $key}));
 
         my $time = RT::DateTime->new_from_string($ticket->$key);
-        push @data, [ $key => $time->as_string ];
+        push @data, [ $key => $time->iso ];
     }
 
     foreach $key (qw(time_estimated time_worked time_left)) {
@@ -277,7 +277,7 @@ else {
             $set = "set_$key";
 
             my $time = RT::DateTime->new_from_string($ticket->$key);
-            next if ($val =~ /^not set$/i || $val eq $time->as_string);
+            next if ($val =~ /^not set$/i || $val eq $time->iso);
 
             $time = RT::DateTime->new_from_string($val);
             ($n, $s) = $ticket->$set($time);
