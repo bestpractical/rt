@@ -63,7 +63,6 @@ sub is_applicable {
     my $elapse = $e{'d'} * 24 * 60 * 60 + $e{'h'} * 60 * 60 + $e{'m'} * 60 + $e{'s'};
 
     my $cur = RT::DateTime->now;
-    $cur->set_to_now();
     my $due = $self->ticket_obj->due;
     return (undef) if $due->epoch <= 0;
 
