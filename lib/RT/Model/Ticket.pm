@@ -441,6 +441,11 @@ sub create {
     if ( defined $args{'resolved'} ) {
         $resolved = RT::DateTime->new_from_string($args{'resolved'});
     }
+    #If the status is an inactive status, set the resolved date
+    elsif ( $queue_obj->status_schema->is_inactive( $args{'status'} ) ) {
+        Jifty->log->debug( "Got a " . $args{'status'} . "(inactive) ticket with undefined resolved date. Setting to now." );
+        $resolved = RT::DateTime->now;
+    }
     else {
         $resolved = RT::DateTime->new_unset;
     }
@@ -451,12 +456,6 @@ sub create {
     }
     else {
         $told = RT::DateTime->new_unset;
-    }
-
-    #If the status is an inactive status, set the resolved date
-    elsif ( $queue_obj->status_schema->is_inactive( $args{'status'} ) ) {
-        Jifty->log->debug( "Got a " . $args{'status'} . "(inactive) ticket with undefined resolved date. Setting to now." );
-        $resolved->set_to_now;
     }
 
     # }}}
