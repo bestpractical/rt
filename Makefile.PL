@@ -41,6 +41,7 @@ requires(
     'File::Glob'                 => 0,
     'Devel::StackTrace'          => '1.19',
     'Text::Naming::Convention'   => 0,
+    'DateTime'                   => '0.46',
 );
 
 features(

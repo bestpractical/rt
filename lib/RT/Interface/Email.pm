@@ -362,7 +362,7 @@ sub send_email {
         require RT::Date;
         my $date = RT::Date->new( current_user => RT->system_user );
         $date->set_to_now;
-        $args{'entity'}->head->set( 'date', $date->rfc2822( timezone => 'server' ) );
+        $args{'entity'}->head->set( 'date', $date->rfc2822( time_zone => 'server' ) );
     }
 
     my $mail_command = RT->config->get('MailCommand');

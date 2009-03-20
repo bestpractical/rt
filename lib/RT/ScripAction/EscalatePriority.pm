@@ -95,11 +95,11 @@ sub prepare {
     }
 
     #compute the number of days until the ticket is due
-    my $due = $self->ticket_obj->due_obj();
+    my $due = $self->ticket_obj->due;
 
     # If we don't have a due date, adjust the priority by one
     # until we hit the final priority
-    if ( $due->unix() < 1 ) {
+    if ( $due->epoch < 1 ) {
         if ( $self->ticket_obj->priority > $self->ticket_obj->final_priority ) {
             $self->{'prio'} = ( $self->ticket_obj->priority - 1 );
             return 1;

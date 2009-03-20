@@ -65,7 +65,7 @@ sub groupings {
       my $type (qw(owner creator last_updated_by requestor cc admin_cc watcher))
     {
         push @fields, $type . ' ' . $_, $type . '.' . $_ foreach qw(
-          name email real_name nickname organization lang city country timezone
+          name email real_name nickname organization lang city country time_zone
         );
     }
 
