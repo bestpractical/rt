@@ -50,7 +50,7 @@ use warnings;
 
 package RT::Model::User;
 
-use base qw/RT::Record/;
+use base qw/RT::IsPrincipal RT::Record/;
 
 =head1 NAME
 
@@ -582,7 +582,7 @@ sub load_or_create_by_email {
 }
 
 
-=head2 validateemail ADDRESS
+=head2 validate_email ADDRESS
 
 Returns true if the email address entered is not in use by another user or is 
 undef or ''. Returns false if it's in use. 
@@ -620,7 +620,7 @@ user preferences.
 =item 'squelched' - returned only when Ticket argument is provided and
 notifications to the user has been supressed for this ticket.
 
-=item 'daily' - retruned when user recieve daily messages digest instead
+=item 'daily' - returned when user recieve daily messages digest instead
 of immediate delivery.
 
 =item 'weekly' - previous, but weekly.
@@ -859,7 +859,7 @@ sub validate_auth_string {
     return $auth_string eq substr(Digest::MD5::md5_hex($str),0,16);
 }
 
-=head2 sub set_disabled
+=head2 set_disabled
 
 Toggles the user's disabled flag.
 If this flag is
@@ -880,57 +880,6 @@ sub set_disabled {
         return ( 0, _('Permission Denied') );
     }
     return $self->principal->set_disabled(@_);
-}
-
-=head2 disabled
-
-Returns true if user is disabled or false otherwise
-
-=cut
-
-sub disabled {
-    my $self = shift;
-    return $self->principal->disabled(@_);
-}
-
-=head2 principal 
-
-Returns the principal object for this user. returns an empty RT::Model::Principal
-if there's no principal object matching this user. 
-The response is cached. principal should never ever change.
-
-
-=cut
-
-sub principal {
-    my $self = shift;
-
-    unless ( $self->id ) {
-        Jifty->log->error("Couldn't get principal for not loaded object");
-        return undef;
-    }
-
-    my $obj = RT::Model::Principal->new( current_user => $self->current_user );
-    $obj->load_by_id( $self->id );
-    unless ( $obj->id ) {
-        Jifty->log->fatal( 'No principal for user #' . $self->id );
-        return undef;
-    } elsif ( $obj->type ne 'User' ) {
-        Jifty->log->fatal( 'User #' . $self->id . ' has principal of ' . $obj->type . ' type' );
-        return undef;
-    }
-    return $obj;
-}
-
-=head2 principal_id  
-
-Returns this user's principal_id
-
-=cut
-
-sub principal_id {
-    my $self = shift;
-    return $self->id;
 }
 
 =head2 has_group_right
@@ -1160,8 +1109,6 @@ sub watched_queues {
     my $self = shift;
     my @roles = @_ || ( 'cc', 'admin_cc' );
 
-    Jifty->log->debug( 'WatcheQueues got user ' . $self->name );
-
     my $watched_queues = RT::Model::QueueCollection->new( current_user => $self->current_user );
 
     my $group_alias = $watched_queues->join(
@@ -1207,8 +1154,6 @@ sub watched_queues {
         column => 'member_id',
         value  => $self->principal_id,
     );
-
-    Jifty->log->debug( "WatchedQueues got " . $watched_queues->count . " queues" );
 
     return $watched_queues;
 

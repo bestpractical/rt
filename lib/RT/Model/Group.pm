@@ -69,7 +69,7 @@ An RT group object.
 =cut
 
 use Jifty::DBI::Schema;
-use base qw/RT::Record/;
+use base qw/RT::IsPrincipal RT::Record/;
 
 use Jifty::DBI::Record schema {
     column name        => type is 'varchar(200)';
@@ -682,13 +682,6 @@ sub set_disabled {
 
 }
 
-
-sub disabled {
-    my $self = shift;
-    $self->principal->disabled(@_);
-}
-
-
 =head2 members
 
 Returns either an L<RT::Model::GroupMemberCollection> or L<RT::Model::CachedGroupMemberCollection>
@@ -1150,40 +1143,6 @@ sub current_user_has_right {
         return (undef);
     }
 
-}
-
-
-
-=head2 principal
-
-Returns the principal object for this user. returns an empty RT::Model::Principal
-if there's no principal object matching this user. 
-The response is cached. principal should never ever change.
-
-
-=cut
-
-sub principal {
-    my $self = shift;
-    unless ( $self->{'principal'} && $self->{'principal'}->id ) {
-        $self->{'principal'} = RT::Model::Principal->new( current_user => $self->current_user );
-        $self->{'principal'}->load_by_cols(
-            id             => $self->id,
-            type => 'Group'
-        );
-    }
-    return $self->{'principal'};
-}
-
-=head2 principal_id  
-
-Returns this user's principal_id
-
-=cut
-
-sub principal_id {
-    my $self = shift;
-    return $self->id;
 }
 
 
