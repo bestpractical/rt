@@ -15,7 +15,7 @@ ok (require RT::Model::GroupCollection);
 # next had bugs
 # Groups->limit( column => 'id', operator => '!=', value => xx );
 my $g = RT::Model::Group->new(current_user => RT->system_user);
-my ($id, $msg) = $g->create_user_defined_group(name => 'GroupsNotEqualTest');
+my ($id, $msg) = $g->create_user_defined(name => 'GroupsNotEqualTest');
 ok ($id, "Created group #". $g->id) or diag("error: $msg");
 
 my $groups = RT::Model::GroupCollection->new(current_user => RT->system_user);
@@ -34,7 +34,7 @@ my ($id, $msg) = $u->create( name => 'Membertests'. $$ );
 ok ($id, 'Created user') or diag "error: $msg";
 
 my $g = RT::Model::Group->new(current_user => RT->system_user);
-($id, $msg) = $g->create_user_defined_group(name => 'Membertests');
+($id, $msg) = $g->create_user_defined(name => 'Membertests');
 ok ($id, $msg);
 
 my ($aid, $amsg) =$g->add_member($u->id);
@@ -62,7 +62,7 @@ my $testuser = RT::Model::User->new(current_user => RT->system_user);
 ok ($id,$msg);
 
 my $global_admin_cc = RT::Model::Group->new(current_user => RT->system_user);
-$global_admin_cc->load_role_group(object => RT->system, type => 'admin_cc');
+$global_admin_cc->load_role(object => RT->system, type => 'admin_cc');
 ok($global_admin_cc->id, "Found the global admincc group");
 my $groups = RT::Model::GroupCollection->new(current_user => RT->system_user);
 $groups->with_right(right => 'OwnTicket', object => $q);
@@ -80,7 +80,7 @@ ok ($id,$msg);
 is($groups->count, 3);
 
 my $RTxGroup = RT::Model::Group->new(current_user => RT->system_user);
-($id, $msg) = $RTxGroup->create_user_defined_group( name => 'RTxGroup', description => "RTx extension group");
+($id, $msg) = $RTxGroup->create_user_defined( name => 'RTxGroup', description => "RTx extension group");
 ok ($id,$msg);
 is ($RTxGroup->id, $id, "group loaded");
 

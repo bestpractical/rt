@@ -61,7 +61,7 @@
 %	while (my $Member = $Users->next()) {
 % my $user_object = $Member->member_obj->object();
 % my $group = RT::Model::Group->new( current_user => Jifty->web->current_user );
-% $group->load_acl_equivalence_group($Member->member_obj);
+% $group->load_acl_equivalence($Member->member_obj);
   <tr align="right"> 
 	<td valign="top"><& /Elements/ShowUser, user => $user_object &></td>
 	  <td>
@@ -95,7 +95,7 @@ $queue_obj->load($id) || abort(_("Couldn't load queue %1",$id));
 
 # Find out which users we want to display ACL selects for
 my $privileged = RT::Model::Group->new( current_user => Jifty->web->current_user );
-$privileged->load_system_internal_group('privileged');
+$privileged->load_system_internal('privileged');
 my $Users = $privileged->members;
 
     

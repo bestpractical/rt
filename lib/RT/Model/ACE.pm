@@ -519,7 +519,7 @@ sub canonicalize_principal {
     # ACL equivalence groups
     if ( $princ_type eq 'User' ) {
         my $equiv_group = RT::Model::Group->new( current_user => $self->current_user );
-        $equiv_group->load_acl_equivalence_group($princ_obj);
+        $equiv_group->load_acl_equivalence($princ_obj);
         unless ( $equiv_group->id ) {
             Jifty->log->fatal( "No ACL equiv group for princ " . $princ_obj->id );
             return ( RT::Model::Principal->new( current_user => RT->system_user ), undef );

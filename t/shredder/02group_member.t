@@ -15,12 +15,12 @@ plan tests => 22;
 {
 	RT::Test::Shredder::create_savepoint('clean');
 	my $pgroup = RT::Model::Group->new(current_user => RT->system_user );
-	my ($pgid) = $pgroup->create_user_defined_group( name => 'Parent group' );
+	my ($pgid) = $pgroup->create_user_defined( name => 'Parent group' );
 	ok( $pgid, "Created parent group" );
 	is( $pgroup->id, $pgid, "id is correct" );
 	
 	my $cgroup = RT::Model::Group->new(current_user => RT->system_user );
-	my ($cgid) = $cgroup->create_user_defined_group( name => 'Child group' );
+	my ($cgid) = $cgroup->create_user_defined( name => 'Child group' );
 	ok( $cgid, "Created child group" );
 	is( $cgroup->id, $cgid, "id is correct" );
 	

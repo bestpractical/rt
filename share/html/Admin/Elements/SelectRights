@@ -92,7 +92,7 @@ while ( my $ace = $acl_obj->next ) {
     $princ->load($principal_id);
     if ($princ->type eq 'User') {
     my $group = RT::Model::Group->new(current_user => RT->system_user);
-        $group->load_acl_equivalence_group($princ);
+        $group->load_acl_equivalence($princ);
         $principal_id = $group->principal_id;
     }
 

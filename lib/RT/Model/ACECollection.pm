@@ -199,7 +199,7 @@ sub limit_to_principal {
         $princ->load( $args{'id'} );
         if ( $princ->type eq 'User' ) {
             my $group = RT::Model::Group->new( current_user => RT->system_user );
-            $group->load_acl_equivalence_group($princ);
+            $group->load_acl_equivalence($princ);
             $args{'id'} = $group->principal_id;
         }
         $self->limit(

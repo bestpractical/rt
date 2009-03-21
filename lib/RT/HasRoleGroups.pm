@@ -40,7 +40,7 @@ sub is_watcher {
 
     # Load the relevant group.
     my $group = RT::Model::Group->new( current_user => $self->current_user );
-    $group->load_role_group(
+    $group->load_role(
         object => $self,
         type   => $args{'type'},
     );
@@ -150,7 +150,7 @@ sub _add_watcher {
     }
 
     my $group = RT::Model::Group->new( current_user => $self->current_user );
-    $group->create_role_group(
+    $group->create_role(
         object => $self,
         type   => $args{'type'},
     );
@@ -261,7 +261,7 @@ sub _delete_watcher {
     # see if this user is already a watcher.
 
     my $group = RT::Model::Group->new( current_user => $self->current_user );
-    $group->load_role_group(
+    $group->load_role(
         object => $self,
         type   => $args{'type'},
     );
@@ -303,11 +303,11 @@ sub role_group {
     my $role = shift;
 
     my $obj = RT::Model::Group->new( current_user => $self->current_user );
-    $obj->load_role_group( object => $self, type => $role );
+    $obj->load_role( object => $self, type => $role );
     return $obj;
 }
 
-=head2 create_role_group
+=head2 create_role
 
 Create role group for this object.
 
@@ -315,12 +315,12 @@ It will return a tuple ($group, $msg), on error group is undefined.
 
 =cut
 
-sub create_role_group {
+sub create_role {
     my $self = shift;
     my $type = shift;
 
     my $group = RT::Model::Group->new( current_user => $self->current_user );
-    my ($id, $msg) = $group->create_role_group(
+    my ($id, $msg) = $group->create_role(
         object => $self,
         type   => $type,
     );

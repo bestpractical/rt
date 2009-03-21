@@ -211,7 +211,7 @@ sub limit_to_privileged {
     my $self = shift;
 
     my $priv = RT::Model::Group->new( current_user => $self->current_user );
-    $priv->load_system_internal_group('privileged');
+    $priv->load_system_internal('privileged');
     unless ( $priv->id ) {
         Jifty->log->fatal("Couldn't find a privileged users group");
     }

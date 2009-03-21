@@ -254,7 +254,7 @@ sub create {
     }
 
     my $everyone = RT::Model::Group->new( current_user => $self->current_user );
-    $everyone->load_system_internal_group('Everyone');
+    $everyone->load_system_internal('Everyone');
     unless ( $everyone->id ) {
         Jifty->log->fatal("Could not load Everyone group on user creation.");
         Jifty->handle->rollback();
@@ -273,9 +273,9 @@ sub create {
 
     my $access_class = RT::Model::Group->new( current_user => $self->current_user );
     if ($privileged) {
-        $access_class->load_system_internal_group('privileged');
+        $access_class->load_system_internal('privileged');
     } else {
-        $access_class->load_system_internal_group('Unprivileged');
+        $access_class->load_system_internal('Unprivileged');
     }
 
     unless ( $access_class->id ) {
@@ -329,7 +329,7 @@ sub set_privileged {
         return ( 0, _('No permission to create users') );
     }
     my $priv = RT::Model::Group->new( current_user => $self->current_user );
-    $priv->load_system_internal_group('privileged');
+    $priv->load_system_internal('privileged');
 
     unless ( $priv->id ) {
         Jifty->log->fatal("Could not find privileged pseudogroup");
@@ -337,7 +337,7 @@ sub set_privileged {
     }
 
     my $unpriv = RT::Model::Group->new( current_user => $self->current_user );
-    $unpriv->load_system_internal_group('Unprivileged');
+    $unpriv->load_system_internal('Unprivileged');
     unless ( $unpriv->id ) {
         Jifty->log->fatal("Could not find unprivileged pseudogroup");
         return ( 0, _("Failed to find 'Unprivileged' users pseudogroup") );
@@ -402,7 +402,7 @@ Returns true if this user is privileged. Returns undef otherwise.
 sub privileged {
     my $self = shift;
     my $priv = RT::Model::Group->new( current_user => $self->current_user );
-    $priv->load_system_internal_group('privileged');
+    $priv->load_system_internal('privileged');
     if ( $priv->has_member( $self->principal ) ) {
         return (1);
     } else {

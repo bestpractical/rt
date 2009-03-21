@@ -185,7 +185,7 @@ sub load {
 
 
 
-=head2 load_user_defined_group name
+=head2 load_user_defined name
 
 Loads a system group from the database. The only argument is
 the group's name.
@@ -193,7 +193,7 @@ the group's name.
 
 =cut
 
-sub load_user_defined_group {
+sub load_user_defined {
     my $self       = shift;
     my $identifier = shift;
 
@@ -212,7 +212,7 @@ sub load_user_defined_group {
 
 
 
-=head2 load_acl_equivalence_group PRINCIPAL
+=head2 load_acl_equivalence PRINCIPAL
 
 Loads a user's acl equivalence group. Takes a principal object or its ID.
 ACL equivalnce groups are used to simplify the acl system. Each user
@@ -223,7 +223,7 @@ and granting ACLs, it _greatly_ simplifies acl checks.
 
 =cut
 
-sub load_acl_equivalence_group {
+sub load_acl_equivalence {
     my $self      = shift;
     my $principal = shift;
     $principal = $principal->id if ref $principal;
@@ -237,13 +237,13 @@ sub load_acl_equivalence_group {
 
 
 
-=head2 load_personal_group {name => name, User => USERID}
+=head2 load_personal {name => name, User => USERID}
 
 Loads a personal group from the database. 
 
 =cut
 
-sub load_personal_group {
+sub load_personal {
     my $self = shift;
     my %args = (
         name => undef,
@@ -260,7 +260,7 @@ sub load_personal_group {
 }
 
 
-=head2 load_system_internal_group name
+=head2 load_system_internal name
 
 Loads a Pseudo group from the database. The only argument is
 the group's name.
@@ -268,7 +268,7 @@ the group's name.
 
 =cut
 
-sub load_system_internal_group {
+sub load_system_internal {
     my $self       = shift;
     my $identifier = shift;
 
@@ -279,7 +279,7 @@ sub load_system_internal_group {
 }
 
 
-=head2 load_role_group { object => OBJ, domain => DOMAIN, type => TYPE, instance => ID }
+=head2 load_role { object => OBJ, domain => DOMAIN, type => TYPE, instance => ID }
 
 Loads a role group of an object (ticket, queue, system or other) from the database. 
 Takes the following arguments:
@@ -299,7 +299,7 @@ Takes the following arguments:
 
 =cut
 
-sub load_role_group {
+sub load_role {
     my $self = shift;
     my %args = (
         domain   => undef,
@@ -406,7 +406,7 @@ sub _create {
 
 
 
-=head2 create_user_defined_group { name => "name", description => "description"}
+=head2 create_user_defined { name => "name", description => "description"}
 
 A helper subroutine which creates a system group 
 
@@ -414,7 +414,7 @@ Returns a tuple of (Id, Message).  If id is 0, the create failed
 
 =cut
 
-sub create_user_defined_group {
+sub create_user_defined {
     my $self = shift;
 
     unless ( $self->current_user_has_right('AdminGroup') ) {
@@ -480,7 +480,7 @@ sub _createacl_equivalence_group {
 
 
 
-=head2 create_personal_group { principal_id => PRINCIPAL_ID, name => "name", description => "description"}
+=head2 create_personal { principal_id => PRINCIPAL_ID, name => "name", description => "description"}
 
 A helper subroutine which creates a personal group.
 
@@ -488,7 +488,7 @@ Returns a tuple of (Id, Message).  If id is 0, the create failed
 
 =cut
 
-sub create_personal_group {
+sub create_personal {
     my $self = shift;
     my %args = (
         name         => undef,
@@ -524,7 +524,7 @@ sub create_personal_group {
 
 
 
-=head2 create_role_group { object => OBJ, domain => DOMAIN, type => TYPE, instance => ID }
+=head2 create_role { object => OBJ, domain => DOMAIN, type => TYPE, instance => ID }
 
 A helper subroutine which creates a role group. Takes the following arguments:
 
@@ -547,7 +547,7 @@ Returns a tuple of (Id, Message).  If id is a false value, the create failed
 
 =cut
 
-sub create_role_group {
+sub create_role {
     my $self = shift;
     my %args = (
         domain   => undef,

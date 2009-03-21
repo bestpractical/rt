@@ -505,7 +505,7 @@ sub role_group {
     my $role  = shift;
     my $group = RT::Model::Group->new( current_user => $self->current_user );
     if ( $self->current_user_has_right('SeeQueue') ) {
-        $group->load_role_group( type => $role, object => $self );
+        $group->load_role( type => $role, object => $self );
     }
     return ($group);
 }

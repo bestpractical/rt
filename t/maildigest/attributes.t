@@ -49,7 +49,7 @@ if( $testq->validate_name( 'EmailDigest-testqueue' ) ) {
 
 # Allow anyone to open a ticket on the test queue.
 my $everyone = RT::Model::Group->new(current_user => RT->system_user );
-( $ret, $msg ) = $everyone->load_system_internal_group( 'Everyone' );
+( $ret, $msg ) = $everyone->load_system_internal( 'Everyone' );
 ok( $ret, "Loaded 'everyone' group: $msg" );
 
 ( $ret, $msg ) = $everyone->principal->grant_right( right => 'CreateTicket',

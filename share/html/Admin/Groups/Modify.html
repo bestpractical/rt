@@ -110,7 +110,7 @@ else {
     $current_tab = 'Admin/Groups/Modify.html?id='.$id;
     if ($id eq 'new' ) {
 	
-	my ($create_id, $create_msg) = $Group->create_user_defined_group(name =>
+	my ($create_id, $create_msg) = $Group->create_user_defined(name =>
     "$name");
         unless ($create_id) {
             abort (_("Group could not be Created: %1", $create_msg));

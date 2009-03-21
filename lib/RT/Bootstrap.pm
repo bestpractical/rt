@@ -126,7 +126,7 @@ sub insert_initial_data {
     # system groups
     foreach my $name (qw(Everyone Privileged Unprivileged)) {
         my $group = RT::Model::Group->new( current_user => RT->system_user );
-        $group->load_system_internal_group($name);
+        $group->load_system_internal($name);
         if ( $group->id ) {
 
             #            push @warns, "System group '$name' already exists.";
@@ -182,7 +182,7 @@ sub insert_initial_data {
     # system role groups
     foreach my $name (qw(owner requestor cc admin_cc)) {
         my $group = RT::Model::Group->new( current_user => RT->system_user );
-        my ( $val, $msg ) = $group->create_role_group( object => RT->system, type => $name);
+        my ( $val, $msg ) = $group->create_role( object => RT->system, type => $name);
         return ( $val, $msg ) unless $val;
     }
 }
@@ -227,7 +227,7 @@ sub insert_data {
                     if ( ref $_ eq 'HASH' ) {
                         $parent->load_by_cols(%$_);
                     } elsif ( !ref $_ ) {
-                        $parent->load_user_defined_group($_);
+                        $parent->load_user_defined($_);
                     } else {
                         print "(Error: wrong format of member_of field."
                             . " Should be name of user defined group or"
@@ -357,15 +357,15 @@ sub insert_data {
             if ( $item->{'GroupDomain'} ) {
                 $princ = RT::Model::Group->new( current_user => RT->system_user );
                 if ( $item->{'GroupDomain'} eq 'UserDefined' ) {
-                    $princ->load_user_defined_group( $item->{'group_id'} );
+                    $princ->load_user_defined( $item->{'group_id'} );
                 } elsif ( $item->{'GroupDomain'} eq 'SystemInternal' ) {
-                    $princ->load_system_internal_group( $item->{'GroupType'} );
+                    $princ->load_system_internal( $item->{'GroupType'} );
                 } elsif ( $item->{'GroupDomain'} eq 'RT::System-Role' ) {
-                    $princ->create_role_group( object => RT->system, type => $item->{'GroupType'} );
+                    $princ->create_role( object => RT->system, type => $item->{'GroupType'} );
                 } elsif ( $item->{'GroupDomain'} eq 'RT::Model::Queue-Role'
                     && $item->{'queue'} )
                 {
-                    $princ->create_role_group(
+                    $princ->create_role(
                         object => $object,
                         type   => $item->{'GroupType'},
                     );
@@ -516,7 +516,7 @@ sub acl_equiv_group_id {
     my $user = RT::Model::User->new( current_user => RT->system_user );
     $user->load($username);
     my $equiv_group = RT::Model::Group->new( current_user => RT->system_user );
-    $equiv_group->load_acl_equivalence_group($user);
+    $equiv_group->load_acl_equivalence($user);
     return ( $equiv_group->id );
 }
 

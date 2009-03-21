@@ -586,7 +586,7 @@ sub create {
         return ( 0, 0, _("Ticket could not be created due to an internal error") );
     }
 
-    ((my $owner_group), $msg) = $self->create_role_group('owner');
+    ((my $owner_group), $msg) = $self->create_role('owner');
     unless ( $owner_group ) {
         Jifty->log->fatal( "Aborting ticket creation because of above error." );
         Jifty->handle->rollback();

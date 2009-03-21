@@ -101,7 +101,7 @@ my @results;
 if ( $update ) {
     foreach my $gid( @add ) {
         my $group = RT::Model::Group->new( current_user => Jifty->web->current_user );
-        $group->load_user_defined_group( $gid );
+        $group->load_user_defined( $gid );
         unless ( $group->id ) {
             push @results, _( "Couldn't load group #%1", $gid );
             next;
@@ -111,7 +111,7 @@ if ( $update ) {
     }
     foreach my $gid( @delete ) {
         my $group = RT::Model::Group->new( current_user => Jifty->web->current_user );
-        $group->load_user_defined_group( $gid );
+        $group->load_user_defined( $gid );
         unless ( $group->id ) {
             push @results, _( "Couldn't load group #%1", $gid );
             next;

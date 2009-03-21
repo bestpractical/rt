@@ -31,11 +31,11 @@ $user_obj->principal->grant_right(right => $_, object => RT->system )
 # }}}
 # create and test groups (outer < inner < user) {{{
 my $inner_group = RT::Model::Group->new(current_user => RT->system_user);
-($ok, $msg) = $inner_group->create_user_defined_group(name => "inner", description =>  "inner group");
+($ok, $msg) = $inner_group->create_user_defined(name => "inner", description =>  "inner group");
 ok($ok, "created inner group: $msg");
 
 my $outer_group = RT::Model::Group->new(current_user => RT->system_user);
-($ok, $msg) = $outer_group->create_user_defined_group(name => "outer", description =>  "outer group");
+($ok, $msg) = $outer_group->create_user_defined(name => "outer", description =>  "outer group");
 ok($ok, "created outer group: $msg");
 
 ($ok, $msg) = $outer_group->add_member($inner_group->principal_id);
