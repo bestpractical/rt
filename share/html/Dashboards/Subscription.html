@@ -146,7 +146,7 @@
     <option value="<% $formatted %>" <%$selected%>><% $formatted %></option>
 % }
 </select>
-(in <%$time_zone%>)
+(in <%$timezone%>)
 </td></tr>
 <tr><td class="label">
 <&|/l&>Rows</&>:
@@ -185,7 +185,7 @@ my $current_subtab = 'Dashboards/Subscription.html?dashboard_id=' . $dashboard_i
 my ($title, @results);
 my ($val, $msg);
 my $Loaded = 0;
-my $timezone = Jifty->web->current_user->user_object->timezone || RT->config->get('timezone');
+my $timezone = Jifty->web->current_user->user_object->time_zone || RT->config->get('time_zone');
 
 use RT::Dashboard;
 my $dashboard_obj = RT::Dashboard->new( current_user => Jifty->web->current_user );

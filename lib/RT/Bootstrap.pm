@@ -181,7 +181,7 @@ sub run {
         'store_loops'                            => undef,
         'strict_link_acl'                        => 1,
         'suppress_inline_text_files'             => undef,
-        'timezone'                               => 'America/New_York',
+        'time_zone'                              => 'America/New_York',
         'truncate_long_attachments'              => undef,
         'trust_html_attachments'                 => undef,
         'use_friendly_from_line'                 => 1,
