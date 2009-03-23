@@ -119,11 +119,6 @@ sub load_config {
     $Config = RT::Model::Config->new;
 
     #    require RT::I18N;
-
-    # RT::Essentials mistakenly recommends that WebPath be set to '/'.
-    # If the user does that, do what they mean.
-    $RT::WebPath = '' if ( $RT::WebPath eq '/' );
-
     RT::I18N->init;
 }
 
