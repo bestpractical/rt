@@ -393,7 +393,7 @@ sub _bootstrap_create {
 
     # When bootstrapping, make sure we get the _right_ users
     if ( $args{'UserId'} ) {
-        my $user = RT::Model::User->new;
+        my $user = RT::Model::User->new( current_user => $self->current_user );
         $user->load( $args{'UserId'} );
         delete $args{'UserId'};
         $args{'principal_id'}   = $user->principal_id;
@@ -518,8 +518,8 @@ sub canonicalize_principal {
     # rights never get granted to users. they get granted to their
     # ACL equivalence groups
     if ( $princ_type eq 'User' ) {
-        my $equiv_group = RT::Model::Group->new;
-        $equiv_group->load_acl_equivalence_group($princ_obj);
+        my $equiv_group = RT::Model::Group->new( current_user => $self->current_user );
+        $equiv_group->load_acl_equivalence($princ_obj);
         unless ( $equiv_group->id ) {
             Jifty->log->fatal( "No ACL equiv group for princ " . $princ_obj->id );
             return ( RT::Model::Principal->new( current_user => RT->system_user ), undef );

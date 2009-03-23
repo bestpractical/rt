@@ -138,7 +138,7 @@ if ($ARGS{'parse'} && $ARGS{'template'}) {
     push @results, $action->update_by_template();
 } else {
     if ($ARGS{'query'}) {
-	my $Tickets = RT::Model::TicketCollection->new();
+	my $Tickets = RT::Model::TicketCollection->new( current_user => Jifty->web->current_user );
 	$Tickets->from_sql($ARGS{'query'});
 	
 	while (my $t = $Tickets->next) {

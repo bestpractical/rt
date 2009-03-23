@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 
-my $Tickets = RT::Model::TicketCollection->new();
+my $Tickets = RT::Model::TicketCollection->new( current_user => Jifty->web->current_user );
 $Tickets->from_sql($ARGS{'query'});
 if ($order_by =~ /\|/) {
     # Multiple Sorts
@@ -90,7 +90,7 @@ $r->content_type('application/rss+xml');
           description => $Ticket->transactions->first->content,
           dc => {
             creator  => $creator_str,
-            date => $Ticket->created_obj->rfc2822,
+            date => $Ticket->created->rfc2822,
           },
           guid        => $Ticket->queue . '_' . $Ticket->id,
         );

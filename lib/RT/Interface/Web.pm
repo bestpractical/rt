@@ -204,13 +204,12 @@ This routine could really use _accurate_ heuristics. (XXX TODO)
 =cut
 
 sub static_file_headers {
-    my $date = RT::Date->new( current_user => RT->system_user );
-
     # make cache public
     $HTML::Mason::Commands::r->headers_out->{'Cache-Control'} = 'max-age=259200, public';
 
     # Expire things in a month.
-    $date->set( value => time + 30 * 24 * 60 * 60 );
+    my $date = RT::DateTime->now;
+    $date->add(months => 1);
     $HTML::Mason::Commands::r->headers_out->{'Expires'} = $date->rfc2616;
 
     # if we set 'Last-Modified' then browser request a comp using 'If-Modified-Since'
@@ -381,9 +380,9 @@ sub create_ticket {
 
     my (@Actions);
 
-    my $Ticket = RT::Model::Ticket->new();
+    my $Ticket = RT::Model::Ticket->new( current_user => Jifty->web->current_user );
 
-    my $Queue = RT::Model::Queue->new();
+    my $Queue = RT::Model::Queue->new( current_user => Jifty->web->current_user );
     unless ( $Queue->load( $ARGS{'queue'} ) ) {
         abort('Queue not found');
     }
@@ -394,13 +393,11 @@ sub create_ticket {
 
     my $due;
     if ( defined $ARGS{'Due'} and $ARGS{'Due'} =~ /\S/ ) {
-        $due = new RT::Date( current_user => Jifty->web->current_user );
-        $due->set( format => 'unknown', value => $ARGS{'Due'} );
+        $due = RT::DateTime->new_from_string($ARGS{'Due'});
     }
     my $starts;
     if ( defined $ARGS{'Starts'} and $ARGS{'Starts'} =~ /\S/ ) {
-        $starts = new RT::Date( current_user => Jifty->web->current_user );
-        $starts->set( format => 'unknown', value => $ARGS{'Starts'} );
+        $starts = RT::DateTime->new_from_string($ARGS{'Starts'});
     }
 
     my $sigless = RT::Interface::Web::strip_content(
@@ -491,7 +488,7 @@ sub create_ticket {
         elsif ( $arg =~ /^object-RT::Model::Ticket--CustomField-(\d+)/ ) {
             my $cfid = $1;
 
-            my $cf = RT::Model::CustomField->new();
+            my $cf = RT::Model::CustomField->new( current_user => Jifty->web->current_user );
             $cf->load($cfid);
             unless ( $cf->id ) {
                 Jifty->log->error( "Couldn't load custom field #" . $cfid );
@@ -575,7 +572,7 @@ sub load_ticket {
         abort("No ticket specified");
     }
 
-    my $Ticket = RT::Model::Ticket->new();
+    my $Ticket = RT::Model::Ticket->new( current_user => Jifty->web->current_user );
     $Ticket->load($id);
     unless ( $Ticket->id ) {
         abort("Could not load ticket $id");
@@ -644,7 +641,8 @@ sub process_update_message {
     );
 
     $Message->head->add( 'Message-ID' => RT::Interface::Email::gen_message_id( Ticket => $args{'ticket_obj'}, ) );
-    my $old_txn = RT::Model::Transaction->new();
+    my $old_txn =
+      RT::Model::Transaction->new( current_user => Jifty->web->current_user );
     if ( $args{args_ref}->{'quote_transaction'} ) {
         $old_txn->load( $args{args_ref}->{'quote_transaction'} );
     } else {
@@ -812,12 +810,7 @@ Returns an ISO date and time in GMT
 sub parse_date_to_iso {
     my $date = shift;
 
-    my $date_obj = RT::Date->new();
-    $date_obj->set(
-        format => 'unknown',
-        value  => $date
-    );
-    return ( $date_obj->iso );
+    return RT::DateTime->new_from_string($date)->iso;
 }
 
 
@@ -844,7 +837,7 @@ sub process_acl_changes {
         @Rights = grep $_, @Rights;
         next unless @Rights;
 
-        my $principal = RT::Model::Principal->new();
+        my $principal = RT::Model::Principal->new( current_user => Jifty->web->current_user );
         $principal->load($principal_id);
 
         my $obj;
@@ -1073,7 +1066,7 @@ sub process_object_custom_field_updates {
             }
 
             foreach my $cf ( keys %{ $custom_fields_to_mod{$class}{$id} } ) {
-                my $CustomFieldObj = RT::Model::CustomField->new();
+                my $CustomFieldObj = RT::Model::CustomField->new( current_user => Jifty->web->current_user );
                 $CustomFieldObj->load_by_id($cf);
                 unless ( $CustomFieldObj->id ) {
                     Jifty->log->warn("Couldn't load custom field #$cf");
@@ -1342,15 +1335,12 @@ sub process_ticket_dates {
 
         my ( $code, $msg );
 
-        my $DateObj = RT::Date->new();
-        $DateObj->set(
-            format => 'unknown',
-            value  => $args_ref->{ $field . '_date' }
-        );
+        my $date = $args_ref->{ $field . '_date' };
+        my $DateObj = RT::DateTime->new_from_string($date);
 
         my $obj = $field . "_obj";
-        if (    ( defined $DateObj->unix )
-            and ( $DateObj->unix != $Ticket->$obj()->unix() ) )
+        if (    ( defined $DateObj->epoch )
+            and ( $DateObj->epoch != $Ticket->$obj->epoch ) )
         {
             my $method = "set_$field";
             my ( $code, $msg ) = $Ticket->$method( $DateObj->iso );

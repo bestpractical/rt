@@ -50,7 +50,7 @@ use warnings;
 
 package RT::Model::User;
 
-use base qw/RT::Record/;
+use base qw/RT::IsPrincipal RT::Record/;
 
 =head1 NAME
 
@@ -122,7 +122,7 @@ use Jifty::DBI::Record schema {
     column state    => max_length is 100, type is 'varchar(100)', default is '';
     column zip      => max_length is 16,  type is 'varchar(16)',  default is '';
     column country  => max_length is 50,  type is 'varchar(50)',  default is '';
-    column timezone => max_length is 50,  type is 'varchar(50)',  default is '';
+    column time_zone => max_length is 50,  type is 'varchar(50)',  default is '';
     column pgp_key   => type is 'text';
 
 };
@@ -217,7 +217,7 @@ sub create {
 
     # Groups deal with principal ids, rather than user ids.
     # When creating this user, set up a principal id for it.
-    my $principal    = RT::Model::Principal->new;
+    my $principal    = RT::Model::Principal->new( current_user => $self->current_user );
     my $principal_id = $principal->create(
         type => 'User',
         disabled       => $args{'disabled'},
@@ -244,7 +244,7 @@ sub create {
         return ( 0, _('Could not create user') );
     }
 
-    my $aclstash = RT::Model::Group->new;
+    my $aclstash = RT::Model::Group->new( current_user => $self->current_user );
     my $stash_id = $aclstash->_createacl_equivalence_group($principal);
 
     unless ($stash_id) {
@@ -253,8 +253,8 @@ sub create {
         return ( 0, _('Could not create user') );
     }
 
-    my $everyone = RT::Model::Group->new;
-    $everyone->load_system_internal_group('Everyone');
+    my $everyone = RT::Model::Group->new( current_user => $self->current_user );
+    $everyone->load_system_internal('Everyone');
     unless ( $everyone->id ) {
         Jifty->log->fatal("Could not load Everyone group on user creation.");
         Jifty->handle->rollback();
@@ -271,11 +271,11 @@ sub create {
         return ( 0, _('Could not create user') );
     }
 
-    my $access_class = RT::Model::Group->new;
+    my $access_class = RT::Model::Group->new( current_user => $self->current_user );
     if ($privileged) {
-        $access_class->load_system_internal_group('privileged');
+        $access_class->load_system_internal('privileged');
     } else {
-        $access_class->load_system_internal_group('Unprivileged');
+        $access_class->load_system_internal('Unprivileged');
     }
 
     unless ( $access_class->id ) {
@@ -328,16 +328,16 @@ sub set_privileged {
     {
         return ( 0, _('No permission to create users') );
     }
-    my $priv = RT::Model::Group->new;
-    $priv->load_system_internal_group('privileged');
+    my $priv = RT::Model::Group->new( current_user => $self->current_user );
+    $priv->load_system_internal('privileged');
 
     unless ( $priv->id ) {
         Jifty->log->fatal("Could not find privileged pseudogroup");
         return ( 0, _("Failed to find 'privileged' users pseudogroup.") );
     }
 
-    my $unpriv = RT::Model::Group->new;
-    $unpriv->load_system_internal_group('Unprivileged');
+    my $unpriv = RT::Model::Group->new( current_user => $self->current_user );
+    $unpriv->load_system_internal('Unprivileged');
     unless ( $unpriv->id ) {
         Jifty->log->fatal("Could not find unprivileged pseudogroup");
         return ( 0, _("Failed to find 'Unprivileged' users pseudogroup") );
@@ -401,8 +401,8 @@ Returns true if this user is privileged. Returns undef otherwise.
 
 sub privileged {
     my $self = shift;
-    my $priv = RT::Model::Group->new;
-    $priv->load_system_internal_group('privileged');
+    my $priv = RT::Model::Group->new( current_user => $self->current_user );
+    $priv->load_system_internal('privileged');
     if ( $priv->has_member( $self->principal ) ) {
         return (1);
     } else {
@@ -458,7 +458,7 @@ sub _bootstrap_create {
         return ( 0, 'Could not create user' );    #never loc this
     }
 
-    my $aclstash = RT::Model::Group->new;
+    my $aclstash = RT::Model::Group->new( current_user => $self->current_user );
 
     my $stash_id = $aclstash->_createacl_equivalence_group($principal);
 
@@ -582,7 +582,7 @@ sub load_or_create_by_email {
 }
 
 
-=head2 validateemail ADDRESS
+=head2 validate_email ADDRESS
 
 Returns true if the email address entered is not in use by another user or is 
 undef or ''. Returns false if it's in use. 
@@ -620,7 +620,7 @@ user preferences.
 =item 'squelched' - returned only when Ticket argument is provided and
 notifications to the user has been supressed for this ticket.
 
-=item 'daily' - retruned when user recieve daily messages digest instead
+=item 'daily' - returned when user recieve daily messages digest instead
 of immediate delivery.
 
 =item 'weekly' - previous, but weekly.
@@ -859,7 +859,7 @@ sub validate_auth_string {
     return $auth_string eq substr(Digest::MD5::md5_hex($str),0,16);
 }
 
-=head2 sub set_disabled
+=head2 set_disabled
 
 Toggles the user's disabled flag.
 If this flag is
@@ -880,57 +880,6 @@ sub set_disabled {
         return ( 0, _('Permission Denied') );
     }
     return $self->principal->set_disabled(@_);
-}
-
-=head2 disabled
-
-Returns true if user is disabled or false otherwise
-
-=cut
-
-sub disabled {
-    my $self = shift;
-    return $self->principal->disabled(@_);
-}
-
-=head2 principal 
-
-Returns the principal object for this user. returns an empty RT::Model::Principal
-if there's no principal object matching this user. 
-The response is cached. principal should never ever change.
-
-
-=cut
-
-sub principal {
-    my $self = shift;
-
-    unless ( $self->id ) {
-        Jifty->log->error("Couldn't get principal for not loaded object");
-        return undef;
-    }
-
-    my $obj = RT::Model::Principal->new;
-    $obj->load_by_id( $self->id );
-    unless ( $obj->id ) {
-        Jifty->log->fatal( 'No principal for user #' . $self->id );
-        return undef;
-    } elsif ( $obj->type ne 'User' ) {
-        Jifty->log->fatal( 'User #' . $self->id . ' has principal of ' . $obj->type . ' type' );
-        return undef;
-    }
-    return $obj;
-}
-
-=head2 principal_id  
-
-Returns this user's principal_id
-
-=cut
-
-sub principal_id {
-    my $self = shift;
-    return $self->id;
 }
 
 =head2 has_group_right
@@ -958,7 +907,7 @@ sub has_group_right {
     );
 
     if ( defined $args{'group'} ) {
-        $args{'group_obj'} = RT::Model::Group->new;
+        $args{'group_obj'} = RT::Model::Group->new( current_user => $self->current_user );
         $args{'group_obj'}->load( $args{'group'} );
     }
 
@@ -986,7 +935,7 @@ user is a member.
 
 sub own_groups {
     my $self   = shift;
-    my $groups = RT::Model::GroupCollection->new;
+    my $groups = RT::Model::GroupCollection->new( current_user => $self->current_user );
     $groups->limit_to_user_defined_groups;
     $groups->with_member(
         principal_id => $self->id,
@@ -1103,7 +1052,7 @@ sub preferences {
     my $name    = _prefname(shift);
     my $default = shift;
 
-    my $attr = RT::Model::Attribute->new;
+    my $attr = RT::Model::Attribute->new( current_user => $self->current_user );
     $attr->load_by_name_and_object( object => $self, name => $name );
 
     my $content = $attr->id ? $attr->content : undef;
@@ -1136,7 +1085,7 @@ sub set_preferences {
     return ( 0, _("No permission to set preferences") )
       unless $self->current_user_can_modify('Preferences');
 
-    my $attr = RT::Model::Attribute->new;
+    my $attr = RT::Model::Attribute->new( current_user => $self->current_user );
     $attr->load_by_name_and_object( object => $self, name => $name );
     if ( $attr->id ) {
         return $attr->set_content($value);
@@ -1160,9 +1109,7 @@ sub watched_queues {
     my $self = shift;
     my @roles = @_ || ( 'cc', 'admin_cc' );
 
-    Jifty->log->debug( 'WatcheQueues got user ' . $self->name );
-
-    my $watched_queues = RT::Model::QueueCollection->new;
+    my $watched_queues = RT::Model::QueueCollection->new( current_user => $self->current_user );
 
     my $group_alias = $watched_queues->join(
         alias1  => 'main',
@@ -1207,8 +1154,6 @@ sub watched_queues {
         column => 'member_id',
         value  => $self->principal_id,
     );
-
-    Jifty->log->debug( "WatchedQueues got " . $watched_queues->count . " queues" );
 
     return $watched_queues;
 

@@ -37,14 +37,14 @@ ok ($id, "Foo $id was Created");
 
 {
     my $group = RT::Model::Group->new(current_user => RT->system_user);
-    ok($group->load_role_group(object => $Queue, type=> 'cc'));
+    ok($group->load_role(object => $Queue, type=> 'cc'));
     ok (!$group->id, "No cc group as there are no ccs yet");
 
     my ($status, $msg) = $Queue->add_watcher(type => 'cc', email => 'bob@fsck.com');
     ok ($status, "Added bob at fsck.com as a cc") or diag "error: $msg";
 
     $group = RT::Model::Group->new(current_user => RT->system_user);
-    ok ($group->load_role_group(object => $Queue, type=> 'cc'));
+    ok ($group->load_role(object => $Queue, type=> 'cc'));
     ok ($group->id, "Found the cc object for this Queue");
 
     ok (my $bob = RT::Model::User->new(current_user => RT->system_user), "Creating a bob rt::user");
@@ -73,7 +73,7 @@ ok ($id, "Foo $id was Created");
 
 {
     my $group = RT::Model::Group->new(current_user => RT->system_user);
-    ok($group->load_role_group(object => $Queue, type=> 'admin_cc'));
+    ok($group->load_role(object => $Queue, type=> 'admin_cc'));
     ok (!$group->id, "No admin_cc group as there are no admin ccs yet");
 }
 

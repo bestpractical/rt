@@ -152,7 +152,7 @@ sub new_item {
     my $self = shift;
 
     use RT::Model::Template;
-    my $item = RT::Model::Template->new();
+    my $item = RT::Model::Template->new( current_user => $self->current_user );
     return ($item);
 }
 

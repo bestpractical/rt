@@ -84,7 +84,7 @@
 my $current_tab;
 my  ($title, @results, $disabled, $enabled_checked);
 
-my $Group = RT::Model::Group->new();
+my $Group = RT::Model::Group->new( current_user => Jifty->web->current_user );
 
 if ($create) {
     $current_tab = 'User/Groups/Modify.html?create=1';
@@ -93,7 +93,7 @@ if ($create) {
 else {
     if ( defined ($id) && $id eq 'new' ) {
 
-        my ( $id, $msg ) = $Group->create_personal_group(
+        my ( $id, $msg ) = $Group->create_personal(
                              name        => "$name",
                              principal_id => Jifty->web->current_user->id
         );

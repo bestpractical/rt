@@ -92,13 +92,13 @@ while ( my $ace = $acl_obj->next ) {
     $princ->load($principal_id);
     if ($princ->type eq 'User') {
     my $group = RT::Model::Group->new(current_user => RT->system_user);
-        $group->load_acl_equivalence_group($princ);
+        $group->load_acl_equivalence($princ);
         $principal_id = $group->principal_id;
     }
 
 
-    my $acl_obj = RT::Model::ACECollection->new();
-    my $ACE = RT::Model::ACE->new();
+    my $acl_obj = RT::Model::ACECollection->new( current_user => Jifty->web->current_user );
+    my $ACE = RT::Model::ACE->new( current_user => Jifty->web->current_user );
 
 
     $acl_obj->limit_to_object( $object);

@@ -176,7 +176,7 @@ sub create {
         }
 
         foreach my $part ( $Attachment->parts ) {
-            my $SubAttachment = RT::Model::Attachment->new();
+            my $SubAttachment = RT::Model::Attachment->new( current_user => $self->current_user );
             my ($id) = $SubAttachment->create(
                 transaction_id => $args{'transaction_id'},
                 parent         => $id,
@@ -239,7 +239,8 @@ sub transaction {
     my $self = shift;
 
     unless ( $self->{_transaction_obj} ) {
-        $self->{_transaction_obj} = RT::Model::Transaction->new;
+        $self->{_transaction_obj} =
+          RT::Model::Transaction->new( current_user => $self->current_user );
         $self->{_transaction_obj}->load( $self->transaction_id );
     }
 
@@ -258,11 +259,8 @@ has a parent, otherwise returns undef.
 
 sub parent_obj {
     my $self = shift;
-    return undef unless $self->parent;
-
-    my $parent = RT::Model::Attachment->new;
-    $parent->load_by_id( $self->parent );
-    return $parent;
+    return undef unless $self->parent->id;
+    return $self->parent;
 }
 
 =head2 children
@@ -276,7 +274,7 @@ C<parent>.
 sub children {
     my $self = shift;
 
-    my $kids = RT::Model::AttachmentCollection->new;
+    my $kids = RT::Model::AttachmentCollection->new( current_user => $self->current_user );
     $kids->children_of( $self->id );
     return ($kids);
 }
@@ -410,7 +408,7 @@ sub quote {
 
         $body =~ s/^/> /gm;
 
-        $body = '[' . $self->transaction->creator_obj->name() . ' - ' . $self->transaction->created_as_string() . "]:\n\n" . $body . "\n\n";
+        $body = '[' . $self->transaction->creator_obj->name() . ' - ' . $self->transaction->created . "]:\n\n" . $body . "\n\n";
 
     } else {
         $body = "[Non-text message not quoted]\n\n";

@@ -69,7 +69,7 @@ my $subtabs = {
     },
 };
 
-my $scrip = RT::Model::Scrip->new();
+my $scrip = RT::Model::Scrip->new( current_user => Jifty->web->current_user );
 my ($id, @results) = $m->comp( '/Admin/Elements/EditScrip:Process', %ARGS );
 
 my ($title, $current_subtab);

@@ -121,7 +121,7 @@ my %class = (
 </%ONCE>
 <%INIT>
 
-my $transdate = $transaction->created_as_string();
+my $transdate = $transaction->created;
 $transdate =~ s/\s/&nbsp;/g;
 
 my ($type, $field) = ($transaction->type, $transaction->field || '');

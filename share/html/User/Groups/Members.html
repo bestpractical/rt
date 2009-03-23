@@ -107,7 +107,7 @@
 </&>
 <%INIT>
 
-my $Group = RT::Model::Group->new();
+my $Group = RT::Model::Group->new( current_user => Jifty->web->current_user );
 $Group->load($id) ;
 
 unless ($Group->id) {
@@ -135,10 +135,10 @@ foreach my $member (@add_member_users, @add_membersGroups) {
     my $principal;
 
     if ($member =~ /^Group-(\d+)$/) {
-        $principal = RT::Model::Group->new();
+        $principal = RT::Model::Group->new( current_user => Jifty->web->current_user );
         $principal->load($1);
     } elsif ($member =~ /^User-(\d+)$/) {
-        $principal = RT::Model::User->new();
+        $principal = RT::Model::User->new( current_user => Jifty->web->current_user );
         $principal->load($1);
     } else {
         next;

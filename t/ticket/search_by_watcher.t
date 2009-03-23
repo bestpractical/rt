@@ -250,7 +250,7 @@ my $nobody = RT->nobody();
 
 {
     my $everyone = RT::Model::Group->new(current_user => RT->system_user );
-    $everyone->load_system_internal_group('Everyone');
+    $everyone->load_system_internal('Everyone');
     ok($everyone->id, "loaded 'everyone' group");
     my($id, $msg) = $everyone->principal->grant_right( right => 'OwnTicket',
                                                          object => $q

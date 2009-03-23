@@ -51,6 +51,7 @@ use strict;
 package RT;
 
 use RT::CurrentUser;
+use RT::DateTime;
 use Jifty::Util;
 
 use strict;

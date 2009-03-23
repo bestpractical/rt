@@ -494,7 +494,7 @@ dashboards. A dashboard is a set of saved searches, the subscription controls
 how often that dashboard is sent and how it's displayed.
 
 Each subscription has an hour, and possibly day of week or day of month. These
-are taken to be in the user's timezone if available, UTC otherwise.
+are taken to be in the user's time zone if available, UTC otherwise.
 
 =head1 SETUP
 

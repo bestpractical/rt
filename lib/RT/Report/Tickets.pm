@@ -65,7 +65,7 @@ sub groupings {
       my $type (qw(owner creator last_updated_by requestor cc admin_cc watcher))
     {
         push @fields, $type . ' ' . $_, $type . '.' . $_ foreach qw(
-          name email real_name nickname organization lang city country timezone
+          name email real_name nickname organization lang city country time_zone
         );
     }
 
@@ -87,9 +87,9 @@ sub groupings {
     }
 
     if ($queues) {
-        my $CustomFields = RT::Model::CustomFieldCollection->new;
+        my $CustomFields = RT::Model::CustomFieldCollection->new( current_user => $self->current_user );
         foreach my $id ( keys %$queues ) {
-            my $queue = RT::Model::Queue->new;
+            my $queue = RT::Model::Queue->new( current_user => $self->current_user );
             $queue->load($id);
             unless ( $queue->id ) {
 
@@ -114,7 +114,7 @@ sub label {
     if ( $field =~ /^(?:CF|CustomField)\.{(.*)}$/ ) {
         my $cf = $1;
         return _( "Custom field '%1'", $cf ) if $cf =~ /\D/;
-        my $obj = RT::Model::CustomField->new;
+        my $obj = RT::Model::CustomField->new( current_user => $self->current_user );
         $obj->load($cf);
         return _( "Custom field '%1'", $obj->name );
     }
@@ -179,7 +179,7 @@ sub _field_to_function {
         }
     } elsif ( $field =~ /^(?:cf|custom_field)\.{(.*)}$/ ) {    #XXX: use CFDecipher method
         my $cf_name = $1;
-        my $cf      = RT::Model::CustomField->new;
+        my $cf      = RT::Model::CustomField->new( current_user => $self->current_user );
         $cf->load($cf_name);
         unless ( $cf->id ) {
             Jifty->log->error("Couldn't load CustomField #$cf_name");

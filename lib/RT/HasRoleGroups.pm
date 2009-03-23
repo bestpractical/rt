@@ -39,8 +39,8 @@ sub is_watcher {
     );
 
     # Load the relevant group.
-    my $group = RT::Model::Group->new;
-    $group->load_role_group(
+    my $group = RT::Model::Group->new( current_user => $self->current_user );
+    $group->load_role(
         object => $self,
         type   => $args{'type'},
     );
@@ -51,7 +51,7 @@ sub is_watcher {
         return 0 unless $args{'email'};
 
         # Look up the specified user.
-        my $user = RT::Model::User->new;
+        my $user = RT::Model::User->new( current_user => $self->current_user );
         $user->load_by_email( $args{'email'} );
         if ( $user->id ) {
             $args{'principal_id'} = $user->principal_id;
@@ -95,7 +95,7 @@ sub add_watcher {
         my ( $addr ) = RT::EmailParser->parse_email_address( $args{email} );
         if ($addr) {
             $args{'email'} = $addr->address;
-            my $user = RT::Model::User->new;
+            my $user = RT::Model::User->new( current_user => $self->current_user );
             $user->load_by_email( $args{'email'} );
             if ( $user->id ) {
                 $args{'principal_id'} = $user->id;
@@ -143,14 +143,14 @@ sub _add_watcher {
         return ( 0, _("System internal error. Contact system administrator.") );
     }
 
-    my $principal = RT::Model::Principal->new;
+    my $principal = RT::Model::Principal->new( current_user => $self->current_user );
     $principal->load( $args{'principal_id'} );
     unless ( $principal->id ) {
         return ( 0, _("Could not find principal #%1", $args{'principal_id'}) );
     }
 
-    my $group = RT::Model::Group->new;
-    $group->create_role_group(
+    my $group = RT::Model::Group->new( current_user => $self->current_user );
+    $group->create_role(
         object => $self,
         type   => $args{'type'},
     );
@@ -209,7 +209,7 @@ sub delete_watcher {
     );
 
     if ( $args{'email'} ) {
-        my $user = RT::Model::User->new;
+        my $user = RT::Model::User->new( current_user => $self->current_user );
         $user->load_by_email( $args{'email'} );
         return ( 0, _("Could not find user with email %1", $args{'email'}) )
             unless $user->id;
@@ -238,7 +238,7 @@ sub _delete_watcher {
     );
 
     if ( $args{'email'} ) {
-        my $user = RT::Model::User->new;
+        my $user = RT::Model::User->new( current_user => $self->current_user );
         $user->load_by_email( $args{'email'} );
         return ( 0, _("Could not find user with email %1", $args{'email'}) )
             unless $user->id;
@@ -252,7 +252,7 @@ sub _delete_watcher {
         return ( 0, _("System internal error. Contact system administrator.") );
     }
 
-    my $principal = RT::Model::Principal->new;
+    my $principal = RT::Model::Principal->new( current_user => $self->current_user );
     $principal->load( $args{'principal_id'} );
     unless ( $principal->id ) {
         return ( 0, _("Could not find principal #%1", $args{'principal_id'}) );
@@ -260,8 +260,8 @@ sub _delete_watcher {
 
     # see if this user is already a watcher.
 
-    my $group = RT::Model::Group->new;
-    $group->load_role_group(
+    my $group = RT::Model::Group->new( current_user => $self->current_user );
+    $group->load_role(
         object => $self,
         type   => $args{'type'},
     );
@@ -302,12 +302,12 @@ sub role_group {
     my $self = shift;
     my $role = shift;
 
-    my $obj = RT::Model::Group->new;
-    $obj->load_role_group( object => $self, type => $role );
+    my $obj = RT::Model::Group->new( current_user => $self->current_user );
+    $obj->load_role( object => $self, type => $role );
     return $obj;
 }
 
-=head2 create_role_group
+=head2 create_role
 
 Create role group for this object.
 
@@ -315,12 +315,12 @@ It will return a tuple ($group, $msg), on error group is undefined.
 
 =cut
 
-sub create_role_group {
+sub create_role {
     my $self = shift;
     my $type = shift;
 
-    my $group = RT::Model::Group->new;
-    my ($id, $msg) = $group->create_role_group(
+    my $group = RT::Model::Group->new( current_user => $self->current_user );
+    my ($id, $msg) = $group->create_role(
         object => $self,
         type   => $type,
     );

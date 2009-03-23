@@ -102,7 +102,7 @@ $rootq->load(1);
 ok($rootq->id, "Loaded the first queue");
 
 for my $role ( qw/owner requestor cc admin_cc/ ) {
-    $rootq->create_role_group( $role );
+    $rootq->create_role( $role );
 }
 
 ok ($rootq->current_user->has_right(right=> 'CreateTicket', object => $rootq), "Root can create tickets");
@@ -139,7 +139,7 @@ ok($tickid, "Created ticket: $tickid");
 ok (!$new_user->has_right( object => $new_tick, right => 'ModifyTicket'), "User can't modify the ticket without group membership");
 # Create a new group
 my $group = RT::Model::Group->new(current_user => RT->system_user);
-$group->create_user_defined_group(name => 'ACLTest'.$$);
+$group->create_user_defined(name => 'ACLTest'.$$);
 ok($group->id, "Created a new group Ok");
 # Grant a group the right to modify tickets in a queue
 ok(my ($gv,$gm) = $group->principal->grant_right( object => $q, right => 'ModifyTicket'),"Granted the group the right to modify tickets");
@@ -174,7 +174,7 @@ ok (!$new_user->has_right( object => $new_tick2, right => 'ModifyTicket'), "User
 
 # Create a subgroup
 my $subgroup = RT::Model::Group->new(current_user => RT->system_user);
-$subgroup->create_user_defined_group(name => 'Subgrouptest'.$$);
+$subgroup->create_user_defined(name => 'Subgrouptest'.$$);
 ok($subgroup->id, "Created a new group ".$subgroup->id."Ok");
 #Add the subgroup as a subgroup of the group
 my ($said, $samsg) =  $group->add_member($subgroup->principal_id);

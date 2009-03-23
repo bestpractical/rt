@@ -110,7 +110,7 @@ my $everyone_group;
 diag "revoke rights tests depend on" if $ENV{'TEST_VERBOSE'};
 {
     $everyone_group = RT::Model::Group->new(current_user => RT->system_user );
-    $everyone_group->load_system_internal_group( 'Everyone' );
+    $everyone_group->load_system_internal( 'Everyone' );
     ok ($everyone_group->id, "Found group 'everyone'");
 
     foreach( qw(CreateTicket ReplyToTicket CommentOnTicket) ) {
@@ -774,7 +774,7 @@ ok( !$user->has_right( right => 'ReplyToTicket', object => $tick ), "User can't 
 
 
 my $group = RT::Model::Group->new(current_user => RT->system_user );
-ok( $group->create_role_group( object => $queue, type=> 'owner' ), "load queue owners role group" );
+ok( $group->create_role( object => $queue, type=> 'owner' ), "load queue owners role group" );
 $ace = RT::Model::ACE->new(current_user => RT->system_user );
 ($ace_id, $msg) = $group->principal->grant_right( right => 'ReplyToTicket', object => $queue );
 ok( $ace_id, "Granted queue owners role group with ReplyToTicket right" );

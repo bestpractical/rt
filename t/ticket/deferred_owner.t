@@ -15,11 +15,11 @@ ok $tester && $tester->id, 'loaded or created user';
 my $queue = RT::Test->load_or_create_queue( name => 'General' );
 ok $queue && $queue->id, 'loaded or created queue';
 
-my ( $ret, $msg ) = $queue->create_role_group( 'cc' );
+my ( $ret, $msg ) = $queue->create_role( 'cc' );
 ok $ret, "created cc group: $msg";
 
 my $owner_role_group = RT::Model::Group->new(current_user => RT->system_user );
-$owner_role_group->create_role_group( type => 'owner', object => $queue );
+$owner_role_group->create_role( type => 'owner', object => $queue );
 ok $owner_role_group->id, 'loaded owners role group of the queue';
 
 diag "check that deffering owner doesn't regress" if $ENV{'TEST_VERBOSE'};

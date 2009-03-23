@@ -99,7 +99,7 @@
 my $current_tab;
 my  ($title, @results, $disabled, $enabled_checked);
 
-my $Group = RT::Model::Group->new();
+my $Group = RT::Model::Group->new( current_user => Jifty->web->current_user );
 
 if ($create) {
     $current_tab = 'Admin/Groups/Modify.html?create=1';
@@ -110,7 +110,7 @@ else {
     $current_tab = 'Admin/Groups/Modify.html?id='.$id;
     if ($id eq 'new' ) {
 	
-	my ($create_id, $create_msg) = $Group->create_user_defined_group(name =>
+	my ($create_id, $create_msg) = $Group->create_user_defined(name =>
     "$name");
         unless ($create_id) {
             abort (_("Group could not be Created: %1", $create_msg));

@@ -52,7 +52,7 @@ diag "load Everyone group" if $ENV{'TEST_VERBOSE'};
 my $everyone;
 {
     $everyone = RT::Model::Group->new(current_user => RT->system_user );
-    $everyone->load_system_internal_group('Everyone');
+    $everyone->load_system_internal('Everyone');
     ok $everyone->id, "loaded 'everyone' group";
 }
 

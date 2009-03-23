@@ -525,8 +525,7 @@ sub _date_limit {
     die "Incorrect Meta Data for $field"
         unless ( defined $meta->[1] );
 
-    my $date = RT::Date->new();
-    $date->set( format => 'unknown', value => $value );
+    my $date = RT::DateTime->new_from_string($value);
 
     if ( $op eq "=" ) {
 
@@ -534,10 +533,9 @@ sub _date_limit {
         # particular single day.  in the database, we need to check for >
         # and < the edges of that day.
 
-        $date->set_to_midnight( timezone => 'server' );
+        $date->truncate(to => 'day')->set_time_zone('UTC');
         my $daystart = $date->iso;
-        $date->add_day;
-        my $dayend = $date->iso;
+        my $dayend = $date->add(days => 1)->iso;
 
         $sb->open_paren;
 
@@ -625,8 +623,7 @@ sub _trans_date_limit {
         );
     }
 
-    my $date = RT::Date->new();
-    $date->set( format => 'unknown', value => $value );
+    my $date = RT::DateTime->new_from_string($value);
 
     $sb->open_paren;
     if ( $op eq "=" ) {
@@ -635,10 +632,9 @@ sub _trans_date_limit {
         # particular single day.  in the database, we need to check for >
         # and < the edges of that day.
 
-        $date->set_to_midnight( timezone => 'server' );
+        $date->truncate(to => 'day')->set_time_zone('UTC');
         my $daystart = $date->iso;
-        $date->add_day;
-        my $dayend = $date->iso;
+        my $dayend = $date->add(days => 1)->iso;
 
         $sb->_sql_limit(
             alias          => $sb->{_sql_transalias},
@@ -813,7 +809,7 @@ sub _watcher_limit {
     # search by id and name at the same time, this is workaround
     # to preserve backward compatibility
     if ( lc $field eq 'owner' && !$rest{subkey} && $op =~ /^!?=$/ ) {
-        my $o = RT::Model::User->new;
+        my $o = RT::Model::User->new( current_user => $self->current_user );
         $o->load($value);
         $self->_sql_limit(
             column   => 'owner',
@@ -856,7 +852,7 @@ sub _watcher_limit {
         # "X = 'Y'" matches more then one user so we try to fetch two records and
         # do the right thing when there is only one exist and semi-working solution
         # otherwise.
-        my $users_obj = RT::Model::UserCollection->new;
+        my $users_obj = RT::Model::UserCollection->new( current_user => $self->current_user );
         $users_obj->limit(
             column   => $rest{subkey},
             operator => $op,
@@ -1206,7 +1202,7 @@ sub _custom_field_decipher {
 
     my $cf;
     if ($queue) {
-        my $q = RT::Model::Queue->new;
+        my $q = RT::Model::Queue->new( current_user => $self->current_user );
         $q->load($queue);
 
         if ( $q->id ) {
@@ -1693,7 +1689,7 @@ sub limit_queue {
 
     #TODO  value should also take queue objects
     if ( defined $args{'value'} && $args{'value'} !~ /^\d+$/ ) {
-        my $queue = RT::Model::Queue->new();
+        my $queue = RT::Model::Queue->new( current_user => $self->current_user );
         $queue->load( $args{'value'} );
         $args{'value'} = $queue->id;
     }

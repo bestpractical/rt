@@ -130,7 +130,7 @@ sub create {
         }
         $args{'queue'} = 0;    # avoid undef sneaking in
     } else {
-        my $queue_obj = RT::Model::Queue->new;
+        my $queue_obj = RT::Model::Queue->new( current_user => $self->current_user );
         $queue_obj->load( $args{'queue'} );
         unless ( $queue_obj->id ) {
             return ( 0, _('Invalid queue') );
@@ -143,7 +143,7 @@ sub create {
 
     return ( 0, _("Action is mandatory argument") )
         unless $args{'scrip_action'};
-    my $action = RT::Model::ScripAction->new;
+    my $action = RT::Model::ScripAction->new( current_user => $self->current_user );
     $action->load( $args{'scrip_action'} );
     return ( 0, _( "Action '%1' not found", $args{'scrip_action'} ) )
         unless $action->id;
@@ -151,7 +151,7 @@ sub create {
     require RT::Model::Template;
     return ( 0, _("template is mandatory argument") )
         unless $args{'template'};
-    my $template = RT::Model::Template->new;
+    my $template = RT::Model::Template->new( current_user => $self->current_user );
     $template->load( $args{'template'} );
     return ( 0, _( "Template '%1' not found", $args{'template'} ) )
         unless $template->id;
@@ -159,7 +159,7 @@ sub create {
     require RT::Model::ScripCondition;
     return ( 0, _("Condition is mandatory argument") )
         unless $args{'scrip_condition'};
-    my $condition = RT::Model::ScripCondition->new;
+    my $condition = RT::Model::ScripCondition->new( current_user => $self->current_user );
     $condition->load( $args{'scrip_condition'} );
     return ( 0, _( "Condition '%1' not found", $args{'scrip_condition'} ) )
         unless $condition->id;
@@ -189,7 +189,7 @@ sub scrip_action {
 
     # jfity returns a new object each time you call the accessor. I'm not sure that's right, but it blows our behaviour
     unless ( $self->{'scrip_action'} ) {
-        $self->{'scrip_action'} = RT::Model::ScripAction->new();
+        $self->{'scrip_action'} = RT::Model::ScripAction->new( current_user => $self->current_user );
         $self->{'scrip_action'}->load( $self->_value('scrip_action'), $self->_value('template') );
     }
     return $self->{'scrip_action'};
@@ -223,7 +223,7 @@ sub queue_obj {
 
     if ( !$self->{'queue_obj'} ) {
         require RT::Model::Queue;
-        $self->{'queue_obj'} = RT::Model::Queue->new;
+        $self->{'queue_obj'} = RT::Model::Queue->new( current_user => $self->current_user );
         $self->{'queue_obj'}->load( $self->__value('queue') );
     }
     return ( $self->{'queue_obj'} );
@@ -240,7 +240,7 @@ sub template_obj {
 
     unless ( defined $self->{'template_obj'} ) {
         require RT::Model::Template;
-        $self->{'template_obj'} = RT::Model::Template->new;
+        $self->{'template_obj'} = RT::Model::Template->new( current_user => $self->current_user );
         $self->{'template_obj'}->load( $self->template->id );
     }
     return ( $self->{'template_obj'} );

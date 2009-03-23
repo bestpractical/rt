@@ -35,7 +35,7 @@ isa_ok( $cf, 'RT::Model::CustomField' );
 {
     # create at least on group for the tests
     my $group = RT::Model::Group->new(current_user => RT->system_user );
-    my ($ret, $msg) = $group->create_user_defined_group( name => $q->name );
+    my ($ret, $msg) = $group->create_user_defined( name => $q->name );
     ok $ret, 'Created group' or diag "error: $msg";
 }
 

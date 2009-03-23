@@ -79,14 +79,14 @@ sub get_current_user {
 
     # If the user can't be loaded, we may need to create one. Figure out the acl situation.
     my $unpriv = RT::Model::Group->new( current_user => RT->system_user );
-    $unpriv->load_system_internal_group('Unprivileged');
+    $unpriv->load_system_internal('Unprivileged');
     unless ( $unpriv->id ) {
         Jifty->log->fatal("Couldn't find the 'Unprivileged' internal group");
         return ( $args{'CurrentUser'}, -1 );
     }
 
     my $everyone = RT::Model::Group->new( current_user => RT->system_user );
-    $everyone->load_system_internal_group('Everyone');
+    $everyone->load_system_internal('Everyone');
     unless ( $everyone->id ) {
         Jifty->log->fatal("Couldn't find the 'Everyone' internal group");
         return ( $args{'CurrentUser'}, -1 );

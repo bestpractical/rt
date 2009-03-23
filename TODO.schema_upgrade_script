@@ -15,3 +15,4 @@ Users.EmailAddress -> Users.email
 Users.email_confirmed is new
 
 zeroes in ACL.delegate_by and ACL.delegate_from should be replaced with NULLs
+* delegations are dropped, this is not required

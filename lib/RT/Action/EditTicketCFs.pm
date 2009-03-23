@@ -11,7 +11,7 @@ sub available_values {
     my $self = shift;
     my $id   = shift;
     next unless $id =~ /^\d+$/;
-    my $cf = RT::Model::CustomField->new;
+    my $cf = RT::Model::CustomField->new( current_user => $self->current_user );
     $cf->load($id);
     my $values = $cf->values;
 

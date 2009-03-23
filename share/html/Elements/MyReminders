@@ -57,7 +57,7 @@
 <tr class="<%$i%2 ? 'evenline' : 'oddline'%>"><td><a href="<%RT->config->get('web_path')%>/Ticket/Display.html?id=<%$ticket->id%>"><%$reminder->subject%></a><br />
 <blockquote>
 #<%$ticket->id%>: <%$ticket->subject%><br />
-<%$reminder->owner_obj->name %>  <%$reminder->due_obj->unix >0 ? '&bull; '.$reminder->due_obj->age_as_string : '' |n %>
+<%$reminder->owner_obj->name %>  <%$reminder->due->epoch >0 ? '&bull; '.$reminder->due->age : '' |n %>
 </blockquote>
 </td>
 </tr>
@@ -67,7 +67,7 @@
 
 <%init>
 return unless RT->config->get('enable_reminders');
-my $reminders = RT::Model::TicketCollection->new();
+my $reminders = RT::Model::TicketCollection->new( current_user => Jifty->web->current_user );
 $reminders->from_sql('(Owner = "Nobody" OR Owner = "'.Jifty->web->current_user->name.'")' .
     ' AND type = "reminder" AND (Status = "new" OR Status = "open")'); 
 $reminders->order_by(column => 'Due', order => 'DESC');
