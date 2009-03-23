@@ -141,10 +141,6 @@ sub self_description {
         return _( "user %1", $user->object->name );
     } elsif ( $self->domain eq 'UserDefined' ) {
         return _( "group '%1'", $self->name );
-    } elsif ( $self->domain eq 'Personal' ) {
-        my $user = RT::Model::User->new( current_user => $self->current_user );
-        $user->load( $self->instance );
-        return _( "personal group '%1' for user '%2'", $self->name, $user->name );
     } elsif ( $self->domain eq 'RT::System-Role' ) {
         return _( "system %1", $self->type );
     } elsif ( $self->domain eq 'RT::Model::Queue-Role' ) {
@@ -234,31 +230,6 @@ sub load_acl_equivalence {
         instance => $principal,
     );
 }
-
-
-
-=head2 load_personal {name => name, User => USERID}
-
-Loads a personal group from the database. 
-
-=cut
-
-sub load_personal {
-    my $self = shift;
-    my %args = (
-        name => undef,
-        user => undef,
-        @_
-    );
-
-    $self->load_by_cols(
-        "domain"   => 'Personal',
-        "instance" => $args{'user'},
-        "type"     => '',
-        "name"     => $args{'name'}
-    );
-}
-
 
 =head2 load_system_internal name
 
@@ -478,52 +449,6 @@ sub _createacl_equivalence_group {
     return ($id);
 }
 
-
-
-=head2 create_personal { principal_id => PRINCIPAL_ID, name => "name", description => "description"}
-
-A helper subroutine which creates a personal group.
-
-Returns a tuple of (Id, Message).  If id is 0, the create failed
-
-=cut
-
-sub create_personal {
-    my $self = shift;
-    my %args = (
-        name         => undef,
-        description  => undef,
-        principal_id => $self->current_user->id,
-        @_
-    );
-    if ( $self->current_user->id == $args{'principal_id'} ) {
-
-        unless ( $self->current_user_has_right('AdminOwnPersonalGroups') ) {
-            Jifty->log->warn( $self->current_user->name . " Tried to create a group without permission." );
-            return ( 0, _('Permission Denied') );
-        }
-
-    } else {
-        unless ( $self->current_user_has_right('AdminAllPersonalGroups') ) {
-            Jifty->log->warn( $self->current_user->name . " Tried to create a group without permission." );
-            return ( 0, _('Permission Denied') );
-        }
-
-    }
-
-    return (
-        $self->_create(
-            domain      => 'Personal',
-            type        => '',
-            instance    => $args{'principal_id'},
-            name        => $args{'name'},
-            description => $args{'description'}
-        )
-    );
-}
-
-
-
 =head2 create_role { object => OBJ, domain => DOMAIN, type => TYPE, instance => ID }
 
 A helper subroutine which creates a role group. Takes the following arguments:
@@ -624,21 +549,11 @@ This routine finds all the cached group members that are members of this group  
 sub set_disabled {
     my $self = shift;
     my $val  = shift;
-    if ( $self->domain eq 'Personal' ) {
-        if ( $self->current_user->id == $self->instance ) {
-            unless ( $self->current_user_has_right('AdminOwnPersonalGroups') ) {
-                return ( 0, _('Permission Denied') );
-            }
-        } else {
-            unless ( $self->current_user_has_right('AdminAllPersonalGroups') ) {
-                return ( 0, _('Permission Denied') );
-            }
-        }
-    } else {
-        unless ( $self->current_user_has_right('AdminGroup') ) {
-            return ( 0, _('Permission Denied') );
-        }
+
+    unless ( $self->current_user_has_right('AdminGroup') ) {
+        return ( 0, _('Permission Denied') );
     }
+
     Jifty->handle->begin_transaction();
     $self->principal->set_disabled($val);
 
@@ -714,7 +629,7 @@ By default returns groups including all subgroups, but
 could be changed with C<recursively> named argument.
 
 B<Note> that groups are not filtered by type and result
-may contain as well system groups, personal and other.
+may contain as well system groups and other.
 
 =cut
 
@@ -832,32 +747,17 @@ sub add_member {
     my $self       = shift;
     my $new_member = shift;
 
-    if ( $self->domain eq 'Personal' ) {
-        if ( $self->current_user->id == $self->instance ) {
-            unless ( $self->current_user_has_right('AdminOwnPersonalGroups') ) {
-                return ( 0, _('Permission Denied') );
-            }
-        } else {
-            unless ( $self->current_user_has_right('AdminAllPersonalGroups') ) {
-                return ( 0, _('Permission Denied') );
-            }
-        }
+    # We should only allow membership changes if the user has the right
+    # to modify group membership or the user is the principal in question
+    # and the user has the right to modify his own membership
+    unless ( ( $new_member == $self->current_user->user_object->id && $self->current_user_has_right('ModifyOwnMembership') )
+        || $self->current_user_has_right('AdminGroupMembership') )
+    {
+
+        #User has no permission to be doing this
+        return ( 0, _("Permission Denied") );
     }
 
-    else {
-
-        # We should only allow membership changes if the user has the right
-        # to modify group membership or the user is the principal in question
-        # and the user has the right to modify his own membership
-        unless ( ( $new_member == $self->current_user->user_object->id && $self->current_user_has_right('ModifyOwnMembership') )
-            || $self->current_user_has_right('AdminGroupMembership') )
-        {
-
-            #User has no permission to be doing this
-            return ( 0, _("Permission Denied") );
-        }
-
-    }
     $self->_add_member( principal_id => $new_member );
 }
 
@@ -996,25 +896,12 @@ sub delete_member {
     # We should only allow membership changes if the user has the right
     # to modify group membership or the user is the principal in question
     # and the user has the right to modify his own membership
+    unless ( ( $member_id == $self->current_user->id && $self->current_user_has_right('ModifyOwnMembership') )
+        || $self->current_user_has_right('AdminGroupMembership') )
+    {
 
-    if ( $self->domain eq 'Personal' ) {
-        if ( $self->current_user->id == $self->instance ) {
-            unless ( $self->current_user_has_right('AdminOwnPersonalGroups') ) {
-                return ( 0, _('Permission Denied') );
-            }
-        } else {
-            unless ( $self->current_user_has_right('AdminAllPersonalGroups') ) {
-                return ( 0, _('Permission Denied') );
-            }
-        }
-    } else {
-        unless ( ( ( $member_id == $self->current_user->id ) && $self->current_user_has_right('ModifyOwnMembership') )
-            || $self->current_user_has_right('AdminGroupMembership') )
-        {
-
-            #User has no permission to be doing this
-            return ( 0, _("Permission Denied") );
-        }
+        #User has no permission to be doing this
+        return ( 0, _("Permission Denied") );
     }
     $self->_delete_member($member_id);
 }
@@ -1067,20 +954,8 @@ sub _set {
         @_
     );
 
-    if ( $self->domain eq 'Personal' ) {
-        if ( $self->current_user->id == $self->instance ) {
-            unless ( $self->current_user_has_right('AdminOwnPersonalGroups') ) {
-                return ( 0, _('Permission Denied') );
-            }
-        } else {
-            unless ( $self->current_user_has_right('AdminAllPersonalGroups') ) {
-                return ( 0, _('Permission Denied') );
-            }
-        }
-    } else {
-        unless ( $self->current_user_has_right('AdminGroup') ) {
-            return ( 0, _('Permission Denied') );
-        }
+    unless ( $self->current_user_has_right('AdminGroup') ) {
+        return ( 0, _('Permission Denied') );
     }
 
     my $Old = $self->SUPER::_value( $args{'column'} );

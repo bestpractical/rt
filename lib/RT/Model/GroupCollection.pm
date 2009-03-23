@@ -164,28 +164,6 @@ sub limit_to_user_defined_groups {
 }
 
 
-
-=head2 limit_to_personal_groups_for PRINCIPAL_ID
-
-Return only Personal Groups for the user whose principal id 
-is PRINCIPAL_ID
-
-=cut
-
-sub limit_to_personal_groups_for {
-    my $self  = shift;
-    my $princ = shift;
-
-    $self->limit( column => 'domain', operator => '=', value => 'Personal' );
-    $self->limit(
-        column   => 'instance',
-        operator => '=',
-        value    => $princ
-    );
-}
-
-
-
 =head2 limit_to_roles_for_queue QUEUE_ID
 
 Limits the set of groups found to role groups for queue QUEUE_ID
