@@ -130,11 +130,6 @@ sub AvailableRights {
     # Build a merged list of all system wide rights, queue rights and group rights.
     my %rights = (%{$RIGHTS}, %{$gr}, %{$qr}, %{$cr});
 
-    # prefer plural forms
-    foreach my $right ( grep !/s$/, keys %rights ) {
-        delete $rights{ $right } if exists $rights{ $right .'s' };
-    }
-
     return(\%rights);
 }
 

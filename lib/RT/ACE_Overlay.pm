@@ -70,8 +70,6 @@ use RT::Principals;
 use RT::Queues;
 use RT::Groups;
 
-use Lingua::EN::Inflect::Number;
-
 use vars qw (
   %LOWERCASERIGHTNAMES
   %OBJECT_TYPES
@@ -563,20 +561,10 @@ the correct case. If it's not found, will return undef.
 
 =cut
 
-our %CANONICRIGHTNAMES = ();
-{ my $keys_cached = 0;
 sub CanonicalizeRightName {
     my $self  = shift;
-    unless ( $keys_cached == keys %LOWERCASERIGHTNAMES ) {
-        foreach my $right ( values %LOWERCASERIGHTNAMES ) {
-            $right = Lingua::EN::Inflect::Number::to_S( $right );
-            $CANONICRIGHTNAMES{ lc $right } = $right;
-            $CANONICRIGHTNAMES{ lc Lingua::EN::Inflect::Number::to_PL( $right ) } = $right;
-        }
-        $keys_cached = keys %LOWERCASERIGHTNAMES;
-    }
-    return $CANONICRIGHTNAMES{ lc shift };
-} }
+    return $LOWERCASERIGHTNAMES{ lc shift };
+}
 
 # }}}
 
