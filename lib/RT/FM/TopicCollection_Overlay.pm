@@ -61,11 +61,18 @@ Find all Topics hung off of the given Object
 sub LimitToObject {
     my $self = shift;
     my $object = shift;
+
+    my $subclause = "limittoobject";
     
+    $self->_OpenParen($subclause);
     $self->Limit(FIELD => 'ObjectId',
-                 VALUE => $object->Id);
+                 VALUE => $object->Id,
+                 SUBCLAUSE => $subclause);
     $self->Limit(FIELD => 'ObjectType',
-                 VALUE => ref($object));
+                 VALUE => ref($object),
+                 SUBCLAUSE => $subclause,
+                 ENTRYAGGREGATOR => 'AND');
+    $self->_CloseParen($subclause);
 }
 
 # }}}

@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use lib 't/lib';
-use RT::FM::Test tests => 42;
+use RT::FM::Test tests => 55;
 
 use RT::CustomField;
 use RT::EmailParser;
@@ -24,12 +24,19 @@ my $class = RT::FM::Class->new($RT::SystemUser);
 ($ret, $msg) = $class->Create('Name' => 'tlaTestClass-'.$$,
 			      'Description' => 'A general-purpose test class');
 ok($ret, "Test class created");
+my $class2 = RT::FM::Class->new($RT::SystemUser);
+($ret, $msg) = $class2->Create('Name' => 'tlaTestClass2-'.$$,
+			      'Description' => 'Another general-purpose test class');
+ok($ret, "Test class 2 created");
+
 
 # Create a hierarchy of test topics
 my $topic1 = RT::FM::Topic->new($RT::SystemUser);
 my $topic11 = RT::FM::Topic->new($RT::SystemUser);
 my $topic12 = RT::FM::Topic->new($RT::SystemUser);
 my $topic2 = RT::FM::Topic->new($RT::SystemUser);
+my $topic_class2= RT::FM::Topic->new($RT::SystemUser);
+my $gtopic = RT::FM::Topic->new($RT::SystemUser);
 ($ret, $msg) = $topic1->Create('Parent' => 0,
 			      'Name' => 'tlaTestTopic1-'.$$,
 			      'ObjectType' => 'RT::FM::Class',
@@ -50,6 +57,16 @@ ok($ret, "Topic 1.2 created");
 			      'ObjectType' => 'RT::FM::Class',
 			      'ObjectId' => $class->Id);
 ok($ret, "Topic 2 created");
+($ret, $msg) = $topic_class2->Create('Parent' => 0,
+			      'Name' => 'tlaTestTopicClass2-'.$$,
+			      'ObjectType' => 'RT::FM::Class',
+			      'ObjectId' => $class2->Id);
+ok($ret, "Topic Class2 created");
+($ret, $msg) = $gtopic->Create('Parent' => 0,
+			      'Name' => 'tlaTestTopicGlobal-'.$$,
+			      'ObjectType' => 'RT::FM::System',
+			      'ObjectId' => $RT::FM::System->Id );
+ok($ret, "Global Topic created");
 
 # Create some article custom fields
 
@@ -189,3 +206,17 @@ $m->follow_link_ok( { text => 'Display' }, '-> Display' );
 $m->content_like(qr/Africa/, "Article content exist");
 $m->content_contains($ticket->Subject,
 		     "Article references originating ticket");
+
+diag("Test creating a ticket in Class2 and make sure we don't see Class1 Topics") if $ENV{TEST_VERBOSE};
+{
+$m->follow_link_ok( {text => 'RTFM'}, 'UI -> RTFM');
+$m->follow_link_ok( {text => 'Articles' }, 'RTFM -> Articles' );
+$m->follow_link_ok( {text => 'New Article' }, 'Articles -> New Article' );
+$m->follow_link_ok( {text => 'in class '.$class2->Name }, 'New Article -> in class '.$class2->Name );
+$m->content_lacks( $topic1->Name, "Topic1 from Class1 isn't shown" );
+$m->content_lacks( $topic11->Name, "Topic11 from Class1 isn't shown" );
+$m->content_lacks( $topic12->Name, "Topic12 from Class1 isn't shown" );
+$m->content_lacks( $topic2->Name, "Topic2 from Class1 isn't shown" );
+$m->content_contains( $gtopic->Name, "Global Topic is shown" );
+$m->content_contains( $topic_class2->Name, "Class2 topic is shown" );
+}
