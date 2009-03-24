@@ -159,10 +159,7 @@ sub web_external_auto_info {
 
 =head2 redirect URL
 
-This routine ells the current user's browser to redirect to URL.  
-Additionally, it unties the user's currently active session, helping to avoid 
-A bug in Apache::Session 1.81 and earlier which clobbers sessions if we try to use 
-a cached DBI statement handle twice at the same time.
+This routine tells the current user's browser to redirect to URL.  
 
 =cut
 
