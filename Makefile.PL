@@ -53,7 +53,6 @@ features(
         'Digest::MD5'       => 2.27,
         'CGI::Cookie'       => 1.20,
         'Storable'          => 2.08,
-        'Apache::Session'   => 1.53,
         'XML::RSS'          => 1.05,
         'Text::WikiFormat'  => 0.76,
         'CSS::Squish'       => 0.06,

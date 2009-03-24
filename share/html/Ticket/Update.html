@@ -109,11 +109,11 @@
 %    } # end if while
 % } # end of if
 
-% if (exists $session{'Attachments'}) {
+% if (Jifty->web->session->get('Attachments')) {
 <tr><td><&|/l&>Attached file</&>:</td>
 <td>
 <&|/l&>Check box to delete</&><br />
-% foreach my $attach_name (keys %{$session{'Attachments'}}) {
+% foreach my $attach_name (keys %{Jifty->web->session->get('Attachments')}) {
 <input type="checkbox" class="checkbox" name="DeleteAttach-<%$attach_name%>" value="1" /><%$attach_name%><br />
 % } # end of foreach
 </td>
@@ -208,9 +208,11 @@ $Cancomment = 1 if ( $ticket_obj->current_user_has_right('CommentOnTicket') or
 # {{{ deal with deleting uploaded attachments
 foreach my $key (keys %ARGS) {
     if ($key =~ m/^DeleteAttach-(.+)$/) {
-        delete $session{'Attachments'}{$1};
+        my $v = Jifty->web->session->get('Attachments');
+        delete $v->{$1};
+        Jifty->web->session->set( 'Attachments', $v );
     }
-    $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
+    Jifty->web->session->set('Attachments', { %{Jifty->web->session->get('Attachments') || {}} } );
 }
 # }}}
 
@@ -221,16 +223,16 @@ if ($ARGS{'attach'}) {            # attachment?
     );
 
     my $file_path = Encode::decode_utf8("$ARGS{'Attach'}");
-    $session{'Attachments'} = {
-        %{$session{'Attachments'} || {}},
+    Jifty->web->session->set('Attachments', {
+        %{Jifty->web->session->get('Attachments') || {}},
         $file_path => $attachment,
-    };
+    });
 }
 # }}}
 
 # delete temporary storage entry to make WebUI clean
-unless (keys %{$session{'Attachments'}} and $ARGS{'update_attach'}) {
-    delete $session{'Attachments'};
+unless (keys %{Jifty->web->session->get('Attachments')} and $ARGS{'update_attach'}) {
+    Jifty->web->session->remove('Attachments');
 }
 # }}}
 

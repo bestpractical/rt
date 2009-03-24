@@ -332,7 +332,7 @@ sub strip_content {
 
 package HTML::Mason::Commands;
 
-use vars qw/$r $m %session/;
+use vars qw/$r $m/;
 
 
 =head2 loc ARRAY
@@ -355,11 +355,11 @@ sub abort {
     my $why  = shift;
     my %args = @_;
 
-    if (   $session{'ErrorDocument'}
-        && $session{'ErrorDocumentType'} )
+    if (   Jifty->web->session->get('ErrorDocument')
+        && Jifty->web->session->get('ErrorDocumentType') )
     {
-        $r->content_type( $session{'ErrorDocumentType'} );
-        $m->comp( $session{'ErrorDocument'}, why => $why, %args );
+        $r->content_type( Jifty->web->session->get('ErrorDocumentType') );
+        $m->comp( Jifty->web->session->get('ErrorDocument'), why => $why, %args );
         $m->abort;
     } else {
         $m->comp( "/Elements/Error", why => $why, %args );

@@ -46,6 +46,6 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%PERL>
-tied(%session)->delete if (defined %session);
+Jifty->web->session->remove_all;
 </%PERL>
 RT/<% $RT::VERSION %> 200 Ok
