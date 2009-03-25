@@ -9,7 +9,7 @@ use File::Spec;
 use RT::Test::Shredder;
 RT::Test::Shredder::init_db();
 
-plan tests => 7;
+plan tests => 4;
 
 diag 'global template' if $ENV{'TEST_VERBOSE'};
 {
@@ -44,29 +44,3 @@ diag 'local template' if $ENV{'TEST_VERBOSE'};
 	cmp_deeply( RT::Test::Shredder::dump_current_and_savepoint('clean'), "current DB equal to savepoint");
 }
 
-diag 'template used in scrip' if $ENV{'TEST_VERBOSE'};
-{
-	RT::Test::Shredder::create_savepoint('clean');
-    my $template = RT::Model::Template->new(current_user => RT->system_user );
-    my ($id, $msg) = $template->create(
-        name => 'my template',
-        queue => 'General',
-        content => "\nsome content",
-    );
-    ok($id, 'Created template') or diag "error: $msg";
-
-    my $scrip = RT::Model::Scrip->new(current_user => RT->system_user );
-    ($id, $msg) = $scrip->create(
-        description    => 'my scrip',
-        queue          => 'General',
-        scrip_condition => 'On Create',
-        scrip_action    => 'Open Tickets',
-        template       => $template->id,
-    );
-    ok($id, 'Created scrip') or diag "error: $msg";
-
-	my $shredder = RT::Test::Shredder::shredder_new();
-	$shredder->put_objects( objects => $template );
-	$shredder->wipeout_all;
-	cmp_deeply( RT::Test::Shredder::dump_current_and_savepoint('clean'), "current DB equal to savepoint");
-}

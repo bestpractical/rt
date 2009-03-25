@@ -1,6 +1,8 @@
-* hinting subsystem: fix coderef passing and callback in lorzy
-
 * lorzy code improvements:  control flow handling like return, exception
+
+* test and implement ordering of rules
+
+* lorzy rule model
 
 Per-rule entry:
 
