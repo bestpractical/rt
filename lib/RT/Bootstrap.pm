@@ -54,163 +54,6 @@ use base qw/Jifty::Bootstrap/;
 sub run {
     my $self = shift;
 
-    my %config = (
-        'active_make_clicky'           => [],
-        'active_status'                => [ 'new', 'open', 'stalled' ],
-        'ambiguous_day_in_future'      => 0,
-        'ambiguous_day_in_past'        => 0,
-        'auto_create'                  => undef,
-        'auto_logoff'                  => 0,
-        'canonicalize_email_match'     => '',
-        'canonicalize_email_replace'   => '',
-        'canonicalize_on_create'       => 0,
-        'canonicalize_redirect_urls'   => 0,
-        'chart_font'                   => undef,
-        'comment_address'              => '',
-        'correspond_address'           => '',
-        'custom_field_values_sources'  => [],
-        'dashboard_address'            => '',
-        'dashboard_subject'            => '%s Dashboard: %s',
-        'date_day_before_month'        => 1,
-        'date_time_format'             => '%Y-%m-%d %H:%M:%S',
-        'default_queue'                => 'General',
-        'default_search_result_format' => qq{
-   '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-   '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__subject__</a></B>/TITLE:subject',
-   status,
-   queue_name, 
-   owner_name, 
-   priority, 
-   '__NEWLINE__',
-   '', 
-   '<small>__requestors__</small>',
-   '<small>__created_relative__</small>',
-   '<small>__told_relative__</small>',
-   '<small>__last_updated_relative__</small>',
-   '<small>__time_left__</small>'},
-        'default_summary_rows'         => 10,
-        'dont_search_file_attachments' => undef,
-        'drop_long_attachments'        => undef,
-        'email_input_encodings'        => [ 'utf-8', 'iso-8859-1', 'us-ascii' ],
-        'email_output_encoding'        => 'utf-8',
-        'email_subject_tag_regex'      => '{{rtname}}',
-        'enable_reminders'             => 1,
-        'extract_subject_tag_match'    => '\[.+? #\d+\]',
-        'forward_from_user'            => 0,
-        'friendly_from_line_format'    => '"%s via RT" <%s>',
-        'friendly_to_line_format'      => '"%s of {{rtname}} Ticket #%s":;',
-        'gnupg'                       => {
-            enable                   => 1,
-            outgoing_messages_format => 'RFC',    # Inline
-            allow_encrypt_data_in_db => 0,
-        },
-        'gnupg_options' => {
-
-            #    homedir => '/home/jesse/svk/3.999-DANGEROUS/var/data/gpg',
-
-            # URL of a keyserver
-            #    keyserver => 'hkp://subkeys.pgp.net',
-
-            # enables the automatic retrieving of keys when encrypting
-            #    'auto-key-locate' => 'keyserver',
-
-            # enables the automatic retrieving of keys when verifying signatures
-            #    'auto-key-retrieve' => undef,
-        },
-        'homepage_components' => [
-            'QuickCreate',   'QuickSearch',
-            'MyAdminQueues', 'MySupportQueues',
-            'MyReminders',   'RefreshHomepage',
-            'Dashboards'
-        ],
-        'inactive_status'              => [ 'resolved', 'rejected', 'deleted' ],
-        'lexicon_languages'            => ['*'],
-        'link_transactions_run1_scrip' => 0,
-        'log_dir'                      => '',
-        'log_stack_traces'             => '',
-        'log_to_file'                  => undef,
-        'log_to_file_named'            => 'rt.log',
-        'log_to_screen'                => 'info',
-        'log_to_syslog'                => 'info',
-        'log_to_syslog_conf'           => [],
-        'logo_url'                         => '{{web_images_url}}bplogo.gif',
-        'loops_to_rt_owner'                => 1,
-        'mail_command'                     => 'sendmailpipe',
-        'mail_params'                      => [],
-        'mail_plugins'                     => [],
-        'mason_parameters'                 => [],
-        'max_attachment_size'              => 10000000,
-        'max_inline_body'                  => 12000,
-        'message_box_height'               => 15,
-        'message_box_include_signature'    => 1,
-        'message_box_rich_text'            => 1,
-        'message_box_rich_text_height'     => 200,
-        'message_box_width'                => 72,
-        'message_box_wrap'                 => 'HARD',
-        'minimum_password_length'          => '5',
-        'net_server_options'               => [],
-        'notify_actor'                     => 0,
-        'oldest_transactions_first'        => '1',
-        'organization'                     => 'example.com',
-        'owner_email'                      => 'root',
-        'parse_new_message_for_ticket_ccs' => undef,
-        'plain_text_pre'                   => 0,
-        'prefer_rich_text'                 => undef,
-        'preview_scrip_messages'           => 0,
-        'record_outgoing_email'            => 1,
-        'redistribute_auto_generated_messages' => 'privileged',
-        'rt_address_regexp'                    => '^rt\\@example.com$',
-        'rtname'                               => 'example.com',
-        'self_service_regex' => '^(?:\/+SelfService\/)',
-        'sender_must_exist_in_external_database' => undef,
-        'sendmail_arguments'                     => '-oi -t',
-        'sendmail_bounce_arguments'              => '-f "<>"',
-        'sendmail_path'                          => '/usr/sbin/sendmail',
-        'show_bcc_header'                        => 0,
-        'show_transaction_images'                => 1,
-        'show_unread_message_notifications'      => 1,
-        'smtp_debug'                             => 0,
-        'smtp_from'                              => undef,
-        'smtp_server'                            => undef,
-        'standalone_max_requests'                => 50,
-        'standalone_max_servers'                 => 1,
-        'standalone_max_spare_servers'           => 0,
-        'standalone_min_servers'                 => 1,
-        'standalone_min_spare_servers'           => 0,
-        'statement_log'                          => undef,
-        'store_loops'                            => undef,
-        'strict_link_acl'                        => 1,
-        'suppress_inline_text_files'             => undef,
-        'time_zone'                              => 'America/New_York',
-        'truncate_long_attachments'              => undef,
-        'trust_html_attachments'                 => undef,
-        'use_friendly_from_line'                 => 1,
-        'use_friendly_to_line'                   => 0,
-        'use_sql_for_acl_checks'                 => undef,
-        'use_transaction_batch'                  => 1,
-        'username_format'                        => 'concise',
-        'web_base_url'                  => 'http://{{web_domain}}:{{web_port}}',
-        'web_default_stylesheet'        => 'web2',
-        'web_domain'                    => 'localhost',
-        'web_external_auth'             => undef,
-        'web_external_auto'             => undef,
-        'web_external_gecos'            => undef,
-        'web_fallback_to_internal_auth' => undef,
-        'web_flush_db_cache_every_request' => '1',
-        'web_images_url'                   => '{{web_path}}/NoAuth/images/',
-        'web_no_auth_regex' =>
-          '(?x-ism:^ (?:\/+NoAuth\/ | \/+REST\/\d+\.\d+\/NoAuth\/) )',
-        'web_path'            => '',
-        'web_port'            => 80,
-        'web_secure_cookies'  => 0,
-        'web_url'             => '{{web_base_url}}{{web_path}}/',
-        'wiki_implicit_links' => 0
-    );
-
-    for my $name ( sort keys %config ) {
-        my $config = RT::Model::Config->new( current_user => RT->system );
-        $config->create( name => $name, value => $config{$name} );
-    }
 
     $self->insert_initial_data();
     $self->insert_data( $RT::EtcPath . "/initialdata" );
@@ -356,11 +199,26 @@ sub insert_data {
     my $datafile = shift;
 
     # Slurp in stuff to insert from the datafile. Possible things to go in here:-
-    our ( @Groups, @Users, @ACL, @Queues, @scrip_actions, @scrip_conditions, @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final );
-    local ( @Groups, @Users, @ACL, @Queues, @scrip_actions, @scrip_conditions, @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final );
+    our (
+        @Groups,        @Users,            @ACL,       @Queues,
+        @scrip_actions, @scrip_conditions, @Templates, @CustomFields,
+        @Scrips,        @Attributes,       @Initial,   @Final,
+        %Config
+    );
+    local (
+        @Groups,        @Users,            @ACL,       @Queues,
+        @scrip_actions, @scrip_conditions, @Templates, @CustomFields,
+        @Scrips,        @Attributes,       @Initial,   @Final,
+        %Config
+    );
 
     require $datafile
-        || die "Couldn't find initial data for import\n" . $@;
+      || die "Couldn't find initial data for import\n" . $@;
+
+    for my $name ( sort keys %Config ) {
+        my $config = RT::Model::Config->new( current_user => RT->system );
+        $config->create( name => $name, value => $Config{$name} );
+    }
 
     if (@Initial) {
 
