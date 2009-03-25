@@ -206,14 +206,13 @@ $Cancomment = 1 if ( $ticket_obj->current_user_has_right('CommentOnTicket') or
 
 
 # {{{ deal with deleting uploaded attachments
+my $attachments = Jifty->web->session->get('Attachments') || {};
 foreach my $key (keys %ARGS) {
     if ($key =~ m/^DeleteAttach-(.+)$/) {
-        my $v = Jifty->web->session->get('Attachments');
-        delete $v->{$1};
-        Jifty->web->session->set( 'Attachments', $v );
+        delete $attachments->{$1};
     }
-    Jifty->web->session->set('Attachments', { %{Jifty->web->session->get('Attachments') || {}} } );
 }
+Jifty->web->session->set('Attachments', $attachments);
 # }}}
 
 # {{{ store the uploaded attachment in session
