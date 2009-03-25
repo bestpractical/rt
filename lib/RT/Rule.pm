@@ -54,6 +54,11 @@ use base 'RT::ScripAction';
 use constant _stage => 'transaction_create';
 use constant _queue => undef;
 
+sub _init {
+    my $self = shift;
+    $self->SUPER::_init(@_);
+}
+
 sub prepare {
     my $self = shift;
     return (0) if $self->_queue && $self->ticket_obj->queue->name ne $self->_queue;
@@ -80,19 +85,12 @@ sub on_status_change {
 
 sub run_scrip_action {
     my ($self, $scrip_action, $template, %args) = @_;
-    my $action = $self->_get_scrip_action($scrip_action, $template, %args);
+    my $action = $self->get_scrip_action($scrip_action, $template, %args);
     $action->prepare or return;
     $action->commit;
 }
 
-sub scrip_action_hints {
-    my ($self, $scrip_action, $template, %args) = @_;
-    my $action = $self->_get_scrip_action($scrip_action, $template, %args);
-    $action->prepare or return;
-    $action->hints();
-}
-
-sub _get_scrip_action {
+sub get_scrip_action {
     my ($self, $scrip_action, $template, %args) = @_;
 
     my $ScripAction = RT::Model::ScripAction->new( current_user => $self->current_user);
@@ -102,7 +100,7 @@ sub _get_scrip_action {
         #    $template->LoadQueueTemplate( Queue => ..., ) || $template->LoadGlobalTemplate(...)
 
         my $t = RT::Model::Template->new( current_user => $self->current_user);
-        $t->load($template) or die;
+        $t->load($template) or Carp::confess "Can't load template '$template'";
         $template = $t;
     }
 

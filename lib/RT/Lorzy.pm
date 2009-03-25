@@ -52,23 +52,27 @@ sub create_scripish {
 
     my $condition = $builder->defun(
         ops => [ $tree ],
-        signature => $sigs,
+        signature => { %$sigs },
     );
 
-    my $action = $builder->defun(
-        ops => [ { name => 'RT.ScripAction.Run',
+    $sigs->{context} = Lorzy::FunctionArgument->new( name => 'context', type => 'HASH' );
+
+    my $prepare = $builder->defun(
+        ops => [ { name => 'RT.ScripAction.Prepare',
                 args => {
                     name     => $scrip_action,
+                    context => { name => 'Symbol', args => { symbol => 'context' } },
                     template => $template,
                     ticket => { name => 'Symbol', args => { symbol => 'ticket' } },
                     transaction => { name => 'Symbol', args => { symbol => 'transaction' } },
                     } } ],
         signature => $sigs );
 
-    my $hints = $builder->defun(
-        ops => [ { name => 'RT.ScripAction.Hints',
+    my $action = $builder->defun(
+        ops => [ { name => 'RT.ScripAction.Run',
                 args => {
                     name     => $scrip_action,
+                    context => { name => 'Symbol', args => { symbol => 'context' } },
                     template => $template,
                     ticket => { name => 'Symbol', args => { symbol => 'ticket' } },
                     transaction => { name => 'Symbol', args => { symbol => 'transaction' } },
@@ -77,7 +81,7 @@ sub create_scripish {
 
     RT::Lorzy::RuleFactory->make_factory(
         { condition     => $condition,
-          collect_hints => $hints,
+          prepare       => $prepare,
           action        => $action,
           description   => $description,
           _stage        => 'transaction_create',
@@ -86,7 +90,7 @@ sub create_scripish {
 
 package RT::Lorzy::RuleFactory;
 use base 'Class::Accessor::Fast';
-__PACKAGE__->mk_accessors(qw(description condition action collect_hints _stage));
+__PACKAGE__->mk_accessors(qw(description condition action prepare _stage));
 
 sub make_factory {
     my $class = shift;
@@ -96,6 +100,7 @@ sub make_factory {
         $self->action( Lorzy::Lambda::Native->new( body => $self->action,
                                                    signature => 
         { ticket => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Model::Ticket' ),
+          context => Lorzy::FunctionArgument->new( name => 'context', type => 'RT::Model::Ticket' ),
           transaction => Lorzy::FunctionArgument->new( name => 'transaction', type => 'RT::Model::Transaction' ) }
 
                                                ) );
@@ -112,37 +117,44 @@ package RT::Lorzy::Rule;
 use base 'RT::Rule';
 use base 'Class::Accessor::Fast';
 
-__PACKAGE__->mk_accessors(qw(factory));
+__PACKAGE__->mk_accessors(qw(factory context _last_scripaction));
+
 sub _init {
     my $self = shift;
+    Carp::cluck if scalar @_ % 2;
     my %args = @_;
     $self->SUPER::_init(%args);
+    $self->context({});
     $self->factory($args{factory});
 }
 
 sub prepare {
-    my ($self, %args) = @_;
-    return RT::Lorzy->evaluate( $self->factory->condition,
-                                ticket => $self->ticket_obj,
-                                transaction => $self->transaction);
+    my ( $self, %args ) = @_;
+    RT::Lorzy->evaluate( $self->factory->condition,
+        ticket      => $self->ticket_obj,
+        transaction => $self->transaction )
+        or return;
+
+    return 1 unless $self->factory->prepare;
+
+    RT::Lorzy->evaluate( $self->factory->prepare,
+        context     => $self->context,
+        ticket      => $self->ticket_obj,
+        transaction => $self->transaction );
+
 }
 
 sub description { $_[0]->factory->description }
 
 sub hints {
-    my ($self) = @_;
-    return unless $self->factory->collect_hints;
-    my $hints = RT::Lorzy->evaluate( $self->factory->collect_hints,
-                                     ticket => $self->ticket_obj,
-                                     transaction => $self->transaction);
-
-    return { description => $self->description,
-             %$hints };
+    my $self = shift;
+    return $self->context->{hints};
 }
 
 sub commit {
     my ($self, %args) = @_;
     return RT::Lorzy->evaluate( $self->factory->action,
+                                context => $self->context,
                                 ticket => $self->ticket_obj,
                                 transaction => $self->transaction);
 }

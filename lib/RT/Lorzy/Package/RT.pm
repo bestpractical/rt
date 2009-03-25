@@ -30,9 +30,10 @@ __PACKAGE__->defun( 'Condition.Applicable',
     },
 );
 
-__PACKAGE__->defun( 'ScripAction.Run',
+__PACKAGE__->defun( 'ScripAction.Prepare',
     signature => {
         'name'     => Lorzy::FunctionArgument->new( name => 'name' ),
+        'context'  => Lorzy::FunctionArgument->new( name => 'context' ),
         'template' => Lorzy::FunctionArgument->new( name => 'template' ),
         'ticket'   => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Model::Ticket' ),
         'transaction' => Lorzy::FunctionArgument->new( name => 'transaction', type => 'RT::Model::Transaction' ),
@@ -43,25 +44,35 @@ __PACKAGE__->defun( 'ScripAction.Run',
                                   ticket_obj => $args->{ticket},
                                   transaction_obj => $args->{transaction}
                               );
-        $rule->run_scrip_action(@{$args}{qw(name template)});
+        my $action = $rule->get_scrip_action(@{$args}{qw(name template)});
+        $action->prepare or return;
+        $args->{context}{hints} = $action->hints;
+        $args->{context}{action} = $action;
     },
 );
 
-__PACKAGE__->defun( 'ScripAction.Hints',
+__PACKAGE__->defun( 'ScripAction.Run',
     signature => {
         'name'     => Lorzy::FunctionArgument->new( name => 'name' ),
+        'context'  => Lorzy::FunctionArgument->new( name => 'context' ),
         'template' => Lorzy::FunctionArgument->new( name => 'template' ),
         'ticket'   => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Model::Ticket' ),
         'transaction' => Lorzy::FunctionArgument->new( name => 'transaction', type => 'RT::Model::Transaction' ),
     },
     native => sub {
         my $args   = shift;
-        my $rule = RT::Rule->new( current_user => $args->{ticket}->current_user,
-                                  ticket_obj => $args->{ticket},
-                                  transaction_obj => $args->{transaction}
-                              );
-        $rule->scrip_action_hints(@{$args}{qw(name template)});
+        my $action = $args->{context}{action};
+        unless ($action) {
+            my $rule = RT::Rule->new( current_user => $args->{ticket}->current_user,
+                                                ticket_obj => $args->{ticket},
+                                                transaction_obj => $args->{transaction}
+                                            );
+            $action = $rule->get_scrip_action(@{$args}{qw(name template)});
+            $action->prepare or return;
+        }
+        $action->commit;
     },
 );
+
 
 1;

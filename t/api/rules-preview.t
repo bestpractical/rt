@@ -31,12 +31,12 @@ my $preview = {};
 for (@{$txn->rules}) {
     my $hints = $_->hints;
     next unless $hints->{class} eq 'SendEmail';
-    $preview->{$hints->{description}} = $hints->{recipients};
+    $preview->{$_->description} = $hints->{recipients};
 }
 
 is_deeply($preview,
           { 'On Correspond Notify Other Recipients' =>
-            { to => [], cc => [], bcc => [] },
+            { to => ['onetime@example.org'], cc => [], bcc => [] },
             'On Correspond Notify requestors and ccs' =>
             { to => [ 'root@localhost' ],
               cc => [ 'moosecc@example.org' ],
@@ -44,3 +44,4 @@ is_deeply($preview,
             'On Correspond Notify admin_ccs' =>
             { to => [], cc => [], bcc => [] } }
       );
+

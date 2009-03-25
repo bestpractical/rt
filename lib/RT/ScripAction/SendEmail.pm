@@ -279,6 +279,7 @@ sub bcc {
 sub addresses_from_header {
     my $self      = shift;
     my $field     = shift;
+    Carp::cluck unless $self->template_obj->mime_obj;
     my $header    = $self->template_obj->mime_obj->head->get($field);
     my @addresses = Email::Address->parse($header);
 

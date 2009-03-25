@@ -40,6 +40,7 @@ $tree    = [ { name => 'RT.ScripAction.Run',
                args => {
                    name => "Autoreply To requestors",
                    template => "Autoreply",
+                   context => { name => 'Symbol', args => { symbol => 'context' } },
                    ticket => { name => 'Symbol', args => { symbol => 'ticket' }},
                    transaction => { name => 'Symbol', args => { symbol => 'transaction' }},
                } } ];
@@ -47,6 +48,7 @@ my $auto_reply  = $builder->defun(
     ops => $tree,
     signature =>
         { ticket => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Model::Ticket' ),
+          context => Lorzy::FunctionArgument->new( name => 'context', type => 'HASH' ),
           transaction => Lorzy::FunctionArgument->new( name => 'transaction', type => 'RT::Model::Transaction' ) }
 );
 

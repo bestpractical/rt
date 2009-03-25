@@ -149,7 +149,7 @@ my $recipients = {};
 for (@{$txn->rules}) {
     my $hints = $_->hints;
     next unless $hints->{class} eq 'SendEmail';
-    $recipients->{$hints->{description}} = $hints->{recipients};
+    $recipients->{$_->description} = $hints->{recipients};
 }
 
 return (recipients => $recipients, emails => [$ticket_obj->squelch_mail_to]);
