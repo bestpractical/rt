@@ -83,7 +83,6 @@ sub _init {
     my %args = (
         argument       => undef,
         current_user    => undef,
-        scrip_action_obj => undef,
         template_obj    => undef,
         ticket_obj      => undef,
         transaction_obj => undef,
@@ -94,7 +93,6 @@ sub _init {
 
     $self->{'argument'} = $args{'argument'};
     $self->current_user( $args{'current_user'} );
-    $self->{'scrip_action_obj'} = $args{'scrip_action_obj'};
     $self->{'template_obj'}    = $args{'template_obj'};
     $self->{'ticket_obj'}      = $args{'ticket_obj'};
     $self->{'transaction_obj'} = $args{'transaction_obj'};
@@ -131,12 +129,6 @@ sub transaction {
 sub template_obj {
     my $self = shift;
     return ( $self->{'template_obj'} );
-}
-
-
-sub scrip_action_obj {
-    my $self = shift;
-    return ( $self->{'scrip_action_obj'} );
 }
 
 
@@ -189,7 +181,6 @@ sub DESTROY {
 
     # We need to clean up all the references that might maybe get
     # oddly circular
-    $self->{'scrip_action_obj'} = undef;
     $self->{'template_obj'}    = undef;
     $self->{'ticket_obj'} = undef;
     $self->{'transaction_obj'} = undef;

@@ -302,7 +302,8 @@ sub send_message {
     my $msgid = $mime_obj->head->get('Message-ID');
     chomp $msgid;
 
-    $self->scrip_action_obj->{_Message_ID}++;
+    $self->{_Message_ID} ||= 0;
+    $self->{_Message_ID}++;
 
     Jifty->log->info( $msgid . " #" . $self->ticket_obj->id . "/" .
             $self->transaction->id . " - Scrip "
@@ -601,18 +602,19 @@ sub set_rt_special_headers {
             and $msgid =~ s/<(rt-.*?-\d+-\d+)\.(\d+)-\d+-\d+\@\QRT->config->get('Organization')\E>$/
                          "<$1." . $self->ticket_obj->id
                           . "-" . '#rule'
-                          . "-" . $self->scrip_action_obj->{_Message_ID}
+                          . "-" . $self->{_Message_ID}
                           . "@" . RT->config->get('Organization') . ">"/eg
             and $2 == $self->ticket_obj->id
             )
         {
             $self->set_header( "Message-ID" => $msgid );
         } else {
+            # XXX: only place calling gen_message_id with scrip and seq
             $self->set_header(
                 'Message-ID' => RT::Interface::Email::gen_message_id(
                     ticket       => $self->ticket_obj,
                     scrip        => '#rule',
-                    scrip_action => $self->scrip_action_obj
+                    sequence     => $self->{_Message_ID},
                 ),
             );
         }
@@ -1019,7 +1021,7 @@ sub set_references_headers {
             s/<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>$/
           "<$1." . $self->ticket_obj->id .
              "-" . '#rule',
-             "-" . $self->scrip_action_obj->{_Message_ID} .
+             "-" . $self->{_Message_ID} .
              "@" . $org . ">"/eg
         }
 

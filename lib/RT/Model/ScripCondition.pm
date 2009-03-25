@@ -144,7 +144,6 @@ sub load_condition {
     $self->{'condition'} = $type->new(
         'scrip_scrip_condition'  => $self,
         'ticket_obj'             => $args{'ticket_obj'},
-        'scrip_obj'              => $args{'scrip_obj'},
         'transaction_obj'        => $args{'transaction_obj'},
         'argument'               => $self->argument,
         'applicable_trans_types' => $self->applicable_trans_types,

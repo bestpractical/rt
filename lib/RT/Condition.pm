@@ -56,7 +56,6 @@
     my $foo = RT::Condition->new( 
 		transaction_obj => $tr, 
 		ticket_obj => $ti, 
-		scrip_obj => $scr, 
 		Argument => $arg, 
 		Type => $type);
 
@@ -194,7 +193,6 @@ sub DESTROY {
     $self->{'template_obj'} = undef;
     $self->{'ticket_obj'} = undef;
     $self->{'transaction_obj'} = undef;
-    $self->{'scrip_obj'}       = undef;
 
 }
 
