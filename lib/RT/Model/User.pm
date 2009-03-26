@@ -245,7 +245,7 @@ sub create {
     }
 
     my $aclstash = RT::Model::Group->new( current_user => $self->current_user );
-    my $stash_id = $aclstash->_createacl_equivalence_group($principal);
+    my $stash_id = $aclstash->create_acl_equivalence($principal);
 
     unless ($stash_id) {
         Jifty->handle->rollback();
@@ -460,7 +460,7 @@ sub _bootstrap_create {
 
     my $aclstash = RT::Model::Group->new( current_user => $self->current_user );
 
-    my $stash_id = $aclstash->_createacl_equivalence_group($principal);
+    my $stash_id = $aclstash->create_acl_equivalence($principal);
 
     unless ($stash_id) {
         Jifty->handle->rollback();

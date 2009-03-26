@@ -105,7 +105,6 @@ sub limit_to_object {
         entry_aggregator => 'OR',
         quote_value      => 0
     );
-
 }
 
 
@@ -170,7 +169,7 @@ sub limit_to_principal {
         my $cgm = $self->new_alias('CachedGroupMembers');
         $self->join(
             alias1  => 'main',
-            column1 => 'principal_id',
+            column1 => 'principal',
             alias2  => $cgm,
             column2 => 'group_id'
         );
@@ -203,7 +202,7 @@ sub limit_to_principal {
             $args{'id'} = $group->principal_id;
         }
         $self->limit(
-            column           => 'principal_id',
+            column           => 'principal',
             operator         => '=',
             value            => $args{'id'},
             entry_aggregator => 'OR'

@@ -226,7 +226,6 @@ sub load_acl_equivalence {
 
     return $self->load_by_cols(
         domain   => 'ACLEquivalence',
-        type     => 'UserEquiv',
         instance => $principal,
     );
 }
@@ -405,7 +404,7 @@ sub create_user_defined {
 
 
 
-=head2 _createacl_equivalence_group { Principal }
+=head2 create_acl_equivalence { Principal }
 
 A helper subroutine which creates a group containing only 
 an individual user. This gets used by the ACL system to check rights.
@@ -415,7 +414,7 @@ Returns a tuple of (Id, Message).  If id is 0, the create failed
 
 =cut
 
-sub _createacl_equivalence_group {
+sub create_acl_equivalence {
     my $self  = shift;
     my $princ = shift;
     my ( $id, $msg ) = $self->_create(
@@ -1020,6 +1019,7 @@ sub current_user_has_right {
 
 }
 
+sub acl_equivalence_group { return $_[0] }
 
 sub basic_columns {
     ( [ name => 'name' ], [ description => 'description' ], );
