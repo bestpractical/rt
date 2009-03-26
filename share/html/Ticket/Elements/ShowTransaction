@@ -61,6 +61,7 @@
     <span class="description">
       <% $Transaction->CreatorObj->Name %> - <% $TicketString %> <% $desc %>
     </span>
+% $m->callback( TimeTaken => \$TimeTaken, Transaction => $Transaction, %ARGS, CallbackName => 'ModifyTimeTaken' );
     <span class="time-taken"><% $TimeTaken %></span>
     <span class="actions<% $titlebar_commands ? '': ' hidden'%>"><% $titlebar_commands |n %></span>
   </div>
