@@ -211,98 +211,21 @@ sub limit_to_principal {
     }
 }
 
-
-
 sub next {
     my $self = shift;
 
     my $ACE = $self->SUPER::next();
-    if ( ( defined($ACE) ) and ( ref($ACE) ) ) {
+    return $ACE unless defined $ACE;
 
-        if ($self->current_user->has_right(
-                right  => 'ShowACL',
-                object => $ACE->object
-            )
-            or $self->current_user->has_right(
-                right  => 'ModifyACL',
-                object => $ACE->object
-            )
-            )
-        {
-            return ($ACE);
-        }
-
-        #If the user doesn't have the right to show this ACE
-        else {
-            return ( $self->next() );
-        }
-    }
-
-    #if there never was any ACE
-    else {
-        return (undef);
-    }
-
-}
-
-
-#wrap around _do_search  so that we can build the hash of returned
-#values
-sub _do_search {
-    my $self = shift;
-
-    # Jifty->log->debug("Now in ".$self."->_do_search");
-    my $return = $self->SUPER::_do_search(@_);
-
-    #  Jifty->log->debug("In $self ->_do_search. return from SUPER::_do_search was $return\n");
-    $self->{'must_redo_search'} = 0;
-    $self->_is_limited(1);
-    $self->_build_hash();
-    return ($return);
-}
-
-#Build a hash of this ACL's entries.
-sub _build_hash {
-    my $self = shift;
-
-    while ( my $entry = $self->next ) {
-        my $hashkey
-            = $entry->__value('object_type') . "-"
-            . $entry->__value('object_id') . "-"
-            . $entry->__value('right_name') . "-"
-            . $entry->__value('principal_id') . "-"
-            . $entry->__value('type');
-
-        $self->{'as_hash'}->{"$hashkey"} = 1;
-
-    }
-}
-
-
-=head2 has_entry
-
-=cut
-
-sub has_entry {
-
-    my $self = shift;
-    my %args = (
-        right_scope      => undef,
-        right_applies_to => undef,
-        right_name       => undef,
-        principal_id     => undef,
-        type   => undef,
-        @_
+    return $ACE if $self->current_user->has_right(
+        right  => 'ShowACL',
+        object => $ACE->object,
     );
-
-    #if we haven't done the search yet, do it now.
-    $self->_do_search();
-
-    if ( $self->{'as_hash'}->{ $args{'right_scope'} . "-" . $args{'right_applies_to'} . "-" . $args{'right_name'} . "-" . $args{'principal_id'} . "-" . $args{'type'} } == 1 ) {
-        return (1);
-    } else {
-        return (undef);
-    }
+    return $ACE if $self->current_user->has_right(
+        right  => 'ModifyACL',
+        object => $ACE->object,
+    );
+    return $self->next;
 }
 
 1;
