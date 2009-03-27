@@ -77,12 +77,6 @@ use base qw/RT::IsPrincipalCollection RT::SearchBuilder/;
 
 use RT::Model::UserCollection;
 
-# XXX: below some code is marked as subject to generalize in Groups, Users classes.
-# RUZ suggest name Principals::Generic or Principals::Base as abstract class, but
-# Jesse wants something that doesn't imply it's a Principals.pm subclass.
-# See comments below for candidats.
-
-
 sub implicit_clauses {
     my $self = shift;
     $self->order_by(
@@ -137,6 +131,9 @@ Limits the set of groups found to role groups for an instance of a model. Takes:
 
 =over 4
 
+=item object - an object roles of which should be looked, replaces the following
+two arguments;
+
 =item model - mandatory name of a model, for example: 'RT::Model::Ticket';
 
 =item instance - optional id of the model record;
@@ -159,6 +156,9 @@ sub limit_to_roles {
         subclause        => 'limit_to_roles',
         @_
     );
+    @args{'model', 'instance'} = (ref $args{'object'}, $args{'object'}->id)
+        if $args{'object'};
+
     $self->open_paren( $args{'subclause'} );
     $self->limit(
         subclause        => $args{'subclause'},
@@ -183,60 +183,6 @@ sub limit_to_roles {
     ) if defined $args{'type'};
     $self->close_paren( $args{'subclause'} );
 }
-
-=head2 limit_to_roles_for_queue QUEUE_ID
-
-Limits the set of groups found to role groups for queue QUEUE_ID
-
-=cut
-
-sub limit_to_roles_for_queue {
-    my $self  = shift;
-    my $queue = shift;
-    $self->limit(
-        column   => 'domain',
-        operator => '=',
-        value    => 'RT::Model::Queue-Role'
-    );
-    $self->limit( column => 'instance', operator => '=', value => $queue );
-}
-
-
-
-=head2 limit_to_roles_for_ticket Ticket_ID
-
-Limits the set of groups found to role groups for Ticket Ticket_ID
-
-=cut
-
-sub limit_to_roles_for_ticket {
-    my $self   = shift;
-    my $Ticket = shift;
-    $self->limit(
-        column   => 'domain',
-        operator => '=',
-        value    => 'RT::Model::Ticket-Role'
-    );
-    $self->limit( column => 'instance', operator => '=', value => '$Ticket' );
-}
-
-
-
-=head2 limit_to_roles_for_system System_ID
-
-Limits the set of groups found to role groups for System System_ID
-
-=cut
-
-sub limit_to_roles_for_system {
-    my $self = shift;
-    $self->limit(
-        column   => 'domain',
-        operator => '=',
-        value    => 'RT::System-Role'
-    );
-}
-
 
 =head2 with_member {principal => PRINCIPAL_ID, recursively => undef}
 
