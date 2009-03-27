@@ -73,7 +73,8 @@ doing something wrong.
 package RT::Model::GroupMember;
 
 use strict;
-no warnings qw(redefine);
+use warnings;
+
 use RT::Model::CachedGroupMemberCollection;
 
 use base qw/RT::Record/;
@@ -82,11 +83,11 @@ sub table {'GroupMembers'}
 
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column group_id  => references RT::Model::Group;
+    column group_id  => references RT::Model::Principal;
     column member_id => references RT::Model::Principal;
-
 };
 
+use Scalar::Util qw(blessed);
 
 =head2 create { Group => undef, Member => undef }
 
@@ -296,13 +297,13 @@ sub delete {
     $cached_submembers->limit(
         column   => 'member_id',
         operator => '=',
-        value    => $self->member_obj->id
+        value    => $self->member->id
     );
 
     $cached_submembers->limit(
         column   => 'immediate_parent',
         operator => '=',
-        value    => $self->group_obj->id
+        value    => $self->group->id
     );
 
     while ( my $item_to_del = $cached_submembers->next() ) {
@@ -329,40 +330,5 @@ sub delete {
     return ($err);
 
 }
-
-
-
-=head2 member_obj
-
-Returns an RT::Model::Principal object for the Principal specified by $self->principal_id
-
-=cut
-
-sub member_obj {
-    my $self = shift;
-    unless ( defined( $self->{'Member_obj'} ) ) {
-        $self->{'Member_obj'} = RT::Model::Principal->new( current_user => $self->current_user );
-        $self->{'Member_obj'}->load( $self->member_id ) if ( $self->member_id );
-    }
-    return ( $self->{'Member_obj'} );
-}
-
-
-
-=head2 group_obj
-
-Returns an RT::Model::Principal object for the Group specified in $self->group_id
-
-=cut
-
-sub group_obj {
-    my $self = shift;
-    unless ( defined( $self->{'Group_obj'} ) ) {
-        $self->{'Group_obj'} = RT::Model::Principal->new( current_user => $self->current_user );
-        $self->{'Group_obj'}->load( $self->group_id );
-    }
-    return ( $self->{'Group_obj'} );
-}
-
 
 1;
