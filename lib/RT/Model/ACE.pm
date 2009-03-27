@@ -64,7 +64,10 @@
 package RT::Model::ACE;
 
 use strict;
-no warnings qw(redefine);
+use warnings;
+
+use Scalar::Util qw(blessed);
+
 use RT::Model::PrincipalCollection;
 use RT::Model::QueueCollection;
 use RT::Model::GroupCollection;
@@ -138,33 +141,27 @@ or
 
 sub load_by_cols {
     my $self = shift;
-    my %args = (
-        principal   => undef,
-        type        => undef,
-        right_name  => undef,
-        object      => undef,
-        object_id   => undef,
-        object_type => undef,
-        @_
-    );
+    my %args = ( @_ );
 
-    my ( $object, $object_type, $object_id ) = $self->_parse_object_arg(%args);
-    unless ($object) {
-        return ( 0, _("System error. Right not granted.") );
+    if ( $args{'object'} || defined $args{'object_id'} || $args{'object_type'} ) {
+        my ( $object, $object_type, $object_id ) = $self->_parse_object_arg(%args);
+        unless ($object) {
+            return ( 0, _("System error. Right not granted.") );
+        }
+        delete $args{'object'};
+        $args{'object_type'} = $object_type;
+        $args{'object_id'} = $object_id;
     }
 
-    my ($acl_group, $msg) = $self->principal_to_acl_group( $args{'principal'} );
-    unless ( $acl_group ) {
-        return ( 0, $msg );
+    if ( defined $args{'principal'} ) {
+        my ($group, $msg) = $self->principal_to_acl_group( $args{'principal'} );
+        unless ( $group ) {
+            return ( 0, $msg );
+        }
+        $args{'principal'} = $group->id;
     }
 
-    $self->load_by_cols(
-        principal   => $acl_group->id,
-        type        => $args{'type'} || 'Group',
-        right_name  => $args{'right_name'},
-        object_type => $object_type,
-        object_id   => $object_id
-    );
+    $self->SUPER::load_by_cols( %args );
     unless ( $self->id ) {
         return ( 0, _("ACE not found") );
     }
@@ -467,7 +464,7 @@ sub _value {
     my $self = shift;
 
     if ( $self->principal->is_group
-        && $self->principal->object->has_member( $self->current_user->principal, recursively => 1 ) )
+        && $self->principal->object->has_member( principal =>  $self->current_user->principal, recursively => 1 ) )
     {
         return ( $self->__value(@_) );
     } elsif (
@@ -498,13 +495,13 @@ sub principal_to_acl_group {
     return $principal->acl_equivalence_group
         if blessed $principal;
 
-    my $tmp = RT::Model::Principal->new( $self->current_user );
+    my $tmp = RT::Model::Principal->new( current_user => $self->current_user );
     $tmp->load( $principal );
     unless ( $tmp->id ) {
         return (undef, _( 'Principal %1 not found.', $principal ));
         return undef;
     }
-    return $principal->acl_equivalence_group;
+    return $tmp->acl_equivalence_group;
 }
 
 sub _parse_object_arg {
