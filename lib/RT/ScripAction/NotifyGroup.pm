@@ -90,7 +90,7 @@ sub set_recipients {
         $self->_handle_argument($_);
     }
 
-    my $creator = $self->transaction->creator_obj->email();
+    my $creator = $self->transaction->creator->email();
     unless ($RT::NotifyActor) {
         @{ $self->{'To'} } = grep ( !/^\Q$creator\E$/, @{ $self->{'To'} } );
     }

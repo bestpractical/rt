@@ -155,7 +155,7 @@ sub set_recipients {
 
     my $skip = '';
     unless ( RT->config->get('NotifyActor') ) {
-        if ( my $creator = $self->transaction->creator_obj->email ) {
+        if ( my $creator = $self->transaction->creator->email ) {
             $skip = lc $creator;
         }
     }

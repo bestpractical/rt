@@ -120,6 +120,7 @@ sub create {
         && $args{'member'}->id )
     {
         Jifty->log->debug("$self->create: bogus Member argument");
+        Carp::confess("boo");
     }
 
     unless ( $args{'group'}
@@ -127,6 +128,7 @@ sub create {
         && $args{'group'}->id )
     {
         Jifty->log->debug("$self->create: bogus Group argument");
+        Carp::confess("boo");
     }
 
     unless ( $args{'immediate_parent'}

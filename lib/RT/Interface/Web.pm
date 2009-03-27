@@ -1285,8 +1285,8 @@ sub process_ticket_watchers {
                 next unless $value =~ /^(?:admin_cc|cc|requestor)$/i;
 
                 my ( $code, $msg ) = $Ticket->add_watcher(
-                    type         => $value,
-                    principal_id => $principal_id
+                    type      => $value,
+                    principal => $principal_id
                 );
                 push @results, $msg;
             }

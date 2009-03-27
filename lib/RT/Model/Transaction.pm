@@ -560,7 +560,7 @@ sub content {
         }
 
         $content =~ s/^/> /gm;
-        $content = _( "On %1, %2 wrote:", $self->created, $self->creator_obj->name ) . "\n$content\n\n";
+        $content = _( "On %1, %2 wrote:", $self->created, $self->creator->name ) . "\n$content\n\n";
     }
 
     return ($content);
@@ -732,7 +732,7 @@ sub description {
         return ( _("No transaction type specified") );
     }
 
-    return _( "%1 by %2", $self->brief_description, $self->creator_obj->name );
+    return _( "%1 by %2", $self->brief_description, $self->creator->name );
 }
 
 
@@ -1000,9 +1000,9 @@ Returns false otherwise
 sub is_inbound {
     my $self = shift;
     $self->object_type eq 'RT::Model::Ticket' or return undef;
-    return $self->ticket_obj->is_watcher(
-        type         => 'requestor',
-        principal_id => $self->creator_obj->principal_id,
+    return $self->ticket->is_watcher(
+        type      => 'requestor',
+        principal => $self->creator,
     );
 }
 
@@ -1098,7 +1098,7 @@ sub ticket {
 
 }
 
-sub ticket_obj {
+sub ticket {
     # XXX: too early for deprecation, a lot of usage
     #require Carp; Carp::confess("use object method instead and check type");
     my $self = shift;

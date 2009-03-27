@@ -612,7 +612,7 @@ sub set_rt_special_headers {
 
     # XXX, TODO: use /ShowUser/ShowUserEntry(or something like that) when it would be
     #            refactored into user's method.
-    if ( my $email = $self->transaction->creator_obj->email ) {
+    if ( my $email = $self->transaction->creator->email ) {
         $self->set_header( 'RT-Originator', $email );
     }
 
@@ -882,7 +882,7 @@ sub set_return_address {
 
             unless ($friendly_name) {
                 $friendly_name =
-                  $self->transaction->creator_obj->friendly_name;
+                  $self->transaction->creator->friendly_name;
                 if ( $friendly_name =~ /^"(.*)"$/ ) {    # a quoted string
                     $friendly_name = $1;
                 }

@@ -112,15 +112,15 @@ $jesse->load_by_email('jesse@example.com');
 ok($jesse->id,  "Found the jesse rt user");
 
 
-ok ($ticket->is_watcher(type => 'requestor', principal_id => $jesse->principal_id), "The ticket actually has jesse at fsck.com as a requestor");
+ok ($ticket->is_watcher(type => 'requestor', principal => $jesse->principal_id), "The ticket actually has jesse at fsck.com as a requestor");
 ok (my ($add_id, $add_msg) = $ticket->add_watcher(type => 'requestor', email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
 ok ($add_id, "Add succeeded: ($add_msg)");
 ok(my $bob = RT::Model::User->new(current_user => RT->system_user), "Creating a bob rt::user");
 $bob->load_by_email('bob@fsck.com');
 ok($bob->id,  "Found the bob rt user");
-ok ($ticket->is_watcher(type => 'requestor', principal_id => $bob->principal_id), "The ticket actually has bob at fsck.com as a requestor");;
+ok ($ticket->is_watcher(type => 'requestor', principal => $bob->principal_id), "The ticket actually has bob at fsck.com as a requestor");;
 ok ( ($add_id, $add_msg) = $ticket->delete_watcher(type =>'requestor', email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
-ok (!$ticket->is_watcher(type => 'requestor', principal_id => $bob->principal_id), "The ticket no longer has bob at fsck.com as a requestor");;
+ok (!$ticket->is_watcher(type => 'requestor', principal => $bob->principal_id), "The ticket no longer has bob at fsck.com as a requestor");;
 
 
 $group = RT::Model::Group->new(current_user => RT->system_user);
@@ -134,7 +134,7 @@ ok (!$group->id, "Not found the admin_cc object for this ticket");
 $group = RT::Model::Group->new(current_user => RT->system_user);
 ok($group->load_role(object => $ticket, type=> 'owner'));
 ok ($group->id, "Found the owner object for this ticket");
-ok($group->has_member(RT->nobody->user_object->principal), "the owner group has the member 'RT_System'");
+ok($group->has_member( principal => RT->nobody->user_object->principal), "the owner group has the member 'RT_System'");
 
 
 $t = RT::Model::Ticket->new(current_user => RT->system_user);

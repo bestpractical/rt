@@ -383,7 +383,7 @@ sub send_email {
             and my $prefix = RT->config->get('VERPPrefix')
             and my $domain = RT->config->get('VERPDomain') )
         {
-            my $from = $args{'transaction'}->creator_obj->email;
+            my $from = $args{'transaction'}->creator->email;
             $from =~ s/@/=/g;
             $from =~ s/\s//g;
             $args .= " -f $prefix$from\@$domain";

@@ -82,7 +82,7 @@ sub __depends_on {
         shredder       => $args{'shredder'}
     );
 
-    my $group = $self->group_obj->object;
+    my $group = $self->group->object;
 
     # XXX: If we delete member of the ticket owner role group then we should also
     # fix ticket object, but only if we don't plan to delete group itself!
@@ -115,7 +115,7 @@ sub __depends_on {
 
             my $group_member = $args{'base_object'};
 
-            if ( $group_member->member_obj->id == RT->nobody->id ) {
+            if ( $group_member->member->id == RT->nobody->id ) {
                 RT::Shredder::Exception->throw("Couldn't delete Nobody from owners role group");
             }
 
@@ -153,7 +153,7 @@ sub __relates {
     my $deps = $args{'dependencies'};
     my $list = [];
 
-    my $obj = $self->member_obj;
+    my $obj = $self->member;
     if ( $obj && $obj->id ) {
         push( @$list, $obj );
     } else {
@@ -163,7 +163,7 @@ sub __relates {
         $rec->{'description'} = "Have no related Principal #" . $self->member_id . " object.";
     }
 
-    $obj = $self->group_obj;
+    $obj = $self->group;
     if ( $obj && $obj->id ) {
         push( @$list, $obj );
     } else {
