@@ -163,27 +163,23 @@ sub create {
 
     return $id if $args{'member'}->id == $args{'group'}->id;
 
-    if ( $args{'member'}->is_group() ) {
-        my $GroupMembers = $args{'member'}->object->members;
-        while ( my $member = $GroupMembers->next() ) {
-            my $cached_member = RT::Model::CachedGroupMember->new( current_user => $self->current_user );
-            my $c_id          = $cached_member->create(
-                group            => $args{'group'},
-                member           => $member->member_obj,
-                immediate_parent => $args{'member'},
-                disabled         => $args{'disabled'},
-                via              => $id
-            );
-            unless ($c_id) {
-                return (undef);    #percolate the error upwards.
-                                   # the caller will log an error and abort the transaction
-            }
-
+    my $GroupMembers = $args{'member'}->object->members;
+    while ( my $member = $GroupMembers->next() ) {
+        my $cached_member = RT::Model::CachedGroupMember->new( current_user => $self->current_user );
+        my $c_id = $cached_member->create(
+            group            => $args{'group'},
+            member           => $member->member,
+            immediate_parent => $args{'member'},
+            disabled         => $args{'disabled'},
+            via              => $id
+        );
+        unless ($c_id) {
+            return (undef);    #percolate the error upwards.
+                               # the caller will log an error and abort the transaction
         }
     }
 
     return ($id);
-
 }
 
 
@@ -199,29 +195,26 @@ mysql supported foreign keys with cascading deletes.
 sub delete {
     my $self = shift;
 
-    my $member = $self->member_obj();
-    if ( $member->is_group ) {
-        my $deletable = RT::Model::CachedGroupMemberCollection->new( current_user => $self->current_user );
+    my $deletable = RT::Model::CachedGroupMemberCollection->new( current_user => $self->current_user );
+    $deletable->limit(
+        column   => 'id',
+        operator => '!=',
+        value    => $self->id
+    );
+    $deletable->limit(
+        column   => 'via',
+        operator => '=',
+        value    => $self->id
+    );
 
-        $deletable->limit(
-            column   => 'id',
-            operator => '!=',
-            value    => $self->id
-        );
-        $deletable->limit(
-            column   => 'via',
-            operator => '=',
-            value    => $self->id
-        );
-
-        while ( my $kid = $deletable->next ) {
-            my $kid_err = $kid->delete();
-            unless ($kid_err) {
-                Jifty->log->error( "Couldn't delete CachedGroupMember " . $kid->id );
-                return (undef);
-            }
+    while ( my $kid = $deletable->next ) {
+        my $kid_err = $kid->delete();
+        unless ($kid_err) {
+            Jifty->log->error( "Couldn't delete CachedGroupMember " . $kid->id );
+            return (undef);
         }
     }
+
     my $err = $self->SUPER::delete();
     unless ($err) {
         Jifty->log->error( "Couldn't delete CachedGroupMember " . $self->id );
@@ -271,27 +264,23 @@ sub set_disabled {
         return ($err);
     }
 
-    my $member = $self->member_obj();
-    if ( $member->is_group ) {
-        my $deletable = RT::Model::CachedGroupMemberCollection->new( current_user => $self->current_user );
+    my $deletable = RT::Model::CachedGroupMemberCollection->new( current_user => $self->current_user );
+    $deletable->limit(
+        column   => 'via',
+        operator => '=',
+        value    => $self->id
+    );
+    $deletable->limit(
+        column   => 'id',
+        operator => '!=',
+        value    => $self->id
+    );
 
-        $deletable->limit(
-            column   => 'via',
-            operator => '=',
-            value    => $self->id
-        );
-        $deletable->limit(
-            column   => 'id',
-            operator => '!=',
-            value    => $self->id
-        );
-
-        while ( my $kid = $deletable->next ) {
-            my $kid_err = $kid->set_disabled($val);
-            unless ($kid_err) {
-                Jifty->log->error( "Couldn't Setdisabled CachedGroupMember " . $kid->id );
-                return ($kid_err);
-            }
+    while ( my $kid = $deletable->next ) {
+        my $kid_err = $kid->set_disabled($val);
+        unless ($kid_err) {
+            Jifty->log->error( "Couldn't Setdisabled CachedGroupMember " . $kid->id );
+            return ($kid_err);
         }
     }
 
