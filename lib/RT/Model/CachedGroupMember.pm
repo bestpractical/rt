@@ -221,7 +221,7 @@ sub delete {
         return (undef);
     }
 
-    unless ( $self->group_obj->object ) {
+    unless ( $self->group->object ) {
 
         warn "HEY! NO group object object!!!" . $self->__value('group_id');
         warn YAML::Dump($self);
@@ -229,9 +229,9 @@ sub delete {
         return undef;
     }
 
-    # Unless $self->group_obj still has the member recursively $self->member_obj
+    # Unless $self->group still has the member recursively $self->member
     # (Since we deleted the database row above, $self no longer counts)
-    unless ( $self->group_obj->object->has_member( $self->member_id, recursively => 1 ) ) {
+    unless ( $self->group->object->has_member( principal =>  $self->member_id, recursively => 1 ) ) {
 
         #   Find all ACEs granted to $self->group_id
         my $acl = RT::Model::ACECollection->new( current_user => RT->system_user );
@@ -284,9 +284,9 @@ sub set_disabled {
         }
     }
 
-    # Unless $self->group_obj still has the member recursively $self->member_obj
+    # Unless $self->group still has the member recursively $self->member
     # (Since we Setdisabledd the database row above, $self no longer counts)
-    unless ( $self->group_obj->object->has_member( $self->member_id, recursively => 1 ) ) {
+    unless ( $self->group->object->has_member( principal => $self->member_id, recursively => 1 ) ) {
 
         #   Find all ACEs granted to $self->group_id
         my $acl = RT::Model::ACECollection->new( current_user => RT->system_user );
@@ -294,51 +294,6 @@ sub set_disabled {
 
     }
     return ($err);
-}
-
-
-
-=head2 group_obj  
-
-Returns the RT::Model::Principal object for this group Group
-
-=cut
-
-sub group_obj {
-    my $self      = shift;
-    my $principal = RT::Model::Principal->new( current_user => $self->current_user );
-    $principal->load( $self->group_id );
-    return ($principal);
-}
-
-
-
-=head2 immediate_parent_obj  
-
-Returns the RT::Model::Principal object for this group immediate_parent
-
-=cut
-
-sub immediate_parent_obj {
-    my $self      = shift;
-    my $principal = RT::Model::Principal->new( current_user => $self->current_user );
-    $principal->load( $self->immediate_parent );
-    return ($principal);
-}
-
-
-
-=head2 member_obj  
-
-Returns the RT::Model::Principal object for this group member
-
-=cut
-
-sub member_obj {
-    my $self      = shift;
-    my $principal = RT::Model::Principal->new( current_user => $self->current_user );
-    $principal->load( $self->member_id );
-    return ($principal);
 }
 
 1;
