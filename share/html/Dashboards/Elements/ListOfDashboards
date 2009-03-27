@@ -1,0 +1,17 @@
+<%init>
+# put the list of dashboards into the navigation
+use RT::Dashboard;
+
+my @objs = RT::Dashboard->new($session{CurrentUser})->_PrivacyObjects(ShowSystem => 1);
+my $dashboard_map = $m->comp("/Dashboards/Elements/DashboardsForObjects", Objects => \@objs);
+
+my @dashboards = (
+    (sort { $a->Id <=> $b->Id } @{ $dashboard_map->{personal} || [] }),
+    (sort { $a->Id <=> $b->Id } @{ $dashboard_map->{system}   || [] }),
+
+    map { sort { $a->Id <=> $b->Id } @{ $dashboard_map->{group}{$_} } }
+        keys %{ $dashboard_map->{group} || {} },
+);
+
+return @dashboards;
+</%init>
