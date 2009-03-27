@@ -13,5 +13,7 @@ my @dashboards = (
         keys %{ $dashboard_map->{group} || {} },
 );
 
+$m->callback(%ARGS, dashboards => \@dashboards, CallbackName => 'ModifyDashboards');
+
 return @dashboards;
 </%init>
