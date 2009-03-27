@@ -452,7 +452,7 @@ sub _join_group_members_for_group_rights {
     my $group_members = $self->_join_group_members(%args);
     $self->limit(
         alias       => $args{'aclalias'},
-        column      => 'principal_id',
+        column      => 'principal',
         value       => "$group_members.group_id",
         quote_value => 0,
     );

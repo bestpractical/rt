@@ -218,7 +218,7 @@ sub limit_to_roles_for_system {
 }
 
 
-=head2 with_member {principal_id => PRINCIPAL_ID, recursively => undef}
+=head2 with_member {principal => PRINCIPAL_ID, recursively => undef}
 
 Limits the set of groups returned to groups which have
 Principal PRINCIPAL_ID as a member
@@ -228,7 +228,7 @@ Principal PRINCIPAL_ID as a member
 sub with_member {
     my $self = shift;
     my %args = (
-        principal_id => undef,
+        principal => undef,
         recursively  => undef,
         @_
     );
@@ -250,14 +250,14 @@ sub with_member {
         alias    => $members,
         column   => 'member_id',
         operator => '=',
-        value    => $args{'principal_id'}
+        value    => $args{'principal'}
     );
 }
 
 sub without_member {
     my $self = shift;
     my %args = (
-        principal_id => undef,
+        principal => undef,
         recursively  => undef,
         @_
     );
@@ -274,7 +274,7 @@ sub without_member {
         alias     => $members_alias,
         column    => 'member_id',
         operator  => '=',
-        value     => $args{'principal_id'},
+        value     => $args{'principal'},
     );
     $self->limit(
         alias       => $members_alias,
@@ -349,7 +349,7 @@ sub _join_group_members_for_group_rights {
     }
     $self->limit(
         alias       => $args{'aclalias'},
-        column      => 'principal_id',
+        column      => 'principal',
         value       => "main.id",
         quote_value => 0,
     );

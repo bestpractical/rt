@@ -2102,7 +2102,7 @@ sub _roles_can_see {
     $ACL->limit( column => 'type', operator => '!=', value => 'Group' );
     my $principal_alias = $ACL->join(
         alias1 => 'main',
-        column1 => 'principal_id',
+        column1 => 'principal',
         table2 => 'Principals',
         column2 => 'id',
     );
@@ -2141,14 +2141,14 @@ sub _directly_can_see_in {
     $ACL->limit( column => 'right_name', value => 'ShowTicket' );
     my $principal_alias = $ACL->join(
         alias1 => 'main',
-        column1 => 'principal_id',
+        column1 => 'principal',
         table2 => 'Principals',
         column2 => 'id',
     );
     $ACL->limit( alias => $principal_alias, column => 'disabled', value => 0 );
     my $cgm_alias = $ACL->join(
         alias1 => 'main',
-        column1 => 'principal_id',
+        column1 => 'principal',
         table2 => 'CachedGroupMembers',
         column2 => 'group_id',
     );

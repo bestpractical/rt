@@ -77,7 +77,7 @@ sub __depends_on {
     # Access Control List
     my $objs = RT::Model::ACECollection->new( current_user => $self->current_user );
     $objs->limit(
-        column   => 'principal_id',
+        column   => 'principal',
         operator => '=',
         value    => $self->id
     );

@@ -930,7 +930,7 @@ sub own_groups {
     my $groups = RT::Model::GroupCollection->new( current_user => $self->current_user );
     $groups->limit_to_user_defined_groups;
     $groups->with_member(
-        principal_id => $self->id,
+        principal => $self->id,
         recursively  => 1
     );
     return $groups;

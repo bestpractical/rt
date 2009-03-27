@@ -1240,7 +1240,7 @@ sub process_ticket_watchers {
         # Delete deletable watchers
         if ( $key =~ /^Ticket-DeleteWatcher-Type-(.*)-Principal-(\d+)$/ ) {
             my ( $code, $msg ) = $Ticket->delete_watcher(
-                principal_id => $2,
+                principal => $2,
                 type         => $1
             );
             push @results, $msg;

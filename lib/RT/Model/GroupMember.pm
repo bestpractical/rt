@@ -90,7 +90,7 @@ use Jifty::DBI::Record schema {
 use Scalar::Util qw(blessed);
 
 
-=head2 create { Group => undef, Member => undef }
+=head2 create { group => undef, member => undef }
 
 Add a Principal to the group Group.
 if the Principal is a group, automatically inserts all
@@ -292,22 +292,22 @@ sub delete {
     # a member of A, will delete C as a member of A without touching
     # C as a member of B
 
-    my $cached_submembers = RT::Model::CachedGroupMemberCollection->new( current_user => $self->current_user );
-
+    my $cached_submembers = RT::Model::CachedGroupMemberCollection->new(
+        current_user => $self->current_user
+    );
     $cached_submembers->limit(
         column   => 'member_id',
         operator => '=',
         value    => $self->member->id
     );
-
     $cached_submembers->limit(
         column   => 'immediate_parent',
         operator => '=',
         value    => $self->group->id
     );
 
-    while ( my $item_to_del = $cached_submembers->next() ) {
-        my ( $del_err, $del_msg ) = $item_to_del->delete();
+    while ( my $item_to_del = $cached_submembers->next ) {
+        my ( $del_err, $del_msg ) = $item_to_del->delete;
         unless ($del_err) {
             Jifty->handle->rollback();
             Jifty->log->warn( "Couldn't delete cached group submember " . $item_to_del->id );
