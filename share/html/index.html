@@ -154,7 +154,7 @@ my $tabs = {
         ++$position;
         my $key = sprintf 'D-%03d', $position;
         $key => {
-            title => $_->Name,
+            title => '"' . $_->Name . '"',
             path  => 'Dashboards/' . $_->Id . '/' . $_->Name,
         }
     }
