@@ -172,10 +172,15 @@ for my $pane (keys %pane_name) {
                     };
                 }
                 elsif ($portlet_type eq 'component') {
+                    # Absolute paths stay absolute, relative paths go into
+                    # /Elements. This way, extensions that add portlets work.
+                    my $path = $item;
+                    $path = "/Elements/$path" if substr($path, 0, 1) ne '/';
+
                     push @portlets, {
                         portlet_type => $portlet_type,
                         component    => $item,
-                        path         => "/Elements/$item",
+                        path         => $path,
                         description  => $item,
                         pane         => $pane,
                     };
