@@ -140,7 +140,7 @@ A convoluted example
 	object =>$groups->first,
 	include_system_rights => undef,
 	include_superusers => 0,
-	include_subgroup_members => 0,
+	recursive => 0,
     );
  
      my @admins;
