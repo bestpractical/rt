@@ -141,6 +141,13 @@ if ($session{'CurrentUser'}->HasRight(Right => 'ModifySelf', Object => $RT::Syst
 
 my @dashboards = $m->comp("/Dashboards/Elements/ListOfDashboards");
 
+# limit to a maximum of 7 dashboards
+my $more = 0;
+if (@dashboards > 7) {
+    $more = 1;
+    splice @dashboards, 7;
+}
+
 my $position = 0;
 my $tabs = {
     map {
@@ -153,6 +160,14 @@ my $tabs = {
     }
     @dashboards
 };
+
+if ($more) {
+    $tabs->{"D-more"} = {
+        title => loc('more'),
+        path => 'Dashboards/index.html',
+
+    }
+}
 
 </%init>
 
