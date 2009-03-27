@@ -161,6 +161,13 @@ my $tabs = {
     @dashboards
 };
 
+$tabs->{"A"} = {
+    # every dashboard gets its name surrounded with "", so it's better to be
+    # consistent here, even though the language may not use ""s
+    title => '"' . loc('Home') . '"',
+    path  => 'index.html',
+};
+
 if ($more) {
     $tabs->{"D-more"} = {
         title => loc('More'),
