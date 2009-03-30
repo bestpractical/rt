@@ -1,0 +1,40 @@
+<%init>
+my @dashboards = $m->comp("/Dashboards/Elements/ListOfDashboards");
+
+# limit to a maximum of 7 dashboards
+my $more = 0;
+if (@dashboards > 7) {
+    $more = 1;
+    splice @dashboards, 7;
+}
+
+my $position = 0;
+my $tabs = {
+    map {
+        ++$position;
+        my $key = sprintf 'D-%03d', $position;
+        $key => {
+            title => '"' . $_->Name . '"',
+            path  => 'Dashboards/' . $_->Id . '/' . $_->Name,
+        }
+    }
+    @dashboards
+};
+
+$tabs->{"A"} = {
+    # every dashboard gets its name surrounded with "", so it's better to be
+    # consistent here, even though the language may not use ""s
+    title => '"' . loc('Home') . '"',
+    path  => 'index.html',
+};
+
+if ($more) {
+    $tabs->{"D-more"} = {
+        title => loc('More'),
+        path => 'Dashboards/index.html',
+
+    }
+}
+
+return $tabs;
+</%init>
