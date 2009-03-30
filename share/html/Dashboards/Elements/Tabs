@@ -49,11 +49,12 @@
     subtabs => $tabs,
     current_tab => 'Dashboards/index.html',
     current_subtab => $current_subtab,
+    actions => $actions,
     Title => $Title &>
 
 <%INIT>
 my $tabs;
-my $real_subtab = $current_subtab;
+my $actions;
 if ( $DashboardObj and $DashboardObj->Id ) {
 
     my $name = $DashboardObj->Name;
@@ -66,32 +67,28 @@ if ( $DashboardObj and $DashboardObj->Id ) {
         title   => $DashboardObj->Name,
         path    => $modify,
         current_subtab  => $current_subtab,
-        subtabs => {
-            a_Basics => { title => loc('Basics'),
-                          path  => $modify,
-            },
-
-            b_Queries => { title => loc('Queries'),
-                           path  => $queries,
-            },
-
-            c_Subscription => { title => loc('Subscription'),
-                                path  => "Dashboards/Subscription.html?DashboardId=" . $DashboardObj->Id
-            },
-
-
-            z_Preview => { title => loc('Show'),
-                           path  => $render,
-            },
-        }
+        subtabs => $m->comp('DashboardTabs'),
     };
 
-    delete $tabs->{"this"}{"subtabs"}{"c_Subscription"}
-        unless $DashboardObj->CurrentUserCanSubscribe;
+    $actions = {
+        a_Basics => {
+            title => loc('Basics'),
+            path  => $modify,
+        },
 
-    $tabs->{"this"}{"subtabs"}{"z_Preview"}{path} = $real_subtab
-        if $real_subtab =~ /Render/
-        || $real_subtab =~ /Dashboard\/\d+/;
+        b_Queries => {
+            title => loc('Queries'),
+            path  => $queries,
+        },
+
+        c_Subscription => {
+            title => loc('Subscription'),
+            path  => "Dashboards/Subscription.html?DashboardId=" . $DashboardObj->Id
+        },
+    };
+
+    delete $actions->{"c_Subscription"}
+        unless $DashboardObj->CurrentUserCanSubscribe;
 
     $current_subtab = $modify;
 }
