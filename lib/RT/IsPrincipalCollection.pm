@@ -231,7 +231,8 @@ sub who_have_group_right {
     $self->limit(
         alias  => $acl,
         column => 'type',
-        value  => 'Group',
+        operator => 'IS',
+        value  => 'NULL',
     );
 
     # no system user
