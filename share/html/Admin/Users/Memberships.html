@@ -123,11 +123,11 @@ if ( $update ) {
 
 my $is_member = RT::Model::GroupCollection->new( current_user => Jifty->web->current_user );
 $is_member->limit_to_user_defined_groups;
-$is_member->with_member( principal_id => $user_object->id );
+$is_member->with_member( principal => $user_object->id );
 
 my $is_not_member = RT::Model::GroupCollection->new( current_user => Jifty->web->current_user );
 $is_not_member->limit_to_user_defined_groups;
-$is_not_member->without_member( principal_id => $user_object->id );
+$is_not_member->without_member( principal => $user_object->id );
 
 $format ||= q{'<a href="__WebPath__/Admin/Groups/Modify.html?id=__id__">__id__</a>/TITLE:#'}
     .q{,'<a href="__WebPath__/Admin/Groups/Modify.html?id=__id__">__name__</a>/TITLE:name'}

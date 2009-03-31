@@ -67,7 +67,7 @@
 	    <% _($Group->type) %>
 		  </td>
 	  <td>
-	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
+	    <& /Admin/Elements/SelectRights, principal => $Group->principal_id,
         object => $queue_obj  &>
 	  </td>
 	</tr>
@@ -83,7 +83,7 @@
 	    <% _($Group->type) %>
 		  </td>
 	  <td>
-	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
+	    <& /Admin/Elements/SelectRights, principal => $Group->principal_id,
         object => $queue_obj  &>
 	  </td>
 	</tr>
@@ -99,7 +99,7 @@
 	    <% $Group->name %>
 		  </td>
 	  <td>
-	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
+	    <& /Admin/Elements/SelectRights, principal => $Group->principal_id,
         object => $queue_obj  &>
 	  </td>
 	</tr>

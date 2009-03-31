@@ -238,7 +238,7 @@ sub add_member {
 # In the dim future, this will all get factored out and life
 # will get better
 
-# takes a paramhash of { principal_id => undef }
+# takes a paramhash of { principal => undef }
 
 sub _add_member {
     my $self = shift;

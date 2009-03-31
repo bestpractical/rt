@@ -65,7 +65,7 @@
 	    <% _($Group->type) %>
 		  </td>
 	  <td>
-	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
+	    <& /Admin/Elements/SelectRights, principal => $Group->principal_id,
         object  =>RT->system &>
 	  </td>
 	</tr>
@@ -81,7 +81,7 @@
 	    <% _($Group->type) %>
 		  </td>
 	  <td>
-	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
+	    <& /Admin/Elements/SelectRights, principal => $Group->principal_id,
         object  => RT->system &>
 	  </td>
 	</tr>
@@ -97,7 +97,7 @@
 	    <% $Group->name %>
 		  </td>
 	  <td>
-	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
+	    <& /Admin/Elements/SelectRights, principal => $Group->principal_id,
         object  => RT->system &>
 	  </td>
 	</tr>

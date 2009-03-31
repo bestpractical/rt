@@ -13,16 +13,12 @@ Returns the string that represents this Users object's primary "Principals" alia
 sub principals_alias {
     my $self = shift;
 
-    return $self->{'princ_alias'} if $self->{'princ_alias'};
-
-    $self->{'princ_alias'} = $self->new_alias('Principals');
-    $self->join(
+    return $self->{'princ_alias'} ||= $self->join(
         alias1  => 'main',
         column1 => 'id',
-        alias2  => $self->principals_alias,
+        table2  => 'Principals',
         column2 => 'id'
     );
-    return $self->{'princ_alias'};
 }
 
 =head2 limit_to_enabled

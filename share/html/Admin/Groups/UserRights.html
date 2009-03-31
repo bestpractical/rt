@@ -62,7 +62,7 @@
   <tr align="right">
     <td valign="top"><& /Elements/ShowUser, user => $user_object &></td>
     <td><& /Admin/Elements/SelectRights,
-        principal_id => $Member->member_obj->id,
+        principal => $Member->member_obj->id,
         type => 'User',
         object => $GroupObj,
     &></td>
