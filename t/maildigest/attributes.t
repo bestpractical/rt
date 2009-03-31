@@ -61,7 +61,7 @@ ok( $ret || $msg =~ /already has/, "Granted everyone CreateTicket on testq: $msg
 						    object => $testq );
 ok( $ret || $msg =~ /already has/, "Granted dduser AdminQueue on testq: $msg" );
 ( $ret, $msg ) = $testq->add_watcher( type => 'admin_cc',
-			     principal_id => $user_d->principal->id );
+			     principal => $user_d->principal );
 ok( $ret || $msg =~ /already/, "dduser added as a queue watcher: $msg" );
 
 # Give the others queue rights.
@@ -86,10 +86,10 @@ ok( $ret, "Ticket $id created: $msg" );
 
 # Make the other users ticket watchers.
 ( $ret, $msg ) = $ticket->add_watcher( type => 'cc',
-		      principal_id => $user_n->principal->id );
+		      principal => $user_n->principal );
 ok( $ret, "Added user_n as a ticket watcher: $msg" );
 ( $ret, $msg ) = $ticket->add_watcher( type => 'cc',
-		      principal_id => $user_s->principal->id );
+		      principal => $user_s->principal );
 ok( $ret, "Added user_s as a ticket watcher: $msg" );
 
 my $obj;

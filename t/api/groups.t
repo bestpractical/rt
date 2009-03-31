@@ -37,13 +37,13 @@ my $g = RT::Model::Group->new(current_user => RT->system_user);
 ($id, $msg) = $g->create_user_defined(name => 'Membertests');
 ok ($id, $msg);
 
-my ($aid, $amsg) =$g->add_member($u->id);
+my ($aid, $amsg) = $g->add_member($u->id);
 ok ($aid, $amsg);
 ok($g->has_member( principal => $u->principal),"G has member u");
 
 my $groups = RT::Model::GroupCollection->new(current_user => RT->system_user);
 $groups->limit_to_user_defined_groups();
-$groups->with_member(principal_id => $u->id);
+$groups->with_member(principal => $u->id);
 is ($groups->count , 1,"found the 1 group - " . $groups->count);
 is ($groups->first->id , $g->id, "it's the right one");
 
@@ -89,7 +89,7 @@ bless $RTxSysObj, 'RTx::System';
 *RTx::System::id = sub  { 1; };
 *RTx::System::id = *RTx::System::id;
 my $ace = RT::Model::ACE->new(current_user => RT->system_user);
-($id, $msg) = $ace->RT::Record::create( principal_id => $RTxGroup->id, type => 'Group', right_name => 'RTxGroupRight', object_type => 'RTx::System', object_id  => 1);
+($id, $msg) = $ace->RT::Record::create( principal => $RTxGroup->id, type => 'Group', right_name => 'RTxGroupRight', object_type => 'RTx::System', object_id  => 1);
 ok ($id, "ACL for RTxSysObj Created");
 
 my $RTxObj = {};
@@ -111,7 +111,7 @@ is($groups->count, 1, "RTxGroupRight found for RTxObj using equiv_objects");
 
 use RT::Model::ACE;
 $ace = RT::Model::ACE->new(current_user => RT->system_user);
-($id, $msg) = $ace->RT::Record::create( principal_id => $RTxGroup->id, type => 'Group', right_name => 'RTxGroupRight', object_type => 'RTx::System::Record', object_id  => 5 );
+($id, $msg) = $ace->RT::Record::create( principal => $RTxGroup->id, type => 'Group', right_name => 'RTxGroupRight', object_type => 'RTx::System::Record', object_id  => 5 );
 ok ($id, "ACL for RTxObj Created");
 
 my $RTxObj2 = {};
