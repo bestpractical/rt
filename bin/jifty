@@ -51,7 +51,6 @@ use strict;
 use File::Basename qw(dirname); 
 use UNIVERSAL::require;
 
-use lib '/Users/sunnavy/bps/jifty/jifty/trunk/lib';
 use Jifty;
 use Jifty::Script;
 
