@@ -675,6 +675,13 @@ sub current_user_has_right {
 
 sub acl_equivalence_group { return $_[0] }
 
+sub type_for_acl {
+    my $self = shift;
+    return undef unless $self->domain =~ /Role$/;
+    return $self->type;
+}
+
+
 sub basic_columns {
     ( [ name => 'name' ], [ description => 'description' ], );
 }

@@ -40,6 +40,14 @@ sub acl_equivalence_group {
     return $res;
 }
 
+=head2 type_for_acl
+
+Returns type for ACL records. For now only roles has type.
+
+=cut
+
+sub type_for_acl { return undef }
+
 =head2 principal 
 
 Returns L<RT::Model::Principal/|"the principal object"> for this record.

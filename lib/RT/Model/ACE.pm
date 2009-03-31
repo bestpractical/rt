@@ -81,7 +81,6 @@ use Jifty::DBI::Record schema {
     column type =>
         max_length is 25,
         type is 'varchar(25)',
-        default is ''
     ;
     column principal => references RT::Model::Principal;
     column right_name => max_length is 25, type is 'varchar(25)', is mandatory;
@@ -227,6 +226,8 @@ sub create {
     unless ( $acl_group ) {
         return ( 0, $msg );
     }
+
+    $args{'type'} ||= $acl_group->type_for_acl;
 
     # {{{ Check the ACL
 
