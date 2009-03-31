@@ -364,44 +364,6 @@ sub __delete {
 }
 
 
-
-=head2 _bootstrap_create
-
-Grant a right with no error checking and no ACL. this is _only_ for 
-installation. If you use this routine without the author's explicit 
-written approval, he will hunt you down and make you spend eternity
-translating mozilla's code into FORTRAN or intercal.
-
-If you think you need this routine, you've mistaken. 
-
-=cut
-
-sub _bootstrap_create {
-    my $self = shift;
-    my %args = (@_);
-
-    # When bootstrapping, make sure we get the _right_ users
-    if ( $args{'UserId'} ) {
-        my $user = RT::Model::User->new( current_user => $self->current_user );
-        $user->load( $args{'UserId'} );
-        delete $args{'UserId'};
-        $args{'principal'}   = $user->principal_id;
-        $args{'type'} = 'User';
-    }
-
-    my $id = $self->SUPER::create(%args);
-
-    if ( $id > 0 ) {
-        return ($id);
-    } else {
-        Jifty->log->err('System error. Right not granted.');
-        return (undef);
-    }
-
-}
-
-
-
 =head2 canonicalize_right_name <RIGHT>
 
 Takes a queue or system right name in any case and returns it in
