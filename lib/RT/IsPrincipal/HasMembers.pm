@@ -221,26 +221,15 @@ sub add_member {
     # We should only allow membership changes if the user has the right
     # to modify group membership or the user is the principal in question
     # and the user has the right to modify his own membership
+    return $self->_add_member( principal => $new_member )
+        if $self->current_user_has_right('AdminGroupMembership');
+
+    if ( $self->current_user->id == (blessed $new_member? $new_member->id : $new_member) ) {
+        return $self->_add_member( principal => $new_member )
+            if $self->current_user_has_right('ModifyOwnMembership');
+    }
+
     return ( 0, _("Permission Denied") )
-        unless $self->current_user_has_right('AdminGroupMembership');
-
-    if ( blessed $new_member ) {
-        $self->_add_member( principal => $new_member )
-            if $new_member == $self->current_user->id
-                && $self->current_user_has_right('ModifyOwnMembership');
-
-        return ( 0, _("Permission Denied") )
-    }
-
-    unless ( $new_member == $self->current_user->user_object->id
-        && $self->current_user_has_right('ModifyOwnMembership') )
-    {
-
-        #User has no permission to be doing this
-        return ( 0, _("Permission Denied") );
-    }
-
-    $self->_add_member( principal => $new_member );
 }
 
 # A helper subroutine for add_member that bypasses the ACL checks
