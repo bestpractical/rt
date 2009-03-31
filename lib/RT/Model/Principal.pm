@@ -464,28 +464,6 @@ sub invalidate_acl_cache {
 }
 
 
-
-
-=head2 _get_principal_type_for_acl
-
-Gets the principal type. if it's a user, it's a user. if it's a role group and it has a Type, 
-return that. if it has no type, return group.
-
-=cut
-
-sub _get_principal_type_for_acl {
-    my $self = shift;
-    my $type;
-    if ( $self->is_group && $self->object->domain =~ /Role$/ ) {
-        $type = $self->object->type;
-    } else {
-        $type = $self->type;
-    }
-
-    return ($type);
-}
-
-
 sub acl_equivalence_group { $_[0]->object->acl_equivalence_group }
 
 
