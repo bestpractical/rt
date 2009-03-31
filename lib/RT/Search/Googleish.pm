@@ -132,6 +132,7 @@ sub query_to_sql {
         elsif ( $User 
                 = RT::Model::User->new( current_user => $self->tickets_obj->current_user )
             and $User->load($key)
+            and $User->id
             and $User->privileged )
         {
             push @owner_clauses, "Owner = '" . $User->name . "'";
