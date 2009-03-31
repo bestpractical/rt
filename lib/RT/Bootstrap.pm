@@ -110,9 +110,8 @@ sub insert_initial_data {
         }
         else {
             my $ace = RT::Model::ACE->new( current_user => RT->system_user );
-            my ( $val, $msg ) = $ace->_bootstrap_create(
-                principal   => acl_equiv_group_id( RT->system_user->id ),
-                type        => 'Group',
+            my ( $val, $msg ) = $ace->create(
+                principal   => RT->system_user->id,
                 right_name  => 'SuperUser',
                 object_type => 'RT::System',
                 object_id   => 1,
@@ -503,21 +502,6 @@ sub insert_data {
     my $db_type = RT->config->get('DatabaseType');
 
     #print "Done setting up database content.\n";
-}
-
-=head2 acl_equiv_group_id
-
-Given a userid, return that user's acl equivalence group
-
-=cut
-
-sub acl_equiv_group_id {
-    my $username = shift;
-    my $user = RT::Model::User->new( current_user => RT->system_user );
-    $user->load($username);
-    my $equiv_group = RT::Model::Group->new( current_user => RT->system_user );
-    $equiv_group->load_acl_equivalence($user);
-    return ( $equiv_group->id );
 }
 
 1;
