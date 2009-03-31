@@ -151,15 +151,9 @@ sub grant_right {
 
     #ACL check handled in ACE.pm
     my $ace = RT::Model::ACE->new( current_user => RT->system_user );
-
-    my $type = $self->_get_principal_type_for_acl();
-
-    # If it's a user, we really want to grant the right to their
-    # user equivalence group
     return $ace->create(
         right_name => $args{'right'},
         object     => $args{'object'},
-        type       => $type,
         principal  => $self,
     );
 }
