@@ -1,17 +1,2 @@
 * lorzy code improvements:  control flow handling like return, exception
-
 * test and implement ordering of rules
-
-* lorzy rule model
-
-Per-rule entry:
-
- - on_condition (make it chained filters?), any of:
-
-   - RT.Condition("On Create", $transaction_obj)
-   - lorzy::Lambda:
-     - $transaction_obj->type eq 'create'
-
- - commit
-   - run_scrip_action("AutoReply", "requestor")
-   - RT.Action.SendEmail( template => 'autoreply', etc etc )
