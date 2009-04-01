@@ -1,4 +1,4 @@
-use Test::More tests => 7;
+use Test::More tests => 8;
 use RT::Test;
 
 use strict;
@@ -59,17 +59,19 @@ lives_ok {
 ok($ret);
 
 use RT::Lorzy;
-# XXX: rework the test to use a context object
-my $action_is_run = 0;
 
+$YAML::Syck::UseCode = $YAML::UseCode = 1;
 my $rule = RT::Model::Rule->new( current_user => RT->system_user );
 $rule->create_from_factory(
     RT::Lorzy::RuleFactory->make_factory
             ( { condition => $is_open,
+                description => 'test action',
                 _stage => 'transaction_create',
-                action => sub { $action_is_run++ } } )
+                action => sub { $_[0]->{context}{hints}{run}++ } } )
 );
-warn $rule->id;
-$ticket->comment(content => 'lorzy lorzy in the code');
+my ($txn_id, $tmsg, $txn) = $ticket->comment(content => 'lorzy lorzy in the code');
+my ($this_rule) = grep { $_->description eq 'test action'} @{$txn->rules};
 
-ok($action_is_run);
+ok($this_rule);
+is_deeply($this_rule->hints, { run => 1 });
+
