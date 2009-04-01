@@ -18,6 +18,7 @@ requires(
     'HTML::Scrubber'             => '0.08',
     'Locale::Maketext::Lexicon'  => '0.32',
     'Locale::Maketext::Fuzzy'    => '0',
+    'Lorzy'                      => '0',
     'MIME::Entity'               => '5.425',
     'Email::Address'             => 0,
     'Mail::Mailer'               => '1.57',
