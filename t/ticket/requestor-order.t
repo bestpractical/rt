@@ -103,7 +103,7 @@ sub check_emails_order
     my $g = RT::Model::Group->new(current_user => RT->system_user);
 
     my ($gid);
-    ($gid, $msg) = $g->create_user_defined_group(name => '20-sort-by-requestor.t-'.rand(200));
+    ($gid, $msg) = $g->create_user_defined(name => '20-sort-by-requestor.t-'.rand(200));
     ok($gid, "Created group") or diag("error: $msg");
 
     ($id, $msg) = $t->role_group("requestor")->add_member( $gid );

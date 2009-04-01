@@ -91,7 +91,7 @@ ok( $t->create(queue => 'General', Due => '2002-05-21 00:00:00', ReferredToBy =>
 ok ( my $id = $t->id, "Got ticket id");
 like ($t->refers_to->first->target , qr/fsck.com/, "Got refers to");
 like ($t->referred_to_by->first->base , qr/cpan.org/, "Got referredtoby");
-is ($t->resolved_obj->unix, 0, "It hasn't been resolved - ". $t->resolved_obj->unix);
+is ($t->resolved->epoch, 0, "It hasn't been resolved - ". $t->resolved->epoch);
 
 
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
@@ -104,7 +104,7 @@ my $msg;
                 );
 ok ($id, "Ticket $id was Created");
 ok(my $group = RT::Model::Group->new(current_user => RT->system_user));
-ok($group->load_role_group(object => $ticket, type=> 'requestor'));
+ok($group->load_role(object => $ticket, type=> 'requestor'));
 ok ($group->id, "Found the requestors object for this ticket");
 
 ok(my $jesse = RT::Model::User->new(current_user => RT->system_user), "Creating a jesse rt::user");
@@ -112,29 +112,29 @@ $jesse->load_by_email('jesse@example.com');
 ok($jesse->id,  "Found the jesse rt user");
 
 
-ok ($ticket->is_watcher(type => 'requestor', principal_id => $jesse->principal_id), "The ticket actually has jesse at fsck.com as a requestor");
+ok ($ticket->is_watcher(type => 'requestor', principal => $jesse->principal_id), "The ticket actually has jesse at fsck.com as a requestor");
 ok (my ($add_id, $add_msg) = $ticket->add_watcher(type => 'requestor', email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
 ok ($add_id, "Add succeeded: ($add_msg)");
 ok(my $bob = RT::Model::User->new(current_user => RT->system_user), "Creating a bob rt::user");
 $bob->load_by_email('bob@fsck.com');
 ok($bob->id,  "Found the bob rt user");
-ok ($ticket->is_watcher(type => 'requestor', principal_id => $bob->principal_id), "The ticket actually has bob at fsck.com as a requestor");;
+ok ($ticket->is_watcher(type => 'requestor', principal => $bob->principal_id), "The ticket actually has bob at fsck.com as a requestor");;
 ok ( ($add_id, $add_msg) = $ticket->delete_watcher(type =>'requestor', email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
-ok (!$ticket->is_watcher(type => 'requestor', principal_id => $bob->principal_id), "The ticket no longer has bob at fsck.com as a requestor");;
+ok (!$ticket->is_watcher(type => 'requestor', principal => $bob->principal_id), "The ticket no longer has bob at fsck.com as a requestor");;
 
 
 $group = RT::Model::Group->new(current_user => RT->system_user);
-ok($group->load_role_group(object => $ticket, type => 'cc'));
+ok($group->load_role(object => $ticket, type => 'cc'));
 ok (!$group->id, "Not found the cc object for this ticket");
 
 $group = RT::Model::Group->new(current_user => RT->system_user);
-ok($group->load_role_group(object => $ticket, type=> 'admin_cc'));
+ok($group->load_role(object => $ticket, type=> 'admin_cc'));
 ok (!$group->id, "Not found the admin_cc object for this ticket");
 
 $group = RT::Model::Group->new(current_user => RT->system_user);
-ok($group->load_role_group(object => $ticket, type=> 'owner'));
+ok($group->load_role(object => $ticket, type=> 'owner'));
 ok ($group->id, "Found the owner object for this ticket");
-ok($group->has_member(RT->nobody->user_object->principal), "the owner group has the member 'RT_System'");
+ok($group->has_member( principal => RT->nobody->user_object->principal), "the owner group has the member 'RT_System'");
 
 
 $t = RT::Model::Ticket->new(current_user => RT->system_user);

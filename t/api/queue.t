@@ -37,26 +37,26 @@ ok ($id, "Foo $id was Created");
 
 {
     my $group = RT::Model::Group->new(current_user => RT->system_user);
-    ok($group->load_role_group(object => $Queue, type=> 'cc'));
+    ok($group->load_role(object => $Queue, type=> 'cc'));
     ok (!$group->id, "No cc group as there are no ccs yet");
 
     my ($status, $msg) = $Queue->add_watcher(type => 'cc', email => 'bob@fsck.com');
     ok ($status, "Added bob at fsck.com as a cc") or diag "error: $msg";
 
     $group = RT::Model::Group->new(current_user => RT->system_user);
-    ok ($group->load_role_group(object => $Queue, type=> 'cc'));
+    ok ($group->load_role(object => $Queue, type=> 'cc'));
     ok ($group->id, "Found the cc object for this Queue");
 
     ok (my $bob = RT::Model::User->new(current_user => RT->system_user), "Creating a bob rt::user");
     $bob->load_by_email('bob@fsck.com');
     ok ($bob->id,  "Found the bob rt user");
 
-    ok ($Queue->is_watcher(type => 'cc', principal_id => $bob->principal_id),
+    ok ($Queue->is_watcher(type => 'cc', principal => $bob->principal_id),
         "The queue actually has bob at fsck.com as a requestor");
     ok ($Queue->is_watcher(type => 'cc', email => $bob->email),
         "The queue actually has bob at fsck.com as a requestor");
 
-    ok (!$Queue->is_watcher(type => 'admin_cc', principal_id => $bob->principal_id),
+    ok (!$Queue->is_watcher(type => 'admin_cc', principal=> $bob->principal_id),
         "bob is not an admin cc");
     ok (!$Queue->is_watcher(type => 'admin_cc', email => $bob->email),
         "bob is not an admin cc");
@@ -64,7 +64,7 @@ ok ($id, "Foo $id was Created");
     ($status, $msg) = $Queue->delete_watcher(type =>'cc', email => 'bob@fsck.com');
     ok ($status, "Deleted bob from Ccs") or diag "error: $msg";
 
-    ok (!$Queue->is_watcher(type => 'cc', principal_id => $bob->principal_id),
+    ok (!$Queue->is_watcher(type => 'cc', principal => $bob->principal_id),
         "The queue no longer has bob at fsck.com as a requestor");
     ok (!$Queue->is_watcher(type => 'cc', email => $bob->email),
         "The queue no longer has bob at fsck.com as a requestor");
@@ -73,7 +73,7 @@ ok ($id, "Foo $id was Created");
 
 {
     my $group = RT::Model::Group->new(current_user => RT->system_user);
-    ok($group->load_role_group(object => $Queue, type=> 'admin_cc'));
+    ok($group->load_role(object => $Queue, type=> 'admin_cc'));
     ok (!$group->id, "No admin_cc group as there are no admin ccs yet");
 }
 

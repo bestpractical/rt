@@ -89,7 +89,7 @@ sub __relates {
     my $list = [];
 
     # Ticket
-    my $obj = $self->ticket_obj;
+    my $obj = $self->ticket;
     if ( $obj && defined $obj->id ) {
         push( @$list, $obj );
     } else {

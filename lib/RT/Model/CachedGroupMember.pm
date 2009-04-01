@@ -54,12 +54,12 @@ use base qw/RT::Record/;
 
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column group_id            => references RT::Model::Group,
+    column group_id            => references RT::Model::Principal,
         is mandatory;
     column member_id           => references RT::Model::Principal,
         is mandatory;
     column via                 => references RT::Model::CachedGroupMember;
-    column immediate_parent    => references RT::Model::CachedGroupMember;
+    column immediate_parent    => references RT::Model::Principal;
     column disabled            => type is 'integer', is mandatory, default is '0';
 
 };
@@ -120,6 +120,7 @@ sub create {
         && $args{'member'}->id )
     {
         Jifty->log->debug("$self->create: bogus Member argument");
+        Carp::confess("boo");
     }
 
     unless ( $args{'group'}
@@ -127,6 +128,7 @@ sub create {
         && $args{'group'}->id )
     {
         Jifty->log->debug("$self->create: bogus Group argument");
+        Carp::confess("boo");
     }
 
     unless ( $args{'immediate_parent'}
@@ -163,27 +165,23 @@ sub create {
 
     return $id if $args{'member'}->id == $args{'group'}->id;
 
-    if ( $args{'member'}->is_group() ) {
-        my $GroupMembers = $args{'member'}->object->members;
-        while ( my $member = $GroupMembers->next() ) {
-            my $cached_member = RT::Model::CachedGroupMember->new( current_user => $self->current_user );
-            my $c_id          = $cached_member->create(
-                group            => $args{'group'},
-                member           => $member->member_obj,
-                immediate_parent => $args{'member'},
-                disabled         => $args{'disabled'},
-                via              => $id
-            );
-            unless ($c_id) {
-                return (undef);    #percolate the error upwards.
-                                   # the caller will log an error and abort the transaction
-            }
-
+    my $GroupMembers = $args{'member'}->object->members;
+    while ( my $member = $GroupMembers->next() ) {
+        my $cached_member = RT::Model::CachedGroupMember->new( current_user => $self->current_user );
+        my $c_id = $cached_member->create(
+            group            => $args{'group'},
+            member           => $member->member,
+            immediate_parent => $args{'member'},
+            disabled         => $args{'disabled'},
+            via              => $id
+        );
+        unless ($c_id) {
+            return (undef);    #percolate the error upwards.
+                               # the caller will log an error and abort the transaction
         }
     }
 
     return ($id);
-
 }
 
 
@@ -199,36 +197,33 @@ mysql supported foreign keys with cascading deletes.
 sub delete {
     my $self = shift;
 
-    my $member = $self->member_obj();
-    if ( $member->is_group ) {
-        my $deletable = RT::Model::CachedGroupMemberCollection->new( current_user => $self->current_user );
+    my $deletable = RT::Model::CachedGroupMemberCollection->new( current_user => $self->current_user );
+    $deletable->limit(
+        column   => 'id',
+        operator => '!=',
+        value    => $self->id
+    );
+    $deletable->limit(
+        column   => 'via',
+        operator => '=',
+        value    => $self->id
+    );
 
-        $deletable->limit(
-            column   => 'id',
-            operator => '!=',
-            value    => $self->id
-        );
-        $deletable->limit(
-            column   => 'via',
-            operator => '=',
-            value    => $self->id
-        );
-
-        while ( my $kid = $deletable->next ) {
-            my $kid_err = $kid->delete();
-            unless ($kid_err) {
-                Jifty->log->error( "Couldn't delete CachedGroupMember " . $kid->id );
-                return (undef);
-            }
+    while ( my $kid = $deletable->next ) {
+        my $kid_err = $kid->delete();
+        unless ($kid_err) {
+            Jifty->log->error( "Couldn't delete CachedGroupMember " . $kid->id );
+            return (undef);
         }
     }
+
     my $err = $self->SUPER::delete();
     unless ($err) {
         Jifty->log->error( "Couldn't delete CachedGroupMember " . $self->id );
         return (undef);
     }
 
-    unless ( $self->group_obj->object ) {
+    unless ( $self->group->object ) {
 
         warn "HEY! NO group object object!!!" . $self->__value('group_id');
         warn YAML::Dump($self);
@@ -236,9 +231,9 @@ sub delete {
         return undef;
     }
 
-    # Unless $self->group_obj still has the member recursively $self->member_obj
+    # Unless $self->group still has the member recursively $self->member
     # (Since we deleted the database row above, $self no longer counts)
-    unless ( $self->group_obj->object->has_member( $self->member_id, recursively => 1 ) ) {
+    unless ( $self->group->object->has_member( principal =>  $self->member_id, recursively => 1 ) ) {
 
         #   Find all ACEs granted to $self->group_id
         my $acl = RT::Model::ACECollection->new( current_user => RT->system_user );
@@ -271,33 +266,29 @@ sub set_disabled {
         return ($err);
     }
 
-    my $member = $self->member_obj();
-    if ( $member->is_group ) {
-        my $deletable = RT::Model::CachedGroupMemberCollection->new( current_user => $self->current_user );
+    my $deletable = RT::Model::CachedGroupMemberCollection->new( current_user => $self->current_user );
+    $deletable->limit(
+        column   => 'via',
+        operator => '=',
+        value    => $self->id
+    );
+    $deletable->limit(
+        column   => 'id',
+        operator => '!=',
+        value    => $self->id
+    );
 
-        $deletable->limit(
-            column   => 'via',
-            operator => '=',
-            value    => $self->id
-        );
-        $deletable->limit(
-            column   => 'id',
-            operator => '!=',
-            value    => $self->id
-        );
-
-        while ( my $kid = $deletable->next ) {
-            my $kid_err = $kid->set_disabled($val);
-            unless ($kid_err) {
-                Jifty->log->error( "Couldn't Setdisabled CachedGroupMember " . $kid->id );
-                return ($kid_err);
-            }
+    while ( my $kid = $deletable->next ) {
+        my $kid_err = $kid->set_disabled($val);
+        unless ($kid_err) {
+            Jifty->log->error( "Couldn't Setdisabled CachedGroupMember " . $kid->id );
+            return ($kid_err);
         }
     }
 
-    # Unless $self->group_obj still has the member recursively $self->member_obj
+    # Unless $self->group still has the member recursively $self->member
     # (Since we Setdisabledd the database row above, $self no longer counts)
-    unless ( $self->group_obj->object->has_member( $self->member_id, recursively => 1 ) ) {
+    unless ( $self->group->object->has_member( principal => $self->member_id, recursively => 1 ) ) {
 
         #   Find all ACEs granted to $self->group_id
         my $acl = RT::Model::ACECollection->new( current_user => RT->system_user );
@@ -305,51 +296,6 @@ sub set_disabled {
 
     }
     return ($err);
-}
-
-
-
-=head2 group_obj  
-
-Returns the RT::Model::Principal object for this group Group
-
-=cut
-
-sub group_obj {
-    my $self      = shift;
-    my $principal = RT::Model::Principal->new( current_user => $self->current_user );
-    $principal->load( $self->group_id );
-    return ($principal);
-}
-
-
-
-=head2 immediate_parent_obj  
-
-Returns the RT::Model::Principal object for this group immediate_parent
-
-=cut
-
-sub immediate_parent_obj {
-    my $self      = shift;
-    my $principal = RT::Model::Principal->new( current_user => $self->current_user );
-    $principal->load( $self->immediate_parent );
-    return ($principal);
-}
-
-
-
-=head2 member_obj  
-
-Returns the RT::Model::Principal object for this group member
-
-=cut
-
-sub member_obj {
-    my $self      = shift;
-    my $principal = RT::Model::Principal->new( current_user => $self->current_user );
-    $principal->load( $self->member_id );
-    return ($principal);
 }
 
 1;

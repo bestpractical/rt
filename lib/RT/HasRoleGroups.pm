@@ -7,15 +7,15 @@ sub current_user_can_modify_watchers {
     die "current_user_can_modify_watchers method must be implemented in the role user";
 }
 
-=head2 is_watcher { type => TYPE, principal_id => PRINCIPAL_ID, email => EMAIL }
+=head2 is_watcher { type => TYPE, principal => PRINCIPAL, email => EMAIL }
 
-Takes a param hash with the attributes type and either principal_id or email:
+Takes a param hash with the attributes type and either principal or email:
 
 =over 4
 
 =item type is one of defined by L</roles> of this object.
 
-=item principal_id is an id of L<RT::Model::Principal>
+=item principal is an id of L<RT::Model::Principal>
 
 =item email can be provided instead of the principal
 
@@ -31,30 +31,30 @@ XX TODO: This should be Memoized.
 sub is_watcher {
     my $self = shift;
     my %args = (
-        type         => 'requestor',
-        principal_id => undef,
-        email        => undef,
-        recursively  => 1,
+        type        => 'requestor',
+        principal   => undef,
+        email       => undef,
+        recursively => 1,
         @_
     );
 
     # Load the relevant group.
     my $group = RT::Model::Group->new( current_user => $self->current_user );
-    $group->load_role_group(
+    $group->load_role(
         object => $self,
         type   => $args{'type'},
     );
     return 0 unless $group->id;
 
     # Find the relevant principal.
-    if ( !$args{'principal_id'} ) {
+    if ( !$args{'principal'} ) {
         return 0 unless $args{'email'};
 
         # Look up the specified user.
         my $user = RT::Model::User->new( current_user => $self->current_user );
         $user->load_by_email( $args{'email'} );
         if ( $user->id ) {
-            $args{'principal_id'} = $user->principal_id;
+            $args{'principal'} = $user;
         } else {
             # A non-existent user can't be a group member.
             return 0;
@@ -62,7 +62,7 @@ sub is_watcher {
     }
 
     # Ask if it has the member in question
-    return $group->has_member( $args{'principal_id'}, recursively => $args{'recursively'} );
+    return $group->has_member( principal =>  $args{'principal'}, recursively => $args{'recursively'} );
 }
 
 =head2 add_watcher
@@ -76,16 +76,16 @@ prinicpal_id The RT::Model::Principal id of the user or group that's being added
 email       The email address of the new watcher. If a user with this 
             email address can't be found, a new nonprivileged user will be created.
 
-If the watcher you\'re trying to set has an RT account, set the principal_id paremeter to their User Id. Otherwise, set the email parameter to their email address.
+If the watcher you\'re trying to set has an RT account, set the principal paremeter to their User Id. Otherwise, set the email parameter to their email address.
 
 =cut
 
 sub add_watcher {
     my $self = shift;
     my %args = (
-        type         => undef,
-        principal_id => undef,
-        email        => undef,
+        type      => undef,
+        principal => undef,
+        email     => undef,
         @_
     );
 
@@ -98,11 +98,11 @@ sub add_watcher {
             my $user = RT::Model::User->new( current_user => $self->current_user );
             $user->load_by_email( $args{'email'} );
             if ( $user->id ) {
-                $args{'principal_id'} = $user->id;
+                $args{'principal'} = $user;
                 delete $args{'email'};
             }
             else {
-                delete $args{'principal_id'};
+                delete $args{'principal'};
             }
         }
     }
@@ -120,10 +120,10 @@ sub add_watcher {
 sub _add_watcher {
     my $self = shift;
     my %args = (
-        type         => undef,
-        silent       => undef,
-        principal_id => undef,
-        email        => undef,
+        type      => undef,
+        silent    => undef,
+        principal => undef,
+        email     => undef,
         @_
     );
 
@@ -132,35 +132,36 @@ sub _add_watcher {
         my $user = RT::Model::User->new( current_user => RT->system_user );
         my ( $pid, $msg ) = $user->load_or_create_by_email( $args{'email'} );
         if ( $pid ) {
-            $args{'principal_id'} = $pid;
+            $args{'principal'} = $pid;
         } else {
             return ( 0, _("Could not find or create user with email %1", $args{'email'}) );
         }
     }
 
-    unless ( $args{'principal_id'} ) {
+    unless ( $args{'principal'} ) {
+        Carp::confess("foo");
         Jifty->log->error("Invalid arguments for add_watcher");
         return ( 0, _("System internal error. Contact system administrator.") );
     }
 
     my $principal = RT::Model::Principal->new( current_user => $self->current_user );
-    $principal->load( $args{'principal_id'} );
+    $principal->load( $args{'principal'} );
     unless ( $principal->id ) {
-        return ( 0, _("Could not find principal #%1", $args{'principal_id'}) );
+        return ( 0, _("Could not find principal #%1", $args{'principal'}) );
     }
 
     my $group = RT::Model::Group->new( current_user => $self->current_user );
-    $group->create_role_group(
+    $group->create_role(
         object => $self,
         type   => $args{'type'},
     );
 
-    if ( $group->has_member($principal) ) {
+    if ( $group->has_member( principal => $principal) ) {
         return ( 0, _( 'That principal is already a %1', _( $args{'type'} ) ) );
     }
 
     my ( $m_id, $m_msg ) = $group->_add_member(
-        principal_id => $principal->id,
+        principal => $principal,
     );
     unless ($m_id) {
         Jifty->log->error(
@@ -183,7 +184,7 @@ sub _add_watcher {
 
 
 
-=head2 delete_watcher { type => TYPE, principal_id => PRINCIPAL_ID, email => EMAIL_ADDRESS }
+=head2 delete_watcher { type => TYPE, principal => PRINCIPAL, email => EMAIL_ADDRESS }
 
 
 Deletes a ticket watcher.  Takes two arguments:
@@ -192,7 +193,7 @@ Type  (one of requestor,cc,admin_cc)
 
 and one of
 
-principal_id (an RT::Model::Principal id of the watcher you want to remove)
+principal (an RT::Model::Principal id of the watcher you want to remove)
     OR
 email (the email address of an existing wathcer)
 
@@ -202,9 +203,9 @@ email (the email address of an existing wathcer)
 sub delete_watcher {
     my $self = shift;
     my %args = (
-        type         => undef,
-        principal_id => undef,
-        email        => undef,
+        type      => undef,
+        principal => undef,
+        email     => undef,
         @_
     );
 
@@ -214,7 +215,7 @@ sub delete_watcher {
         return ( 0, _("Could not find user with email %1", $args{'email'}) )
             unless $user->id;
 
-        $args{'principal_id'} = $user->id;
+        $args{'principal'} = $user->id;
         delete $args{'email'};
     }
 
@@ -231,9 +232,9 @@ sub delete_watcher {
 sub _delete_watcher {
     my $self = shift;
     my %args = (
-        type         => undef,
-        principal_id => undef,
-        email        => undef,
+        type      => undef,
+        principal => undef,
+        email     => undef,
         @_
     );
 
@@ -243,29 +244,29 @@ sub _delete_watcher {
         return ( 0, _("Could not find user with email %1", $args{'email'}) )
             unless $user->id;
 
-        $args{'principal_id'} = $user->id;
+        $args{'principal'} = $user->id;
         delete $args{'email'};
     }
 
-    unless ( $args{'principal_id'} ) {
+    unless ( $args{'principal'} ) {
         Jifty->log->error("Invalid arguments for delete_watcher");
         return ( 0, _("System internal error. Contact system administrator.") );
     }
 
     my $principal = RT::Model::Principal->new( current_user => $self->current_user );
-    $principal->load( $args{'principal_id'} );
+    $principal->load( $args{'principal'} );
     unless ( $principal->id ) {
-        return ( 0, _("Could not find principal #%1", $args{'principal_id'}) );
+        return ( 0, _("Could not find principal #%1", $args{'principal'}) );
     }
 
     # see if this user is already a watcher.
 
     my $group = RT::Model::Group->new( current_user => $self->current_user );
-    $group->load_role_group(
+    $group->load_role(
         object => $self,
         type   => $args{'type'},
     );
-    if ( !$group->id && !$group->has_member($principal) ) {
+    if ( !$group->id && !$group->has_member( principal => $principal ) ) {
         return ( 0, _( 'That principal is not a %1', $args{'type'} ) );
     }
 
@@ -303,11 +304,11 @@ sub role_group {
     my $role = shift;
 
     my $obj = RT::Model::Group->new( current_user => $self->current_user );
-    $obj->load_role_group( object => $self, type => $role );
+    $obj->load_role( object => $self, type => $role );
     return $obj;
 }
 
-=head2 create_role_group
+=head2 create_role
 
 Create role group for this object.
 
@@ -315,12 +316,12 @@ It will return a tuple ($group, $msg), on error group is undefined.
 
 =cut
 
-sub create_role_group {
+sub create_role {
     my $self = shift;
     my $type = shift;
 
     my $group = RT::Model::Group->new( current_user => $self->current_user );
-    my ($id, $msg) = $group->create_role_group(
+    my ($id, $msg) = $group->create_role(
         object => $self,
         type   => $type,
     );

@@ -47,15 +47,15 @@
 %# END BPS TAGGED BLOCK }}}
 <input type="text" id="<% $name %>" name="<% $name %>" class="datetime" value="<% $value %>" size="<% $size %>" />
 <%init>
-unless ((defined $default) or 
-	($current <= 0)) {
-	my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) =
-                                            localtime($current);
-        $default = sprintf("%04d-%02d-%02d %02d:%02d",                         
-                           $year+1900,$mon+1,$mday,                            
-                           $hour,$min);   
+undef $default if ref($default) && !$default->is_set;
+undef $value   if ref($value)   && !$value->is_set;
+
+if (!defined($default) && $current > 0) {
+    $default = RT::DateTime->from_epoch($current);
 }
+
 $value = $value || $default;
+$value = $value->iso if ref($value);
 
 unless ($name) {
 	$name = $menu_prefix. "_date";

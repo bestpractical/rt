@@ -58,7 +58,7 @@
 % my $desc = $transaction->brief_description;
 % $m->callback( text => \$desc, transaction => $transaction, %ARGS, callback_name => 'ModifyDisplay' );
     <span class="description">
-      <% $transaction->creator_obj->name %> - <% $TicketString %> <% $desc %>
+      <% $transaction->creator->name %> - <% $TicketString %> <% $desc %>
     </span>
     <span class="time-taken"><% $time_taken %></span>
     <span class="actions<% $titlebar_commands ? '': ' hidden'%>"><% $titlebar_commands |n %></span>
@@ -121,7 +121,7 @@ my %class = (
 </%ONCE>
 <%INIT>
 
-my $transdate = $transaction->created_as_string();
+my $transdate = $transaction->created;
 $transdate =~ s/\s/&nbsp;/g;
 
 my ($type, $field) = ($transaction->type, $transaction->field || '');

@@ -359,10 +359,8 @@ sub send_email {
     }
 
     unless ( $args{'entity'}->head->get('date') ) {
-        require RT::Date;
-        my $date = RT::Date->new( current_user => RT->system_user );
-        $date->set_to_now;
-        $args{'entity'}->head->set( 'date', $date->rfc2822( timezone => 'server' ) );
+        my $date = RT::DateTime->now;
+        $args{'entity'}->head->set( 'date', $date->rfc2822( time_zone => 'server' ) );
     }
 
     my $mail_command = RT->config->get('MailCommand');
@@ -385,7 +383,7 @@ sub send_email {
             and my $prefix = RT->config->get('VERPPrefix')
             and my $domain = RT->config->get('VERPDomain') )
         {
-            my $from = $args{'transaction'}->creator_obj->email;
+            my $from = $args{'transaction'}->creator->email;
             $from =~ s/@/=/g;
             $from =~ s/\s//g;
             $args .= " -f $prefix$from\@$domain";

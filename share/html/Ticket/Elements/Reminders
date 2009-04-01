@@ -76,26 +76,18 @@ if ( $request_args->{'update-reminders'} ) {
             $reminder->set_owner( $request_args->{ 'Reminder-Owner-' . $reminder->id } , "Force" ) ;
         }
 
-        if ( exists( $request_args->{ 'Reminder-Due-' . $reminder->id } ) && ( $reminder->due_obj->date ne $request_args->{ 'Reminder-Due-' . $reminder->id } )) {
+        if ( exists( $request_args->{ 'Reminder-Due-' . $reminder->id } ) && ( $reminder->due->ymd ne $request_args->{ 'Reminder-Due-' . $reminder->id } )) {
             $reminder->set_due( $request_args->{ 'Reminder-Due-' . $reminder->id } ) ;
         }
     }
 }
 
 if ( $request_args->{'NewReminder-Subject'} ) {
-    my $due_obj = RT::Date->new();
-    my $date    = Time::ParseDate::parsedate(
-        $request_args->{'NewReminder-Due'},
-        UK            => RT->config->get('DateDayBeforeMonth'),
-        PREFER_PAST   => 0,
-        PREFER_FUTURE => 1
-    );
-    $due_obj->set( value => $date, format => 'unix' );
+    my $due = RT::DateTime->new_from_string($request_args->{'NewReminder-Due'});
     my ( $add_id, $msg, $txnid ) = $ticket->reminders->add(
-
         subject => $request_args->{'NewReminder-Subject'},
         owner   => $request_args->{'NewReminder-Owner'},
-        due     => $due_obj->iso
+        due     => $due,
     );
 }
 
@@ -157,8 +149,8 @@ $ticket
 /> 
     <input type="text" size="15" name="Reminder-Subject-<% $reminder->id %>" value="<%$reminder->subject%>" /> &bull; 
     <& /Elements/SelectOwner, name => 'Reminder-Owner-'.$reminder->id, queue => $ticket->queue, default => $reminder->owner, default_value => 0  &>
-    <& /Elements/SelectDate, name => 'Reminder-Due-'.$reminder->id, default => $reminder->due_obj->date &>
-    (<%$reminder->due_obj->unix>0  ? $reminder->due_obj->age_as_string : '' %>)<br />
+    <& /Elements/SelectDate, name => 'Reminder-Due-'.$reminder->id, default => $reminder->due->ymd &>
+    (<%$reminder->due->epoch>0  ? $reminder->due->age : '' %>)<br />
 </%method>
 <%method ShowEntry>
 <%args>
@@ -172,5 +164,5 @@ $ticket
 /> 
     <%$reminder->subject%> &bull; 
     <%$reminder->owner_obj->name%>
-    <%$reminder->due_obj->unix>0  ? "&bull; ". $reminder->due_obj->age_as_string : '' |n%><br />
+    <%$reminder->due->epoch>0  ? "&bull; ". $reminder->due->age : '' |n%><br />
 </%method>

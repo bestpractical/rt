@@ -15,7 +15,7 @@ my @scrips_fired;
 
 #Were not testing acls here.
 my $everyone = RT::Model::Group->new(current_user => RT->system_user);
-$everyone->load_system_internal_group('Everyone');
+$everyone->load_system_internal('Everyone');
 $everyone->principal->grant_right( right =>'SuperUser' );
 
 

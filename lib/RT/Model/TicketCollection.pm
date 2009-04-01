@@ -525,8 +525,7 @@ sub _date_limit {
     die "Incorrect Meta Data for $field"
         unless ( defined $meta->[1] );
 
-    my $date = RT::Date->new();
-    $date->set( format => 'unknown', value => $value );
+    my $date = RT::DateTime->new_from_string($value);
 
     if ( $op eq "=" ) {
 
@@ -534,10 +533,9 @@ sub _date_limit {
         # particular single day.  in the database, we need to check for >
         # and < the edges of that day.
 
-        $date->set_to_midnight( timezone => 'server' );
+        $date->truncate(to => 'day')->set_time_zone('UTC');
         my $daystart = $date->iso;
-        $date->add_day;
-        my $dayend = $date->iso;
+        my $dayend = $date->add(days => 1)->iso;
 
         $sb->open_paren;
 
@@ -625,8 +623,7 @@ sub _trans_date_limit {
         );
     }
 
-    my $date = RT::Date->new();
-    $date->set( format => 'unknown', value => $value );
+    my $date = RT::DateTime->new_from_string($value);
 
     $sb->open_paren;
     if ( $op eq "=" ) {
@@ -635,10 +632,9 @@ sub _trans_date_limit {
         # particular single day.  in the database, we need to check for >
         # and < the edges of that day.
 
-        $date->set_to_midnight( timezone => 'server' );
+        $date->truncate(to => 'day')->set_time_zone('UTC');
         my $daystart = $date->iso;
-        $date->add_day;
-        my $dayend = $date->iso;
+        my $dayend = $date->add(days => 1)->iso;
 
         $sb->_sql_limit(
             alias          => $sb->{_sql_transalias},
@@ -2106,7 +2102,7 @@ sub _roles_can_see {
     $ACL->limit( column => 'type', operator => '!=', value => 'Group' );
     my $principal_alias = $ACL->join(
         alias1 => 'main',
-        column1 => 'principal_id',
+        column1 => 'principal',
         table2 => 'Principals',
         column2 => 'id',
     );
@@ -2145,14 +2141,14 @@ sub _directly_can_see_in {
     $ACL->limit( column => 'right_name', value => 'ShowTicket' );
     my $principal_alias = $ACL->join(
         alias1 => 'main',
-        column1 => 'principal_id',
+        column1 => 'principal',
         table2 => 'Principals',
         column2 => 'id',
     );
     $ACL->limit( alias => $principal_alias, column => 'disabled', value => 0 );
     my $cgm_alias = $ACL->join(
         alias1 => 'main',
-        column1 => 'principal_id',
+        column1 => 'principal',
         table2 => 'CachedGroupMembers',
         column2 => 'group_id',
     );

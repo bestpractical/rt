@@ -136,8 +136,8 @@ use Jifty::Action schema {
         hints is
               'which port your web server will listen to, e.g. 8080',    #loc
         default is defer { RT->config->get( 'web_port' ) };
-    param timezone =>
-        label is 'Timezone',                                   #loc
+    param time_zone =>
+        label is 'Time Zone',                                   #loc
         render as 'Select',
         available are defer {
                 my %map = ( '' => 'System Default' );

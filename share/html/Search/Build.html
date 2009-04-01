@@ -135,15 +135,15 @@ if ( $new_query ) {
     %saved_search = ( id => 'new' );
 
     # ..then wipe the session out..
-    delete $session{'CurrentSearchHash'};
+    Jifty->web->session->remove('CurrentSearchHash');
 
     # ..and the search results.
-    $session{'tickets'}->clean_slate if defined $session{'tickets'};
+    Jifty->web->session->get('tickets')->clean_slate if defined Jifty->web->session->get('tickets');
 }
 
 { # Attempt to load what we can from the session and preferences, set defaults
 
-    my $current = $session{'CurrentSearchHash'};
+    my $current = Jifty->web->session->get('CurrentSearchHash');
     my $prefs = Jifty->web->current_user->user_object->preferences("SearchDisplay") || {};
     my $default = {query => '', format => '', order_by => 'id', order => 'ASC', rows_per_page => 50 };
 
@@ -282,12 +282,12 @@ push @actions, $m->comp( 'Elements/EditSearches:Save', %ARGS, query => \%query, 
 
 # {{{ Push the updates into the session so we don't loose 'em
 
-$session{'CurrentSearchHash'} = {
+Jifty->web->session->set('CurrentSearchHash', {
     %query,
     search_id    => $saved_search{'id'},
     object      => $saved_search{'object'},
     description => $saved_search{'description'},
-};
+} );
 
 # }}}
 

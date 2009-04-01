@@ -71,7 +71,6 @@ use base qw/RT::HasRoleGroups RT::Record/;
 use RT::Model::Queue;
 use RT::Model::User;
 use RT::Model::LinkCollection;
-use RT::Date;
 use RT::Model::CustomFieldCollection;
 use RT::Model::TicketCollection;
 use RT::Model::TransactionCollection;
@@ -79,6 +78,8 @@ use RT::Reminders;
 use RT::URI::fsck_com_rt;
 use RT::URI;
 use MIME::Entity;
+
+use Scalar::Util qw(blessed);
 
 sub table {'Tickets'}
 
@@ -336,6 +337,7 @@ sub create {
         starts              => undef,
         started             => undef,
         resolved            => undef,
+        told                => undef,
         mime_obj            => undef,
         _record_transaction => 1,
         dry_run             => 0,
@@ -406,39 +408,53 @@ sub create {
         unless defined $args{'priority'};
 
     # {{{ Dates
-    #TODO we should see what sort of due date we're getting, rather +
-    # than assuming it's in ISO format.
-
     #Set the due date. if we didn't get fed one, use the queue default due in
-    my $due = RT::Date->new();
+    my $due;
     if ( defined $args{'due'} ) {
-        $due->set( format => 'ISO', value => $args{'due'} );
+        $due = RT::DateTime->new_from_string($args{'due'});
     } elsif ( my $due_in = $queue_obj->default_due_in ) {
-        $due->set_to_now;
-        $due->add_days($due_in);
+        $due = RT::DateTime->now;
+        $due->add(days => $due_in);
+    } else {
+        $due = RT::DateTime->new_unset;
     }
 
-    my $starts = RT::Date->new();
+    my $starts;
     if ( defined $args{'starts'} ) {
-        $starts->set( format => 'ISO', value => $args{'starts'} );
+        $starts = RT::DateTime->new_from_string($args{'starts'});
+    } else {
+        $starts = RT::DateTime->new_unset;
     }
 
-    my $started = RT::Date->new();
+    my $started;
     if ( defined $args{'started'} ) {
-        $started->set( format => 'ISO', value => $args{'started'} );
+        $started = RT::DateTime->new_from_string($args{'started'});
     } elsif ( !$queue_obj->status_schema->is_initial( $args{'status'} ) ) {
-        $started->set_to_now;
+        $started = RT::DateTime->now;
+    }
+    else {
+        $started = RT::DateTime->new_unset;
     }
 
-    my $Resolved = RT::Date->new();
+    my $resolved;
     if ( defined $args{'resolved'} ) {
-        $Resolved->set( format => 'ISO', value => $args{'resolved'} );
+        $resolved = RT::DateTime->new_from_string($args{'resolved'});
     }
-
     #If the status is an inactive status, set the resolved date
     elsif ( $queue_obj->status_schema->is_inactive( $args{'status'} ) ) {
         Jifty->log->debug( "Got a " . $args{'status'} . "(inactive) ticket with undefined resolved date. Setting to now." );
-        $Resolved->set_to_now;
+        $resolved = RT::DateTime->now;
+    }
+    else {
+        $resolved = RT::DateTime->new_unset;
+    }
+
+    my $told;
+    if ( defined $args{'told'} ) {
+        $told = RT::DateTime->new_from_string($args{'told'});
+    }
+    else {
+        $told = RT::DateTime->new_unset;
     }
 
     # }}}
@@ -533,10 +549,11 @@ sub create {
         time_estimated   => $args{'time_estimated'},
         time_left        => $args{'time_left'},
         type             => $args{'type'},
-        starts           => $starts->iso,
-        started          => $started->iso,
-        resolved         => $Resolved->iso,
-        due              => $due->iso
+        starts           => $starts,
+        started          => $started,
+        resolved         => $resolved,
+        told             => $told,
+        due              => $due,
     );
 
     # Parameters passed in during an import that we probably don't want to touch, otherwise
@@ -571,7 +588,7 @@ sub create {
         return ( 0, 0, _("Ticket could not be created due to an internal error") );
     }
 
-    ((my $owner_group), $msg) = $self->create_role_group('owner');
+    ((my $owner_group), $msg) = $self->create_role('owner');
     unless ( $owner_group ) {
         Jifty->log->fatal( "Aborting ticket creation because of above error." );
         Jifty->handle->rollback();
@@ -582,7 +599,7 @@ sub create {
     # We denormalize it into the Ticket table too because doing otherwise would
     # kill performance, bigtime. It gets kept in lockstep thanks to the magic of transactionalization
     ( $val, $msg ) = $owner_group->_add_member(
-        principal_id => $owner->principal_id,
+        principal => $owner,
     ) unless $defer_owner;
 
     # {{{ Deal with setting up watchers
@@ -600,7 +617,7 @@ sub create {
 
             my ( $val, $msg ) = $self->$method(
                 type         => $type,
-                principal_id => $watcher,
+                principal => $watcher,
                 silent       => 1,
             );
             push @non_fatal_errors, _( "Couldn't set %1 watcher: %2", $type, $msg )
@@ -704,7 +721,7 @@ sub create {
 
         }
         $owner_group->_add_member(
-            principal_id       => $owner->principal_id,
+            principal => $owner,
         );
     }
 
@@ -959,45 +976,6 @@ sub set_queue {
 
 
 
-=head2 due_obj
-
-  Returns an RT::Date object containing this ticket's due date
-
-=cut
-
-sub due_obj {
-    my $self = shift;
-
-    my $time = RT::Date->new();
-
-    # -1 is RT::Date slang for never
-    if ( my $due = $self->due ) {
-        $time->set( format => 'sql', value => $due );
-    } else {
-        $time->set( format => 'unix', value => -1 );
-    }
-
-    return $time;
-}
-
-
-
-=head2 resolved_obj
-
-  Returns an RT::Date object of this ticket's 'resolved' time.
-
-=cut
-
-sub resolved_obj {
-    my $self = shift;
-
-    my $time = RT::Date->new();
-    $time->set( format => 'sql', value => $self->resolved );
-    return $time;
-}
-
-
-
 =head2 set_started
 
 Takes a date in ISO format or undef
@@ -1016,11 +994,11 @@ sub set_started {
     }
 
     #We create a date object to catch date weirdness
-    my $time_obj = RT::Date->new( current_user => $self->current_user() );
+    my $time_obj;
     if ($time) {
-        $time_obj->set( format => 'ISO', value => $time );
+        $time_obj = RT::DateTime->new_from_string($time);
     } else {
-        $time_obj->set_to_now();
+        $time_obj = RT::DateTime->now;
     }
 
     #Now that we're starting, open this ticket
@@ -1039,78 +1017,6 @@ sub set_started {
 
 }
 
-
-
-=head2 started_obj
-
-  Returns an RT::Date object which contains this ticket's 
-'started' time.
-
-=cut
-
-sub started_obj {
-    my $self = shift;
-
-    my $time = RT::Date->new();
-    $time->set( format => 'sql', value => $self->started );
-    return $time;
-}
-
-
-
-=head2 starts_obj
-
-  Returns an RT::Date object which contains this ticket's 
-'starts' time.
-
-=cut
-
-sub starts_obj {
-    my $self = shift;
-
-    my $time = RT::Date->new();
-    $time->set( format => 'sql', value => $self->starts );
-    return $time;
-}
-
-
-
-=head2 told_obj
-
-  Returns an RT::Date object which contains this ticket's 
-'told' time.
-
-=cut
-
-sub told_obj {
-    my $self = shift;
-
-    my $time = RT::Date->new();
-    $time->set( format => 'sql', value => $self->told );
-    return $time;
-}
-
-
-
-=head2 told_as_string
-
-A convenience method that returns told_obj->as_string
-
-TODO: This should be deprecated
-
-=cut
-
-sub told_as_string {
-    my $self = shift;
-    if ( $self->told ) {
-        return $self->told_obj->as_string();
-    } else {
-        return ("Never");
-    }
-}
-
-
-
 =head2 time_worked_as_string
 
 Returns the amount of time worked on this ticket as a Text String
@@ -1124,17 +1030,8 @@ sub time_worked_as_string {
     #This is not really a date object, but if we diff a number of seconds
     #vs the epoch, we'll get a nice description of time worked.
 
-    my $worked = RT::Date->new();
-
-    #return the  #of minutes worked turned into seconds and written as
-    # a simple text string
-
-    return ( $worked->duration_as_string( $self->time_worked * 60 ) );
+    return RT::DateTime::Duration->new(minutes => $self->time_worked)->as_string;
 }
-
-
-
-
 
 =head2 comment
 
@@ -1236,7 +1133,7 @@ sub correspond {
     $self->set_told
       unless $self->is_watcher(
               type         => 'requestor',
-              principal_id => $self->current_user->id,
+              principal => $self->current_user->id,
       );
 
     if ( $args{'dry_run'} ) {
@@ -1754,7 +1651,7 @@ sub merge_into {
                 my ( $val, $msg ) = $MergeInto->_add_watcher(
                     type         => $watcher_type,
                     silent       => 1,
-                    principal_id => $watcher->member_id
+                    principal => $watcher->member_id
                 );
                 Jifty->log->warn($msg) unless ($val);
             }
@@ -1943,7 +1840,7 @@ sub set_owner {
         return ( 0, _("Could not change owner. %1", $del_msg ));
     }
     my ( $add_id, $add_msg ) = $self->role_group("owner")->_add_member(
-        principal_id       => $new_owner_obj->principal_id,
+        principal => $new_owner_obj,
     );
     unless ($add_id) {
         Jifty->handle->rollback();
@@ -2098,14 +1995,13 @@ sub set_status {
         return ( 0, _('That ticket has unresolved dependencies') );
     }
 
-    my $now = RT::Date->new;
-    $now->set_to_now();
+    my $now = RT::DateTime->now;
 
     #If we're changing the status from intial to non-initial, record that we've started
     if ( $schema->is_initial( $self->status ) && !$schema->is_initial( $args{status} ) )  {
         $self->_set(
             column             => 'started',
-            value              => $now->iso,
+            value              => $now,
             record_transaction => 0
         );
     }
@@ -2115,7 +2011,7 @@ sub set_status {
     if ( $schema->is_inactive( $args{status} ) ) {
         $self->_set(
             column             => 'resolved',
-            value              => $now->iso,
+            value              => $now,
             record_transaction => 0
         );
     }
@@ -2148,14 +2044,11 @@ sub set_told {
         return ( 0, _("Permission Denied") );
     }
 
-    my $datetold = RT::Date->new();
+    my $datetold;
     if ($told) {
-        $datetold->set(
-            format => 'iso',
-            value  => $told
-        );
+        $datetold = RT::DateTime->new_from_string($told);
     } else {
-        $datetold->set_to_now();
+        $datetold = RT::DateTime->now;
     }
 
     return (
@@ -2177,14 +2070,11 @@ Updates the told without a transaction or acl check. Useful when we're sending r
 sub _set_told {
     my $self = shift;
 
-    my $now = RT::Date->new();
-    $now->set_to_now();
-
     #use __set to get no ACLs ;)
     return (
         $self->__set(
             column => 'told',
-            value  => $now->iso
+            value  => RT::DateTime->now(),
         )
     );
 }
@@ -2289,15 +2179,6 @@ sub _set {
     #Take care of the old value we really don't want to get in an ACL loop.
     # so ask the super::_value
     my $Old = $self->SUPER::_value( $args{'column'} );
-    if ( $args{'column'} =~ /due|starts|started|told/ ) {
-    # we want the real value in db, without filter
-        my $date = RT::Date->new();
-        $date->set(
-            format => 'unknown',
-            value  => $Old,
-        );
-        $Old = $date->iso;
-    }
 
     if ( $Old && $args{'value'} && $Old eq $args{'value'} ) {
 
@@ -2449,10 +2330,10 @@ sub has_right {
 sub current_user_can_modify_watchers {
     my $self = shift;
     my %args = (
-        action       => 'add',
-        type         => undef,
-        principal_id => undef,
-        email        => undef,
+        action    => 'add',
+        type      => undef,
+        principal => undef,
+        email     => undef,
         @_
     );
 
@@ -2460,9 +2341,9 @@ sub current_user_can_modify_watchers {
     return 1 if $self->current_user_has_right('ModifyTicket');
 
     # if it's a new user in the system then user must have ModifyTicket
-    return 0 unless $args{'principal_id'};
+    return 0 unless $args{'principal'};
     # If the watcher isn't the current user then the current user has no right
-    return 0 unless $self->current_user->id == $args{'principal_id'};
+    return 0 unless $self->current_user->id == (blessed $args{'principal'}? $args{'principal'}->id : $args{'principal'});
 
     #  If it's an admin_cc and they don't have 'WatchAsadmin_cc', bail
     if ( $args{'type'} eq 'admin_cc' ) {

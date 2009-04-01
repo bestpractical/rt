@@ -241,7 +241,7 @@ sub load_or_create_user {
     # add new user to groups
     foreach (@$MemberOf) {
         my $group = RT::Model::Group->new( current_user => RT->system_user() );
-        $group->load_user_defined_group($_);
+        $group->load_user_defined($_);
         die "couldn't load group '$_'" unless $group->id;
         $group->add_member( $obj->id );
     }
@@ -384,7 +384,7 @@ sub add_rights {
         unless ( ref $principal ) {
             if ( $principal =~ /^(everyone|(?:un)?privileged)$/i ) {
                 $principal = RT::Model::Group->new( current_user => RT->system_user );
-                $principal->load_system_internal_group($1);
+                $principal->load_system_internal($1);
             } else {
                 die "principal is not an object, but also is not name of a system group";
             }

@@ -27,14 +27,14 @@ $searchuser->principal->grant_right(right => 'ModifySelf');
 
 # This is the group whose searches searchuser should be able to see.
 my $ingroup = RT::Model::Group->new(current_user => RT->system_user);
-$ingroup->create_user_defined_group(name => 'searchgroup1'.$$);
+$ingroup->create_user_defined(name => 'searchgroup1'.$$);
 $ingroup->add_member($searchuser->id);
 $searchuser->principal->grant_right(right => 'EditSavedSearches', object => $ingroup);
 $searchuser->principal->grant_right(right => 'ShowSavedSearches', object => $ingroup);
 
 # This is the group whose searches searchuser should not be able to see.
 my $outgroup = RT::Model::Group->new(current_user => RT->system_user);
-$outgroup->create_user_defined_group(name => 'searchgroup2'.$$);
+$outgroup->create_user_defined(name => 'searchgroup2'.$$);
 $outgroup->add_member(RT->system_user->id);
 
 my $queue = RT::Model::Queue->new(current_user => RT->system_user);

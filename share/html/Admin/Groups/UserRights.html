@@ -62,7 +62,7 @@
   <tr align="right">
     <td valign="top"><& /Elements/ShowUser, user => $user_object &></td>
     <td><& /Admin/Elements/SelectRights,
-        principal_id => $Member->member_obj->id,
+        principal => $Member->member_obj->id,
         type => 'User',
         object => $GroupObj,
     &></td>
@@ -96,7 +96,7 @@ $GroupObj->load($id) || abort(_("Couldn't load group %1",$id));
 
 # Find out which users we want to display ACL selects for
 my $privileged = RT::Model::Group->new( current_user => Jifty->web->current_user );
-$privileged->load_system_internal_group('privileged');
+$privileged->load_system_internal('privileged');
 my $Users = $privileged->members;
 
     

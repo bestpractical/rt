@@ -66,7 +66,6 @@ package RT::Record;
 use strict;
 use warnings;
 
-use RT::Date;
 use RT::Model::User;
 use RT::Model::AttributeCollection;
 use RT::Model::Attribute;
@@ -345,78 +344,6 @@ sub load_by_cols {
 }
 
 
-
-# There is room for optimizations in most of those subs:
-
-
-sub last_updated_obj {
-    my $self = shift;
-    my $obj  = RT::Date->new();
-
-    $obj->set( format => 'sql', value => $self->last_updated );
-    return $obj;
-}
-
-
-
-sub created_obj {
-    my $self = shift;
-    my $obj  = RT::Date->new();
-
-    $obj->set( format => 'sql', value => $self->created );
-
-    return $obj;
-}
-
-
-#
-# TODO: This should be deprecated
-#
-sub age_as_string {
-    my $self = shift;
-    return ( $self->created_obj->age_as_string() );
-}
-
-
-
-# TODO this should be deprecated
-
-sub last_updated_as_string {
-    my $self = shift;
-    if ( $self->last_updated ) {
-        return ( $self->last_updated_obj->as_string() );
-
-    } else {
-        return "never";
-    }
-}
-
-
-#
-# TODO This should be deprecated
-#
-sub created_as_string {
-    my $self = shift;
-    return ( $self->created_obj->as_string() );
-}
-
-
-#
-# TODO This should be deprecated
-#
-sub long_since_update_as_string {
-    my $self = shift;
-    if ( $self->last_updated ) {
-
-        return ( $self->last_updated_obj->age_as_string() );
-
-    } else {
-        return "never";
-    }
-}
-
-
-
 #
 sub _set {
     my $self = shift;
@@ -472,38 +399,17 @@ It takes no options. Arguably, this is a bug
 
 sub set_last_updated {
     my $self = shift;
-    my $now = RT::Date->new( current_user => $self->current_user );
-    $now->set_to_now();
+    my $now = RT::DateTime->now;
 
     my ( $msg, $val ) = $self->__set(
         column => 'last_updated',
-        value  => $now->iso
+        value  => $now,
     );
     ( $msg, $val ) = $self->__set(
         column => 'last_updated_by',
         value  => $self->current_user ? $self->current_user->id : 0
     );
 }
-
-
-
-=head2 creator_obj
-
-Returns an RT::Model::User object with the RT account of the creator of this row
-
-=cut
-
-sub creator_obj {
-    my $self = shift;
-    unless ( exists $self->{'creator_obj'} ) {
-
-        $self->{'creator_obj'} = RT::Model::User->new( current_user => $self->current_user );
-        $self->{'creator_obj'}->load( $self->creator );
-    }
-    return ( $self->{'creator_obj'} );
-}
-
-
 
 =head2 last_updated_by_obj
 

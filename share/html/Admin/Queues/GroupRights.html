@@ -67,7 +67,7 @@
 	    <% _($Group->type) %>
 		  </td>
 	  <td>
-	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
+	    <& /Admin/Elements/SelectRights, principal => $Group->principal_id,
         object => $queue_obj  &>
 	  </td>
 	</tr>
@@ -76,14 +76,14 @@
 <h1><&|/l&>Roles</&></h1>
 <table>
 % $Groups = RT::Model::GroupCollection->new( current_user => Jifty->web->current_user );
-% $Groups->limit_to_roles_for_queue($queue_obj->id);
+% $Groups->limit_to_roles( object => $queue_obj );
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 
 	<td valign="top">
 	    <% _($Group->type) %>
 		  </td>
 	  <td>
-	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
+	    <& /Admin/Elements/SelectRights, principal => $Group->principal_id,
         object => $queue_obj  &>
 	  </td>
 	</tr>
@@ -99,7 +99,7 @@
 	    <% $Group->name %>
 		  </td>
 	  <td>
-	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
+	    <& /Admin/Elements/SelectRights, principal => $Group->principal_id,
         object => $queue_obj  &>
 	  </td>
 	</tr>

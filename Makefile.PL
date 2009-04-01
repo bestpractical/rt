@@ -39,6 +39,7 @@ requires(
     'File::Glob'                 => 0,
     'Devel::StackTrace'          => '1.19',
     'Text::Naming::Convention'   => 0,
+    'DateTime'                   => '0.46',
 );
 
 features(
@@ -48,7 +49,6 @@ features(
         'HTML::Mason'       => 1.40,
         'Digest::MD5'       => 2.27,
         'Storable'          => 2.08,
-        'Apache::Session'   => 1.53,
         'XML::RSS'          => 1.05,
         'Text::WikiFormat'  => 0.76,
         'CSS::Squish'       => 0.06,

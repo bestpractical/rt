@@ -50,7 +50,7 @@ use warnings;
 
 package RT::Model::User;
 
-use base qw/RT::Record/;
+use base qw/RT::IsPrincipal::HasNoMembers RT::Record/;
 
 =head1 NAME
 
@@ -122,7 +122,7 @@ use Jifty::DBI::Record schema {
     column state    => max_length is 100, type is 'varchar(100)', default is '';
     column zip      => max_length is 16,  type is 'varchar(16)',  default is '';
     column country  => max_length is 50,  type is 'varchar(50)',  default is '';
-    column timezone => max_length is 50,  type is 'varchar(50)',  default is '';
+    column time_zone => max_length is 50,  type is 'varchar(50)',  default is '';
     column pgp_key   => type is 'text';
 
 };
@@ -245,7 +245,7 @@ sub create {
     }
 
     my $aclstash = RT::Model::Group->new( current_user => $self->current_user );
-    my $stash_id = $aclstash->_createacl_equivalence_group($principal);
+    my $stash_id = $aclstash->create_acl_equivalence($principal);
 
     unless ($stash_id) {
         Jifty->handle->rollback();
@@ -254,16 +254,14 @@ sub create {
     }
 
     my $everyone = RT::Model::Group->new( current_user => $self->current_user );
-    $everyone->load_system_internal_group('Everyone');
+    $everyone->load_system_internal('Everyone');
     unless ( $everyone->id ) {
         Jifty->log->fatal("Could not load Everyone group on user creation.");
         Jifty->handle->rollback();
         return ( 0, _('Could not create user') );
     }
 
-    my ( $everyone_id, $everyone_msg ) = $everyone->_add_member(
-        principal_id       => $self->principal_id
-    );
+    my ( $everyone_id, $everyone_msg ) = $everyone->_add_member( principal => $self );
     unless ($everyone_id) {
         Jifty->log->fatal("Could not add user to Everyone group on user creation.");
         Jifty->log->fatal($everyone_msg);
@@ -273,9 +271,9 @@ sub create {
 
     my $access_class = RT::Model::Group->new( current_user => $self->current_user );
     if ($privileged) {
-        $access_class->load_system_internal_group('privileged');
+        $access_class->load_system_internal('privileged');
     } else {
-        $access_class->load_system_internal_group('Unprivileged');
+        $access_class->load_system_internal('Unprivileged');
     }
 
     unless ( $access_class->id ) {
@@ -284,9 +282,7 @@ sub create {
         return ( 0, _('Could not create user') );
     }
 
-    my ( $ac_id, $ac_msg ) = $access_class->_add_member(
-        principal_id       => $self->principal_id
-    );
+    my ( $ac_id, $ac_msg ) = $access_class->_add_member( principal => $self );
 
     unless ($ac_id) {
         Jifty->log->fatal( "Could not add user to privileged or Unprivileged group on user creation. aborted" );
@@ -329,7 +325,7 @@ sub set_privileged {
         return ( 0, _('No permission to create users') );
     }
     my $priv = RT::Model::Group->new( current_user => $self->current_user );
-    $priv->load_system_internal_group('privileged');
+    $priv->load_system_internal('privileged');
 
     unless ( $priv->id ) {
         Jifty->log->fatal("Could not find privileged pseudogroup");
@@ -337,19 +333,19 @@ sub set_privileged {
     }
 
     my $unpriv = RT::Model::Group->new( current_user => $self->current_user );
-    $unpriv->load_system_internal_group('Unprivileged');
+    $unpriv->load_system_internal('Unprivileged');
     unless ( $unpriv->id ) {
         Jifty->log->fatal("Could not find unprivileged pseudogroup");
         return ( 0, _("Failed to find 'Unprivileged' users pseudogroup") );
     }
 
     if ($val) {
-        if ( $priv->has_member( $self->principal ) ) {
+        if ( $priv->has_member( principal =>  $self->principal ) ) {
 
             #Jifty->log->debug("That user is already privileged");
             return ( 0, _("That user is already privileged") );
         }
-        if ( $unpriv->has_member( $self->principal ) ) {
+        if ( $unpriv->has_member( principal =>  $self->principal ) ) {
             $unpriv->_delete_member( $self->principal_id );
         } else {
 
@@ -358,21 +354,19 @@ sub set_privileged {
             # bogus happened
             Jifty->log->fatal( "User " . $self->id . " is neither privileged nor " . "unprivileged. something is drastically wrong." );
         }
-        my ( $status, $msg ) = $priv->_add_member(
-            principal_id       => $self->principal_id
-        );
+        my ( $status, $msg ) = $priv->_add_member( principal => $self );
         if ($status) {
             return ( 1, _("That user is now privileged") );
         } else {
             return ( 0, $msg );
         }
     } else {
-        if ( $unpriv->has_member( $self->principal ) ) {
+        if ( $unpriv->has_member( principal =>  $self->principal ) ) {
 
             #Jifty->log->debug("That user is already unprivileged");
             return ( 0, _("That user is already unprivileged") );
         }
-        if ( $priv->has_member( $self->principal ) ) {
+        if ( $priv->has_member( principal =>  $self->principal ) ) {
             $priv->_delete_member( $self->principal_id );
         } else {
 
@@ -381,9 +375,7 @@ sub set_privileged {
             # bogus happened
             Jifty->log->fatal( "User " . $self->id . " is neither privileged nor " . "unprivileged. something is drastically wrong." );
         }
-        my ( $status, $msg ) = $unpriv->_add_member(
-            principal_id       => $self->principal_id
-        );
+        my ( $status, $msg ) = $unpriv->_add_member( principal => $self );
         if ($status) {
             return ( 1, _("That user is now unprivileged") );
         } else {
@@ -402,8 +394,8 @@ Returns true if this user is privileged. Returns undef otherwise.
 sub privileged {
     my $self = shift;
     my $priv = RT::Model::Group->new( current_user => $self->current_user );
-    $priv->load_system_internal_group('privileged');
-    if ( $priv->has_member( $self->principal ) ) {
+    $priv->load_system_internal('privileged');
+    if ( $priv->has_member( principal =>  $self->principal ) ) {
         return (1);
     } else {
         return (undef);
@@ -460,7 +452,7 @@ sub _bootstrap_create {
 
     my $aclstash = RT::Model::Group->new( current_user => $self->current_user );
 
-    my $stash_id = $aclstash->_createacl_equivalence_group($principal);
+    my $stash_id = $aclstash->create_acl_equivalence($principal);
 
     unless ($stash_id) {
         Jifty->handle->rollback();
@@ -582,7 +574,7 @@ sub load_or_create_by_email {
 }
 
 
-=head2 validateemail ADDRESS
+=head2 validate_email ADDRESS
 
 Returns true if the email address entered is not in use by another user or is 
 undef or ''. Returns false if it's in use. 
@@ -620,7 +612,7 @@ user preferences.
 =item 'squelched' - returned only when Ticket argument is provided and
 notifications to the user has been supressed for this ticket.
 
-=item 'daily' - retruned when user recieve daily messages digest instead
+=item 'daily' - returned when user recieve daily messages digest instead
 of immediate delivery.
 
 =item 'weekly' - previous, but weekly.
@@ -859,7 +851,7 @@ sub validate_auth_string {
     return $auth_string eq substr(Digest::MD5::md5_hex($str),0,16);
 }
 
-=head2 sub set_disabled
+=head2 set_disabled
 
 Toggles the user's disabled flag.
 If this flag is
@@ -880,57 +872,6 @@ sub set_disabled {
         return ( 0, _('Permission Denied') );
     }
     return $self->principal->set_disabled(@_);
-}
-
-=head2 disabled
-
-Returns true if user is disabled or false otherwise
-
-=cut
-
-sub disabled {
-    my $self = shift;
-    return $self->principal->disabled(@_);
-}
-
-=head2 principal 
-
-Returns the principal object for this user. returns an empty RT::Model::Principal
-if there's no principal object matching this user. 
-The response is cached. principal should never ever change.
-
-
-=cut
-
-sub principal {
-    my $self = shift;
-
-    unless ( $self->id ) {
-        Jifty->log->error("Couldn't get principal for not loaded object");
-        return undef;
-    }
-
-    my $obj = RT::Model::Principal->new( current_user => $self->current_user );
-    $obj->load_by_id( $self->id );
-    unless ( $obj->id ) {
-        Jifty->log->fatal( 'No principal for user #' . $self->id );
-        return undef;
-    } elsif ( $obj->type ne 'User' ) {
-        Jifty->log->fatal( 'User #' . $self->id . ' has principal of ' . $obj->type . ' type' );
-        return undef;
-    }
-    return $obj;
-}
-
-=head2 principal_id  
-
-Returns this user's principal_id
-
-=cut
-
-sub principal_id {
-    my $self = shift;
-    return $self->id;
 }
 
 =head2 has_group_right
@@ -989,7 +930,7 @@ sub own_groups {
     my $groups = RT::Model::GroupCollection->new( current_user => $self->current_user );
     $groups->limit_to_user_defined_groups;
     $groups->with_member(
-        principal_id => $self->id,
+        principal => $self->id,
         recursively  => 1
     );
     return $groups;
@@ -1160,8 +1101,6 @@ sub watched_queues {
     my $self = shift;
     my @roles = @_ || ( 'cc', 'admin_cc' );
 
-    Jifty->log->debug( 'WatcheQueues got user ' . $self->name );
-
     my $watched_queues = RT::Model::QueueCollection->new( current_user => $self->current_user );
 
     my $group_alias = $watched_queues->join(
@@ -1207,8 +1146,6 @@ sub watched_queues {
         column => 'member_id',
         value  => $self->principal_id,
     );
-
-    Jifty->log->debug( "WatchedQueues got " . $watched_queues->count . " queues" );
 
     return $watched_queues;
 

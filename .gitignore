@@ -1,0 +1,13 @@
+META.yml
+Makefile
+Makefile.old
+MANIFEST
+MANIFEST.bak
+SIGNATURE
+blib/
+inc/
+mason*/
+pm_to_blib
+t/data/gnupg/keyrings/random_seed
+t/mailbox_*
+

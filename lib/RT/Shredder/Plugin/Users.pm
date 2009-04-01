@@ -132,7 +132,7 @@ sub run {
 
     # XXX: we want preload only things we need, but later while
     # logging we need all data, TODO envestigate this
-    # $objs->columns(qw(id name email lang timezone
+    # $objs->columns(qw(id name email lang time_zone
     #                   creator Created last_updated last_updated_by));
     if ( my $s = $self->{'opt'}{'status'} ) {
         if ( $s eq 'any' ) {

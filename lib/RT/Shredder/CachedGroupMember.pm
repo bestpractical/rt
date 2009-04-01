@@ -106,7 +106,7 @@ sub __relates {
         $rec->{'description'} = "Have no related Principal #" . $self->member_id . " object.";
     }
 
-    $obj = $self->group_obj;
+    $obj = $self->group;
     if ( $obj && $obj->id ) {
         push( @$list, $obj );
     } else {

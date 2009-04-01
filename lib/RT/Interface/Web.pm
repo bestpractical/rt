@@ -159,10 +159,7 @@ sub web_external_auto_info {
 
 =head2 redirect URL
 
-This routine ells the current user's browser to redirect to URL.  
-Additionally, it unties the user's currently active session, helping to avoid 
-A bug in Apache::Session 1.81 and earlier which clobbers sessions if we try to use 
-a cached DBI statement handle twice at the same time.
+This routine tells the current user's browser to redirect to URL.  
 
 =cut
 
@@ -204,13 +201,12 @@ This routine could really use _accurate_ heuristics. (XXX TODO)
 =cut
 
 sub static_file_headers {
-    my $date = RT::Date->new( current_user => RT->system_user );
-
     # make cache public
     $HTML::Mason::Commands::r->headers_out->{'Cache-Control'} = 'max-age=259200, public';
 
     # Expire things in a month.
-    $date->set( value => time + 30 * 24 * 60 * 60 );
+    my $date = RT::DateTime->now;
+    $date->add(months => 1);
     $HTML::Mason::Commands::r->headers_out->{'Expires'} = $date->rfc2616;
 
     # if we set 'Last-Modified' then browser request a comp using 'If-Modified-Since'
@@ -333,7 +329,7 @@ sub strip_content {
 
 package HTML::Mason::Commands;
 
-use vars qw/$r $m %session/;
+use vars qw/$r $m/;
 
 
 =head2 loc ARRAY
@@ -356,11 +352,11 @@ sub abort {
     my $why  = shift;
     my %args = @_;
 
-    if (   $session{'ErrorDocument'}
-        && $session{'ErrorDocumentType'} )
+    if (   Jifty->web->session->get('ErrorDocument')
+        && Jifty->web->session->get('ErrorDocumentType') )
     {
-        $r->content_type( $session{'ErrorDocumentType'} );
-        $m->comp( $session{'ErrorDocument'}, why => $why, %args );
+        $r->content_type( Jifty->web->session->get('ErrorDocumentType') );
+        $m->comp( Jifty->web->session->get('ErrorDocument'), why => $why, %args );
         $m->abort;
     } else {
         $m->comp( "/Elements/Error", why => $why, %args );
@@ -394,13 +390,11 @@ sub create_ticket {
 
     my $due;
     if ( defined $ARGS{'Due'} and $ARGS{'Due'} =~ /\S/ ) {
-        $due = new RT::Date( current_user => Jifty->web->current_user );
-        $due->set( format => 'unknown', value => $ARGS{'Due'} );
+        $due = RT::DateTime->new_from_string($ARGS{'Due'});
     }
     my $starts;
     if ( defined $ARGS{'Starts'} and $ARGS{'Starts'} =~ /\S/ ) {
-        $starts = new RT::Date( current_user => Jifty->web->current_user );
-        $starts->set( format => 'unknown', value => $ARGS{'Starts'} );
+        $starts = RT::DateTime->new_from_string($ARGS{'Starts'});
     }
 
     my $sigless = RT::Interface::Web::strip_content(
@@ -813,12 +807,7 @@ Returns an ISO date and time in GMT
 sub parse_date_to_iso {
     my $date = shift;
 
-    my $date_obj = RT::Date->new();
-    $date_obj->set(
-        format => 'unknown',
-        value  => $date
-    );
-    return ( $date_obj->iso );
+    return RT::DateTime->new_from_string($date)->iso;
 }
 
 
@@ -1251,7 +1240,7 @@ sub process_ticket_watchers {
         # Delete deletable watchers
         if ( $key =~ /^Ticket-DeleteWatcher-Type-(.*)-Principal-(\d+)$/ ) {
             my ( $code, $msg ) = $Ticket->delete_watcher(
-                principal_id => $2,
+                principal => $2,
                 type         => $1
             );
             push @results, $msg;
@@ -1296,8 +1285,8 @@ sub process_ticket_watchers {
                 next unless $value =~ /^(?:admin_cc|cc|requestor)$/i;
 
                 my ( $code, $msg ) = $Ticket->add_watcher(
-                    type         => $value,
-                    principal_id => $principal_id
+                    type      => $value,
+                    principal => $principal_id
                 );
                 push @results, $msg;
             }
@@ -1343,15 +1332,12 @@ sub process_ticket_dates {
 
         my ( $code, $msg );
 
-        my $DateObj = RT::Date->new();
-        $DateObj->set(
-            format => 'unknown',
-            value  => $args_ref->{ $field . '_date' }
-        );
+        my $date = $args_ref->{ $field . '_date' };
+        my $DateObj = RT::DateTime->new_from_string($date);
 
         my $obj = $field . "_obj";
-        if (    ( defined $DateObj->unix )
-            and ( $DateObj->unix != $Ticket->$obj()->unix() ) )
+        if (    ( defined $DateObj->epoch )
+            and ( $DateObj->epoch != $Ticket->$obj->epoch ) )
         {
             my $method = "set_$field";
             my ( $code, $msg ) = $Ticket->$method( $DateObj->iso );

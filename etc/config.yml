@@ -49,7 +49,6 @@ framework:
   Web: 
     baseURL: http://localhost
     DataDir: var/mason
-    Globals: [%session]
 
     MasonConfig: 
       autoflush: 0

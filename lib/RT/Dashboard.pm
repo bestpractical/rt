@@ -248,7 +248,7 @@ sub _privacy_objects {
     my $groups = RT::Model::GroupCollection->new( current_user => $CurrentUser );
     $groups->limit_to_user_defined_groups;
     $groups->with_member(
-        principal_id => $CurrentUser->id,
+        principal => $CurrentUser->id,
         recursively => 1
     );
 

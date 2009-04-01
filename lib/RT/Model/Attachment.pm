@@ -259,11 +259,8 @@ has a parent, otherwise returns undef.
 
 sub parent_obj {
     my $self = shift;
-    return undef unless $self->parent;
-
-    my $parent = RT::Model::Attachment->new( current_user => $self->current_user );
-    $parent->load_by_id( $self->parent );
-    return $parent;
+    return undef unless $self->parent->id;
+    return $self->parent;
 }
 
 =head2 children
@@ -411,7 +408,7 @@ sub quote {
 
         $body =~ s/^/> /gm;
 
-        $body = '[' . $self->transaction->creator_obj->name() . ' - ' . $self->transaction->created_as_string() . "]:\n\n" . $body . "\n\n";
+        $body = '[' . $self->transaction->creator->name() . ' - ' . $self->transaction->created . "]:\n\n" . $body . "\n\n";
 
     } else {
         $body = "[Non-text message not quoted]\n\n";
@@ -635,7 +632,7 @@ sub encrypt {
     my $txn = $self->transaction;
     return ( 0, _('Permission Denied') ) unless $txn->current_user_can_see;
     return ( 0, _('Permission Denied') )
-        unless $txn->ticket_obj->current_user_has_right('ModifyTicket');
+        unless $txn->ticket->current_user_has_right('ModifyTicket');
     return ( 0, _('GnuPG integration is disabled') )
         unless RT->config->get('GnuPG')->{'enable'};
     return ( 0, _('Attachments encryption is disabled') )
@@ -652,7 +649,7 @@ sub encrypt {
         $type = qq{x-application-rt\/gpg-encrypted; original-type="$type"};
     }
 
-    my $queue = $txn->ticket_obj->queue;
+    my $queue = $txn->ticket->queue;
     my $encrypt_for;
     foreach my $address ( grep $_, $queue->correspond_address, $queue->comment_address, RT->config->get('CorrespondAddress'), RT->config->get('CommentAddress'), ) {
         my %res = RT::Crypt::GnuPG::get_keys_info( $address, 'private' );
@@ -692,7 +689,7 @@ sub decrypt {
     my $txn = $self->transaction;
     return ( 0, _('Permission Denied') ) unless $txn->current_user_can_see;
     return ( 0, _('Permission Denied') )
-        unless $txn->ticket_obj->current_user_has_right('ModifyTicket');
+        unless $txn->ticket->current_user_has_right('ModifyTicket');
     return ( 0, _('GnuPG integration is disabled') )
         unless RT->config->get('GnuPG')->{'enable'};
 

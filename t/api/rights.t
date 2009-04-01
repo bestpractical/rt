@@ -87,7 +87,7 @@ ok( !$user->has_right( right => 'OwnTicket', object => $queue ), "user can't own
 ok( !$user->has_right( right => 'ReplyToTicket', object => $queue ), "user can't reply to ticket" );
 
 my $group = RT::Model::Group->new(current_user => RT->system_user );
-ok( $group->create_role_group( object => $queue, type=> 'owner' ), "load queue owners role group" );
+ok( $group->create_role( object => $queue, type=> 'owner' ), "load queue owners role group" );
 my $ace = RT::Model::ACE->new(current_user => RT->system_user );
 my ($ace_id, $msg) = $group->principal->grant_right( right => 'ReplyToTicket', object => $queue );
 ok( $ace_id, "Granted queue owners role group with ReplyToTicket right: $msg" );
@@ -113,13 +113,13 @@ ok( $user->has_right( right => 'ReplyToTicket', object => $ticket ), "user is ow
 
 # Testing of equiv_objects
 $group = RT::Model::Group->new(current_user => RT->system_user );
-ok( $group->create_role_group( object => $queue, type=> 'admin_cc' ), "load queue admin_cc role group" );
+ok( $group->create_role( object => $queue, type=> 'admin_cc' ), "load queue admin_cc role group" );
 $ace = RT::Model::ACE->new(current_user => RT->system_user );
 ($ace_id, $msg) = $group->principal->grant_right( right => 'ModifyTicket', object => $queue );
 ok( $ace_id, "Granted queue admin_cc role group with ModifyTicket right: $msg" );
 ok( $group->principal->has_right( right => 'ModifyTicket', object => $queue ), "role group can modify ticket" );
 ok( !$user->has_right( right => 'ModifyTicket', object => $ticket ), "user is not admin_cc and can't modify ticket" );
-($status, $msg) = $ticket->add_watcher(type => 'admin_cc', principal_id => $user->principal_id);
+($status, $msg) = $ticket->add_watcher(type => 'admin_cc', principal => $user);
 ok( $status, "successfuly added user as admin_cc");
 ok( $user->has_right( right => 'ModifyTicket', object => $ticket ), "user is admin_cc and can modify ticket" );
 

@@ -67,7 +67,7 @@
 	    <% _($Group->type) %>
 		  </td>
 	  <td>
-	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
+	    <& /Admin/Elements/SelectRights, principal => $Group->principal_id,
         type => 'Group',
         object => $GroupObj  &>
 	  </td>
@@ -84,7 +84,7 @@
 	    <% $Group->name %>
 		  </td>
 	  <td>
-	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
+	    <& /Admin/Elements/SelectRights, principal => $Group->principal_id,
         type => 'Group',
         object => $GroupObj  &>
 	  </td>

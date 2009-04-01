@@ -93,7 +93,7 @@ else {
             }
         }
 
-        $group->create_user_defined_group(%v);
+        $group->create_user_defined(%v);
         unless ($group->Id) {
             return [ "# Could not create group.", [], {}, 1 ];
         }

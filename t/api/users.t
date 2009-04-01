@@ -10,7 +10,7 @@ no warnings qw/redefine once/;
 use_ok('RT::Model::UserCollection');
 
 ok(my $users = RT::Model::UserCollection->new(current_user => RT->system_user));
-$users->who_have_right(object =>RT->system, right =>'SuperUser');
+$users->who_have_right(object => RT->system, right =>'SuperUser');
 is($users->count , 1, "There is one privileged superuser - Found ". $users->count );
 
 
@@ -21,13 +21,13 @@ my ($id, $msg) = $RTxUser->create( name => 'RTxUser', comments => "RTx extension
 ok ($id,$msg);
 
 my $group = RT::Model::Group->new(current_user => RT->system_user);
-$group->load_acl_equivalence_group($RTxUser->principal);
+$group->load_acl_equivalence($RTxUser->principal);
 my $RTxSysObj = {};
 bless $RTxSysObj, 'RTx::System';
 *RTx::System::Id = sub  { 1; };
 *RTx::System::id = *RTx::System::Id;
 my $ace = RT::Model::ACE->new(current_user => RT->system_user);
-($id, $msg) = $ace->RT::Record::create( principal_id => $group->id, type => 'Group', right_name => 'RTxUserright', object_type => 'RTx::System', object_id  => 1 );
+($id, $msg) = $ace->RT::Record::create( principal => $group->id, right_name => 'RTxUserright', object_type => 'RTx::System', object_id  => 1 );
 ok ($id, "ACL for RTxSysObj Created");
 
 my $RTxObj = {};
@@ -48,7 +48,7 @@ $users->who_have_right(right => 'RTxUserright', object => $RTxObj, equiv_objects
 is($users->count, 1, "RTxUserright found for RTxObj using equiv_objects");
 
 $ace = RT::Model::ACE->new(current_user => RT->system_user);
-($id, $msg) = $ace->RT::Record::create( principal_id => $group->id, type => 'Group', right_name => 'RTxUserright', object_type => 'RTx::System::Record', object_id => 5 );
+($id, $msg) = $ace->RT::Record::create( principal => $group->id, right_name => 'RTxUserright', object_type => 'RTx::System::Record', object_id => 5 );
 ok ($id, "ACL for RTxObj Created");
 
 my $RTxObj2 = {};

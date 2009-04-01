@@ -72,8 +72,8 @@
 <%INIT>
 my @queues;
 
-if ($cache && exists $session{$cache}) {
-    @queues = @{$session{$cache}};
+if ($cache && Jifty->web->session->get($cache)) {
+    @queues = @{Jifty->web->session->get($cache)};
 }
 else {
     my $Queues = RT::Model::QueueCollection->new( current_user => Jifty->web->current_user );
@@ -88,7 +88,7 @@ else {
         description => $_->description,
     } } grep $_, @queues;
 
-    $session{$cache} = \@queues if $cache;
+    Jifty->web->session->set($cache, \@queues) if $cache;
 }
 
 

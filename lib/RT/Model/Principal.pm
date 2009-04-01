@@ -151,16 +151,10 @@ sub grant_right {
 
     #ACL check handled in ACE.pm
     my $ace = RT::Model::ACE->new( current_user => RT->system_user );
-
-    my $type = $self->_get_principal_type_for_acl();
-
-    # If it's a user, we really want to grant the right to their
-    # user equivalence group
     return $ace->create(
-        right_name    => $args{'right'},
-        object        => $args{'object'},
-        type          => $type,
-        principal_id  => $self->id,
+        right_name => $args{'right'},
+        object     => $args{'object'},
+        principal  => $self,
     );
 }
 
@@ -194,27 +188,23 @@ sub revoke_right {
         $args{'object'} = RT->system;
     }
 
-    #ACL check handled in ACE.pm
-    my $type = $self->_get_principal_type_for_acl();
-
     my $ace = RT::Model::ACE->new( current_user => $self->current_user );
-    $ace->load_by_values(
-        right_name     => $args{'right'},
-        object         => $args{'object'},
-        type => $type,
-        principal_id   => $self->id
+    $ace->load_by_cols(
+        right_name => $args{'right'},
+        object     => $args{'object'},
+        principal  => $self,
     );
 
     unless ( $ace->id ) {
         return ( 0, _("ACE not found") );
     }
-    return ( $ace->delete );
+    return $ace->delete;
 }
 
 
 
 
-=head2 sub has_right (right => 'right' object => undef)
+=head2 has_right (right => 'right' object => undef)
 
 
 Checks to see whether this principal has the right "right" for the object
@@ -359,13 +349,13 @@ sub _has_group_right {
         "(ACL.right_name = 'SuperUser' OR ACL.right_name = '$right') "
 
         # Never find disabled groups.
-        . "AND Principals.id = ACL.principal_id " . "AND Principals.type = 'Group' " . "AND Principals.disabled = 0 "
+        . "AND Principals.id = ACL.principal " . "AND Principals.type = 'Group' " . "AND Principals.disabled = 0 "
 
         # See if the principal is a member of the group recursively or _is the rightholder_
         # never find recursively disabled group members
         # also, check to see if the right is being granted _directly_ to this principal,
         #  as is the case when we want to look up group rights
-        . "AND CachedGroupMembers.group_id  = ACL.principal_id "
+        . "AND CachedGroupMembers.group_id  = ACL.principal "
         . "AND CachedGroupMembers.group_id  = Principals.id "
         . "AND CachedGroupMembers.member_id = "
         . $self->id . " "
@@ -474,27 +464,7 @@ sub invalidate_acl_cache {
 }
 
 
-
-
-=head2 _get_principal_type_for_acl
-
-Gets the principal type. if it's a user, it's a user. if it's a role group and it has a Type, 
-return that. if it has no type, return group.
-
-=cut
-
-sub _get_principal_type_for_acl {
-    my $self = shift;
-    my $type;
-    if ( $self->is_group && $self->object->domain =~ /Role$/ ) {
-        $type = $self->object->type;
-    } else {
-        $type = $self->type;
-    }
-
-    return ($type);
-}
-
+sub acl_equivalence_group { $_[0]->object->acl_equivalence_group }
 
 
 =head2 _reference_id

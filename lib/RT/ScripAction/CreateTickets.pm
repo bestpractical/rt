@@ -130,7 +130,7 @@ A convoluted example
     my $groups = RT::Model::GroupCollection->new(current_user => RT->system_user);
     $groups->limit_to_user_defined_groups();
     $groups->limit(column => "name", operator => "=", value => "$name");
-    $groups->with_member($transaction_obj->creator_obj->id);
+    $groups->with_member($transaction_obj->creator->id);
  
     my $groupid = $groups->first->id;
  
@@ -140,7 +140,7 @@ A convoluted example
 	object =>$groups->first,
 	include_system_rights => undef,
 	include_superusers => 0,
-	include_subgroup_members => 0,
+	recursive => 0,
     );
  
      my @admins;
@@ -685,17 +685,9 @@ sub parse_lines {
     }
 
     foreach my $date qw(due starts started resolved) {
-        my $dateobj = RT::Date->new;
         next unless $args{$date};
-        if ( $args{$date} =~ /^\d+$/ ) {
-            $dateobj->set( format => 'unix', value => $args{$date} );
-        } else {
-            eval { $dateobj->set( format => 'iso', value => $args{$date} ); };
-            if ( $@ or $dateobj->unix <= 0 ) {
-                $dateobj->set( format => 'unknown', value => $args{$date} );
-            }
-        }
-        $args{$date} = $dateobj->iso;
+        my $dt = RT::DateTime->new_from_string(delete $args{$date});
+        $args{$date} = $dt->iso if $dt;
     }
 
     $args{'requestor'} ||= $self->ticket_obj->role_group("requestor")->member_emails
@@ -935,10 +927,10 @@ sub get_update_template {
     $string .= "UpdateType: correspond\n";
     $string .= "Content: \n";
     $string .= "ENDOFCONTENT\n";
-    $string .= "Due: " . $t->due_obj->as_string . "\n";
-    $string .= "starts: " . $t->starts_obj->as_string . "\n";
-    $string .= "Started: " . $t->started_obj->as_string . "\n";
-    $string .= "Resolved: " . $t->resolved_obj->as_string . "\n";
+    $string .= "Due: " . $t->due . "\n";
+    $string .= "Starts: " . $t->starts . "\n";
+    $string .= "Started: " . $t->started . "\n";
+    $string .= "Resolved: " . $t->resolved . "\n";
     $string .= "Owner: " . $t->owner->name . "\n";
     $string .= "Requestor: " . $t->role_group("requestor")->member_emails_as_string . "\n";
     $string .= "Cc: " . $t->role_group("cc")->member_emails_as_string . "\n";
@@ -986,10 +978,10 @@ sub get_base_template {
     $string .= "Queue: " . $t->queue . "\n";
     $string .= "Subject: " . $t->subject . "\n";
     $string .= "Status: " . $t->status . "\n";
-    $string .= "Due: " . $t->due_obj->unix . "\n";
-    $string .= "starts: " . $t->starts_obj->unix . "\n";
-    $string .= "Started: " . $t->started_obj->unix . "\n";
-    $string .= "Resolved: " . $t->resolved_obj->unix . "\n";
+    $string .= "Due: " . $t->due->epoch . "\n";
+    $string .= "Starts: " . $t->starts->epoch . "\n";
+    $string .= "Started: " . $t->started->epoch . "\n";
+    $string .= "Resolved: " . $t->resolved->epoch . "\n";
     $string .= "Owner: " . $t->owner . "\n";
     $string .= "Requestor: " . $t->role_group("requestor")->member_emails_as_string . "\n";
     $string .= "Cc: " . $t->role_group("cc")->member_emails_as_string . "\n";

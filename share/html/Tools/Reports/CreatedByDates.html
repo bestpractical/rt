@@ -53,31 +53,21 @@ $created_after => undef
 <%init>
 my $title = _("Created tickets in period, grouped by status");
 my $q = RT::Model::Queue->new( current_user => Jifty->web->current_user );
-my $before = RT::Date->new();
-my $after = RT::Date->new();
 my $query = 'Status != "deleted" ';
 
-
-if ($created_after) {
-    $after->set(format => 'unknown', value => $created_after);
-    $created_after = $after->as_string;
-}
-if ($created_before) {
-    $before->set(format => 'unknown', value => $created_before);
-    $created_before = $before->as_string;
-}
-
+my $after = RT::DateTime->new_from_string($created_after);
+my $before = RT::DateTime->new_from_string($created_before);
 
 $q->load_by_cols(name => $queue);
 </%init>
 <&| /_elements/wrapper, title => $title &>
 <& /Tools/Reports/Elements/Tabs, current_tab => 'Tools/Reports/CreatedByDates.html', title => $title &>
 <form method="post" action="CreatedByDates.html">
-% if ($queue|| $created_before ||$created_after) {
+% if ($queue || $before->is_set || $after->is_set) {
 % # if we have a queue, do the search
 % if ($queue) { $query .= " AND queue = '$queue'"}
-% if ($created_before) { $query .= " AND Created < '".$before->iso."'"; }
-% if ($created_after) { $query .= " AND Created > '".$after->iso."'"}
+% if ($before->is_set) { $query .= " AND Created < '".$before->iso."'"; }
+% if ($after->is_set) { $query .= " AND Created > '".$after->iso."'"}
 % my $groupby = 'Status';
 <& /Search/Elements/Chart, query => $query, primary_group_by => $groupby &>
 % }
@@ -86,9 +76,9 @@ $q->load_by_cols(name => $queue);
 
 <br /><&|/l&>Queue</&>: <& /Elements/SelectQueue, name => 'queue', named_values => 1, default => $q->id &>
 <br /><&|/l&>Tickets Created after</&>: 
-<& /Elements/SelectDate, name => 'created_after', default => ($created_after) ? $after->iso : ''&>
+<& /Elements/SelectDate, name => 'created_after', default => $after &>
 <br /><&|/l&>Tickets Created before</&>: 
-<& /Elements/SelectDate, name => 'created_before', default => ($created_before) ? $before->iso : ''&>
+<& /Elements/SelectDate, name => 'created_before', default => $before &>
 
 <& /Elements/Submit&>
 </form>
