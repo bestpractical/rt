@@ -67,16 +67,6 @@ sub __depends_on {
     my $deps = $args{'dependencies'};
     my $list = [];
 
-    # Scrips
-    my $objs = RT::Model::ScripCollection->new( current_user => $self->current_user );
-    $objs->limit( column => 'ScripAction', value => $self->id );
-    $deps->_push_dependencies(
-        base_object    => $self,
-        flags          => DEPENDS_ON,
-        target_objects => $objs,
-        shredder       => $args{'shredder'}
-    );
-
     return $self->SUPER::__depends_on(%args);
 }
 

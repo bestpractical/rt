@@ -50,7 +50,6 @@ package RT::Interface::Web::Handler;
 use CGI qw/-private_tempfiles/;
 use MIME::Entity;
 use Text::Wrapper;
-use CGI::Cookie;
 use Time::ParseDate;
 use Time::HiRes;
 use HTML::Entities;

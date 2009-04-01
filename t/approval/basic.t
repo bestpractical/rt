@@ -8,7 +8,7 @@ BEGIN {
         or plan skip_all => 'require Email::Abstract and Test::Email';
 }
 
-plan tests => 37;
+plan tests => 32;
 
 use RT;
 use RT::Test;
@@ -69,17 +69,16 @@ $q = RT::Model::Queue->new(current_user => RT->system_user);
 $q->create(name => 'PO');
 ok ($q->id, "Created PO queue");
 
-my $scrip = RT::Model::Scrip->new(current_user => RT->system_user);
-my ($sval, $smsg) =$scrip->create( scrip_condition => 'On Create',
-                scrip_action => 'Create Tickets',
-                template => 'PO Approvals',
-                queue => $q->id,
-                description => 'Create Approval Tickets');
-ok ($sval, $smsg);
-ok ($scrip->id, "Created the scrip");
-ok ($scrip->template_obj->id, "Created the scrip template");
-ok ($scrip->scrip_condition->id, "Created the scrip condition");
-ok ($scrip->scrip_action->id, "Created the scrip action");
+# XXX: limit to one queue
+my $rule_factory = RT::Lorzy->create_scripish(
+    'On Create',
+    'Create Tickets',
+    'PO Approvals',
+    $q->id,
+);
+
+my $rule = RT::Model::Rule->new( current_user => RT->system_user );
+$rule->create_from_factory( $rule_factory );
 
 my $t = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($tid, $ttrans, $tmsg);
@@ -89,14 +88,14 @@ mail_ok {
         $t->create(subject => "PO for stationary",
                    owner => "root", requestor => $users{minion}->email,
                    queue => $q->id);
-} { from => qr/RT System/,
-    to => 'cfo@company.com',
-    subject => qr/New Pending Approval: CFO Approval/,
-    body => qr/pending your approval.*Your approval is requested.*Blah/s
-},{ from => qr/PO via RT/,
+} { from => qr/PO via RT/,
     to => 'minion@company.com',
     subject => qr/PO for stationary/,
     body => qr/automatically generated in response/
+},{ from => qr/RT System/,
+    to => 'cfo@company.com',
+    subject => qr/New Pending Approval: CFO Approval/,
+    body => qr/pending your approval.*Your approval is requested.*Blah/s
 };
 
 ok ($tid,$tmsg);

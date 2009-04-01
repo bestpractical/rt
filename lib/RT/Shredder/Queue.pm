@@ -79,11 +79,6 @@ sub __depends_on {
     $objs->limit( column => 'instance', value => $self->id );
     push( @$list, $objs );
 
-    # Scrips
-    $objs = RT::Model::ScripCollection->new( current_user => $self->current_user );
-    $objs->limit_to_queue( $self->id );
-    push( @$list, $objs );
-
     # Templates
     $objs = $self->templates;
     push( @$list, $objs );

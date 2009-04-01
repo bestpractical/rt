@@ -92,9 +92,6 @@ my $approvals_id = lazy {
       description => 'Sends mail to explicitly listed ccs and Bccs',      # loc
       exec_module  => 'Notify',
       argument    => 'other recipients' },
-    { name        => 'User Defined',                                      # loc
-      description => 'Perform a user-defined action',                     # loc
-      exec_module  => 'UserDefined', },
     {  name        => 'Create Tickets',                                    # loc
        description =>
          'Create new tickets based on this scrip\'s template',             # loc
@@ -166,13 +163,6 @@ my $approvals_id = lazy {
        applicable_trans_types => 'status',
        exec_module           => 'StatusChange',
        argument             => 'resolved'
-
-    },
-
-    {  name                 => 'User Defined',                             # loc
-       description          => 'Whenever a user-defined condition occurs', # loc
-       applicable_trans_types => 'any',
-       exec_module           => 'UserDefined'
 
     },
 

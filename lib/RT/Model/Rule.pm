@@ -45,27 +45,44 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
-use strict;
-use warnings;
 
-package RT::Condition::UserDefined;
-use base 'RT::Condition';
+=head1 NAME
 
-=head2 is_applicable
+RT::Model::Rule - an RT Rule object represening lorzy code
 
-This happens on every transaction. it's always applicable
+=head1 METHODS
+
 
 =cut
 
-sub is_applicable {
-    my $self = shift;
+use strict;
+use warnings;
 
-    my $retval = eval $self->scrip_obj->custom_is_applicable_code;
-    if ($@) {
-        Jifty->log->error( "Scrip " . $self->scrip_obj->id . " is_applicable failed: " . $@ );
-        return (undef);
-    }
-    return ($retval);
+package RT::Model::Rule;
+
+use base qw'RT::Record';
+
+sub table {'Rules'}
+use Jifty::DBI::Schema;
+use Jifty::DBI::Record schema {
+    column action    => type is 'text';
+    column condition => type is 'text';
+    column prepare   => type is 'text';
+    column description               => type is 'text';
+};
+use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
+    created_by => 'creator',
+    created_on => 'created',
+    updated_by => 'last_updated_by',
+    updated_on => 'last_updated'
+};
+
+sub create_from_factory {
+    my ($self, $factory) = @_;
+    my %args = map { $_ => Jifty::YAML::Dump( $factory->$_ ) }
+        qw(action condition prepare );
+    $self->SUPER::create( %args,
+                          description => $factory->description );
 }
 
 1;

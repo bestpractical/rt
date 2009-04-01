@@ -677,16 +677,6 @@ set($LogToFile      , undef);
 set($LogDir, '/home/jesse/svk/3.999-DANGEROUS/var/log');
 set($LogToFileNamed , "rt.log");    #log to rt.log
 
-=item C<$LogStackTraces>
-
-If set to a log level then logging will include stack
-traces for messages with level equal to or greater than
-specified.
-
-=cut
-
-set($LogStackTraces, '');
-
 =item C<@LogToSyslogConf>
 
 On Solaris or UnixWare, set to ( socket => 'inet' ).  Options here

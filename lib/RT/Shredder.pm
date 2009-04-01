@@ -218,7 +218,6 @@ BEGIN {
     require RT::Shredder::Link;
     require RT::Shredder::Principal;
     require RT::Shredder::Queue;
-    require RT::Shredder::Scrip;
     require RT::Shredder::ScripAction;
     require RT::Shredder::ScripCondition;
     require RT::Shredder::Template;
@@ -239,7 +238,6 @@ our @SUPPORTED_OBJECTS = qw(
     Link
     Principal
     Queue
-    Scrip
     ScripAction
     ScripCondition
     Template

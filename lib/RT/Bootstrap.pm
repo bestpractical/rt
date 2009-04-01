@@ -442,31 +442,20 @@ sub insert_data {
         #print "done.\n";
     }
     if (@Scrips) {
+        # XXX: put into RT::Model::Rules
+        require RT::Lorzy;
+        require Lorzy::Builder;
+        for my $item (sort { $a->{description} cmp $b->{description} } @Scrips) {
+            my $rule_factory = RT::Lorzy->create_scripish(
+                $item->{scrip_condition},
+                $item->{scrip_action},
+                $item->{template},
+                $item->{description},
+            );
 
-        #print "Creating scrips...";
-
-        for my $item (@Scrips) {
-            my $new_entry = RT::Model::Scrip->new( current_user => RT->system_user );
-
-            my @queues
-                = ref $item->{'queue'} eq 'ARRAY'
-                ? @{ $item->{'queue'} }
-                : $item->{'queue'} || 0;
-            push @queues, 0 unless @queues;    # add global queue at least
-
-            foreach my $q (@queues) {
-                my ( $return, $msg ) = $new_entry->create( %$item, queue => $q );
-                if ($return) {
-
-                    #print $return. ".";
-                } else {
-
-                    #print "(Error: $msg)\n";
-                }
-            }
+            my $rule = RT::Model::Rule->new( current_user => RT->system_user );
+            $rule->create_from_factory( $rule_factory );
         }
-
-        #print "done.\n";
     }
 
     if (@Attributes) {
