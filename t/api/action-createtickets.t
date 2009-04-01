@@ -55,14 +55,15 @@ my $q = RT::Model::Queue->new(current_user => RT->system_user);
 $q->create(name => 'WorkflowTest');
 ok ($q->id, "Created workflow test queue");
 
-my $rule = RT::Lorzy->create_scripish(
+my $rule_factory = RT::Lorzy->create_scripish(
     'On Transaction',
     'Create Tickets',
     'Approvals',
     'Create approval tickets',
      $q->id);
 
-RT::Lorzy::Dispatcher->add_rule( $rule );
+my $rule = RT::Model::Rule->new( current_user => RT->system_user );
+$rule->create_from_factory( $rule_factory );
 
 my $t = RT::Model::Ticket->new(current_user => RT->system_user);
 my($tid, $ttrans, $tmsg) = $t->create(subject => "Sample workflow test",

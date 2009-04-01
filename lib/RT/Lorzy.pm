@@ -6,7 +6,7 @@ use RT::Ruleset;
 use Lorzy::Evaluator;
 use RT::Lorzy::Dispatcher;
 
-RT::Ruleset->register( RT::Lorzy::Dispatcher->new );
+RT::Ruleset->register( 'RT::Lorzy::Dispatcher' );
 our $EVAL = Lorzy::Evaluator->new();
 $EVAL->load_package($_) for qw(Str Native);
 $EVAL->load_package('RT', 'RT::Lorzy::Package::RT');

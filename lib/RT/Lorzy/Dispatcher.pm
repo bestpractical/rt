@@ -1,18 +1,27 @@
 package RT::Lorzy::Dispatcher;
-use base 'RT::Ruleset';
-
-my $rules = [];
+use strict;
+use warnings;
+#use base 'RT::Ruleset';
 
 sub reset_rules {
-    $rules = [];
-}
-
-sub add_rule {
-    my ($self, $rule) = @_;
-    push @$rules, $rule;
+    my $rules = RT::Model::RuleCollection->new( current_user => RT::CurrentUser->superuser);
+    for (@$rules) {
+        $_->delete;
+    }
 }
 
 sub rules {
+    my $rules = RT::Model::RuleCollection->new( current_user => RT::CurrentUser->superuser);
+    $rules->unlimit;
+    return [ map {
+        RT::Lorzy::RuleFactory->make_factory(
+            { condition     => Jifty::YAML::Load($_->condition),
+              prepare       => Jifty::YAML::Load($_->prepare),
+              action        => Jifty::YAML::Load($_->action),
+              description   => $_->description,
+              _stage        => 'transaction_create' })
+        } @$rules];
+
     return $rules;
 }
 

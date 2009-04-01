@@ -446,14 +446,15 @@ sub insert_data {
         require RT::Lorzy;
         require Lorzy::Builder;
         for my $item (sort { $a->{description} cmp $b->{description} } @Scrips) {
-            my $rule = RT::Lorzy->create_scripish(
+            my $rule_factory = RT::Lorzy->create_scripish(
                 $item->{scrip_condition},
                 $item->{scrip_action},
                 $item->{template},
                 $item->{description},
             );
 
-            RT::Lorzy::Dispatcher->add_rule( $rule );
+            my $rule = RT::Model::Rule->new( current_user => RT->system_user );
+            $rule->create_from_factory( $rule_factory );
         }
     }
 

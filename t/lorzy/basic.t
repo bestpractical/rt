@@ -59,16 +59,17 @@ lives_ok {
 ok($ret);
 
 use RT::Lorzy;
-
+# XXX: rework the test to use a context object
 my $action_is_run = 0;
 
-RT::Lorzy::Dispatcher->add_rule(
+my $rule = RT::Model::Rule->new( current_user => RT->system_user );
+$rule->create_from_factory(
     RT::Lorzy::RuleFactory->make_factory
             ( { condition => $is_open,
                 _stage => 'transaction_create',
                 action => sub { $action_is_run++ } } )
 );
-
+warn $rule->id;
 $ticket->comment(content => 'lorzy lorzy in the code');
 
 ok($action_is_run);

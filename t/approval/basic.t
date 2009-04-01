@@ -70,14 +70,15 @@ $q->create(name => 'PO');
 ok ($q->id, "Created PO queue");
 
 # XXX: limit to one queue
-my $rule = RT::Lorzy->create_scripish(
+my $rule_factory = RT::Lorzy->create_scripish(
     'On Create',
     'Create Tickets',
     'PO Approvals',
     $q->id,
 );
 
-RT::Lorzy::Dispatcher->add_rule( $rule );
+my $rule = RT::Model::Rule->new( current_user => RT->system_user );
+$rule->create_from_factory( $rule_factory );
 
 my $t = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($tid, $ttrans, $tmsg);
