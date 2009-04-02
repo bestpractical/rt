@@ -70,7 +70,7 @@ use warnings;
 use strict;
 
 package RT::Model::AttachmentCollection;
-use base qw/RT::SearchBuilder/;
+use base qw/RT::Collection/;
 
 use RT::Model::Attachment;
 

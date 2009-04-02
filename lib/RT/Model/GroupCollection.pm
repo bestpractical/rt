@@ -73,7 +73,7 @@ use strict;
 
 package RT::Model::GroupCollection;
 
-use base qw/RT::IsPrincipalCollection RT::SearchBuilder/;
+use base qw/RT::IsPrincipalCollection RT::Collection/;
 
 use RT::Model::UserCollection;
 

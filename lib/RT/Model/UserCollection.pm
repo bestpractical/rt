@@ -67,7 +67,7 @@ use warnings;
 use strict;
 
 package RT::Model::UserCollection;
-use base qw/RT::IsPrincipalCollection RT::SearchBuilder/;
+use base qw/RT::IsPrincipalCollection RT::Collection/;
 
 sub _init {
     my $self = shift;

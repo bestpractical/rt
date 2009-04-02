@@ -66,7 +66,7 @@ use warnings;
 use strict;
 
 package RT::Model::CustomFieldCollection;
-use base qw/RT::SearchBuilder/;
+use base qw/RT::Collection/;
 use Jifty::DBI::Collection::Unique;
 
 sub ocf_alias {

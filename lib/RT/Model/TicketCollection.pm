@@ -79,7 +79,7 @@ use strict;
 use warnings;
 
 package RT::Model::TicketCollection;
-use base qw/RT::SearchBuilder/;
+use base qw/RT::Collection/;
 no warnings qw(redefine);
 
 use RT::Model::CustomFieldCollection;

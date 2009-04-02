@@ -74,7 +74,7 @@ Put in objects into collection.
 Takes
 base_object - any supported object of RT::Record subclass;
 Flags - flags that describe relationship between target and base objects;
-target_objects - any of RT::SearchBuilder or RT::Record subclassed objects
+target_objects - any of RT::Collection or RT::Record subclassed objects
 or array ref on list of this objects;
 Shredder - RT::Shredder object.
 

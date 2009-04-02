@@ -67,7 +67,7 @@ use strict;
 use warnings;
 
 package RT::Model::ACECollection;
-use base qw/RT::SearchBuilder/;
+use base qw/RT::Collection/;
 
 =head2 next
 

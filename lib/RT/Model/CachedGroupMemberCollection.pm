@@ -67,7 +67,7 @@ use warnings;
 use strict;
 
 package RT::Model::CachedGroupMemberCollection;
-use base qw/RT::SearchBuilder/;
+use base qw/RT::Collection/;
 
 
 =head2 limit_to_users

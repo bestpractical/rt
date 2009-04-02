@@ -66,7 +66,7 @@ use strict;
 use warnings;
 
 package RT::Model::AttributeCollection;
-use base qw'RT::SearchBuilder';
+use base qw'RT::Collection';
 
 sub _do_search {
     my $self = shift;

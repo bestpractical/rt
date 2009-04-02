@@ -48,7 +48,7 @@
 
 =head1 name
 
-  RT::SearchBuilder - a baseclass for RT collection objects
+  RT::Collection - a baseclass for RT collection objects
 
 =head1 SYNOPSIS
 
@@ -62,7 +62,7 @@
 
 =cut
 
-package RT::SearchBuilder;
+package RT::Collection;
 
 use RT::Base;
 
