@@ -67,9 +67,9 @@ package RT::SearchBuilder;
 use RT::Base;
 
 use strict;
-use base qw/RT::Base/;
-use base qw/Jifty::Collection/;
-use UNIVERSAL::require;
+use warnings;
+
+use base qw/RT::Base Jifty::Collection/;
 
 sub _handle {
     return Jifty->handle;
@@ -307,4 +307,3 @@ sub items_array_ref {
 
 
 1;
-
