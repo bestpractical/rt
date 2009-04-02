@@ -757,22 +757,6 @@ sub make_mime_entity {
 }
 
 
-
-=head2 parse_date_to_iso
-
-Takes a date in an arbitrary format.
-Returns an ISO date and time in GMT
-
-=cut
-
-sub parse_date_to_iso {
-    my $date = shift;
-
-    return RT::DateTime->new_from_string($date)->iso;
-}
-
-
-
 sub process_acl_changes {
     my $ARGSref = shift;
 
