@@ -65,46 +65,7 @@ use RT::System;
 use RT::SavedSearches;
 use URI qw();
 use Digest::MD5 ();
-
-
-=head2 escape_utf8 SCALARREF
-
-does a css-busting but minimalist escaping of whatever html you're passing in.
-
-=cut
-
-sub escape_utf8 {
-    my $ref = shift;
-    return unless defined $$ref;
-
-    $$ref =~ s/&/&#38;/g;
-    $$ref =~ s/</&lt;/g;
-    $$ref =~ s/>/&gt;/g;
-    $$ref =~ s/\(/&#40;/g;
-    $$ref =~ s/\)/&#41;/g;
-    $$ref =~ s/"/&#34;/g;
-    $$ref =~ s/'/&#39;/g;
-}
-
-
-
-=head2 escape_uri SCALARREF
-
-Escapes URI component according to RFC2396
-
-=cut
-
 use Encode qw();
-
-sub escape_uri {
-    my $ref = shift;
-    return unless defined $$ref;
-
-    use bytes;
-    $$ref =~ s/([^a-zA-Z0-9_.!~*'()-])/uc sprintf("%%%02X", ord($1))/eg;
-}
-
-
 
 =head2 web_canonicalize_info();
 
@@ -242,7 +203,7 @@ sub strip_content {
     return '' if not $html and $content =~ /^\s*(--)?\s*\Q$sig\E\s*$/;
 
     # Check for html-formatted sig
-    RT::Interface::Web::escape_utf8( \$sig );
+    Jifty::View::Mason::Handler::escape_utf8( \$sig );
     return ''
       if $html
           and $content =~
@@ -317,7 +278,7 @@ sub strip_content {
     return '' if not $html and $content =~ /^\s*(--)?\s*\Q$sig\E\s*$/;
 
     # Check for html-formatted sig
-    RT::Interface::Web::escape_utf8( \$sig );
+    Jifty::View::Mason::Handler::escape_utf8( \$sig );
     return ''
       if $html
           and $content =~
