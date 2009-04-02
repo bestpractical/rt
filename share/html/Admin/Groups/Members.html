@@ -90,7 +90,7 @@
 % while ( my $member = $GroupMembers->next ) {
 % $GroupsSeen{ $member->member_id } = 1 if $skip_seen_groups;
 <li><input type="checkbox" class="checkbox" name="delete_member-<% $member->member_id %>" value="1" />
-<% $member->member_obj->object->name %>
+<% $member->member->object->name %>
 % }
 </ul>
 % }

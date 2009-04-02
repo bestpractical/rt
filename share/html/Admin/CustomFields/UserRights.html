@@ -58,9 +58,9 @@ title => $title, &>
 <table>
         
 %	while (my $Member = $Users->next()) {
-% my $user_object = $Member->member_obj->object();
+% my $user_object = $Member->member->object();
 % my $group = RT::Model::Group->new( current_user => Jifty->web->current_user );
-% $group->load_acl_equivalence($Member->member_obj);
+% $group->load_acl_equivalence($Member->member);
   <tr align="right"> 
 	<td valign="top"><& /Elements/ShowUser, user => $user_object &></td>
 	  <td>
