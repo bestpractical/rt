@@ -1,0 +1,41 @@
+export REPO=/tmp/shipwright-rt4
+export SVN_PATH="svn:file://$REPO"
+export MIN_PERL=5.008006
+export SKIP="--skip=Module::Signature,Devel::Cover,Pod::Coverage,Test::Pod::Coverage,Test::Distribution,Pod::Readme,Archive::Tar,Test::Script::Run,HTML::Lint,Encode,Date::Calc,cpan-mod_perl,Apache2::Const,Apache::Request,Apache::DBI,Git,XML::SAX::Exception,DBD::Pg,DBD::Oracle,DBD::mysql,CGI::SpeedyCGI,Jifty,Jifty::DBI,Test::WWW::Declare,Lorzy,Class::C3::XS"
+export IMPORT="shipwright import --min-perl-version=$MIN_PERL $SKIP -r $SVN_PATH --log-file - --log-level info"
+rm -rf $REPO
+svnadmin create $REPO
+
+shipwright create -r $SVN_PATH
+
+$IMPORT cpan:Text::Balanced
+$IMPORT svn:http://svn.jifty.org/svn/jifty.org/Test-WWW-Declare --name Test-WWW-Declare
+$IMPORT svn:http://svn.jifty.org/svn/jifty.org/Jifty-DBI/trunk --name Jifty-DBI
+$IMPORT svn:http://svn.jifty.org/svn/jifty.org/jifty/trunk --name Jifty
+
+$IMPORT svn://svn.bestpractical.com/Lorzy/trunk --name Lorzy
+
+echo 'install: cp -rf * %%INSTALL_BASE%%' > /tmp/shipwright_rt_build
+#$IMPORT dir:///Users/sunnavy/bps/rt4 --name RT --build-script /tmp/shipwright_rt_build
+$IMPORT svn://svn.bestpractical.com/rt/3.999/trunk --name RT --build-script /tmp/shipwright_rt_build
+
+# newer Text-Balanced requires version.pm, which is not in core, so we need
+# add this manually
+shipwright update -r $SVN_PATH cpan-Data-Dump-Streamer --add-deps cpan-Text-Balanced
+shipwright update -r $SVN_PATH cpan-Text-Balanced --add-deps cpan-version
+shipwright update -r $SVN_PATH Jifty --add-deps Jifty-DBI,Test-WWW-Declare
+shipwright maintain -r $SVN_PATH --update-order
+
+# set known test failures
+shipwright ktf -r $SVN_PATH cpan-Regexp-Common --set 1
+shipwright ktf -r $SVN_PATH cpan-URI --set 1
+shipwright ktf -r $SVN_PATH cpan-Time-Duration --set 1
+shipwright ktf -r $SVN_PATH cpan-Data-Dump-Streamer --set 1
+shipwright ktf -r $SVN_PATH cpan-Storable --set 1
+
+cd /tmp
+rm -rf rtex
+svn export file://$REPO /tmp/rtex
+rsync -rvp /tmp/rtex/ jesse@fsck.com:/tmp/rtex-$$
+echo "cd /tmp/rtex-$$; ./bin/shipwright-builder --skip cpan-GD,cpan-GDTextUtil,cpan-GDGraph"
+
