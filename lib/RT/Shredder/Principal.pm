@@ -92,33 +92,4 @@ sub __depends_on {
     return $self->SUPER::__depends_on(%args);
 }
 
-sub __relates {
-    my $self = shift;
-    my %args = (
-        shredder     => undef,
-        dependencies => undef,
-        @_,
-    );
-    my $deps = $args{'dependencies'};
-    my $list = [];
-
-    my $obj = $self->object;
-    if ( defined $obj->id ) {
-        push( @$list, $obj );
-    } else {
-        my $rec = $args{'shredder'}->get_record( object => $self );
-        $self = $rec->{'object'};
-        $rec->{'state'} |= INVALID;
-        $rec->{'description'} = "Have no related " . $self->type . " #" . $self->id . " object";
-    }
-
-    $deps->_push_dependencies(
-        base_object    => $self,
-        flags          => RELATES,
-        target_objects => $list,
-        shredder       => $args{'shredder'}
-    );
-    return $self->SUPER::__Relates(%args);
-}
-
 1;

@@ -127,50 +127,6 @@ sub __depends_on {
     return $self->SUPER::__depends_on(%args);
 }
 
-sub __relates {
-    my $self = shift;
-    my %args = (
-        shredder     => undef,
-        dependencies => undef,
-        @_,
-    );
-    my $deps = $args{'dependencies'};
-    my $list = [];
-
-    # Equivalence group id inconsistent without User
-    if ( $self->domain eq 'ACLEquivalence' ) {
-        my $obj = RT::Model::User->new( current_user => $self->current_user );
-        $obj->load( $self->instance );
-        if ( $obj->id ) {
-            push( @$list, $obj );
-        } else {
-            my $rec = $args{'shredder'}->get_record( object => $self );
-            $self = $rec->{'object'};
-            $rec->{'state'} |= INVALID;
-            $rec->{'description'} = "ACLEguvivalence group have no related User #" . $self->instance . " object.";
-        }
-    }
-
-    # Principal
-    my $obj = $self->principal;
-    if ( $obj && $obj->id ) {
-        push( @$list, $obj );
-    } else {
-        my $rec = $args{'shredder'}->get_record( object => $self );
-        $self = $rec->{'object'};
-        $rec->{'state'} |= INVALID;
-        $rec->{'description'} = "Have no related Principal #" . $self->id . " object.";
-    }
-
-    $deps->_push_dependencies(
-        base_object    => $self,
-        flags          => RELATES,
-        target_objects => $list,
-        shredder       => $args{'shredder'}
-    );
-    return $self->SUPER::__Relates(%args);
-}
-
 sub before_wipeout {
     my $self = shift;
     if ( $self->domain eq 'SystemInternal' ) {

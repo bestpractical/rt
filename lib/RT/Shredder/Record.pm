@@ -168,59 +168,6 @@ sub __depends_on {
     return;
 }
 
-sub __relates {
-    my $self = shift;
-    my %args = (
-        shredder     => undef,
-        dependencies => undef,
-        @_,
-    );
-    my $deps = $args{'dependencies'};
-    my $list = [];
-
-    if ( $self->can('creator') ) {
-        my $obj = RT::Model::Principal->new( current_user => $self->current_user );
-        $obj->load( $self->creator );
-
-        if ( $obj && defined $obj->id ) {
-            push( @$list, $obj );
-        } else {
-            my $rec = $args{'shredder'}->get_record( object => $self );
-            $self = $rec->{'object'};
-            $rec->{'state'} |= INVALID;
-            push @{ $rec->{'description'} }, "Have no related User(creator) #" . $self->creator . " object";
-        }
-    }
-
-    if ( $self->can('last_updated_by') ) {
-        my $obj = RT::Model::Principal->new( current_user => $self->current_user );
-        $obj->load( $self->last_updated_by );
-
-        if ( $obj && defined $obj->id ) {
-            push( @$list, $obj );
-        } else {
-            my $rec = $args{'shredder'}->get_record( object => $self );
-            $self = $rec->{'object'};
-            $rec->{'state'} |= INVALID;
-            push @{ $rec->{'description'} }, "Have no related User(last_updated_by) #" . $self->last_updated_by . " object";
-        }
-    }
-
-    $deps->_push_dependencies(
-        base_object    => $self,
-        flags          => RELATES,
-        target_objects => $list,
-        shredder       => $args{'shredder'}
-    );
-
-    # cause of this $self->SUPER::__Relates should be called last
-    # in overridden subs
-    my $rec = $args{'shredder'}->get_record( object => $self );
-    $rec->{'state'} |= VALID unless ( $rec->{'state'} & INVALID );
-
-    return;
-}
-
 # implement proxy method because some RT classes
 # override Delete method
 sub __wipeout {
