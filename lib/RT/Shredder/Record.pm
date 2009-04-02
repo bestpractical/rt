@@ -110,9 +110,6 @@ sub dependencies {
     if ( $args{'flags'} & DEPENDS_ON ) {
         $self->__depends_on( %args, dependencies => $deps );
     }
-    if ( $args{'flags'} & RELATES ) {
-        $self->__relates( %args, dependencies => $deps );
-    }
     return $deps;
 }
 
@@ -175,37 +172,6 @@ sub __wipeout {
     my $msg  = $self->_as_string . " wiped out";
     $self->SUPER::delete;
     Jifty->log->debug($msg);
-    return;
-}
-
-sub validate_relations {
-    my $self = shift;
-    my %args = (
-        shredder => undef,
-        @_
-    );
-    unless ( $args{'shredder'} ) {
-        $args{'shredder'} = RT::Shredder->new();
-    }
-
-    my $rec = $args{'shredder'}->put_object( object => $self );
-    return if ( $rec->{'state'} & VALID );
-    $self = $rec->{'object'};
-
-    $self->_validate_relations( %args, flags => RELATES );
-    $rec->{'state'} |= VALID unless ( $rec->{'state'} & INVALID );
-
-    return;
-}
-
-sub _validate_relations {
-    my $self = shift;
-    my %args = (@_);
-
-    my $deps = $self->dependencies(%args);
-
-    $deps->validate_relations(%args);
-
     return;
 }
 
