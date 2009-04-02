@@ -54,7 +54,8 @@ my $auto_reply  = $builder->defun(
 
 RT::Lorzy::Dispatcher->reset_rules;
 
-RT::Lorzy::Dispatcher->add_rule(
+my $rule = RT::Model::Rule->new( current_user => RT->system_user );
+$rule->create_from_factory( 
     RT::Lorzy::RuleFactory->make_factory
     ( { condition => $on_created,
         _stage => 'transaction_create',

@@ -65,9 +65,9 @@ use base qw'RT::Record';
 sub table {'Rules'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column action    => type is 'text';
-    column condition => type is 'text';
-    column prepare   => type is 'text';
+    column action_code    => type is 'text';
+    column condition_code => type is 'text';
+    column prepare_code   => type is 'text';
     column description               => type is 'text';
 };
 use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
@@ -79,7 +79,7 @@ use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
 
 sub create_from_factory {
     my ($self, $factory) = @_;
-    my %args = map { $_ => Jifty::YAML::Dump( $factory->$_ ) }
+    my %args = map { $_.'_code' => Jifty::YAML::Dump( $factory->$_ ) }
         qw(action condition prepare );
     $self->SUPER::create( %args,
                           description => $factory->description );

@@ -95,6 +95,15 @@ __PACKAGE__->mk_accessors(qw(description condition action prepare _stage));
 sub make_factory {
     my $class = shift;
     my $self = $class->SUPER::new(@_);
+
+    if (ref($self->condition) eq 'CODE') {
+        # XXX: signature compat check
+        $self->condition( Lorzy::Lambda::Native->new( body => $self->condition,
+                                                   signature => 
+        { ticket => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Model::Ticket' ),
+          transaction => Lorzy::FunctionArgument->new( name => 'transaction', type => 'RT::Model::Transaction' ) }
+        ) );
+    }
     if (ref($self->action) eq 'CODE') {
         # XXX: signature compat check
         $self->action( Lorzy::Lambda::Native->new( body => $self->action,

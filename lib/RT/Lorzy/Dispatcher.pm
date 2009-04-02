@@ -5,6 +5,7 @@ use warnings;
 
 sub reset_rules {
     my $rules = RT::Model::RuleCollection->new( current_user => RT::CurrentUser->superuser);
+    $rules->unlimit;
     for (@$rules) {
         $_->delete;
     }
@@ -15,9 +16,9 @@ sub rules {
     $rules->unlimit;
     return [ map {
         RT::Lorzy::RuleFactory->make_factory(
-            { condition     => Jifty::YAML::Load($_->condition),
-              prepare       => Jifty::YAML::Load($_->prepare),
-              action        => Jifty::YAML::Load($_->action),
+            { condition     => Jifty::YAML::Load($_->condition_code),
+              prepare       => Jifty::YAML::Load($_->prepare_code),
+              action        => Jifty::YAML::Load($_->action_code),
               description   => $_->description,
               _stage        => 'transaction_create' })
         } @$rules];
