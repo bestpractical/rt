@@ -34,8 +34,8 @@ shipwright ktf -r $SVN_PATH cpan-Data-Dump-Streamer --set 1
 shipwright ktf -r $SVN_PATH cpan-Storable --set 1
 
 cd /tmp
-rm -rf rtex
-svn export file://$REPO /tmp/rtex
-rsync -rvp /tmp/rtex/ jesse@fsck.com:/tmp/rtex-$$
+rm -rf rtex-$$
+svn export file://$REPO /tmp/rtex-$$
+#rsync -rvp /tmp/rtex/ jesse@fsck.com:/tmp/rtex-$$
 echo "cd /tmp/rtex-$$; ./bin/shipwright-builder --skip cpan-GD,cpan-GDTextUtil,cpan-GDGraph"
 
