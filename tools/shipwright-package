@@ -7,6 +7,16 @@ rm -rf $REPO
 svnadmin create $REPO
 
 shipwright create -r $SVN_PATH
+$IMPORT http://www.zlib.net/zlib-1.2.3.tar.gz 
+$IMPORT ftp://ftp.simplesystems.org/pub/libpng/png/src/libpng-1.2.35.tar.bz2
+
+echo 'configure: LDFLAGS="-L%%INSTALL_BASE%%/lib" CPPFLAGS="-I%%INSTALL_BASE%%/include" ./configure --prefix=%%INSTALL_BASE%% --with-png=%%INSTALL_BASE%% --without-freetype --without-fontconfig --without-jpeg
+make: %%MAKE%%
+install: %%MAKE%% install
+clean: %%MAKE%% clean
+' > /tmp/shipwright_gd_build
+
+$IMPORT http://www.libgd.org/releases/gd-2.0.35.tar.gz --build-script=/tmp/shipwright_gd_build
 
 $IMPORT cpan:Text::Balanced
 $IMPORT svn:http://svn.jifty.org/svn/jifty.org/Test-WWW-Declare --name Test-WWW-Declare
@@ -16,7 +26,6 @@ $IMPORT svn:http://svn.jifty.org/svn/jifty.org/jifty/trunk --name Jifty
 $IMPORT svn://svn.bestpractical.com/Lorzy/trunk --name Lorzy
 
 echo 'install: cp -rf * %%INSTALL_BASE%%' > /tmp/shipwright_rt_build
-#$IMPORT dir:///Users/sunnavy/bps/rt4 --name RT --build-script /tmp/shipwright_rt_build
 $IMPORT svn://svn.bestpractical.com/rt/3.999/trunk --name RT --build-script /tmp/shipwright_rt_build
 
 # newer Text-Balanced requires version.pm, which is not in core, so we need
@@ -24,6 +33,10 @@ $IMPORT svn://svn.bestpractical.com/rt/3.999/trunk --name RT --build-script /tmp
 shipwright update -r $SVN_PATH cpan-Data-Dump-Streamer --add-deps cpan-Text-Balanced
 shipwright update -r $SVN_PATH cpan-Text-Balanced --add-deps cpan-version
 shipwright update -r $SVN_PATH Jifty --add-deps Jifty-DBI,Test-WWW-Declare
+
+shipwright update -r $SVN_PATH cpan-GD --add-deps gd
+shipwright update -r $SVN_PATH gd --add-deps libpng
+shipwright update -r $SVN_PATH libpng --add-deps zlib
 shipwright maintain -r $SVN_PATH --update-order
 
 # set known test failures
