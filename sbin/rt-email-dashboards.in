@@ -86,6 +86,7 @@ use HTML::RewriteAttributes::Resources;
 use HTML::RewriteAttributes::Links;
 use MIME::Types;
 use POSIX 'tzset';
+use File::Temp 'tempdir';
 
 # Clean out all the nasties from the environment
 CleanEnv();
@@ -370,14 +371,13 @@ sub get_from {
 
             # user may not have permissions on the data directory, so create a
             # new one
-            require File::Temp;
-            $data_dir = File::Temp->newdir;
+            $data_dir = tempdir(CLEANUP => 1);
 
             $mason = HTML::Mason::Interp->new(
                 RT::Interface::Web::Handler->DefaultHandlerArgs,
                 out_method => \$outbuf,
                 autohandler_name => '', # disable forced login and more
-                data_dir => "$data_dir", # stringify since Mason doesn't
+                data_dir => $data_dir,
             );
         }
         return $mason;
