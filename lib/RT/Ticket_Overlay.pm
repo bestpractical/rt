@@ -279,7 +279,7 @@ sub Create {
         $QueueObj->Load( $args{'Queue'} );
     }
     else {
-        $RT::Logger->debug( $args{'Queue'} . " not a recognised queue object." );
+        $RT::Logger->debug("'". ( $args{'Queue'} ||''). "' not a recognised queue object." );
     }
 
     #Can't create a ticket without a queue.
