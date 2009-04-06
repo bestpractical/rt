@@ -128,7 +128,7 @@ our %FIELD_METADATA = (
     LastUpdated    => [ 'DATE'         => 'last_updated', ],    #loc_left_pair
     Created         => [ 'DATE'         => 'Created', ],        #loc_left_pair
     Subject         => [ 'STRING', ],                           #loc_left_pair
-    Content         => [ 'TRANSFIELD', ],                       #loc_left_pair
+    Content         => [ 'TRANSCONTENT', ],                     #loc_left_pair
     ContentType    => [ 'TRANSFIELD', ],                        #loc_left_pair
     Filename        => [ 'TRANSFIELD', ],                       #loc_left_pair
     TransactionDate => [ 'TRANSDATE', ],                        #loc_left_pair
@@ -166,6 +166,7 @@ our %dispatch = (
     DATE            => \&_date_limit,
     STRING          => \&_string_limit,
     TRANSFIELD      => \&_trans_limit,
+    TRANSCONTENT    => \&_trans_content_limit,
     TRANSDATE       => \&_trans_date_limit,
     WATCHERFIELD    => \&_watcher_limit,
     MEMBERSHIPFIELD => \&_watcher_membership_limit,
