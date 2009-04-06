@@ -4,7 +4,7 @@ use warnings; use strict;
 use Test::MockTime qw(set_fixed_time restore_time);
 use RT::Test;
 
-use Test::More tests => 93;
+use Test::More tests => 94;
 
 use RT::Model::User;
 use Test::Warn;
@@ -218,6 +218,7 @@ my $current_user;
 {
     RT->config->set( TimeZone => 'Europe/Moscow' );
     my $date = RT::DateTime->new_from_string('2005-11-28 15:10:00');
+    is($date->time_zone->name, 'Europe/Moscow');
     is($date->iso, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 
     $date = RT::DateTime->new_from_string('2005-11-28 15:10:00', time_zone => 'UTC' );
