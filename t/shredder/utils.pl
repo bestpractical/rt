@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use File::Spec;
-use File::Temp ();
+use File::Temp 0.19 ();
 require File::Path;
 require File::Copy;
 require Cwd;
