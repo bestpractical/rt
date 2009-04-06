@@ -76,7 +76,6 @@ my $subtabs = {
     },
 };
 
-my $scrip = RT::Scrip->new( $session{'CurrentUser'} );
 ($id, my @results) = $m->comp( '/Admin/Elements/EditScrip:Process', %ARGS );
 
 if ( $id ) {
