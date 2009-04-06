@@ -305,5 +305,35 @@ sub items_array_ref {
     return $self->items_order_by( $self->SUPER::items_array_ref() );
 }
 
+sub clean_slate {
+    my $self = shift;
+    $self->{'_sql_aliases'} = {};
+    return $self->SUPER::clean_slate(@_);
+}
+
+sub join_transactions {
+    my $self = shift;
+    my %args = ( new => 0, @_ );
+
+    return $self->{'_sql_aliases'}{'transactions'}
+        if !$args{'new'} && $self->{'_sql_aliases'}{'transactions'};
+
+    my $alias = $self->join(
+        alias1  => 'main',
+        column1 => 'id',
+        table2  => RT::Model::TransactionCollection->new,
+        column2 => 'object_id',
+    );
+    $self->limit(
+        leftjoin => $alias,
+        alias    => $alias,
+        column   => 'object_type',
+        value    => ref $self->new_item,
+    );
+    $self->{'_sql_aliases'}{'transactions'} = $alias
+        unless $args{'new'};
+
+    return $alias;
+}
 
 1;
