@@ -20,6 +20,9 @@ clean: %%MAKE%% clean
 
 $IMPORT http://www.libgd.org/releases/gd-2.0.35.tar.gz --build-script=/tmp/shipwright_gd_build
 
+# import graphviz
+$IMPORT http://www.graphviz.org/pub/graphviz/stable/SOURCES/graphviz-2.22.2.tar.gz
+
 # import mysql and Pg
 echo 'configure: ./configure --prefix=%%INSTALL_BASE%% --without-server --without-docs --without-man
 make: %%MAKE%%
@@ -59,6 +62,7 @@ shipwright update -r $SVN_PATH cpan-DBD-Pg --add-deps postgresql,cpan-DBI
 shipwright update -r $SVN_PATH cpan-GD --add-deps gd
 shipwright update -r $SVN_PATH gd --add-deps libpng
 shipwright update -r $SVN_PATH libpng --add-deps zlib
+shipwright update -r $SVN_PATH cpan-GraphViz --add-deps graphviz
 shipwright maintain -r $SVN_PATH --update-order
 
 shipwright flags -r $SVN_PATH mysql --add mysql
