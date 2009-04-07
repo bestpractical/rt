@@ -233,7 +233,6 @@ Regexp::Common
 Scalar::Util
 Module::Versions::Report 1.05
 Cache::Simple::TimedExpiry
-UNIVERSAL::require
 Calendar::Simple
 Encode 2.13
 CSS::Squish 0.06
