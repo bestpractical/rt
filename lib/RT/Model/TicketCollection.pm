@@ -595,14 +595,14 @@ Meta Data:
 
 # This routine should really be factored into translimit.
 sub _trans_date_limit {
-    my ( $sb, $field, $op, $value, @rest ) = @_;
+    my ( $self, $field, $op, $value, @rest ) = @_;
 
     # See the comments for TransLimit, they apply here too
     my $txn_alias = $self->join_transactions;
 
     my $date = RT::DateTime->new_from_string($value);
 
-    $sb->open_paren;
+    $self->open_paren;
     if ( $op eq "=" ) {
 
         # if we're specifying =, that means we want everything on a
@@ -613,7 +613,7 @@ sub _trans_date_limit {
         my $daystart = $date->iso;
         my $dayend = $date->add(days => 1)->iso;
 
-        $sb->_sql_limit(
+        $self->_sql_limit(
             alias          => $txn_alias,
             column         => 'created',
             operator       => ">=",
@@ -621,7 +621,7 @@ sub _trans_date_limit {
             case_sensitive => 0,
             @rest
         );
-        $sb->_sql_limit(
+        $self->_sql_limit(
             alias          => $txn_alias,
             column         => 'created',
             operator       => "<=",
@@ -637,7 +637,7 @@ sub _trans_date_limit {
     else {
 
         #Search for the right field
-        $sb->_sql_limit(
+        $self->_sql_limit(
             alias          => $txn_alias,
             column         => 'created',
             operator       => $op,
@@ -647,7 +647,7 @@ sub _trans_date_limit {
         );
     }
 
-    $sb->close_paren;
+    $self->close_paren;
 }
 
 =head2 _trans_limit
@@ -718,20 +718,20 @@ sub _trans_limit {
 
 =head2 _trans_content_limit
 
-Limit based on the content of a transaction or the content_type.
-
-Meta Data:
-  none
+Limit based on the content of a transaction.
 
 =cut
 
 sub _trans_content_limit {
     my ( $self, $field, $op, $value, @rest ) = @_;
 
+    my $config = RT->config->get('FullTextSearch') || {};
+    return unless $config->{'Enable'};
+
     my $txn_alias = $self->join_transactions;
     unless ( defined $self->{'_sql_aliases'}{'attachments'} ) {
         $self->{'_sql_aliases'}{'attachments'} = $self->_sql_join(
-            type    => 'left',                                 # not all txns have an attachment
+            type    => 'left',
             alias1  => $txn_alias,
             column1 => 'id',
             table2  => RT::Model::AttachmentCollection->new,
@@ -741,23 +741,43 @@ sub _trans_content_limit {
 
     $self->open_paren;
 
-    my $sphinx = RT->config->get('DatabaseType') eq 'mysql'? RT->config->get('MysqlSphinx') : {};
-    if ( $sphinx->{'Enable'} && lc($field) eq 'content' ) {
-        $self->{_sql_sphinxalias} ||= $self->_sql_join(
-            type    => 'left',                                 # not all txns have an attachment
-            alias1  => $self->{'_sql_aliases'}{'attachments'},
-            column1 => 'id',
-            table2  => $sphinx->{'Table'},
-            column2 => 'id',
-        );
-        $self->_sql_limit(
-            alias            => $self->{_sql_sphinxalias},
-            column           => 'query',
-            operator         => '=',
-            value            => $value,
-            case_sensitive   => 0,
-            @rest
-        );
+    if ( $config->{'Indexed'} ) {
+        my $db_type = RT->config->get('DatabaseType');
+        my $alias;
+        if ( $config->{'Table'} ) {
+            $alias = $self->{'_sql_aliases'}{'full_text'} ||= $self->_sql_join(
+                type    => 'left',
+                alias1  => $self->{'_sql_aliases'}{'attachments'},
+                column1 => 'id',
+                table2  => $config->{'Table'},
+                column2 => 'id',
+            );
+        } else {
+            $alias = $self->{'_sql_aliases'}{'attachments'};
+        }
+        if ( $db_type eq 'mysql' ) {
+            $self->_sql_limit(
+                alias            => $alias,
+                column           => $config->{'Column'},
+                operator         => '=',
+                value            => $value,
+                @rest
+            );
+        }
+        elsif ( $db_type eq 'Pg' ) {
+            my $dbh = $self->_handle->dbh;
+            $self->_sql_limit(
+                alias       => $alias,
+                column      => $config->{'Column'} || 'content_tsvector',
+                operator    => '@@',
+                value       => 'plainto_tsquery('. $dbh->quote($value) .')',
+                quote_value => 0,
+                @rest
+            );
+        }
+        else {
+            die "Indexed full text search is not supported for $db_type";
+        }
     } else {
         $self->_sql_limit(
             alias            => $self->{'_sql_aliases'}{'attachments'},
@@ -769,9 +789,7 @@ sub _trans_content_limit {
         );
     }
 
-    if ( lc($field) eq 'content'
-        and RT->config->get('DontSearchFileAttachments') )
-    {
+    if ( RT->config->get('DontSearchFileAttachments') ) {
         $self->_sql_limit(
             alias            => $self->{'_sql_aliases'}{'attachments'},
             column           => 'filename',
