@@ -151,7 +151,16 @@ sub email_digest_like {
     my $pattern = shift;
 
     my $perl = $^X . ' ' . join ' ', map { "-I$_" } grep { not ref } @INC;
-    open my $digester, "-|", "$perl $RT::SbinPath/rt-email-digest $arg";
+    my $rt_email_digest;
+
+# to get around shipwright vessel 
+    if (  -e "$RT::SbinPath-wrapped/rt-email-digest" ) {
+        $rt_email_digest = "$RT::SbinPath-wrapped/rt-email-digest";
+    }
+    else { 
+        $rt_email_digest = "$RT::SbinPath/rt-email-digest";
+    }
+    open my $digester, "-|", "$perl $rt_email_digest $arg";
     my @results = <$digester>;
     my $content = join '', @results;
     if ( ref $pattern && ref $pattern eq 'Regexp' ) {
