@@ -65,10 +65,19 @@ sub Commit {    # XXX: from custom prepare code
     my $self = shift;
     if ( my ($rejected) =
         $self->TicketObj->AllDependedOnBy( Type => 'ticket' ) ) {
+        my $note = '';
+        if ( RT->Config->Get('ApprovalRejectionNotes') ) {
+            my $t = $self->TicketObj->Transactions;
+            while ( my $o = $t->Next ) {
+                next unless $o->Type eq 'Correspond';
+                $note .= $o->Content . "\n" if $o->ContentObj;
+            }
+        }
+
         my $template = $self->GetTemplate('Approval Rejected',
                                           TicketObj => $rejected,
                                           Approval  => $self->TicketObj,
-                                          Notes     => '');
+                                          Notes     => $note);
 
         $rejected->Correspond( MIMEObj => $template->MIMEObj );
         $rejected->SetStatus(

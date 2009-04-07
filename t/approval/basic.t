@@ -8,7 +8,7 @@ BEGIN {
         or plan skip_all => 'require Email::Abstract and Test::Email';
 }
 
-plan tests => 38;
+plan tests => 39;
 
 use RT;
 use RT::Test;
@@ -202,8 +202,8 @@ mail_ok {
     );
     RT::I18N::SetMIMEEntityToUTF8($notes); # convert text parts into utf-8
 
-#    my ( $notesval, $notesmsg ) = $dependson_cfo->Correspond( MIMEObj => $notes );
-#    ok($notesval, $notesmsg);
+    my ( $notesval, $notesmsg ) = $dependson_cfo->Correspond( MIMEObj => $notes );
+    ok($notesval, $notesmsg);
 
     my ($ok, $msg) = $dependson_cfo->SetStatus( Status => 'rejected' );
     ok($ok, "cfo can approve - $msg");
@@ -211,7 +211,7 @@ mail_ok {
 } { from => qr/RT System/,
     to => 'minion@company.com',
     subject => qr/Ticket Rejected: PO for stationary/,
-    body => qr/rejected by CFO/
+    body => qr/rejected by CFO.*out of resources/s,
 };
 
 $t->Load($t->id);$dependson_ceo->Load($dependson_ceo->id);
