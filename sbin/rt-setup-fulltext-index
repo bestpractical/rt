@@ -1,0 +1,210 @@
+#!/usr/bin/env perl
+# BEGIN BPS TAGGED BLOCK {{{
+# 
+# COPYRIGHT:
+# 
+# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
+#                                          <jesse@bestpractical.com>
+# 
+# (Except where explicitly superseded by other copyright notices)
+# 
+# 
+# LICENSE:
+# 
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+# 
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+# 
+# 
+# CONTRIBUTION SUBMISSION POLICY:
+# 
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+# 
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+# 
+# END BPS TAGGED BLOCK }}}
+use strict;
+use warnings;
+
+use RT;
+BEGIN {RT->init_jifty};
+use RT::Interface::CLI qw{ clean_env };
+
+use Getopt::Long;
+
+clean_env();
+RT::load_config();
+RT::init();
+
+no warnings 'once';
+
+# Read in the options
+my %opts;
+GetOptions( \%opts,
+    "help", "dryrun", "verbose", "debug"
+);
+
+if ($opts{'help'}) {
+    require Pod::Usage;
+    import Pod::Usage;
+    pod2usage(-message => "RT Email Dashboards\n", -verbose => 1);
+    exit 1;
+}
+
+# helper functions
+sub verbose  { print _(@_), "\n" if $opts{verbose} || $opts{verbose}; 1 }
+sub debug    { print _(@_), "\n" if $opts{debug}; 1 }
+sub error    { Jifty->log->error(_(@_)); verbose(@_); 1 }
+sub warning  { Jifty->log->warn(_(@_)); verbose(@_); 1 }
+
+
+my $db_type = RT->config->get('DatabaseType');
+if ( $db_type eq 'mysql' ) {
+    my $dbh = Jifty->handle->dbh;
+    
+    my $sphinx = ($dbh->selectrow_array("show variables like 'have_sphinx'"))[1];
+    unless ( lc $sphinx eq 'yes' ) {
+        print STDERR "Mysql server you have compiled without sphinx storage engine (sphinxse).\n";
+        print STDERR "Either use system packages with sphinxse, binaries from Sphinx site
+                      or compile mysql according to instructions in Sphinx's docs.\n";
+        exit 1;
+    }
+
+    my $table = prompt(
+        message => 'Enter name of a DB table that will be used to connect to the sphinx server',
+        default => 'AttachmentsSphinx',
+    );
+    my $url = prompt(
+        message => 'Enter URL of the sphinx search server, it should be sphinx://<server>:<port>/<index name>',
+        default => 'sphinx://localhost:3312/rt',
+    );
+    my $column = 'query';
+
+    my $schema = <<END;
+CREATE TABLE $table (
+    id     INTEGER NOT NULL,
+    weight INTEGER NOT NULL,
+    $column  VARCHAR(3072) NOT NULL,
+    INDEX($column)
+) ENGINE=SPHINX CONNECTION="$url"
+END
+
+    print <<END;
+Configure your RT via site config:
+set( %FullTextSearch,
+    Enable  => 1,
+    Indexed => 1,
+    Table   => '$table',
+    Column  => '$column',
+);
+
+END
+    print "Going to create the table in the DB\n";
+    my $res = $dbh->do( $schema );
+    unless ( $res ) {
+        die "Couldn't create the table: ". $dbh->errstr;
+    }
+}
+elsif ( $db_type eq 'Pg' ) {
+    my $dbh = Jifty->handle->dbh;
+    
+    my $table = prompt(
+        message    => 'Enter name of a DB table that will be used to connect to the sphinx server',
+        default => 'AttachmentsIndex',
+    );
+    my $column = 'content_tsv';
+
+    my $schema = <<END;
+CREATE TABLE $table (
+    id      INTEGER NOT NULL,
+    $column tsvector
+)
+END
+
+    print <<END;
+Configure your RT via site config:
+set( %FullTextSearch,
+    Enable  => 1,
+    Indexed => 1,
+    Table   => '$table',
+    Column  => '$column',
+);
+END
+
+    print "Going to create the table in the DB\n";
+    my $res = $dbh->do( $schema );
+    unless ( $res ) {
+        die "Couldn't create the table: ". $dbh->errstr;
+    }
+
+    print <<END;
+Now you have to create an index on the column. You have choice
+between GiST or GIN, the first is times slower to search, but
+it takes less place and faster to update. Anyway, both are faster
+then searches without them.
+
+Either run:
+
+    CREATE INDEX ${column}_idx ON $table USING gin($column);
+
+or
+
+    CREATE INDEX ${column}_idx ON $table USING gist($column);
+
+END
+}
+else {
+    die "Not yet supported"; 
+}
+
+sub prompt {
+    my %args = @_;
+
+    local $| = 1;
+    print $args{'message'};
+    if ( $args{'default'} ) {
+        print "\n[". $args{'default'} .']: ';
+    } else {
+        print ":\n";
+    }
+
+    my $res = <STDIN>;
+    chomp $res;
+    return $args{'default'} if !$res && $args{'default'};
+    return $res;
+}
+
+=head1 NAME
+
+rt-setup-fulltext-index - Helps create indexes for full text search
+
+=head1 SYNOPSIS
+
+    /opt/rt3/local/sbin/rt-setup-fulltext-index
+
+=head1 DESCRIPTION
+
+=cut
