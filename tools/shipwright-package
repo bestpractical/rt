@@ -80,9 +80,11 @@ shipwright ktf -r $SVN_PATH cpan-Storable --set 1
 shipwright ktf -r $SVN_PATH cpan-DBD-mysql --set 1
 shipwright ktf -r $SVN_PATH cpan-DBD-Pg --set 1
 
+echo 'RT: %%INSTALL_BASE%%/bin/prove -I%%INSTALL_BASE%%/lib -r %%INSTALL_BASE%%/t' > /tmp/shipwright_test
+shipwright import -r $SVN_PATH --test-script /tmp/shipwright_test
+
 cd /tmp
 rm -rf rtex-$$
 svn export file://$REPO /tmp/rtex-$$
 #rsync -rvp /tmp/rtex/ jesse@fsck.com:/tmp/rtex-$$
-echo "cd /tmp/rtex-$$; ./bin/shipwright-builder "
-
+echo "cd /tmp/rtex-$$; ./bin/shipwright-builder; ./bin/shipwright-builder --only-test" 
