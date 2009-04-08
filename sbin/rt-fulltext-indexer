@@ -1,0 +1,178 @@
+#!/usr/bin/env perl
+# BEGIN BPS TAGGED BLOCK {{{
+# 
+# COPYRIGHT:
+# 
+# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
+#                                          <jesse@bestpractical.com>
+# 
+# (Except where explicitly superseded by other copyright notices)
+# 
+# 
+# LICENSE:
+# 
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+# 
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+# 
+# 
+# CONTRIBUTION SUBMISSION POLICY:
+# 
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+# 
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+# 
+# END BPS TAGGED BLOCK }}}
+use strict;
+use warnings;
+
+use RT;
+BEGIN {RT->init_jifty};
+use RT::Interface::CLI qw{ clean_env };
+
+use Getopt::Long;
+
+clean_env();
+RT::load_config();
+RT::init();
+
+no warnings 'once';
+
+# Read in the options
+my %opts;
+GetOptions( \%opts, 'help', 'limit', 'skip' );
+if ( $opts{'help'} ) {
+    require Pod::Usage;
+    import Pod::Usage;
+    pod2usage(-message => "RT Email Dashboards\n", -verbose => 1);
+    exit 1;
+}
+
+my $fts_config = RT->config->get('FullTextSearch') || {};
+unless ( $fts_config->{'Enable'} ) {
+    print STDERR "Full text search disabled in the RT config."
+        ." Read documentation for %FullTextSearch config option.";
+    exit 1;
+}
+unless ( $fts_config->{'Indexed'} ) {
+    print STDERR "Full text search is enabled in the RT config,"
+        ." however full text search works without special index,"
+        ." so this tool is not required."
+        ." Read documentation for %FullTextSearch config option.";
+    exit 1;
+}
+
+my $db_type = RT->config->get('DatabaseType');
+
+
+sub last_indexed {
+    my ($type) = (@_);
+    return goto_specific(
+        $db_type,
+        "Don't know how to find last indexed $type attachment for $db_type DB",
+        @_
+    );
+}
+
+sub last_indexed_mysql {
+    my $type = shift;
+    my $attr = RT->system->first_attribute('LastIndexedAttachments');
+    return 0 unless $attr;
+    return 0 unless exists $attr->{ $type };
+    return $attr->{ $type } || 0;
+}
+
+sub last_indexed_pg {
+    my $type = shift;
+    my $attachments = attachments( $type );
+    my $alias = 'main';
+    if ( $fts_config->{'Table'} ) {
+        $alias = $attachments->join(
+            type    => 'left',
+            column1 => 'id',
+            table2  => $fts_config->{'Table'},
+            column2 => 'id',
+        );
+    }
+    $attachments->limit( alias => $alias, column => $fts_config->{'Column'}, operator => 'IS NOT', value => 'NULL' );
+    $attachments->order_by( column => 'id', order => 'desc' );
+    my $res = $attachments->first;
+    return 0 unless $res;
+    return $res->id;
+}
+
+sub attachments {
+    my $type = shift;
+    my $res = RT::Model::AttachmentCollection->new( current_user => RT->system_user );
+    return goto_specific(
+        $type,
+        "Don't know how to find $type attachments",
+        $res,
+    );
+}
+
+sub attachments_text {
+    my $res = shift;
+
+
+
+    return $res;
+}
+
+sub attachments_html {
+}
+
+sub goto_specific {
+    my $suffix = shift;
+    my $msg = shift;
+    my $func = (caller(1))[3];
+    $func =~ s/.*:://;
+    my $call = $func ."_". lc $suffix;
+    die $msg unless defined &$call;
+    goto &$call;
+}
+
+
+# helper functions
+sub verbose  { print _(@_), "\n" if $opts{verbose} || $opts{verbose}; 1 }
+sub debug    { print _(@_), "\n" if $opts{debug}; 1 }
+sub error    { Jifty->log->error(_(@_)); verbose(@_); 1 }
+sub warning  { Jifty->log->warn(_(@_)); verbose(@_); 1 }
+
+=head1 NAME
+
+rt-fulltext-indexer - Indexer for full text search
+
+=head1 SYNOPSIS
+
+    /opt/rt3/local/sbin/rt-fulltext-indexer --help
+
+    /opt/rt3/local/sbin/rt-fulltext-indexer --limit 100
+
+=head1 DESCRIPTION
+
+=cut
+
