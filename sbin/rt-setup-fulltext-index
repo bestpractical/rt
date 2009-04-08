@@ -63,9 +63,7 @@ no warnings 'once';
 
 # Read in the options
 my %opts;
-GetOptions( \%opts,
-    "help", "dryrun", "verbose", "debug"
-);
+GetOptions( \%opts, "help", "dryrun" );
 
 if ($opts{'help'}) {
     require Pod::Usage;
@@ -79,6 +77,11 @@ sub verbose  { print _(@_), "\n" if $opts{verbose} || $opts{verbose}; 1 }
 sub debug    { print _(@_), "\n" if $opts{debug}; 1 }
 sub error    { Jifty->log->error(_(@_)); verbose(@_); 1 }
 sub warning  { Jifty->log->warn(_(@_)); verbose(@_); 1 }
+
+my %default = (
+    Table  => 'AttachmentsIndex',
+    Column => 'fts_index',
+);
 
 
 my $db_type = RT->config->get('DatabaseType');
@@ -95,38 +98,82 @@ if ( $db_type eq 'mysql' ) {
 
     my $table = prompt(
         message => 'Enter name of a DB table that will be used to connect to the sphinx server',
-        default => 'AttachmentsSphinx',
+        default => $default{'Column'},
     );
     my $url = prompt(
-        message => 'Enter URL of the sphinx search server, it should be sphinx://<server>:<port>/<index name>',
+        message => 'Enter URL of the sphinx search server, it should be sphinx://<server>:<port>/<index name>. Simple config for this sphinx instance will be generated for you.',
         default => 'sphinx://localhost:3312/rt',
     );
-    my $column = 'query';
 
     my $schema = <<END;
 CREATE TABLE $table (
     id     INTEGER NOT NULL,
     weight INTEGER NOT NULL,
-    $column  VARCHAR(3072) NOT NULL,
-    INDEX($column)
+    $default{'Column'}  VARCHAR(3072) NOT NULL,
+    INDEX($default{'Column'})
 ) ENGINE=SPHINX CONNECTION="$url"
 END
 
-    print <<END;
-Configure your RT via site config:
-set( %FullTextSearch,
-    Enable  => 1,
-    Indexed => 1,
-    Table   => '$table',
-    Column  => '$column',
-);
+    print_rt_config( Table => $table, Column => $default{'Column'} );
+    insert_schema( $schema );
+
+    require URI;
+    my $urlo = URI−>new( $url );
+    my $host  = $urlo->host;
+    my $port  = $urlo->port;
+    my $index = $urlo->path;
+
+    my %sphinx_conf = ();
+    $sphinx_conf{'host'} = RT->config->get('DatabaseHost');
+    $sphinx_conf{'db'}   = RT->config->get('DatabaseName');
+    $sphinx_conf{'user'} = RT->config->get('DatabaseUser');
+    $sphinx_conf{'pass'} = RT->config->get('DatabasePassword');
+
+    print "Here is simple sphinx config, you can use it to index text/plain attachments in your DB."
+        ." This config is not ideal. You should read Sphinx docs to get better ideas.";
+    print <<END
+
+source rt {
+    type            = mysql
+
+    sql_host        = $sphinx_conf{'host'}
+    sql_db          = $sphinx_conf{'db'}
+    sql_user        = $sphinx_conf{'user'}
+    sql_pass        = $sphinx_conf{'pass'}
+
+    sql_query       = \
+        SELECT id, content FROM Attachments \
+        WHERE content_type = 'text/plain'
+
+    sql_query_info  = SELECT * FROM Attachments WHERE id=$id
+}
+
+index $index {
+    source                  = rt
+    path                    = $RT::VarPath/sphinx/index
+    docinfo                 = extern
+    charset_type            = utf-8
+}
+
+indexer {
+    mem_limit               = 32M
+}
+
+searchd {
+    port                    = $port
+    log                     = $RT::VarPath/sphinx/searchd.log
+    query_log               = $RT::VarPath/sphinx/query.log
+    read_timeout            = 5
+    max_children            = 30
+    pid_file                = $RT::VarPath/sphinx/searchd.pid
+    max_matches             = 1000
+    seamless_rotate         = 1
+    preopen_indexes         = 0
+    unlink_old              = 1
+}
 
 END
-    print "Going to create the table in the DB\n";
-    my $res = $dbh->do( $schema );
-    unless ( $res ) {
-        die "Couldn't create the table: ". $dbh->errstr;
-    }
+
 }
 elsif ( $db_type eq 'Pg' ) {
     my $dbh = Jifty->handle->dbh;
@@ -135,30 +182,17 @@ elsif ( $db_type eq 'Pg' ) {
         message    => 'Enter name of a DB table that will be used to connect to the sphinx server',
         default => 'AttachmentsIndex',
     );
-    my $column = 'content_tsv';
 
     my $schema = <<END;
 CREATE TABLE $table (
     id      INTEGER NOT NULL,
-    $column tsvector
+    $default{'Column'} tsvector
 )
 END
 
-    print <<END;
-Configure your RT via site config:
-set( %FullTextSearch,
-    Enable  => 1,
-    Indexed => 1,
-    Table   => '$table',
-    Column  => '$column',
-);
-END
+    print_rt_config( Table => $table, Column => $default{'Column'} );
 
-    print "Going to create the table in the DB\n";
-    my $res = $dbh->do( $schema );
-    unless ( $res ) {
-        die "Couldn't create the table: ". $dbh->errstr;
-    }
+    insert_schema( $schema );
 
     print <<END;
 Now you have to create an index on the column. You have choice
@@ -168,11 +202,11 @@ then searches without them.
 
 Either run:
 
-    CREATE INDEX ${column}_idx ON $table USING gin($column);
+    CREATE INDEX ${column}_idx ON $table USING gin($default{'Column'});
 
 or
 
-    CREATE INDEX ${column}_idx ON $table USING gist($column);
+    CREATE INDEX ${column}_idx ON $table USING gist($default{'Column'});
 
 END
 }
@@ -195,6 +229,34 @@ sub prompt {
     chomp $res;
     return $args{'default'} if !$res && $args{'default'};
     return $res;
+}
+
+sub print_rt_config {
+    my %args = @_;
+
+    print <<END;
+
+Configure your RT via site config:
+set( %FullTextSearch,
+    Enable  => 1,
+    Indexed => 1,
+    Table   => '$args{'Table'}',
+    Column  => '$args{'Column'}',
+);
+END
+
+}
+
+sub insert_schema {
+    my $schema = shift;
+    print "Going to do the following change in the DB:\n";
+    print $schema;
+    return if $opts{'dryrun'};
+
+    my $res = $dbh->do( $schema );
+    unless ( $res ) {
+        die "Couldn't create the table: ". $dbh->errstr;
+    }
 }
 
 =head1 NAME
