@@ -755,10 +755,11 @@ sub _trans_content_limit {
         } else {
             $alias = $self->{'_sql_aliases'}{'attachments'};
         }
+        my $column = $config->{'Column'} || 'fts_index';
         if ( $db_type eq 'mysql' ) {
             $self->_sql_limit(
                 alias            => $alias,
-                column           => $config->{'Column'},
+                column           => $column,
                 operator         => '=',
                 value            => $value,
                 @rest
@@ -766,9 +767,10 @@ sub _trans_content_limit {
         }
         elsif ( $db_type eq 'Pg' ) {
             my $dbh = $self->_handle->dbh;
+            #XXX: handle negative searches
             $self->_sql_limit(
                 alias       => $alias,
-                column      => $config->{'Column'} || 'content_tsvector',
+                column      => $column,
                 operator    => '@@',
                 value       => 'plainto_tsquery('. $dbh->quote($value) .')',
                 quote_value => 0,
