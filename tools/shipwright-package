@@ -79,6 +79,10 @@ shipwright ktf -r $SVN_PATH cpan-Storable --set 1
 # DBD-... will try to connect server, which may result in test failure
 shipwright ktf -r $SVN_PATH cpan-DBD-mysql --set 1
 shipwright ktf -r $SVN_PATH cpan-DBD-Pg --set 1
+shipwright ktf -r $SVN_PATH cpan-PAR-Dist --set 1
+shipwright ktf -r $SVN_PATH cpan-WWW-Mechanize --set 1
+shipwright ktf -r $SVN_PATH cpan-Test-WWW-Mechanize --set 1
+shipwright ktf -r $SVN_PATH cpan-MIME-tools --set 1
 
 echo 'RT: cd %%INSTALL_BASE%% && PERL5LIB=lib:lib/perl5 bin/prove -r t' > /tmp/shipwright_test
 shipwright import -r $SVN_PATH --test-script /tmp/shipwright_test
