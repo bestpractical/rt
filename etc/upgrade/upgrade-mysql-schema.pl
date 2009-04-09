@@ -223,14 +223,21 @@ convert_table($_) foreach @tables;
 print join "\n", map(/;$/? $_ : "$_;", @sql_commands), "";
 exit 0;
 
+my %alter_aggregator;
 sub convert_table {
     my $table = shift;
     push @sql_commands, qq{ALTER TABLE $table DEFAULT CHARACTER SET utf8};
+    @alter_aggregator{'char_to_binary','binary_to_char'} = ([],[]);
 
     my $sth = $dbh->column_info( undef, $db_name, $table, undef );
     $sth->execute;
     while ( my $info = $sth->fetchrow_hashref ) {
         convert_column(%$info);
+    }
+    for my $conversiontype (qw(char_to_binary binary_to_char)) {
+        next unless @{$alter_aggregator{$conversiontype}};
+        push @sql_commands, qq{ALTER TABLE $table\n   }.
+            join(",\n   ",@{$alter_aggregator{$conversiontype}});
     }
 }
 
@@ -254,12 +261,12 @@ sub convert_column {
     return if $required_charset eq $current_charset;
 
     if ( $required_charset eq 'binary' ) {
-        push @sql_commands, char_to_binary(%info);
+        char_to_binary(%info);
     }
     elsif ( $current_charset eq 'binary' ) {
-        push @sql_commands, binary_to_char( $required_charset, %info);
+        binary_to_char( $required_charset, %info);
     } else {
-        push @sql_commands, char_to_char( $required_charset, %info);
+        char_to_char( $required_charset, %info);
     }
 }
 
@@ -269,8 +276,9 @@ sub char_to_binary {
     my $table = $info{'TABLE_NAME'};
     my $column = $info{'COLUMN_NAME'};
     my $new_type = calc_suitable_binary_type(%info);
+    push @{$alter_aggregator{char_to_binary}},
+        "MODIFY $column $new_type ".build_column_definition(%info);
 
-    return "ALTER TABLE $table MODIFY $column ". $new_type ." ". build_column_definition(%info);
 }
 
 sub binary_to_char {
@@ -286,8 +294,8 @@ sub binary_to_char {
         $new_type =~ s/blob/text/;
     }
 
-    return "ALTER TABLE $table MODIFY $column ". uc($new_type)
-        ." CHARACTER SET ". $charset
+    push @{$alter_aggregator{binary_to_char}},
+        "MODIFY $column ". uc($new_type) ." CHARACTER SET ". $charset
         ." ". build_column_definition(%info);
 }
 
@@ -298,10 +306,10 @@ sub char_to_char {
     my $column = $info{'COLUMN_NAME'};
     my $new_type = $info{'mysql_type_name'};
 
-    return char_to_binary(%info),
-        "ALTER TABLE $table MODIFY $column ". uc($new_type)
-            ." CHARACTER SET ". $charset
-            ." ". build_column_definition(%info);
+    char_to_binary(%info);
+    push @{$alter_aggregator{binary_to_char}},
+        "MODIFY $column ". uc($new_type)." CHARACTER SET ". $charset
+        ." ". build_column_definition(%info);
 }
 
 sub calc_suitable_binary_type {
