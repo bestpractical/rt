@@ -4,6 +4,7 @@ name        'RT';
 version     '3.999_01';
 license     'GPLv2';
 requires    'Jifty' => '0.80913';
+test_requires 'Test::MockTime';
 
 requires(
     'Digest::base' => 0,
