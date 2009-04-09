@@ -243,7 +243,7 @@ sub convert_column {
 
     my $required_charset = $charset{$table}{$column};
     unless ( $required_charset ) {
-        print STDERR join(".", @info{'TABLE_SCHEM', 'TABLE_NAME', 'COLUMN_NAME'})
+        print STDERR join(".", @info{'TABLE_SCHEMA', 'TABLE_NAME', 'COLUMN_NAME'})
             ." has type $type however mapping is missing.\n";
         return;
     }
