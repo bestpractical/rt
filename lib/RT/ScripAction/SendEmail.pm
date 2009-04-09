@@ -480,7 +480,7 @@ sub add_ticket {
 
     # XXX: we need a current user here, but who is current user?
     my $attachs = RT::Model::AttachmentCollection->new( current_user => RT->system_user );
-    my $txn_alias = $attachs->transaction_alias;
+    my $txn_alias = $attachs->join_transactions;
     $attachs->limit(
         alias  => $txn_alias,
         column => 'type',
