@@ -98,7 +98,7 @@ sub set_resolvers { return 1 }
 
 =head2 fetch_next $collection [, $init]
 
-Returns next object in collection as method L<RT::SearchBuilder/Next>, but
+Returns next object in collection as method L<RT::Collection/Next>, but
 doesn't stop on page boundaries.
 
 When method is called with true C<$init> arg it enables pages on collection

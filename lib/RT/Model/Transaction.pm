@@ -304,7 +304,6 @@ sub table {'Transactions'}
 use vars qw( %_brief_descriptions $Preferredcontent_type );
 
 use RT::Model::AttachmentCollection;
-use RT::Model::ScripCollection;
 use RT::Ruleset;
 
 
@@ -375,31 +374,18 @@ sub create {
     #Provide a way to turn off scrips if we need to
     Jifty->log->debug( 'About to think about scrips for transaction #' . $self->id );
     if ( $activate_scrips and $args{'object_type'} eq 'RT::Model::Ticket' ) {
-        $self->{'scrips'} = RT::Model::ScripCollection->new( current_user => RT->system_user );
-
-        Jifty->log->debug( 'About to prepare scrips for transaction #' . $self->id );
-        $self->{'scrips'}->prepare(
-            stage       => 'transaction_create',
-            type        => $args{'type'},
-            ticket      => $args{'object_id'},
-            transaction => $self->id,
-        );
-
         # Entry point of the rule system
-        my $ticket = RT::Model::Ticket->new( current_user => RT->system_user );
+        my $ticket = RT::Model::Ticket->new( current_user => RT::CurrentUser->superuser );
         $ticket->load( $args{'object_id'} );
-        my $rules = RT::Ruleset->find_all_rules(
+        $self->{'active_rules'} = RT::Ruleset->find_all_rules(
             stage          => 'transaction_create',
             type           => $args{'type'},
             ticket_obj      => $ticket,
             transaction_obj => $self,
         );
-        
         if ( $commit_scrips ) {
             Jifty->log->debug( 'About to commit scrips for transaction #' . $self->id );
-            $self->{'scrips'}->commit;
-            RT::Ruleset->commit_rules($rules);
-            
+            RT::Ruleset->commit_rules($self->{'active_rules'});
         } else {
             Jifty->log->debug( 'Skipping commit of scrips for transaction #' . $self->id );
         }
@@ -418,8 +404,14 @@ Scrips do not get persisted to the database with transactions.
 
 =cut
 
+sub rules {
+    my $self = shift;
+    return $self->{active_rules};
+}
+
 sub scrips {
     my $self = shift;
+    Carp::confess "obsoleted";
     return ( $self->{'scrips'} );
 }
 
@@ -560,7 +552,7 @@ sub content {
         }
 
         $content =~ s/^/> /gm;
-        $content = _( "On %1, %2 wrote:", $self->created, $self->creator_obj->name ) . "\n$content\n\n";
+        $content = _( "On %1, %2 wrote:", $self->created, $self->creator->name ) . "\n$content\n\n";
     }
 
     return ($content);
@@ -732,7 +724,7 @@ sub description {
         return ( _("No transaction type specified") );
     }
 
-    return _( "%1 by %2", $self->brief_description, $self->creator_obj->name );
+    return _( "%1 by %2", $self->brief_description, $self->creator->name );
 }
 
 
@@ -1000,9 +992,9 @@ Returns false otherwise
 sub is_inbound {
     my $self = shift;
     $self->object_type eq 'RT::Model::Ticket' or return undef;
-    return $self->ticket_obj->is_watcher(
-        type         => 'requestor',
-        principal_id => $self->creator_obj->principal_id,
+    return $self->ticket->is_watcher(
+        type      => 'requestor',
+        principal => $self->creator,
     );
 }
 
@@ -1098,7 +1090,7 @@ sub ticket {
 
 }
 
-sub ticket_obj {
+sub ticket {
     # XXX: too early for deprecation, a lot of usage
     #require Carp; Carp::confess("use object method instead and check type");
     my $self = shift;

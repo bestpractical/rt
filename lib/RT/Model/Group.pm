@@ -69,7 +69,7 @@ An RT group object.
 =cut
 
 use Jifty::DBI::Schema;
-use base qw/RT::IsPrincipal RT::Record/;
+use base qw/RT::IsPrincipal::HasMembers RT::Record/;
 
 use Jifty::DBI::Record schema {
     column name        => type is 'varchar(200)';
@@ -87,9 +87,9 @@ use RT::Model::GroupMemberCollection;
 use RT::Model::PrincipalCollection;
 use RT::Model::ACECollection;
 
-use vars qw/$RIGHTS/;
+use Scalar::Util qw(blessed);
 
-$RIGHTS = {
+our $RIGHTS = {
     AdminGroup           => 'Modify group metadata or delete group',                       # loc_pair
     AdminGroupMembership => 'Modify membership roster for this group',                     # loc_pair
     ModifyOwnMembership  => 'join or leave this group',                                    # loc_pair
@@ -141,10 +141,6 @@ sub self_description {
         return _( "user %1", $user->object->name );
     } elsif ( $self->domain eq 'UserDefined' ) {
         return _( "group '%1'", $self->name );
-    } elsif ( $self->domain eq 'Personal' ) {
-        my $user = RT::Model::User->new( current_user => $self->current_user );
-        $user->load( $self->instance );
-        return _( "personal group '%1' for user '%2'", $self->name, $user->name );
     } elsif ( $self->domain eq 'RT::System-Role' ) {
         return _( "system %1", $self->type );
     } elsif ( $self->domain eq 'RT::Model::Queue-Role' ) {
@@ -230,35 +226,9 @@ sub load_acl_equivalence {
 
     return $self->load_by_cols(
         domain   => 'ACLEquivalence',
-        type     => 'UserEquiv',
         instance => $principal,
     );
 }
-
-
-
-=head2 load_personal {name => name, User => USERID}
-
-Loads a personal group from the database. 
-
-=cut
-
-sub load_personal {
-    my $self = shift;
-    my %args = (
-        name => undef,
-        user => undef,
-        @_
-    );
-
-    $self->load_by_cols(
-        "domain"   => 'Personal',
-        "instance" => $args{'user'},
-        "type"     => '',
-        "name"     => $args{'name'}
-    );
-}
-
 
 =head2 load_system_internal name
 
@@ -434,7 +404,7 @@ sub create_user_defined {
 
 
 
-=head2 _createacl_equivalence_group { Principal }
+=head2 create_acl_equivalence { Principal }
 
 A helper subroutine which creates a group containing only 
 an individual user. This gets used by the ACL system to check rights.
@@ -444,7 +414,7 @@ Returns a tuple of (Id, Message).  If id is 0, the create failed
 
 =cut
 
-sub _createacl_equivalence_group {
+sub create_acl_equivalence {
     my $self  = shift;
     my $princ = shift;
     my ( $id, $msg ) = $self->_create(
@@ -477,52 +447,6 @@ sub _createacl_equivalence_group {
     }
     return ($id);
 }
-
-
-
-=head2 create_personal { principal_id => PRINCIPAL_ID, name => "name", description => "description"}
-
-A helper subroutine which creates a personal group.
-
-Returns a tuple of (Id, Message).  If id is 0, the create failed
-
-=cut
-
-sub create_personal {
-    my $self = shift;
-    my %args = (
-        name         => undef,
-        description  => undef,
-        principal_id => $self->current_user->id,
-        @_
-    );
-    if ( $self->current_user->id == $args{'principal_id'} ) {
-
-        unless ( $self->current_user_has_right('AdminOwnPersonalGroups') ) {
-            Jifty->log->warn( $self->current_user->name . " Tried to create a group without permission." );
-            return ( 0, _('Permission Denied') );
-        }
-
-    } else {
-        unless ( $self->current_user_has_right('AdminAllPersonalGroups') ) {
-            Jifty->log->warn( $self->current_user->name . " Tried to create a group without permission." );
-            return ( 0, _('Permission Denied') );
-        }
-
-    }
-
-    return (
-        $self->_create(
-            domain      => 'Personal',
-            type        => '',
-            instance    => $args{'principal_id'},
-            name        => $args{'name'},
-            description => $args{'description'}
-        )
-    );
-}
-
-
 
 =head2 create_role { object => OBJ, domain => DOMAIN, type => TYPE, instance => ID }
 
@@ -624,21 +548,11 @@ This routine finds all the cached group members that are members of this group  
 sub set_disabled {
     my $self = shift;
     my $val  = shift;
-    if ( $self->domain eq 'Personal' ) {
-        if ( $self->current_user->id == $self->instance ) {
-            unless ( $self->current_user_has_right('AdminOwnPersonalGroups') ) {
-                return ( 0, _('Permission Denied') );
-            }
-        } else {
-            unless ( $self->current_user_has_right('AdminAllPersonalGroups') ) {
-                return ( 0, _('Permission Denied') );
-            }
-        }
-    } else {
-        unless ( $self->current_user_has_right('AdminGroup') ) {
-            return ( 0, _('Permission Denied') );
-        }
+
+    unless ( $self->current_user_has_right('AdminGroup') ) {
+        return ( 0, _('Permission Denied') );
     }
+
     Jifty->handle->begin_transaction();
     $self->principal->set_disabled($val);
 
@@ -682,380 +596,6 @@ sub set_disabled {
 
 }
 
-=head2 members
-
-Returns either an L<RT::Model::GroupMemberCollection> or L<RT::Model::CachedGroupMemberCollection>
-object depending on 'recursively' argument of this group's members.
-
-=cut
-
-sub members {
-    my $self = shift;
-    my %args = ( recursively => 0, @_ );
-
-    my $class = $args{'recursively'}
-        ? 'RT::Model::CachedGroupMemberCollection'
-        : 'RT::Model::GroupMemberCollection';
-
-    #If we don't have rights, don't include any results
-    # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
-
-    my $res = $class->new( current_user => $self->current_user );
-    $res->limit_to_members_of_group( $self->id );
-
-    return $res;
-}
-
-
-=head2 group_members [recursively => 1]
-
-Returns an L<RT::Model::GroupCollection> object of this group's members.
-By default returns groups including all subgroups, but
-could be changed with C<recursively> named argument.
-
-B<Note> that groups are not filtered by type and result
-may contain as well system groups, personal and other.
-
-=cut
-
-sub group_members {
-    my $self = shift;
-    my %args = ( recursively => 1, @_ );
-
-    my $groups = RT::Model::GroupCollection->new( current_user => $self->current_user );
-    my $members_table = $args{'recursively'} ? 'CachedGroupMembers' : 'GroupMembers';
-
-    my $members_alias = $groups->new_alias($members_table);
-    $groups->join(
-        alias1  => $members_alias,
-        column1 => 'member_id',
-        alias2  => $groups->principals_alias,
-        column2 => 'id',
-    );
-    $groups->limit(
-        alias  => $members_alias,
-        column => 'group_id',
-        value  => $self->id,
-    );
-    $groups->limit(
-        alias  => $members_alias,
-        column => 'disabled',
-        value  => 0,
-    ) if $args{'recursively'};
-
-    return $groups;
-}
-
-
-=head2 user_members
-
-Returns an L<RT::Model::UserCollection> object of this group's members, by default
-returns users including all members of subgroups, but could be
-changed with C<recursively> named argument.
-
-=cut
-
-sub user_members {
-    my $self = shift;
-    my %args = ( recursively => 1, @_ );
-
-    #If we don't have rights, don't include any results
-    # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
-
-    my $members_table = $args{'recursively'} ? 'CachedGroupMembers' : 'GroupMembers';
-
-    my $users         = RT::Model::UserCollection->new( current_user => $self->current_user );
-    my $members_alias = $users->new_alias($members_table);
-    $users->join(
-        alias1  => $members_alias,
-        column1 => 'member_id',
-        alias2  => $users->principals_alias,
-        column2 => 'id',
-    );
-    $users->limit(
-        alias  => $members_alias,
-        column => 'group_id',
-        value  => $self->id,
-    );
-    $users->limit(
-        alias  => $members_alias,
-        column => 'disabled',
-        value  => 0,
-    ) if $args{'recursively'};
-
-    return ($users);
-}
-
-
-=head2 member_emails
-
-Returns an array of the email addresses of all of this group's members
-
-=cut
-
-sub member_emails {
-    my $self = shift;
-
-    my %addresses;
-    my $members = $self->user_members;
-    while ( my $member = $members->next ) {
-        $addresses{ $member->email } = 1;
-    }
-    return ( sort keys %addresses );
-}
-
-
-
-=head2 member_emails_as_string
-
-Returns a comma delimited string of the email addresses of all users 
-who are members of this group.
-
-=cut
-
-sub member_emails_as_string {
-    my $self = shift;
-    return ( join( ', ', $self->member_emails ) );
-}
-
-
-
-=head2 add_member PRINCIPAL_ID
-
-add_member adds a principal to this group.  It takes a single principal id.
-Returns a two value array. the first value is true on successful 
-addition or 0 on failure.  The second value is a textual status msg.
-
-=cut
-
-sub add_member {
-    my $self       = shift;
-    my $new_member = shift;
-
-    if ( $self->domain eq 'Personal' ) {
-        if ( $self->current_user->id == $self->instance ) {
-            unless ( $self->current_user_has_right('AdminOwnPersonalGroups') ) {
-                return ( 0, _('Permission Denied') );
-            }
-        } else {
-            unless ( $self->current_user_has_right('AdminAllPersonalGroups') ) {
-                return ( 0, _('Permission Denied') );
-            }
-        }
-    }
-
-    else {
-
-        # We should only allow membership changes if the user has the right
-        # to modify group membership or the user is the principal in question
-        # and the user has the right to modify his own membership
-        unless ( ( $new_member == $self->current_user->user_object->id && $self->current_user_has_right('ModifyOwnMembership') )
-            || $self->current_user_has_right('AdminGroupMembership') )
-        {
-
-            #User has no permission to be doing this
-            return ( 0, _("Permission Denied") );
-        }
-
-    }
-    $self->_add_member( principal_id => $new_member );
-}
-
-# A helper subroutine for add_member that bypasses the ACL checks
-# this should _ONLY_ ever be called from Ticket/Queue AddWatcher
-# when we want to deal with groups according to queue rights
-# In the dim future, this will all get factored out and life
-# will get better
-
-# takes a paramhash of { principal_id => undef }
-
-sub _add_member {
-    my $self = shift;
-    my %args = (
-        principal_id       => undef,
-        @_
-    );
-    my $new_member = $args{'principal_id'};
-    unless ( $self->id ) {
-        Jifty->log->fatal( "Attempting to add a member to a group which wasn't loaded. 'oops'" );
-        return ( 0, _("Group not found") );
-    }
-
-    unless ( $new_member =~ /^\d+$/ ) {
-        Jifty->log->fatal("_add_member called with a parameter that's not an integer.");
-    }
-
-    my $new_member_obj = RT::Model::Principal->new( current_user => $self->current_user );
-    $new_member_obj->load($new_member);
-
-    unless ( $new_member_obj->id ) {
-        Jifty->log->debug("Couldn't find that principal");
-        return ( 0, _("Couldn't find that principal") );
-    }
-
-    if ( $self->has_member($new_member_obj) ) {
-
-        #User is already a member of this group. no need to add it
-        return (
-            0,
-            _(
-                "Group already has member: %1",
-                $new_member_obj->object->name
-            )
-        );
-    }
-    if (   $new_member_obj->is_group
-        && $new_member_obj->object->has_member( $self->principal, recursively => 1 ) )
-    {
-
-        #This group can't be made to be a member of itself
-        return ( 0, _("Groups can't be members of their members") );
-    }
-
-    my $member_object = RT::Model::GroupMember->new( current_user => $self->current_user );
-    my $id            = $member_object->create(
-        member             => $new_member_obj,
-        group              => $self->principal,
-    );
-    if ($id) {
-        return ( 1,
-            _( "Member added: %1", $new_member_obj->object->name ) );
-    } else {
-        return ( 0, _("Couldn't add member to group") );
-    }
-}
-
-
-=head2 has_member
-
-Takes an L<RT::Model::Principal> object or its id and optional 'recursively'
-argument. Returns id of a GroupMember or CachedGroupMember record if that user
-is a member of this group. By default lookup is not recursive.
-
-Returns undef if the user isn't a member of the group or if the current
-user doesn't have permission to find out. Arguably, it should differentiate
-between ACL failure and non membership.
-
-=cut
-
-sub has_member {
-    my $self      = shift;
-    my $principal = shift;
-    my %args      = (
-        recursively => 0,
-        @_
-    );
-
-    my $id;
-    if ( UNIVERSAL::isa( $principal, 'RT::Model::Principal' ) ) {
-        $id = $principal->id;
-    } elsif ( $principal =~ /^\d+$/ ) {
-        $id = $principal;
-    } else {
-        Jifty->log->error(
-            "Group::has_member was called with an argument that"
-              . " isn't an RT::Model::Principal or id. It's "
-              . ( $principal || '(undefined)' )
-        );
-        return (undef);
-    }
-    return undef unless $id;
-
-    my $class = $args{'recursively'}
-        ? 'RT::Model::CachedGroupMember'
-        : 'RT::Model::GroupMember';
-
-    my $member_obj = new $class;
-    $member_obj->load_by_cols(
-        member_id => $id,
-        group_id  => $self->id,
-    );
-
-    if ( my $member_id = $member_obj->id ) {
-        return $member_id;
-    } else {
-        return (undef);
-    }
-}
-
-
-=head2 delete_member PRINCIPAL_ID
-
-Takes the principal id of a current user or group.
-If the current user has apropriate rights,
-removes that GroupMember from this group.
-Returns a two value array. the first value is true on successful 
-addition or 0 on failure.  The second value is a textual status msg.
-
-=cut
-
-sub delete_member {
-    my $self      = shift;
-    my $member_id = shift;
-
-    # We should only allow membership changes if the user has the right
-    # to modify group membership or the user is the principal in question
-    # and the user has the right to modify his own membership
-
-    if ( $self->domain eq 'Personal' ) {
-        if ( $self->current_user->id == $self->instance ) {
-            unless ( $self->current_user_has_right('AdminOwnPersonalGroups') ) {
-                return ( 0, _('Permission Denied') );
-            }
-        } else {
-            unless ( $self->current_user_has_right('AdminAllPersonalGroups') ) {
-                return ( 0, _('Permission Denied') );
-            }
-        }
-    } else {
-        unless ( ( ( $member_id == $self->current_user->id ) && $self->current_user_has_right('ModifyOwnMembership') )
-            || $self->current_user_has_right('AdminGroupMembership') )
-        {
-
-            #User has no permission to be doing this
-            return ( 0, _("Permission Denied") );
-        }
-    }
-    $self->_delete_member($member_id);
-}
-
-# A helper subroutine for delete_member that bypasses the ACL checks
-# this should _ONLY_ ever be called from Ticket/Queue  DeleteWatcher
-# when we want to deal with groups according to queue rights
-# In the dim future, this will all get factored out and life
-# will get better
-
-sub _delete_member {
-    my $self      = shift;
-    my $member_id = shift;
-
-    my $member_obj = RT::Model::GroupMember->new( current_user => $self->current_user );
-
-    $member_obj->load_by_cols(
-        member_id => $member_id,
-        group_id  => $self->id
-    );
-
-    #If we couldn't load it, return undef.
-    unless ( $member_obj->id() ) {
-        Jifty->log->debug("Group has no member with that id");
-        return ( 0, _("Group has no such member") );
-    }
-
-    #Now that we've checked ACLs and sanity, delete the groupmember
-    my $val = $member_obj->delete();
-
-    if ($val) {
-        return ( $val, _("Member deleted") );
-    } else {
-        Jifty->log->debug( "Failed to delete group " . $self->id . " member " . $member_id );
-        return ( 0, _("Member not deleted") );
-    }
-}
-
-
-
-
 
 sub _set {
     my $self = shift;
@@ -1067,20 +607,8 @@ sub _set {
         @_
     );
 
-    if ( $self->domain eq 'Personal' ) {
-        if ( $self->current_user->id == $self->instance ) {
-            unless ( $self->current_user_has_right('AdminOwnPersonalGroups') ) {
-                return ( 0, _('Permission Denied') );
-            }
-        } else {
-            unless ( $self->current_user_has_right('AdminAllPersonalGroups') ) {
-                return ( 0, _('Permission Denied') );
-            }
-        }
-    } else {
-        unless ( $self->current_user_has_right('AdminGroup') ) {
-            return ( 0, _('Permission Denied') );
-        }
+    unless ( $self->current_user_has_right('AdminGroup') ) {
+        return ( 0, _('Permission Denied') );
     }
 
     my $Old = $self->SUPER::_value( $args{'column'} );
@@ -1143,6 +671,14 @@ sub current_user_has_right {
         return (undef);
     }
 
+}
+
+sub acl_equivalence_group { return $_[0] }
+
+sub type_for_acl {
+    my $self = shift;
+    return undef unless $self->domain =~ /Role$/;
+    return $self->type;
 }
 
 

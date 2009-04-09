@@ -228,6 +228,20 @@ sub prepare {
     return $result;
 }
 
+=head2 hints
+
+=cut
+
+sub hints {
+    my ($self) = @_;
+
+    return { class => 'SendEmail',
+             recipients => { to =>  [$self->to],
+                             cc =>  [$self->cc],
+                             bcc => [$self->bcc],
+                         } };
+}
+
 =head2 to
 
 Returns an array of L<Email::Address> objects containing all the To: recipients for this notification
@@ -265,6 +279,7 @@ sub bcc {
 sub addresses_from_header {
     my $self      = shift;
     my $field     = shift;
+    Carp::cluck unless $self->template_obj->mime_obj;
     my $header    = $self->template_obj->mime_obj->head->get($field);
     my @addresses = Email::Address->parse($header);
 
@@ -287,12 +302,13 @@ sub send_message {
     my $msgid = $mime_obj->head->get('Message-ID');
     chomp $msgid;
 
-    $self->scrip_action_obj->{_Message_ID}++;
+    $self->{_Message_ID} ||= 0;
+    $self->{_Message_ID}++;
 
     Jifty->log->info( $msgid . " #" . $self->ticket_obj->id . "/" .
             $self->transaction->id . " - Scrip "
-            . ( $self->scrip_obj->id || '#rule' ) . " "
-            . ( $self->scrip_obj->description || '' ) );
+            . ( '#rule' ) . " ");
+
 
     my $status = RT::Interface::Email::send_email(
         entity      => $mime_obj,
@@ -585,19 +601,20 @@ sub set_rt_special_headers {
         if (    $msgid
             and $msgid =~ s/<(rt-.*?-\d+-\d+)\.(\d+)-\d+-\d+\@\QRT->config->get('organization')\E>$/
                          "<$1." . $self->ticket_obj->id
-                          . "-" . $self->scrip_obj->id
-                          . "-" . $self->scrip_action_obj->{_Message_ID}
+                          . "-" . '#rule'
+                          . "-" . $self->{_Message_ID}
                           . "@" . RT->config->get('organization') . ">"/eg
             and $2 == $self->ticket_obj->id
             )
         {
             $self->set_header( "Message-ID" => $msgid );
         } else {
+            # XXX: only place calling gen_message_id with scrip and seq
             $self->set_header(
                 'Message-ID' => RT::Interface::Email::gen_message_id(
                     ticket       => $self->ticket_obj,
-                    scrip        => $self->scrip_obj,
-                    scrip_action => $self->scrip_action_obj
+                    scrip        => '#rule',
+                    sequence     => $self->{_Message_ID},
                 ),
             );
         }
@@ -612,7 +629,7 @@ sub set_rt_special_headers {
 
     # XXX, TODO: use /ShowUser/ShowUserEntry(or something like that) when it would be
     #            refactored into user's method.
-    if ( my $email = $self->transaction->creator_obj->email ) {
+    if ( my $email = $self->transaction->creator->email ) {
         $self->set_header( 'RT-Originator', $email );
     }
 
@@ -882,7 +899,7 @@ sub set_return_address {
 
             unless ($friendly_name) {
                 $friendly_name =
-                  $self->transaction->creator_obj->friendly_name;
+                  $self->transaction->creator->friendly_name;
                 if ( $friendly_name =~ /^"(.*)"$/ ) {    # a quoted string
                     $friendly_name = $1;
                 }
@@ -1003,8 +1020,8 @@ sub set_references_headers {
         for ( @references, @in_reply_to ) {
             s/<(rt-.*?-\d+-\d+)\.(\d+-0-0)\@\Q$org\E>$/
           "<$1." . $self->ticket_obj->id .
-             "-" . $self->scrip_obj->id .
-             "-" . $self->scrip_action_obj->{_Message_ID} .
+             "-" . '#rule',
+             "-" . $self->{_Message_ID} .
              "@" . $org . ">"/eg
         }
 

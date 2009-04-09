@@ -156,7 +156,6 @@ sub load_action {
     $self->{'action'} = $type->new(
         argument         => $self->argument,
         current_user     => $self->current_user,
-        scrip_action_obj => $self,
         scrip_obj        => $args{'scrip_obj'},
         template_obj     => $self->template_obj,
         ticket_obj       => $args{'ticket_obj'},
@@ -205,7 +204,6 @@ sub template_obj {
 
 sub prepare {
     my $self = shift;
-    $self->{_Message_ID} = 0;
     return ( $self->action->prepare() );
 
 }

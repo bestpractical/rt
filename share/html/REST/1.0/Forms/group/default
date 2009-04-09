@@ -117,20 +117,20 @@ if (%data == 0) {
     my $gms = [];
     my $GroupMembers = $group->members;
     while ( my $mo = $GroupMembers->next() ) {
-        if ( $mo->member_obj->is_group ) {
-            my $us = $mo->member_obj->object->user_members;
+        if ( $mo->member->is_group ) {
+            my $us = $mo->member->object->user_members;
             my @users;
             while ( my $u = $us->next() ) {
                 push @users, $u->real_name . ' <' . $u->email . '>';
             }
             push @$gms,
                 'GROUP ['
-                . $mo->member_obj->object->name . ']' . ' ('
+                . $mo->member->object->name . ']' . ' ('
                 . join( ';', @users ) . ')';
-        } elsif ( $mo->member_obj->is_user ) {
+        } elsif ( $mo->member->is_user ) {
             push @$gms,
-                $mo->member_obj->object->real_name . ' <'
-                . $mo->member_obj->object->email . '>';
+                $mo->member->object->real_name . ' <'
+                . $mo->member->object->email . '>';
         }
     }
     push @data, [ Members => $gms ];

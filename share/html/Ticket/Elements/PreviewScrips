@@ -50,32 +50,37 @@ $ticket_obj => undef
 
 </%args>
 <%init>
+###### XXX: this needs to be ported to introspect lorzy
+
 my %squelch = $m->comp('SELF:SquelchRecipients', %ARGS);
-my $object = $squelch{'object'};
+my $recipients = $squelch{'recipients'};
 my @non_recipients = @{ $squelch{'emails'} };
 
 </%init>
 <h2><&|/l&>This message will be sent to...</&></h2>
 
-% if ( $object and $object->scrips ) {
+% if ( my @rules = keys %{$recipients} ) {
 <i><&|/l&>(Check boxes to disable notifications to the listed recipients)</&></i><br />
 
-% foreach my $scrip (@{$object->scrips->prepared}) {
-% next unless $scrip->scrip_action->action->isa('RT::ScripAction::SendEmail');
-<b><% $scrip->description || _('Scrip #%1',$scrip->id) %></b><br />
-<&|/l, _($scrip->scrip_condition->name), _($scrip->scrip_action->name), _($scrip->template_obj->name)&>%1 %2 with template %3</&>
+% foreach my $rule (@rules) {
+<b><% $rule %></b><br />
+%# XXX: hints should give template info as well, condition might come
+ # from other places
+%#<&|/l, _($scrip->scrip_condition->name), _($scrip->scrip_action->name), _($scrip->template_obj->name)&>%1 %2 with template %3</&>
 <br />
 %foreach my $type qw(to cc bcc) {
-%my @addresses =  $scrip->scrip_action->action->$type();
+%my @addresses =  @{$recipients->{$rule}{$type}};
+%#warn Dumper(\@address)
 <ul>
 %foreach my $addr (@addresses) {
 <li> <b><%_($type)%></b>: <input type="checkbox" class="checkbox" name="Ticket-<%$ticket_obj->id%>-SquelchMailTo" value="<%$addr->address%>" /> <%$addr->address%>
 % }
 </ul>
 % }
-% if (RT->config->get('preview_scrip_messages')) {
+%# later
+% if (0 && RT->config->get('PreviewScripMessages')) {
 <textarea cols="80" rows="5">
-<%$scrip->scrip_action->template_obj->mime_obj->as_string%>
+<%#$scrip->scrip_action->template_obj->mime_obj->as_string%>
 </textarea>
 % }
 % }
@@ -128,19 +133,26 @@ my $Message = make_mime_entity(
     body    => $ARGS{'update_content'},
 );
 
-my ( $Transaction, $description, $object ) = $ticket_obj->$action(
+my ( $txn_id, $description, $txn ) = $ticket_obj->$action(
     cc_message_to  => $ARGS{'update_cc'},
     bcc_message_to => $ARGS{'update_bcc'},
     mime_obj      => $Message,
     time_taken    => $ARGS{'update_time_worked'},
     dry_run       => 1
 );
-unless ( $Transaction ) {
+
+unless ( $txn_id ) {
     Jifty->log->error("Coulfn't fire '$action' action: $description");
 }
 
+my $recipients = {};
+for (@{$txn->rules}) {
+    my $hints = $_->hints;
+    next unless $hints->{class} eq 'SendEmail';
+    $recipients->{$_->description} = $hints->{recipients};
+}
 
-return (object => $object, emails => [$ticket_obj->squelch_mail_to]);
+return (recipients => $recipients, emails => [$ticket_obj->squelch_mail_to]);
 </%INIT>
 </%METHOD>
 
@@ -177,12 +189,12 @@ unless ( $id && $txn ) {
 }
 
 my @recipients;
-foreach my $scrip ( @{ $txn->scrips->prepared } ) {
-    my $action = $scrip->scrip_action->action;
-    next unless $action->isa('RT::ScripAction::SendEmail');
+foreach my $rule ( @{ $txn->rules } ) {
+    my $hints = $rule->hints;
+    next unless $hints->{class} eq 'SendEmail';
 
     foreach my $type qw(to cc bcc) {
-        push @recipients, $action->$type();
+        push @recipients, @{$hints->{recipients}{$type}};
     }
 }
 return @recipients;
@@ -222,12 +234,12 @@ unless ( $id && $txn ) {
 }
 
 my @recipients;
-foreach my $scrip ( @{ $txn->scrips->prepared } ) {
-    my $action = $scrip->scrip_action->action;
-    next unless $action->isa('RT::ScripAction::SendEmail');
+foreach my $rule ( @{ $txn->rules } ) {
+    my $hints = $rule->hints;
+    next unless $hints->{class} eq 'SendEmail';
 
     foreach my $type qw(to cc bcc) {
-        push @recipients, $action->$type();
+        push @recipients, @{$hints->{recipients}{$type}};
     }
 }
 return @recipients;

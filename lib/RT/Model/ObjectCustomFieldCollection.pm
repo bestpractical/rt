@@ -49,7 +49,7 @@ use warnings;
 use strict;
 
 package RT::Model::ObjectCustomFieldCollection;
-use base qw/RT::SearchBuilder/;
+use base qw/RT::Collection/;
 
 sub limit_to_custom_field {
     my $self = shift;

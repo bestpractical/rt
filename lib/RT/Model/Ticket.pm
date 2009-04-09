@@ -79,6 +79,8 @@ use RT::URI::fsck_com_rt;
 use RT::URI;
 use MIME::Entity;
 
+use Scalar::Util qw(blessed);
+
 sub table {'Tickets'}
 
 use Jifty::DBI::Schema;
@@ -597,7 +599,7 @@ sub create {
     # We denormalize it into the Ticket table too because doing otherwise would
     # kill performance, bigtime. It gets kept in lockstep thanks to the magic of transactionalization
     ( $val, $msg ) = $owner_group->_add_member(
-        principal_id => $owner->principal_id,
+        principal => $owner,
     ) unless $defer_owner;
 
     # {{{ Deal with setting up watchers
@@ -615,7 +617,7 @@ sub create {
 
             my ( $val, $msg ) = $self->$method(
                 type         => $type,
-                principal_id => $watcher,
+                principal => $watcher,
                 silent       => 1,
             );
             push @non_fatal_errors, _( "Couldn't set %1 watcher: %2", $type, $msg )
@@ -719,7 +721,7 @@ sub create {
 
         }
         $owner_group->_add_member(
-            principal_id       => $owner->principal_id,
+            principal => $owner,
         );
     }
 
@@ -1131,7 +1133,7 @@ sub correspond {
     $self->set_told
       unless $self->is_watcher(
               type         => 'requestor',
-              principal_id => $self->current_user->id,
+              principal => $self->current_user->id,
       );
 
     if ( $args{'dry_run'} ) {
@@ -1649,7 +1651,7 @@ sub merge_into {
                 my ( $val, $msg ) = $MergeInto->_add_watcher(
                     type         => $watcher_type,
                     silent       => 1,
-                    principal_id => $watcher->member_id
+                    principal => $watcher->member_id
                 );
                 Jifty->log->warn($msg) unless ($val);
             }
@@ -1838,7 +1840,7 @@ sub set_owner {
         return ( 0, _("Could not change owner. %1", $del_msg ));
     }
     my ( $add_id, $add_msg ) = $self->role_group("owner")->_add_member(
-        principal_id       => $new_owner_obj->principal_id,
+        principal => $new_owner_obj,
     );
     unless ($add_id) {
         Jifty->handle->rollback();
@@ -2132,18 +2134,13 @@ sub DESTROY {
     my $batch = $self->transaction_batch or return;
     return unless @$batch;
 
-    require RT::Model::ScripCollection;
-    RT::Model::ScripCollection->new( current_user => RT->system_user )->apply(
-        stage           => 'transaction_batch',
-        ticket_obj      => $self,
-        transaction_obj => $batch->[0],
-        type            => join( ',', map $_->type, grep defined, @{$batch} )
-    );
+    my $ticket = RT::Model::Ticket->new( current_user => RT::CurrentUser->superuser );
+    $ticket->load( $self->id );
 
     # Entry point of the rule system
     my $rules = RT::Ruleset->find_all_rules(
         stage           => 'transaction_batch',
-        ticket_obj      => $self,
+        ticket_obj      => $ticket,
         transaction_obj => $batch->[0],
         type            => join( ',', map $_->type, grep defined, @{$batch} )
     );
@@ -2333,10 +2330,10 @@ sub has_right {
 sub current_user_can_modify_watchers {
     my $self = shift;
     my %args = (
-        action       => 'add',
-        type         => undef,
-        principal_id => undef,
-        email        => undef,
+        action    => 'add',
+        type      => undef,
+        principal => undef,
+        email     => undef,
         @_
     );
 
@@ -2344,9 +2341,9 @@ sub current_user_can_modify_watchers {
     return 1 if $self->current_user_has_right('ModifyTicket');
 
     # if it's a new user in the system then user must have ModifyTicket
-    return 0 unless $args{'principal_id'};
+    return 0 unless $args{'principal'};
     # If the watcher isn't the current user then the current user has no right
-    return 0 unless $self->current_user->id == $args{'principal_id'};
+    return 0 unless $self->current_user->id == (blessed $args{'principal'}? $args{'principal'}->id : $args{'principal'});
 
     #  If it's an admin_cc and they don't have 'WatchAsadmin_cc', bail
     if ( $args{'type'} eq 'admin_cc' ) {

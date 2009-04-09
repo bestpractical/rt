@@ -68,7 +68,7 @@ use strict;
 use warnings;
 
 package RT::Model::ScripConditionCollection;
-use base qw/RT::SearchBuilder/;
+use base qw/RT::Collection/;
 
 sub _init {
     my $self = shift;

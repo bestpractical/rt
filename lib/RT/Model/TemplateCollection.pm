@@ -66,7 +66,7 @@ use strict;
 use warnings;
 
 package RT::Model::TemplateCollection;
-use base qw/RT::SearchBuilder/;
+use base qw/RT::Collection/;
 
 
 =head2 _init

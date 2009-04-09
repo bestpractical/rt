@@ -75,7 +75,7 @@ unless ( $display_headers{'_all'} ) {
     @headers = grep $display_headers{ lc $_->{'tag'} }, @headers;
 }
 
-my $ticket = $message->transaction->ticket_obj;
+my $ticket = $message->transaction->ticket;
 foreach my $f (@headers) {
     $m->comp('/Elements/MakeClicky', content => \$f->{'value'}, ticket => $ticket, %ARGS);
 }

@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<&| /_elements/wrapper, title => $title, refresh => $session{'tickets_refresh_interval'}, 
+<&| /_elements/wrapper, title => $title, refresh => Jifty->web->session->get('tickets_refresh_interval'), 
     rss_auto_discovery => $RSSFeedURL,
     link_rel => \%link_rel &>
 <& /Ticket/Elements/Tabs, 
@@ -75,7 +75,7 @@
 % foreach my $key (keys(%hiddens)) {
 <input type="hidden" class="hidden" name="<%$key%>" value="<% defined($hiddens{$key})?$hiddens{$key}:'' %>" />
 % }
-<& /Elements/Refresh, name => 'tickets_refresh_interval', default => $session {'tickets_refresh_interval'} &>
+<& /Elements/Refresh, name => 'tickets_refresh_interval', default => Jifty->web->session->get('tickets_refresh_interval') &>
 <input type="submit" class="button" value="<&|/l&>Change</&>" />
 </form>
 </div>
@@ -117,33 +117,32 @@ if ( !defined($rows) ) {
 }
 
 my ($title, $ticketcount);
-$session{'i'}++;
-$session{'tickets'} = RT::Model::TicketCollection->new( current_user => Jifty->web->current_user ) ;
-$session{'tickets'}->from_sql($query) if ($query);
+Jifty->web->session->set('tickets' => RT::Model::TicketCollection->new( current_user => Jifty->web->current_user ) );
+Jifty->web->session->get('tickets')->from_sql($query) if ($query);
 
 if ($order_by =~ /\|/) {
     # Multiple Sorts
     my @order_by = split /\|/,$order_by;
     my @order = split /\|/,$order;
-    $session{'tickets'}->order_by(
+    Jifty->web->session->get('tickets')->order_by(
         map { { column => $order_by[$_], order => $order[$_] } } ( 0
         .. $#order_by ) );; 
 } else {
-    $session{'tickets'}->order_by(column => $order_by, order => $order); 
+    Jifty->web->session->get('tickets')->order_by(column => $order_by, order => $order); 
 }
 
-$session{'CurrentSearchHash'} = {
+Jifty->web->session->set('CurrentSearchHash', {
     format      => $format,
     query       => $query,
     page       => $page,
     order       => $order,
     order_by     => $order_by,
     rows_per_page => $rows
-    };
+    });
 
 
-if ( $session{'tickets'}->query()) {
-    $ticketcount = $session{tickets}->count_all();
+if ( Jifty->web->session->get('tickets')->query()) {
+    $ticketcount = Jifty->web->session->get('tickets')->count_all();
     $title = _('Found %quant(%1,ticket)', $ticketcount);
 } else {
     $title = _("Find tickets");
@@ -161,7 +160,7 @@ my $RSSQueryString = "?".$m->comp('/Elements/QueryString', query => $query, orde
 my $RSSFeedURL = RT->config->get('web_path')."/Search/Results.rdf$RSSQueryString";
 
 if ($ARGS{'tickets_refresh_interval'}) {
-	$session{'tickets_refresh_interval'} = $ARGS{'tickets_refresh_interval'};
+	Jifty->web->session->set('tickets_refresh_interval', $ARGS{'tickets_refresh_interval'});
 }
 
 my %link_rel;
@@ -183,7 +182,7 @@ $link_rel{next}  = $BaseURL . $genpage->($page + 1) if ($page * $rows) < $ticket
 $link_rel{last}  = $BaseURL . $genpage->(POSIX::ceil($ticketcount/$rows)) if $rows and ($page * $rows) < $ticketcount;
 </%INIT>
 <%CLEANUP>
-$session{'tickets'}->prep_for_serialization();
+Jifty->web->session->get('tickets')->prep_for_serialization();
 </%CLEANUP>
 <%ARGS>
 $query => undef

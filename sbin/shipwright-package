@@ -1,0 +1,42 @@
+export REPO=/Users/jesse/shipwright-rt/
+export SVN_PATH="svn:file://$REPO"
+export FS_REPO_PATH="fs:$REPO"
+
+export MIN_PERL=5.008006
+export SKIP="--skip=Apache2::Const,Apache::Request,Jifty,Jifty::DBI,DBD::Pg,DBD::Oracle,DBD::mysql" # --skip=Module::Signature,Test::Pod,Test::Pod::Coverage,Test::Distribution,Pod::Readme,Archive::Tar,Test::Script::Run,HTML::Lint,Prophet,Encode,Date::Calc"
+export IMPORT="shipwright import --min-perl-version=$MIN_PERL $SKIP -r $FS_REPO_PATH --log-file - --log-level info"
+rm -rf $REPO
+mkdir $REPO
+#svnadmin create $REPO
+shipwright create -r $FS_REPO_PATH
+# Optional deps we sitll want
+$IMPORT --name cpan-Jifty-DBI svn:http://svn.jifty.org/svn/jifty.org/Jifty-DBI/trunk
+$IMPORT --name cpan-Jifty svn:http://svn.jifty.org/svn/jifty.org/jifty/trunk
+$IMPORT --name RT svn://svn.bestpractical.com/rt/3.999/trunk
+$IMPORT cpan:Symbol
+
+#cd /tmp
+#rm -rf sdrt
+#shipwright update -r $SVN_PATH Jifty --add-deps Jifty-DBI
+#shipwright update -r $SVN_PATH RT           --add-deps Jifty
+shipwright update -r $FS_REPO_PATH cpan-Encode           --add-deps cpan-Symbol
+#shipwright maintain -r $SVN_PATH --update-order
+
+
+#cd /tmp
+#mkdir svnhack-$$
+#cd svnhack-$$
+#svn co file://${REPO}/scripts/cpan-DateTime-Format-Natural
+#cd cpan-DateTime-Format-Natural
+#perl -pi -e s'/Build test/Build/g' build
+#svn commit -m 'Made DTFN not run its tests which add a slew of deps' build
+#cd ..
+#svn co file://${REPO}/sources/cpan-Net-Bonjour/vendor
+#cd vendor
+#perl -pi -e's/^chomp.*?STDIN.*?$/my \$ans = "n";/g;' Makefile.PL
+#svn commit -m 'Made Net::Bonjour not promtp ' Makefile.PL
+#
+#
+#svn export file://$REPO /tmp/sdrt
+#rsync -rvp /tmp/sdrt/ jesse@fsck.com:/tmp/sdex-$$
+#echo "cd /tmp/sdrt-$$; ./bin/shipwright-builder"

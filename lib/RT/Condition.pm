@@ -56,7 +56,6 @@
     my $foo = RT::Condition->new( 
 		transaction_obj => $tr, 
 		ticket_obj => $ti, 
-		scrip_obj => $scr, 
 		Argument => $arg, 
 		Type => $type);
 
@@ -97,7 +96,6 @@ sub _init {
     my %args = (
         transaction_obj       => undef,
         ticket_obj            => undef,
-        scrip_obj             => undef,
         template_obj          => undef,
         argument             => undef,
         applicable_trans_types => undef,
@@ -106,7 +104,6 @@ sub _init {
     );
 
     $self->{'argument'}             = $args{'argument'};
-    $self->{'scrip_obj'}             = $args{'scrip_obj'};
     $self->{'ticket_obj'}            = $args{'ticket_obj'};
     $self->{'transaction_obj'}       = $args{'transaction_obj'};
     $self->{'applicable_trans_types'} = $args{'applicable_trans_types'};
@@ -141,18 +138,6 @@ sub ticket_obj {
     return ( $self->{'ticket_obj'} );
 }
 
-
-
-=head2 scrip_obj
-
-Return the Scrip object we're talking about
-
-=cut
-
-sub scrip_obj {
-    my $self = shift;
-    return ( $self->{'scrip_obj'} );
-}
 
 
 =head2 transaction_obj
@@ -208,7 +193,6 @@ sub DESTROY {
     $self->{'template_obj'} = undef;
     $self->{'ticket_obj'} = undef;
     $self->{'transaction_obj'} = undef;
-    $self->{'scrip_obj'}       = undef;
 
 }
 

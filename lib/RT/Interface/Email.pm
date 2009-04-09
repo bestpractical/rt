@@ -383,7 +383,7 @@ sub send_email {
             and my $prefix = RT->config->get('verp_prefix')
             and my $domain = RT->config->get('verp_domain') )
         {
-            my $from = $args{'transaction'}->creator_obj->email;
+            my $from = $args{'transaction'}->creator->email;
             $from =~ s/@/=/g;
             $from =~ s/\s//g;
             $args .= " -f $prefix$from\@$domain";
@@ -941,8 +941,8 @@ sub delete_recipients_from_head {
 sub gen_message_id {
     my %args = (
         ticket       => undef,
-        Scrip        => undef,
-        scrip_action => undef,
+        scrip        => undef,
+        sequence     => undef,
         @_
     );
     my $org = RT->config->get('organization');
@@ -950,8 +950,7 @@ sub gen_message_id {
         || 0;
     my $scrip_id = ( ref $args{'Scrip'} ? $args{'Scrip'}->id : $args{'Scrip'} )
         || 0;
-    my $sent = ( ref $args{'scrip_action'} ? $args{'scrip_action'}->{'_Message_ID'} : 0 )
-        || 0;
+    my $sent = $args{sequence} || 0;
 
     return "<rt-" . $RT::VERSION . "-" . $$ . "-" . CORE::time() . "-" . int( rand(2000) ) . '.' . $ticket_id . "-" . $scrip_id . "-" . $sent . "@" . $org . ">";
 }

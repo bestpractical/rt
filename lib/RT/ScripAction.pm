@@ -83,8 +83,6 @@ sub _init {
     my %args = (
         argument       => undef,
         current_user    => undef,
-        scrip_action_obj => undef,
-        scrip_obj       => undef,
         template_obj    => undef,
         ticket_obj      => undef,
         transaction_obj => undef,
@@ -95,18 +93,15 @@ sub _init {
 
     $self->{'argument'} = $args{'argument'};
     $self->current_user( $args{'current_user'} );
-    $self->{'scrip_action_obj'} = $args{'scrip_action_obj'};
-    $self->{'scrip_obj'}       = $args{'scrip_obj'};
     $self->{'template_obj'}    = $args{'template_obj'};
     $self->{'ticket_obj'}      = $args{'ticket_obj'};
     $self->{'transaction_obj'} = $args{'transaction_obj'};
     $self->{'type'}           = $args{'type'};
 
-    Scalar::Util::weaken( $self->{'scrip_action_obj'} );
-    Scalar::Util::weaken( $self->{'scrip_obj'} );
+#    Scalar::Util::weaken( $self->{'scrip_action_obj'} );
     Scalar::Util::weaken( $self->{'template_obj'} );
-    Scalar::Util::weaken( $self->{'ticket_obj'} );
-    Scalar::Util::weaken( $self->{'transaction_obj'} );
+#    Scalar::Util::weaken( $self->{'ticket_obj'} );
+    Scalar::Util::weaken( $self->{'transaction'} );
 
 }
 
@@ -134,18 +129,6 @@ sub transaction {
 sub template_obj {
     my $self = shift;
     return ( $self->{'template_obj'} );
-}
-
-
-sub scrip_obj {
-    my $self = shift;
-    return ( $self->{'scrip_obj'} );
-}
-
-
-sub scrip_action_obj {
-    my $self = shift;
-    return ( $self->{'scrip_action_obj'} );
 }
 
 
@@ -180,6 +163,10 @@ sub prepare {
     return ( 0, _("Prepare Stubbed") );
 }
 
+sub hints {
+    my ($self) = @_;
+    return { class => 'General' };
+}
 
 #If this rule applies to this transaction, return true.
 
@@ -194,8 +181,6 @@ sub DESTROY {
 
     # We need to clean up all the references that might maybe get
     # oddly circular
-    $self->{'scrip_action_obj'} = undef;
-    $self->{'scrip_obj'}       = undef;
     $self->{'template_obj'}    = undef;
     $self->{'ticket_obj'} = undef;
     $self->{'transaction_obj'} = undef;

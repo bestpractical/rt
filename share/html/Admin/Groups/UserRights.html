@@ -58,11 +58,11 @@
 <&| /Widgets/TitleBox, title => _('Modify user rights for group %1', $GroupObj->name) &>
 <table>
 % while ( my $Member = $Users->next ) {
-% my $user_object = $Member->member_obj->object;
+% my $user_object = $Member->member->object;
   <tr align="right">
     <td valign="top"><& /Elements/ShowUser, user => $user_object &></td>
     <td><& /Admin/Elements/SelectRights,
-        principal_id => $Member->member_obj->id,
+        principal => $Member->member->id,
         type => 'User',
         object => $GroupObj,
     &></td>

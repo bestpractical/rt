@@ -24,6 +24,30 @@ sub disabled {
     return shift->principal->disabled;
 }
 
+=head2 acl_equivalence_group
+
+=cut
+
+sub acl_equivalence_group {
+    my $self = shift;
+
+    my $res = RT::Model::Group->new( current_user => $self->current_user );
+    $res->load_acl_equivalence( $self );
+    unless ( $res->id ) {
+        Jifty->log->fatal( "No ACL equiv group for principal #". $self->id );
+        return (undef, _("No ACL equiv group for principal #%1", $self->id));
+    }
+    return $res;
+}
+
+=head2 type_for_acl
+
+Returns type for ACL records. For now only roles has type.
+
+=cut
+
+sub type_for_acl { return undef }
+
 =head2 principal 
 
 Returns L<RT::Model::Principal/|"the principal object"> for this record.

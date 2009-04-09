@@ -150,7 +150,7 @@ if ($create) {
     if ( defined $id && $id eq 'new' ) {
         my ($val, $msg) = $queue_obj->create( name => $name );
         abort("$msg") unless $val;
-        delete $session{'create_in_queues'};
+        Jifty->web->session->remove('create_in_queues');
 		push @results, $msg;
     }
     else {

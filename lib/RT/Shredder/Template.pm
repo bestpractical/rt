@@ -67,51 +67,7 @@ sub __depends_on {
     my $deps = $args{'dependencies'};
     my $list = [];
 
-    # Scrips
-    my $objs = RT::Model::ScripCollection->new( current_user => $self->current_user );
-    $objs->limit( column => 'template', value => $self->id );
-    push( @$list, $objs );
-
-    $deps->_push_dependencies(
-        base_object    => $self,
-        flags          => DEPENDS_ON,
-        target_objects => $list,
-        shredder       => $args{'shredder'},
-    );
-
     return $self->SUPER::__depends_on(%args);
-}
-
-sub __relates {
-    my $self = shift;
-    my %args = (
-        shredder     => undef,
-        dependencies => undef,
-        @_,
-    );
-    my $deps = $args{'dependencies'};
-    my $list = [];
-
-    # Queue
-    my $obj = $self->queue;
-    if ( $obj && defined $obj->id ) {
-        push( @$list, $obj );
-    } else {
-        my $rec = $args{'shredder'}->get_record( object => $self );
-        $self = $rec->{'object'};
-        $rec->{'state'} |= INVALID;
-        $rec->{'description'} = "Have no related queue #" . $self->id . " object";
-    }
-
-    # TODO: Users(creator, last_updated_by)
-
-    $deps->_push_dependencies(
-        base_object    => $self,
-        flags          => RELATES,
-        target_objects => $list,
-        shredder       => $args{'shredder'}
-    );
-    return $self->SUPER::__Relates(%args);
 }
 
 1;

@@ -235,7 +235,7 @@ sub add_record {
 # don't want.
 sub next {
     my $self = shift;
-    $self->RT::SearchBuilder::next(@_);
+    $self->RT::Collection::next(@_);
 
 }
 

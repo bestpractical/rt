@@ -48,7 +48,7 @@
 
 =head1 name
 
-  RT::SearchBuilder - a baseclass for RT collection objects
+  RT::Collection - a baseclass for RT collection objects
 
 =head1 SYNOPSIS
 
@@ -62,14 +62,14 @@
 
 =cut
 
-package RT::SearchBuilder;
+package RT::Collection;
 
 use RT::Base;
 
 use strict;
-use base qw/RT::Base/;
-use base qw/Jifty::Collection/;
-use UNIVERSAL::require;
+use warnings;
+
+use base qw/RT::Base Jifty::Collection/;
 
 sub _handle {
     return Jifty->handle;
@@ -307,4 +307,3 @@ sub items_array_ref {
 
 
 1;
-

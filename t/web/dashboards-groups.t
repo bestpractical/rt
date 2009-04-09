@@ -44,15 +44,15 @@ ok($ok, "added inner as a member of outer: $msg");
 ($ok, $msg) = $inner_group->add_member($user_obj->principal_id);
 ok($ok, "added user as a member of inner $msg");
 
-ok($outer_group->has_member($inner_group->principal_id), "outer has inner");
-ok(!$outer_group->has_member($user_obj->principal_id), "outer doesn't have user directly");
-ok($outer_group->has_member($inner_group->principal_id, recursively => 1), "outer has inner recursively");
-ok($outer_group->has_member($user_obj->principal_id, recursively => 1), "outer has user recursively");
+ok($outer_group->has_member( principal => $inner_group->principal_id), "outer has inner");
+ok(!$outer_group->has_member( principal => $user_obj->principal_id), "outer doesn't have user directly");
+ok($outer_group->has_member( principal => $inner_group->principal_id, recursively => 1), "outer has inner recursively");
+ok($outer_group->has_member( principal => $user_obj->principal_id, recursively => 1), "outer has user recursively");
 
-ok(!$inner_group->has_member($outer_group->principal_id), "inner doesn't have outer");
-ok($inner_group->has_member($user_obj->principal_id), "inner has user");
-ok(!$inner_group->has_member($outer_group->principal_id, recursively => 1), "inner doesn't have outer, even recursively");
-ok($inner_group->has_member($user_obj->principal_id, recursively =>1), "inner has user recursively");
+ok(!$inner_group->has_member( principal => $outer_group->principal_id), "inner doesn't have outer");
+ok($inner_group->has_member( principal => $user_obj->principal_id), "inner has user");
+ok(!$inner_group->has_member( principal => $outer_group->principal_id, recursively => 1), "inner doesn't have outer, even recursively");
+ok($inner_group->has_member( principal => $user_obj->principal_id, recursively =>1), "inner has user recursively");
 # }}}
 
 ok $m->login(customer => 'customer'), "logged in";

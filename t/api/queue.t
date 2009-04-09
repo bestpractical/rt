@@ -51,12 +51,12 @@ ok ($id, "Foo $id was Created");
     $bob->load_by_email('bob@fsck.com');
     ok ($bob->id,  "Found the bob rt user");
 
-    ok ($Queue->is_watcher(type => 'cc', principal_id => $bob->principal_id),
+    ok ($Queue->is_watcher(type => 'cc', principal => $bob->principal_id),
         "The queue actually has bob at fsck.com as a requestor");
     ok ($Queue->is_watcher(type => 'cc', email => $bob->email),
         "The queue actually has bob at fsck.com as a requestor");
 
-    ok (!$Queue->is_watcher(type => 'admin_cc', principal_id => $bob->principal_id),
+    ok (!$Queue->is_watcher(type => 'admin_cc', principal=> $bob->principal_id),
         "bob is not an admin cc");
     ok (!$Queue->is_watcher(type => 'admin_cc', email => $bob->email),
         "bob is not an admin cc");
@@ -64,7 +64,7 @@ ok ($id, "Foo $id was Created");
     ($status, $msg) = $Queue->delete_watcher(type =>'cc', email => 'bob@fsck.com');
     ok ($status, "Deleted bob from Ccs") or diag "error: $msg";
 
-    ok (!$Queue->is_watcher(type => 'cc', principal_id => $bob->principal_id),
+    ok (!$Queue->is_watcher(type => 'cc', principal => $bob->principal_id),
         "The queue no longer has bob at fsck.com as a requestor");
     ok (!$Queue->is_watcher(type => 'cc', email => $bob->email),
         "The queue no longer has bob at fsck.com as a requestor");

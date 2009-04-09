@@ -8,7 +8,7 @@ framework:
   Database: 
     CheckSchema: 0
     Database: rt4
-    Driver: mysql
+    Driver: SQLite
     Host: localhost
     Password: ''
     RecordBaseClass: Jifty::DBI::Record::Cachable
@@ -49,7 +49,6 @@ framework:
   Web: 
     baseURL: http://localhost
     DataDir: var/mason
-    Globals: [%session]
 
     MasonConfig: 
       autoflush: 0

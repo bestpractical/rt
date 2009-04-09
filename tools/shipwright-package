@@ -1,0 +1,94 @@
+export REPO=/tmp/shipwright-rt4
+export SVN_PATH="svn:file://$REPO"
+export MIN_PERL=5.008006
+export SKIP="--skip=Module::Signature,Devel::Cover,Pod::Coverage,Test::Pod::Coverage,Test::Distribution,Pod::Readme,Archive::Tar,Test::Script::Run,HTML::Lint,Encode,Date::Calc,cpan-mod_perl,Apache2::Const,Apache::Request,Apache::DBI,Git,XML::SAX::Exception,DBD::Oracle,CGI::SpeedyCGI,Jifty,Jifty::DBI,Test::WWW::Declare,Lorzy,Class::C3::XS"
+export IMPORT="shipwright import --min-perl-version=$MIN_PERL $SKIP -r $SVN_PATH --log-file - --log-level info"
+rm -rf $REPO
+svnadmin create $REPO
+
+shipwright create -r $SVN_PATH
+
+# import gd related stuff
+$IMPORT http://www.zlib.net/zlib-1.2.3.tar.gz 
+$IMPORT ftp://ftp.simplesystems.org/pub/libpng/png/src/libpng-1.2.35.tar.bz2
+
+echo 'configure: LDFLAGS="-L%%INSTALL_BASE%%/lib" CPPFLAGS="-I%%INSTALL_BASE%%/include" ./configure --prefix=%%INSTALL_BASE%% --with-png=%%INSTALL_BASE%% --without-freetype --without-fontconfig --without-jpeg
+make: %%MAKE%%
+install: %%MAKE%% install
+clean: %%MAKE%% clean
+' > /tmp/shipwright_gd_build
+
+$IMPORT http://www.libgd.org/releases/gd-2.0.35.tar.gz --build-script=/tmp/shipwright_gd_build
+
+# import graphviz
+$IMPORT http://www.graphviz.org/pub/graphviz/stable/SOURCES/graphviz-2.22.2.tar.gz
+
+# import mysql and Pg
+echo 'configure: ./configure --prefix=%%INSTALL_BASE%% --without-server --without-docs --without-man
+make: %%MAKE%%
+install: %%MAKE%% install
+clean: %%MAKE%% clean
+' > /tmp/shipwright_mysql_build
+$IMPORT http://mysql.easynet.be/Downloads/MySQL-5.1/mysql-5.1.33.tar.gz --build-script=/tmp/shipwright_mysql_build
+
+echo 'configure: ./configure --prefix=%%INSTALL_BASE%% 
+make: %%MAKE%%
+install: %%MAKE%% -C src/bin install && %%MAKE%% -C src/include install && %%MAKE%% -C src/interfaces install
+clean: %%MAKE%% clean
+' > /tmp/shipwright_postgresql_build
+$IMPORT http://ftp2.au.postgresql.org/pub/postgresql/source/v8.3.7/postgresql-8.3.7.tar.bz2 --build-script=/tmp/shipwright_postgresql_build
+
+
+# newer Text-Balanced requires version.pm, which is not in core
+$IMPORT cpan:Text::Balanced
+# DBD::Pg Makefile.PL doesn't die if no DBI installed, that's sad for shipwright
+$IMPORT cpan:DBD::Pg --no-follow
+
+$IMPORT svn:http://svn.jifty.org/svn/jifty.org/Test-WWW-Declare --name Test-WWW-Declare
+$IMPORT svn:http://svn.jifty.org/svn/jifty.org/Jifty-DBI/trunk --name Jifty-DBI
+$IMPORT svn:http://svn.jifty.org/svn/jifty.org/jifty/trunk --name Jifty
+
+$IMPORT svn://svn.bestpractical.com/Lorzy/trunk --name Lorzy
+
+echo 'install: cp -rf * %%INSTALL_BASE%%' > /tmp/shipwright_rt_build
+$IMPORT svn://svn.bestpractical.com/rt/3.999/trunk --name RT --build-script /tmp/shipwright_rt_build
+
+shipwright update -r $SVN_PATH cpan-Data-Dump-Streamer --add-deps cpan-Text-Balanced
+shipwright update -r $SVN_PATH cpan-Text-Balanced --add-deps cpan-version
+shipwright update -r $SVN_PATH Jifty --add-deps Jifty-DBI,Test-WWW-Declare
+shipwright update -r $SVN_PATH cpan-DBD-mysql --add-deps mysql
+shipwright update -r $SVN_PATH cpan-DBD-Pg --add-deps postgresql,cpan-DBI
+
+shipwright update -r $SVN_PATH cpan-GD --add-deps gd
+shipwright update -r $SVN_PATH gd --add-deps libpng
+shipwright update -r $SVN_PATH libpng --add-deps zlib
+shipwright update -r $SVN_PATH cpan-GraphViz --add-deps graphviz
+shipwright maintain -r $SVN_PATH --update-order
+
+shipwright flags -r $SVN_PATH mysql --add mysql
+shipwright flags -r $SVN_PATH cpan-DBD-mysql --add mysql
+shipwright flags -r $SVN_PATH postgresql --add Pg
+shipwright flags -r $SVN_PATH cpan-DBD-Pg --add Pg
+
+# set known test failures
+shipwright ktf -r $SVN_PATH cpan-Regexp-Common --set 1
+shipwright ktf -r $SVN_PATH cpan-URI --set 1
+shipwright ktf -r $SVN_PATH cpan-Time-Duration --set 1
+shipwright ktf -r $SVN_PATH cpan-Data-Dump-Streamer --set 1
+shipwright ktf -r $SVN_PATH cpan-Storable --set 1
+# DBD-... will try to connect server, which may result in test failure
+shipwright ktf -r $SVN_PATH cpan-DBD-mysql --set 1
+shipwright ktf -r $SVN_PATH cpan-DBD-Pg --set 1
+shipwright ktf -r $SVN_PATH cpan-PAR-Dist --set 1
+shipwright ktf -r $SVN_PATH cpan-WWW-Mechanize --set 1
+shipwright ktf -r $SVN_PATH cpan-Test-WWW-Mechanize --set 1
+shipwright ktf -r $SVN_PATH cpan-MIME-tools --set 1
+
+echo 'RT: cd %%INSTALL_BASE%% && PERL5LIB=lib:lib/perl5 bin/prove -r t' > /tmp/shipwright_test
+shipwright import -r $SVN_PATH --test-script /tmp/shipwright_test
+
+cd /tmp
+rm -rf rtex-$$
+svn export file://$REPO /tmp/rtex-$$
+#rsync -rvp /tmp/rtex/ jesse@fsck.com:/tmp/rtex-$$
+echo "cd /tmp/rtex-$$; ./bin/shipwright-builder; ./bin/shipwright-builder --only-test" 

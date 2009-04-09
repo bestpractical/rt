@@ -64,6 +64,8 @@ use RT::Model::ACECollection;
 use RT::Interface::Email;
 use RT::StatusSchema;
 
+use Scalar::Util qw(blessed);
+
 use base qw/RT::HasRoleGroups RT::Record/;
 
 sub table {'Queues'}
@@ -587,7 +589,7 @@ sub current_user_can_modify_watchers {
     my %args = (
         action       => 'add',
         type         => undef,
-        principal_id => undef,
+        principal => undef,
         email        => undef,
         @_
     );
@@ -596,9 +598,9 @@ sub current_user_can_modify_watchers {
     return 1 if $self->current_user_has_right('ModifyQueueWatchers');
 
     # if it's a new user in the system then user must have ModifyTicket
-    return 0 unless $args{'principal_id'};
+    return 0 unless $args{'principal'};
     # If the watcher isn't the current user then the current user has no right
-    return 0 unless $self->current_user->id == $args{'principal_id'};
+    return 0 unless $self->current_user->id == (blessed $args{'principal'}? $args{'principal'}->id : $args{'principal'});
 
     #  If it's an admin_cc and they don't have 'WatchAsadmin_cc', bail
     if ( $args{'type'} eq 'admin_cc' ) {

@@ -130,7 +130,7 @@ A convoluted example
     my $groups = RT::Model::GroupCollection->new(current_user => RT->system_user);
     $groups->limit_to_user_defined_groups();
     $groups->limit(column => "name", operator => "=", value => "$name");
-    $groups->with_member($transaction_obj->creator_obj->id);
+    $groups->with_member($transaction_obj->creator->id);
  
     my $groupid = $groups->first->id;
  
@@ -140,7 +140,7 @@ A convoluted example
 	object =>$groups->first,
 	include_system_rights => undef,
 	include_superusers => 0,
-	include_subgroup_members => 0,
+	recursive => 0,
     );
  
      my @admins;

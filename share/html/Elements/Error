@@ -81,7 +81,7 @@ Encode::_utf8_off($error);
 
 Jifty->log->error($error);
 
-if ( defined $session{'SessionType'} && $session{'SessionType'} eq 'REST' ) {
+if ( defined Jifty->web->session->get('SessionType') && Jifty->web->session->get('SessionType') eq 'REST' ) {
     $r->content_type('text/plain');
     $m->out( "Error: " . $why . "\n" );
     $m->out( $details . "\n" ) if defined $details && length $details;

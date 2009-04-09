@@ -50,7 +50,7 @@ use warnings;
 
 package RT::Model::User;
 
-use base qw/RT::IsPrincipal RT::Record/;
+use base qw/RT::IsPrincipal::HasNoMembers RT::Record/;
 
 =head1 NAME
 
@@ -245,7 +245,7 @@ sub create {
     }
 
     my $aclstash = RT::Model::Group->new( current_user => $self->current_user );
-    my $stash_id = $aclstash->_createacl_equivalence_group($principal);
+    my $stash_id = $aclstash->create_acl_equivalence($principal);
 
     unless ($stash_id) {
         Jifty->handle->rollback();
@@ -261,9 +261,7 @@ sub create {
         return ( 0, _('Could not create user') );
     }
 
-    my ( $everyone_id, $everyone_msg ) = $everyone->_add_member(
-        principal_id       => $self->principal_id
-    );
+    my ( $everyone_id, $everyone_msg ) = $everyone->_add_member( principal => $self );
     unless ($everyone_id) {
         Jifty->log->fatal("Could not add user to Everyone group on user creation.");
         Jifty->log->fatal($everyone_msg);
@@ -284,9 +282,7 @@ sub create {
         return ( 0, _('Could not create user') );
     }
 
-    my ( $ac_id, $ac_msg ) = $access_class->_add_member(
-        principal_id       => $self->principal_id
-    );
+    my ( $ac_id, $ac_msg ) = $access_class->_add_member( principal => $self );
 
     unless ($ac_id) {
         Jifty->log->fatal( "Could not add user to privileged or Unprivileged group on user creation. aborted" );
@@ -344,12 +340,12 @@ sub set_privileged {
     }
 
     if ($val) {
-        if ( $priv->has_member( $self->principal ) ) {
+        if ( $priv->has_member( principal =>  $self->principal ) ) {
 
             #Jifty->log->debug("That user is already privileged");
             return ( 0, _("That user is already privileged") );
         }
-        if ( $unpriv->has_member( $self->principal ) ) {
+        if ( $unpriv->has_member( principal =>  $self->principal ) ) {
             $unpriv->_delete_member( $self->principal_id );
         } else {
 
@@ -358,21 +354,19 @@ sub set_privileged {
             # bogus happened
             Jifty->log->fatal( "User " . $self->id . " is neither privileged nor " . "unprivileged. something is drastically wrong." );
         }
-        my ( $status, $msg ) = $priv->_add_member(
-            principal_id       => $self->principal_id
-        );
+        my ( $status, $msg ) = $priv->_add_member( principal => $self );
         if ($status) {
             return ( 1, _("That user is now privileged") );
         } else {
             return ( 0, $msg );
         }
     } else {
-        if ( $unpriv->has_member( $self->principal ) ) {
+        if ( $unpriv->has_member( principal =>  $self->principal ) ) {
 
             #Jifty->log->debug("That user is already unprivileged");
             return ( 0, _("That user is already unprivileged") );
         }
-        if ( $priv->has_member( $self->principal ) ) {
+        if ( $priv->has_member( principal =>  $self->principal ) ) {
             $priv->_delete_member( $self->principal_id );
         } else {
 
@@ -381,9 +375,7 @@ sub set_privileged {
             # bogus happened
             Jifty->log->fatal( "User " . $self->id . " is neither privileged nor " . "unprivileged. something is drastically wrong." );
         }
-        my ( $status, $msg ) = $unpriv->_add_member(
-            principal_id       => $self->principal_id
-        );
+        my ( $status, $msg ) = $unpriv->_add_member( principal => $self );
         if ($status) {
             return ( 1, _("That user is now unprivileged") );
         } else {
@@ -403,7 +395,7 @@ sub privileged {
     my $self = shift;
     my $priv = RT::Model::Group->new( current_user => $self->current_user );
     $priv->load_system_internal('privileged');
-    if ( $priv->has_member( $self->principal ) ) {
+    if ( $priv->has_member( principal =>  $self->principal ) ) {
         return (1);
     } else {
         return (undef);
@@ -460,7 +452,7 @@ sub _bootstrap_create {
 
     my $aclstash = RT::Model::Group->new( current_user => $self->current_user );
 
-    my $stash_id = $aclstash->_createacl_equivalence_group($principal);
+    my $stash_id = $aclstash->create_acl_equivalence($principal);
 
     unless ($stash_id) {
         Jifty->handle->rollback();
@@ -938,7 +930,7 @@ sub own_groups {
     my $groups = RT::Model::GroupCollection->new( current_user => $self->current_user );
     $groups->limit_to_user_defined_groups;
     $groups->with_member(
-        principal_id => $self->id,
+        principal => $self->id,
         recursively  => 1
     );
     return $groups;

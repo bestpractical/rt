@@ -48,7 +48,7 @@
 
 <&| /_elements/wrapper, title => $title &>
 <& /Ticket/Elements/Tabs,
-    ticket => $txn->ticket_obj,
+    ticket => $txn->ticket,
     current_tab => 'Ticket/Encrypt.html?id='. $id,
     title => $title,
 &>

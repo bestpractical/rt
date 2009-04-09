@@ -67,7 +67,7 @@ use warnings;
 use strict;
 
 package RT::Model::QueueCollection;
-use base qw/RT::SearchBuilder/;
+use base qw/RT::Collection/;
 
 sub _init {
     my $self = shift;

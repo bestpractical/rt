@@ -239,7 +239,7 @@ sub find_transactions {
 
     while ( my $txn = $txns->next ) {
         my $ticket = $txn->ticket;
-        my $queue  = $txn->ticket_obj->queue->name;
+        my $queue  = $ticket->queue->name;
         # Xxx todo - may clobber if two queues have the same name
         foreach my $user ( $txn->deferred_recipients($frequency) ) {
             $all_digest->{$user}->{$queue}->{$ticket->id}->{ $txn->id } = $txn->content_obj;

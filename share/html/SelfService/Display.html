@@ -100,17 +100,17 @@ my $Ticket = RT::Model::Ticket->new( current_user => Jifty->web->current_user );
 
 # store the uploaded attachment in session
 if ( $ARGS{'attach'} ) {    # attachment?
-    $session{'Attachments'} = {} unless defined $session{'Attachments'};
+    Jifty->web->session->set('Attachments', {}) unless defined Jifty->web->session->get('Attachments');
 
     my $attachment = make_mime_entity(
         attachment_field_name => 'attach',
     );
 
     my $file_path = Encode::decode_utf8("$ARGS{'Attach'}");
-    $session{'Attachments'} = {
-        %{ $session{'Attachments'} || {} },
+    Jifty->web->session->set('Attachments', {
+        %{ Jifty->web->session->get('Attachments') || {} },
         $file_path => $attachment,
-    };
+    });
 }
 
 if ( defined ($id[0]) && $id[0] eq 'new' ) {
@@ -132,7 +132,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
 
 
     ( $Ticket, @results ) =
-    create_ticket( attachments => $session{'Attachments'}, %ARGS, status => 'new' );
+    create_ticket( attachments => Jifty->web->session->get('Attachments'), %ARGS, status => 'new' );
 
     unless ( $Ticket->id ) {
         $m->comp( 'Error.html', why => join( "\n", @results ));
@@ -142,8 +142,8 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
         # }}}
 
         # delete temporary storage entry to make WebUI clean
-        unless ( keys %{ $session{'Attachments'} } and $ARGS{'update_attach'} ) {
-            delete $session{'Attachments'};
+        unless ( keys %{ Jifty->web->session->get('Attachments') } and $ARGS{'update_attach'} ) {
+            Jifty->web->session->remove('Attachments');
         }
 
         # }}}
@@ -159,24 +159,24 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
 
 
     if (
-        $session{'Attachments'}
+        Jifty->web->session->get('Attachments')
         || ( defined $ARGS{'update_content'}
             && $ARGS{'update_content'} ne ''
             && $ARGS{'update_content'} ne "-- \n"
             . Jifty->web->current_user->user_object->signature )
       )
     {
-        $ARGS{update_attachments} = $session{'Attachments'};
+        $ARGS{update_attachments} = Jifty->web->session->get('Attachments');
     }
     push @results, process_update_message(
         args_ref   => \%ARGS,
         ticket_obj => $Ticket
     );
-            delete $session{'Attachments'};
+            Jifty->web->session->remove('Attachments');
 
     # delete temporary storage entry to make WebUI clean
-    unless ( keys %{ $session{'Attachments'} } and $ARGS{'update_attach'} ) {
-        delete $session{'Attachments'};
+    unless ( keys %{ Jifty->web->session->get('Attachments') } and $ARGS{'update_attach'} ) {
+        Jifty->web->session->remove('Attachments');
     }
 
     my @cfupdates = process_object_custom_field_updates(object => $Ticket, args_ref => \%ARGS);
@@ -211,8 +211,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
         # resubmission on refresh.
         # But we need to store Actions somewhere too, so we don't lose them.
         my $key = Digest::MD5::md5_hex(rand(1024));
-        push @{ $session{"Actions"}->{$key}  ||= [] }, @results;
-        $session{'i'}++;
+        Jifty->web->session->set( "actions_$key" => \@Actions );
         RT::Interface::Web::redirect( RT->config->get('web_url') ."SelfService/Display.html?id=". $Ticket->id."&results=".$key);
     }
 

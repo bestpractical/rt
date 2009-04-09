@@ -112,12 +112,11 @@ sub insert_initial_data {
         }
         else {
             my $ace = RT::Model::ACE->new( current_user => RT->system_user );
-            my ( $val, $msg ) = $ace->_bootstrap_create(
-                principal_id   => acl_equiv_group_id( RT->system_user->id ),
-                type => 'Group',
-                right_name     => 'SuperUser',
-                object_type    => 'RT::System',
-                object_id      => 1,
+            my ( $val, $msg ) = $ace->create(
+                principal   => RT->system_user->id,
+                right_name  => 'SuperUser',
+                object_type => 'RT::System',
+                object_id   => 1,
             );
             return ( $val, $msg ) unless $val;
         }
@@ -460,31 +459,20 @@ sub insert_data {
         #print "done.\n";
     }
     if (@Scrips) {
+        # XXX: put into RT::Model::Rules
+        require RT::Lorzy;
+        require Lorzy::Builder;
+        for my $item (sort { $a->{description} cmp $b->{description} } @Scrips) {
+            my $rule_factory = RT::Lorzy->create_scripish(
+                $item->{scrip_condition},
+                $item->{scrip_action},
+                $item->{template},
+                $item->{description},
+            );
 
-        #print "Creating scrips...";
-
-        for my $item (@Scrips) {
-            my $new_entry = RT::Model::Scrip->new( current_user => RT->system_user );
-
-            my @queues
-                = ref $item->{'queue'} eq 'ARRAY'
-                ? @{ $item->{'queue'} }
-                : $item->{'queue'} || 0;
-            push @queues, 0 unless @queues;    # add global queue at least
-
-            foreach my $q (@queues) {
-                my ( $return, $msg ) = $new_entry->create( %$item, queue => $q );
-                if ($return) {
-
-                    #print $return. ".";
-                } else {
-
-                    #print "(Error: $msg)\n";
-                }
-            }
+            my $rule = RT::Model::Rule->new( current_user => RT->system_user );
+            $rule->create_from_factory( $rule_factory );
         }
-
-        #print "done.\n";
     }
 
     if (@Attributes) {
@@ -518,21 +506,6 @@ sub insert_data {
     }
 
     #print "Done setting up database content.\n";
-}
-
-=head2 acl_equiv_group_id
-
-Given a userid, return that user's acl equivalence group
-
-=cut
-
-sub acl_equiv_group_id {
-    my $username = shift;
-    my $user = RT::Model::User->new( current_user => RT->system_user );
-    $user->load($username);
-    my $equiv_group = RT::Model::Group->new( current_user => RT->system_user );
-    $equiv_group->load_acl_equivalence($user);
-    return ( $equiv_group->id );
 }
 
 1;

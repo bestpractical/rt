@@ -9,7 +9,7 @@ use RT;
 
 {
 
-ok (require RT::SearchBuilder);
+ok (require RT::Collection);
 
 
 }

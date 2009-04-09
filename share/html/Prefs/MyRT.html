@@ -98,15 +98,15 @@ $ARGS{'summary_rows'} ||= $user->preferences('SummaryRows', RT->config->get('def
 if ($ARGS{reset}) {
     my ($ok, $msg) = $user->set_preferences('HomepageSettings', {});
     push @results, $ok ? _('Preferences saved.') : $msg;
-    delete $session{'my_rt_portlets'};
+    Jifty->web->session->remove('my_rt_portlets');
 }
 
-unless (exists $session{'my_rt_portlets'}) {
+unless (Jifty->web->session->get('my_rt_portlets')) {
     my ($default_portlets) = RT::System->new()->attributes->named('HomepageSettings');
     my $portlets = $default_portlets ? $default_portlets->content : {};
-    $session{'my_rt_portlets'} = $user->preferences('HomepageSettings', $portlets);
+    Jifty->web->session->set('my_rt_portlets', $user->preferences('HomepageSettings', $portlets) );
 }
-my $portlets = $session{'my_rt_portlets'};
+my $portlets = Jifty->web->session->get('my_rt_portlets');
 
 my %seen;
 my @items = map ["component-$_", $_], grep !$seen{$_}++, @{RT->config->get('homepage_components')};
@@ -146,7 +146,7 @@ my @panes = $m->comp(
         my ( $conf, $pane ) = @_;
         my ($ok, $msg) = $user->set_preferences( 'HomepageSettings', $conf );
         push @results, $ok ? _('Preferences saved for %1.', $pane) : $msg;
-        delete $session{'my_rt_portlets'};
+        Jifty->web->session->remove('my_rt_portlets');
     }
 );
 

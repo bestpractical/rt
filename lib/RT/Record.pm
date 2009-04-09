@@ -411,26 +411,6 @@ sub set_last_updated {
     );
 }
 
-
-
-=head2 creator_obj
-
-Returns an RT::Model::User object with the RT account of the creator of this row
-
-=cut
-
-sub creator_obj {
-    my $self = shift;
-    unless ( exists $self->{'creator_obj'} ) {
-
-        $self->{'creator_obj'} = RT::Model::User->new( current_user => $self->current_user );
-        $self->{'creator_obj'}->load( $self->creator );
-    }
-    return ( $self->{'creator_obj'} );
-}
-
-
-
 =head2 last_updated_by_obj
 
   Returns an RT::Model::User object of the last user to touch this object

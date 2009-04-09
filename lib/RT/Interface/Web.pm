@@ -65,46 +65,7 @@ use RT::System;
 use RT::SavedSearches;
 use URI qw();
 use Digest::MD5 ();
-
-
-=head2 escape_utf8 SCALARREF
-
-does a css-busting but minimalist escaping of whatever html you're passing in.
-
-=cut
-
-sub escape_utf8 {
-    my $ref = shift;
-    return unless defined $$ref;
-
-    $$ref =~ s/&/&#38;/g;
-    $$ref =~ s/</&lt;/g;
-    $$ref =~ s/>/&gt;/g;
-    $$ref =~ s/\(/&#40;/g;
-    $$ref =~ s/\)/&#41;/g;
-    $$ref =~ s/"/&#34;/g;
-    $$ref =~ s/'/&#39;/g;
-}
-
-
-
-=head2 escape_uri SCALARREF
-
-Escapes URI component according to RFC2396
-
-=cut
-
 use Encode qw();
-
-sub escape_uri {
-    my $ref = shift;
-    return unless defined $$ref;
-
-    use bytes;
-    $$ref =~ s/([^a-zA-Z0-9_.!~*'()-])/uc sprintf("%%%02X", ord($1))/eg;
-}
-
-
 
 =head2 web_canonicalize_info();
 
@@ -159,10 +120,7 @@ sub web_external_auto_info {
 
 =head2 redirect URL
 
-This routine ells the current user's browser to redirect to URL.  
-Additionally, it unties the user's currently active session, helping to avoid 
-A bug in Apache::Session 1.81 and earlier which clobbers sessions if we try to use 
-a cached DBI statement handle twice at the same time.
+This routine tells the current user's browser to redirect to URL.  
 
 =cut
 
@@ -245,7 +203,7 @@ sub strip_content {
     return '' if not $html and $content =~ /^\s*(--)?\s*\Q$sig\E\s*$/;
 
     # Check for html-formatted sig
-    RT::Interface::Web::escape_utf8( \$sig );
+    Jifty::View::Mason::Handler::escape_utf8( \$sig );
     return ''
       if $html
           and $content =~
@@ -320,7 +278,7 @@ sub strip_content {
     return '' if not $html and $content =~ /^\s*(--)?\s*\Q$sig\E\s*$/;
 
     # Check for html-formatted sig
-    RT::Interface::Web::escape_utf8( \$sig );
+    Jifty::View::Mason::Handler::escape_utf8( \$sig );
     return ''
       if $html
           and $content =~
@@ -332,7 +290,7 @@ sub strip_content {
 
 package HTML::Mason::Commands;
 
-use vars qw/$r $m %session/;
+use vars qw/$r $m/;
 
 
 =head2 loc ARRAY
@@ -355,11 +313,11 @@ sub abort {
     my $why  = shift;
     my %args = @_;
 
-    if (   $session{'ErrorDocument'}
-        && $session{'ErrorDocumentType'} )
+    if (   Jifty->web->session->get('ErrorDocument')
+        && Jifty->web->session->get('ErrorDocumentType') )
     {
-        $r->content_type( $session{'ErrorDocumentType'} );
-        $m->comp( $session{'ErrorDocument'}, why => $why, %args );
+        $r->content_type( Jifty->web->session->get('ErrorDocumentType') );
+        $m->comp( Jifty->web->session->get('ErrorDocument'), why => $why, %args );
         $m->abort;
     } else {
         $m->comp( "/Elements/Error", why => $why, %args );
@@ -799,22 +757,6 @@ sub make_mime_entity {
 }
 
 
-
-=head2 parse_date_to_iso
-
-Takes a date in an arbitrary format.
-Returns an ISO date and time in GMT
-
-=cut
-
-sub parse_date_to_iso {
-    my $date = shift;
-
-    return RT::DateTime->new_from_string($date)->iso;
-}
-
-
-
 sub process_acl_changes {
     my $ARGSref = shift;
 
@@ -1243,7 +1185,7 @@ sub process_ticket_watchers {
         # Delete deletable watchers
         if ( $key =~ /^Ticket-DeleteWatcher-Type-(.*)-Principal-(\d+)$/ ) {
             my ( $code, $msg ) = $Ticket->delete_watcher(
-                principal_id => $2,
+                principal => $2,
                 type         => $1
             );
             push @results, $msg;
@@ -1288,8 +1230,8 @@ sub process_ticket_watchers {
                 next unless $value =~ /^(?:admin_cc|cc|requestor)$/i;
 
                 my ( $code, $msg ) = $Ticket->add_watcher(
-                    type         => $value,
-                    principal_id => $principal_id
+                    type      => $value,
+                    principal => $principal_id
                 );
                 push @results, $msg;
             }

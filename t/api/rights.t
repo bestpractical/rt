@@ -119,7 +119,7 @@ $ace = RT::Model::ACE->new(current_user => RT->system_user );
 ok( $ace_id, "Granted queue admin_cc role group with ModifyTicket right: $msg" );
 ok( $group->principal->has_right( right => 'ModifyTicket', object => $queue ), "role group can modify ticket" );
 ok( !$user->has_right( right => 'ModifyTicket', object => $ticket ), "user is not admin_cc and can't modify ticket" );
-($status, $msg) = $ticket->add_watcher(type => 'admin_cc', principal_id => $user->principal_id);
+($status, $msg) = $ticket->add_watcher(type => 'admin_cc', principal => $user);
 ok( $status, "successfuly added user as admin_cc");
 ok( $user->has_right( right => 'ModifyTicket', object => $ticket ), "user is admin_cc and can modify ticket" );
 

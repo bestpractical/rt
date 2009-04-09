@@ -69,7 +69,7 @@ use strict;
 
 package RT::Model::LinkCollection;
 
-use base qw/RT::SearchBuilder/;
+use base qw/RT::Collection/;
 
 use RT::URI;
 

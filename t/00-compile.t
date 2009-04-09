@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT::Test;
-use Test::More tests => 33;
+use Test::More tests => 32;
 
 require_ok("RT");
 require_ok("RT::Test");
@@ -12,7 +12,6 @@ require_ok("RT::Interface::CLI");
 require_ok("RT::Interface::Email");
 require_ok("RT::Model::LinkCollection");
 require_ok("RT::Model::QueueCollection");
-require_ok("RT::Model::ScripCollection");
 require_ok("RT::Model::TemplateCollection");
 require_ok("RT::Model::PrincipalCollection");
 require_ok("RT::Model::AttachmentCollection");

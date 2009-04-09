@@ -193,7 +193,7 @@ if (!keys(%data)) {
 	if (!%$fields || exists $fields->{lc 'Queue'});
     push @data, [ owner => $ticket->owner_obj->name ]
 	if (!%$fields || exists $fields->{lc 'Owner'});
-    push @data, [ creator => $ticket->creator_obj->name ]
+    push @data, [ creator => $ticket->creator->name ]
 	if (!%$fields || exists $fields->{lc 'Creator'});
 
     foreach (qw(subject status priority initial_priority final_priority)) {

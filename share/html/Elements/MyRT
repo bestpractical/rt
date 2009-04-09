@@ -65,12 +65,13 @@
 my %allowed_components = map {$_ => 1} @{RT->config->get('homepage_components')};
 
 my $user = Jifty->web->current_user->user_object;
-$portlets ||= $session{'my_rt_portlets'};
+$portlets ||= Jifty->web->session->get('my_rt_portlets');
 unless ( $portlets ) {
     my ($default_portlets) = RT::System->new()->attributes->named('HomepageSettings');
-    $portlets = $session{'my_rt_portlets'} = $user->preferences(
+    $portlets =  $user->preferences(
         HomepageSettings => $default_portlets? $default_portlets->content: {},
     );
+    Jifty->web->session->set('my_rt_portlets', $portlets);
 }
 
 my ($body, $summary) = @{$portlets}{qw(body summary)};

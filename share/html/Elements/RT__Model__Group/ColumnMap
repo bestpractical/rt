@@ -62,7 +62,7 @@ my $COLUMN_MAP = {
         value     => sub  {
             my $group = $_[0];
             my $uid   = $_[2] || return '';
-            return $group->has_member( $uid )? $_[0]->_('yes'): $_[0]->_('no');
+            return $group->has_member( principal =>  $uid )? $_[0]->_('yes'): $_[0]->_('no');
         },
     },
     has_member_recursively => {
@@ -70,7 +70,7 @@ my $COLUMN_MAP = {
         value     => sub  {
             my $group = $_[0];
             my $uid   = $_[2] || return '';
-            return $group->has_member( $uid, recursively => 1 )? $_[0]->_('yes'): $_[0]->_('no');
+            return $group->has_member( principal =>  $uid, recursively => 1 )? $_[0]->_('yes'): $_[0]->_('no');
         },
     },
     name => {

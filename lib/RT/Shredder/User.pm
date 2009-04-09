@@ -69,7 +69,6 @@ my @OBJECTS = qw(
     QueueCollection
     ScripActionCollection
     ScripConditionCollection
-    ScripCollection
     TemplateCollection
     ObjectCustomFieldValueCollection
     TicketCollection
@@ -134,47 +133,6 @@ sub __depends_on {
     );
 
     return $self->SUPER::__depends_on(%args);
-}
-
-sub __relates {
-    my $self = shift;
-    my %args = (
-        shredder     => undef,
-        dependencies => undef,
-        @_,
-    );
-    my $deps = $args{'dependencies'};
-    my $list = [];
-
-    # Principal
-    my $obj = $self->principal;
-    if ( $obj && defined $obj->id ) {
-        push( @$list, $obj );
-    } else {
-        my $rec = $args{'shredder'}->get_record( object => $self );
-        $self = $rec->{'object'};
-        $rec->{'state'} |= INVALID;
-        $rec->{'description'} = "Have no related ACL equivalence Group object";
-    }
-
-    $obj = RT::Model::Group->new( current_user => RT->system_user );
-    $obj->load_acl_equivalence( $self->principal );
-    if ( $obj && defined $obj->id ) {
-        push( @$list, $obj );
-    } else {
-        my $rec = $args{'shredder'}->get_record( object => $self );
-        $self = $rec->{'object'};
-        $rec->{'state'} |= INVALID;
-        $rec->{'description'} = "Have no related Principal #" . $self->id . " object";
-    }
-
-    $deps->_push_dependencies(
-        base_object    => $self,
-        flags          => RELATES,
-        target_objects => $list,
-        shredder       => $args{'shredder'}
-    );
-    return $self->SUPER::__Relates(%args);
 }
 
 sub before_wipeout {

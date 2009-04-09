@@ -218,7 +218,6 @@ BEGIN {
     require RT::Shredder::Link;
     require RT::Shredder::Principal;
     require RT::Shredder::Queue;
-    require RT::Shredder::Scrip;
     require RT::Shredder::ScripAction;
     require RT::Shredder::ScripCondition;
     require RT::Shredder::Template;
@@ -239,7 +238,6 @@ our @SUPPORTED_OBJECTS = qw(
     Link
     Principal
     Queue
-    Scrip
     ScripAction
     ScripCondition
     Template
@@ -300,7 +298,7 @@ sub _init {
 
 Cast objects to the C<RT::Record> objects or its ancesstors.
 objects can be passed as SCALAR (format C<< <class>-<id> >>),
-ARRAY, C<RT::Record> ancesstors or C<RT::SearchBuilder> ancesstor.
+ARRAY, C<RT::Record> ancesstors or C<RT::Collection> ancesstor.
 
 Most methods that takes C<objects> argument use this method to
 cast argument value to list of records.
@@ -312,7 +310,7 @@ For example:
     my @objs = $shredder->cast_objects_to_records(
         objects => [             # ARRAY reference
             'RT::Model::Attachment-10', # SCALAR or SCALAR reference
-            $tickets,            # RT::Model::TicketCollection object (isa RT::SearchBuilder)
+            $tickets,            # RT::Model::TicketCollection object (isa RT::Collection)
             $user,               # RT::Model::User object (isa RT::Record)
         ],
     );
@@ -329,7 +327,7 @@ sub cast_objects_to_records {
         RT::Shredder::Exception->throw("Undefined objects argument");
     }
 
-    if ( UNIVERSAL::isa( $targets, 'RT::SearchBuilder' ) ) {
+    if ( UNIVERSAL::isa( $targets, 'RT::Collection' ) ) {
 
         #XXX: try to use ->_do_search + ->items_array_ref in feature
         #     like we do in Record with links, but change only when
@@ -598,16 +596,6 @@ sub _wipeout {
     );
 
     return;
-}
-
-sub validate_relations {
-    my $self = shift;
-    my %args = (@_);
-
-    foreach my $record ( values %{ $self->{'cache'} } ) {
-        next if ( $record->{'state'} & VALID );
-        $record->{'object'}->validate_relations( shredder => $self );
-    }
 }
 
 =head3 Data storage and backups
