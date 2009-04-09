@@ -61,6 +61,7 @@
     <strong><%$queue_obj->Name || ''%></strong> (<%$queue_obj->Description || ''%>)
 </td>
 </tr>
+<% $m->callback( CallbackName => 'AfterQueue', %ARGS, QueueObj => $queue_obj ) %>
 <tr>
 <td class="label">
 <&|/l&>Requestors</&>:
