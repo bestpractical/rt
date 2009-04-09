@@ -13,8 +13,7 @@ $EVAL->load_package('RT', 'RT::Lorzy::Package::RT');
 
 sub evaluate {
     my ($self, $code, %args) = @_;
-    my $ret = $EVAL->apply_script( $code, \%args );
-    return $ret;
+    eval { $EVAL->apply_script( $code, \%args ) };
 }
 
 sub create_scripish {
@@ -139,18 +138,24 @@ sub _init {
 
 sub prepare {
     my ( $self, %args ) = @_;
-    RT::Lorzy->evaluate( $self->factory->condition,
-        ticket      => $self->ticket_obj,
-        transaction => $self->transaction )
-        or return;
+    my $ret = RT::Lorzy->evaluate( $self->factory->condition,
+                                   ticket      => $self->ticket_obj,
+                                   transaction => $self->transaction );
+    if (my $e = Lorzy::Exception->caught()) {
+        Jifty->log->error("Rule '@{[ $self->description]}' condition error, ignoring: $e");
+    }
+    return unless $ret;
 
     return 1 unless $self->factory->prepare;
 
-    RT::Lorzy->evaluate( $self->factory->prepare,
+    $ret = RT::Lorzy->evaluate( $self->factory->prepare,
         context     => $self->context,
         ticket      => $self->ticket_obj,
         transaction => $self->transaction );
 
+    if (my $e = Lorzy::Exception->caught()) {
+        Jifty->log->error("Rule '@{[ $self->description]}' prepare error, ignoring: $e");
+    }
 }
 
 sub description { $_[0]->factory->description }
@@ -162,10 +167,15 @@ sub hints {
 
 sub commit {
     my ($self, %args) = @_;
-    return RT::Lorzy->evaluate( $self->factory->action,
-                                context => $self->context,
-                                ticket => $self->ticket_obj,
-                                transaction => $self->transaction);
+    my $ret = RT::Lorzy->evaluate( $self->factory->action,
+                                   context => $self->context,
+                                   ticket => $self->ticket_obj,
+                                   transaction => $self->transaction);
+
+    if (my $e = Lorzy::Exception->caught()) {
+        Jifty->log->error("Rule '@{[ $self->description]}' commit error: $e");
+    }
+    return $ret;
 }
 
 1;
