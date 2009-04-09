@@ -128,7 +128,7 @@ our %FIELD_METADATA = (
     LastUpdated    => [ 'DATE'         => 'last_updated', ],    #loc_left_pair
     Created         => [ 'DATE'         => 'Created', ],        #loc_left_pair
     Subject         => [ 'STRING', ],                           #loc_left_pair
-    Content         => [ 'TRANSFIELD', ],                       #loc_left_pair
+    Content         => [ 'TRANSCONTENT', ],                     #loc_left_pair
     ContentType    => [ 'TRANSFIELD', ],                        #loc_left_pair
     Filename        => [ 'TRANSFIELD', ],                       #loc_left_pair
     TransactionDate => [ 'TRANSDATE', ],                        #loc_left_pair
@@ -166,6 +166,7 @@ our %dispatch = (
     DATE            => \&_date_limit,
     STRING          => \&_string_limit,
     TRANSFIELD      => \&_trans_limit,
+    TRANSCONTENT    => \&_trans_content_limit,
     TRANSDATE       => \&_trans_date_limit,
     WATCHERFIELD    => \&_watcher_limit,
     MEMBERSHIPFIELD => \&_watcher_membership_limit,
@@ -241,18 +242,8 @@ sub sort_fields {
 
 sub clean_slate {
     my $self = shift;
-    $self->SUPER::clean_slate(@_);
-    delete $self->{$_} foreach qw(
-        _sql_cf_alias
-        _sql_group_members_aliases
-        _sql_object_cfv_alias
-        _sql_role_group_aliases
-        _sql_transalias
-        _sql_trattachalias
-        _sql_u_watchers_alias_for_sort
-        _sql_u_watchers_aliases
-        _sql_current_user_can_see_applied
-    );
+    delete $self->{'_sql_current_user_can_see_applied'};
+    return $self->SUPER::clean_slate(@_);
 }
 
 =head1 Limit Helper Routines
@@ -604,28 +595,14 @@ Meta Data:
 
 # This routine should really be factored into translimit.
 sub _trans_date_limit {
-    my ( $sb, $field, $op, $value, @rest ) = @_;
+    my ( $self, $field, $op, $value, @rest ) = @_;
 
     # See the comments for TransLimit, they apply here too
-
-    unless ( $sb->{_sql_transalias} ) {
-        $sb->{_sql_transalias} = $sb->join(
-            alias1  => 'main',
-            column1 => 'id',
-            table2  => RT::Model::TransactionCollection->new,
-            column2 => 'object_id',
-        );
-        $sb->SUPER::limit(
-            alias            => $sb->{_sql_transalias},
-            column           => 'object_type',
-            value            => 'RT::Model::Ticket',
-            entry_aggregator => 'AND',
-        );
-    }
+    my $txn_alias = $self->join_transactions;
 
     my $date = RT::DateTime->new_from_string($value);
 
-    $sb->open_paren;
+    $self->open_paren;
     if ( $op eq "=" ) {
 
         # if we're specifying =, that means we want everything on a
@@ -636,16 +613,16 @@ sub _trans_date_limit {
         my $daystart = $date->iso;
         my $dayend = $date->add(days => 1)->iso;
 
-        $sb->_sql_limit(
-            alias          => $sb->{_sql_transalias},
+        $self->_sql_limit(
+            alias          => $txn_alias,
             column         => 'created',
             operator       => ">=",
             value          => $daystart,
             case_sensitive => 0,
             @rest
         );
-        $sb->_sql_limit(
-            alias          => $sb->{_sql_transalias},
+        $self->_sql_limit(
+            alias          => $txn_alias,
             column         => 'created',
             operator       => "<=",
             value          => $dayend,
@@ -660,8 +637,8 @@ sub _trans_date_limit {
     else {
 
         #Search for the right field
-        $sb->_sql_limit(
-            alias          => $sb->{_sql_transalias},
+        $self->_sql_limit(
+            alias          => $txn_alias,
             column         => 'created',
             operator       => $op,
             value          => $date->iso,
@@ -670,7 +647,7 @@ sub _trans_date_limit {
         );
     }
 
-    $sb->close_paren;
+    $self->close_paren;
 }
 
 =head2 _trans_limit
@@ -717,25 +694,45 @@ sub _trans_limit {
     # way they get parsed in the tree they're in different subclauses.
 
     my ( $self, $field, $op, $value, @rest ) = @_;
+    my $txn_alias = $self->join_transactions;
 
-    unless ( $self->{_sql_transalias} ) {
-        $self->{_sql_transalias} = $self->join(
-            alias1  => 'main',
+    unless ( defined $self->{'_sql_aliases'}{'attachments'} ) {
+        $self->{'_sql_aliases'}{'attachments'} = $self->_sql_join(
+            type    => 'left',                                 # not all txns have an attachment
+            alias1  => $txn_alias,
             column1 => 'id',
-            table2  => RT::Model::TransactionCollection->new,
-            column2 => 'object_id',
-        );
-        $self->SUPER::limit(
-            alias            => $self->{_sql_transalias},
-            column           => 'object_type',
-            value            => 'RT::Model::Ticket',
-            entry_aggregator => 'AND',
+            table2  => RT::Model::AttachmentCollection->new,
+            column2 => 'transaction_id',
         );
     }
-    unless ( defined $self->{_sql_trattachalias} ) {
-        $self->{_sql_trattachalias} = $self->_sql_join(
-            type    => 'left',                                 # not all txns have an attachment
-            alias1  => $self->{_sql_transalias},
+
+    $self->_sql_limit(
+        alias            => $self->{'_sql_aliases'}{'attachments'},
+        column           => $field,
+        operator         => $op,
+        value            => $value,
+        case_sensitive   => 0,
+        @rest
+    );
+}
+
+=head2 _trans_content_limit
+
+Limit based on the content of a transaction.
+
+=cut
+
+sub _trans_content_limit {
+    my ( $self, $field, $op, $value, @rest ) = @_;
+
+    my $config = RT->config->get('FullTextSearch') || {};
+    return unless $config->{'Enable'};
+
+    my $txn_alias = $self->join_transactions;
+    unless ( defined $self->{'_sql_aliases'}{'attachments'} ) {
+        $self->{'_sql_aliases'}{'attachments'} = $self->_sql_join(
+            type    => 'left',
+            alias1  => $txn_alias,
             column1 => 'id',
             table2  => RT::Model::AttachmentCollection->new,
             column2 => 'transaction_id',
@@ -744,42 +741,68 @@ sub _trans_limit {
 
     $self->open_paren;
 
-    #Search for the right field
-    if ( $field eq 'content'
-        and RT->config->get('DontSearchFileAttachments') )
-    {
-        $self->_sql_limit(
-            alias            => $self->{_sql_trattachalias},
-            column           => 'filename',
-            operator         => 'IS',
-            value            => 'NULL',
-            subclause        => 'contentquery',
-            entry_aggregator => 'AND',
-        );
-        $self->_sql_limit(
-            alias          => $self->{_sql_trattachalias},
-            column         => $field,
-            operator       => $op,
-            value          => $value,
-            case_sensitive => 0,
-            @rest,
-            entry_aggregator => 'AND',
-            subclause        => 'contentquery',
-        );
+    if ( $config->{'Indexed'} ) {
+        my $db_type = RT->config->get('DatabaseType');
+        my $alias;
+        if ( $config->{'Table'} ) {
+            $alias = $self->{'_sql_aliases'}{'full_text'} ||= $self->_sql_join(
+                type    => 'left',
+                alias1  => $self->{'_sql_aliases'}{'attachments'},
+                column1 => 'id',
+                table2  => $config->{'Table'},
+                column2 => 'id',
+            );
+        } else {
+            $alias = $self->{'_sql_aliases'}{'attachments'};
+        }
+        my $column = $config->{'Column'} || 'fts_index';
+        if ( $db_type eq 'mysql' ) {
+            $self->_sql_limit(
+                alias            => $alias,
+                column           => $column,
+                operator         => '=',
+                value            => $value,
+                @rest
+            );
+        }
+        elsif ( $db_type eq 'Pg' ) {
+            my $dbh = $self->_handle->dbh;
+            #XXX: handle negative searches
+            $self->_sql_limit(
+                alias       => $alias,
+                column      => $column,
+                operator    => '@@',
+                value       => 'plainto_tsquery('. $dbh->quote($value) .')',
+                quote_value => 0,
+                @rest
+            );
+        }
+        else {
+            die "Indexed full text search is not supported for $db_type";
+        }
     } else {
         $self->_sql_limit(
-            alias            => $self->{_sql_trattachalias},
+            alias            => $self->{'_sql_aliases'}{'attachments'},
             column           => $field,
             operator         => $op,
             value            => $value,
             case_sensitive   => 0,
-            entry_aggregator => 'AND',
             @rest
         );
     }
 
-    $self->close_paren;
+    if ( RT->config->get('DontSearchFileAttachments') ) {
+        $self->_sql_limit(
+            alias            => $self->{'_sql_aliases'}{'attachments'},
+            column           => 'filename',
+            operator         => 'IS',
+            value            => 'NULL',
+            @rest,
+            entry_aggregator => 'AND',
+        );
+    }
 
+    $self->close_paren;
 }
 
 =head2 _watcher_limit
@@ -915,9 +938,9 @@ sub _watcher_limit {
             new          => 0,
         );
 
-        my $users = $self->{'_sql_u_watchers_aliases'}{$group_members};
+        my $users = $self->{'_sql_aliases'}{'u_watchers'}{$group_members};
         unless ($users) {
-            $users = $self->{'_sql_u_watchers_aliases'}{$group_members} = $self->new_alias( RT::Model::UserCollection->new );
+            $users = $self->{'_sql_aliases'}{'u_watchers'}{$group_members} = $self->new_alias( RT::Model::UserCollection->new );
             $self->SUPER::limit(
                 leftjoin    => $group_members,
                 alias       => $group_members,
@@ -960,9 +983,9 @@ sub _watcher_limit {
 sub _role_groupsjoin {
     my $self = shift;
     my %args = ( new => 0, class => 'ticket', type => '', @_ );
-    return $self->{'_sql_role_group_aliases'}
+    return $self->{'_sql_aliases'}{'role_group'}
       { $args{'class'} . '-' . $args{'type'} }
-      if $self->{'_sql_role_group_aliases'}
+      if $self->{'_sql_aliases'}{'role_group'}
           { $args{'class'} . '-' . $args{'type'} }
           && !$args{'new'};
     
@@ -991,7 +1014,7 @@ sub _role_groupsjoin {
         value    => $args{'type'},
     ) if $args{'type'};
 
-    $self->{'_sql_role_group_aliases'}{ $args{'class'} . '-' . $args{'type'} } =
+    $self->{'_sql_aliases'}{'role_group'}{ $args{'class'} . '-' . $args{'type'} } =
       $groups
         unless $args{'new'};
 
@@ -1002,8 +1025,8 @@ sub _group_membersjoin {
     my $self = shift;
     my %args = ( new => 1, groups_alias => undef, @_ );
 
-    return $self->{'_sql_group_members_aliases'}{ $args{'groups_alias'} }
-        if $self->{'_sql_group_members_aliases'}{ $args{'groups_alias'} }
+    return $self->{'_sql_aliases'}{'group_members'}{ $args{'groups_alias'} }
+        if $self->{'_sql_aliases'}{'group_members'}{ $args{'groups_alias'} }
             && !$args{'new'};
 
     my $alias = $self->join(
@@ -1015,7 +1038,7 @@ sub _group_membersjoin {
         entry_aggregator => 'AND',
     );
 
-    $self->{'_sql_group_members_aliases'}{ $args{'groups_alias'} } = $alias
+    $self->{'_sql_aliases'}{'group_members'}{ $args{'groups_alias'} } = $alias
         unless $args{'new'};
 
     return $alias;
@@ -1243,15 +1266,15 @@ sub _custom_field_join {
     my ( $self, $cfkey, $cfid, $field ) = @_;
 
     # Perform one join per CustomField
-    if (   $self->{_sql_object_cfv_alias}{$cfkey}
-        || $self->{_sql_cf_alias}{$cfkey} )
+    if (   $self->{'_sql_aliases'}{'OCFV'}{$cfkey}
+        || $self->{'_sql_aliases'}{'cf'}{$cfkey} )
     {
-        return ( $self->{_sql_object_cfv_alias}{$cfkey}, $self->{_sql_cf_alias}{$cfkey} );
+        return ( $self->{'_sql_aliases'}{'OCFV'}{$cfkey}, $self->{'_sql_aliases'}{'cf'}{$cfkey} );
     }
 
     my ( $TicketCFs, $CFs );
     if ($cfid) {
-        $TicketCFs = $self->{_sql_object_cfv_alias}{$cfkey} = $self->join(
+        $TicketCFs = $self->{'_sql_aliases'}{'OCFV'}{$cfkey} = $self->join(
             type    => 'left',
             alias1  => 'main',
             column1 => 'id',
@@ -1279,7 +1302,7 @@ sub _custom_field_join {
             value    => '0',
         );
 
-        $CFs = $self->{_sql_cf_alias}{$cfkey} = $self->join(
+        $CFs = $self->{'_sql_aliases'}{'cf'}{$cfkey} = $self->join(
             type    => 'left',
             alias1  => $ocfalias,
             column1 => 'custom_field',
@@ -1301,7 +1324,7 @@ sub _custom_field_join {
 #            value           => $field,
 #        );
 
-        $TicketCFs = $self->{_sql_object_cfv_alias}{$cfkey} = $self->join(
+        $TicketCFs = $self->{'_sql_aliases'}{'OCFV'}{$cfkey} = $self->join(
             type    => 'left',
             alias1  => $CFs,
             column1 => 'id',
@@ -1547,9 +1570,9 @@ sub order_by {
         if ( defined $meta->[0] && $meta->[0] eq 'WATCHERFIELD' ) {
 
             # cache alias as we want to use one alias per watcher type for sorting
-            my $users = $self->{_sql_u_watchers_alias_for_sort}{ $meta->[1] };
+            my $users = $self->{'_sql_aliases'}{'u_watchers_sort'}{ $meta->[1] };
             unless ($users) {
-                $self->{_sql_u_watchers_alias_for_sort}{ $meta->[1] } = $users = ( $self->_watcherjoin( $meta->[1] ) )[2];
+                $self->{'_sql_aliases'}{'u_watchers_sort'}{ $meta->[1] } = $users = ( $self->_watcherjoin( $meta->[1] ) )[2];
             }
             push @res, { %$row, alias => $users, column => $subkey };
         } elsif ( defined $meta->[0] && $meta->[0] =~ /CUSTOMFIELD/i ) {
@@ -2501,13 +2524,9 @@ sub _init_sql {
     my $self = shift;
 
     # Private Member Variables (which should get cleaned)
-    $self->{'_sql_transalias'}               = undef;
-    $self->{'_sql_trattachalias'}            = undef;
-    $self->{'_sql_cf_alias'}                 = undef;
-    $self->{'_sql_object_cfv_alias'}         = undef;
-    $self->{'_sql_watcher_join_users_alias'} = undef;
-    $self->{'_sql_query'}                    = '';
-    $self->{'_sql_looking_at'}               = {};
+    $self->{'_sql_aliases'}    = {};
+    $self->{'_sql_query'}      = '';
+    $self->{'_sql_looking_at'} = {};
 }
 
 sub _sql_limit {

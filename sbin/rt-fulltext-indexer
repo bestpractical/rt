@@ -1,0 +1,346 @@
+#!/usr/bin/env perl
+# BEGIN BPS TAGGED BLOCK {{{
+# 
+# COPYRIGHT:
+# 
+# This software is Copyright (c) 1996-2008 Best Practical Solutions, LLC
+#                                          <jesse@bestpractical.com>
+# 
+# (Except where explicitly superseded by other copyright notices)
+# 
+# 
+# LICENSE:
+# 
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+# 
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+# 
+# 
+# CONTRIBUTION SUBMISSION POLICY:
+# 
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+# 
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+# 
+# END BPS TAGGED BLOCK }}}
+use strict;
+use warnings;
+
+use RT;
+BEGIN {RT->init_jifty};
+use RT::Interface::CLI qw{ clean_env };
+
+use Getopt::Long;
+
+clean_env();
+RT::load_config();
+RT::init();
+
+no warnings 'once';
+
+# Read in the options
+my %opts;
+GetOptions( \%opts, 'help', 'debug', 'limit', 'skip' );
+if ( $opts{'help'} ) {
+    require Pod::Usage;
+    import Pod::Usage;
+    pod2usage(-message => "RT Email Dashboards\n", -verbose => 1);
+    exit 1;
+}
+
+my $fts_config = RT->config->get('FullTextSearch') || {};
+unless ( $fts_config->{'Enable'} ) {
+    print STDERR "Full text search disabled in the RT config."
+        ." Read documentation for %FullTextSearch config option.";
+    exit 1;
+}
+unless ( $fts_config->{'Indexed'} ) {
+    print STDERR "Full text search is enabled in the RT config,"
+        ." however full text search works without special index,"
+        ." so this tool is not required."
+        ." Read documentation for %FullTextSearch config option.";
+    exit 1;
+}
+
+my $db_type = RT->config->get('DatabaseType');
+
+my @types = qw(text html);
+foreach my $type ( @types ) {
+    my $attaches = attachments($type);
+    $attaches->limit( column => 'id', operator => '>', value => last_indexed($type) );
+    $attaches->order_by( column => 'id', order => 'asc' );
+    $attaches->rows_per_page( $opts{'limit'} || 100 );
+
+    my $found = 0;
+    while ( my $a = $attaches->next ) {
+        print "bla\n";
+        debug("Found attachment #". $a->id );
+        next if filter( $type, $a );
+        debug("Attachment #". $a->id ." hasn't been filtered" );
+        my $txt = extract($type, $a) or next;
+        debug("Extracted text from attachment #". $a->id );
+        $found++;
+        process( $type, $a, $txt );
+        debug("Processed attachment #". $a->id );
+    }
+    finalize( $type, $attaches ) if $found;
+    clean( $type );
+}
+
+sub attachments {
+    my $type = shift;
+    my $res = RT::Model::AttachmentCollection->new( current_user => RT->system_user );
+
+    my $txn_alias = $res->join_transactions;
+    $res->limit( alias => $txn_alias, column => 'object_type', value => 'RT::Model::Ticket' );
+    my $ticket_alias = $res->join(
+        alias1 => $txn_alias, column1 => 'object_id',
+        table2 => new RT::Model::TicketCollection, column2 => 'id'
+    );
+    $res->limit( alias => $ticket_alias, column => 'status', operator => '!=', value => 'deleted' );
+
+    return goto_specific(
+        suffix => $type,
+        error => "Don't know how to find $type attachments",
+        arguments => [$res],
+    );
+}
+
+sub last_indexed {
+    my ($type) = (@_);
+    return goto_specific(
+        suffix => $db_type,
+        error => "Don't know how to find last indexed $type attachment for $db_type DB",
+        arguments => \@_,
+    );
+}
+
+sub filter {
+    my $type = shift;
+    return goto_specific(
+        suffix    => $type,
+        arguments => \@_,
+    );
+}
+
+sub extract {
+    my $type = shift;
+    return goto_specific(
+        suffix    => $type,
+        error     => "No way to convert $type attachment into text",
+        arguments => \@_,
+    );
+}
+
+sub process {
+    return goto_specific(
+        suffix    => $db_type,
+        error     => "No processer for $db_type DB",
+        arguments => \@_,
+    );
+}
+
+sub finalize {
+    return goto_specific(
+        suffix    => $db_type,
+        arguments => \@_,
+    );
+}
+
+sub clean {
+    return goto_specific(
+        prefix    => $db_type,
+        arguments => \@_,
+    );
+}
+
+{
+sub last_indexed_mysql {
+    my $type = shift;
+    my $attr = RT->system->first_attribute('LastIndexedAttachments');
+    return 0 unless $attr;
+    return 0 unless exists $attr->{ $type };
+    return $attr->{ $type } || 0;
+}
+
+sub process_mysql {
+    my ($type, $attachment, $text) = (@_);
+
+    my $doc = sphinx_template();
+
+    my $element = $doc->createElement('sphinx:document');
+    $element->setAttribute( id => $attachment->id );
+    $element->appendTextChild( content => $$text );
+
+    $doc->documentElement->appendChild( $element );
+}
+
+my $doc = undef;
+sub sphinx_template {
+    return $doc if $doc;
+
+    require XML::LibXML;
+    $doc = XML::LibXML::Document->new('1.0', 'UTF-8');
+    my $root = $doc->createElement('sphinx:docset');
+    $doc->setDocumentElement( $root );
+
+    my $schema = $doc->createElement('sphinx:schema');
+    $root->appendChild( $schema );
+    foreach ( qw(content) ) {
+        my $field = $doc->createElement('sphinx:field');
+        $field->setAttribute( name => $_ );
+        $schema->appendChild( $field );
+    }
+
+    return $doc;
+}
+
+sub finalize_mysql {
+    my ($type, $attachments) = @_;
+    sphinx_template()->toFH(*STDOUT, 1);
+}
+
+sub clean_mysql {
+    $doc = undef;
+}
+
+}
+
+sub last_indexed_pg {
+    my $type = shift;
+    my $attachments = attachments( $type );
+    my $alias = 'main';
+    if ( $fts_config->{'Table'} ) {
+        $alias = $attachments->join(
+            type    => 'left',
+            column1 => 'id',
+            table2  => $fts_config->{'Table'},
+            column2 => 'id',
+        );
+    }
+    $attachments->limit( alias => $alias, column => $fts_config->{'Column'}, operator => 'IS NOT', value => 'NULL' );
+    $attachments->order_by( column => 'id', order => 'desc' );
+    my $res = $attachments->first;
+    return 0 unless $res;
+    return $res->id;
+}
+
+sub process_pg {
+    my ($type, $attachment, $text) = (@_);
+
+    my $dbh = Jifty->handle->dbh;
+    my $table = $fts_config->{'Table'};
+    my $column = $fts_config->{'Column'};
+
+    my $query;
+    if ( $table ) {
+        if ( my ($id) = $dbh->selectrow_array("SELECT id FROM $table WHERE id = ?", undef, $attachment->id) ) {
+            $query = "UPDATE $table SET $column = to_tsvector(?) WHERE id = ?";
+        } else {
+            $query = "INSERT INTO $table($column, id) VALUES(to_tsvector(?), ?)";
+        }
+    } else {
+        $query = "UPDATE Attachments SET $column = to_tsvector(?) WHERE id = ?";
+    }
+
+    my $status = $dbh->do( $query, undef, $$text, $attachment->id );
+    unless ( $status ) {
+        die "error: ". $dbh->errstr;
+    }
+}
+
+sub attachments_text {
+    my $res = shift;
+    $res->limit( column => 'content_type', value => 'text/plain' );
+    return $res;
+}
+
+sub extract_text {
+    my $attachment = shift;
+    my $text = $attachment->content;
+    return undef unless defined $text && length($text);
+    return \$text;
+}
+
+sub attachments_html {
+    my $res = shift;
+    $res->limit( column => 'content_type', value => 'text/html' );
+    return $res;
+}
+
+sub filter_html {
+    my $attachment = shift;
+    if ( my $parent = $attachment->parent ) {
+# skip html parts that are alternatives
+        return 1 if $parent->id
+            && $parent->content_type eq 'mulitpart/alternative';
+    }
+    return 0;
+}
+
+sub extract_html {
+    my $attachment = shift;
+    my $text = $attachment->content;
+    return undef unless defined $text && length($text);
+# TODO: html -> text
+    return \$text;
+}
+
+sub goto_specific {
+    my %args = (@_);
+
+    my $func = (caller(1))[3];
+    $func =~ s/.*:://;
+    my $call = $func ."_". lc $args{'suffix'};
+    unless ( defined &$call ) {
+        return undef unless $args{'error'};
+        require Carp; Carp::croak( $args{'error'} );
+    }
+    @_ = @{ $args{'arguments'} };
+    goto &$call;
+}
+
+
+# helper functions
+sub verbose  { print _(@_), "\n" if $opts{verbose} || $opts{verbose}; 1 }
+sub debug    { print _(@_), "\n" if $opts{debug}; 1 }
+sub error    { Jifty->log->error(_(@_)); verbose(@_); 1 }
+sub warning  { Jifty->log->warn(_(@_)); verbose(@_); 1 }
+
+=head1 NAME
+
+rt-fulltext-indexer - Indexer for full text search
+
+=head1 SYNOPSIS
+
+    /opt/rt3/local/sbin/rt-fulltext-indexer --help
+
+    /opt/rt3/local/sbin/rt-fulltext-indexer --limit 100
+
+=head1 DESCRIPTION
+
+=cut
+
