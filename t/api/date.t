@@ -294,7 +294,7 @@ my $current_user;
 { # age
     my $date = RT::DateTime->now(current_user => RT->system_user);
     my $diff = $date->age;
-    like($diff, qr/^(0 sec|[1-5] sec ago)$/, 'close enought');
+    like($diff, qr/^(0 sec|[1-5] sec ago)$/, 'close enough');
 }
 
 #TODO: AsString
