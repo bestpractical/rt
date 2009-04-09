@@ -142,8 +142,10 @@ source rt {
     sql_pass        = $sphinx_conf{'pass'}
 
     sql_query       = \
-        SELECT id, content FROM Attachments \
-        WHERE content_type = 'text/plain'
+        SELECT a.id, a.content FROM Attachments a
+        JOIN Transactions txn ON a.transaction_id = txn.id AND txn.object_type = 'RT::Model::Ticket' \
+        JOIN Tickets t ON txn.object_id = t.id \
+        WHERE a.content_type = 'text/plain' AND t.Status != 'deleted'
 
     sql_query_info  = SELECT * FROM Attachments WHERE id=$id
 }
