@@ -156,6 +156,7 @@ sub prepare {
     if (my $e = Lorzy::Exception->caught()) {
         Jifty->log->error("Rule '@{[ $self->description]}' prepare error, ignoring: $e");
     }
+    return $ret;
 }
 
 sub description { $_[0]->factory->description }
