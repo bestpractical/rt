@@ -133,6 +133,21 @@ sub AvailableRights {
     return(\%rights);
 }
 
+=head2 AddRights C<RIGHT>, C<DESCRIPTION> [, ...]
+
+Adds the given rights to the list of possible rights.  This method
+should be called during server startup, not at runtime.
+
+=end
+
+sub AddRights {
+    my $self = shift;
+    my %new = @_;
+    $RIGHTS = { %$RIGHTS, %new };
+    %RT::ACE::LOWERCASERIGHTNAMES = ( %RT::ACE::LOWERCASERIGHTNAMES,
+                                      map { lc($_) => $_ } keys %new);
+}
+
 sub _Init {
     my $self = shift;
     $self->SUPER::_Init (@_) if @_ && $_[0];
