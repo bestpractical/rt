@@ -238,7 +238,7 @@ my $current_user;
         is( $date->iso, '2005-11-27 13:10:00', "YYYY-DD-MM hh:mm:ss" );
     }
 
-    RT->config->set( TimeZone => 'UTC' );
+    RT->config->set( time_zone => 'UTC' );
     $date = RT::DateTime->new_from_string('2005-11-28 15:10:00');
     is($date->iso, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 
