@@ -112,6 +112,8 @@
 
 my $Ticket = LoadTicket($id);
 
+$m->callback( Ticket => $Ticket, ARGSRef => \%ARGS, CallbackName => 'Initial' ); 
+
 my $title = loc( "Update ticket #[_1]", $Ticket->id );
 
 $DefaultStatus = $ARGS{Status} || $Ticket->Status() unless ($DefaultStatus);
@@ -121,6 +123,7 @@ Abort( loc("No permission to view update ticket") )
   unless ( $Ticket->CurrentUserHasRight('ReplyToTicket')
     or $Ticket->CurrentUserHasRight('ModifyTicket') );
 
+$m->callback(CallbackName => 'BeforeDisplay', Ticket => \$Ticket, ARGSRef => \%ARGS);
 </%INIT>
 
 <%ARGS>
