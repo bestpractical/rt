@@ -174,6 +174,25 @@ improvements, but some setups can not handle it.
 
 set($UseSQLForACLChecks, undef);
 
+=item C<%FullTextSearch>
+
+Full text search (FTS) without indexes is slow operation and by default is
+disabled at all. To enable FTS set key 'Enabled' to true value.
+
+Setup of indexes and filling them with data requires different steps for
+different database back-ends. Use F<sbin/rt-setup-fulltext-index> helper
+for quick start. This script creates required structures in the DB and
+gives some ideas on next steps.
+
+=cut
+
+set(%FullTextSearch,
+    Enable  => 0,
+    Indexed => 0,
+#    Table   => 'AttachmentsIndex',
+#    Column  => 'ftsindex',
+);
+
 =back
 
 =head1 Incoming Mail Gateway Configuration

@@ -11,8 +11,12 @@ shipwright create -r $SVN_PATH
 # import gd related stuff
 $IMPORT http://www.zlib.net/zlib-1.2.3.tar.gz 
 $IMPORT ftp://ftp.simplesystems.org/pub/libpng/png/src/libpng-1.2.35.tar.bz2
+$IMPORT http://ftp.twaren.net/Unix/NonGNU/freetype/freetype-2.3.9.tar.gz
+$IMPORT http://fontconfig.org/release/fontconfig-2.6.0.tar.gz
+$IMPORT http://nchc.dl.sourceforge.net/sourceforge/expat/expat-2.0.1.tar.gz
+$IMPORT ftp://ftp.uu.net/graphics/jpeg/jpegsrc.v6b.tar.gz --name libjpeg
 
-echo 'configure: LDFLAGS="-L%%INSTALL_BASE%%/lib" CPPFLAGS="-I%%INSTALL_BASE%%/include" ./configure --prefix=%%INSTALL_BASE%% --with-png=%%INSTALL_BASE%% --without-freetype --without-fontconfig --without-jpeg
+echo 'configure: LDFLAGS="-L%%INSTALL_BASE%%/lib" CPPFLAGS="-I%%INSTALL_BASE%%/include" ./configure --prefix=%%INSTALL_BASE%% --with-png=%%INSTALL_BASE%% --with-jpeg=%%INSTALL_BASE%% --with-fontconfig=%%INSTALL_BASE%% --with-freetype=%%INSTALL_BASE%%
 make: %%MAKE%%
 install: %%MAKE%% install
 clean: %%MAKE%% clean
@@ -21,7 +25,22 @@ clean: %%MAKE%% clean
 $IMPORT http://www.libgd.org/releases/gd-2.0.35.tar.gz --build-script=/tmp/shipwright_gd_build
 
 # import graphviz
+
+# I'm not quite sure why, but the *twice* make stuff make my macbook happy and
+# it doesn't hurt anyway
+echo 'configure: cp configure configure.old && ./configure --prefix=%%INSTALL_BASE%% --enable-java=no --enable-python=no --enable-tcl=no --enable-ruby=no --enable-php=no
+make: %%MAKE%% || cp configure.old configure && %%MAKE%%
+install: %%MAKE%% install
+' > /tmp/shipwright_graphviz_build
 $IMPORT http://www.graphviz.org/pub/graphviz/stable/SOURCES/graphviz-2.22.2.tar.gz
+
+# import gnupg
+$IMPORT ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-1.4.9.tar.bz2
+
+# import ncurses
+$IMPORT http://ftp.gnu.org/pub/gnu/ncurses/ncurses-5.7.tar.gz
+
+$IMPORT ftp://ftp.cwru.edu/pub/bash/readline-6.0.tar.gz
 
 # import mysql and Pg
 echo 'configure: ./configure --prefix=%%INSTALL_BASE%% --without-server --without-docs --without-man
@@ -43,6 +62,15 @@ $IMPORT http://ftp2.au.postgresql.org/pub/postgresql/source/v8.3.7/postgresql-8.
 $IMPORT cpan:Text::Balanced
 # DBD::Pg Makefile.PL doesn't die if no DBI installed, that's sad for shipwright
 $IMPORT cpan:DBD::Pg --no-follow
+$IMPORT cpan:DBD::SQLite --no-follow
+$IMPORT cpan:DBD::mysql --no-follow
+
+echo 'configure: %%PERL%% Makefile.PL LIB=%%INSTALL_BASE%%/lib/perl5/ PREFIX=%%INSTALL_BASE%% %%MAKEMAKER_CONFIGURE_EXTRA%% EXPATINCPATH=%%INSTALL_BASE%%/include EXPATLIBPATH=%%INSTALL_BASE%%/lib
+make: %%MAKE%%
+test: %%MAKE%% test
+install: %%MAKE%% install
+clean: %%MAKE%% clean' > /tmp/shipwright_cpan_xml_parser_build
+$IMPORT cpan:XML::Parser --build-script /tmp/shipwright_cpan_xml_parser_build
 
 $IMPORT svn:http://svn.jifty.org/svn/jifty.org/Test-WWW-Declare --name Test-WWW-Declare
 $IMPORT svn:http://svn.jifty.org/svn/jifty.org/Jifty-DBI/trunk --name Jifty-DBI
@@ -56,13 +84,18 @@ $IMPORT svn://svn.bestpractical.com/rt/3.999/trunk --name RT --build-script /tmp
 shipwright update -r $SVN_PATH cpan-Data-Dump-Streamer --add-deps cpan-Text-Balanced
 shipwright update -r $SVN_PATH cpan-Text-Balanced --add-deps cpan-version
 shipwright update -r $SVN_PATH Jifty --add-deps Jifty-DBI,Test-WWW-Declare
-shipwright update -r $SVN_PATH cpan-DBD-mysql --add-deps mysql
+shipwright update -r $SVN_PATH cpan-DBD-SQLite --add-deps cpan-DBI
+shipwright update -r $SVN_PATH cpan-DBD-mysql --add-deps mysql,cpan-DBI
 shipwright update -r $SVN_PATH cpan-DBD-Pg --add-deps postgresql,cpan-DBI
-
-shipwright update -r $SVN_PATH cpan-GD --add-deps gd
-shipwright update -r $SVN_PATH gd --add-deps libpng
+shipwright update -r $SVN_PATH mysql --add-deps ncurses,readline
+shipwright update -r $SVN_PATH postgresql --add-deps zlib,readline
+shipwright update -r $SVN_PATH fontconfig --add-deps freetype,expat
 shipwright update -r $SVN_PATH libpng --add-deps zlib
+shipwright update -r $SVN_PATH gd --add-deps libpng,libjpeg,freetype,fontconfig
+shipwright update -r $SVN_PATH graphviz --add-deps gd,freetype,fontconfig,zlib
+shipwright update -r $SVN_PATH cpan-GD --add-deps gd
 shipwright update -r $SVN_PATH cpan-GraphViz --add-deps graphviz
+shipwright update -r $SVN_PATH cpan-GnuPG-Interface --add-deps gnupg
 shipwright maintain -r $SVN_PATH --update-order
 
 shipwright flags -r $SVN_PATH mysql --add mysql
@@ -76,13 +109,20 @@ shipwright ktf -r $SVN_PATH cpan-URI --set 1
 shipwright ktf -r $SVN_PATH cpan-Time-Duration --set 1
 shipwright ktf -r $SVN_PATH cpan-Data-Dump-Streamer --set 1
 shipwright ktf -r $SVN_PATH cpan-Storable --set 1
-# DBD-... will try to connect server, which may result in test failure
-shipwright ktf -r $SVN_PATH cpan-DBD-mysql --set 1
-shipwright ktf -r $SVN_PATH cpan-DBD-Pg --set 1
 shipwright ktf -r $SVN_PATH cpan-PAR-Dist --set 1
 shipwright ktf -r $SVN_PATH cpan-WWW-Mechanize --set 1
 shipwright ktf -r $SVN_PATH cpan-Test-WWW-Mechanize --set 1
 shipwright ktf -r $SVN_PATH cpan-MIME-tools --set 1
+
+# DBD-... will try to connect server, which may result in test failure
+shipwright ktf -r $SVN_PATH cpan-DBD-mysql --set 1
+shipwright ktf -r $SVN_PATH cpan-DBD-Pg --set 1
+
+# pod stuff
+shipwright ktf -r $SVN_PATH cpan-XML-SAX-Expat --set 1
+shipwright ktf -r $SVN_PATH cpan-Compress-PPMd --set 1
+# temp jifty failure
+shipwright ktf -r $SVN_PATH Jifty --set 1
 
 echo 'RT: cd %%INSTALL_BASE%% && PERL5LIB=lib:lib/perl5 bin/prove -r t' > /tmp/shipwright_test
 shipwright import -r $SVN_PATH --test-script /tmp/shipwright_test
@@ -91,4 +131,4 @@ cd /tmp
 rm -rf rtex-$$
 svn export file://$REPO /tmp/rtex-$$
 #rsync -rvp /tmp/rtex/ jesse@fsck.com:/tmp/rtex-$$
-echo "cd /tmp/rtex-$$; ./bin/shipwright-builder; ./bin/shipwright-builder --only-test" 
+echo "cd /tmp/rtex-$$; ./bin/shipwright-builder --flags mysql,postgresql; ./bin/shipwright-builder --only-test" 
