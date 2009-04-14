@@ -134,6 +134,8 @@ set( \$MailCommand, 'testfile' );
     $ENV{'RT_SITE_CONFIG'} = $config->filename;
     close $config;
 
+    RT->config->set( FullTextSearch => Enable => 1 );
+
     RT->config->set( DevelMode => '0' ) if $INC{'Devel/Cover.pm'};
     if ( RT->config->get('DevelMode') ) { require Module::Refresh; }
 
