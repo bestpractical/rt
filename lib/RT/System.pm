@@ -138,7 +138,7 @@ sub AvailableRights {
 Adds the given rights to the list of possible rights.  This method
 should be called during server startup, not at runtime.
 
-=end
+=cut
 
 sub AddRights {
     my $self = shift;

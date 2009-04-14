@@ -73,7 +73,8 @@ use strict;
 use warnings;
 use base qw/RT::SharedSetting/;
 
-my %new_rights = (
+use RT::System;
+RT::System->AddRights(
     SubscribeDashboard => 'Subscribe to dashboards', #loc_pair
 
     SeeDashboard       => 'View system dashboards', #loc_pair
@@ -87,10 +88,6 @@ my %new_rights = (
     DeleteOwnDashboard => 'Delete personal dashboards', #loc_pair
 );
 
-use RT::System;
-$RT::System::RIGHTS = { %$RT::System::RIGHTS, %new_rights };
-%RT::ACE::LOWERCASERIGHTNAMES = ( %RT::ACE::LOWERCASERIGHTNAMES,
-                                  map { lc($_) => $_ } keys %new_rights);
 
 =head2 ObjectName
 
