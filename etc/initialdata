@@ -666,6 +666,12 @@ Hour:         { $subscription_obj->sub_value('Hour') }
     'forward_from_user'            => 0,
     'friendly_from_line_format'    => '"%s via RT" <%s>',
     'friendly_to_line_format'      => '"%s of {{rtname}} Ticket #%s":;',
+    'full_text_search' => {
+        enable  => 0,
+        indexed => 0,
+        #    table   => 'AttachmentsIndex',
+        #    column  => 'ftsindex',
+    },
     'gnupg'                        => {
         enable                   => 1,
         outgoing_messages_format => 'RFC',    # Inline

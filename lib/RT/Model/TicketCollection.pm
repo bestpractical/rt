@@ -725,8 +725,8 @@ Limit based on the content of a transaction.
 sub _trans_content_limit {
     my ( $self, $field, $op, $value, @rest ) = @_;
 
-    my $config = RT->config->get('FullTextSearch') || {};
-    return unless $config->{'Enable'};
+    my $config = RT->config->get('full_text_search') || {};
+    return unless $config->{'enable'};
 
     my $txn_alias = $self->join_transactions;
     unless ( defined $self->{'_sql_aliases'}{'attachments'} ) {
@@ -741,15 +741,15 @@ sub _trans_content_limit {
 
     $self->open_paren;
 
-    if ( $config->{'Indexed'} ) {
-        my $db_type = RT->config->get('DatabaseType');
+    if ( $config->{'indexed'} ) {
+        my $db_type = Jifty->config->framework('Database')->{'Driver'};
         my $alias;
-        if ( $config->{'Table'} ) {
+        if ( $config->{'table'} ) {
             $alias = $self->{'_sql_aliases'}{'full_text'} ||= $self->_sql_join(
                 type    => 'left',
                 alias1  => $self->{'_sql_aliases'}{'attachments'},
                 column1 => 'id',
-                table2  => $config->{'Table'},
+                table2  => $config->{'table'},
                 column2 => 'id',
             );
         } else {
@@ -791,7 +791,7 @@ sub _trans_content_limit {
         );
     }
 
-    if ( RT->config->get('DontSearchFileAttachments') ) {
+    if ( RT->config->get('dont_search_file_attachments') ) {
         $self->_sql_limit(
             alias            => $self->{'_sql_aliases'}{'attachments'},
             column           => 'filename',
