@@ -8,8 +8,11 @@ use Test::More tests => 94;
 
 use RT::Model::User;
 use Test::Warn;
+use POSIX;
+my $time_zone = strftime("%Z", localtime());
 
 use_ok('RT::DateTime');
+
 
 set_fixed_time("2005-11-28T15:10:00Z");
 
@@ -224,14 +227,18 @@ my $current_user;
     $date = RT::DateTime->new_from_string('2005-11-28 15:10:00', time_zone => 'UTC' );
     is($date->iso, '2005-11-28 18:10:00', "YYYY-DD-MM hh:mm:ss");
 
-    # relative dates
-    $date = RT::DateTime->new_from_string('now');
-    is($date->iso, '2005-11-28 10:10:00', "YYYY-DD-MM hh:mm:ss");
+  SKIP: {
+        skip 'current timezone is not EDT', 2 unless $time_zone eq 'EDT';
 
-    $date = RT::DateTime->new_from_string('1 day ago');
-    is($date->iso, '2005-11-27 13:10:00', "YYYY-DD-MM hh:mm:ss");
+        # relative dates
+        $date = RT::DateTime->new_from_string('now');
+        is( $date->iso, '2005-11-28 10:10:00', "YYYY-DD-MM hh:mm:ss" );
 
-    RT->config->set( time_zone => 'UTC' );
+        $date = RT::DateTime->new_from_string('1 day ago');
+        is( $date->iso, '2005-11-27 13:10:00', "YYYY-DD-MM hh:mm:ss" );
+    }
+
+    RT->config->set( TimeZone => 'UTC' );
     $date = RT::DateTime->new_from_string('2005-11-28 15:10:00');
     is($date->iso, '2005-11-28 15:10:00', "YYYY-DD-MM hh:mm:ss");
 
