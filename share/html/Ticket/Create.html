@@ -344,6 +344,7 @@ foreach my $key (keys %ARGS) {
     }
     $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
 }
+# }}}
 
 # {{{ store the uploaded attachment in session
 if ($ARGS{'Attach'}) {			# attachment?
