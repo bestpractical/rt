@@ -65,7 +65,7 @@ if ( $DashboardObj and $DashboardObj->Id ) {
     my $render    = "Dashboards/$id/$name";
     my $subscribe = "Dashboards/Subscription.html?DashboardId=$id";
 
-    $subtabs = $m->comp('DashboardTabs', CurrentDashboard => $DashboardObj);
+    $subtabs = $m->comp('/Elements/DashboardTabs', CurrentDashboard => $DashboardObj);
     $current_subtab = $render;
 
     $actions = {
