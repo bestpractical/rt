@@ -128,8 +128,11 @@ my $ValidCFs = $m->comp(
     ARGSRef => \%ARGS
 );
 
+my $skip_create = 0;
+$m->callback( CallbackName => 'BeforeCreate', ARGSRef => \%ARGS, skip_create => \$skip_create, results => \@results );
+
 if ( defined($ARGS{'id'}) and $ARGS{'id'} eq 'new' ) { # new ticket?
-    if ( $ValidCFs ) {
+    if ( $ValidCFs && !$skip_create ) {
         $m->comp('Display.html', %ARGS);
         $RT::Logger->crit("After display call; error is $@");
         $m->abort();
