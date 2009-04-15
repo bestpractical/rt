@@ -132,7 +132,7 @@ $ticket->Create(
 	Subject   => 'dashboard test',
 );
 
-$m->follow_link_ok({text => '"different dashboard"'});
+$m->follow_link_ok({text => 'different dashboard'});
 $m->content_contains("20 highest priority tickets I own");
 $m->content_contains("20 newest unowned tickets");
 $m->content_lacks("Bookmarked Tickets");
@@ -231,7 +231,7 @@ $m->content_contains("Dashboard updated");
 
 $m->content_contains("The following queries may not be visible to all users who can see this dashboard.");
 
-$m->follow_link_ok({text => '"system dashboard"'});
+$m->follow_link_ok({text => 'system dashboard'});
 $m->content_contains("personal search", "saved search shows up");
 $m->content_contains("dashboard test", "matched ticket shows up");
 
