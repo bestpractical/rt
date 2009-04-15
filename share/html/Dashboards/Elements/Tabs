@@ -46,29 +46,27 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Tools/Elements/Tabs,
-    subtabs => $tabs,
+    subtabs => $subtabs,
     current_tab => 'Dashboards/index.html',
     current_subtab => $current_subtab,
     actions => $actions,
     Title => $Title &>
 
 <%INIT>
-my $tabs;
+my $subtabs;
 my $actions;
-if ( $DashboardObj and $DashboardObj->Id ) {
 
+if ( $DashboardObj and $DashboardObj->Id ) {
+    my $id   = $DashboardObj->Id;
     my $name = $DashboardObj->Name;
 
-    my $modify  = "Dashboards/Modify.html?id=" . $DashboardObj->Id;
-    my $queries = "Dashboards/Queries.html?id=" . $DashboardObj->Id;
-    my $render  = "Dashboards/" . $DashboardObj->Id . "/$name";
+    my $modify    = "Dashboards/Modify.html?id=$id";
+    my $queries   = "Dashboards/Queries.html?id=$id";
+    my $render    = "Dashboards/$id/$name";
+    my $subscribe = "Dashboards/Subscription.html?DashboardId=$id";
 
-    $tabs->{"this"} = {
-        title   => $DashboardObj->Name,
-        path    => $modify,
-        current_subtab  => $current_subtab,
-        subtabs => $m->comp('DashboardTabs'),
-    };
+    $subtabs = $m->comp('DashboardTabs');
+    $current_subtab = $render;
 
     $actions = {
         a_Basics => {
@@ -83,28 +81,30 @@ if ( $DashboardObj and $DashboardObj->Id ) {
 
         c_Subscription => {
             title => loc('Subscription'),
-            path  => "Dashboards/Subscription.html?DashboardId=" . $DashboardObj->Id
+            path  => $subscribe,
         },
     };
 
     delete $actions->{"c_Subscription"}
         unless $DashboardObj->CurrentUserCanSubscribe;
-
-    $current_subtab = $modify;
 }
+else {
+    $subtabs->{"a_Select"} = {
+        title => loc('Select dashboard'),
+        path  => "Dashboards/index.html",
+    };
 
-$tabs->{"A"} = { title => loc('Select dashboard'),
-                 path  => "Dashboards/index.html" };
+    my $dashboard = RT::Dashboard->new($session{'CurrentUser'});
+    my @objects = $dashboard->_PrivacyObjects(Create => 1);
 
-my $dashboard = RT::Dashboard->new($session{'CurrentUser'});
-my @objects = $dashboard->_PrivacyObjects(Create => 1);
-
-if (@objects) {
-    $tabs->{"B"} = { title     => loc('New dashboard'),
-                     path      => "Dashboards/Modify.html?Create=1",
-                     separator => 1 };
+    if (@objects) {
+        $subtabs->{"b_Create"} = {
+            title     => loc('New dashboard'),
+            path      => "Dashboards/Modify.html?Create=1",
+            separator => 1,
+        };
+    }
 }
-
 </%INIT>
 <%ARGS>
 $DashboardObj => undef
