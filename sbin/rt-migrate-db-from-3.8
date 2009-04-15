@@ -1,6 +1,8 @@
 #!/usr/bin/perl 
+
 use strict;
 use warnings;
+
 use Getopt::Long;
 use Carp;
 use Text::Naming::Convention qw/renaming/;
@@ -8,39 +10,44 @@ use Text::Naming::Convention qw/renaming/;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 
-my %args;
+my %opts;
+GetOptions( \%opts,
+    "help", "upgrade", "debug",
+);
+if ( $opts{'help'} || !$opts{'upgrade'} ) {
+    require Pod::Usage;
+    import Pod::Usage;
+    pod2usage(-verbose => 1);
+    exit 1;
+}
 
-BEGIN {
-    confess "unknown option"
-      unless GetOptions( \%args, 'db-name-rt3=s', 'help' );
-
-    my $USAGE = <<'END';
-before run, please backup your dbs
-and we need to set up a basic rt4 db with the cmd:
-$ jifty schema --setup --no-bootstrap
-
-then run: ./sbin/migrate-db-from-rt3
-
-options: 
-
-help: print this usage
-db-name-rt3: db name of rt3, default is 'rt3'
-END
-
-    if ( $args{'help'} ) {
-        print $USAGE;
-        exit 0;
-    }
-
-    use Jifty::Everything;
-    Jifty->new();
+{
+    require Jifty::Script::Schema;
+    my $schema = Jifty::Script::Schema->new(
+        no_bootstrap      => 1,
+        no_model_tables   => 1,
+        create_database   => 0,
+        drop_database     => 0,
+    );
+    $schema->setup_environment;
+    Jifty->setup_database_connection( no_version_check => 1 );
+    $schema->create_all_tables;
 }
 
 
-my $db_name_rt3 = $args{'db-name-rt3'} || 'rt3';
+{
+    require Jifty::Everything;
+    import Jifty::Everything;
+    new Jifty;
+}
+
+
+
+my $db_name_rt3 = $opts{'db-name-rt3'} || 'rt3';
 my $db_type = Jifty->config->framework('Database')->{'Driver'};
 my $db_name_rt4 = Jifty->config->framework('Database')->{'Database'};
 my $db_user = Jifty->config->framework('Database')->{'User'};
+my $dbh = Jifty->handle->dbh;
 
 my %name_changes = (
     nick_name           => 'nickname',
@@ -50,93 +57,39 @@ my %name_changes = (
 );
 
 my @tables = qw/ACL Attachments  Attributes CachedGroupMembers CustomFieldValues
-CustomFields GroupMembers Groups Links ObjectCustomFieldValues ObjectCustomFields    Principals  Queues ScripActions ScripConditions Scrips Templates Tickets
+CustomFields GroupMembers Groups Links ObjectCustomFieldValues ObjectCustomFields
+Principals  Queues ScripActions ScripConditions Scrips Templates Tickets
 Transactions Users sessions/;
 
-my $tables_need_change = 'ACL Principals Templates Scrips';
-my $tables_no_change = 'Attachments  Attributes CachedGroupMembers CustomFieldValues CustomFields GroupMembers Groups Links ObjectCustomFieldValues ObjectCustomFields    Queues ScripActions ScripConditions Tickets Transactions Users sessions';
-
-if ( $db_type eq 'mysql' ) {
-    $db_user ||= 'root';
-
-    my $run_sql = sub {
-        my $db  = shift;
-        my @sql = @_;
-        open my $fh, '|-', "mysql -u $db_user $db" or die $!;
-        print $fh $_ for @sql;
-        close $fh;
-    };
-
-    # make a tmp rt3 db, with to-be-dropped columns dropped
-    my $tmp_rt3_db = "tmp_${db_name_rt3}_for_migration";
-    print "creating database $tmp_rt3_db\n";
-    $run_sql->( '',          "create database $tmp_rt3_db;\n" );
-    print "created database $tmp_rt3_db with success\n";
-
-    print "copying tables need to alter( $tables_need_change ) to $tmp_rt3_db\n";
-    system(
-        "mysqldump -u $db_user $db_name_rt3 $tables_need_change |
-      mysql -u $db_user $tmp_rt3_db"
-    ) && die $!;
-    print "copied tables need to alter with success!\n";
-
-    # now we alert tables
-    my @alter_sql = (
-        'alter table ACL drop column DelegatedBy;',
-        'alter table ACL drop column DelegatedFrom;',
-        'alter table Principals drop column ObjectId;',
-        'alter table Templates drop column Language;',
-        'alter table Templates drop column TranslationOf;',
-        'alter table Scrips drop column ConditionRules;',
-        'alter table Scrips drop column ActionRules;'
-    );
-    print "altering the copied tables\n";
-    $run_sql->( $tmp_rt3_db, @alter_sql );
-    print "altered the copied tables with success\n";
-
-    my $insert = sub {
-        my $input_cmd = shift;
-
-        open my $fh, '-|', $input_cmd or die $!;
-
-        while (<$fh>) {
-            next unless /^INSERT INTO/;
-            my $insert = $_;
-
-            # e.g. RT::Group -> RT::Model::Group
-            $insert =~ s/'RT::(?!System|ScripAction)(\w+)\b/'RT::Model::$1/g;
-            $insert =~ s/'Owner'/'owner'/g;
-            $insert =~ s/'Requestor'/'requestor'/g;
-            $insert =~ s/'Cc'/'cc'/g;
-            $insert =~ s/'AdminCc'/'admin_cc'/g;
-            $insert =~
-s/(?<!INSERT INTO )`(\w+)`/'`' . ($name_changes{renaming( $1)} || renaming($1)) . '`'/ge;
-            $run_sql->( $db_name_rt4, $insert );
-        }
-    };
-
-    print "inserting data to $db_name_rt4\n";
-# insert unchanged(actually, no so changed) tables from origion db
-    $insert->(
-"mysqldump -u $db_user $db_name_rt3 --complete-insert --no-create-info $tables_no_change"
-    );
-
-# import changed tables form tmp db
-    $insert->(
-"mysqldump -u $db_user $tmp_rt3_db --complete-insert --no-create-info"
-    );
-    print "inserted data to $db_name_rt4 with success\n";
-
-    $run_sql->( '',                   "drop database $tmp_rt3_db\n" );
-
-    # set up proper values for new added columns
-    # Queue.status_schema: 'default' # this is done automatically by rt4
+sub update_acl_table {
+# delete delegated rights
+    execute_query("DELETE FROM ACL WHERE DelegatedBy != 0 AND DelegatedBy IS NOT NULL");
+# drop columns related to delegations
+    drop_columns(qw(ACL DelegatedBy DelegatedFrom) );
+# replace PrincipalType with NULLs where it's not a role
+    execute_query("UPDATE TABLE ACL SET PrincipalType = NULL WHERE PrincipalType IN ('User', 'Group')");
 }
+
+sub update_groups_table {
+# delete personal groups, everything else can be covered by validator
+    execute("DELETE FROM Groups WHERE Domain = 'Personal'");
+}
+
+sub update_principals_table {
+    rename_columns('Principals', PrincipalType => 'Type');
+    drop_columns(qw(Principals ObjectId));
+}
+
+# drop deprecated columns
+drop_columns(@$_) foreach (
+    [qw(Templates Language TranslationOf)],
+    [qw(Scrips ConditionRules ActionRules)],
+);
 
 print "updating table Attributes\n";
 # need to add a row for the default status schema in Attributes and update
 # part columns of that table
-use RT::Model::AttributeCollection;
+require RT::Model::AttributeCollection;
 my $collection =
   RT::Model::AttributeCollection->new( current_user => RT->system_user );
 $collection->unlimit;
@@ -165,7 +118,7 @@ while ( my $attr = $collection->next ) {
 }
 
 # add default status schema
-use RT::Model::Attribute;
+require RT::Model::Attribute;
 my $attribute = RT::Model::Attribute->new( current_user => RT->system_user );
 my @results = $attribute->create(
     name        => 'StatusSchemas',
@@ -208,7 +161,7 @@ print "updated attributes with success\n";
 
 
 print "updating table Users\n";
-use RT::Model::UserCollection;
+require RT::Model::UserCollection;
 my $user_collection =
   RT::Model::UserCollection->new( current_user => RT->system_user );
 
@@ -218,5 +171,57 @@ while ( my $user = $user_collection->next ) {
       unless $name eq 'RT_System';
 }
 print "updated table Users with success\n";
-print "migrated with success!\n"
+print "migrated with success!\n";
 
+sub rename_columns {
+    my ($table, %map) = (@_);
+
+    my $handle = Jifty->handle;
+    while ( my ($from, $to) = each %map ) {
+        $handle->rename_column(
+            table  => $table,
+            column => $from,
+            to     => $to,
+        );
+    }
+}
+
+sub drop_columns {
+    my ($table, @columns) = @_;
+    my $query = "ALTER TABLE $table ". join ', ', map "DROP COLUMN $_", @columns;
+    return execute_query( $query );
+}
+
+sub execute_query {
+    my ($query, @binds) = @_;
+
+    print "Executing query: $query\n\n";
+
+    my $sth = $dbh->prepare( $query ) or die "couldn't prepare $query\n\tError: ". $dbh->errstr;
+    $sth->execute( @binds ) or die "couldn't execute $query\n\tError: ". $sth->errstr;
+    return $sth;
+}
+
+=head1 NAME
+
+rt-migrate-db-from-3.8
+
+=head1 SYNOPSIS
+
+    rt-migrate-db-from-3.8 --help
+    rt-migrate-db-from-3.8 --upgrade
+
+=head1 DESCRIPTION
+
+before run, please backup your dbs
+and we need to set up a basic rt4 db with the cmd:
+$ jifty schema --setup --no-bootstrap
+
+then run: ./sbin/migrate-db-from-rt3
+
+options: 
+
+help: print this usage
+db-name-rt3: db name of rt3, default is 'rt3'
+
+=cut
