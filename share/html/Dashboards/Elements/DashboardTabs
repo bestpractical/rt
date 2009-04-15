@@ -1,3 +1,6 @@
+<%args>
+$CurrentDashboard => undef
+</%args>
 <%init>
 my @dashboards = $m->comp("/Dashboards/Elements/ListOfDashboards");
 
@@ -8,7 +11,13 @@ if (@dashboards > 7) {
     splice @dashboards, 7;
 }
 
+# always include the current dashboard, even if it's not in the initial list
+push @dashboards, $CurrentDashboard
+    if $CurrentDashboard
+    && 0 == grep { $_->Id == $CurrentDashboard->Id } @dashboards;
+
 my $position = 0;
+
 my $tabs = {
     map {
         ++$position;
