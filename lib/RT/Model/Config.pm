@@ -75,8 +75,7 @@ sub _get {
     my $config = RT::Model::Config->new;
     my ( $ret, $msg ) = $config->load_by_cols( name => $name );
     if ($ret) {
-        my $value = $config->value;
-        return defined $value ? $value : '';
+        return $config->value;
     }
     else {
         return;
