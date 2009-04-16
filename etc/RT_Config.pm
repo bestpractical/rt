@@ -185,7 +185,7 @@ gives some ideas on next steps.
 
 =cut
 
-set( full_text_search,
+set( full_text_search =>
     {
         enable  => 0,
         indexed => 0,
@@ -465,7 +465,7 @@ is not 'sendmailpipe', 'sendmail', or 'smtp'
 
 =cut
 
-set(mail_params, []);
+set(mail_params => []);
 
 =item C<correspond_address>, C<comment_address>
 
@@ -621,10 +621,12 @@ set C<allow_encrypt_data_in_db> to true
 
 =cut
 
-set( %gnupg,
-    enable => 1,
-    outgoing_messages_format => 'RFC', # Inline
-    allow_encrypt_data_in_db   => 0,
+set( gnupg =>
+    {
+        enable                   => 1,
+        outgoing_messages_format => 'RFC',    # Inline
+        allow_encrypt_data_in_db => 0,
+    }
 );
 
 =item C<gnupg_options>
@@ -638,9 +640,9 @@ NOTE that options with '-' character MUST be quoted.
 
 =cut
 
-set( gnupg_options,
+set( gnupg_options =>
     {
-        homedir => '/home/jesse/svk/3.999-DANGEROUS/var/data/gpg',
+        # homedir => '/home/jesse/svk/3.999-DANGEROUS/var/data/gpg',
 
         # URL of a keyserver
         #    keyserver => 'hkp://subkeys.pgp.net',
@@ -695,7 +697,7 @@ direct file logging.
 =cut
 
 set(log_to_file => '');
-set(log_dir => '/home/jesse/svk/3.999-DANGEROUS/var/log');
+set(log_dir => '');
 set(log_to_file_named => "rt.log");    #log to rt.log
 
 =item C<log_to_syslog_conf>
@@ -708,7 +710,7 @@ ident too, if you have multiple RT installations.)
 
 =cut
 
-set(log_to_syslog_conf, []);
+set(log_to_syslog_conf => []);
 
 =item C<statement_log>,
 
@@ -1107,11 +1109,11 @@ HTML::Mason's Apache or CGI Handler.  This is normally only useful
 for debugging, eg. profiling individual components with:
 
     use MasonX::Profiler; # available on CPAN
-    set(mason_parameters, [preamble => 'my $p = MasonX::Profiler->new($m, $r);']);
+    set(mason_parameters => [preamble => 'my $p = MasonX::Profiler->new($m, $r);']);
 
 =cut
 
-set(mason_parameters, []);
+set(mason_parameters => []);
 
 =item C<default_search_result_format>
 
@@ -1185,7 +1187,7 @@ See F<share/html/Elements/MakeClicky> for documentation on how to add your own.
 
 =cut
 
-set(active_make_clicky, []);
+set(active_make_clicky => []);
 
 =item C<default_queue>
 
@@ -1195,7 +1197,7 @@ queue selection boxes on the web interface.
 
 =cut
 
-#set(default_queue => 'General');
+set(default_queue => 'General');
 
 =back
 
@@ -1241,11 +1243,11 @@ C<net_server_options> is a hash of additional options to use for
 L<Net::Server/DEFAULT ARGUMENTS>. For example, you could set
 reverse_lookups to get the hostnames for all users with:
 
-C<set(%net_server_options, (reverse_lookups => 1));>
+C<set(net_server_options => {reverse_lookups => 1});>
 
 =cut
 
-set(net_server_options, []);
+set(net_server_options => {});
 
 =back
 
@@ -1262,7 +1264,7 @@ RT bilingual instead of multilingual, but will save some memory.
 
 =cut
 
-set(lexicon_languages, [qw(*)]);
+set(lexicon_languages => [qw(*)]);
 
 =item C<email_input_encodings>
 
@@ -1272,7 +1274,7 @@ L<Encode::Guess>.
 
 =cut
 
-set(email_input_encodings, [qw(utf-8 iso-8859-1 us-ascii)]);
+set(email_input_encodings => [qw(utf-8 iso-8859-1 us-ascii)]);
 
 =item C<email_output_encoding>
 
@@ -1348,8 +1350,8 @@ will break horribly. The statuses you add must be no longer than
 
 =cut
 
-set(active_status, [qw(new open stalled)]);
-set(inactive_status, [qw(resolved rejected deleted)]);
+set(active_status => [qw(new open stalled)]);
+set(inactive_status => [qw(resolved rejected deleted)]);
 
 =item C<link_transactions_run1_scrip>
 
@@ -1399,7 +1401,7 @@ custom field values from external sources at runtime.
 
 =cut
 
-set(custom_field_values_sources, []);
+set(custom_field_values_sources => []);
 
 =item C<canonicalize_redirect_ur_ls>
 
