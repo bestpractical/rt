@@ -1296,12 +1296,12 @@ This option can be overridden by users in their preferences.
 
 Some examples:
 
-C<set($DateTimeFormat, '%a, %d %b %Y %H:%M:%S %z');> # RFC2822
-C<set($DateTimeFormat, '%Y-%m-%d %H:%M:%S');> # ISO
+C<set($DateTimeFormat, 'rfc2822');>
+C<set($DateTimeFormat, 'iso');>
 
 =cut
 
-set($DateTimeFormat, '%Y-%m-%d %H:%M:%S');
+set($DateTimeFormat, 'iso');
 
 # Next two options are for Time::ParseDate
 

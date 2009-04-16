@@ -135,7 +135,8 @@ sub iCal {
 sub config_format {
     my $self = _canonicalize_self(@_);
 
-    return $self->strftime(RT->config->get('DateTimeFormat'));
+    my $format = RT->config->get('DateTimeFormat');
+    return $self->$format;
 }
 
 sub date {
