@@ -57,7 +57,7 @@ setting enabled.
 
 =cut
 
-#set(email_subject_tag_regex => '\Q{rtname}}\E' );
+set( email_subject_tag_regex => '{{rtname}}' );
 
 
 
@@ -171,7 +171,7 @@ improvements, but some setups can not handle it.
 
 =cut
 
-set(use_sql_for_acl_checks => '');
+set(use_sql_for_acl_checks => undef);
 
 =item C<full_text_search>
 
@@ -230,7 +230,7 @@ sender of these messages
 
 =cut
 
-set(store_loops => '');
+set(store_loops => undef);
 
 =item C<max_attachment_size>
 
@@ -253,7 +253,7 @@ RT will truncate attachments longer than C<max_attachment_size>.
 
 =cut
 
-set(truncate_long_attachments => '');
+set(truncate_long_attachments => undef);
 
 =item C<drop_long_attachments>
 
@@ -262,9 +262,9 @@ RT will silently drop attachments longer than C<MaxAttachmentSize>.
 
 =cut
 
-set(drop_long_attachments => '');
+set(drop_long_attachments => undef);
 
-=item C<parsenew_message_for_ticket_ccs>
+=item C<parse_new_message_for_ticket_ccs>
 
 If C<parse_new_message_for_ticket_ccs> is true, RT will attempt to divine
 Ticket 'Cc' watchers from the To and Cc lines of incoming messages
@@ -274,7 +274,7 @@ C<rt_address_regexp> below, you will get yourself into a heap of trouble.
 
 =cut
 
-set(parse_new_message_for_ticket_ccs => '');
+set(parse_new_message_for_ticket_ccs => undef);
 
 =item C<rt_address_regexp> 
 
@@ -285,7 +285,7 @@ the setting above is enabled.
 
 set(rt_address_regexp => '^rt\@example.com$');
 
-=item C<canonicalize_email_address_match>, C<canonicalize_email_address_replace>
+=item C<canonicalize_email_match>, C<canonicalize_email_replace>
 
 RT provides functionality which allows the system to rewrite
 incoming email addresses.  In its simplest form,
@@ -299,10 +299,10 @@ passed to it.
 
 =cut
 
-#set(canonicalize_email_address_match => '@subdomain\.example\.com$');
-#set(canonicalize_email_address_replace => '@example.com');
+set(canonicalize_email_match => '');
+set(canonicalize_email_replace => '');
 
-=item C<canonicalize_email_address_match>
+=item C<canonicalize_email_match>
 
 Set this to true and the create new user page will use the values that you
 enter in the form but use the function CanonicalizeUserInfo in
@@ -328,7 +328,7 @@ template for the rejection message.
 
 =cut
 
-set(sender_must_exist_in_external_database => '');
+set(sender_must_exist_in_external_database => undef);
 
 =item C<mail_plugins>
 
@@ -336,6 +336,9 @@ C<mail_plugins> is a list of auth plugins for L<RT::Interface::Email>
 to use; see L<rt-mailgate>
 
 =cut
+
+set(mail_plugins => []);
+
 
 =item C<unsafe_email_commands>
 
@@ -354,8 +357,8 @@ subject accordingly.
 
 =cut
 
-set( extract_subject_tag_match => '\[.+? #\\d+\\]' );
-set( extract_subject_tag_no_match => "\[\\Q{{rtname}}\\E #\\d+\\]/" );
+set( extract_subject_tag_match => '\\[.+? #\\d+\\]' );
+#set( extract_subject_tag_no_match => "\[\Q{{rtname}}\\E #\\d+\\]/" );
 
 =back
 
@@ -433,7 +436,7 @@ C<smtp_server> should be set to the hostname of the SMTP server to use
 
 =cut
 
-set(smtp_server => '');
+set(smtp_server => undef);
 
 =item C<smtp_from>
 
@@ -442,7 +445,7 @@ email's 'From'
 
 =cut
 
-set(smtp_from => '');
+set(smtp_from => undef);
 
 =item C<smtp_debug> 
 
@@ -696,7 +699,7 @@ direct file logging.
 
 =cut
 
-set(log_to_file => '');
+set(log_to_file => undef);
 set(log_dir => '');
 set(log_to_file_named => "rt.log");    #log to rt.log
 
@@ -720,7 +723,7 @@ the level that you wish SQL statements to be logged at.
 
 =cut
 
-set(statement_log => '');
+set(statement_log => undef);
 
 =back
 
@@ -826,7 +829,8 @@ What portion of RT's URLspace should not require authentication.
 
 =cut
 
-set(web_no_auth_regex => '^(?:/+NoAuth/|/+REST/\d+\.\d+/NoAuth/)' );
+set(web_no_auth_regex => 
+      '(?x-ism:^ (?:\/+NoAuth\/ | \/+REST\/\d+\.\d+\/NoAuth\/) )' );
 
 =item C<self_service_regex>
 
@@ -837,7 +841,7 @@ ticked displays
 
 =cut
 
-set(self_service_regex => '!^(?:/+SelfService/)!' );
+set(self_service_regex => '^(?:\/+SelfService\/)' );
 
 =item C<message_box_width>, C<message_box_height>
 
@@ -906,7 +910,7 @@ sent in a request (although there is probably more to it than that)
 
 =cut
 
-set(trust_html_attachments => '');
+set(trust_html_attachments => undef);
 
 =item C<redistribute_auto_generated_messages>
 
@@ -930,7 +934,7 @@ by cross-site-scripting attacks.
 
 =cut
 
-set(prefer_rich_text => '');
+set(prefer_rich_text => undef);
 
 =item C<web_external_auth>
 
@@ -939,7 +943,7 @@ REMOTE_USER variable.
 
 =cut
 
-set(web_external_auth => '');
+set(web_external_auth => undef);
 
 =item C<web_fallback_to_internal_auth>
 
@@ -948,7 +952,7 @@ of fallback to the login screen, even if REMOTE_USER failed.
 
 =cut
 
-set(web_fallback_to_internal_auth => '');
+set(web_fallback_to_internal_auth => undef);
 
 =item C<web_external_gecos>
 
@@ -957,7 +961,7 @@ useful with mod_auth_pwcheck and IIS Integrated Windows logon.
 
 =cut
 
-set(web_external_gecos => '');
+set(web_external_gecos => undef);
 
 =item C<web_external_auto>
 
@@ -966,7 +970,7 @@ upon login, if it's missing in the Users table.
 
 =cut
 
-set(web_external_auto => '');
+set(web_external_auto => undef);
 
 =item C<auto_create>
 
@@ -977,7 +981,7 @@ Unprivileged users with C<{ privileged => 0 }>
 
 =cut
 
-set(auto_create => {});
+set(auto_create => undef);
 
 =item C<web_session_class>
 
@@ -1099,7 +1103,7 @@ customized homepage ("RT at a glance").
 
 =cut
 
-set(homepage_components => [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards)]);
+set(homepage_components => [qw(QuickCreate QuickSearch MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards)]);
 
 
 =item C<mason_parameters>
@@ -1145,7 +1149,7 @@ from being displayed in-line when viewing a ticket's history.
 
 =cut
 
-set(suppress_inline_text_files => '');
+set(suppress_inline_text_files => undef);
 
 =item C<dont_search_file_attachments>
 
@@ -1155,7 +1159,7 @@ ticket searches.
 
 =cut
 
-set(dont_search_file_attachments => '');
+set(dont_search_file_attachments => undef);
 
 =item C<chart_font>
 
@@ -1166,7 +1170,7 @@ support for TrueType fonts to use this option.
 
 =cut
 
-set(chart_font => '');
+set(chart_font => undef);
 
 
 =item C<active_make_clicky>
@@ -1247,7 +1251,7 @@ C<set(net_server_options => {reverse_lookups => 1});>
 
 =cut
 
-set(net_server_options => {});
+set(net_server_options => []);
 
 =back
 
@@ -1305,7 +1309,7 @@ C<set(date_time_format => '%y-%m-%d %h:%m:%s');> # ISO
 
 =cut
 
-set(date_time_format => '%y-%m-%d %h:%m:%s');
+set(date_time_format => '%Y-%m-%d %H:%M:%S');
 
 # Next two options are for Time::ParseDate
 
@@ -1403,9 +1407,9 @@ custom field values from external sources at runtime.
 
 set(custom_field_values_sources => []);
 
-=item C<canonicalize_redirect_ur_ls>
+=item C<canonicalize_redirect_urls>
 
-Set C<canonicalize_redirect_ur_ls> to 1 to use $c<WebURL> when redirecting rather
+Set C<canonicalize_redirect_urls> to 1 to use $c<WebURL> when redirecting rather
 than the one we get from C<env>.
 
 If you use RT behind a reverse proxy, you almost certainly want to
@@ -1413,7 +1417,7 @@ enable this option.
 
 =cut
 
-set(canonicalize_redirect_ur_ls => 0);
+set(canonicalize_redirect_urls => 0);
 =item C<enable_reminders>
 
 Hide links/portlets related to Reminders by setting this to 0
