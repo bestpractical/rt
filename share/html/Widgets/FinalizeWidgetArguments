@@ -48,18 +48,10 @@
 <%init>
     my %args = %$widget_arguments;
 
-    %args = (%args, %{ $args{Callback}->() }) if $args{Callback}; # XXX: should be removed once RT4ization has lowercased all of these
     %args = (%args, %{ $args{callback}->() }) if $args{callback};
 
     $args{'description'} = _( $args{'description'} ) if $args{'description'};
     $args{'hints'} = _( $args{'hints'} ) if $args{'hints'};
-
-    # XXX: should be removed once RT4ization has lowercased all of these
-    if ( $args{'ValuesLabel'} ) {
-        while (my ($k, $v) = each %{ $args{'ValuesLabel'} } ) {
-            $args{'ValuesLabel'}->{$k} = _( $args{'ValuesLabel'}->{$k} );
-        }
-    }
 
     if ( $args{'values_label'} ) {
         while (my ($k, $v) = each %{ $args{'values_label'} } ) {
