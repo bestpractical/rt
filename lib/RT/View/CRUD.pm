@@ -61,6 +61,8 @@ use constant current_tab => '';
 sub current_subtab { shift->current_tab(@_) }
 
 template 'index.html' => page {
+    title => shift->page_title,
+} content {
     my $self = shift;
 
     render_mason($self->tab_url, {
