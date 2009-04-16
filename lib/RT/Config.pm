@@ -276,13 +276,20 @@ our %META = (
         },
     },
     DateTimeFormat => {
-        section         => 'Locale',                 #loc
+        section         => 'Locale', #loc
         overridable     => 1,
-        widget          => '/Widgets/Form/String',
+        widget          => '/Widgets/Form/Select',
         widget_arguments => {
-            description => 'Date format',            #loc
-            hints =>
-"Use a strftime format string" #loc
+            description => 'Date format', #loc
+            Callback    => sub {
+                my $ret = { values => [], values_label => {} };
+                my $now = RT::DateTime->now;
+                for my $name (qw/rfc2822 rfc2616 iso iCal /) {
+                    push @{ $ret->{values} }, $name;
+                    $ret->{values_label}{$name} = "$name (" . $now->$name . ")";
+                }
+                return $ret;
+            },
         },
     },
     EmailFrequency => {
