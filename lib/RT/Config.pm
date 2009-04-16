@@ -141,10 +141,9 @@ our %META = (
             description => 'default queue',    #loc
             callback    => sub {
                 my $ret = { values => [], values_label => {} };
-                my $q = new RT::Model::Queues(
-                    $HTML::Mason::Commands::session{'current_user'} );
-                $q->Unlimit;
-                while ( my $queue = $q->next ) {
+                my $qs = RT::Model::QueueCollection->new;
+                $qs->Unlimit;
+                while ( my $queue = $qs->next ) {
                     next unless $queue->current_user_has_right("CreateTicket");
                     push @{ $ret->{values} }, $queue->id;
                     $ret->{values_label}{ $queue->id } = $queue->name;
