@@ -65,5 +65,39 @@ sub _current_collection {
     return $c;
 }
 
+=head2 view_field_name
+
+Display each group's name as a hyperlink to the modify page
+
+=cut
+
+sub view_field_name {
+    my $self = shift;
+    my %args = @_;
+
+    my $id = $args{action}->argument_value('id');
+
+    my $field = $args{action}->form_field($args{field}, render_mode => 'read');
+
+    # I don't see a clean way to do this :(
+    $field->render_wrapper_start();
+    $field->render_preamble();
+
+    $field->render_label();
+
+    # render the value with a hyperlink
+    span {
+        attr { class is "@{[ $field->classes ]} value" };
+        hyperlink(
+            label => "@{[$field->current_value]}",
+            url   => "/Admin/Groups/Modify.html?id=$id",
+        );
+    };
+
+    $field->render_wrapper_end();
+
+    return;
+}
+
 1;
 
