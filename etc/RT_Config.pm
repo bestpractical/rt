@@ -1,6 +1,5 @@
-
-package RT;
-
+package RT::Config;
+# changes: undef => '', array => arrayref, hash => hashref
 =head1 NAME
 
 RT::Config
@@ -23,9 +22,9 @@ Instead, copy any sections you want to change to F<RT_SiteConfig.pm> and edit th
 
 =over 4
 
-=item C<$rtname>
+=item C<rtname>
 
-C<$rtname> is the string that RT will look for in mail messages to
+C<rtname> is the string that RT will look for in mail messages to
 figure out what ticket a new piece of mail belongs to.
 
 Your domain name is recommended, so as not to pollute the namespace.
@@ -34,35 +33,35 @@ once you start using a given tag, you should probably never change it.
 
 =cut
 
-set($rtname , "example.com");
+set(rtname => "example.com");
 
 
-=item C<$EmailSubjectTagRegex>
+=item C<email_subject_tag_regex>
 
 This regexp controls what subject tags RT recognizes as its own.
-If you're not dealing with historical C<$rtname> values, you'll likely
+If you're not dealing with historical C<rtname> values, you'll likely
 never have to enable this feature.
 
-Be VERY CAREFUL with it. Note that it overrides C<$rtname> for subject
+Be VERY CAREFUL with it. Note that it overrides C<rtname> for subject
 token matching and that you should use only "non-capturing" parenthesis
 grouping. For example:
 
-C<set($EmailSubjectTagRegex, qr/(?:example.com|example.org)/i );>
+C<set(email_subject_tag_regex => qr/(?:example.com|example.org)/i );>
 
 and NOT
 
-C<set($EmailSubjectTagRegex, qr/(example.com|example.org)/i );>
+C<set(email_subject_tag_regex => qr/(example.com|example.org)/i );>
 
 This setting would make RT behave exactly as it does without the 
 setting enabled.
 
 =cut
 
-#set($EmailSubjectTagRegex, qr/\Q$rtname\E/i );
+#set(email_subject_tag_regex => '\Q{rtname}}\E' );
 
 
 
-=item C<$Organization>
+=item C<organization>
 
 You should set this to your organization's DNS domain. For example,
 I<fsck.com> or I<asylum.arkham.ma.us>. It's used by the linking interface to
@@ -70,25 +69,25 @@ guarantee that ticket URIs are unique and easy to construct.
 
 =cut
 
-set($Organization , "example.com");
+set(organization => "example.com");
 
-=item C<$MinimumPasswordLength>
+=item C<minimum_password_length>
 
-C<$MinimumPasswordLength> defines the minimum length for user
+C<minimum_password_length> defines the minimum length for user
 passwords. Setting it to 0 disables this check.
 
 =cut
 
-set($MinimumPasswordLength , "5");
+set(minimum_password_length => "5");
 
-=item C<$TimeZone>
+=item C<time_zone>
 
-C<$TimeZone> is used to convert times entered by users into GMT and back again
+C<time_zone> is used to convert times entered by users into GMT and back again
 It should be set to a time zone recognized by L<DateTime::TimeZone>.
 
 =cut
 
-set($TimeZone, 'America/New_York');
+set(time_zone => 'America/New_York');
 
 =back
 
@@ -96,7 +95,7 @@ set($TimeZone, 'America/New_York');
 
 =over 4
 
-=item C<$DatabaseType>
+=item C<database_type>
 
 Database driver being used; case matters.
 
@@ -104,9 +103,9 @@ Valid types are "mysql", "Oracle" and "Pg"
 
 =cut
 
-set($DatabaseType , 'SQLite');
+set(database_type => 'SQLite');
 
-=item C<$DatabaseHost>, C<$DatabaseRTHost>
+=item C<database_host>, C<database_rt_host>
 
 The domain name of your database server.
 
@@ -115,69 +114,69 @@ leave it blank for enhanced performance
 
 =cut
 
-set($DatabaseHost   , 'localhost');
-set($DatabaseRTHost , 'localhost');
+set(database_host => 'localhost');
+set(database_rt_host => 'localhost');
 
-=item C<$DatabasePort>
+=item C<database_port>
 
 The port that your database server is running on.  Ignored unless it's
 a positive integer. It's usually safe to leave this blank
 
 =cut
 
-set($DatabasePort , '');
+set(database_port => '');
 
-=item C<$DatabaseUser>
+=item C<database_user>
 
 The name of the database user (inside the database)
 
 =cut
 
-set($DatabaseUser , 'rt_user');
+set(database_user => 'rt_user');
 
-=item C<$DatabasePassword>
+=item C<database_password>
 
-Password the C<$DatabaseUser> should use to access the database
+Password the C<database_user> should use to access the database
 
 =cut
 
-set($DatabasePassword , 'rt_pass');
+set(database_password => 'rt_pass');
 
-=item C<$DatabaseName>
+=item C<database_name>
 
 The name of the RT's database on your database server
 
 =cut
 
-set($DatabaseName , 'rt3');
+set(database_name => 'rt3');
 
-=item C<$DatabaseRequireSSL>
+=item C<database_require_ssl>
 
 If you're using Postgres and have compiled in SSL support,
-set C<$DatabaseRequireSSL> to 1 to turn on SSL communication
+set C<database_require_ssl> to 1 to turn on SSL communication
 
 =cut
 
-set($DatabaseRequireSSL , undef);
+set(database_require_ssl => '');
 
-=item C<$UseSQLForACLChecks>
+=item C<use_sql_for_acl_checks>
 
 In RT for ages ACL are checked after search what in some situtations
 result in empty search pages and wrong count of tickets.
 
-Set C<$UseSQLForACLChecks> to 1 to use SQL and get rid of these problems.
+Set C<use_sql_for_acl_checks> to 1 to use SQL and get rid of these problems.
 
 However, this option is beta. In some cases it result in performance
 improvements, but some setups can not handle it.
 
 =cut
 
-set($UseSQLForACLChecks, undef);
+set(use_sql_for_acl_checks => '');
 
-=item C<%FullTextSearch>
+=item C<full_text_search>
 
 Full text search (FTS) without indexes is slow operation and by default is
-disabled at all. To enable FTS set key 'Enabled' to true value.
+disabled at all. To enable FTS set key 'enabled' to true value.
 
 Setup of indexes and filling them with data requires different steps for
 different database back-ends. Use F<sbin/rt-setup-fulltext-index> helper
@@ -186,11 +185,14 @@ gives some ideas on next steps.
 
 =cut
 
-set(%FullTextSearch,
-    Enable  => 0,
-    Indexed => 0,
-#    Table   => 'AttachmentsIndex',
-#    Column  => 'ftsindex',
+set( full_text_search,
+    {
+        enable  => 0,
+        indexed => 0,
+
+        #    Table   => 'AttachmentsIndex',
+        #    Column  => 'ftsindex',
+    }
 );
 
 =back
@@ -199,28 +201,28 @@ set(%FullTextSearch,
 
 =over 4
 
-=item C<$OwnerEmail>
+=item C<owner_email>
 
-C<$OwnerEmail> is the address of a human who manages RT. RT will send
+C<owner_email> is the address of a human who manages RT. RT will send
 errors generated by the mail gateway to this address.  This address
 should _not_ be an address that's managed by your RT instance.
 
 =cut
 
-set($OwnerEmail , 'root');
+set(owner_email => 'root');
 
-=item C<$LoopsToRTOwner>
+=item C<loops_to_rt_owner>
 
-If C<$LoopsToRTOwner> is defined, RT will send mail that it believes
-might be a loop to C<$OwnerEmail>
+If C<loops_to_rt_owner> is defined, RT will send mail that it believes
+might be a loop to C<owner_email>
 
 =cut
 
-set($LoopsToRTOwner , 1);
+set(loops_to_rt_owner => 1);
 
-=item C<$StoreLoops>
+=item C<store_loops>
 
-If C<$StoreLoops> is defined, RT will record messages that it believes
+If C<store_loops> is defined, RT will record messages that it believes
 to be part of mail loops.
 
 As it does this, it will try to be careful not to send mail to the
@@ -228,11 +230,11 @@ sender of these messages
 
 =cut
 
-set($StoreLoops , undef);
+set(store_loops => '');
 
-=item C<$MaxAttachmentSize>
+=item C<max_attachment_size>
 
-C<$MaxAttachmentSize> sets the maximum size (in bytes) of attachments stored
+C<max_attachment_size> sets the maximum size (in bytes) of attachments stored
 in the database.
 
 For mysql and oracle, we set this size at 10 megabytes.
@@ -242,48 +244,48 @@ to drop this to 8192. (8k)
 =cut
 
 
-set($MaxAttachmentSize , 10000000);
+set(max_attachment_size => 10000000);
 
-=item C<$TruncateLongAttachments>
+=item C<truncate_long_attachments>
 
-C<$TruncateLongAttachments>: if this is set to a non-undef value,
-RT will truncate attachments longer than C<$MaxAttachmentSize>.
+C<truncate_long_attachments>: if this is set to a non-'' value,
+RT will truncate attachments longer than C<max_attachment_size>.
 
 =cut
 
-set($TruncateLongAttachments , undef);
+set(truncate_long_attachments => '');
 
-=item C<$DropLongAttachments>
+=item C<drop_long_attachments>
 
-C<$DropLongAttachments>: if this is set to a non-undef value,
+C<drop_long_attachments>: if this is set to a non-'' value,
 RT will silently drop attachments longer than C<MaxAttachmentSize>.
 
 =cut
 
-set($DropLongAttachments , undef);
+set(drop_long_attachments => '');
 
-=item C<$ParsenewMessageForTicketCcs>
+=item C<parsenew_message_for_ticket_ccs>
 
-If C<$ParseNewMessageForTicketCcs> is true, RT will attempt to divine
+If C<parse_new_message_for_ticket_ccs> is true, RT will attempt to divine
 Ticket 'Cc' watchers from the To and Cc lines of incoming messages
 Be forewarned that if you have _any_ addresses which forward mail to
 RT automatically and you enable this option without modifying
-C<$RTAddressRegexp> below, you will get yourself into a heap of trouble.
+C<rt_address_regexp> below, you will get yourself into a heap of trouble.
 
 =cut
 
-set($ParseNewMessageForTicketCcs , undef);
+set(parse_new_message_for_ticket_ccs => '');
 
-=item C<$RTAddressRegexp> 
+=item C<rt_address_regexp> 
 
-C<$RTAddressRegexp> is used to make sure RT doesn't add itself as a ticket CC if
+C<rt_address_regexp> is used to make sure RT doesn't add itself as a ticket CC if
 the setting above is enabled.
 
 =cut
 
-set($RTAddressRegexp , '^rt\@example.com$');
+set(rt_address_regexp => '^rt\@example.com$');
 
-=item C<$CanonicalizeEmailAddressMatch>, C<$CanonicalizeEmailAddressReplace>
+=item C<canonicalize_email_address_match>, C<canonicalize_email_address_replace>
 
 RT provides functionality which allows the system to rewrite
 incoming email addresses.  In its simplest form,
@@ -292,15 +294,15 @@ for the value in $<CanonicalizeEmailAddressMatch>
 (These values are passed to the $<CanonicalizeEmailAddress> subroutine in
  F<RT/User.pm>)
 
-By default, that routine performs a C<s/$Match/$Replace/gi> on any address
+By default, that routine performs a C<s/$match/$replace/gi> on any address
 passed to it.
 
 =cut
 
-#set($CanonicalizeEmailAddressMatch , '@subdomain\.example\.com$');
-#set($CanonicalizeEmailAddressReplace , '@example.com');
+#set(canonicalize_email_address_match => '@subdomain\.example\.com$');
+#set(canonicalize_email_address_replace => '@example.com');
 
-=item C<$CanonicalizeEmailAddressMatch>
+=item C<canonicalize_email_address_match>
 
 Set this to true and the create new user page will use the values that you
 enter in the form but use the function CanonicalizeUserInfo in
@@ -308,17 +310,17 @@ F<RT/User_Local.pm>
 
 =cut
 
-set($CanonicalizeOnCreate, 0);
+set(canonicalize_on_create => 0);
 
-=item C<$SenderMustExistInExternalDatabase>
+=item C<sender_must_exist_in_external_database>
 
-If C<$SenderMustExistInExternalDatabase> is true, RT will refuse to
+If C<sender_must_exist_in_external_database> is true, RT will refuse to
 create non-privileged accounts for unknown users if you are using
-the C<$LookupSenderInExternalDatabase> option.
+the C<lookup_sender_in_external_database> option.
 Instead, an error message will be mailed and RT will forward the
-message to C<$RTOwner>.
+message to C<rt_owner>.
 
-If you are not using C<$LookupSenderInExternalDatabase>, this option
+If you are not using C<lookup_sender_in_external_database>, this option
 has no effect.
 
 If you define an AutoRejectRequest template, RT will use this
@@ -326,25 +328,25 @@ template for the rejection message.
 
 =cut
 
-set($SenderMustExistInExternalDatabase , undef);
+set(sender_must_exist_in_external_database => '');
 
-=item C<@MailPlugins>
+=item C<mail_plugins>
 
-C<@MailPlugins> is a list of auth plugins for L<RT::Interface::Email>
+C<mail_plugins> is a list of auth plugins for L<RT::Interface::Email>
 to use; see L<rt-mailgate>
 
 =cut
 
-=item C<$UnsafeEmailCommands>
+=item C<unsafe_email_commands>
 
-C<$UnsafeEmailCommands>, if set to true, enables 'take' and 'resolve'
+C<unsafe_email_commands>, if set to true, enables 'take' and 'resolve'
 as possible actions via the mail gateway.  As its name implies, this
 is very unsafe, as it allows email with a forged sender to possibly
 resolve arbitrary tickets!
 
 =cut
 
-=item C<$ExtractSubjectTagMatch>, C<$ExtractSubjectTagNoMatch>
+=item C<extract_subject_tag_match>, C<extract_subject_tag_no_match>
 
 The default "extract remote tracking tags" scrip settings; these
 detect when your RT is talking to another RT, and adjusts the
@@ -352,10 +354,8 @@ subject accordingly.
 
 =cut
 
-set($ExtractSubjectTagMatch, qr/\[.+? #\d+\]/);
-set($ExtractSubjectTagNoMatch, ( ${RT::EmailSubjectTagRegex}
-       ? qr/\[(?:${RT::EmailSubjectTagRegex}) #\d+\]/
-       : qr/\[\Q$RT::rtname\E #\d+\]/));
+set( extract_subject_tag_match => '\[.+? #\\d+\\]' );
+set( extract_subject_tag_no_match => "\[\\Q{{rtname}}\\E #\\d+\\]/" );
 
 =back
 
@@ -363,94 +363,94 @@ set($ExtractSubjectTagNoMatch, ( ${RT::EmailSubjectTagRegex}
 
 =over 4
 
-=item C<$MailCommand>
+=item C<mail_command>
 
-C<$MailCommand> defines which method RT will use to try to send mail.
+C<mail_command> defines which method RT will use to try to send mail.
 We know that 'sendmailpipe' works fairly well.  If 'sendmailpipe'
 doesn't work well for you, try 'sendmail'.  Other options are 'smtp'
 or 'qmail'.
 
-Note that you should remove the '-t' from C<$SendmailArguments>
+Note that you should remove the '-t' from C<sendmail_arguments>
 if you use 'sendmail' rather than 'sendmailpipe'
 
 =cut
 
-set($MailCommand , 'sendmailpipe');
+set(mail_command => 'sendmailpipe');
 
 =back
 
 =head1 Sendmail Configuration
 
-These options only take effect if C<$MailCommand> is 'sendmail' or
+These options only take effect if C<mail_command> is 'sendmail' or
 'sendmailpipe'
 
 =over 4
 
-=item C<$SendmailArguments> 
+=item C<sendmail_arguments> 
 
-C<$SendmailArguments> defines what flags to pass to C<$SendmailPath>
-If you picked 'sendmailpipe', you MUST add a -t flag to C<$SendmailArguments>
+C<sendmail_arguments> defines what flags to pass to C<sendmail_path>
+If you picked 'sendmailpipe', you MUST add a -t flag to C<sendmail_arguments>
 These options are good for most sendmail wrappers and workalikes
 
 These arguments are good for sendmail brand sendmail 8 and newer
-C<set($SendmailArguments,"-oi -t -ODeliveryMode=b -OErrorMode=m");>
+C<set(sendmail_arguments => "-oi -t -ODeliveryMode=b -OErrorMode=m");>
 
 =cut
 
-set($SendmailArguments , "-oi -t");
+set(sendmail_arguments => "-oi -t");
 
 
-=item C<$SendmailBounceArguments>
+=item C<sendmail_bounce_arguments>
 
-C<$SendmailBounceArguments> defines what flags to pass to C<$Sendmail>
+C<sendmail_bounce_arguments> defines what flags to pass to C<sendmail>
 assuming RT needs to send an error (ie. bounce).
 
 =cut
 
-set($SendmailBounceArguments , '-f "<>"');
+set(sendmail_bounce_arguments => '-f "<>"');
 
-=item C<$SendmailPath>
+=item C<sendmail_path>
 
 If you selected 'sendmailpipe' above, you MUST specify the path to
-your sendmail binary in C<$SendmailPath>.
+your sendmail binary in C<sendmail_path>.
 
 =cut
 
-set($SendmailPath , "/usr/sbin/sendmail");
+set(sendmail_path => "/usr/sbin/sendmail");
 
 
 =back
 
 =head1 SMTP Configuration
 
-These options only take effect if C<$MailCommand> is 'smtp'
+These options only take effect if C<mail_command> is 'smtp'
 
 =over 4
 
-=item C<$SMTPServer>
+=item C<smtp_server>
 
-C<$SMTPServer> should be set to the hostname of the SMTP server to use
+C<smtp_server> should be set to the hostname of the SMTP server to use
 
 =cut
 
-set($SMTPServer, undef);
+set(smtp_server => '');
 
-=item C<$SMTPFrom>
+=item C<smtp_from>
 
-C<$SMTPFrom> should be set to the 'From' address to use, if not the
+C<smtp_from> should be set to the 'From' address to use, if not the
 email's 'From'
 
 =cut
 
-set($SMTPFrom, undef);
+set(smtp_from => '');
 
-=item C<$SMTPDebug> 
+=item C<smtp_debug> 
 
-C<$SMTPDebug> should be set to true to debug SMTP mail sending
+C<smtp_debug> should be set to true to debug SMTP mail sending
 
 =cut
 
-set($SMTPDebug, 0);
+set(smtp_debug => 0);
 
 =back
 
@@ -458,60 +458,60 @@ set($SMTPDebug, 0);
 
 =over 4
 
-=item C<@MailParams>
+=item C<mail_params>
 
-C<@MailParams> defines a list of options passed to $MailCommand if it
+C<mail_params> defines a list of options passed to $mail_command if it
 is not 'sendmailpipe', 'sendmail', or 'smtp'
 
 =cut
 
-set(@MailParams, ());
+set(mail_params, []);
 
-=item C<$CorrespondAddress>, C<$CommentAddress>
+=item C<correspond_address>, C<comment_address>
 
 RT is designed such that any mail which already has a ticket-id associated
 with it will get to the right place automatically.
 
-C<$CorrespondAddress> and C<$CommentAddress> are the default addresses
+C<correspond_address> and C<comment_address> are the default addresses
 that will be listed in From: and Reply-To: headers of correspondence
 and comment mail tracked by RT, unless overridden by a queue-specific
 address.
 
 =cut
 
-set($CorrespondAddress , '');
+set(correspond_address => '');
 
-set($CommentAddress , '');
+set(comment_address => '');
 
-=item C<$DashboardAddress>
+=item C<dashboard_address>
 
 The email address from which RT will send dashboards. If none is set, then
-C<$owneremail> will be used.
+C<owneremail> will be used.
 
 =cut
 
-set($DashboardAddress, '');
+set(dashboard_address => '');
 
 
-=item C<$use_friendly_from_line>
+=item C<use_friendly_from_line>
 
 By default, RT sets the outgoing mail's "From:" header to
-"SenderName via RT".  Setting C<$UseFriendlyFromLine> to 0 disables it.
+"SenderName via RT".  Setting C<use_friendly_from_line> to 0 disables it.
 
 =cut
 
-set($UseFriendlyFromLine, 1);
+set(use_friendly_from_line => 1);
 
-=item C<$FriendlyFromLineFormat>
+=item C<friendly_from_line_format>
 
 C<sprintf()> format of the friendly 'From:' header; its arguments
 are SenderName and SenderEmailAddress.
 
 =cut
 
-set($FriendlyFromLineFormat, "\"%s via RT\" <%s>");
+set(friendly_from_line_format => "\"%s via RT\" <%s>");
 
-=item C<$UseFriendlyToLine>
+=item C<use_friendly_to_line>
 
 RT can optionally set a "Friendly" 'To:' header when sending messages to
 Ccs or AdminCcs (rather than having a blank 'To:' header.
@@ -522,37 +522,37 @@ you _must_ disable this option.
 
 =cut
 
-set($UseFriendlyToLine, 0);
+set(use_friendly_to_line => 0);
 
-=item C<$FriendlyToLineFormat>
+=item C<friendly_to_line_format>
 
 C<sprintf()> format of the friendly 'From:' header; its arguments
 are WatcherType and TicketId.
 
 =cut
 
-set($FriendlyToLineFormat, "\"%s of ". RT->config->get('rtname') ." Ticket #%s\":;");
+set(friendly_to_line_format => "\"%s of {{rtname}} Ticket #%s\":;");
 
-=item C<$NotifyActor>
+=item C<notify_actor>
 
 By default, RT doesn't notify the person who performs an update, as they
 already know what they've done. If you'd like to change this behaviour,
-Set C<$NotifyActor> to 1
+Set C<notify_actor> to 1
 
 =cut
 
-set($NotifyActor, 0);
+set(notify_actor => 0);
 
-=item C<$RecordOutgoingEmail>
+=item C<record_outgoing_email>
 
 By default, RT records each message it sends out to its own internal database.
-To change this behavior, set C<$RecordOutgoingEmail> to 0 
+To change this behavior, set C<record_outgoing_email> to 0 
 
 =cut
 
-set($RecordOutgoingEmail, 1);
+set(record_outgoing_email => 1);
 
-=item C<$VERPPrefix>, C<$VERPPrefix>
+=item C<verp_prefix>, C<verp_prefix>
 
 VERP support (http://cr.yp.to/proto/verp.txt)
 
@@ -564,23 +564,23 @@ This currently only works with sendmail and sendmailppie.
 
 =cut
 
-# set($VERPPrefix, 'rt-');
-# set($VERPDomain, $RT::organization);
+# set(verp_prefix => 'rt-');
+# set(verp_domain => $rt::organization);
 
 
-=item C<$ForwardFromUser>
+=item C<forward_from_user>
 
 By default, RT forwards a message using queue's address and adds RT's tag into
 subject of the outgoing message, so recipients' replies go into RT as correspondents.
 
-To change this behavior, set C<$ForwardFromUser> to true value and RT will use
+To change this behavior, set C<forward_from_user> to true value and RT will use
 address of the current user and leave subject without RT's tag.
 
 =cut
 
-set($ForwardFromUser, 0);
+set(forward_from_user => 0);
 
-=item C<$ShowBccHeader>
+=item C<show_bcc_header>
 
 By default RT hides from the web UI information about blind copies user sent on
 reply or comment.
@@ -589,9 +589,9 @@ To change this set the following option to true value.
 
 =cut
 
-set($ShowBccHeader, 0);
+set(show_bcc_header => 0);
 
-=item C<$DashboardSubject>
+=item C<dashboard_subject>
 
 Lets you set the subject of dashboards. Arguments are the frequency (Daily,
 Weekly, Monthly) of the dashboard and the dashboard's name. %1 for the name
@@ -599,7 +599,7 @@ of the dashboard.
 
 =cut
 
-set($DashboardSubject, '%s Dashboard: %s');
+set(dashboard_subject => '%s Dashboard: %s');
 
 =back
 
@@ -611,7 +611,7 @@ by running the command `perldoc L<RT::Crypt::GnuPG>`  (or `perldoc
 
 =over 4
 
-=item C<%GnuPG>
+=item C<gnu_pg>
 
 Set C<outgoing_messages_format> to 'inline' to use inline encryption and
 signatures instead of 'RFC' (GPG/MIME: RFC3156 and RFC1847) format.
@@ -621,13 +621,13 @@ set C<allow_encrypt_data_in_db> to true
 
 =cut
 
-set( %GnuPG,
+set( %gnupg,
     enable => 1,
     outgoing_messages_format => 'RFC', # Inline
     allow_encrypt_data_in_db   => 0,
 );
 
-=item C<%GnuPGOptions>
+=item C<gnupg_options>
 
 Options of GnuPG program.
 
@@ -638,17 +638,19 @@ NOTE that options with '-' character MUST be quoted.
 
 =cut
 
-set(%GnuPGOptions,
-    homedir => '/home/jesse/svk/3.999-DANGEROUS/var/data/gpg',
+set( gnupg_options,
+    {
+        homedir => '/home/jesse/svk/3.999-DANGEROUS/var/data/gpg',
 
-# URL of a keyserver
-#    keyserver => 'hkp://subkeys.pgp.net',
+        # URL of a keyserver
+        #    keyserver => 'hkp://subkeys.pgp.net',
 
-# enables the automatic retrieving of keys when encrypting
-#    'auto-key-locate' => 'keyserver',
+        # enables the automatic retrieving of keys when encrypting
+        #    'auto-key-locate' => 'keyserver',
 
-# enables the automatic retrieving of keys when verifying signatures
-#    'auto-key-retrieve' => undef,
+        # enables the automatic retrieving of keys when verifying signatures
+        #    'auto-key-retrieve' => '',
+    }
 );
 
 
@@ -668,7 +670,7 @@ log message.
 
 =over 4
 
-=item C<$LogToSyslog>, C<$LogToScreen>
+=item C<log_to_syslog>, C<log_to_screen>
 
 The minimum level error that will be logged to the specific device.
 From lowest to highest priority, the levels are:
@@ -676,10 +678,10 @@ From lowest to highest priority, the levels are:
 
 =cut
 
-set($LogToSyslog    , 'info');
-set($LogToScreen    , 'info');
+set(log_to_syslog => 'info');
+set(log_to_screen => 'info');
 
-=item C<$LogToFile>, C<$LogDir>, C<$LogToFileNamed>
+=item C<log_to_file>, C<log_dir>, C<log_to_file_named>
 
 Logging to a standalone file is also possible, but note that the
 file should needs to both exist and be writable by all direct users
@@ -692,11 +694,11 @@ direct file logging.
 
 =cut
 
-set($LogToFile      , undef);
-set($LogDir, '/home/jesse/svk/3.999-DANGEROUS/var/log');
-set($LogToFileNamed , "rt.log");    #log to rt.log
+set(log_to_file => '');
+set(log_dir => '/home/jesse/svk/3.999-DANGEROUS/var/log');
+set(log_to_file_named => "rt.log");    #log to rt.log
 
-=item C<@LogToSyslogConf>
+=item C<log_to_syslog_conf>
 
 On Solaris or UnixWare, set to ( socket => 'inet' ).  Options here
 override any other options RT passes to L<Log::Dispatch::Syslog>.
@@ -706,17 +708,17 @@ ident too, if you have multiple RT installations.)
 
 =cut
 
-set(@LogToSyslogConf, ());
+set(log_to_syslog_conf, []);
 
-=item C<$StatementLog>,
+=item C<statement_log>,
 
 RT has rudimentary SQL statement logging support if you have
-DBIx-SearchBuilder 1.31_1 or higher; simply set C<$StatementLog> to be
+DBIx-SearchBuilder 1.31_1 or higher; simply set C<statement_log> to be
 the level that you wish SQL statements to be logged at.
 
 =cut
 
-set($StatementLog, undef);
+set(statement_log => '');
 
 =back
 
@@ -724,7 +726,7 @@ set($StatementLog, undef);
 
 =over 4
 
-=item C<$WebDefaultStylesheet>
+=item C<web_default_stylesheet>
 
 This determines the default stylesheet the RT web interface will use.
 RT ships with several themes by default:
@@ -742,9 +744,9 @@ option can be overridden by users in their preferences.
 
 =cut
 
-set($WebDefaultStylesheet, 'web2');
+set(web_default_stylesheet => 'web2');
 
-=item C<$UsernameFormat>
+=item C<username_format>
 
 This determines how user info is displayed. Concise will show one of 
 either NickName, RealName, Name or EmailAddress, depending on what exists 
@@ -753,78 +755,78 @@ EmailAddress.
 
 =cut
 
-set($UsernameFormat, 'concise');
+set(username_format => 'concise');
 
 
-=item C<$WebPath>
+=item C<web_path>
 
 If you're putting the web ui somewhere other than at the root of
-your server, you should set C<$WebPath> to the path you'll be 
+your server, you should set C<web_path> to the path you'll be 
 serving RT at.
 
-C<$WebPath> requires a leading / but no trailing /.
+C<web_path> requires a leading / but no trailing /.
 
-In most cases, you should leave C<$WebPath> set to '' (an empty value).
+In most cases, you should leave C<web_path> set to '' (an empty value).
 
 =cut
 
-set($WebPath, "");
+set(web_path => "");
 
-=item C<$WebPort>
+=item C<web_port>
 
 If we're running as a superuser, run on port 80
 Otherwise, pick a high port for this user.
 
 =cut
 
-set($WebPort, 80);# + ($< * 7274) % 32766 + ($< && 1024));
+set(web_port => 80);# + ($< * 7274) % 32766 + ($< && 1024));
 
-=item C<$WebDomain>
+=item C<web_domain>
 
 you know what domain name is, right? ;)
 
 =cut
 
-set( $WebDomain, 'localhost' );
+set(web_domain => 'localhost' );
 
-=item C<$WebBaseURL>, C<$WebURL>
+=item C<web_base_url>, C<web_url>
 
 This is the Scheme, server and port for constructing urls to webrt
-C<$WebBaseURL> doesn't need a trailing /
+C<web_base_url> doesn't need a trailing /
 
 =cut
 
-set($WebBaseURL, 'http://' . RT->config->get('WebDomain') . ':' . RT->config->get('WebPort'));
+set(web_base_url => 'http://{{web_domain}}:{{web_port}}');
 
-set($WebURL, RT->config->get('WebBaseURL') . RT->config->get('WebPath') . "/");
+set(web_url => '{{web_base_url}}{{web_path}}/');
 
-=item C<$WebImagesURL>
+=item C<web_images_url>
 
-C<$WebImagesURL> points to the base URL where RT can find its images.
+C<web_images_url> points to the base URL where RT can find its images.
 Define the directory name to be used for images in rt web
 documents.
 
 =cut
 
-set($WebImagesURL, RT->config->get('WebPath') . "/NoAuth/images/");
+set(web_images_url => "{{web_path}}/NoAuth/images/");
 
-=item C<$LogoURL>
+=item C<logo_url>
 
-C<$LogoURL> points to the URL of the RT logo displayed in the web UI
+C<logo_url> points to the URL of the RT logo displayed in the web UI
 
 =cut
 
-set($LogoURL, RT->config->get('WebImagesURL') . "bplogo.gif");
+set(logo_url => "{{web_images_url}}bplogo.gif");
 
-=item C<$WebNoAuthRegex>
+=item C<web_no_auth_regex>
 
 What portion of RT's URLspace should not require authentication.
 
 =cut
 
-set($WebNoAuthRegex, qr{^ (?:/+NoAuth/ | /+REST/\d+\.\d+/NoAuth/) }x );
+set(web_no_auth_regex => '^(?:/+NoAuth/|/+REST/\d+\.\d+/NoAuth/)' );
 
-=item C<$SelfServiceRegex>
+=item C<self_service_regex>
 
 What portion of RT's URLspace should be accessible to Unprivileged users
 This does not override the redirect from F</Ticket/Display.html> to
@@ -833,9 +835,9 @@ ticked displays
 
 =cut
 
-set($SelfServiceRegex, qr!^(?:/+SelfService/)!x );
+set(self_service_regex => '!^(?:/+SelfService/)!' );
 
-=item C<$MessageBoxWidth>, C<$MessageBoxHeight>
+=item C<message_box_width>, C<message_box_height>
 
 For message boxes, set the entry box width, height and what type of
 wrapping to use.  These options can be overridden by users in their
@@ -848,42 +850,42 @@ See below for Rich Text settings.
 
 =cut
 
-set($MessageBoxWidth, 72);
-set($MessageBoxHeight, 15);
+set(message_box_width => 72);
+set(message_box_height => 15);
 
-=item C<$MessageBoxWrap>
+=item C<message_box_wrap>
 
 Default wrapping: "HARD"  (choices "SOFT", "HARD")
 
 =cut
 
-set($MessageBoxWrap, "HARD");
+set(message_box_wrap => "HARD");
 
-=item C<$MessageBoxRichText>
+=item C<message_box_rich_text>
 
 Should "rich text" editing be enabled? This option lets your users send html email messages from the web interface.
 
 =cut
 
-set($MessageBoxRichText, 1);
+set(message_box_rich_text => 1);
 
-=item C<$MessageBoxRichTextHeight>
+=item C<message_box_rich_text_height>
 
 Height of RichText javascript enabled editing boxes (in pixels)
 
 =cut
 
-set($MessageBoxRichTextHeight, 200);
+set(message_box_rich_text_height => 200);
 
-=item C<$MessageBoxIncludeSignature>
+=item C<message_box_include_signature>
 
 Should your user's signatures (from their Preferences page) be included in comments and Replies
 
 =cut
 
-set($MessageBoxIncludeSignature, 1);
+set(message_box_include_signature => 1);
 
-=item C<$WikiImplicitLinks>
+=item C<wiki_implicit_links>
 
 Support implicit links in WikiText custom fields?  A true value
 causes InterCapped or ALLCAPS words in WikiText fields to
@@ -892,9 +894,9 @@ RTFM articles, it links to the RTFM article with that name.
 
 =cut
 
-set($WikiImplicitLinks, 0);
+set(wiki_implicit_links => 0);
 
-=item C<$TrustHTMLAttachments>
+=item C<trust_html_attachments>
 
 if C<TrustHTMLAttachments> is not defined, we will display them
 as text. This prevents malicious HTML and javascript from being
@@ -902,9 +904,9 @@ sent in a request (although there is probably more to it than that)
 
 =cut
 
-set($TrustHTMLAttachments, undef);
+set(trust_html_attachments => '');
 
-=item C<$RedistributeAutoGeneratedMessages>
+=item C<redistribute_auto_generated_messages>
 
 Should RT redistribute correspondence that it identifies as
 machine generated? A true value will do so; setting this to '0'
@@ -915,136 +917,136 @@ bounces and loops caused by autocreated requestors with bogus addresses.
 
 =cut
 
-set($RedistributeAutoGeneratedMessages, 'privileged');
+set(redistribute_auto_generated_messages => 'privileged');
 
-=item C<$PreferRichText>
+=item C<prefer_rich_text>
 
-If C<$PreferRichText> is set to a true value, RT will show HTML/Rich text
+If C<prefer_rich_text> is set to a true value, RT will show HTML/Rich text
 messages in preference to their plaintext alternatives. RT "scrubs" the 
 html to show only a minimal subset of HTML to avoid possible contamination
 by cross-site-scripting attacks.
 
 =cut
 
-set($PreferRichText, undef);
+set(prefer_rich_text => '');
 
-=item C<$WebExternalAuth>
+=item C<web_external_auth>
 
-If C<$WebExternalAuth> is defined, RT will defer to the environment's
+If C<web_external_auth> is defined, RT will defer to the environment's
 REMOTE_USER variable.
 
 =cut
 
-set($WebExternalAuth, undef);
+set(web_external_auth => '');
 
-=item C<$WebFallbackToInternalAuth>
+=item C<web_fallback_to_internal_auth>
 
-If C<$WebFallbackToInternalAuth> is undefined, the user is allowed a chance
+If C<web_fallback_to_internal_auth> is ''ined, the user is allowed a chance
 of fallback to the login screen, even if REMOTE_USER failed.
 
 =cut
 
-set($WebFallbackToInternalAuth , undef);
+set(web_fallback_to_internal_auth => '');
 
-=item C<$WebExternalGecos>
+=item C<web_external_gecos>
 
-C<$WebExternalGecos> means to match 'gecos' field as the user identity);
+C<web_external_gecos> means to match 'gecos' field as the user identity);
 useful with mod_auth_pwcheck and IIS Integrated Windows logon.
 
 =cut
 
-set($WebExternalGecos , undef);
+set(web_external_gecos => '');
 
-=item C<$WebExternalAuto>
+=item C<web_external_auto>
 
-C<$WebExternalAuto> will create users under the same name as REMOTE_USER
+C<web_external_auto> will create users under the same name as REMOTE_USER
 upon login, if it's missing in the Users table.
 
 =cut
 
-set($WebExternalAuto , undef);
+set(web_external_auto => '');
 
-=item C<$AutoCreate>
+=item C<auto_create>
 
-If C<$WebExternalAuto> is true, C<$AutoCreate> will be passed to User's
+If C<web_external_auto> is true, C<auto_create> will be passed to User's
 Create method.  Use it to set defaults, such as creating 
 Unprivileged users with C<{ privileged => 0 }>
 ( Must be a hashref of arguments )
 
 =cut
 
-set($AutoCreate, undef);
+set(auto_create => {});
 
-=item C<$WebSessionClass>
+=item C<web_session_class>
 
-C<$WebSessionClass> is the class you wish to use for managing Sessions.
+C<web_session_class> is the class you wish to use for managing Sessions.
 It defaults to use your SQL database, but if you are using MySQL 3.x and
 plans to use non-ascii Queue names, uncomment and add this line to
 F<RT_SiteConfig.pm> will prevent session corruption.
 
 =cut
 
-# set($WebSessionClass , 'Apache::Session::File');
+# set(web_session_class => 'Apache::Session::File');
 
-=item C<$AutoLogoff>
+=item C<auto_logoff>
 
 By default, RT's user sessions persist until a user closes his or her 
-browser. With the C<$AutoLogoff> option you can setup session lifetime in 
+browser. With the C<auto_logoff> option you can setup session lifetime in 
 minutes. A user will be logged out if he or she doesn't send any requests 
 to RT for the defined time.
 
 =cut
 
-set($AutoLogoff, 0);
+set(auto_logoff => 0);
 
-=item C<$WebSecureCookies>
+=item C<web_secure_cookies>
 
 By default, RT's session cookie isn't marked as "secure" Some web browsers 
 will treat secure cookies more carefully than non-secure ones, being careful
 not to write them to disk, only send them over an SSL secured connection 
-and so on. To enable this behaviour, set C<$WebSecureCookies> to a true value. 
+and so on. To enable this behaviour, set C<web_secure_cookies> to a true value. 
 NOTE: You probably don't want to turn this on _unless_ users are only connecting
 via SSL encrypted HTTP connections.
 
 =cut
 
-set($WebSecureCookies, 0);
+set(web_secure_cookies => 0);
 
-=item C<$WebFlushDbCacheEveryRequest>
+=item C<web_flush_db_cache_every_request>
 
 By default, RT clears its database cache after every page view.
 This ensures that you've always got the most current information 
 when working in a multi-process (mod_perl or FastCGI) Environment
-Setting C<$WebFlushDbCacheEveryRequest> to '0' will turn this off,
+Setting C<web_flush_db_cache_every_request> to '0' will turn this off,
 which will speed RT up a bit, at the expense of a tiny bit of data 
 accuracy.
 
 =cut
 
-set($WebFlushDbCacheEveryRequest, '1');
+set(web_flush_db_cache_every_request => '1');
 
 
-=item C<$MaxInlineBody>
+=item C<max_inline_body>
 
-C<$MaxInlineBody> is the maximum attachment size that we want to see
+C<max_inline_body> is the maximum attachment size that we want to see
 inline when viewing a transaction.  RT will inline any text if value
-is undefined or 0.  This option can be overridden by users in their
+is ''ined or 0.  This option can be overridden by users in their
 preferences.
 
 =cut
 
-set($MaxInlineBody, 12000);
+set(max_inline_body => 12000);
 
-=item C<$DefaultSummaryRows>
+=item C<default_summary_rows>
 
-C<$DefaultSummaryRows> is default number of rows displayed in for search
+C<default_summary_rows> is default number of rows displayed in for search
 results on the frontpage.
 
 =cut
 
-set($DefaultSummaryRows, 10);
+set(default_summary_rows => 10);
 
-=item C<$OldestTransactionsFirst>
+=item C<oldest_transactions_first>
 
 By default, RT shows newest transactions at the bottom of the ticket
 history page, if you want see them at the top set this to '0'.  This
@@ -1052,72 +1054,72 @@ option can be overridden by users in their preferences.
 
 =cut
 
-set($OldestTransactionsFirst, '1');
+set(oldest_transactions_first => '1');
 
-=item C<$ShowTransactionImages>
+=item C<show_transaction_images>
 
 By default, RT shows images attached to incoming (and outgoing) ticket updates
 inline. Set this variable to 0 if you'd like to disable that behaviour
 
 =cut
 
-set($ShowTransactionImages, 1);
+set(show_transaction_images => 1);
 
-=item C<$PlainTextPre>
+=item C<plain_text_pre>
 
 Normally plaintext attachments are displayed as HTML with line
 breaks preserved.  This causes space- and tab-based formatting not
-to be displayed correctly.  By setting $PlainTextPre they'll be
+to be displayed correctly.  By setting $plain_text_pre they'll be
 displayed using <pre> instead so such formatting works, but they'll
 use a monospaced font.
 
 =cut
 
-set($PlainTextPre, 0);
+set(plain_text_pre => 0);
 
 
-=item C<$ShowUnreadMessageNotifications>
+=item C<show_unread_message_notifications>
 
 By default, RT will prompt users when there are new, unread messages on
 tickets they are viewing.
 
-Set C<$ShowUnreadMessageNotifications> to a false value to disable this feature.
+Set C<show_unread_message_notifications> to a false value to disable this feature.
 
 =cut
 
-set($ShowUnreadMessageNotifications, 1);
+set(show_unread_message_notifications => 1);
 
 
-=item C<$HomepageComponents>
+=item C<homepage_components>
 
-C<$HomepageComponents> is an arrayref of allowed components on a user's
+C<homepage_components> is an arrayref of allowed components on a user's
 customized homepage ("RT at a glance").
 
 =cut
 
-set($HomepageComponents, [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards)]);
+set(homepage_components => [qw(QuickCreate Quicksearch MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards)]);
 
 
-=item C<@MasonParameters>
+=item C<mason_parameters>
 
-C<@MasonParameters> is the list of parameters for the constructor of
+C<mason_parameters> is the list of parameters for the constructor of
 HTML::Mason's Apache or CGI Handler.  This is normally only useful
 for debugging, eg. profiling individual components with:
 
     use MasonX::Profiler; # available on CPAN
-    set(@MasonParameters, (preamble => 'my $p = MasonX::Profiler->new($m, $r);'));
+    set(mason_parameters, [preamble => 'my $p = MasonX::Profiler->new($m, $r);']);
 
 =cut
 
-set(@MasonParameters, ());
+set(mason_parameters, []);
 
-=item C<$DefaultSearchResultFormat>
+=item C<default_search_result_format>
 
-C<$DefaultSearchResultFormat> is the default format for RT search results
+C<default_search_result_format> is the default format for RT search results
 
 =cut
 
-set($DefaultSearchResultFormat, qq{
+set(default_search_result_format => qq{
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__subject__</a></B>/TITLE:subject',
    status,
@@ -1133,39 +1135,39 @@ set($DefaultSearchResultFormat, qq{
    '<small>__time_left__</small>'});
 
 
-=item C<$SuppressInlineTextFiles>
+=item C<suppress_inline_text_files>
 
-If C<$SuppressInlineTextFiles> is set to a true value, then uploaded
+If C<suppress_inline_text_files> is set to a true value, then uploaded
 text files (text-type attachments with file names) are prevented
 from being displayed in-line when viewing a ticket's history.
 
 =cut
 
-set($SuppressInlineTextFiles, undef);
+set(suppress_inline_text_files => '');
 
-=item C<$DontSearchFileAttachments>
+=item C<dont_search_file_attachments>
 
-If C<$DontSearchFileAttachments> is set to a true value, then uploaded
+If C<dont_search_file_attachments> is set to a true value, then uploaded
 files (attachments with file names) are not searched during full-content
 ticket searches.
 
 =cut
 
-set($DontSearchFileAttachments, undef);
+set(dont_search_file_attachments => '');
 
-=item C<$ChartFont>
+=item C<chart_font>
 
 The L<GD> module (which RT uses for graphs) uses a builtin font that doesn't
 have full Unicode support. You can use a particular TrueType font by setting
-$ChartFont to the absolute path of that font. Your GD library must have
+$chart_font to the absolute path of that font. Your GD library must have
 support for TrueType fonts to use this option.
 
 =cut
 
-set($ChartFont, undef);
+set(chart_font => '');
 
 
-=item C<@ActiveMakeClicky>
+=item C<active_make_clicky>
 
 MakeClicky detects various formats of data in headers and email
 messages, and extends them with supporting links.  By default, RT
@@ -1183,9 +1185,9 @@ See F<share/html/Elements/MakeClicky> for documentation on how to add your own.
 
 =cut
 
-set(@ActiveMakeClicky, qw());
+set(active_make_clicky, []);
 
-=item C<$DefaultQueue>
+=item C<default_queue>
 
 Use this to select the default queue name that will be used for creating new
 tickets. You may use either the queue's name or its ID. This only affects the
@@ -1193,7 +1195,7 @@ queue selection boxes on the web interface.
 
 =cut
 
-#set($DefaultQueue, 'General');
+#set(default_queue => 'General');
 
 =back
 
@@ -1201,7 +1203,7 @@ queue selection boxes on the web interface.
 
 =over 4
 
-=item C<$StandaloneMinServers>, C<$StandaloneMaxServers>
+=item C<standalone_min_servers>, C<standalone_max_servers>
 
 The absolute minimum and maximum number of servers that will be created to
 handle requests. Having multiple servers means that serving a slow page will
@@ -1209,21 +1211,21 @@ affect other users less.
 
 =cut
 
-set($StandaloneMinServers, 1);
-set($StandaloneMaxServers, 1);
+set(standalone_min_servers => 1);
+set(standalone_max_servers => 1);
 
-=item C<$StandaloneMinSpareServers>, C<$StandaloneMaxSpareServers>
+=item C<standalone_min_spare_servers>, C<standalone_max_spare_servers>
 
 These next two options can be used to scale up and down the number of servers
-to adjust to load. These two options will respect the C<$StandaloneMinServers
-> and C<$StandaloneMaxServers options>.
+to adjust to load. These two options will respect the C<$standalone_min_servers
+> and C<$standalone_max_servers options>.
 
 =cut
 
-set($StandaloneMinSpareServers, 0);
-set($StandaloneMaxSpareServers, 0);
+set(standalone_min_spare_servers => 0);
+set(standalone_max_spare_servers => 0);
 
-=item C<$StandaloneMaxRequests>
+=item C<standalone_max_requests>
 
 This sets the absolute maximum number of requests a single server will serve.
 Setting this would be useful if, for example, memory usage slowly crawls up
@@ -1231,19 +1233,19 @@ every hit.
 
 =cut
 
-#set($StandaloneMaxRequests, 50);
+#set(standalone_max_requests => 50);
 
-=item C<%NetServerOptions>
+=item C<net_server_options>
 
-C<%NetServerOptions> is a hash of additional options to use for
+C<net_server_options> is a hash of additional options to use for
 L<Net::Server/DEFAULT ARGUMENTS>. For example, you could set
 reverse_lookups to get the hostnames for all users with:
 
-C<set(%NetServerOptions, (reverse_lookups => 1));>
+C<set(%net_server_options, (reverse_lookups => 1));>
 
 =cut
 
-set(%NetServerOptions, ());
+set(net_server_options, []);
 
 =back
 
@@ -1252,7 +1254,7 @@ set(%NetServerOptions, ());
 
 =over 4
 
-=item C<@LexiconLanguages>
+=item C<lexicon_languages>
 
 An array that contains languages supported by RT's internationalization
 interface.  Defaults to all *.po lexicons; setting it to C<qw(en ja)> will make
@@ -1260,9 +1262,9 @@ RT bilingual instead of multilingual, but will save some memory.
 
 =cut
 
-set(@LexiconLanguages, qw(*));
+set(lexicon_languages, [qw(*)]);
 
-=item C<@EmailInputEncodings>
+=item C<email_input_encodings>
 
 An array that contains default encodings used to guess which charset
 an attachment uses if not specified.  Must be recognized by
@@ -1270,15 +1272,15 @@ L<Encode::Guess>.
 
 =cut
 
-set(@EmailInputEncodings, qw(utf-8 iso-8859-1 us-ascii));
+set(email_input_encodings, [qw(utf-8 iso-8859-1 us-ascii)]);
 
-=item C<$EmailOutputEncoding>
+=item C<email_output_encoding>
 
 The charset for localized email.  Must be recognized by Encode.
 
 =cut
 
-set($EmailOutputEncoding, 'utf-8');
+set(email_output_encoding => 'utf-8');
 
 
 =back
@@ -1287,7 +1289,7 @@ set($EmailOutputEncoding, 'utf-8');
 
 =over 4
 
-=item C<$DateTimeFormat>
+=item C<date_time_format>
 
 You can choose date and time format. This takes a L<DateTime/strftime> format
 specification. See L<DateTime/strftime_Patterns> for a full list of variables.
@@ -1296,40 +1298,40 @@ This option can be overridden by users in their preferences.
 
 Some examples:
 
-C<set($DateTimeFormat, '%a, %d %b %Y %H:%M:%S %z');> # RFC2822
-C<set($DateTimeFormat, '%Y-%m-%d %H:%M:%S');> # ISO
+C<set(date_time_format => '%a, %d %b %y %h:%m:%s %z');> # RFC2822
+C<set(date_time_format => '%y-%m-%d %h:%m:%s');> # ISO
 
 =cut
 
-set($DateTimeFormat, '%Y-%m-%d %H:%M:%S');
+set(date_time_format => '%y-%m-%d %h:%m:%s');
 
 # Next two options are for Time::ParseDate
 
-=item C<$DateDayBeforeMonth>
+=item C<date_day_before_month>
 
 Set this to 1 if your local date convention looks like "dd/mm/yy"
 instead of "mm/dd/yy".
 
 =cut
 
-set($DateDayBeforeMonth , 1);
+set(date_day_before_month => 1);
 
-=item C<$AmbiguousDayInPast>, C<$AmbiguousDayInFuture>
+=item C<ambiguous_day_in_past>, C<ambiguous_day_in_future>
 
 Should an unspecified day or year in a date refer to a future or a
 past value? For example, should a date of "Tuesday" default to mean
 the date for next Tuesday or last Tuesday? Should the date "March 1"
 default to the date for next March or last March?
 
-Set $<AmbiguousDayInPast> for the last date, or $<$AmbiguousDayInFuture> for the
+Set $<AmbiguousDayInPast> for the last date, or $<$ambiguous_day_in_future> for the
 next date.
 
 The default is usually good.
 
 =cut
 
-set($AmbiguousDayInPast, 0);
-set($AmbiguousDayInFuture, 0);
+set(ambiguous_day_in_past => 0);
+set(ambiguous_day_in_future => 0);
 
 =back
 
@@ -1337,7 +1339,7 @@ set($AmbiguousDayInFuture, 0);
 
 =over 4
 
-=item C<@ActiveStatus>, C<@InactiveStatus>
+=item C<active_status>, C<inactive_status>
 
 You can define new statuses and even reorder existing statuses here.
 WARNING. DO NOT DELETE ANY OF THE DEFAULT STATUSES. If you do, RT
@@ -1346,10 +1348,10 @@ will break horribly. The statuses you add must be no longer than
 
 =cut
 
-set(@ActiveStatus, qw(new open stalled));
-set(@InactiveStatus, qw(resolved rejected deleted));
+set(active_status, [qw(new open stalled)]);
+set(inactive_status, [qw(resolved rejected deleted)]);
 
-=item C<$LinkTransactionsRun1Scrip>
+=item C<link_transactions_run1_scrip>
 
 RT-3.4 backward compatibility setting. Add/Delete Link used to record one
 transaction and run one scrip. Set this value to 1 if you want
@@ -1357,9 +1359,9 @@ only one of the link transactions to have scrips run.
 
 =cut
 
-set($LinkTransactionsRun1Scrip, 0);
+set(link_transactions_run1_scrip => 0);
 
-=item C<$StrictLinkACL>
+=item C<strict_link_acl>
 
 When this feature is enabled a user needs I<ModifyTicket> rights on both
 tickets to link them together, otherwise he can have rights on either of
@@ -1367,56 +1369,56 @@ them.
 
 =cut
 
-set($StrictLinkACL, 1);
+set(strict_link_acl => 1);
 
-=item C<$PreviewScripMessages>
+=item C<preview_scrip_messages>
 
-Set C<$PreviewScripMessages> to 1 if the scrips preview on the ticket
+Set C<preview_scrip_messages> to 1 if the scrips preview on the ticket
 reply page should include the content of the messages to be sent.
 
 =cut
 
-set($PreviewScripMessages, 0);
+set(preview_scrip_messages => 0);
 
-=item C<$UseTransactionBatch>
+=item C<use_transaction_batch>
 
-Set C<$UseTransactionBatch> to 1 to execute transactions in batches,
+Set C<use_transaction_batch> to 1 to execute transactions in batches,
 such that a resolve and comment (for example) would happen
 simultaneously, instead of as two transactions, unaware of each
 others' existence.
 
 =cut
 
-set($UseTransactionBatch, 1);
+set(use_transaction_batch => 1);
 
-=item C<@CustomFieldValuesSources>
+=item C<custom_field_values_sources>
 
-Set C<@CustomFieldValuesSources> to a list of class names which extend
+Set C<custom_field_values_sources> to a list of class names which extend
 L<RT::CustomFieldValues::External>.  This can be used to pull lists of
 custom field values from external sources at runtime.
 
 =cut
 
-set(@CustomFieldValuesSources, ());
+set(custom_field_values_sources, []);
 
-=item C<$CanonicalizeRedirectURLs>
+=item C<canonicalize_redirect_ur_ls>
 
-Set C<$CanonicalizeRedirectURLs> to 1 to use $C<WebURL> when redirecting rather
-than the one we get from C<%ENV>.
+Set C<canonicalize_redirect_ur_ls> to 1 to use $c<WebURL> when redirecting rather
+than the one we get from C<env>.
 
 If you use RT behind a reverse proxy, you almost certainly want to
 enable this option.
 
 =cut
 
-set($CanonicalizeRedirectURLs, 0);
-=item C<$EnableReminders>
+set(canonicalize_redirect_ur_ls => 0);
+=item C<enable_reminders>
 
 Hide links/portlets related to Reminders by setting this to 0
 
 =cut
 
-set($EnableReminders,1);
+set(enable_reminders => 1);
 
 =back
 
@@ -1424,7 +1426,7 @@ set($EnableReminders,1);
 
 =over 4
 
-=item C<$DevelMode>
+=item C<devel_mode>
 
 RT comes with a "Development mode" setting. 
 This setting, as a convenience for developers, turns on 
@@ -1439,7 +1441,7 @@ production:
 
 =cut
 
-set($DevelMode, '1');
+set(devel_mode => '1');
 
 
 =back
@@ -1448,15 +1450,15 @@ set($DevelMode, '1');
 
 =over 4
 
-=item C<$AlwaysUseBase64>
+=item C<always_use_base64>
 
 Encode blobs as base64 in DB (?)
 
-=item C<$TicketBaseURI>
+=item C<ticket_base_uri>
 
 Base URI to tickets in this system; used when loading (?)
 
-=item C<$UseCodeTickets>
+=item C<use_code_tickets>
 
 This option is exists for backwards compatibility.  Don't use it.
 
