@@ -58,10 +58,6 @@ use constant current_tab    => 'Admin/Groups/';
 
 use constant display_columns => qw(id name description);
 
-private template 'new_item_region' => sub {
-    # can't create groups through CRUD UI
-};
-
 sub _current_collection {
     my $self = shift;
     my $c    = $self->SUPER::_current_collection();
