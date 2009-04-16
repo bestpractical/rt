@@ -55,7 +55,7 @@
 <form method="post" action="Other.html">
 % foreach my $section( RT->config->sections ) {
 <&|/Widgets/TitleBox, title => _( $section ) &>
-% foreach my $option( RT->config->options( Section => $section ) ) {
+% foreach my $option( RT->config->options( section => $section ) ) {
 % my $meta = RT->config->meta( $option );
 <& $meta->{'widget'},
     default      => 1,
