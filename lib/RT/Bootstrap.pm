@@ -202,7 +202,6 @@ sub update_config_data {
     *RT::Config::set = sub {
         my $key   = shift;
         my $value = shift;
-        $value = '' unless defined $value;
         my $old_value = RT->config->_get($key);
         if ( cmpStr( $value, $old_value ) != 0 ) {
             RT->config->set( $key, $value );
