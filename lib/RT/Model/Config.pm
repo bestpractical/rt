@@ -68,6 +68,21 @@ use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
     updated_on => 'last_updated',
 };
 
+sub _get {
+    my $self = shift;
+    my $name = shift;
+
+    my $config = RT::Model::Config->new;
+    my ( $ret, $msg ) = $config->load_by_cols( name => $name );
+    if ($ret) {
+        my $value = $config->value;
+        return defined $value ? $value : '';
+    }
+    else {
+        return;
+    }
+}
+
 sub get {
     my $self = shift;
     my $name = shift;
@@ -83,13 +98,10 @@ sub get {
         }
     }
 
-    my $config = RT::Model::Config->new;
-    my ( $ret, $msg ) = $config->load_by_cols( name => $name );
-    if ($ret) {
-        my $value = $config->value;
-#        $value = $$value if ref $value;
+    my $value = $self->_get( $name );
+    if ( defined $value ) {
         $value =~ s/{{(\w+)}}/$self->get($1) || ''/ge if $value && !ref $value;
-        return defined $value ? $value : '';
+        return $value;
     }
     else {
         return;
