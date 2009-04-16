@@ -142,7 +142,7 @@ our %META = (
             callback    => sub {
                 my $ret = { values => [], values_label => {} };
                 my $qs = RT::Model::QueueCollection->new;
-                $qs->Unlimit;
+                $qs->unlimit;
                 while ( my $queue = $qs->next ) {
                     next unless $queue->current_user_has_right("CreateTicket");
                     push @{ $ret->{values} }, $queue->id;
