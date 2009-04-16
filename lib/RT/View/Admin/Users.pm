@@ -52,6 +52,7 @@ package RT::View::Admin::Users;
 use Jifty::View::Declare -base;
 use base 'RT::View::CRUD';
 
+use constant page_title      => 'User Management';
 use constant object_type     => 'User';
 use constant display_columns => qw(id name email);
 

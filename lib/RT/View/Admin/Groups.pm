@@ -52,6 +52,7 @@ package RT::View::Admin::Groups;
 use Jifty::View::Declare -base;
 use base 'RT::View::CRUD';
 
+use constant page_title     => 'Group Management';
 use constant object_type    => 'Group';
 use constant tab_url        => '/Admin/Elements/GroupTabs';
 use constant current_tab    => 'Admin/Groups/';
