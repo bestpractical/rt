@@ -41,31 +41,94 @@ if ( $opts{'help'} || !$opts{'upgrade'} ) {
     new Jifty;
 }
 
-
-
-my $db_name_rt3 = $opts{'db-name-rt3'} || 'rt3';
 my $db_type = Jifty->config->framework('Database')->{'Driver'};
-my $db_name_rt4 = Jifty->config->framework('Database')->{'Database'};
+my $db_name = Jifty->config->framework('Database')->{'Database'};
 my $db_user = Jifty->config->framework('Database')->{'User'};
-my $dbh = Jifty->handle->dbh;
+my $dbh     = Jifty->handle->dbh;
 
-my %name_changes = (
+my %columns = (
+    ACL => [qw(id PrincipalType PrincipalId RightName ObjectType ObjectId DelegatedBy DelegatedFrom)],
+    Attachments => [qw(id TransactionId Parent MessageId Subject Filename ContentType ContentEncoding Content Headers Creator Created)],
+    Attributes => [qw(id Name Description Content ContentType ObjectType ObjectId Creator Created LastUpdatedBy LastUpdated)],
+    CachedGroupMembers => [qw(id GroupId MemberId Via ImmediateParentId Disabled)],
+    CustomFields => [qw(id Name Type MaxValues Pattern Repeated Description SortOrder LookupType Creator Created LastUpdatedBy LastUpdated Disabled)],
+    CustomFieldValues => [qw(id CustomField Name Description SortOrder Creator Created LastUpdatedBy LastUpdated)],
+    GroupMembers => [qw(id GroupId MemberId)],
+    Groups => [qw(id Name Description Domain Type Instance)],
+    Links => [qw(id Base Target Type LocalTarget LocalBase LastUpdatedBy LastUpdated Creator Created)],
+    ObjectCustomFields => [qw(id CustomField ObjectId SortOrder Creator Created LastUpdatedBy LastUpdated)],
+    ObjectCustomFieldValues => [qw(id CustomField ObjectType ObjectId SortOrder Content LargeContent ContentType ContentEncoding Creator Created LastUpdatedBy LastUpdated Disabled)],
+    Principals => [qw(id Type ObjectId Disabled)],
+    Queues => [qw(id Name Description CorrespondAddress CommentAddress InitialPriority FinalPriority DefaultDueIn Creator Created LastUpdatedBy LastUpdated Disabled)],
+    ScripActions => [qw(id Name Description ExecModule Argument Creator Created LastUpdatedBy LastUpdated)],
+    ScripConditions => [qw(id Name Description ExecModule Argument ApplicableTransTypes Creator Created LastUpdatedBy LastUpdated)],
+    Scrips => [qw(id Description ScripCondition ScripAction ConditionRules ActionRules CustomIsApplicableCode CustomPrepareCode CustomCommitCode Stage Queue Template Creator Created LastUpdatedBy LastUpdated)],
+    Templates => [qw(id Queue Name Description Type Language TranslationOf Content LastUpdated LastUpdatedBy Creator Created)],
+    Tickets => [qw(id EffectiveId Queue Type IssueStatement Resolution Owner Subject InitialPriority FinalPriority Priority TimeEstimated TimeWorked Status TimeLeft Told Starts Started Due Resolved LastUpdatedBy LastUpdated Creator Created Disabled)],
+    Transactions => [qw(id ObjectType ObjectId TimeTaken Type Field OldValue NewValue ReferenceType OldReference NewReference Data Creator Created)],
+    Users => [qw(id Name Password Comments Signature EmailAddress FreeformContactInfo Organization RealName NickName Lang EmailEncoding WebEncoding ExternalContactInfoId ContactInfoSystem ExternalAuthId AuthSystem Gecos HomePhone WorkPhone MobilePhone PagerPhone Address1 Address2 City State Zip Country Timezone PGPKey Creator Created LastUpdatedBy LastUpdated)],
+);
+
+my @tables = keys %columns;
+
+my %special_renaming = (
     nick_name           => 'nickname',
     email_address       => 'email',
     principal_type      => 'type',
     immediate_parent_id => 'immediate_parent',
 );
 
-my @tables = qw/ACL Attachments  Attributes CachedGroupMembers CustomFieldValues
-CustomFields GroupMembers Groups Links ObjectCustomFieldValues ObjectCustomFields
-Principals  Queues ScripActions ScripConditions Scrips Templates Tickets
-Transactions Users sessions/;
+my %drop_columns = (
+# drop columns related to delegations
+    ACL        => [qw(DelegatedBy DelegatedFrom)],
+# always was equal to id
+    Principals => [qw(ObjectId)],
+# XXX: do we really want to drop this?
+    Templates  => [qw(Language TranslationOf)],
+# never used this fields
+    Scrips     => [qw(ConditionRules ActionRules)],
+);
+
+
+update_all_tables();
+rename_columns_in_all_tables();
+
+sub update_all_tables {
+    foreach my $table ( @tables ) {
+        my $function = join '_', 'update', $table, 'table';
+        next unless defined &$function;
+
+        no strict 'refs';
+        (&$function)->();
+    }
+}
+
+sub drop_columns_in_all_tables {
+    while ( my ($table, $columns) = each %drop_columns ) {
+        drop_columns( $table, @$columns );
+    }
+}
+
+sub rename_columns_in_all_tables {
+    foreach my $table ( @tables ) {
+        my %map;
+        foreach my $column ( @{ $columns{ $table } } ) {
+            next if $drop_columns{$table} && grep $_ eq $column, @{$drop_columns{$table}};
+
+            my $new = renaming( $column );
+            $new = $special_renaming{ $new } || $new;
+            next if lc $new eq lc $column;
+
+            $map{ $column } = $new;
+        }
+        next unless keys %map;
+        rename_columns( $table, %map );
+    }
+}
 
 sub update_acl_table {
 # delete delegated rights
     execute_query("DELETE FROM ACL WHERE DelegatedBy != 0 AND DelegatedBy IS NOT NULL");
-# drop columns related to delegations
-    drop_columns(qw(ACL DelegatedBy DelegatedFrom) );
 # replace PrincipalType with NULLs where it's not a role
     execute_query("UPDATE TABLE ACL SET PrincipalType = NULL WHERE PrincipalType IN ('User', 'Group')");
 }
@@ -74,17 +137,6 @@ sub update_groups_table {
 # delete personal groups, everything else can be covered by validator
     execute("DELETE FROM Groups WHERE Domain = 'Personal'");
 }
-
-sub update_principals_table {
-    rename_columns('Principals', PrincipalType => 'Type');
-    drop_columns(qw(Principals ObjectId));
-}
-
-# drop deprecated columns
-drop_columns(@$_) foreach (
-    [qw(Templates Language TranslationOf)],
-    [qw(Scrips ConditionRules ActionRules)],
-);
 
 print "updating table Attributes\n";
 # need to add a row for the default status schema in Attributes and update
@@ -161,15 +213,15 @@ print "updated attributes with success\n";
 
 
 print "updating table Users\n";
-require RT::Model::UserCollection;
-my $user_collection =
-  RT::Model::UserCollection->new( current_user => RT->system_user );
-
-while ( my $user = $user_collection->next ) {
-    my $name = $user->name;
-    $user->__set( column => 'email_confirmed', value => 1 )
-      unless $name eq 'RT_System';
-}
+    require RT::Model::UserCollection;
+    my $user_collection = RT::Model::UserCollection->new(
+        current_user => RT->system_user
+    );
+    while ( my $user = $user_collection->next ) {
+        my $name = $user->name;
+        $user->__set( column => 'email_confirmed', value => 1 )
+            unless $name eq 'RT_System';
+    }
 print "updated table Users with success\n";
 print "migrated with success!\n";
 
