@@ -10,4 +10,5 @@ mason*/
 pm_to_blib
 t/data/gnupg/keyrings/random_seed
 t/mailbox_*
-
+rt4
+var/
