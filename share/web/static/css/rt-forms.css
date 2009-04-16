@@ -183,3 +183,6 @@ div.widget .hints {
     width: 7em;
 }
 
+.value a {
+    font-weight: bold;
+}
