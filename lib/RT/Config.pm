@@ -104,23 +104,23 @@ or may require more logic than should live in RT_*Config.pm
 Keyed by config name, there are several properties that
 can be set for each config optin:
 
- Section     - What header this option should be grouped
+ section     - What header this option should be grouped
                under on the user Settings page
- Overridable - Can users change this option
- Sortorder   - Within a Section, how should the options be sorted
+ overridable - Can users change this option
+ sortorder   - Within a section, how should the options be sorted
                for display to the user
- Widget      - Mason component path to widget that should be user 
+ widget      - Mason component path to widget that should be user 
                to display this config option
- WidgetArguments - An argument hash passed to the Widget
-    Description - Friendly description to show the user
-    Values      - Arrayref of options (for select Widget)
-    values_label - Hashref, key is the Value from the Values
+ widget_arguments - An argument hash passed to the widget
+    description - Friendly description to show the user
+    values      - Arrayref of options (for select widget)
+    values_label - Hashref, key is the Value from the values
                   list, value is a user friendly description
                   of the value
-    Callback    - subref that receives no arguments.  It returns
+    callback    - subref that receives no arguments.  It returns
                   a hashref of items that are added to the rest
-                  of the WidgetArguments
- PostLoadCheck - subref passed the RT::Config object and the current
+                  of the widget_aarguments
+ post_load_check - subref passed the RT::Config object and the current
                  setting of the config option.  Can make further checks
                  (such as seeing if a library is installed) and then change
                  the setting of this or other options in the Config using 
@@ -133,13 +133,13 @@ can be set for each config optin:
 our %META = (
     # General user overridable options
     DefaultQueue => {
-        Section         => 'General',
-        Overridable     => 1,
-        Sortorder       => 1,
-        Widget          => '/Widgets/Form/Select',
-        WidgetArguments => {
-            Description => 'default queue',    #loc
-            Callback    => sub {
+        section         => 'General',
+        overridable     => 1,
+        sortorder       => 1,
+        widget          => '/Widgets/Form/Select',
+        widget_arguments => {
+            description => 'default queue',    #loc
+            callback    => sub {
                 my $ret = { values => [], values_label => {} };
                 my $q = new RT::Model::Queues(
                     $HTML::Mason::Commands::session{'current_user'} );
@@ -154,13 +154,13 @@ our %META = (
         }
     },
     UsernameFormat => {
-        Section         => 'General',
-        Overridable     => 1,
-        Sortorder       => 2,
-        Widget          => '/Widgets/Form/Select',
-        WidgetArguments => {
-            Description => 'Username format',       # loc
-            Values      => [qw(concise verbose)],
+        section         => 'General',
+        overridable     => 1,
+        sortorder       => 2,
+        widget          => '/Widgets/Form/Select',
+        widget_arguments => {
+            description => 'Username format',       # loc
+            values      => [qw(concise verbose)],
             values_label => {
                 concise => 'Short usernames',           # loc_left_pair
                 verbose => 'Name and email address',    # loc_left_pair
@@ -230,7 +230,7 @@ our %META = (
         overridable     => 1,
         widget          => '/Widgets/Form/Integer',
         widget_arguments => {
-            Description => 'Number of search results',    #loc
+            description => 'Number of search results',    #loc
         },
     },
 
@@ -281,7 +281,7 @@ our %META = (
         widget          => '/Widgets/Form/Select',
         widget_arguments => {
             description => 'Date format', #loc
-            Callback    => sub {
+            callback    => sub {
                 my $ret = { values => [], values_label => {} };
                 my $now = RT::DateTime->now;
                 for my $name (qw/rfc2822 rfc2616 iso iCal /) {
