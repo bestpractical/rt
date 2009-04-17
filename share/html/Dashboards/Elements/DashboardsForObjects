@@ -46,13 +46,16 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%args>
-@Objects
+$Objects => undef
 $dashboards => {}
 </%args>
 <%init>
 # Returns a hash of dashboards associated with @Objects
+if (!defined($Objects)) {
+    @$Objects = RT::Dashboard->new($session{CurrentUser})->_PrivacyObjects;
+}
 
-for my $object (@Objects) {
+for my $object (@$Objects) {
     my $new_dashboards = $m->comp("/Dashboards/Elements/DashboardsForObject", Object => $object);
 
     push @{ $dashboards->{$_} }, @{ $new_dashboards->{$_} || [] }
