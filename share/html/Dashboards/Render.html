@@ -58,12 +58,12 @@
 <tr valign="top">
 
 <td class="boxcontainer">
-% $show_cb->($_) foreach @{ $panes{body} || [] };
+% $show_cb->($_, 'body') foreach @{ $panes{body} || [] };
 </td>
 
 % if (@{ $panes{sidebar} || [] }) {
 <td class="boxcontainer">
-% $show_cb->($_) foreach @{ $panes{sidebar} || [] };
+% $show_cb->($_, 'sidebar') foreach @{ $panes{sidebar} || [] };
 </td>
 % }
 
@@ -101,6 +101,8 @@ my %panes = %{ $DashboardObj->Panes };
 
 my $show_cb = sub {
     my $portlet = shift;
+    my $pane = shift;
+
     my $portlet_type = $portlet->{portlet_type};
     my $comp = "Elements/ShowPortlet/$portlet_type";
     $m->comp($comp,
@@ -108,6 +110,7 @@ my $show_cb = sub {
         Rows      => $rows,
         Preview   => $Preview,
         Dashboard => $DashboardObj,
+        Pane      => $pane,
     );
 };
 </%INIT>
