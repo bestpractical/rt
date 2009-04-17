@@ -74,7 +74,7 @@ use warnings;
 use base qw/RT::SharedSetting/;
 
 use RT::System;
-RT::System->AddRights(
+RT::System::AddRights(
     SubscribeDashboard => 'Subscribe to dashboards', #loc_pair
 
     SeeDashboard       => 'View system dashboards', #loc_pair
