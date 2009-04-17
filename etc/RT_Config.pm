@@ -1,5 +1,4 @@
 package RT::Config;
-# changes: undef => '', array => arrayref, hash => hashref
 =head1 NAME
 
 RT::Config
@@ -94,70 +93,6 @@ set(time_zone => 'America/New_York');
 =head1 Database Configuration
 
 =over 4
-
-=item C<database_type>
-
-Database driver being used; case matters.
-
-Valid types are "mysql", "Oracle" and "Pg"
-
-=cut
-
-set(database_type => 'SQLite');
-
-=item C<database_host>, C<database_rt_host>
-
-The domain name of your database server.
-
-If you're running mysql and it's on localhost,
-leave it blank for enhanced performance
-
-=cut
-
-set(database_host => 'localhost');
-set(database_rt_host => 'localhost');
-
-=item C<database_port>
-
-The port that your database server is running on.  Ignored unless it's
-a positive integer. It's usually safe to leave this blank
-
-=cut
-
-set(database_port => '');
-
-=item C<database_user>
-
-The name of the database user (inside the database)
-
-=cut
-
-set(database_user => 'rt_user');
-
-=item C<database_password>
-
-Password the C<database_user> should use to access the database
-
-=cut
-
-set(database_password => 'rt_pass');
-
-=item C<database_name>
-
-The name of the RT's database on your database server
-
-=cut
-
-set(database_name => 'rt3');
-
-=item C<database_require_ssl>
-
-If you're using Postgres and have compiled in SSL support,
-set C<database_require_ssl> to 1 to turn on SSL communication
-
-=cut
-
-set(database_require_ssl => '');
 
 =item C<use_sql_for_acl_checks>
 
@@ -299,8 +234,8 @@ passed to it.
 
 =cut
 
-set(canonicalize_email_match => '');
-set(canonicalize_email_replace => '');
+set(canonicalize_email_match => 'a');
+set(canonicalize_email_replace => 'a');
 
 =item C<canonicalize_email_match>
 
@@ -1425,30 +1360,6 @@ Hide links/portlets related to Reminders by setting this to 0
 =cut
 
 set(enable_reminders => 1);
-
-=back
-
-=head1 Development Configuration
-
-=over 4
-
-=item C<devel_mode>
-
-RT comes with a "Development mode" setting. 
-This setting, as a convenience for developers, turns on 
-all sorts of development options that you most likely don't want in 
-production:
-
-* Turns off Mason's 'static_source' directive. By default, you can't 
-  edit RT's web ui components on the fly and have RT magically pick up
-  your changes. (It's a big performance hit)
-
- * More to come
-
-=cut
-
-set(devel_mode => '1');
-
 
 =back
 
