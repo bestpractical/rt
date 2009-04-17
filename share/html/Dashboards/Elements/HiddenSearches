@@ -50,6 +50,8 @@
 $Dashboard
 </%args>
 <%init>
+return if @searches == 0;
+
 my @display;
 
 for my $search (@searches) {

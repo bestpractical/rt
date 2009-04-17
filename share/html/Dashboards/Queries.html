@@ -55,9 +55,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-% if (@hidden_searches) {
 <& Elements/HiddenSearches, searches => \@hidden_searches, Dashboard => $Dashboard &>
-% }
 
 <table width="100%" border="0">
 % for my $pane (@panes) {
