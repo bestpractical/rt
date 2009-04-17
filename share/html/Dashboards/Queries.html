@@ -97,7 +97,7 @@ do {
             my $name;
             my $type = $portlet->{portlet_type};
 
-            if ($type eq 'search') {
+            if ($type eq 'search' || $type eq 'dashboard') {
                 $name = join '-', $type, $portlet->{id}, $portlet->{privacy};
             }
             elsif ($type eq 'component') {
@@ -115,6 +115,15 @@ my @components = @{ RT->Config->Get('HomepageComponents') };
 
 for my $desc (@components) {
     my $name = "component-$desc";
+    push @items, [$name, $desc];
+    $desc_of{$name} = $desc;
+}
+
+# add dashboards
+my $dashboards = $m->comp("/Dashboards/Elements/DashboardsForObjects", flatten => 1);
+for my $dashboard (@{ $dashboards || [] }) {
+    my $name = 'dashboard-' . $dashboard->Id . '-' . $dashboard->Privacy;
+    my $desc = $dashboard->Name;
     push @items, [$name, $desc];
     $desc_of{$name} = $desc;
 }
@@ -162,7 +171,7 @@ for my $pane (keys %pane_name) {
                 my $desc = $desc_of{$item};
                 my $portlet_type = $1 if $item =~ s/^(\w+)-//;
 
-                if ($portlet_type eq 'search') {
+                if ($portlet_type eq 'search' || $portlet_type eq 'dashboard') {
                     my ($id, $privacy) = split '-', $item, 2;
                     push @portlets, {
                         portlet_type => $portlet_type,
