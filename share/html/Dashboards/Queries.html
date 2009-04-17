@@ -112,7 +112,6 @@ do {
 
 # add portlets (homepage componenets)
 my @components = @{ RT->Config->Get('HomepageComponents') };
-my %allowed_components = map {$_ => 1} @components;
 
 for my $desc (@components) {
     my $name = "component-$desc";
