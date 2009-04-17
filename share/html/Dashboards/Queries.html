@@ -55,6 +55,8 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
+<& Elements/Deleted, searches => \@deleted, Dashboard => $Dashboard &>
+
 <& Elements/HiddenSearches, searches => \@hidden_searches, Dashboard => $Dashboard &>
 
 <table width="100%" border="0">
@@ -86,27 +88,7 @@ my $title = loc("Modify the queries of dashboard [_1]", $Dashboard->Name);
 my %desc_of;
 my @items;
 my %selected;
-
-# Get the list of queries already in use
-do {
-    my $panes = $Dashboard->Panes;
-    for my $pane (keys %$panes) {
-        for my $portlet (@{ $panes->{$pane} }) {
-            my $name;
-            my $type = $portlet->{portlet_type};
-
-            if ($type eq 'search' || $type eq 'dashboard') {
-                $name = join '-', $type, $portlet->{id}, $portlet->{privacy};
-            }
-            elsif ($type eq 'component') {
-                $name = join '-', 'component', $portlet->{component};
-            }
-
-            push @{ $selected{$pane} }, $name;
-            $desc_of{$name} = $portlet->{description};
-        }
-    }
-};
+my %still_exists;
 
 # add portlets (homepage componenets)
 my @components = @{ RT->Config->Get('HomepageComponents') };
@@ -115,6 +97,7 @@ for my $desc (@components) {
     my $name = "component-$desc";
     push @items, [$name, $desc];
     $desc_of{$name} = $desc;
+    $still_exists{$name} = 1;
 }
 
 # add dashboards
@@ -128,6 +111,7 @@ for my $dashboard (@{ $dashboards || [] }) {
     my $desc = "Dashboard: " . $dashboard->Name;
     push @items, [$name, $desc];
     $desc_of{$name} = $desc;
+    $still_exists{$name} = 1;
 }
 
 # add saved searches
@@ -145,14 +129,44 @@ for my $object (@objs) {
         my $name = 'search-' . $search->Id . '-' . $privacy;
         push @items, [$name, $desc];
         $desc_of{$name} = $desc;
+        $still_exists{$name} = 1;
     }
 }
+
+# Get the list of queries already in use
+my @deleted;
+do {
+    my $panes = $Dashboard->Panes;
+    for my $pane (keys %$panes) {
+        for my $portlet (@{ $panes->{$pane} }) {
+            my $name;
+            my $type = $portlet->{portlet_type};
+
+            if ($type eq 'search' || $type eq 'dashboard') {
+                $name = join '-', $type, $portlet->{id}, $portlet->{privacy};
+            }
+            elsif ($type eq 'component') {
+                $name = join '-', 'component', $portlet->{component};
+            }
+
+            if (!$still_exists{$name}) {
+                push @deleted, { pane => $pane, name => $name };
+                next;
+            }
+
+            push @{ $selected{$pane} }, $name;
+            $desc_of{$name} = $portlet->{description};
+        }
+    }
+};
 
 $m->callback(
     CallbackName => 'PopulatePossibilities',
     Dashboard    => $Dashboard,
     items        => \@items,
     desc_of      => \%desc_of,
+    still_exists => \%still_exists,
+    selected     => \%selected,
 );
 
 # Create selectionbox widgets for those queries
