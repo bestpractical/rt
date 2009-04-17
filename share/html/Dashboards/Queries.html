@@ -129,7 +129,6 @@ push @objs, RT::SavedSearches->new( $session{CurrentUser} )->_PrivacyObjects
 for my $object (@objs) {
     for ($m->comp("/Search/Elements/SearchesForObject", Object => $object)) {
         my ($desc, $search) = @$_;
-        my $SearchType = $search->Content->{'SearchType'} || 'Ticket';
         my $privacy = $Dashboard->_build_privacy($object);
         my $name = 'search-' . $search->Id . '-' . $privacy;
         push @items, [$name, $desc];
