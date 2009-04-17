@@ -62,7 +62,11 @@ if (blessed($Portlet) && $Portlet->isa('RT::Dashboard')) {
 }
 else {
     $current_dashboard = RT::Dashboard->new($session{CurrentUser});
-    $current_dashboard->LoadById($Portlet->{id});
+    my ($ok, $msg) = $current_dashboard->LoadById($Portlet->{id});
+    if (!$ok) {
+        $m->out($msg);
+        return;
+    }
 }
 
 my @panes = @{ $current_dashboard->Panes->{$Pane} || [] };
