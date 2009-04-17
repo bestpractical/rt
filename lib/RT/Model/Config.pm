@@ -75,7 +75,9 @@ sub _get {
     my $config = RT::Model::Config->new;
     my ( $ret, $msg ) = $config->load_by_cols( name => $name );
     if ($ret) {
-        return $config->value;
+        my $value = $config->value;
+        return '' if defined $value && $value eq '[empty string]';
+        return $value;
     }
     else {
         return;
@@ -111,6 +113,10 @@ sub set {
     my $self  = shift;
     my $name  = shift;
     my $value = shift;
+
+    if ( defined $value && $value eq '' ) {
+        $value = '[empty string]'; # bloddy hack, or '' will be treated as undef
+    }
 
     my $config = RT::Model::Config->new( current_user => RT->system_user );
     my ( $ret, $msg ) = $config->load_by_cols( name => $name );
