@@ -166,6 +166,21 @@ sub Portlets {
     return map { @$_ } values %{ $self->Panes };
 }
 
+=head2 Dashboards
+
+Returns a list of loaded sub-dashboards
+
+=cut
+
+sub Dashboards {
+    my $self = shift;
+    return map {
+        my $search = RT::Dashboard->new($self->CurrentUser);
+        $search->LoadById($_->{id});
+        $search
+    } grep { $_->{portlet_type} eq 'dashboard' } $self->Portlets;
+}
+
 =head2 Searches
 
 Returns a list of loaded saved searches
