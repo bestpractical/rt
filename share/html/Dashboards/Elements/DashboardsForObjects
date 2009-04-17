@@ -48,6 +48,7 @@
 <%args>
 $Objects => undef
 $dashboards => {}
+$flatten => 0
 </%args>
 <%init>
 # Returns a hash of dashboards associated with @Objects
@@ -63,6 +64,15 @@ for my $object (@$Objects) {
 
     push @{ $dashboards->{group}{$_} }, @{ $new_dashboards->{group}{$_} }
         for keys %{ $new_dashboards->{group} || {} };
+}
+
+if ($flatten) {
+    my @dashboards;
+    push @dashboards, @{ $dashboards->{personal} || [] };
+    push @dashboards, map { @{ $_ || [] } } values %{ $dashboards->{group} };
+    push @dashboards, @{ $dashboards->{system} || [] };
+
+    return \@dashboards;
 }
 
 return $dashboards;
