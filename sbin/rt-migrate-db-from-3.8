@@ -92,20 +92,123 @@ my %drop_columns = (
 
 update_all_tables();
 rename_columns_in_all_tables();
+drop_columns_in_all_tables();
+post_update_all_tables();
+
+sub post_update_attributes_table {
+
+# need to add a row for the default status schema in Attributes and update
+# part columns of that table
+    require RT::Model::AttributeCollection;
+    my $collection = RT::Model::AttributeCollection->new( current_user => RT->system_user );
+    $collection->unlimit;
+    while ( my $attr = $collection->next ) {
+        my $desc = $attr->description;
+        $desc =~ s/\[_(\d)\]/%$1/g; # [_1] => %1
+        $attr->set_description($desc);
+
+        my $content = $attr->content;
+
+        next unless ref $content && ref $content eq 'HASH';
+        for my $k ( keys %$content ) {
+            my $v = $content->{$k};
+            delete $content->{$k};
+            $content->{ renaming $k} = $v;
+        }
+        my $format = $content->{'format'};
+        if ( $format ) {
+            # update for the name convention changes
+            $format =~ s/__(?!WebPath)(\w+)__/'__' . renaming($1) . '__'/eg;
+            $format =~ s/TITLE:Subject/TITLE:subject/g;
+            $format =~ s/(,\s*|^\s*)(\w+)(?=\s*,|\s*$)/$1 . renaming($2)/eg;
+            $content->{'format'} = $format;
+        }
+        $attr->set_content($content);
+    }
+
+    add_default_status_schema();
+}
+
+sub add_default_status_schema {
+    require RT::Model::Attribute;
+    my $attribute = RT::Model::Attribute->new( current_user => RT->system_user );
+    my @results = $attribute->create(
+        name        => 'StatusSchemas',
+        object      => RT->system,
+        description => 'all system status schemas',
+        content     => {
+            default => {
+                initial     => ['new'],
+                active      => [ 'open', 'stalled' ],
+                inactive    => [ 'resolved', 'rejected', 'deleted' ],
+                transitions => {
+                    new      => [qw(open resolved rejected deleted)],
+                    open     => [qw(stalled resolved rejected deleted)],
+                    stalled  => [qw(open)],
+                    resolved => [qw(open)],
+                    rejected => [qw(open)],
+                    deleted  => [qw(open)],
+                },
+                actions => {
+                    'new -> open'     => [ 'Open It', 'respond' ],
+                    'new -> resolved' => [ 'Resolve', 'comment' ],
+                    'new -> rejected' => [ 'Reject',  'respond' ],
+                    'new -> deleted'  => [ 'Delete',  '' ],
+
+                    'open -> stalled'  => [ 'Stall',   'comment' ],
+                    'open -> resolved' => [ 'Resolve', 'comment' ],
+                    'open -> rejected' => [ 'Reject',  'respond' ],
+                    'open -> deleted'  => [ 'Delete',  'hide' ],
+
+                    'stalled -> open'  => [ 'Open It',  '' ],
+                    'resolved -> open' => [ 'Re-open',  'comment' ],
+                    'rejected -> open' => [ 'Re-open',  'comment' ],
+                    'deleted -> open'  => [ 'Undelete', '' ],
+                },
+            }
+        }
+    );
+}
+
+print "updated attributes with success\n";
+
+
+sub post_update_users_table {
+    # add email confirmed
+    require RT::Model::User;
+    RT::Model::User->add_column_in_db('email_confirmed');
+    execute_query("UPDATE Users SET email_confirmed = 1 WHERE name != 'RT_System'");
+}
 
 sub update_all_tables {
     foreach my $table ( @tables ) {
         my $function = join '_', 'update', $table, 'table';
         next unless defined &$function;
 
+        print "updating table $table\n";
         no strict 'refs';
         (&$function)->();
+        print "updated table $table\n";
+    }
+}
+
+sub post_update_all_tables {
+    foreach my $table ( @tables ) {
+        my $function = join '_', 'post', 'update', $table, 'table';
+        next unless defined &$function;
+
+        print "updating table $table\n";
+        no strict 'refs';
+        (&$function)->();
+        print "updated table $table\n";
     }
 }
 
 sub drop_columns_in_all_tables {
     while ( my ($table, $columns) = each %drop_columns ) {
+        print "dropping columns in table $table\n";
         drop_columns( $table, @$columns );
+        print "dropped columns in table $table\n";
     }
 }
 
@@ -122,7 +225,9 @@ sub rename_columns_in_all_tables {
             $map{ $column } = $new;
         }
         next unless keys %map;
+        print "renaming columns in table $table\n";
         rename_columns( $table, %map );
+        print "renamed columns in table $table\n";
     }
 }
 
@@ -137,93 +242,6 @@ sub update_groups_table {
 # delete personal groups, everything else can be covered by validator
     execute("DELETE FROM Groups WHERE Domain = 'Personal'");
 }
-
-print "updating table Attributes\n";
-# need to add a row for the default status schema in Attributes and update
-# part columns of that table
-require RT::Model::AttributeCollection;
-my $collection =
-  RT::Model::AttributeCollection->new( current_user => RT->system_user );
-$collection->unlimit;
-while ( my $attr = $collection->next ) {
-    my $desc = $attr->description;
-    $desc =~ s/\[_(\d)\]/%$1/g; # [_1] => %1
-    $attr->set_description($desc);
-
-    my $content = $attr->content;
-
-    next unless ref $content && ref $content eq 'HASH';
-    for my $k ( keys %$content ) {
-        my $v = $content->{$k};
-        delete $content->{$k};
-        $content->{ renaming $k} = $v;
-    }
-    my $format = $content->{'format'};
-    if ( $format ) {
-        # update for the name convention changes
-        $format =~ s/__(?!WebPath)(\w+)__/'__' . renaming($1) . '__'/eg;
-        $format =~ s/TITLE:Subject/TITLE:subject/g;
-        $format =~ s/(,\s*|^\s*)(\w+)(?=\s*,|\s*$)/$1 . renaming($2)/eg;
-        $content->{'format'} = $format;
-    }
-    $attr->set_content($content);
-}
-
-# add default status schema
-require RT::Model::Attribute;
-my $attribute = RT::Model::Attribute->new( current_user => RT->system_user );
-my @results = $attribute->create(
-    name        => 'StatusSchemas',
-    object      => RT->system,
-    description => 'all system status schemas',
-    content     => {
-        default => {
-            initial     => ['new'],
-            active      => [ 'open', 'stalled' ],
-            inactive    => [ 'resolved', 'rejected', 'deleted' ],
-            transitions => {
-                new      => [qw(open resolved rejected deleted)],
-                open     => [qw(stalled resolved rejected deleted)],
-                stalled  => [qw(open)],
-                resolved => [qw(open)],
-                rejected => [qw(open)],
-                deleted  => [qw(open)],
-            },
-            actions => {
-                'new -> open'     => [ 'Open It', 'respond' ],
-                'new -> resolved' => [ 'Resolve', 'comment' ],
-                'new -> rejected' => [ 'Reject',  'respond' ],
-                'new -> deleted'  => [ 'Delete',  '' ],
-
-                'open -> stalled'  => [ 'Stall',   'comment' ],
-                'open -> resolved' => [ 'Resolve', 'comment' ],
-                'open -> rejected' => [ 'Reject',  'respond' ],
-                'open -> deleted'  => [ 'Delete',  'hide' ],
-
-                'stalled -> open'  => [ 'Open It',  '' ],
-                'resolved -> open' => [ 'Re-open',  'comment' ],
-                'rejected -> open' => [ 'Re-open',  'comment' ],
-                'deleted -> open'  => [ 'Undelete', '' ],
-            },
-        }
-    }
-);
-
-print "updated attributes with success\n";
-
-
-print "updating table Users\n";
-    require RT::Model::UserCollection;
-    my $user_collection = RT::Model::UserCollection->new(
-        current_user => RT->system_user
-    );
-    while ( my $user = $user_collection->next ) {
-        my $name = $user->name;
-        $user->__set( column => 'email_confirmed', value => 1 )
-            unless $name eq 'RT_System';
-    }
-print "updated table Users with success\n";
-print "migrated with success!\n";
 
 sub rename_columns {
     my ($table, %map) = (@_);
