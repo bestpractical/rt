@@ -146,11 +146,24 @@ for my $object (@objs) {
     }
 }
 
+$m->callback(
+    CallbackName => 'PopulatePossibilities',
+    Dashboard    => $Dashboard,
+    items        => \@items,
+    desc_of      => \%desc_of,
+);
+
 # Create selectionbox widgets for those queries
 
 my %pane_name = (
     'body'    => loc('Body'),
     'sidebar' => loc('Sidebar'),
+);
+
+$m->callback(
+    CallbackName => 'Panes',
+    Dashboard    => $Dashboard,
+    panes        => \%pane_name,
 );
 
 my @panes;
@@ -165,6 +178,13 @@ for my $pane (keys %pane_name) {
         AutoSave    => 1,
         OnSubmit    => sub {
             my $self = shift;
+
+            $m->callback(
+                CallbackName => 'Submit',
+                Dashboard    => $Dashboard,
+                Selected     => $self->{Current},
+                pane         => $pane,
+            );
 
             my @portlets;
             for (@{ $self->{Current} }) {
@@ -201,6 +221,12 @@ for my $pane (keys %pane_name) {
             # we want to keep all the other panes the same
             my $panes = $Dashboard->Panes;
             $panes->{$pane} = \@portlets;
+
+            $m->callback(
+                CallbackName => 'BeforeUpdate',
+                Dashboard    => $Dashboard,
+                panes        => $panes,
+            );
 
             my ($ok, $msg) = $Dashboard->Update(Panes => $panes);
 
