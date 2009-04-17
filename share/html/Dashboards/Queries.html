@@ -238,6 +238,9 @@ for my $pane (keys %pane_name) {
             my $panes = $Dashboard->Panes;
             $panes->{$pane} = \@portlets;
 
+            # remove "deleted" warnings about this pane
+            @deleted = grep { $_->{pane} ne $pane } @deleted;
+
             $m->callback(
                 CallbackName => 'BeforeUpdate',
                 Dashboard    => $Dashboard,
