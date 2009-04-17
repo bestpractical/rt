@@ -54,7 +54,12 @@
     DashboardObj => $DashboardObj &>
 % }
 
+% $m->callback(CallbackName => 'BeforeTable', Dashboard => $DashboardObj, show_cb => $show_cb);
+
 <table class="dashboard">
+
+% $m->callback(CallbackName => 'BeforePanes', Dashboard => $DashboardObj, show_cb => $show_cb);
+
 <tr valign="top">
 
 <td class="boxcontainer">
@@ -65,7 +70,14 @@
 % $show_cb->('sidebar');
 </td>
 
-</tr></table>
+</tr>
+
+% $m->callback(CallbackName => 'AfterPanes', Dashboard => $DashboardObj, show_cb => $show_cb);
+
+</table>
+
+% $m->callback(CallbackName => 'AfterTable', Dashboard => $DashboardObj, show_cb => $show_cb);
+
 </td>
 
 
