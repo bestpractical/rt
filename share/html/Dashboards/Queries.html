@@ -110,6 +110,7 @@ do {
     }
 };
 
+# add portlets (homepage componenets)
 my @components = @{ RT->Config->Get('HomepageComponents') };
 my %allowed_components = map {$_ => 1} @components;
 
@@ -119,8 +120,8 @@ for my $desc (@components) {
     $desc_of{$name} = $desc;
 }
 
-my $sys = RT::System->new($session{'CurrentUser'});
-my @objs = ($sys);
+# add saved searches
+my @objs = RT::System->new($session{'CurrentUser'});
 
 push @objs, RT::SavedSearches->new( $session{CurrentUser} )->_PrivacyObjects
     if $session{'CurrentUser'}->HasRight( Right  => 'LoadSavedSearch',
@@ -164,11 +165,11 @@ for my $pane (keys %pane_name) {
                 my $portlet_type = $1 if $item =~ s/^(\w+)-//;
 
                 if ($portlet_type eq 'search') {
-                    my ($search_id, $privacy) = split '-', $item, 2;
+                    my ($id, $privacy) = split '-', $item, 2;
                     push @portlets, {
                         portlet_type => $portlet_type,
                         privacy      => $privacy,
-                        id           => $search_id,
+                        id           => $id,
                         description  => $desc,
                         pane         => $pane,
                     };
