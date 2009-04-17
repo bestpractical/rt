@@ -226,7 +226,7 @@ sub PossibleHiddenSearches {
     my $self = shift;
     my $privacy = shift || $self->Privacy;
 
-    return grep { !$_->IsVisibleTo($privacy) } $self->Searches;
+    return grep { !$_->IsVisibleTo($privacy) } $self->Searches, $self->Dashboards;
 }
 
 # _PrivacyObjects: returns a list of objects that can be used to load
