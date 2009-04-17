@@ -150,7 +150,11 @@ do {
             }
 
             if (!$still_exists{$name}) {
-                push @deleted, { pane => $pane, name => $name };
+                push @deleted, {
+                    pane => $pane,
+                    name => $name,
+                    description => $portlet->{description},
+                };
                 next;
             }
 

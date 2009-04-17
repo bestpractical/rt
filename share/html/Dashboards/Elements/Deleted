@@ -54,7 +54,7 @@
 
 <ul>
 % for (@searches) {
-    <li><% loc('[_1] (from pane [_2])', $_->{name}, $_->{pane}) %></li>
+    <li><% loc('[_1] (from pane [_2])', ($_->{description} || $_->{name}), $_->{pane}) %></li>
 % }
 </ul>
 </&>
