@@ -58,7 +58,7 @@
 
   Dashboard is an object that can belong to either an RT::User or an
   RT::Group.  It consists of an ID, a name, and a number of
-  saved searches.
+  saved searches and portlets.
 
 =head1 METHODS
 

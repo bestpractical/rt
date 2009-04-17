@@ -98,7 +98,7 @@ do {
             if ($portlet->{portlet_type} eq 'search') {
                 $name = join '-', 'search', $portlet->{id}, $portlet->{privacy};
             }
-            else {
+            elsif ($portlet->{portlet_type} eq 'component') {
                 $name = join '-', 'component', $portlet->{component};
             }
 

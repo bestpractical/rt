@@ -102,8 +102,8 @@ my %panes = %{ $DashboardObj->Panes };
 my $show_cb = sub {
     my $portlet = shift;
     my $portlet_type = $portlet->{portlet_type};
-    my $component = "Elements/ShowPortlet/$portlet_type";
-    $m->comp($component,
+    my $comp = "Elements/ShowPortlet/$portlet_type";
+    $m->comp($comp,
         Portlet   => $portlet,
         Rows      => $rows,
         Preview   => $Preview,
