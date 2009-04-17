@@ -54,7 +54,17 @@ $Preview => 0
 $Depth => 0
 </%args>
 <%init>
-my $current_dashboard = $Portlet;
+my $current_dashboard;
+
+use Scalar::Util 'blessed';
+if (blessed($Portlet) && $Portlet->isa('RT::Dashboard')) {
+    $current_dashboard = $Portlet;
+}
+else {
+    $current_dashboard = RT::Dashboard->new($session{CurrentUser});
+    $current_dashboard->LoadById($Portlet->{id});
+}
+
 my @panes = @{ $current_dashboard->Panes->{$Pane} || [] };
 
 Abort("Possible recursive dashboard detected.") if $Depth > 8;
