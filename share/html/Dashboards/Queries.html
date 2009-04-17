@@ -95,10 +95,12 @@ do {
     for my $pane (keys %$panes) {
         for my $portlet (@{ $panes->{$pane} }) {
             my $name;
-            if ($portlet->{portlet_type} eq 'search') {
-                $name = join '-', 'search', $portlet->{id}, $portlet->{privacy};
+            my $type = $portlet->{portlet_type};
+
+            if ($type eq 'search') {
+                $name = join '-', $type, $portlet->{id}, $portlet->{privacy};
             }
-            elsif ($portlet->{portlet_type} eq 'component') {
+            elsif ($type eq 'component') {
                 $name = join '-', 'component', $portlet->{component};
             }
 
