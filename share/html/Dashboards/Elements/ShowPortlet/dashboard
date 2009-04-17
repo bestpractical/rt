@@ -56,6 +56,8 @@ $Depth => 0
 <%init>
 my $current_dashboard = $Portlet;
 my @panes = @{ $current_dashboard->Panes->{$Pane} || [] };
+
+Abort("Possible recursive dashboard detected.") if $Depth > 8;
 </%init>
 
 <%perl>
