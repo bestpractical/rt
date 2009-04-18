@@ -68,7 +68,7 @@ template 'index.html' => page {
     render_mason($self->tab_url, {
         current_tab    => $self->current_tab,
         current_subtab => $self->current_subtab,
-        title          => $self->object_type,
+        title          => $self->page_title,
     });
 
     form {
