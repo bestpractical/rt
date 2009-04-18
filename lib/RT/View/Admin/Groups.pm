@@ -76,28 +76,13 @@ sub view_field_name {
     my $self = shift;
     my %args = @_;
 
-    my $id = $args{action}->argument_value('id');
-
-    my $field = $args{action}->form_field($args{field}, render_mode => 'read');
-
-    # I don't see a clean way to do this :(
-    $field->render_wrapper_start();
-    $field->render_preamble();
-
-    $field->render_label();
-
-    # render the value with a hyperlink
-    span {
-        attr { class is "@{[ $field->classes ]} value" };
+    $self->view_via_callback(%args, callback => sub {
+        my %args = @_;
         hyperlink(
-            label => "@{[$field->current_value]}",
-            url   => "/Admin/Groups/Modify.html?id=$id",
+            label => $args{current_value},
+            url   => "/Admin/Groups/Modify.html?id=$args{id}",
         );
-    };
-
-    $field->render_wrapper_end();
-
-    return;
+    });
 }
 
 1;
