@@ -94,8 +94,13 @@
 <tr><td class="label">
 <&|/l&>Frequency</&>:
 </td><td class="value">
+
 <input type="radio" name="Frequency" value="daily" <% $fields{'Frequency'} eq 'daily' ? 'checked="checked"' : "" %>>
     <&|/l&>daily</&>
+</input><br />
+
+<input type="radio" name="Frequency" value="m-f" <% $fields{'Frequency'} eq 'm-f' ? 'checked="checked"' : "" %>>
+    <&|/l&>Monday through Friday</&>
 </input><br />
 
 <input type="radio" name="Frequency" value="weekly"<% $fields{'Frequency'} eq 'weekly' ? 'checked="checked"' : "" %>>

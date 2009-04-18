@@ -176,6 +176,10 @@ while (defined(my $user = $Users->Next)) {
             elsif ($subscription->SubValue('Frequency') eq 'monthly') {
                 next if $subscription->SubValue('Dom') != $dom;
             }
+
+            elsif ($subscription->SubValue('Frequency') eq 'm-f') {
+                next if $dow eq 'Sunday' || $dow eq 'Saturday';
+            }
         }
 
         my $email = $subscription->SubValue('Recipient')
