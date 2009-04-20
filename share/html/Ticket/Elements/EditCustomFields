@@ -93,7 +93,7 @@ if ($TicketObj) {
     $NamePrefix .= "Object-RT::Ticket--CustomField-";
 }
 
-$m->callback( CallbackName => 'MassageCustomFields', CustomFields => $CustomFields );
+$m->callback( %ARGS, CallbackName => 'MassageCustomFields', CustomFields => $CustomFields );
 
 </%INIT>
 <%ARGS>
