@@ -52,24 +52,17 @@
 &>
 <& /Elements/ListActions, actions => \@results &>
 
-<form method="post" action="Other.html">
-%# TODO: need to refactor this as jifty actions
-%# % foreach my $section( RT->config->sections ) {
-%# <&|/Widgets/TitleBox, title => _( $section ) &>
-%# % foreach my $option( RT->config->options( Section => $section ) ) {
-%# % my $meta = RT->config->meta( $option );
-%# <& $meta->{'widget'},
-%#     default      => 1,
-%#     %{ $m->comp('/Widgets/FinalizeWidgetArguments', widget_arguments =>
-%#             $meta->{'widget_arguments'} ) },
-%#     name         => $option,
-%#     default_value => scalar RT->config->get( $option ),
-%#     current_value => $preferences->{ $option },
-%# &>
-%# % }
-%# </&>
-%# % }
+<% Jifty->web->form->start %>
+% for my $section ( keys %fields ) {
+<h2><% $section %></h2>
+% for my $field ( @{$fields{$section}} ) {
+<% $action->form_field( $field ) %>
+% }
+% }
+<% Jifty->web->form->submit( label => _('Save Changes') ) %>
+<% Jifty->web->form->end %>
 
+<form method="post" action="Other.html">
 % if ( RT->config->get('gnupg')->{'enable'} ) {
 <&|/Widgets/TitleBox, title => _( 'Cryptography' ) &>
 <&|/l&>Preferred key</&>: <& /Elements/GnuPG/SelectKeyForEncryption, email => $user_object->email, default => $user_object->preferred_key &>
@@ -82,30 +75,16 @@
 <%INIT>
 my @results;
 my $title = _("Settings");
+my $action = Jifty->web->new_action( class => 'UserSettings' );
+my %fields = RT::Action::UserSettings->fields;
 
 my $user_object = Jifty->web->current_user->user_object;
-my $preferences = $user_object->preferences( RT->system );
 
 if ((defined $preferred_key) && $preferred_key ne $user_object->first_attribute('preferred_key')) {
     my ($code, $msg) = $user_object->set_attribute(name => 'preferred_key', content => $preferred_key);
     push @results, _('Preferred Key: %1', _($msg));
 }
 
-if ( $update ) {
-    $preferences ||= {};
-# TODO: need to refactor this as jifty actions
-#    $m->comp( '/Widgets/BulkProcess', meta => {
-#                map { $_ => RT->config->meta($_) } RT->config->options
-#            },
-#            store => $preferences,
-#            types => [RT->config->options], default => 1, arguments => \%ARGS,
-#            default_value => { map { $_ => RT->config->get($_) }
-#                RT->config->options
-#            }, );
-
-    my ($ok, $msg) = $user_object->set_preferences( RT->system, $preferences );
-    push @results, $ok ? _("Preferences saved.") : $msg;
-}
 </%INIT>
 <%ARGS>
 $update => 0,
