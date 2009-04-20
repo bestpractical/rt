@@ -331,8 +331,12 @@ sub LoadByName {
         $CFs->LimitToQueue( $args{'Queue'} );
     }
 
-    # When loading by name, it's ok if they're disabled. That's not a big deal.
+    # When loading by name, we _can_ load disabled fields, but prefer
+    # non-disabled fields.
     $CFs->{'find_disabled_rows'}=1;
+    $CFs->OrderByCols(
+        { FIELD => "Disabled", ORDER => 'ASC' },
+    );
 
     # We only want one entry.
     $CFs->RowsPerPage(1);

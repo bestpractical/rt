@@ -2,7 +2,7 @@
 
 use strict;
 use warnings FATAL => 'all';
-use Test::More tests => 133;
+use Test::More tests => 139;
 
 use RT::Test;
 
@@ -191,6 +191,29 @@ $cfvs = $ticket->CustomFieldValues( 'RecordCustomFields4' );
 is( $cfvs->Count, 0, "No custom field values for non-Queue cf" );
 is( $ticket->FirstCustomFieldValue( 'RecordCustomFields4' ), undef, "No first custom field value for non-Queue cf" );
 
+{
+    my $cfname = $global_cf3->Name;
+    ($status, $msg) = $global_cf3->SetDisabled(1);
+    ok($status, "Disabled CF named $cfname");
+
+    my $load = RT::CustomField->new( $RT::SystemUser );
+    $load->LoadByName( Name => $cfname);
+    ok($load->Id, "Loaded CF named $cfname");
+    is($load->Id, $global_cf3->Id, "Can load disabled CFs");
+
+    my $dup = RT::CustomField->new( $RT::SystemUser );
+    $dup->Create( Name => $cfname, Type => 'SelectSingle', Queue => 0 );
+    ok($dup->Id, "Created CF with duplicate name");
+
+    $load->LoadByName( Name => $cfname);
+    is($load->Id, $dup->Id, "Loading by name gets non-disabled first");
+
+    $dup->SetDisabled(1);
+    $global_cf3->SetDisabled(0);
+
+    $load->LoadByName( Name => $cfname);
+    is($load->Id, $global_cf3->Id, "Loading by name gets non-disabled first, even with order swapped");
+}
 
 #SKIP: {
 #	skip "TODO: should we add CF values to objects via CF Name?", 48;
