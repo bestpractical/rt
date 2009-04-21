@@ -1,22 +1,4 @@
 package RT::Config;
-=head1 NAME
-
-RT::Config
-
-=for testing
-
-use RT::Config;
-
-=cut
-
-=head1 WARNING
-
-NEVER EDIT RT_Config.pm.
-
-Instead, copy any sections you want to change to F<RT_SiteConfig.pm> and edit them there.
-
-=cut
-
 =head1 Base Configuration
 
 =over 4
