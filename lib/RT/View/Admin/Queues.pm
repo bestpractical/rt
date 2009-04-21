@@ -48,17 +48,16 @@
 use warnings;
 use strict;
 
-package RT::View::Admin;
+package RT::View::Admin::Queues;
 use Jifty::View::Declare -base;
+use base 'RT::View::CRUD';
 
-require RT::View::Admin::Groups;
-alias RT::View::Admin::Groups under 'groups/';
+use constant page_title      => 'Queue Management';
+use constant object_type     => 'Queue';
+use constant display_columns => qw(id name description correspond_address initial_priority default_due_in);
 
-require RT::View::Admin::Users;
-alias RT::View::Admin::Users under 'users/';
-
-require RT::View::Admin::Queues;
-alias RT::View::Admin::Queues under 'queues/';
+use constant tab_url         => '/Admin/Elements/QueueTabs';
+use constant current_tab     => 'Admin/Queues/';
 
 1;
 
