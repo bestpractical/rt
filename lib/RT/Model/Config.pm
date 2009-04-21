@@ -114,10 +114,7 @@ sub set {
     my $name  = shift;
     my $value = shift;
 
-    if ( defined $value && $value eq '' ) {
-        $value = '[empty string]'; # bloddy hack, or '' will be treated as undef
-    }
-
+    $value = $self->_empty_string if defined $value && $value eq '';
     my $config = RT::Model::Config->new( current_user => RT->system_user );
     my ( $ret, $msg ) = $config->load_by_cols( name => $name );
     if ($ret) {
@@ -127,6 +124,18 @@ sub set {
         Jifty->log->info( "no $name exist yet, will create a new item" );
         return $config->create( name => $name, value => $value );
     }
+}
+
+sub create {
+    my $self = shift;
+    my %args = @_;
+    $args{value} = $self->_empty_string
+      if defined $args{value} && $args{value} eq '';
+    return $self->SUPER::create(%args);
+}
+
+sub _empty_string {
+    return '[empty string]';
 }
 
 1;
