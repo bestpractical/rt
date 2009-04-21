@@ -56,7 +56,6 @@ sub run {
 
 
     $self->insert_initial_data();
-    $self->update_config_data( $RT::EtcPath . "/RT_Config.pm" );
     $self->insert_data( $RT::EtcPath . "/initialdata" );
 }
 
@@ -189,27 +188,6 @@ sub insert_initial_data {
     }
 }
 
-=head2 update_config_data
-
-=cut
-
-sub update_config_data {
-    my $self = shift;
-    my $config_file = shift;
-
-    use FreezeThaw qw/cmpStr/;
-
-    *RT::Config::set = sub {
-        my $key   = shift;
-        my $value = shift;
-        my $old_value = RT->config->_get($key);
-        if ( cmpStr( $value, $old_value ) != 0 ) {
-            RT->config->set( $key, $value );
-        }
-    };
-    require $config_file or die "require $config_file failed: \n" . $@;
-}
-
 =head2 insert_data
 
 =cut
@@ -224,16 +202,22 @@ sub insert_data {
         @Groups,        @Users,            @ACL,       @Queues,
         @scrip_actions, @scrip_conditions, @Templates, @CustomFields,
         @Scrips,        @Attributes,       @Initial,   @Final,
+        %Config
     );
     local (
         @Groups,        @Users,            @ACL,       @Queues,
         @scrip_actions, @scrip_conditions, @Templates, @CustomFields,
         @Scrips,        @Attributes,       @Initial,   @Final,
+        %Config
     );
 
     require $datafile
       || die "Couldn't find initial data for import\n" . $@;
 
+    for my $name ( sort keys %Config ) {
+        my $config = RT::Model::Config->new( current_user => RT->system );
+        $config->create( name => $name, value => $Config{$name} );
+    }
 
     if (@Initial) {
 
