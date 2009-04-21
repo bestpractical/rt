@@ -48,20 +48,16 @@
 use warnings;
 use strict;
 
-package RT::View::Admin;
+package RT::View::Admin::CustomFields;
 use Jifty::View::Declare -base;
+use base 'RT::View::CRUD';
 
-require RT::View::Admin::Groups;
-alias RT::View::Admin::Groups under 'groups/';
+use constant page_title      => 'Custom Field Management';
+use constant object_type     => 'CustomField';
+use constant display_columns => qw(name type);
 
-require RT::View::Admin::Users;
-alias RT::View::Admin::Users under 'users/';
-
-require RT::View::Admin::Queues;
-alias RT::View::Admin::Queues under 'queues/';
-
-require RT::View::Admin::CustomFields;
-alias RT::View::Admin::CustomFields under 'custom_fields/';
+use constant tab_url         => '/Admin/Elements/CustomFieldTabs';
+use constant current_tab     => 'Admin/Queues/';
 
 1;
 
