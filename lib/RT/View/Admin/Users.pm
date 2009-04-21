@@ -59,5 +59,13 @@ use constant display_columns => qw(id name email);
 use constant tab_url         => '/Admin/Elements/UserTabs';
 use constant current_tab     => 'Admin/Users/';
 
+# limit to privileged users
+sub _current_collection {
+    my $self = shift;
+    my $collection = $self->SUPER::_current_collection(@_);
+    $collection->limit_to_privileged;
+    return $collection;
+}
+
 1;
 
