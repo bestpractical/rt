@@ -48,24 +48,20 @@
 use warnings;
 use strict;
 
-package RT::View::Admin::Users;
+package RT::View::Admin;
 use Jifty::View::Declare -base;
-use base 'RT::View::CRUD';
 
-use constant page_title      => 'User Management';
-use constant object_type     => 'User';
-use constant display_columns => qw(id name email);
+require RT::View::Admin::Groups;
+alias RT::View::Admin::Groups under 'groups/';
 
-use constant tab_url         => '/Admin/Elements/UserTabs';
-use constant current_tab     => 'Admin/Users/';
+require RT::View::Admin::Users;
+alias RT::View::Admin::Users under 'users/';
 
-# limit to privileged users
-sub _current_collection {
-    my $self = shift;
-    my $collection = $self->SUPER::_current_collection(@_);
-    $collection->limit_to_privileged;
-    return $collection;
-}
+require RT::View::Admin::Queues;
+alias RT::View::Admin::Queues under 'queues/';
+
+require RT::View::Admin::CustomFields;
+alias RT::View::Admin::CustomFields under 'custom_fields/';
 
 1;
 

@@ -52,6 +52,7 @@ package RT::View::Admin::Groups;
 use Jifty::View::Declare -base;
 use base 'RT::View::CRUD';
 
+use constant page_title     => 'Group Management';
 use constant object_type    => 'Group';
 use constant tab_url        => '/Admin/Elements/GroupTabs';
 use constant current_tab    => 'Admin/Groups/';
@@ -63,6 +64,25 @@ sub _current_collection {
     my $c    = $self->SUPER::_current_collection();
     $c->limit_to_user_defined_groups();
     return $c;
+}
+
+=head2 view_field_name
+
+Display each group's name as a hyperlink to the modify page
+
+=cut
+
+sub view_field_name {
+    my $self = shift;
+    my %args = @_;
+
+    $self->view_via_callback(%args, callback => sub {
+        my %args = @_;
+        hyperlink(
+            label => $args{current_value},
+            url   => "/Admin/Groups/Modify.html?id=$args{id}",
+        );
+    });
 }
 
 1;

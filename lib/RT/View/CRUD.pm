@@ -61,12 +61,14 @@ use constant current_tab => '';
 sub current_subtab { shift->current_tab(@_) }
 
 template 'index.html' => page {
+    title => shift->page_title,
+} content {
     my $self = shift;
 
     render_mason($self->tab_url, {
         current_tab    => $self->current_tab,
         current_subtab => $self->current_subtab,
-        title          => $self->object_type,
+        title          => $self->page_title,
     });
 
     form {
@@ -76,5 +78,31 @@ template 'index.html' => page {
         );
     }
 };
+
+sub view_via_callback {
+    my $self = shift;
+    my %args = @_;
+
+    my $field = $args{action}->form_field($args{field}, render_mode => 'read');
+
+    $args{id} = $args{action}->argument_value('id');
+    $args{current_value} = "@{[$field->current_value]}";
+
+    # I don't see a clean way to do this :(
+    $field->render_wrapper_start();
+    $field->render_preamble();
+
+    $field->render_label();
+
+    # render the value with a hyperlink
+    span {
+        attr { class is "@{[ $field->classes ]} value" };
+        $args{callback}->(%args);
+    };
+
+    $field->render_wrapper_end();
+
+    return;
+}
 
 1;
