@@ -53,7 +53,72 @@ BEGIN {
     use RT;
     RT->init_jifty;
 }
-use RT::Bootstrap;
-RT::Bootstrap->update_config_data( $RT::EtcPath . "/RT_Config.pm" );
-print "update config with success\n";
 
+use Getopt::Long;
+
+my %args;
+die "unknown option"
+  unless GetOptions( \%args, 'all', 'section=s', 'name=s', 'value=s', 'show',
+    'without-doc', 'help', );
+
+# XXX currently, $args{value} only supports string values.
+# maybe we need to add undef and ref supports too
+if ( $args{name} && defined $args{value} && ! $args{show} ) {
+    RT->config->set( $args{name}, $args{value} );
+    print 'updated with success' . "\n";
+}
+else {
+    use Data::Dumper;
+
+
+    my %map;
+    if ( $args{name} ) {
+        $map{ $args{name} } = RT->config->_get( $args{name} );
+    }
+    else {
+        my $configs = RT::Model::ConfigCollection->new;
+        $configs->unlimit;
+        while ( my $config = $configs->next ) {
+            my $value = $config->value;
+            $value = ''
+              if defined $value && $value eq $config->_empty_string;
+            $map{ $config->name } = $value;
+        }
+    }
+
+    if ( $args{show} ) {
+        for my $name ( sort keys %map ) {
+            my $value = Data::Dumper->Dump( [ $map{$name} ], [''] );
+            $value =~ s/^\$ = //;
+            $value =~ s/;\s*$//;
+            print "$name: $value );\n";
+        }
+    }
+    else {
+        #XXX TODO add comments in $to_be_edited
+        my $to_be_edited;
+        for my $name ( sort keys %map ) {
+            my $value = Data::Dumper->Dump( [ $map{$name} ], [''] );
+            $value =~ s/^\$ = //;
+            $value =~ s/;\s*$//;
+            $to_be_edited .= "set( $name => $value );\n";
+        }
+        my $update = edit($to_be_edited);
+        eval $update;
+        while ($@) {
+            $update = edit($update);
+            eval $update;
+        }
+        print 'updated with success' . "\n";
+    }
+
+}
+
+sub edit {
+    require Proc::InvokeEditor or die "require Proc::InvokeEditor failed";
+    return Proc::InvokeEditor->edit(shift);
+}
+
+sub set {
+    RT->config->set(@_);
+}
