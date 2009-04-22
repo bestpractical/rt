@@ -4,7 +4,7 @@ use warnings; use strict;
 use Test::MockTime qw(set_fixed_time restore_time);
 use RT::Test;
 
-use Test::More tests => 94;
+use Test::More tests => 92;
 
 use RT::Model::User;
 use Test::Warn;
@@ -256,15 +256,11 @@ my $current_user;
     my $date = RT::DateTime->from_epoch(epoch => 0);
     is($date, "unset", "epoch 0 returns 'unset'");
 
-    RT->config->set( DateTimeFormat => '%a %b %d %H:%M:%S %Y');
     $date = RT::DateTime->from_epoch(epoch => 1);
-    is($date, 'Thu Jan 01 00:00:01 1970', "correct string");
 
-    RT->config->set( DateTimeFormat => '%a, %d %b %Y %H:%M:%S %z' );
+    RT->config->set( DateTimeFormat => 'rfc2822' );
     is($date, 'Thu, 01 Jan 1970 00:00:01 +0000', "correct string");
 
-    RT->config->set( DateTimeFormat => '%a, %d %b %Y %H:%M %z' );
-    is($date, 'Thu, 01 Jan 1970 00:00 +0000', "correct string");
 }
 
 { # RT::DateTime::Duration
