@@ -1017,12 +1017,9 @@ specification. See L<DateTime/strftime_Patterns> for a full list of variables.
 
 This option can be overridden by users in their preferences.
 
-Some examples:
+Some examples: C<'iso'>, C<'rfc2822'>
 
-C<'%a, %d %b %y %h:%m:%s %z'>
-C<'%y-%m-%d %h:%m:%s'>
-
-default: C<'%Y-%m-%d %H:%M:%S'>
+default: C<'iso'>
 
 =item C<date_day_before_month>
 

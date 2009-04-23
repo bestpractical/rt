@@ -639,7 +639,7 @@ Hour:         { $subscription_obj->sub_value('Hour') }
     'dashboard_address'            => '',
     'dashboard_subject'            => '%s Dashboard: %s',
     'date_day_before_month'        => 1,
-    'date_time_format'             => '%Y-%m-%d %H:%M:%S',
+    'date_time_format'             => 'iso',
     'default_queue'                => 'General',
     'default_search_result_format' => qq{
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
