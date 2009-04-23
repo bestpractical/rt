@@ -90,8 +90,8 @@ gives some ideas on next steps.
 default: C<< {
         enable  => 0,
         indexed => 0,
-        #table   => 'AttachmentsIndex',
-        #column  => 'ftsindex',
+        table   => 'AttachmentsIndex',
+        column  => 'ftsindex',
     } >>
 
 =back
@@ -146,7 +146,7 @@ default: C<undef>
 =item C<drop_long_attachments>
 
 C<drop_long_attachments>: if this is set to a non-'' value,
-RT will silently drop attachments longer than C<MaxAttachmentSize>.
+RT will silently drop attachments longer than C<max_attachment_size>.
 
 default: C<undef>
 
@@ -228,7 +228,6 @@ detect when your RT is talking to another RT, and adjusts the
 subject accordingly.
 
 default: C<'\\[.+? #\\d+\\]' >
-#default: C<"\[\Q{{rtname}}\\E #\\d+\\]/" >
 
 =back
 
@@ -468,18 +467,14 @@ to include a homedir setting.
 
 NOTE that options with '-' character MUST be quoted.
 
-default: C<< {
-        # homedir => '/home/jesse/svk/3.999-DANGEROUS/var/data/gpg',
-
-        # URL of a keyserver
-        #    keyserver => 'hkp://subkeys.pgp.net',
-
-        # enables the automatic retrieving of keys when encrypting
-        #    'auto-key-locate' => 'keyserver',
-
-        # enables the automatic retrieving of keys when verifying signatures
-        #    'auto-key-retrieve' => '',
+e.g. C<< {
+        homedir => '/home/jesse/svk/3.999-DANGEROUS/var/data/gpg',
+        keyserver => 'hkp://subkeys.pgp.net',
+       'auto-key-locate' => 'keyserver',
+       'auto-key-retrieve' => '',
     } >>
+
+default: C<< { } >>
 
 =back
 
@@ -971,7 +966,7 @@ C<net_server_options> is a hash of additional options to use for
 L<Net::Server/DEFAULT ARGUMENTS>. For example, you could set
 reverse_lookups to get the hostnames for all users with:
 
-C<{reverse_lookups => 1}>
+C<< {reverse_lookups => 1} >>
 
 default: C<[]>
 
@@ -1041,7 +1036,9 @@ next date.
 The default is usually good.
 
 default:
+
 ambiguous_day_in_past => C<0>
+
 ambiguous_day_in_future => C<0>
 
 =back
