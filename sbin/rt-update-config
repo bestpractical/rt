@@ -79,7 +79,7 @@ else {
 
     if ( ! $args{'without-doc'} ) {
         eval {
-            require require Pod::POM;
+            require Pod::POM;
         };
         if ( $@ ) {
             warn "doc needs Pod::POM installed";
