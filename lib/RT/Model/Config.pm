@@ -49,6 +49,7 @@ use warnings;
 use strict;
 package RT::Model::Config;
 use base qw/RT::Record/;
+use FreezeThaw qw/cmpStr/;
 
 sub table {'Configs'}
 
@@ -76,7 +77,7 @@ sub _get {
     my ( $ret, $msg ) = $config->load_by_cols( name => $name );
     if ($ret) {
         my $value = $config->value;
-        return '' if defined $value && $value eq '[empty string]';
+        return '' if defined $value && $value eq $self->_empty_string;
         return $value;
     }
     else {
@@ -118,7 +119,14 @@ sub set {
     my $config = RT::Model::Config->new( current_user => RT->system_user );
     my ( $ret, $msg ) = $config->load_by_cols( name => $name );
     if ($ret) {
-        return $config->set_value( $value );
+        my $old_value = $config->value;
+        if ( cmpStr( $old_value, $value ) == 0 ) {
+            Jifty->log->info(
+                "$name: new value is the same as old value, no need to update");
+        }
+        else {
+            return $config->set_value( $value );
+        }
     }
     else {
         Jifty->log->info( "no $name exist yet, will create a new item" );
