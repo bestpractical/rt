@@ -61,6 +61,12 @@ die "unknown option"
   unless GetOptions( \%args, 'name=s', 'value=s', 'show',
     'without-doc', 'help', );
 
+# so we can run: $0 rtname example.com
+if ( @ARGV ) {
+    $args{name} ||= shift;
+    $args{value} ||= shift;
+}
+
 # XXX currently, $args{value} only supports string values.
 # maybe we need to add undef and ref supports too
 if ( $args{name} && defined $args{value} && ! $args{show} ) {
