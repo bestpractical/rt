@@ -63,8 +63,8 @@ die "unknown option"
 
 # so we can run: $0 rtname example.com
 if ( @ARGV ) {
-    $args{name} ||= shift;
-    $args{value} ||= shift;
+    $args{name} = shift unless defined $args{name};
+    $args{value} = shift unless defined $args{value};
 }
 
 # XXX currently, $args{value} only supports string values.
