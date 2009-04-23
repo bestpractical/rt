@@ -48,14 +48,19 @@
  
 <h1><&|/l&>RT Config</&></h1>
 <% Jifty->web->form->start %>
-% for my $field ( sort keys %$args ) {
+% for my $section ( sort keys %$args ) {
+<h2><% $section |n%></h2>
+% for my $field ( sort keys %{$args->{$section}} ) {
+<% $meta->{$field} && $meta->{$field}{doc} |n %>
 <% $action->form_field( $field ) %>
-% }
+<hr />
+% } }
 <% Jifty->web->form->submit( label => _('Save') ) %>
 <% Jifty->web->form->end %>
 
 <%init>
 my $action = Jifty->web->new_action( class => 'ConfigSystem' );
-my $args = $action->arguments;
+my $args = $action->arguments_by_sections;
+my $meta = $action->meta;
 </%init>
 
