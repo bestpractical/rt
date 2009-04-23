@@ -39,8 +39,49 @@ sub arguments {
             }
         };
     }
-#    require Pod::POM;
     return $self->{__cached_arguments} = $args;
+}
+
+sub meta {
+    my $self = shift;
+    return $self->{__cached_meta} if ( $self->{__cached_meta} );
+    my $meta = {};
+    require Pod::POM;
+    my $parser = Pod::POM->new;
+    my $pom    = $parser->parse_file( $RT::BASE_PATH . '/lib/RT/Config.pm' )
+      or die $parser->error;
+    require Pod::POM::View::HTML;
+    require Pod::POM::View::Text;
+    my $html_view = 'Pod::POM::View::HTML';
+    my $text_view = 'Pod::POM::View::Text';
+
+    for my $section ( $pom->head1 ) {
+        my $over = $section->over->[0];
+        for my $item ( $over->item ) {
+            my $title = $item->title;
+            my @items = split /\s*,\s*/, $title;
+            @items = map { s/C<(\w+)>/$1/; $_ } @items;
+            for (@items) {
+                $meta->{$_} = {
+                    doc     => $item->content->present($html_view),
+                    section => $section->title->present($html_view),
+                };
+            }
+        }
+    }
+    return $self->{__cached_meta} = $meta;
+}
+
+sub arguments_by_sections {
+    my $self = shift;
+    my $args = $self->arguments;
+    my $meta = $self->meta;
+    my $return;
+    for my $name ( keys %$args ) {
+        $return->{$meta->{$name} && $meta->{$name}{section} ||
+            'Others'}{$name}++;
+    }
+    return $return;
 }
 
 =head2 take_action
