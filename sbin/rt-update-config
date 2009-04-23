@@ -126,7 +126,7 @@ else {
             my $value = Data::Dumper->Dump( [ $map{$name} ], [''] );
             $value =~ s/^\$ = //;
             $value =~ s/;\s*$//;
-            print "$name: $value );\n";
+            print "$name: $value\n";
         }
     }
     else {
