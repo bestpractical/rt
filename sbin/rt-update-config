@@ -58,7 +58,7 @@ use Getopt::Long;
 
 my %args;
 die "unknown option"
-  unless GetOptions( \%args, 'all', 'section=s', 'name=s', 'value=s', 'show',
+  unless GetOptions( \%args, 'name=s', 'value=s', 'show',
     'without-doc', 'help', );
 
 # XXX currently, $args{value} only supports string values.
@@ -69,7 +69,36 @@ if ( $args{name} && defined $args{value} && ! $args{show} ) {
 }
 else {
     use Data::Dumper;
+    my %doc;
 
+    if ( ! $args{'without-doc'} ) {
+        eval {
+            require require Pod::POM;
+        };
+        if ( $@ ) {
+            warn "doc needs Pod::POM installed";
+        }
+        else {
+            my $parser = Pod::POM->new;
+            my $pom =
+              $parser->parse_file( $RT::BASE_PATH . '/lib/RT/Config.pm' )
+              or die $parser->error;
+            my $view = 'Pod::POM::View::Text';
+            require Pod::POM::View::Text;
+            for my $section ( $pom->head1 ) {
+                my $over = $section->over->[0];
+                for my $item ( $over->item ) {
+                    my $title = $item->title;
+                    my @items = split /\s*,\s*/, $title;
+                    @items = map { s/C<(\w+)>/$1/; $_ } @items;
+                    for ( @items ) {
+                        $doc{$_} = $item->content->present($view);
+                        $doc{$_} =~ s/^/## /mg;
+                    }
+                }
+            }
+        }
+    }
 
     my %map;
     if ( $args{name} ) {
@@ -95,13 +124,15 @@ else {
         }
     }
     else {
-        #XXX TODO add comments in $to_be_edited
-        my $to_be_edited;
+        my $to_be_edited = '';
         for my $name ( sort keys %map ) {
+            $to_be_edited .= $doc{$name} || '';
             my $value = Data::Dumper->Dump( [ $map{$name} ], [''] );
             $value =~ s/^\$ = //;
             $value =~ s/;\s*$//;
             $to_be_edited .= "set( $name => $value );\n";
+            $to_be_edited .= "\n"
+              if $doc{$name};    # add an extra blank line to ease eyes
         }
         my $update = edit($to_be_edited);
         eval $update;
@@ -122,3 +153,4 @@ sub edit {
 sub set {
     RT->config->set(@_);
 }
+
