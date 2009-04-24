@@ -55,7 +55,8 @@ BEGIN {
 }
 
 use Getopt::Long;
-use Data::Dump qw/dump/;
+use Data::Dumper;
+local $Data::Dumper::Terse = 1; # to show only values
 
 my %args;
 die "unknown option"
@@ -123,15 +124,16 @@ else {
 
     if ( $args{show} ) {
         for my $name ( sort keys %map ) {
-            my $value = dump( $map{$name} );
-            print "$name: $value\n";
+            my $value = Dumper( $map{$name} );
+            print "$name: $value";
         }
     }
     else {
         my $to_be_edited = '';
         for my $name ( sort keys %map ) {
             $to_be_edited .= $doc{$name} || '';
-            my $value = dump( $map{$name} );
+            my $value = Dumper( $map{$name} );
+            chomp $value;
             $to_be_edited .= "set( $name => $value );\n";
             $to_be_edited .= "\n"
               if $doc{$name};    # add an extra blank line to ease eyes
