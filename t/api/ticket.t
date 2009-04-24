@@ -180,7 +180,7 @@ is($#returned, 0, "The ticket has one squelched recipients");
 is(shift @names, 'SquelchMailTo', "The attribute we have is SquelchMailTo");
 
 
-($ret, $msg) = $t->UnsquelchMailTo('nobody@example.com');
+my ($ret, $msg) = $t->UnsquelchMailTo('nobody@example.com');
 ok($ret, "Removed nobody as a squelched recipient - ".$msg);
 @returned = $t->SquelchMailTo();
 is($#returned, -1, "The ticket has no squelched recipients". join(',',@returned));

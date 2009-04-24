@@ -536,7 +536,7 @@ sub _DateLimit {
 
         $sb->_SQLLimit(
             FIELD    => $meta->[1],
-            OPERATOR => "<",
+            OPERATOR => "<=",
             VALUE    => $dayend,
             @rest,
             ENTRYAGGREGATOR => 'AND',
