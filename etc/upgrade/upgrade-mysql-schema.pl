@@ -7,7 +7,7 @@ use DBI;
 use DBD::mysql 4.002;
 
 unless (@ARGV) {
-    print STDERR "usage: $0 db_name db_user db_password\n";
+    print STDERR "usage: $0 db_name[:server_name] db_user db_password\n";
     exit 1;
 }
 
@@ -211,8 +211,10 @@ my %max_type_length = (
 
 my @sql_commands;
 
-my ($db_name, $db_user, $db_pass) = (shift, shift, shift);
-my $dbh = DBI->connect("dbi:mysql:$db_name", $db_user, $db_pass, { RaiseError => 1 });
+my ($db_datasource, $db_user, $db_pass) = (shift, shift, shift);
+my $dbh = DBI->connect("dbi:mysql:$db_datasource", $db_user, $db_pass, { RaiseError => 1 });
+my $db_name = $db_datasource;
+$db_name =~ s/:.*$//;
 
 my $version = ($dbh->selectrow_array("show variables like 'version'"))[1];
 ($version) = $version =~ /^(\d+\.\d+)/;

@@ -27,6 +27,11 @@ upgrade the database's schema. Run it:
 
     perl etc/upgrade/upgrade-mysql-schema.pl db user pass > sql.queries
 
+If your mysql database is on a remote host, you can run the script
+like this instead
+
+    perl etc/upgrade/upgrade-mysql-schema.pl db:host user pass > sql.queries
+
 5) Check sanity of the SQL queries yourself or consult with your DBA.
 
 6) Apply the queries. Note that this step can take a while. It may require
