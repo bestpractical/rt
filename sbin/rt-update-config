@@ -55,6 +55,7 @@ BEGIN {
 }
 
 use Getopt::Long;
+use Data::Dump qw/dump/;
 
 my %args;
 die "unknown option"
@@ -74,7 +75,6 @@ if ( $args{name} && defined $args{value} && ! $args{show} ) {
     print 'updated with success' . "\n";
 }
 else {
-    use Data::Dumper;
     my %doc;
 
     if ( ! $args{'without-doc'} ) {
@@ -123,9 +123,7 @@ else {
 
     if ( $args{show} ) {
         for my $name ( sort keys %map ) {
-            my $value = Data::Dumper->Dump( [ $map{$name} ], [''] );
-            $value =~ s/^\$ = //;
-            $value =~ s/;\s*$//;
+            my $value = dump( $map{$name} );
             print "$name: $value\n";
         }
     }
@@ -133,9 +131,7 @@ else {
         my $to_be_edited = '';
         for my $name ( sort keys %map ) {
             $to_be_edited .= $doc{$name} || '';
-            my $value = Data::Dumper->Dump( [ $map{$name} ], [''] );
-            $value =~ s/^\$ = //;
-            $value =~ s/;\s*$//;
+            my $value = dump( $map{$name} );
             $to_be_edited .= "set( $name => $value );\n";
             $to_be_edited .= "\n"
               if $doc{$name};    # add an extra blank line to ease eyes
