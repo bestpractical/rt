@@ -228,8 +228,7 @@ exit 0;
 my %alter_aggregator;
 sub convert_table {
     my $table = shift;
-    push @sql_commands, qq{ALTER TABLE $table DEFAULT CHARACTER SET utf8};
-    @alter_aggregator{'char_to_binary','binary_to_char'} = ([],[]);
+    @alter_aggregator{'char_to_binary','binary_to_char'} = (['DEFAULT CHARACTER SET utf8'],[]);
 
     my $sth = $dbh->column_info( undef, $db_name, $table, undef );
     $sth->execute;
