@@ -102,6 +102,10 @@
 % }
   </div>
 % }
+</div>
+<div id="body">
+% $m->callback( %ARGS, callback_name => 'BeforeBody' );
+% $m->flush_buffer(); # we've got the page laid out, let's flush the buffer;
 
 <%INIT>
 $r->content_type('text/html; charset=utf-8');
