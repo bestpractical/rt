@@ -1246,56 +1246,16 @@ sub Gateway {
     unless ( $SystemTicket->id || $SystemQueueObj->id ) {
         return ( -75, "RT couldn't find the queue: " . $args{'queue'}, undef );
     }
-    # Authentication Level ($AuthStat)
-    # -1 - Get out.  this user has been explicitly declined
-    # 0 - User may not do anything (Not used at the moment)
-    # 1 - Normal user
-    # 2 - User is allowed to specify status updates etc. a la enhanced-mailgate
-    my ( $CurrentUser, $AuthStat, $error );
 
-    # Initalize AuthStat so comparisons work correctly
-    $AuthStat = -9999999;
+    my ($AuthStat, $CurrentUser, $error) = GetAuthenticationLevel(
+        MailPlugins   => \@mail_plugins,
+        Actions       => \@actions,
+        Message       => $Message,
+        RawMessageRef => \$args{message},
+        SystemTicket  => $SystemTicket,
+        SystemQueue   => $SystemQueueObj,
+    );
 
-    # if plugin returns AuthStat -2 we skip action
-    # NOTE: this is experimental API and it would be changed
-    my %skip_action = ();
-
-    # Since this needs loading, no matter what
-    foreach (@mail_plugins) {
-        my ($Code, $NewAuthStat);
-        if ( ref($_) eq "CODE" ) {
-            $Code = $_;
-        } else {
-            no strict 'refs';
-            $Code = *{ $_ . "::GetCurrentUser" }{CODE};
-        }
-
-        foreach my $action (@actions) {
-            ( $CurrentUser, $NewAuthStat ) = $Code->(
-                Message       => $Message,
-                RawMessageRef => \$args{'message'},
-                CurrentUser   => $CurrentUser,
-                AuthLevel     => $AuthStat,
-                Action        => $action,
-                Ticket        => $SystemTicket,
-                Queue         => $SystemQueueObj
-            );
-
-# You get the highest level of authentication you were assigned, unless you get the magic -1
-# If a module returns a "-1" then we discard the ticket, so.
-            $AuthStat = $NewAuthStat
-                if ( $NewAuthStat > $AuthStat or $NewAuthStat == -1 or $NewAuthStat == -2 );
-
-            last if $AuthStat == -1;
-            $skip_action{$action}++ if $AuthStat == -2;
-        }
-
-        # strip actions we should skip
-        @actions = grep !$skip_action{$_}, @actions if $AuthStat == -2;
-        last unless @actions;
-
-        last if $AuthStat == -1;
-    }
     # {{{ If authentication fails and no new user was created, get out.
     if ( !$CurrentUser || !$CurrentUser->id || $AuthStat == -1 ) {
 
@@ -1427,6 +1387,79 @@ sub Gateway {
         }
     }
     return ( 1, "Success", $Ticket );
+}
+
+=head2 GetAuthenticationLevel
+
+    # Authentication Level
+    # -1 - Get out.  this user has been explicitly declined
+    # 0 - User may not do anything (Not used at the moment)
+    # 1 - Normal user
+    # 2 - User is allowed to specify status updates etc. a la enhanced-mailgate
+
+=cut
+
+sub GetAuthenticationLevel {
+    my %args = (
+        MailPlugins   => [],
+        Actions       => [],
+        Message       => undef,
+        RawMessageRef => undef,
+        SystemTicket  => undef,
+        SystemQueue   => undef,
+        @_,
+    );
+
+    my ( $CurrentUser, $AuthStat, $error );
+
+    # Initalize AuthStat so comparisons work correctly
+    $AuthStat = -9999999;
+
+    # if plugin returns AuthStat -2 we skip action
+    # NOTE: this is experimental API and it would be changed
+    my %skip_action = ();
+
+    # Since this needs loading, no matter what
+    foreach (@{ $args{MailPlugins} }) {
+        my ($Code, $NewAuthStat);
+        if ( ref($_) eq "CODE" ) {
+            $Code = $_;
+        } else {
+            no strict 'refs';
+            $Code = *{ $_ . "::GetCurrentUser" }{CODE};
+        }
+
+        foreach my $action (@{ $args{Actions} }) {
+            ( $CurrentUser, $NewAuthStat ) = $Code->(
+                Message       => $args{Message},
+                RawMessageRef => $args{RawMessageRef},
+                CurrentUser   => $CurrentUser,
+                AuthLevel     => $AuthStat,
+                Action        => $action,
+                Ticket        => $args{SystemTicket},
+                Queue         => $args{SystemQueue},
+            );
+
+# You get the highest level of authentication you were assigned, unless you get the magic -1
+# If a module returns a "-1" then we discard the ticket, so.
+            $AuthStat = $NewAuthStat
+                if ( $NewAuthStat > $AuthStat or $NewAuthStat == -1 or $NewAuthStat == -2 );
+
+            last if $AuthStat == -1;
+            $skip_action{$action}++ if $AuthStat == -2;
+        }
+
+        # strip actions we should skip
+        @{$args{Actions}} = grep !$skip_action{$_}, @{$args{Actions}}
+            if $AuthStat == -2;
+        last unless @{$args{Actions}};
+
+        last if $AuthStat == -1;
+    }
+
+    return $AuthStat if !wantarray;
+
+    return ($AuthStat, $CurrentUser, $error);
 }
 
 sub _RunUnsafeAction {
