@@ -1226,6 +1226,7 @@ sub Gateway {
     if ($IsALoop && !$should_store_machine_generated_message) {
         return ( 0, $result, undef );
     }
+    # }}}
 
     $args{'ticket'} ||= ParseTicketId( $Subject );
 
