@@ -45,6 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+% $m->callback( ARGSRef => \%ARGS, CallbackName => 'BeforeTable' );
 <table class="myrt">
 <tr valign="top">
 
@@ -59,6 +60,7 @@
 % }
 
 </tr></table>
+% $m->callback( ARGSRef => \%ARGS, CallbackName => 'AfterTable' );
 <%INIT>
 
 # XXX: we don't use this, but should.
