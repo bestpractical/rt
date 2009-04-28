@@ -49,9 +49,15 @@
 <b><&|/l&>Users</&></b>
 <br />
 <select multiple="multiple" name="<% $Name %>Users" size="10">
-% while ( my $user = $users->Next ) {
+<%perl>
+my @users = sort { lc($a->[0]) cmp lc($b->[0]) }
+            map { [$m->scomp("/Elements/ShowUser", User => $_), $_] }
+            @{ $users->ItemsArrayRef };
+</%perl>
+% for (@users) {
+% my ($rendered, $user) = @$_;
 % next if $SkipUsers->{ $user->id };
-<option value="User-<% $user->id %>"><& /Elements/ShowUser, User => $user &></option>
+<option value="User-<% $user->id %>"><% $rendered |n%></option>
 % }
 </select>
 <br />
