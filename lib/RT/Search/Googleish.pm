@@ -192,7 +192,7 @@ sub Prepare  {
   my $self = shift;
   my $tql = $self->QueryToSQL($self->Argument);
 
-  $RT::Logger->crit($tql);
+  $RT::Logger->debug($tql);
 
   $self->TicketsObj->FromSQL($tql);
   return(1);
