@@ -79,10 +79,6 @@ use RT::Search::Googleish;
 
 if ($q) {
     my $tickets = new RT::Tickets( $session{'CurrentUser'} );
-    if ($q =~ /^#?(\d+)$/) {
-        RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Ticket/Display.html?id=".$1);
-    }
-
     $m->callback( %ARGS, query => \$q, CallbackName => 'ModifyQuery' );
 
     if ($q =~ /^#?(\d+)$/) {
