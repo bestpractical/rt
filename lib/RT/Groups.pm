@@ -116,8 +116,6 @@ sub NewItem {
         };
 
 
-
-
 =head1 SEE ALSO
 
 This class allows "overlay" methods to be placed

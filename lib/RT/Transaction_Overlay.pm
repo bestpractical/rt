@@ -1145,7 +1145,7 @@ sub CustomFieldLookupType {
 }
 
 
-=item DeferredRecipients($freq, $include_sent )
+=head2 DeferredRecipients($freq, $include_sent )
 
 Takes the following arguments:
 

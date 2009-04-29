@@ -3261,13 +3261,6 @@ sub ItemMap {
     return ( $self->{'item_map'} );
 }
 
-=cut
-
-
-
-}
-
-
 
 # }}}
 
@@ -3300,8 +3293,6 @@ $tickets->{'flagname'} = 1;
 BUG: There should be an API for this
 
 
-
-=cut
 
 =cut
 

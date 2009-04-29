@@ -157,7 +157,7 @@ sub FromURI {
 
 # {{{ _GetResolver
 
-=private _GetResolver <scheme>
+=head2 _GetResolver <scheme>
 
 Gets an RT URI resolver for the scheme <scheme>. 
 Falls back to a null resolver. RT::URI::base.
@@ -263,7 +263,7 @@ sub AsHREF {
     return $self->Resolver->HREF;
 }
 
-=head Resolver
+=head2 Resolver
 
 Returns this URI's URI resolver object
 

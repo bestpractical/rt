@@ -715,7 +715,7 @@ sub InsertInitialData {
     return (1, join "\n", @warns);
 }
 
-=head InsertData
+=head2 InsertData
 
 Load some sort of data into the database, takes path to a file.
 

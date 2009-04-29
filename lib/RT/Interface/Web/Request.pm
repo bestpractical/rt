@@ -106,7 +106,7 @@ Takes hash with optional C<CallbackPage>, C<CallbackName>
 and C<CallbackOnce> arguments, other arguments are passed
 throught to callback components.
 
-=over4
+=over 4
 
 =item CallbackPage
 

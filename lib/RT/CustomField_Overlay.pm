@@ -353,8 +353,6 @@ sub LoadByName {
 # {{{ Dealing with custom field values 
 
 
-=cut
-
 =head2 Custom field values
 
 =head3 Values FIELD
