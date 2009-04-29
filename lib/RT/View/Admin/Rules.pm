@@ -45,44 +45,45 @@
 # those contributions and any derivatives thereof.
 #
 # END BPS TAGGED BLOCK }}}
+use warnings;
+use strict;
 
-=head1 NAME
+package RT::View::Admin::Rules;
+use Jifty::View::Declare -base;
+use base 'RT::View::CRUD';
 
-RT::Model::Rule - an RT Rule object represening lorzy code
+use constant page_title     => 'Rule Management';
+use constant object_type    => 'Rule';
+use constant tab_url        => '/Admin/Elements/RuleTabs';
+use constant current_tab    => 'admin/rules/'; # this is not working
 
-=head1 METHODS
+use constant display_columns => qw(id description condition_code prepare_code action_code);
 
+sub _current_collection {
+    my $self = shift;
+    my $c    = $self->SUPER::_current_collection();
+    $c->unlimit;
+#    $c->limit_to_user_defined_groups();
+    return $c;
+}
+
+=head2 view_field_name
+
+Display each group's name as a hyperlink to the modify page
 
 =cut
 
-use strict;
-use warnings;
+sub view_field_name {
+    my $self = shift;
+    my %args = @_;
 
-package RT::Model::Rule;
-
-use base qw'RT::Record';
-
-sub table {'Rules'}
-use Jifty::DBI::Schema;
-use Jifty::DBI::Record schema {
-    column action_code    => type is 'text', render as 'textarea';
-    column condition_code => type is 'text', render as 'textarea';
-    column prepare_code   => type is 'text', render as 'textarea';
-    column description               => type is 'text';
-};
-use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
-    created_by => 'creator',
-    created_on => 'created',
-    updated_by => 'last_updated_by',
-    updated_on => 'last_updated'
-};
-
-sub create_from_factory {
-    my ($self, $factory) = @_;
-    my %args = map { $_.'_code' => Jifty::YAML::Dump( $factory->$_ ) }
-        qw(action condition prepare );
-    $self->SUPER::create( %args,
-                          description => $factory->description );
+    $self->view_via_callback(%args, callback => sub {
+        my %args = @_;
+        hyperlink(
+            label => $args{current_value},
+            url   => "/Admin/Rules/Modify.html?id=$args{id}",
+        );
+    });
 }
 
 1;

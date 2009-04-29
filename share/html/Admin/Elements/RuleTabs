@@ -45,54 +45,37 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Tabs, 
-    tabs => $tabs, 
-    current_toptab => 'Admin/', 
-    current_tab => $current_tab, 
-    title => $title &>
+<& /Admin/Elements/Tabs,
+    title          => $title,
+    current_tab    => 'Admin/Rules/',
+    subtabs        => $tabs,
+    current_subtab => $current_tab,
+&>
 
 <%INIT>
-  my $tabs = { A => { title => _('Users'),
-			  path => 'Admin/Users/',
-			},
-	       B => { title => _('Groups'),
-			   path => 'Admin/Groups/',
-			 },
-	       C => { title => _('Queues'),
-			   path => 'Admin/Queues/',
-			 },
-	       D => { 'title' => _('Custom Fields'),
-			   path => 'Admin/CustomFields/',
-			 },
-	       E => { 'title' => _('Rules'),
-			   path => 'admin/rules/',
-			 },
-	       F => { 'title' => _('Global'),
-			   path => 'Admin/Global/',
-			 },
-	       G => { 'title' => _('Tools'),
-			   path => 'Admin/Tools/',
-			 },
-	     };
+    my $tabs = {
+        A => { title => _('Select'),
+               path  => "Admin/Rules/", },
+        E => { title => _('Create'),
+               path  => 'Admin/Rules/Modify.html?create=1',
+        },
+    };
 
-  # Now let callbacks add their extra tabs
-  $m->callback( %ARGS, tabs => $tabs );
+    # Now let callbacks add their extra tabs
+    $m->callback( %ARGS, tabs => $tabs );
 
-  if( defined $current_tab ) {
-    foreach my $tab (keys %{$tabs}) {
-      if ($tabs->{$tab}->{'path'} eq $current_tab) {
-        $tabs->{$tab}->{"subtabs"}        = $subtabs;
-        $tabs->{$tab}->{"current_subtab"} = $current_subtab;
-      }
+    foreach my $tab ( values %{$tabs} ) {
+        next unless $tab->{'path'} eq $current_tab;
+
+        $tab->{"subtabs"} = $subtabs;
+        $tab->{"current_subtab"} = $current_subtab;
     }
-  }
-
 </%INIT>
 
-
 <%ARGS>
-$subtabs => undef
+$id => undef
 $current_tab => undef
+$subtabs => undef
 $current_subtab => undef
 $title => undef
 </%ARGS>

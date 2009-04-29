@@ -63,5 +63,8 @@ alias RT::View::Admin::Queues under 'queues/';
 require RT::View::Admin::CustomFields;
 alias RT::View::Admin::CustomFields under 'custom_fields/';
 
+require RT::View::Admin::Rules;
+alias RT::View::Admin::Rules under 'rules/';
+
 1;
 
