@@ -91,15 +91,28 @@ sub arguments_by_sections {
 sub take_action {
     my $self = shift;
 
-            Jifty->log->error( 'ok' );
     for my $arg ( $self->argument_names ) {
         if ( $self->has_argument($arg) ) {
             my $value = $self->argument_value( $arg );
-            if ( $value =~ /^\[\s*(.*)\s*$\]/ ) {
-                $value = [ split /\s*,\s*/, $1 ];
-            }
-            elsif ( $value =~ /^{\s*(.*)\s*$}/ ) {
-                $value = { split /\s*(?:,|=>)\s*/, $1 };
+            if ($value && $value !~ /^{{\w+}}/ ) {
+                if ( $value =~ /^\[ \s* (.*?) \s* \]\s*$/x ) {
+                    my $v = $1;
+                    if ($v =~ /\S/ ) {
+                        $value = [ split /\s*,\s*/, $v ];
+                    }
+                    else {
+                        $value = [];
+                    }
+                }
+                elsif ( $value =~ /^{ \s* (.*?) \s* } \s* $/x ) {
+                    my $pair = $1;
+                    if ( $pair =~ /\S/ ) {
+                        $value = { split /\s*(?:,|=>)\s*/, $pair };
+                    }
+                    else {
+                        $value = {};
+                    }
+                }
             }
 
             RT->config->set( $arg, $value );
