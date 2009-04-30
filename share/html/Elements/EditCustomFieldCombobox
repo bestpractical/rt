@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % while ($Values and my $value = $Values->Next and $Multiple) {
-<input type="checkbox" class="checkbox" name="<%$NamePrefix%><%$CustomField->Id%>-DeleteValueIds" value="<% $value->Id %>" /><% $value->Content %>
+<input type="checkbox" class="checkbox CF-<%$CustomField->id%>-Edit" name="<%$NamePrefix%><%$CustomField->Id%>-DeleteValueIds" class="CF-<%$CustomField->id%>-Edit" value="<% $value->Id %>" /><% $value->Content %>
 <br />
 % }
 % (!$Multiple or !$MaxValues or !$Values or $Values->Count < $MaxValues) or return;
@@ -54,6 +54,7 @@
     Name    => $NamePrefix . $CustomField->Id . "-Value",
     Default => $Default,
     Rows    => $Rows,
+    Class   => "CF-".$CustomField->id."-Edit",
     Values  => [map {$_->Name} @{$CustomField->Values->ItemsArrayRef}],
 &>
 <%ARGS>

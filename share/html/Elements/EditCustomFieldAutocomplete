@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % if ( $Multiple ) {
-<textarea cols="<% $Cols %>" rows="<% $Rows %>" name="<% $name %>-Values" id="<% $name %>-Values" ><% $Default %></textarea><div id="<% $name %>-Choices" class="autocomplete"></div>
+<textarea cols="<% $Cols %>" rows="<% $Rows %>" name="<% $name %>-Values" id="<% $name %>-Values" class="CF-<%$CustomField->id%>-Edit"><% $Default %></textarea><div id="<% $name %>-Choices" class="autocomplete"></div>
 <script type="text/javascript">
 new Ajax.Autocompleter(
     "<% $name %>-Values",
@@ -55,7 +55,7 @@ new Ajax.Autocompleter(
     { tokens: [ '\n' ] }
 );
 % } else {
-<input type="text" id="<% $name %>-Value" name="<% $name %>-Value" value="<% $Default %>"/><div id="<% $name %>-Choices" class="autocomplete"></div>
+<input type="text" id="<% $name %>-Value" name="<% $name %>-Value" class="CF-<%$CustomField->id%>-Edit" value="<% $Default %>"/><div id="<% $name %>-Choices" class="autocomplete"></div>
 <script type="text/javascript">
 new Ajax.Autocompleter(
     "<% $name %>-Value",
