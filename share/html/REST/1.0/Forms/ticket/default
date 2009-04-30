@@ -286,9 +286,11 @@ else {
         elsif (exists $dates{$key}) {
             $key = $dates{$key};
 
-            # LastUpdated might be updated automatically based on
-            # nondeterministic ordering (by changing any other field), so
-            # always just skip updating it to avoid "Immutable field" warnings
+            # We try to detect whether it should update a field by checking
+            # whether its current value equals the entered value. Since the
+            # LastUpdated field is automatically updated as other columns are
+            # changed, it is not properly skipped. Users cannot update this
+            # field anyway.
             next if $key eq 'LastUpdated';
 
             $set = "Set$key";
