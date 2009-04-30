@@ -37,7 +37,7 @@ etc/upgrade/2.2.0RC2/content
 etc/upgrade/2.2.0RC2/schema.mysql
 etc/upgrade/2.2.0RC2/schema.Oracle
 etc/upgrade/2.2.0RC2/schema.Pg
-etc/upgrade/schema.mysql-4.0-4.1.pl
+etc/upgrade/upgrade-mysql-schema.pl
 html/Admin/Global/CustomFields/RTFM-Class-RTFM-Article.html
 html/Admin/RTFM/Classes/CustomFields.html
 html/Admin/RTFM/Classes/GroupRights.html
@@ -153,6 +153,7 @@ MANIFEST			This list of files
 META.yml
 po/es.po
 po/fr.po
+po/it.po
 po/pt_BR.po
 po/README
 po/rtfm.pot
@@ -164,6 +165,7 @@ sbin/migrate-2.0-to-2.1
 t/00smoke.t
 t/04interface.t
 t/05cfsearch.t
+t/06search_interface.t
 t/2basic_api.t
 t/3upload-customfields.t
 t/Article_Overlay.pm.t
