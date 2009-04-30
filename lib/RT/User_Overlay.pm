@@ -1601,7 +1601,7 @@ sub _Value {
 
     #If the user wants to see their own values, let them
     # TODO figure ouyt a better way to deal with this
-   elsif ( $self->CurrentUser->Id == $self->Id ) {
+   elsif ( defined($self->Id) && $self->CurrentUser->Id == $self->Id ) {
         return ( $self->SUPER::_Value($field) );
     }
 
