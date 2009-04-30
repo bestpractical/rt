@@ -307,11 +307,11 @@ if ($ARGS{'Topics'}) {
 }
 
 my %cfs;
-my $all_cfs = RT::CustomFields->new($session{'CurrentUser'});
-$all_cfs->UnLimit();
-while ( my $cf = $all_cfs->Next ) {
+while ( my $cf = $customfields->Next ) {
     $cfs{ $cf->Name } = $cf->Id;
 }
+# reset the iterator because we use this to build the UI
+$customfields->GotoFirstItem;
 
 foreach my $field ( keys %cfs ) {
    
