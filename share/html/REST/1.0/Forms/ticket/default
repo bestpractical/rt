@@ -285,6 +285,12 @@ else {
         }
         elsif (exists $dates{$key}) {
             $key = $dates{$key};
+
+            # LastUpdated might be updated automatically based on
+            # nondeterministic ordering (by changing any other field), so
+            # always just skip updating it to avoid "Immutable field" warnings
+            next if $key eq 'LastUpdated';
+
             $set = "Set$key";
 
             my $time = new RT::Date $session{CurrentUser};
