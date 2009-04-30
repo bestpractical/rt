@@ -41,6 +41,9 @@ framework:
           - ie7-squish
     - TestServerWarnings:
         clear_screen: 0
+    - Config:
+        after_restart_url: '/Admin/Global/System.html'
+        wait_seconds: 10
   PubSub: 
     Backend: Memcached
     Enable: ~
