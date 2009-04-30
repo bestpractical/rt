@@ -130,7 +130,8 @@ load_module($condition) if ($condition);
 my $template_obj;
 if ($template_id) {
     $template_obj = RT::Template->new($CurrentUser);
-    $template_obj->Load($template_id);
+    my ($ok, $msg) = $template_obj->Load($template_id);
+    die "Failed to load template '$template_id': $msg" if !$ok;
 }
 my $void_scrip = RT::Scrip->new( $CurrentUser );
 my $void_scrip_action = RT::ScripAction->new( $CurrentUser );
