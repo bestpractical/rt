@@ -7,7 +7,7 @@ use DBI;
 use DBD::mysql 4.002;
 
 unless (@ARGV) {
-    print STDERR "usage: $0 db_name db_user db_password\n";
+    print STDERR "usage: $0 db_name[:server_name] db_user db_password\n";
     exit 1;
 }
 
@@ -75,9 +75,13 @@ my %max_type_length = (
 
 my @sql_commands;
 
-my ($db_name, $db_user, $db_pass) = (shift, shift, shift);
-my $dbh = DBI->connect("dbi:mysql:$db_name", $db_user, $db_pass, { RaiseError => 1 });
+my ($db_datasource, $db_user, $db_pass) = (shift, shift, shift);
+my $dbh = DBI->connect("dbi:mysql:$db_datasource", $db_user, $db_pass, { RaiseError => 1 });
+my $db_name = $db_datasource;
+$db_name =~ s/:.*$//;
 
+my $version = ($dbh->selectrow_array("show variables like 'version'"))[1];
+($version) = $version =~ /^(\d+\.\d+)/;
 
 # do this from the RT level
 #push @sql_commands, qq{ALTER DATABASE $db_name DEFAULT CHARACTER SET utf8};
@@ -86,14 +90,20 @@ convert_table($_) foreach @tables;
 print join "\n", map(/;$/? $_ : "$_;", @sql_commands), "";
 exit 0;
 
+my %alter_aggregator;
 sub convert_table {
     my $table = shift;
-    push @sql_commands, qq{ALTER TABLE $table DEFAULT CHARACTER SET utf8};
+    @alter_aggregator{'char_to_binary','binary_to_char'} = (['DEFAULT CHARACTER SET utf8'],[]);
 
     my $sth = $dbh->column_info( undef, $db_name, $table, undef );
     $sth->execute;
     while ( my $info = $sth->fetchrow_hashref ) {
         convert_column(%$info);
+    }
+    for my $conversiontype (qw(char_to_binary binary_to_char)) {
+        next unless @{$alter_aggregator{$conversiontype}};
+        push @sql_commands, qq{ALTER TABLE $table\n   }.
+            join(",\n   ",@{$alter_aggregator{$conversiontype}});
     }
 }
 
@@ -106,22 +116,23 @@ sub convert_column {
 
     my $required_charset = $charset{$table}{$column};
     unless ( $required_charset ) {
-        print STDERR join(".", @info{'TABLE_SCHEM', 'TABLE_NAME', 'COLUMN_NAME'})
+        print STDERR join(".", @info{'TABLE_SCHEMA', 'TABLE_NAME', 'COLUMN_NAME'})
             ." has type $type however mapping is missing.\n";
         return;
     }
 
     my $collation = column_info($table, $column)->{'collation'};
-    my $current_charset = $collation? (split /_/, $collation)[0]: 'binary';
+    # mysql 4.1 returns literal NULL instead of undef
+    my $current_charset = $collation && $collation ne 'NULL'? (split /_/, $collation)[0]: 'binary';
     return if $required_charset eq $current_charset;
 
     if ( $required_charset eq 'binary' ) {
-        push @sql_commands, char_to_binary(%info);
+        char_to_binary(%info);
     }
     elsif ( $current_charset eq 'binary' ) {
-        push @sql_commands, binary_to_char( $required_charset, %info);
+        binary_to_char( $required_charset, %info);
     } else {
-        push @sql_commands, char_to_char( $required_charset, %info);
+        char_to_char( $required_charset, %info);
     }
 }
 
@@ -131,8 +142,9 @@ sub char_to_binary {
     my $table = $info{'TABLE_NAME'};
     my $column = $info{'COLUMN_NAME'};
     my $new_type = calc_suitable_binary_type(%info);
+    push @{$alter_aggregator{char_to_binary}},
+        "MODIFY $column $new_type ".build_column_definition(%info);
 
-    return "ALTER TABLE $table MODIFY $column ". $new_type ." ". build_column_definition(%info);
 }
 
 sub binary_to_char {
@@ -148,8 +160,8 @@ sub binary_to_char {
         $new_type =~ s/blob/text/;
     }
 
-    return "ALTER TABLE $table MODIFY $column ". uc($new_type)
-        ." CHARACTER SET ". $charset
+    push @{$alter_aggregator{binary_to_char}},
+        "MODIFY $column ". uc($new_type) ." CHARACTER SET ". $charset
         ." ". build_column_definition(%info);
 }
 
@@ -160,10 +172,10 @@ sub char_to_char {
     my $column = $info{'COLUMN_NAME'};
     my $new_type = $info{'mysql_type_name'};
 
-    return char_to_binary(%info),
-        "ALTER TABLE $table MODIFY $column ". uc($new_type)
-            ." CHARACTER SET ". $charset
-            ." ". build_column_definition(%info);
+    char_to_binary(%info);
+    push @{$alter_aggregator{binary_to_char}},
+        "MODIFY $column ". uc($new_type)." CHARACTER SET ". $charset
+        ." ". build_column_definition(%info);
 }
 
 sub calc_suitable_binary_type {
@@ -215,7 +227,16 @@ sub build_column_definition {
 
 sub column_byte_length {
     my ($table, $column) = @_;
-    return $dbh->selectrow_arrayref("SELECT MAX(LENGTH(". $dbh->quote($column) .")) FROM $table")->[0];
+    if ( $version >= 5.0 ) {
+        my ($char, $octet) = @{ $dbh->selectrow_arrayref(
+            "SELECT CHARACTER_MAXIMUM_LENGTH, CHARACTER_OCTET_LENGTH FROM information_schema.COLUMNS WHERE"
+            ."     TABLE_SCHEMA = ". $dbh->quote($db_name)
+            ." AND TABLE_NAME   = ". $dbh->quote($table)
+            ." AND COLUMN_NAME  = ". $dbh->quote($column)
+        ) };
+        return $octet if $octet == $char;
+    }
+    return $dbh->selectrow_arrayref("SELECT MAX(LENGTH(". $dbh->quote_identifier($column) .")) FROM $table")->[0];
 }
 
 sub column_info {
