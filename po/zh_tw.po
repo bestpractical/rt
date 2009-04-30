@@ -1,8 +1,13 @@
+# translation of zh_tw.po to traditional chinese
+# Copyright (c) 2008 Jesse Vincent <jesse@bestpractical.com>
+#
+# Audrey Tang <audreyt@audreyt.org>, 2003.
 msgid ""
 msgstr ""
-"Project-Id-Version: RTFM 2.1.x\n"
-"Last-Translator: Autrijus Tang <autrijus@autrijus.org>\n"
-"Language-Team: rt-devel <rt-devel@lists.fsck.com>\n"
+"PO-Revision-Date: 2008-10-20 17:11-0400\n"
+"Project-Id-Version: RTFM 2.3.x\n"
+"Last-Translator: Audrey Tang <audreyt@audreyt.org>\n"
+"Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"

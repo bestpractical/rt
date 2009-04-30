@@ -1,14 +1,14 @@
 # translation of pt_BR.po to Português Brasileiro
-# Header entry was created by KBabel!
+# Copyright (c) 2008 Jesse Vincent <jesse@bestpractical.com>
 #
 # Fernando Frota Machado de Morais <frota@cecom.ufmg.br>, 2007.
 msgid ""
 msgstr ""
-"Mime-Version: 1.0Last-Translator: Fernando Frota Machado de Morais <frota@cecom.ufmg.br>\n"
-"PO-Revision-Date: 2007-04-09 18:09-0300\n"
+"Mime-Version: 1.0\n"
+"PO-Revision-Date: 2008-10-20 17:03-0400\n"
 "Last-Translator: Fernando Frota Machado de Morais <frota@cecom.ufmg.br>\n"
-"Project-Id-Version:  RTFM-2.2.0RC5\n"
-"Language-Team: Português Brasileiro <pt@li.org>\n"
+"Project-Id-Version:  RTFM 2.3.x\n"
+"Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.11.4\n"

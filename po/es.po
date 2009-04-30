@@ -1,15 +1,14 @@
 # translation of es.po to spanish
-# translation of es.po to
 # Copyright (c) 2003 Jesse Vincent <jesse@bestpractical.com>
 #
 # Luis Barajas <lbarajas@mixbaal.com>, 2007.
 msgid ""
 msgstr ""
-"Project-Id-Version: es\n"
+"Project-Id-Version: RTFM 2.3.x\n"
 "POT-Creation-Date: 2002-07-07\n"
-"PO-Revision-Date: 2007-04-09 16:38-0500\n"
+"PO-Revision-Date: 2008-10-20 16:57-0400\n"
 "Last-Translator: Luis Barajas <lbarajas@mixbaal.com>\n"
-"Language-Team: spanish <en@li.org>\n"
+"Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
