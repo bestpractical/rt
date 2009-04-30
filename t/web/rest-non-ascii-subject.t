@@ -5,8 +5,10 @@ use warnings;
 use Test::More tests => 7;
 use RT::Test;
 
-my $subject = "Sujet accentu\x{00e9}";
-my $text = "Contenu accentu\x{00e9}";
+use Encode;
+# \x{XX} where XX is less than 255 is not treated as unicode code point
+my $subject = Encode::decode('latin1', "Sujet accentu\x{e9}");
+my $text = Encode::decode('latin1', "Contenu accentu\x{e9}");
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -29,11 +31,11 @@ Starts: 2009-03-10 16:14:55
 Due: 2009-03-10 16:14:55
 Text: $text";
 
-
 $m->post("$baseurl/REST/1.0/ticket/new", [
     user    => 'root',
     pass    => 'password',
-    content => $content,
+# error message from HTTP::Message: content must be bytes
+    content => Encode::encode_utf8($content),
 ], Content_Type => 'form-data' );
 
 my ($id) = $m->content =~ /Ticket (\d+) created/;
@@ -43,6 +45,8 @@ my $ticket = RT::Ticket->new($RT::SystemUser);
 $ticket->Load($id);
 is($ticket->Id, $id, "loaded the REST-created ticket");
 is($ticket->Subject, $subject, "ticket subject successfully set");
-is($ticket->Transactions->First->Attachments->First->Subject, $subject, "attachement subject successfully set");
-is($ticket->Transactions->First->Attachments->First->GetHeader('Subject'), $subject, "attachement header subject successfully set");
+
+my $attach = $ticket->Transactions->First->Attachments->First;
+is($attach->Subject, $subject, "attachement subject successfully set");
+is($attach->GetHeader('Subject'), $subject, "attachement header subject successfully set");
 
