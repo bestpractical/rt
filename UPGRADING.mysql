@@ -24,10 +24,10 @@ MUST follow these instructions.
 3) Apply changes described in the seven step, but only up to version 3.8.0.
 
 4) Apply mysql 4.0->4.1 schema changes. RTFM tarball has script
-etc/upgrade/schema.mysql-4.0-4.1.pl that generates SQL queries to upgrade schema of
+etc/upgrade/upgrade-mysql-schema.pl that generates SQL queries to upgrade schema of
 the DB. Run it:
 
-    perl etc/upgrade/schema.mysql-4.0-4.1.pl db user pass > sql.queries
+    perl etc/upgrade/upgrade-mysql-schema.pl db user pass > sql.queries
 
 5) Check sanity of sql queries yourself or consult with your DBA
 
