@@ -115,6 +115,7 @@ $reminder_collection = $Ticket->Reminders->Collection;
 <& SELF:ShowEntry, Reminder => $reminder, Ticket => $Ticket &>
 %   }
 % }
+<i><&|/l&>(Check box to delete)</&></i><br /><br />
 </div>
 <div>
 <&|/l&>New reminder:</&>
