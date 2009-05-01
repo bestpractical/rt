@@ -115,7 +115,9 @@ $reminder_collection = $Ticket->Reminders->Collection;
 <& SELF:ShowEntry, Reminder => $reminder, Ticket => $Ticket &>
 %   }
 % }
+% if ($reminder_collection->Count) {
 <i><&|/l&>(Check box to delete)</&></i><br /><br />
+% }
 </div>
 <div>
 <&|/l&>New reminder:</&>
