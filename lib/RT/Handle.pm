@@ -549,6 +549,7 @@ sub GetVersionFile {
 
 sub cmp_version($$) {
     my ($a, $b) = (@_);
+    $b =~ s/HEAD$/9999/;
     my @a = split /[^0-9]+/, $a;
     my @b = split /[^0-9]+/, $b;
     for ( my $i = 0; $i < @a; $i++ ) {
