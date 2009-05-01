@@ -66,7 +66,6 @@
 <h3><&|/l&>Owner</&></h3>
 <&|/l&>Owner</&>: <& /Elements/SelectOwner, Name => 'Owner', QueueObj => $Ticket->QueueObj, TicketObj => $Ticket, Default => $Ticket->OwnerObj->Id, DefaultValue => 0&>
 <h3><&|/l&>Current watchers</&></h3>
-<&|/l&>(Check box to delete)</&><br />
 
 <&|/l&>Requestors</&>:
 <& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->Requestors &>
@@ -77,6 +76,7 @@
 <&|/l&>Administrative Cc</&>:
 <& EditWatchers, TicketObj => $Ticket, Watchers => $Ticket->AdminCc &>
 
+<i><&|/l&>(Check box to delete)</&></i><br />
 </td>
 </tr>
 </table>
