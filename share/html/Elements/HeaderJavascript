@@ -63,6 +63,10 @@ $onload => undef
     doOnLoad(function () { focusElementById('<% $focus %>') });
 % }
 
+% if ( $onload ) {
+    doOnLoad(<% $onload |n %>);
+% }
+
 % if ( RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'})) {
     function ReplaceAllTextareas() {
         if (!FCKeditor_IsCompatibleBrowser())
@@ -111,8 +115,5 @@ $onload => undef
         }
     }
     doOnLoad(ReplaceAllTextareas);
-% }
-% if ( $onload ) {
-    doOnLoad(<% $onload |n %>);
 % }
 --></script>
