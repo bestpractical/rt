@@ -267,4 +267,14 @@ sub AddEmptyRows {
     }
 }
 
+eval "require RT::Report::Tickets_Vendor";
+if ($@ && $@ !~ qr{^Can't locate RT/Report/Tickets_Vendor.pm}) {
+    die $@;
+};
+
+eval "require RT::Report::Tickets_Local";
+if ($@ && $@ !~ qr{^Can't locate RT/Report/Tickets_Local.pm}) {
+    die $@;
+};
+
 1;

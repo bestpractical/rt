@@ -124,4 +124,14 @@ Returns the directory this plugin has installed its message catalogs into.
 
 sub PoDir { return $_[0]->Path('po') }
 
+eval "require RT::Plugin_Vendor";
+if ($@ && $@ !~ qr{^Can't locate RT/Plugin_Vendor.pm}) {
+    die $@;
+};
+
+eval "require RT::Plugin_Local";
+if ($@ && $@ !~ qr{^Can't locate RT/Plugin_Local.pm}) {
+    die $@;
+};
+
 1;

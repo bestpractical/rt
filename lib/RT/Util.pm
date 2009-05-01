@@ -76,4 +76,14 @@ sub safe_run_child (&) {
     return shift->();
 }
 
+eval "require RT::Util_Vendor";
+if ($@ && $@ !~ qr{^Can't locate RT/Util_Vendor.pm}) {
+    die $@;
+};
+
+eval "require RT::Util_Local";
+if ($@ && $@ !~ qr{^Can't locate RT/Util_Local.pm}) {
+    die $@;
+};
+
 1;

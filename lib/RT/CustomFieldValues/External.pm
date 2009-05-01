@@ -222,4 +222,14 @@ sub LimitToCustomField {
     return $self->SUPER::LimitToCustomField( @_ );
 }
 
+eval "require RT::CustomFieldValues::External_Vendor";
+if ($@ && $@ !~ qr{^Can't locate RT/CustomFieldValues/External_Vendor.pm}) {
+    die $@;
+};
+
+eval "require RT::CustomFieldValues::External_Local";
+if ($@ && $@ !~ qr{^Can't locate RT/CustomFieldValues/External_Local.pm}) {
+    die $@;
+};
+
 1;

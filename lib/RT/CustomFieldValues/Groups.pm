@@ -75,4 +75,14 @@ sub ExternalValues {
     return \@res;
 }
 
+eval "require RT::CustomFieldValues::Groups_Vendor";
+if ($@ && $@ !~ qr{^Can't locate RT/CustomFieldValues/Groups_Vendor.pm}) {
+    die $@;
+};
+
+eval "require RT::CustomFieldValues::Groups_Local";
+if ($@ && $@ !~ qr{^Can't locate RT/CustomFieldValues/Groups_Local.pm}) {
+    die $@;
+};
+
 1;

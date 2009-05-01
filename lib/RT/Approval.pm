@@ -61,4 +61,14 @@ RT::Ruleset->Add(
         'RT::Approval::Rule::Created',
     ]);
 
+eval "require RT::Approval_Vendor";
+if ($@ && $@ !~ qr{^Can't locate RT/Approval_Vendor.pm}) {
+    die $@;
+};
+
+eval "require RT::Approval_Local";
+if ($@ && $@ !~ qr{^Can't locate RT/Approval_Local.pm}) {
+    die $@;
+};
+
 1;

@@ -81,4 +81,14 @@ sub Add {
     push @RULE_SETS, $class->new(\%args);
 }
 
+eval "require RT::Ruleset_Vendor";
+if ($@ && $@ !~ qr{^Can't locate RT/Ruleset_Vendor.pm}) {
+    die $@;
+};
+
+eval "require RT::Ruleset_Local";
+if ($@ && $@ !~ qr{^Can't locate RT/Ruleset_Local.pm}) {
+    die $@;
+};
+
 1;

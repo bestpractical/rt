@@ -52,5 +52,14 @@ use base qw/RT::Record/;
 # XXX TODO: how the heck do we acl a report?
 sub CurrentUserHasRight {1}
 
+eval "require RT::Report::Tickets::Entry_Vendor";
+if ($@ && $@ !~ qr{^Can't locate RT/Report/Tickets/Entry_Vendor.pm}) {
+    die $@;
+};
+
+eval "require RT::Report::Tickets::Entry_Local";
+if ($@ && $@ !~ qr{^Can't locate RT/Report/Tickets/Entry_Local.pm}) {
+    die $@;
+};
 
 1;

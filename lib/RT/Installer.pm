@@ -326,5 +326,15 @@ C<RT::Installer> class provides access to RT Installer Meta
 
 =cut
 
+eval "require RT::Installer_Vendor";
+if ($@ && $@ !~ qr{^Can't locate RT/Installer_Vendor.pm}) {
+    die $@;
+};
+
+eval "require RT::Installer_Local";
+if ($@ && $@ !~ qr{^Can't locate RT/Installer_Local.pm}) {
+    die $@;
+};
+
 1;
 

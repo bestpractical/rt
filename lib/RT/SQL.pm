@@ -210,4 +210,14 @@ sub _BitmaskToString {
     return join ' or ', @res;
 }
 
+eval "require RT::SQL_Vendor";
+if ($@ && $@ !~ qr{^Can't locate RT/SQL_Vendor.pm}) {
+    die $@;
+};
+
+eval "require RT::SQL_Local";
+if ($@ && $@ !~ qr{^Can't locate RT/SQL_Local.pm}) {
+    die $@;
+};
+
 1;
