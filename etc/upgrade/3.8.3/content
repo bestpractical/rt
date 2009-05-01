@@ -8,11 +8,9 @@
     },
 );
 
-
 @Final = (
     sub {
         $RT::Logger->debug("Going to correct descriptions of notify actions in the DB");
-        my $sys = RT::System->new($RT::SystemUser);
 
         my $actions = RT::ScripActions->new( $RT::SystemUser );
         $actions->Limit(
