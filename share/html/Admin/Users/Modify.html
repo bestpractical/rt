@@ -257,9 +257,7 @@ if ($create) {
     $title = _("Create a new user");
 } 
 else {
-    if ($id =~ /^\d+$/) { 
-        $current_tab = 'Admin/Users/Modify.html?id='.$id;
-    } elsif ($id eq 'new') {
+    if ($id eq 'new') {
         ( $val, $msg ) = $user_object->create(
             name                  => $name,
             email                 => $ARGS{'email'},
@@ -306,6 +304,7 @@ else {
             push @results, _('User could not be Created: %1', $msg);
         }
     } else {
+        $current_tab = 'Admin/Users/Modify.html?id='.$id;
 	    $user_object->load($id) || $user_object->load($name) || abort("Couldn't load user '$name'");
         $val = $user_object->id();
     }
