@@ -165,9 +165,9 @@ if ( $type =~ /email_record$/ ) {
     $titlebar_commands .=
         "[<a target=\"_blank\" href=\"$email_record_path?id="
       . $transaction->object_id
-      . "&Transaction="
+      . "&transaction="
       . $transaction->id
-      . "&Attachment="
+      . "&attachment="
       . ( $attachments->[0] && $attachments->[0]->id )
       . '">' . _('Show') . "</a>]&nbsp;";
     $show_body = 0;
