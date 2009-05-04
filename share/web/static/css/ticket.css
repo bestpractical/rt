@@ -18,8 +18,8 @@ div#ticket-history {
 
 }
 
-.ticket-transaction tr.metadata td { padding-top: 0.75em;} 
-.ticket-transaction tr.metadata td.actions {
+.ticket-transaction .metadata * { padding-top: 0.75em;} 
+.ticket-transaction .metadata .actions {
  padding: 0em;
  background: #ccc;
  text-align: right;
@@ -32,7 +32,7 @@ div#ticket-history {
  white-space: nowrap;
 }
 
-.ticket-transaction tr.metadata  td.type {
+.ticket-transaction .metadata  td.type {
  text-align: center;
  position: absolute;
  margin: 0.25em;
