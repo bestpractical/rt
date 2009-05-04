@@ -59,9 +59,6 @@ use constant current_tab    => 'admin/rules/'; # this is not working
 
 use constant display_columns => qw(id description condition_code prepare_code action_code);
 
-# no inline edit
-private template view_item_controls  => sub { };
-
 sub _current_collection {
     my $self = shift;
     my $c    = $self->SUPER::_current_collection();
