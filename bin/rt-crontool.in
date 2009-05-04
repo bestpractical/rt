@@ -106,7 +106,7 @@ GetOptions(
 RT::LoadConfig();
 
 # adjust logging to the screen according to options
-RT->Config->Set( LogToScreen => $log ) if $log
+RT->Config->Set( LogToScreen => $log ) if $log;
 
 #Connect to the database and get RT::SystemUser and RT::Nobody loaded
 RT::Init();
