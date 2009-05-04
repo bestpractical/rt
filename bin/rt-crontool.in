@@ -113,12 +113,16 @@ RT::Init();
 
 #Get the current user all loaded
 my $CurrentUser = GetCurrentUser();
+
+# show help even if there is no current user
+help() if $help;
+
 unless ( $CurrentUser->Id ) {
     print loc("No RT user found. Please consult your RT administrator.\n");
     exit(1);
 }
 
-help() if $help or not $search or not $action;
+help() unless $search && $action;
 
 $transaction = lc( $transaction||'' );
 if ( $transaction && $transaction !~ /^(first|all|last)$/i ) {
