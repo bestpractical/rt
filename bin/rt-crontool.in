@@ -85,33 +85,38 @@ use RT::Template;
 #Clean out all the nasties from the environment
 CleanEnv();
 
+my ( $search, $condition, $action, $search_arg, $condition_arg, $action_arg,
+     $template_id, $transaction, $transaction_type, $help, $log, $verbose );
+GetOptions(
+    "search=s"           => \$search,
+    "search-arg=s"       => \$search_arg,
+    "condition=s"        => \$condition,
+    "condition-arg=s"    => \$condition_arg,
+    "action-arg=s"       => \$action_arg,
+    "action=s"           => \$action,
+    "template-id=s"      => \$template_id,
+    "transaction=s"      => \$transaction,
+    "transaction-type=s" => \$transaction_type,
+    "log=s"              => \$log,
+    "verbose|v"          => \$verbose,
+    "help"               => \$help,
+);
+
 # Load the config file
 RT::LoadConfig();
+
+# adjust logging to the screen according to options
+RT->Config->Set( LogToScreen => $log ) if $log
 
 #Connect to the database and get RT::SystemUser and RT::Nobody loaded
 RT::Init();
 
 #Get the current user all loaded
 my $CurrentUser = GetCurrentUser();
-
 unless ( $CurrentUser->Id ) {
     print loc("No RT user found. Please consult your RT administrator.\n");
     exit(1);
 }
-
-my ( $search, $condition, $action, $search_arg, $condition_arg, $action_arg,
-     $template_id, $transaction, $transaction_type, $help, $verbose );
-GetOptions( "search=s"           => \$search,
-            "search-arg=s"       => \$search_arg,
-            "condition=s"        => \$condition,
-            "condition-arg=s"    => \$condition_arg,
-            "action-arg=s"       => \$action_arg,
-            "action=s"           => \$action,
-            "template-id=s"      => \$template_id,
-            "transaction=s"      => \$transaction,
-            "transaction-type=s" => \$transaction_type,
-            "help"               => \$help,
-            "verbose|v"          => \$verbose );
 
 help() if $help or not $search or not $action;
 
@@ -309,6 +314,8 @@ sub help {
     print "	"
       . loc( "[_1] - Specify the comma separated list of transactions' types you want to use", "--transaction-type" )
       . "\n";
+    print "	"
+      . loc( "[_1] - Adjust LogToScreen config option", "--log" ) . "\n";
     print "	"
       . loc( "[_1] - Output status updates to STDOUT", "--verbose" ) . "\n";
     print "\n";
