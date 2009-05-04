@@ -74,12 +74,17 @@
 % } else {
 <&|/l&>Users</&>
 % my $Users = $Group->UserMembersObj( Recursively => 0 );
-% $Users->OrderBy( FIELD => $UserOrderBy, ORDER => $UserOrder );
+<%perl>
+my @users = sort { lc($a->[0]) cmp lc($b->[0]) }
+            map { [$m->scomp("/Elements/ShowUser", User => $_), $_] }
+            @{ $Users->ItemsArrayRef };
+</%perl>
 <ul>
-% while ( my $user = $Users->Next ) {
+% for (@users) {
+% my ($rendered, $user) = @$_;
 % $UsersSeen{ $user->id } = 1 if $SkipSeenUsers;
 <li><input type="checkbox" class="checkbox" name="DeleteMember-<% $user->PrincipalObj->Id %>" value="1" />
-<& '/Elements/ShowUser', User => $user &></li>
+<% $rendered |n%></li>
 % }
 </ul>
 <&|/l&>Groups</&>
@@ -149,8 +154,6 @@ foreach my $member (grep $_, @AddMembersUsers, @AddMembersGroups) {
 @AddMembersUsers  => ()
 @AddMembersGroups => ()
 $id => undef
-$UserOrderBy => 'Name'
-$UserOrder => 'ASC'
 $SkipSeenUsers => 1
 $SkipSeenGroups => 1
 </%ARGS>
