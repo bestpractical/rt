@@ -168,7 +168,7 @@ sub QueryToSQL {
     for my $queue (@{ $self->{'Queues'} }) {
         my $QueueObj = RT::Queue->new($self->TicketsObj->CurrentUser);
         $QueueObj->Load($queue) or next;
-        my $quoted_queue = $Queue->Name;
+        my $quoted_queue = $QueueObj->Name;
         $quoted_queue =~ s/'/\\'/g;
         push @queue_clauses, "Queue = '$quoted_queue'";
     }
