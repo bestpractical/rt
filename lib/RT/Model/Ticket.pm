@@ -99,11 +99,11 @@ use Jifty::DBI::Record schema {
     column priority         => max_length is 11,  type is 'int',          default is '0';
 
     column time_estimated   => max_length is 11,  type is 'int',
-           default is '0', label is _( 'time estimated( in minutes )' );
+           default is '0', label is _( 'time estimated' ), hints are _('in minutes');
     column time_worked      => max_length is 11,  type is 'int',
-           default is '0', label is _( 'time worked( in minutes )' );
+           default is '0', label is _( 'time worked' ), hints are _('in minutes');
     column time_left        => max_length is 11,  type is 'int',
-           default is '0', label is _('time left( in minutes )');
+           default is '0', label is _('time left'), hints are _('in minutes');
 
     column status           => max_length is 10,  type is 'varchar(10)',
            default is '', render_as 'Select';
