@@ -59,5 +59,8 @@ use constant display_columns => qw(id name description correspond_address initia
 use constant tab_url         => '/Admin/Elements/QueueTabs';
 use constant current_tab     => 'Admin/Queues/';
 
+# no inline edit
+private template view_item_controls  => sub { };
+
 1;
 

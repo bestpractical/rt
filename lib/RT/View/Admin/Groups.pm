@@ -59,6 +59,9 @@ use constant current_tab    => 'Admin/Groups/';
 
 use constant display_columns => qw(id name description);
 
+# no inline edit
+private template view_item_controls  => sub { };
+
 sub _current_collection {
     my $self = shift;
     my $c    = $self->SUPER::_current_collection();

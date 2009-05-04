@@ -59,6 +59,9 @@ use constant display_columns => qw(id name email);
 use constant tab_url         => '/Admin/Elements/UserTabs';
 use constant current_tab     => 'Admin/Users/';
 
+# no inline edit
+private template view_item_controls  => sub { };
+
 # limit to privileged users
 sub _current_collection {
     my $self = shift;
