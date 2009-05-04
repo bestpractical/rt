@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2008 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -27,7 +27,7 @@ FCKDocumentProcessor._Items = new Array() ;
 FCKDocumentProcessor.AppendNew = function()
 {
 	var oNewItem = new Object() ;
-	this._Items.AddItem( oNewItem ) ;
+	this._Items.push( oNewItem ) ;
 	return oNewItem ;
 }
 
@@ -122,7 +122,7 @@ FCKPageBreaksProcessor.ProcessDocument = function( document )
 }
 
 // EMBED and OBJECT tags.
-FCKEmbedAndObjectProcessor = (function()
+var FCKEmbedAndObjectProcessor = (function()
 {
 	var customProcessors = [] ;
 

@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2008 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -229,9 +229,8 @@ FCK.InitializeBehaviors = function()
 	}
 	else if ( FCKBrowserInfo.IsSafari )
 	{
-		var cancelHandler = function( evt ){ if ( ! FCK.MouseDownFlag ) evt.returnValue = false ; }
-		this.EditorDocument.addEventListener( 'dragenter', cancelHandler, true ) ;
-		this.EditorDocument.addEventListener( 'dragover', cancelHandler, true ) ;
+		this.EditorDocument.addEventListener( 'dragover', function ( evt )
+				{ if ( !FCK.MouseDownFlag && FCK.Config.ForcePasteAsPlainText ) evt.returnValue = false ; }, true ) ;
 		this.EditorDocument.addEventListener( 'drop', this._ExecDrop, true ) ;
 		this.EditorDocument.addEventListener( 'mousedown',
 			function( ev )
@@ -322,7 +321,12 @@ FCK.ExecuteRedirectedNamedCommand = function( commandName, commandParameter )
 				if ( FCK.Paste() )
 					FCK.ExecuteNamedCommand( 'Paste', null, true ) ;
 			}
-			catch (e)	{ FCKDialog.OpenDialog( 'FCKDialog_Paste', FCKLang.Paste, 'dialog/fck_paste.html', 400, 330, 'Security' ) ; }
+			catch (e)	{
+				if ( FCKConfig.ForcePasteAsPlainText )
+					FCK.PasteAsPlainText() ;
+				else
+					FCKDialog.OpenDialog( 'FCKDialog_Paste', FCKLang.Paste, 'dialog/fck_paste.html', 400, 330, 'Security' ) ;
+			}
 			break ;
 		default :
 			FCK.ExecuteNamedCommand( commandName, commandParameter ) ;

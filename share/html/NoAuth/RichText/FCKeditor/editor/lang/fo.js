@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2008 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -308,6 +308,11 @@ DlgTableCellSpace	: "Fjarstøða millum meskar",
 DlgTableCellPad		: "Meskubreddi",
 DlgTableCaption		: "Tabellfrágreiðing",
 DlgTableSummary		: "Samandráttur",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Mesku eginleikar",
@@ -330,6 +335,9 @@ DlgCellVerAlignTop	: "Ovast",
 DlgCellVerAlignMiddle	: "Miðjan",
 DlgCellVerAlignBottom	: "Niðast",
 DlgCellVerAlignBaseline	: "Basislinja",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Røðir, meskin fevnir um",
 DlgCellCollSpan		: "Kolonnur, meskin fevnir um",
 DlgCellBackColor	: "Bakgrundslitur",

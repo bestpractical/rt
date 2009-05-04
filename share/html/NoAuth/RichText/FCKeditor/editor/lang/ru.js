@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2008 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -44,7 +44,7 @@ RemoveFormat		: "Убрать форматирование",
 InsertLinkLbl		: "Ссылка",
 InsertLink			: "Вставить/Редактировать ссылку",
 RemoveLink			: "Убрать ссылку",
-VisitLink			: "Open Link",	//MISSING
+VisitLink			: "Перейти по ссылке",
 Anchor				: "Вставить/Редактировать якорь",
 AnchorDelete		: "Убрать якорь",
 InsertImageLbl		: "Изображение",
@@ -73,9 +73,9 @@ BlockJustify		: "По ширине",
 DecreaseIndent		: "Уменьшить отступ",
 IncreaseIndent		: "Увеличить отступ",
 Blockquote			: "Цитата",
-CreateDiv			: "Create Div Container",	//MISSING
-EditDiv				: "Edit Div Container",	//MISSING
-DeleteDiv			: "Remove Div Container",	//MISSING
+CreateDiv			: "Создать Div контейнер",
+EditDiv				: "Редактировать Div контейнер",
+DeleteDiv			: "Удалить Div контейнер",
 Undo				: "Отменить",
 Redo				: "Повторить",
 NumberedListLbl		: "Нумерованный список",
@@ -308,6 +308,11 @@ DlgTableCellSpace	: "Промежуток (spacing)",
 DlgTableCellPad		: "Отступ (padding)",
 DlgTableCaption		: "Заголовок",
 DlgTableSummary		: "Резюме",
+DlgTableHeaders		: "Заголовки",
+DlgTableHeadersNone		: "Нет",
+DlgTableHeadersColumn	: "Первый столбец",
+DlgTableHeadersRow		: "Первая строка",
+DlgTableHeadersBoth		: "Оба варианта",
 
 // Table Cell Dialog
 DlgCellTitle		: "Свойства ячейки",
@@ -330,6 +335,9 @@ DlgCellVerAlignTop	: "Сверху",
 DlgCellVerAlignMiddle	: "Посередине",
 DlgCellVerAlignBottom	: "Снизу",
 DlgCellVerAlignBaseline	: "По базовой линии",
+DlgCellType		: "Тип ячейки",
+DlgCellTypeData		: "Данные",
+DlgCellTypeHeader	: "Заголовок",
 DlgCellRowSpan		: "Диапазон строк (span)",
 DlgCellCollSpan		: "Диапазон колонок (span)",
 DlgCellBackColor	: "Цвет фона",
@@ -519,8 +527,8 @@ DlgAboutVersion		: "Версия",
 DlgAboutInfo		: "Для большей информации, посетите",
 
 // Div Dialog
-DlgDivGeneralTab	: "General",	//MISSING
-DlgDivAdvancedTab	: "Advanced",	//MISSING
-DlgDivStyle		: "Style",	//MISSING
-DlgDivInlineStyle	: "Inline Style"	//MISSING
+DlgDivGeneralTab	: "Информация",
+DlgDivAdvancedTab	: "Расширенные настройки",
+DlgDivStyle		: "Стиль",
+DlgDivInlineStyle	: "Встроенные стили"
 };

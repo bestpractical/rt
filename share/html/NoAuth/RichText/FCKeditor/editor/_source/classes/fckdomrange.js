@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2008 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -469,13 +469,13 @@ FCKDomRange.prototype =
 		// Also note that the node that we use for "address base" would change during backtracking.
 		var addrStart = this._Range.startContainer ;
 		var addrEnd = this._Range.endContainer ;
-		while ( curStart && addrStart.nodeType == 3 )
+		while ( curStart && curStart.nodeType == 3 && addrStart.nodeType == 3 )
 		{
 			bookmark.Start[0] += curStart.length ;
 			addrStart = curStart ;
 			curStart = curStart.previousSibling ;
 		}
-		while ( curEnd && addrEnd.nodeType == 3 )
+		while ( curEnd && curEnd.nodeType == 3 && addrEnd.nodeType == 3 )
 		{
 			bookmark.End[0] += curEnd.length ;
 			addrEnd = curEnd ;

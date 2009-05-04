@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2008 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -311,7 +311,7 @@ FCKUnlinkCommand.prototype.GetState = function()
 	return state ;
 }
 
-FCKVisitLinkCommand = function()
+var FCKVisitLinkCommand = function()
 {
 	this.Name = 'VisitLink';
 }

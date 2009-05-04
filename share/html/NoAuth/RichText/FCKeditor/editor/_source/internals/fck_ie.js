@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2008 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -136,7 +136,7 @@ FCK.InitializeBehaviors = function( dontReturn )
 
 	this.EditorDocument.attachEvent("ondblclick", Doc_OnDblClick ) ;
 
-	this.EditorDocument.attachEvent("onbeforedeactivate", function(){ FCKSelection.Save( true ) ; } ) ;
+	this.EditorDocument.attachEvent("onbeforedeactivate", function(){ FCKSelection.Save() ; } ) ;
 
 	// Catch cursor selection changes.
 	this.EditorDocument.attachEvent("onselectionchange", Doc_OnSelectionChange ) ;

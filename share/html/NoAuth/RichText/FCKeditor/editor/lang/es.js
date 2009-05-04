@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2008 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -308,6 +308,11 @@ DlgTableCellSpace	: "Esp. e/celdas",
 DlgTableCellPad		: "Esp. interior",
 DlgTableCaption		: "Título",
 DlgTableSummary		: "Síntesis",
+DlgTableHeaders		: "Encabezados",
+DlgTableHeadersNone		: "Ninguno",
+DlgTableHeadersColumn	: "Primera columna",
+DlgTableHeadersRow		: "Primera fila",
+DlgTableHeadersBoth		: "Ambas",
 
 // Table Cell Dialog
 DlgCellTitle		: "Propiedades de Celda",
@@ -330,6 +335,9 @@ DlgCellVerAlignTop	: "Tope",
 DlgCellVerAlignMiddle	: "Medio",
 DlgCellVerAlignBottom	: "ie",
 DlgCellVerAlignBaseline	: "Línea de Base",
+DlgCellType		: "Tipo de celda",
+DlgCellTypeData		: "Datos",
+DlgCellTypeHeader	: "Encabezado",
 DlgCellRowSpan		: "Abarcar Filas",
 DlgCellCollSpan		: "Abarcar Columnas",
 DlgCellBackColor	: "Color de Fondo",

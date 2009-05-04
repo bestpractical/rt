@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2008 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -38,9 +38,19 @@ FCKFitWindow.prototype.Execute = function()
 	var eParent ;
 
 	// Save the current selection and scroll position.
-	var oRange = new FCKDomRange( FCK.EditorWindow ) ;
-	oRange.MoveToSelection() ;
-	var oEditorScrollPos = FCKTools.GetScrollPosition( FCK.EditorWindow ) ;
+	var oRange, oEditorScrollPos ;
+	if ( FCK.EditMode == FCK_EDITMODE_WYSIWYG )
+	{
+		oRange = new FCKDomRange( FCK.EditorWindow ) ;
+		oRange.MoveToSelection() ;
+		oEditorScrollPos = FCKTools.GetScrollPosition( FCK.EditorWindow ) ;
+	}
+	else
+	{
+		var eTextarea = FCK.EditingArea.Textarea ;
+		oRange = !FCKBrowserInfo.IsIE && [ eTextarea.selectionStart, eTextarea.selectionEnd ] ;
+		oEditorScrollPos = [ eTextarea.scrollLeft, eTextarea.scrollTop ] ;
+	}
 
 	// No original style properties known? Go fullscreen.
 	if ( !this.IsMaximized )
@@ -167,8 +177,21 @@ FCKFitWindow.prototype.Execute = function()
 	FCK.Focus() ;
 
 	// Restore the selection and scroll position of inside the document.
-	oRange.Select() ;
-	FCK.EditorWindow.scrollTo( oEditorScrollPos.X, oEditorScrollPos.Y ) ;
+	if ( FCK.EditMode == FCK_EDITMODE_WYSIWYG )
+	{
+		oRange.Select() ;
+		FCK.EditorWindow.scrollTo( oEditorScrollPos.X, oEditorScrollPos.Y ) ;
+	}
+	else
+	{
+		if ( !FCKBrowserInfo.IsIE )
+		{
+			eTextarea.selectionStart = oRange[0] ;
+			eTextarea.selectionEnd = oRange[1] ;
+		}
+		eTextarea.scrollLeft = oEditorScrollPos[0] ;
+		eTextarea.scrollTop = oEditorScrollPos[1] ;
+	}
 }
 
 FCKFitWindow.prototype.GetState = function()

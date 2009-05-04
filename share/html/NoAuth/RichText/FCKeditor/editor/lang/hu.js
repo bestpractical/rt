@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2008 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -308,6 +308,11 @@ DlgTableCellSpace	: "Cella térköz",
 DlgTableCellPad		: "Cella belső margó",
 DlgTableCaption		: "Felirat",
 DlgTableSummary		: "Leírás",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Cella tulajdonságai",
@@ -330,6 +335,9 @@ DlgCellVerAlignTop	: "Tetejére",
 DlgCellVerAlignMiddle	: "Középre",
 DlgCellVerAlignBottom	: "Aljára",
 DlgCellVerAlignBaseline	: "Egyvonalba",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Sorok egyesítése",
 DlgCellCollSpan		: "Oszlopok egyesítése",
 DlgCellBackColor	: "Háttérszín",

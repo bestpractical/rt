@@ -1,6 +1,6 @@
 /*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2008 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -40,9 +40,9 @@ function InitializeAPI()
 		// objects that aren't really FCKeditor instances.
 		var sScript =
 			'window.FCKeditorAPI = {' +
-				'Version : "2.6.3",' +
-				'VersionBuild : "19836",' +
-				'Instances : new Object(),' +
+				'Version : "2.6.4",' +
+				'VersionBuild : "21629",' +
+				'Instances : window.FCKeditorAPI && window.FCKeditorAPI.Instances || {},' +
 
 				'GetInstance : function( name )' +
 				'{' +
@@ -60,7 +60,7 @@ function InitializeAPI()
 					'this._FCKOriginalSubmit() ;' +
 				'},' +
 
-				'_FunctionQueue	: {' +
+				'_FunctionQueue	: window.FCKeditorAPI && window.FCKeditorAPI._FunctionQueue || {' +
 					'Functions : new Array(),' +
 					'IsRunning : false,' +
 
@@ -117,8 +117,9 @@ function InitializeAPI()
 			}
 			else if ( FCKBrowserInfo.IsSafari )
 			{
-				// oParentWindow.eval in Safari and Gran Paradiso executes in the calling window
-				// environment, instead of the parent one. The following should make it work.
+				// oParentWindow.eval in Safari executes in the calling window
+				// environment, instead of the parent one. The following should
+				// make it work.
 				var oParentDocument = oParentWindow.document ;
 				var eScript = oParentDocument.createElement('script') ;
 				eScript.appendChild( oParentDocument.createTextNode( sScript ) ) ;

@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2008 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -308,6 +308,11 @@ DlgTableCellSpace	: "間距",
 DlgTableCellPad		: "內距",
 DlgTableCaption		: "標題",
 DlgTableSummary		: "摘要",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "儲存格屬性",
@@ -330,6 +335,9 @@ DlgCellVerAlignTop	: "靠上對齊",
 DlgCellVerAlignMiddle	: "置中",
 DlgCellVerAlignBottom	: "靠下對齊",
 DlgCellVerAlignBaseline	: "基準線",
+DlgCellType		: "儲存格類型",
+DlgCellTypeData		: "資料",
+DlgCellTypeHeader	: "標題",
 DlgCellRowSpan		: "合併列數",
 DlgCellCollSpan		: "合併欄数",
 DlgCellBackColor	: "背景顏色",

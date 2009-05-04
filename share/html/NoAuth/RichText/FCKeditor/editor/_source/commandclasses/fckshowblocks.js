@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2008 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -56,9 +56,12 @@ FCKShowBlockCommand.prototype.Execute = function()
 	else
 	{
 		var focus = FCK.EditorWindow.getSelection().focusNode ;
-		if ( focus.nodeType != 1 )
-			focus = focus.parentNode ;
-		FCKDomTools.ScrollIntoView( focus, false ) ;
+		if ( focus )
+		{
+			if ( focus.nodeType != 1 )
+				focus = focus.parentNode ;
+			FCKDomTools.ScrollIntoView( focus, false ) ;
+		}
 	}
 
 	FCK.Events.FireEvent( 'OnSelectionChange' ) ;

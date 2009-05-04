@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2008 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -308,6 +308,11 @@ DlgTableCellSpace	: "Spaţiu între celule",
 DlgTableCellPad		: "Spaţiu în cadrul celulei",
 DlgTableCaption		: "Titlu (Caption)",
 DlgTableSummary		: "Rezumat",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Proprietăţile celulei",
@@ -330,6 +335,9 @@ DlgCellVerAlignTop	: "Sus",
 DlgCellVerAlignMiddle	: "Mijloc",
 DlgCellVerAlignBottom	: "Jos",
 DlgCellVerAlignBaseline	: "Linia de jos (Baseline)",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Lungimea în linii (Span)",
 DlgCellCollSpan		: "Lungimea în coloane (Span)",
 DlgCellBackColor	: "Culoarea fundalului",

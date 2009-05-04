@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2008 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -194,7 +194,7 @@ oParser.ParseEMailUri = function( sUrl )
 		}
 
 		// Try to match the email against the encode protection.
-		var aMatch = aLinkInfo[2].match( /^location\.href='mailto:'\+(String\.fromCharCode\([\d,]+\))\+'(.*)'$/ ) ;
+		var aMatch = aLinkInfo[2].match( /^(?:void\()?location\.href='mailto:'\+(String\.fromCharCode\([\d,]+\))\+'(.*)'\)?$/ ) ;
 		if ( aMatch )
 		{
 			// The link is encoded
@@ -253,7 +253,7 @@ oParser.CreateEMailUri = function( address, subject, body )
 			for ( var i = 0 ; i < address.length ; i++ )
 				aAddressCode.push( address.charCodeAt( i ) ) ;
 
-			return 'javascript:location.href=\'mailto:\'+String.fromCharCode(' + aAddressCode.join( ',' ) + ')+\'?' + aParams.join( '&' ) + '\'' ;
+			return 'javascript:void(location.href=\'mailto:\'+String.fromCharCode(' + aAddressCode.join( ',' ) + ')+\'?' + aParams.join( '&' ) + '\')' ;
 	}
 
 	// EMailProtection 'none'

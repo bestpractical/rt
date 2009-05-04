@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" >
 <!--
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2008 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -203,12 +203,43 @@ function CreateDiv()
 	var iterator = new FCKDomRangeIterator( range ) ;
 	var block ;
 
-	iterator.EnforceRealBlocks = true ;
 	var paragraphs = [] ;
+	while ( ( block = iterator.GetNextParagraph() ) )
+		paragraphs.push( block ) ;
+
+	// Make sure all paragraphs have the same parent.
+	var commonParent = paragraphs[0].parentNode ;
+	var tmp = [] ;
+	for ( var i = 0 ; i < paragraphs.length ; i++ )
+	{
+		block = paragraphs[i] ;
+		commonParent = FCKDomTools.GetCommonParents( block.parentNode, commonParent ).pop() ;
+	}
+
+	// The common parent must not be the following tags: table, tbody, tr, ol, ul.
+	while ( commonParent.nodeName.IEquals( 'table', 'tbody', 'tr', 'ol', 'ul' ) )
+		commonParent = commonParent.parentNode ;
+
+	// Reconstruct the block list to be processed such that all resulting blocks
+	// satisfy parentNode == commonParent.
+	var lastBlock = null ;
+	while ( paragraphs.length > 0 )
+	{
+		block = paragraphs.shift() ;
+		while ( block.parentNode != commonParent )
+			block = block.parentNode ;
+		if ( block != lastBlock )
+			tmp.push( block ) ;
+		lastBlock = block ;
+	}
+	paragraphs = tmp ;
+
+	// Split the paragraphs into groups depending on their BlockLimit element.
 	var groups = [] ;
 	var lastBlockLimit = null ;
-	while ( ( block = iterator.GetNextParagraph() ) )
+	for ( var i = 0 ; i < paragraphs.length ; i++ )
 	{
+		block = paragraphs[i] ;
 		var elementPath = new FCKElementPath( block ) ;
 		if ( elementPath.BlockLimit != lastBlockLimit )
 		{
@@ -218,6 +249,7 @@ function CreateDiv()
 		groups[groups.length - 1].push( block ) ;
 	}
 
+	// Create a DIV container for each group.
 	for ( var i = 0 ; i < groups.length ; i++ )
 	{
 		var divNode = FCK.EditorDocument.createElement( 'div' ) ;

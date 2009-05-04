@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2008 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -308,6 +308,11 @@ DlgTableCellSpace	: "સેલ અંતર",
 DlgTableCellPad		: "સેલ પૅડિંગ",
 DlgTableCaption		: "મથાળું/કૅપ્શન ",
 DlgTableSummary		: "ટૂંકો એહેવાલ",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "પંક્તિના ખાનાના ગુણ",
@@ -330,6 +335,9 @@ DlgCellVerAlignTop	: "ઉપર",
 DlgCellVerAlignMiddle	: "મધ્ય સેન્ટર",
 DlgCellVerAlignBottom	: "નીચે",
 DlgCellVerAlignBaseline	: "મૂળ રેખા",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "પંક્તિ સ્પાન",
 DlgCellCollSpan		: "કૉલમ/ઊભી કટાર સ્પાન",
 DlgCellBackColor	: "બૅકગ્રાઉન્ડ રંગ",

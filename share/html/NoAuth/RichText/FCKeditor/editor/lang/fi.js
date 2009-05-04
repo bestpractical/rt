@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2008 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -308,6 +308,11 @@ DlgTableCellSpace	: "Solujen väli",
 DlgTableCellPad		: "Solujen sisennys",
 DlgTableCaption		: "Otsikko",
 DlgTableSummary		: "Yhteenveto",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Solun ominaisuudet",
@@ -330,6 +335,9 @@ DlgCellVerAlignTop	: "Ylös",
 DlgCellVerAlignMiddle	: "Keskelle",
 DlgCellVerAlignBottom	: "Alas",
 DlgCellVerAlignBaseline	: "Tekstin alas",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Rivin jatkuvuus",
 DlgCellCollSpan		: "Sarakkeen jatkuvuus",
 DlgCellBackColor	: "Taustaväri",

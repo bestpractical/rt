@@ -1,6 +1,6 @@
 ﻿/*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
- * Copyright (C) 2003-2008 Frederico Caldeira Knabben
+ * Copyright (C) 2003-2009 Frederico Caldeira Knabben
  *
  * == BEGIN LICENSE ==
  *
@@ -308,6 +308,11 @@ DlgTableCellSpace	: "Khoảng cách Ô",
 DlgTableCellPad		: "Đệm Ô",
 DlgTableCaption		: "Đầu đề",
 DlgTableSummary		: "Tóm lược",
+DlgTableHeaders		: "Headers",	//MISSING
+DlgTableHeadersNone		: "None",	//MISSING
+DlgTableHeadersColumn	: "First column",	//MISSING
+DlgTableHeadersRow		: "First Row",	//MISSING
+DlgTableHeadersBoth		: "Both",	//MISSING
 
 // Table Cell Dialog
 DlgCellTitle		: "Thuộc tính Ô",
@@ -330,6 +335,9 @@ DlgCellVerAlignTop	: "Trên",
 DlgCellVerAlignMiddle	: "Giữa",
 DlgCellVerAlignBottom	: "Dưới",
 DlgCellVerAlignBaseline	: "Đường cơ sở",
+DlgCellType		: "Cell Type",	//MISSING
+DlgCellTypeData		: "Data",	//MISSING
+DlgCellTypeHeader	: "Header",	//MISSING
 DlgCellRowSpan		: "Nối Hàng",
 DlgCellCollSpan		: "Nối Cột",
 DlgCellBackColor	: "Màu nền",
