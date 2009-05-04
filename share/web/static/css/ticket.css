@@ -32,7 +32,7 @@ div#ticket-history {
  white-space: nowrap;
 }
 
-.ticket-transaction .metadata  td.type {
+.ticket-transaction .metadata  .type {
  text-align: center;
  position: absolute;
  margin: 0.25em;
@@ -45,23 +45,23 @@ div#ticket-history {
  -webkit-border-bottom-right-radius: 0.25em;
 }
 
-div#ticket-history td.type a {
+div#ticket-history .type a {
  color: #fff;
 }
 
 
-div#ticket-history td.date {
+div#ticket-history .date {
  padding-left: 2em;
  width: 10em;
 }
 
 
-div#ticket-history td.description {
+div#ticket-history .description {
  padding-left: 1em;
  font-weight: bold;
 }
 
-div#ticket-history td.content {
+div#ticket-history .content {
  position: relative;
  padding-right: 1em;
  font-size: 1.1em;
