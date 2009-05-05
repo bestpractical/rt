@@ -59,7 +59,7 @@ if (RT->install_mode) {
 }
 else {
     # redirect to login page if not in install mode
-    RT::Interface::Web::redirect(Jifty->config->framework('Web')->{BaseURL} . ':' . Jifty->config->framework('Web')->{Port} . '/')
+    RT::Interface::Web::redirect(Jifty->web->url)
 }
 </%init>
 

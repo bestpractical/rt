@@ -151,7 +151,7 @@ if (!$create && !$tried_create && $id && $ARGS{'delete'}) {
     $ok || abort(_("Couldn't delete dashboard %1: %2", $id, $msg));
 
     # put the user back into a useful place with a message
-    RT::Interface::Web::redirect(Jifty->config->framework('Web')->{BaseURL} . ':' . Jifty->config->framework('Web')->{Port} . '/'."Dashboards/index.html?deleted=$id");
+    RT::Interface::Web::redirect(Jifty->web->url."Dashboards/index.html?deleted=$id");
 
 }
 </%INIT>

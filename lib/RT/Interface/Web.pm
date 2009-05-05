@@ -127,7 +127,7 @@ This routine tells the current user's browser to redirect to URL.
 sub redirect {
     my $redir_to   = shift;
     my $uri        = URI->new($redir_to);
-    my $server_uri = URI->new( Jifty->config->framework('Web')->{BaseURL} . ':' . Jifty->config->framework('Web')->{Port} . '/' );
+    my $server_uri = URI->new( Jifty->web->url );
 
     # If the user is coming in via a non-canonical
     # hostname, don't redirect them to the canonical host,

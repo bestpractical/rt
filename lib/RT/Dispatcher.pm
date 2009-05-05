@@ -137,12 +137,12 @@ before qr/(.*)/ => run {
 
         # if the user is trying to access a ticket, redirect them
         if ( $path =~ '^(/+)Ticket/Display.html' && get('id') ) {
-            Jifty->web->redirect( Jifty->config->framework('Web')->{BaseURL} . ':' . Jifty->config->framework('Web')->{Port} . '/' . "SelfService/Display.html?id=" . get('id') );
+            Jifty->web->redirect( Jifty->web->url . "SelfService/Display.html?id=" . get('id') );
         }
 
         # otherwise, drop the user at the SelfService default page
         elsif ( $path !~ '^(/+)SelfService/' ) {
-            Jifty->web->redirect( Jifty->config->framework('Web')->{BaseURL} . ':' . Jifty->config->framework('Web')->{Port} . '/' . "SelfService/" );
+            Jifty->web->redirect( Jifty->web->url . "SelfService/" );
         }
     }
 

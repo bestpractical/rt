@@ -79,7 +79,7 @@ if ($saved_search) {
         # XXX: dispatch to different handler here
         $query_display_component
             = '/Search/Elements/' . $SearchArg->{search_type};
-        $query_link_url = Jifty->config->framework('Web')->{BaseURL} . ':' . Jifty->config->framework('Web')->{Port} . '/' .
+        $query_link_url = Jifty->web->url .
             "/Search/$SearchArg->{search_type}.html";
     } else {
         $customize = RT->config->get('web_path') . '/Search/Build.html?'

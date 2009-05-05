@@ -68,7 +68,7 @@ $r->content_type('application/rss+xml');
         my $rss = new XML::RSS (version => '1.0');
         $rss->channel(
           title        => RT->config->get('rtname').": Search" . $ARGS{'Query'},
-          link         => Jifty->config->framework('Web')->{BaseURL} . ':' . Jifty->config->framework('Web')->{Port} . '/',
+          link         => Jifty->web->url,
           description  => "",
           dc => {
           },
@@ -86,7 +86,7 @@ $r->content_type('application/rss+xml');
         $creator_str =~ s/[\r\n]//g;
         $rss->add_item(
           title       =>  $Ticket->subject || _('No Subject'),
-          link        => Jifty->config->framework('Web')->{BaseURL} . ':' . Jifty->config->framework('Web')->{Port} . '/'."Ticket/Display.html?id=".$Ticket->id,
+          link        => Jifty->web->url."Ticket/Display.html?id=".$Ticket->id,
           description => $Ticket->transactions->first->content,
           dc => {
             creator  => $creator_str,

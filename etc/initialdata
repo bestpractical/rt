@@ -437,7 +437,7 @@ You sent us a message that we cannot handle due to corrupted GnuPG signature or 
 
 Greetings,
 
-Someone at {$ENV{'REMOTE_ADDR'}} requested a password reset for you on {Jifty->config->framework('Web')->{BaseURL} . ':' . Jifty->config->framework('Web')->{Port} . '/'}
+Someone at {$ENV{'REMOTE_ADDR'}} requested a password reset for you on {Jifty->web->url}
 
 Your new password is:
   {$Newpassword}

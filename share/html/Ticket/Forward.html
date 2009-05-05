@@ -100,7 +100,7 @@ if ( $forward || $forward_and_return ) {
     if ( $forward_and_return ) {
         my $key = Digest::MD5::md5_hex(rand(1024));
         Jifty->web->session->set( "actions_$key" => \@results );
-        RT::Interface::Web::redirect( Jifty->config->framework('Web')->{BaseURL} . ':' . Jifty->config->framework('Web')->{Port} . '/' ."Ticket/Display.html?id=". $id."&results=".$key);
+        RT::Interface::Web::redirect( Jifty->web->url ."Ticket/Display.html?id=". $id."&results=".$key);
     }
 }
 
