@@ -62,7 +62,6 @@ __PACKAGE__->use_mason_wrapper;
 
 template login_widget => sub {
 
-    outs_raw('</div>'); # End of div#quickbar from /Elements/Header
     my ( $action, $next ) = get( 'action', 'next' );
     $action ||= new_action( class => 'Login' );
     $next ||= Jifty::Continuation->new(
