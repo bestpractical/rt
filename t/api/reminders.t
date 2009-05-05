@@ -45,7 +45,6 @@ my $reminders = $t->reminders->collection;
 ok($reminders, 'Loading reminders for this ticket');
 my $found = 0;
 while ( my $reminder = $reminders->next ) {
-    warn $reminder->id,"\n";
     next unless $found == 0;
     $found = 1 if ( $reminder->subject =~ m/TestReminder/ );
 }
