@@ -533,6 +533,4 @@ diag q{regression test for #5248 from rt3.fsck.com} if $ENV{TEST_VERBOSE};
 
 
 
-# Don't taint the environment
-$everyone->principal->revoke_right(right =>'SuperUser');
 1;
