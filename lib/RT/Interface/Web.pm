@@ -127,13 +127,13 @@ This routine tells the current user's browser to redirect to URL.
 sub redirect {
     my $redir_to   = shift;
     my $uri        = URI->new($redir_to);
-    my $server_uri = URI->new( RT->config->get('web_url') );
+    my $server_uri = URI->new( Jifty->config->framework('Web')->{BaseURL} . ':' . Jifty->config->framework('Web')->{Port} . '/' );
 
     # If the user is coming in via a non-canonical
     # hostname, don't redirect them to the canonical host,
     # it will just upset them (and invalidate their credentials)
     # don't do this if $RT::CanoniaclRedirectURLs is true
-    if (   !RT->config->get('canonicalize_redirect_ur_ls')
+    if (   !RT->config->get('canonicalize_redirect_urls')
         && $uri->host eq $server_uri->host
         && $uri->port eq $server_uri->port )
     {

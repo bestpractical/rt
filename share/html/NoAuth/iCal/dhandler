@@ -94,7 +94,7 @@ while (my $t = $tickets->next) {
     my $start = Data::ICal::Entry::Event->new;
     my $end   = Data::ICal::Entry::Event->new;
     $_->add_properties(
-        url       => RT->config->get('web_url') . "?q=".$t->id,
+        url       => Jifty->config->framework('Web')->{BaseURL} . ':' . Jifty->config->framework('Web')->{Port} . '/' . "?q=".$t->id,
         organizer => $t->owner_obj->name,
         dtstamp   => $now->iCal,
         created   => $t->created->iCal,

@@ -245,7 +245,7 @@ SUMMARY
 
     $contents = HTML::RewriteAttributes::Links->rewrite(
         $contents,
-        RT->config->get('web_url') . '/Dashboards/Render.html',
+        Jifty->config->framework('Web')->{BaseURL} . ':' . Jifty->config->framework('Web')->{Port} . '/' . '/Dashboards/Render.html',
     );
 
     email_dashboard($currentuser, $email, $dashboard, $subscription, $contents);

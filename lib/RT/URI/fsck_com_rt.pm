@@ -200,7 +200,7 @@ sub href {
         && $self->object
         && ( $self->object_type eq 'ticket' ) )
     {
-        return ( RT->config->get('web_url') . "Ticket/Display.html?id=" . $self->object->id );
+        return ( Jifty->config->framework('Web')->{BaseURL} . ':' . Jifty->config->framework('Web')->{Port} . '/' . "Ticket/Display.html?id=" . $self->object->id );
     } else {
         return ( $self->uri );
     }

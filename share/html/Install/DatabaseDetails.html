@@ -95,12 +95,12 @@ my (@results, @errors);
 #            store => $RT::Installer->{InstallConfig}, 
 #            meta => $RT::Installer->{Meta}, keep_undef => 1 ); 
 #    if ( $back ) {
-#        RT::Interface::Web::redirect(RT->config->get('web_url') .
+#        RT::Interface::Web::redirect(Jifty->config->framework('Web')->{BaseURL} . ':' . Jifty->config->framework('Web')->{Port} . '/' .
 #'Install/DatabaseType.html');
 #    }
 #    
 #    if ( $ARGS{next} ) {
-#        RT::Interface::Web::redirect(RT->config->get('web_url') .
+#        RT::Interface::Web::redirect(Jifty->config->framework('Web')->{BaseURL} . ':' . Jifty->config->framework('Web')->{Port} . '/' .
 #'Install/Basics.html');
 #    }
 #    my ( $status, $msg ) = RT::Installer->save_config;

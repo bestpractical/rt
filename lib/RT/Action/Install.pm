@@ -130,12 +130,12 @@ use Jifty::Action schema {
         hints is
 "Don't include http://, just something like 'localhost', 'rt.example.com'"
             ,                                                        #loc
-        default is defer { RT->config->get( 'web_domain' ) };
+        default is defer { Jifty->config->framework('Web')->{BaseURL} };
     param web_port =>
         label is 'Web port',                               #loc
         hints is
               'which port your web server will listen to, e.g. 8080',    #loc
-        default is defer { RT->config->get( 'web_port' ) };
+        default is defer { Jifty->config->framework('Web')->{Port} };
     param time_zone =>
         label is 'Time Zone',                                   #loc
         render as 'Select',
