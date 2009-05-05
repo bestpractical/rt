@@ -2201,7 +2201,8 @@ sub DESTROY {
     return unless @$batch;
 
     my $ticket = RT::Model::Ticket->new( current_user => RT::CurrentUser->superuser );
-    $ticket->load( $self->id );
+    my ($ok, $msg) = $ticket->load( $self->id );
+    warn "Unable to load ticket #" . $self->id . " for batch processing: " . $msg if !$ok;
 
     # Entry point of the rule system
     my $rules = RT::Ruleset->find_all_rules(
