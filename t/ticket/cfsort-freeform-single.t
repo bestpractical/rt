@@ -188,5 +188,5 @@ diag "create another CF\n" if $ENV{TEST_VERBOSE};
 );
 run_tests();
 
-
-
+# Global destruction issues
+@tickets = ();

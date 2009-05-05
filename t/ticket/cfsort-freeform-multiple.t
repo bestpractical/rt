@@ -136,3 +136,5 @@ run_tests();
 );
 run_tests();
 
+# Global destruction issues
+@tickets = ();

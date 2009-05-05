@@ -131,3 +131,5 @@ my $pid = $tickets[1]->id;
 }
 run_tests();
 
+# Global destruction issues
+@tickets = ();
