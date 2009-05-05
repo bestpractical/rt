@@ -10,7 +10,6 @@ BEGIN {
 
 plan tests => 32;
 
-use RT;
 use RT::Test;
 use RT::Test::Email;
 
