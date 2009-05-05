@@ -579,28 +579,6 @@ In most cases, you should leave C<web_path> set to '' (an empty value).
 
 default: C<"">
 
-=item C<web_port>
-
-If we're running as a superuser, run on port 80
-Otherwise, pick a high port for this user.
-
-default: C<80>
-
-=item C<web_domain>
-
-you know what domain name is, right? ;)
-
-default: C<'localhost' >
-
-=item C<web_base_url>, C<web_url>
-
-This is the Scheme, server and port for constructing urls to webrt
-C<web_base_url> doesn't need a trailing /
-
-default: C<'http://{{web_domain}}:{{web_port}}'>
-
-default: C<'{{web_base_url}}{{web_path}}/'>
-
 =item C<web_images_url>
 
 C<web_images_url> points to the base URL where RT can find its images.

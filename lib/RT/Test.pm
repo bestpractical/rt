@@ -120,8 +120,6 @@ sub _setup_config {
 
     require RT;
     my $port  = 999;
-    RT->config->set( web_port => $port );
-    RT->config->set( web_base_url => "http://localhost:$port" );
     RT->config->set( log_to_screen => 'debug' );
     RT->config->set( log_stack_traces => 'warning' );
     RT->config->set( mail_command => 'testfile' );
