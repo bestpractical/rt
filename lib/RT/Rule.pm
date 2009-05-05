@@ -62,9 +62,9 @@ sub _init {
 sub prepare {
     my $self = shift;
 
-    # When a ticket's DESTROY is called, its id can be undef
+    # When a ticket is deleted with shredder, its id can be undef
     if (!defined($self->ticket_obj->id)) {
-        Jifty->log->debug("Prepare aborted because the ticket was garbage collected.");
+        Jifty->log->debug("Prepare aborted because the ticket was not available.");
         return (0);
     }
 
