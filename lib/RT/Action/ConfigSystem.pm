@@ -5,14 +5,10 @@ package RT::Action::ConfigSystem;
 use base qw/RT::Action Jifty::Action/;
 use Scalar::Defer; 
 
-# TODO XXX
-# section support
-# doc support
-
 sub arguments {
     my $self = shift;
     return $self->{__cached_arguments} if ( $self->{__cached_arguments} );
-    my $args = { };
+    my $args = {};
 
     my $configs = RT::Model::ConfigCollection->new;
     $configs->unlimit;
@@ -119,7 +115,6 @@ sub take_action {
         }
     }
 
-    Jifty->web->tangent( url => Jifty::Plugin::Config->restart_url . '?url=/' );
     return 1;
 }
 
