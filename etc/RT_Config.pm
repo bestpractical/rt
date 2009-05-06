@@ -678,21 +678,6 @@ From lowest to highest priority, the levels are:
 
 set($LogToScreen    , 'info');
 
-=item C<$LogToFile>
-
-Logging to a standalone file is also possible, but note that the
-file should needs to both exist and be writable by all direct users
-of the RT API.  This generally include the web server, whoever
-rt-crontool runs as.  Note that as rt-mailgate and the RT CLI go
-through the webserver, so their users do not need to have write
-permissions to this file. If you expect to have multiple users of
-the direct API, Best Practical recommends using syslog instead of
-direct file logging.
-
-=cut
-
-set($LogToFile      , undef);
-
 =back
 
 =head1 Web Interface Configuration

@@ -83,9 +83,6 @@ sub rewrite_rtconfig {
     # generic logging
     config_set( '$LogToScreen',    'error' );
     config_set( '$LogStackTraces', 'crit' );
-
-    # logging to standalone file
-    config_set( '$LogToFile', 'debug' );
 }
 
 =head3 config_set
