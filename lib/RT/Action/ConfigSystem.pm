@@ -119,8 +119,7 @@ sub take_action {
         }
     }
 
-    Jifty->web->tangent( url =>
-            '/__jifty/config/restart.html?url=/' );
+    Jifty->web->tangent( url => Jifty::Plugin::Config->restart_url . '?url=/' );
     return 1;
 }
 
