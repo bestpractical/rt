@@ -93,8 +93,12 @@
          $class->{li} = join ' ', @li;
 
          my $href = $page_tabs->{$tab}->{'path'} || "";
-         $href = RT->config->get('web_path') .'/'. $href
-            unless $path =~ /^\w+:/;
+         unless ( $path =~ m!^\w+:! ) {
+             $href =
+                 RT->config->get('web_path')
+               . ( $href =~ m{^/} ? '' : '/' )
+               . $href;
+         }
          my $target = $page_tabs->{$tab}->{'target'} || '';
          $target = $m->interp->apply_escapes( $target, 'h' );
 </%perl>
