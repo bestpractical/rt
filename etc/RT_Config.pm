@@ -639,7 +639,7 @@ NOTE that options with '-' character MUST be quoted.
 =cut
 
 set(%GnuPGOptions,
-    homedir => '/home/jesse/svk/3.999-DANGEROUS/var/data/gpg',
+    homedir => $RT::VarPath.'/data/gpg',
 
 # URL of a keyserver
 #    keyserver => 'hkp://subkeys.pgp.net',
@@ -693,7 +693,7 @@ direct file logging.
 =cut
 
 set($LogToFile      , undef);
-set($LogDir, '/home/jesse/svk/3.999-DANGEROUS/var/log');
+set($LogDir, $RT::VarPath.'/log');
 set($LogToFileNamed , "rt.log");    #log to rt.log
 
 =item C<@LogToSyslogConf>
