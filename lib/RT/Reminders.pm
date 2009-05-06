@@ -91,6 +91,8 @@ sub Collection {
      my $query = 'Type = "reminder" AND RefersTo = "'.$self->Ticket.'"';
    
     $col->FromSQL($query);
+
+    $col->OrderBy( FIELD => 'Due' );
     
     return($col);
 }
