@@ -1,6 +1,6 @@
 package RT::Config;
 
-=head1 Base Configuration
+=head1 Base
 
 =over 4
 
@@ -61,7 +61,7 @@ default: C<'America/New_York'>
 
 =back
 
-=head1 Database Configuration
+=head1 Database
 
 =over 4
 
@@ -96,7 +96,7 @@ default: C<< {
 
 =back
 
-=head1 Incoming Mail Gateway Configuration
+=head1 Incoming Mail Gateway
 
 =over 4
 
@@ -231,7 +231,7 @@ default: C<'\\[.+? #\\d+\\]' >
 
 =back
 
-=head1 Outgoing Mail Configuration
+=head1 Outgoing Mail
 
 =over 4
 
@@ -249,7 +249,7 @@ default: C<'sendmailpipe'>
 
 =back
 
-=head1 Sendmail Configuration
+=head1 Sendmail
 
 These options only take effect if C<mail_command> is 'sendmail' or
 'sendmailpipe'
@@ -285,7 +285,7 @@ default: C<"/usr/sbin/sendmail">
 
 =back
 
-=head1 SMTP Configuration
+=head1 SMTP
 
 These options only take effect if C<mail_command> is 'smtp'
 
@@ -312,7 +312,7 @@ default: C<0>
 
 =back
 
-=head1 Other Mailer Configuration
+=head1 Other Mailer
 
 =over 4
 
@@ -436,7 +436,7 @@ default: C<'%s Dashboard: %s'>
 
 =back
 
-=head1 GnuPG Configuration
+=head1 GnuPG
 
 A full description of the (somewhat extensive) GnuPG integration can be found 
 by running the command `perldoc L<RT::Crypt::GnuPG>`  (or `perldoc
@@ -478,7 +478,7 @@ default: C<< { } >>
 
 =back
 
-=head1 Logging Configuration
+=head1 Logging
 
 The default is to log anything except debugging
 information to syslog.  Check the L<Log::Dispatch> POD for
@@ -536,7 +536,7 @@ default: C<undef>
 
 =back
 
-=head1 Web Interface Configuration
+=head1 Web Interface
 
 =over 4
 
@@ -907,7 +907,7 @@ default: C<'General'>
 
 =back
 
-=head1 L<Net::Server> (rt-server) Configuration
+=head1 rt-server
 
 =over 4
 
@@ -950,7 +950,7 @@ default: C<[]>
 
 =back
 
-=head1 UTF-8 Configuration
+=head1 UTF-8
 
 =over 4
 
@@ -979,7 +979,7 @@ default: C<'utf-8'>
 
 =back
 
-=head1 Date Handling Configuration
+=head1 Date Handling
 
 =over 4
 
@@ -1021,7 +1021,7 @@ ambiguous_day_in_future => C<0>
 
 =back
 
-=head1 Miscellaneous Configuration
+=head1 Miscellaneous
 
 =over 4
 
