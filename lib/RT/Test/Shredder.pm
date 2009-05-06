@@ -86,8 +86,6 @@ sub rewrite_rtconfig {
 
     # logging to standalone file
     config_set( '$LogToFile', 'debug' );
-    my $fname = File::Spec->catfile( create_tmpdir(), test_name() . ".log" );
-    config_set( '$LogToFilenamed', $fname );
 }
 
 =head3 config_set

@@ -678,7 +678,7 @@ From lowest to highest priority, the levels are:
 
 set($LogToScreen    , 'info');
 
-=item C<$LogToFile>, C<$LogToFileNamed>
+=item C<$LogToFile>
 
 Logging to a standalone file is also possible, but note that the
 file should needs to both exist and be writable by all direct users
@@ -692,7 +692,6 @@ direct file logging.
 =cut
 
 set($LogToFile      , undef);
-set($LogToFileNamed , "rt.log");    #log to rt.log
 
 =back
 
