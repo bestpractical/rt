@@ -694,16 +694,6 @@ direct file logging.
 set($LogToFile      , undef);
 set($LogToFileNamed , "rt.log");    #log to rt.log
 
-=item C<$StatementLog>,
-
-RT has rudimentary SQL statement logging support if you have
-DBIx-SearchBuilder 1.31_1 or higher; simply set C<$StatementLog> to be
-the level that you wish SQL statements to be logged at.
-
-=cut
-
-set($StatementLog, undef);
-
 =back
 
 =head1 Web Interface Configuration
