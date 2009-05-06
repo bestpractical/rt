@@ -668,7 +668,7 @@ log message.
 
 =over 4
 
-=item C<$LogToSyslog>, C<$LogToScreen>
+=item C<$LogToScreen>
 
 The minimum level error that will be logged to the specific device.
 From lowest to highest priority, the levels are:
@@ -676,7 +676,6 @@ From lowest to highest priority, the levels are:
 
 =cut
 
-set($LogToSyslog    , 'info');
 set($LogToScreen    , 'info');
 
 =item C<$LogToFile>, C<$LogToFileNamed>
@@ -694,18 +693,6 @@ direct file logging.
 
 set($LogToFile      , undef);
 set($LogToFileNamed , "rt.log");    #log to rt.log
-
-=item C<@LogToSyslogConf>
-
-On Solaris or UnixWare, set to ( socket => 'inet' ).  Options here
-override any other options RT passes to L<Log::Dispatch::Syslog>.
-Other interesting flags include facility and logopt.  (See the
-L<Log::Dispatch::Syslog> documentation for more information.)  (Maybe
-ident too, if you have multiple RT installations.)
-
-=cut
-
-set(@LogToSyslogConf, ());
 
 =item C<$StatementLog>,
 

@@ -81,7 +81,6 @@ sub rewrite_rtconfig {
     config_set( '$Databasename', db_name() );
 
     # generic logging
-    config_set( '$LogToSyslog',    undef );
     config_set( '$LogToScreen',    'error' );
     config_set( '$LogStackTraces', 'crit' );
 
