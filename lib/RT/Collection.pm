@@ -103,17 +103,17 @@ If NULL is set, also select rows without the named Attribute.
 
 =cut
 
-my %Negate = qw(
-    =		!=
-    !=		=
-    >		<=
-    <		>=
-    >=		<
-    <=		>
-    LIKE	NOT LIKE
-    NOT LIKE	LIKE
-    IS		IS NOT
-    IS NOT	IS
+my %Negate = (
+    '='        => '!=',
+    '!='       => '=',
+    '>'        => '<=',
+    '<'        => '>=',
+    '>='       => '<',
+    '<='       => '>',
+    'LIKE'     => 'NOT LIKE',
+    'NOT LIKE' => 'LIKE',
+    'IS'       => 'IS NOT',
+    'IS NOT'   => 'IS',
 );
 
 sub limit_attribute {
