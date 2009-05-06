@@ -62,7 +62,9 @@
 % }
 <% Jifty->web->form->submit( label => _('Save') ) %>
 <% Jifty->web->form->submit( label => _('Save and Restart RT'),
-            submit => [ $config, $restart ],
+            submit => [ $config,
+            { action => $restart, arguments => { url => '/' } },
+            ],
         ) %>
 <% Jifty->web->form->end %>
 % } else {
