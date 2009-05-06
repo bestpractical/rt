@@ -654,32 +654,6 @@ set(%GnuPGOptions,
 
 =back
 
-=head1 Logging Configuration
-
-The default is to log anything except debugging
-information to syslog.  Check the L<Log::Dispatch> POD for
-information about how to get things by syslog, mail or anything
-else, get debugging info in the log, etc.
-
-It might generally make sense to send error and higher by email to
-some administrator.  If you do this, be careful that this email
-isn't sent to this RT instance.  Mail loops will generate a critical
-log message.
-
-=over 4
-
-=item C<$LogToScreen>
-
-The minimum level error that will be logged to the specific device.
-From lowest to highest priority, the levels are:
- debug info notice warning error critical alert emergency
-
-=cut
-
-set($LogToScreen    , 'info');
-
-=back
-
 =head1 Web Interface Configuration
 
 =over 4
