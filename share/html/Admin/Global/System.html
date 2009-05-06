@@ -66,7 +66,7 @@
         ) %>
 <% Jifty->web->form->end %>
 % } else {
-    select a section
+<& /Elements/ListMenu, items => $subtabs &>
 %}
 </&>
 <%init>
@@ -84,7 +84,7 @@ my $sort_order = 'A'; # sort order begins with 'A'
 for my $section ( sort keys %$args ) {
     $subtabs->{ $sort_order++ } = {
         title => _($section),
-        path  => "Admin/Global/System.html?section=$section"
+        path  => "/Admin/Global/System.html?section=$section"
     };
 }
 </%init>
