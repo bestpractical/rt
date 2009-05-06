@@ -125,7 +125,6 @@ sub _setup_config {
     print $config qq{
 set( \$WebPort , $port);
 set( \$WebbaseURL , "http://localhost:\$WebPort");
-set( \$LogToScreen , "debug");
 set( \$LogStackTraces , "warning");
 set( \$MailCommand, 'testfile' );
 };
