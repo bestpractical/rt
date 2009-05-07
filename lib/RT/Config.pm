@@ -444,7 +444,7 @@ by running the command `perldoc L<RT::Crypt::GnuPG>`  (or `perldoc
 
 =over 4
 
-=item C<gnu_pg>
+=item C<gnupg>
 
 Set C<outgoing_messages_format> to 'inline' to use inline encryption and
 signatures instead of 'RFC' (GPG/MIME: RFC3156 and RFC1847) format.
@@ -475,64 +475,6 @@ e.g. C<< {
     } >>
 
 default: C<< { } >>
-
-=back
-
-=head1 Logging
-
-The default is to log anything except debugging
-information to syslog.  Check the L<Log::Dispatch> POD for
-information about how to get things by syslog, mail or anything
-else, get debugging info in the log, etc.
-
-It might generally make sense to send error and higher by email to
-some administrator.  If you do this, be careful that this email
-isn't sent to this RT instance.  Mail loops will generate a critical
-log message.
-
-=over 4
-
-=item C<log_to_syslog>, C<log_to_screen>
-
-The minimum level error that will be logged to the specific device.
-From lowest to highest priority, the levels are:
- debug info notice warning error critical alert emergency
-
-default: C<'info'>
-
-=item C<log_to_file>, C<log_dir>, C<log_to_file_named>
-
-Logging to a standalone file is also possible, but note that the
-file should needs to both exist and be writable by all direct users
-of the RT API.  This generally include the web server, whoever
-rt-crontool runs as.  Note that as rt-mailgate and the RT CLI go
-through the webserver, so their users do not need to have write
-permissions to this file. If you expect to have multiple users of
-the direct API, Best Practical recommends using syslog instead of
-direct file logging.
-
-default:
-log_to_file => C<undef>
-log_to_dir => C<''>
-log_to_file_named => C<"rt.log">
-
-=item C<log_to_syslog_conf>
-
-On Solaris or UnixWare, set to ( socket => 'inet' ).  Options here
-override any other options RT passes to L<Log::Dispatch::Syslog>.
-Other interesting flags include facility and logopt.  (See the
-L<Log::Dispatch::Syslog> documentation for more information.)  (Maybe
-ident too, if you have multiple RT installations.)
-
-default: C<[]>
-
-=item C<statement_log>,
-
-RT has rudimentary SQL statement logging support if you have
-DBIx-SearchBuilder 1.31_1 or higher; simply set C<statement_log> to be
-the level that you wish SQL statements to be logged at.
-
-default: C<undef>
 
 =back
 
