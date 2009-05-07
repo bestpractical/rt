@@ -93,7 +93,7 @@ if ( $ARGS{'update_summary_rows'} ) {
         push @results, $ok ? _('Preferences saved for %1.', _('summary rows')) : $msg;
     }
 }
-$ARGS{'summary_rows'} ||= $user->preferences('SummaryRows', RT->config->get('DefaultSummaryRows'));
+$ARGS{'summary_rows'} ||= $user->preferences('SummaryRows', RT->config->get('default_summary_rows'));
 
 if ($ARGS{reset}) {
     my ($ok, $msg) = $user->set_preferences('HomepageSettings', {});
@@ -109,7 +109,7 @@ unless (Jifty->web->session->get('my_rt_portlets')) {
 my $portlets = Jifty->web->session->get('my_rt_portlets');
 
 my %seen;
-my @items = map ["component-$_", $_], grep !$seen{$_}++, @{RT->config->get('HomepageComponents')};
+my @items = map ["component-$_", $_], grep !$seen{$_}++, @{RT->config->get('homepage_components')};
 
 my $sys = RT::System->new();
 my @objs = ($sys);

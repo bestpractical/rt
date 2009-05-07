@@ -79,12 +79,12 @@ sub error    { Jifty->log->error(_(@_)); verbose(@_); 1 }
 sub warning  { Jifty->log->warn(_(@_)); verbose(@_); 1 }
 
 my %default = (
-    Table  => 'AttachmentsIndex',
-    Column => 'fts_index',
+    table  => 'AttachmentsIndex',
+    column => 'fts_index',
 );
 
 
-my $db_type = RT->config->get('DatabaseType');
+my $db_type = Jifty->config->framework('Database')->{'Driver'};
 if ( $db_type eq 'mysql' ) {
     my $dbh = Jifty->handle->dbh;
     
@@ -98,7 +98,7 @@ if ( $db_type eq 'mysql' ) {
 
     my $table = prompt(
         message => 'Enter name of a DB table that will be used to connect to the sphinx server',
-        default => $default{'Column'},
+        default => $default{'column'},
     );
     my $url = prompt(
         message => 'Enter URL of the sphinx search server, it should be sphinx://<server>:<port>/<index name>. Simple config for this sphinx instance will be generated for you.',
@@ -109,12 +109,12 @@ if ( $db_type eq 'mysql' ) {
 CREATE TABLE $table (
     id     INTEGER NOT NULL,
     weight INTEGER NOT NULL,
-    $default{'Column'}  VARCHAR(3072) NOT NULL,
-    INDEX($default{'Column'})
+    $default{'column'}  VARCHAR(3072) NOT NULL,
+    INDEX($default{'column'})
 ) ENGINE=SPHINX CONNECTION="$url"
 END
 
-    print_rt_config( Table => $table, Column => $default{'Column'} );
+    print_rt_config( table => $table, column => $default{'column'} );
     insert_schema( $schema );
 
     require URI;
@@ -188,11 +188,11 @@ elsif ( $db_type eq 'Pg' ) {
     my $schema = <<END;
 CREATE TABLE $table (
     id      INTEGER NOT NULL,
-    $default{'Column'} tsvector
+    $default{'column'} tsvector
 )
 END
 
-    print_rt_config( Table => $table, Column => $default{'Column'} );
+    print_rt_config( table => $table, column => $default{'column'} );
 
     insert_schema( $schema );
 
@@ -204,11 +204,11 @@ then searches without them.
 
 Either run:
 
-    CREATE INDEX ${column}_idx ON $table USING gin($default{'Column'});
+    CREATE INDEX ${column}_idx ON $table USING gin($default{'column'});
 
 or
 
-    CREATE INDEX ${column}_idx ON $table USING gist($default{'Column'});
+    CREATE INDEX ${column}_idx ON $table USING gist($default{'column'});
 
 END
 }
@@ -239,11 +239,11 @@ sub print_rt_config {
     print <<END;
 
 Configure your RT via site config:
-set( %FullTextSearch,
-    Enable  => 1,
-    Indexed => 1,
-    Table   => '$args{'Table'}',
-    Column  => '$args{'Column'}',
+set( %full_text_search,
+    enable  => 1,
+    indexed => 1,
+    table   => '$args{'table'}',
+    column  => '$args{'column'}',
 );
 END
 

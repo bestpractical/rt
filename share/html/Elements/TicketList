@@ -55,7 +55,7 @@ $m->comp(
 <%ARGS>
 $collection => undef
 $query => undef
-$format => RT->config->get('DefaultSearchResultFormat')
+$format => RT->config->get('default_search_result_format')
 $display_format => undef
 $order => undef
 $order_by => undef

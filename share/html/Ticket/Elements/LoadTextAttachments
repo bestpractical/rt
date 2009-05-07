@@ -83,7 +83,7 @@ if ( $ticket->current_user_has_right('ShowTicket') ) {
     $attachments->limit ( column => 'content_type', operator => 'starts_with', value => 'message/');
     $attachments->limit ( column => 'content_type', operator => '=', value => 'text');
     $attachments->limit ( column => 'Filename', operator => 'IS', value => 'NULL')
-        if RT->config->get('SuppressInlineTextFiles', $ticket->current_user );
+        if RT->config->get('suppress_inline_text_files', $ticket->current_user );
 }
 return ($attachments);
 </%INIT>

@@ -23,15 +23,23 @@ my $homedir = RT::Test::get_abs_relocatable_dir(File::Spec->updir(),
 RT::Test->set_mail_catcher;
 
 
-RT->config->set( 'GnuPG',
-                 enable => 1,
-                 outgoing_messages_format => 'RFC' );
+RT->config->set(
+    'gnupg',
+    {
+        enable                   => 1,
+        outgoing_messages_format => 'RFC',
+    }
+);
 
-RT->config->set( 'GnuPGOptions',
-                 homedir => $homedir,
-                 'no-permission-warning' => undef);
+RT->config->set(
+    'gnupg_options',
+    {
+        homedir                 => $homedir,
+        'no-permission-warning' => undef
+    }
+);
 
-RT->config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
+RT->config->set( 'mail_plugins' => ['Auth::MailFrom', 'Auth::GnuPG'] );
 
 my ($baseurl, $m) = RT::Test->started_ok;
 

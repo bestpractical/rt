@@ -17,9 +17,9 @@ eval 'use GnuPG::Interface; 1' or plan skip_all => 'GnuPG required.';
 
 RT::Test->set_mail_catcher;
 
-RT->config->set( CommentAddress => 'general@example.com');
-RT->config->set( CorrespondAddress => 'general@example.com');
-RT->config->set( DefaultSearchResultFormat => qq{
+RT->config->set( comment_address => 'general@example.com');
+RT->config->set( correspond_address => 'general@example.com');
+RT->config->set( default_search_result_format => qq{
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
    '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__subject__</a></B>/TITLE:subject',
    'OO-__owner_name__-O',
@@ -34,16 +34,24 @@ use File::Temp qw(tempdir);
 my $homedir = tempdir( CLEANUP => 1 );
 use_ok('RT::Crypt::GnuPG');
 
-RT->config->set( 'GnuPG',
-                 enable => 1,
-                 outgoing_messages_format => 'RFC' );
+RT->config->set(
+    'gnupg',
+    {
+        enable                   => 1,
+        outgoing_messages_format => 'RFC',
+    }
+);
 
-RT->config->set( 'GnuPGOptions',
-                 homedir => $homedir,
-                 passphrase => 'recipient',
-                  'no-permission-warning' => undef,
-                  'trust-model' => 'always');
-RT->config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
+RT->config->set(
+    'gnupg_options',
+    {
+        homedir                 => $homedir,
+        passphrase              => 'recipient',
+        'no-permission-warning' => undef,
+        'trust-model'           => 'always',
+    }
+);
+RT->config->set( 'mail_plugins' => ['Auth::MailFrom', 'Auth::GnuPG'] );
 RT::Test->import_gnupg_key('recipient@example.com', 'public');
 RT::Test->import_gnupg_key('recipient@example.com', 'secret');
 RT::Test->import_gnupg_key('general@example.com', 'public');
@@ -51,6 +59,7 @@ RT::Test->import_gnupg_key('general@example.com', 'secret');
 RT::Test->import_gnupg_key('general@example.com.2', 'public');
 RT::Test->import_gnupg_key('general@example.com.2', 'secret');
 
+my $rtname = RT->config->get('rtname');
 ok(my $user = RT::Model::User->new(current_user => RT->system_user));
 ok($user->load('root'), "Loaded user 'root'");
 $user->set_email('recipient@example.com');
@@ -136,7 +145,7 @@ MAIL
     );
 
     like($attachments[0]->content, qr/Some content/, "RT's mail includes copy of ticket text");
-    like($attachments[0]->content, qr/$RT::rtname/, "RT's mail includes this instance's name");
+    like($attachments[0]->content, qr/$rtname/, "RT's mail includes this instance's name");
 }
 
 $m->get("$baseurl/Admin/Queues/Modify.html?id=$qid");
@@ -208,7 +217,7 @@ MAIL
     );
 
     like($attachments[0]->content, qr/Some other content/, "RT's mail includes copy of ticket text");
-    like($attachments[0]->content, qr/$RT::rtname/, "RT's mail includes this instance's name");
+    like($attachments[0]->content, qr/$rtname/, "RT's mail includes this instance's name");
 }
 
 $m->get("$baseurl/Admin/Queues/Modify.html?id=$qid");
@@ -281,7 +290,7 @@ MAIL
     );
 
     like($attachments[0]->content, qr/Some final\? content/, "RT's mail includes copy of ticket text");
-    like($attachments[0]->content, qr/$RT::rtname/, "RT's mail includes this instance's name");
+    like($attachments[0]->content, qr/$rtname/, "RT's mail includes this instance's name");
 }
 
 RT::Test->fetch_caught_mails;
@@ -346,7 +355,7 @@ MAIL
     );
 
     like($attachments[0]->content, qr/Thought you had me figured out didya/, "RT's mail includes copy of ticket text");
-    like($attachments[0]->content, qr/$RT::rtname/, "RT's mail includes this instance's name");
+    like($attachments[0]->content, qr/$rtname/, "RT's mail includes this instance's name");
 }
 
 sub strip_headers
@@ -406,7 +415,7 @@ $m->content_like( qr/$key1/, "first key shows up in preferences");
 $m->content_like( qr/$key2/, "second key shows up in preferences");
 $m->content_like( qr/$key1.*?$key2/s, "first key shows up before the second");
 
-$m->form_number(3);
+$m->form_with_fields('preferred_key');
 $m->select("preferred_key" => $key2);
 $m->submit;
 

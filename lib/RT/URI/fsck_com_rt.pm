@@ -65,7 +65,7 @@ Returns the prefix for a local URI.
 sub local_uri_prefix {
     my $self = shift;
 
-    my $prefix = $self->scheme . "://" . RT->config->get('Organization');
+    my $prefix = $self->scheme . "://" . RT->config->get('organization');
 
     return ($prefix);
 }
@@ -200,7 +200,7 @@ sub href {
         && $self->object
         && ( $self->object_type eq 'ticket' ) )
     {
-        return ( RT->config->get('WebURL') . "Ticket/Display.html?id=" . $self->object->id );
+        return ( Jifty->web->url . "Ticket/Display.html?id=" . $self->object->id );
     } else {
         return ( $self->uri );
     }

@@ -149,7 +149,7 @@ ok ($id, $msg);
 
 # we need to swap out send_message to test the new things we care about;
 &iso8859_redef_sendmessage;
-RT->config->set( EmailOutputEncoding => 'iso-8859-1' );
+RT->config->set( email_output_encoding => 'iso-8859-1' );
 # create an iso 8859-1 ticket
 @scrips_fired = ();
 
@@ -338,8 +338,9 @@ is (count_attachs($tick) ,1 , "Has one attachment, presumably a text-html and a 
 
 # {{{ test a message containing a russian subject and NO content type
 
-RT->config->set( EmailInputEncodings => 'koi8-r', RT->config->get('EmailInputEncodings') );
-RT->config->set( EmailOutputEncoding => 'koi8-r' );
+RT->config->set( email_input_encodings => ['koi8-r',
+        @{RT->config->get('email_input_encodings')}] );
+RT->config->set( email_output_encoding => 'koi8-r' );
 my $russian_subject_email = RT::Test::get_relocatable_file(
     'russian-subject-no-content-type', (File::Spec->updir(), 'data', 'emails'));
 $content = RT::Test->file_content($russian_subject_email);
@@ -374,9 +375,9 @@ sub text_plain_russian_redef_sendmessage {
                  ';
 }
 
-my @input_encodings = RT->config->get('EmailInputEncodings');
+my @input_encodings = @{RT->config->get('email_input_encodings')};
 shift @input_encodings;
-RT->config->set(EmailInputEncodings => @input_encodings );
+RT->config->set(EmailInputEncodings => [@input_encodings] );
 RT->config->set(EmailOutputEncoding => 'utf-8');
 # }}}
 

@@ -31,9 +31,9 @@ no warnings 'once';
 # get the top page
 $agent->login($user_obj->name => 'customer');
 # Test for absence of Configure and Preferences tabs.
-ok(!$agent->find_link( url => "$RT::WebPath/Admin/",
+ok(!$agent->find_link( url => RT->config->get('web_path') . "/Admin/",
 		       text => 'Configuration'), "No config tab" );
-ok(!$agent->find_link( url => "$RT::WebPath/User/Prefs.html",
+ok(!$agent->find_link( url => RT->config->get('web_path') . "/User/Prefs.html",
 		       text => 'Preferences'), "No prefs pane" );
 
 # Now test for their presence, one at a time.  Sleep for a bit after
@@ -45,7 +45,7 @@ ok($grantid,$grantmsg);
 $agent->reload;
 
 like($agent->{'content'} , qr/Logout/i, "Reloaded page successfully");
-ok($agent->find_link( url => "$RT::WebPath/Admin/",
+ok($agent->find_link( url => RT->config->get('web_path') . "/Admin/",
 		       text => 'Configuration'), "Found config tab" );
 my ($revokeid,$revokemsg) =$user_obj->principal->revoke_right(right => 'ShowConfigTab');
 ok ($revokeid,$revokemsg);
@@ -58,7 +58,7 @@ ok($agent->find_link(
 ($revokeid,$revokemsg) = $user_obj->principal->revoke_right(right => 'ModifySelf');
 ok ($revokeid,$revokemsg);
 # Good.  Now load the search page and test Load/Save Search.
-$agent->follow_link( url => "$RT::WebPath/Search/Build.html",
+$agent->follow_link( url => RT->config->get('web_path') . "/Search/Build.html",
 		     text => 'Tickets');
 is($agent->{'status'}, 200, "Fetched search builder page");
 ok($agent->{'content'} !~ /Load saved search/i, "No search loading box");

@@ -83,7 +83,7 @@ for my $attr (Jifty->web->current_user->user_object->attributes->named('Subscrip
 %   my $i = 0;
 %   for my $dashboard (@$dashboards) {
 %       my $url = sprintf '%s/Dashboards/%d/%s',
-%                 RT->config->get('WebPath'),
+%                 RT->config->get('web_path'),
 %                 $dashboard->id,
 %                 $dashboard->name;
 

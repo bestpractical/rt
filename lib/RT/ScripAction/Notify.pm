@@ -154,7 +154,7 @@ sub set_recipients {
     }
 
     my $skip = '';
-    unless ( RT->config->get('NotifyActor') ) {
+    unless ( RT->config->get('notify_actor') ) {
         if ( my $creator = $self->transaction->creator->email ) {
             $skip = lc $creator;
         }
@@ -181,7 +181,7 @@ sub set_recipients {
         $recipients{'to'} = delete $recipients{'cc'};
     }
 
-    if ( my $format = RT->config->get('UseFriendlyToLine') ) {
+    if ( my $format = RT->config->get('use_friendly_to_line') ) {
         unless ( @{ $recipients{'to'} } ) {
             push @{ $self->{'PseudoTo'} ||= [] }, sprintf $format, $self->argument, $ticket->id;
         }

@@ -62,7 +62,7 @@
 <%init>
 my @actions;
 
-my @items = map { [ "component-$_", $_ ] } sort @{ RT->config->get('HomepageComponents') };
+my @items = map { [ "component-$_", $_ ] } sort @{ RT->config->get('homepage_components') };
 my $sys = RT::System->new();
 # XXX: put this in savedsearches_to_portlet_items
 for ( $m->comp( "/Search/Elements/SearchesForObject",

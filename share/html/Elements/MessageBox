@@ -68,8 +68,8 @@ if ( $include_signature and my $text = Jifty->web->current_user->user_object->si
 $quote_transaction => undef
 $name             => 'content'
 $default          => ''
-$width            => RT->config->get('MessageBoxWidth', Jifty->web->current_user ) || 72
-$height           => RT->config->get('MessageBoxHeight', Jifty->web->current_user ) || 15
-$wrap             => RT->config->get('MessageBoxWrap') || 'HARD'
-$include_signature => RT->config->get('MessageBoxIncludeSignature')
+$width            => RT->config->get('message_box_width', Jifty->web->current_user ) || 72
+$height           => RT->config->get('message_box_height', Jifty->web->current_user ) || 15
+$wrap             => RT->config->get('message_box_wrap') || 'HARD'
+$include_signature => RT->config->get('message_box_include_signature')
 </%ARGS>

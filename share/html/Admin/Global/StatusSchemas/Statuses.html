@@ -8,7 +8,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<% RT->config->get('WebPath') %>/Admin/Global/StatusSchemas/Statuses.html" method="post">
+<form action="<% RT->config->get('web_path') %>/Admin/Global/StatusSchemas/Statuses.html" method="post">
 <input type="hidden" name="name" value="<% $name %>" />
 
 % foreach my $type (qw(Initial Active Inactive)) { # loc
@@ -28,7 +28,7 @@ use RT::StatusSchema;
 my $schema = RT::StatusSchema->new->load( $name );
 unless ( $schema ) {
     Jifty->web->redirect(
-        RT->config->get('WebPath')
+        RT->config->get('web_path')
         . '/Admin/Global/StatusSchemas/index.html'
     );
 }

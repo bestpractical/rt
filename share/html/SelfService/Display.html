@@ -212,7 +212,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
         # But we need to store Actions somewhere too, so we don't lose them.
         my $key = Digest::MD5::md5_hex(rand(1024));
         Jifty->web->session->set( "actions_$key" => \@results );
-        RT::Interface::Web::redirect( RT->config->get('WebURL') ."SelfService/Display.html?id=". $Ticket->id."&results=".$key);
+        RT::Interface::Web::redirect( Jifty->web->url ."SelfService/Display.html?id=". $Ticket->id."&results=".$key);
     }
 
     my $Transactions = $Ticket->transactions;

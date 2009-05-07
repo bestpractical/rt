@@ -73,7 +73,7 @@ our @EXPORT = qw(is_empty);
 
 my $config;
 our ( $existing_server, $port );
-my $mailsent;
+our $MAIL_SENT;
 
 my @server;
 
@@ -119,33 +119,21 @@ sub _setup_config {
     my %args  = (@_);
 
     require RT;
-    RT->load_config();
-    my $port = 999;
-    $config = File::Temp->new;
-    print $config qq{
-set( \$WebPort , $port);
-set( \$WebbaseURL , "http://localhost:\$WebPort");
-set( \$LogStackTraces , "warning");
-set( \$MailCommand, 'testfile' );
-};
-    print $config $args{'config'} if $args{'config'};
-    print $config "\n1;\n";
-    $ENV{'RT_SITE_CONFIG'} = $config->filename;
-    close $config;
+    my $port  = 999;
+    RT->config->set( mail_command => 'testfile' );
+    RT->config->set( full_text_search => { enable => 1 } );
 
-    RT->config->set( FullTextSearch => Enable => 1 );
-
-    RT->config->set( DevelMode => '0' ) if $INC{'Devel/Cover.pm'};
-    if ( RT->config->get('DevelMode') ) { require Module::Refresh; }
+    Jifty->config->{'framework'}{'DevelMode'} = 0 if $INC{'Devel/Cover.pm'};
+    if ( Jifty->config->framework('DevelMode') ) { require Module::Refresh; }
 
     # make it another function
-    $mailsent = 0;
+    $MAIL_SENT = 0;
     my $mailfunc = sub {
         my $Entity = shift;
-        $mailsent++;
+        $RT::Test::MAIL_SENT++;
         return 1;
     };
-    RT->config->set( 'MailCommand' => $mailfunc );
+    RT->config->set( 'mail_command' => $mailfunc );
 }
 our $server_url;
 
@@ -182,7 +170,7 @@ sub close_mailgate_ok {
 sub mailsent_ok {
     my $class    = shift;
     my $expected = shift;
-    is( $mailsent, $expected, "The number of mail sent ($expected) matches. yay" );
+    is( $MAIL_SENT, $expected, "The number of mail sent ($expected) matches. yay" );
 }
 
 =head1 UTILITIES
@@ -539,26 +527,26 @@ sub import_gnupg_key {
     );
 }
 
-my $mailbox_catcher = File::Temp->new( OPEN => 0, CLEANUP => 0 )->filename;
+our $MAILBOX_CATCHER = File::Temp->new( OPEN => 0, CLEANUP => 0 )->filename;
 
 sub set_mail_catcher {
     my $self    = shift;
     my $catcher = sub {
         my $MIME = shift;
 
-        open my $handle, '>>', $mailbox_catcher
-          or die "Unable to open $mailbox_catcher for appending: $!";
+        open my $handle, '>>', $RT::Test::MAILBOX_CATCHER
+          or die "Unable to open $RT::Test::MAILBOX_CATCHER for appending: $!";
 
         $MIME->print($handle);
         print $handle "%% split me! %%\n";
         close $handle;
     };
-    RT->config->set( MailCommand => $catcher );
+    RT->config->set( mail_command => $catcher );
 }
 
 sub db_requires_no_dba {
     my $self    = shift;
-    my $db_type = RT->config->get('DatabaseType');
+    my $db_type = Jifty->config->framework('Database')->{'Driver'};
     return 1 if $db_type eq 'SQLite';
 }
 
@@ -566,11 +554,11 @@ sub db_requires_no_dba {
 sub fetch_caught_mails {
     my $self = shift;
     return grep /\S/, split /%% split me! %%/,
-       RT::Test->file_content( $mailbox_catcher, 'unlink' => 1, noexist => 1 );
+       RT::Test->file_content( $MAILBOX_CATCHER, 'unlink' => 1, noexist => 1 );
 }
 
 sub clean_caught_mails {
-    unlink $mailbox_catcher;
+    unlink $MAILBOX_CATCHER;
 }
 
 sub file_content {
@@ -617,7 +605,7 @@ sub lsign_gnupg_key {
     require RT::Crypt::GnuPG;
     require GnuPG::Interface;
     my $gnupg = new GnuPG::Interface;
-    my %opt   = RT->config->get('GnuPGOptions');
+    my %opt   = %{RT->config->get('gnupg_options')};
     $gnupg->options->hash_init( RT::Crypt::GnuPG::_prepare_gnupg_options(%opt), meta_interactive => 0, );
 
     my %handle;
@@ -675,7 +663,7 @@ sub trust_gnupg_key {
     require RT::Crypt::GnuPG;
     require GnuPG::Interface;
     my $gnupg = new GnuPG::Interface;
-    my %opt   = RT->config->get('GnuPGOptions');
+    my %opt   = %{RT->config->get('gnupg_options')};
     $gnupg->options->hash_init( RT::Crypt::GnuPG::_prepare_gnupg_options(%opt), meta_interactive => 0, );
 
     my %handle;

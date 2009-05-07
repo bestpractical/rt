@@ -29,7 +29,7 @@ sub _canonicalize_time_zone {
     # if the "user" time zone is requested and the user has none, use the
     # "server" time zone
     if (!$tz || lc($tz) eq 'server' || lc($tz) eq 'system') {
-        $tz = RT->config->get('TimeZone');
+        $tz = RT->config->get('time_zone');
     }
 
     return $tz || $default;
@@ -135,7 +135,7 @@ sub iCal {
 sub config_format {
     my $self = _canonicalize_self(@_);
 
-    my $format = RT->config->get('DateTimeFormat');
+    my $format = RT->config->get('date_time_format');
     return $self->$format;
 }
 

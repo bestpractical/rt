@@ -116,16 +116,9 @@ have not been set already.
 =cut
 
 sub load_config {
-    require RT::Config;
-    $Config = RT::Config->new();
-    $Config->load_configs;
+    $Config = RT::Model::Config->new;
 
     #    require RT::I18N;
-
-    # RT::Essentials mistakenly recommends that WebPath be set to '/'.
-    # If the user does that, do what they mean.
-    $RT::WebPath = '' if ( $RT::WebPath eq '/' );
-
     RT::I18N->init;
 }
 
@@ -286,7 +279,8 @@ sub plugin_dirs {
     my $subdir = shift;
 
     my @res;
-    foreach my $plugin (grep $_, RT->config->get('Plugins')) {
+#    foreach my $plugin ( grep $_, RT->config->get('plugins') ) {
+    foreach my $plugin ( grep $_, () ) {
         my $plugindir = $plugin;
         $plugindir =~ s/::/-/g;
         my $path = $RT::LocalPluginPath. "/$plugindir";
@@ -330,7 +324,8 @@ sub init_plugins {
     my $self    = shift;
     my @plugins;
     require RT::Plugin;
-    foreach my $plugin (grep $_, RT->config->get('Plugins')) {
+#    foreach my $plugin (grep $_, RT->config->get('plugins')) {
+    foreach my $plugin (grep $_, () ) {
         $plugin->require;
         die $UNIVERSAL::require::ERROR if ($UNIVERSAL::require::ERROR);
         push @plugins, RT::Plugin->new(name =>$plugin);
@@ -366,7 +361,7 @@ Jifty->web->add_javascript(
 Jifty::Web->add_trigger(
     name      => 'after_include_javascript',
     callback  => sub {
-        my $webpath = RT->config->get('WebPath') || '/';
+        my $webpath = RT->config->get('web_path') || '/';
         Jifty->web->out(
             qq{<script type="text/javascript">RT = {};RT.WebPath = '$webpath';</script>}
         );

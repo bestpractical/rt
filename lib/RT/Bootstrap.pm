@@ -53,6 +53,8 @@ use base qw/Jifty::Bootstrap/;
 
 sub run {
     my $self = shift;
+
+
     $self->insert_initial_data();
     $self->insert_data( $RT::EtcPath . "/initialdata" );
 }
@@ -196,11 +198,26 @@ sub insert_data {
     my $datafile = shift;
 
     # Slurp in stuff to insert from the datafile. Possible things to go in here:-
-    our ( @Groups, @Users, @ACL, @Queues, @scrip_actions, @scrip_conditions, @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final );
-    local ( @Groups, @Users, @ACL, @Queues, @scrip_actions, @scrip_conditions, @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final );
+    our (
+        @Groups,        @Users,            @ACL,       @Queues,
+        @scrip_actions, @scrip_conditions, @Templates, @CustomFields,
+        @Scrips,        @Attributes,       @Initial,   @Final,
+        %Config
+    );
+    local (
+        @Groups,        @Users,            @ACL,       @Queues,
+        @scrip_actions, @scrip_conditions, @Templates, @CustomFields,
+        @Scrips,        @Attributes,       @Initial,   @Final,
+        %Config
+    );
 
     require $datafile
-        || die "Couldn't find initial data for import\n" . $@;
+      || die "Couldn't find initial data for import\n" . $@;
+
+    for my $name ( sort keys %Config ) {
+        my $config = RT::Model::Config->new( current_user => RT->system );
+        $config->create( name => $name, value => $Config{$name} );
+    }
 
     if (@Initial) {
 
@@ -487,8 +504,6 @@ sub insert_data {
             print "(Error: $@)\n" if $@;
         }
     }
-
-    my $db_type = RT->config->get('DatabaseType');
 
     #print "Done setting up database content.\n";
 }

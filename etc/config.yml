@@ -41,6 +41,11 @@ framework:
           - ie7-squish
     - TestServerWarnings:
         clear_screen: 0
+    - Config:
+        config_url: '/Admin/Global/Elements/ConfigJifty'
+        restart_url: '/Admin/Global/Jifty/restart.html'
+        after_restart_url: '/Admin/Global/System.html'
+        wait_seconds: 10
   PubSub: 
     Backend: Memcached
     Enable: ~

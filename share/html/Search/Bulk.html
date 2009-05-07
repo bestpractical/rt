@@ -57,7 +57,7 @@
     saved_search_id => $saved_search_id &>
 
 <& /Elements/ListActions, actions => \@results &>
-<form method="post" action="<% RT->config->get('WebPath') %>/Search/Bulk.html" enctype="multipart/form-data">
+<form method="post" action="<% RT->config->get('web_path') %>/Search/Bulk.html" enctype="multipart/form-data">
 % foreach my $var qw(query format order_by order Rows Page) {
 <input type="hidden" class="hidden" name="<%$var%>" value="<%$ARGS{$var} || ''%>" />
 %}
@@ -70,7 +70,7 @@
     order => $order,
     rows => $rows,
     page => $page,
-    base_url => RT->config->get('WebPath')."/Search/Bulk.html?",
+    base_url => RT->config->get('web_path')."/Search/Bulk.html?",
     class => 'RT::Model::TicketCollection'
    &>
 
@@ -222,7 +222,7 @@ my (@results);
 
 $page ||= 1;
 
-$format ||= RT->config->get('DefaultSearchResultFormat');
+$format ||= RT->config->get('default_search_result_format');
 
 # inject _CHECKBOX to the first field.
 $format =~ s/'?([^']+)'?,/'___CHECKBOX__$1',/;

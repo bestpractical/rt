@@ -702,7 +702,7 @@ See also description of the L</GetFilename> method.
 =cut
 
 sub storage_path {
-    return scalar( RT->config->get('ShredderStoragePath') )
+    return scalar( RT->config->get('shredder_storage_path') )
         || File::Spec->catdir( $RT::VarPath, qw(data RT-Shredder) );
 }
 

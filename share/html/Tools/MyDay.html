@@ -57,7 +57,7 @@
 % my $class =  $i % 2  ? 'class="evenline"' : 'class="oddline"';
 % $i++;
 <tr <%$class|n%>><td colspan="2"><h2><a
-href="<%RT->config->get('WebPath')%>/Ticket/Display.html?id=<%$Ticket->id%>"><%$Ticket->id%>:
+href="<%RT->config->get('web_path')%>/Ticket/Display.html?id=<%$Ticket->id%>"><%$Ticket->id%>:
 <%$Ticket->subject%></a></h2></td></tr>
 <tr <%$class|n%>><td><span class="label"><&|/l&>Worked</&>:</span><input size="3" name="UpdateTimeWorked-<%$Ticket->id%>" /> <&|/l&>minutes</&>
 </td>

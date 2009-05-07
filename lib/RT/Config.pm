@@ -1,799 +1,1059 @@
-# BEGIN BPS TAGGED BLOCK {{{
-#
-# COPYRIGHT:
-#
-# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
-#                                          <jesse@bestpractical.com>
-#
-# (Except where explicitly superseded by other copyright notices)
-#
-#
-# LICENSE:
-#
-# This work is made available to you under the terms of Version 2 of
-# the GNU General Public License. A copy of that license should have
-# been provided with this software, but in any event can be snarfed
-# from www.gnu.org.
-#
-# This work is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
-# 02110-1301 or visit their web page on the internet at
-# http://www.gnu.org/copyleft/gpl.html.
-#
-#
-# CONTRIBUTION SUBMISSION POLICY:
-#
-# (The following paragraph is not intended to limit the rights granted
-# to you to modify and distribute this software under the terms of
-# the GNU General Public License and is only of importance to you if
-# you choose to contribute your changes and enhancements to the
-# community by submitting them to Best Practical Solutions, LLC.)
-#
-# By intentionally submitting any modifications, corrections or
-# derivatives to this work, or any other work intended for use with
-# Request Tracker, to Best Practical Solutions, LLC, you confirm that
-# you are the copyright holder for those contributions and you grant
-# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
-# royalty-free, perpetual, license to use, copy, create derivative
-# works based on those contributions, and sublicense and distribute
-# those contributions and any derivatives thereof.
-#
-# END BPS TAGGED BLOCK }}}
-use strict;
-use warnings;
-
 package RT::Config;
-use File::Spec ();
-use Text::Naming::Convention qw/renaming/;
 
-=head1 name
+=head1 Base
 
-    RT::Config - RT's config
+=over 4
 
-=head1 SYNOPSYS
+=item C<rtname>
 
-    # get config object
-    use RT::Config;
-    my $config = RT::Config->new;
-    $config->load_configs;
+C<rtname> is the string that RT will look for in mail messages to
+figure out what ticket a new piece of mail belongs to.
 
-    # get or set option
-    my $rt_web_path = $config->get('WebPath');
-    $config->set(EmailOutputEncoding => 'latin1');
+Your domain name is recommended, so as not to pollute the namespace.
+once you start using a given tag, you should probably never change it.
+(otherwise, mail for existing tickets won't get put in the right place)
 
-    # get config object from RT package
-    use RT;
-    RT->load_config;
-    my $config = RT->config;
+default: C<"example.com">
 
-=head1 description
 
-C<RT::Config> class provide access to RT's and RT extensions' config files.
+=item C<email_subject_tag_regex>
 
-RT uses two files for site configuring:
+This regexp controls what subject tags RT recognizes as its own.
+If you're not dealing with historical C<rtname> values, you'll likely
+never have to enable this feature.
 
-First file is F<RT_Config.pm> - core config file. This file is shipped
-with RT distribution and contains default values for all available options.
-B<You should never edit this file.>
+Be VERY CAREFUL with it. Note that it overrides C<rtname> for subject
+token matching and that you should use only "non-capturing" parenthesis
+grouping. For example:
 
-Second file is F<RT_SiteConfig.pm> - site config file. You can use it
-to customize your RT instance. In this file you can override any option
-listed in core config file.
+C<qr/(?:example.com|example.org)/i>
 
-RT extensions could also provide thier config files. Extensions should
-use F<< <name>_Config.pm >> and F<< <name>_SiteConfig.pm >> names for
-config files, where <name> is extension name.
+and NOT
 
-B<NOTE>: All options from RT's config and extensions' configs are saved
-in one place and thus extension could override RT's options, but it is not
-recommended.
+C<qr/(example.com|example.org)/i>
+
+This setting would make RT behave exactly as it does without the 
+setting enabled.
+
+default: C<'{{rtname}}' >
+
+=item C<organization>
+
+You should set this to your organization's DNS domain. For example,
+I<fsck.com> or I<asylum.arkham.ma.us>. It's used by the linking interface to
+guarantee that ticket URIs are unique and easy to construct.
+
+default: C<"example.com">
+
+=item C<minimum_password_length>
+
+C<minimum_password_length> defines the minimum length for user
+passwords. Setting it to 0 disables this check.
+
+default: C<"5">
+
+=item C<time_zone>
+
+C<time_zone> is used to convert times entered by users into GMT and back again
+It should be set to a time zone recognized by L<DateTime::TimeZone>.
+
+default: C<'America/New_York'>
+
+=back
+
+=head1 Database
+
+=over 4
+
+=item C<use_sql_for_acl_checks>
+
+In RT for ages ACL are checked after search what in some situtations
+result in empty search pages and wrong count of tickets.
+
+Set C<use_sql_for_acl_checks> to 1 to use SQL and get rid of these problems.
+
+However, this option is beta. In some cases it result in performance
+improvements, but some setups can not handle it.
+
+default: C<undef>
+
+=item C<full_text_search>
+
+Full text search (FTS) without indexes is slow operation and by default is
+disabled at all. To enable FTS set key 'enabled' to true value.
+
+Setup of indexes and filling them with data requires different steps for
+different database back-ends. Use F<sbin/rt-setup-fulltext-index> helper
+for quick start. This script creates required structures in the DB and
+gives some ideas on next steps.
+
+default: C<< {
+        enable  => 0,
+        indexed => 0,
+        table   => 'AttachmentsIndex',
+        column  => 'ftsindex',
+    } >>
+
+=back
+
+=head1 Incoming Mail Gateway
+
+=over 4
+
+=item C<owner_email>
+
+C<owner_email> is the address of a human who manages RT. RT will send
+errors generated by the mail gateway to this address.  This address
+should _not_ be an address that's managed by your RT instance.
+
+default: C<'root'>
+
+=item C<loops_to_rt_owner>
+
+If C<loops_to_rt_owner> is defined, RT will send mail that it believes
+might be a loop to C<owner_email>
+
+default: C<1>
+
+=item C<store_loops>
+
+If C<store_loops> is defined, RT will record messages that it believes
+to be part of mail loops.
+
+As it does this, it will try to be careful not to send mail to the
+sender of these messages
+
+default: C<undef>
+
+=item C<max_attachment_size>
+
+C<max_attachment_size> sets the maximum size (in bytes) of attachments stored
+in the database.
+
+For mysql and oracle, we set this size at 10 megabytes.
+If you're running a postgres version earlier than 7.1, you will need
+to drop this to 8192. (8k)
+
+default: C<10000000>
+
+=item C<truncate_long_attachments>
+
+C<truncate_long_attachments>: if this is set to a non-'' value,
+RT will truncate attachments longer than C<max_attachment_size>.
+
+default: C<undef>
+
+=item C<drop_long_attachments>
+
+C<drop_long_attachments>: if this is set to a non-'' value,
+RT will silently drop attachments longer than C<max_attachment_size>.
+
+default: C<undef>
+
+=item C<parse_new_message_for_ticket_ccs>
+
+If C<parse_new_message_for_ticket_ccs> is true, RT will attempt to divine
+Ticket 'Cc' watchers from the To and Cc lines of incoming messages
+Be forewarned that if you have _any_ addresses which forward mail to
+RT automatically and you enable this option without modifying
+C<rt_address_regexp> below, you will get yourself into a heap of trouble.
+
+default: C<undef>
+
+=item C<rt_address_regexp> 
+
+C<rt_address_regexp> is used to make sure RT doesn't add itself as a ticket CC if
+the setting above is enabled.
+
+default: C<'^rt\@example.com$'>
+
+=item C<canonicalize_email_match>, C<canonicalize_email_replace>
+
+RT provides functionality which allows the system to rewrite
+incoming email addresses.  In its simplest form,
+you can substitute the value in $<CanonicalizeEmailAddressReplace>
+for the value in $<CanonicalizeEmailAddressMatch>
+(These values are passed to the $<CanonicalizeEmailAddress> subroutine in
+ F<RT/User.pm>)
+
+By default, that routine performs a C<s/$match/$replace/gi> on any address
+passed to it.
+
+default: C<''>
+default: C<''>
+
+=item C<canonicalize_email_match>
+
+Set this to true and the create new user page will use the values that you
+enter in the form but use the function CanonicalizeUserInfo in
+F<RT/User_Local.pm>
+
+default: C<0>
+
+=item C<sender_must_exist_in_external_database>
+
+If C<sender_must_exist_in_external_database> is true, RT will refuse to
+create non-privileged accounts for unknown users if you are using
+the C<lookup_sender_in_external_database> option.
+Instead, an error message will be mailed and RT will forward the
+message to C<rt_owner>.
+
+If you are not using C<lookup_sender_in_external_database>, this option
+has no effect.
+
+If you define an AutoRejectRequest template, RT will use this
+template for the rejection message.
+
+default: C<undef>
+
+=item C<mail_plugins>
+
+C<mail_plugins> is a list of auth plugins for L<RT::Interface::Email>
+to use; see L<rt-mailgate>
+
+default: C<[]>
+
+
+=item C<unsafe_email_commands>
+
+C<unsafe_email_commands>, if set to true, enables 'take' and 'resolve'
+as possible actions via the mail gateway.  As its name implies, this
+is very unsafe, as it allows email with a forged sender to possibly
+resolve arbitrary tickets!
+
+=item C<extract_subject_tag_match>, C<extract_subject_tag_no_match>
+
+The default "extract remote tracking tags" scrip settings; these
+detect when your RT is talking to another RT, and adjusts the
+subject accordingly.
+
+default: C<'\\[.+? #\\d+\\]' >
+
+=back
+
+=head1 Outgoing Mail
+
+=over 4
+
+=item C<mail_command>
+
+C<mail_command> defines which method RT will use to try to send mail.
+We know that 'sendmailpipe' works fairly well.  If 'sendmailpipe'
+doesn't work well for you, try 'sendmail'.  Other options are 'smtp'
+or 'qmail'.
+
+Note that you should remove the '-t' from C<sendmail_arguments>
+if you use 'sendmail' rather than 'sendmailpipe'
+
+default: C<'sendmailpipe'>
+
+=back
+
+=head1 Sendmail
+
+These options only take effect if C<mail_command> is 'sendmail' or
+'sendmailpipe'
+
+=over 4
+
+=item C<sendmail_arguments> 
+
+C<sendmail_arguments> defines what flags to pass to C<sendmail_path>
+If you picked 'sendmailpipe', you MUST add a -t flag to C<sendmail_arguments>
+These options are good for most sendmail wrappers and workalikes
+
+These arguments are good for sendmail brand sendmail 8 and newer
+C<default: C<"-oi -t -ODeliveryMode=b -OErrorMode=m">>
+
+default: C<"-oi -t">
+
+
+=item C<sendmail_bounce_arguments>
+
+C<sendmail_bounce_arguments> defines what flags to pass to C<sendmail>
+assuming RT needs to send an error (ie. bounce).
+
+default: C<'-f "<>"'>
+
+=item C<sendmail_path>
+
+If you selected 'sendmailpipe' above, you MUST specify the path to
+your sendmail binary in C<sendmail_path>.
+
+default: C<"/usr/sbin/sendmail">
+
+
+=back
+
+=head1 SMTP
+
+These options only take effect if C<mail_command> is 'smtp'
+
+=over 4
+
+=item C<smtp_server>
+
+C<smtp_server> should be set to the hostname of the SMTP server to use
+
+default: C<undef>
+
+=item C<smtp_from>
+
+C<smtp_from> should be set to the 'From' address to use, if not the
+email's 'From'
+
+default: C<undef>
+
+=item C<smtp_debug> 
+
+C<smtp_debug> should be set to true to debug SMTP mail sending
+
+default: C<0>
+
+=back
+
+=head1 Other Mailer
+
+=over 4
+
+=item C<mail_params>
+
+C<mail_params> defines a list of options passed to $mail_command if it
+is not 'sendmailpipe', 'sendmail', or 'smtp'
+
+default: C<[]>
+
+=item C<correspond_address>, C<comment_address>
+
+RT is designed such that any mail which already has a ticket-id associated
+with it will get to the right place automatically.
+
+C<correspond_address> and C<comment_address> are the default addresses
+that will be listed in From: and Reply-To: headers of correspondence
+and comment mail tracked by RT, unless overridden by a queue-specific
+address.
+
+default: C<''>
+
+default: C<''>
+
+=item C<dashboard_address>
+
+The email address from which RT will send dashboards. If none is set, then
+C<owneremail> will be used.
+
+default: C<''>
+
+
+=item C<use_friendly_from_line>
+
+By default, RT sets the outgoing mail's "From:" header to
+"SenderName via RT".  Setting C<use_friendly_from_line> to 0 disables it.
+
+default: C<1>
+
+=item C<friendly_from_line_format>
+
+C<sprintf()> format of the friendly 'From:' header; its arguments
+are SenderName and SenderEmailAddress.
+
+default: C<"\"%s via RT\" <%s>">
+
+=item C<use_friendly_to_line>
+
+RT can optionally set a "Friendly" 'To:' header when sending messages to
+Ccs or AdminCcs (rather than having a blank 'To:' header.
+
+This feature DOES NOT WORK WITH SENDMAIL[tm] BRAND SENDMAIL
+If you are using sendmail, rather than postfix, qmail, exim or some other MTA,
+you _must_ disable this option.
+
+default: C<0>
+
+=item C<friendly_to_line_format>
+
+C<sprintf()> format of the friendly 'From:' header; its arguments
+are WatcherType and TicketId.
+
+default: C<"\"%s of {{rtname}} Ticket #%s\":;">
+
+=item C<notify_actor>
+
+By default, RT doesn't notify the person who performs an update, as they
+already know what they've done. If you'd like to change this behaviour,
+Set C<notify_actor> to 1
+
+default: C<0>
+
+=item C<record_outgoing_email>
+
+By default, RT records each message it sends out to its own internal database.
+To change this behavior, set C<record_outgoing_email> to 0 
+
+default: C<1>
+
+=item C<verp_prefix>, C<verp_prefix>
+
+VERP support (http://cr.yp.to/proto/verp.txt)
+
+the following two directives means to generate envelope senders
+of the form C<${VERPPrefix}${originaladdress}@${VERPDomain}>
+(i.e. rt-jesse=fsck.com@rt.example.com ).
+
+This currently only works with sendmail and sendmailppie.
+
+# verp_prefix => C<'rt-'>
+# verp_domain => C<$rt::organization>
+
+default: undef
+
+=item C<forward_from_user>
+
+By default, RT forwards a message using queue's address and adds RT's tag into
+subject of the outgoing message, so recipients' replies go into RT as correspondents.
+
+To change this behavior, set C<forward_from_user> to true value and RT will use
+address of the current user and leave subject without RT's tag.
+
+default: C<0>
+
+=item C<show_bcc_header>
+
+By default RT hides from the web UI information about blind copies user sent on
+reply or comment.
+
+To change this set the following option to true value.
+
+default: C<0>
+
+=item C<dashboard_subject>
+
+Lets you set the subject of dashboards. Arguments are the frequency (Daily,
+Weekly, Monthly) of the dashboard and the dashboard's name. %1 for the name
+of the dashboard.
+
+default: C<'%s Dashboard: %s'>
+
+=back
+
+=head1 GnuPG
+
+A full description of the (somewhat extensive) GnuPG integration can be found 
+by running the command `perldoc L<RT::Crypt::GnuPG>`  (or `perldoc
+        lib/RT/Crypt/GnuPG.pm` from your RT install directory).
+
+=over 4
+
+=item C<gnupg>
+
+Set C<outgoing_messages_format> to 'inline' to use inline encryption and
+signatures instead of 'RFC' (GPG/MIME: RFC3156 and RFC1847) format.
+
+If you want to allow people to encrypt attachments inside the DB then
+set C<allow_encrypt_data_in_db> to true
+
+default: C<< {
+        enable                   => 1,
+        outgoing_messages_format => 'RFC',    # Inline
+        allow_encrypt_data_in_db => 0,
+    } >>
+
+=item C<gnupg_options>
+
+Options of GnuPG program.
+
+If you override this in your RT_SiteConfig, you should be sure
+to include a homedir setting.
+
+NOTE that options with '-' character MUST be quoted.
+
+e.g. C<< {
+        homedir => '/home/jesse/svk/3.999-DANGEROUS/var/data/gpg',
+        keyserver => 'hkp://subkeys.pgp.net',
+       'auto-key-locate' => 'keyserver',
+       'auto-key-retrieve' => '',
+    } >>
+
+default: C<< { } >>
+
+=back
+
+=head1 Web Interface
+
+=over 4
+
+=item C<web_default_stylesheet>
+
+This determines the default stylesheet the RT web interface will use.
+RT ships with several themes by default:
+
+  web2            The totally new, default layout for RT 3.8
+  3.5-default     RT 3.5 and 3.6 original layout
+  3.4-compat      A 3.4 compatibility stylesheet to make RT look
+                  (mostly) like 3.4
+
+This value actually specifies a directory in F<share/html/NoAuth/css/>
+from which RT will try to load the file main.css (which should
+@import any other files the stylesheet needs).  This allows you to
+easily and cleanly create your own stylesheets to apply to RT.  This
+option can be overridden by users in their preferences.
+
+default: C<'web2'>
+
+=item C<username_format>
+
+This determines how user info is displayed. Concise will show one of 
+either NickName, RealName, Name or EmailAddress, depending on what exists 
+and whether the user is privileged or not. Verbose will show RealName and
+EmailAddress.
+
+default: C<'concise'>
+
+=item C<web_path>
+
+If you're putting the web ui somewhere other than at the root of
+your server, you should set C<web_path> to the path you'll be 
+serving RT at.
+
+C<web_path> requires a leading / but no trailing /.
+
+In most cases, you should leave C<web_path> set to '' (an empty value).
+
+default: C<"">
+
+=item C<web_images_url>
+
+C<web_images_url> points to the base URL where RT can find its images.
+Define the directory name to be used for images in rt web
+documents.
+
+default: C<"{{web_path}}/NoAuth/images/">
+
+=item C<logo_url>
+
+C<logo_url> points to the URL of the RT logo displayed in the web UI
+
+default: C<"{{web_images_url}}bplogo.gif">
+
+=item C<web_no_auth_regex>
+
+What portion of RT's URLspace should not require authentication.
+
+default: C<'(?x-ism:^ (?:\/+NoAuth\/ | \/+REST\/\d+\.\d+\/NoAuth\/) )' >
+
+=item C<self_service_regex>
+
+What portion of RT's URLspace should be accessible to Unprivileged users
+This does not override the redirect from F</Ticket/Display.html> to
+F</SelfService/Display.html> when Unprivileged users attempt to access
+ticked displays
+
+default: C<'^(?:\/+SelfService\/)' >
+
+=item C<message_box_width>, C<message_box_height>
+
+For message boxes, set the entry box width, height and what type of
+wrapping to use.  These options can be overridden by users in their
+preferences.
+
+Default width: 72, height: 15
+
+These settings only apply to the non-RichText message box.
+See below for Rich Text settings.
+
+default:
+message_box_width => C<72>
+message_box_width => C<15>
+
+=item C<message_box_wrap>
+
+Default wrapping: "HARD"  (choices "SOFT", "HARD")
+
+default: C<"HARD">
+
+=item C<message_box_rich_text>
+
+Should "rich text" editing be enabled? This option lets your users send html email messages from the web interface.
+
+default: C<1>
+
+=item C<message_box_rich_text_height>
+
+Height of RichText javascript enabled editing boxes (in pixels)
+
+default: C<200>
+
+=item C<message_box_include_signature>
+
+Should your user's signatures (from their Preferences page) be included in comments and Replies
+
+default: C<1>
+
+=item C<wiki_implicit_links>
+
+Support implicit links in WikiText custom fields?  A true value
+causes InterCapped or ALLCAPS words in WikiText fields to
+automatically become links to searches for those words.  If used on
+RTFM articles, it links to the RTFM article with that name.
+
+default: C<0>
+
+=item C<trust_html_attachments>
+
+if C<TrustHTMLAttachments> is not defined, we will display them
+as text. This prevents malicious HTML and javascript from being
+sent in a request (although there is probably more to it than that)
+
+default: C<undef>
+
+=item C<redistribute_auto_generated_messages>
+
+Should RT redistribute correspondence that it identifies as
+machine generated? A true value will do so; setting this to '0'
+will cause no such messages to be redistributed.
+You can also use 'privileged' (the default), which will redistribute
+only to privileged users. This helps to protect against malformed
+bounces and loops caused by autocreated requestors with bogus addresses.
+
+default: C<'privileged'>
+
+=item C<prefer_rich_text>
+
+If C<prefer_rich_text> is set to a true value, RT will show HTML/Rich text
+messages in preference to their plaintext alternatives. RT "scrubs" the 
+html to show only a minimal subset of HTML to avoid possible contamination
+by cross-site-scripting attacks.
+
+default: C<undef>
+
+=item C<web_external_auth>
+
+If C<web_external_auth> is defined, RT will defer to the environment's
+REMOTE_USER variable.
+
+default: C<undef>
+
+=item C<web_fallback_to_internal_auth>
+
+If C<web_fallback_to_internal_auth> is ''ined, the user is allowed a chance
+of fallback to the login screen, even if REMOTE_USER failed.
+
+default: C<undef>
+
+=item C<web_external_gecos>
+
+C<web_external_gecos> means to match 'gecos' field as the user identity);
+useful with mod_auth_pwcheck and IIS Integrated Windows logon.
+
+default: C<undef>
+
+=item C<web_external_auto>
+
+C<web_external_auto> will create users under the same name as REMOTE_USER
+upon login, if it's missing in the Users table.
+
+default: C<undef>
+
+=item C<auto_create>
+
+If C<web_external_auto> is true, C<auto_create> will be passed to User's
+Create method.  Use it to set defaults, such as creating 
+Unprivileged users with C<{ privileged => 0 }>
+( Must be a hashref of arguments )
+
+default: C<undef>
+
+=item C<web_session_class>
+
+C<web_session_class> is the class you wish to use for managing Sessions.
+It defaults to use your SQL database, but if you are using MySQL 3.x and
+plans to use non-ascii Queue names, uncomment and add this line to
+F<RT_SiteConfig.pm> will prevent session corruption.
+
+e.g. C<'Apache::Session::File'>
+
+=item C<auto_logoff>
+
+By default, RT's user sessions persist until a user closes his or her 
+browser. With the C<auto_logoff> option you can setup session lifetime in 
+minutes. A user will be logged out if he or she doesn't send any requests 
+to RT for the defined time.
+
+default: C<0>
+
+=item C<web_secure_cookies>
+
+By default, RT's session cookie isn't marked as "secure" Some web browsers 
+will treat secure cookies more carefully than non-secure ones, being careful
+not to write them to disk, only send them over an SSL secured connection 
+and so on. To enable this behaviour, set C<web_secure_cookies> to a true value. 
+NOTE: You probably don't want to turn this on _unless_ users are only connecting
+via SSL encrypted HTTP connections.
+
+default: C<0>
+
+=item C<web_flush_db_cache_every_request>
+
+By default, RT clears its database cache after every page view.
+This ensures that you've always got the most current information 
+when working in a multi-process (mod_perl or FastCGI) Environment
+Setting C<web_flush_db_cache_every_request> to '0' will turn this off,
+which will speed RT up a bit, at the expense of a tiny bit of data 
+accuracy.
+
+default: C<'1'>
+
+
+=item C<max_inline_body>
+
+C<max_inline_body> is the maximum attachment size that we want to see
+inline when viewing a transaction.  RT will inline any text if value
+is ''ined or 0.  This option can be overridden by users in their
+preferences.
+
+default: C<12000>
+
+=item C<default_summary_rows>
+
+C<default_summary_rows> is default number of rows displayed in for search
+results on the frontpage.
+
+default: C<10>
+
+=item C<oldest_transactions_first>
+
+By default, RT shows newest transactions at the bottom of the ticket
+history page, if you want see them at the top set this to '0'.  This
+option can be overridden by users in their preferences.
+
+default: C<'1'>
+
+=item C<show_transaction_images>
+
+By default, RT shows images attached to incoming (and outgoing) ticket updates
+inline. Set this variable to 0 if you'd like to disable that behaviour
+
+default: C<1>
+
+=item C<plain_text_pre>
+
+Normally plaintext attachments are displayed as HTML with line
+breaks preserved.  This causes space- and tab-based formatting not
+to be displayed correctly.  By setting $plain_text_pre they'll be
+displayed using <pre> instead so such formatting works, but they'll
+use a monospaced font.
+
+default: C<0>
+
+
+=item C<show_unread_message_notifications>
+
+By default, RT will prompt users when there are new, unread messages on
+tickets they are viewing.
+
+Set C<show_unread_message_notifications> to a false value to disable this feature.
+
+default: C<1>
+
+
+=item C<homepage_components>
+
+C<homepage_components> is an arrayref of allowed components on a user's
+customized homepage ("RT at a glance").
+
+default: C<[qw(QuickCreate QuickSearch MyAdminQueues MySupportQueues MyReminders RefreshHomepage Dashboards)]>
+
+
+=item C<mason_parameters>
+
+C<mason_parameters> is the list of parameters for the constructor of
+HTML::Mason's Apache or CGI Handler.  This is normally only useful
+for debugging, eg. profiling individual components with:
+
+    use MasonX::Profiler; # available on CPAN
+    default: C<[preamble => 'my $p = MasonX::Profiler->new($m, $r);']>
+
+default: C<[]>
+
+=item C<default_search_result_format>
+
+default format for RT search results
+
+default: C<< qq{
+   '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+   '<B><A HREF="__WebPath__/Ticket/Display.html?id=__id__">__subject__</a></B>/TITLE:subject',
+   status,
+   queue_name, 
+   owner_name, 
+   priority, 
+   '__NEWLINE__',
+   '', 
+   '<small>__requestors__</small>',
+   '<small>__created_relative__</small>',
+   '<small>__told_relative__</small>',
+   '<small>__last_updated_relative__</small>',
+   '<small>__time_left__</small>'} >>
+
+
+=item C<suppress_inline_text_files>
+
+If C<suppress_inline_text_files> is set to a true value, then uploaded
+text files (text-type attachments with file names) are prevented
+from being displayed in-line when viewing a ticket's history.
+
+default: C<undef>
+
+=item C<dont_search_file_attachments>
+
+If C<dont_search_file_attachments> is set to a true value, then uploaded
+files (attachments with file names) are not searched during full-content
+ticket searches.
+
+default: C<undef>
+
+=item C<chart_font>
+
+The L<GD> module (which RT uses for graphs) uses a builtin font that doesn't
+have full Unicode support. You can use a particular TrueType font by setting
+$chart_font to the absolute path of that font. Your GD library must have
+support for TrueType fonts to use this option.
+
+default: C<undef>
+
+
+=item C<active_make_clicky>
+
+MakeClicky detects various formats of data in headers and email
+messages, and extends them with supporting links.  By default, RT
+provides two formats:
+
+* 'httpurl': detects http:// and https:// URLs and adds '[Open URL]'
+  link after the URL.
+
+* 'httpurl_overwrite': also detects URLs as 'httpurl' format, but
+  replace URL with link and *adds spaces* into text if it's longer
+  then 30 chars. This allow browser to wrap long URLs and avoid
+  horizontal scrolling.
+
+See F<share/html/Elements/MakeClicky> for documentation on how to add your own.
+
+default: C<[]>
+
+=item C<default_queue>
+
+Use this to select the default queue name that will be used for creating new
+tickets. You may use either the queue's name or its ID. This only affects the
+queue selection boxes on the web interface.
+
+default: C<'General'>
+
+=back
+
+=head1 rt-server
+
+=over 4
+
+=item C<standalone_min_servers>, C<standalone_max_servers>
+
+The absolute minimum and maximum number of servers that will be created to
+handle requests. Having multiple servers means that serving a slow page will
+affect other users less.
+
+default:
+standalone_min_servers => C<1>
+standalone_max_servers => C<1>
+
+=item C<standalone_min_spare_servers>, C<standalone_max_spare_servers>
+
+These next two options can be used to scale up and down the number of servers
+to adjust to load. These two options will respect the C<$standalone_min_servers
+> and C<$standalone_max_servers options>.
+default:
+standalone_min_spare_servers => C<0>
+standalone_max_spare_servers => C<0>
+
+=item C<standalone_max_requests>
+
+This sets the absolute maximum number of requests a single server will serve.
+Setting this would be useful if, for example, memory usage slowly crawls up
+every hit.
+
+default: C<50>
+
+=item C<net_server_options>
+
+C<net_server_options> is a hash of additional options to use for
+L<Net::Server/DEFAULT ARGUMENTS>. For example, you could set
+reverse_lookups to get the hostnames for all users with:
+
+C<< {reverse_lookups => 1} >>
+
+default: C<[]>
+
+=back
+
+=head1 UTF-8
+
+=over 4
+
+=item C<lexicon_languages>
+
+An array that contains languages supported by RT's internationalization
+interface.  Defaults to all *.po lexicons; setting it to C<qw(en ja)> will make
+RT bilingual instead of multilingual, but will save some memory.
+
+default: C<[qw(*)]>
+
+=item C<email_input_encodings>
+
+An array that contains default encodings used to guess which charset
+an attachment uses if not specified.  Must be recognized by
+L<Encode::Guess>.
+
+default: C<[qw(utf-8 iso-8859-1 us-ascii)]>
+
+=item C<email_output_encoding>
+
+The charset for localized email.  Must be recognized by Encode.
+
+default: C<'utf-8'>
+
+
+=back
+
+=head1 Date Handling
+
+=over 4
+
+=item C<date_time_format>
+
+You can choose date and time format. This takes a L<DateTime/strftime> format
+specification. See L<DateTime/strftime_Patterns> for a full list of variables.
+
+This option can be overridden by users in their preferences.
+
+Some examples: C<'iso'>, C<'rfc2822'>
+
+default: C<'iso'>
+
+=item C<date_day_before_month>
+
+Set this to 1 if your local date convention looks like "dd/mm/yy"
+instead of "mm/dd/yy".
+
+default: C<1>
+
+=item C<ambiguous_day_in_past>, C<ambiguous_day_in_future>
+
+Should an unspecified day or year in a date refer to a future or a
+past value? For example, should a date of "Tuesday" default to mean
+the date for next Tuesday or last Tuesday? Should the date "March 1"
+default to the date for next March or last March?
+
+Set $<AmbiguousDayInPast> for the last date, or $<$ambiguous_day_in_future> for the
+next date.
+
+The default is usually good.
+
+default:
+
+ambiguous_day_in_past => C<0>
+
+ambiguous_day_in_future => C<0>
+
+=back
+
+=head1 Miscellaneous
+
+=over 4
+
+=item C<active_status>, C<inactive_status>
+
+You can define new statuses and even reorder existing statuses here.
+WARNING. DO NOT DELETE ANY OF THE DEFAULT STATUSES. If you do, RT
+will break horribly. The statuses you add must be no longer than
+10 characters.
+
+default:
+active_status => C<[qw(new open stalled)]>
+inactive_status =>  C<[qw(resolved rejected deleted)]>
+
+=item C<link_transactions_run1_scrip>
+
+RT-3.4 backward compatibility setting. Add/Delete Link used to record one
+transaction and run one scrip. Set this value to 1 if you want
+only one of the link transactions to have scrips run.
+
+default: C<0>
+
+=item C<strict_link_acl>
+
+When this feature is enabled a user needs I<ModifyTicket> rights on both
+tickets to link them together, otherwise he can have rights on either of
+them.
+
+default: C<1>
+
+=item C<preview_scrip_messages>
+
+Set C<preview_scrip_messages> to 1 if the scrips preview on the ticket
+reply page should include the content of the messages to be sent.
+
+default: C<0>
+
+=item C<use_transaction_batch>
+
+Set C<use_transaction_batch> to 1 to execute transactions in batches,
+such that a resolve and comment (for example) would happen
+simultaneously, instead of as two transactions, unaware of each
+others' existence.
+
+default: C<1>
+
+=item C<custom_field_values_sources>
+
+Set C<custom_field_values_sources> to a list of class names which extend
+L<RT::CustomFieldValues::External>.  This can be used to pull lists of
+custom field values from external sources at runtime.
+
+default: C<[]>
+
+=item C<canonicalize_redirect_urls>
+
+Set C<canonicalize_redirect_urls> to 1 to use $c<WebURL> when redirecting rather
+than the one we get from C<env>.
+
+If you use RT behind a reverse proxy, you almost certainly want to
+enable this option.
+
+default: C<0>
+
+=item C<enable_reminders>
+
+Hide links/portlets related to Reminders by setting this to 0
+
+default: C<1>
+
+=back
+
+=head1 Deprecated Options
+
+=over 4
+
+=item C<always_use_base64>
+
+Encode blobs as base64 in DB (?)
+
+=item C<ticket_base_uri>
+
+Base URI to tickets in this system; used when loading (?)
+
+=item C<use_code_tickets>
+
+This option is exists for backwards compatibility.  Don't use it.
+
+=back
 
 =cut
-
-=head2 %META
-
-Hash of Config options that may be user overridable
-or may require more logic than should live in RT_*Config.pm
-
-Keyed by config name, there are several properties that
-can be set for each config optin:
-
- section     - What header this option should be grouped
-               under on the user Settings page
- overridable - Can users change this option
- sortorder   - Within a section, how should the options be sorted
-               for display to the user
- widget      - Mason component path to widget that should be user 
-               to display this config option
- widget_arguments - An argument hash passed to the widget
-    description - Friendly description to show the user
-    values      - Arrayref of options (for select widget)
-    values_label - Hashref, key is the Value from the values
-                  list, value is a user friendly description
-                  of the value
-    callback    - subref that receives no arguments.  It returns
-                  a hashref of items that are added to the rest
-                  of the widget_aarguments
- post_load_check - subref passed the RT::Config object and the current
-                 setting of the config option.  Can make further checks
-                 (such as seeing if a library is installed) and then change
-                 the setting of this or other options in the Config using 
-                 the RT::Config option.
-
-=cut
-
-
-
-our %META = (
-    # General user overridable options
-    DefaultQueue => {
-        section         => 'General',
-        overridable     => 1,
-        sortorder       => 1,
-        widget          => '/Widgets/Form/Select',
-        widget_arguments => {
-            description => 'default queue',    #loc
-            callback    => sub {
-                my $ret = { values => [], values_label => {} };
-                my $qs = RT::Model::QueueCollection->new;
-                $qs->unlimit;
-                while ( my $queue = $qs->next ) {
-                    next unless $queue->current_user_has_right("CreateTicket");
-                    push @{ $ret->{values} }, $queue->id;
-                    $ret->{values_label}{ $queue->id } = $queue->name;
-                }
-                return $ret;
-            },
-        }
-    },
-    UsernameFormat => {
-        section         => 'General',
-        overridable     => 1,
-        sortorder       => 2,
-        widget          => '/Widgets/Form/Select',
-        widget_arguments => {
-            description => 'Username format',       # loc
-            values      => [qw(concise verbose)],
-            values_label => {
-                concise => 'Short usernames',           # loc_left_pair
-                verbose => 'Name and email address',    # loc_left_pair
-            },
-        },
-    },
-        
-    WebDefaultStylesheet => {
-        section         => 'General',                #loc
-        overridable     => 1,
-        sortorder       => 3,
-        widget          => '/Widgets/Form/Select',
-        widget_arguments => {
-            description => 'Theme',                  #loc
-                 # XXX: we need support for 'get values callback'
-            values => [qw(3.5-default 3.4-compat web2)],
-        },
-    },
-    DefaultSummaryRows => {
-        section         => 'RT at a glance',          #loc
-        overridable     => 1,
-        widget          => '/Widgets/Form/Integer',
-        widget_arguments => {
-            description => 'Number of search results',    #loc
-        },
-    },
-    MessageBoxRichText => {
-        section         => 'General',
-        overridable     => 1,
-        sortorder       => 4,
-        widget          => '/Widgets/Form/Boolean',
-        widget_arguments => {
-            description => 'WYSIWYG message composer'     # loc
-        }
-    },
-    MessageBoxRichTextHeight => {
-        section         => 'General',
-        overridable     => 1,
-        sortorder       => 5,
-        widget          => '/Widgets/Form/Integer',
-        widget_arguments => {
-            description => 'WYSIWYG composer height',    # loc
-        }
-    },
-    MessageBoxWidth => {
-        section         => 'General',
-        overridable     => 1,
-        sortorder       => 6,
-        widget          => '/Widgets/Form/Integer',
-        widget_arguments => {
-            description => 'Message box width',          #loc
-        },
-    },
-    MessageBoxHeight => {
-        section         => 'General',
-        overridable     => 1,
-        sortorder       => 7,
-        widget          => '/Widgets/Form/Integer',
-        widget_arguments => {
-            description => 'Message box height',         #loc
-        },
-    },
-
-    # User overridable options for RT at a glance
-    DefaultSummaryRows => {
-        section         => 'RT at a glance',             #loc
-        overridable     => 1,
-        widget          => '/Widgets/Form/Integer',
-        widget_arguments => {
-            description => 'Number of search results',    #loc
-        },
-    },
-
-    # User overridable options for Ticket displays
-    MaxInlineBody => {
-        section => 'Ticket display',    #loc
-        overridable     => 1,
-        sortorder       => 1,
-        widget          => '/Widgets/Form/Integer',
-        widget_arguments => {
-            description => 'Maximum inline message length',    #loc
-            hints =>
-"Length in characters; Use '0' to show all messages inline, regardless of length" #loc
-        },
-    },
-    OldestTransactionsFirst => {
-        section         => 'Ticket display', #loc
-        overridable     => 1,
-        sortorder       => 2,
-        widget          => '/Widgets/Form/Boolean',
-        widget_arguments => {
-            description => 'Show oldest transactions first',    #loc
-        },
-    },
-    ShowUnreadMessageNotifications => {
-        section         => 'Ticket display',
-        overridable     => 1,
-        sortorder       => 3,
-        widget          => '/Widgets/Form/Boolean',
-        widget_arguments => {
-            description => 'Notify me of unread messages',    #loc
-        },
-
-    },
-    PlainTextPre => {
-        section         => 'Ticket display',
-        overridable     => 1,
-        sortorder       => 4,
-        widget          => '/Widgets/Form/Boolean',
-        widget_arguments => {
-            description => 'Use monospace font',
-            hints       => "Use fixed-width font to display plaintext messages"
-        },
-    },
-    DateTimeFormat => {
-        section         => 'Locale', #loc
-        overridable     => 1,
-        widget          => '/Widgets/Form/Select',
-        widget_arguments => {
-            description => 'Date format', #loc
-            callback    => sub {
-                my $ret = { values => [], values_label => {} };
-                my $now = RT::DateTime->now;
-                for my $name (qw/rfc2822 rfc2616 iso iCal /) {
-                    push @{ $ret->{values} }, $name;
-                    $ret->{values_label}{$name} = "$name (" . $now->$name . ")";
-                }
-                return $ret;
-            },
-        },
-    },
-    EmailFrequency => {
-        section         => 'Mail',                   #loc
-        overridable     => 1,
-        default         => 'Individual messages',
-        widget          => '/Widgets/Form/Select',
-        widget_arguments => {
-            description => 'email delivery',         #loc
-            values      => [
-                'Individual messages',               #loc
-                'Daily digest',                      #loc
-                'Weekly digest',                     #loc
-                'Suspended'                          #loc
-            ]
-        }
-    },
-
-    # Internal config options
-    DisableGraphViz => {
-        type          => 'SCALAR',
-        post_load_check => sub {
-            my $self  = shift;
-            my $value = shift;
-            return if $value;
-            return if $INC{'GraphViz.pm'};
-            local $@;
-            return if eval { require GraphViz; 1 };
-            Jifty->log->debug(
-                "You've enabled GraphViz, but we couldn't load the module: $@");
-            $self->set( DisableGraphViz => 1 );
-        },
-    },
-    DisableGD => {
-        type          => 'SCALAR',
-        post_load_check => sub {
-            my $self  = shift;
-            my $value = shift;
-            return if $value;
-            return if $INC{'GD.pm'};
-            local $@;
-            return if eval { require GD; 1 };
-            Jifty->log->debug(
-                "You've enabled GD, but we couldn't load the module: $@");
-            $self->set( DisableGD => 1 );
-        },
-    },
-    MailPlugins  => { type => 'ARRAY' },
-    Plugins      => { type => 'ARRAY' },
-    GnuPG        => { type => 'HASH' },
-    GnuPGOptions => {
-        type          => 'HASH',
-        post_load_check => sub {
-            my $self = shift;
-            my $gpg  = $self->get('GnuPG');
-            return unless $gpg->{'enable'};
-            my $gpgopts = $self->get('GnuPGOptions');
-            unless ( -d $gpgopts->{homedir} && -r _ ) {    # no homedir, no gpg
-                Jifty->log->debug(
-                        "RT's GnuPG libraries couldn't successfully read your"
-                      . " configured GnuPG home directory ("
-                      . $gpgopts->{homedir}
-                      . "). PGP support has been disabled" );
-                $gpg->{'enable'} = 0;
-                return;
-            }
-            require RT::Crypt::GnuPG;
-            unless ( RT::Crypt::GnuPG->probe() ) {
-                Jifty->log->debug(
-                    "RT's GnuPG libraries couldn't successfully execute gpg."
-                      . " PGP support has been disabled" );
-                $gpg->{'enable'} = 0;
-            }
-          }
-    },
-);
-my %OPTIONS = ();
-
-=head1 METHODS
-
-=head2 new
-
-object constructor returns new Object. Takes no arguments.
-
-=cut
-
-sub new {
-    my $proto = shift;
-    my $class = ref($proto) ? ref($proto) : $proto;
-    my $self  = bless {}, $class;
-    $self->_init(@_);
-    return $self;
-}
-
-sub _init { return; }
-
-=head2 init_config
-
-=cut
-
-sub init_config {
-    my $self = shift;
-    my %args = ( file => '', @_ );
-    $args{'file'} =~ s/(?<=Config)(?=\.pm$)/Meta/;
-    return 1;
-}
-
-=head2 load_configs
-
-Load all configs. First of all load RT's config then load
-extensions' config files in alphabetical order.
-Takes no arguments.
-
-Do nothin right now.
-
-=cut
-
-sub load_configs {
-    my $self = shift;
-
-    $self->init_config( file => 'RT_Config.pm' );
-    $self->load_config( file => 'RT_Config.pm' );
-
-    my @configs = $self->configs;
-    $self->init_config( file => $_ ) foreach @configs;
-    $self->load_config( file => $_ ) foreach @configs;
-    return;
-}
-
-=head1 load_config
-
-Takes param hash with C<file> field.
-First, the site configuration file is loaded, in order to establish
-overall site settings like hostname and name of RT instance.
-Then, the core configuration file is loaded to set fallback values
-for all settings; it bases some values on settings from the site
-configuration file.
-
-B<Note> that core config file don't change options if site config
-has set them so to add value to some option instead of
-overriding you have to copy original value from core config file.
-
-=cut
-
-sub load_config {
-    my $self = shift;
-    my %args = ( file => '', @_ );
-    $args{'file'} =~ s/(?<!Site)(?=Config\.pm$)/Site/;
-    if ( $args{'file'} eq 'RT_SiteConfig.pm'
-        and my $site_config = $ENV{RT_SITE_CONFIG} )
-    {
-        $self->_load_config( %args, file => $site_config );
-    } else {
-        $self->_load_config(%args);
-    }
-    $args{'file'} =~ s/Site(?=Config\.pm$)//;
-    $self->_load_config(%args);
-    return 1;
-}
-
-sub _load_config {
-    my $self = shift;
-    my %args = ( file => '', @_ );
-
-    my $is_ext = $args{'file'} !~ /^RT_(?:Site)?Config/ ? 1 : 0;
-    my $is_site = $args{'file'} =~ /SiteConfig/ ? 1 : 0;
-
-    eval {
-        package RT;
-        local *set = sub(\[$@%]@) {
-            my ( $opt_ref, @args ) = @_;
-            my ( $pack, $file, $line ) = caller;
-            return $self->set_from_config(
-                option     => $opt_ref,
-                value      => [@args],
-                package    => $pack,
-                file       => $file,
-                line       => $line,
-                site_config => $is_site,
-                extension  => $is_ext,
-            );
-        };
-        my @etc_dirs = ($RT::LocalEtcPath);
-        push @etc_dirs, RT->plugin_dirs('etc') if $is_ext;
-        push @etc_dirs, $RT::EtcPath, @INC;
-        local @INC = @etc_dirs;
-        require $args{'file'};
-    };
-    if ($@) {
-        return 1 if $is_site && $@ =~ qr{^Can't locate \Q$args{file}};
-        if ( $is_site || $@ !~ qr{^Can't locate \Q$args{file}} ) {
-            die qq{Couldn't load RT config file $args{'file'}:\n\n$@};
-        }
-
-        my $username = getpwuid($>);
-        my $group    = getgrgid($();
-
-        my ( $file_path, $fileuid, $filegid );
-        foreach ( $RT::LocalEtcPath, $RT::EtcPath, @INC ) {
-            my $tmp = File::Spec->catfile( $_, $args{file} );
-            ( $fileuid, $filegid ) = ( stat($tmp) )[ 4, 5 ];
-            if ( defined $fileuid ) {
-                $file_path = $tmp;
-                last;
-            }
-        }
-        unless ($file_path) {
-            die
-qq{Couldn't load RT config file $args{'file'} as user $username / group $group.\n}
-              . qq{The file couldn't be found in $RT::LocalEtcPath and $RT::EtcPath.\n$@};
-        }
-
-        my $message = <<EOF;
-
-RT couldn't load RT config file %s as:
-    user: $username 
-    group: $group
-
-The file is owned by user %s and group %s.  
-
-This usually means that the user/group your webserver is running
-as cannot read the file.  Be careful not to make the permissions
-on this file too liberal, because it contains database passwords.
-You may need to put the webserver user in the appropriate group
-(%s) or change permissions be able to run succesfully.
-EOF
-
-        my $fileusername = getpwuid($fileuid);
-        my $filegroup    = getgrgid($filegid);
-        my $errormessage = sprintf( $message, $file_path, $fileusername, $filegroup, $filegroup );
-        die "$errormessage\n$@";
-    }
-    return 1;
-}
-
-=head2 configs
-
-Returns list of config files found in local etc, plugins' etc
-and main etc directories.
-
-
-=cut
-
-sub configs {
-    my $self = shift;
-
-    
-    my @configs = ();
-    foreach my $path ( $RT::LocalEtcPath, RT->plugin_dirs('etc'), $RT::EtcPath )
-    {
-        my $mask = File::Spec->catfile( $path, "*_Config.pm" );
-        my @files = glob $mask;
-        @files = grep !/^RT_Config\.pm$/, grep $_ && /^\w+_Config\.pm$/, map { s/^.*[\\\/]//; $_ } @files;
-        push @configs, sort @files;
-        
-    }
-
-    my %seen;
-    @configs = grep !$seen{$_}++, @configs;
-    
-    return @configs;
-}
-
-sub post_load_check {
-    my $self = shift;
-    foreach my $o (
-        grep $META{$_}{'post_load_check'},
-        $self->options( overridable => undef )
-      )
-    {
-        $META{$o}->{'post_load_check'}->( $self, $self->get($o) );
-    }
-}
-
-=head2 get
-
-Takes name of the option as argument and returns its current value.
-
-In the case of a user-overridable option, first checks the user's preferences before looking for site-wide configuration.
-
-Returns values from RT_SiteConfig, RT_Config and then the %META hash of configuration variables's "Default" for this config variable, in that order.
-
-
-Returns different things in scalar and array contexts. For scalar
-options it's not that important, however for arrays and hash it's.
-In scalar context returns references to arrays and hashes.
-
-Use C<scalar> perl's op to force context, especially when you use
-C<(..., Argument => RT->config->get('ArrayOpt'), ...)>
-as perl's '=>' op doesn't change context of the right hand argument to
-scalar. Instead use C<(..., Argument => scalar RT->config->get('ArrayOpt'), ...)>.
-
-It's also important for options that have no default value(no default
-in F<etc/RT_Config.pm>). If you don't force scalar context then you'll
-get empty list and all your named args will be messed up. For example
-C<(arg1 => 1, arg2 => RT->config->get('OptionDoesNotExist'), arg3 => 3)>
-will result in C<(arg1 => 1, arg2 => 'arg3', 3)> what is most probably
-unexpected, or C<(arg1 => 1, arg2 => RT->config->get('ArrayOption'), arg3 => 3)>
-will result in C<(arg1 => 1, arg2 => 'element of option', 'another_one' => ..., 'arg3', 3)>.
-
-=cut
-
-sub get {
-    my ( $self, $name, $user ) = @_;
-
-    if ( $name ne 'rtname' && $name !~ /[A-Z]/ ) {
-        # we need to rename it to be UpperCamelCase
-        $name = renaming( $name, { convention => 'UpperCamelCase' } );
-    }
-
-    my $res;
-    if ( $user && $user->id && $META{$name}->{'overridable'} ) {
-        $user = $user->user_object if $user->isa('RT::CurrentUser');
-        my $prefs = $user->preferences( RT->system );
-        $res = $prefs->{$name} if $prefs;
-    }
-    $res = $OPTIONS{$name}           unless defined $res;
-    $res = $META{$name}->{'Default'} unless defined $res;
-    return $self->_return_value( $res, $META{$name}->{'type'} || 'SCALAR' );
-}
-
-=head2 set
-
-Set option's value to new value. Takes name of the option and new value.
-Returns old value.
-
-The new value should be scalar, array or hash depending on type of the option.
-If the option is not defined in meta or the default RT config then it is of
-scalar type.
-
-=cut
-
-sub set {
-    my ( $self, $name ) = ( shift, shift );
-
-    if ( $name ne 'rtname' && $name !~ /[A-Z]/ ) {
-        # we need to rename it to be UpperCamelCase
-        $name = renaming( $name, { convention => 'UpperCamelCase' } );
-    }
-
-    my $old = $OPTIONS{$name};
-    my $type = $META{$name}->{'type'} || 'SCALAR';
-    if ( $type eq 'ARRAY' ) {
-        $OPTIONS{$name} = [@_];
-        { no warnings 'once'; no strict 'refs'; @{"RT::$name"} = (@_); }
-    } elsif ( $type eq 'HASH' ) {
-        $OPTIONS{$name} = {@_};
-        { no warnings 'once'; no strict 'refs'; %{"RT::$name"} = (@_); }
-    } else {
-        $OPTIONS{$name} = shift;
-        {
-            no warnings 'once';
-            no strict 'refs';
-            ${"RT::$name"} = $OPTIONS{$name};
-        }
-    }
-    $META{$name}->{'type'} = $type;
-    return $self->_return_value( $old, $type );
-}
-
-sub _return_value {
-    my ( $self, $res, $type ) = @_;
-    return $res unless wantarray;
-
-    if ( $type eq 'ARRAY' ) {
-        return @{ $res || [] };
-    } elsif ( $type eq 'HASH' ) {
-        return %{ $res || {} };
-    }
-    return $res;
-}
-
-sub set_from_config {
-    my $self = shift;
-    my %args = (
-        option     => undef,
-        value      => [],
-        package    => 'RT',
-        file       => '',
-        line       => 0,
-        site_config => 1,
-        extension  => 0,
-        @_
-    );
-
-    unless ( $args{'file'} ) {
-        ( $args{'package'}, $args{'file'}, $args{'line'} ) = caller(1);
-    }
-
-    my $opt = $args{'option'};
-
-    my $type;
-    my $name = $self->__getname_by_ref($opt);
-    if ($name) {
-        $type = ref $opt;
-        $name =~ s/.*:://;
-    } else {
-        $name = $$opt;
-        $type = $META{$name}->{'type'} || 'SCALAR';
-    }
-
-    return 1 if exists $OPTIONS{$name} && !$args{'site_config'};
-
-    $META{$name}->{'type'} = $type;
-    foreach (qw(package file line site_config extension)) {
-        $META{$name}->{'Source'}->{$_} = $args{$_};
-    }
-    $self->set( $name, @{ $args{'value'} } );
-
-    return 1;
-}
-
-{
-    my $last_pack = '';
-
-    sub __getname_by_ref {
-        my $self = shift;
-        my $ref  = shift;
-        my $pack = shift;
-        if ( !$pack && $last_pack ) {
-            my $tmp = $self->__getname_by_ref( $ref, $last_pack );
-            return $tmp if $tmp;
-        }
-        $pack ||= 'main::';
-        $pack .= '::' unless substr( $pack, -2 ) eq '::';
-
-        my %ref_sym = (
-            SCALAR => '$',
-            ARRAY  => '@',
-            HASH   => '%',
-            CODE   => '&',
-        );
-        no strict 'refs';
-        my $name = undef;
-
-        # scan $pack's nametable(hash)
-        foreach my $k ( keys %{$pack} ) {
-
-            # hash for main:: has reference on itself
-            next if $k eq 'main::';
-
-            # if entry has trailing '::' then
-            # it is link to other name space
-            if ( $k =~ /::$/ ) {
-                $name = $self->__getname_by_ref( $ref, $k );
-                return $name if $name;
-            }
-
-            # entry of the table with references to
-            # SCALAR, ARRAY... and other types with
-            # the same name
-            my $entry = ${$pack}{$k};
-            next unless $entry;
-
-            # get entry for type we are looking for
-            # XXX skip references to scalars or other references.
-            # Otherwie 5.10 goes boom. may be we should skip any
-            # reference
-            return if ref($entry) eq 'SCALAR' || ref($entry) eq 'REF';
-            my $entry_ref = *{$entry}{ ref($ref) };
-            next unless $entry_ref;
-
-            # if references are equal then we've found
-            if ( $entry_ref == $ref ) {
-                $last_pack = $pack;
-                return ( $ref_sym{ ref($ref) } || '*' ) . $pack . $k;
-            }
-        }
-        return '';
-    }
-}
-
-=head2 metadata
-
-
-=head2 meta
-
-=cut
-
-sub meta {
-    return $META{ $_[1] };
-}
-
-sub sections {
-    my $self = shift;
-    my %seen;
-    return sort
-        grep !$seen{$_}++, map $_->{'section'} || 'General', values %META;
-}
-
-sub options {
-    my $self = shift;
-    my %args = ( section => undef, overridable => 1, @_ );
-    my @res  = sort {
-        ( $META{$a}->{sortorder} || 9999 )
-          <=> ( $META{$b}->{sortorder} || 9999 )
-          || $a cmp $b
-    } keys %META;
-    
-    @res = grep( ( $META{$_}->{'section'} || 'General' ) eq $args{'section'}, @res )
-        if defined $args{'section'};
-    if ( defined $args{'overridable'} ) {
-        @res = grep( ( $META{$_}->{'overridable'} || 0 ) == $args{'overridable'}, @res );
-    }
-    return @res;
-}
 
 1;

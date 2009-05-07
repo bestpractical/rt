@@ -66,7 +66,7 @@ return unless $self;
 $arguments => {}
 </%ARGS>
 <%INIT>
-return undef unless RT->config->get('GnuPG')->{'enable'};
+return undef unless RT->config->get('gnupg')->{'enable'};
 
 require RT::Crypt::GnuPG;
 return { %$arguments };
@@ -127,8 +127,8 @@ if ( $self->{'sign'} ) {
 
     my $address = $self->{'sign_using'};
     $address ||= ($self->{'update_type'} && $self->{'update_type'} eq "private")
-        ? ( $queue_obj->comment_address || RT->config->get('CommentAddress') )
-        : ( $queue_obj->correspond_address || RT->config->get('CorrespondAddress') );
+        ? ( $queue_obj->comment_address || RT->config->get('comment_address') )
+        : ( $queue_obj->correspond_address || RT->config->get('correspond_address') );
 
     unless ( RT::Crypt::GnuPG::dry_sign( $address ) ) {
         push @{ $self->{'GnuPGCanNotSignAs'} ||= [] }, $address;

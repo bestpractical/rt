@@ -18,7 +18,7 @@ my $user_d = RT::Model::User->new( current_user => RT->system_user );
 ok( $ret, "user with daily digest email prefs created: $msg" );
 # Set a username & password for testing the interface.
 $user_d->set_privileged( 1 );
-$user_d->set_preferences(RT->system => { %{ $user_d->preferences( RT->system ) || {}}, EmailFrequency => 'Daily digest'});
+$user_d->set_preferences(RT->system => { %{ $user_d->preferences( RT->system ) || {}}, email_frequency => 'Daily digest'});
 
 
 
@@ -26,16 +26,16 @@ my $user_w = RT::Model::User->new(current_user => RT->system_user );
 ( $ret, $msg ) = $user_w->load_or_create_by_email( $users[2] );
 ok( $ret, "user with weekly digest email prefs created: $msg" );
 $user_w->set_privileged( 1 );
-$user_w->set_preferences(RT->system => { %{ $user_w->preferences( RT->system ) || {}}, EmailFrequency => 'Weekly digest'});
+$user_w->set_preferences(RT->system => { %{ $user_w->preferences( RT->system ) || {}}, email_frequency => 'Weekly digest'});
 
 my $user_s = RT::Model::User->new(current_user => RT->system_user );
 ( $ret, $msg ) = $user_s->load_or_create_by_email( $users[3] );
 ok( $ret, "user with suspended email prefs created: $msg" );
-$user_s->set_preferences(RT->system => { %{ $user_s->preferences( RT->system ) || {}}, EmailFrequency => 'Suspended'});
+$user_s->set_preferences(RT->system => { %{ $user_s->preferences( RT->system ) || {}}, email_frequency => 'Suspended'});
 $user_s->set_privileged( 1 );
 
 
-is(RT->config->get('EmailFrequency' => $user_s), 'Suspended');
+is(RT->config->get('email_frequency' => $user_s), 'Suspended');
 
 # Make a testing queue for ourselves.
 my $testq = RT::Model::Queue->new(current_user => RT->system_user );

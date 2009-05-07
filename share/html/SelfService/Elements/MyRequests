@@ -70,8 +70,8 @@ if ( @status ) {
         . " )";
 }
 my $format = qq{
-   '<B><A HREF="}. RT->config->get('WebPath') .qq{/SelfService/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-   '<B><A HREF="}. RT->config->get('WebPath') .qq{/SelfService/Display.html?id=__id__">__subject__</a></B>/TITLE:subject',
+   '<B><A HREF="}. RT->config->get('web_path') .qq{/SelfService/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+   '<B><A HREF="}. RT->config->get('web_path') .qq{/SelfService/Display.html?id=__id__">__subject__</a></B>/TITLE:subject',
    Status,
    Requestors,
    owner_name};

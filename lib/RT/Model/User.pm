@@ -193,8 +193,8 @@ sub create {
         $args{'password'} = '*NO-PASSWORD*';
     }
 
-    elsif ( length( $args{'password'} ) < RT->config->get('MinimumPasswordLength') ) {
-        return ( 0, _( "password needs to be at least %1 characters long", RT->config->get('MinimumPasswordLength') ) );
+    elsif ( length( $args{'password'} ) < RT->config->get('minimum_password_length') ) {
+        return ( 0, _( "password needs to be at least %1 characters long", RT->config->get('minimum_password_length') ) );
     }
 
     unless ( $args{'name'} ) {
@@ -637,7 +637,7 @@ sub email_frequency {
     return 'squelched'
       if $args{'ticket'}
           && grep lc $email eq lc $_->content, $args{'ticket'}->squelch_mail_to;
-    my $frequency = RT->config->get( 'EmailFrequency', $self ) || '';
+    my $frequency = RT->config->get( 'email_frequency', $self ) || '';
     return 'daily'  if $frequency =~ /daily/i;
     return 'weekly' if $frequency =~ /weekly/i;
     return '';
@@ -662,8 +662,8 @@ sub canonicalize_email {
     # Example: the following rule would treat all email
     # coming from a subdomain as coming from second level domain
     # foo.com
-    if (    my $match = RT->config->get('CanonicalizeEmailMatch')
-        and my $replace = RT->config->get('CanonicalizeEmailReplace') )
+    if (    my $match = RT->config->get('canonicalize_email_match')
+        and my $replace = RT->config->get('canonicalize_email_replace') )
     {
         $email =~ s/$match/$replace/gi;
     }
@@ -709,13 +709,13 @@ sub set_random_password {
     }
 
     my $min = (
-          RT->config->get('MinimumPasswordLength') > 6
-        ? RT->config->get('MinimumPasswordLength')
+          RT->config->get('minimum_password_length') > 6
+        ? RT->config->get('minimum_password_length')
         : 6
     );
     my $max = (
-          RT->config->get('MinimumPasswordLength') > 8
-        ? RT->config->get('MinimumPasswordLength')
+          RT->config->get('minimum_password_length') > 8
+        ? RT->config->get('minimum_password_length')
         : 8
     );
     my $pass = Text::Password::Pronounceable->generate( $min => $max );
@@ -749,8 +749,8 @@ sub before_set_password {
 
     if ( !$password ) {
         return ( 0, _("No password set") );
-    } elsif ( length($password) < RT->config->get('MinimumPasswordLength') ) {
-        return ( 0, _( "password needs to be at least %1 characters long", RT->config->get('MinimumPasswordLength') ) );
+    } elsif ( length($password) < RT->config->get('minimum_password_length') ) {
+        return ( 0, _( "password needs to be at least %1 characters long", RT->config->get('minimum_password_length') ) );
     }
     return ( 1, "ok" );
 
@@ -1274,7 +1274,7 @@ return it). Returns C<undef> if no preferred key can be found.
 
 sub preferred_key {
     my $self = shift;
-    return undef unless RT->config->get('GnuPG')->{'enable'};
+    return undef unless RT->config->get('gnupg')->{'enable'};
     my $prefkey = $self->first_attribute('preferred_key');
     return $prefkey->content if $prefkey;
 

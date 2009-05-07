@@ -65,24 +65,24 @@ before qr/.*/ => run {
 before qr/.*/ => run {
     if ( RT->install_mode ) {
         my $path = Jifty->web->request->path;
-        if (   $path !~ RT->config->get('WebNoAuthRegex')
+        if (   $path !~ RT->config->get('web_no_auth_regex')
             && $path !~ m{^(/+)Install/} && $path !~ m{^/+log(in|out)} )
         {
             Jifty->web->redirect(
-                RT->config->get('WebPath') . "Install/index.html"
+                RT->config->get('web_path') . "Install/index.html"
             );
         }
     }
 }
 
 before qr/.*/ => run {
-    if ( int RT->config->get('AutoLogoff') ) {
+    if ( int RT->config->get('auto_logoff') ) {
         my $now = int( time / 60 );
 
         # XXX TODO 4.0 port this;
         my $last_update;
         if ( $last_update
-            && ( $now - $last_update - RT->config->get('AutoLogoff') ) > 0 )
+            && ( $now - $last_update - RT->config->get('auto_logoff') ) > 0 )
         {
 
             # clean up sessions, but we should leave the session id
@@ -110,7 +110,7 @@ before qr/.*/ => run {
 before qr'^/(?!login)' => run {
     tangent '/login'
         unless ( Jifty->web->current_user->id
-        || Jifty->web->request->path =~ RT->config->get('WebNoAuthRegex')
+        || Jifty->web->request->path =~ RT->config->get('web_no_auth_regex')
         || Jifty->web->request->path =~ m{^/Elements/Header$}
         || Jifty->web->request->path =~ m{^/Elements/Footer$}
         || Jifty->web->request->path =~ m{^/Elements/Logo$}
@@ -137,12 +137,12 @@ before qr/(.*)/ => run {
 
         # if the user is trying to access a ticket, redirect them
         if ( $path =~ '^(/+)Ticket/Display.html' && get('id') ) {
-            Jifty->web->redirect( RT->config->get('WebURL') . "SelfService/Display.html?id=" . get('id') );
+            Jifty->web->redirect( Jifty->web->url . "SelfService/Display.html?id=" . get('id') );
         }
 
         # otherwise, drop the user at the SelfService default page
         elsif ( $path !~ '^(/+)SelfService/' ) {
-            Jifty->web->redirect( RT->config->get('WebURL') . "SelfService/" );
+            Jifty->web->redirect( Jifty->web->url . "SelfService/" );
         }
     }
 

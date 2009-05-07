@@ -1,0 +1,160 @@
+#!/usr/bin/env perl -w
+# BEGIN BPS TAGGED BLOCK {{{
+#
+# COPYRIGHT:
+#
+# This software is Copyright (c) 1996-2007 Best Practical Solutions, LLC
+#                                          <jesse@bestpractical.com>
+#
+# (Except where explicitly superseded by other copyright notices)
+#
+#
+# LICENSE:
+#
+# This work is made available to you under the terms of Version 2 of
+# the GNU General Public License. A copy of that license should have
+# been provided with this software, but in any event can be snarfed
+# from www.gnu.org.
+#
+# This work is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 or visit their web page on the internet at
+# http://www.gnu.org/copyleft/gpl.html.
+#
+#
+# CONTRIBUTION SUBMISSION POLICY:
+#
+# (The following paragraph is not intended to limit the rights granted
+# to you to modify and distribute this software under the terms of
+# the GNU General Public License and is only of importance to you if
+# you choose to contribute your changes and enhancements to the
+# community by submitting them to Best Practical Solutions, LLC.)
+#
+# By intentionally submitting any modifications, corrections or
+# derivatives to this work, or any other work intended for use with
+# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+# you are the copyright holder for those contributions and you grant
+# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+# royalty-free, perpetual, license to use, copy, create derivative
+# works based on those contributions, and sublicense and distribute
+# those contributions and any derivatives thereof.
+#
+# END BPS TAGGED BLOCK }}}
+use strict;
+use warnings;
+
+BEGIN {
+    use RT;
+    RT->init_jifty;
+}
+
+use Getopt::Long;
+use Data::Dumper;
+local $Data::Dumper::Terse = 1; # to show only values
+
+my %args;
+die "unknown option"
+  unless GetOptions( \%args, 'name=s', 'value=s', 'show',
+    'without-doc', 'help', );
+
+# so we can run: $0 rtname example.com
+if ( @ARGV ) {
+    $args{name} = shift unless defined $args{name};
+    $args{value} = shift unless defined $args{value};
+}
+
+# XXX currently, $args{value} only supports string values.
+# maybe we need to add undef and ref supports too
+if ( $args{name} && defined $args{value} && ! $args{show} ) {
+    RT->config->set( $args{name}, $args{value} );
+    print 'updated with success' . "\n";
+}
+else {
+    my %doc;
+
+    if ( ! $args{'without-doc'} ) {
+        eval {
+            require Pod::POM;
+        };
+        if ( $@ ) {
+            warn "doc needs Pod::POM installed";
+        }
+        else {
+            my $parser = Pod::POM->new;
+            my $pom =
+              $parser->parse_file( $RT::BASE_PATH . '/lib/RT/Config.pm' )
+              or die $parser->error;
+            my $view = 'Pod::POM::View::Text';
+            require Pod::POM::View::Text;
+            for my $section ( $pom->head1 ) {
+                my $over = $section->over->[0];
+                for my $item ( $over->item ) {
+                    my $title = $item->title;
+                    my @items = split /\s*,\s*/, $title;
+                    @items = map { s/C<(\w+)>/$1/; $_ } @items;
+                    for ( @items ) {
+                        $doc{$_} = $item->content->present($view);
+                        $doc{$_} =~ s/^/## /mg;
+                    }
+                }
+            }
+        }
+    }
+
+    my %map;
+    if ( $args{name} ) {
+        $map{ $args{name} } = RT->config->_get( $args{name} );
+    }
+    else {
+        my $configs = RT::Model::ConfigCollection->new;
+        $configs->unlimit;
+        while ( my $config = $configs->next ) {
+            my $value = $config->value;
+            $value = ''
+              if defined $value && $value eq $config->_empty_string;
+            $map{ $config->name } = $value;
+        }
+    }
+
+    if ( $args{show} ) {
+        for my $name ( sort keys %map ) {
+            my $value = Dumper( $map{$name} );
+            print "$name: $value";
+        }
+    }
+    else {
+        my $to_be_edited = '';
+        for my $name ( sort keys %map ) {
+            $to_be_edited .= $doc{$name} || '';
+            my $value = Dumper( $map{$name} );
+            chomp $value;
+            $to_be_edited .= "set( $name => $value );\n";
+            $to_be_edited .= "\n"
+              if $doc{$name};    # add an extra blank line to ease eyes
+        }
+        my $update = edit($to_be_edited);
+        eval $update;
+        while ($@) {
+            $update = edit($update);
+            eval $update;
+        }
+        print 'updated with success' . "\n";
+    }
+
+}
+
+sub edit {
+    require Proc::InvokeEditor or die "require Proc::InvokeEditor failed";
+    return Proc::InvokeEditor->edit(shift);
+}
+
+sub set {
+    RT->config->set(@_);
+}
+

@@ -69,16 +69,22 @@ RT config option to switch to local SQLite database.
 sub rewrite_rtconfig {
 
     # database
-    config_set( '$DatabaseType',       'SQLite' );
-    config_set( '$DatabaseHost',       'localhost' );
-    config_set( '$DatabaseRTHost',     'localhost' );
-    config_set( '$DatabasePort',       '' );
-    config_set( '$DatabaseUser',       'rt_user' );
-    config_set( '$Databasepassword',   'rt_pass' );
-    config_set( '$DatabaseRequireSSL', undef );
+#    config_set( 'DatabaseType',       'SQLite' );
+#    config_set( 'DatabaseHost',       'localhost' );
+#    config_set( 'DatabaseRTHost',     'localhost' );
+#    config_set( 'DatabasePort',       '' );
+#    config_set( 'DatabaseUser',       'rt_user' );
+#    config_set( 'Databasepassword',   'rt_pass' );
+#    config_set( 'DatabaseRequireSSL', undef );
+#
+#    # database file name
+#    config_set( 'DatabaseName', db_name() );
+    Jifty->config->{'framework'}{'Database'}{'Driver'}   = 'SQLite';
+    Jifty->config->{'framework'}{'Database'}{'Host'}     = 'localhost';
+    Jifty->config->{'framework'}{'Database'}{'Port'}     = 'SQLite';
+    Jifty->config->{'framework'}{'Database'}{'User'}     = 'rt_user';
+    Jifty->config->{'framework'}{'Database'}{'Password'} = 'rt_pass';
 
-    # database file name
-    config_set( '$Databasename', db_name() );
 
     # generic logging
     config_set( '$LogStackTraces', 'crit' );
@@ -90,7 +96,6 @@ sub rewrite_rtconfig {
 
 sub config_set {
     my $opt = shift;
-    $opt =~ s/^[\$\%\@]//;
     RT->config->set( $opt, @_ );
 }
 
@@ -117,7 +122,7 @@ use IPC::Open2;
 sub _init_db {
 
     foreach (qw(Type Host Port Name User password)) {
-        $ENV{ "RT_DB_" . uc $_ } = RT->config->get("Database$_");
+        $ENV{ "RT_DB_" . uc $_ } = RT->config->get("database$_");
     }
     my $rt_setup_database =
       RT::Test::get_relocatable_file( 'rt-setup-database',

@@ -51,7 +51,7 @@
     %ARGS,
     status          => ['rejected', 'resolved'],
     friendly_status => _('closed'), 
-	base_url         => RT->config->get('WebPath') ."/SelfService/Closed.html?",
+	base_url         => RT->config->get('web_path') ."/SelfService/Closed.html?",
 	page            => $page,
 &>
 

@@ -56,7 +56,7 @@
 % if (Jifty->web->current_user->has_right( object=> RT->system, right => 'SuperUser')) {
 <p>
   <&|/l&>You can also edit the predefined search itself</&>:
-  <a href="<% RT->config->get('WebPath').'/Search/Build.html?'.
+  <a href="<% RT->config->get('web_path').'/Search/Build.html?'.
 	  $m->comp('/Elements/QueryString',
 		   saved_search_load => 'RT::System-1-SavedSearch-'.$id) %>"><% $search->name %></a>
 </p>

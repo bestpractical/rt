@@ -240,7 +240,7 @@ $COLUMN_MAP = {
         title => 'New messages', # loc
         value => sub  {
             my $txn = $_[0]->seen_up_to or return $_[0]->_('No');
-            return \('<a href="'. RT->config->get('WebPath') .'/Ticket/Display.html?id='
+            return \('<a href="'. RT->config->get('web_path') .'/Ticket/Display.html?id='
                 . $_[0]->id .'#txn-'. $txn->id .'">'),
                 $_[0]->_('New'), \'</a>';
         },
@@ -333,7 +333,7 @@ $COLUMN_MAP->{'CF'} = $COLUMN_MAP->{'custom_field'};
 
 # if no GPG support, then key_owner_name and key_requestors fall back to the regular
 # versions
-if (RT->config->get('GnuPG')->{'enable'}) {
+if (RT->config->get('gnupg')->{'enable'}) {
     require RT::Crypt::GnuPG;
 }
 else {

@@ -89,14 +89,14 @@ sub cleanup_request {
     # Consistency is imprived, too.
     RT::Model::Principal->invalidate_acl_cache();
     Jifty::DBI::Record::Cachable->flush_cache
-        if ( RT->config->get('WebFlushDbCacheEveryRequest')
+        if ( RT->config->get('web_flush_db_cache_every_request')
         and UNIVERSAL::can( 'Jifty::DBI::Record::Cachable' => 'flush_cache' ) );
 
     # cleanup global squelching of the mails
     require RT::ScripAction::SendEmail;
     RT::ScripAction::SendEmail->clean_slate;
 
-    if ( RT->config->get('GnuPG')->{'enable'} ) {
+    if ( RT->config->get('gnupg')->{'enable'} ) {
         require RT::Crypt::GnuPG;
         RT::Crypt::GnuPG::use_key_for_encryption();
         RT::Crypt::GnuPG::use_key_for_signing(undef);
@@ -117,7 +117,7 @@ package Jifty::View::Mason::Handler;
         }
         %config = ( 
             %config,
-            error_format => ( RT->config->get('DevelMode') ? 'html' : 'brief' ),
+            error_format => ( Jifty->config->framework('DevelMode') ? 'html' : 'brief' ),
             named_component_subs => $INC{'Devel/Cover.pm'} ? 1 : 0,
         );
         return %config;
@@ -202,7 +202,7 @@ be called as default callback for F</autohandler>.
             );
 
             $cache{$CacheKey} = $callbacks
-                unless RT->config->get('DevelMode');
+                unless Jifty->config->framework('DevelMode');
         }
 
         my @rv;

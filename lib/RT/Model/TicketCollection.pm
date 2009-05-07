@@ -725,8 +725,8 @@ Limit based on the content of a transaction.
 sub _trans_content_limit {
     my ( $self, $field, $op, $value, @rest ) = @_;
 
-    my $config = RT->config->get('FullTextSearch') || {};
-    return unless $config->{'Enable'};
+    my $config = RT->config->get('full_text_search') || {};
+    return unless $config->{'enable'};
 
     my $txn_alias = $self->join_transactions;
     unless ( defined $self->{'_sql_aliases'}{'attachments'} ) {
@@ -741,15 +741,15 @@ sub _trans_content_limit {
 
     $self->open_paren;
 
-    if ( $config->{'Indexed'} ) {
-        my $db_type = RT->config->get('DatabaseType');
+    if ( $config->{'indexed'} ) {
+        my $db_type = Jifty->config->framework('Database')->{'Driver'};
         my $alias;
-        if ( $config->{'Table'} ) {
+        if ( $config->{'table'} ) {
             $alias = $self->{'_sql_aliases'}{'full_text'} ||= $self->_sql_join(
                 type    => 'left',
                 alias1  => $self->{'_sql_aliases'}{'attachments'},
                 column1 => 'id',
-                table2  => $config->{'Table'},
+                table2  => $config->{'table'},
                 column2 => 'id',
             );
         } else {
@@ -791,7 +791,7 @@ sub _trans_content_limit {
         );
     }
 
-    if ( RT->config->get('DontSearchFileAttachments') ) {
+    if ( RT->config->get('dont_search_file_attachments') ) {
         $self->_sql_limit(
             alias            => $self->{'_sql_aliases'}{'attachments'},
             column           => 'filename',
@@ -1385,7 +1385,7 @@ sub _custom_field_limit {
     my $null_columns_ok;
     my $fix_op = sub {
         my $op = shift;
-        return $op unless RT->config->get('DatabaseType') eq 'Oracle';
+        return $op unless Jifty->config->framework('Database')->{'Driver'} eq 'Oracle';
         return 'MATCHES'     if $op eq '=';
         return 'NOT MATCHES' if $op eq '!=';
         return $op;
@@ -2079,7 +2079,7 @@ sub next {
     {
         return $self->next;
     }
-    elsif ( RT->config->get('UseSQLForACLChecks') ) {
+    elsif ( RT->config->get('use_sql_for_acl_checks') ) {
     
         # if we found a ticket with this option enabled then
         # all tickets we found are ACLed, cache this fact
@@ -2101,13 +2101,13 @@ sub next {
 
 sub _do_search {
     my $self = shift;
-    $self->current_user_can_see if RT->config->get('UseSQLForACLChecks');
+    $self->current_user_can_see if RT->config->get('use_sql_for_acl_checks');
     return $self->SUPER::_do_search(@_);
 }
 
 sub _docount {
     my $self = shift;
-    $self->current_user_can_see if RT->config->get('UseSQLForACLChecks');
+    $self->current_user_can_see if RT->config->get('use_sql_for_acl_checks');
     return $self->SUPER::_docount(@_);
 }
 

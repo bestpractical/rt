@@ -56,7 +56,7 @@ my $show_content = sub  {
         $m->out( $m->interp->apply_escapes( $attach->content, 'h' ) );
         return;
     }
-    my $href = RT->config->get('WebPath') .'/Ticket/Attachment/'
+    my $href = RT->config->get('web_path') .'/Ticket/Attachment/'
         . $attach->transaction_id .'/'. $attach->id .'/'
         . $m->interp->apply_escapes( $attach->filename, 'u' );
     $m->out( '<a href="'. $href  .'">'. _('download') .'</a>' );

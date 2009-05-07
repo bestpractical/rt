@@ -52,7 +52,7 @@
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%RT->config->get('WebPath')%>/User/Prefs.html" method="post">
+<form action="<%RT->config->get('web_path')%>/User/Prefs.html" method="post">
 <input type="hidden" class="hidden" name="id" value="<%$user_object->id%>" />
 
 <table width="100%" border="0">
@@ -107,7 +107,7 @@
 % $m->callback( %ARGS, user_object => $user_object, callback_name => 'FormLeftColumn' );
 </td>
 <td valign="top" class="boxcontainer">
-% unless (RT->config->get('WebExternalAuth') and !RT->config->get('WebFallbackToInternalAuth')) {
+% unless (RT->config->get('web_external_auth') and !RT->config->get('web_fallback_to_internal_auth')) {
 <&| /Widgets/TitleBox, title => _('password'), id => "user-prefs-password" &>
 <table>
 <tr>

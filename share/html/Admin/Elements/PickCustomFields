@@ -59,7 +59,7 @@
   </td>
 %   }
   <td valign="top">
-    <a href="<% RT->config->get('WebPath') %>/Admin/CustomFields/Modify.html?id=<%$CustomFieldObj->id()%>">
+    <a href="<% RT->config->get('web_path') %>/Admin/CustomFields/Modify.html?id=<%$CustomFieldObj->id()%>">
 % if ($CustomFieldObj->name) {
 <b><%$CustomFieldObj->name%></b>
 % } else {
@@ -74,7 +74,7 @@
 %  # show 'move up' unless it's the first item
 %  if ($count++ and $checked) {
   <td valign="top">
-    [<a href="<%RT->config->get('WebPath')%><% $m->request_comp->path |n %>?id=<%$id%>&sub_type=<%$sub_type%>&CustomField=<%$CustomFieldObj->id%>&Move=-1"><&|/l&>Move up</&></a>]
+    [<a href="<%RT->config->get('web_path')%><% $m->request_comp->path |n %>?id=<%$id%>&sub_type=<%$sub_type%>&CustomField=<%$CustomFieldObj->id%>&Move=-1"><&|/l&>Move up</&></a>]
 %  } else {
   <td valign="top" align="right">
 %  }
@@ -82,7 +82,7 @@
 %  # show 'move down' unless it's the last item
 %  if ($count != @custom_fields and $checked) {
 %  $m->print(' | ') if $count > 1;
-    [<a href="<%RT->config->get('WebPath')%><% $m->request_comp->path |n %>?id=<%$id%>&sub_type=<%$sub_type%>&CustomField=<%$CustomFieldObj->id%>&Move=1"><&|/l&>Move down</&></a>]
+    [<a href="<%RT->config->get('web_path')%><% $m->request_comp->path |n %>?id=<%$id%>&sub_type=<%$sub_type%>&CustomField=<%$CustomFieldObj->id%>&Move=1"><&|/l&>Move down</&></a>]
 %  }
   </td>
 </tr>

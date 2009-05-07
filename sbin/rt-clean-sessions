@@ -81,16 +81,16 @@ BEGIN { RT->init_jifty }
 RT::load_config();
 
 if( $opt{'debug'} ) {
-    RT->config->set( LogToScreen => 'debug' );
+    RT->config->set( log_to_screen => 'debug' );
 } else {
-    RT->config->set( LogToScreen => undef );
+    RT->config->set( log_to_screen => undef );
 }
 
 RT::connect_to_database();
 
 require RT::Interface::Web::Session;
 
-if( $opt{'older'} or my $alogoff = int RT->config->get('AutoLogoff') ) {
+if( $opt{'older'} or my $alogoff = int RT->config->get('auto_logoff') ) {
     my $min;
     foreach ($alogoff*60, $opt{'older'}) {
         next unless $_;

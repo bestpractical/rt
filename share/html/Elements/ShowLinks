@@ -138,7 +138,7 @@ my $pascal_to_camel = sub {
 
 my $clone = {};
 my $path
-    = RT->config->get('WebPath')
+    = RT->config->get('web_path')
     . '/Ticket/Create.html?Queue='
     . $ticket->queue
     . '&CloneTicket='

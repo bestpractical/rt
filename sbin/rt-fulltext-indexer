@@ -71,13 +71,13 @@ if ( $opts{'help'} ) {
     exit 1;
 }
 
-my $fts_config = RT->config->get('FullTextSearch') || {};
-unless ( $fts_config->{'Enable'} ) {
+my $fts_config = RT->config->get('full_text_search') || {};
+unless ( $fts_config->{'enable'} ) {
     print STDERR "Full text search disabled in the RT config."
         ." Read documentation for %FullTextSearch config option.";
     exit 1;
 }
-unless ( $fts_config->{'Indexed'} ) {
+unless ( $fts_config->{'indexed'} ) {
     print STDERR "Full text search is enabled in the RT config,"
         ." however full text search works without special index,"
         ." so this tool is not required."
@@ -85,7 +85,7 @@ unless ( $fts_config->{'Indexed'} ) {
     exit 1;
 }
 
-my $db_type = RT->config->get('DatabaseType');
+my $db_type = Jifty->config->framework('Database')->{'Driver'};
 
 my @types = qw(text html);
 foreach my $type ( @types ) {
@@ -233,15 +233,15 @@ sub last_indexed_pg {
     my $type = shift;
     my $attachments = attachments( $type );
     my $alias = 'main';
-    if ( $fts_config->{'Table'} ) {
+    if ( $fts_config->{'table'} ) {
         $alias = $attachments->join(
             type    => 'left',
             column1 => 'id',
-            table2  => $fts_config->{'Table'},
+            table2  => $fts_config->{'table'},
             column2 => 'id',
         );
     }
-    $attachments->limit( alias => $alias, column => $fts_config->{'Column'}, operator => 'IS NOT', value => 'NULL' );
+    $attachments->limit( alias => $alias, column => $fts_config->{'column'}, operator => 'IS NOT', value => 'NULL' );
     $attachments->order_by( column => 'id', order => 'desc' );
     my $res = $attachments->first;
     return 0 unless $res;
@@ -252,8 +252,8 @@ sub process_pg {
     my ($type, $attachment, $text) = (@_);
 
     my $dbh = Jifty->handle->dbh;
-    my $table = $fts_config->{'Table'};
-    my $column = $fts_config->{'Column'};
+    my $table = $fts_config->{'table'};
+    my $column = $fts_config->{'column'};
 
     my $query;
     if ( $table ) {
