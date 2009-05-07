@@ -146,6 +146,7 @@ sub date {
 }
 
 sub is_unset { shift->epoch == 0 }
+sub is_set { not (shift->is_unset(@_)) }
 
 sub new_unset { RT::DateTime->from_epoch(epoch => 0) }
 

@@ -10,11 +10,9 @@ BEGIN {
 
 plan tests => 32;
 
-use RT;
 use RT::Test;
 use RT::Test::Email;
 
-RT->config->set( log_to_screen => 'debug' );
 RT->config->set( use_transaction_batch => 1 );
 
 my $q = RT::Model::Queue->new( current_user => RT->system_user );
@@ -210,4 +208,3 @@ mail_ok {
 $t->load($t->id);$dependson_ceo->load($dependson_ceo->id);
 is_deeply([ $t->status, $dependson_cfo->status, $dependson_ceo->status ],
           [ 'rejected', 'rejected', 'deleted'], 'ticket state after cfo rejection');
-$SIG{INT} = sub { Carp::cluck };

@@ -99,3 +99,7 @@ sub run_tests {
     { order => "queue" },
 );
 run_tests();
+
+# Global destruction issues
+@tickets = ();
+

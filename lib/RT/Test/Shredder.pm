@@ -87,14 +87,7 @@ sub rewrite_rtconfig {
 
 
     # generic logging
-    config_set( 'LogToSyslog',    undef );
-    config_set( 'LogToScreen',    'error' );
-    config_set( 'LogStackTraces', 'crit' );
-
-    # logging to standalone file
-    config_set( 'LogToFile', 'debug' );
-    my $fname = File::Spec->catfile( create_tmpdir(), test_name() . ".log" );
-    config_set( 'LogToFilenamed', $fname );
+    config_set( '$LogStackTraces', 'crit' );
 }
 
 =head3 config_set

@@ -12,7 +12,6 @@ body {
 }
 
 div#body {
-    position: relative;
     padding: 1em;
     padding-top: 1.5em;
     -moz-border-radius: 0.5em;
@@ -33,7 +32,7 @@ div#body {
 #topactions {
  position: absolute;
  background: transparent;
- top: 3.8em; 
+ top: 3.5em; 
  right: 1em;
  width: auto;
  min-width: 42em;
@@ -158,6 +157,7 @@ div#quick-personal {
 
 div#header h1 {
  position: absolute;
+ top: 1.5em;
  left: 7.25em;
  right: 20em;
  overflow: hidden;

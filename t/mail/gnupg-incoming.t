@@ -23,7 +23,6 @@ my $homedir = RT::Test::get_abs_relocatable_dir(File::Spec->updir(),
 RT::Test->set_mail_catcher;
 
 
-RT->config->set( log_to_screen => 'debug' );
 RT->config->set(
     'gnupg',
     {

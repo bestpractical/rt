@@ -257,72 +257,66 @@ if ($create) {
     $title = _("Create a new user");
 } 
 else {
+    if ($id eq 'new') {
+        ( $val, $msg ) = $user_object->create(
+            name                  => $name,
+            email                 => $ARGS{'email'},
+            name                  => $ARGS{'name'},
+            comments              => $ARGS{'comments'},
+            Signature             => $ARGS{'signature'},
+            email                 => $ARGS{'email'},
+            freeform_contact_info => $ARGS{'freeform_contact_info'},
+            organization          => $ARGS{'organization'},
+            real_name             => $ARGS{'real_name'},
+            nickname              => $ARGS{'nickname'},
+            lang                  => $ARGS{'lang'},
+            email_encoding        => $ARGS{'email_encoding'},
+            web_encoding          => $ARGS{'web_encoding'},
+            ExternalContactInfoId => $ARGS{'external_contact_info_id'},
+            ContactInfoSystem     => $ARGS{'contact_info_system'},
+            gecos                 => $ARGS{'gecos'},
+            ExternalAuthId        => $ARGS{'external_auth_id'},
+            auth_system           => $ARGS{'auth_system'},
+            HomePhone             => $ARGS{'home_phone'},
+            WorkPhone             => $ARGS{'work_phone'},
+            MobilePhone           => $ARGS{'mobile_phone'},
+            PagerPhone            => $ARGS{'pager_phone'},
+            Address1              => $ARGS{'address1'},
+            Address2              => $ARGS{'address2'},
+            City                  => $ARGS{'city'},
+            State                 => $ARGS{'state'},
+            Zip                   => $ARGS{'zip'},
+            Country               => $ARGS{'country'},
+            privileged            => $ARGS{'privileged'},
+            disabled              => ($ARGS{'enabled'} ? 0 : 1)
+        );
 
-    if ($id =~ /^\d+$/) { 
-        $current_tab = 'Admin/Users/Modify.html?id='.$id;
-    } elsif ($id eq 'new') {
-	( $val, $msg ) = $user_object->create(
-	    name                  => $name,
-	    email          => $ARGS{'email'},
-	    name                  => $ARGS{'name'},
-	    comments              => $ARGS{'comments'},
-	    Signature             => $ARGS{'signature'},
-	    email          => $ARGS{'email'},
-	    freeform_contact_info   => $ARGS{'freeform_contact_info'},
-	    organization          => $ARGS{'organization'},
-	    real_name              => $ARGS{'real_name'},
-	    nickname              => $ARGS{'nickname'},
-	    lang                  => $ARGS{'lang'},
-	    email_encoding         => $ARGS{'email_encoding'},
-	    web_encoding           => $ARGS{'web_encoding'},
-	    ExternalContactInfoId => $ARGS{'external_contact_info_id'},
-	    ContactInfoSystem     => $ARGS{'contact_info_system'},
-	    gecos                 => $ARGS{'gecos'},
-	    ExternalAuthId        => $ARGS{'external_auth_id'},
-	    auth_system            => $ARGS{'auth_system'},
-	    HomePhone             => $ARGS{'home_phone'},
-	    WorkPhone             => $ARGS{'work_phone'},
-	    MobilePhone           => $ARGS{'mobile_phone'},
-	    PagerPhone            => $ARGS{'pager_phone'},
-	    Address1              => $ARGS{'address1'},
-	    Address2              => $ARGS{'address2'},
-	    City                  => $ARGS{'city'},
-	    State                 => $ARGS{'state'},
-	    Zip                   => $ARGS{'zip'},
-	    Country               => $ARGS{'country'},
-	    privileged           => $ARGS{'privileged'},
-	    disabled            => ($ARGS{'enabled'} ? 0 : 1)
-	);
-
-	if ($val) {
-		push @results, $msg;
-        foreach my $key ( keys %ARGS) {
-            # Convert custom fields on the "new" object to custom fields on the one we've just Created
-            if ($key =~ /^object-RT::Model::User-new-CustomField-(.*)$/) {
-            $ARGS{'object-RT::Model::User-'.$val.'-CustomField-'.$1} = delete $ARGS{$key};
+        if ($val) {
+            push @results, $msg;
+            foreach my $key ( keys %ARGS) {
+                # Convert custom fields on the "new" object to custom fields on the one we've just Created
+                if ($key =~ /^object-RT::Model::User-new-CustomField-(.*)$/) {
+                    $ARGS{'object-RT::Model::User-'.$val.'-CustomField-'.$1} = delete $ARGS{$key};
+                }
             }
+            push @results, process_object_custom_field_updates( args_ref => \%ARGS, object => $user_object );
+        } else {
+            push @results, _('User could not be Created: %1', $msg);
         }
-        push @results, process_object_custom_field_updates( args_ref => \%ARGS, object => $user_object );
-	} else {
-		push @results, _('User could not be Created: %1', $msg);
-	}
     } else {
+        $current_tab = 'Admin/Users/Modify.html?id='.$id;
 	    $user_object->load($id) || $user_object->load($name) || abort("Couldn't load user '$name'");
         $val = $user_object->id();
     }
 
     if ($val) {
-	$title = _("Modify the user %1", $user_object->name);
+        $title = _("Modify the user %1", $user_object->name);
     }
-
-    # If the create failed
-    else {
-	$title = _("Create a new user");
-	$create = 1;
+    else { # If the create failed
+        $title = _("Create a new user");
+        $create = 1;
     }
 }
-
-
 
 
 # If we have a user to modify, lets try. 

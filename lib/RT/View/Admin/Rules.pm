@@ -48,41 +48,43 @@
 use warnings;
 use strict;
 
-package RT::View;
+package RT::View::Admin::Rules;
 use Jifty::View::Declare -base;
+use base 'RT::View::CRUD';
 
-require RT::View::Admin;
-alias RT::View::Admin under 'admin/';
+use constant page_title     => 'Rule Management';
+use constant object_type    => 'Rule';
+use constant tab_url        => '/Admin/Elements/RuleTabs';
+use constant current_tab    => 'admin/rules/'; # this is not working
 
-require RT::View::Ticket;
-alias RT::View::Ticket under 'ticket/';
+use constant display_columns => qw(id description condition_code prepare_code action_code);
 
+sub _current_collection {
+    my $self = shift;
+    my $c    = $self->SUPER::_current_collection();
+    $c->unlimit;
+#    $c->limit_to_user_defined_groups();
+    return $c;
+}
 
-__PACKAGE__->use_mason_wrapper;
+=head2 view_field_name
 
-template login_widget => sub {
+Display each group's name as a hyperlink to the modify page
 
-    my ( $action, $next ) = get( 'action', 'next' );
-    $action ||= new_action( class => 'Login' );
-    $next ||= Jifty::Continuation->new(
-        request => Jifty::Request->new( path => "/" ) );
-    unless ( Jifty->web->current_user->id ) {
-        div {
-            attr { id => 'body', class => 'login-body' };
-            div {
-                attr { id => 'login-box' };
-                Jifty->web->form->start( call => $next );
-                my $plugin = Jifty->find_plugin(
-                    'Jifty::Plugin::Authentication::Password' );
-                render_param( $action, $plugin->{login_by}, focus => 1 );
-                render_param( $action, $_ ) for (qw(password remember));
-                form_return( label => _(q{Login}), submit => $action );
-                Jifty->web->form->end();
-            };
-        };
-    } else {
-        outs( _("You're already logged in.") );
-    }
-};
+=cut
+
+sub view_field_name {
+    my $self = shift;
+    my %args = @_;
+
+    $self->view_via_callback(%args, callback => sub {
+        my %args = @_;
+        hyperlink(
+            label => $args{current_value},
+            url   => "/Admin/Rules/Modify.html?id=$args{id}",
+        );
+    });
+}
 
 1;
+

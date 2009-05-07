@@ -86,50 +86,116 @@ sub table {'Tickets'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
 
-    column effective_id     => max_length is 11,  type is 'int',          default is '0';
-    column queue            => references RT::Model::Queue;
-    column type             => max_length is 16,  type is 'varchar(16)',  default is '';
-    column issue_statement  => max_length is 11,  type is 'int',          default is '0';
-    column resolution       => max_length is 11,  type is 'int',          default is '0';
-    column owner            => references RT::Model::User;
-    column subject          => max_length is 200, type is 'varchar(200)', default is '';
+    column effective_id =>
+        max_length is 11,
+        type is 'int',
+        default is '0';
 
-    column initial_priority => max_length is 11,  type is 'int',          default is '0';
-    column final_priority   => max_length is 11,  type is 'int',          default is '0';
-    column priority         => max_length is 11,  type is 'int',          default is '0';
+    column queue =>
+        references RT::Model::Queue;
 
-    column time_estimated   => max_length is 11,  type is 'int',
-           default is '0', label is _( 'time estimated( in minutes )' );
-    column time_worked      => max_length is 11,  type is 'int',
-           default is '0', label is _( 'time worked( in minutes )' );
-    column time_left        => max_length is 11,  type is 'int',
-           default is '0', label is _('time left( in minutes )');
+    column type =>
+        max_length is 16,
+        type is 'varchar(16)',
+        default is '';
 
-    column status           => max_length is 10,  type is 'varchar(10)',
-           default is '', render_as 'Select';
+    column issue_statement =>
+        max_length is 11,
+        type is 'int',
+        default is '0';
 
-    column told             => type is 'timestamp',
+    column resolution =>
+        max_length is 11,
+        type is 'int',
+        default is '0';
+
+    column owner =>
+        references RT::Model::User;
+
+    column subject =>
+        display_length is 50,
+        max_length is 200,
+        type is 'varchar(200)',
+        default is '';
+
+    column initial_priority =>
+        max_length is 11,
+        type is 'int',
+        default is '0';
+
+    column final_priority =>
+        max_length is 11,
+        type is 'int',
+        default is '0';
+
+    column priority      =>
+        max_length is 11,
+        type is 'int',
+        default is '0';
+
+    column time_estimated =>
+        max_length is 11,
+        type is 'int',
+        default is '0',
+        label is _( 'time estimated' ),
+        hints are _('in minutes');
+
+    column time_worked   =>
+        max_length is 11,
+        type is 'int',
+        default is '0',
+        label is _( 'time worked' ),
+        hints are _('in minutes');
+
+    column time_left     =>
+        max_length is 11,
+        type is 'int',
+        default is '0',
+        label is _('time left'),
+        hints are _('in minutes');
+
+    column status        =>
+        max_length is 10,
+        type is 'varchar(10)',
+        default is '',
+        render_as 'Select';
+
+    column told          =>
+        type is 'timestamp',
         filters are qw( Jifty::Filter::DateTime Jifty::DBI::Filter::DateTime),
         render_as 'DateTime',
         label is _('Last Contact');
-    column starts           => type is 'timestamp',
+
+    column starts        =>
+        type is 'timestamp',
         filters are qw( Jifty::Filter::DateTime Jifty::DBI::Filter::DateTime),
         render_as 'DateTime',
         label is _('Starts');
-    column started          => type is 'timestamp',
+
+    column started       =>
+        type is 'timestamp',
         filters are qw( Jifty::Filter::DateTime Jifty::DBI::Filter::DateTime),
         render_as 'DateTime',
         label is _('Started');
-    column due              => type is 'timestamp',
+
+    column due           =>
+        type is 'timestamp',
         filters are qw( Jifty::Filter::DateTime Jifty::DBI::Filter::DateTime),
         render_as 'DateTime',
         label is _('Due');
-    column resolved         => type is 'timestamp',
+
+    column resolved      =>
+        type is 'timestamp',
         filters are qw( Jifty::Filter::DateTime Jifty::DBI::Filter::DateTime),
         render_as 'DateTime',
         label is _('Resolved');
-    column disabled         => max_length is 6,   type is 'smallint',     default is '0';
+
+    column disabled      =>
+        max_length is 6,
+        type is 'smallint',
+        default is '0';
 };
+
 use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
     created_by => 'creator',
     created_on => 'created',
@@ -2135,7 +2201,8 @@ sub DESTROY {
     return unless @$batch;
 
     my $ticket = RT::Model::Ticket->new( current_user => RT::CurrentUser->superuser );
-    $ticket->load( $self->id );
+    my ($ok, $msg) = $ticket->load( $self->id );
+    warn "Unable to load ticket #" . $self->id . " for batch processing: " . $msg if !$ok;
 
     # Entry point of the rule system
     my $rules = RT::Ruleset->find_all_rules(

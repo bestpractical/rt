@@ -61,6 +61,13 @@ sub _init {
 
 sub prepare {
     my $self = shift;
+
+    # When a ticket is deleted with shredder, its id can be undef
+    if (!defined($self->ticket_obj->id)) {
+        Jifty->log->debug("Prepare aborted because the ticket was not available.");
+        return (0);
+    }
+
     return (0) if $self->_queue && $self->ticket_obj->queue->name ne $self->_queue;
     return 1;
 }

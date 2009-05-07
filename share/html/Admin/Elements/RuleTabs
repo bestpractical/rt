@@ -45,75 +45,37 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+<& /Admin/Elements/Tabs,
+    title          => $title,
+    current_tab    => 'Admin/Rules/',
+    subtabs        => $tabs,
+    current_subtab => $current_tab,
+&>
+
 <%INIT>
-if ($m->request_comp->path =~ '^/REST/\d+\.\d+/') {
-    $r->content_type("text/plain");
-    $m->error_format("text");
-    $m->out("RT/$RT::VERSION 401 Credentials required\n");
-    $m->out("\n$error\n") if $error;
-    $m->abort;
-}
+    my $tabs = {
+        A => { title => _('Select'),
+               path  => "Admin/Rules/", },
+        E => { title => _('Create'),
+               path  => 'Admin/Rules/Modify.html?create=1',
+        },
+    };
 
-my $req_uri;
+    # Now let callbacks add their extra tabs
+    $m->callback( %ARGS, tabs => $tabs );
 
-if (UNIVERSAL::can($r, 'uri') and $r->uri =~ m{.*/(.*)}) {
-    $req_uri = $1;
-}
+    foreach my $tab ( values %{$tabs} ) {
+        next unless $tab->{'path'} eq $current_tab;
 
-my $form_action = defined $goto             ? $goto
-                : defined $req_uri          ? $req_uri
-                :                             RT->config->get('web_path')
-                ;
+        $tab->{"subtabs"} = $subtabs;
+        $tab->{"current_subtab"} = $current_subtab;
+    }
 </%INIT>
 
-% $m->callback( %ARGS, callback_name => 'Header' );
-<& /Elements/Header, title => _('Login'), focus => 'user' &>
-
-
-%# End of div#quickbar from /Elements/Header
-</div>
-
-<div id="body" class="login-body">
-% if ($error) {
-<&| "/Widgets/TitleBox", title => _('Error'), hideable => 0, class => 'error'  &>
-<% $error %>
-</&>
-% }
-
-% $m->callback( %ARGS, callback_name => 'BeforeForm' );
-
-<div id="login-box">
-<&| /Widgets/TitleBox, title => _('Login'), titleright => $RT::VERSION, hideable => 0 &>
-
-% unless (RT->config->get('web_external_auth') and !RT->config->get('web_fallback_to_internal_auth')) {
-<form id="login" name="login" method="post" action="<% $form_action %>">
-
-<div class="input-row">
-    <span class="label"><&|/l&>Username</&>:</span>
-    <span class="input"><input name="user" value="<%$user%>" id="user" /></span>
-</div>
-
-<div class="input-row">
-    <span class="label"><&|/l&>password</&>:</span>
-    <span class="input"><input type="password" name="pass" autocomplete="off" /></span>
-</div>
-
-<div class="button-row">
-    <span class="input">
-    <% Jifty->web->form->return(label =>'Login') %>
-    </span>
-</div>
-
-</form>
-% }
-</&>
-</div><!-- #login-box -->
-% $m->callback( %ARGS, callback_name => 'AfterForm' );
-</div><!-- #login-body -->
-<& /Elements/Footer, menu => 0 &>
 <%ARGS>
-$user => ""
-$pass => undef
-$goto => undef
-$error => undef
+$id => undef
+$current_tab => undef
+$subtabs => undef
+$current_subtab => undef
+$title => undef
 </%ARGS>

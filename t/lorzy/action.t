@@ -76,3 +76,6 @@ my ($rv, $msg) = $ticket->create( subject => 'lorzy test', queue => $queue->name
     subject => qr'AutoReply: lorzy test',
     body => qr/automatically generated/,
 };
+
+# Global destruction issues
+undef $ticket;

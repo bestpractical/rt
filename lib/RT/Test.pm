@@ -120,10 +120,7 @@ sub _setup_config {
 
     require RT;
     my $port  = 999;
-    RT->config->set( log_to_screen => 'debug' );
-    RT->config->set( log_stack_traces => 'warning' );
     RT->config->set( mail_command => 'testfile' );
-
     RT->config->set( full_text_search => { enable => 1 } );
 
     Jifty->config->{'framework'}{'DevelMode'} = 0 if $INC{'Devel/Cover.pm'};

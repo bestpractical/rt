@@ -941,7 +941,7 @@ sub process_ticket_basics {
 
     # We special case owner changing, so we can use force_owner_change
     if ( $args_ref->{'owner'}
-        && ( $ticket_obj->owner != $args_ref->{'owner'} ) )
+        && ( $ticket_obj->owner_id != $args_ref->{'owner'} ) )
     {
         my ($ChownType);
         if ( $args_ref->{'force_owner_change'} ) {

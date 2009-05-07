@@ -51,8 +51,6 @@
 % }
 </div>
 
-%# End of div#quickbar from /Elements/Header
-</div>
 
 % if ( $show_menu ) {
 <div id="nav">
@@ -159,10 +157,6 @@
 % }
 </div>
 </div>
-<div id="body">
-% $m->callback( %ARGS, callback_name => 'BeforeBody' );
-% $m->flush_buffer(); # we've got the page laid out, let's flush the buffer;
-
 <%INIT>
 if ( defined $current_toptab ) {
     foreach my $tab ( values %{$toptabs} ) {

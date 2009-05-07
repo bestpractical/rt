@@ -281,3 +281,5 @@ my $nobody = RT->nobody();
     is($tix->count, 2, "found ticket(s)");
 }
 
+# Global destruction fun
+@tickets = ();
