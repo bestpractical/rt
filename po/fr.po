@@ -975,7 +975,7 @@ msgstr "Sélectionner une classe"
 
 #: NOT FOUND IN SOURCE
 msgid "Select a Custom Field"
-msgstr "Choisir un champ personnalis�"
+msgstr "Choisir un champ personnalisé"
 
 #: NOT FOUND IN SOURCE
 msgid "Select a Custom Fields"
