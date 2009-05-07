@@ -1,93 +1,97 @@
+# Arabic translation for rt
+# Copyright (c) 2009 Rosetta Contributors and Canonical Ltd 2009
+# This file is distributed under the same license as the rt package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2009.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: RT 3.8.x\n"
-"Report-Msgid-Bugs-To: \n"
+"Project-Id-Version: rt\n"
+"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2009-05-06 21:32+0000\n"
-"PO-Revision-Date: 2009-05-06 20:57+0000\n"
-"Last-Translator: Alex Vandiver <Unknown>\n"
-"Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
+"PO-Revision-Date: 2009-04-12 20:37+0000\n"
+"Last-Translator: Ehab A.Elghariani <ehab517@gmail.com>\n"
+"Language-Team: Arabic <ar@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-05-07 15:52+0000\n"
+"X-Launchpad-Export-Date: 2009-05-07 15:53+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #:
 msgid " (no pubkey!)"
-msgstr ""
+msgstr " لا يوجد pubkey!"
 
 #:
 msgid " (untrusted!)"
-msgstr ""
+msgstr " (غير موثوق!)"
 
 #:
 msgid "#"
-msgstr ""
+msgstr "#"
 
 #:
 msgid "#%1: %2"
-msgstr ""
+msgstr "#%1: %2"
 
 #:
 msgid "%1 #%2"
-msgstr ""
+msgstr "%1 #%2"
 
 #:
 msgid "%1 %2"
-msgstr ""
+msgstr "%1 %2"
 
 #:
 msgid "%1 %2 %3"
-msgstr ""
+msgstr "%1 %2 %3"
 
 #:
 msgid "%1 %2 %3 %4"
-msgstr ""
+msgstr "%1 %2 %3 %4"
 
 #:
 msgid "%1 %2 %3 %4:%5:%6 %7"
-msgstr ""
+msgstr "%1 %2 %3 %4:%5:%6 %7"
 
 #:
 msgid "%1 %2 added"
-msgstr ""
+msgstr "%1 %2 أضيفت"
 
 #:
 msgid "%1 %2 ago"
-msgstr ""
+msgstr "منذ 1% 2%"
 
 #:
 msgid "%1 %2 changed to %3"
-msgstr ""
+msgstr "%1 %2 تغيرت إلى 3%"
 
 #:
 msgid "%1 %2 deleted"
-msgstr ""
+msgstr "تم مسح 1% 2%"
 
 #:
 msgid "%1 %2 deleted."
-msgstr ""
+msgstr "تم مسح 1% 2%"
 
 #:
 msgid "%1 %2 renamed to %3."
-msgstr ""
+msgstr "تم تغيير اسم 1% 2% الى %3"
 
 #:
 msgid "%1 %2 saved."
-msgstr ""
+msgstr "تم حفظ1% 2%"
 
 #:
 msgid "%1 %2 with template %3"
-msgstr ""
+msgstr "%1 %2 مع القالب 3%"
 
 #:
 msgid "%1 (%2) by %3"
-msgstr ""
+msgstr "%1 (%2) بواسطة %3"
 
 #:
 msgid "%1 (Unchanged)"
-msgstr ""
+msgstr "%1 (لم تتغير)"
 
 #:
 msgid "%1 - An argument to pass to %2"
@@ -123,7 +127,7 @@ msgstr ""
 
 #:
 msgid "%1 DashBoards"
-msgstr ""
+msgstr "لوحة مؤشرات %1"
 
 #:
 msgid "%1 RT %2 Copyright 1996-%3 %4."
@@ -155,7 +159,7 @@ msgstr ""
 
 #:
 msgid "%1 by %2"
-msgstr ""
+msgstr "%1 بواسطة %2"
 
 #:
 msgid "%1 changed from %2 to %3"
@@ -167,7 +171,7 @@ msgstr ""
 
 #:
 msgid "%1 copy"
-msgstr ""
+msgstr "نسخ 1%"
 
 #:
 msgid "%1 could not be set to %2."
@@ -179,19 +183,19 @@ msgstr ""
 
 #:
 msgid "%1 created"
-msgstr ""
+msgstr "تم إنشاء %1"
 
 #:
 msgid "%1 deleted"
-msgstr ""
+msgstr "تم مسح %1"
 
 #:
 msgid "%1 doesn't exist."
-msgstr ""
+msgstr "%1 غير موجود"
 
 #:
 msgid "%1 highest priority tickets I own"
-msgstr ""
+msgstr "ال%1 بطاقات الأكثر أولوية التي تخصني"
 
 #:
 msgid "%1 is a tool to act on tickets from an external scheduling tool, such as cron."
@@ -219,7 +223,7 @@ msgstr ""
 
 #:
 msgid "%1 newest unowned tickets"
-msgstr ""
+msgstr "آخر %1 بطاقات بدون مالك"
 
 #:
 msgid "%1 objects"
@@ -227,7 +231,7 @@ msgstr ""
 
 #:
 msgid "%1 update: %2"
-msgstr ""
+msgstr "تحديث %1 %2"
 
 #:
 msgid "%1 update: Nothing changed"
@@ -251,7 +255,7 @@ msgstr ""
 
 #:
 msgid "%1's dashboards"
-msgstr ""
+msgstr "لوحة قرائات %1"
 
 #:
 msgid "%1's saved searches"
@@ -267,11 +271,11 @@ msgstr ""
 
 #:
 msgid "%1b"
-msgstr ""
+msgstr "%1b"
 
 #:
 msgid "%1k"
-msgstr ""
+msgstr "%1k"
 
 #:
 msgid "%quant(%1,hour)"
@@ -295,7 +299,7 @@ msgstr ""
 
 #:
 msgid "(Enter ticket ids or URLs, separated with spaces)"
-msgstr ""
+msgstr "(أدخل أرقام تعريف البطاقات أو عناوينها مفصولة بمسافة)"
 
 #:
 msgid "(If left blank, will default to %1)"
@@ -303,11 +307,11 @@ msgstr ""
 
 #:
 msgid "(No custom fields)"
-msgstr ""
+msgstr "(لا يوجد حقول مخصصة)"
 
 #:
 msgid "(No members)"
-msgstr ""
+msgstr "(لا يوجد أعضاء)"
 
 #:
 msgid "(No scrips)"
@@ -315,19 +319,19 @@ msgstr ""
 
 #:
 msgid "(No templates)"
-msgstr ""
+msgstr "(لا يوجد قوالب"
 
 #:
 msgid "(None)"
-msgstr ""
+msgstr "لا شيء"
 
 #:
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)"
-msgstr ""
+msgstr "(إرسال نسخة من آخر تحديث إلى قائمة من عناوين البريد الإلكتروني الإدارية مفصول بينها بفاصلة, سيستقبل المعنيون أي تحديث في المستقبل)"
 
 #:
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)"
-msgstr ""
+msgstr "(إرسال نسخة من آخر تحديث إلى قائمة من عناوين البريد الإلكتروني مفصول بينها بفاصلة, سيستقبل المعنيون أي تحديث في المستقبل)"
 
 #:
 msgid "(Use these fields when you choose 'User Defined' for a condition or action)"
@@ -335,31 +339,31 @@ msgstr ""
 
 #:
 msgid "(Will not be sent email)"
-msgstr ""
+msgstr "(لن يتم إرسال بريد له)"
 
 #:
 msgid "(any)"
-msgstr ""
+msgstr "أيّ"
 
 #:
 msgid "(empty)"
-msgstr ""
+msgstr "(خالي)"
 
 #:
 msgid "(no pubkey!)"
-msgstr ""
+msgstr "(لا يوجد pubkey)"
 
 #:
 msgid "(no value)"
-msgstr ""
+msgstr "(لا يوجد قيمة)"
 
 #:
 msgid "(no values)"
-msgstr ""
+msgstr "(لا يوجد قيم)"
 
 #:
 msgid "(only one ticket)"
-msgstr ""
+msgstr "(بطاقة واحدة فقط)"
 
 #:
 msgid "(pending %quant(%1,other ticket))"
@@ -367,11 +371,11 @@ msgstr ""
 
 #:
 msgid "(pending approval)"
-msgstr ""
+msgstr "(في إنتظار التصديق)"
 
 #:
 msgid "(required)"
-msgstr ""
+msgstr "(ضروري)"
 
 #:
 msgid "(trust: %1)"
@@ -379,15 +383,15 @@ msgstr ""
 
 #:
 msgid "(untitled)"
-msgstr ""
+msgstr "(بدون عنوان)"
 
 #:
 msgid "(untrusted!)"
-msgstr ""
+msgstr "(غير موثوق!)"
 
 #:
 msgid "-"
-msgstr ""
+msgstr "-"
 
 #:
 msgid "--transaction argument could be only 'first', 'last' or 'all'"
@@ -395,11 +399,11 @@ msgstr ""
 
 #:
 msgid "<input type=\"submit\" class=\"button\" value=\"New ticket in\" />&nbsp;%1"
-msgstr ""
+msgstr "<input type=\"submit\" class=\"button\" value=\"بطاقة جديدة تحت\" />&nbsp;%1"
 
 #:
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
-msgstr ""
+msgstr "<input type=\"submit\" value=\"بطاقة جديدة تحت\">&nbsp;%1"
 
 #:
 msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
@@ -407,11 +411,11 @@ msgstr ""
 
 #:
 msgid "A blank template"
-msgstr ""
+msgstr "قالب فارغ"
 
 #:
 msgid "A password was not set, so user won't be able to login."
-msgstr ""
+msgstr "لا يوجد كلمة سر بعد, لذا لا يستطيع المستخدون تسجيل الدخول بعد."
 
 #:
 msgid "ACE not found"
@@ -423,19 +427,19 @@ msgstr ""
 
 #:
 msgid "AND"
-msgstr ""
+msgstr "و"
 
 #:
 msgid "About me"
-msgstr ""
+msgstr "عن نفسى"
 
 #:
 msgid "Access control"
-msgstr ""
+msgstr "تحكم بالوصول"
 
 #:
 msgid "Action"
-msgstr ""
+msgstr "إجراء"
 
 #:
 msgid "Action '%1' not found"
@@ -443,7 +447,7 @@ msgstr ""
 
 #:
 msgid "Action committed.\\n"
-msgstr ""
+msgstr "تم التنفيذ.\\n"
 
 #:
 msgid "Action is mandatory argument"
@@ -455,19 +459,19 @@ msgstr ""
 
 #:
 msgid "Add AdminCc"
-msgstr ""
+msgstr "أضف نسخة إدارية"
 
 #:
 msgid "Add Bookmark"
-msgstr ""
+msgstr "أضف إشارة مرجعية"
 
 #:
 msgid "Add Cc"
-msgstr ""
+msgstr "أضف نسخة"
 
 #:
 msgid "Add Columns"
-msgstr ""
+msgstr "إضافة أعمدة"
 
 #:
 msgid "Add Criteria"
@@ -475,7 +479,7 @@ msgstr ""
 
 #:
 msgid "Add More Files"
-msgstr ""
+msgstr "أضف المزيد من الملفات"
 
 #:
 msgid "Add Requestor"
@@ -483,7 +487,7 @@ msgstr ""
 
 #:
 msgid "Add Value"
-msgstr ""
+msgstr "أضف قيمة"
 
 #:
 msgid "Add a scrip which will apply to all queues"
@@ -491,27 +495,27 @@ msgstr ""
 
 #:
 msgid "Add comments or replies to selected tickets"
-msgstr ""
+msgstr "أضف تعليق أو رد"
 
 #:
 msgid "Add members"
-msgstr ""
+msgstr "أضف أعضاء"
 
 #:
 msgid "Add new watchers"
-msgstr ""
+msgstr "أضف مشاهدين جدد"
 
 #:
 msgid "Add these terms"
-msgstr ""
+msgstr "أضف هذه المصطلحات"
 
 #:
 msgid "Add these terms and Search"
-msgstr ""
+msgstr "أضف هذه المصطلحات و إبدأ البحث"
 
 #:
 msgid "Add values"
-msgstr ""
+msgstr "أضف قيم"
 
 #:
 msgid "Add, delete and modify custom field values for objects"
@@ -527,23 +531,23 @@ msgstr ""
 
 #:
 msgid "Address"
-msgstr ""
+msgstr "عنوان"
 
 #:
 msgid "Address1"
-msgstr ""
+msgstr "عنوان 1"
 
 #:
 msgid "Address2"
-msgstr ""
+msgstr "عنوان 2"
 
 #:
 msgid "Admin Cc"
-msgstr ""
+msgstr "نسخة إدارية"
 
 #:
 msgid "Admin Comment"
-msgstr ""
+msgstr "تهميشة إداري"
 
 #:
 msgid "Admin Correspondence"
@@ -551,7 +555,7 @@ msgstr ""
 
 #:
 msgid "Admin queues"
-msgstr ""
+msgstr "إدارة تصنيفات"
 
 #:
 msgid "Admin/Global configuration"
@@ -603,7 +607,7 @@ msgstr ""
 
 #:
 msgid "Advanced"
-msgstr ""
+msgstr "متقدم"
 
 #:
 msgid "Aggregator"
@@ -623,27 +627,27 @@ msgstr ""
 
 #:
 msgid "And/Or"
-msgstr ""
+msgstr "أو/و"
 
 #:
 msgid "Applies to"
-msgstr ""
+msgstr "تنطبق على"
 
 #:
 msgid "Apply"
-msgstr ""
+msgstr "تطبيق"
 
 #:
 msgid "Apply your changes"
-msgstr ""
+msgstr "طبق التغييرات"
 
 #:
 msgid "Approval"
-msgstr ""
+msgstr "إعتماد"
 
 #:
 msgid "Approval #%1: %2"
-msgstr ""
+msgstr "إعتماد #%1: %2"
 
 #:
 msgid "Approval #%1: Notes not recorded due to a system error"
@@ -675,15 +679,15 @@ msgstr ""
 
 #:
 msgid "April"
-msgstr ""
+msgstr "ابريل"
 
 #:
 msgid "Asc"
-msgstr ""
+msgstr "تصاعدي"
 
 #:
 msgid "Ascending"
-msgstr ""
+msgstr "تصاعدي"
 
 #:
 msgid "Assign and remove custom fields"
@@ -695,19 +699,19 @@ msgstr ""
 
 #:
 msgid "Attach"
-msgstr ""
+msgstr "إلحاق"
 
 #:
 msgid "Attach file"
-msgstr ""
+msgstr "إلحاق ملف"
 
 #:
 msgid "Attached file"
-msgstr ""
+msgstr "إلحاق ملف"
 
 #:
 msgid "Attachment"
-msgstr ""
+msgstr "ملحق"
 
 #:
 msgid "Attachment '%1' could not be loaded"
@@ -723,7 +727,7 @@ msgstr ""
 
 #:
 msgid "Attachments"
-msgstr ""
+msgstr "ملحقات"
 
 #:
 msgid "Attachments encryption is disabled"
@@ -739,11 +743,11 @@ msgstr ""
 
 #:
 msgid "August"
-msgstr ""
+msgstr "اغسطس"
 
 #:
 msgid "Autoreply"
-msgstr ""
+msgstr "رد آلي"
 
 #:
 msgid "Autoreply To Requestors"
@@ -751,7 +755,7 @@ msgstr ""
 
 #:
 msgid "Available"
-msgstr ""
+msgstr "متوفر"
 
 #:
 msgid "BCc"
@@ -759,7 +763,7 @@ msgstr ""
 
 #:
 msgid "Back"
-msgstr ""
+msgstr "إلى الخلف"
 
 #:
 msgid "Bad privacy for attribute %1"
@@ -767,7 +771,7 @@ msgstr ""
 
 #:
 msgid "Basics"
-msgstr ""
+msgstr "البيانات الأساسية"
 
 #:
 msgid "Be sure to save your changes"
@@ -779,15 +783,15 @@ msgstr ""
 
 #:
 msgid "Blank"
-msgstr ""
+msgstr "فارغ"
 
 #:
 msgid "Body"
-msgstr ""
+msgstr "الجسم"
 
 #:
 msgid "Bold"
-msgstr ""
+msgstr "عريض"
 
 #:
 msgid "Bookmark"
@@ -795,15 +799,15 @@ msgstr ""
 
 #:
 msgid "Bookmarked Tickets"
-msgstr ""
+msgstr "بطاقات معلمة"
 
 #:
 msgid "Brief headers"
-msgstr ""
+msgstr "ترويسات مختصرة"
 
 #:
 msgid "Bulk Update"
-msgstr ""
+msgstr "تحديث جماعي"
 
 #:
 msgid "Buy Support"
@@ -859,7 +863,7 @@ msgstr ""
 
 #:
 msgid "Cannot create tickets in a disabled queue."
-msgstr ""
+msgstr "لا يمكن إنشاء بطاقات في تصنيف معطل."
 
 #:
 msgid "Cannot create user: %1"
@@ -867,7 +871,7 @@ msgstr ""
 
 #:
 msgid "Category"
-msgstr ""
+msgstr "فئة"
 
 #:
 msgid "Category unset"
@@ -875,7 +879,7 @@ msgstr ""
 
 #:
 msgid "Cc"
-msgstr ""
+msgstr "نسخة إلى"
 
 #:
 msgid "Ccs"
@@ -883,15 +887,15 @@ msgstr ""
 
 #:
 msgid "Change"
-msgstr ""
+msgstr "تغيير"
 
 #:
 msgid "Change password"
-msgstr ""
+msgstr "غير كلمة السر"
 
 #:
 msgid "Check All"
-msgstr ""
+msgstr "حدد الكلّ"
 
 #:
 msgid "Check Database Connectivity"
@@ -911,7 +915,7 @@ msgstr ""
 
 #:
 msgid "Children"
-msgstr ""
+msgstr "البطاقات الأسفل"
 
 #:
 msgid "Choose a database engine"
@@ -919,15 +923,15 @@ msgstr ""
 
 #:
 msgid "City"
-msgstr ""
+msgstr "المدينة"
 
 #:
 msgid "Clear"
-msgstr ""
+msgstr "أفرغ"
 
 #:
 msgid "Clear All"
-msgstr ""
+msgstr "تفريغ الكل"
 
 #:
 msgid "Click \"Finish Installation\" below to complete this wizard."
@@ -939,15 +943,15 @@ msgstr ""
 
 #:
 msgid "Close window"
-msgstr ""
+msgstr "غلق النّافذة"
 
 #:
 msgid "Closed"
-msgstr ""
+msgstr "مغلقة"
 
 #:
 msgid "Closed tickets"
-msgstr ""
+msgstr "البطاقات المغلقة"
 
 #:
 msgid "Combobox: Select or enter multiple values"
@@ -963,7 +967,7 @@ msgstr ""
 
 #:
 msgid "Comment"
-msgstr ""
+msgstr "تعليق"
 
 #:
 msgid "Comment Address"
@@ -975,7 +979,7 @@ msgstr ""
 
 #:
 msgid "Comment on tickets"
-msgstr ""
+msgstr "علق على البطاقة"
 
 #:
 msgid "CommentAddress"
@@ -987,15 +991,15 @@ msgstr ""
 
 #:
 msgid "Comments"
-msgstr ""
+msgstr "تهميشات"
 
 #:
 msgid "Comments (Not sent to requestors)"
-msgstr ""
+msgstr "تهميشات (لاترسل للطالب)"
 
 #:
 msgid "Comments (not sent to requestors)"
-msgstr ""
+msgstr "تهميشات (لاترسل للطالب)"
 
 #:
 msgid "Comments about this user"
@@ -1011,7 +1015,7 @@ msgstr ""
 
 #:
 msgid "Condition"
-msgstr ""
+msgstr "شرط"
 
 #:
 msgid "Condition '%1' not found"
@@ -1035,11 +1039,11 @@ msgstr ""
 
 #:
 msgid "Configuration"
-msgstr ""
+msgstr "التعديلات"
 
 #:
 msgid "Confirm"
-msgstr ""
+msgstr "تأكيد"
 
 #:
 msgid "Connection succeeded"
@@ -1047,11 +1051,11 @@ msgstr ""
 
 #:
 msgid "Content"
-msgstr ""
+msgstr "المحتويات"
 
 #:
 msgid "Content-Type"
-msgstr ""
+msgstr "Content-Type"
 
 #:
 msgid "ContentType"
@@ -1315,11 +1319,11 @@ msgstr ""
 
 #:
 msgid "Country"
-msgstr ""
+msgstr "البلد"
 
 #:
 msgid "Create"
-msgstr ""
+msgstr "إنشاء"
 
 #:
 msgid "Create Tickets"
@@ -1339,7 +1343,7 @@ msgstr ""
 
 #:
 msgid "Create a new group"
-msgstr ""
+msgstr "أنشئ مجموعة جديدة"
 
 #:
 msgid "Create a new personal group"
@@ -1347,11 +1351,11 @@ msgstr ""
 
 #:
 msgid "Create a new ticket"
-msgstr ""
+msgstr "إنشاء بطاقة جديدة"
 
 #:
 msgid "Create a new user"
-msgstr ""
+msgstr "أنشئ مستخدم جديد"
 
 #:
 msgid "Create a queue"
@@ -1367,7 +1371,7 @@ msgstr ""
 
 #:
 msgid "Create a ticket"
-msgstr ""
+msgstr "إنشاء بطاقة جديدة"
 
 #:
 msgid "Create dashboards for this group"
@@ -1387,7 +1391,7 @@ msgstr ""
 
 #:
 msgid "Create ticket"
-msgstr ""
+msgstr "إنشاء بطاقة جديدة"
 
 #:
 msgid "Create tickets in this queue"
@@ -1487,7 +1491,7 @@ msgstr ""
 
 #:
 msgid "Current search"
-msgstr ""
+msgstr "البحث الجاري"
 
 #:
 msgid "Current watchers"
@@ -1563,7 +1567,7 @@ msgstr ""
 
 #:
 msgid "Customize"
-msgstr ""
+msgstr "خصّص"
 
 #:
 msgid "Customize Basics"
@@ -1619,7 +1623,7 @@ msgstr ""
 
 #:
 msgid "Dashboards"
-msgstr ""
+msgstr "لوحة القرائات"
 
 #:
 msgid "Database host"
@@ -1627,7 +1631,7 @@ msgstr ""
 
 #:
 msgid "Database name"
-msgstr ""
+msgstr "اسم قاعدة البيانات"
 
 #:
 msgid "Database password for RT"
@@ -1647,19 +1651,19 @@ msgstr ""
 
 #:
 msgid "Date format"
-msgstr ""
+msgstr "نسق التاريخ"
 
 #:
 msgid "Dates"
-msgstr ""
+msgstr "التواريخ"
 
 #:
 msgid "Dec"
-msgstr ""
+msgstr "Dec"
 
 #:
 msgid "December"
-msgstr ""
+msgstr "ديسمبر"
 
 #:
 msgid "Decrypt"
@@ -1699,7 +1703,7 @@ msgstr ""
 
 #:
 msgid "Default: %1"
-msgstr ""
+msgstr "الافتراضي: %1"
 
 #:
 msgid "Default: %1/%2 changed from %3 to %4"
@@ -1727,7 +1731,7 @@ msgstr ""
 
 #:
 msgid "Delete"
-msgstr ""
+msgstr "مسح"
 
 #:
 msgid "Delete Template"
@@ -1779,7 +1783,7 @@ msgstr ""
 
 #:
 msgid "Deleted %1"
-msgstr ""
+msgstr "مسحت %1"
 
 #:
 msgid "Deleted dashboard %1"
@@ -1799,11 +1803,11 @@ msgstr ""
 
 #:
 msgid "Deny"
-msgstr ""
+msgstr "منع"
 
 #:
 msgid "Depended on by"
-msgstr ""
+msgstr "معتمد عليها لـ"
 
 #:
 msgid "DependedOnBy"
@@ -1831,7 +1835,7 @@ msgstr ""
 
 #:
 msgid "Depends on"
-msgstr ""
+msgstr "تعتمد على"
 
 #:
 msgid "DependsOn"
@@ -1839,31 +1843,31 @@ msgstr ""
 
 #:
 msgid "Desc"
-msgstr ""
+msgstr "تنازلي"
 
 #:
 msgid "Descending"
-msgstr ""
+msgstr "تنازلي"
 
 #:
 msgid "Describe the issue below"
-msgstr ""
+msgstr "إشرح المسألة  بالأسفل"
 
 #:
 msgid "Description"
-msgstr ""
+msgstr "الوصف"
 
 #:
 msgid "Direction"
-msgstr ""
+msgstr "الإتجاه"
 
 #:
 msgid "Disabled"
-msgstr ""
+msgstr "معطّل"
 
 #:
 msgid "Display"
-msgstr ""
+msgstr "عرض"
 
 #:
 msgid "Display Access Control List"
@@ -1871,7 +1875,7 @@ msgstr ""
 
 #:
 msgid "Display Columns"
-msgstr ""
+msgstr "أعرض الأعمدة"
 
 #:
 msgid "Display Scrip templates for this queue"
@@ -1895,7 +1899,7 @@ msgstr ""
 
 #:
 msgid "Domain name"
-msgstr ""
+msgstr "اسم النطاق"
 
 #:
 msgid "Don't include http://, just something like 'localhost', 'rt.example.com'"
@@ -1903,7 +1907,7 @@ msgstr ""
 
 #:
 msgid "Don't refresh this page."
-msgstr ""
+msgstr "لا تحدث هذه الصفحة"
 
 #:
 msgid "Don't trust this key at all"
@@ -1911,7 +1915,7 @@ msgstr ""
 
 #:
 msgid "Download"
-msgstr ""
+msgstr "تحميل"
 
 #:
 msgid "Download as a tab-delimited file"
@@ -1923,7 +1927,7 @@ msgstr ""
 
 #:
 msgid "Due"
-msgstr ""
+msgstr "في غضون"
 
 #:
 msgid "DueRelative"
@@ -1931,7 +1935,7 @@ msgstr ""
 
 #:
 msgid "ERROR: %1"
-msgstr ""
+msgstr "خطأ: %1"
 
 #:
 msgid "Easy updating of your open tickets"
@@ -1939,7 +1943,7 @@ msgstr ""
 
 #:
 msgid "Edit"
-msgstr ""
+msgstr "تحرير"
 
 #:
 msgid "Edit Custom Fields"
@@ -1975,7 +1979,7 @@ msgstr ""
 
 #:
 msgid "Edit Search"
-msgstr ""
+msgstr "تحرير البحث"
 
 #:
 msgid "Edit Templates for queue %1"
@@ -2027,7 +2031,7 @@ msgstr ""
 
 #:
 msgid "Email"
-msgstr ""
+msgstr "البريد الإلكتروني"
 
 #:
 msgid "Email Configuration"
@@ -2055,7 +2059,7 @@ msgstr ""
 
 #:
 msgid "Enabled"
-msgstr ""
+msgstr "مفعّل"
 
 #:
 msgid "Enabled (Unchecking this box disables this custom field)"
@@ -2139,7 +2143,7 @@ msgstr ""
 
 #:
 msgid "Error"
-msgstr ""
+msgstr "عطل"
 
 #:
 msgid "Error in parameters to Queue->AddWatcher"
@@ -2183,7 +2187,7 @@ msgstr ""
 
 #:
 msgid "Estimated"
-msgstr ""
+msgstr "الوقت المتوقع"
 
 #:
 msgid "Examine tickets created in a queue between two dates"
@@ -2239,11 +2243,11 @@ msgstr ""
 
 #:
 msgid "Failed to load %1 %2"
-msgstr ""
+msgstr "فشل تحميل %1 %2"
 
 #:
 msgid "Failed to load %1 %2: %3"
-msgstr ""
+msgstr "فشل تحميل %1 %2: %3"
 
 #:
 msgid "Failed to load module %1. (%2)"
@@ -2267,7 +2271,7 @@ msgstr ""
 
 #:
 msgid "February"
-msgstr ""
+msgstr "فبراير"
 
 #:
 msgid "Field values source:"
@@ -2275,11 +2279,11 @@ msgstr ""
 
 #:
 msgid "FileName"
-msgstr ""
+msgstr "إسم الملف"
 
 #:
 msgid "Filename"
-msgstr ""
+msgstr "إسم الملف"
 
 #:
 msgid "Fill arguments"
@@ -2319,11 +2323,11 @@ msgstr ""
 
 #:
 msgid "Final Priority"
-msgstr ""
+msgstr "أقصى أولوية"
 
 #:
 msgid "FinalPriority"
-msgstr ""
+msgstr "أقصى أولوية"
 
 #:
 msgid "Find all users whose"
@@ -2363,11 +2367,11 @@ msgstr ""
 
 #:
 msgid "Format"
-msgstr ""
+msgstr "تنسيق"
 
 #:
 msgid "Forward"
-msgstr ""
+msgstr "أمام"
 
 #:
 msgid "Forward Message"
@@ -2415,7 +2419,7 @@ msgstr ""
 
 #:
 msgid "General"
-msgstr ""
+msgstr "عام"
 
 #:
 msgid "Get template from file"
@@ -2475,11 +2479,11 @@ msgstr ""
 
 #:
 msgid "Go"
-msgstr ""
+msgstr "إنطلق"
 
 #:
 msgid "Go!"
-msgstr ""
+msgstr "أنطلق"
 
 #:
 msgid "Goto ticket"
@@ -2499,7 +2503,7 @@ msgstr ""
 
 #:
 msgid "Group"
-msgstr ""
+msgstr "مجموعة"
 
 #:
 msgid "Group Rights"
@@ -2539,7 +2543,7 @@ msgstr ""
 
 #:
 msgid "Groups"
-msgstr ""
+msgstr "المجموعات"
 
 #:
 msgid "Groups can't be members of their members"
@@ -2583,7 +2587,7 @@ msgstr ""
 
 #:
 msgid "History"
-msgstr ""
+msgstr "المحفوظات"
 
 #:
 msgid "History of the group %1"
@@ -2599,15 +2603,15 @@ msgstr ""
 
 #:
 msgid "Homepage"
-msgstr "Home"
+msgstr "الرئيسية"
 
 #:
 msgid "Hour"
-msgstr ""
+msgstr "السّاعة"
 
 #:
 msgid "Hours"
-msgstr ""
+msgstr "ساعات"
 
 #:
 msgid "I have %quant(%1,concrete mixer)."
@@ -2619,11 +2623,11 @@ msgstr ""
 
 #:
 msgid "Id"
-msgstr ""
+msgstr "تعريف"
 
 #:
 msgid "Identity"
-msgstr ""
+msgstr "الهوية"
 
 #:
 msgid "If an approval is rejected, reject the original and delete pending approvals"
@@ -2739,11 +2743,11 @@ msgstr ""
 
 #:
 msgid "Internal Error"
-msgstr ""
+msgstr "خطأ داخلي"
 
 #:
 msgid "Internal Error: %1"
-msgstr ""
+msgstr "خطأ داخلي: %1"
 
 #:
 msgid "Invalid %1: '%2' doesn't look like an email address"
@@ -2771,7 +2775,7 @@ msgstr ""
 
 #:
 msgid "Invalid object"
-msgstr ""
+msgstr "كائن خاطيء"
 
 #:
 msgid "Invalid owner object"
@@ -2823,7 +2827,7 @@ msgstr ""
 
 #:
 msgid "Italic"
-msgstr ""
+msgstr "مائل"
 
 #:
 msgid "Jan"
@@ -2831,7 +2835,7 @@ msgstr ""
 
 #:
 msgid "January"
-msgstr ""
+msgstr "يناير"
 
 #:
 msgid "Join or leave this group"
@@ -2843,7 +2847,7 @@ msgstr ""
 
 #:
 msgid "July"
-msgstr ""
+msgstr "يوليو"
 
 #:
 msgid "Jumbo"
@@ -2855,7 +2859,7 @@ msgstr ""
 
 #:
 msgid "June"
-msgstr ""
+msgstr "يونيو"
 
 #:
 msgid "Keep 'localhost' if you're not sure. Leave blank to connect locally over a socket"
@@ -2863,19 +2867,19 @@ msgstr ""
 
 #:
 msgid "Language"
-msgstr ""
+msgstr "اللغة"
 
 #:
 msgid "Language."
-msgstr ""
+msgstr "اللغة"
 
 #:
 msgid "Large"
-msgstr ""
+msgstr "كبير"
 
 #:
 msgid "Last"
-msgstr ""
+msgstr "الأخيرة"
 
 #:
 msgid "Last Contact"
@@ -2923,7 +2927,7 @@ msgstr ""
 
 #:
 msgid "Left"
-msgstr ""
+msgstr "على اليسار"
 
 #:
 msgid "Legends"
@@ -2947,7 +2951,7 @@ msgstr ""
 
 #:
 msgid "Link"
-msgstr ""
+msgstr "رابط"
 
 #:
 msgid "Link already exists"
@@ -2987,11 +2991,11 @@ msgstr ""
 
 #:
 msgid "Links"
-msgstr ""
+msgstr "روابط"
 
 #:
 msgid "Load"
-msgstr ""
+msgstr "تحميل"
 
 #:
 msgid "Load saved search:"
@@ -3023,11 +3027,11 @@ msgstr ""
 
 #:
 msgid "Location"
-msgstr ""
+msgstr "الموقع"
 
 #:
 msgid "Logged in as %1"
-msgstr ""
+msgstr "%1 تسجيل الدخول بإسم"
 
 #:
 msgid "Logged out"
@@ -3035,11 +3039,11 @@ msgstr ""
 
 #:
 msgid "Login"
-msgstr ""
+msgstr "تسجيل الدخول"
 
 #:
 msgid "Logout"
-msgstr ""
+msgstr "تسجيل الخروج"
 
 #:
 msgid "Lookup type mismatch"
@@ -3047,7 +3051,7 @@ msgstr ""
 
 #:
 msgid "Mail"
-msgstr ""
+msgstr "البريد إلكتروني"
 
 #:
 msgid "Main type of links"
@@ -3127,7 +3131,7 @@ msgstr ""
 
 #:
 msgid "March"
-msgstr ""
+msgstr "مارس"
 
 #:
 msgid "Marked all messages as seen"
@@ -3139,7 +3143,7 @@ msgstr ""
 
 #:
 msgid "May"
-msgstr ""
+msgstr "مايو"
 
 #:
 msgid "Member"
@@ -3215,7 +3219,7 @@ msgstr ""
 
 #:
 msgid "Message"
-msgstr ""
+msgstr "رسالة"
 
 #:
 msgid "Message body not shown because it is too large or is not plain text."
@@ -3251,7 +3255,7 @@ msgstr ""
 
 #:
 msgid "Minutes"
-msgstr ""
+msgstr "دقائق"
 
 #:
 msgid "Missing a primary key?: %1"
@@ -3515,11 +3519,11 @@ msgstr ""
 
 #:
 msgid "Move down"
-msgstr ""
+msgstr "حرّك إلى الأسفل"
 
 #:
 msgid "Move up"
-msgstr ""
+msgstr "حرّك إلى الأعلى"
 
 #:
 msgid "Multiple"
@@ -3559,7 +3563,7 @@ msgstr ""
 
 #:
 msgid "Name"
-msgstr ""
+msgstr "الإسم"
 
 #:
 msgid "Name in use"
@@ -3571,11 +3575,11 @@ msgstr ""
 
 #:
 msgid "Never"
-msgstr ""
+msgstr "أبداً"
 
 #:
 msgid "New"
-msgstr ""
+msgstr "جديدة"
 
 #:
 msgid "New Links"
@@ -3583,7 +3587,7 @@ msgstr ""
 
 #:
 msgid "New Password"
-msgstr ""
+msgstr "كلمة سر جديدة"
 
 #:
 msgid "New Pending Approval"
@@ -3591,7 +3595,7 @@ msgstr ""
 
 #:
 msgid "New Search"
-msgstr ""
+msgstr "بحث جديد"
 
 #:
 msgid "New and open tickets for %1"
@@ -3607,7 +3611,7 @@ msgstr ""
 
 #:
 msgid "New group"
-msgstr ""
+msgstr "مجموعة جديدة"
 
 #:
 msgid "New messages"
@@ -3615,7 +3619,7 @@ msgstr ""
 
 #:
 msgid "New password"
-msgstr ""
+msgstr "كلمة سر جديدة"
 
 #:
 msgid "New password notification sent"
@@ -3639,7 +3643,7 @@ msgstr ""
 
 #:
 msgid "New ticket"
-msgstr ""
+msgstr "بطاقة جديدة"
 
 #:
 msgid "New ticket doesn't exist"
@@ -3655,19 +3659,19 @@ msgstr ""
 
 #:
 msgid "Next"
-msgstr ""
+msgstr "التالي"
 
 #:
 msgid "NickName"
-msgstr ""
+msgstr "الاسم المستعار"
 
 #:
 msgid "Nickname"
-msgstr ""
+msgstr "الاسم المستعار"
 
 #:
 msgid "No"
-msgstr ""
+msgstr "لا"
 
 #:
 msgid "No %1 loaded"
@@ -3843,11 +3847,11 @@ msgstr ""
 
 #:
 msgid "Nobody"
-msgstr ""
+msgstr "لا أحد"
 
 #:
 msgid "None"
-msgstr ""
+msgstr "لا شيء"
 
 #:
 msgid "Nonexistant field?"
@@ -3859,7 +3863,7 @@ msgstr ""
 
 #:
 msgid "Not found"
-msgstr ""
+msgstr "غير موجود"
 
 #:
 msgid "Not logged in."
@@ -3875,7 +3879,7 @@ msgstr ""
 
 #:
 msgid "Notes"
-msgstr ""
+msgstr "ملاحظات"
 
 #:
 msgid "Notification could not be sent"
@@ -3967,7 +3971,7 @@ msgstr ""
 
 #:
 msgid "November"
-msgstr ""
+msgstr "نوفمبر"
 
 #:
 msgid "Number of search results"
@@ -3975,7 +3979,7 @@ msgstr ""
 
 #:
 msgid "OR"
-msgstr ""
+msgstr "أو"
 
 #:
 msgid "Object could not be created"
@@ -4007,11 +4011,11 @@ msgstr ""
 
 #:
 msgid "Oct"
-msgstr ""
+msgstr "Oct"
 
 #:
 msgid "October"
-msgstr ""
+msgstr "أكتوبر"
 
 #:
 msgid "Offline"
@@ -4035,7 +4039,7 @@ msgstr ""
 
 #:
 msgid "On Comment"
-msgstr ""
+msgstr "علق على البطاقة"
 
 #:
 msgid "On Correspond"
@@ -4099,11 +4103,11 @@ msgstr ""
 
 #:
 msgid "Open URL"
-msgstr ""
+msgstr "فتح الرابط"
 
 #:
 msgid "Open it"
-msgstr "Open"
+msgstr ""
 
 #:
 msgid "Open tickets"
@@ -4115,7 +4119,7 @@ msgstr ""
 
 #:
 msgid "Options"
-msgstr ""
+msgstr "الخيارات"
 
 #:
 msgid "Oracle"
@@ -4123,11 +4127,11 @@ msgstr ""
 
 #:
 msgid "Order by"
-msgstr ""
+msgstr "حسب"
 
 #:
 msgid "Organization"
-msgstr ""
+msgstr "المنظّمة"
 
 #:
 msgid "Originating ticket: #%1"
@@ -4147,7 +4151,7 @@ msgstr ""
 
 #:
 msgid "Own tickets"
-msgstr ""
+msgstr "إمتلك البطاقات"
 
 #:
 msgid "OwnTicket"
@@ -4155,7 +4159,7 @@ msgstr ""
 
 #:
 msgid "Owner"
-msgstr ""
+msgstr "المالك"
 
 #:
 msgid "Owner '%1' does not have rights to own this ticket."
@@ -4179,11 +4183,11 @@ msgstr ""
 
 #:
 msgid "Page"
-msgstr ""
+msgstr "صفحة"
 
 #:
 msgid "Page 1 of 1"
-msgstr ""
+msgstr "عدد الصفوف في الصفحة"
 
 #:
 msgid "Page not found"
@@ -4191,7 +4195,7 @@ msgstr ""
 
 #:
 msgid "Pager"
-msgstr ""
+msgstr "بيجر"
 
 #:
 msgid "PagerPhone"
@@ -4199,11 +4203,11 @@ msgstr ""
 
 #:
 msgid "Parents"
-msgstr ""
+msgstr "البطاقة الأعلى"
 
 #:
 msgid "Password"
-msgstr ""
+msgstr "كلمة السر"
 
 #:
 msgid "Password Reminder"
@@ -4211,7 +4215,7 @@ msgstr ""
 
 #:
 msgid "Password changed"
-msgstr ""
+msgstr "لقد تم تغيير كلمة المرور"
 
 #:
 msgid "Password needs to be at least %1 characters long"
@@ -4223,7 +4227,7 @@ msgstr ""
 
 #:
 msgid "Password: %1"
-msgstr ""
+msgstr "كلمة السر: %1"
 
 #:
 msgid "Password: Permission Denied"
@@ -4235,7 +4239,7 @@ msgstr ""
 
 #:
 msgid "Passwords do not match."
-msgstr ""
+msgstr "كلمتا المرور لا تتطابقان."
 
 #:
 msgid "Passwords do not match. Your password has not been changed"
@@ -4263,11 +4267,11 @@ msgstr ""
 
 #:
 msgid "Permission Denied"
-msgstr ""
+msgstr "رُفض التّصريح"
 
 #:
 msgid "Permission denied"
-msgstr ""
+msgstr "رُفض التّصريح"
 
 #:
 msgid "Personal Dashboards"
@@ -4303,7 +4307,7 @@ msgstr ""
 
 #:
 msgid "Preferences"
-msgstr ""
+msgstr "التفضيلات"
 
 #:
 msgid "Preferences %1 for user %2."
@@ -4339,7 +4343,7 @@ msgstr ""
 
 #:
 msgid "Previous"
-msgstr ""
+msgstr "السابق"
 
 #:
 msgid "Principal %1 not found."
@@ -4355,7 +4359,7 @@ msgstr ""
 
 #:
 msgid "Priority"
-msgstr ""
+msgstr "الأولوية"
 
 #:
 msgid "Priority starts at"
@@ -4399,7 +4403,7 @@ msgstr ""
 
 #:
 msgid "Query"
-msgstr ""
+msgstr "إستعلام"
 
 #:
 msgid "Query Builder"
@@ -4407,11 +4411,11 @@ msgstr ""
 
 #:
 msgid "Query:"
-msgstr ""
+msgstr "إستعلام"
 
 #:
 msgid "Queue"
-msgstr ""
+msgstr "التصنيف"
 
 #:
 msgid "Queue %1 not found"
@@ -4483,11 +4487,11 @@ msgstr ""
 
 #:
 msgid "Quick search"
-msgstr ""
+msgstr "بحث سريع"
 
 #:
 msgid "Quick ticket creation"
-msgstr ""
+msgstr "إنشاء سريع لبطاقة"
 
 #:
 msgid "RFC2822"
@@ -4527,11 +4531,11 @@ msgstr ""
 
 #:
 msgid "RT at a glance"
-msgstr ""
+msgstr "لمحة سريعة"
 
 #:
 msgid "RT at a glance for the user %1"
-msgstr ""
+msgstr "لمحة سريعة للمستخدم %1"
 
 #:
 msgid "RT can communicate with your users about new tickets or new correspondence on tickets. Tell us where to find sendmail (or a sendmail compatible binary such as the one provided by postifx).  RT also needs to know who to notify when someone sends invalid email.  This must not be an address that feeds back into RT."
@@ -4627,7 +4631,7 @@ msgstr ""
 
 #:
 msgid "Referred to by"
-msgstr ""
+msgstr "مشار إليها في"
 
 #:
 msgid "ReferredToBy"
@@ -4635,7 +4639,7 @@ msgstr ""
 
 #:
 msgid "Refers to"
-msgstr ""
+msgstr "إشارة إلى"
 
 #:
 msgid "RefersTo"
@@ -4643,11 +4647,11 @@ msgstr ""
 
 #:
 msgid "Refresh"
-msgstr ""
+msgstr "تحديث"
 
 #:
 msgid "Refresh this page every %1 minutes."
-msgstr ""
+msgstr "قم بتحديث الصفحة كل %1 دقيقة"
 
 #:
 msgid "Reminder '%1' added"
@@ -4667,7 +4671,7 @@ msgstr ""
 
 #:
 msgid "Reminders"
-msgstr ""
+msgstr "تذكير"
 
 #:
 msgid "Reminders for ticket #%1"
@@ -4679,7 +4683,7 @@ msgstr ""
 
 #:
 msgid "Remove Bookmark"
-msgstr ""
+msgstr "إزالة الإشارة المرجعية"
 
 #:
 msgid "Remove Cc"
@@ -4723,7 +4727,7 @@ msgstr ""
 
 #:
 msgid "Requestors"
-msgstr ""
+msgstr "الطالب"
 
 #:
 msgid "Requests should be due in"
@@ -4735,7 +4739,7 @@ msgstr ""
 
 #:
 msgid "Reset"
-msgstr ""
+msgstr "إعادة تعيين"
 
 #:
 msgid "Reset secret authentication token"
@@ -4743,11 +4747,11 @@ msgstr ""
 
 #:
 msgid "Reset to default"
-msgstr ""
+msgstr "إعادة الضبط للإفتراض"
 
 #:
 msgid "Residence"
-msgstr "Home"
+msgstr ""
 
 #:
 msgid "Resolve"
@@ -4759,7 +4763,7 @@ msgstr ""
 
 #:
 msgid "Resolved"
-msgstr ""
+msgstr "إكتملت"
 
 #:
 msgid "Resolved by owner"
@@ -4795,7 +4799,7 @@ msgstr ""
 
 #:
 msgid "Revert"
-msgstr ""
+msgstr "استرجاع"
 
 #:
 msgid "Right Delegated"
@@ -4835,7 +4839,7 @@ msgstr ""
 
 #:
 msgid "Rows"
-msgstr ""
+msgstr "سطور"
 
 #:
 msgid "Rows per box"
@@ -4843,7 +4847,7 @@ msgstr ""
 
 #:
 msgid "Rows per page"
-msgstr ""
+msgstr "عدد الصفوف في الصفحة"
 
 #:
 msgid "SQLite"
@@ -4863,11 +4867,11 @@ msgstr ""
 
 #:
 msgid "Save"
-msgstr ""
+msgstr "حفظ"
 
 #:
 msgid "Save Changes"
-msgstr ""
+msgstr "حفظ التّغييرات"
 
 #:
 msgid "Save Preferences"
@@ -4923,7 +4927,7 @@ msgstr ""
 
 #:
 msgid "Search"
-msgstr ""
+msgstr "بحث"
 
 #:
 msgid "Search Preferences"
@@ -4935,7 +4939,7 @@ msgstr ""
 
 #:
 msgid "Search for tickets"
-msgstr ""
+msgstr "بحث عن بطاقات"
 
 #:
 msgid "Search for tickets. Enter <strong>id</strong> numbers, <strong>queues</strong> by name, Owners by <strong>username</strong> and Requestors by <strong>email address</strong>."
@@ -4959,11 +4963,11 @@ msgstr ""
 
 #:
 msgid "Security:"
-msgstr ""
+msgstr "أمن"
 
 #:
 msgid "See also:"
-msgstr ""
+msgstr "راجع كذلك:"
 
 #:
 msgid "See custom fields"
@@ -5007,7 +5011,7 @@ msgstr ""
 
 #:
 msgid "Select"
-msgstr ""
+msgstr "إنتقاء"
 
 #:
 msgid "Select Database Type"
@@ -5031,7 +5035,7 @@ msgstr ""
 
 #:
 msgid "Select a user"
-msgstr ""
+msgstr "انتقي مستخدم"
 
 #:
 msgid "Select another language"
@@ -5159,19 +5163,19 @@ msgstr ""
 
 #:
 msgid "September"
-msgstr ""
+msgstr "سبتمبر"
 
 #:
 msgid "Settings"
-msgstr ""
+msgstr "الإعدادات"
 
 #:
 msgid "Show"
-msgstr ""
+msgstr "عرض"
 
 #:
 msgid "Show Columns"
-msgstr ""
+msgstr "أعرض الأعمدة"
 
 #:
 msgid "Show Results"
@@ -5191,7 +5195,7 @@ msgstr ""
 
 #:
 msgid "Show basics"
-msgstr ""
+msgstr "أعرض البيانات الأساسية"
 
 #:
 msgid "Show denied requests"
@@ -5199,7 +5203,7 @@ msgstr ""
 
 #:
 msgid "Show details"
-msgstr ""
+msgstr "أعرض التفاصيل"
 
 #:
 msgid "Show link descriptions"
@@ -5295,7 +5299,7 @@ msgstr ""
 
 #:
 msgid "Simple Search"
-msgstr ""
+msgstr "بحث بسيط"
 
 #:
 msgid "Single"
@@ -5307,7 +5311,7 @@ msgstr ""
 
 #:
 msgid "Size"
-msgstr ""
+msgstr "الحجم"
 
 #:
 msgid "Skip Menu"
@@ -5319,7 +5323,7 @@ msgstr ""
 
 #:
 msgid "Small"
-msgstr ""
+msgstr "صغير"
 
 #:
 msgid "Some browsers may only load content from the same domain as your RT server."
@@ -5327,11 +5331,11 @@ msgstr ""
 
 #:
 msgid "Sort"
-msgstr ""
+msgstr "رتب"
 
 #:
 msgid "Sorting"
-msgstr ""
+msgstr "ترتيب"
 
 #:
 msgid "Specify whether this is a daily or weekly run."
@@ -5339,7 +5343,7 @@ msgstr ""
 
 #:
 msgid "Spreadsheet"
-msgstr ""
+msgstr "أوراق عمل ممتدة"
 
 #:
 msgid "Stage"
@@ -5355,7 +5359,7 @@ msgstr ""
 
 #:
 msgid "Starts"
-msgstr ""
+msgstr "تبدأ"
 
 #:
 msgid "StartsRelative"
@@ -5363,11 +5367,11 @@ msgstr ""
 
 #:
 msgid "State"
-msgstr ""
+msgstr "الولاية"
 
 #:
 msgid "Status"
-msgstr ""
+msgstr "الحالة"
 
 #:
 msgid "Status Change"
@@ -5399,11 +5403,11 @@ msgstr ""
 
 #:
 msgid "Style"
-msgstr ""
+msgstr "الشكل"
 
 #:
 msgid "Subject"
-msgstr ""
+msgstr "الموضوع"
 
 #:
 msgid "Subject Tag"
@@ -5459,7 +5463,7 @@ msgstr ""
 
 #:
 msgid "Sun"
-msgstr ""
+msgstr "الأحد"
 
 #:
 msgid "Sunday"
@@ -5483,7 +5487,7 @@ msgstr ""
 
 #:
 msgid "System Default"
-msgstr ""
+msgstr "إفتراضي النظام"
 
 #:
 msgid "System Error"
@@ -5495,7 +5499,7 @@ msgstr ""
 
 #:
 msgid "System Tools"
-msgstr ""
+msgstr "أدوات النّظام"
 
 #:
 msgid "System error. Right not delegated."
@@ -5539,11 +5543,11 @@ msgstr ""
 
 #:
 msgid "Template"
-msgstr ""
+msgstr "قالب"
 
 #:
 msgid "Template #%1"
-msgstr ""
+msgstr "قالب #%1"
 
 #:
 msgid "Template #%1 deleted"
@@ -5647,7 +5651,7 @@ msgstr ""
 
 #:
 msgid "The Basics"
-msgstr ""
+msgstr "البيانات الأساسية"
 
 #:
 msgid "The CC of a ticket"
@@ -5719,7 +5723,7 @@ msgstr ""
 
 #:
 msgid "Theme"
-msgstr ""
+msgstr "السِمة"
 
 #:
 msgid "There are several keys suitable for encryption."
@@ -5787,7 +5791,7 @@ msgstr ""
 
 #:
 msgid "Ticket"
-msgstr ""
+msgstr "بطاقة"
 
 #:
 msgid "Ticket #%1 Jumbo update: %2"
@@ -5799,11 +5803,11 @@ msgstr ""
 
 #:
 msgid "Ticket #%1: %2"
-msgstr ""
+msgstr "البطاقة #%1: %2"
 
 #:
 msgid "Ticket %1"
-msgstr ""
+msgstr "البطاقة %1"
 
 #:
 msgid "Ticket %1 created in queue '%2'"
@@ -5811,7 +5815,7 @@ msgstr ""
 
 #:
 msgid "Ticket %1: %2"
-msgstr ""
+msgstr "البطاقة %1 %2"
 
 #:
 msgid "Ticket Custom Fields"
@@ -5867,11 +5871,11 @@ msgstr ""
 
 #:
 msgid "Tickets"
-msgstr ""
+msgstr "البطاقات"
 
 #:
 msgid "Tickets %1 %2"
-msgstr ""
+msgstr "البطاقات %1 %2"
 
 #:
 msgid "Tickets %1 by %2"
@@ -5899,15 +5903,15 @@ msgstr ""
 
 #:
 msgid "Time Estimated"
-msgstr ""
+msgstr "الوقت المتوقع"
 
 #:
 msgid "Time Left"
-msgstr ""
+msgstr "الوقت المتبقي"
 
 #:
 msgid "Time Worked"
-msgstr ""
+msgstr "وقت العمل"
 
 #:
 msgid "Time to display"
@@ -5927,15 +5931,15 @@ msgstr ""
 
 #:
 msgid "Timezone"
-msgstr ""
+msgstr "المنطقة الزمنية"
 
 #:
 msgid "Title"
-msgstr ""
+msgstr "عنوان"
 
 #:
 msgid "To"
-msgstr ""
+msgstr "إلى"
 
 #:
 msgid "To inquire about support, training, custom development or licensing, please contact %1."
@@ -5951,11 +5955,11 @@ msgstr ""
 
 #:
 msgid "Tools"
-msgstr ""
+msgstr "أدوات"
 
 #:
 msgid "Total"
-msgstr ""
+msgstr "الإجمالي"
 
 #:
 msgid "Transaction"
@@ -5999,7 +6003,7 @@ msgstr ""
 
 #:
 msgid "Type"
-msgstr ""
+msgstr "النوع"
 
 #:
 msgid "Type changed from '%1' to '%2'"
@@ -6043,7 +6047,7 @@ msgstr ""
 
 #:
 msgid "Unlimited"
-msgstr ""
+msgstr "غير محدود"
 
 #:
 msgid "Unnamed search"
@@ -6067,7 +6071,7 @@ msgstr ""
 
 #:
 msgid "Update"
-msgstr ""
+msgstr "تحديث"
 
 #:
 msgid "Update Graph"
@@ -6083,7 +6087,7 @@ msgstr ""
 
 #:
 msgid "Update format and Search"
-msgstr ""
+msgstr "تحديث تنسيق و بحث"
 
 #:
 msgid "Update multiple tickets"
@@ -6155,7 +6159,7 @@ msgstr ""
 
 #:
 msgid "Usage: "
-msgstr ""
+msgstr "الاستخدام: "
 
 #:
 msgid "Use SSL?"
@@ -6163,7 +6167,7 @@ msgstr ""
 
 #:
 msgid "Use default (%1)"
-msgstr ""
+msgstr "استخدم الافتراضي (%1)"
 
 #:
 msgid "Use fixed-width font to display plaintext messages"
@@ -6183,7 +6187,7 @@ msgstr ""
 
 #:
 msgid "User"
-msgstr ""
+msgstr "المستخدم"
 
 #:
 msgid "User '%1' could not be found."
@@ -6195,7 +6199,7 @@ msgstr ""
 
 #:
 msgid "User Defined"
-msgstr ""
+msgstr "معَرّف من طرف المستخدم"
 
 #:
 msgid "User Defined conditions and actions"
@@ -6239,7 +6243,7 @@ msgstr ""
 
 #:
 msgid "Username"
-msgstr ""
+msgstr "أسم المستخدم"
 
 #:
 msgid "Username format"
@@ -6247,7 +6251,7 @@ msgstr ""
 
 #:
 msgid "Users"
-msgstr ""
+msgstr "المستخدمون"
 
 #:
 msgid "Users matching search criteria"
@@ -6443,11 +6447,11 @@ msgstr ""
 
 #:
 msgid "Worked"
-msgstr ""
+msgstr "وقت العمل"
 
 #:
 msgid "Yes"
-msgstr ""
+msgstr "نعم"
 
 #:
 msgid "You already own this ticket"
@@ -6527,11 +6531,11 @@ msgstr ""
 
 #:
 msgid "Zip"
-msgstr ""
+msgstr "Zip"
 
 #:
 msgid "[none]"
-msgstr ""
+msgstr "[لاشيء]"
 
 #:
 msgid "after"
@@ -6551,7 +6555,7 @@ msgstr ""
 
 #:
 msgid "bar"
-msgstr ""
+msgstr "شريط"
 
 #:
 msgid "before"
@@ -6559,7 +6563,7 @@ msgstr ""
 
 #:
 msgid "bottom to top"
-msgstr ""
+msgstr "من أسفل إلى أعلى"
 
 #:
 msgid "click to check/uncheck all objects at once"
@@ -6567,7 +6571,7 @@ msgstr ""
 
 #:
 msgid "closed"
-msgstr ""
+msgstr "مقفل"
 
 #:
 msgid "daily"
@@ -6579,11 +6583,11 @@ msgstr ""
 
 #:
 msgid "days"
-msgstr ""
+msgstr "أيّام"
 
 #:
 msgid "deleted"
-msgstr ""
+msgstr "ممسوحة"
 
 #:
 msgid "doesn't match"
@@ -6591,11 +6595,11 @@ msgstr ""
 
 #:
 msgid "download"
-msgstr ""
+msgstr "تنزيل"
 
 #:
 msgid "equal to"
-msgstr ""
+msgstr "يساوي"
 
 #:
 msgid "error: can't move down"
@@ -6631,19 +6635,19 @@ msgstr ""
 
 #:
 msgid "full"
-msgstr ""
+msgstr "ممتلئ"
 
 #:
 msgid "greater than"
-msgstr ""
+msgstr "أكبر من"
 
 #:
 msgid "group '%1'"
-msgstr ""
+msgstr "مجموعة '%1'"
 
 #:
 msgid "hours"
-msgstr ""
+msgstr "ساعات"
 
 #:
 msgid "iCal"
@@ -6651,7 +6655,7 @@ msgstr ""
 
 #:
 msgid "id"
-msgstr ""
+msgstr "تعريف"
 
 #:
 msgid "is"
@@ -6675,11 +6679,11 @@ msgstr ""
 
 #:
 msgid "left to right"
-msgstr ""
+msgstr "من اليسار إلى اليمين"
 
 #:
 msgid "less than"
-msgstr ""
+msgstr "أقل من"
 
 #:
 msgid "marginal"
@@ -6687,7 +6691,7 @@ msgstr ""
 
 #:
 msgid "matches"
-msgstr ""
+msgstr "مطابق"
 
 #:
 msgid "maximum depth"
@@ -6699,7 +6703,7 @@ msgstr ""
 
 #:
 msgid "minutes"
-msgstr ""
+msgstr "دقائق"
 
 #:
 msgid "monthly"
@@ -6715,31 +6719,31 @@ msgstr ""
 
 #:
 msgid "never"
-msgstr ""
+msgstr "أبداً"
 
 #:
 msgid "new"
-msgstr ""
+msgstr "جديدة"
 
 #:
 msgid "no"
-msgstr ""
+msgstr "لا"
 
 #:
 msgid "no name"
-msgstr ""
+msgstr "بدون اسم"
 
 #:
 msgid "none"
-msgstr ""
+msgstr "لا شيء"
 
 #:
 msgid "not equal to"
-msgstr ""
+msgstr "لا يساوي"
 
 #:
 msgid "nothing"
-msgstr ""
+msgstr "ﻻ شئ"
 
 #:
 msgid "objects were successfuly removed"
@@ -6747,7 +6751,7 @@ msgstr ""
 
 #:
 msgid "on"
-msgstr ""
+msgstr "على"
 
 #:
 msgid "on day"
@@ -6755,7 +6759,7 @@ msgstr ""
 
 #:
 msgid "open"
-msgstr ""
+msgstr "مفتوحة"
 
 #:
 msgid "open/close"
@@ -6763,7 +6767,7 @@ msgstr ""
 
 #:
 msgid "other..."
-msgstr ""
+msgstr "أخرى..."
 
 #:
 msgid "personal group '%1' for user '%2'"
@@ -6779,19 +6783,19 @@ msgstr ""
 
 #:
 msgid "queue %1 %2"
-msgstr ""
+msgstr "التصنيف %1 %2"
 
 #:
 msgid "rejected"
-msgstr ""
+msgstr "مرفوضة"
 
 #:
 msgid "resolved"
-msgstr ""
+msgstr "إكتملت"
 
 #:
 msgid "right to left"
-msgstr ""
+msgstr "من اليمين إلى اليسار"
 
 #:
 msgid "sec"
@@ -6811,7 +6815,7 @@ msgstr ""
 
 #:
 msgid "stalled"
-msgstr ""
+msgstr "متوقفة"
 
 #:
 msgid "summary rows"
@@ -6819,7 +6823,7 @@ msgstr ""
 
 #:
 msgid "system %1"
-msgstr ""
+msgstr "نظام %1"
 
 #:
 msgid "system group '%1'"
@@ -6839,11 +6843,11 @@ msgstr ""
 
 #:
 msgid "ticket #%1 %2"
-msgstr ""
+msgstr "البطاقة #%1 %2"
 
 #:
 msgid "top to bottom"
-msgstr ""
+msgstr "من أعلى إلى أسفل"
 
 #:
 msgid "ultimate"
@@ -6855,36 +6859,36 @@ msgstr ""
 
 #:
 msgid "user %1"
-msgstr ""
+msgstr "المستخدم %1"
 
 #:
 msgid "verbose"
-msgstr ""
+msgstr "مفصل"
 
 #:
 msgid "weekly"
-msgstr ""
+msgstr "اسبوعياً"
 
 #:
 msgid "weekly (on %1) at %2"
-msgstr ""
+msgstr "اسبوعياً (في 1%) عند 2%"
 
 #:
 msgid "weeks"
-msgstr ""
+msgstr "أسابيع"
 
 #:
 msgid "which port your web server will listen to, e.g. 8080"
-msgstr ""
+msgstr "ما هو المنفذ الذي يعمل به خادم الويب لديك، مثال المنفذ 8080"
 
 #:
 msgid "with headers"
-msgstr ""
+msgstr "مع التفاصيل"
 
 #:
 msgid "years"
-msgstr ""
+msgstr "سنوات"
 
 #:
 msgid "yes"
-msgstr ""
+msgstr "نعم"
