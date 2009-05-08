@@ -97,9 +97,43 @@ sub SetRecipients {
 sub _HandleArgument {
     my $self = shift;
     my $instance = shift;
-    
-    my $obj = RT::Principal->new( $RT::SystemUser );
-    $obj->Load( $instance );
+
+    if ( $instance !~ /\D/ ) {
+        my $obj = RT::Principal->new( $self->CurrentUser );
+        $obj->Load( $instance );
+        return $self->_HandlePrincipal( $obj );
+    }
+
+    my $group = RT::Group->new( $self->CurrentUser );
+    $group->LoadUserDefinedGroup( $instance );
+    # to check disabled and so on
+    return $self->_HandlePrincipal( $group->PrincipalObj )
+        if $group->id;
+
+    require Email::Address;
+
+    my $user = RT::User->new( $self->CurrentUser );
+    if ( $instance =~ /^$Email::Address::addr_spec$/ ) {
+        $user->LoadByEmail( $instance );
+        return $self->__PushUserAddress( $instance )
+            unless $user->id;
+    } else {
+        $user->Load( $instance );
+    }
+    return $self->_HandlePrincipal( $user->PrincipalObj )
+        if $user->id;
+
+    $RT::Logger->error(
+        "'$instance' is not principal id, group name, user name,"
+        ." user email address or any email address"
+    );
+
+    return;
+}
+
+sub _HandlePrincipal {
+    my $self = shift;
+    my $obj = shift;
     unless( $obj->id ) {
         $RT::Logger->error( "Couldn't load principal #$instance" );
         return;
