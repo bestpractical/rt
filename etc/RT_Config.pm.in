@@ -886,6 +886,10 @@ Set($MessageBoxHeight, 15);
 
 Default wrapping: "HARD"  (choices "SOFT", "HARD")
 
+Wrapping is disabled when using MessageBoxRichText because
+of a bad interaction between IE and wrapping with the Rich
+Text Editor.
+
 =cut
 
 Set($MessageBoxWrap, "HARD");

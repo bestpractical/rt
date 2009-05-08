@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<textarea class="messagebox" cols="<% $Width %>" rows="<% $Height %>" wrap="<% $Wrap %>" name="<% $Name %>" id="<% $Name %>">\
+<textarea class="messagebox" cols="<% $Width %>" rows="<% $Height %>" <% $wrap_type %> name="<% $Name %>" id="<% $Name %>">\
 % $m->callback( %ARGS );
 <% $Default || '' %><% $message %><% $signature %></textarea>
 % $m->callback( %ARGS, CallbackName => 'AfterTextArea' );
@@ -62,6 +62,12 @@ if ( $QuoteTransaction ) {
 my $signature = '';
 if ( $IncludeSignature and my $text = $session{'CurrentUser'}->UserObj->Signature ) {
 	$signature = "-- \n". $text;
+}
+
+# wrap="something" seems to really break IE + richtext
+my $wrap_type;
+if ( not RT->Config->Get('MessageBoxRichText',  $session{'CurrentUser'}) ) {
+    $wrap_type = qq(wrap="$Wrap");
 }
 
 </%INIT>
