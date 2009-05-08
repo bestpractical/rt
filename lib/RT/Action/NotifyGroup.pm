@@ -80,12 +80,6 @@ sub SetRecipients {
     my $self = shift;
 
     my $arg = $self->Argument;
-
-    my $old_arg = eval { Storable::thaw( $arg ) };
-    unless( $@ ) {
-        $arg = $self->__ConvertOldArg( $old_arg );
-    }
-
     foreach( $self->__SplitArg( $arg ) ) {
         $self->_HandleArgument( $_ );
     }
@@ -149,31 +143,7 @@ sub __HandleGroupArgument {
 }
 
 sub __SplitArg {
-    return split /[^0-9]+/, $_[1];
-}
-
-sub __ConvertOldArg {
-    my $self = shift;
-    my $arg = shift;
-    my @res;
-    foreach my $r ( @{ $arg } ) {
-        my $obj;
-        next unless $r->{'Type'};
-        if( lc $r->{'Type'} eq 'user' ) {
-            $obj = RT::User->new( $RT::SystemUser );
-        } elsif ( lc $r->{'Type'} eq 'user' ) {
-            $obj = RT::Group->new( $RT::SystemUser );
-        } else {
-            next;
-        }
-        $obj->Load( $r->{'Instance'} );
-        my $id = $obj->id;
-        next unless( $id );
-
-        push @res, $id;
-    }
-
-    return join ';', @res;
+    return grep length, map {s/^\s+//; s/\s+$//; $_} split /,/, $_[1];
 }
 
 sub __PushUserAddress {
