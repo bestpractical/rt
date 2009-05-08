@@ -50,6 +50,8 @@ package RT::ObjectCustomFieldValue;
 
 use strict;
 use warnings;
+use RT::Interface::Web;
+
 no warnings qw(redefine);
 
 sub Create {
@@ -195,7 +197,7 @@ sub Delete {
 =head2 _FillInTemplateURL URL
 
 Takes a URL containing placeholders and returns the URL as filled in for this 
-ObjectCustomFieldValue.
+ObjectCustomFieldValue. The values for the placeholders will be URI-escaped.
 
 Available placeholders:
 
@@ -214,15 +216,19 @@ The value of this custom field for the object in question.
 =cut
 
 sub _FillInTemplateURL {
-
     my $self = shift;
-
     my $url = shift;
 
+    my $id = $self->ObjectId;
     my $content = join '', @{[$self->Content]};
-    $content = '' if !defined($content);
 
-    $url =~ s/__id__/$self->ObjectId/eg;
+    # default value, uri-escape
+    for ($id, $content) {
+        $_ = '' if !defined($_);
+        RT::Interface::Web::EscapeURI(\$_);
+    }
+
+    $url =~ s/__id__/$id/g;
     $url =~ s/__CustomField__/$content/g;
 
     return $url;
