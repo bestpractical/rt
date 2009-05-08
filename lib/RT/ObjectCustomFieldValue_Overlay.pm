@@ -219,17 +219,20 @@ sub _FillInTemplateURL {
     my $self = shift;
     my $url = shift;
 
-    my $id = $self->ObjectId;
-    my $content = join '', @{[$self->Content]};
+    my %placeholders = (
+        id          => $self->ObjectId,
+        CustomField => $self->Content,
+    );
 
     # default value, uri-escape
-    for ($id, $content) {
-        $_ = '' if !defined($_);
-        RT::Interface::Web::EscapeURI(\$_);
-    }
+    for my $key (keys %placeholders) {
+        my $value = $placeholders{$key};
 
-    $url =~ s/__id__/$id/g;
-    $url =~ s/__CustomField__/$content/g;
+        $value = '' if !defined($value);
+        RT::Interface::Web::EscapeURI(\$value);
+
+        $url =~ s/__${key}__/$value/g;
+    }
 
     return $url;
 }
