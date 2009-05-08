@@ -219,10 +219,10 @@ sub _FillInTemplateURL {
 
     my $url = shift;
 
-    my $content = @{[$self->Content]};
+    my $content = join '', @{[$self->Content]};
     $content = '' if !defined($content);
 
-    $url =~ s/__id__/@{[$self->ObjectId]}/g;
+    $url =~ s/__id__/$self->ObjectId/eg;
     $url =~ s/__CustomField__/$content/g;
 
     return $url;
