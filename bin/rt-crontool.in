@@ -86,7 +86,7 @@ use RT::Template;
 CleanEnv();
 
 my ( $search, $condition, $action, $search_arg, $condition_arg, $action_arg,
-     $template_id, $transaction, $transaction_type, $help, $log, $verbose );
+     $template, $template_id, $transaction, $transaction_type, $help, $log, $verbose );
 GetOptions(
     "search=s"           => \$search,
     "search-arg=s"       => \$search_arg,
@@ -94,6 +94,7 @@ GetOptions(
     "condition-arg=s"    => \$condition_arg,
     "action-arg=s"       => \$action_arg,
     "action=s"           => \$action,
+    "template=s"         => \$template,
     "template-id=s"      => \$template_id,
     "transaction=s"      => \$transaction,
     "transaction-type=s" => \$transaction_type,
@@ -130,18 +131,20 @@ if ( $transaction && $transaction !~ /^(first|all|last)$/i ) {
     exit 1;
 }
 
+if ( $template && $template_id ) {
+    print STDERR loc("--template-id is deprecated argument and can not be used with --template");
+    exit 1;
+}
+elsif ( $template_id ) {
+# don't warn
+    $template = $template_id;
+}
+
 # We _must_ have a search object
 load_module($search);
 load_module($action)    if ($action);
 load_module($condition) if ($condition);
 
-# load template if specified
-my $template_obj;
-if ($template_id) {
-    $template_obj = RT::Template->new($CurrentUser);
-    my ($ok, $msg) = $template_obj->Load($template_id);
-    die "Failed to load template '$template_id': $msg" if !$ok;
-}
 my $void_scrip = RT::Scrip->new( $CurrentUser );
 my $void_scrip_action = RT::ScripAction->new( $CurrentUser );
 
@@ -164,13 +167,15 @@ my $tickets = $search->TicketsObj;
 while ( my $ticket = $tickets->Next() ) {
     print $ticket->Id() . ": " if ($verbose);
 
+    my $template_obj = get_template( $ticket );
+
     if ( $transaction ) {
         my $txns = get_transactions($ticket);
         my $found = 0;
         while ( my $txn = $txns->Next ) {
             print loc("Using transaction #[_1]...", $txn->id)
                 if $verbose;
-            process($ticket, $txn);
+            process($ticket, $txn, $template_obj);
             $found = 1;
         }
         print loc("Couldn't find suitable transaction, skipping")
@@ -179,13 +184,14 @@ while ( my $ticket = $tickets->Next() ) {
         print loc("Processing without transaction, some conditions and actions may fail. Consider using --transaction argument")
             if $verbose;
 
-        process($ticket);
+        process($ticket, undef, $template_obj);
     }
 }
 
 sub process {
     my $ticket = shift;
     my $transaction = shift;
+    my $template_obj = shift;
 
     # perform some more advanced check
     if ($condition) {
@@ -251,6 +257,41 @@ sub get_transactions {
     return $txns;
 }
 
+=head2 get_template
+
+Takes a ticket and returns a template according to command line options.
+
+=cut
+
+{ my $cache = undef;
+sub get_template {
+    my $ticket = shift;
+    return undef unless $template;
+
+    unless ( $template =~ /\D/ ) {
+        # by id
+        return $cache if $cache;
+
+        my $cache = RT::Template->new( $RT::SystemUser );
+        $cache->Load( $template );
+        die "Failed to load template '$template'"
+            unless $cache->id;
+        return $cache;
+    }
+
+    my $queue = $ticket->Queue;
+    return $cache->{ $queue } if $cache->{ $queue };
+
+    my $res = RT::Template->new( $RT::SystemUser );
+    $res->LoadQueueTemplate( Queue => $queue, Name => $template );
+    unless ( $res->id ) {
+        $res->LoadGlobalTemplate( $template );
+        die "Failed to load template '$template', either for queue #$queue or global"
+            unless $res->id;
+    }
+    return $cache->{ $queue } = $res;
+} }
+
 # {{{ load_module 
 
 =head2 load_module
@@ -310,7 +351,7 @@ sub help {
       . loc( "[_1] - An argument to pass to [_2]", "--action-arg", "--action" )
       . "\n";
     print "	"
-      . loc( "[_1] - Specify id of the template you want to use", "--template-id" )
+      . loc( "[_1] - Specify name or id of template(s) you want to use", "--template" )
       . "\n";
     print "	"
       . loc( "[_1] - Specify if you want to use either 'first', 'last' or 'all' transactions", "--transaction" )
