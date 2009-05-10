@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT::Test;
-use Test::More tests => 32;
+use Test::More tests => 31;
 
 require_ok("RT");
 require_ok("RT::Test");
@@ -34,7 +34,6 @@ require_ok("RT::Condition::Generic");
 require_ok("RT::Interface::Web");
 require_ok("RT::SavedSearch");
 require_ok("RT::SavedSearches");
-require_ok("RT::Installer");
 require_ok("RT::Util");
 
 

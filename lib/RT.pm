@@ -57,7 +57,7 @@ use Jifty::Util;
 use strict;
 use warnings;
 use File::Spec ();
-use vars qw($Config $System $nobody $Handle $_install_mode);
+use vars qw($Config $System $nobody $Handle );
 our $VERSION = '3.999.0';
 
 our $BASE_PATH        = Jifty::Util->app_root;
@@ -331,14 +331,6 @@ sub init_plugins {
         push @plugins, RT::Plugin->new(name =>$plugin);
     }
     return @plugins;
-}
-
-sub install_mode {
-    my $self = shift;
-    if (@_) {
-         $_install_mode = shift;
-    }
-    return $_install_mode;
 }
 
 =head2 init_jifty

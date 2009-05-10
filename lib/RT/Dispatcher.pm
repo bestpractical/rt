@@ -63,19 +63,6 @@ before qr/.*/ => run {
 };
 
 before qr/.*/ => run {
-    if ( RT->install_mode ) {
-        my $path = Jifty->web->request->path;
-        if (   $path !~ RT->config->get('web_no_auth_regex')
-            && $path !~ m{^(/+)Install/} && $path !~ m{^/+log(in|out)} )
-        {
-            Jifty->web->redirect(
-                RT->config->get('web_path') . "Install/index.html"
-            );
-        }
-    }
-}
-
-before qr/.*/ => run {
     if ( int RT->config->get('auto_logoff') ) {
         my $now = int( time / 60 );
 
