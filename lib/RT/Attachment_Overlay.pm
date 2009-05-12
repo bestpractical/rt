@@ -457,8 +457,12 @@ sub ContentAsMIME {
     my $self = shift;
 
     my $entity = new MIME::Entity;
-    $entity->head->add( split /:/, $_, 2 )
-        foreach $self->SplitHeaders;
+    foreach my $header ($self->SplitHeaders) {
+        my ($h_key, $h_val) = split /:/, $header, 2;
+	# We need to encode header as RFC 2047, to avoid conflict with
+	# OrignalContent Encoding that may break display
+        $entity->head->add( $h_key, Encode::encode('MIME-Header', $h_val ) );
+    }
 
     use MIME::Body;
     $entity->bodyhandle(
