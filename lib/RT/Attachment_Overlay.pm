@@ -323,7 +323,7 @@ sub OriginalContent {
 =head2 OriginalHeaders
 
 Returns the attachment's headers as octets before RT's mangling.  Currently,
-this just means restoring text content back to its original encoding.
+this just means restoring text headers back to their original encoding.
 
 =cut
 
