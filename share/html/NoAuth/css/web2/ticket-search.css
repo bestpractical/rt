@@ -197,3 +197,8 @@
     float: left;
 }
 
+/* Force some widget to fit at max parent box */
+#HomeRefreshInterval, #SavedSearchLoad, #SavedSearchOwner {
+    max-width: 100%;
+}
+
