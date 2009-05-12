@@ -622,7 +622,7 @@ sub ForwardTransaction {
         );
     }
 
-    $mail->head->set( $_ => $args{ $_ } )
+    $mail->head->set( $_ => Encode::encode('MIME-Header', $args{ $_ }) )
         foreach grep defined $args{$_}, qw(To Cc Bcc);
 
     $mail->attach(
@@ -643,8 +643,8 @@ sub ForwardTransaction {
         $from = $obj->QueueObj->CorrespondAddress
             || RT->Config->Get('CorrespondAddress');
     }
-    $mail->head->set( Subject => "Fwd: $subject" );
-    $mail->head->set( From    => $from );
+    $mail->head->set( Subject => Encode::encode('MIME-Header', "Fwd: $subject") );
+    $mail->head->set( From    => Encode::encode('MIME-Header', $from) );
 
     my $status = RT->Config->Get('ForwardFromUser')
         # never sign if we forward from User
