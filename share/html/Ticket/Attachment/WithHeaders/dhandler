@@ -59,8 +59,16 @@
         Abort("Couldn't load attachment #$id");
     }
 
+    my $content_type = 'text/plain';
+    if ( my $enc = $AttachmentObj->OriginalEncoding ) {
+        # normalize Encode.pm convention with IANA ones
+        $enc = 'big5'  if $enc eq 'big5-eten';
+        $enc = 'utf-8' if $enc eq 'utf8';
+        $content_type .= ";charset=$enc";
+    }
+
     # XXX: should we check handle html here and integrate headers into html?
-    $r->content_type( 'text/plain' );
+    $r->content_type( $content_type );
     $m->clear_buffer;
     $m->out( $AttachmentObj->Headers );
     $m->out( "\n\n" );
