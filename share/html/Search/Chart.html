@@ -84,5 +84,13 @@ my @actions = $m->comp( '/Widgets/SavedSearch:process', args => \%ARGS, self => 
 <& /Elements/ListActions, actions => \@actions &>
 <& /Search/Elements/Chart, %ARGS &>
 
+<br />
+<&| /Widgets/TitleBox, title => loc('Graph Properties')&>
+<form method="get" action="<%RT->Config->Get('WebPath')%>/Search/Chart.html">
+<input type="hidden" class="hidden" name="Query" value="<% $Query %>" />
+<&|/l, $m->scomp('Elements/SelectChartType', Name => 'ChartStyle', Default => $ChartStyle), $m->scomp('Elements/SelectGroupBy', Name => 'PrimaryGroupBy', Query => $Query, Default => $PrimaryGroupBy) 
+&>[_1] chart by [_2]</&><input type="submit" class="button" value="<%loc('Update Graph')%>" />
+</form>
+</&>
 
 <& /Widgets/SavedSearch:show, %ARGS, Action => 'Chart.html', self => $saved_search, Title => loc('Saved charts') &>
