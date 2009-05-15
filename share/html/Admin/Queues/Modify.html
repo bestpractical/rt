@@ -130,7 +130,11 @@
 % }
 
 </table>
+% if ( $Create ) {
+<& /Elements/Submit, Label => loc('Create') &>
+% } else {
 <& /Elements/Submit, Label => loc('Save Changes') &>
+% }
 </form>
 
 

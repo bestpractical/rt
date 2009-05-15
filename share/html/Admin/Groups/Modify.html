@@ -91,7 +91,11 @@
 </tr>
 % $m->callback( %ARGS, GroupObj => $Group, results => \@results );
 </table>
+% if ( $Create ) {
+<& /Elements/Submit, Label => loc('Create'), Reset => 1 &>
+% } else {
 <& /Elements/Submit, Label => loc('Save Changes'), Reset => 1 &>
+% }
 </form>
 <%INIT>
 

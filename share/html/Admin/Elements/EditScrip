@@ -89,7 +89,6 @@
 
 <& /Elements/Submit,
     Label => $SubmitLabel,
-    Caption => loc("Be sure to save your changes"),
     Reset => 1,
 &><br />
 
@@ -124,7 +123,6 @@
 </&>
 
 <& /Elements/Submit,
-    Caption => loc("Be sure to save your changes"),
     Label => $SubmitLabel,
     Reset => 1,
 &>
@@ -140,7 +138,7 @@ if ( $id ) {
     unless ( $id = $scrip->id ) {
         push @actions, loc("Couldn't load scrip #[_1]", $id);
     }
-    $SubmitLabel = loc('Update');
+    $SubmitLabel = loc('Save Changes');
 }
 
 unless ( $id ) {
