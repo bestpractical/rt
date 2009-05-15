@@ -54,7 +54,7 @@ rt-shredder - Script which wipe out tickets from RT DB
 
   rt-shredder --plugin list
   rt-shredder --plugin help-Tickets
-  rt-shredder --plugin 'Tickets=status,deleted;queue,general'
+  rt-shredder --plugin 'Tickets=query,Queue="general" and Status="open"'
 
   rt-shredder --sqldump unshred.sql --plugin ...
   rt-shredder --force --plugin ...
