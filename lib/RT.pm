@@ -52,6 +52,7 @@ package RT;
 
 use RT::CurrentUser;
 use RT::DateTime;
+use RT::Lorzy;
 use Jifty::Util;
 
 use strict;
