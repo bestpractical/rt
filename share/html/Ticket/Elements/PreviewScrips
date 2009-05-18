@@ -65,7 +65,7 @@ my @non_recipients = @{ $squelch{'emails'} };
 % foreach my $rule (@rules) {
 <b><% $rule %></b><br />
 %# XXX: hints should give template info as well, condition might come
- # from other places
+%# from other places
 %#<&|/l, _($scrip->scrip_condition->name), _($scrip->scrip_action->name), _($scrip->template_obj->name)&>%1 %2 with template %3</&>
 <br />
 %foreach my $type qw(to cc bcc) {
