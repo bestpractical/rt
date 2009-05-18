@@ -132,11 +132,12 @@ my $COLUMN_MAP = {
             return \qq{<input type="radio" name="selected_ticket" value="$id" $checked />};
         },
     },
+    WebBaseURL => Jifty->config->framework('Web')->{BaseURL},
     (map {
         my $value = RT->config->get($_);
         $_ => { value => sub { return \$value } };
     
-    } qw(WebPath WebBaseURL WebURL)),
+    } qw(WebPath WebURL)),
 };
 
 </%ONCE>
