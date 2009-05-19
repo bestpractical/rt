@@ -119,8 +119,9 @@ $m->callback(
 
 foreach ( $SearchArg, $ProcessedSearchArg ) {
     $_->{'format'} =~ s/__WebBaseURL__/Jifty->config->framework('Web')->{BaseURL}/ge;
-    $_->{'format'} =~ s/__(Web(?:Path|base))__/scalar RT->config->get($1)/ge;
+    $_->{'format'} =~ s/__WebPath__/RT->config->get('web_path')/ge;
     $_->{'format'} =~ s/__loc\(["']?(\w+)["']?\)__/_("$1")/ge;
+
     if ( $_->{'query'} =~ /__Bookmarks__/ ) {
         $_->{'rows'} = 999;
 

@@ -133,11 +133,7 @@ my $COLUMN_MAP = {
         },
     },
     WebBaseURL => Jifty->config->framework('Web')->{BaseURL},
-    (map {
-        my $value = RT->config->get($_);
-        $_ => { value => sub { return \$value } };
-    
-    } qw(WebPath WebURL)),
+    WebPath => RT->config->get('web_path'),
 };
 
 </%ONCE>
