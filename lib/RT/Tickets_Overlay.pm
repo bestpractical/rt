@@ -148,6 +148,8 @@ my %FIELD_METADATA = (
     CCGroup          => [ 'MEMBERSHIPFIELD' => 'Cc', ],
     AdminCCGroup     => [ 'MEMBERSHIPFIELD' => 'AdminCc', ],
     WatcherGroup     => [ 'MEMBERSHIPFIELD', ],
+    HasAttribute     => [ 'HASATTRIBUTE', 1 ],
+    HasNoAttribute     => [ 'HASATTRIBUTE', 0 ],
 );
 
 # Mapping of Field Type to Function
@@ -163,6 +165,7 @@ my %dispatch = (
     MEMBERSHIPFIELD => \&_WatcherMembershipLimit,
     LINKFIELD       => \&_LinkFieldLimit,
     CUSTOMFIELD     => \&_CustomFieldLimit,
+    HASATTRIBUTE    => \&_HasAttributeLimit,
 );
 my %can_bundle = (); # WATCHERFIELD => "yes", );
 
@@ -198,6 +201,11 @@ my %DefaultEA = (
         '!='       => 'AND',
         'LIKE'     => 'OR',
         'NOT LIKE' => 'AND'
+    },
+
+    HASATTRIBUTE => {
+        '='        => 'AND',
+        '!='       => 'AND',
     },
 
     CUSTOMFIELD => 'OR',
@@ -1522,6 +1530,40 @@ sub _CustomFieldLimit {
     $self->_CloseParen;
 
 }
+
+sub _HasAttributeLimit {
+    my ( $self, $field, $op, $value, %rest ) = @_;
+
+    my $alias = $self->Join(
+        TYPE   => 'LEFT',
+        ALIAS1 => 'main',
+        FIELD1 => 'id',
+        TABLE2 => 'Attributes',
+        FIELD2 => 'ObjectId',
+    );
+    $self->SUPER::Limit(
+        LEFTJOIN        => $alias,
+        FIELD           => 'ObjectType',
+        VALUE           => 'RT::Ticket',
+        ENTRYAGGREGATOR => 'AND'
+    );
+    $self->SUPER::Limit(
+        LEFTJOIN        => $alias,
+        FIELD           => 'Name',
+        OPERATOR        => $op,
+        VALUE           => $value,
+        ENTRYAGGREGATOR => 'AND'
+    );
+    $self->_SQLLimit(
+        %rest,
+        ALIAS      => $alias,
+        FIELD      => 'id',
+        OPERATOR   => $FIELD_METADATA{$field}->[1]? 'IS NOT': 'IS',
+        VALUE      => 'NULL',
+        QUOTEVALUE => 0,
+    );
+}
+
 
 # End Helper Functions
 
