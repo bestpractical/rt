@@ -192,7 +192,7 @@ sub real_name  { shift->user_object->real_name }
 
 sub principal {
     my $self = shift;
-    Carp::confess unless ( $self->user_object );
+    Carp::confess("No user object for current_user") unless ( $self->user_object );
     return $self->user_object->principal;
 }
 1;
