@@ -36,13 +36,19 @@ sub import_extra {
 
     RT->Config->Set('Plugins',qw(RT::FM));
 
+    $class->set_plugin_base_path;
+}
+
+sub set_plugin_base_path {
     # we need to lie to RT and have it find RTFM's mason templates 
     # in the local directory
-    { no warnings 'redefine';
-      my $cwd = getcwd;
-      *RT::Plugin::_BasePath = sub { return $cwd };
-    }
-
+    no warnings 'redefine';
+    my $cwd = getcwd;
+    my $old_func = \&RT::Plugin::_BasePath;
+    *RT::Plugin::_BasePath = sub {
+        return $cwd if $_[0]->{name} eq 'RT::FM';
+        return $old_func->(@_);
+    };
 }
 
 1;
