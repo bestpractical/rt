@@ -3,14 +3,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RT 3.8.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-05-06 21:32+0000\n"
-"PO-Revision-Date: 2009-05-06 21:13+0000\n"
-"Last-Translator: Alex Vandiver <Unknown>\n"
+"POT-Creation-Date: 2009-05-07 20:49+0000\n"
+"PO-Revision-Date: 2009-05-12 11:57+0000\n"
+"Last-Translator: Angelo Turetta <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-05-07 15:53+0000\n"
+"X-Launchpad-Export-Date: 2009-05-20 12:57+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: NOT FOUND IN SOURCE
@@ -72,7 +72,7 @@ msgstr "%1 %3 %2 %4"
 #: lib/RT/Date.pm:620
 #. ($wday,$mon,$mday,$hour,$min,$year)
 msgid "%1 %2 %3 %4:%5 %6"
-msgstr ""
+msgstr "(%1 %3 %2 %6 %4:%5)"
 
 #: lib/RT/Date.pm:617
 #. ($wday,$mon,$mday,$hour,$min,$sec,$year)
@@ -149,7 +149,7 @@ msgstr "%1 (invariato)"
 #: share/html/Dashboards/Elements/Deleted:57
 #. (($_->{description} || $_->{name}), $_->{pane})
 msgid "%1 (from pane %2)"
-msgstr ""
+msgstr "%1 (dal riquadro %2)"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 - %2 shown"
@@ -158,7 +158,7 @@ msgstr "Mostrati da %1 a %2"
 #: bin/rt-crontool:322
 #. ("--log")
 msgid "%1 - Adjust LogToScreen config option"
-msgstr ""
+msgstr "%1 - Regola l'opzione LogToScreen"
 
 #: bin/rt-crontool:297 bin/rt-crontool:304 bin/rt-crontool:310
 #. ("--search-arg", "--search")
@@ -283,7 +283,7 @@ msgstr "copia di %1"
 #: share/html/Admin/Tools/Configuration.html:85
 #. ($meta->{'Source'}{'Extension'})
 msgid "%1 core config"
-msgstr ""
+msgstr "configurazione base %1"
 
 #: lib/RT/Record.pm:918
 msgid "%1 could not be set to %2."
@@ -311,7 +311,7 @@ msgstr "eliminato %1"
 #: lib/RT/Transaction_Overlay.pm:581
 #. ($obj_type)
 msgid "%1 disabled"
-msgstr ""
+msgstr "disabilitato %1"
 
 #: share/html/Install/Sendmail.html:86
 #. ($ARGS{SendmailPath})
@@ -321,7 +321,7 @@ msgstr "%1 non esiste."
 #: lib/RT/Transaction_Overlay.pm:578
 #. ($obj_type)
 msgid "%1 enabled"
-msgstr ""
+msgstr "abilitato %1"
 
 #: etc/initialdata:545
 msgid "%1 highest priority tickets I own"
@@ -384,7 +384,7 @@ msgstr "Diritti su %1"
 #: share/html/Admin/Tools/Configuration.html:82
 #. ($meta->{'Source'}{'Extension'})
 msgid "%1 site config"
-msgstr ""
+msgstr "Configurazione locale %1"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 succeeded\\n"
@@ -444,7 +444,7 @@ msgstr "%1: nessun allegato specificato"
 #: lib/RT/Date.pm:612
 #. ($hour,$min)
 msgid "%1:%2"
-msgstr ""
+msgstr "%1:%2"
 
 #: lib/RT/Date.pm:609
 #. ($hour,$min,$sec)
@@ -961,7 +961,7 @@ msgstr "Tutti i campi personalizzati"
 msgid "All Queues"
 msgstr "Tutte le code"
 
-#: lib/RT/Attachment_Overlay.pm:675
+#: lib/RT/Attachment_Overlay.pm:631
 msgid "Already encrypted"
 msgstr "Già crittografato"
 
@@ -1095,7 +1095,7 @@ msgstr "Nome file dell'allegato"
 msgid "Attachments"
 msgstr "Allegati"
 
-#: lib/RT/Attachment_Overlay.pm:668
+#: lib/RT/Attachment_Overlay.pm:624
 msgid "Attachments encryption is disabled"
 msgstr "La crittografia per gli allegati è disabilitata"
 
@@ -1325,7 +1325,7 @@ msgstr "Controlla connessione al database"
 
 #: share/html/Install/Basics.html:63 share/html/Install/DatabaseDetails.html:48 share/html/Install/DatabaseType.html:70
 msgid "Check Database Credentials"
-msgstr ""
+msgstr "Verifica le credenziali di accesso al database"
 
 #: share/html/Search/Bulk.html:152 share/html/SelfService/Update.html:81 share/html/Ticket/Create.html:129 share/html/Ticket/ModifyAll.html:120 share/html/Ticket/Update.html:110
 msgid "Check box to delete"
@@ -1345,7 +1345,7 @@ msgstr "Derivati"
 
 #: share/html/Install/DatabaseDetails.html:89 share/html/Install/DatabaseType.html:48
 msgid "Choose Database Engine"
-msgstr ""
+msgstr "Scegli un tipo di database"
 
 #: NOT FOUND IN SOURCE
 msgid "Choose a database engine"
@@ -1877,12 +1877,12 @@ msgstr "Impossibile caricare l'utente n°%1"
 msgid "Couldn't parse address from '%1' string"
 msgstr "Impossibile recuperare un indirizzo email dal valore '%1'"
 
-#: lib/RT/Attachment_Overlay.pm:751
+#: lib/RT/Attachment_Overlay.pm:707
 #. ($msg)
 msgid "Couldn't replace content with decrypted data: %1"
 msgstr "Impossibile rimpiazzare il contenuto con i dati decrittografati: %1"
 
-#: lib/RT/Attachment_Overlay.pm:716
+#: lib/RT/Attachment_Overlay.pm:672
 #. ($msg)
 msgid "Couldn't replace content with encrypted data: %1"
 msgstr "Impossibile rimpiazzare il contenuto con i dati crittografati: %1"
@@ -2344,11 +2344,11 @@ msgstr "Formato data"
 
 #: lib/RT/Date.pm:651
 msgid "DateTime module missing"
-msgstr ""
+msgstr "Manca il modulo DateTime"
 
 #: lib/RT/Date.pm:652
 msgid "DateTime::Locale module missing"
-msgstr ""
+msgstr "Manca il modulo DateTime::Locale"
 
 #: share/html/SelfService/Display.html:65 share/html/Ticket/Create.html:208 share/html/Ticket/Elements/ShowSummary:93 share/html/Ticket/Elements/Tabs:130 share/html/Ticket/ModifyAll.html:68
 msgid "Dates"
@@ -2422,7 +2422,7 @@ msgstr "RisolvereEntroPredefinito"
 
 #: lib/RT/Date.pm:113
 msgid "DefaultFormat"
-msgstr ""
+msgstr "FormatoPredefinito"
 
 #: share/html/User/Delegation.html:48 share/html/User/Delegation.html:51
 msgid "Delegate rights"
@@ -2505,7 +2505,7 @@ msgstr "Cruscotto %1 cancellato"
 
 #: share/html/Dashboards/Elements/Deleted:52
 msgid "Deleted queries"
-msgstr ""
+msgstr "Ricerche cancellate"
 
 #: share/html/Search/Elements/EditSearches:181
 msgid "Deleted saved search"
@@ -3368,11 +3368,11 @@ msgstr "Modello globale: %1"
 msgid "GnuPG"
 msgstr "GnuPG"
 
-#: lib/RT/Attachment_Overlay.pm:711 lib/RT/Attachment_Overlay.pm:746
+#: lib/RT/Attachment_Overlay.pm:667 lib/RT/Attachment_Overlay.pm:702
 msgid "GnuPG error. Contact with administrator"
 msgstr "Errore GnuPG. Contatta l'amministratore del sistema"
 
-#: lib/RT/Attachment_Overlay.pm:666 lib/RT/Attachment_Overlay.pm:728
+#: lib/RT/Attachment_Overlay.pm:622 lib/RT/Attachment_Overlay.pm:684
 msgid "GnuPG integration is disabled"
 msgstr "Integrazione con GnuPG disabilitata"
 
@@ -3541,7 +3541,7 @@ msgstr "Cronologia del gruppo %1"
 #: share/html/Admin/Queues/History.html:64
 #. ($QueueObj->Name)
 msgid "History of the queue %1"
-msgstr ""
+msgstr "Cronologia della coda %1"
 
 #: share/html/Admin/Users/History.html:64
 #. ($UserObj->Name)
@@ -3550,11 +3550,11 @@ msgstr "Cronologia dell'utente %1"
 
 #: share/html/Elements/DashboardTabs:34
 msgid "Home"
-msgstr ""
+msgstr "Home"
 
 #: lib/RT/Config.pm:251
 msgid "Home page refresh interval"
-msgstr ""
+msgstr "Intervallo di caricamento automatico per la Home Page"
 
 #: share/html/Elements/RT__User/ColumnMap:86
 msgid "HomePhone"
@@ -3800,7 +3800,7 @@ msgstr "Diritto non valido. Impossibile rendere in forma canonica il diritto '%1
 
 #: lib/RT/User_Overlay.pm:536
 msgid "Invalid syntax for email address"
-msgstr ""
+msgstr "Sintassi non valida per un indirizzo email"
 
 #: lib/RT/Record.pm:269
 #. ($key)
@@ -3815,7 +3815,7 @@ msgstr "Valore non valido per il campo personalizzato"
 msgid "Invalid value for status"
 msgstr "Valore non valido per lo stato"
 
-#: lib/RT/Attachment_Overlay.pm:738
+#: lib/RT/Attachment_Overlay.pm:694
 msgid "Is not encrypted"
 msgstr "Non è crittografato"
 
@@ -4094,7 +4094,7 @@ msgstr "Impostazioni nazionali"
 
 #: lib/RT/Date.pm:121
 msgid "LocalizedDateTime"
-msgstr ""
+msgstr "DataOraInFormatoLocale"
 
 #: share/html/Admin/Users/Modify.html:141 share/html/User/Prefs.html:132
 msgid "Location"
@@ -4314,11 +4314,11 @@ msgstr "Messaggio"
 
 #: share/html/Ticket/Elements/ShowTransactionAttachments:163 share/html/Ticket/Elements/ShowTransactionAttachments:225
 msgid "Message body is not shown because sender requested not to inline it."
-msgstr ""
+msgstr "Il corpo del messaggio non è mostrato su richiesta del mittente."
 
 #: share/html/Ticket/Elements/ShowTransactionAttachments:245
 msgid "Message body not shown because it is not plain text."
-msgstr ""
+msgstr "Il corpo del messaggio non viene mostrato perché non è testo semplice."
 
 #: NOT FOUND IN SOURCE
 msgid "Message body not shown because it is too large or is not plain text."
@@ -4326,7 +4326,7 @@ msgstr "Il corpo del messaggio non viene mostrato perchè troppo grande o non in
 
 #: share/html/Ticket/Elements/ShowTransactionAttachments:159
 msgid "Message body not shown because it is too large."
-msgstr ""
+msgstr "Il corpo del messaggio non viene mostrato perché supera la dimensione massima consentita."
 
 #: lib/RT/Config.pm:212
 msgid "Message box height"
@@ -4459,7 +4459,7 @@ msgstr "Modifica oggetti associati a %1"
 
 #: lib/RT/Queue_Overlay.pm:97
 msgid "Modify custom field values"
-msgstr ""
+msgstr "Modifica i valori dei campi personalizzati"
 
 #: lib/RT/Group_Overlay.pm:99
 msgid "Modify dashboards for this group"
@@ -4699,11 +4699,11 @@ msgstr "Lunedì"
 
 #: share/html/Dashboards/Subscription.html:103
 msgid "Monday through Friday"
-msgstr ""
+msgstr "Da lunedì a venerdì"
 
 #: share/html/Elements/DashboardTabs:40
 msgid "More"
-msgstr ""
+msgstr "Altro"
 
 #: share/html/Ticket/Elements/ShowRequestor:70
 #. ($name)
@@ -4990,7 +4990,7 @@ msgstr "Nessun gruppo specificato"
 msgid "No groups matching search criteria found."
 msgstr "Nessun gruppo corrisponde ai criteri di ricerca."
 
-#: lib/RT/Attachment_Overlay.pm:697
+#: lib/RT/Attachment_Overlay.pm:653
 msgid "No key suitable for encryption"
 msgstr "Nessuna chiave adatta per la crittografia"
 
@@ -5002,7 +5002,7 @@ msgstr "Nessuna chiave per questi indirizzi"
 msgid "No message attached"
 msgstr "Nessun messaggio allegato"
 
-#: lib/RT/Attachment_Overlay.pm:677
+#: lib/RT/Attachment_Overlay.pm:633
 msgid "No need to encrypt"
 msgstr "Crittografia non necessaria"
 
@@ -5217,11 +5217,11 @@ msgstr "Notifica all'Incaricato l'approvazione del ticket parziale o completa"
 
 #: etc/initialdata:75
 msgid "Notify Owner, Requestors, Ccs and AdminCcs"
-msgstr ""
+msgstr "Invia notifica a: incaricato, richiedenti, Cc e Cc amministrativi"
 
 #: etc/initialdata:71
 msgid "Notify Owner, Requestors, Ccs and AdminCcs as Comment"
-msgstr ""
+msgstr "Invia notifica come commento a: incaricato, richiedenti, Cc e Cc amministrativi"
 
 #: etc/initialdata:309 etc/upgrade/3.8.2/content:38
 msgid "Notify Owners and AdminCcs of new items pending their approval"
@@ -5368,7 +5368,7 @@ msgstr "Al cambio di coda"
 
 #: etc/initialdata:163 etc/upgrade/3.8.3/content:2
 msgid "On Reject"
-msgstr ""
+msgstr "Se respinto"
 
 #: etc/initialdata:182 etc/upgrade/3.7.1/content:7
 msgid "On Reopen"
@@ -5618,7 +5618,7 @@ msgstr "Path di include per Perl (@INC)"
 msgid "Perl configuration"
 msgstr "Configurazione perl"
 
-#: lib/RT/ACE_Overlay.pm:255 lib/RT/ACE_Overlay.pm:261 lib/RT/ACE_Overlay.pm:360 lib/RT/ACE_Overlay.pm:370 lib/RT/ACE_Overlay.pm:380 lib/RT/ACE_Overlay.pm:445 lib/RT/Attachment_Overlay.pm:663 lib/RT/Attachment_Overlay.pm:664 lib/RT/Attachment_Overlay.pm:725 lib/RT/Attachment_Overlay.pm:726 lib/RT/Attribute_Overlay.pm:161 lib/RT/Attribute_Overlay.pm:167 lib/RT/Attribute_Overlay.pm:376 lib/RT/Attribute_Overlay.pm:385 lib/RT/Attribute_Overlay.pm:398 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomFieldValue_Overlay.pm:83 lib/RT/CustomField_Overlay.pm:1096 lib/RT/CustomField_Overlay.pm:1239 lib/RT/CustomField_Overlay.pm:188 lib/RT/CustomField_Overlay.pm:205 lib/RT/CustomField_Overlay.pm:216 lib/RT/CustomField_Overlay.pm:395 lib/RT/CustomField_Overlay.pm:424 lib/RT/CustomField_Overlay.pm:730 lib/RT/CustomField_Overlay.pm:901 lib/RT/CustomField_Overlay.pm:935 lib/RT/CustomField_Overlay.pm:980 lib/RT/Group_Overlay.pm:1136 lib/RT/Group_Overlay.pm:1140 lib/RT/Group_Overlay.pm:1149 lib/RT/Group_Overlay.pm:1259 lib/RT/Group_Overlay.pm:1263 lib/RT/Group_Overlay.pm:1269 lib/RT/Group_Overlay.pm:401 lib/RT/Group_Overlay.pm:499 lib/RT/Group_Overlay.pm:577 lib/RT/Group_Overlay.pm:585 lib/RT/Group_Overlay.pm:683 lib/RT/Group_Overlay.pm:687 lib/RT/Group_Overlay.pm:693 lib/RT/Group_Overlay.pm:938 lib/RT/Group_Overlay.pm:942 lib/RT/Group_Overlay.pm:955 lib/RT/Queue_Overlay.pm:1156 lib/RT/Queue_Overlay.pm:158 lib/RT/Queue_Overlay.pm:176 lib/RT/Queue_Overlay.pm:514 lib/RT/Queue_Overlay.pm:540 lib/RT/Queue_Overlay.pm:562 lib/RT/Queue_Overlay.pm:775 lib/RT/Queue_Overlay.pm:921 lib/RT/Queue_Overlay.pm:930 lib/RT/Queue_Overlay.pm:943 lib/RT/Scrip_Overlay.pm:113 lib/RT/Scrip_Overlay.pm:124 lib/RT/Scrip_Overlay.pm:188 lib/RT/Scrip_Overlay.pm:497 lib/RT/Template_Overlay.pm:215 lib/RT/Template_Overlay.pm:224 lib/RT/Template_Overlay.pm:250 lib/RT/Template_Overlay.pm:379 lib/RT/Template_Overlay.pm:99 lib/RT/Ticket_Overlay.pm:1067 lib/RT/Ticket_Overlay.pm:1073 lib/RT/Ticket_Overlay.pm:1080 lib/RT/Ticket_Overlay.pm:1217 lib/RT/Ticket_Overlay.pm:1227 lib/RT/Ticket_Overlay.pm:1241 lib/RT/Ticket_Overlay.pm:1337 lib/RT/Ticket_Overlay.pm:1694 lib/RT/Ticket_Overlay.pm:1848 lib/RT/Ticket_Overlay.pm:2018 lib/RT/Ticket_Overlay.pm:2068 lib/RT/Ticket_Overlay.pm:2257 lib/RT/Ticket_Overlay.pm:2270 lib/RT/Ticket_Overlay.pm:2351 lib/RT/Ticket_Overlay.pm:2364 lib/RT/Ticket_Overlay.pm:2467 lib/RT/Ticket_Overlay.pm:2481 lib/RT/Ticket_Overlay.pm:2733 lib/RT/Ticket_Overlay.pm:2744 lib/RT/Ticket_Overlay.pm:2750 lib/RT/Ticket_Overlay.pm:2953 lib/RT/Ticket_Overlay.pm:2957 lib/RT/Ticket_Overlay.pm:3094 lib/RT/Ticket_Overlay.pm:3255 lib/RT/Transaction_Overlay.pm:539 lib/RT/Transaction_Overlay.pm:563 lib/RT/User_Overlay.pm:1135 lib/RT/User_Overlay.pm:124 lib/RT/User_Overlay.pm:1549 lib/RT/User_Overlay.pm:283 lib/RT/User_Overlay.pm:672 lib/RT/User_Overlay.pm:707 share/html/Ticket/Forward.html:85
+#: lib/RT/ACE_Overlay.pm:255 lib/RT/ACE_Overlay.pm:261 lib/RT/ACE_Overlay.pm:360 lib/RT/ACE_Overlay.pm:370 lib/RT/ACE_Overlay.pm:380 lib/RT/ACE_Overlay.pm:445 lib/RT/Attachment_Overlay.pm:619 lib/RT/Attachment_Overlay.pm:620 lib/RT/Attachment_Overlay.pm:681 lib/RT/Attachment_Overlay.pm:682 lib/RT/Attribute_Overlay.pm:161 lib/RT/Attribute_Overlay.pm:167 lib/RT/Attribute_Overlay.pm:376 lib/RT/Attribute_Overlay.pm:385 lib/RT/Attribute_Overlay.pm:398 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomFieldValue_Overlay.pm:83 lib/RT/CustomField_Overlay.pm:1096 lib/RT/CustomField_Overlay.pm:1239 lib/RT/CustomField_Overlay.pm:188 lib/RT/CustomField_Overlay.pm:205 lib/RT/CustomField_Overlay.pm:216 lib/RT/CustomField_Overlay.pm:395 lib/RT/CustomField_Overlay.pm:424 lib/RT/CustomField_Overlay.pm:730 lib/RT/CustomField_Overlay.pm:901 lib/RT/CustomField_Overlay.pm:935 lib/RT/CustomField_Overlay.pm:980 lib/RT/Group_Overlay.pm:1136 lib/RT/Group_Overlay.pm:1140 lib/RT/Group_Overlay.pm:1149 lib/RT/Group_Overlay.pm:1259 lib/RT/Group_Overlay.pm:1263 lib/RT/Group_Overlay.pm:1269 lib/RT/Group_Overlay.pm:401 lib/RT/Group_Overlay.pm:499 lib/RT/Group_Overlay.pm:577 lib/RT/Group_Overlay.pm:585 lib/RT/Group_Overlay.pm:683 lib/RT/Group_Overlay.pm:687 lib/RT/Group_Overlay.pm:693 lib/RT/Group_Overlay.pm:938 lib/RT/Group_Overlay.pm:942 lib/RT/Group_Overlay.pm:955 lib/RT/Queue_Overlay.pm:1156 lib/RT/Queue_Overlay.pm:158 lib/RT/Queue_Overlay.pm:176 lib/RT/Queue_Overlay.pm:514 lib/RT/Queue_Overlay.pm:540 lib/RT/Queue_Overlay.pm:562 lib/RT/Queue_Overlay.pm:775 lib/RT/Queue_Overlay.pm:921 lib/RT/Queue_Overlay.pm:930 lib/RT/Queue_Overlay.pm:943 lib/RT/Scrip_Overlay.pm:113 lib/RT/Scrip_Overlay.pm:124 lib/RT/Scrip_Overlay.pm:188 lib/RT/Scrip_Overlay.pm:497 lib/RT/Template_Overlay.pm:215 lib/RT/Template_Overlay.pm:224 lib/RT/Template_Overlay.pm:250 lib/RT/Template_Overlay.pm:379 lib/RT/Template_Overlay.pm:99 lib/RT/Ticket_Overlay.pm:1067 lib/RT/Ticket_Overlay.pm:1073 lib/RT/Ticket_Overlay.pm:1080 lib/RT/Ticket_Overlay.pm:1217 lib/RT/Ticket_Overlay.pm:1227 lib/RT/Ticket_Overlay.pm:1241 lib/RT/Ticket_Overlay.pm:1337 lib/RT/Ticket_Overlay.pm:1694 lib/RT/Ticket_Overlay.pm:1848 lib/RT/Ticket_Overlay.pm:2018 lib/RT/Ticket_Overlay.pm:2068 lib/RT/Ticket_Overlay.pm:2257 lib/RT/Ticket_Overlay.pm:2270 lib/RT/Ticket_Overlay.pm:2351 lib/RT/Ticket_Overlay.pm:2364 lib/RT/Ticket_Overlay.pm:2467 lib/RT/Ticket_Overlay.pm:2481 lib/RT/Ticket_Overlay.pm:2733 lib/RT/Ticket_Overlay.pm:2744 lib/RT/Ticket_Overlay.pm:2750 lib/RT/Ticket_Overlay.pm:2953 lib/RT/Ticket_Overlay.pm:2957 lib/RT/Ticket_Overlay.pm:3094 lib/RT/Ticket_Overlay.pm:3255 lib/RT/Transaction_Overlay.pm:539 lib/RT/Transaction_Overlay.pm:563 lib/RT/User_Overlay.pm:1135 lib/RT/User_Overlay.pm:124 lib/RT/User_Overlay.pm:1549 lib/RT/User_Overlay.pm:283 lib/RT/User_Overlay.pm:672 lib/RT/User_Overlay.pm:707 share/html/Ticket/Forward.html:85
 msgid "Permission Denied"
 msgstr "Operazione non consentita"
 
@@ -5842,11 +5842,11 @@ msgstr "Coda creata"
 
 #: lib/RT/Queue_Overlay.pm:429
 msgid "Queue disabled"
-msgstr ""
+msgstr "Coda disabilitata"
 
 #: lib/RT/Queue_Overlay.pm:431
 msgid "Queue enabled"
-msgstr ""
+msgstr "Coda abilitata"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:80
 msgid "Queue id"
@@ -5906,7 +5906,7 @@ msgstr "Creazione veloce di un ticket"
 
 #: lib/RT/Date.pm:117
 msgid "RFC2616"
-msgstr ""
+msgstr "RFC2616"
 
 #: lib/RT/Date.pm:116
 msgid "RFC2822"
@@ -5987,7 +5987,7 @@ msgstr "RT Self Service / Ticket chiusi"
 
 #: share/html/Admin/Tools/Configuration.html:131
 msgid "RT Size"
-msgstr ""
+msgstr "Dimensione di RT"
 
 #: share/html/Admin/Tools/Configuration.html:112
 msgid "RT Variables"
@@ -6314,7 +6314,7 @@ msgstr "TempoDaRisoluzione"
 
 #: share/html/Search/Elements/EditFormat:70
 msgid "Respond"
-msgstr ""
+msgstr "Rispondi"
 
 #: NOT FOUND IN SOURCE
 msgid "Response to requestors"
@@ -6540,7 +6540,7 @@ msgstr "Risultati della ricerca ordinati per %1"
 
 #: lib/RT/Config.pm:221
 msgid "Search results refresh interval"
-msgstr ""
+msgstr "Intervallo di rinfresco dei risultati della ricerca"
 
 #: NOT FOUND IN SOURCE
 msgid "Search update: %1"
@@ -6564,7 +6564,7 @@ msgstr "Vedi anche:"
 
 #: lib/RT/Queue_Overlay.pm:96
 msgid "See custom field values"
-msgstr ""
+msgstr "Vedi i valori per i campi personalizzati"
 
 #: lib/RT/CustomField_Overlay.pm:112
 msgid "See custom fields"
@@ -6744,11 +6744,11 @@ msgstr "Invia una mail atutti gli osservatori come \"commento\""
 
 #: etc/initialdata:76
 msgid "Send mail to owner and all watchers"
-msgstr ""
+msgstr "Invia email all'incaricato e a tutti gli osservatori"
 
 #: etc/initialdata:72
 msgid "Send mail to owner and all watchers as a \"comment\""
-msgstr ""
+msgstr "Invia messaggio come commento all'incaricato e a tutti gli osservatori"
 
 #: etc/initialdata:67
 msgid "Send mail to requestors and Ccs"
@@ -7166,11 +7166,11 @@ msgstr "Impossibile creare l'abbonamento: %1"
 msgid "Succeeded"
 msgstr "Completato con successo"
 
-#: lib/RT/Attachment_Overlay.pm:753
+#: lib/RT/Attachment_Overlay.pm:709
 msgid "Successfuly decrypted data"
 msgstr "Dati decrittografati correttamente"
 
-#: lib/RT/Attachment_Overlay.pm:718
+#: lib/RT/Attachment_Overlay.pm:674
 msgid "Successfuly encrypted data"
 msgstr "Dati crittografati correttamente"
 
@@ -7340,7 +7340,7 @@ msgstr "Testo"
 
 #: share/html/Ticket/Elements/ShowTransactionAttachments:155
 msgid "Text file is not shown because it is disabled in preferences."
-msgstr ""
+msgstr "Il file di test non è visualizzato perché disabilitato nelle preferenze."
 
 #: lib/RT/CustomField_Overlay.pm:907 lib/RT/Record.pm:919
 msgid "That is already the current value"
@@ -7456,7 +7456,7 @@ msgstr "Il comando seguente troverà tutti i ticket attivi nella coda 'general' 
 
 #: share/html/Dashboards/Elements/Deleted:53
 msgid "The following queries have been deleted and each will be removed from the dashboard once its pane is updated."
-msgstr ""
+msgstr "Le ricerche seguenti sono state cancellate e saranno rimosse dal cruscotto appena il relativo riquadro verrà aggiornato."
 
 #: share/html/Dashboards/Elements/HiddenSearches:71
 msgid "The following queries may not be visible to all users who can see this dashboard."
@@ -7931,7 +7931,7 @@ msgstr "Sconosciuto (nessun valore di affidabilità assegnato)"
 msgid "Unknown (this value is new to the system)"
 msgstr "Sconosciuto (questo valore è nuovo per il sistema)"
 
-#: lib/RT/Attachment_Overlay.pm:304 lib/RT/Attachment_Overlay.pm:344 lib/RT/Record.pm:804
+#: lib/RT/Attachment_Overlay.pm:304 lib/RT/Record.pm:804
 #. ($self->ContentEncoding)
 #. ($ContentEncoding)
 msgid "Unknown ContentEncoding %1"
@@ -8200,11 +8200,11 @@ msgstr "Gruppi definiti dall'utente"
 
 #: lib/RT/User_Overlay.pm:1150
 msgid "User disabled"
-msgstr ""
+msgstr "Utente disabilitato"
 
 #: lib/RT/User_Overlay.pm:1152
 msgid "User enabled"
-msgstr ""
+msgstr "Utente abilitato"
 
 #: share/html/Admin/Users/GnuPG.html:61
 msgid "User has empty email address"
@@ -8413,7 +8413,7 @@ msgstr "Quando un ticket viene chiuso"
 
 #: etc/initialdata:164 etc/upgrade/3.8.3/content:3
 msgid "Whenever a ticket is rejected"
-msgstr ""
+msgstr "Ogni volta che un ticket viene respinto"
 
 #: etc/initialdata:183 etc/upgrade/3.7.1/content:8
 msgid "Whenever a ticket is reopened"
@@ -8648,7 +8648,7 @@ msgstr "content-type"
 
 #: share/html/Admin/Tools/Configuration.html:91
 msgid "core config"
-msgstr ""
+msgstr "configurazione base"
 
 #: NOT FOUND IN SOURCE
 msgid "correspondence (probably) not sent"
@@ -8662,7 +8662,7 @@ msgstr "corrispondenza inviata"
 #. ($cf)
 #. ($obj->Name)
 msgid "custom field '%1'"
-msgstr ""
+msgstr "campo personalizzato '%1'"
 
 #: share/html/Dashboards/Subscription.html:99
 msgid "daily"
@@ -8943,7 +8943,7 @@ msgstr "Mostra configurazione"
 
 #: share/html/Admin/Tools/Configuration.html:88
 msgid "site config"
-msgstr ""
+msgstr "configurazione locale"
 
 #: NOT FOUND IN SOURCE
 msgid "spreadsheet"
