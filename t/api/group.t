@@ -1,9 +1,7 @@
 
 use strict;
 use warnings;
-use RT::Test; use Test::More; 
-plan tests => 37;
-use RT;
+use RT::Test tests => 37;
 
 
 
