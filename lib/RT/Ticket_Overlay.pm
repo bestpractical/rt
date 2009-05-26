@@ -1546,7 +1546,7 @@ sub IsRequestor {
 =head2 IsCc PRINCIPAL_ID
 
   Takes an RT::Principal id.
-  Returns true if the principal is a requestor of the current ticket.
+  Returns true if the principal is a Cc of the current ticket.
 
 
 =cut
@@ -1566,7 +1566,7 @@ sub IsCc {
 =head2 IsAdminCc PRINCIPAL_ID
 
   Takes an RT::Principal id.
-  Returns true if the principal is a requestor of the current ticket.
+  Returns true if the principal is an AdminCc of the current ticket.
 
 =cut
 
