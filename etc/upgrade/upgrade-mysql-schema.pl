@@ -223,7 +223,13 @@ push @sql_commands, qq{ALTER DATABASE $db_name DEFAULT CHARACTER SET utf8};
 convert_table($_) foreach @tables;
 
 print join "\n", map(/;$/? $_ : "$_;", @sql_commands), "";
-print STDERR "-- No database changes have been made.\n-- Please review the generated SQL and apply it to your database\n";
+my $use_p = $db_pass ? " -p" : '';
+print STDERR <<ENDREMINDER;
+-- ** NOTICE: No database changes have been made. **
+-- Please review the generated SQL, ensure you have a full backup of your database 
+-- and apply it to your database using a command like:
+-- mysql -u ${db_user}${use_p} $db_name < queries.sql";
+ENDREMINDER
 exit 0;
 
 my %alter_aggregator;
