@@ -11,10 +11,11 @@ function ahah(url, target, delay) {
   }
 
   var use_get;
-  if ( /webkit/i.test( navigator.userAgent ) ) {
+  if ( /webkit|firefox\/2/i.test( navigator.userAgent ) ) {
       // seems safari has weird problem with post: 
       // it does remove the old content of target
       // while doesn't replace that with new content
+      // so is firefox 2
       use_get = 1;
   }
 
