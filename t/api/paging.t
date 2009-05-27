@@ -20,8 +20,5 @@ while (my $ticket = $tickets->next) {
     ++$count;
 }
 
-TODO: {
-    local $TODO = "Doesn't work yet!";
-    is($count, 5, "set_page_info");
-}
+is($count, 5, "set_page_info");
 

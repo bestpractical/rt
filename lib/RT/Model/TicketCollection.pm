@@ -2744,10 +2744,10 @@ sub from_sql {
     my ( $self, $query ) = @_;
 
     {
-
-        # preserve first_row and show_rows across the clean_slate
-        local ( $self->{'first_row'}, $self->{'show_rows'} );
+        # preserve paging across the clean_slate
+        my $per_page = $self->pager->entries_per_page;
         $self->clean_slate;
+        $self->set_page_info(per_page => $per_page);
     }
     $self->_init_sql();
 
