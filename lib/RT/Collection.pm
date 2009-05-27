@@ -190,10 +190,12 @@ sub items_order_by {
     my $self  = shift;
     my $items = shift;
 
-    if ( $self->new_item()->can('sort_order') ) {
-        $items = [ sort { $a->sort_order <=> $b->sort_order } @{$items} ];
-    } elsif ( $self->new_item()->can('name') ) {
-        $items = [ sort { lc( $a->name ) cmp lc( $b->name ) } @{$items} ];
+    my $dummy = $self->new_item;
+
+    if ( $dummy->can('sort_order') ) {
+        return [ sort { $a->sort_order <=> $b->sort_order } @{$items} ];
+    } elsif ( $dummy->can('name') ) {
+        return [ sort { lc( $a->name ) cmp lc( $b->name ) } @{$items} ];
     }
 
     return $items;
