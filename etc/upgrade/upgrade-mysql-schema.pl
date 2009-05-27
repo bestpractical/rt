@@ -223,6 +223,7 @@ push @sql_commands, qq{ALTER DATABASE $db_name DEFAULT CHARACTER SET utf8};
 convert_table($_) foreach @tables;
 
 print join "\n", map(/;$/? $_ : "$_;", @sql_commands), "";
+print STDERR "-- No database changes have been made.\n-- Please review the generated SQL and apply it to your database\n";
 exit 0;
 
 my %alter_aggregator;
