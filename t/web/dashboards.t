@@ -36,7 +36,8 @@ for my $user ($user_obj, $onlooker) {
 ok $m->login(customer => 'customer'), "logged in";
 
 $m->get_ok($url."Dashboards/index.html");
-$m->content_lacks("New", "No 'new dashboard' link because we have no CreateOwnDashboard");
+$m->content_lacks('<a href="/Dashboards/Modify.html?Create=1">New</a>', 
+                  "No 'new dashboard' link because we have no CreateOwnDashboard");
 
 $m->no_warnings_ok;
 
