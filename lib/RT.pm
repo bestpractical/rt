@@ -362,6 +362,10 @@ sub init_jifty {
             );
         },
     );
+
+    if (my $setup = Jifty->find_plugin('Jifty::Plugin::SetupWizard')) {
+        $setup->add_step('basics');
+    }
 }
 
 
