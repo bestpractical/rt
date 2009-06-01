@@ -2,24 +2,24 @@
 package Module::Install::Fetch;
 
 use strict;
-use Module::Install::Base;
+use Module::Install::Base ();
 
-use vars qw{$VERSION $ISCORE @ISA};
+use vars qw{$VERSION @ISA $ISCORE};
 BEGIN {
-	$VERSION = '0.77';
+	$VERSION = '0.91';
+	@ISA     = 'Module::Install::Base';
 	$ISCORE  = 1;
-	@ISA     = qw{Module::Install::Base};
 }
 
 sub get_file {
     my ($self, %args) = @_;
-    my ($scheme, $host, $path, $file) = 
+    my ($scheme, $host, $path, $file) =
         $args{url} =~ m|^(\w+)://([^/]+)(.+)/(.+)| or return;
 
     if ( $scheme eq 'http' and ! eval { require LWP::Simple; 1 } ) {
         $args{url} = $args{ftp_url}
             or (warn("LWP support unavailable!\n"), return);
-        ($scheme, $host, $path, $file) = 
+        ($scheme, $host, $path, $file) =
             $args{url} =~ m|^(\w+)://([^/]+)(.+)/(.+)| or return;
     }
 
