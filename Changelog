@@ -1,3 +1,28 @@
+2.4.2
+
+BUG
+===
+ * load TransactionCollection before calling new() on it in the upgrade scripts
+ * 3.8.3 starts looking for rights granted via objects other than tickets 
+ * float article searching to the right so it doesn't stack under GotoTicket 
+ * Move search headers back over to the left (ticket 13134) 
+ * fix acl creation on more recent Pg versions 
+ * Fix SQL to not find topics from Class 1 when looking for global topics 
+ * Wording cleanups on reply pages [sartak]
+ * rename schema.mysql-4.0-4.1.pl to upgrade-mysql-schema.pl
+   and port improvements from RT (accessing remote hosts and
+   more efficient SQL) 
+ * Don't look at non-RTFM Custom Fields during a search
+   even if they happen to be named Class 
+ * Refactor plugin overriding in tests to play well with RTIR's tests
+ * fix an issue with 'use 5.8.3' and perl 5.10 [ian norton]
+
+DOC
+===
+ * better upgrade instructions for 2.0 on a new machine
+ * updated it.po [Nicola Murino]
+ * fix fr.po file to be all utf8 [elacour]
+
 2.4.1
 
 FEATURES
