@@ -191,7 +191,7 @@ while (defined(my $user = $Users->Next)) {
         }
         else {
             $subscription->SetSubValues(
-                Counter => $subscription->SubValue('Counter') + 1 )
+                Counter => ($subscription->SubValue('Counter')||0) + 1 )
               unless $opts{'dryrun'};
         }
     }
