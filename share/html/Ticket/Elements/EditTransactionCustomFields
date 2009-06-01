@@ -49,7 +49,7 @@
 % while (my $CF = $CustomFields->Next()) {
 % next unless $CF->CurrentUserHasRight('ModifyCustomField');
 <tr>
-<td class="label"><% $CF->Name %>:</td>
+<td class="label"><% loc($CF->Name) %>:</td>
 <td>
 <& /Elements/EditCustomField,
     CustomField => $CF,

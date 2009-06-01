@@ -54,8 +54,8 @@
 <tr>
 % }
     <td class="cflabel">
-      <b><%$CustomField->Name%></b><br />
-      <i><%$CustomField->FriendlyType%></i>
+      <b><% loc($CustomField->Name) %></b><br />
+      <i><% $CustomField->FriendlyType %></i>
     </td>
     <td class="entry">
       <& /Elements/EditCustomField, 
