@@ -46,6 +46,7 @@ framework:
         restart_url: '/Admin/Global/Jifty/restart.html'
         after_restart_url: '/Admin/Global/System.html'
         wait_seconds: 10
+    - SetupWizard: {}
   PubSub: 
     Backend: Memcached
     Enable: ~
