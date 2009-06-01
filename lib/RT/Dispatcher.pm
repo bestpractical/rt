@@ -152,10 +152,10 @@ before qr/.*/ => run {
 
 before qr{^/$} => run {
     return unless Jifty->config->framework('AdminMode');
-    my $config_plugin = Jifty->find_plugin('Jifty::Plugin::Config')
+    my $wizard_plugin = Jifty->find_plugin('Jifty::Plugin::SetupWizard')
         or return;
 
-    redirect $config_plugin->config_url;
+    redirect '/__jifty/admin/setupwizard';
 };
 
 
