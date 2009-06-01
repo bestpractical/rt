@@ -12,3 +12,4 @@ t/data/gnupg/keyrings/random_seed
 t/mailbox_*
 rt4
 var/
+etc/site_config.yml
