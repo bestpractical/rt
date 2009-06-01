@@ -148,8 +148,16 @@ before qr/.*/ => run {
         }
         delete $args->{$field};
     }
+};
 
-}
+before qr{^/$} => run {
+    return unless Jifty->config->framework('AdminMode');
+    my $config_plugin = Jifty->find_plugin('Jifty::Plugin::Config')
+        or return;
+
+    redirect $config_plugin->config_url;
+};
+
 
 after qr/.*/ => run {
     RT::Interface::Web::Handler::cleanup_request();
