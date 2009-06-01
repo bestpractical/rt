@@ -125,7 +125,10 @@ sub load_config {
 
 sub config {
     my $self = shift;
-    return $RT::Config;
+    if (!$Config) {
+        RT->load_config;
+    }
+    return $Config;
 }
 
 =head2 init
