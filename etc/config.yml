@@ -2,7 +2,7 @@
 framework: 
   AdminMode: 0 
   ApplicationClass: RT
-  Applicationname: RT
+  ApplicationName: RT
   ApplicationUUID: EAFC6FF2-5E8D-11DC-9FAD-91A9684ED971
   ConfigFileVersion: 4
   Database: 
