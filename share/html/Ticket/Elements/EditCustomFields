@@ -59,6 +59,7 @@
     </td>
     <td class="entry">
       <& /Elements/EditCustomField, 
+          %ARGS,
           Object => $TicketObj,
           CustomField => $CustomField,
           NamePrefix => $NamePrefix,
