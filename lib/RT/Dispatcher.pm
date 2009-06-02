@@ -150,17 +150,16 @@ before qr/.*/ => run {
     }
 };
 
-before qr{^/$} => run {
+after qr/.*/ => run {
+    RT::Interface::Web::Handler::cleanup_request();
+};
+
+on qr{^/$} => run {
     return unless Jifty->config->framework('AdminMode');
     my $wizard_plugin = Jifty->find_plugin('Jifty::Plugin::SetupWizard')
         or return;
 
-    redirect '/__jifty/admin/setupwizard';
-};
-
-
-after qr/.*/ => run {
-    RT::Interface::Web::Handler::cleanup_request();
+    show '/__jifty/admin/setupwizard';
 };
 
 on qr{^/Dashboards/(\d+)} => run {
