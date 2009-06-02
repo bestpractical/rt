@@ -53,7 +53,7 @@ framework:
   SkipAccessControl: 0
   TemplateClass: RT::View
   Web: 
-    baseURL: http://localhost
+    BaseURL: http://localhost
     DataDir: var/mason
 
     MasonConfig: 
