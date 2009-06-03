@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT::Test;
-use Test::More tests => 26;
+use Test::More tests => 25;
 
 require_ok("RT");
 require_ok("RT::Test");
@@ -25,7 +25,6 @@ require_ok("RT::ScripAction::Generic");
 require_ok("RT::Search::Generic");
 require_ok("RT::ScripAction::SendEmail");
 require_ok("RT::Model::CachedGroupMemberCollection");
-require_ok("RT::Condition::Generic");
 require_ok("RT::Interface::Web");
 require_ok("RT::SavedSearch");
 require_ok("RT::SavedSearches");

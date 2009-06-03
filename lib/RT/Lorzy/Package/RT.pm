@@ -2,66 +2,99 @@ package RT::Lorzy::Package::RT;
 use strict;
 use base 'Lorzy::Package';
 
+# TODO: make create_scripish resolve from this map and call the
+# condtion function here without RT.Condition.Applicable
+
 my %mymap = ( 'On Create' => 'OnCreate',
               'On Transaction' => 'OnTransaction',
               'On Correspond' => 'OnCorrespond',
               'On comment' => 'OnComment',
               'On Status Change' => 'OnStatusChange',
+              'On owner Change' => 'OnOwnerChange',
+              'On priority Change' => 'OnPriorityChange',
+              'On Resolve' => 'OnResolve',
+              'On Close' => 'OnClose',
+              'On Reopen' => 'OnReopen',
           );
 
-my @scrip_conditions = (
-    {
-
-      name                 => 'On priority Change',                       # loc
-      description          => 'Whenever a ticket\'s priority changes',    # loc
-      applicable_trans_types => 'set',
-      exec_module           => 'priorityChange',
-    },
-    {
-
-      name                 => 'On owner Change',                           # loc
-      description          => 'Whenever a ticket\'s owner changes',        # loc
-      applicable_trans_types => 'any',
-      exec_module           => 'OwnerChange',
-
-    },
-    {
-
-      name                 => 'On queue Change',                           # loc
-      description          => 'Whenever a ticket\'s queue changes',        # loc
-      applicable_trans_types => 'set',
-      exec_module           => 'QueueChange',
-
-    },
-    # not tested
-    {  name                 => 'On Resolve',                               # loc
-       description          => 'Whenever a ticket is resolved',            # loc
-       applicable_trans_types => 'status',
-       exec_module           => 'StatusChange',
-       argument             => 'resolved'
-
-    },
-
-    # not tested
-    {  name                 => 'On Close',                                 # loc
-       description          => 'Whenever a ticket is closed', # loc
-       applicable_trans_types => 'status,set',
-       exec_module           => 'CloseTicket',
-    },
-    {  name                 => 'On Reopen',                                # loc
-       description          => 'Whenever a ticket is reopened', # loc
-       applicable_trans_types => 'status,set',
-       exec_module           => 'ReopenTicket',
-    },
-
-);
-
-__PACKAGE__->defun( 'Condition.OnTransaction',
-    signature => {
+my $sig_ticket_txn = {
         'ticket' => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Model::Ticket' ),
         'transaction' => Lorzy::FunctionArgument->new( name => 'transaction', type => 'RT::Model::Transaction' ),
-    },
+    };
+
+__PACKAGE__->defun( 'Condition.OnTransaction',
+    signature => $sig_ticket_txn,
     native => sub {
+        return 1;
+    },
+);
+
+__PACKAGE__->defun( 'Condition.OnOwnerChange',
+    signature => $sig_ticket_txn,
+    native => sub {
+        my $args = shift;
+        return ( $args->{transaction}->field || '' ) eq 'owner';
+    },
+);
+
+__PACKAGE__->defun( 'Condition.OnQueueChange',
+    signature => $sig_ticket_txn,
+    native => sub {
+        my $args = shift;
+        return $args->{transaction}->type eq 'set'
+            && ( $args->{transaction}->field || '' ) eq 'queue';
+    },
+);
+
+__PACKAGE__->defun( 'Condition.OnPriorityChange',
+    signature => $sig_ticket_txn,
+    native => sub {
+        my $args = shift;
+        return $args->{transaction}->type eq 'set'
+            && ( $args->{transaction}->field || '' ) eq 'priority';
+    },
+);
+
+__PACKAGE__->defun( 'Condition.OnResolve',
+    signature => $sig_ticket_txn,
+    native => sub {
+        my $args = shift;
+        return $args->{transaction}->type eq 'status'
+            && ( $args->{transaction}->field || '' ) eq 'status'
+            && $args->{transaction}->new_value() eq 'resolved';
+    },
+);
+
+__PACKAGE__->defun( 'Condition.OnClose',
+    signature => $sig_ticket_txn,
+    native => sub {
+        my $args = shift;
+        my $txn = $args->{transaction};
+        return 0
+            unless $txn->type eq "status"
+                || ( $txn->type eq "set" && $txn->field eq "status" );
+
+        my $queue = $args->{ticket}->queue;
+        return 0 unless $queue->status_schema->is_active( $txn->old_value );
+        return 0 unless $queue->status_schema->is_inactive( $txn->new_value );
+
+        return 1;
+    },
+);
+
+__PACKAGE__->defun( 'Condition.OnReopen',
+    signature => $sig_ticket_txn,
+    native => sub {
+        my $args = shift;
+        my $txn = $args->{transaction};
+        return 0
+            unless $txn->type eq "status"
+                || ( $txn->type eq "set" && $txn->field eq "status" );
+
+        my $queue = $args->{ticket}->queue;
+        return 0 unless $queue->status_schema->is_inactive( $txn->old_value );
+        return 0 unless $queue->status_schema->is_active( $txn->new_value );
+
         return 1;
     },
 );
@@ -74,10 +107,7 @@ my %simple_txn_cond = ( 'OnCreate' => 'create',
 
 for my $name ( keys %simple_txn_cond ) {
     __PACKAGE__->defun( "Condition.$name",
-        signature => {
-            'ticket' => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Model::Ticket' ),
-            'transaction' => Lorzy::FunctionArgument->new( name => 'transaction', type => 'RT::Model::Transaction' ),
-        },
+        signature => $sig_ticket_txn,
         native => sub {
             my $args = shift;
             return $args->{transaction}->type eq $simple_txn_cond{$name};
@@ -88,42 +118,20 @@ for my $name ( keys %simple_txn_cond ) {
 __PACKAGE__->defun( 'Condition.Applicable',
     signature => {
         'name'   => Lorzy::FunctionArgument->new( name => 'name' ),
-        'ticket' => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Model::Ticket' ),
-        'transaction' => Lorzy::FunctionArgument->new( name => 'transaction', type => 'RT::Model::Transaction' ),
+        %$sig_ticket_txn,
     },
     native => sub {
         my $args = shift;
         my $eval = shift;
 
-        if (my $lorzy_cond = $mymap{$args->{name}}) {
-            $lorzy_cond = 'RT.Condition.'.$lorzy_cond;
-            return $eval->resolve_symbol_name($lorzy_cond)->apply
-                ( $eval, 
-                  { transaction => $args->{transaction},
-                    ticket => $args->{ticket}
-                });
-        }
-
-        my $txn_type = $args->{transaction}->type;
-
-        my ($condition_config) = grep { $args->{name} eq $_->{name} } @scrip_conditions
-            or  die "Can't load scrip condition: $args->{name}";
-
-        my $type = "RT::Condition::" . $condition_config->{exec_module};
-
-        Jifty::Util->require($type);
-
-        my $condition = $type->new(
-                ticket_obj      => $args->{'ticket'},
-                transaction_obj => $args->{'transaction'},
-                'argument'       => $condition_config->{argument},
-                'applicable_trans_types' => $condition_config->{applicable_trans_types},
-            );
-
-        return 0
-            unless ( $condition_config->{applicable_trans_types} =~ /(?:^|,)(?:Any|\Q$txn_type\E)(?:,|$)/i );
-
-        return $condition->is_applicable();
+        my $lorzy_cond = $mymap{$args->{name}}
+            or die "no compat mapping for scrip condition $args->{name}";
+        $lorzy_cond = 'RT.Condition.'.$lorzy_cond;
+        return $eval->resolve_symbol_name($lorzy_cond)->apply
+            ( $eval,
+              { transaction => $args->{transaction},
+                ticket => $args->{ticket}
+            });
     },
 );
 
@@ -132,8 +140,7 @@ __PACKAGE__->defun( 'ScripAction.Prepare',
         'name'     => Lorzy::FunctionArgument->new( name => 'name' ),
         'context'  => Lorzy::FunctionArgument->new( name => 'context' ),
         'template' => Lorzy::FunctionArgument->new( name => 'template' ),
-        'ticket'   => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Model::Ticket' ),
-        'transaction' => Lorzy::FunctionArgument->new( name => 'transaction', type => 'RT::Model::Transaction' ),
+        %$sig_ticket_txn,
     },
     native => sub {
         my $args   = shift;
@@ -153,8 +160,7 @@ __PACKAGE__->defun( 'ScripAction.Run',
         'name'     => Lorzy::FunctionArgument->new( name => 'name' ),
         'context'  => Lorzy::FunctionArgument->new( name => 'context' ),
         'template' => Lorzy::FunctionArgument->new( name => 'template' ),
-        'ticket'   => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Model::Ticket' ),
-        'transaction' => Lorzy::FunctionArgument->new( name => 'transaction', type => 'RT::Model::Transaction' ),
+        %$sig_ticket_txn,
     },
     native => sub {
         my $args   = shift;
