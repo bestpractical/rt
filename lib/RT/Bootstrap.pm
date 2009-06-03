@@ -431,20 +431,6 @@ sub insert_data {
         #print "done.\n";
     }
 
-    if (@scrip_conditions) {
-
-        #print "Creating scrip_conditions...";
-
-        for my $item (@scrip_conditions) {
-            my $new_entry = RT::Model::ScripCondition->new( current_user => RT->system_user );
-            my $return = $new_entry->create(%$item);
-
-            #print $return. ".";
-        }
-
-        #print "done.\n";
-    }
-
     if (@Templates) {
 
         #print "Creating templates...";

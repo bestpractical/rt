@@ -68,7 +68,6 @@ my @OBJECTS = qw(
     PrincipalCollection
     QueueCollection
     ScripActionCollection
-    ScripConditionCollection
     TemplateCollection
     ObjectCustomFieldValueCollection
     TicketCollection

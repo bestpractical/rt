@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT::Test; use Test::More; 
-plan tests => 43;
+plan tests => 42;
 use RT;
 
 
@@ -12,7 +12,6 @@ use RT;
 ok (require RT::ScripAction::CreateTickets);
 use_ok('RT::Model::Template');
 use_ok('RT::Model::ScripAction');
-use_ok('RT::Model::ScripCondition');
 use_ok('RT::Model::Ticket');
 
 my $approvalsq = RT::Model::Queue->new(current_user => RT->system_user);

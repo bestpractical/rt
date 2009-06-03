@@ -219,7 +219,6 @@ BEGIN {
     require RT::Shredder::Principal;
     require RT::Shredder::Queue;
     require RT::Shredder::ScripAction;
-    require RT::Shredder::ScripCondition;
     require RT::Shredder::Template;
     require RT::Shredder::ObjectCustomFieldValue;
     require RT::Shredder::Ticket;
@@ -239,7 +238,6 @@ our @SUPPORTED_OBJECTS = qw(
     Principal
     Queue
     ScripAction
-    ScripCondition
     Template
     ObjectCustomFieldValue
     Ticket
