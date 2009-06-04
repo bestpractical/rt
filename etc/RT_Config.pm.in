@@ -849,11 +849,14 @@ Set($LogoURL, RT->Config->Get('WebImagesURL') . "bplogo.gif");
 
 =item C<$WebNoAuthRegex>
 
-What portion of RT's URLspace should not require authentication.
+What portion of RT's URL space should not require authentication.
+
+This is mostly for extension and doesn't mean RT will work without
+login if you change it.
 
 =cut
 
-Set($WebNoAuthRegex, qr{^ (?:/+NoAuth/ | /+REST/\d+\.\d+/NoAuth/) }x );
+Set($WebNoAuthRegex, qr{ /NoAuth/ }x );
 
 =item C<$SelfServiceRegex>
 
