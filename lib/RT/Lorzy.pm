@@ -16,16 +16,34 @@ sub evaluate {
     eval { $EVAL->apply_script( $code, \%args ) };
 }
 
+my %cond_compat_map = ( 'On Create' => 'OnCreate',
+                        'On Transaction' => 'OnTransaction',
+                        'On Correspond' => 'OnCorrespond',
+                        'On comment' => 'OnComment',
+                        'On Status Change' => 'OnStatusChange',
+                        'On owner Change' => 'OnOwnerChange',
+                        'On priority Change' => 'OnPriorityChange',
+                        'On Resolve' => 'OnResolve',
+                        'On Close' => 'OnClose',
+                        'On Reopen' => 'OnReopen',
+                        # doesn't work yet
+                        'PriorityExceeds' => 'PriorityExceeds',
+                        'BeforeDue' => 'BeforeDue',
+                        'OverDue' => 'OverDue',
+          );
+
+
 sub create_scripish {
     my ( $class, $scrip_condition, $scrip_action, $template, $description, $queue ) = @_;
     my $sigs = { ticket => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Model::Ticket' ),
         transaction => Lorzy::FunctionArgument->new( name => 'transaction', type => 'RT::Model::Transaction' ) };
     my $builder = Lorzy::Builder->new();
 
+    my $lorzy_cond = $cond_compat_map{$scrip_condition}
+        or die "unsupported compat condition: $scrip_condition";
     my $tree = {
-        name => 'RT.Condition.Applicable',
+        name => 'RT.Condition.'.$lorzy_cond,
         args => {
-            name => $scrip_condition,
             ticket => { name => 'Symbol', args => { symbol => 'ticket' } },
             transaction => { name => 'Symbol', args => { symbol => 'transaction' } }
         } };

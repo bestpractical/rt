@@ -18,9 +18,8 @@ my $eval = Lorzy::Evaluator->new();
 $eval->load_package($_) for qw(Str Native);
 $eval->load_package('RT', 'RT::Lorzy::Package::RT');
 
-my $tree    = [ { name => 'RT.Condition.Applicable',
+my $tree    = [ { name => 'RT.Condition.OnCreate',
                   args => {
-                      name => "On Create",
                       ticket => { name => 'Symbol', args => { symbol => 'ticket' }},
                       transaction => { name => 'Symbol', args => { symbol => 'transaction' }},
                   }

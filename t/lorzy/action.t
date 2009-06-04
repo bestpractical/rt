@@ -19,9 +19,8 @@ use_ok('RT::Lorzy');
 my $tree    = [ { name => 'IfThen',
                   args => { if_true => { name => 'True' },
                             if_false => { name => 'False' },
-                            condition => { name => 'RT.Condition.Applicable',
+                            condition => { name => 'RT.Condition.OnCreate',
                                 args => {
-                                    name => "On Create",
                                     ticket => { name => 'Symbol', args => { symbol => 'ticket' }},
                                     transaction => { name => 'Symbol', args => { symbol => 'transaction' }},
                                     }

@@ -2,20 +2,6 @@ package RT::Lorzy::Package::RT;
 use strict;
 use base 'Lorzy::Package';
 
-# TODO: make create_scripish resolve from this map and call the
-# condtion function here without RT.Condition.Applicable
-
-my %mymap = ( 'On Create' => 'OnCreate',
-              'On Transaction' => 'OnTransaction',
-              'On Correspond' => 'OnCorrespond',
-              'On comment' => 'OnComment',
-              'On Status Change' => 'OnStatusChange',
-              'On owner Change' => 'OnOwnerChange',
-              'On priority Change' => 'OnPriorityChange',
-              'On Resolve' => 'OnResolve',
-              'On Close' => 'OnClose',
-              'On Reopen' => 'OnReopen',
-          );
 
 my $sig_ticket_txn = {
         'ticket' => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Model::Ticket' ),
@@ -159,26 +145,6 @@ for my $name ( keys %simple_txn_cond ) {
         },
     );
 }
-
-__PACKAGE__->defun( 'Condition.Applicable',
-    signature => {
-        'name'   => Lorzy::FunctionArgument->new( name => 'name' ),
-        %$sig_ticket_txn,
-    },
-    native => sub {
-        my $args = shift;
-        my $eval = shift;
-
-        my $lorzy_cond = $mymap{$args->{name}}
-            or die "no compat mapping for scrip condition $args->{name}";
-        $lorzy_cond = 'RT.Condition.'.$lorzy_cond;
-        return $eval->resolve_symbol_name($lorzy_cond)->apply
-            ( $eval,
-              { transaction => $args->{transaction},
-                ticket => $args->{ticket}
-            });
-    },
-);
 
 __PACKAGE__->defun( 'ScripAction.Prepare',
     signature => {
