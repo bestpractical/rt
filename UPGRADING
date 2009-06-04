@@ -19,11 +19,6 @@ well.
 
 *******
 
-UPGRADING FROM 3.8.3 and earlier - Changes:
-
-Default value of WebNoAuthRegex option in the config now matches any path
-that has '/NoAuth/' substring, so extensions can avoid overriding it.
-
 UPGRADING FROM 3.8.2 and earlier - Changes:
 
 New scrip condition 'On Reject'.

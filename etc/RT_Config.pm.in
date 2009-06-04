@@ -856,7 +856,7 @@ login if you change it.
 
 =cut
 
-Set($WebNoAuthRegex, qr{ /NoAuth/ }x );
+Set($WebNoAuthRegex, qr{^ (?:/+NoAuth/ | /+REST/\d+\.\d+/NoAuth/) }x );
 
 =item C<$SelfServiceRegex>
 
