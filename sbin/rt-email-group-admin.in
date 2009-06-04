@@ -361,7 +361,7 @@ sub __add
 
     push @cur, $id;
 
-    return $action->__Set( Field => 'Argument', Value => join(';', @cur) );
+    return $action->__Set( Field => 'Argument', Value => join(',', @cur) );
 }
 
 =head2 delete NAME
@@ -477,44 +477,8 @@ if other is not specified.
 
 sub argument_to_list {
     my $action = shift;
-    my $arg = $action->Argument;
-
-    # old variant via Storable
-    {
-        local $@;
-        require Storable;
-        my $old = eval { Storable::thaw( $arg ) };
-        unless ( $@ ) {
-            $arg = __convert_old($old);
-        }
-    }
-
-    return _split_arg( $arg );
-}
-
-sub _split_arg { return split /[^0-9]+/, $_[0] }
-
-sub __convert_old {
-    my $arg = shift;
-    my @res;
-    foreach my $r ( @{ $arg } ) {
-        my $obj;
-        next unless $r->{'Type'};
-        if ( lc $r->{'Type'} eq 'user' ) {
-            $obj = RT::User->new( $RT::SystemUser );
-        } elsif ( lc $r->{'Type'} eq 'user' ) {
-            $obj = RT::Group->new( $RT::SystemUser );
-        } else {
-            next;
-        }
-        $obj->Load( $r->{'Instance'} );
-        my $id = $obj->id;
-        next unless $id;
-
-        push @res, $id;
-    }
-
-    return join ';', @res;
+    require RT::Action::NotifyGroup;
+    return RT::Action::NotifyGroup->__SplitArg( $action->Argument );
 }
 
 sub _get_our_actions {

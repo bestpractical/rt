@@ -1,0 +1,58 @@
+
+@Final = (
+    sub {
+        $RT::Logger->debug("Going to correct arguments of NotifyGroup actions if you have any");
+
+        my $actions = RT::ScripActions->new( $RT::SystemUser );
+        $actions->Limit(
+            FIELD => 'ExecModule',
+            VALUE => 'NotifyGroup',
+        );
+        $actions->Limit(
+            FIELD => 'ExecModule',
+            VALUE => 'NotifyGroupAsComment',
+        );
+
+        my $converter = sub {
+            my $arg = shift;
+            my @res;
+            foreach my $r ( @{ $arg } ) {
+                my $obj;
+                next unless $r->{'Type'};
+                if( lc $r->{'Type'} eq 'user' ) {
+                    $obj = RT::User->new( $RT::SystemUser );
+                } elsif ( lc $r->{'Type'} eq 'group' ) {
+                    $obj = RT::Group->new( $RT::SystemUser );
+                } else {
+                    next;
+                }
+                $obj->Load( $r->{'Instance'} );
+                my $id = $obj->id;
+                next unless( $id );
+
+                push @res, $id;
+            }
+
+            return join ',', @res;
+        };
+
+        require Storable;
+        while ( my $action = $actions->Next ) {
+            my $argument = $action->Argument;
+            my $new = '';
+            local $@;
+            if ( my $struct = eval { Storable::thaw( $arg ) } ) {
+                $new = $converter->( $struct );
+            } else {
+                $new = join /, /, grep length, split /[^0-9]+/, $argument;
+            }
+            next if $new eq $argument;
+
+            my ($status, $msg) = $action->__Set( Field => 'Argument', Value => $new );
+            $RT::Logger->warning( "Couldn't change argument value of the action: $msg" )
+                unless $status;
+        }
+    },
+);
+
+
