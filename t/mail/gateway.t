@@ -628,15 +628,13 @@ my ($id) = $tick->create( queue => 'ext-mailgate', subject => 'test');
 ok( $id, 'new ticket Created' );
 is( $tick->owner, RT->nobody->id, 'owner of the new ticket is nobody' );
 
-$! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take"), "Opened the mailgate - $!");
-print MAIL <<EOF;
+my $mail = RT::Test->open_mailgate_ok($baseurl);
+print $mail <<EOF; 
 From: root\@localhost
 Subject: [@{[RT->config->get('rtname')]} \#$id] test
 
 EOF
-close (MAIL);
-is ($? >> 8, 0, "The mail gateway exited normally");
+RT::Test->close_mailgate_ok($mail);
 
 $tick = RT::Model::Ticket->new(current_user => RT->system_user);
 $tick->load( $id );
@@ -652,16 +650,14 @@ ok( $status, 'successfuly changed owner: '. ($msg||'') );
 is( $tick->owner, RT->nobody->id, 'set owner back to nobody');
 
 
-$! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $@");
-print MAIL <<EOF;
+$mail = RT::Test->open_mailgate_ok($baseurl);
+print $mail <<EOF;
 From: root\@localhost
 Subject: [@{[RT->config->get('rtname')]} \#$id] correspondence
 
 test
 EOF
-close (MAIL);
-is ($? >> 8, 0, "The mail gateway exited normally");
+RT::Test->close_mailgate_ok($mail);
 
 Jifty::DBI::Record::Cachable->flush_cache;
 
@@ -676,15 +672,13 @@ $txns->order_by( column => 'id', order => 'DESC' );
 is( $tick->transactions->count, 6, 'no superfluous transactions');
 is( $txns->first->subject, "[$RT::rtname \#$id] correspondence", 'successfuly add correspond within take via email' );
 
-$! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action resolve"), "Opened the mailgate - $!");
-print MAIL <<EOF;
+$mail = RT::Test->open_mailgate_ok($baseurl);
+print $mail <<EOF;
 From: root\@localhost
 Subject: [@{[RT->config->get('rtname')]} \#$id] test
 
 EOF
-close (MAIL);
-is ($? >> 8, 0, "The mail gateway exited normally");
+RT::Test->close_mailgate_ok($mail);
 
 Jifty::DBI::Record::Cachable->flush_cache;
 
@@ -710,15 +704,13 @@ ok( $id, 'create new ticket' );
 
 my $rtname = RT->config->get('rtname');
 
-$! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take"), "Opened the mailgate - $!");
-print MAIL <<EOF;
+$mail = RT::Test->open_mailgate_ok($baseurl);
+print $mail <<EOF;
 From: ext-mailgate\@localhost
 Subject: [$rtname \#$id] test
 
 EOF
-close (MAIL);
-is ( $? >> 8, 0, "mailgate exited normally" );
+RT::Test->close_mailgate_ok($mail);
 Jifty::DBI::Record::Cachable->flush_cache;
 
 cmp_ok( $tick->owner, '!=', $user->id, "we didn't change owner" );
@@ -728,31 +720,27 @@ ok( $status, "successfuly granted right: $msg" );
 my $ace_id = $status;
 ok( $user->has_right( right => 'ReplyToTicket', object => $tick ), "User can reply to ticket" );
 
-$! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action correspond-take"), "Opened the mailgate - $!");
-print MAIL <<EOF;
+$mail = RT::Test->open_mailgate_ok($baseurl);
+print $mail <<EOF;
 From: ext-mailgate\@localhost
 Subject: [$rtname \#$id] test
 
 correspond-take
 EOF
-close (MAIL);
-is ( $? >> 8, 0, "mailgate exited normally" );
+RT::Test->close_mailgate_ok($mail);
 Jifty::DBI::Record::Cachable->flush_cache;
 
 cmp_ok( $tick->owner, '!=', $user->id, "we didn't change owner" );
 is( $tick->transactions->count, 3, "one transactions added" );
 
-$! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $!");
-print MAIL <<EOF;
+$mail = RT::Test->open_mailgate_ok($baseurl);
+print $mail <<EOF;
 From: ext-mailgate\@localhost
 Subject: [$rtname \#$id] test
 
 correspond-take
 EOF
-close (MAIL);
-is ( $? >> 8, 0, "mailgate exited normally" );
+RT::Test->close_mailgate_ok($mail);
 Jifty::DBI::Record::Cachable->flush_cache;
 
 cmp_ok( $tick->owner, '!=', $user->id, "we didn't change owner" );
@@ -784,16 +772,14 @@ ok( $status, "successfuly granted right: $msg" );
 ($status, $msg) = $user->principal->grant_right( object => $queue, right => 'TakeTicket' );
 ok( $status, "successfuly granted right: $msg" );
 
-$! = 0;
-ok(open(MAIL, "|$RT::BinPath/rt-mailgate --url $url --queue ext-mailgate --action take-correspond"), "Opened the mailgate - $!");
-print MAIL <<EOF;
+$mail = RT::Test->open_mailgate_ok($baseurl);
+print $mail <<EOF;
 From: ext-mailgate\@localhost
 Subject: [$rtname \#$id] test
 
 take-correspond with reply Right granted to owner role
 EOF
-close (MAIL);
-is ( $? >> 8, 0, "mailgate exited normally" );
+RT::Test->close_mailgate_ok($mail);
 Jifty::DBI::Record::Cachable->flush_cache;
 
 $tick->load( $id );
