@@ -99,6 +99,51 @@ __PACKAGE__->defun( 'Condition.OnReopen',
     },
 );
 
+__PACKAGE__->defun( 'Condition.BeforeDue', # XXX: lambday required, doesn't work yet
+    signature => $sig_ticket_txn,
+    native => sub {
+        my $args = shift;
+
+        # Parse date string.  format is "1d2h3m4s" for 1 day and 2 hours
+        # and 3 minutes and 4 seconds.
+        my %e;
+        foreach (qw(d h m s)) {
+            my @vals = $args->{argument} =~ m/(\d+)$_/;
+            $e{$_} = pop @vals || 0;
+        }
+        my $elapse = $e{'d'} * 24 * 60 * 60 + $e{'h'} * 60 * 60 + $e{'m'} * 60 + $e{'s'};
+
+        my $cur = RT::DateTime->now;
+        my $due = $args->{ticket}->due;
+        return (undef) if $due->epoch <= 0;
+
+        my $diff = $due->diff($cur);
+        if ( $diff >= 0 and $diff <= $elapse ) {
+            return (1);
+        } else {
+            return (undef);
+        }
+
+    },
+);
+
+__PACKAGE__->defun( 'Condition.PriorityExceeds', # XXX: lambday required, doesn't work yet
+    signature => $sig_ticket_txn,
+    native => sub {
+        my $args = shift;
+        return $args->{ticket}->priority > $args->{argument};
+    },
+);
+
+__PACKAGE__->defun( 'Condition.Overdue',
+    signature => $sig_ticket_txn,
+    native => sub {
+        my $args = shift;
+        my $ticket = $args->{ticket};
+        return $ticket->due->epoch > 0 && $ticket->due->epoch < time();
+    },
+);
+
 my %simple_txn_cond = ( 'OnCreate' => 'create',
                         'OnCorrespond' => 'correspond',
                         'OnComment' => 'comment',
