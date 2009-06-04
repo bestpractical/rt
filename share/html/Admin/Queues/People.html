@@ -146,33 +146,34 @@ my $QueueObj = new RT::Queue($session{'CurrentUser'});
 $QueueObj->Load($id) || Abort(loc("Couldn't load queue", $id));
 # }}}
 
+unless ($OnlySearchForPeople or $OnlySearchForGroup) {
 # {{{ Delete deletable watchers
 
-foreach my $key (keys %ARGS) {
-        my $id = $QueueObj->Id;
+    foreach my $key (keys %ARGS) {
+            my $id = $QueueObj->Id;
 
-    if (($key =~ /^Queue-$id-DeleteWatcher-Type-(.*?)-Principal-(\d*)$/)) {;
-	    my ($code, $msg) = $QueueObj->DeleteWatcher(Type => $1,
-                                                    PrincipalId => $2);
-	    push @results, $msg;
+        if (($key =~ /^Queue-$id-DeleteWatcher-Type-(.*?)-Principal-(\d*)$/)) {;
+            my ($code, $msg) = $QueueObj->DeleteWatcher(Type => $1,
+                                                        PrincipalId => $2);
+            push @results, $msg;
+        }
     }
-}
 # }}}
 
 # {{{ Add new watchers
-foreach my  $key (keys %ARGS) {
-    #They're in this order because otherwise $1 gets clobbered :/
-    if ( ($ARGS{$key} =~ /^(AdminCc|Cc)$/) and
-	 ($key =~ /^Queue-AddWatcher-Principal-(\d*)$/) ) {
-	$RT::Logger->debug("Adding a watcher $1 to ".$ARGS{$key}."\n");
-	my ($code, $msg) = $QueueObj->AddWatcher(Type => $ARGS{$key},
-				                             PrincipalId => $1);
-	push @results, $msg;
+    foreach my  $key (keys %ARGS) {
+        #They're in this order because otherwise $1 gets clobbered :/
+        if ( ($ARGS{$key} =~ /^(AdminCc|Cc)$/) and
+         ($key =~ /^Queue-AddWatcher-Principal-(\d*)$/) ) {
+        $RT::Logger->debug("Adding a watcher $1 to ".$ARGS{$key}."\n");
+        my ($code, $msg) = $QueueObj->AddWatcher(Type => $ARGS{$key},
+                                                 PrincipalId => $1);
+        push @results, $msg;
+        }
     }
-}
 
 # }}}
-
+}
  
 
 if (!length $ARGS{'UserString'}) {
@@ -200,6 +201,8 @@ $current_tab = 'Admin/Queues/People.html?id='.$QueueObj->id;
 </%INIT>
 
 <%ARGS>
+$OnlySearchForPeople => undef
+$OnlySearchForGroup => undef
 $UserField => 'Name'
 $UserOp => '='
 $UserString => undef
