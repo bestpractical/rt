@@ -121,4 +121,15 @@ in addition to Update.html)
 
 Please note, this only works with RTFM 3.8.1 or greater
 
+=head2 RTFM_HideArticleSearchOnReplyCreate
+
+On Ticket Reply (and Create if you set the above config var)
+RTFM normally displays a search box and an include box (for
+inputting an article id) and configurable dropdowns
+of articles.  These can be configured using Global Topics or
+on the Class page.
+
+If you set this to a true value, RTFM will only display
+dropdowns and hide the search boxes
+
 =cut

@@ -50,6 +50,8 @@
 % }
 
 <table>
+%if ( RT->can('Config') && RT->Config->can('Get') ) {
+%    unless (RT->Config->Get('RTFM_HideArticleSearchOnReplyCreate')) {
 <tr>
 <td><&|/l&>Search for RTFM articles matching</&></td>
 <td><input size=20 name="<% $name_prefix %>RTFM_Content" /></td>
@@ -59,6 +61,8 @@
 <td><input size=20 name="<% $name_prefix %>RTFM-Include-Article-Named" /></td>
 <td><input type="submit" value="Go" /></td>
 </tr>
+%   }
+%}
 % if ($hotlist->Count) {
 <tr>
 <td><&|/l&>Select an Article to include</&></td>
