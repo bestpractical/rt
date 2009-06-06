@@ -116,7 +116,7 @@ ok($val,$msg);
     # text attachment
     check_attachment($test_email);
     # binary attachment
-    check_attachment($RT::MasonComponentRoot.'/NoAuth/images/bplogo.gif');
+    check_attachment(Jifty::Util->app_root.'/share/html/NoAuth/images/bplogo.gif');
 
 # change a ticket's Owner
 expect_send("edit ticket/$ticket_id set owner=root", 'Changing owner...');

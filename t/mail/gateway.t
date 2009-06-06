@@ -457,7 +457,7 @@ EOF
 diag "Testing preservation of binary attachments" if $ENV{'TEST_VERBOSE'};
 {
     # Get a binary blob (Best Practical logo) 
-    my $LOGO_FILE = $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
+    my $LOGO_FILE = Jifty::Util->app_root .'/share/html/NoAuth/images/bplogo.gif';
 
     # Create a mime entity with an attachment
     my $entity = MIME::Entity->build(

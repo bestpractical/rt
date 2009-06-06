@@ -3,9 +3,9 @@ use strict;
 
 use RT::Test; use Test::More tests => 14;
 
-
-use constant LogoFile => $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
-use constant FaviconFile => $RT::MasonComponentRoot .'/NoAuth/images/favicon.png';
+use constant ImageRoot => Jifty::Util->app_root . '/share/html/NoAuth/images';
+use constant LogoFile => ImageRoot .'/bplogo.gif';
+use constant FaviconFile => ImageRoot .'/favicon.png';
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in';
