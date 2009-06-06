@@ -109,42 +109,42 @@ if ($ARGS{fromjs}) {
 else {
     my $current = $self->{Current} = $ARGS{$self->{Name}.'-Current'};
     if ($current && !ref ($current)) {
-	$current = [$current];
+        $current = [$current];
     }
 
     unless ($self->{ReadOnly}) {
         ++$self->{Modified};
         if ($ARGS{add}) {
-        my $choosed = $ARGS{$self->{Name}.'-Available'};
-        for my $add (ref($choosed) ? @$choosed : $choosed) {
-            next if grep { $_ eq $add } @$current;
-            push @$current, $add;
-        }
+            my $choosed = $ARGS{$self->{Name}.'-Available'};
+            for my $add (ref($choosed) ? @$choosed : $choosed) {
+                next if grep { $_ eq $add } @$current;
+                push @$current, $add;
+            }
         }
 
         if ($ARGS{remove}) {
-        my $choosed = $ARGS{$self->{Name}.'-Selected'};
-        for my $del (ref($choosed) ? @$choosed : $choosed) {
-            @$current = map { $_ eq $del ? () : $_ } @$current;
-        }
+            my $choosed = $ARGS{$self->{Name}.'-Selected'};
+            for my $del (ref($choosed) ? @$choosed : $choosed) {
+                @$current = map { $_ eq $del ? () : $_ } @$current;
+            }
         }
 
         if ($ARGS{moveup} or $ARGS{movedown}) {
-        my $offset = $ARGS{moveup} ? 1 : 0;
-        my $choosed = $ARGS{$self->{Name}.'-Selected'};
-        $choosed = [$choosed] unless ref ($choosed);
-        my $canmove = 0; # not in the cornor
-        for my $i ($ARGS{moveup} ? 0..$#{$current} : reverse 0..$#{$current}) {
-            if (grep {$_ eq $current->[$i]} @$choosed) {
-            if ($canmove) {
-                splice (@$current, $i-$offset, 2,
-                    @{$current}[$i+1-$offset,$i-$offset]);
+            my $offset = $ARGS{moveup} ? 1 : 0;
+            my $choosed = $ARGS{$self->{Name}.'-Selected'};
+            $choosed = [$choosed] unless ref ($choosed);
+            my $canmove = 0; # not in the cornor
+            for my $i ($ARGS{moveup} ? 0..$#{$current} : reverse 0..$#{$current}) {
+                if (grep {$_ eq $current->[$i]} @$choosed) {
+                if ($canmove) {
+                    splice (@$current, $i-$offset, 2,
+                        @{$current}[$i+1-$offset,$i-$offset]);
+                }
+                }
+                else {
+                ++$canmove;
+                }
             }
-            }
-            else {
-            ++$canmove;
-            }
-        }
         }
 
         if ($ARGS{clear}) {
