@@ -672,7 +672,8 @@ $txns->limit( column => 'type', value => 'correspond');
 $txns->order_by( column => 'id', order => 'DESC' );
 # +1 because of auto open
 is( $tick->transactions->count, 6, 'no superfluous transactions');
-is( $txns->first->subject, "[$RT::rtname \#$id] correspondence", 'successfuly add correspond within take via email' );
+my $rtname = RT->config->get('rtname');
+is( $txns->first->subject, "[$rtname \#$id] correspondence", 'successfuly add correspond within take via email' );
 
 $mail = RT::Test->open_mailgate_ok($baseurl);
 print $mail <<EOF;
