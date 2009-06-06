@@ -72,11 +72,6 @@ our $LocalEtcPath     = $BASE_PATH . '/local/etc';
 our $LocalLexiconPath = $BASE_PATH . '/local/po';
 our $LocalPluginPath  = $LocalPath . "/plugins";
 
-# $MasonLocalComponentRoot is where your rt instance keeps its site-local
-# mason html files.
-
-our $MasonLocalComponentRoot = $BASE_PATH . '/local/html';
-
 # $MasonDataDir Where mason keeps its datafiles
 
 our $MasonDataDir = $BASE_PATH . '/var/mason_data';

@@ -110,7 +110,7 @@ package Jifty::View::Mason::Handler;
     *config = sub {
         my %config = $oldsub->();
         push @{ $config{comp_root} },
-          [ local => $RT::MasonLocalComponentRoot ];
+          [ local => Jifty::Util->app_root . '/local/html' ];
         for my $plugin ( @{ RT->plugins } ) {
             push @{ $config{comp_root} },
               [ 'plugin-' . $plugin->name => $plugin->component_root ];
