@@ -101,18 +101,18 @@ foreach my $object (@objects) {
     );
     while ( my $user = $Users->next() ) {
         next
-            if ( $user->id == $RT::nobody->id )
+            if ( $user->id == RT->nobody->id )
             ;    # skip nobody here, so we can make them first later
         $user_uniq_hash{ $user->id() } = $user;
     }
 }
-if ($default && $default != $RT::nobody->id && !$user_uniq_hash{$default}) {
+if ($default && $default != RT->nobody->id && !$user_uniq_hash{$default}) {
     $user_uniq_hash{$default} = RT::Model::User->new( current_user => Jifty->web->current_user );
     $user_uniq_hash{$default}->load($default);
 }
 
 my @users = sort { uc( $a->name ) cmp uc( $b->name ) } values %user_uniq_hash;
-unshift( @users, $RT::nobody );
+unshift( @users, RT->nobody );
 
 $m->callback(
     %ARGS,

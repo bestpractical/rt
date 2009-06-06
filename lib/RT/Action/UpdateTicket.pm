@@ -77,7 +77,7 @@ sub _compute_possible_owners {
         );
         while ( my $user = $Users->next() ) {
             next
-              if ( $user->id == $RT::nobody->id )
+              if ( $user->id == RT->nobody->id )
               ;    # skip nobody here, so we can make them first later
             $user_uniq_hash{ $user->id() } = $user;
         }
@@ -87,7 +87,7 @@ sub _compute_possible_owners {
         map { { display => $_->name, value => $_->id } }
           sort { uc( $a->name ) cmp uc( $b->name ) } values %user_uniq_hash
     ];
-    unshift @$owners, { display => 'Nobody', value => $RT::nobody->id };
+    unshift @$owners, { display => 'Nobody', value => RT->nobody->id };
 
     return $owners;
 }

@@ -204,7 +204,7 @@ if ($ticket) {
     }
 
     if ( $ticket->current_user_has_right('OwnTicket') ) {
-        if ( $ticket->owner_obj->id == $RT::nobody->id ) {
+        if ( $ticket->owner_obj->id == RT->nobody->id ) {
             $actions->{'B'} = {
                 path  => "Ticket/Display.html?action=take&id=" . $id,
                 title => _('Take'),
