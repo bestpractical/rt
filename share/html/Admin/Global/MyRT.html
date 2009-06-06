@@ -83,15 +83,18 @@ for ( $m->comp( "/Search/Elements/SearchesForObject",
 
 my ($default_portlets) = $sys->Attributes->Named('HomepageSettings');
 
+my $has_right = $session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser');
+
 my @panes = $m->comp(
     '/Admin/Elements/ConfigureMyRT',
     panes  => ['body', 'summary'],
     Action => 'MyRT.html',
     items => \@items,
+    ReadOnly => !$has_right,
     current_portlets => $default_portlets->Content,
     OnSave => sub {
         my ( $conf, $pane ) = @_;
-        if (!$session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
+        if (!$has_right) {
             push @actions, loc( 'Permission denied' );
         }
         else {

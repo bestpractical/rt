@@ -51,6 +51,7 @@ $OnSave
 $items
 $panes
 $current_portlets
+$ReadOnly => 0
 </%args>
 <%init>
 my $portlets = $current_portlets;
@@ -62,6 +63,7 @@ for my $pane (@$panes) {
         Name      => $pane,
         Available => $items,
         AutoSave  => 1,
+        ReadOnly  => $ReadOnly,
         OnSubmit  => sub {
             my $sel = shift;
             $portlets->{$pane} = [
