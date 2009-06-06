@@ -91,8 +91,13 @@ my @panes = $m->comp(
     current_portlets => $default_portlets->Content,
     OnSave => sub {
         my ( $conf, $pane ) = @_;
-	$default_portlets->SetContent( $conf );
-        push @actions, loc( 'Global portlet [_1] saved.', $pane );
+        if (!$session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'SuperUser')) {
+            push @actions, loc( 'Permission denied' );
+        }
+        else {
+            $default_portlets->SetContent( $conf );
+            push @actions, loc( 'Global portlet [_1] saved.', $pane );
+        }
     }
 );
 
