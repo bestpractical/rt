@@ -705,8 +705,6 @@ $tick = RT::Model::Ticket->new(current_user => RT->system_user);
 ($id) = $tick->create( queue => $qid, subject => 'test' );
 ok( $id, 'create new ticket' );
 
-my $rtname = RT->config->get('rtname');
-
 $mail = RT::Test->open_mailgate_ok($baseurl);
 print $mail <<EOF;
 From: ext-mailgate\@localhost
