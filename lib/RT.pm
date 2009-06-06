@@ -62,7 +62,6 @@ use vars qw($Config $System $nobody $Handle );
 our $VERSION = '3.999.0';
 
 our $BASE_PATH        = Jifty::Util->app_root;
-our $EtcPath          = $BASE_PATH . '/etc';
 our $BinPath          = $BASE_PATH . '/bin';
 our $SbinPath          = $BASE_PATH . '/sbin';
 our $VarPath          = $BASE_PATH . '/var';

@@ -56,7 +56,7 @@ sub run {
 
 
     $self->insert_initial_data();
-    $self->insert_data( $RT::EtcPath . "/initialdata" );
+    $self->insert_data( Jifty::Util->app_root . "/etc/initialdata" );
 }
 
 use File::Spec;
