@@ -10,6 +10,7 @@ mason*/
 pm_to_blib
 t/data/gnupg/keyrings/random_seed
 t/mailbox_*
+rt4t*
 rt4
 var/
 etc/site_config.yml
