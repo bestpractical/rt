@@ -51,7 +51,7 @@ use warnings;
 package RT::ScripAction::RecordCorrespondence;
 use base qw(RT::ScripAction);
 
-=head1 name
+=head1 NAME
 
 RT::ScripAction::RecordCorrespondence - An Action which can be used from an
 external tool, or in any situation where a ticket transaction has not

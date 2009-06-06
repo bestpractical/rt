@@ -50,7 +50,7 @@
 ## This is a library of static subs to be used by the Mason web
 ## interface to RT
 
-=head1 name
+=head1 NAME
 
 RT::Interface::Web
 

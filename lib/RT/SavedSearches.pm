@@ -46,7 +46,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-=head1 name
+=head1 NAME
 
   RT::SavedSearches - a pseudo-collection for SavedSearch objects.
 

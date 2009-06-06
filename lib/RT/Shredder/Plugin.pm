@@ -51,7 +51,7 @@ use strict;
 use warnings FATAL => 'all';
 use File::Spec ();
 
-=head1 name
+=head1 NAME
 
 RT::Shredder::Plugin - interface to access shredder plugins
 

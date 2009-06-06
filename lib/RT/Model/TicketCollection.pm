@@ -56,7 +56,7 @@
 # - ClearRestrictions and Reinitialization is messy and unclear.  The
 # only good way to do it is to create a RT::Model::TicketCollection->new Object.
 
-=head1 name
+=head1 NAME
 
   RT::Model::TicketCollection - A collection of Ticket objects
 

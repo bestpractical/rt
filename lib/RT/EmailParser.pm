@@ -58,7 +58,7 @@ use MIME::Head;
 use MIME::Parser;
 use File::Temp qw/tempdir/;
 
-=head1 name
+=head1 NAME
 
   RT::EmailParser - helper functions for parsing parts from incoming
   email messages

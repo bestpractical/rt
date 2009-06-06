@@ -64,7 +64,7 @@ use Jifty::DBI::Record schema {
 
 };
 
-=head1 name
+=head1 NAME
 
   RT::Model::CachedGroupMember
 

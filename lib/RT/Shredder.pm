@@ -50,7 +50,7 @@ package RT::Shredder;
 use strict;
 use warnings;
 
-=head1 name
+=head1 NAME
 
 RT::Shredder - Permanently wipeout data from RT
 

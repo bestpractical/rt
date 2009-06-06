@@ -47,7 +47,7 @@
 # END BPS TAGGED BLOCK }}}
 # Portions Copyright 2000 Tobias Brox <tobix@cpan.org>
 
-=head1 name
+=head1 NAME
 
   RT::Model::Template - RT's template object
 

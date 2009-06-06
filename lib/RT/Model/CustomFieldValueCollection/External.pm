@@ -52,7 +52,7 @@ use warnings;
 
 use base qw(RT::Model::CustomFieldValueCollection);
 
-=head1 name
+=head1 NAME
 
 RT::Model::CustomFieldValueCollection::External - Pull possible values for a custom
 field from an arbitrary external data source.

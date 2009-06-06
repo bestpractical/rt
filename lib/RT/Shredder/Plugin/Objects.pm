@@ -53,7 +53,7 @@ use base qw(RT::Shredder::Plugin::Base::Search);
 
 use RT::Shredder;
 
-=head1 name
+=head1 NAME
 
 RT::Shredder::Plugin::Objects - search plugin for wiping any selected object.
 

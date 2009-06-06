@@ -61,7 +61,7 @@ use RT::Interface::Email;
 use Email::Address;
 our @EMAIL_RECIPIENT_HEADERS = qw(To Cc Bcc);
 
-=head1 name
+=head1 NAME
 
 RT::ScripAction::SendEmail - An Action which users can use to send mail 
 or can subclassed for more specialized mail sending behavior. 

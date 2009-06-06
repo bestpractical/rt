@@ -50,7 +50,7 @@ use strict;
 
 package RT::Model::Group;
 
-=head1 name
+=head1 NAME
 
   RT::Model::Group - RT\'s group object
 

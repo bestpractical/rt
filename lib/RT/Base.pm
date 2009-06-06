@@ -51,7 +51,7 @@ use base qw/Jifty::Object/;
 use strict;
 use warnings;
 
-=head1 name
+=head1 NAME
 
 RT::Base
 

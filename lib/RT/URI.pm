@@ -54,7 +54,7 @@ use base 'RT::Base';
 use RT::URI::base;
 use Carp;
 
-=head1 name
+=head1 NAME
 
 RT::URI
 

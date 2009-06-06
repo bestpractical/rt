@@ -49,7 +49,7 @@ use strict;
 #
 # END BPS TAGGED BLOCK }}}
 
-=head1 name
+=head1 NAME
 
   RT::Model::ScripAction - RT Action object
 

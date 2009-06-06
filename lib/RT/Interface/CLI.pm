@@ -64,7 +64,7 @@ BEGIN {
         &get_current_user &get_message_content &debug &loc);
 }
 
-=head1 name
+=head1 NAME
 
   RT::Interface::CLI - helper functions for creating a commandline RT interface
 

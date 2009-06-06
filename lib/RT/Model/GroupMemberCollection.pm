@@ -46,7 +46,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-=head1 name
+=head1 NAME
 
   RT::Model::GroupMemberCollection - a collection of RT::Model::GroupMember objects
 

@@ -154,7 +154,7 @@ sub available_rights {
     return $RIGHTS;
 }
 
-=head1 name
+=head1 NAME
 
   RT::Model::CustomField_Overlay - overlay for RT::Model::CustomField
 

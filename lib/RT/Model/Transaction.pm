@@ -48,7 +48,7 @@
 use strict;
 use warnings;
 
-=head1 name
+=head1 NAME
 
 RT::Model::Transaction
 

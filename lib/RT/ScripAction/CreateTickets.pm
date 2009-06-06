@@ -53,7 +53,7 @@ use base 'RT::ScripAction';
 
 use MIME::Entity;
 
-=head1 name
+=head1 NAME
 
 RT::ScripAction::CreateTickets - Create one or more tickets according
 to an externally supplied template.

@@ -51,7 +51,7 @@ use warnings FATAL => 'all';
 package RT::Shredder::Plugin::Base;
 use base qw/RT::Base/;
 
-=head1 name
+=head1 NAME
 
 RT::Shredder::Plugin::Base - base class for Shredder plugins.
 

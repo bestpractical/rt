@@ -1,4 +1,4 @@
-=head1 name
+=head1 NAME
 
 RT::StyleGuide - RT Style Guide
 

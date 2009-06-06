@@ -51,7 +51,7 @@ use strict;
 use warnings FATAL => 'all';
 use base qw(RT::Shredder::Plugin::Base::Search);
 
-=head1 name
+=head1 NAME
 
 RT::Shredder::Plugin::Users - search plugin for wiping users.
 

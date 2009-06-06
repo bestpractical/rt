@@ -70,7 +70,7 @@ our $LocalPath        = $BASE_PATH . '/local';
 our $LocalLibPath     = $BASE_PATH . '/local/lib';
 our $LocalPluginPath  = $LocalPath . "/plugins";
 
-=head1 name
+=head1 NAME
 
 RT - Request Tracker
 

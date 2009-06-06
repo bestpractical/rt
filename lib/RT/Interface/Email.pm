@@ -82,7 +82,7 @@ BEGIN {
 
 }
 
-=head1 name
+=head1 NAME
 
   RT::Interface::Email - helper functions for parsing email sent to RT
 

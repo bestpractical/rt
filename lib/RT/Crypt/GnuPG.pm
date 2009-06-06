@@ -55,7 +55,7 @@ use GnuPG::Interface;
 use RT::EmailParser ();
 use RT::Util 'safe_run_child';
 
-=head1 name
+=head1 NAME
 
 RT::Crypt::GnuPG - encrypt/decrypt and sign/verify email messages with the GNU Privacy Guard (GPG)
 
