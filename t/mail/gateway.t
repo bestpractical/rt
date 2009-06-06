@@ -210,9 +210,11 @@ EOF
 
 diag "Test new ticket creation without --action argument" if $ENV{'TEST_VERBOSE'};
 {
+    my $rtname = RT->config->get('rtname');
+
     my $text = <<EOF;
 From: root\@localhost
-To: rt\@$RT::rtname
+To: rt\@$rtname
 Subject: using mailgate without --action arg
 
 Blah!
