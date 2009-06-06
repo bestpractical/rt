@@ -135,21 +135,21 @@ sub _HandlePrincipal {
     my $self = shift;
     my $obj = shift;
     unless( $obj->id ) {
-        $RT::Logger->error( "Couldn't load principal #$instance" );
+        $RT::Logger->error( "Couldn't load principal #$obj" );
         return;
     }
     if( $obj->Disabled ) {
-        $RT::Logger->info( "Principal #$instance is disabled => skip" );
+        $RT::Logger->info( "Principal #$obj is disabled => skip" );
         return;
     }
     if( !$obj->PrincipalType ) {
-        $RT::Logger->crit( "Principal #$instance has empty type" );
+        $RT::Logger->crit( "Principal #$obj has empty type" );
     } elsif( lc $obj->PrincipalType eq 'user' ) {
         $self->__HandleUserArgument( $obj->Object );
     } elsif( lc $obj->PrincipalType eq 'group' ) {
         $self->__HandleGroupArgument( $obj->Object );
     } else {
-        $RT::Logger->info( "Principal #$instance has unsupported type" );
+        $RT::Logger->info( "Principal #$obj has unsupported type" );
     }
     return;
 }
