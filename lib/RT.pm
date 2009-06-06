@@ -68,8 +68,6 @@ our $SbinPath          = $BASE_PATH . '/sbin';
 our $VarPath          = $BASE_PATH . '/var';
 our $LocalPath        = $BASE_PATH . '/local';
 our $LocalLibPath     = $BASE_PATH . '/local/lib';
-our $LocalEtcPath     = $BASE_PATH . '/local/etc';
-our $LocalLexiconPath = $BASE_PATH . '/local/po';
 our $LocalPluginPath  = $LocalPath . "/plugins";
 
 =head1 name
