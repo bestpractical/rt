@@ -72,10 +72,6 @@ our $LocalEtcPath     = $BASE_PATH . '/local/etc';
 our $LocalLexiconPath = $BASE_PATH . '/local/po';
 our $LocalPluginPath  = $LocalPath . "/plugins";
 
-# RT needs to put session data (for preserving state between connections
-# via the web interface)
-our $MasonSessionDir = $BASE_PATH . '/var/session_data';
-
 =head1 name
 
 RT - Request Tracker
