@@ -108,49 +108,51 @@ if ($ARGS{fromjs}) {
 }
 else {
     my $current = $self->{Current} = $ARGS{$self->{Name}.'-Current'};
-    ++$self->{Modified};
     if ($current && !ref ($current)) {
 	$current = [$current];
     }
 
-    if ($ARGS{add}) {
-	my $choosed = $ARGS{$self->{Name}.'-Available'};
-	for my $add (ref($choosed) ? @$choosed : $choosed) {
-	    next if grep { $_ eq $add } @$current;
-	    push @$current, $add;
-	}
-    }
+    unless ($self->{ReadOnly}) {
+        ++$self->{Modified};
+        if ($ARGS{add}) {
+        my $choosed = $ARGS{$self->{Name}.'-Available'};
+        for my $add (ref($choosed) ? @$choosed : $choosed) {
+            next if grep { $_ eq $add } @$current;
+            push @$current, $add;
+        }
+        }
 
-    if ($ARGS{remove}) {
-	my $choosed = $ARGS{$self->{Name}.'-Selected'};
-	for my $del (ref($choosed) ? @$choosed : $choosed) {
-	    @$current = map { $_ eq $del ? () : $_ } @$current;
-	}
-    }
+        if ($ARGS{remove}) {
+        my $choosed = $ARGS{$self->{Name}.'-Selected'};
+        for my $del (ref($choosed) ? @$choosed : $choosed) {
+            @$current = map { $_ eq $del ? () : $_ } @$current;
+        }
+        }
 
-    if ($ARGS{moveup} or $ARGS{movedown}) {
-	my $offset = $ARGS{moveup} ? 1 : 0;
-	my $choosed = $ARGS{$self->{Name}.'-Selected'};
-	$choosed = [$choosed] unless ref ($choosed);
-	my $canmove = 0; # not in the cornor
-	for my $i ($ARGS{moveup} ? 0..$#{$current} : reverse 0..$#{$current}) {
-	    if (grep {$_ eq $current->[$i]} @$choosed) {
-		if ($canmove) {
-		    splice (@$current, $i-$offset, 2,
-			    @{$current}[$i+1-$offset,$i-$offset]);
-		}
-	    }
-	    else {
-		++$canmove;
-	    }
-	}
-    }
+        if ($ARGS{moveup} or $ARGS{movedown}) {
+        my $offset = $ARGS{moveup} ? 1 : 0;
+        my $choosed = $ARGS{$self->{Name}.'-Selected'};
+        $choosed = [$choosed] unless ref ($choosed);
+        my $canmove = 0; # not in the cornor
+        for my $i ($ARGS{moveup} ? 0..$#{$current} : reverse 0..$#{$current}) {
+            if (grep {$_ eq $current->[$i]} @$choosed) {
+            if ($canmove) {
+                splice (@$current, $i-$offset, 2,
+                    @{$current}[$i+1-$offset,$i-$offset]);
+            }
+            }
+            else {
+            ++$canmove;
+            }
+        }
+        }
 
-    if ($ARGS{clear}) {
-        $current = [];
-    }
+        if ($ARGS{clear}) {
+            $current = [];
+        }
 
-    $self->{Current} = $current;
+        $self->{Current} = $current;
+    }
 }
 
 @{$self->{Current}} = grep { exists $self->{_item_map}{$_} } @{$self->{Current}};
@@ -195,7 +197,11 @@ onsubmit="list_<% $name %>.selectAll();"
 <option value="<% $_->[0] %>"><% $_->[1] %></option>
 % }
 </select>
+
+% unless ($self->{ReadOnly}) {
 <input name="add" type="submit" class="button" value=" &rarr; " />
+% }
+
 <select name="<%$name%>-Selected" id="<%$name%>-Selected" size="<%$size%>" multiple="multiple">
 % for (@{$self->{Current}}) {
 <option value="<% $_ %>"
@@ -205,6 +211,7 @@ selected="selected"
 ><% $self->{_item_map}{$_} ||'' %></option>
 % }
 </select>
+% unless ($self->{'ReadOnly'}) {
 % unless ($ARGS{'NoArrows'}) {
  <input name="moveup" type="submit" class="button" value=" &uarr; " />
  <input name="movedown" type="submit" class="button" value=" &darr; " />
@@ -212,6 +219,7 @@ selected="selected"
  <input name="remove" type="submit" class="button" value="<&|/l&>Delete</&>" />
 % if ($ARGS{'Clear'}) {
  <input name="clear" type="submit" class="button" value="<&|/l&>Clear</&>" />
+% }
 % }
 
 % my $caption = "";
