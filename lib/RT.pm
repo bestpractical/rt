@@ -66,7 +66,6 @@ our $BinPath          = $BASE_PATH . '/bin';
 our $SbinPath          = $BASE_PATH . '/sbin';
 our $VarPath          = $BASE_PATH . '/var';
 our $LocalPath        = $BASE_PATH . '/local';
-our $LocalLibPath     = $BASE_PATH . '/local/lib';
 our $LocalPluginPath  = $LocalPath . "/plugins";
 
 =head1 NAME
@@ -287,8 +286,9 @@ sub init_plugin_paths {
     my @lib_dirs = $self->plugin_dirs('lib');
 
     my @tmp_inc;
+    my $local_lib = Jifty::Util->app_root . '/local/lib';
     for (@INC) {
-        if ( Cwd::realpath($_) eq $RT::LocalLibPath) {
+        if ( Cwd::realpath($_) eq $local_lib) {
             push @tmp_inc, $_, @lib_dirs;
         } else {
             push @tmp_inc, $_;
