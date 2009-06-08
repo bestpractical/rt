@@ -88,7 +88,7 @@ else {
         else {
             my $parser = Pod::POM->new;
             my $pom =
-              $parser->parse_file( $RT::BASE_PATH . '/lib/RT/Config.pm' )
+              $parser->parse_file( RT->lib_path . '/RT/Config.pm' )
               or die $parser->error;
             my $view = 'Pod::POM::View::Text';
             require Pod::POM::View::Text;

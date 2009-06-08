@@ -61,8 +61,6 @@ use File::Spec ();
 use vars qw($Config $System $nobody $Handle );
 our $VERSION = '3.999.0';
 
-our $BASE_PATH        = Jifty::Util->app_root;
-
 =head1 NAME
 
 RT - Request Tracker
@@ -414,6 +412,14 @@ The root of F</local/plugins> (plugins)
 =cut
 
 sub local_plugin_path { Jifty::Util->app_root . '/local/plugins' }
+
+=head2 lib_path
+
+The root of F</lib> (RT libraries)
+
+=cut
+
+sub lib_path { Jifty::Util->app_root . '/lib' }
 
 =head1 BUGS
 

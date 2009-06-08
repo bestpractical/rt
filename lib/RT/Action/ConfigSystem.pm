@@ -44,7 +44,7 @@ sub meta {
     my $meta = {};
     require Pod::POM;
     my $parser = Pod::POM->new;
-    my $pom    = $parser->parse_file( $RT::BASE_PATH . '/lib/RT/Config.pod' )
+    my $pom    = $parser->parse_file( RT->lib_path . '/RT/Config.pod' )
       or die $parser->error;
     require Pod::POM::View::HTML;
     require Pod::POM::View::Text;
