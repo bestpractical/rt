@@ -17,7 +17,7 @@ BEGIN {
 
 BEGIN {
     use RT;
-    my $local_lib = Jifty::Util->app_root . '/local/lib';
+    my $local_lib = RT->local_lib_path;
     use lib $local_lib; # plugin need this path in @INC
     RT->load_config;
     $RT::LocalPluginPath = $RT::BASE_PATH . "/t/plugins";

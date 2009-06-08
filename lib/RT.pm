@@ -285,7 +285,7 @@ sub init_plugin_paths {
     my @lib_dirs = $self->plugin_dirs('lib');
 
     my @tmp_inc;
-    my $local_lib = Jifty::Util->app_root . '/local/lib';
+    my $local_lib = $self->local_lib_path;
     for (@INC) {
         if ( Cwd::realpath($_) eq $local_lib) {
             push @tmp_inc, $_, @lib_dirs;
@@ -347,9 +347,17 @@ sub init_jifty {
     }
 }
 
+=head2 local_lib_path
+
+The root of F</local/lib> (user libraries)
+
+=cut
+
+sub local_lib_path { Jifty::Util->app_root . '/local/lib' }
+
 =head2 sbin_path
 
-The root of sbin (system programs)
+The root of F</sbin> (system programs)
 
 =cut
 
