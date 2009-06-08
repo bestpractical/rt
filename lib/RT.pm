@@ -63,7 +63,6 @@ our $VERSION = '3.999.0';
 
 our $BASE_PATH        = Jifty::Util->app_root;
 our $LocalPath        = $BASE_PATH . '/local';
-our $LocalPluginPath  = $LocalPath . "/plugins";
 
 =head1 NAME
 
@@ -263,7 +262,7 @@ sub plugin_dirs {
     foreach my $plugin ( grep $_, () ) {
         my $plugindir = $plugin;
         $plugindir =~ s/::/-/g;
-        my $path = $RT::LocalPluginPath. "/$plugindir";
+        my $path = RT->local_plugin_path. "/$plugindir";
         $path .= "/$subdir" if defined $subdir && length $subdir;
         next unless -d $path;
         push @res, $path;
@@ -408,6 +407,14 @@ The root of F</var> (internal book-keeping)
 =cut
 
 sub var_path { Jifty::Util->app_root . '/var' }
+
+=head2 local_plugin_path
+
+The root of F</local/plugins> (plugins)
+
+=cut
+
+sub local_plugin_path { Jifty::Util->app_root . '/local/plugins' }
 
 =head1 BUGS
 

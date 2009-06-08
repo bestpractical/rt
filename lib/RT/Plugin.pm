@@ -105,7 +105,7 @@ sub _base_path {
     my $base = $self->{'name'};
     $base =~ s/::/-/g;
 
-    return $RT::LocalPluginPath . "/" . $base;
+    return RT->local_plugin_path . "/" . $base;
 
 }
 
