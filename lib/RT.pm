@@ -379,6 +379,14 @@ The root of F</share/html> (Mason templates)
 
 sub html_path { Jifty::Util->app_root . '/share/html' }
 
+=head2 local_html_path
+
+The root of F</local/html> (user Mason templates)
+
+=cut
+
+sub local_html_path { Jifty::Util->app_root . '/local/html' }
+
 =head1 BUGS
 
 Please report them to C<rt-bugs@bestpractical.com>, if you know what's
