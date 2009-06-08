@@ -63,7 +63,6 @@ our $VERSION = '3.999.0';
 
 our $BASE_PATH        = Jifty::Util->app_root;
 our $BinPath          = $BASE_PATH . '/bin';
-our $SbinPath          = $BASE_PATH . '/sbin';
 our $VarPath          = $BASE_PATH . '/var';
 our $LocalPath        = $BASE_PATH . '/local';
 our $LocalPluginPath  = $LocalPath . "/plugins";

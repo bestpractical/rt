@@ -154,11 +154,12 @@ sub email_digest_like {
     my $rt_email_digest;
 
 # to get around shipwright vessel 
-    if (  -e "$RT::SbinPath-wrapped/rt-email-digest" ) {
-        $rt_email_digest = "$RT::SbinPath-wrapped/rt-email-digest";
+    my $sbin_path = Jifty::Util->app_root . '/sbin';
+    if (  -e "$sbin_path-wrapped/rt-email-digest" ) {
+        $rt_email_digest = "$sbin_path-wrapped/rt-email-digest";
     }
-    else { 
-        $rt_email_digest = "$RT::SbinPath/rt-email-digest";
+    else {
+        $rt_email_digest = "$sbin_path/rt-email-digest";
     }
     open my $digester, "-|", "$perl $rt_email_digest $arg";
     my @results = <$digester>;
