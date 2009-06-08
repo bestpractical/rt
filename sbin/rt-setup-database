@@ -116,7 +116,7 @@ my $db_pass = RT->config->get('databasepassword') || '';
 
 
 if ( $db_type eq 'SQLite' && !File::Spec->file_name_is_absolute($db_name) ) {
-    $db_name = File::Spec->catfile($RT::VarPath, $db_name);
+    $db_name = File::Spec->catfile(RT->var_path, $db_name);
     RT->config->set( databasename => $db_name );
 }
 

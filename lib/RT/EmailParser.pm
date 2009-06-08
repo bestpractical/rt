@@ -417,19 +417,21 @@ sub _setup_mime_parser {
     my $self   = shift;
     my $parser = shift;
 
-    # Set up output directory for files; we use $RT::VarPath instead
+    my $var_path = RT->var_path;
+
+    # Set up output directory for files; we use RT->var_path instead
     # of File::Spec->tmpdir (e.g., /tmp) beacuse it isn't always
     # writable.
     my $tmpdir;
-    if ( -w $RT::VarPath ) {
-        $tmpdir = File::Temp::tempdir( DIR => $RT::VarPath, CLEANUP => 1 );
+    if ( -w $var_path ) {
+        $tmpdir = File::Temp::tempdir( DIR => $var_path, CLEANUP => 1 );
     }
     elsif ( -w File::Spec->tmpdir ) {
         $tmpdir = File::Temp::tempdir( TMPDIR => 1, CLEANUP => 1 );
     }
     else {
         Jifty->log->fatal(
-"Neither the RT var directory ($RT::VarPath) nor the system tmpdir (@{[File::Spec->tmpdir]}) are writable; falling back to in-memory parsing!"
+"Neither the RT var directory ($var_path) nor the system tmpdir (@{[File::Spec->tmpdir]}) are writable; falling back to in-memory parsing!"
         );
     }
 

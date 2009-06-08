@@ -701,7 +701,7 @@ See also description of the L</GetFilename> method.
 
 sub storage_path {
     return scalar( RT->config->get('shredder_storage_path') )
-        || File::Spec->catdir( $RT::VarPath, qw(data RT-Shredder) );
+        || File::Spec->catdir( RT->var_path, qw(data RT-Shredder) );
 }
 
 my %active_dump_state = ();

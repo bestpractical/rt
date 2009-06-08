@@ -123,6 +123,8 @@ END
     my $port  = $urlo->port;
     my $index = $urlo->path;
 
+    my $var_path = RT->var_path;
+
     my %sphinx_conf = ();
     $sphinx_conf{'host'} = RT->config->get('DatabaseHost');
     $sphinx_conf{'db'}   = RT->config->get('DatabaseName');
@@ -152,7 +154,7 @@ source rt {
 
 index $index {
     source                  = rt
-    path                    = $RT::VarPath/sphinx/index
+    path                    = $var_path/sphinx/index
     docinfo                 = extern
     charset_type            = utf-8
 }
@@ -163,11 +165,11 @@ indexer {
 
 searchd {
     port                    = $port
-    log                     = $RT::VarPath/sphinx/searchd.log
-    query_log               = $RT::VarPath/sphinx/query.log
+    log                     = $var_path/sphinx/searchd.log
+    query_log               = $var_path/sphinx/query.log
     read_timeout            = 5
     max_children            = 30
-    pid_file                = $RT::VarPath/sphinx/searchd.pid
+    pid_file                = $var_path/sphinx/searchd.pid
     max_matches             = 1000
     seamless_rotate         = 1
     preopen_indexes         = 0

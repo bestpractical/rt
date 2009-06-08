@@ -62,7 +62,6 @@ use vars qw($Config $System $nobody $Handle );
 our $VERSION = '3.999.0';
 
 our $BASE_PATH        = Jifty::Util->app_root;
-our $VarPath          = $BASE_PATH . '/var';
 our $LocalPath        = $BASE_PATH . '/local';
 our $LocalPluginPath  = $LocalPath . "/plugins";
 
@@ -401,6 +400,14 @@ The root of F</etc> (configuration)
 =cut
 
 sub etc_path { Jifty::Util->app_root . '/etc' }
+
+=head2 var_path
+
+The root of F</var> (internal book-keeping)
+
+=cut
+
+sub var_path { Jifty::Util->app_root . '/var' }
 
 =head1 BUGS
 
