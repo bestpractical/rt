@@ -347,6 +347,13 @@ sub init_jifty {
     }
 }
 
+=head2 sbin_path
+
+The root of sbin (system programs)
+
+=cut
+
+sub sbin_path { Jifty::Util->app_root . '/sbin' }
 
 =head1 BUGS
 
