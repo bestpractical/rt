@@ -387,6 +387,14 @@ The root of F</local/html> (user Mason templates)
 
 sub local_html_path { Jifty::Util->app_root . '/local/html' }
 
+=head2 etc_path
+
+The root of F</etc> (configuration)
+
+=cut
+
+sub etc_path { Jifty::Util->app_root . '/etc' }
+
 =head1 BUGS
 
 Please report them to C<rt-bugs@bestpractical.com>, if you know what's

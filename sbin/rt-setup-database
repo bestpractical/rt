@@ -98,7 +98,7 @@ foreach ( @actions ) {
 # convert init to multiple actions
 if ( $actions[0] eq 'init' ) {
     @actions = qw(create schema acl insert);
-    $args{'datafile'} ||= Jifty::Util->app_root . "/etc/initialdata";
+    $args{'datafile'} ||= RT->etc_path . "/initialdata";
 }
 
 # set options from environment
