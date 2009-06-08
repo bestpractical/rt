@@ -62,7 +62,6 @@ use vars qw($Config $System $nobody $Handle );
 our $VERSION = '3.999.0';
 
 our $BASE_PATH        = Jifty::Util->app_root;
-our $LocalPath        = $BASE_PATH . '/local';
 
 =head1 NAME
 
