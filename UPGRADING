@@ -18,6 +18,13 @@ If you are using MySQL, please read the instructions in UPGRADING.mysql as
 well.
 
 *******
+UPGRADING FROM 3.8.3 and earlier - Changes:
+
+Arguments to the NotifyGroup Scrip Action need
+to be corrected in the database using 
+
+/opt/rt3/sbin/rt-setup-database --dba root --prompt-for-dba-password --action upgrade
+
 
 UPGRADING FROM 3.8.2 and earlier - Changes:
 
