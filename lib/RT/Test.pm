@@ -155,7 +155,11 @@ sub open_mailgate_ok {
     my $baseurl = shift;
     my $queue   = shift || 'general';
     my $action  = shift || 'correspond';
-    ok( open( my $mail, "|$RT::BinPath/rt-mailgate --url $baseurl --queue $queue --action $action" ), "Opened the mailgate - $!" );
+
+    my $mailgate = RT->bin_path . '/rt-mailgate';
+    my $mail_command = "|$mailgate --url $baseurl --queue $queue --action $action" ;
+
+    ok( open( my $mail, $mail_command), "Opened the mailgate - $!" );
     return $mail;
 }
 
@@ -405,7 +409,7 @@ sub run_mailgate {
     );
     my $message = delete $args{'message'};
 
-    my $cmd = $RT::BinPath . '/rt-mailgate';
+    my $cmd = RT->bin_path . '/rt-mailgate';
     die "Couldn't find mailgate ($cmd) command" unless -f $cmd;
 
     $cmd = $^X . " " . $cmd . ' --debug';

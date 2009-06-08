@@ -62,7 +62,6 @@ use vars qw($Config $System $nobody $Handle );
 our $VERSION = '3.999.0';
 
 our $BASE_PATH        = Jifty::Util->app_root;
-our $BinPath          = $BASE_PATH . '/bin';
 our $VarPath          = $BASE_PATH . '/var';
 our $LocalPath        = $BASE_PATH . '/local';
 our $LocalPluginPath  = $LocalPath . "/plugins";
@@ -370,6 +369,14 @@ The root of F</sbin> (system programs)
 =cut
 
 sub sbin_path { Jifty::Util->app_root . '/sbin' }
+
+=head2 bin_path
+
+The root of F</bin> (RT programs)
+
+=cut
+
+sub bin_path { Jifty::Util->app_root . '/bin' }
 
 =head2 html_path
 

@@ -9,7 +9,7 @@ my ($baseurl, $m) = RT::Test->started_ok;
 use RT::Model::User;
 use RT::Model::Queue;
 use Encode;
-my $rt_tool_path = "$RT::BinPath/rt";
+my $rt_tool_path = RT->bin_path . '/rt';
 
 # {{{  test configuration options
 

@@ -91,8 +91,10 @@ sub create_ticket_as_ok {
 sub escalate_ticket_ok {
     my $ticket = shift;
     my $id = $ticket->id;
-    print "$RT::BinPath/rt-crontool --search RT::Search::FromSQL --search-arg \"id = @{[$id]}\" --action RT::ScripAction::LinearEscalate --action-arg \"RecordTransaction:$RecordTransaction; UpdateLastUpdated:$UpdateLastUpdated\"\n";
-    print STDERR `$RT::BinPath/rt-crontool --search RT::Search::FromSQL --search-arg "id = @{[$id]}" --action RT::ScripAction::LinearEscalate --action-arg "RecordTransaction:$RecordTransaction; UpdateLastUpdated:$UpdateLastUpdated"`;
+
+    my $crontool = RT->bin_path . '/rt-crontool';
+    print "$crontool --search RT::Search::FromSQL --search-arg \"id = @{[$id]}\" --action RT::ScripAction::LinearEscalate --action-arg \"RecordTransaction:$RecordTransaction; UpdateLastUpdated:$UpdateLastUpdated\"\n";
+    print STDERR `$crontool --search RT::Search::FromSQL --search-arg "id = @{[$id]}" --action RT::ScripAction::LinearEscalate --action-arg "RecordTransaction:$RecordTransaction; UpdateLastUpdated:$UpdateLastUpdated"`;
 
     Jifty::DBI::Record::Cachable->flush_cache;
     $ticket->load($id);     # reload, because otherwise we get the cached value
