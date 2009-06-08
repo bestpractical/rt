@@ -347,13 +347,21 @@ sub init_jifty {
     }
 }
 
+=head2 local_path
+
+The root of F</local (user overrides)
+
+=cut
+
+sub local_path { Jifty::Util->app_root . '/local' }
+
 =head2 local_lib_path
 
 The root of F</local/lib> (user libraries)
 
 =cut
 
-sub local_lib_path { Jifty::Util->app_root . '/local/lib' }
+sub local_lib_path { shift->local_path . '/lib' }
 
 =head2 sbin_path
 
@@ -362,6 +370,14 @@ The root of F</sbin> (system programs)
 =cut
 
 sub sbin_path { Jifty::Util->app_root . '/sbin' }
+
+=head2 html_path
+
+The root of F</share/html> (Mason templates)
+
+=cut
+
+sub html_path { Jifty::Util->app_root . '/share/html' }
 
 =head1 BUGS
 

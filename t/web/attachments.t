@@ -3,7 +3,7 @@ use strict;
 
 use RT::Test; use Test::More tests => 14;
 
-use constant ImageRoot => Jifty::Util->app_root . '/share/html/NoAuth/images';
+use constant ImageRoot => RT->html_path . '/NoAuth/images';
 use constant LogoFile => ImageRoot .'/bplogo.gif';
 use constant FaviconFile => ImageRoot .'/favicon.png';
 
