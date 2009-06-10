@@ -114,10 +114,16 @@ __PACKAGE__->defun( 'Condition.BeforeDue', # XXX: lambday required, doesn't work
 );
 
 __PACKAGE__->defun( 'Condition.PriorityExceeds', # XXX: lambday required, doesn't work yet
-    signature => $sig_ticket_txn,
+    signature => { 'priority' => Lorzy::FunctionArgument->new( name => 'priority', type => 'Int' ),
+               },
     native => sub {
-        my $args = shift;
-        return $args->{ticket}->priority > $args->{argument};
+        my $xargs = shift;
+        return Lorzy::Lambda::Native->new
+            ( body => sub {
+                  my $args = shift;
+                  $args->{ticket}->priority > $xargs->{priority};
+              },
+              signature => $sig_ticket_txn );
     },
 );
 
