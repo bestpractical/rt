@@ -51,7 +51,7 @@ use 5.008003;
 use strict;
 use warnings;
 
-our $VERSION = '2.4.2';
+our $VERSION = '2.4.HEAD';
 
 # Create a system object for RTFM
 use RT::FM::System;
