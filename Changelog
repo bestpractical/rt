@@ -1,3 +1,9 @@
+2.4.3
+
+FEATURES
+========
+ * Add RTFM_HideArticleSearchOnReplyCreate config var
+
 2.4.2
 
 BUG
