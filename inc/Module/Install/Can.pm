@@ -2,18 +2,16 @@
 package Module::Install::Can;
 
 use strict;
-use Module::Install::Base;
-use Config ();
-### This adds a 5.005 Perl version dependency.
-### This is a bug and will be fixed.
-use File::Spec ();
-use ExtUtils::MakeMaker ();
+use Config                ();
+use File::Spec            ();
+use ExtUtils::MakeMaker   ();
+use Module::Install::Base ();
 
-use vars qw{$VERSION $ISCORE @ISA};
+use vars qw{$VERSION @ISA $ISCORE};
 BEGIN {
-	$VERSION = '0.77';
+	$VERSION = '0.91';
+	@ISA     = 'Module::Install::Base';
 	$ISCORE  = 1;
-	@ISA     = qw{Module::Install::Base};
 }
 
 # check if we can load some module
@@ -80,4 +78,4 @@ if ( $^O eq 'cygwin' ) {
 
 __END__
 
-#line 158
+#line 156

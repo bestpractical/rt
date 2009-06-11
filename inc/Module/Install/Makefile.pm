@@ -2,14 +2,14 @@
 package Module::Install::Makefile;
 
 use strict 'vars';
-use Module::Install::Base;
-use ExtUtils::MakeMaker ();
+use ExtUtils::MakeMaker   ();
+use Module::Install::Base ();
 
-use vars qw{$VERSION $ISCORE @ISA};
+use vars qw{$VERSION @ISA $ISCORE};
 BEGIN {
-	$VERSION = '0.77';
+	$VERSION = '0.91';
+	@ISA     = 'Module::Install::Base';
 	$ISCORE  = 1;
-	@ISA     = qw{Module::Install::Base};
 }
 
 sub Makefile { $_[0] }
@@ -64,7 +64,7 @@ sub clean_files {
 	my $self  = shift;
 	my $clean = $self->makemaker_args->{clean} ||= {};
 	  %$clean = (
-		%$clean, 
+		%$clean,
 		FILES => join ' ', grep { length $_ } ($clean->{FILES} || (), @_),
 	);
 }
@@ -73,7 +73,7 @@ sub realclean_files {
 	my $self      = shift;
 	my $realclean = $self->makemaker_args->{realclean} ||= {};
 	  %$realclean = (
-		%$realclean, 
+		%$realclean,
 		FILES => join ' ', grep { length $_ } ($realclean->{FILES} || (), @_),
 	);
 }
@@ -114,17 +114,32 @@ sub write {
 	my $self = shift;
 	die "&Makefile->write() takes no arguments\n" if @_;
 
-	# Make sure we have a new enough
+	# Check the current Perl version
+	my $perl_version = $self->perl_version;
+	if ( $perl_version ) {
+		eval "use $perl_version; 1"
+			or die "ERROR: perl: Version $] is installed, "
+			. "but we need version >= $perl_version";
+	}
+
+	# Make sure we have a new enough MakeMaker
 	require ExtUtils::MakeMaker;
 
-	# MakeMaker can complain about module versions that include
-	# an underscore, even though its own version may contain one!
-	# Hence the funny regexp to get rid of it.  See RT #35800
-	# for details.
+	if ( $perl_version and $self->_cmp($perl_version, '5.006') >= 0 ) {
+		# MakeMaker can complain about module versions that include
+		# an underscore, even though its own version may contain one!
+		# Hence the funny regexp to get rid of it.  See RT #35800
+		# for details.
+		$self->build_requires( 'ExtUtils::MakeMaker' => $ExtUtils::MakeMaker::VERSION =~ /^(\d+\.\d+)/ );
+		$self->configure_requires( 'ExtUtils::MakeMaker' => $ExtUtils::MakeMaker::VERSION =~ /^(\d+\.\d+)/ );
+	} else {
+		# Allow legacy-compatibility with 5.005 by depending on the
+		# most recent EU:MM that supported 5.005.
+		$self->build_requires( 'ExtUtils::MakeMaker' => 6.42 );
+		$self->configure_requires( 'ExtUtils::MakeMaker' => 6.42 );
+	}
 
-	$self->configure_requires( 'ExtUtils::MakeMaker' => $ExtUtils::MakeMaker::VERSION =~ /^(\d+\.\d+)/ );
-
-	# Generate the 
+	# Generate the MakeMaker params
 	my $args = $self->makemaker_args;
 	$args->{DISTNAME} = $self->name;
 	$args->{NAME}     = $self->module_name || $self->name;
@@ -133,7 +148,7 @@ sub write {
 	if ( $self->tests ) {
 		$args->{test} = { TESTS => $self->tests };
 	}
-	if ($] >= 5.005) {
+	if ( $] >= 5.005 ) {
 		$args->{ABSTRACT} = $self->abstract;
 		$args->{AUTHOR}   = $self->author;
 	}
@@ -147,7 +162,7 @@ sub write {
 		delete $args->{SIGN};
 	}
 
-	# merge both kinds of requires into prereq_pm
+	# Merge both kinds of requires into prereq_pm
 	my $prereq = ($args->{PREREQ_PM} ||= {});
 	%$prereq = ( %$prereq,
 		map { @$_ }
@@ -196,7 +211,7 @@ sub fix_up_makefile {
 	my $top_class     = ref($self->_top) || '';
 	my $top_version   = $self->_top->VERSION || '';
 
-	my $preamble = $self->preamble 
+	my $preamble = $self->preamble
 		? "# Preamble by $top_class $top_version\n"
 			. $self->preamble
 		: '';
@@ -250,4 +265,4 @@ sub postamble {
 
 __END__
 
-#line 379
+#line 394
