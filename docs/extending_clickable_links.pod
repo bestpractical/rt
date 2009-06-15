@@ -50,7 +50,7 @@ Text of tickets is plain, but actions could generate arbitrary HTML.
 =head2 Writing custom MakeClicky actions
 
 To extend the list of actions with your own types of data, use the callback. Create
-file F<local/html/MyCallbacks/Elements/MakeClicky/Default>.
+file F<local/html/Callbacks/MyCallbacks/Elements/MakeClicky/Default>.
 
 It will be provided with arguments:
 
@@ -112,7 +112,7 @@ passed to actions.
 
 =head2 Custom MakeClicky action example
 
-Create a new file F</opt/rt3/local/html/MyCallbacks/Elements/MakeClicky/Default>
+Create a new file F</opt/rt3/local/html/Callbacks/MyCallbacks/Elements/MakeClicky/Default>
 with the content:
 
   <%ARGS>
