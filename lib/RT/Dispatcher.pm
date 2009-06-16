@@ -161,6 +161,14 @@ on qr{^/$} => run {
 
         show '/__jifty/admin/setupwizard';
     }
+
+    # Make them log in first, otherwise they'll appear to be logged in
+    # for one click as RT_System
+    # Instead of this, we may want to log them in automatically as the
+    # root user as a convenience
+    tangent '/login' if !Jifty->web->current_user->id
+                     || Jifty->web->current_user->id == RT->system_user->id;
+
     show '/index.html';
 };
 
