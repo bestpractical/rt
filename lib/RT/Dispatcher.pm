@@ -155,12 +155,13 @@ after qr/.*/ => run {
 };
 
 on qr{^/$} => run {
-    my $wizard_plugin = Jifty->find_plugin('Jifty::Plugin::SetupWizard')
-        or return;
+    if (Jifty->config->framework('SetupMode')) {
+        Jifty->find_plugin('Jifty::Plugin::SetupWizard')
+            or die "The SetupWizard plugin needs to be used with SetupMode";
 
-    if ($wizard_plugin->{activated}) {
         show '/__jifty/admin/setupwizard';
     }
+    show '/index.html';
 };
 
 on qr{^/Dashboards/(\d+)} => run {
