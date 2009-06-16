@@ -1,6 +1,6 @@
 --- 
 framework: 
-  AdminMode: 1
+  AdminMode: 0
   SetupMode: 1
   ApplicationClass: RT
   ApplicationName: RT
