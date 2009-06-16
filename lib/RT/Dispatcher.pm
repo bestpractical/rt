@@ -158,7 +158,7 @@ on qr{^/$} => run {
     my $wizard_plugin = Jifty->find_plugin('Jifty::Plugin::SetupWizard')
         or return;
 
-    if ($wizard->plugin->{activated}) {
+    if ($wizard_plugin->{activated}) {
         show '/__jifty/admin/setupwizard';
     }
 };
