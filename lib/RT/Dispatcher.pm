@@ -155,11 +155,12 @@ after qr/.*/ => run {
 };
 
 on qr{^/$} => run {
-    return unless Jifty->config->framework('AdminMode');
     my $wizard_plugin = Jifty->find_plugin('Jifty::Plugin::SetupWizard')
         or return;
 
-    show '/__jifty/admin/setupwizard';
+    if ($wizard->plugin->{activated}) {
+        show '/__jifty/admin/setupwizard';
+    }
 };
 
 on qr{^/Dashboards/(\d+)} => run {
