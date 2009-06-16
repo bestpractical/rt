@@ -1,6 +1,7 @@
 --- 
 framework: 
   AdminMode: 1
+  SetupMode: 1
   ApplicationClass: RT
   ApplicationName: RT
   ApplicationUUID: EAFC6FF2-5E8D-11DC-9FAD-91A9684ED971
@@ -46,8 +47,7 @@ framework:
         restart_url: '/Admin/Global/Jifty/restart.html'
         after_restart_url: '/Admin/Global/System.html'
         wait_seconds: 10
-    - SetupWizard:
-        activated: 1
+    - SetupWizard: {}
   PubSub: 
     Backend: Memcached
     Enable: ~
