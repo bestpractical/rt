@@ -76,8 +76,7 @@ wrap 'HTTP::Request::Common::form_data',
 
 our @EXPORT = qw(is_empty);
 
-my $config;
-our ($existing_server, $port, $dbname);
+our ($port, $dbname);
 my $mailsent;
 
 =head1 NAME
@@ -116,24 +115,8 @@ sub generate_port {
 }
 
 BEGIN {
-    if ( my $test_server = $ENV{'RT_TEST_SERVER'} ) {
-        my ($host, $test_port) = split(':', $test_server, 2);
-        $port = $test_port || 80;
-        $existing_server = "http://$host:$port";
-
-        # we can't parallel test with $existing_server
-        undef $ENV{RT_TEST_PARALLEL};
-    }
-    if ( $ENV{RT_TEST_PARALLEL} ) {
-        $port   = generate_port();
-        $dbname = "rt3test_$port";    #yes, dbname also makes use of $port
-    }
-    else {
-        $dbname = "rt3test";
-    }
-
-    $port = generate_port() unless $port;
-
+    $port   = generate_port();
+    $dbname = $ENV{RT_TEST_PARALLEL}? "rt3test_$port" : "rt3test";
 };
 
 use RT::Interface::Web::Standalone;
@@ -150,29 +133,13 @@ sub import {
     my $class = shift;
     my %args = @_;
 
-    $config = File::Temp->new;
-    print $config qq{
-Set( \$WebPort , $port);
-Set( \$WebBaseURL , "http://localhost:\$WebPort");
-Set( \$LogToSyslog , undef);
-Set( \$LogToScreen , "warning");
-Set( \$MailCommand, 'testfile');
-};
-    if ( $ENV{'RT_TEST_DB_SID'} ) { # oracle case
-        print $config "Set( \$DatabaseName , '$ENV{'RT_TEST_DB_SID'}' );\n";
-        print $config "Set( \$DatabaseUser , '$dbname');\n";
-    } else {
-        print $config "Set( \$DatabaseName , '$dbname');\n";
-        print $config "Set( \$DatabaseUser , 'u${dbname}');\n";
-    }
-    print $config $args{'config'} if $args{'config'};
-    print $config "\n1;\n";
-    $ENV{'RT_SITE_CONFIG'} = $config->filename;
-    close $config;
+    require Carp;
+    Carp::cluck("boo");
+
+    $class->bootstrap_config( %args );
 
     use RT;
     RT::LoadConfig;
-    RT->Config->Set( DevelMode => '0' ) if $INC{'Devel/Cover.pm'};
 
     if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
 
@@ -183,12 +150,9 @@ Set( \$MailCommand, 'testfile');
         $mailsent++;
         return 1;
     };
-    RT::Config->Set( 'MailCommand' => $mailfunc);
+    RT->Config->Set( 'MailCommand' => $mailfunc);
 
-    require RT::Handle;
-    unless ( $existing_server ) {
-        $class->bootstrap_db( %args );
-    }
+    $class->bootstrap_db( %args );
 
     RT->Init;
 
@@ -225,13 +189,50 @@ sub db_requires_no_dba {
     return 1 if $db_type eq 'SQLite';
 }
 
+my $config;
+sub bootstrap_config {
+    my $self = shift;
+    my %args = @_;
+
+    $config = File::Temp->new;
+    print $config qq{
+Set( \$WebPort , $port);
+Set( \$WebBaseURL , "http://localhost:\$WebPort");
+Set( \$LogToSyslog , undef);
+Set( \$LogToScreen , "warning");
+Set( \$MailCommand, 'testfile');
+};
+    if ( $ENV{'RT_TEST_DB_SID'} ) { # oracle case
+        print $config "Set( \$DatabaseName , '$ENV{'RT_TEST_DB_SID'}' );\n";
+        print $config "Set( \$DatabaseUser , '$dbname');\n";
+    } else {
+        print $config "Set( \$DatabaseName , '$dbname');\n";
+        print $config "Set( \$DatabaseUser , 'u${dbname}');\n";
+    }
+    print $config "Set( \$DevelMode, 0 );\n"
+        if $INC{'Devel/Cover.pm'};
+
+    print $config $args{'config'} if $args{'config'};
+
+    print $config "\n1;\n";
+    $ENV{'RT_SITE_CONFIG'} = $config->filename;
+    close $config;
+
+    return $config;
+}
+
 sub bootstrap_db {
     my $self = shift;
     my %args = @_;
 
-   unless (defined $ENV{'RT_DBA_USER'} && defined $ENV{'RT_DBA_PASSWORD'}) {
-       Test::More::BAIL_OUT("RT_DBA_USER and RT_DBA_PASSWORD environment variables need to be set in order to run 'make test'") unless $self->db_requires_no_dba;
-   }
+    unless (defined $ENV{'RT_DBA_USER'} && defined $ENV{'RT_DBA_PASSWORD'}) {
+        Test::More::BAIL_OUT(
+            "RT_DBA_USER and RT_DBA_PASSWORD environment variables need"
+            ." to be set in order to run 'make test'"
+        ) unless $self->db_requires_no_dba;
+    }
+
+    require RT::Handle;
     # bootstrap with dba cred
     my $dbh = _get_dbh(RT::Handle->SystemDSN,
                $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
@@ -279,11 +280,6 @@ sub bootstrap_db {
 my @SERVERS;
 sub started_ok {
     require RT::Test::Web;
-    if ( $existing_server ) {
-        Test::More::ok(1, "using existing server $existing_server");
-        RT::Logger->warning( $existing_server);
-        return ($existing_server, RT::Test::Web->new);
-    }
     my $s = RT::Interface::Web::Standalone->new($port);
     push @server, $s;
     my $ret = $s->started_ok;
