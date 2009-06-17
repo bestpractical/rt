@@ -53,6 +53,14 @@ use Jifty::View::Declare -base;
 
 template 'basics' => sub {
     p { _("You may change basic information about your RT install.") };
+
+    p { _("It is very important that you change the password to RT's root user. Leaving it as the default of 'password' is a serious security risk.") };
+
+    my $user = RT::Model::User->new;
+    $user->load_by_cols(name => 'root');
+
+    my $action = $user->as_update_action;
+    render_action($action, ['password']);
 };
 
 1;
