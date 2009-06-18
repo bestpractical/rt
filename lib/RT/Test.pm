@@ -689,19 +689,34 @@ sub get_abs_relocatable_dir {
 
 sub import_gnupg_key {
     my $self = shift;
-    my $key = shift;
+    my $key  = shift;
     my $type = shift || 'secret';
 
     $key =~ s/\@/-at-/g;
     $key .= ".$type.key";
 
     require RT::Crypt::GnuPG;
-    # this is a bit hackish; calling it from somewhere that's not a subdir
-    # of t/ will fail
+
+    # simple strategy find data/gnupg/keys, from the dir where test file lives
+    # to updirs, try 3 times in total
+    my $path = File::Spec->catfile( 'data', 'gnupg', 'keys' );
+    my $abs_path;
+    for my $up ( 0 .. 2 ) {
+        my $p = get_relocatable_dir($path);
+        if ( -e $p ) {
+            $abs_path = $p;
+            last;
+        }
+        else {
+            $path = File::Spec->catfile( File::Spec->updir(), $path );
+        }
+    }
+
+    die "can't find the dir where gnupg keys are stored"
+      unless $abs_path;
+
     return RT::Crypt::GnuPG::ImportKey(
-        RT::Test->file_content([get_relocatable_dir(File::Spec->updir(),
-                qw(data gnupg keys)), $key])
-    );
+        RT::Test->file_content( [ $abs_path, $key ] ) );
 }
 
 
