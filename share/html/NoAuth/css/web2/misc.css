@@ -50,6 +50,11 @@
     margin-top: 1em;
 } 
 
+#body.calpopup a.today {
+    font-size: 1em;
+    font-weight: bold;
+}
+
 #body.calpopup a {
     font-size: 0.8em;
 }

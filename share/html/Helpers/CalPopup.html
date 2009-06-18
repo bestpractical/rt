@@ -70,7 +70,11 @@
       <td>
 %         if ($day) {
 %             my $datestr = sprintf('%04d-%02d-%02d', $DisplayedYear, $DisplayedMonth, $day);
-        <a href="#" onclick="updateParentField('<% $field %>','<% $datestr %>'); return false;"><% $day %></a>
+% my $class;
+% if ( ( $DisplayedYear == $today[5] + 1900 ) && ( $DisplayedMonth == $today[4] + 1 ) && ( $day == $today[3] ) ) {
+%     $class = 'today';
+% }
+        <a <% $class && 'class="'.$class.'"' |n%> href="#" onclick="updateParentField('<% $field %>','<% $datestr %>'); return false;"><% $day %></a>
 %         } else {
         &nbsp;
 %         }
