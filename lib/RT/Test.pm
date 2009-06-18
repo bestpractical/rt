@@ -134,7 +134,6 @@ sub import {
     my %args = @_;
 
     require Carp;
-    Carp::cluck("boo");
 
     $class->bootstrap_config( %args );
 
