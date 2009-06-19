@@ -133,7 +133,13 @@ sub import {
     my $class = shift;
     my %args = @_;
 
-    require Carp;
+    # Spit out a plan (if we got one) *before* we load modules
+    if ( $args{'tests'} ) {
+        $class->builder->plan( tests => $args{'tests'} );
+    }
+    else {
+        $class->builder->no_plan unless $class->builder->has_plan;
+    }
 
     $class->bootstrap_config( %args );
 
@@ -149,11 +155,13 @@ sub import {
         $mailsent++;
         return 1;
     };
-    RT->Config->Set( 'MailCommand' => $mailfunc);
+    RT->Config->Set( 'MailCommand' => $mailfunc );
 
     $class->bootstrap_db( %args );
 
     RT->Init;
+
+    $class->bootstrap_plugins( %args );
 
     my $screen_logger = $RT::Logger->remove( 'screen' );
     require Log::Dispatch::Perl;
@@ -168,8 +176,14 @@ sub import {
     mkpath [ $RT::MasonSessionDir ]
         if RT->Config->Get('DatabaseType');
 
-    __PACKAGE__->export_to_level(1, @EXPORT);
+    my $level = 1;
+    while ( my ($package) = caller($level-1) ) {
+        last unless $package =~ /Test/;
+        $level++;
+    }
 
+    Test::More->export_to_level($level);
+    __PACKAGE__->export_to_level($level);
 }
 
 sub is_empty($;$) {
@@ -274,6 +288,60 @@ sub bootstrap_db {
         $RT::Handle->InsertData( $RT::EtcPath . "/initialdata" );
     }
     DBIx::SearchBuilder::Record::Cachable->FlushCache;
+}
+
+sub bootstrap_plugins {
+    my $self = shift;
+    my %args = @_;
+
+    return unless $args{'requires'};
+
+    my @plugins = @{ $args{'requires'} };
+    push @plugins, $args{'testing'}
+        if $args{'testing'};
+
+    require RT::Plugin;
+    my $cwd;
+    if ( $args{'testing'} ) {
+        require Cwd;
+        $cwd = Cwd::getcwd();
+    }
+
+    my $old_func = \&RT::Plugin::_BasePath;
+    no warnings 'redefine';
+    *RT::Plugin::_BasePath = sub {
+        my $name = $_[0]->{'name'};
+
+        return $cwd if $args{'testing'} && $name eq $args{'testing'};
+
+        if ( grep $name eq $_, @plugins ) {
+            my $variants = join "(?:|::|-|_)", map "\Q$_\E", split /::/, $name;
+            my ($path) = map $ENV{$_}, grep /^CHIMPS_(?:$variants).*_ROOT$/i, keys %ENV;
+            return $path if $path;
+        }
+        return $old_func->(@_);
+    };
+
+    RT->Config->Set( Plugins => @plugins );
+    RT->InitPluginPaths;
+
+    require File::Spec;
+    foreach my $name ( @plugins ) {
+        my $plugin = RT::Plugin->new( name => $name );
+        Test::More::diag( "Initializing DB for the $name plugin" )
+            if $ENV{'TEST_VERBOSE'};
+        Test::More::diag( "etc path of the plugin is '". $plugin->Path('etc') ."'" )
+            if $ENV{'TEST_VERBOSE'};
+
+        my ($ret, $msg) = $RT::Handle->InsertSchema( undef, $plugin->Path('etc') );
+        Test::More::ok($ret || $msg =~ /^Couldn't find schema/, "Created schema: ".($msg||''));
+        ($ret, $msg) = $RT::Handle->InsertACL( undef, $plugin->Path('etc') );
+        Test::More::ok($ret || $msg =~ /^Couldn't find ACLs/, "Created ACL: ".($msg||''));
+        ($ret, $msg) = $RT::Handle->InsertData( File::Spec->catfile( $plugin->Path('etc'), 'initialdata' ) );
+        Test::More::ok($ret || $msg =~ /^Couldn't load data from/, "Inserted data: ".($msg||''));
+    }
+
+    $RT::Handle->Connect;
 }
 
 my @SERVERS;
