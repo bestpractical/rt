@@ -861,8 +861,6 @@ sub InsertData {
                 );
                 $RT::Logger->error( $msg ) unless $return and $OCF->Id;
             }
-
-            print $new_entry->Id. ".";
         }
 
         $RT::Logger->debug("done.");
