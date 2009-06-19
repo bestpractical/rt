@@ -413,7 +413,8 @@ sub set_last_updated {
 
 =head2 last_updated_by_obj
 
-  Returns an RT::Model::User object of the last user to touch this object
+Returns an L<RT::Model::User> object of the last user to touch this
+object
 
 =cut
 
@@ -428,7 +429,7 @@ sub last_updated_by_obj {
 
 
 
-=head2 URI
+=head2 uri
 
 Returns this record's URI
 
@@ -682,8 +683,8 @@ sub update {
 
 =head2 members
 
-  This returns an RT::Model::LinkCollection object which references all the tickets 
-which are 'MembersOf' this ticket
+This returns an L<RT::Model::LinkCollection> object which references
+all the tickets which are 'MembersOf' this ticket
 
 =cut
 
@@ -696,8 +697,8 @@ sub members {
 
 =head2 member_of
 
-  This returns an RT::Model::LinkCollection object which references all the tickets that this
-ticket is a 'MemberOf'
+This returns an L<RT::Model::LinkCollection> object which references all
+the tickets that this ticket is a 'MemberOf'
 
 =cut
 
@@ -710,7 +711,8 @@ sub member_of {
 
 =head2 refers_to
 
-  This returns an RT::Model::LinkCollection object which shows all references for which this ticket is a base
+This returns an L<RT::Model::LinkCollection> object which shows all
+references for which this ticket is a base
 
 =cut
 
@@ -723,7 +725,8 @@ sub refers_to {
 
 =head2 referred_to_by
 
-This returns an L<RT::Model::LinkCollection> object which shows all references for which this ticket is a target
+This returns an L<RT::Model::LinkCollection> object which shows all
+references for which this ticket is a target
 
 =cut
 
@@ -736,7 +739,8 @@ sub referred_to_by {
 
 =head2 depended_on_by
 
-  This returns an RT::Model::LinkCollection object which references all the tickets that depend on this one
+This returns an L<RT::Model::LinkCollection> object which references
+all the tickets that depend on this one
 
 =cut
 
@@ -890,7 +894,8 @@ sub _all_linked_tickets {
 
 =head2 depends_on
 
-  This returns an RT::Model::LinkCollection object which references all the tickets that this ticket depends on
+This returns an L<RT::Model::LinkCollection> object which references
+all the tickets that this ticket depends on
 
 =cut
 
@@ -1071,7 +1076,7 @@ Delete a link. takes a paramhash of base, target and Type.
 Either base or target must be null. The null value will 
 be replaced with this ticket\'s id
 
-=cut 
+=cut
 
 sub _delete_link {
     my $self = shift;
@@ -1215,7 +1220,8 @@ sub _new_transaction {
 
 =head2 transactions
 
-  Returns an RT::Model::TransactionCollection object of all transactions on this record object
+Returns an L<RT::Model::TransactionCollection> object of all
+transactions on this record object
 
 =cut
 
@@ -1271,7 +1277,7 @@ sub _lookup_id {
     return $object->id;
 }
 
-=head2 custom_field_lookup_type 
+=head2 custom_field_lookup_type
 
 Returns the path RT uses to figure out which custom fields apply to this object.
 
@@ -1286,13 +1292,13 @@ sub custom_field_lookup_type {
 =head2 add_custom_field_value { Field => column, value => value }
 
 value should be a string. column can be any identifier of a CustomField
-supported by L</LoadCustomFieldByIdentifier> method.
+supported by L</load_custom_field_by_identifier> method.
 
 Adds value as a value of CustomField column. If this is a single-value custom field,
 deletes the old value.
-If value is not a valid value for the custom field, returns 
+If value is not a valid value for the custom field, returns
 (0, 'Error message' ) otherwise, returns ($id, 'Success Message') where
-$id is ID of Created L<ObjectCustomFieldValue> object.
+$id is ID of Created L<RT::Model::ObjectCustomFieldValue> object.
 
 =cut
 
@@ -1476,11 +1482,11 @@ sub _add_custom_field_value {
 
 =head2 delete_custom_field_value { Field => column, value => value }
 
-Deletes value as a value of CustomField column. 
+Deletes value as a value of CustomField column.
 
 value can be a string, a CustomFieldValue or a ObjectCustomFieldValue.
 
-If value is not a valid value for the custom field, returns 
+If value is not a valid value for the custom field, returns
 (0, 'Error message' ) otherwise, returns (1, 'Success Message')
 
 =cut
@@ -1541,7 +1547,7 @@ sub first_custom_field_value {
 
 =head2 custom_field_values column
 
-Return a ObjectCustomFieldValues object of all values of the CustomField whose 
+Return a ObjectCustomFieldValues object of all values of the CustomField whose
 id or name is column for this record.
 
 Returns an RT::Model::ObjectCustomFieldValueCollection object

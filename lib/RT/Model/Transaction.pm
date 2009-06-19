@@ -561,7 +561,8 @@ sub content {
 
 =head2 addresses
 
-Returns a hashref of addresses related to this transaction. See L<RT::Model::Attachment/Addresses> for details.
+Returns a hashref of addresses related to this transaction. See
+L<RT::Model::Attachment/addresses> for details.
 
 =cut
 
@@ -577,9 +578,10 @@ sub addresses {
 }
 
 
-=head2 content_obj 
+=head2 content_obj
 
-Returns the RT::Model::Attachment object which contains the content for this Transaction
+Returns the L<RT::Model::Attachment> object which contains the content
+for this Transaction.
 
 =cut
 
@@ -632,7 +634,7 @@ sub content_obj {
 
 If this transaction has attached mime objects, returns the first one's subject
 Otherwise, returns null
-  
+
 =cut
 
 sub subject {
@@ -1138,14 +1140,16 @@ sub friendly_object_type {
 }
 
 =head2 update_custom_fields
-    
-    Takes a hash of 
+
+Takes a hash of
 
     CustomField-<<Id>> => Value
-        or 
 
-    object-RT::Model::Transaction-CustomField-<<Id>> => Value parameters to update
-    this transaction's custom fields
+or
+
+    object-RT::Model::Transaction-CustomField-<<Id>> => Value
+
+parameters to update this transaction's custom fields
 
 =cut
 
@@ -1226,15 +1230,21 @@ sub custom_field_lookup_type {
     "RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction";
 }
 
-=item deferred_recipients($freq, $include_sent )
+=head2 deferred_recipients($freq, $include_sent )
 
 Takes the following arguments:
 
 =over
 
-=item * a string to indicate the frequency of digest delivery.  Valid values are "daily", "weekly", or "susp".
+=item *
 
-=item * an optional argument which, if true, will return addresses even if this notification has been marked as 'sent' for this transaction.
+A string to indicate the frequency of digest delivery.  Valid values
+are "daily", "weekly", or "susp".
+
+=item *
+
+An optional argument which, if true, will return addresses even if
+this notification has been marked as 'sent' for this transaction.
 
 =back
 

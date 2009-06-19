@@ -105,8 +105,8 @@ sub config {
 
 =head2 init
 
-L<Connect to the database /connect_to_database>, L<initilizes system objects /InitSystemobjects>,
-L<preloads classes /InitClasses> 
+L<Initilizes system objects|init_system_objects>, and L<configures
+plugins|init_plugins>.
 
 =cut
 
@@ -163,10 +163,10 @@ EOF
     }
 }
 
-=head2 InitSystemobjects
+=head2 init_system_objects
 
-Initializes system objects: C<RT->system>, C<RT->system_user>
-and C<RT->nobody>.
+Initializes system objects: C<< RT->system >>, C<< RT->system_user >>
+and C<< RT->nobody >>.
 
 =cut
 
@@ -182,20 +182,18 @@ sub init_system_objects {
 
 =head1 CLASS METHODS
 
-=head2 Config
+=head2 config
 
-Returns the current L<config object RT::Config>, but note that
-you must L<load config /load_config> first otherwise this method
-returns undef.
+Returns the current L<config object|RT::Model::Config>.
 
 Method can be called as class method.
 
 =cut
 
-=head2 System
+=head2 system
 
-Returns the current L<system object RT::System>. See also
-L</InitSystemobjects>.
+Returns the current system object L<RT::System>. See also
+L</init_system_objects>.
 
 =cut
 
@@ -205,7 +203,7 @@ sub system { return RT::System->new }
 
 Returns the system user's object, it's object of
 L<RT::CurrentUser> class that represents the system. See also
-L</InitSystemobjects>.
+L</init_system_objects>.
 
 =cut
 
@@ -220,7 +218,7 @@ sub system_user {
 
 Returns object of Nobody. It's object of L<RT::CurrentUser> class
 that represents a user who can own ticket and nothing else. See
-also L</InitSystemobjects>.
+also L</init_system_objects>.
 
 =cut
 
@@ -293,7 +291,8 @@ sub init_plugin_paths {
 
 =head2 init_plugins
 
-Initialze all Plugins found in the RT configuration file, setting up their lib and HTML::Mason component roots.
+Initialize all Plugins found in the RT configuration file, setting up
+their lib and HTML::Mason component roots.
 
 =cut
 
@@ -339,7 +338,7 @@ sub init_jifty {
 
 =head2 local_path
 
-The root of F</local (user overrides)
+The root of F</local> (user overrides)
 
 =cut
 

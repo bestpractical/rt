@@ -13,7 +13,7 @@ Takes a param hash with the attributes type and either principal or email:
 
 =over 4
 
-=item type is one of defined by L</roles> of this object.
+=item type is one of defined by C<roles> of this object.
 
 =item principal is an id of L<RT::Model::Principal>
 

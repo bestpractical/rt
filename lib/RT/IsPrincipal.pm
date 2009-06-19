@@ -48,9 +48,9 @@ Returns type for ACL records. For now only roles has type.
 
 sub type_for_acl { return undef }
 
-=head2 principal 
+=head2 principal
 
-Returns L<RT::Model::Principal/|"the principal object"> for this record.
+Returns the L<RT::Model::Principal> object for this record.
 Each record which share this role must have one principal record. Returns
 undef on error.
 
@@ -78,7 +78,7 @@ sub principal {
     return $res;
 }
 
-=head2 principal_id  
+=head2 principal_id
 
 Returns id of the principal record for this object.
 

@@ -80,7 +80,7 @@ RT::ScripAction::SendEmail.
 
 =head2 clean_slate
 
-Cleans class-wide options, like L</SquelchMailTo> or L</AttachTickets>.
+Cleans class-wide options, like L</squelch_mail_to> or L</attach_tickets>.
 
 =cut
 
@@ -454,7 +454,7 @@ clean list by passing undef as argument.
 =head2 add_tickets
 
 Attaches tickets to the current message, list of tickets' ids get from
-L</AttachTickets> method.
+L</attach_tickets> method.
 
 =cut
 
@@ -571,7 +571,7 @@ sub record_outgoing_mail_transaction {
     return $id;
 }
 
-=head2 set_rtspecialheaders 
+=head2 set_rt_special_headers
 
 This routine adds all the random headers that RT wants in a mail message
 that don't matter much to anybody else.
@@ -943,7 +943,7 @@ This routine sets the subject. it does not add the rt tag. That gets done elsewh
 If subject is already defined via template, it uses that. otherwise, it tries to get
 the transaction's subject.
 
-=cut 
+=cut
 
 sub set_subject {
     my $self = shift;
@@ -1097,7 +1097,7 @@ sub set_header_as_encoding {
 
 }
 
-=head2 mimeencode_string STRING ENCODING
+=head2 mime_encode_string STRING ENCODING
 
 Takes a string and a possible encoding and returns the string wrapped in MIME goo.
 

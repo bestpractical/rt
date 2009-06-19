@@ -157,6 +157,7 @@ example F</Callbacks/MyExtension/autohandler/Default> would
 be called as default callback for F</autohandler>.
 
 =cut
+
 {
     package Jifty::View::Mason::Request;
 

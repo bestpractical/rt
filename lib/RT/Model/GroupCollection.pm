@@ -131,18 +131,30 @@ Limits the set of groups found to role groups for an instance of a model. Takes:
 
 =over 4
 
-=item object - an object roles of which should be looked, replaces the following
-two arguments;
+=item object
 
-=item model - mandatory name of a model, for example: 'RT::Model::Ticket';
+An object roles of which should be looked, replaces the following two
+arguments;
 
-=item instance - optional id of the model record;
+=item model
 
-=item type - optional type of the role groups, for example 'cc';
+Mandatory name of a model, for example: 'RT::Model::Ticket';
 
-=item subclause and entry_aggregator - use to combine with different conditions;
-by default aggregator is 'OR' and subclause matches name of the method, so you can
-call this method multiple times and get role of groups of different models.
+=item instance
+
+Optional id of the model record;
+
+=item type
+
+Optional type of the role groups, for example 'cc';
+
+=item subclause and entry_aggregator
+
+Use to combine with different conditions; by default aggregator is
+'OR' and subclause matches name of the method, so you can call this
+method multiple times and get role of groups of different models.
+
+=back
 
 =cut
 
