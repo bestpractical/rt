@@ -339,9 +339,8 @@ sub bootstrap_plugins {
         Test::More::ok($ret || $msg =~ /^Couldn't find ACLs/, "Created ACL: ".($msg||''));
         ($ret, $msg) = $RT::Handle->InsertData( File::Spec->catfile( $plugin->Path('etc'), 'initialdata' ) );
         Test::More::ok($ret || $msg =~ /^Couldn't load data from/, "Inserted data: ".($msg||''));
+        $RT::Handle->Connect; # XXX: strange but mysql can loose connection
     }
-
-    $RT::Handle->Connect;
 }
 
 my @SERVERS;
