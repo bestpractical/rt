@@ -100,11 +100,24 @@ sub Create {
     return ($id, $msg);
 }
 
+=head2 Category
+
+Returns the Category assigned to this Value
+Returns udef if there is no Category
+
+=cut
+
 sub Category {
     my $self = shift;
     my $attr = $self->FirstAttribute('Category') or return undef;
     return $attr->Content;
 }
+
+=head2 SetCategory Category
+
+Takes a string Category and stores it as an attribute of this CustomFieldValue
+
+=cut
 
 sub SetCategory {
     my $self = shift;
