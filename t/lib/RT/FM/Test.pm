@@ -1,54 +1,39 @@
 use strict;
 use warnings;
 
+### after: use lib qw(@RT_LIB_PATH@);
+use lib qw(/opt/rt3/local/lib /opt/rt3/lib);
+
 package RT::FM::Test;
-use base qw(Test::More);
-use Cwd;
 
-eval 'use RT::Test; 1'
-    or Test::More::plan skip_all => 'requires 3.8 to run tests.  You may need to set PERL5LIB=/path/to/rt/lib';
-
-sub import_extra {
-    my $class = shift;
-    my $args  = shift;
-
-    # Spit out a plan (if we got one) *before* we load modules, in
-    # case of compilation errors
-    $class->builder->plan(@{$args})
-      unless $class->builder->has_plan;
-
-    Test::More->export_to_level(2);
-
-    # Now, clobber Test::Builder::plan (if we got given a plan) so we
-    # don't try to spit one out *again* later.  Test::Builder::Module 
-    # plans for you in import
-    if ($class->builder->has_plan) {
-        no warnings 'redefine';
-        *Test::Builder::plan = sub {};
-    }
-
-    {
-        my ($ret, $msg) = $RT::Handle->InsertSchema(undef,'etc/');
-        Test::More::ok($ret,"Created Schema: ".($msg||''));
-        ($ret, $msg) = $RT::Handle->InsertACL(undef,'etc/');
-        Test::More::ok($ret,"Created ACL: ".($msg||''));
-    }
-
-    RT->Config->Set('Plugins',qw(RT::FM));
-
-    $class->set_plugin_base_path;
+our @ISA;
+BEGIN {
+    local $@;
+    eval { require RT::Test; 1 } or do {
+        require Test::More;
+        Test::More::BAIL_OUT(
+            "requires 3.8 to run tests. Error:\n$@\n"
+            ."You may need to set PERL5LIB=/path/to/rt/lib"
+        );
+    };
+    push @ISA, 'RT::Test';
 }
 
-sub set_plugin_base_path {
-    # we need to lie to RT and have it find RTFM's mason templates 
-    # in the local directory
-    no warnings 'redefine';
-    my $cwd = getcwd;
-    my $old_func = \&RT::Plugin::_BasePath;
-    *RT::Plugin::_BasePath = sub {
-        return $cwd if $_[0]->{name} eq 'RT::FM';
-        return $old_func->(@_);
-    };
+sub import {
+    my $class = shift;
+    my %args  = @_;
+
+    $args{'requires'} ||= [];
+    if ( $args{'testing'} ) {
+        unshift @{ $args{'requires'} }, 'RT::FM';
+    } else {
+        $args{'testing'} = 'RT::FM';
+    }
+
+    $class->SUPER::import( %args );
+
+    RT->Config->LoadConfig( File => 'RTFM_Config.pm' );
+    require RT::FM;
 }
 
 1;
