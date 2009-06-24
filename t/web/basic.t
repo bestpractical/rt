@@ -6,7 +6,7 @@ use HTTP::Cookies;
 use LWP;
 use Encode;
 
-use RT::Test tests => 21;;
+use RT::Test tests => 21;
 my ($baseurl, $agent) = RT::Test->started_ok;
 $agent->cookie_jar( HTTP::Cookies->new );
 

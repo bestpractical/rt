@@ -4,7 +4,7 @@ use strict;
 use RT;
 
 # Load the config file
-use RT::Test tests => 63;;
+use RT::Test tests => 63;
 
 #Connect to the database and get RT::SystemUser and RT::Nobody loaded
 

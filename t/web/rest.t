@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use RT::Test tests => 16;;
+use RT::Test tests => 16;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 

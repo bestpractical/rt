@@ -4,7 +4,7 @@ use warnings;
 use strict;
 
 use RT;
-use RT::Test nodata => 1, tests => 11;;
+use RT::Test nodata => 1, tests => 11;
 
 sub new (*) {
     my $class = shift;

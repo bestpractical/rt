@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1, tests => 9;;
+use RT::Test nodata => 1, tests => 9;
 
 use RT::Interface::Email;
 

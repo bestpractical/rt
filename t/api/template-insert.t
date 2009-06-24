@@ -5,7 +5,7 @@ use strict;
 
 
 use RT;
-use RT::Test tests => 7;;
+use RT::Test tests => 7;
 
 
 

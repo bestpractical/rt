@@ -2,7 +2,7 @@
 # Test ticket creation with REST using non ascii subject
 use strict;
 use warnings;
-use RT::Test tests => 7;;
+use RT::Test tests => 7;
 
 local $RT::Test::SKIP_REQUEST_WORK_AROUND = 1;
 

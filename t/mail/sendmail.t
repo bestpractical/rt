@@ -3,7 +3,7 @@
 use strict;
 use File::Spec ();
 
-use RT::Test tests => 137;;
+use RT::Test tests => 137;
 
 use RT::EmailParser;
 use RT::Tickets;

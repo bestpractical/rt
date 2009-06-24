@@ -48,7 +48,7 @@
 # END BPS TAGGED BLOCK }}}
 
 use RT;
-use RT::Test tests => 26;;
+use RT::Test tests => 26;
 
 use RT::I18N;
 use strict;

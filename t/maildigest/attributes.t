@@ -3,7 +3,7 @@
 use warnings;
 use strict;
 use RT;
-use RT::Test tests => 31;;
+use RT::Test tests => 31;
 my @users = qw/ emailnormal@example.com emaildaily@example.com emailweekly@example.com emailsusp@example.com /;
 
 my( $ret, $msg );

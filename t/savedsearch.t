@@ -9,7 +9,7 @@ use RT::Queue;
 
 use_ok('RT::SavedSearch');
 use_ok('RT::SavedSearches');
-use RT::Test tests => 27;;
+use RT::Test tests => 27;
 
 use Test::Warn;
 

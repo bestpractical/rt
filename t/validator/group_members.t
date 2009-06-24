@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 60;;
+use RT::Test tests => 60;
 
 sub load_or_create_group {
     my $name = shift;

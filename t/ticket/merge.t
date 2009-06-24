@@ -5,7 +5,7 @@ use warnings;
 
 
 use RT;
-use RT::Test tests => '17';;
+use RT::Test tests => '17';
 
 
 # validate that when merging two tickets, the comments from both tickets

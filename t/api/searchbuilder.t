@@ -31,7 +31,7 @@ my @items_ids = map {$_->id } @items;
 is ($#sorted, $#items);
 is ($sorted[0]->Name, $items[0]->Name);
 is ($sorted[-1]->Name, $items[-1]->Name);
-is_deeply(\@items_ids, \@sorted_ids, "ItemsArrayRef sorts alphabetically by name");;
+is_deeply(\@items_ids, \@sorted_ids, "ItemsArrayRef sorts alphabetically by name");
 
 
 

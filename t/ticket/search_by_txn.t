@@ -6,7 +6,7 @@ use strict;
 
 BEGIN{ $ENV{'TZ'} = 'GMT'};
 
-use RT::Test tests => 10;;
+use RT::Test tests => 10;
 
 my $SUBJECT = "Search test - ".$$;
 

@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use File::Spec;
-use RT::Test tests => 11, tests => 11;;;
+use RT::Test tests => 11, tests => 11;
 
 BEGIN {
     my $shredder_utils = RT::Test::get_relocatable_file('utils.pl',
