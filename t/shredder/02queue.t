@@ -3,10 +3,9 @@
 use strict;
 use warnings;
 
-use Test::More;
 use Test::Deep;
 use File::Spec;
-use RT::Test ();
+use RT::Test tests => 16, tests => 16;
 BEGIN {
     my $shredder_utils = RT::Test::get_relocatable_file('utils.pl',
         File::Spec->curdir());
@@ -14,7 +13,6 @@ BEGIN {
 }
 init_db();
 
-plan tests => 16;
 
 diag 'simple queue' if $ENV{'TEST_VERBOSE'};
 {

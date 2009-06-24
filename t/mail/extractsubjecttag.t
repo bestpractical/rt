@@ -3,10 +3,8 @@ use strict;
 use warnings;
 use utf8;
 
-use Test::More;
-use RT::Test;
+use RT::Test tests => 14;
 
-plan tests => 14;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 RT::Test->set_mail_catcher;

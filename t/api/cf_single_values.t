@@ -1,10 +1,9 @@
 #!/usr/bin/perl
 use warnings;
 use strict;
-use Test::More tests => 8;
 
 use RT;
-use RT::Test;
+use RT::Test tests => 8;;
 
 
 

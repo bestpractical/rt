@@ -3,11 +3,10 @@
 use warnings;
 use strict;
 
-use Test::More tests => 10;
 
 BEGIN{ $ENV{'TZ'} = 'GMT'};
 
-use RT::Test;
+use RT::Test tests => 10;;
 
 my $SUBJECT = "Search test - ".$$;
 

@@ -2,18 +2,24 @@
 
 use strict;
 use warnings;
-
 use Test::More;
+use RT::Test tests => 14;
+my %clicky;
 
+BEGIN {
 
-my %clicky = map { $_ => 1 } grep $_, RT->Config->Get('Active_MakeClicky');
-if ( keys %clicky ) {
-    plan tests => 14;
-} else {
-    plan skip_all => 'No active Make Clicky actions';
+    %clicky = map { $_ => 1 } grep $_, RT->Config->Get('Active_MakeClicky');
+
+# this's hack: we have to use RT::Test first to get RT->Config work, this
+# results in the fact that we can't plan any more
+    unless ( keys %clicky ) {
+      SKIP: {
+            skip "No active Make Clicky actions", 14;
+        }
+        exit 0;
+    }
 }
 
-use RT::Test;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 use_ok('MIME::Entity');

@@ -3,12 +3,10 @@
 use strict;
 use warnings;
 
-use Test::More;
 use Test::Deep;
 use File::Spec;
-use RT::Test ();
+use RT::Test tests => 15, tests => 15;
 
-plan tests => 15;
 
 BEGIN {
     my $shredder_utils = RT::Test::get_relocatable_file('utils.pl',

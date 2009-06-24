@@ -1,11 +1,10 @@
-use Test::More  tests => '19';
 
 use strict;
 use warnings;
 
 use_ok('RT');
 use_ok('RT::Ticket');
-use RT::Test;
+use RT::Test tests => '19';;
 
 my $queue = RT::Test->load_or_create_queue( Name => 'Regression' );
 ok $queue && $queue->id, 'loaded or created queue';

@@ -1,8 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 26;
-use RT::Test;
+use RT::Test tests => 26;;
 $RT::Test::SKIP_REQUEST_WORK_AROUND = 1;
 
 my ($baseurl, $m) = RT::Test->started_ok;

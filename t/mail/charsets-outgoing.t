@@ -3,10 +3,8 @@ use strict;
 use warnings;
 use utf8;
 
-use Test::More;
-use RT::Test;
+use RT::Test tests => 30;
 
-plan tests => 30;
 
 RT::Test->set_mail_catcher;
 

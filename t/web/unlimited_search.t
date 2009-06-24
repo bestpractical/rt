@@ -1,9 +1,8 @@
 #!/usr/bin/perl
 
 use strict;
-use Test::More tests => 8;
 
-use RT::Test;
+use RT::Test tests => 8;;
 RT::Test->started_ok;
 
 my $ticket = RT::Ticket->new($RT::SystemUser);

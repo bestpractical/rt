@@ -1,10 +1,8 @@
 #!/usr/bin/perl -w
 use strict; use warnings;
 
-use Test::More;
-plan tests => 58;
 use_ok('RT');
-use RT::Test;
+use RT::Test tests => 58;
 
 use RT::Ticket;
 

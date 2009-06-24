@@ -3,19 +3,23 @@
 use Test::MockTime qw(set_fixed_time restore_time);
 
 use Test::More;
-my $tests = 167;
-my $localized_datetime_tests = eval { require DateTime; 1; } && eval { require DateTime::Locale; 1; };
+my $tests;
 
-if ( $localized_datetime_tests ) {
-    # Include RT::Date::LocalizedDateTime tests
-    $tests += 7;
+my $localized_datetime_tests;
+BEGIN {
+    $tests = 167;
+    $localized_datetime_tests =
+      eval { require DateTime; 1; } && eval { require DateTime::Locale; 1; };
+
+    if ($localized_datetime_tests) {
+
+        # Include RT::Date::LocalizedDateTime tests
+        $tests += 7;
+    }
 }
 
-plan tests => $tests;
-
-
 use warnings; use strict;
-use RT::Test;
+use RT::Test tests => $tests;
 use RT::User;
 use Test::Warn;
 

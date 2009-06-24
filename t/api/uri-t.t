@@ -1,8 +1,7 @@
 use strict;
 use warnings;
-use Test::More tests => 6;
 use RT;
-use RT::Test;
+use RT::Test tests => 6;;
 
 my $t1 = RT::Ticket->new($RT::SystemUser);
 my ($id,$trans,$msg) =$t1->Create (Queue => 'general', Subject => 'Requestor test one', );

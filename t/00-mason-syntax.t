@@ -3,8 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 1;
-use RT::Test ();
+use RT::Test tests => 1, tests => 1;;;
 
 my $ok = 1;
 

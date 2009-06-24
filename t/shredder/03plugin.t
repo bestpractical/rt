@@ -3,10 +3,9 @@
 use strict;
 use warnings;
 
-use Test::More;
 use Test::Deep;
 use File::Spec;
-use RT::Test ();
+use RT::Test tests => 28;
 BEGIN {
     my $shredder_utils = RT::Test::get_relocatable_file('utils.pl',
         File::Spec->curdir());
@@ -14,7 +13,6 @@ BEGIN {
 }
 
 my @PLUGINS = sort qw(Attachments Base Objects SQLDump Summary Tickets Users);
-plan tests => 7 + 3 * @PLUGINS;
 
 use_ok('RT::Shredder::Plugin');
 {

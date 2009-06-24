@@ -1,13 +1,12 @@
 #!/usr/bin/perl
 
 use strict;
-use Test::More tests => 21;
 use HTTP::Request::Common;
 use HTTP::Cookies;
 use LWP;
 use Encode;
 
-use RT::Test;
+use RT::Test tests => 21;;
 my ($baseurl, $agent) = RT::Test->started_ok;
 $agent->cookie_jar( HTTP::Cookies->new );
 

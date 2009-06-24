@@ -1,10 +1,9 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 137;
 use File::Spec ();
 
-use RT::Test;
+use RT::Test tests => 137;;
 
 use RT::EmailParser;
 use RT::Tickets;
