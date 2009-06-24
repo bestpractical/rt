@@ -2,9 +2,9 @@
 use strict;
 use warnings;
 
+use RT::Test tests => 18;
 use_ok('RT');
 use_ok('RT::Ticket');
-use RT::Test tests => 18;
 use Test::Warn;
 
 

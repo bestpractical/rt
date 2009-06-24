@@ -7,9 +7,9 @@ use RT::Group;
 use RT::Ticket;
 use RT::Queue;
 
+use RT::Test tests => 27;
 use_ok('RT::SavedSearch');
 use_ok('RT::SavedSearches');
-use RT::Test tests => 27;
 
 use Test::Warn;
 

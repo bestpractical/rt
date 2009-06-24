@@ -4,9 +4,9 @@ use warnings;
 use strict;
 use Data::Dumper;
 
+use RT::Test tests => 14;
 use_ok('RT');
 use_ok('RT::Transactions');
-use RT::Test tests => 14;
 
 
 my $q = RT::Queue->new($RT::SystemUser);

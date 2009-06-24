@@ -4,8 +4,8 @@
 use strict;
 use warnings;
 
-use_ok('RT');
 use RT::Test tests => 10;
+use_ok('RT');
 
 
 my $q = RT::Queue->new($RT::SystemUser);

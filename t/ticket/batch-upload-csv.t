@@ -1,8 +1,8 @@
 #!/usr/bin/perl -w
 use strict; use warnings;
 
-use_ok('RT');
 use RT::Test tests => 12;
+use_ok('RT');
 
 use_ok('RT::Action::CreateTickets');
 
