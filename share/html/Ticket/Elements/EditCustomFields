@@ -86,7 +86,7 @@
 <%INIT>
 my $CustomFields;
 
-if ($TicketObj) {
+if ($TicketObj && !$OnCreate) {
     $CustomFields = $TicketObj->CustomFields();
     $NamePrefix .= "Object-RT::Ticket-".$TicketObj->Id."-CustomField-";
 } else {
@@ -101,4 +101,5 @@ $m->callback( %ARGS, CallbackName => 'MassageCustomFields', CustomFields => $Cus
 $NamePrefix => ''
 $TicketObj => undef
 $QueueObj => undef
+$OnCreate => undef
 </%ARGS>
