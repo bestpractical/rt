@@ -135,7 +135,8 @@ sub import {
 
     # Spit out a plan (if we got one) *before* we load modules
     if ( $args{'tests'} ) {
-        $class->builder->plan( tests => $args{'tests'} );
+        $class->builder->plan( tests => $args{'tests'} )
+          unless $args{'tests'} eq 'no_declare';
     }
     else {
         $class->builder->no_plan unless $class->builder->has_plan;
