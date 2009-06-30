@@ -1,4 +1,4 @@
 --- 
 framework: 
-  AdminMode: 0
+  SetupMode: 0
 
