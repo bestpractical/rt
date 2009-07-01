@@ -49,7 +49,7 @@
     Title => $title,
     JavaScript => $Preview,
     ShowBar => $Preview,
-    Refresh => ($Preview ? $session{'home_refresh_interval'} : 0),
+    Refresh => $Refresh,
 &>
 
 % if ($Preview) {
@@ -122,6 +122,11 @@ my $show_cb = sub {
         Depth     => 0,
     );
 };
+
+my $Refresh = $Preview
+    ? $session{'home_refresh_interval'}
+        || RT->Config->Get('HomePageRefreshInterval', $session{'CurrentUser'})
+    : 0;
 
 </%INIT>
 <%ARGS>
