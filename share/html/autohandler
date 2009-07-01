@@ -284,6 +284,12 @@ unless( $session{'CurrentUser'} ) {
     }
 }
 
+# now it applies not only to home page, but any dashboard
+# that can be used as a workspace
+if ( $ARGS{'HomeRefreshInterval'} ) {
+    $session{'home_refresh_interval'} = $ARGS{'HomeRefreshInterval'};
+}
+
 # we've got credentials, let's serve the file up.
 # Process per-page global callbacks
 $m->callback( %ARGS );
