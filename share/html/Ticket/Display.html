@@ -77,14 +77,16 @@
       attachment_content => $attachment_content
 &> 
 
-% $m->callback( %ARGS,
-%     ticket       => $ticket_obj,
-%     current_tab  => 'Ticket/Display.html?id=' . $ticket_obj->id,
-%     callback_name => 'AfterShowHistory',
-% );
+<%perl>
 
-% $m->comp('/Elements/Footer');
-<%ARGS>
+ $m->callback( %ARGS,
+     ticket       => $ticket_obj,
+     current_tab  => 'Ticket/Display.html?id=' . $ticket_obj->id,
+     callback_name => 'AfterShowHistory',
+ );
+ $m->comp('/Elements/Footer');
+ </%perl> 
+ <%ARGS>
 $id => undef
 $ticket_obj => undef
 $show_headers => 0
