@@ -995,7 +995,7 @@ sub set_queue {
             return ( 0, _("There is no mapping for statuses between these queues. Contact your system administrator.") );
         }
         $new_status = $schema->map( $Newqueue_obj )->{ $self->status };
-        return ( 0, _("Mapping between queues' status schemas is incomplete. Contact your system administrator.") )
+        return ( 0, _("Mapping between queues' workflows is incomplete. Contact your system administrator.") )
             unless $new_status;
     }
 
@@ -2002,7 +2002,7 @@ Returns false otherwise.
 
 =cut
 
-# XXX, FIXME: disable this for a while, as it conflicts with status schemas
+# XXX, FIXME: disable this for a while, as it conflicts with workflows
 #sub validate_status {
 #    my $self   = shift;
 #    my $status = shift;

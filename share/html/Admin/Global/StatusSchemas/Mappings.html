@@ -10,7 +10,7 @@
 <&|/l&>Mapping between schemas is required when you want to move tickets between queues with different schemas.</&>
 
 % unless ( @list > 1 ) {
-<&|/l&>You need more than one status schema to be able to define mappings.</&>
+<&|/l&>You need more than one workflow to be able to define mappings.</&>
 % } else {
 <& Elements/MissingMaps &>
 
@@ -83,7 +83,7 @@
 </&>
 
 <%INIT>
-my $title = _("Modify mapping between status schemas");
+my $title = _("Modify mapping between workflows");
 
 use RT::StatusSchema;
 my @list = RT::StatusSchema->new->list;

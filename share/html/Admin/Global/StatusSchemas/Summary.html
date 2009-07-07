@@ -78,7 +78,7 @@ unless ( $schema ) {
     );
 }
 my $qs_name = $m->comp( '/Elements/QueryString', name => $schema->name );
-my $title = _("'%1' status schema summary", $name);
+my $title = _("'%1' workflow summary", $name);
 
 
 my @all_maps = RT::StatusSchema->list;

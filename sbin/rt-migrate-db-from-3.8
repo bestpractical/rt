@@ -97,7 +97,7 @@ post_update_all_tables();
 
 sub post_update_attributes_table {
 
-# need to add a row for the default status schema in Attributes and update
+# need to add a row for the default workflow in Attributes and update
 # part columns of that table
     require RT::Model::AttributeCollection;
     my $collection = RT::Model::AttributeCollection->new( current_user => RT->system_user );
@@ -135,7 +135,7 @@ sub add_default_status_schema {
     my @results = $attribute->create(
         name        => 'StatusSchemas',
         object      => RT->system,
-        description => 'all system status schemas',
+        description => 'all system workflows',
         content     => {
             default => {
                 initial     => ['new'],

@@ -20,15 +20,15 @@
 
 <form action="<% RT->config->get('web_path') %>/Admin/Global/StatusSchemas/index.html" method="post">
 
-Status schema name: <input name="name" value="" /><br />
+Workflow name: <input name="name" value="" /><br />
 
-<& /Elements/Submit, caption => _('Create a new status schema'), label => _('Create'), name => 'create' &>
+<& /Elements/Submit, caption => _('Create a new workflow'), label => _('Create'), name => 'create' &>
 </form>
 
 </&>
 
 <%INIT>
-my $title = _("Modify system status schemas");
+my $title = _("Modify system workflows");
 
 use RT::StatusSchema;
 my @list = RT::StatusSchema->new->list;

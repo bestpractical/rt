@@ -32,11 +32,11 @@ our %STATUS_SCHEMAS_CACHE;
 
 =head1 NAME
 
-RT::StatusSchema - class to access and manipulate status schemas
+RT::StatusSchema - class to access and manipulate workflows
 
 =head1 DESCRIPTION
 
-Status schema is a list statuses tickets can have, splitted into three groups:
+Workflow is a list statuses tickets can have, splitted into three groups:
 initial, active and inactive. As well it defines possible transitions between
 statuses, for example from 'stalled' status of default schema you can change
 status to 'open' only.
@@ -302,7 +302,7 @@ sub transition_action {
 
 =head3 create
 
-Creates a new status schema in the DB. Takes a param hash with
+Creates a new workflow in the DB. Takes a param hash with
 'name', 'initial', 'active', 'inactive' and 'transitions' keys.
 
 All arguments except 'name' are optional and can be filled later
@@ -339,7 +339,7 @@ sub create {
     my ($status, $msg) = $self->_store_schemas( $name );
     return ($status, $msg) unless $status;
 
-    return (1, _('Created a new status schema'));
+    return (1, _('Created a new workflow'));
 }
 
 sub set_statuses {
@@ -351,7 +351,7 @@ sub set_statuses {
         @_
     );
 
-    my $name = $self->name or return (0, _("Status schema is not loaded"));
+    my $name = $self->name or return (0, _("Workflow is not loaded"));
 
     my ($status, $msg) = $self->_set_statuses( %args, name => $name );
     return ($status, $msg) unless $status;
@@ -366,7 +366,7 @@ sub set_transitions {
     my $self = shift;
     my %args = @_;
 
-    my $name = $self->name or return (0, _("Status schema is not loaded"));
+    my $name = $self->name or return (0, _("Workflow is not loaded"));
 
     my ($status, $msg) = $self->_set_transitions(
         transitions => \%args, name => $name
@@ -383,7 +383,7 @@ sub set_actions {
     my $self = shift;
     my %args = @_;
 
-    my $name = $self->name or return (0, _("Status schema is not loaded"));
+    my $name = $self->name or return (0, _("Workflow is not loaded"));
 
     my ($status, $msg) = $self->_set_actions(
         actions => \%args, name => $name
@@ -453,7 +453,7 @@ sub _store_schemas {
     my $name = shift;
     my ($status, $msg) = $RT::System->set_attribute(
         name => 'StatusSchemas',
-        description => 'all system status schemas',
+        description => 'all system workflows',
         content => \%STATUS_SCHEMAS,
     );
     $self->fill_cache;
@@ -530,10 +530,10 @@ sub set_map {
     my %map = @_;
     $map{ lc $_ } = delete $map{ $_ } foreach keys %map;
 
-    return (0, _("Status schema is not loaded"))
+    return (0, _("Workflow is not loaded"))
         unless $self->name;
 
-    return (0, _("Status schema is not loaded"))
+    return (0, _("Workflow is not loaded"))
         unless $to->name;
 
 

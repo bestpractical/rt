@@ -59,7 +59,7 @@
                B => { title => _('Templates'),
                         path => 'Admin/Global/Templates.html',
                       },
-                C => { title => _('Status Schemas'),
+                C => { title => _('Workflows'),
                         path => 'Admin/Global/StatusSchemas/index.html',
                         },
               

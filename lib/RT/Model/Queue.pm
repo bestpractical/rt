@@ -321,7 +321,7 @@ sub status_schema {
     my $res = RT::StatusSchema->load(
         (ref $self && $self->id) ? $self->__value('status_schema') : ''
     );
-    Jifty->log->error("Status schema doesn't exist") unless $res;
+    Jifty->log->error("Workflow doesn't exist") unless $res;
     return $res;
 }
 
