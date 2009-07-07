@@ -140,7 +140,7 @@ sub GroupBy {
     my $self = shift;
     my %args = ref $_[0]? %{ $_[0] }: (@_);
 
-    $self->{'_group_by_field'} = $args{'FIELD'};
+    push @{ $self->{'_group_by_field'} ||= [] }, $args{'FIELD'};
     %args = $self->_FieldToFunction( %args );
 
     $self->SUPER::GroupBy( \%args );
@@ -269,7 +269,7 @@ for, do that.
 
 sub AddEmptyRows {
     my $self = shift;
-    if ( $self->{'_group_by_field'} eq 'Status' ) {
+    if ( @{ $self->{'_group_by_field'} || [] } == 1 && $self->{'_group_by_field'}[0] eq 'Status' ) {
         my %has = map { $_->__Value('Status') => 1 } @{ $self->ItemsArrayRef || [] };
 
         foreach my $status ( grep !$has{$_}, RT::Queue->new($self->CurrentUser)->StatusArray ) {
