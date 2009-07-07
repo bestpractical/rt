@@ -3,12 +3,12 @@
 <& Elements/Tabs,
     title       => $title,
     schema      => $schema,
-    current_tab => 'Admin/Global/StatusSchemas/Transitions.html',
+    current_tab => 'Admin/Global/Workflows/Transitions.html',
 &>
 
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<% RT->config->get('web_path') %>/Admin/Global/StatusSchemas/Transitions.html" method="post">
+<form action="<% RT->config->get('web_path') %>/Admin/Global/Workflows/Transitions.html" method="post">
 <input type="hidden" name="name" value="<% $name %>" />
 
 <table>
@@ -33,12 +33,12 @@
 <%INIT>
 my $title = _("Modify transitions for schema '%1'", $name);
 
-use RT::StatusSchema;
-my $schema = RT::StatusSchema->new->load( $name );
+use RT::Workflow;
+my $schema = RT::Workflow->new->load( $name );
 unless ( $schema ) {
     Jifty->web->redirect(
         RT->config->get('web_path')
-        . '/Admin/Global/StatusSchemas/index.html'
+        . '/Admin/Global/Workflows/index.html'
     );
 }
 

@@ -133,7 +133,7 @@ sub add_default_status_schema {
     require RT::Model::Attribute;
     my $attribute = RT::Model::Attribute->new( current_user => RT->system_user );
     my @results = $attribute->create(
-        name        => 'StatusSchemas',
+        name        => 'Workflows',
         object      => RT->system,
         description => 'all system workflows',
         content     => {

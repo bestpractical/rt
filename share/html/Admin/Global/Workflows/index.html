@@ -2,7 +2,7 @@
 
 <& Elements/Tabs,
     title       => $title,
-    current_tab => 'Admin/Global/StatusSchemas/index.html',
+    current_tab => 'Admin/Global/Workflows/index.html',
 &>
 
 <& /Elements/ListActions, actions => \@results &>
@@ -10,15 +10,15 @@
 <table>
 <tr><th><% _('Schema') %></th><th><% _('Statuses') %></th><th><% _('Queues') %></th></tr>
 % foreach my $schema ( @list ) {
-% my $obj = RT::StatusSchema->load( $schema );
+% my $obj = RT::Workflow->load( $schema );
 <tr>
-<td><a href="<% RT->config->get('web_path') %>/Admin/Global/StatusSchemas/Summary.html?<% $m->comp( '/Elements/QueryString', name => $schema ) %>"><% $schema %></a></td>
+<td><a href="<% RT->config->get('web_path') %>/Admin/Global/Workflows/Summary.html?<% $m->comp( '/Elements/QueryString', name => $schema ) %>"><% $schema %></a></td>
 <td><% join ', ', map _($_), $obj->valid %></td>
 <td><% join ', ', map $_->name, @{ $obj->queues->items_array_ref } %></td>
 % }
 </table>
 
-<form action="<% RT->config->get('web_path') %>/Admin/Global/StatusSchemas/index.html" method="post">
+<form action="<% RT->config->get('web_path') %>/Admin/Global/Workflows/index.html" method="post">
 
 Workflow name: <input name="name" value="" /><br />
 
@@ -30,18 +30,18 @@ Workflow name: <input name="name" value="" /><br />
 <%INIT>
 my $title = _("Modify system workflows");
 
-use RT::StatusSchema;
-my @list = RT::StatusSchema->new->list;
+use RT::Workflow;
+my @list = RT::Workflow->new->list;
 
 my @results;
 if ( $create ) {
-    my $schema = new RT::StatusSchema;
+    my $schema = new RT::Workflow;
     my ($status, $msg) = $schema->create( name => $name );
     push @results, $msg if $msg;
     if ( $status ) {
         Jifty->web->redirect(
             RT->config->get('web_path')
-            . '/Admin/Global/StatusSchemas/Modify.html?'
+            . '/Admin/Global/Workflows/Modify.html?'
             . $m->comp( '/Elements/QueryString', name => $schema->name )
         );
     }

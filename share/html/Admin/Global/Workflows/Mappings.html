@@ -2,7 +2,7 @@
 
 <& Elements/Tabs,
     title       => $title,
-    current_tab => 'Admin/Global/StatusSchemas/Mappings.html',
+    current_tab => 'Admin/Global/Workflows/Mappings.html',
 &>
 
 <& /Elements/ListActions, actions => \@results &>
@@ -14,7 +14,7 @@
 % } else {
 <& Elements/MissingMaps &>
 
-<form action="<% RT->config->get('web_path') %>/Admin/Global/StatusSchemas/Mappings.html" method="get">
+<form action="<% RT->config->get('web_path') %>/Admin/Global/Workflows/Mappings.html" method="get">
 <& /Widgets/Form/Select,
     name          => 'from',
     description   => _('From'),
@@ -35,7 +35,7 @@
 % }
 
 % if ( $from && $to ) {
-<form action="<% RT->config->get('web_path') %>/Admin/Global/StatusSchemas/Mappings.html" method="post">
+<form action="<% RT->config->get('web_path') %>/Admin/Global/Workflows/Mappings.html" method="post">
 <input type="hidden" name="from" value=<% $from %> />
 <input type="hidden" name="to" value=<% $to %> />
 
@@ -85,17 +85,17 @@
 <%INIT>
 my $title = _("Modify mapping between workflows");
 
-use RT::StatusSchema;
-my @list = RT::StatusSchema->new->list;
+use RT::Workflow;
+my @list = RT::Workflow->new->list;
 
 my @results;
 my ($from_schema, $to_schema);
 if ( $from ) {
-    $from_schema = RT::StatusSchema->load( $from );
+    $from_schema = RT::Workflow->load( $from );
     $from_schema = $from = undef unless $from_schema;
 }
 if ( $to ) {
-    $to_schema = RT::StatusSchema->load( $to );
+    $to_schema = RT::Workflow->load( $to );
     $to_schema = $to = undef unless $to_schema;
 }
 

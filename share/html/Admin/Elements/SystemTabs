@@ -60,7 +60,7 @@
                         path => 'Admin/Global/Templates.html',
                       },
                 C => { title => _('Workflows'),
-                        path => 'Admin/Global/StatusSchemas/index.html',
+                        path => 'Admin/Global/Workflows/index.html',
                         },
               
                 F => { title => _('Custom Fields'),

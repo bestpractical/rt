@@ -5,7 +5,7 @@
     current_subtab => $parent_subtab,
 &>
 <%INIT>
-my $base = "Admin/Global/StatusSchemas";
+my $base = "Admin/Global/Workflows";
 my $parent_subtab;
 my $parent_subtabs = {
     A => {

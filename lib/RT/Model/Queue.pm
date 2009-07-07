@@ -62,7 +62,7 @@ package RT::Model::Queue;
 use RT::Model::GroupCollection;
 use RT::Model::ACECollection;
 use RT::Interface::Email;
-use RT::StatusSchema;
+use RT::Workflow;
 
 use Scalar::Util qw(blessed);
 
@@ -318,7 +318,7 @@ sub load {
 
 sub status_schema {
     my $self = shift;
-    my $res = RT::StatusSchema->load(
+    my $res = RT::Workflow->load(
         (ref $self && $self->id) ? $self->__value('status_schema') : ''
     );
     Jifty->log->error("Workflow doesn't exist") unless $res;

@@ -2,13 +2,13 @@
 
 <& Elements/Tabs,
     title       => $title,
-    current_tab => 'Admin/Global/StatusSchemas/Localization.html',
+    current_tab => 'Admin/Global/Workflows/Localization.html',
 &>
 
 <&|/l&>Status values stored in the DB are limitted to ASCII. To localize values you have to change po-files. Copy text block below, insert it into a local po file for language you want to localize into and translate. If you don't have local po files then you can borrow a header from RT's core po files. Don't change general po files as those are over written on every update.</&>
 
 <pre>
-% foreach my $str ( RT::StatusSchema->for_localization ) {
+% foreach my $str ( RT::Workflow->for_localization ) {
 msgid "<% $str |n %>"
 msgstr ""
 

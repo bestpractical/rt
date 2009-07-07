@@ -591,7 +591,7 @@ Hour:         { $subscription_obj->sub_value('Hour') }
 	]
       },
     },
-    { name => 'StatusSchemas',
+    { name => 'Workflows',
       description => 'all system workflows',
       content => {
         default => {

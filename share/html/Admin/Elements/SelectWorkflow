@@ -4,7 +4,7 @@
 % }
 </select>
 <%INIT>
-my @list = RT::StatusSchema->list;
+my @list = RT::Workflow->list;
 $default = $default->name if ref $default;
 </%INIT>
 <%ARGS>

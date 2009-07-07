@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-package RT::StatusSchema;
+package RT::Workflow;
 
 our %STATUS_SCHEMAS;
 our %STATUS_SCHEMAS_CACHE;
@@ -32,7 +32,7 @@ our %STATUS_SCHEMAS_CACHE;
 
 =head1 NAME
 
-RT::StatusSchema - class to access and manipulate workflows
+RT::Workflow - class to access and manipulate workflows
 
 =head1 DESCRIPTION
 
@@ -71,7 +71,7 @@ loads the global schema with statuses from all named schemas.
 
 Can be called as class method, returns a new object, for example:
 
-    my $schema = RT::StatusSchema->load('default');
+    my $schema = RT::Workflow->load('default');
 
 =cut
 
@@ -398,7 +398,7 @@ sub set_actions {
 
 sub fill_cache {
     my $self = shift;
-    my $map = $RT::System->first_attribute('StatusSchemas')
+    my $map = $RT::System->first_attribute('Workflows')
         or return;
     $map = $map->content or return;
 
@@ -452,7 +452,7 @@ sub _store_schemas {
     my $self = shift;
     my $name = shift;
     my ($status, $msg) = $RT::System->set_attribute(
-        name => 'StatusSchemas',
+        name => 'Workflows',
         description => 'all system workflows',
         content => \%STATUS_SCHEMAS,
     );
@@ -519,14 +519,14 @@ sub from_set {
 sub map {
     my $from = shift;
     my $to = shift;
-    $to = RT::StatusSchema->load( $to ) unless ref $to;
+    $to = RT::Workflow->load( $to ) unless ref $to;
     return $STATUS_SCHEMAS{'__maps__'}{ $from->name .' -> '. $to->name } || {};
 }
 
 sub set_map {
     my $self = shift;
     my $to = shift;
-    $to = RT::StatusSchema->load( $to ) unless ref $to;
+    $to = RT::Workflow->load( $to ) unless ref $to;
     my %map = @_;
     $map{ lc $_ } = delete $map{ $_ } foreach keys %map;
 
@@ -561,7 +561,7 @@ sub no_maps {
         foreach my $to ( @list ) {
             next if $from eq $to;
             push @res, $from, $to
-                unless RT::StatusSchema->load( $from )->has_map( $to );
+                unless RT::Workflow->load( $from )->has_map( $to );
         }
     }
     return @res;

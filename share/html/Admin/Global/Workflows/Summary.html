@@ -3,7 +3,7 @@
 <& Elements/Tabs,
     title       => $title,
     schema      => $schema,
-    current_tab => 'Admin/Global/StatusSchemas/Summary.html',
+    current_tab => 'Admin/Global/Workflows/Summary.html',
 &>
 
 <&| /Widgets/TitleBox, title => _('Statuses') &>
@@ -68,20 +68,20 @@
 
 </&>
 <%INIT>
-my $url_base = RT->config->get('web_path') ."/Admin/Global/StatusSchemas";
-use RT::StatusSchema;
-my $schema = RT::StatusSchema->load( $name );
+my $url_base = RT->config->get('web_path') ."/Admin/Global/Workflows";
+use RT::Workflow;
+my $schema = RT::Workflow->load( $name );
 unless ( $schema ) {
     Jifty->web->redirect(
         RT->config->get('web_path')
-        . '/Admin/Global/StatusSchemas/index.html'
+        . '/Admin/Global/Workflows/index.html'
     );
 }
 my $qs_name = $m->comp( '/Elements/QueryString', name => $schema->name );
 my $title = _("'%1' workflow summary", $name);
 
 
-my @all_maps = RT::StatusSchema->list;
+my @all_maps = RT::Workflow->list;
 
 </%INIT>
 <%ARGS>
