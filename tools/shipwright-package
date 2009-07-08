@@ -100,12 +100,15 @@ $IMPORT $JIFTY --name Jifty
 $IMPORT $LORZY --name Lorzy
 
 echo 'install: cp -rf * %%INSTALL_BASE%%' > /tmp/shipwright_rt_build
-export RT_GIT=/tmp/shipwright_rt.git
+export RT_GIT=/tmp/shipwright_rt_tmp.git
+rm -rf $RT_GIT
 git clone $RT $RT_GIT
 cd $RT_GIT
 git checkout origin/3.999-trunk
 rm -rf .git
-$IMPORT $RT_GIT --name RT --build-script /tmp/shipwright_rt_build
+$IMPORT dir://$RT_GIT --name RT --build-script /tmp/shipwright_rt_build
+cd /tmp/
+rm -rf $RT_GIT
 
 shipwright update -r $GIT_PATH cpan-Data-Dump-Streamer --add-deps cpan-Text-Balanced
 shipwright update -r $GIT_PATH cpan-Text-Balanced --add-deps cpan-version
