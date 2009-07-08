@@ -124,25 +124,7 @@ shipwright flags -r $GIT_PATH postgresql --add Pg
 shipwright flags -r $GIT_PATH cpan-DBD-Pg --add Pg
 
 # set known test failures
-shipwright ktf -r $GIT_PATH cpan-Regexp-Common --set 1
-shipwright ktf -r $GIT_PATH cpan-URI --set 1
-shipwright ktf -r $GIT_PATH cpan-Time-Duration --set 1
-shipwright ktf -r $GIT_PATH cpan-Data-Dump-Streamer --set 1
-shipwright ktf -r $GIT_PATH cpan-Storable --set 1
-shipwright ktf -r $GIT_PATH cpan-PAR-Dist --set 1
-shipwright ktf -r $GIT_PATH cpan-WWW-Mechanize --set 1
-shipwright ktf -r $GIT_PATH cpan-Test-WWW-Mechanize --set 1
-shipwright ktf -r $GIT_PATH cpan-MIME-tools --set 1
-
-# DBD-... will try to connect server, which may result in test failure
-shipwright ktf -r $GIT_PATH cpan-DBD-mysql --set 1
-shipwright ktf -r $GIT_PATH cpan-DBD-Pg --set 1
-
-# pod stuff
-shipwright ktf -r $GIT_PATH cpan-XML-SAX-Expat --set 1
-shipwright ktf -r $GIT_PATH cpan-Compress-PPMd --set 1
-# temp jifty failure
-shipwright ktf -r $GIT_PATH Jifty --set 1
+shipwright ktf -r $GIT_PATH --set 1 cpan-Regexp-Common cpan-URI cpan-Time-Duration cpan-Data-Dump-Streamer cpan-Storable cpan-PAR-Dist cpan-WWW-Mechanize cpan-Test-WWW-Mechanize  cpan-MIME-tools cpan-DBD-mysql cpan-DBD-Pg cpan-XML-SAX-Expat cpan-Compress-PPMd Jifty
 
 echo 'RT: cd %%INSTALL_BASE%% && PERL5LIB=lib:lib/perl5 bin/prove -r t' > /tmp/shipwright_test
 shipwright import -r $GIT_PATH --test-script /tmp/shipwright_test
