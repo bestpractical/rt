@@ -16,7 +16,8 @@ export TEST_WWW_DECLARE=svn:http://svn.jifty.org/svn/jifty.org/Test-WWW-Declare
 export JIFTY_DBI=svn:http://svn.jifty.org/svn/jifty.org/Jifty-DBI/trunk
 export JIFTY=svn:http://svn.jifty.org/svn/jifty.org/jifty/trunk
 export LORZY=svn://svn.bestpractical.com/Lorzy/trunk
-export RT=svn://svn.bestpractical.com/rt/3.999/trunk
+#export RT=svn://svn.bestpractical.com/rt/3.999/trunk
+export RT=git://github.com/bestpractical/rt.git
 
 
 export REPO=/tmp/shipwright-rt4.git
@@ -99,7 +100,12 @@ $IMPORT $JIFTY --name Jifty
 $IMPORT $LORZY --name Lorzy
 
 echo 'install: cp -rf * %%INSTALL_BASE%%' > /tmp/shipwright_rt_build
-$IMPORT $RT --name RT --build-script /tmp/shipwright_rt_build
+export RT_GIT=/tmp/shipwright_rt.git
+git clone $RT $RT_GIT
+cd $RT_GIT
+git checkout origin/3.999-trunk
+rm -rf .git
+$IMPORT $RT_GIT --name RT --build-script /tmp/shipwright_rt_build
 
 shipwright update -r $GIT_PATH cpan-Data-Dump-Streamer --add-deps cpan-Text-Balanced
 shipwright update -r $GIT_PATH cpan-Text-Balanced --add-deps cpan-version
@@ -149,5 +155,4 @@ rm -rf rtex-$$
 git clone file://$REPO /tmp/rtex-$$
 #rsync -rvp /tmp/rtex/ jesse@fsck.com:/tmp/rtex-$$
 echo "cd /tmp/rtex-$$; ./bin/shipwright-builder --flags mysql,postgresql; ./bin/shipwright-builder --only-test" 
-
 
