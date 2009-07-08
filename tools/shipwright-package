@@ -141,7 +141,6 @@ shipwright import -r $GIT_PATH --test-script /tmp/shipwright_test
 # add trivial wrapper for update
 echo "# e.g.
 # ./bin/shipwright-update cpan-version
-# ./bin/shipwright-update RT
 shipwright update -r $GIT_PATH --only-sources \$1" > /tmp/shipwright-update
 chmod +x /tmp/shipwright-update
 git clone file://$REPO /tmp/shipwright-tmp.git
