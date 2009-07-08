@@ -1,0 +1,6 @@
+# e.g.
+# shipwright-update cpan-version
+# shipwright-update RT
+export REPO=/tmp/shipwright-rt4.git
+export GIT_PATH="git:file://$REPO"
+shipwright update -r $GIT_PATH --only-sources $1
