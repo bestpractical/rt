@@ -151,6 +151,26 @@ git commit -m 'add bin/shipwright-update' shipwright-update
 git push
 rm -rf /tmp/shipwright-tmp.git
 
+echo "# e.g.
+# ./bin/shipwright-update-rt
+export RT_GIT=/tmp/shipwright_rt_tmp.git
+rm -rf \$RT_GIT
+git clone $RT \$RT_GIT
+cd \$RT_GIT
+git checkout origin/3.999-trunk
+rm -rf .git
+shipwright update -r $GIT_PATH --only-sources RT dir:\$RT_GIT
+cd $REPO
+rm -rf \$RT_GIT" > /tmp/shipwright-update-rt
+
+chmod +x /tmp/shipwright-update-rt
+git clone file://$REPO /tmp/shipwright-tmp.git
+cp /tmp/shipwright-update-rt /tmp/shipwright-tmp.git/bin/
+cd /tmp/shipwright-tmp.git/bin/
+git add shipwright-update-rt
+git commit -m 'add bin/shipwright-update-rt' shipwright-update-rt
+git push
+rm -rf /tmp/shipwright-tmp.git
 
 cd /tmp
 rm -rf rtex-$$
