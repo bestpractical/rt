@@ -129,8 +129,25 @@ shipwright ktf -r $GIT_PATH --set 1 cpan-Regexp-Common cpan-URI cpan-Time-Durati
 echo 'RT: cd %%INSTALL_BASE%% && PERL5LIB=lib:lib/perl5 bin/prove -r t' > /tmp/shipwright_test
 shipwright import -r $GIT_PATH --test-script /tmp/shipwright_test
 
+# add trivial wrapper for update
+echo "# e.g.
+# ./bin/shipwright-update cpan-version
+# ./bin/shipwright-update RT
+shipwright update -r $GIT_PATH --only-sources \$1" > /tmp/shipwright-update
+chmod +x /tmp/shipwright-update
+git clone file://$REPO /tmp/shipwright-tmp.git
+cp /tmp/shipwright-update /tmp/shipwright-tmp.git/bin/
+cd /tmp/shipwright-tmp.git/bin/
+git add shipwright-update
+git commit -m 'add bin/shipwright-update' shipwright-update
+git push
+rm -rf /tmp/shipwright-tmp.git
+
+
 cd /tmp
 rm -rf rtex-$$
 git clone file://$REPO /tmp/rtex-$$
 #rsync -rvp /tmp/rtex/ jesse@fsck.com:/tmp/rtex-$$
 echo "cd /tmp/rtex-$$; ./bin/shipwright-builder --flags mysql,postgresql; ./bin/shipwright-builder --only-test" 
+
+
