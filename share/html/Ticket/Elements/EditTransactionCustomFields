@@ -70,13 +70,11 @@ if ($TicketObj) {
     $CustomFields = $QueueObj->TicketTransactionCustomFields();
 }
 
-$NamePrefix .= "Object-RT::Transaction--CustomField-";
-
 $m->callback( CallbackName => 'MassageTransactionCustomFields', CustomFields => $CustomFields );
 
 </%INIT>
 <%ARGS>
-$NamePrefix => ''
+$NamePrefix => "Object-RT::Transaction--CustomField-"
 $TicketObj => undef
 $QueueObj => undef
 </%ARGS>
