@@ -125,7 +125,7 @@ sub SetupGroupings {
 
     $self->FromSQL( $args{'Query'} );
     my @group_by = ref( $args{'GroupBy'} )? @{ $args{'GroupBy'} } : ($args{'GroupBy'});
-    $self->GroupBy( FIELD => $_ ) foreach @group_by;
+    $self->GroupBy( map { {FIELD => $_} } @group_by );
 
     # UseSQLForACLChecks may add late joins
     my $joined = ($self->_isJoined || RT->Config->Get('UseSQLForACLChecks')) ? 1 : 0;
@@ -138,12 +138,12 @@ sub SetupGroupings {
 
 sub GroupBy {
     my $self = shift;
-    my %args = ref $_[0]? %{ $_[0] }: (@_);
+    my @args = ref $_[0]? @_ : { @_ };
 
-    push @{ $self->{'_group_by_field'} ||= [] }, $args{'FIELD'};
-    %args = $self->_FieldToFunction( %args );
+    @{ $self->{'_group_by_field'} ||= [] }, map $_->{'FIELD'}, @args;
+    $_ = { $self->_FieldToFunction( %$_ ) } foreach @args;
 
-    $self->SUPER::GroupBy( \%args );
+    $self->SUPER::GroupBy( @args );
 }
 
 sub Column {
