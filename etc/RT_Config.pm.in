@@ -244,7 +244,7 @@ RT will silently drop attachments longer than C<MaxAttachmentSize>.
 
 Set($DropLongAttachments , undef);
 
-=item C<$ParsenewMessageForTicketCcs>
+=item C<$ParseNewMessageForTicketCcs>
 
 If C<$ParseNewMessageForTicketCcs> is true, RT will attempt to divine
 Ticket 'Cc' watchers from the To and Cc lines of incoming messages
