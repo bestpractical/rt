@@ -11,6 +11,7 @@ etc/upgrade/3.8-branded-queues-extension
 etc/upgrade/3.8-ical-extension
 lib/RT.pm
 Makefile
+t/data/gnupg/keyrings/random_seed
 sbin/rt-attributes-viewer
 sbin/rt-clean-sessions
 sbin/rt-dump-database
