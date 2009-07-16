@@ -74,6 +74,13 @@ div#page-navigation ul#page-menu {
     right: 0em;
 }
 
+.titlebox
+{
+    height: auto !important;
+    height: 1.25em;
+}
+
+
 .ticket-transaction .messagebody img {
     /* ie6 does not support max-width */
     width: expression(this.width > 401 ? 400 : true);
