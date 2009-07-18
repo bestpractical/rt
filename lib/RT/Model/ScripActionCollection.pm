@@ -46,7 +46,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-=head1 name
+=head1 NAME
 
   RT::Model::ScripActionCollection - Collection of Action objects
 
@@ -67,7 +67,7 @@ use strict;
 use warnings;
 
 package RT::Model::ScripActionCollection;
-use base qw/RT::SearchBuilder/;
+use base qw/RT::Collection/;
 
 sub _init {
     my $self = shift;

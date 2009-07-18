@@ -47,12 +47,12 @@
 %# END BPS TAGGED BLOCK }}}
 %# Released under the terms of version 2 of the GNU Public License
 
-% my $Users = $group->user_members_obj( recursively => $recursively );
+% my $Users = $group->user_members( recursively => $recursively );
 % while ( my $user = $Users->next ) {
 <& /Elements/ShowUser, user => $user, ticket => $ticket &>
 <& /Elements/ShowUserEmailFrequency, user => $user, ticket => $ticket &><br />
 % }
-% my $Groups = $group->group_members_obj( recursively => $recursively );
+% my $Groups = $group->group_members( recursively => $recursively );
 % $Groups->limit_to_user_defined_groups;
 % while (my $group = $Groups->next) {
 <&|/l&>Group</&>: <% $group->name %><br />

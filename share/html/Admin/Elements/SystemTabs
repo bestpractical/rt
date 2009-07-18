@@ -59,8 +59,8 @@
                B => { title => _('Templates'),
                         path => 'Admin/Global/Templates.html',
                       },
-                C => { title => _('Status Schemas'),
-                        path => 'Admin/Global/StatusSchemas/index.html',
+                C => { title => _('Workflows'),
+                        path => 'Admin/Global/Workflows/index.html',
                         },
               
                 F => { title => _('Custom Fields'),
@@ -75,6 +75,12 @@
                       },
                 I => { title => _('RT at a glance'),
                                 path => 'Admin/Global/MyRT.html',
+                      },
+                Y => { title => _('Jifty'),
+                                path => 'Admin/Global/Jifty.html',
+                      },
+                Z => { title => _('System'),
+                                path => 'Admin/Global/System.html',
                       },
 
 };

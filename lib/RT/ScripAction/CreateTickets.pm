@@ -53,7 +53,7 @@ use base 'RT::ScripAction';
 
 use MIME::Entity;
 
-=head1 name
+=head1 NAME
 
 RT::ScripAction::CreateTickets - Create one or more tickets according
 to an externally supplied template.
@@ -130,7 +130,7 @@ A convoluted example
     my $groups = RT::Model::GroupCollection->new(current_user => RT->system_user);
     $groups->limit_to_user_defined_groups();
     $groups->limit(column => "name", operator => "=", value => "$name");
-    $groups->with_member($transaction_obj->creator_obj->id);
+    $groups->with_member($transaction_obj->creator->id);
  
     my $groupid = $groups->first->id;
  
@@ -140,7 +140,7 @@ A convoluted example
 	object =>$groups->first,
 	include_system_rights => undef,
 	include_superusers => 0,
-	include_subgroup_members => 0,
+	recursive => 0,
     );
  
      my @admins;
@@ -309,7 +309,7 @@ sub prepare {
         Jifty->log->warn("No template object handed to $self");
     }
 
-    unless ( $self->transaction_obj ) {
+    unless ( $self->transaction ) {
         Jifty->log->warn("No transaction object handed to $self");
 
     }
@@ -638,7 +638,7 @@ sub parse_lines {
         }
     }
 
-    my $ticket_obj ||= RT::Model::Ticket->new;
+    my $ticket_obj ||= RT::Model::Ticket->new( current_user => $self->current_user );
 
     my %args;
     my %original_tags;
@@ -685,17 +685,9 @@ sub parse_lines {
     }
 
     foreach my $date qw(due starts started resolved) {
-        my $dateobj = RT::Date->new;
         next unless $args{$date};
-        if ( $args{$date} =~ /^\d+$/ ) {
-            $dateobj->set( format => 'unix', value => $args{$date} );
-        } else {
-            eval { $dateobj->set( format => 'iso', value => $args{$date} ); };
-            if ( $@ or $dateobj->epoch <= 0 ) {
-                $dateobj->set( format => 'unknown', value => $args{$date} );
-            }
-        }
-        $args{$date} = $dateobj->iso;
+        my $dt = RT::DateTime->new_from_string(delete $args{$date});
+        $args{$date} = $dt->iso if $dt;
     }
 
     $args{'requestor'} ||= $self->ticket_obj->role_group("requestor")->member_emails
@@ -740,11 +732,11 @@ sub parse_lines {
         if ( $orig_tag =~ /^custom_?field-?(\d+)$/i ) {
             $ticketargs{ "custom_field-" . $1 } = $args{$tag};
         } elsif ( $orig_tag =~ /^(?:custom_?field|cf)-?(.*)$/i ) {
-            my $cf = RT::Model::CustomField->new;
+            my $cf = RT::Model::CustomField->new( current_user => $self->current_user );
             $cf->load_by_name( name => $1, queue => $ticketargs{queue} );
             $ticketargs{ "custom_field-" . $cf->id } = $args{$tag};
         } elsif ($orig_tag) {
-            my $cf = RT::Model::CustomField->new;
+            my $cf = RT::Model::CustomField->new( current_user => $self->current_user );
             $cf->load_by_name(
                 name  => $orig_tag,
                 queue => $ticketargs{queue}
@@ -1068,7 +1060,7 @@ sub update_watchers {
             } else {
 
                 # It doesn't look like an email address.  Try to load it.
-                my $user = RT::Model::User->new;
+                my $user = RT::Model::User->new( current_user => $self->current_user );
                 $user->load($_);
                 if ( $user->id ) {
                     push @new, $user->email;
@@ -1114,7 +1106,7 @@ sub update_custom_fields {
         next unless $arg =~ /^custom_?field-(\d+)$/;
         my $cf = $1;
 
-        my $cf_obj = RT::Model::CustomField->new;
+        my $cf_obj = RT::Model::CustomField->new( current_user => $self->current_user );
         $cf_obj->load_by_id($cf);
 
         my @values;

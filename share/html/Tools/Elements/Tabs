@@ -57,10 +57,6 @@ my $tabs = {
         title => _('Dashboards'),
         path  => 'Dashboards/index.html',
     },
-    b => {
-        title => _('Offline'),
-        path  => 'Tools/Offline.html',
-    },
     c => {
         title => _('Reports'),
         path  => 'Tools/Reports/index.html',

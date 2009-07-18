@@ -46,7 +46,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-=head1 name
+=head1 NAME
 
   RT::Model::AttachmentCollection - a collection of RT::Model::Attachment objects
 
@@ -70,7 +70,7 @@ use warnings;
 use strict;
 
 package RT::Model::AttachmentCollection;
-use base qw/RT::SearchBuilder/;
+use base qw/RT::Collection/;
 
 use RT::Model::Attachment;
 
@@ -83,35 +83,6 @@ sub _init {
         order  => 'ASC',
     );
     return $self->SUPER::_init(@_);
-}
-
-sub clean_slate {
-    my $self = shift;
-    delete $self->{_sql_transaction_alias};
-    return $self->SUPER::clean_slate(@_);
-}
-
-=head2 transaction_alias
-
-Returns alias for transactions table with applied join condition.
-Always return the same alias, so if you want to build some complex
-or recursive joining then you have to create new alias youself.
-
-=cut
-
-sub transaction_alias {
-    my $self = shift;
-    return $self->{'_sql_transaction_alias'}
-        if $self->{'_sql_transaction_alias'};
-
-    my $res = $self->new_alias('Transactions');
-    $self->limit(
-        entry_aggregator => 'AND',
-        column           => 'transaction_id',
-        value            => $res . '.id',
-        quote_value      => 0,
-    );
-    return $self->{'_sql_transaction_alias'} = $res;
 }
 
 =head2 content_type (value => 'text/plain', entry_aggregator => 'OR', operator => '=' ) 
@@ -164,7 +135,7 @@ sub limit_not_empty {
     );
 
     # http://rt3.fsck.com/Ticket/Display.html?id=12483
-    if ( RT->config->get('DatabaseType') ne 'Oracle' ) {
+    if ( Jifty->config->framework('Database')->{'Driver'} ne 'Oracle' ) {
         $self->limit(
             entry_aggregator => 'AND',
             column           => 'content',
@@ -185,7 +156,7 @@ sub limit_by_ticket {
     my $self = shift;
     my $tid  = shift;
 
-    my $transactions = $self->transaction_alias;
+    my $transactions = $self->join_transactions;
     $self->limit(
         entry_aggregator => 'AND',
         alias            => $transactions,
@@ -212,7 +183,7 @@ sub limit_by_ticket {
 
 sub new_item {
     my $self = shift;
-    return RT::Model::Attachment->new;
+    return RT::Model::Attachment->new( current_user => $self->current_user );
 }
 
 
@@ -222,7 +193,7 @@ sub next {
     my $Attachment = $self->SUPER::next;
     return $Attachment unless $Attachment;
 
-    my $txn = $Attachment->transaction_obj;
+    my $txn = $Attachment->transaction;
     if ( $txn->__value('type') eq 'comment' ) {
         return $Attachment
             if $txn->current_user_has_right('ShowTicketcomments');
@@ -232,6 +203,33 @@ sub next {
 
     # If the user doesn't have the right to show this ticket
     return $self->next;
+}
+
+=head2 join_transactions
+
+Returns alias for transactions table with applied join condition.
+Always return the same alias, so if you want to build some complex
+or recursive joining then you have to create new alias youself.
+
+=cut
+
+sub join_transactions {
+    my $self = shift;
+    my %args = ( new => 0, @_ );
+
+    return $self->{'_sql_aliases'}{'transactions'}
+        if !$args{'new'} && $self->{'_sql_aliases'}{'transactions'};
+
+    my $alias = $self->join(
+        alias1  => 'main',
+        column1 => 'transaction_id',
+        table2  => RT::Model::TransactionCollection->new,
+        column2 => 'id',
+    );
+    $self->{'_sql_aliases'}{'transactions'} = $alias
+        unless $args{'new'};
+
+    return $alias;
 }
 
 

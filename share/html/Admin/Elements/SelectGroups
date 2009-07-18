@@ -52,7 +52,7 @@
 </select>
 
 <%INIT>
-my $groups = RT::Model::GroupCollection->new();
+my $groups = RT::Model::GroupCollection->new( current_user => Jifty->web->current_user );
 $groups->limit(column => 'domain', operator => '=', value => $domain);
 
 </%INIT>

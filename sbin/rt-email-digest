@@ -155,7 +155,7 @@ sub send_digest {
     }
 
     # Set our sender and recipient.
-    $digest_template->mime_obj->head->replace( 'From', RT->config->get('CorrespondAddress') );
+    $digest_template->mime_obj->head->replace( 'From', RT->config->get('correspond_address') );
     $digest_template->mime_obj->head->replace( 'To',   $to );
 
     if ($print) {
@@ -200,17 +200,16 @@ sub since_date {
 
     # Specify a short time for digest overlap, in case we aren't starting
     # this process exactly on time.
-    my $OVERLAP_HEDGE = -30;
+    my $OVERLAP_HEDGE = 30;
 
-    my $since_date = RT::Date->new( current_user => RT->system_user );
-    $since_date->set( format => 'unix', value => time() );
+    my $since_date = RT::DateTime->now;
     if ( $frequency eq 'daily' ) {
-        $since_date->add_days(-1);
+        $since_date->subtract(days => 1);
     } else {
-        $since_date->add_days(-7);
+        $since_date->subtract(days => 7);
     }
 
-    $since_date->add_seconds($OVERLAP_HEDGE);
+    $since_date->subtract(seconds => $OVERLAP_HEDGE);
 
     return $since_date;
 }
@@ -240,7 +239,7 @@ sub find_transactions {
 
     while ( my $txn = $txns->next ) {
         my $ticket = $txn->ticket;
-        my $queue  = $txn->ticket_obj->queue->name;
+        my $queue  = $ticket->queue->name;
         # Xxx todo - may clobber if two queues have the same name
         foreach my $user ( $txn->deferred_recipients($frequency) ) {
             $all_digest->{$user}->{$queue}->{$ticket->id}->{ $txn->id } = $txn->content_obj;
@@ -296,13 +295,7 @@ sub build_digest_for_user {
                 unless ($date) {
                     my $txn_obj = RT::Model::Transaction->new( current_user => RT->system_user );
                     $txn_obj->load($txn);
-                    my $date_obj = RT::Date->new( current_user => RT->system_user );
-                    $date_obj->set(
-                        format => 'sql',
-                        value  => $txn_obj->created
-                    );
-                    $date = strftime( '%a, %d %b %Y %H:%M:%S %z',
-                        @{ [ localtime( $date_obj->unix ) ] } );
+                    $date = RT::DateTime->new_from_string($txn_obj->created)->rfc2822;
                 }
                 $contents_body .= "Date: $date\n\n";
                 $contents_body .= $msg->content . "\n";

@@ -27,14 +27,14 @@ $searchuser->principal->grant_right(right => 'ModifySelf');
 
 # This is the group whose searches searchuser should be able to see.
 my $ingroup = RT::Model::Group->new(current_user => RT->system_user);
-$ingroup->create_user_defined_group(name => 'searchgroup1'.$$);
+$ingroup->create_user_defined(name => 'searchgroup1'.$$);
 $ingroup->add_member($searchuser->id);
 $searchuser->principal->grant_right(right => 'EditSavedSearches', object => $ingroup);
 $searchuser->principal->grant_right(right => 'ShowSavedSearches', object => $ingroup);
 
 # This is the group whose searches searchuser should not be able to see.
 my $outgroup = RT::Model::Group->new(current_user => RT->system_user);
-$outgroup->create_user_defined_group(name => 'searchgroup2'.$$);
+$outgroup->create_user_defined(name => 'searchgroup2'.$$);
 $outgroup->add_member(RT->system_user->id);
 
 my $queue = RT::Model::Queue->new(current_user => RT->system_user);
@@ -67,7 +67,6 @@ my $format = '\'   <b><a href="/Ticket/Display.html?id=__id__">__id__</a></b>/TI
 \'<small>__time_left__</small>\'';
 
 my $curruser = RT::CurrentUser->new(id => $searchuser->id);
-warn "My search user = ".$searchuser->id;
 my $mysearch = RT::SavedSearch->new( current_user => $curruser );
 ( $ret, $msg ) = $mysearch->save(
     privacy      => 'RT::Model::User-' . $searchuser->id,
@@ -128,7 +127,6 @@ is($loadedsearch1->type, 'Ticket', "Type of mysearch correct");
 # See if it can be used to search for tickets.
 my $tickets = RT::Model::TicketCollection->new(current_user => $curruser);
 $tickets->from_sql($loadedsearch1->get_parameter('query'));
-diag $loadedsearch1->get_parameter('query');
 is($tickets->count, 1, "Found a ticket");
 
 # This should fail -- wrong object.
@@ -190,8 +188,4 @@ ok($ret, "Deleted genericsearch ".$msg);
 $allsearches = RT::SavedSearches->new(current_user => $curruser);
 $allsearches->limit_to_privacy('RT::Model::User-'.$curruser->id);
 is($allsearches->count, 1, "Found all searchuser's searches after deletion");
-
-while (my $search = $allsearches->next) {
-    diag($search->id, $search->name);
-}
 

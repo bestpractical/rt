@@ -67,7 +67,7 @@
 % foreach my $issue ( @$issues ) {
 <li>
 % if ( $issue->{'user'} ) {
-User <a href="<% RT->config->get('WebPath') %>/Admin/Users/Modify.html?id=<% $issue->{'user'}->id %>"><&/Elements/ShowUser, user => $issue->{'user'} &></a> has a problem.
+User <a href="<% RT->config->get('web_path') %>/Admin/Users/Modify.html?id=<% $issue->{'user'}->id %>"><&/Elements/ShowUser, user => $issue->{'user'} &></a> has a problem.
 % } else {
 There is a problem with key(s) for address <% $issue->{'email'} %>, but there is no user in the DB for this address.
 % }

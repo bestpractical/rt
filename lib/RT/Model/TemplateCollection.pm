@@ -46,7 +46,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-=head1 name
+=head1 NAME
 
   RT::Model::TemplateCollection - a collection of RT template objects
 
@@ -66,7 +66,7 @@ use strict;
 use warnings;
 
 package RT::Model::TemplateCollection;
-use base qw/RT::SearchBuilder/;
+use base qw/RT::Collection/;
 
 
 =head2 _init
@@ -152,7 +152,7 @@ sub new_item {
     my $self = shift;
 
     use RT::Model::Template;
-    my $item = RT::Model::Template->new();
+    my $item = RT::Model::Template->new( current_user => $self->current_user );
     return ($item);
 }
 

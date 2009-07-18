@@ -30,14 +30,9 @@ sub take_action {
         my $value = $self->argument_value($field);
         if ( defined $value ) {
 
-            # convert date to be as utc
-            my $date = RT::Date->new();
-            $date->set(
-                format => 'unknown',
-                value  => $value,
-            );
-
-            $self->argument_value( $field, $date->iso );
+            # convert date to be as UTC
+            my $date = RT::DateTime->new_from_string($value);
+            $self->argument_value($field, $date);
         }
     }
 
@@ -73,7 +68,7 @@ sub _compute_possible_owners {
     );
 
     foreach my $object (@objects) {
-        my $Users = RT::Model::UserCollection->new;
+        my $Users = RT::Model::UserCollection->new( current_user => $self->current_user );
         $Users->who_have_right(
             right                 => 'OwnTicket',
             object                => $object,
@@ -82,7 +77,7 @@ sub _compute_possible_owners {
         );
         while ( my $user = $Users->next() ) {
             next
-              if ( $user->id == $RT::nobody->id )
+              if ( $user->id == RT->nobody->id )
               ;    # skip nobody here, so we can make them first later
             $user_uniq_hash{ $user->id() } = $user;
         }
@@ -92,7 +87,7 @@ sub _compute_possible_owners {
         map { { display => $_->name, value => $_->id } }
           sort { uc( $a->name ) cmp uc( $b->name ) } values %user_uniq_hash
     ];
-    unshift @$owners, { display => 'Nobody', value => $RT::nobody->id };
+    unshift @$owners, { display => 'Nobody', value => RT->nobody->id };
 
     return $owners;
 }
@@ -100,7 +95,7 @@ sub _compute_possible_owners {
 sub _compute_possible_queues {
     my $self = shift;
 
-    my $q = RT::Model::QueueCollection->new();
+    my $q = RT::Model::QueueCollection->new( current_user => $self->current_user );
     $q->find_all_rows;
     
     my $queues;

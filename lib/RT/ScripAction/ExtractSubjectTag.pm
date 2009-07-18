@@ -61,7 +61,7 @@ sub prepare {
 
 sub Commit {
     my $self            = shift;
-    my $Transaction     = $self->transaction_obj;
+    my $Transaction     = $self->transaction;
     my $FirstAttachment = $Transaction->attachments->first;
     return 1 unless ($FirstAttachment);
 
@@ -71,8 +71,8 @@ sub Commit {
     my $origTicketSubject  = $TicketSubject;
     my $TransactionSubject = $FirstAttachment->subject;
 
-    my $match   = RT->config->get('ExtractSubjectTagMatch');
-    my $nomatch = RT->config->get('ExtractSubjectTagNoMatch');
+    my $match   = RT->config->get('extract_subject_tag_match');
+    my $nomatch = RT->config->get('extract_subject_tag_no_match');
     while ( $TransactionSubject =~ /($match)/g ) {
         my $tag = $1;
         next if $tag =~ /$nomatch/;

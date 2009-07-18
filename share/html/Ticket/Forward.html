@@ -86,7 +86,7 @@ $id = $ARGS{'id'} = $ticket_obj->id;
 abort( _("Permission Denied") )
     unless $ticket_obj->current_user_has_right('ForwardMessage');
 
-my $txn = RT::Model::Transaction->new();
+my $txn = RT::Model::Transaction->new( current_user => Jifty->web->current_user );
 $txn->load( $quote_transaction );
 abort( _("Couldn't load transaction #%1", $quote_transaction) )
     unless $txn->id;
@@ -98,10 +98,9 @@ if ( $forward || $forward_and_return ) {
     push @results, $msg;
 
     if ( $forward_and_return ) {
-        $session{'i'}++;
         my $key = Digest::MD5::md5_hex(rand(1024));
-        push @{ $session{"Actions"}->{$key}  ||= [] }, @results;
-        RT::Interface::Web::redirect( RT->config->get('WebURL') ."Ticket/Display.html?id=". $id."&results=".$key);
+        Jifty->web->session->set( "actions_$key" => \@results );
+        RT::Interface::Web::redirect( Jifty->web->url ."Ticket/Display.html?id=". $id."&results=".$key);
     }
 }
 

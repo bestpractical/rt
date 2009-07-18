@@ -73,7 +73,7 @@
 </ul>
 % }
 
-<form action="<%RT->config->get('WebPath')%>/Admin/CustomFields/index.html" method="get">
+<form action="<%RT->config->get('web_path')%>/Admin/CustomFields/index.html" method="get">
 <&|/l&>Only show custom fields for:</&>
 <select name="type">
 <option value="" <% !$type && 'selected="selected"'%> ><% _('(any)') %></option>
@@ -101,7 +101,7 @@ if ( !$type && $ARGS{'type'} ) {
     Jifty->log->warn("'type' argument is deprecated use 'type' instead");
 }
 
-my $CustomFields = RT::Model::CustomFieldCollection->new();
+my $CustomFields = RT::Model::CustomFieldCollection->new( current_user => Jifty->web->current_user );
 $CustomFields->find_all_rows;
 $CustomFields->{'find_disabled_rows'} = 1 if $show_disabled;
 $CustomFields->limit_to_lookup_type( $type ) if $type;

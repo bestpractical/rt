@@ -46,7 +46,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-=head1 name
+=head1 NAME
 
   RT::SavedSearches - a pseudo-collection for SavedSearch objects.
 
@@ -172,10 +172,10 @@ sub _privacy_objects {
     my $self        = shift;
     my $CurrentUser = $self->current_user;
 
-    my $groups = RT::Model::GroupCollection->new;
+    my $groups = RT::Model::GroupCollection->new( current_user => $self->current_user );
     $groups->limit_to_user_defined_groups;
     $groups->with_member(
-        principal_id => $self->current_user->id,
+        principal => $self->current_user->id,
         recursively  => 1
     );
 

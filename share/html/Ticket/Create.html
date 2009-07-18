@@ -53,7 +53,7 @@
     title => _("Create a new ticket"),
     actions => $actions &>
 <& /Elements/ListActions, actions => \@results &>
-<form action="<% RT->config->get('WebPath') %>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="ticket_create">
+<form action="<% RT->config->get('web_path') %>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="ticket_create">
 <input type="hidden" class="hidden" name="id" value="new" />
 % $m->callback( callback_name => 'FormStart', args_ref => \%ARGS );
 % if ($gnupg_widget) {
@@ -128,13 +128,13 @@
 % }
 % }
 <tr>
-% if (exists $session{'Attachments'}) {
+% if (Jifty->web->session->get('Attachments')) {
 <td class="label">
 <&|/l&>Attached file</&>:
 </td>
 <td colspan="5">
 <&|/l&>Check box to delete</&><br />
-% foreach my $attach_name (keys %{$session{'Attachments'}}) {
+% foreach my $attach_name (keys %{Jifty->web->session->get('Attachments')}) {
 <input type="checkbox" class="checkbox" name="DeleteAttach-<%$attach_name%>" value="1" /><%$attach_name%><br />
 % } # end of foreach
 </td>
@@ -253,7 +253,7 @@ my $queue = $ARGS{queue};
 
 my $cloneticket_obj;
 if ( $clone_ticket ) {
-    $cloneticket_obj = RT::Model::Ticket->new();
+    $cloneticket_obj = RT::Model::Ticket->new( current_user => Jifty->web->current_user );
     $cloneticket_obj->load($clone_ticket) or abort(_("Ticket could not be loaded"));
     
     my $clone = {
@@ -323,7 +323,7 @@ if ( $clone_ticket ) {
         }
 }
 my @results;
-my $queue_obj = RT::Model::Queue->new();
+my $queue_obj = RT::Model::Queue->new( current_user => Jifty->web->current_user );
 $queue_obj->load($queue) || abort(_("Queue could not be loaded."));
 
 $m->callback( queue_obj => $queue_obj, args_ref => \%ARGS );
@@ -340,12 +340,13 @@ my $ValidCFs = $m->comp(
 );
 
 # {{{ deal with deleting uploaded attachments
+my $attachments = Jifty->web->session->get('Attachments') || {};
 foreach my $key (keys %ARGS) {
     if ($key =~ m/^DeleteAttach-(.+)$/) {
-	delete $session{'Attachments'}{$1};
+        delete $attachments->{$1};
     }
-    $session{'Attachments'} = { %{$session{'Attachments'} || {}} };
 }
+Jifty->web->session->set('Attachments', $attachments);
 
 # {{{ store the uploaded attachment in session
 if ($ARGS{'attach'}) {			# attachment?
@@ -353,17 +354,17 @@ if ($ARGS{'attach'}) {			# attachment?
         attachment_field_name => 'attach'
     );
     my $file_path = Encode::decode_utf8("$ARGS{'attach'}");
-    $session{'Attachments'} = {
-        %{$session{'Attachments'} || {}},
+    Jifty->web->session->set('Attachments', {
+        %{Jifty->web->session->get('Attachments') || {}},
 	$file_path => $attachment,
-    };
+    });
     
 }
 # }}}
 
 # delete temporary storage entry to make WebUI clean
-unless (keys %{$session{'Attachments'}} and $ARGS{'id'} eq 'new') {
-    delete $session{'Attachments'};
+unless (keys %{Jifty->web->session->get('Attachments')} and $ARGS{'id'} eq 'new') {
+    Jifty->web->session->remove('Attachments');
 }
 
 my $checks_failure = 0;

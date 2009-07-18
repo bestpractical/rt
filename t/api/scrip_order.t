@@ -4,8 +4,8 @@ use strict;
 use RT::Test; use Test::More tests => 7;
 
 use RT;
-
-
+SKIP: {
+skip 'port this test to lorzy', 7;
 
 # {{{ test scrip ordering based on description
 
@@ -53,5 +53,5 @@ isnt($ticket->priority , 5, "Ticket shouldn't be priority 5");
 is  ($ticket->priority , 10, "Ticket should be priority 10");
 
 # }}}
-
+}
 1;

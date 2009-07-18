@@ -86,7 +86,7 @@ $users->limit(
 );
 $users->limit_to_privileged();
 
-my $groups = RT::Model::GroupCollection->new();
+my $groups = RT::Model::GroupCollection->new( current_user => Jifty->web->current_user );
 
 # self-recursive group membership considered harmful!
 $groups->limit(column => 'id', value => $group->id, operator => '!=' );

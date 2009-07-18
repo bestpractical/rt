@@ -143,7 +143,7 @@ my ($field, @results, $User, $Users, $Groups, $watcher, $user_msg, $group_msg);
 
 
 
-my $queue_obj = RT::Model::Queue->new();
+my $queue_obj = RT::Model::Queue->new( current_user => Jifty->web->current_user );
 $queue_obj->load($id) || abort(_("Couldn't load queue", $id));
 # }}}
 
@@ -154,7 +154,7 @@ foreach my $key (keys %ARGS) {
 
     if (($key =~ /^Queue-$id-DeleteWatcher-Type-(.*?)-Principal-(\d*)$/)) {;
 	    my ($code, $msg) = $queue_obj->delete_watcher(type => $1,
-                                                    principal_id => $2);
+                                                    principal => $2);
 	    push @results, $msg;
     }
 }
@@ -167,7 +167,7 @@ foreach my  $key (keys %ARGS) {
 	 ($key =~ /^Queue-AddWatcher-Principal-(\d*)$/) ) {
 	Jifty->log->debug("Adding a watcher $1 to ".$ARGS{$key}."\n");
 	my ($code, $msg) = $queue_obj->add_watcher(type => $ARGS{$key},
-				                             principal_id => $1);
+				                             principal => $1);
 	push @results, $msg;
     }
 }
@@ -180,7 +180,7 @@ if (!length $ARGS{'user_string'}) {
 $user_msg = _("No principals selected.");
  }
 else {
-    $Users = RT::Model::UserCollection->new();
+    $Users = RT::Model::UserCollection->new( current_user => Jifty->web->current_user );
     $Users->limit(column => $ARGS{'user_field'},
                  value => $ARGS{'user_string'},
                  operator => $ARGS{'user_op'});
@@ -190,7 +190,7 @@ if (!length $ARGS{'group_string'}) {
 $group_msg = _("No principals selected.");
  }
 else {
-$Groups = RT::Model::GroupCollection->new();
+$Groups = RT::Model::GroupCollection->new( current_user => Jifty->web->current_user );
 $Groups->limit(column => 'domain', operator => '=', value => 'UserDefined');
 $Groups->limit(column => $ARGS{'group_field'},
 		value => $ARGS{'group_string'},

@@ -75,7 +75,7 @@ my $COLUMN_MAP = {
     created_by => {
         attribute => 'CreatedBy',
         title => 'Created By', # loc
-        value     => sub  { return $_[0]->creator_obj->name }
+        value     => sub  { return $_[0]->creator->name }
     },
     last_updated => {
         attribute => 'last_updated',
@@ -132,11 +132,8 @@ my $COLUMN_MAP = {
             return \qq{<input type="radio" name="selected_ticket" value="$id" $checked />};
         },
     },
-    (map {
-        my $value = RT->config->get($_);
-        $_ => { value => sub { return \$value } };
-    
-    } qw(WebPath WebBaseURL WebURL)),
+    WebBaseURL => Jifty->config->framework('Web')->{BaseURL},
+    WebPath => RT->config->get('web_path'),
 };
 
 </%ONCE>

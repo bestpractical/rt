@@ -54,11 +54,11 @@
 </ul>
 
 <%INIT>
-my $ACL = RT::Model::ACECollection->new();
+my $ACL = RT::Model::ACECollection->new( current_user => Jifty->web->current_user );
 $ACL->limit_to_queue($queue_obj->id);
 $ACL->limit_principal_to_user($principal_id);
 </%INIT>
 <%ARGS>
-$principal_id => undef
+$principal => undef
 $queue_obj => undef
 </%ARGS>

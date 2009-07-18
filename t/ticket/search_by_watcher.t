@@ -242,7 +242,7 @@ my $nobody = RT->nobody();
 
 {
     my $everyone = RT::Model::Group->new(current_user => RT->system_user );
-    $everyone->load_system_internal_group('Everyone');
+    $everyone->load_system_internal('Everyone');
     ok($everyone->id, "loaded 'everyone' group");
     my($id, $msg) = $everyone->principal->grant_right( right => 'OwnTicket',
                                                          object => $q
@@ -273,3 +273,5 @@ my $nobody = RT->nobody();
     is($tix->count, 2, "found ticket(s)");
 }
 
+# Global destruction fun
+@tickets = ();

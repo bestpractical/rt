@@ -54,7 +54,7 @@ use base qw/Tree::Simple/;
 use Text::Naming::Convention qw/renaming/;
 
 
-=head1 name
+=head1 NAME
 
   RT::Interface::Web::QueryBuilder::Tree - subclass of Tree::Simple used in Query Builder
 

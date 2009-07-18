@@ -50,7 +50,7 @@ package RT::Shredder;
 use strict;
 use warnings;
 
-=head1 name
+=head1 NAME
 
 RT::Shredder - Permanently wipeout data from RT
 
@@ -218,9 +218,7 @@ BEGIN {
     require RT::Shredder::Link;
     require RT::Shredder::Principal;
     require RT::Shredder::Queue;
-    require RT::Shredder::Scrip;
     require RT::Shredder::ScripAction;
-    require RT::Shredder::ScripCondition;
     require RT::Shredder::Template;
     require RT::Shredder::ObjectCustomFieldValue;
     require RT::Shredder::Ticket;
@@ -239,9 +237,7 @@ our @SUPPORTED_OBJECTS = qw(
     Link
     Principal
     Queue
-    Scrip
     ScripAction
-    ScripCondition
     Template
     ObjectCustomFieldValue
     Ticket
@@ -251,9 +247,9 @@ our @SUPPORTED_OBJECTS = qw(
 
 =head3 GENERIC
 
-=head4 Init
+=head4 init
 
-    RT::Shredder::Init( %default_options );
+    RT::Shredder::init( %default_options );
 
 C<RT::Shredder::Init()> should be called before creating an
 RT::Shredder object.  It iniitalizes RT and loads the RT
@@ -296,11 +292,11 @@ sub _init {
     $self->{'dump_plugins'} = [];
 }
 
-=head4 CastobjectsToRecords( objects => undef )
+=head4 cast_objects_to_records ( objects => undef )
 
-Cast objects to the C<RT::Record> objects or its ancesstors.
+Cast objects to the L<RT::Record> objects or its ancesstors.
 objects can be passed as SCALAR (format C<< <class>-<id> >>),
-ARRAY, C<RT::Record> ancesstors or C<RT::SearchBuilder> ancesstor.
+ARRAY, L<RT::Record> ancesstors or L<RT::Collection> ancesstor.
 
 Most methods that takes C<objects> argument use this method to
 cast argument value to list of records.
@@ -312,7 +308,7 @@ For example:
     my @objs = $shredder->cast_objects_to_records(
         objects => [             # ARRAY reference
             'RT::Model::Attachment-10', # SCALAR or SCALAR reference
-            $tickets,            # RT::Model::TicketCollection object (isa RT::SearchBuilder)
+            $tickets,            # RT::Model::TicketCollection object (isa RT::Collection)
             $user,               # RT::Model::User object (isa RT::Record)
         ],
     );
@@ -329,7 +325,7 @@ sub cast_objects_to_records {
         RT::Shredder::Exception->throw("Undefined objects argument");
     }
 
-    if ( UNIVERSAL::isa( $targets, 'RT::SearchBuilder' ) ) {
+    if ( UNIVERSAL::isa( $targets, 'RT::Collection' ) ) {
 
         #XXX: try to use ->_do_search + ->items_array_ref in feature
         #     like we do in Record with links, but change only when
@@ -365,13 +361,13 @@ sub cast_objects_to_records {
 
 =head3 OBJECTS CACHE
 
-=head4 Putobjects( objects => undef )
+=head4 put_objects ( objects => undef )
 
 Puts objects into cache.
 
 Returns array of the cache entries.
 
-See C<CastobjectsToRecords> method for supported types of the C<objects>
+See L</cast_objects_to_records> method for supported types of the C<objects>
 argument.
 
 =cut
@@ -388,13 +384,13 @@ sub put_objects {
     return @res;
 }
 
-=head4 Putobject( object => undef )
+=head4 put_object ( object => undef )
 
 Puts record object into cache and returns its cache entry.
 
 B<NOTE> that this method support B<only C<RT::Record> object or its ancesstor
 objects>, if you want put mutliple objects or objects represented by different
-classes then use C<Putobjects> method instead.
+classes then use C<put_objects> method instead.
 
 =cut
 
@@ -411,7 +407,11 @@ sub put_object {
     return ( $self->{'cache'}->{$str} ||= { state => ON_STACK, object => $obj } );
 }
 
-=head4 Getobject, GetState, GetRecord( String => ''| object => '' )
+=head4 get_object ( String => ''| object => '' )
+
+=head4 get_state ( String => ''| object => '' )
+
+=head4 get_record ( String => ''| object => '' )
 
 Returns record object from cache, cache entry state or cache entry accordingly.
 
@@ -451,7 +451,11 @@ sub get_record {
 
 =head3 Dependencies resolvers
 
-=head4 PutResolver, GetResolvers and ApplyResolvers
+=head4 put_resolver
+
+=head4 get_resolvers
+
+=head4 apply_resolvers
 
 TODO: These methods have no documentation.
 
@@ -600,32 +604,36 @@ sub _wipeout {
     return;
 }
 
-sub validate_relations {
-    my $self = shift;
-    my %args = (@_);
-
-    foreach my $record ( values %{ $self->{'cache'} } ) {
-        next if ( $record->{'state'} & VALID );
-        $record->{'object'}->validate_relations( shredder => $self );
-    }
-}
-
 =head3 Data storage and backups
 
-=head4 GetFilename( Filename => '<ISO DATETIME>-XXXX.sql', FromStorage => 1 )
+=head4 get_filename ( Filename => '<ISO DATETIME>-XXXX.sql', FromStorage => 1 )
 
 Takes desired C<Filename> and flag C<FromStorage> then translate file name to absolute
 path by next rules:
 
-* Default value of the C<Filename> option is C<< <ISO DATETIME>-XXXX.sql >>;
+=over
 
-* if C<Filename> has C<XXXX> (exactly four uppercase C<X> letters) then it would be changed with digits from 0000 to 9999 range, with first one free value;
+=item *
 
-* if C<Filename> has C<%T> then it would be replaced with the current date and time in the C<YYYY-MM-DDTHH:MM:SS> format. Note that using C<%t> may still generate not unique names, using C<XXXX> recomended.
+Default value of the C<Filename> option is C<< <ISO DATETIME>-XXXX.sql >>;
 
-* if C<FromStorage> argument is true (default behaviour) then result path would always be relative to C<StoragePath>;
+=item *
 
-* if C<FromStorage> argument is false then result would be relative to the current dir unless it's already absolute path.
+if C<Filename> has C<XXXX> (exactly four uppercase C<X> letters) then it would be changed with digits from 0000 to 9999 range, with first one free value;
+
+=item *
+
+if C<Filename> has C<%T> then it would be replaced with the current date and time in the C<YYYY-MM-DDTHH:MM:SS> format. Note that using C<%t> may still generate not unique names, using C<XXXX> recomended.
+
+=item *
+
+if C<FromStorage> argument is true (default behaviour) then result path would always be relative to C<StoragePath>;
+
+=item *
+
+if C<FromStorage> argument is false then result would be relative to the current dir unless it's already absolute path.
+
+=back
 
 Returns an absolute path of the file.
 
@@ -704,18 +712,18 @@ sub get_filename {
     return $file;
 }
 
-=head4 StoragePath
+=head4 storage_path
 
 Returns an absolute path to the storage dir.  See
 L<CONFIGURATION/$ShredderStoragePath>.
 
-See also description of the L</GetFilename> method.
+See also description of the L</get_filename> method.
 
 =cut
 
 sub storage_path {
-    return scalar( RT->config->get('ShredderStoragePath') )
-        || File::Spec->catdir( $RT::VarPath, qw(data RT-Shredder) );
+    return scalar( RT->config->get('shredder_storage_path') )
+        || File::Spec->catdir( RT->var_path, qw(data RT-Shredder) );
 }
 
 my %active_dump_state = ();

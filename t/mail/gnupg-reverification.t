@@ -16,23 +16,31 @@ plan tests => 111;
 use File::Temp qw(tempdir);
 my $homedir = tempdir( CLEANUP => 1 );
 
-RT->config->set( 'GnuPG',
-                 enable => 1,
-                 outgoing_messages_format => 'RFC' );
+RT->config->set(
+    'gnupg',
+    {
+        enable                   => 1,
+        outgoing_messages_format => 'RFC',
+    }
+);
 
-RT->config->set( 'GnuPGOptions',
-                 homedir => $homedir,
-                 passphrase => 'rt-test',
-                 'no-permission-warning' => undef);
+RT->config->set(
+    'gnupg_options',
+    {
+        homedir                 => $homedir,
+        passphrase              => 'rt-test',
+        'no-permission-warning' => undef,
+    }
+);
 
-RT->config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
+RT->config->set( 'mail_plugins' => ['Auth::MailFrom', 'Auth::GnuPG'] );
 
 
 diag "load Everyone group" if $ENV{'TEST_VERBOSE'};
 my $everyone;
 {
     $everyone = RT::Model::Group->new(current_user => RT->system_user );
-    $everyone->load_system_internal_group('Everyone');
+    $everyone->load_system_internal('Everyone');
     ok $everyone->id, "loaded 'everyone' group";
 }
 

@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 % if ($lite) {
-%     my $d = RT::Model::Queue->new();
+%     my $d = RT::Model::Queue->new( current_user => Jifty->web->current_user );
 %     $d->load($default);
 <input name="<%$name%>" size="25" value="<%$d->name%>" class="<%$class%>" />
 % }
@@ -55,7 +55,7 @@
 %     if ($show_null_option) {
   <option value="">-</option>
 %     }
-%     for my $queue (@{$session{$cache_key}}) {
+%     for my $queue (@{Jifty->web->session->get($cache_key)||[]}) {
   <option value="<% ($named_values ? $queue->{name} : $queue->{id}) %>" 
 
 % if ($queue->{id} eq ($default||'') || $queue->{name} eq ($default||'')) {
@@ -89,17 +89,19 @@ my $cache_key = "SelectQueue---"
                 . Jifty->web->current_user->id
                 . "---$check_queue_right---$show_all_queues";
 
-if (not defined $session{$cache_key} and not $lite) {
-    my $q = RT::Model::QueueCollection->new();
+if (not defined Jifty->web->session->get($cache_key) and not $lite) {
+    my $q = RT::Model::QueueCollection->new( current_user => Jifty->web->current_user );
     $q->find_all_rows;
     
     while (my $queue = $q->next) {
         if ($show_all_queues || $queue->current_user_has_right($check_queue_right)) {
-            push @{$session{$cache_key}}, {
+            my $v = Jifty->web->session->get($cache_key) || [];
+            push @$v, {
                 id          => $queue->id,
                 name        => $queue->name,
                 description => $queue->description,
             };
+            Jifty->web->session->set($cache_key, $v);
         }
     }
 }

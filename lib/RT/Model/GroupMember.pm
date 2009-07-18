@@ -46,7 +46,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-=head1 name
+=head1 NAME
 
   RT::Model::GroupMember - a member of an RT Group
 
@@ -73,7 +73,8 @@ doing something wrong.
 package RT::Model::GroupMember;
 
 use strict;
-no warnings qw(redefine);
+use warnings;
+
 use RT::Model::CachedGroupMemberCollection;
 
 use base qw/RT::Record/;
@@ -82,13 +83,14 @@ sub table {'GroupMembers'}
 
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column group_id  => references RT::Model::Group;
+    column group_id  => references RT::Model::Principal;
     column member_id => references RT::Model::Principal;
-
 };
 
+use Scalar::Util qw(blessed);
 
-=head2 create { Group => undef, Member => undef }
+
+=head2 create { group => undef, member => undef }
 
 Add a Principal to the group Group.
 if the Principal is a group, automatically inserts all
@@ -106,25 +108,30 @@ sub create {
         @_
     );
 
-    unless ( $args{'group'}
-        && UNIVERSAL::isa( $args{'group'}, 'RT::Model::Principal' )
-        && $args{'group'}->id )
-    {
-        Carp::cluck();
-        Jifty->log->warn( "GroupMember::Create called with a bogus group arg: " . $args{'group'} );
-        return (undef);
+    foreach my $type (qw(group member)) {
+        if ( blessed $args{$type} ) {
+            unless ( $args{$type}->id ) {
+                Jifty->log->error( "GroupMember::Create called with a not loaded $type argument");
+                return (undef);
+            }
+            if ( $args{$type}->isa('RT::Model::Principal') ) {
+                $args{$type} = $args{$type}->object;
+            } elsif ( !$args{$type}->isa('RT::IsPrincipal') ) {
+                Jifty->log->warn( "GroupMember::Create called with a bogus $type arg: " . $args{$type} );
+                return (undef);
+            }
+        } else {
+            my $p = RT::Model::Principal->new( $self->current_user );
+            $p->load( $args{$type} );
+            unless ( $p->id ) {
+                $RT::Logger->error("Couldn't find principal '$args{$type}'");
+                return (undef);
+            }
+        }
     }
 
-    unless ( $args{'group'}->is_group ) {
-        Jifty->log->warn("Someone tried to add a member to a user instead of a group");
-        return (undef);
-    }
-
-    unless ( $args{'member'}
-        && UNIVERSAL::isa( $args{'member'}, 'RT::Model::Principal' )
-        && $args{'member'}->id )
-    {
-        Jifty->log->warn("GroupMember::Create called with a bogus Principal arg");
+    unless ( $args{'group'}->isa('RT::IsPrincipal::HasMembers') ) {
+        Jifty->log->warn("Someone tried to add a member to a principal that can not has members");
         return (undef);
     }
 
@@ -135,22 +142,20 @@ sub create {
     my $inside_transaction = Jifty->handle->transaction_depth;
     Jifty->handle->begin_transaction() unless $inside_transaction;
 
+    if ( $args{'member'}->id == $args{'group'}->id ) {
+        Jifty->log->debug("Can't add a group to itself");
+        Jifty->handle->rollback() unless $inside_transaction;
+        return (undef);
+    }
+
     # We really need to make sure we don't add any members to this group
     # that contain the group itself. that would, um, suck.
     # (and recurse infinitely)  Later, we can add code to check this in the
     # cache and bail so we can support cycling directed graphs
-
-    if ( $args{'member'}->is_group ) {
-        my $member_object = $args{'member'}->object;
-        if ( $member_object->has_member_recursively( $args{'group'} ) ) {
-            Jifty->log->debug("Adding that group would create a loop");
-            Jifty->handle->rollback() unless $inside_transaction;
-            return (undef);
-        } elsif ( $args{'member'}->id == $args{'group'}->id ) {
-            Jifty->log->debug("Can't add a group to itself");
-            Jifty->handle->rollback() unless $inside_transaction;
-            return (undef);
-        }
+    if ( $args{'member'}->has_member( principal => $args{'group'}, recursively => 1 ) ) {
+        Jifty->log->debug("Adding that group would create a loop");
+        Jifty->handle->rollback() unless $inside_transaction;
+        return (undef);
     }
 
     my $id = $self->SUPER::create(
@@ -163,17 +168,17 @@ sub create {
         return (undef);
     }
 
-    my $cached_member = RT::Model::CachedGroupMember->new;
+    my $cached_member = RT::Model::CachedGroupMember->new( current_user => $self->current_user );
     my $cached_id     = $cached_member->create(
-        member           => $args{'member'},
-        group            => $args{'group'},
-        immediate_parent => $args{'group'},
+        member           => $args{'member'}->principal,
+        group            => $args{'group'}->principal,
+        immediate_parent => $args{'group'}->principal,
         via              => '0'
     );
 
     #and popuplate the CachedGroupMembers of all the groups that group is part of .
 
-    my $cgm = RT::Model::CachedGroupMemberCollection->new;
+    my $cgm = RT::Model::CachedGroupMemberCollection->new( current_user => $self->current_user );
 
     #When adding a member to a group, we need to go back
     # find things which have the current group as a member.
@@ -181,15 +186,11 @@ sub create {
     $cgm->limit_to_groups_with_member( $args{'group'}->id );
 
     while ( my $parent_member = $cgm->next ) {
-        my $parent_id = $parent_member->member_id;
-        my $via       = $parent_member->id;
-        my $group_id  = $parent_member->group_id;
-
-        my $other_cached_member = RT::Model::CachedGroupMember->new;
+        my $other_cached_member = RT::Model::CachedGroupMember->new( current_user => $self->current_user );
         my $other_cached_id     = $other_cached_member->create(
-            member           => $args{'member'},
-            group            => $parent_member->group_obj,
-            immediate_parent => $parent_member->member_obj,
+            member           => $args{'member'}->principal,
+            group            => $parent_member->group,
+            immediate_parent => $parent_member->member,
             via              => $parent_member->id
         );
         unless ($other_cached_id) {
@@ -251,7 +252,7 @@ sub _stash_user {
         return (undef);
     }
 
-    my $cached_member = RT::Model::CachedGroupMember->new;
+    my $cached_member = RT::Model::CachedGroupMember->new( current_user => $self->current_user );
     my $cached_id     = $cached_member->create(
         member           => $args{'member'},
         group            => $args{'group'},
@@ -291,22 +292,22 @@ sub delete {
     # a member of A, will delete C as a member of A without touching
     # C as a member of B
 
-    my $cached_submembers = RT::Model::CachedGroupMemberCollection->new;
-
+    my $cached_submembers = RT::Model::CachedGroupMemberCollection->new(
+        current_user => $self->current_user
+    );
     $cached_submembers->limit(
         column   => 'member_id',
         operator => '=',
-        value    => $self->member_obj->id
+        value    => $self->member->id
     );
-
     $cached_submembers->limit(
         column   => 'immediate_parent',
         operator => '=',
-        value    => $self->group_obj->id
+        value    => $self->group->id
     );
 
-    while ( my $item_to_del = $cached_submembers->next() ) {
-        my ( $del_err, $del_msg ) = $item_to_del->delete();
+    while ( my $item_to_del = $cached_submembers->next ) {
+        my ( $del_err, $del_msg ) = $item_to_del->delete;
         unless ($del_err) {
             Jifty->handle->rollback();
             Jifty->log->warn( "Couldn't delete cached group submember " . $item_to_del->id );
@@ -329,40 +330,5 @@ sub delete {
     return ($err);
 
 }
-
-
-
-=head2 member_obj
-
-Returns an RT::Model::Principal object for the Principal specified by $self->principal_id
-
-=cut
-
-sub member_obj {
-    my $self = shift;
-    unless ( defined( $self->{'Member_obj'} ) ) {
-        $self->{'Member_obj'} = RT::Model::Principal->new;
-        $self->{'Member_obj'}->load( $self->member_id ) if ( $self->member_id );
-    }
-    return ( $self->{'Member_obj'} );
-}
-
-
-
-=head2 group_obj
-
-Returns an RT::Model::Principal object for the Group specified in $self->group_id
-
-=cut
-
-sub group_obj {
-    my $self = shift;
-    unless ( defined( $self->{'Group_obj'} ) ) {
-        $self->{'Group_obj'} = RT::Model::Principal->new;
-        $self->{'Group_obj'}->load( $self->group_id );
-    }
-    return ( $self->{'Group_obj'} );
-}
-
 
 1;

@@ -67,7 +67,7 @@
     pass_arguments => [qw(format Rows Page order order_by FindDisabledQueues)],
 &>
 % }
-<form method="post" action="<% RT->config->get('WebPath') %>/Admin/Queues/index.html">
+<form method="post" action="<% RT->config->get('web_path') %>/Admin/Queues/index.html">
 <input type="checkbox" class="checkbox" name="find_disabled_queues" value="1" <% $find_disabled_queues? 'checked="checked"': '' |n%> />
 <&|/l&>Include disabled queues in listing.</&>
 <div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
@@ -76,7 +76,7 @@
 </&>
 <%INIT>
 my ($queue, $caption);
-my $queues = RT::Model::QueueCollection->new();
+my $queues = RT::Model::QueueCollection->new( current_user => Jifty->web->current_user );
 $queues->find_all_rows();
 
 if ($find_disabled_queues) {

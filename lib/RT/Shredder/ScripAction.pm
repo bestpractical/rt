@@ -67,32 +67,7 @@ sub __depends_on {
     my $deps = $args{'dependencies'};
     my $list = [];
 
-    # Scrips
-    my $objs = RT::Model::ScripCollection->new;
-    $objs->limit( column => 'ScripAction', value => $self->id );
-    $deps->_push_dependencies(
-        base_object    => $self,
-        flags          => DEPENDS_ON,
-        target_objects => $objs,
-        shredder       => $args{'shredder'}
-    );
-
     return $self->SUPER::__depends_on(%args);
-}
-
-sub __relates {
-    my $self = shift;
-    my %args = (
-        shredder     => undef,
-        dependencies => undef,
-        @_,
-    );
-    my $deps = $args{'dependencies'};
-    my $list = [];
-
-    # TODO: Check here for exec module
-
-    return $self->SUPER::__Relates(%args);
 }
 
 1;

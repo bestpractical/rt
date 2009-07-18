@@ -90,7 +90,7 @@ sub set_return_address {
     my $self = shift;
     my $friendly_name;
 
-    if ( RT->config->get('UseFriendlyFromLine') ) {
+    if ( RT->config->get('use_friendly_from_line') ) {
         $friendly_name = $self->ticket_obj->queue->description
           || $self->ticket_obj->queue->name;
     }

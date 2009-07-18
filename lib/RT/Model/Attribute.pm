@@ -80,7 +80,7 @@ use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
     updated_on => 'last_updated'
 };
 
-=head1 name
+=head1 NAME
 
   RT::Model::Attribute 
 

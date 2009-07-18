@@ -66,10 +66,9 @@ ok( $ticket3->transactions->last->type =~ /Create/i, "Did not record a transacti
 sub create_ticket_as_ok {
     my $user = shift;
 
-    my $created = RT::Date->new( current_user => RT->system_user );
-    $created->unix(time() - ( 7 * 24 * 60**2 ));
-    my $due = RT::Date->new( current_user => RT->system_user );
-    $due->unix(time() + ( 7 * 24 * 60**2 ));
+    my $one_week_ago = time() - (7 * 24 * 60 * 60);
+    my $created = RT::DateTime->from_epoch(epoch => $one_week_ago);
+    my $due = RT::DateTime->from_epoch(epoch => $one_week_ago);
 
     my $ticket = RT::Model::Ticket->new( current_user => $user);
     ($id, $msg) = $ticket->create( queue => $q->id,
@@ -92,8 +91,10 @@ sub create_ticket_as_ok {
 sub escalate_ticket_ok {
     my $ticket = shift;
     my $id = $ticket->id;
-    print "$RT::BinPath/rt-crontool --search RT::Search::FromSQL --search-arg \"id = @{[$id]}\" --action RT::ScripAction::LinearEscalate --action-arg \"RecordTransaction:$RecordTransaction; UpdateLastUpdated:$UpdateLastUpdated\"\n";
-    print STDERR `$RT::BinPath/rt-crontool --search RT::Search::FromSQL --search-arg "id = @{[$id]}" --action RT::ScripAction::LinearEscalate --action-arg "RecordTransaction:$RecordTransaction; UpdateLastUpdated:$UpdateLastUpdated"`;
+
+    my $crontool = RT->bin_path . '/rt-crontool';
+    print "$crontool --search RT::Search::FromSQL --search-arg \"id = @{[$id]}\" --action RT::ScripAction::LinearEscalate --action-arg \"RecordTransaction:$RecordTransaction; UpdateLastUpdated:$UpdateLastUpdated\"\n";
+    print STDERR `$crontool --search RT::Search::FromSQL --search-arg "id = @{[$id]}" --action RT::ScripAction::LinearEscalate --action-arg "RecordTransaction:$RecordTransaction; UpdateLastUpdated:$UpdateLastUpdated"`;
 
     Jifty::DBI::Record::Cachable->flush_cache;
     $ticket->load($id);     # reload, because otherwise we get the cached value

@@ -71,14 +71,15 @@ unless (Jifty->web->current_user->has_right( object=> RT->system, right => 'Supe
 
 <h2><&|/l&>RT Config</&></h2>
 <table>
-% foreach my $key ( RT->config->options( Overridable => undef ) ) {
-% my $val = RT->config->get( $key );
+% my $configs = RT::Model::ConfigCollection->new;
+% $configs->unlimit;
+% while ( my $config = $configs->next ) {
+% my $val = $config->value;
 % next unless defined $val;
-<tr><td><% $key %></td>
+% $val = '' if defined $val && $val eq $config->_empty_string;
+<tr><td><% $config->name %></td>
 <td>
-% if ( $key =~ /password(?!Length)/i ) { 
-<em>password not printed</em>
-% } elsif ( !ref $val ) {
+% if ( !ref $val ) {
 <% $val %>
 % } elsif ( ref $val eq 'ARRAY' ) {
 <% join ', ', @$val %>
@@ -94,16 +95,11 @@ unless (Jifty->web->current_user->has_right( object=> RT->system, right => 'Supe
 <h2><&|/l&>RT Variables</&></h2>
 <table>
 % { no strict qw/refs/;
-% my %config_opt = map { $_ => 1 } RT->config->options( Overridable => undef );
 % foreach my $key ( sort keys %{*RT::} ) {
-% next if !${'RT::'.$key} || ref ${'RT::'.$key} || $config_opt{ $key };
+% next if !${'RT::'.$key} || ref ${'RT::'.$key};
 <tr><td>RT::<% $key %></td>
 <td>
-% if ( $key =~ /password(?!Length)/i ) { 
-<em>password not printed</em>
-% } else {
 <% ${'RT::'.$key} %>
-% }
 </td>
 </tr>
 % }

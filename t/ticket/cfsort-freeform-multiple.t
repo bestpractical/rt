@@ -76,7 +76,7 @@ sub run_tests {
             my $error = 0;
             my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user );
             $tix->from_sql( $query );
-            $tix->order_by( field => $test->{'Order'}, order => $order );
+            $tix->order_by( column => $test->{'column'}, order => $order );
 
             ok($tix->count, "found ticket(s)")
                 or $error = 1;
@@ -119,8 +119,8 @@ sub run_tests {
 );
 @tickets = add_tix_from_data();
 @test = (
-    { order => "CF.{$cf_name}" },
-    { order => "CF.$queue_name.{$cf_name}" },
+    { column => "CF.{$cf_name}" },
+    { column => "CF.$queue_name.{$cf_name}" },
 );
 run_tests();
 
@@ -131,8 +131,10 @@ run_tests();
 );
 @tickets = add_tix_from_data();
 @test = (
-    { order => "CF.{$cf_name}", query => "CF.{$cf_name} = 'm'" },
-    { order => "CF.$queue_name.{$cf_name}", query => "CF.{$cf_name} = 'm'" },
+    { column => "CF.{$cf_name}", query => "CF.{$cf_name} = 'm'" },
+    { column => "CF.$queue_name.{$cf_name}", query => "CF.{$cf_name} = 'm'" },
 );
 run_tests();
 
+# Global destruction issues
+@tickets = ();

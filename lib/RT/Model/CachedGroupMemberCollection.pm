@@ -46,7 +46,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-=head1 name
+=head1 NAME
 
   RT::Model::CachedGroupMemberCollection - a collection of RT::Model::GroupMember objects
 
@@ -67,7 +67,7 @@ use warnings;
 use strict;
 
 package RT::Model::CachedGroupMemberCollection;
-use base qw/RT::SearchBuilder/;
+use base qw/RT::Collection/;
 
 
 =head2 limit_to_users

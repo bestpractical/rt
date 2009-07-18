@@ -51,7 +51,7 @@ $order => 'ASC'
 </%ARGS>
 <%INIT>
 
-my $Tickets = RT::Model::TicketCollection->new();
+my $Tickets = RT::Model::TicketCollection->new( current_user => Jifty->web->current_user );
 $Tickets->from_sql( $ARGS{'query'} );
 if ( $order_by =~ /\|/ ) {
 
@@ -81,7 +81,7 @@ while ( my $Ticket = $Tickets->next()) {
             $row->{$attr} = "";
         } else {
             my $method = '$Ticket->'.$attr.'()';
-            $method =~ s/->iso\(\)$/->iso( Timezone => 'user' )/;
+            $method =~ s/->iso\(\)$/->iso( time_zone => 'user' )/;
             $row->{$attr} = eval $method;
             if ($@) {die "Failed to find $attr - ". $@}; 
         }

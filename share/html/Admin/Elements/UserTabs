@@ -71,7 +71,7 @@ subtabs => {
 			 },
 	}
 };
-    if ( RT->config->get('GnuPG')->{'enable'} ) {
+    if ( RT->config->get('gnupg')->{'enable'} ) {
         $tabs->{'this'}{'subtabs'}{'GnuPG'} = {
             title => _('GnuPG'),
             path  => "Admin/Users/GnuPG.html?id=".$id,

@@ -59,7 +59,7 @@
       
 <h1><&|/l&>System groups</&></h1>
 <table>
-% $Groups = RT::Model::GroupCollection->new();
+% $Groups = RT::Model::GroupCollection->new( current_user => Jifty->web->current_user );
 % $Groups->limit_to_system_internal_groups();
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 
@@ -67,7 +67,7 @@
 	    <% _($Group->type) %>
 		  </td>
 	  <td>
-	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
+	    <& /Admin/Elements/SelectRights, principal => $Group->principal_id,
         type => 'Group',
         object => $GroupObj  &>
 	  </td>
@@ -76,7 +76,7 @@
 </table>
 <h1><&|/l&>User defined groups</&></h1>
 <table>
-% $Groups = RT::Model::GroupCollection->new();
+% $Groups = RT::Model::GroupCollection->new( current_user => Jifty->web->current_user );
 % $Groups->limit_to_user_defined_groups();    
 %	while (my $Group = $Groups->next()) {
   <tr align="right"> 
@@ -84,7 +84,7 @@
 	    <% $Group->name %>
 		  </td>
 	  <td>
-	    <& /Admin/Elements/SelectRights, principal_id => $Group->principal_id,
+	    <& /Admin/Elements/SelectRights, principal => $Group->principal_id,
         type => 'Group',
         object => $GroupObj  &>
 	  </td>
@@ -108,7 +108,7 @@ if (!defined $id) {
     abort(_("No Group defined"));
 }
 
-my $GroupObj = RT::Model::Group->new();
+my $GroupObj = RT::Model::Group->new( current_user => Jifty->web->current_user );
 $GroupObj->load($id) || abort(_("Couldn't load group %1",$id));
 
 my $Groups;

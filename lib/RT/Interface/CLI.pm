@@ -64,7 +64,7 @@ BEGIN {
         &get_current_user &get_message_content &debug &loc);
 }
 
-=head1 name
+=head1 NAME
 
   RT::Interface::CLI - helper functions for creating a commandline RT interface
 
@@ -123,7 +123,7 @@ sub clean_env {
 =head2 get_current_user
 
   Figures out the uid of the current user and returns an RT::CurrentUser object
-loaded with that user.  if the current user isn't found, returns a copy of RT::nobody.
+loaded with that user.  if the current user isn't found, returns a copy of RT->nobody.
 
 =cut
 

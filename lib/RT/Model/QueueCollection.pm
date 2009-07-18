@@ -46,7 +46,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-=head1 name
+=head1 NAME
 
   RT::Model::QueueCollection - a collection of RT::Model::Queue objects
 
@@ -67,7 +67,7 @@ use warnings;
 use strict;
 
 package RT::Model::QueueCollection;
-use base qw/RT::SearchBuilder/;
+use base qw/RT::Collection/;
 
 sub _init {
     my $self = shift;

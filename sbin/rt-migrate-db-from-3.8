@@ -1,6 +1,8 @@
 #!/usr/bin/perl 
+
 use strict;
 use warnings;
+
 use Getopt::Long;
 use Carp;
 use Text::Naming::Convention qw/renaming/;
@@ -8,13 +10,279 @@ use Text::Naming::Convention qw/renaming/;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 
-my %args;
+my %opts;
+GetOptions( \%opts,
+    "help", "upgrade", "debug",
+);
+if ( $opts{'help'} || !$opts{'upgrade'} ) {
+    require Pod::Usage;
+    import Pod::Usage;
+    pod2usage(-verbose => 1);
+    exit 1;
+}
 
-BEGIN {
-    confess "unknown option"
-      unless GetOptions( \%args, 'db-name-rt3=s', 'help' );
+{
+    require Jifty::Script::Schema;
+    my $schema = Jifty::Script::Schema->new(
+        no_bootstrap      => 1,
+        no_model_tables   => 1,
+        create_database   => 0,
+        drop_database     => 0,
+    );
+    $schema->setup_environment;
+    Jifty->setup_database_connection( no_version_check => 1 );
+    $schema->create_all_tables;
+}
 
-    my $USAGE = <<'END';
+
+{
+    require Jifty::Everything;
+    import Jifty::Everything;
+    new Jifty;
+}
+
+my $db_type = Jifty->config->framework('Database')->{'Driver'};
+my $db_name = Jifty->config->framework('Database')->{'Database'};
+my $db_user = Jifty->config->framework('Database')->{'User'};
+my $dbh     = Jifty->handle->dbh;
+
+my %columns = (
+    ACL => [qw(id PrincipalType PrincipalId RightName ObjectType ObjectId DelegatedBy DelegatedFrom)],
+    Attachments => [qw(id TransactionId Parent MessageId Subject Filename ContentType ContentEncoding Content Headers Creator Created)],
+    Attributes => [qw(id Name Description Content ContentType ObjectType ObjectId Creator Created LastUpdatedBy LastUpdated)],
+    CachedGroupMembers => [qw(id GroupId MemberId Via ImmediateParentId Disabled)],
+    CustomFields => [qw(id Name Type MaxValues Pattern Repeated Description SortOrder LookupType Creator Created LastUpdatedBy LastUpdated Disabled)],
+    CustomFieldValues => [qw(id CustomField Name Description SortOrder Creator Created LastUpdatedBy LastUpdated)],
+    GroupMembers => [qw(id GroupId MemberId)],
+    Groups => [qw(id Name Description Domain Type Instance)],
+    Links => [qw(id Base Target Type LocalTarget LocalBase LastUpdatedBy LastUpdated Creator Created)],
+    ObjectCustomFields => [qw(id CustomField ObjectId SortOrder Creator Created LastUpdatedBy LastUpdated)],
+    ObjectCustomFieldValues => [qw(id CustomField ObjectType ObjectId SortOrder Content LargeContent ContentType ContentEncoding Creator Created LastUpdatedBy LastUpdated Disabled)],
+    Principals => [qw(id Type ObjectId Disabled)],
+    Queues => [qw(id Name Description CorrespondAddress CommentAddress InitialPriority FinalPriority DefaultDueIn Creator Created LastUpdatedBy LastUpdated Disabled)],
+    ScripActions => [qw(id Name Description ExecModule Argument Creator Created LastUpdatedBy LastUpdated)],
+    ScripConditions => [qw(id Name Description ExecModule Argument ApplicableTransTypes Creator Created LastUpdatedBy LastUpdated)],
+    Scrips => [qw(id Description ScripCondition ScripAction ConditionRules ActionRules CustomIsApplicableCode CustomPrepareCode CustomCommitCode Stage Queue Template Creator Created LastUpdatedBy LastUpdated)],
+    Templates => [qw(id Queue Name Description Type Language TranslationOf Content LastUpdated LastUpdatedBy Creator Created)],
+    Tickets => [qw(id EffectiveId Queue Type IssueStatement Resolution Owner Subject InitialPriority FinalPriority Priority TimeEstimated TimeWorked Status TimeLeft Told Starts Started Due Resolved LastUpdatedBy LastUpdated Creator Created Disabled)],
+    Transactions => [qw(id ObjectType ObjectId TimeTaken Type Field OldValue NewValue ReferenceType OldReference NewReference Data Creator Created)],
+    Users => [qw(id Name Password Comments Signature EmailAddress FreeformContactInfo Organization RealName NickName Lang EmailEncoding WebEncoding ExternalContactInfoId ContactInfoSystem ExternalAuthId AuthSystem Gecos HomePhone WorkPhone MobilePhone PagerPhone Address1 Address2 City State Zip Country Timezone PGPKey Creator Created LastUpdatedBy LastUpdated)],
+);
+
+my @tables = keys %columns;
+
+my %special_renaming = (
+    nick_name           => 'nickname',
+    email_address       => 'email',
+    principal_type      => 'type',
+    immediate_parent_id => 'immediate_parent',
+);
+
+my %drop_columns = (
+# drop columns related to delegations
+    ACL        => [qw(DelegatedBy DelegatedFrom)],
+# always was equal to id
+    Principals => [qw(ObjectId)],
+# XXX: do we really want to drop this?
+    Templates  => [qw(Language TranslationOf)],
+# never used this fields
+    Scrips     => [qw(ConditionRules ActionRules)],
+);
+
+
+update_all_tables();
+rename_columns_in_all_tables();
+drop_columns_in_all_tables();
+post_update_all_tables();
+
+sub post_update_attributes_table {
+
+# need to add a row for the default workflow in Attributes and update
+# part columns of that table
+    require RT::Model::AttributeCollection;
+    my $collection = RT::Model::AttributeCollection->new( current_user => RT->system_user );
+    $collection->unlimit;
+    while ( my $attr = $collection->next ) {
+        my $desc = $attr->description;
+        $desc =~ s/\[_(\d)\]/%$1/g; # [_1] => %1
+        $attr->set_description($desc);
+
+        my $content = $attr->content;
+
+        next unless ref $content && ref $content eq 'HASH';
+        for my $k ( keys %$content ) {
+            my $v = $content->{$k};
+            delete $content->{$k};
+            $content->{ renaming $k} = $v;
+        }
+        my $format = $content->{'format'};
+        if ( $format ) {
+            # update for the name convention changes
+            $format =~ s/__(?!WebPath)(\w+)__/'__' . renaming($1) . '__'/eg;
+            $format =~ s/TITLE:Subject/TITLE:subject/g;
+            $format =~ s/(,\s*|^\s*)(\w+)(?=\s*,|\s*$)/$1 . renaming($2)/eg;
+            $content->{'format'} = $format;
+        }
+        $attr->set_content($content);
+    }
+
+    add_default_status_schema();
+}
+
+sub add_default_status_schema {
+    require RT::Model::Attribute;
+    my $attribute = RT::Model::Attribute->new( current_user => RT->system_user );
+    my @results = $attribute->create(
+        name        => 'Workflows',
+        object      => RT->system,
+        description => 'all system workflows',
+        content     => {
+            default => {
+                initial     => ['new'],
+                active      => [ 'open', 'stalled' ],
+                inactive    => [ 'resolved', 'rejected', 'deleted' ],
+                transitions => {
+                    new      => [qw(open resolved rejected deleted)],
+                    open     => [qw(stalled resolved rejected deleted)],
+                    stalled  => [qw(open)],
+                    resolved => [qw(open)],
+                    rejected => [qw(open)],
+                    deleted  => [qw(open)],
+                },
+                actions => {
+                    'new -> open'     => [ 'Open It', 'respond' ],
+                    'new -> resolved' => [ 'Resolve', 'comment' ],
+                    'new -> rejected' => [ 'Reject',  'respond' ],
+                    'new -> deleted'  => [ 'Delete',  '' ],
+
+                    'open -> stalled'  => [ 'Stall',   'comment' ],
+                    'open -> resolved' => [ 'Resolve', 'comment' ],
+                    'open -> rejected' => [ 'Reject',  'respond' ],
+                    'open -> deleted'  => [ 'Delete',  'hide' ],
+
+                    'stalled -> open'  => [ 'Open It',  '' ],
+                    'resolved -> open' => [ 'Re-open',  'comment' ],
+                    'rejected -> open' => [ 'Re-open',  'comment' ],
+                    'deleted -> open'  => [ 'Undelete', '' ],
+                },
+            }
+        }
+    );
+}
+
+print "updated attributes with success\n";
+
+
+sub post_update_users_table {
+    # add email confirmed
+    require RT::Model::User;
+    RT::Model::User->add_column_in_db('email_confirmed');
+    execute_query("UPDATE Users SET email_confirmed = 1 WHERE name != 'RT_System'");
+}
+
+sub update_all_tables {
+    foreach my $table ( @tables ) {
+        my $function = join '_', 'update', $table, 'table';
+        next unless defined &$function;
+
+        print "updating table $table\n";
+        no strict 'refs';
+        (&$function)->();
+        print "updated table $table\n";
+    }
+}
+
+sub post_update_all_tables {
+    foreach my $table ( @tables ) {
+        my $function = join '_', 'post', 'update', $table, 'table';
+        next unless defined &$function;
+
+        print "updating table $table\n";
+        no strict 'refs';
+        (&$function)->();
+        print "updated table $table\n";
+    }
+}
+
+sub drop_columns_in_all_tables {
+    while ( my ($table, $columns) = each %drop_columns ) {
+        print "dropping columns in table $table\n";
+        drop_columns( $table, @$columns );
+        print "dropped columns in table $table\n";
+    }
+}
+
+sub rename_columns_in_all_tables {
+    foreach my $table ( @tables ) {
+        my %map;
+        foreach my $column ( @{ $columns{ $table } } ) {
+            next if $drop_columns{$table} && grep $_ eq $column, @{$drop_columns{$table}};
+
+            my $new = renaming( $column );
+            $new = $special_renaming{ $new } || $new;
+            next if lc $new eq lc $column;
+
+            $map{ $column } = $new;
+        }
+        next unless keys %map;
+        print "renaming columns in table $table\n";
+        rename_columns( $table, %map );
+        print "renamed columns in table $table\n";
+    }
+}
+
+sub update_acl_table {
+# delete delegated rights
+    execute_query("DELETE FROM ACL WHERE DelegatedBy != 0 AND DelegatedBy IS NOT NULL");
+# replace PrincipalType with NULLs where it's not a role
+    execute_query("UPDATE TABLE ACL SET PrincipalType = NULL WHERE PrincipalType IN ('User', 'Group')");
+}
+
+sub update_groups_table {
+# delete personal groups, everything else can be covered by validator
+    execute("DELETE FROM Groups WHERE Domain = 'Personal'");
+}
+
+sub rename_columns {
+    my ($table, %map) = (@_);
+
+    my $handle = Jifty->handle;
+    while ( my ($from, $to) = each %map ) {
+        $handle->rename_column(
+            table  => $table,
+            column => $from,
+            to     => $to,
+        );
+    }
+}
+
+sub drop_columns {
+    my ($table, @columns) = @_;
+    my $query = "ALTER TABLE $table ". join ', ', map "DROP COLUMN $_", @columns;
+    return execute_query( $query );
+}
+
+sub execute_query {
+    my ($query, @binds) = @_;
+
+    print "Executing query: $query\n\n";
+
+    my $sth = $dbh->prepare( $query ) or die "couldn't prepare $query\n\tError: ". $dbh->errstr;
+    $sth->execute( @binds ) or die "couldn't execute $query\n\tError: ". $sth->errstr;
+    return $sth;
+}
+
+=head1 NAME
+
+rt-migrate-db-from-3.8
+
+=head1 SYNOPSIS
+
+    rt-migrate-db-from-3.8 --help
+    rt-migrate-db-from-3.8 --upgrade
+
+=head1 DESCRIPTION
+
 before run, please backup your dbs
 and we need to set up a basic rt4 db with the cmd:
 $ jifty schema --setup --no-bootstrap
@@ -25,198 +293,5 @@ options:
 
 help: print this usage
 db-name-rt3: db name of rt3, default is 'rt3'
-END
 
-    if ( $args{'help'} ) {
-        print $USAGE;
-        exit 0;
-    }
-
-    use Jifty::Everything;
-    Jifty->new();
-}
-
-
-my $db_name_rt3 = $args{'db-name-rt3'} || 'rt3';
-my $db_type = Jifty->config->framework('Database')->{'Driver'};
-my $db_name_rt4 = Jifty->config->framework('Database')->{'Database'};
-my $db_user = Jifty->config->framework('Database')->{'User'};
-
-my %name_changes = (
-    nick_name           => 'nickname',
-    email_address       => 'email',
-    principal_type      => 'type',
-    immediate_parent_id => 'immediate_parent',
-);
-
-my @tables = qw/ACL Attachments  Attributes CachedGroupMembers CustomFieldValues
-CustomFields GroupMembers Groups Links ObjectCustomFieldValues ObjectCustomFields    Principals  Queues ScripActions ScripConditions Scrips Templates Tickets
-Transactions Users sessions/;
-
-my $tables_need_change = 'ACL Principals Templates Scrips';
-my $tables_no_change = 'Attachments  Attributes CachedGroupMembers CustomFieldValues CustomFields GroupMembers Groups Links ObjectCustomFieldValues ObjectCustomFields    Queues ScripActions ScripConditions Tickets Transactions Users sessions';
-
-if ( $db_type eq 'mysql' ) {
-    $db_user ||= 'root';
-
-    my $run_sql = sub {
-        my $db  = shift;
-        my @sql = @_;
-        open my $fh, '|-', "mysql -u $db_user $db" or die $!;
-        print $fh $_ for @sql;
-        close $fh;
-    };
-
-    # make a tmp rt3 db, with to-be-dropped columns dropped
-    my $tmp_rt3_db = "tmp_${db_name_rt3}_for_migration";
-    print "creating database $tmp_rt3_db\n";
-    $run_sql->( '',          "create database $tmp_rt3_db;\n" );
-    print "created database $tmp_rt3_db with success\n";
-
-    print "copying tables need to alter( $tables_need_change ) to $tmp_rt3_db\n";
-    system(
-        "mysqldump -u $db_user $db_name_rt3 $tables_need_change |
-      mysql -u $db_user $tmp_rt3_db"
-    ) && die $!;
-    print "copied tables need to alter with success!\n";
-
-    # now we alert tables
-    my @alter_sql = (
-        'alter table ACL drop column DelegatedBy;',
-        'alter table ACL drop column DelegatedFrom;',
-        'alter table Principals drop column ObjectId;',
-        'alter table Templates drop column Language;',
-        'alter table Templates drop column TranslationOf;',
-        'alter table Scrips drop column ConditionRules;',
-        'alter table Scrips drop column ActionRules;'
-    );
-    print "altering the copied tables\n";
-    $run_sql->( $tmp_rt3_db, @alter_sql );
-    print "altered the copied tables with success\n";
-
-    my $insert = sub {
-        my $input_cmd = shift;
-
-        open my $fh, '-|', $input_cmd or die $!;
-
-        while (<$fh>) {
-            next unless /^INSERT INTO/;
-            my $insert = $_;
-
-            # e.g. RT::Group -> RT::Model::Group
-            $insert =~ s/'RT::(?!System|ScripAction)(\w+)\b/'RT::Model::$1/g;
-            $insert =~ s/'Owner'/'owner'/g;
-            $insert =~ s/'Requestor'/'requestor'/g;
-            $insert =~ s/'Cc'/'cc'/g;
-            $insert =~ s/'AdminCc'/'admin_cc'/g;
-            $insert =~
-s/(?<!INSERT INTO )`(\w+)`/'`' . ($name_changes{renaming( $1)} || renaming($1)) . '`'/ge;
-            $run_sql->( $db_name_rt4, $insert );
-        }
-    };
-
-    print "inserting data to $db_name_rt4\n";
-# insert unchanged(actually, no so changed) tables from origion db
-    $insert->(
-"mysqldump -u $db_user $db_name_rt3 --complete-insert --no-create-info $tables_no_change"
-    );
-
-# import changed tables form tmp db
-    $insert->(
-"mysqldump -u $db_user $tmp_rt3_db --complete-insert --no-create-info"
-    );
-    print "inserted data to $db_name_rt4 with success\n";
-
-    $run_sql->( '',                   "drop database $tmp_rt3_db\n" );
-
-    # set up proper values for new added columns
-    # Queue.status_schema: 'default' # this is done automatically by rt4
-}
-
-print "updating table Attributes\n";
-# need to add a row for the default status schema in Attributes and update
-# part columns of that table
-use RT::Model::AttributeCollection;
-my $collection =
-  RT::Model::AttributeCollection->new( current_user => RT->system_user );
-$collection->unlimit;
-while ( my $attr = $collection->next ) {
-    my $desc = $attr->description;
-    $desc =~ s/\[_(\d)\]/%$1/g; # [_1] => %1
-    $attr->set_description($desc);
-
-    my $content = $attr->content;
-
-    next unless ref $content && ref $content eq 'HASH';
-    for my $k ( keys %$content ) {
-        my $v = $content->{$k};
-        delete $content->{$k};
-        $content->{ renaming $k} = $v;
-    }
-    my $format = $content->{'format'};
-    if ( $format ) {
-        # update for the name convention changes
-        $format =~ s/__(?!WebPath)(\w+)__/'__' . renaming($1) . '__'/eg;
-        $format =~ s/TITLE:Subject/TITLE:subject/g;
-        $format =~ s/(,\s*|^\s*)(\w+)(?=\s*,|\s*$)/$1 . renaming($2)/eg;
-        $content->{'format'} = $format;
-    }
-    $attr->set_content($content);
-}
-
-# add default status schema
-use RT::Model::Attribute;
-my $attribute = RT::Model::Attribute->new( current_user => RT->system_user );
-my @results = $attribute->create(
-    name        => 'StatusSchemas',
-    object      => RT->system,
-    description => 'all system status schemas',
-    content     => {
-        default => {
-            initial     => ['new'],
-            active      => [ 'open', 'stalled' ],
-            inactive    => [ 'resolved', 'rejected', 'deleted' ],
-            transitions => {
-                new      => [qw(open resolved rejected deleted)],
-                open     => [qw(stalled resolved rejected deleted)],
-                stalled  => [qw(open)],
-                resolved => [qw(open)],
-                rejected => [qw(open)],
-                deleted  => [qw(open)],
-            },
-            actions => {
-                'new -> open'     => [ 'Open It', 'respond' ],
-                'new -> resolved' => [ 'Resolve', 'comment' ],
-                'new -> rejected' => [ 'Reject',  'respond' ],
-                'new -> deleted'  => [ 'Delete',  '' ],
-
-                'open -> stalled'  => [ 'Stall',   'comment' ],
-                'open -> resolved' => [ 'Resolve', 'comment' ],
-                'open -> rejected' => [ 'Reject',  'respond' ],
-                'open -> deleted'  => [ 'Delete',  'hide' ],
-
-                'stalled -> open'  => [ 'Open It',  '' ],
-                'resolved -> open' => [ 'Re-open',  'comment' ],
-                'rejected -> open' => [ 'Re-open',  'comment' ],
-                'deleted -> open'  => [ 'Undelete', '' ],
-            },
-        }
-    }
-);
-
-print "updated attributes with success\n";
-
-
-print "updating table Users\n";
-use RT::Model::UserCollection;
-my $user_collection =
-  RT::Model::UserCollection->new( current_user => RT->system_user );
-
-while ( my $user = $user_collection->next ) {
-    my $name = $user->name;
-    $user->__set( column => 'email_confirmed', value => 1 )
-      unless $name eq 'RT_System';
-}
-print "updated table Users with success\n";
-print "migrated with success!\n"
-
+=cut

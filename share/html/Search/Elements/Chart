@@ -105,10 +105,10 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 
 <% _('Query:') %>&nbsp;<% $query %><br />
 
-% if (RT->config->get('DisableGD')) {
+% if (RT->config->get('disable_gd')) {
 <% _('Graphical charts are not available.') %><br />
 % } else {
-<img src="<%RT->config->get('WebPath')%>/Search/Chart?<%$query_string|n%>" /><br />
+<img src="<%RT->config->get('web_path')%>/Search/Chart?<%$query_string|n%>" /><br />
 % }
 
 <table class="collection-as-table">

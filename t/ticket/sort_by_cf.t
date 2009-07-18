@@ -121,7 +121,6 @@ check_order( $tx, 1, 2);
 $tx = RT::Model::TicketCollection->new( current_user => RT->system_user );
 $tx->from_sql(qq[queue="$queue"] );
 $tx->order_by( {column => "CF.{Charlie}", order => 'ASC' });
-diag $tx->build_select_query;
 is($tx->count,2);
 check_order( $tx, 2, 1);
 

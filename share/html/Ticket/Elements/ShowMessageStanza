@@ -86,9 +86,9 @@ if ( ref $message ) {
 }
 </%perl>
 <%INIT>
-my $plain_text_pre = RT->config->get('PlainTextPre', Jifty->web->current_user);
+my $plain_text_pre = RT->config->get('plain_text_pre', Jifty->web->current_user);
 
-my $ticket = $transaction ? $transaction->ticket_obj : undef;
+my $ticket = $transaction ? $transaction->ticket : undef;
 
 my $print_content = sub  {
     my $ref = shift;

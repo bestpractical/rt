@@ -46,7 +46,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-=head1 name
+=head1 NAME
 
   RT::Model::LinkCollection - A collection of Link objects
 
@@ -69,7 +69,7 @@ use strict;
 
 package RT::Model::LinkCollection;
 
-use base qw/RT::SearchBuilder/;
+use base qw/RT::Collection/;
 
 use RT::URI;
 

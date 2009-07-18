@@ -69,7 +69,7 @@
 % my $ids = join ',', map $_->id, @{ $Groups->items_array_ref };
 % if ( $ids ) {
 <div align="right"><em>
-(<a href="<% RT->config->get('WebPath') %>/Download/Tabular/Group/<% $ids %>/Groups.tsv">
+(<a href="<% RT->config->get('web_path') %>/Download/Tabular/Group/<% $ids %>/Groups.tsv">
 <&|/l&>Download as a tab-delimited file</&>
 </a>)</em></div>
 % }
@@ -77,14 +77,14 @@
 <br /><br />
 % }
 
-<form method="post" action="<% RT->config->get('WebPath') %>/Admin/Groups/index.html">
+<form method="post" action="<% RT->config->get('web_path') %>/Admin/Groups/index.html">
 <input type="checkbox" class="checkbox" name="finddisabled_groups" value="1" <% $finddisabled_groups? 'checked="checked"': '' |n %> /> <&|/l&>Include disabled groups in listing.</&><br />
 <&|/l&>Find groups whose</&> <& /Elements/SelectGroups &><br />
 <div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
 </form>
 </&>
 <%INIT>
-my $Groups = RT::Model::GroupCollection->new();
+my $Groups = RT::Model::GroupCollection->new( current_user => Jifty->web->current_user );
 $Groups->limit_to_user_defined_groups();
 my $title = _('Select a group');
 my $caption;

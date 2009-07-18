@@ -82,9 +82,9 @@ unless ( ($message->get_header('Content-Disposition')||"") =~ /attachment/i ) {
 
     # If it's text
     if (   $message->content_type =~ m{^(text|message)}i
-        && !( $message->filename && RT->config->get('SuppressInlineTextFiles', Jifty->web->current_user ) )
-        && (   !RT->config->get( 'MaxInlineBody', Jifty->web->current_user )
-            || $size <= RT->config->get('MaxInlineBody', Jifty->web->current_user ) ) )
+        && !( $message->filename && RT->config->get('suppress_inline_text_files', Jifty->web->current_user ) )
+        && (   !RT->config->get( 'max_inline_body', Jifty->web->current_user )
+            || $size <= RT->config->get('max_inline_body', Jifty->web->current_user ) ) )
     {
 
         if (
@@ -98,10 +98,10 @@ unless ( ($message->get_header('Content-Disposition')||"") =~ /attachment/i ) {
             # or it's of our prefered alterative type
             || (
                 (
-                    RT->config->get('PreferRichText')
+                    RT->config->get('prefer_rich_text')
                     && ( $message->content_type =~ m{^text/(?:html|enriched)$} )
                 )
-                || ( !RT->config->get('PreferRichText')
+                || ( !RT->config->get('prefer_rich_text')
                     && ( $message->content_type !~ m{^text/(?:html|enriched)$} )
                 )
             )
@@ -142,7 +142,7 @@ unless ( ($message->get_header('Content-Disposition')||"") =~ /attachment/i ) {
     }
 
     # if it's an image, show it as an image
-    elsif ( RT->config->get('ShowTransactionImages') and  $message->content_type =~ /^image\//i ) {
+    elsif ( RT->config->get('show_transaction_images') and  $message->content_type =~ /^image\//i ) {
         $m->out('<img src="'
               . $attach_path . '/'
               . $transaction->id . '/'
@@ -178,9 +178,9 @@ $collapsed => undef
 $downloadable_headers => 1
 $show_title_bar_commands => 1
 $row_num => 1
-$attach_path => RT->config->get('WebPath')."/Ticket/Attachment"
-$update_path => RT->config->get('WebPath')."/Ticket/Update.html"
-$email_record_path => RT->config->get('WebPath')."/Ticket/ShowEmailRecord.html"
+$attach_path => RT->config->get('web_path')."/Ticket/Attachment"
+$update_path => RT->config->get('web_path')."/Ticket/Update.html"
+$email_record_path => RT->config->get('web_path')."/Ticket/ShowEmailRecord.html"
 $attachments => undef
 $attachment_content => {}
 $show_body => 1
@@ -195,7 +195,7 @@ if ( $transaction->type =~ /email_record$/ ) {
 
 # If the transaction has anything attached to it at all
 elsif (!$show_headers)  {
-    push @display_headers, 'RT-Send-Bcc' if RT->config->get('ShowBccHeader');
+    push @display_headers, 'RT-Send-Bcc' if RT->config->get('show_bcc_header');
     @display_headers = qw(To From RT-Send-Cc Cc Bcc date subject);
 }
 

@@ -75,7 +75,7 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 %# 
 %# END BPS TAGGED BLOCK }}}
 
-<&| /_elements/wrapper, title=>_("RT at a glance"), refresh => $session{'home_refresh_interval'} &>
+<&| /_elements/wrapper, title=>_("RT at a glance"), refresh => Jifty->web->session->get('home_refresh_interval') &>
 <& /Elements/Tabs, 
     current_toptab => '', 
     title=>_("RT at a glance"),
@@ -122,11 +122,11 @@ if ( $ARGS{'quick_create'} ) {
 
 
 if ( $ARGS{'q'} ) {
-    RT::Interface::Web::redirect(RT->config->get('WebURL')."Search/Simple.html?q=".$m->interp->apply_escapes($ARGS{q}));
+    RT::Interface::Web::redirect(Jifty->web->url."Search/Simple.html?q=".$m->interp->apply_escapes($ARGS{q}));
 }
 
 if ($ARGS{'home_refresh_interval'}) {
-	$session{'home_refresh_interval'} = $ARGS{'home_refresh_interval'};
+	Jifty->web->session->get('home_refresh_interval') = $ARGS{'home_refresh_interval'};
 }
 
 my $actions;

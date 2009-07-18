@@ -132,7 +132,7 @@
 <%init>
 
 my (@actions, $SubmitLabel);
-my $scrip = RT::Model::Scrip->new();
+my $scrip = RT::Model::Scrip->new( current_user => Jifty->web->current_user );
 
 if ( $id ) {
     $scrip->load( $id );
@@ -165,7 +165,7 @@ $queue => undef
 <%INIT>
 return ($id) unless $id;
 
-my $scrip = RT::Model::Scrip->new();
+my $scrip = RT::Model::Scrip->new( current_user => Jifty->web->current_user );
 if ( $id eq 'new' ) {
     return $scrip->create(
         queue                  => $queue,

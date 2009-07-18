@@ -3,14 +3,13 @@
 use strict;
 use Test::Expect;
 use File::Spec ();
-use Test::More tests => 241;
-use RT::Test;
+use RT::Test tests => 241, l10n => 1;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 use RT::Model::User;
 use RT::Model::Queue;
 use Encode;
-my $rt_tool_path = "$RT::BinPath/rt";
+my $rt_tool_path = RT->bin_path . '/rt';
 
 # {{{  test configuration options
 
@@ -117,7 +116,7 @@ ok($val,$msg);
     # text attachment
     check_attachment($test_email);
     # binary attachment
-    check_attachment($RT::MasonComponentRoot.'/NoAuth/images/bplogo.gif');
+    check_attachment(RT->html_path.'/NoAuth/images/bplogo.gif');
 
 # change a ticket's Owner
 expect_send("edit ticket/$ticket_id set owner=root", 'Changing owner...');

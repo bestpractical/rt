@@ -62,9 +62,11 @@ package RT::Model::Queue;
 use RT::Model::GroupCollection;
 use RT::Model::ACECollection;
 use RT::Interface::Email;
-use RT::StatusSchema;
+use RT::Workflow;
 
-use base qw/RT::Record/;
+use Scalar::Util qw(blessed);
+
+use base qw/RT::HasRoleGroups RT::Record/;
 
 sub table {'Queues'}
 
@@ -253,11 +255,6 @@ sub create {
         return ( 0, _('Queue could not be created') );
     }
 
-    my $create_ret = $self->_create_role_groups();
-    unless ($create_ret) {
-        Jifty->handle->rollback();
-        return ( 0, _('Queue could not be created') );
-    }
     Jifty->handle->commit;
 
     if ( defined $sign ) {
@@ -321,10 +318,10 @@ sub load {
 
 sub status_schema {
     my $self = shift;
-    my $res = RT::StatusSchema->load(
+    my $res = RT::Workflow->load(
         (ref $self && $self->id) ? $self->__value('status_schema') : ''
     );
-    Jifty->log->error("Status schema doesn't exist") unless $res;
+    Jifty->log->error("Workflow doesn't exist") unless $res;
     return $res;
 }
 
@@ -394,7 +391,7 @@ Returns an RT::Model::TemplateCollection object of all of this queue's templates
 sub templates {
     my $self = shift;
 
-    my $templates = RT::Model::TemplateCollection->new;
+    my $templates = RT::Model::TemplateCollection->new( current_user => $self->current_user );
 
     if ( $self->current_user_has_right('ShowTemplate') ) {
         $templates->limit_to_queue( $self->id );
@@ -450,7 +447,7 @@ Load the queue-specific custom field named name
 sub custom_field {
     my $self = shift;
     my $name = shift;
-    my $cf   = RT::Model::CustomField->new;
+    my $cf   = RT::Model::CustomField->new( current_user => $self->current_user );
     $cf->load_by_name_and_queue( name => $name, queue => $self->id );
     return ($cf);
 }
@@ -466,7 +463,7 @@ queue-specific B<ticket> custom fields.
 sub ticket_custom_fields {
     my $self = shift;
 
-    my $cfs = RT::Model::CustomFieldCollection->new;
+    my $cfs = RT::Model::CustomFieldCollection->new( current_user => $self->current_user );
     if ( $self->current_user_has_right('SeeQueue') ) {
         $cfs->limit_to_global_or_object_id( $self->id );
         $cfs->limit_to_lookup_type('RT::Model::Queue-RT::Model::Ticket');
@@ -486,7 +483,7 @@ queue-specific B<transaction> custom fields.
 sub ticket_transaction_custom_fields {
     my $self = shift;
 
-    my $cfs = RT::Model::CustomFieldCollection->new;
+    my $cfs = RT::Model::CustomFieldCollection->new( current_user => $self->current_user );
     if ( $self->current_user_has_right('SeeQueue') ) {
         $cfs->limit_to_global_or_object_id( $self->id );
         $cfs->limit_to_lookup_type('RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction');
@@ -496,309 +493,7 @@ sub ticket_transaction_custom_fields {
 
 
 
-=head2 _create_queue_groups
-
-Create the ticket groups and links for this ticket. 
-This routine expects to be called from Ticket->create _inside of a transaction_
-
-It will create four groups for this ticket: Requestor, Cc, AdminCc and owner.
-
-It will return true on success and undef on failure.
-
-=cut
-
-sub roles {qw(requestor cc admin_cc)}
-
-sub _create_role_groups {
-    my $self = shift;
-
-    my @types = ( 'owner', $self->roles );
-
-    foreach my $type (@types) {
-        my $type_obj = RT::Model::Group->new;
-        my ( $id, $msg ) = $type_obj->create_role_group(
-            instance => $self->id,
-            type     => $type,
-            domain   => 'RT::Model::Queue-Role'
-        );
-        unless ($id) {
-            Jifty->log->error( "Couldn't create a queue group of type '$type' for ticket " . $self->id . ": " . $msg );
-            return (undef);
-        }
-    }
-    return (1);
-
-}
-
-=head2 add_watcher
-
-AddWatcher takes a parameter hash. The keys are as follows:
-
-Type        One of Requestor, Cc, AdminCc
-
-PrinicpalId The RT::Model::Principal id of the user or group that's being added as a watcher
-Email       The email address of the new watcher. If a user with this 
-            email address can't be found, a new nonprivileged user will be Created.
-
-If the watcher you\'re trying to set has an RT account, set the owner paremeter to their User Id. Otherwise, set the Email parameter to their Email address.
-
-Returns a tuple of (status/id, message).
-
-=cut
-
-sub add_watcher {
-    my $self = shift;
-    my %args = (
-        type         => undef,
-        principal_id => undef,
-        email        => undef,
-        @_
-    );
-
-    return ( 0, "No principal specified" )
-      unless $args{'email'}
-          or $args{'principal_id'};
-
-    if ( !$args{'principal_id'} && $args{'email'} ) {
-        my $user = RT::Model::User->new;
-        $user->load_by_email( $args{'email'} );
-        $args{'principal_id'} = $user->principal_id if $user->id;
-    }
-
-    # {{{ Check ACLS
-    return ( $self->_add_watcher(%args) )
-      if $self->current_user_has_right('ModifyQueueWatchers');
-
-    #If the watcher we're trying to add is for the current user
-    if ( defined $args{'principal_id'}
-        && $self->current_user->id eq $args{'principal_id'} )
-    {
-
-        #  If it's an AdminCc and they don't have
-        #   'WatchAsAdminCc' or 'ModifyTicket', bail
-        if ( defined $args{'type'} && ( $args{'type'} eq 'admin_cc' ) ) {
-            return ( $self->_add_watcher(%args) )
-              if $self->current_user_has_right('WatchAsAdminCc');
-        }
-
-        #  If it's a Requestor or Cc and they don't have
-        #   'Watch' or 'ModifyTicket', bail
-        elsif ( $args{'type'} eq 'cc' or $args{'type'} eq 'requestor' ) {
-            return ( $self->_add_watcher(%args) )
-              if $self->current_user_has_right('Watch');
-        } else {
-            Jifty->log->warn("$self -> add_watcher got passed a bogus type");
-            return ( 0, _('Error in parameters to Queue->add_watcher') );
-        }
-    }
-
-    return ( 0, _("Permission Denied") );
-}
-
-#This contains the meat of AddWatcher. but can be called from a routine like
-# Create, which doesn't need the additional acl check
-sub _add_watcher {
-    my $self = shift;
-    my %args = (
-        type         => undef,
-        silent       => undef,
-        principal_id => undef,
-        email        => undef,
-        @_
-    );
-
-    my $principal = RT::Model::Principal->new;
-    if ( $args{'principal_id'} ) {
-        $principal->load( $args{'principal_id'} );
-    } elsif ( $args{'email'} ) {
-        my $user = RT::Model::User->new;
-        $user->load_by_email( $args{'email'} );
-        $user->load( $args{'email'} )
-          unless $user->id;
-
-        if ( $user->id ) {    # If the user exists
-            $principal->load( $user->principal_id );
-        } else {
-
-            # if the user doesn't exist, we need to create a new user
-            my $new_user = RT::Model::User->new( current_user => RT->system_user );
-
-            my ( $Address, $name ) = RT::Interface::Email::parse_address_from_header( $args{'email'} );
-
-            my ( $Val, $Message ) = $new_user->create(
-                name       => $Address,
-                email      => $Address,
-                real_name  => $name,
-                privileged => 0,
-                comments   => 'AutoCreated when added as a watcher'
-            );
-            unless ($Val) {
-                Jifty->log->error( "Failed to create user " . $args{'email'} . ": " . $Message );
-
-                # Deal with the race condition of two account creations at once
-                $new_user->load_by_email( $args{'email'} );
-            }
-            $principal->load( $new_user->principal_id );
-        }
-    }
-
-    # If we can't find this watcher, we need to bail.
-    unless ( $principal->id ) {
-        return ( 0, _("Could not find or create that user") );
-    }
-
-    my $group = RT::Model::Group->new;
-    $group->load_queue_role_group(
-        type  => $args{'type'},
-        queue => $self->id
-    );
-    unless ( $group->id ) {
-        return ( 0, _("Group not found") );
-    }
-
-    if ( $group->has_member($principal) ) {
-
-        return ( 0, _( 'That principal is already a %1 for this queue', $args{'type'} ) );
-    }
-
-    my ( $m_id, $m_msg ) = $group->_add_member( principal_id => $principal->id );
-    unless ($m_id) {
-        Jifty->log->error( "Failed to add "
-              . $principal->id
-              . " as a member of group "
-              . $group->id . ": "
-              . $m_msg );
-
-        return ( 0, _( 'Could not make that principal a %1 for this queue', $args{'type'} ) );
-    }
-    return ( 1, _( 'Added principal as a %1 for this queue', $args{'type'} ) );
-}
-
-
-
-=head2 delete_watcher { type => TYPE, principal_id => PRINCIPAL_ID }
-
-
-Deletes a queue  watcher.  Takes two arguments:
-
-Type  (one of Requestor,Cc,AdminCc)
-
-and one of
-
-principal_id (an RT::Model::Principal id of the watcher you want to remove)
-    OR
-Email (the email address of an existing wathcer)
-
-
-=cut
-
-sub delete_watcher {
-    my $self = shift;
-
-    my %args = (
-        type         => undef,
-        principal_id => undef,
-        email       => undef,
-        @_
-    );
-
-    unless ( $args{'principal_id'} || $args{'email'} ) {
-        return ( 0, _("No principal specified") );
-    }
-
-    if ( !$args{principal_id} and $args{email} ) {
-        my $user = RT::Model::User->new;
-        my ( $rv, $msg ) = $user->load_by_email( $args{email} );
-        $args{principal_id} = $user->principal_id if $rv;
-    }
-
-    my $principal = RT::Model::Principal->new;
-    if ( $args{'principal_id'} ) {
-        $principal->load( $args{'principal_id'} );
-    }
-    else {
-        my $user = RT::Model::User->new;
-        $user->load_by_email( $args{'email'} );
-        $principal->load( $user->id );
-    }
-
-    # If we can't find this watcher, we need to bail.
-    unless ( $principal->id ) {
-        return ( 0, _("Could not find that principal") );
-    }
-
-    my $group = RT::Model::Group->new;
-    $group->load_queue_role_group(
-        type  => $args{'type'},
-        queue => $self->id
-    );
-    unless ( $group->id ) {
-        return ( 0, _("Group not found") );
-    }
-
-    my $can_modify_queue = $self->current_user_has_right('ModifyQueueWatchers');
-
-    # {{{ Check ACLS
-    #If the watcher we're trying to add is for the current user
-    if ( defined $args{'principal_id'}
-        and $self->current_user->principal->id eq $args{'principal_id'} )
-    {
-
-        #  If it's an AdminCc and they don't have
-        #   'WatchAsAdminCc' or 'ModifyQueue', bail
-        if ( $args{'type'} eq 'admin_cc' ) {
-            unless ( $can_modify_queue
-                or $self->current_user_has_right('WatchAsAdminCc') )
-            {
-                return ( 0, _('Permission Denied') );
-            }
-        }
-
-        #  If it's a Requestor or Cc and they don't have
-        #   'Watch' or 'ModifyQueue', bail
-        elsif (( $args{'type'} eq 'cc' ) or ( $args{'type'} eq 'requestor' ) ) {
-
-            unless ( $can_modify_queue
-                or $self->current_user_has_right('Watch') )
-            {
-                return ( 0, _('Permission Denied') );
-            }
-        } else {
-            Jifty->log->warn("$self -> delete_watcher got passed a bogus type");
-            return ( 0, _('Error in parameters to Queue->delete_watcher') );
-        }
-    }
-
-    # If the watcher isn't the current user
-    # and the current user  doesn't have 'ModifyQueueWathcers' bail
-    else {
-        unless ($can_modify_queue) {
-            return ( 0, _("Permission Denied") );
-        }
-    }
-
-    # }}}
-
-    # see if this user is already a watcher.
-
-    unless ( $group->has_member($principal) ) {
-        return ( 0, _( 'That principal is not a %1 for this queue', $args{'type'} ) );
-    }
-
-    my ( $m_id, $m_msg ) = $group->_delete_member( $principal->id );
-    unless ($m_id) {
-        Jifty->log->error( "Failed to delete "
-              . $principal->id
-              . " as a member of group "
-              . $group->id . ": "
-              . $m_msg );
-
-        return ( 0, _( 'Could not remove that principal as a %1 for this queue', $args{'type'} ) );
-    }
-
-    return ( 1, _( "%1 is no longer a %2 for this queue.", $principal->object->name, $args{'type'} ) );
-}
-
+sub roles { qw(requestor cc admin_cc) }
 
 =head2 role_group $role
 
@@ -810,59 +505,12 @@ If the user doesn't have "ShowQueue" permission, returns an empty group
 sub role_group {
     my $self  = shift;
     my $role  = shift;
-    my $group = RT::Model::Group->new;
+    my $group = RT::Model::Group->new( current_user => $self->current_user );
     if ( $self->current_user_has_right('SeeQueue') ) {
-        $group->load_queue_role_group( type => $role, queue => $self->id );
+        $group->load_role( type => $role, object => $self );
     }
     return ($group);
-
 }
-
-
-# a generic routine to be called by IsRequestor, IsCc and is_admin_cc
-
-=head2 is_watcher { type => TYPE, principal_id => PRINCIPAL_ID }
-
-Takes a param hash with the attributes type and principal_id
-
-Type is one of Requestor, Cc, AdminCc and owner
-
-principal_id is an RT::Model::Principal id 
-
-Returns true if that principal is a member of the group type for this queue
-
-
-=cut
-
-sub is_watcher {
-    my $self = shift;
-
-    my %args = (
-        type         => 'cc',
-        principal_id => undef,
-        @_
-    );
-
-    # Load the relevant group.
-    my $group = RT::Model::Group->new;
-    $group->load_queue_role_group(
-        type  => $args{'type'},
-        queue => $self->id
-    );
-
-    # Ask if it has the member in question
-
-    my $principal = RT::Model::Principal->new;
-    $principal->load( $args{'principal_id'} );
-    unless ( $principal->id ) {
-        return (undef);
-    }
-
-    return ( $group->has_member_recursively($principal) );
-}
-
-
-
 
 
 sub _set {
@@ -874,8 +522,6 @@ sub _set {
     return ( $self->SUPER::_set(@_) );
 }
 
-
-
 sub _value {
     my $self = shift;
 
@@ -885,8 +531,6 @@ sub _value {
 
     return ( $self->__value(@_) );
 }
-
-
 
 =head2 current_user_has_right
 
@@ -938,6 +582,36 @@ sub has_right {
     }
 
     return $principal->has_right( %args, object => ( $self->id ? $self : RT->system ), );
+}
+
+sub current_user_can_modify_watchers {
+    my $self = shift;
+    my %args = (
+        action       => 'add',
+        type         => undef,
+        principal => undef,
+        email        => undef,
+        @_
+    );
+
+    # ModifyTicket works in any case
+    return 1 if $self->current_user_has_right('ModifyQueueWatchers');
+
+    # if it's a new user in the system then user must have ModifyTicket
+    return 0 unless $args{'principal'};
+    # If the watcher isn't the current user then the current user has no right
+    return 0 unless $self->current_user->id == (blessed $args{'principal'}? $args{'principal'}->id : $args{'principal'});
+
+    #  If it's an admin_cc and they don't have 'WatchAsadmin_cc', bail
+    if ( $args{'type'} eq 'admin_cc' ) {
+        return 0 unless $self->current_user_has_right('WatchAsadmin_cc');
+    }
+
+    #  otherwise check 'Watch'
+    else {
+        return 0 unless $self->current_user_has_right('Watch');
+    }
+    return 1;
 }
 
 1;

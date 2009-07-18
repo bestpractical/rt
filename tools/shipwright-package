@@ -1,0 +1,180 @@
+# sources
+export ZLIB=http://www.zlib.net/zlib-1.2.3.tar.gz 
+export LIBPNG=ftp://ftp.simplesystems.org/pub/libpng/png/src/libpng-1.2.37.tar.bz2
+export FREETYPE=http://ftp.twaren.net/Unix/NonGNU/freetype/freetype-2.3.9.tar.gz
+export FONTCONFIG=http://fontconfig.org/release/fontconfig-2.6.0.tar.gz
+export EXPAT=http://nchc.dl.sourceforge.net/sourceforge/expat/expat-2.0.1.tar.gz
+export LIBJPEG=ftp://ftp.uu.net/graphics/jpeg/jpegsrc.v6b.tar.gz 
+export GD=http://www.libgd.org/releases/gd-2.0.35.tar.gz
+export GRAPHVIZ=http://www.graphviz.org/pub/graphviz/stable/SOURCES/graphviz-2.22.2.tar.gz
+export GNUPG=ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-1.4.9.tar.bz2
+export NCURSES=http://ftp.gnu.org/pub/gnu/ncurses/ncurses-5.7.tar.gz
+export READLINE=ftp://ftp.cwru.edu/pub/bash/readline-6.0.tar.gz
+export MYSQL=http://mysql.easynet.be/Downloads/MySQL-5.1/mysql-5.1.36.tar.gz
+export PG=http://ftp2.au.postgresql.org/pub/postgresql/source/v8.3.7/postgresql-8.3.7.tar.bz2
+export TEST_WWW_DECLARE=svn:http://svn.jifty.org/svn/jifty.org/Test-WWW-Declare
+export JIFTY_DBI=svn:http://svn.jifty.org/svn/jifty.org/Jifty-DBI/trunk
+export JIFTY=svn:http://svn.jifty.org/svn/jifty.org/jifty/trunk
+export LORZY=svn://svn.bestpractical.com/Lorzy/trunk
+#export RT=svn://svn.bestpractical.com/rt/3.999/trunk
+export RT=git://github.com/bestpractical/rt.git
+
+
+export REPO=/tmp/shipwright-rt4.git
+export GIT_PATH="git:file://$REPO"
+export MIN_PERL=5.008006
+export SKIP="--skip=Module::Signature,Devel::Cover,Pod::Coverage,Test::Pod::Coverage,Test::Distribution,Pod::Readme,Archive::Tar,Test::Script::Run,HTML::Lint,Encode,Date::Calc,cpan-mod_perl,Apache2::Const,Apache::Request,Apache::DBI,Git,XML::SAX::Exception,DBD::Oracle,CGI::SpeedyCGI,Jifty,Jifty::DBI,Test::WWW::Declare,Lorzy,Class::C3::XS"
+export IMPORT="shipwright import --min-perl-version=$MIN_PERL $SKIP -r $GIT_PATH --log-file - --log-level info"
+
+rm -rf $REPO
+shipwright create -r $GIT_PATH
+
+# import gd related stuff
+$IMPORT $ZLIB
+$IMPORT $LIBPNG
+$IMPORT $FREETYPE
+$IMPORT $FONTCONFIG
+$IMPORT $EXPAT
+$IMPORT $LIBJPEG --name libjpeg
+
+echo 'configure: LDFLAGS="-L%%INSTALL_BASE%%/lib" CPPFLAGS="-I%%INSTALL_BASE%%/include" ./configure --prefix=%%INSTALL_BASE%% --with-png=%%INSTALL_BASE%% --with-jpeg=%%INSTALL_BASE%% --with-fontconfig=%%INSTALL_BASE%% --with-freetype=%%INSTALL_BASE%%
+make: %%MAKE%%
+install: %%MAKE%% install
+clean: %%MAKE%% clean
+' > /tmp/shipwright_gd_build
+
+$IMPORT $GD --build-script=/tmp/shipwright_gd_build
+
+# import graphviz
+
+# I'm not quite sure why, but the *twice* make stuff make my macbook happy and
+# it doesn't hurt anyway
+echo 'configure: cp configure configure.old && ./configure --prefix=%%INSTALL_BASE%% --enable-java=no --enable-python=no --enable-tcl=no --enable-ruby=no --enable-php=no
+make: %%MAKE%% || cp configure.old configure && %%MAKE%%
+install: %%MAKE%% install
+' > /tmp/shipwright_graphviz_build
+$IMPORT $GRAPHVIZ --build-script=/tmp/shipwright_graphviz_build
+
+# import gnupg
+$IMPORT $GNUPG
+
+# import ncurses
+$IMPORT $NCURSES
+
+$IMPORT $READLINE
+
+# import mysql and Pg
+echo 'configure: ./configure --prefix=%%INSTALL_BASE%% --without-server --without-docs --without-man
+make: %%MAKE%%
+install: %%MAKE%% install
+clean: %%MAKE%% clean
+' > /tmp/shipwright_mysql_build
+$IMPORT $MYSQL --build-script=/tmp/shipwright_mysql_build
+
+echo 'configure: ./configure --prefix=%%INSTALL_BASE%% 
+make: %%MAKE%%
+install: %%MAKE%% -C src/bin install && %%MAKE%% -C src/include install && %%MAKE%% -C src/interfaces install
+clean: %%MAKE%% clean
+' > /tmp/shipwright_postgresql_build
+$IMPORT $PG --build-script=/tmp/shipwright_postgresql_build
+
+
+# newer Text-Balanced requires version.pm, which is not in core
+$IMPORT cpan:Text::Balanced
+# DBD::Pg Makefile.PL doesn't die if no DBI installed, that's sad for shipwright
+$IMPORT cpan:DBD::Pg --no-follow
+$IMPORT cpan:DBD::SQLite --no-follow
+$IMPORT cpan:DBD::mysql --no-follow
+
+echo 'configure: %%PERL%% Makefile.PL LIB=%%INSTALL_BASE%%/lib/perl5/ PREFIX=%%INSTALL_BASE%% %%MAKEMAKER_CONFIGURE_EXTRA%% EXPATINCPATH=%%INSTALL_BASE%%/include EXPATLIBPATH=%%INSTALL_BASE%%/lib
+make: %%MAKE%%
+test: %%MAKE%% test
+install: %%MAKE%% install
+clean: %%MAKE%% clean' > /tmp/shipwright_cpan_xml_parser_build
+$IMPORT cpan:XML::Parser --build-script /tmp/shipwright_cpan_xml_parser_build
+
+$IMPORT $TEST_WWW_DECLARE  --name Test-WWW-Declare
+$IMPORT $JIFTY_DBI --name Jifty-DBI
+$IMPORT $JIFTY --name Jifty
+
+$IMPORT $LORZY --name Lorzy
+
+echo 'install: cp -rf * %%INSTALL_BASE%%' > /tmp/shipwright_rt_build
+export RT_GIT=/tmp/shipwright_rt_tmp.git
+rm -rf $RT_GIT
+git clone $RT $RT_GIT
+cd $RT_GIT
+git checkout origin/3.999-trunk
+rm -rf .git
+$IMPORT dir://$RT_GIT --name RT --build-script /tmp/shipwright_rt_build
+cd /tmp/
+rm -rf $RT_GIT
+
+shipwright update -r $GIT_PATH cpan-Data-Dump-Streamer --add-deps cpan-Text-Balanced
+shipwright update -r $GIT_PATH cpan-Text-Balanced --add-deps cpan-version
+shipwright update -r $GIT_PATH Jifty --add-deps Jifty-DBI,Test-WWW-Declare
+shipwright update -r $GIT_PATH cpan-DBD-SQLite --add-deps cpan-DBI
+shipwright update -r $GIT_PATH cpan-DBD-mysql --add-deps mysql,cpan-DBI
+shipwright update -r $GIT_PATH cpan-DBD-Pg --add-deps postgresql,cpan-DBI
+shipwright update -r $GIT_PATH mysql --add-deps ncurses,readline
+shipwright update -r $GIT_PATH postgresql --add-deps zlib,readline
+shipwright update -r $GIT_PATH fontconfig --add-deps freetype,expat
+shipwright update -r $GIT_PATH libpng --add-deps zlib
+shipwright update -r $GIT_PATH gd --add-deps libpng,libjpeg,freetype,fontconfig
+shipwright update -r $GIT_PATH graphviz --add-deps gd,freetype,fontconfig,zlib
+shipwright update -r $GIT_PATH cpan-GD --add-deps gd
+shipwright update -r $GIT_PATH cpan-GraphViz --add-deps graphviz
+shipwright update -r $GIT_PATH cpan-GnuPG-Interface --add-deps gnupg
+shipwright maintain -r $GIT_PATH --update-order
+
+shipwright flags -r $GIT_PATH mysql --add mysql
+shipwright flags -r $GIT_PATH cpan-DBD-mysql --add mysql
+shipwright flags -r $GIT_PATH postgresql --add Pg
+shipwright flags -r $GIT_PATH cpan-DBD-Pg --add Pg
+
+# set known test failures
+shipwright ktf -r $GIT_PATH --set 1 cpan-Regexp-Common cpan-URI cpan-Time-Duration cpan-Data-Dump-Streamer cpan-Storable cpan-PAR-Dist cpan-WWW-Mechanize cpan-Test-WWW-Mechanize  cpan-MIME-tools cpan-DBD-mysql cpan-DBD-Pg cpan-XML-SAX-Expat cpan-Compress-PPMd Jifty
+
+echo 'RT: cd %%INSTALL_BASE%% && PERL5LIB=lib:lib/perl5 bin/prove -r t' > /tmp/shipwright_test
+shipwright import -r $GIT_PATH --test-script /tmp/shipwright_test
+
+# add trivial wrapper for update
+echo "# e.g.
+# ./bin/shipwright-update cpan-version
+shipwright update -r $GIT_PATH --only-sources \$1" > /tmp/shipwright-update
+chmod +x /tmp/shipwright-update
+git clone file://$REPO /tmp/shipwright-tmp.git
+cp /tmp/shipwright-update /tmp/shipwright-tmp.git/bin/
+cd /tmp/shipwright-tmp.git/bin/
+git add shipwright-update
+git commit -m 'add bin/shipwright-update' shipwright-update
+git push
+rm -rf /tmp/shipwright-tmp.git
+
+echo "# e.g.
+# ./bin/shipwright-update-rt
+export RT_GIT=/tmp/shipwright_rt_tmp.git
+rm -rf \$RT_GIT
+git clone $RT \$RT_GIT
+cd \$RT_GIT
+git checkout origin/3.999-trunk
+rm -rf .git
+shipwright update -r $GIT_PATH --only-sources RT dir:\$RT_GIT
+cd $REPO
+rm -rf \$RT_GIT" > /tmp/shipwright-update-rt
+
+chmod +x /tmp/shipwright-update-rt
+git clone file://$REPO /tmp/shipwright-tmp.git
+cp /tmp/shipwright-update-rt /tmp/shipwright-tmp.git/bin/
+cd /tmp/shipwright-tmp.git/bin/
+git add shipwright-update-rt
+git commit -m 'add bin/shipwright-update-rt' shipwright-update-rt
+git push
+rm -rf /tmp/shipwright-tmp.git
+
+cd /tmp
+rm -rf rtex-$$
+git clone file://$REPO /tmp/rtex-$$
+#rsync -rvp /tmp/rtex/ jesse@fsck.com:/tmp/rtex-$$
+echo "cd /tmp/rtex-$$; ./bin/shipwright-builder --flags mysql,postgresql; ./bin/shipwright-builder --only-test" 
+

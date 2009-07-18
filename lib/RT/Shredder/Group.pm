@@ -72,7 +72,7 @@ sub __depends_on {
 
         # delete user entry after ACL equiv group
         # in other case we will get deep recursion
-        my $objs = RT::Model::User->new;
+        my $objs = RT::Model::User->new( current_user => $self->current_user );
         $objs->load( $self->instance );
         $deps->_push_dependency(
             base_object   => $self,
@@ -91,12 +91,12 @@ sub __depends_on {
     );
 
     # Group members records
-    my $objs = RT::Model::GroupMemberCollection->new;
+    my $objs = RT::Model::GroupMemberCollection->new( current_user => $self->current_user );
     $objs->limit_to_members_of_group( $self->principal_id );
     push( @$list, $objs );
 
     # Group member records group belongs to
-    $objs = RT::Model::GroupMemberCollection->new;
+    $objs = RT::Model::GroupMemberCollection->new( current_user => $self->current_user );
     $objs->limit(
         value            => $self->principal_id,
         column           => 'member_id',
@@ -106,10 +106,10 @@ sub __depends_on {
     push( @$list, $objs );
 
     # Cached group members records
-    push( @$list, $self->deep_members_obj );
+    push( @$list, $self->members( recursively => 1 ) );
 
     # Cached group member records group belongs to
-    $objs = RT::Model::GroupMemberCollection->new;
+    $objs = RT::Model::GroupMemberCollection->new( current_user => $self->current_user );
     $objs->limit(
         value            => $self->principal_id,
         column           => 'member_id',
@@ -125,50 +125,6 @@ sub __depends_on {
         shredder       => $args{'shredder'}
     );
     return $self->SUPER::__depends_on(%args);
-}
-
-sub __relates {
-    my $self = shift;
-    my %args = (
-        shredder     => undef,
-        dependencies => undef,
-        @_,
-    );
-    my $deps = $args{'dependencies'};
-    my $list = [];
-
-    # Equivalence group id inconsistent without User
-    if ( $self->domain eq 'ACLEquivalence' ) {
-        my $obj = RT::Model::User->new;
-        $obj->load( $self->instance );
-        if ( $obj->id ) {
-            push( @$list, $obj );
-        } else {
-            my $rec = $args{'shredder'}->get_record( object => $self );
-            $self = $rec->{'object'};
-            $rec->{'state'} |= INVALID;
-            $rec->{'description'} = "ACLEguvivalence group have no related User #" . $self->instance . " object.";
-        }
-    }
-
-    # Principal
-    my $obj = $self->principal;
-    if ( $obj && $obj->id ) {
-        push( @$list, $obj );
-    } else {
-        my $rec = $args{'shredder'}->get_record( object => $self );
-        $self = $rec->{'object'};
-        $rec->{'state'} |= INVALID;
-        $rec->{'description'} = "Have no related Principal #" . $self->id . " object.";
-    }
-
-    $deps->_push_dependencies(
-        base_object    => $self,
-        flags          => RELATES,
-        target_objects => $list,
-        shredder       => $args{'shredder'}
-    );
-    return $self->SUPER::__Relates(%args);
 }
 
 sub before_wipeout {

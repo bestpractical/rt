@@ -176,7 +176,7 @@ sub create {
         }
 
         foreach my $part ( $Attachment->parts ) {
-            my $SubAttachment = RT::Model::Attachment->new();
+            my $SubAttachment = RT::Model::Attachment->new( current_user => $self->current_user );
             my ($id) = $SubAttachment->create(
                 transaction_id => $args{'transaction_id'},
                 parent         => $id,
@@ -235,11 +235,12 @@ Returns the transaction object asscoiated with this attachment.
 
 =cut
 
-sub transaction_obj {
+sub transaction {
     my $self = shift;
 
     unless ( $self->{_transaction_obj} ) {
-        $self->{_transaction_obj} = RT::Model::Transaction->new;
+        $self->{_transaction_obj} =
+          RT::Model::Transaction->new( current_user => $self->current_user );
         $self->{_transaction_obj}->load( $self->transaction_id );
     }
 
@@ -258,11 +259,8 @@ has a parent, otherwise returns undef.
 
 sub parent_obj {
     my $self = shift;
-    return undef unless $self->parent;
-
-    my $parent = RT::Model::Attachment->new;
-    $parent->load_by_id( $self->parent );
-    return $parent;
+    return undef unless $self->parent->id;
+    return $self->parent;
 }
 
 =head2 children
@@ -276,7 +274,7 @@ C<parent>.
 sub children {
     my $self = shift;
 
-    my $kids = RT::Model::AttachmentCollection->new;
+    my $kids = RT::Model::AttachmentCollection->new( current_user => $self->current_user );
     $kids->children_of( $self->id );
     return ($kids);
 }
@@ -357,7 +355,7 @@ Returns length of L</content> in bytes.
 sub content_length {
     my $self = shift;
 
-    return undef unless $self->transaction_obj->current_user_can_see;
+    return undef unless $self->transaction->current_user_can_see;
 
     my $len = $self->get_header('Content-Length');
     unless ( defined $len ) {
@@ -410,7 +408,7 @@ sub quote {
 
         $body =~ s/^/> /gm;
 
-        $body = '[' . $self->transaction_obj->creator_obj->name() . ' - ' . $self->transaction_obj->created . "]:\n\n" . $body . "\n\n";
+        $body = '[' . $self->transaction->creator->name() . ' - ' . $self->transaction->created . "]:\n\n" . $body . "\n\n";
 
     } else {
         $body = "[Non-text message not quoted]\n\n";
@@ -631,14 +629,14 @@ sub _split_headers {
 sub encrypt {
     my $self = shift;
 
-    my $txn = $self->transaction_obj;
+    my $txn = $self->transaction;
     return ( 0, _('Permission Denied') ) unless $txn->current_user_can_see;
     return ( 0, _('Permission Denied') )
-        unless $txn->ticket_obj->current_user_has_right('ModifyTicket');
+        unless $txn->ticket->current_user_has_right('ModifyTicket');
     return ( 0, _('GnuPG integration is disabled') )
-        unless RT->config->get('GnuPG')->{'enable'};
+        unless RT->config->get('gnupg')->{'enable'};
     return ( 0, _('Attachments encryption is disabled') )
-        unless RT->config->get('GnuPG')->{'allow_encrypt_data_in_db'};
+        unless RT->config->get('gnupg')->{'allow_encrypt_data_in_db'};
 
     require RT::Crypt::GnuPG;
 
@@ -651,9 +649,9 @@ sub encrypt {
         $type = qq{x-application-rt\/gpg-encrypted; original-type="$type"};
     }
 
-    my $queue = $txn->ticket_obj->queue;
+    my $queue = $txn->ticket->queue;
     my $encrypt_for;
-    foreach my $address ( grep $_, $queue->correspond_address, $queue->comment_address, RT->config->get('CorrespondAddress'), RT->config->get('CommentAddress'), ) {
+    foreach my $address ( grep $_, $queue->correspond_address, $queue->comment_address, RT->config->get('correspond_address'), RT->config->get('comment_address'), ) {
         my %res = RT::Crypt::GnuPG::get_keys_info( $address, 'private' );
         next if $res{'exit_code'} || !$res{'info'};
         %res = RT::Crypt::GnuPG::get_keys_for_encryption($address);
@@ -688,12 +686,12 @@ sub encrypt {
 sub decrypt {
     my $self = shift;
 
-    my $txn = $self->transaction_obj;
+    my $txn = $self->transaction;
     return ( 0, _('Permission Denied') ) unless $txn->current_user_can_see;
     return ( 0, _('Permission Denied') )
-        unless $txn->ticket_obj->current_user_has_right('ModifyTicket');
+        unless $txn->ticket->current_user_has_right('ModifyTicket');
     return ( 0, _('GnuPG integration is disabled') )
-        unless RT->config->get('GnuPG')->{'enable'};
+        unless RT->config->get('gnupg')->{'enable'};
 
     require RT::Crypt::GnuPG;
 
@@ -736,7 +734,7 @@ sub _value {
         return ( $self->__value( $field, @_ ) );
     }
 
-    return undef unless $self->transaction_obj->current_user_can_see;
+    return undef unless $self->transaction->current_user_can_see;
     return $self->__value( $field, @_ );
 }
 

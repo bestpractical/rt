@@ -3,13 +3,13 @@ use strict;
 
 use RT::Test; use Test::More tests => 14;
 
-
-use constant LogoFile => $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
-use constant FaviconFile => $RT::MasonComponentRoot .'/NoAuth/images/favicon.png';
+use constant ImageRoot => RT->html_path . '/NoAuth/images';
+use constant LogoFile => ImageRoot .'/bplogo.gif';
+use constant FaviconFile => ImageRoot .'/favicon.png';
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in';
-my $queue = RT::Model::Queue->new(current_user => $RT::nobody);
+my $queue = RT::Model::Queue->new(current_user => RT->nobody);
 my $qid = $queue->load('General');
 ok( $qid, "Loaded General queue" );
 

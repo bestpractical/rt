@@ -47,7 +47,7 @@
 # END BPS TAGGED BLOCK }}}
 # Portions Copyright 2000 Tobias Brox <tobix@cpan.org>
 
-=head1 name
+=head1 NAME
 
   RT::Model::Template - RT's template object
 
@@ -151,14 +151,14 @@ sub load_queue_template {
 Takes a paramhash of content, queue, name and description.
 name should be a unique string identifying this Template.
 description and content should be the template's title and content.
-queue should be 0 for a global template and the queue # for a queue-specific 
+queue should be 0 for a global template and the queue # for a queue-specific
 template.
 
 Returns the Template's id if the create was successful. Returns undef on error.
 In list context returns a message as well.
 
 =head2 is_empty
- 
+
 Returns true value if content of the template is empty, otherwise
 returns false.
 
@@ -172,10 +172,10 @@ sub is_empty {
 }
 
 =head2 mime_obj
- 
-Returns L<MIME::Entity> object parsed using L</Parse> method. Returns
-undef if last call to L</Parse> failed or never be called.
- 
+
+Returns L<MIME::Entity> object parsed using L</parse> method. Returns
+undef if last call to L</parse> failed or never be called.
+
 Note that content of the template is UTF-8, but L<MIME::Parser> is not
 good at handling it and all data of the entity should be treated as
 octets and converted to perl strings using Encode::decode_utf8 or
@@ -191,13 +191,13 @@ sub mime_obj {
 
 =head2 parse
 
- This routine performs Text::Template parsing on the template and then
- imports the results into a MIME::Entity so we can really use it
+This routine performs Text::Template parsing on the template and then
+imports the results into a MIME::Entity so we can really use it
 
- Takes a hash containing Argument, ticket_obj, and transaction_obj.
+Takes a hash containing Argument, ticket_obj, and transaction_obj.
 
- It returns a tuple of (val, message)
- If val is 0, the message contains an error message
+It returns a tuple of (val, message) If val is 0, the message contains
+an error message.
 
 Note that content of the template is UTF-8, but L<MIME::Parser> is not
 good at handling it and all data of the entity should be treated as
@@ -207,17 +207,17 @@ something else.
 =cut
 
 =head2 parse
-         
+
 This routine performs L<Text::Template> parsing on the template and then
 imports the results into a L<MIME::Entity> so we can really use it. Use
 L</mime_obj> method to get the L<MIME::Entity> object.
- 
+
 Takes a hash containing Argument, ticket_obj, and transaction_obj and other
 arguments that will be available in the template's code.
-     
+
 It returns a tuple of (val, message). If val is false, the message contains
 an error message.
- 
+
 =cut
 
 sub parse {
@@ -324,7 +324,7 @@ sub _parse_content {
     $args{'ticket'} = delete $args{'ticket_obj'} if $args{'ticket_obj'};
     $args{'transaction'} = delete $args{'transaction_obj'}
         if $args{'transaction_obj'};
-    $args{'requestor'} = eval { $args{'ticket'}->role_group("requestor")->user_members_obj->first->name; }
+    $args{'requestor'} = eval { $args{'ticket'}->role_group("requestor")->user_members->first->name; }
         if $args{'ticket'};
     $args{'rtname'} = RT->config->get('rtname');
     if ( $args{'ticket'} ) {
@@ -518,7 +518,7 @@ sub check_delete_rights {
 sub queue_obj {
     require Carp; Carp::confess("deprecated");
     my $self = shift;
-    my $q    = RT::Model::Queue->new;
+    my $q    = RT::Model::Queue->new( current_user => $self->current_user );
     $q->load( $self->__value('queue') );
     return $q;
 }

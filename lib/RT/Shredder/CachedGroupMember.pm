@@ -68,7 +68,7 @@ sub __depends_on {
     my $list = [];
 
     # deep memebership
-    my $objs = RT::Model::CachedGroupMemberCollection->new;
+    my $objs = RT::Model::CachedGroupMemberCollection->new( current_user => $self->current_user );
     $objs->limit( column => 'via', value => $self->id );
     $objs->limit( column => 'id', operator => '!=', value => $self->id );
     push( @$list, $objs );
@@ -83,45 +83,4 @@ sub __depends_on {
     return $self->SUPER::__depends_on(%args);
 }
 
-#TODO: If we plan write export tool we also should fetch parent groups
-# now we only wipeout things.
-
-sub __relates {
-    my $self = shift;
-    my %args = (
-        shredder     => undef,
-        dependencies => undef,
-        @_,
-    );
-    my $deps = $args{'dependencies'};
-    my $list = [];
-
-    my $obj = $self->member_obj;
-    if ( $obj && $obj->id ) {
-        push( @$list, $obj );
-    } else {
-        my $rec = $args{'shredder'}->get_record( object => $self );
-        $self = $rec->{'object'};
-        $rec->{'state'} |= INVALID;
-        $rec->{'description'} = "Have no related Principal #" . $self->member_id . " object.";
-    }
-
-    $obj = $self->group_obj;
-    if ( $obj && $obj->id ) {
-        push( @$list, $obj );
-    } else {
-        my $rec = $args{'shredder'}->get_record( object => $self );
-        $self = $rec->{'object'};
-        $rec->{'state'} |= INVALID;
-        $rec->{'description'} = "Have no related Principal #" . $self->group_id . " object.";
-    }
-
-    $deps->_push_dependencies(
-        base_object    => $self,
-        flags          => RELATES,
-        target_objects => $list,
-        shredder       => $args{'shredder'}
-    );
-    return $self->SUPER::__Relates(%args);
-}
 1;

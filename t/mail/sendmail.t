@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use RT::Test; use Test::More tests => 131;
+use RT::Test; use Test::More tests => 117;
 use File::Spec ();
 
 
@@ -15,7 +15,7 @@ my @scrips_fired;
 
 #Were not testing acls here.
 my $everyone = RT::Model::Group->new(current_user => RT->system_user);
-$everyone->load_system_internal_group('Everyone');
+$everyone->load_system_internal('Everyone');
 $everyone->principal->grant_right( right =>'SuperUser' );
 
 
@@ -27,7 +27,7 @@ is (__PACKAGE__, 'main', "We're operating in the main package");
         my $self = shift;
         my $MIME = shift;
 
-        main::_fired_scrip($self->scrip_obj);
+        main::_fired_scrip('#rule');
         main::is(ref($MIME) , 'MIME::Entity', "hey, look. it's a mime entity");
     }
 }
@@ -149,7 +149,7 @@ ok ($id, $msg);
 
 # we need to swap out send_message to test the new things we care about;
 &iso8859_redef_sendmessage;
-RT->config->set( EmailOutputEncoding => 'iso-8859-1' );
+RT->config->set( email_output_encoding => 'iso-8859-1' );
 # create an iso 8859-1 ticket
 @scrips_fired = ();
 
@@ -199,9 +199,7 @@ sub utf8_redef_sendmessage {
         my $self = shift;
         my $MIME = shift;
 
-        my $scrip = $self->scrip_obj->id;
-        ok(1, $self->scrip_obj->scrip_condition->name . " ".$self->scrip_obj->scrip_action->name);
-        main::_fired_scrip($self->scrip_obj);
+        main::_fired_scrip("#rule");
         $MIME->make_singlepart;
         main::is( ref($MIME) , \'MIME::Entity\',
                   "hey, look. it\'s a mime entity" );
@@ -226,9 +224,7 @@ sub iso8859_redef_sendmessage {
         my $self = shift;
         my $MIME = shift;
 
-        my $scrip = $self->scrip_obj->id;
-        ok(1, $self->scrip_obj->scrip_condition->name . " ".$self->scrip_obj->scrip_action->name);
-        main::_fired_scrip($self->scrip_obj);
+        main::_fired_scrip("#rule");
         $MIME->make_singlepart;
         main::is( ref($MIME) , \'MIME::Entity\',
                   "hey, look. it\'s a mime entity" );
@@ -305,7 +301,7 @@ sub text_html_redef_sendmessage {
     eval 'sub RT::ScripAction::SendEmail::send_message { 
                 my $self = shift;
                 my $MIME = shift;
-                return (1) unless ($self->scrip_obj->scrip_action->name eq "Notify AdminCcs" );
+                return (1) unless ($self->hints->{source_scripaction_name} eq "Notify AdminCcs" );
                 is ($MIME->parts, 0, "generated correspondence mime entity
                         does not have parts");
                 is ($MIME->head->mime_type , "text/plain", "The mime type is a plain");
@@ -342,8 +338,9 @@ is (count_attachs($tick) ,1 , "Has one attachment, presumably a text-html and a 
 
 # {{{ test a message containing a russian subject and NO content type
 
-RT->config->set( EmailInputEncodings => 'koi8-r', RT->config->get('EmailInputEncodings') );
-RT->config->set( EmailOutputEncoding => 'koi8-r' );
+RT->config->set( email_input_encodings => ['koi8-r',
+        @{RT->config->get('email_input_encodings')}] );
+RT->config->set( email_output_encoding => 'koi8-r' );
 my $russian_subject_email = RT::Test::get_relocatable_file(
     'russian-subject-no-content-type', (File::Spec->updir(), 'data', 'emails'));
 $content = RT::Test->file_content($russian_subject_email);
@@ -369,7 +366,7 @@ sub text_plain_russian_redef_sendmessage {
     eval 'sub RT::ScripAction::SendEmail::send_message { 
                 my $self = shift; 
                 my $MIME = shift; 
-                return (1) unless ($self->scrip_obj->scrip_action->name eq "Notify AdminCcs" );
+                return (1) unless ($self->hints->{source_scripaction_name} eq "Notify AdminCcs" );
                 is ($MIME->head->mime_type , "text/plain", "The only part is text/plain ");
                  my $subject  = $MIME->head->get("subject");
                 chomp($subject);
@@ -378,9 +375,9 @@ sub text_plain_russian_redef_sendmessage {
                  ';
 }
 
-my @input_encodings = RT->config->get('EmailInputEncodings');
+my @input_encodings = @{RT->config->get('email_input_encodings')};
 shift @input_encodings;
-RT->config->set(EmailInputEncodings => @input_encodings );
+RT->config->set(EmailInputEncodings => [@input_encodings] );
 RT->config->set(EmailOutputEncoding => 'utf-8');
 # }}}
 
@@ -412,7 +409,7 @@ sub text_plain_nested_redef_sendmessage {
     eval 'sub RT::ScripAction::SendEmail::send_message { 
                 my $self = shift; 
                 my $MIME = shift; 
-                return (1) unless ($self->scrip_obj->scrip_action->name eq "Notify AdminCcs" );
+                return (1) unless ($self->hints->{source_scripaction_name} eq "Notify AdminCcs" );
                 is ($MIME->head->mime_type , "multipart/mixed", "It is a mixed multipart");
                  my $subject  =  $MIME->head->get("subject");
                  $subject  = MIME::Base64::decode_base64( $subject);
@@ -537,6 +534,4 @@ diag q{regression test for #5248 from rt3.fsck.com} if $ENV{TEST_VERBOSE};
 
 
 
-# Don't taint the environment
-$everyone->principal->revoke_right(right =>'SuperUser');
 1;

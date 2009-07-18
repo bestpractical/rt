@@ -118,7 +118,7 @@
   margin-top: 0.5em;
   width: 20px;
 
-  background: url(<%RT->config->get('WebPath')%>/NoAuth/images/css/rollup-arrow.gif) no-repeat center center;
+  background: url(<%RT->config->get('web_path')%>/NoAuth/images/css/rollup-arrow.gif) no-repeat center center;
 
   position: absolute;
   top: -0.75em;
@@ -136,7 +136,7 @@
 }
 
 .titlebox.rolled-up .titlebox-title .widget a {
-    background-image: url(<%RT->config->get('WebImagesURL')%>/css/rolldown-arrow.gif);
+    background-image: url(<%RT->config->get('web_images_url')%>/css/rolldown-arrow.gif);
 }
 
 #body .titlebox .titlebox-title :link,

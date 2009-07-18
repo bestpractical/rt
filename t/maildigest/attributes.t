@@ -18,7 +18,7 @@ my $user_d = RT::Model::User->new( current_user => RT->system_user );
 ok( $ret, "user with daily digest email prefs created: $msg" );
 # Set a username & password for testing the interface.
 $user_d->set_privileged( 1 );
-$user_d->set_preferences(RT->system => { %{ $user_d->preferences( RT->system ) || {}}, EmailFrequency => 'Daily digest'});
+$user_d->set_preferences(RT->system => { %{ $user_d->preferences( RT->system ) || {}}, email_frequency => 'Daily digest'});
 
 
 
@@ -26,16 +26,16 @@ my $user_w = RT::Model::User->new(current_user => RT->system_user );
 ( $ret, $msg ) = $user_w->load_or_create_by_email( $users[2] );
 ok( $ret, "user with weekly digest email prefs created: $msg" );
 $user_w->set_privileged( 1 );
-$user_w->set_preferences(RT->system => { %{ $user_w->preferences( RT->system ) || {}}, EmailFrequency => 'Weekly digest'});
+$user_w->set_preferences(RT->system => { %{ $user_w->preferences( RT->system ) || {}}, email_frequency => 'Weekly digest'});
 
 my $user_s = RT::Model::User->new(current_user => RT->system_user );
 ( $ret, $msg ) = $user_s->load_or_create_by_email( $users[3] );
 ok( $ret, "user with suspended email prefs created: $msg" );
-$user_s->set_preferences(RT->system => { %{ $user_s->preferences( RT->system ) || {}}, EmailFrequency => 'Suspended'});
+$user_s->set_preferences(RT->system => { %{ $user_s->preferences( RT->system ) || {}}, email_frequency => 'Suspended'});
 $user_s->set_privileged( 1 );
 
 
-is(RT->config->get('EmailFrequency' => $user_s), 'Suspended');
+is(RT->config->get('email_frequency' => $user_s), 'Suspended');
 
 # Make a testing queue for ourselves.
 my $testq = RT::Model::Queue->new(current_user => RT->system_user );
@@ -49,7 +49,7 @@ if( $testq->validate_name( 'EmailDigest-testqueue' ) ) {
 
 # Allow anyone to open a ticket on the test queue.
 my $everyone = RT::Model::Group->new(current_user => RT->system_user );
-( $ret, $msg ) = $everyone->load_system_internal_group( 'Everyone' );
+( $ret, $msg ) = $everyone->load_system_internal( 'Everyone' );
 ok( $ret, "Loaded 'everyone' group: $msg" );
 
 ( $ret, $msg ) = $everyone->principal->grant_right( right => 'CreateTicket',
@@ -61,7 +61,7 @@ ok( $ret || $msg =~ /already has/, "Granted everyone CreateTicket on testq: $msg
 						    object => $testq );
 ok( $ret || $msg =~ /already has/, "Granted dduser AdminQueue on testq: $msg" );
 ( $ret, $msg ) = $testq->add_watcher( type => 'admin_cc',
-			     principal_id => $user_d->principal->id );
+			     principal => $user_d->principal );
 ok( $ret || $msg =~ /already/, "dduser added as a queue watcher: $msg" );
 
 # Give the others queue rights.
@@ -86,10 +86,10 @@ ok( $ret, "Ticket $id created: $msg" );
 
 # Make the other users ticket watchers.
 ( $ret, $msg ) = $ticket->add_watcher( type => 'cc',
-		      principal_id => $user_n->principal->id );
+		      principal => $user_n->principal );
 ok( $ret, "Added user_n as a ticket watcher: $msg" );
 ( $ret, $msg ) = $ticket->add_watcher( type => 'cc',
-		      principal_id => $user_s->principal->id );
+		      principal => $user_s->principal );
 ok( $ret, "Added user_s as a ticket watcher: $msg" );
 
 my $obj;
@@ -151,7 +151,17 @@ sub email_digest_like {
     my $pattern = shift;
 
     my $perl = $^X . ' ' . join ' ', map { "-I$_" } grep { not ref } @INC;
-    open my $digester, "-|", "$perl $RT::SbinPath/rt-email-digest $arg";
+    my $rt_email_digest;
+
+# to get around shipwright vessel 
+    my $sbin_path = RT->sbin_path;
+    if (  -e "$sbin_path-wrapped/rt-email-digest" ) {
+        $rt_email_digest = "$sbin_path-wrapped/rt-email-digest";
+    }
+    else {
+        $rt_email_digest = "$sbin_path/rt-email-digest";
+    }
+    open my $digester, "-|", "$perl $rt_email_digest $arg";
     my @results = <$digester>;
     my $content = join '', @results;
     if ( ref $pattern && ref $pattern eq 'Regexp' ) {

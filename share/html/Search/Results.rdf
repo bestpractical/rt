@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 
-my $Tickets = RT::Model::TicketCollection->new();
+my $Tickets = RT::Model::TicketCollection->new( current_user => Jifty->web->current_user );
 $Tickets->from_sql($ARGS{'query'});
 if ($order_by =~ /\|/) {
     # Multiple Sorts
@@ -68,7 +68,7 @@ $r->content_type('application/rss+xml');
         my $rss = new XML::RSS (version => '1.0');
         $rss->channel(
           title        => RT->config->get('rtname').": Search" . $ARGS{'Query'},
-          link         => RT->config->get('WebURL'),
+          link         => Jifty->web->url,
           description  => "",
           dc => {
           },
@@ -82,11 +82,11 @@ $r->content_type('application/rss+xml');
 
 
     while ( my $Ticket = $Tickets->next()) {
-        my $creator_str = $m->scomp('/Elements/ShowUser', user => $Ticket->creator_obj);
+        my $creator_str = $m->scomp('/Elements/ShowUser', user => $Ticket->creator);
         $creator_str =~ s/[\r\n]//g;
         $rss->add_item(
           title       =>  $Ticket->subject || _('No Subject'),
-          link        => RT->config->get('WebURL')."Ticket/Display.html?id=".$Ticket->id,
+          link        => Jifty->web->url."Ticket/Display.html?id=".$Ticket->id,
           description => $Ticket->transactions->first->content,
           dc => {
             creator  => $creator_str,

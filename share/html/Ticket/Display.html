@@ -77,14 +77,16 @@
       attachment_content => $attachment_content
 &> 
 
-% $m->callback( %ARGS,
-%     ticket       => $ticket_obj,
-%     current_tab  => 'Ticket/Display.html?id=' . $ticket_obj->id,
-%     callback_name => 'AfterShowHistory',
-% );
+<%perl>
 
-% $m->comp('/Elements/Footer');
-<%ARGS>
+ $m->callback( %ARGS,
+     ticket       => $ticket_obj,
+     current_tab  => 'Ticket/Display.html?id=' . $ticket_obj->id,
+     callback_name => 'AfterShowHistory',
+ );
+ $m->comp('/Elements/Footer');
+ </%perl> 
+ <%ARGS>
 $id => undef
 $ticket_obj => undef
 $show_headers => 0
@@ -105,7 +107,7 @@ unless ($id || $ticket_obj) {
 if ($ARGS{'id'} eq 'new') {
     # {{{ Create a new ticket
 
-    my $queue = RT::Model::Queue->new();
+    my $queue = RT::Model::Queue->new( current_user => Jifty->web->current_user );
     $queue->load($ARGS{'queue'});
     unless ( $queue->id ) {
         abort('Queue not found');
@@ -116,9 +118,11 @@ if ($ARGS{'id'} eq 'new') {
     }
 
     ($ticket_obj, @Actions) = create_ticket(
-        Attachments => delete $session{'Attachments'},
+        Attachments => Jifty->web->session->get('Attachments'),
         %ARGS,
     );
+    Jifty->web->session->remove('Attachments');
+
 #XXX bloody hack, should have a better way
     my %cf_args;
     for my $arg ( keys %ARGS ) {
@@ -153,14 +157,14 @@ if ($ARGS{'id'} eq 'new') {
             args_ref => \%ARGS, 
             actions => \@Actions);
     
-    $ARGS{update_attachments} = $session{'Attachments'};
+    $ARGS{update_attachments} = Jifty->web->session->get('Attachments');
     push @Actions,
         process_update_message(
         args_ref   => \%ARGS,
         actions   => \@Actions,
         ticket_obj => $ticket_obj,
         );
-    delete $session{'Attachments'};
+    Jifty->web->session->remove('Attachments');
 
     #Process status updates
     push @Actions, process_ticket_watchers(args_ref => \%ARGS, ticket_obj => $ticket_obj);
@@ -199,18 +203,16 @@ if (@Actions) {
     # resubmission on refresh.
     # But we need to store Actions somewhere too, so we don't lose them.
     my $key = Digest::MD5::md5_hex( rand(1024) );
-    push @{ $session{"Actions"}->{$key} ||= [] }, @Actions;
-    $session{'i'}++;
-
-    RT::Interface::Web::redirect( RT->config->get('WebURL') . "Ticket/Display.html?id=" . $ticket_obj->id . "&results=" . $key );
+    Jifty->web->session->set( "actions_$key" => \@Actions );
+    RT::Interface::Web::redirect( Jifty->web->url . "Ticket/Display.html?id=" . $ticket_obj->id . "&results=" . $key );
 }
 
 my $attachments = $m->comp('Elements/FindAttachments', ticket => $ticket_obj, tickets => $Tickets);
 my $attachment_content = $m->comp('Elements/LoadTextAttachments', ticket => $ticket_obj);
 
 my %link_rel;
-if (defined $session{'tickets'} and ($ARGS{'query'} or $session{'CurrentSearchHash'}->{'Query'})) {
-    my $item_map = $session{'tickets'}->item_map;
+if (defined Jifty->web->session->get('tickets') and ($ARGS{'query'} or Jifty->web->session->get('CurrentSearchHash')->{'Query'})) {
+    my $item_map = Jifty->web->session->get('tickets')->item_map;
     $link_rel{first} = "Ticket/Display.html?id=" . $item_map->{first}                if $item_map->{$ticket_obj->id}{prev};
     $link_rel{prev}  = "Ticket/Display.html?id=" . $item_map->{$ticket_obj->id}{prev} if $item_map->{$ticket_obj->id}{prev};
     $link_rel{next}  = "Ticket/Display.html?id=" . $item_map->{$ticket_obj->id}{next} if $item_map->{$ticket_obj->id}{next};

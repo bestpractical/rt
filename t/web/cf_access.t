@@ -1,13 +1,13 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test; use Test::More tests => 26;
+use RT::Test tests => 26, l10n => 1;
 
 $RT::Test::SKIP_REQUEST_WORK_AROUND = 1;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
-use constant ImageFile => $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
+use constant ImageFile => RT->html_path .'/NoAuth/images/bplogo.gif';
 use constant ImageFileContent => RT::Test->file_content(ImageFile);
 
 ok $m->login, 'logged in';

@@ -154,7 +154,7 @@ sub available_rights {
     return $RIGHTS;
 }
 
-=head1 name
+=head1 NAME
 
   RT::Model::CustomField_Overlay - overlay for RT::Model::CustomField
 
@@ -231,7 +231,7 @@ sub create {
         }
         $args{'lookup_type'} = 'RT::Model::Queue-RT::Model::Ticket';
     } else {
-        my $queue = RT::Model::Queue->new;
+        my $queue = RT::Model::Queue->new( current_user => $self->current_user );
         $queue->load( $args{'queue'} );
         unless ( $queue->id ) {
             return ( 0, _("Queue not found") );
@@ -354,14 +354,14 @@ sub load_by_name {
 
     # if we're looking for a queue by name, make it a number
     if ( defined $args{'queue'} && $args{'queue'} =~ /\D/ ) {
-        my $queue_obj = RT::Model::Queue->new;
+        my $queue_obj = RT::Model::Queue->new( current_user => $self->current_user );
         $queue_obj->load( $args{'queue'} );
         $args{'queue'} = $queue_obj->id;
     }
 
     # XXX - really naive implementation.  Slow. - not really. still just one query
 
-    my $CFs = RT::Model::CustomFieldCollection->new;
+    my $CFs = RT::Model::CustomFieldCollection->new( current_user => $self->current_user );
     Carp::cluck unless ( $args{'name'} );
     $CFs->limit(
         column         => 'name',
@@ -441,7 +441,7 @@ sub add_value {
         return ( 0, _("Can't add a custom field value without a name") );
     }
 
-    my $newval = RT::Model::CustomFieldValue->new;
+    my $newval = RT::Model::CustomFieldValue->new( current_user => $self->current_user );
     return $newval->create( %args, custom_field => $self->id );
 }
 
@@ -462,7 +462,7 @@ sub delete_value {
         return ( 0, _('Permission Denied') );
     }
 
-    my $val_to_del = RT::Model::CustomFieldValue->new;
+    my $val_to_del = RT::Model::CustomFieldValue->new( current_user => $self->current_user );
     $val_to_del->load($id);
     unless ( $val_to_del->id ) {
         return ( 0, _("Couldn't find that value") );
@@ -791,7 +791,7 @@ sub set_lookup_type {
     if ( $lookup ne $self->lookup_type ) {
 
         # Okay... We need to invalidate our existing relationships
-        my $ObjectCustomFields = RT::Model::ObjectCustomFieldCollection->new;
+        my $ObjectCustomFields = RT::Model::ObjectCustomFieldCollection->new( current_user => $self->current_user );
         $ObjectCustomFields->limit_to_custom_field( $self->id );
         $_->delete foreach @{ $ObjectCustomFields->items_array_ref };
     }
@@ -876,7 +876,7 @@ sub add_to_object {
         return ( 0, _('Permission Denied') );
     }
 
-    my $objectCF = RT::Model::ObjectCustomField->new;
+    my $objectCF = RT::Model::ObjectCustomField->new( current_user => $self->current_user );
     $objectCF->load_by_cols( object_id => $id, custom_field => $self->id );
     if ( $objectCF->id ) {
         return ( 0, _("That is already the current value") );
@@ -907,7 +907,7 @@ sub remove_from_object {
         return ( 0, _('Permission Denied') );
     }
 
-    my $objectCF = RT::Model::ObjectCustomField->new;
+    my $objectCF = RT::Model::ObjectCustomField->new( current_user => $self->current_user );
     $objectCF->load_by_cols( object_id => $id, custom_field => $self->id );
     unless ( $objectCF->id ) {
         return ( 0, _("This custom field does not apply to that object") );
@@ -979,7 +979,7 @@ sub add_value_for_object {
             $extra_values--;
         }
     }
-    my $newval = RT::Model::ObjectCustomFieldValue->new;
+    my $newval = RT::Model::ObjectCustomFieldValue->new( current_user => $self->current_user );
     my $val    = $newval->create(
         object_type   => ref($obj),
         object_id     => $obj->id,
@@ -1059,7 +1059,7 @@ sub delete_value_for_object {
         return ( 0, _('Permission Denied') );
     }
 
-    my $oldval = RT::Model::ObjectCustomFieldValue->new;
+    my $oldval = RT::Model::ObjectCustomFieldValue->new( current_user => $self->current_user );
 
     if ( my $id = $args{'id'} ) {
         $oldval->load($id);
@@ -1101,7 +1101,7 @@ sub values_for_object {
     my $self   = shift;
     my $object = shift;
 
-    my $values = RT::Model::ObjectCustomFieldValueCollection->new();
+    my $values = RT::Model::ObjectCustomFieldValueCollection->new( current_user => $self->current_user );
     unless ( $self->current_user_has_right('SeeCustomField') ) {
 
         # Return an empty object if they have no rights to see

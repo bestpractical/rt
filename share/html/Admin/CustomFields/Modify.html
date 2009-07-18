@@ -70,7 +70,7 @@
         default => $CustomFieldObj->type_composite, &>
 </td></tr>
 
-% if ( $CustomFieldObj->id and $CustomFieldObj->is_selection_type and RT->config->get('CustomFieldValuesSources') and ( scalar(@{RT->config->get('CustomFieldValuesSources')}) > 0 ) ) {
+% if ( $CustomFieldObj->id and $CustomFieldObj->is_selection_type and RT->config->get('custom_field_values_sources') and ( scalar(@{RT->config->get('custom_field_values_sources')}) > 0 ) ) {
     
 <tr><td class="label"><&|/l&>Field values source:</&></td><td>
 <& /Admin/Elements/EditCustomFieldValuesSource, custom_field => $CustomFieldObj &>
@@ -131,7 +131,7 @@
 <%INIT>
 my ($title, @results, $disabled);
 
-my $CustomFieldObj = RT::Model::CustomField->new();
+my $CustomFieldObj = RT::Model::CustomField->new( current_user => Jifty->web->current_user );
 my $current_tab = 'Admin/CustomFields/Modify.html';
 
 unless ( $id ) {

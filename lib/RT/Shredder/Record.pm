@@ -110,9 +110,6 @@ sub dependencies {
     if ( $args{'flags'} & DEPENDS_ON ) {
         $self->__depends_on( %args, dependencies => $deps );
     }
-    if ( $args{'flags'} & RELATES ) {
-        $self->__relates( %args, dependencies => $deps );
-    }
     return $deps;
 }
 
@@ -136,7 +133,7 @@ sub __depends_on {
     push( @$list, $objs );
 
     # Transactions
-    $objs = RT::Model::TransactionCollection->new;
+    $objs = RT::Model::TransactionCollection->new( current_user => $self->current_user );
     $objs->limit( column => 'object_type', value => ref $self );
     $objs->limit( column => 'object_id',   value => $self->id );
     push( @$list, $objs );
@@ -155,7 +152,7 @@ sub __depends_on {
     }
 
     # ACE records
-    $objs = RT::Model::ACECollection->new;
+    $objs = RT::Model::ACECollection->new( current_user => $self->current_user );
     $objs->limit_to_object($self);
     push( @$list, $objs );
 
@@ -168,59 +165,6 @@ sub __depends_on {
     return;
 }
 
-sub __relates {
-    my $self = shift;
-    my %args = (
-        shredder     => undef,
-        dependencies => undef,
-        @_,
-    );
-    my $deps = $args{'dependencies'};
-    my $list = [];
-
-    if ( $self->can('creator') ) {
-        my $obj = RT::Model::Principal->new;
-        $obj->load( $self->creator );
-
-        if ( $obj && defined $obj->id ) {
-            push( @$list, $obj );
-        } else {
-            my $rec = $args{'shredder'}->get_record( object => $self );
-            $self = $rec->{'object'};
-            $rec->{'state'} |= INVALID;
-            push @{ $rec->{'description'} }, "Have no related User(creator) #" . $self->creator . " object";
-        }
-    }
-
-    if ( $self->can('last_updated_by') ) {
-        my $obj = RT::Model::Principal->new;
-        $obj->load( $self->last_updated_by );
-
-        if ( $obj && defined $obj->id ) {
-            push( @$list, $obj );
-        } else {
-            my $rec = $args{'shredder'}->get_record( object => $self );
-            $self = $rec->{'object'};
-            $rec->{'state'} |= INVALID;
-            push @{ $rec->{'description'} }, "Have no related User(last_updated_by) #" . $self->last_updated_by . " object";
-        }
-    }
-
-    $deps->_push_dependencies(
-        base_object    => $self,
-        flags          => RELATES,
-        target_objects => $list,
-        shredder       => $args{'shredder'}
-    );
-
-    # cause of this $self->SUPER::__Relates should be called last
-    # in overridden subs
-    my $rec = $args{'shredder'}->get_record( object => $self );
-    $rec->{'state'} |= VALID unless ( $rec->{'state'} & INVALID );
-
-    return;
-}
-
 # implement proxy method because some RT classes
 # override Delete method
 sub __wipeout {
@@ -228,37 +172,6 @@ sub __wipeout {
     my $msg  = $self->_as_string . " wiped out";
     $self->SUPER::delete;
     Jifty->log->debug($msg);
-    return;
-}
-
-sub validate_relations {
-    my $self = shift;
-    my %args = (
-        shredder => undef,
-        @_
-    );
-    unless ( $args{'shredder'} ) {
-        $args{'shredder'} = RT::Shredder->new();
-    }
-
-    my $rec = $args{'shredder'}->put_object( object => $self );
-    return if ( $rec->{'state'} & VALID );
-    $self = $rec->{'object'};
-
-    $self->_validate_relations( %args, flags => RELATES );
-    $rec->{'state'} |= VALID unless ( $rec->{'state'} & INVALID );
-
-    return;
-}
-
-sub _validate_relations {
-    my $self = shift;
-    my %args = (@_);
-
-    my $deps = $self->dependencies(%args);
-
-    $deps->validate_relations(%args);
-
     return;
 }
 

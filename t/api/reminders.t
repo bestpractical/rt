@@ -33,20 +33,18 @@ ok(my ($id, $msg) = $t->create( queue => $testqueue->id,
 isnt($id , 0, 'Success creating ticket');
 
 # Add reminder
-my $due_obj = RT::Date->new( RT->system_user);
-$due_obj->set_to_now;
+my $due = RT::DateTime->now(current_user => RT->system_user);
 ok(my ( $add_id, $add_msg, $txnid ) = $t->reminders->add(
     subject => 'TestReminder',
     owner   => 'root',
-    due     => $due_obj->iso
-    ), 'Add reminder');
+    due     => $due,
+), 'Add reminder');
 
 # Check that the new Reminder is here
 my $reminders = $t->reminders->collection;
 ok($reminders, 'Loading reminders for this ticket');
 my $found = 0;
 while ( my $reminder = $reminders->next ) {
-    warn $reminder->id,"\n";
     next unless $found == 0;
     $found = 1 if ( $reminder->subject =~ m/TestReminder/ );
 }

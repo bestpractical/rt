@@ -51,8 +51,6 @@
 % }
 </div>
 
-%# End of div#quickbar from /Elements/Header
-</div>
 
 % if ( $show_menu ) {
 <div id="nav">
@@ -93,8 +91,12 @@
          $class->{li} = join ' ', @li;
 
          my $href = $page_tabs->{$tab}->{'path'} || "";
-         $href = RT->config->get('WebPath') .'/'. $href
-            unless $path =~ /^\w+:/;
+         unless ( $path =~ m!^\w+:! ) {
+             $href =
+                 RT->config->get('web_path')
+               . ( $href =~ m{^/} ? '' : '/' )
+               . $href;
+         }
          my $target = $page_tabs->{$tab}->{'target'} || '';
          $target = $m->interp->apply_escapes( $target, 'h' );
 </%perl>
@@ -140,7 +142,7 @@
 %         if ($type->{"$action"}->{'html'}) {
       <% $type->{"$action"}->{'html'} | n %>
 %         } else {
-      <a href="<%RT->config->get('WebPath')%>/<%$type->{$action}->{'path'}%>"<% $type->{$action}->{class} && ' class="'.$type->{$action}->{class}.'"' |n %><% $type->{$action}->{id} && ' id="'.$type->{$action}->{id}.'"' |n %>><%$type->{$action}->{'title'}%></a>
+      <a href="<%RT->config->get('web_path')%>/<%$type->{$action}->{'path'}%>"<% $type->{$action}->{class} && ' class="'.$type->{$action}->{class}.'"' |n %><% $type->{$action}->{id} && ' id="'.$type->{$action}->{id}.'"' |n %>><%$type->{$action}->{'title'}%></a>
 %         }
     </li>
 %         if ($sep) {
@@ -155,10 +157,6 @@
 % }
 </div>
 </div>
-<div id="body">
-% $m->callback( %ARGS, callback_name => 'BeforeBody' );
-% $m->flush_buffer(); # we've got the page laid out, let's flush the buffer;
-
 <%INIT>
 if ( defined $current_toptab ) {
     foreach my $tab ( values %{$toptabs} ) {
@@ -169,7 +167,7 @@ if ( defined $current_toptab ) {
 
 my ($menu_depth, $almost_last, $page_tabs);
 
-if (RT->config->get( 'WebDefaultStylesheet', Jifty->web->current_user ) ne '3.4-compat') {
+if (RT->config->get( 'web_default_stylesheet', Jifty->web->current_user ) ne '3.4-compat') {
     ($menu_depth, $almost_last) = @{ $m->comp('.menu_recurse', data => $toptabs, current => $current_toptab ) };
 
     if (defined $almost_last->{subtabs} and %{$almost_last->{subtabs}}) {

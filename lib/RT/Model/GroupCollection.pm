@@ -46,7 +46,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-=head1 name
+=head1 NAME
 
   RT::Model::GroupCollection - a collection of RT::Model::Group objects
 
@@ -73,15 +73,9 @@ use strict;
 
 package RT::Model::GroupCollection;
 
-use base qw/RT::SearchBuilder/;
+use base qw/RT::IsPrincipalCollection RT::Collection/;
 
 use RT::Model::UserCollection;
-
-# XXX: below some code is marked as subject to generalize in Groups, Users classes.
-# RUZ suggest name Principals::Generic or Principals::Base as abstract class, but
-# Jesse wants something that doesn't imply it's a Principals.pm subclass.
-# See comments below for candidats.
-
 
 sub implicit_clauses {
     my $self = shift;
@@ -90,38 +84,6 @@ sub implicit_clauses {
         column => 'name',
         order  => 'ASC'
     );
-
-    # XXX: this code should be generalized
-    $self->{'princalias'} = $self->join(
-        alias1  => 'main',
-        column1 => 'id',
-        table2  => 'Principals',
-        column2 => 'id'
-    );
-
-    # even if this condition is useless and ids in the Groups table
-    # only match principals with type 'Group' this could speed up
-    # searches in some DBs.
-    $self->limit(
-        alias  => $self->{'princalias'},
-        column => 'type',
-        value  => 'Group',
-    );
-
-}
-
-
-=head2 principals_alias
-
-Returns the string that represents this Users object's primary "Principals" alias.
-
-=cut
-
-# XXX: should be generalized, code duplication
-sub principals_alias {
-    my $self = shift;
-    return ( $self->{'princalias'} );
-
 }
 
 
@@ -163,84 +125,78 @@ sub limit_to_user_defined_groups {
     #$self->limit(column => 'instance', operator => '=', value => '');
 }
 
+=head2 limit_to_roles
 
+Limits the set of groups found to role groups for an instance of a model. Takes:
 
-=head2 limit_to_personal_groups_for PRINCIPAL_ID
+=over 4
 
-Return only Personal Groups for the user whose principal id 
-is PRINCIPAL_ID
+=item object
+
+An object roles of which should be looked, replaces the following two
+arguments;
+
+=item model
+
+Mandatory name of a model, for example: 'RT::Model::Ticket';
+
+=item instance
+
+Optional id of the model record;
+
+=item type
+
+Optional type of the role groups, for example 'cc';
+
+=item subclause and entry_aggregator
+
+Use to combine with different conditions; by default aggregator is
+'OR' and subclause matches name of the method, so you can call this
+method multiple times and get role of groups of different models.
+
+=back
 
 =cut
 
-sub limit_to_personal_groups_for {
+sub limit_to_roles {
     my $self  = shift;
-    my $princ = shift;
-
-    $self->limit( column => 'domain', operator => '=', value => 'Personal' );
-    $self->limit(
-        column   => 'instance',
-        operator => '=',
-        value    => $princ
+    my %args = (
+        model            => undef,
+        type             => undef,
+        instance         => undef,
+        entry_aggregator => 'OR',
+        subclause        => 'limit_to_roles',
+        @_
     );
+    @args{'model', 'instance'} = (ref $args{'object'}, $args{'object'}->id)
+        if $args{'object'};
+
+    $self->open_paren( $args{'subclause'} );
+    $self->limit(
+        subclause        => $args{'subclause'},
+        entry_aggregator => $args{'entry_aggregator'},
+        column           => 'domain',
+        operator         => '=',
+        value            => $args{'model'} .'-Role',
+    );
+    $self->limit(
+        subclause        => $args{'subclause'},
+        entry_aggregator => 'AND',
+        column           => 'instance',
+        operator         => '=',
+        value            => $args{'instance'},
+    ) if defined $args{'instance'};
+    $self->limit(
+        subclause        => $args{'subclause'},
+        entry_aggregator => 'AND',
+        column           => 'type',
+        operator         => '=',
+        value            => $args{'type'},
+    ) if defined $args{'type'};
+    $self->close_paren( $args{'subclause'} );
 }
 
-
-
-=head2 limit_to_roles_for_queue QUEUE_ID
-
-Limits the set of groups found to role groups for queue QUEUE_ID
-
-=cut
-
-sub limit_to_roles_for_queue {
-    my $self  = shift;
-    my $queue = shift;
-    $self->limit(
-        column   => 'domain',
-        operator => '=',
-        value    => 'RT::Model::Queue-Role'
-    );
-    $self->limit( column => 'instance', operator => '=', value => $queue );
-}
-
-
-
-=head2 limit_to_roles_for_ticket Ticket_ID
-
-Limits the set of groups found to role groups for Ticket Ticket_ID
-
-=cut
-
-sub limit_to_roles_for_ticket {
-    my $self   = shift;
-    my $Ticket = shift;
-    $self->limit(
-        column   => 'domain',
-        operator => '=',
-        value    => 'RT::Model::Ticket-Role'
-    );
-    $self->limit( column => 'instance', operator => '=', value => '$Ticket' );
-}
-
-
-
-=head2 limit_to_roles_for_system System_ID
-
-Limits the set of groups found to role groups for System System_ID
-
-=cut
-
-sub limit_to_roles_for_system {
-    my $self = shift;
-    $self->limit(
-        column   => 'domain',
-        operator => '=',
-        value    => 'RT::System-Role'
-    );
-}
-
-
-=head2 with_member {principal_id => PRINCIPAL_ID, recursively => undef}
+=head2 with_member {principal => PRINCIPAL_ID, recursively => undef}
 
 Limits the set of groups returned to groups which have
 Principal PRINCIPAL_ID as a member
@@ -250,12 +206,12 @@ Principal PRINCIPAL_ID as a member
 sub with_member {
     my $self = shift;
     my %args = (
-        principal_id => undef,
+        principal => undef,
         recursively  => undef,
         @_
     );
-    my $members;
 
+    my $members;
     if ( $args{'recursively'} ) {
         $members = $self->new_alias('CachedGroupMembers');
     } else {
@@ -272,14 +228,14 @@ sub with_member {
         alias    => $members,
         column   => 'member_id',
         operator => '=',
-        value    => $args{'principal_id'}
+        value    => $args{'principal'}
     );
 }
 
 sub without_member {
     my $self = shift;
     my %args = (
-        principal_id => undef,
+        principal => undef,
         recursively  => undef,
         @_
     );
@@ -296,7 +252,7 @@ sub without_member {
         alias     => $members_alias,
         column    => 'member_id',
         operator  => '=',
-        value     => $args{'principal_id'},
+        value     => $args{'principal'},
     );
     $self->limit(
         alias       => $members_alias,
@@ -307,59 +263,18 @@ sub without_member {
     );
 }
 
-=head2 withright { right => RIGHTNAME, object => RT::Record, include_system_rights => 1, include_superusers => 0, equiv_objects => [ ] }
-
-
-Find all groups which have RIGHTNAME for RT::Record. Optionally include global rights and superusers. By default, include the global rights, but not the superusers.
-
-
-
-=cut
-
-#XXX: should be generilized
-sub with_right {
-    my $self = shift;
-    my %args = (
-        right                    => undef,
-        object                   => => undef,
-        include_system_rights    => 1,
-        include_superusers       => undef,
-        include_subgroup_members => 0,
-        equiv_objects            => [],
-        @_
-    );
-
-    my $from_role = $self->clone;
-    $from_role->with_role_right(%args);
-
-    my $from_group = $self->clone;
-    $from_group->with_group_right(%args);
-
-    #XXX: DIRTY HACK
-    use Jifty::DBI::Collection::Union;
-    my $union = new Jifty::DBI::Collection::Union;
-    $union->add($from_role);
-    $union->add($from_group);
-    %$self = %$union;
-    bless $self, ref($union);
-
-    return;
-}
-
-#XXX: methods are active aliases to Users class to prevent code duplication
-# should be generalized
 sub _join_groups {
     my $self = shift;
     my %args = (@_);
-    return 'main' unless $args{'include_subgroup_members'};
-    return $self->RT::Model::UserCollection::_join_groups(%args);
+    return 'main' unless $args{'recursive'};
+    return $self->SUPER::_join_groups(%args);
 }
 
 sub _join_group_members {
     my $self = shift;
     my %args = (@_);
-    return 'main' unless $args{'include_subgroup_members'};
-    return $self->RT::Model::UserCollection::_join_group_members(%args);
+    return 'main' unless $args{'recursive'};
+    return $self->SUPER::_join_group_members(%args);
 }
 
 sub _join_group_members_for_group_rights {
@@ -367,56 +282,15 @@ sub _join_group_members_for_group_rights {
     my %args          = (@_);
     my $group_members = $self->_join_group_members(%args);
     unless ( $group_members eq 'main' ) {
-        return $self->RT::Model::UserCollection::_join_group_members_for_group_rights(%args);
+        return $self->SUPER::_join_group_members_for_group_rights(%args);
     }
     $self->limit(
         alias       => $args{'aclalias'},
-        column      => 'principal_id',
+        column      => 'principal',
         value       => "main.id",
         quote_value => 0,
     );
 }
-sub _join_acl { return (shift)->RT::Model::UserCollection::_join_acl(@_) }
-
-sub _role_clauses {
-    return (shift)->RT::Model::UserCollection::_RoleClauses(@_);
-}
-
-sub who_have_role_right_splitted {
-    return (shift)->RT::Model::UserCollection::_who_have_role_rightSplitted(@_);
-}
-
-sub _get_equiv_objects {
-    return (shift)->RT::Model::UserCollection::_get_equiv_objects(@_);
-}
-
-sub with_group_right {
-    return (shift)->RT::Model::UserCollection::who_have_group_right(@_);
-}
-
-sub with_role_right {
-    return (shift)->RT::Model::UserCollection::who_have_role_right(@_);
-}
-
-
-=head2 limit_to_enabled
-
-Only find items that haven\'t been disabled
-
-=cut
-
-sub limit_to_enabled {
-    my $self = shift;
-
-    $self->limit(
-        alias    => $self->principals_alias,
-        column   => 'disabled',
-        value    => '0',
-        operator => '=',
-    );
-}
-
-
 
 sub next {
     my $self = shift;
@@ -443,9 +317,7 @@ sub _do_search {
         $self->limit_to_enabled();
     }
 
-    return ( $self->SUPER::_do_search(@_) );
-
+    return $self->SUPER::_do_search(@_);
 }
 
 1;
-

@@ -62,16 +62,15 @@ if ($ticket) {
 
     my $id = $ticket->id();
 
-    if ( defined $session{'tickets'} ) {
+    if ( defined Jifty->web->session->get('tickets') ) {
 
         # we have to update session data if we get new ItemMap
-        my $updatesession = 1 unless ( $session{'tickets'}->{'item_map'} );
+        my $updatesession = 1 unless ( Jifty->web->session->get('tickets')->{'item_map'} );
 
-        my $item_map = $session{'tickets'}->item_map;
+        my $item_map = Jifty->web->session->get('tickets')->item_map;
 
         if ($updatesession) {
-            $session{'i'}++;
-            $session{'tickets'}->prep_for_serialization();
+            Jifty->web->session->get('tickets')->prep_for_serialization();
         }
 
         # Don't display prev links if we're on the first ticket
@@ -146,7 +145,7 @@ if ($ticket) {
 
     };
 
-    if ( RT->config->get('EnableReminders') ) {
+    if ( RT->config->get('enable_reminders') ) {
         $ticket_page_tabs->{_F} = {
             title     => _('Reminders'),
             path      => "Ticket/Reminders.html?id=" . $id,
@@ -205,7 +204,7 @@ if ($ticket) {
     }
 
     if ( $ticket->current_user_has_right('OwnTicket') ) {
-        if ( $ticket->owner_obj->id == $RT::nobody->id ) {
+        if ( $ticket->owner_obj->id == RT->nobody->id ) {
             $actions->{'B'} = {
                 path  => "Ticket/Display.html?action=take&id=" . $id,
                 title => _('Take'),
@@ -252,20 +251,20 @@ my $args = '';
 my $has_query = '';
 my %query_args;
 my $search_id = $ARGS{'saved_search_id'}
-            || $session{'CurrentSearchHash'}->{'searchid'} || '';
+            || Jifty->web->session->get('CurrentSearchHash') && Jifty->web->session->get('CurrentSearchHash')->{'searchid'} || '';
 
-$has_query = 1 if ( $ARGS{'query'} or $session{'CurrentSearchHash'}->{'query'} );
+$has_query = 1 if ( $ARGS{'query'} or Jifty->web->session->get('CurrentSearchHash') && Jifty->web->session->get('CurrentSearchHash')->{'query'} );
   
 %query_args = (
 
         saved_search_id => ($search_id eq 'new') ? undef : $search_id,
-        query  => $ARGS{'query'}  || $session{'CurrentSearchHash'}->{'query'},
-        format => $ARGS{'format'} || $session{'CurrentSearchHash'}->{'format'},
+        query  => $ARGS{'query'}  || Jifty->web->session->get('CurrentSearchHash') && Jifty->web->session->get('CurrentSearchHash')->{'query'},
+        format => $ARGS{'format'} || Jifty->web->session->get('CurrentSearchHash') && Jifty->web->session->get('CurrentSearchHash')->{'format'},
         order_by => $ARGS{'order_by'}
-            || $session{'CurrentSearchHash'}->{'order_by'},
-        order => $ARGS{'order'} || $session{'CurrentSearchHash'}->{'order'},
-        page  => $ARGS{'page'}  || $session{'CurrentSearchHash'}->{'page'},
-        rows_per_page  => $ARGS{'rows_per_page'}  || $session{'CurrentSearchHash'}->{'rows_per_page'},
+            || Jifty->web->session->get('CurrentSearchHash') && Jifty->web->session->get('CurrentSearchHash')->{'order_by'},
+        order => $ARGS{'order'} || Jifty->web->session->get('CurrentSearchHash') && Jifty->web->session->get('CurrentSearchHash')->{'order'},
+        page  => $ARGS{'page'}  || Jifty->web->session->get('CurrentSearchHash') && Jifty->web->session->get('CurrentSearchHash')->{'page'},
+        rows_per_page  => $ARGS{'rows_per_page'}  || Jifty->web->session->get('CurrentSearchHash') && Jifty->web->session->get('CurrentSearchHash')->{'rows_per_page'},
     );
 
     $args = "?" . $m->comp( '/Elements/QueryString', %query_args );

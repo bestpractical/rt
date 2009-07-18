@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-%    my $url = RT->config->get('WebPath') . "/Download/CustomFieldValue/".$object->id.'/'.$object->content;
+%    my $url = RT->config->get('web_path') . "/Download/CustomFieldValue/".$object->id.'/'.$object->content;
 <a href="<% $url %>"><% $object->content %></a>
 <img type="<% $object->content_type %>" height="64" src="<% $url %>" align="middle" />
 <%ARGS>

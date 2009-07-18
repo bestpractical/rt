@@ -50,7 +50,7 @@
 <& /Elements/ListActions, actions => \@results &>
 <form method="post">
 
-% unless (RT->config->get('WebExternalAuth') and !RT->config->get('WebFallbackToInternalAuth')) {
+% unless (RT->config->get('web_external_auth') and !RT->config->get('web_fallback_to_internal_auth')) {
 <&| /Widgets/TitleBox, title => _('Change password')  &>
 <&|/l&>New password</&>: <input type="password" name="new_pass1" size="16" autocomplete="off" />
 <&|/l&>Confirm</&>: <input type="password" name="new_pass2" size="16" autocomplete="off" />
@@ -81,9 +81,7 @@ if ($signature) {
 	push (@results, "Signature: ".$msg);
     }
 }
-#A hack to make sure that session gets rewritten.
 
-$session{'i'}++;
 </%INIT>
 
 <%ARGS>

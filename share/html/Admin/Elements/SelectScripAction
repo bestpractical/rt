@@ -58,7 +58,7 @@
 </select>
 
 <%INIT>
-my $scrip_actions = RT::Model::ScripActionCollection->new();
+my $scrip_actions = RT::Model::ScripActionCollection->new( current_user => Jifty->web->current_user );
 $scrip_actions->find_all_rows;
 $scrip_actions->order_by(column => 'name');
 

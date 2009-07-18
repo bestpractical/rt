@@ -99,7 +99,6 @@ sub write_down_default {
 # User.pm
 
 # ScripAction.pm - works fine with defaults
-# ScripCondition.pm - works fine with defaults
 # Template.pm - works fine with defaults
 
 sub write_down_cached_group_member { return 1 }

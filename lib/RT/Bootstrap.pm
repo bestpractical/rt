@@ -53,8 +53,10 @@ use base qw/Jifty::Bootstrap/;
 
 sub run {
     my $self = shift;
+
+
     $self->insert_initial_data();
-    $self->insert_data( $RT::EtcPath . "/initialdata" );
+    $self->insert_data( RT->etc_path . "/initialdata" );
 }
 
 use File::Spec;
@@ -110,12 +112,11 @@ sub insert_initial_data {
         }
         else {
             my $ace = RT::Model::ACE->new( current_user => RT->system_user );
-            my ( $val, $msg ) = $ace->_bootstrap_create(
-                principal_id   => acl_equiv_group_id( RT->system_user->id ),
-                type => 'Group',
-                right_name     => 'SuperUser',
-                object_type    => 'RT::System',
-                object_id      => 1,
+            my ( $val, $msg ) = $ace->create(
+                principal   => RT->system_user->id,
+                right_name  => 'SuperUser',
+                object_type => 'RT::System',
+                object_id   => 1,
             );
             return ( $val, $msg ) unless $val;
         }
@@ -126,7 +127,7 @@ sub insert_initial_data {
     # system groups
     foreach my $name (qw(Everyone Privileged Unprivileged)) {
         my $group = RT::Model::Group->new( current_user => RT->system_user );
-        $group->load_system_internal_group($name);
+        $group->load_system_internal($name);
         if ( $group->id ) {
 
             #            push @warns, "System group '$name' already exists.";
@@ -182,21 +183,7 @@ sub insert_initial_data {
     # system role groups
     foreach my $name (qw(owner requestor cc admin_cc)) {
         my $group = RT::Model::Group->new( current_user => RT->system_user );
-        $group->load_system_role_group($name);
-        if ( $group->id ) {
-
-            #            push @warns, "System role '$name' already exists.";
-            next;
-        }
-
-        $group = RT::Model::Group->new( current_user => RT->system_user );
-        my ( $val, $msg ) = $group->_create(
-            type        => $name,
-            domain      => 'RT::System-Role',
-            description => 'SystemRolegroup for internal use',    # loc
-            name        => '',
-            instance    => '',
-        );
+        my ( $val, $msg ) = $group->create_role( object => RT->system, type => $name);
         return ( $val, $msg ) unless $val;
     }
 }
@@ -211,11 +198,26 @@ sub insert_data {
     my $datafile = shift;
 
     # Slurp in stuff to insert from the datafile. Possible things to go in here:-
-    our ( @Groups, @Users, @ACL, @Queues, @scrip_actions, @scrip_conditions, @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final );
-    local ( @Groups, @Users, @ACL, @Queues, @scrip_actions, @scrip_conditions, @Templates, @CustomFields, @Scrips, @Attributes, @Initial, @Final );
+    our (
+        @Groups,        @Users,            @ACL,       @Queues,
+        @scrip_actions, @scrip_conditions, @Templates, @CustomFields,
+        @Scrips,        @Attributes,       @Initial,   @Final,
+        %Config
+    );
+    local (
+        @Groups,        @Users,            @ACL,       @Queues,
+        @scrip_actions, @scrip_conditions, @Templates, @CustomFields,
+        @Scrips,        @Attributes,       @Initial,   @Final,
+        %Config
+    );
 
     require $datafile
-        || die "Couldn't find initial data for import\n" . $@;
+      || die "Couldn't find initial data for import\n" . $@;
+
+    for my $name ( sort keys %Config ) {
+        my $config = RT::Model::Config->new( current_user => RT->system );
+        $config->create( name => $name, value => $Config{$name} );
+    }
 
     if (@Initial) {
 
@@ -241,7 +243,7 @@ sub insert_data {
                     if ( ref $_ eq 'HASH' ) {
                         $parent->load_by_cols(%$_);
                     } elsif ( !ref $_ ) {
-                        $parent->load_user_defined_group($_);
+                        $parent->load_user_defined($_);
                     } else {
                         print "(Error: wrong format of member_of field."
                             . " Should be name of user defined group or"
@@ -371,17 +373,17 @@ sub insert_data {
             if ( $item->{'GroupDomain'} ) {
                 $princ = RT::Model::Group->new( current_user => RT->system_user );
                 if ( $item->{'GroupDomain'} eq 'UserDefined' ) {
-                    $princ->load_user_defined_group( $item->{'group_id'} );
+                    $princ->load_user_defined( $item->{'group_id'} );
                 } elsif ( $item->{'GroupDomain'} eq 'SystemInternal' ) {
-                    $princ->load_system_internal_group( $item->{'GroupType'} );
+                    $princ->load_system_internal( $item->{'GroupType'} );
                 } elsif ( $item->{'GroupDomain'} eq 'RT::System-Role' ) {
-                    $princ->load_system_role_group( $item->{'GroupType'} );
+                    $princ->create_role( object => RT->system, type => $item->{'GroupType'} );
                 } elsif ( $item->{'GroupDomain'} eq 'RT::Model::Queue-Role'
                     && $item->{'queue'} )
                 {
-                    $princ->load_queue_role_group(
-                        type  => $item->{'GroupType'},
-                        queue => $object->id
+                    $princ->create_role(
+                        object => $object,
+                        type   => $item->{'GroupType'},
                     );
                 } else {
                     $princ->load( $item->{'group_id'} );
@@ -429,20 +431,6 @@ sub insert_data {
         #print "done.\n";
     }
 
-    if (@scrip_conditions) {
-
-        #print "Creating scrip_conditions...";
-
-        for my $item (@scrip_conditions) {
-            my $new_entry = RT::Model::ScripCondition->new( current_user => RT->system_user );
-            my $return = $new_entry->create(%$item);
-
-            #print $return. ".";
-        }
-
-        #print "done.\n";
-    }
-
     if (@Templates) {
 
         #print "Creating templates...";
@@ -457,31 +445,20 @@ sub insert_data {
         #print "done.\n";
     }
     if (@Scrips) {
+        # XXX: put into RT::Model::Rules
+        require RT::Lorzy;
+        require Lorzy::Builder;
+        for my $item (sort { $a->{description} cmp $b->{description} } @Scrips) {
+            my $rule_factory = RT::Lorzy->create_scripish(
+                $item->{scrip_condition},
+                $item->{scrip_action},
+                $item->{template},
+                $item->{description},
+            );
 
-        #print "Creating scrips...";
-
-        for my $item (@Scrips) {
-            my $new_entry = RT::Model::Scrip->new( current_user => RT->system_user );
-
-            my @queues
-                = ref $item->{'queue'} eq 'ARRAY'
-                ? @{ $item->{'queue'} }
-                : $item->{'queue'} || 0;
-            push @queues, 0 unless @queues;    # add global queue at least
-
-            foreach my $q (@queues) {
-                my ( $return, $msg ) = $new_entry->create( %$item, queue => $q );
-                if ($return) {
-
-                    #print $return. ".";
-                } else {
-
-                    #print "(Error: $msg)\n";
-                }
-            }
+            my $rule = RT::Model::Rule->new( current_user => RT->system_user );
+            $rule->create_from_factory( $rule_factory );
         }
-
-        #print "done.\n";
     }
 
     if (@Attributes) {
@@ -514,24 +491,7 @@ sub insert_data {
         }
     }
 
-    my $db_type = RT->config->get('DatabaseType');
-
     #print "Done setting up database content.\n";
-}
-
-=head2 acl_equiv_group_id
-
-Given a userid, return that user's acl equivalence group
-
-=cut
-
-sub acl_equiv_group_id {
-    my $username = shift;
-    my $user = RT::Model::User->new( current_user => RT->system_user );
-    $user->load($username);
-    my $equiv_group = RT::Model::Group->new( current_user => RT->system_user );
-    $equiv_group->load_acl_equivalence_group($user);
-    return ( $equiv_group->id );
 }
 
 1;

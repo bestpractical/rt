@@ -46,7 +46,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-=head1 name
+=head1 NAME
 
   RT::Model::TransactionCollection - a collection of RT Transaction objects
 
@@ -67,7 +67,7 @@ use warnings;
 use strict;
 
 package RT::Model::TransactionCollection;
-use base qw/RT::SearchBuilder/;
+use base qw/RT::Collection/;
 
 sub _init {
     my $self = shift;

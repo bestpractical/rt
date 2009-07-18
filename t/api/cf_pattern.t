@@ -51,4 +51,7 @@ works($cf->set_pattern('(?!)')); # reject everything
 fails(add(''));
 fails(add('...'));
 
+# Avoid global destruction issues
+undef $t;
+
 1;

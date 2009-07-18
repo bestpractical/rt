@@ -52,33 +52,23 @@ $resolved_after => undef
 </%args>
 <%init>
 my $title = _("Resolved tickets in period, grouped by owner");
-my $q = RT::Model::Queue->new();
-my $before = RT::Date->new();
-my $after = RT::Date->new();
+my $q = RT::Model::Queue->new( current_user => Jifty->web->current_user );
 my $query = '';
 
-
-if ($resolved_after) {
-    $after->set(format => 'unknown', value => $resolved_after);
-    $resolved_after = $after->as_string;
-}
-if ($resolved_before) {
-    $before->set(format => 'unknown', value => $resolved_before);
-    $resolved_before = $before->as_string;
-}
-
+my $after = RT::DateTime->new_from_string($resolved_after);
+my $before = RT::DateTime->new_from_string($resolved_before);
 
 $q->load_by_cols(name => $queue);
 </%init>
 <&| /_elements/wrapper, title => $title &>
 <& /Tools/Reports/Elements/Tabs, current_tab => 'Tools/Reports/ResolvedByDates.html', title => $title &>
 <form method="post" action="ResolvedByDates.html">
-% if ($queue|| $resolved_before ||$resolved_after) {
+% if ($queue || $before->is_set || $after->is_set) {
 % # if we have a queue, do the search
 % $query = "Status = 'resolved'";
 % if ($queue) { $query .= " AND queue = '$queue'"}
-% if ($resolved_before) { $query .= " AND resolved < '".$before->iso."'"; }
-% if ($resolved_after) { $query .= " AND resolved > '".$after->iso."'"}
+% if ($before->is_set) { $query .= " AND resolved < '".$before->iso."'"; }
+% if ($after->is_set) { $query .= " AND resolved > '".$after->iso."'"}
 % my $groupby = 'Owner';
 <& /Search/Elements/Chart, query => $query, primary_group_by => $groupby &>
 % }
@@ -87,9 +77,9 @@ $q->load_by_cols(name => $queue);
 
 <br /><&|/l&>Queue</&>: <& /Elements/SelectQueue, name => 'queue', named_values => 1, default => $q->id &>
 <br /><&|/l&>Tickets resolved after</&>: 
-<& /Elements/SelectDate, name => 'resolved_after', default => ($resolved_after) ? $after->iso : ''&>
+<& /Elements/SelectDate, name => 'resolved_after', default => $after &>
 <br /><&|/l&>Tickets resolved before</&>: 
-<& /Elements/SelectDate, name => 'resolved_before', default => ($resolved_before) ? $before->iso : ''&>
+<& /Elements/SelectDate, name => 'resolved_before', default => $before &>
 
 <& /Elements/Submit&>
 </form>

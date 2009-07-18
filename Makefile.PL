@@ -1,8 +1,8 @@
 use inc::Module::Install;
 
 name        'RT';
-version     '3.99_01';
-license 'GPLv2';
+version     '3.999_01';
+license     'GPLv2';
 requires    'Jifty' => '0.80913';
 
 requires(
@@ -16,10 +16,9 @@ requires(
     'File::Spec'                 => '0.8',
     'HTML::Entities'             => 0,
     'HTML::Scrubber'             => '0.08',
-    'Log::Dispatch'              => '2.0',
-    'Locale::Maketext'           => '1.06',
     'Locale::Maketext::Lexicon'  => '0.32',
     'Locale::Maketext::Fuzzy'    => '0',
+    'Lorzy'                      => '0',
     'MIME::Entity'               => '5.425',
     'Email::Address'             => 0,
     'Mail::Mailer'               => '1.57',
@@ -41,6 +40,8 @@ requires(
     'File::Glob'                 => 0,
     'Devel::StackTrace'          => '1.19',
     'Text::Naming::Convention'   => 0,
+    'DateTime'                   => '0.46',
+    'Pod::POM'                   => 0,
 );
 
 features(
@@ -48,27 +49,13 @@ features(
     'Mason' => [
         -default            => 1,
         'HTML::Mason'       => 1.40,
-        'Errno'             => 0,
         'Digest::MD5'       => 2.27,
-        'CGI::Cookie'       => 1.20,
         'Storable'          => 2.08,
-        'Apache::Session'   => 1.53,
         'XML::RSS'          => 1.05,
         'Text::WikiFormat'  => 0.76,
         'CSS::Squish'       => 0.06,
         'Devel::StackTrace' => 1.19,
     ],
-
-    'Standalone Server' => [
-        -default => 1,
-
-        'HTTP::Server::Simple' => 0.34,
-        'HTTP::Server::Simple::Mason', 0.09,
-        'Net::Server'          => 0,
-        'Net::Server::PreFork' => 0
-    ],
-
-    ,
     MAILGATE => [
         -default => 1,
         'HTML::TreeBuilder',
@@ -102,11 +89,10 @@ features(
         'File::Find',
         'Test::Deep', => 0,
         'String::ShellQuote'         => '0',
-        'Test::HTTP::Server::Simple' => '0.09',
-        'Log::Dispatch::Perl',
         'Test::Warn',
         'Test::Builder' => '0.77',
         'IPC::Run3',
+        'Test::MockTime',
     ],
 
     ,
@@ -115,29 +101,6 @@ features(
         'CGI'    => '3.38',
         'FCGI',
         'CGI::Fast'
-        ]
-
-    ,
-    SPEEDYCGI => [
-        -default => 0,
-        'CGI'    => '3.38',
-        'CGI::SpeedyCGI'
-        ]
-
-    ,
-    MODPERL1 => [
-        -default => 0,
-        'CGI'    => '3.38',
-        'Apache::Request',
-        'Apache::DBI' => '0.92'
-        ]
-
-    ,
-    MODPERL2 => [
-        -default => 0,
-        'CGI'    => '3.38',
-        'Apache::DBI',
-        'HTML::Mason' => '1.40',
         ]
 
     ,

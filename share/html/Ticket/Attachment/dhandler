@@ -55,7 +55,7 @@
     else {
         abort("Corrupted attachment URL.");
     }
-     my $AttachmentObj = RT::Model::Attachment->new();
+     my $AttachmentObj = RT::Model::Attachment->new( current_user => Jifty->web->current_user );
      $AttachmentObj->load($attach) || abort("Attachment '$attach' could not be loaded");
 
 
@@ -69,7 +69,7 @@
 
      my $content_type = $AttachmentObj->content_type || 'text/plain';
         
-     unless (RT->config->get('TrustHTMLAttachments')) {
+     unless (RT->config->get('trust_html_attachments')) {
          $content_type = 'text/plain' if ($content_type =~ /^text\/html/i);
      }
 
@@ -80,7 +80,7 @@
 	$content_type .= ";charset=$enc";
      }
 
-     # unless (RT->config->get('TrustMIMEAttachments')) {
+     # unless (RT->config->get('trust_mime_attachments')) {
      #     $content_type = 'application/octet-stream';
      # }
 

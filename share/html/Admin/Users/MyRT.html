@@ -73,7 +73,7 @@
 my @actions;
 my $current_tab;
 $current_tab = 'Admin/Users/MyRT.html?id='.$id if ($id);
-my $user_object = RT::Model::User->new();
+my $user_object = RT::Model::User->new( current_user => Jifty->web->current_user );
 $user_object->load($id) || abort("Couldn't load user '$id'");
 my $title = _("RT at a glance for the user %1", $user_object->name);
 
@@ -85,7 +85,7 @@ if ($ARGS{reset}) {
 my ($default_portlets) = RT::System->new()->attributes->named('HomepageSettings');
 my $portlets  = $user_object->preferences('HomepageSettings', $default_portlets ? $default_portlets->content  : {});
 
-my %allowed_components = map {$_ => 1} @{ RT->config->get('HomepageComponents') };
+my %allowed_components = map {$_ => 1} @{ RT->config->get('homepage_components') };
 
 my @items;
 push @items, map {["component-$_", $_]} sort keys %allowed_components;

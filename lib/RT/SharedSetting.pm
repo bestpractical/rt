@@ -139,7 +139,7 @@ sub load {
 =head2 load_by_id
 
 First loads up the L<RT::Model::Attribute> for this shared setting by ID, then calls
-L</Load> with the correct parameters. Returns a tuple of status and message,
+L</load> with the correct parameters. Returns a tuple of status and message,
 where status is true on success.
 
 =cut
@@ -170,17 +170,17 @@ sub load_by_id {
 
 =head2 post_load
 
-Called after after successful L</Load>.
+Called after after successful L</load>.
 
 =cut
 
 sub post_load { }
 
-=head2 Save
+=head2 save
 
 Creates a new shared setting. Takes a privacy, a name, and any other arguments.
 Saves the given parameters to the appropriate user/group object, and loads the
-resulting object. Arguments are passed to the L</SaveAttribute> method, which
+resulting object. Arguments are passed to the L</save_attribute> method, which
 does the actual update. Returns a tuple of status and message, where status is
 true on success. Defaults are:
 
@@ -223,18 +223,18 @@ sub save {
     }
 }
 
-=head2 SaveAttribute
+=head2 save_attribute
 
-An empty method for subclassing. Called from L</Save> method.
+An empty method for subclassing. Called from L</save> method.
 
 =cut
 
 sub save_attribute { }
 
-=head2 Update
+=head2 update
 
 Updates the parameters of an existing shared setting. Any arguments are passed
-to the L</UpdateAttribute> method. Returns a tuple of status and message, where
+to the L</update_attribute> method. Returns a tuple of status and message, where
 status is true on success.
 
 =cut
@@ -279,7 +279,7 @@ An empty method for subclassing. Called from L</Update> method.
 sub update_attribute { }
 
 =head2 delete
-    
+
 Deletes the existing shared setting. Returns a tuple of status and message,
 where status is true upon success.
 
@@ -382,7 +382,7 @@ sub is_visible_to {
 
             # then any principal that is a member of the setting's group can see
             # the setting
-            return $setting_group->has_member_recursively($to_id);
+            return $setting_group->has_member( principal =>  $to_id, recursively => 1 );
         }
     }
 
@@ -431,8 +431,8 @@ sub _get_object {
     }
 
     if ( $obj_type eq 'RT::Model::Group'
-        && !$object->has_member_recursively(
-            $self->current_user->principal ) )
+        && !$object->has_member( principal => 
+            $self->current_user->principal, recursively => 1 ) )
     {
         Jifty->log->debug( "Permission denied, "
               . $self->current_user->name

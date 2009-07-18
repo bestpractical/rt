@@ -101,6 +101,10 @@ my $rootq = RT::Model::Queue->new(current_user => RT::CurrentUser->new( id => $r
 $rootq->load(1);
 ok($rootq->id, "Loaded the first queue");
 
+for my $role ( qw/owner requestor cc admin_cc/ ) {
+    $rootq->create_role( $role );
+}
+
 ok ($rootq->current_user->has_right(right=> 'CreateTicket', object => $rootq), "Root can create tickets");
 
 my $new_user = RT::Model::User->new(current_user => RT->system_user);
@@ -135,7 +139,7 @@ ok($tickid, "Created ticket: $tickid");
 ok (!$new_user->has_right( object => $new_tick, right => 'ModifyTicket'), "User can't modify the ticket without group membership");
 # Create a new group
 my $group = RT::Model::Group->new(current_user => RT->system_user);
-$group->create_user_defined_group(name => 'ACLTest'.$$);
+$group->create_user_defined(name => 'ACLTest'.$$);
 ok($group->id, "Created a new group Ok");
 # Grant a group the right to modify tickets in a queue
 ok(my ($gv,$gm) = $group->principal->grant_right( object => $q, right => 'ModifyTicket'),"Granted the group the right to modify tickets");
@@ -170,7 +174,7 @@ ok (!$new_user->has_right( object => $new_tick2, right => 'ModifyTicket'), "User
 
 # Create a subgroup
 my $subgroup = RT::Model::Group->new(current_user => RT->system_user);
-$subgroup->create_user_defined_group(name => 'Subgrouptest'.$$);
+$subgroup->create_user_defined(name => 'Subgrouptest'.$$);
 ok($subgroup->id, "Created a new group ".$subgroup->id."Ok");
 #Add the subgroup as a subgroup of the group
 my ($said, $samsg) =  $group->add_member($subgroup->principal_id);
@@ -217,13 +221,13 @@ ok(my ($qv,$qm) = $q_as_system->role_group("admin_cc")->principal->grant_right( 
 ok($qv, "Granted the right successfully - $qm");
 
 # Add the user as a queue admincc
-ok (my ($add_id, $add_msg) = $q_as_system->add_watcher(type => 'admin_cc', principal_id => $new_user->principal_id)  , "Added the new user as a queue admincc");
+ok (my ($add_id, $add_msg) = $q_as_system->add_watcher(type => 'admin_cc', principal => $new_user->principal_id)  , "Added the new user as a queue admincc");
 ok ($add_id, "the user is now a queue admincc - $add_msg");
 
 # Make sure the user does have the right to modify tickets in the queue
 ok ($new_user->has_right( object => $new_tick2, right => 'ModifyTicket'), "User can modify the ticket as an admincc");
 # Remove the user from the role  group
-ok (my ($del_id, $del_msg) = $q_as_system->delete_watcher(type => 'admin_cc', principal_id => $new_user->principal_id)  , "Deleted the new user as a queue admincc");
+ok (my ($del_id, $del_msg) = $q_as_system->delete_watcher(type => 'admin_cc', principal => $new_user->principal_id)  , "Deleted the new user as a queue admincc");
 
 # Make sure the user doesn't have the right to modify tickets in the queue
 ok (!$new_user->has_right( object => $new_tick2, right => 'ModifyTicket'), "User can't modify the ticket without group membership");
@@ -233,14 +237,14 @@ ok (!$new_user->has_right( object => $new_tick2, right => 'ModifyTicket'), "User
 # {{{ Test the user's right to modify a ticket as a _ticket_ admincc with the Right granted at the _queue_ level
 
 # Add the user as a ticket admincc
-ok (my( $uadd_id, $uadd_msg) = $new_tick2->add_watcher(type => 'admin_cc', principal_id => $new_user->principal_id)  , "Added the new user as a queue admincc");
+ok (my( $uadd_id, $uadd_msg) = $new_tick2->add_watcher(type => 'admin_cc', principal => $new_user->principal_id)  , "Added the new user as a queue admincc");
 ok ($add_id, "the user is now a queue admincc - $add_msg");
 
 # Make sure the user does have the right to modify tickets in the queue
 ok ($new_user->has_right( object => $new_tick2, right => 'ModifyTicket'), "User can modify the ticket as an admincc");
 
 # Remove the user from the role  group
-ok (( $del_id, $del_msg) = $new_tick2->delete_watcher(type => 'admin_cc', principal_id => $new_user->principal_id)  , "Deleted the new user as a queue admincc");
+ok (( $del_id, $del_msg) = $new_tick2->delete_watcher(type => 'admin_cc', principal => $new_user->principal_id)  , "Deleted the new user as a queue admincc");
 
 # Make sure the user doesn't have the right to modify tickets in the queue
 ok (!$new_user->has_right( object => $new_tick2, right => 'ModifyTicket'), "User can't modify the ticket without group membership");
@@ -269,14 +273,14 @@ ok (!$new_user->has_right( object => $new_tick2, right => 'ModifyTicket'), "User
 ok (!$new_user->has_right( object => $new_tick2->queue, right => 'ModifyTicket'), "User can not modify tickets in the queue without being an admincc");
 
 # Add the user as a queue admincc
-ok (($add_id, $add_msg) = $q_as_system->add_watcher(type => 'admin_cc', principal_id => $new_user->principal_id)  , "Added the new user as a queue admincc");
+ok (($add_id, $add_msg) = $q_as_system->add_watcher(type => 'admin_cc', principal => $new_user->principal_id)  , "Added the new user as a queue admincc");
 ok ($add_id, "the user is now a queue admincc - $add_msg");
 
 # Make sure the user does have the right to modify tickets in the queue
 ok ($new_user->has_right( object => $new_tick2, right => 'ModifyTicket'), "User can modify the ticket as an admincc");
 ok ($new_user->has_right( object => $new_tick2->queue, right => 'ModifyTicket'), "User can modify tickets in the queue as an admincc");
 # Remove the user from the role  group
-ok (($del_id, $del_msg) = $q_as_system->delete_watcher(type => 'admin_cc', principal_id => $new_user->principal_id)  , "Deleted the new user as a queue admincc");
+ok (($del_id, $del_msg) = $q_as_system->delete_watcher(type => 'admin_cc', principal => $new_user->principal_id)  , "Deleted the new user as a queue admincc");
 
 # Make sure the user doesn't have the right to modify tickets in the queue
 ok (!$new_user->has_right( object => $new_tick2, right => 'ModifyTicket'), "User can't modify the ticket without group membership");
@@ -291,7 +295,7 @@ ok (!$new_user->has_right( object => $new_tick2->queue, right => 'ModifyTicket')
 
 
 # Add the user as a ticket admincc
-ok ( ($uadd_id, $uadd_msg) = $new_tick2->add_watcher(type => 'admin_cc', principal_id => $new_user->principal_id)  , "Added the new user as a queue admincc");
+ok ( ($uadd_id, $uadd_msg) = $new_tick2->add_watcher(type => 'admin_cc', principal => $new_user->principal_id)  , "Added the new user as a queue admincc");
 ok ($add_id, "the user is now a queue admincc - $add_msg");
 
 # Make sure the user does have the right to modify tickets in the queue
@@ -299,7 +303,7 @@ ok ($new_user->has_right( object => $new_tick2, right => 'ModifyTicket'), "User 
 ok (!$new_user->has_right( object => $new_tick2->queue, right => 'ModifyTicket'), "User can not modify tickets in the queue obj being only a ticket admincc");
 
 # Remove the user from the role  group
-ok ( ($del_id, $del_msg) = $new_tick2->delete_watcher(type => 'admin_cc', principal_id => $new_user->principal_id)  , "Deleted the new user as a queue admincc");
+ok ( ($del_id, $del_msg) = $new_tick2->delete_watcher(type => 'admin_cc', principal => $new_user->principal_id)  , "Deleted the new user as a queue admincc");
 
 # Make sure the user doesn't have the right to modify tickets in the queue
 ok (!$new_user->has_right( object => $new_tick2, right => 'ModifyTicket'), "User can't modify the ticket without being an admincc");

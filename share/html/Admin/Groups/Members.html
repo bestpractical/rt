@@ -55,7 +55,7 @@
 
 <&| /Widgets/TitleBox, title => _('Editing membership for group %1', $Group->name) &>
 
-<form action="<% RT->config->get('WebPath') %>/Admin/Groups/Members.html" method="post">
+<form action="<% RT->config->get('web_path') %>/Admin/Groups/Members.html" method="post">
 <input type="hidden" class="hidden" name="id" value="<%$Group->id%>" />
 <table width="100%">
 <tr>
@@ -70,11 +70,11 @@
 <tr>
 <td valign="top">
 
-% if ($Group->members_obj->count == 0 ) {
+% if ($Group->members->count == 0 ) {
 <em><&|/l&>(No members)</&></em>
 % } else {
 <&|/l&>Users</&>
-% my $Users = $Group->user_members_obj( recursively => 0 );
+% my $Users = $Group->user_members( recursively => 0 );
 % $Users->order_by( column => $user_order_by, order => $userorder );
 <ul>
 % while ( my $user = $Users->next ) {
@@ -85,12 +85,12 @@
 </ul>
 <&|/l&>Groups</&>
 <ul>
-% my $GroupMembers = $Group->members_obj;
+% my $GroupMembers = $Group->members;
 % $GroupMembers->limit_to_groups();
 % while ( my $member = $GroupMembers->next ) {
 % $GroupsSeen{ $member->member_id } = 1 if $skip_seen_groups;
 <li><input type="checkbox" class="checkbox" name="delete_member-<% $member->member_id %>" value="1" />
-<% $member->member_obj->object->name %>
+<% $member->member->object->name %>
 % }
 </ul>
 % }

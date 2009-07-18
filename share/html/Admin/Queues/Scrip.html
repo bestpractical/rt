@@ -58,7 +58,7 @@
 
 </&>
 <%init>
-my $queue_obj = RT::Model::Queue->new();
+my $queue_obj = RT::Model::Queue->new( current_user => Jifty->web->current_user );
 $queue_obj->load( $queue );
 unless( $queue_obj->id ) {
     abort(_("Queue %1 not found", $id));
@@ -77,7 +77,6 @@ my $subtabs = {
     },
 };
 
-my $scrip = RT::Model::Scrip->new();
 ($id, my @results) = $m->comp( '/Admin/Elements/EditScrip:Process', %ARGS );
 
 if ( $id ) {

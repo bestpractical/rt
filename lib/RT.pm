@@ -51,43 +51,17 @@ use strict;
 package RT;
 
 use RT::CurrentUser;
+use RT::DateTime;
+use RT::Lorzy;
 use Jifty::Util;
 
 use strict;
 use warnings;
 use File::Spec ();
-use vars qw($Config $System $nobody $Handle $_install_mode);
+use vars qw($Config $System $nobody $Handle );
 our $VERSION = '3.999.0';
 
-our $BASE_PATH        = Jifty::Util->app_root;
-our $EtcPath          = $BASE_PATH . '/etc';
-our $BinPath          = $BASE_PATH . '/bin';
-our $SbinPath          = $BASE_PATH . '/sbin';
-our $VarPath          = $BASE_PATH . '/var';
-our $LocalPath        = $BASE_PATH . '/local';
-our $LocalLibPath     = $BASE_PATH . '/local/lib';
-our $LocalEtcPath     = $BASE_PATH . '/local/etc';
-our $LocalLexiconPath = $BASE_PATH . '/local/po';
-our $LocalPluginPath  = $LocalPath . "/plugins";
-
-# $MasonComponentRoot is where your rt instance keeps its mason html files
-
-our $MasonComponentRoot = $BASE_PATH . '/share/html';
-
-# $MasonLocalComponentRoot is where your rt instance keeps its site-local
-# mason html files.
-
-our $MasonLocalComponentRoot = $BASE_PATH . '/local/html';
-
-# $MasonDataDir Where mason keeps its datafiles
-
-our $MasonDataDir = $BASE_PATH . '/var/mason_data';
-
-# RT needs to put session data (for preserving state between connections
-# via the web interface)
-our $MasonSessionDir = $BASE_PATH . '/var/session_data';
-
-=head1 name
+=head1 NAME
 
 RT - Request Tracker
 
@@ -115,28 +89,24 @@ have not been set already.
 =cut
 
 sub load_config {
-    require RT::Config;
-    $Config = RT::Config->new();
-    $Config->load_configs;
+    $Config = RT::Model::Config->new;
 
     #    require RT::I18N;
-
-    # RT::Essentials mistakenly recommends that WebPath be set to '/'.
-    # If the user does that, do what they mean.
-    $RT::WebPath = '' if ( $RT::WebPath eq '/' );
-
     RT::I18N->init;
 }
 
 sub config {
     my $self = shift;
-    return $RT::Config;
+    if (!$Config) {
+        RT->load_config;
+    }
+    return $Config;
 }
 
 =head2 init
 
-L<Connect to the database /connect_to_database>, L<initilizes system objects /InitSystemobjects>,
-L<preloads classes /InitClasses> 
+L<Initilizes system objects|init_system_objects>, and L<configures
+plugins|init_plugins>.
 
 =cut
 
@@ -193,10 +163,10 @@ EOF
     }
 }
 
-=head2 InitSystemobjects
+=head2 init_system_objects
 
-Initializes system objects: C<RT->system>, C<RT->system_user>
-and C<RT->nobody>.
+Initializes system objects: C<< RT->system >>, C<< RT->system_user >>
+and C<< RT->nobody >>.
 
 =cut
 
@@ -212,20 +182,18 @@ sub init_system_objects {
 
 =head1 CLASS METHODS
 
-=head2 Config
+=head2 config
 
-Returns the current L<config object RT::Config>, but note that
-you must L<load config /load_config> first otherwise this method
-returns undef.
+Returns the current L<config object|RT::Model::Config>.
 
 Method can be called as class method.
 
 =cut
 
-=head2 System
+=head2 system
 
-Returns the current L<system object RT::System>. See also
-L</InitSystemobjects>.
+Returns the current system object L<RT::System>. See also
+L</init_system_objects>.
 
 =cut
 
@@ -235,7 +203,7 @@ sub system { return RT::System->new }
 
 Returns the system user's object, it's object of
 L<RT::CurrentUser> class that represents the system. See also
-L</InitSystemobjects>.
+L</init_system_objects>.
 
 =cut
 
@@ -250,7 +218,7 @@ sub system_user {
 
 Returns object of Nobody. It's object of L<RT::CurrentUser> class
 that represents a user who can own ticket and nothing else. See
-also L</InitSystemobjects>.
+also L</init_system_objects>.
 
 =cut
 
@@ -285,10 +253,11 @@ sub plugin_dirs {
     my $subdir = shift;
 
     my @res;
-    foreach my $plugin (grep $_, RT->config->get('Plugins')) {
+#    foreach my $plugin ( grep $_, RT->config->get('plugins') ) {
+    foreach my $plugin ( grep $_, () ) {
         my $plugindir = $plugin;
         $plugindir =~ s/::/-/g;
-        my $path = $RT::LocalPluginPath. "/$plugindir";
+        my $path = RT->local_plugin_path. "/$plugindir";
         $path .= "/$subdir" if defined $subdir && length $subdir;
         next unless -d $path;
         push @res, $path;
@@ -308,8 +277,9 @@ sub init_plugin_paths {
     my @lib_dirs = $self->plugin_dirs('lib');
 
     my @tmp_inc;
+    my $local_lib = $self->local_lib_path;
     for (@INC) {
-        if ( Cwd::realpath($_) eq $RT::LocalLibPath) {
+        if ( Cwd::realpath($_) eq $local_lib) {
             push @tmp_inc, $_, @lib_dirs;
         } else {
             push @tmp_inc, $_;
@@ -321,7 +291,8 @@ sub init_plugin_paths {
 
 =head2 init_plugins
 
-Initialze all Plugins found in the RT configuration file, setting up their lib and HTML::Mason component roots.
+Initialize all Plugins found in the RT configuration file, setting up
+their lib and HTML::Mason component roots.
 
 =cut
 
@@ -329,20 +300,13 @@ sub init_plugins {
     my $self    = shift;
     my @plugins;
     require RT::Plugin;
-    foreach my $plugin (grep $_, RT->config->get('Plugins')) {
+#    foreach my $plugin (grep $_, RT->config->get('plugins')) {
+    foreach my $plugin (grep $_, () ) {
         $plugin->require;
         die $UNIVERSAL::require::ERROR if ($UNIVERSAL::require::ERROR);
         push @plugins, RT::Plugin->new(name =>$plugin);
     }
     return @plugins;
-}
-
-sub install_mode {
-    my $self = shift;
-    if (@_) {
-         $_install_mode = shift;
-    }
-    return $_install_mode;
 }
 
 =head2 init_jifty
@@ -355,30 +319,110 @@ nomrally, we need to do it early in BEGIN block
 sub init_jifty {
     require Jifty;
     Jifty->new;
+
+    Jifty->web->add_javascript(
+        qw( titlebox-state.js util.js ahah.js fckeditor.js list.js class.js
+        combobox.js  cascaded.js )
+    );
+
+    Jifty::Web->add_trigger(
+        name      => 'after_include_javascript',
+        callback  => sub {
+            my $webpath = RT->config->get('web_path') || '/';
+            Jifty->web->out(
+                qq{<script type="text/javascript">RT = {};RT.WebPath = '$webpath';</script>}
+            );
+        },
+    );
 }
 
-Jifty->web->add_javascript(
-    qw( titlebox-state.js util.js ahah.js fckeditor.js list.js class.js
-      combobox.js  cascaded.js )
-);
+=head2 local_path
 
-Jifty::Web->add_trigger(
-    name      => 'after_include_javascript',
-    callback  => sub {
-        my $webpath = RT->config->get('WebPath') || '/';
-        Jifty->web->out(
-            qq{<script type="text/javascript">RT = {};RT.WebPath = '$webpath';</script>}
-        );
-    },
-);
+The root of F</local> (user overrides)
 
+=cut
+
+sub local_path { Jifty::Util->app_root . '/local' }
+
+=head2 local_lib_path
+
+The root of F</local/lib> (user libraries)
+
+=cut
+
+sub local_lib_path { shift->local_path . '/lib' }
+
+=head2 sbin_path
+
+The root of F</sbin> (system programs)
+
+=cut
+
+sub sbin_path { Jifty::Util->app_root . '/sbin' }
+
+=head2 bin_path
+
+The root of F</bin> (RT programs)
+
+=cut
+
+sub bin_path { Jifty::Util->app_root . '/bin' }
+
+=head2 html_path
+
+The root of F</share/html> (Mason templates)
+
+=cut
+
+sub html_path { Jifty::Util->app_root . '/share/html' }
+
+=head2 local_html_path
+
+The root of F</local/html> (user Mason templates)
+
+=cut
+
+sub local_html_path { Jifty::Util->app_root . '/local/html' }
+
+=head2 etc_path
+
+The root of F</etc> (configuration)
+
+=cut
+
+sub etc_path { Jifty::Util->app_root . '/etc' }
+
+=head2 var_path
+
+The root of F</var> (internal book-keeping)
+
+=cut
+
+sub var_path { Jifty::Util->app_root . '/var' }
+
+=head2 local_plugin_path
+
+The root of F</local/plugins> (plugins)
+
+=cut
+
+sub local_plugin_path { Jifty::Util->app_root . '/local/plugins' }
+
+=head2 lib_path
+
+The root of F</lib> (RT libraries)
+
+=cut
+
+sub lib_path { Jifty::Util->app_root . '/lib' }
 
 =head1 BUGS
 
-Please report them to rt-bugs@bestpractical.com, if you know what's
+Please report them to C<rt-bugs@bestpractical.com>, if you know what's
 broken and have at least some idea of what needs to be fixed.
 
-If you're not sure what's going on, report them rt-devel@lists.bestpractical.com.
+If you're not sure what's going on, report them
+C<rt-devel@lists.bestpractical.com>.
 
 =head1 SEE ALSO
 

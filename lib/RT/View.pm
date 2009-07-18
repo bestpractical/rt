@@ -51,21 +51,19 @@ use strict;
 package RT::View;
 use Jifty::View::Declare -base;
 
-require RT::View::Admin::Groups;
-alias RT::View::Admin::Groups under 'admin/groups/';
-
-require RT::View::Admin::Users;
-alias RT::View::Admin::Users under 'admin/users/';
+require RT::View::Admin;
+alias RT::View::Admin under 'admin/';
 
 require RT::View::Ticket;
 alias RT::View::Ticket under 'ticket/';
 
+require RT::View::SetupWizard;
+alias RT::View::SetupWizard under '__jifty/admin/setupwizard';
 
 __PACKAGE__->use_mason_wrapper;
 
 template login_widget => sub {
 
-    outs_raw('</div>'); # End of div#quickbar from /Elements/Header
     my ( $action, $next ) = get( 'action', 'next' );
     $action ||= new_action( class => 'Login' );
     $next ||= Jifty::Continuation->new(

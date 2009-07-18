@@ -64,7 +64,10 @@
 package RT::Model::ACE;
 
 use strict;
-no warnings qw(redefine);
+use warnings;
+
+use Scalar::Util qw(blessed);
+
 use RT::Model::PrincipalCollection;
 use RT::Model::QueueCollection;
 use RT::Model::GroupCollection;
@@ -75,14 +78,17 @@ sub table {'ACL'}
 
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column
-        type => max_length is 25,
-        type is 'varchar(25)', default is '';
-    column principal_id => references RT::Model::Principal;
+    column type =>
+        max_length is 25,
+        type is 'varchar(25)',
+    ;
+    column principal => references RT::Model::Principal;
     column right_name => max_length is 25, type is 'varchar(25)', is mandatory;
-    column
-        object_type => max_length is 25,
-        type is 'varchar(25)', default is '';
+    column object_type =>
+        type is 'varchar(25)',
+        max_length is 25,
+        default is '',
+    ;
     column object_id => type is 'int', default is '0';
 };
 
@@ -113,74 +119,61 @@ use vars qw (
 
 
 
-=head2 load_by_values PARAMHASH
+=head2 load_by_cols PARAMHASH
 
 Load an ACE by specifying a paramhash with the following fields:
 
-              principal_id => undef,
-              type => undef,
-	      right_name => undef,
+    principal  => undef,
+    type       => undef,
+    right_name => undef,
 
-        And either:
+And either:
 
-	      object => undef,
+    object => undef,
 
-            OR
+or
 
-	      object_type => undef,
-	      object_id => undef
+    object_type => undef,
+    object_id   => undef
 
 =cut
 
-sub load_by_values {
+sub load_by_cols {
     my $self = shift;
-    my %args = (
-        principal_id   => undef,
-        type => undef,
-        right_name     => undef,
-        object         => undef,
-        object_id      => undef,
-        object_type    => undef,
-        @_
-    );
+    my %args = ( @_ );
 
-    my $princ_obj;
-    ( $princ_obj, $args{'type'} ) = $self->canonicalize_principal( $args{'principal_id'}, $args{'type'} );
-
-    unless ( $princ_obj->id ) {
-        return ( 0, _( 'Principal %1 not found.', $args{'principal_id'} ) );
+    if ( $args{'object'} || defined $args{'object_id'} || $args{'object_type'} ) {
+        my ( $object, $object_type, $object_id ) = $self->_parse_object_arg(%args);
+        unless ($object) {
+            return ( 0, _("System error. Right not granted.") );
+        }
+        delete $args{'object'};
+        $args{'object_type'} = $object_type;
+        $args{'object_id'} = $object_id;
     }
 
-    my ( $object, $object_type, $object_id ) = $self->_parse_object_arg(%args);
-    unless ($object) {
-        return ( 0, _("System error. Right not granted.") );
+    if ( defined $args{'principal'} ) {
+        my ($group, $msg) = $self->principal_to_acl_group( $args{'principal'} );
+        unless ( $group ) {
+            return ( 0, $msg );
+        }
+        $args{'principal'} = $group->id;
     }
 
-    $self->load_by_cols(
-        principal_id   => $princ_obj->id,
-        type => $args{'type'},
-        right_name     => $args{'right_name'},
-        object_type    => $object_type,
-        object_id      => $object_id
-    );
-
-    #If we couldn't load it.
+    $self->SUPER::load_by_cols( %args );
     unless ( $self->id ) {
         return ( 0, _("ACE not found") );
     }
 
     # if we could
     return ( $self->id, _("Right Loaded") );
-
 }
-
-
 
 =head2 create <PARAMS>
 
 PARAMS is a parameter hash with the following elements:
 
-   principal_id => The id of an RT::Model::Principal object
+   principal => The id of an RT::Model::Principal object
    type => "User" "Group" or any Role type
    right_name => the name of a right. in any case
 
@@ -206,10 +199,10 @@ PARAMS is a parameter hash with the following elements:
 sub create {
     my $self = shift;
     my %args = (
-        principal_id   => undef,
-        type => undef,
-        right_name     => undef,
-        object         => undef,
+        principal  => undef,
+        type       => undef,
+        right_name => undef,
+        object     => undef,
         @_
     );
 
@@ -217,7 +210,7 @@ sub create {
         return ( 0, _('No right specified') );
     }
 
-    #if we haven't specified any sort of right, we're talking about a global right
+    #if we haven't specified any sort of object, we're talking about a global right
     if (   !defined $args{'object'}
         && !defined $args{'object_id'}
         && !defined $args{'object_type'} )
@@ -229,19 +222,16 @@ sub create {
         return ( 0, _("System error. Right not granted.") );
     }
 
-    # {{{ Validate the principal
-    my $princ_obj;
-    ( $princ_obj, $args{'type'} ) = $self->canonicalize_principal( $args{'principal_id'}, $args{'type'} );
-
-    unless ( $princ_obj->id ) {
-        return ( 0, _( 'Principal %1 not found.', $args{'principal_id'} ) );
+    my ($acl_group, $msg) = $self->principal_to_acl_group( $args{'principal'} );
+    unless ( $acl_group ) {
+        return ( 0, $msg );
     }
 
-    # }}}
+    $args{'type'} ||= $acl_group->type_for_acl;
 
     # {{{ Check the ACL
 
-    if ( ref( $args{'object'} ) eq 'RT::Model::Group' ) {
+    if ( $args{'object'}->isa('RT::Model::Group') ) {
         unless (
             $self->current_user->has_right(
                 object => $args{'object'},
@@ -292,22 +282,22 @@ sub create {
 
     # Make sure the right doesn't already exist.
     $self->load_by_cols(
-        principal_id   => $princ_obj->id,
-        type => $args{'type'},
-        right_name     => $args{'right_name'},
-        object_type    => $args{'object_type'},
-        object_id      => $args{'object_id'},
+        principal   => $acl_group->id,
+        type        => $args{'type'},
+        right_name  => $args{'right_name'},
+        object_type => $args{'object_type'},
+        object_id   => $args{'object_id'},
     );
     if ( $self->id ) {
         return ( 0, _('That principal already has that right') );
     }
 
     my $id = $self->SUPER::create(
-        principal_id   => $princ_obj->id,
-        type => $args{'type'},
-        right_name     => $args{'right_name'},
-        object_type    => ref( $args{'object'} ),
-        object_id      => $args{'object'}->id,
+        principal   => $acl_group->id,
+        type        => $args{'type'},
+        right_name  => $args{'right_name'},
+        object_type => ref( $args{'object'} ),
+        object_id   => $args{'object'}->id,
     );
 
     #Clear the key cache. TODO someday we may want to just clear a little bit of the keycache space.
@@ -375,44 +365,6 @@ sub __delete {
 }
 
 
-
-=head2 _bootstrap_create
-
-Grant a right with no error checking and no ACL. this is _only_ for 
-installation. If you use this routine without the author's explicit 
-written approval, he will hunt you down and make you spend eternity
-translating mozilla's code into FORTRAN or intercal.
-
-If you think you need this routine, you've mistaken. 
-
-=cut
-
-sub _bootstrap_create {
-    my $self = shift;
-    my %args = (@_);
-
-    # When bootstrapping, make sure we get the _right_ users
-    if ( $args{'UserId'} ) {
-        my $user = RT::Model::User->new;
-        $user->load( $args{'UserId'} );
-        delete $args{'UserId'};
-        $args{'principal_id'}   = $user->principal_id;
-        $args{'type'} = 'User';
-    }
-
-    my $id = $self->SUPER::create(%args);
-
-    if ( $id > 0 ) {
-        return ($id);
-    } else {
-        Jifty->log->err('System error. Right not granted.');
-        return (undef);
-    }
-
-}
-
-
-
 =head2 canonicalize_right_name <RIGHT>
 
 Takes a queue or system right name in any case and returns it in
@@ -475,7 +427,7 @@ sub _value {
     my $self = shift;
 
     if ( $self->principal->is_group
-        && $self->principal->object->has_member_recursively( $self->current_user->principal ) )
+        && $self->principal->object->has_member( principal =>  $self->current_user->principal, recursively => 1 ) )
     {
         return ( $self->__value(@_) );
     } elsif (
@@ -491,44 +443,28 @@ sub _value {
     }
 }
 
-=head2 canonicalize_principal (principal_id, type)
+=head2 principal_to_acl_group
 
-Takes a principal id and an optional principal type.
-
-If the principal is a user, resolves it to the proper acl equivalence group.
-Returns a tuple of  (RT::Model::Principal, type)  for the principal we really want to work with
+Takes a principal either an object or id. Resolves it to the proper acl
+equivalence group. Returns a tuple of (L<RT::Model::Group>, message). On
+errors object is empty and message is the error.
 
 =cut
 
-sub canonicalize_principal {
-    my $self       = shift;
-    my $princ_id   = shift;
-    my $princ_type = shift || 'Group';
+sub principal_to_acl_group {
+    my $self = shift;
+    my $principal = shift;
 
-    my $princ_obj = RT::Model::Principal->new( current_user => RT->system_user );
-    $princ_obj->load($princ_id);
+    return $principal->acl_equivalence_group
+        if blessed $principal;
 
-    unless ( $princ_obj->id ) {
-        use Carp;
-        Jifty->log->fatal(Carp::cluck);
-        Jifty->log->fatal("Can't load a principal for id $princ_id");
-        return ( $princ_obj, undef );
+    my $tmp = RT::Model::Principal->new( current_user => $self->current_user );
+    $tmp->load( $principal );
+    unless ( $tmp->id ) {
+        return (undef, _( 'Principal %1 not found.', $principal ));
+        return undef;
     }
-
-    # rights never get granted to users. they get granted to their
-    # ACL equivalence groups
-    if ( $princ_type eq 'User' ) {
-        my $equiv_group = RT::Model::Group->new;
-        $equiv_group->load_acl_equivalence_group($princ_obj);
-        unless ( $equiv_group->id ) {
-            Jifty->log->fatal( "No ACL equiv group for princ " . $princ_obj->id );
-            return ( RT::Model::Principal->new( current_user => RT->system_user ), undef );
-        }
-        $princ_obj  = $equiv_group->principal();
-        $princ_type = 'Group';
-
-    }
-    return ( $princ_obj, $princ_type );
+    return $tmp->acl_equivalence_group;
 }
 
 sub _parse_object_arg {
@@ -544,7 +480,7 @@ sub _parse_object_arg {
         Jifty->log->fatal( "Method called with an object_type or an object_id and object args" );
         return ();
     } elsif ( $args{'object'} && !UNIVERSAL::can( $args{'object'}, 'id' ) ) {
-        Jifty->log->fatal("Method called called object that has no id method");
+        Jifty->log->fatal("Method called with object that has no id method");
         return ();
     } elsif ( $args{'object'} ) {
         my $obj = $args{'object'};

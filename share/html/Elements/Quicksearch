@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <div class="ticket-overview">
 <&|/Widgets/TitleBox, title => _("Quick search"), bodyclass => "",
-   titleright => _("Edit"), titleright_href => RT->config->get('WebPath').'/Prefs/Quicksearch.html' &>
+   titleright => _("Edit"), titleright_href => RT->config->get('web_path').'/Prefs/Quicksearch.html' &>
 <& /Elements/QueueSummary,
    cache => 'quick_search_queues',
    queue_filter => sub  { $_->current_user_has_right('ShowTicket') && !exists $unwanted->{$_->name} },

@@ -48,7 +48,7 @@
 use strict;
 use warnings;
 
-=head1 name
+=head1 NAME
 
 RT::Model::Transaction
 
@@ -304,7 +304,6 @@ sub table {'Transactions'}
 use vars qw( %_brief_descriptions $Preferredcontent_type );
 
 use RT::Model::AttachmentCollection;
-use RT::Model::ScripCollection;
 use RT::Ruleset;
 
 
@@ -375,31 +374,18 @@ sub create {
     #Provide a way to turn off scrips if we need to
     Jifty->log->debug( 'About to think about scrips for transaction #' . $self->id );
     if ( $activate_scrips and $args{'object_type'} eq 'RT::Model::Ticket' ) {
-        $self->{'scrips'} = RT::Model::ScripCollection->new( current_user => RT->system_user );
-
-        Jifty->log->debug( 'About to prepare scrips for transaction #' . $self->id );
-        $self->{'scrips'}->prepare(
-            stage       => 'transaction_create',
-            type        => $args{'type'},
-            ticket      => $args{'object_id'},
-            transaction => $self->id,
-        );
-
         # Entry point of the rule system
-        my $ticket = RT::Model::Ticket->new( current_user => RT->system_user );
+        my $ticket = RT::Model::Ticket->new( current_user => RT::CurrentUser->superuser );
         $ticket->load( $args{'object_id'} );
-        my $rules = RT::Ruleset->find_all_rules(
+        $self->{'active_rules'} = RT::Ruleset->find_all_rules(
             stage          => 'transaction_create',
             type           => $args{'type'},
             ticket_obj      => $ticket,
             transaction_obj => $self,
         );
-        
         if ( $commit_scrips ) {
             Jifty->log->debug( 'About to commit scrips for transaction #' . $self->id );
-            $self->{'scrips'}->commit;
-            RT::Ruleset->commit_rules($rules);
-            
+            RT::Ruleset->commit_rules($self->{'active_rules'});
         } else {
             Jifty->log->debug( 'Skipping commit of scrips for transaction #' . $self->id );
         }
@@ -418,8 +404,14 @@ Scrips do not get persisted to the database with transactions.
 
 =cut
 
+sub rules {
+    my $self = shift;
+    return $self->{active_rules};
+}
+
 sub scrips {
     my $self = shift;
+    Carp::confess "obsoleted";
     return ( $self->{'scrips'} );
 }
 
@@ -470,7 +462,7 @@ sub message {
 
     unless ( defined $self->{'message'} ) {
 
-        $self->{'message'} = RT::Model::AttachmentCollection->new();
+        $self->{'message'} = RT::Model::AttachmentCollection->new( current_user => $self->current_user );
         $self->{'message'}->limit(
             column => 'transaction_id',
             value  => $self->id
@@ -560,7 +552,7 @@ sub content {
         }
 
         $content =~ s/^/> /gm;
-        $content = _( "On %1, %2 wrote:", $self->created, $self->creator_obj->name ) . "\n$content\n\n";
+        $content = _( "On %1, %2 wrote:", $self->created, $self->creator->name ) . "\n$content\n\n";
     }
 
     return ($content);
@@ -569,7 +561,8 @@ sub content {
 
 =head2 addresses
 
-Returns a hashref of addresses related to this transaction. See L<RT::Model::Attachment/Addresses> for details.
+Returns a hashref of addresses related to this transaction. See
+L<RT::Model::Attachment/addresses> for details.
 
 =cut
 
@@ -585,9 +578,10 @@ sub addresses {
 }
 
 
-=head2 content_obj 
+=head2 content_obj
 
-Returns the RT::Model::Attachment object which contains the content for this Transaction
+Returns the L<RT::Model::Attachment> object which contains the content
+for this Transaction.
 
 =cut
 
@@ -640,7 +634,7 @@ sub content_obj {
 
 If this transaction has attached mime objects, returns the first one's subject
 Otherwise, returns null
-  
+
 =cut
 
 sub subject {
@@ -667,7 +661,7 @@ sub attachments {
         return $self->{'attachments'};
     }
 
-    $self->{'attachments'} = RT::Model::AttachmentCollection->new;
+    $self->{'attachments'} = RT::Model::AttachmentCollection->new( current_user => $self->current_user );
 
     unless ( $self->current_user_can_see ) {
         $self->{'attachments'}->limit( column => 'id', value => '0' );
@@ -703,7 +697,7 @@ sub _attach {
         return ( 0, _( "%1: no attachment specified", $self ) );
     }
 
-    my $Attachment = RT::Model::Attachment->new;
+    my $Attachment = RT::Model::Attachment->new( current_user => $self->current_user );
     my ( $id, $msg ) = $Attachment->create(
         transaction_id => $self->id,
         attachment     => $mime_object
@@ -732,7 +726,7 @@ sub description {
         return ( _("No transaction type specified") );
     }
 
-    return _( "%1 by %2", $self->brief_description, $self->creator_obj->name );
+    return _( "%1 by %2", $self->brief_description, $self->creator->name );
 }
 
 
@@ -806,7 +800,7 @@ sub brief_description {
         my $field = _('custom_field');
 
         if ( $self->field ) {
-            my $cf = RT::Model::CustomField->new;
+            my $cf = RT::Model::CustomField->new( current_user => $self->current_user );
             $cf->load( $self->field );
             $field = $cf->name();
         }
@@ -830,34 +824,34 @@ sub brief_description {
     },
     force => sub {
         my $self = shift;
-        my $Old  = RT::Model::User->new;
+        my $Old  = RT::Model::User->new( current_user => $self->current_user );
         $Old->load( $self->old_value );
-        my $New = RT::Model::User->new;
+        my $New = RT::Model::User->new( current_user => $self->current_user );
         $New->load( $self->new_value );
 
         return _( "Owner forcibly changed from %1 to %2", $Old->name, $New->name );
     },
     steal => sub {
         my $self = shift;
-        my $Old  = RT::Model::User->new;
+        my $Old  = RT::Model::User->new( current_user => $self->current_user );
         $Old->load( $self->old_value );
         return _( "Stolen from %1", $Old->name );
     },
     give => sub {
         my $self = shift;
-        my $New  = RT::Model::User->new;
+        my $New  = RT::Model::User->new( current_user => $self->current_user );
         $New->load( $self->new_value );
         return _( "Given to %1", $New->name );
     },
     add_watcher => sub {
         my $self      = shift;
-        my $principal = RT::Model::Principal->new;
+        my $principal = RT::Model::Principal->new( current_user => $self->current_user );
         $principal->load( $self->new_value );
         return _( "%1 %2 added", $self->field, $principal->object->name );
     },
     del_watcher => sub {
         my $self      = shift;
-        my $principal = RT::Model::Principal->new;
+        my $principal = RT::Model::Principal->new( current_user => $self->current_user );
         $principal->load( $self->old_value );
         return _( "%1 %2 deleted", $self->field, $principal->object->name );
     },
@@ -928,43 +922,27 @@ sub brief_description {
     },
     told => sub {
         my $self = shift;
-        if ( $self->field eq 'told' ) {
-            my $t1 = RT::Date->new();
-            $t1->set( format => 'ISO', value => $self->new_value );
-            my $t2 = RT::Date->new();
-            $t2->set( format => 'ISO', value => $self->old_value );
-            return _( "%1 changed from %2 to %3", $self->field, $t2->as_string, $t1->as_string );
-        } else {
-            return _(
-                "%1 changed from %2 to %3",
-                $self->field,
-                (   $self->old_value
-                    ? "'" . $self->old_value . "'"
-                    : _("(no value)")
-                ),
-                "'" . $self->new_value . "'"
-            );
-        }
+        my $old = RT::DateTime->new_from_string($self->new_value);
+        my $new = RT::DateTime->new_from_string($self->old_value);
+        return _( "%1 changed from %2 to %3", $self->field, $old, $new );
     },
     set => sub {
         my $self = shift;
         if ( $self->field eq 'password' ) {
             return _('password changed');
         } elsif ( $self->field eq 'queue' ) {
-            my $q1 = RT::Model::Queue->new();
+            my $q1 = RT::Model::Queue->new( current_user => $self->current_user );
             $q1->load( $self->old_value );
-            my $q2 = RT::Model::Queue->new();
+            my $q2 = RT::Model::Queue->new( current_user => $self->current_user );
             $q2->load( $self->new_value );
             return _( "%1 changed from %2 to %3", $self->field, $q1->name, $q2->name );
         }
 
         # Write the date/time change at local time:
         elsif ( $self->field =~ /due|starts|started/i ) {
-            my $t1 = RT::Date->new();
-            $t1->set( format => 'ISO', value => $self->new_value );
-            my $t2 = RT::Date->new();
-            $t2->set( format => 'ISO', value => $self->old_value );
-            return _( "%1 changed from %2 to %3", $self->field, $t2->as_string, $t1->as_string );
+            my $old = RT::DateTime->new_from_string($self->new_value);
+            my $new = RT::DateTime->new_from_string($self->old_value);
+            return _( "%1 changed from %2 to %3", $self->field, $old, $new );
         } else {
             return _(
                 "%1 changed from %2 to %3",
@@ -983,20 +961,20 @@ sub brief_description {
     },
     add_reminder => sub {
         my $self   = shift;
-        my $ticket = RT::Model::Ticket->new;
+        my $ticket = RT::Model::Ticket->new( current_user => $self->current_user );
         $ticket->load( $self->new_value );
         return _( "Reminder '%1' added", $ticket->subject );
     },
     open_reminder => sub {
         my $self   = shift;
-        my $ticket = RT::Model::Ticket->new;
+        my $ticket = RT::Model::Ticket->new( current_user => $self->current_user );
         $ticket->load( $self->new_value );
         return _( "Reminder '%1' reopened", $ticket->subject );
 
     },
     resolve_reminder => sub {
         my $self   = shift;
-        my $ticket = RT::Model::Ticket->new;
+        my $ticket = RT::Model::Ticket->new( current_user => $self->current_user );
         $ticket->load( $self->new_value );
         return _( "Reminder '%1' completed", $ticket->subject );
 
@@ -1016,7 +994,10 @@ Returns false otherwise
 sub is_inbound {
     my $self = shift;
     $self->object_type eq 'RT::Model::Ticket' or return undef;
-    return ( $self->ticket_obj->is_requestor( $self->creator_obj->principal_id ) );
+    return $self->ticket->is_watcher(
+        type      => 'requestor',
+        principal => $self->creator,
+    );
 }
 
 
@@ -1077,7 +1058,7 @@ sub current_user_can_see {
 
     # Make sure the user can see the custom field before showing that it changed
     elsif ( $type eq 'custom_field' and my $cf_id = $self->__value('field') ) {
-        my $cf = RT::Model::CustomField->new;
+        my $cf = RT::Model::CustomField->new( current_user => $self->current_user );
         $cf->load($cf_id);
         return 0 unless $cf->current_user_has_right('SeeCustomField');
     }
@@ -1111,7 +1092,7 @@ sub ticket {
 
 }
 
-sub ticket_obj {
+sub ticket {
     # XXX: too early for deprecation, a lot of usage
     #require Carp; Carp::confess("use object method instead and check type");
     my $self = shift;
@@ -1159,14 +1140,16 @@ sub friendly_object_type {
 }
 
 =head2 update_custom_fields
-    
-    Takes a hash of 
+
+Takes a hash of
 
     CustomField-<<Id>> => Value
-        or 
 
-    object-RT::Model::Transaction-CustomField-<<Id>> => Value parameters to update
-    this transaction's custom fields
+or
+
+    object-RT::Model::Transaction-CustomField-<<Id>> => Value
+
+parameters to update this transaction's custom fields
 
 =cut
 
@@ -1223,7 +1206,7 @@ sub custom_field_values {
         # XXX: $field could be undef when we want fetch values for all CFs
         #      do we want to cover this situation somehow here?
         unless ( defined $field && $field =~ /^\d+$/o ) {
-            my $CFs = RT::Model::CustomFieldCollection->new;
+            my $CFs = RT::Model::CustomFieldCollection->new( current_user => $self->current_user );
             $CFs->limit( column => 'name', value => $field );
             $CFs->limit_to_lookup_type( $self->custom_field_lookup_type );
             $CFs->limit_to_global_or_object_id( $self->object->queue->id );
@@ -1247,15 +1230,21 @@ sub custom_field_lookup_type {
     "RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction";
 }
 
-=item deferred_recipients($freq, $include_sent )
+=head2 deferred_recipients($freq, $include_sent )
 
 Takes the following arguments:
 
 =over
 
-=item * a string to indicate the frequency of digest delivery.  Valid values are "daily", "weekly", or "susp".
+=item *
 
-=item * an optional argument which, if true, will return addresses even if this notification has been marked as 'sent' for this transaction.
+A string to indicate the frequency of digest delivery.  Valid values
+are "daily", "weekly", or "susp".
+
+=item *
+
+An optional argument which, if true, will return addresses even if
+this notification has been marked as 'sent' for this transaction.
 
 =back
 

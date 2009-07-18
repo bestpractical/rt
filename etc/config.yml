@@ -1,23 +1,24 @@
 --- 
 framework: 
-  AdminMode: 0 
+  AdminMode: 0
+  SetupMode: 1
   ApplicationClass: RT
-  Applicationname: RT
+  ApplicationName: RT
   ApplicationUUID: EAFC6FF2-5E8D-11DC-9FAD-91A9684ED971
   ConfigFileVersion: 4
   Database: 
     CheckSchema: 0
     Database: rt4
-    Driver: mysql
+    Driver: SQLite
     Host: localhost
-    password: ''
+    Password: ''
     RecordBaseClass: Jifty::DBI::Record::Cachable
     User: root
     Version: 0.0.1
   DevelMode: 1
   L10N: 
     PoDir: share/po
-  LogLevel: DEBUG
+  LogLevel: INFO
   Mailer: Sendmail
   MailerArgs: []
 
@@ -41,15 +42,23 @@ framework:
           - ie7-squish
     - TestServerWarnings:
         clear_screen: 0
+    - Config:
+        config_url: '/Admin/Global/Elements/ConfigJifty'
+        restart_url: '/Admin/Global/Jifty/restart.html'
+        after_restart_url: '/Admin/Global/System.html'
+        wait_seconds: 10
+    - SetupWizard:
+        add_steps:
+          - template: basics
+            header: RT Basics
   PubSub: 
     Backend: Memcached
     Enable: ~
   SkipAccessControl: 0
   TemplateClass: RT::View
   Web: 
-    baseURL: http://localhost
+    BaseURL: http://localhost
     DataDir: var/mason
-    Globals: [%session]
 
     MasonConfig: 
       autoflush: 0

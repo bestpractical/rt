@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT::Test; use Test::More; 
-plan tests => 49;
+plan tests => 42;
 use RT;
 
 
@@ -10,10 +10,8 @@ use RT;
 {
 
 ok (require RT::ScripAction::CreateTickets);
-use_ok('RT::Model::Scrip');
 use_ok('RT::Model::Template');
 use_ok('RT::Model::ScripAction');
-use_ok('RT::Model::ScripCondition');
 use_ok('RT::Model::Ticket');
 
 my $approvalsq = RT::Model::Queue->new(current_user => RT->system_user);
@@ -56,16 +54,15 @@ my $q = RT::Model::Queue->new(current_user => RT->system_user);
 $q->create(name => 'WorkflowTest');
 ok ($q->id, "Created workflow test queue");
 
-my $scrip = RT::Model::Scrip->new(current_user => RT->system_user);
-my ($sval, $smsg) =$scrip->create( scrip_condition => 'On Transaction',
-                scrip_action => 'Create Tickets',
-                template => 'Approvals',
-                queue => $q->id);
-ok ($sval, $smsg);
-ok ($scrip->id, "Created the scrip");
-ok ($scrip->template_obj->id, "Created the scrip template");
-ok ($scrip->scrip_condition->id, "Created the scrip condition");
-ok ($scrip->scrip_action->id, "Created the scrip action");
+my $rule_factory = RT::Lorzy->create_scripish(
+    'On Transaction',
+    'Create Tickets',
+    'Approvals',
+    'Create approval tickets',
+     $q->id);
+
+my $rule = RT::Model::Rule->new( current_user => RT->system_user );
+$rule->create_from_factory( $rule_factory );
 
 my $t = RT::Model::Ticket->new(current_user => RT->system_user);
 my($tid, $ttrans, $tmsg) = $t->create(subject => "Sample workflow test",

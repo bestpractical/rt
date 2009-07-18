@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Elements/ListActions, actions => \@results &>
 
-<form action="<%RT->config->get('WebPath')%><% $m->request_comp->path |n %>" method="post" name="edit_custom_fields">
+<form action="<%RT->config->get('web_path')%><% $m->request_comp->path |n %>" method="post" name="edit_custom_fields">
 <input type="hidden" class="hidden" name="id" value="<% $object->id || ''%>" />
 <input type="hidden" class="hidden" name="object_type" value="<% $object_type %>" />
 <input type="hidden" class="hidden" name="sub_type" value="<% $sub_type %>" />
@@ -67,7 +67,7 @@
 
 
 <%INIT>
-my $CustomFields = RT::Model::CustomFieldCollection->new();
+my $CustomFields = RT::Model::CustomFieldCollection->new( current_user => Jifty->web->current_user );
 my @results;
 my (@GlobalCFs, @UnassignedCFs);
 
@@ -85,7 +85,7 @@ $CustomFields->order_by( column => 'name' );
 
 
 my ($GlobalCFs, $objectCFs);
-$objectCFs = RT::Model::ObjectCustomFieldCollection->new();
+$objectCFs = RT::Model::ObjectCustomFieldCollection->new( current_user => Jifty->web->current_user );
 $objectCFs->find_all_rows;
 $objectCFs->limit_to_object_id($id);
 $objectCFs->limit_to_lookup_type($lookup);
@@ -106,7 +106,7 @@ if (grep $_ > 1, values %sort_orders) {
 
 # {{{ deal with moving sort_order of custom fields
 if ($custom_field and $move) {
-    my $SourceObj = RT::Model::ObjectCustomField->new();
+    my $SourceObj = RT::Model::ObjectCustomField->new( current_user => Jifty->web->current_user );
     $SourceObj->load_by_cols( object_id => $id, CustomField => $custom_field );
 
     my $targetObj;
@@ -145,7 +145,7 @@ if ($custom_field and $move) {
 # }}}
 
 if ($id) {
-    $GlobalCFs = RT::Model::ObjectCustomFieldCollection->new();
+    $GlobalCFs = RT::Model::ObjectCustomFieldCollection->new( current_user => Jifty->web->current_user );
     $GlobalCFs->limit_to_object_id(0);
     $GlobalCFs->limit_to_lookup_type($lookup);
 }
@@ -186,7 +186,7 @@ while (my $cf = $CustomFields->next) {
 }
 
 # redo search...
-$objectCFs = RT::Model::ObjectCustomFieldCollection->new();
+$objectCFs = RT::Model::ObjectCustomFieldCollection->new( current_user => Jifty->web->current_user );
 $objectCFs->find_all_rows;
 $objectCFs->limit_to_object_id($id);
 $objectCFs->limit_to_lookup_type($lookup);

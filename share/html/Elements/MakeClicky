@@ -90,7 +90,7 @@ my $handle = sub  {
 
 my $escaper = sub  {
     my $content = shift;
-    RT::Interface::Web::escape_utf8( \$content );
+    Jifty::View::Mason::Handler::escape_utf8( \$content );
     return $content;
 };
 
@@ -107,7 +107,7 @@ $m->callback(
 
 # Filter
 my %active;
-$active{$_}++ for RT->config->get('ActiveMakeClicky');
+$active{$_}++ for @{RT->config->get('active_make_clicky')};
 @types = grep $active{$_->{name}}, @types;
 
 # Build up the whole match
@@ -130,7 +130,7 @@ $html => undef
 <%INIT>
 return unless defined $$content;
 unless ( $regexp ) {
-    RT::Interface::Web::escape_utf8( $content ) unless $html;
+    Jifty::View::Mason::Handler::escape_utf8( $content ) unless $html;
     return;
 }
 

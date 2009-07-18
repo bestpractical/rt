@@ -54,7 +54,7 @@
 
 
 
-<form action="<%RT->config->get('WebPath')%>/Admin/Queues/Modify.html" method="post">
+<form action="<%RT->config->get('web_path')%>/Admin/Queues/Modify.html" method="post">
 <input type="hidden" class="hidden" name="set_enabled" value="1" />
 <input type="hidden" class="hidden" name="id" value="<% $create? 'new': $queue_obj->id %>" />
 
@@ -67,8 +67,8 @@
 <td colspan="3"><input name="description" value="<% ($create) ? "" : $queue_obj->description %>" size="60" /></td>
 </tr>
 
-<tr><td align="right"><&|/l&>Status schema</&>:</td>
-<td colspan="3"><& /Admin/Elements/SelectStatusSchema, default => $create? '' : $queue_obj->status_schema  &></td>
+<tr><td align="right"><&|/l&>Workflow</&>:</td>
+<td colspan="3"><& /Admin/Elements/SelectWorkflow, default => $create? '' : $queue_obj->status_schema  &></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Subject Tag</&>:</td>
@@ -77,10 +77,10 @@
 
 <tr><td align="right"><&|/l&>Reply Address</&>:</td>
 <td><input name="correspond_address" value="<% ($create) ? "" : $queue_obj->correspond_address %>" />
-<br /><span><em><&|/l , RT->config->get('CorrespondAddress')&>(If left blank, will default to %1)</&></em></span></td>
+<br /><span><em><&|/l , RT->config->get('correspond_address')&>(If left blank, will default to %1)</&></em></span></td>
 <td align="right"><&|/l&>comment Address</&>:</td>
 <td><input name="comment_address" value="<% ($create) ? "" : $queue_obj->comment_address %>" />
-<br /><span><em><&|/l , RT->config->get('CommentAddress')&>(If left blank, will default to %1)</&></em></span></td>
+<br /><span><em><&|/l , RT->config->get('comment_address')&>(If left blank, will default to %1)</&></em></span></td>
 </tr>
 
 <tr><td align="right"><&|/l&>Priority starts at</&>:</td>
@@ -105,7 +105,7 @@
 </td></tr>
 % }
 
-% if ( RT->config->get('GnuPG')->{'enable'} ) {
+% if ( RT->config->get('gnupg')->{'enable'} ) {
 <tr><td align="right"><input type="checkbox" class="checkbox" name="sign" value="1" <% $queue_obj->sign? 'checked="checked"': '' |n%> /></td>
 <td><&|/l&>sign by default</&></td>
 <td align="right"><input type="checkbox" class="checkbox" name="encrypt" value="1" <% $queue_obj->encrypt? 'checked="checked"': '' |n%> /></td>
@@ -119,11 +119,11 @@ value="1" <%$enabled_checked|n%> /></td>
 % $m->callback( %ARGS, queue_obj => $queue_obj, results => \@results );
 </td></tr>
 
-% if ( RT->config->get('GnuPG')->{'enable'} ) {
-% if ( my $email = $queue_obj->correspond_address || RT->config->get('CorrespondAddress') ) {
+% if ( RT->config->get('gnupg')->{'enable'} ) {
+% if ( my $email = $queue_obj->correspond_address || RT->config->get('correspond_address') ) {
 <tr><td colspan="4"><& /Admin/Elements/ShowKeyInfo, type => 'private', email => $email &></td></tr>
 % }
-% if ( my $email = $queue_obj->comment_address || RT->config->get('CommentAddress') ) {
+% if ( my $email = $queue_obj->comment_address || RT->config->get('comment_address') ) {
 <tr><td colspan="4"><& /Admin/Elements/ShowKeyInfo, type => 'private', email => $email &></td></tr>
 % }
 % }
@@ -150,7 +150,7 @@ if ($create) {
     if ( defined $id && $id eq 'new' ) {
         my ($val, $msg) = $queue_obj->create( name => $name );
         abort("$msg") unless $val;
-        delete $session{'create_in_queues'};
+        Jifty->web->session->remove('create_in_queues');
 		push @results, $msg;
     }
     else {

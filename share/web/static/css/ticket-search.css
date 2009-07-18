@@ -1,5 +1,4 @@
 #comp-Search-Build #body {
-    position: relative;
 }
 
 #comp-Search-Build #pick-criteria select {
@@ -61,21 +60,21 @@
 }
 
 #comp-Search-Build #editquery, #comp-Search-Build #editsearches{
-  position: absolute;
-  margin-top: 0.2em;
-  right: 1em;
-  left: 60%;
-  top: 1em;
+   position: absolute;
+   width: 35%;
+    right: 2em;
 /*  margin-top: -1em; */
 }
 
 #comp-Search-Build #editquery {
-   top: 1.3em;
+   width: 35%;
+    right: 2em;
+   top: 8.8em;
 }    
 
 
 #comp-Search-Build #editsearches {
-  top: 24em;
+  top: 30em;
 }
 
 

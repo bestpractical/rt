@@ -121,19 +121,4 @@ sub __depends_on {
 #TODO: Link record has small strength, but should be encountered
 # if we plan write export tool.
 
-sub __relates {
-    my $self = shift;
-    my %args = (
-        shredder     => undef,
-        dependencies => undef,
-        @_,
-    );
-    my $deps = $args{'dependencies'};
-    my $list = [];
-
-    # FIXME: if link is local then object should exist
-
-    return $self->SUPER::__Relates(%args);
-}
-
 1;

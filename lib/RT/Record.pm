@@ -46,7 +46,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-=head1 name
+=head1 NAME
 
   RT::Record - base class for RT record objects
 
@@ -66,7 +66,6 @@ package RT::Record;
 use strict;
 use warnings;
 
-use RT::Date;
 use RT::Model::User;
 use RT::Model::AttributeCollection;
 use RT::Model::Attribute;
@@ -146,7 +145,7 @@ sub attributes {
     my $self = shift;
 
     unless ( $self->{'attributes'} ) {
-        $self->{'attributes'} = RT::Model::AttributeCollection->new;
+        $self->{'attributes'} = RT::Model::AttributeCollection->new( current_user => $self->current_user );
         $self->{'attributes'}->limit_to_object($self);
     }
     return ( $self->{'attributes'} );
@@ -168,7 +167,7 @@ sub add_attribute {
         @_
     );
 
-    my $attr = RT::Model::Attribute->new;
+    my $attr = RT::Model::Attribute->new( current_user => $self->current_user );
     my ( $id, $msg ) = $attr->create(
         object      => $self,
         name        => $args{'name'},
@@ -400,12 +399,11 @@ It takes no options. Arguably, this is a bug
 
 sub set_last_updated {
     my $self = shift;
-    my $now = RT::Date->new( current_user => $self->current_user );
-    $now->set_to_now();
+    my $now = RT::DateTime->now;
 
     my ( $msg, $val ) = $self->__set(
         column => 'last_updated',
-        value  => $now->iso
+        value  => $now,
     );
     ( $msg, $val ) = $self->__set(
         column => 'last_updated_by',
@@ -413,36 +411,17 @@ sub set_last_updated {
     );
 }
 
-
-
-=head2 creator_obj
-
-Returns an RT::Model::User object with the RT account of the creator of this row
-
-=cut
-
-sub creator_obj {
-    my $self = shift;
-    unless ( exists $self->{'creator_obj'} ) {
-
-        $self->{'creator_obj'} = RT::Model::User->new;
-        $self->{'creator_obj'}->load( $self->creator );
-    }
-    return ( $self->{'creator_obj'} );
-}
-
-
-
 =head2 last_updated_by_obj
 
-  Returns an RT::Model::User object of the last user to touch this object
+Returns an L<RT::Model::User> object of the last user to touch this
+object
 
 =cut
 
 sub last_updated_by_obj {
     my $self = shift;
     unless ( exists $self->{last_updated_by_obj} ) {
-        $self->{'last_updated_by_obj'} = RT::Model::User->new;
+        $self->{'last_updated_by_obj'} = RT::Model::User->new( current_user => $self->current_user );
         $self->{'last_updated_by_obj'}->load( $self->last_updated_by );
     }
     return $self->{'last_updated_by_obj'};
@@ -450,7 +429,7 @@ sub last_updated_by_obj {
 
 
 
-=head2 URI
+=head2 uri
 
 Returns this record's URI
 
@@ -493,12 +472,12 @@ sub _encode_lob {
     my $content_encoding = 'none';
 
     #get the max attachment length from RT
-    my $MaxSize = RT->config->get('MaxAttachmentSize');
+    my $MaxSize = RT->config->get('max_attachment_size');
 
     #if the current attachment contains nulls and the
     #database doesn't support embedded nulls
 
-    if ( RT->config->get('AlwaysUseBase64') ) {
+    if ( RT->config->get('always_use_base64') ) {
 
         # set a flag telling us to mimencode the attachment
         $content_encoding = 'base64';
@@ -521,7 +500,7 @@ sub _encode_lob {
     if ( ($MaxSize) and ( $MaxSize < length($body) ) ) {
 
         # if we're supposed to truncate large attachments
-        if ( RT->config->get('TruncateLongAttachments') ) {
+        if ( RT->config->get('truncate_long_attachments') ) {
 
             # truncate the attachment to that length.
             $body = substr( $body, 0, $MaxSize );
@@ -529,7 +508,7 @@ sub _encode_lob {
         }
 
         # elsif we're supposed to drop large attachments on the floor,
-        elsif ( RT->config->get('DropLongAttachments') ) {
+        elsif ( RT->config->get('drop_long_attachments') ) {
 
             # drop the attachment on the floor
             Jifty->log->info(
@@ -704,8 +683,8 @@ sub update {
 
 =head2 members
 
-  This returns an RT::Model::LinkCollection object which references all the tickets 
-which are 'MembersOf' this ticket
+This returns an L<RT::Model::LinkCollection> object which references
+all the tickets which are 'MembersOf' this ticket
 
 =cut
 
@@ -718,8 +697,8 @@ sub members {
 
 =head2 member_of
 
-  This returns an RT::Model::LinkCollection object which references all the tickets that this
-ticket is a 'MemberOf'
+This returns an L<RT::Model::LinkCollection> object which references all
+the tickets that this ticket is a 'MemberOf'
 
 =cut
 
@@ -732,7 +711,8 @@ sub member_of {
 
 =head2 refers_to
 
-  This returns an RT::Model::LinkCollection object which shows all references for which this ticket is a base
+This returns an L<RT::Model::LinkCollection> object which shows all
+references for which this ticket is a base
 
 =cut
 
@@ -745,7 +725,8 @@ sub refers_to {
 
 =head2 referred_to_by
 
-This returns an L<RT::Model::LinkCollection> object which shows all references for which this ticket is a target
+This returns an L<RT::Model::LinkCollection> object which shows all
+references for which this ticket is a target
 
 =cut
 
@@ -758,7 +739,8 @@ sub referred_to_by {
 
 =head2 depended_on_by
 
-  This returns an RT::Model::LinkCollection object which references all the tickets that depend on this one
+This returns an L<RT::Model::LinkCollection> object which references
+all the tickets that depend on this one
 
 =cut
 
@@ -816,7 +798,7 @@ RT::Model::Queue->status_schema->active
 
 sub unresolved_dependencies {
     my $self = shift;
-    my $deps = RT::Model::TicketCollection->new;
+    my $deps = RT::Model::TicketCollection->new( current_user => $self->current_user );
 
     my @live_statuses = RT::Model::Queue->status_schema->valid('initial', 'active');
     foreach my $status (@live_statuses) {
@@ -912,7 +894,8 @@ sub _all_linked_tickets {
 
 =head2 depends_on
 
-  This returns an RT::Model::LinkCollection object which references all the tickets that this ticket depends on
+This returns an L<RT::Model::LinkCollection> object which references
+all the tickets that this ticket depends on
 
 =cut
 
@@ -945,7 +928,7 @@ sub _links {
     my $type = shift || "";
 
     unless ( $self->{"$field$type"} ) {
-        $self->{"$field$type"} = RT::Model::LinkCollection->new;
+        $self->{"$field$type"} = RT::Model::LinkCollection->new( current_user => $self->current_user );
 
         # at least to myself
         $self->{"$field$type"}->limit(
@@ -1045,7 +1028,7 @@ sub _add_link {
 
     # {{{ Check if the link already exists - we don't want duplicates
     use RT::Model::Link;
-    my $old_link = RT::Model::Link->new;
+    my $old_link = RT::Model::Link->new( current_user => $self->current_user );
     $old_link->load_by_params(
         base   => $args{'base'},
         type   => $args{'type'},
@@ -1059,7 +1042,7 @@ sub _add_link {
     # }}}
 
     # Storing the link in the DB.
-    my $link = RT::Model::Link->new;
+    my $link = RT::Model::Link->new( current_user => $self->current_user );
     my ( $linkid, $linkmsg ) = $link->create(
         target => $args{target},
         base   => $args{base},
@@ -1093,7 +1076,7 @@ Delete a link. takes a paramhash of base, target and Type.
 Either base or target must be null. The null value will 
 be replaced with this ticket\'s id
 
-=cut 
+=cut
 
 sub _delete_link {
     my $self = shift;
@@ -1126,7 +1109,7 @@ sub _delete_link {
         return ( 0, _('Either base or target must be specified') );
     }
 
-    my $link = RT::Model::Link->new();
+    my $link = RT::Model::Link->new( current_user => $self->current_user );
     Jifty->log->debug( "Trying to load link: " . $args{'base'} . " " . $args{'type'} . " " . $args{'target'} );
 
     $link->load_by_params(
@@ -1200,7 +1183,7 @@ sub _new_transaction {
         $new_ref = $new_ref->id if ref($new_ref);
     }
 
-    my $trans = RT::Model::Transaction->new();
+    my $trans = RT::Model::Transaction->new( current_user => $self->current_user );
     my ( $transaction, $msg ) = $trans->create(
         object_id       => $self->id,
         object_type     => ref($self),
@@ -1226,7 +1209,7 @@ sub _new_transaction {
     if ( defined $args{'time_taken'} and $self->can('_update_time_taken') ) {
         $self->_update_time_taken( $args{'time_taken'} );
     }
-    if ( RT->config->get('UseTransactionBatch') and $transaction ) {
+    if ( RT->config->get('use_transaction_batch') and $transaction ) {
         push @{ $self->{_transaction_batch} }, $trans
             if $args{'commit_scrips'};
     }
@@ -1237,7 +1220,8 @@ sub _new_transaction {
 
 =head2 transactions
 
-  Returns an RT::Model::TransactionCollection object of all transactions on this record object
+Returns an L<RT::Model::TransactionCollection> object of all
+transactions on this record object
 
 =cut
 
@@ -1245,7 +1229,7 @@ sub transactions {
     my $self = shift;
 
     use RT::Model::TransactionCollection;
-    my $transactions = RT::Model::TransactionCollection->new;
+    my $transactions = RT::Model::TransactionCollection->new( current_user => $self->current_user );
 
     #If the user has no rights, return an empty object
     $transactions->limit(
@@ -1264,7 +1248,7 @@ sub transactions {
 
 sub custom_fields {
     my $self = shift;
-    my $cfs  = RT::Model::CustomFieldCollection->new;
+    my $cfs  = RT::Model::CustomFieldCollection->new( current_user => $self->current_user );
 
     # XXX handle multiple types properly
     $cfs->limit_to_lookup_type( $self->custom_field_lookup_type );
@@ -1293,7 +1277,7 @@ sub _lookup_id {
     return $object->id;
 }
 
-=head2 custom_field_lookup_type 
+=head2 custom_field_lookup_type
 
 Returns the path RT uses to figure out which custom fields apply to this object.
 
@@ -1308,13 +1292,13 @@ sub custom_field_lookup_type {
 =head2 add_custom_field_value { Field => column, value => value }
 
 value should be a string. column can be any identifier of a CustomField
-supported by L</LoadCustomFieldByIdentifier> method.
+supported by L</load_custom_field_by_identifier> method.
 
 Adds value as a value of CustomField column. If this is a single-value custom field,
 deletes the old value.
-If value is not a valid value for the custom field, returns 
+If value is not a valid value for the custom field, returns
 (0, 'Error message' ) otherwise, returns ($id, 'Success Message') where
-$id is ID of Created L<ObjectCustomFieldValue> object.
+$id is ID of Created L<RT::Model::ObjectCustomFieldValue> object.
 
 =cut
 
@@ -1438,7 +1422,7 @@ sub _add_custom_field_value {
             return ( 0, _( "Could not add new custom field value: %1", $value_msg ) );
         }
 
-        my $new_value = RT::Model::ObjectCustomFieldValue->new;
+        my $new_value = RT::Model::ObjectCustomFieldValue->new( current_user => $self->current_user );
         $new_value->load($new_value_id);
 
         # now that adding the new value was successful, delete the old one
@@ -1498,11 +1482,11 @@ sub _add_custom_field_value {
 
 =head2 delete_custom_field_value { Field => column, value => value }
 
-Deletes value as a value of CustomField column. 
+Deletes value as a value of CustomField column.
 
 value can be a string, a CustomFieldValue or a ObjectCustomFieldValue.
 
-If value is not a valid value for the custom field, returns 
+If value is not a valid value for the custom field, returns
 (0, 'Error message' ) otherwise, returns (1, 'Success Message')
 
 =cut
@@ -1563,7 +1547,7 @@ sub first_custom_field_value {
 
 =head2 custom_field_values column
 
-Return a ObjectCustomFieldValues object of all values of the CustomField whose 
+Return a ObjectCustomFieldValues object of all values of the CustomField whose
 id or name is column for this record.
 
 Returns an RT::Model::ObjectCustomFieldValueCollection object
@@ -1580,13 +1564,13 @@ sub custom_field_values {
         # we were asked to search on a custom field we couldn't find
         unless ( $cf->id ) {
             Jifty->log->warn("Couldn't load custom field by '$field' identifier");
-            return RT::Model::ObjectCustomFieldValueCollection->new;
+            return RT::Model::ObjectCustomFieldValueCollection->new( current_user => $self->current_user );
         }
         return ( $cf->values_for_object($self) );
     }
 
     # we're not limiting to a specific custom field;
-    my $ocfs = RT::Model::ObjectCustomFieldValueCollection->new;
+    my $ocfs = RT::Model::ObjectCustomFieldValueCollection->new( current_user => $self->current_user );
     $ocfs->limit_to_object($self);
     return $ocfs;
 }
@@ -1606,18 +1590,18 @@ sub load_custom_field_by_identifier {
     unless ( defined $field ) {
         Carp::confess;
     }
-    my $cf = RT::Model::CustomField->new();
+    my $cf = RT::Model::CustomField->new( current_user => $self->current_user );
 
     if ( UNIVERSAL::isa( $field, "RT::Model::CustomField" ) ) {
         $cf->load_by_id( $field->id );
     } elsif ( $field =~ /^\d+$/ ) {
-        $cf = RT::Model::CustomField->new();
+        $cf = RT::Model::CustomField->new( current_user => $self->current_user );
         $cf->load_by_id($field);
     } else {
 
         my $cfs = $self->custom_fields();
         $cfs->limit( column => 'name', value => $field, case_sensitive => 0 );
-        $cf = $cfs->first || RT::Model::CustomField->new;
+        $cf = $cfs->first || RT::Model::CustomField->new( current_user => $self->current_user );
     }
     return $cf;
 }
@@ -1626,7 +1610,7 @@ sub load_custom_field_by_identifier {
 
 
 sub wiki_base {
-    return RT->config->get('WebPath') . "/index.html?q=";
+    return RT->config->get('web_path') . "/index.html?q=";
 }
 
 =head2 _get_current_user

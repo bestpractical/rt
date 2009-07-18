@@ -46,7 +46,7 @@
 #
 # END BPS TAGGED BLOCK }}}
 
-=head1 name
+=head1 NAME
 
   RT::Model::CustomFieldCollection - a collection of RT CustomField objects
 
@@ -66,7 +66,7 @@ use warnings;
 use strict;
 
 package RT::Model::CustomFieldCollection;
-use base qw/RT::SearchBuilder/;
+use base qw/RT::Collection/;
 use Jifty::DBI::Collection::Unique;
 
 sub ocf_alias {

@@ -23,16 +23,23 @@ my $homedir = RT::Test::get_abs_relocatable_dir(File::Spec->updir(),
 RT::Test->set_mail_catcher;
 
 
-RT->config->set( LogToScreen => 'debug' );
-RT->config->set( 'GnuPG',
-                 enable => 1,
-                 outgoing_messages_format => 'RFC' );
+RT->config->set(
+    'gnupg',
+    {
+        enable                   => 1,
+        outgoing_messages_format => 'RFC',
+    }
+);
 
-RT->config->set( 'GnuPGOptions',
-                 homedir => $homedir,
-                 'no-permission-warning' => undef);
+RT->config->set(
+    'gnupg_options',
+    {
+        homedir                 => $homedir,
+        'no-permission-warning' => undef
+    }
+);
 
-RT->config->set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
+RT->config->set( 'mail_plugins' => ['Auth::MailFrom', 'Auth::GnuPG'] );
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -53,9 +60,10 @@ $user->set_email('recipient@example.com');
 # 1. the queue requires signature
 # 2. the from is not what the key is associated with
 my $mail = RT::Test->open_mailgate_ok($baseurl);
+my $rtname = RT->config->get('rtname');
 print $mail <<EOF;
 From: recipient\@example.com
-To: general\@$RT::rtname
+To: general\@$rtname
 Subject: This is a test of new ticket creation as root
 
 Blah!
@@ -96,7 +104,7 @@ run3(
 $mail = RT::Test->open_mailgate_ok($baseurl);
 print $mail <<"EOF";
 From: recipient\@example.com
-To: general\@$RT::rtname
+To: general\@$rtname
 Subject: signed message for queue
 
 $buf
@@ -138,7 +146,7 @@ run3(
 $mail = RT::Test->open_mailgate_ok($baseurl);
 print $mail <<"EOF";
 From: recipient\@example.com
-To: general\@$RT::rtname
+To: general\@$rtname
 Subject: signed message for queue
 
 $buf
@@ -180,7 +188,7 @@ run3(
 $mail = RT::Test->open_mailgate_ok($baseurl);
 print $mail <<"EOF";
 From: recipient\@example.com
-To: general\@$RT::rtname
+To: general\@$rtname
 Subject: Encrypted message for queue
 
 $buf
@@ -228,7 +236,7 @@ run3(
 $mail = RT::Test->open_mailgate_ok($baseurl);
 print $mail <<"EOF";
 From: recipient\@example.com
-To: general\@$RT::rtname
+To: general\@$rtname
 Subject: encrypted message for queue
 
 $buf
@@ -263,7 +271,7 @@ run3(
 $mail = RT::Test->open_mailgate_ok($baseurl);
 print $mail <<"EOF";
 From: recipient\@example.com
-To: general\@$RT::rtname
+To: general\@$rtname
 Subject: encrypted message for queue
 
 $buf
@@ -304,7 +312,7 @@ RT::Test->fetch_caught_mails;
 $mail = RT::Test->open_mailgate_ok($baseurl);
 print $mail <<"EOF";
 From: recipient\@example.com
-To: general\@$RT::rtname
+To: general\@$rtname
 Subject: encrypted message for queue
 
 $buf
