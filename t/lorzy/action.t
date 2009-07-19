@@ -1,4 +1,4 @@
-use Test::More tests => 6;
+use Test::More tests => 7;
 use RT::Test;
 
 use strict;
@@ -13,7 +13,6 @@ use RT::CurrentUser;
 use Test::Exception;
 use RT::Test::Email;
 
-use_ok('Lorzy');
 use_ok('RT::Lorzy');
 use_ok('LCore');
 use_ok('LCore::Level2');
@@ -34,8 +33,16 @@ $l->env->set_symbol('Str.Eq' => LCore::Primitive->new
 
 $l->env->set_symbol('RT.RuleAction.Run' => LCore::Primitive->new
                         ( body => sub {
-                              warn "run ruleaction! " .join(',',@_);
-                              return;
+                              my ($name, $template, $context, $ticket, $transaction) = @_;
+                              my $action = $context->{action};
+                              unless ($action) {
+                                  my $rule = RT::Rule->new( current_user => $ticket->current_user,
+                                                            ticket_obj => $ticket,
+                                                            transaction_obj => $transaction );
+                                  $action = $rule->get_scrip_action($name, $template);
+                                  $action->prepare or return;
+                              }
+                              $action->commit;
                           },
                           lazy => 0,
                           parameters => [ LCore::Parameter->new({ name => 'name', type => 'Str' }),
