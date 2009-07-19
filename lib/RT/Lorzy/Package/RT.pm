@@ -2,6 +2,23 @@ package RT::Lorzy::Package::RT;
 use strict;
 use base 'Lorzy::Package';
 
+=begin comment
+
+sub lcore_defun {
+    my ($env, $name, %args) = @_;
+    $env->set_symbol($name => LCore::Primitive->new(
+        body => sub {
+            my ($ticket, $transaction) = @_;
+            $args->{native}->(
+                { ticket      => $ticket,
+                  transaction => $transaction });
+        },
+        parameters => [ LCore::Parameter->new({ name => 'ticket', type => 'RT::Model::Ticket' }),
+                        LCore::Parameter->new({ name => 'transaction', type => 'RT::Model::Transaction' }) ],
+    ));
+}
+
+=cut
 
 my $sig_ticket_txn = {
         'ticket' => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Model::Ticket' ),
@@ -145,6 +162,7 @@ for my $name ( keys %simple_txn_cond ) {
     __PACKAGE__->defun( "Condition.$name",
         signature => $sig_ticket_txn,
         native => sub {
+return 0;
             my $args = shift;
             return ($args->{transaction}->type||'') eq ($simple_txn_cond{$name} ||'');
         },

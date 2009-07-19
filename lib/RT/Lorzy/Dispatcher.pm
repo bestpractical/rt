@@ -14,11 +14,12 @@ sub reset_rules {
 sub rules {
     my $rules = RT::Model::RuleCollection->new( current_user => RT::CurrentUser->superuser);
     $rules->unlimit;
+    my $l = $RT::Lorzy::LCORE;
     return [ map {
         RT::Lorzy::RuleFactory->make_factory(
-            { condition     => Jifty::YAML::Load($_->condition_code),
-              prepare       => Jifty::YAML::Load($_->prepare_code),
-              action        => Jifty::YAML::Load($_->action_code),
+            { condition     => $l->analyze_it($_->condition_code)->($l->env),
+              prepare       => $_->prepare_code ? $l->analyze_it($_->prepare_code)->($l->env) : undef,
+              action        => $l->analyze_it($_->action_code)->($l->env),
               description   => $_->description,
               _stage        => 'transaction_create' })
         } @$rules];

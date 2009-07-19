@@ -15,51 +15,69 @@ use RT::Test::Email;
 
 use_ok('Lorzy');
 use_ok('RT::Lorzy');
+use_ok('LCore');
+use_ok('LCore::Level2');
+my $l = $RT::Lorzy::LCORE;
 
-my $tree    = [ { name => 'IfThen',
-                  args => { if_true => { name => 'True' },
-                            if_false => { name => 'False' },
-                            condition => { name => 'RT.Condition.OnCreate',
-                                args => {
-                                    ticket => { name => 'Symbol', args => { symbol => 'ticket' }},
-                                    transaction => { name => 'Symbol', args => { symbol => 'transaction' }},
-                                    }
-                            }
-                        } } ];
+$l->env->set_symbol('Native.Invoke' => LCore::Primitive->new
+                        ( body => sub {
+                              my ($object, $method, @args) = @_;
+                              return $object->$method(@args);
+                          },
+                          lazy => 0,
+                      ));
 
-my $builder = Lorzy::Builder->new();
-my $on_created  = $builder->defun(
-    ops => $tree,
-    signature =>
-        { ticket => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Model::Ticket' ),
-          transaction => Lorzy::FunctionArgument->new( name => 'transaction', type => 'RT::Model::Transaction' ) }
-);
+$l->env->set_symbol('Str.Eq' => LCore::Primitive->new
+                        ( body => sub {
+                              return $_[0] eq $_[1];
+                          }));
 
-$tree    = [ { name => 'RT.ScripAction.Run',
-               args => {
-                   name => "Autoreply To requestors",
-                   template => "Autoreply",
-                   context => { name => 'Symbol', args => { symbol => 'context' } },
-                   ticket => { name => 'Symbol', args => { symbol => 'ticket' }},
-                   transaction => { name => 'Symbol', args => { symbol => 'transaction' }},
-               } } ];
-my $auto_reply  = $builder->defun(
-    ops => $tree,
-    signature =>
-        { ticket => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Model::Ticket' ),
-          context => Lorzy::FunctionArgument->new( name => 'context', type => 'HASH' ),
-          transaction => Lorzy::FunctionArgument->new( name => 'transaction', type => 'RT::Model::Transaction' ) }
-);
+$l->env->set_symbol('RT.RuleAction.Run' => LCore::Primitive->new
+                        ( body => sub {
+                              warn "run ruleaction! " .join(',',@_);
+                              return;
+                          },
+                          lazy => 0,
+                          parameters => [ LCore::Parameter->new({ name => 'name', type => 'Str' }),
+                                          LCore::Parameter->new({ name => 'template', type => 'Str' }),
+                                          LCore::Parameter->new({ name => 'context', type => 'Str' }),
+                                          LCore::Parameter->new({ name => 'ticket', type => 'RT::Model::Ticket' }),
+                                          LCore::Parameter->new({ name => 'transaction', type => 'RT::Model::Transaction' }) ],
+
+                      ));
+
+
+my $on_created_lcore = q{
+(lambda (ticket transaction)
+  (Str.Eq (Native.Invoke transaction "type") "create"))
+};
+#my $on_created_lcore2 = $l->analze_it("RT.Condition.OnCreate")
+    # my $lcore_code = "(RT.Condition.$lorzy_cond ticket transaction)"
+
+#my $auto_reply_lcore = $l->analyze_it(q{(quote (RT.RuleAction.SendEmail (to . ## $self->ticket_obj->role_group("requestor")->member_emails )))});
+# (lambda (ticket :RT::Model::Ticket transaction :RT::Model::Transaction context :HASH)
+my $auto_reply_lcore = q{
+(lambda (ticket transaction context)
+  (RT.RuleAction.Run
+        (("name"        . "Autoreply To requestors")
+         ("template"    . "Autoreply")
+         ("context"     . context)
+         ("ticket"      . ticket)
+         ("transaction" . transaction))))
+};
 
 RT::Lorzy::Dispatcher->reset_rules;
-
+#
 my $rule = RT::Model::Rule->new( current_user => RT->system_user );
-$rule->create_from_factory( 
-    RT::Lorzy::RuleFactory->make_factory
-    ( { condition => $on_created,
-        _stage => 'transaction_create',
-        action => $auto_reply } )
-);
+$rule->create( condition_code => $on_created_lcore,
+               action_code    => $auto_reply_lcore );
+
+#$rule->create_from_factory( 
+#    RT::Lorzy::RuleFactory->make_factory
+#    ( { condition => $on_created,
+#        _stage => 'transaction_create',
+#        action => $auto_reply } )
+#);
 
 my $queue = RT::Model::Queue->new(current_user => RT->system_user);
 my ($queue_id) = $queue->create( name =>  'lorzy');

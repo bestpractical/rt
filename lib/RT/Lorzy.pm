@@ -10,6 +10,10 @@ RT::Ruleset->register( 'RT::Lorzy::Dispatcher' );
 our $EVAL = Lorzy::Evaluator->new();
 $EVAL->load_package($_) for qw(Str Native);
 $EVAL->load_package('RT', 'RT::Lorzy::Package::RT');
+use LCore;
+use LCore::Level2;
+
+our $LCORE = LCore->new( env => LCore::Level2->new );
 
 sub evaluate {
     my ($self, $code, %args) = @_;
@@ -48,8 +52,11 @@ sub create_scripish {
             transaction => { name => 'Symbol', args => { symbol => 'transaction' } }
         } };
 
+    # my $lcore_code = "(RT.Condition.$lorzy_cond ticket transaction)"
+
     if ($queue) {
 
+        # $lcore_code = qq{(and $lcore_code (Str.Eq "$queue" (Native.Invoke ticket "queue")))}
         $tree = { name => 'And',
                   args => { nodes =>
                                 [ { name => 'Str.Eq',
@@ -111,27 +118,7 @@ __PACKAGE__->mk_accessors(qw(description condition action prepare _stage));
 
 sub make_factory {
     my $class = shift;
-    my $self = $class->SUPER::new(@_);
-
-    if (ref($self->condition) eq 'CODE') {
-        # XXX: signature compat check
-        $self->condition( Lorzy::Lambda::Native->new( body => $self->condition,
-                                                   signature => 
-        { ticket => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Model::Ticket' ),
-          transaction => Lorzy::FunctionArgument->new( name => 'transaction', type => 'RT::Model::Transaction' ) }
-        ) );
-    }
-    if (ref($self->action) eq 'CODE') {
-        # XXX: signature compat check
-        $self->action( Lorzy::Lambda::Native->new( body => $self->action,
-                                                   signature => 
-        { ticket => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Model::Ticket' ),
-          context => Lorzy::FunctionArgument->new( name => 'context', type => 'RT::Model::Ticket' ),
-          transaction => Lorzy::FunctionArgument->new( name => 'transaction', type => 'RT::Model::Transaction' ) }
-
-                                               ) );
-    }
-    return $self;
+    return $class->SUPER::new(@_);
 }
 
 sub new {
@@ -156,24 +143,21 @@ sub _init {
 
 sub prepare {
     my ( $self, %args ) = @_;
-    my $ret = RT::Lorzy->evaluate( $self->factory->condition,
-                                   ticket      => $self->ticket_obj,
-                                   transaction => $self->transaction );
-    if (my $e = Lorzy::Exception->caught()) {
-        Jifty->log->error("Rule '@{[ $self->description]}' condition error, ignoring: $e");
-    }
-    return unless $ret;
+    warn "===> hi this is prepare for $self ";
+    my $ret = $self->factory->condition->apply($self->ticket_obj, $self->transaction);
+    warn $ret;
+#    if (my $e = Lorzy::Exception->caught()) {
+#        Jifty->log->error("Rule '@{[ $self->description]}' condition error, ignoring: $e");
+#    }
+#    return unless $ret;
 
     return 1 unless $self->factory->prepare;
+    warn "==> hi this is to preprae";
+    $ret = $self->factory->prepare->($self->ticket_obj, $self->transaction, $self->context);
 
-    $ret = RT::Lorzy->evaluate( $self->factory->prepare,
-        context     => $self->context,
-        ticket      => $self->ticket_obj,
-        transaction => $self->transaction );
-
-    if (my $e = Lorzy::Exception->caught()) {
-        Jifty->log->error("Rule '@{[ $self->description]}' prepare error, ignoring: $e");
-    }
+#    if (my $e = Lorzy::Exception->caught()) {
+#        Jifty->log->error("Rule '@{[ $self->description]}' prepare error, ignoring: $e");
+#    }
     return $ret;
 }
 
@@ -186,14 +170,12 @@ sub hints {
 
 sub commit {
     my ($self, %args) = @_;
-    my $ret = RT::Lorzy->evaluate( $self->factory->action,
-                                   context => $self->context,
-                                   ticket => $self->ticket_obj,
-                                   transaction => $self->transaction);
+    warn "==> trying to commit";
+    my $ret = $self->factory->action->apply($self->ticket_obj, $self->transaction, $self->context);
 
-    if (my $e = Lorzy::Exception->caught()) {
-        Jifty->log->error("Rule '@{[ $self->description]}' commit error: $e");
-    }
+#    if (my $e = Lorzy::Exception->caught()) {
+#        Jifty->log->error("Rule '@{[ $self->description]}' commit error: $e");
+#    }
     return $ret;
 }
 
