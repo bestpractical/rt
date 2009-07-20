@@ -8,13 +8,13 @@ use RT::Lorzy::Dispatcher;
 
 RT::Ruleset->register( 'RT::Lorzy::Dispatcher' );
 our $EVAL = Lorzy::Evaluator->new();
-$EVAL->load_package($_) for qw(Str Native);
-$EVAL->load_package('RT', 'RT::Lorzy::Package::RT');
+#$EVAL->load_package($_) for qw(Str Native);
+#$EVAL->load_package('RT', 'RT::Lorzy::Package::RT');
 use LCore;
 use LCore::Level2;
 
 our $LCORE = LCore->new( env => LCore::Level2->new );
-
+require RT::Lorzy::Package::RT;
 $LCORE->env->set_symbol('Native.Invoke' => LCore::Primitive->new
                         ( body => sub {
                               my ($object, $method, @args) = @_;
@@ -27,6 +27,27 @@ $LCORE->env->set_symbol('Str.Eq' => LCore::Primitive->new
                         ( body => sub {
                               return $_[0] eq $_[1];
                           }));
+
+$LCORE->env->set_symbol('RT.RuleAction.Prepare' => LCore::Primitive->new
+                        ( body => sub {
+                              my ($name, $template, $context, $ticket, $transaction) = @_;
+                              my $rule = RT::Rule->new( current_user => $ticket->current_user,
+                                  ticket_obj => $ticket,
+                                  transaction_obj => $transaction
+                              );
+                              my $action = $rule->get_scrip_action($name, $template);
+                              $action->prepare or return;
+                              $context->{hints} = $action->hints;
+                              $context->{action} = $action;
+                          },
+                          lazy => 0,
+                          parameters => [ LCore::Parameter->new({ name => 'name', type => 'Str' }),
+                                          LCore::Parameter->new({ name => 'template', type => 'Str' }),
+                                          LCore::Parameter->new({ name => 'context', type => 'Str' }),
+                                          LCore::Parameter->new({ name => 'ticket', type => 'RT::Model::Ticket' }),
+                                          LCore::Parameter->new({ name => 'transaction', type => 'RT::Model::Transaction' }) ],
+
+                      ));
 
 $LCORE->env->set_symbol('RT.RuleAction.Run' => LCore::Primitive->new
                         ( body => sub {
@@ -149,11 +170,11 @@ sub prepare {
 #    if (my $e = Lorzy::Exception->caught()) {
 #        Jifty->log->error("Rule '@{[ $self->description]}' condition error, ignoring: $e");
 #    }
-#    return unless $ret;
+    return unless $ret;
 
     return 1 unless $self->factory->prepare;
     warn "==> hi this is to preprae";
-    $ret = $self->factory->prepare->($self->ticket_obj, $self->transaction, $self->context);
+    $ret = $self->factory->prepare->apply($self->ticket_obj, $self->transaction, $self->context);
 
 #    if (my $e = Lorzy::Exception->caught()) {
 #        Jifty->log->error("Rule '@{[ $self->description]}' prepare error, ignoring: $e");
@@ -170,7 +191,7 @@ sub hints {
 
 sub commit {
     my ($self, %args) = @_;
-    warn "==> trying to commit";
+    warn "==> trying to commit ".$self->factory->description;
     my $ret = $self->factory->action->apply($self->ticket_obj, $self->transaction, $self->context);
 
 #    if (my $e = Lorzy::Exception->caught()) {

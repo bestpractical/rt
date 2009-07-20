@@ -2,46 +2,35 @@ package RT::Lorzy::Package::RT;
 use strict;
 use base 'Lorzy::Package';
 
-=begin comment
-
 sub lcore_defun {
     my ($env, $name, %args) = @_;
-    $env->set_symbol($name => LCore::Primitive->new(
+    $RT::Lorzy::LCORE->env->set_symbol('RT.'.$name => LCore::Primitive->new(
         body => sub {
             my ($ticket, $transaction) = @_;
-            $args->{native}->(
+            $args{native}->(
                 { ticket      => $ticket,
                   transaction => $transaction });
         },
+        lazy => 0,
         parameters => [ LCore::Parameter->new({ name => 'ticket', type => 'RT::Model::Ticket' }),
                         LCore::Parameter->new({ name => 'transaction', type => 'RT::Model::Transaction' }) ],
     ));
 }
 
-=cut
-
-my $sig_ticket_txn = {
-        'ticket' => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Model::Ticket' ),
-        'transaction' => Lorzy::FunctionArgument->new( name => 'transaction', type => 'RT::Model::Transaction' ),
-    };
-
-__PACKAGE__->defun( 'Condition.OnTransaction',
-    signature => $sig_ticket_txn,
+__PACKAGE__->lcore_defun( 'Condition.OnTransaction',
     native => sub {
         return 1;
     },
 );
 
-__PACKAGE__->defun( 'Condition.OnOwnerChange',
-    signature => $sig_ticket_txn,
+__PACKAGE__->lcore_defun( 'Condition.OnOwnerChange',
     native => sub {
         my $args = shift;
         return ( $args->{transaction}->field || '' ) eq 'owner';
     },
 );
 
-__PACKAGE__->defun( 'Condition.OnQueueChange',
-    signature => $sig_ticket_txn,
+__PACKAGE__->lcore_defun( 'Condition.OnQueueChange',
     native => sub {
         my $args = shift;
         return $args->{transaction}->type eq 'set'
@@ -49,8 +38,7 @@ __PACKAGE__->defun( 'Condition.OnQueueChange',
     },
 );
 
-__PACKAGE__->defun( 'Condition.OnPriorityChange',
-    signature => $sig_ticket_txn,
+__PACKAGE__->lcore_defun( 'Condition.OnPriorityChange',
     native => sub {
         my $args = shift;
         return $args->{transaction}->type eq 'set'
@@ -58,8 +46,7 @@ __PACKAGE__->defun( 'Condition.OnPriorityChange',
     },
 );
 
-__PACKAGE__->defun( 'Condition.OnResolve',
-    signature => $sig_ticket_txn,
+__PACKAGE__->lcore_defun( 'Condition.OnResolve',
     native => sub {
         my $args = shift;
         return ($args->{transaction}->type ||'') eq 'status'
@@ -68,8 +55,7 @@ __PACKAGE__->defun( 'Condition.OnResolve',
     },
 );
 
-__PACKAGE__->defun( 'Condition.OnClose',
-    signature => $sig_ticket_txn,
+__PACKAGE__->lcore_defun( 'Condition.OnClose',
     native => sub {
         my $args = shift;
         my $txn = $args->{transaction};
@@ -85,8 +71,7 @@ __PACKAGE__->defun( 'Condition.OnClose',
     },
 );
 
-__PACKAGE__->defun( 'Condition.OnReopen',
-    signature => $sig_ticket_txn,
+__PACKAGE__->lcore_defun( 'Condition.OnReopen',
     native => sub {
         my $args = shift;
         my $txn = $args->{transaction};
@@ -101,6 +86,8 @@ __PACKAGE__->defun( 'Condition.OnReopen',
         return 1;
     },
 );
+
+=begin comment
 
 __PACKAGE__->defun( 'Condition.BeforeDue',
     # format is "1d2h3m4s" for 1 day and 2 hours and 3 minutes and 4 seconds.
@@ -152,6 +139,8 @@ __PACKAGE__->defun( 'Condition.Overdue',
     },
 );
 
+=cut
+
 my %simple_txn_cond = ( 'OnCreate' => 'create',
                         'OnCorrespond' => 'correspond',
                         'OnComment' => 'comment',
@@ -159,8 +148,7 @@ my %simple_txn_cond = ( 'OnCreate' => 'create',
                     );
 
 for my $name ( keys %simple_txn_cond ) {
-    __PACKAGE__->defun( "Condition.$name",
-        signature => $sig_ticket_txn,
+    __PACKAGE__->lcore_defun( "Condition.$name",
         native => sub {
 return 0;
             my $args = shift;
@@ -168,6 +156,8 @@ return 0;
         },
     );
 }
+
+=begin comment
 
 __PACKAGE__->defun( 'ScripAction.Prepare',
     signature => {
@@ -211,5 +201,6 @@ __PACKAGE__->defun( 'ScripAction.Run',
     },
 );
 
+=cut
 
 1;
