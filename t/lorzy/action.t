@@ -18,41 +18,6 @@ use_ok('LCore');
 use_ok('LCore::Level2');
 my $l = $RT::Lorzy::LCORE;
 
-$l->env->set_symbol('Native.Invoke' => LCore::Primitive->new
-                        ( body => sub {
-                              my ($object, $method, @args) = @_;
-                              return $object->$method(@args);
-                          },
-                          lazy => 0,
-                      ));
-
-$l->env->set_symbol('Str.Eq' => LCore::Primitive->new
-                        ( body => sub {
-                              return $_[0] eq $_[1];
-                          }));
-
-$l->env->set_symbol('RT.RuleAction.Run' => LCore::Primitive->new
-                        ( body => sub {
-                              my ($name, $template, $context, $ticket, $transaction) = @_;
-                              my $action = $context->{action};
-                              unless ($action) {
-                                  my $rule = RT::Rule->new( current_user => $ticket->current_user,
-                                                            ticket_obj => $ticket,
-                                                            transaction_obj => $transaction );
-                                  $action = $rule->get_scrip_action($name, $template);
-                                  $action->prepare or return;
-                              }
-                              $action->commit;
-                          },
-                          lazy => 0,
-                          parameters => [ LCore::Parameter->new({ name => 'name', type => 'Str' }),
-                                          LCore::Parameter->new({ name => 'template', type => 'Str' }),
-                                          LCore::Parameter->new({ name => 'context', type => 'Str' }),
-                                          LCore::Parameter->new({ name => 'ticket', type => 'RT::Model::Ticket' }),
-                                          LCore::Parameter->new({ name => 'transaction', type => 'RT::Model::Transaction' }) ],
-
-                      ));
-
 
 my $on_created_lcore = q{
 (lambda (ticket transaction)

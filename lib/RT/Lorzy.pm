@@ -15,6 +15,42 @@ use LCore::Level2;
 
 our $LCORE = LCore->new( env => LCore::Level2->new );
 
+$LCORE->env->set_symbol('Native.Invoke' => LCore::Primitive->new
+                        ( body => sub {
+                              my ($object, $method, @args) = @_;
+                              return $object->$method(@args);
+                          },
+                          lazy => 0,
+                      ));
+
+$LCORE->env->set_symbol('Str.Eq' => LCore::Primitive->new
+                        ( body => sub {
+                              return $_[0] eq $_[1];
+                          }));
+
+$LCORE->env->set_symbol('RT.RuleAction.Run' => LCore::Primitive->new
+                        ( body => sub {
+                              my ($name, $template, $context, $ticket, $transaction) = @_;
+                              my $action = $context->{action};
+                              unless ($action) {
+                                  my $rule = RT::Rule->new( current_user => $ticket->current_user,
+                                                            ticket_obj => $ticket,
+                                                            transaction_obj => $transaction );
+                                  $action = $rule->get_scrip_action($name, $template);
+                                  $action->prepare or return;
+                              }
+                              $action->commit;
+                          },
+                          lazy => 0,
+                          parameters => [ LCore::Parameter->new({ name => 'name', type => 'Str' }),
+                                          LCore::Parameter->new({ name => 'template', type => 'Str' }),
+                                          LCore::Parameter->new({ name => 'context', type => 'Str' }),
+                                          LCore::Parameter->new({ name => 'ticket', type => 'RT::Model::Ticket' }),
+                                          LCore::Parameter->new({ name => 'transaction', type => 'RT::Model::Transaction' }) ],
+
+                      ));
+
+
 sub evaluate {
     my ($self, $code, %args) = @_;
     eval { $EVAL->apply_script( $code, \%args ) };
@@ -39,77 +75,41 @@ my %cond_compat_map = ( 'On Create' => 'OnCreate',
 
 sub create_scripish {
     my ( $class, $scrip_condition, $scrip_action, $template, $description, $queue ) = @_;
-    my $sigs = { ticket => Lorzy::FunctionArgument->new( name => 'ticket', type => 'RT::Model::Ticket' ),
-        transaction => Lorzy::FunctionArgument->new( name => 'transaction', type => 'RT::Model::Transaction' ) };
-    my $builder = Lorzy::Builder->new();
-
     my $lorzy_cond = $cond_compat_map{$scrip_condition}
         or die "unsupported compat condition: $scrip_condition";
-    my $tree = {
-        name => 'RT.Condition.'.$lorzy_cond,
-        args => {
-            ticket => { name => 'Symbol', args => { symbol => 'ticket' } },
-            transaction => { name => 'Symbol', args => { symbol => 'transaction' } }
-        } };
 
-    # my $lcore_code = "(RT.Condition.$lorzy_cond ticket transaction)"
-
+    my $lcore_cond = "(RT.Condition.$lorzy_cond ticket transaction)";
     if ($queue) {
-
-        # $lcore_code = qq{(and $lcore_code (Str.Eq "$queue" (Native.Invoke ticket "queue")))}
-        $tree = { name => 'And',
-                  args => { nodes =>
-                                [ { name => 'Str.Eq',
-                                    args => {
-                                        arg1 => $queue,
-                                        arg2 => { name => 'Native.Invoke',
-                                                  args => { obj => { name => 'Native.Invoke',
-                                                                     args => { obj => { name => 'Symbol', args => { symbol => 'ticket' }},
-                                                                               method => 'queue',
-                                                                               args => { name => 'List',  nodes => []} } },
-                                                            method => 'id',
-                                                            args => { name => 'List',  nodes => []} },
-                                              },
-                                    }},
-                                  $tree ] } };
+        $lcore_cond = qq{(and $lcore_cond (Str.Eq "$queue" (Native.Invoke ticket "queue")))};
     }
+    $lcore_cond = qq{(lambda (ticket transaction) $lcore_cond)};
 
-    my $condition = $builder->defun(
-        ops => [ $tree ],
-        signature => { %$sigs },
-    );
+    my $lcore_prepare = qq{
+(lambda (ticket transaction context)
+  (RT.RuleAction.Prepare
+        (("name"        . "$scrip_action")
+         ("template"    . "$template")
+         ("context"     . context)
+         ("ticket"      . ticket)
+         ("transaction" . transaction))))
+};
 
-    $sigs->{context} = Lorzy::FunctionArgument->new( name => 'context', type => 'HASH' );
+    my $lcore_action = qq{
+(lambda (ticket transaction context)
+  (RT.RuleAction.Run
+        (("name"        . "$scrip_action")
+         ("template"    . "$template")
+         ("context"     . context)
+         ("ticket"      . ticket)
+         ("transaction" . transaction))))
+};
 
-    my $prepare = $builder->defun(
-        ops => [ { name => 'RT.ScripAction.Prepare',
-                args => {
-                    name     => $scrip_action,
-                    context => { name => 'Symbol', args => { symbol => 'context' } },
-                    template => $template,
-                    ticket => { name => 'Symbol', args => { symbol => 'ticket' } },
-                    transaction => { name => 'Symbol', args => { symbol => 'transaction' } },
-                    } } ],
-        signature => $sigs );
-
-    my $action = $builder->defun(
-        ops => [ { name => 'RT.ScripAction.Run',
-                args => {
-                    name     => $scrip_action,
-                    context => { name => 'Symbol', args => { symbol => 'context' } },
-                    template => $template,
-                    ticket => { name => 'Symbol', args => { symbol => 'ticket' } },
-                    transaction => { name => 'Symbol', args => { symbol => 'transaction' } },
-                    } } ],
-        signature => $sigs );
-
-    RT::Lorzy::RuleFactory->make_factory(
-        { condition     => $condition,
-          prepare       => $prepare,
-          action        => $action,
-          description   => $description,
-          _stage        => 'transaction_create',
-      } )
+    my $rule = RT::Model::Rule->new( current_user => RT->system_user );
+    $rule->create( condition_code => $lcore_cond,
+                   prepare_code   => $lcore_prepare,
+                   action_code    => $lcore_action,
+                   description    => $description,
+               );
 }
 
 package RT::Lorzy::RuleFactory;
