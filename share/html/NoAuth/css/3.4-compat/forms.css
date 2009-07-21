@@ -103,3 +103,8 @@ form .label, form label {
     margin-left: 2em;
 }
 
+.cfinvalidfield {
+    font-style: italic;
+    color: red;
+}
+
