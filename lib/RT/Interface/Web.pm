@@ -310,7 +310,7 @@ sub StripContent {
     return ''
         if $html
         and $content
-        =~ m{^\s*<p>\s*(--)?\s*<br[^>]*?/?>\s*\Q$sig\E\s*</p>\s*$}s;
+        =~ m{^\s*(?:<p>)?\s*(--)?\s*<br[^>]*?/?>\s*\Q$sig\E\s*(?:</p>)?\s*$}s;
 
     # Pass it through
     return $content;
