@@ -320,46 +320,6 @@ sub OriginalContent {
     return $content;
 }
 
-=head2 OriginalHeaders
-
-Returns the attachment's headers as octets before RT's mangling.  Currently,
-this just means restoring text headers back to their original encoding.
-
-=cut
-
-sub OriginalHeaders {
-    my $self = shift;
-
-    return $self->Headers unless RT::I18N::IsTextualContentType($self->ContentType);
-    my $enc = $self->OriginalEncoding;
-
-    my $headers;
-    if ( !$self->ContentEncoding || $self->ContentEncoding eq 'none' ) {
-        $headers = $self->_Value('Headers', decode_utf8 => 0);
-    } elsif ( $self->ContentEncoding eq 'base64' ) {
-        $headers = MIME::Base64::decode_base64($self->_Value('Headers', decode_utf8 => 0));
-    } elsif ( $self->ContentEncoding eq 'quoted-printable' ) {
-        $headers = MIME::QuotedPrint::decode($self->_Value('Headers', decode_utf8 => 0));
-    } else {
-        return( $self->loc("Unknown ContentEncoding [_1]", $self->ContentEncoding));
-    }
-
-    # Turn *off* the SvUTF8 bits here so decode_utf8 and from_to below can work.
-    local $@;
-    Encode::_utf8_off($headers);
-
-    if (!$enc || $enc eq '' ||  $enc eq 'utf8' || $enc eq 'utf-8') {
-        # If we somehow fail to do the decode, at least push out the raw bits
-        eval { return( Encode::decode_utf8($headers)) } || return ($headers);
-    }
-
-    eval { Encode::from_to($headers, 'utf8' => $enc) } if $enc;
-    if ($@) {
-        $RT::Logger->error("Could not convert attachment headers from assumed utf8 to '$enc' :".$@);
-    }
-    return $headers;
-}
-
 =head2 OriginalEncoding
 
 Returns the attachment's original encoding.
@@ -537,6 +497,21 @@ an abstraction barrier that makes it impossible to pass this data directly.
 
 sub Headers {
     return join("\n", $_[0]->SplitHeaders);
+}
+
+=head2 EncodedHeaders
+
+Takes encoding as argument and returns the attachment's headers as octets in encoded
+using the encoding.
+
+This is not protection using quoted printable or base64 encoding.
+
+=cut
+
+sub EncodedHeaders {
+    my $self = shift;
+    my $encoding = shift || 'utf8';
+    return Encode::encode( $encoding, $self->Headers );
 }
 
 =head2 GetHeader $TAG
