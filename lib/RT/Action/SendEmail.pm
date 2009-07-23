@@ -55,8 +55,6 @@ use warnings;
 
 use base qw(RT::Action);
 
-use MIME::Words qw(encode_mimeword);
-
 use RT::EmailParser;
 use RT::Interface::Email;
 use Email::Address;
@@ -413,10 +411,7 @@ sub AddAttachment {
         Type     => $attach->ContentType,
         Charset  => $attach->OriginalEncoding,
         Data     => $attach->OriginalContent,
-        Filename => defined( $attach->Filename )
-        ? $self->MIMEEncodeString( $attach->Filename,
-            RT->Config->Get('EmailOutputEncoding') )
-        : undef,
+        Filename => $self->MIMEEncodeString( $attach->Filename ),
         'RT-Attachment:' => $self->TicketObj->Id . "/"
             . $self->TransactionObj->Id . "/"
             . $attach->id,
@@ -1075,68 +1070,18 @@ sub SetHeaderAsEncoding {
 
 }
 
-=head2 MIMEEncodeString STRING ENCODING
+=head2 MIMEEncodeString
 
-Takes a string and a possible encoding and returns the string wrapped in MIME goo.
+Takes a perl string and optional encoding pass it over
+L<RT::Interface::Email/EncodeToMIME>.
+
+Basicly encode a string using B encoding according to RFC2047.
 
 =cut
 
 sub MIMEEncodeString {
     my $self  = shift;
-    my $value = shift;
-
-    # using RFC2047 notation, sec 2.
-    # encoded-word = "=?" charset "?" encoding "?" encoded-text "?="
-    my $charset  = shift;
-    my $encoding = 'B';
-
-    # An 'encoded-word' may not be more than 75 characters long
-    #
-    # MIME encoding increases 4/3*(number of bytes), and always in multiples
-    # of 4. Thus we have to find the best available value of bytes available
-    # for each chunk.
-    #
-    # First we get the integer max which max*4/3 would fit on space.
-    # Then we find the greater multiple of 3 lower or equal than $max.
-    my $max = int(
-        (   ( 75 - length( '=?' . $charset . '?' . $encoding . '?' . '?=' ) )
-            * 3
-        ) / 4
-    );
-    $max = int( $max / 3 ) * 3;
-
-    chomp $value;
-
-    if ( $max <= 0 ) {
-
-        # gives an error...
-        $RT::Logger->crit("Can't encode! Charset or encoding too big.");
-        return ($value);
-    }
-
-    return ($value) unless $value =~ /[^\x20-\x7e]/;
-
-    $value =~ s/\s+$//;
-
-    # we need perl string to split thing char by char
-    Encode::_utf8_on($value) unless Encode::is_utf8($value);
-
-    my ( $tmp, @chunks ) = ( '', () );
-    while ( length $value ) {
-        my $char = substr( $value, 0, 1, '' );
-        my $octets = Encode::encode( $charset, $char );
-        if ( length($tmp) + length($octets) > $max ) {
-            push @chunks, $tmp;
-            $tmp = '';
-        }
-        $tmp .= $octets;
-    }
-    push @chunks, $tmp if length $tmp;
-
-    # encode an join chuncks
-    $value = join "\n ",
-        map encode_mimeword( $_, $encoding, $charset ), @chunks;
-    return ($value);
+    return RT::Interface::Email::EncodeToMIME( String => $_[0], Charset => $_[1] );
 }
 
 eval "require RT::Action::SendEmail_Vendor";

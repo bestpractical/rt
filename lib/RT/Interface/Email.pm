@@ -622,7 +622,7 @@ sub ForwardTransaction {
         );
     }
 
-    $mail->head->set( $_ => Encode::encode('MIME-Header', $args{ $_ }) )
+    $mail->head->set( $_ => EncodeToMIME( String => $args{$_} ) )
         foreach grep defined $args{$_}, qw(To Cc Bcc);
 
     $mail->attach(
@@ -643,8 +643,8 @@ sub ForwardTransaction {
         $from = $obj->QueueObj->CorrespondAddress
             || RT->Config->Get('CorrespondAddress');
     }
-    $mail->head->set( Subject => Encode::encode('MIME-Header', "Fwd: $subject") );
-    $mail->head->set( From    => Encode::encode('MIME-Header', $from) );
+    $mail->head->set( Subject => EncodeToMIME( String => "Fwd: $subject" ) );
+    $mail->head->set( From    => EncodeToMIME( String => $from ) );
 
     my $status = RT->Config->Get('ForwardFromUser')
         # never sign if we forward from User
@@ -759,6 +759,84 @@ sub SignEncrypt {
     return 1;
 }
 
+use MIME::Words ();
+
+=head2 EncodeToMIME
+
+Takes a hash with a String and a Charset. Returns the string encoded
+according to RFC2047, using B (base64 based) encoding.
+
+String must be a perl string, octets are returned.
+
+If Charset is not provided then $EmailOutputEncoding config option
+is used, or "latin-1" if that is not set.
+
+=cut
+
+sub EncodeToMIME {
+    my $self  = shift;
+    my %args = (
+        String => undef,
+        Charset  => undef,
+        @_
+    );
+    my $value = $args{'String'};
+    return $value unless $value; # 0 is perfect ascii
+    my $charset  = $args{'Charset'} || RT->Config->Get('EmailOutputEncoding');
+    my $encoding = 'B';
+
+    # using RFC2047 notation, sec 2.
+    # encoded-word = "=?" charset "?" encoding "?" encoded-text "?="
+
+    # An 'encoded-word' may not be more than 75 characters long
+    #
+    # MIME encoding increases 4/3*(number of bytes), and always in multiples
+    # of 4. Thus we have to find the best available value of bytes available
+    # for each chunk.
+    #
+    # First we get the integer max which max*4/3 would fit on space.
+    # Then we find the greater multiple of 3 lower or equal than $max.
+    my $max = int(
+        (   ( 75 - length( '=?' . $charset . '?' . $encoding . '?' . '?=' ) )
+            * 3
+        ) / 4
+    );
+    $max = int( $max / 3 ) * 3;
+
+    chomp $value;
+
+    if ( $max <= 0 ) {
+
+        # gives an error...
+        $RT::Logger->crit("Can't encode! Charset or encoding too big.");
+        return ($value);
+    }
+
+    return ($value) unless $value =~ /[^\x20-\x7e]/;
+
+    $value =~ s/\s+$//;
+
+    # we need perl string to split thing char by char
+    Encode::_utf8_on($value) unless Encode::is_utf8($value);
+
+    my ( $tmp, @chunks ) = ( '', () );
+    while ( length $value ) {
+        my $char = substr( $value, 0, 1, '' );
+        my $octets = Encode::encode( $charset, $char );
+        if ( length($tmp) + length($octets) > $max ) {
+            push @chunks, $tmp;
+            $tmp = '';
+        }
+        $tmp .= $octets;
+    }
+    push @chunks, $tmp if length $tmp;
+
+    # encode an join chuncks
+    $value = join "\n ",
+        map MIME::Words::encode_mimeword( $_, $encoding, $charset ),
+        @chunks;
+    return ($value);
+}
 
 sub CreateUser {
     my ( $Username, $Address, $Name, $ErrorsTo, $entity ) = @_;
