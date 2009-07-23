@@ -271,6 +271,7 @@ you may reply to this message.
        Description => 'Default admin comment template',          # loc
        Content     =>
 'Subject: [Comment] {my $s=($Transaction->Subject||$Ticket->Subject); $s =~ s/\\[Comment\\]//g; $s =~ s/^Re//i; $s;}
+RT-Attach-Message: yes
 
 
 {RT->Config->Get(\'WebURL\')}Ticket/Display.html?id={$Ticket->id}

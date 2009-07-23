@@ -62,7 +62,7 @@ been changed a little. Database upgrade script handles global 'Bookmarked Ticket
 search only. New Ticket SQL "id = '__Bookmarked__'" is more flexible than
 old "__Bookmarks__". Old version is not valid Ticket SQL query, so people
 can not use it in the query builder and as well admins couldn't not edit
-format and other properties of the global saved search. Old verion's been
+format and other properties of the global saved search. Old version's been
 left for backwards compatibility.
 
 
@@ -173,7 +173,7 @@ UPGRADING FROM 3.0.x - Changes:
 = Installation =
 
 We recommend you move your existing /opt/rt3 tree completely out
-of the way before installating the newversion of RT, to make sure
+of the way before installing the new version of RT, to make sure
 that you don't inadvertently leave old files hanging around.
 
 = Rights changes =
@@ -193,7 +193,7 @@ It's worth checking out that resource if these instructions don't
 work right for you
 
 
-RT 3.2 includes a signficant change to the FastCGI handler. It is
+RT 3.2 includes a significant change to the FastCGI handler. It is
 no longer "setgid" to the RT group.  Perl's setid support has been
 deprecated for the last several releases and a number of platforms
 don't bundle the "sperl" or "suidperl" executable by default.

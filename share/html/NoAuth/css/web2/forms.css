@@ -235,3 +235,8 @@ div.widget .hints {
     width: 7em;
 }
 
+.cfinvalidfield {
+    font-style: italic;
+    color: red;
+}
+

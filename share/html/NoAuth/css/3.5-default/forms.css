@@ -141,3 +141,8 @@ form input.checkbox, form input.radio {
     
 }
 
+.cfinvalidfield {
+    font-style: italic;
+    color: red;
+}
+

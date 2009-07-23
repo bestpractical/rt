@@ -67,7 +67,7 @@
       &>
 %  if (my $msg = $m->notes('InvalidField-' . $CustomField->Id)) {
         <br />
-        <em style="color: red"><% $msg %></em>
+        <span class="cfinvalidfield"><% $msg %></span>
 %  }
     </td>
 
