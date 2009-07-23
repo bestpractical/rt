@@ -74,10 +74,10 @@ Email address mask.
 
 =head2 replace_relations - user identifier
 
-When you delete user there is could be minor links to him in RT DB.
+When you delete user there are could be minor links to him in RT DB.
 This option allow you to replace this links with link to other user.
 This links are Creator and LastUpdatedBy, but NOT any watcher roles,
-this mean that if user is watcher(Requestor, Owner,
+this means that if user is watcher(Requestor, Owner,
 Cc or AdminCc) of the ticket or queue then link would be deleted.
 
 This argument could be user id or name.
@@ -87,8 +87,14 @@ This argument could be user id or name.
 If true then plugin looks for users who are not watchers (Owners,
 Requestors, Ccs or AdminCcs) of any ticket.
 
-B<Note> that found users still may have relations with other objects
-and you most probably want to use C<replace_relations> option.
+Before RT 3.8.5, users who were watchers of deleted tickets B<were deleted>
+when this option was enabled. Decision has been made that it's not correct
+and you should either shred these deleted tickets, change watchers or
+explicitly delete user by name or email.
+
+Note that found users still B<may have relations> with other objects,
+for example via Creator or LastUpdatedBy fields, and you most probably
+want to use C<replace_relations> option.
 
 =cut
 
@@ -219,6 +225,7 @@ sub FilterWithoutTickets {
 sub _WithoutTickets {
     my ($self, $user) = @_;
     my $tickets = RT::Tickets->new( $RT::SystemUser );
+    $tickets->{'allow_deleted_search'} = 1;
     $tickets->FromSQL( 'Watcher.id = '. $user->id );
     # HACK: we may use Count method which counts all records
     # that match condtion, but we really want to know only that
