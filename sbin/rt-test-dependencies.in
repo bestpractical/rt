@@ -234,7 +234,7 @@ Scalar::Util
 Module::Versions::Report 1.05
 Cache::Simple::TimedExpiry
 Calendar::Simple
-Encode 2.13
+Encode 2.21
 CSS::Squish 0.06
 File::Glob
 Devel::StackTrace 1.19
