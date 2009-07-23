@@ -185,16 +185,17 @@ sub _FieldToFunction {
 
     if ($field =~ /^(.*)(Daily|Monthly|Annually)$/) {
         my ($field, $grouping) = ($1, $2);
+        my $alias = $args{'ALIAS'} || 'main';
         # Pg 8.3 requires explicit casting
         $field .= '::text' if RT->Config->Get('DatabaseType') eq 'Pg';
         if ( $grouping =~ /Daily/ ) {
-            $args{'FUNCTION'} = "SUBSTR($field,1,10)";
+            $args{'FUNCTION'} = "SUBSTR($alias.$field,1,10)";
         }
         elsif ( $grouping =~ /Monthly/ ) {
-            $args{'FUNCTION'} = "SUBSTR($field,1,7)";
+            $args{'FUNCTION'} = "SUBSTR($alias.$field,1,7)";
         }
         elsif ( $grouping =~ /Annually/ ) {
-            $args{'FUNCTION'} = "SUBSTR($field,1,4)";
+            $args{'FUNCTION'} = "SUBSTR($alias.$field,1,4)";
         }
     } elsif ( $field =~ /^(?:CF|CustomField)\.{(.*)}$/ ) { #XXX: use CFDecipher method
         my $cf_name = $1;
