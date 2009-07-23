@@ -70,7 +70,7 @@
     # XXX: should we check handle html here and integrate headers into html?
     $r->content_type( $content_type );
     $m->clear_buffer;
-    $m->out( $AttachmentObj->OriginalHeaders );
+    $m->out( $AttachmentObj->EncodedHeaders( $enc ) );
     $m->out( "\n\n" );
     $m->out( $AttachmentObj->OriginalContent );
     $m->abort;
