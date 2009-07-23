@@ -87,7 +87,7 @@ This argument could be user id or name.
 If true then plugin looks for users who are not watchers (Owners,
 Requestors, Ccs or AdminCcs) of any ticket.
 
-Before RT 3.8.5, users who were watchers of deleted tickets B<were deleted>
+Before RT 3.8.5, users who were watchers of deleted tickets B<will be deleted>
 when this option was enabled. Decision has been made that it's not correct
 and you should either shred these deleted tickets, change watchers or
 explicitly delete user by name or email.
