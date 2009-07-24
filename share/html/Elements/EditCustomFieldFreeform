@@ -49,7 +49,7 @@
 % if ($Multiple) {
 <textarea cols="<%$Cols%>" rows="<%$Rows%>" name="<%$name%>s" id="<%$name%>s" wrap="off" class="CF-<%$CustomField->id%>-Edit"><% $Default || '' %></textarea>
 % } else {
-<input name="<%$name%>" id="<%$name%>" size="<%$Cols%>" class="CF-<%$CustomField->id%>-Edit" value="<%$Default ? $Default : ''%>" />
+<input name="<%$name%>" id="<%$name%>" size="<%$Cols%>" class="CF-<%$CustomField->id%>-Edit" value="<% defined($Default) ? $Default : ''%>" />
 % }
 <%INIT>
 if ( $Multiple and $Values ) {
