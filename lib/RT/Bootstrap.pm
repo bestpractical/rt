@@ -442,9 +442,7 @@ sub insert_data {
         #print "done.\n";
     }
     if (@Scrips) {
-        # XXX: put into RT::Model::Rules
         require RT::Lorzy;
-        require Lorzy::Builder;
         for my $item (sort { $a->{description} cmp $b->{description} } @Scrips) {
             RT::Lorzy->create_scripish(
                 $item->{scrip_condition},

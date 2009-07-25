@@ -1,6 +1,5 @@
 package RT::Lorzy::Package::RT;
 use strict;
-use base 'Lorzy::Package';
 
 sub lcore_defun {
     my ($env, $name, %args) = @_;

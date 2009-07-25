@@ -3,13 +3,9 @@ use strict;
 use warnings;
 
 use RT::Ruleset;
-use Lorzy::Evaluator;
 use RT::Lorzy::Dispatcher;
 
 RT::Ruleset->register( 'RT::Lorzy::Dispatcher' );
-our $EVAL = Lorzy::Evaluator->new();
-#$EVAL->load_package($_) for qw(Str Native);
-#$EVAL->load_package('RT', 'RT::Lorzy::Package::RT');
 use LCore;
 use LCore::Level2;
 
@@ -71,11 +67,6 @@ $LCORE->env->set_symbol('RT.RuleAction.Run' => LCore::Primitive->new
 
                       ));
 
-
-sub evaluate {
-    my ($self, $code, %args) = @_;
-    eval { $EVAL->apply_script( $code, \%args ) };
-}
 
 my %cond_compat_map = ( 'On Create' => 'OnCreate',
                         'On Transaction' => 'OnTransaction',
