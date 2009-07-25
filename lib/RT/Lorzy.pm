@@ -162,23 +162,29 @@ sub _init {
     $self->factory($args{factory});
 }
 
+sub handle_exception {
+    my $self = shift;
+    my $e;
+    if ( $e = LCore::Exception->caught() ) {
+        Jifty->log->error("Rule '@{[ $self->description]}' condition error, ignoring: $e");
+    }
+    elsif ( $e = Exception::Class->caught() ) {
+        warn $e;
+        ref $e ? $e->rethrow : die "$e";
+    }
+}
+
 sub prepare {
     my ( $self, %args ) = @_;
-    warn "===> hi this is prepare for $self ";
-    my $ret = $self->factory->condition->apply($self->ticket_obj, $self->transaction);
-    warn $ret;
-#    if (my $e = Lorzy::Exception->caught()) {
-#        Jifty->log->error("Rule '@{[ $self->description]}' condition error, ignoring: $e");
-#    }
+    my $ret = eval { $self->factory->condition->apply($self->ticket_obj, $self->transaction) };
+    return if $self->handle_exception();
     return unless $ret;
 
     return 1 unless $self->factory->prepare;
-    warn "==> hi this is to preprae";
-    $ret = $self->factory->prepare->apply($self->ticket_obj, $self->transaction, $self->context);
 
-#    if (my $e = Lorzy::Exception->caught()) {
-#        Jifty->log->error("Rule '@{[ $self->description]}' prepare error, ignoring: $e");
-#    }
+    $ret = eval { $self->factory->prepare->apply($self->ticket_obj, $self->transaction, $self->context) };
+    return if $self->handle_exception();
+
     return $ret;
 }
 
@@ -191,12 +197,9 @@ sub hints {
 
 sub commit {
     my ($self, %args) = @_;
-    warn "==> trying to commit ".$self->factory->description;
-    my $ret = $self->factory->action->apply($self->ticket_obj, $self->transaction, $self->context);
+    my $ret = eval { $self->factory->action->apply($self->ticket_obj, $self->transaction, $self->context) };
+    return if $self->handle_exception();
 
-#    if (my $e = Lorzy::Exception->caught()) {
-#        Jifty->log->error("Rule '@{[ $self->description]}' commit error: $e");
-#    }
     return $ret;
 }
 
