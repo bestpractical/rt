@@ -86,48 +86,51 @@ __PACKAGE__->lcore_defun( 'Condition.OnReopen',
     },
 );
 
-=begin comment
-
-__PACKAGE__->defun( 'Condition.BeforeDue',
+$RT::Lorzy::LCORE->env->set_symbol('RT.MkCondition.BeforeDue' => LCore::Primitive->new(
     # format is "1d2h3m4s" for 1 day and 2 hours and 3 minutes and 4 seconds.
-    signature => { 'datestring' => Lorzy::FunctionArgument->new( name => 'datestring', type => 'Str' ) },
-
-    native => sub {
-        my $xargs = shift;
+    parameters => [LCore::Parameter->new( name => 'datestring', type => 'Str' )],
+    lazy => 0,
+    body => sub {
+        my $datestring = shift;
         my %e;
         foreach (qw(d h m s)) {
-            my @vals = $xargs->{datestring} =~ m/(\d+)$_/;
+            my @vals = $datestring =~ m/(\d+)$_/;
             $e{$_} = pop @vals || 0;
         }
         my $elapse = $e{'d'} * 24 * 60 * 60 + $e{'h'} * 60 * 60 + $e{'m'} * 60 + $e{'s'};
 
-        return Lorzy::Lambda::Native->new
+        return LCore::Primitive->new
             ( body => sub {
-                  my $args = shift;
+                  my ($ticket, $transaction) = @_;
                   my $cur = RT::DateTime->now;
-                  my $due = $args->{ticket}->due;
+                  my $due = $ticket->due;
                   return (undef) if $due->epoch <= 0;
 
                   my $diff = $due->diff($cur);
                   return ($diff >= 0 and $diff <= $elapse);
               },
-              signature => $sig_ticket_txn );
-    },
-);
+              parameters => [ LCore::Parameter->new({ name => 'ticket', type => 'RT::Model::Ticket' }),
+                              LCore::Parameter->new({ name => 'transaction', type => 'RT::Model::Transaction' }) ]
+          ),
+      }
+));
 
-__PACKAGE__->defun( 'Condition.PriorityExceeds',
-    signature => { 'priority' => Lorzy::FunctionArgument->new( name => 'priority', type => 'Int' ),
-               },
-    native => sub {
-        my $xargs = shift;
-        return Lorzy::Lambda::Native->new
+$RT::Lorzy::LCORE->env->set_symbol('RT.MkCondition.PriorityExceeds' => LCore::Primitive->new(
+    parameters => [ LCore::Parameter->new( name => 'priority', type => 'Num' ) ],
+    body => sub {
+        my $priority = shift;
+        return LCore::Primitive->new
             ( body => sub {
-                  my $args = shift;
-                  $args->{ticket}->priority > $xargs->{priority};
+                  my $ticket = shift;
+                  $ticket->priority > $priority;
               },
-              signature => $sig_ticket_txn );
-    },
-);
+              parameters => [ LCore::Parameter->new({ name => 'ticket', type => 'RT::Model::Ticket' }),
+                              LCore::Parameter->new({ name => 'transaction', type => 'RT::Model::Transaction' }) ]
+          );
+      },
+));
+
+=begin comment
 
 __PACKAGE__->defun( 'Condition.Overdue',
     signature => $sig_ticket_txn,
@@ -155,51 +158,5 @@ return 0;
         },
     );
 }
-
-=begin comment
-
-__PACKAGE__->defun( 'ScripAction.Prepare',
-    signature => {
-        'name'     => Lorzy::FunctionArgument->new( name => 'name' ),
-        'context'  => Lorzy::FunctionArgument->new( name => 'context' ),
-        'template' => Lorzy::FunctionArgument->new( name => 'template' ),
-        %$sig_ticket_txn,
-    },
-    native => sub {
-        my $args   = shift;
-        my $rule = RT::Rule->new( current_user => $args->{ticket}->current_user,
-                                  ticket_obj => $args->{ticket},
-                                  transaction_obj => $args->{transaction}
-                              );
-        my $action = $rule->get_scrip_action(@{$args}{qw(name template)});
-        $action->prepare or return;
-        $args->{context}{hints} = $action->hints;
-        $args->{context}{action} = $action;
-    },
-);
-
-__PACKAGE__->defun( 'ScripAction.Run',
-    signature => {
-        'name'     => Lorzy::FunctionArgument->new( name => 'name' ),
-        'context'  => Lorzy::FunctionArgument->new( name => 'context' ),
-        'template' => Lorzy::FunctionArgument->new( name => 'template' ),
-        %$sig_ticket_txn,
-    },
-    native => sub {
-        my $args   = shift;
-        my $action = $args->{context}{action};
-        unless ($action) {
-            my $rule = RT::Rule->new( current_user => $args->{ticket}->current_user,
-                                                ticket_obj => $args->{ticket},
-                                                transaction_obj => $args->{transaction}
-                                            );
-            $action = $rule->get_scrip_action(@{$args}{qw(name template)});
-            $action->prepare or return;
-        }
-        $action->commit;
-    },
-);
-
-=cut
 
 1;
