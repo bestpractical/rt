@@ -92,7 +92,7 @@ sub create_scripish {
 
     my $lcore_cond = "(RT.Condition.$lorzy_cond ticket transaction)";
     if ($queue) {
-        $lcore_cond = qq{(and $lcore_cond (Str.Eq "$queue" (Native.Invoke ticket "queue")))};
+        $lcore_cond = qq{(and $lcore_cond (Str.Eq "$queue" (Native.Invoke ticket "queue_id")))};
     }
     $lcore_cond = qq{(lambda (ticket transaction) $lcore_cond)};
 
@@ -122,6 +122,7 @@ sub create_scripish {
                    action_code    => $lcore_action,
                    description    => $description,
                );
+    return $rule;
 }
 
 package RT::Lorzy::RuleFactory;
@@ -160,7 +161,6 @@ sub handle_exception {
         Jifty->log->error("Rule '@{[ $self->description]}' condition error, ignoring: $e");
     }
     elsif ( $e = Exception::Class->caught() ) {
-        warn $e;
         ref $e ? $e->rethrow : die "$e";
     }
 }
