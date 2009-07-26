@@ -44,13 +44,6 @@ my $rule = RT::Model::Rule->new( current_user => RT->system_user );
 $rule->create( condition_code => $on_created_lcore,
                action_code    => $auto_reply_lcore );
 
-#$rule->create_from_factory( 
-#    RT::Lorzy::RuleFactory->make_factory
-#    ( { condition => $on_created,
-#        _stage => 'transaction_create',
-#        action => $auto_reply } )
-#);
-
 my $queue = RT::Model::Queue->new(current_user => RT->system_user);
 my ($queue_id) = $queue->create( name =>  'lorzy');
 ok( $queue_id, 'queue created' );

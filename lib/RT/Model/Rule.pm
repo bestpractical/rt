@@ -77,13 +77,5 @@ use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
     updated_on => 'last_updated'
 };
 
-sub create_from_factory {
-    my ($self, $factory) = @_;
-    my %args = map { $_.'_code' => Jifty::YAML::Dump( $factory->$_ ) }
-        qw(action condition prepare );
-    $self->SUPER::create( %args,
-                          description => $factory->description );
-}
-
 1;
 
