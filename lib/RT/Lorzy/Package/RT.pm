@@ -152,7 +152,6 @@ my %simple_txn_cond = ( 'OnCreate' => 'create',
 for my $name ( keys %simple_txn_cond ) {
     __PACKAGE__->lcore_defun( "Condition.$name",
         native => sub {
-return 0;
             my $args = shift;
             return ($args->{transaction}->type||'') eq ($simple_txn_cond{$name} ||'');
         },
