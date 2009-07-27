@@ -68,9 +68,9 @@ sub Create {
         @_,
     );
 
-    if ( defined $args{'Content'} && length( $args{'Content'} ) > 255 ) {
+    if ( defined $args{'Content'} && length( Encode::encode_utf8($args{'Content'}) ) > 255 ) {
         if ( defined $args{'LargeContent'} && length $args{'LargeContent'} ) {
-            $RT::Logger->error("Content is longer than 255 and LargeContent specified");
+            $RT::Logger->error("Content is longer than 255 bytes and LargeContent specified");
         }
         else {
             $args{'LargeContent'} = $args{'Content'};
