@@ -94,6 +94,7 @@ sub Create {
         Class        => '0',
         CustomFields => {},
         Links        => {},
+        Topics       => [],
         @_
     );
 
