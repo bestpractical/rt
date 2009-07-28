@@ -170,4 +170,7 @@ features(
 
 tests("t/*.t t/*/*.t");
 auto_install;
+
+install_prefix_jifty("/opt/rt4");
+
 WriteAll;
