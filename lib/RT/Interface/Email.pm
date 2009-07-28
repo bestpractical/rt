@@ -548,7 +548,7 @@ sub SendEmailUsingTemplate {
 
 =head2 ForwardTransaction TRANSACTION, To => '', Cc => '', Bcc => ''
 
-Forwards transaction with all attachments 'message/rfc822'.
+Forwards transaction with all attachments as 'message/rfc822'.
 
 =cut
 
@@ -556,55 +556,72 @@ sub ForwardTransaction {
     my $txn = shift;
     my %args = ( To => '', Cc => '', Bcc => '', @_ );
 
-    my $main_content = $txn->ContentObj;
-    my $entity = $main_content->ContentAsMIME;
+    my $entity = $txn->ContentAsMIME;
 
-    if ( $main_content->Parent ) {
-        # main content is not top most entity, we shouldn't loose
-        # From/To/Cc headers that are on a top part
-        my $attachments = RT::Attachments->new( $txn->CurrentUser );
-        $attachments->Columns(qw(id Parent TransactionId Headers));
-        $attachments->Limit( FIELD => 'TransactionId', VALUE => $txn->id );
-        $attachments->Limit( FIELD => 'Parent', VALUE => 0 );
-        $attachments->Limit( FIELD => 'Parent', OPERATOR => 'IS', VALUE => 'NULL', QUOTEVALUE => 0 );
-        $attachments->OrderBy( FIELD => 'id', ORDER => 'ASC' );
-        my $tmp = $attachments->First;
-        if ( $tmp && $tmp->id ne $main_content->id ) {
-            $entity->make_multipart;
-            $entity->head->add( split /:/, $_, 2 ) foreach $tmp->SplitHeaders;
-            $entity->make_singlepart;
-        }
-    }
+    return SendForward( %args, Entity => $entity, Transaction => $txn );
+}
 
-    my $attachments = RT::Attachments->new( $txn->CurrentUser );
-    $attachments->Limit( FIELD => 'TransactionId', VALUE => $txn->id );
-    $attachments->Limit(
-        FIELD => 'id',
-        OPERATOR => '!=',
-        VALUE => $main_content->id,
+=head2 ForwardTicket TICKET, To => '', Cc => '', Bcc => ''
+
+Forwards ticket with all transactions and attachments as 'message/rfc822'.
+
+=cut
+
+sub ForwardTicket {
+    my $ticket = shift;
+    my %args = ( To => '', Cc => '', Bcc => '', @_ );
+
+    my $txns = $ticket->Transactions;
+    $txns->Limit(
+        FIELD    => 'Type',
+        VALUE    => $_,
+    ) for qw(Create Correspond);
+
+    my $entity = MIME::Entity->build(
+        Type => 'multipart/mixed',
     );
-    $attachments->Limit(
-        FIELD => 'ContentType',
-        OPERATOR => 'NOT STARTSWITH',
-        VALUE => 'multipart/',
+    $entity->add_part( $_ ) foreach 
+        map $_->ContentAsMIME,
+        @{ $txns->ItemsArrayRef };
+
+    return SendForward( %args, Entity => $entity, Ticket => $ticket );
+}
+
+=head2 SendForward Entity => undef, Ticket => undef, Transaction => undef, Template => undef, To => '', Cc => '', Bcc => ''
+
+Forwards an Entity representing Ticket or Transaction as 'message/rfc822'. Entity is wrapped into Template.
+
+=cut
+
+sub SendForward {
+    my (%args) = (
+        Entity => undef,
+        Ticket => undef,
+        Transaction => undef,
+        Template => 'Forward',
+        To => '', Cc => '', Bcc => '',
+        @_
     );
-    $attachments->Limit(
-        FIELD => 'Content',
-        OPERATOR => '!=',
-        VALUE => '',
-    );
-    while ( my $a = $attachments->Next ) {
-        $entity->make_multipart unless $entity->is_multipart;
-        $entity->add_part( $a->ContentAsMIME );
+
+    my $txn = $args{'Transaction'};
+    my $ticket = $args{'Ticket'};
+    $ticket ||= $txn->Object if $txn;
+
+    my $entity = $args{'Entity'};
+    unless ( $entity ) {
+        require Carp;
+        $RT::Logger->error(Carp::longmess("No entity provided"));
+        return (0, $ticket->loc("Couldn't send email"));
     }
 
     my ($template, $msg) = PrepareEmailUsingTemplate(
-        Template  => 'Forward',
+        Template  => $args{'Template'},
         Arguments => {
+            Ticket      => $ticket,
             Transaction => $txn,
-            Ticket      => $txn->Object,
         },
     );
+
     my $mail;
     if ( $template ) {
         $mail = $template->MIMEObj;
@@ -614,8 +631,13 @@ sub ForwardTransaction {
     unless ( $mail ) {
         $RT::Logger->warning("Couldn't generate email using template 'Forward'");
 
-        my $description = 'This is forward of transaction #'
-            . $txn->id ." of a ticket #". $txn->ObjectId;
+        my $description;
+        unless ( $args{'Transaction'} ) {
+            $description = 'This is forward of ticket #'. $ticket->id;
+        } else {
+            $description = 'This is forward of transaction #'
+                . $txn->id ." of a ticket #". $txn->ObjectId;
+        }
         $mail = MIME::Entity->build(
             Type => 'text/plain',
             Data => $description,
@@ -633,14 +655,15 @@ sub ForwardTransaction {
     );
 
     my $from;
-    my $subject = $txn->Subject || $txn->Object->Subject;
+    my $subject = '';
+    $subject = $txn->Subject if $txn;
+    $subject ||= $ticket->Subject if $ticket;
     if ( RT->Config->Get('ForwardFromUser') ) {
-        $from = $txn->CurrentUser->UserObj->EmailAddress;
+        $from = ($txn || $ticket)->CurrentUser->UserObj->EmailAddress;
     } else {
         # XXX: what if want to forward txn of other object than ticket?
-        my $obj = $txn->Object;
-        $subject = AddSubjectTag( $subject, $obj );
-        $from = $obj->QueueObj->CorrespondAddress
+        $subject = AddSubjectTag( $subject, $ticket );
+        $from = $ticket->QueueObj->CorrespondAddress
             || RT->Config->Get('CorrespondAddress');
     }
     $mail->head->set( Subject => EncodeToMIME( String => "Fwd: $subject" ) );
@@ -648,10 +671,10 @@ sub ForwardTransaction {
 
     my $status = RT->Config->Get('ForwardFromUser')
         # never sign if we forward from User
-        ? SendEmail( Entity => $mail, Transaction => $txn, Sign => 0 )
-        : SendEmail( Entity => $mail, Transaction => $txn );
-    return (0, $txn->loc("Couldn't send email")) unless $status;
-    return (1, $txn->loc("Send email successfully"));
+        ? SendEmail( %args, Entity => $mail, Sign => 0 )
+        : SendEmail( %args, Entity => $mail );
+    return (0, $ticket->loc("Couldn't send email")) unless $status;
+    return (1, $ticket->loc("Send email successfully"));
 }
 
 =head2 SignEncrypt Entity => undef, Sign => 0, Encrypt => 0
