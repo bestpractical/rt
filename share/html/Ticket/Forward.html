@@ -85,15 +85,20 @@ $id = $ARGS{'id'} = $TicketObj->id;
 Abort( loc("Permission Denied") )
     unless $TicketObj->CurrentUserHasRight('ForwardMessage');
 
-my $txn = RT::Transaction->new( $session{'CurrentUser'} );
-$txn->Load( $QuoteTransaction );
-Abort( loc("Couldn't load transaction #[_1]", $QuoteTransaction) )
-    unless $txn->id;
+my $txn;
+if ( $QuoteTransaction ) {
+    $txn = RT::Transaction->new( $session{'CurrentUser'} );
+    $txn->Load( $QuoteTransaction );
+    Abort( loc("Couldn't load transaction #[_1]", $QuoteTransaction) )
+        unless $txn->id;
+}
 
 my @results;
 if ( $Forward || $ForwardAndReturn ) {
     require RT::Interface::Email;
-    my ($status, $msg) = RT::Interface::Email::ForwardTransaction( $txn, %ARGS );
+    my ($status, $msg) = $txn
+        ? RT::Interface::Email::ForwardTransaction( $txn, %ARGS )
+        : RT::Interface::Email::ForwardTicket( $TicketObj, %ARGS );
     push @results, $msg;
 
     if ( $ForwardAndReturn ) {
@@ -104,7 +109,9 @@ if ( $Forward || $ForwardAndReturn ) {
     }
 }
 
-my $Title = loc('Forward message');
+my $Title = $txn
+    ? loc('Forward transaction #[_1]', $txn->id)
+    : loc('Forward ticket #[_1]', $TicketObj->id);
 
 </%INIT>
 
