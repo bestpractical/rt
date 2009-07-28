@@ -797,7 +797,6 @@ is used, or "latin-1" if that is not set.
 =cut
 
 sub EncodeToMIME {
-    my $self  = shift;
     my %args = (
         String => undef,
         Charset  => undef,
