@@ -380,7 +380,7 @@ The ticket has been approved, you may now start to act on it.
        Description => "Heading of a forwarded message", # loc
        Content => q{
 
-This is forward of transaction #{ $Transaction->id } of a ticket #{ $Ticket->id }
+This is forward { $Transaction? ('of transaction #'. $Transaction->id) : '' }of a ticket #{ $Ticket->id }
 }
     },
     {  Queue       => 0,
