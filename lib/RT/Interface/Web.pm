@@ -541,7 +541,8 @@ sub CreateTicket {
             } elsif ( $type =~ /text/i ) {
                 @values = ($ARGS{ $arg });
             } else {
-                @values = split /\r*\n/, $ARGS{ $arg } || '';
+                no warnings 'uninitialized';
+                @values = split /\r*\n/, $ARGS{ $arg };
             }
             @values = grep length,
                 map {
