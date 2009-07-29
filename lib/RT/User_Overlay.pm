@@ -282,9 +282,9 @@ sub SetPrivileged {
     unless ( $self->CurrentUser->HasRight(Right => 'AdminUsers', Object => $RT::System) ) {
         return ( 0, $self->loc('Permission Denied') );
     }
+
     my $priv = RT::Group->new($self->CurrentUser);
     $priv->LoadSystemInternalGroup('Privileged');
-   
     unless ($priv->Id) {
         $RT::Logger->crit("Could not find Privileged pseudogroup");
         return(0,$self->loc("Failed to find 'Privileged' users pseudogroup."));
@@ -297,13 +297,14 @@ sub SetPrivileged {
         return(0,$self->loc("Failed to find 'Unprivileged' users pseudogroup"));
     }
 
+    my $principal = $self->PrincipalId;
     if ($val) {
-        if ($priv->HasMember($self->PrincipalObj)) {
+        if ($priv->HasMember($principal)) {
             #$RT::Logger->debug("That user is already privileged");
             return (0,$self->loc("That user is already privileged"));
         }
-        if ($unpriv->HasMember($self->PrincipalObj)) {
-            $unpriv->_DeleteMember($self->PrincipalId);
+        if ($unpriv->HasMember($principal)) {
+            $unpriv->_DeleteMember($principal);
         } else {
         # if we had layered transactions, life would be good
         # sadly, we have to just go ahead, even if something
@@ -311,7 +312,7 @@ sub SetPrivileged {
             $RT::Logger->crit("User ".$self->Id." is neither privileged nor ".
                 "unprivileged. something is drastically wrong.");
         }
-        my ($status, $msg) = $priv->_AddMember( InsideTransaction => 1, PrincipalId => $self->PrincipalId);  
+        my ($status, $msg) = $priv->_AddMember( InsideTransaction => 1, PrincipalId => $principal);  
         if ($status) {
             return (1, $self->loc("That user is now privileged"));
         } else {
@@ -319,12 +320,12 @@ sub SetPrivileged {
         }
     }
     else {
-        if ($unpriv->HasMember($self->PrincipalObj)) {
+        if ($unpriv->HasMember($principal)) {
             #$RT::Logger->debug("That user is already unprivileged");
             return (0,$self->loc("That user is already unprivileged"));
         }
-        if ($priv->HasMember($self->PrincipalObj)) {
-            $priv->_DeleteMember( $self->PrincipalId);
+        if ($priv->HasMember($principal)) {
+            $priv->_DeleteMember( $principal );
         } else {
         # if we had layered transactions, life would be good
         # sadly, we have to just go ahead, even if something
@@ -332,7 +333,7 @@ sub SetPrivileged {
             $RT::Logger->crit("User ".$self->Id." is neither privileged nor ".
                 "unprivileged. something is drastically wrong.");
         }
-        my ($status, $msg) = $unpriv->_AddMember( InsideTransaction => 1, PrincipalId => $self->PrincipalId);  
+        my ($status, $msg) = $unpriv->_AddMember( InsideTransaction => 1, PrincipalId => $principal);  
         if ($status) {
             return (1, $self->loc("That user is now unprivileged"));
         } else {
@@ -351,7 +352,7 @@ sub Privileged {
     my $self = shift;
     my $priv = RT::Group->new($self->CurrentUser);
     $priv->LoadSystemInternalGroup('Privileged');
-    if ($priv->HasMember($self->PrincipalObj)) {
+    if ( $priv->HasMember( $self->PrincipalId ) ) {
         return(1);
     }
     else {
