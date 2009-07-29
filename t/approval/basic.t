@@ -2,16 +2,14 @@
 use strict;
 use warnings;
 use Test::More;
-
 BEGIN {
     eval { require Email::Abstract; require Test::Email; 1 }
         or plan skip_all => 'require Email::Abstract and Test::Email';
 }
 
-plan tests => 39;
 
 use RT;
-use RT::Test;
+use RT::Test tests => 39;
 use RT::Test::Email;
 
 RT->Config->Set( LogToScreen => 'debug' );

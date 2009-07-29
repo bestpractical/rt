@@ -1,10 +1,8 @@
 
 use strict;
 use warnings;
-use Test::More; 
-plan tests => 38;
 use RT;
-use RT::Test;
+use RT::Test tests => 38;
 
 
 {
@@ -80,7 +78,7 @@ isnt ($delid ,0, "Sucessfully deleted it-".$delid."-".$delmsg);
 ok(!$ng->HasMember($principal_2)  , "group ".$ng->Id." no longer has member 2");
 is($group_3->HasMemberRecursively($principal_2), undef, "group 3 doesn't have member 2");
 is($group_2->HasMemberRecursively($principal_2), undef, "group 2 doesn't have member 2");
-is($ng->HasMember($principal_2), undef, "group 1 doesn't have member 2");;
+is($ng->HasMember($principal_2), undef, "group 1 doesn't have member 2");
 is($group_3->HasMemberRecursively($principal_2), undef, "group 3 has member 2 recursively");
 
 # }}}

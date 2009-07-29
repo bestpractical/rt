@@ -126,10 +126,6 @@ if ( $ARGS{'q'} ) {
     RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Search/Simple.html?q=".$m->interp->apply_escapes($ARGS{q}));
 }
 
-if ($ARGS{'HomeRefreshInterval'}) {
-	$session{'home_refresh_interval'} = $ARGS{'HomeRefreshInterval'};
-}
-
 my $actions;
 if ($session{'CurrentUser'}->HasRight(Right => 'ModifySelf', Object => $RT::System)) {
     $actions = {

@@ -80,12 +80,6 @@ sub SetRecipients {
     my $self = shift;
 
     my $arg = $self->Argument;
-
-    my $old_arg = eval { Storable::thaw( $arg ) };
-    unless( $@ ) {
-        $arg = $self->__ConvertOldArg( $old_arg );
-    }
-
     foreach( $self->__SplitArg( $arg ) ) {
         $self->_HandleArgument( $_ );
     }
@@ -103,25 +97,59 @@ sub SetRecipients {
 sub _HandleArgument {
     my $self = shift;
     my $instance = shift;
-    
-    my $obj = RT::Principal->new( $RT::SystemUser );
-    $obj->Load( $instance );
+
+    if ( $instance !~ /\D/ ) {
+        my $obj = RT::Principal->new( $self->CurrentUser );
+        $obj->Load( $instance );
+        return $self->_HandlePrincipal( $obj );
+    }
+
+    my $group = RT::Group->new( $self->CurrentUser );
+    $group->LoadUserDefinedGroup( $instance );
+    # to check disabled and so on
+    return $self->_HandlePrincipal( $group->PrincipalObj )
+        if $group->id;
+
+    require Email::Address;
+
+    my $user = RT::User->new( $self->CurrentUser );
+    if ( $instance =~ /^$Email::Address::addr_spec$/ ) {
+        $user->LoadByEmail( $instance );
+        return $self->__PushUserAddress( $instance )
+            unless $user->id;
+    } else {
+        $user->Load( $instance );
+    }
+    return $self->_HandlePrincipal( $user->PrincipalObj )
+        if $user->id;
+
+    $RT::Logger->error(
+        "'$instance' is not principal id, group name, user name,"
+        ." user email address or any email address"
+    );
+
+    return;
+}
+
+sub _HandlePrincipal {
+    my $self = shift;
+    my $obj = shift;
     unless( $obj->id ) {
-        $RT::Logger->error( "Couldn't load principal #$instance" );
+        $RT::Logger->error( "Couldn't load principal #$obj" );
         return;
     }
     if( $obj->Disabled ) {
-        $RT::Logger->info( "Principal #$instance is disabled => skip" );
+        $RT::Logger->info( "Principal #$obj is disabled => skip" );
         return;
     }
     if( !$obj->PrincipalType ) {
-        $RT::Logger->crit( "Principal #$instance has empty type" );
+        $RT::Logger->crit( "Principal #$obj has empty type" );
     } elsif( lc $obj->PrincipalType eq 'user' ) {
         $self->__HandleUserArgument( $obj->Object );
     } elsif( lc $obj->PrincipalType eq 'group' ) {
         $self->__HandleGroupArgument( $obj->Object );
     } else {
-        $RT::Logger->info( "Principal #$instance has unsupported type" );
+        $RT::Logger->info( "Principal #$obj has unsupported type" );
     }
     return;
 }
@@ -149,31 +177,7 @@ sub __HandleGroupArgument {
 }
 
 sub __SplitArg {
-    return split /[^0-9]+/, $_[1];
-}
-
-sub __ConvertOldArg {
-    my $self = shift;
-    my $arg = shift;
-    my @res;
-    foreach my $r ( @{ $arg } ) {
-        my $obj;
-        next unless $r->{'Type'};
-        if( lc $r->{'Type'} eq 'user' ) {
-            $obj = RT::User->new( $RT::SystemUser );
-        } elsif ( lc $r->{'Type'} eq 'user' ) {
-            $obj = RT::Group->new( $RT::SystemUser );
-        } else {
-            next;
-        }
-        $obj->Load( $r->{'Instance'} );
-        my $id = $obj->id;
-        next unless( $id );
-
-        push @res, $id;
-    }
-
-    return join ';', @res;
+    return grep length, map {s/^\s+//; s/\s+$//; $_} split /,/, $_[1];
 }
 
 sub __PushUserAddress {

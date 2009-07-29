@@ -45,7 +45,12 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => $title, JavaScript => $Preview, ShowBar => $Preview  &>
+<& /Elements/Header,
+    Title => $title,
+    JavaScript => $Preview,
+    ShowBar => $Preview,
+    Refresh => $Refresh,
+&>
 
 % if ($Preview) {
 <& /Dashboards/Elements/Tabs,
@@ -57,6 +62,7 @@
 % $m->callback(CallbackName => 'BeforeTable', Dashboard => $DashboardObj, show_cb => $show_cb);
 
 <table class="dashboard">
+<!-- Dashboard #<%$id%> -->
 
 % $m->callback(CallbackName => 'BeforePanes', Dashboard => $DashboardObj, show_cb => $show_cb);
 
@@ -117,6 +123,11 @@ my $show_cb = sub {
         Depth     => 0,
     );
 };
+
+my $Refresh = $Preview
+    ? $session{'home_refresh_interval'}
+        || RT->Config->Get('HomePageRefreshInterval', $session{'CurrentUser'})
+    : 0;
 
 </%INIT>
 <%ARGS>

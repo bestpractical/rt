@@ -98,7 +98,7 @@
 % my $CFs = $QueueObj->CustomFields;
 % while (my $CF = $CFs->Next) {
 <tr valign="top"><td align="right">
-<% $CF->Name %>:
+<% loc($CF->Name) %>:
 </td><td>
 <& /Elements/EditCustomField, CustomField => $CF, 
                               Object => $QueueObj, 
@@ -130,7 +130,11 @@
 % }
 
 </table>
+% if ( $Create ) {
+<& /Elements/Submit, Label => loc('Create') &>
+% } else {
 <& /Elements/Submit, Label => loc('Save Changes') &>
+% }
 </form>
 
 

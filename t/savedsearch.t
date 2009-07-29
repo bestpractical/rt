@@ -2,15 +2,14 @@ use strict;
 use warnings;
 BEGIN { $ENV{'LANG'} = 'C' }
 use RT;
-use Test::More tests => 27;
 use RT::User;
 use RT::Group;
 use RT::Ticket;
 use RT::Queue;
 
+use RT::Test tests => 27;
 use_ok('RT::SavedSearch');
 use_ok('RT::SavedSearches');
-use RT::Test;
 
 use Test::Warn;
 

@@ -2,10 +2,9 @@
 
 use warnings;
 use strict;
-use Test::More tests => 11;
 
 use RT;
-use RT::Test nodata => 1;
+use RT::Test nodata => 1, tests => 11;
 
 sub new (*) {
     my $class = shift;

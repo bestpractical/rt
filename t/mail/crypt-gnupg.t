@@ -2,15 +2,13 @@
 
 use strict;
 use warnings;
-use Test::More;
 
-use RT::Test nodata => 1;
+use RT::Test nodata => 1, tests => 92;
 plan skip_all => 'GnuPG required.'
     unless eval 'use GnuPG::Interface; 1';
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
 
-plan tests => 92;
 
 use File::Spec ();
 use Cwd;

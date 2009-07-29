@@ -76,8 +76,7 @@ wrap 'HTTP::Request::Common::form_data',
 
 our @EXPORT = qw(is_empty);
 
-my $config;
-our ($existing_server, $port, $dbname);
+our ($port, $dbname);
 my $mailsent;
 
 =head1 NAME
@@ -116,24 +115,8 @@ sub generate_port {
 }
 
 BEGIN {
-    if ( my $test_server = $ENV{'RT_TEST_SERVER'} ) {
-        my ($host, $test_port) = split(':', $test_server, 2);
-        $port = $test_port || 80;
-        $existing_server = "http://$host:$port";
-
-        # we can't parallel test with $existing_server
-        undef $ENV{RT_TEST_PARALLEL};
-    }
-    if ( $ENV{RT_TEST_PARALLEL} ) {
-        $port   = generate_port();
-        $dbname = "rt3test_$port";    #yes, dbname also makes use of $port
-    }
-    else {
-        $dbname = "rt3test";
-    }
-
-    $port = generate_port() unless $port;
-
+    $port   = generate_port();
+    $dbname = $ENV{RT_TEST_PARALLEL}? "rt3test_$port" : "rt3test";
 };
 
 use RT::Interface::Web::Standalone;
@@ -150,29 +133,19 @@ sub import {
     my $class = shift;
     my %args = @_;
 
-    $config = File::Temp->new;
-    print $config qq{
-Set( \$WebPort , $port);
-Set( \$WebBaseURL , "http://localhost:\$WebPort");
-Set( \$LogToSyslog , undef);
-Set( \$LogToScreen , "warning");
-Set( \$MailCommand, 'testfile');
-};
-    if ( $ENV{'RT_TEST_DB_SID'} ) { # oracle case
-        print $config "Set( \$DatabaseName , '$ENV{'RT_TEST_DB_SID'}' );\n";
-        print $config "Set( \$DatabaseUser , '$dbname');\n";
-    } else {
-        print $config "Set( \$DatabaseName , '$dbname');\n";
-        print $config "Set( \$DatabaseUser , 'u${dbname}');\n";
+    # Spit out a plan (if we got one) *before* we load modules
+    if ( $args{'tests'} ) {
+        $class->builder->plan( tests => $args{'tests'} )
+          unless $args{'tests'} eq 'no_declare';
     }
-    print $config $args{'config'} if $args{'config'};
-    print $config "\n1;\n";
-    $ENV{'RT_SITE_CONFIG'} = $config->filename;
-    close $config;
+    else {
+        $class->builder->no_plan unless $class->builder->has_plan;
+    }
+
+    $class->bootstrap_config( %args );
 
     use RT;
     RT::LoadConfig;
-    RT->Config->Set( DevelMode => '0' ) if $INC{'Devel/Cover.pm'};
 
     if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
 
@@ -183,14 +156,13 @@ Set( \$MailCommand, 'testfile');
         $mailsent++;
         return 1;
     };
-    RT::Config->Set( 'MailCommand' => $mailfunc);
+    RT->Config->Set( 'MailCommand' => $mailfunc );
 
-    require RT::Handle;
-    unless ( $existing_server ) {
-        $class->bootstrap_db( %args );
-    }
+    $class->bootstrap_db( %args );
 
     RT->Init;
+
+    $class->bootstrap_plugins( %args );
 
     my $screen_logger = $RT::Logger->remove( 'screen' );
     require Log::Dispatch::Perl;
@@ -205,8 +177,14 @@ Set( \$MailCommand, 'testfile');
     mkpath [ $RT::MasonSessionDir ]
         if RT->Config->Get('DatabaseType');
 
-    __PACKAGE__->export_to_level(1, @EXPORT);
+    my $level = 1;
+    while ( my ($package) = caller($level-1) ) {
+        last unless $package =~ /Test/;
+        $level++;
+    }
 
+    Test::More->export_to_level($level);
+    __PACKAGE__->export_to_level($level);
 }
 
 sub is_empty($;$) {
@@ -225,13 +203,50 @@ sub db_requires_no_dba {
     return 1 if $db_type eq 'SQLite';
 }
 
+my $config;
+sub bootstrap_config {
+    my $self = shift;
+    my %args = @_;
+
+    $config = File::Temp->new;
+    print $config qq{
+Set( \$WebPort , $port);
+Set( \$WebBaseURL , "http://localhost:\$WebPort");
+Set( \$LogToSyslog , undef);
+Set( \$LogToScreen , "warning");
+Set( \$MailCommand, 'testfile');
+};
+    if ( $ENV{'RT_TEST_DB_SID'} ) { # oracle case
+        print $config "Set( \$DatabaseName , '$ENV{'RT_TEST_DB_SID'}' );\n";
+        print $config "Set( \$DatabaseUser , '$dbname');\n";
+    } else {
+        print $config "Set( \$DatabaseName , '$dbname');\n";
+        print $config "Set( \$DatabaseUser , 'u${dbname}');\n";
+    }
+    print $config "Set( \$DevelMode, 0 );\n"
+        if $INC{'Devel/Cover.pm'};
+
+    print $config $args{'config'} if $args{'config'};
+
+    print $config "\n1;\n";
+    $ENV{'RT_SITE_CONFIG'} = $config->filename;
+    close $config;
+
+    return $config;
+}
+
 sub bootstrap_db {
     my $self = shift;
     my %args = @_;
 
-   unless (defined $ENV{'RT_DBA_USER'} && defined $ENV{'RT_DBA_PASSWORD'}) {
-       Test::More::BAIL_OUT("RT_DBA_USER and RT_DBA_PASSWORD environment variables need to be set in order to run 'make test'") unless $self->db_requires_no_dba;
-   }
+    unless (defined $ENV{'RT_DBA_USER'} && defined $ENV{'RT_DBA_PASSWORD'}) {
+        Test::More::BAIL_OUT(
+            "RT_DBA_USER and RT_DBA_PASSWORD environment variables need"
+            ." to be set in order to run 'make test'"
+        ) unless $self->db_requires_no_dba;
+    }
+
+    require RT::Handle;
     # bootstrap with dba cred
     my $dbh = _get_dbh(RT::Handle->SystemDSN,
                $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD});
@@ -276,14 +291,62 @@ sub bootstrap_db {
     DBIx::SearchBuilder::Record::Cachable->FlushCache;
 }
 
+sub bootstrap_plugins {
+    my $self = shift;
+    my %args = @_;
+
+    return unless $args{'requires'};
+
+    my @plugins = @{ $args{'requires'} };
+    push @plugins, $args{'testing'}
+        if $args{'testing'};
+
+    require RT::Plugin;
+    my $cwd;
+    if ( $args{'testing'} ) {
+        require Cwd;
+        $cwd = Cwd::getcwd();
+    }
+
+    my $old_func = \&RT::Plugin::_BasePath;
+    no warnings 'redefine';
+    *RT::Plugin::_BasePath = sub {
+        my $name = $_[0]->{'name'};
+
+        return $cwd if $args{'testing'} && $name eq $args{'testing'};
+
+        if ( grep $name eq $_, @plugins ) {
+            my $variants = join "(?:|::|-|_)", map "\Q$_\E", split /::/, $name;
+            my ($path) = map $ENV{$_}, grep /^CHIMPS_(?:$variants).*_ROOT$/i, keys %ENV;
+            return $path if $path;
+        }
+        return $old_func->(@_);
+    };
+
+    RT->Config->Set( Plugins => @plugins );
+    RT->InitPluginPaths;
+
+    require File::Spec;
+    foreach my $name ( @plugins ) {
+        my $plugin = RT::Plugin->new( name => $name );
+        Test::More::diag( "Initializing DB for the $name plugin" )
+            if $ENV{'TEST_VERBOSE'};
+        Test::More::diag( "etc path of the plugin is '". $plugin->Path('etc') ."'" )
+            if $ENV{'TEST_VERBOSE'};
+
+        my ($ret, $msg) = $RT::Handle->InsertSchema( undef, $plugin->Path('etc') );
+        Test::More::ok($ret || $msg =~ /^Couldn't find schema/, "Created schema: ".($msg||''));
+        ($ret, $msg) = $RT::Handle->InsertACL( undef, $plugin->Path('etc') );
+        Test::More::ok($ret || $msg =~ /^Couldn't find ACLs/, "Created ACL: ".($msg||''));
+        ($ret, $msg) = $RT::Handle->InsertData( File::Spec->catfile( $plugin->Path('etc'), 'initialdata' ) );
+        Test::More::ok($ret || $msg =~ /^Couldn't load data from/, "Inserted data: ".($msg||''));
+        $RT::Handle->Connect; # XXX: strange but mysql can loose connection
+    }
+}
+
 my @SERVERS;
 sub started_ok {
     require RT::Test::Web;
-    if ( $existing_server ) {
-        Test::More::ok(1, "using existing server $existing_server");
-        RT::Logger->warning( $existing_server);
-        return ($existing_server, RT::Test::Web->new);
-    }
     my $s = RT::Interface::Web::Standalone->new($port);
     push @server, $s;
     my $ret = $s->started_ok;
@@ -693,19 +756,34 @@ sub get_abs_relocatable_dir {
 
 sub import_gnupg_key {
     my $self = shift;
-    my $key = shift;
+    my $key  = shift;
     my $type = shift || 'secret';
 
     $key =~ s/\@/-at-/g;
     $key .= ".$type.key";
 
     require RT::Crypt::GnuPG;
-    # this is a bit hackish; calling it from somewhere that's not a subdir
-    # of t/ will fail
+
+    # simple strategy find data/gnupg/keys, from the dir where test file lives
+    # to updirs, try 3 times in total
+    my $path = File::Spec->catfile( 'data', 'gnupg', 'keys' );
+    my $abs_path;
+    for my $up ( 0 .. 2 ) {
+        my $p = get_relocatable_dir($path);
+        if ( -e $p ) {
+            $abs_path = $p;
+            last;
+        }
+        else {
+            $path = File::Spec->catfile( File::Spec->updir(), $path );
+        }
+    }
+
+    die "can't find the dir where gnupg keys are stored"
+      unless $abs_path;
+
     return RT::Crypt::GnuPG::ImportKey(
-        RT::Test->file_content([get_relocatable_dir(File::Spec->updir(),
-                qw(data gnupg keys)), $key])
-    );
+        RT::Test->file_content( [ $abs_path, $key ] ) );
 }
 
 

@@ -310,7 +310,7 @@ sub StripContent {
     return ''
         if $html
         and $content
-        =~ m{^\s*<p>\s*(--)?\s*<br[^>]*?/?>\s*\Q$sig\E\s*</p>\s*$}s;
+        =~ m{^\s*(?:<p>)?\s*(--)?\s*<br[^>]*?/?>\s*\Q$sig\E\s*(?:</p>)?\s*$}s;
 
     # Pass it through
     return $content;
@@ -541,7 +541,8 @@ sub CreateTicket {
             } elsif ( $type =~ /text/i ) {
                 @values = ($ARGS{ $arg });
             } else {
-                @values = split /\r*\n/, $ARGS{ $arg } || '';
+                no warnings 'uninitialized';
+                @values = split /\r*\n/, $ARGS{ $arg };
             }
             @values = grep length,
                 map {

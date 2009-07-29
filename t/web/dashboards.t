@@ -1,8 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 109;
-use RT::Test;
+use RT::Test tests => 109;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 my $url = $m->rt_base_url;
@@ -36,7 +35,8 @@ for my $user ($user_obj, $onlooker) {
 ok $m->login(customer => 'customer'), "logged in";
 
 $m->get_ok($url."Dashboards/index.html");
-$m->content_lacks("New dashboard", "No 'new dashboard' link because we have no CreateOwnDashboard");
+$m->content_lacks('<a href="/Dashboards/Modify.html?Create=1">New</a>', 
+                  "No 'new dashboard' link because we have no CreateOwnDashboard");
 
 $m->no_warnings_ok;
 
@@ -59,16 +59,16 @@ $user_obj->PrincipalObj->GrantRight(Right => 'CreateOwnDashboard', Object => $RT
 
 $m->get_ok($url."Dashboards/Modify.html?Create=1");
 $m->content_lacks("Permission denied");
-$m->content_contains("Save Changes");
+$m->content_contains("Create");
 
 $m->get_ok($url."Dashboards/index.html");
-$m->content_contains("New dashboard", "'New dashboard' link because we now have ModifyOwnDashboard");
+$m->content_contains("New", "'New' link because we now have ModifyOwnDashboard");
 
-$m->follow_link_ok({text => "New dashboard"});
+$m->follow_link_ok({text => "New"});
 $m->form_name('ModifyDashboard');
 $m->field("Name" => 'different dashboard');
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
-$m->click_button(value => 'Save Changes');
+$m->click_button(value => 'Create');
 $m->content_lacks("No permission to create dashboards");
 $m->content_contains("Saved dashboard different dashboard");
 $m->content_lacks('Delete', "Delete button hidden because we lack DeleteOwnDashboard");
@@ -218,7 +218,7 @@ $m->form_name('ModifyDashboard');
 $m->field("Name" => 'system dashboard');
 $m->field("Privacy" => 'RT::System-1');
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
-$m->click_button(value => 'Save Changes');
+$m->click_button(value => 'Create');
 $m->content_lacks("No permission to create dashboards");
 $m->content_contains("Saved dashboard system dashboard");
 

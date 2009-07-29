@@ -3,10 +3,9 @@
 use strict;
 use warnings;
 
-use Test::More;
 use Test::Deep;
 use File::Spec;
-use RT::Test ();
+use RT::Test tests => 7, tests => 7;
 BEGIN {
     my $shredder_utils = RT::Test::get_relocatable_file('utils.pl',
         File::Spec->curdir());
@@ -14,7 +13,6 @@ BEGIN {
 }
 init_db();
 
-plan tests => 7;
 
 diag 'global template' if $ENV{'TEST_VERBOSE'};
 {

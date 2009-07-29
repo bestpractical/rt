@@ -54,11 +54,12 @@
 <tr>
 % }
     <td class="cflabel">
-      <b><%$CustomField->Name%></b><br />
-      <i><%$CustomField->FriendlyType%></i>
+      <b><% loc($CustomField->Name) %></b><br />
+      <i><% $CustomField->FriendlyType %></i>
     </td>
     <td class="entry">
       <& /Elements/EditCustomField, 
+          %ARGS,
           Object => $TicketObj,
           CustomField => $CustomField,
           NamePrefix => $NamePrefix,
@@ -66,7 +67,7 @@
       &>
 %  if (my $msg = $m->notes('InvalidField-' . $CustomField->Id)) {
         <br />
-        <em style="color: red"><% $msg %></em>
+        <span class="cfinvalidfield"><% $msg %></span>
 %  }
     </td>
 
@@ -85,7 +86,7 @@
 <%INIT>
 my $CustomFields;
 
-if ($TicketObj) {
+if ($TicketObj && !$OnCreate) {
     $CustomFields = $TicketObj->CustomFields();
     $NamePrefix .= "Object-RT::Ticket-".$TicketObj->Id."-CustomField-";
 } else {
@@ -100,4 +101,5 @@ $m->callback( %ARGS, CallbackName => 'MassageCustomFields', CustomFields => $Cus
 $NamePrefix => ''
 $TicketObj => undef
 $QueueObj => undef
+$OnCreate => undef
 </%ARGS>

@@ -288,10 +288,6 @@ sub Create {
         return ( 0, 0, $self->loc('Could not create ticket. Queue not set') );
     }
 
-    if ( $QueueObj->Disabled ) {
-        $RT::Logger->debug("$self Disabled queue '".$QueueObj->Name."' given for ticket creation.");
-        return ( 0, 0, $self->loc('Could not create ticket in disabled queue "[_1]"', $QueueObj->Name) );
-    }
 
     #Now that we have a queue, Check the ACLS
     unless (
@@ -1546,7 +1542,7 @@ sub IsRequestor {
 =head2 IsCc PRINCIPAL_ID
 
   Takes an RT::Principal id.
-  Returns true if the principal is a requestor of the current ticket.
+  Returns true if the principal is a Cc of the current ticket.
 
 
 =cut
@@ -1566,7 +1562,7 @@ sub IsCc {
 =head2 IsAdminCc PRINCIPAL_ID
 
   Takes an RT::Principal id.
-  Returns true if the principal is a requestor of the current ticket.
+  Returns true if the principal is an AdminCc of the current ticket.
 
 =cut
 

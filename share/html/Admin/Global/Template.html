@@ -74,10 +74,10 @@ my $TemplateObj = new RT::Template($session{'CurrentUser'});
 my  ($title, @results, $current_subtab, $SubmitLabel);
 
 my $subtabs = {
-		 A => { title => loc('Select template'),
+		 A => { title => loc('Select'),
   		     	path => "Admin/Global/Templates.html"
 			   },
-		 B => { title => loc('New template'),
+		 B => { title => loc('New'),
   		     	path => "Admin/Global/Template.html?Create=1&Queue=0",
 			separator => 1,
 			   }
@@ -99,7 +99,7 @@ else {
        $TemplateObj->Load($Template) || Abort(loc('No Template'));
     }
      $title = loc('Modify template [_1]', loc($TemplateObj->Name())); 
-     $SubmitLabel = loc('Update');
+     $SubmitLabel = loc('Save Changes');
     
 }
 if ($TemplateObj->Id()) {

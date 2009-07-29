@@ -3,17 +3,15 @@
 use strict;
 use warnings;
 
-use Test::More;
 use Test::Deep;
 use File::Spec;
-use RT::Test ();
+use RT::Test tests => 4, tests => 4;
 BEGIN {
     my $shredder_utils = RT::Test::get_relocatable_file('utils.pl',
         File::Spec->curdir());
     require $shredder_utils;
 }
 
-plan tests => 4;
 
 use_ok('RT::Shredder::Plugin');
 my $plugin_obj = new RT::Shredder::Plugin;

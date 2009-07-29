@@ -106,7 +106,7 @@
 % if (my $TxnCFs = $Ticket->TransactionCustomFields) {
 %    while (my $CF = $TxnCFs->Next()) {
 <tr>
-<td class="label"><% $CF->Name %>:</td>
+<td class="label"><% loc($CF->Name) %>:</td>
 <td class="entry"><& /Elements/EditCustomField, 
     CustomField => $CF, 
     NamePrefix => "Object-RT::Transaction--CustomField-"

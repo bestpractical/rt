@@ -68,10 +68,9 @@ if ($ChartStyle eq 'pie') {
 
 use RT::Report::Tickets;
 my $tix = RT::Report::Tickets->new( $session{'CurrentUser'} );
-$tix->FromSQL( $Query );
-my $count_name = $tix->Column( FUNCTION => 'COUNT', FIELD => 'id' );
-$tix->GroupBy( FIELD => $PrimaryGroupBy );
-my $value_name = $tix->Column( FIELD => $PrimaryGroupBy );
+my ($count_name, $value_name) = $tix->SetupGroupings(
+    Query => $Query, GroupBy => $PrimaryGroupBy,
+);
 
 my $chart = $chart_class->new( 600 => 400 );
 

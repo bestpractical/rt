@@ -1,0 +1,16 @@
+<%ARGS>
+$Prefs => '/Prefs/Other.html'
+</%ARGS>
+<div id="quick-personal">
+    <span class="hide"><a href="#skipnav"><&|/l&>Skip Menu</&></a> | </span>
+% if ($session{'CurrentUser'}->Name) {
+    <&|/l, "<span>".$session{'CurrentUser'}->Name."</span>" &>Logged in as [_1]</&>
+%     if ( $session{'CurrentUser'}->HasRight( Right => 'ModifySelf', Object => $RT::System ) ) {
+    | <a href="<%RT->Config->Get('WebPath')%><%$Prefs%>"><&|/l&>Preferences</&></a>
+%     }
+% } else {
+    <&|/l&>Not logged in.</&>
+% }
+% $m->callback( %ARGS );
+<& Logout, %ARGS &>
+</div>

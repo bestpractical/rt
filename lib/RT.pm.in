@@ -570,18 +570,20 @@ sub Plugins {
 
 Takes optional subdir (e.g. po, lib, etc.) and return plugins' dirs that exist.
 
+This code chacke plugins names or anything else and required when main config
+is loaded to load plugins' configs.
+
 =cut
 
 sub PluginDirs {
     my $self = shift;
     my $subdir = shift;
 
+    require RT::Plugin;
+
     my @res;
     foreach my $plugin (grep $_, RT->Config->Get('Plugins')) {
-        my $plugindir = $plugin;
-        $plugindir =~ s/::/-/g;
-        my $path = $RT::LocalPluginPath. "/$plugindir";
-        $path .= "/$subdir" if defined $subdir && length $subdir;
+        my $path = RT::Plugin->new( name => $plugin )->Path( $subdir );
         next unless -d $path;
         push @res, $path;
     }

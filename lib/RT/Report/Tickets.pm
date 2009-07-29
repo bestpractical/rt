@@ -119,14 +119,31 @@ sub Label {
     return $self->CurrentUser->loc($field);
 }
 
+sub SetupGroupings {
+    my $self = shift;
+    my %args = (Query => undef, GroupBy => undef, @_);
+
+    $self->FromSQL( $args{'Query'} );
+    my @group_by = ref( $args{'GroupBy'} )? @{ $args{'GroupBy'} } : ($args{'GroupBy'});
+    $self->GroupBy( map { {FIELD => $_} } @group_by );
+
+    # UseSQLForACLChecks may add late joins
+    my $joined = ($self->_isJoined || RT->Config->Get('UseSQLForACLChecks')) ? 1 : 0;
+
+    my @res;
+    push @res, $self->Column( FUNCTION => ($joined? 'DISTINCT COUNT' : 'COUNT'), FIELD => 'id' );
+    push @res, map $self->Column( FIELD => $_ ), @group_by;
+    return @res;
+}
+
 sub GroupBy {
     my $self = shift;
-    my %args = ref $_[0]? %{ $_[0] }: (@_);
+    my @args = ref $_[0]? @_ : { @_ };
 
-    $self->{'_group_by_field'} = $args{'FIELD'};
-    %args = $self->_FieldToFunction( %args );
+    @{ $self->{'_group_by_field'} ||= [] }, map $_->{'FIELD'}, @args;
+    $_ = { $self->_FieldToFunction( %$_ ) } foreach @args;
 
-    $self->SUPER::GroupBy( \%args );
+    $self->SUPER::GroupBy( @args );
 }
 
 sub Column {
@@ -168,16 +185,17 @@ sub _FieldToFunction {
 
     if ($field =~ /^(.*)(Daily|Monthly|Annually)$/) {
         my ($field, $grouping) = ($1, $2);
+        my $alias = $args{'ALIAS'} || 'main';
         # Pg 8.3 requires explicit casting
         $field .= '::text' if RT->Config->Get('DatabaseType') eq 'Pg';
         if ( $grouping =~ /Daily/ ) {
-            $args{'FUNCTION'} = "SUBSTR($field,1,10)";
+            $args{'FUNCTION'} = "SUBSTR($alias.$field,1,10)";
         }
         elsif ( $grouping =~ /Monthly/ ) {
-            $args{'FUNCTION'} = "SUBSTR($field,1,7)";
+            $args{'FUNCTION'} = "SUBSTR($alias.$field,1,7)";
         }
         elsif ( $grouping =~ /Annually/ ) {
-            $args{'FUNCTION'} = "SUBSTR($field,1,4)";
+            $args{'FUNCTION'} = "SUBSTR($alias.$field,1,4)";
         }
     } elsif ( $field =~ /^(?:CF|CustomField)\.{(.*)}$/ ) { #XXX: use CFDecipher method
         my $cf_name = $1;
@@ -252,7 +270,7 @@ for, do that.
 
 sub AddEmptyRows {
     my $self = shift;
-    if ( $self->{'_group_by_field'} eq 'Status' ) {
+    if ( @{ $self->{'_group_by_field'} || [] } == 1 && $self->{'_group_by_field'}[0] eq 'Status' ) {
         my %has = map { $_->__Value('Status') => 1 } @{ $self->ItemsArrayRef || [] };
 
         foreach my $status ( grep !$has{$_}, RT::Queue->new($self->CurrentUser)->StatusArray ) {

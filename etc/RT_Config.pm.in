@@ -244,7 +244,7 @@ RT will silently drop attachments longer than C<MaxAttachmentSize>.
 
 Set($DropLongAttachments , undef);
 
-=item C<$ParsenewMessageForTicketCcs>
+=item C<$ParseNewMessageForTicketCcs>
 
 If C<$ParseNewMessageForTicketCcs> is true, RT will attempt to divine
 Ticket 'Cc' watchers from the To and Cc lines of incoming messages
@@ -849,7 +849,10 @@ Set($LogoURL, RT->Config->Get('WebImagesURL') . "bplogo.gif");
 
 =item C<$WebNoAuthRegex>
 
-What portion of RT's URLspace should not require authentication.
+What portion of RT's URL space should not require authentication.
+
+This is mostly for extension and doesn't mean RT will work without
+login if you change it.
 
 =cut
 

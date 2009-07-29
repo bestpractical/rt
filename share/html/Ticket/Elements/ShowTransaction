@@ -59,7 +59,7 @@
 % my $desc = $Transaction->BriefDescription;
 % $m->callback( text => \$desc, Transaction => $Transaction, %ARGS, CallbackName => 'ModifyDisplay' );
     <span class="description">
-      <% $Transaction->CreatorObj->Name %> - <% $TicketString %> <% $desc %>
+      <& /Elements/ShowUser, User => $Transaction->CreatorObj &> - <% $TicketString %> <% $desc %>
     </span>
 % $m->callback( TimeTaken => \$TimeTaken, Transaction => $Transaction, %ARGS, CallbackName => 'ModifyTimeTaken' );
     <span class="time-taken"><% $TimeTaken %></span>

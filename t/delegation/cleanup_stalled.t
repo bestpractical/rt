@@ -12,12 +12,10 @@ use warnings;
 # The case where the "parent" delegated ACE is removed is handled in
 # the embedded regression tests in lib/RT/ACE_Overlay.pm .
 
-use Test::More; 
-plan tests => 98;
 
 use RT;
 
-use RT::Test;
+use RT::Test tests => 98;
 
 my ($u1, $u2, $g1, $g2, $g3, $pg1, $pg2, $ace, @groups, @users, @principals);
 @groups = (\$g1, \$g2, \$g3, \$pg1, \$pg2);

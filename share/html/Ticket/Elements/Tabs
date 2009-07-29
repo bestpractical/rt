@@ -314,6 +314,11 @@ if ($has_query) {
         title => loc('Bulk Update'),
     };
 
+    $tabs->{"k"} = {
+        path  => "Search/Chart.html$args",
+        title => loc('Graph'),
+    };
+
 }
 
 foreach my $searchtab ( keys %{$searchtabs} ) {

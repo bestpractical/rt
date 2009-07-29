@@ -72,12 +72,19 @@ User name mask.
 
 Email address mask.
 
+=head2 member_of - group identifier
+
+Using this option users that are members of a particular group can
+be selected for deletion. Identifier is name of user defined group
+or id of a group, as well C<Privileged> or <unprivileged> can used
+to select people from system groups.
+
 =head2 replace_relations - user identifier
 
-When you delete user there is could be minor links to him in RT DB.
+When you delete user there are could be minor links to him in RT DB.
 This option allow you to replace this links with link to other user.
 This links are Creator and LastUpdatedBy, but NOT any watcher roles,
-this mean that if user is watcher(Requestor, Owner,
+this means that if user is watcher(Requestor, Owner,
 Cc or AdminCc) of the ticket or queue then link would be deleted.
 
 This argument could be user id or name.
@@ -87,15 +94,21 @@ This argument could be user id or name.
 If true then plugin looks for users who are not watchers (Owners,
 Requestors, Ccs or AdminCcs) of any ticket.
 
-B<Note> that found users still may have relations with other objects
-and you most probably want to use C<replace_relations> option.
+Before RT 3.8.5, users who were watchers of deleted tickets B<will be deleted>
+when this option was enabled. Decision has been made that it's not correct
+and you should either shred these deleted tickets, change watchers or
+explicitly delete user by name or email.
+
+Note that found users still B<may have relations> with other objects,
+for example via Creator or LastUpdatedBy fields, and you most probably
+want to use C<replace_relations> option.
 
 =cut
 
 sub SupportArgs
 {
     return $_[0]->SUPER::SupportArgs,
-           qw(status name email replace_relations no_tickets);
+           qw(status name email member_of replace_relations no_tickets);
 }
 
 sub TestArgs
@@ -114,6 +127,20 @@ sub TestArgs
     }
     if( $args{'name'} ) {
         $args{'name'} = $self->ConvertMaskToSQL( $args{'name'} );
+    }
+    if( $args{'member_of'} ) {
+        my $group = RT::Group->new( $RT::SystemUser );
+        if ( $args{'member_of'} =~ /^(Everyone|Privileged|Unprivileged)$/i ) {
+            $group->LoadSystemInternalGroup( $args{'member_of'} );
+        }
+        else {
+            $group->LoadUserDefinedGroup( $args{'member_of'} );
+        }
+        unless ( $group->id ) {
+            return (0, "Couldn't load group '$args{'member_of'}'" );
+        }
+        $args{'member_of'} = $group->id;
+
     }
     if( $args{'replace_relations'} ) {
         my $uid = $args{'replace_relations'};
@@ -164,7 +191,9 @@ sub Run
                   VALUE => $self->{'opt'}{'name'},
                 );
     }
-
+    if( $self->{'opt'}{'member_of'} ) {
+        $objs->MemberOfGroup( $self->{'opt'}{'member_of'} );
+    }
     if( $self->{'opt'}{'no_tickets'} ) {
         return $self->FilterWithoutTickets(
             Shredder => $args{'Shredder'},
@@ -219,6 +248,7 @@ sub FilterWithoutTickets {
 sub _WithoutTickets {
     my ($self, $user) = @_;
     my $tickets = RT::Tickets->new( $RT::SystemUser );
+    $tickets->{'allow_deleted_search'} = 1;
     $tickets->FromSQL( 'Watcher.id = '. $user->id );
     # HACK: we may use Count method which counts all records
     # that match condtion, but we really want to know only that

@@ -78,6 +78,16 @@
 </td><td>
 <&|/l&>Email</&>
 </td></tr>
+% my $counter = 4;
+% for my $email (@extras) {
+% $counter++;
+<tr><td>
+<&/Elements/SelectWatcherType, Name => "WatcherTypeEmail".$counter &>
+</td><td>
+<input type="hidden" name="WatcherAddressEmail<%$counter%>" value="<%$email->address%>">
+<%$email->format%>
+</td></tr>
+% }
 <tr><td>
 <&/Elements/SelectWatcherType, Name => "WatcherTypeEmail1" &>
 </td><td>
@@ -110,6 +120,12 @@ if ($GroupString) {
     $Groups->Limit(FIELD => $GroupField, VALUE => $GroupString, OPERATOR => $GroupOp);
      }
 
+my @extras;
+for my $addr ( values %{$Ticket->TransactionAddresses} ) {
+    push @extras, $addr unless ($Ticket->IsWatcher( Email => $addr->address));
+}
+
+
 </%INIT>
 
 <%ARGS>
@@ -120,4 +136,5 @@ $GroupField => 'Name'
 $GroupOp => '='
 $GroupString => undef
 $PrivilegedOnly => undef
+$Ticket => undef
 </%ARGS>

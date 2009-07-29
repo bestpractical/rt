@@ -1,7 +1,6 @@
 #!/usr/bin/perl
 
-use Test::More tests => 21;
-use RT::Test;
+use RT::Test tests => 21;
 RT::Init();
 
 use strict;

@@ -90,7 +90,7 @@ if ( $DashboardObj and $DashboardObj->Id ) {
 }
 else {
     $subtabs->{"a_Select"} = {
-        title => loc('Select dashboard'),
+        title => loc('Select'),
         path  => "Dashboards/index.html",
     };
 
@@ -99,7 +99,7 @@ else {
 
     if (@objects) {
         $subtabs->{"b_Create"} = {
-            title     => loc('New dashboard'),
+            title     => loc('New'),
             path      => "Dashboards/Modify.html?Create=1",
             separator => 1,
         };

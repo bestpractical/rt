@@ -3,8 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 18;
-use RT::Test;
+use RT::Test tests => 18;
 use RT::Ticket;
 use RT::CustomField;
 

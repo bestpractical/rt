@@ -95,9 +95,11 @@ See also L</ComponentRoot>, L</PoDir> and other shortcut methods.
 =cut
 
 sub Path {
-    my $self = shift;
-    my $sub  = shift;
-    return $self->_BasePath ."/$sub";
+    my $self   = shift;
+    my $subdir = shift;
+    my $res = $self->_BasePath;
+    $res .= "/$subdir" if defined $subdir && length $subdir;
+    return $res;
 }
 
 sub _BasePath {

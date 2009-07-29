@@ -3,10 +3,9 @@
 use warnings;
 use strict;
 
-use Test::More tests => 7;
 
 use RT;
-use RT::Test;
+use RT::Test tests => 7;
 
 
 

@@ -1,10 +1,9 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 7;
 
 use RT;
-use RT::Test;
+use RT::Test tests => 7;
 
 
 # {{{ test scrip ordering based on description

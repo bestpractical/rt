@@ -1,8 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use Test::More tests => 14;
-use RT::Test;
+use RT::Test tests => 14;
 
 use constant LogoFile => $RT::MasonComponentRoot .'/NoAuth/images/bplogo.gif';
 use constant FaviconFile => $RT::MasonComponentRoot .'/NoAuth/images/favicon.png';

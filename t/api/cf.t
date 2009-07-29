@@ -2,9 +2,8 @@
 
 use strict;
 use warnings FATAL => 'all';
-use Test::More tests => 139;
 
-use RT::Test;
+use RT::Test tests => 139;
 
 # Before we get going, ditch all object_cfs; this will remove 
 # all custom fields systemwide;

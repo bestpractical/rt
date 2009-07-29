@@ -3,10 +3,9 @@
 use strict;
 use warnings;
 
-use Test::More  tests => '17';
 
 use RT;
-use RT::Test;
+use RT::Test tests => '17';
 
 
 # validate that when merging two tickets, the comments from both tickets

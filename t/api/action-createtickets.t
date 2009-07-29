@@ -1,10 +1,8 @@
 
 use strict;
 use warnings;
-use Test::More; 
-plan tests => 49;
 use RT;
-use RT::Test;
+use RT::Test tests => 49;
 
 
 {
@@ -82,7 +80,7 @@ unlike ($dependson->Subject, qr/{/, "The subject doesn't have braces in it. that
 is ($t->ReferredToBy->Count,1, "It's only referred to by one other ticket");
 is ($t->ReferredToBy->First->BaseObj->Id,$t->DependsOn->First->TargetObj->Id, "The same ticket that depends on it refers to it.");
 use RT::Action::CreateTickets;
-my $action =  RT::Action::CreateTickets->new( CurrentUser => $RT::SystemUser);;
+my $action =  RT::Action::CreateTickets->new( CurrentUser => $RT::SystemUser);
 
 # comma-delimited templates
 my $commas = <<"EOF";

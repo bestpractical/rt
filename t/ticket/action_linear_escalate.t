@@ -3,9 +3,8 @@
 use strict;
 use warnings;
 
-use Test::More tests => 17;
 use RT;
-use RT::Test;
+use RT::Test tests => 17;
 
 my ($id, $msg);
 my $RecordTransaction;

@@ -2,8 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test nodata => 1;
-use Test::More tests => 34;
+use RT::Test nodata => 1, tests => 34;
 
 require_ok("RT");
 require_ok("RT::Test");

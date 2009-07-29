@@ -183,4 +183,25 @@ sub callback {
 }
 }
 
+=head2 request_path
+
+Returns path of the request.
+
+Very close to C<< $m->request_comp->path >>, but if called in a dhandler returns
+path of the request without dhandler name, but with dhandler arguments instead.
+
+=cut
+
+sub request_path {
+    my $self = shift;
+
+    my $path = $self->request_comp->path;
+    # disabled dhandlers, not RT case, but anyway
+    return $path unless my $dh_name = $self->dhandler_name;
+    # not a dhandler
+    return $path unless substr($path, -length("/$dh_name")) eq "/$dh_name";
+    substr($path, -length $dh_name) = $self->dhandler_arg;
+    return $path;
+}
+
 1;

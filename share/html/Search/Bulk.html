@@ -183,7 +183,7 @@ $cfs->LimitToQueue($_) for keys %$seen_queues;
 </tr>
 % while (my $cf = $cfs->Next()) {
 <tr>
-<td class="label"><%$cf->Name%><br />
+<td class="label"><% loc($cf->Name) %><br />
 <em>(<%$cf->FriendlyType%>)</em></td>
 % my $rows = 5;
 % my @add = (NamePrefix => 'Bulk-Add-CustomField-', CustomField => $cf, Rows => $rows, Multiple => ($cf->MaxValues ==1 ? 0 : 1) , Cols => 25);

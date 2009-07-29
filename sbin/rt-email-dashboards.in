@@ -149,6 +149,7 @@ while (defined(my $user = $Users->Next)) {
     # look through this user's subscriptions, are any supposed to be generated
     # right now?
     for my $subscription ($user->Attributes->Named('Subscription')) {
+        my $counter = $subscription->SubValue('Counter') || 0;
 
         if (!$opts{all}) {
             debug "Checking against subscription with frequency [_1], hour [_2], dow [_3], dom [_4]",
@@ -163,10 +164,9 @@ while (defined(my $user = $Users->Next)) {
             # if weekly, correct day of week?
             if ( $subscription->SubValue('Frequency') eq 'weekly' ) {
                 next if $subscription->SubValue('Dow') ne $dow;
-                my $counter = $subscription->SubValue('Counter') || 0;
                 my $fow       = $subscription->SubValue('Fow') || 1;
                 if ( $counter % $fow ) {
-                    $subscription->SetSubValues( Counter => $counter+1 )
+                    $subscription->SetSubValues( Counter => $counter + 1 )
                       unless $opts{'dryrun'};
                     next;
                 }
@@ -191,7 +191,7 @@ while (defined(my $user = $Users->Next)) {
         }
         else {
             $subscription->SetSubValues(
-                Counter => $subscription->SubValue('Counter') + 1 )
+                Counter => $counter + 1 )
               unless $opts{'dryrun'};
         }
     }

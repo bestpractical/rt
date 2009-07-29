@@ -1,10 +1,8 @@
 
 use strict;
 use warnings;
-use Test::More; 
-plan tests => 87;
 use RT;
-use RT::Test;
+use RT::Test tests => 87;
 
 
 {
@@ -51,7 +49,7 @@ ok(my ($cfv, $cfm) =$t->AddCustomFieldValue(Field => $testcf->Id,
 isnt($cfv , 0, "Custom field creation didn't return an error: $cfm");
 is($t->CustomFieldValues($testcf->Id)->Count , 1);
 ok($t->CustomFieldValues($testcf->Id)->First &&
-    $t->CustomFieldValues($testcf->Id)->First->Content eq 'Value1');;
+    $t->CustomFieldValues($testcf->Id)->First->Content eq 'Value1');
 
 ok(my ($cfdv, $cfdm) = $t->DeleteCustomFieldValue(Field => $testcf->Id,
                         Value => 'Value1'));
@@ -132,9 +130,9 @@ ok ($add_id, "Add succeeded: ($add_msg)");
 ok(my $bob = RT::User->new($RT::SystemUser), "Creating a bob rt::user");
 $bob->LoadByEmail('bob@fsck.com');
 ok($bob->Id,  "Found the bob rt user");
-ok ($ticket->IsWatcher(Type => 'Requestor', PrincipalId => $bob->PrincipalId), "The ticket actually has bob at fsck.com as a requestor");;
+ok ($ticket->IsWatcher(Type => 'Requestor', PrincipalId => $bob->PrincipalId), "The ticket actually has bob at fsck.com as a requestor");
 ok ( ($add_id, $add_msg) = $ticket->DeleteWatcher(Type =>'Requestor', Email => 'bob@fsck.com'), "Added bob at fsck.com as a requestor");
-ok (!$ticket->IsWatcher(Type => 'Requestor', PrincipalId => $bob->PrincipalId), "The ticket no longer has bob at fsck.com as a requestor");;
+ok (!$ticket->IsWatcher(Type => 'Requestor', PrincipalId => $bob->PrincipalId), "The ticket no longer has bob at fsck.com as a requestor");
 
 
 $group = RT::Group->new($RT::SystemUser);

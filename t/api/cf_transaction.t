@@ -3,12 +3,10 @@
 use warnings;
 use strict;
 use Data::Dumper;
-use Test::More; 
-plan tests => 14;
 
+use RT::Test tests => 14;
 use_ok('RT');
 use_ok('RT::Transactions');
-use RT::Test;
 
 
 my $q = RT::Queue->new($RT::SystemUser);
