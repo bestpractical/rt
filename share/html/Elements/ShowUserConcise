@@ -46,26 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 %# Released under the terms of version 2 of the GNU Public License
-<%INIT>
-if ($User) {
-    my $printable;
-    if ( $User->Privileged ) {
-             $printable = $User->RealName
-          || $User->NickName
-          || $User->Name
-          || $User->EmailAddress;
-    }
-    else {
-             $printable = $User->EmailAddress
-          || $User->Name
-          || $User->RealName
-          || $User->NickName;
-    }
-    $m->out( $m->interp->apply_escapes( $printable, 'h' ) );
-}
-
-</%INIT>
+<% $User->RealName || $User->Name %>\
 <%ARGS>
-$User => undef
-$Address => undef
+$User
 </%ARGS>
