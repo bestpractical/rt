@@ -2,6 +2,7 @@
 @Final = (
     sub {
         $RT::Logger->debug("Going to correct arguments of NotifyGroup actions if you have any");
+        use strict;
 
         my $actions = RT::ScripActions->new( $RT::SystemUser );
         $actions->Limit(
@@ -41,7 +42,7 @@
             my $argument = $action->Argument;
             my $new = '';
             local $@;
-            if ( my $struct = eval { Storable::thaw( $arg ) } ) {
+            if ( my $struct = eval { Storable::thaw( $argument ) } ) {
                 $new = $converter->( $struct );
             } else {
                 $new = join /, /, grep length, split /[^0-9]+/, $argument;
