@@ -563,7 +563,7 @@ sub ForwardTransaction {
 
 =head2 ForwardTicket TICKET, To => '', Cc => '', Bcc => ''
 
-Forwards ticket with all transactions and attachments as 'message/rfc822'.
+Forwards a ticket's Create and Correspond Transactions and their Attachments as 'message/rfc822'.
 
 =cut
 
