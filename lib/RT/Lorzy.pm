@@ -22,7 +22,11 @@ $LCORE->env->set_symbol('Native.Invoke' => LCore::Primitive->new
 $LCORE->env->set_symbol('Str.Eq' => LCore::Primitive->new
                         ( body => sub {
                               return $_[0] eq $_[1];
-                          }));
+                          },
+                          parameters => [ LCore::Parameter->new({ name => 'left', type => 'Str' }),
+                                          LCore::Parameter->new({ name => 'right', type => 'Str' })],
+                          return_type => 'Bool'
+                      ));
 
 $LCORE->env->set_symbol('RT.RuleAction.Prepare' => LCore::Primitive->new
                         ( body => sub {

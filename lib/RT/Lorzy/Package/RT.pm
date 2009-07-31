@@ -11,6 +11,7 @@ sub lcore_defun {
                   transaction => $transaction });
         },
         lazy => 0,
+        return_type => 'Bool',
         parameters => [ LCore::Parameter->new({ name => 'ticket', type => 'RT::Model::Ticket' }),
                         LCore::Parameter->new({ name => 'transaction', type => 'RT::Model::Transaction' }) ],
     ));
