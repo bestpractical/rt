@@ -45,7 +45,9 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+% if ($Table) {
 <table>
+% }
 % while ( my $CustomField = $CustomFields->Next ) {
 % my $Values = $Object->CustomFieldValues( $CustomField->Id );
 % my $count = $Values->Count;
@@ -68,7 +70,9 @@
     </td>
   </tr>
 % }
+% if ($Table) {
 </table>
+% }
 <%INIT>
 $m->callback( CallbackName => 'MassageCustomFields', CustomFields => $CustomFields );
 
@@ -111,4 +115,5 @@ my $print_value = sub {
 <%ARGS>
 $Object => undef
 $CustomFields => $Object->CustomFields
+$Table => 1
 </%ARGS>
