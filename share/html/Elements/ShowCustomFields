@@ -70,7 +70,6 @@
 % }
 </table>
 <%INIT>
-my $CustomFields = $Object->CustomFields;
 $m->callback( CallbackName => 'MassageCustomFields', CustomFields => $CustomFields );
 
 my $print_value = sub {
@@ -111,4 +110,5 @@ my $print_value = sub {
 </%INIT>
 <%ARGS>
 $Object => undef
+$CustomFields => $Object->CustomFields
 </%ARGS>
