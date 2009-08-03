@@ -3544,7 +3544,7 @@ sub CustomFieldLookupType {
 
 This method returns a list of objects for which a user's rights also apply
 to this ticket. Generally, this is only the ticket's queue, but some RT 
-extensions may make other objects availalbe too.
+extensions may make other objects available too.
 
 This method is called from L<RT::Principal/HasRight>.
 
