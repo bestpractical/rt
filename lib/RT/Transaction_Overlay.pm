@@ -1199,4 +1199,27 @@ sub _CacheConfig {
      'cache_for_sec'  => 6000,
   }
 }
+
+
+=head2 ACLEquivalenceObjects
+
+This method returns a list of objects for which a user's rights also apply
+to this Transaction.
+
+This currently only applies to Transaction Custom Fields on Tickets, so we return
+the Ticket's Queue and the Ticket.
+
+This method is called from L<RT::Principal/HasRight>.
+
+=cut
+
+sub ACLEquivalenceObjects {
+    my $self = shift;
+
+    return unless $self->ObjectType eq 'RT::Ticket';
+    my $object = $self->Object;
+    return $object,$object->QueueObj;
+
+}
+
 1;
