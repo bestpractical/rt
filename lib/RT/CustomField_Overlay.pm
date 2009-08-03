@@ -384,7 +384,6 @@ sub Values {
 
 Create a new value for this CustomField.  Takes a paramhash containing the elements Name, Description and SortOrder
 
-
 =cut
 
 sub AddValue {
@@ -479,7 +478,7 @@ sub Types {
 # }}}
 
 # {{{ IsSelectionType
- 
+
 =head2 IsSelectionType 
 
 Retuns a boolean value indicating whether the C<Values> method makes sense
@@ -776,7 +775,6 @@ Takes a boolean.
 
 Set this custom field's type and maximum values as a composite value
 
-
 =cut
 
 sub SetTypeComposite {
@@ -861,6 +859,8 @@ my @FriendlyObjectTypes = (
 );
 
 =head2 FriendlyTypeLookup
+
+Returns a localized description of the type of this custom field
 
 =cut
 
@@ -1226,8 +1226,6 @@ the current user has the right to see this custom field.
 With two arguments, attemptes to set the relevant template value.
 
 =cut
-
-
 
 sub _URLTemplate {
     my $self          = shift;
