@@ -21,10 +21,10 @@ RuleBuilder.functions = {
 
 RuleBuilder.expressions = [
     { expression: 'ticket',
-      type: 'RT::Model::Ticket',
+      type: 'RT::Model::Ticket'
     },
     { expression: 'transaction',
-      type: 'RT::Model::Transaction',
+      type: 'RT::Model::Transaction'
     }
 ];
 
@@ -33,10 +33,10 @@ RuleBuilder.prototype.init = function () {
     var ebuilder = jQuery(sel);
     var that = this;
 
-    jQuery._div({class: 'application'})
+    jQuery._div({'class': 'application'})
             ._h3_().text("New Expression")
-            ._div_({class: 'application-function'})
-            ._div_({class: 'application-params'})
+            ._div_({'class': 'application-function'})
+           ._div_({'class': 'application-params'})
           .div_()
         .appendTo(ebuilder);
 
@@ -66,7 +66,7 @@ RuleBuilder.prototype.update_expressions = function() {
 
     jQuery('div.expressions', ebuilder).remove();
 
-    jQuery._div({class: 'expressions'})
+    jQuery._div({'class': 'expressions'})
             ._h3_().text("Current Expressions")
           .div_()
         .appendTo(ebuilder);
@@ -75,9 +75,9 @@ RuleBuilder.prototype.update_expressions = function() {
 
     jQuery.each(this.expressions,
                 function(idx, val) {
-                    jQuery._div({class: 'expression ret_'+val.type})
-                            ._span_({ class: 'expression-text' }).text(val.expression)
-                            ._span_({ class: 'type' }).text(val.type)
+                    jQuery._div({'class': 'expression ret_'+val.type})
+                            ._span_({ 'class': 'expression-text' }).text(val.expression)
+                            ._span_({ 'class': 'type' }).text(val.type)
                           .div_().click(function(e) {
                         if (that.current_application_param != null) {
                             if (val.type != 
