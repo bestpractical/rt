@@ -308,9 +308,10 @@ nomrally, we need to do it early in BEGIN block
 sub init_jifty {
     require Jifty;
     Jifty->new;
+}
 
     Jifty->web->add_javascript(
-        qw( titlebox-state.js util.js ahah.js fckeditor.js list.js class.js
+        qw( titlebox-state.js util.js ahah.js fckeditor.js list.js
         combobox.js  cascaded.js rulebuilder.js jquery.createdomnodes.js )
     );
 
@@ -323,7 +324,6 @@ sub init_jifty {
             );
         },
     );
-}
 
 =head2 local_path
 
