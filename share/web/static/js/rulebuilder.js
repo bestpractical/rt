@@ -40,6 +40,8 @@ RuleBuilder.prototype.init = function () {
           .div_()
         .appendTo(ebuilder);
 
+    jQuery("#add-expression").appendTo(ebuilder);
+
     ebuilder.append('<h3>Functions</h3>');
     ebuilder.append('<div class="functions">');
     jQuery.each(this.functions,
