@@ -46,7 +46,7 @@ RuleBuilder.prototype.init = function () {
     ebuilder.append('<div class="functions">');
     jQuery.each(this.functions,
                 function(key, val) {
-                    ebuilder.append('<div class="function ret_'+val.return_type+'"><span class="function_name">'+key+'</span> <span class="type">'+val.return_type+'</span></div>');
+                    ebuilder.append('<div class="function ret_'+val.return_type+'"><span class="function-name">'+key+'</span> <span class="return-type">'+val.return_type+'</span></div>');
                 });
     ebuilder.append('</div>');
 
@@ -54,7 +54,7 @@ RuleBuilder.prototype.init = function () {
 
     jQuery(this.sel+' div.function').click(
         function(e) {
-            var func_name = jQuery('span.function_name', this).text();
+            var func_name = jQuery('span.function-name', this).text();
             that.current_application = func_name;
             that.update_application();
         });

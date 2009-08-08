@@ -1,6 +1,18 @@
-div.application_params span.param-placeholder,
+div.application-params span.param-placeholder,
+div.function span.return-type,
 div.expression span.type {
   color:#555555;
   font-style:italic;
 }
 
+div.application-params span.param-placeholder,
+div.function span.return-type {
+  background-color:lightBlue;
+  border:2px solid blue;
+}
+
+div.application-params span.param-placeholder {
+  background-color:pink;
+  border:1px solid red;
+  padding:0.5em;
+}
