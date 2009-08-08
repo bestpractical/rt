@@ -1,2 +1,28 @@
 * lorzy code improvements:  control flow handling like return, exception
 * test and implement ordering of rules
+
+
+
+Possible rule workflows:
+
+
+On ticket creation, send email to the user who is the requestor of the ticket
+using a particular template.
+
+On ticket correspondence, if the requestor of the ticket wasn't the sender,
+send a copy to him.
+
+On ticket correspondence, send email to all members of the group
+"adminccs of ticket $ticket->id."
+
+On ticket correspondence, send email to jesse@example.com
+
+On ticket correspondence, add a copy of the correspondence as a comment
+on each ticket which depends on ticket $id
+
+On ticket creation, if the ticket subject matches /emergency/, send a pager
+email to sysadmin@example.com
+
+On ticket update, if the ticket's custom field "Foo" has a value that is in the list ("A", "B", "C"), set its status to 'stalled'.
+
+On ticket update, if its custom field "Foo" has a value that is > 20, create a new ticket owned by the ticket requestor's manager in the approvals queue which the original ticket depends on, copying various bits of ticket metadata. It subject should be "Approval for '$ticket->subject'"
