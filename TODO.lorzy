@@ -26,3 +26,25 @@ email to sysadmin@example.com
 On ticket update, if the ticket's custom field "Foo" has a value that is in the list ("A", "B", "C"), set its status to 'stalled'.
 
 On ticket update, if its custom field "Foo" has a value that is > 20, create a new ticket owned by the ticket requestor's manager in the approvals queue which the original ticket depends on, copying various bits of ticket metadata. It subject should be "Approval for '$ticket->subject'"
+
+on ticket creation
+	If there is no owner, figure out which possible owner of tickets in this queue has the fewest open tickets and assign it to him.
+
+
+on ticket creation
+	If there is no owner, figure out which possible owner of tickets in this queue has the fewest minutes of work left on open tickets and assign it to him.
+
+on ticket creation
+	if the subject matches /mac/, assign to a member of the mac group
+	if the subject matches /windows/, assign to a member of the windows group
+	if the subject matches /linux/, assign to a member of the sysadmin group
+	if the subject matches /solaris/, assign to a member of the sysadmin group
+	if the subject matches /VAX/, 
+		send a note back to the requestor saying we don't do VMS
+						and resolve the ticket
+
+
+on ticket resolve,
+	if this ticket has never been resolved before, send email
+		to the requestor telling them their ticket has been resolved.
+
