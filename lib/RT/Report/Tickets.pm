@@ -140,7 +140,7 @@ sub GroupBy {
     my $self = shift;
     my @args = ref $_[0]? @_ : { @_ };
 
-    @{ $self->{'_group_by_field'} ||= [] }, map $_->{'FIELD'}, @args;
+    @{ $self->{'_group_by_field'} ||= [] } = map $_->{'FIELD'}, @args;
     $_ = { $self->_FieldToFunction( %$_ ) } foreach @args;
 
     $self->SUPER::GroupBy( @args );
