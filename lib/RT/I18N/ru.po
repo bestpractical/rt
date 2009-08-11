@@ -2876,7 +2876,7 @@ msgstr ""
 
 #: lib/RT/Config.pm:251
 msgid "Home page refresh interval"
-msgstr ""
+msgstr "Интервал обновления домашней страницы"
 
 #: share/html/Elements/RT__User/ColumnMap:86
 msgid "HomePhone"
@@ -5081,7 +5081,7 @@ msgstr "Обновлять"
 #: share/html/Elements/Refresh:59
 #. ($value/60)
 msgid "Refresh this page every %1 minutes."
-msgstr "Обновлять эту страницу каждые %1 минут."
+msgstr "Обновлять эту страницу каждые %quant(%1,минута,минуты,минут)."
 
 #: lib/RT/Transaction_Overlay.pm:839
 #. ($ticket->Subject)
@@ -5402,7 +5402,7 @@ msgstr "Сгруппировать результаты поиска по %1"
 
 #: lib/RT/Config.pm:221
 msgid "Search results refresh interval"
-msgstr ""
+msgstr "Интервал обновления страницы результатов поиска"
 
 #: share/html/Search/Simple.html:61
 msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history for any word by typing <b>fulltext:<i>word</i></b>."
