@@ -44,7 +44,93 @@ on ticket creation
 						and resolve the ticket
 
 
+
+		when =~ mac:		$ticket->set_owner('bob');
+		when =~ pc:		$ticket->set_owner('joe');
+		when =~ vax:	$ticket->set_status('resolved'); send_email($ticket->requestors, "ha ha. no");
+
+
+	if
+	
 on ticket resolve,
 	if this ticket has never been resolved before, send email
 		to the requestor telling them their ticket has been resolved.
 
+
+rules and language features we need
+
+
+	let 
+
+	use variable
+
+	if/elsif/else
+
+	foreach
+
+	string match
+
+	integer operations
+
+	arithmetic
+
+	logical operators
+
+	on transaction batch - when all other rules complete?
+
+	"if ticket has no unresolved dependencies" 
+
+	when ticket's status is set to rejected
+
+	if status is in the list of {inactive,active} statuses
+
+	find tickets:
+		takes ticketsql?
+		takes "template" to match against?
+
+	filter transactions by "template".
+		"grep" + accessors
+
+
+	ticket has unresolved dependencies
+		by type"
+
+	set status
+
+
+	find users
+	get watchers by type
+
+
+	add correspondence
+			takes a ticket id
+			might take a template
+			might take a block of text
+			
+	add comment
+		see "add correspondence"
+
+	find tickets
+
+	call other lambda by name?
+
+	run rule action:
+		notify "set of people" with template "template"
+	
+
+	"send email"
+		to
+		cc
+		bcc
+		subject
+		body
+		attachments
+		template
+		extra headers
+		encryption
+
+	create a ticket
+
+
+
+accessors "for everything"

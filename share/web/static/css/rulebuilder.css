@@ -4,15 +4,89 @@ div.expression span.type {
   color:#555555;
   font-style:italic;
 }
-
 div.application-params span.param-placeholder,
 div.function span.return-type {
   background-color:lightBlue;
   border:2px solid blue;
+
 }
 
-div.application-params span.param-placeholder {
-  background-color:pink;
-  border:1px solid red;
+.signature .parameter {
+	border: 1px solid red;
+}
+
+.expression .type {
+	background-color: lightGreen;
+	border: 2px solid green;
+}
+
+.signature .parameter {
+	background-color: lightGreen;
+	border: 2px solid green;
+}
+
+div.application-params span.param-placeholder,
+div.function span.return-type, 
+.signature .parameter,
+.expression .type {
+	font-size: 0.8em;
+  display: inline-block;
+  text-align: left;
+  padding: 0.25em;
+  padding-left: 0.5em;
+  margin-right: 0.5em;
+  width: 8em;
+  overflow: hidden;
+}
+
+
+div#body {
+	margin-left: 1em;
+
+}
+
+#expression-filter input[type=text] {
+	display: block;
+}
+
+#expressionbuilder {
+}
+.application {
+	position: relative;
+	top: -7em;
+	left: 20em;
+
+}
+		
+.library {
+	position: relative;
+	top: -5em;
+	left: 1em;
+	width: 15em;
+	padding: 0.5em;
+	background: #ccc;
+	-moz-border-radius: 0.5em;
+
+}
+
+
+div.application-params span.param {
   padding:0.5em;
+	background: lightGreen;
+	border 1px solid green;
+
+}
+
+div.application-params span.param-placeholder,
+.application-params .param{
+  background-color: #fcc;
+  border:1px solid red;
+}
+
+div.application-params span.param-placeholder.current {
+	background: #f99;	
+}
+
+.signature {
+	padding-left: 2em;
 }

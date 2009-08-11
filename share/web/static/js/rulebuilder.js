@@ -35,20 +35,22 @@ RuleBuilder.prototype.init = function () {
 
     jQuery._div({'class': 'application'})
             ._h3_().text("New Expression")
-            ._div_({'class': 'application-function'})
-           ._div_({'class': 'application-params'})
+            ._div_({'class': 'application-function function'})
+           ._div_({'class': 'application-params signature'})
           .div_()
         .appendTo(ebuilder);
 
-    jQuery("#add-expression").appendTo(ebuilder);
+    jQuery("#add-expression")
+		.appendTo(jQuery(".application"));
 
-    ebuilder.append('<h3>Functions</h3>');
-    ebuilder.append('<div class="functions">');
+  	ebuilder.append('<div class="functions">');
+    functions_div = jQuery('.functions');
+    functions_div.append('<h3>Functions</h3>');
     jQuery.each(this.functions,
                 function(key, val) {
-                    ebuilder.append('<div class="function ret_'+val.return_type+'"><span class="function-name">'+key+'</span> <span class="return-type">'+val.return_type+'</span></div>');
+                    functions_div.append('<div class="function ret_'+val.return_type+'"> <span class="return-type">'+val.return_type+'</span> <span class="function-name">'+key+'</span>'+render_signature(val.parameters).html() +'</div>');
                 });
-    ebuilder.append('</div>');
+
 
     this.update_expressions();
 
@@ -59,6 +61,23 @@ RuleBuilder.prototype.init = function () {
             that.update_application();
         });
 //    jQuery(this.sel+' div.application').hide();
+	function render_signature(sig) {
+			var content = jQuery._span_({'class': 'outer node we should not need but createdomnodes is broken'});
+			if (!sig) 
+					return content.append()._div_({ 'class': 'signature empty'});
+
+			var innercontent = content.append()._div_({ 'class': 'signature'});
+
+			jQuery.map(sig,
+					function (item) {
+					name = item.name;
+					type = item.type;
+						innercontent.append(content._div({class: 'parameter'})._span_({ 'class': 'name'}).text(name)
+						._span_({ 'class': 'type'}).text(type).div_());
+						
+					});
+			return content;
+	}
 };
 
 RuleBuilder.prototype.update_expressions = function() {
@@ -78,8 +97,8 @@ RuleBuilder.prototype.update_expressions = function() {
     jQuery.each(this.expressions,
                 function(idx, val) {
                     jQuery._div({'class': 'expression ret_'+val.type})
-                            ._span_({ 'class': 'expression-text' }).text(val.expression)
                             ._span_({ 'class': 'type' }).text(val.type)
+                            ._span_({ 'class': 'expression-text' }).text(val.expression)
                           .div_().click(function(e) {
                         if (that.current_application_param != null) {
                             if (val.type != 
