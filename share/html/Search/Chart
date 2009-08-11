@@ -52,8 +52,6 @@ $SecondaryGroupBy => undef
 $ChartStyle => 'bars'
 </%args>
 <%init>
-my @keys;
-my @values;
 my $chart_class;
 use GD;
 use GD::Text;
@@ -122,21 +120,26 @@ my %class = (
 );
 my $class = $class{ $PrimaryGroupBy };
 
+my %data;
 while ( my $entry = $tix->Next ) {
+    my $key;
     if ( $class ) {
         my $q = $class->new( $session{'CurrentUser'} );
         $q->Load( $entry->__Value( $value_name ) );
-        push @keys, $q->Name;
+        $key = $q->Name;
     }
     else {
-        push @keys, $entry->__Value($value_name);
+        $key = $entry->__Value($value_name);
     }
-
-    $keys[-1] ||= loc('(no value)');
+    $key ||= '(no value)';
+    
+    my $value = $entry->__Value( $count_name );
     if ($chart_class eq 'GD::Graph::pie') {
-        $keys[-1] .= " - ". $entry->__Value( $count_name );
+        $key = loc($key) ." - ". $value;
+    } else {
+        $key = loc($key);
     }
-    push @values, $entry->__Value($count_name);
+    $data{ $key } = $value;
 }
 
 # XXX: Convert 1970-01-01 date to the 'Not Set'
@@ -146,23 +149,18 @@ if ( $PrimaryGroupBy =~ /(Daily|Monthly|Annually)$/ ) {
     $re = qr{1970-01-01} if $PrimaryGroupBy =~ /Daily$/;
     $re = qr{1970-01} if $PrimaryGroupBy =~ /Monthly$/;
     $re = qr{1970} if $PrimaryGroupBy =~ /Annually$/;
-    foreach (@keys) {
-        s/^$re/loc('Not Set')/e;
-    }   
+    foreach my $k (keys %data) {
+        my $tmp = $k;
+        $tmp =~ s/^$re/loc('Not Set')/e or next;
+        $data{$tmp} = delete $data{$k};
+    }
 }
 
-unless (@keys && @values) {
-    @keys = ('');
-    @values = (0);
+unless (keys %data) {
+    $data{''} = 0;
 }
 
-my %data;
-my %loc_keys;
-foreach my $key (@keys) { $data{$key} = shift @values; $loc_keys{$key} = loc($key); }
-my @sorted_keys = map { $loc_keys{$_}} sort { $loc_keys{$a} cmp $loc_keys{$b} } keys %loc_keys;
-my @sorted_values = map { $data{$_}} sort { $loc_keys{$a} cmp $loc_keys{$b} } keys %loc_keys;
-
-my $plot = $chart->plot( [ [@sorted_keys], [@sorted_values] ] ) or die $chart->error;
+my $plot = $chart->plot( [ [sort keys %data], [map $data{$_}, sort keys %data] ] ) or die $chart->error;
 $m->comp( 'SELF:Plot', plot => $plot, %ARGS );
 </%init>
 
