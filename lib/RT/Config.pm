@@ -221,13 +221,13 @@ our %META = (
             Description => 'Search results refresh interval',                            #loc
             Values      => [qw(0 120 300 600 1200 3600 7200)],
             ValuesLabel => {
-                0 => "Don't refresh search results.",           #loc_left_pair
-                120 => "Refresh search results every 2 minutes.",
-                300 => "Refresh search results every 5 minutes.",
-                600 => "Refresh search results every 10 minutes.",
-                1200 => "Refresh search results every 20 minutes.",
-                3600 => "Refresh search results every 60 minutes.",
-                7200 => "Refresh search results every 120 minutes.",
+                0 => "Don't refresh search results.",                      #loc
+                120 => "Refresh search results every 2 minutes.",          #loc
+                300 => "Refresh search results every 5 minutes.",          #loc
+                600 => "Refresh search results every 10 minutes.",         #loc
+                1200 => "Refresh search results every 20 minutes.",        #loc
+                3600 => "Refresh search results every 60 minutes.",        #loc
+                7200 => "Refresh search results every 120 minutes.",       #loc
             },  
         },  
     },
@@ -251,13 +251,13 @@ our %META = (
             Description => 'Home page refresh interval',                #loc
             Values      => [qw(0 120 300 600 1200 3600 7200)],
             ValuesLabel => {
-                0 => "Don't refresh home page.",           #loc_left_pair
-                120 => "Refresh home page every 2 minutes.",
-                300 => "Refresh home page every 5 minutes.",
-                600 => "Refresh home page every 10 minutes.",
-                1200 => "Refresh home page every 20 minutes.",
-                3600 => "Refresh home page every 60 minutes.",
-                7200 => "Refresh home page every 120 minutes.",
+                0 => "Don't refresh home page.",                  #loc
+                120 => "Refresh home page every 2 minutes.",      #loc
+                300 => "Refresh home page every 5 minutes.",      #loc
+                600 => "Refresh home page every 10 minutes.",     #loc
+                1200 => "Refresh home page every 20 minutes.",    #loc
+                3600 => "Refresh home page every 60 minutes.",    #loc
+                7200 => "Refresh home page every 120 minutes.",   #loc
             },  
         },  
     },
