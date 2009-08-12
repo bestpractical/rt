@@ -7391,3 +7391,67 @@ msgstr ""
 msgid "yes"
 msgstr ""
 
+# add by hand
+msgid "Don't refresh search results."
+msgstr ""
+
+# add by hand
+msgid "Refresh search results every 2 minutes."
+msgstr ""
+
+# add by hand
+msgid "Refresh search results every 5 minutes."
+msgstr ""
+
+# add by hand
+msgid "Refresh search results every 10 minutes."
+msgstr ""
+
+# add by hand
+msgid "Refresh search results every 20 minutes."
+msgstr ""
+
+# add by hand
+msgid "Refresh search results every 60 minutes."
+msgstr ""
+
+# add by hand
+msgid "Refresh search results every 120 minutes."
+msgstr ""
+
+# add by hand
+msgid "Don't refresh home page."
+msgstr ""
+
+# add by hand
+msgid "Refresh home page every 2 minutes."
+msgstr ""
+
+# add by hand
+msgid "Refresh home page every 5 minutes."
+msgstr ""
+
+# add by hand
+msgid ""
+msgstr ""
+
+# add by hand
+msgid ""
+msgstr ""
+
+# add by hand
+msgid "Refresh home page every 60 minutes."
+msgstr ""
+
+# add by hand
+msgid "Refresh home page every 120 minutes."
+msgstr ""
+
+# add by hand
+msgid "Short usernames"
+msgstr ""
+
+# add by hand
+msgid "Name and email address"
+msgstr ""
+

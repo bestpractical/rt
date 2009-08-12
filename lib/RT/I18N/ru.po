@@ -952,7 +952,7 @@ msgstr "Купить поддержку"
 
 #: share/html/Install/Global.html:56
 msgid "By default, RT will use the timezone of your system.  This lets you set a global default for the display of dates and times in RT.  Your users can choose a different Timezone in their preferences."
-msgstr "По-умолчанию, RT использует системную временную зону. Это позволяет вам установить глобальное умолчание для отображения дат и времен в RT. Ваши пользователи смогут выбирать различные временные зоны в своих настройках."
+msgstr "По умолчанию, RT использует системную временную зону. Это позволяет вам установить глобальное значение для отображения дат и времен в RT. Ваши пользователи смогут выбирать различные временные зоны в своих настройках."
 
 #: lib/RT/Tickets_Overlay.pm:143
 msgid "CCGroup"
@@ -1788,7 +1788,7 @@ msgstr "Настроить параметры БД"
 
 #: share/html/Install/Global.html:48 share/html/Install/Initialize.html:62 share/html/Install/Sendmail.html:63
 msgid "Customize Email Addresses"
-msgstr "Изменение Email'ов"
+msgstr "Изменение Email"
 
 #: share/html/Install/Basics.html:62 share/html/Install/Global.html:66 share/html/Install/Sendmail.html:48
 msgid "Customize Email Configuration"
@@ -1858,7 +1858,7 @@ msgstr "Тип БД"
 
 #: lib/RT/Installer.pm:118
 msgid "Database username for RT"
-msgstr "Имя пользователя для доступа RT к базе даных"
+msgstr "Имя пользователя для доступа RT к базе данных"
 
 #: lib/RT/Config.pm:313
 msgid "Date format"
@@ -2548,7 +2548,7 @@ msgstr "Заполнить параметры"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:81
 msgid "Fill boxes with color using"
-msgstr "Раскрасить в соотвествии с"
+msgstr "Раскрасить в соответствии с"
 
 #: lib/RT/CustomField_Overlay.pm:70
 msgid "Fill in multiple text areas"
@@ -2653,7 +2653,7 @@ msgstr "ПересылатьСообщение"
 #: share/html/Search/Results.html:148
 #. ($ticketcount)
 msgid "Found %quant(%1,ticket)"
-msgstr "Найдено %quant(%1,ticket)"
+msgstr "Найдено: %quant(%1,заявка,заявки,заявок)"
 
 #: lib/RT/Record.pm:930
 msgid "Found Object"
@@ -2872,7 +2872,7 @@ msgstr "История пользователя %1"
 
 #: share/html/Elements/DashboardTabs:34
 msgid "Home"
-msgstr ""
+msgstr "В начало"
 
 #: lib/RT/Config.pm:251
 msgid "Home page refresh interval"
@@ -2901,7 +2901,7 @@ msgstr "Имеется %quant(%1,concrete mixer)."
 
 #: lib/RT/Date.pm:114
 msgid "ISO"
-msgstr "ИСО"
+msgstr "ISO"
 
 #: lib/RT/Tickets_Overlay.pm:1955 share/html/Ticket/Elements/ShowBasics:50
 msgid "Id"
@@ -4962,7 +4962,7 @@ msgstr "Обзор RT для пользователя %1"
 
 #: share/html/Install/Sendmail.html:53
 msgid "RT can communicate with your users about new tickets or new correspondence on tickets. Tell us where to find sendmail (or a sendmail compatible binary such as the one provided by postifx).  RT also needs to know who to notify when someone sends invalid email.  This must not be an address that feeds back into RT."
-msgstr "RT может взаимодействовать с вашими пользователями по новым заявкам или новой корреспонденции по заявкам. Укажите нам где найти sendmail (или sendmail-совместимый бинарник, например используемый   postfix'ом). RT также необходимо знать кого нужно извещать,  когда  кто-то отсылает неверную почту. Это не должен быть адрес для обратной связи с RT."
+msgstr "RT может взаимодействовать с вашими пользователями по новым заявкам или новой корреспонденции по заявкам. Укажите путь к утилите sendmail (или совместимой, например предоставляемой  postfix). также необходимо задать адрес для обовещения о невалидных сообщениях. Это не должен быть адрес для обратной связи с RT."
 
 #: share/html/Admin/CustomFields/Modify.html:104
 msgid "RT can include content from another web service when showing this custom field."
@@ -5297,7 +5297,7 @@ msgstr "SQLite"
 
 #: share/html/Install/DatabaseType.html:58
 msgid "SQLite is a database that doesn't need a server or any configuration whatsoever. RT's authors recommend it for testing, demoing and development, but it's not quite right for a high-volume production RT server."
-msgstr "SQLite -- СУБД, не требующая сервера и каких-либо настроек. Авторы RT рекомендуют ее использование в целях тетсирования, демонстрации и разработки, но не рекомендуют использовать на высоконагружегнных боевых серверах."
+msgstr "SQLite -- СУБД, не требующая сервера и каких-либо настроек. Авторы RT рекомендуют ее использование в целях тестирования, демонстрации и разработки, но не рекомендуют использовать на высоконагруженных боевых серверах."
 
 #: lib/RT/Date.pm:109 share/html/CalPopup.html:91
 msgid "Sat"
@@ -5398,7 +5398,7 @@ msgstr "Параметры поиска"
 #: share/html/Search/Chart.html:73
 #. ($PrimaryGroupByLabel)
 msgid "Search results grouped by %1"
-msgstr "Сгруппировать результаты поиска по %1"
+msgstr "Результаты поиска сгруппированы по полю \"%1\""
 
 #: lib/RT/Config.pm:221
 msgid "Search results refresh interval"
@@ -5784,7 +5784,7 @@ msgstr "Пропустить меню"
 
 #: sbin/rt-email-digest:287
 msgid "Skipping disabled user"
-msgstr "Пропускаем октлюченного пользователя"
+msgstr "Пропускаем отключенного пользователя"
 
 #: share/html/Search/Elements/EditFormat:78
 msgid "Small"
@@ -6219,7 +6219,7 @@ msgstr ""
 
 #: share/html/Elements/GnuPG/KeyIssues:52
 msgid "The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem addresses are:"
-msgstr "Системе не удалось подписать исходящую почту. Обычно, это означает, что слово-пароль неверно указано или, что GPG-агент не запущен. Пожалуйста, уведомите вашего системного администратора как можно скорее. Проблемные адреса:"
+msgstr "Системе не удалось подписать исходящую почту. Обычно, это означает, что неверно задан пароль  или GPG-агент не запущен. Пожалуйста, уведомите вашего системного администратора как можно скорее. Проблемные адреса:"
 
 #: lib/RT/Config.pm:174
 msgid "Theme"
@@ -7011,7 +7011,7 @@ msgstr "Вы собираетесь зашифровать исходящее п
 
 #: share/html/Elements/GnuPG/KeyIssues:61
 msgid "You are going to encrypt outgoing email messages, but there is a problem with a recipient's public key. You have to fix the problem with the key, disable sending a message to that recipient, or disable encryption."
-msgstr "Вы собираетесь зашифровать исходящее почтовое сообщение, но есть некоторые проблемы с публичным ключом получателя. Вы должны исправить ситуацию с ключем, отключить отсылку сообщения к этому получателю по поводу проблемы с ключем или отключить шифрование."
+msgstr "Вы собираетесь зашифровать исходящее почтовое сообщение, но есть некоторые проблемы с публичным ключом получателя. Вы должны исправить ситуацию с ключом, отключить отсылку сообщения к этому получателю по поводу проблемы с ключем или отключить шифрование."
 
 #: share/html/autohandler:231 share/html/autohandler:239
 msgid "You are not an authorized user"
@@ -7468,4 +7468,68 @@ msgstr "лет"
 #: share/html/Elements/RT__Group/ColumnMap:65 share/html/Elements/RT__Group/ColumnMap:73
 msgid "yes"
 msgstr "да"
+
+# add by hand
+msgid "Don't refresh search results."
+msgstr "Не обновлять результаты поиска."
+
+# add by hand
+msgid "Refresh search results every 2 minutes."
+msgstr "Обновлять результаты поиска раз в 2 минуты."
+
+# add by hand
+msgid "Refresh search results every 5 minutes."
+msgstr "Обновлять результаты поиска раз в 5 минут."
+
+# add by hand
+msgid "Refresh search results every 10 minutes."
+msgstr "Обновлять результаты поиска раз в 10 минут."
+
+# add by hand
+msgid "Refresh search results every 20 minutes."
+msgstr "Обновлять результаты поиска раз в 20 минут."
+
+# add by hand
+msgid "Refresh search results every 60 minutes."
+msgstr "Обновлять результаты поиска раз в 60 минут."
+
+# add by hand
+msgid "Refresh search results every 120 minutes."
+msgstr "Обновлять результаты поиска раз в 120 минут."
+
+# add by hand
+msgid "Don't refresh home page."
+msgstr "Не обновлять начальную страницу."
+
+# add by hand
+msgid "Refresh home page every 2 minutes."
+msgstr "Обновлять начальную страницу раз в 2 минуты."
+
+# add by hand
+msgid "Refresh home page every 5 minutes."
+msgstr "Обновлять начальную страницу раз в 5 минут."
+
+# add by hand
+msgid "Refresh home page every 10 minutes."
+msgstr "Обновлять начальную страницу раз в 10 минут."
+
+# add by hand
+msgid "Refresh home page every 20 minutes."
+msgstr "Обновлять начальную страницу раз в 20 минут."
+
+# add by hand
+msgid "Refresh home page every 60 minutes."
+msgstr "Обновлять начальную страницу раз в 60 минут."
+
+# add by hand
+msgid "Refresh home page every 120 minutes."
+msgstr "Обновлять начальную страницу раз в 120 минут."
+
+# add by hand
+msgid "Short usernames"
+msgstr "Короткое имя"
+
+# add by hand
+msgid "Name and email address"
+msgstr "Имя и email адрес"
 
