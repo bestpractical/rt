@@ -78,8 +78,7 @@ use RT::ACL;
 our $RIGHTS = {
     SuperUser              => 'Do anything and everything',           # loc_pair
     AdminAllPersonalGroups =>
-      "Create, delete and modify the members of any user's personal groups"
-    ,                                                                 # loc_pair
+      "Create, delete and modify the members of any user's personal groups", # loc_pair
     AdminOwnPersonalGroups =>
       'Create, delete and modify the members of personal groups',     # loc_pair
     AdminUsers     => 'Create, delete and modify users',              # loc_pair
