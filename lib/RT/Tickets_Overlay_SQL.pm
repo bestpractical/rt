@@ -349,6 +349,18 @@ sub Query {
     return ($_[0]->{_sql_query});
 }
 
+{
+my %inv = (
+    '=' => '!=', '!=' => '=', '<>' => '=',
+    '>' => '<=', '<' => '>=', '>=' => '<', '<=' => '>',
+    'is' => 'IS NOT', 'is not' => 'IS',
+    'like' => 'NOT LIKE', 'not like' => 'LIKE',
+    'matches' => 'NOT MATCHES', 'not matches' => 'MATCHES',
+    'startswith' => 'NOT STARTSWITH', 'not startswith' => 'STARTSWITH',
+    'endswith' => 'NOT ENDSWITH', 'not endswith' => 'ENDSWITH',
+);
+
+my %range = map { $_ => 1 } qw(> >= < <=);
 
 sub ClassifySQLOperation {
     my $self = shift;
@@ -364,18 +376,8 @@ sub ClassifySQLOperation {
         $is_null = 1;
     }
 
-    my %inv = (
-        '=' => '!=', '!=' => '=', '<>' => '=',
-        '>' => '<=', '<' => '>=', '>=' => '<', '<=' => '>',
-        'is' => 'IS NOT', 'is not' => 'IS',
-        'like' => 'NOT LIKE', 'not like' => 'LIKE',
-        'matches' => 'NOT MATCHES', 'not matches' => 'MATCHES',
-        'startswith' => 'NOT STARTSWITH', 'not startswith' => 'STARTSWITH',
-        'endswith' => 'NOT ENDSWITH', 'not endswith' => 'ENDSWITH',
-    );
-
-    return ($is_negative, $is_null, $inv{lc $op});
-}
+    return ($is_negative, $is_null, $inv{lc $op}, $range{lc $op});
+} }
 
 1;
 
