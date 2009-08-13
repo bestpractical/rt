@@ -1960,20 +1960,34 @@ Returns the amount of time worked on this ticket as a Text String
 
 sub TimeWorkedAsString {
     my $self = shift;
-    return "0" unless $self->TimeWorked;
+    my $value = $self->TimeWorked;
 
-    #This is not really a date object, but if we diff a number of seconds 
-    #vs the epoch, we'll get a nice description of time worked.
-
-    my $worked = new RT::Date( $self->CurrentUser );
-
-    #return the  #of minutes worked turned into seconds and written as
-    # a simple text string
-
-    return ( $worked->DurationAsString( $self->TimeWorked * 60 ) );
+    # return the # of minutes worked turned into seconds and written as
+    # a simple text string, this is not really a date object, but if we
+    # diff a number of seconds vs the epoch, we'll get a nice description
+    # of time worked.
+    return "" unless $value;
+    return RT::Date->new( $self->CurrentUser )
+        ->DurationAsString( $value * 60 );
 }
 
 # }}}
+
+# {{{ sub TimeLeftAsString
+
+=head2  TimeLeftAsString
+
+Returns the amount of time left on this ticket as a Text String
+
+=cut
+
+sub TimeLeftAsString {
+    my $self = shift;
+    my $value = $self->TimeLeft;
+    return "" unless $value;
+    return RT::Date->new( $self->CurrentUser )
+        ->DurationAsString( $value * 60 );
+}
 
 # }}}
 

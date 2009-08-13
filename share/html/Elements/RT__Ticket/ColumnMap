@@ -162,7 +162,7 @@ $COLUMN_MAP = {
     TimeLeft => {
         attribute => 'TimeLeft',
         title     => 'Time Left', # loc
-        value     => sub { return $_[0]->TimeLeft }
+        value     => sub { return $_[0]->TimeLeftAsString }
     },
     TimeEstimated => {
         attribute => 'TimeEstimated',
