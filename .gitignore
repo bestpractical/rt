@@ -32,3 +32,9 @@ config.pld
 *~
 *.swp
 *.swo
+
+# RT4 junk
+META.yml
+inc/
+rt4
+var/
