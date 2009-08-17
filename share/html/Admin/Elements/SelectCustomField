@@ -45,37 +45,27 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<h3><&|/l&>Add Value</&></h3>
+<select name="<%$Name%>">
+<option value="" <% not $Default and qq[ selected="selected"] |n %>>--</option>
+% while (my $CustomFieldObj = $CustomFields->Next) {
+% next if $OnlySelectionType and not $CustomFieldObj->IsSelectionType;
+% next if $Not and $CustomFieldObj->id == $Not;
+<option value="<%$CustomFieldObj->id%>"<% $Default == $CustomFieldObj->id && qq[ selected="selected"] |n%>><% $CustomFieldObj->Name %></option>
+%}
+</select>
+<%INIT>
+my $CustomFields = RT::CustomFields->new($session{'CurrentUser'});
+$CustomFields->UnLimit;
+$CustomFields->LimitToLookupType( $LookupType ) if $LookupType;
+$CustomFields->OrderByCols( { FIELD => 'LookupType' }, { FIELD => 'Name' } );
 
-<table border="0">
-
-<tr>
-<th><&|/l&>Sort</&></th>
-<th><&|/l&>Name</&></th>
-<th><&|/l&>Description</&></th>
-% if ( $CustomField->Type ne 'Combobox' ) {
-<th><&|/l&>Category</&></th>
-% }
-</tr>
-
-% my $paramtag = "CustomField-". $CustomField->Id ."-Value-new";
-<tr>
-<td><input type="text" size="3"  name="<% $paramtag %>-SortOrder"   /></td>
-<td><input type="text" size="25" name="<% $paramtag %>-Name"        /></td>
-<td><input type="text" size="45" name="<% $paramtag %>-Description" /></td>
-% if ( $CustomField->Type ne 'Combobox' ) {
-<td>
-% my $BasedOnObj = $CustomField->BasedOnObj;
-%   if ( $BasedOnObj->id ) {
-<& /Elements/EditCustomField, CustomField => $BasedOnObj, Rows => 1, NamePrefix => "$paramtag-BasedOn-", Default => "" &>
-%   } else {
-<input type="text" size="10" name="<% $paramtag %>-Category" value="" />
-%   }
-</td>
-% }
-</tr>
-
-</table>
-<%args>
-$CustomField => undef
-</%args>
+$Default = $Default->id || 0 if ref $Default;
+</%INIT>
+<%ARGS>
+$None => 1
+$Name => 'BasedOn'
+$Default => 0
+$LookupType => 'RT::Queue-RT::Ticket'
+$OnlySelectionType => 1
+$Not => 0
+</%ARGS>

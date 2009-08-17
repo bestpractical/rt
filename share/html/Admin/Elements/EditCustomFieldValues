@@ -70,8 +70,13 @@
 <td><input type="text" size="25" name="<% $paramtag %>-Name" value="<% $value->Name %>" /></td>
 <td><input type="text" size="45" name="<% $paramtag %>-Description" value="<% $value->Description %>" /></td>
 % if ( $CustomField->Type ne 'Combobox' ) {
-<td><input type="text" size="10" name="<% $paramtag %>-Category" 
-    value="<% $value->Category || '' %>" /></td>
+<td>
+%   if ( $BasedOnObj->id ) {
+<& /Elements/EditCustomField, CustomField => $BasedOnObj, Rows => 1, NamePrefix => "$paramtag-BasedOn-", Default => $value->Category &>
+%   } else {
+<input type="text" size="10" name="<% $paramtag %>-Category" value="<% $value->Category || '' %>" />
+%   }
+</td>
 % }
 </tr>
 % }
@@ -82,6 +87,7 @@
 
 my $values = $CustomField->ValuesObj();
 
+my $BasedOnObj = $CustomField->BasedOnObj;
 </%init>
 <%args>
 $CustomField => undef
