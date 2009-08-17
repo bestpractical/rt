@@ -250,6 +250,18 @@ sub Create {
         $self->SetValuesClass( $args{'ValuesClass'} );
     }
 
+    if ( exists $args{'BasedOn'} ) {
+        my $BasedOn = RT::CustomField->new( $self->CurrentUser );
+        $BasedOn->Load($args{BasedOn});
+        if ( $BasedOn->id && $BasedOn->CurrentUserHasRight('SeeCustomField') ) {
+            $self->AddAttribute(
+                Name => "BasedOn",
+                Description => "Custom field whose CF we depend on",
+                Content => $BasedOn->id,
+            );
+        }
+    }
+
     return ($rv, $msg) unless exists $args{'Queue'};
 
     # Compat code -- create a new ObjectCustomField mapping
@@ -1249,6 +1261,39 @@ sub _URLTemplate {
         if ($attr) { return $attr->Content }
 
     }
+}
+
+sub SetBasedOn {
+    my $self = shift;
+    my $value = shift;
+    $value = $value->id if ref $value;
+
+    $self->SetAttribute(
+        Name => "BasedOn",
+        Description => "Custom field whose CF we depend on",
+        Content => $value,
+    );
+}
+
+sub BasedOnObj {
+    my $self = shift;
+    my $obj = RT::CustomField->new( $self->CurrentUser );
+
+    my $attribute = $self->FirstAttribute("BasedOn");
+    $obj->Load($attribute->Content) if defined $attribute;
+    return $obj;
+}
+
+sub DerivativeCFs {
+    my $self = shift;
+    my $attrs = RT::Attributes->new( $self->CurrentUser );
+    $attrs->Limit( FIELD => 'ObjectType', VALUE => 'RT::CustomField' );
+    $attrs->Limit( FIELD => 'Name',       VALUE => 'BasedOn' );
+    $attrs->Limit( FIELD => 'Content',    VALUE => $self->id );
+
+    my @cfs;
+    push @cfs, $_->Object while $_ = $attrs->Next;
+    return @cfs;
 }
 
 1;
