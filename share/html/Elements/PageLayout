@@ -73,8 +73,10 @@
 <%perl>
  if ($page_tabs) {
      my @tabs = ( sort grep { $_ !~ /^(?:current_toptab|this)$/ } keys %{$page_tabs});
+     my $tab_idx = -1;
      foreach my $tab ( @tabs ) {
          $count++;
+         $tab_idx++;
 
          my $current = $page_tabs->{current_toptab} || "";
          my $path    = $page_tabs->{$tab}->{'path'} || "";
@@ -83,6 +85,12 @@
          $current =~ s#(/index\.html)?(\?)?$##gi;
          
          $sep = $toptabs->{$tab}->{'separator'} ? 1 : 0;
+
+         my $next_tab = $tabs[$tab_idx+1];
+         if ($next_tab && $toptabs->{$next_tab}->{'pre_separator'}) {
+            $sep = 1;
+         }
+
          $class->{a} = $path eq $current ? ' class="selected"' : undef;
 
          my @li;
@@ -124,9 +132,17 @@
 
  if ($type && %$type) {
      my @actions  = sort keys %{$type};
+     my $action_idx = -1;
      foreach my $action (@actions) {
          $count++;
+         $action_idx++;
+
          $sep = $type->{$action}->{'separator'} ? 1 : 0;
+
+         my $next_action = $actions[$action_idx+1];
+         if ($next_action && $type->{$next_action}->{'pre_separator'}) {
+            $sep = 1;
+         }
 
          my @li;
          push @li, 'first' if $count == 1;
