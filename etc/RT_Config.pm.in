@@ -1125,11 +1125,20 @@ Normally plaintext attachments are displayed as HTML with line
 breaks preserved.  This causes space- and tab-based formatting not
 to be displayed correctly.  By setting $PlainTextPre they'll be
 displayed using <pre> instead so such formatting works, but they'll
-use a monospaced font.
+use a monospaced font, no matter what the value of C<$PlainTextMono> is.
 
 =cut
 
 Set($PlainTextPre, 0);
+
+=item C<$PlainTextMono>
+
+To display plaintext attachments,
+Set C<$PlainTextMono> to 1 to use monospaced font,  0 to not to.
+
+=cut
+
+Set($PlainTextMono, 0);
 
 
 =item C<$ShowUnreadMessageNotifications>

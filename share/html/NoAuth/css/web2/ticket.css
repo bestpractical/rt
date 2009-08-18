@@ -118,6 +118,10 @@ div#ticket-history div.content {
  margin-left: 1.5em;
 }
 
+div.mono {
+ font-family: monospace;
+}
+
 .ticket-transaction .messagebody {
  font-size: 1em;
  padding-left: 1em;

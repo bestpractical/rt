@@ -76,7 +76,7 @@ foreach my $message ( grep $_->__Value('Parent') == $Parent, @$Attachments ) {
 % if ( scalar ( grep $_->__Value('Parent') == $message->id, @$Attachments ) ) {
 <div class="messageattachments">
 % } else {
-<div class="messagebody">
+<div class="messagebody<% RT->Config->Get('PlainTextMono', $session{'CurrentUser'}) ? ' mono' : ''%>">
 % }
 <%PERL>
 
