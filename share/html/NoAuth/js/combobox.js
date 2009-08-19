@@ -217,7 +217,6 @@ function ComboBox_ToggleList(e) {
 }
 function ComboBox_ShowList(e) {
     if ( !this.IsShowing && !this.disabled ) {
-        this.style.width = ( this.Container.offsetWidth ) + "px";
         this.style.top = '1.2em';//( this.Container.offsetHeight + ComboBox_RecursiveOffsetTop(this.Container,true) ) + "px";
         this.style.left = '0px';// ( ComboBox_RecursiveOffsetLeft(this.Container,true) + 1 ) + "px";
         ComboBox_SetVisibility(this,true);
