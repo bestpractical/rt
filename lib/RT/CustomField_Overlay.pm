@@ -652,7 +652,7 @@ Returns false if it accepts multiple values
 
 sub SingleValue {
     my $self = shift;
-    if ($self->MaxValues == 1) {
+    if (($self->MaxValues||0) == 1) {
         return 1;
     } 
     else {
@@ -662,7 +662,7 @@ sub SingleValue {
 
 sub UnlimitedValues {
     my $self = shift;
-    if ($self->MaxValues == 0) {
+    if (($self->MaxValues||0) == 0) {
         return 1;
     } 
     else {
