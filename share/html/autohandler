@@ -48,6 +48,8 @@
 <%INIT>
 use RT::Util;
 
+$m->callback( ARGSRef => \%ARGS, CallbackName => 'Init' );
+
 if (RT->InstallMode) {
   if  ( $m->base_comp->path =~ RT->Config->Get('WebNoAuthRegex') ) {
     $m->call_next();
