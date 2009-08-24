@@ -51,8 +51,10 @@
 % my $selected = 0;
 % my @category;
 % my $id = $NamePrefix . $CustomField->Id;
+% if ($CustomField->BasedOnObj->Id) {
+% }
 % my $out = $m->scomp('SELF:options', %ARGS, SelectedRef => \$selected, CategoryRef => \@category);
-% if (@category) {
+% if (@category and not $CustomField->BasedOnObj->id) {
   <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/cascaded.js"></script>
 %# XXX - Hide this select from w3m?
   <select onchange="filter_cascade('<% $id %>-Values', this.value)" name="<% $id %>-Category" class="CF-<%$CustomField->id%>-Edit">
@@ -63,7 +65,17 @@
 %   }
     </select><br />
 % }
-<select name="<%$id%>-Values" id="<%$id%>-Values" class="CF-<%$CustomField->id%>-Edit"
+% my @Derivatives = map {$_->id} $CustomField->DerivativeCFs;
+% if (@Derivatives) {
+  <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/cascaded.js"></script>
+<script type="text/javascript"><!--
+doOnLoad(  function () {<% join(";", map {"filter_cascade('$NamePrefix$_-Values',document.getElementById('$id-Values').value, 1)"} @Derivatives) |n%>} );
+--></script>
+<select onchange="<% join(";", map {"filter_cascade('$NamePrefix$_-Values', this.value, 1)"} @Derivatives) |n%>"
+% } else {
+<select
+% }
+  name="<%$id%>-Values" id="<%$id%>-Values" class="CF-<%$CustomField->id%>-Edit"
 % if ( $Rows && ( $Multiple || !@category ) ) {
   size="<% $Rows %>"
 % }

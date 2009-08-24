@@ -52,6 +52,10 @@ function filter_cascade (id, val) {
     var children = select.childNodes;
     for (i in children) {
         if (!children[i].label) { continue };
+        if ( val == '' && arguments.length == 3 ) {
+            hide(children[i]);
+            continue;
+        }
         if ( val == '' || children[i].label.substr(0, val.length) == val) {
             show(children[i]);
             continue;
