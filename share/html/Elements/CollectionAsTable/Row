@@ -106,7 +106,7 @@ foreach my $column (@Format) {
             Attr  => 'align'
         );
         unless ( exists $ColumnMap->{$col}{'value'} ) {
-            $ColumnMap->{$col} = $m->comp(
+            $ColumnMap->{$col}{'value'} = $m->comp(
                 "/Elements/ColumnMap",
                 Class => $Class,
                 Name  => $col,

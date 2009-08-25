@@ -1588,7 +1588,8 @@ sub ProcessColumnMapValue {
         }
         elsif ( UNIVERSAL::isa( $value, 'ARRAY' ) ) {
             return join '', map ProcessColumnMapValue($_, %args), @$value;
-        } elsif ( UNIVERSAL::isa( $value, 'SCALAR' ) ) {
+        }
+        elsif ( UNIVERSAL::isa( $value, 'SCALAR' ) ) {
             return $$value;
         }
     }

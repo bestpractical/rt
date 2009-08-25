@@ -105,7 +105,7 @@ foreach my $col ( @Format ) {
     unless( $tmp ) {
         $title = $m->comp('/Elements/ScrubHTML', Content => $title);
     } else {
-        $title = ProcessColumnMapVaue( $tmp, Arguments => [ $title ] );
+        $title = ProcessColumnMapValue( $tmp, Arguments => [ $title ] );
     }
 
     if ( $AllowSorting and $col->{'attribute'}
@@ -117,7 +117,7 @@ foreach my $col ( @Format ) {
         )
       )
     {
-        $attr = ProcessColumnMapVaue( $attr, Arguments => [ $col->{'attribute'} ], Escape => 0 );
+        $attr = ProcessColumnMapValue( $attr, Arguments => [ $col->{'attribute'} ], Escape => 0 );
 
         my $new_order = 'ASC';
         $new_order = $Order[0] eq 'ASC'? 'DESC': 'ASC'
