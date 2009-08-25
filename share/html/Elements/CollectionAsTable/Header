@@ -105,19 +105,7 @@ foreach my $col ( @Format ) {
     unless( $tmp ) {
         $title = $m->comp('/Elements/ScrubHTML', Content => $title);
     } else {
-        if ( UNIVERSAL::isa( $tmp, 'CODE' ) ) {
-            my @tmp = $tmp->( $title );
-            $title = @tmp > 1? \@tmp: shift @tmp || '';
-        } else {
-            $title = $tmp;
-        }
-        if( UNIVERSAL::isa( $title, 'ARRAY' ) ) {
-            $title = join '', map { ref $_? $$_: $m->interp->apply_escapes( $_, 'h' ) } @$title;
-        } elsif( UNIVERSAL::isa( $title, 'SCALAR' ) ) {
-            $title = $$title;
-        } else {
-            $title = $m->interp->apply_escapes( $title, 'h' );
-        }
+        $title = ProcessColumnMapVaue( $tmp, Arguments => [ $title ] );
     }
 
     if ( $AllowSorting and $col->{'attribute'}
@@ -129,6 +117,8 @@ foreach my $col ( @Format ) {
         )
       )
     {
+        $attr = ProcessColumnMapVaue( $attr, Arguments => [ $col->{'attribute'} ], Escape => 0 );
+
         my $new_order = 'ASC';
         $new_order = $Order[0] eq 'ASC'? 'DESC': 'ASC'
             if $OrderBy[0] && $OrderBy[0] eq $attr;

@@ -87,12 +87,12 @@ foreach my $column (@Format) {
 
     my @out;
     foreach my $subcol ( @{ $column->{output} } ) {
-        unless ( $subcol =~ /^__(.*?)__$/ ) {
+        my ($col) = ($subcol =~ /^__(.*?)__$/);
+        unless ( $col ) {
             push @out, $subcol;
             next;
         }
 
-        my $col = $1;
         $style = $m->comp(
             "/Elements/ColumnMap",
             Class => $Class,
@@ -105,7 +105,7 @@ foreach my $column (@Format) {
             Name  => $col,
             Attr  => 'align'
         );
-        unless ( exists $ColumnMap->{$col} ) {
+        unless ( exists $ColumnMap->{$col}{'value'} ) {
             $ColumnMap->{$col} = $m->comp(
                 "/Elements/ColumnMap",
                 Class => $Class,
@@ -114,23 +114,12 @@ foreach my $column (@Format) {
             );
         }
 
-        my $value = $ColumnMap->{$col};
-
-        if ( ref $value ) {
-
-            # All HTML snippets are returned by the callback function
-            # as scalar references.  Data fetched from the objects are
-            # plain scalars, and needs to be escaped properly.
-            push @out, grep defined && length,
-                map { ref($_) ? $$_ : $m->interp->apply_escapes( $_ => 'h' ) }
-                $value->( $record, $i );
-        } elsif ( defined $value && length $value ) {
-
-            # Simple value; just escape it.
-            push @out, $m->interp->apply_escapes( $value => 'h' );
-        }
-        s/\n/<br \/>/gs for @out;
+        push @out, ProcessColumnMapValue(
+            $ColumnMap->{$col}{'value'},
+            Arguments => [$record, $i]
+        );
     }
+    s/\n/<br \/>/gs for @out;
 
     $m->out( 'align="'   . $m->interp->apply_escapes( $align => 'h' ) . '"' )
         if $align;
