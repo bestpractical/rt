@@ -64,12 +64,10 @@
 
 package RT::Collection;
 
-use RT::Base;
-
 use strict;
 use warnings;
 
-use base qw/RT::Base Jifty::Collection/;
+use base qw/Jifty::Collection/;
 
 sub _handle {
     return Jifty->handle;
