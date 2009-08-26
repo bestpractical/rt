@@ -48,11 +48,9 @@
 <div class="unread-messages">
 <&| /Widgets/TitleBox, title => _('New messages'), title_href => "#txn-". $txn->id &>
 <&|/l, &>There are unread messages on this ticket.</&>
-<&|/l, 
+<%_('You can <a href="%1">jump to the first unread message</a> or <a href="%2">jump to the first unread message and mark all messages as seen</a>.',
  RT->config->get('web_path') ."/Ticket/Display.html?id=". $ticket->id. "#txn-".$txn->id,
- RT->config->get('web_path') ."/Ticket/Display.html?id=". $ticket->id ."&mark_as_seen=1".  "#txn-".$txn->id
- 
- &>You can <a href="%1">jump to the first unread message</a> or <a href="%2">jump to the first unread message and mark all messages as seen</a>.</&>
+ RT->config->get('web_path') ."/Ticket/Display.html?id=". $ticket->id ."&mark_as_seen=1".  "#txn-".$txn->id)|n%>
 </&>
 </div>
 <%ARGS>

@@ -19,8 +19,6 @@ RT::load_config and other in RT package should be replaced with RT->load_config
 * remoe rt::base
 * remove old compat-* css
 * remove <|&/l, should just be <%_()%>
-  - share/html/Search/Elements/ResultViews:<&|/l, $m->scomp('SelectChartType', name 
-  - share/html/Ticket/Elements/ShowUpdateStatus:<&|/l,
 
 * fresh db, create ticket with body asdf shows "<p>&nbsp;asdf</p>" in the ticket history right after create.
 * fresh db, create an unowned ticket, click unowned search from homepage, click chart by status, infinite loop.
