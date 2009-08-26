@@ -13,3 +13,113 @@ to the latter.
 
 RT::load_config and other in RT package should be replaced with RT->load_config
 
+
+* create graphviz for templates/elements, orphan ones needs to be documented.
+* make richtext a jifty plugin (so we get automagic js/css squish)
+* remove old compat-* css
+* remove <|&/l, should just be <%_()%>
+  - share/html/Search/Elements/ResultViews:<&|/l, $m->scomp('SelectChartType', name 
+  - share/html/Ticket/Elements/ShowUpdateStatus:<&|/l,
+
+* fresh db, create ticket with body asdf shows "<p>&nbsp;asdf</p>" in the ticket history right after create.
+* fresh db, create an unowned ticket, click unowned search from homepage, click chart by status, infinite loop.
+
+------------- todo by feature list
+I18N
+  - display of messages in utf8
+  - picking up user's loc preferences from browser or from db
+
+Database audit tool (integrity check)
+database Shredder
+
+Linking tickets to each other
+saved tix relationship graphs
+pluggable link schemes
+REST interface
+  * leave this for now, and see phase2 of ticket action for transition to jifty rest api
+
+Web interface
+  * ticket actions refactor:
+    * make create into a jifty action with dynamic params
+    * go through the %arg usage in ticket::create and make them into action params (should be only based on queue). good to make the cf logic separate so it might be reusable in the update action.
+      * note the update action will need add/delete/modify OCFV, where the create action will just use add.
+    * repeated argument (such as role) might need special handling as jifty action param
+    * make use of default jifty model update actions, for cfs, links, roles, use individual actions for now
+      * make sure all Ticket/Modify* renders action, basically all "push @results, process_*" in ModifyAll should be gone and the logic be run with actions.
+
+    * phase2: gradually enhance the grand ticket update action to include the other update functionality (and make that into the general $model->update() method) for each of cf/link/role CRUD of the ticket update.  at this point the view layer should have minimum change (just the rendering $action, from old small related crud actions to the grand update action).
+    * the REST api for ticket update (REST/1.0/Forms/ticket/default) has some flattening for the update action.  this can be a reference and eventually just have the update action serve the rest api via jifty rest plugin.
+
+Self service web interface
+
+Email interface
+  - Email input
+  - Email sending
+	privileged users can get mail batched on a schedule or immediately
+  - GPG email in
+  - GPG email out
+  * make jifty::notification hookable to support gpg/smime (or make it native to jifty::notification)
+
+Custom Fields
+  - external sources (forming list)
+  - pick/enter one/many
+  - autocomplete
+  - custom fields can apply to a set queues
+  - custom fields can apply to tix, txns, users, groups
+
+Groups of users
+  - recursive
+  - can contain other groups
+
+User, group and role based access control
+
+external authentication	(LDAP, trust aache, etc)
+  * code was in autohandler, seems to be removed now, need to verify workiness
+
+search builder subsystem
+  - graphical query builder
+  - custom search result formats
+  - search -> ical
+  - search -> csv
+  - bulk ticket edit
+  - saved searches
+  - saved charts
+  * see if we can migrate the general ui flow to some component that uses tisql. low priority, leave this as-is as long as it works.
+
+overview:
+  - Custom homepage
+  - dashboards
+  - "all the stuff i've been working on today" MyDay.html
+
+per-user preferences of various sorts
+  - user-switchable themes
+  - user-selectable date-time formats
+
+date/time inputs (ajax?)
+  * migrate to rendering jifty action fields
+  * dates fields in ticket, anything else?
+
+scrips
+custom per-queue templates for scrips
+
+approvals
+
+full administrative UI
+  * make basic CRUD for admin/{queues,users,groups}/* use jifty actions/CRUD
+  * note there is CF for group as well, so we still need to leave the process_object_custom_field_updates as part of the form submit.
+  * investigate the effort to convert right editing system to native jifty.
+
+Database support
+ * mysql/pg/sqlite/oracle
+
+RT plugins
+ - override libs/ui
+   * some basic test to make sure this works
+ - callback systems (from mason)
+   * investigate what's used in core and decide if it should be deprecated and in favor of different hook mechanism
+-----
+investigate how complete the update() method for various models is:
+  - update_record_object calls $model->update
+  - process_custom_field_updates - this is for modifying CF and CFV, not OCFV
+  - process_object_custom_field_updates - for OCFV, can be used in grand ticket->update api in the future (like the current heavy-lifting create_ticket in interface::web and ticket::create).
+
