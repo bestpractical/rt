@@ -1577,6 +1577,27 @@ sub GetColumnMapEntry {
     return undef;
 }
 
+sub ProcessColumnMapValue {
+    my $value = shift;
+    my %args = ( Arguments => [], Escape => 1, @_ );
+
+    if ( ref $value ) {
+        if ( UNIVERSAL::isa( $value, 'CODE' ) ) {
+            my @tmp = $value->( @{ $args{'Arguments'} } );
+            return ProcessColumnMapValue( (@tmp > 1? \@tmp: $tmp[0]), %args );
+        }
+        elsif ( UNIVERSAL::isa( $value, 'ARRAY' ) ) {
+            return join '', map ProcessColumnMapValue($_, %args), @$value;
+        }
+        elsif ( UNIVERSAL::isa( $value, 'SCALAR' ) ) {
+            return $$value;
+        }
+    }
+
+    return $m->interp->apply_escapes( $value, 'h' ) if $args{'Escape'};
+    return $value;
+}
+
 =head2 _load_container_object ( $type, $id );
 
 Instantiate container object for saving searches.

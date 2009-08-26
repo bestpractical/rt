@@ -304,7 +304,7 @@ $COLUMN_MAP = {
     },
 
     CustomField => {
-        attribute => undef,
+        attribute => sub { return pop @_ },
         title     => sub { return pop @_ },
         value     => sub {
             # Display custom field contents, separated by newlines.

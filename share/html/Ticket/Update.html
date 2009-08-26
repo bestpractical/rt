@@ -233,7 +233,17 @@ $m->comp( '/Elements/GnuPG/SignEncryptWidget:Process',
     self => $gnupg_widget,
     TicketObj => $TicketObj,
 );
+
+my $CFs = $TicketObj->TransactionCustomFields();
+my $ValidCFs = undef;
+
 if ( $ARGS{'SubmitTicket'} ) {
+    $ValidCFs = $m->comp(
+        '/Elements/ValidateCustomFields',
+        CustomFields => $CFs,
+        NamePrefix => "Object-RT::Transaction--CustomField-",
+        ARGSRef => \%ARGS
+    );
     my $status = $m->comp('/Elements/GnuPG/SignEncryptWidget:Check',
         self      => $gnupg_widget,
         TicketObj => $TicketObj,
@@ -241,9 +251,15 @@ if ( $ARGS{'SubmitTicket'} ) {
     $checks_failure = 1 unless $status;
 }
 
-if ( !$checks_failure && exists $ARGS{SubmitTicket} ) {
+if ( $ValidCFs && !$checks_failure && exists $ARGS{SubmitTicket} ) {
     $m->callback( Ticket => $TicketObj, ARGSRef => \%ARGS, CallbackName => 'BeforeDisplay' );
     return $m->comp('Display.html', TicketObj => $TicketObj, %ARGS);
+} elsif ( !$ValidCFs ) {
+    # Invalid CFs
+    while (my $CF = $CFs->Next) {
+        my $msg = $m->notes('InvalidField-' . $CF->Id) or next;
+        push @results, $CF->Name . ': ' . $msg;
+    }
 }
 
 </%INIT>
