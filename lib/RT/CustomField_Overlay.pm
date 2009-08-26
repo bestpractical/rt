@@ -251,15 +251,7 @@ sub Create {
     }
 
     if ( exists $args{'BasedOn'} ) {
-        my $BasedOn = RT::CustomField->new( $self->CurrentUser );
-        $BasedOn->Load($args{BasedOn});
-        if ( $BasedOn->id && $BasedOn->CurrentUserHasRight('SeeCustomField') ) {
-            $self->AddAttribute(
-                Name => "BasedOn",
-                Description => "Custom field whose CF we depend on",
-                Content => $BasedOn->id,
-            );
-        }
+        $self->SetBasedOn( $args{'BasedOn'} );
     }
 
     return ($rv, $msg) unless exists $args{'Queue'};
@@ -1266,12 +1258,20 @@ sub _URLTemplate {
 sub SetBasedOn {
     my $self = shift;
     my $value = shift;
-    $value = $value->id if ref $value;
 
-    $self->SetAttribute(
+    return $self->DeleteAttribute( "BasedOn" )
+        unless defined $value and length $value;
+
+    my $cf = RT::CustomField->new( $self->CurrentUser );
+    $cf->Load( ref $value ? $value->Id : $value );
+
+    return (0, "Permission denied")
+        unless $cf->Id && $cf->CurrentUserHasRight('SeeCustomField');
+
+    return $self->AddAttribute(
         Name => "BasedOn",
         Description => "Custom field whose CF we depend on",
-        Content => $value,
+        Content => $cf->Id,
     );
 }
 
