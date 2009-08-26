@@ -53,6 +53,8 @@ use RT::Report::Tickets::Entry;
 use strict;
 use warnings;
 
+sub record_class { 'RT::Report::Tickets::Entry' }
+
 sub groupings {
     my $self   = shift;
     my %args   = (@_);

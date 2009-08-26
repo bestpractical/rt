@@ -57,7 +57,6 @@ $query   => ''
 % }
 </select>
 <%init>
-use RT::Report::Tickets;
 my $report = RT::Report::Tickets->new();
 my @options = $report->groupings( query => $query );
 </%init>

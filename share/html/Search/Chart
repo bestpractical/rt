@@ -66,7 +66,6 @@ if ($chart_style eq 'pie') {
     $chart_class = "GD::Graph::bars";
 }
 
-use RT::Report::Tickets;
 my $tix = RT::Report::Tickets->new();
 $tix->from_sql( $query );
 my $count_name = $tix->column( FUNCTION => 'COUNT', column => 'id' );
