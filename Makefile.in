@@ -509,14 +509,11 @@ apachectl:
 	$(APACHECTL) start
 	sleep 5
 
+SNAPSHOT=RT-$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).HEAD-$(shell git log -n1 --pretty='format:%h')
 snapshot:
-	git archive \
-	    --prefix "RT-$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).HEAD-`git log -n1 --pretty='format:%H'`/" \
-	    `git log -n1 --pretty='format:%H'` \
-            | tar -xf -
-	( cd "RT-$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).HEAD-`git log -n1 --pretty='format:%H'`/" && autoconf && ./configure )
-	tar -czf "RT-$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).HEAD-`git log -n1 --pretty='format:%H'`.tar.gz" \
-            "RT-$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).HEAD-`git log -n1 --pretty='format:%H'`/"
-	rm -fr "RT-$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).HEAD-`git log -n1 --pretty='format:%H'`/"
+	git archive --prefix "$(SNAPSHOT)/"  HEAD | tar -xf -
+	( cd $(SNAPSHOT) && autoconf && ./configure )
+	tar -czf "$(SNAPSHOT).tar.gz" "$(SNAPSHOT)/"
+	rm -fr "$(SNAPSHOT)/"
 
 # }}}
