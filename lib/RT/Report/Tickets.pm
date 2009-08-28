@@ -256,7 +256,9 @@ for, do that.
 sub add_empty_rows {
     my $self = shift;
     if ( $self->{'_group_by_field'} eq 'status' ) {
-        my %has = map { $_->__value('status') => 1 } @{ $self->items_array_ref || [] };
+#        ->tiems_array_ref will cause circular call loop see rt4#13813 for detail
+#        my %has = map { $_->__value('status') => 1 } @{ $self->items_array_ref || [] };
+        my %has = map { $_->__value('status') => 1 } @{ $self->{'items'} || [] };
 
         foreach my $status ( grep !$has{$_}, RT::Model::Queue->status_schema->valid ) {
 
