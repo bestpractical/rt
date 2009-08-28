@@ -95,8 +95,6 @@ sub view_via_callback {
     $field->render_wrapper_start();
     $field->render_preamble();
 
-    $field->render_label();
-
     # render the value with a hyperlink
     span {
         attr { class is "@{[ $field->classes ]} value" };
