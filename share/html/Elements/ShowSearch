@@ -79,7 +79,7 @@ if ($SavedSearch) {
         $query_display_component
             = '/Search/Elements/' . $SearchArg->{SearchType};
         $query_link_url = RT->Config->Get('WebURL') . "/Search/$SearchArg->{SearchType}.html";
-    } else {
+    } elsif ($show_customize) {
         $customize = RT->Config->Get('WebPath') . '/Search/Build.html?'
             . $m->comp( '/Elements/QueryString',
             SavedSearchLoad => $SavedSearch );
@@ -98,9 +98,11 @@ if ($SavedSearch) {
     }
 
     $SearchArg = $user->Preferences( $search, $search->Content );
-    $customize = RT->Config->Get('WebPath') . '/Prefs/Search.html?'
-        . $m->comp( '/Elements/QueryString',
-            name => ref($search) . '-' . $search->Id );
+    if ($show_customize) {
+        $customize = RT->Config->Get('WebPath') . '/Prefs/Search.html?'
+            . $m->comp( '/Elements/QueryString',
+                name => ref($search) . '-' . $search->Id );
+    }
 }
 
 # ProcessedSearchArg is a search with overridings, but for link we use
@@ -140,9 +142,10 @@ my $QueryString = '?' . $m->comp( '/Elements/QueryString', %$SearchArg );
 
 </%init>
 <%ARGS>
-$Name          => undef
-$SavedSearch   => undef
-%Override      => ()
-$IgnoreMissing => undef
-$hideable      => 1
+$Name           => undef
+$SavedSearch    => undef
+%Override       => ()
+$IgnoreMissing  => undef
+$hideable       => 1
+$show_customize => 1
 </%ARGS>
