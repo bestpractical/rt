@@ -57,6 +57,7 @@ my @for_showsearch = $Dashboard->ShowSearchName($Portlet);
 
 <& /Elements/ShowSearch,
     @for_showsearch,
-    Override => { Rows => $Rows },
-    hideable => $Preview,
+    Override       => { Rows => $Rows },
+    hideable       => $Preview,
+    show_customize => $Preview,
 &>
