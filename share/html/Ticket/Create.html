@@ -346,6 +346,8 @@ foreach my $key (keys %ARGS) {
         delete $attachments->{$1};
     }
 }
+# }}}
+
 Jifty->web->session->set('Attachments', $attachments);
 
 # {{{ store the uploaded attachment in session
