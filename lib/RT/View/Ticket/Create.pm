@@ -86,10 +86,33 @@ template 'create' => page {
 
 sub show_basics {
     my $create = shift;
+    my $queue = get('queue');
 
     div {
         attr { id => "Ticket-Create-basics" };
-        h1 { "Basics" };
+
+        table {
+            attr {
+                border      => 0,
+                cellpadding => 0,
+                cellspacing => 0,
+            };
+
+            row {
+                cell {
+                    attr { class => "label" };
+                    _("Queue:")
+                }
+                cell {
+                    attr { class => "value" };
+
+                    render_mason('/Ticket/Elements/ShowQueue', {
+                        queue => $queue,
+                    });
+                }
+            }
+        };
+
         $create->button(label => _('Create'));
     };
 }
@@ -102,7 +125,6 @@ sub show_details {
             id    => "Ticket-Create-details",
             class => "jshide",
         };
-        h1 { "Details" };
         $create->button(label => _('Create'));
     };
 }
