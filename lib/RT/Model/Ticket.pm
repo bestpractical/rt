@@ -2555,6 +2555,18 @@ sub acl_equivalence_objects {
 
 }
 
+sub canonicalize_queue {
+    my $self  = shift;
+    my $queue = shift;
+
+    my $queue_obj = RT::Model::Queue->new;
+    $queue_obj->load($queue);
+
+    return $queue_obj->id if $queue_obj->id;
+
+    return undef;
+}
+
 1;
 
 =head1 AUTHOR
