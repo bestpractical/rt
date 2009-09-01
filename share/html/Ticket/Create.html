@@ -47,7 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /_elements/wrapper,
     title => _("Create a new ticket"),
-    onload => "function () { hide(document.getElementById('Ticket-Create-details')) }" &>
+    onload => "function () { jQuery('#Ticket-Create-details').hide() }",
+&>
 <& /Elements/Tabs, 
     current_toptab => "Ticket/Create.html", 
     title => _("Create a new ticket"),
