@@ -107,7 +107,7 @@
 </tr>
 <tr>
 <td class="label">
-<&|/l&>subject</&>:
+<&|/l&>Subject</&>:
 </td>
 <td class="value" colspan="5">
 <input name="subject" size="60" maxsize="200" value="<%$ARGS{subject} || ''%>" />
@@ -158,7 +158,7 @@
 
 <tr>
 <td colspan="6">
-<&|/l&>describe the issue below</&>:<br />
+<&|/l&>Describe the issue below</&>:<br />
 % $m->callback( %ARGS, queue_obj => $queue_obj, callback_name => 'BeforeMessageBox' );
 % if (exists $ARGS{content}) {
 <& /Elements/MessageBox, default => $ARGS{content}, include_signature => 0 &>
