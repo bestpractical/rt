@@ -54,6 +54,23 @@ use Jifty::View::Declare -base;
 __PACKAGE__->use_mason_wrapper;
 
 template 'create' => page {
+    my $create = new_action(
+        class   => 'CreateTicket',
+        moniker => 'create_ticket',
+    );
+
+    my $actions;
+    render_mason('/Elements/Tabs', {
+        current_toptab => 'ticket/create',
+        title          => _("Create a new ticket"),
+        actions        => $actions,
+    });
+
+    form {
+        form_next_page url => '/';
+        render_action $create;
+        form_submit( label => _('Create') );
+    };
 };
 
 1;
