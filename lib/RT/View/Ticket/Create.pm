@@ -61,7 +61,15 @@ template 'create' => page {
         moniker => 'create_ticket',
     );
 
-    my $actions;
+    my $actions = {
+        A => {
+            html => q[<a href="#basics" onclick="jQuery('#Ticket-Create-details').hide(); jQuery('#Ticket-Create-basics').show(); return false;">] . _('Show basics') . q[</a>],
+        },
+        B => {
+            html => q[<a href="#details" onclick="jQuery('#Ticket-Create-basics').hide(); jQuery('#Ticket-Create-details').show(); return false;">] . _('Show details') . q[</a>],
+        },
+    };
+
     render_mason('/Elements/Tabs', {
         current_toptab => 'ticket/create',
         title          => _("Create a new ticket"),
@@ -70,9 +78,31 @@ template 'create' => page {
 
     form {
         form_next_page url => '/Ticket/Display.html';
-        $create->button(label => _('Create'));
+
+        show_basics($create);
+        show_details($create);
     };
 };
+
+sub show_basics {
+    my $create = shift;
+
+    div {
+        attr { id => "Ticket-Create-basics" };
+        h1 { "Basics" };
+        $create->button(label => _('Create'));
+    };
+}
+
+sub show_details {
+    my $create = shift;
+
+    div {
+        attr { id => "Ticket-Create-details" };
+        h1 { "Details" };
+        $create->button(label => _('Create'));
+    };
+}
 
 1;
 
