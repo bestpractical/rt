@@ -47,7 +47,6 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /_elements/wrapper,
     title => _("Create a new ticket"),
-    onload => "function () { jQuery('#Ticket-Create-details').hide() }",
 &>
 <& /Elements/Tabs, 
     current_toptab => "Ticket/Create.html", 
@@ -175,7 +174,7 @@
 <& /Elements/Submit, label => _("Create")&>
 </div>
 
-<div id="Ticket-Create-details">
+<div id="Ticket-Create-details" class="jshide">
 <a name="details"></a>
 <table width="100%" border="0">
 <tr>

@@ -98,7 +98,10 @@ sub show_details {
     my $create = shift;
 
     div {
-        attr { id => "Ticket-Create-details" };
+        attr {
+            id    => "Ticket-Create-details",
+            class => "jshide",
+        };
         h1 { "Details" };
         $create->button(label => _('Create'));
     };
