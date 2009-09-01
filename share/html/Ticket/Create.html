@@ -409,10 +409,10 @@ if ((!exists $ARGS{'add_more_attach'}) and (defined($ARGS{'id'}) and $ARGS{'id'}
 
 my $actions = {
     A => {
-        html => q[<a href="#basics" onclick="return switchVisibility('Ticket-Create-basics','Ticket-Create-details');">] . _('Show basics') . q[</a>],
+        html => q[<a href="#basics" onclick="jQuery('#Ticket-Create-details').hide(); jQuery('#Ticket-Create-basics').show(); return false;">] . _('Show basics') . q[</a>],
     },
     B => {
-        html => q[<a href="#details" onclick="return switchVisibility('Ticket-Create-details','Ticket-Create-basics');">] . _('Show details') . q[</a>],
+        html => q[<a href="#details" onclick="jQuery('#Ticket-Create-basics').hide(); jQuery('#Ticket-Create-details').show(); return false;">] . _('Show details') . q[</a>],
     },
 };
 </%INIT>
