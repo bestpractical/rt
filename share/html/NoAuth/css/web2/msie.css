@@ -126,7 +126,7 @@ div#quickbar { height: 1.2em;
 }
 
 
-#comp-Search-Build #editquery {
+#editquery {
   margin-top: 0.2em;
   width: 39%;
   left: 60%;
@@ -230,10 +230,10 @@ table.queue-summary td, td.collection-as-table {
     margin-left: -0.2em;
 }
 
-#comp-Search-Build #pick-criteria td.label {
+#pick-criteria td.label {
      width: auto;
 }
 
-#comp-Search-Build #pick-criteria td.operator {
+#pick-criteria td.operator {
   width: 7.5em;
 }
