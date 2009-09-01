@@ -48,16 +48,13 @@
 use warnings;
 use strict;
 
-package RT::View::Ticket;
+package RT::View::Ticket::Create;
 use Jifty::View::Declare -base;
 
 __PACKAGE__->use_mason_wrapper;
 
-require RT::View::Ticket::Links;
-alias RT::View::Ticket::Links under '/';
-
-require RT::View::Ticket::Create;
-alias RT::View::Ticket::Create under '/';
+template 'create' => page {
+};
 
 1;
 
