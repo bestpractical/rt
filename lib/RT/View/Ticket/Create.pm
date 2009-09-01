@@ -67,7 +67,7 @@ template 'create' => page {
     });
 
     form {
-        form_next_page url => '/';
+        form_next_page url => '/Ticket/Display.html';
         render_action $create;
         form_submit( label => _('Create') );
     };

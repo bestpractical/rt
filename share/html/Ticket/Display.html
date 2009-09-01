@@ -95,6 +95,8 @@ $collapsed => undef
 
 <%INIT>
 
+$id ||= Jifty->web->response->result('create_ticket')->content('id');
+
 $m->callback( ticket_obj => $ticket_obj, args_ref => \%ARGS, callback_name => 'Initial' );
 
 my (@Actions, $Tickets);  
@@ -139,7 +141,7 @@ if ($ARGS{'id'} eq 'new') {
     }
     # }}}
 } else { 
-    $ticket_obj ||= load_ticket($ARGS{'id'});
+    $ticket_obj ||= load_ticket($id);
 
     $m->callback( callback_name => 'BeforeProcessArguments',
         ticket_obj => $ticket_obj, tickets => $Tickets,
