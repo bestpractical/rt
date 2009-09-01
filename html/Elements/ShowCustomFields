@@ -90,7 +90,7 @@ my $print_value = sub {
     if ( $m->comp_exists( $comp ) ) {
         $m->comp( $comp, Object => $value );
     } else {
-        $m->print( $value->Content );
+        $m->out( $m->interp->apply_escapes( $value->Content, 'h' ) );
     }
     $m->out('</a>') if $linked;
 
