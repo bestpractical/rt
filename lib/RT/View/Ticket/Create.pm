@@ -98,6 +98,12 @@ sub show_basics {
         a { attr { name => "basics" } };
 
         render_param($create, 'queue');
+
+        # Jifty should do this for us when we render a read-only parameter
+        # The only worry is that the user does what we're doing here so that
+        # the parameter is now an arrayref instead of a plain scalar
+        render_hidden($create, 'queue', $queue);
+
         render_param($create, 'status');
 
         $create->button(label => _('Create'));
