@@ -54,7 +54,11 @@ use Jifty::View::Declare -base;
 __PACKAGE__->use_mason_wrapper;
 
 template 'create' => page {
-    my $queue = get('queue') or die "Queue not specified";
+    # If we have a create_ticket action, pluck the queue out, otherwise,
+    # check the regular queue query parameter
+    my $action = Jifty->web->request->action('create_ticket');
+    my $queue = $action ? $action->argument('queue') : get('queue');
+    $queue or die "Queue not specified";
 
     my $create = new_action(
         class   => 'CreateTicket',
