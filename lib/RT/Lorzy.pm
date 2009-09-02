@@ -71,6 +71,31 @@ $LCORE->env->set_symbol('RT.RuleAction.Run' => LCore::Primitive->new
 
                       ));
 
+sub install_ticket_accessors {
+    my ($env) = @_;
+    for my $column (RT::Model::Ticket->columns) {
+        my $name = $column->name;
+        my $type = $column->type;
+        $type = $type =~ m/^varchar/ ? 'Str'
+              : $type =~ m/int$/     ? 'Int'
+              : $type eq 'integer'   ? 'Int'
+              : $type eq 'serial'    ? 'Int'
+              :                        next;
+
+        $env->set_symbol('RT::Model::Ticket.'.$name => LCore::Primitive->new
+                             ( body => sub {
+                                   my ($ticket) = @_;
+                                   $ticket->$name
+                               },
+                               lazy => 0,
+                               parameters => [ LCore::Parameter->new({ name => 'ticket', type => 'RT::Model::Ticket' }) ],
+                               return_type => $type
+                           ));
+    }
+}
+
+RT::Lorzy::install_ticket_accessors($RT::Lorzy::LCORE->env);
+
 
 my %cond_compat_map = ( 'On Create' => 'OnCreate',
                         'On Transaction' => 'OnTransaction',
