@@ -27,9 +27,10 @@ sub arguments {
         #    adjust valid values, etc.
         # We do not want to call set_queue twice.
         my $already_setting_queue = (caller(1))[3] eq __PACKAGE__.'::set_queue';
+        my $action = Jifty->web->request->action($self->moniker);
+        my $queue = $action ? $action->argument('queue') : 0;
 
-        if (!$already_setting_queue && Jifty->web->request->argument('queue')) {
-            my $queue = Jifty->web->request->argument('queue');
+        if (!$already_setting_queue && $queue) {
             $queue = $queue->[0] if ref $queue eq 'ARRAY';
             $self->set_queue($queue);
         }
