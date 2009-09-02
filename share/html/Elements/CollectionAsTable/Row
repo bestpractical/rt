@@ -79,11 +79,34 @@ foreach my $column (@Format) {
     my $class = $column->{class} ? encode_entities( $column->{class}, q{'"&<>} ) : 'collection-as-table';
     $m->out(qq{<td class="$class" });
 
-    my $align = $column->{align};
-    my $style = $column->{style};
-    my $span  = $column->{span};
+    my %attrs;
+    foreach my $attr (qw(style align)) {
+        if ( defined $column->{ $attr } ) {
+            $attrs{ $attr } = $column->{ $attr };
+            next;
+        }
 
-    $item += ($span || 1);
+        # if it's not defined then use column map
+        unless ( exists $ColumnMap->{$col}{$attr} ) {
+            my $col = $column->{'attribute'} || $column->{'last_attribute'};
+            next unless $col;
+
+            $ColumnMap->{$col}{$attr} = $m->comp(
+                "/Elements/ColumnMap",
+                Class => $Class,
+                Name  => $col,
+                Attr  => $attr,
+            );
+        }
+        $attrs{ $attr } = ProcessColumnMapValue(
+            $ColumnMap->{$col}{$attr},
+            Arguments => [$record, $i],
+            Escape = 0,
+        );
+    }
+
+    $attrs{colspan} = $column->{span};
+    $item += ($attrs{'colspan'} || 1);
 
     my @out;
     foreach my $subcol ( @{ $column->{output} } ) {
@@ -93,18 +116,6 @@ foreach my $column (@Format) {
             next;
         }
 
-        $style = $m->comp(
-            "/Elements/ColumnMap",
-            Class => $Class,
-            Name  => $col,
-            Attr  => 'style'
-        );
-        $align = $m->comp(
-            "/Elements/ColumnMap",
-            Class => $Class,
-            Name  => $col,
-            Attr  => 'align'
-        );
         unless ( exists $ColumnMap->{$col}{'value'} ) {
             $ColumnMap->{$col}{'value'} = $m->comp(
                 "/Elements/ColumnMap",
@@ -116,17 +127,13 @@ foreach my $column (@Format) {
 
         push @out, ProcessColumnMapValue(
             $ColumnMap->{$col}{'value'},
-            Arguments => [$record, $i]
+            Arguments => [$record, $i],
         );
     }
     s/\n/<br \/>/gs for @out;
 
-    $m->out( 'align="'   . $m->interp->apply_escapes( $align => 'h' ) . '"' )
-        if $align;
-    $m->out( 'style="'   . $m->interp->apply_escapes( $style => 'h' ) . '"' )
-        if $style;
-    $m->out( 'colspan="' . $m->interp->apply_escapes( $span  => 'h' ) . '"' )
-        if $span;
+    $m->out( $_ .'="'. $m->interp->apply_escapes( $attrs{$_} => 'h' ) .'"' )
+        foreach grep $attrs{$_}, qw(align style colspan);
 
     $m->out('>');
     $m->out(@out) if @out;
