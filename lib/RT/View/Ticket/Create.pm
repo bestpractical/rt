@@ -93,27 +93,8 @@ sub show_basics {
         attr { id => "Ticket-Create-basics" };
         a { attr { name => "basics" } };
 
-        table {
-            attr {
-                border      => 0,
-                cellpadding => 0,
-                cellspacing => 0,
-            };
-
-            row {
-                cell {
-                    attr { class => "label" };
-                    _("Queue:")
-                }
-                cell {
-                    attr { class => "value" };
-
-                    render_mason('/Ticket/Elements/ShowQueue', {
-                        queue => $queue,
-                    });
-                }
-            }
-        };
+        render_param($create, 'queue');
+        render_param($create, 'status');
 
         $create->button(label => _('Create'));
     };
