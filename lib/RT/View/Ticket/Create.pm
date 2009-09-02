@@ -90,6 +90,7 @@ sub show_basics {
 
     div {
         attr { id => "Ticket-Create-basics" };
+        a { attr { name => "basics" } };
 
         table {
             attr {
@@ -125,6 +126,8 @@ sub show_details {
             id    => "Ticket-Create-details",
             class => "jshide",
         };
+        a { attr { name => "details" } };
+
         $create->button(label => _('Create'));
     };
 }
