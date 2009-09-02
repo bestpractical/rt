@@ -16,7 +16,19 @@ sub arguments {
     if (!$self->{_cached_arguments}) {
         $self->{_cached_arguments} = \%{ $self->PARAMS };
 
-        if (Jifty->web->request->argument('queue')) {
+        # The two cases are:
+        # 1. Some template called set_queue on this action. The template
+        #    has told us which queue to use. We do not want to guess the
+        #    queue based on request parameters. We also do not want to call
+        #    set_queue since set_queue is already doing its thing.
+        # 2. Jifty inspected this action's arguments and we are plucking
+        #    the queue out of the request. We need to call set_queue to
+        #    inform the rest of the arguments of the queue so they can
+        #    adjust valid values, etc.
+        # We do not want to call set_queue twice.
+        my $already_setting_queue = caller eq __PACKAGE__ && (caller)[3] eq 'set_queue';
+
+        if (!$already_setting_queue && Jifty->web->request->argument('queue')) {
             my $queue = Jifty->web->request->argument('queue');
             $queue = $queue->[0] if ref $queue eq 'ARRAY';
             $self->set_queue($queue);
@@ -35,6 +47,11 @@ sub set_queue {
         $queue_obj->load($queue);
         $queue = $queue_obj;
     }
+
+    # Prep the arguments cache
+    $self->arguments if !$self->{_cached_arguments};
+
+    $self->{_cached_arguments}{queue}{default_value} = $queue->name;
 
     $self->after_set_queue($queue);
 
