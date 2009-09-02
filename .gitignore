@@ -38,3 +38,4 @@ META.yml
 inc/
 rt4
 var/
+etc/site_config.yml
