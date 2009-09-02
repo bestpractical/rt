@@ -39,6 +39,13 @@ sub arguments {
     return $self->{_cached_arguments};
 }
 
+sub queue {
+    my $self = shift;
+    return $self->{_cached_arguments}{queue}{default_value}
+        if $self->{_cached_arguments};
+    return;
+}
+
 sub set_queue {
     my $self  = shift;
     my $queue = shift;
