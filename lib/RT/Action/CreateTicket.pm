@@ -17,7 +17,9 @@ sub after_set_queue {
     my $self  = shift;
     my $queue = shift;
     $self->SUPER::after_set_queue(@_);
-    # set valid statuses
+
+    my @valid_statuses = $queue->status_schema->valid;
+    $self->{_cached_arguments}{status}{valid_values} = \@valid_statuses;
 }
 
 1;
