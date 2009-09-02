@@ -91,7 +91,7 @@ template 'create' => page {
 
 sub show_basics {
     my $create = shift;
-    my $queue = get('queue');
+    my $queue = $create->queue;
 
     div {
         attr { id => "Ticket-Create-basics" };
