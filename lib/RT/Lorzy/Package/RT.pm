@@ -89,7 +89,7 @@ __PACKAGE__->lcore_defun( 'Condition.OnReopen',
 
 $RT::Lorzy::LCORE->env->set_symbol('RT.MkCondition.BeforeDue' => LCore::Primitive->new(
     # format is "1d2h3m4s" for 1 day and 2 hours and 3 minutes and 4 seconds.
-    parameters => [LCore::Parameter->new( name => 'datestring', type => 'Str' )],
+    parameters => [LCore::Parameter->new({ name => 'datestring', type => 'Str'})],
     lazy => 0,
     body => sub {
         my $datestring = shift;
@@ -117,7 +117,7 @@ $RT::Lorzy::LCORE->env->set_symbol('RT.MkCondition.BeforeDue' => LCore::Primitiv
 ));
 
 $RT::Lorzy::LCORE->env->set_symbol('RT.MkCondition.PriorityExceeds' => LCore::Primitive->new(
-    parameters => [ LCore::Parameter->new( name => 'priority', type => 'Num' ) ],
+    parameters => [ LCore::Parameter->new({ name => 'priority', type => 'Num' }) ],
     body => sub {
         my $priority = shift;
         return LCore::Primitive->new
