@@ -91,7 +91,7 @@ foreach my $col ( @Format ) {
     $item += ($span || 1);
 
     $m->out('<th class="collection-as-table"');
-    $m->out('colspan="' . $m->interp->apply_escapes($span  => 'h') . '"')
+    $m->out(' colspan="' . $m->interp->apply_escapes($span  => 'h') . '"')
         if $span;
     $m->out('>');
 
