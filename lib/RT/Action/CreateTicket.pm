@@ -10,7 +10,7 @@ use Jifty::Param::Schema;
 use Jifty::Action schema {
     param queue =>
         render as 'text',
-        is mandatory,
+        render_mode is 'read',
         default is defer {
             my $queue = Jifty->web->request->argument('queue');
             $queue = $queue->[0] if ref $queue eq 'ARRAY';
