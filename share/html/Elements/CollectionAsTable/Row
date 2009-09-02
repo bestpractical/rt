@@ -87,8 +87,8 @@ foreach my $column (@Format) {
         }
 
         # if it's not defined then use column map
+        my $col = $column->{'attribute'} || $column->{'last_attribute'};
         unless ( exists $ColumnMap->{$col}{$attr} ) {
-            my $col = $column->{'attribute'} || $column->{'last_attribute'};
             next unless $col;
 
             $ColumnMap->{$col}{$attr} = $m->comp(
@@ -101,7 +101,7 @@ foreach my $column (@Format) {
         $attrs{ $attr } = ProcessColumnMapValue(
             $ColumnMap->{$col}{$attr},
             Arguments => [$record, $i],
-            Escape = 0,
+            Escape => 0,
         );
     }
 
