@@ -26,7 +26,7 @@ sub arguments {
         #    inform the rest of the arguments of the queue so they can
         #    adjust valid values, etc.
         # We do not want to call set_queue twice.
-        my $already_setting_queue = caller eq __PACKAGE__ && (caller)[3] eq 'set_queue';
+        my $already_setting_queue = (caller(1))[3] eq __PACKAGE__.'::set_queue';
 
         if (!$already_setting_queue && Jifty->web->request->argument('queue')) {
             my $queue = Jifty->web->request->argument('queue');
