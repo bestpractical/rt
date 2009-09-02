@@ -95,17 +95,18 @@ foreach my $col ( @Format ) {
         if $span;
     $m->out('>');
 
-    $title =~ s/^__(.*)__$/$1/o;
-    my $tmp = $m->comp( '/Elements/ColumnMap',
-        Class => $Class,
-        Name  => $title,
-        Attr  => 'title',
-    );
-
-    unless( $tmp ) {
-        $title = $m->comp('/Elements/ScrubHTML', Content => $title);
+    # if title is not defined then use defined attribute or last
+    # one we saw in the format
+    unless ( defined $col->{'title'} ) {
+        my $attr = $col->{'attribute'} || $col->{'last_attribute'};
+        my $tmp = $m->comp( '/Elements/ColumnMap',
+            Class => $Class,
+            Name  => $attr,
+            Attr  => 'title',
+        );
+        $title = ProcessColumnMapValue( $tmp, Arguments => [ $attr ] );
     } else {
-        $title = ProcessColumnMapValue( $tmp, Arguments => [ $title ] );
+        $title = $m->comp('/Elements/ScrubHTML', Content => $title);
     }
 
     if ( $AllowSorting and $col->{'attribute'}
