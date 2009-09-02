@@ -16,7 +16,7 @@ sub arguments {
     if (!$self->{_cached_arguments}) {
         $self->{_cached_arguments} = \%{ $self->PARAMS };
 
-        if (get('queue')) {
+        if (Jifty->web->request->argument('queue')) {
             my $queue = Jifty->web->request->argument('queue');
             $queue = $queue->[0] if ref $queue eq 'ARRAY';
             $self->set_queue($queue);
