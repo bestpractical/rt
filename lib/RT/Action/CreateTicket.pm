@@ -18,5 +18,18 @@ use Jifty::Action schema {
         };
 };
 
+sub set_queue {
+    my $self  = shift;
+    my $queue = shift;
+
+    if (!ref($queue)) {
+        my $queue_obj = RT::Model::Queue->new;
+        $queue_obj->load($queue);
+        $queue = $queue_obj;
+    }
+
+    my @valid_statuses = $queue->status_schema->valid;
+}
+
 1;
 

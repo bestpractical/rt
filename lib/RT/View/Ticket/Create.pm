@@ -60,6 +60,7 @@ template 'create' => page {
         class   => 'CreateTicket',
         moniker => 'create_ticket',
     );
+    $create->set_queue($queue);
 
     my $actions = {
         A => {
