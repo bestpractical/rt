@@ -8,14 +8,6 @@ use constant report_detailed_messages => 1;
 
 use Jifty::Param::Schema;
 use Jifty::Action schema {
-    param id =>
-        render as 'hidden',
-        default is defer {
-            my $id = Jifty->web->request->argument('id');
-            $id = $id->[0] if ref $id eq 'ARRAY';
-            $id;
-        };
-
     param queue =>
         render as 'text',
         is mandatory,
