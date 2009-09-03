@@ -21,7 +21,7 @@ MUST follow these instructions.
 
 2) Follow the README to step 4 (make install)
 
-3) Apply changes described in the seven step, but only up to version 3.8.0.
+3) Apply changes described in step 3 of UPGRADING
 
 4) Apply mysql 4.0->4.1 schema changes. RTFM tarball has script
 etc/upgrade/upgrade-mysql-schema.pl that generates SQL queries to upgrade schema of

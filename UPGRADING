@@ -27,7 +27,7 @@ Upgrade Instructions from 2.1.x
 
 2) make install
 
-4) Type "ls etc/upgrade"; For each item in that directory whose name
+3) Type "ls etc/upgrade"; For each item in that directory whose name
    is greater than your previously installed RTFM version, run:
 
             /opt/rt3/sbin/rt-setup-database --action schema \
@@ -53,16 +53,16 @@ Upgrade Instructions from 2.1.x
                 --dba root --prompt-for-dba-password \
                  --datadir etc/upgrade/<version>
 
-5) If you are running 3.8, you need to enable RTFM in your 
+4) If you are running 3.8, you need to enable RTFM in your 
    RT_SiteConfig.pm file.  You can do this by adding the following
    line:
 
    Set(@Plugins,qw(RT::FM));
 
-6) clear your mason cache.  This is most often accomplished with
+5) clear your mason cache.  This is most often accomplished with
    rm -rf /opt/rt3/var/mason_data/*
 
-7) stop and start your web server
+6) stop and start your web server
 
 
 Upgrade instructions (From any  2.0.x release):
