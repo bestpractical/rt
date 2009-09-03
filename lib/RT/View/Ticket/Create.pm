@@ -106,6 +106,7 @@ sub show_basics {
 
         render_param($create, 'status');
         render_param($create, 'owner');
+        render_param($create, 'requestors');
 
         $create->button(label => _('Create'));
     };

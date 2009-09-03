@@ -15,6 +15,11 @@ use Jifty::Action schema {
     param owner =>
         render as 'select',
         valid_values are RT->nobody;
+
+    param requestors =>
+        render as 'text',
+        display_length is 40,
+        default is defer { Jifty->web->current_user->email };
 };
 
 sub after_set_queue {
