@@ -57,10 +57,6 @@ use RT::Interface::Web;
 use RT::Interface::Web::Handler;
 
 before qr/.*/ => run {
-    RT::init_system_objects();
-};
-
-before qr/.*/ => run {
     if ( int RT->config->get('auto_logoff') ) {
         my $now = int( time / 60 );
 

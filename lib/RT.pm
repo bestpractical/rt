@@ -105,8 +105,7 @@ sub config {
 
 =head2 init
 
-L<Initilizes system objects|init_system_objects>, and L<configures
-plugins|init_plugins>.
+L<configures plugins|init_plugins>.
 
 =cut
 
@@ -116,10 +115,12 @@ sub init {
     #Get a database connection
     init_plugin_paths();
 
-    init_system_objects();
+    $System = RT::System->new();
+
     init_plugins();
     # enable approval subsystem
     require RT::Approval;
+
 }
 
 # Signal handlers
@@ -163,23 +164,6 @@ EOF
     }
 }
 
-=head2 init_system_objects
-
-Initializes system objects: C<< RT->system >>, C<< RT->system_user >>
-and C<< RT->nobody >>.
-
-=cut
-
-sub init_system_objects {
-
-    #RT's "nobody user" is a genuine database user. its ID lives here.
-    $nobody = RT::CurrentUser->new( name => 'Nobody' );
-    Carp::confess "Could not load 'Nobody' User. This usually indicates a corrupt or missing RT database"
-        unless $nobody->id;
-
-    $System = RT::System->new();
-}
-
 =head1 CLASS METHODS
 
 =head2 config
@@ -192,8 +176,7 @@ Method can be called as class method.
 
 =head2 system
 
-Returns the current system object L<RT::System>. See also
-L</init_system_objects>.
+Returns the current system object L<RT::System>.
 
 =cut
 
@@ -202,8 +185,7 @@ sub system { return RT::System->new }
 =head2 system_user
 
 Returns the system user's object, it's object of
-L<RT::CurrentUser> class that represents the system. See also
-L</init_system_objects>.
+L<RT::CurrentUser> class that represents the system.
 
 =cut
 
@@ -217,12 +199,19 @@ sub system_user {
 =head2 Nobody
 
 Returns object of Nobody. It's object of L<RT::CurrentUser> class
-that represents a user who can own ticket and nothing else. See
-also L</init_system_objects>.
+that represents a user who can own ticket and nothing else.
 
 =cut
 
-sub nobody { return $nobody }
+sub nobody {
+    unless ($nobody) {
+        $nobody = RT::CurrentUser->new( name => 'Nobody' );
+        Carp::confess "Could not load 'Nobody' User. This usually indicates a corrupt or missing RT database"
+                unless $nobody->id;
+    }
+
+    return $nobody
+}
 
 =head2 Plugins
 
@@ -319,21 +308,6 @@ nomrally, we need to do it early in BEGIN block
 sub init_jifty {
     require Jifty;
     Jifty->new;
-
-    Jifty->web->add_javascript(
-        qw( titlebox-state.js util.js ahah.js fckeditor.js list.js class.js
-        combobox.js  cascaded.js )
-    );
-
-    Jifty::Web->add_trigger(
-        name      => 'after_include_javascript',
-        callback  => sub {
-            my $webpath = RT->config->get('web_path') || '/';
-            Jifty->web->out(
-                qq{<script type="text/javascript">RT = {};RT.WebPath = '$webpath';</script>}
-            );
-        },
-    );
 }
 
 =head2 local_path
@@ -432,10 +406,26 @@ L<Jifty::DBI>
 
 =cut
 
-{
+sub start {
     #XXX TODO RT pages don't play well with Halo right now
     no warnings 'redefine';
     *Jifty::Plugin::Halo::is_proscribed = sub { 1 };
+    RT::init();
+
+    Jifty->web->add_javascript(
+        qw( titlebox-state.js util.js ahah.js fckeditor.js list.js class.js
+        combobox.js  cascaded.js )
+    );
+
+    Jifty::Web->add_trigger(
+        name      => 'after_include_javascript',
+        callback  => sub {
+            my $webpath = RT->config->get('web_path') || '/';
+            Jifty->web->out(
+                qq{<script type="text/javascript">RT = {};RT.WebPath = '$webpath';</script>}
+            );
+        },
+    );
 }
 
 1;

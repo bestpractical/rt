@@ -177,9 +177,6 @@ sub insert_initial_data {
         }
     }
 
-    # rerun to get init Nobody as well
-    RT::init_system_objects();
-
     # system role groups
     foreach my $name (qw(owner requestor cc admin_cc)) {
         my $group = RT::Model::Group->new( current_user => RT->system_user );
