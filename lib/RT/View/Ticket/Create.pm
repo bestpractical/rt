@@ -106,7 +106,10 @@ sub show_basics {
 
         render_param($create, 'status');
         render_param($create, 'owner');
-        render_param($create, 'requestors');
+
+        for my $role_group ($create->role_group_parameters) {
+            render_param($create, $role_group);
+        }
 
         $create->button(label => _('Create'));
     };

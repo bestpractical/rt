@@ -15,11 +15,6 @@ use Jifty::Action schema {
     param owner =>
         render as 'select',
         valid_values are RT->nobody;
-
-    param requestors =>
-        render as 'text',
-        display_length is 40,
-        default is defer { Jifty->web->current_user->email };
 };
 
 sub after_set_queue {
@@ -29,6 +24,16 @@ sub after_set_queue {
 
     $self->set_valid_statuses($queue);
     $self->set_valid_owners($queue);
+
+    $self->add_role_group_parameter(
+        name          => 'requestors',
+        default_value => Jifty->web->current_user->email,
+    );
+}
+
+sub role_group_parameters {
+    my $self = shift;
+    return @{ $self->{_role_group_parameters} || [] };
 }
 
 sub set_valid_statuses {
@@ -74,6 +79,21 @@ sub set_valid_owners {
             value   => $_->id,
         } } @valid_owners,
     ];
+}
+
+sub add_role_group_parameter {
+    my $self = shift;
+    my %args = @_;
+
+    my $name = delete $args{name};
+
+    push @{ $self->{_role_group_parameters} }, $name;
+
+    $self->{_cached_arguments}{$name} = {
+        render_as      => 'text',
+        display_length => 40,
+        %args,
+    };
 }
 
 1;
