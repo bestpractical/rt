@@ -15,6 +15,11 @@ use Jifty::Action schema {
     param owner =>
         render as 'select',
         valid_values are RT->nobody;
+
+    param subject =>
+        render as 'text',
+        display_length is 60,
+        max_length is 200;
 };
 
 sub after_set_queue {
