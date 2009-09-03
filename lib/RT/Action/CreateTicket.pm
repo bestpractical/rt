@@ -31,11 +31,13 @@ sub after_set_queue {
     );
 
     $self->add_role_group_parameter(
-        name => 'cc',
+        name  => 'cc',
+        hints => _('(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)'),
     );
 
     $self->add_role_group_parameter(
-        name => 'admin_cc',
+        name  => 'admin_cc',
+        hints => _('(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)'),
     );
 }
 
