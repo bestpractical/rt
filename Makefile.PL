@@ -44,6 +44,12 @@ requires(
     'Pod::POM'                   => 0,
 );
 
+test_requires (
+    'Test::Expect'        => 0,
+    'Test::MockTime'      => 0,
+    'String::ShellQuote'  => 0,
+);
+
 features(
 
     'Mason' => [
