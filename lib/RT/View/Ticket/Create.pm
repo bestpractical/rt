@@ -105,6 +105,7 @@ sub show_basics {
         render_hidden($create, 'queue', $queue);
 
         render_param($create, 'status');
+        render_param($create, 'owner');
 
         $create->button(label => _('Create'));
     };
