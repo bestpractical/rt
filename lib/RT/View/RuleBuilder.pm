@@ -3,10 +3,27 @@ use strict;
 
 package RT::View::RuleBuilder;
 use Jifty::View::Declare -base;
+use JSON;
+
+sub _type_as_string {
+    my ($type) = @_;
+    return $type ? $type->name : undef;
+}
+
+sub _function_as_hash {
+    my ($func) = @_;
+    return { return_type => _type_as_string($func->return_type),
+             parameters => [ map { { name => $_->name, type => _type_as_string($_->type) } } @{ $func->parameters || [] } ] };
+}
 
 template 'index.html' => page {
     title => "rule",
 } content {
+    my $l = $RT::Lorzy::LCORE;
+    my $functions = $l->env->all_functions;
+    my $data = { map { $_ => _function_as_hash($functions->{$_}) } keys %$functions };
+    pre { to_json($data) };
+
     h1 { "Rule Builder"};
     # given transaction :: RT::Model::Transaction
     #       ticket :: RT::Model::Ticket
