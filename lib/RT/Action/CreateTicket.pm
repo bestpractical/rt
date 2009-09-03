@@ -29,6 +29,14 @@ sub after_set_queue {
         name          => 'requestors',
         default_value => Jifty->web->current_user->email,
     );
+
+    $self->add_role_group_parameter(
+        name => 'cc',
+    );
+
+    $self->add_role_group_parameter(
+        name => 'admin_cc',
+    );
 }
 
 sub role_group_parameters {
