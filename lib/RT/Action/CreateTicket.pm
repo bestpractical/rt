@@ -63,7 +63,12 @@ sub set_valid_owners {
                        values %user_uniq_hash;
     unshift @valid_owners, RT->nobody;
 
-    $self->{_cached_arguments}{owner}{valid_values} = \@valid_owners;
+    $self->{_cached_arguments}{owner}{valid_values} = [
+        map { {
+            display => $_->name, # XXX: should use ShowUser or something
+            value   => $_->id,
+        } } @valid_owners,
+    ];
 }
 
 1;
