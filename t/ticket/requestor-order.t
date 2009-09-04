@@ -127,7 +127,7 @@ sub check_emails_order
     my @mails;
     while (my $t = $tix->next) { push @mails, $t->role_group("requestor")->member_emails_as_string; }
     is(@mails, 30, "found thirty tickets");
-    is_deeply( [grep {$_} @mails], [ sort grep {$_} @mails ], "Paging works (exclude nulls, which are db-dependant)");
+    is_deeply( [grep {$_} @mails], [ sort grep {$_} @mails ], "Paging works (exclude nulls, which are db-dependent)");
 }
 
 {
@@ -138,7 +138,7 @@ sub check_emails_order
     my @mails;
     while (my $t = $tix->next) { push @mails, $t->role_group("requestor")->member_emails_as_string; }
     is(@mails, 30, "found thirty tickets");
-    is_deeply( [grep {$_} @mails], [ sort grep {$_} @mails ], "Paging works (exclude nulls, which are db-dependant)");
+    is_deeply( [grep {$_} @mails], [ sort grep {$_} @mails ], "Paging works (exclude nulls, which are db-dependent)");
 }
 RT::Test->mailsent_ok(25);
 
