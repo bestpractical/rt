@@ -77,6 +77,9 @@ sub install_ticket_accessors {
         my $name = $column->name;
         my $type = $column->type;
         $type = $type =~ m/^varchar/ ? 'Str'
+              : $type eq 'timestamp' ? 'DateTime'
+              : $type eq 'boolean'   ? 'Bool'
+              : $type eq 'smallint'  ? 'Bool'
               : $type =~ m/int$/     ? 'Int'
               : $type eq 'integer'   ? 'Int'
               : $type eq 'serial'    ? 'Int'
