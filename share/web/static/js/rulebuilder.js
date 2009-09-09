@@ -1,22 +1,17 @@
 RuleBuilder = function (sel) {
     this.sel = sel;
     /* defaults for now, should use ajax query */
-    this.functions = RuleBuilder.functions;
     this.expressions = RuleBuilder.expressions;
 
     this.current_application = null;
-    this.init();
-};
 
-RuleBuilder.functions = {
-    'or': { 'return_type': 'Bool' },
-    'and': { 'return_type': 'Bool' },
-    'RT.Condition.OnCreate': { 'return_type': 'Bool',
-                               'parameters':
-                               [{name: 'ticket', type: 'RT::Model::Ticket'},
-                                {name: 'transaction', type: 'RT::Model::Transaction'}
-                               ]},
-    'blah': { 'return_type': 'Str' }
+    var that = this;
+    jQuery.get('/rulebuilder/allfunctions.json', {},
+               function(response, status) {
+                   that.functions = response;
+                   that.init();
+               },
+               'json'); // handle errors.
 };
 
 RuleBuilder.expressions = [
@@ -43,16 +38,17 @@ RuleBuilder.prototype.init = function () {
     jQuery("#add-expression")
 		.appendTo(jQuery(".application"));
 
-  	ebuilder.append('<div class="functions">');
+
+    this.update_expressions();
+
+    ebuilder.append('<div class="functions">');
+
     functions_div = jQuery('.functions');
     functions_div.append('<h3>Functions</h3>');
     jQuery.each(this.functions,
                 function(key, val) {
                     functions_div.append('<div class="function ret_'+val.return_type+'"> <span class="return-type">'+val.return_type+'</span> <span class="function-name">'+key+'</span>'+render_signature(val.parameters).html() +'</div>');
                 });
-
-
-    this.update_expressions();
 
     jQuery(this.sel+' div.function').click(
         function(e) {

@@ -16,14 +16,18 @@ sub _function_as_hash {
              parameters => [ map { { name => $_->name, type => _type_as_string($_->type) } } @{ $func->parameters || [] } ] };
 }
 
+template 'allfunctions.json' => sub {
+    Jifty->handler->apache->header_out('Content-Type' => 'application/json; charset=UTF-8' );
+    Jifty->handler->send_http_header;
+
+    my $functions = $RT::Lorzy::LCORE->env->all_functions;
+    my $data = { map { $_ => _function_as_hash($functions->{$_}) } keys %$functions };
+    print to_json($data);
+};
+
 template 'index.html' => page {
     title => "rule",
 } content {
-    my $l = $RT::Lorzy::LCORE;
-    my $functions = $l->env->all_functions;
-    my $data = { map { $_ => _function_as_hash($functions->{$_}) } keys %$functions };
-    pre { to_json($data) };
-
     h1 { "Rule Builder"};
     # given transaction :: RT::Model::Transaction
     #       ticket :: RT::Model::Ticket
