@@ -432,7 +432,8 @@ sub start {
 
     Jifty->web->add_javascript(
         qw( titlebox-state.js util.js ahah.js list.js class.js
-        combobox.js  cascaded.js )
+            jquery.createdomnodes.js jquery.menu.js combobox.js  cascaded.js rulebuilder.js
+      )
     );
 
     Jifty::Web->add_trigger(

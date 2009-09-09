@@ -107,8 +107,23 @@ RuleBuilder.prototype.update_expressions = function() {
                         else {
                             alert("must select param first");
                         }
-                      }).appendTo(expressions_div);
+                          })
+                    .appendTo(expressions_div);
                 });
+
+    var options = {
+        onClick: function(e,item) { x=e;y=item },
+        minWidth: 120,
+        arrowSrc: '/images/arrow_right.gif',
+        hoverOpenDelay: 500,
+        hideDelay: 500 };
+
+    var items = [   {src: 'test' },
+        {src: ''}, /* separator */
+        {src: 'test2', subMenu: [   {src: 'sub 1'},
+                                    {src: 'sub 2' },
+                                    {src: 'sub 3'}]}];
+    jQuery('.ret_'+e_sel('RT::Model::Ticket')).menu(options, items);
 };
 
 
