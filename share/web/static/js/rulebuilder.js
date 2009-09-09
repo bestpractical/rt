@@ -86,7 +86,7 @@ RuleBuilder.prototype.update_expressions = function() {
     jQuery._div({'class': 'expressions'})
             ._h3_().text("Current Expressions")
           .div_()
-        .appendTo(ebuilder);
+        .prependTo(ebuilder);
 
     var expressions_div = jQuery('div.expressions', ebuilder);
 
