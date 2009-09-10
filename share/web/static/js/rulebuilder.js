@@ -249,9 +249,94 @@ RuleBuilder.Context = function(expected_type, element, parent, rb) {
     jQuery._span_({ 'class': 'return-type'})
           .text(expected_type)
           .appendTo(this.element);
+    jQuery._span_({ 'class': 'transform' })
+          .text("♨")
+          .click(function(e) {
+              that.transformMenu(this);
+              return false;
+          })
+          .hide()
+          .appendTo(this.element);
+    if (expected_type == 'Str' || expected_type == 'Num') { // self-evaluating
+        jQuery._span_({ 'class': 'enter-value' })
+          .text("Enter a value")
+          .click(function(e) {
+              jQuery(this).html('').unbind('click');
+              jQuery._input_({ 'type': 'text', class: 'enter-value'})
+                  .appendTo(this).trigger('focus');
+              return true;
+          })
+          .appendTo(this.element);
+    }
 };
 
+
+RuleBuilder.Context.prototype.transform = function(func_name) {
+    if (this.parent) {
+        alert('not yet');
+    }
+    else {
+        var rb = this.rb;
+        var func = rb.functions[func_name];
+        jQuery(rb.top_context.element).removeClass('top-context').remove();
+        var tc = jQuery._div_({'class': 'context top-context'})
+            .prependTo(this.rb.ebuilder);
+
+        rb.top_context = new RuleBuilder.Context(this.expected_type,
+                                                 tc.get(0), null, rb);
+        rb.top_context.set_application(func_name, func);
+        this.parent = rb.top_context;
+
+        jQuery(this.element).unbind('click');
+        var first_param = rb.top_context.children[0];
+        rb.top_context.children[0] = this;
+        this.expected_type = first_param.expected_type;
+        jQuery('span.return-type:first', this.element)
+            .text(first_param.expected_type);
+        jQuery(first_param.element).replaceWith(this.element);
+        var that = this;
+        jQuery(this.element).click(function(e) { rb.focus(that); return false });
+
+        this.update_return_type(this.return_type);
+    }
+}
+
+RuleBuilder.Context.prototype.transformMenu = function(el) {
+    // this.return_type -> this.expected_type
+    var that = this;
+    var options = {
+        onClick: function(e,item) {
+            that.transform(item.src);
+            jQuery.Menu.closeAll();
+            return false;
+        },
+        minWidth: 120,
+        arrowSrc: '/images/arrow_right.gif',
+        hoverOpenDelay: 500,
+        hideDelay: 500 };
+
+    jQuery.get('/rulebuilder/getfunctions.json',
+               { parameters: [ this.return_type ],
+                 return_type: this.expected_type },
+               function(response, status) {
+                   var entries = [];
+                   for (var name in response) {
+                       entries.push(name);
+                   }
+
+                   jQuery(el)
+                   .menu(options,
+                         jQuery.map(entries,
+                                    function(val) {
+                                        return {src: val, data: {  } }}
+                                       ));
+               },
+               'json');
+
+}
+
 RuleBuilder.Context.prototype.update_return_type = function(type) {
+    this.return_type = type;
     if (this.expected_type == type) {
         jQuery("span.return-type", this.element).removeClass("unmatched").addClass("matched");
     }
@@ -263,12 +348,15 @@ RuleBuilder.Context.prototype.update_return_type = function(type) {
 RuleBuilder.Context.prototype.clear = function() {
     jQuery('div.application', this.element).remove();
     jQuery('span.expression', this.element).remove();
+    jQuery('span.transform', this.element).hide();
+    jQuery('span.enter-value', this.element).hide();
 }
 
 RuleBuilder.Context.prototype.set_expression = function(expression) {
     this.clear();
     this.expression = expression.expression;
     this.update_return_type(expression.type);
+    jQuery('span.transform', this.element).show();
 
     jQuery._span_({ 'class': 'expression'})
           .text(this.expression)
@@ -282,13 +370,13 @@ RuleBuilder.Context.prototype.set_application = function(func_name, func) {
     this.func = func;
     this.children = [];
     this.update_return_type(func.return_type);
+    jQuery('span.transform', this.element).show();
     jQuery._div({'class': 'application'})
             ._div_({'class': 'application-function function'})
            ._div_({'class': 'application-params signature'})
           .div_()
         .appendTo(this.element);
 
-//    jQuery(this.sel+' div.application-function').html(this.current_application);
     jQuery('div.application-function',this.element).html(func_name);
     jQuery('div.application', this.element).show();
     jQuery('div.application-params', this.element).html('');
@@ -305,10 +393,6 @@ RuleBuilder.Context.prototype.set_application = function(func_name, func) {
     if (this.children.length) {
         this.rb.focus(this.children[0]);
     }
-};
-
-RuleBuilder.Context.prototype.init = function() {
-
 };
 
 jQuery.fn.sort = function() {

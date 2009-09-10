@@ -4,8 +4,9 @@ div.context span.return-type,
 div.expression span.return-type,
 div.parameter .type,
 div.menu-item span.return-type {
-  color:#555555;
-  font-style:italic;
+    color:#555555;
+    font-style:italic;
+    padding-right:0.5em;
 }
 
 .signature .parameter {
@@ -29,6 +30,8 @@ div.top-context {
 
 div.context {
     border: 1px dashed;
+    margin: 0.5em;
+    padding: 0.5em;
     min-height: 1.5em;
 }
 
