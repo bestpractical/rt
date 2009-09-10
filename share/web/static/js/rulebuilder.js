@@ -141,12 +141,18 @@ RuleBuilder.prototype.update_expressions = function() {
         hoverOpenDelay: 500,
         hideDelay: 500 };
 
-    var items = [   {src: 'test' },
-        {src: ''}, /* separator */
-        {src: 'test2', subMenu: [   {src: 'sub 1'},
-                                    {src: 'sub 2' },
-                                    {src: 'sub 3'}]}];
-//    jQuery('.ret_'+e_sel('RT::Model::Ticket')).menu(options, items);
+    jQuery.get('/rulebuilder/getfunctions.json',
+               { parameters: ['RT::Model::Ticket'] },
+               function(response, status) {
+                   var entries = [];
+                   for (var name in response) {
+                       if (/^RT::Model::Ticket\./.match(name))
+                           entries.push(name);
+                   }
+                   var x = jQuery.map(entries, function(val) { return {src: val}});
+                   jQuery('.ret_'+e_sel('RT::Model::Ticket')).menu(options, x);
+               },
+               'json');
 };
 
 

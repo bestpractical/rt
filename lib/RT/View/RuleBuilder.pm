@@ -25,6 +25,16 @@ template 'allfunctions.json' => sub {
     print to_json($data);
 };
 
+template 'getfunctions.json' => sub {
+    Jifty->handler->apache->header_out('Content-Type' => 'application/json; charset=UTF-8' );
+    Jifty->handler->send_http_header;
+
+    my $functions = $RT::Lorzy::LCORE->env->find_functions_by_type(get('parameters'), get('return_type'));
+
+    my $data = { map { $_ => _function_as_hash($functions->{$_}) } keys %$functions };
+    print to_json($data);
+};
+
 template 'index.html' => page {
     title => "rule",
 } content {
@@ -44,7 +54,6 @@ jQuery(function() {
     var rb = new RuleBuilder("#expressionbuilder");
     jQuery("#type-filter").click(function(e) { rb.filter_return_type(jQuery("#type-filter-type").val())});
     jQuery("#type-unfilter").click(function(e) { rb.unfilter_return_type()});
-    jQuery("#add-expression").click(function(e) { rb.add_expression()});
 });
 </script>
 ');
