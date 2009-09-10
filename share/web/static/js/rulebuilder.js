@@ -135,7 +135,12 @@ RuleBuilder.prototype.update_expressions = function() {
 
 
     var options = {
-        onClick: function(e,item) { x=e;y=item },
+        onClick: function(e,item) {
+            that.push_expression({ expression: "("+item.data.func+" "+item.data.expression+")",
+                                   type: item.data.type });
+            jQuery.Menu.closeAll();
+            return false;
+        },
         minWidth: 120,
         arrowSrc: '/images/arrow_right.gif',
         hoverOpenDelay: 500,
@@ -149,8 +154,20 @@ RuleBuilder.prototype.update_expressions = function() {
                        if (/^RT::Model::Ticket\./.match(name))
                            entries.push(name);
                    }
-                   var x = jQuery.map(entries, function(val) { return {src: val}});
-                   jQuery('.ret_'+e_sel('RT::Model::Ticket')).menu(options, x);
+                   jQuery('.ret_'+e_sel('RT::Model::Ticket'), that.ebuilder)
+                   .each(function() {
+                       var expression = jQuery('span.expression-text',this).text();
+                       jQuery._span_().text('...')
+                       .appendTo(this)
+                       .menu(options,
+                             jQuery.map(entries,
+                                        function(val) {
+                                            var attribute = val.replace(/^RT::Model::Ticket\./, '');
+                                            var type = that.functions[val].return_type;
+                                            attribute += ' <span class="return-type">'+type+'</span>';
+                                            return {src: attribute, data: { type: type, expression: expression, func: val } }}
+                                       ));
+                   });
                },
                'json');
 };
