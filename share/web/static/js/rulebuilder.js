@@ -134,6 +134,7 @@ RuleBuilder.prototype.update_expressions = function() {
                 });
 
     this.build_accessor_menu('RT::Model::Ticket');
+    this.build_accessor_menu('RT::Model::Transaction');
 }
 
 RuleBuilder.prototype.build_accessor_menu = function(model) {
@@ -172,6 +173,7 @@ RuleBuilder.prototype.build_accessor_menu = function(model) {
                                             var attribute = val.replace(re, '');
                                             var type = that.functions[val].return_type;
                                             attribute += ' <span class="return-type">'+type+'</span>';
+                                            // XXX: submenu here for known types
                                             return {src: attribute, data: { type: type, expression: expression, func: val } }}
                                        ));
                    });

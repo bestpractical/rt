@@ -2,6 +2,7 @@ div.application-params span.param-placeholder,
 div.function span.return-type,
 div.context span.return-type,
 div.expression span.return-type,
+div.parameter .type,
 div.menu-item span.return-type {
   color:#555555;
   font-style:italic;
