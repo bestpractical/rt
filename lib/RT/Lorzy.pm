@@ -76,9 +76,11 @@ sub install_model_accessors {
     my $modelname = lc($model);
     $modelname =~ s/.*://;
     for my $column ($model->columns) {
+        next if $column->virtual;
         my $name = $column->name;
         my $type = $column->type;
-        $type = $type =~ m/^varchar/ ? 'Str'
+        $type = $column->refers_to   ? $column->refers_to
+              : $type =~ m/^varchar/ ? 'Str'
               : $type eq 'timestamp' ? 'DateTime'
               : $type eq 'boolean'   ? 'Bool'
               : $type eq 'smallint'  ? 'Bool'

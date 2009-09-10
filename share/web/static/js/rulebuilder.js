@@ -139,6 +139,8 @@ RuleBuilder.prototype.update_expressions = function() {
                     .appendTo(expressions_div);
                 });
 
+    this.model_accessors = {};
+    this.build_accessor_menu('RT::Model::Queue');
     this.build_accessor_menu('RT::Model::Ticket');
     this.build_accessor_menu('RT::Model::Transaction');
 }
@@ -159,7 +161,6 @@ RuleBuilder.prototype.build_accessor_menu = function(model) {
         hideDelay: 500 };
 
     var re = new RegExp('^'+model+'\.');
-
     jQuery.get('/rulebuilder/getfunctions.json',
                { parameters: [model] },
                function(response, status) {
@@ -168,6 +169,7 @@ RuleBuilder.prototype.build_accessor_menu = function(model) {
                        if (re.match(name))
                            entries.push(name);
                    }
+                   that.model_accessors[model] = entries;
                    jQuery('.ret_'+e_sel(model), that.ebuilder)
                    .each(function() {
                        var expression = jQuery('span.expression-text',this).text();
@@ -176,15 +178,33 @@ RuleBuilder.prototype.build_accessor_menu = function(model) {
                        .menu(options,
                              jQuery.map(entries,
                                         function(val) {
-                                            var attribute = val.replace(re, '');
-                                            var type = that.functions[val].return_type;
-                                            attribute += ' <span class="return-type">'+type+'</span>';
-                                            // XXX: submenu here for known types
-                                            return {src: attribute, data: { type: type, expression: expression, func: val } }}
-                                       ));
+                                            return that.map_accessor_menu_entry(model, val, expression, true);
+                                        }
+                                       ))
                    });
                },
                'json');
+};
+
+RuleBuilder.prototype.map_accessor_menu_entry = function (model, func_name, expression, want_submenu) {
+    var re = new RegExp('^'+model+'\.');
+    var attribute = func_name.replace(re, '');
+    var type = this.functions[func_name].return_type;
+    var submenu = null;
+    attribute += ' <span class="return-type">'+type+'</span>';
+
+    var that = this;
+    if (want_submenu && that.model_accessors[type]) {
+        submenu = jQuery.map(that.model_accessors[type],
+                             function(val) {
+                                 return that.map_accessor_menu_entry(type, val,
+                                                                     "("+func_name+" "+expression+")" );
+                             });
+    }
+
+    return {src: attribute,
+            subMenu: submenu,
+            data: { type: type, expression: expression, func: func_name } };
 };
 
 
