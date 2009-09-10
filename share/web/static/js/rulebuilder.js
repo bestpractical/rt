@@ -133,6 +133,11 @@ RuleBuilder.prototype.update_expressions = function() {
                     .appendTo(expressions_div);
                 });
 
+    this.build_accessor_menu('RT::Model::Ticket');
+}
+
+RuleBuilder.prototype.build_accessor_menu = function(model) {
+    var that = this;
 
     var options = {
         onClick: function(e,item) {
@@ -146,15 +151,17 @@ RuleBuilder.prototype.update_expressions = function() {
         hoverOpenDelay: 500,
         hideDelay: 500 };
 
+    var re = new RegExp('^'+model+'\.');
+
     jQuery.get('/rulebuilder/getfunctions.json',
-               { parameters: ['RT::Model::Ticket'] },
+               { parameters: [model] },
                function(response, status) {
                    var entries = [];
                    for (var name in response) {
-                       if (/^RT::Model::Ticket\./.match(name))
+                       if (re.match(name))
                            entries.push(name);
                    }
-                   jQuery('.ret_'+e_sel('RT::Model::Ticket'), that.ebuilder)
+                   jQuery('.ret_'+e_sel(model), that.ebuilder)
                    .each(function() {
                        var expression = jQuery('span.expression-text',this).text();
                        jQuery._span_().text('...')
@@ -162,7 +169,7 @@ RuleBuilder.prototype.update_expressions = function() {
                        .menu(options,
                              jQuery.map(entries,
                                         function(val) {
-                                            var attribute = val.replace(/^RT::Model::Ticket\./, '');
+                                            var attribute = val.replace(re, '');
                                             var type = that.functions[val].return_type;
                                             attribute += ' <span class="return-type">'+type+'</span>';
                                             return {src: attribute, data: { type: type, expression: expression, func: val } }}
