@@ -1,34 +1,43 @@
 div.application-params span.param-placeholder,
 div.function span.return-type,
-div.expression span.type {
+div.context span.return-type,
+div.expression span.return-type {
   color:#555555;
   font-style:italic;
 }
-div.application-params span.param-placeholder,
-div.function span.return-type {
-  background-color:lightBlue;
-  border:2px solid blue;
-
-}
 
 .signature .parameter {
-	border: 1px solid red;
+    border: 1px solid red;
 }
 
 .expression .type {
-	background-color: lightGreen;
-	border: 2px solid green;
+    background-color: lightGreen;
+    border: 2px solid green;
 }
 
 .signature .parameter {
-	background-color: lightGreen;
-	border: 2px solid green;
+    background-color: lightBlue;
+    border: 2px solid blue;
+}
+
+div.top-context {
+    position: relative;
+    left: 20em;
+}
+
+div.context {
+    border: 1px dashed;
+    min-height: 1.5em;
+}
+
+div.current {
+    border: 1px dotted red;
 }
 
 div.application-params span.param-placeholder,
 div.function span.return-type, 
 .signature .parameter,
-.expression .type {
+.expression .return-type {
 	font-size: 0.8em;
   display: inline-block;
   text-align: left;
@@ -51,7 +60,7 @@ div#body {
 
 #expressionbuilder {
 }
-.application {
+.application-old {
 	position: relative;
 	top: -7em;
 	left: 20em;
@@ -72,8 +81,8 @@ div#body {
 
 div.application-params span.param {
   padding:0.5em;
-	background: lightGreen;
-	border 1px solid green;
+  background: lightBlue;
+  border 1px solid blue;
 
 }
 
@@ -87,6 +96,20 @@ div.application-params span.param-placeholder.current {
 	background: #f99;	
 }
 
+.return-type.unmatched {
+    background: #f99;
+    border: 1px solid red;
+}
+
+.return-type.matched {
+    background: lightGreen;
+    border: 1px solid green;
+}
+
 .signature {
 	padding-left: 2em;
+}
+
+div.context span.expression {
+    padding-left: 1em;
 }
