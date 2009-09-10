@@ -29,7 +29,7 @@ RuleBuilder.prototype.init = function () {
     var that = this;
 
     this.ebuilder = ebuilder;
-    
+
     jQuery._div_({'class': 'context top-context'})
         .appendTo(ebuilder);
 
@@ -77,6 +77,12 @@ RuleBuilder.prototype.init = function () {
 	}
 
     this.focus(this.top_context);
+
+    jQuery._div_({'class': 'ohai'})
+        .text("OH HAI")
+        .click(function(e){ alert(that.top_context.serialize())})
+        .prependTo(ebuilder);
+
 };
 
 RuleBuilder.prototype.push_application = function(func_name) {
@@ -264,6 +270,7 @@ RuleBuilder.Context = function(expected_type, element, parent, rb) {
               jQuery(this).html('').unbind('click');
               jQuery._input_({ 'type': 'text', class: 'enter-value'})
                   .appendTo(this).trigger('focus');
+              that.self_eval = true;
               return true;
           })
           .appendTo(this.element);
@@ -352,6 +359,26 @@ RuleBuilder.Context.prototype.clear = function() {
     jQuery('span.enter-value', this.element).hide();
 }
 
+RuleBuilder.Context.prototype.serialize = function() {
+    if( this.self_eval ) {
+        var val = jQuery('input.enter-value', this.element).val();
+        if (this.expected_type == 'Str') {
+            return '"'+val+'"';
+        }
+        else {
+            return val;
+        }
+    }
+    else if ( this.expression ) {
+        return this.expression;
+    }
+    else if ( this.func_name ) {
+        var args = jQuery.map(this.children, function(val) { return val.serialize() });
+        args.unshift(this.func_name);
+        return '('+args.join(' ')+')';
+    }
+}
+
 RuleBuilder.Context.prototype.set_expression = function(expression) {
     this.clear();
     this.expression = expression.expression;
@@ -367,7 +394,7 @@ RuleBuilder.Context.prototype.set_expression = function(expression) {
 
 RuleBuilder.Context.prototype.set_application = function(func_name, func) {
     this.clear();
-    this.func = func;
+    this.func_name = func_name;
     this.children = [];
     this.update_return_type(func.return_type);
     jQuery('span.transform', this.element).show();
