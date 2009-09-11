@@ -32,11 +32,13 @@ div.context {
     border: 1px dashed;
     margin: 0.5em;
     padding: 0.5em;
-    min-height: 1.5em;
+	max-width: 70%;
+	display: inline-block;
 }
 
 div.current {
     border: 1px dotted red;
+	background: #ffc;
 }
 
 div.application-params span.param-placeholder,
@@ -101,12 +103,14 @@ div.application-params span.param-placeholder.current {
 	background: #f99;	
 }
 
-.return-type.unmatched {
+
+
+.unmatched .return-type {
     background: #f99;
     border: 1px solid red;
 }
 
-.return-type.matched {
+.matched .return-type {
     background: lightGreen;
     border: 1px solid green;
 }

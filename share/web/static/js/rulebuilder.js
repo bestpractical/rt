@@ -101,17 +101,17 @@ RuleBuilder.prototype.focus = function(ctx) {
     this.current_ctx = ctx;
     jQuery(this.current_ctx.element).addClass('current');
     var type = this.current_ctx.expected_type;
-    jQuery('.functions .return-type', this.ebuilder).removeClass('matched')
+    jQuery('.functions ', this.ebuilder).removeClass('matched')
                                                      .addClass('unmatched');
 
-    jQuery('.expressions .return-type', this.ebuilder).removeClass('matched')
+    jQuery('.expressions', this.ebuilder).removeClass('matched')
                                                    .addClass('unmatched');
 
     jQuery('.functions .return-type:contains('+type+')', this.ebuilder)
-    .addClass('matched');
+    .parent().addClass('matched');
 
     jQuery('.expressions .return-type:contains('+type+')', this.ebuilder)
-    .addClass('matched');
+    .parent().addClass('matched');
 };
 
 RuleBuilder.prototype.update_expressions = function() {
