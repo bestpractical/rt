@@ -104,7 +104,7 @@ RuleBuilder.prototype.focus = function(ctx) {
     jQuery('.functions .function', this.ebuilder).removeClass('matched')
                                                      .addClass('unmatched');
 
-    jQuery('.functions .expression', this.ebuilder).removeClass('matched')
+    jQuery('.expressions .expression', this.ebuilder).removeClass('matched')
                                                    .addClass('unmatched');
 
     jQuery('.functions .function .return-type:contains('+type+')', this.ebuilder)
