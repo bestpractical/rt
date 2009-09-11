@@ -5,13 +5,9 @@ div.expression span.return-type,
 div.parameter .type,
 div.menu-item span.return-type {
     color:#555555;
-    font-style:italic;
     padding-right:0.5em;
 }
 
-.signature .parameter {
-    border: 1px solid red;
-}
 
 .expression .type {
     background-color: lightGreen;
@@ -21,6 +17,7 @@ div.menu-item span.return-type {
 .signature .parameter {
     background-color: lightBlue;
     border: 2px solid blue;
+	border-right: 10px solid #00c;
 }
 
 div.top-context {
@@ -29,23 +26,25 @@ div.top-context {
 }
 
 div.context {
-    border: 1px dashed;
+    border: 1px solid #ccc;
     margin: 0.5em;
     padding: 0.5em;
 	max-width: 70%;
 	display: inline-block;
+	border-right: 10px solid #ccc;
 }
 
 div.current {
-    border: 1px dotted red;
+    border: 1px solid blue;
 	background: #ffc;
+	border-right: 10px solid #00c;
 }
 
 div.application-params span.param-placeholder,
 div.function span.return-type, 
 .signature .parameter,
 .expression .return-type {
-	font-size: 0.8em;
+	font-size: 0.9em;
   display: inline-block;
   text-align: left;
   padding: 0.25em;
@@ -89,7 +88,7 @@ div#body {
 div.application-params span.param {
   padding:0.5em;
   background: lightBlue;
-  border 1px solid blue;
+  border: 1px solid blue;
 
 }
 
@@ -103,16 +102,39 @@ div.application-params span.param-placeholder.current {
 	background: #f99;	
 }
 
+.functions .unmatched {
+	display: none;
+}
+
+.functions .matched {
+	display: block;
+}
 
 
-.unmatched .return-type {
-    background: #f99;
-    border: 1px solid red;
+.expressions .return-type, .functions .return-type {
+	background: #fff;
+    border: 1px solid #ccc;
+    border-left: 10px solid #ccc;
+	color: #ccc;
+}
+.unmatched * {
+	color: #ccc;
+}
+
+.unmatched .signature {
+	display: none;
+}
+
+.matched .signature {
+	display: block;
+}
+
+.matched .signature * {
+	color: #000;
 }
 
 .matched .return-type {
-    background: lightGreen;
-    border: 1px solid green;
+    border-left: 10px solid #0c0;
 }
 
 .signature {
@@ -121,4 +143,24 @@ div.application-params span.param-placeholder.current {
 
 div.context span.expression {
     padding-left: 1em;
+}
+
+.context .unmatched {
+	color: red;
+	padding: 0.5em;
+	margin-bottom: 0.5em;
+	border: 1px solid red;
+
+
+}
+.context .unmatched:before {
+	font-size: 1em;
+	font-weight: bold;
+	color: #f00;
+	content: "TYPE MISMATCH: ";
+}
+.context .transform {
+	float: right;
+	padding: 0.5em;
+	font-size: 2em;
 }
