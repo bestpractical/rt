@@ -39,9 +39,13 @@ RuleBuilder.prototype.init = function () {
         null,
         this
     );
-    this.update_expressions();
 
-    ebuilder.append('<div class="functions">');
+	ebuilder.append('<div class="library">');
+
+
+    jQuery('.library').append('<div class="expressions">');
+    jQuery('.library').append('<div class="functions">');
+    this.update_expressions();
 
     functions_div = jQuery('.functions');
     functions_div.append('<h3>Functions</h3>');
@@ -119,14 +123,9 @@ RuleBuilder.prototype.update_expressions = function() {
     var ebuilder = jQuery(sel);
     var that = this;
 
-    jQuery('div.expressions', ebuilder).remove();
-
-    jQuery._div({'class': 'expressions'})
-            ._h3_().text("Current Expressions")
-          .div_()
-        .prependTo(ebuilder);
-
     var expressions_div = jQuery('div.expressions', ebuilder);
+	expressions_div.html('<h3>Current Expressions</h3>');
+
 
     jQuery.each(this.expressions,
                 function(idx, val) {

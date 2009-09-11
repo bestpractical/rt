@@ -42,13 +42,9 @@ template 'index.html' => page {
     # given transaction :: RT::Model::Transaction
     #       ticket :: RT::Model::Ticket
     # expect Bool
-	div { { id is 'expression-filter'};
-    input { { id is 'type-filter-type', type is 'text' } };
-    input { { id is 'type-filter', type is 'button', value is 'filter' } };
-    input { { id is 'type-unfilter', type is 'button', value is 'unfilter' } };
-	}
     div { { id is 'expressionbuilder' } };
     input { { id is 'add-expression', type is 'button', value is 'Add Expression' } };
+
     outs_raw('<script type="text/javascript">
 jQuery(function() {
     var rb = new RuleBuilder("#expressionbuilder");

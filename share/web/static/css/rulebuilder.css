@@ -56,7 +56,7 @@ div.function span.return-type,
 
 
 div#body {
-	margin-left: 1em;
+	margin-left: 24em;
 
 }
 
@@ -74,14 +74,20 @@ div#body {
 }
 		
 .library {
-	position: relative;
-	top: -5em;
-	left: 1em;
-	width: 15em;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 21em;
+	bottom: 0;
 	padding: 0.5em;
-	background: #ccc;
+	background: #fff;
+	overflow: auto;
 	-moz-border-radius: 0.5em;
 
+}
+
+.library * {
+ 0.25em;
 }
 
 
@@ -106,8 +112,12 @@ div.application-params span.param-placeholder.current {
 	display: none;
 }
 
-.functions .matched {
+.functions .matched, .expressions .matched {
 	display: block;
+	padding: 0.25em;
+
+	background: #eee;
+	margin-bottom: 3px;
 }
 
 
