@@ -108,6 +108,7 @@ div.application-params span.param-placeholder.current {
 	background: #f99;	
 }
 
+
 .functions .unmatched {
 	display: none;
 }
@@ -173,4 +174,7 @@ div.context span.expression {
 	float: right;
 	padding: 0.5em;
 	font-size: 2em;
+}
+.expression:hover, .function:hover, .application:hover, .context:hover {
+	background: #ffd;
 }
