@@ -71,6 +71,12 @@
         <option value=""<% !$selected && qq[ selected="selected"] |n %>><&|/l&>(no value)</&></option>
 %       $m->out($out);
       </select>
+%# this hidden select is to supply a full list of values,
+%# see filter_cascade() in js/cascaded.js
+      <select name="<%$id%>-Values-Complete" id="<%$id%>-Values-Complete" class="hidden">
+        <option value=""<% !$selected && qq[ selected="selected"] |n %>><&|/l&>(no value)</&></option>
+%       $m->out($out);
+      </select>
 <%ARGS>
 $Object => undef
 $CustomField => undef
