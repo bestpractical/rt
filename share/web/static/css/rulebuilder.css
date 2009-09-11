@@ -178,3 +178,25 @@ div.context span.expression {
 .expression:hover, .function:hover, .application:hover, .context:hover {
 	background: #ffd;
 }
+
+.launch-menu {
+	padding: 0.25em;
+	margin: 0.25em;
+	border: 1px solid #ccc;
+	border-right: 3px solid #ccc;
+	border-bottom: 3px solid #ccc;
+	background: #eee;
+	-moz-border-radius: 0.5em;
+	-webkit-border-radius: 0.5em;
+	border-radius: 0.5em;
+}
+
+.launch-menu:hover {
+	border: 3px solid #999;
+	border-right: 1px solid #999;
+	border-bottom: 1px solid #999;
+	background: #eee;
+	-moz-border-radius: 0.5em;
+	-webkit-border-radius: 0.5em;
+	border-radius: 0.5em;
+}

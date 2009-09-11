@@ -172,7 +172,7 @@ RuleBuilder.prototype.build_accessor_menu = function(model) {
                    jQuery('.ret_'+e_sel(model), that.ebuilder)
                    .each(function() {
                        var expression = jQuery('span.expression-text',this).text();
-                       jQuery._span_().text('...')
+                       jQuery._span_({ 'class': 'launch-menu'} ).text('...')
                        .appendTo(this)
                        .menu(options,
                              jQuery.map(entries,
@@ -274,7 +274,7 @@ RuleBuilder.Context = function(expected_type, element, parent, rb) {
     jQuery._span_({ 'class': 'return-type'})
           .text(expected_type)
           .appendTo(this.element);
-    jQuery._span_({ 'class': 'transform' })
+    jQuery._span_({ 'class': 'launch-menu transform' })
           .text("♨")
           .click(function(e) {
               that.transformMenu(this);
