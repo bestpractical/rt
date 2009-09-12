@@ -312,6 +312,11 @@ sub LoadByName {
         @_,
     );
 
+    unless ( defined $args{'Name'} && length $args{'Name'} ) {
+        $RT::Logger->error("Couldn't load Custom Field without Name");
+        return wantarray ? (0, $self->loc("No name provided")) : 0;
+    }
+
     # if we're looking for a queue by name, make it a number
     if ( defined $args{'Queue'} && $args{'Queue'} =~ /\D/ ) {
         my $QueueObj = RT::Queue->new( $self->CurrentUser );
