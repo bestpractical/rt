@@ -79,7 +79,11 @@ RuleBuilder.prototype.init = function () {
 
     jQuery._div_({'class': 'ohai'})
         .text("OH HAI")
-        .click(function(e){ alert(that.top_context.serialize())})
+        .click(function(e){
+            that.top_context.traverse(function(ctx) {
+                jQuery(ctx.element).append(ctx.state());
+            });
+            alert(that.top_context.serialize())})
         .prependTo(ebuilder);
 
 };
@@ -160,7 +164,7 @@ RuleBuilder.prototype.build_accessor_menu = function(model) {
                function(response, status) {
                    var entries = [];
                    for (var name in response) {
-                       if (re.match(name))
+                       if (name.match(re))
                            entries.push(name);
                    }
                    that.model_accessors[model] = entries;
@@ -332,6 +336,35 @@ RuleBuilder.Context.prototype.transformMenu = function(el) {
 
 }
 
+RuleBuilder.Context.prototype.state = function() {
+    if( this.self_eval ) {
+    }
+    else if ( this.expression ) {
+    }
+    else if ( this.func_name ) {
+        var type_complete = false;
+        console.log(this.children);
+        for (var i in this.children) {
+            var child = this.children[i];
+            console.log(i);
+            console.log(this.children[i]);
+            var state = child.state();
+            if (state == 'pending')
+                return 'pending';
+            if (state == 'type-complete')
+                type_complete = true;
+        }
+        if (!type_complete)
+            return "complete";
+    }
+    else {
+        return 'pending';
+    }
+
+    var el = jQuery("span.return-type", this.element);
+    return el.hasClass('matched') ? 'type-complete' : 'complete';
+}
+
 RuleBuilder.Context.prototype.update_return_type = function(type) {
     // XXX: this should query the server for 'is-a-type-of'
     this.return_type = type;
@@ -353,6 +386,13 @@ RuleBuilder.Context.prototype.clear = function() {
     this.self_eval = false;
     this.expression = null;
     this.func_name = null;
+}
+
+RuleBuilder.Context.prototype.traverse = function(fn) {
+    fn(this);
+    if ( this.func_name ) {
+        jQuery.each(this.children, function(idx, val) { fn(this) } );
+    }
 }
 
 RuleBuilder.Context.prototype.serialize = function() {
@@ -410,7 +450,7 @@ RuleBuilder.Context.prototype.set_application = function(func_name, func) {
                     var x = jQuery._div_({'class': 'context'})
                     .appendTo(params);
 
-                    var child = new RuleBuilder.Context(val.type, x, that, that.rb);
+                    var child = new RuleBuilder.Context(val.type, x.get(0), that, that.rb);
                     that.children.push(child);
                 });
     if (this.children.length) {
