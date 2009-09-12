@@ -31,7 +31,6 @@ framework:
     - User: {}
     - Authentication::Password:
         login_by: username
-    - Prototypism: {}
     - I18N:
         js: 0
     - IEFixes:
