@@ -274,20 +274,14 @@ RuleBuilder.Context = function(expected_type, element, parent, rb) {
     jQuery._span_({ 'class': 'return-type'})
           .text(expected_type)
           .appendTo(this.element);
-    jQuery._span_({ 'class': 'launch-menu transform' })
-          .text("♨")
-          .click(function(e) {
-              that.transformMenu(this);
-              return false;
-          })
-          .hide()
-          .appendTo(this.element);
+
     if (expected_type == 'Str' || expected_type == 'Num') { // self-evaluating
         jQuery._span_({ 'class': 'enter-value' })
           .text("Enter a value")
           .click(function(e) {
               jQuery(this).html('').unbind('click');
               jQuery._input_({ 'type': 'text', class: 'enter-value'})
+                  .change(function() { that.update_return_type(that.return_type_from_val(this.value)) } )
                   .appendTo(this).trigger('focus');
               that.self_eval = true;
               return true;
@@ -296,6 +290,10 @@ RuleBuilder.Context = function(expected_type, element, parent, rb) {
     }
 };
 
+RuleBuilder.Context.prototype.return_type_from_val = function(val) {
+    // XXX
+    return 'Str';
+}
 
 RuleBuilder.Context.prototype.transform = function(func_name) {
     if (this.parent) {
@@ -308,22 +306,24 @@ RuleBuilder.Context.prototype.transform = function(func_name) {
         var tc = jQuery._div_({'class': 'context top-context'})
             .prependTo(this.rb.ebuilder);
 
-        rb.top_context = new RuleBuilder.Context(this.expected_type,
-                                                 tc.get(0), null, rb);
-        rb.top_context.set_application(func_name, func);
-        this.parent = rb.top_context;
+        var parent = new RuleBuilder.Context(this.expected_type,
+                                             tc.get(0), null, rb);
+        parent.set_application(func_name, func);
+        this.parent = rb.top_context = parent;
 
         jQuery(this.element).unbind('click');
-        var first_param = rb.top_context.children[0];
-        rb.top_context.children[0] = this;
+        var first_param = parent.children[0];
+        var second_param = parent.children.length > 1 ? parent.children[1] : null;
+        parent.children[0] = this;
         this.expected_type = first_param.expected_type;
         jQuery('span.return-type:first', this.element)
             .text(first_param.expected_type);
         jQuery(first_param.element).replaceWith(this.element);
         var that = this;
         jQuery(this.element).click(function(e) { rb.focus(that); return false });
-
         this.update_return_type(this.return_type);
+        if (second_param)
+            this.focus(second_param);
     }
 }
 
@@ -362,12 +362,15 @@ RuleBuilder.Context.prototype.transformMenu = function(el) {
 }
 
 RuleBuilder.Context.prototype.update_return_type = function(type) {
+    // XXX: this should query the server for 'is-a-type-of'
     this.return_type = type;
+    var el = jQuery("span.return-type", this.element);
     if (this.expected_type == type) {
-        jQuery("span.return-type", this.element).removeClass("unmatched").addClass("matched");
+        el.removeClass("unmatched").addClass("matched");
     }
     else {
-        jQuery("span.return-type", this.element).removeClass("matched").addClass("unmatched");
+        el.removeClass("matched").addClass("unmatched");
+        this.transformMenu(el);
     }
 }
 

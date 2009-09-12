@@ -22,7 +22,7 @@ div.menu-item span.return-type {
 
 div.top-context {
     position: relative;
-    left: 20em;
+    left: 1em;
 }
 
 div.context {
@@ -156,19 +156,32 @@ div.context span.expression {
     padding-left: 1em;
 }
 
-.context .unmatched {
-	color: red;
-	padding: 0.5em;
-	margin-bottom: 0.5em;
-	border: 1px solid red;
-
+.context .matched:before {
+    font-size: 1em;
+    font-weight: bold;
+    color: green;
+    content: "\2714";
+}
+.context .matched {
+    padding: 0.2em;
+    margin-bottom: 0.2em;
+    border: 1px solid green;
+    background: lightGreen;
 
 }
+.context .unmatched {
+    color: red;
+    padding: 0.2em;
+    margin-bottom: 0.2em;
+    border: 1px solid red;
+    background: #e99;
+}
+
 .context .unmatched:before {
 	font-size: 1em;
 	font-weight: bold;
 	color: #f00;
-	content: "TYPE MISMATCH: ";
+	content: "! ";
 }
 .context .transform {
 	float: right;
