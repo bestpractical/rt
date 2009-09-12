@@ -3,8 +3,6 @@ RuleBuilder = function (sel) {
     /* defaults for now, should use ajax query */
     this.expressions = RuleBuilder.expressions;
 
-    this.current_application = null;
-
     var that = this;
     jQuery.get('/rulebuilder/allfunctions.json', {},
                function(response, status) {
@@ -40,8 +38,7 @@ RuleBuilder.prototype.init = function () {
         this
     );
 
-	ebuilder.append('<div class="library">');
-
+    ebuilder.append('<div class="library">');
 
     jQuery('.library').append('<div class="expressions">');
     jQuery('.library').append('<div class="functions">');
@@ -58,10 +55,8 @@ RuleBuilder.prototype.init = function () {
         function(e) {
             var func_name = jQuery('span.function-name', this).text();
             that.push_application(func_name);
-//            that.current_application = func_name;
-//            that.update_application();
         });
-//    jQuery(this.sel+' div.application').hide();
+
 	function render_signature(sig) {
 			var content = jQuery._span_({'class': 'outer node we should not need but createdomnodes is broken'});
 			if (!sig) 
@@ -206,37 +201,13 @@ RuleBuilder.prototype.map_accessor_menu_entry = function (model, func_name, expr
             data: { type: type, expression: expression, func: func_name } };
 };
 
-
-RuleBuilder.prototype.update_application = function () {
-    /* might be an expression too */
-    jQuery(this.sel+' div.application-function').html(this.current_application);
-    jQuery(this.sel+' div.application-old').show();
-    jQuery(this.sel+' div.application-params').html('');
-    var params = jQuery(this.sel+' div.application-params');
-    var that = this;
-    jQuery.each(this.functions[this.current_application].parameters,
-                function(idx, val) {
-                    params.append('<span class="param param-placeholder">'+val.type+'</span> ').children(':last-child')
-         .click(function(e) {
-             jQuery(that.sel+ ' .param-placeholder').removeClass('current');
-             jQuery(this).addClass('current');
-             that.filter_expression_type(jQuery(this).text());
-             that.current_application_param = idx; });
-                });
-};
-
 RuleBuilder.prototype.add_expression = function () {
     var params = jQuery.map(
         jQuery(".application-params span.param"),
         function(elt) { return elt.textContent });
-  
-    params.unshift(this.current_application);
-    var expression = {
-        expression: '('+params.join(' ')+')',
-        type: this.functions[this.current_application].return_type
-    };
 
-    this.expressions.push(expression);
+    // XXX: later
+
     this.update_expressions();
 }
 
@@ -323,7 +294,7 @@ RuleBuilder.Context.prototype.transform = function(func_name) {
         jQuery(this.element).click(function(e) { rb.focus(that); return false });
         this.update_return_type(this.return_type);
         if (second_param)
-            this.focus(second_param);
+            this.rb.focus(second_param);
     }
 }
 
@@ -332,8 +303,8 @@ RuleBuilder.Context.prototype.transformMenu = function(el) {
     var that = this;
     var options = {
         onClick: function(e,item) {
-            that.transform(item.src);
             jQuery.Menu.closeAll();
+            that.transform(item.src);
             return false;
         },
         minWidth: 120,
