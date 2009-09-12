@@ -376,6 +376,9 @@ RuleBuilder.Context.prototype.clear = function() {
     jQuery('span.expression', this.element).remove();
     jQuery('span.transform', this.element).hide();
     jQuery('span.enter-value', this.element).hide();
+    this.self_eval = false;
+    this.expression = null;
+    this.func_name = null;
 }
 
 RuleBuilder.Context.prototype.serialize = function() {
