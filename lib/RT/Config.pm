@@ -319,7 +319,7 @@ our %META = (
         Widget          => '/Widgets/Form/Select',
         WidgetArguments => {
             Description => 'CSS rule white-space',    #loc
-            Values => [ 'normal', 'nowrap', 'pre', 'pre-line', 'pre-wrap', '' ]
+            Values => [ 'normal', 'nowrap', 'pre', 'pre-line', 'pre-wrap', '' ],
               Hints => "ie6 doesn't support white-space well, so don't use this if you use ie6"    #loc
         },
     },
