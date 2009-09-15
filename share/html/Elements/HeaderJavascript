@@ -92,9 +92,10 @@ $onload => undef
                 textArea.parentNode.appendChild(FCKeditorEncoded);
 
 %# for FCKeditor..
+
                 var typeField = document.createElement('input');
                 typeField.setAttribute('type', 'hidden');
-                typeField.setAttribute('name', textArea.name + 'Type');
+                typeField.setAttribute('name', textArea.name + '_type');
                 typeField.setAttribute('value', 'text/html');
                 textArea.parentNode.appendChild(typeField);
 
