@@ -309,7 +309,7 @@ our %META = (
         SortOrder       => 5,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
-            Description => 'display wrapping formatting plain text', #loc
+            Description => 'display wrapped and formatted plain text attachments', #loc
             Hints => 'Use css rules to display text monospaced and with formatting preserved, but wrap as needed.  This does not work well with IE6 and you should use the previous option', #loc
         },
     },
