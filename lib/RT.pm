@@ -413,7 +413,7 @@ sub start {
     RT::init();
 
     Jifty->web->add_javascript(
-        qw( titlebox-state.js util.js ahah.js fckeditor.js list.js class.js
+        qw( titlebox-state.js util.js ahah.js list.js class.js
         combobox.js  cascaded.js )
     );
 
