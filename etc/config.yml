@@ -50,6 +50,7 @@ framework:
         add_steps:
           - template: basics
             header: RT Basics
+    - WyzzEditor: {}
   PubSub: 
     Backend: Memcached
     Enable: ~
