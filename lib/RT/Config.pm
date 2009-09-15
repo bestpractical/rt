@@ -309,18 +309,8 @@ our %META = (
         SortOrder       => 5,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
-            Description => 'Use monospaced font to display plain text attachments', #loc
-        },
-    },
-    PlainTextWhiteSpace => {
-        Section         => 'Ticket display',
-        Overridable     => 1,
-        SortOrder       => 4,
-        Widget          => '/Widgets/Form/Select',
-        WidgetArguments => {
-            Description => 'CSS rule white-space',    #loc
-            Values => [ 'normal', 'nowrap', 'pre', 'pre-line', 'pre-wrap', '' ],
-              Hints => "ie6 doesn't support white-space well, so don't use this if you use ie6"    #loc
+            Description => 'display wrapping formatting plain text', #loc
+            Hints => 'Use css rules to display text monospaced and with formatting preserved, but wrap as needed.  This does not work well with IE6 and you should use the previous option', #loc
         },
     },
 

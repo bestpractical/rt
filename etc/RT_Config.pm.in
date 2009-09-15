@@ -1132,43 +1132,15 @@ use a monospaced font, no matter what the value of C<$PlainTextMono> is.
 Set($PlainTextPre, 0);
 
 
-=item C<$PlainTextMono>
-
+=item C<$PlainTextMono> 
 To display plaintext attachments,
-Set C<$PlainTextMono> to 1 to use monospaced font,  0 to not to.
+Set C<$PlainTextMono> to 1 to use monospaced font and preserve
+formatting, but unlike PlainTextPre, the text will wrap to fit into the
+UI.
 
 =cut
 
 Set($PlainTextMono, 0);
-
-=item C<$PlainTextWhiteSpace>
-
-Decorate plain text displays by white-space css property.
-Possible values are: 
-
-normal:
-    Sequences of whitespace will collapse into a single whitespace.
-    Text will wrap when necessary.
-nowrap:
-    Sequences of whitespace will collapse into a single whitespace.
-    Text will never wrap to the next line.
-    The text continues on the same line until a <br /> tag is encountered
-pre:
-    Whitespace is preserved by the browser.
-    Text will only wrap on line breaks Acts like the <pre> tag in HTML
-pre-line:
-    Sequences of whitespace will collapse into a single whitespace.
-    Text will wrap when necessary, and on line breaks
-pre-wrap:
-    Whitespace is preserved by the browser.
-    Text will wrap when necessary, and on line breaks 
-
-Set value to '' to not use this.
-
-=cut
-
-Set($PlainTextWhiteSpace, '');
-
 
 =item C<$ShowUnreadMessageNotifications>
 

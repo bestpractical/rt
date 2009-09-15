@@ -118,12 +118,8 @@ div#ticket-history div.content {
  margin-left: 1.5em;
 }
 
-div.mono {
- font-family: monospace;
-}
-
 .plain-text-white-space {
- white-space: <%RT->Config->Get('PlainTextWhiteSpace', $RT::CurrentUser)%>;
+ white-space: pre-wrap;
 }
 
 .ticket-transaction .messagebody {
