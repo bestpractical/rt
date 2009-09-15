@@ -211,31 +211,41 @@ The id of the object in question.
 
 The value of this custom field for the object in question.
 
+=item __WebDomain__, __WebPort__, __WebPath__, __WebBaseURL__ and __WebURL__
+
+The value of the config option.
+
 =back
 
 =cut
+
+{
+my %placeholders = (
+    id          => { value => sub { $_[0]->ObjectId }, escape => 1 },
+    CustomField => { value => sub { $_[0]->Content }, escape => 1 },
+    WebDomain   => { value => sub { RT->Config->Get('WebDomain') } },
+    WebPort     => { value => sub { RT->Config->Get('WebPort') } },
+    WebPath     => { value => sub { RT->Config->Get('WebPath') } },
+    WebBaseURL  => { value => sub { RT->Config->Get('WebBaseURL') } },
+    WebURL      => { value => sub { RT->Config->Get('WebURL') } },
+);
 
 sub _FillInTemplateURL {
     my $self = shift;
     my $url = shift;
 
-    my %placeholders = (
-        id          => $self->ObjectId,
-        CustomField => $self->Content,
-    );
-
     # default value, uri-escape
     for my $key (keys %placeholders) {
-        my $value = $placeholders{$key};
-
-        $value = '' if !defined($value);
-        RT::Interface::Web::EscapeURI(\$value);
-
-        $url =~ s/__${key}__/$value/g;
+        $url =~ s{__${key}__}{
+            my $value = $placeholders{$key}{'value'}->( $self );
+            $value = '' if !defined($value);
+            RT::Interface::Web::EscapeURI(\$value) if $placeholders{$key}{'escape'};
+            $value
+        }gxe;
     }
 
     return $url;
-}
+} }
 
 
 =head2 ValueLinkURL

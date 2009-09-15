@@ -508,4 +508,12 @@ apachectl:
 	sleep 10
 	$(APACHECTL) start
 	sleep 5
+
+SNAPSHOT=RT-$(RT_VERSION_MAJOR).$(RT_VERSION_MINOR).HEAD-$(shell git log -n1 --pretty='format:%h')
+snapshot:
+	git archive --prefix "$(SNAPSHOT)/"  HEAD | tar -xf -
+	( cd $(SNAPSHOT) && autoconf && ./configure )
+	tar -czf "$(SNAPSHOT).tar.gz" "$(SNAPSHOT)/"
+	rm -fr "$(SNAPSHOT)/"
+
 # }}}

@@ -57,7 +57,8 @@
 <tr>
 
 <td valign="top"><select size="6" name="SelectDisplayColumns" multiple="multiple">
-% foreach my $field ( @$AvailableColumns) {
+% my %seen;
+% foreach my $field ( grep !$seen{lc $_}++, @$AvailableColumns) {
 <option value="<% $field %>"><% loc($field) %></option>
 % }
 </select></td>

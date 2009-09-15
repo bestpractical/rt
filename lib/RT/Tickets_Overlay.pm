@@ -804,16 +804,28 @@ sub _WatcherLimit {
     # Owner was ENUM field, so "Owner = 'xxx'" allowed user to
     # search by id and Name at the same time, this is workaround
     # to preserve backward compatibility
-    if ( $field eq 'Owner' && !$rest{SUBKEY} && $op =~ /^!?=$/ ) {
-        my $o = RT::User->new( $self->CurrentUser );
-        $o->Load( $value );
-        $self->_SQLLimit(
-            FIELD    => 'Owner',
-            OPERATOR => $op,
-            VALUE    => $o->Id,
-            %rest,
-        );
-        return;
+    if ( $field eq 'Owner' ) {
+        if ( $op =~ /^!?=$/ && (!$rest{'SUBKEY'} || $rest{'SUBKEY'} eq 'Name' || $rest{'SUBKEY'} eq 'EmailAddress') ) {
+            my $o = RT::User->new( $self->CurrentUser );
+            my $method = ($rest{'SUBKEY'}||'') eq 'EmailAddress' ? 'LoadByEmail': 'Load';
+            $o->$method( $value );
+            $self->_SQLLimit(
+                FIELD    => 'Owner',
+                OPERATOR => $op,
+                VALUE    => $o->id,
+                %rest,
+            );
+            return;
+        }
+        if ( ($rest{'SUBKEY'}||'') eq 'id' ) {
+            $self->_SQLLimit(
+                FIELD    => 'Owner',
+                OPERATOR => $op,
+                VALUE    => $value,
+                %rest,
+            );
+            return;
+        }
     }
     $rest{SUBKEY} ||= 'EmailAddress';
 

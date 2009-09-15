@@ -91,33 +91,22 @@ foreach my $col ( @Format ) {
     $item += ($span || 1);
 
     $m->out('<th class="collection-as-table"');
-    $m->out('colspan="' . $m->interp->apply_escapes($span  => 'h') . '"')
+    $m->out(' colspan="' . $m->interp->apply_escapes($span  => 'h') . '"')
         if $span;
     $m->out('>');
 
-    $title =~ s/^__(.*)__$/$1/o;
-    my $tmp = $m->comp( '/Elements/ColumnMap',
-        Class => $Class,
-        Name  => $title,
-        Attr  => 'title',
-    );
-
-    unless( $tmp ) {
-        $title = $m->comp('/Elements/ScrubHTML', Content => $title);
+    # if title is not defined then use defined attribute or last
+    # one we saw in the format
+    unless ( defined $col->{'title'} ) {
+        my $attr = $col->{'attribute'} || $col->{'last_attribute'};
+        my $tmp = $m->comp( '/Elements/ColumnMap',
+            Class => $Class,
+            Name  => $attr,
+            Attr  => 'title',
+        );
+        $title = ProcessColumnMapValue( $tmp, Arguments => [ $attr ] );
     } else {
-        if ( UNIVERSAL::isa( $tmp, 'CODE' ) ) {
-            my @tmp = $tmp->( $title );
-            $title = @tmp > 1? \@tmp: shift @tmp || '';
-        } else {
-            $title = $tmp;
-        }
-        if( UNIVERSAL::isa( $title, 'ARRAY' ) ) {
-            $title = join '', map { ref $_? $$_: $m->interp->apply_escapes( $_, 'h' ) } @$title;
-        } elsif( UNIVERSAL::isa( $title, 'SCALAR' ) ) {
-            $title = $$title;
-        } else {
-            $title = $m->interp->apply_escapes( $title, 'h' );
-        }
+        $title = $m->comp('/Elements/ScrubHTML', Content => $title);
     }
 
     if ( $AllowSorting and $col->{'attribute'}
@@ -129,6 +118,8 @@ foreach my $col ( @Format ) {
         )
       )
     {
+        $attr = ProcessColumnMapValue( $attr, Arguments => [ $col->{'attribute'} ], Escape => 0 );
+
         my $new_order = 'ASC';
         $new_order = $Order[0] eq 'ASC'? 'DESC': 'ASC'
             if $OrderBy[0] && $OrderBy[0] eq $attr;

@@ -49,65 +49,65 @@
     position: relative;
 }
 
-#comp-Search-Build #pick-criteria select {
- width: 8em;
+#pick-criteria select {
+    width: 8em;
 }
 
-#comp-Search-Build #pick-criteria tr {
- height: 1.5em;
+#pick-criteria tr {
+    height: 1.5em;
 }
 
-#comp-Search-Build #pick-criteria td.label {
+#pick-criteria td.label {
     font: message-box;    
     padding-right: 0.5em;
     width: 11em;
 }
 
-#comp-Search-Build #pick-criteria td.label * {
+#pick-criteria td.label * {
  width: 8.5em;
 }
 
-#comp-Search-Build #pick-criteria td.label select {
+#pick-criteria td.label select {
   text-align: right;
 }
 
-#comp-Search-Build #pick-criteria td.operator {
+#pick-criteria td.operator {
  padding-right: 0.5em;
  text-align: left;
  vertical-align: bottom;
  width: 7em;
 }
 
-#comp-Search-Build #pick-criteria td.operator select {
+#pick-criteria td.operator select {
  text-align: right;
 }
 
-#comp-Search-Build #pick-criteria td.value input,
-#comp-Search-Build #pick-criteria td.value select {
+#pick-criteria td.value input,
+#pick-criteria td.value select {
  width: 10em;
 }
 
-#comp-Search-Build #pick-criteria td.value #ValueOfDate {
+#pick-criteria td.value #ValueOfDate {
  width: 6em;
 }
 
 
-#comp-Search-Build #pick-criteria td.value #ValueOfTime {
+#pick-criteria td.value #ValueOfTime {
  width: 4em;
 
 }
 
-#comp-Search-Build #pick-criteria td.value #ValueOfTime-TimeUnits{
+#pick-criteria td.value #ValueOfTime-TimeUnits{
  width: 5.5em;
 }
 
-#comp-Search-Build #pick-criteria td.value {
+#pick-criteria td.value {
  padding-right: 0.5em;
  text-align: left;
  font: message-box;
 }
 
-#comp-Search-Build #editquery, #comp-Search-Build #editsearches{
+#editquery, #editsearches{
   position: absolute;
   margin-top: 0.2em;
   right: 1em;
@@ -116,45 +116,40 @@
 /*  margin-top: -1em; */
 }
 
-#comp-Search-Build #editquery {
+#editquery {
    top: 1.3em;
-}    
+}
 
 
-#comp-Search-Build #editsearches {
+#editsearches {
   top: 24em;
 }
 
 
-#comp-Search-Build #pick-criteria {
+#pick-criteria {
  width: 58%;
  padding-top: 0em;
  margin-top: 0em;
 }
 
-#comp-Search-Build #pick-criteria .titlebox-content {
+#pick-criteria .titlebox-content {
  overflow-x: auto;
 }
 
-
 #comp-Search-Build .submit {
  width: 58%;
-
 }
 
 
-#comp-Search-Build #sorting.titlebox {
+#sorting.titlebox {
  width: 55%;
  padding-right: 1em;
 }
 
 #comp-Search-Build #columns {
-
-
- 
 }
 
-#comp-Search-Build #formatbuttons {
+#display-options .submit {
  width: 100%;
 }
 

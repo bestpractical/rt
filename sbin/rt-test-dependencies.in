@@ -119,7 +119,7 @@ $args{$_} = $default{$_} foreach grep !exists $args{$_}, keys %default;
 
     unless ( $args{'list-deps'} ) {
         if ( $args{'v'} or not $test or $always_show_sections{$section} ) {
-            print "\t$msg...";
+            print "\t$msg ...";
             print $test ? "found" : "MISSING";
             print "\n";
         }

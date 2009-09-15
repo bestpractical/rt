@@ -312,6 +312,11 @@ sub LoadByName {
         @_,
     );
 
+    unless ( defined $args{'Name'} && length $args{'Name'} ) {
+        $RT::Logger->error("Couldn't load Custom Field without Name");
+        return wantarray ? (0, $self->loc("No name provided")) : 0;
+    }
+
     # if we're looking for a queue by name, make it a number
     if ( defined $args{'Queue'} && $args{'Queue'} =~ /\D/ ) {
         my $QueueObj = RT::Queue->new( $self->CurrentUser );
@@ -383,7 +388,6 @@ sub Values {
 =head3 AddValue HASH
 
 Create a new value for this CustomField.  Takes a paramhash containing the elements Name, Description and SortOrder
-
 
 =cut
 
@@ -479,7 +483,7 @@ sub Types {
 # }}}
 
 # {{{ IsSelectionType
- 
+
 =head2 IsSelectionType 
 
 Retuns a boolean value indicating whether the C<Values> method makes sense
@@ -652,7 +656,7 @@ Returns false if it accepts multiple values
 
 sub SingleValue {
     my $self = shift;
-    if ($self->MaxValues == 1) {
+    if (($self->MaxValues||0) == 1) {
         return 1;
     } 
     else {
@@ -662,7 +666,7 @@ sub SingleValue {
 
 sub UnlimitedValues {
     my $self = shift;
-    if ($self->MaxValues == 0) {
+    if (($self->MaxValues||0) == 0) {
         return 1;
     } 
     else {
@@ -776,7 +780,6 @@ Takes a boolean.
 
 Set this custom field's type and maximum values as a composite value
 
-
 =cut
 
 sub SetTypeComposite {
@@ -861,6 +864,8 @@ my @FriendlyObjectTypes = (
 );
 
 =head2 FriendlyTypeLookup
+
+Returns a localized description of the type of this custom field
 
 =cut
 
@@ -1226,8 +1231,6 @@ the current user has the right to see this custom field.
 With two arguments, attemptes to set the relevant template value.
 
 =cut
-
-
 
 sub _URLTemplate {
     my $self          = shift;

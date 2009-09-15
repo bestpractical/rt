@@ -331,15 +331,33 @@ sub bootstrap_plugins {
         my $plugin = RT::Plugin->new( name => $name );
         Test::More::diag( "Initializing DB for the $name plugin" )
             if $ENV{'TEST_VERBOSE'};
-        Test::More::diag( "etc path of the plugin is '". $plugin->Path('etc') ."'" )
+
+        my $etc_path = $plugin->Path('etc');
+        Test::More::diag( "etc path of the plugin is '$etc_path'" )
             if $ENV{'TEST_VERBOSE'};
 
-        my ($ret, $msg) = $RT::Handle->InsertSchema( undef, $plugin->Path('etc') );
-        Test::More::ok($ret || $msg =~ /^Couldn't find schema/, "Created schema: ".($msg||''));
-        ($ret, $msg) = $RT::Handle->InsertACL( undef, $plugin->Path('etc') );
-        Test::More::ok($ret || $msg =~ /^Couldn't find ACLs/, "Created ACL: ".($msg||''));
-        ($ret, $msg) = $RT::Handle->InsertData( File::Spec->catfile( $plugin->Path('etc'), 'initialdata' ) );
-        Test::More::ok($ret || $msg =~ /^Couldn't load data from/, "Inserted data: ".($msg||''));
+        if ( -e $etc_path ) {
+            my ($ret, $msg) = $RT::Handle->InsertSchema( undef, $etc_path );
+            Test::More::ok($ret || $msg =~ /^Couldn't find schema/, "Created schema: ".($msg||''));
+
+            ($ret, $msg) = $RT::Handle->InsertACL( undef, $etc_path );
+            Test::More::ok($ret || $msg =~ /^Couldn't find ACLs/, "Created ACL: ".($msg||''));
+
+            my $data_file = File::Spec->catfile( $etc_path, 'initialdata' );
+            if ( -e $data_file ) {
+                ($ret, $msg) = $RT::Handle->InsertData( $data_file );;
+                Test::More::ok($ret, "Inserted data".($msg||''));
+            } else {
+                Test::More::ok(1, "There is no data file" );
+            }
+        }
+        else {
+# we can not say if plugin has no data or we screwed with etc path
+            Test::More::ok(1, "There is no etc dir: no schema" );
+            Test::More::ok(1, "There is no etc dir: no ACLs" );
+            Test::More::ok(1, "There is no etc dir: no data" );
+        }
+
         $RT::Handle->Connect; # XXX: strange but mysql can loose connection
     }
 }
