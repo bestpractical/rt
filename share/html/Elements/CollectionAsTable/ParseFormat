@@ -75,6 +75,9 @@ while ($Format =~ /($RE{delimited}{-delim=>qq{\'"}}|[{}\w.]+)/go) {
         $colref->{'last_attribute'} = $colref->{'attribute'} = ''
             unless defined $colref->{'attribute'};
     }
+    elsif ( $col =~ /^__(NEWLINE|NBSP)__$/ || $col =~ /^(NEWLINE|NBSP)$/ ) {
+        $colref->{'title'} = $1;
+    }
     elsif ( $col =~ /__(.*?)__/io ) {
         my @subcols;
         while ( $col =~ s/^(.*?)__(.*?)__//o ) {
@@ -86,9 +89,6 @@ while ($Format =~ /($RE{delimited}{-delim=>qq{\'"}}|[{}\w.]+)/go) {
         $colref->{'output'} = \@subcols;
         $colref->{'attribute'} = $colref->{'last_attribute'}
             unless defined $colref->{'attribute'};
-    }
-    elsif ( $col eq 'NEWLINE' || $col eq 'NBSP' ) {
-        $colref->{'title'} = $col;
     }
     else {
         $colref->{'output'} = [ "__" . $col . "__" ];
