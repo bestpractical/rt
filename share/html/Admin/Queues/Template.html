@@ -65,14 +65,14 @@
 <input type="hidden" class="hidden" name="Queue" value="<%$Queue%>" />
 <& /Admin/Elements/ModifyTemplate, Name => $TemplateObj->Name, Description =>
 $TemplateObj->Description, Content => $TemplateObj->Content &> 
-<& /Elements/Submit, Label => loc('Create'), Reset => 1 &>
+<& /Elements/Submit, Label => $SubmitLabel, Reset => 1 &>
 </form>
 
 
 <%INIT>
 
 my $TemplateObj = new RT::Template($session{'CurrentUser'});
-my  ($title, @results, $current_subtab);
+my  ($title, @results, $current_subtab, $SubmitLabel);
 
 my $subtabs = {
 		 A => { title => loc('Select template'),
@@ -87,6 +87,7 @@ my $subtabs = {
 if ($Create) {
   $title = loc("Create a template");
   $current_subtab = "Admin/Queues/Template.html?Create=1&Queue=".$Queue;
+  $SubmitLabel = loc('Create');
 }
 
 else {
@@ -99,6 +100,7 @@ else {
        $TemplateObj->Load($Template) || Abort(loc('No Template'));
     }
      $title = loc('Modify template [_1]', loc($TemplateObj->Name())); 
+     $SubmitLabel = loc('Save Changes');
   
     
 }
