@@ -66,8 +66,13 @@
 % if ( $CustomField->Type ne 'Combobox' ) {
 <td>
 % my $BasedOnObj = $CustomField->BasedOnObj;
-%   if ( $BasedOnObj and $BasedOnObj->id ) {
-<& /Elements/EditCustomField, CustomField => $BasedOnObj, Rows => 1, NamePrefix => "$paramtag-BasedOn-", Default => "" &>
+% if ( $BasedOnObj and $BasedOnObj->id ) {
+% my $Categories = $BasedOnObj->Values;
+<select name="<% $paramtag %>-Category" size="1">
+<option value=""><&|/l&>(no value)</&></option>
+% while (my $Value = $Categories->Next) {
+<option value="<% $Value->Name %>"><% $Value->Name %></option>
+% }
 %   } else {
 <input type="text" size="10" name="<% $paramtag %>-Category" value="" />
 %   }

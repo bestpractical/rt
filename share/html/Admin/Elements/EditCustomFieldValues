@@ -71,8 +71,14 @@
 <td><input type="text" size="45" name="<% $paramtag %>-Description" value="<% $value->Description %>" /></td>
 % if ( $CustomField->Type ne 'Combobox' ) {
 <td>
-%   if ( $BasedOnObj->id ) {
-<& /Elements/EditCustomField, CustomField => $BasedOnObj, Rows => 1, NamePrefix => "$paramtag-BasedOn-", Default => $value->Category &>
+%   if ( $Categories ) {
+% my $selected = $value->Category;
+% $selected = '' unless defined $selected;
+<select name="<% $paramtag %>-Category" size="1">
+<option value=""<% $selected eq '' ? q[ selected="selected"] : "" |n%>><&|/l&>(no value)</&></option>
+% while (my $Value = $Categories->Next) {
+<option value="<% $Value->Name %>"<% $selected eq $Value->Name ? q[ selected="selected"] : "" |n%>><% $Value->Name %></option>
+% }
 %   } else {
 <input type="text" size="10" name="<% $paramtag %>-Category" value="<% $value->Category || '' %>" />
 %   }
@@ -88,6 +94,10 @@
 my $values = $CustomField->ValuesObj();
 
 my $BasedOnObj = $CustomField->BasedOnObj;
+my $Categories;
+if ($BasedOnObj and $BasedOnObj->Id) {
+    $Categories = $BasedOnObj->Values;
+}
 </%init>
 <%args>
 $CustomField => undef

@@ -196,11 +196,8 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     # Update any existing values
     my $values = $CustomFieldObj->ValuesObj;
     while ( my $value = $values->Next ) {
-        my $prefix = $paramtag . "-" . $value->Id;
-        $ARGS{"$prefix-Category"} = delete $ARGS{$_}
-            for grep /^$prefix-BasedOn-\d+-Values$/, keys %ARGS;
         foreach my $attr qw(Name Description SortOrder Category) {
-            my $param = "$prefix-$attr";
+            my $param = join("-", $paramtag, $value->Id, $attr);
             next unless exists $ARGS{$param};
             next if ($value->$attr()||'') eq ($ARGS{$param}||'');
 
@@ -212,8 +209,6 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
 
     # Add any new values
     if ( defined $ARGS{ $paramtag ."-new-Name" } && length $ARGS{ $paramtag ."-new-Name" } ) {
-        $ARGS{"$paramtag-new-Category"} = delete $ARGS{$_}
-            for grep /^$paramtag-new-BasedOn-\d+-Values$/, keys %ARGS;
         my ($id, $msg) = $CustomFieldObj->AddValue(
             map { $_ => $ARGS{ $paramtag ."-new-$_" } }
                 qw( Name Description SortOrder Category )
