@@ -27,10 +27,19 @@ RuleBuilder.load_and_edit_lambda = function (params, return_type, el) {
     var lambda_text = jQuery(el).prev('textarea').text();
     jQuery.post('/rulebuilder/parse_lambda.json', { lambda_text: lambda_text },
                function(response, status) {
-                   new RuleBuilder("#expressionbuilder",
-                                   function () {
-                                       this.load_expressions(response, this.top_context);
-                                   });
+                   var rb = new RuleBuilder("#expressionbuilder",
+                                            function () {
+                                                this.load_expressions(response, this.top_context);
+                                            });
+                   rb.finalize = function() {
+                       var body = this.top_context.serialize();
+                       var lambda = '(lambda ('
+                           +jQuery.map(params,
+                                       function(val) { return val.expression }).join(" ")+') '
+                           +body+')';
+                       jQuery(el).prev('textarea').text(lambda);
+                       this.ebuilder.html('');
+                   };
                },
                'json'); // XXX: handle errors.
 };
@@ -59,6 +68,7 @@ RuleBuilder.prototype.load_expressions = function (node, ctx) {
         alert('unknown node type');
     }
 }
+
 
 RuleBuilder.prototype.init = function () {
     var sel = this.sel;
@@ -123,6 +133,14 @@ RuleBuilder.prototype.init = function () {
                 jQuery(ctx.element).append(ctx.state());
             });
             alert(that.top_context.serialize())})
+        .prependTo(ebuilder);
+
+    jQuery._div_({'class': 'done'})
+        .text("Done")
+        .click(function(e){
+            if (that.finalize)
+                that.finalize.apply(that);
+        })
         .prependTo(ebuilder);
 
 };
@@ -410,8 +428,8 @@ RuleBuilder.Context.prototype.update_return_type = function(type) {
     }
     else {
         el.removeClass("matched").addClass("unmatched");
-        this.transformMenu(el);
     }
+    this.transformMenu(el);
 }
 
 RuleBuilder.Context.prototype.clear = function() {
