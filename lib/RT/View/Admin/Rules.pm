@@ -86,5 +86,27 @@ sub view_field_name {
     });
 }
 
+template 'edit' => page {
+    show('./update');
+
+    div { { id is 'expressionbuilder' } };
+outs_raw(q{<script type="text/javascript">
+jQuery(function() {
+  jQuery._span_({'class': 'edit-with-rulebuilder'}).text("...")
+    .insertAfter("textarea.argument-condition_code")
+    .click(function(e) { RuleBuilder.load_and_edit_lambda([
+    { expression: 'ticket',
+      type: 'RT::Model::Ticket'
+    },
+    { expression: 'transaction',
+      type: 'RT::Model::Transaction'
+    }
+], 'Bool', this) });
+
+});
+</script>
+});
+};
+
 1;
 

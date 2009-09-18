@@ -35,6 +35,18 @@ template 'getfunctions.json' => sub {
     print to_json($data);
 };
 
+template 'parse_lambda.json' => sub {
+    Jifty->handler->apache->header_out('Content-Type' => 'application/json; charset=UTF-8' );
+    Jifty->handler->send_http_header;
+
+    my $l = $RT::Lorzy::LCORE;
+    my $env = $l->env;
+    my $lambda = $l->analyze_it(get('lambda_text'));
+
+    print to_json( $lambda->procedure->body->to_hash );
+};
+
+
 template 'index.html' => page {
     title => "rule",
 } content {

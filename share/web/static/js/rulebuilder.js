@@ -21,6 +21,31 @@ RuleBuilder.expressions = [
     }
 ];
 
+RuleBuilder.load_and_edit_lambda = function (params, return_type, el) {
+    var lambda_text = jQuery(el).prev('textarea').text();
+    jQuery.post('/rulebuilder/parse_lambda.json', { lambda_text: lambda_text },
+               function(response, status) {
+                   var rb = new RuleBuilder("#expressionbuilder");
+                   rb.load_expressions(response);
+               },
+               'json'); // XXX: handle errors.
+};
+
+RuleBuilder.prototype.load_expressions = function (node) {
+    if (node.type == 'application') {
+
+    }
+    else if (node.type == 'variable') {
+
+    }
+    else if (node.type == 'self_evaluating') {
+
+    }
+    else {
+        console.log('unknown node type');
+    }
+}
+
 RuleBuilder.prototype.init = function () {
     var sel = this.sel;
     var ebuilder = jQuery(sel);
