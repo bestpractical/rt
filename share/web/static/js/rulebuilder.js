@@ -1,4 +1,4 @@
-RuleBuilder = function (sel) {
+RuleBuilder = function (sel, cb) {
     this.sel = sel;
     /* defaults for now, should use ajax query */
     this.expressions = RuleBuilder.expressions;
@@ -8,6 +8,8 @@ RuleBuilder = function (sel) {
                function(response, status) {
                    that.functions = response;
                    that.init();
+                   if (cb)
+                       cb.apply(that);
                },
                'json'); // XXX: handle errors.
 };
@@ -25,20 +27,32 @@ RuleBuilder.load_and_edit_lambda = function (params, return_type, el) {
     var lambda_text = jQuery(el).prev('textarea').text();
     jQuery.post('/rulebuilder/parse_lambda.json', { lambda_text: lambda_text },
                function(response, status) {
-                   var rb = new RuleBuilder("#expressionbuilder");
-                   rb.load_expressions(response);
+                   new RuleBuilder("#expressionbuilder",
+                                   function () {
+                                       this.load_expressions(response, this.top_context);
+                                   });
                },
                'json'); // XXX: handle errors.
 };
 
-RuleBuilder.prototype.load_expressions = function (node) {
+RuleBuilder.prototype.load_expressions = function (node, ctx) {
     if (node.type == 'application') {
-
+        var func_name = node.operator.name; // XXX: ensure operator of
+                                            // type: variable
+        ctx.set_application(func_name, this.functions[func_name]);
+        for (var i in ctx.children) {
+            this.load_expressions(node.operands[i], ctx.children[i]);
+        }
     }
     else if (node.type == 'variable') {
-
+        var expressions = jQuery.grep(this.expressions, function(val) { return val.expression == node.name });
+        ctx.set_expression(expressions[0]);
     }
     else if (node.type == 'self_evaluating') {
+        jQuery._input_({ 'type': 'text', 'class': 'enter-value', 'value': node.value})
+            .change(function() { ctx.update_return_type(ctx.return_type_from_val(this.value)) } )
+            .appendTo(ctx.element).trigger('focus');
+        ctx.self_eval = true;
 
     }
     else {
