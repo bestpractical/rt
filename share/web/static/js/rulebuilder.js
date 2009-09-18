@@ -56,7 +56,7 @@ RuleBuilder.prototype.load_expressions = function (node, ctx) {
 
     }
     else {
-        console.log('unknown node type');
+        alert('unknown node type');
     }
 }
 
@@ -382,11 +382,8 @@ RuleBuilder.Context.prototype.state = function() {
     }
     else if ( this.func_name ) {
         var type_complete = false;
-        console.log(this.children);
         for (var i in this.children) {
             var child = this.children[i];
-            console.log(i);
-            console.log(this.children[i]);
             var state = child.state();
             if (state == 'pending')
                 return 'pending';
