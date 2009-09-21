@@ -96,7 +96,7 @@ sub QueryToSQL {
     my $query    = shift || $self->Argument;
 
     my @keywords = grep length, map { s/^\s+//; s/\s+$//; $_ }
-        split /((?:fultext:)?$re_delim|\s+)/o, $query;
+        split /((?:fulltext:)?$re_delim|\s+)/o, $query;
 
     my (
         @tql_clauses,  @owner_clauses, @queue_clauses,
