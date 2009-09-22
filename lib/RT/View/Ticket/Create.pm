@@ -129,6 +129,8 @@ sub show_details {
         };
         a { attr { name => "details" } };
 
+        render_param($create, 'priority');
+
         $create->button(label => _('Create'));
     };
 }

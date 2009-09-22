@@ -10,11 +10,13 @@ use Jifty::Param::Schema;
 use Jifty::Action schema {
     param status =>
         render as 'select',
-        valid_values are 'new', 'open',
-        label is _('Status'); # XXX
+        # valid_values are queue-specific
+        valid_values are 'new', 'open', # XXX
+        label is _('Status');
 
     param owner =>
         render as 'select',
+        # valid_values are queue-specific
         valid_values are lazy { RT->nobody },
         label is _('Owner');
 
@@ -27,6 +29,11 @@ use Jifty::Action schema {
     param content =>
         render as 'textarea',
         label is _('Describe the issue below');
+
+    param priority =>
+        # default is queue-specific
+        render as 'text',
+        label is _('Priority');
 };
 
 sub after_set_queue {
@@ -54,6 +61,8 @@ sub after_set_queue {
         label => _('Admin Cc'),
         hints => _('(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)'),
     );
+
+    $self->set_default_priority($queue);
 }
 
 sub role_group_parameters {
@@ -119,6 +128,13 @@ sub add_role_group_parameter {
         display_length => 40,
         %args,
     };
+}
+
+sub set_default_priority {
+    my $self  = shift;
+    my $queue = shift;
+
+    $self->{_cached_arguments}{priority}{default_value} = $queue->initial_priority;
 }
 
 1;
