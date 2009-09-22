@@ -130,6 +130,7 @@ sub show_details {
         a { attr { name => "details" } };
 
         render_param($create, 'priority');
+        render_param($create, 'final_priority');
 
         $create->button(label => _('Create'));
     };

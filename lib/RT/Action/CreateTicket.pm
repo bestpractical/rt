@@ -34,6 +34,11 @@ use Jifty::Action schema {
         # default is queue-specific
         render as 'text',
         label is _('Priority');
+
+    param final_priority =>
+        # default is queue-specific
+        render as 'text',
+        label is _('Final Priority');
 };
 
 sub after_set_queue {
@@ -135,6 +140,13 @@ sub set_default_priority {
     my $queue = shift;
 
     $self->fill_parameter(priority => default_value => $queue->initial_priority);
+}
+
+sub set_final_priority {
+    my $self  = shift;
+    my $queue = shift;
+
+    $self->fill_parameter(final_priority => default_value => $queue->final_priority);
 }
 
 1;
