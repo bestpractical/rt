@@ -30,7 +30,7 @@ use Jifty::Action schema {
         render as 'textarea',
         label is _('Describe the issue below');
 
-    param priority =>
+    param initial_priority =>
         # default is queue-specific
         render as 'text',
         label is _('Priority');
@@ -67,7 +67,7 @@ sub after_set_queue {
         hints => _('(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)'),
     );
 
-    $self->set_default_priority($queue);
+    $self->set_initial_priority($queue);
     $self->set_final_priority($queue);
 }
 
@@ -136,11 +136,11 @@ sub add_role_group_parameter {
     ));
 }
 
-sub set_default_priority {
+sub set_initial_priority {
     my $self  = shift;
     my $queue = shift;
 
-    $self->fill_parameter(priority => default_value => $queue->initial_priority);
+    $self->fill_parameter(initial_priority => default_value => $queue->initial_priority);
 }
 
 sub set_final_priority {
