@@ -60,11 +60,21 @@ sub set_queue {
     # Prep the arguments cache
     $self->arguments if !$self->{_cached_arguments};
 
-    $self->{_cached_arguments}{queue}{default_value} = $queue->name;
+    $self->fill_parameter(queue => default_value => $queue->name);
 
     $self->after_set_queue($queue);
 
     return $queue;
+}
+
+sub fill_parameter {
+    my $self = shift;
+    my $name = shift;
+
+    $self->{_cached_arguments}{$name} = {
+        %{ $self->{_cached_arguments}{$name} || {} },
+        @_,
+    };
 }
 
 sub after_set_queue {}

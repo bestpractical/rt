@@ -75,7 +75,7 @@ sub set_valid_statuses {
     my $queue = shift;
 
     my @valid_statuses = $queue->status_schema->valid;
-    $self->{_cached_arguments}{status}{valid_values} = \@valid_statuses;
+    $self->fill_parameter(status => valid_values => \@valid_statuses);
 }
 
 sub set_valid_owners {
@@ -107,12 +107,12 @@ sub set_valid_owners {
                        values %user_uniq_hash;
     unshift @valid_owners, RT->nobody;
 
-    $self->{_cached_arguments}{owner}{valid_values} = [
+    $self->fill_parameter(owner => valid_values => [
         map { {
             display => $_->name, # XXX: should use ShowUser or something
             value   => $_->id,
         } } @valid_owners,
-    ];
+    ]);
 }
 
 sub add_role_group_parameter {
@@ -123,18 +123,18 @@ sub add_role_group_parameter {
 
     push @{ $self->{_role_group_parameters} }, $name;
 
-    $self->{_cached_arguments}{$name} = {
+    $self->fill_parameter($name => (
         render_as      => 'text',
         display_length => 40,
         %args,
-    };
+    ));
 }
 
 sub set_default_priority {
     my $self  = shift;
     my $queue = shift;
 
-    $self->{_cached_arguments}{priority}{default_value} = $queue->initial_priority;
+    $self->fill_parameter(priority => default_value => $queue->initial_priority);
 }
 
 1;
