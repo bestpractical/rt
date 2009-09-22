@@ -15,6 +15,7 @@ sub arguments {
     my $self = shift;
 
     if (!$self->{_cached_arguments}) {
+        # The blank slate is the parameters provided using Jifty::Param::Schema
         $self->{_cached_arguments} = \%{ $self->PARAMS };
 
         # The two cases are:
@@ -62,6 +63,7 @@ sub set_queue {
 
     $self->fill_parameter(queue => default_value => $queue->name);
 
+    # Let the action invoke all its queue-specific logic
     $self->after_set_queue($queue);
 
     return $queue;
@@ -77,6 +79,7 @@ sub fill_parameter {
     };
 }
 
+# This is empty so that users can always redispatch cleanly
 sub after_set_queue {}
 
 1;
