@@ -7,7 +7,8 @@ use Jifty::Param::Schema;
 use Jifty::Action schema {
     param queue =>
         render as 'text',
-        render_mode is 'read';
+        render_mode is 'read',
+        label is _('Queue');
 };
 
 sub arguments {
