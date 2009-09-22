@@ -14,7 +14,7 @@ use Jifty::Action schema {
 
     param owner =>
         render as 'select',
-        valid_values are RT->nobody;
+        valid_values are lazy { RT->nobody };
 
     param subject =>
         render as 'text',
