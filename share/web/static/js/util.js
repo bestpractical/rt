@@ -47,27 +47,6 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 */
-/* $(...)
-    Returns DOM node or array of nodes (if more then one argument passed).
-    If argument is node object allready then do nothing.
-    // Stolen from Prototype
-*/
-function $() {
-    var elements = new Array();
-
-    for (var i = 0; i < arguments.length; i++) {
-        var element = arguments[i];
-        if (typeof element == 'string')
-            element = document.getElementById(element);
-
-        if (arguments.length == 1)
-            return element;
-
-        elements.push(element);
-    }
-
-    return elements;
-}
 
 /* Visibility */
 
@@ -76,7 +55,7 @@ function hide(id) { addClass( id, 'hidden' ) }
 
 function hideshow(id) { return toggleVisibility( id ) }
 function toggleVisibility(id) {
-    var e = $(id);
+    var e = jQuery('#'+id).get(0);
 
     if ( e.className.match( /\bhidden\b/ ) )
         show(e);
@@ -102,21 +81,21 @@ function switchVisibility(id1, id2) {
 /* Classes */
 
 function addClass(id, value) {
-    var e = $(id);
-    if ( e.className.match( new RegExp('\b'+ value +'\b') ) )
-        return;
-    e.className += e.className? ' '+value : value;
+    jQuery('#'+id).addClass(value);
 }
 
 function delClass(id, value) {
-    var e = $(id);
-    e.className = e.className.replace( new RegExp('\\s?\\b'+ value +'\\b', 'g'), '' );
+    jQuery('#'+id).removeClass(value);
 }
 
 /* Rollups */
 
 function rollup(id) {
-    var e   = $(id);
+    /* this is broken because it's called with title bar which has
+     * something like
+     * TitleBox--_index.html------5b\\+r6YCf5bu656uL55Sz6KuL5Zau---0
+     * and might require escaping for jquery*/
+    var e   = jQuery('#'+id).get(0);
     var e2  = e.parentNode;
     if (e.className.match(/\bhidden\b/)) {
         set_rollup_state(e,e2,'shown');
@@ -143,19 +122,18 @@ function set_rollup_state(e,e2,state) {
 }
 
 function doOnLoad(handler) {
-    Event.observe(window, 'load', handler);
+    jQuery(handler);
 }
 
 /* other utils */
 
 function focusElementById(id) {
-    var e = $(id);
-    if (e) e.focus();
+    jQuery('#'+id).trigger('focus');
 }
 
 function updateParentField(field, value) {
     if (window.opener) {
-        window.opener.$(field).value = value;
+        window.opener.jQuery('#'+field).value = value;
         window.close();
     }
 }
@@ -194,7 +172,7 @@ function walkChildElements(parent, callback)
 function showShredderPluginTab( plugin )
 {
 	var plugin_tab_id = 'shredder-plugin-'+ plugin +'-tab';
-	var root = $('shredder-plugin-tabs');
+	var root = jQuery('#shredder-plugin-tabs');
 	walkChildElements( root, function(node) {
 		if( node.id == plugin_tab_id ) {
 			show( node );
@@ -211,8 +189,8 @@ function showShredderPluginTab( plugin )
 
 function checkAllObjects()
 {
-	var check = $('shredder-select-all-objects-checkbox').checked;
-	var elements = $('shredder-search-form').elements;
+    var check = jQuery('#shredder-select-all-objects-checkbox').get(0).checked;
+    var elements = jQuery('#shredder-search-form').get(0).elements;
 	for( var i = 0; i < elements.length; i++ ) {
 		if( elements[i].name != 'wipeout_object' ) {
 			continue;
@@ -229,8 +207,8 @@ function checkAllObjects()
 }
 
 function checkboxToInput(target,checkbox,val){    
-    var tar=$(target);
-    var box = $(checkbox);
+    var tar = jQuery('#'+target).get(0);
+    var box = jQuery('#'+checkbox).get(0);
     if(box.checked){
         if (tar.value==''){
             tar.value=val;

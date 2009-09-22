@@ -117,7 +117,7 @@ unless ( ($message->get_header('Content-Disposition')||"") =~ /attachment/i ) {
 
             # if it's a text/html clean the body and show it
             if ( $message->content_type =~ m{^text/(?:html|enriched)$}i ) {
-                $content = $m->comp( '/Elements/ScrubHTML', Content => $content );
+                $content = $m->comp( '/Elements/ScrubHTML', content => $content );
                 if ( $message->content_type eq 'text/html' ) {
                     $m->comp('/Elements/MakeClicky', 
                             content => \$content, html => 1 );

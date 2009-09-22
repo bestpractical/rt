@@ -59,8 +59,6 @@ $onload => undef
 
 % if ( RT->config->get('message_box_rich_text',  Jifty->web->current_user)) {
     function ReplaceAllTextareas() {
-        if (!FCKeditor_IsCompatibleBrowser())
-            return false;
 
         // replace all content and signature message boxes
         var allTextAreas = document.getElementsByTagName("textarea");
@@ -72,7 +70,7 @@ $onload => undef
                 // Turn the original plain text content into HTML 
 
 %# Special case - when we re-edit a textarea, don't re-encode it
-% if (!$m->request_args->{'FCKeditorEncoded'}) {
+% if (!$m->request_args->{'WYZZEncoded'}) {
                 textArea.value = textArea.value.replace(
                     /&/g, "&amp;"
                 ).replace(
@@ -85,22 +83,21 @@ $onload => undef
 % }
 
 %# for this template..
-                var FCKeditorEncoded = document.createElement('input');
-                FCKeditorEncoded.setAttribute('type', 'hidden');
-                FCKeditorEncoded.setAttribute('name', 'FCKeditorEncoded');
-                FCKeditorEncoded.setAttribute('value', '1');
-                textArea.parentNode.appendChild(FCKeditorEncoded);
+                var WYZZEncoded = document.createElement('input');
+                WYZZEncoded.setAttribute('type', 'hidden');
+                WYZZEncoded.setAttribute('name', 'WYZZEncoded');
+                WYZZEncoded.setAttribute('value', '1');
+                textArea.parentNode.appendChild(WYZZEncoded);
 
-%# for FCKeditor..
+%# for WYZZ..
+
                 var typeField = document.createElement('input');
                 typeField.setAttribute('type', 'hidden');
-                typeField.setAttribute('name', textArea.name + 'Type');
+                typeField.setAttribute('name', textArea.name + '_type');
                 typeField.setAttribute('value', 'text/html');
                 textArea.parentNode.appendChild(typeField);
 
-                var oFCKeditor = new FCKeditor( textArea.name, '100%', <% RT->config->get('message_box_rich_text_height') %> );
-                oFCKeditor.BasePath = "<%RT->config->get('web_path')%>/NoAuth/RichText/";
-                oFCKeditor.ReplaceTextarea();
+                make_wyzz(textArea.id);
             }
         }
     }

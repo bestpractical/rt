@@ -110,7 +110,6 @@ sub setup {
     $self->SUPER::setup($args);
 
     $self->_setup_config(@$args);
-    RT::init_system_objects();
     RT::init();
 }
 

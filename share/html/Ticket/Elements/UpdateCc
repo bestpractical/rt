@@ -55,7 +55,7 @@
 id="update_cc-<%$addr%>" 
 name="update_cc-<%$addr%>" 
     type="checkbox" 
-    onClick="checkboxToInput('update_cc', 'update_cc-<%$addr%>','<%$txn_addresses{$addr}->format%>' ); $(UpdateIgnoreAddressCheckboxes).value=1"  
+    onClick="checkboxToInput('update_cc', 'update_cc-<%$addr%>','<%$txn_addresses{$addr}->format%>' ); jQuery('#'+UpdateIgnoreAddressCheckboxes).get(0).value=1"  
     <% $ARGS{'update_cc-'.$addr} ? 'checked="checked"' : ''%> > <& /Elements/ShowUser, address => $txn_addresses{$addr}&>
 %}
 </td></tr>
@@ -66,7 +66,7 @@ name="update_cc-<%$addr%>"
     id="UpdateBcc-<%$addr%>"
     name="UpdateBcc-<%$addr%>"
     type="checkbox" 
-    onClick="checkboxToInput('UpdateBcc', 'UpdateBcc-<%$addr%>','<%$txn_addresses{$addr}->format%>' ); $(UpdateIgnoreAddressCheckboxes).value=1" 
+    onClick="checkboxToInput('UpdateBcc', 'UpdateBcc-<%$addr%>','<%$txn_addresses{$addr}->format%>' ); jQuery('#'+UpdateIgnoreAddressCheckboxes).get(0).value=1" 
         <% $ARGS{'UpdateBcc-'.$addr} ? 'checked="checked"' : ''%>> 
 <& /Elements/ShowUser, address => $txn_addresses{$addr}&>
 %}
