@@ -33,11 +33,13 @@ use Jifty::Action schema {
     param initial_priority =>
         # default is queue-specific
         render as 'text',
+        display_length is 3,
         label is _('Priority');
 
     param final_priority =>
         # default is queue-specific
         render as 'text',
+        display_length is 3,
         label is _('Final Priority');
 };
 
