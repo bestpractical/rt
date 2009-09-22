@@ -20,6 +20,9 @@ use Jifty::Action schema {
         render as 'text',
         display_length is 60,
         max_length is 200;
+
+    param content =>
+        render as 'textarea';
 };
 
 sub after_set_queue {

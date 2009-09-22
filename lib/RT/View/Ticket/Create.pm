@@ -113,6 +113,8 @@ sub show_basics {
 
         render_param($create, 'subject');
 
+        render_param($create, 'content');
+
         $create->button(label => _('Create'));
     };
 }
