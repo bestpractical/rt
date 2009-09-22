@@ -26,6 +26,10 @@ use Jifty::Action schema {
         max_length is 200,
         label is _('Subject');
 
+    param attachments =>
+        render as 'upload',
+        label is _('Attach file');
+
     param content =>
         render as 'textarea',
         label is _('Describe the issue below');

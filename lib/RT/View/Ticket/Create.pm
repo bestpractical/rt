@@ -112,6 +112,7 @@ sub show_basics {
         }
 
         render_param($create, 'subject');
+        render_param($create, 'attachments');
 
         render_param($create, 'content');
 
