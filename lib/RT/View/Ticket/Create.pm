@@ -53,7 +53,7 @@ use Jifty::View::Declare -base;
 
 __PACKAGE__->use_mason_wrapper;
 
-template 'create' => page {
+template 'create' => page { title => _('Create a new ticket') } content {
     # If we have a create_ticket action, pluck the queue out, otherwise,
     # check the regular queue query parameter
     my $action = Jifty->web->request->action('create_ticket');
