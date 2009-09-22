@@ -68,6 +68,7 @@ sub after_set_queue {
     );
 
     $self->set_default_priority($queue);
+    $self->set_final_priority($queue);
 }
 
 sub role_group_parameters {
