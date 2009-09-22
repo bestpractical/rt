@@ -22,12 +22,14 @@ sub arguments {
         # 1. Some template called set_queue on this action. The template
         #    has told us which queue to use. We do not want to guess the
         #    queue based on request parameters. We also do not want to call
-        #    set_queue since set_queue is already doing its thing.
+        #    set_queue since we have just been called by set_queue.
         # 2. Jifty inspected this action's arguments and we are plucking
         #    the queue out of the request. We need to call set_queue to
         #    inform the rest of the arguments of the queue so they can
         #    adjust valid values, etc.
-        # We do not want to call set_queue twice.
+        # We do not want to call set_queue twice. That will cause
+        # after_set_queue to be called twice, and that leads to a lot of
+        # duplicate work and possibly duplicate data.
         my $already_setting_queue = (caller(1))[3] eq __PACKAGE__.'::set_queue';
         my $action = Jifty->web->request->action($self->moniker);
         my $queue = $action ? $action->argument('queue') : 0;
