@@ -65,6 +65,10 @@
     text-align: left;
 }
 
+.rtfm-select-article select {
+	max-width: 20em;
+}
+
 <%init>
 # only works on RT 3.6.1 and newer
 eval { RT::Interface::Web::StaticFileHeaders() }; 
