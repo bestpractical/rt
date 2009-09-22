@@ -10,19 +10,23 @@ use Jifty::Param::Schema;
 use Jifty::Action schema {
     param status =>
         render as 'select',
-        valid_values are 'new', 'open'; # XXX
+        valid_values are 'new', 'open',
+        label is _('Status'); # XXX
 
     param owner =>
         render as 'select',
-        valid_values are lazy { RT->nobody };
+        valid_values are lazy { RT->nobody },
+        label is _('Owner');
 
     param subject =>
         render as 'text',
         display_length is 60,
-        max_length is 200;
+        max_length is 200,
+        label is _('Subject');
 
     param content =>
-        render as 'textarea';
+        render as 'textarea',
+        label is _('Describe the issue below');
 };
 
 sub after_set_queue {
@@ -35,16 +39,19 @@ sub after_set_queue {
 
     $self->add_role_group_parameter(
         name          => 'requestors',
+        label         => _('Requestors'),
         default_value => Jifty->web->current_user->email,
     );
 
     $self->add_role_group_parameter(
         name  => 'cc',
+        label => _('Cc'),
         hints => _('(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)'),
     );
 
     $self->add_role_group_parameter(
         name  => 'admin_cc',
+        label => _('Admin Cc'),
         hints => _('(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)'),
     );
 }
