@@ -207,7 +207,7 @@ sub _add_parameter_type {
     my $key        = $args{key} || "_${name}_parameters";
     my $add_method = $args{add_method} || "add_${name}_parameter";
     my $get_method = $args{get_method} || "${name}_parameters";
-    my %defaults   = %{ $args{defaults} };
+    my %defaults   = %{ $args{defaults} || {} };
 
     no strict 'refs';
 
