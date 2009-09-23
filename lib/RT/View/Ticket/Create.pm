@@ -111,6 +111,10 @@ sub show_basics {
             render_param($create, $role_group);
         }
 
+        for my $custom_field ($create->ticket_custom_field_parameters) {
+            render_param($create, $custom_field);
+        }
+
         render_param($create, 'subject');
         render_param($create, 'attachments');
 

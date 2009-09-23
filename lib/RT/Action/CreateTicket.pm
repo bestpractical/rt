@@ -128,6 +128,8 @@ sub after_set_queue {
         label => _('Referred to by'),
     );
 
+    $self->add_ticket_custom_fields($queue);
+
     $self->set_initial_priority($queue);
     $self->set_final_priority($queue);
 }
@@ -199,6 +201,11 @@ sub take_action {
     HTML::Mason::Commands::create_ticket(%{ $self->argument_values });
 }
 
+sub add_ticket_custom_fields {
+    my $self  = shift;
+    my $queue = shift;
+}
+
 sub _add_parameter_type {
     my $class = shift;
     my %args  = @_;
@@ -263,6 +270,10 @@ __PACKAGE__->_add_parameter_type(
         render_as      => 'text',
         display_length => 10,
     },
+);
+
+__PACKAGE__->_add_parameter_type(
+    name => 'ticket_custom_field',
 );
 
 1;
