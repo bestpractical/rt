@@ -82,19 +82,14 @@ $m->callback( TicketObj => $TicketObj, CustomFields => $CustomFields, ARGSRef =>
 my @results = ProcessTicketBasics(TicketObj => $TicketObj, ARGSRef => \%ARGS);
 push @results, ProcessObjectCustomFieldUpdates(Object => $TicketObj, ARGSRef => \%ARGS);
 
-# undef so that TransactionBatch scrips run and update the ticket
-$TicketObj = undef;
-$TicketObj = LoadTicket($id);
+$TicketObj->ApplyTransactionBatch;
 
 # TODO: display the results, even if we can't display the ticket
-
 unless ($TicketObj->CurrentUserHasRight('ShowTicket')) {
     Abort("No permission to view ticket");
 } 
 
 </%INIT>
-
-
 <%ARGS>
 $id => undef
 </%ARGS>
