@@ -132,16 +132,16 @@ sub show_details {
 
         render_param($create, 'initial_priority');
         render_param($create, 'final_priority');
-        render_param($create, 'time_estimated');
-        render_param($create, 'time_worked');
-        render_param($create, 'time_left');
+
+        for my $duration_type ($create->duration_parameters) {
+            render_param($create, $duration_type);
+        }
 
         hr {};
 
         for my $datetime_type ($create->datetime_parameters) {
             render_param($create, $datetime_type);
         }
-
 
         hr {};
 

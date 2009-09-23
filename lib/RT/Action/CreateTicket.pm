@@ -45,21 +45,6 @@ use Jifty::Action schema {
         render as 'text',
         display_length is 3,
         label is _('Final Priority');
-
-    param time_estimated =>
-        render as 'text', # should be duration
-        display_length is 3,
-        label is _('Time Estimated');
-
-    param time_worked =>
-        render as 'text', # should be duration
-        display_length is 3,
-        label is _('Time Worked');
-
-    param time_left =>
-        render as 'text', # should be duration
-        display_length is 3,
-        label is _('Time Left');
 };
 
 sub after_set_queue {
@@ -86,6 +71,21 @@ sub after_set_queue {
         name  => 'admin_cc',
         label => _('Admin Cc'),
         hints => _('(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)'),
+    );
+
+    $self->add_duration_parameter(
+        name  => 'time_estimated',
+        label => _('Time Estimated'),
+    );
+
+    $self->add_duration_parameter(
+        name  => 'time_worked',
+        label => _('Time Worked'),
+    );
+
+    $self->add_duration_parameter(
+        name  => 'time_left',
+        label => _('Time Left'),
     );
 
     $self->add_datetime_parameter(
@@ -135,6 +135,11 @@ sub after_set_queue {
 sub role_group_parameters {
     my $self = shift;
     return @{ $self->{_role_group_parameters} || [] };
+}
+
+sub duration_parameters {
+    my $self = shift;
+    return @{ $self->{_duration_parameters} || [] };
 }
 
 sub datetime_parameters {
@@ -203,6 +208,21 @@ sub add_role_group_parameter {
     $self->fill_parameter($name => (
         render_as      => 'text',
         display_length => 40,
+        %args,
+    ));
+}
+
+sub add_duration_parameter {
+    my $self = shift;
+    my %args = @_;
+
+    my $name = delete $args{name};
+
+    push @{ $self->{_duration_parameters} }, $name;
+
+    $self->fill_parameter($name => (
+        render_as      => 'text', # ideally would be Duration
+        display_length => 3,
         %args,
     ));
 }
