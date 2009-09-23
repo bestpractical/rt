@@ -115,6 +115,10 @@ sub show_basics {
             render_param($create, $custom_field);
         }
 
+        for my $custom_field ($create->transaction_custom_field_parameters) {
+            render_param($create, $custom_field);
+        }
+
         render_param($create, 'subject');
         render_param($create, 'attachments');
 

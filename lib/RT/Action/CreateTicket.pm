@@ -129,6 +129,7 @@ sub after_set_queue {
     );
 
     $self->add_ticket_custom_fields($queue);
+    $self->add_transaction_custom_fields($queue);
 
     $self->set_initial_priority($queue);
     $self->set_final_priority($queue);
@@ -206,6 +207,11 @@ sub add_ticket_custom_fields {
     my $queue = shift;
 }
 
+sub add_transaction_custom_fields {
+    my $self  = shift;
+    my $queue = shift;
+}
+
 sub _add_parameter_type {
     my $class = shift;
     my %args  = @_;
@@ -274,6 +280,10 @@ __PACKAGE__->_add_parameter_type(
 
 __PACKAGE__->_add_parameter_type(
     name => 'ticket_custom_field',
+);
+
+__PACKAGE__->_add_parameter_type(
+    name => 'transaction_custom_field',
 );
 
 1;
