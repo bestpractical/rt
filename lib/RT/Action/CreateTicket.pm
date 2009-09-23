@@ -132,26 +132,6 @@ sub after_set_queue {
     $self->set_final_priority($queue);
 }
 
-sub role_group_parameters {
-    my $self = shift;
-    return @{ $self->{_role_group_parameters} || [] };
-}
-
-sub duration_parameters {
-    my $self = shift;
-    return @{ $self->{_duration_parameters} || [] };
-}
-
-sub datetime_parameters {
-    my $self = shift;
-    return @{ $self->{_datetime_parameters} || [] };
-}
-
-sub link_parameters {
-    my $self = shift;
-    return @{ $self->{_link_parameters} || [] };
-}
-
 sub set_valid_statuses {
     my $self  = shift;
     my $queue = shift;
@@ -197,66 +177,6 @@ sub set_valid_owners {
     ]);
 }
 
-sub add_role_group_parameter {
-    my $self = shift;
-    my %args = @_;
-
-    my $name = delete $args{name};
-
-    push @{ $self->{_role_group_parameters} }, $name;
-
-    $self->fill_parameter($name => (
-        render_as      => 'text',
-        display_length => 40,
-        %args,
-    ));
-}
-
-sub add_duration_parameter {
-    my $self = shift;
-    my %args = @_;
-
-    my $name = delete $args{name};
-
-    push @{ $self->{_duration_parameters} }, $name;
-
-    $self->fill_parameter($name => (
-        render_as      => 'text', # ideally would be Duration
-        display_length => 3,
-        %args,
-    ));
-}
-
-sub add_datetime_parameter {
-    my $self = shift;
-    my %args = @_;
-
-    my $name = delete $args{name};
-
-    push @{ $self->{_datetime_parameters} }, $name;
-
-    $self->fill_parameter($name => (
-        render_as      => 'DateTime',
-        display_length => 10,
-        %args,
-    ));
-}
-
-sub add_link_parameter {
-    my $self = shift;
-    my %args = @_;
-
-    my $name = delete $args{name};
-
-    push @{ $self->{_link_parameters} }, $name;
-
-    $self->fill_parameter($name => (
-        render_as      => 'text',
-        display_length => 10,
-        %args,
-    ));
-}
-
 sub set_initial_priority {
     my $self  = shift;
     my $queue = shift;
@@ -278,6 +198,72 @@ sub take_action {
     # action
     HTML::Mason::Commands::create_ticket(%{ $self->argument_values });
 }
+
+sub _add_parameter_type {
+    my $class = shift;
+    my %args  = @_;
+
+    my $name       = $args{name};
+    my $key        = $args{key} || "_${name}_parameters";
+    my $add_method = $args{add_method} || "add_${name}_parameter";
+    my $get_method = $args{get_method} || "${name}_parameters";
+    my %defaults   = %{ $args{defaults} };
+
+    no strict 'refs';
+
+    *{__PACKAGE__."::$get_method"} = sub {
+        use strict 'refs';
+        my $self = shift;
+        return @{ $self->{$key} || [] };
+    };
+
+    *{__PACKAGE__."::$add_method"} = sub {
+        use strict 'refs';
+        my $self = shift;
+        my %args = @_;
+
+        my $parameter = delete $args{name};
+
+        push @{ $self->{$key} }, $parameter;
+
+        $self->fill_parameter($parameter => (
+            %defaults,
+            %args,
+        ));
+    };
+}
+
+__PACKAGE__->_add_parameter_type(
+    name     => 'role_group',
+    defaults => {
+        render_as      => 'text',
+        display_length => 40,
+    },
+);
+
+__PACKAGE__->_add_parameter_type(
+    name     => 'duration',
+    defaults => {
+        render_as      => 'text', # ideally would be Duration
+        display_length => 3,
+    },
+);
+
+__PACKAGE__->_add_parameter_type(
+    name     => 'datetime',
+    defaults => {
+        render_as      => 'DateTime',
+        display_length => 10,
+    },
+);
+
+__PACKAGE__->_add_parameter_type(
+    name     => 'link',
+    defaults => {
+        render_as      => 'text',
+        display_length => 10,
+    },
+);
 
 1;
 
