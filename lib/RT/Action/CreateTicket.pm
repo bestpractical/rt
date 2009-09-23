@@ -60,14 +60,6 @@ use Jifty::Action schema {
         render as 'text', # should be duration
         display_length is 3,
         label is _('Time Left');
-
-    param starts =>
-        render as 'DateTime',
-        label is _('Starts');
-
-    param due =>
-        render as 'DateTime',
-        label is _('Due');
 };
 
 sub after_set_queue {
@@ -94,6 +86,16 @@ sub after_set_queue {
         name  => 'admin_cc',
         label => _('Admin Cc'),
         hints => _('(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)'),
+    );
+
+    $self->add_datetime_parameter(
+        name  => 'starts',
+        label => _('Starts'),
+    );
+
+    $self->add_datetime_parameter(
+        name  => 'due',
+        label => _('Due'),
     );
 
     $self->add_link_parameter(
@@ -133,6 +135,11 @@ sub after_set_queue {
 sub role_group_parameters {
     my $self = shift;
     return @{ $self->{_role_group_parameters} || [] };
+}
+
+sub datetime_parameters {
+    my $self = shift;
+    return @{ $self->{_datetime_parameters} || [] };
 }
 
 sub link_parameters {
@@ -196,6 +203,21 @@ sub add_role_group_parameter {
     $self->fill_parameter($name => (
         render_as      => 'text',
         display_length => 40,
+        %args,
+    ));
+}
+
+sub add_datetime_parameter {
+    my $self = shift;
+    my %args = @_;
+
+    my $name = delete $args{name};
+
+    push @{ $self->{_datetime_parameters} }, $name;
+
+    $self->fill_parameter($name => (
+        render_as      => 'DateTime',
+        display_length => 10,
         %args,
     ));
 }

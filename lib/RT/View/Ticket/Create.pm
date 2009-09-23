@@ -138,8 +138,10 @@ sub show_details {
 
         hr {};
 
-        render_param($create, 'starts');
-        render_param($create, 'due');
+        for my $datetime_type ($create->datetime_parameters) {
+            render_param($create, $datetime_type);
+        }
+
 
         hr {};
 
