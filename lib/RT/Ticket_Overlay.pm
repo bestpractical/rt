@@ -3164,16 +3164,60 @@ sub SeenUpTo {
 
 =head2 TransactionBatch
 
-  Returns an array reference of all transactions created on this ticket during
-  this ticket object's lifetime, or undef if there were none.
+Returns an array reference of all transactions created on this ticket during
+this ticket object's lifetime or since last application of a batch, or undef
+if there were none.
 
-  Only works when the C<UseTransactionBatch> config option is set to true.
+Only works when the C<UseTransactionBatch> config option is set to true.
 
 =cut
 
 sub TransactionBatch {
     my $self = shift;
     return $self->{_TransactionBatch};
+}
+
+=head2 ApplyTransactionBatch
+
+Applies scrips on the current batch of transactions and shinks it. Usually
+batch is applied when object is destroyed, but in some cases it's too late.
+
+=cut
+
+sub ApplyTransactionBatch {
+    my $self = shift;
+
+    my $batch = $self->TransactionBatch;
+    return unless $batch && @$batch;
+
+    $self->_ApplyTransactionBatch;
+
+    $self->{_TransactionBatch} = [];
+}
+
+sub _ApplyTransactionBatch {
+    my $self = shift;
+    my $batch = $self->TransactionBatch;
+
+    my %seen;
+    my $types = join ',', grep !$seen{$_}++, map $_->Type, grep defined, @{$batch};
+
+    require RT::Scrips;
+    RT::Scrips->new($RT::SystemUser)->Apply(
+        Stage          => 'TransactionBatch',
+        TicketObj      => $self,
+        TransactionObj => $batch->[0],
+        Type           => $types,
+    );
+
+    # Entry point of the rule system
+    my $rules = RT::Ruleset->FindAllRules(
+        Stage          => 'TransactionBatch',
+        TicketObj      => $self,
+        TransactionObj => $batch->[0],
+        Type           => $types,
+    );
+    RT::Ruleset->CommitRules($rules);
 }
 
 sub DESTROY {
@@ -3189,25 +3233,10 @@ sub DESTROY {
     # when an object's refcount is changed in its destructor.
     return if $self->{_Destroyed}++;
 
-    my $batch = $self->TransactionBatch or return;
-    return unless @$batch;
+    my $batch = $self->TransactionBatch;
+    return unless $batch && @$batch;
 
-    require RT::Scrips;
-    RT::Scrips->new($RT::SystemUser)->Apply(
-        Stage          => 'TransactionBatch',
-        TicketObj      => $self,
-        TransactionObj => $batch->[0],
-        Type           => join( ',', map $_->Type, grep defined, @{$batch} )
-    );
-
-    # Entry point of the rule system
-    my $rules = RT::Ruleset->FindAllRules(
-        Stage          => 'TransactionBatch',
-        TicketObj      => $self,
-        TransactionObj => $batch->[0],
-        Type           => join( ',', map $_->Type, grep defined, @{$batch} )
-    );
-    RT::Ruleset->CommitRules($rules);
+    return $self->_ApplyTransactionBatch;
 }
 
 # }}}
