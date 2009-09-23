@@ -70,7 +70,7 @@ Upgrade instructions (From any  2.0.x release):
 
 1) perl Makefile.PL
 
-2) perl -I/path/to/your/rt/lib sbin/migrate-2.0-to-2.1
+2) perl -I/path/to/your/rt/lib etc/upgrade/migrate-2.0-to-2.1
 
 if you are installing 2.4.x on a new machine and have brought
 your old 2.0.x database over, you will need a copy of the
@@ -78,7 +78,7 @@ RTFM 2.0 libs.  You can bring these from your old machine or
 download them from http://download.bestpractical.com
 This command would then be
 
-perl -I/path/to/your/old/rtfm/lib -I/path/to/rt/lib sbin/migrate-2.0-to-2.1
+perl -I/path/to/your/old/rtfm/lib -I/path/to/rt/lib etc/upgrade/migrate-2.0-to-2.1
 
 3) Type "make install"
 
