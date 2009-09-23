@@ -45,6 +45,21 @@ use Jifty::Action schema {
         render as 'text',
         display_length is 3,
         label is _('Final Priority');
+
+    param time_estimated =>
+        render as 'text', # should be duration
+        display_length is 3,
+        label is _('Time Estimated');
+
+    param time_worked =>
+        render as 'text', # should be duration
+        display_length is 3,
+        label is _('Time Worked');
+
+    param time_left =>
+        render as 'text', # should be duration
+        display_length is 3,
+        label is _('Time Left');
 };
 
 sub after_set_queue {

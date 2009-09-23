@@ -132,6 +132,9 @@ sub show_details {
 
         render_param($create, 'initial_priority');
         render_param($create, 'final_priority');
+        render_param($create, 'time_estimated');
+        render_param($create, 'time_worked');
+        render_param($create, 'time_left');
 
         $create->button(label => _('Create'));
     };
