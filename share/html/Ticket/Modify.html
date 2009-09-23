@@ -59,7 +59,7 @@
 
 <&| /Widgets/TitleBox, title => loc('Modify ticket #[_1]',$TicketObj->Id), class=>'ticket-info-basics' &>
 <& Elements/EditBasics, TicketObj => $TicketObj &>
-<& Elements/EditCustomFields, TicketObj => $TicketObj &>
+<& Elements/EditCustomFields, TicketObj => $TicketObj, DefaultsFromTopArguments => 0 &>
 </&>
 
 <& /Elements/Submit, Name => 'SubmitTicket', Label => loc('Save Changes'), Caption => loc("If you've updated anything above, be sure to"), color => "#993333" &>

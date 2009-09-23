@@ -58,12 +58,14 @@
       <i><% $CustomField->FriendlyType %></i>
     </td>
     <td class="entry">
+% my $default = $m->notes('Field-' . $CustomField->Id);
+% $default ||= $ARGS{"CustomField-". $CustomField->Id };
       <& /Elements/EditCustomField, 
           %ARGS,
           Object => $TicketObj,
           CustomField => $CustomField,
           NamePrefix => $NamePrefix,
-          Default => $m->notes('Field-' . $CustomField->Id) || $ARGS{"CustomField-".$CustomField->Id},
+          Default => $default,
       &>
 %  if (my $msg = $m->notes('InvalidField-' . $CustomField->Id)) {
         <br />
@@ -102,4 +104,5 @@ $NamePrefix => ''
 $TicketObj => undef
 $QueueObj => undef
 $OnCreate => undef
+$DefaultsFromTopArguments => 1
 </%ARGS>
