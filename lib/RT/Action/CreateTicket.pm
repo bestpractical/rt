@@ -253,7 +253,7 @@ __PACKAGE__->_add_parameter_type(
     name     => 'datetime',
     defaults => {
         render_as      => 'DateTime',
-        display_length => 10,
+        display_length => 16,
     },
 );
 
