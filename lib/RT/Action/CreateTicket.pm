@@ -60,6 +60,14 @@ use Jifty::Action schema {
         render as 'text', # should be duration
         display_length is 3,
         label is _('Time Left');
+
+    param starts =>
+        render as 'DateTime',
+        label is _('Starts');
+
+    param due =>
+        render as 'DateTime',
+        label is _('Due');
 };
 
 sub after_set_queue {

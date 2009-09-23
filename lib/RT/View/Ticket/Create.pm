@@ -136,6 +136,11 @@ sub show_details {
         render_param($create, 'time_worked');
         render_param($create, 'time_left');
 
+        hr {};
+
+        render_param($create, 'starts');
+        render_param($create, 'due');
+
         $create->button(label => _('Create'));
     };
 }
