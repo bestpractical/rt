@@ -96,6 +96,36 @@ sub after_set_queue {
         hints => _('(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)'),
     );
 
+    $self->add_link_parameter(
+        name  => 'depends_on',
+        label => _('Depends on'),
+    );
+
+    $self->add_link_parameter(
+        name  => 'depended_on_by',
+        label => _('Depended on by'),
+    );
+
+    $self->add_link_parameter(
+        name  => 'parents',
+        label => _('Parents'),
+    );
+
+    $self->add_link_parameter(
+        name  => 'children',
+        label => _('Children'),
+    );
+
+    $self->add_link_parameter(
+        name  => 'refers_to',
+        label => _('Refers to'),
+    );
+
+    $self->add_link_parameter(
+        name  => 'referred_to_by',
+        label => _('Referred to by'),
+    );
+
     $self->set_initial_priority($queue);
     $self->set_final_priority($queue);
 }
@@ -103,6 +133,11 @@ sub after_set_queue {
 sub role_group_parameters {
     my $self = shift;
     return @{ $self->{_role_group_parameters} || [] };
+}
+
+sub link_parameters {
+    my $self = shift;
+    return @{ $self->{_link_parameters} || [] };
 }
 
 sub set_valid_statuses {
@@ -161,6 +196,21 @@ sub add_role_group_parameter {
     $self->fill_parameter($name => (
         render_as      => 'text',
         display_length => 40,
+        %args,
+    ));
+}
+
+sub add_link_parameter {
+    my $self = shift;
+    my %args = @_;
+
+    my $name = delete $args{name};
+
+    push @{ $self->{_link_parameters} }, $name;
+
+    $self->fill_parameter($name => (
+        render_as      => 'text',
+        display_length => 10,
         %args,
     ));
 }

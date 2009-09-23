@@ -141,6 +141,12 @@ sub show_details {
         render_param($create, 'starts');
         render_param($create, 'due');
 
+        hr {};
+
+        for my $link_type ($create->link_parameters) {
+            render_param($create, $link_type);
+        }
+
         $create->button(label => _('Create'));
     };
 }
