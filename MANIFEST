@@ -1,4 +1,3 @@
-bin/notify
 Changelog
 docs/adding_ticketing
 docs/developers_guide
@@ -37,6 +36,7 @@ etc/upgrade/2.2.0RC2/content
 etc/upgrade/2.2.0RC2/schema.mysql
 etc/upgrade/2.2.0RC2/schema.Oracle
 etc/upgrade/2.2.0RC2/schema.Pg
+etc/upgrade/migrate-2.0-to-2.1
 etc/upgrade/upgrade-mysql-schema.pl
 html/Admin/Global/CustomFields/RTFM-Class-RTFM-Article.html
 html/Admin/RTFM/Classes/CustomFields.html
@@ -160,8 +160,6 @@ po/rtfm.pot
 po/ru.po
 po/zh_tw.po
 README
-sbin/factory
-sbin/migrate-2.0-to-2.1
 t/00smoke.t
 t/04interface.t
 t/05cfsearch.t
