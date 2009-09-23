@@ -220,3 +220,43 @@ function checkboxToInput(target,checkbox,val){
     }
 }
 
+
+function ReplaceAllTextareas( encoded ) {
+
+    // replace all content and signature message boxes
+    var allTextAreas = document.getElementsByTagName("textarea");
+
+    for (var i=0; i < allTextAreas.length; i++) {
+        var textArea = allTextAreas[i];
+        if ( (textArea.getAttribute('class') == 'messagebox')
+          || (textArea.getAttribute('className') == 'messagebox')) {
+            // Turn the original plain text content into HTML 
+
+            if ( encoded == 0 ) {
+                textArea.value = textArea.value.replace(
+                    /&/g, "&amp;"
+                ).replace(
+                    /</g, "&lt;"
+                ).replace(
+                    />/g, "&gt;"
+                ).replace(
+                    /\n/g, "\n<br />"
+                );
+            }
+
+            var RichEncoded = document.createElement('input');
+            RichEncoded.setAttribute('type', 'hidden');
+            RichEncoded.setAttribute('name', 'RichEncoded');
+            RichEncoded.setAttribute('value', '1');
+            textArea.parentNode.appendChild(RichEncoded);
+
+            var typeField = document.createElement('input');
+            typeField.setAttribute('type', 'hidden');
+            typeField.setAttribute('name', textArea.name + '_type');
+            typeField.setAttribute('value', 'text/html');
+            textArea.parentNode.appendChild(typeField);
+
+            make_wyzz(textArea.id);
+        }
+    }
+}

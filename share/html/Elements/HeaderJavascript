@@ -58,50 +58,11 @@ $onload => undef
 % }
 
 % if ( RT->config->get('message_box_rich_text',  Jifty->web->current_user)) {
-    function ReplaceAllTextareas() {
-
-        // replace all content and signature message boxes
-        var allTextAreas = document.getElementsByTagName("textarea");
-
-        for (var i=0; i < allTextAreas.length; i++) {
-            var textArea = allTextAreas[i];
-            if ( (textArea.getAttribute('class') == 'messagebox')
-              || (textArea.getAttribute('className') == 'messagebox')) {
-                // Turn the original plain text content into HTML 
-
-%# Special case - when we re-edit a textarea, don't re-encode it
-% if (!$m->request_args->{'WYZZEncoded'}) {
-                textArea.value = textArea.value.replace(
-                    /&/g, "&amp;"
-                ).replace(
-                    /</g, "&lt;"
-                ).replace(
-                    />/g, "&gt;"
-                ).replace(
-                    /\n/g, "\n<br />"
-                );
-% }
-
-%# for this template..
-                var WYZZEncoded = document.createElement('input');
-                WYZZEncoded.setAttribute('type', 'hidden');
-                WYZZEncoded.setAttribute('name', 'WYZZEncoded');
-                WYZZEncoded.setAttribute('value', '1');
-                textArea.parentNode.appendChild(WYZZEncoded);
-
-%# for WYZZ..
-
-                var typeField = document.createElement('input');
-                typeField.setAttribute('type', 'hidden');
-                typeField.setAttribute('name', textArea.name + '_type');
-                typeField.setAttribute('value', 'text/html');
-                textArea.parentNode.appendChild(typeField);
-
-                make_wyzz(textArea.id);
-            }
-        }
+    function WrapReplaceAllTextareas() {
+        ReplaceAllTextareas( <% $m->request_args->{'RichEncoded'} ? 1 : 0 %> );
     }
-    doOnLoad(ReplaceAllTextareas);
+
+    doOnLoad(WrapReplaceAllTextareas);
 % }
 % if ( $onload ) {
     doOnLoad(<% $onload |n %>);
