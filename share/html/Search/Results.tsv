@@ -46,93 +46,115 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%ARGS>
+$Query => ''
 $OrderBy => 'id'
 $Order => 'ASC'
 </%ARGS>
 <%INIT>
 
 my $Tickets = RT::Tickets->new( $session{'CurrentUser'} );
-$Tickets->FromSQL( $ARGS{'Query'} );
+$Tickets->FromSQL( $Query );
 if ( $OrderBy =~ /\|/ ) {
-
-  # Multiple Sorts
-  my @OrderBy = split /\|/, $OrderBy;
-  my @Order   = split /\|/, $Order;
-  $Tickets->OrderByCols(
-    map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } }
-      ( 0 .. $#OrderBy ) );
+    # Multiple Sorts
+    my @OrderBy = split /\|/, $OrderBy;
+    my @Order   = split /\|/, $Order;
+    $Tickets->OrderByCols(
+        map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } }
+        ( 0 .. $#OrderBy )
+    );
 }
 else {
-  $Tickets->OrderBy( FIELD => $OrderBy, ORDER => $Order );
+    $Tickets->OrderBy( FIELD => $OrderBy, ORDER => $Order );
 }
 
-my @rows;
-my %known_cfs;
+my %cf_id_to_name;
+my %cf_name_to_pos;
+{
+    my $cfs = RT::SQL::PossibleCustomFields(
+        Query => $Query, CurrentUser => $session{'CurrentUser'},
+    );
+    while ( my $cf = $cfs->Next ) {
+        my $name = $cf->Name;
+        $cf_id_to_name{ $cf->id } = $name;
+        next if $cf_name_to_pos{ $name };
 
-my @attrs = qw( id QueueObj->Name Subject Status TimeEstimated TimeWorked TimeLeft Priority FinalPriority OwnerObj->Name 
-                Requestors->MemberEmailAddressesAsString Cc->MemberEmailAddressesAsString AdminCc->MemberEmailAddressesAsString
-                DueObj->ISO ToldObj->ISO CreatedObj->ISO ResolvedObj->ISO LastUpdatedObj->ISO);
+        $cf_name_to_pos{ $name } = 
+            (sort { $b <=> $a } values %cf_name_to_pos)[0] + 1;
+    }
+}
+
+my @attrs = qw(
+    id QueueObj->Name Subject Status
+    TimeEstimated TimeWorked TimeLeft
+    Priority FinalPriority
+    OwnerObj->Name 
+    Requestors->MemberEmailAddressesAsString
+    Cc->MemberEmailAddressesAsString
+    AdminCc->MemberEmailAddressesAsString
+    DueObj->ISO ToldObj->ISO CreatedObj->ISO
+    ResolvedObj->ISO LastUpdatedObj->ISO
+);
 
 $r->content_type('application/vnd.ms-excel');
-while ( my $Ticket = $Tickets->Next()) {
-    my $row;
-    foreach my $attr (@attrs) {
-        if ($attr =~ /(.*)->ISO$/ and $Ticket->$1->Unix <= 0) {
-            $row->{$attr} = "";
-        } else {
-            my $method = '$Ticket->'.$attr.'()';
-            $method =~ s/->ISO\(\)$/->ISO( Timezone => 'user' )/;
-            $row->{$attr} = eval $method;
-            if ($@) {die "Failed to find $attr - ". $@}; 
-        }
-    }
-
-    my $cfs = $Ticket->CustomFields;
-    while (my $cf = $cfs->Next) {
-        $known_cfs{$cf->Id} = $cf->Name;
-        my @content;
-        my $values = $Ticket->CustomFieldValues($cf->Id);
-        while (my $value = $values->Next) {
-            push @content, $value->Content;
-        }
-        $row->{'CustomField-'.$cf->Id} = join(', ',@content);
-    }
-    push @rows, $row;
-}
-
-{ 
+{
     my @header;
     foreach my $attr (@attrs) {
         my $label = $attr;
         $label =~ s'Obj-.(?:AsString|Name|ISO)''g;
         $label =~ s'-\>MemberEmailAddressesAsString''g;
-	push @header, $label;
+        push @header, $label;
     }
-    foreach my $id (sort keys %known_cfs) {
-        push @header, "CF-".$known_cfs{$id}; 
+
+    $_ += @header - 1 foreach values %cf_name_to_pos;
+
+    foreach my $name ( sort { $cf_name_to_pos{$a} <=> $cf_name_to_pos{$a} } keys %cf_name_to_pos ) {
+        push @header, "CF-". $name;
     }
     $m->out(join("\t", @header));
     $m->out("\n");
+    $m->flush_buffer;
 }
 
-foreach my $row (@rows) {
+my $i = 0;
+while ( my $Ticket = $Tickets->Next()) {
     my @row;
-    foreach my $attr(@attrs) {
-        push @row, $row->{"$attr"};
+    foreach my $attr (@attrs) {
+        my $value;
+        if ($attr =~ /(.*)->ISO$/ and $Ticket->$1->Unix <= 0) {
+            $value = '';
+        } else {
+            my $method = '$Ticket->'.$attr.'()';
+            $method =~ s/->ISO\(\)$/->ISO( Timezone => 'user' )/;
+            $value = eval $method;
+            if ($@) {die "Failed to find $attr - ". $@}; 
+        }
+        push @row, $value;
     }
-    foreach my $id (sort keys %known_cfs) {
-        my $val = $row->{'CustomField-'.$id};
-        $val =~ s/(\n|\r)//g;
-        push @row, $val;
+
+    my $values = $Ticket->CustomFieldValues;
+    while (my $value = $values->Next) {
+        my $pos = $cf_name_to_pos{ $cf_id_to_name{ $value->CustomField } };
+        next unless $pos;
+
+        $row[$pos] = '' unless defined $row[$pos];
+        $row[$pos] .= ', ' if $row[$pos];
+        $row[$pos] .= $value->Content;
     }
 
     # remove tabs from all field values, they screw up the tsv
     for (@row) {
+        $_ = '' unless defined;
+        $_ =~ s/(?:\n|\r)//g;
         $_ =~ s{\t}{    }g;
     }
 
     $m->out(join("\t",@row));
     $m->out("\n");
+
+    unless (++$i%10) {
+        $i = 0;
+        $m->flush_buffer;
+    }
 }
 
 $m->abort();
