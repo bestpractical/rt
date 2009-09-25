@@ -202,13 +202,15 @@ sub take_action {
     HTML::Mason::Commands::create_ticket(%{ $self->argument_values });
 }
 
-sub add_ticket_custom_fields {
-    my $self  = shift;
-    my $queue = shift;
+sub _add_custom_fields {
+    my $self = shift;
+    my %args = @_;
 
-    my $cfs = $queue->ticket_custom_fields;
+    my $cfs    = $args{cfs};
+    my $method = $args{method};
+
     while (my $cf = $cfs->next) {
-        $self->add_ticket_custom_field_parameter(
+        $self->$method(
             name     => $cf->name,
             defaults => {
                 render_as => $cf->type_for_rendering,
@@ -217,19 +219,26 @@ sub add_ticket_custom_fields {
     }
 }
 
+sub add_ticket_custom_fields {
+    my $self  = shift;
+    my $queue = shift;
+
+    my $cfs = $queue->ticket_custom_fields;
+    $self->_add_custom_fields(
+        cfs    => $cfs,
+        method => 'add_ticket_custom_field_parameter',
+    );
+}
+
 sub add_ticket_transaction_custom_fields {
     my $self  = shift;
     my $queue = shift;
 
     my $cfs = $queue->ticket_transaction_custom_fields;
-    while (my $cf = $cfs->next) {
-        $self->add_ticket_transaction_custom_field_parameter(
-            name     => $cf->name,
-            defaults => {
-                render_as => $cf->type_for_rendering,
-            },
-        );
-    }
+    $self->_add_custom_fields(
+        cfs    => $cfs,
+        method => 'add_ticket_transaction_custom_field_parameter',
+    );
 }
 
 sub _add_parameter_type {
