@@ -220,6 +220,16 @@ sub add_ticket_custom_fields {
 sub add_transaction_custom_fields {
     my $self  = shift;
     my $queue = shift;
+
+    my $cfs = $queue->ticket_transaction_custom_fields;
+    while (my $cf = $cfs->next) {
+        $self->add_transaction_custom_field_parameter(
+            name     => $cf->name,
+            defaults => {
+                render_as => 'text',
+            },
+        );
+    }
 }
 
 sub _add_parameter_type {
