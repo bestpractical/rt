@@ -107,6 +107,17 @@
 <i><&|/l&>Some browsers may only load content from the same domain as your RT server.</&></i>
 </div></td></tr>
 
+% if ( $CustomFieldObj->Id && $CustomFieldObj->IsSelectionType && !$CustomFieldObj->IsExternalValues ) {
+<tr><td class="label"><&|/l&>Categories are based on</&></td><td>
+<& /Admin/Elements/SelectCustomField,
+    Name => "BasedOn",
+    LookupType => $CustomFieldObj->LookupType,
+    Default => $CustomFieldObj->BasedOnObj,
+    Not => $CustomFieldObj->id,
+&>
+</td></tr>
+% }
+
 <tr><td class="label">&nbsp;</td><td>
 <input type="hidden" class="hidden" name="SetEnabled" value="1" />
 <input type="checkbox" class="checkbox" name="Enabled" value="1" <% $EnabledChecked |n%> />
@@ -147,6 +158,7 @@ else {
             Pattern       => $Pattern,
             LinkValueTo   => $LinkValueTo,
             IncludeContentForValue => $IncludeContentForValue,
+            BasedOn       => $BasedOn,
         );
         $m->comp( "/Elements/Error", Why => loc( "Could not create CustomField", $msg ) ) unless $val;
         push @results, $msg;
@@ -171,6 +183,8 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     );
     $CustomFieldObj->SetValuesClass( $ValuesClass );
 
+    $CustomFieldObj->SetBasedOn( $BasedOn );
+
     my $paramtag = "CustomField-". $CustomFieldObj->Id ."-Value";
     # Delete any fields that want to be deleted
     foreach my $key ( keys %ARGS ) {
@@ -183,7 +197,7 @@ if ( $ARGS{'Update'} && $id ne 'new' ) {
     my $values = $CustomFieldObj->ValuesObj;
     while ( my $value = $values->Next ) {
         foreach my $attr qw(Name Description SortOrder Category) {
-            my $param = "$paramtag-". $value->Id ."-". $attr;
+            my $param = join("-", $paramtag, $value->Id, $attr);
             next unless exists $ARGS{$param};
             next if ($value->$attr()||'') eq ($ARGS{$param}||'');
 
@@ -231,4 +245,5 @@ $Enabled => 0
 $ValuesClass => 'RT::CustomFieldValues'
 $LinkValueTo => undef
 $IncludeContentForValue => undef
+$BasedOn => undef
 </%ARGS>
