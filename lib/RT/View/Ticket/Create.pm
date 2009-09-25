@@ -115,7 +115,7 @@ sub show_basics {
             render_param($create, $custom_field);
         }
 
-        for my $custom_field ($create->transaction_custom_field_parameters) {
+        for my $custom_field ($create->ticket_transaction_custom_field_parameters) {
             render_param($create, $custom_field);
         }
 
