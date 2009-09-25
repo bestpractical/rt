@@ -1209,4 +1209,31 @@ sub url_template {
     }
 }
 
+=head2 type_for_rendering
+
+This returns an appropriate C<render as> value based on the custom field's
+type.
+
+=cut
+
+sub type_for_rendering {
+    my $self = shift;
+    my $type = $self->type;
+
+    return undef if !$type;
+
+    my %type_map = (
+        Select       => 'Select',
+        Freeform     => 'Text',
+        Text         => 'Textarea',
+        Wikitext     => '',
+        Image        => '',
+        Binary       => 'Upload',
+        Combobox     => '',
+        Autocomplete => '',
+    );
+
+    return $type_map{$type};
+}
+
 1;
