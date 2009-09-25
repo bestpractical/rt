@@ -211,7 +211,7 @@ sub add_ticket_custom_fields {
         $self->add_ticket_custom_field_parameter(
             name     => $cf->name,
             defaults => {
-                render_as => 'text',
+                render_as => $cf->type_for_rendering,
             },
         );
     }
@@ -226,7 +226,7 @@ sub add_ticket_transaction_custom_fields {
         $self->add_ticket_transaction_custom_field_parameter(
             name     => $cf->name,
             defaults => {
-                render_as => 'text',
+                render_as => $cf->type_for_rendering,
             },
         );
     }
