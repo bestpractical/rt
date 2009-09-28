@@ -132,6 +132,7 @@ while ( my $Ticket = $Tickets->Next()) {
     }
 
     my $values = $Ticket->CustomFieldValues;
+    $values->OrderByCols; # don't sort them
     while (my $value = $values->Next) {
         my $pos = $cf_name_to_pos{ $cf_id_to_name{ $value->CustomField } };
         next unless $pos;
