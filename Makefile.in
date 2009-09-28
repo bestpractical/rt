@@ -509,7 +509,7 @@ apachectl:
 	$(APACHECTL) start
 	sleep 5
 
-SNAPSHOT=rt-$(shell git describe --tags)
+SNAPSHOT=$(shell git describe --tags)
 snapshot:
 	git archive --prefix "$(SNAPSHOT)/"  HEAD | tar -xf -
 	( cd $(SNAPSHOT) && autoconf && ./configure )
