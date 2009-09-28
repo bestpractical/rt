@@ -210,11 +210,21 @@ sub _add_custom_fields {
     my $method = $args{method};
 
     while (my $cf = $cfs->next) {
-        $self->$method(
-            name     => $cf->name,
+        my $render_as = $cf->type_for_rendering;
+        my %args = (
+            name => $cf->name,
             defaults => {
-                render_as => $cf->type_for_rendering,
+                render_as => $render_as,
             },
+        );
+
+        if ($render_as =~ /Select/i) {
+            my @valid_values = 'XXX';
+            $args{defaults}{valid_values} = \@valid_values;
+        }
+
+        $self->$method(
+            %args,
         );
     }
 }
