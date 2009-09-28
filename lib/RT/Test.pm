@@ -127,8 +127,6 @@ use File::Path 'mkpath';
 unshift @RT::Interface::Web::Standalone::ISA, 'Test::HTTP::Server::Simple::StashWarnings';
 sub RT::Interface::Web::Standalone::test_warning_path { "/__test_warnings" }
 
-my @server;
-
 sub import {
     my $class = shift;
     my %args = @_;
@@ -360,19 +358,6 @@ sub bootstrap_plugins {
 
         $RT::Handle->Connect; # XXX: strange but mysql can loose connection
     }
-}
-
-my @SERVERS;
-sub started_ok {
-    require RT::Test::Web;
-    my $s = RT::Interface::Web::Standalone->new($port);
-    push @server, $s;
-    my $ret = $s->started_ok;
-    @SERVERS = $s->pids;
-    $RT::Handle = new RT::Handle;
-    $RT::Handle->dbh( undef );
-    RT->ConnectToDatabase;
-    return ($ret, RT::Test::Web->new);
 }
 
 sub _get_dbh {
@@ -930,16 +915,164 @@ sub trust_gnupg_key {
     return %res;
 }
 
+my @SERVERS;
+sub started_ok {
+    my $self = shift;
+
+    require RT::Test::Web;
+
+    my $which = $ENV{'RT_TEST_WEB_HANDLER'} || 'standalone';
+    my ($server, $variant) = split /\+/, $which, 2;
+
+    my $function = 'start_'. $server .'_server';
+    unless ( $self->can($function) ) {
+        die "Don't know how to start server '$server'";
+    }
+    return $self->$function( $variant, @_ );
+}
+
+sub start_standalone_server {
+    my $self = shift;
+
+    my $s = RT::Interface::Web::Standalone->new($port);
+
+    my $ret = $s->started_ok;
+    push @SERVERS, $s->pids;
+
+    $RT::Handle = new RT::Handle;
+    $RT::Handle->dbh( undef );
+    RT->ConnectToDatabase;
+
+    return ($ret, RT::Test::Web->new);
+}
+
+use File::Temp qw(tempfile);
+
+sub start_apache_server {
+    my $self = shift;
+    my $variant = shift || 'mod_perl2';
+
+    my $apache_bin = $ENV{'RT_TEST_APACHE'} || $self->find_apache_server
+        || Test::More::BAIL_OUT("Couldn't find apache server, use RT_TEST_APACHE");
+
+    Test::More::diag("Using apache - '$apache_bin'") if $ENV{'TEST_VERBOSE'};
+
+    my $apache_info = `$apache_bin -V`;
+    my ($version) = ($apache_info =~ m{Server\s+version:\s+Apache/(\d+\.\d+)\.});
+    die "Couldn't figure out version of the server" unless $version;
+
+    my %apache_opts = ($apache_info =~ m/^\s*-D\s+([A-Z_]+)="(.*)"$/mg);
+
+    my ($log_fh, $log_fn) = tempfile();
+    my $tmpl = File::Spec->rel2abs( File::Spec->catfile(
+        't', 'data', 'configs', 'apache'. $version .'+'. $variant .'.conf'
+    ) );
+    my %opt = (
+        listen => $port,
+        server_root   => $apache_opts{'HTTPD_ROOT'}
+            || Test::More::BAIL_OUT("Couldn't figure out server root"),
+        document_root => $RT::MasonComponentRoot,
+        rt_bin_path   => $RT::BinPath,
+        log_file      => $log_fn,
+    );
+    my ($conf_fh, $conf_fn) = $self->process_in_file(
+        in => $tmpl, options => \%opt, out => $tmpl .'.final',
+    );
+
+    my $pid = $self->fork_exec($apache_bin, '-f', $conf_fn);
+    Test::More::diag("Started apache server #$pid");
+    push @SERVERS, $pid;
+
+    sleep 1;
+
+    return (RT->Config->Get('WebURL'), RT::Test::Web->new);
+}
+
+sub find_apache_server {
+    my $self = shift;
+    return $_ foreach grep defined,
+        map $self->find_bin($_),
+        qw(httpd apache apache2 apache1);
+    return undef;
+}
+
+sub stop_server {
+    my $self = shift;
+
+    my $sig = 'TERM';
+    $sig = 'INT' if !$ENV{'RT_TEST_WEB_HANDLER'}
+                    || $ENV{'RT_TEST_WEB_HANDLER'} =~/^standalone(?:\+|\z)/;
+    kill $sig, @SERVERS;
+    foreach my $pid (@SERVERS) {
+        waitpid $pid, 0;
+    }
+}
+
+sub find_bin {
+    my $self = shift;
+    my $name = shift;
+
+    return $_ foreach
+        grep -e $_ && -x $_,
+        map File::Spec->catfile($_, $name),
+        split /:/, $ENV{'PATH'};
+    return undef;
+}
+
+sub fork_exec {
+    my $self = shift;
+
+    my $pid = fork;
+    unless ( defined $pid ) {
+        die "cannot fork: $!";
+    } elsif ( !$pid ) {
+        exec @_;
+        die "can't exec `". join(' ', @_) ."` program: $!";
+    } else {
+        return $pid;
+    }
+}
+
+sub process_in_file {
+    my $self = shift;
+    my %args = ( in => undef, options => undef, @_ );
+
+    my $in_fn = $args{'in'};
+    my $text = do {
+        open my $fh, '<', $in_fn
+            or die "Couldn't open '$in_fn': $!";
+        local $/;
+        <$fh>
+    };
+    while ( my ($opt) = ($text =~ /\%\%(.+)\%\%/) ) {
+        my $value = $args{'options'}{ lc $opt };
+        die "no value for $opt" unless defined $value;
+
+        $text =~ s/\%\%\Q$opt\E\%\%/$value/g;
+    }
+
+    my ($out_fh, $out_conf);
+    if ( $args{'out'} ) {
+        ($out_fh, $out_conf) = tempfile();
+    } else {
+        $out_conf = $args{'out'};
+        open $out_fh, '>', $out_conf
+            or die "couldn't open '$out_conf': $!";
+    }
+    print $out_fh $text;
+    seek $out_fh, 0, 0;
+
+    return ($out_fh, $out_conf);
+}
+
 END {
     my $Test = RT::Test->builder;
     return if $Test->{Original_Pid} != $$;
+    Test::More::diag("Cleaning");
+
+    RT::Test->stop_server;
+
     if ( $ENV{RT_TEST_PARALLEL} && $created_new_db ) {
-        {
-            kill 'INT', @SERVERS;
-            foreach my $pid (@SERVERS) {
-                waitpid $pid, 0;
-            }
-        }
 
         # Pg doesn't like if you issue a DROP DATABASE while still connected
         my $dbh = $RT::Handle->dbh;
