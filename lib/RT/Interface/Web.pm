@@ -358,17 +358,23 @@ sub AttemptPasswordAuthentication {
     $m->callback( %$ARGS, CallbackName => 'SuccessfulLogin', CallbackPage => '/autohandler' );
 }
 
-=head2 SetupSessionCookie
+=head2 LoadSessionCookie
 
 Load or setup a session cookie for the current user.
 
 =cut
 
-sub SetupSessionCookie {
-
-    my %cookies    = CGI::Cookie->fetch;
+sub _SessionCookieName {
     my $cookiename = "RT_SID_" . RT->Config->Get('rtname');
     $cookiename .= "." . $ENV{'SERVER_PORT'} if $ENV{'SERVER_PORT'};
+	return $cookiename;
+}
+
+sub LoadSessionCookie {
+
+    my %cookies    = CGI::Cookie->fetch;
+	my $cookiename = _SessionCookieName();
+
     my $SessionCookie = ( $cookies{$cookiename} ? $cookies{$cookiename}->value : undef );
 
     tie %HTML::Mason::Commands::session, 'RT::Interface::Web::Session', $SessionCookie;
@@ -388,17 +394,20 @@ sub SetupSessionCookie {
         # save session on each request when AutoLogoff is turned on
         $HTML::Mason::Commands::session{'_session_last_update'} = $now if $now != $last_update;
     }
+}
 
-    if ( !$cookies{$cookiename} ) {
+sub SaveSessionCookie {
         my $cookie = new CGI::Cookie(
-            -name   => $cookiename,
+            -name   => _SessionCookieName(),
             -value  => $HTML::Mason::Commands::session{_session_id},
             -path   => RT->Config->Get('WebPath'),
             -secure => ( RT->Config->Get('WebSecureCookies') ? 1 : 0 )
         );
         $HTML::Mason::Commands::r->headers_out->{'Set-Cookie'} = $cookie->as_string;
-    }
 }
+
+
+
 
 =head2 Redirect URL
 

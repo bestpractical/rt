@@ -105,6 +105,8 @@ $session{'home_refresh_interval'} = $ARGS{'HomeRefreshInterval'} if ( $ARGS{'Hom
 
 # Process per-page global callbacks
 $m->callback( %ARGS, CallbackName => 'Default', CallbackPage => '/autohandler' );
+
+RT::Interface::Web::SaveSessionCookie();
 RT::Interface::Web::ShowRequestedPage(\%ARGS);
 RT::Interface::Web::LogRecordedSQLStatements();
 $m->comp( '/Elements/Footer', %ARGS );

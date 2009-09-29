@@ -48,7 +48,7 @@
 <%INIT>
 return if $m->is_subrequest; # avoid reentrancy, as suggested by masonbook
 
-RT::Interface::Web::SetupSessionCookie();
+RT::Interface::Web::LoadSessionCookie();
 
 return ();
 </%INIT>
