@@ -190,7 +190,7 @@ sub HandleRequest {
 
     MaybeShowInstallModePage();
     $HTML::Mason::Commands::m->comp( '/Elements/SetupSessionCookie', %$ARGS );
-    SaveSessionCookie();
+    SendSessionCookie();
     $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new() unless _UserLoggedIn();
 
     MaybeShowNoAuthPage($ARGS);
@@ -282,6 +282,7 @@ sub MaybeShowNoAuthPage {
     # If it's a noauth file, don't ask for auth.
     my $m = $HTML::Mason::Commands::m;
     if ( $m->base_comp->path =~ RT->Config->Get('WebNoAuthRegex') ) {
+		SendSessionCookie();
         $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %$ARGS );
         $m->abort;
     }
@@ -299,10 +300,12 @@ can only see self-service pages.
 sub ShowRequestedPage {
     my $ARGS = shift;
 
-    # If the user isn't privileged, they can only see SelfService
-    #
     my $m = $HTML::Mason::Commands::m;
 
+	SendSessionCookie();
+
+
+    # If the user isn't privileged, they can only see SelfService
     unless ( $HTML::Mason::Commands::session{'CurrentUser'}->Privileged ) {
 
         # if the user is trying to access a ticket, redirect them
@@ -473,7 +476,7 @@ sub InstantiateNewSession {
 }
 
 
-sub SaveSessionCookie {
+sub SendSessionCookie {
         my $cookie = new CGI::Cookie(
             -name   => _SessionCookieName(),
             -value  => $HTML::Mason::Commands::session{_session_id},
