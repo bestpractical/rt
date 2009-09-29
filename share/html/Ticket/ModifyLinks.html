@@ -75,7 +75,7 @@ my $Ticket = LoadTicket($id);
 my @results;  
 $m->callback( TicketObj => $Ticket, ARGSRef => \%ARGS, Results => \@results );
 push @results, ProcessTicketLinks( TicketObj => $Ticket, ARGSRef => \%ARGS );
-$TicketObj->ApplyTransactionBatch;
+$Ticket->ApplyTransactionBatch;
     
 </%INIT>
       
