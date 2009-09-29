@@ -104,7 +104,6 @@ elsif ( RT->Config->Get('WebExternalAuth') ) {
 
     # do we actually have a REMOTE_USER equivlent?
     if ( RT::Interface::Web::WebCanonicalizeInfo() ) {
-
         my $orig_user = $user;
 
         $user = RT::Interface::Web::WebCanonicalizeInfo();
@@ -122,7 +121,6 @@ elsif ( RT->Config->Get('WebExternalAuth') ) {
         if ( RT->Config->Get('WebExternalAuto') && !$session{'CurrentUser'}->Id ) {
 
             # Create users on-the-fly
-
             my $UserObj = RT::User->new( $RT::SystemUser );
             my ($val, $msg) = $UserObj->Create(
                 %{ ref RT->Config->Get('AutoCreate') ? RT->Config->Get('AutoCreate') : {} },
@@ -131,17 +129,14 @@ elsif ( RT->Config->Get('WebExternalAuth') ) {
             );
 
             if ( $val ) {
-
                 # now get user specific information, to better create our user.
-                my $new_user_info
-                    = RT::Interface::Web::WebExternalAutoInfo($user);
+                my $new_user_info = RT::Interface::Web::WebExternalAutoInfo($user);
                 
                 # set the attributes that have been defined.
                 foreach my $attribute ($user->WritableAttributes) {
                     $m->callback( Attribute => $attribute, User => $user, UserInfo => $new_user_info, CallbackName => 'NewUser' );
                     my $method = "Set$attribute";
-                    $UserObj->$method( $new_user_info->{$attribute} )
-                        if defined $new_user_info->{$attribute};
+                    $UserObj->$method( $new_user_info->{$attribute} ) if defined $new_user_info->{$attribute};
                 }
                 $session{'CurrentUser'}->Load($user);
             }
@@ -150,8 +145,7 @@ elsif ( RT->Config->Get('WebExternalAuth') ) {
                 # we failed to successfully create the user. abort abort abort.
                 delete $session{'CurrentUser'};
                 $m->abort unless RT->Config->Get('WebFallbackToInternalAuth');
-                $m->comp( '/Elements/Login', %ARGS,
-                    Error => loc( 'Cannot create user: [_1]', $msg ) );
+                $m->comp( '/Elements/Login', %ARGS, Error => loc( 'Cannot create user: [_1]', $msg ) );
             }
         }
 
@@ -163,16 +157,14 @@ elsif ( RT->Config->Get('WebExternalAuth') ) {
             $user = $orig_user;
 
             if ( RT->Config->Get('WebExternalOnly') ) {
-                $m->comp( '/Elements/Login', %ARGS,
-                    Error => loc('You are not an authorized user') );
+                $m->comp( '/Elements/Login', %ARGS, Error => loc('You are not an authorized user') );
                 $m->abort();
             }
         }
     }
     elsif (RT->Config->Get('WebFallbackToInternalAuth')) {
         unless ( defined $session{'CurrentUser'} ) {
-            $m->comp( '/Elements/Login', %ARGS,
-                Error => loc('You are not an authorized user') );
+            $m->comp( '/Elements/Login', %ARGS, Error => loc('You are not an authorized user') );
             $m->abort();
         }
     }
@@ -185,14 +177,12 @@ elsif ( RT->Config->Get('WebExternalAuth') ) {
     }
 }
 
-delete $session{'CurrentUser'}
-    unless $session{'CurrentUser'} && $session{'CurrentUser'}->Id;
+delete $session{'CurrentUser'} unless $session{'CurrentUser'} && $session{'CurrentUser'}->Id;
 
 # Process per-page authentication callbacks
 $m->callback( %ARGS, CallbackName => 'Auth' );
 
-delete $session{'CurrentUser'}
-    unless $session{'CurrentUser'} && $session{'CurrentUser'}->Id;
+delete $session{'CurrentUser'} unless $session{'CurrentUser'} && $session{'CurrentUser'}->Id;
 
 unless( $session{'CurrentUser'} ) {
     # If the user is logging in, let's authenticate
@@ -202,15 +192,12 @@ unless( $session{'CurrentUser'} ) {
 
         unless ( $user_obj->id && $user_obj->IsPassword( $pass ) ) {
             $RT::Logger->error("FAILED LOGIN for $user from $ENV{'REMOTE_ADDR'}");
-            $m->comp( '/Elements/Login', %ARGS,
-                      Error => loc('Your username or password is incorrect'),
-                    );
+            $m->comp( '/Elements/Login', %ARGS, Error => loc('Your username or password is incorrect'),);
             $m->callback( %ARGS, CallbackName => 'FailedLogin' );
             $m->abort;
         }
         $session{'CurrentUser'} = $user_obj;
-        $RT::Logger->info(
-            "Successful login for $user from $ENV{'REMOTE_ADDR'}");
+        $RT::Logger->info( "Successful login for $user from $ENV{'REMOTE_ADDR'}");
         $m->callback( %ARGS, CallbackName => 'SuccessfulLogin' );
     }
     # if no credentials then show him login page
@@ -232,9 +219,7 @@ $m->callback( %ARGS );
 unless ( $session{'CurrentUser'}->Privileged ) {
 
     # if the user is trying to access a ticket, redirect them
-    if (    $m->request_comp->path =~ '^(/+)Ticket/Display.html'
-         && $ARGS{'id'} )
-    {
+    if (    $m->request_comp->path =~ '^(/+)Ticket/Display.html' && $ARGS{'id'} ) {
         RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."SelfService/Display.html?id=".$ARGS{'id'});
     }
 
