@@ -300,7 +300,7 @@ sub _JoinACL
     if ( $args{'Right'} ) {
         my $canonic = RT::ACE->CanonicalizeRightName( $args{'Right'} );
         unless ( $canonic ) {
-            $RT::Logger->crit("Invalid right. Couldn't canonicalize right '$args{'Right'}'");
+            $RT::Logger->error("Invalid right. Couldn't canonicalize right '$args{'Right'}'");
         }
         else {
             $args{'Right'} = $canonic;
