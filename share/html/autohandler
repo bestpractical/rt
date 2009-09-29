@@ -79,10 +79,7 @@ $r->content_type("text/html; charset=utf-8");
 
 RT::Interface::Web::MaybeShowNoAuthPage(\%ARGS);
 
-
-
 RT::Interface::Web::AttemptExternalAuth(\%ARGS);
-
 
 
 delete $session{'CurrentUser'} unless $session{'CurrentUser'} && $session{'CurrentUser'}->Id;
