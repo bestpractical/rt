@@ -166,10 +166,32 @@ sub WebExternalAutoInfo {
 # }}}
 
 
+=head2 MaybeShowNoAuthPage  \%ARGS
+
+This function, called exclusively by RT's autohandler, dispatches
+a request to the page a user requested (but only if it matches the "noauth" regex.
+
+If it serves a page, it stops mason processing. Otherwise, mason just keeps running through the autohandler
+
+=cut 
+
+
+sub MaybeShowNoAuthPage {
+    my $ARGS = shift;
+
+    # If it's a noauth file, don't ask for auth.
+    my $m = $HTML::Mason::Commands::m;
+    if ( $m->base_comp->path =~ RT->Config->Get('WebNoAuthRegex') ) {
+        $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %$ARGS );
+        $m->abort;
+    }
+}
+
+
 =head2 ShowRequestedPage  \%ARGS
 
 This function, called exclusively by RT's autohandler, dispatches
-a request to the page a user requested (making sure that unprivileg users
+a request to the page a user requested (making sure that unpriviled users
 can only see self-service pages.
 
 =cut 

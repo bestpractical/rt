@@ -91,13 +91,12 @@ unless ( $session{'CurrentUser'} && $session{'CurrentUser'}->Id ) {
 # Set the proper encoding for the current language handle
 $r->content_type("text/html; charset=utf-8");
 
-# If it's a noauth file, don't ask for auth.
-if ( $m->base_comp->path =~ RT->Config->Get('WebNoAuthRegex') ) {
-    $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %ARGS);
-    $m->abort;
-}
+RT::Interface::Web::MaybeShowNoAuthPage(\%ARGS);
+
+
+
 # If RT is configured for external auth, let's go through and get REMOTE_USER
-elsif ( RT->Config->Get('WebExternalAuth') ) {
+if ( RT->Config->Get('WebExternalAuth') ) {
 
     # do we actually have a REMOTE_USER equivlent?
     if ( RT::Interface::Web::WebCanonicalizeInfo() ) {
@@ -146,9 +145,9 @@ elsif ( RT->Config->Get('WebExternalAuth') ) {
             }
         }
 
-        if ( $session{'CurrentUser'}->Id ) {
-            $m->callback(%ARGS, CallbackName => 'ExternalAuthSuccessfulLogin');
-        }
+		if ( $session{'CurrentUser'}->Id ) {
+            $m->callback(%ARGS, CallbackName => 'ExternalAuthSuccessfulLogin') 
+		}
         else {
             delete $session{'CurrentUser'};
             $user = $orig_user;
