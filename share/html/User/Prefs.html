@@ -161,6 +161,20 @@
   </tr>
 </table>
 </&>
+
+<&| /Widgets/TitleBox, title => loc('Custom Fields') &>
+<table>
+% my $CustomFields = $UserObj->CustomFields;
+% while ( my $CF = $CustomFields->Next ) {
+<tr valign="top">
+<td align="right"><% loc( $CF->Name ) %>:</td>
+<td><& /Elements/EditCustomField,
+    %ARGS, Object => $UserObj, CustomField => $CF
+&></td></tr>
+% }
+</table>
+</&>
+
 % $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'FormRightColumn' );
 </td>
 </tr>
@@ -231,6 +245,8 @@ push @results, UpdateRecordObject (
     Object => $UserObj,
     ARGSRef => \%ARGS,
 );
+
+push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $UserObj );
 
 if ( $Lang ) {
     $session{'CurrentUser'}->LanguageHandle($Lang);
