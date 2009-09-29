@@ -215,26 +215,8 @@ $session{'home_refresh_interval'} = $ARGS{'HomeRefreshInterval'} if ( $ARGS{'Hom
 # Process per-page global callbacks
 $m->callback( %ARGS );
 
-# If the user isn't privileged, they can only see SelfService
-unless ( $session{'CurrentUser'}->Privileged ) {
 
-    # if the user is trying to access a ticket, redirect them
-    if (    $m->request_comp->path =~ '^(/+)Ticket/Display.html' && $ARGS{'id'} ) {
-        RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."SelfService/Display.html?id=".$ARGS{'id'});
-    }
-
-    # otherwise, drop the user at the SelfService default page
-    elsif ( $m->base_comp->path !~ RT->Config->Get('SelfServiceRegex') ) {
-        RT::Interface::Web::Redirect( RT->Config->Get('WebURL') ."SelfService/" );
-    }
-    # if user is in SelfService dir let him do anything
-    else {
-        $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %ARGS);
-    }
-}
-else {
-    $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %ARGS);
-}
+RT::Interface::Web::ShowRequestedPage(\%ARGS);
 
 
 RT::Interface::Web::LogRecordedSQLStatements();

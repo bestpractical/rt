@@ -166,6 +166,43 @@ sub WebExternalAutoInfo {
 # }}}
 
 
+=head2 ShowRequestedPage  \%ARGS
+
+This function, called exclusively by RT's autohandler, dispatches
+a request to the page a user requested (making sure that unprivileg users
+can only see self-service pages.
+
+=cut 
+
+sub ShowRequestedPage {
+    my $ARGS = shift;
+
+    # If the user isn't privileged, they can only see SelfService
+    #
+    my $m = $HTML::Mason::Commands::m;
+
+    unless ( $HTML::Mason::Commands::session{'CurrentUser'}->Privileged ) {
+
+        # if the user is trying to access a ticket, redirect them
+        if ( $m->request_comp->path =~ '^(/+)Ticket/Display.html' && $ARGS->{'id'} ) {
+            RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . "SelfService/Display.html?id=" . $ARGS->{'id'} );
+        }
+
+        # otherwise, drop the user at the SelfService default page
+        elsif ( $m->base_comp->path !~ RT->Config->Get('SelfServiceRegex') ) {
+            RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . "SelfService/" );
+        }
+
+        # if user is in SelfService dir let him do anything
+        else {
+            $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %$ARGS );
+        }
+    } else {
+        $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %$ARGS );
+    }
+
+}
+
 
 =head2 Redirect URL
 
