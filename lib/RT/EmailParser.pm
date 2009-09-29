@@ -356,6 +356,7 @@ Returns the same array with any IsRTAddress()es weeded out.
 sub CullRTAddresses {
     my $self = shift;
     my @addresses= (@_);
+    return @addresses if RT->Config->Get('LinkSelfLoops');
     my @addrlist;
 
     foreach my $addr( @addresses ) {
