@@ -217,8 +217,11 @@ sub _add_custom_fields {
         );
 
         if ($render_as =~ /Select/i) {
-            my @valid_values = 'XXX';
-            $args{valid_values} = \@valid_values;
+            $args{valid_values} = {
+                collection   => $cf->values,
+                display_from => 'name',
+                value_from   => 'name',
+            };
         }
 
         $self->$method(
