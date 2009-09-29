@@ -64,15 +64,10 @@ local *session unless $m->is_subrequest;
 # Disable AutoFlush using an attribute
 $m->autoflush( $m->request_comp->attr('AutoFlush') ) if ( $m->request_comp->attr_exists('AutoFlush') );
 
-
 %ARGS = RT::Interface::Web::DecodeARGS(\%ARGS);
-
 RT::Interface::Web::PreprocessTimeUpdates(\%ARGS);
 
-
-
 $m->{'rt_base_time'} = [ Time::HiRes::gettimeofday() ];
-
 $m->comp( '/Elements/SetupSessionCookie', %ARGS );
 
 unless ( $session{'CurrentUser'} && $session{'CurrentUser'}->Id ) {
@@ -121,7 +116,7 @@ if ( RT->Config->Get('WebExternalAuth') ) {
                 
                 # set the attributes that have been defined.
                 foreach my $attribute ($user->WritableAttributes) {
-                    $m->callback( Attribute => $attribute, User => $user, UserInfo => $new_user_info, CallbackName => 'NewUser' );
+                    $m->callback( Attribute => $attribute, User => $user, UserInfo => $new_user_info, CallbackName => 'NewUser', CallbackPage => '/autohandler' );
                     my $method = "Set$attribute";
                     $UserObj->$method( $new_user_info->{$attribute} ) if defined $new_user_info->{$attribute};
                 }
@@ -137,7 +132,7 @@ if ( RT->Config->Get('WebExternalAuth') ) {
         }
 
 		if ( $session{'CurrentUser'}->Id ) {
-            $m->callback(%ARGS, CallbackName => 'ExternalAuthSuccessfulLogin') 
+            $m->callback(%ARGS, CallbackName => 'ExternalAuthSuccessfulLogin', CallbackPage => '/autohandler') 
 		}
         else {
             delete $session{'CurrentUser'};
@@ -167,7 +162,7 @@ if ( RT->Config->Get('WebExternalAuth') ) {
 delete $session{'CurrentUser'} unless $session{'CurrentUser'} && $session{'CurrentUser'}->Id;
 
 # Process per-page authentication callbacks
-$m->callback( %ARGS, CallbackName => 'Auth' );
+$m->callback( %ARGS, CallbackName => 'Auth', CallbackPage => '/autohandler');
 
 delete $session{'CurrentUser'} unless $session{'CurrentUser'} && $session{'CurrentUser'}->Id;
 
@@ -180,12 +175,12 @@ unless( $session{'CurrentUser'} ) {
         unless ( $user_obj->id && $user_obj->IsPassword( $pass ) ) {
             $RT::Logger->error("FAILED LOGIN for $user from $ENV{'REMOTE_ADDR'}");
             $m->comp( '/Elements/Login', %ARGS, Error => loc('Your username or password is incorrect'),);
-            $m->callback( %ARGS, CallbackName => 'FailedLogin' );
+            $m->callback( %ARGS, CallbackName => 'FailedLogin', CallbackPage => '/autohandler');
             $m->abort;
         }
         $session{'CurrentUser'} = $user_obj;
         $RT::Logger->info( "Successful login for $user from $ENV{'REMOTE_ADDR'}");
-        $m->callback( %ARGS, CallbackName => 'SuccessfulLogin' );
+        $m->callback( %ARGS, CallbackName => 'SuccessfulLogin', CallbackPage => '/autohandler' );
     }
     # if no credentials then show him login page
     else {
@@ -198,7 +193,7 @@ unless( $session{'CurrentUser'} ) {
 $session{'home_refresh_interval'} = $ARGS{'HomeRefreshInterval'} if ( $ARGS{'HomeRefreshInterval'} ); 
 
 # Process per-page global callbacks
-$m->callback( %ARGS );
+$m->callback( %ARGS, CallbackName => 'Default', CallbackPage => '/autohandler' );
 RT::Interface::Web::ShowRequestedPage(\%ARGS);
 RT::Interface::Web::LogRecordedSQLStatements();
 $m->comp( '/Elements/Footer', %ARGS );
