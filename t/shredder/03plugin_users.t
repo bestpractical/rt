@@ -13,7 +13,7 @@ BEGIN {
 }
 
 
-my @ARGS = sort qw(limit status name email replace_relations no_tickets);
+my @ARGS = sort qw(limit status name member_of email replace_relations no_tickets);
 
 use_ok('RT::Shredder::Plugin::Users');
 {
@@ -24,6 +24,7 @@ use_ok('RT::Shredder::Plugin::Users');
 
     my @args = sort $plugin->SupportArgs;
     cmp_deeply(\@args, \@ARGS, "support all args");
+
 
     my ($status, $msg) = $plugin->TestArgs( name => 'r??t*' );
     ok($status, "arg name = 'r??t*'") or diag("error: $msg");
