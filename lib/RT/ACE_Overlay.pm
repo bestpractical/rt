@@ -550,7 +550,7 @@ sub RightName {
         return $right if $val eq $self->CanonicalizeRightName($right);
     }
 
-    $RT::Logger->crit("Invalid right. Couldn't canonicalize right '$val'");
+    $RT::Logger->error("Invalid right. Couldn't canonicalize right '$val'");
     return $val;
 }
 
