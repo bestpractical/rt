@@ -1,7 +1,7 @@
 package RT::Action::CreateTicket;
 use strict;
 use warnings;
-use base 'RT::Action::QueueBased', 'Jifty::Action::Record::Create';
+use base 'RT::Action::CustomFieldBased', 'RT::Action::QueueBased', 'Jifty::Action::Record::Create';
 
 use constant record_class => 'RT::Model::Ticket';
 use constant report_detailed_messages => 1;
@@ -200,41 +200,6 @@ sub take_action {
     # We should inline this function to encourage other people to use this
     # action
     HTML::Mason::Commands::create_ticket(%{ $self->argument_values });
-}
-
-sub _add_custom_fields {
-    my $self = shift;
-    my %args = @_;
-
-    my $cfs    = $args{cfs};
-    my $method = $args{method};
-
-    while (my $cf = $cfs->next) {
-        my $render_as = $cf->type_for_rendering;
-        my %args = (
-            name => $cf->name,
-            render_as => $render_as,
-        );
-
-        if ($render_as =~ /Select/i) {
-            $args{valid_values} = [ {
-                collection   => $cf->values,
-                display_from => 'name',
-                value_from   => 'name',
-            } ];
-        }
-        elsif ($render_as =~ /Combobox/i) {
-            $args{available_values} = [ {
-                collection   => $cf->values,
-                display_from => 'name',
-                value_from   => 'name',
-            } ];
-        }
-
-        $self->$method(
-            %args,
-        );
-    }
 }
 
 sub add_ticket_custom_fields {
