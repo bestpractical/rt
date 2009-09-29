@@ -363,6 +363,8 @@ sub CullRTAddresses {
     my $self = shift;
     my @addresses = (@_);
 
+    return @addresses if RT->Config->Get('LinkSelfLoops');
+
     return grep { !$self->IsRTAddress($_) } @addresses;
 }
 

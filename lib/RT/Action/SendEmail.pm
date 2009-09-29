@@ -568,6 +568,7 @@ sub SetRTSpecialHeaders {
         if ( RT->Config->Get('EmailOutputEncoding') );
     $self->SetReturnAddress();
     $self->SetReferencesHeaders();
+    $self->SetHeader("X-RT-Transaction-Id" => $self->TransactionObj->Id );
 
     unless ( $self->TemplateObj->MIMEObj->head->get('Message-ID') ) {
 
@@ -608,6 +609,7 @@ sub SetRTSpecialHeaders {
     }
 
     $self->SetHeader( 'X-RT-Loop-Prevention', RT->Config->Get('rtname') );
+    $self->SetHeader( 'X-RT-Allow-Self-Loops', 1) if RT->Config->Get('LinkSelfLoops');
     $self->SetHeader( 'RT-Ticket',
         RT->Config->Get('rtname') . " #" . $self->TicketObj->id() );
     $self->SetHeader( 'Managed-by',
