@@ -223,6 +223,13 @@ sub _add_custom_fields {
                 value_from   => 'name',
             } ];
         }
+        elsif ($render_as =~ /Combobox/i) {
+            $args{available_values} = [ {
+                collection   => $cf->values,
+                display_from => 'name',
+                value_from   => 'name',
+            } ];
+        }
 
         $self->$method(
             %args,
