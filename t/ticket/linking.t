@@ -2,6 +2,7 @@
 use strict;
 use warnings;
 
+use RT::Test tests => '101';
 use_ok('RT');
 use_ok('RT::Ticket');
 use_ok('RT::ScripConditions');
@@ -9,7 +10,6 @@ use_ok('RT::ScripActions');
 use_ok('RT::Template');
 use_ok('RT::Scrips');
 use_ok('RT::Scrip');
-use RT::Test tests => '101';
 
 
 use File::Temp qw/tempfile/;
