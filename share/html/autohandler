@@ -63,7 +63,6 @@ RT::Interface::Web::MaybeEnableSQLStatementLog();
 # avoid reentrancy, as suggested by masonbook
 local *session unless $m->is_subrequest;
 
-# Disable AutoFlush using an attribute
 $m->autoflush( $m->request_comp->attr('AutoFlush') ) if ( $m->request_comp->attr_exists('AutoFlush') );
 
 RT::Interface::Web::DecodeARGS(\%ARGS);
