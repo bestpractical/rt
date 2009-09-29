@@ -338,6 +338,25 @@ sub AttemptExternalAuth {
     }
 }
 
+sub AttemptPasswordAuthentication {
+    my $ARGS     = shift;
+    my $user_obj = RT::CurrentUser->new();
+    $user_obj->Load( $ARGS->{user} );
+
+    my $m  = $HTML::Mason::Commands::m;
+
+    unless ( $user_obj->id && $user_obj->IsPassword( $ARGS->{pass} ) ) {
+        $RT::Logger->error("FAILED LOGIN for @{[$ARGS->{user}]} from $ENV{'REMOTE_ADDR'}");
+        $m->comp( '/Elements/Login', %$ARGS, Error => loc('Your username or password is incorrect'), );
+        $m->callback( %$ARGS, CallbackName => 'FailedLogin', CallbackPage => '/autohandler' );
+        $m->abort;
+    }
+
+    $RT::Logger->info("Successful login for @{[$ARGS->{user}]} from $ENV{'REMOTE_ADDR'}");
+    $HTML::Mason::Commands::session{'CurrentUser'} = $user_obj;
+    $m->callback( %$ARGS, CallbackName => 'SuccessfulLogin', CallbackPage => '/autohandler' );
+}
+
 =head2 Redirect URL
 
 This routine ells the current user's browser to redirect to URL.  
