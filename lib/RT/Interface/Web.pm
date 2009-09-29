@@ -357,6 +357,50 @@ sub AttemptPasswordAuthentication {
     $m->callback( %$ARGS, CallbackName => 'SuccessfulLogin', CallbackPage => '/autohandler' );
 }
 
+=head2 SetupSessionCookie
+
+Load or setup a session cookie for the current user.
+
+=cut
+
+sub SetupSessionCookie {
+	my $ARGS = shift;
+    use RT::Interface::Web::Session;
+
+    my %cookies    = CGI::Cookie->fetch;
+    my $cookiename = "RT_SID_" . RT->Config->Get('rtname');
+    $cookiename .= "." . $ENV{'SERVER_PORT'} if $ENV{'SERVER_PORT'};
+    my $SessionCookie = ( $cookies{$cookiename} ? $cookies{$cookiename}->value : undef );
+
+        tie %HTML::Mason::Commands::session, 'RT::Interface::Web::Session', $SessionCookie;
+    undef $cookies{$cookiename} unless $SessionCookie && $HTML::Mason::Commands::session{'_session_id'} eq $SessionCookie;
+
+    if ( int RT->Config->Get('AutoLogoff') ) {
+        my $now = int( time / 60 );
+        my $last_update = $HTML::Mason::Commands::session{'_session_last_update'} || 0;
+
+        if ( $last_update && ( $now - $last_update - RT->Config->Get('AutoLogoff') ) > 0 ) {
+
+            # clean up sessions, but we should leave the session id
+            # Should be creating a new session here
+            %HTML::Mason::Commands::session = ( _session_id => $HTML::Mason::Commands::session{'_session_id'} );
+        }
+
+        # save session on each request when AutoLogoff is turned on
+        $HTML::Mason::Commands::session{'_session_last_update'} = $now if $now != $last_update;
+    }
+
+    if ( !$cookies{$cookiename} ) {
+        my $cookie = new CGI::Cookie(
+            -name   => $cookiename,
+            -value  => $HTML::Mason::Commands::session{_session_id},
+            -path   => RT->Config->Get('WebPath'),
+            -secure => ( RT->Config->Get('WebSecureCookies') ? 1 : 0 )
+        );
+        $HTML::Mason::Commands::r->headers_out->{'Set-Cookie'} = $cookie->as_string;
+    }
+}
+
 =head2 Redirect URL
 
 This routine ells the current user's browser to redirect to URL.  
