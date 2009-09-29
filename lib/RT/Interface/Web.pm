@@ -165,6 +165,30 @@ sub WebExternalAutoInfo {
 
 # }}}
 
+=head2 MaybeShowInstallModePage
+
+This function, called exclusively by RT's autohandler, dispatches
+a request to RT's Installation workflow, only if Install Mode is enabled in the configuration file.
+
+If it serves a page, it stops mason processing. Otherwise, mason just keeps running through the autohandler
+
+=cut
+
+
+sub MaybeShowInstallModePage {
+
+    my $m = $HTML::Mason::Commands::m;
+    if ( RT->InstallMode ) {
+        if ( $m->base_comp->path =~ RT->Config->Get('WebNoAuthRegex') ) {
+            $m->call_next();
+        } elsif ( $m->request_comp->path !~ '^(/+)Install/' ) {
+            RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . "Install/index.html" );
+        } else {
+            $m->call_next();
+        }
+        $m->abort();
+    }
+}
 
 =head2 MaybeShowNoAuthPage  \%ARGS
 
