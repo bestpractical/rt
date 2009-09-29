@@ -67,7 +67,9 @@ package RT::Interface::Web;
 
 use RT::SavedSearches;
 use URI qw();
+use RT::Interface::Web::Session;
 use Digest::MD5 ();
+use Encode qw();
 
 
 # {{{ EscapeUTF8
@@ -101,7 +103,6 @@ Escapes URI component according to RFC2396
 
 =cut
 
-use Encode qw();
 sub EscapeURI {
     my $ref = shift;
     return unless defined $$ref;
@@ -364,26 +365,24 @@ Load or setup a session cookie for the current user.
 =cut
 
 sub SetupSessionCookie {
-	my $ARGS = shift;
-    use RT::Interface::Web::Session;
 
     my %cookies    = CGI::Cookie->fetch;
     my $cookiename = "RT_SID_" . RT->Config->Get('rtname');
     $cookiename .= "." . $ENV{'SERVER_PORT'} if $ENV{'SERVER_PORT'};
     my $SessionCookie = ( $cookies{$cookiename} ? $cookies{$cookiename}->value : undef );
 
-        tie %HTML::Mason::Commands::session, 'RT::Interface::Web::Session', $SessionCookie;
-    undef $cookies{$cookiename} unless $SessionCookie && $HTML::Mason::Commands::session{'_session_id'} eq $SessionCookie;
+    tie %HTML::Mason::Commands::session, 'RT::Interface::Web::Session', $SessionCookie;
+
+	unless ( $SessionCookie && $HTML::Mason::Commands::session{'_session_id'} eq $SessionCookie ) {
+		undef $cookies{$cookiename};
+	}
 
     if ( int RT->Config->Get('AutoLogoff') ) {
         my $now = int( time / 60 );
         my $last_update = $HTML::Mason::Commands::session{'_session_last_update'} || 0;
 
         if ( $last_update && ( $now - $last_update - RT->Config->Get('AutoLogoff') ) > 0 ) {
-
-            # clean up sessions, but we should leave the session id
-            # Should be creating a new session here
-            %HTML::Mason::Commands::session = ( _session_id => $HTML::Mason::Commands::session{'_session_id'} );
+            tied( %HTML::Mason::Commands::session)->delete;
         }
 
         # save session on each request when AutoLogoff is turned on
