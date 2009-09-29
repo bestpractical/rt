@@ -50,65 +50,9 @@ use RT::Util;
 
 $m->callback( ARGSRef => \%ARGS, CallbackName => 'Init', CallbackPage => '/autohandler' );
 
-$r->content_type("text/html; charset=utf-8");
+RT::Interface::Web::HandleRequest(\%ARGS);
 
-$m->{'rt_base_time'} = [ Time::HiRes::gettimeofday() ];
-
-
-# Roll back any dangling transactions from a previous failed connection
-$RT::Handle->ForceRollback() if $RT::Handle->TransactionDepth;
-
-RT::Interface::Web::MaybeEnableSQLStatementLog();
-
-# avoid reentrancy, as suggested by masonbook
-local *session unless $m->is_subrequest;
-
-$m->autoflush( $m->request_comp->attr('AutoFlush') ) if ( $m->request_comp->attr_exists('AutoFlush') );
-
-RT::Interface::Web::DecodeARGS(\%ARGS);
-
-RT::Interface::Web::PreprocessTimeUpdates(\%ARGS);
-
-RT::Interface::Web::MaybeShowInstallModePage();
-
-$m->comp( '/Elements/SetupSessionCookie', %ARGS );
-
-$session{'CurrentUser'} = RT::CurrentUser->new() unless ( $session{'CurrentUser'} && $session{'CurrentUser'}->Id );
-
-RT::Interface::Web::MaybeShowNoAuthPage(\%ARGS);
-
-RT::Interface::Web::AttemptExternalAuth(\%ARGS) unless ($session{'CurrentUser'} && $session{'CurrentUser'}->id);
-
-delete $session{'CurrentUser'} unless $session{'CurrentUser'} && $session{'CurrentUser'}->Id;
-
-# Process per-page authentication callbacks
-$m->callback( %ARGS, CallbackName => 'Auth', CallbackPage => '/autohandler');
-
-delete $session{'CurrentUser'} unless $session{'CurrentUser'} && $session{'CurrentUser'}->Id;
-
-unless ( $session{'CurrentUser'} ) {
-    # If the user is logging in, let's authenticate
-    if ( defined $user && defined $pass ) {
-        RT::Interface::Web::AttemptPasswordAuthentication( \%ARGS );
-
-        # if no credentials then show him login page
-        } else {
-            $m->comp( '/Elements/Login', %ARGS );
-            $m->abort;
-        }
-    }
-
-# now it applies not only to home page, but any dashboard that can be used as a workspace
-$session{'home_refresh_interval'} = $ARGS{'HomeRefreshInterval'} if ( $ARGS{'HomeRefreshInterval'} ); 
-
-# Process per-page global callbacks
-$m->callback( %ARGS, CallbackName => 'Default', CallbackPage => '/autohandler' );
-
-RT::Interface::Web::SaveSessionCookie();
-RT::Interface::Web::ShowRequestedPage(\%ARGS);
-RT::Interface::Web::LogRecordedSQLStatements();
 $m->comp( '/Elements/Footer', %ARGS );
-
 </%INIT>
 <%ARGS>
 $user => undef

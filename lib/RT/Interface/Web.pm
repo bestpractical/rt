@@ -166,6 +166,81 @@ sub WebExternalAutoInfo {
 
 # }}}
 
+sub HandleRequest {
+    my $ARGS = shift;
+
+    $HTML::Mason::Commands::r->content_type("text/html; charset=utf-8");
+
+    $HTML::Mason::Commands::m->{'rt_base_time'} = [ Time::HiRes::gettimeofday() ];
+
+    # Roll back any dangling transactions from a previous failed connection
+    $RT::Handle->ForceRollback() if $RT::Handle->TransactionDepth;
+
+    MaybeEnableSQLStatementLog();
+
+    # avoid reentrancy, as suggested by masonbook
+	local *HTML::Mason::Commands::session unless $HTML::Mason::Commands::m->is_subrequest;
+
+    $HTML::Mason::Commands::m->autoflush( $HTML::Mason::Commands::m->request_comp->attr('AutoFlush') )
+        if ( $HTML::Mason::Commands::m->request_comp->attr_exists('AutoFlush') );
+
+    DecodeARGS($ARGS);
+
+    PreprocessTimeUpdates($ARGS);
+
+    MaybeShowInstallModePage();
+    $HTML::Mason::Commands::m->comp( '/Elements/SetupSessionCookie', %$ARGS );
+    SaveSessionCookie();
+    $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new() unless _UserLoggedIn();
+
+    MaybeShowNoAuthPage($ARGS);
+
+    AttemptExternalAuth($ARGS) unless _UserLoggedIn();
+
+    _ForceLogout() unless _UserLoggedIn();
+    
+	# Process per-page authentication callbacks
+    $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Auth', CallbackPage => '/autohandler' );
+
+    unless ( _UserLoggedIn()) {
+		_ForceLogout();
+        # If the user is logging in, let's authenticate
+        if ( defined $ARGS->{user} && defined $ARGS->{pass} ) {
+            AttemptPasswordAuthentication($ARGS);
+
+            # if no credentials then show him login page
+        } else {
+            $HTML::Mason::Commands::m->comp( '/Elements/Login', %$ARGS );
+            $HTML::Mason::Commands::m->abort;
+        }
+    }
+
+	warn "Not logged in! " unless _UserLoggedIn();
+    # now it applies not only to home page, but any dashboard that can be used as a workspace
+    $HTML::Mason::Commands::session{'home_refresh_interval'} = $ARGS->{'HomeRefreshInterval'} if ( $ARGS->{'HomeRefreshInterval'} );
+
+    # Process per-page global callbacks
+    $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Default', CallbackPage => '/autohandler' );
+
+    ShowRequestedPage($ARGS);
+    LogRecordedSQLStatements();
+
+}
+
+sub _ForceLogout {
+
+    delete $HTML::Mason::Commands::session{'CurrentUser'} ;
+}
+
+sub _UserLoggedIn {
+	if ($HTML::Mason::Commands::session{CurrentUser} && $HTML::Mason::Commands::session{'CurrentUser'}->id) {
+		return 1;
+	} else {
+		return undef;
+	}
+
+}
+
 =head2 MaybeShowInstallModePage 
 
 This function, called exclusively by RT's autohandler, dispatches
@@ -353,7 +428,6 @@ sub AttemptPasswordAuthentication {
         $m->abort;
     }
 
-	RT::Interface::Web::InstantiateNewSession();
     $RT::Logger->info("Successful login for @{[$ARGS->{user}]} from $ENV{'REMOTE_ADDR'}");
     $HTML::Mason::Commands::session{'CurrentUser'} = $user_obj;
     $m->callback( %$ARGS, CallbackName => 'SuccessfulLogin', CallbackPage => '/autohandler' );
@@ -375,15 +449,11 @@ sub LoadSessionFromCookie {
 
     my %cookies    = CGI::Cookie->fetch;
 	my $cookiename = _SessionCookieName();
-
     my $SessionCookie = ( $cookies{$cookiename} ? $cookies{$cookiename}->value : undef );
-
     tie %HTML::Mason::Commands::session, 'RT::Interface::Web::Session', $SessionCookie;
-
 	unless ( $SessionCookie && $HTML::Mason::Commands::session{'_session_id'} eq $SessionCookie ) {
 		undef $cookies{$cookiename};
 	}
-
     if ( int RT->Config->Get('AutoLogoff') ) {
         my $now = int( time / 60 );
         my $last_update = $HTML::Mason::Commands::session{'_session_last_update'} || 0;
@@ -410,6 +480,7 @@ sub SaveSessionCookie {
             -path   => RT->Config->Get('WebPath'),
             -secure => ( RT->Config->Get('WebSecureCookies') ? 1 : 0 )
         );
+
         $HTML::Mason::Commands::r->headers_out->{'Set-Cookie'} = $cookie->as_string;
 }
 
