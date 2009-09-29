@@ -5,7 +5,7 @@ use warnings;
 
 use Test::Deep;
 use File::Spec;
-use RT::Test tests => 15, tests => 15;
+use RT::Test tests => 15;
 
 
 BEGIN {
