@@ -69,6 +69,7 @@
 my $TicketObj = LoadTicket($id);
 $m->callback( TicketObj => $TicketObj, ARGSRef => \%ARGS );
 my @results = ProcessTicketDates( TicketObj => $TicketObj, ARGSRef => \%ARGS);
+$TicketObj->ApplyTransactionBatch;
 
 </%INIT>
 
