@@ -50,12 +50,11 @@ use RT::Util;
 
 $m->callback( ARGSRef => \%ARGS, CallbackName => 'Init' );
 
-if (RT->InstallMode) {
-  if  ( $m->base_comp->path =~ RT->Config->Get('WebNoAuthRegex') ) {
-    $m->call_next();
-  }
-  elsif ( $m->request_comp->path !~ '^(/+)Install/' ) {
-    RT::Interface::Web::Redirect(RT->Config->Get('WebURL')."Install/index.html");
+if ( RT->InstallMode ) {
+    if ( $m->base_comp->path =~ RT->Config->Get('WebNoAuthRegex') ) {
+        $m->call_next();
+    } elsif ( $m->request_comp->path !~ '^(/+)Install/' ) {
+        RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . "Install/index.html" );
     } else {
         $m->call_next();
     }
@@ -72,9 +71,7 @@ RT::Interface::Web::MaybeEnableSQLStatementLog();
 local *session unless $m->is_subrequest;
 
 # Disable AutoFlush using an attribute
-if ( $m->request_comp->attr_exists('AutoFlush') ) {
-    $m->autoflush( $m->request_comp->attr('AutoFlush') );
-}
+$m->autoflush( $m->request_comp->attr('AutoFlush') ) if ( $m->request_comp->attr_exists('AutoFlush') );
 
 
 %ARGS = RT::Interface::Web::DecodeARGS(\%ARGS);
@@ -207,20 +204,13 @@ unless( $session{'CurrentUser'} ) {
     }
 }
 
-# now it applies not only to home page, but any dashboard
-# that can be used as a workspace
+# now it applies not only to home page, but any dashboard that can be used as a workspace
 $session{'home_refresh_interval'} = $ARGS{'HomeRefreshInterval'} if ( $ARGS{'HomeRefreshInterval'} ); 
 
-# we've got credentials, let's serve the file up.
 # Process per-page global callbacks
 $m->callback( %ARGS );
-
-
 RT::Interface::Web::ShowRequestedPage(\%ARGS);
-
-
 RT::Interface::Web::LogRecordedSQLStatements();
-
 $m->comp( '/Elements/Footer', %ARGS );
 
 </%INIT>
