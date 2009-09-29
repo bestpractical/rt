@@ -233,7 +233,7 @@ sub __Wipeout
     my $self = shift;
     my $msg = $self->_AsString ." wiped out";
     $self->SUPER::Delete;
-    $RT::Logger->warning( $msg );
+    $RT::Logger->info( $msg );
     return;
 }
 
