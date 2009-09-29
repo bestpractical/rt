@@ -343,7 +343,6 @@ sub AttemptExternalAuth {
         my $orig_user = $user;
 
         $user = RT::Interface::Web::WebCanonicalizeInfo();
-        $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new();
         my $load_method = RT->Config->Get('WebExternalGecos') ? 'LoadByGecos' : 'Load';
 
         if ( $^O eq 'MSWin32' and RT->Config->Get('WebExternalGecos') ) {
@@ -351,6 +350,7 @@ sub AttemptExternalAuth {
             $user =~ s/^\Q$NodeName\E\\//i;
         }
 
+		InstantiateNewSession();
         $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new();
         $HTML::Mason::Commands::session{'CurrentUser'}->$load_method($user);
 
@@ -432,6 +432,7 @@ sub AttemptPasswordAuthentication {
     }
 
     $RT::Logger->info("Successful login for @{[$ARGS->{user}]} from $ENV{'REMOTE_ADDR'}");
+	InstantiateNewSession();
     $HTML::Mason::Commands::session{'CurrentUser'} = $user_obj;
     $m->callback( %$ARGS, CallbackName => 'SuccessfulLogin', CallbackPage => '/autohandler' );
 }
