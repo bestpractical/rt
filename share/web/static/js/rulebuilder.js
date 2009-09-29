@@ -320,6 +320,55 @@ RuleBuilder.Context = function(expected_type, element, parent, rb) {
           })
           .appendTo(this.element);
     }
+
+    var matched = /^ArrayRef\[(.*)\]$/.exec(expected_type);
+    if (matched) {
+        this.inner_type = matched[1];
+        this.children = [];
+        var builder = jQuery._div({'class': 'arraybuilder'})
+            ._div_({'class': 'array-item-container'})
+            .div_()
+            .appendTo(this.element)
+            .hide();
+        jQuery._span_({'class': 'arraybuilder-icon'})
+            .text("Array builder")
+            .appendTo(this.element)
+            .click(function(e) {
+                that.arraybuilder = builder;
+                var child = that.mk_array_item_context(that.inner_type,
+                                                       jQuery('div.array-item-container', builder));
+                that.children.push(child);
+                builder.show();
+                jQuery(this).remove();
+                that.rb.focus(child);
+                return false;
+            });
+    }
+};
+
+RuleBuilder.Context.prototype.mk_array_item_context = function(type, container) {
+    var li = jQuery._div_({'class': 'array-item'})
+        .appendTo(container);
+    var x = jQuery._div_({'class': 'context'})
+        .appendTo(li);
+    var child = new RuleBuilder.Context(type, x.get(0), this, this.rb);
+    var that = this; // parent
+    jQuery._span_({'class': 'add-icon'})
+        .text("+")
+        .appendTo(li)
+        .click(function(e) {
+            var child = that.mk_array_item_context(that.inner_type,
+                                                   jQuery('div.array-item-container', that.arraybuilder));
+            that.children.push(child); // XXX: make correct insert order
+        });
+    jQuery._span_({'class': 'delete-icon'})
+        .text("-")
+        .appendTo(li)
+        .click(function(e) {
+             // XXX: make correct splice order
+        });
+
+    return child;
 };
 
 RuleBuilder.Context.prototype.return_type_from_val = function(val) {

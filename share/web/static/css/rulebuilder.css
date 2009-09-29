@@ -213,3 +213,42 @@ div.context span.expression {
 	-webkit-border-radius: 0.5em;
 	border-radius: 0.5em;
 }
+
+span.arraybuilder-icon {
+    background:#FFFFFF url(/static/images/text_columns.png) no-repeat scroll 0 0;
+    float:right;
+    height:16px;
+    overflow:hidden;
+    padding-left:16px;
+    width:0;
+}
+
+div.arraybuilder {
+
+}
+
+div.array-item-container {
+}
+
+div.array-item {
+    width: 120%;
+}
+
+span.add-icon, span.delete-icon {
+    float:left;
+    height:16px;
+    clear: left;
+    overflow:hidden;
+    padding-left:16px;
+    margin-top: 4px;
+    width:0;
+}
+
+span.add-icon {
+    background: url(/static/images/add.png) no-repeat;
+}
+
+span.delete-icon {
+    background: url(/static/images/delete.png) no-repeat;
+}
+
