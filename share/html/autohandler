@@ -50,9 +50,10 @@ use RT::Util;
 
 $m->callback( ARGSRef => \%ARGS, CallbackName => 'Init', CallbackPage => '/autohandler' );
 
+$r->content_type("text/html; charset=utf-8");
+
 $m->{'rt_base_time'} = [ Time::HiRes::gettimeofday() ];
 
-$r->content_type("text/html; charset=utf-8");
 
 # Roll back any dangling transactions from a previous failed connection
 $RT::Handle->ForceRollback() if $RT::Handle->TransactionDepth;
@@ -69,13 +70,12 @@ $m->autoflush( $m->request_comp->attr('AutoFlush') ) if ( $m->request_comp->attr
 
 RT::Interface::Web::PreprocessTimeUpdates(\%ARGS);
 
+
 RT::Interface::Web::MaybeShowInstallModePage();
 
 $m->comp( '/Elements/SetupSessionCookie', %ARGS );
 
 $session{'CurrentUser'} = RT::CurrentUser->new() unless ( $session{'CurrentUser'} && $session{'CurrentUser'}->Id );
-
-# Set the proper encoding for the current language handle
 
 RT::Interface::Web::MaybeShowNoAuthPage(\%ARGS);
 
