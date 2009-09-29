@@ -137,26 +137,8 @@ elsif ( RT->Config->Get('WebExternalAuth') ) {
                     = RT::Interface::Web::WebExternalAutoInfo($user);
                 
                 # set the attributes that have been defined.
-                # FIXME: this is a horrible kludge. I'm sure there's something cleaner
-                foreach my $attribute (
-                    'Name',                  'Comments',
-                    'Signature',             'EmailAddress',
-                    'PagerEmailAddress',     'FreeformContactInfo',
-                    'Organization',          'Disabled',
-                    'Privileged',            'RealName',
-                    'NickName',              'Lang',
-                    'EmailEncoding',         'WebEncoding',
-                    'ExternalContactInfoId', 'ContactInfoSystem',
-                    'ExternalAuthId',        'Gecos',
-                    'HomePhone',             'WorkPhone',
-                    'MobilePhone',           'PagerPhone',
-                    'Address1',              'Address2',
-                    'City',                  'State',
-                    'Zip',                   'Country'
-                    )
-                {
+                foreach my $attribute ($user->WritableAttributes) {
                     $m->callback( Attribute => $attribute, User => $user, UserInfo => $new_user_info, CallbackName => 'NewUser' );
-
                     my $method = "Set$attribute";
                     $UserObj->$method( $new_user_info->{$attribute} )
                         if defined $new_user_info->{$attribute};
