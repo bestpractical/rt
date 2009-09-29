@@ -108,7 +108,7 @@ if ( $m->request_comp->attr_exists('AutoFlush') ) {
         : $_
 } %ARGS;
 
-# Latter in the code we use
+# Later in the code we use
 # $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %ARGS );
 # instead of $m->call_next to avoid problems with UTF8 keys in arguments.
 # The call_next method pass through original arguments and if you have
