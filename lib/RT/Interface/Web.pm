@@ -317,6 +317,107 @@ sub StripContent {
 }
 
 
+sub DecodeARGS {
+	my $ARGS = shift;
+
+  return map {
+
+    # if they've passed multiple values, they'll be an array. if they've
+    # passed just one, a scalar whatever they are, mark them as utf8
+    my $type = ref($_);
+    ( !$type )
+        ? Encode::is_utf8($_)
+        ? $_
+        : Encode::decode( 'UTF-8' => $_, Encode::FB_PERLQQ )
+        : ( $type eq 'ARRAY' )
+        ? [
+        map {
+            ( ref($_) or Encode::is_utf8($_) )
+                ? $_
+                : Encode::decode( 'UTF-8' => $_, Encode::FB_PERLQQ )
+            } @$_
+        ]
+        : ( $type eq 'HASH' )
+        ? {
+        map {
+            ( ref($_) or Encode::is_utf8($_) )
+                ? $_
+                : Encode::decode( 'UTF-8' => $_, Encode::FB_PERLQQ )
+            } %$_
+        }
+        : $_
+} %$ARGS;
+}
+
+
+sub PreprocessTimeUpdates {
+	my $ARGS = shift;
+
+# Later in the code we use
+# $m->comp( { base_comp => $m->request_comp }, $m->fetch_next, %ARGS );
+# instead of $m->call_next to avoid problems with UTF8 keys in arguments.
+# The call_next method pass through original arguments and if you have
+# an argument with unicode key then in a next component you'll get two
+# records in the args hash: one with key without UTF8 flag and another
+# with the flag, which may result into errors. "{ base_comp => $m->request_comp }"
+# is copied from mason's source to get the same results as we get from
+# call_next method, this feature is not documented, so we just leave it
+# here to avoid possible side effects.
+
+# This code canonicalizes time inputs in hours into minutes
+foreach my $field ( keys %$ARGS ) {
+    next unless $field =~ /^(.*)-TimeUnits$/i && $ARGS->{ $1 };
+    my $local = $1;
+    $ARGS->{$local} =~ s{\b (?: (\d+) \s+ )? (\d+)/(\d+) \b}
+                      {($1 || 0) + $3 ? $2 / $3 : 0}xe;
+    if ( $ARGS->{$field} && $ARGS->{$field} =~ /hours/i ) {
+        $ARGS->{$local} *= 60;
+    }
+    delete $ARGS->{$field};
+}
+
+}
+
+
+sub MaybeEnableSQLStatementLog {
+
+my $log_sql_statements = RT->Config->Get('StatementLog');
+
+if ( $log_sql_statements ) {
+    $RT::Handle->ClearSQLStatementLog;
+    $RT::Handle->LogSQLStatements(1);
+}
+
+}
+sub LogRecordedSQLStatements {
+	my $log_sql_statements = RT->Config->Get('StatementLog');
+
+	return unless ($log_sql_statements);
+
+    my @log = $RT::Handle->SQLStatementLog;
+    $RT::Handle->ClearSQLStatementLog;
+    for my $stmt (@log) {
+        my ( $time, $sql, $bind, $duration ) = @{$stmt};
+        my @bind;
+        if ( ref $bind ) {
+            @bind = @{$bind};
+        }
+        else {
+
+            # Older DBIx-SB
+            $duration = $bind;
+        }
+        $RT::Logger->log(
+            level => $log_sql_statements,
+            message => "SQL(" . sprintf( "%.6f", $duration ) . "s): $sql;"
+                . ( @bind ? "  [ bound values: @{[map{qq|'$_'|} @bind]} ]" : "" )
+        );
+    }
+
+}
+
+
+
 package HTML::Mason::Commands;
 
 use vars qw/$r $m %session/;
