@@ -66,10 +66,9 @@ local *session unless $m->is_subrequest;
 # Disable AutoFlush using an attribute
 $m->autoflush( $m->request_comp->attr('AutoFlush') ) if ( $m->request_comp->attr_exists('AutoFlush') );
 
-%ARGS = RT::Interface::Web::DecodeARGS(\%ARGS);
+RT::Interface::Web::DecodeARGS(\%ARGS);
 
 RT::Interface::Web::PreprocessTimeUpdates(\%ARGS);
-
 
 RT::Interface::Web::MaybeShowInstallModePage();
 
@@ -79,7 +78,7 @@ $session{'CurrentUser'} = RT::CurrentUser->new() unless ( $session{'CurrentUser'
 
 RT::Interface::Web::MaybeShowNoAuthPage(\%ARGS);
 
-RT::Interface::Web::AttemptExternalAuth(\%ARGS);
+RT::Interface::Web::AttemptExternalAuth(\%ARGS) unless ($session{'CurrentUser'} && $session{'CurrentUser'}->id);
 
 delete $session{'CurrentUser'} unless $session{'CurrentUser'} && $session{'CurrentUser'}->Id;
 

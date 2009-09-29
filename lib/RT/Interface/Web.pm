@@ -353,6 +353,7 @@ sub AttemptPasswordAuthentication {
         $m->abort;
     }
 
+	RT::Interface::Web::InstantiateNewSession();
     $RT::Logger->info("Successful login for @{[$ARGS->{user}]} from $ENV{'REMOTE_ADDR'}");
     $HTML::Mason::Commands::session{'CurrentUser'} = $user_obj;
     $m->callback( %$ARGS, CallbackName => 'SuccessfulLogin', CallbackPage => '/autohandler' );
@@ -568,7 +569,7 @@ sub StripContent {
 sub DecodeARGS {
 	my $ARGS = shift;
 
-  return map {
+    %{$ARGS} = map {
 
     # if they've passed multiple values, they'll be an array. if they've
     # passed just one, a scalar whatever they are, mark them as utf8
