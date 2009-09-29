@@ -165,14 +165,14 @@ sub WebExternalAutoInfo {
 
 # }}}
 
-=head2 MaybeShowInstallModePage
+=head2 MaybeShowInstallModePage 
 
 This function, called exclusively by RT's autohandler, dispatches
 a request to RT's Installation workflow, only if Install Mode is enabled in the configuration file.
 
 If it serves a page, it stops mason processing. Otherwise, mason just keeps running through the autohandler
 
-=cut
+=cut 
 
 
 sub MaybeShowInstallModePage {
