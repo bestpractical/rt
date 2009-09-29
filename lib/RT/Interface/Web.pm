@@ -249,6 +249,94 @@ sub ShowRequestedPage {
 
 }
 
+sub AttemptExternalAuth {
+    my $ARGS = shift;
+
+    return unless ( RT->Config->Get('WebExternalAuth') );
+
+    my $user = $ARGS->{user};
+    my $m    = $HTML::Mason::Commands::m;
+
+    # If RT is configured for external auth, let's go through and get REMOTE_USER
+
+    # do we actually have a REMOTE_USER equivlent?
+    if ( RT::Interface::Web::WebCanonicalizeInfo() ) {
+        my $orig_user = $user;
+
+        $user = RT::Interface::Web::WebCanonicalizeInfo();
+        $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new();
+        my $load_method = RT->Config->Get('WebExternalGecos') ? 'LoadByGecos' : 'Load';
+
+        if ( $^O eq 'MSWin32' and RT->Config->Get('WebExternalGecos') ) {
+            my $NodeName = Win32::NodeName();
+            $user =~ s/^\Q$NodeName\E\\//i;
+        }
+
+        $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new();
+        $HTML::Mason::Commands::session{'CurrentUser'}->$load_method($user);
+
+        if ( RT->Config->Get('WebExternalAuto') && !$HTML::Mason::Commands::session{'CurrentUser'}->Id ) {
+
+            # Create users on-the-fly
+            my $UserObj = RT::User->new($RT::SystemUser);
+            my ( $val, $msg ) = $UserObj->Create(
+                %{ ref RT->Config->Get('AutoCreate') ? RT->Config->Get('AutoCreate') : {} },
+                Name  => $user,
+                Gecos => $user,
+            );
+
+            if ($val) {
+
+                # now get user specific information, to better create our user.
+                my $new_user_info = RT::Interface::Web::WebExternalAutoInfo($user);
+
+                # set the attributes that have been defined.
+                foreach my $attribute ( $user->WritableAttributes ) {
+                    $m->callback(
+                        Attribute    => $attribute,
+                        User         => $user,
+                        UserInfo     => $new_user_info,
+                        CallbackName => 'NewUser',
+                        CallbackPage => '/autohandler'
+                    );
+                    my $method = "Set$attribute";
+                    $UserObj->$method( $new_user_info->{$attribute} ) if defined $new_user_info->{$attribute};
+                }
+                $HTML::Mason::Commands::session{'CurrentUser'}->Load($user);
+            } else {
+
+                # we failed to successfully create the user. abort abort abort.
+                delete $HTML::Mason::Commands::session{'CurrentUser'};
+                $m->abort unless RT->Config->Get('WebFallbackToInternalAuth');
+                $m->comp( '/Elements/Login', %$ARGS, Error => loc( 'Cannot create user: [_1]', $msg ) );
+            }
+        }
+
+        if ( $HTML::Mason::Commands::session{'CurrentUser'}->Id ) {
+            $m->callback( %$ARGS, CallbackName => 'ExternalAuthSuccessfulLogin', CallbackPage => '/autohandler' );
+        } else {
+            delete $HTML::Mason::Commands::session{'CurrentUser'};
+            $user = $orig_user;
+
+            if ( RT->Config->Get('WebExternalOnly') ) {
+                $m->comp( '/Elements/Login', %$ARGS, Error => loc('You are not an authorized user') );
+                $m->abort();
+            }
+        }
+    } elsif ( RT->Config->Get('WebFallbackToInternalAuth') ) {
+        unless ( defined $HTML::Mason::Commands::session{'CurrentUser'} ) {
+            $m->comp( '/Elements/Login', %$ARGS, Error => loc('You are not an authorized user') );
+            $m->abort();
+        }
+    } else {
+
+        # WebExternalAuth is set, but we don't have a REMOTE_USER. abort
+        # XXX: we must return AUTH_REQUIRED status or we fallback to
+        # internal auth here too.
+        delete $HTML::Mason::Commands::session{'CurrentUser'}
+            if defined $HTML::Mason::Commands::session{'CurrentUser'};
+    }
+}
 
 =head2 Redirect URL
 
