@@ -50,11 +50,12 @@ use RT::Util;
 
 $m->callback( ARGSRef => \%ARGS, CallbackName => 'Init', CallbackPage => '/autohandler' );
 
-RT::Interface::Web::MaybeShowInstallModePage();
+$m->{'rt_base_time'} = [ Time::HiRes::gettimeofday() ];
+
+$r->content_type("text/html; charset=utf-8");
 
 # Roll back any dangling transactions from a previous failed connection
 $RT::Handle->ForceRollback() if $RT::Handle->TransactionDepth;
-
 
 RT::Interface::Web::MaybeEnableSQLStatementLog();
 
@@ -65,20 +66,20 @@ local *session unless $m->is_subrequest;
 $m->autoflush( $m->request_comp->attr('AutoFlush') ) if ( $m->request_comp->attr_exists('AutoFlush') );
 
 %ARGS = RT::Interface::Web::DecodeARGS(\%ARGS);
+
 RT::Interface::Web::PreprocessTimeUpdates(\%ARGS);
 
-$m->{'rt_base_time'} = [ Time::HiRes::gettimeofday() ];
+RT::Interface::Web::MaybeShowInstallModePage();
+
 $m->comp( '/Elements/SetupSessionCookie', %ARGS );
 
 $session{'CurrentUser'} = RT::CurrentUser->new() unless ( $session{'CurrentUser'} && $session{'CurrentUser'}->Id );
 
 # Set the proper encoding for the current language handle
-$r->content_type("text/html; charset=utf-8");
 
 RT::Interface::Web::MaybeShowNoAuthPage(\%ARGS);
 
 RT::Interface::Web::AttemptExternalAuth(\%ARGS);
-
 
 delete $session{'CurrentUser'} unless $session{'CurrentUser'} && $session{'CurrentUser'}->Id;
 
