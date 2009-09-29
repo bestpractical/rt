@@ -370,7 +370,7 @@ sub _SessionCookieName {
 	return $cookiename;
 }
 
-sub LoadSessionCookie {
+sub LoadSessionFromCookie {
 
     my %cookies    = CGI::Cookie->fetch;
 	my $cookiename = _SessionCookieName();
@@ -388,13 +388,19 @@ sub LoadSessionCookie {
         my $last_update = $HTML::Mason::Commands::session{'_session_last_update'} || 0;
 
         if ( $last_update && ( $now - $last_update - RT->Config->Get('AutoLogoff') ) > 0 ) {
-            tied( %HTML::Mason::Commands::session)->delete;
+			InstantiateNewSession();
         }
 
         # save session on each request when AutoLogoff is turned on
         $HTML::Mason::Commands::session{'_session_last_update'} = $now if $now != $last_update;
     }
 }
+
+sub InstantiateNewSession {
+    tied( %HTML::Mason::Commands::session)->delete if tied(%HTML::Mason::Commands::session);
+    tie %HTML::Mason::Commands::session, 'RT::Interface::Web::Session', undef;
+}
+
 
 sub SaveSessionCookie {
         my $cookie = new CGI::Cookie(
