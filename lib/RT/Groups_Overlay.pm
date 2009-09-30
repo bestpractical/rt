@@ -150,7 +150,7 @@ sub LimitToSystemInternalGroups {
 
 # {{{ LimiToUserDefinedGroups
 
-=head2 LimitToUserDefined Groups
+=head2 LimitToUserDefinedGroups
 
 Return only UserDefined Groups
 
@@ -167,7 +167,7 @@ sub LimitToUserDefinedGroups {
 
 # }}}
 
-# {{{ LimiToPersonalGroups
+# {{{ LimiToPersonalGroupsFor
 
 =head2 LimitToPersonalGroupsFor PRINCIPAL_ID
 
