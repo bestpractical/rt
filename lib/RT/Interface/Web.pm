@@ -351,7 +351,7 @@ sub AttemptExternalAuth {
         $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new();
         $HTML::Mason::Commands::session{'CurrentUser'}->$load_method($user);
 
-        if ( RT->Config->Get('WebExternalAuto') && !$HTML::Mason::Commands::session{'CurrentUser'}->Id ) {
+        if ( RT->Config->Get('WebExternalAuto') and not _UserLoggedIn() ) {
 
             # Create users on-the-fly
             my $UserObj = RT::User->new($RT::SystemUser);
@@ -389,7 +389,7 @@ sub AttemptExternalAuth {
             }
         }
 
-        if ( $HTML::Mason::Commands::session{'CurrentUser'}->Id ) {
+        if ( _UserLoggedIn() ) {
             $m->callback( %$ARGS, CallbackName => 'ExternalAuthSuccessfulLogin', CallbackPage => '/autohandler' );
         } else {
             delete $HTML::Mason::Commands::session{'CurrentUser'};
