@@ -383,8 +383,9 @@ sub AttemptExternalAuth {
 
                 # we failed to successfully create the user. abort abort abort.
                 delete $HTML::Mason::Commands::session{'CurrentUser'};
-                $m->abort unless RT->Config->Get('WebFallbackToInternalAuth');
-                $m->comp( '/Elements/Login', %$ARGS, Error => loc( 'Cannot create user: [_1]', $msg ) );
+                $m->comp( '/Elements/Login', %$ARGS, Error => loc( 'Cannot create user: [_1]', $msg ) )
+                    if RT->Config->Get('WebFallbackToInternalAuth');;
+                $m->abort();
             }
         }
 
