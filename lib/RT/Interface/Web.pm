@@ -184,10 +184,10 @@ sub HandleRequest {
         if ( $HTML::Mason::Commands::m->request_comp->attr_exists('AutoFlush') );
 
     DecodeARGS($ARGS);
-
     PreprocessTimeUpdates($ARGS);
 
     MaybeShowInstallModePage();
+
     $HTML::Mason::Commands::m->comp( '/Elements/SetupSessionCookie', %$ARGS );
     SendSessionCookie();
     $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new() unless _UserLoggedIn();
@@ -223,7 +223,6 @@ sub HandleRequest {
 
     ShowRequestedPage($ARGS);
     LogRecordedSQLStatements();
-
 }
 
 sub _ForceLogout {
