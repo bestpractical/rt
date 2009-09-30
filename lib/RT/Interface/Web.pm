@@ -253,18 +253,17 @@ If it serves a page, it stops mason processing. Otherwise, mason just keeps runn
 =cut 
 
 sub MaybeShowInstallModePage {
+    return unless RT->InstallMode;
 
     my $m = $HTML::Mason::Commands::m;
-    if ( RT->InstallMode ) {
-        if ( $m->base_comp->path =~ RT->Config->Get('WebNoAuthRegex') ) {
-            $m->call_next();
-        } elsif ( $m->request_comp->path !~ '^(/+)Install/' ) {
-            RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . "Install/index.html" );
-        } else {
-            $m->call_next();
-        }
-        $m->abort();
+    if ( $m->base_comp->path =~ RT->Config->Get('WebNoAuthRegex') ) {
+        $m->call_next();
+    } elsif ( $m->request_comp->path !~ '^(/+)Install/' ) {
+        RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . "Install/index.html" );
+    } else {
+        $m->call_next();
     }
+    $m->abort();
 }
 
 =head2 MaybeShowNoAuthPage  \%ARGS
