@@ -399,6 +399,7 @@ sub AttemptExternalAuth {
         }
     } elsif ( RT->Config->Get('WebFallbackToInternalAuth') ) {
         unless ( defined $HTML::Mason::Commands::session{'CurrentUser'} ) {
+            # XXX unreachable due to prior defaulting in HandleRequest (check c34d108)
             $m->comp( '/Elements/Login', %$ARGS, Error => loc('You are not an authorized user') );
             $m->abort();
         }
