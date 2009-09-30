@@ -434,7 +434,7 @@ sub AttemptPasswordAuthentication {
     $m->callback( %$ARGS, CallbackName => 'SuccessfulLogin', CallbackPage => '/autohandler' );
 }
 
-=head2 LoadSessionCookie
+=head2 LoadSessionFromCookie
 
 Load or setup a session cookie for the current user.
 
