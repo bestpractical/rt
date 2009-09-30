@@ -207,9 +207,8 @@ sub HandleRequest {
         # If the user is logging in, let's authenticate
         if ( defined $ARGS->{user} && defined $ARGS->{pass} ) {
             AttemptPasswordAuthentication($ARGS);
-
-            # if no credentials then show him login page
         } else {
+            # if no credentials then show him login page
             $HTML::Mason::Commands::m->comp( '/Elements/Login', %$ARGS );
             $HTML::Mason::Commands::m->abort;
         }
