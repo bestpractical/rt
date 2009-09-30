@@ -404,10 +404,10 @@ force-dropdb:
 # {{{ libs-install
 libs-install: 
 @COMMENT_INPLACE_LAYOUT@	[ -d $(DESTDIR)$(RT_LIB_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(RT_LIB_PATH)
-@COMMENT_INPLACE_LAYOUT@	-( cd lib && find . -type d -name .svn -prune -o -type d -print ) | while read dir ; do \
+@COMMENT_INPLACE_LAYOUT@	-( cd lib && find . -type d -print ) | while read dir ; do \
 @COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0755 -d "$(DESTDIR)$(RT_LIB_PATH)/$$dir" ; \
 @COMMENT_INPLACE_LAYOUT@	done
-@COMMENT_INPLACE_LAYOUT@	-( cd lib && find . -type d -name .svn -prune -o -type f -print ) | while read file ; do \
+@COMMENT_INPLACE_LAYOUT@	-( cd lib && find . -type f -print ) | while read file ; do \
 @COMMENT_INPLACE_LAYOUT@	     $(INSTALL) -m 0644 "lib/$$file" "$(DESTDIR)$(RT_LIB_PATH)/$$file" ; \
 @COMMENT_INPLACE_LAYOUT@	done
 # }}}
@@ -415,10 +415,10 @@ libs-install:
 # {{{ html-install
 html-install:
 @COMMENT_INPLACE_LAYOUT@	[ -d $(DESTDIR)$(MASON_HTML_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(MASON_HTML_PATH)
-@COMMENT_INPLACE_LAYOUT@	-( cd share/html && find . -type d -name .svn -prune -o -type d -print ) | while read dir ; do \
+@COMMENT_INPLACE_LAYOUT@	-( cd share/html && find . -type d -print ) | while read dir ; do \
 @COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0755 -d "$(DESTDIR)$(MASON_HTML_PATH)/$$dir" ; \
 @COMMENT_INPLACE_LAYOUT@	done
-@COMMENT_INPLACE_LAYOUT@	-( cd share/html && find . -type d -name .svn -prune -o -type f -print ) | while read file ; do \
+@COMMENT_INPLACE_LAYOUT@	-( cd share/html && find . -type f -print ) | while read file ; do \
 @COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0644 "share/html/$$file" "$(DESTDIR)$(MASON_HTML_PATH)/$$file" ; \
 @COMMENT_INPLACE_LAYOUT@	done
 # }}}
@@ -460,22 +460,22 @@ bin-install:
 
 # {{{ local-install
 local-install:
-	-( cd local/html && find . -type d -name .svn -prune -o -type d -print ) | while read dir ; do \
+	-( cd local/html && find . -type d -print ) | while read dir ; do \
 	    $(INSTALL) -m 0755 -d "$(DESTDIR)$(MASON_LOCAL_HTML_PATH)/$$dir" ; \
 	done
-	-( cd local/html && find . -type d -name .svn -prune -o -type f -print ) | while read file ; do \
+	-( cd local/html && find . -type f -print ) | while read file ; do \
 	    $(INSTALL) -m 0644 "local/html/$$file" "$(DESTDIR)$(MASON_LOCAL_HTML_PATH)/$$file" ; \
 	done
-	-( cd local/po && find . -type d -name .svn -prune -o -type d -print ) | while read dir ; do \
+	-( cd local/po && find . -type d -print ) | while read dir ; do \
 	    $(INSTALL) -m 0755 -d "$(DESTDIR)$(LOCAL_LEXICON_PATH)/$$dir" ; \
 	done
-	-( cd local/po && find . -type d -name .svn -prune -o -type f -print ) | while read file ; do \
+	-( cd local/po && find . -type f -print ) | while read file ; do \
 	    $(INSTALL) -m 0644 "local/po/$$file" "$(DESTDIR)$(LOCAL_LEXICON_PATH)/$$file" ; \
 	done
-	-( cd local/etc && find . -type d -name .svn -prune -o -type d -print ) | while read dir ; do \
+	-( cd local/etc && find . -type d -print ) | while read dir ; do \
 	    $(INSTALL) -m 0755 -d "$(DESTDIR)$(LOCAL_ETC_PATH)/$$dir" ; \
 	done
-	-( cd local/etc && find . -type d -name .svn -prune -o -type f -print ) | while read file ; do \
+	-( cd local/etc && find . -type f -print ) | while read file ; do \
 	    $(INSTALL) -m 0644 "etc/$$file" "$(DESTDIR)$(LOCAL_ETC_PATH)/$$file" ; \
 	done
 # }}}
