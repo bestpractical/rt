@@ -386,18 +386,18 @@ regression-install: config-install
 # {{{ database-installation
 
 regression-reset-db: force-dropdb
-	$(PERL) sbin/rt-setup-database --action init --dba $(DB_DBA) --dba-password ''
+	$(PERL) -I$(LOCAL_LIB_PATH) -I$(RT_LIB_PATH) sbin/rt-setup-database --action init --dba $(DB_DBA) --dba-password ''
 
 initdb :: initialize-database
 
 initialize-database: 
-	$(PERL) sbin/rt-setup-database --action init --dba $(DB_DBA) --prompt-for-dba-password
+	$(PERL) -I$(LOCAL_LIB_PATH) -I$(RT_LIB_PATH) sbin/rt-setup-database --action init --dba $(DB_DBA) --prompt-for-dba-password
 
 dropdb: 
-	$(PERL)	sbin/rt-setup-database --action drop --dba $(DB_DBA) --prompt-for-dba-password
+	$(PERL)	-I$(LOCAL_LIB_PATH) -I$(RT_LIB_PATH) sbin/rt-setup-database --action drop --dba $(DB_DBA) --prompt-for-dba-password
 
 force-dropdb: 
-	$(PERL)	sbin/rt-setup-database --action drop --dba $(DB_DBA) --dba-password '' --force
+	$(PERL)	-I$(LOCAL_LIB_PATH) -I$(RT_LIB_PATH) sbin/rt-setup-database --action drop --dba $(DB_DBA) --dba-password '' --force
 
 # }}}
 
