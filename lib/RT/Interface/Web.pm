@@ -474,7 +474,7 @@ sub InstantiateNewSession {
 }
 
 sub SendSessionCookie {
-    my $cookie = new CGI::Cookie(
+    my $cookie = CGI::Cookie->new(
         -name   => _SessionCookieName(),
         -value  => $HTML::Mason::Commands::session{_session_id},
         -path   => RT->Config->Get('WebPath'),
