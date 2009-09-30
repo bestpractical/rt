@@ -274,7 +274,7 @@ If it serves a page, it stops mason processing. Otherwise, mason just keeps runn
 sub MaybeShowNoAuthPage {
     my $ARGS = shift;
 
-    return unless $m->base_comp->path =~ RT->Config->Get('WebNoAuthRegex');
+    return unless $HTML::Mason::Commands::m->base_comp->path =~ RT->Config->Get('WebNoAuthRegex');
 
     # If it's a noauth file, don't ask for auth.
     my $m = $HTML::Mason::Commands::m;
