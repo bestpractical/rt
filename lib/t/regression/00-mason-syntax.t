@@ -12,10 +12,6 @@ find( {
     no_chdir => 1,
     wanted   => sub {
         return if /\.(?:jpe?g|png|gif|rej|\~)$/i;
-	if (m!/\.svn$!) {
-	    $File::Find::prune = 1;
-	    return;
-	}
         return unless -f $_;
         diag "testing $_" if $ENV{'TEST_VERBOSE'};
         eval { compile_file($_) } and return;
