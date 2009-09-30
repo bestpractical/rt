@@ -214,8 +214,6 @@ sub HandleRequest {
         }
     }
 
-    warn "Not logged in! " unless _UserLoggedIn();
-
     # now it applies not only to home page, but any dashboard that can be used as a workspace
     $HTML::Mason::Commands::session{'home_refresh_interval'} = $ARGS->{'HomeRefreshInterval'}
         if ( $ARGS->{'HomeRefreshInterval'} );
