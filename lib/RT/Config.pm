@@ -340,6 +340,18 @@ our %META = (
         }
     },
 
+    # this tends to break extensions that stash links in ticket update pages
+    Organization => {
+        Type            => 'SCALAR',
+        PostLoadCheck   => sub {
+            my ($self,$value) = @_;
+            $RT::Logger->error("got $value for organization");
+            if ($value =~ /\w/) {
+                $RT::Logger->error("your \$Organization setting ($value) appears to contain whitespace.  Please fix this.");
+            }
+        },
+    },
+
     # Internal config options
     DisableGraphViz => {
         Type            => 'SCALAR',
