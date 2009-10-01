@@ -33,6 +33,7 @@ config.pld
 *~
 *.swp
 *.swo
+t/data/configs/apache2.2+mod_perl.conf
 
 # RT4 junk
 META.yml
