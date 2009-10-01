@@ -100,7 +100,7 @@ my ($ok, $msg) = $DashboardObj->LoadById($id);
 Abort(loc("Couldn't load dashboard [_1]: [_2]", $id, $msg)) if !$ok;
 
 my $SubscriptionObj = RT::Attribute->new($session{'CurrentUser'});
-my $rows = 20;
+my $rows;
 
 # try to load the subscription to this id to get a better idea of number of rows
 for my $sub ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription')) {
@@ -108,6 +108,12 @@ for my $sub ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription')
     $SubscriptionObj = $sub;
     $rows = $SubscriptionObj->SubValue('Rows');
     last;
+}
+
+# otherwise honor their search preferences.. otherwise 20 rows
+if (!$rows) {
+    my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
+    $rows = defined($prefs->{'RowsPerPage'}) ? $prefs->{'RowsPerPage'} : 20;
 }
 
 my $title = loc 'Dashboard [_1]', $DashboardObj->Name;
