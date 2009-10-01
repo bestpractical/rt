@@ -345,10 +345,8 @@ our %META = (
         Type            => 'SCALAR',
         PostLoadCheck   => sub {
             my ($self,$value) = @_;
-            $RT::Logger->error("got $value for organization");
-            if ($value =~ /\s/) {
-                $RT::Logger->error("your \$Organization setting ($value) appears to contain whitespace.  Please fix this.");
-            }
+            $RT::Logger->error("your \$Organization setting ($value) appears to contain whitespace.  Please fix this.")
+                if $value =~ /\s/;;
         },
     },
 
