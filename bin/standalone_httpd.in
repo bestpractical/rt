@@ -122,6 +122,7 @@ EOF
     RT->InitSystemObjects();
     RT->InitClasses();
     RT->InitPlugins();
+    RT->Config->PostLoadCheck();
 
     my ($status, $msg) = RT::Handle->CheckCompatibility(
         $RT::Handle->dbh, 'post'
