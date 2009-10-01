@@ -74,13 +74,15 @@ while ( my $requestor = $people->Next ) {
 %# Additional information about this user.  Empty by default.
 % $m->callback( requestor => $requestor, %ARGS, CallbackName => 'AboutThisUser' );
 
-<&|/l&>Comments about this user</&>:<br />
-<b><% ($requestor->Comments || loc("No comment entered about this user")) %></b><br />
+<span class="label"><&|/l&>Comments about this user</&>:</span><br />
+<b class="value"><% ($requestor->Comments || loc("No comment entered about this user")) %></b><br />
 
-<&|/l, $rows &>This user's [_1] highest priority tickets</&>:<br />
+<span class="label"><&|/l, $rows &>This user's [_1] highest priority tickets</&>:</span>
 <ul>
 %while (my $w=$tickets->Next) {
-<li><a href="<%RT->Config->Get('WebPath')%><%$DisplayPath%>?id=<%$w->id%>"><%$w->Id%>: <%$w->Subject%></a> (<%$w->Status%>)
+%my $uri = RT::URI->new( $session{'CurrentUser'} );
+%$uri->FromObject($w);
+<li class="value"><& /Elements/ShowLink, URI => $uri &></li>
 %}
 </ul>
 
