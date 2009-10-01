@@ -68,6 +68,7 @@ my $extract_action = $actions->First;
 
 if ( $extract_action && $extract_action->Id ) {
     $RT::Logger->debug("You appear to already have an Extract Subject Tag action, skipping");
+    return 1;
 } else {
     $RT::Logger->debug("Didn't find an existing Extract Subject Tag action, adding it");
     push @ScripActions, (
