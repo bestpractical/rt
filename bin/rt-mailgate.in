@@ -237,8 +237,6 @@ Usual invocation (from MTA):
 
 
 
-See C<man rt-mailgate> for more.
-
 =head1 OPTIONS
 
 =over 3
