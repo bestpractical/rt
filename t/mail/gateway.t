@@ -57,7 +57,7 @@ use strict;
 use warnings;
 
 
-use RT::Test config => 'Set( $UnsafeEmailCommands, 1), tests => 159;;';
+use RT::Test config => 'Set( $UnsafeEmailCommands, 1)', tests => 159;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 use RT::Tickets;
