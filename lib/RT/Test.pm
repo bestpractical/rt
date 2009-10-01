@@ -950,42 +950,105 @@ use File::Temp qw(tempfile);
 
 sub start_apache_server {
     my $self = shift;
-    my $variant = shift || 'mod_perl2';
+    my $variant = shift || 'mod_perl';
 
-    my $apache_bin = $ENV{'RT_TEST_APACHE'} || $self->find_apache_server
-        || Test::More::BAIL_OUT("Couldn't find apache server, use RT_TEST_APACHE");
-
-    Test::More::diag("Using apache - '$apache_bin'") if $ENV{'TEST_VERBOSE'};
-
-    my $apache_info = `$apache_bin -V`;
-    my ($version) = ($apache_info =~ m{Server\s+version:\s+Apache/(\d+\.\d+)\.});
-    die "Couldn't figure out version of the server" unless $version;
-
-    my %apache_opts = ($apache_info =~ m/^\s*-D\s+([A-Z_]+)="(.*)"$/mg);
+    my %info = $self->apache_server_info( variant => $variant );
 
     my ($log_fh, $log_fn) = tempfile();
+    my $pid_fn = File::Spec->rel2abs( File::Spec->catfile(
+        't', "apache.$$.pid"
+    ) );
     my $tmpl = File::Spec->rel2abs( File::Spec->catfile(
-        't', 'data', 'configs', 'apache'. $version .'+'. $variant .'.conf'
+        't', 'data', 'configs',
+        'apache'. $info{'version'} .'+'. $variant .'.conf'
     ) );
     my %opt = (
-        listen => $port,
-        server_root   => $apache_opts{'HTTPD_ROOT'}
+        listen        => $port,
+        server_root   => $info{'HTTPD_ROOT'}
             || Test::More::BAIL_OUT("Couldn't figure out server root"),
+        pid_file      => $pid_fn,
         document_root => $RT::MasonComponentRoot,
         rt_bin_path   => $RT::BinPath,
         log_file      => $log_fn,
     );
+    {
+        my $method = 'apache_'.$variant.'_server_options';
+        $self->$method( \%info, \%opt );
+    }
     my ($conf_fh, $conf_fn) = $self->process_in_file(
         in => $tmpl, options => \%opt, out => $tmpl .'.final',
     );
 
-    my $pid = $self->fork_exec($apache_bin, '-f', $conf_fn);
-    Test::More::diag("Started apache server #$pid");
+    $self->fork_exec($info{'executable'}, '-f', $conf_fn);
+    my $pid = do {
+        my $tries = 60;
+        while ( !-e $pid_fn ) {
+            $tries--;
+            last unless $tries;
+            sleep 1;
+        }
+        Test::More::BAIL_OUT("Couldn't start apache server, no pid file")
+            unless -e $pid_fn;
+        open my $pid_fh, '<', $pid_fn
+            or Test::More::BAIL_OUT("Couldn't open pid file: $!");
+        my $pid = <$pid_fh>;
+        chomp $pid;
+        $pid;
+    };
+
+    Test::More::ok($pid, "Started apache server #$pid");
+
     push @SERVERS, $pid;
 
-    sleep 1;
-
     return (RT->Config->Get('WebURL'), RT::Test::Web->new);
+}
+
+sub apache_server_info {
+    my $self = shift;
+    my %res = @_;
+
+    my $bin = $res{'executable'} = $ENV{'RT_TEST_APACHE'} || $self->find_apache_server
+        || Test::More::BAIL_OUT("Couldn't find apache server, use RT_TEST_APACHE");
+
+    Test::More::diag("Using '$bin' apache executable for testing")
+        if $ENV{'TEST_VERBOSE'};
+
+    my $info = `$bin -V`;
+    ($res{'version'}) = ($info =~ m{Server\s+version:\s+Apache/(\d+\.\d+)\.});
+    Test::More::BAIL_OUT(
+        "Couldn't figure out version of the server"
+    ) unless $res{'version'};
+
+    my %opts = ($info =~ m/^\s*-D\s+([A-Z_]+?)(?:="(.*)")$/mg);
+    %res = (%res, %opts);
+
+    $res{'modules'} = [
+        map {s/^\s+//; s/\s+$//; $_}
+        grep $_ !~ /Compiled in modules/i,
+        split /\r*\n/, `$bin -l`
+    ];
+
+    return %res;
+}
+
+sub apache_mod_perl_server_options {
+    my $self = shift;
+    my %info = %{ shift() };
+    my $current = shift;
+
+    my %required_modules = (
+        '2.2' => [qw(authz_host log_config env alias perl)],
+    );
+    my @mlist = @{ $required_modules{ $info{'version'} } };
+
+    $current->{'load_modules'} = '';
+    foreach my $mod ( @mlist ) {
+        next if grep "$mod.c" eq $_, @{ $info{'modules'} };
+
+        $current->{'load_modules'} .=
+            "LoadModule ${mod}_module modules/mod_${mod}.so\n";
+    }
+    return;
 }
 
 sub find_apache_server {
@@ -1068,7 +1131,6 @@ sub process_in_file {
 END {
     my $Test = RT::Test->builder;
     return if $Test->{Original_Pid} != $$;
-    Test::More::diag("Cleaning");
 
     RT::Test->stop_server;
 
