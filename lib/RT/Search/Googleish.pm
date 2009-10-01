@@ -96,108 +96,220 @@ sub QueryToSQL {
     my $query    = shift || $self->Argument;
 
     my @keywords = grep length, map { s/^\s+//; s/\s+$//; $_ }
-        split /((?:fulltext:)?$re_delim|\s+)/o, $query;
+      split /((?:fulltext:)?$re_delim|\s+)/o, $query;
 
     my (
-        @tql_clauses,  @owner_clauses, @queue_clauses,
-        @user_clauses, @id_clauses,    @status_clauses
+        @keyvalue_clauses, @number_clauses, @status_clauses,
+        @queue_clauses,    @user_clauses,   @owner_clauses,
+        @others_clauses,   @tql_clauses
     );
-    my ( $Queue, $User );
-    for my $key (@keywords) {
 
-        # Is this a ticket number? If so, go to it.
-        # But look into subject as well
-        if ( $key =~ m/^\d+$/ ) {
-            push @id_clauses, "id = '$key'", "Subject LIKE '$key'";
-        }
+    my %map = (
+        KeyValue => \@keyvalue_clauses,
+        Number   => \@number_clauses,
+        Status   => \@status_clauses,
+        Queue    => \@queue_clauses,
+        User     => \@user_clauses,
+        Owner    => \@owner_clauses,
+        Others   => \@others_clauses
+    );
 
-        # if it's quoted string then search it "as is" in subject or fulltext
-        elsif ( $key =~ /^(fulltext:)?($re_delim)$/io ) {
-            if ( $1 ) {
-                push @tql_clauses, "Content LIKE $2";
-            } else {
-                push @tql_clauses, "Subject LIKE $2";
+  KEYWORD:
+    for my $keyword (@keywords) {
+        for my $action (qw/KeyValue Number User Status Queue Owner Others/) {
+            my $translate = 'Translate' . $action;
+            my $clause    = $map{$action};
+            my @clauses   = $self->$translate($keyword);
+            if (@clauses) {
+                push @{$clause}, @clauses;
+                next KEYWORD;
             }
         }
-
-        elsif ( $key =~ /^fulltext:(.*?)$/i ) {
-            $key = $1;
-            $key =~ s/['\\].*//g;
-            push @tql_clauses, "Content LIKE '$key'";
-
-        }
-
-        elsif ( $key =~ /\w+\@\w+/ ) {
-            push @user_clauses, "Requestor LIKE '$key'";
-        }
-
-        # Is there a status with this name?
-        elsif (
-            $Queue = RT::Queue->new( $self->TicketsObj->CurrentUser )
-            and $Queue->IsValidStatus($key)
-          )
-        {
-            push @status_clauses, "Status = '" . $key . "'";
-        }
-
-        # Is there a queue named $key?
-        elsif ( $Queue = RT::Queue->new( $self->TicketsObj->CurrentUser )
-            and $Queue->Load($key) )
-        {
-            my $quoted_queue = $Queue->Name;
-            $quoted_queue =~ s/'/\\'/g;
-            push @queue_clauses, "Queue = '$quoted_queue'";
-        }
-
-        # Is there a owner named $key?
-        elsif ( $User = RT::User->new( $self->TicketsObj->CurrentUser )
-            and $User->Load($key)
-            and $User->Privileged )
-        {
-            push @owner_clauses, "Owner = '" . $User->Name . "'";
-        }
-
-        # Else, subject must contain $key
-        else {
-            $key =~ s/['\\].*//g;
-            push @tql_clauses, "Subject LIKE '$key'";
-        }
     }
 
-    # restrict to any queues requested by the caller
-    for my $queue (@{ $self->{'Queues'} }) {
-        my $QueueObj = RT::Queue->new($self->TicketsObj->CurrentUser);
-        $QueueObj->Load($queue) or next;
-        my $quoted_queue = $QueueObj->Name;
-        $quoted_queue =~ s/'/\\'/g;
-        push @queue_clauses, "Queue = '$quoted_queue'";
-    }
+    $self->ProcessAfterTranslate(
+        key_value => \@keyvalue_clauses,
+        number    => \@number_clauses,
+        user      => \@user_clauses,
+        status    => \@status_clauses,
+        queue     => \@queue_clauses,
+        owner     => \@owner_clauses,
+        other     => \@others_clauses,
+        final     => \@tql_clauses,
+    );
 
-    push @tql_clauses, join( " OR ", sort @id_clauses );
+    $self->ProcessAfterTranslate(
+        key_value => \@keyvalue_clauses,
+        number    => \@number_clauses,
+        user      => \@user_clauses,
+        status    => \@status_clauses,
+        queue     => \@queue_clauses,
+        owner     => \@owner_clauses,
+        other     => \@others_clauses,
+        final     => \@tql_clauses,
+    );
+
+    $self->CallbackAfterProcess(
+        key_value => \@keyvalue_clauses,
+        number    => \@number_clauses,
+        user      => \@user_clauses,
+        status    => \@status_clauses,
+        queue     => \@queue_clauses,
+        owner     => \@owner_clauses,
+        other     => \@others_clauses,
+        final     => \@tql_clauses,
+    );
+
+    push @tql_clauses, join( " AND ", sort @keyvalue_clauses );    # Yes, AND!
+
+    push @tql_clauses, join( " OR ", sort @number_clauses );
     push @tql_clauses, join( " OR ", sort @owner_clauses );
-    if ( ! @status_clauses ) {
-        push @tql_clauses, join( " OR ", map "Status = '$_'", RT::Queue->ActiveStatusArray());
-    } else {
-        push @tql_clauses, join( " OR ", sort @status_clauses );
-    }
     push @tql_clauses, join( " OR ", sort @user_clauses );
     push @tql_clauses, join( " OR ", sort @queue_clauses );
+    push @tql_clauses, join( " OR ", sort @status_clauses );
+    push @tql_clauses, join( " OR ", sort @others_clauses );
     @tql_clauses = grep { $_ ? $_ = "( $_ )" : undef } @tql_clauses;
     return join " AND ", sort @tql_clauses;
 }
+
 # }}}
 
 # {{{ sub Prepare
-sub Prepare  {
-  my $self = shift;
-  my $tql = $self->QueryToSQL($self->Argument);
+sub Prepare {
+    my $self = shift;
+    my $tql  = $self->QueryToSQL( $self->Argument );
 
-  $RT::Logger->debug($tql);
+    $RT::Logger->debug($tql);
 
-  $self->TicketsObj->FromSQL($tql);
-  return(1);
+    $self->TicketsObj->FromSQL($tql);
+    return (1);
 }
+
 # }}}
+
+sub TranslateKeyValue {
+    my $self = shift;
+    my $key  = shift;
+    my @clauses;
+    if ( $key =~
+/(subject|cf\.(?:[^:]*?)|content|requestor|id|status|owner|queue|fulltext):(['"])?(.+)\2?/i
+      )
+    {
+        my $field = $1;
+        my $value = $3;
+
+        if ( $field =~ /id|status|owner|queue/i ) {
+            push @clauses, "$field = '$value'";
+        }
+        elsif ( $field =~ /fulltext/i ) {
+            push @clauses, "Content LIKE '$value'";
+        }
+        else {
+            push @clauses, "$field LIKE '$value'";
+        }
+    }
+    return @clauses;
+}
+
+sub TranslateNumber {
+    my $self = shift;
+    my $key  = shift;
+    my @clauses;
+    if ( $key =~ /^\d+$/ ) {
+        push @clauses, "id = '$key'", "Subject LIKE '$key'";
+    }
+    return @clauses;
+}
+
+sub TranslateStatus {
+    my $self = shift;
+    my $key  = shift;
+    my @clauses;
+    my $Queue = RT::Queue->new( $self->TicketsObj->CurrentUser );
+    if ( $Queue->IsValidStatus($key) ) {
+        push @clauses, "Status = '$key'";
+    }
+    return @clauses;
+}
+
+sub TranslateQueue {
+    my $self = shift;
+    my $key  = shift;
+    my @clauses;
+    my $Queue = RT::Queue->new( $self->TicketsObj->CurrentUser );
+    $Queue->Load($key);
+    if ( $Queue->Id ) {
+        my $quoted_queue = $Queue->Name;
+        $quoted_queue =~ s/'/\\'/g;
+        push @clauses, "Queue = '$quoted_queue'";
+    }
+    return @clauses;
+}
+
+sub TranslateUser {
+    my $self = shift;
+    my $key  = shift;
+    my @clauses;
+    if ( $key =~ /\w+\@\w+/ ) {
+        push @clauses, "Requestor LIKE '$key'";
+    }
+    return @clauses;
+}
+
+sub TranslateOwner {
+    my $self = shift;
+    my $key  = shift;
+    my @clauses;
+    my $User = RT::User->new( $self->TicketsObj->CurrentUser );
+    if ( $User->Load($key) && $User->Privileged ) {
+        push @clauses, "Owner = '" . $User->Name . "'";
+    }
+    return @clauses;
+}
+
+sub TranslateOthers {
+    my $self = shift;
+    my $key  = shift;
+    my @clauses;
+    $key =~ s{^(['"])(.*)\1$}{$2};    # 'foo' => foo
+
+    $key =~ s/['\\].*//g;             # XXX what's the usage of this?
+    push @clauses, "Subject LIKE '$key'";
+    return @clauses;
+}
+
+sub ProcessAfterTranslate {
+    my $self           = shift;
+    my %args           = @_;
+    my $queue_clauses  = $args{queue};
+    my $status_clauses = $args{status};
+
+    # restrict to any queues requested by the caller
+    for my $queue ( @{ $self->{'Queues'} } ) {
+        my $QueueObj = RT::Queue->new( $self->TicketsObj->CurrentUser );
+        $QueueObj->Load($queue) or next;
+        my $quoted_queue = $QueueObj->Name;
+        $quoted_queue =~ s/'/\\'/g;
+        push @$queue_clauses, "Queue = '$quoted_queue'";
+    }
+
+    if (
+        !@$status_clauses
+        && RT::Config->Get(
+            'OnlySearchActiveTicketsInSimpleSearch',
+            $self->TicketsObj->CurrentUser
+        )
+      )
+    {
+        push @$status_clauses,
+          join( " OR ", map "Status = '$_'", RT::Queue->ActiveStatusArray() );
+    }
+}
+
+sub CallbackAfterProcess {
+    my $self = shift;
+
+}
 
 eval "require RT::Search::Googleish_Vendor";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Search/Googleish_Vendor.pm});
