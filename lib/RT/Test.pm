@@ -1132,6 +1132,11 @@ END {
     my $Test = RT::Test->builder;
     return if $Test->{Original_Pid} != $$;
 
+
+    # we are in END block and should protect our exit code
+    # so calls below may call system or kill that clobbers $?
+    local $?;
+
     RT::Test->stop_server;
 
     if ( $ENV{RT_TEST_PARALLEL} && $created_new_db ) {
