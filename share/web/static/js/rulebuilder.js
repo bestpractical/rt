@@ -516,6 +516,10 @@ RuleBuilder.Context.prototype.serialize = function() {
         args.unshift(this.func_name);
         return '('+args.join(' ')+')';
     }
+    else if ( this.arraybuilder ) {
+        var args = jQuery.map(this.children, function(val) { return val.serialize() });
+        return args.join(' ');
+    }
 }
 
 RuleBuilder.Context.prototype.set_expression = function(expression) {
