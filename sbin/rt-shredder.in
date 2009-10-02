@@ -188,7 +188,7 @@ sub prompt_delete_objs
 		print "Objects list is empty, try refine search options\n";
 		exit 0;
 	}
-	my $list = "Next objects would be deleted:\n";
+	my $list = "Next ". scalar( @$objs ) ." objects would be deleted:\n";
 	foreach my $o( @$objs ) {
 		$list .= "\t". $o->_AsString ." object\n";
 	}
