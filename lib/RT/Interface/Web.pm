@@ -380,7 +380,7 @@ sub AttemptExternalAuth {
 
                 # we failed to successfully create the user. abort abort abort.
                 delete $HTML::Mason::Commands::session{'CurrentUser'};
-                $m->comp( '/Elements/Login', %$ARGS, Error => loc( 'Cannot create user: [_1]', $msg ) )
+                $m->comp( '/Elements/Login', %$ARGS, Error => HTML::Mason::Commands::loc( 'Cannot create user: [_1]', $msg ) )
                     if RT->Config->Get('WebFallbackToInternalAuth');;
                 $m->abort();
             }
@@ -393,14 +393,14 @@ sub AttemptExternalAuth {
             $user = $orig_user;
 
             if ( RT->Config->Get('WebExternalOnly') ) {
-                $m->comp( '/Elements/Login', %$ARGS, Error => loc('You are not an authorized user') );
+                $m->comp( '/Elements/Login', %$ARGS, Error => HTML::Mason::Commands::loc('You are not an authorized user') );
                 $m->abort();
             }
         }
     } elsif ( RT->Config->Get('WebFallbackToInternalAuth') ) {
         unless ( defined $HTML::Mason::Commands::session{'CurrentUser'} ) {
             # XXX unreachable due to prior defaulting in HandleRequest (check c34d108)
-            $m->comp( '/Elements/Login', %$ARGS, Error => loc('You are not an authorized user') );
+            $m->comp( '/Elements/Login', %$ARGS, Error => HTML::Mason::Commands::loc('You are not an authorized user') );
             $m->abort();
         }
     } else {
@@ -422,7 +422,7 @@ sub AttemptPasswordAuthentication {
 
     unless ( $user_obj->id && $user_obj->IsPassword( $ARGS->{pass} ) ) {
         $RT::Logger->error("FAILED LOGIN for @{[$ARGS->{user}]} from $ENV{'REMOTE_ADDR'}");
-        $m->comp( '/Elements/Login', %$ARGS, Error => loc('Your username or password is incorrect'), );
+        $m->comp( '/Elements/Login', %$ARGS, Error => HTML::Mason::Commands::loc('Your username or password is incorrect'), );
         $m->callback( %$ARGS, CallbackName => 'FailedLogin', CallbackPage => '/autohandler' );
         $m->abort;
     }
