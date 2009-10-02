@@ -350,34 +350,36 @@ RuleBuilder.Context.prototype.array_item_idx = function()
 {
     for (var i in this.parent.children) {
         if (this.parent.children[i] == this)
-            return i;
+            return parseInt(i);
     }
     return -1;
 }
 
 RuleBuilder.Context.prototype.mk_array_item_context = function(type, container, idx) {
     var li = jQuery._div_({'class': 'array-item'});
-    if (idx)
+    if (idx) {
         jQuery("div.array-item:nth-child("+(idx)+")", this.arraybuilder).after(li);
+    }
     else
         li.appendTo(container);
     var x = jQuery._div_({'class': 'context'})
         .appendTo(li);
     var child = new RuleBuilder.Context(type, x.get(0), this, this.rb);
-    var that = this; // parent
     jQuery._span_({'class': 'add-icon'})
         .text("+")
         .appendTo(li)
         .click(function(e) {
-            var idx = child.array_item_idx();
+            var that = child.parent;
+            var idx = child.array_item_idx()+1;
             var newchild = that.mk_array_item_context(that.inner_type,
-                                                      jQuery('div.array-item-container', that.arraybuilder), idx+1);
-            that.children.splice(idx+1, 0, newchild);
+                                                      jQuery('div.array-item-container', that.arraybuilder), idx);
+            that.children.splice(idx, 0, newchild);
         });
     jQuery._span_({'class': 'delete-icon'})
         .text("-")
         .appendTo(li)
         .click(function(e) {
+            var that = child.parent;
             var idx = child.array_item_idx();
             jQuery("div.array-item:nth-child("+(idx+1)+")", that.arraybuilder).remove();
             that.children.splice(idx, 1);
@@ -413,19 +415,25 @@ RuleBuilder.Context.prototype.transform = function(func_name) {
         var second_param = parent.children.length > 1 ? parent.children[1] : null;
 
         if (first_param.inner_type) {
+            //   Bool "or"                 (......)  <- parent
+            //        |--- ArrayRef[Bool]  (parent)  <- first_param
+            //              |- first_param           <- 
+            //              |- second_param          <- 
             parent = first_param;
             var builder = jQuery('div.arraybuilder', parent.element).show();
-            jQuery("span.arraybuilder-icon", builder).hide();
+            jQuery("span.arraybuilder-icon", parent.element).hide();
             parent.arraybuilder = builder;
+            var container = jQuery('div.array-item-container', builder);
             first_param = parent.mk_array_item_context(parent.inner_type,
-                                                       jQuery('div.array-item-container', builder), 0);
+                                                       container, 0);
 
             second_param = parent.mk_array_item_context(parent.inner_type,
-                                                      jQuery('div.array-item-container', parent.arraybuilder), 1);
-            parent.children.push(second_param);
+                                                        container, 1);
+            parent.children = [ first_param, second_param ];
         }
 
         parent.children[0] = this;
+        this.parent = parent;
         this.expected_type = first_param.expected_type;
 
         jQuery('span.return-type:first', this.element)
