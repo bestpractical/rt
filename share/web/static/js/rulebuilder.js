@@ -339,7 +339,7 @@ RuleBuilder.Context = function(expected_type, element, parent, rb) {
                                                        jQuery('div.array-item-container', builder), 0);
                 that.children.push(child);
                 builder.show();
-                jQuery(this).remove();
+                jQuery(this).hide();
                 that.rb.focus(child);
                 return false;
             });
@@ -404,14 +404,30 @@ RuleBuilder.Context.prototype.transform = function(func_name) {
 
         var parent = new RuleBuilder.Context(this.expected_type,
                                              tc.get(0), null, rb);
-        parent.set_application(func_name, func);
         this.parent = rb.top_context = parent;
+
+        parent.set_application(func_name, func);
 
         jQuery(this.element).unbind('click');
         var first_param = parent.children[0];
         var second_param = parent.children.length > 1 ? parent.children[1] : null;
+
+        if (first_param.inner_type) {
+            parent = first_param;
+            var builder = jQuery('div.arraybuilder', parent.element).show();
+            jQuery("span.arraybuilder-icon", builder).hide();
+            parent.arraybuilder = builder;
+            first_param = parent.mk_array_item_context(parent.inner_type,
+                                                       jQuery('div.array-item-container', builder), 0);
+
+            second_param = parent.mk_array_item_context(parent.inner_type,
+                                                      jQuery('div.array-item-container', parent.arraybuilder), 1);
+            parent.children.push(second_param);
+        }
+
         parent.children[0] = this;
         this.expected_type = first_param.expected_type;
+
         jQuery('span.return-type:first', this.element)
             .text(first_param.expected_type);
         jQuery(first_param.element).replaceWith(this.element);
