@@ -336,7 +336,7 @@ RuleBuilder.Context = function(expected_type, element, parent, rb) {
             .click(function(e) {
                 that.arraybuilder = builder;
                 var child = that.mk_array_item_context(that.inner_type,
-                                                       jQuery('div.array-item-container', builder));
+                                                       jQuery('div.array-item-container', builder), 0);
                 that.children.push(child);
                 builder.show();
                 jQuery(this).remove();
@@ -346,9 +346,21 @@ RuleBuilder.Context = function(expected_type, element, parent, rb) {
     }
 };
 
-RuleBuilder.Context.prototype.mk_array_item_context = function(type, container) {
-    var li = jQuery._div_({'class': 'array-item'})
-        .appendTo(container);
+RuleBuilder.Context.prototype.array_item_idx = function()
+{
+    for (var i in this.parent.children) {
+        if (this.parent.children[i] == this)
+            return i;
+    }
+    return -1;
+}
+
+RuleBuilder.Context.prototype.mk_array_item_context = function(type, container, idx) {
+    var li = jQuery._div_({'class': 'array-item'});
+    if (idx)
+        jQuery("div.array-item:nth-child("+(idx)+")", this.arraybuilder).after(li);
+    else
+        li.appendTo(container);
     var x = jQuery._div_({'class': 'context'})
         .appendTo(li);
     var child = new RuleBuilder.Context(type, x.get(0), this, this.rb);
@@ -357,15 +369,18 @@ RuleBuilder.Context.prototype.mk_array_item_context = function(type, container) 
         .text("+")
         .appendTo(li)
         .click(function(e) {
-            var child = that.mk_array_item_context(that.inner_type,
-                                                   jQuery('div.array-item-container', that.arraybuilder));
-            that.children.push(child); // XXX: make correct insert order
+            var idx = child.array_item_idx();
+            var newchild = that.mk_array_item_context(that.inner_type,
+                                                      jQuery('div.array-item-container', that.arraybuilder), idx+1);
+            that.children.splice(idx+1, 0, newchild);
         });
     jQuery._span_({'class': 'delete-icon'})
         .text("-")
         .appendTo(li)
         .click(function(e) {
-             // XXX: make correct splice order
+            var idx = child.array_item_idx();
+            jQuery("div.array-item:nth-child("+(idx+1)+")", that.arraybuilder).remove();
+            that.children.splice(idx, 1);
         });
 
     return child;
