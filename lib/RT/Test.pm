@@ -693,7 +693,10 @@ sub file_content {
     Test::More::diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
 
     open my $fh, "<:raw", $path
-        or do { warn "couldn't open file '$path': $!" unless $args{noexist}; return '' };
+        or do {
+            warn "couldn't open file '$path': $!" unless $args{noexist};
+            return ''
+        };
     my $content = do { local $/; <$fh> };
     close $fh;
 
@@ -708,7 +711,9 @@ sub find_executable {
 
     require File::Spec;
     foreach my $dir ( split /:/, $ENV{'PATH'} ) {
-        my $fpath = File::Spec->catpath( (File::Spec->splitpath( $dir, 'no file' ))[0..1], $name );
+        my $fpath = File::Spec->catpath(
+            (File::Spec->splitpath( $dir, 'no file' ))[0..1], $name
+        );
         next unless -e $fpath && -r _ && -x _;
         return $fpath;
     }
@@ -1008,7 +1013,8 @@ sub apache_server_info {
     my $self = shift;
     my %res = @_;
 
-    my $bin = $res{'executable'} = $ENV{'RT_TEST_APACHE'} || $self->find_apache_server
+    my $bin = $res{'executable'} = $ENV{'RT_TEST_APACHE'}
+        || $self->find_apache_server
         || Test::More::BAIL_OUT("Couldn't find apache server, use RT_TEST_APACHE");
 
     Test::More::diag("Using '$bin' apache executable for testing")
@@ -1075,7 +1081,7 @@ sub apache_fastcgi_server_options {
 sub find_apache_server {
     my $self = shift;
     return $_ foreach grep defined,
-        map $self->find_bin($_),
+        map $self->find_executable($_),
         qw(httpd apache apache2 apache1);
     return undef;
 }
@@ -1090,17 +1096,6 @@ sub stop_server {
     foreach my $pid (@SERVERS) {
         waitpid $pid, 0;
     }
-}
-
-sub find_bin {
-    my $self = shift;
-    my $name = shift;
-
-    return $_ foreach
-        grep -e $_ && -x $_,
-        map File::Spec->catfile($_, $name),
-        split /:/, $ENV{'PATH'};
-    return undef;
 }
 
 sub fork_exec {
@@ -1121,14 +1116,8 @@ sub process_in_file {
     my $self = shift;
     my %args = ( in => undef, options => undef, @_ );
 
-    my $in_fn = $args{'in'};
-    my $text = do {
-        open my $fh, '<', $in_fn
-            or die "Couldn't open '$in_fn': $!";
-        local $/;
-        <$fh>
-    };
-    while ( my ($opt) = ($text =~ /\%\%((?:(?!\%\%).)*)\%\%/) ) {
+    my $text = $self->file_content( $args{'in'} );
+    while ( my ($opt) = ($text =~ /\%\%((?:.+?)\%\%/) ) {
         my $value = $args{'options'}{ lc $opt };
         die "no value for $opt" unless defined $value;
 
