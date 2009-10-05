@@ -51,6 +51,7 @@ package RT::Interface::Web::QueryBuilder::Tree;
 use strict;
 use warnings;
 
+use Tree::Simple qw/use_weak_refs/;
 use base qw/Tree::Simple/;
 
 =head1 NAME
