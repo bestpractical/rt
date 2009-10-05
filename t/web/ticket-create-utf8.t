@@ -3,7 +3,9 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 8;
+use RT::Test tests => 14;
+
+$RT::Test::SKIP_REQUEST_WORK_AROUND = 1;
 
 use Encode;
 
@@ -33,6 +35,9 @@ ok $m->login, 'logged in';
         qr{<td\s+class="message-header-value"[^>]*>\s*\Q$ru_test\E\s*</td>}i,
         'header on the page'
     );
+
+    my $ticket = RT::Test->last_ticket;
+    is $ticket->Subject, $ru_test, "correct subject";
 }
 
 # create a ticket with a subject and content
@@ -51,4 +56,28 @@ ok $m->login, 'logged in';
         qr{\Q$ru_support\E}i,
         'content on the page'
     );
+
+    my $ticket = RT::Test->last_ticket;
+    is $ticket->Subject, $ru_test, "correct subject";
+}
+
+# create a ticket with a subject and content
+{
+    ok $m->goto_create_ticket( $q ), "go to create ticket";
+    $m->form_number(3);
+    $m->field( Subject => $ru_test );
+    $m->field( Content => $ru_support );
+    $m->submit;
+
+    $m->content_like( 
+        qr{<td\s+class="message-header-value"[^>]*>\s*\Q$ru_test\E\s*</td>}i,
+        'header on the page'
+    );
+    $m->content_like( 
+        qr{\Q$ru_support\E}i,
+        'content on the page'
+    );
+
+    my $ticket = RT::Test->last_ticket;
+    is $ticket->Subject, $ru_test, "correct subject";
 }
