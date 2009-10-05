@@ -1107,7 +1107,7 @@ sub process_in_file {
         local $/;
         <$fh>
     };
-    while ( my ($opt) = ($text =~ /\%\%(.+)\%\%/) ) {
+    while ( my ($opt) = ($text =~ /\%\%((?:(?!\%\%).)*)\%\%/) ) {
         my $value = $args{'options'}{ lc $opt };
         die "no value for $opt" unless defined $value;
 
