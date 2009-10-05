@@ -45,9 +45,9 @@ __PACKAGE__->defun( 'Condition.OnResolve',
     signature => $sig_ticket_txn,
     native => sub {
         my $args = shift;
-        return $args->{transaction}->type eq 'status'
+        return ($args->{transaction}->type ||'') eq 'status'
             && ( $args->{transaction}->field || '' ) eq 'status'
-            && $args->{transaction}->new_value() eq 'resolved';
+            && ($args->{transaction}->new_value()||'') eq 'resolved';
     },
 );
 
@@ -146,7 +146,7 @@ for my $name ( keys %simple_txn_cond ) {
         signature => $sig_ticket_txn,
         native => sub {
             my $args = shift;
-            return $args->{transaction}->type eq $simple_txn_cond{$name};
+            return ($args->{transaction}->type||'') eq ($simple_txn_cond{$name} ||'');
         },
     );
 }
