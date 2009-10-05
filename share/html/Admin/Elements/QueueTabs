@@ -65,10 +65,6 @@ if ($id) {
 		 D => { title => _('Watchers'),
 		 	path => "Admin/Queues/People.html?id=".$id,
 		      },
-
-		 E => { title => _('Scrips'),
-			     path => "Admin/Queues/Scrips.html?id=".$id,
-			   },
 		 F => { title => _('Templates'),
 				path => "Admin/Queues/Templates.html?id=".$id,
 			      },

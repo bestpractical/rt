@@ -90,9 +90,8 @@ sub get_current_user {
     # _this_ queue. send rejecting mail otherwise.
 
     unless ($status) {
-        Jifty->log->error("Had a problem during decrypting and verifying");
         my $reject = handle_errors( message => $args{'message'}, result => \@res );
-        return ( 0, 'rejected because of problems during decrypting and verifying' )
+        return ( 0, 'rejected because of problems during decryption and verification' )
             if $reject;
     }
 

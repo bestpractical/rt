@@ -2209,7 +2209,7 @@ sub DESTROY {
         stage           => 'transaction_batch',
         ticket_obj      => $ticket,
         transaction_obj => $batch->[0],
-        type            => join( ',', map $_->type, grep defined, @{$batch} )
+        type            => join( ',', grep defined, map $_->type, grep defined, @{$batch} )
     );
     RT::Ruleset->commit_rules($rules);
 }

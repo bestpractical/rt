@@ -52,10 +52,6 @@
 
 <%INIT>
   my $tabs = {
-                
-               A => { title => _('Scrips'),
-                           path => 'Admin/Global/Scrips.html',
-                         },
                B => { title => _('Templates'),
                         path => 'Admin/Global/Templates.html',
                       },
