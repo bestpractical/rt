@@ -964,7 +964,7 @@ sub start_apache_server {
     ) );
     my %opt = (
         listen        => $port,
-        server_root   => $info{'HTTPD_ROOT'}
+        server_root   => $info{'HTTPD_ROOT'} || $ENV{'HTTPD_ROOT'}
             || Test::More::BAIL_OUT("Couldn't figure out server root"),
         pid_file      => $pid_fn,
         document_root => $RT::MasonComponentRoot,
