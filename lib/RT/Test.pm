@@ -1128,7 +1128,7 @@ sub process_in_file {
     my %args = ( in => undef, options => undef, @_ );
 
     my $text = $self->file_content( $args{'in'} );
-    while ( my ($opt) = ($text =~ /\%\%((?:.+?)\%\%/) ) {
+    while ( my ($opt) = ($text =~ /\%\%(.+?)\%\%/) ) {
         my $value = $args{'options'}{ lc $opt };
         die "no value for $opt" unless defined $value;
 
