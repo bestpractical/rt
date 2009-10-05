@@ -70,14 +70,6 @@ use LWP::UserAgent;
 
 my $url = $m->rt_base_url;
 
-sub latest_ticket {
-    my $tickets = RT::Tickets->new( $RT::SystemUser );
-    $tickets->OrderBy( FIELD => 'id', ORDER => 'DESC' );
-    $tickets->Limit( FIELD => 'id', OPERATOR => '>', VALUE => '0' );
-    $tickets->RowsPerPage( 1 );
-    return $tickets->First;
-}
-
 diag "Make sure that when we call the mailgate without URL, it fails" if $ENV{'TEST_VERBOSE'};
 {
     my $text = <<EOF;
@@ -133,7 +125,7 @@ EOF
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "Created ticket");
 
-    my $tick = latest_ticket();
+    my $tick = RT::Test->last_ticket;
     isa_ok ($tick, 'RT::Ticket');
     is ($tick->Id, $id, "correct ticket id");
     is ($tick->Subject , 'This is a test of new ticket creation', "Created the ticket");
@@ -153,7 +145,7 @@ EOF
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "Created ticket #$id");
 
-    my $tick = latest_ticket();
+    my $tick = RT::Test->last_ticket;
     isa_ok ($tick, 'RT::Ticket');
     is ($tick->Id, $id, "correct ticket id");
     is ($tick->Subject, 'This is a test of the X-RT-Mail-Extension field', "Created the ticket");
@@ -188,7 +180,7 @@ EOF
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "Created ticket #$id");
 
-    my $tick = latest_ticket();
+    my $tick = RT::Test->last_ticket;
     isa_ok ($tick, 'RT::Ticket');
     is ($tick->Id, $id, "correct ticket id");
 
@@ -222,7 +214,7 @@ EOF
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "Created ticket #$id");
 
-    my $tick = latest_ticket();
+    my $tick = RT::Test->last_ticket;
     isa_ok ($tick, 'RT::Ticket');
     is ($tick->Id, $id, "correct ticket id");
     is ($tick->Subject, 'using mailgate without --action arg', "using mailgate without --action arg");
@@ -242,7 +234,7 @@ EOF
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok (!$id, "no ticket created");
 
-    my $tick = latest_ticket();
+    my $tick = RT::Test->last_ticket;
     isa_ok ($tick, 'RT::Ticket');
     ok ($tick->Id, "found ticket ".$tick->Id);
     isnt ($tick->Subject , 'This is a test of new ticket creation as an unknown user', "failed to create the new ticket from an unprivileged account");
@@ -276,7 +268,7 @@ EOF
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "ticket created");
 
-    my $tick = latest_ticket();
+    my $tick = RT::Test->last_ticket;
     isa_ok ($tick, 'RT::Ticket');
     ok ($tick->Id, "found ticket ".$tick->Id);
     is ($tick->Id, $id, "correct ticket id");
@@ -350,7 +342,7 @@ EOF
     is ($status >> 8, 0, "The mail gateway exited normally");
     is ($id, $ticket_id, "replied to the ticket");
 
-    my $tick = latest_ticket();
+    my $tick = RT::Test->last_ticket;
     isa_ok ($tick, 'RT::Ticket');
     ok ($tick->Id, "found ticket ".$tick->Id);
     is ($tick->Id, $id, "correct ticket id");
@@ -430,7 +422,7 @@ EOF
     is ($status >> 8, 0, "The mail gateway exited normally");
     is ($id, $ticket_id, "added comment to the ticket");
 
-    my $tick = latest_ticket();
+    my $tick = RT::Test->last_ticket;
     isa_ok ($tick, 'RT::Ticket');
     ok ($tick->Id, "found ticket ".$tick->Id);
     is ($tick->Id, $id, "correct ticket id");
@@ -475,7 +467,7 @@ diag "Testing preservation of binary attachments" if $ENV{'TEST_VERBOSE'};
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "created ticket");
 
-    my $tick = latest_ticket();
+    my $tick = RT::Test->last_ticket;
     isa_ok ($tick, 'RT::Ticket');
     ok ($tick->Id, "found ticket ".$tick->Id);
     is ($tick->Id, $id, "correct ticket id");
@@ -531,7 +523,7 @@ EOF
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "created ticket");
 
-    my $tick = latest_ticket();
+    my $tick = RT::Test->last_ticket;
     isa_ok ($tick, 'RT::Ticket');
     ok ($tick->Id, "found ticket ". $tick->Id);
     is ($tick->Id, $id, "correct ticket");
@@ -567,7 +559,7 @@ EOF
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "created ticket");
 
-    my $tick = latest_ticket();
+    my $tick = RT::Test->last_ticket;
     isa_ok ($tick, 'RT::Ticket');
     ok ($tick->Id, "found ticket ". $tick->Id);
     is ($tick->Id, $id, "correct ticket");
@@ -597,7 +589,7 @@ EOF
     is ($status >> 8, 0, "The mail gateway exited normally");
     ok ($id, "created ticket");
 
-    my $tick = latest_ticket();
+    my $tick = RT::Test->last_ticket;
     isa_ok ($tick, 'RT::Ticket');
     ok ($tick->Id, "found ticket ". $tick->Id);
     is ($tick->Id, $id, "correct ticket");

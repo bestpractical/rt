@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 46;
+use RT::Test tests => 39;
 
 plan skip_all => 'GnuPG required.'
     unless eval 'use GnuPG::Interface; 1';
@@ -61,7 +61,7 @@ EOF
 RT::Test->close_mailgate_ok($mail);
 
 {
-    my $tick = get_latest_ticket_ok();
+    my $tick = RT::Test->last_ticket;
     is( $tick->Subject,
         'This is a test of new ticket creation as root',
         "Created the ticket"
@@ -101,7 +101,7 @@ EOF
 RT::Test->close_mailgate_ok($mail);
 
 {
-    my $tick = get_latest_ticket_ok();
+    my $tick = RT::Test->last_ticket;
     is( $tick->Subject, 'signed message for queue',
         "Created the ticket"
     );
@@ -143,7 +143,7 @@ EOF
 RT::Test->close_mailgate_ok($mail);
 
 {
-    my $tick = get_latest_ticket_ok();
+    my $tick = RT::Test->last_ticket;
     is( $tick->Subject, 'signed message for queue',
         "Created the ticket"
     );
@@ -185,7 +185,7 @@ EOF
 RT::Test->close_mailgate_ok($mail);
 
 {
-    my $tick = get_latest_ticket_ok();
+    my $tick = RT::Test->last_ticket;
     is( $tick->Subject, 'Encrypted message for queue',
         "Created the ticket"
     );
@@ -233,7 +233,7 @@ EOF
 RT::Test->close_mailgate_ok($mail);
 
 {
-    my $tick = get_latest_ticket_ok();
+    my $tick = RT::Test->last_ticket;
     my $txn = $tick->Transactions->First;
     my ($msg, $attach) = @{$txn->Attachments->ItemsArrayRef};
     # XXX: in this case, which credential should we be using?
@@ -268,7 +268,7 @@ EOF
 RT::Test->close_mailgate_ok($mail);
 
 {
-    my $tick = get_latest_ticket_ok();
+    my $tick = RT::Test->last_ticket;
     my $txn = $tick->Transactions->First;
     my ($msg, $attach) = @{$txn->Attachments->ItemsArrayRef};
     
@@ -312,18 +312,9 @@ is(@mail, 1, 'caught outgoing mail.');
 }
 
 {
-    my $tick = get_latest_ticket_ok();
+    my $tick = RT::Test->last_ticket;
     my $txn = $tick->Transactions->First;
     my ($msg, $attach) = @{$txn->Attachments->ItemsArrayRef};
     unlike( ($attach ? $attach->Content : ''), qr'really should not be there either');
-}
-
-sub get_latest_ticket_ok {
-    my $tickets = RT::Tickets->new($RT::SystemUser);
-    $tickets->OrderBy( FIELD => 'id', ORDER => 'DESC' );
-    $tickets->Limit( FIELD => 'id', OPERATOR => '>', VALUE => '0' );
-    my $tick = $tickets->First();
-    ok( $tick->Id, "found ticket " . $tick->Id );
-    return $tick;
 }
 
