@@ -513,7 +513,9 @@ sub load_or_create_custom_field {
 
 sub last_ticket {
     my $self = shift;
-    my $tickets = RT::Tickets->new( $RT::SystemUser );
+    my $current = shift;
+    $current = $current ? RT::CurrentUser->new($current) : $RT::SystemUser;
+    my $tickets = RT::Tickets->new( $current );
     $tickets->OrderBy( FIELD => 'id', ORDER => 'DESC' );
     $tickets->Limit( FIELD => 'id', OPERATOR => '>', VALUE => '0' );
     $tickets->RowsPerPage( 1 );
