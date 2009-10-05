@@ -416,6 +416,7 @@ AC_CONFIG_FILES([
                  lib/RT.pm
                  bin/mason_handler.svc
                  bin/webmux.pl
-                 t/data/configs/apache2.2+mod_perl.conf],
+                 t/data/configs/apache2.2+mod_perl.conf
+                 t/data/configs/apache2.2+fastcgi.conf],
                )
 AC_OUTPUT

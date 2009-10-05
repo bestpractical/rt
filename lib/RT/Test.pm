@@ -1052,6 +1052,26 @@ sub apache_mod_perl_server_options {
     return;
 }
 
+sub apache_fastcgi_server_options {
+    my $self = shift;
+    my %info = %{ shift() };
+    my $current = shift;
+
+    my %required_modules = (
+        '2.2' => [qw(authz_host log_config env alias mime fastcgi)],
+    );
+    my @mlist = @{ $required_modules{ $info{'version'} } };
+
+    $current->{'load_modules'} = '';
+    foreach my $mod ( @mlist ) {
+        next if grep "$mod.c" eq $_, @{ $info{'modules'} };
+
+        $current->{'load_modules'} .=
+            "LoadModule ${mod}_module modules/mod_${mod}.so\n";
+    }
+    return;
+}
+
 sub find_apache_server {
     my $self = shift;
     return $_ foreach grep defined,

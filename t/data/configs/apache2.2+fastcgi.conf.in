@@ -1,0 +1,44 @@
+ServerRoot %%SERVER_ROOT%%
+PidFile %%PID_FILE%%
+ServerAdmin root@localhost
+
+%%LOAD_MODULES%%
+
+TypesConfig /etc/mime.types
+FastCgiIpcDir /tmp
+
+<IfModule !mpm_netware_module>
+<IfModule !mpm_winnt_module>
+User @WEB_USER@
+Group @WEB_GROUP@
+</IfModule>
+</IfModule>
+
+Listen %%LISTEN%%
+
+ErrorLog "%%LOG_FILE%%"
+LogLevel debug
+
+<Directory />
+    Options FollowSymLinks
+    AllowOverride None
+    Order deny,allow
+    Deny from all
+</Directory>
+
+AddDefaultCharset UTF-8
+
+FastCgiServer %%RT_BIN_PATH%%/mason_handler.fcgi -processes 1 -idle-timeout 180 -initial-env RT_SITE_CONFIG=%%RT_SITE_CONFIG%%
+
+Alias /NoAuth/images/ %%DOCUMENT_ROOT%%/NoAuth/images/
+ScriptAlias / %%RT_BIN_PATH%%/mason_handler.fcgi/
+
+DocumentRoot "%%DOCUMENT_ROOT%%"
+<Location />
+    Order allow,deny
+    Allow from all
+
+    Options +ExecCGI
+    AddHandler fastcgi-script fcgi
+</Location>
+
