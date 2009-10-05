@@ -970,6 +970,7 @@ sub start_apache_server {
         document_root => $RT::MasonComponentRoot,
         rt_bin_path   => $RT::BinPath,
         log_file      => $log_fn,
+        rt_site_config => $ENV{'RT_SITE_CONFIG'},
     );
     {
         my $method = 'apache_'.$variant.'_server_options';

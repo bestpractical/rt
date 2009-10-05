@@ -24,6 +24,7 @@ LogLevel debug
 </Directory>
 
 AddDefaultCharset UTF-8
+PerlSetEnv RT_SITE_CONFIG %%RT_SITE_CONFIG%%
 PerlRequire %%RT_BIN_PATH%%/webmux.pl
 
 RedirectMatch permanent (.*)/$ $1/index.html
