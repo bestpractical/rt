@@ -54,12 +54,6 @@ div.function span.return-type,
   overflow: hidden;
 }
 
-
-div#body {
-	margin-left: 24em;
-
-}
-
 #expression-filter input[type=text] {
 	display: block;
 }
