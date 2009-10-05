@@ -1044,7 +1044,7 @@ sub apache_mod_perl_server_options {
 
     $current->{'load_modules'} = '';
     foreach my $mod ( @mlist ) {
-        next if grep "$mod.c" eq $_, @{ $info{'modules'} };
+        next if grep $_ =~ /^(mod_|)$mod\.c$/, @{ $info{'modules'} };
 
         $current->{'load_modules'} .=
             "LoadModule ${mod}_module modules/mod_${mod}.so\n";
@@ -1064,7 +1064,7 @@ sub apache_fastcgi_server_options {
 
     $current->{'load_modules'} = '';
     foreach my $mod ( @mlist ) {
-        next if grep "$mod.c" eq $_, @{ $info{'modules'} };
+        next if grep $_ =~ /^(mod_|)$mod\.c$/, @{ $info{'modules'} };
 
         $current->{'load_modules'} .=
             "LoadModule ${mod}_module modules/mod_${mod}.so\n";
