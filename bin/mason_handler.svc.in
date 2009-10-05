@@ -225,6 +225,10 @@ warn "Begin listening on $ENV{'FCGI_SOCKET_PATH'}\n";
 require CGI::Fast;
 
 RT::Init();
+$Handler ||= RT::Interface::Web::Handler->new(
+    RT->Config->Get('MasonParameters')
+);
+
 
 # Response loop
 while( my $cgi = CGI::Fast->new ) {

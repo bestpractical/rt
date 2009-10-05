@@ -58,6 +58,10 @@ require (dirname(__FILE__) . '/webmux.pl');
 require CGI::Fast;
 
 RT::Init();
+$Handler ||= RT::Interface::Web::Handler->new(
+    RT->Config->Get('MasonParameters')
+);
+
 
 while ( my $cgi = CGI::Fast->new ) {
     # the whole point of fastcgi requires the env to get reset here..

@@ -57,6 +57,10 @@ require (dirname(__FILE__) . '/webmux.pl');
 require CGI;
 
 RT::Init();
+$Handler ||= RT::Interface::Web::Handler->new(
+    RT->Config->Get('MasonParameters')
+);
+
 
 my $cgi = CGI->new;
 if ( ( !$Handler->interp->comp_exists( $cgi->path_info ) )
