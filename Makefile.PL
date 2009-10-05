@@ -19,6 +19,8 @@ requires(
     'Locale::Maketext::Lexicon'  => '0.32',
     'Locale::Maketext::Fuzzy'    => '0',
     'Lorzy'                      => '0',
+	'Moose'						 => '0',
+	'Class::MOP'				 => '0.94',
     'MIME::Entity'               => '5.425',
     'Email::Address'             => 0,
     'Mail::Mailer'               => '1.57',
