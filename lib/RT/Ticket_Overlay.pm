@@ -1998,9 +1998,9 @@ sub TimeLeftAsString {
 =head2 Comment
 
 Comment on this ticket.
-Takes a hashref with the following attributes:
+Takes a hash with the following attributes:
 If MIMEObj is undefined, Content will be used to build a MIME::Entity for this
-commentl
+comment.
 
 MIMEObj, TimeTaken, CcMessageTo, BccMessageTo, Content, DryRun
 
