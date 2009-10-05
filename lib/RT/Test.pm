@@ -511,6 +511,15 @@ sub load_or_create_custom_field {
     return $obj;
 }
 
+sub last_ticket {
+    my $self = shift;
+    my $tickets = RT::Tickets->new( $RT::SystemUser );
+    $tickets->OrderBy( FIELD => 'id', ORDER => 'DESC' );
+    $tickets->Limit( FIELD => 'id', OPERATOR => '>', VALUE => '0' );
+    $tickets->RowsPerPage( 1 );
+    return $tickets->First;
+}
+
 sub store_rights {
     my $self = shift;
 
