@@ -692,43 +692,6 @@ sub clean_caught_mails {
     unlink $mailbox_catcher;
 }
 
-sub file_content {
-    my $self = shift;
-    my $path = shift;
-    my %args = @_;
-
-    $path = File::Spec->catfile( @$path ) if ref $path eq 'ARRAY';
-
-    Test::More::diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
-
-    open my $fh, "<:raw", $path
-        or do {
-            warn "couldn't open file '$path': $!" unless $args{noexist};
-            return ''
-        };
-    my $content = do { local $/; <$fh> };
-    close $fh;
-
-    unlink $path if $args{'unlink'};
-
-    return $content;
-}
-
-sub find_executable {
-    my $self = shift;
-    my $name = shift;
-
-    require File::Spec;
-    foreach my $dir ( split /:/, $ENV{'PATH'} ) {
-        my $fpath = File::Spec->catpath(
-            (File::Spec->splitpath( $dir, 'no file' ))[0..1], $name
-        );
-        next unless -e $fpath && -r _ && -x _;
-        return $fpath;
-    }
-    return undef;
-}
-
 =head2 get_relocatable_dir
 
 Takes a path relative to the location of the test file that is being
@@ -1105,6 +1068,43 @@ sub stop_server {
     foreach my $pid (@SERVERS) {
         waitpid $pid, 0;
     }
+}
+
+sub file_content {
+    my $self = shift;
+    my $path = shift;
+    my %args = @_;
+
+    $path = File::Spec->catfile( @$path ) if ref $path eq 'ARRAY';
+
+    Test::More::diag "reading content of '$path'" if $ENV{'TEST_VERBOSE'};
+
+    open my $fh, "<:raw", $path
+        or do {
+            warn "couldn't open file '$path': $!" unless $args{noexist};
+            return ''
+        };
+    my $content = do { local $/; <$fh> };
+    close $fh;
+
+    unlink $path if $args{'unlink'};
+
+    return $content;
+}
+
+sub find_executable {
+    my $self = shift;
+    my $name = shift;
+
+    require File::Spec;
+    foreach my $dir ( split /:/, $ENV{'PATH'} ) {
+        my $fpath = File::Spec->catpath(
+            (File::Spec->splitpath( $dir, 'no file' ))[0..1], $name
+        );
+        next unless -e $fpath && -r _ && -x _;
+        return $fpath;
+    }
+    return undef;
 }
 
 sub fork_exec {
