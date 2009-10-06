@@ -200,6 +200,12 @@ sub take_action {
     # We should inline this function to encourage other people to use this
     # action
     HTML::Mason::Commands::create_ticket(%{ $self->argument_values });
+    $self->SUPER::take_action(@_);
+}
+
+sub report_success {
+    my $self = shift;
+    $self->result->message(_("Your ticket has been created!"));
 }
 
 sub add_ticket_custom_fields {
