@@ -1,37 +1,34 @@
 package RT::View::Form::Field::SelectOwner;
 use warnings;
 use strict;
+use Jifty::View::Declare;
 use base 'Jifty::Web::Form::Field::Select';
+#use Jifty::View::Declare::Helpers;
 
-sub render_widget {
-    my $self  = shift;
-    my $field = qq! <select !;
-    $field .= qq! name="@{[ $self->input_name ]}"!;
-    $field .= qq! id="@{[ $self->element_id ]}"!;
-    $field .= qq! title="@{[ $self->title ]}"! if ($self->title);
-    $field .= $self->_widget_class;
-    $field .= $self->javascript;
-    $field .= q! multiple="multiple"! if $self->multiple;
-    $field .= qq!      >\n!;
+sub _render_select_values {
+    my $self = shift;
+    my $rendered = '';
+
     my $current_value = $self->current_value;
-    for my $opt ($self->available_values) {
-        my $display = ref($opt) ? $opt->{'display'} : $opt;
-        my $value   = ref($opt) ? $opt->{'value'} : $opt;
+    for my $value ($self->available_values) {
         $value = "" unless defined $value;
-        $field .= qq!<option value="@{[ Jifty->web->escape($value) ]}"!;
-        $field .= qq! selected="selected"!
+        $rendered .= qq!<option value="@{[ Jifty->web->escape($value) ]}"!;
+        $rendered .= qq! selected="selected"!
           if defined $current_value
               && (
                   ref $current_value eq 'ARRAY'
                   ? ( grep { $value eq $_ } @$current_value )
                   : $current_value eq $value );
-        $field .= qq!>!;
-        $field .= Jifty->web->escape(_($display)) if defined $display;
-        $field .= qq!</option>\n!;
+        $rendered .= qq!>!;
+
+        my $user = RT::Model::User->new;
+        $user->load($value);
+        $rendered .= mason_scomp('/Elements/ShowUser', user => $user);
+
+        $rendered .= qq!</option>\n!;
     }
-    $field .= qq!</select>\n!;
-    Jifty->web->out($field);
-    '';
+
+    return $rendered;
 }
 
 sub render_value {
