@@ -1,4 +1,4 @@
-package RT::View::Form::SelectOwner;
+package RT::View::Form::Field::SelectOwner;
 use warnings;
 use strict;
 use base 'Jifty::Web::Form::Field::Select';
