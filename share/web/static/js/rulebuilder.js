@@ -355,11 +355,10 @@ RuleBuilder.Context.prototype.array_item_idx = function()
     return -1;
 }
 
-RuleBuilder.Context.prototype.mk_array_item_context = function(type, container, idx) {
+RuleBuilder.Context.prototype.mk_array_item_context = function(type, container, insert_after) {
     var li = jQuery._div_({'class': 'array-item'});
-    if (idx) {
-        jQuery("div.array-item:nth-child("+(idx)+")", this.arraybuilder).after(li);
-    }
+    if (insert_after)
+        li.insertAfter(jQuery(insert_after).parent(".array-item"));
     else
         li.appendTo(container);
     var x = jQuery._div_({'class': 'context'})
@@ -372,7 +371,7 @@ RuleBuilder.Context.prototype.mk_array_item_context = function(type, container, 
             var that = child.parent;
             var idx = child.array_item_idx()+1;
             var newchild = that.mk_array_item_context(that.inner_type,
-                                                      jQuery('div.array-item-container', that.arraybuilder), idx);
+                                                      jQuery('div.array-item-container', that.arraybuilder), child.element);
             that.children.splice(idx, 0, newchild);
         });
     jQuery._span_({'class': 'delete-icon'})
@@ -381,7 +380,7 @@ RuleBuilder.Context.prototype.mk_array_item_context = function(type, container, 
         .click(function(e) {
             var that = child.parent;
             var idx = child.array_item_idx();
-            jQuery("div.array-item:nth-child("+(idx+1)+")", that.arraybuilder).remove();
+            jQuery(child.element).parent('.array-item').remove();
             that.children.splice(idx, 1);
         });
 
@@ -431,10 +430,9 @@ RuleBuilder.Context.prototype.transform = function(func_name) {
         parent.arraybuilder = builder;
         var container = jQuery('div.array-item-container', builder);
         first_param = parent.mk_array_item_context(parent.inner_type,
-                                                   container, 0);
-
+                                                   container, null);
         second_param = parent.mk_array_item_context(parent.inner_type,
-                                                        container, 1);
+                                                    container, first_param.element);
         parent.children = [ first_param, second_param ];
     }
 
