@@ -394,57 +394,66 @@ RuleBuilder.Context.prototype.return_type_from_val = function(val) {
 }
 
 RuleBuilder.Context.prototype.transform = function(func_name) {
+    var rb = this.rb;
+    var func = rb.functions[func_name];
+    var parent;
     if (this.parent) {
-        alert('not yet');
+        var new_entry = jQuery._div_({'class': 'context'})
+            .insertAfter(this.element);
+        jQuery(this.element).remove();
+        parent = new RuleBuilder.Context(this.expected_type,
+                                         new_entry.get(0), this.parent, rb);
+        var idx = this.array_item_idx();
+        this.parent.children[idx] = parent;
     }
     else {
-        var rb = this.rb;
-        var func = rb.functions[func_name];
-        jQuery(rb.top_context.element).removeClass('top-context').remove();
         var tc = jQuery._div_({'class': 'context top-context'})
             .prependTo(this.rb.ebuilder);
+        jQuery(rb.top_context.element).removeClass('top-context').remove();
 
-        var parent = new RuleBuilder.Context(this.expected_type,
-                                             tc.get(0), null, rb);
-        this.parent = rb.top_context = parent;
-
-        parent.set_application(func_name, func);
-
-        jQuery(this.element).unbind('click');
-        var first_param = parent.children[0];
-        var second_param = parent.children.length > 1 ? parent.children[1] : null;
-
-        if (first_param.inner_type) {
-            //   Bool "or"                 (......)  <- parent
-            //        |--- ArrayRef[Bool]  (parent)  <- first_param
-            //              |- first_param           <- 
-            //              |- second_param          <- 
-            parent = first_param;
-            var builder = jQuery('div.arraybuilder', parent.element).show();
-            jQuery("span.arraybuilder-icon", parent.element).hide();
-            parent.arraybuilder = builder;
-            var container = jQuery('div.array-item-container', builder);
-            first_param = parent.mk_array_item_context(parent.inner_type,
-                                                       container, 0);
-
-            second_param = parent.mk_array_item_context(parent.inner_type,
-                                                        container, 1);
-            parent.children = [ first_param, second_param ];
-        }
-
-        parent.children[0] = this;
-        this.parent = parent;
-        this.expected_type = first_param.expected_type;
-
-        jQuery('span.return-type:first', this.element)
-            .text(first_param.expected_type);
-        jQuery(first_param.element).replaceWith(this.element);
-        var that = this;
-        jQuery(this.element).click(function(e) { rb.focus(that); return false });
-        this.update_return_type(this.return_type);
-        if (second_param)
-            this.rb.focus(second_param);
+        parent = new RuleBuilder.Context(this.expected_type,
+                                         tc.get(0), null, rb);
+        rb.top_context = parent;
     }
+
+    this.parent = parent;
+
+    parent.set_application(func_name, func);
+
+    jQuery(this.element).unbind('click');
+    var first_param = parent.children[0];
+    var second_param = parent.children.length > 1 ? parent.children[1] : null;
+
+    if (first_param.inner_type) {
+        //   Bool "or"                 (......)  <- parent
+        //        |--- ArrayRef[Bool]  (parent)  <- first_param
+        //              |- first_param           <- 
+        //              |- second_param          <- 
+        parent = first_param;
+        var builder = jQuery('div.arraybuilder', parent.element).show();
+        jQuery("span.arraybuilder-icon", parent.element).hide();
+        parent.arraybuilder = builder;
+        var container = jQuery('div.array-item-container', builder);
+        first_param = parent.mk_array_item_context(parent.inner_type,
+                                                   container, 0);
+
+        second_param = parent.mk_array_item_context(parent.inner_type,
+                                                        container, 1);
+        parent.children = [ first_param, second_param ];
+    }
+
+    parent.children[0] = this;
+    this.parent = parent;
+    this.expected_type = first_param.expected_type;
+
+    jQuery('span.return-type:first', this.element)
+        .text(first_param.expected_type);
+    jQuery(first_param.element).replaceWith(this.element);
+    var that = this;
+    jQuery(this.element).click(function(e) { rb.focus(that); return false });
+    this.update_return_type(this.return_type);
+    if (second_param)
+        this.rb.focus(second_param);
 }
 
 RuleBuilder.Context.prototype.transformMenu = function(el) {
