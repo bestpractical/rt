@@ -396,23 +396,19 @@ RuleBuilder.Context.prototype.return_type_from_val = function(val) {
 RuleBuilder.Context.prototype.transform = function(func_name) {
     var rb = this.rb;
     var func = rb.functions[func_name];
-    var parent;
+    var new_element = jQuery._div_({'class': 'context'});
+    var parent = new RuleBuilder.Context(this.expected_type,
+                                         new_element.get(0), this.parent, rb);
     if (this.parent) {
-        var new_entry = jQuery._div_({'class': 'context'})
-            .insertAfter(this.element);
+        new_element.insertAfter(this.element);
         jQuery(this.element).remove();
-        parent = new RuleBuilder.Context(this.expected_type,
-                                         new_entry.get(0), this.parent, rb);
-        var idx = this.array_item_idx();
-        this.parent.children[idx] = parent;
+
+        this.parent.children[this.array_item_idx()] = parent;
     }
     else {
-        var tc = jQuery._div_({'class': 'context top-context'})
-            .prependTo(this.rb.ebuilder);
         jQuery(rb.top_context.element).removeClass('top-context').remove();
+        new_element.addClass('top-context').prependTo(rb.ebuilder);
 
-        parent = new RuleBuilder.Context(this.expected_type,
-                                         tc.get(0), null, rb);
         rb.top_context = parent;
     }
 
