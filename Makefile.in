@@ -244,9 +244,9 @@ upgrade-instruct:
 	@echo ""
 	@echo "For each item in that directory whose name is greater than"
 	@echo "your previously installed RT version, run:"
-	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --prompt-for-dba-password --action schema --datadir etc/upgrade/<version>"
-	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --prompt-for-dba-password --action acl --datadir etc/upgrade/<version>"
-	@echo "	   $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --prompt-for-dba-password --action insert --datadir etc/upgrade/<version>"
+	@echo "    $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --prompt-for-dba-password --action schema --datadir etc/upgrade/<version>"
+	@echo "    $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --prompt-for-dba-password --action acl --datadir etc/upgrade/<version>"
+	@echo "    $(RT_SBIN_PATH)/rt-setup-database --dba $(DB_DBA) --prompt-for-dba-password --action insert --datadir etc/upgrade/<version>"
 
 
 upgrade: config-install dirs files-install fixperms upgrade-instruct
@@ -271,7 +271,7 @@ fixperms:
 	chmod $(RT_READABLE_DIR_MODE) $(DESTDIR)/$(RT_PATH)
 	chown -R $(LIBS_OWNER) $(DESTDIR)/$(RT_LIB_PATH)
 	chgrp -R $(LIBS_GROUP) $(DESTDIR)/$(RT_LIB_PATH)
-	chmod -R  u+rwX,go-w,go+rX 	$(DESTDIR)/$(RT_LIB_PATH)
+	chmod -R  u+rwX,go-w,go+rX $(DESTDIR)/$(RT_LIB_PATH)
 
 
 	chmod $(RT_READABLE_DIR_MODE) $(DESTDIR)/$(RT_BIN_PATH)
@@ -331,7 +331,7 @@ install: config-install dirs files-install fixperms instruct
 files-install: libs-install etc-install bin-install sbin-install html-install local-install doc-install
 
 config-install:
-	mkdir -p $(DESTDIR)/$(CONFIG_FILE_PATH)	
+	mkdir -p $(DESTDIR)/$(CONFIG_FILE_PATH)
 	-cp etc/RT_Config.pm $(DESTDIR)/$(CONFIG_FILE)
 	[ -f $(DESTDIR)/$(SITE_CONFIG_FILE) ] || cp etc/RT_SiteConfig.pm $(DESTDIR)/$(SITE_CONFIG_FILE) 
 
@@ -367,7 +367,7 @@ regression-instruct:
 # {{{ database-installation
 
 regression-reset-db:
-	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action drop --dba $(DB_DBA) --dba-password '' --force
+	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action drop --dba $(DB_DBA) --dba-password '' --force
 	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action init --dba $(DB_DBA) --dba-password ''
 
 initdb :: initialize-database
@@ -376,7 +376,7 @@ initialize-database:
 	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action init --dba $(DB_DBA) --prompt-for-dba-password
 
 dropdb: 
-	$(PERL)	$(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action drop --dba $(DB_DBA) --prompt-for-dba-password
+	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/rt-setup-database --action drop --dba $(DB_DBA) --prompt-for-dba-password
 
 insert-approval-data: 
 	$(PERL) $(DESTDIR)/$(RT_SBIN_PATH)/insert_approval_scrips
