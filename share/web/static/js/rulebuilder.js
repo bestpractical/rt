@@ -443,6 +443,7 @@ RuleBuilder.Context.prototype.transform = function(func_name) {
     jQuery('span.return-type:first', this.element)
         .text(first_param.expected_type);
     jQuery(first_param.element).replaceWith(this.element);
+    first_param.element = this.element;
     var that = this;
     jQuery(this.element).click(function(e) { rb.focus(that); return false });
     this.update_return_type(this.return_type);
