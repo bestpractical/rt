@@ -88,7 +88,7 @@ my $title_b64 = MIME::Base64::encode_base64(Encode::encode_utf8($title), '');
 my $tid  = "TitleBox--$page--" .
             join '--', ($class, $bodyclass, $title_b64, $id);
 
-$tid =~ s{[/\s'\\]+}{_}g;
+$tid =~ s{[^A-Za-z0-9\-_:\.]+}{_}g;
 
 my $i = 0;
 $i++ while $m->notes("$tid-$i");
