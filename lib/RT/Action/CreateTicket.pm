@@ -172,12 +172,7 @@ sub set_valid_owners {
                        values %user_uniq_hash;
     unshift @valid_owners, RT->nobody;
 
-    $self->fill_parameter(owner => valid_values => [
-        map { {
-            display => $_->name, # XXX: should use ShowUser or something
-            value   => $_->id,
-        } } @valid_owners,
-    ]);
+    $self->fill_parameter(owner => valid_values => [ map { $_->id } @valid_owners ]);
 }
 
 sub set_initial_priority {
