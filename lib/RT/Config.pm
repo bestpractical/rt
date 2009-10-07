@@ -299,8 +299,18 @@ our %META = (
         SortOrder       => 4,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
-            Description => 'Use monospace font', #loc
-            Hints       => "Use fixed-width font to display plaintext messages" #loc
+            Description => 'add <pre> tag around plain text attachments', #loc
+            Hints       => "Use this to protect the format of plain text" #loc
+        },
+    },
+    PlainTextMono => {
+        Section         => 'Ticket display',
+        Overridable     => 1,
+        SortOrder       => 5,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'display wrapped and formatted plain text attachments', #loc
+            Hints => 'Use css rules to display text monospaced and with formatting preserved, but wrap as needed.  This does not work well with IE6 and you should use the previous option', #loc
         },
     },
 
