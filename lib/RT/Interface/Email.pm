@@ -584,7 +584,7 @@ sub ForwardTicket {
         map $_->ContentAsMIME,
         @{ $txns->ItemsArrayRef };
 
-    return SendForward( %args, Entity => $entity, Ticket => $ticket );
+    return SendForward( %args, Entity => $entity, Ticket => $ticket, Template => 'Forward Ticket' );
 }
 
 =head2 SendForward Entity => undef, Ticket => undef, Transaction => undef, Template => undef, To => '', Cc => '', Bcc => ''
