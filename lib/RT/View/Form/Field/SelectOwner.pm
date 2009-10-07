@@ -3,7 +3,7 @@ use warnings;
 use strict;
 use Jifty::View::Declare;
 use base 'Jifty::Web::Form::Field::Select';
-#use Jifty::View::Declare::Helpers;
+use Jifty::View::Declare::Helpers 'mason_scomp';
 
 sub _render_select_values {
     my $self = shift;
