@@ -418,8 +418,10 @@ sub ContentAsMIME {
     my $self = shift;
 
     my $entity = new MIME::Entity;
-    $entity->head->add( split /:/, $_, 2 )
-        foreach $self->SplitHeaders;
+    foreach my $header ($self->SplitHeaders) {
+        my ($h_key, $h_val) = split /:/, $header, 2;
+        $entity->head->add( $h_key, RT::Interface::Email::EncodeToMIME( String => $h_val ) );
+    }
 
     use MIME::Body;
     $entity->bodyhandle(
@@ -494,6 +496,21 @@ an abstraction barrier that makes it impossible to pass this data directly.
 
 sub Headers {
     return join("\n", $_[0]->SplitHeaders);
+}
+
+=head2 EncodedHeaders
+
+Takes encoding as argument and returns the attachment's headers as octets in encoded
+using the encoding.
+
+This is not protection using quoted printable or base64 encoding.
+
+=cut
+
+sub EncodedHeaders {
+    my $self = shift;
+    my $encoding = shift || 'utf8';
+    return Encode::encode( $encoding, $self->Headers );
 }
 
 =head2 GetHeader $TAG

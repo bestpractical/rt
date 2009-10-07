@@ -173,6 +173,14 @@ if ($Ticket) {
         };
     }
 
+    if ( $Ticket->CurrentUserHasRight('ForwardMessage') )
+    {
+        $actions->{'FA'} = {
+            title => loc('Forward'),
+            path  => "Ticket/Forward.html?id=" . $id,
+        };
+    }
+
     if ( $can{'ModifyTicket'} ) {
         if ( $Ticket->Status ne 'resolved' ) {
             $actions->{'G'} = {

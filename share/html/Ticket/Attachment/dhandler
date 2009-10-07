@@ -74,10 +74,9 @@
      }
 
      if (my $enc = $AttachmentObj->OriginalEncoding) {
-	# normalize Encode.pm convention with IANA ones
-        $enc = 'big5'  if $enc eq 'big5-eten';
-        $enc = 'utf-8' if $enc eq 'utf8';
-	$content_type .= ";charset=$enc";
+        my $iana = Encode::find_encoding( $enc );
+        $iana = $iana? $iana->mime_name : $enc;
+	$content_type .= ";charset=$iana";
      }
 
      # unless (RT->Config->Get('TrustMIMEAttachments')) {

@@ -18,6 +18,14 @@ If you are using MySQL, please read the instructions in UPGRADING.mysql as
 well.
 
 *******
+UPGRADING FROM 3.8.5 and earlier - Changes:
+
+You can now forward an entire Ticket history (in addition to specific transactions)
+but this requires a new Template called forward ticket.  This template will be added
+when you run.
+
+/opt/rt3/sbin/rt-setup-database --dba root --prompt-for-dba-password --action upgrade
+
 UPGRADING FROM 3.8.3 and earlier - Changes:
 
 Arguments to the NotifyGroup Scrip Action need

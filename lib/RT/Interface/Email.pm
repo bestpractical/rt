@@ -548,7 +548,7 @@ sub SendEmailUsingTemplate {
 
 =head2 ForwardTransaction TRANSACTION, To => '', Cc => '', Bcc => ''
 
-Forwards transaction with all attachments 'message/rfc822'.
+Forwards transaction with all attachments as 'message/rfc822'.
 
 =cut
 
@@ -556,55 +556,72 @@ sub ForwardTransaction {
     my $txn = shift;
     my %args = ( To => '', Cc => '', Bcc => '', @_ );
 
-    my $main_content = $txn->ContentObj;
-    my $entity = $main_content->ContentAsMIME;
+    my $entity = $txn->ContentAsMIME;
 
-    if ( $main_content->Parent ) {
-        # main content is not top most entity, we shouldn't loose
-        # From/To/Cc headers that are on a top part
-        my $attachments = RT::Attachments->new( $txn->CurrentUser );
-        $attachments->Columns(qw(id Parent TransactionId Headers));
-        $attachments->Limit( FIELD => 'TransactionId', VALUE => $txn->id );
-        $attachments->Limit( FIELD => 'Parent', VALUE => 0 );
-        $attachments->Limit( FIELD => 'Parent', OPERATOR => 'IS', VALUE => 'NULL', QUOTEVALUE => 0 );
-        $attachments->OrderBy( FIELD => 'id', ORDER => 'ASC' );
-        my $tmp = $attachments->First;
-        if ( $tmp && $tmp->id ne $main_content->id ) {
-            $entity->make_multipart;
-            $entity->head->add( split /:/, $_, 2 ) foreach $tmp->SplitHeaders;
-            $entity->make_singlepart;
-        }
-    }
+    return SendForward( %args, Entity => $entity, Transaction => $txn );
+}
 
-    my $attachments = RT::Attachments->new( $txn->CurrentUser );
-    $attachments->Limit( FIELD => 'TransactionId', VALUE => $txn->id );
-    $attachments->Limit(
-        FIELD => 'id',
-        OPERATOR => '!=',
-        VALUE => $main_content->id,
+=head2 ForwardTicket TICKET, To => '', Cc => '', Bcc => ''
+
+Forwards a ticket's Create and Correspond Transactions and their Attachments as 'message/rfc822'.
+
+=cut
+
+sub ForwardTicket {
+    my $ticket = shift;
+    my %args = ( To => '', Cc => '', Bcc => '', @_ );
+
+    my $txns = $ticket->Transactions;
+    $txns->Limit(
+        FIELD    => 'Type',
+        VALUE    => $_,
+    ) for qw(Create Correspond);
+
+    my $entity = MIME::Entity->build(
+        Type => 'multipart/mixed',
     );
-    $attachments->Limit(
-        FIELD => 'ContentType',
-        OPERATOR => 'NOT STARTSWITH',
-        VALUE => 'multipart/',
+    $entity->add_part( $_ ) foreach 
+        map $_->ContentAsMIME,
+        @{ $txns->ItemsArrayRef };
+
+    return SendForward( %args, Entity => $entity, Ticket => $ticket, Template => 'Forward Ticket' );
+}
+
+=head2 SendForward Entity => undef, Ticket => undef, Transaction => undef, Template => undef, To => '', Cc => '', Bcc => ''
+
+Forwards an Entity representing Ticket or Transaction as 'message/rfc822'. Entity is wrapped into Template.
+
+=cut
+
+sub SendForward {
+    my (%args) = (
+        Entity => undef,
+        Ticket => undef,
+        Transaction => undef,
+        Template => 'Forward',
+        To => '', Cc => '', Bcc => '',
+        @_
     );
-    $attachments->Limit(
-        FIELD => 'Content',
-        OPERATOR => '!=',
-        VALUE => '',
-    );
-    while ( my $a = $attachments->Next ) {
-        $entity->make_multipart unless $entity->is_multipart;
-        $entity->add_part( $a->ContentAsMIME );
+
+    my $txn = $args{'Transaction'};
+    my $ticket = $args{'Ticket'};
+    $ticket ||= $txn->Object if $txn;
+
+    my $entity = $args{'Entity'};
+    unless ( $entity ) {
+        require Carp;
+        $RT::Logger->error(Carp::longmess("No entity provided"));
+        return (0, $ticket->loc("Couldn't send email"));
     }
 
     my ($template, $msg) = PrepareEmailUsingTemplate(
-        Template  => 'Forward',
+        Template  => $args{'Template'},
         Arguments => {
+            Ticket      => $ticket,
             Transaction => $txn,
-            Ticket      => $txn->Object,
         },
     );
+
     my $mail;
     if ( $template ) {
         $mail = $template->MIMEObj;
@@ -614,15 +631,20 @@ sub ForwardTransaction {
     unless ( $mail ) {
         $RT::Logger->warning("Couldn't generate email using template 'Forward'");
 
-        my $description = 'This is forward of transaction #'
-            . $txn->id ." of a ticket #". $txn->ObjectId;
+        my $description;
+        unless ( $args{'Transaction'} ) {
+            $description = 'This is forward of ticket #'. $ticket->id;
+        } else {
+            $description = 'This is forward of transaction #'
+                . $txn->id ." of a ticket #". $txn->ObjectId;
+        }
         $mail = MIME::Entity->build(
             Type => 'text/plain',
             Data => $description,
         );
     }
 
-    $mail->head->set( $_ => $args{ $_ } )
+    $mail->head->set( $_ => EncodeToMIME( String => $args{$_} ) )
         foreach grep defined $args{$_}, qw(To Cc Bcc);
 
     $mail->attach(
@@ -633,25 +655,26 @@ sub ForwardTransaction {
     );
 
     my $from;
-    my $subject = $txn->Subject || $txn->Object->Subject;
+    my $subject = '';
+    $subject = $txn->Subject if $txn;
+    $subject ||= $ticket->Subject if $ticket;
     if ( RT->Config->Get('ForwardFromUser') ) {
-        $from = $txn->CurrentUser->UserObj->EmailAddress;
+        $from = ($txn || $ticket)->CurrentUser->UserObj->EmailAddress;
     } else {
         # XXX: what if want to forward txn of other object than ticket?
-        my $obj = $txn->Object;
-        $subject = AddSubjectTag( $subject, $obj );
-        $from = $obj->QueueObj->CorrespondAddress
+        $subject = AddSubjectTag( $subject, $ticket );
+        $from = $ticket->QueueObj->CorrespondAddress
             || RT->Config->Get('CorrespondAddress');
     }
-    $mail->head->set( Subject => "Fwd: $subject" );
-    $mail->head->set( From    => $from );
+    $mail->head->set( Subject => EncodeToMIME( String => "Fwd: $subject" ) );
+    $mail->head->set( From    => EncodeToMIME( String => $from ) );
 
     my $status = RT->Config->Get('ForwardFromUser')
         # never sign if we forward from User
-        ? SendEmail( Entity => $mail, Transaction => $txn, Sign => 0 )
-        : SendEmail( Entity => $mail, Transaction => $txn );
-    return (0, $txn->loc("Couldn't send email")) unless $status;
-    return (1, $txn->loc("Send email successfully"));
+        ? SendEmail( %args, Entity => $mail, Sign => 0 )
+        : SendEmail( %args, Entity => $mail );
+    return (0, $ticket->loc("Couldn't send email")) unless $status;
+    return (1, $ticket->loc("Send email successfully"));
 }
 
 =head2 SignEncrypt Entity => undef, Sign => 0, Encrypt => 0
@@ -759,6 +782,83 @@ sub SignEncrypt {
     return 1;
 }
 
+use MIME::Words ();
+
+=head2 EncodeToMIME
+
+Takes a hash with a String and a Charset. Returns the string encoded
+according to RFC2047, using B (base64 based) encoding.
+
+String must be a perl string, octets are returned.
+
+If Charset is not provided then $EmailOutputEncoding config option
+is used, or "latin-1" if that is not set.
+
+=cut
+
+sub EncodeToMIME {
+    my %args = (
+        String => undef,
+        Charset  => undef,
+        @_
+    );
+    my $value = $args{'String'};
+    return $value unless $value; # 0 is perfect ascii
+    my $charset  = $args{'Charset'} || RT->Config->Get('EmailOutputEncoding');
+    my $encoding = 'B';
+
+    # using RFC2047 notation, sec 2.
+    # encoded-word = "=?" charset "?" encoding "?" encoded-text "?="
+
+    # An 'encoded-word' may not be more than 75 characters long
+    #
+    # MIME encoding increases 4/3*(number of bytes), and always in multiples
+    # of 4. Thus we have to find the best available value of bytes available
+    # for each chunk.
+    #
+    # First we get the integer max which max*4/3 would fit on space.
+    # Then we find the greater multiple of 3 lower or equal than $max.
+    my $max = int(
+        (   ( 75 - length( '=?' . $charset . '?' . $encoding . '?' . '?=' ) )
+            * 3
+        ) / 4
+    );
+    $max = int( $max / 3 ) * 3;
+
+    chomp $value;
+
+    if ( $max <= 0 ) {
+
+        # gives an error...
+        $RT::Logger->crit("Can't encode! Charset or encoding too big.");
+        return ($value);
+    }
+
+    return ($value) unless $value =~ /[^\x20-\x7e]/;
+
+    $value =~ s/\s+$//;
+
+    # we need perl string to split thing char by char
+    Encode::_utf8_on($value) unless Encode::is_utf8($value);
+
+    my ( $tmp, @chunks ) = ( '', () );
+    while ( length $value ) {
+        my $char = substr( $value, 0, 1, '' );
+        my $octets = Encode::encode( $charset, $char );
+        if ( length($tmp) + length($octets) > $max ) {
+            push @chunks, $tmp;
+            $tmp = '';
+        }
+        $tmp .= $octets;
+    }
+    push @chunks, $tmp if length $tmp;
+
+    # encode an join chuncks
+    $value = join "\n ",
+        map MIME::Words::encode_mimeword( $_, $encoding, $charset ),
+        @chunks;
+    return ($value);
+}
 
 sub CreateUser {
     my ( $Username, $Address, $Name, $ErrorsTo, $entity ) = @_;

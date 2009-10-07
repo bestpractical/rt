@@ -380,8 +380,15 @@ The ticket has been approved, you may now start to act on it.
        Name        => "Forward",    # loc
        Description => "Heading of a forwarded message", # loc
        Content => q{
+This is a forward of transaction #{$Transaction->id} of ticket #{ $Ticket->id }
+}
+    },
+    {  Queue       => 0,
+       Name        => "Forward Ticket",    # loc
+       Description => "Heading of a forwarded Ticket", # loc
+       Content => q{
 
-This is forward of transaction #{ $Transaction->id } of a ticket #{ $Ticket->id }
+This is a forward of ticket #{ $Ticket->id }
 }
     },
     {  Queue       => 0,
