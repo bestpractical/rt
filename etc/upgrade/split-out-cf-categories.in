@@ -66,6 +66,7 @@ my $CFs = RT::CustomFields->new( $RT::SystemUser );
 $CFs->UnLimit;
 $CFs->Limit( FIELD => 'Type', VALUE => 'Select' );
 
+my $seen;
 while (my $cf  = $CFs->Next ) {
     next if $cf->BasedOnObj->Id;
     my @categories;
@@ -78,8 +79,13 @@ while (my $cf  = $CFs->Next ) {
     }
     next unless @categories;
 
+    $seen++;
     print "Found CF '@{[$cf->Name]}' with categories:\n";
     print "  $_\n" for @categories;
+
+    print "Split this CF's categories into a hierarchical custom field (Y/n)? ";
+    my $dothis = <>;
+    next if $dothis =~ /n/i;
 
     print "Enter name of CF to create as category ('@{[$cf->Name]} category'): ";
     my $newname = <>;
@@ -162,3 +168,4 @@ while (my $cf  = $CFs->Next ) {
 }
 
 $RT::Handle->Commit;
+print "No custom fields with categories found\n" unless $seen;
