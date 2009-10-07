@@ -11,6 +11,7 @@ sub _render_select_values {
 
     my $current_value = $self->current_value;
     for my $value ($self->available_values) {
+        $value = $value->{value} if ref($value) eq 'HASH';
         $value = "" unless defined $value;
         $rendered .= qq!<option value="@{[ Jifty->web->escape($value) ]}"!;
         $rendered .= qq! selected="selected"!
