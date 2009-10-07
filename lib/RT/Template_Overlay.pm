@@ -442,18 +442,21 @@ sub _DowngradeFromHTML {
 
     require HTML::FormatText;
     require HTML::TreeBuilder;
-    $new_entity->bodyhandle(MIME::Body::InCore->new(\(scalar(HTML::FormatText->new(
-        leftmargin  => 0,
-        rightmargin => 78,
-    )->format(
-        HTML::TreeBuilder->new_from_content( $new_entity->bodyhandle->as_string )
-    )))));
+    my $tree = HTML::TreeBuilder->new_from_content(
+        $new_entity->bodyhandle->as_string
+    );
+    $new_entity->bodyhandle(MIME::Body::InCore->new(
+        \(scalar HTML::FormatText->new(
+            leftmargin  => 0,
+            rightmargin => 78,
+        )->format( $tree ))
+    ));
+    $tree->delete;
 
     $orig_entity->add_part($new_entity, 0); # plain comes before html
     $self->{MIMEObj} = $orig_entity;
 
     return;
-
 }
 
 =head2 CurrentUserHasQueueRight

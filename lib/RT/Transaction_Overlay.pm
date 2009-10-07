@@ -313,12 +313,12 @@ sub Content {
             $content =~ s/<p>--\s+<br \/>.*?$//s if $args{'Quote'};
 
             if ($args{Type} ne 'text/html') {
+                my $tree = HTML::TreeBuilder->new_from_content( $content );
                 $content = HTML::FormatText->new(
                     leftmargin  => 0,
                     rightmargin => 78,
-                )->format(
-                    HTML::TreeBuilder->new_from_content( $content )
-                );
+                )->format( $tree);
+                $tree->delete;
             }
         }
         else {
