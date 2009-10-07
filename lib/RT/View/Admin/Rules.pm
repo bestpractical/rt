@@ -90,7 +90,7 @@ template 'edit' => page {
     show('./update');
 
     div { { id is 'expressionbuilder' } };
-outs_raw(q{<script type="text/javascript">
+if (0) {outs_raw(q{<script type="text/javascript">
 jQuery(function() {
   jQuery._span_({'class': 'edit-with-rulebuilder'}).text("...")
     .insertAfter("textarea.argument-condition_code")
@@ -106,6 +106,7 @@ jQuery(function() {
 });
 </script>
 });
+}
 };
 
 1;
