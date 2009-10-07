@@ -23,7 +23,7 @@ sub _render_select_values {
 
         my $user = RT::Model::User->new;
         $user->load($value);
-        $rendered .= mason_scomp('/Elements/ShowUser', user => $user);
+        $rendered .= mason_scomp('/Elements/ShowUser', { user => $user });
 
         $rendered .= qq!</option>\n!;
     }
