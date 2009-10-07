@@ -26,6 +26,16 @@ when you run.
 
 /opt/rt3/sbin/rt-setup-database --dba root --prompt-for-dba-password --action upgrade
 
+Custom fields with categories can optionally be split out into
+hierarchical custom fields.  If you wish to convert your old
+category-based custom fields, run:
+
+    perl etc/upgrade/split-out-cf-categories
+
+It will prompt you for each custom field with categories that it
+finds, and the name of the custom field to create to store the
+categories.
+
 UPGRADING FROM 3.8.3 and earlier - Changes:
 
 Arguments to the NotifyGroup Scrip Action need
