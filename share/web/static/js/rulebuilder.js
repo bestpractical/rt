@@ -135,7 +135,7 @@ RuleBuilder.prototype.init = function () {
             alert(that.top_context.serialize())})
         .prependTo(ebuilder);
 
-    jQuery._div_({'class': 'done'})
+    jQuery._input_({'class': 'done', 'type': 'submit', 'value': 'Done' })
         .text("Done")
         .click(function(e){
             if (that.finalize)
