@@ -55,7 +55,22 @@ div.function span.return-type,
 }
 
 div#expressionbuilder {
-    margin-left: 24em;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: #fff;
+}
+
+div#expressionbuilder .panel {
+	position: absolute;
+	top: 0em;
+	left: 0em;
+	padding-left: 21em;
+	background: #fff;
+	bottom: 0em;
+	z-index: 999;
+	right: 0em;
 }
 
 #expressionbuilder {
@@ -71,11 +86,12 @@ div#expressionbuilder {
 	position: absolute;
 	top: 0;
 	left: 0;
-	width: 21em;
+	width: 18em;
 	bottom: 0;
 	padding: 0.5em;
 	background: #fff;
 	overflow: auto;
+	z-index: 1000;
 	-moz-border-radius: 0.5em;
 
 }

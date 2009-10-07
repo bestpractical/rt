@@ -77,8 +77,11 @@ RuleBuilder.prototype.init = function () {
 
     this.ebuilder = ebuilder;
 
+	ebuilder.append('<div class="panel">');
+	this.panel = jQuery('.panel');
+
     jQuery._div_({'class': 'context top-context'})
-        .appendTo(ebuilder);
+        .appendTo(this.panel);
 
     this.top_context = new RuleBuilder.Context(
         'Bool',
@@ -126,14 +129,16 @@ RuleBuilder.prototype.init = function () {
 
     this.focus(this.top_context);
 
+
+
     jQuery._div_({'class': 'ohai'})
-        .text("OH HAI")
+        .text("Show serialized expression")
         .click(function(e){
             that.top_context.traverse(function(ctx) {
                 jQuery(ctx.element).append(ctx.state());
             });
             alert(that.top_context.serialize())})
-        .prependTo(ebuilder);
+        .prependTo(this.panel);
 
     jQuery._input_({'class': 'done', 'type': 'submit', 'value': 'Done' })
         .text("Done")
@@ -141,7 +146,7 @@ RuleBuilder.prototype.init = function () {
             if (that.finalize)
                 that.finalize.apply(that);
         })
-        .prependTo(ebuilder);
+        .prependTo(this.panel);
 
 };
 
