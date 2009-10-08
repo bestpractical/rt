@@ -1,5 +1,6 @@
 html>body div.outerbox
 {
+	z-index: 1500;
 	padding: 0 5px 5px 0;
 }
 html>body div.outerbox div.shadowbox1
