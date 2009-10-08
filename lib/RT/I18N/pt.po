@@ -4,13 +4,13 @@ msgstr ""
 "Project-Id-Version: RT 3.5.x\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-05-07 20:49+0000\n"
-"PO-Revision-Date: 2009-05-07 20:39+0000\n"
-"Last-Translator: Kevin Falcone <Unknown>\n"
+"PO-Revision-Date: 2009-08-09 15:17+0000\n"
+"Last-Translator: Tiago Silva <Unknown>\n"
 "Language-Team: rt-devel <rt-devel@lists.bestpractical.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2009-05-20 12:56+0000\n"
+"X-Launchpad-Export-Date: 2009-10-08 18:48+0000\n"
 "X-Generator: Launchpad (build Unknown)\n"
 
 #: NOT FOUND IN SOURCE
@@ -63,7 +63,7 @@ msgstr "%1 #%2"
 msgid "%1 %2"
 msgstr "%1 %2"
 
-#: lib/RT/Tickets_Overlay.pm:1684
+#: lib/RT/Tickets_Overlay.pm:1696
 #. ($args{'FIELD'},        $args{'OPERATOR'}, $args{'VALUE'})
 msgid "%1 %2 %3"
 msgstr "%1 %2 %3"
@@ -76,14 +76,14 @@ msgstr "%1 %2 %3 %4"
 #: lib/RT/Date.pm:620
 #. ($wday,$mon,$mday,$hour,$min,$year)
 msgid "%1 %2 %3 %4:%5 %6"
-msgstr ""
+msgstr "%1 %2 %3 %4:%5 %6"
 
 #: lib/RT/Date.pm:617
 #. ($wday,$mon,$mday,$hour,$min,$sec,$year)
 msgid "%1 %2 %3 %4:%5:%6 %7"
 msgstr "%1 %2 %3 %4:%5:%6 %7"
 
-#: lib/RT/Record.pm:1715 lib/RT/Transaction_Overlay.pm:657 lib/RT/Transaction_Overlay.pm:700
+#: lib/RT/Record.pm:1715 lib/RT/Transaction_Overlay.pm:704 lib/RT/Transaction_Overlay.pm:747
 #. ($cf->Name, $new_content)
 #. ($field, $self->NewValue)
 #. ($self->Field, $principal->Object->Name)
@@ -95,13 +95,13 @@ msgstr "%1 %2 adicionado"
 msgid "%1 %2 ago"
 msgstr "há %1 %2"
 
-#: lib/RT/Record.pm:1722 lib/RT/Transaction_Overlay.pm:664
+#: lib/RT/Record.pm:1722 lib/RT/Transaction_Overlay.pm:711
 #. ($cf->Name, $old_content, $new_content)
 #. ($field, $self->OldValue, $self->NewValue)
 msgid "%1 %2 changed to %3"
 msgstr "%1 %2 alterado para %3"
 
-#: lib/RT/Record.pm:1719 lib/RT/Transaction_Overlay.pm:660 lib/RT/Transaction_Overlay.pm:706
+#: lib/RT/Record.pm:1719 lib/RT/Transaction_Overlay.pm:707 lib/RT/Transaction_Overlay.pm:753
 #. ($cf->Name, $old_content)
 #. ($field, $self->OldValue)
 #. ($self->Field, $principal->Object->Name)
@@ -127,7 +127,7 @@ msgstr "%1 %2 gravado."
 #. (loc($scrip->ConditionObj->Name), loc($scrip->ActionObj->Name), loc($scrip->TemplateObj->Name))
 #. ($_[0]->loc($_[0]->ConditionObj->Name),            $_[0]->loc($_[0]->ActionObj->Name),            $_[0]->loc($_[0]->TemplateObj->Name),)
 msgid "%1 %2 with template %3"
-msgstr "%1 %2 com template %3"
+msgstr "%1 %2 com modelo %3"
 
 #: share/html/Ticket/Elements/ShowAttachments:75
 #. ($rev->CreatedAsString, $size, $rev->CreatorObj->Name)
@@ -149,7 +149,7 @@ msgstr "%1 (dia %2) em %3"
 #: share/html/Dashboards/Elements/Deleted:57
 #. (($_->{description} || $_->{name}), $_->{pane})
 msgid "%1 (from pane %2)"
-msgstr ""
+msgstr "%1 (do painel %2)"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 (on %2) at %3"
@@ -158,7 +158,7 @@ msgstr "%1 (em %2) às %3"
 #: bin/rt-crontool:363
 #. ("--log")
 msgid "%1 - Adjust LogToScreen config option"
-msgstr ""
+msgstr "%1 - Ajustar opção de configuração LogToScreen"
 
 #: bin/rt-crontool:338 bin/rt-crontool:345 bin/rt-crontool:351
 #. ("--search-arg", "--search")
@@ -194,7 +194,7 @@ msgstr "%1 - Especificar o modulo de acção que quer usar"
 #: bin/rt-crontool:360
 #. ("--transaction-type")
 msgid "%1 - Specify the comma separated list of transactions' types you want to use"
-msgstr "%1 - Especificar a lista de tipos de transações separada por virgulas que quer usar"
+msgstr "%1 - Especificar a lista de tipos de transacções, separada por virgulas, que quer usar"
 
 #: bin/rt-crontool:342
 #. ("--condition")
@@ -213,14 +213,14 @@ msgstr "%1 - Especifique o tipo de transacção que quer usar"
 #: share/html/Dashboards/index.html:67
 #. ($group)
 msgid "%1 DashBoards"
-msgstr ""
+msgstr "%1 Paineis"
 
 #: NOT FOUND IN SOURCE
 msgid "%1 Dashboards"
 msgstr "%1 Painéis de controle"
 
 #: share/html/Elements/Footer:59
-#. ('&#187;&#124;&#171;', $RT::VERSION, '2008', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
+#. ('&#187;&#124;&#171;', $RT::VERSION, '2009', '<a href="http://www.bestpractical.com?rt='.$RT::VERSION.'">Best Practical Solutions, LLC</a>',)
 msgid "%1 RT %2 Copyright 1996-%3 %4."
 msgstr "%1 RT %2 Copyright 1996-%3 %4."
 
@@ -259,13 +259,13 @@ msgstr "%1 parece estar totalmente inicializado. Não é necessario criar tabela
 msgid "%1 at %2"
 msgstr "%1 em %2"
 
-#: lib/RT/Transaction_Overlay.pm:546 share/html/Ticket/Elements/ShowDates:80
+#: lib/RT/Transaction_Overlay.pm:593 share/html/Ticket/Elements/ShowDates:80
 #. ($self->BriefDescription , $self->CreatorObj->Name)
 #. ($Ticket->LastUpdatedAsString, $Ticket->LastUpdatedByObj->Name)
 msgid "%1 by %2"
 msgstr "%1 por %2"
 
-#: lib/RT/Record.pm:500 lib/RT/Transaction_Overlay.pm:608 lib/RT/Transaction_Overlay.pm:795 lib/RT/Transaction_Overlay.pm:800 lib/RT/Transaction_Overlay.pm:814 lib/RT/Transaction_Overlay.pm:823 lib/RT/Transaction_Overlay.pm:828
+#: lib/RT/Record.pm:500 lib/RT/Transaction_Overlay.pm:655 lib/RT/Transaction_Overlay.pm:842 lib/RT/Transaction_Overlay.pm:847 lib/RT/Transaction_Overlay.pm:861 lib/RT/Transaction_Overlay.pm:870 lib/RT/Transaction_Overlay.pm:875
 #. ($self->loc( $args{'Field'} ),            ( $old_val ? "'$old_val'" : $self->loc("(no value)") ),            '"' . $self->__Value( $args{'Field'}) . '"')
 #. ($self->Field,                ( $self->OldValue ? "'" . $self->OldValue . "'" : $no_value ),                "'" . $self->NewValue . "'")
 #. ($self->loc($self->Field), $t2->AsString, $t1->AsString)
@@ -288,43 +288,43 @@ msgstr "cópia %1"
 #: share/html/Admin/Tools/Configuration.html:85
 #. ($meta->{'Source'}{'Extension'})
 msgid "%1 core config"
-msgstr ""
+msgstr "%1 configuração de raiz"
 
 #: lib/RT/Record.pm:918
 msgid "%1 could not be set to %2."
 msgstr "%1 não pôde ser definido para %2."
 
-#: lib/RT/Ticket_Overlay.pm:2510
+#: lib/RT/Ticket_Overlay.pm:2524
 #. ($self)
 msgid "%1 couldn't set status to resolved. RT's Database may be inconsistent."
 msgstr "%1 estado não foi mudado para resolvido. RT's Database pode estar inconsistente."
 
-#: lib/RT/Transaction_Overlay.pm:575
+#: lib/RT/Transaction_Overlay.pm:622
 #. ($obj_type)
 msgid "%1 created"
 msgstr "%1 criado"
 
-#: lib/RT/Transaction_Overlay.pm:586
+#: lib/RT/Transaction_Overlay.pm:633
 #. ($obj_type)
 msgid "%1 deleted"
 msgstr "%1 apagado"
 
-#: lib/RT/Transaction_Overlay.pm:581
+#: lib/RT/Transaction_Overlay.pm:628
 #. ($obj_type)
 msgid "%1 disabled"
-msgstr ""
+msgstr "%1 desactivo"
 
 #: share/html/Install/Sendmail.html:86
 #. ($ARGS{SendmailPath})
 msgid "%1 doesn't exist."
 msgstr "%1 não existe"
 
-#: lib/RT/Transaction_Overlay.pm:578
+#: lib/RT/Transaction_Overlay.pm:625
 #. ($obj_type)
 msgid "%1 enabled"
-msgstr ""
+msgstr "%1 activo"
 
-#: etc/initialdata:546
+#: etc/initialdata:553
 msgid "%1 highest priority tickets I own"
 msgstr "%1 tickets com maior prioridade da minha responsabilidade"
 
@@ -358,11 +358,11 @@ msgstr "%1 já não é um valor para campo personalizado %2"
 msgid "%1 min"
 msgstr "%1 min"
 
-#: etc/initialdata:557
+#: etc/initialdata:564
 msgid "%1 newest unowned tickets"
 msgstr "%1 tickets mais recentes sem responsável atribuído"
 
-#: lib/RT/CustomField_Overlay.pm:858
+#: lib/RT/CustomField_Overlay.pm:865
 msgid "%1 objects"
 msgstr "%1 objectos"
 
@@ -373,7 +373,7 @@ msgstr "%1 direitos"
 #: share/html/Admin/Tools/Configuration.html:82
 #. ($meta->{'Source'}{'Extension'})
 msgid "%1 site config"
-msgstr ""
+msgstr "%1 configuração do site"
 
 #: lib/RT/SharedSetting.pm:240
 #. (ucfirst($self->ObjectName), $msg)
@@ -394,11 +394,11 @@ msgstr "%1 actualizado"
 msgid "%1 will resolve all members of a resolved group ticket."
 msgstr "%1 Resolverá todos os membros de ticket de grupo resolvido."
 
-#: lib/RT/CustomField_Overlay.pm:859
+#: lib/RT/CustomField_Overlay.pm:866
 msgid "%1's %2 objects"
 msgstr "objectos %2 de %1"
 
-#: lib/RT/CustomField_Overlay.pm:860
+#: lib/RT/CustomField_Overlay.pm:867
 msgid "%1's %2's %3 objects"
 msgstr "objectos %1's %2's %3"
 
@@ -421,7 +421,7 @@ msgstr "%1: anexo não especificado"
 #: lib/RT/Date.pm:612
 #. ($hour,$min)
 msgid "%1:%2"
-msgstr ""
+msgstr "%1:%2"
 
 #: lib/RT/Date.pm:609
 #. ($hour,$min,$sec)
@@ -449,7 +449,7 @@ msgstr "%quant(%1,hora)"
 msgid "'%1' is an invalid value for status"
 msgstr "%1 é um valor inválido para o estado"
 
-#: share/html/Admin/Elements/EditCustomFieldValues:80 share/html/Admin/Elements/EditQueueWatchers:66 share/html/Admin/Elements/EditScrips:67 share/html/Admin/Elements/EditTemplates:69 share/html/Admin/Groups/Members.html:109 share/html/Elements/EditLinks:112 share/html/Ticket/Elements/EditPeople:79 share/html/Ticket/Elements/Reminders:119 share/html/User/Groups/Members.html:78
+#: share/html/Admin/Elements/EditCustomFieldValues:91 share/html/Admin/Elements/EditQueueWatchers:66 share/html/Admin/Elements/EditScrips:67 share/html/Admin/Elements/EditTemplates:69 share/html/Admin/Groups/Members.html:109 share/html/Elements/EditLinks:112 share/html/Ticket/Elements/EditPeople:79 share/html/Ticket/Elements/Reminders:119 share/html/User/Groups/Members.html:78
 msgid "(Check box to delete)"
 msgstr "(Seleccione caixa para apagar)"
 
@@ -527,7 +527,7 @@ msgstr "(sem nome)"
 msgid "(no pubkey!)"
 msgstr "(Sem pubkey!)"
 
-#: lib/RT/Transaction_Overlay.pm:601 share/html/Admin/Elements/SelectRights:77 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:52 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Elements/EditCustomFieldSelect:71 share/html/Elements/SelectCustomFieldValue:53 share/html/Elements/ShowCustomFields:58 share/html/Search/Elements/Chart:79
+#: lib/RT/Transaction_Overlay.pm:648 share/html/Admin/Elements/AddCustomFieldValue:72 share/html/Admin/Elements/EditCustomFieldValues:78 share/html/Admin/Elements/SelectRights:77 share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:52 share/html/Admin/Tools/Shredder/Elements/SelectPlugin:55 share/html/Elements/EditCustomFieldSelect:70 share/html/Elements/EditCustomFieldSelect:89 share/html/Elements/SelectCustomFieldValue:53 share/html/Elements/ShowCustomFields:58 share/html/Search/Elements/Chart:79
 msgid "(no value)"
 msgstr "(sem valor)"
 
@@ -603,9 +603,9 @@ msgstr "<input type=\"submit\" class=\"button\" value=\"Novo Pedido em\" />&nbsp
 msgid "<input type=\"submit\" value=\"New ticket in\">&nbsp;%1"
 msgstr "<input type=\"submit\" value=\"Novo Pedido em\">&nbsp;%1"
 
-#: share/html/User/Prefs.html:182
+#: share/html/User/Prefs.html:196
 msgid "<p>All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.</p>"
-msgstr ""
+msgstr "<p>Todas as feeds iCal embebem um token privado que o autorizam. Se o URL de um dos seus feeds iCal foi exposto ao exterior, pode ter um novo token privado ao <b>quebrar as feeds existentes</b>.</p>"
 
 #: etc/initialdata:193
 msgid "A blank template"
@@ -617,11 +617,11 @@ msgstr "Password não foi definida, portanto o utilizador não vai conseguir efe
 
 #: lib/RT/ACE_Overlay.pm:171
 msgid "ACE not found"
-msgstr ""
+msgstr "ACE não encontrado"
 
 #: lib/RT/ACE_Overlay.pm:640
 msgid "ACEs can only be created and deleted."
-msgstr ""
+msgstr "Os ACEs apenas podem ser criados e eliminados"
 
 #: share/html/Search/Elements/SelectAndOr:48
 msgid "AND"
@@ -690,7 +690,7 @@ msgstr "Adicionar mais ficheiros"
 
 #: share/html/Search/Bulk.html:91
 msgid "Add Requestor"
-msgstr ""
+msgstr "Adicionar Requerente"
 
 #: share/html/Admin/Elements/AddCustomFieldValue:48
 msgid "Add Value"
@@ -734,17 +734,17 @@ msgstr "Adicionar valores"
 
 #: lib/RT/CustomField_Overlay.pm:114
 msgid "Add, delete and modify custom field values for objects"
-msgstr ""
+msgstr "Adicione, elimine e modifique os valores dos campos personalizados para os objectos"
 
 #: lib/RT/Queue_Overlay.pm:848
 #. ($args{'Type'})
 msgid "Added principal as a %1 for this queue"
-msgstr ""
+msgstr "%1 adicionado como principal para esta queue"
 
 #: lib/RT/Ticket_Overlay.pm:1146
 #. ($self->loc($args{'Type'}))
 msgid "Added principal as a %1 for this ticket"
-msgstr ""
+msgstr "%1 adicionado como principal para esta tarefa"
 
 #: share/html/Elements/RT__Queue/ColumnMap:70
 msgid "Address"
@@ -768,15 +768,15 @@ msgstr "Comentário de Admin"
 
 #: etc/initialdata:249
 msgid "Admin Correspondence"
-msgstr ""
+msgstr "Correspondência Admin"
 
 #: share/html/Admin/Queues/index.html:48 share/html/Admin/Queues/index.html:51
 msgid "Admin queues"
-msgstr ""
+msgstr "Queues do Administrador"
 
 #: share/html/Admin/Global/index.html:49 share/html/Admin/Global/index.html:51
 msgid "Admin/Global configuration"
-msgstr ""
+msgstr "Configurações do Administrador/Globais"
 
 #: lib/RT/System.pm:81
 msgid "AdminAllPersonalGroups"
@@ -784,7 +784,7 @@ msgstr ""
 
 #: lib/RT/Tickets_Overlay.pm:144
 msgid "AdminCCGroup"
-msgstr ""
+msgstr "AdminCCGroup"
 
 #: lib/RT/ACE_Overlay.pm:102 lib/RT/Tickets_Overlay.pm:133 share/html/Elements/RT__Ticket/ColumnMap:183 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Elements/ShowPeople:64
 msgid "AdminCc"
@@ -792,23 +792,23 @@ msgstr "AdminCc"
 
 #: lib/RT/Graph/Tickets.pm:158
 msgid "AdminCcs"
-msgstr ""
+msgstr "AdminCcs"
 
 #: lib/RT/CustomField_Overlay.pm:113
 msgid "AdminCustomField"
-msgstr ""
+msgstr "AdminCampoPerson"
 
 #: lib/RT/Group_Overlay.pm:87
 msgid "AdminGroup"
-msgstr ""
+msgstr "AdminGroupo"
 
 #: lib/RT/Group_Overlay.pm:89
 msgid "AdminGroupMembership"
-msgstr ""
+msgstr "AdminMembrosGrupo"
 
 #: lib/RT/System.pm:83
 msgid "AdminOwnPersonalGroups"
-msgstr ""
+msgstr "AdminGruposPessoais"
 
 #: lib/RT/Queue_Overlay.pm:92
 msgid "AdminQueue"
@@ -816,7 +816,7 @@ msgstr ""
 
 #: lib/RT/System.pm:84
 msgid "AdminUsers"
-msgstr ""
+msgstr "AdminUtilizadores"
 
 #: share/html/Admin/Queues/People.html:71 share/html/Ticket/Elements/EditPeople:76
 msgid "Administrative Cc"
@@ -824,9 +824,9 @@ msgstr ""
 
 #: lib/RT/Installer.pm:152
 msgid "Administrative password"
-msgstr ""
+msgstr "Palavra-Chave Administrativa"
 
-#: share/html/Ticket/Elements/Tabs:269
+#: share/html/Ticket/Elements/Tabs:277
 msgid "Advanced"
 msgstr "Avançado"
 
@@ -842,7 +842,7 @@ msgstr "Todas as aprovações tratadas"
 msgid "All Queues"
 msgstr "Todas as Queues"
 
-#: lib/RT/Attachment_Overlay.pm:631
+#: lib/RT/Attachment_Overlay.pm:649
 msgid "Already encrypted"
 msgstr "Já cifrado"
 
@@ -876,12 +876,12 @@ msgstr "Aprovação #%1: %2"
 #: share/html/Approvals/index.html:77
 #. ($ticket->Id)
 msgid "Approval #%1: Notes not recorded due to a system error"
-msgstr ""
+msgstr "Aprovação #%1: Notas não guardadas devido a um erro no sistema"
 
 #: share/html/Approvals/index.html:75
 #. ($ticket->Id)
 msgid "Approval #%1: Notes recorded"
-msgstr ""
+msgstr "Aprovação #%1: Notas guardadas"
 
 #: etc/initialdata:327 etc/upgrade/3.8.2/content:55
 msgid "Approval Passed"
@@ -889,15 +889,15 @@ msgstr ""
 
 #: etc/initialdata:368 etc/upgrade/3.8.2/content:96
 msgid "Approval Ready for Owner"
-msgstr ""
+msgstr "Aprovação pronta para o dono"
 
 #: etc/initialdata:355 etc/upgrade/3.8.2/content:83
 msgid "Approval Rejected"
-msgstr ""
+msgstr "Aprovação rejeitada"
 
 #: share/html/Approvals/Elements/Approve:71
 msgid "Approve"
-msgstr ""
+msgstr "Aprove"
 
 #: lib/RT/Date.pm:91
 msgid "Apr"
@@ -925,7 +925,7 @@ msgstr "Atribuir e remover campos pré-definidos"
 
 #: lib/RT/Queue_Overlay.pm:98
 msgid "AssignCustomFields"
-msgstr ""
+msgstr "AtribuirCamposPerson"
 
 #: share/html/Search/Bulk.html:160 share/html/SelfService/Update.html:90 share/html/Ticket/ModifyAll.html:129 share/html/Ticket/Update.html:118
 msgid "Attach"
@@ -946,13 +946,13 @@ msgstr "Anexo"
 #: share/html/Ticket/ShowEmailRecord.html:83 share/html/Ticket/ShowEmailRecord.html:85 share/html/Ticket/ShowEmailRecord.html:88
 #. ($Attachment)
 msgid "Attachment '%1' could not be loaded"
-msgstr ""
+msgstr "Anexo '%1' não foi carregado"
 
 #: lib/RT/Transaction_Overlay.pm:518
 msgid "Attachment created"
 msgstr "Anexo criado"
 
-#: lib/RT/Tickets_Overlay.pm:2134
+#: lib/RT/Tickets_Overlay.pm:2146
 msgid "Attachment filename"
 msgstr "Nome do anexo"
 
@@ -960,13 +960,13 @@ msgstr "Nome do anexo"
 msgid "Attachments"
 msgstr "Anexos"
 
-#: lib/RT/Attachment_Overlay.pm:624
+#: lib/RT/Attachment_Overlay.pm:642
 msgid "Attachments encryption is disabled"
-msgstr ""
+msgstr "A encriptação dos anexos está inactiva"
 
 #: lib/RT/Attributes_Overlay.pm:180
 msgid "Attribute Deleted"
-msgstr ""
+msgstr "Atributo eliminado"
 
 #: lib/RT/Date.pm:95
 msgid "Aug"
@@ -1003,7 +1003,7 @@ msgstr "Back"
 #: lib/RT/SharedSetting.pm:145
 #. ($id)
 msgid "Bad privacy for attribute %1"
-msgstr ""
+msgstr "Privacidade incorrecta para atributo %1"
 
 #: share/html/Admin/Elements/CustomFieldTabs:67 share/html/Admin/Elements/GroupTabs:62 share/html/Admin/Elements/QueueTabs:62 share/html/Admin/Elements/UserTabs:60 share/html/Dashboards/Elements/Tabs:73 share/html/Ticket/Elements/Tabs:125 share/html/User/Elements/GroupTabs:61
 msgid "Basics"
@@ -1023,7 +1023,7 @@ msgstr "Antes"
 
 #: share/html/Elements/Logo:51
 msgid "Best Practical Solutions, LLC corporate logo"
-msgstr ""
+msgstr "Best Practical Solutions, LLC logo corporativo"
 
 #: etc/initialdata:192
 msgid "Blank"
@@ -1031,39 +1031,39 @@ msgstr "Branco"
 
 #: share/html/Dashboards/Queries.html:181
 msgid "Body"
-msgstr ""
+msgstr "Corpo"
 
-#: share/html/Search/Elements/EditFormat:84
+#: share/html/Search/Elements/EditFormat:85
 msgid "Bold"
-msgstr ""
+msgstr "Negrito"
 
 #: share/html/Search/Elements/BuildFormatString:99
 msgid "Bookmark"
-msgstr ""
+msgstr "Marcador"
 
-#: etc/initialdata:570 etc/upgrade/3.7.82/content:3
+#: etc/initialdata:577 etc/upgrade/3.7.82/content:3
 msgid "Bookmarked Tickets"
-msgstr ""
+msgstr "Tarefas marcadas"
 
 #: share/html/Ticket/Elements/ShowHistory:66 share/html/Ticket/Elements/ShowHistory:71
 msgid "Brief headers"
 msgstr ""
 
-#: share/html/Ticket/Elements/Tabs:306
+#: share/html/Ticket/Elements/Tabs:314
 msgid "Bulk Update"
 msgstr "Actualização em bloco"
 
 #: share/html/Install/Elements/Wrapper:54
 msgid "Buy Support"
-msgstr ""
+msgstr "Compre suporte"
 
 #: share/html/Install/Global.html:56
 msgid "By default, RT will use the timezone of your system.  This lets you set a global default for the display of dates and times in RT.  Your users can choose a different Timezone in their preferences."
-msgstr ""
+msgstr "Por predefinição, o RT usa o fuso horário do seu sistema. Isto permite que defina as predefinições globais para a apresentação de datas e horas no RT. Os utilizadores podem definir fusos horários diferentes nas suas Preferências."
 
 #: lib/RT/Tickets_Overlay.pm:143
 msgid "CCGroup"
-msgstr ""
+msgstr "CCGroupo"
 
 #: lib/RT/Tickets_Overlay.pm:140
 msgid "CF"
@@ -1081,14 +1081,14 @@ msgstr "Não é possível alterar utilizadores de sistema"
 msgid "Can this principal see this queue"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:400
+#: lib/RT/CustomField_Overlay.pm:408
 msgid "Can't add a custom field value without a name"
-msgstr ""
+msgstr "Não se pode adicionar um campo personalizado sem designação"
 
 #: share/html/Admin/CustomFields/Objects.html:88
 #. ($Class)
 msgid "Can't find a collection class for '%1'"
-msgstr ""
+msgstr "Não foi encontrado uma colecção de classes para '%1'"
 
 #: share/html/Search/Elements/EditSearches:279
 msgid "Can't find a saved search to work with"
@@ -1109,16 +1109,20 @@ msgstr "Não é possível gravar esta pesquisa"
 
 #: lib/RT/Record.pm:1286 lib/RT/Record.pm:1366
 msgid "Can't specifiy both base and target"
-msgstr ""
+msgstr "Não se consegue especificar a base nem o alvo"
 
 #: share/html/Ticket/Create.html:330
 msgid "Cannot create tickets in a disabled queue."
-msgstr ""
+msgstr "Não se pode criar tarefas numa queue inactiva"
 
-#: share/html/autohandler:218
+#: lib/RT/Interface/Web.pm:383
 #. ($msg)
 msgid "Cannot create user: %1"
 msgstr "Não é possível criar utilizador: %1"
+
+#: share/html/Admin/CustomFields/Modify.html:111
+msgid "Categories are based on"
+msgstr ""
 
 #: share/html/Admin/Elements/AddCustomFieldValue:57 share/html/Admin/Elements/EditCustomFieldValues:61
 msgid "Category"
@@ -1134,7 +1138,7 @@ msgstr "Cc"
 
 #: lib/RT/Graph/Tickets.pm:158
 msgid "Ccs"
-msgstr ""
+msgstr "Ccs"
 
 #: share/html/Install/index.html:64 share/html/Search/Results.html:80
 msgid "Change"
@@ -1142,11 +1146,11 @@ msgstr "Alterar"
 
 #: share/html/SelfService/Prefs.html:54
 msgid "Change password"
-msgstr "Mudar password"
+msgstr "Alterar senha"
 
 #: share/html/Elements/Submit:90
 msgid "Check All"
-msgstr "Seleccionar todos"
+msgstr "Seleccionar Todos"
 
 #: share/html/Install/DatabaseDetails.html:88
 msgid "Check Database Connectivity"
@@ -1154,7 +1158,7 @@ msgstr "Testar Conectividade com BD"
 
 #: share/html/Install/Basics.html:63 share/html/Install/DatabaseDetails.html:48 share/html/Install/DatabaseType.html:70
 msgid "Check Database Credentials"
-msgstr ""
+msgstr "Verifique as credenciais da base de dados"
 
 #: share/html/Search/Bulk.html:152 share/html/SelfService/Update.html:81 share/html/Ticket/Create.html:129 share/html/Ticket/ModifyAll.html:120 share/html/Ticket/Update.html:110
 msgid "Check box to delete"
@@ -1162,7 +1166,7 @@ msgstr "Seleccione caixa para apagar"
 
 #: share/html/Admin/Elements/SelectRights:66
 msgid "Check box to revoke right"
-msgstr ""
+msgstr "Assinale para revogar direitos"
 
 #: NOT FOUND IN SOURCE
 msgid "Check your database credentials"
@@ -1174,7 +1178,7 @@ msgstr "Filhos"
 
 #: share/html/Install/DatabaseDetails.html:89 share/html/Install/DatabaseType.html:48
 msgid "Choose Database Engine"
-msgstr ""
+msgstr "Seleccione o motor da base de dados"
 
 #: NOT FOUND IN SOURCE
 msgid "Choose a database engine"
@@ -1198,11 +1202,11 @@ msgstr "Limpar todos"
 
 #: share/html/Install/Finish.html:52
 msgid "Click \"Finish Installation\" below to complete this wizard."
-msgstr ""
+msgstr "Clique em \"Finalizar instalação\" para completar este assistente"
 
 #: share/html/Install/Initialize.html:54
 msgid "Click \"Initialize Database\" to create RT's database and insert initial metadata. This may take a few moments"
-msgstr ""
+msgstr "Clique em \"Iniciar base de dados\" para criar a base de dados do RT e inserir os metadados iniciais. Pode demorar alguns minutos."
 
 #: share/html/Helpers/CalPopup.html:53
 msgid "Close window"
@@ -1228,7 +1232,7 @@ msgstr "Seleccione ou insira um valor"
 msgid "Combobox: Select or enter up to %1 values"
 msgstr "Seleccione ou insira até %1 valores"
 
-#: share/html/Search/Elements/EditFormat:71 share/html/Ticket/Elements/ShowTransaction:195 share/html/Ticket/Elements/Tabs:215
+#: share/html/Search/Elements/EditFormat:72 share/html/Ticket/Elements/ShowTransaction:195 share/html/Ticket/Elements/Tabs:223
 msgid "Comment"
 msgstr "Comentário"
 
@@ -1238,7 +1242,7 @@ msgstr "Morada de Comentário"
 
 #: lib/RT/Installer.pm:167
 msgid "Comment address"
-msgstr ""
+msgstr "Endereço do comentário"
 
 #: lib/RT/Queue_Overlay.pm:113
 msgid "Comment on tickets"
@@ -1250,7 +1254,7 @@ msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:113
 msgid "CommentOnTicket"
-msgstr ""
+msgstr "ComentarNaTarefa"
 
 #: share/html/Tools/MyDay.html:64
 msgid "Comments"
@@ -1264,11 +1268,11 @@ msgstr "Comentários (não so enviados para utilizadores)"
 msgid "Comments (not sent to requestors)"
 msgstr "Comentários (não so enviados para utilizadores)"
 
-#: share/html/Admin/Users/Modify.html:229 share/html/Ticket/Elements/ShowRequestor:77
+#: share/html/Admin/Users/Modify.html:229 share/html/Ticket/Elements/ShowRequestor:82
 msgid "Comments about this user"
 msgstr "Comentários sobre este utilizador"
 
-#: lib/RT/Transaction_Overlay.pm:644
+#: lib/RT/Transaction_Overlay.pm:691
 msgid "Comments added"
 msgstr "Comentários adicionados"
 
@@ -1283,7 +1287,7 @@ msgstr "Condição"
 #: lib/RT/Scrip_Overlay.pm:152
 #. ($args{'ScripCondition'})
 msgid "Condition '%1' not found"
-msgstr ""
+msgstr "Condição '%1' não encontrada"
 
 #: lib/RT/Scrip_Overlay.pm:148
 msgid "Condition is mandatory argument"
@@ -1295,12 +1299,12 @@ msgstr ""
 
 #: share/html/Elements/RT__Scrip/ColumnMap:80
 msgid "Condition, Action and Template"
-msgstr ""
+msgstr "Condição, Acção e Modelo"
 
 #: share/html/Install/index.html:106
 #. ($file)
 msgid "Config file %1 is locked"
-msgstr ""
+msgstr "Ficheiro de configuração %1 está trancado"
 
 #: share/html/Elements/Tabs:84
 msgid "Configuration"
@@ -1320,11 +1324,11 @@ msgstr "Conteúdo"
 
 #: share/html/Elements/SelectAttachmentField:51
 msgid "Content-Type"
-msgstr ""
+msgstr "Tipo de Conteúdo"
 
 #: lib/RT/Tickets_Overlay.pm:127
 msgid "ContentType"
-msgstr ""
+msgstr "TipoConteudo"
 
 #: NOT FOUND IN SOURCE
 msgid "Copy"
@@ -1342,7 +1346,7 @@ msgstr ""
 msgid "Correspondence"
 msgstr "Correspondência"
 
-#: lib/RT/Transaction_Overlay.pm:640
+#: lib/RT/Transaction_Overlay.pm:687
 msgid "Correspondence added"
 msgstr "Correspondência adicionada"
 
@@ -1350,37 +1354,41 @@ msgstr "Correspondência adicionada"
 #. ($value_msg)
 #. ($msg)
 msgid "Could not add new custom field value: %1"
-msgstr ""
+msgstr "Não foi adicionado o valor do campo personalizado: %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not change owner. "
 msgstr "Não foi possível alterar responsável "
 
-#: lib/RT/Ticket_Overlay.pm:2789 lib/RT/Ticket_Overlay.pm:2797 lib/RT/Ticket_Overlay.pm:2814
+#: lib/RT/Ticket_Overlay.pm:2803 lib/RT/Ticket_Overlay.pm:2811 lib/RT/Ticket_Overlay.pm:2828
 #. ($del_msg)
 #. ($add_msg)
 #. ($msg)
 msgid "Could not change owner: %1"
-msgstr ""
+msgstr "Não foi alterado o dono: %1"
 
-#: share/html/Admin/CustomFields/Modify.html:151
+#: share/html/Admin/CustomFields/Modify.html:163
 #. ($msg)
 msgid "Could not create CustomField"
-msgstr ""
+msgstr "Não foi criado o campo personalizado"
 
 #: share/html/Admin/Elements/EditCustomField:115
 #. ($msg)
 msgid "Could not create CustomField: %1"
-msgstr ""
+msgstr "Não foi criado o campo personalizado: %1"
 
 #: lib/RT/Group_Overlay.pm:451 lib/RT/Group_Overlay.pm:458 share/html/User/Groups/Modify.html:100
 msgid "Could not create group"
 msgstr "Não foi possível criar o grupo"
 
-#: share/html/Admin/Global/Template.html:95 share/html/Admin/Queues/Template.html:95
+#: share/html/Admin/Global/Template.html:95 share/html/Admin/Queues/Template.html:96
 #. ($msg)
 msgid "Could not create template: %1"
 msgstr "Não foi possível criar template: %1"
+
+#: NOT FOUND IN SOURCE
+msgid "Could not create ticket in disabled queue \"%1\""
+msgstr "Não foi criada tarefa em queue inactiva \"%1\""
 
 #: lib/RT/Ticket_Overlay.pm:288 lib/RT/Ticket_Overlay.pm:819
 msgid "Could not create ticket. Queue not set"
@@ -1401,20 +1409,20 @@ msgstr ""
 #: lib/RT/SharedSetting.pm:225
 #. ($self->ObjectName)
 msgid "Could not load %1 attribute"
-msgstr ""
+msgstr "Não foi carregado o atributo %1"
 
 #: share/html/Admin/CustomFields/Objects.html:71
 msgid "Could not load CustomField %1"
-msgstr ""
+msgstr "Não foi carregado o campo personalizado %1"
 
 #: share/html/Admin/Groups/Members.html:117 share/html/User/Groups/Members.html:113 share/html/User/Groups/Modify.html:105
 msgid "Could not load group"
-msgstr ""
+msgstr "Grupo não foi carregado"
 
 #: lib/RT/SharedSetting.pm:121
 #. ($privacy)
 msgid "Could not load object for %1"
-msgstr ""
+msgstr "Não doi carregado o objecto para %1"
 
 #: NOT FOUND IN SOURCE
 msgid "Could not load search attribute"
@@ -1458,134 +1466,148 @@ msgstr "Não foi possível adicionar membro a grupo"
 msgid "Couldn't create a transaction: %1"
 msgstr "Não foi possível criar uma transacção: %1"
 
-#: lib/RT/CustomField_Overlay.pm:1023
+#: lib/RT/CustomField_Overlay.pm:1032
 msgid "Couldn't create record"
-msgstr ""
+msgstr "Não foi criado o registo"
 
 #: share/html/Dashboards/Modify.html:154
 #. ($id, $msg)
 msgid "Couldn't delete dashboard %1: %2"
-msgstr ""
+msgstr "Não foi criado o painel %1: %2"
 
 #: lib/RT/Record.pm:927
 msgid "Couldn't find row"
-msgstr ""
+msgstr "Linha não encontrada"
 
 #: bin/rt-crontool:181
 msgid "Couldn't find suitable transaction, skipping"
-msgstr ""
+msgstr "Não foi encontrada a transacção adequada, continuar"
 
 #: lib/RT/Group_Overlay.pm:993
 msgid "Couldn't find that principal"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:430
+#: lib/RT/CustomField_Overlay.pm:438
 msgid "Couldn't find that value"
-msgstr ""
+msgstr "Não foi encontrado o valor"
 
 #: lib/RT/CurrentUser.pm:164
 #. ($self->Id)
 msgid "Couldn't load %1 from the users database.\\n"
-msgstr ""
+msgstr "%1 não foi carregado da base de dados de utilizadores.\\n"
 
 #: share/html/Admin/CustomFields/UserRights.html:92
 #. ($id)
 msgid "Couldn't load Class %1"
-msgstr ""
+msgstr "Não foi carregada a classe %1"
 
 #: lib/RT/CustomFieldValue_Overlay.pm:80
 #. ($cf_id)
 msgid "Couldn't load Custom Field #%1"
-msgstr ""
+msgstr "Não foi carregado o campo personalizado #%1"
 
 #: share/html/Admin/CustomFields/GroupRights.html:104
 #. ($id)
 msgid "Couldn't load CustomField %1"
-msgstr ""
+msgstr "Não foi carregado o campo personalizado %1"
 
 #: lib/RT/Ticket_Overlay.pm:1723
 #. ($self->Id)
 msgid "Couldn't load copy of ticket #%1."
-msgstr ""
+msgstr "Não foi carregada a cópia da tarefa #%1."
 
 #: share/html/Dashboards/Queries.html:85 share/html/Dashboards/Render.html:100
 #. ($id, $msg)
 msgid "Couldn't load dashboard %1: %2"
-msgstr ""
+msgstr "Não foi carregado o painel %1: %2"
 
 #: share/html/Dashboards/Subscription.html:210
 #. ($DashboardId, $msg)
 msgid "Couldn't load dashboard %1: %2."
-msgstr ""
+msgstr "Não foi carregado o painel %1: %2."
 
 #: share/html/Admin/Users/Memberships.html:105 share/html/Admin/Users/Memberships.html:115
 #. ($gid)
 msgid "Couldn't load group #%1"
-msgstr ""
+msgstr "Não foi carregado o grupo #%1"
 
 #: share/html/Admin/Groups/GroupRights.html:111 share/html/Admin/Groups/UserRights.html:94
 #. ($id)
 msgid "Couldn't load group %1"
-msgstr ""
+msgstr "Não foi carregado o grupo  %1"
 
 #: lib/RT/Link_Overlay.pm:193 lib/RT/Link_Overlay.pm:202 lib/RT/Link_Overlay.pm:229
 msgid "Couldn't load link"
-msgstr ""
+msgstr "Não foi carregado o link"
 
 #: share/html/Admin/Elements/ObjectCustomFields:85 share/html/Admin/Queues/CustomFields.html:61 share/html/Admin/Users/CustomFields.html:61
 #. ($id)
 msgid "Couldn't load object %1"
-msgstr ""
+msgstr "Não foi carregado o objecto %1"
 
 #: lib/RT/Ticket_Overlay.pm:440
 #. ($msg)
 msgid "Couldn't load or create user: %1"
-msgstr ""
+msgstr "Não foi carregado nem adicionado o utilizador: %1"
 
 #: share/html/Admin/Queues/People.html:146
 #. ($id)
 msgid "Couldn't load queue"
-msgstr ""
+msgstr "A queue não foi carregada"
 
 #: share/html/Admin/Elements/EditScrips:86
 #. ($id)
 msgid "Couldn't load queue #%1"
-msgstr ""
+msgstr "A queue #%1 não foi carregada"
 
 #: share/html/Admin/Queues/GroupRights.html:124 share/html/Admin/Queues/UserRights.html:93
 #. ($id)
 msgid "Couldn't load queue %1"
-msgstr ""
+msgstr "A queue %1 não foi carregada"
 
 #: share/html/Admin/Queues/Modify.html:160
 #. ($Name)
 msgid "Couldn't load queue '%1'"
-msgstr ""
+msgstr "A queue '%1' não foi carregada"
 
 #: share/html/Admin/Elements/EditScrip:139 share/html/Admin/Elements/EditScrip:183
 #. ($id)
 msgid "Couldn't load scrip #%1"
-msgstr ""
+msgstr "O script #%1 não foi carregado"
 
 #: share/html/Admin/Elements/EditTemplates:108
 #. ($id)
 msgid "Couldn't load template #%1"
-msgstr ""
+msgstr "O modelo #%1 não foi carregado"
 
 #: lib/RT/Action/CreateTickets.pm:454 share/html/SelfService/Display.html:157
 #. ($id)
 msgid "Couldn't load ticket '%1'"
-msgstr ""
+msgstr "A tarefa '%1' não foi carregada"
 
-#: share/html/Ticket/Forward.html:90 share/html/Ticket/GnuPG.html:75
+#: share/html/Ticket/Forward.html:92 share/html/Ticket/GnuPG.html:75
 #. ($QuoteTransaction)
 #. ($id)
 msgid "Couldn't load transaction #%1"
+msgstr "A transacção #%1 não foi carregada"
+
+#: share/html/User/Prefs.html:222
+msgid "Couldn't load user"
 msgstr ""
 
-#: share/html/Admin/Users/GnuPG.html:92
+#: share/html/Admin/Users/GnuPG.html:92 share/html/User/Prefs.html:218
 #. ($id)
 msgid "Couldn't load user #%1"
+msgstr "O utilizador #%1 não foi carregado"
+
+#: share/html/User/Prefs.html:216
+#. ($id, $Name)
+msgid "Couldn't load user #%1 or user '%2'"
+msgstr ""
+
+#: share/html/User/Prefs.html:220
+#. ($Name)
+msgid "Couldn't load user '%1'"
 msgstr ""
 
 #: lib/RT/Ticket_Overlay.pm:1049
@@ -1593,17 +1615,17 @@ msgstr ""
 msgid "Couldn't parse address from '%1' string"
 msgstr ""
 
-#: lib/RT/Attachment_Overlay.pm:707
+#: lib/RT/Attachment_Overlay.pm:725
 #. ($msg)
 msgid "Couldn't replace content with decrypted data: %1"
-msgstr ""
+msgstr "Não foi substituído o conteúdo com dados desencriptados"
 
-#: lib/RT/Attachment_Overlay.pm:672
+#: lib/RT/Attachment_Overlay.pm:690
 #. ($msg)
 msgid "Couldn't replace content with encrypted data: %1"
-msgstr ""
+msgstr "Não foi substituído o conteúdo com dados encriptados"
 
-#: lib/RT/Ticket_Overlay.pm:2376
+#: lib/RT/Ticket_Overlay.pm:2390
 #. ($args{'URI'})
 msgid "Couldn't resolve '%1' into a URI."
 msgstr ""
@@ -1618,7 +1640,7 @@ msgstr ""
 msgid "Couldn't resolve target '%1' into a URI."
 msgstr ""
 
-#: lib/RT/Interface/Email.pm:653
+#: lib/RT/Interface/Email.pm:614 lib/RT/Interface/Email.pm:676
 msgid "Couldn't send email"
 msgstr "Não consegui enviar email"
 
@@ -1639,7 +1661,7 @@ msgstr ""
 msgid "Country"
 msgstr "País"
 
-#: share/html/Admin/CustomFields/Modify.html:126 share/html/Admin/Elements/CreateUserCalled:49 share/html/Admin/Elements/CustomFieldTabs:95 share/html/Admin/Elements/EditCustomField:86 share/html/Admin/Elements/EditScrip:146 share/html/Admin/Elements/GroupTabs:79 share/html/Admin/Elements/QueueTabs:100 share/html/Admin/Elements/UserTabs:86 share/html/Admin/Global/Template.html:89 share/html/Admin/Groups/Modify.html:95 share/html/Admin/Queues/Modify.html:134 share/html/Admin/Queues/Template.html:68 share/html/Admin/Users/Modify.html:244 share/html/Dashboards/Modify.html:76 share/html/Elements/QuickCreate:73 share/html/Elements/ShowLinks:108 share/html/Elements/ShowLinks:50 share/html/Elements/ShowLinks:80 share/html/Elements/ShowLinks:90 share/html/Elements/ShowLinks:94 share/html/Elements/ShowLinks:98 share/html/Ticket/Create.html:167 share/html/Ticket/Create.html:244
+#: share/html/Admin/CustomFields/Modify.html:137 share/html/Admin/Elements/CreateUserCalled:49 share/html/Admin/Elements/CustomFieldTabs:95 share/html/Admin/Elements/EditCustomField:86 share/html/Admin/Elements/EditScrip:146 share/html/Admin/Elements/GroupTabs:79 share/html/Admin/Elements/QueueTabs:100 share/html/Admin/Elements/UserTabs:86 share/html/Admin/Global/Template.html:89 share/html/Admin/Groups/Modify.html:95 share/html/Admin/Queues/Modify.html:134 share/html/Admin/Queues/Template.html:90 share/html/Admin/Users/Modify.html:244 share/html/Dashboards/Modify.html:76 share/html/Elements/QuickCreate:73 share/html/Elements/ShowLinks:108 share/html/Elements/ShowLinks:50 share/html/Elements/ShowLinks:80 share/html/Elements/ShowLinks:90 share/html/Elements/ShowLinks:94 share/html/Elements/ShowLinks:98 share/html/Ticket/Create.html:167 share/html/Ticket/Create.html:244
 msgid "Create"
 msgstr "Criar"
 
@@ -1647,18 +1669,18 @@ msgstr "Criar"
 msgid "Create Tickets"
 msgstr "Criar tickets"
 
-#: share/html/Admin/CustomFields/Modify.html:136 share/html/Admin/Elements/EditCustomField:98
+#: share/html/Admin/CustomFields/Modify.html:147 share/html/Admin/Elements/EditCustomField:98
 msgid "Create a CustomField"
-msgstr ""
+msgstr "Criar um campo personalizado"
 
 #: share/html/Admin/Queues/CustomField.html:71
 #. ($QueueObj->Name())
 msgid "Create a CustomField for queue %1"
-msgstr ""
+msgstr "Criar um campo personalizado para a queue %1"
 
 #: share/html/Dashboards/Modify.html:102 share/html/Dashboards/Modify.html:133
 msgid "Create a new dashboard"
-msgstr ""
+msgstr "Criar um novo painel"
 
 #: share/html/Admin/Groups/Modify.html:109 share/html/Admin/Groups/Modify.html:135
 msgid "Create a new group"
@@ -1666,7 +1688,7 @@ msgstr "Criar novo grupo"
 
 #: share/html/User/Groups/Modify.html:115 share/html/User/Groups/Modify.html:90
 msgid "Create a new personal group"
-msgstr ""
+msgstr "Criar um novo grupo pessoal"
 
 #: share/html/Ticket/Create.html:49 share/html/Ticket/Create.html:53 share/html/Ticket/Create.html:64
 msgid "Create a new ticket"
@@ -1683,7 +1705,7 @@ msgstr "Criar queue"
 #: share/html/Admin/Queues/Scrip.html:90
 #. ($QueueObj->Name)
 msgid "Create a scrip for queue %1"
-msgstr ""
+msgstr "Criar um srcipt para a queue %1"
 
 #: share/html/Admin/Global/Template.html:87 share/html/Admin/Queues/Template.html:88
 msgid "Create a template"
@@ -1695,7 +1717,7 @@ msgstr "Criar ticket"
 
 #: lib/RT/Group_Overlay.pm:98
 msgid "Create dashboards for this group"
-msgstr ""
+msgstr "Criar paineis para este grupo"
 
 #: etc/initialdata:92
 msgid "Create new tickets based on this scrip's template"
@@ -1703,11 +1725,11 @@ msgstr "Criar novo pedido baseado num modelo existente"
 
 #: lib/RT/Dashboard.pm:86
 msgid "Create personal dashboards"
-msgstr ""
+msgstr "Criar paineis pessoais"
 
 #: lib/RT/Dashboard.pm:81
 msgid "Create system dashboards"
-msgstr ""
+msgstr "Criar paineis de sistema"
 
 #: share/html/SelfService/Create.html:113
 msgid "Create ticket"
@@ -1719,15 +1741,15 @@ msgstr "Criar tickets nesta queue"
 
 #: share/html/Tools/index.html:65
 msgid "Create tickets offline"
-msgstr ""
+msgstr "Criar tarefas offline (modo desligado)"
 
 #: lib/RT/CustomField_Overlay.pm:113
 msgid "Create, delete and modify custom fields"
-msgstr ""
+msgstr "Criar, eliminar e modificar campos personalizados"
 
 #: lib/RT/Queue_Overlay.pm:92
 msgid "Create, delete and modify queues"
-msgstr ""
+msgstr "Criar, eliminar e modificar queues"
 
 #: lib/RT/System.pm:81
 msgid "Create, delete and modify the members of any user's personal groups"
@@ -1735,7 +1757,7 @@ msgstr ""
 
 #: lib/RT/System.pm:83
 msgid "Create, delete and modify the members of personal groups"
-msgstr ""
+msgstr "Criar, eliminar e modificar membros de grupos pessoais"
 
 #: lib/RT/System.pm:84
 msgid "Create, delete and modify users"
@@ -1759,7 +1781,7 @@ msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:111
 msgid "CreateTicket"
-msgstr ""
+msgstr "Criar Tarefa"
 
 #: lib/RT/Graph/Tickets.pm:159 lib/RT/Ticket_Overlay.pm:913 lib/RT/Tickets_Overlay.pm:124 share/html/Admin/Elements/ShowKeyInfo:58 share/html/Elements/ColumnMap:66 share/html/Elements/ColumnMap:71 share/html/Elements/SelectDateType:49 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Elements/ShowDates:50
 msgid "Created"
@@ -1767,9 +1789,9 @@ msgstr "Criado"
 
 #: share/html/Elements/ColumnMap:76
 msgid "Created By"
-msgstr ""
+msgstr "Criado por"
 
-#: share/html/Admin/CustomFields/Modify.html:153 share/html/Admin/Elements/EditCustomField:119
+#: share/html/Admin/CustomFields/Modify.html:165 share/html/Admin/Elements/EditCustomField:119
 #. ($CustomFieldObj->Name())
 #. ($CustomFieldObj->Name)
 msgid "Created CustomField %1"
@@ -1793,11 +1815,11 @@ msgstr ""
 
 #: lib/RT/Graph/Tickets.pm:158 lib/RT/Tickets_Overlay.pm:96 share/html/Search/Elements/PickBasics:115
 msgid "Creator"
-msgstr ""
+msgstr "Autor"
 
 #: share/html/Prefs/Other.html:73
 msgid "Cryptography"
-msgstr ""
+msgstr "Criptografia"
 
 #: share/html/Elements/EditLinks:51
 msgid "Current Links"
@@ -1823,14 +1845,14 @@ msgstr "Pesquisa actual"
 msgid "Current watchers"
 msgstr ""
 
-#: share/html/Admin/Elements/SystemTabs:63 share/html/Admin/Elements/Tabs:64 share/html/Admin/Global/index.html:65 share/html/Admin/Users/Modify.html:209 share/html/Admin/index.html:73 share/html/Ticket/Elements/ShowSummary:58
+#: share/html/Admin/Elements/SystemTabs:63 share/html/Admin/Elements/Tabs:64 share/html/Admin/Global/index.html:65 share/html/Admin/Users/Modify.html:209 share/html/Admin/index.html:73 share/html/Ticket/Elements/ShowSummary:58 share/html/User/Prefs.html:165
 msgid "Custom Fields"
-msgstr ""
+msgstr "Campos Personalizados"
 
 #: share/html/Admin/CustomFields/index.html:62
 #. ($lookup)
 msgid "Custom Fields for %1"
-msgstr ""
+msgstr "Campos Personalizados para %1"
 
 #: share/html/Admin/Elements/EditScrip:115
 msgid "Custom action cleanup code"
@@ -1842,57 +1864,57 @@ msgstr ""
 
 #: share/html/Admin/Elements/EditScrip:101
 msgid "Custom condition"
-msgstr ""
+msgstr "Condição personalizada"
 
-#: lib/RT/Tickets_Overlay.pm:2598
+#: lib/RT/Tickets_Overlay.pm:2610
 #. ($CF->Name, $args{OPERATOR}, $args{VALUE})
 msgid "Custom field %1 %2 %3"
-msgstr ""
+msgstr "Campo personalizado %1 %2 %3"
 
 #: lib/RT/Record.pm:1609
 #. ($args{'Field'})
 msgid "Custom field %1 does not apply to this object"
-msgstr ""
+msgstr "O campo personalizado %1 não se aplica a este objecto"
 
-#: lib/RT/Tickets_Overlay.pm:2592
+#: lib/RT/Tickets_Overlay.pm:2604
 #. ($CF->Name)
 msgid "Custom field %1 has a value."
-msgstr ""
+msgstr "Campo personalizado %1 tem um valor."
 
-#: lib/RT/Tickets_Overlay.pm:2588
+#: lib/RT/Tickets_Overlay.pm:2600
 #. ($CF->Name)
 msgid "Custom field %1 has no value."
-msgstr ""
+msgstr "Campo personalizado %1 não tem valores"
 
 #: lib/RT/Record.pm:1598 lib/RT/Record.pm:1780
 #. ($args{'Field'})
 msgid "Custom field %1 not found"
-msgstr ""
+msgstr "Campo personalizado %1 não encontrado"
 
 #: lib/RT/Report/Tickets.pm:114 lib/RT/Report/Tickets.pm:117
 #. ($cf)
 #. ($obj->Name)
 msgid "Custom field '%1'"
-msgstr ""
+msgstr "Campo personalizado '%1'"
 
-#: lib/RT/CustomField_Overlay.pm:1115
+#: lib/RT/CustomField_Overlay.pm:1124
 #. ($args{'Content'}, $self->Name)
 msgid "Custom field value %1 could not be found for custom field %2"
-msgstr ""
+msgstr "O valor do campo personalizado %1 não foi encontrado para o campo personalizado %2"
 
-#: lib/RT/CustomField_Overlay.pm:438
+#: lib/RT/CustomField_Overlay.pm:446
 msgid "Custom field value could not be deleted"
-msgstr ""
+msgstr "O valor do campo personalizado não pode ser eliminado"
 
-#: lib/RT/CustomField_Overlay.pm:1127
+#: lib/RT/CustomField_Overlay.pm:1136
 msgid "Custom field value could not be found"
-msgstr ""
+msgstr "O valor do campo personalizado não foi encontrado"
 
-#: lib/RT/CustomField_Overlay.pm:1129 lib/RT/CustomField_Overlay.pm:440
+#: lib/RT/CustomField_Overlay.pm:1138 lib/RT/CustomField_Overlay.pm:448
 msgid "Custom field value deleted"
-msgstr ""
+msgstr "O valor do campo personalizado foi eliminado"
 
-#: lib/RT/Tickets_Overlay.pm:139 lib/RT/Transaction_Overlay.pm:648 share/html/Elements/SelectGroups:54 share/html/Elements/SelectUsers:54
+#: lib/RT/Tickets_Overlay.pm:139 lib/RT/Transaction_Overlay.pm:695 share/html/Elements/SelectGroups:54 share/html/Elements/SelectUsers:54
 msgid "CustomField"
 msgstr ""
 
@@ -1902,85 +1924,85 @@ msgstr ""
 
 #: share/html/Prefs/MyRT.html:84 share/html/Prefs/Quicksearch.html:72 share/html/Prefs/Search.html:77
 msgid "Customize"
-msgstr ""
+msgstr "Personalizar"
 
 #: share/html/Install/Basics.html:48 share/html/Install/DatabaseDetails.html:72 share/html/Install/Sendmail.html:64
 msgid "Customize Basics"
-msgstr ""
+msgstr "Personalizar Básico"
 
 #: share/html/Install/Global.html:48 share/html/Install/Initialize.html:62 share/html/Install/Sendmail.html:63
 msgid "Customize Email Addresses"
-msgstr ""
+msgstr "Personalizar endereços de email"
 
 #: share/html/Install/Basics.html:62 share/html/Install/Global.html:66 share/html/Install/Sendmail.html:48
 msgid "Customize Email Configuration"
-msgstr ""
+msgstr "Personalizar configurações de email"
 
 #: lib/RT/Installer.pm:109
 msgid "DBA password"
-msgstr ""
+msgstr "Palavra-Chave do DBA (Administrador da Base de Dados)"
 
 #: lib/RT/Installer.pm:102
 msgid "DBA username"
-msgstr ""
+msgstr "Nome de utilizador do DBA (Administrador da Base de Dados)"
 
-#: lib/RT/Config.pm:336
+#: lib/RT/Config.pm:346
 msgid "Daily digest"
 msgstr ""
 
 #: share/html/Dashboards/Subscription.html:62 share/html/Dashboards/Subscription.html:66
 msgid "Dashboard"
-msgstr ""
+msgstr "Painel"
 
 #: share/html/Dashboards/Modify.html:114
 #. ($msg)
 msgid "Dashboard could not be created: %1"
-msgstr ""
+msgstr "Painel não pode ser criado: %1"
 
 #: share/html/Dashboards/Modify.html:145 share/html/Dashboards/Queries.html:262
 #. ($msg)
 msgid "Dashboard could not be updated: %1"
-msgstr ""
+msgstr "Painel não pode ser actualizado: %1"
 
 #: share/html/Dashboards/Modify.html:142 share/html/Dashboards/Queries.html:259
 msgid "Dashboard updated"
-msgstr ""
+msgstr "Painel actualizado"
 
 #: share/html/Dashboards/index.html:73 share/html/Elements/Dashboards:50 share/html/Tools/Elements/Tabs:58 share/html/Tools/index.html:58
 msgid "Dashboards"
-msgstr ""
+msgstr "Painéis"
 
 #: lib/RT/Installer.pm:76
 msgid "Database host"
-msgstr ""
+msgstr "Anfitrião do painel"
 
 #: lib/RT/Installer.pm:94
 msgid "Database name"
-msgstr ""
+msgstr "Nome da Base de Dados"
 
 #: lib/RT/Installer.pm:125
 msgid "Database password for RT"
-msgstr ""
+msgstr "Palavra-Chave da Base de Dados para o RT"
 
 #: lib/RT/Installer.pm:85
 msgid "Database port"
-msgstr ""
+msgstr "Porta da Base de Dados"
 
 #: lib/RT/Installer.pm:58
 msgid "Database type"
-msgstr ""
+msgstr "Tipo da Base de Dados"
 
 #: lib/RT/Installer.pm:118
 msgid "Database username for RT"
-msgstr ""
+msgstr "Nome do utilizador da Base de Dados para o RT"
 
-#: lib/RT/Config.pm:313
+#: lib/RT/Config.pm:323
 msgid "Date format"
-msgstr ""
+msgstr "Formato da data"
 
 #: lib/RT/Date.pm:651
 msgid "DateTime module missing"
-msgstr ""
+msgstr "Módulo DateTime em falta"
 
 #: lib/RT/Date.pm:652
 msgid "DateTime::Locale module missing"
@@ -1992,19 +2014,23 @@ msgstr "Datas"
 
 #: lib/RT/Date.pm:99
 msgid "Dec"
-msgstr ""
+msgstr "Dez"
 
 #: NOT FOUND IN SOURCE
 msgid "Dec."
 msgstr "Dec"
 
+#: NOT FOUND IN SOURCE
+msgid "December"
+msgstr "Dezembro"
+
 #: share/html/Ticket/GnuPG.html:62
 msgid "Decrypt"
-msgstr ""
+msgstr "Desencriptar"
 
 #: etc/initialdata:197
 msgid "Default Autoresponse template"
-msgstr ""
+msgstr "Modelo de resposta automática predefinido"
 
 #: share/html/Tools/Offline.html:62
 msgid "Default Queue"
@@ -2012,37 +2038,37 @@ msgstr "Queue por omissão"
 
 #: share/html/Tools/Offline.html:71
 msgid "Default Requestor"
-msgstr ""
+msgstr "Requerente Predefinido"
 
 #: etc/initialdata:271
 msgid "Default admin comment template"
-msgstr ""
+msgstr "Modelo de comentário de administração predefinido"
 
 #: etc/initialdata:250
 msgid "Default admin correspondence template"
-msgstr ""
+msgstr "Modelo de correspondência de administração predefinido"
 
 #: etc/initialdata:262
 msgid "Default correspondence template"
-msgstr ""
+msgstr "Modelo de correspondência predefinido"
 
 #: lib/RT/Config.pm:140
 msgid "Default queue"
-msgstr ""
+msgstr "Queue predefinida"
 
 #: etc/initialdata:228
 msgid "Default transaction template"
-msgstr ""
+msgstr "Modelo de transacção predefinido"
 
 #: share/html/Widgets/Form/Integer:71 share/html/Widgets/Form/String:69
 #. ($DefaultValue)
 msgid "Default: %1"
-msgstr ""
+msgstr "Predefinição: %1"
 
-#: lib/RT/Transaction_Overlay.pm:626
+#: lib/RT/Transaction_Overlay.pm:673
 #. ($type,        $self->Field,        (            $self->OldValue            ? "'" . $self->OldValue . "'"            : $self->loc("(no value)")        ),        "'" . $self->NewValue . "'")
 msgid "Default: %1/%2 changed from %3 to %4"
-msgstr ""
+msgstr "Predefinição: %1/%2 alterado para %3 to %4"
 
 #: share/html/Elements/RT__Queue/ColumnMap:104
 msgid "DefaultDueIn"
@@ -2054,11 +2080,11 @@ msgstr ""
 
 #: share/html/User/Delegation.html:48 share/html/User/Delegation.html:51
 msgid "Delegate rights"
-msgstr ""
+msgstr "Delegar direitos"
 
 #: lib/RT/Group_Overlay.pm:91 lib/RT/System.pm:87
 msgid "Delegate specific rights which have been granted to you."
-msgstr ""
+msgstr "Delegar direitos específicos que lhe foram atribuídos"
 
 #: lib/RT/Group_Overlay.pm:91 lib/RT/System.pm:87
 msgid "DelegateRights"
@@ -2066,9 +2092,9 @@ msgstr ""
 
 #: share/html/User/Elements/Tabs:67
 msgid "Delegation"
-msgstr ""
+msgstr "Delegação"
 
-#: share/html/Admin/Elements/EditScrips:73 share/html/Dashboards/Modify.html:81 share/html/Search/Elements/EditFormat:102 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:63 share/html/Widgets/SelectionBox:219
+#: share/html/Admin/Elements/EditScrips:73 share/html/Dashboards/Modify.html:81 share/html/Search/Elements/EditFormat:103 share/html/Search/Elements/EditQuery:61 share/html/Search/Elements/EditSearches:63 share/html/Widgets/SelectionBox:219
 msgid "Delete"
 msgstr "Apagar"
 
@@ -2078,24 +2104,24 @@ msgstr "Apagar template"
 
 #: lib/RT/Group_Overlay.pm:100
 msgid "Delete dashboards for this group"
-msgstr ""
+msgstr "Apagar painéis para este grupo"
 
 #: lib/RT/SharedSetting.pm:268
 #. ($msg)
 msgid "Delete failed: %1"
-msgstr ""
+msgstr "Eliminação falhou: %1"
 
 #: lib/RT/Dashboard.pm:88
 msgid "Delete personal dashboards"
-msgstr ""
+msgstr "Eliminar painéis pessoais"
 
 #: share/html/Admin/Elements/EditScrips:72
 msgid "Delete selected scrips"
-msgstr ""
+msgstr "Elimiar scripts seleccionados"
 
 #: lib/RT/Dashboard.pm:83
 msgid "Delete system dashboards"
-msgstr ""
+msgstr "Eliminar painéis de sistema"
 
 #: lib/RT/Queue_Overlay.pm:116
 msgid "Delete tickets"
@@ -2124,20 +2150,20 @@ msgstr ""
 #: lib/RT/SharedSetting.pm:266
 #. ($self->ObjectName)
 msgid "Deleted %1"
-msgstr ""
+msgstr "%1 Eliminado"
 
 #: share/html/Dashboards/index.html:80
 #. ($Deleted)
 msgid "Deleted dashboard %1"
-msgstr ""
+msgstr "Eliminar painel %1"
 
 #: share/html/Dashboards/Elements/Deleted:52
 msgid "Deleted queries"
-msgstr ""
+msgstr "Eliminar consultas"
 
 #: share/html/Search/Elements/EditSearches:181
 msgid "Deleted saved search"
-msgstr ""
+msgstr "Eliminar pesquisa guardada"
 
 #: NOT FOUND IN SOURCE
 msgid "Deleted search"
@@ -2145,15 +2171,15 @@ msgstr "Pesquisa apagada"
 
 #: lib/RT/Queue_Overlay.pm:398
 msgid "Deleting this object would break referential integrity"
-msgstr ""
+msgstr "A eliminação deste objecto irá quebrar a integridade referencial"
 
 #: lib/RT/User_Overlay.pm:415
 msgid "Deleting this object would violate referential integrity"
-msgstr ""
+msgstr "A eliminação deste objecto irá violar a integridade referencial"
 
 #: share/html/Approvals/Elements/Approve:75
 msgid "Deny"
-msgstr ""
+msgstr "Negar"
 
 #: share/html/Elements/EditLinks:141 share/html/Elements/EditLinks:64 share/html/Elements/ShowLinks:80 share/html/Ticket/Create.html:229 share/html/Ticket/Elements/BulkLinks:58 share/html/Ticket/Elements/ShowDependencies:55
 msgid "Depended on by"
@@ -2163,25 +2189,25 @@ msgstr ""
 msgid "DependedOnBy"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:728
+#: lib/RT/Transaction_Overlay.pm:775
 #. ($value)
 msgid "Dependency by %1 added"
-msgstr ""
+msgstr "Dependência por %1 adicionada"
 
-#: lib/RT/Transaction_Overlay.pm:768
+#: lib/RT/Transaction_Overlay.pm:815
 #. ($value)
 msgid "Dependency by %1 deleted"
-msgstr ""
+msgstr "Dependência por %1 eliminada"
 
-#: lib/RT/Transaction_Overlay.pm:725
+#: lib/RT/Transaction_Overlay.pm:772
 #. ($value)
 msgid "Dependency on %1 added"
-msgstr ""
+msgstr "Dependência de %1 adicionada"
 
-#: lib/RT/Transaction_Overlay.pm:765
+#: lib/RT/Transaction_Overlay.pm:812
 #. ($value)
 msgid "Dependency on %1 deleted"
-msgstr ""
+msgstr "Dependência de %1 eliminada"
 
 #: lib/RT/Tickets_Overlay.pm:115
 msgid "DependentOn"
@@ -2189,7 +2215,7 @@ msgstr ""
 
 #: share/html/Elements/EditLinks:137 share/html/Elements/EditLinks:55 share/html/Elements/SelectLinkType:50 share/html/Elements/ShowLinks:50 share/html/Ticket/Create.html:228 share/html/Ticket/Elements/BulkLinks:54 share/html/Ticket/Elements/ShowDependencies:48
 msgid "Depends on"
-msgstr ""
+msgstr "Depende de"
 
 #: lib/RT/Graph/Tickets.pm:160 lib/RT/Tickets_Overlay.pm:112 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Graphs/Elements/EditGraphProperties:138
 msgid "DependsOn"
@@ -2197,7 +2223,7 @@ msgstr ""
 
 #: share/html/Search/Elements/DisplayOptions:83
 msgid "Desc"
-msgstr ""
+msgstr "Desc"
 
 #: share/html/Elements/SelectSortOrder:58
 msgid "Descending"
@@ -2213,19 +2239,19 @@ msgstr "Descrição"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:50
 msgid "Direction"
-msgstr ""
+msgstr "Direcção"
 
 #: share/html/Elements/RT__Queue/ColumnMap:63
 msgid "Disabled"
-msgstr ""
+msgstr "Inactivo"
 
-#: share/html/Search/Elements/EditFormat:68 share/html/Ticket/Elements/Tabs:116
+#: share/html/Search/Elements/EditFormat:69 share/html/Ticket/Elements/Tabs:116
 msgid "Display"
 msgstr "Mostrar"
 
 #: lib/RT/Queue_Overlay.pm:93
 msgid "Display Access Control List"
-msgstr ""
+msgstr "Visualizar lista de controlo de acessos"
 
 #: share/html/Search/Elements/DisplayOptions:99
 msgid "Display Columns"
@@ -2233,11 +2259,11 @@ msgstr "Visualizar Colunas"
 
 #: lib/RT/Queue_Overlay.pm:100
 msgid "Display Scrip templates for this queue"
-msgstr ""
+msgstr "Visualizar modelos de Script para esta queue"
 
 #: lib/RT/Queue_Overlay.pm:103
 msgid "Display Scrips for this queue"
-msgstr ""
+msgstr "Visualizar Scripts para esta queue"
 
 #: NOT FOUND IN SOURCE
 msgid "Display mode"
@@ -2245,7 +2271,7 @@ msgstr "Modo de visualização"
 
 #: lib/RT/Group_Overlay.pm:94
 msgid "Display saved searches for this group"
-msgstr "Visualizar a pesquisa gravada para este grupo"
+msgstr "Visualizar pesquisas guardadas para este grupo"
 
 #: share/html/Elements/Footer:64
 msgid "Distributed under version 2 <a href=\"http://www.gnu.org/copyleft/gpl.html\"> of the GNU GPL.</a>"
@@ -2257,11 +2283,11 @@ msgstr ""
 
 #: lib/RT/Installer.pm:190
 msgid "Domain name"
-msgstr ""
+msgstr "Nome do domínio"
 
 #: lib/RT/Installer.pm:191
 msgid "Don't include http://, just something like 'localhost', 'rt.example.com'"
-msgstr ""
+msgstr "Não incluir http://, apenas algo como 'localhost', 'rt.example.com'"
 
 #: lib/RT/Config.pm:254
 msgid "Don't refresh home page."
@@ -2273,11 +2299,11 @@ msgstr ""
 
 #: share/html/Elements/Refresh:53
 msgid "Don't refresh this page."
-msgstr ""
+msgstr "Não actualizar (refrescar) esta página"
 
 #: lib/RT/Crypt/GnuPG.pm:2175
 msgid "Don't trust this key at all"
-msgstr ""
+msgstr "Não confiar nesta chave"
 
 #: share/html/Ticket/Elements/ShowTransactionAttachments:66
 msgid "Download"
@@ -2302,11 +2328,11 @@ msgstr ""
 #: share/html/Install/Initialize.html:126 share/html/Install/Initialize.html:89
 #. ($msg)
 msgid "ERROR: %1"
-msgstr ""
+msgstr "ERRO: %1"
 
 #: share/html/Tools/index.html:75
 msgid "Easy updating of your open tickets"
-msgstr ""
+msgstr "Actualização simples das suas tarefas abertas"
 
 #: share/html/Elements/Dashboards:53 share/html/Elements/Quicksearch:50 share/html/Elements/ShowSearch:51 share/html/index.html:132
 msgid "Edit"
@@ -2327,7 +2353,7 @@ msgstr "Editar Campos Personalizados para todos os grupos"
 
 #: share/html/Admin/Global/CustomFields/Queues.html:56
 msgid "Edit Custom Fields for all queues"
-msgstr ""
+msgstr "Editar Campos Personalizados para todas as queues"
 
 #: share/html/Admin/Global/CustomFields/Users.html:56
 msgid "Edit Custom Fields for all users"
@@ -2343,16 +2369,16 @@ msgstr "Editar ligações"
 
 #: share/html/Search/Edit.html:74
 msgid "Edit Query"
-msgstr "Editar Pesquisa"
+msgstr "Editar Consulta"
 
-#: share/html/Ticket/Elements/Tabs:265
+#: share/html/Ticket/Elements/Tabs:273
 msgid "Edit Search"
 msgstr "Editar Pesquisa"
 
 #: share/html/Admin/Queues/Templates.html:65
 #. ($QueueObj->Name)
 msgid "Edit Templates for queue %1"
-msgstr ""
+msgstr "Editar modelos para a queue %1"
 
 #: lib/RT/Group_Overlay.pm:93
 msgid "Edit saved searches for this group"
@@ -2368,41 +2394,41 @@ msgstr ""
 
 #: share/html/Search/Elements/ResultViews:63
 msgid "Editable text"
-msgstr ""
+msgstr "Texto editável"
 
 #: share/html/Admin/Queues/Modify.html:162
 #. ($QueueObj->Name)
 msgid "Editing Configuration for queue %1"
-msgstr ""
+msgstr "A editar configurações para a queue %1"
 
-#: share/html/Admin/CustomFields/Modify.html:156 share/html/Admin/Elements/EditCustomField:122
+#: share/html/Admin/CustomFields/Modify.html:168 share/html/Admin/Elements/EditCustomField:122
 #. ($CustomFieldObj->Name())
 #. ($CustomFieldObj->Name)
 msgid "Editing CustomField %1"
-msgstr ""
+msgstr "A editar campo personalizado %1"
 
 #: share/html/Admin/Groups/Members.html:57
 #. ($Group->Name)
 msgid "Editing membership for group %1"
-msgstr ""
+msgstr "A editar membros para o grupo %1"
 
 #: share/html/User/Groups/Members.html:152
 #. ($Group->Name)
 msgid "Editing membership for personal group %1"
-msgstr ""
+msgstr "A editar membros para o grupo pessoal %1"
 
 #: lib/RT/Tickets_Overlay.pm:99 share/html/Elements/RT__Ticket/ColumnMap:148
 msgid "EffectiveId"
 msgstr ""
 
-#: lib/RT/Record.pm:1299 lib/RT/Record.pm:1380 lib/RT/Ticket_Overlay.pm:2246 lib/RT/Ticket_Overlay.pm:2341
+#: lib/RT/Record.pm:1299 lib/RT/Record.pm:1380 lib/RT/Ticket_Overlay.pm:2260 lib/RT/Ticket_Overlay.pm:2355
 msgid "Either base or target must be specified"
-msgstr ""
+msgstr "Base ou alvo devem ser especificados"
 
 #: share/html/Elements/ShowSearch:67
 #. ($SavedSearch)
 msgid "Either you have no rights to view saved search %1 or identifier is incorrect"
-msgstr ""
+msgstr "Ou não tem direitos para visualizar a pesquisa guardada %1 ou o identificador está incorrecto"
 
 #: share/html/Admin/Users/Modify.html:76 share/html/Ticket/Elements/AddWatchers:79 share/html/User/Prefs.html:67
 msgid "Email"
@@ -2412,7 +2438,7 @@ msgstr "Correio Electrónico"
 msgid "Email Configuration"
 msgstr "Configuração de Correio Electrónico"
 
-#: etc/initialdata:449 etc/upgrade/3.7.85/content:4
+#: etc/initialdata:456 etc/upgrade/3.7.85/content:4
 msgid "Email Digest"
 msgstr ""
 
@@ -2420,11 +2446,11 @@ msgstr ""
 msgid "Email address in use"
 msgstr "Endereço de email já utilizado"
 
-#: lib/RT/Config.pm:333
+#: lib/RT/Config.pm:343
 msgid "Email delivery"
 msgstr ""
 
-#: etc/initialdata:450 etc/upgrade/3.7.85/content:5
+#: etc/initialdata:457 etc/upgrade/3.7.85/content:5
 msgid "Email template for periodic notification digests"
 msgstr ""
 
@@ -2434,9 +2460,9 @@ msgstr ""
 
 #: share/html/Elements/RT__Queue/ColumnMap:63
 msgid "Enabled"
-msgstr ""
+msgstr "Activo"
 
-#: share/html/Admin/CustomFields/Modify.html:113 share/html/Admin/Elements/EditCustomField:74
+#: share/html/Admin/CustomFields/Modify.html:124 share/html/Admin/Elements/EditCustomField:74
 msgid "Enabled (Unchecking this box disables this custom field)"
 msgstr "Activo (remover selecção desta caixa desactiva este campo)"
 
@@ -2455,36 +2481,36 @@ msgstr "Queues activas"
 #: share/html/Admin/Elements/EditCustomField:138 share/html/User/Groups/Modify.html:140
 #. (loc_fuzzy($msg))
 msgid "Enabled status %1"
-msgstr ""
+msgstr "Estado activo %1"
 
 #: share/html/Elements/GnuPG/SignEncryptWidget:53 share/html/Ticket/GnuPG.html:62
 msgid "Encrypt"
-msgstr ""
+msgstr "Enciptar"
 
 #: share/html/Admin/Queues/Modify.html:114
 msgid "Encrypt by default"
-msgstr ""
+msgstr "Enciptar por predefinição"
 
 #: share/html/Ticket/Elements/ShowTransaction:212
 msgid "Encrypt/Decrypt"
-msgstr ""
+msgstr "Encriptar/Desencriptar"
 
 #: share/html/Ticket/GnuPG.html:103
 #. ($id, $txn->Ticket)
 msgid "Encrypt/Decrypt transaction #%1 of ticket #%2"
-msgstr ""
+msgstr "Encriptar/Desencriptar transacção #%1 de tarefa #%2"
 
 #: lib/RT/Queue_Overlay.pm:550
 msgid "Encrypting disabled"
-msgstr ""
+msgstr "Encriptação inactiva"
 
 #: lib/RT/Queue_Overlay.pm:549
 msgid "Encrypting enabled"
-msgstr ""
+msgstr "Encriptação activa"
 
 #: lib/RT/CustomField_Overlay.pm:65
 msgid "Enter multiple values"
-msgstr ""
+msgstr "Introduzir múltiplos valores"
 
 #: lib/RT/CustomField_Overlay.pm:95
 msgid "Enter multiple values with autocompletion"
@@ -2492,7 +2518,7 @@ msgstr ""
 
 #: share/html/Elements/EditLinks:127
 msgid "Enter objects or URIs to link objects to. Separate multiple entries with spaces."
-msgstr ""
+msgstr "Introduzir objectos ou URLs para ligar os objectos. Separar as entradas múltiplas com espaços."
 
 #: lib/RT/CustomField_Overlay.pm:66
 msgid "Enter one value"
@@ -2538,25 +2564,25 @@ msgstr ""
 msgid "Error in parameters to Ticket->DeleteWatcher"
 msgstr ""
 
-#: etc/initialdata:397 etc/upgrade/3.7.10/content:13
+#: etc/initialdata:404 etc/upgrade/3.7.10/content:13
 msgid "Error to RT owner: public key"
 msgstr ""
 
-#: etc/initialdata:459 etc/upgrade/3.7.87/content:4
+#: etc/initialdata:466 etc/upgrade/3.7.87/content:4
 msgid "Error: Missing dashboard"
-msgstr ""
+msgstr "Erro: Painel em falta"
 
-#: etc/initialdata:422 etc/upgrade/3.7.10/content:38
+#: etc/initialdata:429 etc/upgrade/3.7.10/content:38
 msgid "Error: bad GnuPG data"
-msgstr ""
+msgstr "Erro: Dados GnuPG errados"
 
-#: etc/initialdata:410 etc/upgrade/3.7.10/content:26
+#: etc/initialdata:417 etc/upgrade/3.7.10/content:26
 msgid "Error: no private key"
-msgstr ""
+msgstr "Erro: Não existe chave privada"
 
-#: etc/initialdata:388 etc/upgrade/3.7.10/content:4
+#: etc/initialdata:395 etc/upgrade/3.7.10/content:4
 msgid "Error: public key"
-msgstr ""
+msgstr "Erro: Chave Pública"
 
 #: bin/rt-crontool:388
 msgid "Escalate tickets"
@@ -2572,15 +2598,15 @@ msgstr "Todos"
 
 #: share/html/Tools/Reports/index.html:70
 msgid "Examine tickets created in a queue between two dates"
-msgstr ""
+msgstr "Analisar tarefas criadas numa queue entre duas datas"
 
 #: share/html/Tools/Reports/index.html:65
 msgid "Examine tickets resolved in a queue between two dates"
-msgstr ""
+msgstr "Analisar tarefas resolvidas numa queue entre duas datas"
 
 #: share/html/Tools/Reports/index.html:60
 msgid "Examine tickets resolved in a queue, grouped by owner"
-msgstr ""
+msgstr "Analisar tarefas resolvidas numa queue, agrupadas por dono"
 
 #: bin/rt-crontool:374
 msgid "Example:"
@@ -2588,7 +2614,7 @@ msgstr "Exemplo:"
 
 #: share/html/Admin/Elements/ShowKeyInfo:61
 msgid "Expire"
-msgstr ""
+msgstr "Expirar"
 
 #: share/html/Search/Elements/BuildFormatString:99
 msgid "ExtendedStatus"
@@ -2598,55 +2624,55 @@ msgstr ""
 msgid "Extra info"
 msgstr "Informação adicional"
 
-#: etc/initialdata:97 etc/upgrade/3.8.3/content:74
+#: etc/initialdata:97 etc/upgrade/3.8.3/content:75
 msgid "Extract Subject Tag"
 msgstr ""
 
-#: etc/initialdata:98 etc/upgrade/3.8.3/content:75
+#: etc/initialdata:98 etc/upgrade/3.8.3/content:76
 msgid "Extract tags from a Transaction's subject and add them to the Ticket's subject."
 msgstr ""
 
 #: share/html/Install/DatabaseDetails.html:187
 #. ($DBI::errstr)
 msgid "Failed to connect to database: %1"
-msgstr ""
+msgstr "Falta ao ligar a base de dados: %1"
 
 #: lib/RT/SharedSetting.pm:200
 #. ($self->ObjectName)
 msgid "Failed to create %1 attribute"
-msgstr ""
+msgstr "Falta ao criar atributo %1"
 
 #: lib/RT/User_Overlay.pm:290
 msgid "Failed to find 'Privileged' users pseudogroup."
-msgstr ""
+msgstr "Não foi encontrado peseudogrupo dos utilizadores \"Privilegiados\""
 
 #: lib/RT/User_Overlay.pm:297
 msgid "Failed to find 'Unprivileged' users pseudogroup"
-msgstr ""
+msgstr "Não foi encontrado peseudogrupo dos utilizadores \"Não Privilegiados\""
 
 #: lib/RT/SharedSetting.pm:117
 #. ($self->ObjectName, $id)
 msgid "Failed to load %1 %2"
-msgstr ""
+msgstr "Falha ao carregar %1 %2"
 
 #: lib/RT/SharedSetting.pm:141
 #. ($self->ObjectName, $id, $msg)
 msgid "Failed to load %1 %2: %3"
-msgstr ""
+msgstr "Falha ao carregar %1 %2: %3"
 
 #: bin/rt-crontool:307
 #. ($modname, $@)
 msgid "Failed to load module %1. (%2)"
-msgstr ""
+msgstr "Falta ao carregar módulo %1. (%2)"
 
 #: lib/RT/SharedSetting.pm:184
 #. ($privacy)
 msgid "Failed to load object for %1"
-msgstr ""
+msgstr "Falha ao carregar objecto para %1"
 
 #: sbin/rt-email-digest:166
 msgid "Failed to load template"
-msgstr ""
+msgstr "Falta ao carregar modelo"
 
 #: sbin/rt-email-digest:174
 msgid "Failed to parse template"
@@ -2654,15 +2680,19 @@ msgstr ""
 
 #: lib/RT/Date.pm:89
 msgid "Feb"
-msgstr ""
+msgstr "Fev"
 
 #: NOT FOUND IN SOURCE
 msgid "Feb."
 msgstr "Feb"
 
+#: NOT FOUND IN SOURCE
+msgid "February"
+msgstr "Fevereiro"
+
 #: share/html/Admin/CustomFields/Modify.html:74
 msgid "Field values source:"
-msgstr ""
+msgstr "Fonte dos valores do campo"
 
 #: share/html/Admin/Tools/Shredder/Elements/Object/RT--Attachment:52
 msgid "FileName"
@@ -2674,7 +2704,7 @@ msgstr "Ficheiro"
 
 #: share/html/Admin/Tools/Shredder/Elements/PluginArguments:52
 msgid "Fill arguments"
-msgstr ""
+msgstr "Preencher argumentos"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:81
 msgid "Fill boxes with color using"
@@ -2690,7 +2720,7 @@ msgstr ""
 
 #: lib/RT/CustomField_Overlay.pm:71
 msgid "Fill in one text area"
-msgstr ""
+msgstr "Preencher uma área de texto"
 
 #: lib/RT/CustomField_Overlay.pm:76
 msgid "Fill in one wikitext area"
@@ -2708,7 +2738,7 @@ msgstr "Preencha até %1 áreas de texto"
 msgid "Fill in up to %1 wikitext areas"
 msgstr ""
 
-#: lib/RT/Tickets_Overlay.pm:2030 share/html/Search/Elements/PickBasics:188 share/html/Ticket/Create.html:185 share/html/Ticket/Elements/EditBasics:109
+#: lib/RT/Tickets_Overlay.pm:2042 share/html/Search/Elements/PickBasics:188 share/html/Ticket/Create.html:185 share/html/Ticket/Elements/EditBasics:109
 msgid "Final Priority"
 msgstr "Prioridade final"
 
@@ -2718,7 +2748,7 @@ msgstr ""
 
 #: share/html/Admin/Users/index.html:86
 msgid "Find all users whose"
-msgstr ""
+msgstr "Procurar todos os utilizadores cujo"
 
 #: share/html/Admin/Groups/index.html:82 share/html/Admin/Queues/People.html:84 share/html/Ticket/Elements/EditPeople:57
 msgid "Find groups whose"
@@ -2734,7 +2764,7 @@ msgstr "Encontrar tickets"
 
 #: share/html/Install/Finish.html:48 share/html/Install/Global.html:65
 msgid "Finish"
-msgstr ""
+msgstr "Terminar"
 
 #: share/html/Ticket/Elements/Tabs:81
 msgid "First"
@@ -2754,26 +2784,40 @@ msgstr "Forçar alteraçao"
 
 #: share/html/Search/Edit.html:67 share/html/Search/Elements/EditFormat:52
 msgid "Format"
-msgstr ""
+msgstr "Formato"
 
-#: etc/initialdata:380 etc/upgrade/3.7.15/content:4 share/html/Ticket/Elements/ShowTransaction:202
+#: etc/initialdata:380 etc/upgrade/3.7.15/content:4 share/html/Ticket/Elements/ShowTransaction:202 share/html/Ticket/Elements/Tabs:179
 msgid "Forward"
-msgstr ""
+msgstr "Encaminhar"
 
 #: share/html/Ticket/Forward.html:79
 msgid "Forward Message"
-msgstr ""
+msgstr "Encaminhar Mensagem"
 
 #: share/html/Ticket/Forward.html:78
 msgid "Forward Message and Return"
+msgstr "Encaminhar Mensagem e Voltar"
+
+#: etc/initialdata:387 etc/upgrade/3.8.6/content:3
+msgid "Forward Ticket"
 msgstr ""
 
-#: share/html/Ticket/Forward.html:107
+#: NOT FOUND IN SOURCE
 msgid "Forward message"
-msgstr ""
+msgstr "Encaminhar Mensagem"
 
 #: lib/RT/Queue_Overlay.pm:120
 msgid "Forward messages to third person(s)"
+msgstr "Encaminhar mensagem para terceira(s) pessoa(s)"
+
+#: share/html/Ticket/Forward.html:114
+#. ($TicketObj->id)
+msgid "Forward ticket #%1"
+msgstr ""
+
+#: share/html/Ticket/Forward.html:113
+#. ($txn->id)
+msgid "Forward transaction #%1"
 msgstr ""
 
 #: lib/RT/Queue_Overlay.pm:120
@@ -2787,15 +2831,15 @@ msgstr ""
 
 #: lib/RT/Record.pm:929
 msgid "Found Object"
-msgstr ""
+msgstr "Objecto Encontrado"
 
 #: share/html/Dashboards/Subscription.html:95
 msgid "Frequency"
-msgstr ""
+msgstr "Frequência"
 
 #: lib/RT/Date.pm:108
 msgid "Fri"
-msgstr ""
+msgstr "Sex"
 
 #: NOT FOUND IN SOURCE
 msgid "Fri."
@@ -2803,7 +2847,7 @@ msgstr "Fri"
 
 #: share/html/Dashboards/Subscription.html:113
 msgid "Friday"
-msgstr ""
+msgstr "Sexta"
 
 #: share/html/Ticket/Elements/ShowHistory:68 share/html/Ticket/Elements/ShowHistory:74
 msgid "Full headers"
@@ -2811,54 +2855,54 @@ msgstr "Cabeçalhos completos"
 
 #: lib/RT/Config.pm:169 lib/RT/Config.pm:216
 msgid "General"
-msgstr ""
+msgstr "Geral"
 
 #: share/html/Tools/Offline.html:86
 msgid "Get template from file"
-msgstr ""
+msgstr "Obter modelo a partir de ficheiro"
 
 #: share/html/Install/index.html:76
 msgid "Getting started"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:694
+#: lib/RT/Transaction_Overlay.pm:741
 #. ($New->Name)
 msgid "Given to %1"
-msgstr ""
+msgstr "Atribuído a %1"
 
 #: share/html/Admin/Elements/Tabs:67 share/html/Admin/index.html:78 share/html/Elements/RT__Scrip/ColumnMap:64
 msgid "Global"
-msgstr ""
+msgstr "Global"
 
 #: share/html/Admin/Elements/EditCustomFields:57
 msgid "Global Custom Fields"
-msgstr ""
+msgstr "Campos Personalizados Globais"
 
 #: share/html/Admin/Global/CustomFields/index.html:61
 msgid "Global custom field configuration"
-msgstr ""
+msgstr "Configuração gloval dos campos personalizados"
 
 #: share/html/Admin/Global/MyRT.html:102
 #. ($pane)
 msgid "Global portlet %1 saved."
-msgstr ""
+msgstr "Portlet  global %1 guardado"
 
 #: share/html/Admin/Elements/SelectTemplate:61
 #. (loc($Template->Name))
 msgid "Global template: %1"
-msgstr ""
+msgstr "Modelo Global: %1"
 
 #: share/html/Admin/Elements/UserTabs:76
 msgid "GnuPG"
-msgstr ""
+msgstr "GnuPG"
 
-#: lib/RT/Attachment_Overlay.pm:667 lib/RT/Attachment_Overlay.pm:702
+#: lib/RT/Attachment_Overlay.pm:685 lib/RT/Attachment_Overlay.pm:720
 msgid "GnuPG error. Contact with administrator"
-msgstr ""
+msgstr "Erro GnuPG. Contacte o Administrador"
 
-#: lib/RT/Attachment_Overlay.pm:622 lib/RT/Attachment_Overlay.pm:684
+#: lib/RT/Attachment_Overlay.pm:640 lib/RT/Attachment_Overlay.pm:702
 msgid "GnuPG integration is disabled"
-msgstr ""
+msgstr "Integração GnuPG inactiva"
 
 #: share/html/Elements/GnuPG/KeyIssues:49
 msgid "GnuPG issues"
@@ -2867,36 +2911,36 @@ msgstr ""
 #: share/html/Admin/Elements/ShowKeyInfo:88
 #. ($EmailAddress)
 msgid "GnuPG private key(s) for %1"
-msgstr ""
+msgstr "Chave(s)-Privada(s) GnuPG para %1"
 
 #: share/html/Admin/Elements/ShowKeyInfo:86
 #. ($EmailAddress)
 msgid "GnuPG public key(s) for %1"
-msgstr ""
+msgstr "Chave(s)-Pública(s) GnuPG para %1"
 
 #: share/html/Search/Elements/ResultViews:73
 msgid "Go"
-msgstr ""
+msgstr "Ir"
 
 #: share/html/Admin/CustomFields/index.html:89 share/html/Admin/Groups/index.html:83 share/html/Admin/Queues/People.html:82 share/html/Admin/Queues/People.html:86 share/html/Admin/Queues/index.html:73 share/html/Admin/Users/index.html:90 share/html/Approvals/index.html:54 share/html/Elements/RefreshHomepage:52 share/html/Ticket/Elements/EditPeople:55 share/html/Ticket/Elements/EditPeople:59 share/html/Tools/Offline.html:90
 msgid "Go!"
-msgstr ""
+msgstr "Ir!"
 
 #: share/html/Elements/GotoTicket:49 share/html/SelfService/Elements/GotoTicket:49
 msgid "Goto ticket"
 msgstr "Ir para ticket"
 
-#: share/html/Ticket/Elements/ShowSummary:99 share/html/Ticket/Elements/Tabs:311 share/html/Ticket/ModifyLinks.html:61
+#: share/html/Ticket/Elements/ShowSummary:99 share/html/Ticket/Elements/Tabs:319 share/html/Ticket/ModifyLinks.html:61
 msgid "Graph"
-msgstr ""
+msgstr "Gráfico"
 
 #: share/html/Search/Chart.html:88 share/html/Ticket/Graphs/Elements/EditGraphProperties:48
 msgid "Graph Properties"
-msgstr ""
+msgstr "Propriedades do Gráfico"
 
 #: share/html/Search/Elements/Chart:108
 msgid "Graphical charts are not available."
-msgstr ""
+msgstr "Gráficos não estão disponíveis"
 
 #: lib/RT/Record.pm:910 share/html/Ticket/Elements/AddWatchers:69 share/html/Ticket/Elements/ShowGroupMembers:58
 msgid "Group"
@@ -2913,7 +2957,7 @@ msgstr "Grupo já tem membro"
 #: lib/RT/Group_Overlay.pm:999
 #. ($new_member_obj->Object->Name)
 msgid "Group already has member: %1"
-msgstr ""
+msgstr "O grupo já tem um membro: %1"
 
 #: share/html/Admin/Groups/Modify.html:119
 #. ($create_msg)
@@ -2926,11 +2970,11 @@ msgstr "Grupo criado"
 
 #: lib/RT/Group_Overlay.pm:734
 msgid "Group disabled"
-msgstr ""
+msgstr "Grupo inactivo"
 
 #: lib/RT/Group_Overlay.pm:736
 msgid "Group enabled"
-msgstr ""
+msgstr "Grupo activo"
 
 #: lib/RT/Group_Overlay.pm:1174
 msgid "Group has no such member"
@@ -2942,9 +2986,9 @@ msgstr "Grupo não encontrado"
 
 #: share/html/User/Elements/DelegateRights:102
 msgid "Group rights"
-msgstr ""
+msgstr "Direitos do grupo"
 
-#: lib/RT/CustomField_Overlay.pm:1167 share/html/Admin/Elements/GlobalCustomFieldTabs:63 share/html/Admin/Elements/SelectNewGroupMembers:67 share/html/Admin/Elements/Tabs:58 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:90 share/html/Admin/Queues/People.html:108 share/html/Admin/index.html:63 share/html/User/Groups/Members.html:90
+#: lib/RT/CustomField_Overlay.pm:1176 share/html/Admin/Elements/GlobalCustomFieldTabs:63 share/html/Admin/Elements/SelectNewGroupMembers:67 share/html/Admin/Elements/Tabs:58 share/html/Admin/Global/CustomFields/index.html:71 share/html/Admin/Groups/Members.html:90 share/html/Admin/Queues/People.html:108 share/html/Admin/index.html:63 share/html/User/Groups/Members.html:90
 msgid "Groups"
 msgstr "Grupos"
 
@@ -2958,18 +3002,22 @@ msgstr "Grupos que preenchem critérios"
 
 #: share/html/Admin/Users/Memberships.html:60
 msgid "Groups the user is member of (check box to delete)"
-msgstr ""
+msgstr "Grupos em que o utilizador é membro (seleccione caixa para eliminar)"
 
 #: share/html/Admin/Users/Memberships.html:74
 msgid "Groups the user is not member of (check box to add)"
-msgstr ""
+msgstr "Grupos em que o utilizador não é membro (seleccione caixa para adicionar)"
 
-#: share/html/Ticket/Elements/ShowRequestor:87
+#: share/html/Ticket/Elements/ShowRequestor:94
 msgid "Groups this user belongs to"
 msgstr "Grupos a que este utilizador pertence"
 
 #: lib/RT/Tickets_Overlay.pm:114
 msgid "HasMember"
+msgstr ""
+
+#: etc/initialdata:388 etc/upgrade/3.8.6/content:4
+msgid "Heading of a forwarded Ticket"
 msgstr ""
 
 #: etc/initialdata:381 etc/upgrade/3.7.15/content:5
@@ -2987,7 +3035,7 @@ msgstr "Olá, %1"
 
 #: share/html/Install/Global.html:52
 msgid "Help us set up some useful defaults for RT."
-msgstr ""
+msgstr "Ajude-nos a definir predefinições úteis para o RT"
 
 #: share/html/Admin/Elements/GroupTabs:72 share/html/Admin/Elements/QueueTabs:90 share/html/Admin/Elements/UserTabs:66 share/html/Ticket/Elements/ShowHistory:55 share/html/Ticket/Elements/Tabs:121
 msgid "History"
@@ -3001,7 +3049,7 @@ msgstr "Histórico do grupo %1"
 #: share/html/Admin/Queues/History.html:64
 #. ($QueueObj->Name)
 msgid "History of the queue %1"
-msgstr ""
+msgstr "Histórico da queue %1"
 
 #: share/html/Admin/Users/History.html:64
 #. ($UserObj->Name)
@@ -3010,11 +3058,11 @@ msgstr "Histórico do utilizador %1"
 
 #: share/html/Elements/DashboardTabs:34
 msgid "Home"
-msgstr ""
+msgstr "Início"
 
 #: lib/RT/Config.pm:251
 msgid "Home page refresh interval"
-msgstr ""
+msgstr "Intervalo de actualização da página de ínicio"
 
 #: share/html/Elements/RT__User/ColumnMap:86
 msgid "HomePhone"
@@ -3026,7 +3074,7 @@ msgstr "Home"
 
 #: share/html/Dashboards/Subscription.html:141
 msgid "Hour"
-msgstr ""
+msgstr "Hora"
 
 #: share/html/Elements/SelectTimeUnits:53
 msgid "Hours"
@@ -3043,9 +3091,9 @@ msgstr "Estou perdido"
 
 #: lib/RT/Date.pm:114
 msgid "ISO"
-msgstr ""
+msgstr "ISO"
 
-#: lib/RT/Tickets_Overlay.pm:1955 share/html/Ticket/Elements/ShowBasics:50
+#: lib/RT/Tickets_Overlay.pm:1967 share/html/Ticket/Elements/ShowBasics:50
 msgid "Id"
 msgstr "Id"
 
@@ -3055,7 +3103,7 @@ msgstr "Identidade"
 
 #: lib/RT/Approval/Rule/Rejected.pm:54
 msgid "If an approval is rejected, reject the original and delete pending approvals"
-msgstr ""
+msgstr "Se uma aprovação é rejeitada, rejeite a original e elimine aprovações pendentes"
 
 #: share/html/Tools/Offline.html:75
 msgid "If no Requestor is specified, create tickets with this requestor."
@@ -3067,15 +3115,15 @@ msgstr "Se nenhuma queue foi definida, criar tickets nesta queue"
 
 #: bin/rt-crontool:370
 msgid "If this tool were setgid, a hostile local user could use this tool to gain administrative access to RT."
-msgstr ""
+msgstr "Se esta ferramenta fosse setgid, um utilizador local hostil poderia usá-la para ter acesso de administrador ao RT."
 
 #: share/html/Install/index.html:83
 msgid "If you already have a working RT server and database, you should take this opportunity to make sure that your database server is running and that the RT server can connect to it. Once you've done that, stop and start the RT server.</p>"
-msgstr ""
+msgstr "Se já tem um servidor RT e base de dados funcionais, deveria aproveitar a oportunidade para se assegurar que o seu servidor de base de dados está a correr e que o servidor do RT consegue-se ligar a ele. Depois disto, pare e inicie o servidor do RT. </p>"
 
 #: share/html/Install/Finish.html:60
 msgid "If you've change the Port that RT runs on, you'll need to restart the server in order to log in."
-msgstr ""
+msgstr "Se alterar a porta em que corre o RT, vai precisar de reiniciar o servidor de forma a poder iniciar sessão."
 
 #: share/html/Admin/Queues/People.html:130 share/html/Ticket/Modify.html:65 share/html/Ticket/ModifyAll.html:145 share/html/Ticket/ModifyPeople.html:63
 msgid "If you've updated anything above, be sure to"
@@ -3084,19 +3132,19 @@ msgstr "Se actualizou algo acima, certifique-se que"
 #: share/html/Install/DatabaseType.html:61
 #. ('<a href="http://search.cpan.org" target="_new">CPAN</a>')
 msgid "If your preferred database isn't listed in the dropdown below, that means RT couldn't find a <i>database driver</i> for it installed locally. You may be able to remedy this by using %1 to download and install DBD::MySQL, DBD::Oracle or DBD::Pg."
-msgstr ""
+msgstr "Se a sua base de dados escolhida não está listada abaixo, significa que o RT não conseguiu encontrar um <i>driver /i> para a mesma instalada localmente. Pode contornar este problema ao usar %1 para descarregar e instalar DBD::MySQL, DBD::Oracle ou DBD::Pg."
 
 #: lib/RT/Record.pm:921
 msgid "Illegal value for %1"
-msgstr ""
+msgstr "Valor ilegal para %1"
 
 #: lib/RT/Record.pm:924
 msgid "Immutable field"
-msgstr ""
+msgstr "Campo imutável"
 
 #: share/html/Admin/CustomFields/index.html:86
 msgid "Include disabled custom fields in listing."
-msgstr ""
+msgstr "Incluir campos personalizados inactivos na listagem."
 
 #: share/html/Admin/Groups/index.html:81
 msgid "Include disabled groups in listing."
@@ -3122,35 +3170,35 @@ msgstr "Query incompleta"
 msgid "Incomplete query"
 msgstr "Query incompleta"
 
-#: lib/RT/Config.pm:335
+#: lib/RT/Config.pm:345
 msgid "Individual messages"
-msgstr ""
+msgstr "Mensagens individuais"
 
-#: etc/initialdata:399 etc/upgrade/3.7.10/content:15
+#: etc/initialdata:406 etc/upgrade/3.7.10/content:15
 msgid "Inform RT owner that user(s) have problems with public keys"
-msgstr ""
+msgstr "Informar dono do RT que utilizadores estão com problemas com chaves públicas"
 
-#: etc/initialdata:461 etc/upgrade/3.7.87/content:6
+#: etc/initialdata:468 etc/upgrade/3.7.87/content:6
 msgid "Inform user that a dashboard he subscribed to is missing"
-msgstr ""
+msgstr "Informar utilizador que o painel que ele subscreveu está em falta"
 
-#: etc/initialdata:424 etc/upgrade/3.7.10/content:40
+#: etc/initialdata:431 etc/upgrade/3.7.10/content:40
 msgid "Inform user that a message he sent has invalid GnuPG data"
-msgstr ""
+msgstr "Informar utilizador que a mensagem que ele enviou tem dados GnuPG inválidos"
 
-#: etc/initialdata:390 etc/upgrade/3.7.10/content:6
+#: etc/initialdata:397 etc/upgrade/3.7.10/content:6
 msgid "Inform user that he has problems with public key and couldn't recieve encrypted content"
-msgstr ""
+msgstr "Informar utilizador que ele está com problemas relacionados com a chave pública e não consegue receber conteúdo encriptado"
 
-#: etc/initialdata:436
+#: etc/initialdata:443
 msgid "Inform user that his password has been reset"
-msgstr ""
+msgstr "Informar utilizador que a sua password foi redefinida"
 
-#: etc/initialdata:412 etc/upgrade/3.7.10/content:28
+#: etc/initialdata:419 etc/upgrade/3.7.10/content:28
 msgid "Inform user that we received an encrypted email and we have no private keys to decrypt"
-msgstr ""
+msgstr "Informar utilizador que recebemos um email encriptado e que não temos chaves provadas para o desencriptar"
 
-#: lib/RT/Tickets_Overlay.pm:2005 share/html/Search/Elements/PickBasics:187
+#: lib/RT/Tickets_Overlay.pm:2017 share/html/Search/Elements/PickBasics:187
 msgid "Initial Priority"
 msgstr "Prioridade Inicial"
 
@@ -3160,13 +3208,13 @@ msgstr ""
 
 #: share/html/Install/Global.html:65 share/html/Install/Initialize.html:48 share/html/Install/Initialize.html:61
 msgid "Initialize Database"
-msgstr ""
+msgstr "Iniciar Base de Dados"
 
 #: lib/RT/ScripAction_Overlay.pm:131
 msgid "Input error"
-msgstr ""
+msgstr "Erro de entrada"
 
-#: lib/RT/CustomField_Overlay.pm:1120 lib/RT/CustomField_Overlay.pm:984 share/html/Elements/ValidateCustomFields:87
+#: lib/RT/CustomField_Overlay.pm:1129 lib/RT/CustomField_Overlay.pm:993 share/html/Elements/ValidateCustomFields:87
 #. ($self->FriendlyPattern)
 #. ($CF->FriendlyPattern)
 msgid "Input must match %1"
@@ -3174,9 +3222,9 @@ msgstr ""
 
 #: share/html/Install/Elements/Wrapper:51
 msgid "Install RT"
-msgstr ""
+msgstr "Instalar RT"
 
-#: lib/RT/Ticket_Overlay.pm:3257
+#: lib/RT/Ticket_Overlay.pm:3300
 msgid "Internal Error"
 msgstr "Erro interno"
 
@@ -3189,16 +3237,16 @@ msgstr "Erro interno: %1"
 #. ($_, $ARGS{$_})
 #. ('Administrator Email', $ARGS{OwnerEmail})
 msgid "Invalid %1: '%2' doesn't look like an email address"
-msgstr ""
+msgstr "%1 Inválido: '%2' não parece um enderço de email"
 
 #: share/html/Install/Basics.html:81
 #. ('WebPort')
 msgid "Invalid %1: it should be a number"
-msgstr ""
+msgstr "%1 Inválido: deveria ser numérico"
 
 #: lib/RT/Group_Overlay.pm:625
 msgid "Invalid Group Type"
-msgstr ""
+msgstr "Tipo de Grupo Inválido"
 
 #: NOT FOUND IN SOURCE
 msgid "Invalid Right"
@@ -3208,15 +3256,15 @@ msgstr "Direito Inválido"
 msgid "Invalid data"
 msgstr "Dados Inválidos"
 
-#: lib/RT/CustomField_Overlay.pm:977
+#: lib/RT/CustomField_Overlay.pm:986
 msgid "Invalid object"
-msgstr ""
+msgstr "Objecto Inválido"
 
 #: lib/RT/Ticket_Overlay.pm:385
 msgid "Invalid owner object"
-msgstr ""
+msgstr "Dono de Objecto Inválido"
 
-#: lib/RT/CustomField_Overlay.pm:223 lib/RT/CustomField_Overlay.pm:616
+#: lib/RT/CustomField_Overlay.pm:223 lib/RT/CustomField_Overlay.pm:624
 #. ($msg)
 msgid "Invalid pattern: %1"
 msgstr "Padrão inválido: %1"
@@ -3236,7 +3284,7 @@ msgstr ""
 
 #: lib/RT/User_Overlay.pm:537
 msgid "Invalid syntax for email address"
-msgstr ""
+msgstr "Sintaxe inválido para endereço de e-mail"
 
 #: lib/RT/Record.pm:269
 #. ($key)
@@ -3245,15 +3293,15 @@ msgstr "Valor inválido para %1"
 
 #: lib/RT/Record.pm:1619
 msgid "Invalid value for custom field"
-msgstr ""
+msgstr "Valor inválido para campo personalizado"
 
 #: lib/RT/Ticket_Overlay.pm:306
 msgid "Invalid value for status"
 msgstr "Valor inválido para estado"
 
-#: lib/RT/Attachment_Overlay.pm:694
+#: lib/RT/Attachment_Overlay.pm:712
 msgid "Is not encrypted"
-msgstr ""
+msgstr "Não está encriptado"
 
 #: bin/rt-crontool:371
 msgid "It is incredibly important that nonprivileged users not be allowed to run this tool."
@@ -3267,17 +3315,21 @@ msgstr "É sugerido que crie um utilizador não privilegiado com o grupo correct
 msgid "It takes several arguments:"
 msgstr "Necessários vários argumentos:"
 
-#: share/html/Search/Elements/EditFormat:85
+#: share/html/Search/Elements/EditFormat:86
 msgid "Italic"
 msgstr "Itálico"
 
 #: lib/RT/Date.pm:88
 msgid "Jan"
-msgstr ""
+msgstr "Jan"
 
 #: NOT FOUND IN SOURCE
 msgid "Jan."
 msgstr "Jan"
+
+#: NOT FOUND IN SOURCE
+msgid "January"
+msgstr "Janeiro"
 
 #: lib/RT/Group_Overlay.pm:92
 msgid "Join or leave this group"
@@ -3285,11 +3337,15 @@ msgstr ""
 
 #: lib/RT/Date.pm:94
 msgid "Jul"
-msgstr ""
+msgstr "Jul"
 
 #: NOT FOUND IN SOURCE
 msgid "Jul."
 msgstr "Jul"
+
+#: NOT FOUND IN SOURCE
+msgid "July"
+msgstr "Julho"
 
 #: share/html/Ticket/Elements/Tabs:142
 msgid "Jumbo"
@@ -3297,15 +3353,19 @@ msgstr ""
 
 #: lib/RT/Date.pm:93
 msgid "Jun"
-msgstr ""
+msgstr "Jun"
 
 #: NOT FOUND IN SOURCE
 msgid "Jun."
 msgstr "Jun"
 
+#: NOT FOUND IN SOURCE
+msgid "June"
+msgstr "Junho"
+
 #: lib/RT/Installer.pm:78
 msgid "Keep 'localhost' if you're not sure. Leave blank to connect locally over a socket"
-msgstr ""
+msgstr "Mantenha 'localhost' se não tiver a certeza. Deixe em branco para ligar localmente sobre um socket"
 
 #: share/html/Admin/Users/Modify.html:96 share/html/Install/index.html:56 share/html/User/Prefs.html:78
 msgid "Language"
@@ -3315,7 +3375,7 @@ msgstr "Idioma"
 msgid "Language."
 msgstr "Idioma."
 
-#: share/html/Search/Elements/EditFormat:79
+#: share/html/Search/Elements/EditFormat:80
 msgid "Large"
 msgstr "Grande"
 
@@ -3337,11 +3397,11 @@ msgstr "Última actualização"
 
 #: share/html/Elements/ColumnMap:91
 msgid "Last Updated By"
-msgstr ""
+msgstr "Útima Actualização Por"
 
 #: share/html/Search/Elements/PickBasics:116
 msgid "Last updated by"
-msgstr ""
+msgstr "Útima actualização por"
 
 #: lib/RT/Graph/Tickets.pm:159 lib/RT/Tickets_Overlay.pm:123 share/html/Search/Elements/BuildFormatString:99
 msgid "LastUpdated"
@@ -3358,11 +3418,11 @@ msgstr ""
 #: share/html/Dashboards/Subscription.html:169
 #. ($session{'CurrentUser'}->UserObj->EmailAddress)
 msgid "Leave blank to send to your current email address (%1)"
-msgstr ""
+msgstr "Deixar em branco para enviar para o seu endereço de email actual (%1)"
 
 #: lib/RT/Installer.pm:88
 msgid "Leave empty to use the default value for your database"
-msgstr ""
+msgstr "Deixar em branco para usar o valor predefinido para a sua base de dados"
 
 #: lib/RT/Installer.pm:101
 msgid "Leave this alone to use the default dba username for your database type"
@@ -3378,7 +3438,7 @@ msgstr ""
 
 #: lib/RT/Config.pm:274
 msgid "Length in characters; Use '0' to show all messages inline, regardless of length"
-msgstr ""
+msgstr "Tamanho em caracteres; Use '0' para mostrar todas as mensagens, independentemente do tamanho"
 
 #: share/html/Admin/Users/Modify.html:111
 msgid "Let this user access RT"
@@ -3392,7 +3452,7 @@ msgstr "Permitir que este utilizador tenha direitos"
 msgid "Let's go!"
 msgstr ""
 
-#: share/html/Search/Elements/EditFormat:65
+#: share/html/Search/Elements/EditFormat:66
 msgid "Link"
 msgstr "Ligação"
 
@@ -3419,7 +3479,7 @@ msgstr "Ligação não encontrada"
 #: share/html/Ticket/ModifyLinks.html:48 share/html/Ticket/ModifyLinks.html:52
 #. ($Ticket->Id)
 msgid "Link ticket #%1"
-msgstr ""
+msgstr "Ligar ticket #%1"
 
 #: share/html/Admin/CustomFields/Modify.html:93
 msgid "Link values to"
@@ -3427,7 +3487,7 @@ msgstr "Ligar valores a"
 
 #: lib/RT/Tickets_Overlay.pm:108
 msgid "Linked"
-msgstr ""
+msgstr "Ligado"
 
 #: lib/RT/Tickets_Overlay.pm:110
 msgid "LinkedFrom"
@@ -3460,12 +3520,12 @@ msgstr ""
 #: lib/RT/SharedSetting.pm:113
 #. ($self->ObjectName, $self->Name)
 msgid "Loaded %1 %2"
-msgstr ""
+msgstr "Carregado %1 %2"
 
 #: share/html/Search/Elements/EditSearches:166
 #. ($SavedSearch->{'Description'})
 msgid "Loaded original \"%1\" saved search"
-msgstr ""
+msgstr "Carregada pesquisa guardada \"%1\" original"
 
 #: share/html/Admin/Tools/Configuration.html:65
 msgid "Loaded perl modules"
@@ -3474,13 +3534,13 @@ msgstr "Módulos perl carregados"
 #: share/html/Search/Elements/EditSearches:168
 #. ($SavedSearch->{'Description'})
 msgid "Loaded saved search \"%1\""
-msgstr ""
+msgstr "Carregada pesquisa guardada \"%1\""
 
 #: NOT FOUND IN SOURCE
 msgid "Loaded search %1"
 msgstr "Pesquisa %1 carregada"
 
-#: lib/RT/Config.pm:309
+#: lib/RT/Config.pm:319
 msgid "Locale"
 msgstr ""
 
@@ -3499,7 +3559,7 @@ msgstr "Ligado como %1"
 
 #: share/html/NoAuth/Logout.html:54
 msgid "Logged out"
-msgstr ""
+msgstr "Desligado"
 
 #: lib/RT/StyleGuide.pod:789 share/html/Elements/Login:102 share/html/Elements/Login:70 share/html/Elements/Login:86
 msgid "Login"
@@ -3509,13 +3569,13 @@ msgstr "Entrar"
 msgid "Logout"
 msgstr "Sair"
 
-#: lib/RT/CustomField_Overlay.pm:897
+#: lib/RT/CustomField_Overlay.pm:906
 msgid "Lookup type mismatch"
 msgstr ""
 
-#: lib/RT/Config.pm:328
+#: lib/RT/Config.pm:338
 msgid "Mail"
-msgstr ""
+msgstr "Correio"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:58
 msgid "Main type of links"
@@ -3563,11 +3623,11 @@ msgstr "Definir assunto"
 
 #: lib/RT/Group_Overlay.pm:95
 msgid "Make this group visible to user"
-msgstr ""
+msgstr "Tornar este grupo visível ao utilizador"
 
 #: share/html/Admin/index.html:74
 msgid "Manage custom fields and custom field values"
-msgstr ""
+msgstr "Gerir campos personalizados e valores dos campos personalizados"
 
 #: share/html/Admin/index.html:65
 msgid "Manage groups and group membership"
@@ -3583,7 +3643,7 @@ msgstr "Gerir queues e propriedades específicas das queues"
 
 #: share/html/Ticket/Graphs/index.html:67
 msgid "Manage saved graphs"
-msgstr ""
+msgstr "Gerir grafícos guardados"
 
 #: share/html/Admin/index.html:60
 msgid "Manage users and passwords"
@@ -3591,23 +3651,27 @@ msgstr "Gerir utilizadores e passwords"
 
 #: lib/RT/Date.pm:90
 msgid "Mar"
-msgstr ""
+msgstr "Mar"
 
 #: NOT FOUND IN SOURCE
 msgid "Mar."
 msgstr "Mar"
 
+#: NOT FOUND IN SOURCE
+msgid "March"
+msgstr "Março"
+
 #: share/html/Ticket/Display.html:170
 msgid "Marked all messages as seen"
-msgstr ""
+msgstr "Marcar todas as mensagens como lidas"
 
 #: lib/RT/Config.pm:272
 msgid "Maximum inline message length"
-msgstr ""
+msgstr "Tamanho máximo da mensagem inline"
 
 #: lib/RT/Date.pm:92
 msgid "May"
-msgstr ""
+msgstr "Maio"
 
 #: NOT FOUND IN SOURCE
 msgid "May."
@@ -3615,14 +3679,14 @@ msgstr "May"
 
 #: share/html/Elements/RT__Group/ColumnMap:61
 msgid "Member"
-msgstr ""
+msgstr "Membro"
 
-#: lib/RT/Transaction_Overlay.pm:741
+#: lib/RT/Transaction_Overlay.pm:788
 #. ($value)
 msgid "Member %1 added"
 msgstr "Membro %1 adicionado"
 
-#: lib/RT/Transaction_Overlay.pm:781
+#: lib/RT/Transaction_Overlay.pm:828
 #. ($value)
 msgid "Member %1 deleted"
 msgstr "Membro %1 apagado"
@@ -3634,7 +3698,7 @@ msgstr "Membro adicionado"
 #: lib/RT/Group_Overlay.pm:1016
 #. ($new_member_obj->Object->Name)
 msgid "Member added: %1"
-msgstr ""
+msgstr "Membro adicionado: %1"
 
 #: lib/RT/Group_Overlay.pm:1181
 msgid "Member deleted"
@@ -3656,12 +3720,12 @@ msgstr ""
 msgid "Members"
 msgstr "Membros"
 
-#: lib/RT/Transaction_Overlay.pm:738
+#: lib/RT/Transaction_Overlay.pm:785
 #. ($value)
 msgid "Membership in %1 added"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:778
+#: lib/RT/Transaction_Overlay.pm:825
 #. ($value)
 msgid "Membership in %1 deleted"
 msgstr ""
@@ -3675,15 +3739,15 @@ msgstr ""
 msgid "Memberships of the user %1"
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:2617
+#: lib/RT/Ticket_Overlay.pm:2631
 msgid "Merge Successful"
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:2495
+#: lib/RT/Ticket_Overlay.pm:2509
 msgid "Merge failed. Couldn't set EffectiveId"
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:2512
+#: lib/RT/Ticket_Overlay.pm:2526
 msgid "Merge failed. Couldn't set Status"
 msgstr ""
 
@@ -3691,7 +3755,7 @@ msgstr ""
 msgid "Merge into"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:744
+#: lib/RT/Transaction_Overlay.pm:791
 #. ($value)
 msgid "Merged into %1"
 msgstr ""
@@ -3706,7 +3770,7 @@ msgstr ""
 
 #: share/html/Ticket/Elements/ShowTransactionAttachments:245
 msgid "Message body not shown because it is not plain text."
-msgstr ""
+msgstr "Corpo da mensagem não visível por não ser texto"
 
 #: NOT FOUND IN SOURCE
 msgid "Message body not shown because it is too large or is not plain text."
@@ -3714,25 +3778,25 @@ msgstr "Corpo da mensagem não apresentado porque é grande demais ou não é te
 
 #: share/html/Ticket/Elements/ShowTransactionAttachments:159
 msgid "Message body not shown because it is too large."
-msgstr ""
+msgstr "Corpo da mensagem não visível por ser demasiado grande"
 
 #: lib/RT/Config.pm:212
 msgid "Message box height"
-msgstr ""
+msgstr "Altura da caixa de mensagem"
 
 #: lib/RT/Config.pm:203
 msgid "Message box width"
-msgstr ""
+msgstr "Largura da caixa de mensagem"
 
-#: lib/RT/Ticket_Overlay.pm:2171
+#: lib/RT/Ticket_Overlay.pm:2185
 msgid "Message could not be recorded"
 msgstr "Mensagem não pôde ser gravada"
 
 #: sbin/rt-email-digest:291
 msgid "Message for user"
-msgstr ""
+msgstr "Mensagem para o utilizador"
 
-#: lib/RT/Ticket_Overlay.pm:2174
+#: lib/RT/Ticket_Overlay.pm:2188
 msgid "Message recorded"
 msgstr "Mensagem gravada"
 
@@ -3742,7 +3806,7 @@ msgstr "Mensagens sobre este ticket não serão enviadas a..."
 
 #: lib/RT/Installer.pm:146
 msgid "Minimum password length"
-msgstr ""
+msgstr "Tamanho mínimo da password"
 
 #: share/html/Elements/SelectTimeUnits:50
 msgid "Minutes"
@@ -3750,11 +3814,11 @@ msgstr "Minutos"
 
 #: lib/RT/Record.pm:928
 msgid "Missing a primary key?: %1"
-msgstr ""
+msgstr "Chave primária em falta?: %1"
 
 #: share/html/Admin/Users/Modify.html:196 share/html/User/Prefs.html:98
 msgid "Mobile"
-msgstr ""
+msgstr "Telemóvel"
 
 #: share/html/Elements/RT__User/ColumnMap:96
 msgid "MobilePhone"
@@ -3767,12 +3831,12 @@ msgstr "Alterar Lista de Controle de Acessos"
 #: share/html/Admin/Elements/ObjectCustomFields:98
 #. (loc(lc($FriendlySubTypes)), loc(lc($Types)))
 msgid "Modify Custom Fields which apply to %1 for all %2"
-msgstr ""
+msgstr "Modificar Campos Personalizados que se aplicam a %1 para todos os %2"
 
 #: share/html/Admin/Elements/ObjectCustomFields:100
 #. (loc(lc($Types)))
 msgid "Modify Custom Fields which apply to all %1"
-msgstr ""
+msgstr "Modificar todos os Campos Personalizados que se aplicam a todos os %1"
 
 #: share/html/Admin/Global/GroupRights.html:108 share/html/Admin/Groups/GroupRights.html:96 share/html/Admin/Queues/GroupRights.html:109
 msgid "Modify Group Rights"
@@ -3801,7 +3865,7 @@ msgstr "Alterar Direitos de Utilizadores"
 #: share/html/Admin/Queues/CustomField.html:68
 #. ($QueueObj->Name())
 msgid "Modify a CustomField for queue %1"
-msgstr ""
+msgstr "Modificar um Campo Personalizado para a queue %1"
 
 #: share/html/Admin/Queues/Scrip.html:83
 #. ($QueueObj->Name)
@@ -3815,11 +3879,11 @@ msgstr "Alterar uma scrip que se aplica a todas as queues"
 #: share/html/Admin/CustomFields/Objects.html:92
 #. ($CF->Name)
 msgid "Modify associated objects for %1"
-msgstr ""
+msgstr "Mofificar objectos associados para %1"
 
 #: lib/RT/Queue_Overlay.pm:97
 msgid "Modify custom field values"
-msgstr ""
+msgstr "Modificar valores dos campos personalizados"
 
 #: lib/RT/Group_Overlay.pm:99
 msgid "Modify dashboards for this group"
@@ -3837,7 +3901,7 @@ msgstr "Alterar datas do ticket # %1"
 
 #: share/html/Admin/Global/index.html:66
 msgid "Modify global custom fields"
-msgstr ""
+msgstr "Modificar campos personalizados globais"
 
 #: share/html/Admin/Global/GroupRights.html:48 share/html/Admin/Global/GroupRights.html:51 share/html/Admin/Global/index.html:71
 msgid "Modify global group rights"
@@ -3857,12 +3921,12 @@ msgstr "Alterar direitos de utilizador globais"
 
 #: lib/RT/Group_Overlay.pm:87
 msgid "Modify group metadata or delete group"
-msgstr ""
+msgstr "Modificar metadados do grupo ou eliminar grupo"
 
 #: share/html/Admin/CustomFields/GroupRights.html:108
 #. ($CustomFieldObj->Name)
 msgid "Modify group rights for custom field %1"
-msgstr ""
+msgstr "Modificar direitos do grupo para campo personalizado %1"
 
 #: share/html/Admin/Groups/GroupRights.html:48 share/html/Admin/Groups/GroupRights.html:52 share/html/Admin/Groups/GroupRights.html:58
 #. ($GroupObj->Name)
@@ -3910,7 +3974,7 @@ msgstr "Alterar scrips que se aplicam a todas as queues"
 msgid "Modify system dashboards"
 msgstr ""
 
-#: share/html/Admin/Global/Template.html:101 share/html/Admin/Queues/Template.html:101
+#: share/html/Admin/Global/Template.html:101 share/html/Admin/Queues/Template.html:102
 #. (loc($TemplateObj->Name()))
 msgid "Modify template %1"
 msgstr "Alterar template %1"
@@ -3969,7 +4033,7 @@ msgstr "Alterar tickets"
 #: share/html/Admin/CustomFields/UserRights.html:99
 #. ($CustomFieldObj->Name)
 msgid "Modify user rights for custom field %1"
-msgstr ""
+msgstr "Modificar direitos de utilizador para campo personalizado %1"
 
 #: share/html/Admin/Groups/UserRights.html:48 share/html/Admin/Groups/UserRights.html:52 share/html/Admin/Groups/UserRights.html:58
 #. ($GroupObj->Name)
@@ -4027,7 +4091,7 @@ msgstr ""
 
 #: lib/RT/Date.pm:104
 msgid "Mon"
-msgstr ""
+msgstr "Seg"
 
 #: NOT FOUND IN SOURCE
 msgid "Mon."
@@ -4035,17 +4099,17 @@ msgstr "Mon"
 
 #: share/html/Dashboards/Subscription.html:109
 msgid "Monday"
-msgstr ""
+msgstr "Segunda-Feira"
 
 #: share/html/Dashboards/Subscription.html:103
 msgid "Monday through Friday"
-msgstr ""
+msgstr "De Segunda a Sexta"
 
 #: share/html/Elements/DashboardTabs:40
 msgid "More"
-msgstr ""
+msgstr "Mais"
 
-#: share/html/Ticket/Elements/ShowRequestor:70
+#: share/html/Ticket/Elements/ShowRequestor:75
 #. ($name)
 msgid "More about %1"
 msgstr "Mais sobre %1"
@@ -4064,7 +4128,7 @@ msgstr "Múltiplo"
 
 #: lib/RT/User_Overlay.pm:160
 msgid "Must specify 'Name' attribute"
-msgstr ""
+msgstr "Deve espedificar atributo \"Nome\""
 
 #: share/html/SelfService/Elements/MyRequests:82
 #. ($friendly_status)
@@ -4073,7 +4137,7 @@ msgstr "Os meus %1 tickets"
 
 #: share/html/Tools/Elements/Tabs:70 share/html/Tools/index.html:73
 msgid "My Day"
-msgstr ""
+msgstr "O Meu Dia"
 
 #: share/html/Approvals/index.html:48 share/html/Approvals/index.html:49
 msgid "My approvals"
@@ -4089,11 +4153,11 @@ msgstr "As minhas pesquisas guardadas"
 
 #: lib/RT/Installer.pm:66
 msgid "MySQL"
-msgstr ""
+msgstr "MySQL"
 
 #: share/html/Search/Elements/BuildFormatString:99
 msgid "NEWLINE"
-msgstr ""
+msgstr "Nova linha"
 
 #: share/html/Admin/CustomFields/Modify.html:61 share/html/Admin/Elements/AddCustomFieldValue:54 share/html/Admin/Elements/EditCustomField:57 share/html/Admin/Elements/EditCustomFieldValues:58 share/html/Admin/Elements/ModifyTemplate:51 share/html/Admin/Groups/Modify.html:67 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Dashboards/Elements/ShowDashboards:79 share/html/Dashboards/Modify.html:65 share/html/Elements/RT__Group/ColumnMap:77 share/html/Elements/RT__Queue/ColumnMap:74 share/html/Elements/RT__Template/ColumnMap:61 share/html/Elements/RT__User/ColumnMap:61 share/html/Search/Bulk.html:180 share/html/User/Groups/Modify.html:67
 msgid "Name"
@@ -4113,7 +4177,7 @@ msgstr "Nunca"
 
 #: share/html/Admin/Global/Scrip.html:65 share/html/Admin/Global/Scrips.html:62 share/html/Admin/Global/Template.html:80 share/html/Admin/Global/Templates.html:62 share/html/Dashboards/Elements/Tabs:102 share/html/Elements/RT__Ticket/ColumnMap:251
 msgid "New"
-msgstr ""
+msgstr "Novo"
 
 #: share/html/Elements/EditLinks:118
 msgid "New Links"
@@ -4127,18 +4191,18 @@ msgstr "Nova Password"
 msgid "New Pending Approval"
 msgstr "Novas aprovações pendentes"
 
-#: share/html/Ticket/Elements/Tabs:261
+#: share/html/Ticket/Elements/Tabs:269
 msgid "New Search"
 msgstr "Nova Pesquisa"
 
 #: share/html/Tools/MyDay.html:53
 #. ($session{'CurrentUser'}->Name)
 msgid "New and open tickets for %1"
-msgstr ""
+msgstr "Tickets novos e abertos para %1"
 
 #: share/html/Admin/Queues/CustomField.html:75
 msgid "New custom field"
-msgstr ""
+msgstr "Novo campo personalizado"
 
 #: share/html/User/Elements/GroupTabs:75
 msgid "New group"
@@ -4146,7 +4210,7 @@ msgstr "Novo grupo"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:246 share/html/Ticket/Elements/ShowUpdateStatus:49
 msgid "New messages"
-msgstr ""
+msgstr "Novas mensagens"
 
 #: share/html/SelfService/Prefs.html:55
 msgid "New password"
@@ -4154,7 +4218,7 @@ msgstr "Nova password"
 
 #: lib/RT/User_Overlay.pm:725
 msgid "New password notification sent"
-msgstr ""
+msgstr "Notificação de nova password enviada"
 
 #: NOT FOUND IN SOURCE
 msgid "New queue"
@@ -4180,7 +4244,7 @@ msgstr "Novo template"
 msgid "New ticket"
 msgstr "Novo ticket"
 
-#: lib/RT/Ticket_Overlay.pm:2472
+#: lib/RT/Ticket_Overlay.pm:2486
 msgid "New ticket doesn't exist"
 msgstr "Novo ticket não existe"
 
@@ -4206,7 +4270,7 @@ msgstr "Próxima Página"
 
 #: share/html/Elements/RT__User/ColumnMap:71
 msgid "NickName"
-msgstr ""
+msgstr "Alcunha"
 
 #: share/html/Admin/Users/Modify.html:86 share/html/User/Prefs.html:74
 msgid "Nickname"
@@ -4214,7 +4278,7 @@ msgstr "Nick"
 
 #: share/html/Elements/RT__Ticket/ColumnMap:248 share/html/Widgets/Form/Boolean:79
 msgid "No"
-msgstr ""
+msgstr "Não"
 
 #: lib/RT/SharedSetting.pm:224
 #. ($self->ObjectName)
@@ -4225,7 +4289,7 @@ msgstr ""
 msgid "No Class defined"
 msgstr ""
 
-#: share/html/Admin/CustomFields/Modify.html:155 share/html/Admin/Elements/EditCustomField:121
+#: share/html/Admin/CustomFields/Modify.html:167 share/html/Admin/Elements/EditCustomField:121
 msgid "No CustomField"
 msgstr ""
 
@@ -4251,21 +4315,21 @@ msgstr ""
 
 #: share/html/Search/Results.rdf:88
 msgid "No Subject"
-msgstr ""
+msgstr "Sem Assunto"
 
-#: share/html/Admin/Global/Template.html:99 share/html/Admin/Queues/Template.html:99
+#: share/html/Admin/Global/Template.html:99 share/html/Admin/Queues/Template.html:100
 msgid "No Template"
-msgstr ""
+msgstr "Sem Modelo"
 
 #: share/html/Approvals/Elements/Approve:79
 msgid "No action"
-msgstr ""
+msgstr "Sem acção"
 
 #: lib/RT/Record.pm:923
 msgid "No column specified"
-msgstr ""
+msgstr "Sem coluna especificada"
 
-#: share/html/Ticket/Elements/ShowRequestor:78
+#: share/html/Ticket/Elements/ShowRequestor:83
 msgid "No comment entered about this user"
 msgstr ""
 
@@ -4286,21 +4350,25 @@ msgstr "Grupo não especificado"
 msgid "No groups matching search criteria found."
 msgstr "Nenhum grupo verificou o critério de pesquisa especificado."
 
-#: lib/RT/Attachment_Overlay.pm:653
+#: lib/RT/Attachment_Overlay.pm:671
 msgid "No key suitable for encryption"
-msgstr ""
+msgstr "Sem chave adequada para encriptação"
 
 #: share/html/Admin/Elements/ShowKeyInfo:50
 msgid "No keys for this address"
-msgstr ""
+msgstr "Sem chaves para este endereço"
 
-#: lib/RT/Ticket_Overlay.pm:2115
+#: lib/RT/Ticket_Overlay.pm:2129
 msgid "No message attached"
 msgstr "Sem mensagem anexada"
 
-#: lib/RT/Attachment_Overlay.pm:633
-msgid "No need to encrypt"
+#: lib/RT/CustomField_Overlay.pm:321
+msgid "No name provided"
 msgstr ""
+
+#: lib/RT/Attachment_Overlay.pm:651
+msgid "No need to encrypt"
+msgstr "Sem necessidade de encriptação"
 
 #: lib/RT/User_Overlay.pm:935
 msgid "No password set"
@@ -4329,7 +4397,7 @@ msgstr "Não tem permissão para gravar uma pesquisa de sistema"
 
 #: lib/RT/User_Overlay.pm:1383
 msgid "No permission to set preferences"
-msgstr ""
+msgstr "Sem permissões para definir preferências"
 
 #: share/html/SelfService/Update.html:122
 msgid "No permission to view update ticket"
@@ -4345,7 +4413,7 @@ msgstr ""
 
 #: share/html/Admin/Users/GnuPG.html:72
 msgid "No private key"
-msgstr ""
+msgstr "Sem chave privada"
 
 #: share/html/Admin/Queues/index.html:58
 msgid "No queues matching search criteria found."
@@ -4353,15 +4421,15 @@ msgstr "Nenhuma fila verificou os critérios de pesquisa especificados"
 
 #: lib/RT/ACE_Overlay.pm:223
 msgid "No right specified"
-msgstr ""
+msgstr "Sem direito especificado"
 
 #: share/html/Admin/Elements/SelectRights:111
 msgid "No rights found"
-msgstr ""
+msgstr "Não foram encontrados direitos"
 
 #: share/html/Admin/Elements/SelectRights:64
 msgid "No rights granted."
-msgstr ""
+msgstr "Sem direitos atribuídos"
 
 #: NOT FOUND IN SOURCE
 msgid "No search loaded"
@@ -4377,19 +4445,19 @@ msgstr "Sem assunto"
 
 #: lib/RT/User_Overlay.pm:1690
 msgid "No such key or it's not suitable for signing"
-msgstr ""
+msgstr "Chave inexistente ou inadequada para assinatura"
 
 #: share/html/Search/Chart:98
 msgid "No tickets found."
 msgstr "Tickets não encontrados"
 
-#: lib/RT/Transaction_Overlay.pm:543 lib/RT/Transaction_Overlay.pm:569
+#: lib/RT/Transaction_Overlay.pm:590 lib/RT/Transaction_Overlay.pm:616
 msgid "No transaction type specified"
-msgstr ""
+msgstr "Sem tipo de transacção especificado"
 
 #: share/html/Elements/GnuPG/SelectKeyForEncryption:49
 msgid "No usable keys."
-msgstr ""
+msgstr "Sem chaves utilizáveis."
 
 #: share/html/Admin/Users/index.html:56
 msgid "No users matching search criteria found."
@@ -4397,7 +4465,7 @@ msgstr "Nenhum proprietário verificou o critério de pesquisa."
 
 #: lib/RT/Record.pm:920
 msgid "No value sent to _Set!\\n"
-msgstr ""
+msgstr "Sem valor enviado para _Set!\\n"
 
 #: share/html/Elements/QuickCreate:61
 msgid "Nobody"
@@ -4405,19 +4473,19 @@ msgstr "Nobody"
 
 #: share/html/Dashboards/Elements/ShowSubscription:58
 msgid "None"
-msgstr ""
+msgstr "Nenhum"
 
 #: lib/RT/Record.pm:925
 msgid "Nonexistant field?"
-msgstr ""
+msgstr "Campo inexistente?"
 
 #: share/html/Search/Chart:154 share/html/Search/Elements/Chart:91
 msgid "Not Set"
 msgstr "Não definido"
 
-#: lib/RT/CustomField_Overlay.pm:346
+#: lib/RT/CustomField_Overlay.pm:355
 msgid "Not found"
-msgstr ""
+msgstr "Não encontrado"
 
 #: share/html/Elements/PersonalQuickbar:12
 msgid "Not logged in."
@@ -4425,15 +4493,15 @@ msgstr "Desligado"
 
 #: lib/RT/Date.pm:398
 msgid "Not set"
-msgstr ""
+msgstr "Não definido"
 
 #: share/html/NoAuth/Reminder.html:50
 msgid "Not yet implemented."
-msgstr ""
+msgstr "Ainda não foi implementado."
 
 #: share/html/Approvals/Elements/Approve:83
 msgid "Notes"
-msgstr ""
+msgstr "Observações"
 
 #: lib/RT/User_Overlay.pm:728
 msgid "Notification could not be sent"
@@ -4473,31 +4541,31 @@ msgstr "Notificar Proprietário como comentário"
 
 #: etc/initialdata:357 etc/upgrade/3.8.2/content:85
 msgid "Notify Owner of their rejected ticket"
-msgstr ""
+msgstr "Notificar Dono do seu ticket rejeitado"
 
 #: etc/initialdata:370 etc/upgrade/3.8.2/content:98
 msgid "Notify Owner of their ticket has been approved and is ready to be acted on"
-msgstr ""
+msgstr "Notificar Dono que o seu ticket foi aprovado e está pronto para que tomem uma acção sobre o mesmo"
 
 #: lib/RT/Approval/Rule/Created.pm:56 lib/RT/Approval/Rule/Passed.pm:54
 msgid "Notify Owner of their ticket has been approved by some or all approvers"
-msgstr ""
+msgstr "Notificar Dono que o seu ticket foi aprovado por alguém ou por todos os aprovadores"
 
 #: etc/initialdata:75
 msgid "Notify Owner, Requestors, Ccs and AdminCcs"
-msgstr ""
+msgstr "Notidicar Dono, Requerentes, Ccs e AdminCcs"
 
 #: etc/initialdata:71
 msgid "Notify Owner, Requestors, Ccs and AdminCcs as Comment"
-msgstr ""
+msgstr "Notidicar Dono, Requerentes, Ccs e AdminCcs como Comentário"
 
 #: etc/initialdata:310 etc/upgrade/3.8.2/content:38
 msgid "Notify Owners and AdminCcs of new items pending their approval"
-msgstr ""
+msgstr "Notificar Donos e AdminCcs de novos itens com aprovação pendente"
 
 #: etc/initialdata:343 etc/upgrade/3.8.2/content:71
 msgid "Notify Requestor of their ticket has been approved by all approvers"
-msgstr ""
+msgstr "Notificar requerente que o seu ticket foi aprovado por todos os aprovadores"
 
 #: etc/initialdata:329 etc/upgrade/3.8.2/content:57
 msgid "Notify Requestor of their ticket has been approved by some approver"
@@ -4565,7 +4633,7 @@ msgstr "Objecto apagado"
 msgid "Object of type %1 cannot take custom fields"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:931
+#: lib/RT/CustomField_Overlay.pm:940
 msgid "Object type mismatch"
 msgstr ""
 
@@ -4680,7 +4748,7 @@ msgstr "Tickets Abertos"
 msgid "Open URL"
 msgstr ""
 
-#: share/html/Ticket/Elements/Tabs:188
+#: share/html/Ticket/Elements/Tabs:196
 msgid "Open it"
 msgstr "Abrir"
 
@@ -4713,11 +4781,11 @@ msgstr "Organização"
 msgid "Originating ticket: #%1"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:632
+#: lib/RT/Transaction_Overlay.pm:679
 msgid "Outgoing email about a comment recorded"
 msgstr "Registado email sobre um comentário"
 
-#: lib/RT/Transaction_Overlay.pm:636
+#: lib/RT/Transaction_Overlay.pm:683
 msgid "Outgoing email recorded"
 msgstr "Registado email"
 
@@ -4733,7 +4801,7 @@ msgstr "Próprios tickets"
 msgid "OwnTicket"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:99 lib/RT/Graph/Tickets.pm:158 lib/RT/Tickets_Overlay.pm:2195 lib/RT/Tickets_Overlay.pm:98 share/html/Elements/QuickCreate:58 share/html/Elements/RT__Ticket/ColumnMap:274 share/html/Elements/RT__Ticket/ColumnMap:89 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Create.html:76 share/html/Ticket/Elements/EditBasics:63 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:138 share/html/Ticket/Elements/ShowPeople:50 share/html/Ticket/Update.html:71
+#: lib/RT/ACE_Overlay.pm:99 lib/RT/Graph/Tickets.pm:158 lib/RT/Tickets_Overlay.pm:2207 lib/RT/Tickets_Overlay.pm:98 share/html/Elements/QuickCreate:58 share/html/Elements/RT__Ticket/ColumnMap:274 share/html/Elements/RT__Ticket/ColumnMap:89 share/html/Search/Elements/PickBasics:114 share/html/Ticket/Create.html:76 share/html/Ticket/Elements/EditBasics:63 share/html/Ticket/Elements/EditPeople:66 share/html/Ticket/Elements/EditPeople:67 share/html/Ticket/Elements/Reminders:138 share/html/Ticket/Elements/ShowPeople:50 share/html/Ticket/Update.html:71
 msgid "Owner"
 msgstr "Dono"
 
@@ -4742,7 +4810,7 @@ msgstr "Dono"
 msgid "Owner '%1' does not have rights to own this ticket."
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:2827
+#: lib/RT/Ticket_Overlay.pm:2841
 #. ($OldOwnerObj->Name, $NewOwnerObj->Name)
 msgid "Owner changed from %1 to %2"
 msgstr "Dono alterado de %1 para %2"
@@ -4751,7 +4819,7 @@ msgstr "Dono alterado de %1 para %2"
 msgid "Owner could not be set."
 msgstr "Dono não pôde ser definido."
 
-#: lib/RT/Transaction_Overlay.pm:682
+#: lib/RT/Transaction_Overlay.pm:729
 #. ($Old->Name , $New->Name)
 msgid "Owner forcibly changed from %1 to %2"
 msgstr "Proprietário forçado de %1 para %2"
@@ -4796,7 +4864,7 @@ msgstr "Password"
 msgid "Password Reminder"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:806 lib/RT/User_Overlay.pm:946
+#: lib/RT/Transaction_Overlay.pm:853 lib/RT/User_Overlay.pm:946
 msgid "Password changed"
 msgstr "Password alterada"
 
@@ -4809,7 +4877,7 @@ msgstr "A Password tem de ter pelo menos %1 caracteres"
 msgid "Password set"
 msgstr "Password definida"
 
-#: share/html/User/Prefs.html:251
+#: share/html/User/Prefs.html:266
 #. (loc_fuzzy($msg))
 msgid "Password: %1"
 msgstr "Password: %1"
@@ -4818,7 +4886,7 @@ msgstr "Password: %1"
 msgid "Password: Permission Denied"
 msgstr "Password: Permissão Negada"
 
-#: etc/initialdata:434
+#: etc/initialdata:441
 msgid "PasswordChange"
 msgstr ""
 
@@ -4826,7 +4894,7 @@ msgstr ""
 msgid "Passwords do not match."
 msgstr "As passwords não coincidem."
 
-#: share/html/User/Prefs.html:253
+#: share/html/User/Prefs.html:268
 msgid "Passwords do not match. Your password has not been changed"
 msgstr "As passwords não coincidem. A sua password não foi alterada"
 
@@ -4850,7 +4918,7 @@ msgstr ""
 msgid "Perl configuration"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:255 lib/RT/ACE_Overlay.pm:261 lib/RT/ACE_Overlay.pm:360 lib/RT/ACE_Overlay.pm:370 lib/RT/ACE_Overlay.pm:380 lib/RT/ACE_Overlay.pm:445 lib/RT/Attachment_Overlay.pm:619 lib/RT/Attachment_Overlay.pm:620 lib/RT/Attachment_Overlay.pm:681 lib/RT/Attachment_Overlay.pm:682 lib/RT/Attribute_Overlay.pm:161 lib/RT/Attribute_Overlay.pm:167 lib/RT/Attribute_Overlay.pm:376 lib/RT/Attribute_Overlay.pm:385 lib/RT/Attribute_Overlay.pm:398 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomFieldValue_Overlay.pm:83 lib/RT/CustomField_Overlay.pm:1096 lib/RT/CustomField_Overlay.pm:1239 lib/RT/CustomField_Overlay.pm:188 lib/RT/CustomField_Overlay.pm:205 lib/RT/CustomField_Overlay.pm:216 lib/RT/CustomField_Overlay.pm:395 lib/RT/CustomField_Overlay.pm:424 lib/RT/CustomField_Overlay.pm:730 lib/RT/CustomField_Overlay.pm:901 lib/RT/CustomField_Overlay.pm:935 lib/RT/CustomField_Overlay.pm:980 lib/RT/Group_Overlay.pm:1136 lib/RT/Group_Overlay.pm:1140 lib/RT/Group_Overlay.pm:1149 lib/RT/Group_Overlay.pm:1259 lib/RT/Group_Overlay.pm:1263 lib/RT/Group_Overlay.pm:1269 lib/RT/Group_Overlay.pm:401 lib/RT/Group_Overlay.pm:499 lib/RT/Group_Overlay.pm:577 lib/RT/Group_Overlay.pm:585 lib/RT/Group_Overlay.pm:683 lib/RT/Group_Overlay.pm:687 lib/RT/Group_Overlay.pm:693 lib/RT/Group_Overlay.pm:938 lib/RT/Group_Overlay.pm:942 lib/RT/Group_Overlay.pm:955 lib/RT/Queue_Overlay.pm:1156 lib/RT/Queue_Overlay.pm:158 lib/RT/Queue_Overlay.pm:176 lib/RT/Queue_Overlay.pm:514 lib/RT/Queue_Overlay.pm:540 lib/RT/Queue_Overlay.pm:562 lib/RT/Queue_Overlay.pm:775 lib/RT/Queue_Overlay.pm:921 lib/RT/Queue_Overlay.pm:930 lib/RT/Queue_Overlay.pm:943 lib/RT/Scrip_Overlay.pm:113 lib/RT/Scrip_Overlay.pm:124 lib/RT/Scrip_Overlay.pm:188 lib/RT/Scrip_Overlay.pm:497 lib/RT/Template_Overlay.pm:215 lib/RT/Template_Overlay.pm:224 lib/RT/Template_Overlay.pm:250 lib/RT/Template_Overlay.pm:379 lib/RT/Template_Overlay.pm:99 lib/RT/Ticket_Overlay.pm:1063 lib/RT/Ticket_Overlay.pm:1069 lib/RT/Ticket_Overlay.pm:1076 lib/RT/Ticket_Overlay.pm:1213 lib/RT/Ticket_Overlay.pm:1223 lib/RT/Ticket_Overlay.pm:1237 lib/RT/Ticket_Overlay.pm:1333 lib/RT/Ticket_Overlay.pm:1690 lib/RT/Ticket_Overlay.pm:1844 lib/RT/Ticket_Overlay.pm:2014 lib/RT/Ticket_Overlay.pm:2064 lib/RT/Ticket_Overlay.pm:2253 lib/RT/Ticket_Overlay.pm:2266 lib/RT/Ticket_Overlay.pm:2347 lib/RT/Ticket_Overlay.pm:2360 lib/RT/Ticket_Overlay.pm:2463 lib/RT/Ticket_Overlay.pm:2477 lib/RT/Ticket_Overlay.pm:2729 lib/RT/Ticket_Overlay.pm:2740 lib/RT/Ticket_Overlay.pm:2746 lib/RT/Ticket_Overlay.pm:2949 lib/RT/Ticket_Overlay.pm:2953 lib/RT/Ticket_Overlay.pm:3090 lib/RT/Ticket_Overlay.pm:3251 lib/RT/Transaction_Overlay.pm:539 lib/RT/Transaction_Overlay.pm:563 lib/RT/User_Overlay.pm:1136 lib/RT/User_Overlay.pm:124 lib/RT/User_Overlay.pm:1550 lib/RT/User_Overlay.pm:283 lib/RT/User_Overlay.pm:673 lib/RT/User_Overlay.pm:708 share/html/Ticket/Forward.html:85
+#: lib/RT/ACE_Overlay.pm:255 lib/RT/ACE_Overlay.pm:261 lib/RT/ACE_Overlay.pm:360 lib/RT/ACE_Overlay.pm:370 lib/RT/ACE_Overlay.pm:380 lib/RT/ACE_Overlay.pm:445 lib/RT/Attachment_Overlay.pm:637 lib/RT/Attachment_Overlay.pm:638 lib/RT/Attachment_Overlay.pm:699 lib/RT/Attachment_Overlay.pm:700 lib/RT/Attribute_Overlay.pm:161 lib/RT/Attribute_Overlay.pm:167 lib/RT/Attribute_Overlay.pm:376 lib/RT/Attribute_Overlay.pm:385 lib/RT/Attribute_Overlay.pm:398 lib/RT/CurrentUser.pm:137 lib/RT/CurrentUser.pm:143 lib/RT/CurrentUser.pm:149 lib/RT/CustomFieldValue_Overlay.pm:83 lib/RT/CustomField_Overlay.pm:1105 lib/RT/CustomField_Overlay.pm:1246 lib/RT/CustomField_Overlay.pm:188 lib/RT/CustomField_Overlay.pm:205 lib/RT/CustomField_Overlay.pm:216 lib/RT/CustomField_Overlay.pm:403 lib/RT/CustomField_Overlay.pm:432 lib/RT/CustomField_Overlay.pm:738 lib/RT/CustomField_Overlay.pm:910 lib/RT/CustomField_Overlay.pm:944 lib/RT/CustomField_Overlay.pm:989 lib/RT/Group_Overlay.pm:1136 lib/RT/Group_Overlay.pm:1140 lib/RT/Group_Overlay.pm:1149 lib/RT/Group_Overlay.pm:1259 lib/RT/Group_Overlay.pm:1263 lib/RT/Group_Overlay.pm:1269 lib/RT/Group_Overlay.pm:401 lib/RT/Group_Overlay.pm:499 lib/RT/Group_Overlay.pm:577 lib/RT/Group_Overlay.pm:585 lib/RT/Group_Overlay.pm:683 lib/RT/Group_Overlay.pm:687 lib/RT/Group_Overlay.pm:693 lib/RT/Group_Overlay.pm:938 lib/RT/Group_Overlay.pm:942 lib/RT/Group_Overlay.pm:955 lib/RT/Queue_Overlay.pm:1156 lib/RT/Queue_Overlay.pm:158 lib/RT/Queue_Overlay.pm:176 lib/RT/Queue_Overlay.pm:514 lib/RT/Queue_Overlay.pm:540 lib/RT/Queue_Overlay.pm:562 lib/RT/Queue_Overlay.pm:775 lib/RT/Queue_Overlay.pm:921 lib/RT/Queue_Overlay.pm:930 lib/RT/Queue_Overlay.pm:943 lib/RT/Scrip_Overlay.pm:113 lib/RT/Scrip_Overlay.pm:124 lib/RT/Scrip_Overlay.pm:188 lib/RT/Scrip_Overlay.pm:497 lib/RT/Template_Overlay.pm:215 lib/RT/Template_Overlay.pm:224 lib/RT/Template_Overlay.pm:250 lib/RT/Template_Overlay.pm:379 lib/RT/Template_Overlay.pm:99 lib/RT/Ticket_Overlay.pm:1063 lib/RT/Ticket_Overlay.pm:1069 lib/RT/Ticket_Overlay.pm:1076 lib/RT/Ticket_Overlay.pm:1213 lib/RT/Ticket_Overlay.pm:1223 lib/RT/Ticket_Overlay.pm:1237 lib/RT/Ticket_Overlay.pm:1333 lib/RT/Ticket_Overlay.pm:1690 lib/RT/Ticket_Overlay.pm:1844 lib/RT/Ticket_Overlay.pm:2028 lib/RT/Ticket_Overlay.pm:2078 lib/RT/Ticket_Overlay.pm:2267 lib/RT/Ticket_Overlay.pm:2280 lib/RT/Ticket_Overlay.pm:2361 lib/RT/Ticket_Overlay.pm:2374 lib/RT/Ticket_Overlay.pm:2477 lib/RT/Ticket_Overlay.pm:2491 lib/RT/Ticket_Overlay.pm:2743 lib/RT/Ticket_Overlay.pm:2754 lib/RT/Ticket_Overlay.pm:2760 lib/RT/Ticket_Overlay.pm:2963 lib/RT/Ticket_Overlay.pm:2967 lib/RT/Ticket_Overlay.pm:3104 lib/RT/Ticket_Overlay.pm:3294 lib/RT/Transaction_Overlay.pm:586 lib/RT/Transaction_Overlay.pm:610 lib/RT/User_Overlay.pm:1136 lib/RT/User_Overlay.pm:124 lib/RT/User_Overlay.pm:1550 lib/RT/User_Overlay.pm:283 lib/RT/User_Overlay.pm:673 lib/RT/User_Overlay.pm:708 share/html/Ticket/Forward.html:85
 msgid "Permission Denied"
 msgstr "Permissão Negada"
 
@@ -4960,7 +5028,7 @@ msgstr ""
 msgid "Print this message"
 msgstr ""
 
-#: lib/RT/Tickets_Overlay.pm:103 lib/RT/Tickets_Overlay.pm:1979 share/html/Elements/RT__Queue/ColumnMap:66 share/html/Elements/RT__Ticket/ColumnMap:131 share/html/Search/Elements/BuildFormatString:99 share/html/Search/Elements/PickBasics:186 share/html/Ticket/Create.html:180 share/html/Ticket/Elements/EditBasics:102 share/html/Ticket/Elements/ShowBasics:76
+#: lib/RT/Tickets_Overlay.pm:103 lib/RT/Tickets_Overlay.pm:1991 share/html/Elements/RT__Queue/ColumnMap:66 share/html/Elements/RT__Ticket/ColumnMap:131 share/html/Search/Elements/BuildFormatString:99 share/html/Search/Elements/PickBasics:186 share/html/Ticket/Create.html:180 share/html/Ticket/Elements/EditBasics:102 share/html/Ticket/Elements/ShowBasics:76
 msgid "Priority"
 msgstr "Prioridade"
 
@@ -4984,7 +5052,7 @@ msgstr ""
 msgid "Privileged"
 msgstr "Privilegiados"
 
-#: share/html/Admin/Users/Modify.html:352 share/html/User/Prefs.html:244
+#: share/html/Admin/Users/Modify.html:352 share/html/User/Prefs.html:259
 #. (loc_fuzzy($msg))
 msgid "Privileged status: %1"
 msgstr ""
@@ -5022,7 +5090,7 @@ msgstr "Construtor de Pesquisas"
 msgid "Query:"
 msgstr "Pesquisa"
 
-#: lib/RT/Graph/Tickets.pm:157 lib/RT/Record.pm:911 lib/RT/Tickets_Overlay.pm:1806 lib/RT/Tickets_Overlay.pm:94 share/html/Elements/QueueSummary:50 share/html/Elements/QuickCreate:56 share/html/Elements/RT__Scrip/ColumnMap:61 share/html/Elements/RT__Ticket/ColumnMap:85 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:57 share/html/Ticket/Create.html:66 share/html/Ticket/Elements/EditBasics:59 share/html/Ticket/Elements/ShowBasics:80 share/html/Tools/Reports/CreatedByDates.html:87 share/html/Tools/Reports/ResolvedByDates.html:88 share/html/Tools/Reports/ResolvedByOwner.html:68
+#: lib/RT/Graph/Tickets.pm:157 lib/RT/Record.pm:911 lib/RT/Tickets_Overlay.pm:1818 lib/RT/Tickets_Overlay.pm:94 share/html/Elements/QueueSummary:50 share/html/Elements/QuickCreate:56 share/html/Elements/RT__Scrip/ColumnMap:61 share/html/Elements/RT__Ticket/ColumnMap:85 share/html/Search/Elements/PickBasics:83 share/html/SelfService/Create.html:57 share/html/Ticket/Create.html:66 share/html/Ticket/Elements/EditBasics:59 share/html/Ticket/Elements/ShowBasics:80 share/html/Tools/Reports/CreatedByDates.html:87 share/html/Tools/Reports/ResolvedByDates.html:88 share/html/Tools/Reports/ResolvedByOwner.html:68
 msgid "Queue"
 msgstr "Queue"
 
@@ -5244,22 +5312,22 @@ msgstr "Gravar todas as actualizações"
 msgid "Recursive member"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:735
+#: lib/RT/Transaction_Overlay.pm:782
 #. ($value)
 msgid "Reference by %1 added"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:775
+#: lib/RT/Transaction_Overlay.pm:822
 #. ($value)
 msgid "Reference by %1 deleted"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:732
+#: lib/RT/Transaction_Overlay.pm:779
 #. ($value)
 msgid "Reference to %1 added"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:772
+#: lib/RT/Transaction_Overlay.pm:819
 #. ($value)
 msgid "Reference to %1 deleted"
 msgstr ""
@@ -5337,17 +5405,17 @@ msgstr ""
 msgid "Refresh this page every %1 minutes."
 msgstr "Refrescar esta pagina de %1 em %1 minutos."
 
-#: lib/RT/Transaction_Overlay.pm:839
+#: lib/RT/Transaction_Overlay.pm:886
 #. ($ticket->Subject)
 msgid "Reminder '%1' added"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:852
+#: lib/RT/Transaction_Overlay.pm:899
 #. ($ticket->Subject)
 msgid "Reminder '%1' completed"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:845
+#: lib/RT/Transaction_Overlay.pm:892
 #. ($ticket->Subject)
 msgid "Reminder '%1' reopened"
 msgstr ""
@@ -5431,7 +5499,7 @@ msgstr ""
 msgid "Reset"
 msgstr ""
 
-#: share/html/User/Prefs.html:184
+#: share/html/User/Prefs.html:198
 msgid "Reset secret authentication token"
 msgstr ""
 
@@ -5443,7 +5511,7 @@ msgstr ""
 msgid "Residence"
 msgstr "Residência"
 
-#: share/html/Search/Elements/EditFormat:72 share/html/Ticket/Elements/Tabs:182
+#: share/html/Search/Elements/EditFormat:73 share/html/Ticket/Elements/Tabs:190
 msgid "Resolve"
 msgstr "Resolver"
 
@@ -5476,7 +5544,7 @@ msgstr "Tickets resolvidos, agrupados por dono"
 msgid "ResolvedRelative"
 msgstr ""
 
-#: share/html/Search/Elements/EditFormat:70
+#: share/html/Search/Elements/EditFormat:71
 msgid "Respond"
 msgstr ""
 
@@ -5528,7 +5596,7 @@ msgstr ""
 msgid "Rights"
 msgstr "Direitos"
 
-#: lib/RT/Interface/Web.pm:910
+#: lib/RT/Interface/Web.pm:1297
 #. ($object_type)
 msgid "Rights could not be granted for %1"
 msgstr ""
@@ -5573,11 +5641,11 @@ msgstr ""
 msgid "Save"
 msgstr "Gravar"
 
-#: share/html/Admin/CustomFields/Modify.html:126 share/html/Admin/Elements/EditScrip:141 share/html/Admin/Global/Template.html:102 share/html/Admin/Groups/Modify.html:97 share/html/Admin/Queues/Modify.html:136 share/html/Admin/Queues/People.html:130 share/html/Admin/Users/GnuPG.html:75 share/html/Admin/Users/Modify.html:246 share/html/Dashboards/Modify.html:78 share/html/Dashboards/Subscription.html:178 share/html/Prefs/Other.html:78 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:71 share/html/Prefs/SearchOptions.html:65 share/html/SelfService/Prefs.html:60 share/html/Ticket/Elements/PreviewScrips:94 share/html/Ticket/Modify.html:65 share/html/Ticket/ModifyAll.html:144 share/html/Ticket/ModifyDates.html:63 share/html/Ticket/ModifyLinks.html:65 share/html/Ticket/ModifyPeople.html:63 share/html/User/Groups/Modify.html:79
+#: share/html/Admin/CustomFields/Modify.html:137 share/html/Admin/Elements/EditScrip:141 share/html/Admin/Global/Template.html:102 share/html/Admin/Groups/Modify.html:97 share/html/Admin/Queues/Modify.html:136 share/html/Admin/Queues/People.html:130 share/html/Admin/Queues/Template.html:103 share/html/Admin/Users/GnuPG.html:75 share/html/Admin/Users/Modify.html:246 share/html/Dashboards/Modify.html:78 share/html/Dashboards/Subscription.html:178 share/html/Prefs/Other.html:78 share/html/Prefs/Quicksearch.html:66 share/html/Prefs/Search.html:71 share/html/Prefs/SearchOptions.html:65 share/html/SelfService/Prefs.html:60 share/html/Ticket/Elements/PreviewScrips:94 share/html/Ticket/Modify.html:65 share/html/Ticket/ModifyAll.html:144 share/html/Ticket/ModifyDates.html:63 share/html/Ticket/ModifyLinks.html:65 share/html/Ticket/ModifyPeople.html:63 share/html/User/Groups/Modify.html:79
 msgid "Save Changes"
 msgstr "Gravar Alterações"
 
-#: share/html/User/Prefs.html:192
+#: share/html/User/Prefs.html:206
 msgid "Save Preferences"
 msgstr "Gravar Preferências"
 
@@ -5686,7 +5754,7 @@ msgstr "Actualização de pesquisa: %1"
 msgid "Searching the full text of every ticket can take a long time, but if you need to do it, you can search for any word in full ticket history for any word by typing <b>fulltext:<i>word</i></b>."
 msgstr "Procurar com o texto completo pode levar muito tempo a realizar, mas se for realmente necessário, pode efectuar uma pesquisa por qualquer palavra no historial do pedido ao especificar <b>fulltext:<i>palavra</i></b>."
 
-#: share/html/User/Prefs.html:180
+#: share/html/User/Prefs.html:194
 msgid "Secret authentication token"
 msgstr ""
 
@@ -5694,7 +5762,7 @@ msgstr ""
 msgid "Security:"
 msgstr "Segurança:"
 
-#: share/html/Elements/ShowCustomFields:104
+#: share/html/Elements/ShowCustomFields:108
 msgid "See also:"
 msgstr ""
 
@@ -5846,7 +5914,7 @@ msgstr ""
 msgid "Selections modified. Please save your changes"
 msgstr ""
 
-#: lib/RT/Interface/Email.pm:654
+#: lib/RT/Interface/Email.pm:677
 msgid "Send email successfully"
 msgstr ""
 
@@ -5922,7 +5990,7 @@ msgstr "Mostrar"
 msgid "Show Columns"
 msgstr ""
 
-#: share/html/Ticket/Elements/Tabs:301
+#: share/html/Ticket/Elements/Tabs:309
 msgid "Show Results"
 msgstr "Mostrar Resultados"
 
@@ -6003,12 +6071,12 @@ msgstr ""
 msgid "ShowTicketComments"
 msgstr ""
 
-#: share/html/Admin/Elements/ToolTabs:60 share/html/Admin/Tools/Shredder/index.html:78 share/html/Ticket/Elements/Tabs:290
+#: share/html/Admin/Elements/ToolTabs:60 share/html/Admin/Tools/Shredder/index.html:78 share/html/Ticket/Elements/Tabs:298
 msgid "Shredder"
 msgstr ""
 
 #: share/html/Admin/Tools/Shredder/Elements/Error/NoStorage:58
-#. ($Path)
+#. ($m->interp->apply_escapes( $Path ))
 msgid "Shredder needs a directory to write dumps to. Please check that you have <span class=\"file-path\">%1</span> and it is writable by your web server."
 msgstr ""
 
@@ -6032,7 +6100,7 @@ msgstr ""
 msgid "Sign up as a ticket or queue AdminCc"
 msgstr ""
 
-#: share/html/Admin/Users/Modify.html:234 share/html/User/Prefs.html:172
+#: share/html/Admin/Users/Modify.html:234 share/html/User/Prefs.html:186
 msgid "Signature"
 msgstr "Assinatura"
 
@@ -6056,7 +6124,7 @@ msgstr ""
 msgid "Site name"
 msgstr ""
 
-#: share/html/Search/Elements/EditFormat:75
+#: share/html/Search/Elements/EditFormat:76
 msgid "Size"
 msgstr "Tamanho"
 
@@ -6068,7 +6136,7 @@ msgstr ""
 msgid "Skipping disabled user"
 msgstr ""
 
-#: share/html/Search/Elements/EditFormat:78
+#: share/html/Search/Elements/EditFormat:79
 msgid "Small"
 msgstr "Pequeno"
 
@@ -6116,7 +6184,7 @@ msgstr ""
 msgid "State"
 msgstr "Estado"
 
-#: lib/RT/Graph/Tickets.pm:157 lib/RT/Ticket_Overlay.pm:910 lib/RT/Tickets_Overlay.pm:1840 lib/RT/Tickets_Overlay.pm:93 share/html/Elements/RT__Ticket/ColumnMap:104 share/html/Elements/RT__Ticket/ColumnMap:94 share/html/Search/Elements/BuildFormatString:99 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:60 share/html/Ticket/Create.html:70 share/html/Ticket/Elements/EditBasics:55 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Ticket/Update.html:68 share/html/Tools/MyDay.html:67
+#: lib/RT/Graph/Tickets.pm:157 lib/RT/Ticket_Overlay.pm:910 lib/RT/Tickets_Overlay.pm:1852 lib/RT/Tickets_Overlay.pm:93 share/html/Elements/RT__Ticket/ColumnMap:104 share/html/Elements/RT__Ticket/ColumnMap:94 share/html/Search/Elements/BuildFormatString:99 share/html/Search/Elements/PickBasics:97 share/html/SelfService/Update.html:60 share/html/Ticket/Create.html:70 share/html/Ticket/Elements/EditBasics:55 share/html/Ticket/Elements/ShowBasics:54 share/html/Ticket/Graphs/Elements/ShowLegends:51 share/html/Ticket/Update.html:68 share/html/Tools/MyDay.html:67
 msgid "Status"
 msgstr "Estado"
 
@@ -6124,12 +6192,12 @@ msgstr "Estado"
 msgid "Status Change"
 msgstr "Alteração de Estado"
 
-#: lib/RT/Transaction_Overlay.pm:594
+#: lib/RT/Transaction_Overlay.pm:641
 #. ("'" . $self->loc( $self->OldValue ) . "'",                        "'" . $self->loc( $self->NewValue ) . "'")
 msgid "Status changed from %1 to %2"
 msgstr "Alteração de estado de %1 para %2"
 
-#: share/html/Ticket/Elements/Tabs:204
+#: share/html/Ticket/Elements/Tabs:212
 msgid "Steal"
 msgstr "Roubar"
 
@@ -6152,7 +6220,7 @@ msgstr ""
 msgid "Step %1 of %2"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:688
+#: lib/RT/Transaction_Overlay.pm:735
 #. ($Old->Name)
 msgid "Stolen from %1"
 msgstr "Roubado de %1"
@@ -6161,11 +6229,11 @@ msgstr "Roubado de %1"
 msgid "Stolen from %1 "
 msgstr "Roubado de %1 "
 
-#: share/html/Search/Elements/EditFormat:81
+#: share/html/Search/Elements/EditFormat:82
 msgid "Style"
 msgstr ""
 
-#: lib/RT/Graph/Tickets.pm:157 lib/RT/Ticket_Overlay.pm:906 lib/RT/Tickets_Overlay.pm:125 lib/RT/Tickets_Overlay.pm:1922 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/QuickCreate:53 share/html/Elements/RT__Ticket/ColumnMap:99 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:139 share/html/Search/Elements/BuildFormatString:99 share/html/SelfService/Create.html:83 share/html/SelfService/Update.html:68 share/html/Ticket/Create.html:111 share/html/Ticket/Elements/EditBasics:50 share/html/Ticket/Elements/Reminders:131 share/html/Ticket/Forward.html:64 share/html/Ticket/ModifyAll.html:103 share/html/Ticket/Update.html:101
+#: lib/RT/Graph/Tickets.pm:157 lib/RT/Ticket_Overlay.pm:906 lib/RT/Tickets_Overlay.pm:125 lib/RT/Tickets_Overlay.pm:1934 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/QuickCreate:53 share/html/Elements/RT__Ticket/ColumnMap:99 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:139 share/html/Search/Elements/BuildFormatString:99 share/html/SelfService/Create.html:83 share/html/SelfService/Update.html:68 share/html/Ticket/Create.html:111 share/html/Ticket/Elements/EditBasics:50 share/html/Ticket/Elements/Reminders:131 share/html/Ticket/Forward.html:64 share/html/Ticket/ModifyAll.html:103 share/html/Ticket/Update.html:101
 msgid "Subject"
 msgstr "Assunto"
 
@@ -6173,7 +6241,7 @@ msgstr "Assunto"
 msgid "Subject Tag"
 msgstr ""
 
-#: lib/RT/StyleGuide.pod:807 lib/RT/Transaction_Overlay.pm:710
+#: lib/RT/StyleGuide.pod:807 lib/RT/Transaction_Overlay.pm:757
 #. ($self->Data)
 msgid "Subject changed to %1"
 msgstr "Assunto alterado para %1"
@@ -6218,11 +6286,11 @@ msgstr ""
 msgid "Subscription could not be created: %1"
 msgstr ""
 
-#: lib/RT/Attachment_Overlay.pm:709
+#: lib/RT/Attachment_Overlay.pm:727
 msgid "Successfuly decrypted data"
 msgstr ""
 
-#: lib/RT/Attachment_Overlay.pm:674
+#: lib/RT/Attachment_Overlay.pm:692
 msgid "Successfuly encrypted data"
 msgstr ""
 
@@ -6242,7 +6310,7 @@ msgstr ""
 msgid "SuperUser"
 msgstr ""
 
-#: lib/RT/Config.pm:338
+#: lib/RT/Config.pm:348
 msgid "Suspended"
 msgstr ""
 
@@ -6258,7 +6326,7 @@ msgstr ""
 msgid "System Default"
 msgstr ""
 
-#: lib/RT/ACE_Overlay.pm:364 lib/RT/Interface/Web.pm:909 share/html/Admin/Elements/SelectRights:111
+#: lib/RT/ACE_Overlay.pm:364 lib/RT/Interface/Web.pm:1297 share/html/Admin/Elements/SelectRights:111
 msgid "System Error"
 msgstr ""
 
@@ -6291,7 +6359,7 @@ msgstr ""
 msgid "SystemRolegroup for internal use"
 msgstr ""
 
-#: etc/initialdata:559 share/html/Search/Elements/EditFormat:69 share/html/Ticket/Elements/Tabs:197
+#: etc/initialdata:566 share/html/Search/Elements/EditFormat:70 share/html/Ticket/Elements/Tabs:205
 msgid "Take"
 msgstr "Tomar"
 
@@ -6303,7 +6371,7 @@ msgstr "Tomar pedidos"
 msgid "TakeTicket"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:673
+#: lib/RT/Transaction_Overlay.pm:720
 msgid "Taken"
 msgstr ""
 
@@ -6315,7 +6383,7 @@ msgstr ""
 msgid "Template"
 msgstr "Template"
 
-#: share/html/Admin/Global/Template.html:111 share/html/Admin/Queues/Template.html:115
+#: share/html/Admin/Global/Template.html:111 share/html/Admin/Queues/Template.html:117
 #. ($TemplateObj->Id())
 msgid "Template #%1"
 msgstr "Template $%1"
@@ -6358,11 +6426,11 @@ msgstr "Templates"
 msgid "Text file is not shown because it is disabled in preferences."
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:907 lib/RT/Record.pm:919
+#: lib/RT/CustomField_Overlay.pm:916 lib/RT/Record.pm:919
 msgid "That is already the current value"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:433
+#: lib/RT/CustomField_Overlay.pm:441
 msgid "That is not a value for this custom field"
 msgstr ""
 
@@ -6398,15 +6466,15 @@ msgstr ""
 msgid "That queue does not exist"
 msgstr "Essa queue não existe"
 
-#: lib/RT/Ticket_Overlay.pm:2958
+#: lib/RT/Ticket_Overlay.pm:2972
 msgid "That ticket has unresolved dependencies"
 msgstr ""
 
-#: lib/RT/Action/CreateTickets.pm:484 lib/RT/Ticket_Overlay.pm:2775
+#: lib/RT/Action/CreateTickets.pm:484 lib/RT/Ticket_Overlay.pm:2789
 msgid "That user already owns that ticket"
 msgstr "Esse utilizador já é dono desse ticket"
 
-#: lib/RT/Ticket_Overlay.pm:2718
+#: lib/RT/Ticket_Overlay.pm:2732
 msgid "That user does not exist"
 msgstr "Esse utilizador não existe"
 
@@ -6426,7 +6494,7 @@ msgstr ""
 msgid "That user is now unprivileged"
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:2768
+#: lib/RT/Ticket_Overlay.pm:2782
 msgid "That user may not own tickets in that queue"
 msgstr "Esse utilizador não pode ser dono de tickets nessa queue"
 
@@ -6544,7 +6612,7 @@ msgstr ""
 msgid "These configuration options cover some of the basics needed to get RT up and running.  We need to know the name of your RT installation and the domain name where RT will live.  You will also need to set a password for your default administrative user."
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:941
+#: lib/RT/CustomField_Overlay.pm:950
 msgid "This custom field does not apply to that object"
 msgstr ""
 
@@ -6569,7 +6637,7 @@ msgstr ""
 msgid "This transaction appears to have no content"
 msgstr "Esta transacção não parece ter conteúdo"
 
-#: share/html/Ticket/Elements/ShowRequestor:80
+#: share/html/Ticket/Elements/ShowRequestor:85
 #. ($rows)
 msgid "This user's %1 highest priority tickets"
 msgstr "%1 tickets deste utilizador com maior prioridade"
@@ -6640,15 +6708,15 @@ msgstr "Ticket Resolvido"
 msgid "Ticket Search"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:1165 share/html/Admin/Elements/GlobalCustomFieldTabs:81 share/html/Admin/Global/CustomFields/index.html:89
+#: lib/RT/CustomField_Overlay.pm:1174 share/html/Admin/Elements/GlobalCustomFieldTabs:81 share/html/Admin/Global/CustomFields/index.html:89
 msgid "Ticket Transactions"
 msgstr "Transacções do ticket"
 
-#: lib/RT/Tickets_Overlay.pm:2109
+#: lib/RT/Tickets_Overlay.pm:2121
 msgid "Ticket content"
 msgstr "Conteúdo do ticket"
 
-#: lib/RT/Tickets_Overlay.pm:2158
+#: lib/RT/Tickets_Overlay.pm:2170
 msgid "Ticket content type"
 msgstr ""
 
@@ -6677,16 +6745,16 @@ msgstr "Estado do ticket alterado"
 msgid "TicketSQL search module"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:1164 share/html/Admin/Elements/GlobalCustomFieldTabs:75 share/html/Admin/Global/CustomFields/index.html:83 share/html/Elements/Tabs:74 share/html/Search/Chart:110 share/html/Search/Elements/Chart:117
+#: lib/RT/CustomField_Overlay.pm:1173 share/html/Admin/Elements/GlobalCustomFieldTabs:75 share/html/Admin/Global/CustomFields/index.html:83 share/html/Elements/Tabs:74 share/html/Search/Chart:110 share/html/Search/Elements/Chart:117
 msgid "Tickets"
 msgstr "Tickets"
 
-#: lib/RT/Tickets_Overlay.pm:2329
+#: lib/RT/Tickets_Overlay.pm:2341
 #. ($self->loc( $args{'TYPE'} ),            $args{'BASE'},)
 msgid "Tickets %1 %2"
 msgstr "Tickets %1 %2"
 
-#: lib/RT/Tickets_Overlay.pm:2284
+#: lib/RT/Tickets_Overlay.pm:2296
 #. ($self->loc( $args{'TYPE'} ),            $args{'TARGET'})
 msgid "Tickets %1 by %2"
 msgstr "Tickets %1 por %2"
@@ -6715,11 +6783,11 @@ msgstr "Pedidos que dependem desta aprovação"
 msgid "Time Estimated"
 msgstr "Tempo previsto"
 
-#: lib/RT/Tickets_Overlay.pm:2080 share/html/Elements/RT__Ticket/ColumnMap:164 share/html/Search/Elements/PickBasics:166 share/html/Ticket/Create.html:200 share/html/Ticket/Elements/EditBasics:92
+#: lib/RT/Tickets_Overlay.pm:2092 share/html/Elements/RT__Ticket/ColumnMap:164 share/html/Search/Elements/PickBasics:166 share/html/Ticket/Create.html:200 share/html/Ticket/Elements/EditBasics:92
 msgid "Time Left"
 msgstr "Tempo disponível"
 
-#: lib/RT/Tickets_Overlay.pm:2055 share/html/Elements/RT__Ticket/ColumnMap:159 share/html/Search/Elements/PickBasics:164 share/html/Ticket/Create.html:195 share/html/Ticket/Elements/EditBasics:83
+#: lib/RT/Tickets_Overlay.pm:2067 share/html/Elements/RT__Ticket/ColumnMap:159 share/html/Search/Elements/PickBasics:164 share/html/Ticket/Create.html:195 share/html/Ticket/Elements/EditBasics:83
 msgid "Time Worked"
 msgstr "Tempo de trabalho"
 
@@ -6743,7 +6811,7 @@ msgstr ""
 msgid "Timezone"
 msgstr ""
 
-#: share/html/Search/Elements/EditFormat:74
+#: share/html/Search/Elements/EditFormat:75
 msgid "Title"
 msgstr ""
 
@@ -6776,7 +6844,7 @@ msgstr "Total"
 msgid "Transaction"
 msgstr "Transacção"
 
-#: lib/RT/Transaction_Overlay.pm:833
+#: lib/RT/Transaction_Overlay.pm:880
 #. ($self->Data)
 msgid "Transaction %1 purged"
 msgstr ""
@@ -6797,7 +6865,7 @@ msgstr ""
 msgid "TransactionDate"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:898
+#: lib/RT/Transaction_Overlay.pm:945
 msgid "Transactions are immutable"
 msgstr ""
 
@@ -6817,11 +6885,11 @@ msgstr "Tue"
 msgid "Tuesday"
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:912 lib/RT/Tickets_Overlay.pm:1894 lib/RT/Tickets_Overlay.pm:95 share/html/Admin/CustomFields/Modify.html:67 share/html/Admin/Elements/EditCustomField:67 share/html/Elements/RT__Ticket/ColumnMap:153 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Elements/AddWatchers:56 share/html/Ticket/Elements/AddWatchers:67 share/html/Ticket/Elements/AddWatchers:77
+#: lib/RT/Ticket_Overlay.pm:912 lib/RT/Tickets_Overlay.pm:1906 lib/RT/Tickets_Overlay.pm:95 share/html/Admin/CustomFields/Modify.html:67 share/html/Admin/Elements/EditCustomField:67 share/html/Elements/RT__Ticket/ColumnMap:153 share/html/Search/Elements/BuildFormatString:99 share/html/Ticket/Elements/AddWatchers:56 share/html/Ticket/Elements/AddWatchers:67 share/html/Ticket/Elements/AddWatchers:77
 msgid "Type"
 msgstr "Tipo"
 
-#: lib/RT/CustomField_Overlay.pm:801
+#: lib/RT/CustomField_Overlay.pm:808
 #. ($self->FriendlyTypeComposite( $old ),        $self->FriendlyTypeComposite( $composite ),)
 msgid "Type changed from '%1' to '%2'"
 msgstr ""
@@ -6851,13 +6919,13 @@ msgstr ""
 msgid "Unknown (this value is new to the system)"
 msgstr ""
 
-#: lib/RT/Attachment_Overlay.pm:304 lib/RT/Record.pm:804
+#: lib/RT/Attachment_Overlay.pm:305 lib/RT/Record.pm:804
 #. ($self->ContentEncoding)
 #. ($ContentEncoding)
 msgid "Unknown ContentEncoding %1"
 msgstr ""
 
-#: lib/RT/Interface/Web/QueryBuilder/Tree.pm:266
+#: lib/RT/Interface/Web/QueryBuilder/Tree.pm:267
 #. ($key)
 msgid "Unknown field: %1"
 msgstr ""
@@ -6890,7 +6958,7 @@ msgstr ""
 msgid "Unset private key"
 msgstr ""
 
-#: lib/RT/Transaction_Overlay.pm:669
+#: lib/RT/Transaction_Overlay.pm:716
 msgid "Untaken"
 msgstr ""
 
@@ -6918,7 +6986,7 @@ msgstr ""
 msgid "Update multiple tickets"
 msgstr "Actualizar múltiplos tickets"
 
-#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:757
+#: lib/RT/Action/CreateTickets.pm:524 lib/RT/Interface/Web.pm:1144
 msgid "Update not recorded."
 msgstr ""
 
@@ -6936,7 +7004,7 @@ msgstr "Actualizar ticket #%1"
 msgid "Update ticket #%1 (%2)"
 msgstr "Actualizar ticket #%1 (%2)"
 
-#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:756
+#: lib/RT/Action/CreateTickets.pm:522 lib/RT/Interface/Web.pm:1144
 msgid "Update type was neither correspondence nor comment."
 msgstr ""
 
@@ -6944,7 +7012,7 @@ msgstr ""
 msgid "UpdateStatus"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:1242 lib/RT/Ticket_Overlay.pm:915 lib/RT/Tickets_Overlay.pm:141 share/html/Elements/SelectDateType:56 share/html/Ticket/Elements/ShowDates:79
+#: lib/RT/CustomField_Overlay.pm:1249 lib/RT/Ticket_Overlay.pm:915 lib/RT/Tickets_Overlay.pm:141 share/html/Elements/SelectDateType:56 share/html/Ticket/Elements/ShowDates:79
 msgid "Updated"
 msgstr "Actualizado"
 
@@ -6993,17 +7061,13 @@ msgstr ""
 msgid "Use SSL?"
 msgstr ""
 
+#: lib/RT/Config.pm:313
+msgid "Use css rules to display text monospaced and with formatting preserved, but wrap as needed.  This does not work well with IE6 and you should use the previous option"
+msgstr ""
+
 #: share/html/Widgets/Form/Boolean:68
 #. ($DefaultValue? loc('Yes'): loc('No'))
 msgid "Use default (%1)"
-msgstr ""
-
-#: lib/RT/Config.pm:303
-msgid "Use fixed-width font to display plaintext messages"
-msgstr ""
-
-#: lib/RT/Config.pm:302
-msgid "Use monospace font"
 msgstr ""
 
 #: share/html/Admin/index.html:86
@@ -7013,6 +7077,10 @@ msgstr "Utilizar outras ferramentas administrativas do RT"
 #: share/html/Widgets/Form/Select:120
 #. (join ', ', map{ loc($ValuesLabel{$_} || $_) } @DefaultValue)
 msgid "Use system default (%1)"
+msgstr ""
+
+#: lib/RT/Config.pm:303
+msgid "Use this to protect the format of plain text"
 msgstr ""
 
 #: lib/RT/Record.pm:909 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52
@@ -7040,8 +7108,8 @@ msgstr ""
 msgid "User Rights"
 msgstr "Direitos de utilizador"
 
-#: lib/RT/Interface/Web.pm:1293
-#. ($cf->Name, ref $args{'Object'}, $args{'Object'}->id)
+#: lib/RT/Interface/Web.pm:1672
+#. ($cf->Name, ref $args{'Object'},                    $args{'Object'}->id)
 msgid "User asked for an unknown update type for custom field %1 for %2 object #%3"
 msgstr ""
 
@@ -7090,7 +7158,7 @@ msgstr "Username"
 msgid "Username format"
 msgstr ""
 
-#: lib/RT/CustomField_Overlay.pm:1166 share/html/Admin/Elements/GlobalCustomFieldTabs:57 share/html/Admin/Elements/SelectNewGroupMembers:49 share/html/Admin/Elements/Tabs:55 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:75 share/html/Admin/Queues/People.html:91 share/html/Admin/index.html:58 share/html/User/Groups/Members.html:81
+#: lib/RT/CustomField_Overlay.pm:1175 share/html/Admin/Elements/GlobalCustomFieldTabs:57 share/html/Admin/Elements/SelectNewGroupMembers:49 share/html/Admin/Elements/Tabs:55 share/html/Admin/Global/CustomFields/index.html:66 share/html/Admin/Groups/Members.html:75 share/html/Admin/Queues/People.html:91 share/html/Admin/index.html:58 share/html/User/Groups/Members.html:81
 msgid "Users"
 msgstr "Utilizadores"
 
@@ -7111,7 +7179,7 @@ msgstr "Query válida"
 msgid "Validation"
 msgstr ""
 
-#: share/html/Admin/CustomFields/Modify.html:119 share/html/Admin/Elements/EditCustomField:80
+#: share/html/Admin/CustomFields/Modify.html:130 share/html/Admin/Elements/EditCustomField:80
 msgid "Values"
 msgstr "Valores"
 
@@ -7195,7 +7263,7 @@ msgstr "Wed"
 msgid "Wednesday"
 msgstr ""
 
-#: lib/RT/Config.pm:337
+#: lib/RT/Config.pm:347
 msgid "Weekly digest"
 msgstr ""
 
@@ -7303,7 +7371,7 @@ msgstr ""
 msgid "Yes"
 msgstr ""
 
-#: lib/RT/Ticket_Overlay.pm:2884
+#: lib/RT/Ticket_Overlay.pm:2898
 msgid "You already own this ticket"
 msgstr "Este ticket já é seu"
 
@@ -7315,7 +7383,7 @@ msgstr ""
 msgid "You are going to encrypt outgoing email messages, but there is a problem with a recipient's public key. You have to fix the problem with the key, disable sending a message to that recipient, or disable encryption."
 msgstr ""
 
-#: share/html/autohandler:231 share/html/autohandler:239
+#: lib/RT/Interface/Web.pm:396 lib/RT/Interface/Web.pm:403
 msgid "You are not an authorized user"
 msgstr ""
 
@@ -7328,11 +7396,11 @@ msgstr ""
 msgid "You can also edit the predefined search itself"
 msgstr "Também pode editar a própria procura personalizada"
 
-#: lib/RT/Ticket_Overlay.pm:2761
+#: lib/RT/Ticket_Overlay.pm:2775
 msgid "You can only reassign tickets that you own or that are unowned"
 msgstr "Só pode atribuir um pedido que seja seu ou que não proprietário"
 
-#: lib/RT/Ticket_Overlay.pm:2757
+#: lib/RT/Ticket_Overlay.pm:2771
 msgid "You can only take tickets that are unowned"
 msgstr "Só pode responsabilizar-se por tickets que não têm dono"
 
@@ -7377,7 +7445,7 @@ msgstr ""
 msgid "You're welcome to login again"
 msgstr ""
 
-#: share/html/autohandler:270
+#: lib/RT/Interface/Web.pm:425
 msgid "Your username or password is incorrect"
 msgstr "Login ou password errados"
 
@@ -7387,6 +7455,10 @@ msgstr "Código Postal"
 
 #: share/html/Search/Elements/DisplayOptions:62
 msgid "[none]"
+msgstr ""
+
+#: lib/RT/Config.pm:302
+msgid "add <pre> tag around plain text attachments"
 msgstr ""
 
 #: share/html/Elements/SelectDateRelation:59
@@ -7460,6 +7532,10 @@ msgstr "dias"
 #: lib/RT/Queue_Overlay.pm:87
 msgid "deleted"
 msgstr "apagado"
+
+#: lib/RT/Config.pm:312
+msgid "display wrapped and formatted plain text attachments"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "doesn't contain"
