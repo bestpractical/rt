@@ -961,7 +961,7 @@ sub start_apache_server {
 
     $self->fork_exec($info{'executable'}, '-f', $conf_fn);
     my $pid = do {
-        my $tries = 60;
+        my $tries = 10;
         while ( !-e $pid_fn ) {
             $tries--;
             last unless $tries;
