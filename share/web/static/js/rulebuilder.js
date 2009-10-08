@@ -24,7 +24,7 @@ RuleBuilder.expressions = [
 ];
 
 RuleBuilder.load_and_edit_lambda = function (params, return_type, el) {
-    var lambda_text = jQuery(el).prev('textarea').text();
+    var lambda_text = jQuery(el).prev('textarea').val();
     jQuery.post('/rulebuilder/parse_lambda.json', { lambda_text: lambda_text },
                function(response, status) {
                    var rb = new RuleBuilder("#expressionbuilder",

@@ -13,14 +13,14 @@ sub render_widget {
 
 sub render_rulebuilder_launcher {
 	Jifty->web->out('
-<input type="submit" value="Edit!" onclick="RuleBuilder.load_and_edit_lambda([
+<input type="submit" value="Edit!" onClick="RuleBuilder.load_and_edit_lambda([
     { expression: \'ticket\',
       type: \'RT::Model::Ticket\'
     },
     { expression: \'transaction\',
       type: \'RT::Model::Transaction\'
     }
-], \'Bool\', this) ;"/>
+], \'Bool\', this);"/>
 
 
 		');
