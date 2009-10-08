@@ -1136,7 +1136,7 @@ sub process_in_file {
     }
 
     my ($out_fh, $out_conf);
-    if ( $args{'out'} ) {
+    unless ( $args{'out'} ) {
         ($out_fh, $out_conf) = tempfile();
     } else {
         $out_conf = $args{'out'};
