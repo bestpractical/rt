@@ -975,6 +975,18 @@ REMOTE_USER variable.
 
 Set($WebExternalAuth, undef);
 
+=item C<$WebExternalAuthContinuous>
+
+If C<$WebExternalAuthContinuous> is defined, RT will check for the
+REMOTE_USER on each access.  If you would prefer this to only happen
+once (at initial login) set this to a false value.  The default setting
+will help ensure that if your external auth system deauthenticates a
+user, RT notices as soon as possible.
+
+=cut
+
+Set($WebExternalAuthContinuous, 1);
+
 =item C<$WebFallbackToInternalAuth>
 
 If C<$WebFallbackToInternalAuth> is defined, the user is allowed a chance
