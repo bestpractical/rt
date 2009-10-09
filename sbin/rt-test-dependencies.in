@@ -238,7 +238,6 @@ Encode 2.21
 CSS::Squish 0.06
 File::Glob
 Devel::StackTrace 1.19
-Parse::BooleanLogic 0.09
 .
 
 $deps{'MASON'} = [ text_to_hash( << '.') ];
