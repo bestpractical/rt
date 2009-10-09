@@ -1,7 +1,10 @@
-RuleBuilder = function (sel, cb) {
+RuleBuilder = function (sel, expressions, cb) {
     this.sel = sel;
     /* defaults for now, should use ajax query */
-    this.expressions = RuleBuilder.expressions;
+    if (expressions)
+        this.expressions = expressions;
+    else
+        this.expressions = RuleBuilder.expressions;
 
     var that = this;
     jQuery.get('/rulebuilder/allfunctions.json', {},
@@ -28,6 +31,7 @@ RuleBuilder.load_and_edit_lambda = function (params, return_type, el) {
     jQuery.post('/rulebuilder/parse_lambda.json', { lambda_text: lambda_text },
                function(response, status) {
                    var rb = new RuleBuilder("#expressionbuilder",
+                                            params,
                                             function () {
                                                 this.load_expressions(response, this.top_context);
                                             });
