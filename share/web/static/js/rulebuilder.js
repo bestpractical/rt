@@ -53,8 +53,21 @@ RuleBuilder.prototype.load_expressions = function (node, ctx) {
         var func_name = node.operator.name; // XXX: ensure operator of
                                             // type: variable
         ctx.set_application(func_name, this.functions[func_name]);
-        for (var i in ctx.children) {
-            this.load_expressions(node.operands[i], ctx.children[i]);
+
+        var operands = node.operands;
+        if (operands instanceof Array) {
+            for (var i in ctx.children) {
+                this.load_expressions(node.operands[i], ctx.children[i]);
+            }
+        }
+        else {
+            var names = jQuery.map(this.functions[func_name].parameters,
+                                   function(param) { return param.name });
+            console.log(names);
+            for (var i in ctx.children) {
+                console.log("setting "+i+" "+names[i]);
+                this.load_expressions(node.operands[names[i]], ctx.children[i]);
+            }
         }
     }
     else if (node.type == 'variable') {
