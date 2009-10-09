@@ -33,7 +33,7 @@ RuleBuilder.load_and_edit_lambda = function (params, return_type, el) {
                    var rb = new RuleBuilder("#expressionbuilder",
                                             params,
                                             function () {
-                                                this.load_expressions(response, this.top_context);
+                                                this.load_expressions(response.body, this.top_context);
                                             });
                    rb.finalize = function() {
                        var body = this.top_context.serialize();

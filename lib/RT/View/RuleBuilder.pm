@@ -43,7 +43,8 @@ template 'parse_lambda.json' => sub {
     my $env = $l->env;
     my $lambda = $l->analyze_it(get('lambda_text'));
 
-    print to_json( $lambda->procedure->body->to_hash );
+    print to_json( { parameters => [map { $_->to_hash} @{ $lambda->procedure->parameters} ],
+                     body       => $lambda->procedure->body->to_hash } );
 };
 
 
