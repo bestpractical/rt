@@ -75,6 +75,7 @@ RuleBuilder.prototype.load_expressions = function (node, ctx) {
         ctx.set_expression(expressions[0]);
     }
     else if (node.type == 'self_evaluating') {
+        jQuery('span.enter-value', ctx.element).hide();
         jQuery._input_({ 'type': 'text', 'class': 'enter-value', 'value': node.value})
             .change(function() { ctx.update_return_type(ctx.return_type_from_val(this.value)) } )
             .appendTo(ctx.element).trigger('focus');
