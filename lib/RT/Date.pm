@@ -641,8 +641,8 @@ sub LocalizedDateTime
     my %args = ( Date => 1,
                  Time => 1,
                  Timezone => '',
-                 DateFormat => 'full_date_format',
-                 TimeFormat => 'medium_time_format',
+                 DateFormat => 'date_format_full',
+                 TimeFormat => 'time_format_medium',
                  AbbrDay => 1,
                  AbbrMonth => 1,
                  @_,
@@ -658,8 +658,8 @@ sub LocalizedDateTime
     my $formatter = DateTime::Locale->load($lang);
     $date_format = $formatter->$date_format;
     $time_format = $formatter->$time_format;
-    $date_format =~ s/\%A/\%a/g if ( $args{'AbbrDay'} );
-    $date_format =~ s/\%B/\%b/g if ( $args{'AbbrMonth'} );
+    $date_format =~ s/EEEE/EEE/g if ( $args{'AbbrDay'} );
+    $date_format =~ s/MMMM/MMM/g if ( $args{'AbbrMonth'} );
 
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) =
                             $self->Localtime($args{'Timezone'});
@@ -680,11 +680,11 @@ sub LocalizedDateTime
                           );
 
     if ( $args{'Date'} && !$args{'Time'} ) {
-        return $dt->strftime($date_format);
+        return $dt->format_cldr($date_format);
     } elsif ( !$args{'Date'} && $args{'Time'} ) {
-        return $dt->strftime($time_format);
+        return $dt->format_cldr($time_format);
     } else {
-        return $dt->strftime($date_format) . " " . $dt->strftime($time_format);
+        return $dt->format_cldr($date_format) . " " . $dt->format_cldr($time_format);
     }
 }
 
