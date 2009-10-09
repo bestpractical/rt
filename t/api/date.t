@@ -167,10 +167,10 @@ my $current_user;
     is($date->LocalizedDateTime(AbbrMonth => 0),
        'Thu, January 1, 1970 12:00:00 AM',
        "LocalizedDateTime format without abbreviation of month") if ( $localized_datetime_tests );
-    is($date->LocalizedDateTime(DateFormat => 'short_date_format'),
+    is($date->LocalizedDateTime(DateFormat => 'date_format_short'),
        '1/1/70 12:00:00 AM',
        "LocalizedDateTime format with non default DateFormat") if ( $localized_datetime_tests );
-    is($date->LocalizedDateTime(TimeFormat => 'short_time_format'),
+    is($date->LocalizedDateTime(TimeFormat => 'time_format_short'),
        'Thu, Jan 1, 1970 12:00 AM',
        "LocalizedDateTime format with non default TimeFormat") if ( $localized_datetime_tests );
 
