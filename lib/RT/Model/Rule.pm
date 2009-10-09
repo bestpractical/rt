@@ -65,9 +65,26 @@ use base qw'RT::Record';
 sub table {'Rules'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column action_code    => type is 'text', render as 'RT::View::Form::Field::RuleTextarea';
-    column condition_code => type is 'text', render as 'RT::View::Form::Field::RuleTextarea';
-    column prepare_code   => type is 'text', render as 'RT::View::Form::Field::RuleTextarea';
+    column action_code    => type is 'text',
+        signatures is [ { name => 'ticket', type => 'RT::Model::Ticket' },
+                        { name => 'transaction', type => 'RT::Model::Transaction' },
+                        { name => 'context', type => 'HashRef' },
+                    ],
+        return_type is 'Any',
+        render as 'RT::View::Form::Field::RuleTextarea';
+    column condition_code => type is 'text',
+        signatures is [ { name => 'ticket', type => 'RT::Model::Ticket' },
+                        { name => 'transaction', type => 'RT::Model::Transaction' },
+],
+        return_type is 'Bool',
+        render as 'RT::View::Form::Field::RuleTextarea';
+    column prepare_code   => type is 'text',
+        signatures is [ { name => 'ticket', type => 'RT::Model::Ticket' },
+                        { name => 'transaction', type => 'RT::Model::Transaction' },
+                        { name => 'context', type => 'HashRef' },
+                    ],
+        return_type is 'Any',
+        render as 'RT::View::Form::Field::RuleTextarea';
     column description               => type is 'text';
 };
 use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
