@@ -36,6 +36,12 @@ It will prompt you for each custom field with categories that it
 finds, and the name of the custom field to create to store the
 categories.
 
+If you were using the LocalizedDateTime RT::Date formatter from code
+and passing a DateFormat or TimeFormat argument, you need to switch from 
+the strftime methods to the cldr methods (ie full_date_format becomes date_format_full)
+You may have done this from your RT_SiteConfig.pm by using
+Set($DateTimeFormat, { Format => 'LocalizedDateTime', DateFormat => 'medium_date_format' );
+
 UPGRADING FROM 3.8.3 and earlier - Changes:
 
 Arguments to the NotifyGroup Scrip Action need
