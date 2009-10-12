@@ -25,19 +25,19 @@ instructions below even if your old RT was installed on MySQL 4.1 or newer.
 etc/upgrade/upgrade-mysql-schema.pl that generates SQL queries to 
 upgrade the database's schema. Run it:
 
-    perl etc/upgrade/upgrade-mysql-schema.pl db user pass > sql.queries
+    perl etc/upgrade/upgrade-mysql-schema.pl db user pass > queries.sql
 
 If your mysql database is on a remote host, you can run the script
 like this instead
 
-    perl etc/upgrade/upgrade-mysql-schema.pl db:host user pass > sql.queries
+    perl etc/upgrade/upgrade-mysql-schema.pl db:host user pass > queries.sql
 
 5) Check sanity of the SQL queries yourself or consult with your DBA.
 
 6) Apply the queries. Note that this step can take a while. It may require
 additional space on your hard drive comparable with size of your tables.
 
-    mysql -u root -p rt3 < sql.queries
+    mysql -u root -p rt3 < queries.sql
 
 NOTE that 'rt3' is the default name of the RT database, change it in the
 command above if you're using a different name.
