@@ -390,9 +390,6 @@ sub load_by_name {
 }
 
 
-
-=cut
-
 =head2 custom field values
 
 =head3 Values column

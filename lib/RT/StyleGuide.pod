@@ -810,7 +810,7 @@ should become	 return _( "subject changed to %1", $self->data );
 It is important not to localize  the names of rights or statuses within RT's core, as there is logic that depends on them as string identifiers.  The proper place to localize these values is when they're presented for display in the web or commandline interfaces.
 
 
-=back 4
+=back
 
 =head1 CODING PRCEDURE
 

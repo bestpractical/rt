@@ -2490,15 +2490,6 @@ sub item_map {
     return ( $self->{'item_map'} );
 }
 
-=cut
-
-
-
-}
-
-
-
-
 
 =head2 prep_for_serialization
 
@@ -2872,9 +2863,6 @@ BUG: There should be an API for this
 
 =cut
 
-=cut
-
 1;
-
 
 
