@@ -237,8 +237,8 @@ sub TranslateQueue {
     my $key  = shift;
     my @clauses;
     my $Queue = RT::Queue->new( $self->TicketsObj->CurrentUser );
-    $Queue->Load($key);
-    if ( $Queue->Id ) {
+    my ( $ret ) = $Queue->Load($key);
+    if ( $ret && $Queue->Id ) {
         my $quoted_queue = $Queue->Name;
         $quoted_queue =~ s/'/\\'/g;
         push @clauses, "Queue = '$quoted_queue'";
@@ -261,7 +261,8 @@ sub TranslateOwner {
     my $key  = shift;
     my @clauses;
     my $User = RT::User->new( $self->TicketsObj->CurrentUser );
-    if ( $User->Load($key) && $User->Privileged ) {
+    my ( $ret ) = $User->Load($key);
+    if ( $ret && $User->Privileged ) {
         push @clauses, "Owner = '" . $User->Name . "'";
     }
     return @clauses;
@@ -287,7 +288,8 @@ sub ProcessAfterTranslate {
     # restrict to any queues requested by the caller
     for my $queue ( @{ $self->{'Queues'} } ) {
         my $QueueObj = RT::Queue->new( $self->TicketsObj->CurrentUser );
-        $QueueObj->Load($queue) or next;
+        my ( $ret ) = $QueueObj->Load($queue);
+        next unless $ret;
         my $quoted_queue = $QueueObj->Name;
         $quoted_queue =~ s/'/\\'/g;
         push @$queue_clauses, "Queue = '$quoted_queue'";
