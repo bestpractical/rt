@@ -178,8 +178,10 @@ my $genpage = sub {
 my $BaseURL = RT->config->get('web_path')."/Search/Results.html?";
 $link_rel{first} = $BaseURL . $genpage->(1)         if $page > 1;
 $link_rel{prev}  = $BaseURL . $genpage->($page - 1) if $page > 1;
-$link_rel{next}  = $BaseURL . $genpage->($page + 1) if ($page * $rows) < $ticketcount;
-$link_rel{last}  = $BaseURL . $genpage->(POSIX::ceil($ticketcount/$rows)) if $rows and ($page * $rows) < $ticketcount;
+if ( $ticketcount ) {
+    $link_rel{next}  = $BaseURL . $genpage->($page + 1) if ($page * $rows) < $ticketcount;
+    $link_rel{last}  = $BaseURL . $genpage->(POSIX::ceil($ticketcount/$rows)) if $rows and ($page * $rows) < $ticketcount;
+}
 </%INIT>
 <%CLEANUP>
 Jifty->web->session->get('tickets')->prep_for_serialization();
