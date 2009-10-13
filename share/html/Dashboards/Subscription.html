@@ -102,13 +102,13 @@
 'weekly' ? 'checked="checked"' : "" |n %> />
 <&|/l&>weekly</&>, <&|/l&>on</&>
 <select name="dow">
-    <option value="Monday" <% $fields{'Dow'} eq 'Monday' ? 'selected="selected"' : '' %>><&|/l&>Monday</&></option>
-    <option value="Tuesday" <% $fields{'Dow'} eq 'Tuesday' ? 'selected="selected"' : '' %>><&|/l&>Tuesday</&></option>
-    <option value="Wednesday" <% $fields{'Dow'} eq 'Wednesday' ? 'selected="selected"' : '' %>><&|/l&>Wednesday</&></option>
-    <option value="Thursday" <% $fields{'Dow'} eq 'Thursday' ? 'selected="selected"' : '' %>><&|/l&>Thursday</&></option>
-    <option value="Friday" <% $fields{'Dow'} eq 'Friday' ? 'selected="selected"' : '' %>><&|/l&>Friday</&></option>
-    <option value="Saturday" <% $fields{'Dow'} eq 'Saturday' ? 'selected="selected"' : '' %>><&|/l&>Saturday</&></option>
-    <option value="Sunday" <% $fields{'Dow'} eq 'Sunday' ? 'selected="selected"' : '' %>><&|/l&>Sunday</&></option>
+    <option value="Monday" <% $fields{'dow'} eq 'Monday' ? 'selected="selected"' : '' %>><&|/l&>Monday</&></option>
+    <option value="Tuesday" <% $fields{'dow'} eq 'Tuesday' ? 'selected="selected"' : '' %>><&|/l&>Tuesday</&></option>
+    <option value="Wednesday" <% $fields{'dow'} eq 'Wednesday' ? 'selected="selected"' : '' %>><&|/l&>Wednesday</&></option>
+    <option value="Thursday" <% $fields{'dow'} eq 'Thursday' ? 'selected="selected"' : '' %>><&|/l&>Thursday</&></option>
+    <option value="Friday" <% $fields{'dow'} eq 'Friday' ? 'selected="selected"' : '' %>><&|/l&>Friday</&></option>
+    <option value="Saturday" <% $fields{'dow'} eq 'Saturday' ? 'selected="selected"' : '' %>><&|/l&>Saturday</&></option>
+    <option value="Sunday" <% $fields{'dow'} eq 'Sunday' ? 'selected="selected"' : '' %>><&|/l&>Sunday</&></option>
 </select>
 <&|/l&>weeks</&>
 <select name="fow">
