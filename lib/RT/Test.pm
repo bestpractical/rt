@@ -77,7 +77,6 @@ wrap 'HTTP::Request::Common::form_data',
 our @EXPORT = qw(is_empty);
 
 our ($port, $dbname);
-my $mailsent;
 
 =head1 NAME
 
@@ -147,15 +146,6 @@ sub import {
 
     if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
 
-    # make it another function
-    $mailsent = 0;
-    my $mailfunc = sub { 
-        my $Entity = shift;
-        $mailsent++;
-        return 1;
-    };
-    RT->Config->Set( 'MailCommand' => $mailfunc );
-
     $class->bootstrap_db( %args );
 
     RT->Init;
@@ -202,6 +192,7 @@ sub db_requires_no_dba {
 }
 
 my $config;
+my $mailbox_catcher = File::Temp->new( OPEN => 0, CLEANUP => 0 )->filename;
 sub bootstrap_config {
     my $self = shift;
     my %args = @_;
@@ -223,6 +214,20 @@ Set( \$MailCommand, 'testfile');
     }
     print $config "Set( \$DevelMode, 0 );\n"
         if $INC{'Devel/Cover.pm'};
+
+    # set mail catcher
+    print $config <<END;
+Set( \$MailCommand, sub {
+    my \$MIME = shift;
+
+    open my \$handle, '>>', '$mailbox_catcher'
+        or die "Unable to open '$mailbox_catcher' for appending: \$!";
+
+    \$MIME->print(\$handle);
+    print \$handle "%% split me! %%\n";
+    close \$handle;
+} );
+END
 
     print $config $args{'config'} if $args{'config'};
 
@@ -375,29 +380,6 @@ sub _get_dbh {
         print STDERR $msg; exit -1;
     }
     return $dbh;
-}
-
-sub open_mailgate_ok {
-    my $class   = shift;
-    my $baseurl = shift;
-    my $queue   = shift || 'general';
-    my $action  = shift || 'correspond';
-    Test::More::ok(open(my $mail, "|$RT::BinPath/rt-mailgate --url $baseurl --queue $queue --action $action"), "Opened the mailgate - $!");
-    return $mail;
-}
-
-
-sub close_mailgate_ok {
-    my $class = shift;
-    my $mail  = shift;
-    close $mail;
-    Test::More::is ($? >> 8, 0, "The mail gateway exited normally. yay");
-}
-
-sub mailsent_ok {
-    my $class = shift;
-    my $expected  = shift;
-    Test::More::is ($mailsent, $expected, "The number of mail sent ($expected) matches. yay");
 }
 
 =head1 UTILITIES
@@ -654,40 +636,71 @@ sub send_via_mailgate {
     my $message = shift;
     my %args = (@_);
 
-    my ($status, $gate_result) = $self->run_mailgate( message => $message, %args );
+    my ($status, $gate_result) = $self->run_mailgate(
+        message => $message, %args
+    );
 
     my $id;
     unless ( $status >> 8 ) {
         ($id) = ($gate_result =~ /Ticket:\s*(\d+)/i);
         unless ( $id ) {
-            Test::More::diag "Couldn't find ticket id in text:\n$gate_result" if $ENV{'TEST_VERBOSE'};
+            Test::More::diag "Couldn't find ticket id in text:\n$gate_result"
+                if $ENV{'TEST_VERBOSE'};
         }
     } else {
-        Test::More::diag "Mailgate output:\n$gate_result" if $ENV{'TEST_VERBOSE'};
+        Test::More::diag "Mailgate output:\n$gate_result"
+            if $ENV{'TEST_VERBOSE'};
     }
     return ($status, $id);
 }
 
-my $mailbox_catcher = File::Temp->new( OPEN => 0, CLEANUP => 0 )->filename;
+sub open_mailgate_ok {
+    my $class   = shift;
+    my $baseurl = shift;
+    my $queue   = shift || 'general';
+    my $action  = shift || 'correspond';
+    Test::More::ok(open(my $mail, "|$RT::BinPath/rt-mailgate --url $baseurl --queue $queue --action $action"), "Opened the mailgate - $!");
+    return $mail;
+}
+
+
+sub close_mailgate_ok {
+    my $class = shift;
+    my $mail  = shift;
+    close $mail;
+    Test::More::is ($? >> 8, 0, "The mail gateway exited normally. yay");
+}
+
+sub mailsent_ok {
+    my $class = shift;
+    my $expected  = shift;
+
+    my $mailsent = scalar grep /\S/, split /%% split me! %%\n/,
+        RT::Test->file_content(
+            $mailbox_catcher,
+            'unlink' => 0,
+            noexist => 1
+        );
+
+    Test::More::is(
+        $mailsent, $expected,
+        "The number of mail sent ($expected) matches. yay"
+    );
+}
+
 sub set_mail_catcher {
     my $self = shift;
-    my $catcher = sub {
-        my $MIME = shift;
-
-        open my $handle, '>>', $mailbox_catcher
-            or die "Unable to open $mailbox_catcher for appending: $!";
-
-        $MIME->print($handle);
-        print $handle "%% split me! %%\n";
-        close $handle;
-    };
-    RT->Config->Set( MailCommand => $catcher );
+    return 1;
 }
 
 sub fetch_caught_mails {
     my $self = shift;
     return grep /\S/, split /%% split me! %%\n/,
-        RT::Test->file_content( $mailbox_catcher, 'unlink' => 1, noexist => 1 );
+        RT::Test->file_content(
+            $mailbox_catcher,
+            'unlink' => 1,
+            noexist => 1
+        );
 }
 
 sub clean_caught_mails {
