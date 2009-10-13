@@ -686,7 +686,7 @@ sub set_mail_catcher {
 
 sub fetch_caught_mails {
     my $self = shift;
-    return grep /\S/, split /%% split me! %%/,
+    return grep /\S/, split /%% split me! %%\n/,
         RT::Test->file_content( $mailbox_catcher, 'unlink' => 1, noexist => 1 );
 }
 
