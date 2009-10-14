@@ -77,6 +77,16 @@ wrap 'HTTP::Request::Common::form_data',
 
 our @EXPORT = qw(is_empty);
 our ($port, $dbname);
+our @SERVERS;
+
+my %tmp = (
+    directory => undef,
+    config    => {
+        RT => undef,
+        apache => undef,
+    },
+    mailbox   => undef,
+);
 
 =head1 NAME
 
@@ -131,6 +141,8 @@ sub import {
         $class->builder->no_plan unless $class->builder->has_plan;
     }
 
+    $class->bootstrap_tempdir;
+
     $class->bootstrap_config( %args );
 
     use RT;
@@ -143,6 +155,8 @@ sub import {
     RT->Init;
 
     $class->bootstrap_plugins( %args );
+
+    $class->set_config_wrapper;
 
     my $screen_logger = $RT::Logger->remove( 'screen' );
     require Log::Dispatch::Perl;
@@ -183,13 +197,29 @@ sub db_requires_no_dba {
     return 1 if $db_type eq 'SQLite';
 }
 
-my $config;
-my $mailbox_catcher = File::Temp->new( OPEN => 0, CLEANUP => 0 )->filename;
+sub bootstrap_tempdir {
+    my $self = shift;
+    my $test_file = (
+        File::Spec->rel2abs((caller)[1])
+            =~ m{(?:^|[\\/])t[/\\](.*)}
+    );
+    my $dir_name = File::Spec->rel2abs('t/tmp/'. $test_file);
+    mkpath( $dir_name );
+    return $tmp{'directory'} = File::Temp->newdir(
+        DIR => $dir_name
+    );
+}
+
 sub bootstrap_config {
     my $self = shift;
     my %args = @_;
 
-    $config = File::Temp->new;
+    $tmp{'config'}{'RT'} = File::Spec->catfile(
+        "$tmp{'directory'}", 'RT_SiteConfig.pm'
+    );
+    open my $config, '>', $tmp{'config'}{'RT'}
+        or die "Couldn't open $tmp{'config'}{'RT'}: $!";
+
     print $config qq{
 Set( \$WebPort , $port);
 Set( \$WebBaseURL , "http://localhost:\$WebPort");
@@ -208,12 +238,15 @@ Set( \$MailCommand, 'testfile');
         if $INC{'Devel/Cover.pm'};
 
     # set mail catcher
+    my $mail_catcher = $tmp{'mailbox'} = File::Spec->catfile(
+        $tmp{'directory'}->dirname, 'mailbox.eml'
+    );
     print $config <<END;
 Set( \$MailCommand, sub {
     my \$MIME = shift;
 
-    open my \$handle, '>>', '$mailbox_catcher'
-        or die "Unable to open '$mailbox_catcher' for appending: \$!";
+    open my \$handle, '>>', '$mail_catcher'
+        or die "Unable to open '$mail_catcher' for appending: \$!";
 
     \$MIME->print(\$handle);
     print \$handle "%% split me! %%\n";
@@ -224,10 +257,43 @@ END
     print $config $args{'config'} if $args{'config'};
 
     print $config "\n1;\n";
-    $ENV{'RT_SITE_CONFIG'} = $config->filename;
+    $ENV{'RT_SITE_CONFIG'} = $tmp{'config'}{'RT'};
     close $config;
 
     return $config;
+}
+
+sub set_config_wrapper {
+    my $self = shift;
+
+    my $old_sub = \&RT::Config::Set;
+    *RT::Config::Set = sub {
+        my @caller = caller;
+        if ( ($caller[1]||'') =~ /\.t$/ ) {
+            my ($self, $name) = @_;
+            my $type = $RT::Config::META{$name}->{'Type'} || 'SCALAR';
+            my %sigils = (
+                HASH   => '%',
+                ARRAY  => '@',
+                SCALAR => '$',
+            );
+            my $sigil = $sigils{$type} || $sigils{'SCALAR'};
+            open my $fh, '>>', $tmp{'config'}{'RT'}
+                or die "Couldn't open config file: $!";
+            require Data::Dumper;
+            print $fh
+                "\nSet(${sigil}${name}, \@{"
+                    . Data::Dumper::Dumper([@_[2 .. $#_]])
+                ."}); 1;\n";
+            close $fh;
+
+            if ( @SERVERS ) {
+                warn "you're changing config option in a test file"
+                    ." when server is active";
+            }
+        }
+        return $old_sub->(@_);
+    };
 }
 
 sub bootstrap_db {
@@ -669,7 +735,7 @@ sub mailsent_ok {
 
     my $mailsent = scalar grep /\S/, split /%% split me! %%\n/,
         RT::Test->file_content(
-            $mailbox_catcher,
+            $tmp{'mailbox'},
             'unlink' => 0,
             noexist => 1
         );
@@ -689,14 +755,14 @@ sub fetch_caught_mails {
     my $self = shift;
     return grep /\S/, split /%% split me! %%\n/,
         RT::Test->file_content(
-            $mailbox_catcher,
+            $tmp{'mailbox'},
             'unlink' => 1,
             noexist => 1
         );
 }
 
 sub clean_caught_mails {
-    unlink $mailbox_catcher;
+    unlink $tmp{'mailbox'};
 }
 
 =head2 get_relocatable_dir
@@ -899,7 +965,6 @@ sub trust_gnupg_key {
     return %res;
 }
 
-my @SERVERS;
 sub started_ok {
     my $self = shift;
 
@@ -946,10 +1011,18 @@ sub start_apache_server {
 
     my %info = $self->apache_server_info( variant => $variant );
 
-    my ($log_fh, $log_fn) = tempfile();
-    my $pid_fn = File::Spec->rel2abs( File::Spec->catfile(
-        't', "apache.$$.pid"
-    ) );
+    Test::More::diag(do {
+        open my $fh, '<', $tmp{'config'}{'RT'};
+        local $/;
+        <$fh>
+    });
+
+    my $log_fn = File::Spec->catfile(
+        "$tmp{'directory'}", 'apache.log'
+    );
+    my $pid_fn = File::Spec->catfile(
+        "$tmp{'directory'}", "apache.pid"
+    );
     my $tmpl = File::Spec->rel2abs( File::Spec->catfile(
         't', 'data', 'configs',
         'apache'. $info{'version'} .'+'. $variant .'.conf'
@@ -968,11 +1041,16 @@ sub start_apache_server {
         my $method = 'apache_'.$variant.'_server_options';
         $self->$method( \%info, \%opt );
     }
-    my ($conf_fh, $conf_fn) = $self->process_in_file(
-        in => $tmpl, options => \%opt, out => $tmpl .'.final',
+    $tmp{'config'}{'apache'} = File::Spec->catfile(
+        "$tmp{'directory'}", "apache.conf"
+    );
+    $self->process_in_file(
+        in      => $tmpl, 
+        out     => $tmp{'config'}{'apache'},
+        options => \%opt,
     );
 
-    $self->fork_exec($info{'executable'}, '-f', $conf_fn);
+    $self->fork_exec($info{'executable'}, '-f', $tmp{'config'}{'apache'});
     my $pid = do {
         my $tries = 60;
         while ( !-e $pid_fn ) {
@@ -1149,7 +1227,7 @@ sub process_in_file {
     }
 
     my ($out_fh, $out_conf);
-    if ( $args{'out'} ) {
+    unless ( $args{'out'} ) {
         ($out_fh, $out_conf) = tempfile();
     } else {
         $out_conf = $args{'out'};
@@ -1173,7 +1251,15 @@ END {
 
     RT::Test->stop_server;
 
-    RT::Test->clean_caught_mails;
+    # not success
+    if ( grep !$_, $Test->summary ) {
+        $tmp{'directory'}->unlink_on_destroy(0);
+
+        Test::More::diag(
+            "Some tests failed, tmp directory"
+            ." '$tmp{directory}' is not cleaned"
+        );
+    }
 
     if ( $ENV{RT_TEST_PARALLEL} && $created_new_db ) {
 
