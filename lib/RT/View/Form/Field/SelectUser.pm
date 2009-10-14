@@ -1,4 +1,4 @@
-package RT::View::Form::Field::SelectOwner;
+package RT::View::Form::Field::SelectUser;
 use warnings;
 use strict;
 use Jifty::View::Declare;
