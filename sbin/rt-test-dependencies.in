@@ -294,7 +294,7 @@ Test::Warn
 Test::Builder 0.77 # needed to fix TODO test
 IPC::Run3
 Test::MockTime
-Test::HTTP::Server::Simple 0.13
+HTTP::Server::Simple::Mason 0.13
 .
 
 $deps{'FASTCGI'} = [ text_to_hash( << '.') ];
