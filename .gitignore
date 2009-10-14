@@ -31,3 +31,4 @@ configure
 etc/RT_Config.pm
 etc/upgrade/
 sbin/rt-server
+sbin/rt-test-dependencies
