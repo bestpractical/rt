@@ -118,14 +118,6 @@ BEGIN {
     $dbname = $ENV{RT_TEST_PARALLEL}? "rt3test_$port" : "rt3test";
 };
 
-use RT::Interface::Web::Standalone;
-use Test::HTTP::Server::Simple::StashWarnings;
-use Test::WWW::Mechanize;
-use File::Path 'mkpath';
-
-unshift @RT::Interface::Web::Standalone::ISA, 'Test::HTTP::Server::Simple::StashWarnings';
-sub RT::Interface::Web::Standalone::test_warning_path { "/__test_warnings" }
-
 sub import {
     my $class = shift;
     my %args = @_;
@@ -925,6 +917,16 @@ sub started_ok {
 
 sub start_standalone_server {
     my $self = shift;
+
+
+    require RT::Interface::Web::Standalone;
+
+    require Test::HTTP::Server::Simple::StashWarnings;
+    unshift @RT::Interface::Web::Standalone::ISA,
+        'Test::HTTP::Server::Simple::StashWarnings';
+    *RT::Interface::Web::Standalone::test_warning_path = sub {
+        "/__test_warnings";
+    };
 
     my $s = RT::Interface::Web::Standalone->new($port);
 
