@@ -1173,6 +1173,8 @@ END {
 
     RT::Test->stop_server;
 
+    RT::Test->clean_caught_mails;
+
     if ( $ENV{RT_TEST_PARALLEL} && $created_new_db ) {
 
         # Pg doesn't like if you issue a DROP DATABASE while still connected
