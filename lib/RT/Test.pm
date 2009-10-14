@@ -54,7 +54,8 @@ use warnings;
 use base 'Test::More';
 
 use Socket;
-use File::Temp;
+use File::Temp qw(tempfile);
+use File::Path qw(mkpath);
 use File::Spec;
 
 our $SKIP_REQUEST_WORK_AROUND = 0;
@@ -75,7 +76,6 @@ wrap 'HTTP::Request::Common::form_data',
 
 
 our @EXPORT = qw(is_empty);
-
 our ($port, $dbname);
 
 =head1 NAME
@@ -939,8 +939,6 @@ sub start_standalone_server {
 
     return ($ret, RT::Test::Web->new);
 }
-
-use File::Temp qw(tempfile);
 
 sub start_apache_server {
     my $self = shift;
