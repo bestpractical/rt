@@ -4,6 +4,19 @@ use strict;
 use Jifty::View::Declare;
 use base 'Jifty::Web::Form::Field::Select';
 
+sub _render_user {
+    my $self = shift;
+    my $user = shift;
+
+    if (!ref($user)) {
+        my $user_object = RT::Model::User->new;
+        $user_object->load($user);
+        $user = $user_object;
+    }
+
+    return $user->name;
+}
+
 sub _render_select_values {
     my $self = shift;
     my $rendered = '';
@@ -21,9 +34,7 @@ sub _render_select_values {
                   : $current_value eq $value );
         $rendered .= qq!>!;
 
-        my $user = RT::Model::User->new;
-        $user->load($value);
-        $rendered .= $user->name;
+        $rendered .= $self->_render_user($value);
 
         $rendered .= qq!</option>\n!;
     }
@@ -38,7 +49,7 @@ sub render_value {
     my $value = $self->current_value;
     if(defined $value) {
         my @value = grep { $_->{value} eq $value } $self->available_values;
-        $value = $value[0]->{display} if scalar @value;
+        $value = $self->_render_user($value[0]->{value}) if scalar @value;
     }
     $field .= Jifty->web->escape(_($value)) if defined $value;
     $field .= qq!</span>\n!;
