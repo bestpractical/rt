@@ -3,7 +3,6 @@ use warnings;
 use strict;
 use Jifty::View::Declare;
 use base 'Jifty::Web::Form::Field::Select';
-use Jifty::View::Declare::Helpers 'mason_scomp';
 
 sub _render_select_values {
     my $self = shift;
@@ -24,7 +23,7 @@ sub _render_select_values {
 
         my $user = RT::Model::User->new;
         $user->load($value);
-        $rendered .= mason_scomp('/Elements/ShowUser', { user => $user });
+        $rendered .= $user->name;
 
         $rendered .= qq!</option>\n!;
     }
