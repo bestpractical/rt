@@ -43,7 +43,7 @@ $LCORE->env->set_symbol('RT.RuleAction.Prepare' => LCore::Primitive->new
                           lazy => 0,
                           parameters => [ LCore::Parameter->new({ name => 'name', type => 'Str' }),
                                           LCore::Parameter->new({ name => 'template', type => 'Str' }),
-                                          LCore::Parameter->new({ name => 'context', type => 'Str' }),
+                                          LCore::Parameter->new({ name => 'context', type => 'HashRef' }),
                                           LCore::Parameter->new({ name => 'ticket', type => 'RT::Model::Ticket' }),
                                           LCore::Parameter->new({ name => 'transaction', type => 'RT::Model::Transaction' }) ],
 
@@ -65,7 +65,7 @@ $LCORE->env->set_symbol('RT.RuleAction.Run' => LCore::Primitive->new
                           lazy => 0,
                           parameters => [ LCore::Parameter->new({ name => 'name', type => 'Str' }),
                                           LCore::Parameter->new({ name => 'template', type => 'Str' }),
-                                          LCore::Parameter->new({ name => 'context', type => 'Str' }),
+                                          LCore::Parameter->new({ name => 'context', type => 'HashRef' }),
                                           LCore::Parameter->new({ name => 'ticket', type => 'RT::Model::Ticket' }),
                                           LCore::Parameter->new({ name => 'transaction', type => 'RT::Model::Transaction' }) ],
 
