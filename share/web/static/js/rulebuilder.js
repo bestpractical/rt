@@ -389,9 +389,9 @@ Module("RuleBuilder2", function(m) {
                         context.expcontext = new m.ArrayContext({ context: context,
                                                                   builder: builder,
                                                                   inner_type: inner_type });
-                        var child = this.context.mk_array_item_context(this.inner_type,
-                                                                       jQuery('div.array-item-container', this.builder), 0);
-                        this.context.children.push(child);
+                        var child = context.mk_array_item_context(context.inner_type,
+                                                                  jQuery('div.array-item-container', this.builder), 0);
+                        context.children.push(child);
                         builder.show();
                         jQuery(this).hide();
                         context.rb.focus(child);
@@ -478,33 +478,46 @@ Module("RuleBuilder2", function(m) {
             rb: { is: "rw" }
         },
         after: { initialize: function() {
-            var expected_type = this.expected_type;
             var rb = this.rb;
 
             var that = this;
             jQuery(this.element).click(function(e) { rb.focus(that); return false });
-            jQuery._span_({ 'class': 'return-type'})
-                .text(expected_type)
-                .appendTo(this.element);
-
-            if (expected_type == 'Str' || expected_type == 'Num') { // self-evaluating
-                jQuery._span_({ 'class': 'enter-value' })
-                    .text("Enter a value")
-                    .click(function(e) {
-                        jQuery(this).html('').unbind('click');
-                        that.expcontext = new m.SelfEvalContext( { context: that } );
-                        return true;
-                    })
-                    .appendTo(this.element);
-            }
-
-            var matched = /^ArrayRef\[(.*)\]$/.exec(expected_type);
-            if (matched) {
-                m.ArrayContext.prototype.helper(this, matched[1]);
-            }
+            this.show_helpers();
         }
                },
         methods: {
+            show_helpers: function() {
+            var expected_type = this.expected_type;
+                var that = this;
+                jQuery._span_({ 'class': 'return-type'})
+                    .text(expected_type)
+                    .appendTo(this.element);
+
+                if (expected_type == 'Str' || expected_type == 'Num') { // self-evaluating
+                    jQuery._span_({ 'class': 'enter-value' })
+                        .text("Enter a value")
+                        .click(function(e) {
+                            jQuery(this).html('').unbind('click');
+                            that.expcontext = new m.SelfEvalContext( { context: that } );
+                            return true;
+                        })
+                        .appendTo(this.element);
+                }
+
+                var matched = /^ArrayRef\[(.*)\]$/.exec(expected_type);
+                if (matched) {
+                    m.ArrayContext.prototype.helper(this, matched[1]);
+                }
+                jQuery._span_({'class': 'clear-icon'})
+                    .text("Clear")
+                    .appendTo(this.element)
+                    .click(function(e) {
+                        jQuery(that.element).html('');
+                        that.clear();
+                        that.show_helpers();
+                    });
+            },
+
             array_item_idx: function() {
                 for (var i in this.parent.children) {
                     if (this.parent.children[i] == this)

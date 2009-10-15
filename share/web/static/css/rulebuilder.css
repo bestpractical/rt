@@ -233,6 +233,15 @@ span.arraybuilder-icon {
     width:0;
 }
 
+span.clear-icon {
+    background:transparent url(/static/images/cross.png) no-repeat scroll 0 0;
+    float:right;
+    height:16px;
+    overflow:hidden;
+    padding-left:16px;
+    width:0;
+}
+
 div.arraybuilder {
 
 }
