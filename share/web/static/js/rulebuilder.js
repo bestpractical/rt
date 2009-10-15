@@ -363,6 +363,48 @@ Module("RuleBuilder2", function(m) {
         }
     });
 
+    Class("ArrayContext", {
+        has: { context: { is: "rw" },
+               builder: { is: "rw" },
+               inner_type: { is: "rw" },
+             },
+        after: {
+            initialize: function() {
+            }
+        },
+        methods: {
+            helper: function(context, inner_type) {
+                context.inner_type = inner_type;
+                context.children = [];
+                var builder = jQuery._div({'class': 'arraybuilder'})
+                    ._div_({'class': 'array-item-container'})
+                    .div_()
+                    .appendTo(context.element)
+                    .hide();
+                jQuery._span_({'class': 'arraybuilder-icon'})
+                    .text("Array builder")
+                    .appendTo(context.element)
+                    .click(function(e) {
+                        context.arraybuilder = builder;
+                        context.expcontext = new m.ArrayContext({ context: context,
+                                                                  builder: builder,
+                                                                  inner_type: inner_type });
+                        var child = this.context.mk_array_item_context(this.inner_type,
+                                                                       jQuery('div.array-item-container', this.builder), 0);
+                        this.context.children.push(child);
+                        builder.show();
+                        jQuery(this).hide();
+                        context.rb.focus(child);
+                        return false;
+                    });
+            },
+            serialize: function() {
+                var args = jQuery.map(this.context.children, function(val) { return val.serialize() });
+                return args.join(' ');
+            }
+        }
+    });
+
     Class("ApplicationContext", {
         has: { context: { is: "rw" },
                func_name: { is: "rw" },
@@ -458,26 +500,7 @@ Module("RuleBuilder2", function(m) {
 
             var matched = /^ArrayRef\[(.*)\]$/.exec(expected_type);
             if (matched) {
-                this.inner_type = matched[1];
-                this.children = [];
-                var builder = jQuery._div({'class': 'arraybuilder'})
-                    ._div_({'class': 'array-item-container'})
-                    .div_()
-                    .appendTo(this.element)
-                    .hide();
-                jQuery._span_({'class': 'arraybuilder-icon'})
-                    .text("Array builder")
-                    .appendTo(this.element)
-                    .click(function(e) {
-                        that.arraybuilder = builder;
-                        var child = that.mk_array_item_context(that.inner_type,
-                                                               jQuery('div.array-item-container', builder), 0);
-                        that.children.push(child);
-                        builder.show();
-                        jQuery(this).hide();
-                        that.rb.focus(child);
-                        return false;
-                    });
+                m.ArrayContext.prototype.helper(this, matched[1]);
             }
         }
                },
@@ -564,6 +587,9 @@ Module("RuleBuilder2", function(m) {
                     var builder = jQuery('div.arraybuilder', parent.element).show();
                     jQuery("span.arraybuilder-icon", parent.element).hide();
                     parent.arraybuilder = builder;
+                    parent.expcontext = new m.ArrayContext({ context: parent,
+                                                             builder: builder,
+                                                             inner_type: parent.inner_type });
                     var container = jQuery('div.array-item-container', builder);
                     first_param = parent.mk_array_item_context(parent.inner_type,
                                                                container, null);
@@ -668,18 +694,11 @@ Module("RuleBuilder2", function(m) {
             },
 
             serialize: function() {
-                if( this.expcontext instanceof m.SelfEvalContext ) {
-                    return this.expcontext.serialize();
-                }
-                else if( this.expcontext instanceof m.ApplicationContext ) {
-                    return this.expcontext.serialize();
-                }
-                else if ( this.expression ) {
+                if ( this.expression ) {
                     return this.expression;
                 }
-                else if ( this.arraybuilder ) {
-                    var args = jQuery.map(this.children, function(val) { return val.serialize() });
-                    return args.join(' ');
+                else {
+                    return this.expcontext.serialize();
                 }
             },
 
