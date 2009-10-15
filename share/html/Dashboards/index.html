@@ -54,18 +54,21 @@
 
 <& /Dashboards/Elements/ShowDashboards,
     Title      => loc('Personal Dashboards'),
-    Dashboards => [sort { $a->Id <=> $b->Id } @{ $dashboards->{personal} || [] }],
+    Dashboards => \@personal_dashboards,
 &>
 
 <& /Dashboards/Elements/ShowDashboards,
     Title      => loc('System Dashboards'),
-    Dashboards => [sort { $a->Id <=> $b->Id } @{ $dashboards->{system} || [] }],
+    Dashboards => \@system_dashboards,
 &>
 
-% for my $group (sort keys %{ $dashboards->{group} || {} }) {
+% for (@grouped_dashboards) {
+%   my $group = $_->{name};
+%   my $dashboards = $_->{dashboards};
+
     <& /Dashboards/Elements/ShowDashboards,
         Title      => loc('[_1] DashBoards', $group),
-        Dashboards => [sort { $a->Id <=> $b->Id } @{ $dashboards->{group}{$group} || [] }],
+        Dashboards => $dashboards,
     &>
 % }
 
@@ -80,6 +83,23 @@ if (defined $Deleted) {
     push @actions, loc("Deleted dashboard [_1]", $Deleted);
 }
 
+my @personal_dashboards = sort { $a->Id <=> $b->Id } @{ $dashboards->{personal} || [] };
+my @system_dashboards = sort { $a->Id <=> $b->Id } @{ $dashboards->{system} || [] };
+
+my @groups = sort keys %{ $dashboards->{group} || {} };
+my @grouped_dashboards = map {
+    {
+        name => $_,
+        dashboards => [ sort { $a->Id <=> $b->Id } @{ $dashboards->{group}{$_} || [] } ],
+    }
+} @groups;
+
+$m->callback(
+    PersonalDashboards => \@personal_dashboards,
+    SystemDashboards   => \@system_dashboards,
+    GroupedDashboards  => \@grouped_dashboards,
+    CallbackName       => 'MassageDashboards',
+);
 </%INIT>
 <%ARGS>
 $Deleted => undef
