@@ -57,15 +57,27 @@ RuleBuilder.prototype.load_expressions = function (node, ctx) {
         var operands = node.operands;
         if (operands instanceof Array) {
             for (var i in ctx.children) {
-                this.load_expressions(node.operands[i], ctx.children[i]);
+                var childctx = ctx.children[i];
+                // XXX: make arraybuilder proper ctx subclass and provide methods for the following manipulation
+                if (childctx.inner_type) {
+                    jQuery('span.arraybuilder-icon', childctx.element)
+                        .trigger('click');
+                    this.load_expressions(node.operands[i], childctx.children[0]);
+                    for (var j = parseInt(i)+1; j < node.operands.length; ++j) {
+                        var newchild = childctx.mk_array_item_context(childctx.inner_type,
+                                                                      jQuery('div.array-item-container', childctx.arraybuilder), childctx.children[childctx.children.length-1].element);
+                        childctx.children.push(newchild);
+                        this.load_expressions(node.operands[j], newchild);
+                    }
+                }
+                else
+                    this.load_expressions(node.operands[i], childctx);
             }
         }
         else {
             var names = jQuery.map(this.functions[func_name].parameters,
                                    function(param) { return param.name });
-            console.log(names);
             for (var i in ctx.children) {
-                console.log("setting "+i+" "+names[i]);
                 this.load_expressions(node.operands[names[i]], ctx.children[i]);
             }
         }
