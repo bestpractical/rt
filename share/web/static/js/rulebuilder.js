@@ -113,11 +113,11 @@ RuleBuilder.prototype.init = function () {
     jQuery._div_({'class': 'context top-context'})
         .appendTo(this.panel);
 
-    this.top_context = new RuleBuilder.Context(
-        'Bool',
-        jQuery(".top-context").get(0),
-        null,
-        this
+    this.top_context = new RuleBuilder2.Context(
+        { expected_type: 'Bool',
+          element: jQuery(".top-context").get(0),
+          parent: null,
+          rb: this }
     );
 
     ebuilder.append('<div class="library">');
@@ -329,319 +329,336 @@ RuleBuilder.prototype.filter_expression_type = function (type) {
     jQuery(this.sel+' .expression:not(.ret_'+e_sel(type)+')').hide();
 };
 
-
-RuleBuilder.Context = function(expected_type, element, parent, rb) {
-    this.expected_type = expected_type;
-    this.element = element;
-    this.parent = parent;
-    this.rb = rb;
-
-    var that = this;
-    jQuery(this.element).click(function(e) { rb.focus(that); return false });
-    jQuery._span_({ 'class': 'return-type'})
-          .text(expected_type)
-          .appendTo(this.element);
-
-    if (expected_type == 'Str' || expected_type == 'Num') { // self-evaluating
-        jQuery._span_({ 'class': 'enter-value' })
-          .text("Enter a value")
-          .click(function(e) {
-              jQuery(this).html('').unbind('click');
-              jQuery._input_({ 'type': 'text', class: 'enter-value'})
-                  .change(function() { that.update_return_type(that.return_type_from_val(this.value)) } )
-                  .appendTo(this).trigger('focus');
-              that.self_eval = true;
-              return true;
-          })
-          .appendTo(this.element);
-    }
-
-    var matched = /^ArrayRef\[(.*)\]$/.exec(expected_type);
-    if (matched) {
-        this.inner_type = matched[1];
-        this.children = [];
-        var builder = jQuery._div({'class': 'arraybuilder'})
-            ._div_({'class': 'array-item-container'})
-            .div_()
-            .appendTo(this.element)
-            .hide();
-        jQuery._span_({'class': 'arraybuilder-icon'})
-            .text("Array builder")
-            .appendTo(this.element)
-            .click(function(e) {
-                that.arraybuilder = builder;
-                var child = that.mk_array_item_context(that.inner_type,
-                                                       jQuery('div.array-item-container', builder), 0);
-                that.children.push(child);
-                builder.show();
-                jQuery(this).hide();
-                that.rb.focus(child);
-                return false;
-            });
-    }
-};
-
-RuleBuilder.Context.prototype.array_item_idx = function()
-{
-    for (var i in this.parent.children) {
-        if (this.parent.children[i] == this)
-            return parseInt(i);
-    }
-    return -1;
-}
-
-RuleBuilder.Context.prototype.mk_array_item_context = function(type, container, insert_after) {
-    var li = jQuery._div_({'class': 'array-item'});
-    if (insert_after)
-        li.insertAfter(jQuery(insert_after).parent(".array-item"));
-    else
-        li.appendTo(container);
-    var x = jQuery._div_({'class': 'context'})
-        .appendTo(li);
-    var child = new RuleBuilder.Context(type, x.get(0), this, this.rb);
-    jQuery._span_({'class': 'add-icon'})
-        .text("+")
-        .appendTo(li)
-        .click(function(e) {
-            var that = child.parent;
-            var idx = child.array_item_idx()+1;
-            var newchild = that.mk_array_item_context(that.inner_type,
-                                                      jQuery('div.array-item-container', that.arraybuilder), child.element);
-            that.children.splice(idx, 0, newchild);
-        });
-    jQuery._span_({'class': 'delete-icon'})
-        .text("-")
-        .appendTo(li)
-        .click(function(e) {
-            var that = child.parent;
-            var idx = child.array_item_idx();
-            jQuery(child.element).parent('.array-item').remove();
-            that.children.splice(idx, 1);
-        });
-
-    return child;
-};
-
-RuleBuilder.Context.prototype.return_type_from_val = function(val) {
-    // XXX
-    return 'Str';
-}
-
-RuleBuilder.Context.prototype.transform = function(func_name) {
-    var rb = this.rb;
-    var func = rb.functions[func_name];
-    var new_element = jQuery._div_({'class': 'context'});
-    var parent = new RuleBuilder.Context(this.expected_type,
-                                         new_element.get(0), this.parent, rb);
-    if (this.parent) {
-        new_element.insertAfter(this.element);
-        jQuery(this.element).remove();
-
-        this.parent.children[this.array_item_idx()] = parent;
-    }
-    else {
-        jQuery(rb.top_context.element).removeClass('top-context').remove();
-        new_element.addClass('top-context').appendTo(rb.panel);
-
-        rb.top_context = parent;
-    }
-
-    this.parent = parent;
-
-    parent.set_application(func_name, func);
-
-    jQuery(this.element).unbind('click');
-    var first_param = parent.children[0];
-    var second_param = parent.children.length > 1 ? parent.children[1] : null;
-
-    if (first_param.inner_type) {
-        //   Bool "or"                 (......)  <- parent
-        //        |--- ArrayRef[Bool]  (parent)  <- first_param
-        //              |- first_param           <- 
-        //              |- second_param          <- 
-        parent = first_param;
-        var builder = jQuery('div.arraybuilder', parent.element).show();
-        jQuery("span.arraybuilder-icon", parent.element).hide();
-        parent.arraybuilder = builder;
-        var container = jQuery('div.array-item-container', builder);
-        first_param = parent.mk_array_item_context(parent.inner_type,
-                                                   container, null);
-        second_param = parent.mk_array_item_context(parent.inner_type,
-                                                    container, first_param.element);
-        parent.children = [ first_param, second_param ];
-    }
-
-    parent.children[0] = this;
-    this.parent = parent;
-    this.expected_type = first_param.expected_type;
-
-    jQuery('span.return-type:first', this.element)
-        .text(first_param.expected_type);
-    jQuery(first_param.element).replaceWith(this.element);
-    first_param.element = this.element;
-    var that = this;
-    jQuery(this.element).click(function(e) { rb.focus(that); return false });
-    this.update_return_type(this.return_type);
-    if (second_param)
-        this.rb.focus(second_param);
-}
-
-RuleBuilder.Context.prototype.transformMenu = function(el) {
-    // this.return_type -> this.expected_type
-    var that = this;
-    var options = {
-        onClick: function(e,item) {
-            jQuery.Menu.closeAll();
-            that.transform(item.src);
-            return false;
+Module("RuleBuilder2", function(m) {
+    Class("Context", {
+        has: {
+            expected_type: { is: "rw" },
+            element: { is: "rw" },
+            parent: { is: "rw" },
+            rb: { is: "rw" }
         },
-        minWidth: 120,
-        arrowSrc: '/images/arrow_right.gif',
-        hoverOpenDelay: 500,
-        hideDelay: 500 };
+        after: { initialize: function() {
+            var expected_type = this.expected_type;
+            var rb = this.rb;
 
-    jQuery.get('/rulebuilder/getfunctions.json',
-               { parameters: [ this.return_type ],
-                 return_type: this.expected_type },
-               function(response, status) {
-                   var entries = [];
-                   for (var name in response) {
-                       entries.push(name);
-                   }
+            var that = this;
+            jQuery(this.element).click(function(e) { rb.focus(that); return false });
+            jQuery._span_({ 'class': 'return-type'})
+                .text(expected_type)
+                .appendTo(this.element);
 
-                   jQuery(el)
-                   .menu(options,
-                         jQuery.map(entries,
-                                    function(val) {
-                                        return {src: val, data: {  } }}
-                                       ));
+            if (expected_type == 'Str' || expected_type == 'Num') { // self-evaluating
+                jQuery._span_({ 'class': 'enter-value' })
+                    .text("Enter a value")
+                    .click(function(e) {
+                        jQuery(this).html('').unbind('click');
+                        jQuery._input_({ 'type': 'text', class: 'enter-value'})
+                            .change(function() { that.update_return_type(that.return_type_from_val(this.value)) } )
+                            .appendTo(this).trigger('focus');
+                        that.self_eval = true;
+                        return true;
+                    })
+                    .appendTo(this.element);
+            }
+
+            var matched = /^ArrayRef\[(.*)\]$/.exec(expected_type);
+            if (matched) {
+                this.inner_type = matched[1];
+                this.children = [];
+                var builder = jQuery._div({'class': 'arraybuilder'})
+                    ._div_({'class': 'array-item-container'})
+                    .div_()
+                    .appendTo(this.element)
+                    .hide();
+                jQuery._span_({'class': 'arraybuilder-icon'})
+                    .text("Array builder")
+                    .appendTo(this.element)
+                    .click(function(e) {
+                        that.arraybuilder = builder;
+                        var child = that.mk_array_item_context(that.inner_type,
+                                                               jQuery('div.array-item-container', builder), 0);
+                        that.children.push(child);
+                        builder.show();
+                        jQuery(this).hide();
+                        that.rb.focus(child);
+                        return false;
+                    });
+            }
+        }
                },
-               'json');
+        methods: {
+            array_item_idx: function() {
+                for (var i in this.parent.children) {
+                    if (this.parent.children[i] == this)
+                        return parseInt(i);
+                }
+                return -1;
+            },
 
-}
+            mk_array_item_context: function(type, container, insert_after) {
+                var li = jQuery._div_({'class': 'array-item'});
+                if (insert_after)
+                    li.insertAfter(jQuery(insert_after).parent(".array-item"));
+                else
+                    li.appendTo(container);
+                var x = jQuery._div_({'class': 'context'})
+                    .appendTo(li);
+                var child = new RuleBuilder2.Context({ expected_type: type,
+                                                       element: x.get(0),
+                                                       parent: this,
+                                                       rb: this.rb });
+                jQuery._span_({'class': 'add-icon'})
+                    .text("+")
+                    .appendTo(li)
+                    .click(function(e) {
+                        var that = child.parent;
+                        var idx = child.array_item_idx()+1;
+                        var newchild = that.mk_array_item_context(that.inner_type,
+                                                                  jQuery('div.array-item-container', that.arraybuilder), child.element);
+                        that.children.splice(idx, 0, newchild);
+                    });
+                jQuery._span_({'class': 'delete-icon'})
+                    .text("-")
+                    .appendTo(li)
+                    .click(function(e) {
+                        var that = child.parent;
+                        var idx = child.array_item_idx();
+                        jQuery(child.element).parent('.array-item').remove();
+                        that.children.splice(idx, 1);
+                    });
 
-RuleBuilder.Context.prototype.state = function() {
-    if( this.self_eval ) {
-    }
-    else if ( this.expression ) {
-    }
-    else if ( this.func_name ) {
-        var type_complete = false;
-        for (var i in this.children) {
-            var child = this.children[i];
-            var state = child.state();
-            if (state == 'pending')
-                return 'pending';
-            if (state == 'type-complete')
-                type_complete = true;
+                return child;
+            },
+
+            return_type_from_val: function(val) {
+                // XXX
+                return 'Str';
+            },
+
+            transform: function(func_name) {
+                var rb = this.rb;
+                var func = rb.functions[func_name];
+                var new_element = jQuery._div_({'class': 'context'});
+                var parent = new RuleBuilder2.Context({ expected_type: this.expected_type,
+                                                        element: new_element.get(0),
+                                                        parent: this.parent,
+                                                        rb: rb });
+
+                if (this.parent) {
+                    new_element.insertAfter(this.element);
+                    jQuery(this.element).remove();
+
+                    this.parent.children[this.array_item_idx()] = parent;
+                }
+                else {
+                    jQuery(rb.top_context.element).removeClass('top-context').remove();
+                    new_element.addClass('top-context').appendTo(rb.panel);
+
+                    rb.top_context = parent;
+                }
+
+                this.parent = parent;
+
+                parent.set_application(func_name, func);
+
+                jQuery(this.element).unbind('click');
+                var first_param = parent.children[0];
+                var second_param = parent.children.length > 1 ? parent.children[1] : null;
+
+                if (first_param.inner_type) {
+                    //   Bool "or"                 (......)  <- parent
+                    //        |--- ArrayRef[Bool]  (parent)  <- first_param
+                    //              |- first_param           <- 
+                    //              |- second_param          <- 
+                    parent = first_param;
+                    var builder = jQuery('div.arraybuilder', parent.element).show();
+                    jQuery("span.arraybuilder-icon", parent.element).hide();
+                    parent.arraybuilder = builder;
+                    var container = jQuery('div.array-item-container', builder);
+                    first_param = parent.mk_array_item_context(parent.inner_type,
+                                                               container, null);
+                    second_param = parent.mk_array_item_context(parent.inner_type,
+                                                                container, first_param.element);
+                    parent.children = [ first_param, second_param ];
+                }
+
+                parent.children[0] = this;
+                this.parent = parent;
+                this.expected_type = first_param.expected_type;
+
+                jQuery('span.return-type:first', this.element)
+                    .text(first_param.expected_type);
+                jQuery(first_param.element).replaceWith(this.element);
+                first_param.element = this.element;
+                var that = this;
+                jQuery(this.element).click(function(e) { rb.focus(that); return false });
+                this.update_return_type(this.return_type);
+                if (second_param)
+                    this.rb.focus(second_param);
+            },
+
+            transformMenu: function(el) {
+                // this.return_type -> this.expected_type
+                var that = this;
+                var options = {
+                    onClick: function(e,item) {
+                        jQuery.Menu.closeAll();
+                        that.transform(item.src);
+                        return false;
+                    },
+                    minWidth: 120,
+                    arrowSrc: '/images/arrow_right.gif',
+                    hoverOpenDelay: 500,
+                    hideDelay: 500 };
+
+                jQuery.get('/rulebuilder/getfunctions.json',
+                           { parameters: [ this.return_type ],
+                             return_type: this.expected_type },
+                           function(response, status) {
+                               var entries = [];
+                               for (var name in response) {
+                                   entries.push(name);
+                               }
+
+                               jQuery(el)
+                                   .menu(options,
+                                         jQuery.map(entries,
+                                                    function(val) {
+                                                        return {src: val, data: {  } }}
+                                                   ));
+                           },
+                           'json');
+
+            },
+
+            state: function() {
+                if( this.self_eval ) {
+                }
+                else if ( this.expression ) {
+                }
+                else if ( this.func_name ) {
+                    var type_complete = false;
+                    for (var i in this.children) {
+                        var child = this.children[i];
+                        var state = child.state();
+                        if (state == 'pending')
+                            return 'pending';
+                        if (state == 'type-complete')
+                            type_complete = true;
+                    }
+                    if (!type_complete)
+                        return "complete";
+                }
+                else {
+                    return 'pending';
+                }
+
+                var el = jQuery("span.return-type", this.element);
+                return el.hasClass('matched') ? 'type-complete' : 'complete';
+            },
+
+            update_return_type: function(type) {
+                // XXX: this should query the server for 'is-a-type-of'
+                this.return_type = type;
+                var el = jQuery("span.return-type", this.element);
+                if (this.expected_type == type) {
+                    el.removeClass("unmatched").addClass("matched");
+                }
+                else {
+                    el.removeClass("matched").addClass("unmatched");
+                }
+                this.transformMenu(el);
+            },
+
+            clear: function() {
+                jQuery('div.application', this.element).remove();
+                jQuery('span.expression', this.element).remove();
+                jQuery('span.transform', this.element).hide();
+                jQuery('span.enter-value', this.element).hide();
+                this.self_eval = false;
+                this.expression = null;
+                this.func_name = null;
+            },
+
+            traverse: function(fn) {
+                fn(this);
+                if ( this.func_name ) {
+                    jQuery.each(this.children, function(idx, val) { fn(this) } );
+                }
+            },
+
+            serialize: function() {
+                if( this.self_eval ) {
+                    var val = jQuery('input.enter-value', this.element).val();
+                    if (this.expected_type == 'Str') {
+                        return '"'+val+'"';
+                    }
+                    else {
+                        return val;
+                    }
+                }
+                else if ( this.expression ) {
+                    return this.expression;
+                }
+                else if ( this.func_name ) {
+                    var args = jQuery.map(this.children, function(val) { return val.serialize() });
+                    args.unshift(this.func_name);
+                    return '('+args.join(' ')+')';
+                }
+                else if ( this.arraybuilder ) {
+                    var args = jQuery.map(this.children, function(val) { return val.serialize() });
+                    return args.join(' ');
+                }
+            },
+
+            set_expression: function(expression) {
+                this.clear();
+                this.expression = expression.expression;
+                this.update_return_type(expression.type);
+                jQuery('span.transform', this.element).show();
+
+                jQuery._span_({ 'class': 'expression'})
+                    .text(this.expression)
+                    .appendTo(this.element);
+            },
+
+            set_application: function(func_name, func) {
+                this.clear();
+                this.func_name = func_name;
+                this.children = [];
+                this.update_return_type(func.return_type);
+                jQuery('span.transform', this.element).show();
+                jQuery._div({'class': 'application'})
+                    ._div_({'class': 'application-function function'})
+                    ._div_({'class': 'application-params signature'})
+                    .div_()
+                    .appendTo(this.element);
+
+                jQuery('div.application-function',this.element).html(func_name);
+                jQuery('div.application', this.element).show();
+                jQuery('div.application-params', this.element).html('');
+                var params = jQuery('div.application-params', this.element);
+                var that = this;
+                jQuery.each(func.parameters,
+                            function(idx, val) {
+                                var x = jQuery._div_({'class': 'context'})
+                                    .appendTo(params);
+
+                                var child = new RuleBuilder2.Context({ expected_type: val.type,
+                                                                       element: x.get(0),
+                                                                       parent: that,
+                                                                       rb: that.rb });
+
+                                that.children.push(child);
+                            });
+                if (this.children.length) {
+                    this.rb.focus(this.children[0]);
+                }
+            }
         }
-        if (!type_complete)
-            return "complete";
-    }
-    else {
-        return 'pending';
-    }
+    })
+});
 
-    var el = jQuery("span.return-type", this.element);
-    return el.hasClass('matched') ? 'type-complete' : 'complete';
-}
-
-RuleBuilder.Context.prototype.update_return_type = function(type) {
-    // XXX: this should query the server for 'is-a-type-of'
-    this.return_type = type;
-    var el = jQuery("span.return-type", this.element);
-    if (this.expected_type == type) {
-        el.removeClass("unmatched").addClass("matched");
-    }
-    else {
-        el.removeClass("matched").addClass("unmatched");
-    }
-    this.transformMenu(el);
-}
-
-RuleBuilder.Context.prototype.clear = function() {
-    jQuery('div.application', this.element).remove();
-    jQuery('span.expression', this.element).remove();
-    jQuery('span.transform', this.element).hide();
-    jQuery('span.enter-value', this.element).hide();
-    this.self_eval = false;
-    this.expression = null;
-    this.func_name = null;
-}
-
-RuleBuilder.Context.prototype.traverse = function(fn) {
-    fn(this);
-    if ( this.func_name ) {
-        jQuery.each(this.children, function(idx, val) { fn(this) } );
-    }
-}
-
-RuleBuilder.Context.prototype.serialize = function() {
-    if( this.self_eval ) {
-        var val = jQuery('input.enter-value', this.element).val();
-        if (this.expected_type == 'Str') {
-            return '"'+val+'"';
-        }
-        else {
-            return val;
-        }
-    }
-    else if ( this.expression ) {
-        return this.expression;
-    }
-    else if ( this.func_name ) {
-        var args = jQuery.map(this.children, function(val) { return val.serialize() });
-        args.unshift(this.func_name);
-        return '('+args.join(' ')+')';
-    }
-    else if ( this.arraybuilder ) {
-        var args = jQuery.map(this.children, function(val) { return val.serialize() });
-        return args.join(' ');
-    }
-}
-
-RuleBuilder.Context.prototype.set_expression = function(expression) {
-    this.clear();
-    this.expression = expression.expression;
-    this.update_return_type(expression.type);
-    jQuery('span.transform', this.element).show();
-
-    jQuery._span_({ 'class': 'expression'})
-          .text(this.expression)
-          .appendTo(this.element);
-}
-
-
-
-RuleBuilder.Context.prototype.set_application = function(func_name, func) {
-    this.clear();
-    this.func_name = func_name;
-    this.children = [];
-    this.update_return_type(func.return_type);
-    jQuery('span.transform', this.element).show();
-    jQuery._div({'class': 'application'})
-            ._div_({'class': 'application-function function'})
-           ._div_({'class': 'application-params signature'})
-          .div_()
-        .appendTo(this.element);
-
-    jQuery('div.application-function',this.element).html(func_name);
-    jQuery('div.application', this.element).show();
-    jQuery('div.application-params', this.element).html('');
-    var params = jQuery('div.application-params', this.element);
-    var that = this;
-    jQuery.each(func.parameters,
-                function(idx, val) {
-                    var x = jQuery._div_({'class': 'context'})
-                    .appendTo(params);
-
-                    var child = new RuleBuilder.Context(val.type, x.get(0), that, that.rb);
-                    that.children.push(child);
-                });
-    if (this.children.length) {
-        this.rb.focus(this.children[0]);
-    }
-};
 
 jQuery.fn.sort = function() {
     return this.pushStack( [].sort.apply( this, arguments ), []);
