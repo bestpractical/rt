@@ -3,12 +3,19 @@ $CurrentDashboard => undef
 </%args>
 <%init>
 my @dashboards = $m->comp("/Dashboards/Elements/ListOfDashboards");
+my $limit = 7;
+
+$m->callback(
+    Dashboards   => \@dashboards,
+    Limit        => \$limit,
+    CallbackName => 'MassageDashboards',
+);
 
 # limit to a maximum of 7 dashboards
 my $more = 0;
-if (@dashboards > 7) {
+if (@dashboards > $limit) {
     $more = 1;
-    splice @dashboards, 7;
+    splice @dashboards, $limit;
 }
 
 # always include the current dashboard, even if it's not in the initial list
@@ -39,7 +46,6 @@ if ($more) {
     $tabs->{"D-more"} = {
         title => loc('More'),
         path => 'Dashboards/index.html',
-
     }
 }
 
