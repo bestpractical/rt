@@ -363,6 +363,71 @@ Module("RuleBuilder2", function(m) {
         }
     });
 
+    Class("ApplicationContext", {
+        has: { context: { is: "rw" },
+               func_name: { is: "rw" },
+               func: { is: "rw" }
+             },
+        after: {
+            initialize: function() {
+                var that = this.context;
+                that.children = [];
+                that.update_return_type(this.func.return_type);
+                jQuery('span.transform', that.element).show();
+                jQuery._div({'class': 'application'})
+                    ._div_({'class': 'application-function function'})
+                    ._div_({'class': 'application-params signature'})
+                    .div_()
+                    .appendTo(that.element);
+
+                jQuery('div.application-function',that.element).html(this.func_name);
+                jQuery('div.application', that.element).show();
+                jQuery('div.application-params', that.element).html('');
+                var params = jQuery('div.application-params', that.element);
+                jQuery.each(this.func.parameters,
+                            function(idx, val) {
+                                var x = jQuery._div_({'class': 'context'})
+                                    .appendTo(params);
+
+                                var child = new RuleBuilder2.Context({ expected_type: val.type,
+                                                                       element: x.get(0),
+                                                                       parent: that,
+                                                                       rb: that.rb });
+
+                                that.children.push(child);
+                            });
+                if (that.children.length) {
+                    that.rb.focus(that.children[0]);
+                }
+            }
+        },
+        methods: {
+            serialize: function() {
+                var args = jQuery.map(this.context.children, function(val) { return val.serialize() });
+                args.unshift(this.func_name);
+                return '('+args.join(' ')+')';
+            },
+            get_state: function() {
+                var type_complete = false;
+                var children = this.context.children;
+                for (var i in children) {
+                    var child = children[i];
+                    var state = child.state();
+                    if (state == 'pending')
+                        return 'pending';
+                    if (state == 'type-complete')
+                        type_complete = true;
+                }
+                if (!type_complete)
+                    return "complete";
+
+                var el = jQuery("span.return-type", this.context.element);
+                return el.hasClass('matched') ? 'type-complete' : 'complete';
+            }
+
+        }
+    });
+
     Class("Context", {
         has: {
             expected_type: { is: "rw" },
@@ -561,18 +626,8 @@ Module("RuleBuilder2", function(m) {
                 }
                 else if ( this.expression ) {
                 }
-                else if ( this.func_name ) {
-                    var type_complete = false;
-                    for (var i in this.children) {
-                        var child = this.children[i];
-                        var state = child.state();
-                        if (state == 'pending')
-                            return 'pending';
-                        if (state == 'type-complete')
-                            type_complete = true;
-                    }
-                    if (!type_complete)
-                        return "complete";
+                else if ( this.expcontext instanceof m.ApplicationContext ) {
+                    return this.expcontext.get_state();
                 }
                 else {
                     return 'pending';
@@ -603,12 +658,11 @@ Module("RuleBuilder2", function(m) {
 
                 this.expcontext = null;
                 this.expression = null;
-                this.func_name = null;
             },
 
             traverse: function(fn) {
                 fn(this);
-                if ( this.func_name ) {
+                if ( this.expcontext instanceof m.ApplicationContext ) {
                     jQuery.each(this.children, function(idx, val) { fn(this) } );
                 }
             },
@@ -617,13 +671,11 @@ Module("RuleBuilder2", function(m) {
                 if( this.expcontext instanceof m.SelfEvalContext ) {
                     return this.expcontext.serialize();
                 }
+                else if( this.expcontext instanceof m.ApplicationContext ) {
+                    return this.expcontext.serialize();
+                }
                 else if ( this.expression ) {
                     return this.expression;
-                }
-                else if ( this.func_name ) {
-                    var args = jQuery.map(this.children, function(val) { return val.serialize() });
-                    args.unshift(this.func_name);
-                    return '('+args.join(' ')+')';
                 }
                 else if ( this.arraybuilder ) {
                     var args = jQuery.map(this.children, function(val) { return val.serialize() });
@@ -644,37 +696,10 @@ Module("RuleBuilder2", function(m) {
 
             set_application: function(func_name, func) {
                 this.clear();
-                this.func_name = func_name;
-                this.children = [];
-                this.update_return_type(func.return_type);
-                jQuery('span.transform', this.element).show();
-                jQuery._div({'class': 'application'})
-                    ._div_({'class': 'application-function function'})
-                    ._div_({'class': 'application-params signature'})
-                    .div_()
-                    .appendTo(this.element);
 
-                jQuery('div.application-function',this.element).html(func_name);
-                jQuery('div.application', this.element).show();
-                jQuery('div.application-params', this.element).html('');
-                var params = jQuery('div.application-params', this.element);
-                var that = this;
-                jQuery.each(func.parameters,
-                            function(idx, val) {
-                                var x = jQuery._div_({'class': 'context'})
-                                    .appendTo(params);
-
-                                var child = new RuleBuilder2.Context({ expected_type: val.type,
-                                                                       element: x.get(0),
-                                                                       parent: that,
-                                                                       rb: that.rb });
-
-                                that.children.push(child);
-                            });
-                if (this.children.length) {
-                    this.rb.focus(this.children[0]);
-                }
+                this.expcontext = new m.ApplicationContext( { context: this, func_name: func_name, func: func } );
             }
+
         }
     })
 });
