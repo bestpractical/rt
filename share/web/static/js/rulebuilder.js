@@ -429,7 +429,7 @@ RuleBuilder.Context.prototype.transform = function(func_name) {
     }
     else {
         jQuery(rb.top_context.element).removeClass('top-context').remove();
-        new_element.addClass('top-context').prependTo(rb.ebuilder);
+        new_element.addClass('top-context').appendTo(rb.panel);
 
         rb.top_context = parent;
     }
