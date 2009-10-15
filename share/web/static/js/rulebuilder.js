@@ -88,11 +88,8 @@ RuleBuilder.prototype.load_expressions = function (node, ctx) {
     }
     else if (node.type == 'self_evaluating') {
         jQuery('span.enter-value', ctx.element).hide();
-        jQuery._input_({ 'type': 'text', 'class': 'enter-value', 'value': node.value})
-            .change(function() { ctx.update_return_type(ctx.return_type_from_val(this.value)) } )
-            .appendTo(ctx.element).trigger('focus');
-        ctx.self_eval = true;
-
+        ctx.expcontext = new RuleBuilder2.SelfEvalContext( { context: ctx } );
+        ctx.expcontext.set_value(node.value);
     }
     else {
         alert('unknown node type');
@@ -330,6 +327,42 @@ RuleBuilder.prototype.filter_expression_type = function (type) {
 };
 
 Module("RuleBuilder2", function(m) {
+    Class("SelfEvalContext", {
+        has: { context: { is: "rw" },
+             },
+        after: {
+            initialize: function() {
+                var that = this;
+                jQuery._input_({ 'type': 'text', class: 'enter-value'})
+                    .change(function() {
+                        that.context.update_return_type(that.return_type(this.value))
+                    } )
+                    .appendTo(this.context.element)
+                    .trigger('focus');
+            },
+        },
+        methods: {
+            set_value: function(val) {
+                jQuery('input.enter-value', this.context.element)
+                    .val(val)
+                    .trigger('change');
+            },
+            return_type: function(val) {
+                // XXX
+                return 'Str';
+            },
+            serialize: function() {
+                var val = jQuery('input.enter-value', this.context.element).val();
+                if (this.context.expected_type == 'Str') {
+                    return '"'+val+'"';
+                }
+                else {
+                    return val;
+                }
+            }
+        }
+    });
+
     Class("Context", {
         has: {
             expected_type: { is: "rw" },
@@ -352,10 +385,7 @@ Module("RuleBuilder2", function(m) {
                     .text("Enter a value")
                     .click(function(e) {
                         jQuery(this).html('').unbind('click');
-                        jQuery._input_({ 'type': 'text', class: 'enter-value'})
-                            .change(function() { that.update_return_type(that.return_type_from_val(this.value)) } )
-                            .appendTo(this).trigger('focus');
-                        that.self_eval = true;
+                        that.expcontext = new m.SelfEvalContext( { context: that } );
                         return true;
                     })
                     .appendTo(this.element);
@@ -428,11 +458,6 @@ Module("RuleBuilder2", function(m) {
                     });
 
                 return child;
-            },
-
-            return_type_from_val: function(val) {
-                // XXX
-                return 'Str';
             },
 
             transform: function(func_name) {
@@ -532,7 +557,7 @@ Module("RuleBuilder2", function(m) {
             },
 
             state: function() {
-                if( this.self_eval ) {
+                if( this.expcontext instanceof m.SelfEvalContext ) {
                 }
                 else if ( this.expression ) {
                 }
@@ -575,7 +600,8 @@ Module("RuleBuilder2", function(m) {
                 jQuery('span.expression', this.element).remove();
                 jQuery('span.transform', this.element).hide();
                 jQuery('span.enter-value', this.element).hide();
-                this.self_eval = false;
+
+                this.expcontext = null;
                 this.expression = null;
                 this.func_name = null;
             },
@@ -588,14 +614,8 @@ Module("RuleBuilder2", function(m) {
             },
 
             serialize: function() {
-                if( this.self_eval ) {
-                    var val = jQuery('input.enter-value', this.element).val();
-                    if (this.expected_type == 'Str') {
-                        return '"'+val+'"';
-                    }
-                    else {
-                        return val;
-                    }
+                if( this.expcontext instanceof m.SelfEvalContext ) {
+                    return this.expcontext.serialize();
                 }
                 else if ( this.expression ) {
                     return this.expression;
