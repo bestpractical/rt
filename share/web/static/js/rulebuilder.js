@@ -498,7 +498,9 @@ Module("RuleBuilder2", function(m) {
                     .text(expected_type)
                     .appendTo(this.element);
 
-                if (expected_type == 'Str' || expected_type == 'Num') { // self-evaluating
+                if (expected_type == 'Str' ||
+                    expected_type == 'Num' ||
+                    expected_type == 'Int') { // self-evaluating
                     jQuery._span_({ 'class': 'enter-value' })
                         .text("Enter a value")
                         .click(function(e) {
