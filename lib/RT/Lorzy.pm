@@ -75,6 +75,18 @@ sub install_model_accessors {
     my ($env, $model) = @_;
     my $modelname = lc($model);
     $modelname =~ s/.*://;
+
+
+    $env->set_symbol($model.'.Update' => LCore::Primitive->new
+                         ( body => sub {
+                               my @params = @_;
+                               die 'not yet';
+                           },
+                           parameters => [
+                               LCore::Parameter->new({ name => 'params', type => "ArrayRef[${model}Param]" }) ],
+                           return_type => 'Any',
+                       ));
+
     for my $column ($model->columns) {
         next if $column->virtual;
         my $name = $column->name;
@@ -98,6 +110,17 @@ sub install_model_accessors {
                                parameters => [ LCore::Parameter->new({ name => $modelname, type => $model }) ],
                                return_type => $type
                            ));
+
+        $env->set_symbol($model.'Param.'.$name => LCore::Primitive->new
+                             ( body => sub {
+                                   my ($object) = @_;
+                                   die 'not yet';
+                               },
+                               parameters => [ LCore::Parameter->new({ name => $name, type => $type }) ],
+                               return_type => $model.'Param',
+                           ));
+
+
     }
 }
 
