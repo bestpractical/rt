@@ -125,6 +125,11 @@ RuleBuilder.prototype.init = function () {
 
     functions_div = jQuery('.functions');
     functions_div.append('<h3>Functions</h3>');
+    jQuery._span_({ 'class': 'showall'})
+        .text("show all...")
+        .click(function(e) {
+            jQuery('.functions .function', ebuilder).removeClass('unmatched');
+        }).appendTo(functions_div);
     jQuery.each(this.functions,
                 function(key, val) {
                     functions_div.append('<div class="function ret_'+val.return_type+'"> <span class="return-type">'+val.return_type+'</span> <span class="function-name">'+key+'</span>'+render_signature(val.parameters).html() +'</div>');
