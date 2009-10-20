@@ -1,4 +1,4 @@
-use Test::More tests => 7;
+use Test::More tests => 9;
 use RT::Test;
 
 use strict;
@@ -21,13 +21,11 @@ my $l = $RT::Lorzy::LCORE;
 
 my $on_created_lcore = q{
 (lambda (ticket transaction)
-  (Str.Eq (Native.Invoke transaction "type") "create"))
+  (Str.Eq (RT::Model::Transaction.type transaction) "create"))
 };
-#my $on_created_lcore2 = $l->analze_it("RT.Condition.OnCreate")
-    # my $lcore_code = "(RT.Condition.$lorzy_cond ticket transaction)"
 
-#my $auto_reply_lcore = $l->analyze_it(q{(quote (RT.RuleAction.SendEmail (to . ## $self->ticket_obj->role_group("requestor")->member_emails )))});
-# (lambda (ticket :RT::Model::Ticket transaction :RT::Model::Transaction context :HASH)
+ok( $l->analyze_it($on_created_lcore) );
+
 my $auto_reply_lcore = q{
 (lambda (ticket transaction context)
   (RT.RuleAction.Run
@@ -37,6 +35,8 @@ my $auto_reply_lcore = q{
          ("ticket"      . ticket)
          ("transaction" . transaction))))
 };
+
+ok( $l->analyze_it($auto_reply_lcore) );
 
 RT::Lorzy::Dispatcher->reset_rules;
 #

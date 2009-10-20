@@ -13,13 +13,6 @@ use Moose::Util::TypeConstraints;
 
 our $LCORE = LCore->new( env => LCore::Level2->new );
 require RT::Lorzy::Package::RT;
-$LCORE->env->set_symbol('Native.Invoke' => LCore::Primitive->new
-                        ( body => sub {
-                              my ($object, $method, @args) = @_;
-                              return $object->$method(@args);
-                          },
-                          lazy => 0,
-                      ));
 
 $LCORE->env->set_symbol('Str.Eq' => LCore::Primitive->new
                         ( body => sub {
@@ -157,13 +150,14 @@ my %cond_compat_map = ( 'On Create' => 'OnCreate',
 
 
 sub create_scripish {
-    my ( $class, $scrip_condition, $scrip_action, $template, $description, $queue ) = @_;
+    my ( $class, $scrip_condition, $scrip_action, $template, $description, $queue_id ) = @_;
     my $lorzy_cond = $cond_compat_map{$scrip_condition}
         or die "unsupported compat condition: $scrip_condition";
 
     my $lcore_cond = "(RT.Condition.$lorzy_cond ticket transaction)";
-    if ($queue) {
-        $lcore_cond = qq{(and $lcore_cond (Str.Eq "$queue" (Native.Invoke ticket "queue_id")))};
+    if ($queue_id) {
+        # XXX: Num.Eq
+        $lcore_cond = qq{(and $lcore_cond (Str.Eq "$queue_id" (RT::Model::Queue.id (RT::Model::Ticket.queue ticket))))};
     }
     $lcore_cond = qq{(lambda (ticket transaction) $lcore_cond)};
 
