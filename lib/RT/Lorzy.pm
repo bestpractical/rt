@@ -82,8 +82,10 @@ sub install_model_accessors {
                                my @params = @_;
                                die 'not yet';
                            },
+                           slurpy => 1,
                            parameters => [
-                               LCore::Parameter->new({ name => 'params', type => "ArrayRef[${model}Param]" }) ],
+                               LCore::Parameter->new({ name => $modelname, type => $model }),
+                               LCore::Parameter->new({ name => 'update', type => "ArrayRef[${model}Param]" }) ],
                            return_type => 'Any',
                        ));
 
