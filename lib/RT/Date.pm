@@ -653,7 +653,12 @@ sub LocalizedDateTime
     my $date_format = $args{'DateFormat'};
     my $time_format = $args{'TimeFormat'};
 
-    my $lang = $self->CurrentUser->UserObj->Lang || 'en';
+    my $lang = $self->CurrentUser->UserObj->Lang;
+    unless ($lang) {
+        require I18N::LangTags::Detect;
+        $lang = ( I18N::LangTags::Detect::detect(), 'en' )[0];
+    }
+    
 
     my $formatter = DateTime::Locale->load($lang);
     $date_format = $formatter->$date_format;
