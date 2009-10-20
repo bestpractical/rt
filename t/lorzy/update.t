@@ -47,3 +47,5 @@ my ($rv, $msg) = $ticket->create( subject => 'lorzy test', queue => $queue->name
 ok($ticket->id);
 is($ticket->subject, 'moose');
 is($ticket->priority, 10);
+
+

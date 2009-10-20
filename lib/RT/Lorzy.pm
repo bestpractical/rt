@@ -79,9 +79,15 @@ sub install_model_accessors {
 
     $env->set_symbol($model.'.Update' => LCore::Primitive->new
                          ( body => sub {
-                               my @params = @_;
-                               die 'not yet';
+                               my ($ticket, $update) = @_;
+                               # update is [ ['tag', $value], .... ]
+                               my %params = map { @$_ } @$update;
+                               use Data::Dumper;
+                               my ( $ret, $msg ) = $ticket->update(
+                                   attributes_ref => [keys %params],
+                                   args_ref       => \%params );
                            },
+                           lazy => 0,
                            slurpy => 1,
                            parameters => [
                                LCore::Parameter->new({ name => $modelname, type => $model }),
@@ -115,8 +121,8 @@ sub install_model_accessors {
 
         $env->set_symbol($model.'Param.'.$name => LCore::Primitive->new
                              ( body => sub {
-                                   my ($object) = @_;
-                                   die 'not yet';
+                                   my $val = shift;
+                                   return [$name => $val]
                                },
                                parameters => [ LCore::Parameter->new({ name => $name, type => $type }) ],
                                return_type => $model.'Param',
