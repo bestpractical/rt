@@ -9,6 +9,8 @@ RT::Ruleset->register( 'RT::Lorzy::Dispatcher' );
 use LCore;
 use LCore::Level2;
 
+use Moose::Util::TypeConstraints;
+
 our $LCORE = LCore->new( env => LCore::Level2->new );
 require RT::Lorzy::Package::RT;
 $LCORE->env->set_symbol('Native.Invoke' => LCore::Primitive->new
@@ -76,6 +78,8 @@ sub install_model_accessors {
     my $modelname = lc($model);
     $modelname =~ s/.*://;
 
+    my $param_type = $model.'Param';
+    type $param_type;
 
     $env->set_symbol($model.'.Update' => LCore::Primitive->new
                          ( body => sub {
@@ -91,7 +95,7 @@ sub install_model_accessors {
                            slurpy => 1,
                            parameters => [
                                LCore::Parameter->new({ name => $modelname, type => $model }),
-                               LCore::Parameter->new({ name => 'update', type => "ArrayRef[${model}Param]" }) ],
+                               LCore::Parameter->new({ name => 'update', type => "ArrayRef[$param_type]" }) ],
                            return_type => 'Any',
                        ));
 
@@ -112,6 +116,8 @@ sub install_model_accessors {
         $env->set_symbol($model.'.'.$name => LCore::Primitive->new
                              ( body => sub {
                                    my ($object) = @_;
+                                   Carp::cluck unless $object;
+
                                    $object->$name
                                },
                                lazy => 0,
@@ -125,16 +131,13 @@ sub install_model_accessors {
                                    return [$name => $val]
                                },
                                parameters => [ LCore::Parameter->new({ name => $name, type => $type }) ],
-                               return_type => $model.'Param',
+                               return_type => $param_type,
                            ));
-
-
     }
 }
 
 install_model_accessors($RT::Lorzy::LCORE->env, $_)
     for qw(RT::Model::Ticket RT::Model::Transaction RT::Model::Queue);
-
 
 my %cond_compat_map = ( 'On Create' => 'OnCreate',
                         'On Transaction' => 'OnTransaction',

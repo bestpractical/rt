@@ -1,4 +1,4 @@
-use Test::More tests => 7;
+use Test::More tests => 10;
 use RT::Test;
 
 use strict;
@@ -20,15 +20,31 @@ my $l = $RT::Lorzy::LCORE;
 
 my $on_created_lcore = q{
 (lambda (ticket transaction)
-  (Str.Eq (Native.Invoke transaction "type") "create"))
+  (Str.Eq (RT::Model::Transaction.type transaction) "create"))
 };
 
+ok( $l->analyze_it($on_created_lcore) );
+
 my $update_ticket_lcore = q{
+(lambda (ticket transaction context)
+  (RT::Model::Ticket.Update ticket
+        "fooo"
+        (RT::Model::TicketParam.subject "moose")
+        (RT::Model::TicketParam.priority 10)))
+};
+
+throws_ok {
+    $l->analyze_it($update_ticket_lcore)
+} qr/type mismatch for array element 1: expecting RT::Model::TicketParam, got Str/;
+
+$update_ticket_lcore = q{
 (lambda (ticket transaction context)
   (RT::Model::Ticket.Update ticket
         (RT::Model::TicketParam.subject "moose")
         (RT::Model::TicketParam.priority 10)))
 };
+
+ok( $l->analyze_it($update_ticket_lcore) );
 
 RT::Lorzy::Dispatcher->reset_rules;
 
