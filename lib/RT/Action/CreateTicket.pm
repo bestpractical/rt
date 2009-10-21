@@ -139,7 +139,7 @@ sub set_valid_statuses {
     my $self  = shift;
     my $queue = shift;
 
-    my @valid_statuses = $queue->status_schema->valid;
+    my @valid_statuses = $queue->status_schema->initial;
     $self->fill_parameter(status => valid_values => \@valid_statuses);
 }
 
