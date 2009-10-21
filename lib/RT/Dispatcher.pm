@@ -181,40 +181,127 @@ on qr{^/Ticket/Graphs/(\d+)} => run {
 
 before qr{.*} => run {
     Jifty->web->navigation->child( a => label => _('Homepage'), url => '' );
-    Jifty->web->navigation->child( ab  => label => _('Simple Search'),
+    Jifty->web->navigation->child(
+        ab  => label => _('Simple Search'),
         url => 'Search/Simple.html'
     );
     Jifty->web->navigation->child(
         b   => label => _('Tickets'),
         url => 'Search/Build.html'
     );
-    Jifty->web->navigation->child(
-        c   => label => _('Tools'),
-        url => 'Tools/index.html'
+	my $tools =     Jifty->web->navigation->child( c   => label => _('Tools'), url => 'Tools/index.html');
+    $tools->child( a => label => _('Dashboards'), url  => 'Dashboards/index.html',);
+    my $reports = $tools->child( c => label => _('Reports'), url  => 'Tools/Reports/index.html',);
+    $reports->child( a =>
+        label => _('Resolved by owner'),
+        url  => 'Tools/Reports/ResolvedByOwner.html',
     );
-if (Jifty->web->current_user->has_right( right => 'ShowConfigTab', object => RT->system )) {
-	my $admin = Jifty->web->navigation->child( e =>  label => _('Configuration'), url => 'Admin/');
-			$admin->child( A =>  label => _('Users'),
-			  url => '/Admin/Users/',
+    $reports->child( b =>
+        label => _('Resolved in date range'),
+        url  => 'Tools/Reports/ResolvedByDates.html',
+    );
+    $reports->child( c =>
+        label => _('Created in a date range'),
+        url  => 'Tools/Reports/CreatedByDates.html',
+    );
+
+
+
+    $tools->child( d => label => _('My Day'), url  => 'Tools/MyDay.html',);
+
+
+    if ( Jifty->web->current_user->has_right( right => 'ShowConfigTab', object => RT->system ) ) {
+        my $admin = Jifty->web->navigation->child( e => label => _('Configuration'), url => 'Admin/' );
+        $admin->child(
+            A   => label => _('Users'),
+            url => '/Admin/Users/',
+        );
+        $admin->child(
+            B   => label => _('Groups'),
+            url => '/Admin/Groups/',
+        );
+        $admin->child(
+            C   => label => _('Queues'),
+            url => '/Admin/Queues/',
+        );
+        $admin->child(
+            D   => 'label' => _('Custom Fields'),
+            url => '/Admin/CustomFields/',
+        );
+        $admin->child(
+            E   => 'label' => _('Rules'),
+            url => '/admin/rules/',
+        );
+        my $admin_global = $admin->child(
+            F   => 'label' => _('Global'),
+            url => '/Admin/Global/',
+        );
+
+               $admin_global->child( B =>  label => _('Templates'),
+                        url => 'Admin/Global/Templates.html',
+                      );
+                $admin_global->child( C =>  label => _('Workflows'),
+                        url => 'Admin/Global/Workflows/index.html',
+                        );
+
+                $admin_global->child( F =>  label => _('Custom Fields'),
+                        url => 'Admin/Global/CustomFields/index.html',
+                        );
+
+                $admin_global->child( G =>  label => _('Group rights'),
+                                url => 'Admin/Global/GroupRights.html',
+                      );
+                $admin_global->child( H =>  label => _('User rights'),
+                                url => 'Admin/Global/UserRights.html',
+                      );
+                $admin_global->child( I =>  label => _('RT at a glance'),
+                                url => 'Admin/Global/MyRT.html',
+                      );
+                $admin_global->child( Y =>  label => _('Jifty'),
+                                url => 'Admin/Global/Jifty.html',
+                      );
+                $admin_global->child( Z =>  label => _('System'),
+                                url => 'Admin/Global/System.html',
+                      );
+
+
+
+        my $admin_tools = $admin->child(
+            G   => 'label' => _('Tools'),
+            url => '/Admin/Tools/',
+        );
+        $admin_tools->child( A =>  label => _('System Configuration'),
+               url => 'Admin/Tools/Configuration.html',
+        );
+        $admin_tools->child( E =>  label => _('Shredder'),
+               url  => 'Admin/Tools/Shredder',
+        );
+    }
+if (Jifty->web->current_user->has_right( right => 'ModifySelf',
+				       object => RT->system )) {
+my $prefs = Jifty->web->navigation->child( k =>  label => _('Preferences'),
+                       url => 'Prefs/Other.html');
+
+	       $prefs->child( a =>  label => _('Settings'),
+			   url => 'Prefs/Other.html',
+			 );
+
+             $prefs->child( b =>  label => _('About me'),
+			  url => 'User/Prefs.html',
 			);
-	       $admin->child( B =>  label => _('Groups'),
-			   url => '/Admin/Groups/',
+	       $prefs->child( f =>  label => _('Search options'),
+			   url => 'Prefs/SearchOptions.html',
 			 );
-	       $admin->child( C =>  label => _('Queues'),
-			   url => '/Admin/Queues/',
+	       $prefs->child( r =>  label => _('RT at a glance'),
+			   url => 'Prefs/MyRT.html',
 			 );
-	       $admin->child( D =>  'label' => _('Custom Fields'),
-			   url => '/Admin/CustomFields/',
-			 );
-	       $admin->child( E =>  'label' => _('Rules'),
-			   url => '/admin/rules/',
-			 );
-	       $admin->child( F =>  'label' => _('Global'),
-			   url => '/Admin/Global/',
-			 );
-	       $admin->child( G =>  'label' => _('Tools'),
-			   url => '/Admin/Tools/',
-			 );
+}
+
+if (Jifty->web->current_user->has_right( right => 'ShowApprovalsTab',
+                        object => RT->system )) {
+Jifty->web->navigation->child( p =>  label => _('Approval'),
+                        url => 'Approvals/'
+			)
 }
 };
 
@@ -231,19 +318,6 @@ my $basetopactions = {
 
 
 
-if (Jifty->web->current_user->has_right( right => 'ModifySelf',
-				       object => RT->system )) {
-Jifty->web->navigation->child( k =>  label => _('Preferences'),
-                       url => 'Prefs/Other.html'
-		     };
-}
-
-if (Jifty->web->current_user->has_right( right => 'ShowApprovalsTab',
-                        object => RT->system )) {
-Jifty->web->navigation->child( p =>  label => _('Approval'),
-                        url => 'Approvals/'
-            };
-}
 
 if (!defined $toptabs) {
    $toptabs = $basetabs;
@@ -261,34 +335,10 @@ $m->callback(
 
 #/Tools tabs
 my $tabs = {
-    Jifty->web->navigation->child( a =>
-        label => _('Dashboards'),
-        url  => 'Dashboards/index.html',
-    );
-    Jifty->web->navigation->child( c =>
-        label => _('Reports'),
-        url  => 'Tools/Reports/index.html',
-    );
-    Jifty->web->navigation->child( d =>
-        label => _('My Day'),
-        url  => 'Tools/MyDay.html',
-    );
 };
 
 #/Tools/Reports tabs
 my $tabs = {
-    Jifty->web->navigation->child( a =>
-        label => _('Resolved by owner'),
-        url  => 'Tools/Reports/ResolvedByOwner.html',
-    );
-    Jifty->web->navigation->child( b =>
-        label => _('Resolved in date range'),
-        url  => 'Tools/Reports/ResolvedByDates.html',
-    );
-    Jifty->web->navigation->child( c =>
-        label => _('Created in a date range'),
-        url  => 'Tools/Reports/CreatedByDates.html',
-    );
 };
 
 
@@ -481,32 +531,6 @@ if( $id ) { $current_tab = "Admin/CustomFields/Modify.html?id=" . $id }
 
 # /Admin/Global tabs
   my $tabs = {
-               Jifty->web->navigation->child( B =>  label => _('Templates'),
-                        url => 'Admin/Global/Templates.html',
-                      );
-                Jifty->web->navigation->child( C =>  label => _('Workflows'),
-                        url => 'Admin/Global/Workflows/index.html',
-                        );
-
-                Jifty->web->navigation->child( F =>  label => _('Custom Fields'),
-                        url => 'Admin/Global/CustomFields/index.html',
-                        );
-
-                Jifty->web->navigation->child( G =>  label => _('Group rights'),
-                                url => 'Admin/Global/GroupRights.html',
-                      );
-                Jifty->web->navigation->child( H =>  label => _('User rights'),
-                                url => 'Admin/Global/UserRights.html',
-                      );
-                Jifty->web->navigation->child( I =>  label => _('RT at a glance'),
-                                url => 'Admin/Global/MyRT.html',
-                      );
-                Jifty->web->navigation->child( Y =>  label => _('Jifty'),
-                                url => 'Admin/Global/Jifty.html',
-                      );
-                Jifty->web->navigation->child( Z =>  label => _('System'),
-                                url => 'Admin/Global/System.html',
-                      );
 
 };
 
@@ -843,12 +867,6 @@ foreach my $searchtab ( keys %{$searchtabs} ) {
 
 # /Admin/tools
     my $tabs = {
-        Jifty->web->navigation->child( A =>  label => _('System Configuration'),
-               url => 'Admin/Tools/Configuration.html',
-        );
-        Jifty->web->navigation->child( E =>  label => _('Shredder'),
-               url  => 'Admin/Tools/Shredder',
-        );
     };
 
 # /Admin/Rules
@@ -1025,20 +1043,6 @@ Jifty->web->navigation->child(  $search->[0]  =>
 
 
 # User/
-
-	       Jifty->web->navigation->child( a =>  label => _('Settings'),
-			   url => 'Prefs/Other.html',
-			 );
-
-             Jifty->web->navigation->child( b =>  label => _('About me'),
-			  url => 'User/Prefs.html',
-			);
-	       Jifty->web->navigation->child( f =>  label => _('Search options'),
-			   url => 'Prefs/SearchOptions.html',
-			 );
-	       Jifty->web->navigation->child( r =>  label => _('RT at a glance'),
-			   url => 'Prefs/MyRT.html',
-			 );
 	     };
 
 # User/Groups
