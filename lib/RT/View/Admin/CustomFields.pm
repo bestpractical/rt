@@ -56,8 +56,6 @@ use constant page_title      => 'Custom Field Management';
 use constant object_type     => 'CustomField';
 use constant display_columns => qw(name type);
 
-use constant tab_url         => '/Admin/Elements/CustomFieldTabs';
-use constant current_tab     => 'Admin/Queues/';
 
 1;
 

@@ -54,8 +54,6 @@ use base 'RT::View::CRUD';
 
 use constant page_title     => 'Rule Management';
 use constant object_type    => 'Rule';
-use constant tab_url        => '/Admin/Elements/RuleTabs';
-use constant current_tab    => 'admin/rules/'; # this is not working
 
 use constant display_columns => qw(id description condition_code prepare_code action_code);
 
