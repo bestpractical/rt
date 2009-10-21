@@ -104,6 +104,8 @@
 % }
 </div>
 
+
+% Jifty->web->navigation->render_as_menu();
 %# template login already has div with id "body"
 % unless ( Jifty->web->request->path =~ m{^/login} ) {
 <div id="body">
