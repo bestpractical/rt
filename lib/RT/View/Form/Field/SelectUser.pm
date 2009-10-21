@@ -1,7 +1,6 @@
 package RT::View::Form::Field::SelectUser;
 use warnings;
 use strict;
-use Jifty::View::Declare;
 use base 'Jifty::Web::Form::Field::Select';
 
 sub _render_user {
