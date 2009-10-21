@@ -60,106 +60,23 @@ template 'create' => page { title => _('Create a new ticket') } content {
     my $queue = $action ? $action->argument('queue') : get('queue');
     $queue or die "Queue not specified";
 
+    render_mason('/Elements/Tabs', {
+        current_toptab => 'ticket/create',
+        title          => _("Create a new ticket"),
+    });
+
     my $create = new_action(
         class   => 'CreateTicket',
         moniker => 'create_ticket',
     );
     $create->set_queue($queue);
 
-    my $actions = {
-        A => {
-            html => q[<a href="#basics" onclick="jQuery('#Ticket-Create-details').hide(); jQuery('#Ticket-Create-basics').show(); return false;">] . _('Show basics') . q[</a>],
-        },
-        B => {
-            html => q[<a href="#details" onclick="jQuery('#Ticket-Create-basics').hide(); jQuery('#Ticket-Create-details').show(); return false;">] . _('Show details') . q[</a>],
-        },
-    };
-
-    render_mason('/Elements/Tabs', {
-        current_toptab => 'ticket/create',
-        title          => _("Create a new ticket"),
-        actions        => $actions,
-    });
-
     form {
         form_next_page url => '/Ticket/Display.html';
-
-        show_basics($create);
-        show_details($create);
+        render_action($create);
+        $create->button(label => _('Create'));
     };
 };
-
-sub show_basics {
-    my $create = shift;
-    my $queue = $create->queue;
-
-    div {
-        attr { id => "Ticket-Create-basics" };
-        a { attr { name => "basics" } };
-
-        render_param($create, 'queue');
-
-        # Jifty should do this for us when we render a read-only parameter
-        # The only worry is that the user does what we're doing here so that
-        # the parameter is now an arrayref instead of a plain scalar
-        render_hidden($create, 'queue', $queue);
-
-        render_param($create, 'status');
-        render_param($create, 'owner');
-
-        for my $role_group ($create->role_group_parameters) {
-            render_param($create, $role_group);
-        }
-
-        for my $custom_field ($create->ticket_custom_field_parameters) {
-            render_param($create, $custom_field);
-        }
-
-        for my $custom_field ($create->ticket_transaction_custom_field_parameters) {
-            render_param($create, $custom_field);
-        }
-
-        render_param($create, 'subject');
-        render_param($create, 'attachments');
-
-        render_param($create, 'content');
-
-        $create->button(label => _('Create'));
-    };
-}
-
-sub show_details {
-    my $create = shift;
-
-    div {
-        attr {
-            id    => "Ticket-Create-details",
-            class => "jshide",
-        };
-        a { attr { name => "details" } };
-
-        render_param($create, 'initial_priority');
-        render_param($create, 'final_priority');
-
-        for my $duration_type ($create->duration_parameters) {
-            render_param($create, $duration_type);
-        }
-
-        hr {};
-
-        for my $datetime_type ($create->datetime_parameters) {
-            render_param($create, $datetime_type);
-        }
-
-        hr {};
-
-        for my $link_type ($create->link_parameters) {
-            render_param($create, $link_type);
-        }
-
-        $create->button(label => _('Create'));
-    };
-}
 
 1;
 
