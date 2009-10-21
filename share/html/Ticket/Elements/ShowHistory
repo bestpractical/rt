@@ -123,9 +123,6 @@ while ( my $Transaction = $Transactions->next ) {
               last_transaction      => $IsLastTransaction,
  );
 
-# manually flush the content buffer after each txn, so the user sees
-# some update
-$m->flush_buffer(); 
 }
 
 </%perl>
