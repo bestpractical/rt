@@ -1209,6 +1209,19 @@ Set ($DefaultSearchResultFormat, qq{
    '<small>__LastUpdatedRelative__</small>',
    '<small>__TimeLeft__</small>'});
 
+=item C<$DefaultSelfServiceSearchResultFormat>
+
+C<$DefaultSelfServiceSearchResultFormat> is the default format of searches displayed in the 
+SelfService interface.
+
+=cut
+
+Set($DefaultSelfServiceSearchResultFormat, qq{
+   '<B><A HREF="__WebPath__/SelfService/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+   '<B><A HREF="__WebPath__/SelfService/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+   Status,
+   Requestors,
+   OwnerName});
 
 =item C<$SuppressInlineTextFiles>
 
