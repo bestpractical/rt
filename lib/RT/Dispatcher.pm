@@ -325,6 +325,65 @@ before qr{.*} => run {
     }
 };
 
+
+
+before '/SelfService' => sub {
+
+    my $queues = RT::Model::QueueCollection->new( current_user => Jifty->web->current_user );
+    $queues->find_all_rows;
+
+    my $queue_count = 0;
+    my $queue_id    = 1;
+
+    while ( my $queue = $queues->next ) {
+        next unless $queue->current_user_has_right('CreateTicket');
+        $queue_id = $queue->id;
+        $queue_count++;
+        last if ( $queue_count > 1 );
+    }
+
+    if ($label) {
+        $label = _("RT Self Service") . " / " . $label;
+    } else {
+        $label = _("RT Self Service");
+
+    }
+    Jifty->web->navigation->child(
+        A   => label => _('Open tickets'),
+        url => 'SelfService/',
+    );
+    Jifty->web->navigation->child(
+        B   => label => _('Closed tickets'),
+        url => 'SelfService/Closed.html',
+    );
+    if ( $queue_count > 1 ) {
+        Jifty->web->navigation->child(
+            C   => label => _('New ticket'),
+            url => 'SelfService/CreateTicketInQueue.html'
+        );
+    } else {
+        Jifty->web->navigation->child(
+            C   => label => _('New ticket'),
+            url => 'SelfService/Create.html?queue=' . $queue_id
+        );
+    }
+
+    if (Jifty->web->current_user->has_right(
+            right  => 'ModifySelf',
+            object => RT->system
+        )
+        )
+    {
+        Jifty->web->navigation->child(
+            Z   => label => _('Preferences'),
+            url => 'SelfService/Prefs.html'
+        );
+    }
+
+};
+
+
+
 =for later Navigation
 
 # Top level tabs /Elements/Tabs
@@ -334,32 +393,6 @@ my $basetopactions = {
 	b => { html => $m->scomp('/Elements/SimpleSearch')
 		}
 	};
-
-
-
-
-if (!defined $toptabs) {
-   $toptabs = $basetabs;
-}
-if (!defined $topactions) {
-   $topactions = $basetopactions;
-}
-
-# Now let callbacks add their extra tabs
-$m->callback(
-    topactions => $topactions,
-    toptabs    => $toptabs,
-    %ARGS
-);
-
-#/Tools tabs
-my $tabs = {
-};
-
-#/Tools/Reports tabs
-my $tabs = {
-};
-
 
 
 
@@ -425,53 +458,6 @@ Jifty->web->navigation->child( "B" =>  label     => _('New dashboard'),
 
 
 # /SelfService Tabs
-
-<a name="skipnav" id="skipnav" accesskey="8"></a>
-<%INIT>
-my $queues = RT::Model::QueueCollection->new( current_user => Jifty->web->current_user );
-$queues->find_all_rows;
-
-my $queue_count = 0;
-my $queue_id = 1;
-
-while (my $queue = $queues->next) {
-  next unless $queue->current_user_has_right('CreateTicket');
-  $queue_id = $queue->id;
-  $queue_count++;
-  last if ($queue_count > 1);
-}
-
-if ($label) {
-$label = _("RT Self Service") . " / " . $label;
-} else {
-$label = _("RT Self Service");
-
-}
-my ($tab);
-my $tabs = { Jifty->web->navigation->child( A =>  label => _('Open tickets'),
-                        url => 'SelfService/',
-                      );
-             Jifty->web->navigation->child( B =>  label => _('Closed tickets'),
-                         url => 'SelfService/Closed.html',
-                       );
-           };
-
-if ($queue_count > 1) {
-Jifty->web->navigation->child( C =>  label => _('New ticket'),
-                       url => 'SelfService/CreateTicketInQueue.html'
-                       };
-} else {
-Jifty->web->navigation->child( C =>  label => _('New ticket'),
-                       url => 'SelfService/Create.html?queue=' . $queue_id
-                       };
-}
-
-if (Jifty->web->current_user->has_right( right => 'ModifySelf',
-				       object => RT->system )) {
-Jifty->web->navigation->child( Z =>  label => _('Preferences'),
-		       url => 'SelfService/Prefs.html'
-		       };
-}
 
 my $actions = {
 	Jifty->web->navigation->child( B =>  html => $m->scomp('GotoTicket')
@@ -876,17 +862,6 @@ Jifty->web->navigation->child( "j" =>
     };
 
 }
-
-foreach my $searchtab ( keys %{$searchtabs} ) {
-    ( $searchtab =~ /^_/ )
-        ? $tabs->{ "s" . $searchtab } = $searchtabs->{$searchtab}
-        : $tabs->{ "z_" . $searchtab } = $searchtabs->{$searchtab};
-
-}
-
-# /Admin/tools
-    my $tabs = {
-    };
 
 # /Admin/Rules
     my $tabs = {
