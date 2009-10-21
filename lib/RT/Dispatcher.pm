@@ -192,6 +192,30 @@ before qr{.*} => run {
         c   => label => _('Tools'),
         url => 'Tools/index.html'
     );
+if (Jifty->web->current_user->has_right( right => 'ShowConfigTab', object => RT->system )) {
+	my $admin = Jifty->web->navigation->child( e =>  label => _('Configuration'), url => 'Admin/');
+			$admin->child( A =>  label => _('Users'),
+			  url => '/Admin/Users/',
+			);
+	       $admin->child( B =>  label => _('Groups'),
+			   url => '/Admin/Groups/',
+			 );
+	       $admin->child( C =>  label => _('Queues'),
+			   url => '/Admin/Queues/',
+			 );
+	       $admin->child( D =>  'label' => _('Custom Fields'),
+			   url => '/Admin/CustomFields/',
+			 );
+	       $admin->child( E =>  'label' => _('Rules'),
+			   url => '/admin/rules/',
+			 );
+	       $admin->child( F =>  'label' => _('Global'),
+			   url => '/Admin/Global/',
+			 );
+	       $admin->child( G =>  'label' => _('Tools'),
+			   url => '/Admin/Tools/',
+			 );
+}
 };
 
 
@@ -206,12 +230,6 @@ my $basetopactions = {
 	};
 
 
-if (Jifty->web->current_user->has_right( right => 'ShowConfigTab',
-				       object => RT->system )) {
-Jifty->web->navigation->child( e =>  label => _('Configuration'),
-                       url => 'Admin/',
-		     };
-}
 
 if (Jifty->web->current_user->has_right( right => 'ModifySelf',
 				       object => RT->system )) {
@@ -455,27 +473,10 @@ if( $id ) { $current_tab = "Admin/CustomFields/Modify.html?id=" . $id }
 # /Admin tabs
 
 
-  my $tabs = { Jifty->web->navigation->child( A =>  label => _('Users'),
-			  url => 'Admin/Users/',
-			);
-	       Jifty->web->navigation->child( B =>  label => _('Groups'),
-			   url => 'Admin/Groups/',
-			 );
-	       Jifty->web->navigation->child( C =>  label => _('Queues'),
-			   url => 'Admin/Queues/',
-			 );
-	       Jifty->web->navigation->child( D =>  'label' => _('Custom Fields'),
-			   url => 'Admin/CustomFields/',
-			 );
-	       Jifty->web->navigation->child( E =>  'label' => _('Rules'),
-			   url => 'admin/rules/',
-			 );
-	       Jifty->web->navigation->child( F =>  'label' => _('Global'),
-			   url => 'Admin/Global/',
-			 );
-	       Jifty->web->navigation->child( G =>  'label' => _('Tools'),
-			   url => 'Admin/Tools/',
-			 );
+  my $tabs = {
+
+
+
 	     };
 
 # /Admin/Global tabs
