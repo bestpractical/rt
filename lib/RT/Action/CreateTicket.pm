@@ -11,7 +11,7 @@ use Jifty::Action schema {
     param status =>
         render as 'select',
         # valid_values are queue-specific
-        valid_values are 'new', 'open', # XXX
+        valid_values are lazy { [ RT::Workflow->load(undef)->initial ] },
         label is _('Status');
 
     param owner =>
