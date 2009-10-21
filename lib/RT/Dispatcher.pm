@@ -182,7 +182,7 @@ on qr{^/Ticket/Graphs/(\d+)} => run {
 
 
 
-# Navigation
+=for later Navigation
 
 # Top level tabs /Elements/Tabs
 my $basetopactions = {
@@ -1063,6 +1063,8 @@ $tabs->{"B"} = { title     => _('New group'),
                  path      => "User/Groups/Modify.html?create=1",
                  separator => 1 };
 
+
+=cut
 
 
 # Now let callbacks add their extra tabs
