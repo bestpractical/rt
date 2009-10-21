@@ -65,7 +65,7 @@ my @actions = $m->comp( '/Widgets/SavedSearch:process', args => \%ARGS, self => 
 
 </%init>
 <&| /_elements/wrapper, title => $title &>
-<& /Ticket/Elements/Tabs, title => $title &>
+<& /Elements/Tabs, title => $title &>
 <& /Elements/ListActions, actions => \@actions &>
 <& /Search/Elements/Chart, %ARGS &>
 

@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 
 <&| /Admin/Elements/Header, title => $title  &>
-<& /Admin/Elements/UserTabs, 
+<& /Elements/Tabs,
     id          => $id, 
     user_object     => $user_object,
     current_tab => 'Admin/Users/GnuPG.html?id='. $id,

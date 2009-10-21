@@ -48,7 +48,7 @@
 <&| /_elements/wrapper, title => $title, refresh => Jifty->web->session->get('tickets_refresh_interval'), 
     rss_auto_discovery => $RSSFeedURL,
     link_rel => \%link_rel &>
-<& /Ticket/Elements/Tabs, 
+<& /Elements/Tabs,
     current_tab => "Search/Results.html".$query_string, 
     title => $title,
     format => $format,

@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&| /_elements/wrapper, title => _("Ticket #%1 Jumbo update: %2", $Ticket->id, $Ticket->subject) &>
-<& /Ticket/Elements/Tabs, 
+<& /Elements/Tabs,
     ticket => $Ticket, 
     current_tab => "Ticket/ModifyAll.html?id=".$Ticket->id, 
     title => _("Ticket #%1 Jumbo update: %2", $Ticket->id, $Ticket->subject) &>

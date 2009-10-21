@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&| /Admin/Elements/Header, title => $title &>
-<& /Admin/Elements/CustomFieldTabs, id => $id, 
+<& /Elements/Tabs, id => $id,
 current_tab => "Admin/CustomFields/UserRights.html?id=".$id,
 title => $title, &>
 <& /Elements/ListActions, actions => \@results &>

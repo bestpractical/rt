@@ -46,6 +46,6 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&| /_elements/wrapper, %ARGS, prefs => '/SelfService/Prefs.html' &>
-<& /SelfService/Elements/Tabs, %ARGS &>
+<& /Elements/Tabs, %ARGS &>
 <% $m->content |n %>
 </&>

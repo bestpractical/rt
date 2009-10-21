@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&| /Admin/Elements/Header, title => _('Modify user rights for queue %1', $queue_obj->name) &>
-<& /Admin/Elements/QueueTabs, id => $id,
+<& /Elements/Tabs, id => $id,
     queue_obj => $queue_obj,                                                      
     current_tab => $current_tab, 
     title => _('Modify user rights for queue %1', $queue_obj->name) &>

@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /Admin/Elements/Header, title => _('RT/Admin/Edit the group %1', $Group->name) &>
 
-<& /Admin/Elements/GroupTabs, group_obj => $Group, 
+<& /Elements/Tabs, group_obj => $Group,
     current_tab => 'Admin/Groups/Members.html?id='.$id, 
     title => "RT/Admin/Edit the group ". $Group->name &>
 <& /Elements/ListActions, actions => \@results &>
