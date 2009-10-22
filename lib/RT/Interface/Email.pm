@@ -656,7 +656,7 @@ sub SendForward {
         $RT::Logger->warning($msg);
     }
     unless ( $mail ) {
-        $RT::Logger->warning("Couldn't generate email using template 'Forward'");
+        $RT::Logger->warning("Couldn't generate email using template '$args{Template}'");
 
         my $description;
         unless ( $args{'Transaction'} ) {
