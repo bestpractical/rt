@@ -192,11 +192,12 @@ sub TranslateKeyValue {
     my $key  = shift;
     my @clauses;
     if ( $key =~
-/(subject|cf\.(?:[^:]*?)|content|requestor|id|status|owner|queue|fulltext):(['"])?(.+)\2?/i
+/(subject|cf\.(?:[^:]*?)|content|requestor|id|status|owner|queue|fulltext):(['"]?)(.+)\2/i
       )
     {
         my $field = $1;
         my $value = $3;
+        $value =~ s/(['"])/\\$1/g;
 
         if ( $field =~ /id|status|owner|queue/i ) {
             push @clauses, "$field = '$value'";
@@ -251,6 +252,7 @@ sub TranslateUser {
     my $key  = shift;
     my @clauses;
     if ( $key =~ /\w+\@\w+/ ) {
+        $key =~ s/(['"])/\\$1/g;
         push @clauses, "Requestor LIKE '$key'";
     }
     return @clauses;
@@ -263,7 +265,9 @@ sub TranslateOwner {
     my $User = RT::User->new( $self->TicketsObj->CurrentUser );
     my ( $ret ) = $User->Load($key);
     if ( $ret && $User->Privileged ) {
-        push @clauses, "Owner = '" . $User->Name . "'";
+        my $name = $User->Name;
+        $name =~ s/(['"])/\\$1/g;
+        push @clauses, "Owner = '" . $name . "'";
     }
     return @clauses;
 }
@@ -273,8 +277,8 @@ sub TranslateOthers {
     my $key  = shift;
     my @clauses;
     $key =~ s{^(['"])(.*)\1$}{$2};    # 'foo' => foo
+    $key =~ s/(['"])/\\$1/g;          # foo'bar => foo\'bar
 
-    $key =~ s/['\\].*//g;             # XXX what's the usage of this?
     push @clauses, "Subject LIKE '$key'";
     return @clauses;
 }
