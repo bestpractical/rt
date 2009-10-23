@@ -605,9 +605,6 @@ sub StripContent {
     my $html = $args{ContentType} && $args{ContentType} eq "text/html";
     my $sigonly = $args{StripSignature};
 
-    # Save us from undef warnings
-    return '' unless defined $content;
-
     # massage content to easily detect if there's any real content
     $content =~ s/\s+//g; # yes! remove all the spaces
     if ( $html ) {
