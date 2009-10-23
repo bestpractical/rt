@@ -120,6 +120,7 @@ div#ticket-history div.content {
 
 .plain-text-white-space {
  white-space: pre-wrap;
+ font-family: monospace;
 }
 
 .ticket-transaction .messagebody {
