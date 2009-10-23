@@ -165,7 +165,7 @@ sub ticket_properties {
     );
     my $cfs = RT::Model::CustomFieldCollection->new(current_user => $user);
     $cfs->limit_to_lookup_type('RT::Model::Queue-RT::Model::Ticket');
-    $cfs->order_by( field => 'name' );
+    $cfs->order_by( column => 'name' );
     my ( $first, %seen ) = (1);
     while ( my $cf = $cfs->next ) {
         next if $seen{ lc $cf->name }++;

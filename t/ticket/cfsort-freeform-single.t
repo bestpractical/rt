@@ -85,7 +85,7 @@ sub run_tests {
             my $error = 0;
             my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user );
             $tix->from_sql( $query );
-            $tix->order_by( field => $test->{'Order'}, order => $order );
+            $tix->order_by( column => $test->{'Order'}, order => $order );
 
             ok($tix->count, "found ticket(s)")
                 or $error = 1;
