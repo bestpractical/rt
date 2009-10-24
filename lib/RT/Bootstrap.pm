@@ -101,8 +101,6 @@ sub insert_initial_data {
         }
     }
 
-    Jifty::DBI::Record::Cachable->flush_cache;
-
     # grant SuperUser right to system user
     {
         my $test_ace = RT::Model::ACE->new( current_user => RT->system_user );
@@ -121,8 +119,6 @@ sub insert_initial_data {
             return ( $val, $msg ) unless $val;
         }
     }
-
-    Jifty::DBI::Record::Cachable->flush_cache;
 
     # system groups
     foreach my $name (qw(Everyone Privileged Unprivileged)) {
