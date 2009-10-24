@@ -374,13 +374,15 @@ sub create {
     Jifty->log->debug( 'About to think about scrips for transaction #' . $self->id );
     if ( $activate_scrips and $args{'object_type'} eq 'RT::Model::Ticket' ) {
         # Entry point of the rule system
-        my $ticket = RT::Model::Ticket->new( current_user => RT::CurrentUser->superuser );
-        $ticket->load( $args{'object_id'} );
+        # Escalate as superuser
+        my $txn = RT::Model::Transaction->new( current_user => RT::CurrentUser->superuser );
+        $txn->load( $self->id );
+
         $self->{'active_rules'} = RT::Ruleset->find_all_rules(
             stage          => 'transaction_create',
             type           => $args{'type'},
-            ticket_obj      => $ticket,
-            transaction_obj => $self,
+            ticket_obj      => $txn->ticket,
+            transaction_obj => $txn,
         );
         if ( $commit_scrips ) {
             Jifty->log->debug( 'About to commit scrips for transaction #' . $self->id );
