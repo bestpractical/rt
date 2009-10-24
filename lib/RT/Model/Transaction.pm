@@ -361,7 +361,6 @@ sub create {
     my $mime = delete $args{'mime_obj'};
 
     my $id = $self->SUPER::create( %args );
-    $self->load($id);
 
     if ( defined $mime ) {
         my ( $id, $msg ) = $self->_attach( $mime );
