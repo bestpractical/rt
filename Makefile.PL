@@ -10,7 +10,7 @@ requires(
     'Digest::MD5'                => '2.27',
     'DBI'                        => '1.37',
     'Class::ReturnValue'         => '0.40',
-    'Jifty::DBI'                 => '0.49',
+    'Jifty::DBI'                 => '0.59',
     'Text::Template'             => 0,
     'File::ShareDir'             => 0,
     'File::Spec'                 => '0.8',

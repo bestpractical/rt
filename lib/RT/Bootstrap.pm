@@ -101,9 +101,6 @@ sub insert_initial_data {
         }
     }
 
-    my $record_base_class = Jifty->config->framework('Database')->{'RecordBaseClass'};
-    $record_base_class->flush_cache if $record_base_class->can("flush_cache");
-
     # grant SuperUser right to system user
     {
         my $test_ace = RT::Model::ACE->new( current_user => RT->system_user );
@@ -122,8 +119,6 @@ sub insert_initial_data {
             return ( $val, $msg ) unless $val;
         }
     }
-
-    $record_base_class->flush_cache if $record_base_class->can("flush_cache");
 
     # system groups
     foreach my $name (qw(Everyone Privileged Unprivileged)) {
