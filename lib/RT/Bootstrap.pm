@@ -101,7 +101,8 @@ sub insert_initial_data {
         }
     }
 
-    Jifty::DBI::Record::Cachable->flush_cache;
+    my $record_base_class = Jifty->config->framework('Database')->{'RecordBaseClass'};
+    $record_base_class->flush_cache if $record_base_class->can("flush_cache");
 
     # grant SuperUser right to system user
     {
@@ -122,7 +123,7 @@ sub insert_initial_data {
         }
     }
 
-    Jifty::DBI::Record::Cachable->flush_cache;
+    $record_base_class->flush_cache if $record_base_class->can("flush_cache");
 
     # system groups
     foreach my $name (qw(Everyone Privileged Unprivileged)) {
