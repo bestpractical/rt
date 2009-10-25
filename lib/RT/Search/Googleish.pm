@@ -138,17 +138,6 @@ sub QueryToSQL {
         final     => \@tql_clauses,
     );
 
-    $self->ProcessAfterTranslate(
-        key_value => \@keyvalue_clauses,
-        number    => \@number_clauses,
-        user      => \@user_clauses,
-        status    => \@status_clauses,
-        queue     => \@queue_clauses,
-        owner     => \@owner_clauses,
-        other     => \@others_clauses,
-        final     => \@tql_clauses,
-    );
-
     $self->CallbackAfterProcess(
         key_value => \@keyvalue_clauses,
         number    => \@number_clauses,
