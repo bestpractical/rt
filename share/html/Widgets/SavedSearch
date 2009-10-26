@@ -68,6 +68,14 @@ if ( my ( $container_object, $search_id ) = _parse_saved_search( $args->{'SavedS
     $self->{SearchId} = $args->{'SavedSearchLoad'};
     $self->{CurrentSearch}{Object} = $search;
     $args->{$_} = $search->SubValue($_) for @{ $self->{SearchFields} };
+# saved search in /Search/Chart.html is different from /Search/Build.html
+# the former is of type 'Chart', while the latter is of type 'Ticket'.
+# After loading a saved search from the former after loading one from the
+# latter, accessing /Search/Build.html will still show the old one, so we
+# need to delete $session{CurrentSearchHash} to let it not show the old one.
+# of course, the new one should not be shown there either because it's of
+# different type
+    delete $session{'CurrentSearchHash'};
 }
 
 # look for the current one in the available saved searches
