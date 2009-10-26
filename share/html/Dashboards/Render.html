@@ -76,11 +76,11 @@
 my $current_subtab = 'Dashboards/Render.html?id=' . $id;
 
 use RT::Dashboard;
-my $dashboard_obj = RT::Dashboard->new( current_user => Jifty->web->current_user );
+my $dashboard_obj = RT::Dashboard->new( );
 my ($ok, $msg) = $dashboard_obj->load_by_id($id);
 abort(_("Couldn't load dashboard %1: %2", $id, $msg)) if !$ok;
 
-my $SubscriptionObj = RT::Model::Attribute->new( current_user => Jifty->web->current_user );
+my $SubscriptionObj = RT::Model::Attribute->new();
 my $Loaded = 0;
 
 # try to load the subscription to this id

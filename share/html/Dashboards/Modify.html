@@ -89,7 +89,7 @@ $create = 1 if !$id;
 
 use RT::Dashboard;
 
-my $Dashboard = RT::Dashboard->new( current_user => Jifty->web->current_user );
+my $Dashboard = RT::Dashboard->new( );
 my @privacies = $Dashboard->_privacy_objects(($create ? 'create' : 'modify') => 1);
 
 abort(_("Permission denied")) if @privacies == 0;
