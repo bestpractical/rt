@@ -88,9 +88,11 @@ sub cleanup_request {
     # Clean out the ACL cache. the performance impact should be marginal.
     # Consistency is imprived, too.
     RT::Model::Principal->invalidate_acl_cache();
-    Jifty::DBI::Record::Cachable->flush_cache
-        if ( RT->config->get('web_flush_db_cache_every_request')
-        and UNIVERSAL::can( 'Jifty::DBI::Record::Cachable' => 'flush_cache' ) );
+
+    my $record_base_class = Jifty->config->framework('Database')->{'RecordBaseClass'};
+    $record_base_class->flush_cache
+        if $record_base_class->can("flush_cache") &&
+           RT->config->get('web_flush_db_cache_every_request');
 
     # cleanup global squelching of the mails
     require RT::ScripAction::SendEmail;

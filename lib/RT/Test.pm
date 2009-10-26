@@ -418,8 +418,6 @@ sub run_mailgate {
     }
     $cmd .= ' 2>&1';
 
-    Jifty::DBI::Record::Cachable->flush_cache;
-
     require IPC::Open2;
     my ( $child_out, $child_in );
     my $pid = IPC::Open2::open2( $child_out, $child_in, $cmd );
