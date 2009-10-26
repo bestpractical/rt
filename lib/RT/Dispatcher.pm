@@ -186,7 +186,7 @@ before qr{.*} => run {
     my $tools = Jifty->web->navigation->child( _('Tools'), url => '/Tools/index.html' );
     $tools->child( _('Dashboards'), url => '/Dashboards/index.html' );
 
-	my $reports = $tools->child( _('Reports'), url => '/Tools/Reports/index.html' );
+    my $reports = $tools->child( _('Reports'), url => '/Tools/Reports/index.html' );
     $reports->child( _('Resolved by owner'),       url => '/Tools/Reports/ResolvedByOwner.html', );
     $reports->child( _('Resolved in date range'),  url => '/Tools/Reports/ResolvedByDates.html', );
     $reports->child( _('Created in a date range'), url => '/Tools/Reports/CreatedByDates.html', );
@@ -197,8 +197,8 @@ before qr{.*} => run {
         && Jifty->web->current_user->has_right( right => 'ShowConfigTab', object => RT->system ) )
     {
         my $admin = Jifty->web->navigation->child( Config => label => _('Configuration'), url => '/Admin/' );
-        $admin->child( _('Users'),  url => '/Admin/Users/', );
-        $admin->child( _('Groups'), url => '/Admin/Groups/', );
+        $admin->child( _('Users'),         url => '/Admin/Users/', );
+        $admin->child( _('Groups'),        url => '/Admin/Groups/', );
         $admin->child( _('Queues'),        url => '/Admin/Queues/', );
         $admin->child( _('Custom Fields'), url => '/Admin/CustomFields/', );
         $admin->child( _('Rules'),         url => '/admin/rules/', );
@@ -206,27 +206,41 @@ before qr{.*} => run {
         my $admin_global = $admin->child( _('Global'), url => '/Admin/Global/', );
 
         $admin_global->child( _('Templates'), url => '/Admin/Global/Templates.html', );
-       my $workflows =  $admin_global->child( _('Workflows'), url => '/Admin/Global/Workflows/index.html', );
-		{
-    $workflows->child( _('Overview') =>  url => "/Admin/Global/Workflows/index.html");
-    $workflows->child( _('Localization') =>  url => "/Admin/Global/Workflows/Localization.html");
-    $workflows->child( _('Mappings') => url => "/Admin/Global/Workflows/Mappings.html");
-		}
+        my $workflows = $admin_global->child( _('Workflows'), url => '/Admin/Global/Workflows/index.html', );
+        {
+            $workflows->child( _('Overview')     => url => "/Admin/Global/Workflows/index.html" );
+            $workflows->child( _('Localization') => url => "/Admin/Global/Workflows/Localization.html" );
+            $workflows->child( _('Mappings')     => url => "/Admin/Global/Workflows/Mappings.html" );
+        }
 
+        my $cfadmin = $admin_global->child( _('Custom Fields'), url => '/Admin/Global/CustomFields/index.html', );
+        {
+            $cfadmin->child(
+                _('Users') => text => _('Select custom fields for all users'),
+                url        => 'Admin/Global/CustomFields/Users.html'
+            );
 
-     my $cfadmin =    $admin_global->child( _('Custom Fields'), url => '/Admin/Global/CustomFields/index.html', );
-	{
-	    $cfadmin->child( _('Users') => text  => _('Select custom fields for all users') , url  => 'Admin/Global/CustomFields/Users.html' );
+            $cfadmin->child(
+                _('Groups') => text => _('Select custom fields for all user groups'),
+                url         => 'Admin/Global/CustomFields/Groups.html'
+            );
 
-	    $cfadmin->child( _('Groups') => text  => _('Select custom fields for all user groups') , url  => 'Admin/Global/CustomFields/Groups.html');
+            $cfadmin->child(
+                _('Queues') => text => _('Select custom fields for all queues'),
+                url         => 'Admin/Global/CustomFields/Queues.html'
+            );
 
-	    $cfadmin->child( _('Queues') => text  => _('Select custom fields for all queues') , url  => 'Admin/Global/CustomFields/Queues.html');
+            $cfadmin->child(
+                _('Tickets') => text => _('Select custom fields for tickets in all queues'),
+                url => 'Admin/Global/CustomFields/Queue-Tickets.html'
+            );
 
-	    $cfadmin->child( _('Tickets') => text  => _('Select custom fields for tickets in all queues') , url  => 'Admin/Global/CustomFields/Queue-Tickets.html') ;
+            $cfadmin->child(
+                _('Ticket Transactions') => text => _('Select custom fields for transactions on tickets in all queues'),
+                url => 'Admin/Global/CustomFields/Queue-Transactions.html'
+            );
 
-	    $cfadmin->child( _('Ticket Transactions') => text  => _('Select custom fields for transactions on tickets in all queues') , url  => 'Admin/Global/CustomFields/Queue-Transactions.html' );
-
-		}
+        }
 
         $admin_global->child( _('Group rights'),   url => '/Admin/Global/GroupRights.html', );
         $admin_global->child( _('User rights'),    url => '/Admin/Global/UserRights.html', );
@@ -234,7 +248,7 @@ before qr{.*} => run {
         $admin_global->child( _('Jifty'),          url => '/Admin/Global/Jifty.html', );
         $admin_global->child( _('System'),         url => '/Admin/Global/System.html', );
 
-        my $admin_tools = $admin->child( _('Tools'), url => '/Admin/Tools/',);
+        my $admin_tools = $admin->child( _('Tools'), url => '/Admin/Tools/', );
         $admin_tools->child( _('System Configuration'), url => '/Admin/Tools/Configuration.html', );
         $admin_tools->child( _('Shredder'),             url => '/Admin/Tools/Shredder', );
     }
@@ -247,13 +261,15 @@ before qr{.*} => run {
     {
         my $prefs = Jifty->web->navigation->child( _('Preferences'), url => '/Prefs/Other.html' );
 
-        $prefs->child( _('Settings'), url => '/Prefs/Other.html', );
+        $prefs->child( _('Settings'),       url => '/Prefs/Other.html', );
         $prefs->child( _('About me'),       url => '/User/Prefs.html', );
         $prefs->child( _('Search options'), url => '/Prefs/SearchOptions.html', );
         $prefs->child( _('RT at a glance'), url => '/Prefs/MyRT.html', );
     }
 
-    if (Jifty->web->current_user->user_object && Jifty->web->current_user->has_right( right  => 'ShowApprovalsTab', object => RT->system)) {
+    if (   Jifty->web->current_user->user_object
+        && Jifty->web->current_user->has_right( right => 'ShowApprovalsTab', object => RT->system ) )
+    {
         Jifty->web->navigation->child( _('Approval'), url => '/Approvals/' );
     }
 };
@@ -352,7 +368,7 @@ Jifty->web->page_navigation->child(_('Create'), url => "/Admin/Users/Modify.html
 	       $tabs->child(_('History'), url => "/Admin/Users/History.html?id=".$id);
 	       $tabs->child(_('RT at a glance'), url => "/Admin/Users/MyRT.html?id=".$id);
     if ( RT->config->get('gnupg')->{'enable'} ) {
-			$tabs->child(_('GnuPG'), url  => "Admin/Users/GnuPG.html?id=".$id);
+			$tabs->child(_('GnuPG'), url  => "/Admin/Users/GnuPG.html?id=".$id);
         }
     }
 
@@ -360,19 +376,21 @@ Jifty->web->page_navigation->child(_('Create'), url => "/Admin/Users/Modify.html
 
 before 'Admin/Groups' => sub {
 
-Jifty->web->page_navigation->child( _('Select') => url  => "Admin/Groups/");
-Jifty->web->page_navigation->child( _('Create') => url      => "Admin/Groups/Modify.html?create=1", separator => 1);
+Jifty->web->page_navigation->child( _('Select') => url  => "/Admin/Groups/");
+Jifty->web->page_navigation->child( _('Create') => url      => "/Admin/Groups/Modify.html?create=1", separator => 1);
     if ( my $id = Jifty->web->request->argument('id') ) {
         my $obj = RT::Model::User->new();
         $obj->load($id);
-        my $tabs = Jifty->web->page_navigation->child( $obj->name, url => "Admin/CustomFields/Modify.html?id=" . $id );
-        $tabs->child( _('Basics') => url  => "Admin/Groups/Modify.html?id=" . $obj->id );
-        $tabs->child( _('Members') => url  => "Admin/Groups/Members.html?id=" . $obj->id );
-        $tabs->child( _('Group rights') => url  => "Admin/Groups/GroupRights.html?id=" . $obj->id );
-        $tabs->child( _('User rights') => url  => "Admin/Groups/UserRights.html?id=" . $obj->id );
-        $tabs->child( _('History') => url  => "Admin/Groups/History.html?id=" . $obj->id );
+        my $tabs = Jifty->web->page_navigation->child( $obj->name, url => "/Admin/CustomFields/Modify.html?id=" . $id );
+        $tabs->child( _('Basics') => url  => "/Admin/Groups/Modify.html?id=" . $obj->id );
+        $tabs->child( _('Members') => url  => "/Admin/Groups/Members.html?id=" . $obj->id );
+        $tabs->child( _('Group rights') => url  => "/Admin/Groups/GroupRights.html?id=" . $obj->id );
+        $tabs->child( _('User rights') => url  => "/Admin/Groups/UserRights.html?id=" . $obj->id );
+        $tabs->child( _('History') => url  => "/Admin/Groups/History.html?id=" . $obj->id );
     }
 };
+
+
 before 'Admin/CustomFields/' => sub {
     if ( Jifty->web->current_user->has_right( object => RT->system, right => 'AdminCustomField' ) ) {
         Jifty->web->page_navigation->child( _('Select'), url => "/Admin/CustomFields/" );
@@ -385,23 +403,92 @@ before 'Admin/CustomFields/' => sub {
     if ( my $id = Jifty->web->request->argument('id') ) {
         my $obj = RT::Model::CustomField->new();
         $obj->load($id);
-        my $tabs = Jifty->web->page_navigation->child( $obj->name, url => "Admin/CustomFields/Modify.html?id=" . $id );
+        my $tabs = Jifty->web->page_navigation->child( $obj->name, url => "/Admin/CustomFields/Modify.html?id=" . $id );
 
-        $tabs->child( _('Basics')       => url => "Admin/CustomFields/Modify.html?id=" . $id );
-        $tabs->child( _('Group rights') => url => "Admin/CustomFields/GroupRights.html?id=" . $id );
+        $tabs->child( _('Basics')       => url => "/Admin/CustomFields/Modify.html?id=" . $id );
+        $tabs->child( _('Group rights') => url => "/Admin/CustomFields/GroupRights.html?id=" . $id );
         $tabs->child( _('User rights')  => url => "/Admin/CustomFields/UserRights.html?id=" . $id );
 
         if ( $obj->lookup_type =~ /^RT::Model::Queue-/io ) {
-            $tabs->child( _('Applies to'), url => "Admin/CustomFields/Objects.html?id=" . $id );
+            $tabs->child( _('Applies to'), url => "/Admin/CustomFields/Objects.html?id=" . $id );
         }
 
     }
 
 };
 
+before 'Admin/Rules' => sub {
+        Jifty->web->page_navigation->child(_('Select'), url  => "/Admin/Rules/");
+        Jifty->web->page_navigation->child(_('Create'), url  => "/Admin/Rules/Modify.html?create=1");
+};
+
+before 'Ticket/' => sub {
+    if ( my $id = Jifty->web->request->argument('id') ) {
+        my $obj = RT::Model::Ticket->new();
+        $obj->load($id);
+
+        my $tabs = Jifty->web->page_navigation->child(
+            "#" . $id => class => "currentnav",
+            url       => "/Ticket/Display.html?id=" . $id
+        );
+
+        $tabs->child( _('Display') => url => "/Ticket/Display.html?id=" . $id );
+
+        $tabs->child( _('History') => url => "/Ticket/History.html?id=" . $id );
+        $tabs->child( _('Basics')  => url => "/Ticket/Modify.html?id=" . $id );
+
+        $tabs->child( _('Dates') => url => "/Ticket/ModifyDates.html?id=" . $id );
+        $tabs->child( _('People'), url => "/Ticket/ModifyPeople.html?id=" . $id );
+        $tabs->child( _('Links'),  url => "/Ticket/ModifyLinks.html?id=" . $id );
+        $tabs->child( _('Jumbo'),  url => "/Ticket/ModifyAll.html?id=" . $id );
+
+        my %can = ( ModifyTicket => $obj->current_user_has_right('ModifyTicket') );
+
+        if ( $can{'ModifyTicket'} or $obj->current_user_has_right('ReplyToTicket') ) {
+            $tabs->child( _('Reply'), url => "/Ticket/Update.html?action=respond&id=" . $id );
+        }
+
+        if ( $can{'ModifyTicket'} ) {
+            my $current = $obj->status;
+            my $schema  = $obj->queue->status_schema;
+            my $i       = 1;
+            foreach my $next ( $schema->transitions($current) ) {
+                my $action = $schema->transition_action( $current => $next );
+                next if $action eq 'hide';
+
+                my $url = 'Ticket/';
+                if ($action) {
+		#XXX TODO
+                    #$url .= "Update.html?" . $m->comp( '/Elements/QueryString', action => $action, default_status => $next, id => $id );
+                } else {
+			#XXX TODO
+                   # $url .= "Display.html?" . $m->comp( '/Elements/QueryString', Status => $next, id => $id );
+                }
+                $tabs->child( _( $schema->transition_label( $current => $next ) ) => url => $url );
+            }
+
+        }
+            if ( $obj->current_user_has_right('OwnTicket') ) {
+                if ( $obj->owner_obj->id == RT->nobody->id ) {
+                    $tabs->child( _('Take') => url => "/Ticket/Display.html?action=take&id=" . $id )
+                    if ($can{'ModifyTicket'} or $obj->current_user_has_right('TakeTicket'));
+                } elsif ( $obj->owner_obj->id != Jifty->web->current_user->id ) {
+                    $tabs->child( _('Steal') => url => "/Ticket/Display.html?action=steal&id=" . $id )
+                        if ($can{'ModifyTicket'}
+                            or $obj->current_user_has_right('StealTicket'));
+                }
+            }
+
+            if ( $can{'ModifyTicket'} or $obj->current_user_has_right('CommentOnTicket') ) {
+                $tabs->child( _('Comment') => url => "/Ticket/Update.html?action=comment&id=" . $id );
+            }
+
+
+        # $actions->{'_ZZ'} = { html => $m->scomp( '/Ticket/Elements/Bookmark', id => $obj->id ), };
+    }
+};
 
 before 'User/Group' => sub {
-
     if ( my $id = Jifty->web->request->argument('id') ) {
         my $obj = RT::Model::User->new();
         $obj->load($id);
@@ -414,6 +501,7 @@ before 'User/Group' => sub {
     Jifty->web->page_navigation( _('New group') => url => "/User/Groups/Modify.html?create=1", separator => 1 );
 
 };
+
 =for later Navigation
 
 # Top level tabs /Elements/Tabs
@@ -425,19 +513,10 @@ my $basetopactions = {
 	};
 
 
-
-
-
-# /SelfService Tabs
-
-
-
-# /Admin/CustomFields tabs
 #/Admin/Global/Workflows tabs
 
 if ( $schema ) {
     my $qs_name = $m->comp( '/Elements/QueryString', name => $schema->name );
-
 		$workflow = Jifty->web->page_navigation( $schema->name, url => "$base/Summary.html?$qs_name");
             $workflow->child( _("Summary") => url  => "$base/Summary.html?$qs_name");
             $workflow->child( _("Statuses") => url  => "$base/Statuses.html?$qs_name");
@@ -473,76 +552,12 @@ Jifty->web->page_navigation->child( '< ' . _('Prev') => class => "nav", url  => 
 
         # Don't display next links if we're on the last ticket
         if ( $item_map->{ $ticket->id }->{next} ) {
-            Jifty->web->page_navigation->child(
-                _('next') . ' >' => class => "nav",
-                url              => "Ticket/Display.html?id=" . $item_map->{ $ticket->id }->{next}
-            );
-            Jifty->web->page_navigation->child(
-                _('Last') . ' >>' => class => "nav",
-                url               => "Ticket/Display.html?id=" . $item_map->{last}
-            );
-
-            my $ticket = Jifty->web->page_navigation->child(
-                "#" . $id => class => "currentnav",
-                url       => "Ticket/Display.html?id=" . $ticket->id,
-            );
-
-            $ticket->child( _('Display') => url => "Ticket/Display.html?id=" . $id );
-
-            $ticket->child( _('History') => url => "Ticket/History.html?id=" . $id );
-            $ticket->child( _('Basics')  => url => "Ticket/Modify.html?id=" . $id );
-
-            $ticket->child( _('Dates') => url => "Ticket/ModifyDates.html?id=" . $id );
-            $ticket->child( _('People'), url => "Ticket/ModifyPeople.html?id=" . $id );
-            $ticket->child( _('Links'),  url => "Ticket/ModifyLinks.html?id=" . $id );
-            $ticket->child( _('Jumbo'),  url => "Ticket/ModifyAll.html?id=" . $id );
-
-        }
-    my %can = ( ModifyTicket => $ticket->current_user_has_right('ModifyTicket'));
-
-    if ( $can{'ModifyTicket'} or $ticket->current_user_has_right('ReplyToTicket') ) {
-		Jifty->web->navigation->child( _('Reply'), url  => "Ticket/Update.html?action=respond&id=" . $id )
-    }
-
-    if ( $can{'ModifyTicket'} ) {
-        my $current = $ticket->status;
-        my $schema = $ticket->queue->status_schema;
-        my $i = 1;
-        foreach my $next ( $schema->transitions( $current ) ) {
-            my $action = $schema->transition_action( $current => $next );
-            next if $action eq 'hide';
-
-            my $url = 'Ticket/';
-            if ( $action ) {
-                $url .= "Update.html?". $m->comp( '/Elements/QueryString', action => $action, default_status => $next, id => $id);
-            } else {
-                $url .= "Display.html?". $m->comp( '/Elements/QueryString', Status => $next, id => $id);
-            }
-			Jifty->web->page_navigation->child( _( $schema->transition_label( $current => $next ) ) => url => $url);
-        }
-    }
-
-    if ( $ticket->current_user_has_right('OwnTicket') ) {
-        if ( $ticket->owner_obj->id == RT->nobody->id ) {
-				Jifty->web->page_navigation->child( _('Take') => url  => "Ticket/Display.html?action=take&id=" . $id );
-                if $can{'ModifyTicket'}
-                    or $ticket->current_user_has_right('TakeTicket');
-        } elsif ( $ticket->owner_obj->id != Jifty->web->current_user->id ) {
-				Jifty->web->page_navigation->child( _('Steal') => url  => "Ticket/Display.html?action=steal&id=" . $id )
-                if $can{'ModifyTicket'}
-                    or $ticket->current_user_has_right('StealTicket');
-        }
-    }
-
-    if (   $can{'ModifyTicket'} or $ticket->current_user_has_right('CommentOnTicket') ) {
-Jifty->web->page_navigation->child( _('Comment') => url  => "Ticket/Update.html?action=comment&id=" . $id );
-    }
-
-    $actions->{'_ZZ'}
-        = { html => $m->scomp( '/Ticket/Elements/Bookmark', id => $ticket->id ),
-        };
-
+            Jifty->web->page_navigation->child( _('next') . ' >' => class => "nav", url              => "Ticket/Display.html?id=" . $item_map->{ $ticket->id }->{next});
+            Jifty->web->page_navigation->child( _('Last') . ' >>' => class => "nav", url               => "Ticket/Display.html?id=" . $item_map->{last});
 }
+        }
+
+
 
 my $args = '';
 my $has_query = '';
@@ -592,26 +607,6 @@ Jifty->web->page_navigation->child( _('Bulk Update') => url  => "Search/Bulk.htm
 
 }
 
-# /Admin/Rules
-    my $tabs = {
-
-
-        $rules_admin->child(_('Select'), url  => "Admin/Rules/");
-        $rules_admin->child(_('Create'), url  => 'Admin/Rules/Modify.html?create=1');
-    };
-
-# /Admin/Users tabs
-
-# Admin/GlobalCustomFields
-
-my $tabs = {
-
-
-
-};
-
-# Admin/Groups
-
 
 # Prefs/
 my $tabs;
@@ -626,9 +621,6 @@ Jifty->web->navigation->child(  $search->[0]  =>
     };
 }
 
-
-# User/
-	     };
 =cut
 
 # Now let callbacks add their extra tabs
