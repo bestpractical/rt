@@ -431,11 +431,7 @@ else {
             $e = 1;
             push @comments, "# $key: $s";
             unless (@$o) {
-                # XXX by sunnavy
-                # the following line is probably wrong, maybe
-                # my %o = %$changes;  ???
-                my %o = keys %$changes;
-
+                my %o = %$changes;
                 delete $o{id};
                 @$o = ("id", keys %o);
                 $k = $changes;
