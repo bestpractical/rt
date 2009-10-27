@@ -2,10 +2,9 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 9;
+use RT::Test tests => 12;
 my ( $url, $m ) = RT::Test->started_ok;
 
-# merged tickets still show up in search
 my $ticket = RT::Ticket->new($RT::SystemUser);
 my ( $ret, $msg ) = $ticket->Create(
     Subject   => 'base ticket' . $$,
@@ -36,19 +35,37 @@ $m->submit_form(
     button => 'SavedSearchSave',
 );
 
-$m->content_like(qr/Chart first chart saved/);
+$m->content_like( qr/Chart first chart saved/, 'saved first chart' );
 
 my ($search) = $m->content =~ /value="(RT::User-\d+-SavedSearch-\d+)"/;
 $m->submit_form(
     form_name => 'SaveSearch',
-    fields      => { SavedSearchLoad => $search },
+    fields    => { SavedSearchLoad => $search },
 );
 
-$m->content_like(qr/name="SavedSearchDelete"\s+value="Delete"/);
-TODO: {
-    local $TODO = 'add Saved Chart Search fully update support';
-    $m->content_like(qr/name="SavedSearchDescription"\s+value="first chart"/);
-    $m->content_like(qr/name="SavedSearchSave"\s+value="Update"/);
-    $m->content_unlike(qr/name="SavedSearchSave"\s+value="Save"/);
-}
+$m->content_like( qr/name="SavedSearchDelete"\s+value="Delete"/,
+    'found Delete button' );
+$m->content_like(
+    qr/name="SavedSearchDescription"\s+value="first chart"/,
+    'found Description input with the value filled'
+);
+$m->content_like( qr/name="SavedSearchSave"\s+value="Update"/,
+    'found Update button' );
+$m->content_unlike( qr/name="SavedSearchSave"\s+value="Save"/,
+    'no Save button' );
 
+$m->submit_form(
+    form_name => 'SaveSearch',
+    fields    => { Query => 'id=2' },
+    button    => 'SavedSearchSave',
+);
+
+$m->content_like( qr/Chart first chart updated/, 'found updated message' );
+
+$m->submit_form(
+    form_name => 'SaveSearch',
+    button    => 'SavedSearchDelete',
+);
+$m->content_like(qr/Chart first chart deleted/, 'found deleted message');
+$m->content_unlike( qr/value="RT::User-\d+-SavedSearch-\d+"/,
+    'no saved search' );
