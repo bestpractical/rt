@@ -50,6 +50,8 @@ $rule->create( description => 'test worky action',
                condition_code => '(lambda (ticket transaction) 1)',
                action_code    => '(lambda (ticket transaction context) (inc-hint-run context))' );
 
+RT::Lorzy::Dispatcher->flush_cache;
+
 my ($txn_id, $tmsg, $txn) = $ticket->comment(content => 'lorzy lorzy in the code');
 my ($this_rule) = grep { $_->description eq 'test fail action'} @{$txn->rules};
 

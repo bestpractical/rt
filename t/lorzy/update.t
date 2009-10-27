@@ -52,6 +52,8 @@ my $rule = RT::Model::Rule->new( current_user => RT->system_user );
 $rule->create( condition_code => $on_created_lcore,
                action_code    => $update_ticket_lcore );
 
+RT::Lorzy::Dispatcher->flush_cache;
+
 my $queue = RT::Model::Queue->new(current_user => RT->system_user);
 my ($queue_id) = $queue->create( name =>  'lorzy');
 ok( $queue_id, 'queue created' );
