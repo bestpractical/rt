@@ -70,12 +70,12 @@ if ( my ( $container_object, $search_id ) = _parse_saved_search(
     $self->{SearchId} = $args->{'SavedSearchLoad'} ||
         $args->{'SavedChartSearchId'};
     $self->{CurrentSearch}{Object} = $search;
-    for ( @{ $self->{SearchFields} } ) {
-        # we may updated Query
-        next if $_ eq 'Query' && ! $args->{'SavedSearchLoad'};
-
-        $args->{$_} = $search->SubValue($_) 
+    if ( $args->{'SaveSearchLoad'} ) {
+        for ( @{ $self->{SearchFields} } ) {
+            $args->{$_} = $search->SubValue($_) 
+        }
     }
+
     $args->{SavedChartSearchId} = $args->{'SavedSearchLoad'}
         if $args->{'SavedSearchLoad'};
 # saved search in /Search/Chart.html is different from /Search/Build.html
