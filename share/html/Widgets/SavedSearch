@@ -109,7 +109,7 @@ if ( $args->{SavedSearchSave} ) {
     if ( my $search = $self->{CurrentSearch}{Object} ) {
         # rename
         $search->SetDescription( $args->{SavedSearchDescription} );
-        $search->SetSubValues( Query => $args->{Query} );
+        $search->SetSubValues(%$SearchParams);
 	    push @actions, loc( '[_1] [_2] updated.', loc($self->{SearchType}), $args->{SavedSearchDescription} );
     }
     else {
