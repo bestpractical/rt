@@ -480,7 +480,7 @@ sub SendSessionCookie {
         -secure => ( RT->Config->Get('WebSecureCookies') ? 1 : 0 )
     );
 
-    $HTML::Mason::Commands::r->headers_out->{'Set-Cookie'} = $cookie->as_string;
+    $HTML::Mason::Commands::r->err_headers_out->{'Set-Cookie'} = $cookie->as_string;
 }
 
 =head2 Redirect URL
