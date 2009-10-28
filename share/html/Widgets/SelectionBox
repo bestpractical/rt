@@ -220,6 +220,9 @@ selected="selected"
 % if ($ARGS{'Clear'}) {
  <input name="clear" type="submit" class="button" value="<&|/l&>Clear</&>" />
 % }
+% if ( $ARGS{'ShowUpdate'} ) {
+ <input name="update" type="submit" class="button" value="<&|/l&>Update</&>" />
+% }
 % }
 
 % my $caption = "";
