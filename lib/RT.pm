@@ -310,24 +310,6 @@ sub init_jifty {
     Jifty->new;
 }
 
-    Jifty->web->add_javascript(
-        qw( titlebox-state.js util.js ahah.js fckeditor.js list.js
-		jquery.createdomnodes.js 
-        combobox.js  cascaded.js rulebuilder.js 
-		
-		)
-    );
-
-    Jifty::Web->add_trigger(
-        name      => 'after_include_javascript',
-        callback  => sub {
-            my $webpath = RT->config->get('web_path') || '/';
-            Jifty->web->out(
-                qq{<script type="text/javascript">RT = {};RT.WebPath = '$webpath';</script>}
-            );
-        },
-    );
-
 =head2 local_path
 
 The root of F</local> (user overrides)
