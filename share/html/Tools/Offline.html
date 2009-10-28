@@ -115,6 +115,9 @@ if ($ARGS{'Parse'} && $ARGS{'Template'}) {
     while ( my $bytesread = read( $fh, $buffer, 4096 ) ) {
 	    $template .= $buffer;
     }
+    my $encode = RT::I18N::_GuessCharset( $template );
+    require Encode;
+    $template = Encode::decode( $encode, $template );
     $template =~ s/\r\n/\n/gs;
     $action->Parse(Content => $template, Queue => $qname, Requestor => $requestoraddress);
     foreach ( @{ $action->{'create_tickets'} } ) {
