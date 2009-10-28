@@ -68,7 +68,7 @@
 
 <&| /Widgets/TitleBox, title => $pane->{DisplayName} &>
     <& /Widgets/SelectionBox:show, self => $pane, nojs => 1, grep( {
-            lc $_->{pane} eq lc $pane->{DisplayName} } @deleted ) ? ( ShowUpdate => 1 ) : () &>
+            lc loc($_->{pane}) eq lc $pane->{DisplayName} } @deleted ) ? ( ShowUpdate => 1 ) : () &>
 </&>
 </form>
 </td></tr>
