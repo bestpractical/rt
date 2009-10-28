@@ -67,8 +67,9 @@
 <input type="hidden" class="hidden" name="Privacy" value="<%$Dashboard->Privacy%>" />
 
 <&| /Widgets/TitleBox, title => $pane->{DisplayName} &>
+% my ( $pane_name ) = $pane->{Name} =~ /Searches-(.+)/;
     <& /Widgets/SelectionBox:show, self => $pane, nojs => 1, grep( {
-            lc loc($_->{pane}) eq lc $pane->{DisplayName} } @deleted ) ? ( ShowUpdate => 1 ) : () &>
+            $_->{pane} eq $pane_name} @deleted ) ? ( ShowUpdate => 1 ) : () &>
 </&>
 </form>
 </td></tr>
