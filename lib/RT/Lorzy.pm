@@ -23,6 +23,22 @@ $LCORE->env->set_symbol('Str.Eq' => LCore::Primitive->new
                           return_type => 'Bool'
                       ));
 
+my $ticket_status = enum 'RT::TicketStatus'  => [qw(new open stalled resolved rejected deleted)];
+
+install_enum_consts($ticket_status);
+
+# XXX type class eq
+$LCORE->env->set_symbol('TicketStatus.Eq' => LCore::Primitive->new
+                        ( body => sub {
+                              die 'not yet';
+                              return $_[0] eq $_[1];
+                          },
+                          parameters => [ LCore::Parameter->new({ name => 'left', type => 'RT::TicketStatus' }),
+                                          LCore::Parameter->new({ name => 'right', type => 'RT::TicketStatus' })],
+                          return_type => 'Bool'
+                      ));
+
+
 $LCORE->env->set_symbol('RT.RuleAction.Prepare' => LCore::Primitive->new
                         ( body => sub {
                               my ($name, $template, $context, $ticket, $transaction) = @_;
@@ -66,6 +82,20 @@ $LCORE->env->set_symbol('RT.RuleAction.Run' => LCore::Primitive->new
 
                       ));
 
+
+sub install_enum_consts {
+    my ($type) = @_;
+    # this helper installs const functions for the possible values of
+    # an enum type.
+    for (@{$type->values}) {
+        $LCORE->env->set_symbol($type.'.'.$_ => LCore::Primitive->new
+                                    ( body => sub { $_ },
+                                      parameters => [],
+                                      return_type => $type,
+                                  ));
+    }
+}
+
 sub install_model_accessors {
     my ($env, $model) = @_;
     my $modelname = lc($model);
@@ -97,6 +127,7 @@ sub install_model_accessors {
         my $name = $column->name;
         my $type = $column->type;
         $type = $column->refers_to   ? $column->refers_to
+              : $name eq 'status'    ? 'RT::TicketStatus' # XXX hack for now
               : $type =~ m/^varchar/ ? 'Str'
               : $type eq 'timestamp' ? 'DateTime'
               : $type eq 'boolean'   ? 'Bool'
