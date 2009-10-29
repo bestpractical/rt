@@ -45,6 +45,83 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+<table width="100%">
+  <tr>
+    <td valign="top" width="50%">
+      <h3><&|/l&>Current Links</&></h3>
+<table>
+  <tr>
+    <td class="labeltop"><&|/l&>Depends on</&>:</td>
+    <td class="value">
+% if ( $hash{DependsOn} ) {
+% for my $link ( values %{$hash{DependsOn}} ) {
+      <input type="checkbox" class="checkbox" name="DeleteLink--<%$link->Type%>-<%$link->Target%>" value="1" />
+        <& /Elements/ShowLink, URI => $link->TargetURI &><br />
+% } }
+    </td>
+  </tr>
+  <tr>
+    <td class="labeltop"><&|/l&>Depended on by</&>:</td>
+    <td class="value">
+% if ( $hash{DependedOnBy} ) {
+% for my $link ( values %{$hash{DependedOnBy}} ) {
+      <input type="checkbox" class="checkbox" name="DeleteLink-<%$link->Base%>-<%$link->Type%>-" value="1" />
+        <& /Elements/ShowLink, URI => $link->BaseURI &><br />
+% } }
+    </td>
+  </tr>
+  <tr>
+    <td class="labeltop"><&|/l&>Parents</&>:</td>
+    <td class="value">
+% if ( $hash{MemberOf} ) {
+% for my $link ( values %{$hash{MemberOf}} ) {
+      <input type="checkbox" class="checkbox" name="DeleteLink--<%$link->Type%>-<%$link->Target%>" value="1" />
+        <& /Elements/ShowLink, URI => $link->TargetURI &><br />
+% } }
+    </td>
+  </tr>
+  <tr>
+    <td class="labeltop"><&|/l&>Children</&>:</td>
+    <td class="value">
+% if ( $hash{Members} ) {
+% for my $link ( values %{$hash{Members}} ) {
+      <input type="checkbox" class="checkbox" name="DeleteLink-<%$link->Base%>-<%$link->Type%>-" value="1" />
+        <& /Elements/ShowLink, URI => $link->BaseURI &><br />
+% } }
+    </td>
+  </tr>
+  <tr>
+    <td class="labeltop"><&|/l&>Refers to</&>:</td>
+    <td class="value">
+% if ( $hash{RefersTo} ) {
+% for my $link ( values %{$hash{RefersTo}} ) {
+      <input type="checkbox" class="checkbox" name="DeleteLink--<%$link->Type%>-<%$link->Target%>" value="1" />
+        <& /Elements/ShowLink, URI => $link->TargetURI &><br />
+% } }
+    </td>
+  </tr>
+  <tr>
+    <td class="labeltop"><&|/l&>Referred to by</&>:</td>
+    <td class="value">
+% if ( $hash{ReferredToBy} ) {
+% for my $link ( values %{$hash{ReferredToBy}} ) {
+% # Skip reminders
+% next if (UNIVERSAL::isa($link->BaseObj, 'RT::Ticket')  && $link->BaseObj->Type eq 'reminder');
+      <input type="checkbox" class="checkbox" name="DeleteLink-<%$link->Base%>-<%$link->Type%>-" value="1" />
+        <& /Elements/ShowLink, URI => $link->BaseURI &><br />
+% } }
+    </td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><i><&|/l&>(Check box to delete)</&></i></td>
+  </tr>
+</table>
+</td>
+<td valign="top">
+<h3><&|/l&>New Links</&></h3>
+<i><&|/l&>Enter tickets or URIs to link tickets to. Separate multiple entries with spaces.</&>
+</i><br />
 <table>
   <tr>
     <td class="label"><&|/l&>Merge into</&>:</td>
@@ -75,3 +152,43 @@
     <td class="entry"> <input name="RefersTo-Ticket" /></td>
   </tr>
 </table>
+</td>
+</tr>
+</table>
+
+<%ARGS>
+$Tickets => undef
+</%ARGS>
+
+<%INIT>
+my %hash;
+if ( $Tickets && $Tickets->Count ) {
+    my $first_ticket = $Tickets->Next;
+    # we only show current links that eixst on all the tickets
+    for my $type ( qw/DependsOn DependedOnBy Members MemberOf RefersTo
+            ReferredToBy/ ) {
+        my $target_or_base =
+            $type =~ /DependsOn|MemberOf|RefersTo/ ? 'Target' : 'Base';
+        while ( my $link = $first_ticket->$type->Next ) {
+            $hash{$type}{$link->$target_or_base} = $link;
+        }
+    }
+
+    while ( my $ticket = $Tickets->Next ) {
+        for my $type ( qw/DependsOn DependedOnBy Members MemberOf RefersTo
+                ReferredToBy/ ) {
+            my $target_or_base =
+                $type =~ /DependsOn|MemberOf|RefersTo/ ? 'Target' : 'Base';
+            next unless $hash{$type};
+            my %exists;
+            while ( my $link = $ticket->$type->Next ) {
+                $exists{$link->$target_or_base}++;
+            }
+
+            for ( keys %{$hash{$type}} ) {
+                delete $hash{$type}{$_} unless $exists{$_};
+            }
+        }
+    }
+}
+</%INIT>
