@@ -23,8 +23,7 @@ ok( $ret, "ticket created: $msg" );
 
 ok( $m->login, 'logged in' );
 
-$m->get( $url . "/Search/Chart.html?Query=" . 'id=1' );
-is( $m->{'status'}, 200, "Loaded /Search/Chart.html" );
+$m->get_ok( $url . "/Search/Chart.html?Query=" . 'id=1' );
 my ($owner) = $m->content =~ /value="(RT::User-\d+)"/;
 
 $m->submit_form(

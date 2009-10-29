@@ -23,8 +23,7 @@ ok( $ret, "ticket created: $msg" );
 
 ok( $m->login, 'logged in' );
 
-$m->get( $url . "/Ticket/ModifyAll.html?id=" . $ticket->id );
-is( $m->{'status'}, 200, "Loaded ModifyAll.html" );
+$m->get_ok( $url . "/Ticket/ModifyAll.html?id=" . $ticket->id );
 
 $m->submit_form(
     form_number => 3,
@@ -43,8 +42,7 @@ EOF
 
 ok( $ret, $msg );
 
-$m->get( $url . "/Ticket/ModifyAll.html?id=" . $ticket->id );
-is( $m->{'status'}, 200, "Loaded ModifyAll.html" );
+$m->get_ok( $url . "/Ticket/ModifyAll.html?id=" . $ticket->id );
 
 $m->submit_form(
     form_number => 3,

@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 19;
+use RT::Test tests => 18;
 my ( $url, $m ) = RT::Test->started_ok;
 ok( $m->login, 'logged in' );
 
@@ -72,7 +72,6 @@ $m->content_lacks( $search_uri, 'deleted search foo' );
 # here is what we really want to test
 
 $m->get_ok( $url . "/Dashboards/Queries.html?id=$dashboard_id" );
-is( $m->{'status'}, 200, "Loaded /Dashboards/Queries.html" );
 $m->content_like( qr/Deleted queries/i, 'found deleted message' );
 
 # Update button shows so we can update the deleted search easily

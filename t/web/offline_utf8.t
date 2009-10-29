@@ -23,8 +23,7 @@ close $fh;
 my ( $url, $m ) = RT::Test->started_ok;
 ok( $m->login, 'logged in' );
 
-$m->get( $url . '/Tools/Offline.html' );
-is( $m->{'status'}, 200, "Loaded /Tools/Offline.html" );
+$m->get_ok( $url . '/Tools/Offline.html' );
 
 $m->submit_form(
     form_name => 'TicketUpdate',
@@ -49,8 +48,7 @@ my $ticket = RT::Ticket->new( $RT::SystemUser );
 $ticket->Load( $ticket_id );
 is( $ticket->Subject, '标题', 'subject in $ticket is right' );
 
-$m->get( $url . "/Ticket/Display.html?id=$ticket_id" );
-is( $m->{'status'}, 200, "Loaded /Ticket/Display.html?id=$ticket_id" );
+$m->get_ok( $url . "/Ticket/Display.html?id=$ticket_id" );
 $m->content_contains( '这是正文',
     'content is right in ticket display page' );
 
