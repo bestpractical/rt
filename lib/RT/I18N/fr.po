@@ -2398,7 +2398,7 @@ msgstr "Modifier les modèles système"
 
 #: lib/RT/Group_Overlay.pm:93
 msgid "EditSavedSearches"
-msgstr "ModifierRecherchesSaugardées"
+msgstr "ModifierRecherchesSauvegardées"
 
 #: share/html/Search/Elements/ResultViews:63
 msgid "Editable text"
