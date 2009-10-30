@@ -179,7 +179,8 @@ if ( $Tickets && $Tickets->Count ) {
                 ReferredToBy/ ) {
             my $target_or_base =
                 $type =~ /DependsOn|MemberOf|RefersTo/ ? 'Target' : 'Base';
-            next unless $hash{$type};
+            # if $hash{$type} is empty, no need to check any more
+            next unless $hash{$type} && keys %{$hash{$type}};
             my %exists;
             while ( my $link = $ticket->$type->Next ) {
                 $exists{$link->$target_or_base}++;
