@@ -559,8 +559,8 @@ being considered)
 
 =item --all
 
-Disable checking of whether each subscription should be sent right now (should
-only be used with --dryrun)
+Ignore subscription frequency when considering each dashboard (should only be
+used with --dryrun)
 
 =back
 

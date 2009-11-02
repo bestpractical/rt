@@ -656,14 +656,33 @@ sub run_mailgate {
         message => '',
         action  => 'correspond',
         queue   => 'General',
+        debug   => 1,
+        command => $RT::BinPath .'/rt-mailgate',
         @_
     );
     my $message = delete $args{'message'};
 
-    my $cmd = $RT::BinPath .'/rt-mailgate';
-    die "Couldn't find mailgate ($cmd) command" unless -f $cmd;
+    $args{after_open} = sub {
+        my $child_in = shift;
+        if ( UNIVERSAL::isa($message, 'MIME::Entity') ) {
+            $message->print( $child_in );
+        } else {
+            print $child_in $message;
+        }
+    };
 
-    $cmd .= ' --debug';
+    $self->run_and_capture(%args);
+}
+
+sub run_and_capture {
+    my $self = shift;
+    my %args = @_;
+
+    my $cmd = delete $args{'command'};
+    die "Couldn't find command ($cmd)" unless -f $cmd;
+
+    $cmd .= ' --debug' if delete $args{'debug'};
+
     while( my ($k,$v) = each %args ) {
         next unless $v;
         $cmd .= " --$k '$v'";
@@ -676,11 +695,8 @@ sub run_mailgate {
     my ($child_out, $child_in);
     my $pid = IPC::Open2::open2($child_out, $child_in, $cmd);
 
-    if ( UNIVERSAL::isa($message, 'MIME::Entity') ) {
-        $message->print( $child_in );
-    } else {
-        print $child_in $message;
-    }
+    $args{after_open}->($child_in, $child_out) if $args{after_open};
+
     close $child_in;
 
     my $result = do { local $/; <$child_out> };
