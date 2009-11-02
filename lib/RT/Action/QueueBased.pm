@@ -8,6 +8,7 @@ use Jifty::Action schema {
     param queue =>
         render as 'text',
         render_mode is 'read',
+        constructor is 1,
         label is _('Queue');
 };
 
