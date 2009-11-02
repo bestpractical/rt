@@ -422,6 +422,23 @@ before 'Admin/CustomFields/' => sub {
 
 };
 
+before 'Admin/Global/Workflows' => sub {
+    if ( my $id = Jifty->web->request->argument('name') ) {
+
+        my $schema = RT::Workflow->new->load($id);
+
+        if ($schema) {
+            my $qs_name = $m->comp( '/Elements/QueryString', name => $schema->name );
+            $workflow = page_nav->child( $schema->name, url => "$base/Summary.html?$qs_name" );
+            $workflow->child( _("Summary")     => url => "$base/Summary.html?$qs_name" );
+            $workflow->child( _("Statuses")    => url => "$base/Statuses.html?$qs_name" );
+            $workflow->child( _("Transitions") => url => "$base/Transitions.html?$qs_name" );
+            $workflow->child( _("Interface")   => url => "$base/Interface.html?$qs_name" );
+            );
+        }
+    }
+    };
+
 before 'Admin/Rules' => sub {
         page_nav->child(_('Select'), url  => "/Admin/Rules/");
         page_nav->child(_('Create'), url  => "/Admin/Rules/Modify.html?create=1");
@@ -533,13 +550,10 @@ before 'Ticket/' => sub {
             my $has_query = '';
             my %query_args;
 
-96: my $search_id = $ARGS{'saved_search_id'} ||  && ->{'searchid'} | ...
-                                             --  ^
-found && where term expected (previous token underlined)
             my $search = Jifty->web->session->get('CurrentSearchHash') || {};
-            my $search_id = $ARGS{'saved_search_id'} || &&->{'searchid'} || '';
+            my $search_id = $ARGS{'saved_search_id'} || $search->{'searchid'} || '';
 
-            $has_query = 1 if ( $ARGS{'query'} or &&->{'query'} );
+            $has_query = 1 if ( $ARGS{'query'} or $search->{'query'} );
 
             %query_args = (
 
@@ -552,7 +566,7 @@ found && where term expected (previous token underlined)
                 rows_per_page => $ARGS{'rows_per_page'} || $search->{'rows_per_page'}
             );
 
-            $args = "?" . $m->comp( '/Elements/QueryString', %query_args );
+            $args = "?" . URI->new->query_form( %query_args );
 
             $search->child( _('New Search')  => url => "Search/Build.html?NewQuery=1" );
             $search->child( _('Edit Search') => url => "Search/Build.html" . ( ($has_query) ? $args : '' ) );
@@ -610,9 +624,10 @@ before 'Prefs' => sub {
 };
 
 
-=for later Navigation
+under '/' => sub {
 
 # Top level tabs /Elements/Tabs
+warn "Adding create ticket and simplesearch are todo";
 my $basetopactions = {
 	a => { html => $m->scomp('/Elements/CreateTicket')
 		},
@@ -620,19 +635,8 @@ my $basetopactions = {
 		}
 	};
 
+};
 
-before 'Admin/Global/Workflows' => sub {
-
-if ( $schema ) {
-    my $qs_name = $m->comp( '/Elements/QueryString', name => $schema->name );
-		$workflow = page_nav->child( $schema->name, url => "$base/Summary.html?$qs_name");
-            $workflow->child( _("Summary") => url  => "$base/Summary.html?$qs_name");
-            $workflow->child( _("Statuses") => url  => "$base/Statuses.html?$qs_name");
-            $workflow->child( _("Transitions") => url  => "$base/Transitions.html?$qs_name");
-            $workflow->child( _("Interface") => url  => "$base/Interface.html?$qs_name");
-        );
-    };
-}
 # Backward compatibility with old RT URLs
 
 before '/NoAuth/Logout.html' => run { redirect '/logout' };
