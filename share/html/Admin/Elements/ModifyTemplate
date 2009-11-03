@@ -68,7 +68,7 @@
 </td>
 <td>
 <textarea name="content" rows="25" cols="80" wrap="soft">
-<%$Content%></textarea>
+<%$content%></textarea>
 </td>
 </tr>
 </table>

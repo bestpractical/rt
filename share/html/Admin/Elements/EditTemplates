@@ -75,8 +75,8 @@
 
 <%INIT>
 my $dir_path = $m->request_comp->dir_path;
-$format ||= qq{'<a href="__WebPath__$dir_path/Template.html?queue=$id&Template=__id__">__id__</a>/TITLE:#'}
-    .qq{,'<a href="__WebPath__$dir_path/Template.html?queue=$id&Template=__id__">__name__</a>/TITLE:name'}
+$format ||= qq{'<a href="__WebPath__$dir_path/Template.html?queue=$id&template=__id__">__id__</a>/TITLE:#'}
+    .qq{,'<a href="__WebPath__$dir_path/Template.html?queue=$id&template=__id__">__name__</a>/TITLE:name'}
     .qq{,'__description__'};
 
 my $queue_obj = RT::Model::Queue->new( current_user => Jifty->web->current_user );
@@ -103,7 +103,7 @@ foreach my $key (keys %ARGS) {
 }
 
 foreach my $id( @delete_templates ) {
-    my $template_obj = RT::Model::Template->new( current_user => Jifty->web->current_user );
+    my $template_obj = RT::Model::Template->new( );
     $template_obj->load( $id );
     unless ( $template_obj->id ) {
         push @actions, _("Couldn't load template #%1", $id);
