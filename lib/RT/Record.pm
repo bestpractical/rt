@@ -1228,7 +1228,7 @@ sub FormatType{
 		 @_
 	       );
     $args{Type} =~ s/([A-Z])/" " . lc $1/ge;
-    $args{Type} =~ s/^\s+//; # in case the first letter is A-Z
+    $args{Type} =~ s/^\s+//;
     return $args{Type};
 }
 
