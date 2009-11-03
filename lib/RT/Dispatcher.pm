@@ -56,9 +56,8 @@ use RT;
 use RT::Interface::Web;
 use RT::Interface::Web::Handler;
 
-sub page_nav {
-	return Jifty->web->page_navigation();
-}
+sub main_nav { return Jifty->web->navigation() }
+sub page_nav { return Jifty->web->page_navigation(); }
 
 
 before qr/.*/ => run {
@@ -185,10 +184,11 @@ on qr{^/Ticket/Graphs/(\d+)} => run {
 };
 
 before qr{.*} => run {
-    Jifty->web->navigation->child( _('Homepage'),      url => '/' );
-    Jifty->web->navigation->child( _('Simple Search'), url => '/Search/Simple.html' );
-    Jifty->web->navigation->child( _('Tickets'),       url => '/Search/Build.html' );
-    my $tools = Jifty->web->navigation->child( _('Tools'), url => '/Tools/index.html' );
+	page_nav->render_children_inline(1);
+    main_nav->child( _('Homepage'),      url => '/' );
+    main_nav->child( _('Simple Search'), url => '/Search/Simple.html' );
+    main_nav->child( _('Tickets'),       url => '/Search/Build.html' );
+    my $tools = main_nav->child( _('Tools'), url => '/Tools/index.html' );
     $tools->child( _('Dashboards'), url => '/Dashboards/index.html' );
 
     my $reports = $tools->child( _('Reports'), url => '/Tools/Reports/index.html' );
@@ -201,7 +201,7 @@ before qr{.*} => run {
     if (   Jifty->web->current_user->user_object
         && Jifty->web->current_user->has_right( right => 'ShowConfigTab', object => RT->system ) )
     {
-        my $admin = Jifty->web->navigation->child( Config => label => _('Configuration'), url => '/Admin/' );
+        my $admin = main_nav->child( Config => label => _('Configuration'), url => '/Admin/' );
         $admin->child( _('Users'),         url => '/Admin/Users/', );
         $admin->child( _('Groups'),        url => '/Admin/Groups/', );
         $admin->child( _('Queues'),        url => '/Admin/Queues/', );
@@ -264,7 +264,7 @@ before qr{.*} => run {
         )
         )
     {
-        my $prefs = Jifty->web->navigation->child( _('Preferences'), url => '/Prefs/Other.html' );
+        my $prefs = main_nav->child( _('Preferences'), url => '/Prefs/Other.html' );
 
         $prefs->child( _('Settings'),       url => '/Prefs/Other.html', );
         $prefs->child( _('About me'),       url => '/User/Prefs.html', );
@@ -275,7 +275,7 @@ before qr{.*} => run {
     if (   Jifty->web->current_user->user_object
         && Jifty->web->current_user->has_right( right => 'ShowApprovalsTab', object => RT->system ) )
     {
-        Jifty->web->navigation->child( _('Approval'), url => '/Approvals/' );
+        main_nav->child( _('Approval'), url => '/Approvals/' );
     }
 };
 
@@ -316,7 +316,7 @@ before '/SelfService' => sub {
         last if ( $queue_count > 1 );
     }
 
-	my $TOP = Jifty->web->navigation();
+	my $TOP = main_nav();
 
 	$TOP->child( _('Open tickets'),   url => '/SelfService/', );
     $TOP->child( _('Closed tickets'), url => '/SelfService/Closed.html', );
@@ -331,7 +331,7 @@ before '/SelfService' => sub {
     }
 
 	# XXX TODO RENDER GOTO TICKET WIDGET
-	#Jifty->web->navigation->child( B =>  html => $m->scomp('GotoTicket'))
+	#main_nav->child( B =>  html => $m->scomp('GotoTicket'))
 };
 
 before 'Admin/Queues' => sub {
@@ -511,7 +511,6 @@ before qr'(?:Ticket|Search)/' => sub {
 
         # $actions->{'_ZZ'} = { html => $m->scomp( '/Ticket/Elements/Bookmark', id => $obj->id ), };
 
-        my $id = $obj->id();
 
         if ( defined Jifty->web->session->get('tickets') ) {
 
@@ -547,7 +546,8 @@ before qr'(?:Ticket|Search)/' => sub {
                     );
                 }
             }
-
+		}
+        }
             my $args      = '';
             my $has_query = '';
             my %query_args;
@@ -570,9 +570,9 @@ before qr'(?:Ticket|Search)/' => sub {
 
             $args = "?" . URI->new->query_form(%query_args);
 
-            $search->child( _('New Search')  => url => "Search/Build.html?NewQuery=1" );
-            $search->child( _('Edit Search') => url => "Search/Build.html" . ( ($has_query) ? $args : '' ) );
-            $search->child( _('Advanced')    => url => "Search/Edit.html$args" );
+            page_nav->child( _('New Search')  => url => "Search/Build.html?NewQuery=1" );
+            page_nav->child( _('Edit Search') => url => "Search/Build.html" . ( ($has_query) ? $args : '' ) );
+            page_nav->child( _('Advanced')    => url => "Search/Edit.html$args" );
 
             if ($has_query) {
                 if ($self->{path} =~ qr|^Search/Results.html| &&    #XXX TODO better abstraction
@@ -594,8 +594,6 @@ before qr'(?:Ticket|Search)/' => sub {
                 page_nav->child( _('Bulk Update') => url => "Search/Bulk.html$args" );
 
             }
-        }
-    }
 };
 
 before 'User/Group' => sub {
@@ -623,20 +621,6 @@ before 'Prefs' => sub {
         $search->[0],
         url  => "/Prefs/Search.html?" .URI->new->query_form( name => ref($search->[1]).'-'.$search->[1]->id));
     }
-};
-
-
-under '/' => sub {
-
-# Top level tabs /Elements/Tabs
-warn "Adding create ticket and simplesearch are todo";
-my $basetopactions = {
-	a => { html => '',#$m->scomp('/Elements/CreateTicket')
-		},
-	b => { html => ''#$m->scomp('/Elements/SimpleSearch')
-		}
-	};
-
 };
 
 # Backward compatibility with old RT URLs
