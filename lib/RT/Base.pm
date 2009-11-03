@@ -85,9 +85,4 @@ sub new {
 sub _init {
 }
 
-sub loc {
-    shift;
-    _(@_);
-}
-
 1;
