@@ -1579,6 +1579,26 @@ sub load_custom_field_by_identifier {
 }
 
 
+=head2 saved_searches
+
+Returns an array of search objects associated on $object, in the form of [description, searchObj]
+
+=cut
+ 
+sub saved_searches {
+    my $self = shift;
+    my @result;
+    while ( my $search = $self->attributes->next ) {
+        my $desc;
+        if ( $search->name eq 'saved_search' ) {
+            push @result, [ $search->description, $search ];
+        } elsif ( $search->name =~ m/^Search - (.*)/ ) {
+            push @result, [ $1, $search ];
+        }
+    }
+    return @result;
+
+}
 
 
 sub wiki_base {

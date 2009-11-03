@@ -331,11 +331,10 @@ before '/SelfService' => sub {
     }
 
 	# XXX TODO RENDER GOTO TICKET WIDGET
-	#Jifty->web->navigation->child( B =>  html => $m->scomp('GotoTicket')
+	#Jifty->web->navigation->child( B =>  html => $m->scomp('GotoTicket'))
 };
 
 before 'Admin/Queues' => sub {
-    my $tabs;
         if ( Jifty->web->current_user->has_right( object => RT->system, right => 'AdminQueue' ) ) {
             page_nav->child( _('Select'), url => "/Admin/Queues/" );
             page_nav->child( _('Create'), url       => "/Admin/Queues/Modify.html?create=1");
@@ -359,15 +358,16 @@ before 'Admin/Queues' => sub {
     }
 };
 
-before 'Admin/Users' => sub {
+before '/Admin/Users' => sub {
 if (Jifty->web->current_user->has_right( object => RT->system, right => 'AdminUsers')) {
 page_nav->child(_('Select'), url => "/Admin/Users/");
 page_nav->child(_('Create'), url => "/Admin/Users/Modify.html?create=1", separator => 1);
 }
     if ( my $id = Jifty->web->request->argument('id') ) {
+	warn "loading user $id";
         my $obj = RT::Model::User->new();
         $obj->load($id);
-		my $tabs = page_nav->child($obj->Name, url => "/Admin/Users/Modify.html?id=".$id,);
+		my $tabs = page_nav->child('current' => label => $obj->name, url => "/Admin/Users/Modify.html?id=".$id,);
 	       $tabs->child(_('Basics'), url => "/Admin/Users/Modify.html?id=".$id);
 	       $tabs->child(_('Memberships'), url => "/Admin/Users/Memberships.html?id=".$id);
 	       $tabs->child(_('History'), url => "/Admin/Users/History.html?id=".$id);
@@ -425,16 +425,17 @@ before 'Admin/CustomFields/' => sub {
 before 'Admin/Global/Workflows' => sub {
     if ( my $id = Jifty->web->request->argument('name') ) {
 
+		my $base = '/Admin/Global/Workflows';
+
         my $schema = RT::Workflow->new->load($id);
 
         if ($schema) {
-            my $qs_name = $m->comp( '/Elements/QueryString', name => $schema->name );
-            $workflow = page_nav->child( $schema->name, url => "$base/Summary.html?$qs_name" );
+            my $qs_name = URI->new->query_form( name => $schema->name );
+            my $workflow = page_nav->child( $schema->name, url => "$base/Summary.html?$qs_name" );
             $workflow->child( _("Summary")     => url => "$base/Summary.html?$qs_name" );
             $workflow->child( _("Statuses")    => url => "$base/Statuses.html?$qs_name" );
             $workflow->child( _("Transitions") => url => "$base/Transitions.html?$qs_name" );
             $workflow->child( _("Interface")   => url => "$base/Interface.html?$qs_name" );
-            );
         }
     }
     };
@@ -444,7 +445,8 @@ before 'Admin/Rules' => sub {
         page_nav->child(_('Create'), url  => "/Admin/Rules/Modify.html?create=1");
 };
 
-before 'Ticket/' => sub {
+before qr'(?:Ticket|Search)/' => sub {
+	my $self = shift;
     if ( my $id = Jifty->web->request->argument('id') ) {
         my $obj = RT::Model::Ticket->new();
         $obj->load($id);
@@ -481,12 +483,12 @@ before 'Ticket/' => sub {
                 my $url = 'Ticket/';
                 if ($action) {
 
-   #XXX TODO
-   #$url .= "Update.html?" . $m->comp( '/Elements/QueryString', action => $action, default_status => $next, id => $id );
+                #XXX TODO
+                #$url .= "Update.html?" . URI->new->query_form( action => $action, default_status => $next, id => $id );
                 } else {
 
                     #XXX TODO
-                    # $url .= "Display.html?" . $m->comp( '/Elements/QueryString', Status => $next, id => $id );
+                    # $url .= "Display.html?" .URI->new->query_form(Status => $next, id => $id );
                 }
                 $tabs->child( _( $schema->transition_label( $current => $next ) ) => url => $url );
             }
@@ -509,7 +511,7 @@ before 'Ticket/' => sub {
 
         # $actions->{'_ZZ'} = { html => $m->scomp( '/Ticket/Elements/Bookmark', id => $obj->id ), };
 
-        my $id = $ticket->id();
+        my $id = $obj->id();
 
         if ( defined Jifty->web->session->get('tickets') ) {
 
@@ -523,21 +525,21 @@ before 'Ticket/' => sub {
             }
 
             # Don't display prev links if we're on the first ticket
-            if ( $item_map->{ $ticket->id }->{prev} ) {
+            if ( $item_map->{$id}->{prev} ) {
                 page_nav->child(
                     '<< ' . _('First') => class => "nav",
                     url                => "Ticket/Display.html?id=" . $item_map->{first}
                 );
                 page_nav->child(
                     '< ' . _('Prev') => class => "nav",
-                    url              => "Ticket/Display.html?id=" . $item_map->{ $ticket->id }->{prev}
+                    url              => "Ticket/Display.html?id=" . $item_map->{$id}->{prev}
                 );
 
                 # Don't display next links if we're on the last ticket
-                if ( $item_map->{ $ticket->id }->{next} ) {
+                if ( $item_map->{$id}->{next} ) {
                     page_nav->child(
                         _('next') . ' >' => class => "nav",
-                        url              => "Ticket/Display.html?id=" . $item_map->{ $ticket->id }->{next}
+                        url              => "Ticket/Display.html?id=" . $item_map->{$id}->{next}
                     );
                     page_nav->child(
                         _('Last') . ' >>' => class => "nav",
@@ -551,32 +553,32 @@ before 'Ticket/' => sub {
             my %query_args;
 
             my $search = Jifty->web->session->get('CurrentSearchHash') || {};
-            my $search_id = $ARGS{'saved_search_id'} || $search->{'searchid'} || '';
+            my $search_id = Jifty->web->request->argument('saved_search_id') || $search->{'searchid'} || '';
 
-            $has_query = 1 if ( $ARGS{'query'} or $search->{'query'} );
+            $has_query = 1 if ( Jifty->web->request->argument('query') or $search->{'query'} );
 
             %query_args = (
 
                 saved_search_id => ( $search_id eq 'new' ) ? undef : $search_id,
-                query         => $ARGS{'query'}         || $search->{'query'},
-                format        => $ARGS{'format'}        || $search->{'format'},
-                order_by      => $ARGS{'order_by'}      || $search->{'order_by'},
-                order         => $ARGS{'order'}         || $search->{'order'},
-                page          => $ARGS{'page'}          || $search->{'page'},
-                rows_per_page => $ARGS{'rows_per_page'} || $search->{'rows_per_page'}
+                query         => Jifty->web->request->argument('query')         || $search->{'query'},
+                format        => Jifty->web->request->argument('format')        || $search->{'format'},
+                order_by      => Jifty->web->request->argument('order_by')      || $search->{'order_by'},
+                order         => Jifty->web->request->argument('order')         || $search->{'order'},
+                page          => Jifty->web->request->argument('page')          || $search->{'page'},
+                rows_per_page => Jifty->web->request->argument('rows_per_page') || $search->{'rows_per_page'}
             );
 
-            $args = "?" . URI->new->query_form( %query_args );
+            $args = "?" . URI->new->query_form(%query_args);
 
             $search->child( _('New Search')  => url => "Search/Build.html?NewQuery=1" );
             $search->child( _('Edit Search') => url => "Search/Build.html" . ( ($has_query) ? $args : '' ) );
             $search->child( _('Advanced')    => url => "Search/Edit.html$args" );
 
             if ($has_query) {
-
-                before 'Search/Results.html' =>
-
-                    if ( Jifty->web->current_user->has_right( right => 'SuperUser', object => RT->system ) ) {
+                if ($self->{path} =~ qr|^Search/Results.html| &&    #XXX TODO better abstraction
+                    Jifty->web->current_user->has_right( right => 'SuperUser', object => RT->system )
+                    )
+                {
                     my $shred_args = URI->new->query_param(
                         search          => 1,
                         plugin          => 'Tickets',
@@ -584,7 +586,7 @@ before 'Ticket/' => sub {
                         'Tickets:limit' => $query_args{'rows'}
                     );
 
-                    page_nav->child( _('Shredder') url => 'Admin/Tools/Shredder/?' . $shred_args );
+                    page_nav->child( 'shredder' =>  label => _('Shredder'), url => 'Admin/Tools/Shredder/?' . $shred_args );
                 }
 
                 page_nav->child( _('Show Results') => url => "Search/Results.html$args" );
@@ -612,14 +614,14 @@ before 'User/Group' => sub {
 
 before 'Prefs' => sub {
 	my $tabs;
-	$searches ||= [$m->comp("/Search/Elements/SearchesForObject", object => RT::System->new())];
+	my $searches = RT::System->new->saved_searches();
 
 	page_nav->child(  'Quick search' => label => _('Quick search'), url => '/Prefs/Quicksearch.html');
 
 	for my $search (@$searches) {
-	page_nav->child(  $search->[0]  =>
-        label => $search->[0],
-        url  => "Prefs/Search.html?" .URI->new->query_form( name => ref($search->[1]).'-'.$search->[1]->id),
+	page_nav->child(
+        $search->[0],
+        url  => "/Prefs/Search.html?" .URI->new->query_form( name => ref($search->[1]).'-'.$search->[1]->id));
     }
 };
 
@@ -629,9 +631,9 @@ under '/' => sub {
 # Top level tabs /Elements/Tabs
 warn "Adding create ticket and simplesearch are todo";
 my $basetopactions = {
-	a => { html => $m->scomp('/Elements/CreateTicket')
+	a => { html => '',#$m->scomp('/Elements/CreateTicket')
 		},
-	b => { html => $m->scomp('/Elements/SimpleSearch')
+	b => { html => ''#$m->scomp('/Elements/SimpleSearch')
 		}
 	};
 
