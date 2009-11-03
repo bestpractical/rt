@@ -53,8 +53,8 @@ use warnings;
 
 =head1 NAME
 
-RT::Base
-
+RT::Base is the base class for RT classes that require some
+current_user context.
 
 =head1 SYNOPSIS
 
@@ -62,7 +62,28 @@ RT::Base
 
 =head1 FUNCTIONS
 
+=head2 new
+
+The constructor builds C<current_user> using L<Jifty::Object>'s logic.
+The caller can pass the argument C<current_user => $current_user> in,
+or it will traverse the caller stack and find the invoker's
+current_user.  Finally it falls back to the web session's current
+user.  C<_init> is also called by the constructor.
+
 =cut
+
+sub new {
+    my $proto = shift;
+    my $class = ref($proto) || $proto;
+    my $self  = {};
+    bless( $self, $class );
+    $self->_get_current_user(@_);
+    $self->_init(@_);
+    return ($self);
+}
+
+sub _init {
+}
 
 sub loc {
     shift;

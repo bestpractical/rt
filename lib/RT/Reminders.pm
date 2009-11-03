@@ -51,14 +51,6 @@ use base qw/RT::Base/;
 
 our $REMINDER_QUEUE = 'General';
 
-sub new {
-    my $class = shift;
-    my $self  = {};
-    bless $self, $class;
-    $self->_get_current_user;
-    return ($self);
-}
-
 sub ticket {
     my $self = shift;
     $self->{'_ticket'} = shift if (@_);

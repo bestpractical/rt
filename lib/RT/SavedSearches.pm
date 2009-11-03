@@ -72,15 +72,10 @@ use RT::SavedSearch;
 use strict;
 use base 'RT::Base';
 
-sub new {
-    my $proto = shift;
-    my $class = ref($proto) || $proto;
-    my $self  = {};
-    bless( $self, $class );
-    $self->_get_current_user(@_);
+sub _init {
+    my $self = shift;
     $self->{'idx'}     = 0;
     $self->{'objects'} = [];
-    return $self;
 }
 
 =head2 limit_to_privacy

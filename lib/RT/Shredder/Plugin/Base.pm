@@ -57,16 +57,8 @@ RT::Shredder::Plugin::Base - base class for Shredder plugins.
 
 =cut
 
-sub new {
-    my $proto = shift;
-    my $self = bless( {}, ref $proto || $proto );
-    $self->_init(@_);
-    return $self;
-}
-
 sub _init {
     my $self = shift;
-    $self->_get_current_user(@_);
     $self->{'opt'} = {@_};
 }
 
