@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use RT::Test;
-use Test::More tests => 25;
+use Test::More;
 
 require_ok("RT");
 require_ok("RT::Test");
@@ -30,6 +30,24 @@ require_ok("RT::SavedSearch");
 require_ok("RT::SavedSearches");
 require_ok("RT::Util");
 
+use_ok("RT::Shredder");
+
+use_ok("RT::Shredder::Plugin");
+use_ok("RT::Shredder::Plugin::Base");
+
+# search plugins
+use_ok("RT::Shredder::Plugin::Base::Search");
+use_ok("RT::Shredder::Plugin::Objects");
+use_ok("RT::Shredder::Plugin::Attachments");
+use_ok("RT::Shredder::Plugin::Tickets");
+use_ok("RT::Shredder::Plugin::Users");
+
+# dump plugins
+use_ok("RT::Shredder::Plugin::Base::Dump");
+use_ok("RT::Shredder::Plugin::SQLDump");
+use_ok("RT::Shredder::Plugin::Summary");
+
+done_testing();
 
 # no the following doesn't work yet
 __END__
