@@ -58,7 +58,7 @@ use RT::Interface::Web::Handler;
 
 sub main_nav { return Jifty->web->navigation() }
 sub page_nav { return Jifty->web->page_navigation(); }
-
+sub query_string { my %args = @_; my $u = URI->new(); $u->query_form(%args); return $u->query}
 
 before qr/.*/ => run {
     if ( int RT->config->get('auto_logoff') ) {
@@ -430,7 +430,7 @@ before 'Admin/Global/Workflows' => sub {
         my $schema = RT::Workflow->new->load($id);
 
         if ($schema) {
-            my $qs_name = URI->new->query_form( name => $schema->name );
+            my $qs_name = query_string( name => $schema->name );
             my $workflow = page_nav->child( $schema->name, url => "$base/Summary.html?$qs_name" );
             $workflow->child( _("Summary")     => url => "$base/Summary.html?$qs_name" );
             $workflow->child( _("Statuses")    => url => "$base/Statuses.html?$qs_name" );
@@ -484,11 +484,11 @@ before qr'(?:Ticket|Search)/' => sub {
                 if ($action) {
 
                 #XXX TODO
-                #$url .= "Update.html?" . URI->new->query_form( action => $action, default_status => $next, id => $id );
+                #$url .= "Update.html?" . query_string( action => $action, default_status => $next, id => $id );
                 } else {
 
                     #XXX TODO
-                    # $url .= "Display.html?" .URI->new->query_form(Status => $next, id => $id );
+                    # $url .= "Display.html?" .query_string(Status => $next, id => $id );
                 }
                 $tabs->child( _( $schema->transition_label( $current => $next ) ) => url => $url );
             }
@@ -527,22 +527,22 @@ before qr'(?:Ticket|Search)/' => sub {
             if ( $item_map->{$id}->{prev} ) {
                 page_nav->child(
                     '<< ' . _('First') => class => "nav",
-                    url                => "Ticket/Display.html?id=" . $item_map->{first}
+                    url                => "/Ticket/Display.html?id=" . $item_map->{first}
                 );
                 page_nav->child(
                     '< ' . _('Prev') => class => "nav",
-                    url              => "Ticket/Display.html?id=" . $item_map->{$id}->{prev}
+                    url              => "/Ticket/Display.html?id=" . $item_map->{$id}->{prev}
                 );
 
                 # Don't display next links if we're on the last ticket
                 if ( $item_map->{$id}->{next} ) {
                     page_nav->child(
                         _('next') . ' >' => class => "nav",
-                        url              => "Ticket/Display.html?id=" . $item_map->{$id}->{next}
+                        url              => "/Ticket/Display.html?id=" . $item_map->{$id}->{next}
                     );
                     page_nav->child(
                         _('Last') . ' >>' => class => "nav",
-                        url               => "Ticket/Display.html?id=" . $item_map->{last}
+                        url               => "/Ticket/Display.html?id=" . $item_map->{last}
                     );
                 }
             }
@@ -550,14 +550,13 @@ before qr'(?:Ticket|Search)/' => sub {
         }
             my $args      = '';
             my $has_query = '';
-            my %query_args;
 
             my $search = Jifty->web->session->get('CurrentSearchHash') || {};
             my $search_id = Jifty->web->request->argument('saved_search_id') || $search->{'searchid'} || '';
 
             $has_query = 1 if ( Jifty->web->request->argument('query') or $search->{'query'} );
 
-            %query_args = (
+            my %query_args = (
 
                 saved_search_id => ( $search_id eq 'new' ) ? undef : $search_id,
                 query         => Jifty->web->request->argument('query')         || $search->{'query'},
@@ -568,11 +567,11 @@ before qr'(?:Ticket|Search)/' => sub {
                 rows_per_page => Jifty->web->request->argument('rows_per_page') || $search->{'rows_per_page'}
             );
 
-            $args = "?" . URI->new->query_form(%query_args);
+            $args = "?" . query_string(%query_args);
 
-            page_nav->child( _('New Search')  => url => "Search/Build.html?NewQuery=1" );
-            page_nav->child( _('Edit Search') => url => "Search/Build.html" . ( ($has_query) ? $args : '' ) );
-            page_nav->child( _('Advanced')    => url => "Search/Edit.html$args" );
+            page_nav->child( _('New Search')  => url => "/Search/Build.html?NewQuery=1" );
+            page_nav->child( _('Edit Search') => url => "/Search/Build.html" . ( ($has_query) ? $args : '' ) );
+            page_nav->child( _('Advanced')    => url => "/Search/Edit.html$args" );
 
             if ($has_query) {
                 if ($self->{path} =~ qr|^Search/Results.html| &&    #XXX TODO better abstraction
@@ -589,9 +588,9 @@ before qr'(?:Ticket|Search)/' => sub {
                     page_nav->child( 'shredder' =>  label => _('Shredder'), url => 'Admin/Tools/Shredder/?' . $shred_args );
                 }
 
-                page_nav->child( _('Show Results') => url => "Search/Results.html$args" );
+                page_nav->child( _('Show Results') => url => "/Search/Results.html$args" );
 
-                page_nav->child( _('Bulk Update') => url => "Search/Bulk.html$args" );
+                page_nav->child( _('Bulk Update') => url => "/Search/Bulk.html$args" );
 
             }
 };
@@ -619,7 +618,7 @@ before 'Prefs' => sub {
 	for my $search (@$searches) {
 	page_nav->child(
         $search->[0],
-        url  => "/Prefs/Search.html?" .URI->new->query_form( name => ref($search->[1]).'-'.$search->[1]->id));
+        url  => "/Prefs/Search.html?" .query_string( name => ref($search->[1]).'-'.$search->[1]->id));
     }
 };
 
