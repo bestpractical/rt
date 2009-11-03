@@ -18,7 +18,7 @@ requires(
     'HTML::Scrubber'             => '0.08',
     'Locale::Maketext::Lexicon'  => '0.32',
     'Locale::Maketext::Fuzzy'    => '0',
-    'Lorzy'                      => '0',
+    'LCore'                      => '0',
 	'Moose'						 => '0',
 	'Class::MOP'				 => '0.94',
     'MIME::Entity'               => '5.425',
