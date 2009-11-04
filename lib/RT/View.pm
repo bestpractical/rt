@@ -63,6 +63,9 @@ alias RT::View::SetupWizard under '__jifty/admin/setupwizard';
 require RT::View::SelfService;
 alias RT::View::SelfService under 'selfservice/';
 
+require RT::View::RuleBuilder;
+alias RT::View::RuleBuilder under 'rulebuilder/';
+
 __PACKAGE__->use_mason_wrapper;
 
 template login_widget => sub {

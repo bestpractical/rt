@@ -73,8 +73,6 @@ use Encode qw();
 
 our $_TABLE_ATTR = {};
 use base qw(Jifty::Record);
-use base qw(RT::Base);
-
 
 sub table {
     my $class = shift;

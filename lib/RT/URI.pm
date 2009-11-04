@@ -69,22 +69,6 @@ by RT::Model::Link objects.
 
 =cut
 
-=head2 new
-
-Create a RT::URI->new Object.
-
-=cut
-
-sub new {
-    my $proto = shift;
-    my $class = ref($proto) || $proto;
-    my $self  = {};
-    bless( $self, $class );
-    $self->_get_current_user(@_);
-    return ($self);
-}
-
-
 =head2 from_object <object>
 
 Given a local object, such as an RT::Model::Ticket or an RT::FM::Article, this routine will return a URI for

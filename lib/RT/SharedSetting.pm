@@ -69,21 +69,11 @@ use base qw/RT::Base/;
 
 =head1 METHODS
 
-=head2 new
-
-Returns a new L<RT::SharedSetting> object.
-Takes the current user, see also L<RT::Base>.
-
 =cut
 
-sub new {
-    my $proto = shift;
-    my $class = ref($proto) || $proto;
-    my $self  = {};
+sub _init {
+    my $self = shift;
     $self->{'id'} = 0;
-    bless( $self, $class );
-    $self->_get_current_user(@_);
-
     return $self;
 }
 
