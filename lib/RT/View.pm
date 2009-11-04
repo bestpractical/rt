@@ -60,6 +60,9 @@ alias RT::View::Ticket under 'ticket/';
 require RT::View::SetupWizard;
 alias RT::View::SetupWizard under '__jifty/admin/setupwizard';
 
+require RT::View::RuleBuilder;
+alias RT::View::RuleBuilder under 'rulebuilder/';
+
 __PACKAGE__->use_mason_wrapper;
 
 template login_widget => sub {
