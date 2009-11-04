@@ -500,7 +500,7 @@ sub prepare_email_using_template {
     return $template;
 }
 
-=head2 send_email_using_template template => '', arguments => {}, From => correspond_address, To => '', Cc => '', Bcc => ''
+=head2 send_email_using_template template => '', arguments => {}, From => correspond_address, to => '', cc => '', bcc => ''
 
 Sends email using a template, takes name of template, arguments for it and recipients.
 
@@ -527,10 +527,9 @@ sub send_email_using_template {
         return -1;
     }
 
-    $mail->head->set( $_ => $args{$_} ) foreach grep defined $args{$_}, qw(To Cc Bcc From);
+    $mail->head->set( ucfirst($_) => $args{$_} ) foreach grep defined $args{$_}, qw(to cc bcc from);
 
     set_in_reply_to( message => $mail, in_reply_to => $args{'in_reply_to'} );
-
     return send_email( entity => $mail );
 }
 
@@ -681,34 +680,31 @@ sub sign_encrypt {
     Jifty->log->debug("$msgid Encrypting message") if $args{'encrypt'};
 
     require RT::Crypt::GnuPG;
-    my %res = RT::Crypt::GnuPG::sign_encrypt(%args);
+    my %res = RT::Crypt::GnuPG::sign_encrypt(%args, quiet => 1);
     return 1 unless $res{'exit_code'};
-
     my @status = RT::Crypt::GnuPG::parse_status( $res{'status'} );
-
     my @bad_recipients;
     foreach my $line (@status) {
-
         # if the passphrase fails, either you have a bad passphrase
         # or gpg-agent has died.  That should get caught in Create and
         # Update, but at least throw an error here
-        if ( ( $line->{'Operation'} || '' ) eq 'PassphraseCheck' 
-            && $line->{'Status'} =~ /^(?:BAD|MISSING)$/ )
+        if ( ( $line->{'operation'} || '' ) eq 'passphrase_check' 
+            && $line->{'status'} =~ /^(?:BAD|MISSING)$/ )
         {
-            Jifty->log->error("$line->{'Status'} PASSPHRASE: $line->{'message'}");
+            Jifty->log->error("$line->{'status'} PASSPHRASE: $line->{'message'}");
             return 0;
         }
-        next unless ( $line->{'Operation'} || '' ) eq 'RecipientsCheck';
-        next if $line->{'Status'} eq 'DONE';
+        next unless ( $line->{'operation'} || '' ) eq 'recipients_check';
+        next if $line->{'status'} eq 'DONE';
         Jifty->log->error( $line->{'message'} );
         push @bad_recipients, $line;
     }
     return 0 unless @bad_recipients;
 
-    $_->{'address_obj'} = ( Email::Address->parse( $_->{'Recipient'} ) )[0] foreach @bad_recipients;
+    $_->{'address_obj'} = ( Email::Address->parse( $_->{'recipient'} ) )[0] foreach @bad_recipients;
 
     foreach my $recipient (@bad_recipients) {
-        my $status = send_email_using_template(
+        my ($status, $msg) = send_email_using_template(
             to        => $recipient->{'address_obj'}->address,
             template  => 'Error: public key',
             arguments => {
