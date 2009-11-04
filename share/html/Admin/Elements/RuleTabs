@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Tabs,
     title          => $title,
-    current_tab    => 'Admin/Rules/',
+    current_tab    => 'admin/rules/',
     subtabs        => $tabs,
     current_subtab => $current_tab,
 &>
@@ -55,9 +55,12 @@
 <%INIT>
     my $tabs = {
         A => { title => _('Select'),
-               path  => "Admin/Rules/", },
+               path  => "admin/rules/", },
         E => { title => _('Create'),
-               path  => 'Admin/Rules/Modify.html?create=1',
+               path  => 'admin/rules/create',
+        },
+        E => { title => _('Modify'),
+               path  => 'admin/rules/modify?id='.$id,
         },
     };
 
