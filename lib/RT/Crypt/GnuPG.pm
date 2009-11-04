@@ -2012,7 +2012,7 @@ sub get_keys_info {
     close $handle{'stdout'};
 
     $res{'exit_code'} = $?;
-    _res_post_process(\%res, \%handle, {});
+    _res_post_process(\%res, \%handle, { quiet => 1});
     if ( $@ || $? ) {
         $res{'message'} = $@ ? $@ : "gpg exitted with error code " . ( $? >> 8 );
         return %res;
