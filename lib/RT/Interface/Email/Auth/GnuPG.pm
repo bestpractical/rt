@@ -109,13 +109,33 @@ sub get_current_user {
     if (@res) {
         my $decrypted;
         my @status = RT::Crypt::GnuPG::parse_status( $res[0]->{'status'} );
+        my $unhandled_error = 0;
         for (@status) {
+            next if $_->{operation} eq 'key_check';
             if ( $_->{operation} eq 'decrypt' && $_->{status} eq 'DONE' ) {
                 $decrypted = 1;
+                next;
             }
-            if ( $_->{operation} eq 'verify' && $_->{status} eq 'DONE' ) {
-                $args{'message'}->head->add( 'X-RT-Incoming-Signature' => $_->{user_string} );
+            elsif ( $_->{operation} eq 'verify' ) {
+                if ( $_->{status} eq 'DONE' ) {
+                    $args{'message'}->head->add( 'X-RT-Incoming-Signature' => $_->{user_string} );
+                    next;
+                }
+                elsif ($_->{status} eq 'ERROR') {
+                    # XXX: give a warning too?
+                    next if $_->{reason} eq 'missing public key';
+                }
             }
+            elsif ($_->{status} eq 'DONE') {
+                next;
+            }
+            ++$unhandled_error;
+        }
+        if ($unhandled_error) {
+            warn "==> with unhandled... ";
+            Jifty->log->debug($res[0]{status});
+            Jifty->log->error($res[0]{stderr});
+            Jifty->log->error($res[0]{logger});
         }
 
         $args{'message'}->head->add(
@@ -229,6 +249,7 @@ sub check_bad_data {
 sub verify_decrypt {
     my %args = (
         entity => undef,
+        quiet  => 1,
         @_
     );
 

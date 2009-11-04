@@ -670,7 +670,7 @@ sub encrypt {
         content    => \$content,
         sign       => 0,
         encrypt    => 1,
-        Recipients => [$encrypt_for],
+        recipients => [$encrypt_for],
     );
     if ( $res{'exit_code'} ) {
         return ( 0, _('GnuPG error. Contact with administrator') );
