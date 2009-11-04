@@ -294,7 +294,7 @@ before qr'Dashboards/(\d*)?' => sub {
             $tabs->child( _('Basics'),       url => "/Dashboards/Modify.html?id=" . $obj->id );
             $tabs->child( _('Queries'),      url => "/Dashboards/Queries.html?id=" . $obj->id );
             $tabs->child( _('Subscription'), url => "/Dashboards/Subscription.html?dashboard_id=" . $obj->id ) if $obj->current_user_can_subscribe;
-            $tabs->child( _('Show'), url => "Dashboards/" . $obj->id . "/" . $obj->name )
+            $tabs->child( _('Show'), url => "/Dashboards/" . $obj->id . "/" . $obj->name )
 
         }
     }
@@ -611,11 +611,11 @@ before 'User/Group' => sub {
 
 before 'Prefs' => sub {
 	my $tabs;
-	my $searches = RT::System->new->saved_searches();
+	my @searches = RT::System->new->saved_searches();
 
 	page_nav->child(  'Quick search' => label => _('Quick search'), url => '/Prefs/Quicksearch.html');
 
-	for my $search (@$searches) {
+	for my $search (@searches) {
 	page_nav->child(
         $search->[0],
         url  => "/Prefs/Search.html?" .query_string( name => ref($search->[1]).'-'.$search->[1]->id));

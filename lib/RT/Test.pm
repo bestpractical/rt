@@ -726,4 +726,14 @@ sub trust_gnupg_key {
     return %res;
 }
 
+sub diag_html_content {
+	my $self = shift;
+	my $content = shift;
+	$content =~ s/\s+/ /g;
+	$content =~ s/<script.*?<\/script.*?>//gi;
+	$content =~ s/<(?:p|br).*?>/\n/i;
+	$content =~ s/\<.+?\>//g;
+	diag($content);
+}
+
 1;

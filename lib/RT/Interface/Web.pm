@@ -119,17 +119,37 @@ sub web_external_auto_info {
 }
 
 
-=head2 redirect URL
+=head2 redirect URL || HASHREF
 
 This routine tells the current user's browser to redirect to URL.  
+
+If a hashref is passed in, takes: url => a url to redirect to
+								  messages => an array ref to messages to propagate across the redirect
 
 =cut
 
 sub redirect {
-    my $redir_to   = shift;
+	my %args;
+	if (!defined $_[1]) {
+		$args{url} = shift;
+	} else {
+
+		%args = ( url => undef, messages => undef, @_);
+	}
+    my $redir_to   = $args{url};
     my $uri        = URI->new($redir_to);
     my $server_uri = URI->new( Jifty->web->url );
+    
+	
+    if ( $args{messages} ) {
 
+        # We've done something, so we need to clear the decks to avoid
+        # resubmission on refresh.
+        # But we need to store Actions somewhere too, so we don't lose them.
+        my $key = Digest::MD5::md5_hex( rand(1024) );
+        Jifty->web->session->set( "actions_$key" => $args{messages} );
+        $uri->query_form( $uri->query_form(), results => $key );
+    }
     # If the user is coming in via a non-canonical
     # hostname, don't redirect them to the canonical host,
     # it will just upset them (and invalidate their credentials)

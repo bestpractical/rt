@@ -112,7 +112,14 @@ else {
         }
 
         push @results, $msg;
-        $id = $Dashboard->id;
+		$id = $Dashboard->id;
+	warn Jifty->web->url . "Dashboards/Modify.html?id=" . $Dashboard->id;
+	warn join(',',@results);
+    RT::Interface::Web::redirect(
+	url      => Jifty->web->url . "Dashboards/Modify.html?id=" . $Dashboard->id,
+	messages => \@results
+    );
+					
     }
     else {
         my ($ok, $msg) = $Dashboard->load_by_id($id);

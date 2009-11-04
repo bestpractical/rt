@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test tests => 99, l10n => 1;
+use RT::Test tests => 100, l10n => 1;
 use RT::Dashboard;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -36,7 +36,7 @@ for my $user ($user_obj, $onlooker) {
 ok $m->login(customer => 'customer'), "logged in";
 
 $m->get_ok($url."/Dashboards/index.html");
-$m->content_lacks("New dashboard", "No 'new dashboard' link because we have no CreateOwnDashboard");
+$m->content_lacks(">Create<", "No 'new dashboard' link because we have no CreateOwnDashboard");
 
 $m->no_warnings_ok;
 
@@ -62,17 +62,14 @@ $m->content_lacks("Permission denied");
 $m->content_contains("Save Changes");
 
 $m->get_ok($url."/Dashboards/index.html");
-$m->content_contains("New dashboard", "'New dashboard' link because we now have ModifyOwnDashboard");
-
-$m->follow_link_ok({text => "New dashboard"});
+$m->content_contains("Create", "'Create' link because we now have ModifyOwnDashboard");
+$m->follow_link_ok({text => "Create"});
 $m->form_name( 'modify_dashboard' );
 $m->field("name" => 'different dashboard');
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
 $m->click_button(value => 'Save Changes');
 $m->content_lacks("No permission to create dashboards");
 $m->content_contains("Saved dashboard different dashboard");
-$m->content_lacks('Delete', "Delete button hidden because we lack DeleteOwnDashboard");
-
 $m->get_ok($url."/Dashboards/index.html");
 $m->content_lacks("different dashboard", "we lack SeeOwnDashboard");
 
@@ -81,6 +78,10 @@ $user_obj->principal->grant_right(right => 'SeeOwnDashboard', object => RT->syst
 $m->get_ok($url."/Dashboards/index.html");
 $m->content_contains("different dashboard", "we now have SeeOwnDashboard");
 $m->content_lacks("Permission denied");
+
+
+$m->content_lacks('Delete', "Delete button hidden because we lack DeleteOwnDashboard");
+
 
 $m->follow_link_ok({text => "different dashboard"});
 $m->content_contains("Basics");
@@ -150,8 +151,7 @@ $m->get_ok("/Dashboards/Subscription.html?dashboard_id=$id");
 $m->form_name( 'subscribe_dashboard' );
 $m->click_button(name => 'save');
 $m->content_contains("Permission denied");
-$m->warnings_like(qr/Unable to subscribe to dashboard.*Permission denied/, "got a permission denied warning when trying to subscribe to a dashboard");
-
+$m->warnings_like([qr/Permission denied/,qr/Unable to subscribe/i], "got a permission denied warning when trying to subscribe to a dashboard");
 Jifty::DBI::Record::Cachable->flush_cache;
 is($user_obj->attributes->named('Subscription'), 0, "no subscriptions");
 
@@ -220,9 +220,7 @@ $m->content_lacks('Delete', "Delete button hidden because we are creating");
 $m->click_button(value => 'Save Changes');
 $m->content_lacks("No permission to create dashboards");
 $m->content_contains("Saved dashboard system dashboard");
-
 $m->follow_link_ok({text => 'Queries'});
-
 $m->form_name('Dashboard-Searches-body');
 my ( $personal_search_option ) = $m->content =~ /(search-\d+-RT::Model::User-\d+)/;
 $m->field('Searches-body-Available' => [$personal_search_option]);
