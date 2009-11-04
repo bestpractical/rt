@@ -23,7 +23,7 @@ $LCORE->env->set_symbol('Str.Eq' => LCore::Primitive->new
                           return_type => 'Bool'
                       ));
 
-my $ticket_status = enum 'RT::TicketStatus'  => [qw(new open stalled resolved rejected deleted)];
+my $ticket_status = enum 'RT::TicketStatus'  => qw(new open stalled resolved rejected deleted);
 
 install_enum_consts($ticket_status);
 
