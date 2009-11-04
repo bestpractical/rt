@@ -3,6 +3,8 @@ use strict;
 use warnings;
 
 use RT::Test;
+use RT::Test::Email;
+
 plan skip_all => 'GnuPG required.'
     unless eval 'use GnuPG::Interface; 1';
 plan skip_all => 'gpg executable is required.'
@@ -53,11 +55,6 @@ RT::Test->set_rights(
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'we get log in';
-use RT::Test::Email;
-
-#no strict 'refs';
-#*mail_ok = *RT::Test::Email::mail_ok;
-RT::Test->set_mail_catcher;
 
 RT::Test->import_gnupg_key('rt-recipient@example.com');
 
