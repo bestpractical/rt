@@ -156,17 +156,23 @@ if ( $ARGS{'SavedSearchRevert'} ) {
 
 if ( $ARGS{'SavedSearchLoad'} ) {
     my ($container, $id ) = _parse_saved_search ($ARGS{'SavedSearchLoad'});
-    my $search = $container->Attributes->WithId( $id );
+    if ( $container ) {
+        my $search = $container->Attributes->WithId( $id );
+        $SavedSearch->{'Id'}          = $ARGS{'SavedSearchLoad'};
+        $SavedSearch->{'Object'}      = $search;
+        $SavedSearch->{'Description'} = $search->Description;
+        $Query->{$_} = $search->SubValue($_) foreach @SearchFields;
 
-    $SavedSearch->{'Id'}          = $ARGS{'SavedSearchLoad'};
-    $SavedSearch->{'Object'}      = $search;
-    $SavedSearch->{'Description'} = $search->Description;
-    $Query->{$_} = $search->SubValue($_) foreach @SearchFields;
-
-    if ( $ARGS{'SavedSearchRevert'} ) {
-        push @results, loc('Loaded original "[_1]" saved search', $SavedSearch->{'Description'} );
-    } else {
-        push @results, loc('Loaded saved search "[_1]"', $SavedSearch->{'Description'} );
+        if ( $ARGS{'SavedSearchRevert'} ) {
+            push @results, loc('Loaded original "[_1]" saved search', $SavedSearch->{'Description'} );
+        } else {
+            push @results, loc('Loaded saved search "[_1]"', $SavedSearch->{'Description'} );
+        }
+    }
+    else {
+        push @results, loc( 'Can not load saved search "[_1]"',
+                $ARGS{'SavedSearchLoad'} );
+        return @results;
     }
 }
 elsif ( $ARGS{'SavedSearchDelete'} ) {
