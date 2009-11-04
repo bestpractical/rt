@@ -189,6 +189,15 @@ sub set_final_priority {
     $self->fill_parameter(final_priority => default_value => $queue->final_priority);
 }
 
+sub take_action {
+    my $self = shift;
+
+    # We can't rely on regular method dispatch because the QueueBased and
+    # CustomFieldBased superclasses also have take_action, inherited from
+    # Jifty::Action.
+    $self->Jifty::Action::Record::Create::take_action(@_);
+}
+
 sub report_success {
     my $self = shift;
     $self->result->message(_("Your ticket has been created!"));
