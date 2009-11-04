@@ -387,9 +387,9 @@ This is forward of transaction #{ $transaction->id } of a ticket #{ $ticket->id 
        name        => "Error: public key",    # loc
        description =>
          "Inform user that he has problems with public key and couldn't recieve encrypted content", # loc
-       content => q{Subject: We have no your public key or it's wrong
+       content => q{Subject: We do not have your public key or it's wrong
 
-You received this message as we have no your public PGP key or we have a problem with your key. Inform the administrator about the problem.
+You received this message as we do not have your public PGP key or we have a problem with your key. Inform the administrator about the problem.
 }
     },
     {  queue       => 0,
@@ -400,8 +400,8 @@ You received this message as we have no your public PGP key or we have a problem
 
 You received this message as RT has problems with public keys of the following user:
 {
-    foreach my $e ( @BadRecipients ) {
-        $OUT .= "* ". $e->{'Message'} ."\n";
+    foreach my $e ( @bad_recipients ) {
+        $OUT .= "* ". $e->{'message'} ."\n";
     }
 }}
     },
