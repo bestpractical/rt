@@ -71,7 +71,7 @@
 my $CF = RT::Model::CustomField->new( current_user => Jifty->web->current_user );
 $CF->load($id) if ($id);
 
-unless ($CF->id) {  abort(_("Could not load CustomField %1"), $id)};
+unless ($CF->id) {  abort(_("Could not load CustomField %1", $id))};
 my $lookup_type = $CF->lookup_type || '';
 $lookup_type =~ /^(.*?)-/ ||
      abort(_("object of type %1 cannot take custom fields", $lookup_type));

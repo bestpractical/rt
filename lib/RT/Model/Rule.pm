@@ -65,9 +65,26 @@ use base qw'RT::Record';
 sub table {'Rules'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
-    column action_code    => type is 'text', render as 'textarea';
-    column condition_code => type is 'text', render as 'textarea';
-    column prepare_code   => type is 'text', render as 'textarea';
+    column action_code    => type is 'text',
+        signatures is [ { name => 'ticket', type => 'RT::Model::Ticket' },
+                        { name => 'transaction', type => 'RT::Model::Transaction' },
+                        { name => 'context', type => 'HashRef' },
+                    ],
+        return_type is 'Any',
+        render as 'RT::View::Form::Field::RuleTextarea';
+    column condition_code => type is 'text',
+        signatures is [ { name => 'ticket', type => 'RT::Model::Ticket' },
+                        { name => 'transaction', type => 'RT::Model::Transaction' },
+],
+        return_type is 'Bool',
+        render as 'RT::View::Form::Field::RuleTextarea';
+    column prepare_code   => type is 'text',
+        signatures is [ { name => 'ticket', type => 'RT::Model::Ticket' },
+                        { name => 'transaction', type => 'RT::Model::Transaction' },
+                        { name => 'context', type => 'HashRef' },
+                    ],
+        return_type is 'Any',
+        render as 'RT::View::Form::Field::RuleTextarea';
     column description               => type is 'text';
 };
 use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
@@ -76,14 +93,6 @@ use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
     updated_by => 'last_updated_by',
     updated_on => 'last_updated'
 };
-
-sub create_from_factory {
-    my ($self, $factory) = @_;
-    my %args = map { $_.'_code' => Jifty::YAML::Dump( $factory->$_ ) }
-        qw(action condition prepare );
-    $self->SUPER::create( %args,
-                          description => $factory->description );
-}
 
 1;
 

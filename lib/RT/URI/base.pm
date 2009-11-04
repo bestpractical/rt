@@ -63,20 +63,7 @@ handle the API presented here
 
 =head1 API
 
-=head2 new
-
-Create a new URI handler
-
 =cut
-
-sub new {
-    my $class = shift;
-    my $self  = {};
-    bless $self => ref($class) || $class;
-    $self->_get_current_user(@_);
-    return $self;
-
-}
 
 sub parse_object {
     my $self = shift;

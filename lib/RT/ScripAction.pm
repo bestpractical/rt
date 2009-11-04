@@ -68,21 +68,10 @@ use Scalar::Util;
 
 use base qw/RT::Base/;
 
-sub new {
-    my $proto = shift;
-    my $class = ref($proto) || $proto;
-    my $self  = {};
-    bless( $self, $class );
-    $self->_init(@_);
-    return $self
-}
-
-
 sub _init {
     my $self = shift;
     my %args = (
         argument       => undef,
-        current_user    => undef,
         template_obj    => undef,
         ticket_obj      => undef,
         transaction_obj => undef,
@@ -92,7 +81,6 @@ sub _init {
     );
 
     $self->{'argument'} = $args{'argument'};
-    $self->current_user( $args{'current_user'} );
     $self->{'template_obj'}    = $args{'template_obj'};
     $self->{'ticket_obj'}      = $args{'ticket_obj'};
     $self->{'transaction_obj'} = $args{'transaction_obj'};

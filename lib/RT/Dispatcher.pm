@@ -137,7 +137,7 @@ before qr/.*/ => run {
 
     my $args = Jifty->web->request->arguments;
 
-    # This code canonicalize_s time inputs in hours into minutes
+    # This code canonicalizes time inputs in hours into minutes
     foreach my $field ( keys %$args ) {
         next unless $field =~ /^(.*)-TimeUnits$/i && $args->{$1};
         my $local = $1;

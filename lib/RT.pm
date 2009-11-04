@@ -52,7 +52,6 @@ package RT;
 
 use RT::CurrentUser;
 use RT::DateTime;
-use RT::Lorzy;
 use Jifty::Util;
 
 use strict;
@@ -118,6 +117,7 @@ sub init {
     $System = RT::System->new();
 
     init_plugins();
+    require RT::Lorzy;
     # enable approval subsystem
     require RT::Approval;
 
@@ -264,6 +264,7 @@ sub init_plugin_paths {
     my $self = shift || __PACKAGE__;
 
     my @lib_dirs = $self->plugin_dirs('lib');
+    return unless @lib_dirs; # in case no plugins at all
 
     my @tmp_inc;
     my $local_lib = $self->local_lib_path;
@@ -413,8 +414,9 @@ sub start {
     RT::init();
 
     Jifty->web->add_javascript(
-        qw( titlebox-state.js util.js ahah.js list.js class.js
-        combobox.js  cascaded.js )
+        qw( joose.js titlebox-state.js util.js ahah.js list.js class.js
+            jquery.createdomnodes.js jquery.menu.js combobox.js  cascaded.js rulebuilder.js
+      )
     );
 
     Jifty::Web->add_trigger(

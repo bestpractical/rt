@@ -1,2 +1,136 @@
 * lorzy code improvements:  control flow handling like return, exception
 * test and implement ordering of rules
+
+
+
+Possible rule workflows:
+
+
+On ticket creation, send email to the user who is the requestor of the ticket
+using a particular template.
+
+On ticket correspondence, if the requestor of the ticket wasn't the sender,
+send a copy to him.
+
+On ticket correspondence, send email to all members of the group
+"adminccs of ticket $ticket->id."
+
+On ticket correspondence, send email to jesse@example.com
+
+On ticket correspondence, add a copy of the correspondence as a comment
+on each ticket which depends on ticket $id
+
+On ticket creation, if the ticket subject matches /emergency/, send a pager
+email to sysadmin@example.com
+
+On ticket update, if the ticket's custom field "Foo" has a value that is in the list ("A", "B", "C"), set its status to 'stalled'.
+
+On ticket update, if its custom field "Foo" has a value that is > 20, create a new ticket owned by the ticket requestor's manager in the approvals queue which the original ticket depends on, copying various bits of ticket metadata. It subject should be "Approval for '$ticket->subject'"
+
+on ticket creation
+	If there is no owner, figure out which possible owner of tickets in this queue has the fewest open tickets and assign it to him.
+
+
+on ticket creation
+	If there is no owner, figure out which possible owner of tickets in this queue has the fewest minutes of work left on open tickets and assign it to him.
+
+on ticket creation
+	if the subject matches /mac/, assign to a member of the mac group
+	if the subject matches /windows/, assign to a member of the windows group
+	if the subject matches /linux/, assign to a member of the sysadmin group
+	if the subject matches /solaris/, assign to a member of the sysadmin group
+	if the subject matches /VAX/, 
+		send a note back to the requestor saying we don't do VMS
+						and resolve the ticket
+
+
+
+		when =~ mac:		$ticket->set_owner('bob');
+		when =~ pc:		$ticket->set_owner('joe');
+		when =~ vax:	$ticket->set_status('resolved'); send_email($ticket->requestors, "ha ha. no");
+
+
+	if
+	
+on ticket resolve,
+	if this ticket has never been resolved before, send email
+		to the requestor telling them their ticket has been resolved.
+
+
+rules and language features we need
+
+
+	let 
+
+	use variable
+
+	if/elsif/else
+
+	foreach
+
+	string match
+
+	integer operations
+
+	arithmetic
+
+	logical operators
+
+	on transaction batch - when all other rules complete?
+
+	"if ticket has no unresolved dependencies" 
+
+	when ticket's status is set to rejected
+
+	if status is in the list of {inactive,active} statuses
+
+	find tickets:
+		takes ticketsql?
+		takes "template" to match against?
+
+	filter transactions by "template".
+		"grep" + accessors
+
+
+	ticket has unresolved dependencies
+		by type"
+
+	set status
+
+
+	find users
+	get watchers by type
+
+
+	add correspondence
+			takes a ticket id
+			might take a template
+			might take a block of text
+			
+	add comment
+		see "add correspondence"
+
+	find tickets
+
+	call other lambda by name?
+
+	run rule action:
+		notify "set of people" with template "template"
+	
+
+	"send email"
+		to
+		cc
+		bcc
+		subject
+		body
+		attachments
+		template
+		extra headers
+		encryption
+
+	create a ticket
+
+
+
+accessors "for everything"

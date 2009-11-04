@@ -438,19 +438,14 @@ sub insert_data {
         #print "done.\n";
     }
     if (@Scrips) {
-        # XXX: put into RT::Model::Rules
         require RT::Lorzy;
-        require Lorzy::Builder;
         for my $item (sort { $a->{description} cmp $b->{description} } @Scrips) {
-            my $rule_factory = RT::Lorzy->create_scripish(
+            RT::Lorzy->create_scripish(
                 $item->{scrip_condition},
                 $item->{scrip_action},
                 $item->{template},
                 $item->{description},
             );
-
-            my $rule = RT::Model::Rule->new( current_user => RT->system_user );
-            $rule->create_from_factory( $rule_factory );
         }
     }
 

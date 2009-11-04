@@ -51,14 +51,6 @@ use base qw/RT::Base/;
 
 our $REMINDER_QUEUE = 'General';
 
-sub new {
-    my $class = shift;
-    my $self  = {};
-    bless $self, $class;
-    $self->current_user(@_);
-    return ($self);
-}
-
 sub ticket {
     my $self = shift;
     $self->{'_ticket'} = shift if (@_);
@@ -68,8 +60,7 @@ sub ticket {
 sub ticket_obj {
     my $self = shift;
     unless ( $self->{'_ticketobj'} ) {
-        $self->{'_ticketobj'} =
-          RT::Model::Ticket->new( current_user => RT->system_user );
+        $self->{'_ticketobj'} = RT::Model::Ticket->new;
         $self->{'_ticketobj'}->load( $self->ticket );
     }
     return $self->{'_ticketobj'};
@@ -83,8 +74,7 @@ Returns an RT::Model::TicketCollection object containing reminders for this obje
 
 sub collection {
     my $self = shift;
-    my $col =
-      RT::Model::TicketCollection->new( current_user => RT->system_user );
+    my $col = RT::Model::TicketCollection->new;
 
     my $query = 'type = "reminder" AND RefersTo = "' . $self->ticket . '"';
 
@@ -115,7 +105,7 @@ sub add {
         @_
     );
 
-    my $reminder = RT::Model::Ticket->new( current_user => RT->system_user );
+    my $reminder = RT::Model::Ticket->new;
     $reminder->create(
         subject   => $args{'subject'},
         owner     => $args{'owner'},
