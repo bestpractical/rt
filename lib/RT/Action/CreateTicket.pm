@@ -189,15 +189,6 @@ sub set_final_priority {
     $self->fill_parameter(final_priority => default_value => $queue->final_priority);
 }
 
-sub take_action {
-    my $self = shift;
-
-    # We should inline this function to encourage other people to use this
-    # action
-    HTML::Mason::Commands::create_ticket(%{ $self->argument_values });
-    $self->SUPER::take_action(@_);
-}
-
 sub report_success {
     my $self = shift;
     $self->result->message(_("Your ticket has been created!"));
