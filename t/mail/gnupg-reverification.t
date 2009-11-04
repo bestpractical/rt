@@ -3,15 +3,16 @@ use strict;
 use warnings;
 
 use RT::Test;
-use Test::More;
-
 plan skip_all => 'GnuPG required.'
     unless eval 'use GnuPG::Interface; 1';
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
 
-plan tests => 111;
+plan tests => 147;
 
+# the test imports a bunch of signed email but not loading the public
+# keys into the server first.  We then check if the message can be
+# reverified after importing the public keys.
 
 use File::Temp qw(tempdir);
 my $homedir = tempdir( CLEANUP => 1 );
@@ -52,6 +53,11 @@ RT::Test->set_rights(
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'we get log in';
+use RT::Test::Email;
+
+#no strict 'refs';
+#*mail_ok = *RT::Test::Email::mail_ok;
+RT::Test->set_mail_catcher;
 
 RT::Test->import_gnupg_key('rt-recipient@example.com');
 
@@ -61,17 +67,30 @@ my $emaildatadir = RT::Test::get_relocatable_dir(File::Spec->updir(),
     qw(data gnupg emails));
 my @files = glob("$emaildatadir/*-signed-*");
 foreach my $file ( @files ) {
-    diag "testing $file" if $ENV{'TEST_VERBOSE'};
-
     my ($eid) = ($file =~ m{(\d+)[^/\\]+$});
     ok $eid, 'figured id of a file';
 
     my $email_content = RT::Test->file_content( $file );
     ok $email_content, "$eid: got content of email";
+    my ($from) = $email_content =~ m/^From: .*?(.*)$/mg;
+    my ($addr) = Email::Address->parse( $from );
+    diag "testing $file from ".$addr->address if $ENV{'TEST_VERBOSE'};
 
-    my ($status, $id) = RT::Test->send_via_mailgate( $email_content );
-    is $status >> 8, 0, "$eid: the mail gateway exited normally";
-    ok $id, "$eid: got id of a newly created ticket - $id";
+    my ($status, $id);
+    mail_ok {
+        # XXX: also expect an error from server saying no pubkey.
+        ($status, $id) = RT::Test->send_via_mailgate( $email_content );
+        is $status >> 8, 0, "$eid: the mail gateway exited normally";
+        ok $id, "$eid: got id of a newly created ticket - $id";
+    } {
+        to => $addr->address,
+        subject => qr/We do not have your public key/,
+        body => qr/we do not have your public PGP key/,
+    }, {
+        to => 'root',
+        subject => qr/Some users have problems with public keys/,
+        body => qr/following user/, # XXX: fix me, the user list is not there
+    };
 
     my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     $ticket->load( $id );
