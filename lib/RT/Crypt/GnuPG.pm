@@ -398,16 +398,20 @@ Returns a hash with the following keys:
 =cut
 
 sub _res_post_process {
-    my ($res, $handle) = @_;
+    my ($res, $handle, $args) = @_;
 
     foreach (qw(stderr logger status)) {
         $res->{$_} = do { local $/; readline $handle->{$_} };
         delete $res->{$_} unless $res->{$_} && $res->{$_} =~ /\S/s;
         close $handle->{$_};
     }
-    Jifty->log->debug( $res->{'status'} )   if $res->{'status'};
-    Jifty->log->warn( $res->{'stderr'} ) if $res->{'stderr'};
-    Jifty->log->error( $res->{'logger'} )   if $res->{'logger'} && $?;
+    return if $args->{quiet};
+    Jifty->log->debug( $res->{'status'} )
+        if $res->{'status'};
+    Jifty->log->warn( $res->{'stderr'} )
+        if $res->{'stderr'};
+    Jifty->log->error( $res->{'logger'} )
+        if $res->{'logger'} && $res->{'exit_code'};
 }
 
 sub sign_encrypt {
@@ -505,7 +509,7 @@ sub sign_encrypt_rfc3156 {
         close $handle{'stdout'};
 
         $res{'exit_code'} = $?;
-        _res_post_process(\%res, \%handle);
+        _res_post_process(\%res, \%handle, \%args);
         if ( $err || $res{'exit_code'} ) {
             $res{'message'}
                 = $err
@@ -557,7 +561,7 @@ sub sign_encrypt_rfc3156 {
         };
 
         $res{'exit_code'} = $?;
-        _res_post_process(\%res, \%handle);
+        _res_post_process(\%res, \%handle, \%args);
         if ( $@ || $? ) {
             $res{'message'} =
               $@ ? $@ : "gpg exited with error code " . ( $? >> 8 );
@@ -676,7 +680,7 @@ sub _sign_encrypt_text_inline {
     };
     $res{'exit_code'} = $?;
     my $err = $@;
-    _res_post_process(\%res, \%handle);
+    _res_post_process(\%res, \%handle, \%args);
     if ( $err || $res{'exit_code'} ) {
         $res{'message'}
             = $err
@@ -759,7 +763,7 @@ sub sign_encrypt_attachment_inline {
     };
     $res{'exit_code'} = $?;
     my $err = $@;
-    _res_post_process(\%res, \%handle);
+    _res_post_process(\%res, \%handle, \%args);
     if ( $err || $res{'exit_code'} ) {
         $res{'message'}
             = $err
@@ -855,7 +859,7 @@ sub sign_encrypt_content {
     };
     $res{'exit_code'} = $?;
     my $err = $@;
-    _res_post_process(\%res, \%handle);
+    _res_post_process(\%res, \%handle, \%args);
     if ( $err || $res{'exit_code'} ) {
         $res{'message'}
             = $err
@@ -1002,22 +1006,23 @@ sub find_protected_parts {
 =cut
 
 sub verify_decrypt {
-    my %args = ( entity => undef, detach => 1, @_ );
+    my %args = ( entity => undef, detach => 1, quiet => 0, @_ );
     my @protected = find_protected_parts( entity => $args{'entity'} );
     my @res;
+    my $quiet = $args{quiet};
 
     # XXX: detaching may brake nested signatures
     foreach my $item ( grep $_->{'type'} eq 'signed', @protected ) {
         if ( $item->{'format'} eq 'RFC3156' ) {
-            push @res, { verify_rfc3156(%$item) };
+            push @res, { verify_rfc3156(%$item, quiet => $quiet) };
             if ( $args{'detach'} ) {
                 $item->{'top'}->parts( [ $item->{'data'} ] );
                 $item->{'top'}->make_singlepart;
             }
         } elsif ( $item->{'format'} eq 'inline' ) {
-            push @res, { verify_inline(%$item) };
+            push @res, { verify_inline(%$item, quiet => $quiet) };
         } elsif ( $item->{'format'} eq 'attachment' ) {
-            push @res, { verify_attachment(%$item) };
+            push @res, { verify_attachment(%$item, quiet => $quiet) };
             if ( $args{'detach'} ) {
                 $item->{'top'}->parts( [ grep "$_" ne $item->{'signature'}, $item->{'top'}->parts ] );
                 $item->{'top'}->make_singlepart;
@@ -1026,11 +1031,11 @@ sub verify_decrypt {
     }
     foreach my $item ( grep $_->{'type'} eq 'encrypted', @protected ) {
         if ( $item->{'format'} eq 'RFC3156' ) {
-            push @res, { decrypt_rfc3156(%$item) };
+            push @res, { decrypt_rfc3156(%$item, quiet => $quiet) };
         } elsif ( $item->{'format'} eq 'inline' ) {
-            push @res, { decrypt_inline(%$item) };
+            push @res, { decrypt_inline(%$item, quiet => $quiet) };
         } elsif ( $item->{'format'} eq 'attachment' ) {
-            push @res, { decrypt_attachment(%$item) };
+            push @res, { decrypt_attachment(%$item, quiet => $quiet) };
 
             #            if ( $args{'Detach'} ) {
             #                $item->{'top'}->parts( [ grep "$_" ne $item->{'signature'}, $item->{'top'}->parts ] );
@@ -1076,7 +1081,7 @@ sub verify_attachment {
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
-    _res_post_process(\%res, \%handle);
+    _res_post_process(\%res, \%handle, \%args);
     if ( $@ || $? ) {
         $res{'message'} = $@ ? $@ : "gpg exitted with error code " . ( $? >> 8 );
     }
@@ -1116,7 +1121,7 @@ sub verify_rfc3156 {
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
-    _res_post_process(\%res, \%handle);
+    _res_post_process(\%res, \%handle, \%args);
     if ( $@ || $? ) {
         $res{'message'} = $@ ? $@ : "gpg exitted with error code " . ( $? >> 8 );
     }
@@ -1173,7 +1178,7 @@ sub decrypt_rfc3156 {
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
-    _res_post_process(\%res, \%handle);
+    _res_post_process(\%res, \%handle, \%args);
 
     # if the decryption is fine but the signature is bad, then without this
     # status check we lose the decrypted text
@@ -1303,7 +1308,7 @@ sub _decrypt_inline_block {
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
-    _res_post_process(\%res, \%handle);
+    _res_post_process(\%res, \%handle, \%args);
 
     # if the decryption is fine but the signature is bad, then without this
     # status check we lose the decrypted text
@@ -1406,7 +1411,7 @@ sub decrypt_content {
         waitpid $pid, 0;
     };
     $res{'exit_code'} = $?;
-    _res_post_process(\%res, \%handle);
+    _res_post_process(\%res, \%handle, \%args);
 
     # if the decryption is fine but the signature is bad, then without this
     # status check we lose the decrypted text
@@ -2007,7 +2012,7 @@ sub get_keys_info {
     close $handle{'stdout'};
 
     $res{'exit_code'} = $?;
-    _res_post_process(\%res, \%handle);
+    _res_post_process(\%res, \%handle, {});
     if ( $@ || $? ) {
         $res{'message'} = $@ ? $@ : "gpg exitted with error code " . ( $? >> 8 );
         return %res;
@@ -2197,7 +2202,7 @@ sub delete_key {
 
     my %res;
     $res{'exit_code'} = $?;
-    _res_post_process(\%res, \%handle);
+    _res_post_process(\%res, \%handle, {});
     if ( $err || $res{'exit_code'} ) {
         $res{'message'}
             = $err
@@ -2235,7 +2240,7 @@ sub import_key {
 
     my %res;
     $res{'exit_code'} = $?;
-    _res_post_process(\%res, \%handle);
+    _res_post_process(\%res, \%handle, {});
     if ( $err || $res{'exit_code'} ) {
         $res{'message'}
             = $err
