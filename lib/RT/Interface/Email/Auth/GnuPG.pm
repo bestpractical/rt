@@ -116,7 +116,7 @@ sub get_current_user {
                 $decrypted = 1;
                 next;
             }
-            if ( $_->{operation} eq 'verify' ) {
+            elsif ( $_->{operation} eq 'verify' ) {
                 if ( $_->{status} eq 'DONE' ) {
                     $args{'message'}->head->add( 'X-RT-Incoming-Signature' => $_->{user_string} );
                     next;
@@ -126,11 +126,15 @@ sub get_current_user {
                     next if $_->{reason} eq 'missing public key';
                 }
             }
+            elsif ($_->{status} eq 'DONE') {
+                next;
+            }
             ++$unhandled_error;
         }
         if ($unhandled_error) {
+            warn "==> with unhandled... ";
             Jifty->log->debug($res[0]{status});
-            Jifty->log->error($res[0]{message});
+            Jifty->log->error($res[0]{stderr});
             Jifty->log->error($res[0]{logger});
         }
 
