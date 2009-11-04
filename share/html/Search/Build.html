@@ -174,10 +174,11 @@ my $ParseQuery = sub {
     return $tree;
 };
 
-my $tree = $ParseQuery->( $query{'Query'}, \@actions );
+my @parse_results;
+my $tree = $ParseQuery->( $query{'Query'}, \@parse_results );
 
 # if parsing went poorly, send them to the edit page to fix it
-if ( $actions[0] ) {
+if ( @parse_results ) {
     return $m->comp( "Edit.html", Query => $query{'Query'}, actions => \@actions );
 }
 
