@@ -264,6 +264,7 @@ sub init_plugin_paths {
     my $self = shift || __PACKAGE__;
 
     my @lib_dirs = $self->plugin_dirs('lib');
+    return unless @lib_dirs; # in case no plugins at all
 
     my @tmp_inc;
     my $local_lib = $self->local_lib_path;
