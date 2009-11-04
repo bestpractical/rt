@@ -48,46 +48,13 @@
 use warnings;
 use strict;
 
-package RT::View;
+package RT::View::SelfService;
 use Jifty::View::Declare -base;
-
-require RT::View::Admin;
-alias RT::View::Admin under 'admin/';
-
-require RT::View::Ticket;
-alias RT::View::Ticket under 'ticket/';
-
-require RT::View::SetupWizard;
-alias RT::View::SetupWizard under '__jifty/admin/setupwizard';
-
-require RT::View::SelfService;
-alias RT::View::SelfService under 'selfservice/';
 
 __PACKAGE__->use_mason_wrapper;
 
-template login_widget => sub {
-
-    my ( $action, $next ) = get( 'action', 'next' );
-    $action ||= new_action( class => 'Login' );
-    $next ||= Jifty::Continuation->new(
-        request => Jifty::Request->new( path => "/" ) );
-    unless ( Jifty->web->current_user->id ) {
-        div {
-            attr { id => 'body', class => 'login-body' };
-            div {
-                attr { id => 'login-box' };
-                Jifty->web->form->start( call => $next );
-                my $plugin = Jifty->find_plugin(
-                    'Jifty::Plugin::Authentication::Password' );
-                render_param( $action, $plugin->{login_by}, focus => 1 );
-                render_param( $action, $_ ) for (qw(password remember));
-                form_return( label => _(q{Login}), submit => $action );
-                Jifty->web->form->end();
-            };
-        };
-    } else {
-        outs( _("You're already logged in.") );
-    }
-};
+require RT::View::SelfService::Create;
+alias RT::View::SelfService::Create under '/';
 
 1;
+
