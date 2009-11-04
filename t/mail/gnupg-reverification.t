@@ -10,7 +10,7 @@ plan skip_all => 'GnuPG required.'
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
 
-plan tests => 147;
+plan tests => 159;
 
 # the test imports a bunch of signed email but not loading the public
 # keys into the server first.  We then check if the message can be
@@ -70,9 +70,8 @@ foreach my $file ( @files ) {
     my $email_content = RT::Test->file_content( $file );
     ok $email_content, "$eid: got content of email";
     my ($from) = $email_content =~ m/^From: .*?(.*)$/mg;
-    my ($addr) = Email::Address->parse( $from );
-    diag "testing $file from ".$addr->address if $ENV{'TEST_VERBOSE'};
-
+    my ($addr) = map { $_->address } Email::Address->parse( $from );
+    diag "testing $file from ".$addr if $ENV{'TEST_VERBOSE'};
     my ($status, $id);
     mail_ok {
         # XXX: also expect an error from server saying no pubkey.
@@ -80,7 +79,7 @@ foreach my $file ( @files ) {
         is $status >> 8, 0, "$eid: the mail gateway exited normally";
         ok $id, "$eid: got id of a newly created ticket - $id";
     } {
-        to => $addr->address,
+        to => $addr,
         subject => qr/We do not have your public key/,
         body => qr/we do not have your public PGP key/,
     }, {
@@ -100,6 +99,8 @@ foreach my $file ( @files ) {
         "$eid: signature is not verified",
     );
     $m->content_like(qr/This is .*ID:$eid/ims, "$eid: content is there and message is decrypted");
+
+    $m->warnings_like(qr/Recipient '\Q$addr\E' is unusable/);
 
     push @ticket_ids, $id;
 }
