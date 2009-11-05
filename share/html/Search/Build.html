@@ -106,7 +106,7 @@
 
 <& Elements/DisplayOptions,
     %ARGS, %query,
-    available_columns => $AvailableColumns,
+    available_columns => $available_columns,
     current_format    => $current_format,
 &>
 
@@ -119,12 +119,8 @@
 <%INIT>
 use RT::Interface::Web::QueryBuilder::Tree;
 
-my %query;
-for (qw(query format order_by order rows_per_page)) {
-    $query{$_} = $ARGS{$_};
-}
-
 my %saved_search;
+my %query = map { $_ => $ARGS{$_} } qw(query format order_by order rows_per_page);
 my @actions = RT::Interface::Web::QueryBuilder->load_saved_search( \%ARGS, \%query, \%saved_search );
 
 if ($new_query) {
@@ -157,24 +153,13 @@ if ($new_query) {
         if ( ref $query{$_} eq "ARRAY" ) {
             $query{$_} = join( '|', @{ $query{$_} } );
         }
-    }
-    if ( $query{'format'} ) {
+	}
 
-        # Clean unwanted junk from the format
-		$query{'format'} = RT::Interface::Web->scrub_html( $query{'format'} );
-    }
+	$query{'format'} = RT::Interface::Web->scrub_html( $query{'format'} ) if ( $query{'format'} );
 }
 
-my $parse_query = sub {
-    my ( $string, $results ) = @_;
-
-    my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
-    @$results = $tree->parse_sql( query => $string );
-
-    return $tree;
-};
-
-my $tree = $parse_query->( $query{'query'}, \@actions );
+my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
+push @actions, = $tree->parse_sql( query => $query{query} );
 
 # if parsing went poorly, send them to the edit page to fix it
 if ( $actions[0] ) {
@@ -185,36 +170,35 @@ my @options        = $tree->get_displayed_nodes;
 my @current_values = grep defined, @options[@clauses];
 my @new_values     = ();
 
-#  Try to find if we're adding a clause
 foreach my $arg ( keys %ARGS ) {
-    next
-        unless $arg =~ m/^value_of_(\w+|'CF.{.*?}')$/
-            && (ref $ARGS{$arg} eq "ARRAY"
-                ? grep $_ ne '', @{ $ARGS{$arg} }
-                : $ARGS{$arg} ne ''
-            );
+	#  Try to find if we're adding a clause
+    next unless $arg =~ m/^value_of_(\w+|'CF.{.*?}')$/ && (ref $ARGS{$arg} eq "ARRAY" ? grep $_ ne '', @{ $ARGS{$arg} } : $ARGS{$arg} ne '');
 
-    # We're adding a $1 clause
     my $field = $1;
-
     my ( $op, $value );
 
     #figure out if it's a grouping
     my $keyword = $ARGS{ $field . "_field" } || $field;
 
-    my ( @ops, @values );
-    if ( ref $ARGS{ 'value_of_' . $field } eq "ARRAY" ) {
+	my ( @ops, @values );
 
+
+	my $op_name = $field. "_op";
+	my $op_value = 'value_of_'.$field;
+
+    if ( ref $ARGS{$op_value} eq "ARRAY" ) {
         # we have many keys/values to iterate over, because there is
         # more than one CF with the same name.
-        @ops    = @{ $ARGS{ $field . '_op' } };
-        @values = @{ $ARGS{ 'value_of_' . $field } };
+		@ops    = @{ $ARGS{ $op_name } };
+		@values = @{ $ARGS{ $op_value } };
     } else {
-        @ops    = ( $ARGS{ $field . '_op' } );
-        @values = ( $ARGS{ 'value_of_' . $field } );
-    }
-    Jifty->log->error("Bad Parameters passed into Query Builder")
-        unless @ops == @values;
+        @ops    = ( $ARGS{ $op_name } );
+		@values = ( $ARGS{ $op_value } );
+	}
+
+
+
+    Jifty->log->error("Bad Parameters passed into Query Builder") unless @ops == @values;
 
     for ( my $i = 0; $i < @ops; $i++ ) {
         my ( $op, $value ) = ( $ops[$i], $values[$i] );
@@ -257,15 +241,14 @@ my $optionlist = join "\n", map {
           qq(<option value="$_->{INDEX}" $_->{SELECTED}>)
         . ( "&nbsp;" x ( 5 * $_->{DEPTH} ) )
 		. Jifty->web->escape( $_->{TEXT})
-        . qq(</option>)
-} @$optionlist_arrayref;
+        . qq(</option>) } @$optionlist_arrayref;
 
 my $queues = $tree->get_referenced_queues;
 
 #  Deal with format changes
-my ( $AvailableColumns, $current_format );
+my ( $available_columns, $current_format );
 
-( $query{'format'}, $AvailableColumns, $current_format ) = RT::Interface::Web::QueryBuilder->build_format_string(
+( $query{'format'}, $available_columns, $current_format ) = RT::Interface::Web::QueryBuilder->build_format_string(
     %ARGS,
     cfqueues => $queues,
     format   => $query{'format'},
@@ -276,8 +259,7 @@ push @actions, RT::Interface::Web::QueryBuilder->save_search( \%ARGS, \%query, \
 
 #  Push the updates into the session so we don't loose 'em
 
-Jifty->web->session->set(
-    'CurrentSearchHash',
+Jifty->web->session->set( 'CurrentSearchHash',
     {   %query,
         search_id   => $saved_search{'id'},
         object      => $saved_search{'object'},
