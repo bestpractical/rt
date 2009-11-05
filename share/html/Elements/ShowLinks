@@ -140,7 +140,7 @@ my $clone = {};
 my $path
     = RT->config->get('web_path')
     . '/Ticket/Create.html?Queue='
-    . $ticket->queue
+    . $ticket->queue->id
     . '&CloneTicket='
     . $ticket->id;
 
