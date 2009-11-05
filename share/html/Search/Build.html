@@ -66,12 +66,6 @@
 %#   action does quote it (this breaks SQLite).
 %#
 <&| /_elements/wrapper, title => _("Query Builder") &>
-<& /Elements/Tabs,
-    current_tab => "Search/Build.html?".$query_string, 
-    title => _("Query Builder"),
-    %query,
-    saved_search_id => $saved_search{'id'},
-&>
 
 <form method="post" action="Build.html" name="build_query">
 <input type="hidden" class="hidden" name="saved_search_id" value="<% $saved_search{'id'} %>" />
@@ -225,7 +219,7 @@ foreach my $arg ( keys %ARGS ) {
                 $op = "IS NOT";
             }
 
-            # This isn't "right", but...
+            # This is not "right", but...
             # It has to be this way until #5182 is fixed
             $value = "'NULL'";
         }
@@ -245,12 +239,12 @@ foreach my $arg ( keys %ARGS ) {
 }
 
 # }}}
-
-push @actions, $m->comp('Elements/EditQuery:Process',
-    %ARGS,
-    tree     => $tree,
-    selected => \@current_values,
-    new      => \@new_values,
+use RT::Interface::Web::QueryBuilder;
+push @actions, RT::Interface::Web::QueryBuilder->process_query(
+    \%ARGS,
+    $tree,
+    \@current_values,
+    \@new_values,
 );
 
 # {{{ Rebuild $Query based on the additions / movements
@@ -307,7 +301,7 @@ if ($new_query) {
     $query_string = 'new_query=1';
 }
 elsif ( $query{'query'} ) {
-    $query_string = $m->comp('/Elements/QueryString', %query );
+$query_string = URI->new->query_form( %query );
 }
 
 # }}}
