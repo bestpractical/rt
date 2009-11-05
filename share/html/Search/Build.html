@@ -70,11 +70,11 @@
     current_tab => "Search/Build.html?".$query_string, 
     title => _("Query Builder"),
     %query,
-    saved_search_id => $saved_search{'id'},
+	saved_search_id => $saved_search->{'id'},
 &>
 
 <form method="post" action="Build.html" name="build_query">
-<input type="hidden" class="hidden" name="saved_search_id" value="<% $saved_search{'id'} %>" />
+	<input type="hidden" class="hidden" name="saved_search_id" value="<% $saved_search->{'id'} %>" />
 <input type="hidden" class="hidden" name="query" value="<% $query{'query'} %>" />
 <input type="hidden" class="hidden" name="format" value="<% $query{'format'} %>" />
 
@@ -93,11 +93,11 @@
     %ARGS,
     actions => \@actions,
     optionlist => $optionlist,
-    description => $saved_search{'description'},
+	description => $saved_search->{'description'},
     &>
 </div>
 <div id="editsearches">
-    <& Elements/EditSearches, %saved_search, current_search => \%query &>
+    <& Elements/EditSearches, %$saved_search, current_search => \%query &>
 </div>
 
 
@@ -119,21 +119,19 @@
 <%INIT>
 use RT::Interface::Web::QueryBuilder::Tree;
 
-my %saved_search;
+my $saved_search;
 my %query = map { $_ => $ARGS{$_} } qw(query format order_by order rows_per_page);
-my @actions = RT::Interface::Web::QueryBuilder->load_saved_search( \%ARGS, \%query, \%saved_search );
+my @actions = RT::Interface::Web::QueryBuilder->load_saved_search( \%ARGS, \%query, $saved_search );
 
 if ($new_query) {
 
     # Wipe all data-carrying variables clear if we want a new
     # search, or we're deleting an old one..
     %query = ();
-    %saved_search = ( id => 'new' );
+	$saved_search = { id => 'new'};
 
-    # ..then wipe the session out..
+    # ..then wipe the sessionand the search results.
     Jifty->web->session->remove('CurrentSearchHash');
-
-    # ..and the search results.
     Jifty->web->session->get('tickets')->clean_slate if defined Jifty->web->session->get('tickets');
 }
 
@@ -238,15 +236,15 @@ my ( $available_columns, $current_format );
 );
 
 # if we're asked to save the current search, save it
-push @actions, RT::Interface::Web::QueryBuilder->save_search( \%ARGS, \%query, \%saved_search );
+push @actions, RT::Interface::Web::QueryBuilder->save_search( \%ARGS, \%query, $saved_search );
 
 #  Push the updates into the session so we don't loose 'em
 
 Jifty->web->session->set( 'CurrentSearchHash',
     {   %query,
-        search_id   => $saved_search{'id'},
-        object      => $saved_search{'object'},
-        description => $saved_search{'description'},
+	search_id   => $saved_search->{'id'},
+	object      => $saved_search->{'object'},
+	description => $saved_search->{'description'},
     }
 );
 
