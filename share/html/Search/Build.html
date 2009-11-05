@@ -214,13 +214,13 @@ foreach my $arg ( keys %ARGS ) {
             $value = "'$value'" unless $value =~ /^\d+$/;
         }
 
-        my $clause = {
-            Key   => $keyword,
-            Op    => $op,
-            Value => $value
-        };
+        push @new_values, RT::Interface::Web::QueryBuilder::Tree->new(
+            {   Key   => $keyword,
+                Op    => $op,
+                Value => $value
+            }
 
-        push @new_values, RT::Interface::Web::QueryBuilder::Tree->new($clause);
+        );
     }
 }
 
