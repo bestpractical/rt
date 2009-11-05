@@ -7,10 +7,11 @@ use UNIVERSAL::require;
 use Scalar::Util qw/looks_like_number/;
 use Regexp::Common qw/Email::Address/;
 
-our $SYSTEM_DEFAULT = {
-    display => 'use system default',
-    value   => 'use_system_default',
-};
+# XXX system default's option is
+#            {
+#                display => _('use system default'),
+#                value   => 'use_system_default'
+#            }
 
 use Jifty::Param::Schema;
 use Jifty::Action schema {
@@ -20,7 +21,12 @@ use Jifty::Action schema {
       available are defer {
         my $qs = RT::Model::QueueCollection->new;
         $qs->unlimit;
-        my $ret = [$RT::Action::UserSettings::SYSTEM_DEFAULT];
+        my $ret = [
+            {
+                display => _('use system default'),
+                value   => 'use_system_default'
+            }
+        ];
         while ( my $queue = $qs->next ) {
             next unless $queue->current_user_has_right("CreateTicket");
             push @$ret,
@@ -40,16 +46,16 @@ use Jifty::Action schema {
       available are [
         { display => 'Short usernames',        value => 'concise' },
         { display => 'Name and email address', value => 'verbose' },
-        $RT::Action::UserSettings::SYSTEM_DEFAULT
+        { display => _('use system default'),  value => 'use_system_default' }
       ],
       default is defer {
-          RT::Action::UserSettings->default_value('username_format')
+        RT::Action::UserSettings->default_value('username_format');
       };
     param 'web_default_stylesheet' =>
       label is 'theme',
       render as 'Select',
       available are [
-        $RT::Action::UserSettings::SYSTEM_DEFAULT,
+        { display => _('use system default'), value => 'use_system_default' },
         map { $_ } qw/3.5-default 3.4-compat web2/
       ],
       default is defer {
@@ -58,9 +64,12 @@ use Jifty::Action schema {
     param 'message_box_rich_text' =>
       label is 'WYSIWYG message composer',
       render as 'Radio',
-      available are [ $RT::Action::UserSettings::SYSTEM_DEFAULT, 'yes', 'no' ],
+      available are [
+        { display => _('use system default'), value => 'use_system_default' },
+        'yes', 'no'
+      ],
       default is defer {
-          RT::Action::UserSettings->default_value('message_box_rich_text')
+        RT::Action::UserSettings->default_value('message_box_rich_text');
       };
     param 'message_box_rich_text_height' =>
       label is 'WYSIWYG composer height',
@@ -69,21 +78,27 @@ use Jifty::Action schema {
       };
     param 'message_box_width' =>
       label is 'message box width',
-      default is defer { 
-          RT::Action::UserSettings->default_value('message_box_width')
+      default is defer {
+        RT::Action::UserSettings->default_value('message_box_width');
       };
     param 'message_box_height' =>
       label is 'message box height',
       default is defer {
         RT::Action::UserSettings->default_value('message_box_height');
       };
+
     # locale
     param 'date_time_format' =>
       label is 'date format',
       render as 'Select',
       available are defer {
         my $now = RT::DateTime->now;
-        my $ret = [$RT::Action::UserSettings::SYSTEM_DEFAULT];
+        my $ret = [
+            {
+                display => _('use system default'),
+                value   => 'use_system_default'
+            }
+        ];
         for my $name (qw/rfc2822 rfc2616 iso iCal /) {
             push @$ret,
               {
@@ -103,7 +118,10 @@ use Jifty::Action schema {
       render as 'Select',
       available are defer {
         [
-            $RT::Action::UserSettings::SYSTEM_DEFAULT,
+            {
+                display => _('use system default'),
+                value   => 'use_system_default'
+            },
             'Individual messages',    #loc
             'Daily digest',           #loc
             'Weekly digest',          #loc
@@ -130,14 +148,20 @@ use Jifty::Action schema {
     param 'oldest_transactions_first' =>
       label is 'Show oldest transactions first',
       render as 'Radio',
-      available are [ $RT::Action::UserSettings::SYSTEM_DEFAULT, 'yes', 'no' ],
+      available are [
+        { display => _('use system default'), value => 'use_system_default' },
+        'yes', 'no'
+      ],
       default is defer {
         RT::Action::UserSettings->default_value('oldest_transactions_first');
       };
     param 'show_unread_message_notifications' =>
       label is 'Notify me of unread messages',
       render as 'Radio',
-      available are [ $RT::Action::UserSettings::SYSTEM_DEFAULT, 'yes', 'no' ],
+      available are [
+        { display => _('use system default'), value => 'use_system_default' },
+        'yes', 'no'
+      ],
       default is defer {
         RT::Action::UserSettings->default_value(
             'show_unread_message_notifications');
@@ -146,7 +170,10 @@ use Jifty::Action schema {
       label is 'Use monospace font',
       hints is 'Use fixed-width font to display plaintext messages',
       render as 'Radio',
-      available are [ $RT::Action::UserSettings::SYSTEM_DEFAULT, 'yes', 'no' ],
+      available are [
+        { display => _('use system default'), value => 'use_system_default' },
+        'yes', 'no'
+      ],
       default is defer {
         RT::Action::UserSettings->default_value('plain_text_pre');
       };
@@ -164,7 +191,7 @@ sub take_action {
     for my $arg ( $self->argument_names ) {
         if ( $self->has_argument($arg) ) {
             delete $pref->{$arg}
-              if $self->argument_value($arg) eq $SYSTEM_DEFAULT->{value};
+              if $self->argument_value($arg) eq 'use_system_default';
             $pref->{$arg} = $self->argument_value($arg);
         }
     }
@@ -193,7 +220,7 @@ sub default_value {
         return $pref->{$name};
     }
     else {
-        return $SYSTEM_DEFAULT->{value};
+        return 'use_system_default';
     }
 }
 
@@ -206,12 +233,12 @@ my %fields = (
     'Locale'         => [qw/date_time_format/],
     Mail             => [qw/email_frequency/],
     'RT at a glance' => [
-        qw/default_summary_rows max_inline_body oldest_transactions_first 
-        show_unread_message_notifications plain_text_pre/
+        qw/default_summary_rows max_inline_body oldest_transactions_first
+          show_unread_message_notifications plain_text_pre/
     ],
 );
 
-sub fields { 
+sub fields {
     return %fields;
 }
 
