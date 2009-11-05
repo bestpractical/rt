@@ -153,9 +153,9 @@ if ($new_query) {
         if ( ref $query{$_} eq "ARRAY" ) {
             $query{$_} = join( '|', @{ $query{$_} } );
         }
-	}
+    }
 
-	$query{'format'} = RT::Interface::Web->scrub_html( $query{'format'} ) if ( $query{'format'} );
+    $query{'format'} = RT::Interface::Web->scrub_html( $query{'format'} ) if ( $query{'format'} );
 }
 
 my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
@@ -227,7 +227,7 @@ my $optionlist_arrayref;
 my $optionlist = join "\n", map {
           qq(<option value="$_->{INDEX}" $_->{SELECTED}>)
         . ( "&nbsp;" x ( 5 * $_->{DEPTH} ) )
-		. Jifty->web->escape( $_->{TEXT})
+        . Jifty->web->escape( $_->{TEXT})
         . qq(</option>) } @$optionlist_arrayref;
 
 my $queues = $tree->get_referenced_queues;
@@ -257,8 +257,9 @@ Jifty->web->session->set( 'CurrentSearchHash',
 #  Show the results, if we were asked.
 
 if ( $ARGS{'do_search'} ) {
-    $m->comp( 'Results.html', %query );
-    $m->abort;
+    Jifty->web->redirect( Jifty->web->url . "Search/Results.html?" . 
+                          RT::Interface::Web->format_query_params(%query) );
+
 }
 
 #  Build a query_string for the tabs
