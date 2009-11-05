@@ -1,7 +1,6 @@
 package RT::Action::QueueBased;
 use strict;
 use warnings;
-use base 'Jifty::Action';
 
 use Jifty::Param::Schema;
 use Jifty::Action schema {
@@ -11,6 +10,10 @@ use Jifty::Action schema {
         is constructor,
         label is _('Queue');
 };
+
+# We really do not want to inherit from Jifty::Action. This is a mixin, and
+# inheriting from Jifty::Action causes diamond inheritance.
+our @ISA = ();
 
 sub arguments {
     my $self = shift;

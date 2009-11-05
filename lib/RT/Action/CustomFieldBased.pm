@@ -1,7 +1,6 @@
 package RT::Action::CustomFieldBased;
 use strict;
 use warnings;
-use base 'Jifty::Action';
 
 sub _add_custom_fields {
     my $self = shift;
