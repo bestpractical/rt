@@ -191,7 +191,7 @@ foreach my $arg ( keys %ARGS ) {
     my @ops    = ref $ARGS{$op_value} ? @{ $ARGS{$op_name} }  : $ARGS{$op_name};
     my @values = ref $ARGS{$op_value} ? @{ $ARGS{$op_value} } : $ARGS{$op_value};
 
-    Jifty->log->error("Bad Parameters passed into Query Builder") unless @ops == @values;
+    Jifty->log->debug("Bad Parameters passed into Query Builder") unless @ops == @values;
 
     for ( my $i = 0; $i < @ops; $i++ ) {
         my ( $op, $value ) = ( $ops[$i], $values[$i] );
