@@ -31,7 +31,7 @@ use Jifty::Action schema {
             next unless $queue->current_user_has_right("CreateTicket");
             push @$ret,
               {
-                display => $queue->name,
+                display => _($queue->name),
                 value   => $queue->id
               };
         }
@@ -44,9 +44,9 @@ use Jifty::Action schema {
       label is 'username format',
       render as 'Select',
       available are [
-        { display => 'Short usernames',        value => 'concise' },
-        { display => 'Name and email address', value => 'verbose' },
-        { display => _('use system default'),  value => 'use_system_default' }
+        { display => _('use system default'),  value => 'use_system_default' },
+        { display => _('Short usernames'),        value => 'concise' },
+        { display => _('Name and email address'), value => 'verbose' },
       ],
       default is defer {
         RT::Action::UserSettings->default_value('username_format');
@@ -56,7 +56,7 @@ use Jifty::Action schema {
       render as 'Select',
       available are [
         { display => _('use system default'), value => 'use_system_default' },
-        map { $_ } qw/3.5-default 3.4-compat web2/
+        map {{ display => _($_), value => $_ }} qw/3.5-default 3.4-compat web2/
       ],
       default is defer {
         RT::Action::UserSettings->default_value('web_default_stylesheet');
@@ -66,7 +66,7 @@ use Jifty::Action schema {
       render as 'Radio',
       available are [
         { display => _('use system default'), value => 'use_system_default' },
-        'yes', 'no'
+        map { { display => _($_), value => $_ } } 'yes', 'no',
       ],
       default is defer {
         RT::Action::UserSettings->default_value('message_box_rich_text');
@@ -122,10 +122,11 @@ use Jifty::Action schema {
                 display => _('use system default'),
                 value   => 'use_system_default'
             },
-            'Individual messages',    #loc
-            'Daily digest',           #loc
-            'Weekly digest',          #loc
-            'Suspended'               #loc
+            map { { display => _($_), value => $_ } }
+              'Individual messages',    #loc
+              'Daily digest',           #loc
+              'Weekly digest',          #loc
+              'Suspended',              #loc
         ];
       },
       default is defer {
@@ -150,7 +151,7 @@ use Jifty::Action schema {
       render as 'Radio',
       available are [
         { display => _('use system default'), value => 'use_system_default' },
-        'yes', 'no'
+        map { { display => _($_), value => $_ } } 'yes', 'no',
       ],
       default is defer {
         RT::Action::UserSettings->default_value('oldest_transactions_first');
@@ -160,7 +161,7 @@ use Jifty::Action schema {
       render as 'Radio',
       available are [
         { display => _('use system default'), value => 'use_system_default' },
-        'yes', 'no'
+        map { { display => _($_), value => $_ } } 'yes', 'no',
       ],
       default is defer {
         RT::Action::UserSettings->default_value(
@@ -172,7 +173,7 @@ use Jifty::Action schema {
       render as 'Radio',
       available are [
         { display => _('use system default'), value => 'use_system_default' },
-        'yes', 'no'
+        map { { display => _($_), value => $_ } } 'yes', 'no',
       ],
       default is defer {
         RT::Action::UserSettings->default_value('plain_text_pre');
