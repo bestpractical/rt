@@ -59,7 +59,7 @@ use warnings;
 
 use Locale::Maketext 1.04;
 use Locale::Maketext::Lexicon 0.25;
-use base ('Locale::Maketext::Fuzzy');
+use base 'Locale::Maketext::Fuzzy';
 
 use Encode;
 use MIME::Entity;
