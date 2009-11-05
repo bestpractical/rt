@@ -64,6 +64,8 @@ package RT::Interface::Web;
 use RT::Report::Tickets;
 use RT::System;
 use RT::SavedSearches;
+use RT::Interface::Web::QueryBuilder;
+
 use URI qw();
 use Digest::MD5 ();
 use Encode qw();
@@ -288,6 +290,18 @@ sub strip_content {
     # Pass it through
     return $content;
 }
+
+
+
+sub format_query_params {
+	my $self = shift;
+	my %params = @_;
+
+	my $uri = URI->new;
+	$uri->query_form(%params);
+	return $uri->query;
+}
+
 
 package HTML::Mason::Commands;
 
@@ -1491,6 +1505,7 @@ sub _detailed_messages {
 
     return map { ref $msg->{$_} eq 'ARRAY' ? (@{$msg->{$_}}) : $msg->{$_} } sort keys %$msg;
 }
+
 
 
 1;
