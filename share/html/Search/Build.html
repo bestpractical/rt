@@ -186,15 +186,10 @@ foreach my $arg ( keys %ARGS ) {
 	my $op_name = $field. "_op";
 	my $op_value = 'value_of_'.$field;
 
-    if ( ref $ARGS{$op_value} eq "ARRAY" ) {
-        # we have many keys/values to iterate over, because there is
-        # more than one CF with the same name.
-		@ops    = @{ $ARGS{ $op_name } };
-		@values = @{ $ARGS{ $op_value } };
-    } else {
-        @ops    = ( $ARGS{ $op_name } );
-		@values = ( $ARGS{ $op_value } );
-	}
+        # we may have many keys/values to iterate over, because there
+        # may be more than one CF with the same name.
+		@ops    = ref $ARGS{$op_value} ? @{ $ARGS{ $op_name } } : $ARGS{$op_name};
+		@values    = ref $ARGS{$op_value} ? @{ $ARGS{ $op_value } } : $ARGS{$op_value};
 
 
 
