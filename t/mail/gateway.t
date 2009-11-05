@@ -56,7 +56,7 @@ rt-mailgate - Mail interface to RT3.
 use strict;
 use warnings;
 
-use RT::Test; use Test::More tests => 159;
+use RT::Test strict => 0, tests => 159;
 
 my ($baseurl, $ua) = RT::Test->started_ok;
 

@@ -1,7 +1,7 @@
 
 use strict;
 use warnings;
-use RT::Test; use Test::More; 
+use RT::Test strict => 1; use Test::More; 
 plan tests => 11;
 use RT;
 no warnings qw/redefine once/;

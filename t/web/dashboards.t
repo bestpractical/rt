@@ -1,7 +1,8 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test tests => 99, l10n => 1;
+use RT::Test strict => 1, l10n => 1;
+plan tests => 99;
 use RT::Dashboard;
 my ($baseurl, $m) = RT::Test->started_ok;
 

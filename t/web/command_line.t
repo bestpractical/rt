@@ -3,7 +3,7 @@
 use strict;
 use Test::Expect;
 use File::Spec ();
-use RT::Test tests => 241, l10n => 1;
+use RT::Test strict => 0, tests => 241, l10n => 1;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 use RT::Model::User;

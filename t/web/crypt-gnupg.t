@@ -2,7 +2,7 @@
 use strict;
 
 use Test::More;
-use RT::Test;
+use RT::Test strict => 0;
 
 plan skip_all => 'GnuPG required.'
     unless eval 'use GnuPG::Interface; 1';

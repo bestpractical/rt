@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test tests => 20;
+use RT::Test strict => 1, tests => 20;
 
 use_ok('RT');
 use_ok('RT::Model::Ticket');

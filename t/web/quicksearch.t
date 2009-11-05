@@ -3,7 +3,7 @@ use strict;
 use warnings;
 
 use Test::More tests => 7;
-use RT::Test;
+use RT::Test strict => 1;
 my ($baseurl, $m) = RT::Test->started_ok;
 my $url = $m->rt_base_url;
 

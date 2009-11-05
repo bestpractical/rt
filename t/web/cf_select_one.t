@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 41, l10n => 1;
+use RT::Test strict => 1, tests => 41, l10n => 1;
 
 
 my ($baseurl, $m) = RT::Test->started_ok;

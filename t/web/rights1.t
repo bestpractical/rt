@@ -2,7 +2,7 @@
 use strict;
 use HTTP::Cookies;
 
-use RT::Test; use Test::More tests => 31;
+use RT::Test strict => 0, tests => 31;
 
 my ($baseurl, $agent) = RT::Test->started_ok;
 

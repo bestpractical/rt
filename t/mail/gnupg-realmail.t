@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test;
+use RT::Test strict => 0;
 use Test::More;
 
 plan skip_all => 'GnuPG required.'

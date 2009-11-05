@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 93, l10n => 1;
+use RT::Test strict => 1, tests => 93, l10n => 1;
 
 
 my $queue = RT::Test->load_or_create_queue( name => 'Regression' );

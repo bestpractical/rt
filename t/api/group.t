@@ -1,7 +1,7 @@
 
 use strict;
 use warnings;
-use RT::Test tests => 37;
+use RT::Test strict => 1, tests => 37;
 
 
 

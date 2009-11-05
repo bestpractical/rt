@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use RT::Test; use Test::More tests => 6;
+use RT::Test strict => 1; use Test::More tests => 6;
 
 use_ok('RT::I18N');
 

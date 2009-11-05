@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 159;
+use RT::Test tests => 159, strict => 1;
 use RT::Test::Email;
 
 skip_rest('GnuPG required.')

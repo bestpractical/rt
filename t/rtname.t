@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use RT::Test; use Test::More tests => 9;
+use RT::Test strict => 1; use Test::More tests => 9;
 
 
 use RT::Interface::Email;
