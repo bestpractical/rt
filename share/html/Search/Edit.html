@@ -73,7 +73,7 @@
 </&>
 <%INIT>
 my $title = _("Edit Query");
-$format = $m->comp('/Elements/ScrubHTML', content => $format);
+$format = RT::Interface::Web->scrub_html( $format);
 my $query_string = $m->comp('/Elements/QueryString',
                            query   => $query,
                            format  => $format,

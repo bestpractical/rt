@@ -161,7 +161,7 @@ if ($new_query) {
     if ( $query{'format'} ) {
 
         # Clean unwanted junk from the format
-        $query{'format'} = $m->comp( '/Elements/ScrubHTML', content => $query{'format'} );
+		$query{'format'} = RT::Interface::Web->scrub_html( $query{'format'} );
     }
 }
 
