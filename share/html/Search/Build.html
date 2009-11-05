@@ -159,7 +159,7 @@ if ($new_query) {
 }
 
 my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
-push @actions, = $tree->parse_sql( query => $query{query} );
+push @actions, $tree->parse_sql( query => $query{query} );
 
 # if parsing went poorly, send them to the edit page to fix it
 if ( $actions[0] ) {
