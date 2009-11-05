@@ -482,8 +482,7 @@ sub create {
             current_user    => $self->current_user,
         );
 
-        # XXX: move make_mime_entity somewhere sane
-        $args{mime_obj} = HTML::Mason::Commands::make_mime_entity(
+        $args{mime_obj} = RT::Interface::Email::make_mime_entity(
             subject => $args{'subject'},
             from    => $args{'from'},
             cc      => $args{'cc'},
