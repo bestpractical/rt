@@ -1,4 +1,4 @@
-package RT::Action::CustomFieldBased;
+package RT::Action::WithCustomFields;
 use strict;
 use warnings;
 
