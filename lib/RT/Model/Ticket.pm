@@ -473,6 +473,26 @@ sub create {
     $args{'priority'} = $args{'initial_priority'}
         unless defined $args{'priority'};
 
+# Initial message {{{
+    if (!$args{mime_obj}) {
+        my $sigless = RT::Interface::Web::strip_content(
+            content         => $args{'content'},
+            content_type    => $args{'content_type'},
+            strip_signature => 1,
+            current_user    => $self->current_user,
+        );
+
+        # XXX: move make_mime_entity somewhere sane
+        $args{mime_obj} = HTML::Mason::Commands::make_mime_entity(
+            subject => $args{'subject'},
+            from    => $args{'from'},
+            cc      => $args{'cc'},
+            body    => $sigless,
+            type    => $args{'content_type'},
+        );
+    }
+# }}}
+
     # {{{ Dates
     #Set the due date. if we didn't get fed one, use the queue default due in
     my $due;
