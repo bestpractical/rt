@@ -93,6 +93,7 @@ features(
         'Test::WWW::Mechanize' => '1.04',
         'Module::Refresh'      => '0.03',
         'Test::Expect'         => '0.31',
+		'Test::Email',
         'XML::Simple',
         'File::Find',
         'Test::Deep', => 0,

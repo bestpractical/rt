@@ -279,7 +279,7 @@ before qr{.*} => run {
     }
 };
 
-before qr'Dashboards/(\d*)?' => sub {
+before qr'Dashboards/(\d*)?' => run {
 	page_nav->child( _('Select'), url => "/Dashboards/index.html" );
 	require RT::Dashboard; # not a record class, so not autoloaded :/
     if ( RT::Dashboard->new->_privacy_objects( create => 1 ) ) {
@@ -301,7 +301,7 @@ before qr'Dashboards/(\d*)?' => sub {
 };
 
 
-before '/SelfService' => sub {
+before '/SelfService' => run {
 
     my $queues = RT::Model::QueueCollection->new();
     $queues->find_all_rows;
@@ -334,7 +334,7 @@ before '/SelfService' => sub {
 	#main_nav->child( B =>  html => $m->scomp('GotoTicket'))
 };
 
-before 'Admin/Queues' => sub {
+before 'Admin/Queues' => run {
         if ( Jifty->web->current_user->has_right( object => RT->system, right => 'AdminQueue' ) ) {
             page_nav->child( _('Select'), url => "/Admin/Queues/" );
             page_nav->child( _('Create'), url       => "/Admin/Queues/Modify.html?create=1");
@@ -358,7 +358,7 @@ before 'Admin/Queues' => sub {
     }
 };
 
-before '/Admin/Users' => sub {
+before '/Admin/Users' => run {
 if (Jifty->web->current_user->has_right( object => RT->system, right => 'AdminUsers')) {
 page_nav->child(_('Select'), url => "/Admin/Users/");
 page_nav->child(_('Create'), url => "/Admin/Users/Modify.html?create=1", separator => 1);
@@ -379,7 +379,7 @@ page_nav->child(_('Create'), url => "/Admin/Users/Modify.html?create=1", separat
 
 };
 
-before 'Admin/Groups' => sub {
+before 'Admin/Groups' => run {
 
 page_nav->child( _('Select') => url  => "/Admin/Groups/");
 page_nav->child( _('Create') => url      => "/Admin/Groups/Modify.html?create=1", separator => 1);
@@ -396,7 +396,7 @@ page_nav->child( _('Create') => url      => "/Admin/Groups/Modify.html?create=1"
 };
 
 
-before 'Admin/CustomFields/' => sub {
+before 'Admin/CustomFields/' => run {
     if ( Jifty->web->current_user->has_right( object => RT->system, right => 'AdminCustomField' ) ) {
         page_nav->child( _('Select'), url => "/Admin/CustomFields/" );
         page_nav->child(
@@ -422,7 +422,7 @@ before 'Admin/CustomFields/' => sub {
 
 };
 
-before 'Admin/Global/Workflows' => sub {
+before 'Admin/Global/Workflows' => run {
     if ( my $id = Jifty->web->request->argument('name') ) {
 
 		my $base = '/Admin/Global/Workflows';
@@ -440,14 +440,14 @@ before 'Admin/Global/Workflows' => sub {
     }
     };
 
-before 'Admin/Rules' => sub {
+before 'Admin/Rules' => run {
         page_nav->child(_('Select'), url  => "/Admin/Rules/");
         page_nav->child(_('Create'), url  => "/Admin/Rules/Modify.html?create=1");
 };
 
-before qr'(?:Ticket|Search)/' => sub {
-	my $self = shift;
-    if ( my $id = Jifty->web->request->argument('id') ) {
+before qr'(?:Ticket|Search)/' => run {
+    if ( (Jifty->web->request->argument('id')||'') =~ /^(\d+)$/) {
+		my $id = $1;
         my $obj = RT::Model::Ticket->new();
         $obj->load($id);
 
@@ -574,7 +574,7 @@ before qr'(?:Ticket|Search)/' => sub {
             page_nav->child( _('Advanced')    => url => "/Search/Edit.html$args" );
 
             if ($has_query) {
-                if ($self->{path} =~ qr|^Search/Results.html| &&    #XXX TODO better abstraction
+                if (Jifty->web->request->path =~ qr|^Search/Results.html| &&    #XXX TODO better abstraction
                     Jifty->web->current_user->has_right( right => 'SuperUser', object => RT->system )
                     )
                 {
@@ -595,7 +595,7 @@ before qr'(?:Ticket|Search)/' => sub {
             }
 };
 
-before 'User/Group' => sub {
+before 'User/Group' => run {
     if ( my $id = Jifty->web->request->argument('id') ) {
         my $obj = RT::Model::User->new();
         $obj->load($id);
@@ -609,7 +609,7 @@ before 'User/Group' => sub {
 
 };
 
-before 'Prefs' => sub {
+before 'Prefs' => run {
 	my $tabs;
 	my @searches = RT::System->new->saved_searches();
 
