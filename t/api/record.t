@@ -35,9 +35,9 @@ my $t3 = RT::Model::Ticket->new(current_user => RT->system_user);
 (my $id3, $trans, my $msg3) = $t3->create(subject => 'DepTest3', queue => 'general', type => 'approval');
 ok($id3, "Created dep test 3 - $msg3");
 my ($addid, $addmsg);
-ok (($addid, $addmsg) =$t1->add_link( type => 'DependsOn', target => $t2->id));
+ok (($addid, $addmsg) =$t1->add_link( type => 'depends_on', target => $t2->id));
 ok ($addid, $addmsg);
-ok (($addid, $addmsg) =$t1->add_link( type => 'DependsOn', target => $t3->id));
+ok (($addid, $addmsg) =$t1->add_link( type => 'depends_on', target => $t3->id));
 
 ok ($addid, $addmsg);
 my $link = RT::Model::Link->new(current_user => RT->system_user);

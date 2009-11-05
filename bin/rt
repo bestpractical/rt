@@ -869,8 +869,8 @@ sub link {
     my ($bad, $del, %data) = (0, 0, ());
     my $type;
 
-    my %ltypes = map { lc $_ => $_ } qw(DependsOn DependedOnBy RefersTo
-                                        ReferredToBy has_member MemberOf);
+    my %ltypes = map { lc $_ => $_ } qw(depends_on depended_on_by refers_to
+                                        referred_to_by has_member member_of);
 
     while (@ARGV && $ARGV[0] =~ /^-/) {
         $_ = shift @ARGV;
@@ -2327,9 +2327,9 @@ Text:
     Creates (or, with -d, deletes) a link between the specified tickets.
     The link can (irrespective of case) be any of:
 
-        DependsOn/DependedOnBy:     A depends upon B (or vice versa).
-        RefersTo/ReferredToBy:      A refers to B (or vice versa).
-        MemberOf/has_member:         A is a member of B (or vice versa).
+        depends_on/depended_on_by:     A depends upon B (or vice versa).
+        refers_to/referred_to_by:      A refers to B (or vice versa).
+        member_of/has_member:         A is a member of B (or vice versa).
 
     To view a ticket's links, use "rt show ticket/3/links". (See
     "rt help ticket" and "rt help show".)

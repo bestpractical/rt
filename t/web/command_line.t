@@ -414,10 +414,10 @@ expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in 
 # }}}
 
 # {{{ test ticket linking
-    my @link_relns = ( 'DependsOn', 'DependedOnBy', 'RefersTo', 'ReferredToBy',
-                       'MemberOf', 'has_member', );
+    my @link_relns = ( 'depends_on', 'depended_on_by', 'refers_to', 'referred_to_by',
+                       'member_of', 'has_member', );
     my %display_relns = map { $_ => $_ } @link_relns;
-    $display_relns{has_member} = 'Members';
+    $display_relns{has_member} = 'members';
 
     my $link1_id = ok_create_ticket( "LinkTicket1-$$" );
     my $link2_id = ok_create_ticket( "LinkTicket2-$$" );

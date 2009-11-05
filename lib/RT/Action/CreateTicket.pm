@@ -110,12 +110,12 @@ sub after_set_queue {
 
     $self->add_link_parameter(
         name  => 'parents',
-        label => _('Parents'),
+        label => _('parents'),
     );
 
     $self->add_link_parameter(
         name  => 'children',
-        label => _('Children'),
+        label => _('children'),
     );
 
     $self->add_link_parameter(

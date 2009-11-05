@@ -37,7 +37,7 @@ my $string = 'subject/content SQL test';
     ok( $t->create( queue => 'General',
                     subject => 'another ticket',
                     mime_obj => $Message,
-                    MemberOf => $Created[0]
+                    member_of => $Created[0]
                   ),
         "Ticket Created"
     );
@@ -60,7 +60,7 @@ TODO: {
 }
 
 {
-    my $query = "id = $Created[0] OR MemberOf = $Created[0]";
+    my $query = "id = $Created[0] OR member_of = $Created[0]";
     my ($status, $msg) = $tix->from_sql($query);
     ok ($status, "correct query") or diag("error: $msg");
 

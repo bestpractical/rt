@@ -199,12 +199,12 @@ A complete list of acceptable fields for this beastie:
        initial_priority => 
        final_priority   => 
        type            => 
-    +! DependsOn       => 
-    +! DependedOnBy    =>
-    +! RefersTo        =>
-    +! ReferredToBy    => 
-    +! Members         =>
-    +! MemberOf        => 
+    +! depends_on       => 
+    +! depended_on_by    =>
+    +! refers_to        =>
+    +! referred_to_by    => 
+    +! members         =>
+    +! member_of        => 
        Content         => content. Can extend to multiple lines. Everything
                           within a template after a Content: header is treated
                           as content until we hit a line containing only 
@@ -231,7 +231,7 @@ the identifiers after ==Create-Ticket), instead of raw Ticket ID
 numbers.
 
 When parsed, field names are converted to lowercase and have -s stripped.
-Refers-To, RefersTo, refersto, refers-to and r-e-f-er-s-tO will all 
+Refers-To, refers_to, refersto, refers-to and r-e-f-er-s-tO will all 
 be treated as the same thing.
 
 
@@ -248,40 +248,40 @@ perl(1).
 =cut
 
 my %LINKTYPEMAP = (
-    MemberOf => {
-        type => 'MemberOf',
+    member_of => {
+        type => 'member_of',
         mode => 'target',
     },
-    Parents => {
-        type => 'MemberOf',
+    parents => {
+        type => 'member_of',
         mode => 'target',
     },
-    Members => {
-        type => 'MemberOf',
+    members => {
+        type => 'member_of',
         mode => 'base',
     },
-    Children => {
-        type => 'MemberOf',
+    children => {
+        type => 'member_of',
         mode => 'base',
     },
     has_member => {
-        type => 'MemberOf',
+        type => 'member_of',
         mode => 'base',
     },
-    RefersTo => {
-        type => 'RefersTo',
+    refers_to => {
+        type => 'refers_to',
         mode => 'target',
     },
-    ReferredToBy => {
-        type => 'RefersTo',
+    referred_to_by => {
+        type => 'refers_to',
         mode => 'base',
     },
-    DependsOn => {
-        type => 'DependsOn',
+    depends_on => {
+        type => 'depends_on',
         mode => 'target',
     },
-    DependedOnBy => {
-        type => 'DependsOn',
+    depended_on_by => {
+        type => 'depends_on',
         mode => 'base',
     },
 
@@ -900,12 +900,12 @@ sub get_deferred {
     push @$links,
         (
         $id,
-        {   DependsOn    => $args->{'dependson'},
-            DependedOnBy => $args->{'dependedonby'},
-            RefersTo     => $args->{'refersto'},
-            ReferredToBy => $args->{'referredtoby'},
-            Children     => $args->{'children'},
-            Parents      => $args->{'parents'},
+        {   depends_on    => $args->{'dependson'},
+            depended_on_by => $args->{'dependedonby'},
+            refers_to     => $args->{'refersto'},
+            referred_to_by => $args->{'referredtoby'},
+            children     => $args->{'children'},
+            parents      => $args->{'parents'},
         }
         );
 
@@ -945,8 +945,8 @@ sub get_update_template {
 
         # don't display duplicates
         if (   $type eq "has_member"
-            || $type eq "Members"
-            || $type eq "MemberOf" )
+            || $type eq "members"
+            || $type eq "member_of" )
         {
             next;
         }
@@ -1023,8 +1023,8 @@ sub get_create_template {
 
         # don't display duplicates
         if (   $type eq "has_member"
-            || $type eq 'Members'
-            || $type eq 'MemberOf' )
+            || $type eq 'members'
+            || $type eq 'member_of' )
         {
             next;
         }

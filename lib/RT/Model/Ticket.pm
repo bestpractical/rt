@@ -208,44 +208,44 @@ use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
 # to build and parse links between tickets
 
 our %LINKTYPEMAP = (
-    MemberOf => {
-        type => 'MemberOf',
+    member_of => {
+        type => 'member_of',
         mode => 'target',
     },
-    Parents => {
-        type => 'MemberOf',
+    parents => {
+        type => 'member_of',
         mode => 'target',
     },
-    Members => {
-        type => 'MemberOf',
+    members => {
+        type => 'member_of',
         mode => 'base',
     },
-    Children => {
-        type => 'MemberOf',
+    children => {
+        type => 'member_of',
         mode => 'base',
     },
-    HasMember => {
-        type => 'MemberOf',
+    has_member => {
+        type => 'member_of',
         mode => 'base',
     },
-    RefersTo => {
-        type => 'RefersTo',
+    refers_to => {
+        type => 'refers_to',
         mode => 'target',
     },
-    ReferredToBy => {
-        type => 'RefersTo',
+    referred_to_by => {
+        type => 'refers_to',
         mode => 'base',
     },
-    DependsOn => {
-        type => 'DependsOn',
+    depends_on => {
+        type => 'depends_on',
         mode => 'target',
     },
-    DependedOnBy => {
-        type => 'DependsOn',
+    depended_on_by => {
+        type => 'depends_on',
         mode => 'base',
     },
-    MergedInto => {
-        type => 'MergedInto',
+    merged_into => {
+        type => 'merged_into',
         mode => 'target',
     },
 
@@ -256,21 +256,21 @@ our %LINKTYPEMAP = (
 # to build and parse links between tickets
 
 our %LINKDIRMAP = (
-    MemberOf => {
-        base   => 'MemberOf',
-        target => 'HasMember',
+    member_of => {
+        base   => 'member_of',
+        target => 'has_member',
     },
-    RefersTo => {
-        base   => 'RefersTo',
-        target => 'ReferredToBy',
+    refers_to => {
+        base   => 'refers_to',
+        target => 'referred_to_by',
     },
-    DependsOn => {
-        base   => 'DependsOn',
-        target => 'DependedOnBy',
+    depends_on => {
+        base   => 'depends_on',
+        target => 'depended_on_by',
     },
-    MergedInto => {
-        base   => 'MergedInto',
-        target => 'MergedInto',
+    merged_into => {
+        base   => 'merged_into',
+        target => 'merged_into',
     },
 
 );
@@ -367,12 +367,12 @@ the ticket id to be linked to as a value (or a URI when linking to other objects
 Multiple links of the same type can be created by passing an array ref. For example:
 
   Parent => 45,
-  DependsOn => [ 15, 22 ],
-  RefersTo => 'http://www.bestpractical.com',
+  depends_on => [ 15, 22 ],
+  refers_to => 'http://www.bestpractical.com',
 
-Supported link types are C<MemberOf>, C<has_member>, C<RefersTo>, C<ReferredToBy>,
-C<DependsOn> and C<DependedOnBy>. Also, C<Parents> is alias for C<MemberOf> and
-C<Members> and C<Children> are aliases for C<has_member>.
+Supported link types are C<member_of>, C<has_member>, C<refers_to>, C<referred_to_by>,
+C<depends_on> and C<depended_on_by>. Also, C<parents> is alias for C<member_of> and
+C<members> and C<children> are aliases for C<has_member>.
 
 Returns: TICKETID, Transaction object, Error Message
 
@@ -1761,7 +1761,7 @@ sub merge_into {
     }
 
     #make a new link: this ticket is merged into that other ticket.
-    $self->add_link( type => 'MergedInto', target => $MergeInto->id() );
+    $self->add_link( type => 'merged_into', target => $MergeInto->id() );
 
     $MergeInto->set_last_updated;
 

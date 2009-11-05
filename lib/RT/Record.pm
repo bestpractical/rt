@@ -558,21 +558,21 @@ sub _decode_lob {
 use vars '%LINKDIRMAP';
 
 %LINKDIRMAP = (
-    MemberOf => {
-        base   => 'MemberOf',
+    member_of => {
+        base   => 'member_of',
         target => 'has_member',
     },
-    RefersTo => {
-        base   => 'RefersTo',
-        target => 'ReferredToBy',
+    refers_to => {
+        base   => 'refers_to',
+        target => 'referred_to_by',
     },
-    DependsOn => {
-        base   => 'DependsOn',
-        target => 'DependedOnBy',
+    depends_on => {
+        base   => 'depends_on',
+        target => 'depended_on_by',
     },
-    MergedInto => {
-        base   => 'MergedInto',
-        target => 'MergedInto',
+    merged_into => {
+        base   => 'merged_into',
+        target => 'merged_into',
     },
 
 );
@@ -688,7 +688,7 @@ all the tickets which are 'MembersOf' this ticket
 
 sub members {
     my $self = shift;
-    return ( $self->_links( 'target', 'MemberOf' ) );
+    return ( $self->_links( 'target', 'member_of' ) );
 }
 
 
@@ -696,13 +696,13 @@ sub members {
 =head2 member_of
 
 This returns an L<RT::Model::LinkCollection> object which references all
-the tickets that this ticket is a 'MemberOf'
+the tickets that this ticket is a 'member_of'
 
 =cut
 
 sub member_of {
     my $self = shift;
-    return ( $self->_links( 'base', 'MemberOf' ) );
+    return ( $self->_links( 'base', 'member_of' ) );
 }
 
 
@@ -716,7 +716,7 @@ references for which this ticket is a base
 
 sub refers_to {
     my $self = shift;
-    return ( $self->_links( 'base', 'RefersTo' ) );
+    return ( $self->_links( 'base', 'refers_to' ) );
 }
 
 
@@ -730,7 +730,7 @@ references for which this ticket is a target
 
 sub referred_to_by {
     my $self = shift;
-    return ( $self->_links( 'target', 'RefersTo' ) );
+    return ( $self->_links( 'target', 'refers_to' ) );
 }
 
 
@@ -744,7 +744,7 @@ all the tickets that depend on this one
 
 sub depended_on_by {
     my $self = shift;
-    return ( $self->_links( 'target', 'DependsOn' ) );
+    return ( $self->_links( 'target', 'depends_on' ) );
 }
 
 
@@ -823,7 +823,7 @@ dependency search.
 sub all_depended_on_by {
     my $self = shift;
     return $self->_all_linked_tickets(
-        link_type  => 'DependsOn',
+        link_type  => 'depends_on',
         direction => 'target',
         @_
     );
@@ -842,7 +842,7 @@ recursive dependency search.
 sub all_depends_on {
     my $self = shift;
     return $self->_all_linked_tickets(
-        link_type  => 'DependsOn',
+        link_type  => 'depends_on',
         direction => 'base',
         @_
     );
@@ -899,7 +899,7 @@ all the tickets that this ticket depends on
 
 sub depends_on {
     my $self = shift;
-    return ( $self->_links( 'base', 'DependsOn' ) );
+    return ( $self->_links( 'base', 'depends_on' ) );
 }
 
 

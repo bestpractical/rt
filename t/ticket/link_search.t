@@ -25,7 +25,7 @@ ok($childid, "We Created a child ticket");
 my $parent_ticket = RT::Model::Ticket->new(current_user =>  $CurrentUser );
 my ($parentid) = $parent_ticket->create(
     subject => 'test parent',
-    Children => [ $childid ],
+    children => [ $childid ],
     queue => $queue->id,
 );
 ok($parentid, "We Created a parent ticket");
@@ -37,7 +37,7 @@ ok($Collection->first);
 is($Collection->first->id, $childid, "We found the collection of all children of $parentid with Limit");
 
 $Collection = RT::Model::TicketCollection->new(current_user => RT->system_user);
-$Collection->from_sql("MemberOf = $parentid");
+$Collection->from_sql("member_of = $parentid");
 is($Collection->count, 1, "We found only one result");
 ok($Collection->first);
 is($Collection->first->id, $childid, "We found the collection of all children of $parentid with TicketSQL");
@@ -113,7 +113,7 @@ ok( $has{$childid}, "The collection has our child - $childid");
 
 # Now we find a collection of all the tickets which are not members of anything. they should have no parents.
 $Collection = RT::Model::TicketCollection->new(current_user => RT->system_user);
-$Collection->from_sql("MemberOf IS NULL");
+$Collection->from_sql("member_of IS NULL");
 # must not  contain parent; must contain parent
 %has = ();
 while (my $t = $Collection->next) {
@@ -125,7 +125,7 @@ ok( !$has{$childid}, "The collection doesn't have our child - $childid");
 
 # Now we find a collection of all the tickets which are not members of anything. they should have no parents.
 $Collection = RT::Model::TicketCollection->new(current_user => RT->system_user);
-$Collection->from_sql("MemberOf = ''");
+$Collection->from_sql("member_of = ''");
 # must not  contain parent; must contain parent
 %has = ();
 while (my $t = $Collection->next) {
@@ -137,7 +137,7 @@ ok( !$has{$childid}, "The collection doesn't have our child - $childid");
 
 # Now we find a collection of all the tickets which are not members of the parent ticket
 $Collection = RT::Model::TicketCollection->new(current_user => RT->system_user);
-$Collection->from_sql("MemberOf != $parentid");
+$Collection->from_sql("member_of != $parentid");
 %has = ();
 while (my $t = $Collection->next) {
     ++$has{$t->id};
@@ -158,7 +158,7 @@ my $grand_child_ticket = RT::Model::Ticket->new(current_user =>  $CurrentUser );
 my ($grand_childid) = $child_ticket->create(
     subject => 'test child',
     queue   => $queue->id,
-    MemberOf => $childid,
+    member_of => $childid,
 );
 ok($childid, "We Created a grand child ticket");
 

@@ -186,9 +186,9 @@ sub load_or_create_user {
     my $self = shift;
     my %args = ( privileged => 1, disabled => 0, @_ );
 
-    my $MemberOf = delete $args{'member_of'};
-    $MemberOf = [$MemberOf] if defined $MemberOf && !ref $MemberOf;
-    $MemberOf ||= [];
+    my $member_of = delete $args{'member_of'};
+    $member_of = [$member_of] if defined $member_of && !ref $member_of;
+    $member_of ||= [];
 
     my $obj = RT::Model::User->new( current_user => RT->system_user );
     if ( $args{'name'} ) {
@@ -231,7 +231,7 @@ sub load_or_create_user {
     }
 
     # add new user to groups
-    foreach (@$MemberOf) {
+    foreach (@$member_of) {
         my $group = RT::Model::Group->new( current_user => RT->system_user() );
         $group->load_user_defined($_);
         die "couldn't load group '$_'" unless $group->id;

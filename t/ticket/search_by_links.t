@@ -57,7 +57,7 @@ sub run_tests {
 @data = (
     { subject => '-', },
     { subject => 'p', },
-    { subject => 'c', MemberOf => -1 },
+    { subject => 'c', member_of => -1 },
 );
 @tickets = add_tix_from_data();
 %test = (
@@ -70,17 +70,17 @@ sub run_tests {
 
     'has_member  IS NOT NULL'  => { '-' => 0, c => 0, p => 1 },
     'has_member  IS     NULL'  => { '-' => 1, c => 1, p => 0 },
-    'MemberOf   IS NOT NULL'  => { '-' => 0, c => 1, p => 0 },
-    'MemberOf   IS     NULL'  => { '-' => 1, c => 0, p => 1 },
+    'member_of   IS NOT NULL'  => { '-' => 0, c => 1, p => 0 },
+    'member_of   IS     NULL'  => { '-' => 1, c => 0, p => 1 },
 
-    'RefersTo   IS NOT NULL'  => { '-' => 0, c => 0, p => 0 },
-    'RefersTo   IS     NULL'  => { '-' => 1, c => 1, p => 1 },
+    'refers_to   IS NOT NULL'  => { '-' => 0, c => 0, p => 0 },
+    'refers_to   IS     NULL'  => { '-' => 1, c => 1, p => 1 },
 
     'Linked      = '. $tickets[0]->id  => { '-' => 0, c => 0, p => 0 },
     'Linked     != '. $tickets[0]->id  => { '-' => 1, c => 1, p => 1 },
 
-    'MemberOf    = '. $tickets[1]->id  => { '-' => 0, c => 1, p => 0 },
-    'MemberOf   != '. $tickets[1]->id  => { '-' => 1, c => 0, p => 1 },
+    'member_of    = '. $tickets[1]->id  => { '-' => 0, c => 1, p => 0 },
+    'member_of   != '. $tickets[1]->id  => { '-' => 1, c => 0, p => 1 },
 );
 {
     my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);
@@ -93,36 +93,36 @@ run_tests();
 @data = (
     { subject => '-', },
     { subject => 'p', },
-    { subject => 'rp',  RefersTo => -1 },
-    { subject => 'c',   MemberOf => -2 },
-    { subject => 'rc1', RefersTo => -1 },
-    { subject => 'rc2', RefersTo => -2 },
+    { subject => 'rp',  refers_to => -1 },
+    { subject => 'c',   member_of => -2 },
+    { subject => 'rc1', refers_to => -1 },
+    { subject => 'rc2', refers_to => -2 },
 );
 @tickets = add_tix_from_data();
 my $pid = $tickets[1]->id;
 %test = (
-    'RefersTo IS NOT NULL'  => { '-' => 0, c => 0, p => 0, rp => 1, rc1 => 1, rc2 => 1 },
-    'RefersTo IS     NULL'  => { '-' => 1, c => 1, p => 1, rp => 0, rc1 => 0, rc2 => 0 },
+    'refers_to IS NOT NULL'  => { '-' => 0, c => 0, p => 0, rp => 1, rc1 => 1, rc2 => 1 },
+    'refers_to IS     NULL'  => { '-' => 1, c => 1, p => 1, rp => 0, rc1 => 0, rc2 => 0 },
 
-    'RefersTo IS NOT NULL AND MemberOf IS NOT NULL'  => { '-' => 0, c => 0, p => 0, rp => 0, rc1 => 0, rc2 => 0 },
-    'RefersTo IS NOT NULL AND MemberOf IS     NULL'  => { '-' => 0, c => 0, p => 0, rp => 1, rc1 => 1, rc2 => 1 },
-    'RefersTo IS     NULL AND MemberOf IS NOT NULL'  => { '-' => 0, c => 1, p => 0, rp => 0, rc1 => 0, rc2 => 0 },
-    'RefersTo IS     NULL AND MemberOf IS     NULL'  => { '-' => 1, c => 0, p => 1, rp => 0, rc1 => 0, rc2 => 0 },
+    'refers_to IS NOT NULL AND member_of IS NOT NULL'  => { '-' => 0, c => 0, p => 0, rp => 0, rc1 => 0, rc2 => 0 },
+    'refers_to IS NOT NULL AND member_of IS     NULL'  => { '-' => 0, c => 0, p => 0, rp => 1, rc1 => 1, rc2 => 1 },
+    'refers_to IS     NULL AND member_of IS NOT NULL'  => { '-' => 0, c => 1, p => 0, rp => 0, rc1 => 0, rc2 => 0 },
+    'refers_to IS     NULL AND member_of IS     NULL'  => { '-' => 1, c => 0, p => 1, rp => 0, rc1 => 0, rc2 => 0 },
 
-    'RefersTo IS NOT NULL OR  MemberOf IS NOT NULL'  => { '-' => 0, c => 1, p => 0, rp => 1, rc1 => 1, rc2 => 1 },
-    'RefersTo IS NOT NULL OR  MemberOf IS     NULL'  => { '-' => 1, c => 0, p => 1, rp => 1, rc1 => 1, rc2 => 1 },
-    'RefersTo IS     NULL OR  MemberOf IS NOT NULL'  => { '-' => 1, c => 1, p => 1, rp => 0, rc1 => 0, rc2 => 0 },
-    'RefersTo IS     NULL OR  MemberOf IS     NULL'  => { '-' => 1, c => 1, p => 1, rp => 1, rc1 => 1, rc2 => 1 },
+    'refers_to IS NOT NULL OR  member_of IS NOT NULL'  => { '-' => 0, c => 1, p => 0, rp => 1, rc1 => 1, rc2 => 1 },
+    'refers_to IS NOT NULL OR  member_of IS     NULL'  => { '-' => 1, c => 0, p => 1, rp => 1, rc1 => 1, rc2 => 1 },
+    'refers_to IS     NULL OR  member_of IS NOT NULL'  => { '-' => 1, c => 1, p => 1, rp => 0, rc1 => 0, rc2 => 0 },
+    'refers_to IS     NULL OR  member_of IS     NULL'  => { '-' => 1, c => 1, p => 1, rp => 1, rc1 => 1, rc2 => 1 },
 
-    "RefersTo  = $pid AND MemberOf  = $pid" => { '-' => 0, c => 0, p => 0, rp => 0, rc1 => 0, rc2 => 0 },
-    "RefersTo  = $pid AND MemberOf != $pid" => { '-' => 0, c => 0, p => 0, rp => 1, rc1 => 0, rc2 => 0 },
-    "RefersTo != $pid AND MemberOf  = $pid" => { '-' => 0, c => 1, p => 0, rp => 0, rc1 => 0, rc2 => 0 },
-    "RefersTo != $pid AND MemberOf != $pid" => { '-' => 1, c => 0, p => 1, rp => 0, rc1 => 1, rc2 => 1 },
+    "refers_to  = $pid AND member_of  = $pid" => { '-' => 0, c => 0, p => 0, rp => 0, rc1 => 0, rc2 => 0 },
+    "refers_to  = $pid AND member_of != $pid" => { '-' => 0, c => 0, p => 0, rp => 1, rc1 => 0, rc2 => 0 },
+    "refers_to != $pid AND member_of  = $pid" => { '-' => 0, c => 1, p => 0, rp => 0, rc1 => 0, rc2 => 0 },
+    "refers_to != $pid AND member_of != $pid" => { '-' => 1, c => 0, p => 1, rp => 0, rc1 => 1, rc2 => 1 },
 
-    "RefersTo  = $pid OR  MemberOf  = $pid" => { '-' => 0, c => 1, p => 0, rp => 1, rc1 => 0, rc2 => 0 },
-    "RefersTo  = $pid OR  MemberOf != $pid" => { '-' => 1, c => 0, p => 1, rp => 1, rc1 => 1, rc2 => 1 },
-    "RefersTo != $pid OR  MemberOf  = $pid" => { '-' => 1, c => 1, p => 1, rp => 0, rc1 => 1, rc2 => 1 },
-    "RefersTo != $pid OR  MemberOf != $pid" => { '-' => 1, c => 1, p => 1, rp => 1, rc1 => 1, rc2 => 1 },
+    "refers_to  = $pid OR  member_of  = $pid" => { '-' => 0, c => 1, p => 0, rp => 1, rc1 => 0, rc2 => 0 },
+    "refers_to  = $pid OR  member_of != $pid" => { '-' => 1, c => 0, p => 1, rp => 1, rc1 => 1, rc2 => 1 },
+    "refers_to != $pid OR  member_of  = $pid" => { '-' => 1, c => 1, p => 1, rp => 0, rc1 => 1, rc2 => 1 },
+    "refers_to != $pid OR  member_of != $pid" => { '-' => 1, c => 1, p => 1, rp => 1, rc1 => 1, rc2 => 1 },
 );
 {
     my $tix = RT::Model::TicketCollection->new(current_user => RT->system_user);

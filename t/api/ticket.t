@@ -86,7 +86,7 @@ ok(require RT::Model::Ticket, "Loading the RT::Model::Ticket library");
 {
 my $t = RT::Model::Ticket->new(current_user => RT->system_user);
 
-ok( $t->create(queue => 'General', Due => '2002-05-21 00:00:00', ReferredToBy => 'http://www.cpan.org', RefersTo => 'http://fsck.com', subject => 'This is a subject'), "Ticket Created");
+ok( $t->create(queue => 'General', Due => '2002-05-21 00:00:00', referred_to_by => 'http://www.cpan.org', refers_to => 'http://fsck.com', subject => 'This is a subject'), "Ticket Created");
 
 ok ( my $id = $t->id, "Got ticket id");
 like ($t->refers_to->first->target , qr/fsck.com/, "Got refers to");

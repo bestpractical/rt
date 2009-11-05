@@ -76,7 +76,7 @@ sub collection {
     my $self = shift;
     my $col = RT::Model::TicketCollection->new;
 
-    my $query = 'type = "reminder" AND RefersTo = "' . $self->ticket . '"';
+    my $query = 'type = "reminder" AND refers_to = "' . $self->ticket . '"';
 
     $col->from_sql($query);
 
@@ -110,7 +110,7 @@ sub add {
         subject   => $args{'subject'},
         owner     => $args{'owner'},
         due       => $args{'due'},
-        RefersTo => $self->ticket,
+        refers_to => $self->ticket,
         type      => 'reminder',
         queue     => $self->ticket_obj->queue,
     );

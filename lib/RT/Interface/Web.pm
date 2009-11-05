@@ -1072,7 +1072,7 @@ sub process_record_links {
 
     # Delete links that are gone gone gone.
     foreach my $arg ( keys %$args_ref ) {
-        if ( $arg =~ /delete_link-(.*?)-(DependsOn|MemberOf|RefersTo)-(.*)$/ ) {
+        if ( $arg =~ /delete_link-(.*?)-(depends_on|member_of|refers_to)-(.*)$/ ) {
             my $base   = $1;
             my $type   = $2;
             my $target = $3;
@@ -1089,7 +1089,7 @@ sub process_record_links {
 
     }
 
-    my @linktypes = qw( DependsOn MemberOf RefersTo );
+    my @linktypes = qw( depends_on member_of refers_to );
 
     foreach my $linktype (@linktypes) {
         if ( $args_ref->{ $Record->id . "-$linktype" } ) {

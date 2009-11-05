@@ -128,7 +128,7 @@ sub limit_refers_to {
     my $self = shift;
     my $URI  = shift;
 
-    $self->limit( column => 'type',   value => 'RefersTo' );
+    $self->limit( column => 'type',   value => 'refers_to' );
     $self->limit( column => 'target', value => $URI );
 }
 
@@ -143,7 +143,7 @@ sub limit_referred_to_by {
     my $self = shift;
     my $URI  = shift;
 
-    $self->limit( column => 'type', value => 'RefersTo' );
+    $self->limit( column => 'type', value => 'refers_to' );
     $self->limit( column => 'base', value => $URI );
 }
 

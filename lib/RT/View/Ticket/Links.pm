@@ -69,9 +69,9 @@ template '_elements/edit_links' => sub {
 
                 show( '_edit_link_type', _('Depended on by'), 'depended_on_by', $ticket->depended_on_by, $delete_links, 'base_uri' );
 
-                show( '_edit_link_type', _('Parents'), 'member_of', $ticket->member_of, $delete_links, 'target_uri' );
+                show( '_edit_link_type', _('parents'), 'member_of', $ticket->member_of, $delete_links, 'target_uri' );
 
-                show( '_edit_link_type', _('Children'), 'has_member', $ticket->members, $delete_links, 'base_uri' );
+                show( '_edit_link_type', _('children'), 'has_member', $ticket->members, $delete_links, 'base_uri' );
 
                 show( '_edit_link_type', _('Refers to'), 'refers_to', $ticket->refers_to, $delete_links, 'target_uri' );
 

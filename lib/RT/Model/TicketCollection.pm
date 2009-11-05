@@ -113,13 +113,13 @@ our %FIELD_METADATA = (
     Linked       => ['LINK'],                                   #loc_left_pair
     LinkedTo    => [ 'LINK' => 'To' ],                          #loc_left_pair
     LinkedFrom   => [ 'LINK' => 'From' ],                       #loc_left_pair
-    MemberOf     => [ 'LINK' => To => 'MemberOf', ],            #loc_left_pair
-    DependsOn    => [ 'LINK' => To => 'DependsOn', ],           #loc_left_pair
-    RefersTo     => [ 'LINK' => To => 'RefersTo', ],            #loc_left_pair
-    HasMember   => [ 'LINK' => From => 'MemberOf', ],           #loc_left_pair
-    DependentOn  => [ 'LINK' => From => 'DependsOn', ],         #loc_left_pair
-    DependedOnBy => [ 'LINK' => From => 'DependsOn', ],         #loc_left_pair
-    ReferredToBy => [ 'LINK' => From => 'RefersTo', ],          #loc_left_pair
+    member_of     => [ 'LINK' => To => 'member_of', ],            #loc_left_pair
+    depends_on    => [ 'LINK' => To => 'depends_on', ],           #loc_left_pair
+    refers_to     => [ 'LINK' => To => 'refers_to', ],            #loc_left_pair
+    has_member   => [ 'LINK' => From => 'member_of', ],           #loc_left_pair
+    DependentOn  => [ 'LINK' => From => 'depends_on', ],         #loc_left_pair
+    depended_on_by => [ 'LINK' => From => 'depends_on', ],         #loc_left_pair
+    referred_to_by => [ 'LINK' => From => 'refers_to', ],          #loc_left_pair
     Told            => [ 'DATE'         => 'Told', ],           #loc_left_pair
     Starts          => [ 'DATE'         => 'starts', ],         #loc_left_pair
     Started         => [ 'DATE'         => 'Started', ],        #loc_left_pair
@@ -383,11 +383,11 @@ sub _int_limit {
 
 =head2 _link_limit
 
-Handle fields which deal with links between tickets.  (MemberOf, DependsOn)
+Handle fields which deal with links between tickets.  (member_of, depends_on)
 
 Meta Data:
   1: Direction (From, To)
-  2: Link type (MemberOf, DependsOn, RefersTo)
+  2: Link type (member_of, depends_on, refers_to)
 
 =cut
 
@@ -440,7 +440,7 @@ sub _link_limit {
 
     #For doing a left join to find "unlinked tickets" we want to generate a query that looks like this
     #    SELECT main.* FROM Tickets main
-    #        left join Links Links_1 ON (     (Links_1.Type = 'MemberOf')
+    #        left join Links Links_1 ON (     (Links_1.Type = 'member_of')
     #                                      AND(main.id = Links_1.local_target))
     #        WHERE Links_1.local_base IS NULL;
 
@@ -1857,7 +1857,7 @@ sub limit_watcher {
 limit_linked_to takes a paramhash with two fields: type and target
 type limits the sort of link we want to search on
 
-type = { RefersTo, MemberOf, DependsOn }
+type = { refers_to, member_of, depends_on }
 
 target is the id or URI of the target of the link
 
@@ -1904,9 +1904,9 @@ sub limit_linked_from {
     );
 
     # translate RT2 From/To naming to RT3 TicketSQL naming
-    my %fromToMap = qw(DependsOn DependentOn
-        MemberOf  has_member
-        RefersTo  ReferredToBy);
+    my %fromToMap = qw(depends_on DependentOn
+        member_of  has_member
+        refers_to  referred_to_by);
 
     my $type = $args{'type'};
     $type = $fromToMap{$type} if exists( $fromToMap{$type} );
@@ -1928,7 +1928,7 @@ sub limit_member_of {
     return $self->limit_linked_to(
         @_,
         target => $ticket_id,
-        type   => 'MemberOf',
+        type   => 'member_of',
     );
 }
 
@@ -1952,7 +1952,7 @@ sub limitdepends_on {
     return $self->limit_linked_to(
         @_,
         target => $ticket_id,
-        type   => 'DependsOn',
+        type   => 'depends_on',
     );
 
 }
@@ -1978,7 +1978,7 @@ sub limit_refers_to {
     return $self->limit_linked_to(
         @_,
         target => $ticket_id,
-        type   => 'RefersTo',
+        type   => 'refers_to',
     );
 
 }
@@ -1991,7 +1991,7 @@ sub limit_referred_to_by {
     return $self->limit_linked_from(
         @_,
         base => $ticket_id,
-        type => 'ReferredToBy',
+        type => 'referred_to_by',
     );
 }
 

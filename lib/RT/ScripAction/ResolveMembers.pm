@@ -74,7 +74,7 @@ sub commit {
     my $self = shift;
 
     my $Links = RT::Model::LinkCollection->new( current_user => RT->system_user );
-    $Links->limit( column => 'type',   value => 'MemberOf' );
+    $Links->limit( column => 'type',   value => 'member_of' );
     $Links->limit( column => 'target', value => $self->ticket_obj->id );
 
     while ( my $Link = $Links->next() ) {

@@ -871,20 +871,20 @@ sub brief_description {
             } else {
                 $value = $self->new_value;
             }
-            if ( $self->field eq 'DependsOn' ) {
+            if ( $self->field eq 'depends_on' ) {
                 return _( "Dependency on %1 added", $value );
-            } elsif ( $self->field eq 'DependedOnBy' ) {
+            } elsif ( $self->field eq 'depended_on_by' ) {
                 return _( "Dependency by %1 added", $value );
 
-            } elsif ( $self->field eq 'RefersTo' ) {
+            } elsif ( $self->field eq 'refers_to' ) {
                 return _( "Reference to %1 added", $value );
-            } elsif ( $self->field eq 'ReferredToBy' ) {
+            } elsif ( $self->field eq 'referred_to_by' ) {
                 return _( "Reference by %1 added", $value );
-            } elsif ( $self->field eq 'MemberOf' ) {
+            } elsif ( $self->field eq 'member_of' ) {
                 return _( "Membership in %1 added", $value );
             } elsif ( $self->field eq 'has_member' ) {
                 return _( "Member %1 added", $value );
-            } elsif ( $self->field eq 'MergedInto' ) {
+            } elsif ( $self->field eq 'merged_into' ) {
                 return _( "Merged into %1", $value );
             }
         } else {
@@ -903,16 +903,16 @@ sub brief_description {
                 $value = $self->old_value;
             }
 
-            if ( $self->field eq 'DependsOn' ) {
+            if ( $self->field eq 'depends_on' ) {
                 return _( "Dependency on %1 deleted", $value );
-            } elsif ( $self->field eq 'DependedOnBy' ) {
+            } elsif ( $self->field eq 'depended_on_by' ) {
                 return _( "Dependency by %1 deleted", $value );
 
-            } elsif ( $self->field eq 'RefersTo' ) {
+            } elsif ( $self->field eq 'refers_to' ) {
                 return _( "Reference to %1 deleted", $value );
-            } elsif ( $self->field eq 'ReferredToBy' ) {
+            } elsif ( $self->field eq 'referred_to_by' ) {
                 return _( "Reference by %1 deleted", $value );
-            } elsif ( $self->field eq 'MemberOf' ) {
+            } elsif ( $self->field eq 'member_of' ) {
                 return _( "Membership in %1 deleted", $value );
             } elsif ( $self->field eq 'has_member' ) {
                 return _( "Member %1 deleted", $value );

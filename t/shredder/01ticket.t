@@ -45,7 +45,7 @@ cmp_deeply( RT::Test::Shredder::dump_current_and_savepoint('clean'), "current DB
     my ($cid) = $child->create( subject => 'test', queue => 1 );
     ok( $cid, "Created new ticket" );
 
-    my ($status, $msg) = $parent->add_link( type => 'MemberOf', target => $cid );
+    my ($status, $msg) = $parent->add_link( type => 'member_of', target => $cid );
     ok( $status, "Added link between tickets") or diag("error: $msg");
     my $shredder = RT::Test::Shredder::shredder_new();
     $shredder->put_objects( objects => $child );
@@ -69,7 +69,7 @@ cmp_deeply( RT::Test::Shredder::dump_current_and_savepoint('clean'), "current DB
     my ($cid) = $child->create( subject => 'test', queue => 1 );
     ok( $cid, "Created new ticket" );
 
-    ($status, $msg) = $parent->add_link( type => 'DependsOn', target => $cid );
+    ($status, $msg) = $parent->add_link( type => 'depends_on', target => $cid );
     ok( $status, "Added link between tickets") or diag("error: $msg");
     my $shredder = RT::Test::Shredder::shredder_new();
     $shredder->put_objects( objects => $child );

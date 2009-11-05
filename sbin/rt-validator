@@ -165,16 +165,16 @@ $redo_on{'Delete'} = {
     Tickets => [ 'Tickets -> other', 'Tickets <-> Role Groups' ],
     Transactions => [ 'Attachments -> other' ],
 
-    Principals => ['User <-> ACL equivalence group', 'GMs -> Groups, Members' ],
-    Users => ['User <-> ACL equivalence group', 'GMs -> Groups, Members', 'Principals -> Users' ],
-    Groups => ['User <-> ACL equivalence group', 'GMs -> Groups, Members', 'CGM vs. GM', 'Principals -> Groups' ],
+    Principals => ['User <-> ACL equivalence group', 'GMs -> Groups, members' ],
+    Users => ['User <-> ACL equivalence group', 'GMs -> Groups, members', 'Principals -> Users' ],
+    Groups => ['User <-> ACL equivalence group', 'GMs -> Groups, members', 'CGM vs. GM', 'Principals -> Groups' ],
 
     GroupMembers => [ 'CGM vs. GM' ],
     CachedGroupMembers => [ 'CGM vs. GM' ],
 };
 $redo_on{'Create'} = {
-    Principals => ['User <-> ACL equivalence group', 'GMs -> Groups, Members' ],
-    Groups => ['User <-> ACL equivalence group', 'GMs -> Groups, Members', 'CGM vs. GM' ],
+    Principals => ['User <-> ACL equivalence group', 'GMs -> Groups, members' ],
+    Groups => ['User <-> ACL equivalence group', 'GMs -> Groups, members', 'CGM vs. GM' ],
     GroupMembers => [ 'CGM vs. GM' ],
     CachedGroupMembers => [ 'CGM vs. GM' ],
 };
@@ -355,7 +355,7 @@ push @CHECKS, 'Role Groups (Instance, type) uniqueness' => sub {
 };
 
 
-push @CHECKS, 'GMs -> Groups, Members' => sub {
+push @CHECKS, 'GMs -> Groups, members' => sub {
     my $msg = "A record in GroupMembers references an object that doesn't exist."
         ." May be you deleted a group or principal directly from DB?"
         ." Usually it's ok to delete such records.";

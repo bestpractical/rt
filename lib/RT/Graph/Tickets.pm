@@ -76,9 +76,9 @@ our %ticket_status_style = (
 );
 
 our %link_style = (
-    MemberOf  => { style => 'solid' },
-    DependsOn => { style => 'dashed' },
-    RefersTo  => { style => 'dotted' },
+    member_of  => { style => 'solid' },
+    depends_on => { style => 'dashed' },
+    refers_to  => { style => 'dotted' },
 );
 
 # We don't use qw() because perl complains about "possible attempt to put comments in qw() list"
@@ -354,7 +354,7 @@ sub ticket_links {
             $args{'graph'}->add_edge(
 
                 # we revers order of member links to get better layout
-                $link->type eq 'MemberOf'
+                $link->type eq 'member_of'
                 ? ( $target->id => $base->id, dir => 'back' )
                 : ( $base->id => $target->id ),
                 %{ $link_style{ $link->type } || {} },
