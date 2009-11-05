@@ -161,10 +161,6 @@ if ($new_query) {
 my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
 push @actions, $tree->parse_sql( query => $query{query} );
 
-# if parsing went poorly, send them to the edit page to fix it
-if ( $actions[0] ) {
-    return $m->comp( "Edit.html", query => $query{'query'}, actions => \@actions );
-}
 
 my @options        = $tree->get_displayed_nodes;
 my @current_values = grep defined, @options[@clauses];
