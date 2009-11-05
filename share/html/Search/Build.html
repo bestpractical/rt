@@ -256,7 +256,7 @@ my $optionlist_arrayref;
 my $optionlist = join "\n", map {
           qq(<option value="$_->{INDEX}" $_->{SELECTED}>)
         . ( "&nbsp;" x ( 5 * $_->{DEPTH} ) )
-        . $m->interp->apply_escapes( $_->{TEXT}, 'h' )
+		. Jifty->web->escape( $_->{TEXT})
         . qq(</option>)
 } @$optionlist_arrayref;
 
