@@ -217,7 +217,6 @@ foreach my $arg ( keys %ARGS ) {
     }
 }
 
-use RT::Interface::Web::QueryBuilder;
 push @actions, RT::Interface::Web::QueryBuilder->process_query( \%ARGS, $tree, \@current_values, \@new_values, );
 
 #  Rebuild $Query based on the additions / movements

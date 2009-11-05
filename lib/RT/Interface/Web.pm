@@ -66,7 +66,6 @@ use RT::System;
 use RT::SavedSearches;
 use RT::Interface::Web::QueryBuilder;
 
-
 use URI qw();
 use Digest::MD5 ();
 use Encode qw();
