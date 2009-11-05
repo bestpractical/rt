@@ -183,15 +183,13 @@ foreach my $arg ( keys %ARGS ) {
     #figure out if it's a grouping
     my $keyword = $ARGS{ $field . "_field" } || $field;
 
-    my ( @ops, @values );
-
     my $op_name  = $field . "_op";
     my $op_value = 'value_of_' . $field;
 
     # we may have many keys/values to iterate over, because there
     # may be more than one CF with the same name.
-    @ops    = ref $ARGS{$op_value} ? @{ $ARGS{$op_name} }  : $ARGS{$op_name};
-    @values = ref $ARGS{$op_value} ? @{ $ARGS{$op_value} } : $ARGS{$op_value};
+    my @ops    = ref $ARGS{$op_value} ? @{ $ARGS{$op_name} }  : $ARGS{$op_name};
+    my @values = ref $ARGS{$op_value} ? @{ $ARGS{$op_value} } : $ARGS{$op_value};
 
     Jifty->log->error("Bad Parameters passed into Query Builder") unless @ops == @values;
 
