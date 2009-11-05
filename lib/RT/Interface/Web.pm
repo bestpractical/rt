@@ -65,6 +65,7 @@ use RT::Report::Tickets;
 use RT::System;
 use RT::SavedSearches;
 use RT::Interface::Web::QueryBuilder;
+use RT::Interface::Web::QueryBuilder::Tree;
 
 use URI qw();
 use Digest::MD5 ();

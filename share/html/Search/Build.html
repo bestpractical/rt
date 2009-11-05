@@ -117,8 +117,6 @@
 
 </&>
 <%INIT>
-use RT::Interface::Web::QueryBuilder::Tree;
-
 my $saved_search;
 my %query = map { $_ => $ARGS{$_} } qw(query format order_by order rows_per_page);
 my @actions = RT::Interface::Web::QueryBuilder->load_saved_search( \%ARGS, \%query, $saved_search );
