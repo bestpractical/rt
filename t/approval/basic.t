@@ -74,7 +74,7 @@ my $rule = RT::Lorzy->create_scripish(
     'Create approval tickets',
     $q->id,
 );
-diag $rule->condition_code;
+diag $rule->condition_code if $ENV{TEST_VERBOSE};
 my $t = RT::Model::Ticket->new(current_user => RT->system_user);
 my ($tid, $ttrans, $tmsg);
 
