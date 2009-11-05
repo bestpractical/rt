@@ -178,7 +178,6 @@ foreach my $arg ( keys %ARGS ) {
             && ( ref $ARGS{$arg} eq "ARRAY" ? grep $_ ne '', @{ $ARGS{$arg} } : $ARGS{$arg} ne '' );
 
     my $field = $1;
-    my ( $op, $value );
 
     #figure out if it's a grouping
     my $keyword = $ARGS{ $field . "_field" } || $field;
