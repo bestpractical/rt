@@ -98,8 +98,7 @@ $ARGS{'order'} = join '|', grep defined && /\S/, (ref $ARGS{'order'})? @{$ARGS{'
 $ARGS{'order_by'} = join '|', grep defined && /\S/, (ref $ARGS{'order_by'})? @{$ARGS{'order_by'}}: $ARGS{'order_by'};
 
 my ( $AvailableColumns, $current_format );
-( $ARGS{format}, $AvailableColumns, $current_format ) = $m->comp(
-    '/Search/Elements/BuildFormatString',
+( $ARGS{format}, $AvailableColumns, $current_format ) = RT::Interface::Web::QueryBuilder->build_format_string(
     cfqueues => {}, %ARGS
 );
 

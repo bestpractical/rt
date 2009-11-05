@@ -264,8 +264,8 @@ my $queues = $tree->get_referenced_queues;
 
 #  Deal with format changes
 my ( $AvailableColumns, $current_format );
-( $query{'format'}, $AvailableColumns, $current_format ) = $m->comp(
-    'Elements/BuildFormatString',
+
+( $query{'format'}, $AvailableColumns, $current_format ) = RT::Interface::Web::QueryBuilder->build_format_string(
     %ARGS,
     cfqueues => $queues,
     format   => $query{'format'},

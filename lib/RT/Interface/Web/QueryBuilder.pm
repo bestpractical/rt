@@ -312,5 +312,179 @@ sub save_search {
     return @results;
 }
 
+sub build_format_string {
+    my $self = shift;
+    my %args = (
+        format                  => RT->config->get('default_search_result_format'),
+        cfqueues                => undef,
+        face                    => undef,
+        size                    => undef,
+        link                    => undef,
+        title                   => undef,
+        add_col                 => undef,
+        remove_col              => undef,
+        col_up                  => undef,
+        col_down                => undef,
+        select_display_columns  => undef,
+        current_display_columns => undef,
+        @_
+    );
+
+    # All the things we can display in the format string by default
+    my @fields = qw(
+        id queue_name subject
+        status extended_status update_status
+        type owner_name requestors cc admin_cc created_by last_updated_by
+        priority initial_priority final_priority
+        time_worked time_left time_estimated
+        starts      starts_relative
+        started     started_relative
+        created     created_relative
+        last_updated last_updated_relative
+        told        told_relative
+        due         due_relative
+        resolved    resolved_relative
+        refers_to    referred_to_by
+        depends_on   depended_on_by
+        member_of    members
+        parents     children
+        Bookmark
+        NEWLINE     Bookmark
+        );    # loc_qw
+
+    my $CustomFields = RT::Model::CustomFieldCollection->new();
+    foreach my $id ( keys %{$args{cfqueues}} ) {
+
+        # Gotta load up the $queue object, since queues get stored by name now. my $id
+        my $queue = RT::Model::Queue->new();
+        $queue->load($id);
+        unless ( $queue->id ) {
+
+            # XXX TODO: This ancient code dates from a former developer
+            # we have no idea what it means or why cfqueues are so encoded.
+            $id =~ s/^.'*(.*).'*$/$1/;
+            $queue->load($id);
+        }
+        $CustomFields->limit_to_queue( $queue->id );
+    }
+    $CustomFields->limit_to_global;
+
+    while ( my $CustomField = $CustomFields->next ) {
+        push @fields, "custom_field.{" . $CustomField->name . "}";
+    }
+
+    my (@seen);
+
+    my @format = split( /,\s*/, $args{format} );
+    foreach my $field (@format) {
+        my %column = ();
+        $field =~ s/'(.*)'/$1/;
+        my ( $prefix, $suffix );
+        if ( $field =~ m/(.*)__(.*)__(.*)/ ) {
+            $prefix = $1;
+            $suffix = $3;
+            $field  = $2;
+        }
+        $field = "<blank>" if !$field;
+        $column{Prefix} = $prefix;
+        $column{Suffix} = $suffix;
+        $field =~ s/\s*(.*)\s*/$1/;
+        $column{Column} = $field;
+        push @seen, \%column;
+    }
+
+    if ( $args{remove_col} ) {
+
+        # we do this regex match to avoid a non-numeric warning
+        my ($index) = $args{current_display_columns} =~ /^(\d+)/;
+
+        my $column = $seen[$index];
+        if ($index) {
+            delete $seen[$index];
+            my @temp = @seen;
+            @seen = ();
+            foreach my $element (@temp) {
+                next unless $element;
+                push @seen, $element;
+            }
+        }
+    } elsif ( $args{add_col} ) {
+        if ( defined $args{select_display_columns} ) {
+            my $selected = $args{select_display_columns};
+            my @columns;
+            if ( ref($selected) eq 'ARRAY' ) {
+                @columns = @$selected;
+            } else {
+                push @columns, $selected;
+            }
+            foreach my $col (@columns) {
+                my %column = ();
+                $column{Column} = $col;
+
+                if ( $args{face} eq "Bold" ) {
+                    $column{Prefix} .= "<b>";
+                    $column{Suffix} .= "</b>";
+                }
+                if ( $args{face} eq "Italic" ) {
+                    $column{Prefix} .= "<i>";
+                    $column{Suffix} .= "</i>";
+                }
+                if ($args{size}) {
+                    $column{Prefix} .= "<" . Jifty->web->escape($args{size}) . ">";
+                    $column{Suffix} .= "</" . Jifty->web->escape($args{size}) . ">";
+                }
+                if ( $args{link} eq "Display" ) {
+                    $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Display.html?id=__id__">};
+                    $column{Suffix} .= "</a>";
+                } elsif ( $args{link} eq "Take" ) {
+                    $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Display.html?Action=Take&id=__id__">};
+                    $column{Suffix} .= "</a>";
+                }
+
+                if ( $args{title} ) {
+                    $column{Suffix} .= "/TITLE:" . Jifty->web->escape( $args{title} );
+                }
+                push @seen, \%column;
+            }
+        }
+    } elsif ( $args{col_up} ) {
+        my $index = $args{current_display_columns};
+        if ( defined $index && ( $index - 1 ) >= 0 ) {
+            my $column = $seen[$index];
+            $seen[$index]                  = $seen[ $index - 1 ];
+            $seen[ $index - 1 ]            = $column;
+            $args{current_display_columns} = $index - 1;
+        }
+    } elsif ( $args{col_down} ) {
+        my $index = $args{current_display_columns};
+        if ( defined $index && ( $index + 1 ) < scalar @seen ) {
+            my $column = $seen[$index];
+            $seen[$index]                  = $seen[ $index + 1 ];
+            $seen[ $index + 1 ]            = $column;
+            $args{current_display_columns} = $index + 1;
+        }
+    }
+
+    my @format_string;
+    foreach my $field (@seen) {
+        next unless $field;
+        my $row = "'";
+        $row .= $field->{'Prefix'} if defined $field->{'Prefix'};
+        $row .= "__" . (
+              $field->{'Column'} =~ m/\(/
+            ? $field->{'Column'}    # func, don't escape
+            : Jifty->web->escape( $field->{'Column'} )
+            )
+            . "__"
+            unless ( $field->{'Column'} eq "<blank>" );
+        $row .= $field->{'Suffix'} if defined $field->{'Suffix'};
+        $row .= "'";
+        push( @format_string, $row );
+    }
+
+    return ( join( ",\n", @format_string ), \@fields, \@seen );
+
+}
+
 
 1;
