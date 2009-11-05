@@ -68,7 +68,7 @@ wrap 'HTTP::Request::Common::form_data', post => sub {
     }
 };
 
-our @EXPORT = qw(is_empty);
+our @EXPORT = qw(is_empty skip_rest);
 
 
 my $config;
@@ -560,6 +560,13 @@ sub fetch_caught_mails {
 
 sub clean_caught_mails {
     unlink $MAILBOX_CATCHER;
+}
+
+sub skip_rest {
+    my ($reason) = @_;
+    my $tb = Jifty::Test->builder;
+    $tb->skip($reason) for (1..$tb->expected_tests);
+    exit;
 }
 
 sub file_content {
