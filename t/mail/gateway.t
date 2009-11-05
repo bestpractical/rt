@@ -787,9 +787,12 @@ $tick->load( $id );
 is( $tick->owner, $user->id, "we changed owner" );
 ok( $user->has_right( right => 'ReplyToTicket', object => $tick ), "owner can reply to ticket" );
 is( $tick->transactions->count, 5, "transactions added" );
-$txns = $tick->transactions;
-while (my $t = $txns->next) {
-    diag( $t->id, $t->description."\n");
+
+if ( $ENV{TEST_VERBOSE} ) {
+    $txns = $tick->transactions;
+    while ( my $t = $txns->next ) {
+        diag( $t->id, $t->description . "\n" );
+    }
 }
 
 # }}}
