@@ -32,7 +32,7 @@ use Jifty::Action schema {
 
     param content =>
         render as 'textarea',
-        label is _('Describe the issue below');
+        label is _('Describe the issue');
 
     param initial_priority =>
         # default is queue-specific
