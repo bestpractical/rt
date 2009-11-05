@@ -1203,7 +1203,7 @@ sub gateway {
     my $subject = $head->get('subject') || '';
     chomp $subject;
 
-    # {{{ Lets check for mail loops of various sorts.
+    # Lets check for mail loops of various sorts.
     my ( $should_store_machine_generated_message, $IsALoop, $result );
     ( $should_store_machine_generated_message, $errors_to, $result, $IsALoop ) = _handle_machine_generated_mail(
         message    => $Message,
