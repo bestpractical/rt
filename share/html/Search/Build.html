@@ -92,7 +92,7 @@
 <& Elements/EditQuery,
     %ARGS,
     actions => \@actions,
-    optionlist => $optionlist,
+    parsed_query => $parsed_query,
 	description => $saved_search->{'description'},
     &>
 </div>
@@ -126,7 +126,7 @@ if ($new_query) {
     # Wipe all data-carrying variables clear if we want a new
     # search, or we're deleting an old one..
     %query = ();
-	$saved_search = { id => 'new'};
+    $saved_search = { id => 'new' };
 
     # ..then wipe the sessionand the search results.
     Jifty->web->session->remove('CurrentSearchHash');
@@ -212,15 +212,8 @@ foreach my $arg ( keys %ARGS ) {
 push @actions, RT::Interface::Web::QueryBuilder->process_query( \%ARGS, $tree, \@current_values, \@new_values, );
 
 #  Rebuild $Query based on the additions / movements
-
-my $optionlist_arrayref;
-( $query{'query'}, $optionlist_arrayref ) = $tree->get_query_and_option_list( \@current_values );
-
-my $optionlist = join "\n", map {
-          qq(<option value="$_->{INDEX}" $_->{SELECTED}>)
-        . ( "&nbsp;" x ( 5 * $_->{DEPTH} ) )
-        . Jifty->web->escape( $_->{TEXT})
-        . qq(</option>) } @$optionlist_arrayref;
+my $parsed_query;
+( $query{'query'}, $parsed_query ) = $tree->get_query_and_option_list( \@current_values );
 
 my $queues = $tree->get_referenced_queues;
 
