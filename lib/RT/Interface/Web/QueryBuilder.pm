@@ -160,6 +160,58 @@ sub process_query {
     return @results;
 }
 
+sub process_query_additions {
+	my $self = shift;
+    my $cgi_args = shift;
+    my @new_values;
+    foreach my $arg ( keys %$cgi_args ) {
+
+        #  Try to find if we're adding a clause
+        next
+            unless $arg =~ m/^value_of_(\w+|'CF.{.*?}')$/
+                && (ref $cgi_args->{$arg} eq "ARRAY"
+                    ? grep $_ ne '', @{ $cgi_args->{$arg} }
+                    : $cgi_args->{$arg} ne ''
+                );
+
+        my $field = $1;
+
+        #figure out if it's a grouping
+        my $keyword  = $cgi_args->{ $field . "_field" } || $field;
+        my $op_name  = $field . "_op";
+        my $op_value = 'value_of_' . $field;
+
+        # we may have many keys/values to iterate over, because there
+        # may be more than one CF with the same name.
+        my @ops    = ref $cgi_args->{$op_value} ? @{ $cgi_args->{$op_name} }  : $cgi_args->{$op_name};
+        my @values = ref $cgi_args->{$op_value} ? @{ $cgi_args->{$op_value} } : $cgi_args->{$op_value};
+
+        Jifty->log->debug("Bad Parameters passed into Query Builder") unless @ops == @values;
+
+        for ( my $i = 0; $i < @ops; $i++ ) {
+            my ( $op, $value ) = ( $ops[$i], $values[$i] );
+            next if !defined $value || $value eq '';
+
+            if ( $value eq 'NULL' && $op eq '=' ) {
+                $op = "IS";
+            } elsif ( $value eq 'NULL' && $op eq '!=' ) {
+                $op = "IS NOT";
+            } else {
+                $value =~ s/'/\\'/g;
+                $value = "'$value'" unless $value =~ /^\d+$/;
+            }
+
+            push @new_values,
+                RT::Interface::Web::QueryBuilder::Tree->new(
+                {   Key   => $keyword,
+                    Op    => $op,
+                    Value => $value
+                }
+                );
+        }
+    }
+    return @new_values;
+};
 
 sub load_saved_search {
     my $self          = shift;
