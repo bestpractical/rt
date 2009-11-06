@@ -120,19 +120,13 @@ if ($new_query) {
 }
 
 
-
-
 %query = RT::Interface::Web::QueryBuilder->set_query_defaults(%query);
-
-
 my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
-push @actions, $tree->parse_sql( query => $query{query} );
 
+push @actions, $tree->parse_sql( query => $query{query} );
 
 my @options        = $tree->get_displayed_nodes;
 my @current_values = grep defined, @options[@clauses];
-
-
 
 my @new_values = RT::Interface::Web::QueryBuilder->process_query_additions( \%ARGS );
 push @actions, RT::Interface::Web::QueryBuilder->process_query( \%ARGS, $tree, \@current_values, \@new_values, );
