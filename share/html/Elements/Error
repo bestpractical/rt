@@ -79,7 +79,8 @@ $error .= " ($details)" if defined $details && length $details;
 use Encode ();
 Encode::_utf8_off($error);
 
-Jifty->log->error($error);
+# yeah! use debug here to cause few warnings
+Jifty->log->debug($error);
 
 if ( defined Jifty->web->session->get('SessionType') && Jifty->web->session->get('SessionType') eq 'REST' ) {
     $r->content_type('text/plain');
