@@ -198,7 +198,8 @@ my $render_attachment = sub {
                 $content = $m->comp( '/Elements/ScrubHTML', Content => $content );
                 if ( $message->ContentType eq 'text/html' ) {
                     $m->comp('/Elements/MakeClicky', 
-                            content => \$content, html => 1 );
+                            content => \$content, html => 1,
+                            ticket => $Ticket );
                 }
                 $m->out( $content );
             }
