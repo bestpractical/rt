@@ -315,7 +315,7 @@ sub save_search {
 sub build_format_string {
     my $self = shift;
     my %args = (
-        format                  => RT->config->get('default_search_result_format'),
+        format                  => undef,
         cfqueues                => undef,
         face                    => undef,
         size                    => undef,
@@ -329,6 +329,9 @@ sub build_format_string {
         current_display_columns => undef,
         @_
     );
+		
+	
+	$args{format} = RT->config->get('default_search_result_format') unless $args{format};
 
     # All the things we can display in the format string by default
     my @fields = qw(
