@@ -13,7 +13,7 @@ $tests = 2;
 find ( sub { wanted() and $tests += 4 } , 'share/html/');
 }
 
-use RT::Test tests => $tests, strict => 0;
+use RT::Test tests => $tests, strict => 1;
 use HTTP::Request::Common;
 use HTTP::Cookies;
 use LWP;
@@ -52,5 +52,9 @@ sub test_get {
 }
 
 # }}}
+
+# it's predictable that we will get a lot of warnings because some pages need 
+# mandatory arguments, let's not show the warnings 
+$agent->get( '/__jifty/test_warnings' );
 
 1;
