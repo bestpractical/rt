@@ -57,9 +57,6 @@ alias RT::View::Admin under 'admin/';
 require RT::View::Ticket;
 alias RT::View::Ticket under 'ticket/';
 
-require RT::View::SetupWizard;
-alias RT::View::SetupWizard under '__jifty/admin/setupwizard';
-
 require RT::View::RuleBuilder;
 alias RT::View::RuleBuilder under 'rulebuilder/';
 
