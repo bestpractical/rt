@@ -390,32 +390,31 @@ sub SendEmail {
         my $path = RT->Config->Get('SendmailPath');
         my $args = RT->Config->Get('SendmailArguments');
 
-    # SetOutgoingMailFrom
+        # SetOutgoingMailFrom
+        if ( RT->Config->Get('SetOutgoingMailFrom') ) {
+            my $OutgoingMailAddress;
 
-    if ( RT->Config->Get('SetOutgoingMailFrom') ) {
-        my $OutgoingMailAddress;
+            if ($TicketObj) {
+                my $QueueName = $TicketObj->QueueObj->Name;
+                my $QueueAddressOverride = RT->Config->Get('OverrideOutgoingMailFrom')->{$QueueName};
 
-        if ($TicketObj) {
-            my $QueueName = $TicketObj->QueueObj->Name;
-            my $QueueAddressOverride = RT->Config->Get('OverrideOutgoingMailFrom')->{$QueueName};
-
-            if ($QueueAddressOverride) {
-                $OutgoingMailAddress = $QueueAddressOverride;
-            } else {
-                $OutgoingMailAddress = $TicketObj->QueueObj->CorrespondAddress;
+                if ($QueueAddressOverride) {
+                    $OutgoingMailAddress = $QueueAddressOverride;
+                } else {
+                    $OutgoingMailAddress = $TicketObj->QueueObj->CorrespondAddress;
+                }
             }
+
+            $OutgoingMailAddress ||= RT->Config->Get('OverrideOutgoingMailFrom')->{'Default'};
+
+            $args .= " -f $OutgoingMailAddress"
+                if $OutgoingMailAddress;
         }
 
-        $OutgoingMailAddress ||= RT->Config->Get('OverrideOutgoingMailFrom')->{'Default'};
+        # Set Bounce Arguments
+        $args .= ' '. RT->Config->Get('SendmailBounceArguments') if $args{'Bounce'};
 
-        $args .= ' -f ' . $OutgoingMailAddress
-            if $OutgoingMailAddress;
-    }
-
-    # Set Bounce Arguments
-    $args .= ' '. RT->Config->Get('SendmailBounceArguments') if $args{'Bounce'};
-
-    # VERP
+        # VERP
         if ( $TransactionObj and
              my $prefix = RT->Config->Get('VERPPrefix') and
              my $domain = RT->Config->Get('VERPDomain') )
