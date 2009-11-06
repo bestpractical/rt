@@ -397,10 +397,12 @@ sub SendEmail {
 
         if ($TicketObj) {
             my $QueueName = $TicketObj->QueueObj->Name;
-            if (not defined RT->Config->Get('OverrideOutgoingMailFrom')->{$QueueName}) {
-                $OutgoingMailAddress = $TicketObj->QueueObj->CorrespondAddress;
+            my $QueueAddressOverride = RT->Config->Get('OverrideOutgoingMailFrom')->{$QueueName};
+
+            if ($QueueAddressOverride) {
+                $OutgoingMailAddress = $QueueAddressOverride;
             } else {
-                $OutgoingMailAddress = RT->Config->Get('OverrideOutgoingMailFrom')->{$QueueName};
+                $OutgoingMailAddress = $TicketObj->QueueObj->CorrespondAddress;
             }
         }
 
