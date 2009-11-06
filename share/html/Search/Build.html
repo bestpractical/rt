@@ -153,8 +153,9 @@ my ( $available_columns, $current_format );
 );
 
 # if we're asked to save the current search, save it
-push @actions, RT::Interface::Web::QueryBuilder->save_search( \%ARGS, \%query, $saved_search );
-
+if( $ARGS{'saved_search_save'} || $ARGS{'saved_search_copy'}) {
+push @actions, RT::Interface::Web::QueryBuilder->save_search( \%query, $saved_search );
+}	
 #  Push the updates into the session so we don't loose 'em
 
 Jifty->web->session->set( 'CurrentSearchHash', {   %query,

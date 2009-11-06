@@ -310,12 +310,10 @@ sub load_saved_search {
 
 sub save_search {
     my $self          = shift;
-    my $ARGS          = shift;
     my $query         = shift;
     my $saved_search  = shift;
     my $search_fields = shift || [qw( query format order_by order rows_per_page)];
 
-    return unless $ARGS->{'saved_search_save'} || $ARGS->{'saved_search_copy'};
 
     my @results;
     my $obj  = $saved_search->{'object'};
