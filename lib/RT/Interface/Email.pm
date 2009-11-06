@@ -315,6 +315,10 @@ sub SendEmail {
         Transaction => undef,
         @_,
     );
+
+    my $TicketObj = $args{'Ticket'};
+    my $TransactionObj = $args{'Transaction'};
+
     foreach my $arg( qw(Entity Bounce) ) {
         next unless defined $args{ lc $arg };
 
@@ -339,26 +343,26 @@ sub SendEmail {
         return -1;
     }
 
-    if ( $args{'Transaction'} && !$args{'Ticket'}
-        && $args{'Transaction'}->ObjectType eq 'RT::Ticket' )
+    if ( $TransactionObj && !$TicketObj
+        && $TransactionObj->ObjectType eq 'RT::Ticket' )
     {
-        $args{'Ticket'} = $args{'Transaction'}->Object;
+        $TicketObj = $TransactionObj->Object;
     }
 
     if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
         my %crypt;
 
         my $attachment;
-        $attachment = $args{'Transaction'}->Attachments->First
-            if $args{'Transaction'};
+        $attachment = $TransactionObj->Attachments->First
+            if $TransactionObj;
 
         foreach my $argument ( qw(Sign Encrypt) ) {
             next if defined $args{ $argument };
 
             if ( $attachment && defined $attachment->GetHeader("X-RT-$argument") ) {
                 $crypt{$argument} = $attachment->GetHeader("X-RT-$argument");
-            } elsif ( $args{'Ticket'} ) {
-                $crypt{$argument} = $args{'Ticket'}->QueueObj->$argument();
+            } elsif ( $TicketObj ) {
+                $crypt{$argument} = $TicketObj->QueueObj->$argument();
             }
         }
 
@@ -382,21 +386,18 @@ sub SendEmail {
     # if it is a sub routine, we just return it;
     return $mail_command->($args{'Entity'}) if UNIVERSAL::isa( $mail_command, 'CODE' );
 
-    my $ticketObj = $args{'Ticket'};
-    my $transactionObj = $args{'Transaction'};
-
     if ( $mail_command eq 'sendmailpipe' ) {
         my $path = RT->Config->Get('SendmailPath');
         my $args = RT->Config->Get('SendmailArguments');
-	
+
 	# SetOutgoingMailFrom
-	
+
 	my $outgoingMailAddress;
 	if ( RT->Config->Get('SetOutgoingMailFrom') ) {
-		if ( defined $ticketObj ){
-			my $queueName = $ticketObj->QueueObj->Name;
+		if ( defined $TicketObj ){
+			my $queueName = $TicketObj->QueueObj->Name;
 			if (not defined RT->Config->Get('OverrideOutgoingMailFrom')->{$queueName}) {
-				$outgoingMailAddress = $ticketObj->QueueObj->CorrespondAddress;
+				$outgoingMailAddress = $TicketObj->QueueObj->CorrespondAddress;
 			} else {
 				$outgoingMailAddress = RT->Config->Get('OverrideOutgoingMailFrom')->{$queueName};
 			}
@@ -409,13 +410,13 @@ sub SendEmail {
 
 	# Set Bounce Arguments
 	$args .= ' '. RT->Config->Get('SendmailBounceArguments') if $args{'Bounce'};
-	
+
 	# VERP
-        if ( $args{'Transaction'} and
+        if ( $TransactionObj and
              my $prefix = RT->Config->Get('VERPPrefix') and
              my $domain = RT->Config->Get('VERPDomain') )
         {
-            my $from = $args{'Transaction'}->CreatorObj->EmailAddress;
+            my $from = $TransactionObj->CreatorObj->EmailAddress;
             $from =~ s/@/=/g;
             $from =~ s/\s//g;
             $args .= " -f $prefix$from\@$domain";
