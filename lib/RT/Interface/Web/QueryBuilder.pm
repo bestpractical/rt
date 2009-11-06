@@ -179,7 +179,7 @@ sub load_saved_search {
     }
 
     if ( $ARGS->{'saved_search_load'} ) {
-        my ( $container, $id ) = _parse_saved_search( $ARGS->{'saved_search_load'} );
+        my ( $container, $id ) = RT::Interface::Web::QueryBuilder::_parse_saved_search( $ARGS->{'saved_search_load'} );
         my $search = $container->attributes->with_id($id);
 
         $saved_search->{'id'}          = $ARGS->{'saved_search_load'};
@@ -195,7 +195,7 @@ sub load_saved_search {
     } elsif ( $ARGS->{'saved_search_delete'} ) {
 
         # We set $SearchId to 'new' above already, so peek into the %ARGS
-        my ( $container, $id ) = _parse_saved_search( $saved_search->{'id'} );
+        my ( $container, $id ) = RT::Interface::Web::QueryBuilder::_parse_saved_search( $saved_search->{'id'} );
         if ( $container && $container->id ) {
 
             # We have the object the entry is an attribute on; delete the entry...
@@ -206,7 +206,7 @@ sub load_saved_search {
         $saved_search->{'description'} = undef;
         push @results, _("Deleted saved search");
     } elsif ( $ARGS->{'saved_search_copy'} ) {
-        my ( $container, $id ) = _parse_saved_search( $ARGS->{'saved_search_id'} );
+        my ( $container, $id ) = RT::Interface::Web::QueryBuilder::_parse_saved_search( $ARGS->{'saved_search_id'} );
         $saved_search->{'object'} = $container->attributes->withid($id);
         if (   $ARGS->{'saved_search_description'}
             && $ARGS->{'saved_search_description'} ne $saved_search->{'object'}->description )
@@ -223,11 +223,10 @@ sub load_saved_search {
         && $saved_search->{'id'} ne 'new'
         && !$saved_search->{'object'} )
     {
-        my ( $container, $id ) = _parse_saved_search( $ARGS->{'saved_search_id'} );
+        my ( $container, $id ) = RT::Interface::Web::QueryBuilder::_parse_saved_search( $ARGS->{'saved_search_id'} );
         $saved_search->{'object'} = $container->attributes->with_id($id);
         $saved_search->{'description'} ||= $saved_search->{'object'}->description;
     }
-
     return @results;
 }
 
@@ -245,7 +244,6 @@ sub save_search {
     my $obj  = $saved_search->{'object'};
     my $id   = $saved_search->{'id'};
     my $desc = $saved_search->{'description'};
-
     my $privacy = $saved_search->{'Privacy'};
 
     my %params = map { $_ => $query->{$_} } @$search_fields;
@@ -311,6 +309,38 @@ sub save_search {
 
     return @results;
 }
+
+=head2 _parse_saved_search ( $arg );
+
+Given a serialization string for saved search, and returns the
+container object and the search id.
+
+=cut
+
+sub _parse_saved_search {
+    my $spec = shift;
+    return unless $spec;
+    if ( $spec !~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
+        return;
+    }
+    my $obj_type  = $1;
+    my $obj_id    = $2;
+    my $search_id = $3;
+
+    return ( _load_container_object( $obj_type, $obj_id ), $search_id );
+}
+
+=head2 _load_container_object ( $type, $id );
+
+Instantiate container object for saving searches.
+
+=cut
+
+sub _load_container_object {
+    my ( $obj_type, $obj_id ) = @_;
+    return RT::SavedSearch->new()->_load_privacy_object( $obj_type, $obj_id );
+}
+
 
 sub build_format_string {
     my $self = shift;

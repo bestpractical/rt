@@ -62,7 +62,7 @@ push @objects, RT::System->new()
 $self->{SearchId} ||= 'new';
 my $search_params = { map { $_ => $args->{$_} } @{$self->{SearchFields}} };
 
-if ( my ( $container_object, $search_id ) = _parse_saved_search( $args->{'SavedSearchLoad'} ) ) {
+if ( my ( $container_object, $search_id ) = RT::Interface::Web::QueryBuilder::_parse_saved_search( $args->{'SavedSearchLoad'} ) ) {
     my $search = $container_object->attributes->with_id($search_id);
     # We have a $search and now; import the others
     $self->{SearchId} = $args->{'SavedSearchLoad'};

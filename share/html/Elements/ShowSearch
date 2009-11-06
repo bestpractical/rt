@@ -63,7 +63,7 @@ my $query_display_component = '/Elements/CollectionList';
 my $query_link_url = RT->config->get('web_path').'/Search/Results.html';
 
 if ($saved_search) {
-    my ( $container_object, $search_id ) = _parse_saved_search($saved_search);
+    my ( $container_object, $search_id ) = RT::Interface::Web::QueryBuilder::_parse_saved_search($saved_search);
     unless ( $container_object ) {
         $m->out(_("Either you have no rights to view saved search %1 or identifier is incorrect", $saved_search));
         return;
