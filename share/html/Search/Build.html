@@ -74,9 +74,9 @@
 &>
 
 <form method="post" action="Build.html" name="build_query">
-	<input type="hidden" class="hidden" name="saved_search_id" value="<% $saved_search->{'id'} %>" />
-<input type="hidden" class="hidden" name="query" value="<% $query{'query'} %>" />
-<input type="hidden" class="hidden" name="format" value="<% $query{'format'} %>" />
+<input type="hidden" class="hidden" name="saved_search_id" value="<% $saved_search->{'id'} || '' %>" />
+<input type="hidden" class="hidden" name="query" value="<% $query{'query'} || '' %>" />
+<input type="hidden" class="hidden" name="format" value="<% $query{'format'} || '' %>" />
 
 
 
