@@ -119,7 +119,10 @@ if ($new_query) {
     Jifty->web->session->get('tickets')->clean_slate if defined Jifty->web->session->get('tickets');
 }
 
-{    # Attempt to load what we can from the session and preferences, set defaults
+
+
+my $set_query_defaults = sub {
+	# Attempt to load what we can from the session and preferences, set defaults
 
     my $current = Jifty->web->session->get('CurrentSearchHash');
     my $prefs   = Jifty->web->current_user->user_object->preferences("SearchDisplay") || {};
@@ -135,8 +138,12 @@ if ($new_query) {
        $query{$param} = join( '|', @{ $query{$param} } ) if ( ref $query{$param} eq "ARRAY" ) 
     }
 
-    $query{'format'} = RT::Interface::Web->scrub_html( $query{'format'} ) if ( $query{'format'} );
-}
+	$query{'format'} = RT::Interface::Web->scrub_html( $query{'format'} ) if ( $query{'format'} );
+	return %query;
+};
+
+%query = $set_query_defaults->(%query);
+
 
 my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
 push @actions, $tree->parse_sql( query => $query{query} );
