@@ -42,7 +42,8 @@ my ($grantid,$grantmsg) =$user_obj->principal->grant_right(right => 'ShowConfigT
 
 ok($grantid,$grantmsg);
 
-$agent->reload;
+# instead of $agent->reload so $agent won't try to login again
+$agent->get( $agent->uri ); 
 
 like($agent->{'content'} , qr/Logout/i, "Reloaded page successfully");
 ok($agent->find_link( url => RT->config->get('web_path') . "/Admin/",
