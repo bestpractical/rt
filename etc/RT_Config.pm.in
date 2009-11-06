@@ -374,26 +374,27 @@ Set($MailCommand , 'sendmailpipe');
 
 =item C<$SetOutgoingMailFrom>
 
-C<$SetOutgoingMailFrom> enables that RT sets the sender envelope with
-the
-correspond mail address of the ticket's queue.
+C<$SetOutgoingMailFrom> tells RT to set the sender envelope with the correspond
+mail address of the ticket's queue.
 
-Warning: If you use RT in this way, you should know that bounce mails
-will
-be incoming to the system, and creating new tickets.
+Warning: If you use this setting, bounced mails will appear to be incoming
+mail to the system, thus creating new tickets.
+
 =cut
 
-Set ($SetOutgoingMailFrom, 1);
+Set($SetOutgoingMailFrom, 0);
 
 =item C<$OverrideOutgoingMailFrom>
 
 C<$OverrideOutgoingMailFrom> is used for overwriting the Correspond
-address of the queue.
+address of the queue. The option is a hash reference of queue name to
+email address.
 
 =cut
+
 Set($OverrideOutgoingMailFrom, {
-}
-);
+#    'General' => 'general@rt.example.com',
+});
 
 =back
 
