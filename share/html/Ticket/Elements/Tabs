@@ -270,7 +270,7 @@ $has_query = 1 if ( $ARGS{'query'} or Jifty->web->session->get('CurrentSearchHas
     $args = "?" . $m->comp( '/Elements/QueryString', %query_args );
 
 $tabs->{"f"} = {
-    path  => "Search/Build.html?NewQuery=1",
+    path  => "Search/Build.html?new_query=1",
     title => _('New Search')
 };
 $tabs->{"g"} = {
