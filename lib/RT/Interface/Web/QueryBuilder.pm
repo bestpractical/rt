@@ -2,6 +2,31 @@ package RT::Interface::Web::QueryBuilder;
 use warnings;
 use strict;
 
+
+sub set_query_defaults {
+	my $self = shift;
+	my %query = (@_);
+	# Attempt to load what we can from the session and preferences, set defaults
+
+    my $current = Jifty->web->session->get('CurrentSearchHash');
+    my $prefs   = Jifty->web->current_user->user_object->preferences("SearchDisplay") || {};
+    my $default = { query => '', format => '', order_by => 'id', order => 'ASC', rows_per_page => 50 };
+
+    for my $param (qw(query format order_by order rows_per_page)) {
+        $query{$param} = $current->{$param} unless defined $query{$param};
+        $query{$param} = $prefs->{$param}   unless defined $query{$param};
+        $query{$param} = $default->{$param} unless defined $query{$param};
+    }
+
+    for my $param  (qw(order order_by)) {
+       $query{$param} = join( '|', @{ $query{$param} } ) if ( ref $query{$param} eq "ARRAY" ) 
+    }
+
+	$query{'format'} = RT::Interface::Web->scrub_html( $query{'format'} ) if ( $query{'format'} );
+	return %query;
+}
+
+
 sub process_query {
     my $self     = shift;
     my $ARGS     = shift;
