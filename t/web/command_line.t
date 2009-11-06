@@ -3,9 +3,10 @@
 use strict;
 use Test::Expect;
 use File::Spec ();
-use RT::Test strict => 0, tests => 241, l10n => 1;
+use RT::Test strict => 1, tests => 244, l10n => 1;
 
 my ($baseurl, $m) = RT::Test->started_ok;
+ok( $m->login, 'login' );
 use RT::Model::User;
 use RT::Model::Queue;
 use Encode;
@@ -100,7 +101,6 @@ my $othercf = RT::Model::CustomField->new(current_user => RT->system_user);
 ok($val,$msg);
 
 
-
 # add a comment to ticket
     expect_send("comment -m 'comment-$$' $ticket_id", "Adding a comment...");
     expect_like(qr/Message recorded/, "Added the comment");
@@ -117,6 +117,8 @@ ok($val,$msg);
     check_attachment($test_email);
     # binary attachment
     check_attachment(RT->html_path.'/NoAuth/images/bplogo.gif');
+    #XXX TODO this is not so right warning
+    $m->warnings_like( qr/Encode::Guess failed/ );
 
 # change a ticket's Owner
 expect_send("edit ticket/$ticket_id set owner=root", 'Changing owner...');
@@ -148,6 +150,7 @@ expect_send("edit ticket/$ticket_id set queue=nonexistent-$$", 'Changing to none
 expect_like(qr/queue does not exist/i, 'Errored out');
 expect_send("show ticket/$ticket_id -f queue", 'Verifying lack of change...');
 expect_like(qr/Queue: EditedQueue$$/, 'Verified lack of change');
+
 
 # Test reading and setting custom fields without spaces
 expect_send("show ticket/$ticket_id -f CF-myCF$$", 'Checking initial value');
@@ -334,6 +337,7 @@ my $merge_ticket_B = $1;
 ok($merge_ticket_B, "Got second ticket to merge id=$merge_ticket_B");
 expect_send("merge $merge_ticket_B $merge_ticket_A", 'Merging the tickets...');
 expect_like(qr/Merge completed/, 'Merged the tickets');
+$m->warnings_like( qr/That principal is already a requestor/ );
 
 expect_send("show ticket/$merge_ticket_A/history", 'Checking merge on first ticket');
 expect_like(qr/Merged into ticket #$merge_ticket_A by root/, 'Merge recorded in first ticket');

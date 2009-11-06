@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test strict => 0;
+use RT::Test strict => 1;
 use Test::More;
 
 plan skip_all => 'GnuPG required.'
@@ -10,7 +10,7 @@ plan skip_all => 'GnuPG required.'
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
 
-plan tests => 176;
+plan tests => 192;
 
 
 use Digest::MD5 qw(md5_hex);
@@ -39,6 +39,7 @@ RT->config->set( 'mail_plugins' => ['Auth::MailFrom', 'Auth::GnuPG'] );
 
 RT::Test->import_gnupg_key('rt-recipient@example.com');
 RT::Test->import_gnupg_key('rt-test@example.com', 'public');
+RT::Test->trust_gnupg_key('rt-test@example.com');
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'we did log in';
@@ -72,6 +73,11 @@ for my $usage (qw/signed encrypted signed&encrypted/) {
         }
     }
 }
+
+$m->warnings_like(
+    [ (qr/Recipient 'ternus\@mit.edu' is unusable/ ) x 16 ],
+    "got Recipient 'ternus\@mit.edu  is unusable warning"
+);
 
 sub email_ok {
     my ($eid, $usage, $format, $attachment) = @_;
