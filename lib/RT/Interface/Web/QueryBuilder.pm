@@ -2,11 +2,11 @@ package RT::Interface::Web::QueryBuilder;
 use warnings;
 use strict;
 
-
 sub set_query_defaults {
-	my $self = shift;
-	my %query = (@_);
-	# Attempt to load what we can from the session and preferences, set defaults
+    my $self  = shift;
+    my %query = (@_);
+
+    # Attempt to load what we can from the session and preferences, set defaults
 
     my $current = Jifty->web->session->get('CurrentSearchHash');
     my $prefs   = Jifty->web->current_user->user_object->preferences("SearchDisplay") || {};
@@ -18,14 +18,13 @@ sub set_query_defaults {
         $query{$param} = $default->{$param} unless defined $query{$param};
     }
 
-    for my $param  (qw(order order_by)) {
-       $query{$param} = join( '|', @{ $query{$param} } ) if ( ref $query{$param} eq "ARRAY" ) 
+    for my $param (qw(order order_by)) {
+        $query{$param} = join( '|', @{ $query{$param} } ) if ( ref $query{$param} eq "ARRAY" );
     }
 
-	$query{'format'} = RT::Interface::Web->scrub_html( $query{'format'} ) if ( $query{'format'} );
-	return %query;
+    $query{'format'} = RT::Interface::Web->scrub_html( $query{'format'} ) if ( $query{'format'} );
+    return %query;
 }
-
 
 sub process_query {
     my $self     = shift;
@@ -186,7 +185,7 @@ sub process_query {
 }
 
 sub process_query_additions {
-	my $self = shift;
+    my $self     = shift;
     my $cgi_args = shift;
     my @new_values;
     foreach my $arg ( keys %$cgi_args ) {
@@ -236,7 +235,7 @@ sub process_query_additions {
         }
     }
     return @new_values;
-};
+}
 
 sub load_saved_search {
     my $self          = shift;
@@ -307,18 +306,16 @@ sub load_saved_search {
     return @results;
 }
 
-
 sub save_search {
     my $self          = shift;
     my $query         = shift;
     my $saved_search  = shift;
     my $search_fields = shift || [qw( query format order_by order rows_per_page)];
 
-
     my @results;
-    my $obj  = $saved_search->{'object'};
-    my $id   = $saved_search->{'id'};
-    my $desc = $saved_search->{'description'};
+    my $obj     = $saved_search->{'object'};
+    my $id      = $saved_search->{'id'};
+    my $desc    = $saved_search->{'description'};
     my $privacy = $saved_search->{'Privacy'};
 
     my %params = map { $_ => $query->{$_} } @$search_fields;
@@ -416,12 +413,11 @@ sub _load_container_object {
     return RT::SavedSearch->new()->_load_privacy_object( $obj_type, $obj_id );
 }
 
-
 sub build_format_string {
     my $self = shift;
     my %args = (
         format                  => undef,
-        queues                => undef,
+        queues                  => undef,
         face                    => undef,
         size                    => undef,
         link                    => undef,
@@ -434,9 +430,8 @@ sub build_format_string {
         current_display_columns => undef,
         @_
     );
-		
-	
-	$args{format} = RT->config->get('default_search_result_format') unless $args{format};
+
+    $args{format} = RT->config->get('default_search_result_format') unless $args{format};
 
     # All the things we can display in the format string by default
     my @fields = qw(
@@ -461,7 +456,7 @@ sub build_format_string {
         );    # loc_qw
 
     my $CustomFields = RT::Model::CustomFieldCollection->new();
-    foreach my $id ( keys %{$args{queues}} ) {
+    foreach my $id ( keys %{ $args{queues} } ) {
 
         # Gotta load up the $queue object, since queues get stored by name now. my $id
         my $queue = RT::Model::Queue->new();
@@ -537,9 +532,9 @@ sub build_format_string {
                     $column{Prefix} .= "<i>";
                     $column{Suffix} .= "</i>";
                 }
-                if ($args{size}) {
-                    $column{Prefix} .= "<" . Jifty->web->escape($args{size}) . ">";
-                    $column{Suffix} .= "</" . Jifty->web->escape($args{size}) . ">";
+                if ( $args{size} ) {
+                    $column{Prefix} .= "<" . Jifty->web->escape( $args{size} ) . ">";
+                    $column{Suffix} .= "</" . Jifty->web->escape( $args{size} ) . ">";
                 }
                 if ( $args{link} eq "Display" ) {
                     $column{Prefix} .= q{<a HREF="__WebPath__/Ticket/Display.html?id=__id__">};
@@ -593,6 +588,5 @@ sub build_format_string {
     return ( join( ",\n", @format_string ), \@fields, \@seen );
 
 }
-
 
 1;
