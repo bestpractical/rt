@@ -77,7 +77,7 @@ RT::Test->set_rights(
 );
 
 my ($baseurl, $m) = RT::Test->started_ok;
-diag($baseurl);
+diag($baseurl) if $ENV{TEST_VERBOSE};
 ok $m->login, 'logged in';
 
 $m->get_ok("/Admin/Queues/Modify.html?id=$qid");

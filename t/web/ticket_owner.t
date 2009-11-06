@@ -96,7 +96,7 @@ diag "user A can not change owner after create" if $ENV{TEST_VERBOSE};
     my $test_cb = sub  {
         my $agent = shift;
         $agent->goto_ticket( $id );
-        diag("Going to ticket $id");
+        diag("Going to ticket $id") if $ENV{TEST_VERBOSE};
         $agent->follow_link_ok(text => 'Basics');
         my $form = $agent->form_number(3);
         is $agent->action_field_value(

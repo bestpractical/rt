@@ -150,5 +150,8 @@ sub is_set { not (shift->is_unset(@_)) }
 
 sub new_unset { RT::DateTime->from_epoch(epoch => 0) }
 
+sub is_in_past   { time > shift->epoch }
+sub is_in_future { shift->epoch > time }
+
 1;
 
