@@ -392,20 +392,22 @@ sub SendEmail {
 
     # SetOutgoingMailFrom
 
-    my $outgoingMailAddress;
     if ( RT->Config->Get('SetOutgoingMailFrom') ) {
-        if ( defined $TicketObj ){
-            my $queueName = $TicketObj->QueueObj->Name;
-            if (not defined RT->Config->Get('OverrideOutgoingMailFrom')->{$queueName}) {
-                $outgoingMailAddress = $TicketObj->QueueObj->CorrespondAddress;
+        my $OutgoingMailAddress;
+
+        if ($TicketObj) {
+            my $QueueName = $TicketObj->QueueObj->Name;
+            if (not defined RT->Config->Get('OverrideOutgoingMailFrom')->{$QueueName}) {
+                $OutgoingMailAddress = $TicketObj->QueueObj->CorrespondAddress;
             } else {
-                $outgoingMailAddress = RT->Config->Get('OverrideOutgoingMailFrom')->{$queueName};
+                $OutgoingMailAddress = RT->Config->Get('OverrideOutgoingMailFrom')->{$QueueName};
             }
-            $args .= ' -f '.$outgoingMailAddress;
-        } elsif (RT->Config->Get('OverrideOutgoingMailFrom')->{'Default'} ) {
-            $outgoingMailAddress  = RT->Config->Get('OverrideOutgoingMailFrom')->{'Default'};
-            $args .= ' -f '.$outgoingMailAddress;
         }
+
+        $OutgoingMailAddress ||= RT->Config->Get('OverrideOutgoingMailFrom')->{'Default'};
+
+        $args .= ' -f ' . $OutgoingMailAddress
+            if $OutgoingMailAddress;
     }
 
     # Set Bounce Arguments
