@@ -50,7 +50,8 @@ $m->get_ok($url."/Dashboards/Modify.html?create=1");
 $m->content_contains("Permission denied");
 $m->content_lacks("Save Changes");
 
-$m->warnings_like(qr/Permission denied/, "got a permission denied warning");
+# permission denied is not error in RT
+$m->no_warnings_ok;
 
 $user_obj->principal->grant_right(
     right  => 'CreateOwnDashboard',
@@ -150,7 +151,7 @@ $m->get_ok("/Dashboards/Subscription.html?dashboard_id=$id");
 $m->form_name( 'subscribe_dashboard' );
 $m->click_button(name => 'save');
 $m->content_contains("Permission denied");
-$m->warnings_like(qr/Unable to subscribe to dashboard.*Permission denied/, "got a permission denied warning when trying to subscribe to a dashboard");
+$m->no_warnings_ok;
 
 Jifty::DBI::Record::Cachable->flush_cache;
 is($user_obj->attributes->named('Subscription'), 0, "no subscriptions");
@@ -181,7 +182,7 @@ $m->content_contains("Modify the subscription to dashboard different dashboard")
 
 $m->get_ok("/Dashboards/Modify.html?id=$id&delete=1");
 $m->content_contains("Permission denied", "unable to delete dashboard because we lack DeleteOwnDashboard");
-$m->warnings_like(qr/Couldn't delete dashboard.*Permission denied/, "got a permission denied warning when trying to delete the dashboard");
+$m->no_warnings_ok;
 
 $user_obj->principal->grant_right(right => 'DeleteOwnDashboard', object => RT->system );
 $m->get_ok("/Dashboards/Modify.html?id=$id");
@@ -194,7 +195,7 @@ $m->content_contains("Deleted dashboard $id");
 $m->get("/Dashboards/Modify.html?id=$id");
 $m->content_lacks("different dashboard", "dashboard was deleted");
 $m->content_contains("Failed to load dashboard $id");
-$m->warnings_like(qr/Failed to load dashboard.*Couldn't find row/, "the dashboard was deleted");
+$m->no_warnings_ok;
 
 $user_obj->principal->grant_right(right => "SuperUser", object => RT->system);
 

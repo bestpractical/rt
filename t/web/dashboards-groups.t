@@ -94,7 +94,7 @@ $m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->content_lacks("inner dashboard", "no SeeGroupDashboard right");
 $m->content_contains("Permission denied");
 
-$m->warnings_like(qr/Permission denied/, "got a permission denied warning");
+$m->no_warnings_ok;
 
 $user_obj->principal->grant_right(right => 'SeeGroupDashboard', object => $inner_group);
 $m->get_ok("/Dashboards/Modify.html?id=$id");
