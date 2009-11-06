@@ -96,7 +96,7 @@ sub groupings {
             unless ( $queue->id ) {
 
                 # XXX TODO: This ancient code dates from a former developer
-                # we have no idea what it means or why cfqueues are so encoded.
+                # we have no idea what it means or why queues are so encoded.
                 $id =~ s/^.'*(.*).'*$/$1/;
                 $queue->load($id);
             }

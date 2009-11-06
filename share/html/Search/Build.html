@@ -82,7 +82,7 @@
 
 
 <div id="pick-criteria">
-    <& Elements/PickCriteria, query => $query{'query'}, cfqueues => $queues &>
+    <& Elements/PickCriteria, query => $query{'query'}, queues => $queues &>
 </div>
 <& /Elements/Submit,  label => _('Add these terms'), name => 'add_clause'&>
 <& /Elements/Submit, label => _('Add these terms and Search'), name => 'do_search'&>
@@ -222,7 +222,7 @@ my ( $available_columns, $current_format );
 
 ( $query{'format'}, $available_columns, $current_format ) = RT::Interface::Web::QueryBuilder->build_format_string(
     %ARGS,
-    cfqueues => $queues,
+    queues => $queues,
     format   => $query{'format'},
 );
 

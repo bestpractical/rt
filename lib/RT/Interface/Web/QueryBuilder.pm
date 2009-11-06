@@ -346,7 +346,7 @@ sub build_format_string {
     my $self = shift;
     my %args = (
         format                  => undef,
-        cfqueues                => undef,
+        queues                => undef,
         face                    => undef,
         size                    => undef,
         link                    => undef,
@@ -386,7 +386,7 @@ sub build_format_string {
         );    # loc_qw
 
     my $CustomFields = RT::Model::CustomFieldCollection->new();
-    foreach my $id ( keys %{$args{cfqueues}} ) {
+    foreach my $id ( keys %{$args{queues}} ) {
 
         # Gotta load up the $queue object, since queues get stored by name now. my $id
         my $queue = RT::Model::Queue->new();
@@ -394,7 +394,7 @@ sub build_format_string {
         unless ( $queue->id ) {
 
             # XXX TODO: This ancient code dates from a former developer
-            # we have no idea what it means or why cfqueues are so encoded.
+            # we have no idea what it means or why queues are so encoded.
             $id =~ s/^.'*(.*).'*$/$1/;
             $queue->load($id);
         }
