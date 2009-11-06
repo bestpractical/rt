@@ -77,17 +77,11 @@
 <input type="hidden" class="hidden" name="saved_search_id" value="<% $saved_search->{'id'} || '' %>" />
 <input type="hidden" class="hidden" name="query" value="<% $query{'query'} || '' %>" />
 <input type="hidden" class="hidden" name="format" value="<% $query{'format'} || '' %>" />
-
-
-
-
 <div id="pick-criteria">
     <& Elements/PickCriteria, query => $query{'query'}, queues => $queues &>
 </div>
 <& /Elements/Submit,  label => _('Add these terms'), name => 'add_clause'&>
 <& /Elements/Submit, label => _('Add these terms and Search'), name => 'do_search'&>
-
-
 <div id="editquery">
 <& Elements/EditQuery,
     %ARGS,
@@ -99,22 +93,15 @@
 <div id="editsearches">
     <& Elements/EditSearches, %$saved_search, current_search => \%query &>
 </div>
-
-
-
 <span id="display-options">
-
 <& Elements/DisplayOptions,
     %ARGS, %query,
     available_columns => $available_columns,
     current_format    => $current_format,
 &>
-
 <& /Elements/Submit, label => _('Update format and Search'), name => 'do_search', id=>"formatbuttons"&>
 </span>
-
 </form>
-
 </&>
 <%INIT>
 my $saved_search = {};
@@ -122,7 +109,6 @@ my %query = map { $_ => $ARGS{$_} } qw(query format order_by order rows_per_page
 my @actions = RT::Interface::Web::QueryBuilder->load_saved_search( \%ARGS, \%query, $saved_search );
 
 if ($new_query) {
-
     # Wipe all data-carrying variables clear if we want a new
     # search, or we're deleting an old one..
     %query = ();
@@ -139,16 +125,14 @@ if ($new_query) {
     my $prefs   = Jifty->web->current_user->user_object->preferences("SearchDisplay") || {};
     my $default = { query => '', format => '', order_by => 'id', order => 'ASC', rows_per_page => 50 };
 
-    for (qw(query format order_by order rows_per_page)) {
-        $query{$_} = $current->{$_} unless defined $query{$_};
-        $query{$_} = $prefs->{$_}   unless defined $query{$_};
-        $query{$_} = $default->{$_} unless defined $query{$_};
+    for my $param (qw(query format order_by order rows_per_page)) {
+        $query{$param} = $current->{$param} unless defined $query{$param};
+        $query{$param} = $prefs->{$param}   unless defined $query{$param};
+        $query{$param} = $default->{$param} unless defined $query{$param};
     }
 
-    for (qw(order order_by)) {
-        if ( ref $query{$_} eq "ARRAY" ) {
-            $query{$_} = join( '|', @{ $query{$_} } );
-        }
+    for my $param  (qw(order order_by)) {
+       $query{$param} = join( '|', @{ $query{$param} } ) if ( ref $query{$param} eq "ARRAY" ) 
     }
 
     $query{'format'} = RT::Interface::Web->scrub_html( $query{'format'} ) if ( $query{'format'} );
@@ -160,55 +144,60 @@ push @actions, $tree->parse_sql( query => $query{query} );
 
 my @options        = $tree->get_displayed_nodes;
 my @current_values = grep defined, @options[@clauses];
-my @new_values     = ();
 
-foreach my $arg ( keys %ARGS ) {
 
-    #  Try to find if we're adding a clause
-    next
-        unless $arg =~ m/^value_of_(\w+|'CF.{.*?}')$/
-            && ( ref $ARGS{$arg} eq "ARRAY" ? grep $_ ne '', @{ $ARGS{$arg} } : $ARGS{$arg} ne '' );
+my $process_args = sub {
+    my $cgi_args = shift;
+    my @new_values;
+    foreach my $arg ( keys %$cgi_args ) {
 
-    my $field = $1;
+        #  Try to find if we're adding a clause
+        next
+            unless $arg =~ m/^value_of_(\w+|'CF.{.*?}')$/
+                && ( ref $cgi_args->{$arg} eq "ARRAY"
+                    ? grep $_ ne '', @{ $cgi_args->{$arg} }
+                    : $cgi_args->{$arg} ne '' );
 
-    #figure out if it's a grouping
-    my $keyword = $ARGS{ $field . "_field" } || $field;
+        my $field = $1;
 
-    my $op_name  = $field . "_op";
-    my $op_value = 'value_of_' . $field;
+        #figure out if it's a grouping
+        my $keyword  = $cgi_args->{ $field . "_field" } || $field;
+        my $op_name  = $field . "_op";
+        my $op_value = 'value_of_' . $field;
 
-    # we may have many keys/values to iterate over, because there
-    # may be more than one CF with the same name.
-    my @ops    = ref $ARGS{$op_value} ? @{ $ARGS{$op_name} }  : $ARGS{$op_name};
-    my @values = ref $ARGS{$op_value} ? @{ $ARGS{$op_value} } : $ARGS{$op_value};
+        # we may have many keys/values to iterate over, because there
+        # may be more than one CF with the same name.
+        my @ops    = ref $cgi_args->{$op_value} ? @{ $cgi_args->{$op_name} }  : $cgi_args->{$op_name};
+        my @values = ref $cgi_args->{$op_value} ? @{ $cgi_args->{$op_value} } : $cgi_args->{$op_value};
 
-    Jifty->log->debug("Bad Parameters passed into Query Builder") unless @ops == @values;
+        Jifty->log->debug("Bad Parameters passed into Query Builder") unless @ops == @values;
 
-    for ( my $i = 0; $i < @ops; $i++ ) {
-        my ( $op, $value ) = ( $ops[$i], $values[$i] );
-        next if !defined $value || $value eq '';
+        for ( my $i = 0; $i < @ops; $i++ ) {
+            my ( $op, $value ) = ( $ops[$i], $values[$i] );
+            next if !defined $value || $value eq '';
 
-        if ( $value eq 'NULL' && $op =~ /=/ ) {
-            if ( $op eq '=' ) {
+            if ( $value eq 'NULL' && $op eq '=' ) {
                 $op = "IS";
-            } elsif ( $op eq '!=' ) {
+            } elsif ( $value eq 'NULL' && $op eq '!=' ) {
                 $op = "IS NOT";
+            } else {
+                $value =~ s/'/\\'/g;
+                $value = "'$value'" unless $value =~ /^\d+$/;
             }
-        } else {
-            $value =~ s/'/\\'/g;
-            $value = "'$value'" unless $value =~ /^\d+$/;
+
+            push @new_values,
+                RT::Interface::Web::QueryBuilder::Tree->new(
+                {   Key   => $keyword,
+                    Op    => $op,
+                    Value => $value
+                }
+                );
         }
+		}
+		return @new_values;
+};
 
-        push @new_values, RT::Interface::Web::QueryBuilder::Tree->new(
-            {   Key   => $keyword,
-                Op    => $op,
-                Value => $value
-            }
-
-        );
-    }
-}
-
+my @new_values     = $process_args->(\%ARGS);
 push @actions, RT::Interface::Web::QueryBuilder->process_query( \%ARGS, $tree, \@current_values, \@new_values, );
 
 #  Rebuild $Query based on the additions / movements
@@ -231,8 +220,7 @@ push @actions, RT::Interface::Web::QueryBuilder->save_search( \%ARGS, \%query, $
 
 #  Push the updates into the session so we don't loose 'em
 
-Jifty->web->session->set( 'CurrentSearchHash',
-    {   %query,
+Jifty->web->session->set( 'CurrentSearchHash', {   %query,
 	search_id   => $saved_search->{'id'},
 	object      => $saved_search->{'object'},
 	description => $saved_search->{'description'},
