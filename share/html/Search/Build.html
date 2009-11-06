@@ -247,20 +247,17 @@ Jifty->web->session->set( 'CurrentSearchHash',
 );
 
 #  Show the results, if we were asked.
-
-if ( $ARGS{'do_search'} ) {
-    Jifty->web->redirect( Jifty->web->url . "Search/Results.html?" . 
-                          RT::Interface::Web->format_query_params(%query) );
-
-}
+my $query_string = '';
 
 #  Build a query_string for the tabs
-
-my $query_string = '';
 if ($new_query) {
     $query_string = 'new_query=1';
 } elsif ( $query{'query'} ) {
     $query_string = RT::Interface::Web->format_query_params(%query);
+}
+
+if ( $ARGS{'do_search'} ) {
+	Jifty->web->redirect( Jifty->web->url . "Search/Results.html?" .$query_string;
 }
 
 </%INIT>
