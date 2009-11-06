@@ -390,9 +390,13 @@ C<$OverrideOutgoingMailFrom> is used for overwriting the Correspond
 address of the queue. The option is a hash reference of queue name to
 email address.
 
+If there is no ticket involved, then the value of the C<Default> key will be
+used.
+
 =cut
 
 Set($OverrideOutgoingMailFrom, {
+#    'Default' => 'admin@rt.example.com',
 #    'General' => 'general@rt.example.com',
 });
 
