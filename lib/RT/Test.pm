@@ -267,6 +267,7 @@ sub set_config_wrapper {
     my $self = shift;
 
     my $old_sub = \&RT::Config::Set;
+    no warnings 'redefine';
     *RT::Config::Set = sub {
         my @caller = caller;
         if ( ($caller[1]||'') =~ /\.t$/ ) {
