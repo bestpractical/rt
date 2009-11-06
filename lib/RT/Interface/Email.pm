@@ -382,12 +382,35 @@ sub SendEmail {
     # if it is a sub routine, we just return it;
     return $mail_command->($args{'Entity'}) if UNIVERSAL::isa( $mail_command, 'CODE' );
 
+    my $ticketObj = $args{'Ticket'};
+    my $transactionObj = $args{'Transaction'};
+
     if ( $mail_command eq 'sendmailpipe' ) {
         my $path = RT->Config->Get('SendmailPath');
         my $args = RT->Config->Get('SendmailArguments');
-        $args .= ' '. RT->Config->Get('SendmailBounceArguments') if $args{'Bounce'};
+	
+	# SetOutgoingMailFrom
+	
+	my $outgoingMailAddress;
+	if ( RT->Config->Get('SetOutgoingMailFrom') ) {
+		if ( defined $ticketObj ){
+			my $queueName = $ticketObj->QueueObj->Name;
+			if (not defined RT->Config->Get('OverrideOutgoingMailFrom')->{$queueName}) {
+				$outgoingMailAddress = $ticketObj->QueueObj->CorrespondAddress;
+			} else {
+				$outgoingMailAddress = RT->Config->Get('OverrideOutgoingMailFrom')->{$queueName};
+			}
+			$args .= ' -f '.$outgoingMailAddress;
+		} elsif (RT->Config->Get('OverrideOutgoingMailFrom')->{'Default'} ) {
+			$outgoingMailAddress  = RT->Config->Get('OverrideOutgoingMailFrom')->{'Default'};
+			$args .= ' -f '.$outgoingMailAddress;
+		}
+	}
 
-        # VERP
+	# Set Bounce Arguments
+	$args .= ' '. RT->Config->Get('SendmailBounceArguments') if $args{'Bounce'};
+	
+	# VERP
         if ( $args{'Transaction'} and
              my $prefix = RT->Config->Get('VERPPrefix') and
              my $domain = RT->Config->Get('VERPDomain') )
