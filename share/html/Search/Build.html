@@ -85,7 +85,7 @@
 <div id="editquery">
 <& Elements/EditQuery,
     %ARGS,
-    actions => \@actions,
+	actions => $results,
     parsed_query => $parsed_query,
 	description => $saved_search->{'description'},
     &>
@@ -108,17 +108,16 @@
 
 my ($saved_search, $query, $results) = RT::Interface::Web::QueryBuilder->setup_query();
 
-my @actions = @$results;
 
 my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
 
-push @actions, $tree->parse_sql( query => $query->{query} );
+push @$results, $tree->parse_sql( query => $query->{query} );
 my @options        = $tree->get_displayed_nodes;
 my @current_values = grep defined, @options[@clauses];
 
 my @new_values = RT::Interface::Web::QueryBuilder->process_query_additions( );
 
-push @actions, RT::Interface::Web::QueryBuilder->process_query(  $tree, \@current_values, \@new_values, );
+push @$results, RT::Interface::Web::QueryBuilder->process_query(  $tree, \@current_values, \@new_values, );
 
 #  Rebuild $Query based on the additions / movements
 my ( $new_serialized_query, $parsed_query ) = $tree->get_query_and_option_list( \@current_values );
@@ -138,7 +137,7 @@ my ($new_format, $available_columns, $current_format ) =
 
 # if we're asked to save the current search, save it
 if( Jifty->web->request->argument('saved_search_save') || Jifty->web->request->argument('saved_search_copy')) {
-    push @actions, RT::Interface::Web::QueryBuilder->save_search( $query, $saved_search );
+    push @$results, RT::Interface::Web::QueryBuilder->save_search( $query, $saved_search );
 }	
 #  Push the updates into the session so we don't lose 'em
 
