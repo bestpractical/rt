@@ -105,46 +105,46 @@
 </&>
 <%INIT>
 
-
-my ($saved_search, $query, $results) = RT::Interface::Web::QueryBuilder->setup_query();
-
+my ( $saved_search, $query, $results ) = RT::Interface::Web::QueryBuilder->setup_query();
 
 my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
 
 push @$results, $tree->parse_sql( query => $query->{query} );
-my @options        = $tree->get_displayed_nodes;
+my @options = $tree->get_displayed_nodes;
 my @current_values = grep defined, @options[@clauses];
 
-my @new_values = RT::Interface::Web::QueryBuilder->process_query_additions( );
+my @new_values = RT::Interface::Web::QueryBuilder->process_query_additions();
 
-push @$results, RT::Interface::Web::QueryBuilder->process_query(  $tree, \@current_values, \@new_values, );
+push @$results, RT::Interface::Web::QueryBuilder->process_query( $tree, \@current_values, \@new_values, );
 
 #  Rebuild $Query based on the additions / movements
 my ( $new_serialized_query, $parsed_query ) = $tree->get_query_and_option_list( \@current_values );
 $query->{'query'} = $new_serialized_query;
 
-
 my $queues = $tree->get_referenced_queues;
 
 #  Deal with format changes
-my ($new_format, $available_columns, $current_format ) = 
-	RT::Interface::Web::QueryBuilder->build_format_string(
-	%{Jifty->web->request->arguments},
+my ( $new_format, $available_columns, $current_format ) = RT::Interface::Web::QueryBuilder->build_format_string(
+    %{ Jifty->web->request->arguments },
     queues => $queues,
-	format   => $query->{'format'});
+    format => $query->{'format'}
+);
 
-	$query->{'format'} = $new_format;
+$query->{'format'} = $new_format;
 
 # if we're asked to save the current search, save it
-if( Jifty->web->request->argument('saved_search_save') || Jifty->web->request->argument('saved_search_copy')) {
+if ( Jifty->web->request->argument('saved_search_save') || Jifty->web->request->argument('saved_search_copy') ) {
     push @$results, RT::Interface::Web::QueryBuilder->save_search( $query, $saved_search );
-}	
+}
+
 #  Push the updates into the session so we don't lose 'em
 
-Jifty->web->session->set( 'CurrentSearchHash', {   %$query,
-	search_id   => $saved_search->{'id'},
-	object      => $saved_search->{'object'},
-	description => $saved_search->{'description'},
+Jifty->web->session->set(
+    'CurrentSearchHash',
+    {   %$query,
+        search_id   => $saved_search->{'id'},
+        object      => $saved_search->{'object'},
+        description => $saved_search->{'description'},
     }
 );
 
@@ -152,14 +152,14 @@ Jifty->web->session->set( 'CurrentSearchHash', {   %$query,
 my $query_string = '';
 
 #  Build a query_string for the tabs
-if (Jifty->web->request->argument('new_query')) {
+if ( Jifty->web->request->argument('new_query') ) {
     $query_string = 'new_query=1';
-	} elsif ( $query->{'query'} ) {
+} elsif ( $query->{'query'} ) {
     $query_string = RT::Interface::Web->format_query_params(%$query);
 }
 
 if ( Jifty->web->request->argument('do_search') ) {
-	Jifty->web->redirect( Jifty->web->url . "Search/Results.html?" .$query_string);
+    Jifty->web->redirect( Jifty->web->url . "Search/Results.html?" . $query_string );
 }
 
 </%INIT>
