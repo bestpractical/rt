@@ -50,13 +50,13 @@ sub set_query_defaults {
 
 sub process_query {
     my $self     = shift;
-    my $ARGS     = shift;
     my $tree     = shift;
     my $selected = shift;
     my $new      = shift || [];
 
     my @NewSelection = ();
 
+    my $ARGS = Jifty->web->request->arguments;
     my @results;
     if ( $ARGS->{'up'} || $ARGS->{'down'} ) {
         if (@$selected) {
@@ -208,7 +208,7 @@ sub process_query {
 
 sub process_query_additions {
     my $self     = shift;
-    my $cgi_args = shift;
+    my $cgi_args = Jifty->web->request->arguments();
     my @new_values;
     foreach my $arg ( keys %$cgi_args ) {
 

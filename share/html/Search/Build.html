@@ -116,9 +116,9 @@ push @actions, $tree->parse_sql( query => $query->{query} );
 my @options        = $tree->get_displayed_nodes;
 my @current_values = grep defined, @options[@clauses];
 
-my @new_values = RT::Interface::Web::QueryBuilder->process_query_additions( \%ARGS );
+my @new_values = RT::Interface::Web::QueryBuilder->process_query_additions( );
 
-push @actions, RT::Interface::Web::QueryBuilder->process_query( \%ARGS, $tree, \@current_values, \@new_values, );
+push @actions, RT::Interface::Web::QueryBuilder->process_query(  $tree, \@current_values, \@new_values, );
 
 #  Rebuild $Query based on the additions / movements
 my ( $new_serialized_query, $parsed_query ) = $tree->get_query_and_option_list( \@current_values );
@@ -130,14 +130,14 @@ my $queues = $tree->get_referenced_queues;
 #  Deal with format changes
 my ($new_format, $available_columns, $current_format ) = 
 	RT::Interface::Web::QueryBuilder->build_format_string(
-    %ARGS,
+	%{Jifty->web->request->arguments},
     queues => $queues,
 	format   => $query->{'format'});
 
 	$query->{'format'} = $new_format;
 
 # if we're asked to save the current search, save it
-if( $ARGS{'saved_search_save'} || $ARGS{'saved_search_copy'}) {
+if( Jifty->web->request->argument('saved_search_save') || Jifty->web->request->argument('saved_search_copy')) {
     push @actions, RT::Interface::Web::QueryBuilder->save_search( $query, $saved_search );
 }	
 #  Push the updates into the session so we don't lose 'em
@@ -159,7 +159,7 @@ if (Jifty->web->request->argument('new_query')) {
     $query_string = RT::Interface::Web->format_query_params(%$query);
 }
 
-if ( $ARGS{'do_search'} ) {
+if ( Jifty->web->request->argument('do_search') ) {
 	Jifty->web->redirect( Jifty->web->url . "Search/Results.html?" .$query_string);
 }
 
