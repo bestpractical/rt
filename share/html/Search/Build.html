@@ -105,10 +105,10 @@
 </&>
 <%INIT>
 my $saved_search = {};
-my %query = map { $_ => $ARGS{$_} } qw(query format order_by order rows_per_page);
+my %query = map { $_ => Jifty->web->request->argument($_) } qw(query format order_by order rows_per_page);
 my @actions = RT::Interface::Web::QueryBuilder->load_saved_search( \%ARGS, \%query, $saved_search );
 
-if ($new_query) {
+if (Jifty->web->request->argument('new_query')) {
     # Wipe all data-carrying variables clear if we want a new
     # search, or we're deleting an old one..
     %query = ();
@@ -132,19 +132,20 @@ my @new_values = RT::Interface::Web::QueryBuilder->process_query_additions( \%AR
 push @actions, RT::Interface::Web::QueryBuilder->process_query( \%ARGS, $tree, \@current_values, \@new_values, );
 
 #  Rebuild $Query based on the additions / movements
-my $parsed_query;
-( $query{'query'}, $parsed_query ) = $tree->get_query_and_option_list( \@current_values );
+my ( $new_serialized_query, $parsed_query ) = $tree->get_query_and_option_list( \@current_values );
+$query{'query'} = $new_serialized_query;
+
 
 my $queues = $tree->get_referenced_queues;
 
 #  Deal with format changes
-my ( $available_columns, $current_format );
-
-( $query{'format'}, $available_columns, $current_format ) = RT::Interface::Web::QueryBuilder->build_format_string(
+my ($new_format, $available_columns, $current_format ) = 
+	RT::Interface::Web::QueryBuilder->build_format_string(
     %ARGS,
     queues => $queues,
-    format   => $query{'format'},
-);
+    format   => $query{'format'});
+
+$query{'format'} = $new_format;
 
 # if we're asked to save the current search, save it
 if( $ARGS{'saved_search_save'} || $ARGS{'saved_search_copy'}) {
@@ -163,7 +164,7 @@ Jifty->web->session->set( 'CurrentSearchHash', {   %query,
 my $query_string = '';
 
 #  Build a query_string for the tabs
-if ($new_query) {
+if (Jifty->web->request->argument('new_query')) {
     $query_string = 'new_query=1';
 } elsif ( $query{'query'} ) {
     $query_string = RT::Interface::Web->format_query_params(%query);
@@ -176,6 +177,5 @@ if ( $ARGS{'do_search'} ) {
 </%INIT>
 
 <%ARGS>
-$new_query => 0
 @clauses => ()
 </%ARGS>
