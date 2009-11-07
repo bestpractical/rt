@@ -2,6 +2,29 @@ package RT::Interface::Web::QueryBuilder;
 use warnings;
 use strict;
 
+sub setup_query {
+
+    my $saved_search = {};
+    my $query = { map { $_ => Jifty->web->request->argument($_) } qw(query format order_by order rows_per_page) };
+    my @actions = RT::Interface::Web::QueryBuilder->load_saved_search( Jifty->web->request->arguments(), $query, $saved_search );
+
+    if ( Jifty->web->request->argument('new_query') ) {
+
+        # Wipe all data-carrying variables clear if we want a new
+        # search, or we're deleting an old one..
+        $query = {};
+        $saved_search = { id => 'new' };
+
+        # ..then wipe the sessionand the search results.
+        Jifty->web->session->remove('CurrentSearchHash');
+        Jifty->web->session->get('tickets')->clean_slate if defined Jifty->web->session->get('tickets');
+    }
+
+    RT::Interface::Web::QueryBuilder->set_query_defaults($query);
+    return ( $saved_search, $query, \@actions );
+}
+
+
 sub set_query_defaults {
     my $self  = shift;
     my $query = shift;
