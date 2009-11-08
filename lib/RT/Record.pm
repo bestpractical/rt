@@ -1829,6 +1829,28 @@ sub FirstCustomFieldValue {
     return $first->Content;
 }
 
+=head2 CustomFieldValuesAsString FIELD
+
+Return the content of the CustomField FIELD for this ticket.
+If this is a multi-value custom field, values will be joined with newlines.
+
+Takes a field id or name as the first argument
+
+Takes an optional Separator => "," second and third argument
+if you want to join the values using something other than a newline
+
+=cut
+
+sub CustomFieldValuesAsString {
+    my $self  = shift;
+    my $field = shift;
+    my %args  = @_;
+    my $separator = $args{Separator} || "\n";
+
+    my $values = $self->CustomFieldValues( $field );
+    return join ($separator, grep { defined $_ }
+                 map { $_->Content } @{$values->ItemsArrayRef});
+}
 
 
 # {{{ CustomFieldValues
