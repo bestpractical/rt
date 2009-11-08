@@ -117,7 +117,8 @@ our @FORMATTERS = (
     'RFC2616',       # loc
     'iCal',          # loc
 );
-if ( eval 'use DateTime qw(); 1;' && eval 'use DateTime::Locale qw(); 1;' ) {
+if ( eval 'use DateTime qw(); 1;' && eval 'use DateTime::Locale qw(); 1;' && 
+     DateTime->can('format_cldr') && DateTime::Locale::root->can('date_format_full') ) {
     push @FORMATTERS, 'LocalizedDateTime'; # loc
 }
 
@@ -501,6 +502,9 @@ as described in L</Get>.
 
 sub DateTime {
     my $self = shift;
+    unless (defined $self) {
+        use Carp; Carp::confess("undefined $self");
+    }
     return $self->Get( @_, Date => 1, Time => 1 );
 }
 
@@ -650,6 +654,10 @@ sub LocalizedDateTime
 
     return $self->loc("DateTime module missing") unless ( eval 'use DateTime qw(); 1;' );
     return $self->loc("DateTime::Locale module missing") unless ( eval 'use DateTime::Locale qw(); 1;' );
+    return $self->loc("DateTime doesn't support format_cldr, you must upgrade to use this feature") 
+        unless can DateTime::('format_cldr');
+
+
     my $date_format = $args{'DateFormat'};
     my $time_format = $args{'TimeFormat'};
 
@@ -661,6 +669,8 @@ sub LocalizedDateTime
     
 
     my $formatter = DateTime::Locale->load($lang);
+    return $self->loc("DateTime::Locale doesn't support date_format_full, you must upgrade to use this feature") 
+        unless $formatter->can('date_format_full');
     $date_format = $formatter->$date_format;
     $time_format = $formatter->$time_format;
     $date_format =~ s/EEEE/EEE/g if ( $args{'AbbrDay'} );

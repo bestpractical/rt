@@ -9,7 +9,8 @@ my $localized_datetime_tests;
 BEGIN {
     $tests = 167;
     $localized_datetime_tests =
-      eval { require DateTime; 1; } && eval { require DateTime::Locale; 1; };
+      eval { require DateTime; 1; } && eval { require DateTime::Locale; 1; } &&
+      DateTime->can('format_cldr') && DateTime::Locale::root->can('date_format_full');
 
     if ($localized_datetime_tests) {
 
