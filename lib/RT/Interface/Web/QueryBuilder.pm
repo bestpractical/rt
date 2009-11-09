@@ -52,8 +52,8 @@ sub process_query {
     my $self     = shift;
     my $tree     = shift;
     my $selected = shift;
-    my $new      = shift || [];
 
+    my $new      = $self->process_query_additions || [];
     my @NewSelection = ();
 
     my $ARGS = Jifty->web->request->arguments;
@@ -256,7 +256,7 @@ sub process_query_additions {
                 );
         }
     }
-    return @new_values;
+    return \@new_values;
 }
 
 sub load_saved_search {
