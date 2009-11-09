@@ -1144,11 +1144,7 @@ sub friendly_object_type {
 
 Takes a hash of
 
-    CustomField-<<Id>> => Value
-
-or
-
-    object-RT::Model::Transaction-CustomField-<<Id>> => Value
+    cf_<<Id>> => Value
 
 parameters to update this transaction's custom fields
 
@@ -1159,9 +1155,7 @@ sub update_custom_fields {
     my %args = (@_);
 
     foreach my $arg ( keys %args ) {
-        next
-            unless ( $arg =~ /^(?:object-RT::Model::Transaction--)?CustomField-(\d+)/ );
-        next if $arg =~ /-magic$/;
+        next unless $arg =~ /^cf_(\d+)$/;
         my $cfid   = $1;
         my $values = $args{$arg};
         foreach my $value ( UNIVERSAL::isa( $values, 'ARRAY' ) ? @$values : $values ) {
