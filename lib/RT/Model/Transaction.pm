@@ -1158,12 +1158,12 @@ sub update_custom_fields {
     my $self = shift;
     my %args = (@_);
 
-    foreach my $arg ( keys %$args ) {
+    foreach my $arg ( keys %args ) {
         next
             unless ( $arg =~ /^(?:object-RT::Model::Transaction--)?CustomField-(\d+)/ );
         next if $arg =~ /-magic$/;
         my $cfid   = $1;
-        my $values = $args->{$arg};
+        my $values = $args{$arg};
         foreach my $value ( UNIVERSAL::isa( $values, 'ARRAY' ) ? @$values : $values ) {
             next unless length($value);
             $self->add_custom_field_value(
