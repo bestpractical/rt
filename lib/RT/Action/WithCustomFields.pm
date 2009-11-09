@@ -11,8 +11,11 @@ sub _add_custom_fields {
 
     while (my $cf = $cfs->next) {
         my $render_as = $cf->type_for_rendering;
+        my $name = 'cf_' . $cf->id;
+
         my %args = (
-            name => $cf->name,
+            name      => $name,
+            label     => $cf->name,
             render_as => $render_as,
         );
 
