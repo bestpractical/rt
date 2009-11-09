@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use warnings;
-use RT::Test;
+use RT::Test strict => 1;
 use strict;
 use Test::More tests => 31;
 use RT;

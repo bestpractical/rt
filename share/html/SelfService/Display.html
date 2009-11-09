@@ -106,7 +106,7 @@ if ( $ARGS{'attach'} ) {    # attachment?
         attachment_field_name => 'attach',
     );
 
-    my $file_path = Encode::decode_utf8("$ARGS{'Attach'}");
+    my $file_path = Encode::decode_utf8("$ARGS{'attach'}");
     Jifty->web->session->set('Attachments', {
         %{ Jifty->web->session->get('Attachments') || {} },
         $file_path => $attachment,

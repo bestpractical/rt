@@ -1,11 +1,19 @@
 #!/usr/bin/perl
 
 use strict;
-use RT::Test;
-use Test::More;
-my $tests = 2;
+use File::Find;
+
+sub wanted {
+        -f  && /\.html$/ && $_ !~ /Logout.html$/;
+}
+
+my $tests;
+BEGIN {
+$tests = 2;
 find ( sub { wanted() and $tests += 4 } , 'share/html/');
-plan tests => $tests;
+}
+
+use RT::Test tests => $tests, strict => 1;
 use HTTP::Request::Common;
 use HTTP::Cookies;
 use LWP;
@@ -29,12 +37,7 @@ $agent->login(root => 'password');
 like( $agent->{'content'} , qr/Logout/i, "Found a logout link");
 
 
-use File::Find;
 find ( sub { wanted() and test_get($File::Find::name) } , 'share/html');
-
-sub wanted {
-        -f  && /\.html$/ && $_ !~ /Logout.html$/;
-}
 
 sub test_get {
         my $file = shift;
@@ -49,5 +52,9 @@ sub test_get {
 }
 
 # }}}
+
+# it's predictable that we will get a lot of warnings because some pages need 
+# mandatory arguments, let's not show the warnings 
+$agent->get( '/__jifty/test_warnings' );
 
 1;

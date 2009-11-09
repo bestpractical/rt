@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test tests => 11;
+use RT::Test strict => 1, tests => 11;
 
 for (1 .. 10) {
     my $t = RT::Model::Ticket->new(current_user => RT->system_user);

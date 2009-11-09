@@ -64,9 +64,14 @@ package RT::Interface::Web;
 use RT::Report::Tickets;
 use RT::System;
 use RT::SavedSearches;
+use RT::Interface::Web::QueryBuilder;
+use RT::Interface::Web::QueryBuilder::Tree;
+
 use URI qw();
 use Digest::MD5 ();
 use Encode qw();
+use HTML::Scrubber;
+
 
 =head2 web_canonicalize_info();
 
@@ -288,6 +293,45 @@ sub strip_content {
     # Pass it through
     return $content;
 }
+
+
+
+sub format_query_params {
+	my $self = shift;
+	my %params = @_;
+
+	my $uri = URI->new;
+	$uri->query_form(%params);
+	return $uri->query;
+}
+
+my $scrubber = HTML::Scrubber->new();
+$scrubber->default(
+    0,
+    {
+        '*'    => 0,
+        id     => 1,
+        class  => 1,
+        # Match http, ftp and relative urls
+        # XXX: we also scrub format strings with this module then allow simple config options
+        href   => qr{^(?:http:|ftp:|https:|/|__Web(?:Path|baseURL|URL)__)}i,
+        face   => 1,
+        size   => 1,
+        target => 1,
+        style  => qr{^(?:(?:color:\s*rgb\(\d+,\s*\d+,\s*\d+\))|
+                         (?:text-align:\s*))}ix,
+    }
+);
+$scrubber->deny(qw[*]);
+$scrubber->allow( qw[A B U P BR I HR BR SMALL EM FONT SPAN STRONG SUB SUP STRIKE H1 H2 H3 H4 H5 H6 DIV UL OL LI DL DT DD PRE]);
+$scrubber->comment(0);
+
+sub scrub_html {
+	my $self = shift;
+	my $content = shift;
+	return $scrubber->scrub($content);
+}
+
 
 package HTML::Mason::Commands;
 
@@ -1259,37 +1303,6 @@ sub get_column_map_entry {
     return undef;
 }
 
-=head2 _load_container_object ( $type, $id );
-
-Instantiate container object for saving searches.
-
-=cut
-
-sub _load_container_object {
-    my ( $obj_type, $obj_id ) = @_;
-    return RT::SavedSearch->new()->_load_privacy_object( $obj_type, $obj_id );
-}
-
-=head2 _parse_saved_search ( $arg );
-
-Given a serialization string for saved search, and returns the
-container object and the search id.
-
-=cut
-
-sub _parse_saved_search {
-    my $spec = shift;
-    return unless $spec;
-    if ( $spec !~ /^(.*?)-(\d+)-SavedSearch-(\d+)$/ ) {
-        return;
-    }
-    my $obj_type  = $1;
-    my $obj_id    = $2;
-    my $search_id = $3;
-
-    return ( _load_container_object( $obj_type, $obj_id ), $search_id );
-}
-
 =head2 get_jifty_messages
 
 =cut
@@ -1306,6 +1319,7 @@ sub _detailed_messages {
 
     return map { ref $msg->{$_} eq 'ARRAY' ? (@{$msg->{$_}}) : $msg->{$_} } sort keys %$msg;
 }
+
 
 
 1;

@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use RT::Test; use Test::More tests => 7;
+use RT::Test strict => 1; use Test::More tests => 7;
 
 use RT;
 SKIP: {

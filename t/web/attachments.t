@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test; use Test::More tests => 14;
+use RT::Test strict => 1; use Test::More tests => 14;
 
 use constant ImageRoot => RT->html_path . '/NoAuth/images';
 use constant LogoFile => ImageRoot .'/bplogo.gif';

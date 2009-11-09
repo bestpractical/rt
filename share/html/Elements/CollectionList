@@ -84,8 +84,8 @@ $collection->set_page_info(
 $display_format ||= $format;
 
 # Scrub the html of the format string to remove any potential nasties.
-$format = $m->comp('/Elements/ScrubHTML', content => $format);
-$display_format = $m->comp('/Elements/ScrubHTML', content => $display_format);
+$format = RT::Interface::Web->scrub_html( $format);
+$display_format = RT::Interface::Web->scrub_html( $display_format);
 
 my @format = $m->comp('/Elements/CollectionAsTable/ParseFormat', format => $display_format);
 

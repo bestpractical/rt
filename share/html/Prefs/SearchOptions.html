@@ -96,8 +96,7 @@ $order_by     ||= ($prefs->{'order_by'} || 'id');
 ($rows_per_page =  defined( $prefs->{'rows_per_page'} ) ? $prefs->{'rows_per_page'}  : 50) unless defined ($rows_per_page);
 
 my ( $AvailableColumns, $current_format );
-( $format, $AvailableColumns, $current_format ) = $m->comp(
-    '/Search/Elements/BuildFormatString',
+( $format, $AvailableColumns, $current_format ) = RT::Interface::Web::QueryBuilder->build_format_string(
     %ARGS, format => $format
 );
 </%INIT>

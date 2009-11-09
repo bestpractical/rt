@@ -2,15 +2,13 @@
 use strict;
 use warnings;
 
-use RT::Test;
+use RT::Test tests => 159, strict => 1;
 use RT::Test::Email;
 
-plan skip_all => 'GnuPG required.'
+skip_rest('GnuPG required.')
     unless eval 'use GnuPG::Interface; 1';
-plan skip_all => 'gpg executable is required.'
+skip_rest('executable is required.')
     unless RT::Test->find_executable('gpg');
-
-plan tests => 159;
 
 # the test imports a bunch of signed email but not loading the public
 # keys into the server first.  We then check if the message can be

@@ -1,5 +1,5 @@
 use Test::More tests => 9;
-use RT::Test;
+use RT::Test strict => 1;
 
 use strict;
 use warnings;

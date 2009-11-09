@@ -27,7 +27,7 @@ BEGIN {
     ok( RT->plugins->[0]->name, 'RT-Extension-Test' );
 }
 
-use RT::Test;
+use RT::Test strict => 1;
 my ($baseurl, $agent) = RT::Test->started_ok;
 $agent->get_ok($baseurl);
 $agent->get_ok($baseurl . '/NoAuth/test.html');

@@ -3,7 +3,7 @@
 use warnings;
 use strict;
 use Data::Dumper;
-use RT::Test; use Test::More; 
+use RT::Test strict => 1; use Test::More; 
 
 plan tests => 14;
 

@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test tests => 26, l10n => 1;
+use RT::Test strict => 1, tests => 26, l10n => 1;
 
 $RT::Test::SKIP_REQUEST_WORK_AROUND = 1;
 

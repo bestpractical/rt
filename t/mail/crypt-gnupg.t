@@ -2,7 +2,7 @@
 
 use strict;
 use warnings;
-use RT::Test; use Test::More;
+use RT::Test strict => 1; use Test::More;
 plan skip_all => 'GnuPG required.'
     unless eval 'use GnuPG::Interface; 1';
 plan skip_all => 'gpg executable is required.'

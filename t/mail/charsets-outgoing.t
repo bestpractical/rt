@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 use strict;
 use warnings;
-use RT::Test;
+use RT::Test strict => 1;
 use utf8;
 
 use Test::More;

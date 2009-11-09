@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
-use RT::Test; use Test::More tests => 42;
+use RT::Test strict => 1; use Test::More tests => 42;
 use HTTP::Request::Common;
 use HTTP::Cookies;
 use LWP;

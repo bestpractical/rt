@@ -679,7 +679,7 @@ Hour:         { $subscription_obj->sub_value('Hour') }
         #    column  => 'ftsindex',
     },
     'gnupg'                        => {
-        enable                   => 1,
+        enable                   => 0,
         outgoing_messages_format => 'RFC',    # Inline
         allow_encrypt_data_in_db => 0,
     },

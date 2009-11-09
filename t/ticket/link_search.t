@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use warnings;
 use strict;
-use RT::Test; use Test::More tests => 63;
+use RT::Test strict => 1; use Test::More tests => 63;
 
 # Load the config file
 

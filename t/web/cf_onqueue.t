@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test tests => 14, l10n => 1;
+use RT::Test strict => 1, tests => 14, l10n => 1;
 my ($baseurl, $m) = RT::Test->started_ok;
 
 ok $m->login, 'logged in';

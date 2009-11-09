@@ -3,7 +3,7 @@
 use strict;
 use Test::More tests => 8;
 
-use RT::Test;
+use RT::Test strict => 1;
 RT::Test->started_ok;
 
 my $ticket = RT::Model::Ticket->new(current_user => RT->system_user);
