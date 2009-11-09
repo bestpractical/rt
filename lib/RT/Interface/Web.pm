@@ -518,11 +518,11 @@ sub process_update_message {
     if ( $args{args_ref}->{'update_type'} =~ /^(private|public)$/ ) {
         my ( $Transaction, $description, $object ) = $args{ticket_obj}->comment(%message_args);
         push( @results, $description );
-        $object->update_custom_fields( args_ref => $args{args_ref} ) if $object;
+        $object->update_custom_fields( %{ $args{args_ref} } ) if $object;
     } elsif ( $args{args_ref}->{'update_type'} eq 'response' ) {
         my ( $Transaction, $description, $object ) = $args{ticket_obj}->correspond(%message_args);
         push( @results, $description );
-        $object->update_custom_fields( args_ref => $args{args_ref} ) if $object;
+        $object->update_custom_fields( %{ $args{args_ref} } ) if $object;
     } else {
         push( @results, _("Update type was neither correspondence nor comment.") . " " . _("Update not recorded.") );
     }

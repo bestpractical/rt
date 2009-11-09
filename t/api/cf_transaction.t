@@ -5,7 +5,7 @@ use strict;
 use Data::Dumper;
 use RT::Test strict => 1; use Test::More; 
 
-plan tests => 14;
+plan tests => 13;
 
 use_ok('RT');
 use_ok('RT::Model::TransactionCollection');
@@ -46,17 +46,10 @@ is ($txn_cf->id, $cf->id, "It's the right custom field");
 my $values = $trans->custom_field_values($txn_cf->id);
 is ($values->count, 0, "It has no values");
 
-# Old API
 my %cf_updates = ( 'CustomField-'.$cf->id => 'Testing');
-$trans->update_custom_fields( args_ref => \%cf_updates);
+$trans->update_custom_fields(%cf_updates);
 
  $values = $trans->custom_field_values($txn_cf->id);
 is ($values->count, 1, "It has one value");
-
-# New API
-
-$trans->update_custom_fields( 'CustomField-'.$cf->id => 'Test two');
- $values = $trans->custom_field_values($txn_cf->id);
-is ($values->count, 2, "it has two values");
 
 # TODO ok(0, "Should updating custom field values remove old values?");

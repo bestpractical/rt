@@ -822,7 +822,7 @@ sub create {
         );
         if ( $self->id && $Trans ) {
 
-            $TransObj->update_custom_fields( args_ref => \%args );
+            $TransObj->update_custom_fields(%args);
 
             Jifty->log->info( "Ticket " . $self->id . " created in queue '" . $queue_obj->name . "' by " . $self->current_user->name );
             $ErrStr = _( "Ticket %1 created in queue '%2'", $self->id, $queue_obj->name );
