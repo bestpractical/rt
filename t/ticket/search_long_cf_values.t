@@ -21,7 +21,7 @@ ok ($q->id, "Created the queue");
 my $cf = RT::Model::CustomField->new( current_user => RT->system_user );
 $cf->create(name => 'SearchTest', type => 'Freeform', max_values => 0, queue => $q->id);
 ok($cf->id, "Created the SearchTest CF");
-my $cflabel = "custom_field-".$cf->id;
+my $cflabel = "cf_".$cf->id;
 
 # setup some tickets
 my $t1 = RT::Model::Ticket->new(current_user => RT->system_user);

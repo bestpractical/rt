@@ -23,17 +23,17 @@ ok ($q->id, "Created the queue");
 my $cf = RT::Model::CustomField->new(current_user => RT->system_user);
 $cf->create(name => 'SearchTest', type => 'Freeform', MaxValues => 0, queue => $q->id);
 ok($cf->id, "Created the SearchTest CF");
-my $cflabel = "custom_field-".$cf->id;
+my $cflabel = "cf_".$cf->id;
 
 my $cf2 = RT::Model::CustomField->new(current_user => RT->system_user);
 $cf2->create(name => 'SearchTest2', type => 'Freeform', MaxValues => 0, queue => $q->id);
 ok($cf2->id, "Created the SearchTest2 CF");
-my $cflabel2 = "custom_field-".$cf2->id;
+my $cflabel2 = "cf_".$cf2->id;
 
 my $cf3 = RT::Model::CustomField->new(current_user => RT->system_user);
 $cf3->create(name => 'SearchTest3', type => 'Freeform', MaxValues => 0, queue => $q->id);
 ok($cf3->id, "Created the SearchTest3 CF");
-my $cflabel3 = "custom_field-".$cf3->id;
+my $cflabel3 = "cf_".$cf3->id;
 
 
 # There was a bug involving a missing join to ObjectCustomFields that

@@ -75,7 +75,7 @@ diag "create a ticket using API with 'asd'(not 'ASD') as value of the CF"
     ($tid, $txnid, $msg) = $ticket->create(
         subject => 'test',
         queue => $queue->id,
-        "custom_field-$cfid" => 'ASD',
+        "cf_$cfid" => 'ASD',
     );
     ok $tid, "Created ticket";
     diag $msg if $msg && $ENV{'TEST_VERBOSE'};

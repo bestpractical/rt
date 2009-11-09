@@ -730,11 +730,11 @@ sub parse_lines {
         # if the tag was added later, skip it
         my $orig_tag = $original_tags{$tag} or next;
         if ( $orig_tag =~ /^custom_?field-?(\d+)$/i ) {
-            $ticketargs{ "custom_field-" . $1 } = $args{$tag};
+            $ticketargs{ "cf_" . $1 } = $args{$tag};
         } elsif ( $orig_tag =~ /^(?:custom_?field|cf)-?(.*)$/i ) {
             my $cf = RT::Model::CustomField->new( current_user => $self->current_user );
             $cf->load_by_name( name => $1, queue => $ticketargs{queue} );
-            $ticketargs{ "custom_field-" . $cf->id } = $args{$tag};
+            $ticketargs{ "cf_" . $cf->id } = $args{$tag};
         } elsif ($orig_tag) {
             my $cf = RT::Model::CustomField->new( current_user => $self->current_user );
             $cf->load_by_name(
@@ -742,7 +742,7 @@ sub parse_lines {
                 queue => $ticketargs{queue}
             );
             next unless ( $cf->id );
-            $ticketargs{ "custom_field-" . $cf->id } = $args{$tag};
+            $ticketargs{ "cf_" . $cf->id } = $args{$tag};
 
         }
     }

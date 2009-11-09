@@ -150,7 +150,7 @@ else {
                     delete $data{$k};
                     next;
                 }
-                $v{"custom_field-".$cf->id()} = delete $data{$k};
+                $v{"cf_".$cf->id()} = delete $data{$k};
             }
             elsif (lc $k eq 'text') {
                 $text = delete $data{$k};
