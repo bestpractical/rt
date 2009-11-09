@@ -197,7 +197,7 @@ $title => undef
 $move => undef
 $source => undef
 $custom_field => undef
-$finddisabled_custom_fields => undef
+$find_disabled_custom_fields => undef
 $update_cfs => 0
 $object
 $object_type
