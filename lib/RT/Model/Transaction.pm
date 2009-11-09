@@ -1158,21 +1158,6 @@ sub update_custom_fields {
     my $self = shift;
     my %args = (@_);
 
-    # This method used to have an API that took a hash of a single
-    # value "args_ref", which was a reference to a hash of arguments.
-    # This was insane. The next few lines of code preserve that API
-    # while giving us something saner.
-
-    # TODO: 3.6: DEPRECATE OLD API
-
-    my $args;
-
-    if ( $args{'args_ref'} ) {
-        $args = $args{args_ref};
-    } else {
-        $args = \%args;
-    }
-
     foreach my $arg ( keys %$args ) {
         next
             unless ( $arg =~ /^(?:object-RT::Model::Transaction--)?CustomField-(\d+)/ );
