@@ -35,7 +35,7 @@ ok($moniker, "Found the moniker $moniker");
 $agent->submit();
 is($agent->{'status'}, 200, "Fetched the page ok");
 ok( $agent->content =~ /Logout/i, "Found a logout link");
-$agent->get($url."/Ticket/Create.html?queue=1");
+$agent->get($url."/ticket/create?queue=1");
 is ($agent->{'status'}, 200, "Loaded Create.html");
 $agent->form_number(3);
 # Start with a string containing characters in latin1
@@ -47,7 +47,7 @@ ok($agent->submit(), "Created new ticket with $string as content");
 like( $agent->{'content'}, qr{$string} , "Found the content");
 ok($agent->{redirected_uri}, "Did redirection");
 
-$agent->get($url."/Ticket/Create.html?queue=1");
+$agent->get($url."/ticket/create?queue=1");
 is ($agent->{'status'}, 200, "Loaded Create.html");
 $agent->form_number(3);
 

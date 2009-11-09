@@ -49,11 +49,11 @@
     title => _("Create a new ticket"),
 &>
 <& /Elements/Tabs, 
-    current_toptab => "Ticket/Create.html", 
+    current_toptab => "ticket/create", 
     title => _("Create a new ticket"),
     actions => $actions &>
 <& /Elements/ListActions, actions => \@results &>
-<form action="<% RT->config->get('web_path') %>/Ticket/Create.html" method="post" enctype="multipart/form-data" name="ticket_create">
+<form action="<% RT->config->get('web_path') %>/ticket/create" method="post" enctype="multipart/form-data" name="ticket_create">
 <input type="hidden" class="hidden" name="id" value="new" />
 % $m->callback( callback_name => 'FormStart', args_ref => \%ARGS );
 % if ($gnupg_widget) {

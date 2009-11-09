@@ -364,7 +364,7 @@ msgstr "(Zatrhněte pro zakázání upozorňování uvedených příjemců)"
 msgid "(Check boxes to enable notifications to the listed recipients)"
 msgstr "(Zatrhněte pro povolení upozorňování uvedených příjemců)"
 
-#: html/Ticket/Create.html:218
+#: html/ticket/create:218
 msgid "(Enter ticket ids or URLs, separated with spaces)"
 msgstr "(Zadejte identifikátory či URL požadavku, oddělené mezerami)"
 
@@ -410,7 +410,7 @@ msgstr "(Zašle skrytou kopii této aktualizace čárkami oddělenému seznamu e
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <b>will</b> receive future updates.)"
 msgstr "(Zašle kopii této aktualizace čárkami oddělenému seznamu e-mail adres. Tito lidé <b>budou</b> dostávat budoucí aktualizace.)"
 
-#: html/Ticket/Create.html:103
+#: html/ticket/create:103
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)"
 msgstr "(Zašle kopii této aktualizace čárkami oddělenému seznamu e-mail adres. Tito lidé <strong>budou</strong> dostávat budoucí aktualizace.)"
 
@@ -430,7 +430,7 @@ msgstr "(Zašle kopii této aktualizace čárkami oddělenému seznamu e-mail ad
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <b>will</b> receive future updates.)"
 msgstr "(Zašle kopii této aktualizace čárkami oddělenému seznamu e-mail adres. Tito lidé <b>budou</b> dostávat budoucí aktualizace.)"
 
-#: html/Ticket/Create.html:93
+#: html/ticket/create:93
 msgid "(Sends a carbon-copy of this update to a comma-delimited list of email addresses. These people <strong>will</strong> receive future updates.)"
 msgstr "(Zašle kopii této aktualizace čárkami oddělenému seznamu e-mail adres. Tito lidé <strong>budou</strong> dostávat budoucí aktualizace.)"
 
@@ -601,7 +601,7 @@ msgstr "Přidat sloupce"
 msgid "Add Criteria"
 msgstr "Přidat podmínku"
 
-#: html/Ticket/Create.html:147 html/Ticket/Update.html:116
+#: html/ticket/create:147 html/Ticket/Update.html:116
 msgid "Add More Files"
 msgstr "Přidat další soubory"
 
@@ -679,7 +679,7 @@ msgstr "Adresa1"
 msgid "Address2"
 msgstr "Adresa2"
 
-#: html/Ticket/Create.html:98
+#: html/ticket/create:98
 msgid "Admin Cc"
 msgstr "Admin Cc"
 
@@ -880,11 +880,11 @@ msgstr "Přidělit uživatelské položky"
 msgid "Attach"
 msgstr "Přiložit"
 
-#: html/SelfService/Create.html:92 html/Ticket/Create.html:143
+#: html/SelfService/Create.html:92 html/ticket/create:143
 msgid "Attach file"
 msgstr "Připojit soubor"
 
-#: html/SelfService/Update.html:75 html/Ticket/Create.html:131 html/Ticket/Update.html:94
+#: html/SelfService/Update.html:75 html/ticket/create:131 html/Ticket/Update.html:94
 msgid "Attached file"
 msgstr "Připojený soubor"
 
@@ -1052,7 +1052,7 @@ msgstr "Nelze vytvořit uživatele: %1"
 msgid "category"
 msgstr "Kategorie"
 
-#: etc/initialdata:50 html/Admin/Queues/People.html:65 html/SelfService/Create.html:71 html/Ticket/Create.html:88 html/Ticket/Elements/EditPeople:72 html/Ticket/Elements/ShowPeople:56 html/Ticket/Update.html:83 lib/RT/ACE_Overlay.pm:112
+#: etc/initialdata:50 html/Admin/Queues/People.html:65 html/SelfService/Create.html:71 html/ticket/create:88 html/Ticket/Elements/EditPeople:72 html/Ticket/Elements/ShowPeople:56 html/Ticket/Update.html:83 lib/RT/ACE_Overlay.pm:112
 msgid "Cc"
 msgstr "Cc"
 
@@ -1064,7 +1064,7 @@ msgstr "Změna hesla"
 msgid "Check All"
 msgstr "Označ vše"
 
-#: html/SelfService/Update.html:78 html/Ticket/Create.html:134 html/Ticket/Update.html:97
+#: html/SelfService/Update.html:78 html/ticket/create:134 html/Ticket/Update.html:97
 msgid "Check box to delete"
 msgstr "Zašrtnutím odstraníte"
 
@@ -1072,7 +1072,7 @@ msgstr "Zašrtnutím odstraníte"
 msgid "Check box to revoke right"
 msgstr "Zatrhněte k odebrání práva"
 
-#: html/Elements/EditLinks:148 html/Elements/EditLinks:85 html/Elements/ShowLinks:78 html/Ticket/Create.html:223 html/Ticket/Elements/BulkLinks:64
+#: html/Elements/EditLinks:148 html/Elements/EditLinks:85 html/Elements/ShowLinks:78 html/ticket/create:223 html/Ticket/Elements/BulkLinks:64
 msgid "Children"
 msgstr "Potomci"
 
@@ -1456,7 +1456,7 @@ msgstr "Nelze přeložit '%1' do URI."
 msgid "Country"
 msgstr "Země"
 
-#: html/Admin/Elements/create_userCalled:47 html/Admin/Elements/EditCustomField:84 html/Admin/Elements/EditScrip:133 html/Admin/Queues/Template.html:66 html/Elements/QuickCreate:65 html/Ticket/Create.html:168 html/Ticket/Create.html:235
+#: html/Admin/Elements/create_userCalled:47 html/Admin/Elements/EditCustomField:84 html/Admin/Elements/EditScrip:133 html/Admin/Queues/Template.html:66 html/Elements/QuickCreate:65 html/ticket/create:168 html/ticket/create:235
 msgid "Create"
 msgstr "Vytvořit"
 
@@ -1505,7 +1505,7 @@ msgstr "Vytvořit nový scrip"
 msgid "Create a new template"
 msgstr "Vytvořit nový vzor"
 
-#: html/Ticket/Create.html:47 html/Ticket/Create.html:51 html/Ticket/Create.html:60
+#: html/ticket/create:47 html/ticket/create:51 html/ticket/create:60
 msgid "Create a new ticket"
 msgstr "Vytvoření nového požadavku"
 
@@ -1718,7 +1718,7 @@ msgstr "Uživatelská položka"
 msgid "Customize"
 msgstr "Upravit"
 
-#: html/SelfService/Display.html:61 html/Ticket/Create.html:203 html/Ticket/Elements/ShowSummary:83 html/Ticket/Elements/Tabs:116 html/Ticket/ModifyAll.html:65
+#: html/SelfService/Display.html:61 html/ticket/create:203 html/Ticket/Elements/ShowSummary:83 html/Ticket/Elements/Tabs:116 html/Ticket/ModifyAll.html:65
 msgid "Dates"
 msgstr "Datumy"
 
@@ -1823,7 +1823,7 @@ msgstr "Smazání tohoto objektu by mohlo narušit referenční integritu"
 msgid "Deny"
 msgstr "Zamítnout"
 
-#: html/Elements/EditLinks:140 html/Elements/EditLinks:66 html/Elements/ShowLinks:58 html/Ticket/Create.html:221 html/Ticket/Elements/BulkLinks:56 html/Ticket/Elements/ShowDependencies:53
+#: html/Elements/EditLinks:140 html/Elements/EditLinks:66 html/Elements/ShowLinks:58 html/ticket/create:221 html/Ticket/Elements/BulkLinks:56 html/Ticket/Elements/ShowDependencies:53
 msgid "Depended on by"
 msgstr "Je rekvizitou pro"
 
@@ -1851,7 +1851,7 @@ msgstr "Přidána závislost na %1"
 msgid "Dependency on %1 deleted"
 msgstr "Závislost na %1 smazána"
 
-#: html/Elements/EditLinks:136 html/Elements/EditLinks:57 html/Elements/SelectLinkType:48 html/Elements/ShowLinks:48 html/Ticket/Create.html:220 html/Ticket/Elements/BulkLinks:52 html/Ticket/Elements/ShowDependencies:46
+#: html/Elements/EditLinks:136 html/Elements/EditLinks:57 html/Elements/SelectLinkType:48 html/Elements/ShowLinks:48 html/ticket/create:220 html/Ticket/Elements/BulkLinks:52 html/Ticket/Elements/ShowDependencies:46
 msgid "Depends on"
 msgstr "Závisející na"
 
@@ -1863,7 +1863,7 @@ msgstr "Sestupně"
 msgid "Descending"
 msgstr "Sestupně"
 
-#: html/SelfService/Create.html:100 html/Ticket/Create.html:152
+#: html/SelfService/Create.html:100 html/ticket/create:152
 msgid "Describe the issue below"
 msgstr "Popište případ níže"
 
@@ -1923,7 +1923,7 @@ msgstr "Stáhnout"
 msgid "Download as a tab-delimited file"
 msgstr "Stáhnout jako soubor oddělený tabelátory"
 
-#: html/Elements/SelectDateType:53 html/Ticket/Create.html:209 html/Ticket/Elements/EditDates:66 html/Ticket/Elements/Reminders:133 html/Ticket/Elements/ShowDates:64 lib/RT/Ticket_Overlay.pm:1173
+#: html/Elements/SelectDateType:53 html/ticket/create:209 html/Ticket/Elements/EditDates:66 html/Ticket/Elements/Reminders:133 html/Ticket/Elements/ShowDates:64 lib/RT/Ticket_Overlay.pm:1173
 msgid "Due"
 msgstr "Termín dokončení"
 
@@ -2209,7 +2209,7 @@ msgstr "Vyplnit nejvýše %1 wiki %quant(%1,textovou oblast,textové oblasti,tex
 msgid "Fin"
 msgstr "Kon"
 
-#: html/Search/Elements/PickBasics:149 html/Ticket/Create.html:182 html/Ticket/Elements/EditBasics:97 lib/RT/TicketCollection_Overlay.pm:1841
+#: html/Search/Elements/PickBasics:149 html/ticket/create:182 html/Ticket/Elements/EditBasics:97 lib/RT/TicketCollection_Overlay.pm:1841
 msgid "Final Priority"
 msgstr "Koncová priorita"
 
@@ -2723,7 +2723,7 @@ msgstr "Odkazuje na"
 msgid "Linking. Permission denied"
 msgstr "Spojování. Přístup nepovolen"
 
-#: html/Ticket/Create.html:216 html/Ticket/Elements/ShowSummary:89 html/Ticket/Elements/Tabs:120 html/Ticket/ModifyAll.html:78
+#: html/ticket/create:216 html/Ticket/Elements/ShowSummary:89 html/Ticket/Elements/Tabs:120 html/Ticket/ModifyAll.html:78
 msgid "Links"
 msgstr "Vazby"
 
@@ -3824,7 +3824,7 @@ msgstr "Vlastnit požadavky"
 msgid "OwnTicket"
 msgstr "Vlastnit požadavek"
 
-#: etc/initialdata:38 html/Elements/QuickCreate:56 html/Search/Elements/PickBasics:101 html/Ticket/Create.html:72 html/Ticket/Elements/EditBasics:61 html/Ticket/Elements/EditPeople:64 html/Ticket/Elements/EditPeople:65 html/Ticket/Elements/Reminders:129 html/Ticket/Elements/ShowPeople:48 html/Ticket/Update.html:62 lib/RT/ACE_Overlay.pm:110 lib/RT/TicketCollection_Overlay.pm:2006
+#: etc/initialdata:38 html/Elements/QuickCreate:56 html/Search/Elements/PickBasics:101 html/ticket/create:72 html/Ticket/Elements/EditBasics:61 html/Ticket/Elements/EditPeople:64 html/Ticket/Elements/EditPeople:65 html/Ticket/Elements/Reminders:129 html/Ticket/Elements/ShowPeople:48 html/Ticket/Update.html:62 lib/RT/ACE_Overlay.pm:110 lib/RT/TicketCollection_Overlay.pm:2006
 msgid "Owner"
 msgstr "Vlastník"
 
@@ -3858,7 +3858,7 @@ msgstr "Pager"
 msgid "PagerPhone"
 msgstr "Číslo pageru"
 
-#: html/Elements/EditLinks:144 html/Elements/EditLinks:76 html/Elements/ShowLinks:68 html/Ticket/Create.html:222 html/Ticket/Elements/BulkLinks:60
+#: html/Elements/EditLinks:144 html/Elements/EditLinks:76 html/Elements/ShowLinks:68 html/ticket/create:222 html/Ticket/Elements/BulkLinks:60
 msgid "Parents"
 msgstr "Rodiče"
 
@@ -3991,7 +3991,7 @@ msgstr "Pri"
 msgid "Principal %1 not found."
 msgstr "Uživatel %1 nenalezen."
 
-#: html/Search/Elements/PickBasics:147 html/Ticket/Create.html:181 html/Ticket/Elements/EditBasics:92 html/Ticket/Elements/ShowBasics:72 lib/RT/TicketCollection_Overlay.pm:1790
+#: html/Search/Elements/PickBasics:147 html/ticket/create:181 html/Ticket/Elements/EditBasics:92 html/Ticket/Elements/ShowBasics:72 lib/RT/TicketCollection_Overlay.pm:1790
 msgid "Priority"
 msgstr "Priorita"
 
@@ -4032,7 +4032,7 @@ msgstr "Tvůrce dotazu"
 msgid "Query:"
 msgstr "Dotaz:"
 
-#: html/Elements/QueueSummary:48 html/Elements/QuickCreate:54 html/Search/Elements/PickBasics:71 html/SelfService/Create.html:54 html/Ticket/Create.html:62 html/Ticket/Elements/EditBasics:57 html/Ticket/Elements/ShowBasics:76 html/Tools/Reports/CreatedByDates.html:85 html/Tools/Reports/ResolvedByDates.html:86 html/Tools/Reports/ResolvedByOwner.html:66 html/User/Elements/DelegateRights:101 lib/RT/TicketCollection_Overlay.pm:1617
+#: html/Elements/QueueSummary:48 html/Elements/QuickCreate:54 html/Search/Elements/PickBasics:71 html/SelfService/Create.html:54 html/ticket/create:62 html/Ticket/Elements/EditBasics:57 html/Ticket/Elements/ShowBasics:76 html/Tools/Reports/CreatedByDates.html:85 html/Tools/Reports/ResolvedByDates.html:86 html/Tools/Reports/ResolvedByOwner.html:66 html/User/Elements/DelegateRights:101 lib/RT/TicketCollection_Overlay.pm:1617
 msgid "Queue"
 msgstr "Fronta"
 
@@ -4062,7 +4062,7 @@ msgstr "Fronta již existuje"
 msgid "Queue could not be Created"
 msgstr "Fronta nemůže být vytvořena"
 
-#: html/Ticket/Create.html:244 lib/t/regression/01ticket_link_searching.t:17
+#: html/ticket/create:244 lib/t/regression/01ticket_link_searching.t:17
 msgid "Queue could not be loaded."
 msgstr "Fronta nemůže být načtena."
 
@@ -4257,11 +4257,11 @@ msgstr "Přidán odkaz na %1"
 msgid "Reference to %1 deleted"
 msgstr "Smazán odkaz na %1"
 
-#: html/Elements/EditLinks:103 html/Elements/EditLinks:156 html/Elements/ShowLinks:92 html/Ticket/Create.html:225 html/Ticket/Elements/BulkLinks:72
+#: html/Elements/EditLinks:103 html/Elements/EditLinks:156 html/Elements/ShowLinks:92 html/ticket/create:225 html/Ticket/Elements/BulkLinks:72
 msgid "Referred to by"
 msgstr "Je odkazem z"
 
-#: html/Elements/EditLinks:152 html/Elements/EditLinks:94 html/Elements/SelectLinkType:49 html/Elements/ShowLinks:82 html/Ticket/Create.html:224 html/Ticket/Elements/BulkLinks:68
+#: html/Elements/EditLinks:152 html/Elements/EditLinks:94 html/Elements/SelectLinkType:49 html/Elements/ShowLinks:82 html/ticket/create:224 html/Ticket/Elements/BulkLinks:68
 msgid "Refers to"
 msgstr "Odkazuje na"
 
@@ -4355,7 +4355,7 @@ msgstr "Emailová adresa žadatele"
 msgid "Requestor(s)"
 msgstr "Žadatel(é)"
 
-#: html/SelfService/Create.html:63 html/Ticket/Create.html:80 html/Ticket/Elements/EditPeople:69 html/Ticket/Elements/ShowPeople:52
+#: html/SelfService/Create.html:63 html/ticket/create:80 html/Ticket/Elements/EditPeople:69 html/Ticket/Elements/ShowPeople:52
 msgid "Requestors"
 msgstr "Žadatelé"
 
@@ -4800,7 +4800,7 @@ msgstr "Zobrazit výsledky"
 msgid "Show approved requests"
 msgstr "Zobrazit schválené požadavky"
 
-#: html/Ticket/Create.html:316
+#: html/ticket/create:316
 msgid "Show basics"
 msgstr "Zobrazit základní údaje"
 
@@ -4808,7 +4808,7 @@ msgstr "Zobrazit základní údaje"
 msgid "Show denied requests"
 msgstr "Zobrazit odepřené požadavky"
 
-#: html/Ticket/Create.html:319
+#: html/ticket/create:319
 msgid "Show details"
 msgstr "Zobrazit podrobnosti"
 
@@ -4936,7 +4936,7 @@ msgstr "Započato"
 msgid "Started date '%1' could not be parsed"
 msgstr "Datum započetí '%1' nemůže být rozpoznáno"
 
-#: html/Elements/SelectDateType:52 html/Ticket/Create.html:208 html/Ticket/Elements/EditDates:48 html/Ticket/Elements/ShowDates:52
+#: html/Elements/SelectDateType:52 html/ticket/create:208 html/Ticket/Elements/EditDates:48 html/Ticket/Elements/ShowDates:52
 msgid "starts"
 msgstr "Začíná"
 
@@ -4952,7 +4952,7 @@ msgstr "Datum začínání '%1' nemůže být rozpoznáno"
 msgid "State"
 msgstr "Stát"
 
-#: html/Search/Elements/PickBasics:87 html/SelfService/Update.html:57 html/Ticket/Create.html:66 html/Ticket/Elements/EditBasics:53 html/Ticket/Elements/ShowBasics:52 html/Ticket/Update.html:59 lib/RT/Ticket_Overlay.pm:1166 lib/RT/TicketCollection_Overlay.pm:1651
+#: html/Search/Elements/PickBasics:87 html/SelfService/Update.html:57 html/ticket/create:66 html/Ticket/Elements/EditBasics:53 html/Ticket/Elements/ShowBasics:52 html/Ticket/Update.html:59 lib/RT/Ticket_Overlay.pm:1166 lib/RT/TicketCollection_Overlay.pm:1651
 msgid "Status"
 msgstr "Stav"
 
@@ -4989,7 +4989,7 @@ msgstr "Převzato od %1"
 msgid "Style"
 msgstr "Styl"
 
-#: html/Elements/QuickCreate:52 html/Elements/SelectAttachmentField:47 html/Search/Bulk.html:132 html/SelfService/Create.html:79 html/SelfService/Update.html:65 html/Ticket/Create.html:108 html/Ticket/Elements/EditBasics:48 html/Ticket/Elements/Reminders:125 html/Ticket/ModifyAll.html:100 html/Ticket/Update.html:82 lib/RT/Ticket_Overlay.pm:1162 lib/RT/TicketCollection_Overlay.pm:1733
+#: html/Elements/QuickCreate:52 html/Elements/SelectAttachmentField:47 html/Search/Bulk.html:132 html/SelfService/Create.html:79 html/SelfService/Update.html:65 html/ticket/create:108 html/Ticket/Elements/EditBasics:48 html/Ticket/Elements/Reminders:125 html/Ticket/ModifyAll.html:100 html/Ticket/Update.html:82 lib/RT/Ticket_Overlay.pm:1162 lib/RT/TicketCollection_Overlay.pm:1733
 msgid "subject"
 msgstr "Předmět"
 
@@ -5195,7 +5195,7 @@ msgstr "V této frontě nemůže tento uživatel vlastnit požadavky"
 msgid "That's not a numerical id"
 msgstr "Toto není číselný identifikátor"
 
-#: html/SelfService/Display.html:53 html/Ticket/Create.html:177 html/Ticket/Elements/ShowSummary:49
+#: html/SelfService/Display.html:53 html/ticket/create:177 html/Ticket/Elements/ShowSummary:49
 msgid "The Basics"
 msgstr "Základní údaje"
 
@@ -5417,15 +5417,15 @@ msgstr "Požadavky vyřešené před"
 msgid "Tickets which depend on this approval:"
 msgstr "Požadavky, které záleží na tomto schválení:"
 
-#: html/Search/Elements/PickBasics:134 html/Ticket/Create.html:183 html/Ticket/Elements/EditBasics:72
+#: html/Search/Elements/PickBasics:134 html/ticket/create:183 html/Ticket/Elements/EditBasics:72
 msgid "Time Estimated"
 msgstr "Předpokládaný čas"
 
-#: html/Search/Elements/PickBasics:135 html/Ticket/Create.html:196 html/Ticket/Elements/EditBasics:85
+#: html/Search/Elements/PickBasics:135 html/ticket/create:196 html/Ticket/Elements/EditBasics:85
 msgid "Time Left"
 msgstr "Zbývající čas"
 
-#: html/Search/Elements/PickBasics:133 html/Ticket/Create.html:189 html/Ticket/Elements/EditBasics:78
+#: html/Search/Elements/PickBasics:133 html/ticket/create:189 html/Ticket/Elements/EditBasics:78
 msgid "Time Worked"
 msgstr "Čas práce"
 
