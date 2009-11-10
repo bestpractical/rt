@@ -85,7 +85,7 @@ sub has_entry_for_custom_field {
     my $self = shift;
     my $id   = shift;
 
-    my @items = grep { $_->custom_field == $id } @{ $self->items_array_ref };
+    my @items = grep { $_->custom_field->id == $id } @{ $self->items_array_ref };
 
     if ( $#items > 1 ) {
         die "$self HasEntry had a list with more than one of $id in it. this can never happen";
