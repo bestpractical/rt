@@ -71,7 +71,7 @@ my $CustomFields = RT::Model::CustomFieldCollection->new( current_user => Jifty-
 my @results;
 my (@GlobalCFs, @UnassignedCFs);
 
-my $id = $object->id;
+my $id = $object->id || '';
 if ($id and !$object->current_user_has_right('AssignCustomFields')) {
     $m->out('<p><i>', _('(No custom fields)'), '</i></p>');
     return;
