@@ -113,8 +113,6 @@ else {
 
         push @results, $msg;
 		$id = $Dashboard->id;
-	warn Jifty->web->url . "Dashboards/Modify.html?id=" . $Dashboard->id;
-	warn join(',',@results);
     RT::Interface::Web::redirect(
 	url      => Jifty->web->url . "Dashboards/Modify.html?id=" . $Dashboard->id,
 	messages => \@results
