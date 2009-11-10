@@ -105,12 +105,13 @@
 </&>
 <%INIT>
 my $querystring = '';
+my $selected_clauses = Jifty->web->request->argument('clauses');
 my ( $saved_search, $current_search, $results ) = RT::Interface::Web::QueryBuilder->setup_query();
 
 my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
 push @$results, $tree->parse_sql( query => $current_search->{query} );
 
-my $current_values = [ ( $tree->get_displayed_nodes() )[@clauses] ];
+my $current_values = [ ( $tree->get_displayed_nodes() )[ref $selected_clauses ? @$selected_clauses : $selected_clauses] ];
 
 push @$results, RT::Interface::Web::QueryBuilder->process_query( $tree, $current_values );
 
@@ -146,7 +147,3 @@ Jifty->web->redirect( Jifty->web->url . "Search/Results.html?" . $querystring )
     if ( Jifty->web->request->argument('do_search') );
 
 </%INIT>
-
-<%ARGS>
-@clauses => ()
-</%ARGS>
