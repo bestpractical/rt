@@ -47,7 +47,6 @@
 %# END BPS TAGGED BLOCK }}}
 <&| /_elements/wrapper, title => $title &>
 <& /Elements/Tabs,
-    current_subtab => $current_subtab,
     title => $title,
     $create ? () : (dashboard_obj => $Dashboard),
 &>
@@ -80,7 +79,6 @@
 </&>
 <%INIT>
 
-my $current_subtab;
 my ($title, @results);
 my $tried_create = 0;
 
@@ -95,7 +93,6 @@ my @privacies = $Dashboard->_privacy_objects(($create ? 'create' : 'modify') => 
 abort(_("Permission denied")) if @privacies == 0;
 
 if ($create) {
-    $current_subtab = 'Dashboards/Modify.html?create=1';
     $title = _("Create a new dashboard");
 }
 else {
@@ -103,8 +100,8 @@ else {
         $tried_create = 1;
 
         my ($val, $msg) = $Dashboard->save(
-            name    => $ARGS{'name'},
-            privacy => $ARGS{'privacy'},
+            name    => Jifty->web->request->argument('name'),
+            privacy => Jifty->web->request->argument('privacy'),
         );
 
         if (!$val) {
@@ -126,19 +123,17 @@ else {
 
     if ($id) {
         $title = _("Modify the dashboard %1", $Dashboard->name);
-        $current_subtab = 'Dashboards/Modify.html?id=' . $id;
     }	
     # If the create failed
     else {
         $create = 1;
-        $current_subtab = 'Dashboards/Modify.html?create=1';
         $title = _("Create a new dashboard");
     }
 }
 
-if (!$create && !$tried_create && $id && $ARGS{'save'}) {
-    my ($ok, $msg) = $Dashboard->update(privacy  => $ARGS{'privacy'},
-                                        name     => $ARGS{'name'});
+if (!$create && !$tried_create && $id && Jifty->web->request->argument('save')) {
+    my ($ok, $msg) = $Dashboard->update(privacy  => Jifty->web->request->argument('privacy'),
+                                        name     => Jifty->web->request->argument('name'));
 
     if ($ok) {
         push @results, _("Dashboard updated");
@@ -151,12 +146,12 @@ if (!$create && !$tried_create && $id && $ARGS{'save'}) {
 
 my $can_delete = $Dashboard->current_user_can_delete;
 
-if (!$create && !$tried_create && $id && $ARGS{'delete'}) {
+if (!$create && !$tried_create && $id && Jifty->web->request->argument('delete')) {
     my ($ok, $msg) = $Dashboard->delete();
     $ok || abort(_("Couldn't delete dashboard %1: %2", $id, $msg));
 
     # put the user back into a useful place with a message
-    RT::Interface::Web::redirect(Jifty->web->url."Dashboards/index.html?deleted=$id");
+	RT::Interface::Web::redirect(Jifty->web->url."Dashboards/index.html?deleted=$id");
 
 }
 </%INIT>
