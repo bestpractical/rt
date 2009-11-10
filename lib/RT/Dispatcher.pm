@@ -178,6 +178,63 @@ on qr{^/Ticket/Graphs/(\d+)} => run {
     show( '/Ticket/Graphs/Render' );
 };
 
+before qr{^/Search/Build.html} => run {
+    my $querystring      = '';
+    my $selected_clauses = Jifty->web->request->argument('clauses');
+    my ( $saved_search, $current_search, $results ) = RT::Interface::Web::QueryBuilder->setup_query();
+
+    my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
+    push @$results, $tree->parse_sql( query => $current_search->{query} );
+
+    my $current_values
+        = [ ( $tree->get_displayed_nodes() )[ ref $selected_clauses ? @$selected_clauses : $selected_clauses ] ];
+
+    push @$results, RT::Interface::Web::QueryBuilder->process_query( $tree, $current_values );
+
+    my $queues       = $tree->get_referenced_queues;
+    my $parsed_query = $tree->get_query_option_list($current_values);
+
+    $current_search->{'query'} = join ' ', map $_->{'TEXT'}, @$parsed_query;
+
+    #  Deal with format changes
+    my ( $available_columns, $current_format );
+    ( $current_search->{'format'}, $available_columns, $current_format )
+        = RT::Interface::Web::QueryBuilder->build_format_string(
+        %{ Jifty->web->request->arguments },
+        queues => $queues,
+        format => $current_search->{'format'}
+        );
+
+    # if we're asked to save the current search, save it
+    push @$results, RT::Interface::Web::QueryBuilder->save_search( $current_search, $saved_search )
+        if ( Jifty->web->request->argument('saved_search_save') || Jifty->web->request->argument('saved_search_copy') );
+
+    #  Push the updates into the session so we don't lose 'em
+    Jifty->web->session->set( 'CurrentSearchHash', { %$saved_search, %$current_search, } );
+
+    #  Build a query_string for the tabs
+    if ( Jifty->web->request->argument('new_query') ) {
+        $querystring = 'new_query=1';
+    } elsif ( $current_search->{'query'} ) {
+        $querystring = RT::Interface::Web->format_query_params(%$current_search);
+    }
+
+    Jifty->web->redirect( Jifty->web->url . "Search/Results.html?" . $querystring )
+        if ( Jifty->web->request->argument('do_search') );
+
+    set current_search    => $current_search;
+    set current_format    => $current_format;
+    set available_columns => $available_columns;
+    set saved_search      => $saved_search;
+    set results           => $results;
+    set parsed_query      => $parsed_query;
+    set querystring       => $querystring;
+    set queues            => $queues;
+
+};
+
+
+
 # Backward compatibility with old RT URLs
 
 before '/NoAuth/Logout.html' => run { redirect '/logout' };
