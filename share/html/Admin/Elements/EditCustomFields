@@ -71,7 +71,7 @@ my $CustomFields = RT::Model::CustomFieldCollection->new( current_user => Jifty-
 my @results;
 my (@GlobalCFs, @UnassignedCFs);
 
-my $id = $object->id;
+my $id = $object->id || '';
 if ($id and !$object->current_user_has_right('AssignCustomFields')) {
     $m->out('<p><i>', _('(No custom fields)'), '</i></p>');
     return;
@@ -107,7 +107,7 @@ if (grep $_ > 1, values %sort_orders) {
 # {{{ deal with moving sort_order of custom fields
 if ($custom_field and $move) {
     my $SourceObj = RT::Model::ObjectCustomField->new( current_user => Jifty->web->current_user );
-    $SourceObj->load_by_cols( object_id => $id, CustomField => $custom_field );
+    $SourceObj->load_by_cols( object_id => $id, custom_field => $custom_field );
 
     my $targetObj;
     my $target_order = $SourceObj->sort_order + $move;

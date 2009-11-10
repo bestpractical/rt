@@ -203,11 +203,11 @@ Sends an error message. Takes a param hash:
 
 =over 4
 
-=item From - sender's address, by default is 'correspond_address';
+=item from - sender's address, by default is 'correspond_address';
 
-=item To - recipient, by default is 'OwnerEmail';
+=item to - recipient, by default is 'OwnerEmail';
 
-=item Bcc - optional Bcc recipients;
+=item bcc - optional Bcc recipients;
 
 =item subject - subject of the message, default is 'There has been an error';
 
@@ -216,7 +216,7 @@ Sends an error message. Takes a param hash:
 =item mime_obj - optional MIME entity that's attached to the error mail, as well we
 add 'In-Reply-To' field to the error that points to this message.
 
-=item Attach - optional text that attached to the error as 'message/rfc822' part.
+=item attach - optional text that attached to the error as 'message/rfc822' part.
 
 =item log_level - log level under which we should write explanation message into the
 log, by default we log it as errorical.
@@ -227,13 +227,13 @@ log, by default we log it as errorical.
 
 sub mail_error {
     my %args = (
-        To          => RT->config->get('owner_email'),
-        Bcc         => undef,
-        From        => RT->config->get('correspond_address'),
+        to          => RT->config->get('owner_email'),
+        bcc         => undef,
+        from        => RT->config->get('correspond_address'),
         subject     => 'There has been an error',
         explanation => 'Unexplained error',
         mime_obj    => undef,
-        Attach      => undef,
+        attach      => undef,
         log_level   => 'error',
         @_
     );
@@ -244,9 +244,9 @@ sub mail_error {
     # the colons are necessary to make ->build include non-standard headers
     my $entity = MIME::Entity->build(
         Type                    => "multipart/mixed",
-        From                    => $args{'From'},
-        Bcc                     => $args{'Bcc'},
-        To                      => $args{'To'},
+        From                    => $args{'from'},
+        Bcc                     => $args{'bcc'},
+        To                      => $args{'to'},
         Subject                 => $args{'subject'},
         'Precedence:'           => 'bulk',
         'X-RT-Loop-Prevention:' => RT->config->get('rtname'),
@@ -500,7 +500,7 @@ sub prepare_email_using_template {
     return $template;
 }
 
-=head2 send_email_using_template template => '', arguments => {}, From => correspond_address, to => '', cc => '', bcc => ''
+=head2 send_email_using_template template => '', arguments => {}, from => correspond_address, to => '', cc => '', bcc => ''
 
 Sends email using a template, takes name of template, arguments for it and recipients.
 
@@ -533,7 +533,7 @@ sub send_email_using_template {
     return send_email( entity => $mail );
 }
 
-=head2 forward_transaction TRANSACTION, To => '', Cc => '', Bcc => ''
+=head2 forward_transaction TRANSACTION, to => '', cc => '', bcc => ''
 
 Forwards transaction with all attachments 'message/rfc822'.
 
@@ -541,7 +541,7 @@ Forwards transaction with all attachments 'message/rfc822'.
 
 sub forward_transaction {
     my $txn = shift;
-    my %args = ( To => '', Cc => '', Bcc => '', @_ );
+    my %args = ( to => '', cc => '', bcc => '', @_ );
 
     my $main_content = $txn->content_obj;
     my $entity       = $main_content->content_as_mime;
@@ -812,7 +812,7 @@ email address  and anything that the configuration sub RT::is_rt_address matches
 
 sub parse_cc_addresses_from_head {
     my %args = (
-        Head         => undef,
+        head         => undef,
         queue_obj    => undef,
         current_user => undef,
         @_
@@ -820,12 +820,12 @@ sub parse_cc_addresses_from_head {
 
     my @recipients
         = map lc $_->address,
-        map Email::Address->parse( $args{'Head'}->get($_) ), qw(To Cc);
+        map Email::Address->parse( $args{'head'}->get($_) ), qw(To Cc);
 
     my @res;
     foreach my $address (@recipients) {
-        $address = $args{'CurrentUser'}->user_object->canonicalize_email($address);
-        next if lc $args{'CurrentUser'}->email            eq $address;
+        $address = $args{'current_user'}->user_object->canonicalize_email($address);
+        next if lc $args{'current_user'}->email            eq $address;
         next if lc $args{'queue_obj'}->correspond_address eq $address;
         next if lc $args{'queue_obj'}->comment_address    eq $address;
         next if RT::EmailParser->is_rt_address($address);
@@ -944,7 +944,7 @@ sub gen_message_id {
     my $org = RT->config->get('organization');
     my $ticket_id = ( ref $args{'ticket'} ? $args{'ticket'}->id : $args{'ticket'} )
         || 0;
-    my $scrip_id = ( ref $args{'Scrip'} ? $args{'Scrip'}->id : $args{'Scrip'} )
+    my $scrip_id = ( ref $args{'scrip'} ? $args{'scrip'}->id : $args{'scrip'} )
         || 0;
     my $sent = $args{sequence} || 0;
 
