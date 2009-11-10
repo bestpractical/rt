@@ -4,7 +4,7 @@
 use strict;
 use warnings;
 
-use RT::Test; use Test::More; 
+use RT::Test strict => 1; use Test::More; 
 plan tests => 10;
 use_ok('RT');
 

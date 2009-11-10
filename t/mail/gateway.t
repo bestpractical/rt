@@ -56,9 +56,10 @@ rt-mailgate - Mail interface to RT3.
 use strict;
 use warnings;
 
-use RT::Test; use Test::More tests => 159;
+use RT::Test strict => 1, tests => 169;
 
 my ($baseurl, $ua) = RT::Test->started_ok;
+ok( $ua->login, 'logged in' );
 
 use RT::Model::TicketCollection;
 
@@ -105,7 +106,6 @@ EOF
     is ($status >> 8, 75, "The mail gateway exited with a failure");
     ok (!$id, "No ticket id");
 }
-
 my $everyone_group;
 diag "revoke rights tests depend on" if $ENV{'TEST_VERBOSE'};
 {
@@ -254,6 +254,11 @@ EOF
     ok( !$u->id, "user does not exist and was not Created by failed ticket submission");
 }
 
+$ua->warnings_like(
+    [(qr/could not load a valid user/i) x 3],
+    'got could not load user warning'
+);
+
 diag "grant everybody with CreateTicket right" if $ENV{'TEST_VERBOSE'};
 {
     ok( RT::Test->set_rights(
@@ -308,6 +313,11 @@ EOF
     $u->load('doesnotexist-2@'.RT->config->get('rtname'));
     ok( !$u->id, " user does not exist and was not Created by ticket correspondence submission");
 }
+
+$ua->warnings_like(
+    [(qr/could not load a valid user/i) x 3],
+    'got could not load user warning'
+);
 
 diag "grant everyone 'ReplyToTicket' right" if $ENV{'TEST_VERBOSE'};
 {
@@ -388,6 +398,10 @@ EOF
     ok( !$u->id, " user does not exist and was not Created by ticket comment submission");
 }
 
+$ua->warnings_like(
+    [(qr/could not load a valid user/i) x 3],
+    'got could not load user warning'
+);
 
 diag "grant everyone 'CommentOnTicket' right" if $ENV{'TEST_VERBOSE'};
 {
@@ -509,7 +523,6 @@ diag "Testing preservation of binary attachments" if $ENV{'TEST_VERBOSE'};
     # Grab the binary attachment via the web ui
     my $full_url = "$url/Ticket/Attachment/". $attachment->transaction_id
         ."/". $attachment->id. "/bplogo.gif";
-        $ua->login();
     my $r = $ua->get( $full_url );
 
     # Verify that the downloaded attachment is the same as what we uploaded.

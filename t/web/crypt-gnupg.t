@@ -2,14 +2,14 @@
 use strict;
 
 use Test::More;
-use RT::Test;
+use RT::Test strict => 1;
 
 plan skip_all => 'GnuPG required.'
     unless eval 'use GnuPG::Interface; 1';
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
 
-plan tests => 92;
+plan tests => 93;
 
 use RT::ScripAction::SendEmail;
 
@@ -388,6 +388,8 @@ hello
 MAIL
  
 ((my $status), $id) = RT::Test->send_via_mailgate($mail);
+$m->warnings_like( qr/Recipient 'nokey\@example.com' is unusable/ );
+
 is ($status >> 8, 0, "The mail gateway exited normally");
 ok ($id, "got id of a newly created ticket - $id");
 $tick = RT::Model::Ticket->new(current_user => RT->system_user );

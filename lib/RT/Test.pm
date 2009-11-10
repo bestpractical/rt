@@ -68,7 +68,7 @@ wrap 'HTTP::Request::Common::form_data', post => sub {
     }
 };
 
-our @EXPORT = qw(is_empty);
+our @EXPORT = qw(is_empty skip_rest);
 
 
 my $config;
@@ -508,11 +508,6 @@ sub import_gnupg_key {
     $key .= ".$type.key";
 
     require RT::Crypt::GnuPG;
-    ( my $volume, my $directories, my $file ) = File::Spec->splitpath($0);
-    my $keys_dir = File::Spec->catdir(
-        File::Spec->curdir(), $directories,
-        File::Spec->updir(),  qw(data gnupg keys)
-    );
 
     # this is a bit hackish; calling it from somewhere that's not a subdir
     # of t/ will fail
@@ -560,6 +555,13 @@ sub fetch_caught_mails {
 
 sub clean_caught_mails {
     unlink $MAILBOX_CATCHER;
+}
+
+sub skip_rest {
+    my ($reason) = @_;
+    my $tb = Jifty::Test->builder;
+    $tb->skip($reason) for (1..$tb->expected_tests);
+    exit;
 }
 
 sub file_content {

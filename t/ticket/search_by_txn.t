@@ -3,7 +3,7 @@
 use warnings;
 use strict;
 
-use RT::Test; use Test::More tests => 11;
+use RT::Test strict => 1; use Test::More tests => 11;
 
 BEGIN{ $ENV{'TZ'} = 'GMT'};
 

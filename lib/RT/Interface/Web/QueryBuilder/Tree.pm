@@ -120,7 +120,7 @@ sub get_referenced_queues {
     return $queues;
 }
 
-=head2 get_query_and_option_list SELECTED_NODES
+=head2 get_query_option_list SELECTED_NODES
 
 Given an array reference of tree nodes that have been selected by the user,
 traverses the tree and returns the equivalent SQL query and a list of hashes
@@ -134,7 +134,7 @@ level of indentation for the option.
 
 =cut 
 
-sub get_query_and_option_list {
+sub get_query_option_list {
     my $self           = shift;
     my $selected_nodes = shift;
 

@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use RT::Test; use Test::More tests => 27;
+use RT::Test strict => 1; use Test::More tests => 27;
 use RT::Model::User;
 use RT::Model::Group;
 use RT::Model::Ticket;

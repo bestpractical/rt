@@ -2,7 +2,7 @@
 
 use warnings;
 use strict;
-use RT::Test; use Test::More tests => 12;
+use RT::Test strict => 1; use Test::More tests => 12;
 
 
 sub new {

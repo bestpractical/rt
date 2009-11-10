@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 use strict;
-use RT::Test; use Test::More tests => 5;
+use RT::Test strict => 1; use Test::More tests => 5;
 use_ok('RT::Interface::Web');
 my $queue = RT::Model::Queue->new(current_user => RT->system_user );
 $queue->create( name => 'RecordCustomFields-'.$$ );

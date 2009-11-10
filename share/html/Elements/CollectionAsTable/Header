@@ -102,7 +102,7 @@ foreach my $col ( @format ) {
     );
 
     unless( $tmp ) {
-        $title = $m->comp('/Elements/ScrubHTML', content => $title);
+        $title = RT::Interface::Web->scrub_html( $title);
     } else {
         if ( UNIVERSAL::isa( $tmp, 'CODE' ) ) {
             my @tmp = $tmp->( $title );

@@ -71,8 +71,8 @@ if ($ticket_obj) {
     @objects = ($ticket_obj);
 } elsif ($queue_obj) {
     @objects = ($queue_obj);
-} elsif ($cfqueues) {
-    @objects = keys %{$cfqueues};
+} elsif ($queues) {
+    @objects = keys %{$queues};
 } else {
 # Let's check rights on an empty queue object. that will do a search
 # for any queue.
@@ -131,5 +131,5 @@ $ticket_obj => undef
 $default_value => 1
 $default_label => "-"
 $value_attribute => 'id'
-$cfqueues => undef
+$queues => undef
 </%ARGS>

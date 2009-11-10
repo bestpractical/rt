@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use Test::More tests => 24;
-use RT::Test;
+use RT::Test strict => 1;
 
 use strict;
 use warnings;

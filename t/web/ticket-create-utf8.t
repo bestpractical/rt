@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 8, l10n => 1;
+use RT::Test strict => 1, tests => 8, l10n => 1;
 
 use Encode;
 
@@ -43,12 +43,14 @@ ok $m->login, 'logged in';
     $m->field( content => $ru_support );
     $m->submit;
 
+    my $encoded_ru_test = Encode::encode_utf8( $ru_test );
+    my $encoded_ru_support = Encode::encode_utf8( $ru_support );
     $m->content_like( 
-        qr{<td\s+class="message-header-value"[^>]*>\s*\Q$ru_test\E\s*</td>}i,
+        qr{<td\s+class="message-header-value"[^>]*>\s*\Q$encoded_ru_test\E\s*</td>}i,
         'header on the page'
     );
     $m->content_like( 
-        qr{\Q$ru_support\E}i,
+        qr{\Q$encoded_ru_support\E}i,
         'content on the page'
     );
 }

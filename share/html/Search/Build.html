@@ -1,4 +1,4 @@
-%# BEGIN BPS TAGGED BLOCK {{{
+%# BEGIN BPS TAGGED BLOCK 
 %# 
 %# COPYRIGHT:
 %# 
@@ -44,7 +44,7 @@
 %# works based on those contributions, and sublicense and distribute
 %# those contributions and any derivatives thereof.
 %# 
-%# END BPS TAGGED BLOCK }}}
+%# END BPS TAGGED BLOCK
 %#
 %# Data flow here:
 %#   The page receives a Query from the previous page, and maybe arguments
@@ -68,247 +68,42 @@
 <&| /_elements/wrapper, title => _("Query Builder") &>
 
 <form method="post" action="Build.html" name="build_query">
-<input type="hidden" class="hidden" name="saved_search_id" value="<% $saved_search{'id'} %>" />
-<input type="hidden" class="hidden" name="query" value="<% $query{'query'} %>" />
-<input type="hidden" class="hidden" name="format" value="<% $query{'format'} %>" />
-
-
-
-
+<input type="hidden" class="hidden" name="saved_search_id" value="<% $saved_search->{'id'} || '' %>" />
+<input type="hidden" class="hidden" name="query" value="<% $current_search->{'query'} || '' %>" />
+<input type="hidden" class="hidden" name="format" value="<% $current_search->{'format'} || '' %>" />
 <div id="pick-criteria">
-    <& Elements/PickCriteria, query => $query{'query'}, cfqueues => $queues &>
+	<& Elements/PickCriteria, query => $current_search->{'query'}, queues => $queues &>
 </div>
 <& /Elements/Submit,  label => _('Add these terms'), name => 'add_clause'&>
 <& /Elements/Submit, label => _('Add these terms and Search'), name => 'do_search'&>
-
-
 <div id="editquery">
 <& Elements/EditQuery,
     %ARGS,
-    actions => \@actions,
-    optionlist => $optionlist,
-    description => $saved_search{'description'},
+	actions => $results,
+    parsed_query => $parsed_query,
+	description => $saved_search->{'description'},
     &>
 </div>
 <div id="editsearches">
-    <& Elements/EditSearches, %saved_search, current_search => \%query &>
+    <& Elements/EditSearches, %$saved_search, current_search => $current_search &>
 </div>
-
-
-
 <span id="display-options">
-
 <& Elements/DisplayOptions,
-    %ARGS, %query,
-    available_columns => $AvailableColumns,
+    %ARGS, %$current_search,
+    available_columns => $available_columns,
     current_format    => $current_format,
 &>
-
 <& /Elements/Submit, label => _('Update format and Search'), name => 'do_search', id=>"formatbuttons"&>
 </span>
-
 </form>
-
 </&>
-<%INIT>
-use RT::Interface::Web::QueryBuilder::Tree;
-
-my %query;
-for( qw(query format order_by order rows_per_page) ) {
-    $query{$_} = $ARGS{$_};
-}
-
-my %saved_search;
-my @actions = $m->comp( 'Elements/EditSearches:Init', %ARGS, query => \%query, saved_search => \%saved_search);
-
-if ( $new_query ) {
-
-    # Wipe all data-carrying variables clear if we want a new
-    # search, or we're deleting an old one..
-    %query = ();
-    %saved_search = ( id => 'new' );
-
-    # ..then wipe the session out..
-    Jifty->web->session->remove('CurrentSearchHash');
-
-    # ..and the search results.
-    Jifty->web->session->get('tickets')->clean_slate if defined Jifty->web->session->get('tickets');
-}
-
-{ # Attempt to load what we can from the session and preferences, set defaults
-
-    my $current = Jifty->web->session->get('CurrentSearchHash');
-    my $prefs = Jifty->web->current_user->user_object->preferences("SearchDisplay") || {};
-    my $default = {query => '', format => '', order_by => 'id', order => 'ASC', rows_per_page => 50 };
-
-    for( qw(query format order_by order rows_per_page) ) {
-        $query{$_} = $current->{$_} unless defined $query{$_};
-        $query{$_} = $prefs->{$_} unless defined $query{$_};
-        $query{$_} = $default->{$_} unless defined $query{$_};
-    }
-
-    for( qw(order order_by) ) {
-        if (ref $query{$_} eq "ARRAY") {
-            $query{$_} = join( '|', @{ $query{$_} } );
-        }
-    }
-    if ( $query{'format'} ) {
-        # Clean unwanted junk from the format
-        $query{'format'} = $m->comp( '/Elements/ScrubHTML', content => $query{'format'} );
-    }
-}
-
-my $parse_query = sub  {
-    my ($string, $results) = @_;
-
-    my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
-    @$results = $tree->parse_sql( query => $string );
-
-    return $tree;
-};
-
-my $tree = $parse_query->( $query{'query'}, \@actions );
-
-# if parsing went poorly, send them to the edit page to fix it
-if ( $actions[0] ) {
-    return $m->comp( "Edit.html", query => $query{'query'}, actions => \@actions );
-}
-
-my @options = $tree->get_displayed_nodes;
-my @current_values = grep defined, @options[@clauses];
-my @new_values = ();
-
-# {{{ Try to find if we're adding a clause
-foreach my $arg ( keys %ARGS ) {
-    next unless $arg =~ m/^value_of_(\w+|'CF.{.*?}')$/
-                && ( ref $ARGS{$arg} eq "ARRAY"
-                     ? grep $_ ne '', @{ $ARGS{$arg} }
-                     : $ARGS{$arg} ne '' );
-
-    # We're adding a $1 clause
-    my $field = $1;
-
-    my ($op, $value);
-
-    #figure out if it's a grouping
-    my $keyword = $ARGS{ $field . "_field" } || $field;
-
-    my ( @ops, @values );
-    if ( ref $ARGS{ 'value_of_' . $field } eq "ARRAY" ) {
-        # we have many keys/values to iterate over, because there is
-        # more than one CF with the same name.
-        @ops    = @{ $ARGS{ $field . '_op' } };
-        @values = @{ $ARGS{ 'value_of_' . $field } };
-    }
-    else {
-        @ops    = ( $ARGS{ $field . '_op' } );
-        @values = ( $ARGS{ 'value_of_' . $field } );
-    }
-    Jifty->log->error("Bad Parameters passed into Query Builder")
-        unless @ops == @values;
-
-    for ( my $i = 0; $i < @ops; $i++ ) {
-        my ( $op, $value ) = ( $ops[$i], $values[$i] );
-        next if !defined $value || $value eq '';
-
-        if ( $value eq 'NULL' && $op =~ /=/ ) {
-            if ( $op eq '=' ) {
-                $op = "IS";
-            }
-            elsif ( $op eq '!=' ) {
-                $op = "IS NOT";
-            }
-
-            # This is not "right", but...
-            # It has to be this way until #5182 is fixed
-            $value = "'NULL'";
-        }
-        else {
-            $value =~ s/'/\\'/g;
-            $value = "'$value'" unless $value =~ /^\d+$/;
-        }
-
-        my $clause = {
-            Key   => $keyword,
-            Op    => $op,
-            Value => $value
-        };
-
-        push @new_values, RT::Interface::Web::QueryBuilder::Tree->new($clause);
-    }
-}
-
-# }}}
-use RT::Interface::Web::QueryBuilder;
-push @actions, RT::Interface::Web::QueryBuilder->process_query(
-    \%ARGS,
-    $tree,
-    \@current_values,
-    \@new_values,
-);
-
-# {{{ Rebuild $Query based on the additions / movements
-
-my $optionlist_arrayref;
-($query{'query'}, $optionlist_arrayref) = $tree->get_query_and_option_list(\@current_values);
-
-my $optionlist = join "\n", map { qq(<option value="$_->{INDEX}" $_->{SELECTED}>) 
-                                  . ("&nbsp;" x (5 * $_->{DEPTH}))
-                                  . $m->interp->apply_escapes($_->{TEXT}, 'h') . qq(</option>) } @$optionlist_arrayref;
-
-# }}}
-
-my $queues = $tree->get_referenced_queues;
-
-# {{{ Deal with format changes
-my ( $AvailableColumns, $current_format );
-( $query{'format'}, $AvailableColumns, $current_format ) = $m->comp(
-    'Elements/BuildFormatString',
-    %ARGS,
-    cfqueues => $queues,
-    format => $query{'format'},
-);
-
-# }}}
-
-# if we're asked to save the current search, save it
-push @actions, $m->comp( 'Elements/EditSearches:Save', %ARGS, query => \%query, saved_search => \%saved_search);
-
-# {{{ Push the updates into the session so we don't loose 'em
-
-Jifty->web->session->set('CurrentSearchHash', {
-    %query,
-    search_id    => $saved_search{'id'},
-    object      => $saved_search{'object'},
-    description => $saved_search{'description'},
-} );
-
-# }}}
-
-# {{{ Show the results, if we were asked.
-
-if ( $ARGS{'do_search'} ) {
-    $m->comp( 'Results.html', %query );
-    $m->abort;
-}
-
-# }}}
-
-# {{{ Build a query_string for the tabs
-
-my $query_string = '';
-if ($new_query) {
-    $query_string = 'new_query=1';
-}
-elsif ( $query{'query'} ) {
-$query_string = URI->new->query_form( %query );
-}
-
-# }}}
-
-</%INIT>
-
-<%ARGS>
-$new_query => 0
-@clauses => ()
-</%ARGS>
+<%args>
+$available_columns
+$current_search
+$saved_search
+$current_format
+$results
+$parsed_query
+$querystring
+$queues
+</%args>

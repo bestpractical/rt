@@ -3,14 +3,14 @@ use strict;
 use warnings;
 
 use Test::More;
-use RT::Test;
+use RT::Test strict => 1;
 
 plan skip_all => 'GnuPG required.'
     unless eval 'use GnuPG::Interface; 1';
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
 
-plan tests => 60;
+plan tests => 61;
 
 use RT::ScripAction::SendEmail;
 use File::Temp qw(tempdir);
@@ -66,6 +66,7 @@ diag "check that signing doesn't work if there is no key" if $ENV{TEST_VERBOSE};
         qr/unable to sign outgoing email messages/i,
         'problems with passphrase'
     );
+    $m->warnings_like( qr/secret key not available/, 'got secret key not available warning' );
 
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';

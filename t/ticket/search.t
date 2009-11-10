@@ -6,7 +6,7 @@
 use strict;
 use warnings;
 
-use RT::Test; use Test::More tests => 43;
+use RT::Test strict => 1; use Test::More tests => 43;
 
 
 # setup the queue

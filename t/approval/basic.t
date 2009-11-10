@@ -10,7 +10,7 @@ BEGIN {
 
 plan tests => 32;
 
-use RT::Test;
+use RT::Test strict => 1;
 use RT::Test::Email;
 
 RT->config->set( use_transaction_batch => 1 );

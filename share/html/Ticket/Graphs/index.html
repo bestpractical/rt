@@ -84,12 +84,7 @@ foreach my $level ( 0 .. 6 ) {
     push @save_arguments, "Level-". $level ."-Properties";
 }
 my $saved_search = { type => 'Graph' };
-push @results, $m->comp( '/Search/Elements/EditSearches:Init',
-    %ARGS,
-    query        => \%ARGS,
-    saved_search  => $saved_search,
-    search_fields => \@save_arguments,
-);
+push @results, RT::Interface::Web::QueryBuilder->load_saved_search(\%ARGS, \%ARGS, $saved_search, \@save_arguments);
 
 my $id = $ARGS{'id'};
 my $ticket = load_ticket( $id );
@@ -104,12 +99,8 @@ if ( $ARGS{'show_links'} && !ref $ARGS{'show_links'} ) {
 $ARGS{'show_links'} = [ grep $_ ne $ARGS{'leading_link'}, @{ $ARGS{'show_links'} } ];
 $ARGS{'max_depth'} = 3 unless defined $ARGS{'max_depth'} && length $ARGS{'max_depth'};
 
-push @results, $m->comp( '/Search/Elements/EditSearches:Save',
-    %ARGS,
-    query        => \%ARGS,
-    saved_search  => $saved_search,
-    search_fields => \@save_arguments,
-);
-
+if( $ARGS{'saved_search_save'} || $ARGS{'saved_search_copy'}) {
+push @results, RT::Interface::Web::QueryBuilder->save_search(\%ARGS, $saved_search, \@save_arguments);
+}
 my $title = _( "Ticket #%1 relationships graph", $id );
 </%INIT>

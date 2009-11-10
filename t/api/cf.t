@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
-use RT::Test; use Test::More tests => 138;
+use RT::Test strict => 1; use Test::More tests => 138;
 
 
 # Before we get going, ditch all object_cfs; this will remove 

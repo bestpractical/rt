@@ -47,7 +47,7 @@
 # 
 # END BPS TAGGED BLOCK }}}
 
-use RT::Test; use Test::More tests => 26;
+use RT::Test strict => 1; use Test::More tests => 26;
 use RT;
 
 

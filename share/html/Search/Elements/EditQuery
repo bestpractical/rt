@@ -49,7 +49,9 @@
 <&|/Widgets/TitleBox, title => join(': ', grep defined, _("Current search"), $description) &>
 
 <select size="10" name="clauses" style="width: 100%" multiple="multiple">
-% $m->out($optionlist);
+% for (@$parsed_query)  {
+% $m->out(	qq(<option value="$_->{INDEX}" $_->{SELECTED}>) . ( "&nbsp;" x ( 5 * $_->{DEPTH} ) ) . Jifty->web->escape( $_->{TEXT}) . qq(</option>\n)); 
+% }
 </select>
 
 <p align="center">
@@ -65,6 +67,6 @@
 </&>
 <%ARGS>
 $description => undef
-$optionlist => ''
+$parsed_query => ''
 $actions => []
 </%ARGS>
