@@ -279,13 +279,15 @@ before qr{.*} => run {
     }
 };
 
-before qr'Dashboards/(\d*)?' => run {
-	page_nav->child( _('Select'), url => "/Dashboards/index.html" );
+before qr'Dashboards/?' => run {
 	require RT::Dashboard; # not a record class, so not autoloaded :/
+	page_nav->child( _('Select'), url => "/Dashboards/index.html" );
     if ( RT::Dashboard->new->_privacy_objects( create => 1 ) ) {
         page_nav->child( _('Create') => url => "/Dashboards/Modify.html?create=1" );
     }
+};
 
+before qr'Dashboards/(\d*)?' => run {
     if ( my $id = ($1 || Jifty->web->request->argument('id') )) {
         my $obj = RT::Dashboard->new();
         $obj->load_by_id($id);
