@@ -59,14 +59,14 @@ ok $m->login(customer => 'customer'), "logged in";
 
 $m->get_ok("$url/Dashboards");
 
-$m->follow_link_ok({text => "New dashboard"});
+$m->follow_link_ok({text => "Create"});
 $m->form_name( 'modify_dashboard' );
 is_deeply([$m->current_form->find_input('privacy')->possible_values], ["RT::Model::User-" . $user_obj->id], "the only selectable privacy is user");
 $m->content_lacks('Delete', "Delete button hidden because we are creating");
 
 $user_obj->principal->grant_right(right => 'CreateGroupDashboard', object => $inner_group);
 
-$m->follow_link_ok({text => "New dashboard"});
+$m->follow_link_ok({text => "Create"});
 $m->form_name( 'modify_dashboard' );
 is_deeply([$m->current_form->find_input('privacy')->possible_values],
         ["RT::Model::User-" . $user_obj->id, "RT::Model::Group-" . $inner_group->id], "the only selectable privacies are user and inner group (not outer group)");
