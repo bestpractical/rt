@@ -1,6 +1,7 @@
-use Test::More tests => 6;
+use Test::More tests => 7;
+use Test::NoWarnings;
 use RT::Test strict => 1;
-
+use Test::Log4perl;
 use strict;
 use warnings;
 
@@ -52,7 +53,12 @@ $rule->create( description => 'test worky action',
 
 RT::Lorzy::Dispatcher->flush_cache;
 
-my ($txn_id, $tmsg, $txn) = $ticket->comment(content => 'lorzy lorzy in the code');
+my ($txn_id, $tmsg, $txn);
+
+{
+    my $log = Test::Log4perl->expect(['Jifty', ignore_priority => 'INFO', 'error' => qr(Rule 'test fail action' condition error, ignoring: LCore: fail)]);
+    ($txn_id, $tmsg, $txn) = $ticket->comment(content => 'lorzy lorzy in the code');
+}
 my ($this_rule) = grep { $_->description eq 'test fail action'} @{$txn->rules};
 
 ok(!$this_rule, 'not running failing condition rules');
