@@ -290,7 +290,7 @@ before qr'Dashboards/?' => run {
 before 'Dashboards/Modify.html' => run {
     my $id = Jifty->web->request->argument('id') || '';
 	my $results = [];
-    my $Dashboard = RT::Dashboard->new();
+    my $Dashboard = RT::Dashboard->new(current_user => Jifty->web->current_user);
 	set Dashboard => $Dashboard;
     my @privacies = $Dashboard->_privacy_objects( ( !$id ? 'create' : 'modify' ) => 1 );
 	set privacies => \@privacies;
@@ -324,9 +324,10 @@ before 'Dashboards/Modify.html' => run {
 			unless ($ok);
 
             # put the user back into a useful place with a message
-            RT::Interface::Web::redirect( Jifty->web->url . "Dashboards/index.html?deleted=$id" );
+            RT::Interface::Web::redirect( url => Jifty->web->url . "Dashboards/index.html?deleted=$id", messages => $results);
 
         }
+
     } elsif ( $id eq 'new' ) {
         my ( $val, $msg ) = $Dashboard->save(
             name    => Jifty->web->request->argument('name'),
@@ -342,6 +343,7 @@ before 'Dashboards/Modify.html' => run {
         );
 
     }
+
 	set Dashboard => $Dashboard;
 	set results => $results;
 };

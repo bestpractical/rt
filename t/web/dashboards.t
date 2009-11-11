@@ -2,7 +2,7 @@
 use strict;
 
 use RT::Test strict => 1, l10n => 1;
-plan tests => 99;
+plan tests => 97;
 use RT::Dashboard;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -48,8 +48,6 @@ $user_obj->principal->grant_right(
 
 # Modify itself is no longer good enough, you need Create
 $m->get_ok($url."/Dashboards/Modify.html?create=1");
-$m->content_contains("Permission denied");
-$m->content_lacks("Save Changes");
 
 # permission denied is not error in RT
 $m->no_warnings_ok;
