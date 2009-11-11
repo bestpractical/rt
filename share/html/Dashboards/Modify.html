@@ -140,9 +140,7 @@ if ( $id =~ /^\d+$/ ) {
             push @results, _( "Dashboard could not be updated: %1", $msg );
         }
 
-    }
-
-    if ( Jifty->web->request->argument('delete') ) {
+    } elsif ( Jifty->web->request->argument('delete') ) {
         my ( $ok, $msg ) = $Dashboard->delete();
         $ok || abort( _( "Couldn't delete dashboard %1: %2", $id, $msg ) );
 
