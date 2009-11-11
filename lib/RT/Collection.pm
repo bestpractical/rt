@@ -188,11 +188,11 @@ sub items_order_by {
     my $self  = shift;
     my $items = shift;
 
-    my $dummy = $self->new_item;
+    my $item_class = $self->record_class;
 
-    if ( $dummy->can('sort_order') ) {
+    if ( $item_class->can('sort_order') ) {
         return [ sort { $a->sort_order <=> $b->sort_order } @{$items} ];
-    } elsif ( $dummy->can('name') ) {
+    } elsif ( $item_class->can('name') ) {
         return [ sort { lc( $a->name ) cmp lc( $b->name ) } @{$items} ];
     }
 
