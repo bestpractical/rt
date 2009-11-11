@@ -105,17 +105,15 @@
 </div>
 
 % if ( Jifty->web->current_user->user_object) {
-
-<& /Elements/CreateTicket &>
-<& /Elements/SimpleSearch &>
+<div id="nav-widgets"><& /Elements/CreateTicket &><& /Elements/SimpleSearch &></div>
 %} 
 <div class="nav">
 <div class="main-nav">
 % Jifty->web->navigation->render_as_yui_menubar();
 </div>
 <div class="page-nav">
-</div>
 % Jifty->web->page_navigation->render_as_yui_menubar();
+</div>
 </div>
 %# template login already has div with id "body"
 % unless ( Jifty->web->request->path =~ m{^/login} ) {

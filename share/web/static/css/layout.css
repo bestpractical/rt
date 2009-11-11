@@ -14,9 +14,11 @@ body {
 div#body {
     padding: 1em;
     padding-top: 1.5em;
-    -moz-border-radius: 0.5em;
-    -webkit-border-radius: 0.5em;
-    margin-left: 10.5em;
+    -moz-border-radius-topright: 0.5em;
+    -moz-border-radius-bottomright: 0.5em;
+    -webkit-border-top-right-radius: 0.5em;
+    -webkit-border-bottom-right-radius: 0.5em;
+    margin-left: em;
     margin-top: 5.2em;
     margin-right: 1em;
     margin-bottom: 0em;
@@ -29,10 +31,10 @@ div#body {
 
 }
 
-#topactions {
+#nav-widgets {
  position: absolute;
  background: transparent;
- top: 3.5em; 
+ top: 6.5em; 
  right: 1em;
  width: auto;
  min-width: 42em;
@@ -40,38 +42,47 @@ div#body {
  z-index: 99;
 }
 
-#topactions form * {
+#nav-widgets form * {
     vertical-align: top;
 }
 
-#topactions button, #topactions select, #topactions input{
+#nav-widgets button, #nav-widgets select, #nav-widgets input{
  padding-top: 0em;
  padding-bottom: 0em;
  width: 8em;
 
 }
 
-#topactions form {
+#nav-widgets form {
  display: block;
 
 }
 
-#topactions #CreateTicketInQueue {
+#nav-widgets #CreateTicketInQueue {
  text-align: right; 
 
 }
-#topactions #simple-search {
+#nav-widgets #simple-search {
     float: right;
 }
 
-#topactions #simple-search input.button {
+#nav-widgets #simple-search input.button {
     width: 5em;
 }
-#topactions #simple-search .field{
+#nav-widgets #simple-search .field{
  margin-left: 1em;
  }
 
-div#footer {
+
+.page-nav {
+	padding-top: 0.25em;
+}
+
+.page-nav ul  {
+	background: #ddd;
+}	
+ 
+ div#footer {
  position: absolute;
  right: 0;
   text-align: right;
