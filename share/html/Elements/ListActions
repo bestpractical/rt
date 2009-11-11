@@ -56,8 +56,7 @@
 </div>
 <%init>
 
-my $actions_pointer = $m->request_args->{'results'};
-
+my $actions_pointer = Jifty->web->request->argument('results');
 if ($actions_pointer && 
         ref Jifty->web->session->get("actions_$actions_pointer") eq 'ARRAY' ) {
     unshift @actions, @{Jifty->web->session->get("actions_$actions_pointer")};
