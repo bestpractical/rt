@@ -428,7 +428,6 @@ page_nav->child(_('Select'), url => "/Admin/Users/");
 page_nav->child(_('Create'), url => "/Admin/Users/Modify.html?create=1", separator => 1);
 }
     if ( my $id = Jifty->web->request->argument('id') ) {
-	warn "loading user $id";
         my $obj = RT::Model::User->new();
         $obj->load($id);
 		my $tabs = page_nav->child('current' => label => $obj->name, url => "/Admin/Users/Modify.html?id=".$id,);
@@ -628,12 +627,12 @@ before qr'(?:Ticket|Search)/' => run {
                 order_by      => Jifty->web->request->argument('order_by')      || $search->{'order_by'},
                 order         => Jifty->web->request->argument('order')         || $search->{'order'},
                 page          => Jifty->web->request->argument('page')          || $search->{'page'},
-                rows_per_page => Jifty->web->request->argument('rows_per_page') || $search->{'rows_per_page'}
+                rows_per_page => (defined Jifty->web->request->argument('rows_per_page')  ?  Jifty->web->request->argument('rows_per_page') : $search->{'rows_per_page'})
             );
 
             $args = "?" . query_string(%query_args);
 
-            page_nav->child( _('New Search')  => url => "/Search/Build.html?NewQuery=1" );
+            page_nav->child( _('New Search')  => url => "/Search/Build.html?new_query=1" );
             page_nav->child( _('Edit Search') => url => "/Search/Build.html" . ( ($has_query) ? $args : '' ) );
             page_nav->child( _('Advanced')    => url => "/Search/Edit.html$args" );
 
@@ -646,7 +645,7 @@ before qr'(?:Ticket|Search)/' => run {
                         search          => 1,
                         plugin          => 'Tickets',
                         'Tickets:query' => $query_args{'query'},
-                        'Tickets:limit' => $query_args{'rows'}
+                        'Tickets:limit' => $query_args{'rows_per_page'}
                     );
 
                     page_nav->child( 'shredder' =>  label => _('Shredder'), url => 'Admin/Tools/Shredder/?' . $shred_args );
