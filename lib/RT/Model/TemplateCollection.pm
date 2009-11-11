@@ -142,22 +142,6 @@ sub limit_to_queue {
 
 
 
-=head2 new_item
-
-Returns a new empty template object
-
-=cut
-
-sub new_item {
-    my $self = shift;
-
-    use RT::Model::Template;
-    my $item = RT::Model::Template->new( current_user => $self->current_user );
-    return ($item);
-}
-
-
-
 =head2 next
 
 Returns the next template that this user can see.
