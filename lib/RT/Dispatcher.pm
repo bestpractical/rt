@@ -100,7 +100,8 @@ before qr'^/(?!login)' => run {
         || Jifty->web->request->path =~ m{^/Elements/Footer$}
         || Jifty->web->request->path =~ m{^/Elements/Logo$}
         || Jifty->web->request->path =~ m{^/__jifty/test_warnings$}
-        || Jifty->web->request->path =~ m{^/__jifty/(css|js)} );
+        || Jifty->web->request->path =~ m{^/__jifty/(css|js)} 
+		);
 };
 
 before qr/(.*)/ => run {
@@ -222,22 +223,22 @@ before qr{.*} => run {
         {
             $cfadmin->child(
                 _('Users') => text => _('Select custom fields for all users'),
-                url        => 'Admin/Global/CustomFields/Users.html'
+                url        => '/Admin/Global/CustomFields/Users.html'
             );
 
             $cfadmin->child(
                 _('Groups') => text => _('Select custom fields for all user groups'),
-                url         => 'Admin/Global/CustomFields/Groups.html'
+                url         => '/Admin/Global/CustomFields/Groups.html'
             );
 
             $cfadmin->child(
                 _('Queues') => text => _('Select custom fields for all queues'),
-                url         => 'Admin/Global/CustomFields/Queues.html'
+                url         => '/Admin/Global/CustomFields/Queues.html'
             );
 
             $cfadmin->child(
                 _('Tickets') => text => _('Select custom fields for tickets in all queues'),
-                url => 'Admin/Global/CustomFields/Queue-Tickets.html'
+                url => '/Admin/Global/CustomFields/Queue-Tickets.html'
             );
 
             $cfadmin->child(
@@ -543,15 +544,13 @@ before qr'(?:Ticket|Search)/' => run {
                 my $action = $schema->transition_action( $current => $next );
                 next if $action eq 'hide';
 
-                my $url = 'Ticket/';
+                my $url = '/Ticket/';
                 if ($action) {
 
-                #XXX TODO
-                #$url .= "Update.html?" . query_string( action => $action, default_status => $next, id => $id );
+                $url .= "Update.html?" . query_string( action => $action, default_status => $next, id => $id );
                 } else {
 
-                    #XXX TODO
-                    # $url .= "Display.html?" .query_string(Status => $next, id => $id );
+                    #$url .= "Display.html?" .query_string(Status => $next, id => $id );
                 }
                 $tabs->child( _( $schema->transition_label( $current => $next ) ) => url => $url );
             }
