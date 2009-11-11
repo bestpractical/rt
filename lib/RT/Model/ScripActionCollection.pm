@@ -99,12 +99,5 @@ sub limit_to_type {
 }
 
 
-sub new_item {
-    my $self = shift;
-    return ( RT::Model::ScripAction->new );
-
-}
-
-
 1;
 

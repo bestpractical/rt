@@ -19,5 +19,5 @@ if ( $schema ) {
 return unless @maps;
 </%INIT>
 <%ARGS>
-$schema => undef
+$schema => ''
 </%ARGS>

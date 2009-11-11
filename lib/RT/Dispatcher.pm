@@ -688,7 +688,7 @@ before 'Prefs' => run {
 
 before qr{^/Search/Build.html} => run {
     my $querystring      = '';
-    my $selected_clauses = Jifty->web->request->argument('clauses');
+    my $selected_clauses = Jifty->web->request->argument('clauses') || 0;
     my ( $saved_search, $current_search, $results ) = RT::Interface::Web::QueryBuilder->setup_query();
 
     my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
