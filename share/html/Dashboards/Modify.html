@@ -80,7 +80,7 @@
 
 my ( $title, @results );
 my $Dashboard = RT::Dashboard->new();
-my @privacies = $Dashboard->_privacy_objects( ( $id =~ /^\d+$/ ? 'create' : 'modify' ) => 1 );
+my @privacies = $Dashboard->_privacy_objects( ( !$id ? 'create' : 'modify' ) => 1 );
 
 abort( _("Permission denied") ) if @privacies == 0;
 
