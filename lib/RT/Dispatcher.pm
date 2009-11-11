@@ -287,6 +287,68 @@ before qr'Dashboards/?' => run {
     }
 };
 
+before 'Dashboards/Modify.html' => run {
+    my $id = Jifty->web->request->argument('id') || '';
+	my $results = [];
+    my $title;
+    my $Dashboard = RT::Dashboard->new();
+    my $privacies = [$Dashboard->_privacy_objects( ( !$id ? 'create' : 'modify' ) => 1 )];
+
+    abort( _("Permission denied") ) if @$privacies == 0;
+
+    if ( $id =~ /^\d+$/ ) {
+        my ( $ok, $msg ) = $Dashboard->load_by_id($id);
+        $ok || abort($msg);
+        $title = _( "Modify the dashboard %1", $Dashboard->name );
+    } else {
+        $title = _("Create a new dashboard");
+    }
+
+    if ( $id =~ /^\d+$/ ) {
+        if ( Jifty->web->request->argument('save') ) {
+            my ( $ok, $msg ) = $Dashboard->update(
+                privacy => Jifty->web->request->argument('privacy'),
+                name    => Jifty->web->request->argument('name')
+            );
+
+            if ($ok) {
+                push @$results, _("Dashboard updated");
+            } else {
+                push @$results, _( "Dashboard could not be updated: %1", $msg );
+            }
+
+        } elsif ( Jifty->web->request->argument('delete') ) {
+            my ( $ok, $msg ) = $Dashboard->delete();
+            $ok || abort( _( "Couldn't delete dashboard %1: %2", $id, $msg ) );
+
+            # put the user back into a useful place with a message
+            RT::Interface::Web::redirect( Jifty->web->url . "Dashboards/index.html?deleted=$id" );
+
+        }
+    } elsif ( $id eq 'new' ) {
+        my ( $val, $msg ) = $Dashboard->save(
+            name    => Jifty->web->request->argument('name'),
+            privacy => Jifty->web->request->argument('privacy'),
+        );
+
+        if ( !$val ) {
+            abort( _( "Dashboard could not be created: %1", $msg ) );
+        }
+
+        push @$results, $msg;
+        RT::Interface::Web::redirect(
+            url      => Jifty->web->url . "Dashboards/Modify.html?id=" . $Dashboard->id,
+            messages => $results
+        );
+
+    }
+	set privacies => $privacies;
+	set Dashboard => $Dashboard;
+	set results => $results;
+	set title => $title;
+};
+
+
 before qr'Dashboards/(\d*)?' => run {
     if ( my $id = ($1 || Jifty->web->request->argument('id') )) {
         my $obj = RT::Dashboard->new();
