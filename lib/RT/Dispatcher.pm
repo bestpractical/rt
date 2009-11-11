@@ -185,7 +185,6 @@ on qr{^/Ticket/Graphs/(\d+)} => run {
 };
 
 before qr{.*} => run {
-	page_nav->render_children_inline(1);
     main_nav->child( _('Homepage'),      url => '/' );
     main_nav->child( _('Simple Search'), url => '/Search/Simple.html' );
     main_nav->child( _('Tickets'),       url => '/Search/Build.html' );
