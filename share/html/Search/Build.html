@@ -89,7 +89,8 @@
 </div>
 <span id="display-options">
 <& Elements/DisplayOptions,
-    %ARGS, %$current_search,
+	%{Jifty->web->request->arguments},
+	%$current_search,
     available_columns => $available_columns,
     current_format    => $current_format,
 &>
