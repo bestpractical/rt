@@ -106,7 +106,7 @@ my %class = (
     correspond => 'message',
     comment    => 'message',
 
-    AddWatcher => 'people',
+    add_watcher => 'people',
     del_watcher => 'people',
     Take       => 'people',
     Untake     => 'people',

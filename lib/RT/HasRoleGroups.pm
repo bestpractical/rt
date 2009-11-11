@@ -173,7 +173,7 @@ sub _add_watcher {
 
     unless ( $args{'silent'} ) {
         $self->_new_transaction(
-            type      => 'AddWatcher',
+            type      => 'add_watcher',
             new_value => $principal->id,
             field     => $args{'type'},
         );
