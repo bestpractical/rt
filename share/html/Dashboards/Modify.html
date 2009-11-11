@@ -79,53 +79,20 @@
 <%INIT>
 
 my ( $title, @results );
-my $tried_create = 0;
-
-# user went directly to Modify.html
-$create = 1 if !$id;
-
 my $Dashboard = RT::Dashboard->new();
 my @privacies = $Dashboard->_privacy_objects( ( $create ? 'create' : 'modify' ) => 1 );
 
 abort( _("Permission denied") ) if @privacies == 0;
 
-if ($create) {
-    $title = _("Create a new dashboard");
+if ( $id =~ /^\d+$/ ) {
+    my ( $ok, $msg ) = $Dashboard->load_by_id($id);
+    $ok || abort($msg);
+    $title = _( "Modify the dashboard %1", $Dashboard->name );
 } else {
-    if ( $id eq 'new' ) {
-        $tried_create = 1;
-
-        my ( $val, $msg ) = $Dashboard->save(
-            name    => Jifty->web->request->argument('name'),
-            privacy => Jifty->web->request->argument('privacy'),
-        );
-
-        if ( !$val ) {
-            abort( _( "Dashboard could not be created: %1", $msg ) );
-        }
-
-        push @results, $msg;
-        $id = $Dashboard->id;
-        RT::Interface::Web::redirect(
-            url      => Jifty->web->url . "Dashboards/Modify.html?id=" . $Dashboard->id,
-            messages => \@results
-        );
-
-    } else {
-        my ( $ok, $msg ) = $Dashboard->load_by_id($id);
-        $ok || abort($msg);
-    }
-
-    if ($id) {
-        $title = _( "Modify the dashboard %1", $Dashboard->name );
-    }
-
-    # If the create failed
-    else {
-        $create = 1;
-        $title  = _("Create a new dashboard");
-    }
+    $title = _("Create a new dashboard");
 }
+
+
 
 if ( $id =~ /^\d+$/ ) {
     if ( Jifty->web->request->argument('save') ) {
@@ -148,8 +115,25 @@ if ( $id =~ /^\d+$/ ) {
         RT::Interface::Web::redirect( Jifty->web->url . "Dashboards/index.html?deleted=$id" );
 
     }
+} elsif ( $id eq 'new' ) {
+    my ( $val, $msg ) = $Dashboard->save(
+        name    => Jifty->web->request->argument('name'),
+        privacy => Jifty->web->request->argument('privacy'),
+    );
+
+    if ( !$val ) {
+        abort( _( "Dashboard could not be created: %1", $msg ) );
+    }
+
+    push @results, $msg;
+    $id = $Dashboard->id;
+    RT::Interface::Web::redirect(
+        url      => Jifty->web->url . "Dashboards/Modify.html?id=" . $Dashboard->id,
+        messages => \@results
+    );
 
 }
+
 </%INIT>
 
 <%ARGS>
