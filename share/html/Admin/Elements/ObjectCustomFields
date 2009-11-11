@@ -60,11 +60,9 @@ $id ? (
 
 <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, object => $object &>
 <%INIT>
-# XXX TODO: Validate here?
-#$object_type =~ /^RT::(queue|User|Group)$/
-#    or abort(_("object of type %1 cannot take custom fields", $object_type), SuppressHeader => 1);
-
-
+ XXX TODO: Validate here?
+$object_type =~ /^RT::Model::(Queue|User|Group)$/
+    or abort(_("object of type %1 cannot take custom fields", $object_type), suppress_header => 1);
 
 my $Type = $1;
 my $Types = $Type.'s';

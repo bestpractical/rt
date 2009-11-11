@@ -58,7 +58,7 @@ else {
 
 </%INIT>
 <%ARGS>
-$schema      => undef
-$title       => undef
-$current_tab => undef
+$schema      => ''
+$title       => ''
+$current_tab => ''
 </%ARGS>
