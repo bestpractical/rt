@@ -120,7 +120,6 @@ package Jifty::View::Mason::Handler;
         %config = ( 
             %config,
             error_format => ( Jifty->config->framework('DevelMode') ? 'html' : 'brief' ),
-            named_component_subs => $INC{'Devel/Cover.pm'} ? 1 : 0,
         );
         return %config;
     };
