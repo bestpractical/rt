@@ -62,6 +62,26 @@
       <option value="<% $name %>"><% '&nbsp;' x $depth |n %><% $name %></option>
 %   }
     </select><br />
+% } elsif ($CustomField->BasedOnObj->id) {
+<script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/cascaded.js"></script>
+<script type="text/javascript"><!--
+doOnLoad(  function () {
+    var basedon = document.getElementById('<% $NamePrefix . $CustomField->BasedOnObj->id %>-Values');
+    if (basedon != null) {
+        var oldchange = basedon.onchange;
+        basedon.onchange = function () {
+            filter_cascade(
+                '<% $id %>-Values',
+                basedon.value,
+                1
+            );
+            if (oldchange != null)
+                oldchange();
+        };
+        basedon.onchange();
+    }
+});
+--></script>
 % }
 % if (@category) {
 %# this hidden select is to supply a full list of values,
@@ -71,16 +91,7 @@
 %       $m->out($out);
       </select>
 % }
-% my @Derivatives = map {$_->id} $CustomField->DerivativeCFs;
-% if (@Derivatives) {
-  <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/cascaded.js"></script>
-<script type="text/javascript"><!--
-doOnLoad(  function () {<% join(";", map {"filter_cascade('$NamePrefix$_-Values',document.getElementById('$id-Values').value, 1)"} @Derivatives) |n%>} );
---></script>
-<select onchange="<% join(";", map {"filter_cascade('$NamePrefix$_-Values', this.value, 1)"} @Derivatives) |n%>"
-% } else {
 <select
-% }
   name="<%$id%>-Values" id="<%$id%>-Values" class="CF-<%$CustomField->id%>-Edit"
 % if ( $Rows && ( $Multiple || !@category ) ) {
   size="<% $Rows %>"
