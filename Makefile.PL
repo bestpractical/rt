@@ -11,6 +11,7 @@ requires(
     'DBI'                        => '1.37',
     'Class::ReturnValue'         => '0.40',
     'Jifty::DBI'                 => '0.59',
+    'Jifty::Plugin::WyzzEditor'  => '0.01',
     'Text::Template'             => 0,
     'File::ShareDir'             => 0,
     'File::Spec'                 => '0.8',
