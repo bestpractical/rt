@@ -39,10 +39,10 @@ diag "current user has no right to own, nobody selected as owner on create" if $
     $agent_a->content_like(qr/Create a new ticket/i, 'opened create ticket page');
     my $form = $agent_a->form_name('ticket_create');
     my $moniker = $agent_a->moniker_for('RT::Action::CreateTicket');
-    my $owner = $agent_a->action_field_value($moniker, 'owner');
+    my $owner_field = $agent_a->action_field_input($moniker, 'owner');
 
-    is $owner, RT->nobody->id, 'correct owner selected';
-    ok !grep($_ == $user_a->id, $form->find_input('owner')->possible_values),
+    is $owner_field->value, RT->nobody->id, 'correct owner selected';
+    ok !grep($_ == $user_a->id, $owner_field->possible_values),
         'user A can not own tickets';
     $agent_a->submit;
 
