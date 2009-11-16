@@ -290,13 +290,13 @@ while ( my $Ticket = $Tickets->next ) {
     my @watchresults =
       process_ticket_watchers( ticket_obj => $Ticket, args_ref => \%ARGS );
 
-    foreach my $type qw(MergeInto DependsOn MemberOf RefersTo) {
+    foreach my $type qw(merge_into depends_on member_of refers_to) {
         $ARGS{ $Ticket->id . "-" . $type } = $ARGS{"Ticket-$type"};
         $ARGS{ $type . "-" . $Ticket->id } = $ARGS{"$type-Ticket"};
     }
     @linkresults =
       process_ticket_links( ticket_obj => $Ticket, args_ref => \%ARGS );
-    foreach my $type qw(MergeInto DependsOn MemberOf RefersTo) {
+    foreach my $type qw(merge_into depends_on member_of refers_to) {
         delete $ARGS{ $type . "-" . $Ticket->id };
         delete $ARGS{ $Ticket->id . "-" . $type };
     }

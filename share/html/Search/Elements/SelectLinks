@@ -56,11 +56,11 @@ $name => 'links_field'
 
 <%INIT>
 my @fields = ('has_member',
-	      'MemberOf',
-	      'DependsOn',
-	      'DependedOnBy',
-	      'RefersTo',
-	      'ReferredToBy',
+	      'member_of',
+	      'depends_on',
+	      'depended_on_by',
+	      'refers_to',
+	      'referred_to_by',
 	      'linked_to',
 	      );
 </%INIT>

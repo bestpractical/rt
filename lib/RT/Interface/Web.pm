@@ -1195,9 +1195,9 @@ sub process_ticket_links {
     my (@results) = process_record_links( record_obj => $Ticket, args_ref => $args_ref );
 
     #Merge if we need to
-    if ( $args_ref->{ $Ticket->id . "-MergeInto" } ) {
-        $args_ref->{ $Ticket->id . "-MergeInto" } =~ s/\s+//g;
-        my ( $val, $msg ) = $Ticket->merge_into( $args_ref->{ $Ticket->id . "-MergeInto" } );
+    if ( $args_ref->{ $Ticket->id . "-merge_into" } ) {
+        $args_ref->{ $Ticket->id . "-merge_into" } =~ s/\s+//g;
+        my ( $val, $msg ) = $Ticket->merge_into( $args_ref->{ $Ticket->id . "-merge_into" } );
         push @results, $msg;
     }
 

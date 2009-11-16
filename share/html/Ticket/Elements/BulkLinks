@@ -48,30 +48,30 @@
 <table>
   <tr>
     <td class="label"><&|/l&>Merge into</&>:</td>
-    <td class="entry"><input name="Ticket-MergeInto" /> <i><&|/l&>(only one ticket)</&></i></td>
+    <td class="entry"><input name="Ticket-merge_into" /> <i><&|/l&>(only one ticket)</&></i></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Depends on</&>:</td>
-    <td class="entry"><input name="Ticket-DependsOn" /></td>
+    <td class="entry"><input name="Ticket-depends_on" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Depended on by</&>:</td>
-    <td class="entry"><input name="DependsOn-Ticket" /></td>
+    <td class="entry"><input name="depends_on-Ticket" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Parents</&>:</td>
-    <td class="entry"><input name="Ticket-MemberOf" /></td>
+    <td class="entry"><input name="Ticket-member_of" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Children</&>:</td>
-    <td class="entry"> <input name="MemberOf-Ticket" /></td>
+    <td class="entry"> <input name="member_of-Ticket" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Refers to</&>:</td>
-    <td class="entry"><input name="Ticket-RefersTo" /></td>
+    <td class="entry"><input name="Ticket-refers_to" /></td>
   </tr>
   <tr>
     <td class="label"><&|/l&>Referred to by</&>:</td>
-    <td class="entry"> <input name="RefersTo-Ticket" /></td>
+    <td class="entry"> <input name="refers_to-Ticket" /></td>
   </tr>
 </table>

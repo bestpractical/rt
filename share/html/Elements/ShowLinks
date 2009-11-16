@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <table>
   <tr>
-    <td class="labeltop"><&|/l&>Depends on</&>: (<a href="<%$clone->{'DependsOn-new'}%>"><% _('Create') %></a>)</td>
+    <td class="labeltop"><&|/l&>Depends on</&>: (<a href="<%$clone->{'depends_on-new'}%>"><% _('Create') %></a>)</td>
     <td class="value">
 
 <%PERL>
@@ -77,7 +77,7 @@ for my $link ( @{ $ticket->depends_on->items_array_ref } ) {
     </td>
   </tr>
   <tr>
-    <td class="labeltop"><&|/l&>Depended on by</&>: (<a href="<%$clone->{'new-DependsOn'}%>"><% _('Create') %></a>)</td>
+    <td class="labeltop"><&|/l&>Depended on by</&>: (<a href="<%$clone->{'new-depends_on'}%>"><% _('Create') %></a>)</td>
     <td class="value">
 <ul>
 % while (my $Link = $ticket->depended_on_by->next) {
@@ -87,7 +87,7 @@ for my $link ( @{ $ticket->depends_on->items_array_ref } ) {
     </td>
   </tr>
   <tr>
-    <td class="labeltop"><&|/l&>Parents</&>: (<a href="<%$clone->{'MemberOf-new'}%>"><% _('Create') %></a>)</td>
+    <td class="labeltop"><&|/l&>Parents</&>: (<a href="<%$clone->{'member_of-new'}%>"><% _('Create') %></a>)</td>
     <td class="value">
 <ul>
 % while (my $Link = $ticket->member_of->next) {
@@ -97,11 +97,11 @@ for my $link ( @{ $ticket->depends_on->items_array_ref } ) {
     </td>
   </tr>
   <tr>
-    <td class="labeltop"><&|/l&>Children</&>: (<a href="<%$clone->{'new-MemberOf'}%>"><% _('Create') %></a>)</td>
+    <td class="labeltop"><&|/l&>Children</&>: (<a href="<%$clone->{'new-member_of'}%>"><% _('Create') %></a>)</td>
     <td class="value"><& /Ticket/Elements/ShowMembers, ticket => $ticket &></td>
   </tr>
   <tr>
-    <td class="labeltop"><&|/l&>Refers to</&>: (<a href="<%$clone->{'RefersTo-new'}%>"><% _('Create') %></a>)</td>
+    <td class="labeltop"><&|/l&>Refers to</&>: (<a href="<%$clone->{'refers_to-new'}%>"><% _('Create') %></a>)</td>
     <td class="value">
 <ul>
 % while (my $Link = $ticket->refers_to->next) {
@@ -111,7 +111,7 @@ for my $link ( @{ $ticket->depends_on->items_array_ref } ) {
     </td>
   </tr>
   <tr>
-    <td class="labeltop"><&|/l&>Referred to by</&>: (<a href="<%$clone->{'new-RefersTo'}%>"><% _('Create') %></a>)</td>
+    <td class="labeltop"><&|/l&>Referred to by</&>: (<a href="<%$clone->{'new-refers_to'}%>"><% _('Create') %></a>)</td>
     <td class="value">
     <ul>
 % while (my $Link = $ticket->referred_to_by->next) {
@@ -146,7 +146,7 @@ my $path
 
 
 for my $relation (
-    qw(RefersTo ReferredToBy)) {
+    qw(refers_to referred_to_by)) {
     my $mode  = $RT::Model::Ticket::LINKTYPEMAP{$relation}->{mode};
     my $type  = $RT::Model::Ticket::LINKTYPEMAP{$relation}->{type};
     my $other = "local_" . $mode;
@@ -159,7 +159,7 @@ for my $relation (
         $ticket->id );
 }
 
-for my $relation ( qw(MemberOf Members DependsOn DependedOnBy)) {
+for my $relation ( qw(member_of members depends_on depended_on_by)) {
     my $mode  = $RT::Model::Ticket::LINKTYPEMAP{$relation}->{mode};
     my $type  = $RT::Model::Ticket::LINKTYPEMAP{$relation}->{type};
     my $field = $mode eq 'base' ? 'new-' . $type : $type . '-new';

@@ -66,12 +66,12 @@ my @fields = qw(depends_on depended_on_by refers_to referred_to_by members membe
 my %fields = map { lc $_ => $_ } @fields;
 
 my %lfields = (
-    members      => { type => 'MemberOf',  mode => 'base'   },
-    referred_to_by => { type => 'RefersTo',  mode => 'base'   },
-    depended_on_by => { type => 'DependsOn', mode => 'base'   },
-    member_of     => { type => 'MemberOf',  mode => 'target' },
-    refers_to     => { type => 'RefersTo',  mode => 'target' },
-    depends_on    => { type => 'DependsOn', mode => 'target' },
+    members        => { type => 'member_of',  mode => 'base'   },
+    referred_to_by => { type => 'refers_to',  mode => 'base'   },
+    depended_on_by => { type => 'depends_on', mode => 'base'   },
+    member_of      => { type => 'member_of',  mode => 'target' },
+    refers_to      => { type => 'refers_to',  mode => 'target' },
+    depends_on     => { type => 'depends_on', mode => 'target' },
 );
 
 if ($changes) {
