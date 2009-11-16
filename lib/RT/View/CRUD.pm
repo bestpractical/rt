@@ -56,20 +56,11 @@ __PACKAGE__->use_mason_wrapper;
 
 use constant per_page => 50;
 
-use constant tab_url     => '/Elements/Tabs';
-use constant current_tab => '';
-sub current_subtab { shift->current_tab(@_) }
 
 template 'index.html' => page {
     title => shift->page_title,
 } content {
     my $self = shift;
-
-    render_mason($self->tab_url, {
-        current_tab    => $self->current_tab,
-        current_subtab => $self->current_subtab,
-        title          => $self->page_title,
-    });
 
     form {
         render_region(

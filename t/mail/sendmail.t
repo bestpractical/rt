@@ -301,7 +301,7 @@ sub text_html_redef_sendmessage {
     eval 'sub RT::ScripAction::SendEmail::send_message { 
                 my $self = shift;
                 my $MIME = shift;
-                return (1) unless ($self->hints->{source_scripaction_name} eq "Notify AdminCcs" );
+                return (1) unless ( $self->hints->{source_scrip_action_name} && $self->hints->{source_scripaction_name} eq "Notify AdminCcs" );
                 is ($MIME->parts, 0, "generated correspondence mime entity
                         does not have parts");
                 is ($MIME->head->mime_type , "text/plain", "The mime type is a plain");
@@ -366,7 +366,7 @@ sub text_plain_russian_redef_sendmessage {
     eval 'sub RT::ScripAction::SendEmail::send_message { 
                 my $self = shift; 
                 my $MIME = shift; 
-                return (1) unless ($self->hints->{source_scripaction_name} eq "Notify AdminCcs" );
+                return (1) unless ( $self->hints->{source_scripaction_name} && $self->hints->{source_scripaction_name} eq "Notify AdminCcs" );
                 is ($MIME->head->mime_type , "text/plain", "The only part is text/plain ");
                  my $subject  = $MIME->head->get("subject");
                 chomp($subject);
@@ -409,7 +409,7 @@ sub text_plain_nested_redef_sendmessage {
     eval 'sub RT::ScripAction::SendEmail::send_message { 
                 my $self = shift; 
                 my $MIME = shift; 
-                return (1) unless ($self->hints->{source_scripaction_name} eq "Notify AdminCcs" );
+                return (1) unless ( $self->hints->{source_scrip_action_name} && $self->hints->{source_scrip_action_name} eq "Notify AdminCcs" );
                 is ($MIME->head->mime_type , "multipart/mixed", "It is a mixed multipart");
                  my $subject  =  $MIME->head->get("subject");
                  $subject  = MIME::Base64::decode_base64( $subject);

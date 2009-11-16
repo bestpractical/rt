@@ -1,6 +1,6 @@
 <&| /Admin/Elements/Header, title => $title &>
 
-<& Elements/Tabs,
+<& /Elements/Tabs,
     title       => $title,
     current_tab => 'Admin/Global/Workflows/index.html',
 &>
@@ -49,6 +49,6 @@ if ( $create ) {
 
 </%INIT>
 <%ARGS>
-$name => undef
-$create => undef 
+$name => ''
+$create => '' 
 </%ARGS>

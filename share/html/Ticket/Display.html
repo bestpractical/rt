@@ -48,7 +48,7 @@
 <& /Elements/Header,
     title => _("#%1: %2", $ticket_obj->id, $ticket_obj->subject), 
     link_rel => \%link_rel &>
-<& /Ticket/Elements/Tabs, 
+<& /Elements/Tabs,
     ticket => $ticket_obj, 
     current_tab => 'Ticket/Display.html?id='.$ticket_obj->id,
     title => _("#%1: %2", $ticket_obj->id, $ticket_obj->subject) &>
@@ -200,13 +200,10 @@ $m->callback(
 # This code does automatic redirection if any updates happen. 
 
 if (@Actions) {
-
-    # We've done something, so we need to clear the decks to avoid
-    # resubmission on refresh.
-    # But we need to store Actions somewhere too, so we don't lose them.
-    my $key = Digest::MD5::md5_hex( rand(1024) );
-    Jifty->web->session->set( "actions_$key" => \@Actions );
-    RT::Interface::Web::redirect( Jifty->web->url . "Ticket/Display.html?id=" . $ticket_obj->id . "&results=" . $key );
+    RT::Interface::Web::redirect(
+        url      => Jifty->web->url . "Ticket/Display.html?id=" . $ticket_obj->id,
+        messages => \@Actions
+    );
 }
 
 my $attachments = $m->comp('Elements/FindAttachments', ticket => $ticket_obj, tickets => $Tickets);

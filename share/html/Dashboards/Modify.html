@@ -46,12 +46,10 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&| /_elements/wrapper, title => $title &>
-<& /Dashboards/Elements/Tabs,
-    current_subtab => $current_subtab,
+<& /Elements/Tabs,
     title => $title,
-    $create ? () : (dashboard_obj => $Dashboard),
 &>
-<& /Elements/ListActions, actions => \@results &>
+<& /Elements/ListActions, actions => $results &>
 
 <form action="<%RT->config->get('web_path')%>/Dashboards/Modify.html" method="post" enctype="multipart/form-data" name="modify_dashboard">
 
@@ -69,97 +67,19 @@
 <tr><td align="right">
 <&|/l&>Privacy</&>:
 </td><td>
-<& /Dashboards/Elements/SelectPrivacy, name => "privacy", objects => \@privacies, default => $Dashboard->privacy &>
+<& /Dashboards/Elements/SelectPrivacy, name => "privacy", objects => $privacies, default => $Dashboard->privacy &>
 </td></tr>
 </table>
 <& /Elements/Submit, name => 'save', label => _('Save Changes') &>
-% if ($Dashboard->id && $can_delete) {
+% if ($Dashboard->id && $Dashboard->current_user_can_delete) {
 <& /Elements/Submit, name => 'delete', label => _('Delete') &>
 % }
 </form>
 </&>
-<%INIT>
-
-my $current_subtab;
-my ($title, @results);
-my $tried_create = 0;
-
-# user went directly to Modify.html
-$create = 1 if !$id;
-
-use RT::Dashboard;
-
-my $Dashboard = RT::Dashboard->new( current_user => Jifty->web->current_user );
-my @privacies = $Dashboard->_privacy_objects(($create ? 'create' : 'modify') => 1);
-
-abort(_("Permission denied")) if @privacies == 0;
-
-if ($create) {
-    $current_subtab = 'Dashboards/Modify.html?create=1';
-    $title = _("Create a new dashboard");
-}
-else {
-    if ($id eq 'new') {
-        $tried_create = 1;
-
-        my ($val, $msg) = $Dashboard->save(
-            name    => $ARGS{'name'},
-            privacy => $ARGS{'privacy'},
-        );
-
-        if (!$val) {
-            abort(_("Dashboard could not be created: %1", $msg));
-        }
-
-        push @results, $msg;
-        $id = $Dashboard->id;
-    }
-    else {
-        my ($ok, $msg) = $Dashboard->load_by_id($id);
-        $ok || abort($msg);
-    }
-
-    if ($id) {
-        $title = _("Modify the dashboard %1", $Dashboard->name);
-        $current_subtab = 'Dashboards/Modify.html?id=' . $id;
-    }	
-    # If the create failed
-    else {
-        $create = 1;
-        $current_subtab = 'Dashboards/Modify.html?create=1';
-        $title = _("Create a new dashboard");
-    }
-}
-
-if (!$create && !$tried_create && $id && $ARGS{'save'}) {
-    my ($ok, $msg) = $Dashboard->update(privacy  => $ARGS{'privacy'},
-                                        name     => $ARGS{'name'});
-
-    if ($ok) {
-        push @results, _("Dashboard updated");
-    }
-    else {
-        push @results, _("Dashboard could not be updated: %1", $msg);
-    }
-
-}
-
-my $can_delete = $Dashboard->current_user_can_delete;
-
-if (!$create && !$tried_create && $id && $ARGS{'delete'}) {
-    my ($ok, $msg) = $Dashboard->delete();
-    $ok || abort(_("Couldn't delete dashboard %1: %2", $id, $msg));
-
-    # put the user back into a useful place with a message
-    RT::Interface::Web::redirect(Jifty->web->url."Dashboards/index.html?deleted=$id");
-
-}
-</%INIT>
-
 <%ARGS>
-$create => undef
-$name => undef
-$id => '' unless defined $id
-$delete => undef
+$Dashboard => undef
+$privacies => undef
+$results => undef
+$title => undef
 </%ARGS>
 

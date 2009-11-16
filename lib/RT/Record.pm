@@ -315,34 +315,6 @@ DB is case sensitive
 
 sub load_by_id { shift->load_by_cols( id => shift ) }
 
-sub load_by_cols {
-    my $self = shift;
-    my %hash = (@_);
-
-    # We don't want to hang onto this
-    delete $self->{'attributes'};
-
-    return $self->SUPER::load_by_cols(@_);    # unless $self->_handle->case_sensitive;
-
-    # If this database is case sensitive we need to uncase objects for
-    # explicit loading
-    foreach my $key ( keys %hash ) {
-
-        # If we've been passed an empty value, we can't do the lookup.
-        # We don't need to explicitly downcase integers or an id.
-        if ( $key ne 'id' && defined $hash{$key} && $hash{$key} !~ /^\d+$/ ) {
-            my ( $op, $val, $func );
-            ( $key, $op, $val, $func ) = Jifty->handle->_make_clause_case_insensitive( $key, '=', delete $hash{$key} );
-            $hash{$key}->{operator} = $op;
-            $hash{$key}->{value}    = $val;
-            $hash{$key}->{function} = $func;
-        }
-    }
-    return $self->SUPER::load_by_cols(%hash);
-}
-
-
-#
 sub _set {
     my $self = shift;
 
@@ -1605,6 +1577,26 @@ sub load_custom_field_by_identifier {
 }
 
 
+=head2 saved_searches
+
+Returns an array of search objects associated on $object, in the form of [description, searchObj]
+
+=cut
+ 
+sub saved_searches {
+    my $self = shift;
+    my @result;
+    while ( my $search = $self->attributes->next ) {
+        my $desc;
+        if ( $search->name eq 'saved_search' ) {
+            push @result, [ $search->description, $search ];
+        } elsif ( $search->name =~ m/^Search - (.*)/ ) {
+            push @result, [ $1, $search ];
+        }
+    }
+    return @result;
+
+}
 
 
 sub wiki_base {

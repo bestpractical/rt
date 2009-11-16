@@ -181,11 +181,6 @@ sub limit_by_ticket {
     return;
 }
 
-sub new_item {
-    my $self = shift;
-    return RT::Model::Attachment->new( current_user => $self->current_user );
-}
-
 
 sub next {
     my $self = shift;

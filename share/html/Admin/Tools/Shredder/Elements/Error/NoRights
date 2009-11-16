@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <& /Admin/Elements/Header, title => 'Error' &>
-<& /Admin/Elements/ToolTabs,
+<& /Elements/Tabs,
 	current_tab => 'Admin/Tools/Shredder',
 	current_subtab => 'Admin/Tools/Shredder',
 	title => 'Error',

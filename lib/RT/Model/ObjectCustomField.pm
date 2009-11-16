@@ -133,7 +133,7 @@ sub delete {
 
 sub custom_field_obj {
     my $self = shift;
-    my $id   = shift || $self->custom_field;
+    my $id   = shift || $self->custom_field->id;
     my $CF   = RT::Model::CustomField->new( current_user => $self->current_user );
     $CF->load($id);
     return $CF;

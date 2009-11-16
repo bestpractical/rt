@@ -48,28 +48,19 @@
 <&| /_elements/wrapper, title => $title, refresh => Jifty->web->session->get('tickets_refresh_interval'), 
     rss_auto_discovery => $RSSFeedURL,
     link_rel => \%link_rel &>
-<& /Ticket/Elements/Tabs, 
-    current_tab => "Search/Results.html".$query_string, 
-    title => $title,
-    format => $format,
-    query => $query,
-    rows => $rows,
-    order_by => $order_by,
-    order => $order,
-    saved_search_id => $saved_search_id &>
 <& /Elements/CollectionList, 
     query => $query,
     allow_sorting => 1,
     order_by => $order_by,
     order => $order,
-    rows => $rows,
+    rows => $rows_per_page,
     page => $page,
     format => $format,
     base_url => RT->config->get('web_path')."/Search/Results.html?",
     class => 'RT::Model::TicketCollection',
 
    &>
-% my %hiddens = (query => $query, format => $format, rows => $rows, order_by => $order_by, order => $order, HideResults => $hide_results, page => $page );
+% my %hiddens = (query => $query, format => $format, rows_per_page => $rows_per_page, order_by => $order_by, order => $order, HideResults => $hide_results, page => $page );
 <div align="right" class="refresh">
 <form method="get" action="<%RT->config->get('web_path')%>/Search/Results.html">
 % foreach my $key (keys(%hiddens)) {
@@ -84,7 +75,7 @@
     query_string => $query_string,
     query => $query,
     format => $format,
-    rows => $rows,
+    rows => $rows_per_page,
     order_by => $order_by,
     order => $order,
     rss_feed_url => $RSSFeedURL,
@@ -96,6 +87,8 @@
 </&>
 <%INIT>
 # Read from user preferences
+
+
 my $prefs = Jifty->web->current_user->user_object->preferences("SearchDisplay") || {};
 # These variables are what define a search_hash; this is also
 # where we give sane defaults.
@@ -103,23 +96,24 @@ $format      ||= $prefs->{'format'} || RT->config->get('default_search_result_fo
 $order       ||= $prefs->{'order'} || 'ASC';
 $order_by     ||= $prefs->{'order_by'} || 'id';
 
-# Some forms pass in "rows_per_page" rather than "Rows"
+# Some forms pass in "rows_per_page" rather than "rows"
 # We call it rows_per_page everywhere else.
-
-if ( !defined($rows) ) {
-    if (defined $ARGS{'rows_per_page'} ) {
-        $rows = $ARGS{'rows_per_page'};
-    } elsif ( defined $prefs->{'rows_per_page'} ) {
-        $rows = $prefs->{'rows_per_page'};
+if ( !defined($rows_per_page) ) {
+    if ( defined $prefs->{'rows_per_page'} ) {
+        $rows_per_page = $prefs->{'rows_per_page'};
     } else {
-        $rows = 50;
+        $rows_per_page = 50;
     }
 }
-
 my ($title, $ticketcount);
-Jifty->web->session->set('tickets' => RT::Model::TicketCollection->new( current_user => Jifty->web->current_user ) );
+Jifty->web->session->set('tickets' => RT::Model::TicketCollection->new());
 Jifty->web->session->get('tickets')->from_sql($query) if ($query);
 
+
+# XXX TODO 4.0 - hack to workaround arrayification of multiple order_by params 
+# caused by turning a subrequest to a redirect in Search/Build.html
+$order_by = join('|',@$order_by) if (ref $order_by eq 'ARRAY');
+$order = join('|',@$order) if (ref $order eq 'ARRAY');
 if ($order_by =~ /\|/) {
     # Multiple Sorts
     my @order_by = split /\|/,$order_by;
@@ -137,7 +131,7 @@ Jifty->web->session->set('CurrentSearchHash', {
     page       => $page,
     order       => $order,
     order_by     => $order_by,
-    rows_per_page => $rows
+    rows_per_page => $rows_per_page
     });
 
 
@@ -151,7 +145,7 @@ if ( Jifty->web->session->get('tickets')->query()) {
 my $query_string = "?".$m->comp('/Elements/QueryString',
                                query => $query,
                                format => $format,
-                               rows => $rows,
+                               rows_per_page => $rows_per_page,
                                order_by => $order_by,
                                order => $order,
                                page => $page);
@@ -159,8 +153,8 @@ my $short_querystring = "?".$m->comp('/Elements/QueryString', query => $query);
 my $RSSQueryString = "?".$m->comp('/Elements/QueryString', query => $query, order => $order, order_by => $order_by);
 my $RSSFeedURL = RT->config->get('web_path')."/Search/Results.rdf$RSSQueryString";
 
-if ($ARGS{'tickets_refresh_interval'}) {
-	Jifty->web->session->set('tickets_refresh_interval', $ARGS{'tickets_refresh_interval'});
+if (Jifty->web->request->argument('tickets_refresh_interval')) {
+Jifty->web->session->set('tickets_refresh_interval', Jifty->web->request->argument('tickets_refresh_interval'));
 }
 
 my %link_rel;
@@ -169,7 +163,7 @@ my $genpage = sub {
         '/Elements/QueryString',
         query   => $query,
         format  => $format,
-        rows    => $rows,
+        rows_per_page    => $rows_per_page,
         order_by => $order_by,
         order   => $order,
         page    => shift(@_),
@@ -179,8 +173,8 @@ my $BaseURL = RT->config->get('web_path')."/Search/Results.html?";
 $link_rel{first} = $BaseURL . $genpage->(1)         if $page > 1;
 $link_rel{prev}  = $BaseURL . $genpage->($page - 1) if $page > 1;
 if ( $ticketcount ) {
-    $link_rel{next}  = $BaseURL . $genpage->($page + 1) if ($page * $rows) < $ticketcount;
-    $link_rel{last}  = $BaseURL . $genpage->(POSIX::ceil($ticketcount/$rows)) if $rows and ($page * $rows) < $ticketcount;
+    $link_rel{next}  = $BaseURL . $genpage->($page + 1) if ($page * $rows_per_page) < $ticketcount;
+    $link_rel{last}  = $BaseURL . $genpage->(POSIX::ceil($ticketcount/$rows_per_page)) if $rows_per_page and ($page * $rows_per_page) < $ticketcount;
 }
 </%INIT>
 <%CLEANUP>
@@ -190,7 +184,7 @@ Jifty->web->session->get('tickets')->prep_for_serialization();
 $query => undef
 $format => undef 
 $hide_results => 0
-$rows => undef
+$rows_per_page => undef
 $page => 1
 $order_by => undef
 $order => undef

@@ -61,7 +61,7 @@ my $before = RT::DateTime->new_from_string($created_before);
 $q->load_by_cols(name => $queue);
 </%init>
 <&| /_elements/wrapper, title => $title &>
-<& /Tools/Reports/Elements/Tabs, current_tab => 'Tools/Reports/CreatedByDates.html', title => $title &>
+<& /Elements/Tabs, current_tab => 'Tools/Reports/CreatedByDates.html', title => $title &>
 <form method="post" action="CreatedByDates.html">
 % if ($queue || $before->is_set || $after->is_set) {
 % # if we have a queue, do the search

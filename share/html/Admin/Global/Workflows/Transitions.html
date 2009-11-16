@@ -1,6 +1,6 @@
 <&| /Admin/Elements/Header, title => $title &>
 
-<& Elements/Tabs,
+<& /Elements/Tabs,
     title       => $title,
     schema      => $schema,
     current_tab => 'Admin/Global/Workflows/Transitions.html',
@@ -58,6 +58,6 @@ if ( $update ) {
 
 </%INIT>
 <%ARGS>
-$name => undef
-$update => undef
+$name => ''
+$update => ''
 </%ARGS>

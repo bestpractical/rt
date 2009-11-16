@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&| /_elements/wrapper, title => _('Modify people related to ticket #%1', $Ticket->id) &>
-<& /Ticket/Elements/Tabs, 
+<& /Elements/Tabs,
     ticket => $Ticket, 
     current_tab => "Ticket/ModifyPeople.html?id=".$Ticket->id, 
     title => _('Modify people related to ticket #%1', $Ticket->id) &>

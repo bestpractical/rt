@@ -273,7 +273,7 @@ sub _privacy_objects {
 sub _current_user_can {
     my $self    = shift;
     my $privacy = shift || $self->privacy;
-    my %args    = @_;
+    my %args    = (right => undef, full_right => undef, @_);
 
     if ( !defined($privacy) ) {
         Jifty->log->debug("No privacy provided to $self->_current_user_can");
@@ -303,12 +303,9 @@ sub _current_user_can {
       || join( '', $args{right}, $level, 'Dashboard' );
 
     # all rights, except group rights, are global
-    $object = RT->system_user unless $object->isa('RT::Model::Group');
+    $object = RT->system unless $object->isa('RT::Model::Group');
 
-    return $self->current_user->has_right(
-        right  => $right,
-        object => $object,
-    );
+    return $self->current_user->has_right( right  => $right, object => $object,);
 }
 
 sub current_user_can_see {

@@ -1,6 +1,6 @@
 <&| /Admin/Elements/Header, title => $title &>
 
-<& Elements/Tabs,
+<& /Elements/Tabs,
     title       => $title,
     schema      => $schema,
     current_tab => 'Admin/Global/Workflows/Summary.html',
@@ -85,5 +85,5 @@ my @all_maps = RT::Workflow->list;
 
 </%INIT>
 <%ARGS>
-$name => undef
+$name => ''
 </%ARGS>

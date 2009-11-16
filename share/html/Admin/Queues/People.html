@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&| /_elements/wrapper, title => _('Modify people related to queue %1', $queue_obj->name) &>
-<& /Admin/Elements/QueueTabs, id => $id, 
+<& /Elements/Tabs, id => $id,
     queue_obj => $queue_obj,                                                      
     current_tab => $current_tab, 
     title => _('Modify people related to queue %1', $queue_obj->name) &>

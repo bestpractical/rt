@@ -55,7 +55,7 @@ unless (Jifty->web->current_user->has_right( object=> RT->system, right => 'Supe
 
 </%init>
 <&| /Admin/Elements/Header, title => $title &>
-<& /Admin/Elements/ToolTabs, 
+<& /Elements/Tabs,
     current_tab => 'Admin/Tools/Configuration.html',
     current_subtab => 'Admin/Tools/Configuration.html', 
     title => $title &>

@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&| /_elements/wrapper, title => _("Ticket History # %1 %2", $Ticket->id, $Ticket->subject) &>
-<& /Ticket/Elements/Tabs, 
+<& /Elements/Tabs,
     ticket => $Ticket, current_tab => 'Ticket/History.html?id='.$Ticket->id, 
     title => _("Ticket History # %1 %2", $Ticket->id, $Ticket->subject) &>
 

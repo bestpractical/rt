@@ -56,8 +56,6 @@ use constant page_title      => 'User Management';
 use constant object_type     => 'User';
 use constant display_columns => qw(id name email);
 
-use constant tab_url         => '/Admin/Elements/UserTabs';
-use constant current_tab     => 'Admin/Users/';
 
 # limit to privileged users
 sub _current_collection {

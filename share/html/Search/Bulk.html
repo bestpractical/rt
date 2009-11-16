@@ -46,15 +46,6 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&| /_elements/wrapper, title => $title &>
-<& /Ticket/Elements/Tabs, 
-    current_tab => "Search/Bulk.html",
-    title => $title,
-    format => $ARGS{'format'}, # we don't want the locally modified one
-    query => $query,
-    rows => $rows,
-    order_by => $order_by,
-    order => $order,
-    saved_search_id => $saved_search_id &>
 
 <& /Elements/ListActions, actions => \@results &>
 <form method="post" action="<% RT->config->get('web_path') %>/Search/Bulk.html" enctype="multipart/form-data">
@@ -68,7 +59,7 @@
     allow_sorting => 1,
     order_by => $order_by,
     order => $order,
-    rows => $rows,
+    rows => $rows_per_page,
     page => $page,
     base_url => RT->config->get('web_path')."/Search/Bulk.html?",
     class => 'RT::Model::TicketCollection'
@@ -171,9 +162,9 @@ $cfs->limit_to_queue($_) for keys %$seen_queues;
 <tr>
 <td class="label"><%$cf->name%><br />
 <em>(<%$cf->friendly_type%>)</em></td>
-% my $rows = 5;
-% my @add = (name_prefix => 'Bulk-Add-CustomField-', custom_field => $cf, rows => $rows, Multiple => ($cf->max_values ==1 ? 0 : 1) , Cols => 25);
-% my @del = (name_prefix => 'Bulk-Delete-CustomField-', custom_field => $cf, rows => $rows, Multiple => 1, Cols => 25);
+% my $cf_size = 5; 
+% my @add = (name_prefix => 'Bulk-Add-CustomField-', custom_field => $cf, rows => $cf_size, Multiple => ($cf->max_values ==1 ? 0 : 1) , Cols => 25);
+% my @del = (name_prefix => 'Bulk-Delete-CustomField-', custom_field => $cf, rows => $cf_size, Multiple => 1, Cols => 25);
 % if ($cf->type eq 'Select') {
 <td><& /Elements/EditCustomFieldSelect, @add &></td>
 <td><& /Elements/EditCustomFieldSelect, @del &></td>
@@ -208,11 +199,6 @@ $cfs->limit_to_queue($_) for keys %$seen_queues;
 
 </&>
 <%INIT>
-unless ( defined $rows ) {
-    $rows = $rows_per_page;
-    $ARGS{rows} = $rows_per_page;
-}
-
 my $title = _("Update multiple tickets");
 
 # Iterate through the ARGS hash and remove anything with a null value.
@@ -229,6 +215,13 @@ $format =~ s/'?([^']+)'?,/'___CHECKBOX__$1',/;
 
 my $Tickets = RT::Model::TicketCollection->new( current_user => Jifty->web->current_user );
 $Tickets->from_sql($query);
+
+
+# XXX TODO 4.0 - hack to workaround arrayification of multiple order_by params 
+# caused by turning a subrequest to a redirect in Search/Build.html
+$order_by = join('|',@$order_by) if (ref $order_by eq 'ARRAY');
+$order = join('|',@$order) if (ref $order eq 'ARRAY');
+
 if ( $order_by =~ /\|/ ) {
 
   # Multiple Sorts
@@ -243,7 +236,7 @@ else {
 }
 
 $page = 1 unless $page && $page > 0; # workaround problems with Page = '' or undef
-$Tickets->set_page_info(per_page => $rows, current_page => $page);
+$Tickets->set_page_info(per_page => $rows_per_page, current_page => $page);
 
 abort( _("No search to operate on.") ) unless ($Tickets);
 
@@ -385,8 +378,7 @@ $TxnCFs->limit_to_global_or_object_id( sort keys %queues );
 <%args>
 $format => undef
 $page => 1
-$rows => 50
-$rows_per_page => undef
+$rows_per_page => 50
 $order => 'ASC'
 $order_by => 'id'
 $query => undef

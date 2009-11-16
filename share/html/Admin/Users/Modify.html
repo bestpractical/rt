@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&| /Admin/Elements/Header, title => $title  &>
-<& /Admin/Elements/UserTabs, 
+<& /Elements/Tabs,
     id => $id, 
     user_object => $user_object,
     current_tab => $current_tab, 
@@ -390,8 +390,8 @@ $id = $user_object->id;
 
 
 <%ARGS>
-$id => undef
-$name  => undef
+$id => ''
+$name  => ''
 $comments  => undef
 $signature  => undef
 $email  => undef

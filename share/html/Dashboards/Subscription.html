@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&| /_elements/wrapper, title => $title &>
-<& /Dashboards/Elements/Tabs,
+<& /Elements/Tabs,
     current_subtab => $current_subtab,
     title => $title,
     dashboard_obj => $dashboard_obj &>
@@ -278,7 +278,7 @@ else {
 
 </%INIT>
 <%ARGS>
-$dashboard_id => undef
+$dashboard_id => ''
 $frequency   => undef
 $hour        => undef
 $dow         => undef

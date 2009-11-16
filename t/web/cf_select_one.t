@@ -91,7 +91,7 @@ diag "check that values of the CF are case insensetive(asd vs. ASD)"
     if $ENV{'TEST_VERBOSE'};
 {
     ok $m->goto_ticket( $tid ), "opened ticket's page";
-    $m->follow_link( text => 'Custom Fields' );
+    $m->follow_link( url_regex => qr{Ticket/Modify.html} );
     $m->title_like(qr/Modify ticket/i, 'modify ticket');
     $m->content_like(qr/\Q$cf_name/, 'CF on the page');
 
@@ -113,7 +113,7 @@ diag "check that 0 is ok value of the CF"
     if $ENV{'TEST_VERBOSE'};
 {
     ok $m->goto_ticket( $tid ), "opened ticket's page";
-    $m->follow_link( text => 'Custom Fields' );
+    $m->follow_link( url_regex => qr{Ticket/Modify.html} );
     $m->title_like(qr/Modify ticket/i, 'modify ticket');
     $m->content_like(qr/\Q$cf_name/, 'CF on the page');
 
@@ -138,7 +138,7 @@ diag "check that we can set empty value when the current is 0"
     if $ENV{'TEST_VERBOSE'};
 {
     ok $m->goto_ticket( $tid ), "opened ticket's page";
-    $m->follow_link( text => 'Custom Fields' );
+    $m->follow_link( url_regex => qr{Ticket/Modify.html} );
     $m->title_like(qr/Modify ticket/i, 'modify ticket');
     $m->content_like(qr/\Q$cf_name/, 'CF on the page');
 

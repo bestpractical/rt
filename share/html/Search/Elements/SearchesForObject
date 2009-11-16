@@ -49,17 +49,5 @@
 $object => undef
 </%args>
 <%init>
-# Returns an array of search objects associated on $object,
-# in the form of [description, searchObj]
-my @result;
-while (my $search = $object->attributes->next) {
-    my $desc;
-    if ($search->name eq 'saved_search') {
-	push @result, [$search->description, $search];
-    }
-    elsif ($search->name =~ m/^Search - (.*)/) {
-	push @result, [$1, $search];
-    }
-}
-return @result;
+return $object->saved_searches();
 </%init>

@@ -66,19 +66,13 @@
 %#   action does quote it (this breaks SQLite).
 %#
 <&| /_elements/wrapper, title => _("Query Builder") &>
-<& /Ticket/Elements/Tabs, 
-    current_tab => "Search/Build.html?".$query_string, 
-    title => _("Query Builder"),
-    %$query,
-	saved_search_id => $saved_search->{'id'},
-&>
 
 <form method="post" action="Build.html" name="build_query">
 <input type="hidden" class="hidden" name="saved_search_id" value="<% $saved_search->{'id'} || '' %>" />
-<input type="hidden" class="hidden" name="query" value="<% $query->{'query'} || '' %>" />
-<input type="hidden" class="hidden" name="format" value="<% $query->{'format'} || '' %>" />
+<input type="hidden" class="hidden" name="query" value="<% $current_search->{'query'} || '' %>" />
+<input type="hidden" class="hidden" name="format" value="<% $current_search->{'format'} || '' %>" />
 <div id="pick-criteria">
-	<& Elements/PickCriteria, query => $query->{'query'}, queues => $queues &>
+	<& Elements/PickCriteria, query => $current_search->{'query'}, queues => $queues &>
 </div>
 <& /Elements/Submit,  label => _('Add these terms'), name => 'add_clause'&>
 <& /Elements/Submit, label => _('Add these terms and Search'), name => 'do_search'&>
@@ -91,11 +85,12 @@
     &>
 </div>
 <div id="editsearches">
-    <& Elements/EditSearches, %$saved_search, current_search => $query &>
+    <& Elements/EditSearches, %$saved_search, current_search => $current_search &>
 </div>
 <span id="display-options">
 <& Elements/DisplayOptions,
-    %ARGS, %$query,
+	%{Jifty->web->request->arguments},
+	%$current_search,
     available_columns => $available_columns,
     current_format    => $current_format,
 &>
@@ -103,67 +98,13 @@
 </span>
 </form>
 </&>
-<%INIT>
-
-my ( $saved_search, $query, $results ) = RT::Interface::Web::QueryBuilder->setup_query();
-
-my $tree = RT::Interface::Web::QueryBuilder::Tree->new('AND');
-
-push @$results, $tree->parse_sql( query => $query->{query} );
-my @options = $tree->get_displayed_nodes;
-my @current_values = grep defined, @options[@clauses];
-
-my @new_values = RT::Interface::Web::QueryBuilder->process_query_additions();
-
-push @$results, RT::Interface::Web::QueryBuilder->process_query( $tree, \@current_values, \@new_values, );
-
-#  Rebuild $Query based on the additions / movements
-my ( $new_serialized_query, $parsed_query ) = $tree->get_query_and_option_list( \@current_values );
-$query->{'query'} = $new_serialized_query;
-
-my $queues = $tree->get_referenced_queues;
-
-#  Deal with format changes
-my ( $new_format, $available_columns, $current_format ) = RT::Interface::Web::QueryBuilder->build_format_string(
-    %{ Jifty->web->request->arguments },
-    queues => $queues,
-    format => $query->{'format'}
-);
-
-$query->{'format'} = $new_format;
-
-# if we're asked to save the current search, save it
-if ( Jifty->web->request->argument('saved_search_save') || Jifty->web->request->argument('saved_search_copy') ) {
-    push @$results, RT::Interface::Web::QueryBuilder->save_search( $query, $saved_search );
-}
-
-#  Push the updates into the session so we don't lose 'em
-
-Jifty->web->session->set(
-    'CurrentSearchHash',
-    {   %$query,
-        search_id   => $saved_search->{'id'},
-        object      => $saved_search->{'object'},
-        description => $saved_search->{'description'},
-    }
-);
-
-#  Show the results, if we were asked.
-my $query_string = '';
-
-#  Build a query_string for the tabs
-if ( Jifty->web->request->argument('new_query') ) {
-    $query_string = 'new_query=1';
-} elsif ( $query->{'query'} ) {
-    $query_string = RT::Interface::Web->format_query_params(%$query);
-}
-
-if ( Jifty->web->request->argument('do_search') ) {
-    Jifty->web->redirect( Jifty->web->url . "Search/Results.html?" . $query_string );
-}
-
-</%INIT>
-
-<%ARGS>
-@clauses => ()
-</%ARGS>
+<%args>
+$available_columns
+$current_search
+$saved_search
+$current_format
+$results
+$parsed_query
+$querystring
+$queues
+</%args>

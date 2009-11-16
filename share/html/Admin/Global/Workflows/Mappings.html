@@ -1,6 +1,6 @@
 <&| /Admin/Elements/Header, title => $title &>
 
-<& Elements/Tabs,
+<& /Elements/Tabs,
     title       => $title,
     current_tab => 'Admin/Global/Workflows/Mappings.html',
 &>
@@ -117,8 +117,8 @@ if ( $update && $from_schema && $to_schema ) {
 
 </%INIT>
 <%ARGS>
-$from   => undef
-$to     => undef
-$update => undef
-$select => undef
+$from   => ''
+$to     => ''
+$update => ''
+$select => ''
 </%ARGS>

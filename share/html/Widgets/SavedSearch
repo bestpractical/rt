@@ -136,7 +136,7 @@ $args
 <%method show>
 <form method="post" action="<% $action %>" name="save_search">
 <& /Search/Elements/EditSearches,
-    id            => $self->{Searchid},
+    id            => $self->{SearchId},
     type          => $self->{SearchType},
     current_search => $self->{CurrentSearch},
     title         => $title,

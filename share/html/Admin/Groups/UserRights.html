@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <&| /Admin/Elements/Header, title => _('Modify user rights for group %1', $GroupObj->name) &>
-<& /Admin/Elements/GroupTabs, 
+<& /Elements/Tabs,
     group_obj => $GroupObj, 
     current_tab => 'Admin/Groups/UserRights.html?id='.$id, 
     title => _('Modify user rights for group %1', $GroupObj->name) &>  
