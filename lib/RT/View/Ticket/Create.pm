@@ -71,8 +71,9 @@ template 'create' => page { title => _('Create a new ticket') } content {
     );
     $create->set_queue($queue);
 
-    form {
+    with ( name => 'ticket_create' ), form {
         form_next_page url => '/Ticket/Display.html';
+
         render_action($create);
         $create->button(label => _('Create'));
     };
