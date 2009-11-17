@@ -173,11 +173,11 @@ mail_ok {
 is_deeply([ $t->status, $dependson_cfo->status, $dependson_ceo->status ],
           [ 'new', 'resolved', 'resolved'], 'ticket state after ceo approval');
 
-$dependson_cfo->_set(
+$dependson_cfo->__set(
     column => 'status',
     value => 'open');
 
-$dependson_ceo->_set(
+$dependson_ceo->__set(
     column => 'status',
     value => 'new');
 
