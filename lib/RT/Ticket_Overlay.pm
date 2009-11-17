@@ -181,7 +181,7 @@ sub Load {
     }
 
     #If we're merged, resolve the merge.
-    if ( ($self->EffectiveId || 0) != $self->Id ) {
+    if ( $self->EffectiveId && $self->EffectiveId != $self->Id ) {
         $RT::Logger->debug(
             "We found a merged ticket. "
             . $self->id ."/". $self->EffectiveId
