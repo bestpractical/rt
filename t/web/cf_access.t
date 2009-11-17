@@ -87,7 +87,7 @@ diag "check that we have no the CF on the create"
         form_name => "ticket_create",
         fields => { subject => 'test' },
     );
-    $m->content_like(qr/Ticket \d+ created/, "a ticket is Created succesfully");
+    $m->content_like(qr/Created ticket #\d+/, "a ticket is Created succesfully");
 
     $m->content_unlike(qr/img:/, 'has no img field on the page');
     $m->follow_link( text => 'Custom Fields');
@@ -117,7 +117,7 @@ diag "check that we have no the CF on the create"
         form_name => "ticket_create",
         fields => { subject => 'test' },
     );
-    $tid = $1 if $m->content =~ /Ticket (\d+) created/i;
+    $tid = $1 if $m->content =~ /Created ticket #(\d+)/;
     ok $tid, "a ticket is Created succesfully";
 
     $m->follow_link( text => 'Custom Fields' );
@@ -149,9 +149,9 @@ diag "create a ticket with an image" if $ENV{'TEST_VERBOSE'};
         },
     );
 
-    $m->content_like(qr/Ticket \d+ created/, "a ticket is Created succesfully");
+    $m->content_like(qr/Created ticket #\d+/, "a ticket is Created succesfully");
 
-    $tid = $1 if $m->content =~ /Ticket (\d+) created/;
+    $tid = $1 if $m->content =~ /Created ticket #(\d+)/;
 
     $m->title_like(qr/testing img cf creation/, "its title is the subject");
 
