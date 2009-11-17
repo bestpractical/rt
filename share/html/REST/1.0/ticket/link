@@ -60,15 +60,15 @@ my $status = "200 Ok";
 my $ticket = RT::Model::Ticket->new( current_user => Jifty->web->current_user );
 my $object = $r->path_info;
 
-my @fields = qw(depends_on depended_on_by refers_to referred_to_by has_member member_of);
+my @fields = qw(DependsOn DependedOnBy RefersTo ReferredToBy HasMember MemberOf);
 my %fields = map { lc $_ => $_ } @fields;
 my %lfields = (
-    has_member     => { type => 'member_of',  mode => 'base'   },
-    referred_to_by => { type => 'refers_to',  mode => 'base'   },
-    depended_on_by => { type => 'depends_on', mode => 'base'   },
-    member_of      => { type => 'member_of',  mode => 'target' },
-    refers_to      => { type => 'refers_to',  mode => 'target' },
-    depends_on     => { type => 'depends_on', mode => 'target' },
+    HasMember    => { type => 'MemberOf',  mode => 'base'   },
+    ReferredToBy => { type => 'RefersTo',  mode => 'base'   },
+    DependedOnBy => { type => 'DependsOn', mode => 'base'   },
+    MemberOf     => { type => 'MemberOf',  mode => 'target' },
+    RefersTo     => { type => 'RefersTo',  mode => 'target' },
+    DependsOn    => { type => 'DependsOn', mode => 'target' },
 );
 
 # http://.../REST/1.0/ticket/link/1
@@ -101,8 +101,12 @@ unless ($ticket->id) {
     goto OUTPUT;
 }
 
-my $type = $lfields{$rel}->{type};
-my $mode = $lfields{$rel}->{mode};
+my $old_type = $lfields{$rel}->{type};
+my $old_mode = $lfields{$rel}->{mode};
+
+require Text::Naming::Convention;
+my $type = Text::Naming::Convention::renaming($old_type, {convention => '_'});
+my $mode = Text::Naming::Convention::renaming($old_mode, {convention => '_'});
 
 my $n = 1;
 my $op = $del ? "delete_link" : "add_link";

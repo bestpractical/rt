@@ -869,8 +869,8 @@ sub link {
     my ($bad, $del, %data) = (0, 0, ());
     my $type;
 
-    my %ltypes = map { lc $_ => $_ } qw(depends_on depended_on_by refers_to
-                                        referred_to_by has_member member_of);
+    my %ltypes = map { lc $_ => $_ } qw(DependsOn DependedOnBy RefersTo
+                                        ReferredToBy HasMember MemberOf);
 
     while (@ARGV && $ARGV[0] =~ /^-/) {
         $_ = shift @ARGV;
