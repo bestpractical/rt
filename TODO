@@ -7,10 +7,6 @@ RT::load_config and other in RT package should be replaced with RT->load_config
 
 
 * create graphviz for templates/elements, orphan ones needs to be documented.
-* make richtext a jifty plugin (so we get automagic js/css squish)
-* remoe rt::base
-* remove old compat-* css
-* remove <|&/l, should just be <%_()%>
 
 * fresh db, create ticket with body asdf shows "<p>&nbsp;asdf</p>" in the ticket history right after create.
 * fresh db, create an unowned ticket, click unowned search from homepage, click chart by status, infinite loop.
