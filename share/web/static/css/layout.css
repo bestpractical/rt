@@ -6,7 +6,7 @@ body {
     padding:0;
     margin:0;
 
-    background: #547CCC url(../../NoAuth/css/web2/images/background-gradient.png) top left repeat-x ;
+    background: #547CCC url(/static/images/css/web2/background-gradient.png) top left repeat-x ;
     font-family: helvetica, arial, sans-serif;
 
 }
