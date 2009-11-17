@@ -46,7 +46,7 @@ is ($txn_cf->id, $cf->id, "It's the right custom field");
 my $values = $trans->custom_field_values($txn_cf->id);
 is ($values->count, 0, "It has no values");
 
-my %cf_updates = ( 'CustomField-'.$cf->id => 'Testing');
+my %cf_updates = ( 'cf_'.$cf->id => 'Testing');
 $trans->update_custom_fields(%cf_updates);
 
  $values = $trans->custom_field_values($txn_cf->id);
