@@ -28,7 +28,7 @@ my $string = 'subject/content SQL test';
 
 {
     my $Message = MIME::Entity->build(
-                     subject     => 'this is my subject',
+                     Subject     => 'this is my subject',
                      From        => 'jesse@example.com',
                      Data        => [ $string ],
             );

@@ -1,6 +1,3 @@
-API changes
-    check that MIME tools have camel case args
-
 things we ripped out that need to be added back
 
     external auth
