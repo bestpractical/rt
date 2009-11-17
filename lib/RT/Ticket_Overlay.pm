@@ -2202,28 +2202,36 @@ sub _Links {
     my $field = shift;
     my $type  = shift || "";
 
-    unless ( $self->{"$field$type"} ) {
-        $self->{"$field$type"} = new RT::Links( $self->CurrentUser );
-        if ( $self->CurrentUserHasRight('ShowTicket') ) {
-            # Maybe this ticket is a merged ticket
-            my $Tickets = new RT::Tickets( $self->CurrentUser );
-            # at least to myself
-            $self->{"$field$type"}->Limit( FIELD => $field,
-                                           VALUE => $self->URI,
-                                           ENTRYAGGREGATOR => 'OR' );
-            $Tickets->Limit( FIELD => 'EffectiveId',
-                             VALUE => $self->EffectiveId );
-            while (my $Ticket = $Tickets->Next) {
-                $self->{"$field$type"}->Limit( FIELD => $field,
-                                               VALUE => $Ticket->URI,
-                                               ENTRYAGGREGATOR => 'OR' );
-            }
-            $self->{"$field$type"}->Limit( FIELD => 'Type',
-                                           VALUE => $type )
-              if ($type);
-        }
+    my $cache_key = "$field$type";
+    return $self->{ $cache_key } if $self->{ $cache_key };
+
+    $RT::Logger->error( "links field: $field, type: $type" );
+    my $links = $self->{ $cache_key }
+              = RT::Links->new( $self->CurrentUser );
+    unless ( $self->CurrentUserHasRight('ShowTicket') ) {
+        $links->Limit( FIELD => 'id', VALUE => 0 );
+        return $links;
     }
-    return ( $self->{"$field$type"} );
+
+    # Maybe this ticket is a merge ticket
+    my $limit_on = 'Local'. $field;
+    # at least to myself
+    $links->Limit(
+        FIELD           => $limit_on,
+        VALUE           => $self->id,
+        ENTRYAGGREGATOR => 'OR',
+    );
+    $links->Limit(
+        FIELD           => $limit_on,
+        VALUE           => $_,
+        ENTRYAGGREGATOR => 'OR',
+    ) foreach $self->Merged;
+    $links->Limit(
+        FIELD => 'Type',
+        VALUE => $type,
+    ) if $type;
+
+    return $links;
 }
 
 # }}}
@@ -2640,7 +2648,7 @@ Returns list of tickets' ids that's been merged into this ticket.
 sub Merged {
     my $self = shift;
 
-    my $mergees = new RT::Tickets( $self->CurrentUser );
+    my $mergees = RT::Tickets->new( $self->CurrentUser );
     $mergees->Limit(
         FIELD    => 'EffectiveId',
         OPERATOR => '=',
