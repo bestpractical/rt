@@ -358,21 +358,6 @@ package HTML::Mason::Commands;
 use vars qw/$r $m/;
 
 
-=head2 loc ARRAY
-
-loc is a nice clean global routine which calls Jifty->web->current_user->_()
-with whatever it's called with. If there is no Jifty->web->current_user, 
-it creates a temporary user, so we have something to get a localisation handle
-through
-
-=cut
-
-sub loc {
-
-    return _(@_);
-}
-
-
 # Error - calls Error and aborts
 sub abort {
     my $why  = shift;
