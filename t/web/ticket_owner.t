@@ -45,9 +45,8 @@ diag "current user has no right to own, nobody selected as owner on create" if $
     ok !grep($_ == $user_a->id, $owner_field->possible_values),
         'user A can not own tickets';
     $agent_a->submit;
-
-    $agent_a->content_like(qr/Ticket \d+ created in queue/i, 'created ticket');
-    my ($id) = ($agent_a->content =~ /Ticket (\d+) created in queue/);
+    $agent_a->content_like(qr/Created ticket #\d+ in queue/i, 'created ticket');
+    my ($id) = ($agent_a->content =~ /Created ticket #(\d+) in queue/);
     ok $id, 'found id of the ticket';
     my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
     $ticket->load( $id );
@@ -63,16 +62,18 @@ diag "user can chose owner of a new ticket" if $ENV{TEST_VERBOSE};
     $agent_a->submit;
 
     $agent_a->content_like(qr/Create a new ticket/i, 'opened create ticket page');
-    my $form = $agent_a->form_name('ticket_create');
-    is $form->value('owner'), RT->nobody->id, 'correct owner selected';
+    my $moniker = $agent_a->moniker_for('RT::Action::CreateTicket');
+    my $owner_field = $agent_a->action_field_input($moniker, 'owner');
 
-    ok grep($_ == $user_b->id,  $form->find_input('owner')->possible_values),
+    is $owner_field->value, RT->nobody->id, 'correct owner selected';
+
+    ok grep($_ == $user_b->id, $owner_field->possible_values),
         'user B is listed as potential owner';
-    $agent_a->select('owner', $user_b->id);
+    $owner_field->value($user_b->id);
     $agent_a->submit;
 
-    $agent_a->content_like(qr/Ticket \d+ created in queue/i, 'created ticket');
-    my ($id) = ($agent_a->content =~ /Ticket (\d+) created in queue/);
+    $agent_a->content_like(qr/Created ticket #\d+ in queue/i, 'created ticket');
+    my ($id) = ($agent_a->content =~ /Created ticket #(\d+) in queue/);
     ok $id, 'found id of the ticket';
 
     my $ticket = RT::Model::Ticket->new(current_user => RT->system_user );
