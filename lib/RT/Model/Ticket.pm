@@ -2088,7 +2088,6 @@ sub set_status {
         value            => $args{status},
         time_taken       => 0,
         check_acl        => 0,
-        transaction_type => 'status'
     );
 
     return ( $val, $msg );
