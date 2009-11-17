@@ -25,8 +25,7 @@ ok $m->login, 'logged in';
 # create a ticket with a subject only
 {
     ok $m->goto_create_ticket( $q ), "go to create ticket";
-    $m->form_number(3);
-    $m->field( subject => $ru_test );
+    $m->fill_in_action_ok('create_ticket', subject => $ru_test);
     $m->submit;
 
     $m->content_like( 
@@ -38,9 +37,10 @@ ok $m->login, 'logged in';
 # create a ticket with a subject and content
 {
     ok $m->goto_create_ticket( $q ), "go to create ticket";
-    $m->form_number(3);
-    $m->field( subject => $ru_test );
-    $m->field( content => $ru_support );
+    $m->fill_in_action_ok('create_ticket', (
+        subject => $ru_test,
+        content => $ru_support,
+    ));
     $m->submit;
 
     my $encoded_ru_test = Encode::encode_utf8( $ru_test );
