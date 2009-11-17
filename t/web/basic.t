@@ -69,10 +69,10 @@ $agent->submit;
 
 TODO: {
     todo_skip("Need to handle mason trying to compile images",1);
-$agent->get( $url."/NoAuth/images/test.png" );
+$agent->get( $url."/static/images/test.png" );
 my $file = RT::Test::get_relocatable_file(
   File::Spec->catfile(
-    qw(.. .. share html NoAuth images test.png)
+    qw(.. .. share web static images test.png)
   )
 );
 is(

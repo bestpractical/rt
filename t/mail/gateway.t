@@ -471,7 +471,7 @@ EOF
 diag "Testing preservation of binary attachments" if $ENV{'TEST_VERBOSE'};
 {
     # Get a binary blob (Best Practical logo) 
-    my $LOGO_FILE = RT->html_path .'/NoAuth/images/bplogo.gif';
+    my $LOGO_FILE = RT->static_path .'/images/bplogo.gif';
 
     # Create a mime entity with an attachment
     my $entity = MIME::Entity->build(

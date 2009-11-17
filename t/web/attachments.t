@@ -3,7 +3,7 @@ use strict;
 
 use RT::Test strict => 1; use Test::More tests => 14;
 
-use constant ImageRoot => RT->html_path . '/NoAuth/images';
+use constant ImageRoot => RT->static_path . '/images';
 use constant LogoFile => ImageRoot .'/bplogo.gif';
 use constant FaviconFile => ImageRoot .'/favicon.png';
 

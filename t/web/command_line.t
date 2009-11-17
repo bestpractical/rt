@@ -116,7 +116,7 @@ ok($val,$msg);
     # text attachment
     check_attachment($test_email);
     # binary attachment
-    check_attachment(RT->html_path.'/NoAuth/images/bplogo.gif');
+    check_attachment(RT->static_path.'/images/bplogo.gif');
     #XXX TODO this is not so right warning
     $m->warnings_like( qr/Encode::Guess failed/ );
 

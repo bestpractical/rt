@@ -359,6 +359,14 @@ The root of F</local/html> (user Mason templates)
 
 sub local_html_path { Jifty::Util->app_root . '/local/html' }
 
+=head2 static_path
+
+The root of F</share/html> (Mason templates)
+
+=cut
+
+sub static_path { Jifty::Util->app_root . '/' . Jifty->config->framework('Web')->{StaticRoot} }
+
 =head2 etc_path
 
 The root of F</etc> (configuration)
