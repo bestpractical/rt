@@ -171,6 +171,9 @@ sub Load {
         return (undef);
     }
 
+    $id = $MERGE_CACHE{'effective'}{ $id }
+        if $MERGE_CACHE{'effective'}{ $id };
+
     my ($ticketid, $msg) = $self->LoadById( $id );
     unless ( $self->Id ) {
         $RT::Logger->debug("$self tried to load a bogus ticket: $id");
@@ -183,7 +186,9 @@ sub Load {
             "We found a merged ticket. "
             . $self->id ."/". $self->EffectiveId
         );
-        return $self->Load( $self->EffectiveId );
+        my $real_id = $self->Load( $self->EffectiveId );
+        $MERGE_CACHE{'effective'}{ $id } = $real_id;
+        return $real_id;
     }
 
     #Ok. we're loaded. lets get outa here.
