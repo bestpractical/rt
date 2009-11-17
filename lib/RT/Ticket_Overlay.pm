@@ -135,6 +135,11 @@ our %LINKDIRMAP = (
 sub LINKTYPEMAP   { return \%LINKTYPEMAP   }
 sub LINKDIRMAP   { return \%LINKDIRMAP   }
 
+our %MERGE_CACHE = (
+    effective => {},
+    merged => {},
+);
+
 # {{{ sub Load
 
 =head2 Load
@@ -2640,18 +2645,22 @@ Returns list of tickets' ids that's been merged into this ticket.
 sub Merged {
     my $self = shift;
 
+    my $id = $self->id;
+    return @{ $MERGE_CACHE{'merged'}{ $id } }
+        if $MERGE_CACHE{'merged'}{ $id };
+
     my $mergees = RT::Tickets->new( $self->CurrentUser );
     $mergees->Limit(
         FIELD    => 'EffectiveId',
-        OPERATOR => '=',
-        VALUE    => $self->Id,
+        VALUE    => $id,
     );
     $mergees->Limit(
         FIELD    => 'id',
         OPERATOR => '!=',
-        VALUE    => $self->Id,
+        VALUE    => $id,
     );
-    return map $_->id, @{ $mergees->ItemsArrayRef || [] };
+    return @{ $MERGE_CACHE{'merged'}{ $id } ||= [] }
+        = map $_->id, @{ $mergees->ItemsArrayRef || [] };
 }
 
 # }}}
