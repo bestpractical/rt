@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
-use RT::Test strict => 1, tests => 21, l10n => 1;
+use RT::Test strict => 1, tests => 23, l10n => 1;
 use HTTP::Request::Common;
 use HTTP::Cookies;
 use LWP;
@@ -37,22 +37,24 @@ is($agent->{'status'}, 200, "Fetched the page ok");
 ok( $agent->content =~ /Logout/i, "Found a logout link");
 $agent->get($url."/ticket/create?queue=1");
 is ($agent->{'status'}, 200, "Loaded Create.html");
-$agent->form_number(3);
 # Start with a string containing characters in latin1
 my $string = "I18N Web Testing æøå";
 my $decoded_string = Encode::decode_utf8($string);
-$agent->field('subject' => "Ticket with utf8 body");
-$agent->field('content' => $decoded_string);
+$agent->fill_in_action_ok('create_ticket', (
+    'subject' => "Ticket with utf8 body",
+    'content' => $decoded_string,
+));
+
 ok($agent->submit(), "Created new ticket with $string as content");
 like( $agent->{'content'}, qr{$string} , "Found the content");
 ok($agent->{redirected_uri}, "Did redirection");
 
 $agent->get($url."/ticket/create?queue=1");
 is ($agent->{'status'}, 200, "Loaded Create.html");
-$agent->form_number(3);
-
-$agent->field('subject' => $decoded_string);
-$agent->field('content' => "Ticket with utf8 subject");
+$agent->fill_in_action_ok('create_ticket', (
+    'subject' => $decoded_string,
+    'content' => "Ticket with utf8 subject",
+));
 ok($agent->submit(), "Created new ticket with $string as subject");
 like( $agent->{'content'}, qr{$string} , "Found the content");
 
