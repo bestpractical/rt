@@ -56,8 +56,8 @@ use RT::Interface::CLI qw{ clean_env };
 use Getopt::Long;
 
 clean_env();
-RT::load_config();
-RT::init();
+RT->load_config();
+RT->init();
 
 no warnings 'once';
 

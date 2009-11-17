@@ -61,7 +61,7 @@ Savepoints are named and you can create two or more savepoints.
 
 =head3 rewrite_rtconfig
 
-Call this sub after C<RT::load_config>. Function changes
+Call this sub after C<RT->load_config>. Function changes
 RT config option to switch to local SQLite database.
 
 =cut
@@ -105,7 +105,7 @@ sub config_set {
 
 Creates new RT DB with initial data in the test tmp dir.
 Remove old files in the tmp dir if exist.
-Also runs RT::Init() and init logging.
+Also runs RT->init() and init logging.
 This is all you need to call to setup testing environment
 in common situation.
 

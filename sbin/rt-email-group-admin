@@ -90,8 +90,8 @@ use strict;
 
 use RT;
 BEGIN { RT->init_jifty }
-RT::load_config;
-RT::init;
+RT->load_config;
+RT->init;
 
 require RT::Principal;
 require RT::Model::User;

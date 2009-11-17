@@ -53,7 +53,7 @@ use RT;
 
 use Getopt::Long;
 
-BEGIN { RT::init_jifty(); }
+BEGIN { RT->init_jifty(); }
 
 use RT::Interface::CLI qw(clean_env get_current_user get_message_content );
 use RT::Model::TicketCollection;
@@ -66,7 +66,7 @@ clean_env();
 RT::load_config();
 
 #Connect to the database and get RT->system_user and RT->nobody loaded
-RT::init();
+RT->init();
 
 #Get the current user all loaded
 my $CurrentUser = get_current_user();

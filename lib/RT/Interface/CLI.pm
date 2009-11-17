@@ -82,10 +82,10 @@ BEGIN {
   use RT;
 
   #Load RT's config file
-  RT::load_config();
+  RT->load_config();
 
   # Connect to the database. set up loggign
-  RT::Init();
+  RT->init();
 
   #Get the current user all loaded
   my $CurrentUser = get_current_user();

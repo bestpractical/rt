@@ -264,8 +264,8 @@ our %opt = ();
 sub init {
     %opt = @_;
     # XXX: this shouldn't be necessary anymore, as RT.pm does init and config is lazily loaded.
-    RT::load_config();
-    RT::init();
+    RT->load_config();
+    RT->init();
 }
 
 =head4 new

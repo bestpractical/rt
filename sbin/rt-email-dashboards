@@ -68,10 +68,10 @@ use POSIX 'tzset';
 clean_env();
 
 # Load the config file
-RT::load_config();
+RT->load_config();
 
 # Connect to the database and get RT->system_user and RT->nobody loaded
-RT::init();
+RT->init();
 
 $HTML::Mason::Commands::r = RT::Dashboard::FakeRequest->new;
 

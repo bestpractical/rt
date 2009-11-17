@@ -3,9 +3,6 @@ things we ripped out that need to be added back
     external auth
     autocreate of users
 
-RT::load_config and other in RT package should be replaced with RT->load_config
-
-
 * create graphviz for templates/elements, orphan ones needs to be documented.
 
 * fresh db, create ticket with body asdf shows "<p>&nbsp;asdf</p>" in the ticket history right after create.
