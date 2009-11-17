@@ -75,7 +75,7 @@ template 'create' => page { title => _('Create a new ticket') } content {
         form_next_page url => '/Ticket/Display.html';
 
         render_action($create);
-        $create->button(label => _('Create'));
+        form_submit( label => _('Create') );
     };
 };
 
