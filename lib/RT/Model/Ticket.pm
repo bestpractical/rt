@@ -2121,7 +2121,6 @@ sub set_told {
             column           => 'told',
             value            => $datetold->iso,
             time_taken       => $timetaken,
-            transaction_type => 'told'
         )
     );
 }
