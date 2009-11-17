@@ -191,7 +191,8 @@ sub set_final_priority {
 
 sub report_success {
     my $self = shift;
-    $self->result->message(_("Your ticket has been created!"));
+    my $id = $self->record->id;
+    $self->result->message(_("Created ticket #%1", $id));
 }
 
 sub add_ticket_custom_fields {
