@@ -192,7 +192,8 @@ sub set_final_priority {
 sub report_success {
     my $self = shift;
     my $id = $self->record->id;
-    $self->result->message(_("Created ticket #%1", $id));
+    my $queue = $self->record->queue->name;
+    $self->result->message(_("Created ticket #%1 in queue %2", $id, $queue));
 }
 
 sub add_ticket_custom_fields {
