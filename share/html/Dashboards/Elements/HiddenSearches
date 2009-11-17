@@ -65,7 +65,7 @@ for my $search (@searches) {
 }
 
 </%init>
-<&| /Widgets/TitleBox, title => loc('Possible hidden searches') &>
+<&| /Widgets/TitleBox, title => _('Possible hidden searches') &>
 <p><% _("The following queries may not be visible to all users who can see this dashboard.") %></p>
 
 <ul>

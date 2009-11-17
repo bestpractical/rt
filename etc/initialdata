@@ -705,7 +705,7 @@ Hour:         { $subscription_obj->sub_value('Hour') }
     'inactive_status'              => [ 'resolved', 'rejected', 'deleted' ],
     'lexicon_languages'            => ['*'],
     'link_transactions_run1_scrip' => 0,
-    'logo_url'                               => '{{web_images_url}}bplogo.gif',
+    'logo_url'                               => '/static/images/bplogo.gif',
     'loops_to_rt_owner'                      => 1,
     'mail_command'                           => 'sendmailpipe',
     'mail_params'                            => [],
@@ -766,7 +766,6 @@ Hour:         { $subscription_obj->sub_value('Hour') }
     'web_external_gecos'               => undef,
     'web_fallback_to_internal_auth'    => undef,
     'web_flush_db_cache_every_request' => '1',
-    'web_images_url'                   => '{{web_path}}/NoAuth/images/',
     'web_no_auth_regex' =>
       '(?x-ism:^ (?:\/+NoAuth\/ | \/+REST\/\d+\.\d+\/NoAuth\/) )',
     'web_path'            => '',

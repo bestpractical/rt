@@ -107,8 +107,8 @@ END
 }
 
 use RT;
-RT::load_config();
-RT::init();
+RT->load_config();
+RT->init();
 
 my $dbh = Jifty->handle->dbh;
 my $db_type = $RT::DatabaseType;

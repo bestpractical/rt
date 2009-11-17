@@ -76,8 +76,8 @@ BEGIN {
 use RT;
 use XML::Simple;
 
-RT::load_config();
-RT::Init();
+RT->load_config();
+RT->init();
 
 my $LocalOnly = @ARGV ? shift(@ARGV) : 1;
 

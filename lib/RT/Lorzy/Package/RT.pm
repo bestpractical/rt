@@ -49,7 +49,7 @@ __PACKAGE__->lcore_defun( 'Condition.OnPriorityChange',
 __PACKAGE__->lcore_defun( 'Condition.OnResolve',
     native => sub {
         my $args = shift;
-        return ($args->{transaction}->type ||'') eq 'status'
+        return ($args->{transaction}->type ||'') eq 'set'
             && ( $args->{transaction}->field || '' ) eq 'status'
             && ($args->{transaction}->new_value()||'') eq 'resolved';
     },
@@ -60,8 +60,7 @@ __PACKAGE__->lcore_defun( 'Condition.OnClose',
         my $args = shift;
         my $txn = $args->{transaction};
         return 0
-            unless $txn->type eq "status"
-                || ( $txn->type eq "set" && $txn->field eq "status" );
+            unless $txn->type eq "set" && $txn->field eq "status";
 
         my $queue = $args->{ticket}->queue;
         return 0 unless $queue->status_schema->is_active( $txn->old_value );
@@ -76,8 +75,7 @@ __PACKAGE__->lcore_defun( 'Condition.OnReopen',
         my $args = shift;
         my $txn = $args->{transaction};
         return 0
-            unless $txn->type eq "status"
-                || ( $txn->type eq "set" && $txn->field eq "status" );
+            unless $txn->type eq "set" && $txn->field eq "status";
 
         my $queue = $args->{ticket}->queue;
         return 0 unless $queue->status_schema->is_inactive( $txn->old_value );

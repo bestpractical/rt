@@ -58,8 +58,8 @@ use RT::Interface::CLI qw( clean_env );
 use RT::Interface::Email;
 
 clean_env();
-RT::load_config();
-RT::init();
+RT->load_config();
+RT->init();
 
 sub usage {
     my ($error) = @_;

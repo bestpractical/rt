@@ -487,10 +487,7 @@ default: C<< { } >>
 This determines the default stylesheet the RT web interface will use.
 RT ships with several themes by default:
 
-  web2            The totally new, default layout for RT 3.8
-  3.5-default     RT 3.5 and 3.6 original layout
-  3.4-compat      A 3.4 compatibility stylesheet to make RT look
-                  (mostly) like 3.4
+  web2            The default layout
 
 This value actually specifies a directory in F<share/html/NoAuth/css/>
 from which RT will try to load the file main.css (which should
@@ -521,19 +518,11 @@ In most cases, you should leave C<web_path> set to '' (an empty value).
 
 default: C<"">
 
-=item C<web_images_url>
-
-C<web_images_url> points to the base URL where RT can find its images.
-Define the directory name to be used for images in rt web
-documents.
-
-default: C<"{{web_path}}/NoAuth/images/">
-
 =item C<logo_url>
 
 C<logo_url> points to the URL of the RT logo displayed in the web UI
 
-default: C<"{{web_images_url}}bplogo.gif">
+default: C<"/static/images/bplogo.gif">
 
 =item C<web_no_auth_regex>
 

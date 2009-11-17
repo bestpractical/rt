@@ -7,7 +7,7 @@ $RT::Test::SKIP_REQUEST_WORK_AROUND = 1;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
-use constant ImageFile => RT->html_path .'/NoAuth/images/bplogo.gif';
+use constant ImageFile => RT->static_path .'/images/bplogo.gif';
 use constant ImageFileContent => RT::Test->file_content(ImageFile);
 
 ok $m->login, 'logged in';

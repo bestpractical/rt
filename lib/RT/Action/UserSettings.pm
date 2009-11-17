@@ -56,7 +56,7 @@ use Jifty::Action schema {
       render as 'Select',
       available are [
         { display => _('use system default'), value => 'use_system_default' },
-        map {{ display => _($_), value => $_ }} qw/3.5-default 3.4-compat web2/
+        map {{ display => _($_), value => $_ }} qw/web2/
       ],
       default is defer {
         RT::Action::UserSettings->default_value('web_default_stylesheet');

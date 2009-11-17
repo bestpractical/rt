@@ -110,7 +110,7 @@ sub setup {
     $self->SUPER::setup($args);
 
     $self->_setup_config(@$args);
-    RT::init();
+    RT->init();
 }
 
 sub _setup_config {

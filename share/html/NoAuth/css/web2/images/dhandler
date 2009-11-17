@@ -1,8 +1,0 @@
-<%INIT>
-use File::Basename;
-my $arg = $m->dhandler_arg;
-my $file = dirname($m->current_comp->source_file) . '/source/'. $arg;
-RT::Interface::Web->send_static_file( file => $file );
-
-$m->abort;
-</%INIT>

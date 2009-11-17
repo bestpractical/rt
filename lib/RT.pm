@@ -196,7 +196,7 @@ sub system_user {
 
 }
 
-=head2 Nobody
+=head2 nobody
 
 Returns object of Nobody. It's object of L<RT::CurrentUser> class
 that represents a user who can own ticket and nothing else.
@@ -213,7 +213,7 @@ sub nobody {
     return $nobody
 }
 
-=head2 Plugins
+=head2 plugins
 
 Returns a listref of all Plugins currently configured for this RT instance.
 You can define plugins by adding them to the @Plugins list in your RT_SiteConfig
@@ -359,6 +359,14 @@ The root of F</local/html> (user Mason templates)
 
 sub local_html_path { Jifty::Util->app_root . '/local/html' }
 
+=head2 static_path
+
+The root of F</share/html> (Mason templates)
+
+=cut
+
+sub static_path { Jifty::Util->app_root . '/' . Jifty->config->framework('Web')->{StaticRoot} }
+
 =head2 etc_path
 
 The root of F</etc> (configuration)
@@ -411,7 +419,7 @@ sub start {
     #XXX TODO RT pages don't play well with Halo right now
     no warnings 'redefine';
     *Jifty::Plugin::Halo::is_proscribed = sub { 1 };
-    RT::init();
+    RT->init();
 
     Jifty->web->add_javascript(
         qw( joose.js titlebox-state.js util.js ahah.js list.js class.js

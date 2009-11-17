@@ -2108,7 +2108,6 @@ sub set_status {
         value            => $args{status},
         time_taken       => 0,
         check_acl        => 0,
-        transaction_type => 'status'
     );
 
     return ( $val, $msg );
@@ -2142,7 +2141,6 @@ sub set_told {
             column           => 'told',
             value            => $datetold->iso,
             time_taken       => $timetaken,
-            transaction_type => 'told'
         )
     );
 }

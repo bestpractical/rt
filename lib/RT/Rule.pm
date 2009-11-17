@@ -85,7 +85,7 @@ sub describe {
 sub on_status_change {
     my ($self, $value) = @_;
 
-    $self->transaction->type eq 'status' and
+    $self->transaction->type eq 'set' and
     $self->transaction->field eq 'status' and
     $self->transaction->new_value eq $value
 }

@@ -68,8 +68,8 @@ END
 
 use RT;
 BEGIN { RT->init_jifty }
-RT::load_config();
-RT::init();
+RT->load_config();
+RT->init();
 
 require RT::Model::Attribute;
 my $attr = RT::Model::Attribute->new( current_user => RT->system_user );
