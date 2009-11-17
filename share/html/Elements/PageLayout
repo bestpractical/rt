@@ -167,7 +167,6 @@ if ( defined $current_toptab ) {
 
 my ($menu_depth, $almost_last, $page_tabs);
 
-if (RT->config->get( 'web_default_stylesheet', Jifty->web->current_user ) ne '3.4-compat') {
     ($menu_depth, $almost_last) = @{ $m->comp('.menu_recurse', data => $toptabs, current => $current_toptab ) };
 
     if (defined $almost_last->{subtabs} and %{$almost_last->{subtabs}}) {
@@ -179,7 +178,6 @@ if (RT->config->get( 'web_default_stylesheet', Jifty->web->current_user ) ne '3.
         delete $almost_last->{subtabs};
         delete $almost_last->{current_subtab};
     }
-}
 </%INIT>
 
 %# There's probably a better way to do this that involves three times as
