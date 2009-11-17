@@ -2209,7 +2209,6 @@ sub _Links {
     my $cache_key = "$field$type";
     return $self->{ $cache_key } if $self->{ $cache_key };
 
-    $RT::Logger->error( "links field: $field, type: $type" );
     my $links = $self->{ $cache_key }
               = RT::Links->new( $self->CurrentUser );
     unless ( $self->CurrentUserHasRight('ShowTicket') ) {
