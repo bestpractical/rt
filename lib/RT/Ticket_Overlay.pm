@@ -2501,6 +2501,11 @@ sub MergeInto {
         return ( 0, $self->loc("Permission Denied") );
     }
 
+    delete $MERGE_CACHE{'effective'}{ $self->id };
+    delete @{ $MERGE_CACHE{'merged'} }{
+        $ticket_id, $MergeInto->id, $self->id
+    };
+
     $RT::Handle->BeginTransaction();
 
     # We use EffectiveId here even though it duplicates information from
