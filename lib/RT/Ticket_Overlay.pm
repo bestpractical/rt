@@ -148,47 +148,41 @@ Otherwise, returns the ticket id.
 sub Load {
     my $self = shift;
     my $id   = shift;
+    $id = '' unless defined $id;
 
-    #TODO modify this routine to look at EffectiveId and do the recursive load
-    # thing. be careful to cache all the interim tickets we try so we don't loop forever.
+    # TODO: modify this routine to look at EffectiveId and
+    # do the recursive load thing. be careful to cache all
+    # the interim tickets we try so we don't loop forever.
 
     # FIXME: there is no TicketBaseURI option in config
     my $base_uri = RT->Config->Get('TicketBaseURI') || '';
     #If it's a local URI, turn it into a ticket id
-    if ( $base_uri && defined $id && $id =~ /^$base_uri(\d+)$/ ) {
+    if ( $base_uri && $id =~ /^$base_uri(\d+)$/ ) {
         $id = $1;
     }
 
-    #If it's a remote URI, we're going to punt for now
-    elsif ( $id =~ '://' ) {
-        return (undef);
-    }
-
-    #If we have an integer URI, load the ticket
-    if ( defined $id && $id =~ /^\d+$/ ) {
-        my ($ticketid,$msg) = $self->LoadById($id);
-
-        unless ($self->Id) {
-            $RT::Logger->debug("$self tried to load a bogus ticket: $id");
-            return (undef);
-        }
-    }
-
-    #It's not a URI. It's not a numerical ticket ID. Punt!
-    else {
+    unless ( $id =~ /^\d+$/ ) {
         $RT::Logger->debug("Tried to load a bogus ticket id: '$id'");
         return (undef);
     }
 
+    my ($ticketid, $msg) = $self->LoadById( $id );
+    unless ( $self->Id ) {
+        $RT::Logger->debug("$self tried to load a bogus ticket: $id");
+        return (undef);
+    }
+
     #If we're merged, resolve the merge.
-    if ( ( $self->EffectiveId ) and ( $self->EffectiveId != $self->Id ) ) {
-        $RT::Logger->debug ("We found a merged ticket.". $self->id ."/".$self->EffectiveId);
-        return ( $self->Load( $self->EffectiveId ) );
+    if ( ($self->EffectiveId || 0) != $self->Id ) {
+        $RT::Logger->debug(
+            "We found a merged ticket. "
+            . $self->id ."/". $self->EffectiveId
+        );
+        return $self->Load( $self->EffectiveId );
     }
 
     #Ok. we're loaded. lets get outa here.
-    return ( $self->Id );
-
+    return $self->Id;
 }
 
 # }}}
@@ -2472,8 +2466,6 @@ sub _AddLink {
 =head2 MergeInto
 
 MergeInto take the id of the ticket to merge this ticket into.
-
-
 
 =cut
 
