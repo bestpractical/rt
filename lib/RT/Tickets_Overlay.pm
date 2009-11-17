@@ -3230,7 +3230,8 @@ sub _ProcessRestrictions {
 
 =head2 _BuildItemMap
 
-    # Build up a map of first/last/next/prev items, so that we can display search nav quickly
+Build up a map of first/last/next/prev items, so that we can
+display search nav quickly.
 
 =cut
 
@@ -3257,12 +3258,22 @@ sub _BuildItemMap {
 
 =head2 ItemMap
 
-Returns an a map of all items found by this search. The map is of the form
+Returns an a map of all items found by this search. The map is a hash
+of the form:
 
-$ItemMap->{'first'} = first ticketid found
-$ItemMap->{'last'} = last ticketid found
-$ItemMap->{$id}->{prev} = the ticket id found before $id
-$ItemMap->{$id}->{next} = the ticket id found after $id
+    {
+        first => <first ticket id found>,
+        last => <last ticket id found or undef>,
+
+        <ticket id> => {
+            prev => <the ticket id found before>,
+            next => <the ticket id found after>,
+        },
+        <ticket id> => {
+            prev => ...,
+            next => ...,
+        },
+    }
 
 =cut
 
@@ -3280,7 +3291,9 @@ sub ItemMap {
 
 =head2 PrepForSerialization
 
-You don't want to serialize a big tickets object, as the {items} hash will be instantly invalid _and_ eat lots of space
+You don't want to serialize a big tickets object, as
+the {items} hash will be instantly invalid _and_ eat
+lots of space
 
 =cut
 
