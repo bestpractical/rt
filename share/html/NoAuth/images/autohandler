@@ -1,8 +1,0 @@
-<%INIT>
-
-# This autohandler will spit out RT's images if the user hasn't 
-# properly configured their webserver to stop RT from passing 
-# images through the mason handler.
-my $file = $m->base_comp->source_file;
-RT::Interface::Web->send_static_file( file => $file );
-</%INIT>

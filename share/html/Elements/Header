@@ -55,7 +55,7 @@
     <meta http-equiv="refresh" content="<% $refresh %>" />
 % }
 
-<link rel="shortcut icon" href="<%RT->config->get('web_images_url')%>/favicon.png" type="image/png" />
+<link rel="shortcut icon" href="/static/images/favicon.png" type="image/png" />
 <link rel="stylesheet" href="<%RT->config->get('web_path')%>/NoAuth/css/print.css" type="text/css" media="print" />
 
 % for (keys %{$link_rel || {}}) {

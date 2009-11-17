@@ -122,7 +122,7 @@
   padding-top: 0.5em;
   width: 20px;
 
-  background: url(../../NoAuth/images/css/rollup-arrow.gif) no-repeat center center;
+  background: url(/static/images/css/rollup-arrow.gif) no-repeat center center;
   margin: 0;
   text-indent: -9999px;
 
@@ -140,5 +140,5 @@
 }
 
 .titlebox.rolled-up .titlebox-title .widget a {
-    background-image: url(../../NoAuth/images/css/rolldown-arrow.gif);
+    background-image: url(/static/images/css/rolldown-arrow.gif);
 }

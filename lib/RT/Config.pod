@@ -518,19 +518,11 @@ In most cases, you should leave C<web_path> set to '' (an empty value).
 
 default: C<"">
 
-=item C<web_images_url>
-
-C<web_images_url> points to the base URL where RT can find its images.
-Define the directory name to be used for images in rt web
-documents.
-
-default: C<"{{web_path}}/NoAuth/images/">
-
 =item C<logo_url>
 
 C<logo_url> points to the URL of the RT logo displayed in the web UI
 
-default: C<"{{web_images_url}}bplogo.gif">
+default: C<"/static/images/bplogo.gif">
 
 =item C<web_no_auth_regex>
 

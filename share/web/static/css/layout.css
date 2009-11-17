@@ -114,7 +114,7 @@ display: none ;
 
 div#footer #bpscredits {
  text-align: right;
- background: url(../../NoAuth/images/bplogo.gif) no-repeat top right;
+ background: url(/static/images/bplogo.gif) no-repeat top right;
  padding-top: 4em;
 } 
 

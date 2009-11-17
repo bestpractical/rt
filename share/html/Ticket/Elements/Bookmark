@@ -88,9 +88,9 @@ $toggle => 0
 % my $url = RT->config->get('web_path') ."/Helpers/Toggle/TicketBookmark?id=". $id;
 <a align="right" href="<% $url %>" onclick="ahah('<% $url |n %>', 'toggle-<% $id |n %>'); return false;" >
 % if ( $bookmarked ) {
-<img src="<% RT->config->get('web_path') %>/NoAuth/images/star.gif" alt="<% _('Remove Bookmark') %>" style="border-style: none" />
+<img src="/static/images/star.gif" alt="<% _('Remove Bookmark') %>" style="border-style: none" />
 % } else {
-<img src="<% RT->config->get('web_path') %>/NoAuth/images/empty_star.gif" alt="<% _('Add Bookmark') %>" style="border-style: none" />
+<img src="/static/images/empty_star.gif" alt="<% _('Add Bookmark') %>" style="border-style: none" />
 % }
 </a>
 </span>
