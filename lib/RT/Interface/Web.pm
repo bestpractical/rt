@@ -1010,9 +1010,9 @@ sub process_ticket_basics {
     {
         my ($ChownType);
         if ( $args_ref->{'force_owner_change'} ) {
-            $ChownType = "Force";
+            $ChownType = "force";
         } else {
-            $ChownType = "Give";
+            $ChownType = "give";
         }
 
         my ( $val, $msg ) = $ticket_obj->set_owner( $args_ref->{'owner'}, $ChownType );
