@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test strict => 1, tests => 8, l10n => 1;
+use RT::Test strict => 0, tests => 10, l10n => 1;
 
 use Encode;
 
