@@ -51,6 +51,7 @@ requires(
 test_requires (
     'Test::Expect'        => 0,
     'Test::MockTime'      => 0,
+    'Test::Script::Run'   => '0.03',
     'String::ShellQuote'  => 0,
 );
 

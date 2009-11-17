@@ -4,7 +4,8 @@ use strict;
 use warnings;
 use RT::Test strict => 1;
 
-use Test::More tests => 17;
+use Test::More tests => 20;
+use Test::Script::Run 'run_ok';
 use RT;
 
 my ($id, $msg);
@@ -93,8 +94,13 @@ sub escalate_ticket_ok {
     my $id = $ticket->id;
 
     my $crontool = RT->bin_path . '/rt-crontool';
-    print "$crontool --search RT::Search::FromSQL --search-arg \"id = @{[$id]}\" --action RT::ScripAction::LinearEscalate --action-arg \"RecordTransaction:$RecordTransaction; UpdateLastUpdated:$UpdateLastUpdated\"\n";
-    print STDERR `$crontool --search RT::Search::FromSQL --search-arg "id = @{[$id]}" --action RT::ScripAction::LinearEscalate --action-arg "RecordTransaction:$RecordTransaction; UpdateLastUpdated:$UpdateLastUpdated"`;
+
+    run_ok($crontool, [
+        '--search'     => 'RT::Search::FromSQL',
+        '--search-arg' => "id = $id",
+        '--action'     => 'RT::ScripAction::LinearEscalate',
+        '--action-arg' => "RecordTransaction:$RecordTransaction; UpdateLastUpdated:$UpdateLastUpdated",
+    ], 'ran crontool successfully');
 
     Jifty::DBI::Record::Cachable->flush_cache;
     $ticket->load($id);     # reload, because otherwise we get the cached value
