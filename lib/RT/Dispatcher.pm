@@ -183,6 +183,14 @@ on qr{^/Ticket/Graphs/(\d+)} => run {
     show('/Ticket/Graphs/Render');
 };
 
+
+my $PREFS_NAV = Jifty::Web::Menu->new( { label => _('Preferences'), url => '/Prefs/Other.html' } );
+$PREFS_NAV->child( _('Settings'),       url => '/Prefs/Other.html', );
+$PREFS_NAV->child( _('About me'),       url => '/User/Prefs.html', );
+$PREFS_NAV->child( _('Search options'), url => '/Prefs/SearchOptions.html', );
+$PREFS_NAV->child( _('RT at a glance'), url => '/Prefs/MyRT.html', );
+
+
 before qr{.*} => run {
 	next_rule unless (Jifty->web->current_user->user_object);
     main_nav->child( _('Homepage'),      url => '/' );
@@ -198,8 +206,7 @@ before qr{.*} => run {
 
     $tools->child( _('My Day'), url => '/Tools/MyDay.html' );
 
-    if (   Jifty->web->current_user->user_object
-        && Jifty->web->current_user->has_right( right => 'ShowConfigTab', object => RT->system ) )
+    if ( Jifty->web->current_user->has_right( right => 'ShowConfigTab', object => RT->system ) )
     {
         my $admin = main_nav->child( Config => label => _('Configuration'), url => '/Admin/' );
         $admin->child( _('Users'),         url => '/Admin/Users/', );
@@ -265,15 +272,11 @@ before qr{.*} => run {
         )
     {
 
-        my $prefs = Jifty::Web::Menu->new( { label => _('Preferences'), url => '/Prefs/Other.html' } );
+     if ( Jifty->web->current_user->has_right( right => 'ModifySelf', object => RT->system ) ) {
 
-        $prefs->child( _('Settings'),       url => '/Prefs/Other.html', );
-        $prefs->child( _('About me'),       url => '/User/Prefs.html', );
-        $prefs->child( _('Search options'), url => '/Prefs/SearchOptions.html', );
-        $prefs->child( _('RT at a glance'), url => '/Prefs/MyRT.html', );
-
-        main_nav->child( 'Preferences' => menu => $prefs );
+        main_nav->child( 'Preferences' => menu => $PREFS_NAV );
     }
+     }
 
     if ( Jifty->web->current_user->has_right( right => 'ShowApprovalsTab', object => RT->system ) )
     {
@@ -671,7 +674,7 @@ before 'User/Group' => run {
 
     }
     page_nav( _('Select') => url => "/User/Groups/index.html" );
-    page_nav( _('New') => url => "/User/Groups/Modify.html?create=1", separator => 1 );
+    page_nav( _('Create') => url => "/User/Groups/Modify.html?create=1", separator => 1 );
 
 };
 
