@@ -84,6 +84,7 @@
 </div>
 <div align="right" class="search-result-actions">
 <& Elements/ResultViews,
+    Collection => $session{'tickets'},
     QueryString => $QueryString,
     Query => $Query,
     Format => $Format,
@@ -118,6 +119,7 @@ if ( !defined($Rows) ) {
         $Rows = 50;
     }
 }
+$Page = 1 unless $Page && $Page > 0;
 
 my ($title, $ticketcount);
 $session{'i'}++;
@@ -134,6 +136,8 @@ if ($OrderBy =~ /\|/) {
 } else {
     $session{'tickets'}->OrderBy(FIELD => $OrderBy, ORDER => $Order); 
 }
+$session{'tickets'}->RowsPerPage( $Rows ) if $Rows;
+$session{'tickets'}->GotoPage( $Page - 1 );
 
 $session{'CurrentSearchHash'} = {
     Format      => $Format,
@@ -142,7 +146,7 @@ $session{'CurrentSearchHash'} = {
     Order       => $Order,
     OrderBy     => $OrderBy,
     RowsPerPage => $Rows
-    };
+};
 
 
 if ( $session{'tickets'}->Query()) {
