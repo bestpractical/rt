@@ -676,7 +676,6 @@ before 'User/Group' => run {
 };
 
 before 'Prefs' => run {
-    my $tabs;
     my @searches = RT::System->new->saved_searches();
 
     page_nav->child( 'Quick search' => label => _('Quick search'), url => '/Prefs/Quicksearch.html' );
@@ -721,7 +720,6 @@ before qr{^/Search/Build.html} => run {
     #  Push the updates into the session so we don't lose 'em
     Jifty->web->session->set( 'CurrentSearchHash', { %$saved_search, %$current_search, } );
 
-    #  Build a query_string for the tabs
     if ( Jifty->web->request->argument('new_query') ) {
         $querystring = 'new_query=1';
     } elsif ( $current_search->{'query'} ) {
