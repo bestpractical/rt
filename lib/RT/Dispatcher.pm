@@ -264,12 +264,15 @@ before qr{.*} => run {
         )
         )
     {
-        my $prefs = main_nav->child( _('Preferences'), url => '/Prefs/Other.html' );
+		
+		my $prefs = Jifty::Web::Menu->new( { label => _('Preferences'), url => '/Prefs/Other.html' });
 
         $prefs->child( _('Settings'),       url => '/Prefs/Other.html', );
         $prefs->child( _('About me'),       url => '/User/Prefs.html', );
         $prefs->child( _('Search options'), url => '/Prefs/SearchOptions.html', );
         $prefs->child( _('RT at a glance'), url => '/Prefs/MyRT.html', );
+
+        main_nav->child( 'Preferences' => menu => $prefs);
     }
 
     if (   Jifty->web->current_user->user_object
