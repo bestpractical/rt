@@ -45,3 +45,37 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+
+<select name="<%$name%>">
+% if ($show_null_option) {
+<option value="">-</option>
+% }
+% foreach my $lang (@lang) {
+<option value="<%$lang%>"<%(defined($default) && ($lang eq $default)) && qq[ selected="selected"] |n%>><% $lang_to_desc{$lang} %>
+%   if (($verbose) and (my $description = I18N::LangTags::List::native_name($lang)) ){
+(<%$description%>)
+%   }
+</option>
+% }
+</select>
+<%ARGS>
+$show_null_option => 1
+$show_all_queues => 1
+$name => undef
+$verbose => undef
+$default => 0
+$lite => 0
+</%ARGS>
+
+<%ONCE>
+use I18N::LangTags::List;
+my (@lang, %lang_to_desc);
+foreach my $lang (map { s/_/-/g; $_ } Jifty::I18N->available_languages) {
+    next if $lang =~ /i-default|en-us/;
+    my $desc = I18N::LangTags::List::name($lang);
+    next unless ($desc);
+    $desc =~ s/(.*) (.*)/$2 ($1)/ unless ( $desc =~ /.* \(.*\)/ );
+    $lang_to_desc{$lang} = $desc;
+}
+@lang = sort { $lang_to_desc{$a} cmp $lang_to_desc{$b} } keys %lang_to_desc;
+</%ONCE>

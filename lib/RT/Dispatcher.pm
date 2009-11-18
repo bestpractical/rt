@@ -56,9 +56,9 @@ use RT;
 use RT::Interface::Web;
 use RT::Interface::Web::Handler;
 
-sub main_nav { return Jifty->web->navigation() }
-sub page_nav { return Jifty->web->page_navigation(); }
-sub query_string { my %args = @_; my $u = URI->new(); $u->query_form(%args); return $u->query}
+sub main_nav     { return Jifty->web->navigation() }
+sub page_nav     { return Jifty->web->page_navigation(); }
+sub query_string { my %args = @_; my $u = URI->new(); $u->query_form(%args); return $u->query }
 
 before qr/.*/ => run {
     if ( int RT->config->get('auto_logoff') ) {
@@ -100,8 +100,7 @@ before qr'^/(?!login)' => run {
         || Jifty->web->request->path =~ m{^/Elements/Footer$}
         || Jifty->web->request->path =~ m{^/Elements/Logo$}
         || Jifty->web->request->path =~ m{^/__jifty/test_warnings$}
-        || Jifty->web->request->path =~ m{^/__jifty/(css|js)} 
-		);
+        || Jifty->web->request->path =~ m{^/__jifty/(css|js)} );
 };
 
 before qr/(.*)/ => run {
@@ -264,12 +263,15 @@ before qr{.*} => run {
         )
         )
     {
-        my $prefs = main_nav->child( _('Preferences'), url => '/Prefs/Other.html' );
+
+        my $prefs = Jifty::Web::Menu->new( { label => _('Preferences'), url => '/Prefs/Other.html' } );
 
         $prefs->child( _('Settings'),       url => '/Prefs/Other.html', );
         $prefs->child( _('About me'),       url => '/User/Prefs.html', );
         $prefs->child( _('Search options'), url => '/Prefs/SearchOptions.html', );
         $prefs->child( _('RT at a glance'), url => '/Prefs/MyRT.html', );
+
+        main_nav->child( 'Preferences' => menu => $prefs );
     }
 
     if (   Jifty->web->current_user->user_object
@@ -280,26 +282,26 @@ before qr{.*} => run {
 };
 
 before qr'Dashboards/?' => run {
-	require RT::Dashboard; # not a record class, so not autoloaded :/
-	page_nav->child( _('Select'), url => "/Dashboards/index.html" );
+    require RT::Dashboard;    # not a record class, so not autoloaded :/
+    page_nav->child( _('Select'), url => "/Dashboards/index.html" );
     if ( RT::Dashboard->new->_privacy_objects( create => 1 ) ) {
         page_nav->child( _('Create') => url => "/Dashboards/Modify.html?create=1" );
     }
 };
 
 before 'Dashboards/Modify.html' => run {
-    my $id = Jifty->web->request->argument('id') || '';
-	my $results = [];
-    my $Dashboard = RT::Dashboard->new(current_user => Jifty->web->current_user);
-	set Dashboard => $Dashboard;
+    my $id        = Jifty->web->request->argument('id') || '';
+    my $results   = [];
+    my $Dashboard = RT::Dashboard->new( current_user => Jifty->web->current_user );
+    set Dashboard => $Dashboard;
     my @privacies = $Dashboard->_privacy_objects( ( !$id ? 'create' : 'modify' ) => 1 );
-	set privacies => \@privacies;
+    set privacies => \@privacies;
 
-	push @$results,  _("Permission denied") if @privacies == 0;
+    push @$results, _("Permission denied") if @privacies == 0;
 
     if ( $id =~ /^\d+$/ ) {
         my ( $ok, $msg ) = $Dashboard->load_by_id($id);
-		push @$results, $msg unless ($ok);
+        push @$results, $msg unless ($ok);
         set title => _( "Modify the dashboard %1", $Dashboard->name );
     } else {
         set title => _("Create a new dashboard");
@@ -320,11 +322,14 @@ before 'Dashboards/Modify.html' => run {
 
         } elsif ( Jifty->web->request->argument('delete') ) {
             my ( $ok, $msg ) = $Dashboard->delete();
-			push @$results,	_( "Couldn't delete dashboard %1: %2", $id, $msg ) 
-			unless ($ok);
+            push @$results, _( "Couldn't delete dashboard %1: %2", $id, $msg )
+                unless ($ok);
 
             # put the user back into a useful place with a message
-            RT::Interface::Web::redirect( url => Jifty->web->url . "Dashboards/index.html?deleted=$id", messages => $results);
+            RT::Interface::Web::redirect(
+                url      => Jifty->web->url . "Dashboards/index.html?deleted=$id",
+                messages => $results
+            );
 
         }
 
@@ -334,7 +339,7 @@ before 'Dashboards/Modify.html' => run {
             privacy => Jifty->web->request->argument('privacy'),
         );
 
-		push @$results, _( "Dashboard could not be created: %1", $msg  ) if ( !$val );
+        push @$results, _( "Dashboard could not be created: %1", $msg ) if ( !$val );
 
         push @$results, $msg;
         RT::Interface::Web::redirect(
@@ -344,26 +349,26 @@ before 'Dashboards/Modify.html' => run {
 
     }
 
-	set Dashboard => $Dashboard;
-	set results => $results;
+    set Dashboard => $Dashboard;
+    set results   => $results;
 };
 
-
 before qr'Dashboards/(\d*)?' => run {
-    if ( my $id = ($1 || Jifty->web->request->argument('id') )) {
+    if ( my $id = ( $1 || Jifty->web->request->argument('id') ) ) {
         my $obj = RT::Dashboard->new();
         $obj->load_by_id($id);
         if ( $obj and $obj->id ) {
-            my $tabs = page_nav->child( "this" => label => $obj->name, url    => "/Dashboards/Modify.html?id=" . $obj->id);
+            my $tabs
+                = page_nav->child( "this" => label => $obj->name, url => "/Dashboards/Modify.html?id=" . $obj->id );
             $tabs->child( _('Basics'),       url => "/Dashboards/Modify.html?id=" . $obj->id );
             $tabs->child( _('Queries'),      url => "/Dashboards/Queries.html?id=" . $obj->id );
-            $tabs->child( _('Subscription'), url => "/Dashboards/Subscription.html?dashboard_id=" . $obj->id ) if $obj->current_user_can_subscribe;
+            $tabs->child( _('Subscription'), url => "/Dashboards/Subscription.html?dashboard_id=" . $obj->id )
+                if $obj->current_user_can_subscribe;
             $tabs->child( _('Show'), url => "/Dashboards/" . $obj->id . "/" . $obj->name )
 
         }
     }
 };
-
 
 before '/SelfService' => run {
 
@@ -380,9 +385,9 @@ before '/SelfService' => run {
         last if ( $queue_count > 1 );
     }
 
-	my $TOP = main_nav();
+    my $TOP = main_nav();
 
-	$TOP->child( _('Open tickets'),   url => '/SelfService/', );
+    $TOP->child( _('Open tickets'),   url => '/SelfService/', );
     $TOP->child( _('Closed tickets'), url => '/SelfService/Closed.html', );
     if ( $queue_count > 1 ) {
         $TOP->child( _('New ticket'), url => '/SelfService/CreateTicketInQueue.html' );
@@ -390,19 +395,19 @@ before '/SelfService' => run {
         $TOP->child( _('New ticket'), url => '/SelfService/Create.html?queue=' . $queue_id );
     }
 
-    if (Jifty->web->current_user->has_right( right  => 'ModifySelf', object => RT->system)) {
+    if ( Jifty->web->current_user->has_right( right => 'ModifySelf', object => RT->system ) ) {
         $TOP->child( _('Preferences'), url => '/SelfService/Prefs.html' );
     }
 
-	# XXX TODO RENDER GOTO TICKET WIDGET
-	#main_nav->child( B =>  html => $m->scomp('GotoTicket'))
+    # XXX TODO RENDER GOTO TICKET WIDGET
+    #main_nav->child( B =>  html => $m->scomp('GotoTicket'))
 };
 
 before 'Admin/Queues' => run {
-        if ( Jifty->web->current_user->has_right( object => RT->system, right => 'AdminQueue' ) ) {
-            page_nav->child( _('Select'), url => "/Admin/Queues/" );
-            page_nav->child( _('Create'), url       => "/Admin/Queues/Modify.html?create=1");
-        }
+    if ( Jifty->web->current_user->has_right( object => RT->system, right => 'AdminQueue' ) ) {
+        page_nav->child( _('Select'), url => "/Admin/Queues/" );
+        page_nav->child( _('Create'), url => "/Admin/Queues/Modify.html?create=1" );
+    }
     if ( my $id = Jifty->web->request->argument('id') ) {
         my $queue_obj = RT::Model::Queue->new();
         $queue_obj->load($id);
@@ -412,7 +417,8 @@ before 'Admin/Queues' => run {
         $queue->child( _('Watchers'),  url => "/Admin/Queues/People.html?id=" . $id );
         $queue->child( _('Templates'), url => "/Admin/Queues/Templates.html?id=" . $id );
 
-        $queue->child( _('Ticket Custom Fields'), url => '/Admin/Queues/CustomFields.html?sub_type=RT::Model::Ticket&id=' . $id );
+        $queue->child( _('Ticket Custom Fields'),
+            url => '/Admin/Queues/CustomFields.html?sub_type=RT::Model::Ticket&id=' . $id );
 
         $queue->child( _('Transaction Custom Fields'),
             url => '/Admin/Queues/CustomFields.html?sub_type=RT::Model::Ticket-RT::Model::Transaction&id=' . $id );
@@ -423,20 +429,20 @@ before 'Admin/Queues' => run {
 };
 
 before '/Admin/Users' => run {
-if (Jifty->web->current_user->has_right( object => RT->system, right => 'AdminUsers')) {
-page_nav->child(_('Select'), url => "/Admin/Users/");
-page_nav->child(_('Create'), url => "/Admin/Users/Modify.html?create=1", separator => 1);
-}
+    if ( Jifty->web->current_user->has_right( object => RT->system, right => 'AdminUsers' ) ) {
+        page_nav->child( _('Select'), url => "/Admin/Users/" );
+        page_nav->child( _('Create'), url => "/Admin/Users/Modify.html?create=1", separator => 1 );
+    }
     if ( my $id = Jifty->web->request->argument('id') ) {
         my $obj = RT::Model::User->new();
         $obj->load($id);
-		my $tabs = page_nav->child('current' => label => $obj->name, url => "/Admin/Users/Modify.html?id=".$id,);
-	       $tabs->child(_('Basics'), url => "/Admin/Users/Modify.html?id=".$id);
-	       $tabs->child(_('Memberships'), url => "/Admin/Users/Memberships.html?id=".$id);
-	       $tabs->child(_('History'), url => "/Admin/Users/History.html?id=".$id);
-	       $tabs->child(_('RT at a glance'), url => "/Admin/Users/MyRT.html?id=".$id);
-    if ( RT->config->get('gnupg')->{'enable'} ) {
-			$tabs->child(_('GnuPG'), url  => "/Admin/Users/GnuPG.html?id=".$id);
+        my $tabs = page_nav->child( 'current' => label => $obj->name, url => "/Admin/Users/Modify.html?id=" . $id, );
+        $tabs->child( _('Basics'),         url => "/Admin/Users/Modify.html?id=" . $id );
+        $tabs->child( _('Memberships'),    url => "/Admin/Users/Memberships.html?id=" . $id );
+        $tabs->child( _('History'),        url => "/Admin/Users/History.html?id=" . $id );
+        $tabs->child( _('RT at a glance'), url => "/Admin/Users/MyRT.html?id=" . $id );
+        if ( RT->config->get('gnupg')->{'enable'} ) {
+            $tabs->child( _('GnuPG'), url => "/Admin/Users/GnuPG.html?id=" . $id );
         }
     }
 
@@ -444,28 +450,24 @@ page_nav->child(_('Create'), url => "/Admin/Users/Modify.html?create=1", separat
 
 before 'Admin/Groups' => run {
 
-page_nav->child( _('Select') => url  => "/Admin/Groups/");
-page_nav->child( _('Create') => url      => "/Admin/Groups/Modify.html?create=1", separator => 1);
+    page_nav->child( _('Select') => url => "/Admin/Groups/" );
+    page_nav->child( _('Create') => url => "/Admin/Groups/Modify.html?create=1", separator => 1 );
     if ( my $id = Jifty->web->request->argument('id') ) {
         my $obj = RT::Model::User->new();
         $obj->load($id);
         my $tabs = page_nav->child( $obj->name, url => "/Admin/CustomFields/Modify.html?id=" . $id );
-        $tabs->child( _('Basics') => url  => "/Admin/Groups/Modify.html?id=" . $obj->id );
-        $tabs->child( _('Members') => url  => "/Admin/Groups/Members.html?id=" . $obj->id );
-        $tabs->child( _('Group rights') => url  => "/Admin/Groups/GroupRights.html?id=" . $obj->id );
-        $tabs->child( _('User rights') => url  => "/Admin/Groups/UserRights.html?id=" . $obj->id );
-        $tabs->child( _('History') => url  => "/Admin/Groups/History.html?id=" . $obj->id );
+        $tabs->child( _('Basics')       => url => "/Admin/Groups/Modify.html?id=" . $obj->id );
+        $tabs->child( _('Members')      => url => "/Admin/Groups/Members.html?id=" . $obj->id );
+        $tabs->child( _('Group rights') => url => "/Admin/Groups/GroupRights.html?id=" . $obj->id );
+        $tabs->child( _('User rights')  => url => "/Admin/Groups/UserRights.html?id=" . $obj->id );
+        $tabs->child( _('History')      => url => "/Admin/Groups/History.html?id=" . $obj->id );
     }
 };
-
 
 before 'Admin/CustomFields/' => run {
     if ( Jifty->web->current_user->has_right( object => RT->system, right => 'AdminCustomField' ) ) {
         page_nav->child( _('Select'), url => "/Admin/CustomFields/" );
-        page_nav->child(
-            _('Create') =>
-            url       => "/Admin/CustomFields/Modify.html?create=1",
-        );
+        page_nav->child( _('Create') => url => "/Admin/CustomFields/Modify.html?create=1", );
 
     }
     if ( my $id = Jifty->web->request->argument('id') ) {
@@ -488,7 +490,7 @@ before 'Admin/CustomFields/' => run {
 before 'Admin/Global/Workflows' => run {
     if ( my $id = Jifty->web->request->argument('name') ) {
 
-		my $base = '/Admin/Global/Workflows';
+        my $base = '/Admin/Global/Workflows';
 
         my $schema = RT::Workflow->new->load($id);
 
@@ -501,16 +503,16 @@ before 'Admin/Global/Workflows' => run {
             $workflow->child( _("Interface")   => url => "$base/Interface.html?$qs_name" );
         }
     }
-    };
+};
 
 before 'Admin/Rules' => run {
-        page_nav->child(_('Select'), url  => "/Admin/Rules/");
-        page_nav->child(_('Create'), url  => "/Admin/Rules/Modify.html?create=1");
+    page_nav->child( _('Select'), url => "/Admin/Rules/" );
+    page_nav->child( _('Create'), url => "/Admin/Rules/Modify.html?create=1" );
 };
 
 before qr'(?:Ticket|Search)/' => run {
-    if ( (Jifty->web->request->argument('id')||'') =~ /^(\d+)$/) {
-		my $id = $1;
+    if ( ( Jifty->web->request->argument('id') || '' ) =~ /^(\d+)$/ ) {
+        my $id  = $1;
         my $obj = RT::Model::Ticket->new();
         $obj->load($id);
 
@@ -546,7 +548,7 @@ before qr'(?:Ticket|Search)/' => run {
                 my $url = '/Ticket/';
                 if ($action) {
 
-                $url .= "Update.html?" . query_string( action => $action, default_status => $next, id => $id );
+                    $url .= "Update.html?" . query_string( action => $action, default_status => $next, id => $id );
                 } else {
 
                     #$url .= "Display.html?" .query_string(Status => $next, id => $id );
@@ -571,7 +573,6 @@ before qr'(?:Ticket|Search)/' => run {
         }
 
         # $actions->{'_ZZ'} = { html => $m->scomp( '/Ticket/Elements/Bookmark', id => $obj->id ), };
-
 
         if ( defined Jifty->web->session->get('tickets') ) {
 
@@ -607,53 +608,57 @@ before qr'(?:Ticket|Search)/' => run {
                     );
                 }
             }
-		}
         }
-            my $args      = '';
-            my $has_query = '';
+    }
+    my $args      = '';
+    my $has_query = '';
 
-            my $search = Jifty->web->session->get('CurrentSearchHash') || {};
-            my $search_id = Jifty->web->request->argument('saved_search_id') || $search->{'searchid'} || '';
+    my $search = Jifty->web->session->get('CurrentSearchHash') || {};
+    my $search_id = Jifty->web->request->argument('saved_search_id') || $search->{'searchid'} || '';
 
-            $has_query = 1 if ( Jifty->web->request->argument('query') or $search->{'query'} );
+    $has_query = 1 if ( Jifty->web->request->argument('query') or $search->{'query'} );
 
-            my %query_args = (
+    my %query_args = (
 
-                saved_search_id => ( $search_id eq 'new' ) ? undef : $search_id,
-                query         => Jifty->web->request->argument('query')         || $search->{'query'},
-                format        => Jifty->web->request->argument('format')        || $search->{'format'},
-                order_by      => Jifty->web->request->argument('order_by')      || $search->{'order_by'},
-                order         => Jifty->web->request->argument('order')         || $search->{'order'},
-                page          => Jifty->web->request->argument('page')          || $search->{'page'},
-                rows_per_page => (defined Jifty->web->request->argument('rows_per_page')  ?  Jifty->web->request->argument('rows_per_page') : $search->{'rows_per_page'})
+        saved_search_id => ( $search_id eq 'new' ) ? undef : $search_id,
+        query    => Jifty->web->request->argument('query')    || $search->{'query'},
+        format   => Jifty->web->request->argument('format')   || $search->{'format'},
+        order_by => Jifty->web->request->argument('order_by') || $search->{'order_by'},
+        order    => Jifty->web->request->argument('order')    || $search->{'order'},
+        page     => Jifty->web->request->argument('page')     || $search->{'page'},
+        rows_per_page => (
+            defined Jifty->web->request->argument('rows_per_page')
+            ? Jifty->web->request->argument('rows_per_page')
+            : $search->{'rows_per_page'}
+        )
+    );
+
+    $args = "?" . query_string(%query_args);
+
+    page_nav->child( _('New Search')  => url => "/Search/Build.html?new_query=1" );
+    page_nav->child( _('Edit Search') => url => "/Search/Build.html" . ( ($has_query) ? $args : '' ) );
+    page_nav->child( _('Advanced')    => url => "/Search/Edit.html$args" );
+
+    if ($has_query) {
+        if (Jifty->web->request->path =~ qr|^Search/Results.html| &&    #XXX TODO better abstraction
+            Jifty->web->current_user->has_right( right => 'SuperUser', object => RT->system )
+            )
+        {
+            my $shred_args = URI->new->query_param(
+                search          => 1,
+                plugin          => 'Tickets',
+                'Tickets:query' => $query_args{'query'},
+                'Tickets:limit' => $query_args{'rows_per_page'}
             );
 
-            $args = "?" . query_string(%query_args);
+            page_nav->child( 'shredder' => label => _('Shredder'), url => 'Admin/Tools/Shredder/?' . $shred_args );
+        }
 
-            page_nav->child( _('New Search')  => url => "/Search/Build.html?new_query=1" );
-            page_nav->child( _('Edit Search') => url => "/Search/Build.html" . ( ($has_query) ? $args : '' ) );
-            page_nav->child( _('Advanced')    => url => "/Search/Edit.html$args" );
+        page_nav->child( _('Show Results') => url => "/Search/Results.html$args" );
 
-            if ($has_query) {
-                if (Jifty->web->request->path =~ qr|^Search/Results.html| &&    #XXX TODO better abstraction
-                    Jifty->web->current_user->has_right( right => 'SuperUser', object => RT->system )
-                    )
-                {
-                    my $shred_args = URI->new->query_param(
-                        search          => 1,
-                        plugin          => 'Tickets',
-                        'Tickets:query' => $query_args{'query'},
-                        'Tickets:limit' => $query_args{'rows_per_page'}
-                    );
+        page_nav->child( _('Bulk Update') => url => "/Search/Bulk.html$args" );
 
-                    page_nav->child( 'shredder' =>  label => _('Shredder'), url => 'Admin/Tools/Shredder/?' . $shred_args );
-                }
-
-                page_nav->child( _('Show Results') => url => "/Search/Results.html$args" );
-
-                page_nav->child( _('Bulk Update') => url => "/Search/Bulk.html$args" );
-
-            }
+    }
 };
 
 before 'User/Group' => run {
@@ -671,20 +676,19 @@ before 'User/Group' => run {
 };
 
 before 'Prefs' => run {
-	my $tabs;
-	my @searches = RT::System->new->saved_searches();
+    my $tabs;
+    my @searches = RT::System->new->saved_searches();
 
-	page_nav->child(  'Quick search' => label => _('Quick search'), url => '/Prefs/Quicksearch.html');
+    page_nav->child( 'Quick search' => label => _('Quick search'), url => '/Prefs/Quicksearch.html' );
 
-	for my $search (@searches) {
-	page_nav->child(
-        $search->[0],
-        url  => "/Prefs/Search.html?" .query_string( name => ref($search->[1]).'-'.$search->[1]->id));
+    for my $search (@searches) {
+        page_nav->child( $search->[0],
+            url => "/Prefs/Search.html?" . query_string( name => ref( $search->[1] ) . '-' . $search->[1]->id ) );
     }
 };
 
 before qr{^/Search/Build.html} => run {
-    my $querystring      = '';
+    my $querystring = '';
     my $selected_clauses = Jifty->web->request->argument('clauses') || 0;
     my ( $saved_search, $current_search, $results ) = RT::Interface::Web::QueryBuilder->setup_query();
 
@@ -737,8 +741,6 @@ before qr{^/Search/Build.html} => run {
     set queues            => $queues;
 
 };
-
-
 
 # Backward compatibility with old RT URLs
 

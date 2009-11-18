@@ -57,12 +57,14 @@ $tix->from_sql( $query );
 my $count_name = $tix->column( function => 'COUNT', column => 'id' );
 $tix->group_by( column => $primary_group_by );
 my $value_name = $tix->column( column => $primary_group_by );
-
+# XXX TODO we need a better way
+$value_name =~ s/^main_//;
+$count_name =~ s/^main_//;
 my %class = (
     queue => 'RT::Model::Queue',
-    Owner => 'RT::Model::User',
-    Creator => 'RT::Model::User',
-    LastUpdatedBy => 'RT::Model::User',
+    owner => 'RT::Model::User',
+    creator => 'RT::Model::User',
+    last_updated_by => 'RT::Model::User',
 );
 my $class = $class{ $primary_group_by };
 
