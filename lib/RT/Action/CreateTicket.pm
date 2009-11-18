@@ -26,7 +26,7 @@ use Jifty::Action schema {
         max_length is 200,
         label is _('Subject');
 
-    param attachment =>
+    param attachments =>
         render as 'upload',
         label is _('Attach file');
 
