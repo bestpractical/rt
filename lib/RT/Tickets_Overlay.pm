@@ -3252,7 +3252,7 @@ sub _ProcessRestrictions {
 
 =head2 _BuildItemMap
 
-Build up a map of first/last/next/prev items, so that we can
+Build up a L</ItemMap> of first/last/next/prev items, so that we can
 display search nav quickly.
 
 =cut
@@ -3260,22 +3260,26 @@ display search nav quickly.
 sub _BuildItemMap {
     my $self = shift;
 
-    my $items = $self->ItemsArrayRef;
-    my $prev  = 0;
+    my $window = RT->Config->Get('TicketsItemMapSize');
 
-    delete $self->{'item_map'};
-    return unless @$items;
+    $self->{'item_map'} = {};
 
-    $self->{'item_map'}->{'first'} = $items->[0]->EffectiveId;
-    while ( my $item = shift @$items ) {
+    my $items = $self->ItemsArrayRefWindow( $window );
+    return unless $items && @$items;
+
+    my $prev = 0;
+    $self->{'item_map'}{'first'} = $items->[0]->EffectiveId;
+    for ( my $i = 0; $i < @$items; $i++ ) {
+        my $item = $items->[$i];
         my $id = $item->EffectiveId;
         $self->{'item_map'}{$id}{'defined'} = 1;
         $self->{'item_map'}{$id}{'prev'}    = $prev;
-        $self->{'item_map'}{$id}{'next'}    = $items->[0]->EffectiveId
-            if $items->[0];
+        $self->{'item_map'}{$id}{'next'}    = $items->[$i+1]->EffectiveId
+            if $items->[$i+1];
         $prev = $id;
     }
-    $self->{'item_map'}->{'last'} = $prev;
+    $self->{'item_map'}{'last'} = $prev
+        if !$window || @$items < $window;
 }
 
 =head2 ItemMap
@@ -3301,9 +3305,8 @@ of the form:
 
 sub ItemMap {
     my $self = shift;
-    $self->_BuildItemMap()
-        unless ( $self->{'items_array'} and $self->{'item_map'} );
-    return ( $self->{'item_map'} );
+    $self->_BuildItemMap unless $self->{'item_map'};
+    return $self->{'item_map'};
 }
 
 
