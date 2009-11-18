@@ -811,6 +811,16 @@ sub create {
         );
     }
 
+    if ($args{'attachments'}) {
+        for my $attachment (@{ $args{'attachments'} }) {
+            $args{'mime_obj'}->attach(
+                Data     => $attachment->content,
+                Type     => $attachment->content_type,
+                Filename => $attachment->filename,
+            );
+        }
+    }
+
     if ( $args{'_record_transaction'} ) {
 
         # {{{ Add a transaction for the create
