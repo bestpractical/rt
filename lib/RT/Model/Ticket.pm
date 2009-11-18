@@ -812,6 +812,10 @@ sub create {
     }
 
     if ($args{'attachments'}) {
+        # Once multi-upload works we probably won't have to do this coercion
+        $args{'attachments'} = [$args{'attachments'}]
+            if ref($args{'attachments'}) ne 'ARRAY';
+
         for my $attachment (@{ $args{'attachments'} }) {
             $args{'mime_obj'}->attach(
                 Data     => $attachment->content,
