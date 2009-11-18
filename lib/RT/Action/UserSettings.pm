@@ -191,9 +191,12 @@ sub take_action {
     my $pref = $user->preferences( RT->system ) || {};
     for my $arg ( $self->argument_names ) {
         if ( $self->has_argument($arg) ) {
-            delete $pref->{$arg}
-              if $self->argument_value($arg) eq 'use_system_default';
-            $pref->{$arg} = $self->argument_value($arg);
+            if ( $self->argument_value($arg) eq 'use_system_default' ) {
+                delete $pref->{$arg};
+            }
+            else {
+                $pref->{$arg} = $self->argument_value($arg);
+            }
         }
     }
     $user->set_preferences( RT->system, $pref );
