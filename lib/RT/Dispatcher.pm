@@ -184,6 +184,7 @@ on qr{^/Ticket/Graphs/(\d+)} => run {
 };
 
 before qr{.*} => run {
+	next_rule unless (Jifty->web->current_user->user_object);
     main_nav->child( _('Homepage'),      url => '/' );
     main_nav->child( _('Simple Search'), url => '/Search/Simple.html' );
     main_nav->child( _('Tickets'),       url => '/Search/Build.html' );
@@ -274,8 +275,7 @@ before qr{.*} => run {
         main_nav->child( 'Preferences' => menu => $prefs );
     }
 
-    if (   Jifty->web->current_user->user_object
-        && Jifty->web->current_user->has_right( right => 'ShowApprovalsTab', object => RT->system ) )
+    if ( Jifty->web->current_user->has_right( right => 'ShowApprovalsTab', object => RT->system ) )
     {
         main_nav->child( _('Approval'), url => '/Approvals/' );
     }
