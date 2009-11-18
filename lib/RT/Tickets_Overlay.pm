@@ -3325,6 +3325,7 @@ lots of space
 sub PrepForSerialization {
     my $self = shift;
     delete $self->{'items'};
+    delete $self->{'items_array'};
     $self->RedoSearch();
 }
 
