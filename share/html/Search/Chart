@@ -68,9 +68,11 @@ if ($chart_style eq 'pie') {
 
 my $tix = RT::Report::Tickets->new();
 $tix->from_sql( $query );
-my $count_name = $tix->column( FUNCTION => 'COUNT', column => 'id' );
+my $count_name = $tix->column( function => 'COUNT', column => 'id' );
 $tix->group_by( column => $primary_group_by );
 my $value_name = $tix->column( column => $primary_group_by );
+$count_name =~ s/^main_//;
+$value_name =~ s/^main_//;
 
 my $chart = $chart_class->new( 600 => 400 );
 
@@ -116,12 +118,11 @@ if ($chart_class eq "GD::Graph::bars") {
 
 my %class = (
     queue => 'RT::Model::Queue',
-    Owner => 'RT::Model::User',
-    Creator => 'RT::Model::User',
-    LastUpdatedBy => 'RT::Model::User',
+    owner => 'RT::Model::User',
+    creator => 'RT::Model::User',
+    last_updated_by => 'RT::Model::User',
 );
 my $class = $class{ $primary_group_by };
-
 while ( my $entry = $tix->next ) {
     if ( $class ) {
         my $q = $class->new();
@@ -138,7 +139,6 @@ while ( my $entry = $tix->next ) {
     }
     push @values, $entry->__value($count_name);
 }
-
 # XXX: Convert 1970-01-01 date to the 'Not Set'
 # this code should be generalized!!!
 if ( $primary_group_by =~ /(Daily|Monthly|Annually)$/ ) {
