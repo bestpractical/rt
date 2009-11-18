@@ -670,8 +670,8 @@ before 'User/Group' => run {
         $group->child( _('Members'), url => "/User/Groups/Members.html?id=" . $obj->id );
 
     }
-    page_nav( _('Select group') => url => "/User/Groups/index.html" );
-    page_nav( _('New group') => url => "/User/Groups/Modify.html?create=1", separator => 1 );
+    page_nav( _('Select') => url => "/User/Groups/index.html" );
+    page_nav( _('New') => url => "/User/Groups/Modify.html?create=1", separator => 1 );
 
 };
 
