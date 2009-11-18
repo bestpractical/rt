@@ -175,6 +175,26 @@ improvements, but some setups can not handle it.
 
 Set($UseSQLForACLChecks, undef);
 
+=item C<$TicketsItemMapSize>
+
+In RT at display page of a ticket and there is the current search,
+then links for first, next, previous and last ticket are shown in
+the menu.
+
+To build full map RT has to fetch full result set out of DB what can
+eat lots of resourses. Using this option it's possible to limit number
+of tickets fetched.
+
+Set C<$TicketsItemMapSize> to number of tickets you want RT to look
+at to build the map. If full result set is bigger than that number
+then there would be no 'last' link in the menu.
+
+Set this to zero to return back to old behaviour.
+
+=cut
+
+Set($TicketsItemMapSize, 1000);
+
 =back
 
 =head1 Incoming Mail Gateway Configuration
