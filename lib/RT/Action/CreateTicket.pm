@@ -26,7 +26,7 @@ use Jifty::Action schema {
         max_length is 200,
         label is _('Subject');
 
-    param attachments =>
+    param attachment =>
         render as 'upload',
         label is _('Attach file');
 
@@ -187,6 +187,24 @@ sub set_final_priority {
     my $queue = shift;
 
     $self->fill_parameter(final_priority => default_value => $queue->final_priority);
+}
+
+sub take_action {
+    my $self = shift;
+    my $fh = $self->argument_value('attachment');
+    $self->argument_value(attachment_filename => "$fh");
+
+    my $info = Jifty->handler->cgi->uploadInfo( $fh );
+    $self->argument_value(attachment_content_type => $info->{'Content-Type'})
+        if defined $info;
+
+    my $ret = $self->SUPER::take_action( @_ );
+
+    # Kill file handle so it's not in the session or request
+    $self->argument_value(attachment => '');
+    Jifty->web->request->delete('J:A:F-attachment-'.$self->moniker);
+
+    return $ret;
 }
 
 sub report_success {
