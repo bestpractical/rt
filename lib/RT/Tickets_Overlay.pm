@@ -2705,18 +2705,40 @@ Returns a reference to the set of all items found in this search
 sub ItemsArrayRef {
     my $self = shift;
 
-    unless ( $self->{'items_array'} ) {
+    return $self->{'items_array'} if $self->{'items_array'};
 
-        my $placeholder = $self->_ItemsCounter;
-        $self->GotoFirstItem();
-        while ( my $item = $self->Next ) {
-            push( @{ $self->{'items_array'} }, $item );
-        }
-        $self->GotoItem($placeholder);
-        $self->{'items_array'}
-            = $self->ItemsOrderBy( $self->{'items_array'} );
+    my $placeholder = $self->_ItemsCounter;
+    $self->GotoFirstItem();
+    while ( my $item = $self->Next ) {
+        push( @{ $self->{'items_array'} }, $item );
     }
-    return ( $self->{'items_array'} );
+    $self->GotoItem($placeholder);
+    $self->{'items_array'}
+        = $self->ItemsOrderBy( $self->{'items_array'} );
+
+    return $self->{'items_array'};
+}
+
+sub ItemsArrayRefWindow {
+    my $self = shift;
+    my $window = shift;
+
+    my @old = ($self->_ItemsCounter, $self->RowsPerPage, $self->FirstRow+1);
+
+    $self->RowsPerPage( $window );
+    $self->FirstRow(1);
+    $self->GotoFirstItem;
+
+    my @res;
+    while ( my $item = $self->Next ) {
+        push @res, $item;
+    }
+
+    $self->RowsPerPage( $old[1] );
+    $self->FirstRow( $old[2] );
+    $self->GotoItem( $old[0] );
+
+    return \@res;
 }
 
 # }}}
