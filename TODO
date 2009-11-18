@@ -6,10 +6,6 @@ things we ripped out that need to be added back
 * create graphviz for templates/elements, orphan ones needs to be documented.
 
 ------------- todo by feature list
-I18N
-  - display of messages in utf8
-  - picking up user's loc preferences from browser or from db
-
 Database audit tool (integrity check)
 database Shredder
 
