@@ -127,8 +127,6 @@ package Jifty::View::Mason::Handler;
 
 =head2 callback
 
-Method replaces deprecated component C<Element/Callback>.
-
 Takes hash with optional C<callback_page>, C<callback_name>
 and C<callback_once> arguments, other arguments are passed
 throught to callback components.
