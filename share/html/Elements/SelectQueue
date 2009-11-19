@@ -53,7 +53,7 @@
 % else {
 <select name="<%$name%>" <% ($on_change) ? 'onchange="'.$on_change.'"' : '' |n %> class="<%$class%>">
 %     if ($show_null_option) {
-  <option value="">-</option>
+  <option value=""><%$null_option_label%></option>
 %     }
 %     for my $queue (@{Jifty->web->session->get($cache_key)||[]}) {
   <option value="<% ($named_values ? $queue->{name} : $queue->{id}) %>" 
@@ -74,6 +74,7 @@
 % }
 <%args>
 $check_queue_right => 'CreateTicket'
+$null_option_label => '-'
 $show_null_option => 1
 $show_all_queues => 1
 $name => undef
