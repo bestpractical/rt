@@ -18,10 +18,11 @@ $m->field('queue', $qid);
 $m->submit;
 is($m->status, 200, "request successful");
 $m->content_like(qr/Create a new ticket/, 'ticket create page');
-$m->form_name('ticket_create');
-$m->field('subject', 'Attachments test');
-$m->field('attach',  LogoFile);
-$m->field('content', 'Some content');
+$m->fill_in_action_ok('create_ticket', (
+    subject     => 'Attachments test',
+    attachments => LogoFile,
+    content     => 'Some content',
+));
 $m->submit;
 is($m->status, 200, "request successful");
 
