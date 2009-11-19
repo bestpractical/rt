@@ -282,7 +282,20 @@ before qr{.*} => run {
     {
         main_nav->child( _('Approval'), url => '/Approvals/' );
     }
-};
+
+	
+	
+	my $create_ticket = show('/Elements/CreateTicket');
+	main_nav->child( 'search' => label =>  $create_ticket, escape_label =>0);	
+	
+	
+	main_nav->child( 'search' => label => '<form action="/" method="get" id="simple-search">
+	  <input size="12" name="q" autocomplete="off" accesskey="0" class="field" />
+	    <input type="submit" class="button" value="'. _('Search') .'" /></form>', 
+		escape_label =>0);	
+	
+	
+	};
 
 before qr'Dashboards/?' => run {
     require RT::Dashboard;    # not a record class, so not autoloaded :/

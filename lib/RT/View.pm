@@ -87,4 +87,12 @@ template login_widget => sub {
     }
 };
 
+template simple_search_widget => sub {
+	form { { id is 'simple-search'; method is 'GET'; action is '/'};
+	input { {size is "12"; name is "q"; autocomplete is "off"; accesskey is "0"; class is "field"}}
+  input {{type is "submit"; class is "button"; value is _('Search')} }
+	}
+};
+
+
 1;
