@@ -60,4 +60,6 @@
     on_change => "if (this.value != '') document.CreateTicketInQueue.submit();"
  &>
 </label>
+<input type="submit" value="<%_('Go')%>" id="create_ticket_go_button">
+<script>jQuery('#create_ticket_go_button').hide();</script>
 </form>
