@@ -31,6 +31,7 @@ framework:
     - User: {}
     - Authentication::Password:
         login_by: username
+        nav_menu: 0
     - I18N:
         js: 0
     - IEFixes:
@@ -46,6 +47,7 @@ framework:
         restart_url: '/Admin/Global/Jifty/restart.html'
         after_restart_url: '/Admin/Global/System.html'
         wait_seconds: 10
+        nav_menu: 0
     - SetupWizard:
         add_steps:
           - template: basics

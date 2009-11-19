@@ -45,6 +45,21 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<form action="<% RT->config->get('web_path') %>/ticket/create" name="create_ticket_in_queue" id="CreateTicketInQueue">
-<&|/l, $m->scomp('/Elements/SelectNewTicketQueue', on_change => 'document.CreateTicketInQueue.submit()')&><input type="submit" class="button" value="New ticket in" />&nbsp;%1</&>
+<form 
+    action="<% RT->config->get('web_path') %>/Ticket/Create.html" 
+    name="create_ticket_in_queue" 
+    id="create_ticket_in_queue">
+<label accesskey="9">
+  <& /Elements/SelectQueue, 
+    default => '',
+    %ARGS, 
+    name => 'queue', 
+    show_null_option => 1, 
+    null_option_label => _('New ticket')."...",
+    show_all_queues => 0,
+    on_change => "if (this.value != '') document.create_ticket_in_queue.submit();"
+ &>
+</label>
+<input type="submit" value="<%_('Go')%>" id="create_ticket_go_button">
+<script>jQuery('#create_ticket_go_button').hide();</script>
 </form>

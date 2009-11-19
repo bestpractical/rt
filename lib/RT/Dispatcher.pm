@@ -183,7 +183,16 @@ on qr{^/Ticket/Graphs/(\d+)} => run {
     show('/Ticket/Graphs/Render');
 };
 
+
+my $PREFS_NAV = Jifty::Web::Menu->new( { label => _('Preferences'), url => '/Prefs/Other.html' } );
+$PREFS_NAV->child( _('Settings'),       url => '/Prefs/Other.html', );
+$PREFS_NAV->child( _('About me'),       url => '/User/Prefs.html', );
+$PREFS_NAV->child( _('Search options'), url => '/Prefs/SearchOptions.html', );
+$PREFS_NAV->child( _('RT at a glance'), url => '/Prefs/MyRT.html', );
+
+
 before qr{.*} => run {
+	next_rule unless (Jifty->web->current_user->user_object);
     main_nav->child( _('Homepage'),      url => '/' );
     main_nav->child( _('Simple Search'), url => '/Search/Simple.html' );
     main_nav->child( _('Tickets'),       url => '/Search/Build.html' );
@@ -197,8 +206,7 @@ before qr{.*} => run {
 
     $tools->child( _('My Day'), url => '/Tools/MyDay.html' );
 
-    if (   Jifty->web->current_user->user_object
-        && Jifty->web->current_user->has_right( right => 'ShowConfigTab', object => RT->system ) )
+    if ( Jifty->web->current_user->has_right( right => 'ShowConfigTab', object => RT->system ) )
     {
         my $admin = main_nav->child( Config => label => _('Configuration'), url => '/Admin/' );
         $admin->child( _('Users'),         url => '/Admin/Users/', );
@@ -264,22 +272,20 @@ before qr{.*} => run {
         )
     {
 
-        my $prefs = Jifty::Web::Menu->new( { label => _('Preferences'), url => '/Prefs/Other.html' } );
+     if ( Jifty->web->current_user->has_right( right => 'ModifySelf', object => RT->system ) ) {
 
-        $prefs->child( _('Settings'),       url => '/Prefs/Other.html', );
-        $prefs->child( _('About me'),       url => '/User/Prefs.html', );
-        $prefs->child( _('Search options'), url => '/Prefs/SearchOptions.html', );
-        $prefs->child( _('RT at a glance'), url => '/Prefs/MyRT.html', );
-
-        main_nav->child( 'Preferences' => menu => $prefs );
+        main_nav->child( 'Preferences' => menu => $PREFS_NAV );
     }
+     }
 
-    if (   Jifty->web->current_user->user_object
-        && Jifty->web->current_user->has_right( right => 'ShowApprovalsTab', object => RT->system ) )
+    if ( Jifty->web->current_user->has_right( right => 'ShowApprovalsTab', object => RT->system ) )
     {
         main_nav->child( _('Approval'), url => '/Approvals/' );
     }
-};
+
+	
+	
+	};
 
 before qr'Dashboards/?' => run {
     require RT::Dashboard;    # not a record class, so not autoloaded :/
@@ -670,13 +676,12 @@ before 'User/Group' => run {
         $group->child( _('Members'), url => "/User/Groups/Members.html?id=" . $obj->id );
 
     }
-    page_nav( _('Select group') => url => "/User/Groups/index.html" );
-    page_nav( _('New group') => url => "/User/Groups/Modify.html?create=1", separator => 1 );
+    page_nav( _('Select') => url => "/User/Groups/index.html" );
+    page_nav( _('Create') => url => "/User/Groups/Modify.html?create=1", separator => 1 );
 
 };
 
 before 'Prefs' => run {
-    my $tabs;
     my @searches = RT::System->new->saved_searches();
 
     page_nav->child( 'Quick search' => label => _('Quick search'), url => '/Prefs/Quicksearch.html' );
@@ -721,7 +726,6 @@ before qr{^/Search/Build.html} => run {
     #  Push the updates into the session so we don't lose 'em
     Jifty->web->session->set( 'CurrentSearchHash', { %$saved_search, %$current_search, } );
 
-    #  Build a query_string for the tabs
     if ( Jifty->web->request->argument('new_query') ) {
         $querystring = 'new_query=1';
     } elsif ( $current_search->{'query'} ) {

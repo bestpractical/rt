@@ -88,9 +88,6 @@
     <span class="hide"><a href="#skipnav"><% _('Skip Menu') %></a> | </span>
 % if (Jifty->web->current_user->user_object && Jifty->web->current_user->name) {
   <% _('Logged in as %1', "<span>".Jifty->web->current_user->name."</span>") |n%>
-%     if ( Jifty->web->current_user->has_right( right => 'ModifySelf', object => RT->system ) ) {
-    | <a href="<%RT->config->get('web_path')%><%$prefs%>"><% _('Preferences') %></a>
-%     }
 % } else {
     <% _('Not logged in.') %>
 % }

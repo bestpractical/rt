@@ -50,6 +50,7 @@ package RT::Graph::Tickets;
 
 use strict;
 use warnings;
+use Try::Tiny;
 
 =head1 NAME
 
@@ -57,13 +58,18 @@ RT::Graph::Tickets - view relations between tickets as graphs
 
 =cut
 
-unless ($RT::DisableGraphViz) {
-    require IPC::Run;
-    IPC::Run->import;
-    require IPC::Run::SafeHandles;
-    IPC::Run::SafeHandles->import;
-    require GraphViz;
-    GraphViz->import;
+unless (RT->config->get('disable_graphviz')) {
+    try {
+        require IPC::Run;
+        IPC::Run->import;
+        require IPC::Run::SafeHandles;
+        IPC::Run::SafeHandles->import;
+        require GraphViz;
+        GraphViz->import;
+    } catch {
+        Jifty->log->warn("GraphViz disabled: $@");
+        RT->config->set(disable_graphviz => 1);
+    }
 }
 
 our %ticket_status_style = (

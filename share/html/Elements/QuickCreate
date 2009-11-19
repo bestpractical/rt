@@ -53,7 +53,8 @@
 <tr class="input-row"><td class="label"><&|/l&>Subject</&>:</td>
     <td colspan="3" class="value"><input type="text" size="50" name="subject" /></td>
     </tr><tr class="input-row">
-<td class="label"><&|/l&>Queue</&>:</td><td class="value"><& /Elements/SelectNewTicketQueue, name => 'queue' &>
+<td class="label"><&|/l&>Queue</&>:</td><td class="value">
+  <& /Elements/SelectQueue, name => 'queue', default => RT->config->get("default_queue", Jifty->web->current_user), %ARGS, show_null_option => 0, show_all_queues => 0 &>
 </td>
 <td class="label"><&|/l&>Owner</&>:</td><td class="value">
 <select type="select" name="owner">  

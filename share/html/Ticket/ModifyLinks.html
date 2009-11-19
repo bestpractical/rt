@@ -58,7 +58,8 @@
 <input type="hidden" class="hidden" name="id" value="<%$Ticket->id%>" />
 % $m->callback( callback_name => 'FormStart', args_ref => \%ARGS );
 % my (@extra);
-% push @extra, titleright_raw => '<a href="'. RT->config->get('web_path') . '/Ticket/Graphs/index.html?id='.$Ticket->id.'">'._('Graph').'</a>' unless RT->config->get('disable_graph_viz');
+% require RT::Graph::Tickets; # XXX: remove this after config post-load check is working again
+% push @extra, titleright_raw => '<a href="'. RT->config->get('web_path') . '/Ticket/Graphs/index.html?id='.$Ticket->id.'">'._('Graph').'</a>' unless RT->config->get('disable_graphviz');
 <&| /Widgets/TitleBox, title => _('Edit Links'), class=>'ticket-info-links', @extra &>
 <& /Elements/EditLinks, object => $Ticket, merge => 1 &>
 </&>

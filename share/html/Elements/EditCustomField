@@ -80,6 +80,12 @@ my $EditComponent = "EditCustomField$Type";
 $m->callback( callback_name => 'EditComponentname', name => \$EditComponent, custom_field => $custom_field, object => $object );
 $EditComponent = "EditCustomField$Type" unless $m->comp_exists($EditComponent);
 
+# NOTEST: This $m->comp might call one of the untested components:
+# /Elements/EditCustomFieldAutocomplete
+# /Elements/EditCustomFieldBinary
+# /Elements/EditCustomFieldImage
+# /Elements/EditCustomFieldWikitext
+
 return $m->comp(
     $EditComponent,
     %ARGS,
