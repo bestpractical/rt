@@ -152,7 +152,7 @@ RuleBuilder.prototype.init = function () {
 					function (item) {
 					name = item.name;
 					type = item.type;
-						innercontent.append(content._div({class: 'parameter'})._span_({ 'class': 'name'}).text(name)
+						innercontent.append(content._div({'class': 'parameter'})._span_({ 'class': 'name'}).text(name)
 						._span_({ 'class': 'type'}).text(type).div_());
 						
 					});
@@ -338,7 +338,7 @@ Module("RuleBuilder2", function(m) {
         after: {
             initialize: function() {
                 var that = this;
-                jQuery._input_({ 'type': 'text', class: 'enter-value'})
+                jQuery._input_({ 'type': 'text', 'class': 'enter-value'})
                     .change(function() {
                         that.context.update_return_type(that.return_type(this.value))
                     } )
