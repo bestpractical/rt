@@ -47,8 +47,8 @@
 %# END BPS TAGGED BLOCK }}}
 <form 
     action="<% RT->config->get('web_path') %>/Ticket/Create.html" 
-    name="CreateTicketInQueue" 
-    id="CreateTicketInQueue">
+    name="create_ticket_in_queue" 
+    id="create_ticket_in_queue">
 <label accesskey="9">
   <& /Elements/SelectQueue, 
     default => '',
@@ -57,7 +57,7 @@
     show_null_option => 1, 
     null_option_label => _('New ticket')."...",
     show_all_queues => 0,
-    on_change => "if (this.value != '') document.CreateTicketInQueue.submit();"
+    on_change => "if (this.value != '') document.create_ticket_in_queue.submit();"
  &>
 </label>
 <input type="submit" value="<%_('Go')%>" id="create_ticket_go_button">
