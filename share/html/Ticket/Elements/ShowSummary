@@ -96,7 +96,8 @@
 	  </&>
 
 % my (@extra);
-% push @extra, titleright_raw => '<a href="'. RT->config->get('web_path'). '/Ticket/Graphs/index.html?id='.$ticket->id.'">'._('Graph').'</a>' unless RT->config->get('disable_graph_viz');
+% require RT::Graph::Tickets; # XXX: remove this after config post-load check is working again
+% push @extra, titleright_raw => '<a href="'. RT->config->get('web_path'). '/Ticket/Graphs/index.html?id='.$ticket->id.'">'._('Graph').'</a>' unless RT->config->get('disable_graphviz');
 
 	  <&| /Widgets/TitleBox, title => _('Links'), 
 		title_href => RT->config->get('web_path')."/Ticket/ModifyLinks.html?id=".$ticket->id, 

@@ -31,6 +31,7 @@ requires(
     'File::Temp'                 => '0.18',
     'Text::Quoted'               => '2.02',
     'Tree::Simple'               => '1.04',
+    'Try::Tiny'                  => 0,
     'UNIVERSAL::require'         => 0,
     'Regexp::Common'             => 0,
     'Regexp::Common::Email::Address'             => 0,

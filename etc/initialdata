@@ -662,6 +662,7 @@ Hour:         { $subscription_obj->sub_value('Hour') }
    '<small>__last_updated_relative__</small>',
    '<small>__time_left__</small>'},
     'default_summary_rows'         => 10,
+    'disable_graphviz'             => undef,
     'dont_search_file_attachments' => undef,
     'drop_long_attachments'        => undef,
     'email_input_encodings'        => [ 'utf-8', 'iso-8859-1', 'us-ascii' ],

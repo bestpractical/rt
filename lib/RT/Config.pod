@@ -709,6 +709,10 @@ results on the frontpage.
 
 default: C<10>
 
+=item C<disable_graphviz>
+
+default: C<undef>
+
 =item C<oldest_transactions_first>
 
 By default, RT shows newest transactions at the bottom of the ticket
