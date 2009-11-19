@@ -285,11 +285,11 @@ before qr{.*} => run {
 
 	
 	
-    #my $create_ticket = Jifty->web->render_template('/Elements/CreateTicket');
-    #main_nav->child( 'create' => label =>  $create_ticket, escape_label =>0);	
+    my $cticket = scalar Jifty->web->render_template('/Elements/CreateTicket');
+    main_nav->child( 'create' => label =>  $cticket, escape_label =>0);	
 	
-    #my $search = Jifty->web->render_template('/Elements/SimpleSearch');
-    #main_nav->child( 'search' => label =>  $search, escape_label =>0);	
+    my $search = Jifty->web->render_template('/Elements/SimpleSearch');
+    main_nav->child( 'search' => label =>  $search, escape_label =>0);	
 	};
 
 before qr'Dashboards/?' => run {
