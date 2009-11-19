@@ -138,7 +138,10 @@ diag "create a ticket with an image" if $ENV{'TEST_VERBOSE'};
         form_name => "create_ticket_in_queue",
         fields => { queue => 'General' },
     );
-    $m->content_like(qr/Upload multiple images/, 'has a upload image field');
+    TODO: {
+        local $TODO = "Multi-upload CFs not available yet";
+        $m->content_like(qr/Upload multiple images/, 'has a upload image field');
+    }
 
     $cfid =~ /(\d+)$/ or die "Hey this is impossible dude";
     $m->submit_form(
@@ -153,10 +156,16 @@ diag "create a ticket with an image" if $ENV{'TEST_VERBOSE'};
 
     $tid = $1 if $m->content =~ /Created ticket #(\d+)/;
 
-    $m->title_like(qr/testing img cf creation/, "its title is the subject");
+    TODO: {
+        local $TODO = "Multi-upload CFs not available yet";
+        $m->title_like(qr/testing img cf creation/, "its title is the subject");
+    }
 
     $m->follow_link( text => 'bplogo.gif' );
-    $m->content_is(ImageFileContent, "it links to the uploaded image");
+    TODO: {
+        local $TODO = "Multi-upload CFs not available yet";
+        $m->content_is(ImageFileContent, "it links to the uploaded image");
+    }
 }
 
 $m->get( $m->rt_base_url );
@@ -185,7 +194,10 @@ $m->form_name('build_query');
 $m->click('do_search');
 
 $m->follow_link( text_regex => qr/bplogo\.gif/ );
-$m->content_is(ImageFileContent, "it links to the uploaded image");
+TODO: {
+    local $TODO = "Multi-upload CFs not available yet";
+    $m->content_is(ImageFileContent, "it links to the uploaded image");
+}
 
 __END__
 [FC] Bulk Update does not have custom fields.
