@@ -22,9 +22,9 @@ FM_ObjectTopics
         : "SELECT, UPDATE";
     foreach my $table (@tables) {
         if ( $table =~ /id_seq$/ ) {
-            push @acls, "GRANT $sequence_right ON $table TO $RT::DatabaseUser;";
+            push @acls, "GRANT $sequence_right ON $table TO \"$RT::DatabaseUser\";";
         } else {
-            push @acls, "GRANT SELECT, INSERT, UPDATE, DELETE ON $table to $RT::DatabaseUser;";
+            push @acls, "GRANT SELECT, INSERT, UPDATE, DELETE ON $table to \"$RT::DatabaseUser\";";
         }
     }
     return (@acls);
