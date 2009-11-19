@@ -102,8 +102,7 @@
 </div>
 
 % if ( Jifty->web->current_user->user_object) {
-<div id="nav-widgets">
-</div>
+<div id="nav-widgets"><& /Elements/CreateTicket &><& /Elements/SimpleSearch &></div>
 %} 
 <div class="nav">
 <div class="main-nav">

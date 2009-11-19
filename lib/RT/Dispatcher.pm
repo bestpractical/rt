@@ -285,11 +285,6 @@ before qr{.*} => run {
 
 	
 	
-    my $cticket = scalar Jifty->web->render_template('/Elements/CreateTicket');
-    main_nav->child( 'create' => label =>  $cticket, escape_label =>0);	
-	
-    my $search = Jifty->web->render_template('/Elements/SimpleSearch');
-    main_nav->child( 'search' => label =>  $search, escape_label =>0);	
 	};
 
 before qr'Dashboards/?' => run {
