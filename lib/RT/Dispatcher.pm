@@ -285,16 +285,11 @@ before qr{.*} => run {
 
 	
 	
-	my $create_ticket = show('/Elements/CreateTicket');
-	main_nav->child( 'search' => label =>  $create_ticket, escape_label =>0);	
+    #my $create_ticket = Jifty->web->render_template('/Elements/CreateTicket');
+    #main_nav->child( 'create' => label =>  $create_ticket, escape_label =>0);	
 	
-	
-	main_nav->child( 'search' => label => '<form action="/" method="get" id="simple-search">
-	  <input size="12" name="q" autocomplete="off" accesskey="0" class="field" />
-	    <input type="submit" class="button" value="'. _('Search') .'" /></form>', 
-		escape_label =>0);	
-	
-	
+    #my $search = Jifty->web->render_template('/Elements/SimpleSearch');
+    #main_nav->child( 'search' => label =>  $search, escape_label =>0);	
 	};
 
 before qr'Dashboards/?' => run {
