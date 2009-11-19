@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test strict => 1; use Test::More tests => 14;
+use RT::Test strict => 1; use Test::More tests => 15;
 
 use constant ImageRoot => RT->static_path . '/images';
 use constant LogoFile => ImageRoot .'/bplogo.gif';
