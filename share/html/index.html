@@ -87,8 +87,10 @@ If you need commercial support, please contact us at sales@bestpractical.com.
 <%init>
 
 my @results;
+my $skip_create = 0;
 
-$m->callback( ARGSRef => \%ARGS, results => \@results, CallbackName => 'Initial' );
+$m->callback( ARGSRef => \%ARGS, results => \@results, CallbackName => 'Initial', 
+              skip_create => \$skip_create );
 
 if ( $ARGS{'QuickCreate'} ) {
     my $QueueObj = new RT::Queue($session{'CurrentUser'});
@@ -103,7 +105,7 @@ if ( $ARGS{'QuickCreate'} ) {
     );
 
 
-    if ( $ValidCFs ) {
+    if ( $ValidCFs && !$skip_create ) {
         my ($t, $msg) = CreateTicket( 
                         Queue => $ARGS{'Queue'},
                         Owner => $ARGS{'Owner'},
@@ -115,7 +117,7 @@ if ( $ARGS{'QuickCreate'} ) {
                         Subject => $ARGS{'Subject'});
         push @results, $msg;
     }
-    else {
+    elsif ( !$ValidCFs ) {
         push @results, "can't quickly create ticket in queue " .
             $QueueObj->Name . ' because some custom fields need to be set, please go to normal ticket creation page to do that.';
     }
