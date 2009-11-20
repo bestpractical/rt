@@ -89,11 +89,22 @@ sub take_action {
 
     for my $arg ( $self->argument_names ) {
         if ( $self->has_argument($arg) ) {
+            RT->config->set( $arg, $self->argument_value($arg) );
+        }
+    }
+
+    return 1;
+}
+
+sub _canonicalize_arguments {
+    my $self = shift;
+    for my $arg ( $self->argument_names ) {
+        if ( $self->has_argument($arg) ) {
             my $value = $self->argument_value( $arg );
-            if ($value && $value !~ /^{{\w+}}/ ) {
+            if ( $value && $value !~ /^{{\w+}}/ ) {
                 if ( $value =~ /^\[ \s* (.*?) \s* \]\s*$/x ) {
                     my $v = $1;
-                    if ($v =~ /\S/ ) {
+                    if ( $v =~ /\S/ ) {
                         $value = [ split /\s*,\s*/, $v ];
                     }
                     else {
@@ -109,12 +120,10 @@ sub take_action {
                         $value = {};
                     }
                 }
+                $self->argument_value( $arg, $value );
             }
-
-            RT->config->set( $arg, $value );
         }
     }
-
     return 1;
 }
 
