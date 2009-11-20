@@ -131,6 +131,5 @@ sub add_record {
     $self->SUPER::add_record($Queue);
 }
 
-
 1;
 
