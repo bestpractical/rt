@@ -1,5 +1,6 @@
 ServerRoot %%SERVER_ROOT%%
 PidFile %%PID_FILE%%
+LockFile %%LOCK_FILE%%
 ServerAdmin root@localhost
 
 %%LOAD_MODULES%%
