@@ -68,7 +68,7 @@
 %# and @selected is an arrayref of selected values from @items.
 %#
 %# and in html:
-%# <& /Widgets/SelectionBox:sow, self => $sel &>
+%# <& /Widgets/SelectionBox:show, self => $sel &>
 %#
 %# if the SelectionBox is created with AutoSave option, OnSubmit will be called
 %# on every button clicked in non-js mode.
@@ -219,6 +219,9 @@ selected="selected"
  <input name="remove" type="submit" class="button" value="<&|/l&>Delete</&>" />
 % if ($ARGS{'Clear'}) {
  <input name="clear" type="submit" class="button" value="<&|/l&>Clear</&>" />
+% }
+% if ( $ARGS{'ShowUpdate'} ) {
+ <input name="update" type="submit" class="button" value="<&|/l&>Update</&>" />
 % }
 % }
 

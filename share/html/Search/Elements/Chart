@@ -53,6 +53,8 @@ $ChartStyle => 'bars'
 </%args>
 <%init>
 use RT::Report::Tickets;
+$PrimaryGroupBy ||= 'Queue'; # make sure PrimaryGroupBy is not undef
+
 my $tix = RT::Report::Tickets->new( $session{'CurrentUser'} );
 my ($count_name, $value_name) = $tix->SetupGroupings(
     Query => $Query, GroupBy => $PrimaryGroupBy,

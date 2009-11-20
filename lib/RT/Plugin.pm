@@ -106,8 +106,10 @@ sub _BasePath {
     my $self = shift;
     my $base = $self->{'name'};
     $base =~ s/::/-/g;
+    my $local_base = $RT::LocalPluginPath."/".$base;
+    my $base_base = $RT::PluginPath."/".$base;
 
-    return $RT::LocalPluginPath."/".$base;
+    return -d $local_base ? $local_base : $base_base;
 }
 
 =head2 ComponentRoot

@@ -54,7 +54,8 @@ use warnings;
 use base 'Test::More';
 
 use Socket;
-use File::Temp;
+use File::Temp qw(tempfile);
+use File::Path qw(mkpath);
 use File::Spec;
 
 our $SKIP_REQUEST_WORK_AROUND = 0;
@@ -75,9 +76,17 @@ wrap 'HTTP::Request::Common::form_data',
 
 
 our @EXPORT = qw(is_empty);
-
 our ($port, $dbname);
-my $mailsent;
+our @SERVERS;
+
+my %tmp = (
+    directory => undef,
+    config    => {
+        RT => undef,
+        apache => undef,
+    },
+    mailbox   => undef,
+);
 
 =head1 NAME
 
@@ -119,14 +128,6 @@ BEGIN {
     $dbname = $ENV{RT_TEST_PARALLEL}? "rt3test_$port" : "rt3test";
 };
 
-use RT::Interface::Web::Standalone;
-use Test::HTTP::Server::Simple::StashWarnings;
-use Test::WWW::Mechanize;
-use File::Path 'mkpath';
-
-unshift @RT::Interface::Web::Standalone::ISA, 'Test::HTTP::Server::Simple::StashWarnings';
-sub RT::Interface::Web::Standalone::test_warning_path { "/__test_warnings" }
-
 sub import {
     my $class = shift;
     my %args = @_;
@@ -140,6 +141,8 @@ sub import {
         $class->builder->no_plan unless $class->builder->has_plan;
     }
 
+    $class->bootstrap_tempdir;
+
     $class->bootstrap_config( %args );
 
     use RT;
@@ -147,20 +150,13 @@ sub import {
 
     if (RT->Config->Get('DevelMode')) { require Module::Refresh; }
 
-    # make it another function
-    $mailsent = 0;
-    my $mailfunc = sub { 
-        my $Entity = shift;
-        $mailsent++;
-        return 1;
-    };
-    RT->Config->Set( 'MailCommand' => $mailfunc );
-
     $class->bootstrap_db( %args );
 
     RT->Init;
 
     $class->bootstrap_plugins( %args );
+
+    $class->set_config_wrapper;
 
     my $screen_logger = $RT::Logger->remove( 'screen' );
     require Log::Dispatch::Perl;
@@ -201,12 +197,29 @@ sub db_requires_no_dba {
     return 1 if $db_type eq 'SQLite';
 }
 
-my $config;
+sub bootstrap_tempdir {
+    my $self = shift;
+    my $test_file = (
+        File::Spec->rel2abs((caller)[1])
+            =~ m{(?:^|[\\/])t[/\\](.*)}
+    );
+    my $dir_name = File::Spec->rel2abs('t/tmp/'. $test_file);
+    mkpath( $dir_name );
+    return $tmp{'directory'} = File::Temp->newdir(
+        DIR => $dir_name
+    );
+}
+
 sub bootstrap_config {
     my $self = shift;
     my %args = @_;
 
-    $config = File::Temp->new;
+    $tmp{'config'}{'RT'} = File::Spec->catfile(
+        "$tmp{'directory'}", 'RT_SiteConfig.pm'
+    );
+    open my $config, '>', $tmp{'config'}{'RT'}
+        or die "Couldn't open $tmp{'config'}{'RT'}: $!";
+
     print $config qq{
 Set( \$WebPort , $port);
 Set( \$WebBaseURL , "http://localhost:\$WebPort");
@@ -224,13 +237,64 @@ Set( \$MailCommand, 'testfile');
     print $config "Set( \$DevelMode, 0 );\n"
         if $INC{'Devel/Cover.pm'};
 
+    # set mail catcher
+    my $mail_catcher = $tmp{'mailbox'} = File::Spec->catfile(
+        $tmp{'directory'}->dirname, 'mailbox.eml'
+    );
+    print $config <<END;
+Set( \$MailCommand, sub {
+    my \$MIME = shift;
+
+    open my \$handle, '>>', '$mail_catcher'
+        or die "Unable to open '$mail_catcher' for appending: \$!";
+
+    \$MIME->print(\$handle);
+    print \$handle "%% split me! %%\n";
+    close \$handle;
+} );
+END
+
     print $config $args{'config'} if $args{'config'};
 
     print $config "\n1;\n";
-    $ENV{'RT_SITE_CONFIG'} = $config->filename;
+    $ENV{'RT_SITE_CONFIG'} = $tmp{'config'}{'RT'};
     close $config;
 
     return $config;
+}
+
+sub set_config_wrapper {
+    my $self = shift;
+
+    my $old_sub = \&RT::Config::Set;
+    no warnings 'redefine';
+    *RT::Config::Set = sub {
+        my @caller = caller;
+        if ( ($caller[1]||'') =~ /\.t$/ ) {
+            my ($self, $name) = @_;
+            my $type = $RT::Config::META{$name}->{'Type'} || 'SCALAR';
+            my %sigils = (
+                HASH   => '%',
+                ARRAY  => '@',
+                SCALAR => '$',
+            );
+            my $sigil = $sigils{$type} || $sigils{'SCALAR'};
+            open my $fh, '>>', $tmp{'config'}{'RT'}
+                or die "Couldn't open config file: $!";
+            require Data::Dumper;
+            print $fh
+                "\nSet(${sigil}${name}, \@{"
+                    . Data::Dumper::Dumper([@_[2 .. $#_]])
+                ."}); 1;\n";
+            close $fh;
+
+            if ( @SERVERS ) {
+                warn "you're changing config option in a test file"
+                    ." when server is active";
+            }
+        }
+        return $old_sub->(@_);
+    };
 }
 
 sub bootstrap_db {
@@ -375,29 +439,6 @@ sub _get_dbh {
         print STDERR $msg; exit -1;
     }
     return $dbh;
-}
-
-sub open_mailgate_ok {
-    my $class   = shift;
-    my $baseurl = shift;
-    my $queue   = shift || 'general';
-    my $action  = shift || 'correspond';
-    Test::More::ok(open(my $mail, "|$RT::BinPath/rt-mailgate --url $baseurl --queue $queue --action $action"), "Opened the mailgate - $!");
-    return $mail;
-}
-
-
-sub close_mailgate_ok {
-    my $class = shift;
-    my $mail  = shift;
-    close $mail;
-    Test::More::is ($? >> 8, 0, "The mail gateway exited normally. yay");
-}
-
-sub mailsent_ok {
-    my $class = shift;
-    my $expected  = shift;
-    Test::More::is ($mailsent, $expected, "The number of mail sent ($expected) matches. yay");
 }
 
 =head1 UTILITIES
@@ -616,14 +657,33 @@ sub run_mailgate {
         message => '',
         action  => 'correspond',
         queue   => 'General',
+        debug   => 1,
+        command => $RT::BinPath .'/rt-mailgate',
         @_
     );
     my $message = delete $args{'message'};
 
-    my $cmd = $RT::BinPath .'/rt-mailgate';
-    die "Couldn't find mailgate ($cmd) command" unless -f $cmd;
+    $args{after_open} = sub {
+        my $child_in = shift;
+        if ( UNIVERSAL::isa($message, 'MIME::Entity') ) {
+            $message->print( $child_in );
+        } else {
+            print $child_in $message;
+        }
+    };
 
-    $cmd .= ' --debug';
+    $self->run_and_capture(%args);
+}
+
+sub run_and_capture {
+    my $self = shift;
+    my %args = @_;
+
+    my $cmd = delete $args{'command'};
+    die "Couldn't find command ($cmd)" unless -f $cmd;
+
+    $cmd .= ' --debug' if delete $args{'debug'};
+
     while( my ($k,$v) = each %args ) {
         next unless $v;
         $cmd .= " --$k '$v'";
@@ -636,11 +696,8 @@ sub run_mailgate {
     my ($child_out, $child_in);
     my $pid = IPC::Open2::open2($child_out, $child_in, $cmd);
 
-    if ( UNIVERSAL::isa($message, 'MIME::Entity') ) {
-        $message->print( $child_in );
-    } else {
-        print $child_in $message;
-    }
+    $args{after_open}->($child_in, $child_out) if $args{after_open};
+
     close $child_in;
 
     my $result = do { local $/; <$child_out> };
@@ -654,44 +711,75 @@ sub send_via_mailgate {
     my $message = shift;
     my %args = (@_);
 
-    my ($status, $gate_result) = $self->run_mailgate( message => $message, %args );
+    my ($status, $gate_result) = $self->run_mailgate(
+        message => $message, %args
+    );
 
     my $id;
     unless ( $status >> 8 ) {
         ($id) = ($gate_result =~ /Ticket:\s*(\d+)/i);
         unless ( $id ) {
-            Test::More::diag "Couldn't find ticket id in text:\n$gate_result" if $ENV{'TEST_VERBOSE'};
+            Test::More::diag "Couldn't find ticket id in text:\n$gate_result"
+                if $ENV{'TEST_VERBOSE'};
         }
     } else {
-        Test::More::diag "Mailgate output:\n$gate_result" if $ENV{'TEST_VERBOSE'};
+        Test::More::diag "Mailgate output:\n$gate_result"
+            if $ENV{'TEST_VERBOSE'};
     }
     return ($status, $id);
 }
 
-my $mailbox_catcher = File::Temp->new( OPEN => 0, CLEANUP => 0 )->filename;
+sub open_mailgate_ok {
+    my $class   = shift;
+    my $baseurl = shift;
+    my $queue   = shift || 'general';
+    my $action  = shift || 'correspond';
+    Test::More::ok(open(my $mail, "|$RT::BinPath/rt-mailgate --url $baseurl --queue $queue --action $action"), "Opened the mailgate - $!");
+    return $mail;
+}
+
+
+sub close_mailgate_ok {
+    my $class = shift;
+    my $mail  = shift;
+    close $mail;
+    Test::More::is ($? >> 8, 0, "The mail gateway exited normally. yay");
+}
+
+sub mailsent_ok {
+    my $class = shift;
+    my $expected  = shift;
+
+    my $mailsent = scalar grep /\S/, split /%% split me! %%\n/,
+        RT::Test->file_content(
+            $tmp{'mailbox'},
+            'unlink' => 0,
+            noexist => 1
+        );
+
+    Test::More::is(
+        $mailsent, $expected,
+        "The number of mail sent ($expected) matches. yay"
+    );
+}
+
 sub set_mail_catcher {
     my $self = shift;
-    my $catcher = sub {
-        my $MIME = shift;
-
-        open my $handle, '>>', $mailbox_catcher
-            or die "Unable to open $mailbox_catcher for appending: $!";
-
-        $MIME->print($handle);
-        print $handle "%% split me! %%\n";
-        close $handle;
-    };
-    RT->Config->Set( MailCommand => $catcher );
+    return 1;
 }
 
 sub fetch_caught_mails {
     my $self = shift;
-    return grep /\S/, split /%% split me! %%/,
-        RT::Test->file_content( $mailbox_catcher, 'unlink' => 1, noexist => 1 );
+    return grep /\S/, split /%% split me! %%\n/,
+        RT::Test->file_content(
+            $tmp{'mailbox'},
+            'unlink' => 1,
+            noexist => 1
+        );
 }
 
 sub clean_caught_mails {
-    unlink $mailbox_catcher;
+    unlink $tmp{'mailbox'};
 }
 
 =head2 get_relocatable_dir
@@ -894,7 +982,6 @@ sub trust_gnupg_key {
     return %res;
 }
 
-my @SERVERS;
 sub started_ok {
     my $self = shift;
 
@@ -913,6 +1000,16 @@ sub started_ok {
 sub start_standalone_server {
     my $self = shift;
 
+
+    require RT::Interface::Web::Standalone;
+
+    require Test::HTTP::Server::Simple::StashWarnings;
+    unshift @RT::Interface::Web::Standalone::ISA,
+        'Test::HTTP::Server::Simple::StashWarnings';
+    *RT::Interface::Web::Standalone::test_warning_path = sub {
+        "/__test_warnings";
+    };
+
     my $s = RT::Interface::Web::Standalone->new($port);
 
     my $ret = $s->started_ok;
@@ -925,18 +1022,24 @@ sub start_standalone_server {
     return ($ret, RT::Test::Web->new);
 }
 
-use File::Temp qw(tempfile);
-
 sub start_apache_server {
     my $self = shift;
     my $variant = shift || 'mod_perl';
 
     my %info = $self->apache_server_info( variant => $variant );
 
-    my ($log_fh, $log_fn) = tempfile();
-    my $pid_fn = File::Spec->rel2abs( File::Spec->catfile(
-        't', "apache.$$.pid"
-    ) );
+    Test::More::diag(do {
+        open my $fh, '<', $tmp{'config'}{'RT'};
+        local $/;
+        <$fh>
+    });
+
+    my $log_fn = File::Spec->catfile(
+        "$tmp{'directory'}", 'apache.log'
+    );
+    my $pid_fn = File::Spec->catfile(
+        "$tmp{'directory'}", "apache.pid"
+    );
     my $tmpl = File::Spec->rel2abs( File::Spec->catfile(
         't', 'data', 'configs',
         'apache'. $info{'version'} .'+'. $variant .'.conf'
@@ -955,11 +1058,16 @@ sub start_apache_server {
         my $method = 'apache_'.$variant.'_server_options';
         $self->$method( \%info, \%opt );
     }
-    my ($conf_fh, $conf_fn) = $self->process_in_file(
-        in => $tmpl, options => \%opt, out => $tmpl .'.final',
+    $tmp{'config'}{'apache'} = File::Spec->catfile(
+        "$tmp{'directory'}", "apache.conf"
+    );
+    $self->process_in_file(
+        in      => $tmpl, 
+        out     => $tmp{'config'}{'apache'},
+        options => \%opt,
     );
 
-    $self->fork_exec($info{'executable'}, '-f', $conf_fn);
+    $self->fork_exec($info{'executable'}, '-f', $tmp{'config'}{'apache'});
     my $pid = do {
         my $tries = 10;
         while ( !-e $pid_fn ) {
@@ -1159,6 +1267,16 @@ END {
     local $?;
 
     RT::Test->stop_server;
+
+    # not success
+    if ( grep !$_, $Test->summary ) {
+        $tmp{'directory'}->unlink_on_destroy(0);
+
+        Test::More::diag(
+            "Some tests failed, tmp directory"
+            ." '$tmp{directory}' is not cleaned"
+        );
+    }
 
     if ( $ENV{RT_TEST_PARALLEL} && $created_new_db ) {
 

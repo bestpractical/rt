@@ -51,7 +51,10 @@ package RT::SQL;
 use strict;
 use warnings;
 
-use Parse::BooleanLogic;
+use constant HAS_BOOLEAN_PARSER => do {
+    local $@;
+    eval { require Parse::BooleanLogic; 1 }
+};
 
 # States
 use constant VALUE       => 1;
@@ -215,13 +218,17 @@ sub _BitmaskToString {
 sub PossibleCustomFields {
     my %args = (Query => undef, CurrentUser => undef, @_);
 
-    my $tree = Parse::BooleanLogic->filter(
-        RT::SQL::ParseToArray( $args{'Query'} ),
-        sub { $_[0]->{'key'} =~ /^Queue(?:\z|\.)/ },
-    );
     my $cfs = RT::CustomFields->new( $args{'CurrentUser'} );
     my $ocf_alias = $cfs->_OCFAlias;
     $cfs->LimitToLookupType( 'RT::Queue-RT::Ticket' );
+
+    my $tree;
+    if ( HAS_BOOLEAN_PARSER ) {
+        $tree = Parse::BooleanLogic->filter(
+            RT::SQL::ParseToArray( $args{'Query'} ),
+            sub { $_[0]->{'key'} =~ /^Queue(?:\z|\.)/ },
+        );
+    }
     if ( $tree ) {
         my $clause = 'QUEUES';
         my $queue_alias = $cfs->Join(
@@ -269,9 +276,18 @@ sub PossibleCustomFields {
 
         $cfs->_CloseParen($clause);
         $cfs->_CloseParen($clause);
+    } else {
+        $cfs->Limit(
+            ENTRYAGGREGATOR => 'AND',
+            ALIAS           => $ocf_alias,
+            FIELD           => 'ObjectId',
+            OPERATOR        => 'IS NOT',
+            VALUE           => 'NULL',
+        );
     }
     return $cfs;
 }
+
 
 eval "require RT::SQL_Vendor";
 if ($@ && $@ !~ qr{^Can't locate RT/SQL_Vendor.pm}) {

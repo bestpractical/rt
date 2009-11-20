@@ -238,7 +238,6 @@ Encode 2.21
 CSS::Squish 0.06
 File::Glob
 Devel::StackTrace 1.19
-Parse::BooleanLogic 0.09
 .
 
 $deps{'MASON'} = [ text_to_hash( << '.') ];
@@ -295,6 +294,7 @@ Test::Warn
 Test::Builder 0.77 # needed to fix TODO test
 IPC::Run3
 Test::MockTime
+HTTP::Server::Simple::Mason 0.13
 .
 
 $deps{'FASTCGI'} = [ text_to_hash( << '.') ];

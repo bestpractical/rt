@@ -347,7 +347,6 @@ sub CreateByTemplate {
     my @results;
 
     # XXX: cargo cult programming that works. i'll be back.
-    use bytes;
 
     local %T::Tickets = %T::Tickets;
     local $T::TOP     = $T::TOP;
@@ -409,7 +408,6 @@ sub UpdateByTemplate {
     my $top  = shift;
 
     # XXX: cargo cult programming that works. i'll be back.
-    use bytes;
 
     my @results;
     local %T::Tickets = %T::Tickets;

@@ -1140,7 +1140,7 @@ sub SetDisabled {
     my $set_err = $self->PrincipalObj->SetDisabled($val);
     unless ($set_err) {
         $RT::Handle->Rollback();
-        $RT::Logger->warning("Couldn't ".($val == 1) ? "disable" : "enable"." user ".$self->PrincipalObj->Id);
+        $RT::Logger->warning(sprintf("Couldn't %s user %s", ($val == 1) ? "disable" : "enable", $self->PrincipalObj->Id));
         return (undef);
     }
     $self->_NewTransaction( Type => ($val == 1) ? "Disabled" : "Enabled" );

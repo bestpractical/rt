@@ -431,9 +431,8 @@ else {
             $e = 1;
             push @comments, "# $key: $s";
             unless (@$o) {
-                my %o = keys %$changes;
-                delete $o{id};
-                @$o = ("id", keys %o);
+                # move id forward
+                @$o = ("id", grep { $_ ne 'id' } keys %$changes);
                 $k = $changes;
             }
         }

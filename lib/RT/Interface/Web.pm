@@ -480,7 +480,7 @@ sub SendSessionCookie {
         -secure => ( RT->Config->Get('WebSecureCookies') ? 1 : 0 )
     );
 
-    $HTML::Mason::Commands::r->headers_out->{'Set-Cookie'} = $cookie->as_string;
+    $HTML::Mason::Commands::r->err_headers_out->{'Set-Cookie'} = $cookie->as_string;
 }
 
 =head2 Redirect URL
@@ -595,37 +595,45 @@ sub SendStaticFile {
 sub StripContent {
     my %args    = @_;
     my $content = $args{Content};
-    my $html    = ( ( $args{ContentType} || '' ) eq "text/html" );
-    my $sigonly = $args{StripSignature};
-
-    # Save us from undef warnings
-    return '' unless defined $content;
+    return '' unless $content;
 
     # Make the content have no 'weird' newlines in it
     $content =~ s/\r+\n/\n/g;
 
+    my $return_content = $content;
+
+    my $html = $args{ContentType} && $args{ContentType} eq "text/html";
+    my $sigonly = $args{StripSignature};
+
+    # massage content to easily detect if there's any real content
+    $content =~ s/\s+//g; # yes! remove all the spaces
+    if ( $html ) {
+        # remove html version of spaces and newlines
+        $content =~ s!&nbsp;!!g;
+        $content =~ s!<br/?>!!g;
+    }
+
     # Filter empty content when type is text/html
-    return '' if $html && $content =~ m{^\s*(?:<br[^>]*/?>)*\s*$}s;
+    return '' if $html && $content !~ /\S/;
 
     # If we aren't supposed to strip the sig, just bail now.
-    return $content unless $sigonly;
+    return $return_content unless $sigonly;
 
     # Find the signature
     my $sig = $args{'CurrentUser'}->UserObj->Signature || '';
-    $sig =~ s/^\s+//;
-    $sig =~ s/\s+$//;
+    $sig =~ s/\s+//g;
 
     # Check for plaintext sig
-    return '' if not $html and $content =~ /^\s*(--)?\s*\Q$sig\E\s*$/;
+    return '' if not $html and $content =~ /^(--)?\Q$sig\E$/;
 
     # Check for html-formatted sig
     RT::Interface::Web::EscapeUTF8( \$sig );
     return ''
-        if $html
-            and $content =~ m{^\s*(?:<p>)?\s*(--)?\s*<br[^>]*?/?>\s*\Q$sig\E\s*(?:</p>)?\s*$}s;
+      if $html
+          and $content =~ m{^(?:<p>)?(--)?\Q$sig\E(?:</p>)?$}s;
 
     # Pass it through
-    return $content;
+    return $return_content;
 }
 
 sub DecodeARGS {

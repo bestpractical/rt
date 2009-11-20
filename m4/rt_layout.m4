@@ -27,7 +27,7 @@ AC_DEFUN([RT_LAYOUT],[
 		s/\s+$/\n/gim;
 		s/\+$/\/rt3/gim;
 		# m4 will not let us just use $1, we need @S|@1
-#		s/^((?:bin|sbin|libexec|data|sysconf|sharedstate|localstate|lib|include|oldinclude|info|man)dir)\s*:\s*(.*)$/@S|@1=@S|@2/gim;
+#		s/^((?:bin|sbin|libexec|data|sysconf|sharedstate|localstate|lib|include|oldinclude|plugin|info|man)dir)\s*:\s*(.*)$/@S|@1=@S|@2/gim;
 		# uh, should be [:=], but m4 apparently substitutes something...
 		s/^(.*?)\s*(?::|=)\s*(.*)$/\(test "x\@S|@@S|@1" = "xNONE" || test "x\@S|@@S|@1" = "x") && @S|@1=@S|@2/gim;
 		 ' < $1 > $pldconf
@@ -38,7 +38,7 @@ AC_DEFUN([RT_LAYOUT],[
 			changequote({,})
 			for var in prefix exec_prefix bindir sbindir \
 				 sysconfdir mandir libdir datadir htmldir \
-				 localstatedir logfiledir masonstatedir \
+				 localstatedir logfiledir masonstatedir plugindir \
 				 sessionstatedir customdir custometcdir customhtmldir \
 				 customlexdir customlibdir manualdir; do
 				eval "val=\"\$$var\""
@@ -63,6 +63,7 @@ AC_DEFUN([RT_LAYOUT],[
 	RT_SUBST_EXPANDED_ARG(datadir)
 	RT_SUBST_EXPANDED_ARG(htmldir)
 	RT_SUBST_EXPANDED_ARG(manualdir)
+	RT_SUBST_EXPANDED_ARG(plugindir)
 	RT_SUBST_EXPANDED_ARG(localstatedir)
 	RT_SUBST_EXPANDED_ARG(logfiledir)
 	RT_SUBST_EXPANDED_ARG(masonstatedir)

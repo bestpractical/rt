@@ -152,6 +152,8 @@ sub email_digest_like {
     my $arg = shift;
     my $pattern = shift;
 
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
+
     my $perl = $^X . ' ' . join ' ', map { "-I$_" } @INC;
     open my $digester, "-|", "$perl $RT::SbinPath/rt-email-digest $arg";
     my @results = <$digester>;

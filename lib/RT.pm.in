@@ -66,9 +66,10 @@ our $EtcPath = '@RT_ETC_PATH@';
 our $BinPath = '@RT_BIN_PATH@';
 our $SbinPath = '@RT_SBIN_PATH@';
 our $VarPath = '@RT_VAR_PATH@';
+our $PluginPath = '@RT_PLUGIN_PATH@';
 our $LocalPath = '@RT_LOCAL_PATH@';
 our $LocalEtcPath = '@LOCAL_ETC_PATH@';
-our $LocalLibPath		=	'@LOCAL_LIB_PATH@';
+our $LocalLibPath        =    '@LOCAL_LIB_PATH@';
 our $LocalLexiconPath = '@LOCAL_LEXICON_PATH@';
 our $LocalPluginPath = $LocalPath."/plugins";
 
@@ -108,8 +109,9 @@ unless (  File::Spec->file_name_is_absolute($EtcPath) ) {
     $BasePath = Cwd::realpath( $BasePath );
 
     for my $path ( qw/EtcPath BinPath SbinPath VarPath LocalPath LocalEtcPath
-            LocalLibPath LocalLexiconPath LocalPluginPath MasonComponentRoot
-            MasonLocalComponentRoot MasonDataDir MasonSessionDir/ ) {
+            LocalLibPath LocalLexiconPath PluginPath LocalPluginPath 
+            MasonComponentRoot MasonLocalComponentRoot MasonDataDir 
+            MasonSessionDir/ ) {
         no strict 'refs';
         # just change relative ones
         $$path = File::Spec->catfile( $BasePath, $$path )
@@ -596,6 +598,7 @@ sub PluginDirs {
 =head2 InitPluginPaths
 
 Push plugins' lib paths into @INC right after F<local/lib>.
+In case F<local/lib> isn't in @INC, append them to @INC
 
 =cut
 
@@ -605,13 +608,19 @@ sub InitPluginPaths {
     my @lib_dirs = $self->PluginDirs('lib');
 
     my @tmp_inc;
+    my $added;
     for (@INC) {
         if ( Cwd::realpath($_) eq $RT::LocalLibPath) {
             push @tmp_inc, $_, @lib_dirs;
+            $added = 1;
         } else {
             push @tmp_inc, $_;
         }
     }
+
+    # append @lib_dirs in case $RT::LocalLibPath isn't in @INC
+    push @tmp_inc, @lib_dirs unless $added;
+
     my %seen;
     @INC = grep !$seen{$_}++, @tmp_inc;
 }

@@ -1289,16 +1289,4 @@ sub BasedOnObj {
     return $obj;
 }
 
-sub DerivativeCFs {
-    my $self = shift;
-    my $attrs = RT::Attributes->new( $self->CurrentUser );
-    $attrs->Limit( FIELD => 'ObjectType', VALUE => 'RT::CustomField' );
-    $attrs->Limit( FIELD => 'Name',       VALUE => 'BasedOn' );
-    $attrs->Limit( FIELD => 'Content',    VALUE => $self->id );
-
-    my @cfs;
-    push @cfs, $_->Object while $_ = $attrs->Next;
-    return @cfs;
-}
-
 1;

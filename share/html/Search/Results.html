@@ -57,7 +57,9 @@
     Rows => $Rows,
     OrderBy => $OrderBy,
     Order => $Order,
-    SavedSearchId => $SavedSearchId &>
+    SavedSearchId => $SavedSearchId,
+    SavedChartSearchId => $SavedChartSearchId,
+    &>
 <& /Elements/CollectionList, 
     Query => $Query,
     AllowSorting => 1,
@@ -70,7 +72,7 @@
     BaseURL => $BaseURL
 
    &>
-% my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order, HideResults => $HideResults, Page => $Page );
+% my %hiddens = (Query => $Query, Format => $Format, Rows => $Rows, OrderBy => $OrderBy, Order => $Order, HideResults => $HideResults, Page => $Page, SavedChartSearchId => $SavedChartSearchId );
 <div align="right" class="refresh">
 <form method="get" action="<%RT->Config->Get('WebPath')%>/Search/Results.html">
 % foreach my $key (keys(%hiddens)) {
@@ -195,4 +197,5 @@ $Page => 1
 $OrderBy => undef
 $Order => undef
 $SavedSearchId => undef
+$SavedChartSearchId => undef
 </%ARGS>

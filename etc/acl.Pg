@@ -54,7 +54,7 @@ sub acl {
     # if there's already an rt_user, use it.
     my @row = $dbh->selectrow_array( "SELECT usename FROM pg_user WHERE usename = '$db_user'" );
     unless ( $row[0] ) {
-	 push @acls, "CREATE USER $db_user WITH PASSWORD '$db_pass' NOCREATEDB NOCREATEUSER;";
+	 push @acls, "CREATE USER \"$db_user\" WITH PASSWORD '$db_pass' NOCREATEDB NOCREATEUSER;";
     }
 
     my $sequence_right
@@ -64,10 +64,10 @@ sub acl {
     foreach my $table (@tables) {
         if ( $table =~ /^[a-z]/ && $table ne 'sessions' ) {
 # table like objectcustomfields_id_s
-            push @acls, "GRANT $sequence_right ON $table TO $db_user;"
+            push @acls, "GRANT $sequence_right ON $table TO \"$db_user\";"
         }
         else {
-            push @acls, "GRANT SELECT, INSERT, UPDATE, DELETE ON $table TO $db_user;"
+            push @acls, "GRANT SELECT, INSERT, UPDATE, DELETE ON $table TO \"$db_user\";"
         }
     }
     return (@acls);

@@ -59,7 +59,7 @@ require Test::More;
 sub get_ok {
     my $self = shift;
     my $url = shift;
-    if ( $url =~ m{^/} ) {
+    if ( $url =~ s!^/!! ) {
         $url = $self->rt_base_url . $url;
     }
     my $rv = $self->SUPER::get_ok($url, @_);

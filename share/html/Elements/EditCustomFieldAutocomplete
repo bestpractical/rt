@@ -51,7 +51,7 @@
 new Ajax.Autocompleter(
     "<% $name %>-Values",
     "<% $name %>-Choices",
-    <% RT->Config->Get('WebPath')%>"/Helpers/Autocomplete/CustomFieldValues",
+    "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/CustomFieldValues",
     { tokens: [ '\n' ] }
 );
 % } else {
@@ -60,7 +60,7 @@ new Ajax.Autocompleter(
 new Ajax.Autocompleter(
     "<% $name %>-Value",
     "<% $name %>-Choices",
-    <% RT->Config->Get('WebPath')%>"/Helpers/Autocomplete/CustomFieldValues",
+    "<% RT->Config->Get('WebPath')%>/Helpers/Autocomplete/CustomFieldValues",
     {}
 );
 % }

@@ -69,12 +69,7 @@ if ( @status ) {
         . join( ' OR ', map "Status = '$_'", @status )
         . " )";
 }
-my $Format = qq{
-   '<B><A HREF="}. RT->Config->Get('WebPath') .qq{/SelfService/Display.html?id=__id__">__id__</a></B>/TITLE:#',
-   '<B><A HREF="}. RT->Config->Get('WebPath') .qq{/SelfService/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
-   Status,
-   Requestors,
-   OwnerName};
+my $Format = RT->Config->Get('DefaultSelfServiceSearchResultFormat');
 
 </%INIT>
 <%ARGS>

@@ -58,7 +58,7 @@
                path => 'Admin/Tools/Configuration.html',
         },
         E => { title => loc('Shredder'),
-               path  => 'Admin/Tools/Shredder',
+               path  => 'Admin/Tools/Shredder/',
         },
     };
 

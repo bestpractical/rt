@@ -117,7 +117,8 @@ our @FORMATTERS = (
     'RFC2616',       # loc
     'iCal',          # loc
 );
-if ( eval 'use DateTime qw(); 1;' && eval 'use DateTime::Locale qw(); 1;' ) {
+if ( eval 'use DateTime qw(); 1;' && eval 'use DateTime::Locale qw(); 1;' && 
+     DateTime->can('format_cldr') && DateTime::Locale::root->can('date_format_full') ) {
     push @FORMATTERS, 'LocalizedDateTime'; # loc
 }
 
@@ -501,6 +502,9 @@ as described in L</Get>.
 
 sub DateTime {
     my $self = shift;
+    unless (defined $self) {
+        use Carp; Carp::confess("undefined $self");
+    }
     return $self->Get( @_, Date => 1, Time => 1 );
 }
 
@@ -641,8 +645,8 @@ sub LocalizedDateTime
     my %args = ( Date => 1,
                  Time => 1,
                  Timezone => '',
-                 DateFormat => 'full_date_format',
-                 TimeFormat => 'medium_time_format',
+                 DateFormat => 'date_format_full',
+                 TimeFormat => 'time_format_medium',
                  AbbrDay => 1,
                  AbbrMonth => 1,
                  @_,
@@ -650,16 +654,27 @@ sub LocalizedDateTime
 
     return $self->loc("DateTime module missing") unless ( eval 'use DateTime qw(); 1;' );
     return $self->loc("DateTime::Locale module missing") unless ( eval 'use DateTime::Locale qw(); 1;' );
+    return $self->loc("DateTime doesn't support format_cldr, you must upgrade to use this feature") 
+        unless can DateTime::('format_cldr');
+
+
     my $date_format = $args{'DateFormat'};
     my $time_format = $args{'TimeFormat'};
 
-    my $lang = $self->CurrentUser->UserObj->Lang || 'en';
+    my $lang = $self->CurrentUser->UserObj->Lang;
+    unless ($lang) {
+        require I18N::LangTags::Detect;
+        $lang = ( I18N::LangTags::Detect::detect(), 'en' )[0];
+    }
+    
 
     my $formatter = DateTime::Locale->load($lang);
+    return $self->loc("DateTime::Locale doesn't support date_format_full, you must upgrade to use this feature") 
+        unless $formatter->can('date_format_full');
     $date_format = $formatter->$date_format;
     $time_format = $formatter->$time_format;
-    $date_format =~ s/\%A/\%a/g if ( $args{'AbbrDay'} );
-    $date_format =~ s/\%B/\%b/g if ( $args{'AbbrMonth'} );
+    $date_format =~ s/EEEE/EEE/g if ( $args{'AbbrDay'} );
+    $date_format =~ s/MMMM/MMM/g if ( $args{'AbbrMonth'} );
 
     my ($sec,$min,$hour,$mday,$mon,$year,$wday,$ydaym,$isdst,$offset) =
                             $self->Localtime($args{'Timezone'});
@@ -680,11 +695,11 @@ sub LocalizedDateTime
                           );
 
     if ( $args{'Date'} && !$args{'Time'} ) {
-        return $dt->strftime($date_format);
+        return $dt->format_cldr($date_format);
     } elsif ( !$args{'Date'} && $args{'Time'} ) {
-        return $dt->strftime($time_format);
+        return $dt->format_cldr($time_format);
     } else {
-        return $dt->strftime($date_format) . " " . $dt->strftime($time_format);
+        return $dt->format_cldr($date_format) . " " . $dt->format_cldr($time_format);
     }
 }
 

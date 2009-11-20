@@ -470,7 +470,7 @@ msgstr "%1k"
 #: share/html/Ticket/Elements/ShowTime:51
 #. (sprintf("%.1f",$minutes / 60))
 msgid "%quant(%1,hour)"
-msgstr "%antall(%1,time)"
+msgstr "%quant(%1,time)"
 
 #: lib/RT/Ticket_Overlay.pm:886
 #. ($args{'Status'})

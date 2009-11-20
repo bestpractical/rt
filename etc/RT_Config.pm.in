@@ -372,6 +372,34 @@ if you use 'sendmail' rather than 'sendmailpipe'
 
 Set($MailCommand , 'sendmailpipe');
 
+=item C<$SetOutgoingMailFrom>
+
+C<$SetOutgoingMailFrom> tells RT to set the sender envelope with the correspond
+mail address of the ticket's queue.
+
+Warning: If you use this setting, bounced mails will appear to be incoming
+mail to the system, thus creating new tickets.
+
+=cut
+
+Set($SetOutgoingMailFrom, 0);
+
+=item C<$OverrideOutgoingMailFrom>
+
+C<$OverrideOutgoingMailFrom> is used for overwriting the Correspond
+address of the queue. The option is a hash reference of queue name to
+email address.
+
+If there is no ticket involved, then the value of the C<Default> key will be
+used.
+
+=cut
+
+Set($OverrideOutgoingMailFrom, {
+#    'Default' => 'admin@rt.example.com',
+#    'General' => 'general@rt.example.com',
+});
+
 =back
 
 =head1 Sendmail Configuration
@@ -1209,6 +1237,19 @@ Set ($DefaultSearchResultFormat, qq{
    '<small>__LastUpdatedRelative__</small>',
    '<small>__TimeLeft__</small>'});
 
+=item C<$DefaultSelfServiceSearchResultFormat>
+
+C<$DefaultSelfServiceSearchResultFormat> is the default format of searches displayed in the 
+SelfService interface.
+
+=cut
+
+Set($DefaultSelfServiceSearchResultFormat, qq{
+   '<B><A HREF="__WebPath__/SelfService/Display.html?id=__id__">__id__</a></B>/TITLE:#',
+   '<B><A HREF="__WebPath__/SelfService/Display.html?id=__id__">__Subject__</a></B>/TITLE:Subject',
+   Status,
+   Requestors,
+   OwnerName});
 
 =item C<$SuppressInlineTextFiles>
 

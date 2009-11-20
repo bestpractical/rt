@@ -56,13 +56,9 @@
 
 =head1 DESCRIPTION
 
+An RT queue object.
 
 =head1 METHODS
-
-=begin testing 
-
-use RT::Queue;
-
 
 =cut
 
