@@ -60,11 +60,6 @@ template 'create' => page { title => _('Create a new ticket') } content {
     my $queue = $action ? $action->argument('queue') : get('queue');
     $queue or die "Queue not specified";
 
-    render_mason('/Elements/Tabs', {
-        current_toptab => 'ticket/create',
-        title          => _("Create a new ticket"),
-    });
-
     my $create = new_action(
         class   => 'CreateTicket',
         moniker => 'create_ticket',
