@@ -1267,11 +1267,11 @@ END {
     RT::Test->stop_server;
 
     # not success
-    if ( grep !$_, $Test->summary ) {
+    if ( !$Test->summary || grep !$_, $Test->summary ) {
         $tmp{'directory'}->unlink_on_destroy(0);
 
         Test::More::diag(
-            "Some tests failed, tmp directory"
+            "Some tests failed or we bailed out, tmp directory"
             ." '$tmp{directory}' is not cleaned"
         );
     }
