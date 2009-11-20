@@ -4,6 +4,7 @@ use warnings;
 package RT::Action::ConfigSystem;
 use base qw/RT::Action Jifty::Action/;
 use Scalar::Defer; 
+use Try::Tiny;
 
 sub arguments {
     my $self = shift;
@@ -124,6 +125,66 @@ sub _canonicalize_arguments {
             }
         }
     }
+    return 1;
+}
+
+sub validate_organization {
+    my $self = shift;
+    my $value = shift;
+    return 1 unless defined $value;
+    if ( $value =~ /\s/ ) {
+        return $self->validation_error(
+            organization => _("Organization cannot contain whitespaces.") );
+    }
+    return 1;
+}
+
+sub validate_gnupg {
+    my $self = shift;
+    my $value = shift;
+    return 1 unless defined $value;
+    if ( ref $value && ref $value eq 'HASH' ) {
+        if ( $value->{enable} ) {
+            my $gpgopts = $self->argument_value('gnupg_options')
+              || RT->config->get('gnupg_options') || {};
+            unless ( -d $gpgopts->{homedir} && -r _ ) {    # no homedir, no gpg
+                return $self->validation_error(
+                    gnupg => _(
+"couldn't successfully read your configured GnuPG home directory: '%1'",
+                        $gpgopts->{homedir}
+                      )
+                );
+            }
+
+            require RT::Crypt::GnuPG;
+            unless ( RT::Crypt::GnuPG::probe() ) {
+                return $self->validation_error(
+                    gnupg => _("couldn't successfully execute gpg") );
+            }
+        }
+    }
+    else {
+        return $self->validation_error(
+            gnupg => _("gnupg value should be a hashref.") );
+    }
+    return 1;
+}
+
+sub validate_disable_graphviz {
+    my $self  = shift;
+    my $value = shift;
+    return 1 unless defined $value;
+
+    try {
+        require IPC::Run;
+        require IPC::Run::SafeHandles;
+        require GraphViz;
+    }
+    catch {
+        return $self->validation_error(
+            disable_graphviz => _( "GraphViz can't be enabled: %1", $_ ) );
+    };
+
     return 1;
 }
 
