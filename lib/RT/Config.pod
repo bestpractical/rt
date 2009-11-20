@@ -589,7 +589,7 @@ default: C<0>
 
 =item C<trust_html_attachments>
 
-if C<TrustHTMLAttachments> is not defined, we will display them
+if C<trust_html_attachments> is not defined, we will display them
 as text. This prevents malicious HTML and javascript from being
 sent in a request (although there is probably more to it than that)
 
@@ -711,7 +711,9 @@ default: C<10>
 
 =item C<disable_graphviz>
 
-default: C<undef>
+Disable GraphViz or not
+
+default: C<'0'>
 
 =item C<oldest_transactions_first>
 
