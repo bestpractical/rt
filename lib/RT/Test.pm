@@ -1034,26 +1034,24 @@ sub start_apache_server {
         <$fh>
     });
 
-    my $log_fn = File::Spec->catfile(
-        "$tmp{'directory'}", 'apache.log'
-    );
-    my $pid_fn = File::Spec->catfile(
-        "$tmp{'directory'}", "apache.pid"
-    );
     my $tmpl = File::Spec->rel2abs( File::Spec->catfile(
         't', 'data', 'configs',
         'apache'. $info{'version'} .'+'. $variant .'.conf'
     ) );
     my %opt = (
-        listen        => $port,
-        server_root   => $info{'HTTPD_ROOT'} || $ENV{'HTTPD_ROOT'}
+        listen         => $port,
+        server_root    => $info{'HTTPD_ROOT'} || $ENV{'HTTPD_ROOT'}
             || Test::More::BAIL_OUT("Couldn't figure out server root"),
-        pid_file      => $pid_fn,
-        document_root => $RT::MasonComponentRoot,
-        rt_bin_path   => $RT::BinPath,
-        log_file      => $log_fn,
+        document_root  => $RT::MasonComponentRoot,
+        tmp_dir        => "$tmp{'directory'}",
+        rt_bin_path    => $RT::BinPath,
         rt_site_config => $ENV{'RT_SITE_CONFIG'},
     );
+    foreach (qw(log pid lock)) {
+        $opt{$_ .'_file'} = File::Spec->catfile(
+            "$tmp{'directory'}", "apache.$_"
+        );
+    }
     {
         my $method = 'apache_'.$variant.'_server_options';
         $self->$method( \%info, \%opt );
@@ -1070,14 +1068,14 @@ sub start_apache_server {
     $self->fork_exec($info{'executable'}, '-f', $tmp{'config'}{'apache'});
     my $pid = do {
         my $tries = 10;
-        while ( !-e $pid_fn ) {
+        while ( !-e $opt{'pid_file'} ) {
             $tries--;
             last unless $tries;
             sleep 1;
         }
         Test::More::BAIL_OUT("Couldn't start apache server, no pid file")
-            unless -e $pid_fn;
-        open my $pid_fh, '<', $pid_fn
+            unless -e $opt{'pid_file'};
+        open my $pid_fh, '<', $opt{'pid_file'}
             or Test::More::BAIL_OUT("Couldn't open pid file: $!");
         my $pid = <$pid_fh>;
         chomp $pid;
