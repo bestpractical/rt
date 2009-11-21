@@ -2411,16 +2411,10 @@ sub Probe {
 
 
 sub _make_gpg_handles {
-    my %handle_map = (
-        stdin  => IO::Handle->new(),
-        stdout => IO::Handle->new(),
-        stderr => IO::Handle->new(),
-        logger => IO::Handle->new(),
-        status => IO::Handle->new(),
-        command => IO::Handle->new(),
-
-
-            @_);
+    my %handle_map = (@_);
+    $handle_map{$_} = IO::Handle->new
+        foreach grep !defined $handle_map{$_}, 
+        qw(stdin stdout stderr logger status command);
 
     my $handles = GnuPG::Handles->new(%handle_map);
     return ($handles, \%handle_map);
