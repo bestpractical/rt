@@ -54,6 +54,42 @@ use base 'Exporter';
 our @EXPORT = qw/safe_run_child/;
 
 sub safe_run_child (&) {
+    my $our_pid = $$;
+
+    # situation here is wierd, running external app
+    # involves fork+exec. At some point after fork,
+    # but before exec (or during) code can die in a
+    # child. Local is no help here as die throws
+    # error out of scope and locals are reset to old
+    # values. Instead we set values, eval code, check pid
+    # on failure and reset values only in our original
+    # process
+    my $dbh = $RT::Handle->dbh;
+    $dbh->{'InactiveDestroy'} = 1 if $dbh;
+    $RT::Handle->{'DisconnectHandleOnDestroy'} = 0;
+
+    my @res;
+    my $want = wantarray;
+    eval {
+        unless ( defined $want ) {
+            _safe_run_child( @_ );
+        } elsif ( $want ) {
+            @res = _safe_run_child( @_ );
+        } else {
+            @res = ( scalar _safe_run_child( @_ ) );
+        }
+        1;
+    } or do {
+        if ( $our_pid == $$ ) {
+            $dbh->{'InactiveDestroy'} = 0 if $dbh;
+            $RT::Handle->{'DisconnectHandleOnDestroy'} = 1;
+        }
+        die $@;
+    };
+    return $want? (@res) : $res[0];
+}
+
+sub _safe_run_child {
     local @ENV{ 'LANG', 'LC_ALL' } = ( 'C', 'C' );
 
     return shift->() if $ENV{'MOD_PERL'} || $CGI::SpeedyCGI::i_am_speedy;
