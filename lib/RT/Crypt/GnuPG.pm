@@ -2399,11 +2399,17 @@ sub Probe {
 # it's general error system error or incorrect command, command is correct,
 # but there is no way to get actuall error
     if ( $? && ($? >> 8) != 2 ) {
-        $RT::Logger->debug(
-            "Probe for GPG failed."
+        my $msg = "Probe for GPG failed."
             ." Process exitted with code ". ($? >> 8)
             . ($? & 127 ? (" as recieved signal ". ($? & 127)) : '')
-        );
+            . ".";
+        foreach ( qw(stderr logger status) ) {
+            my $tmp = do { local $/; readline $handle{$_} };
+            next unless $tmp && $tmp =~ /\S/s;
+            close $handle{$_};
+            $msg .= "\n$_:\n$tmp\n";
+        }
+        $RT::Logger->debug( $msg );
         return 0;
     }
     return 1;
