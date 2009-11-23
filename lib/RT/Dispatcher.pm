@@ -196,13 +196,13 @@ before qr{.*} => run {
     main_nav->child( Home => label => _('Homepage'),      url => '/', sort_order => 1);
     my $tickets = main_nav->child( _('Tickets'),       url => '/Search/Build.html', sort_order => 2 );
     $tickets->child( new => label => _('New Search')  => url => "/Search/Build.html?new_query=1" );
-    my $new = $tickets->child(create => label => _('New ticket'), url => '/Ticket/Create.html');
+    my $new = $tickets->child(create => label => _('New ticket'), url => '/ticket/create');
 
     my $q = RT::Model::QueueCollection->new();
     $q->find_all_rows;
     while (my $queue = $q->next) {
             next unless $queue->current_user_has_right('CreateTicket');
-            $new->child( $queue->id => label => $queue->name, url => '/Ticket/Create.html?queue='.$queue->id);
+            $new->child( $queue->id => label => $queue->name, url => '/ticket/create?queue='.$queue->id);
     }
 
     my $tools = main_nav->child( _('Tools'), url => '/Tools/index.html', sort_order => 3 );
