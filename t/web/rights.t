@@ -16,7 +16,7 @@ sub get_rights {
     my $agent = shift;
     my $principal_id = shift;
     my $object = shift;
-    $agent->form_number(3);
+    $agent->form_number(2);
     my @inputs = $agent->current_form->find_input("revoke_right-$principal_id-$object");
     my @Rights = sort grep $_, map $_->possible_values, grep $_, @inputs;
     return @Rights;
@@ -33,7 +33,7 @@ my ($everyone, $everyone_gid);
 diag "revoke all global rights from Everyone group" if $ENV{'TEST_VERBOSE'};
 my @has = get_rights( $m, $everyone_gid, 'RT::System-1' );
 if ( @has ) {
-    $m->form_number(3);
+    $m->form_number(2);
     $m->tick("revoke_right-$everyone_gid-RT::System-1", $_) foreach @has;
     $m->submit;
     
@@ -44,7 +44,7 @@ if ( @has ) {
 
 diag "grant SuperUser right to everyone" if $ENV{'TEST_VERBOSE'};
 {
-    $m->form_number(3);
+    $m->form_number(2);
     $m->select("grant_right-$everyone_gid-RT::System-1", ['SuperUser']);
     $m->submit;
 
@@ -56,7 +56,7 @@ diag "grant SuperUser right to everyone" if $ENV{'TEST_VERBOSE'};
 
 diag "revoke the right" if $ENV{'TEST_VERBOSE'};
 {
-    $m->form_number(3);
+    $m->form_number(2);
     $m->tick("revoke_right-$everyone_gid-RT::System-1", 'SuperUser');
     $m->submit;
 
@@ -69,7 +69,7 @@ diag "revoke the right" if $ENV{'TEST_VERBOSE'};
 
 diag "return rights the group had in the beginning" if $ENV{'TEST_VERBOSE'};
 if ( @has ) {
-    $m->form_number(3);
+    $m->form_number(2);
     $m->select("grant_right-$everyone_gid-RT::System-1", \@has);
     $m->submit;
 

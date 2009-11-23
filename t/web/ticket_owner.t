@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test strict => 0, tests => 93, l10n => 1;
+use RT::Test strict => 0, tests => 94, l10n => 1;
 
 
 my $queue = RT::Test->load_or_create_queue( name => 'Regression' );
@@ -32,9 +32,7 @@ ok $agent_a->login('user_a', 'password'), 'logged in as user A';
 diag "current user has no right to own, nobody selected as owner on create" if $ENV{TEST_VERBOSE};
 {
     $agent_a->get_ok('/', 'open home page');
-    $agent_a->form_name('create_ticket_in_queue');
-    $agent_a->select( 'queue', $queue->id );
-    $agent_a->submit;
+    $agent_a->follow_link_ok( url_regex => qr'ticket/create' , text => $queue->name);
 
     $agent_a->content_like(qr/Create a new ticket/i, 'opened create ticket page');
     my $form = $agent_a->form_name('ticket_create');
@@ -56,10 +54,7 @@ diag "current user has no right to own, nobody selected as owner on create" if $
 
 diag "user can chose owner of a new ticket" if $ENV{TEST_VERBOSE};
 {
-    $agent_a->get_ok('/', 'open home page');
-    $agent_a->form_name('create_ticket_in_queue');
-    $agent_a->select( 'queue', $queue->id );
-    $agent_a->submit;
+    $agent_a->follow_link_ok( url_regex => qr'ticket/create' , text => $queue->name);
 
     $agent_a->content_like(qr/Create a new ticket/i, 'opened create ticket page');
     my $moniker = $agent_a->moniker_for('RT::Action::CreateTicket');
@@ -102,7 +97,7 @@ diag "user A can not change owner after create" if $ENV{TEST_VERBOSE};
         $agent->goto_ticket( $id );
         diag("Going to ticket $id") if $ENV{TEST_VERBOSE};
         $agent->follow_link_ok(text => 'Basics');
-        my $form = $agent->form_number(3);
+        my $form = $agent->form_number(2);
         is $agent->action_field_value(
             $agent->moniker_for('RT::Action::UpdateTicket'), 'owner'
           ),
@@ -142,7 +137,7 @@ diag "on reply correct owner is selected" if $ENV{TEST_VERBOSE};
     $agent_a->goto_ticket( $id );
     $agent_a->follow_link_ok(text => 'Reply');
 
-    my $form = $agent_a->form_number(3);
+    my $form = $agent_a->form_number(2);
     is $form->value('owner'), '', 'empty value selected';
     $agent_a->submit;
 
