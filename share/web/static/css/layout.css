@@ -13,73 +13,20 @@ body {
 
 div#body {
     padding: 1em;
-    padding-top: 1.5em;
     -moz-border-radius-topright: 0.5em;
     -moz-border-radius-bottomright: 0.5em;
     -webkit-border-top-right-radius: 0.5em;
     -webkit-border-bottom-right-radius: 0.5em;
-    margin-left: em;
-    margin-top: 5.2em;
+    margin-top: 1em;
     margin-right: 1em;
     margin-bottom: 0em;
     min-height: 10%;
     background: #fff;
     border-top: 2px solid #ccc;
-    border-left: 2px solid #ccc;
+    border-right: 2px solid #ccc;
     z-index:1;
 
 
-}
-
-#nav-widgets {
- position: absolute;
- background: transparent;
- top: 6.5em; 
- right: 1em;
- width: auto;
- min-width: 42em;
- font-size: 0.9em;
- z-index: 99;
-}
-
-#nav-widgets form * {
-    vertical-align: top;
-}
-
-#nav-widgets button, #nav-widgets select, #nav-widgets input{
- padding-top: 0em;
- padding-bottom: 0em;
- width: 8em;
-
-}
-
-#nav-widgets form {
- display: block;
-
-}
-
-#nav-widgets #CreateTicketInQueue {
- text-align: right; 
-
-}
-#nav-widgets #simple-search {
-    float: right;
-}
-
-#nav-widgets #simple-search input.button {
-    width: 5em;
-}
-#nav-widgets #simple-search .field{
- margin-left: 1em;
- }
-
-
-.page-nav {
-	padding-top: 0.25em;
-}
-
-.page-nav ul  {
-	background: #ddd;
 }	
  
  div#footer {
@@ -157,6 +104,15 @@ div#quickbar {
  padding-bottom: 0.5em;
  height: 1em;
  border-bottom: 1px solid #ccc;
+
+}
+
+#simple-search {
+    position: absolute;
+    right: -1em;
+    font-size: 0.6em;
+    font-weight: normal;
+    top: 2em;
 
 }
 div#quick-personal {

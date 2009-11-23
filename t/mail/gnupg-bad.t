@@ -42,7 +42,7 @@ $m->login;
 $m->content_like(qr/Logout/, 'we did log in');
 $m->get( $baseurl.'/Admin/Queues/');
 $m->follow_link_ok( {text => 'General'} );
-$m->submit_form( form_number => 3,
+$m->submit_form( form_number => 2,
          fields      => { correspond_address => 'rt@example.com' } );
 $m->content_like(qr/rt\@example.com.* - never/, 'has key info.');
 ok(my $user = RT::Model::User->new(current_user => RT->system_user));
