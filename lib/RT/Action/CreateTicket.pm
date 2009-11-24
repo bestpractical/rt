@@ -183,13 +183,13 @@ sub setup_gnupg {
     return unless RT->config->get('gnupg')->{enable};
 
     $self->fill_parameter(sign => (
-        render_as => 'checkbox',
-        default   => $queue->sign,
+        render_as     => 'checkbox',
+        default_value => $queue->sign,
     ));
 
     $self->fill_parameter(encrypt => (
-        render_as => 'checkbox',
-        default   => $queue->encrypt,
+        render_as     => 'checkbox',
+        default_value => $queue->encrypt,
     ));
 }
 
