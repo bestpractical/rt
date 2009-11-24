@@ -153,7 +153,7 @@ sub validate_gnupg {
             unless ( -d $homedir ) {
                 return $self->validation_error(
                     gnupg => _(
-"your configured GnuPG home directory does not exist: '%1'",
+'your configured GnuPG home directory does not exist: "%1"',
                         $homedir
                       )
                 );
@@ -161,7 +161,7 @@ sub validate_gnupg {
             unless ( -r $homedir ) {
                 return $self->validation_error(
                     gnupg => _(
-"couldn't read your configured GnuPG home directory: '%1'",
+'could not read your configured GnuPG home directory: "%1"',
                         $homedir
                       )
                 );
