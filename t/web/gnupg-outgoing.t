@@ -293,7 +293,7 @@ sub update_ticket {
 
     ok $m->goto_ticket( $tid ), "UI -> ticket #$tid";
     $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );
-    $m->form_number(3);
+    $m->form_name('ticket_update');
     $m->field( update_content => 'Some content' );
 
     foreach ( qw(sign encrypt) ) {

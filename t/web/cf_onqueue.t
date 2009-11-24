@@ -10,7 +10,8 @@ diag "Create a queue CF" if $ENV{'TEST_VERBOSE'};
 {
     $m->follow_link( text => 'Configuration' );
     $m->title_is(q/RT Administration/, 'admin screen');
-    $m->follow_link( text => 'Custom Fields' );
+    $m->follow_link( text => 'Custom Fields', url_regex =>
+            qr!Admin/CustomFields! );
     $m->title_is(q/Select a Custom Field/, 'admin-cf screen');
     $m->follow_link( text => 'Create' );
     $m->submit_form(
@@ -51,7 +52,7 @@ diag "Edit the CF value for default queue" if $ENV{'TEST_VERBOSE'};
     $m->title_is(q/Editing Configuration for queue General/, 'default queue configuration screen');
     $m->content_like( qr/QueueCFTest/, 'CF QueueCFTest displayed on default queue' );
     $m->submit_form(
-        form_number => 3,
+        form_name => 'queue_modify',
         # The following doesn't want to works :(
         #with_fields => { 'object-RT::Model::Queue-1-CustomField-1-value' },
         fields => {

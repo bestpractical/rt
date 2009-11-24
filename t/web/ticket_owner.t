@@ -102,7 +102,7 @@ diag "user A can not change owner after create" if $ENV{TEST_VERBOSE};
         $agent->goto_ticket( $id );
         diag("Going to ticket $id") if $ENV{TEST_VERBOSE};
         $agent->follow_link_ok(text => 'Basics');
-        my $form = $agent->form_number(3);
+        my $form = $agent->form_name('ticket_modify');
         is $agent->action_field_value(
             $agent->moniker_for('RT::Action::UpdateTicket'), 'owner'
           ),
@@ -142,7 +142,7 @@ diag "on reply correct owner is selected" if $ENV{TEST_VERBOSE};
     $agent_a->goto_ticket( $id );
     $agent_a->follow_link_ok(text => 'Reply');
 
-    my $form = $agent_a->form_number(3);
+    my $form = $agent_a->form_name('ticket_update');
     is $form->value('owner'), '', 'empty value selected';
     $agent_a->submit;
 

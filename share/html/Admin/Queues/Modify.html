@@ -54,7 +54,7 @@
 
 
 
-<form action="<%RT->config->get('web_path')%>/Admin/Queues/Modify.html" method="post">
+<form action="<%RT->config->get('web_path')%>/Admin/Queues/Modify.html" method="post" name="queue_modify">
 <input type="hidden" class="hidden" name="set_enabled" value="1" />
 <input type="hidden" class="hidden" name="id" value="<% $create? 'new': $queue_obj->id %>" />
 
