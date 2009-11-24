@@ -1561,6 +1561,19 @@ Hide links/portlets related to Reminders by setting this to 0
 
 Set($EnableReminders,1);
 
+
+=item C<@Plugins>
+
+Set C<@Plugins> to a list of external RT plugins that should be enabled (those
+plugins have to be previously downloaded and installed).
+Example:
+
+C<Set(@Plugins, (qw(Extension::QuickDelete RT::FM)));>
+
+=cut
+
+Set(@Plugins, ());
+
 =back
 
 =head1 Development Configuration
