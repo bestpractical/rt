@@ -88,12 +88,16 @@ $m->submit;
 RT::Test->clean_caught_mails;
 
 $m->goto_create_ticket( $queue );
-$m->form_name('ticket_create');
+$m->fill_in_action_ok(create_ticket => (
+    subject => 'Encryption test',
+    content => 'Some content',
+));
 
-$m->field('subject', 'Encryption test');
-$m->field('content', 'Some content');
-ok($m->value('encrypt', 2), "encrypt tick box is checked");
-ok(!$m->value('sign', 2), "sign tick box is unchecked");
+my $encrypt = $m->action_field_input('create_ticket', 'encrypt');
+my $sign    = $m->action_field_input('create_ticket', 'sign');
+
+ok($encrypt->value, "encrypt tick box is checked");
+ok(!$sign->value, "sign tick box is unchecked");
 $m->submit;
 is($m->status, 200, "request successful");
 
@@ -157,11 +161,15 @@ $m->submit;
 RT::Test->clean_caught_mails;
 
 $m->goto_create_ticket( $queue );
-$m->form_name('ticket_create');
-$m->field('subject', 'Signing test');
-$m->field('content', 'Some other content');
-ok(!$m->value('encrypt', 2), "encrypt tick box is unchecked");
-ok($m->value('sign', 2), "sign tick box is checked");
+$m->fill_in_action_ok(create_ticket => (
+    subject => 'Signing test',
+    content => 'Some other content',
+));
+
+$encrypt = $m->action_field_input('create_ticket', 'encrypt');
+$sign    = $m->action_field_input('create_ticket', 'sign');
+ok(!$encrypt->value, "encrypt tick box is unchecked");
+ok($sign->value, "sign tick box is checked");
 $m->submit;
 is($m->status, 200, "request successful");
 
@@ -230,11 +238,15 @@ RT::Test->clean_caught_mails;
 
 $user->set_email('recipient@example.com');
 $m->goto_create_ticket( $queue );
-$m->form_name('ticket_create');
-$m->field('subject', 'Crypt+Sign test');
-$m->field('content', 'Some final? content');
-ok($m->value('encrypt', 2), "encrypt tick box is checked");
-ok($m->value('sign', 2), "sign tick box is checked");
+$m->fill_in_action_ok(create_ticket => (
+    subject => 'Crypt+Sign test',
+    content => 'Some final? content',
+));
+
+$encrypt = $m->action_field_input('create_ticket', 'encrypt');
+$sign    = $m->action_field_input('create_ticket', 'sign');
+ok($encrypt->value, "encrypt tick box is checked");
+ok($sign->value, "sign tick box is checked");
 $m->submit;
 is($m->status, 200, "request successful");
 $m->get($baseurl); # ensure that the mail has been processed
@@ -296,12 +308,16 @@ MAIL
 RT::Test->fetch_caught_mails;
 
 $m->goto_create_ticket( $queue );
-$m->form_name('ticket_create');
-$m->field('subject', 'Test crypt-off on encrypted queue');
-$m->field('content', 'Thought you had me figured out didya');
-$m->field(encrypt => undef, 2); # turn off encryption
-ok(!$m->value('encrypt', 2), "encrypt tick box is now unchecked");
-ok($m->value('sign', 2), "sign tick box is still checked");
+$m->fill_in_action_ok(create_ticket => (
+    subject => 'Test crypt-off on encrypted queue',
+    content => 'Thought you had me figured out didya',
+    encrypt => undef, # turn off encryption
+));
+
+$encrypt = $m->action_field_input('create_ticket', 'encrypt');
+$sign    = $m->action_field_input('create_ticket', 'sign');
+ok(!$encrypt->value, "encrypt tick box is now unchecked");
+ok($sign->value, "sign tick box is still checked");
 $m->submit;
 is($m->status, 200, "request successful");
 
