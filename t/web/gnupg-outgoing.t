@@ -103,18 +103,17 @@ diag "check in read-only mode that queue's props influence create/update ticket 
         set_queue_crypt_options( %$variant );
         $m->goto_ticket( $id );
         $m->follow_link_ok({text => 'Reply'}, '-> reply');
-        my $encrypt = $m->action_field_input('create_ticket', 'encrypt');
-        my $sign    = $m->action_field_input('create_ticket', 'sign');
-        if ( $variant->{'encrypt'} ) {
-            ok $encrypt->value('encrypt'), "encrypt tick box is checked";
-        } else {
-            ok !$encrypt->value('encrypt'), "encrypt tick box is unchecked";
-        }
-        if ( $variant->{'sign'} ) {
-            ok $sign->value('sign'), "sign tick box is checked";
-        } else {
-            ok !$sign->value('sign'), "sign tick box is unchecked";
-        }
+        $m->form_number(3);
+         if ( $variant->{'encrypt'} ) {
+            ok $m->value('encrypt', 2), "encrypt tick box is checked";
+         } else {
+            ok !$m->value('encrypt', 2), "encrypt tick box is unchecked";
+         }
+         if ( $variant->{'sign'} ) {
+            ok $m->value('sign', 2), "sign tick box is checked";
+         } else {
+            ok !$m->value('sign', 2), "sign tick box is unchecked";
+         }
     }
 }
 
