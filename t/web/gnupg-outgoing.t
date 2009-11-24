@@ -74,16 +74,17 @@ diag "check in read-only mode that queue's props influence create/update ticket 
     foreach my $variant ( @variants ) {
         set_queue_crypt_options( %$variant );
         $m->goto_create_ticket( $queue );
-        my $form = $m->action_form('create_ticket');
+        my $encrypt = $m->action_field_input('create_ticket', 'encrypt');
+        my $sign    = $m->action_field_input('create_ticket', 'sign');
         if ( $variant->{'encrypt'} ) {
-            ok $form->value('encrypt'), "encrypt tick box is checked";
+            ok $encrypt->value('encrypt'), "encrypt tick box is checked";
         } else {
-            ok !$form->value('encrypt'), "encrypt tick box is unchecked";
+            ok !$encrypt->value('encrypt'), "encrypt tick box is unchecked";
         }
         if ( $variant->{'sign'} ) {
-            ok $form->value('sign'), "sign tick box is checked";
+            ok $sign->value('sign'), "sign tick box is checked";
         } else {
-            ok !$form->value('sign'), "sign tick box is unchecked";
+            ok !$sign->value('sign'), "sign tick box is unchecked";
         }
     }
 
@@ -102,16 +103,17 @@ diag "check in read-only mode that queue's props influence create/update ticket 
         set_queue_crypt_options( %$variant );
         $m->goto_ticket( $id );
         $m->follow_link_ok({text => 'Reply'}, '-> reply');
-        my $form = $m->action_form('create_ticket');
+        my $encrypt = $m->action_field_input('create_ticket', 'encrypt');
+        my $sign    = $m->action_field_input('create_ticket', 'sign');
         if ( $variant->{'encrypt'} ) {
-            ok $form->value('encrypt'), "encrypt tick box is checked";
+            ok $encrypt->value('encrypt'), "encrypt tick box is checked";
         } else {
-            ok !$form->value('encrypt'), "encrypt tick box is unchecked";
+            ok !$encrypt->value('encrypt'), "encrypt tick box is unchecked";
         }
         if ( $variant->{'sign'} ) {
-            ok $form->value('sign'), "sign tick box is checked";
+            ok $sign->value('sign'), "sign tick box is checked";
         } else {
-            ok !$form->value('sign'), "sign tick box is unchecked";
+            ok !$sign->value('sign'), "sign tick box is unchecked";
         }
     }
 }
