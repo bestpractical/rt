@@ -54,6 +54,7 @@ sub after_set_queue {
 
     $self->set_valid_statuses($queue);
     $self->set_valid_owners($queue);
+    $self->setup_gnupg($queue);
 
     $self->add_role_group_parameter(
         name          => 'requestors',
@@ -173,6 +174,23 @@ sub set_valid_owners {
     unshift @valid_owners, RT->nobody;
 
     $self->fill_parameter(owner => valid_values => [ map { $_->id } @valid_owners ]);
+}
+
+sub setup_gnupg {
+    my $self  = shift;
+    my $queue = shift;
+
+    return unless RT->config->get('gnupg')->{enable};
+
+    $self->fill_parameter(sign => (
+        render_as => 'checkbox',
+        default   => $queue->sign,
+    ));
+
+    $self->fill_parameter(encrypt => (
+        render_as => 'checkbox',
+        default   => $queue->encrypt,
+    ));
 }
 
 sub set_initial_priority {

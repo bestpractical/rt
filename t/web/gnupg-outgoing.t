@@ -74,16 +74,17 @@ diag "check in read-only mode that queue's props influence create/update ticket 
     foreach my $variant ( @variants ) {
         set_queue_crypt_options( %$variant );
         $m->goto_create_ticket( $queue );
-        $m->form_name('ticket_create');
+        my $encrypt = $m->action_field_input('create_ticket', 'encrypt');
+        my $sign    = $m->action_field_input('create_ticket', 'sign');
         if ( $variant->{'encrypt'} ) {
-            ok $m->value('encrypt', 2), "encrypt tick box is checked";
+            ok $encrypt->value('encrypt'), "encrypt tick box is checked";
         } else {
-            ok !$m->value('encrypt', 2), "encrypt tick box is unchecked";
+            ok !$encrypt->value('encrypt'), "encrypt tick box is unchecked";
         }
         if ( $variant->{'sign'} ) {
-            ok $m->value('sign', 2), "sign tick box is checked";
+            ok $sign->value('sign'), "sign tick box is checked";
         } else {
-            ok !$m->value('sign', 2), "sign tick box is unchecked";
+            ok !$sign->value('sign'), "sign tick box is unchecked";
         }
     }
 
@@ -102,16 +103,17 @@ diag "check in read-only mode that queue's props influence create/update ticket 
         set_queue_crypt_options( %$variant );
         $m->goto_ticket( $id );
         $m->follow_link_ok({text => 'Reply'}, '-> reply');
-        $m->form_number(3);
+        my $encrypt = $m->action_field_input('create_ticket', 'encrypt');
+        my $sign    = $m->action_field_input('create_ticket', 'sign');
         if ( $variant->{'encrypt'} ) {
-            ok $m->value('encrypt', 2), "encrypt tick box is checked";
+            ok $encrypt->value('encrypt'), "encrypt tick box is checked";
         } else {
-            ok !$m->value('encrypt', 2), "encrypt tick box is unchecked";
+            ok !$encrypt->value('encrypt'), "encrypt tick box is unchecked";
         }
         if ( $variant->{'sign'} ) {
-            ok $m->value('sign', 2), "sign tick box is checked";
+            ok $sign->value('sign'), "sign tick box is checked";
         } else {
-            ok !$m->value('sign', 2), "sign tick box is unchecked";
+            ok !$sign->value('sign'), "sign tick box is unchecked";
         }
     }
 }
@@ -259,16 +261,18 @@ sub create_a_ticket {
     RT::Test->clean_caught_mails;
 
     $m->goto_create_ticket( $queue );
-    $m->form_name('ticket_create');
-    $m->field( subject    => 'test' );
-    $m->field( requestors => 'rt-test@example.com' );
-    $m->field( content    => 'Some content' );
+    $m->fill_in_action_ok('create_ticket' => (
+        subject    => 'test',
+        requestors => 'rt-test@example.com',
+        content    => 'Some content',
+    ));
+    my $form = $m->action_form('create_ticket');
 
     foreach ( qw(sign encrypt) ) {
         if ( $args{ $_ } ) {
-            $m->tick( $_ => 1 );
+            $form->tick( $_ => 1 );
         } else {
-            $m->untick( $_ => 1 );
+            $form->untick( $_ => 1 );
         }
     }
 
@@ -291,7 +295,7 @@ sub update_ticket {
 
     ok $m->goto_ticket( $tid ), "UI -> ticket #$tid";
     $m->follow_link_ok( { text => 'Reply' }, 'ticket -> reply' );
-    $m->form_number(3);
+    $m->form_name('ticket_update');
     $m->field( update_content => 'Some content' );
 
     foreach ( qw(sign encrypt) ) {

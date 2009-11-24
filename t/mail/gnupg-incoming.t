@@ -48,7 +48,7 @@ $m->login();
 $m->content_like(qr/Logout/, 'we did log in');
 $m->get( $baseurl.'/Admin/Queues/');
 $m->follow_link_ok( text => 'General', url_regex => qr!/Admin/Queues! );
-$m->submit_form( form_number => 3,
+$m->submit_form( form_name => 'queue_modify',
 		 fields      => { correspond_address => 'general@example.com' } );
 $m->content_like(qr/general\@example.com.* - never/, 'has key info.');
 

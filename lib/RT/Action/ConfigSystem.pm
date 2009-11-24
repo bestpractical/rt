@@ -147,11 +147,22 @@ sub validate_gnupg {
         if ( $value->{enable} ) {
             my $gpgopts = $self->argument_value('gnupg_options')
               || RT->config->get('gnupg_options') || {};
-            unless ( -d $gpgopts->{homedir} && -r _ ) {    # no homedir, no gpg
+
+            # no homedir, no gpg
+            my $homedir = $gpgopts->{homedir};
+            unless ( -d $homedir ) {
                 return $self->validation_error(
                     gnupg => _(
-"couldn't successfully read your configured GnuPG home directory: '%1'",
-                        $gpgopts->{homedir}
+'your configured GnuPG home directory does not exist: "%1"',
+                        $homedir
+                      )
+                );
+            }
+            unless ( -r $homedir ) {
+                return $self->validation_error(
+                    gnupg => _(
+'could not read your configured GnuPG home directory: "%1"',
+                        $homedir
                       )
                 );
             }

@@ -18,7 +18,8 @@ diag "Create a CF" if $ENV{'TEST_VERBOSE'};
 {
     $m->follow_link( text => 'Configuration' );
     $m->title_is(q/RT Administration/, 'admin screen');
-    $m->follow_link( text => 'Custom Fields' );
+    $m->follow_link( text => 'Custom Fields', url_regex =>
+            qr!Admin/CustomFields! );
     $m->title_is(q/Select a Custom Field/, 'admin-cf screen');
     $m->follow_link( text => 'Create' );
     $m->submit_form(
@@ -36,7 +37,7 @@ diag "apply the CF to General queue" if $ENV{'TEST_VERBOSE'};
 my ( $cf, $cfid, $tid );
 {
     $m->title_is(q/Created CustomField img/, 'admin-cf Created');
-    $m->follow_link( text => 'Queues' );
+    $m->follow_link( text => 'Queues', url_regex => qr!/Admin/Queues! );
     $m->title_is(q/Admin queues/, 'admin-queues screen');
     $m->follow_link( text => 'General', url_regex => qr!/Admin/Queues! );
     $m->title_is(q/Editing Configuration for queue General/, 'admin-queue: general');
@@ -115,7 +116,7 @@ diag "check that we have no the CF on the create"
 
     $m->follow_link( text => 'Custom Fields' );
     $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
-    $form = $m->form_number(3);
+    $form = $m->form_name('ticket_modify');
     ok !$form->find_input( "J:A:F-$cfid-$cf_moniker" ), 'no form field on the page';
 }
 

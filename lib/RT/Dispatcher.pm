@@ -757,6 +757,18 @@ before qr{^/Search/Build.html} => run {
 
 };
 
+on '/ticket/create' => run {
+    my $action = Jifty->web->request->action('create_ticket');
+    my $queue = $action ? $action->argument('queue') : get('queue');
+    if (!defined($queue)) {
+        show '/ticket/select-queue-for-create';
+    }
+    else {
+        set(queue => $queue);
+        show '/ticket/create';
+    }
+};
+
 # Backward compatibility with old RT URLs
 
 before '/NoAuth/Logout.html' => run { redirect '/logout' };

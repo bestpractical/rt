@@ -54,16 +54,7 @@ use Jifty::View::Declare -base;
 __PACKAGE__->use_mason_wrapper;
 
 template 'create' => page { title => _('Create a new ticket') } content {
-    # If we have a create_ticket action, pluck the queue out, otherwise,
-    # check the regular queue query parameter
-    my $action = Jifty->web->request->action('create_ticket');
-    my $queue = $action ? $action->argument('queue') : get('queue');
-    $queue or die "Queue not specified";
-
-    render_mason('/Elements/Tabs', {
-        current_toptab => 'ticket/create',
-        title          => _("Create a new ticket"),
-    });
+    my $queue = get('queue');
 
     my $create = new_action(
         class   => 'CreateTicket',
@@ -77,6 +68,28 @@ template 'create' => page { title => _('Create a new ticket') } content {
         render_action($create);
         form_submit( label => _('Create') );
     };
+};
+
+template 'select-queue-for-create' =>
+page { title => _('Create a new ticket') }
+content {
+    my $queues = RT::Model::QueueCollection->new;
+    $queues->unlimit;
+
+    p { _("Please select a queue for your new ticket.") };
+    ul {
+        while (my $queue = $queues->next) {
+            li {
+                hyperlink(
+                    label => $queue->name,
+                    url => '/ticket/create',
+                    parameters => {
+                        queue => $queue->id,
+                    },
+                );
+            }
+        }
+    }
 };
 
 1;

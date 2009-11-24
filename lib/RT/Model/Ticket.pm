@@ -756,7 +756,7 @@ sub create {
     # //RUZ
 
     foreach my $type ( keys %LINKTYPEMAP ) {
-        next unless ( defined $args{$type} );
+        next unless $args{$type};
         foreach my $link ( ref( $args{$type} ) ? @{ $args{$type} } : ( $args{$type} ) ) {
 
             # Check rights on the other end of the link if we must
