@@ -184,10 +184,12 @@ sub setup_gnupg {
 
     $self->fill_parameter(sign => (
         render_as => 'checkbox',
+        default   => $queue->sign,
     ));
 
     $self->fill_parameter(encrypt => (
         render_as => 'checkbox',
+        default   => $queue->encrypt,
     ));
 }
 
