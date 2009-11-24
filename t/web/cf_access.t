@@ -39,7 +39,7 @@ my ( $cf, $cfid, $tid );
     $m->title_is(q/Created CustomField img/, 'admin-cf Created');
     $m->follow_link( text => 'Queues', url_regex => qr!/Admin/Queues! );
     $m->title_is(q/Admin queues/, 'admin-queues screen');
-    $m->follow_link( text => 'General' );
+    $m->follow_link( text => 'General', url_regex => qr!/Admin/Queues! );
     $m->title_is(q/Editing Configuration for queue General/, 'admin-queue: general');
     $m->follow_link( text => 'Ticket Custom Fields' );
 
@@ -74,11 +74,7 @@ diag "check that we have no the CF on the create"
     ." ticket page when user has no SeeCustomField right"
         if $ENV{'TEST_VERBOSE'};
 {
-    $m->submit_form(
-        form_name => "create_ticket_in_queue",
-        fields => { queue => 'General' },
-    );
-    $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
+    $m->follow_link_ok( url_regex => qr'/ticket/create', text => 'General');
 
     my $form = $m->form_name("ticket_create");
 
@@ -105,10 +101,7 @@ diag "check that we have no the CF on the create"
     ." ticket page when user has no ModifyCustomField right"
         if $ENV{'TEST_VERBOSE'};
 {
-    $m->submit_form(
-        form_name => "create_ticket_in_queue",
-        fields => { queue => 'General' },
-    );
+    $m->follow_link( url_regex => qr'/ticket/create', text => 'General');
     $m->content_unlike(qr/Upload multiple images/, 'has no upload image field');
 
     my $form = $m->form_name("ticket_create");
@@ -135,10 +128,7 @@ RT::Test->set_rights(
 
 diag "create a ticket with an image" if $ENV{'TEST_VERBOSE'};
 {
-    $m->submit_form(
-        form_name => "create_ticket_in_queue",
-        fields => { queue => 'General' },
-    );
+    $m->follow_link( url_regex => qr'/ticket/create', text => 'General');
     TODO: {
         local $TODO = "Multi-upload CFs not available yet";
         $m->content_like(qr/Upload multiple images/, 'has a upload image field');

@@ -53,9 +53,9 @@ ok $queue && $queue->id, 'loaded or Created queue';
 
 diag "apply the CF to General queue" if $ENV{'TEST_VERBOSE'};
 {
-    $m->follow_link( text => 'Queues' );
+    $m->follow_link( text => 'Queues', url_regex => qr!/Admin/Queues! );
     $m->title_is(q/Admin queues/, 'admin-queues screen');
-    $m->follow_link( text => 'General' );
+    $m->follow_link( text => 'General', url_regex => qr!/Admin/Queues! );
     $m->title_is(q/Editing Configuration for queue General/, 'admin-queue: general');
     $m->follow_link( text => 'Ticket Custom Fields' );
     $m->title_is(q/Edit Custom Fields for General/, 'admin-queue: general cfid');

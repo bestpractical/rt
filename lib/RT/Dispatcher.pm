@@ -193,10 +193,19 @@ $PREFS_NAV->child( _('RT at a glance'), url => '/Prefs/MyRT.html', );
 
 before qr{.*} => run {
 	next_rule unless (Jifty->web->current_user->user_object);
-    main_nav->child( _('Homepage'),      url => '/' );
-    main_nav->child( _('Simple Search'), url => '/Search/Simple.html' );
-    main_nav->child( _('Tickets'),       url => '/Search/Build.html' );
-    my $tools = main_nav->child( _('Tools'), url => '/Tools/index.html' );
+    main_nav->child( Home => label => _('Homepage'),      url => '/', sort_order => 1);
+    my $tickets = main_nav->child( _('Tickets'),       url => '/Search/Build.html', sort_order => 2 );
+    $tickets->child( new => label => _('New Search')  => url => "/Search/Build.html?new_query=1" );
+    my $new = $tickets->child(create => label => _('New ticket'), url => '/ticket/create');
+
+    my $q = RT::Model::QueueCollection->new();
+    $q->find_all_rows;
+    while (my $queue = $q->next) {
+            next unless $queue->current_user_has_right('CreateTicket');
+            $new->child( $queue->id => label => $queue->name, url => '/ticket/create?queue='.$queue->id);
+    }
+
+    my $tools = main_nav->child( _('Tools'), url => '/Tools/index.html', sort_order => 3 );
     $tools->child( _('Dashboards'), url => '/Dashboards/index.html' );
 
     my $reports = $tools->child( _('Reports'), url => '/Tools/Reports/index.html' );
@@ -206,9 +215,16 @@ before qr{.*} => run {
 
     $tools->child( _('My Day'), url => '/Tools/MyDay.html' );
 
+
+    if ( Jifty->web->current_user->has_right( right => 'ShowApprovalsTab', object => RT->system ) ) {
+       $tools->child( _('Approval'), url => '/Approvals/' );
+    }
+
+
+
     if ( Jifty->web->current_user->has_right( right => 'ShowConfigTab', object => RT->system ) )
     {
-        my $admin = main_nav->child( Config => label => _('Configuration'), url => '/Admin/' );
+        my $admin = $tools->child( Config => label => _('Configuration'), url => '/Admin/' );
         $admin->child( _('Users'),         url => '/Admin/Users/', );
         $admin->child( _('Groups'),        url => '/Admin/Groups/', );
         $admin->child( _('Queues'),        url => '/Admin/Queues/', );
@@ -274,14 +290,10 @@ before qr{.*} => run {
 
      if ( Jifty->web->current_user->has_right( right => 'ModifySelf', object => RT->system ) ) {
 
-        main_nav->child( 'Preferences' => menu => $PREFS_NAV );
+        $tools->child( 'Preferences' => menu => $PREFS_NAV, sort_order=> 99 );
     }
      }
 
-    if ( Jifty->web->current_user->has_right( right => 'ShowApprovalsTab', object => RT->system ) )
-    {
-        main_nav->child( _('Approval'), url => '/Approvals/' );
-    }
 
 	
 	
@@ -641,7 +653,6 @@ before qr'(?:Ticket|Search)/' => run {
 
     $args = "?" . query_string(%query_args);
 
-    page_nav->child( _('New Search')  => url => "/Search/Build.html?new_query=1" );
     page_nav->child( _('Edit Search') => url => "/Search/Build.html" . ( ($has_query) ? $args : '' ) );
     page_nav->child( _('Advanced')    => url => "/Search/Edit.html$args" );
 

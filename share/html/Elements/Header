@@ -80,7 +80,7 @@
 % Jifty->handler->stash->{'in_body'} = 1;
   <body<% $id && qq[ id="comp-$id"] |n %>>
 
-% if ($show_bar && Jifty->web->current_user) {
+% if ($show_bar) {
 <& /Elements/Logo, %ARGS &>
 
 <div id="quickbar">
@@ -97,13 +97,14 @@
     | <a  href="<%RT->config->get('web_path')%>/NoAuth/Logout.html<%$url ?
 "?URL=".$url : ''%>"><% _('Logout') %></a>
 % }
-  </div>
+% if (Jifty->web->current_user->user_object && Jifty->web->current_user->user_object->privileged) {
+ <& /Elements/SimpleSearch &>
 % }
+  </div>
 </div>
+% }
 
 % if ( Jifty->web->current_user->user_object) {
-<div id="nav-widgets"><& /Elements/CreateTicket &><& /Elements/SimpleSearch &></div>
-%} 
 <div class="nav">
 <div class="main-nav">
 % Jifty->web->navigation->render_as_yui_menubar();
@@ -112,6 +113,7 @@
 % Jifty->web->page_navigation->render_as_yui_menubar();
 </div>
 </div>
+%} 
 %# template login already has div with id "body"
 % unless ( Jifty->web->request->path =~ m{^/login} ) {
 <div id="body">
