@@ -51,7 +51,7 @@ diag "Edit the CF value for default queue" if $ENV{'TEST_VERBOSE'};
     $m->title_is(q/Editing Configuration for queue General/, 'default queue configuration screen');
     $m->content_like( qr/QueueCFTest/, 'CF QueueCFTest displayed on default queue' );
     $m->submit_form(
-        form_number => 2,
+        form_number => 3,
         # The following doesn't want to works :(
         #with_fields => { 'object-RT::Model::Queue-1-CustomField-1-value' },
         fields => {

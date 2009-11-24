@@ -146,7 +146,7 @@ diag "click advanced, enter 'C1 OR ( C2 AND C3 )', apply, aggregators should sta
 {
     my $response = $agent->get($url."/Search/Edit.html");
     ok( $response->is_success, "Fetched /Search/Edit.html" );
-    ok($agent->form_number(2), "found the form");
+    ok($agent->form_number(3), "found the form");
     $agent->field("query", "Status = 'new' OR ( Status = 'open' AND subject LIKE 'office' )");
     $agent->submit;
     is( get_query_from_form,
@@ -234,7 +234,7 @@ diag "input a condition, select (several conditions), click delete"
 {
     my $response = $agent->get( $url."/Search/Edit.html" );
     ok $response->is_success, "Fetched /Search/Edit.html";
-    ok $agent->form_number(2), "found the form";
+    ok $agent->form_number(3), "found the form";
     $agent->field("query", "( Status = 'new' OR Status = 'open' )");
     $agent->submit;
     is( get_query_from_form,

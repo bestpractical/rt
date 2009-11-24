@@ -44,8 +44,8 @@ RT::Test->trust_gnupg_key('rt-test@example.com');
 my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'we did log in';
 $m->get_ok( '/Admin/Queues/');
-$m->follow_link_ok( {text => 'General'} );
-$m->submit_form( form_number => 2,
+$m->follow_link_ok( text => 'General', url_regex => qr!/Admin/Queues! );
+$m->submit_form( form_number => 3,
          fields      => { correspond_address => 'rt-recipient@example.com' } );
 $m->content_like(qr/rt-recipient\@example.com.* - never/, 'has key info.');
 

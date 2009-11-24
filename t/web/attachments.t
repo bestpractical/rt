@@ -13,10 +13,7 @@ my $queue = RT::Model::Queue->new(current_user => RT->nobody);
 my $qid = $queue->load('General');
 ok( $qid, "Loaded General queue" );
 
-$m->form_name('create_ticket_in_queue');
-$m->field('queue', $qid);
-$m->submit;
-is($m->status, 200, "request successful");
+$m->follow_link_ok( url_regex => qr'/ticket/create', text => 'General');
 $m->content_like(qr/Create a new ticket/, 'ticket create page');
 $m->fill_in_action_ok('create_ticket', (
     subject     => 'Attachments test',
