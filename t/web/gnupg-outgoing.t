@@ -266,14 +266,13 @@ sub create_a_ticket {
         requestors => 'rt-test@example.com',
         content    => 'Some content',
     ));
-    my $form = $m->action_form('create_ticket');
 
     foreach ( qw(sign encrypt) ) {
         my $field = $m->action_field_input('create_ticket', $_);
         if ( $args{ $_ } ) {
-            $form->tick( $_ => 1 );
+            $field->value(1); 
         } else {
-            $form->untick( $_ => 1 );
+            $field->value(0);
         }
     }
 
