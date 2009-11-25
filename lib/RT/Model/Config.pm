@@ -100,14 +100,7 @@ sub get {
         }
     }
 
-    my $value = $self->_get( $name );
-    if ( defined $value ) {
-        $value =~ s/{{(\w+)}}/$self->get($1) || ''/ge if $value && !ref $value;
-        return $value;
-    }
-    else {
-        return;
-    }
+    return $self->_get( $name );
 }
 
 sub set {

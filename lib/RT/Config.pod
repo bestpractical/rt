@@ -35,7 +35,7 @@ C<qr/(example.com|example.org)/i>
 This setting would make RT behave exactly as it does without the 
 setting enabled.
 
-default: C<'{{rtname}}' >
+default: C<"example.com">
 
 =item C<organization>
 
@@ -375,7 +375,7 @@ default: C<0>
 C<sprintf()> format of the friendly 'From:' header; its arguments
 are WatcherType and TicketId.
 
-default: C<"\"%s of {{rtname}} Ticket #%s\":;">
+default: C<"\"%s of example.com Ticket #%s\":;">
 
 =item C<notify_actor>
 

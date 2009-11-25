@@ -5,6 +5,7 @@ package RT::Action::ConfigSystem;
 use base qw/RT::Action Jifty::Action/;
 use Scalar::Defer; 
 use Try::Tiny;
+use Data::Dumper;
 
 sub arguments {
     my $self = shift;
@@ -14,26 +15,13 @@ sub arguments {
     my $configs = RT::Model::ConfigCollection->new;
     $configs->unlimit;
     while ( my $config = $configs->next ) {
+        my $value = RT->config->get( $config->name );
         $args->{ $config->name } = {
             default_value => defer {
-                my $value = $config->value;
-                $value = ''
-                  if defined $value && $value eq $config->_empty_string;
-                if ( ref $value eq 'ARRAY' ) {
-                    return '[' . join( ', ', @$value ) . ']';
-                }
-                elsif ( ref $value eq 'HASH' ) {
-                    my $str = '{';
-                    for my $key ( keys %$value ) {
-                        $str .= qq{$key => $value->{$key},};
-                    }
-                    $str .= '}';
-                    return $str;
-                }
-                else {
-                    return $value;
-                }
-            }
+                local $Data::Dumper::Terse = 1;
+                Dumper $value,
+            },
+            ref $value ? ( render_as => 'textarea' ) : (),
         };
     }
     return $self->{__cached_arguments} = $args;
@@ -102,27 +90,16 @@ sub _canonicalize_arguments {
     for my $arg ( $self->argument_names ) {
         if ( $self->has_argument($arg) ) {
             my $value = $self->argument_value( $arg );
-            if ( $value && $value !~ /^{{\w+}}/ ) {
-                if ( $value =~ /^\[ \s* (.*?) \s* \]\s*$/x ) {
-                    my $v = $1;
-                    if ( $v =~ /\S/ ) {
-                        $value = [ split /\s*,\s*/, $v ];
-                    }
-                    else {
-                        $value = [];
-                    }
-                }
-                elsif ( $value =~ /^{ \s* (.*?) \s* } \s* $/x ) {
-                    my $pair = $1;
-                    if ( $pair =~ /\S/ ) {
-                        $value = { split /\s*(?:,|=>)\s*/, $pair };
-                    }
-                    else {
-                        $value = {};
-                    }
-                }
-                $self->argument_value( $arg, $value );
+            next unless defined $value;
+            my $eval = eval $value;
+            if ( $@ ) {
+                return $self->validation_error(
+                    $arg => _( "invalid value: %1", $value ) );
             }
+            else {
+                $value = $eval;
+            }
+            $self->argument_value( $arg, $value );
         }
     }
     return 1;
