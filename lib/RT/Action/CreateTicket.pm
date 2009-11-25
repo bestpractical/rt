@@ -200,6 +200,26 @@ sub setup_gnupg {
         render_as     => 'checkbox',
         default_value => $queue->encrypt,
     ));
+}
+
+sub validate_sign_using {
+    my $self    = shift;
+    my $address = shift;
+
+    return if !$self->argument_value('sign');
+
+    # XXX: how should this fit into RT4?
+    #$address ||= ($self->{'update_type'} && $self->{'update_type'} eq "private")
+    #    ? ( $queue_obj->comment_address || RT->config->get('comment_address') )
+    #    : ( $queue_obj->correspond_address || RT->config->get('correspond_address') );
+
+    unless ( RT::Crypt::GnuPG::dry_sign($address) ) {
+        return $self->validation_error(sign_using => _("The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem address is: %1", $address));
+    } else {
+        # should this use argument_value('sign_using') or $address?
+        RT::Crypt::GnuPG::use_key_for_signing($self->argument_value('sign_using'))
+            if $self->argument_value('sign_using');
+    }
 
 }
 
