@@ -107,7 +107,17 @@
 % if ( Jifty->web->current_user->user_object) {
 <div class="nav">
 <div class="main-nav">
-% Jifty->web->navigation->render_as_yui_menubar();
+<%perl>
+
+    my $id   = Jifty->web->serial;
+    Jifty->web->navigation->_render_as_yui_menu_item( class => "yuimenubar", id => $id );
+    Jifty->web->out(qq|<script type="text/javascript">\n|
+        . qq|YAHOO.util.Event.onContentReady("|.$id.qq|", function() {\n|
+        . qq|var menu = new YAHOO.widget.MenuBar("|.$id.qq|", {  lazyload:true, submenutoggleregion:true });\n|
+        . qq|menu.render();\n|
+        . qq|});</script>|
+        );
+</%perl>
 </div>
 <div class="page-nav">
 % Jifty->web->page_navigation->render_as_yui_menubar();
