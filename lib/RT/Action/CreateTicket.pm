@@ -195,6 +195,13 @@ sub setup_gnupg {
             ],
         ));
     }
+    else {
+        # always have sign_using so it can be validated
+        $self->fill_parameter(sign_using => (
+            default_value => '',
+            render_as => 'hidden',
+        ));
+    }
 
     $self->fill_parameter(encrypt => (
         render_as     => 'checkbox',
