@@ -228,14 +228,15 @@ sub validate_sign_using {
 
     return if !$self->argument_value('sign');
 
-    unless ( RT::Crypt::GnuPG::dry_sign($address) ) {
-        return $self->validation_error(sign_using => _("The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem address is: %1", $address));
-    } else {
-        # should this use argument_value('sign_using') or $address?
-        RT::Crypt::GnuPG::use_key_for_signing($self->argument_value('sign_using'))
-            if $self->argument_value('sign_using');
+    if (!RT::Crypt::GnuPG::dry_sign($address)) {
+        return $self->validation_error(sign=> _("The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem address is: %1", $address));
     }
 
+    # should this use argument_value('sign_using') or $address?
+    RT::Crypt::GnuPG::use_key_for_signing($self->argument_value('sign_using'))
+        if $self->argument_value('sign_using');
+
+    return $self->validation_ok('sign');
 }
 
 sub select_key_for_encryption {
