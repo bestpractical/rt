@@ -209,16 +209,24 @@ sub setup_gnupg {
     ));
 }
 
+sub canonicalize_sign_using {
+    my $self = shift;
+    my $address = shift;
+
+    return $address if length $address;
+
+    my $queue_id = $self->argument_value('queue');
+    my $queue = RT::Model::Queue->new;
+    $queue->load($queue_id);
+
+    return $queue->correspond_address;
+}
+
 sub validate_sign_using {
     my $self    = shift;
     my $address = shift;
 
     return if !$self->argument_value('sign');
-
-    # XXX: how should this fit into RT4?
-    #$address ||= ($self->{'update_type'} && $self->{'update_type'} eq "private")
-    #    ? ( $queue_obj->comment_address || RT->config->get('comment_address') )
-    #    : ( $queue_obj->correspond_address || RT->config->get('correspond_address') );
 
     unless ( RT::Crypt::GnuPG::dry_sign($address) ) {
         return $self->validation_error(sign_using => _("The system is unable to sign outgoing email messages. This usually indicates that the passphrase was mis-set, or that GPG Agent is down. Please alert your system administrator immediately. The problem address is: %1", $address));
