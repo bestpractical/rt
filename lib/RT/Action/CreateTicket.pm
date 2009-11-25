@@ -200,6 +200,38 @@ sub setup_gnupg {
         render_as     => 'checkbox',
         default_value => $queue->encrypt,
     ));
+
+}
+
+sub select_key_for_encryption {
+    my $self    = shift;
+    my $email   = shift;
+    my $default = shift;
+
+    require RT::Crypt::GnuPG;
+    my %res = RT::Crypt::GnuPG::get_keys_for_encryption($email);
+
+    # move the preferred key to the top of the list
+    my $d;
+    my @keys = map {
+                   $_->{'fingerprint'} eq ( $default || '' )
+                       ?  do { $d = $_; () }
+                       : $_
+               }
+               @{ $res{'info'} };
+
+    @keys = sort { $b->{'trust_level'} <=> $a->{'trust_level'} } @keys;
+
+    unshift @keys, $d if defined $d;
+
+    return map {
+        my $display = _("%1 (trust: %2)", $_->{fingerprint}, $_->{trust_terse});
+
+        {
+            value   => $_->{fingerprint},
+            display => $display,
+        }
+    } @keys;
 }
 
 sub set_initial_priority {
