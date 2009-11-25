@@ -187,6 +187,15 @@ sub setup_gnupg {
         default_value => $queue->sign,
     ));
 
+    if (my $user_key = $self->current_user->user_object->private_key) {
+        $self->fill_parameter(sign_using => (
+            valid_values => [
+                { name => '', display => _("Queue's key") },
+                "$user_key",
+            ],
+        ));
+    }
+
     $self->fill_parameter(encrypt => (
         render_as     => 'checkbox',
         default_value => $queue->encrypt,
