@@ -142,7 +142,7 @@ unless ( $type_class ) {
 
 my $TicketString = '';
 if ( $Ticket->Id != $Transaction->Ticket ) {
-    $TicketString = "Ticket " . $Transaction->Ticket . ": ";
+    $TicketString = loc("Ticket #[_1]:", $Transaction->Ticket) .' ';
 }
 
 my $TimeTaken = '';
