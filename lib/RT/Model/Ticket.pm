@@ -405,6 +405,8 @@ sub create {
         resolved            => undef,
         told                => undef,
         mime_obj            => undef,
+        sign                => 0,
+        encrypt             => 0,
         _record_transaction => 1,
         dry_run             => 0,
         @_
@@ -809,6 +811,12 @@ sub create {
         $owner_group->_add_member(
             principal => $owner,
         );
+    }
+
+    foreach my $argument (qw(encrypt sign)) {
+        my $header = "X-RT-" . ucfirst($argument);
+        $args{'mime_obj'}->head->add( $header => $args{$argument} )
+            if defined $args{$argument};
     }
 
     if ($args{'attachments'}) {
