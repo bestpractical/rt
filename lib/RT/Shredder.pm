@@ -607,7 +607,7 @@ sub _wipeout {
 
 =head3 Data storage and backups
 
-=head4 get_filename ( Filename => '<ISO DATETIME>-XXXX.sql', FromStorage => 1 )
+=head4 get_file_name ( Filename => '<ISO DATETIME>-XXXX.sql', FromStorage => 1 )
 
 Takes desired C<Filename> and flag C<FromStorage> then translate file name to absolute
 path by next rules:
@@ -640,26 +640,26 @@ Returns an absolute path of the file.
 
 Examples:
     # file from storage with default name format
-    my $fname = $shredder->get_filename;
+    my $fname = $shredder->get_file_name;
 
     # file from storage with custom name format
-    my $fname = $shredder->get_filename( Filename => 'shredder-XXXX.backup' );
+    my $fname = $shredder->get_file_name( Filename => 'shredder-XXXX.backup' );
 
     # file with path relative to the current dir
-    my $fname = $shredder->get_filename(
+    my $fname = $shredder->get_file_name(
         FromStorage => 0,
         Filename => 'backups/shredder.sql',
     );
 
     # file with absolute path
-    my $fname = $shredder->get_filename(
+    my $fname = $shredder->get_file_name(
         FromStorage => 0,
         Filename => '/var/backups/shredder-XXXX.sql'
     );
 
 =cut
 
-sub get_filename {
+sub get_file_name {
     my $self = shift;
     my %args = ( filename => '', from_storage => 1, @_ );
 
@@ -718,7 +718,7 @@ sub get_filename {
 Returns an absolute path to the storage dir.  See
 L<CONFIGURATION/$ShredderStoragePath>.
 
-See also description of the L</get_filename> method.
+See also description of the L</get_file_name> method.
 
 =cut
 
