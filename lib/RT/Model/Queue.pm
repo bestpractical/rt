@@ -100,7 +100,8 @@ use Jifty::DBI::Record schema {
     column initial_priority => max_length is 11, type is 'int',      default is '0';
     column final_priority   => max_length is 11, type is 'int',      default is '0';
     column default_due_in   => max_length is 11, type is 'int',      default is '0';
-    column disabled         => max_length is 6, type is 'smallint', is mandatory, default is '0';
+    column disabled         => max_length is 6, type is 'smallint', is
+        mandatory, default is '0', render as 'Checkbox';
 };
 use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata 
 no_user_refs => 1,
