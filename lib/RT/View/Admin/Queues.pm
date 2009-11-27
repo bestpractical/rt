@@ -54,8 +54,10 @@ use base 'RT::View::CRUD';
 
 use constant page_title      => 'Queue Management';
 use constant object_type     => 'Queue';
-use constant display_columns => qw(id name description correspond_address initial_priority default_due_in);
 
+# TODO we need to show/edit status_schema column too
+use constant display_columns => qw(id name description correspond_address
+        comment_address initial_priority final_priority default_due_in disabled);
 
 1;
 
