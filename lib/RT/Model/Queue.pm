@@ -73,15 +73,23 @@ sub table {'Queues'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
 
-    column name => max_length is 200, type is 'varchar(200)', is mandatory, is distinct;
+    column name => max_length is 200,
+           type is 'varchar(200)',
+           is mandatory,
+           display_length is '20',
+           is distinct;
     column
         description => max_length is 255,
-        type is 'varchar(255)', default is '';
+        type is 'varchar(255)',
+        display_length is '60',
+        default is '';
     column
         correspond_address => max_length is 120,
+        display_length is '60',
         type is 'varchar(120)';
     column
         comment_address => max_length is 120,
+        display_length is '60',
         type is 'varchar(120)';
     column
         status_schema => max_length is 120,
