@@ -256,6 +256,7 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'signed_encrypted'} } ) {
 
 sub create_a_ticket {
     my %args = (@_);
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     RT::Test->clean_caught_mails;
 
@@ -289,6 +290,7 @@ sub create_a_ticket {
 sub update_ticket {
     my $tid = shift;
     my %args = (@_);
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     RT::Test->clean_caught_mails;
 
@@ -318,6 +320,8 @@ sub update_ticket {
 sub check_text_emails {
     my %args = %{ shift @_ };
     my @mail = @_;
+
+    local $Test::Builder::Level = $Test::Builder::Level + 1;
 
     ok scalar @mail, "got some mail";
     for my $mail (@mail) {
