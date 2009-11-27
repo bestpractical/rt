@@ -475,6 +475,10 @@ sub create {
     $args{'priority'} = $args{'initial_priority'}
         unless defined $args{'priority'};
 
+    # XXX we should become consistent about requestor vs requestors
+    $args{'requestor'} = delete $args{'requestors'}
+        unless $args{'requestor'};
+
 # Initial message {{{
     if (!$args{mime_obj}) {
         my $sigless = RT::Interface::Web::strip_content(
