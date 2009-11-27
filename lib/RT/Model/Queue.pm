@@ -87,6 +87,7 @@ use Jifty::DBI::Record schema {
         status_schema => max_length is 120,
         type is 'varchar(120)',
         default is 'default',
+        render as 'RT::View::Form::Field::SelectStatusSchema',
         is mandatory;
     column initial_priority => max_length is 11, type is 'int',      default is '0';
     column final_priority   => max_length is 11, type is 'int',      default is '0';
