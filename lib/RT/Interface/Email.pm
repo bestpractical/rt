@@ -300,21 +300,21 @@ and hasn't been sent.
 
 =head3 Signing and Encrypting
 
-This function as well signs and/or encrypts the message according to
+This function also signs and/or encrypts the message according to
 headers of a transaction's attachment or properties of a ticket's queue.
 To get full access to the configuration ticket and/or transaction
-arguments must be provided, but you can force behaviour using Sign
-and/or encrypt arguments.
+arguments must be provided, but you can force behaviour using the C<sign>
+and/or C<encrypt> arguments.
 
 The following precedence of arguments are used to figure out if
 the message should be encrypted and/or signed:
 
-* if sign or encrypt argument is defined then its value is used
+* if C<sign> or C<encrypt> argument is defined then its value is used
 
-* else if transaction's first attachment has X-RT-Sign or X-RT-Encrypt
+* else if transaction's first attachment has C<X-RT-Sign> or C<X-RT-Encrypt>
 header field then it's value is used
 
-* else properties of a queue of the ticket are used.
+* else properties of the queue of the ticket are used.
 
 =cut
 
@@ -820,10 +820,10 @@ sub create_user {
 
 =head2 parse_cc_addresses_from_head HASH
 
-Takes a hash containing queue_obj, Head and current_user objects.
+Takes a hash containing C<queue_obj>, C<head> and C<current_user> objects.
 Returns a list of all email addresses in the To and Cc
-headers b<except> the current Queue\'s email addresses, the CurrentUser\'s
-email address  and anything that the configuration sub RT::is_rt_address matches.
+headers b<except> the current Queue's email addresses, the CurrentUser's
+email address and anything that the configuration L<RT/is_rt_address> matches.
 
 =cut
 
