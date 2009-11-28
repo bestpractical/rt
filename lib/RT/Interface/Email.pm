@@ -139,7 +139,7 @@ sub check_for_suspicious_sender {
 
     #TODO: better algorithms needed here - there is no standards for
     #bounces, so it's very difficult to separate them from anything
-    #else.  At the other hand, the Return-To address is only ment to be
+    #else.  At the other hand, the Return-To address is only meant to be
     #used as an error channel, we might want to put up a separate
     #Return-To address which is treated differently.
 
@@ -203,22 +203,38 @@ Sends an error message. Takes a param hash:
 
 =over 4
 
-=item from - sender's address, by default is 'correspond_address';
+=item from
 
-=item to - recipient, by default is 'OwnerEmail';
+sender's address, by default is 'correspond_address';
 
-=item bcc - optional Bcc recipients;
+=item to
 
-=item subject - subject of the message, default is 'There has been an error';
+recipient, by default is 'OwnerEmail';
 
-=item explanation - main content of the error, default value is 'Unexplained error';
+=item bcc
 
-=item mime_obj - optional MIME entity that's attached to the error mail, as well we
+optional Bcc recipients;
+
+=item subject
+
+subject of the message, default is 'There has been an error';
+
+=item explanation
+
+main content of the error, default value is 'Unexplained error';
+
+=item mime_obj
+
+optional MIME entity that's attached to the error mail, as well we
 add 'In-Reply-To' field to the error that points to this message.
 
-=item attach - optional text that attached to the error as 'message/rfc822' part.
+=item attach
 
-=item log_level - log level under which we should write explanation message into the
+optional text that attached to the error as 'message/rfc822' part.
+
+=item log_level
+
+log level under which we should write explanation message into the
 log, by default we log it as errorical.
 
 =back
