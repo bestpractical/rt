@@ -608,7 +608,7 @@ sub create {
     # _outside_ the transaction, so we don't get into ticket creation races
     foreach my $type ( $self->roles ) {
 
-        $args{$type} = [ $args{$type} ] unless ref $args{$type};
+        $args{$type} = [ $args{$type} ] unless ref $args{$type} eq 'ARRAY';
         foreach my $watcher ( grep $_, splice @{ $args{$type} } ) {
             if ( $watcher =~ /^\d+$/ ) {
                 push @{ $args{$type} }, $watcher;
