@@ -344,11 +344,12 @@ sub send_email {
 
         foreach my $argument (qw(sign encrypt)) {
             next if defined $args{$argument};
+            my $header = "X-RT-" . ucfirst($argument);
 
             if ( $attachment
-                && defined $attachment->get_header("X-RT-$argument") )
+                && defined $attachment->get_header($header) )
             {
-                $crypt{$argument} = $attachment->get_header("X-RT-$argument");
+                $crypt{$argument} = $attachment->get_header($header);
             } elsif ( $args{'ticket'} ) {
                 $crypt{$argument} = $args{'ticket'}->queue->$argument();
             }
