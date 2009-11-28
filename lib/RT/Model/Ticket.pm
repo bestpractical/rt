@@ -1306,7 +1306,8 @@ sub _record_note {
     }
 
     foreach my $argument (qw(encrypt sign)) {
-        $args{'mime_obj'}->head->add( "X-RT-$argument" => $args{$argument} )
+        my $header = "X-RT-" . ucfirst($argument);
+        $args{'mime_obj'}->head->add( $header => $args{$argument} )
             if defined $args{$argument};
     }
 
