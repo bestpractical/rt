@@ -822,7 +822,7 @@ sub create_user {
 
 Takes a hash containing C<queue_obj>, C<head> and C<current_user> objects.
 Returns a list of all email addresses in the To and Cc
-headers b<except> the current Queue's email addresses, the CurrentUser's
+headers B<except> the current Queue's email addresses, the CurrentUser's
 email address and anything that the configuration L<RT/is_rt_address> matches.
 
 =cut
