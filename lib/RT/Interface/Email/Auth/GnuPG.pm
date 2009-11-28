@@ -74,7 +74,7 @@ sub get_current_user {
         @_
     );
 
-    $args{'message'}->head->delete($_) for qw(X-RT-GnuPG-status X-RT-Incoming-Encryption
+    $args{'message'}->head->delete($_) for qw(X-RT-GnuPG-Status X-RT-Incoming-Encryption
         X-RT-Incoming-Signature X-RT-Privacy);
 
     my $msg = $args{'message'}->dup;
@@ -102,7 +102,7 @@ sub get_current_user {
         Data        => ${ $args{'raw_message_ref'} },
     );
 
-    $args{'message'}->head->add( 'X-RT-GnuPG-status' => $_->{'status'} ) foreach @res;
+    $args{'message'}->head->add( 'X-RT-GnuPG-Status' => $_->{'status'} ) foreach @res;
     $args{'message'}->head->add( 'X-RT-Privacy' => 'PGP' );
 
     # XXX: first entity only for now
