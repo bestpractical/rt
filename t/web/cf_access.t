@@ -21,7 +21,7 @@ diag "Create a CF" if $ENV{'TEST_VERBOSE'};
     $m->follow_link( text => 'Custom Fields', url_regex =>
             qr!Admin/CustomFields! );
     $m->title_is(q/Select a Custom Field/, 'admin-cf screen');
-    $m->follow_link( text => 'Create' );
+    $m->follow_link( text => 'Create', url_regex => qr|CustomFields/Modify.html|);
     $m->submit_form(
         form_name => "modify_custom_field",
         fields => {
