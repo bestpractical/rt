@@ -51,7 +51,7 @@
     title_href => RT->Config->Get('WebPath').'/Dashboards/index.html',
     bodyclass => "",
     titleright => loc("Edit"),
-    titleright_href => RT->Config->Get('WebPath').'/Dashboards',
+    titleright_href => RT->Config->Get('WebPath').'/Dashboards/',
 &>
 
 <& /Dashboards/Elements/ShowDashboards:table,
