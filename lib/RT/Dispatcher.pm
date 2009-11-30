@@ -399,13 +399,11 @@ before qr'Dashboards/(\d*)?' => run {
         my $obj = RT::Dashboard->new();
         $obj->load_by_id($id);
         if ( $obj and $obj->id ) {
-            my $tabs
-                = page_nav->child( "this" => label => $obj->name, url => "/Dashboards/Modify.html?id=" . $obj->id );
-            $tabs->child( _('Basics'),       url => "/Dashboards/Modify.html?id=" . $obj->id );
-            $tabs->child( _('Queries'),      url => "/Dashboards/Queries.html?id=" . $obj->id );
-            $tabs->child( _('Subscription'), url => "/Dashboards/Subscription.html?dashboard_id=" . $obj->id )
+            page_nav->child( _('Basics'),       url => "/Dashboards/Modify.html?id=" . $obj->id );
+            page_nav->child( _('Queries'),      url => "/Dashboards/Queries.html?id=" . $obj->id );
+            page_nav->child( _('Subscription'), url => "/Dashboards/Subscription.html?dashboard_id=" . $obj->id )
                 if $obj->current_user_can_subscribe;
-            $tabs->child( _('Show'), url => "/Dashboards/" . $obj->id . "/" . $obj->name )
+            page_nav->child( _('Show'), url => "/Dashboards/" . $obj->id . "/" . $obj->name )
 
         }
     }
@@ -451,19 +449,18 @@ before 'Admin/Queues' => run {
         my $queue_obj = RT::Model::Queue->new();
         $queue_obj->load($id);
 
-        my $queue = page_nav->child( $queue_obj->name => url => "/Admin/Queues/Modify.html?id=" . $id );
-        $queue->child( _('Basics'),    url => "/Admin/Queues/Modify.html?id=" . $id );
-        $queue->child( _('Watchers'),  url => "/Admin/Queues/People.html?id=" . $id );
-        $queue->child( _('Templates'), url => "/Admin/Queues/Templates.html?id=" . $id );
+        page_nav->child( _('Basics'),    url => "/Admin/Queues/Modify.html?id=" . $id );
+        page_nav->child( _('Watchers'),  url => "/Admin/Queues/People.html?id=" . $id );
+        page_nav->child( _('Templates'), url => "/Admin/Queues/Templates.html?id=" . $id );
 
-        $queue->child( _('Ticket Custom Fields'),
+        page_nav->child( _('Ticket Custom Fields'),
             url => '/Admin/Queues/CustomFields.html?sub_type=RT::Model::Ticket&id=' . $id );
 
-        $queue->child( _('Transaction Custom Fields'),
+        page_nav->child( _('Transaction Custom Fields'),
             url => '/Admin/Queues/CustomFields.html?sub_type=RT::Model::Ticket-RT::Model::Transaction&id=' . $id );
 
-        $queue->child( _('Group rights'), url => "/Admin/Queues/GroupRights.html?id=" . $id );
-        $queue->child( _('User rights'),  url => "/Admin/Queues/UserRights.html?id=" . $id );
+        page_nav->child( _('Group rights'), url => "/Admin/Queues/GroupRights.html?id=" . $id );
+        page_nav->child( _('User rights'),  url => "/Admin/Queues/UserRights.html?id=" . $id );
     }
 };
 
@@ -471,13 +468,12 @@ before '/Admin/Users' => run {
     if ( my $id = Jifty->web->request->argument('id') ) {
         my $obj = RT::Model::User->new();
         $obj->load($id);
-        my $tabs = page_nav->child( 'current' => label => $obj->name, url => "/Admin/Users/Modify.html?id=" . $id, );
-        $tabs->child( _('Basics'),         url => "/Admin/Users/Modify.html?id=" . $id );
-        $tabs->child( _('Memberships'),    url => "/Admin/Users/Memberships.html?id=" . $id );
-        $tabs->child( _('History'),        url => "/Admin/Users/History.html?id=" . $id );
-        $tabs->child( _('RT at a glance'), url => "/Admin/Users/MyRT.html?id=" . $id );
+        page_nav->child( _('Basics'),         url => "/Admin/Users/Modify.html?id=" . $id );
+        page_nav->child( _('Memberships'),    url => "/Admin/Users/Memberships.html?id=" . $id );
+        page_nav->child( _('History'),        url => "/Admin/Users/History.html?id=" . $id );
+        page_nav->child( _('RT at a glance'), url => "/Admin/Users/MyRT.html?id=" . $id );
         if ( RT->config->get('gnupg')->{'enable'} ) {
-            $tabs->child( _('GnuPG'), url => "/Admin/Users/GnuPG.html?id=" . $id );
+            page_nav->child( _('GnuPG'), url => "/Admin/Users/GnuPG.html?id=" . $id );
         }
     }
 
@@ -487,12 +483,11 @@ before 'Admin/Groups' => run {
     if ( my $id = Jifty->web->request->argument('id') ) {
         my $obj = RT::Model::User->new();
         $obj->load($id);
-        my $tabs = page_nav->child( $obj->name, url => "/Admin/CustomFields/Modify.html?id=" . $id );
-        $tabs->child( _('Basics')       => url => "/Admin/Groups/Modify.html?id=" . $obj->id );
-        $tabs->child( _('Members')      => url => "/Admin/Groups/Members.html?id=" . $obj->id );
-        $tabs->child( _('Group rights') => url => "/Admin/Groups/GroupRights.html?id=" . $obj->id );
-        $tabs->child( _('User rights')  => url => "/Admin/Groups/UserRights.html?id=" . $obj->id );
-        $tabs->child( _('History')      => url => "/Admin/Groups/History.html?id=" . $obj->id );
+        page_nav->child( _('Basics')       => url => "/Admin/Groups/Modify.html?id=" . $obj->id );
+        page_nav->child( _('Members')      => url => "/Admin/Groups/Members.html?id=" . $obj->id );
+        page_nav->child( _('Group rights') => url => "/Admin/Groups/GroupRights.html?id=" . $obj->id );
+        page_nav->child( _('User rights')  => url => "/Admin/Groups/UserRights.html?id=" . $obj->id );
+        page_nav->child( _('History')      => url => "/Admin/Groups/History.html?id=" . $obj->id );
     }
 };
 
@@ -500,14 +495,13 @@ before 'Admin/CustomFields/' => run {
     if ( my $id = Jifty->web->request->argument('id') ) {
         my $obj = RT::Model::CustomField->new();
         $obj->load($id);
-        my $tabs = page_nav->child( $obj->name, url => "/Admin/CustomFields/Modify.html?id=" . $id );
 
-        $tabs->child( _('Basics')       => url => "/Admin/CustomFields/Modify.html?id=" . $id );
-        $tabs->child( _('Group rights') => url => "/Admin/CustomFields/GroupRights.html?id=" . $id );
-        $tabs->child( _('User rights')  => url => "/Admin/CustomFields/UserRights.html?id=" . $id );
+        page_nav->child( _('Basics')       => url => "/Admin/CustomFields/Modify.html?id=" . $id );
+        page_nav->child( _('Group rights') => url => "/Admin/CustomFields/GroupRights.html?id=" . $id );
+        page_nav->child( _('User rights')  => url => "/Admin/CustomFields/UserRights.html?id=" . $id );
 
         if ( $obj->lookup_type =~ /^RT::Model::Queue-/io ) {
-            $tabs->child( _('Applies to'), url => "/Admin/CustomFields/Objects.html?id=" . $id );
+            page_nav->child( _('Applies to'), url => "/Admin/CustomFields/Objects.html?id=" . $id );
         }
 
     }
@@ -523,11 +517,10 @@ before 'Admin/Global/Workflows' => run {
 
         if ($schema) {
             my $qs_name = query_string( name => $schema->name );
-            my $workflow = page_nav->child( $schema->name, url => "$base/Summary.html?$qs_name" );
-            $workflow->child( _("Summary")     => url => "$base/Summary.html?$qs_name" );
-            $workflow->child( _("Statuses")    => url => "$base/Statuses.html?$qs_name" );
-            $workflow->child( _("Transitions") => url => "$base/Transitions.html?$qs_name" );
-            $workflow->child( _("Interface")   => url => "$base/Interface.html?$qs_name" );
+            page_nav->child( _("Summary")     => url => "$base/Summary.html?$qs_name" );
+            page_nav->child( _("Statuses")    => url => "$base/Statuses.html?$qs_name" );
+            page_nav->child( _("Transitions") => url => "$base/Transitions.html?$qs_name" );
+            page_nav->child( _("Interface")   => url => "$base/Interface.html?$qs_name" );
         }
     }
 };
@@ -538,25 +531,20 @@ before qr'(?:Ticket|Search)/' => run {
         my $obj = RT::Model::Ticket->new();
         $obj->load($id);
 
-        my $tabs = page_nav->child(
-            "#" . $id => class => "currentnav",
-            url       => "/Ticket/Display.html?id=" . $id
-        );
+        page_nav->child( _('Display') => url => "/Ticket/Display.html?id=" . $id );
 
-        $tabs->child( _('Display') => url => "/Ticket/Display.html?id=" . $id );
+        page_nav->child( _('History') => url => "/Ticket/History.html?id=" . $id );
+        page_nav->child( _('Basics')  => url => "/Ticket/Modify.html?id=" . $id );
 
-        $tabs->child( _('History') => url => "/Ticket/History.html?id=" . $id );
-        $tabs->child( _('Basics')  => url => "/Ticket/Modify.html?id=" . $id );
-
-        $tabs->child( _('Dates') => url => "/Ticket/ModifyDates.html?id=" . $id );
-        $tabs->child( _('People'), url => "/Ticket/ModifyPeople.html?id=" . $id );
-        $tabs->child( _('Links'),  url => "/Ticket/ModifyLinks.html?id=" . $id );
-        $tabs->child( _('Jumbo'),  url => "/Ticket/ModifyAll.html?id=" . $id );
+        page_nav->child( _('Dates') => url => "/Ticket/ModifyDates.html?id=" . $id );
+        page_nav->child( _('People'), url => "/Ticket/ModifyPeople.html?id=" . $id );
+        page_nav->child( _('Links'),  url => "/Ticket/ModifyLinks.html?id=" . $id );
+        page_nav->child( _('Jumbo'),  url => "/Ticket/ModifyAll.html?id=" . $id );
 
         my %can = ( ModifyTicket => $obj->current_user_has_right('ModifyTicket') );
 
         if ( $can{'ModifyTicket'} or $obj->current_user_has_right('ReplyToTicket') ) {
-            $tabs->child( _('Reply'), url => "/Ticket/Update.html?action=respond&id=" . $id );
+            page_nav->child( _('Reply'), url => "/Ticket/Update.html?action=respond&id=" . $id );
         }
 
         if ( $can{'ModifyTicket'} ) {
@@ -575,23 +563,23 @@ before qr'(?:Ticket|Search)/' => run {
 
                     #$url .= "Display.html?" .query_string(Status => $next, id => $id );
                 }
-                $tabs->child( _( $schema->transition_label( $current => $next ) ) => url => $url );
+                page_nav->child( _( $schema->transition_label( $current => $next ) ) => url => $url );
             }
 
         }
         if ( $obj->current_user_has_right('OwnTicket') ) {
             if ( $obj->owner_obj->id == RT->nobody->id ) {
-                $tabs->child( _('Take') => url => "/Ticket/Display.html?action=take&id=" . $id )
+                page_nav->child( _('Take') => url => "/Ticket/Display.html?action=take&id=" . $id )
                     if ( $can{'ModifyTicket'} or $obj->current_user_has_right('TakeTicket') );
             } elsif ( $obj->owner_obj->id != Jifty->web->current_user->id ) {
-                $tabs->child( _('Steal') => url => "/Ticket/Display.html?action=steal&id=" . $id )
+                page_nav->child( _('Steal') => url => "/Ticket/Display.html?action=steal&id=" . $id )
                     if ( $can{'ModifyTicket'}
                     or $obj->current_user_has_right('StealTicket') );
             }
         }
 
         if ( $can{'ModifyTicket'} or $obj->current_user_has_right('CommentOnTicket') ) {
-            $tabs->child( _('Comment') => url => "/Ticket/Update.html?action=comment&id=" . $id );
+            page_nav->child( _('Comment') => url => "/Ticket/Update.html?action=comment&id=" . $id );
         }
 
         # $actions->{'_ZZ'} = { html => $m->scomp( '/Ticket/Elements/Bookmark', id => $obj->id ), };
@@ -680,20 +668,6 @@ before qr'(?:Ticket|Search)/' => run {
         page_nav->child( _('Bulk Update') => url => "/Search/Bulk.html$args" );
 
     }
-};
-
-before 'User/Group' => run {
-    if ( my $id = Jifty->web->request->argument('id') ) {
-        my $obj = RT::Model::User->new();
-        $obj->load($id);
-        my $group = page_nav->child( url => "/User/Groups/Modify.html?id=" . $obj->id );
-        $group->child( _('Basics'),  url => "/User/Groups/Modify.html?id=" . $obj->id );
-        $group->child( _('Members'), url => "/User/Groups/Members.html?id=" . $obj->id );
-
-    }
-    page_nav( _('Select') => url => "/User/Groups/index.html" );
-    page_nav( _('Create') => url => "/User/Groups/Modify.html?create=1", separator => 1 );
-
 };
 
 before 'Prefs' => run {
