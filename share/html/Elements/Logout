@@ -45,10 +45,21 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-% unless (!$session{'CurrentUser'}->Name
-%         or (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth'))) {
-    | <a  href="<%RT->Config->Get('WebPath')%>/NoAuth/Logout.html<%$URL ? "?URL=".$URL : ''%>"><&|/l&>Logout</&></a>
-% }
+ | <a href="<% RT->Config->Get('WebPath') %>/NoAuth/Logout.html<% $URL ? "?URL=". $URL : '' %>"><&|/l&>Logout</&></a>
 <%ARGS>
 $URL => undef
 </%ARGS>
+<%INIT>
+my $show = 0;
+if ( $session{'CurrentUser'}->Name
+    && ( !RT->Config->Get('WebExternalAuth')
+        || RT->Config->Get('WebFallbackToInternalAuth')
+    )
+) {
+    $show = 1;
+}
+
+$m->callback( %ARGS, URL => \$URL, show => \$show );
+
+return unless $show;
+</%INIT>
