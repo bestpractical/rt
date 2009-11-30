@@ -64,25 +64,51 @@
     Format => $Format,
     Collection => $queues,
     AllowSorting => 1,
-    PassArguments => [qw(Format Rows Page Order OrderBy FindDisabledQueues)],
+    PassArguments => [qw(
+        Format Rows Page Order OrderBy
+        FindDisabledQueues QueueString QueueOp QueueField
+    )],
 &>
 % }
 <form method="post" action="<% RT->Config->Get('WebPath') %>/Admin/Queues/index.html">
+% foreach my $field( qw(Format Rows Page Order OrderBy) ) {
+%     next unless defined $ARGS{ $field } && length $ARGS{ $field };
+<input type="hidden" name="<% $field %>" value="<% $ARGS{ $field } %>" />
+% }
+
+<select name="QueueField">
+% foreach my $col (qw(Name Description CorrespondAddress CommentAddress InitialPriority FinalPriority DefaultDueIn)) {
+<option <% $QueueField eq $col ? 'selected="selected"' : '' |n %> value="<% $col %>"><% loc($col) %></option>
+% }
+</select>
+<& /Elements/SelectMatch, Name => 'QueueOp', Default => $QueueOp &>
+<input size="8" name="QueueString" value="<% $QueueString %>" />
+<br />
+
 <input type="checkbox" class="checkbox" name="FindDisabledQueues" value="1" <% $FindDisabledQueues? 'checked="checked"': '' |n%> />
 <&|/l&>Include disabled queues in listing.</&>
 <div align="right"><input type="submit" class="button" value="<&|/l&>Go!</&>" /></div> 
 </form>
 
 <%INIT>
-my ($queue, $caption);
 my $queues = new RT::Queues($session{'CurrentUser'});
-$queues->UnLimit();
+$queues->{'find_disabled_rows'} = 1 if $FindDisabledQueues;
 
-if ($FindDisabledQueues) {
-    $caption = loc("All Queues");
-    $queues->{'find_disabled_rows'} = 1;
+my ($caption);
+if ( defined $QueueString && length $QueueString ) {
+    $caption = $FindDisabledQueues
+        ? loc("All queues matching search criteria")
+        : loc("Enabled queues matching search criteria");
+    $queues->Limit(
+        FIELD    => $QueueField,
+        OPERATOR => $QueueOp,
+        VALUE    => $QueueString,
+    );
 } else {
-    $caption = loc("Enabled Queues");
+    $queues->UnLimit;
+    $caption = $FindDisabledQueues
+        ? loc("All Queues")
+        : loc("Enabled Queues");
 }
 
 $Format ||= q{'<a href="__WebPath__/Admin/Queues/Modify.html?id=__id__">__id__</a>/TITLE:#'}
@@ -93,4 +119,8 @@ $Format ||= q{'<a href="__WebPath__/Admin/Queues/Modify.html?id=__id__">__id__</
 <%ARGS>
 $FindDisabledQueues => 0
 $Format             => undef
+
+$QueueField         => 'Name'
+$QueueOp            => '='
+$QueueString        => ''
 </%ARGS>
