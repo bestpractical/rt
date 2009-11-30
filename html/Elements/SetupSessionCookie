@@ -50,7 +50,7 @@ return if $m->is_subrequest; # avoid reentrancy, as suggested by masonbook
 
 my %cookies    = CGI::Cookie->fetch();
 my $cookiename = "RT_SID_" . $RT::rtname . "." . $ENV{'SERVER_PORT'};
-$SessionCookie ||= $cookies{$cookiename} ? $cookies{$cookiename}->value : undef;
+$SessionCookie = $cookies{$cookiename} ? $cookies{$cookiename}->value : undef;
 
 my %backends   = (
     mysql => 'Apache::Session::MySQL',
@@ -96,6 +96,13 @@ if ($@) {
         tie %session, $session_class, undef, $session_properties;
         undef $cookies{$cookiename};
     };
+}
+elsif ( !($session{'CurrentUser'} && $session{'CurrentUser'}->id) ) {
+    eval {
+        undef $cookies{$cookiename};
+        tied(%session)->delete;
+        tie %session, $session_class, undef, $session_properties;
+    }
 }
 
 if ($@) {
