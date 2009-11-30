@@ -213,6 +213,7 @@ create table CachedGroupMembers (
 ) TYPE=InnoDB CHARACTER SET utf8;
 
 CREATE INDEX DisGrouMem  on CachedGroupMembers (GroupId,MemberId,Disabled);
+CREATE INDEX CachedGroupMembers3 on CachedGroupMembers (MemberId, ImmediateParentId);
 
 # }}}
 
