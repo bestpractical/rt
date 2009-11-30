@@ -69,7 +69,7 @@ $wipeout => ''
 </div>
 <br />
 % if( $search || $wipeout ) {
-<& Elements/Selectobjects, objects => \@objs &>
+<& Elements/SelectObjects, objects => \@objs &>
 % }
 </form>
 </&>
@@ -145,7 +145,7 @@ if( $plugin && $wipeout ) { { # use additional block({}) to effectively exit blo
         last;
     }
 
-    ($dump_file) = $backup_plugin->file_name;
+    ($dump_file) = $backup_plugin->filename;
     push @{ $messages{'Success'} }, "SQL dump file is '$dump_file'";
 
     $shredder->add_dump_plugin( object => $backup_plugin );
@@ -178,7 +178,7 @@ if( $plugin && ( $search || $wipeout ) ) { { # use additional block({}) to effec
 
     my $shredder = new RT::Shredder;
     foreach my $o( grep defined, splice @objs ) {
-        eval { push @objs, $shredder->cast_objectsToRecords( objects => $o ) };
+        eval { push @objs, $shredder->cast_objects_to_records( objects => $o ) };
           $catch_non_fatals->() && last if $@;
     }
     unless( @objs ) {

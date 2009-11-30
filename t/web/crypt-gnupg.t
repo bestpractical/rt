@@ -9,7 +9,7 @@ plan skip_all => 'GnuPG required.'
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
 
-plan tests => 93;
+plan tests => 97;
 
 use RT::ScripAction::SendEmail;
 
@@ -394,7 +394,9 @@ ok(my $id = $tick->id, 'created ticket for owner-without-pubkey');
 $tick = RT::Model::Ticket->new(current_user => RT->system_user );
 $tick->create(subject => 'owner has pubkey', queue => 'general',
               owner => 'root');
-ok($id = $tick->id, 'created ticket for owner-with-pubkey');
+ok($tick->id, 'created ticket for owner-with-pubkey');
+
+
 my $mail = << "MAIL";
 Subject: Nokey requestor
 From: nokey\@example.com
@@ -402,7 +404,7 @@ To: general\@example.com
 
 hello
 MAIL
- 
+
 ((my $status), $id) = RT::Test->send_via_mailgate($mail);
 $m->warnings_like( qr/Recipient 'nokey\@example.com' is unusable/ );
 

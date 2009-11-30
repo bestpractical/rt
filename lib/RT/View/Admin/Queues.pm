@@ -50,78 +50,11 @@ use strict;
 
 package RT::View::Admin::Queues;
 use Jifty::View::Declare -base;
-#use base 'RT::View::CRUD';
+use base 'RT::View::CRUD';
 
-#use constant page_title      => 'Queue Management';
-#use constant object_type     => 'Queue';
-#use constant display_columns => qw(id name description correspond_address
-#        comment_address initial_priority default_due_in);
-
-template 'index.html' =>
-page { title => _('Queues') }
-content {
-  my $include_disable = get( 'find_disabled_queues' );
-  if ( $include_disable ) {
-    h1 { _('All Queues') };
-  }
-  else {
-    h1 { _('Enabled Queues') };
-  }
-
-  my $queues = RT::Model::QueueCollection->new;
-  $queues->find_all_rows;
-  if ( $include_disable ) {
-      $queues->{'find_disabled_rows'} = 1;
-  }
-
-  p { _("Select a queue") };
-  unless ( $queues->count ) {
-    em { _('No queues matching search criteria found.') };
-  } else {
-    my @fields = ( '#', qw/name description address priority default_due_in/ );
-    push @fields, 'disabled' if $include_disable;
-    table {
-        thead { row { 
-            for my $head ( @fields ) {
-                cell { { class is 'labeltop' }; $head };
-            }
-        } };
-        tbody { 
-          while ( my $queue = $queues->next ) {
-            row { 
-                for my $field ( @fields ) {
-                    cell { { class is 'value' };
-                        if ( $field eq '#' ) {
-                            $queue->id
-                        }
-                        elsif ( $field eq 'disabled' ) {
-                            $queue->disabled ? 'disabled' : 'enabled'
-                        }
-                        elsif ( $field eq 'address' ) {
-                            ( $queue->correspond_address ||'-'). '/' .
-                                ($queue->comment_address || '-')
-                        }
-                        elsif ( $field eq 'priority' ) {
-                            ( $queue->initial_priority || 0 ). '/' .
-                                ( $queue->final_priority || 0 )
-                        }
-                        else {
-                            $queue->$field
-                        } 
-                    };
-                }
-            };
-          }
-        }
-    };
-    }
-
-    hyperlink(
-        label       => _('Include disabled queues in listing.'),
-        url         => '/admin/queues',
-        parameters => { find_disabled_queues => 1 },
-    );
-};
+use constant page_title      => 'Queue Management';
+use constant object_type     => 'Queue';
+use constant display_columns => qw(id name description correspond_address initial_priority default_due_in);
 
 
 1;

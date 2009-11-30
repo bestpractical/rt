@@ -405,6 +405,8 @@ sub create {
         resolved            => undef,
         told                => undef,
         mime_obj            => undef,
+        sign                => 0,
+        encrypt             => 0,
         _record_transaction => 1,
         dry_run             => 0,
         @_
@@ -472,6 +474,10 @@ sub create {
     # where we're importing tickets (eg, from an older RT version.)
     $args{'priority'} = $args{'initial_priority'}
         unless defined $args{'priority'};
+
+    # XXX we should become consistent about requestor vs requestors
+    $args{'requestor'} = delete $args{'requestors'}
+        unless $args{'requestor'};
 
 # Initial message {{{
     if (!$args{mime_obj}) {
@@ -602,7 +608,7 @@ sub create {
     # _outside_ the transaction, so we don't get into ticket creation races
     foreach my $type ( $self->roles ) {
 
-        $args{$type} = [ $args{$type} ] unless ref $args{$type};
+        $args{$type} = [ $args{$type} ] unless ref $args{$type} eq 'ARRAY';
         foreach my $watcher ( grep $_, splice @{ $args{$type} } ) {
             if ( $watcher =~ /^\d+$/ ) {
                 push @{ $args{$type} }, $watcher;
@@ -809,6 +815,12 @@ sub create {
         $owner_group->_add_member(
             principal => $owner,
         );
+    }
+
+    foreach my $argument (qw(encrypt sign)) {
+        my $header = "X-RT-" . ucfirst($argument);
+        $args{'mime_obj'}->head->add( $header => $args{$argument} )
+            if defined $args{$argument};
     }
 
     if ($args{'attachments'}) {
@@ -1294,7 +1306,8 @@ sub _record_note {
     }
 
     foreach my $argument (qw(encrypt sign)) {
-        $args{'mime_obj'}->head->add( "X-RT-$argument" => $args{$argument} )
+        my $header = "X-RT-" . ucfirst($argument);
+        $args{'mime_obj'}->head->add( $header => $args{$argument} )
             if defined $args{$argument};
     }
 

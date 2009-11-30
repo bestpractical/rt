@@ -76,7 +76,7 @@ for my $usage (qw/signed encrypted signed&encrypted/) {
 
 $m->warnings_like(
     [ (qr/Recipient 'ternus\@mit.edu' is unusable/ ) x 16 ],
-    "got Recipient 'ternus\@mit.edu  is unusable warning"
+    "got Recipient 'ternus\@mit.edu' is unusable warning"
 );
 
 sub email_ok {

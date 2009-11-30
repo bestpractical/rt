@@ -113,10 +113,11 @@ sub commit {
 
         my %crypt;
         foreach my $argument (qw(sign encrypt)) {
+            my $header = "X-RT-" . ucfirst($argument);
             if ( $attachment
-                && defined $attachment->get_header("X-RT-$argument") )
+                && defined $attachment->get_header($header) )
             {
-                $crypt{$argument} = $attachment->get_header("X-RT-$argument");
+                $crypt{$argument} = $attachment->get_header($header);
             } else {
                 $crypt{$argument} = $self->ticket_obj->queue->$argument();
             }
