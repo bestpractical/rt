@@ -113,13 +113,20 @@
     Jifty->web->navigation->_render_as_yui_menu_item( class => "yuimenubar", id => $id );
     Jifty->web->out(qq|<script type="text/javascript">\n|
         . qq|YAHOO.util.Event.onContentReady("|.$id.qq|", function() {\n|
-        . qq|var menu = new YAHOO.widget.MenuBar("|.$id.qq|", {  lazyload:true, submenutoggleregion:true });\n|
+        . qq|var menu = new YAHOO.widget.MenuBar("|.$id.qq|", {  lazyload:true, autosubmenudisplay:true |
+        #. qq|, submenutoggleregion:true |
+        # commented out until we upgrade to a version of yui menu that does chrome
+        . qq| });\n|
         . qq|menu.render();\n|
         . qq|});</script>|
         );
 </%perl>
 </div>
 <div class="page-nav">
+<%perl>
+ my $page_nav  = Jifty->web->page_navigation;
+$page_nav->render_children_inline(1);
+</%perl>
 % Jifty->web->page_navigation->render_as_yui_menubar();
 </div>
 </div>

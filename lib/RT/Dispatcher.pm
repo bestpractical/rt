@@ -206,7 +206,12 @@ before qr{.*} => run {
     }
 
     my $tools = main_nav->child( _('Tools'), url => '/Tools/index.html', sort_order => 3 );
-    $tools->child( _('Dashboards'), url => '/Dashboards/index.html' );
+    my $dashes =$tools->child( _('Dashboards'), url => '/Dashboards/index.html' );
+    $dashes->child( _('Select'), url => "/Dashboards/index.html" );
+    use RT::Dashboard;
+    if ( RT::Dashboard->new->_privacy_objects( create => 1 ) ) {
+        $dashes->child( _('Create') => url => "/Dashboards/Modify.html?create=1" );
+    }
 
     my $reports = $tools->child( _('Reports'), url => '/Tools/Reports/index.html' );
     $reports->child( _('Resolved by owner'),       url => '/Tools/Reports/ResolvedByOwner.html', );
@@ -225,11 +230,33 @@ before qr{.*} => run {
     if ( Jifty->web->current_user->has_right( right => 'ShowConfigTab', object => RT->system ) )
     {
         my $admin = $tools->child( Config => label => _('Configuration'), url => '/Admin/' );
-        $admin->child( _('Users'),         url => '/Admin/Users/', );
-        $admin->child( _('Groups'),        url => '/Admin/Groups/', );
-        $admin->child( _('Queues'),        url => '/Admin/Queues/', );
-        $admin->child( _('Custom Fields'), url => '/Admin/CustomFields/', );
-        $admin->child( _('Rules'),         url => '/admin/rules/', );
+        my $users = $admin->child( _('Users'),         url => '/Admin/Users/', );
+    if ( Jifty->web->current_user->has_right( object => RT->system, right => 'AdminUsers' ) ) {
+        $users->child( _('Select'), url => "/Admin/Users/" );
+        $users->child( _('Create'), url => "/Admin/Users/Modify.html?create=1", separator => 1 );
+    }
+       my $groups=  $admin->child( _('Groups'),        url => '/Admin/Groups/', );
+
+   $groups->child( _('Select') => url => "/Admin/Groups/" );
+    $groups->child( _('Create') => url => "/Admin/Groups/Modify.html?create=1", separator => 1 );
+        my $queues= $admin->child( _('Queues'),        url => '/Admin/Queues/', );
+
+        if ( Jifty->web->current_user->has_right( object => RT->system, right => 'AdminQueue' ) ) {
+        $queues->child( _('Select'), url => "/Admin/Queues/" );
+        $queues->child( _('Create'), url => "/Admin/Queues/Modify.html?create=1" );
+        }
+
+
+
+       my $cfs= $admin->child( _('Custom Fields'), url => '/Admin/CustomFields/', );
+    if ( Jifty->web->current_user->has_right( object => RT->system, right => 'AdminCustomField' ) ) {
+        $cfs->child( _('Select'), url => "/Admin/CustomFields/" );
+        $cfs->child( _('Create') => url => "/Admin/CustomFields/Modify.html?create=1", );
+
+    }
+        my $rules = $admin->child( _('Rules'),         url => '/admin/rules/', );
+    $rules->child( _('Select'), url => "/Admin/Rules/" );
+    $rules->child( _('Create'), url => "/Admin/Rules/Modify.html?create=1" );
 
         my $admin_global = $admin->child( _('Global'), url => '/Admin/Global/', );
 
@@ -301,10 +328,6 @@ before qr{.*} => run {
 
 before qr'Dashboards/?' => run {
     require RT::Dashboard;    # not a record class, so not autoloaded :/
-    page_nav->child( _('Select'), url => "/Dashboards/index.html" );
-    if ( RT::Dashboard->new->_privacy_objects( create => 1 ) ) {
-        page_nav->child( _('Create') => url => "/Dashboards/Modify.html?create=1" );
-    }
 };
 
 before 'Dashboards/Modify.html' => run {
@@ -422,10 +445,8 @@ before '/SelfService' => run {
 };
 
 before 'Admin/Queues' => run {
-    if ( Jifty->web->current_user->has_right( object => RT->system, right => 'AdminQueue' ) ) {
-        page_nav->child( _('Select'), url => "/Admin/Queues/" );
-        page_nav->child( _('Create'), url => "/Admin/Queues/Modify.html?create=1" );
-    }
+
+
     if ( my $id = Jifty->web->request->argument('id') ) {
         my $queue_obj = RT::Model::Queue->new();
         $queue_obj->load($id);
@@ -447,10 +468,6 @@ before 'Admin/Queues' => run {
 };
 
 before '/Admin/Users' => run {
-    if ( Jifty->web->current_user->has_right( object => RT->system, right => 'AdminUsers' ) ) {
-        page_nav->child( _('Select'), url => "/Admin/Users/" );
-        page_nav->child( _('Create'), url => "/Admin/Users/Modify.html?create=1", separator => 1 );
-    }
     if ( my $id = Jifty->web->request->argument('id') ) {
         my $obj = RT::Model::User->new();
         $obj->load($id);
@@ -467,9 +484,6 @@ before '/Admin/Users' => run {
 };
 
 before 'Admin/Groups' => run {
-
-    page_nav->child( _('Select') => url => "/Admin/Groups/" );
-    page_nav->child( _('Create') => url => "/Admin/Groups/Modify.html?create=1", separator => 1 );
     if ( my $id = Jifty->web->request->argument('id') ) {
         my $obj = RT::Model::User->new();
         $obj->load($id);
@@ -483,11 +497,6 @@ before 'Admin/Groups' => run {
 };
 
 before 'Admin/CustomFields/' => run {
-    if ( Jifty->web->current_user->has_right( object => RT->system, right => 'AdminCustomField' ) ) {
-        page_nav->child( _('Select'), url => "/Admin/CustomFields/" );
-        page_nav->child( _('Create') => url => "/Admin/CustomFields/Modify.html?create=1", );
-
-    }
     if ( my $id = Jifty->web->request->argument('id') ) {
         my $obj = RT::Model::CustomField->new();
         $obj->load($id);
@@ -521,11 +530,6 @@ before 'Admin/Global/Workflows' => run {
             $workflow->child( _("Interface")   => url => "$base/Interface.html?$qs_name" );
         }
     }
-};
-
-before 'Admin/Rules' => run {
-    page_nav->child( _('Select'), url => "/Admin/Rules/" );
-    page_nav->child( _('Create'), url => "/Admin/Rules/Modify.html?create=1" );
 };
 
 before qr'(?:Ticket|Search)/' => run {
