@@ -607,32 +607,32 @@ sub _wipeout {
 
 =head3 Data storage and backups
 
-=head4 get_file_name ( Filename => '<ISO DATETIME>-XXXX.sql', FromStorage => 1 )
+=head4 get_filename ( filename => '<ISO DATETIME>-XXXX.sql', from_storage => 1 )
 
-Takes desired C<Filename> and flag C<FromStorage> then translate file name to absolute
+Takes desired C<filename> and flag C<from_storage> then translate file name to absolute
 path by next rules:
 
 =over
 
 =item *
 
-Default value of the C<Filename> option is C<< <ISO DATETIME>-XXXX.sql >>;
+Default value of the C<filename> option is C<< <ISO DATETIME>-XXXX.sql >>;
 
 =item *
 
-if C<Filename> has C<XXXX> (exactly four uppercase C<X> letters) then it would be changed with digits from 0000 to 9999 range, with first one free value;
+if C<filename> has C<XXXX> (exactly four uppercase C<X> letters) then it would be changed with digits from 0000 to 9999 range, with first one free value;
 
 =item *
 
-if C<Filename> has C<%T> then it would be replaced with the current date and time in the C<YYYY-MM-DDTHH:MM:SS> format. Note that using C<%t> may still generate not unique names, using C<XXXX> recomended.
+if C<filename> has C<%T> then it would be replaced with the current date and time in the C<YYYY-MM-DDTHH:MM:SS> format. Note that using C<%t> may still generate not unique names, using C<XXXX> recomended.
 
 =item *
 
-if C<FromStorage> argument is true (default behaviour) then result path would always be relative to C<StoragePath>;
+if C<from_storage> argument is true (default behaviour) then result path would always be relative to C<StoragePath>;
 
 =item *
 
-if C<FromStorage> argument is false then result would be relative to the current dir unless it's already absolute path.
+if C<from_storage> argument is false then result would be relative to the current dir unless it's already absolute path.
 
 =back
 
@@ -640,26 +640,26 @@ Returns an absolute path of the file.
 
 Examples:
     # file from storage with default name format
-    my $fname = $shredder->get_file_name;
+    my $fname = $shredder->get_filename;
 
     # file from storage with custom name format
-    my $fname = $shredder->get_file_name( Filename => 'shredder-XXXX.backup' );
+    my $fname = $shredder->get_filename( filename => 'shredder-XXXX.backup' );
 
     # file with path relative to the current dir
-    my $fname = $shredder->get_file_name(
-        FromStorage => 0,
-        Filename => 'backups/shredder.sql',
+    my $fname = $shredder->get_filename(
+        from_storage => 0,
+        filename => 'backups/shredder.sql',
     );
 
     # file with absolute path
-    my $fname = $shredder->get_file_name(
-        FromStorage => 0,
-        Filename => '/var/backups/shredder-XXXX.sql'
+    my $fname = $shredder->get_filename(
+        from_storage => 0,
+        filename => '/var/backups/shredder-XXXX.sql'
     );
 
 =cut
 
-sub get_file_name {
+sub get_filename {
     my $self = shift;
     my %args = ( filename => '', from_storage => 1, @_ );
 
@@ -718,7 +718,7 @@ sub get_file_name {
 Returns an absolute path to the storage dir.  See
 L<CONFIGURATION/$ShredderStoragePath>.
 
-See also description of the L</get_file_name> method.
+See also description of the L</get_filename> method.
 
 =cut
 

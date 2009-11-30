@@ -145,7 +145,7 @@ if( $plugin && $wipeout ) { { # use additional block({}) to effectively exit blo
         last;
     }
 
-    ($dump_file) = $backup_plugin->file_name;
+    ($dump_file) = $backup_plugin->filename;
     push @{ $messages{'Success'} }, "SQL dump file is '$dump_file'";
 
     $shredder->add_dump_plugin( object => $backup_plugin );
