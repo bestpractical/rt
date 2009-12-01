@@ -8,10 +8,21 @@ use Scalar::Defer;
 
 __PACKAGE__->mk_accessors('object');
 
+# don't use this directly, use EditUserRights or EditGroupRights instead
 sub arguments {
     my $self = shift;
-    $self->log->fatal(
-        "Use one of the subclasses, EditUserRights or EditGroupRights" );
+    return {} unless $self->object;
+
+    my $args = {};
+    $args->{object_id} = {
+        render_as     => 'hidden',
+        default_value => $self->object->id,
+    };
+    $args->{object_type} = {
+        render_as     => 'hidden',
+        default_value => ref $self->object,
+    };
+    return $args;
 }
 
 =head2 take_action

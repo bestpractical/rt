@@ -9,15 +9,7 @@ use Scalar::Defer;
 sub arguments {
     my $self = shift;
     return {} unless $self->object;
-    my $args = {};
-    $args->{object_id} = {
-        render_as     => 'hidden',
-        default_value => $self->object->id,
-    };
-    $args->{object_type} = {
-        render_as     => 'hidden',
-        default_value => ref $self->object,
-    };
+    my $args = $self->SUPER::arguments( @_ );
 
     my @groups;
 
