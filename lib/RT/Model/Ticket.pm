@@ -474,13 +474,6 @@ sub create {
 # }}}
 
     # {{{ Dates
-    my $starts;
-    if ( defined $args{'starts'} ) {
-        $starts = RT::DateTime->new_from_string($args{'starts'});
-    } else {
-        $starts = RT::DateTime->new_unset;
-    }
-
     my $started;
     if ( defined $args{'started'} ) {
         $started = RT::DateTime->new_from_string($args{'started'});
@@ -604,7 +597,7 @@ sub create {
         time_estimated   => $args{'time_estimated'},
         time_left        => $args{'time_left'},
         type             => $args{'type'},
-        starts           => $starts,
+        starts           => $args{'starts'},
         started          => $started,
         resolved         => $resolved,
         told             => $told,
@@ -873,6 +866,24 @@ sub canonicalize_due {
     }
 
     return RT::DateTime->new_unset;
+}
+
+=head2 canonicalize_starts
+
+Try to parse the starts date as a string.
+
+=cut
+
+sub canonicalize_starts {
+    my $self   = shift;
+    my $starts = shift;
+
+    if (defined $starts) {
+        return RT::DateTime->new_from_string($starts);
+    }
+
+    return RT::DateTime->new_unset;
+
 }
 
 
