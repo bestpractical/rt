@@ -8,9 +8,16 @@ use Scalar::Defer;
 
 sub arguments {
     my $self = shift;
-
-    #    return $self->{__cached_arguments} if ( $self->{__cached_arguments} );
+    return {} unless $self->object;
     my $args = {};
+    $args->{object_id} = {
+        render_as     => 'hidden',
+        default_value => $self->object->id,
+    };
+    $args->{object_type} = {
+        render_as     => 'hidden',
+        default_value => ref $self->object,
+    };
 
     my $privileged =
       RT::Model::Group->new( current_user => Jifty->web->current_user );
@@ -22,19 +29,17 @@ sub arguments {
           RT::Model::Group->new( current_user => Jifty->web->current_user );
         $group->load_acl_equivalence( $user->member );
 
-        my $name = join '-',
-          $group->principal_id, ref( $self->object ), $self->object->id;
+        my $name = 'rights_' . $group->principal_id;
         $args->{$name} = {
-            default_value    => defer { $self->default_value($group) },
+            default_value    => defer {
+                $self->default_value($group->principal_id) },
             available_values => defer { $self->available_values },
-            render_as        => 'Select',
+            render_as        => 'Checkboxes',
             multiple         => 1,
             label => $user->member->object->real_name,
         };
     }
     return $args;
-
-    #    return $self->{__cached_arguments} = $args;
 }
 
 =head2 take_action
@@ -44,10 +49,70 @@ sub arguments {
 sub take_action {
     my $self = shift;
 
-    for my $arg ( $self->argument_names ) {
+    my $object_type = $self->argument_value('object_type');
+    return unless $object_type;
+    if ( $object_type eq 'RT::System' ) {
+        $self->object( RT->system );
+    }
+    elsif ( $RT::Model::ACE::OBJECT_TYPES{$object_type} ) {
+        my $object =
+          $object_type->new( current_user => Jifty->web->current_user );
+        my $object_id = $self->argument_value('object_id');
+        $object->load($object_id);
+        unless ( $object->id ) {
+            Jifty->log->error("couldn't load $object_type #$object_id");
+            return;
+        }
 
+        $self->object($object);
+    }
+    else {
+        Jifty->log->error("object type '$object_type' is incorrect");
+        return;
     }
 
+    for my $arg ( $self->argument_names ) {
+        next
+          unless ( $arg =~ /^rights_(\d+)$/ );
+
+        my $principal_id = $1;
+
+        my @rights;
+        my $value = $self->argument_value($arg);
+        if ( UNIVERSAL::isa( $self->argument_value($arg), 'ARRAY' ) ) {
+            @rights = @$value;
+        }
+        else {
+            @rights = $value;
+        }
+
+        @rights = grep $_, @rights;
+        next unless @rights;
+
+        my $principal =
+          RT::Model::Principal->new( current_user => Jifty->web->current_user );
+        $principal->load($principal_id);
+
+        my $current_rights = $self->default_value($principal_id);
+        my %current_rights = map { $_ => 1 } @$current_rights;
+        my %rights         = map { $_ => 1 } @rights;
+
+        for my $right ( keys %current_rights ) {
+            next if $rights{$right};
+            my ( $val, $msg ) =
+              $principal->revoke_right( object => $self->object, right => $right );
+            Jifty->log->error($msg) unless $val;
+        }
+
+        for my $right ( keys %rights ) {
+            next if $current_rights{$right};
+            my ( $val, $msg ) =
+              $principal->grant_right( object => $self->object, right => $right );
+            Jifty->log->error($msg) unless $val;
+        }
+    }
+
+    $self->report_success;
     return 1;
 }
 
@@ -81,14 +146,14 @@ sub available_values {
 
 sub default_value {
     my $self  = shift;
-    my $group = shift;
+    my $principal_id = shift;
 
     my $object = $self->object;
     my $acl_obj =
       RT::Model::ACECollection->new( current_user => Jifty->web->current_user );
     my $ACE = RT::Model::ACE->new( current_user => Jifty->web->current_user );
     $acl_obj->limit_to_object($object);
-    $acl_obj->limit_to_principal( id => $group->principal_id );
+    $acl_obj->limit_to_principal( id => $principal_id );
     $acl_obj->order_by( column => 'right_name' );
 
     my @rights;
