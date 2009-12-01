@@ -45,6 +45,9 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<form action="<% RT->Config->Get('WebPath') %>/Search/Simple.html" id="simple-search">
+<form action="<% RT->Config->Get('WebPath') %><% $SendTo %>" id="simple-search">
   <input size="12" name="q" autocomplete="off" accesskey="0" class="field" value="<&|/l&>Search</&>..." onfocus="if (this.value=='<&|/l&>Search</&>...') this.value=''" />
 </form>
+<%ARGS>
+$SendTo => '/Search/Simple.html'
+</%ARGS>
