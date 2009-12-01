@@ -328,7 +328,7 @@ unless ( $ARGS{'AddMoreAttach'} ) {
         $ARGS{'id'} = $Ticket->id;
         $queues{ $Ticket->QueueObj->Id }++;
 
-        my @updateresults, ProcessUpdateMessage(
+        my @updateresults = ProcessUpdateMessage(
                 TicketObj => $Ticket,
                 ARGSRef   => \%ARGS,
             );
