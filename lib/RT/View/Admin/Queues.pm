@@ -107,6 +107,49 @@ template 'index.html' => page {
     );
 };
 
+private template 'rights' => sub {
+    my $self = shift;
+    my $type = shift || 'user';
+
+    my $id = get('id');
+    unless ( $id ) {
+        Jifty->log->fatal( "need queue id parameter" );
+        return;
+    }
+
+    my $queue = RT::Model::Queue->new( current_user =>
+            Jifty->web->current_user );
+    my ( $ret, $msg ) = $queue->load( $id );
+    unless ( $ret ) {
+        Jifty->log->fatal( "failed to load queue $id: $msg" );
+        return;
+    }
+
+    my $class   = 'Edit' . ucfirst($type) . 'Rights';
+    my $moniker = 'modify_' . $type . '_rights';
+
+    my $rights = new_action(
+        class   => $class,
+        moniker => $moniker,
+    );
+
+    $rights->object($queue);
+
+    with ( name => $moniker ), form {
+        input { type is 'hidden'; name is 'id'; value is $id };
+        render_action($rights);
+        form_submit( label => _('Save') );
+    };
+};
+
+template 'user_rights.html' => page { title => _('Modify user rights') } content {
+    show( 'rights', 'user' );
+};
+
+template 'group_rights.html' => page { title => _('Modify group rights') } content {
+    show( 'rights', 'group' );
+};
+
 sub _current_collection {
     my $self = shift; 
     my $collection = $self->SUPER::_current_collection( @_ );
