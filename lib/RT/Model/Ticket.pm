@@ -474,17 +474,6 @@ sub create {
 # }}}
 
     # {{{ Dates
-    #Set the due date. if we didn't get fed one, use the queue default due in
-    my $due;
-    if ( defined $args{'due'} ) {
-        $due = RT::DateTime->new_from_string($args{'due'});
-    } elsif ( my $due_in = $queue_obj->default_due_in ) {
-        $due = RT::DateTime->now;
-        $due->add(days => $due_in);
-    } else {
-        $due = RT::DateTime->new_unset;
-    }
-
     my $starts;
     if ( defined $args{'starts'} ) {
         $starts = RT::DateTime->new_from_string($args{'starts'});
@@ -619,7 +608,7 @@ sub create {
         started          => $started,
         resolved         => $resolved,
         told             => $told,
-        due              => $due,
+        due              => $args{'due'},
     );
 
     # Parameters passed in during an import that we probably don't want to touch, otherwise
@@ -855,6 +844,36 @@ sub create {
 }
 
 
+=head2 canonicalize_due
+
+Try to parse the due date as a string, falling back to the queue's
+default-due-in (but only if canonicalizing a due date for ticket creation)
+
+=cut
+
+sub canonicalize_due {
+    my $self     = shift;
+    my $due      = shift;
+    my $other    = shift;
+    my $metadata = shift;
+
+    if ( defined $due ) {
+        return RT::DateTime->new_from_string($due);
+    }
+
+    if ($metadata->{for} eq 'create') {
+        my $queue = $self->queue_id || $other->{queue};
+        my $queue_obj = RT::Model::Queue->new;
+        $queue_obj->load($queue);
+
+        if ( my $due_in = $queue_obj->default_due_in ) {
+            my $due = RT::DateTime->now;
+            return $due->add(days => $due_in);
+        }
+    }
+
+    return RT::DateTime->new_unset;
+}
 
 
 sub roles { return ( "cc", "admin_cc", "requestor" ); }
