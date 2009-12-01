@@ -430,16 +430,7 @@ sub create {
     }
 
     #Now that we have a queue, Check the ACLS
-            die caller unless $self->current_user->id;
-    unless (
-        $self->current_user->has_right(
-            right  => 'CreateTicket',
-            object => $queue_obj
-        )
-        )
-    {
-        return ( 0, 0, _( "No permission to create tickets in the queue '%1'", $queue_obj->name ) );
-    }
+    die caller unless $self->current_user->id;
 
     unless ( $queue_obj->status_schema->is_valid( $args{'status'} ) ) {
         return ( 0, 0, _('Invalid value for status') );
@@ -985,17 +976,29 @@ sub validate_queue {
     my $queue_obj = RT::Model::Queue->new( current_user => $self->current_user );
     my $id        = $queue_obj->load($value);
 
-    if ( $meta->{for} eq 'create' && $queue_obj->disabled ) {
-        Jifty->log->debug( "$self Disabled queue '"
-              . $queue_obj->name
-              . "' given for ticket creation." );
-        return (
-            0,
-            _(
-                'Could not create ticket in disabled queue "%1"',
-                $queue_obj->name
+    if ($meta->{for} eq 'create') {
+        if ( $queue_obj->disabled ) {
+            Jifty->log->debug( "$self Disabled queue '"
+                . $queue_obj->name
+                . "' given for ticket creation." );
+            return (
+                0,
+                _(
+                    'Could not create ticket in disabled queue "%1"',
+                    $queue_obj->name
+                )
+            );
+        }
+
+        unless (
+            $self->current_user->has_right(
+                right  => 'CreateTicket',
+                object => $queue_obj
             )
-        );
+            )
+        {
+            return ( 0, _( "No permission to create tickets in the queue '%1'", $queue_obj->name ) );
+        }
     }
 
     if ($id) {
