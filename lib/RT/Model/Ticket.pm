@@ -432,10 +432,6 @@ sub create {
     #Now that we have a queue, Check the ACLS
     die caller unless $self->current_user->id;
 
-    unless ( $queue_obj->status_schema->is_valid( $args{'status'} ) ) {
-        return ( 0, 0, _('Invalid value for status') );
-    }
-
     #Since we have a queue, we can set queue defaults
 
     #Initial priority
@@ -2054,19 +2050,22 @@ Returns false otherwise.
 
 =cut
 
-# XXX, FIXME: disable this for a while, as it conflicts with workflows
-#sub validate_status {
-#    my $self   = shift;
-#    my $status = shift;
-#
-#    #Make sure the status passed in is valid
-#    unless ( $self->queue->status_schema->is_valid($status) ) {
-#        return (undef);
-#    }
-#
-#    return (1);
-#
-#}
+sub validate_status {
+    my $self     = shift;
+    my $status   = shift;
+    my $other    = shift;
+    my $metadata = shift;
+
+    my $queue = $self->queue_id || $other->{queue};
+    my $queue_obj = RT::Model::Queue->new;
+    $queue_obj->load($queue);
+
+    if ( $queue_obj->status_schema->is_valid($status) ) {
+        return 1;
+    }
+
+    return undef;
+}
 
 
 
