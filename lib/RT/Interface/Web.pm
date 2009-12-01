@@ -364,7 +364,7 @@ sub AttemptExternalAuth {
                 my $new_user_info = RT::Interface::Web::WebExternalAutoInfo($user);
 
                 # set the attributes that have been defined.
-                foreach my $attribute ( $user->WritableAttributes ) {
+                foreach my $attribute ( $UserObj->WritableAttributes ) {
                     $m->callback(
                         Attribute    => $attribute,
                         User         => $user,
