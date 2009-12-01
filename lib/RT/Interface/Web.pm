@@ -194,7 +194,7 @@ sub HandleRequest {
 
     MaybeShowNoAuthPage($ARGS);
 
-    AttemptExternalAuth($ARGS) unless ( ! RT->Config->Get('WebExternalAuthContinuous') && _UserLoggedIn() );
+    AttemptExternalAuth($ARGS) if RT->Config->Get('WebExternalAuthContinuous') or not _UserLoggedIn();
 
     _ForceLogout() unless _UserLoggedIn();
 
