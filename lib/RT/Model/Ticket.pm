@@ -429,19 +429,6 @@ sub create {
         return ( 0, 0, _('Could not create ticket. queue not set') );
     }
 
-    if ( $queue_obj->disabled ) {
-        Jifty->log->debug( "$self Disabled queue '"
-              . $queue_obj->name
-              . "' given for ticket creation." );
-        return (
-            0, 0,
-            _(
-                'Could not create ticket in disabled queue "%1"',
-                $queue_obj->name
-            )
-        );
-    }
-
     #Now that we have a queue, Check the ACLS
             die caller unless $self->current_user->id;
     unless (
@@ -987,6 +974,8 @@ sub transaction_addresses {
 sub validate_queue {
     my $self  = shift;
     my $value = shift;
+    my $other = shift;
+    my $meta  = shift;
 
     if ( !$value ) {
         Jifty->log->warn( " RT:::Queue::validate_Queue called with a null value. this isn't ok." );
@@ -995,6 +984,19 @@ sub validate_queue {
 
     my $queue_obj = RT::Model::Queue->new( current_user => $self->current_user );
     my $id        = $queue_obj->load($value);
+
+    if ( $meta->{for} eq 'create' && $queue_obj->disabled ) {
+        Jifty->log->debug( "$self Disabled queue '"
+              . $queue_obj->name
+              . "' given for ticket creation." );
+        return (
+            0,
+            _(
+                'Could not create ticket in disabled queue "%1"',
+                $queue_obj->name
+            )
+        );
+    }
 
     if ($id) {
         return (1);
