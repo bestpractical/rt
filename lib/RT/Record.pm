@@ -252,15 +252,16 @@ If this object's table has any of the following atetributes defined as
 sub create {
     my $self    = shift;
     my %attribs = (@_);
+
     foreach my $key ( keys %attribs ) {
         my $method = $self->can("validate_$key");
-        if ($method) {
-            unless ( $method->( $self, $attribs{$key}, { for => 'create' } ) ) {
-                if (wantarray) {
-                    return ( 0, _( 'Invalid value for %1', $key ) );
-                } else {
-                    return (0);
-                }
+        next if !$method;
+
+        unless ( $method->( $self, $attribs{$key}, \%attribs, { for => 'create' } ) ) {
+            if (wantarray) {
+                return ( 0, _( 'Invalid value for %1', $key ) );
+            } else {
+                return (0);
             }
         }
     }
