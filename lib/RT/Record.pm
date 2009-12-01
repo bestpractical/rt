@@ -412,7 +412,7 @@ sub uri {
 }
 
 
-=head2 validatename name
+=head2 validate_name name
 
 Validate the name of the record we're creating. Mostly, just make sure it's not a numeric ID, which is invalid for name
 
