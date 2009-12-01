@@ -6,6 +6,8 @@ package RT::Action::EditRights;
 use base qw/RT::Action Jifty::Action/;
 use Scalar::Defer;
 
+__PACKAGE__->mk_accessors('object');
+
 sub arguments {
     my $self = shift;
     $self->log->fatal(
@@ -95,16 +97,6 @@ sub report_success {
 
     # Your success message here
     $self->result->message('Success');
-}
-
-sub object {
-    my $self = shift;
-    if (@_) {
-        $self->{object} = shift;
-    }
-    else {
-        $self->{object};
-    }
 }
 
 sub available_values {
