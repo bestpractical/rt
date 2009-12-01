@@ -97,11 +97,18 @@ sub _compute_possible_queues {
 
     my $q = RT::Model::QueueCollection->new( current_user => $self->current_user );
     $q->find_all_rows;
-    
+
     my $queues;
+
+    my $current_queue = $self->record->queue;
+    push @$queues, {
+        display => _('%1 (unchanged)', $current_queue->name),
+        value => $current_queue->id,
+    };
+
     while (my $queue = $q->next) {
         if (   $queue->current_user_has_right('CreateTicket')
-            || $queue->id eq $self->record->queue->id )
+            && $queue->id ne $current_queue->id )
         {
             push @$queues, { display => $queue->name, value => $queue->id };
         }
