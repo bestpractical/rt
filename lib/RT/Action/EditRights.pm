@@ -70,7 +70,6 @@ sub take_action {
         }
 
         @rights = grep $_, @rights;
-        next unless @rights;
 
         my $principal =
           RT::Model::Principal->new( current_user => Jifty->web->current_user );
