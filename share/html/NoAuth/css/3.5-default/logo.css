@@ -53,7 +53,7 @@
 }
 
 #logo img { border: none; }
-#logo div.rtname {
+#logo .rtname {
     text-align: center;
     font-weight: bold;
 }
