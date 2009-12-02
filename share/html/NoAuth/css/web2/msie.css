@@ -237,3 +237,10 @@ table.queue-summary td, td.collection-as-table {
 #pick-criteria td.operator {
   width: 7.5em;
 }
+
+.plain-text-white-space {
+  word-wrap: break-word;       /* Internet Explorer 5.5+ */
+  white-space: pre;   /* IE only hack to re-specify in addition to
+  word-wrap  */
+}
+
