@@ -474,16 +474,6 @@ sub create {
 # }}}
 
     # {{{ Dates
-    my $started;
-    if ( defined $args{'started'} ) {
-        $started = RT::DateTime->new_from_string($args{'started'});
-    } elsif ( !$queue_obj->status_schema->is_initial( $args{'status'} ) ) {
-        $started = RT::DateTime->now;
-    }
-    else {
-        $started = RT::DateTime->new_unset;
-    }
-
     my $resolved;
     if ( defined $args{'resolved'} ) {
         $resolved = RT::DateTime->new_from_string($args{'resolved'});
@@ -598,7 +588,7 @@ sub create {
         time_left        => $args{'time_left'},
         type             => $args{'type'},
         starts           => $args{'starts'},
-        started          => $started,
+        started          => $args{'started'},
         resolved         => $resolved,
         told             => $told,
         due              => $args{'due'},
@@ -877,15 +867,22 @@ Try to parse the starts date as a string.
 sub canonicalize_starts {
     my $self   = shift;
     my $starts = shift;
+    my $other  = shift;
 
     if (defined $starts) {
         return RT::DateTime->new_from_string($starts);
     }
 
+    my $queue = $self->queue_id || $other->{queue};
+    my $queue_obj = RT::Model::Queue->new;
+    $queue_obj->load($queue);
+
+    if ( !$queue_obj->status_schema->is_initial($other->{status}) ) {
+        return RT::DateTime->now;
+    }
+
     return RT::DateTime->new_unset;
-
 }
-
 
 sub roles { return ( "cc", "admin_cc", "requestor" ); }
 
