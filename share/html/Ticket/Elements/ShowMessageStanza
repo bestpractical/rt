@@ -48,7 +48,8 @@
 <%perl>
 if ( ref $Message ) {
     $m->out('<pre>') if $plain_text_pre && !$Depth && !$plain_text_mono;
-    $m->out( qq{<div class="message-stanza-depth-$Depth">} );
+    $m->out( qq{<div class="message-stanza-depth-$Depth } .($plain_text_mono ? "plain-text-white-space" : "") .qq{">} );
+
 
     my @stack;
     my $para = '';
