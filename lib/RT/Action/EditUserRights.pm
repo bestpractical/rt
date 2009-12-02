@@ -28,7 +28,8 @@ sub arguments {
             available_values => defer { $self->available_values },
             render_as        => 'Checkboxes',
             multiple         => 1,
-            label => $user->member->object->real_name,
+            label => $user->member->object->real_name ||
+                $user->member->object->name,
         };
     }
     return $args;
