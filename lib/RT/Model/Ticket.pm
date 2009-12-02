@@ -434,21 +434,6 @@ sub create {
 
     #Since we have a queue, we can set queue defaults
 
-    #Initial priority
-    # If there's no queue default initial priority and it's not set, set it to 0
-    $args{'initial_priority'} = $queue_obj->initial_priority || 0
-        unless defined $args{'initial_priority'};
-
-    #Final priority
-    # If there's no queue default final priority and it's not set, set it to 0
-    $args{'final_priority'} = $queue_obj->final_priority || 0
-        unless defined $args{'final_priority'};
-
-    # priority may have changed from initial_priority, for the case
-    # where we're importing tickets (eg, from an older RT version.)
-    $args{'priority'} = $args{'initial_priority'}
-        unless defined $args{'priority'};
-
     # XXX we should become consistent about requestor vs requestors
     $args{'requestor'} = delete $args{'requestors'}
         unless $args{'requestor'};
@@ -920,6 +905,66 @@ sub canonicalize_told {
     }
 
     return RT::DateTime->new_unset;
+}
+
+=head2 canonicalize_initial_priority
+
+Fallback to the queue's initial priority if available, or 0.
+
+=cut
+
+sub canonicalize_initial_priority {
+    my $self    = shift;
+    my $initial = shift;
+    my $other   = shift;
+
+    return $initial if defined $initial;
+
+    my $queue = $self->queue_id || $other->{queue};
+    my $queue_obj = RT::Model::Queue->new;
+    $queue_obj->load($queue);
+
+    return $queue_obj->initial_priority || 0;
+}
+
+=head2 canonicalize_final_priority
+
+Fallback to the queue's final priority if available, or 0.
+
+=cut
+
+sub canonicalize_final_priority {
+    my $self  = shift;
+    my $final = shift;
+    my $other = shift;
+
+    return $final if defined $final;
+
+    my $queue = $self->queue_id || $other->{queue};
+    my $queue_obj = RT::Model::Queue->new;
+    $queue_obj->load($queue);
+
+    return $queue_obj->final_priority || 0;
+}
+
+=head2 canonicalize_priority
+
+Fallback to the initial priority.
+
+=cut
+
+sub canonicalize_priority {
+    my $self     = shift;
+    my $priority = shift;
+    my $other    = shift;
+
+    return $priority if defined $priority;
+
+    # Otherwise, we should canonicalize to initial_priority. But
+    # canonicalizations are unordered, so we need to play a little dirty
+    my $initial = $self->canonicalize_initial_priority($other->{initial_priority}, $other, @_);
+
+    return $initial;
 }
 
 sub roles { return ( "cc", "admin_cc", "requestor" ); }
