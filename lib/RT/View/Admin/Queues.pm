@@ -150,6 +150,36 @@ template 'group_rights.html' => page { title => _('Modify group rights') } conte
     show( 'rights', 'group' );
 };
 
+template 'people.html' => page { title => _('Modify people') } content {
+    my $self = shift;
+    my $id = get('id');
+    unless ( $id ) {
+        Jifty->log->fatal( "need queue id parameter" );
+        return;
+    }
+
+    my $queue = RT::Model::Queue->new( current_user =>
+            Jifty->web->current_user );
+    my ( $ret, $msg ) = $queue->load( $id );
+    unless ( $ret ) {
+        Jifty->log->fatal( "failed to load queue $id: $msg" );
+        return;
+    }
+
+    my $action = new_action(
+        class   => 'EditWatchers',
+        moniker => 'modify_people',
+    );
+
+    $action->object($queue);
+
+    with ( name => 'modify_people' ), form {
+        input { type is 'hidden'; name is 'id'; value is $id };
+        render_action($action);
+        form_submit( label => _('Save') );
+    };
+};
+
 sub _current_collection {
     my $self = shift; 
     my $collection = $self->SUPER::_current_collection( @_ );
