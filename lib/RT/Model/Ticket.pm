@@ -474,19 +474,6 @@ sub create {
 # }}}
 
     # {{{ Dates
-    my $resolved;
-    if ( defined $args{'resolved'} ) {
-        $resolved = RT::DateTime->new_from_string($args{'resolved'});
-    }
-    #If the status is an inactive status, set the resolved date
-    elsif ( $queue_obj->status_schema->is_inactive( $args{'status'} ) ) {
-        Jifty->log->debug( "Got a " . $args{'status'} . "(inactive) ticket with undefined resolved date. Setting to now." );
-        $resolved = RT::DateTime->now;
-    }
-    else {
-        $resolved = RT::DateTime->new_unset;
-    }
-
     my $told;
     if ( defined $args{'told'} ) {
         $told = RT::DateTime->new_from_string($args{'told'});
@@ -589,7 +576,7 @@ sub create {
         type             => $args{'type'},
         starts           => $args{'starts'},
         started          => $args{'started'},
-        resolved         => $resolved,
+        resolved         => $args{'resolved'},
         told             => $told,
         due              => $args{'due'},
     );
@@ -896,6 +883,32 @@ sub canonicalize_started {
     $queue_obj->load($queue);
 
     if ( !$queue_obj->status_schema->is_initial($other->{status}) ) {
+        return RT::DateTime->now;
+    }
+
+    return RT::DateTime->new_unset;
+}
+
+=head2 canonicalize_resolved
+
+Try to parse the resolved date as a string.
+
+=cut
+
+sub canonicalize_resolved {
+    my $self     = shift;
+    my $resolved = shift;
+    my $other    = shift;
+
+    if (defined $resolved) {
+        return RT::DateTime->new_from_string($resolved);
+    }
+
+    my $queue = $self->queue_id || $other->{queue};
+    my $queue_obj = RT::Model::Queue->new;
+    $queue_obj->load($queue);
+
+    if ( !$queue_obj->status_schema->is_inactive($other->{status}) ) {
         return RT::DateTime->now;
     }
 
