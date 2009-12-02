@@ -566,7 +566,7 @@ sub create {
         starts           => $args{'starts'},
         started          => $args{'started'},
         resolved         => $args{'resolved'},
-        told             => $told,
+        told             => $args{'told'},
         due              => $args{'due'},
     );
 
