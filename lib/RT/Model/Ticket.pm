@@ -865,7 +865,8 @@ sub canonicalize_starts {
 
 =head2 canonicalize_started
 
-Try to parse the started date as a string.
+Try to parse the started date as a string. If the status is not one of the
+queue's initial statuses, then a default of "now" will be used.
 
 =cut
 
@@ -891,7 +892,8 @@ sub canonicalize_started {
 
 =head2 canonicalize_resolved
 
-Try to parse the resolved date as a string.
+Try to parse the resolved date as a string. If the status is inactive, then a
+default of "now" will be used.
 
 =cut
 
