@@ -473,17 +473,6 @@ sub create {
     }
 # }}}
 
-    # {{{ Dates
-    my $told;
-    if ( defined $args{'told'} ) {
-        $told = RT::DateTime->new_from_string($args{'told'});
-    }
-    else {
-        $told = RT::DateTime->new_unset;
-    }
-
-    # }}}
-
     # {{{ Dealing with time fields
 
     $args{'time_estimated'} = 0 unless defined $args{'time_estimated'};
@@ -860,7 +849,6 @@ sub canonicalize_starts {
     }
 
     return RT::DateTime->new_unset;
-
 }
 
 =head2 canonicalize_started
@@ -912,6 +900,23 @@ sub canonicalize_resolved {
 
     if ( !$queue_obj->status_schema->is_inactive($other->{status}) ) {
         return RT::DateTime->now;
+    }
+
+    return RT::DateTime->new_unset;
+}
+
+=head2 canonicalize_told
+
+Try to parse the told date as a string.
+
+=cut
+
+sub canonicalize_told {
+    my $self = shift;
+    my $told = shift;
+
+    if (defined $told) {
+        return RT::DateTime->new_from_string($told);
     }
 
     return RT::DateTime->new_unset;
