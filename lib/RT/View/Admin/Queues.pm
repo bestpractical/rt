@@ -111,20 +111,7 @@ private template 'rights' => sub {
     my $self = shift;
     my $type = shift || 'user';
 
-    my $id = get('id');
-    unless ( $id ) {
-        Jifty->log->fatal( "need queue id parameter" );
-        return;
-    }
-
-    my $queue = RT::Model::Queue->new( current_user =>
-            Jifty->web->current_user );
-    my ( $ret, $msg ) = $queue->load( $id );
-    unless ( $ret ) {
-        Jifty->log->fatal( "failed to load queue $id: $msg" );
-        return;
-    }
-
+    my $queue = $self->queue;
     my $class   = 'Edit' . ucfirst($type) . 'Rights';
     my $moniker = 'modify_' . $type . '_rights';
 
@@ -136,7 +123,7 @@ private template 'rights' => sub {
     $rights->object($queue);
 
     with ( name => $moniker ), form {
-        input { type is 'hidden'; name is 'id'; value is $id };
+        input { type is 'hidden'; name is 'id'; value is $queue->id };
         render_action($rights);
         form_submit( label => _('Save') );
     };
@@ -152,6 +139,32 @@ template 'group_rights.html' => page { title => _('Modify group rights') } conte
 
 template 'people.html' => page { title => _('Modify people') } content {
     my $self = shift;
+    my $queue = $self->queue;
+    return unless $queue;
+
+    my $action = new_action(
+        class   => 'EditWatchers',
+        moniker => 'modify_people',
+    );
+
+    $action->object($queue);
+
+    with ( name => 'modify_people' ), form {
+        input { type is 'hidden'; name is 'id'; value is $queue->id };
+        render_action($action);
+        form_submit( label => _('Save') );
+    };
+};
+
+sub _current_collection {
+    my $self = shift; 
+    my $collection = $self->SUPER::_current_collection( @_ );
+    $collection->{'find_disabled_rows'} = get('include_disabled');
+    return $collection;    
+}
+
+sub queue {
+    my $self = shift;
     my $id = get('id');
     unless ( $id ) {
         Jifty->log->fatal( "need queue id parameter" );
@@ -165,26 +178,7 @@ template 'people.html' => page { title => _('Modify people') } content {
         Jifty->log->fatal( "failed to load queue $id: $msg" );
         return;
     }
-
-    my $action = new_action(
-        class   => 'EditWatchers',
-        moniker => 'modify_people',
-    );
-
-    $action->object($queue);
-
-    with ( name => 'modify_people' ), form {
-        input { type is 'hidden'; name is 'id'; value is $id };
-        render_action($action);
-        form_submit( label => _('Save') );
-    };
-};
-
-sub _current_collection {
-    my $self = shift; 
-    my $collection = $self->SUPER::_current_collection( @_ );
-    $collection->{'find_disabled_rows'} = get('include_disabled');
-    return $collection;    
+    return $queue;
 }
 
 1;
