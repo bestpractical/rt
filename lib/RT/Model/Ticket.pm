@@ -867,10 +867,28 @@ Try to parse the starts date as a string.
 sub canonicalize_starts {
     my $self   = shift;
     my $starts = shift;
-    my $other  = shift;
 
     if (defined $starts) {
         return RT::DateTime->new_from_string($starts);
+    }
+
+    return RT::DateTime->new_unset;
+
+}
+
+=head2 canonicalize_started
+
+Try to parse the started date as a string.
+
+=cut
+
+sub canonicalize_started {
+    my $self    = shift;
+    my $started = shift;
+    my $other   = shift;
+
+    if (defined $started) {
+        return RT::DateTime->new_from_string($started);
     }
 
     my $queue = $self->queue_id || $other->{queue};
