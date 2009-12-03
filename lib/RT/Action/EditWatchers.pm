@@ -138,7 +138,11 @@ sub available_values {
         my @users;
         while ( my $user = $users->next ) {
             push @users,
-              { display => $user->name, value => $user->principal_id };
+              {
+                display =>
+                  RT::View::Form::Field::SelectUser->_render_user($user),
+                value => $user->principal_id
+              };
         }
         return \@users;
     }
