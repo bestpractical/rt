@@ -883,7 +883,7 @@ sub canonicalize_resolved {
     my $queue_obj = RT::Model::Queue->new;
     $queue_obj->load($queue);
 
-    if ( !$queue_obj->status_schema->is_inactive($other->{status}) ) {
+    if ($queue_obj->status_schema->is_inactive($other->{status})) {
         return RT::DateTime->now;
     }
 
