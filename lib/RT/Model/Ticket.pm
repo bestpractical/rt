@@ -1065,7 +1065,7 @@ sub validate_queue {
     my $meta  = shift;
 
     if ( !$value ) {
-        Jifty->log->warn( " RT:::Queue::validate_Queue called with a null value. this isn't ok." );
+        Jifty->log->warn( " RT::Model::Ticket::validate_queue called with a null value." );
         return (1);
     }
 
