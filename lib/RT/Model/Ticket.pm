@@ -806,9 +806,7 @@ sub canonicalize_due {
     }
 
     if ($metadata->{for} eq 'create') {
-        my $queue = $self->queue_id || $other->{queue};
-        my $queue_obj = RT::Model::Queue->new;
-        $queue_obj->load($queue);
+        my $queue_obj = RT::Model::Queue->load($self->queue_id || $other->{queue});
 
         if ( my $due_in = $queue_obj->default_due_in ) {
             my $due = RT::DateTime->now;
@@ -852,9 +850,7 @@ sub canonicalize_started {
         return RT::DateTime->new_from_string($started);
     }
 
-    my $queue = $self->queue_id || $other->{queue};
-    my $queue_obj = RT::Model::Queue->new;
-    $queue_obj->load($queue);
+    my $queue_obj = RT::Model::Queue->load($self->queue_id || $other->{queue});
 
     if ( !$queue_obj->status_schema->is_initial($other->{status}) ) {
         return RT::DateTime->now;
@@ -879,9 +875,7 @@ sub canonicalize_resolved {
         return RT::DateTime->new_from_string($resolved);
     }
 
-    my $queue = $self->queue_id || $other->{queue};
-    my $queue_obj = RT::Model::Queue->new;
-    $queue_obj->load($queue);
+    my $queue_obj = RT::Model::Queue->load($self->queue_id || $other->{queue});
 
     if ($queue_obj->status_schema->is_inactive($other->{status})) {
         return RT::DateTime->now;
@@ -920,9 +914,7 @@ sub canonicalize_initial_priority {
 
     return $initial if defined $initial;
 
-    my $queue = $self->queue_id || $other->{queue};
-    my $queue_obj = RT::Model::Queue->new;
-    $queue_obj->load($queue);
+    my $queue_obj = RT::Model::Queue->load($self->queue_id || $other->{queue});
 
     return $queue_obj->initial_priority || 0;
 }
@@ -940,9 +932,7 @@ sub canonicalize_final_priority {
 
     return $final if defined $final;
 
-    my $queue = $self->queue_id || $other->{queue};
-    my $queue_obj = RT::Model::Queue->new;
-    $queue_obj->load($queue);
+    my $queue_obj = RT::Model::Queue->load($self->queue_id || $other->{queue});
 
     return $queue_obj->final_priority || 0;
 }
