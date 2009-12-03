@@ -55,7 +55,7 @@ $changes => {}
 <%perl>
 my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
-my $group = RT::Model::Group->new( current_user => Jifty->web->current_user );
+my $group = RT::Model::Group->new;
 
 $group->load($id);
 if (!$group->Id) {

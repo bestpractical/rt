@@ -54,7 +54,7 @@ $args => undef
 <%INIT>
 my @data;
 my ($c, $o, $k, $e) = ("", [], {}, "");
-my $attachment = RT::Model::Attachment->new( current_user => Jifty->web->current_user );
+my $attachment = RT::Model::Attachment->new;
 
 $attachment->load($id);
 unless ( $attachment->Id ) {

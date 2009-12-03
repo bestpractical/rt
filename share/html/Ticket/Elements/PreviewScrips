@@ -210,7 +210,7 @@ my $Message = make_mime_entity(
     body    => $ARGS{'content'},
 );
 
-my $ticket_obj = RT::Model::Ticket->new( current_user => Jifty->web->current_user );
+my $ticket_obj = RT::Model::Ticket->new;
 my ( $id, $txn, $msg ) = $ticket_obj->create(
     type            => $ARGS{'type'} || 'ticket',
     queue           => $ARGS{'queue'},

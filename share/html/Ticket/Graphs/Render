@@ -46,7 +46,7 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
-my $ticket = RT::Model::Ticket->new( current_user => Jifty->web->current_user );
+my $ticket = RT::Model::Ticket->new;
 $ticket->load( $id );
 unless ( $ticket->id ) {
     Jifty->log->error("Couldn't load ticket #$id");

@@ -132,7 +132,7 @@ while ( my $Transaction = $Transactions->next ) {
 </div>
 % }
 <%INIT>
-my $Transactions = RT::Model::TransactionCollection->new( current_user => Jifty->web->current_user );
+my $Transactions = RT::Model::TransactionCollection->new;
 if ($tickets) {
     while (my $t = $tickets->next) {
         $Transactions->limit_to_ticket($t->id);

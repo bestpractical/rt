@@ -99,13 +99,13 @@
 my ($Users, $Groups);
 
 if ($user_string) {
-    $Users = RT::Model::UserCollection->new( current_user => Jifty->web->current_user );
+    $Users = RT::Model::UserCollection->new;
     $Users->limit(column => $user_field, value => $user_string, operator => $user_op);
     $Users->limit_to_privileged if $privileged_only;
      }
 
 if ($group_string) {
-    $Groups = RT::Model::GroupCollection->new( current_user => Jifty->web->current_user );
+    $Groups = RT::Model::GroupCollection->new;
     $Groups->limit(column => 'domain', operator => '=', value => 'UserDefined');
     $Groups->limit(column => $group_field, value => $group_string, operator => $group_op);
      }

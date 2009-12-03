@@ -57,7 +57,7 @@ my $privacy = RT::Dashboard->_build_privacy($object);
 
 while (my $attr = $object->attributes->next) {
     if ($attr->name =~ /^Dashboard\b/) {
-        my $dashboard = RT::Dashboard->new( current_user => Jifty->web->current_user );
+        my $dashboard = RT::Dashboard->new;
         my ($ok, $msg) = $dashboard->load($privacy, $attr->id);
 
         if (!$ok) {

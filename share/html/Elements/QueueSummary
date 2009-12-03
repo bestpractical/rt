@@ -76,7 +76,7 @@ if ($cache && Jifty->web->session->get($cache)) {
     @queues = @{Jifty->web->session->get($cache)};
 }
 else {
-    my $Queues = RT::Model::QueueCollection->new( current_user => Jifty->web->current_user );
+    my $Queues = RT::Model::QueueCollection->new;
     $Queues->find_all_rows();
     @queues = grep $queue_filter->($_), @{$Queues->items_array_ref};
 
@@ -92,7 +92,7 @@ else {
 }
 
 
-my $Tickets = RT::Model::TicketCollection->new( current_user => Jifty->web->current_user );
+my $Tickets = RT::Model::TicketCollection->new;
 </%INIT>
 <%ARGS>
 $cache => undef

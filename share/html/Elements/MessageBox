@@ -53,7 +53,7 @@
 my $message = '';
 
 if ( $quote_transaction ) {
-    my $transaction = RT::Model::Transaction->new( current_user => Jifty->web->current_user );
+    my $transaction = RT::Model::Transaction->new;
     $transaction->load( $quote_transaction );
     $message = $transaction->content( Quote => 1 );
 }

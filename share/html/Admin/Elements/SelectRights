@@ -92,8 +92,8 @@ while ( my $ace = $acl_obj->next ) {
     $princ->load($principal);
     $princ = $princ->acl_equivalence_group;
 
-    my $acl_obj = RT::Model::ACECollection->new( current_user => Jifty->web->current_user );
-    my $ACE = RT::Model::ACE->new( current_user => Jifty->web->current_user );
+    my $acl_obj = RT::Model::ACECollection->new;
+    my $ACE = RT::Model::ACE->new;
 
 
     $acl_obj->limit_to_object( $object);

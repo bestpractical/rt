@@ -57,7 +57,7 @@ $changes => {}
 my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 my %data = %$changes;
-my $group = RT::Model::Group->new( current_user => Jifty->web->current_user );
+my $group = RT::Model::Group->new;
 my @fields = qw(Name Description);
 my %fields = map { lc $_ => $_ } @fields;
 

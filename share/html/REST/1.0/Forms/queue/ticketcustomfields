@@ -71,7 +71,7 @@ if (%$changes) {
 my @data;
 
 push @data, [ id => "queue/" . $queue->Id ];
-my $qcfs = RT::CustomFields->new(current_user => Jifty->web->current_user);
+my $qcfs = RT::CustomFields->new;
 $qcfs->limit_to_global_or_queue($id);
 while ( my $qcf = $qcfs->next() ) {
     if ( $format eq "l" ) {

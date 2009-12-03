@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <%INIT>
 if (!$collection && $class eq 'RT::Model::TicketCollection') {
-    $collection = RT::Model::TicketCollection->new( current_user => Jifty->web->current_user );
+    $collection = RT::Model::TicketCollection->new;
     $collection->from_sql($query);
 }
 my $TotalFound = $collection->count_all();

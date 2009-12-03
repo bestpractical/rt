@@ -76,7 +76,7 @@ if ($ticket_obj) {
 } else {
 # Let's check rights on an empty queue object. that will do a search
 # for any queue.
-    my $queue = RT::Model::Queue->new( current_user => Jifty->web->current_user );
+    my $queue = RT::Model::Queue->new;
     push( @objects, $queue );
 }
 
@@ -92,7 +92,7 @@ my $isSU = Jifty->web->current_user
     ->has_right( right => 'SuperUser', object => RT->system );
 
 foreach my $object (@objects) {
-    my $Users = RT::Model::UserCollection->new( current_user => Jifty->web->current_user );
+    my $Users = RT::Model::UserCollection->new;
     $Users->who_have_right(
         right               => 'OwnTicket',
         object              => $object,
@@ -107,7 +107,7 @@ foreach my $object (@objects) {
     }
 }
 if ($default && $default != RT->nobody->id && !$user_uniq_hash{$default}) {
-    $user_uniq_hash{$default} = RT::Model::User->new( current_user => Jifty->web->current_user );
+    $user_uniq_hash{$default} = RT::Model::User->new;
     $user_uniq_hash{$default}->load($default);
 }
 

@@ -69,11 +69,11 @@
 </&>
 
 <%init>
-my $tickets = RT::Model::TicketCollection->new( current_user => Jifty->web->current_user );
+my $tickets = RT::Model::TicketCollection->new;
 $tickets->limit( column => 'owner', value => Jifty->web->current_user->id );
 
 # also consider AdminCcs as potential approvers.
-my $group_tickets = RT::Model::TicketCollection->new( current_user => Jifty->web->current_user );
+my $group_tickets = RT::Model::TicketCollection->new;
 $group_tickets->limit_watcher( value => Jifty->web->current_user->user_object->email, type => 'admin_cc' );
 
 my $created_before = RT::DateTime->new_from_string($ARGS{'created_before'});
