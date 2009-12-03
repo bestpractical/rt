@@ -20,6 +20,7 @@ well.
 *******
 UPGRADING FROM 3.8.6 and earlier - Changes:
 
+For MySQL and Oracle users:
 If you upgraded from a version of RT earlier than 3.7.81 you should
 already have a CachedGroupMembers3 index on your CachedGroupMembers table.
 If you did a clean install of RT somewhere in the 3.8 release series, you 
