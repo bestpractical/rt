@@ -293,6 +293,9 @@ Takes a boolean.
 =head2 load
 
 Takes either a numerical id or a textual name and loads the specified queue.
+Returns the queue's ID.
+
+When called as a class method, instantiates a new queue object and returns it.
 
 =cut
 
@@ -301,6 +304,13 @@ sub load {
     my $identifier = shift;
     if ( !$identifier ) {
         return (undef);
+    }
+
+    # when called as a class method, load up a new object and return it
+    if (!ref($self)) {
+        my $obj = $self->new;
+        $obj->load($identifier);
+        return $obj;
     }
 
     if ( $identifier =~ /^(\d+)$/ ) {
