@@ -1069,8 +1069,7 @@ sub validate_queue {
         return (1);
     }
 
-    my $queue_obj = RT::Model::Queue->new;
-    my $id        = $queue_obj->load($value);
+    my $queue_obj = RT::Model::Queue->load($value);
 
     if ($meta->{for} eq 'create') {
         if ( $queue_obj->disabled ) {
@@ -1097,7 +1096,7 @@ sub validate_queue {
         }
     }
 
-    if ($id) {
+    if ($queue_obj->id) {
         return (1);
     } else {
         return (undef);
@@ -1115,8 +1114,7 @@ sub set_queue {
         return ( 0, _("Permission Denied") );
     }
 
-    my $Newqueue_obj = RT::Model::Queue->new;
-    $Newqueue_obj->load($NewQueue);
+    my $Newqueue_obj = RT::Model::Queue->load($NewQueue);
 
     unless ( $Newqueue_obj->id() ) {
         return ( 0, _("That queue does not exist") );
@@ -2156,9 +2154,7 @@ sub validate_status {
     my $other    = shift;
     my $metadata = shift;
 
-    my $queue = $self->queue_id || $other->{queue};
-    my $queue_obj = RT::Model::Queue->new;
-    $queue_obj->load($queue);
+    my $queue_obj = RT::Model::Queue->load($self->queue_id || $other->{queue});
 
     if ( $queue_obj->status_schema->is_valid($status) ) {
         return 1;
@@ -2708,9 +2704,7 @@ sub canonicalize_queue {
     my $self  = shift;
     my $queue = shift;
 
-    my $queue_obj = RT::Model::Queue->new;
-    $queue_obj->load($queue);
-
+    my $queue_obj = RT::Model::Queue->load($queue);
     return $queue_obj->id if $queue_obj->id;
 
     return undef;
