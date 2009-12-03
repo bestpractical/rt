@@ -92,8 +92,7 @@ else {
     if (!keys(%data)) {
         # GET ticket/new: Return a suitable default form.
         # We get defaults from queue/1 (XXX: What if it isn't there?).
-        my $queue = RT::Model::Queue->new ( current_user =>
-                Jifty->web->current_user ) ;
+        my $queue = RT::Model::Queue->new;
         $queue->load(1);
 
         my $due = RT::DateTime->now;
@@ -142,8 +141,7 @@ else {
             }
             # Set custom field
             elsif ($k =~ /^$cf_spec/) {
-                my $cf = RT::Model::CustomField->new(current_user =>
-                        Jifty->web->current_user );
+                my $cf = RT::Model::CustomField->new;
                 my $cfk = $1 || $2;
                 unless($cf->load_by_name( name => $cfk )) {
                     push @comments, "# Invalid custom field name ($cfk)";
