@@ -96,7 +96,7 @@ my ( $field, @results );
 # to deal
 my @id = ( ref $id eq 'ARRAY' ) ? @{$id} : ($id);
 
-my $Ticket = RT::Model::Ticket->new( current_user => Jifty->web->current_user );
+my $Ticket = RT::Model::Ticket->new;
 
 # store the uploaded attachment in session
 if ( $ARGS{'attach'} ) {    # attachment?
@@ -117,7 +117,7 @@ if ( defined ($id[0]) && $id[0] eq 'new' ) {
 
     # {{{ Create a new ticket
 
-    my $queue = RT::Model::Queue->new( current_user => Jifty->web->current_user );
+    my $queue = RT::Model::Queue->new;
     unless ( $queue->load( $ARGS{'queue'} ) ) {
         $m->comp( 'Error.html', why => _('Queue not found') );
         $m->abort;

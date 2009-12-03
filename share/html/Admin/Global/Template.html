@@ -74,7 +74,7 @@ $template_obj->description, content => $template_obj->content &>
 </&>
 <%INIT>
 
-my $template_obj = RT::Model::Template->new( current_user => Jifty->web->current_user );
+my $template_obj = RT::Model::Template->new;
 my  ($title, @results, $current_subtab, $SubmitLabel);
 
 

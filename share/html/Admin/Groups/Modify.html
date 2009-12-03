@@ -99,7 +99,7 @@
 my $current_tab;
 my  ($title, @results, $disabled, $enabled_checked);
 
-my $Group = RT::Model::Group->new( current_user => Jifty->web->current_user );
+my $Group = RT::Model::Group->new;
 
 if ($create) {
     $current_tab = 'Admin/Groups/Modify.html?create=1';

@@ -79,7 +79,7 @@ $show = sub  {
     $m->out( '</pre></div>' );
 };
 
-my $AttachmentObj = RT::Model::Attachment->new( current_user => Jifty->web->current_user );
+my $AttachmentObj = RT::Model::Attachment->new;
 $AttachmentObj->load($attachment) || abort(_("Attachment '%1' could not be loaded", $attachment));
 unless ( $AttachmentObj->id ) {
     abort(_("Attachment '%1' could not be loaded", $attachment));

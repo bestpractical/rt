@@ -84,7 +84,7 @@
 </form>
 </&>
 <%INIT>
-my $Groups = RT::Model::GroupCollection->new( current_user => Jifty->web->current_user );
+my $Groups = RT::Model::GroupCollection->new;
 $Groups->limit_to_user_defined_groups();
 my $title = _('Select a group');
 my $caption;

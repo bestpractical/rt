@@ -91,7 +91,7 @@
 
 </&>
 <%INIT>
-my $user_object = RT::Model::User->new( current_user => Jifty->web->current_user );
+my $user_object = RT::Model::User->new;
 $user_object->load( $id ) || abort("Couldn't load user '$id'");
 
 my $title = _("Memberships of the user %1", $user_object->name);
@@ -100,7 +100,7 @@ my $current_tab = 'Admin/Users/Memberships.html?id='. $id;
 my @results;
 if ( $update ) {
     foreach my $gid( @add ) {
-        my $group = RT::Model::Group->new( current_user => Jifty->web->current_user );
+        my $group = RT::Model::Group->new;
         $group->load_user_defined( $gid );
         unless ( $group->id ) {
             push @results, _( "Couldn't load group #%1", $gid );
@@ -110,7 +110,7 @@ if ( $update ) {
         push @results, $msg;
     }
     foreach my $gid( @delete ) {
-        my $group = RT::Model::Group->new( current_user => Jifty->web->current_user );
+        my $group = RT::Model::Group->new;
         $group->load_user_defined( $gid );
         unless ( $group->id ) {
             push @results, _( "Couldn't load group #%1", $gid );
@@ -121,11 +121,11 @@ if ( $update ) {
     }
 }
 
-my $is_member = RT::Model::GroupCollection->new( current_user => Jifty->web->current_user );
+my $is_member = RT::Model::GroupCollection->new;
 $is_member->limit_to_user_defined_groups;
 $is_member->with_member( principal => $user_object->id );
 
-my $is_not_member = RT::Model::GroupCollection->new( current_user => Jifty->web->current_user );
+my $is_not_member = RT::Model::GroupCollection->new;
 $is_not_member->limit_to_user_defined_groups;
 $is_not_member->without_member( principal => $user_object->id );
 

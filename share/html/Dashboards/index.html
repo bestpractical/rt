@@ -75,7 +75,7 @@
 my $title = _("Dashboards");
 use RT::Dashboard;
 
-my @objs = RT::Dashboard->new( current_user => Jifty->web->current_user )->_privacy_objects;
+my @objs = RT::Dashboard->new->_privacy_objects;
 my $dashboards = $m->comp("/Dashboards/Elements/DashboardsForObjects", objects => \@objs);
 
 my @actions;

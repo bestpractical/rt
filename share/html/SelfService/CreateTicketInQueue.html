@@ -59,6 +59,6 @@
 </dl>
 </&>
 <%init>
-my $queues = RT::Model::QueueCollection->new( current_user => Jifty->web->current_user );
+my $queues = RT::Model::QueueCollection->new;
 $queues->find_all_rows;
 </%init>

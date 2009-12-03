@@ -52,7 +52,7 @@ $created_after => undef
 </%args>
 <%init>
 my $title = _("Created tickets in period, grouped by status");
-my $q = RT::Model::Queue->new( current_user => Jifty->web->current_user );
+my $q = RT::Model::Queue->new;
 my $query = 'Status != "deleted" ';
 
 my $after = RT::DateTime->new_from_string($created_after);

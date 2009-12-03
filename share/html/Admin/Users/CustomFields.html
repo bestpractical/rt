@@ -57,11 +57,11 @@
     <& /Admin/Elements/EditCustomFields, %ARGS, title => $title, object => $object, object_type => 'RT::Model::User' &>
 </&>
 <%INIT>
-my $object = RT::Model::User->new( current_user => Jifty->web->current_user );
+my $object = RT::Model::User->new;
 
 $object->load($id) || abort( _( "Couldn't load object %1", $id ) );
 my $FriendlySubTypes =
-  RT::Model::CustomField->new( current_user => Jifty->web->current_user )
+  RT::Model::CustomField->new
   ->friendly_lookup_type( $object->custom_field_lookup_type );
 
 my $title = _( 'Edit Custom Fields for %1', $object->name );
