@@ -54,13 +54,13 @@
 	        <& /Ticket/Elements/ShowBasics, Ticket => $Ticket &>
 	  </&>
 
-% if ($Ticket->CustomFields->First) {
 	  <&| /Widgets/TitleBox, title => loc('Custom Fields'), 
 		title_href => RT->Config->Get('WebPath')."/Ticket/Modify.html?id=".$Ticket->Id, 
-		class => 'ticket-info-cfs'  &> 
+		class => 'ticket-info-cfs',
+                hide_empty => 1 &> 
 	        <& /Ticket/Elements/ShowCustomFields, Ticket => $Ticket &>
 	  </&>
-% }
+
 	  <&| /Widgets/TitleBox, title => loc('People'), 
 		title_href => RT->Config->Get('WebPath')."/Ticket/ModifyPeople.html?id=".$Ticket->Id, 
 		class => 'ticket-info-people' &>
@@ -111,7 +111,3 @@
 $Ticket => undef
 $Attachments => undef
 </%ARGS>
-
-
-
-
