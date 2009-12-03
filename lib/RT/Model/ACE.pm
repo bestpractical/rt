@@ -458,7 +458,7 @@ sub principal_to_acl_group {
     return $principal->acl_equivalence_group
         if blessed $principal;
 
-    my $tmp = RT::Model::Principal->new( current_user => $self->current_user );
+    my $tmp = RT::Model::Principal->new;
     $tmp->load( $principal );
     unless ( $tmp->id ) {
         return (undef, _( 'Principal %1 not found.', $principal ));

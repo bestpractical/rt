@@ -24,7 +24,7 @@ sub members {
     #If we don't have rights, don't include any results
     # TODO XXX  WHY IS THERE NO ACL CHECK HERE?
 
-    my $res = $class->new( current_user => $self->current_user );
+    my $res = $class->new;
     $res->limit_to_members_of_group( $self->id );
 
     return $res;
@@ -45,7 +45,7 @@ sub group_members {
     my $self = shift;
     my %args = ( recursively => 1, @_ );
 
-    my $groups = RT::Model::GroupCollection->new( current_user => $self->current_user );
+    my $groups = RT::Model::GroupCollection->new;
     my $members_table = $args{'recursively'} ? 'CachedGroupMembers' : 'GroupMembers';
 
     my $members_alias = $groups->new_alias($members_table);
@@ -87,7 +87,7 @@ sub user_members {
 
     my $members_table = $args{'recursively'} ? 'CachedGroupMembers' : 'GroupMembers';
 
-    my $users         = RT::Model::UserCollection->new( current_user => $self->current_user );
+    my $users         = RT::Model::UserCollection->new;
     my $members_alias = $users->new_alias($members_table);
     $users->join(
         alias1  => $members_alias,
@@ -278,7 +278,7 @@ sub _add_member {
             return ( 0, _("System error") );
         }
 
-        $principal = RT::Model::Principal->new( current_user => $self->current_user );
+        $principal = RT::Model::Principal->new;
         $principal->load( $args{'principal'} );
         unless ( $principal->id ) {
             Jifty->log->error("Couldn't find that principal");
@@ -297,7 +297,7 @@ sub _add_member {
         return ( 0, _("Groups can't be members of their members") );
     }
 
-    my $member_object = RT::Model::GroupMember->new( current_user => $self->current_user );
+    my $member_object = RT::Model::GroupMember->new;
     my ($gm_id, $msg) = $member_object->create(
         member => $object,
         group  => $self->principal,
@@ -347,7 +347,7 @@ sub _delete_member {
     my $self      = shift;
     my $member_id = shift;
 
-    my $member_obj = RT::Model::GroupMember->new( current_user => $self->current_user );
+    my $member_obj = RT::Model::GroupMember->new;
 
     $member_obj->load_by_cols(
         member_id => $member_id,

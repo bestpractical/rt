@@ -110,7 +110,7 @@ sub parse_uri {
     my $uri  = shift;
 
     if ( $uri =~ /^\d+$/ ) {
-        my $ticket = RT::Model::Ticket->new( current_user => $self->current_user );
+        my $ticket = RT::Model::Ticket->new;
         $ticket->load($uri);
         $self->{'uri'}    = $ticket->uri;
         $self->{'object'} = $ticket;

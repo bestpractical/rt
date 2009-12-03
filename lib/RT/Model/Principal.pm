@@ -188,7 +188,7 @@ sub revoke_right {
         $args{'object'} = RT->system;
     }
 
-    my $ace = RT::Model::ACE->new( current_user => $self->current_user );
+    my $ace = RT::Model::ACE->new;
     $ace->load_by_cols(
         right_name => $args{'right'},
         object     => $args{'object'},

@@ -20,7 +20,7 @@ sub members {
         ? 'RT::Model::CachedGroupMemberCollection'
         : 'RT::Model::GroupMemberCollection';
 
-    my $res = $class->new( current_user => $self->current_user );
+    my $res = $class->new;
     $res->limit( column => 'id', value => 0 );
     return $res;
 }
@@ -33,7 +33,7 @@ Returns an empty L<RT::Model::GroupCollection> object.
 
 sub group_members {
     my $self = shift;
-    my $groups = RT::Model::GroupCollection->new( current_user => $self->current_user );
+    my $groups = RT::Model::GroupCollection->new;
     $groups->limit( column => 'id', value => 0 );
     return $groups;
 }
@@ -54,7 +54,7 @@ sub user_members {
 
     my $members_table = $args{'recursively'} ? 'CachedGroupMembers' : 'GroupMembers';
 
-    my $users         = RT::Model::UserCollection->new( current_user => $self->current_user );
+    my $users         = RT::Model::UserCollection->new;
     my $members_alias = $users->new_alias($members_table);
     $users->join(
         alias1  => $members_alias,

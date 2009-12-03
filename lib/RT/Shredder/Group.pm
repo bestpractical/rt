@@ -72,7 +72,7 @@ sub __depends_on {
 
         # delete user entry after ACL equiv group
         # in other case we will get deep recursion
-        my $objs = RT::Model::User->new( current_user => $self->current_user );
+        my $objs = RT::Model::User->new;
         $objs->load( $self->instance );
         $deps->_push_dependency(
             base_object   => $self,
@@ -91,12 +91,12 @@ sub __depends_on {
     );
 
     # Group members records
-    my $objs = RT::Model::GroupMemberCollection->new( current_user => $self->current_user );
+    my $objs = RT::Model::GroupMemberCollection->new;
     $objs->limit_to_members_of_group( $self->principal_id );
     push( @$list, $objs );
 
     # Group member records group belongs to
-    $objs = RT::Model::GroupMemberCollection->new( current_user => $self->current_user );
+    $objs = RT::Model::GroupMemberCollection->new;
     $objs->limit(
         value            => $self->principal_id,
         column           => 'member_id',
@@ -109,7 +109,7 @@ sub __depends_on {
     push( @$list, $self->members( recursively => 1 ) );
 
     # Cached group member records group belongs to
-    $objs = RT::Model::GroupMemberCollection->new( current_user => $self->current_user );
+    $objs = RT::Model::GroupMemberCollection->new;
     $objs->limit(
         value            => $self->principal_id,
         column           => 'member_id',

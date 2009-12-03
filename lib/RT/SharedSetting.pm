@@ -138,7 +138,7 @@ sub load_by_id {
     my $self = shift;
     my $id   = shift;
 
-    my $attr = RT::Model::Attribute->new( current_user => $self->current_user );
+    my $attr = RT::Model::Attribute->new;
     my ( $ok, $msg ) = $attr->load_by_id($id);
 
     if ( !$ok ) {
@@ -364,7 +364,7 @@ sub is_visible_to {
 
     # If the setting is group-wide...
     if ( $privacy =~ /^RT::Model::Group-(\d+)$/ ) {
-        my $setting_group = RT::Model::Group->new( current_user => $self->current_user );
+        my $setting_group = RT::Model::Group->new;
         $setting_group->load($1);
 
         if ( $to =~ /-(\d+)$/ ) {
@@ -448,12 +448,12 @@ sub _load_privacy_object {
         }
     }
     elsif ( $obj_type eq 'RT::Model::Group' ) {
-        my $group = RT::Model::Group->new( current_user => $self->current_user );
+        my $group = RT::Model::Group->new;
         $group->load($obj_id);
         return $group;
     }
     elsif ( $obj_type eq 'RT::System' ) {
-        return RT::System->new( current_user => $self->current_user );
+        return RT::System->new;
     }
 
     Jifty->log->error( "Tried to load a "

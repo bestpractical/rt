@@ -481,7 +481,7 @@ sub create {
 
     #If we've been handed something else, try to load the user.
     elsif ( $args{'owner'} ) {
-        $owner = RT::Model::User->new( current_user => $self->current_user );
+        $owner = RT::Model::User->new;
         $owner->load( $args{'owner'} );
         unless ( $owner->id ) {
             push @non_fatal_errors, _("Owner could not be set.") . " " . _( "User '%1' could not be found.", $args{'owner'} );
@@ -505,7 +505,7 @@ sub create {
 
     #If we haven't been handed a valid owner, make it nobody.
     unless ( defined($owner) && $owner->id ) {
-        $owner = RT::Model::User->new( current_user => $self->current_user );
+        $owner = RT::Model::User->new;
         $owner->load( RT->nobody->id );
     }
 
@@ -1079,7 +1079,7 @@ sub validate_queue {
         return (1);
     }
 
-    my $queue_obj = RT::Model::Queue->new( current_user => $self->current_user );
+    my $queue_obj = RT::Model::Queue->new;
     my $id        = $queue_obj->load($value);
 
     if ($meta->{for} eq 'create') {
@@ -1125,7 +1125,7 @@ sub set_queue {
         return ( 0, _("Permission Denied") );
     }
 
-    my $Newqueue_obj = RT::Model::Queue->new( current_user => $self->current_user );
+    my $Newqueue_obj = RT::Model::Queue->new;
     $Newqueue_obj->load($NewQueue);
 
     unless ( $Newqueue_obj->id() ) {
@@ -1462,11 +1462,11 @@ sub _links {
     my $type = shift || "";
 
     unless ( $self->{"$field$type"} ) {
-        $self->{"$field$type"} = RT::Model::LinkCollection->new( current_user => $self->current_user );
+        $self->{"$field$type"} = RT::Model::LinkCollection->new;
         if ( $self->current_user_has_right('ShowTicket') ) {
 
             # Maybe this ticket is a merged ticket
-            my $Tickets = RT::Model::TicketCollection->new( current_user => $self->current_user );
+            my $Tickets = RT::Model::TicketCollection->new;
 
             # at least to myself
             $self->{"$field$type"}->limit(
@@ -1797,7 +1797,7 @@ sub merge_into {
     }
 
     # update all the links that point to that old ticket
-    my $old_links_to = RT::Model::LinkCollection->new( current_user => $self->current_user );
+    my $old_links_to = RT::Model::LinkCollection->new;
     $old_links_to->limit( column => 'target', value => $self->uri );
 
     my %old_seen;
@@ -1826,7 +1826,7 @@ sub merge_into {
 
     }
 
-    my $old_links_from = RT::Model::LinkCollection->new( current_user => $self->current_user );
+    my $old_links_from = RT::Model::LinkCollection->new;
     $old_links_from->limit( column => 'base', value => $self->uri );
 
     while ( my $link = $old_links_from->next ) {
@@ -1884,7 +1884,7 @@ sub merge_into {
     }
 
     #find all of the tickets that were merged into this ticket.
-    my $old_mergees = RT::Model::TicketCollection->new( current_user => $self->current_user );
+    my $old_mergees = RT::Model::TicketCollection->new;
     $old_mergees->limit(
         column   => 'effective_id',
         operator => '=',
@@ -1917,7 +1917,7 @@ Returns list of tickets' ids that's been merged into this ticket.
 sub merged {
     my $self = shift;
 
-    my $mergees = RT::Model::TicketCollection->new( current_user => $self->current_user );
+    my $mergees = RT::Model::TicketCollection->new;
     $mergees->limit(
         column    => 'effective_id',
         operator => '=',
@@ -1947,7 +1947,7 @@ sub owner_obj {
     #get deep recursion. if we need ACLs here, we need
     #an equiv without ACLs
 
-    my $owner = RT::Model::User->new( current_user => $self->current_user );
+    my $owner = RT::Model::User->new;
     $owner->load( $self->__value('owner') );
 
     #Return the owner object
@@ -1992,7 +1992,7 @@ sub set_owner {
 
     my $old_owner_obj = $self->owner;
 
-    my $new_owner_obj = RT::Model::User->new( current_user => $self->current_user );
+    my $new_owner_obj = RT::Model::User->new;
     $new_owner_obj->load($NewOwner);
     unless ( $new_owner_obj->id ) {
         Jifty->handle->rollback();
@@ -2613,7 +2613,7 @@ sub reminders {
 sub transactions {
     my $self = shift;
 
-    my $transactions = RT::Model::TransactionCollection->new( current_user => $self->current_user );
+    my $transactions = RT::Model::TransactionCollection->new;
 
     #If the user has no rights, return an empty object
     if ( $self->current_user_has_right('ShowTicket') ) {
@@ -2671,14 +2671,14 @@ sub custom_field_values {
     return $self->SUPER::custom_field_values($field)
       if !$field || $field =~ /^\d+$/;
 
-    my $cf = RT::Model::CustomField->new( current_user => $self->current_user );
+    my $cf = RT::Model::CustomField->new;
     $cf->load_by_name_and_queue( name => $field, queue => $self->queue );
     unless ( $cf->id ) {
         $cf->load_by_name_and_queue( name => $field, queue => 0 );
     }
 
     # If we didn't find a valid cfid, give up.
-    return RT::Model::ObjectCustomFieldValueCollection->new( current_user => $self->current_user )
+    return RT::Model::ObjectCustomFieldValueCollection->new
       unless $cf->id;
 
     return $self->SUPER::custom_field_values( $cf->id );

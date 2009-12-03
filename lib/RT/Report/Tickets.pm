@@ -89,9 +89,9 @@ sub groupings {
     }
 
     if ($queues) {
-        my $CustomFields = RT::Model::CustomFieldCollection->new( current_user => $self->current_user );
+        my $CustomFields = RT::Model::CustomFieldCollection->new;
         foreach my $id ( keys %$queues ) {
-            my $queue = RT::Model::Queue->new( current_user => $self->current_user );
+            my $queue = RT::Model::Queue->new;
             $queue->load($id);
             unless ( $queue->id ) {
 
@@ -116,7 +116,7 @@ sub label {
     if ( $field =~ /^(?:CF|CustomField)\.{(.*)}$/ ) {
         my $cf = $1;
         return _( "Custom field '%1'", $cf ) if $cf =~ /\D/;
-        my $obj = RT::Model::CustomField->new( current_user => $self->current_user );
+        my $obj = RT::Model::CustomField->new;
         $obj->load($cf);
         return _( "Custom field '%1'", $obj->name );
     }
@@ -181,7 +181,7 @@ sub _field_to_function {
         }
     } elsif ( $field =~ /^(?:cf|custom_field)\.{(.*)}$/ ) {    #XXX: use CFDecipher method
         my $cf_name = $1;
-        my $cf      = RT::Model::CustomField->new( current_user => $self->current_user );
+        my $cf      = RT::Model::CustomField->new;
         $cf->load($cf_name);
         unless ( $cf->id ) {
             Jifty->log->error("Couldn't load CustomField #$cf_name");

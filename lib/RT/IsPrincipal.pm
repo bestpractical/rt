@@ -31,7 +31,7 @@ sub disabled {
 sub acl_equivalence_group {
     my $self = shift;
 
-    my $res = RT::Model::Group->new( current_user => $self->current_user );
+    my $res = RT::Model::Group->new;
     $res->load_acl_equivalence( $self );
     unless ( $res->id ) {
         Jifty->log->fatal( "No ACL equiv group for principal #". $self->id );
@@ -64,7 +64,7 @@ sub principal {
         return undef;
     }
 
-    my $res = RT::Model::Principal->new( current_user => $self->current_user );
+    my $res = RT::Model::Principal->new;
     $res->load_by_id( $self->id );
     unless ( $res->id ) {
         Jifty->log->fatal( 'No principal for '. ref($self) .' #' . $self->id );

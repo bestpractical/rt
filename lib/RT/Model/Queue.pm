@@ -391,7 +391,7 @@ Returns an RT::Model::TemplateCollection object of all of this queue's templates
 sub templates {
     my $self = shift;
 
-    my $templates = RT::Model::TemplateCollection->new( current_user => $self->current_user );
+    my $templates = RT::Model::TemplateCollection->new;
 
     if ( $self->current_user_has_right('ShowTemplate') ) {
         $templates->limit_to_queue( $self->id );
@@ -447,7 +447,7 @@ Load the queue-specific custom field named name
 sub custom_field {
     my $self = shift;
     my $name = shift;
-    my $cf   = RT::Model::CustomField->new( current_user => $self->current_user );
+    my $cf   = RT::Model::CustomField->new;
     $cf->load_by_name_and_queue( name => $name, queue => $self->id );
     return ($cf);
 }
@@ -463,7 +463,7 @@ queue-specific B<ticket> custom fields.
 sub ticket_custom_fields {
     my $self = shift;
 
-    my $cfs = RT::Model::CustomFieldCollection->new( current_user => $self->current_user );
+    my $cfs = RT::Model::CustomFieldCollection->new;
     if ( $self->current_user_has_right('SeeQueue') ) {
         $cfs->limit_to_global_or_object_id( $self->id );
         $cfs->limit_to_lookup_type('RT::Model::Queue-RT::Model::Ticket');
@@ -483,7 +483,7 @@ queue-specific B<transaction> custom fields.
 sub ticket_transaction_custom_fields {
     my $self = shift;
 
-    my $cfs = RT::Model::CustomFieldCollection->new( current_user => $self->current_user );
+    my $cfs = RT::Model::CustomFieldCollection->new;
     if ( $self->current_user_has_right('SeeQueue') ) {
         $cfs->limit_to_global_or_object_id( $self->id );
         $cfs->limit_to_lookup_type('RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction');
@@ -505,7 +505,7 @@ If the user doesn't have "ShowQueue" permission, returns an empty group
 sub role_group {
     my $self  = shift;
     my $role  = shift;
-    my $group = RT::Model::Group->new( current_user => $self->current_user );
+    my $group = RT::Model::Group->new;
     if ( $self->current_user_has_right('SeeQueue') ) {
         $group->load_role( type => $role, object => $self );
     }

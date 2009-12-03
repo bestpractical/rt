@@ -95,13 +95,13 @@ sub __depends_on {
 
     # ACL equivalence group
     # don't use load_acl_equivalence cause it may not exists any more
-    my $objs = RT::Model::GroupCollection->new( current_user => $self->current_user );
+    my $objs = RT::Model::GroupCollection->new;
     $objs->limit( column => 'domain',   value => 'ACLEquivalence' );
     $objs->limit( column => 'instance', value => $self->id );
     push( @$list, $objs );
 
     # Cleanup user's membership
-    $objs = RT::Model::GroupMemberCollection->new( current_user => $self->current_user );
+    $objs = RT::Model::GroupMemberCollection->new;
     $objs->limit( column => 'member_id', value => $self->id );
     push( @$list, $objs );
 

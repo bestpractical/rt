@@ -143,7 +143,7 @@ sub attributes {
     my $self = shift;
 
     unless ( $self->{'attributes'} ) {
-        $self->{'attributes'} = RT::Model::AttributeCollection->new( current_user => $self->current_user );
+        $self->{'attributes'} = RT::Model::AttributeCollection->new;
         $self->{'attributes'}->limit_to_object($self);
     }
     return ( $self->{'attributes'} );
@@ -165,7 +165,7 @@ sub add_attribute {
         @_
     );
 
-    my $attr = RT::Model::Attribute->new( current_user => $self->current_user );
+    my $attr = RT::Model::Attribute->new;
     my ( $id, $msg ) = $attr->create(
         object      => $self,
         name        => $args{'name'},
@@ -392,7 +392,7 @@ object
 sub last_updated_by_obj {
     my $self = shift;
     unless ( exists $self->{last_updated_by_obj} ) {
-        $self->{'last_updated_by_obj'} = RT::Model::User->new( current_user => $self->current_user );
+        $self->{'last_updated_by_obj'} = RT::Model::User->new;
         $self->{'last_updated_by_obj'}->load( $self->last_updated_by );
     }
     return $self->{'last_updated_by_obj'};
@@ -769,7 +769,7 @@ RT::Model::Queue->status_schema->active
 
 sub unresolved_dependencies {
     my $self = shift;
-    my $deps = RT::Model::TicketCollection->new( current_user => $self->current_user );
+    my $deps = RT::Model::TicketCollection->new;
 
     my @live_statuses = RT::Model::Queue->status_schema->valid('initial', 'active');
     foreach my $status (@live_statuses) {
@@ -899,7 +899,7 @@ sub _links {
     my $type = shift || "";
 
     unless ( $self->{"$field$type"} ) {
-        $self->{"$field$type"} = RT::Model::LinkCollection->new( current_user => $self->current_user );
+        $self->{"$field$type"} = RT::Model::LinkCollection->new;
 
         # at least to myself
         $self->{"$field$type"}->limit(
@@ -999,7 +999,7 @@ sub _add_link {
 
     # {{{ Check if the link already exists - we don't want duplicates
     use RT::Model::Link;
-    my $old_link = RT::Model::Link->new( current_user => $self->current_user );
+    my $old_link = RT::Model::Link->new;
     $old_link->load_by_params(
         base   => $args{'base'},
         type   => $args{'type'},
@@ -1013,7 +1013,7 @@ sub _add_link {
     # }}}
 
     # Storing the link in the DB.
-    my $link = RT::Model::Link->new( current_user => $self->current_user );
+    my $link = RT::Model::Link->new;
     my ( $linkid, $linkmsg ) = $link->create(
         target => $args{target},
         base   => $args{base},
@@ -1080,7 +1080,7 @@ sub _delete_link {
         return ( 0, _('Either base or target must be specified') );
     }
 
-    my $link = RT::Model::Link->new( current_user => $self->current_user );
+    my $link = RT::Model::Link->new;
     Jifty->log->debug( "Trying to load link: " . $args{'base'} . " " . $args{'type'} . " " . $args{'target'} );
 
     $link->load_by_params(
@@ -1154,7 +1154,7 @@ sub _new_transaction {
         $new_ref = $new_ref->id if ref($new_ref);
     }
 
-    my $trans = RT::Model::Transaction->new( current_user => $self->current_user );
+    my $trans = RT::Model::Transaction->new;
     my ( $transaction, $msg ) = $trans->create(
         object_id       => $self->id,
         object_type     => ref($self),
@@ -1200,7 +1200,7 @@ sub transactions {
     my $self = shift;
 
     use RT::Model::TransactionCollection;
-    my $transactions = RT::Model::TransactionCollection->new( current_user => $self->current_user );
+    my $transactions = RT::Model::TransactionCollection->new;
 
     #If the user has no rights, return an empty object
     $transactions->limit(
@@ -1219,7 +1219,7 @@ sub transactions {
 
 sub custom_fields {
     my $self = shift;
-    my $cfs  = RT::Model::CustomFieldCollection->new( current_user => $self->current_user );
+    my $cfs  = RT::Model::CustomFieldCollection->new;
 
     # XXX handle multiple types properly
     $cfs->limit_to_lookup_type( $self->custom_field_lookup_type );
@@ -1393,7 +1393,7 @@ sub _add_custom_field_value {
             return ( 0, _( "Could not add new custom field value: %1", $value_msg ) );
         }
 
-        my $new_value = RT::Model::ObjectCustomFieldValue->new( current_user => $self->current_user );
+        my $new_value = RT::Model::ObjectCustomFieldValue->new;
         $new_value->load($new_value_id);
 
         # now that adding the new value was successful, delete the old one
@@ -1535,13 +1535,13 @@ sub custom_field_values {
         # we were asked to search on a custom field we couldn't find
         unless ( $cf->id ) {
             Jifty->log->warn("Couldn't load custom field by '$field' identifier");
-            return RT::Model::ObjectCustomFieldValueCollection->new( current_user => $self->current_user );
+            return RT::Model::ObjectCustomFieldValueCollection->new;
         }
         return ( $cf->values_for_object($self) );
     }
 
     # we're not limiting to a specific custom field;
-    my $ocfs = RT::Model::ObjectCustomFieldValueCollection->new( current_user => $self->current_user );
+    my $ocfs = RT::Model::ObjectCustomFieldValueCollection->new;
     $ocfs->limit_to_object($self);
     return $ocfs;
 }
@@ -1561,18 +1561,18 @@ sub load_custom_field_by_identifier {
     unless ( defined $field ) {
         Carp::confess;
     }
-    my $cf = RT::Model::CustomField->new( current_user => $self->current_user );
+    my $cf = RT::Model::CustomField->new;
 
     if ( UNIVERSAL::isa( $field, "RT::Model::CustomField" ) ) {
         $cf->load_by_id( $field->id );
     } elsif ( $field =~ /^\d+$/ ) {
-        $cf = RT::Model::CustomField->new( current_user => $self->current_user );
+        $cf = RT::Model::CustomField->new;
         $cf->load_by_id($field);
     } else {
 
         my $cfs = $self->custom_fields();
         $cfs->limit( column => 'name', value => $field, case_sensitive => 0 );
-        $cf = $cfs->first || RT::Model::CustomField->new( current_user => $self->current_user );
+        $cf = $cfs->first || RT::Model::CustomField->new;
     }
     return $cf;
 }

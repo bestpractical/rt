@@ -87,7 +87,7 @@ sub _attr_hash {
     my $self = shift;
     $self->_do_search if ( $self->{'must_redo_search'} );
     unless ( $self->{'attr'} ) {
-        $self->{'attr'}->{'__none'} = RT::Model::Attribute->new( current_user => $self->current_user );
+        $self->{'attr'}->{'__none'} = RT::Model::Attribute->new;
     }
     return ( $self->{'attr'} );
 }
@@ -133,7 +133,7 @@ sub with_id {
     my $self = shift;
     my $id   = shift;
 
-    my $attr = RT::Model::Attribute->new( current_user => $self->current_user );
+    my $attr = RT::Model::Attribute->new;
     $attr->load_by_cols( id => $id );
     return ($attr);
 }

@@ -133,7 +133,7 @@ sub __depends_on {
     push( @$list, $objs );
 
     # Transactions
-    $objs = RT::Model::TransactionCollection->new( current_user => $self->current_user );
+    $objs = RT::Model::TransactionCollection->new;
     $objs->limit( column => 'object_type', value => ref $self );
     $objs->limit( column => 'object_id',   value => $self->id );
     push( @$list, $objs );
@@ -152,7 +152,7 @@ sub __depends_on {
     }
 
     # ACE records
-    $objs = RT::Model::ACECollection->new( current_user => $self->current_user );
+    $objs = RT::Model::ACECollection->new;
     $objs->limit_to_object($self);
     push( @$list, $objs );
 

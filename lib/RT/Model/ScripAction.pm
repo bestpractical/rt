@@ -176,13 +176,13 @@ sub template_obj {
     my $self = shift;
     return undef unless $self->{template};
     if ( !$self->{'template_obj'} ) {
-        $self->{'template_obj'} = RT::Model::Template->new( current_user => $self->current_user );
+        $self->{'template_obj'} = RT::Model::Template->new;
         $self->{'template_obj'}->load_by_id( $self->{'template'} );
 
         if ( ( $self->{'template_obj'}->__value('queue') == 0 )
             && $self->{'_ticket_obj'} )
         {
-            my $tmptemplate = RT::Model::Template->new( current_user => $self->current_user );
+            my $tmptemplate = RT::Model::Template->new;
             my ( $ok, $err ) = $tmptemplate->load_queue_template(
                 queue => $self->{'_ticket_obj'}->queue->id,
                 name  => $self->{'template_obj'}->name

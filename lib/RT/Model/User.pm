@@ -217,7 +217,7 @@ sub create {
 
     # Groups deal with principal ids, rather than user ids.
     # When creating this user, set up a principal id for it.
-    my $principal    = RT::Model::Principal->new( current_user => $self->current_user );
+    my $principal    = RT::Model::Principal->new;
     my $principal_id = $principal->create(
         type => 'User',
         disabled       => $args{'disabled'},
@@ -244,7 +244,7 @@ sub create {
         return ( 0, _('Could not create user') );
     }
 
-    my $aclstash = RT::Model::Group->new( current_user => $self->current_user );
+    my $aclstash = RT::Model::Group->new;
     my $stash_id = $aclstash->create_acl_equivalence($principal);
 
     unless ($stash_id) {
@@ -253,7 +253,7 @@ sub create {
         return ( 0, _('Could not create user') );
     }
 
-    my $everyone = RT::Model::Group->new( current_user => $self->current_user );
+    my $everyone = RT::Model::Group->new;
     $everyone->load_system_internal('Everyone');
     unless ( $everyone->id ) {
         Jifty->log->fatal("Could not load Everyone group on user creation.");
@@ -269,7 +269,7 @@ sub create {
         return ( 0, _('Could not create user') );
     }
 
-    my $access_class = RT::Model::Group->new( current_user => $self->current_user );
+    my $access_class = RT::Model::Group->new;
     if ($privileged) {
         $access_class->load_system_internal('privileged');
     } else {
@@ -324,7 +324,7 @@ sub set_privileged {
     {
         return ( 0, _('No permission to create users') );
     }
-    my $priv = RT::Model::Group->new( current_user => $self->current_user );
+    my $priv = RT::Model::Group->new;
     $priv->load_system_internal('privileged');
 
     unless ( $priv->id ) {
@@ -332,7 +332,7 @@ sub set_privileged {
         return ( 0, _("Failed to find 'privileged' users pseudogroup.") );
     }
 
-    my $unpriv = RT::Model::Group->new( current_user => $self->current_user );
+    my $unpriv = RT::Model::Group->new;
     $unpriv->load_system_internal('Unprivileged');
     unless ( $unpriv->id ) {
         Jifty->log->fatal("Could not find unprivileged pseudogroup");
@@ -393,7 +393,7 @@ Returns true if this user is privileged. Returns undef otherwise.
 
 sub privileged {
     my $self = shift;
-    my $priv = RT::Model::Group->new( current_user => $self->current_user );
+    my $priv = RT::Model::Group->new;
     $priv->load_system_internal('privileged');
     if ( $priv->has_member( principal =>  $self->principal ) ) {
         return (1);
@@ -450,7 +450,7 @@ sub _bootstrap_create {
         return ( 0, 'Could not create user' );    #never loc this
     }
 
-    my $aclstash = RT::Model::Group->new( current_user => $self->current_user );
+    my $aclstash = RT::Model::Group->new;
 
     my $stash_id = $aclstash->create_acl_equivalence($principal);
 
@@ -899,7 +899,7 @@ sub has_group_right {
     );
 
     if ( defined $args{'group'} ) {
-        $args{'group_obj'} = RT::Model::Group->new( current_user => $self->current_user );
+        $args{'group_obj'} = RT::Model::Group->new;
         $args{'group_obj'}->load( $args{'group'} );
     }
 
@@ -927,7 +927,7 @@ user is a member.
 
 sub own_groups {
     my $self   = shift;
-    my $groups = RT::Model::GroupCollection->new( current_user => $self->current_user );
+    my $groups = RT::Model::GroupCollection->new;
     $groups->limit_to_user_defined_groups;
     $groups->with_member(
         principal => $self->id,
@@ -1044,7 +1044,7 @@ sub preferences {
     my $name    = _prefname(shift);
     my $default = shift;
 
-    my $attr = RT::Model::Attribute->new( current_user => $self->current_user );
+    my $attr = RT::Model::Attribute->new;
     $attr->load_by_name_and_object( object => $self, name => $name );
 
     my $content = $attr->id ? $attr->content : undef;
@@ -1077,7 +1077,7 @@ sub set_preferences {
     return ( 0, _("No permission to set preferences") )
       unless $self->current_user_can_modify('Preferences');
 
-    my $attr = RT::Model::Attribute->new( current_user => $self->current_user );
+    my $attr = RT::Model::Attribute->new;
     $attr->load_by_name_and_object( object => $self, name => $name );
     if ( $attr->id ) {
         return $attr->set_content($value);
@@ -1101,7 +1101,7 @@ sub watched_queues {
     my $self = shift;
     my @roles = @_ || ( 'cc', 'admin_cc' );
 
-    my $watched_queues = RT::Model::QueueCollection->new( current_user => $self->current_user );
+    my $watched_queues = RT::Model::QueueCollection->new;
 
     my $group_alias = $watched_queues->join(
         alias1  => 'main',

@@ -168,7 +168,7 @@ sub create {
         return (undef);
     }
 
-    my $cached_member = RT::Model::CachedGroupMember->new( current_user => $self->current_user );
+    my $cached_member = RT::Model::CachedGroupMember->new;
     my $cached_id     = $cached_member->create(
         member           => $args{'member'}->principal,
         group            => $args{'group'}->principal,
@@ -178,7 +178,7 @@ sub create {
 
     #and popuplate the CachedGroupMembers of all the groups that group is part of .
 
-    my $cgm = RT::Model::CachedGroupMemberCollection->new( current_user => $self->current_user );
+    my $cgm = RT::Model::CachedGroupMemberCollection->new;
 
     #When adding a member to a group, we need to go back
     # find things which have the current group as a member.
@@ -186,7 +186,7 @@ sub create {
     $cgm->limit_to_groups_with_member( $args{'group'}->id );
 
     while ( my $parent_member = $cgm->next ) {
-        my $other_cached_member = RT::Model::CachedGroupMember->new( current_user => $self->current_user );
+        my $other_cached_member = RT::Model::CachedGroupMember->new;
         my $other_cached_id     = $other_cached_member->create(
             member           => $args{'member'}->principal,
             group            => $parent_member->group,
@@ -252,7 +252,7 @@ sub _stash_user {
         return (undef);
     }
 
-    my $cached_member = RT::Model::CachedGroupMember->new( current_user => $self->current_user );
+    my $cached_member = RT::Model::CachedGroupMember->new;
     my $cached_id     = $cached_member->create(
         member           => $args{'member'},
         group            => $args{'group'},
@@ -292,9 +292,7 @@ sub delete {
     # a member of A, will delete C as a member of A without touching
     # C as a member of B
 
-    my $cached_submembers = RT::Model::CachedGroupMemberCollection->new(
-        current_user => $self->current_user
-    );
+    my $cached_submembers = RT::Model::CachedGroupMemberCollection->new;
     $cached_submembers->limit(
         column   => 'member_id',
         operator => '=',

@@ -638,7 +638,7 @@ sub parse_lines {
         }
     }
 
-    my $ticket_obj ||= RT::Model::Ticket->new( current_user => $self->current_user );
+    my $ticket_obj ||= RT::Model::Ticket->new;
 
     my %args;
     my %original_tags;
@@ -732,11 +732,11 @@ sub parse_lines {
         if ( $orig_tag =~ /^custom_?field-?(\d+)$/i ) {
             $ticketargs{ "cf_" . $1 } = $args{$tag};
         } elsif ( $orig_tag =~ /^(?:custom_?field|cf)-?(.*)$/i ) {
-            my $cf = RT::Model::CustomField->new( current_user => $self->current_user );
+            my $cf = RT::Model::CustomField->new;
             $cf->load_by_name( name => $1, queue => $ticketargs{queue} );
             $ticketargs{ "cf_" . $cf->id } = $args{$tag};
         } elsif ($orig_tag) {
-            my $cf = RT::Model::CustomField->new( current_user => $self->current_user );
+            my $cf = RT::Model::CustomField->new;
             $cf->load_by_name(
                 name  => $orig_tag,
                 queue => $ticketargs{queue}
@@ -1060,7 +1060,7 @@ sub update_watchers {
             } else {
 
                 # It doesn't look like an email address.  Try to load it.
-                my $user = RT::Model::User->new( current_user => $self->current_user );
+                my $user = RT::Model::User->new;
                 $user->load($_);
                 if ( $user->id ) {
                     push @new, $user->email;
@@ -1106,7 +1106,7 @@ sub update_custom_fields {
         next unless $arg =~ /^custom_?field-(\d+)$/;
         my $cf = $1;
 
-        my $cf_obj = RT::Model::CustomField->new( current_user => $self->current_user );
+        my $cf_obj = RT::Model::CustomField->new;
         $cf_obj->load_by_id($cf);
 
         my @values;

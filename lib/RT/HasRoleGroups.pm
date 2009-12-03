@@ -39,7 +39,7 @@ sub is_watcher {
     );
 
     # Load the relevant group.
-    my $group = RT::Model::Group->new( current_user => $self->current_user );
+    my $group = RT::Model::Group->new;
     $group->load_role(
         object => $self,
         type   => $args{'type'},
@@ -51,7 +51,7 @@ sub is_watcher {
         return 0 unless $args{'email'};
 
         # Look up the specified user.
-        my $user = RT::Model::User->new( current_user => $self->current_user );
+        my $user = RT::Model::User->new;
         $user->load_by_email( $args{'email'} );
         if ( $user->id ) {
             $args{'principal'} = $user;
@@ -95,7 +95,7 @@ sub add_watcher {
         my ( $addr ) = RT::EmailParser->parse_email_address( $args{email} );
         if ($addr) {
             $args{'email'} = $addr->address;
-            my $user = RT::Model::User->new( current_user => $self->current_user );
+            my $user = RT::Model::User->new;
             $user->load_by_email( $args{'email'} );
             if ( $user->id ) {
                 $args{'principal'} = $user;
@@ -144,13 +144,13 @@ sub _add_watcher {
         return ( 0, _("System internal error. Contact system administrator.") );
     }
 
-    my $principal = RT::Model::Principal->new( current_user => $self->current_user );
+    my $principal = RT::Model::Principal->new;
     $principal->load( $args{'principal'} );
     unless ( $principal->id ) {
         return ( 0, _("Could not find principal #%1", $args{'principal'}) );
     }
 
-    my $group = RT::Model::Group->new( current_user => $self->current_user );
+    my $group = RT::Model::Group->new;
     $group->create_role(
         object => $self,
         type   => $args{'type'},
@@ -210,7 +210,7 @@ sub delete_watcher {
     );
 
     if ( $args{'email'} ) {
-        my $user = RT::Model::User->new( current_user => $self->current_user );
+        my $user = RT::Model::User->new;
         $user->load_by_email( $args{'email'} );
         return ( 0, _("Could not find user with email %1", $args{'email'}) )
             unless $user->id;
@@ -239,7 +239,7 @@ sub _delete_watcher {
     );
 
     if ( $args{'email'} ) {
-        my $user = RT::Model::User->new( current_user => $self->current_user );
+        my $user = RT::Model::User->new;
         $user->load_by_email( $args{'email'} );
         return ( 0, _("Could not find user with email %1", $args{'email'}) )
             unless $user->id;
@@ -253,7 +253,7 @@ sub _delete_watcher {
         return ( 0, _("System internal error. Contact system administrator.") );
     }
 
-    my $principal = RT::Model::Principal->new( current_user => $self->current_user );
+    my $principal = RT::Model::Principal->new;
     $principal->load( $args{'principal'} );
     unless ( $principal->id ) {
         return ( 0, _("Could not find principal #%1", $args{'principal'}) );
@@ -261,7 +261,7 @@ sub _delete_watcher {
 
     # see if this user is already a watcher.
 
-    my $group = RT::Model::Group->new( current_user => $self->current_user );
+    my $group = RT::Model::Group->new;
     $group->load_role(
         object => $self,
         type   => $args{'type'},
@@ -303,7 +303,7 @@ sub role_group {
     my $self = shift;
     my $role = shift;
 
-    my $obj = RT::Model::Group->new( current_user => $self->current_user );
+    my $obj = RT::Model::Group->new;
     $obj->load_role( object => $self, type => $role );
     return $obj;
 }
@@ -320,7 +320,7 @@ sub create_role {
     my $self = shift;
     my $type = shift;
 
-    my $group = RT::Model::Group->new( current_user => $self->current_user );
+    my $group = RT::Model::Group->new;
     my ($id, $msg) = $group->create_role(
         object => $self,
         type   => $type,

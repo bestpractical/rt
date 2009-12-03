@@ -126,7 +126,7 @@ Limits to users who can be made members of ACLs and groups
 sub limit_to_privileged {
     my $self = shift;
 
-    my $priv = RT::Model::Group->new( current_user => $self->current_user );
+    my $priv = RT::Model::Group->new;
     $priv->load_system_internal('privileged');
     unless ( $priv->id ) {
         Jifty->log->fatal("Couldn't find a privileged users group");

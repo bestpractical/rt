@@ -136,7 +136,7 @@ Returns a user-readable description of what this group is for and what it's name
 sub self_description {
     my $self = shift;
     if ( $self->domain eq 'ACLEquivalence' ) {
-        my $user = RT::Model::Principal->new( current_user => $self->current_user );
+        my $user = RT::Model::Principal->new;
         $user->load( $self->instance );
         return _( "user %1", $user->object->name );
     } elsif ( $self->domain eq 'UserDefined' ) {
@@ -144,7 +144,7 @@ sub self_description {
     } elsif ( $self->domain eq 'RT::System-Role' ) {
         return _( "system %1", $self->type );
     } elsif ( $self->domain eq 'RT::Model::Queue-Role' ) {
-        my $queue = RT::Model::Queue->new( current_user => $self->current_user );
+        my $queue = RT::Model::Queue->new;
         $queue->load( $self->instance );
         return _( "queue %1 %2", $queue->name, $self->type );
     } elsif ( $self->domain eq 'RT::Model::Ticket-Role' ) {
@@ -325,7 +325,7 @@ sub _create {
 
     # Groups deal with principal ids, rather than user ids.
     # When creating this group, set up a principal id for it.
-    my $principal = RT::Model::Principal->new( current_user => $self->current_user );
+    my $principal = RT::Model::Principal->new;
     my ( $principal_id, $msg ) = $principal->create(
         type => 'Group',
     );
@@ -358,7 +358,7 @@ sub _create {
 
     # in the ordinary case, this would fail badly because it would recurse and add all the members of this group as
     # cached members. thankfully, we're creating the group now...so it has no members.
-    my $cgm = RT::Model::CachedGroupMember->new( current_user => $self->current_user );
+    my $cgm = RT::Model::CachedGroupMember->new;
     $cgm->create(
         group            => $self->principal,
         member           => $self->principal,
@@ -432,7 +432,7 @@ sub create_acl_equivalence {
 
     # We use stashuser so we don't get transactions inside transactions
     # and so we bypass all sorts of cruft we don't need
-    my $aclstash = RT::Model::GroupMember->new( current_user => $self->current_user );
+    my $aclstash = RT::Model::GroupMember->new;
     my ( $stash_id, $add_msg ) = $aclstash->_stash_user(
         group  => $self->principal,
         member => $princ
@@ -565,7 +565,7 @@ sub set_disabled {
     # a member of A, will delete C as a member of A without touching
     # C as a member of B
 
-    my $cached_submembers = RT::Model::CachedGroupMemberCollection->new( current_user => $self->current_user );
+    my $cached_submembers = RT::Model::CachedGroupMemberCollection->new;
 
     $cached_submembers->limit(
         column   => 'immediate_parent',

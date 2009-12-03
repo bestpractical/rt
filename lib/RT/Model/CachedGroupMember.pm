@@ -167,7 +167,7 @@ sub create {
 
     my $GroupMembers = $args{'member'}->object->members;
     while ( my $member = $GroupMembers->next() ) {
-        my $cached_member = RT::Model::CachedGroupMember->new( current_user => $self->current_user );
+        my $cached_member = RT::Model::CachedGroupMember->new;
         my $c_id = $cached_member->create(
             group            => $args{'group'},
             member           => $member->member,
@@ -197,7 +197,7 @@ mysql supported foreign keys with cascading deletes.
 sub delete {
     my $self = shift;
 
-    my $deletable = RT::Model::CachedGroupMemberCollection->new( current_user => $self->current_user );
+    my $deletable = RT::Model::CachedGroupMemberCollection->new;
     $deletable->limit(
         column   => 'id',
         operator => '!=',
@@ -266,7 +266,7 @@ sub set_disabled {
         return ($err);
     }
 
-    my $deletable = RT::Model::CachedGroupMemberCollection->new( current_user => $self->current_user );
+    my $deletable = RT::Model::CachedGroupMemberCollection->new;
     $deletable->limit(
         column   => 'via',
         operator => '=',

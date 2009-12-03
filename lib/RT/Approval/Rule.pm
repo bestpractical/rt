@@ -62,7 +62,7 @@ sub prepare {
 
 sub get_template {
     my ($self, $template_name, %args) = @_;
-    my $template = RT::Model::Template->new( current_user => $self->current_user);
+    my $template = RT::Model::Template->new;
     $template->load($template_name) or return;
     my ($result, $msg) = $template->parse(%args);
 

@@ -145,7 +145,7 @@ sub _get_resolver {
     Jifty::Util->try_to_require($class);
 
     if ( $class->can('new') ) {
-        $self->{'resolver'} = $class->new( current_user => $self->current_user );
+        $self->{'resolver'} = $class->new;
     } else {
         $self->{'resolver'} = RT::URI::base->new;
     }

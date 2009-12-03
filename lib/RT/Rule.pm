@@ -100,13 +100,13 @@ sub run_scrip_action {
 sub get_scrip_action {
     my ($self, $scrip_action, $template, %args) = @_;
 
-    my $ScripAction = RT::Model::ScripAction->new( current_user => $self->current_user);
+    my $ScripAction = RT::Model::ScripAction->new;
     $ScripAction->load($scrip_action) or die ;
     unless (ref($template)) {
         # XXX: load per-queue template
         #    $template->LoadQueueTemplate( Queue => ..., ) || $template->LoadGlobalTemplate(...)
 
-        my $t = RT::Model::Template->new( current_user => $self->current_user);
+        my $t = RT::Model::Template->new;
         $t->load($template) or Carp::confess "Can't load template '$template'";
         $template = $t;
     }

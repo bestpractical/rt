@@ -245,7 +245,7 @@ sub _privacy_objects {
         object => RT->system,
       );
 
-    my $groups = RT::Model::GroupCollection->new( current_user => $CurrentUser );
+    my $groups = RT::Model::GroupCollection->new;
     $groups->limit_to_user_defined_groups;
     $groups->with_member(
         principal => $CurrentUser->id,
@@ -259,7 +259,7 @@ sub _privacy_objects {
           )
     } @{ $groups->items_array_ref };
 
-    push @objects, RT::System->new( current_user => $CurrentUser )
+    push @objects, RT::System->new
       if $CurrentUser->has_right(
         right  => "${prefix}Dashboard",
         object => RT->system,
