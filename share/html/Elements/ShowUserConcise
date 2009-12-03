@@ -46,7 +46,19 @@
 %# 
 %# END BPS TAGGED BLOCK }}}
 %# Released under the terms of version 2 of the GNU Public License
-<% $User->RealName || $User->Name %>\
+<% $Address || $User->RealName || $User->Name %>\
 <%ARGS>
-$User
+$User => undef
+$Address => undef
 </%ARGS>
+<%INIT>
+if ( !$User && $Address ) {
+    $User = RT::User->new( $session{'CurrentUser'} );
+    $User->LoadByEmail( $Address->address );
+    if ( $User->Id ) {
+        $Address = '';
+    } else {
+        $Address = $Address->address;
+    }
+}
+</%INIT>
