@@ -3,6 +3,7 @@ use warnings;
 
 package RT::Action::EditWatchers;
 use base qw/RT::Action Jifty::Action/;
+use RT::View::Helpers qw/render_user/;
 use Scalar::Defer;
 
 __PACKAGE__->mk_accessors('object');
@@ -139,8 +140,7 @@ sub available_values {
         while ( my $user = $users->next ) {
             push @users,
               {
-                display =>
-                  RT::View::Form::Field::SelectUser->_render_user($user),
+                display => render_user($user),
                 value => $user->principal_id
               };
         }

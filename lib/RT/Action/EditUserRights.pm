@@ -4,7 +4,7 @@ use warnings;
 
 package RT::Action::EditUserRights;
 use base qw/RT::Action::EditRights/;
-use RT::View::Form::Field::SelectUser;
+use RT::View::Helpers qw/render_user/;
 use Scalar::Defer;
 
 sub arguments {
@@ -30,9 +30,7 @@ sub arguments {
             available_values => defer { $self->available_values },
             render_as        => 'Checkboxes',
             multiple         => 1,
-            label => RT::View::Form::Field::SelectUser->_render_user(
-                $user->member->object
-            ),
+            label => render_user( $user->member->object ),
         };
     }
     return $args;
