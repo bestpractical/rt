@@ -49,16 +49,20 @@
 <%INIT>
 # $User is an RT::User object
 # $Address is Email::Address object
-if ( $style eq 'concise' ) {
-    $m->comp( '/Elements/ShowUserConcise',
+
+my $comp = '/Elements/ShowUser'. ucfirst lc $style;
+unless ( $m->comp_exists( $comp ) ) {
+    $RT::Logger->error(
+        'Either system config or user #'
+        . $session{'CurrentUser'}->id
+        . ' picked UsernameFormat '. $style
+        . ', but '. $comp . "doesn't exist";
+    );
+    return $m->comp('/Elements/ShowUserConcise',
         User => $User, Address => $Address,
     );
 }
-else {
-    return $m->comp( '/Elements/ShowUserVerbose',
-        User => $User, Address => $Address
-    );
-}
+return $m->comp( $comp, User => $User, Address => $Address );
 </%INIT>
 <%ARGS>
 $User => undef
