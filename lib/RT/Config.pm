@@ -349,6 +349,16 @@ our %META = (
             ]
         }
     },
+    NotifyActor => {
+        Section         => 'Mail',                                     #loc
+        Overridable     => 1,
+        SortOrder       => 2,
+        Widget          => '/Widgets/Form/Boolean',
+        WidgetArguments => {
+            Description => 'Notify Actor', #loc
+            Hints => 'Receive mail from RT for all your actions and correspondence',    #loc
+        }
+    },
 
     # this tends to break extensions that stash links in ticket update pages
     Organization => {

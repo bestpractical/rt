@@ -139,12 +139,15 @@ sub SetRecipients {
         }
     }
 
-    my $creator = $self->TransactionObj->CreatorObj->EmailAddress();
+    my $creatorObj = $self->TransactionObj->CreatorObj;
+    my $creator = $creatorObj->EmailAddress();
 
     #Strip the sender out of the To, Cc and AdminCc and set the 
     # recipients fields used to build the message by the superclass.
     # unless a flag is set 
-    if (RT->Config->Get('NotifyActor')) {
+    my $TransactionCurrentUser = RT::CurrentUser->new;
+    $TransactionCurrentUser->LoadByName($creatorObj->Name);
+    if (RT->Config->Get('NotifyActor',$TransactionCurrentUser)) {
         @{ $self->{'To'} }  = @To;
         @{ $self->{'Cc'} }  = @Cc;
         @{ $self->{'Bcc'} } = @Bcc;

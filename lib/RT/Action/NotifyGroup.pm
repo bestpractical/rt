@@ -84,8 +84,13 @@ sub SetRecipients {
         $self->_HandleArgument( $_ );
     }
 
-    my $creator = $self->TransactionObj->CreatorObj->EmailAddress();
-    unless( $RT::NotifyActor ) {
+    my $creatorObj = $self->TransactionObj->CreatorObj;
+    my $creator = $creatorObj->EmailAddress();
+
+    my $TransactionCurrentUser = RT::CurrentUser->new;
+    $TransactionCurrentUser->LoadByName($creatorObj->Name);
+
+    unless (RT->Config->Get('NotifyActor',$TransactionCurrentUser)) {
         @{ $self->{'To'} } = grep ( !/^\Q$creator\E$/, @{ $self->{'To'} } );
     }
 
