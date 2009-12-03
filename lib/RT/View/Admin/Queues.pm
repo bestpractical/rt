@@ -52,6 +52,9 @@ package RT::View::Admin::Queues;
 use Jifty::View::Declare -base;
 use base 'RT::View::CRUD';
 
+require RT::View::Admin::Queues::Templates;
+alias RT::View::Admin::Queues::Templates under 'templates/';
+
 use constant page_title      => 'Queue Management';
 use constant object_type     => 'Queue';
 
