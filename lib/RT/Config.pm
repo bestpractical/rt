@@ -355,8 +355,8 @@ our %META = (
         SortOrder       => 2,
         Widget          => '/Widgets/Form/Boolean',
         WidgetArguments => {
-            Description => 'Notify Actor', #loc
-            Hints => 'Receive mail from RT for all your actions and correspondence',    #loc
+            Description => 'Outgoing mail', #loc
+            Hints => 'Should RT send you mail for ticket updates you make?', #loc
         }
     },
 
