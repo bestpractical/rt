@@ -465,8 +465,7 @@ sub check_create_rights {
             right => $right,
         );
     } else {
-        my $queue = RT::Model::Queue->new;
-        $queue->load( $args{'queue'} );
+        my $queue = RT::Model::Queue->load($args{'queue'});
         unless ( $queue->id ) {
             Jifty->log->error(
                 $self->current_user->id ." tried to create a "
@@ -518,8 +517,7 @@ sub check_delete_rights {
 sub queue_obj {
     require Carp; Carp::confess("deprecated");
     my $self = shift;
-    my $q    = RT::Model::Queue->new;
-    $q->load( $self->__value('queue') );
+    my $q    = RT::Model::Queue->load($self->__value('queue'));
     return $q;
 }
 

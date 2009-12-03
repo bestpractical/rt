@@ -1225,8 +1225,7 @@ sub _custom_field_decipher {
 
     my $cf;
     if ($queue) {
-        my $q = RT::Model::Queue->new;
-        $q->load($queue);
+        my $q = RT::Model::Queue->load($queue);
 
         if ( $q->id ) {
 
@@ -1712,8 +1711,7 @@ sub limit_queue {
 
     #TODO  value should also take queue objects
     if ( defined $args{'value'} && $args{'value'} !~ /^\d+$/ ) {
-        my $queue = RT::Model::Queue->new;
-        $queue->load( $args{'value'} );
+        my $queue = RT::Model::Queue->load($args{'value'});
         $args{'value'} = $queue->id;
     }
 

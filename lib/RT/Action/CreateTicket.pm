@@ -215,10 +215,7 @@ sub canonicalize_sign_using {
 
     return $address if length $address;
 
-    my $queue_id = $self->argument_value('queue');
-    my $queue = RT::Model::Queue->new;
-    $queue->load($queue_id);
-
+    my $queue = RT::Model::Queue->load($self->argument_value('queue'));
     return $queue->correspond_address;
 }
 

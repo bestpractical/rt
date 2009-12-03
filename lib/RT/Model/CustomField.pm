@@ -231,8 +231,7 @@ sub create {
         }
         $args{'lookup_type'} = 'RT::Model::Queue-RT::Model::Ticket';
     } else {
-        my $queue = RT::Model::Queue->new;
-        $queue->load( $args{'queue'} );
+        my $queue = RT::Model::Queue->load($args{'queue'});
         unless ( $queue->id ) {
             return ( 0, _("Queue not found") );
         }
@@ -354,8 +353,7 @@ sub load_by_name {
 
     # if we're looking for a queue by name, make it a number
     if ( defined $args{'queue'} && $args{'queue'} =~ /\D/ ) {
-        my $queue_obj = RT::Model::Queue->new;
-        $queue_obj->load( $args{'queue'} );
+        my $queue_obj = RT::Model::Queue->load($args{'queue'});
         $args{'queue'} = $queue_obj->id;
     }
 

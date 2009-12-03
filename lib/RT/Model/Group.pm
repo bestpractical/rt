@@ -144,8 +144,7 @@ sub self_description {
     } elsif ( $self->domain eq 'RT::System-Role' ) {
         return _( "system %1", $self->type );
     } elsif ( $self->domain eq 'RT::Model::Queue-Role' ) {
-        my $queue = RT::Model::Queue->new;
-        $queue->load( $self->instance );
+        my $queue = RT::Model::Queue->load($self->instance);
         return _( "queue %1 %2", $queue->name, $self->type );
     } elsif ( $self->domain eq 'RT::Model::Ticket-Role' ) {
         return _( "ticket #%1 %2", $self->instance, $self->type );

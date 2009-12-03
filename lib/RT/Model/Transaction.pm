@@ -931,10 +931,8 @@ sub brief_description {
         if ( $self->field eq 'password' ) {
             return _('password changed');
         } elsif ( $self->field eq 'queue' ) {
-            my $q1 = RT::Model::Queue->new;
-            $q1->load( $self->old_value );
-            my $q2 = RT::Model::Queue->new;
-            $q2->load( $self->new_value );
+            my $q1 = RT::Model::Queue->load($self->old_value);
+            my $q2 = RT::Model::Queue->load($self->new_value);
             return _( "%1 changed from %2 to %3", $self->field, $q1->name, $q2->name );
         }
 

@@ -91,8 +91,7 @@ sub groupings {
     if ($queues) {
         my $CustomFields = RT::Model::CustomFieldCollection->new;
         foreach my $id ( keys %$queues ) {
-            my $queue = RT::Model::Queue->new;
-            $queue->load($id);
+            my $queue = RT::Model::Queue->load($id);
             unless ( $queue->id ) {
 
                 # XXX TODO: This ancient code dates from a former developer

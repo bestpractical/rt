@@ -59,9 +59,7 @@ sub set_queue {
     my $queue = shift;
 
     if (!ref($queue)) {
-        my $queue_obj = RT::Model::Queue->new;
-        $queue_obj->load($queue);
-        $queue = $queue_obj;
+        $queue = RT::Model::Queue->load($queue);
     }
 
     # Prep the arguments cache
