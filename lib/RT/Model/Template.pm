@@ -79,12 +79,17 @@ use base qw'RT::Record';
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
     column queue => references RT::Model::Queue;
-    column name  => max_length is 200, type is 'varchar(200)', is mandatory;
-    column
-        description => max_length is 255,
-        type is 'varchar(255)', default is '';
+    column name => max_length is 200,
+      type is 'varchar(200)',
+      display_length is 20,
+      is mandatory;
+    column description => max_length is 255,
+      type is 'varchar(255)',
+      display_length is 60,
+      default is '';
     column type => max_length is 16, type is 'varchar(16)', default is '';
-    column content => type is 'text', default is '', filters are 'Jifty::DBI::Filter::utf8';
+    column content => type is 'text', render as 'textarea',
+      default is '', filters are 'Jifty::DBI::Filter::utf8';
 };
 
 use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
