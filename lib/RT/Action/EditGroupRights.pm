@@ -14,9 +14,7 @@ sub arguments {
     my @groups;
 
     {
-        my $groups =
-          RT::Model::GroupCollection->new(
-            current_user => Jifty->web->current_user );
+        my $groups = RT::Model::GroupCollection->new;
         $groups->limit_to_system_internal_groups();
         while ( my $group = $groups->next ) {
             push @groups, $group;
@@ -24,9 +22,7 @@ sub arguments {
     }
 
     {
-        my $groups =
-          RT::Model::GroupCollection->new(
-            current_user => Jifty->web->current_user );
+        my $groups = RT::Model::GroupCollection->new;
         $groups->limit_to_user_defined_groups();
         while ( my $group = $groups->next ) {
             push @groups, $group;
@@ -35,8 +31,7 @@ sub arguments {
 
     {
         my $groups =
-          RT::Model::GroupCollection->new(
-            current_user => Jifty->web->current_user );
+          RT::Model::GroupCollection->new;
         $groups->limit_to_roles( object => $self->object );
         while ( my $group = $groups->next ) {
             push @groups, $group;

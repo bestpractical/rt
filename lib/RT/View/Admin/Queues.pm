@@ -174,8 +174,7 @@ sub queue {
         return;
     }
 
-    my $queue = RT::Model::Queue->new( current_user =>
-            Jifty->web->current_user );
+    my $queue = RT::Model::Queue->new;
     my ( $ret, $msg ) = $queue->load( $id );
     unless ( $ret ) {
         Jifty->log->fatal( "failed to load queue $id: $msg" );

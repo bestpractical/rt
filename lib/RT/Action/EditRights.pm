@@ -38,8 +38,7 @@ sub take_action {
         $self->object( RT->system );
     }
     elsif ( $RT::Model::ACE::OBJECT_TYPES{$object_type} ) {
-        my $object =
-          $object_type->new( current_user => Jifty->web->current_user );
+        my $object = $object_type->new;
         my $object_id = $self->argument_value('object_id');
         $object->load($object_id);
         unless ( $object->id ) {
@@ -71,8 +70,7 @@ sub take_action {
 
         @rights = grep $_, @rights;
 
-        my $principal =
-          RT::Model::Principal->new( current_user => Jifty->web->current_user );
+        my $principal = RT::Model::Principal->new;
         $principal->load($principal_id);
 
         my $current_rights = $self->default_value($principal_id);
@@ -121,9 +119,8 @@ sub default_value {
     my $principal_id = shift;
 
     my $object = $self->object;
-    my $acl_obj =
-      RT::Model::ACECollection->new( current_user => Jifty->web->current_user );
-    my $ACE = RT::Model::ACE->new( current_user => Jifty->web->current_user );
+    my $acl_obj = RT::Model::ACECollection->new;
+    my $ACE = RT::Model::ACE->new;
     $acl_obj->limit_to_object($object);
     $acl_obj->limit_to_principal( id => $principal_id );
     $acl_obj->order_by( column => 'right_name' );

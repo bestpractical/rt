@@ -12,14 +12,12 @@ sub arguments {
     return {} unless $self->object;
     my $args = $self->SUPER::arguments( @_ );
 
-    my $privileged =
-      RT::Model::Group->new( current_user => Jifty->web->current_user );
+    my $privileged = RT::Model::Group->new;
     $privileged->load_system_internal('privileged');
     my $users = $privileged->members;
 
     while ( my $user = $users->next ) {
-        my $group =
-          RT::Model::Group->new( current_user => Jifty->web->current_user );
+        my $group = RT::Model::Group->new;
         $group->load_acl_equivalence( $user->member );
 
         my $name = 'rights_' . $group->principal_id;

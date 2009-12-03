@@ -52,8 +52,7 @@ sub take_action {
         $self->object( RT->system );
     }
     elsif ( $RT::Model::ACE::OBJECT_TYPES{$object_type} ) {
-        my $object =
-          $object_type->new( current_user => Jifty->web->current_user );
+        my $object = $object_type->new;
         my $object_id = $self->argument_value('object_id');
         $object->load($object_id);
         unless ( $object->id ) {
@@ -129,9 +128,7 @@ sub available_values {
     my $self     = shift;
     my $sub_type = shift;
     if ( $sub_type eq 'users' ) {
-        my $users =
-          RT::Model::UserCollection->new(
-            current_user => Jifty->web->current_user );
+        my $users = RT::Model::UserCollection->new;
 
         #XXX do we need to limit to only privileged people?
         $users->limit_to_privileged;
@@ -147,9 +144,7 @@ sub available_values {
         return \@users;
     }
     else {
-        my $groups =
-          RT::Model::GroupCollection->new(
-            current_user => Jifty->web->current_user );
+        my $groups = RT::Model::GroupCollection;
         $groups->limit_to_user_defined_groups;
         $groups->order_by( { column => 'name', order => 'ASC' } );
         my @groups;
