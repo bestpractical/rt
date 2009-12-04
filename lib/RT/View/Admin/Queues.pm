@@ -159,6 +159,26 @@ template 'people' => page { title => _('Modify people') } content {
     };
 };
 
+template 'ticket_custom_fields' => page { title => _('Modify people') } content {
+    my $self  = shift;
+    my $queue = $self->queue;
+    return unless $queue;
+
+    my $action = new_action(
+        class   => 'SelectCustomFields',
+        moniker => 'select_ticket_cfs',
+    );
+
+    $action->object($queue);
+    $action->lookup_type('RT::Model::Queue-RT::Model::Ticket');
+
+    with( name => 'select_ticket_cfs' ), form {
+        input { type is 'hidden'; name is 'id'; value is $queue->id };
+        render_action($action);
+        form_submit( label => _('Save') );
+    };
+};
+
 sub _current_collection {
     my $self = shift; 
     my $collection = $self->SUPER::_current_collection( @_ );
