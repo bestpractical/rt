@@ -58,18 +58,20 @@ sub arguments {
     }
 
     if ($global_cfs) {
-        $args->{global} = {
+        $args->{global_cfs} = {
             default_value    => [@global],
             available_values => [@global],
             render_as        => 'Checkboxes',
             render_mode      => 'read',
+            label            => _('Global Custom Fields'),
         };
     }
-    $args->{select} = {
+    $args->{cfs} = {
         default_value    => [@selected],
         available_values => [ @selected, @unselected ],
         render_as        => 'Checkboxes',
         multiple         => 1,
+        label            => _('Custom Fields'),
     };
 
     return $args;
@@ -108,8 +110,8 @@ sub take_action {
     }
 
     my @ids;
-    my $value = $self->argument_value('select');
-    if ( UNIVERSAL::isa( $self->argument_value('select'), 'ARRAY' ) ) {
+    my $value = $self->argument_value('cfs');
+    if ( UNIVERSAL::isa( $value, 'ARRAY' ) ) {
         @ids = @$value;
     }
     else {
