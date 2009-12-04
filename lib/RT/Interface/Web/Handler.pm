@@ -217,6 +217,8 @@ sub CleanupRequest {
         RT::Crypt::GnuPG::UseKeyForEncryption();
         RT::Crypt::GnuPG::UseKeyForSigning( undef );
     }
+
+    %RT::Ticket::MERGE_CACHE = ( effective => {}, merged => {} );
 }
 # }}}
 

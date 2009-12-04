@@ -135,6 +135,11 @@ our %LINKDIRMAP = (
 sub LINKTYPEMAP   { return \%LINKTYPEMAP   }
 sub LINKDIRMAP   { return \%LINKDIRMAP   }
 
+our %MERGE_CACHE = (
+    effective => {},
+    merged => {},
+);
+
 # {{{ sub Load
 
 =head2 Load
@@ -148,47 +153,46 @@ Otherwise, returns the ticket id.
 sub Load {
     my $self = shift;
     my $id   = shift;
+    $id = '' unless defined $id;
 
-    #TODO modify this routine to look at EffectiveId and do the recursive load
-    # thing. be careful to cache all the interim tickets we try so we don't loop forever.
+    # TODO: modify this routine to look at EffectiveId and
+    # do the recursive load thing. be careful to cache all
+    # the interim tickets we try so we don't loop forever.
 
     # FIXME: there is no TicketBaseURI option in config
     my $base_uri = RT->Config->Get('TicketBaseURI') || '';
     #If it's a local URI, turn it into a ticket id
-    if ( $base_uri && defined $id && $id =~ /^$base_uri(\d+)$/ ) {
+    if ( $base_uri && $id =~ /^$base_uri(\d+)$/ ) {
         $id = $1;
     }
 
-    #If it's a remote URI, we're going to punt for now
-    elsif ( $id =~ '://' ) {
-        return (undef);
-    }
-
-    #If we have an integer URI, load the ticket
-    if ( defined $id && $id =~ /^\d+$/ ) {
-        my ($ticketid,$msg) = $self->LoadById($id);
-
-        unless ($self->Id) {
-            $RT::Logger->debug("$self tried to load a bogus ticket: $id");
-            return (undef);
-        }
-    }
-
-    #It's not a URI. It's not a numerical ticket ID. Punt!
-    else {
+    unless ( $id =~ /^\d+$/ ) {
         $RT::Logger->debug("Tried to load a bogus ticket id: '$id'");
         return (undef);
     }
 
+    $id = $MERGE_CACHE{'effective'}{ $id }
+        if $MERGE_CACHE{'effective'}{ $id };
+
+    my ($ticketid, $msg) = $self->LoadById( $id );
+    unless ( $self->Id ) {
+        $RT::Logger->debug("$self tried to load a bogus ticket: $id");
+        return (undef);
+    }
+
     #If we're merged, resolve the merge.
-    if ( ( $self->EffectiveId ) and ( $self->EffectiveId != $self->Id ) ) {
-        $RT::Logger->debug ("We found a merged ticket.". $self->id ."/".$self->EffectiveId);
-        return ( $self->Load( $self->EffectiveId ) );
+    if ( $self->EffectiveId && $self->EffectiveId != $self->Id ) {
+        $RT::Logger->debug(
+            "We found a merged ticket. "
+            . $self->id ."/". $self->EffectiveId
+        );
+        my $real_id = $self->Load( $self->EffectiveId );
+        $MERGE_CACHE{'effective'}{ $id } = $real_id;
+        return $real_id;
     }
 
     #Ok. we're loaded. lets get outa here.
-    return ( $self->Id );
-
+    return $self->Id;
 }
 
 # }}}
@@ -2202,28 +2206,35 @@ sub _Links {
     my $field = shift;
     my $type  = shift || "";
 
-    unless ( $self->{"$field$type"} ) {
-        $self->{"$field$type"} = new RT::Links( $self->CurrentUser );
-        if ( $self->CurrentUserHasRight('ShowTicket') ) {
-            # Maybe this ticket is a merged ticket
-            my $Tickets = new RT::Tickets( $self->CurrentUser );
-            # at least to myself
-            $self->{"$field$type"}->Limit( FIELD => $field,
-                                           VALUE => $self->URI,
-                                           ENTRYAGGREGATOR => 'OR' );
-            $Tickets->Limit( FIELD => 'EffectiveId',
-                             VALUE => $self->EffectiveId );
-            while (my $Ticket = $Tickets->Next) {
-                $self->{"$field$type"}->Limit( FIELD => $field,
-                                               VALUE => $Ticket->URI,
-                                               ENTRYAGGREGATOR => 'OR' );
-            }
-            $self->{"$field$type"}->Limit( FIELD => 'Type',
-                                           VALUE => $type )
-              if ($type);
-        }
+    my $cache_key = "$field$type";
+    return $self->{ $cache_key } if $self->{ $cache_key };
+
+    my $links = $self->{ $cache_key }
+              = RT::Links->new( $self->CurrentUser );
+    unless ( $self->CurrentUserHasRight('ShowTicket') ) {
+        $links->Limit( FIELD => 'id', VALUE => 0 );
+        return $links;
     }
-    return ( $self->{"$field$type"} );
+
+    # Maybe this ticket is a merge ticket
+    my $limit_on = 'Local'. $field;
+    # at least to myself
+    $links->Limit(
+        FIELD           => $limit_on,
+        VALUE           => $self->id,
+        ENTRYAGGREGATOR => 'OR',
+    );
+    $links->Limit(
+        FIELD           => $limit_on,
+        VALUE           => $_,
+        ENTRYAGGREGATOR => 'OR',
+    ) foreach $self->Merged;
+    $links->Limit(
+        FIELD => 'Type',
+        VALUE => $type,
+    ) if $type;
+
+    return $links;
 }
 
 # }}}
@@ -2465,8 +2476,6 @@ sub _AddLink {
 
 MergeInto take the id of the ticket to merge this ticket into.
 
-
-
 =cut
 
 sub MergeInto {
@@ -2490,6 +2499,11 @@ sub MergeInto {
     unless ( $MergeInto->CurrentUserHasRight('ModifyTicket') ) {
         return ( 0, $self->loc("Permission Denied") );
     }
+
+    delete $MERGE_CACHE{'effective'}{ $self->id };
+    delete @{ $MERGE_CACHE{'merged'} }{
+        $ticket_id, $MergeInto->id, $self->id
+    };
 
     $RT::Handle->BeginTransaction();
 
@@ -2640,18 +2654,22 @@ Returns list of tickets' ids that's been merged into this ticket.
 sub Merged {
     my $self = shift;
 
-    my $mergees = new RT::Tickets( $self->CurrentUser );
+    my $id = $self->id;
+    return @{ $MERGE_CACHE{'merged'}{ $id } }
+        if $MERGE_CACHE{'merged'}{ $id };
+
+    my $mergees = RT::Tickets->new( $self->CurrentUser );
     $mergees->Limit(
         FIELD    => 'EffectiveId',
-        OPERATOR => '=',
-        VALUE    => $self->Id,
+        VALUE    => $id,
     );
     $mergees->Limit(
         FIELD    => 'id',
         OPERATOR => '!=',
-        VALUE    => $self->Id,
+        VALUE    => $id,
     );
-    return map $_->id, @{ $mergees->ItemsArrayRef || [] };
+    return @{ $MERGE_CACHE{'merged'}{ $id } ||= [] }
+        = map $_->id, @{ $mergees->ItemsArrayRef || [] };
 }
 
 # }}}
