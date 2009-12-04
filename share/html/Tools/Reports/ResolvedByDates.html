@@ -52,7 +52,8 @@ $resolved_after => undef
 </%args>
 <%init>
 my $title = _("Resolved tickets in period, grouped by owner");
-my $q = RT::Model::Queue->load($queue);
+my $q = RT::Model::Queue->new( current_user => Jifty->web->current_user );
+$q->load($queue);
 my $query = '';
 
 my $after = RT::DateTime->new_from_string($resolved_after);

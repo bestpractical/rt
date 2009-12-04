@@ -68,7 +68,7 @@
 
 </&>
 <%INIT>
-my $CF = RT::Model::CustomField->new;
+my $CF = RT::Model::CustomField->new( current_user => Jifty->web->current_user );
 $CF->load($id) if ($id);
 
 unless ($CF->id) {  abort(_("Could not load CustomField %1", $id))};
@@ -103,7 +103,7 @@ $objects->order_by( column => 'name' );
 
 
 my $objectCFs;
-$objectCFs = RT::Model::ObjectCustomFieldCollection->new;
+$objectCFs = RT::Model::ObjectCustomFieldCollection->new( current_user => Jifty->web->current_user );
 $objectCFs->find_all_rows;
 $objectCFs->limit_to_custom_field($id);
 

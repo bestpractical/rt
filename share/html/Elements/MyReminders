@@ -67,7 +67,7 @@
 
 <%init>
 return unless RT->config->get('enable_reminders');
-my $reminders = RT::Model::TicketCollection->new;
+my $reminders = RT::Model::TicketCollection->new( current_user => Jifty->web->current_user );
 $reminders->from_sql('(Owner = "Nobody" OR Owner = "'.Jifty->web->current_user->name.'")' .
     ' AND type = "reminder" AND (Status = "new" OR Status = "open")'); 
 $reminders->order_by(column => 'Due', order => 'DESC');

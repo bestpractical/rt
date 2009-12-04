@@ -79,7 +79,7 @@ my $title = _("Search for tickets");
 use RT::Search::Googleish;
 
 if ($q) {
-    my $tickets = RT::Model::TicketCollection->new;
+    my $tickets = RT::Model::TicketCollection->new(current_user => Jifty->web->current_user);
     if ($q =~ /^#?(\d+)$/) {
         RT::Interface::Web::redirect(Jifty->web->url."Ticket/Display.html?id=".$1);
     }

@@ -57,7 +57,7 @@
 <& /Elements/SelectMatch, name => 'user_op', default => $user_op &>
 <input size="8" name="user_string" value="<% $user_string %>" />
 <%INIT>
-my $CFs = RT::Model::CustomFieldCollection->new;
+my $CFs = RT::Model::CustomFieldCollection->new( current_user => Jifty->web->current_user );
 $CFs->limit_to_child_type('RT::Model::User');
 $CFs->order_by( column => 'name' );
 </%INIT>

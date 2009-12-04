@@ -119,7 +119,8 @@ $queue => undef
 </%args>
 <%init>
 my @results;
-my $queue_obj = RT::Model::Queue->load($queue);
+my $queue_obj = RT::Model::Queue->new( current_user => Jifty->web->current_user );
+$queue_obj->load($queue);
 my $CFs = $queue_obj->ticket_custom_fields();
 my $ValidCFs = $m->comp(
     '/Elements/ValidateCustomFields',

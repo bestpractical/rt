@@ -145,7 +145,7 @@
 </&>
 
 <%perl>
-my $cfs = RT::Model::CustomFieldCollection->new;
+my $cfs = RT::Model::CustomFieldCollection->new( current_user => Jifty->web->current_user );
 $cfs->limit_to_global();
 $cfs->limit_to_queue($_) for keys %$seen_queues;
 </%perl>
@@ -213,7 +213,7 @@ $format ||= RT->config->get('default_search_result_format');
 # inject _CHECKBOX to the first field.
 $format =~ s/'?([^']+)'?,/'___CHECKBOX__$1',/;
 
-my $Tickets = RT::Model::TicketCollection->new;
+my $Tickets = RT::Model::TicketCollection->new( current_user => Jifty->web->current_user );
 $Tickets->from_sql($query);
 
 
@@ -326,7 +326,7 @@ while ( my $Ticket = $Tickets->next ) {
             my ( $cfid, $cf );
             if ( $key =~ /CustomField-(\d+)-/ ) {
                 $cfid = $1;
-                $cf   = RT::Model::CustomField->new;
+                $cf   = RT::Model::CustomField->new( current_user => Jifty->web->current_user );
                 $cf->load($cfid);
             }
             else {next}
@@ -370,7 +370,7 @@ while ( my $Ticket = $Tickets->next ) {
     @results = ( @results, @tempresults );
 }
 
-my $TxnCFs = RT::Model::CustomFieldCollection->new;
+my $TxnCFs = RT::Model::CustomFieldCollection->new( current_user => Jifty->web->current_user );
 $TxnCFs->limit_to_lookup_type( RT::Model::Transaction->custom_field_lookup_type );
 $TxnCFs->limit_to_global_or_object_id( sort keys %queues );
 

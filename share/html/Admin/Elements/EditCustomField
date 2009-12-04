@@ -90,7 +90,7 @@
 
 <%INIT>
 
-my $CustomFieldObj = RT::Model::CustomField->new;
+my $CustomFieldObj = RT::Model::CustomField->new( current_user => Jifty->web->current_user );
 my $enabled_checked = 'checked="checked"';
 my (@results);
 

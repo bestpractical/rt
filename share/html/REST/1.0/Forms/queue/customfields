@@ -55,7 +55,7 @@ $changes => {}
 <%perl>
 my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
-my $queue = RT::Model::Queue->new;
+my $queue = RT::Model::Queue->new( current_user => Jifty->web->current_user );
 
 $queue->load($id);
 if (!$queue->id) {

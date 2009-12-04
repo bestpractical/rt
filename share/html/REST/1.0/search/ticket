@@ -57,7 +57,7 @@ $fields => undef
 use RT::Interface::REST;
 my $output = "";
 my $status = "200 Ok";
-my $tickets = RT::Model::TicketCollection->new;
+my $tickets = RT::Model::TicketCollection->new( current_user => Jifty->web->current_user );
 
 # Parse and validate any field specifications.
 my $field  = RT::Interface::REST->field_spec;

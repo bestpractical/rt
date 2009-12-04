@@ -52,7 +52,7 @@
 </select>
 
 <%INIT>
-my $tickets = RT::Model::TicketCollection->new;
+my $tickets = RT::Model::TicketCollection->new( current_user => Jifty->web->current_user );
 my @sortfields = $tickets->sort_fields();
 
 </%INIT>

@@ -40,7 +40,7 @@ sub take_action {
     $self->result->content->{'detailed_messages'} ||= {};
     if ( $self->argument_value('id') ) {
         my $ticket =
-          RT::Model::Ticket->new;
+          RT::Model::Ticket->new( current_user => Jifty->web->current_user );
         $ticket->load( $self->argument_value('id') );
 
         my $args = $self->argument_values;
@@ -51,7 +51,8 @@ sub take_action {
             if ( $tbd =~ /delete_(\d+)_(\d+)/ ) {
                 my ( $cfid, $ocfvid ) = ( $1, $2 );
                 my $cf =
-                  RT::Model::CustomField->new;
+                  RT::Model::CustomField->new(
+                    current_user => Jifty->web->current_user );
                 $cf->load_by_id($cfid);
                 my ( $val, $msg ) = $ticket->delete_custom_field_value(
                     field    => $cfid,
@@ -68,7 +69,8 @@ sub take_action {
 
         for my $cfid (@cfids) {
             my $cf =
-              RT::Model::CustomField->new;
+              RT::Model::CustomField->new(
+                current_user => Jifty->web->current_user );
             $cf->load_by_id($cfid);
 
             my $values     = $ticket->custom_field_values( $cf->id );

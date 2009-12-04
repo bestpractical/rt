@@ -113,7 +113,9 @@ template '_elements/edit_cfs' => sub {
         $cfs    = $ticket->custom_fields;
     }
     elsif ( get('queue') ) {
-        my $queue = RT::Model::Queue->load( get('queue') );
+        my $queue =
+          RT::Model::Queue->new( current_user => Jifty->web->current_user );
+        $queue->load( get('queue') );
         $cfs = $queue->ticket_custom_fields;
     }
 

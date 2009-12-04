@@ -333,7 +333,7 @@ before qr'Dashboards/?' => run {
 before 'Dashboards/Modify.html' => run {
     my $id        = Jifty->web->request->argument('id') || '';
     my $results   = [];
-    my $Dashboard = RT::Dashboard->new;
+    my $Dashboard = RT::Dashboard->new( current_user => Jifty->web->current_user );
     set Dashboard => $Dashboard;
     my @privacies = $Dashboard->_privacy_objects( ( !$id ? 'create' : 'modify' ) => 1 );
     set privacies => \@privacies;

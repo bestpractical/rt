@@ -56,7 +56,7 @@ $changes => {}
 my @comments;
 my ($c, $o, $k, $e) = ("", [], {}, 0);
 my %data = %$changes;
-my $user = RT::Model::User->new ;
+my $user = RT::Model::User->new( current_user => Jifty->web->current_user ) ;
 my @fields = qw(real_name nickname gecos organization address1 address2 city
                 state zip country home_phone work_phone mobile_phone pager_phone
                 freeform_contact_info comments signature lang email_encoding

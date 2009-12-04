@@ -78,7 +78,7 @@ my $current_subtab = 'Dashboards/Queries.html?id=' . $id;
 my @results;
 
 use RT::Dashboard;
-my $Dashboard = new RT::Dashboard;
+my $Dashboard = new RT::Dashboard( current_user => Jifty->web->current_user );
 my ($ok, $msg) = $Dashboard->load_by_id($id);
 $ok || abort(_("Couldn't load dashboard %1: %2", $id, $msg));
 my $title = _("Modify the queries of dashboard %1", $Dashboard->name);
@@ -115,10 +115,10 @@ for my $desc (@components) {
     $desc_of{$name} = $desc;
 }
 
-my $sys = RT::System->new;
+my $sys = RT::System->new( current_user => Jifty->web->current_user );
 my @objs = ($sys);
 
-push @objs, RT::SavedSearches->new->_privacy_objects
+push @objs, RT::SavedSearches->new( current_user => Jifty->web->current_user )->_privacy_objects
     if Jifty->web->current_user->has_right( right  => 'LoadSavedSearch',
                                           object => RT->system_user );
 

@@ -73,7 +73,7 @@ my $object = $object_type->new();
 my $QualifiedType;
 my $FriendlySubTypes;
 if (defined $sub_type && $sub_type =~/^RT::(.*)$/)  {
-    $FriendlySubTypes = RT::Model::CustomField->new->friendly_lookup_type($object->custom_field_lookup_type);
+    $FriendlySubTypes = RT::Model::CustomField->new( current_user => Jifty->web->current_user )->friendly_lookup_type($object->custom_field_lookup_type);
    $QualifiedType = "$Type-$1"; 
 } else {
     $QualifiedType = $Type;

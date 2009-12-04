@@ -57,7 +57,7 @@
 <& /Elements/SelectMatch, name => 'group_op', default => $group_op &>
 <input size="8" name="group_string" value="<% $group_string %>" />
 <%INIT>
-my $CFs = RT::Model::CustomFieldCollection->new;
+my $CFs = RT::Model::CustomFieldCollection->new( current_user => Jifty->web->current_user );
 $CFs->limit_to_child_type('RT::Model::Group');
 $CFs->order_by( column => 'name' );
 </%INIT>

@@ -53,7 +53,7 @@ $id
 <%perl>
 use RT::Model::Groups;
 
-my $groups = RT::Model::Groups->new;
+my $groups = RT::Model::Groups->new( current_user => Jifty->web->current_user );
 $groups->limit(column => 'name', operator => '=', value => $id);
 if ($groups->count == 0) {
     return (0, "No group named $id exists.");

@@ -93,7 +93,7 @@
 </&>
 <%INIT>
 my $caption;
-my $users = RT::Model::UserCollection->new;
+my $users = RT::Model::UserCollection->new( current_user => Jifty->web->current_user );
 $users->{'find_disabled_rows'} = 1 if $finddisabled_users;
 
 if ( defined($user_string) && length $user_string ) {
