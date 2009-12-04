@@ -25,10 +25,9 @@ sub arguments {
             default_value => defer {
                 $self->default_value( $group->principal_id );
             },
-            available_values => defer { $self->available_values },
-            render_as        => 'Checkboxes',
-            multiple         => 1,
-            label => render_user( $user->member->object ),
+            render_as => 'Checkboxes',
+            multiple  => 1,
+            label     => render_user( $user->member->object ),
         };
     }
     return $args;
