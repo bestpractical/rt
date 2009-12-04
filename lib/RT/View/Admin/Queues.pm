@@ -159,21 +159,27 @@ template 'people' => page { title => _('Modify People') } content {
     };
 };
 
-template 'ticket_custom_fields' => page { title => _('Select Ticket CustomFields') } content {
+template 'select_custom_fields' => page { title => _('Select CustomFields') } content {
     my $self  = shift;
     my $queue = $self->queue;
     return unless $queue;
 
     my $action = new_action(
         class   => 'SelectCustomFields',
-        moniker => 'select_ticket_cfs',
+        moniker => 'select_cfs',
     );
 
     $action->object($queue);
-    $action->lookup_type('RT::Model::Queue-RT::Model::Ticket');
+    # set it to RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction
+    # to select transaction cfs
 
-    with( name => 'select_ticket_cfs' ), form {
+    my $lookup_type = get('lookup_type')
+      || 'RT::Model::Queue-RT::Model::Ticket';
+    $action->lookup_type($lookup_type);
+
+    with( name => 'select_cfs' ), form {
         input { type is 'hidden'; name is 'id'; value is $queue->id };
+        input { type is 'hidden'; name is 'lookup_type'; value is $lookup_type };
         render_action($action);
         form_submit( label => _('Save') );
     };
