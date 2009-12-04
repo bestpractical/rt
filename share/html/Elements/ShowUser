@@ -56,7 +56,7 @@ unless ( $m->comp_exists( $comp ) ) {
         'Either system config or user #'
         . $session{'CurrentUser'}->id
         . ' picked UsernameFormat '. $style
-        . ', but '. $comp . "doesn't exist";
+        . ', but '. $comp . "doesn't exist"
     );
     return $m->comp('/Elements/ShowUserConcise',
         User => $User, Address => $Address,
