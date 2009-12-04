@@ -144,7 +144,7 @@ sub available_values {
         return \@users;
     }
     else {
-        my $groups = RT::Model::GroupCollection;
+        my $groups = RT::Model::GroupCollection->new;
         $groups->limit_to_user_defined_groups;
         $groups->order_by( { column => 'name', order => 'ASC' } );
         my @groups;
