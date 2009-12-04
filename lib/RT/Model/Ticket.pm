@@ -901,6 +901,19 @@ sub canonicalize_told {
     return RT::DateTime->new_unset;
 }
 
+sub _canonicalize_priority {
+    my $self   = shift;
+    my $method = shift;
+    my $value  = shift;
+    my $other  = shift;
+
+    return $value if defined $value;
+
+    my $queue_obj = RT::Model::Queue->load($self->queue_id || $other->{queue});
+
+    return $queue_obj->$method || 0;
+}
+
 =head2 canonicalize_initial_priority
 
 Fallback to the queue's initial priority if available, or 0.
@@ -908,15 +921,8 @@ Fallback to the queue's initial priority if available, or 0.
 =cut
 
 sub canonicalize_initial_priority {
-    my $self    = shift;
-    my $initial = shift;
-    my $other   = shift;
-
-    return $initial if defined $initial;
-
-    my $queue_obj = RT::Model::Queue->load($self->queue_id || $other->{queue});
-
-    return $queue_obj->initial_priority || 0;
+    my $self = shift;
+    $self->_canonicalize_priority('initial_priority', @_);
 }
 
 =head2 canonicalize_final_priority
@@ -926,15 +932,8 @@ Fallback to the queue's final priority if available, or 0.
 =cut
 
 sub canonicalize_final_priority {
-    my $self  = shift;
-    my $final = shift;
-    my $other = shift;
-
-    return $final if defined $final;
-
-    my $queue_obj = RT::Model::Queue->load($self->queue_id || $other->{queue});
-
-    return $queue_obj->final_priority || 0;
+    my $self = shift;
+    $self->_canonicalize_priority('final_priority', @_);
 }
 
 =head2 canonicalize_priority
