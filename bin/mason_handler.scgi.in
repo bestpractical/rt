@@ -56,18 +56,13 @@ require (dirname(__FILE__) . '/webmux.pl');
 
 require CGI;
 
-RT::Init();
-$Handler ||= RT::Interface::Web::Handler->new(
-    RT->Config->Get('MasonParameters')
-);
-
-
 my $cgi = CGI->new;
 if ( ( !$Handler->interp->comp_exists( $cgi->path_info ) )
     && ( $Handler->interp->comp_exists( $cgi->path_info . "/index.html" ) ) ) {
     $cgi->path_info( $cgi->path_info . "/index.html" );
 }
 
+RT::ConnectToDatabase();
 $Handler->handle_cgi_object($cgi);
 RT::Interface::Web::Handler->CleanupRequest();
 1;

@@ -46,22 +46,15 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
-package RT::Mason;
-
 use strict;
-use vars '$Handler';
-use File::Basename;
+use warnings;
+no warnings qw(once);
 
-require (dirname(__FILE__) . '/webmux.pl');
+use File::Basename;
+require (dirname(__FILE__) .'/webmux.pl');
 
 # Enter CGI::Fast mode, which should also work as a vanilla CGI script.
 require CGI::Fast;
-
-RT::Init();
-$Handler ||= RT::Interface::Web::Handler->new(
-    RT->Config->Get('MasonParameters')
-);
-
 
 while ( my $cgi = CGI::Fast->new ) {
     # the whole point of fastcgi requires the env to get reset here..
@@ -75,12 +68,16 @@ while ( my $cgi = CGI::Fast->new ) {
     Module::Refresh->refresh if RT->Config->Get('DevelMode');
     RT::ConnectToDatabase();
 
-    if ( ( !$Handler->interp->comp_exists( $cgi->path_info ) )
-        && ( $Handler->interp->comp_exists( $cgi->path_info . "/index.html" ) ) ) {
+    my $interp = $RT::Mason::Handler->interp;
+    if (
+        !$interp->comp_exists( $cgi->path_info )
+        && $interp->comp_exists( $cgi->path_info . "/index.html" )
+    ) {
         $cgi->path_info( $cgi->path_info . "/index.html" );
     }
 
-    eval { $Handler->handle_cgi_object($cgi); };
+    local $@;
+    eval { $RT::Mason::Handler->handle_cgi_object($cgi); };
     if ($@) {
         $RT::Logger->crit($@);
     }

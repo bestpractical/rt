@@ -1,11 +1,11 @@
 ServerRoot %%SERVER_ROOT%%
 PidFile %%PID_FILE%%
+LockFile %%LOCK_FILE%%
 ServerAdmin root@localhost
 
 %%LOAD_MODULES%%
 
-TypesConfig /etc/mime.types
-FastCgiIpcDir /tmp
+FastCgiIpcDir %%TMP_DIR%%
 
 <IfModule !mpm_netware_module>
 <IfModule !mpm_winnt_module>
