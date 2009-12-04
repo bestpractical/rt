@@ -132,15 +132,15 @@ private template 'rights' => sub {
     };
 };
 
-template 'user_rights' => page { title => _('Modify user rights') } content {
+template 'user_rights' => page { title => _('Modify User Rights') } content {
     show( 'rights', 'user' );
 };
 
-template 'group_rights' => page { title => _('Modify group rights') } content {
+template 'group_rights' => page { title => _('Modify Group Rights') } content {
     show( 'rights', 'group' );
 };
 
-template 'people' => page { title => _('Modify people') } content {
+template 'people' => page { title => _('Modify People') } content {
     my $self = shift;
     my $queue = $self->queue;
     return unless $queue;
@@ -159,7 +159,7 @@ template 'people' => page { title => _('Modify people') } content {
     };
 };
 
-template 'ticket_custom_fields' => page { title => _('Modify people') } content {
+template 'ticket_custom_fields' => page { title => _('Select Ticket CustomFields') } content {
     my $self  = shift;
     my $queue = $self->queue;
     return unless $queue;
