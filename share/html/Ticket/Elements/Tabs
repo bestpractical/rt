@@ -75,11 +75,13 @@ if ($Ticket) {
 
         # Don't display prev links if we're on the first ticket
         if ( $item_map->{ $Ticket->Id }->{prev} ) {
-            $searchtabs->{'_a'} = {
-                class => "nav",
-                path  => "Ticket/Display.html?id=" . $item_map->{first},
-                title => '<< ' . loc('First')
-            };
+            if ( $item_map->{first} ) {
+                $searchtabs->{'_a'} = {
+                    class => "nav",
+                    path  => "Ticket/Display.html?id=" . $item_map->{first},
+                    title => '<< ' . loc('First')
+                };
+            }
             $searchtabs->{"_b"} = {
                 class => "nav",
                 path  => "Ticket/Display.html?id="
@@ -96,11 +98,13 @@ if ($Ticket) {
                     . $item_map->{ $Ticket->Id }->{next},
                 title => loc('Next') . ' >'
             };
-            $searchtabs->{'e'} = {
-                class => "nav",
-                path  => "Ticket/Display.html?id=" . $item_map->{last},
-                title => loc('Last') . ' >>'
-            };
+            if ( $item_map->{last} ) {
+                $searchtabs->{'e'} = {
+                    class => "nav",
+                    path  => "Ticket/Display.html?id=" . $item_map->{last},
+                    title => loc('Last') . ' >>'
+                };
+            }
         }
     }
 

@@ -2705,18 +2705,40 @@ Returns a reference to the set of all items found in this search
 sub ItemsArrayRef {
     my $self = shift;
 
-    unless ( $self->{'items_array'} ) {
+    return $self->{'items_array'} if $self->{'items_array'};
 
-        my $placeholder = $self->_ItemsCounter;
-        $self->GotoFirstItem();
-        while ( my $item = $self->Next ) {
-            push( @{ $self->{'items_array'} }, $item );
-        }
-        $self->GotoItem($placeholder);
-        $self->{'items_array'}
-            = $self->ItemsOrderBy( $self->{'items_array'} );
+    my $placeholder = $self->_ItemsCounter;
+    $self->GotoFirstItem();
+    while ( my $item = $self->Next ) {
+        push( @{ $self->{'items_array'} }, $item );
     }
-    return ( $self->{'items_array'} );
+    $self->GotoItem($placeholder);
+    $self->{'items_array'}
+        = $self->ItemsOrderBy( $self->{'items_array'} );
+
+    return $self->{'items_array'};
+}
+
+sub ItemsArrayRefWindow {
+    my $self = shift;
+    my $window = shift;
+
+    my @old = ($self->_ItemsCounter, $self->RowsPerPage, $self->FirstRow+1);
+
+    $self->RowsPerPage( $window );
+    $self->FirstRow(1);
+    $self->GotoFirstItem;
+
+    my @res;
+    while ( my $item = $self->Next ) {
+        push @res, $item;
+    }
+
+    $self->RowsPerPage( $old[1] );
+    $self->FirstRow( $old[2] );
+    $self->GotoItem( $old[0] );
+
+    return \@res;
 }
 
 # }}}
@@ -3230,47 +3252,61 @@ sub _ProcessRestrictions {
 
 =head2 _BuildItemMap
 
-    # Build up a map of first/last/next/prev items, so that we can display search nav quickly
+Build up a L</ItemMap> of first/last/next/prev items, so that we can
+display search nav quickly.
 
 =cut
 
 sub _BuildItemMap {
     my $self = shift;
 
-    my $items = $self->ItemsArrayRef;
-    my $prev  = 0;
+    my $window = RT->Config->Get('TicketsItemMapSize');
 
-    delete $self->{'item_map'};
-    if ( $items->[0] ) {
-        $self->{'item_map'}->{'first'} = $items->[0]->EffectiveId;
-        while ( my $item = shift @$items ) {
-            my $id = $item->EffectiveId;
-            $self->{'item_map'}->{$id}->{'defined'} = 1;
-            $self->{'item_map'}->{$id}->{prev}      = $prev;
-            $self->{'item_map'}->{$id}->{next}      = $items->[0]->EffectiveId
-                if ( $items->[0] );
-            $prev = $id;
-        }
-        $self->{'item_map'}->{'last'} = $prev;
+    $self->{'item_map'} = {};
+
+    my $items = $self->ItemsArrayRefWindow( $window );
+    return unless $items && @$items;
+
+    my $prev = 0;
+    $self->{'item_map'}{'first'} = $items->[0]->EffectiveId;
+    for ( my $i = 0; $i < @$items; $i++ ) {
+        my $item = $items->[$i];
+        my $id = $item->EffectiveId;
+        $self->{'item_map'}{$id}{'defined'} = 1;
+        $self->{'item_map'}{$id}{'prev'}    = $prev;
+        $self->{'item_map'}{$id}{'next'}    = $items->[$i+1]->EffectiveId
+            if $items->[$i+1];
+        $prev = $id;
     }
+    $self->{'item_map'}{'last'} = $prev
+        if !$window || @$items < $window;
 }
 
 =head2 ItemMap
 
-Returns an a map of all items found by this search. The map is of the form
+Returns an a map of all items found by this search. The map is a hash
+of the form:
 
-$ItemMap->{'first'} = first ticketid found
-$ItemMap->{'last'} = last ticketid found
-$ItemMap->{$id}->{prev} = the ticket id found before $id
-$ItemMap->{$id}->{next} = the ticket id found after $id
+    {
+        first => <first ticket id found>,
+        last => <last ticket id found or undef>,
+
+        <ticket id> => {
+            prev => <the ticket id found before>,
+            next => <the ticket id found after>,
+        },
+        <ticket id> => {
+            prev => ...,
+            next => ...,
+        },
+    }
 
 =cut
 
 sub ItemMap {
     my $self = shift;
-    $self->_BuildItemMap()
-        unless ( $self->{'items_array'} and $self->{'item_map'} );
-    return ( $self->{'item_map'} );
+    $self->_BuildItemMap unless $self->{'item_map'};
+    return $self->{'item_map'};
 }
 
 
@@ -3280,13 +3316,16 @@ sub ItemMap {
 
 =head2 PrepForSerialization
 
-You don't want to serialize a big tickets object, as the {items} hash will be instantly invalid _and_ eat lots of space
+You don't want to serialize a big tickets object, as
+the {items} hash will be instantly invalid _and_ eat
+lots of space
 
 =cut
 
 sub PrepForSerialization {
     my $self = shift;
     delete $self->{'items'};
+    delete $self->{'items_array'};
     $self->RedoSearch();
 }
 
