@@ -54,8 +54,35 @@ use base 'RT::View::CRUD';
 
 use constant page_title      => 'User Management';
 use constant object_type     => 'User';
-use constant display_columns => qw(id name email);
+use constant display_columns => qw(id name real_name email);
 
+use constant edit_columns => qw(name email real_name nickname gecos lang
+  freeform_contact_info
+  organization address1 address2 city state zip country
+  home_phone work_phone mobile_phone pager_phone
+  password comments signature );
+
+# unused columns:
+#  email_encoding web_encoding external_contact_info_id
+#  contact_info_system external_auth_id auth_system 
+#  time_zone
+
+private template view_item_controls  => sub {
+
+    my $self = shift;
+    my $record = shift;
+
+    if ( $record->current_user_can('update') ) {
+        hyperlink(
+            label   => _("Edit"),
+            class   => "editlink",
+            onclick => {
+                popout => $self->fragment_for('update'),
+                args   => { id => $record->id },
+            },
+        );
+    }
+};
 
 # limit to privileged users
 sub _current_collection {
