@@ -64,24 +64,22 @@ sub _current_collection {
     return $c;
 }
 
-=head2 view_field_name
+private template view_item_controls  => sub {
 
-Display each group's name as a hyperlink to the modify page
-
-=cut
-
-sub view_field_name {
     my $self = shift;
-    my %args = @_;
+    my $record = shift;
 
-    $self->view_via_callback(%args, callback => sub {
-        my %args = @_;
+    if ( $record->current_user_can('update') ) {
         hyperlink(
-            label => $args{current_value},
-            url   => "/Admin/Groups/Modify.html?id=$args{id}",
+            label   => _("Edit"),
+            class   => "editlink",
+            onclick => {
+                popout => $self->fragment_for('update'),
+                args   => { id => $record->id },
+            },
         );
-    });
-}
+    }
+};
 
 1;
 
