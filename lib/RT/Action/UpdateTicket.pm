@@ -3,6 +3,16 @@ use strict;
 use warnings;
 use base 'RT::Action::TicketAction', 'Jifty::Action::Record::Update';
 
+sub _valid_statuses {
+    my $self = shift;
+
+    my $record = $self->record;
+    return (
+        $record->status,
+        $record->queue->status_schema->transitions($record->status),
+    );
+}
+
 sub _compute_possible_queues {
     my $self = shift;
 
