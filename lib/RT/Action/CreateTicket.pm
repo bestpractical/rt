@@ -50,7 +50,6 @@ sub after_set_queue {
     $self->SUPER::after_set_queue(@_);
 
     $self->set_valid_statuses($queue);
-    $self->set_valid_owners($queue);
     $self->setup_gnupg($queue);
 
     $self->add_role_group_parameter(
@@ -139,38 +138,6 @@ sub set_valid_statuses {
 
     my @valid_statuses = $queue->status_schema->initial;
     $self->fill_parameter(status => valid_values => \@valid_statuses);
-}
-
-sub set_valid_owners {
-    my $self  = shift;
-    my $queue = shift;
-
-    my $isSU = Jifty->web->current_user->has_right(
-        right  => 'SuperUser',
-        object => RT->system,
-    );
-
-    my $users = RT::Model::UserCollection->new;
-    $users->who_have_right(
-        right                 => 'OwnTicket',
-        object                => $queue,
-        include_system_rights => 1,
-        include_superusers    => $isSU,
-    );
-
-    my %user_uniq_hash;
-    while (my $user = $users->next) {
-        $user_uniq_hash{ $user->id } = $user;
-    }
-
-    # delete nobody here, so we can make them first later
-    delete $user_uniq_hash{RT->nobody->id};
-
-    my @valid_owners = sort { uc( $a->name ) cmp uc( $b->name ) }
-                       values %user_uniq_hash;
-    unshift @valid_owners, RT->nobody;
-
-    $self->fill_parameter(owner => valid_values => [ map { $_->id } @valid_owners ]);
 }
 
 sub setup_gnupg {
