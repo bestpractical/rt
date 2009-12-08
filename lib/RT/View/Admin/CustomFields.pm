@@ -54,8 +54,26 @@ use base 'RT::View::CRUD';
 
 use constant page_title      => 'Custom Field Management';
 use constant object_type     => 'CustomField';
-use constant display_columns => qw(name type);
+use constant display_columns =>
+  qw(id name description type lookup_type max_values pattern
+  sort_order repeated disabled );
 
+private template view_item_controls  => sub {
+
+    my $self = shift;
+    my $record = shift;
+
+    if ( $record->current_user_can('update') ) {
+        hyperlink(
+            label   => _("Edit"),
+            class   => "editlink",
+            onclick => {
+                popout => $self->fragment_for('update'),
+                args   => { id => $record->id },
+            },
+        );
+    }
+};
 
 1;
 
