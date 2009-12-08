@@ -61,19 +61,24 @@ sub table {'CustomFields'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
 
-    column name       => max_length is 200, type is 'varchar(200)', default is '';
-    column type       => max_length is 200, type is 'varchar(200)', default is '';
-    column max_values => max_length is 11,  type is 'int',          default is 0;
+    column name       => max_length is 200, type is 'varchar(200)',
+           display_length is 15, default is '';
+    column type       => max_length is 200, type is 'varchar(200)',
+           display_length is 15, default is '';
+    column max_values => max_length is 11, type is 'int', display_length is 5,
+           default is 0;
     column pattern    => type is 'text',    default is '';
-    column repeated   => max_length is 6,   type is 'smallint',     default is '0';
+    column repeated   => max_length is 6,   type is 'smallint', render as 'Checkbox', default is '0';
     column
-        description => max_length is 255,
+        description => max_length is 255, display_length is 60,
         type is 'varchar(255)', default is '';
-    column sort_order => max_length is 11, type is 'int', default is '0';
+    column sort_order => max_length is 11, type is 'int', display_length is 5,
+           default is '0';
     column
-        lookup_type => max_length is 255,
+        lookup_type => max_length is 255, display_length is 60,
         type is 'varchar(255)', default is '';
-    column disabled        => max_length is 6, type is 'smallint', default is '0';
+    column disabled        => max_length is 6, type is 'smallint', render as
+        'Checkbox', default is '0';
 };
 
 use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
