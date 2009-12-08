@@ -1,10 +1,7 @@
 package RT::Action::CreateTicket;
 use strict;
 use warnings;
-use base 'RT::Action::QueueBased', 'RT::Action::WithCustomFields', 'Jifty::Action::Record::Create';
-
-use constant record_class => 'RT::Model::Ticket';
-use constant report_detailed_messages => 1;
+use base 'RT::Action::TicketAction', 'Jifty::Action::Record::Create';
 
 use Jifty::Param::Schema;
 use Jifty::Action schema {
