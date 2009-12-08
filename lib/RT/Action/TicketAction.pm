@@ -11,7 +11,16 @@ sub after_set_queue {
     my $queue = shift;
     $self->SUPER::after_set_queue($queue, @_);
 
+    $self->set_valid_statuses($queue);
     $self->set_valid_owners($queue);
+}
+
+sub set_valid_statuses {
+    my $self  = shift;
+    my $queue = shift;
+
+    my @valid_statuses = $self->_valid_statuses($queue);
+    $self->fill_parameter(status => valid_values => \@valid_statuses);
 }
 
 sub set_valid_owners {

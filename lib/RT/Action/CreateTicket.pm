@@ -49,7 +49,6 @@ sub after_set_queue {
     my $queue = shift;
     $self->SUPER::after_set_queue($queue, @_);
 
-    $self->set_valid_statuses($queue);
     $self->setup_gnupg($queue);
 
     $self->add_role_group_parameter(
@@ -132,12 +131,10 @@ sub after_set_queue {
     $self->set_final_priority($queue);
 }
 
-sub set_valid_statuses {
+sub _valid_statuses {
     my $self  = shift;
     my $queue = shift;
-
-    my @valid_statuses = $queue->status_schema->initial;
-    $self->fill_parameter(status => valid_values => \@valid_statuses);
+    return $queue->status_schema->initial;
 }
 
 sub setup_gnupg {
