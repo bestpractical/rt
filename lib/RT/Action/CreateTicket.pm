@@ -312,13 +312,5 @@ __PACKAGE__->_add_parameter_type(
     },
 );
 
-__PACKAGE__->_add_parameter_type(
-    name => 'ticket_custom_field',
-);
-
-__PACKAGE__->_add_parameter_type(
-    name => 'ticket_transaction_custom_field',
-);
-
 1;
 
