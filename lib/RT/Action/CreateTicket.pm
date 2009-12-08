@@ -69,31 +69,6 @@ sub after_set_queue {
         hints => _('(Sends a carbon-copy of this update to a comma-delimited list of administrative email addresses. These people <strong>will</strong> receive future updates.)'),
     );
 
-    $self->add_duration_parameter(
-        name  => 'time_estimated',
-        label => _('Time Estimated'),
-    );
-
-    $self->add_duration_parameter(
-        name  => 'time_worked',
-        label => _('Time Worked'),
-    );
-
-    $self->add_duration_parameter(
-        name  => 'time_left',
-        label => _('Time Left'),
-    );
-
-    $self->add_datetime_parameter(
-        name  => 'starts',
-        label => _('Starts'),
-    );
-
-    $self->add_datetime_parameter(
-        name  => 'due',
-        label => _('Due'),
-    );
-
     $self->add_link_parameter(
         name  => 'depends_on',
         label => _('Depends on'),
@@ -251,22 +226,6 @@ __PACKAGE__->_add_parameter_type(
     defaults => {
         render_as      => 'text',
         display_length => 40,
-    },
-);
-
-__PACKAGE__->_add_parameter_type(
-    name     => 'duration',
-    defaults => {
-        render_as      => 'text', # ideally would be Duration
-        display_length => 3,
-    },
-);
-
-__PACKAGE__->_add_parameter_type(
-    name     => 'datetime',
-    defaults => {
-        render_as      => 'DateTime',
-        display_length => 16,
     },
 );
 

@@ -16,6 +16,31 @@ sub after_set_queue {
 
     $self->add_ticket_custom_fields($queue);
     $self->add_ticket_transaction_custom_fields($queue);
+
+    $self->add_duration_parameter(
+        name  => 'time_estimated',
+        label => _('Time Estimated'),
+    );
+
+    $self->add_duration_parameter(
+        name  => 'time_worked',
+        label => _('Time Worked'),
+    );
+
+    $self->add_duration_parameter(
+        name  => 'time_left',
+        label => _('Time Left'),
+    );
+
+    $self->add_datetime_parameter(
+        name  => 'starts',
+        label => _('Starts'),
+    );
+
+    $self->add_datetime_parameter(
+        name  => 'due',
+        label => _('Due'),
+    );
 }
 
 sub set_valid_statuses {
@@ -120,6 +145,22 @@ __PACKAGE__->_add_parameter_type(
 
 __PACKAGE__->_add_parameter_type(
     name => 'ticket_transaction_custom_field',
+);
+
+__PACKAGE__->_add_parameter_type(
+    name     => 'duration',
+    defaults => {
+        render_as      => 'text', # ideally would be Duration
+        display_length => 3,
+    },
+);
+
+__PACKAGE__->_add_parameter_type(
+    name     => 'datetime',
+    defaults => {
+        render_as      => 'DateTime',
+        display_length => 16,
+    },
 );
 
 1;
