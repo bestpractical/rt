@@ -246,40 +246,6 @@ sub report_success {
     $self->result->message(_("Created ticket #%1 in queue %2", $id, $queue));
 }
 
-sub _add_parameter_type {
-    my $class = shift;
-    my %args  = @_;
-
-    my $name       = $args{name};
-    my $key        = $args{key} || "_${name}_parameters";
-    my $add_method = $args{add_method} || "add_${name}_parameter";
-    my $get_method = $args{get_method} || "${name}_parameters";
-    my %defaults   = %{ $args{defaults} || {} };
-
-    no strict 'refs';
-
-    *{__PACKAGE__."::$get_method"} = sub {
-        use strict 'refs';
-        my $self = shift;
-        return @{ $self->{$key} || [] };
-    };
-
-    *{__PACKAGE__."::$add_method"} = sub {
-        use strict 'refs';
-        my $self = shift;
-        my %args = @_;
-
-        my $parameter = delete $args{name};
-
-        push @{ $self->{$key} }, $parameter;
-
-        $self->fill_parameter($parameter => (
-            %defaults,
-            %args,
-        ));
-    };
-}
-
 __PACKAGE__->_add_parameter_type(
     name     => 'role_group',
     defaults => {
