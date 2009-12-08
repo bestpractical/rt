@@ -13,6 +13,9 @@ sub after_set_queue {
 
     $self->set_valid_statuses($queue);
     $self->set_valid_owners($queue);
+
+    $self->add_ticket_custom_fields($queue);
+    $self->add_ticket_transaction_custom_fields($queue);
 }
 
 sub set_valid_statuses {
@@ -53,6 +56,28 @@ sub set_valid_owners {
     unshift @valid_owners, RT->nobody;
 
     $self->fill_parameter(owner => valid_values => [ map { $_->id } @valid_owners ]);
+}
+
+sub add_ticket_custom_fields {
+    my $self  = shift;
+    my $queue = shift;
+
+    my $cfs = $queue->ticket_custom_fields;
+    $self->_add_custom_fields(
+        cfs    => $cfs,
+        method => 'add_ticket_custom_field_parameter',
+    );
+}
+
+sub add_ticket_transaction_custom_fields {
+    my $self  = shift;
+    my $queue = shift;
+
+    my $cfs = $queue->ticket_transaction_custom_fields;
+    $self->_add_custom_fields(
+        cfs    => $cfs,
+        method => 'add_ticket_transaction_custom_field_parameter',
+    );
 }
 
 1;

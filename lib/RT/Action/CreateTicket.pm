@@ -124,9 +124,6 @@ sub after_set_queue {
         label => _('Referred to by'),
     );
 
-    $self->add_ticket_custom_fields($queue);
-    $self->add_ticket_transaction_custom_fields($queue);
-
     $self->set_initial_priority($queue);
     $self->set_final_priority($queue);
 }
@@ -247,28 +244,6 @@ sub report_success {
     my $id = $self->record->id;
     my $queue = $self->record->queue->name;
     $self->result->message(_("Created ticket #%1 in queue %2", $id, $queue));
-}
-
-sub add_ticket_custom_fields {
-    my $self  = shift;
-    my $queue = shift;
-
-    my $cfs = $queue->ticket_custom_fields;
-    $self->_add_custom_fields(
-        cfs    => $cfs,
-        method => 'add_ticket_custom_field_parameter',
-    );
-}
-
-sub add_ticket_transaction_custom_fields {
-    my $self  = shift;
-    my $queue = shift;
-
-    my $cfs = $queue->ticket_transaction_custom_fields;
-    $self->_add_custom_fields(
-        cfs    => $cfs,
-        method => 'add_ticket_transaction_custom_field_parameter',
-    );
 }
 
 sub _add_parameter_type {
