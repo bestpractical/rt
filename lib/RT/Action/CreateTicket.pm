@@ -47,7 +47,7 @@ use Jifty::Action schema {
 sub after_set_queue {
     my $self  = shift;
     my $queue = shift;
-    $self->SUPER::after_set_queue(@_);
+    $self->SUPER::after_set_queue($queue, @_);
 
     $self->set_valid_statuses($queue);
     $self->setup_gnupg($queue);
