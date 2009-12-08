@@ -63,8 +63,24 @@ use Jifty::DBI::Record schema {
 
     column name       => max_length is 200, type is 'varchar(200)',
            display_length is 15, default is '';
-    column type       => max_length is 200, type is 'varchar(200)',
-           display_length is 15, default is '';
+    column type => max_length is 200, type is 'varchar(200)',
+      render as 'Select', valid_values are [
+        { value => 'Wikitext', display => _('Fill in wikitext area') },
+        { value => 'Image',    display => _('Upload image(s)') },
+        { value => 'Binary',   display => _('Upload file(s)') },
+        { value => 'Text',     display => _('Fill in text area') },
+        { value => 'Freeform', display => _('Enter value(s)') },
+        {
+            value   => 'Combobox',
+            display => _('Combobox: Select or enter value(s)')
+        },
+        { value => 'Select', display => _('Select value(s)') },
+        {
+            value   => 'Autocomplete',
+            display => _('Enter value(s) with autocompletion')
+        },
+      ],
+      default is 'Freeform';
     column max_values => max_length is 11, type is 'int', display_length is 5,
            default is 0;
     column pattern    => type is 'text',    default is '';
@@ -74,9 +90,21 @@ use Jifty::DBI::Record schema {
         type is 'varchar(255)', default is '';
     column sort_order => max_length is 11, type is 'int', display_length is 5,
            default is '0';
-    column
-        lookup_type => max_length is 255, display_length is 60,
-        type is 'varchar(255)', default is '';
+    column lookup_type => max_length is 255,
+      type is 'varchar(255)', render as 'Select', valid_values are [
+        { display => _('Groups'), value => 'RT::Model::Group' },
+        { display => _('Queues'), value => 'RT::Model::Queue' },
+        { display => _('Users'),  value => 'RT::Model::User' },
+        {
+            display => _('Tickets'),
+            value   => 'RT::Model::Queue-RT::Model::Ticket'
+        },
+        {
+            display => _('Ticket Transactions'),
+            value => 'RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction'
+        },
+      ],
+      default is 'RT::Model::Queue-RT::Model::Ticket';
     column disabled        => max_length is 6, type is 'smallint', render as
         'Checkbox', default is '0';
 };
