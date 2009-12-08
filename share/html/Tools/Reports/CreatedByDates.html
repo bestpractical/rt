@@ -76,8 +76,8 @@ $q->LoadByCols(Name => $Queue);
 % if ($Queue|| $CreatedBefore ||$CreatedAfter) {
 % # if we have a queue, do the search
 % if ($Queue) { $query .= " AND Queue = '$Queue'"}
-% if ($CreatedBefore) { $query .= " AND Created < '".$before->ISO."'"; }
-% if ($CreatedAfter) { $query .= " AND Created > '".$after->ISO."'"}
+% if ($CreatedBefore) { $query .= " AND Created < '".$before->ISO(Timezone => 'user') ."'"; }
+% if ($CreatedAfter) { $query .= " AND Created > '".$after->ISO(Timezone => 'user')."'"}
 % my $groupby = 'Status';
 <& /Search/Elements/Chart, Query => $query, PrimaryGroupBy => $groupby &>
 % }
@@ -86,9 +86,9 @@ $q->LoadByCols(Name => $Queue);
 
 <br /><&|/l&>Queue</&>: <& /Elements/SelectQueue, Name => 'Queue', NamedValues => 1, Default => $q->id &>
 <br /><&|/l&>Tickets created after</&>: 
-<& /Elements/SelectDate, Name => 'CreatedAfter', Default => ($CreatedAfter) ? $after->ISO : ''&>
+<& /Elements/SelectDate, Name => 'CreatedAfter', Default => ($CreatedAfter) ?  $after->ISO(Timezone => 'user') : ''&>
 <br /><&|/l&>Tickets created before</&>: 
-<& /Elements/SelectDate, Name => 'CreatedBefore', Default => ($CreatedBefore) ? $before->ISO : ''&>
+<& /Elements/SelectDate, Name => 'CreatedBefore', Default => ($CreatedBefore) ? $before->ISO(Timezone => 'user') : ''&>
 
 <& /Elements/Submit&>
 </form>

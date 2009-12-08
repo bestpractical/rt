@@ -77,8 +77,8 @@ $q->LoadByCols(Name => $Queue);
 % # if we have a queue, do the search
 % $query = "Status = 'resolved'";
 % if ($Queue) { $query .= " AND Queue = '$Queue'"}
-% if ($ResolvedBefore) { $query .= " AND Resolved < '".$before->ISO."'"; }
-% if ($ResolvedAfter) { $query .= " AND Resolved > '".$after->ISO."'"}
+% if ($ResolvedBefore) { $query .= " AND Resolved < '".$before->ISO(Timezone => 'user')."'"; }
+% if ($ResolvedAfter) { $query .= " AND Resolved > '".$after->ISO(Timezone => 'user')."'"}
 % my $groupby = 'Owner';
 <& /Search/Elements/Chart, Query => $query, PrimaryGroupBy => $groupby &>
 % }
@@ -87,9 +87,9 @@ $q->LoadByCols(Name => $Queue);
 
 <br /><&|/l&>Queue</&>: <& /Elements/SelectQueue, Name => 'Queue', NamedValues => 1, Default => $q->id &>
 <br /><&|/l&>Tickets resolved after</&>: 
-<& /Elements/SelectDate, Name => 'ResolvedAfter', Default => ($ResolvedAfter) ? $after->ISO : ''&>
+<& /Elements/SelectDate, Name => 'ResolvedAfter', Default => ($ResolvedAfter) ? $after->ISO(Timezone => 'user') : ''&>
 <br /><&|/l&>Tickets resolved before</&>: 
-<& /Elements/SelectDate, Name => 'ResolvedBefore', Default => ($ResolvedBefore) ? $before->ISO : ''&>
+<& /Elements/SelectDate, Name => 'ResolvedBefore', Default => ($ResolvedBefore) ? $before->ISO(Timezone => 'user') : ''&>
 
 <& /Elements/Submit&>
 </form>
