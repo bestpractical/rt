@@ -60,17 +60,21 @@ sub set_valid_owners {
         object => RT->system,
     );
 
-    my $users = RT::Model::UserCollection->new;
-    $users->who_have_right(
-        right                 => 'OwnTicket',
-        object                => $queue,
-        include_system_rights => 1,
-        include_superusers    => $isSU,
-    );
-
     my %user_uniq_hash;
-    while (my $user = $users->next) {
-        $user_uniq_hash{ $user->id } = $user;
+    for my $object ($self->record, $queue) {
+        next if !$object->id;
+
+        my $users = RT::Model::UserCollection->new;
+        $users->who_have_right(
+            right                 => 'OwnTicket',
+            object                => $object,
+            include_system_rights => 1,
+            include_superusers    => $isSU,
+        );
+
+        while (my $user = $users->next) {
+            $user_uniq_hash{ $user->id } = $user;
+        }
     }
 
     # delete nobody here, so we can make them first later
@@ -80,7 +84,10 @@ sub set_valid_owners {
                        values %user_uniq_hash;
     unshift @valid_owners, RT->nobody;
 
-    $self->fill_parameter(owner => valid_values => [ map { $_->id } @valid_owners ]);
+    $self->fill_parameter(owner => (
+        valid_values => [ map { $_->id } @valid_owners ],
+        default_value => $self->record->owner->id,
+    ));
 }
 
 sub add_ticket_custom_fields {
