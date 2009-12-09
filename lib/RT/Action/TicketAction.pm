@@ -162,6 +162,21 @@ sub _add_parameter_type {
             %args,
         ));
     };
+
+    if (my $shared_canonicalizer = $args{shared_canonicalizer}) {
+        $shared_canonicalizer = "_canonicalize_$name"
+            if $shared_canonicalizer eq '1';
+
+        unless (__PACKAGE__->can("canonicalize_$name")) {
+            *{__PACKAGE__."::canonicalize_$name"} = sub {
+                use strict 'refs';
+                my $self  = shift;
+                my $value = shift;
+
+                return $self->$shared_canonicalizer($value, @_);
+            };
+        }
+    }
 }
 
 sub _canonicalize_duration {
@@ -189,6 +204,7 @@ __PACKAGE__->_add_parameter_type(
         render_as      => 'text', # ideally would be Duration
         display_length => 3,
     },
+    shared_canonicalizer => 1,
 );
 
 __PACKAGE__->_add_parameter_type(
