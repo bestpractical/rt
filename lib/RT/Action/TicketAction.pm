@@ -16,7 +16,8 @@ sub record {
     my $record = shift;
     my $ret = $self->Jifty::Action::Record::record($record, @_);
 
-    $self->set_queue($record->queue);
+    $self->set_queue($record->queue)
+        if $record->queue->id;
 
     return $ret;
 }
