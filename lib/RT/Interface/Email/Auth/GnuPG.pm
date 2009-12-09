@@ -75,13 +75,18 @@ sub GetCurrentUser {
         @_
     );
 
-    $args{'Message'}->head->delete($_)
-        for qw(X-RT-GnuPG-Status X-RT-Incoming-Encrypton
-               X-RT-Incoming-Signature X-RT-Privacy);
+    foreach my $p ( $args{'Message'}->parts_DFS ) {
+        $p->head->delete($_) for qw(
+            X-RT-GnuPG-Status X-RT-Incoming-Encrypton
+            X-RT-Incoming-Signature X-RT-Privacy
+        );
+    }
 
     my $msg = $args{'Message'}->dup;
 
-    my ($status, @res) = VerifyDecrypt( Entity => $args{'Message'} );
+    my ($status, @res) = VerifyDecrypt(
+        Entity => $args{'Message'}, AddStatus => 1,
+    );
     if ( $status && !@res ) {
         $args{'Message'}->head->add(
             'X-RT-Incoming-Encryption' => 'Not encrypted'

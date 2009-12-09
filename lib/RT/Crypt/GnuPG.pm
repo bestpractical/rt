@@ -1026,46 +1026,62 @@ sub FindProtectedParts {
 =cut
 
 sub VerifyDecrypt {
-    my %args = ( Entity => undef, Detach => 1, SetStatus => 1, @_ );
+    my %args = (
+        Entity    => undef,
+        Detach    => 1,
+        SetStatus => 1,
+        AddStatus => 0,
+        @_
+    );
     my @protected = FindProtectedParts( Entity => $args{'Entity'} );
     my @res;
     # XXX: detaching may brake nested signatures
     foreach my $item( grep $_->{'Type'} eq 'signed', @protected ) {
+        my $status_on;
         if ( $item->{'Format'} eq 'RFC3156' ) {
             push @res, { VerifyRFC3156( %$item, SetStatus => $args{'SetStatus'} ) };
             if ( $args{'Detach'} ) {
                 $item->{'Top'}->parts( [ $item->{'Data'} ] );
                 $item->{'Top'}->make_singlepart;
             }
-            $item->{'Top'}->head->set( 'X-RT-GnuPG-Status' => $res[-1]->{'status'} )
-                if $args{'SetStatus'};
+            $status_on = $item->{'Top'};
         } elsif ( $item->{'Format'} eq 'Inline' ) {
             push @res, { VerifyInline( %$item ) };
-            $item->{'Data'}->head->set( 'X-RT-GnuPG-Status' => $res[-1]->{'status'} )
-                if $args{'SetStatus'};
+            $status_on = $item->{'Data'};
         } elsif ( $item->{'Format'} eq 'Attachment' ) {
             push @res, { VerifyAttachment( %$item ) };
             if ( $args{'Detach'} ) {
-                $item->{'Top'}->parts( [ grep "$_" ne $item->{'Signature'}, $item->{'Top'}->parts ] );
+                $item->{'Top'}->parts( [
+                    grep "$_" ne $item->{'Signature'}, $item->{'Top'}->parts
+                ] );
                 $item->{'Top'}->make_singlepart;
             }
-            $item->{'Data'}->head->set( 'X-RT-GnuPG-Status' => $res[-1]->{'status'} )
-                if $args{'SetStatus'};
+            $status_on = $item->{'Data'};
+        }
+        if ( $args{'SetStatus'} || $args{'AddStatus'} ) {
+            my $method = $args{'AddStatus'} ? 'add' : 'set';
+            $status_on->head->$method(
+                'X-RT-GnuPG-Status' => $res[-1]->{'status'}
+            );
         }
     }
     foreach my $item( grep $_->{'Type'} eq 'encrypted', @protected ) {
+        my $status_on;
         if ( $item->{'Format'} eq 'RFC3156' ) {
             push @res, { DecryptRFC3156( %$item ) };
-            $item->{'Top'}->head->set( 'X-RT-GnuPG-Status' => $res[-1]->{'status'} )
-                if $args{'SetStatus'};
+            $status_on = $item->{'Top'};
         } elsif ( $item->{'Format'} eq 'Inline' ) {
             push @res, { DecryptInline( %$item ) };
-            $item->{'Data'}->head->set( 'X-RT-GnuPG-Status' => $res[-1]->{'status'} )
-                if $args{'SetStatus'};
+            $status_on = $item->{'Data'};
         } elsif ( $item->{'Format'} eq 'Attachment' ) {
             push @res, { DecryptAttachment( %$item ) };
-            $item->{'Data'}->head->set( 'X-RT-GnuPG-Status' => $res[-1]->{'status'} )
-                if $args{'SetStatus'};
+            $status_on = $item->{'Data'};
+        }
+        if ( $args{'SetStatus'} || $args{'AddStatus'} ) {
+            my $method = $args{'AddStatus'} ? 'add' : 'set';
+            $status_on->head->$method(
+                'X-RT-GnuPG-Status' => $res[-1]->{'status'}
+            );
         }
     }
     return @res;
