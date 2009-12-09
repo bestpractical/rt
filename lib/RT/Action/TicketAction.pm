@@ -6,6 +6,21 @@ use base 'RT::Action::QueueBased', 'RT::Action::WithCustomFields';
 use constant record_class => 'RT::Model::Ticket';
 use constant report_detailed_messages => 1;
 
+# We can't use SUPER here because TicketAction does not inherit from
+# Jifty::Action::Record, and SUPER is statically determined. Maybe time to
+# switch to roles.
+sub record {
+    my $self = shift;
+    return $self->Jifty::Action::Record::record if @_ == 0; # reader
+
+    my $record = shift;
+    my $ret = $self->Jifty::Action::Record::record($record, @_);
+
+    $self->set_queue($record->queue);
+
+    return $ret;
+}
+
 sub after_set_queue {
     my $self  = shift;
     my $queue = shift;
