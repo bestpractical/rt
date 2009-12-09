@@ -6,6 +6,8 @@ use base 'RT::Action::QueueBased', 'RT::Action::WithCustomFields';
 use constant record_class => 'RT::Model::Ticket';
 use constant report_detailed_messages => 1;
 
+use Time::Duration::Parse;
+
 # We can't use SUPER here because TicketAction does not inherit from
 # Jifty::Action::Record, and SUPER is statically determined. Maybe time to
 # switch to roles.
@@ -160,6 +162,17 @@ sub _add_parameter_type {
             %args,
         ));
     };
+}
+
+sub _canonicalize_duration {
+    my $self  = shift;
+    my $value = shift;
+
+    if (defined $value) {
+        $value = parse_duration($value);
+    }
+
+    return $value;
 }
 
 __PACKAGE__->_add_parameter_type(
