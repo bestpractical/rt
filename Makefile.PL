@@ -29,6 +29,7 @@ requires(
     'Text::Wrapper'              => 0,
     'Time::ParseDate'            => 0,
     'Time::HiRes'                => 0,
+    'Time::Duration::Parse'     => 0,
     'File::Temp'                 => '0.18',
     'Text::Quoted'               => '2.02',
     'Tree::Simple'               => '1.04',
