@@ -142,13 +142,13 @@ sub _add_parameter_type {
 
     no strict 'refs';
 
-    *{__PACKAGE__."::$get_method"} = sub {
+    *{$class."::$get_method"} = sub {
         use strict 'refs';
         my $self = shift;
         return @{ $self->{$key} || [] };
     };
 
-    *{__PACKAGE__."::$add_method"} = sub {
+    *{$class."::$add_method"} = sub {
         use strict 'refs';
         my $self = shift;
         my %args = @_;
@@ -167,8 +167,8 @@ sub _add_parameter_type {
         $shared_canonicalizer = "_canonicalize_$name"
             if $shared_canonicalizer eq '1';
 
-        unless (__PACKAGE__->can("canonicalize_$name")) {
-            *{__PACKAGE__."::canonicalize_$name"} = sub {
+        unless ($class->can("canonicalize_$name")) {
+            *{$class."::canonicalize_$name"} = sub {
                 use strict 'refs';
                 my $self  = shift;
                 my $value = shift;
