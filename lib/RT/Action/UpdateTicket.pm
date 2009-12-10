@@ -3,6 +3,25 @@ use strict;
 use warnings;
 use base 'RT::Action::TicketAction', 'Jifty::Action::Record::Update';
 
+use Jifty::Param::Schema;
+use Jifty::Action schema {
+    param status =>
+        render as 'select',
+        label is _('Status');
+
+    param owner =>
+        render as 'RT::View::Form::Field::SelectUser',
+        # valid_values are queue-specific
+        valid_values are lazy { RT->nobody->id },
+        label is _('Owner');
+
+    param subject =>
+        render as 'text',
+        display_length is 60,
+        max_length is 200,
+        label is _('Subject');
+};
+
 sub _valid_statuses {
     my $self = shift;
 
