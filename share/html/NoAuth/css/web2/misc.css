@@ -45,6 +45,9 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+
+@import "../base/misc.css";
+
 #body.calpopup {
     margin-left: 1em;
     margin-top: 1em;
@@ -71,29 +74,6 @@
     font-size: 1.5em;
 }
 
-div.autocomplete {
-    position: absolute;
-    background-color: white;
-    border: 1px solid #888;
-    margin: 0px;
-    padding: 0px;
-}
-div.autocomplete ul {
-    list-style-type: none;
-    margin: 0px;
-    padding: 0px;
-}
-div.autocomplete ul li.selected {
-    background-color: #0088cc;
-    color: #eee;
-}
-div.autocomplete ul li {
-    list-style-type: none;
-    display: block;
-    margin: 0;
-    padding: 2px;
-}
-
 .comment { 
  padding-left: 0.5em;
  color: #999;
@@ -105,4 +85,3 @@ div.autocomplete ul li {
     margin-top: 1em;
     overflow: auto;
 } 
-

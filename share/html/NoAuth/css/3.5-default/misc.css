@@ -45,14 +45,15 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+
+@import "../base/misc.css";
+
 body {
     font-family: Verdana, sans-serif;
     font-size: 76%;
     margin: 0;
     background-color: white;
 }
-
-.hide, .hidden { display: none !important; }
 
 #body.calpopup {
     margin-left: 2em;
@@ -77,34 +78,9 @@ td {
     padding: 0.1em 0.5em 0.1em 0.5em;
 }
 
-.clear { clear: both; }
-
 ul.action-results {
     margin-top: 0;
     margin-bottom: 0;
-}
-
-div.autocomplete {
-    position: absolute;
-    background-color: white;
-    border: 1px solid #888;
-    margin: 0px;
-    padding: 0px;
-}
-div.autocomplete ul {
-    list-style-type: none;
-    margin: 0px;
-    padding: 0px;
-}
-div.autocomplete ul li.selected {
-    background-color: #0088cc;
-    color: #eee;
-}
-div.autocomplete ul li {
-    list-style-type: none;
-    display: block;
-    margin: 0;
-    padding: 2px;
 }
 
 .shredder-form { line-height: 3em }
@@ -122,4 +98,3 @@ div.autocomplete ul li {
 #shredder-plugin-results input { margin-left: 1em; }
 
 .pod-sequence-C { background-color: #eee }
-

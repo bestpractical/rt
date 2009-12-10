@@ -45,6 +45,9 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+
+@import "../base/misc.css";
+
 .oddline { background: white; }
 .evenline { background: #cecfef; }
 
