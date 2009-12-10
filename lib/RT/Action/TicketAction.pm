@@ -187,8 +187,9 @@ __PACKAGE__->_add_parameter_type(
 __PACKAGE__->_add_parameter_type(
     name     => 'duration',
     defaults => {
-        render_as      => 'text', # ideally would be Duration
-        display_length => 3,
+        render_as          => 'text', # ideally would be Duration
+        display_length     => 3,
+        ajax_canonicalizes => 1,
     },
     canonicalizer => sub {
         my $self  = shift;
