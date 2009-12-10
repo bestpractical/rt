@@ -747,6 +747,20 @@ on '/ticket/create' => run {
     }
 };
 
+on '/ticket/modify' => run {
+    my $action = Jifty->web->request->action('update_ticket');
+    my $id = $action ? $action->argument('id') : get('id');
+    if (!defined($id)) {
+        die "no ticket selected";
+    }
+    else {
+        my $ticket = RT::Model::Ticket->new;
+        $ticket->load($id);
+        set(ticket => $ticket);
+        show '/ticket/modify';
+    }
+};
+
 # Backward compatibility with old RT URLs
 
 before '/NoAuth/Logout.html' => run { redirect '/logout' };

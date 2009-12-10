@@ -59,5 +59,8 @@ alias RT::View::Ticket::Links under '/';
 require RT::View::Ticket::Create;
 alias RT::View::Ticket::Create under '/';
 
+require RT::View::Ticket::Update;
+alias RT::View::Ticket::Update under '/';
+
 1;
 
