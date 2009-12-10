@@ -163,31 +163,17 @@ sub _add_parameter_type {
         ));
     };
 
-    if (my $shared_canonicalizer = $args{shared_canonicalizer}) {
-        $shared_canonicalizer = "_canonicalize_$name"
-            if $shared_canonicalizer eq '1';
-
+    if (my $canonicalizer = $args{canonicalizer}) {
         unless ($class->can("canonicalize_$name")) {
             *{$class."::canonicalize_$name"} = sub {
                 use strict 'refs';
                 my $self  = shift;
                 my $value = shift;
 
-                return $self->$shared_canonicalizer($value, @_);
+                return $self->$canonicalizer($value, @_);
             };
         }
     }
-}
-
-sub _canonicalize_duration {
-    my $self  = shift;
-    my $value = shift;
-
-    if (defined $value) {
-        $value = parse_duration($value);
-    }
-
-    return $value;
 }
 
 __PACKAGE__->_add_parameter_type(
@@ -204,7 +190,16 @@ __PACKAGE__->_add_parameter_type(
         render_as      => 'text', # ideally would be Duration
         display_length => 3,
     },
-    shared_canonicalizer => 1,
+    canonicalizer => sub {
+        my $self  = shift;
+        my $value = shift;
+
+        if (defined $value) {
+            $value = parse_duration($value);
+        }
+
+        return $value;
+    },
 );
 
 __PACKAGE__->_add_parameter_type(
