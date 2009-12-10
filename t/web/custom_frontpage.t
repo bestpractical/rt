@@ -13,7 +13,7 @@ $user_obj->SetName('customer');
 $user_obj->SetPrivileged(1);
 ($ret, $msg) = $user_obj->SetPassword('customer');
 $user_obj->PrincipalObj->GrantRight(Right => 'LoadSavedSearch');
-$user_obj->PrincipalObj->GrantRight(Right => 'EditSavedSearch');
+$user_obj->PrincipalObj->GrantRight(Right => 'EditSavedSearches');
 $user_obj->PrincipalObj->GrantRight(Right => 'CreateSavedSearch');
 $user_obj->PrincipalObj->GrantRight(Right => 'ModifySelf');
 
