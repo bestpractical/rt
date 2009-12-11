@@ -51,6 +51,9 @@ use strict;
 package RT::View::Admin::Global;
 use Jifty::View::Declare -base;
 
+require RT::View::Admin::Global::Templates;
+alias RT::View::Admin::Global::Templates under 'templates/';
+
 template 'system' => page { title => _('Configure RT') } content {
     my $self    = shift;
     my $section = get('section');
