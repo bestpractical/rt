@@ -43,9 +43,9 @@ framework:
     - TestServerWarnings:
         clear_screen: 0
     - Config:
-        config_url: '/Admin/Global/Elements/ConfigJifty'
-        restart_url: '/Admin/Global/Jifty/restart.html'
-        after_restart_url: '/Admin/Global/System.html'
+        config_url: '/admin/global/config_jifty'
+        restart_url: '/admin/global/jifty/restart'
+        after_restart_url: '/admin/global/system'
         wait_seconds: 10
         nav_menu: 0
     - SetupWizard:
