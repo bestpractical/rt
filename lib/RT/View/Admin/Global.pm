@@ -120,5 +120,33 @@ template 'system' => page { title => _('Configure RT') } content {
     }
 }
 
+private template 'rights' => sub {
+    my $self = shift;
+    my $type = shift || 'user';
+
+    my $class   = 'Edit' . ucfirst($type) . 'Rights';
+    my $moniker = 'modify_' . $type . '_rights';
+
+    my $rights = new_action(
+        class   => $class,
+        moniker => $moniker,
+    );
+
+    $rights->object( RT->system );
+
+    with( name => $moniker ), form {
+        render_action($rights);
+        form_submit( label => _('Save') );
+    };
+};
+
+template 'user_rights' => page { title => _('Modify User Rights') } content {
+    show( 'rights', 'user' );
+};
+
+template 'group_rights' => page { title => _('Modify Group Rights') } content {
+    show( 'rights', 'group' );
+};
+
 1;
 
