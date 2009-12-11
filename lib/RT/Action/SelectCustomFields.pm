@@ -25,7 +25,7 @@ sub arguments {
     };
 
     my $global_cfs;
-    unless ( ref $self->object eq 'RT::System' ) {
+    if ( $self->object->id ) {
         $global_cfs = RT::Model::ObjectCustomFieldCollection->new;
         $global_cfs->find_all_rows;
         $global_cfs->limit_to_object_id(0);
@@ -90,18 +90,16 @@ sub take_action {
     return unless $lookup_type;
     $self->lookup_type($lookup_type);
 
-    if ( $object_type eq 'RT::System' ) {
-        $self->object( RT->system );
-    }
-    elsif ( $RT::Model::ACE::OBJECT_TYPES{$object_type} ) {
+    if ( $RT::Model::ACE::OBJECT_TYPES{$object_type} ) {
         my $object    = $object_type->new;
         my $object_id = $self->argument_value('object_id');
-        $object->load($object_id);
-        unless ( $object->id ) {
-            Jifty->log->error("couldn't load $object_type #$object_id");
-            return;
+        if ($object_id) {
+            $object->load($object_id);
+            unless ( $object->id ) {
+                Jifty->log->error("couldn't load $object_type #$object_id");
+                return;
+            }
         }
-
         $self->object($object);
     }
     else {
