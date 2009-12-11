@@ -143,13 +143,88 @@ private template 'rights' => sub {
     };
 };
 
-template 'user_rights' => page { title => _('Modify User Rights') } content {
+template 'user_rights' => page { title => _('Modify Global User Rights') }
+  content {
     show( 'rights', 'user' );
-};
+  };
 
-template 'group_rights' => page { title => _('Modify Group Rights') } content {
+template 'group_rights' => page { title => _('Modify Global Group Rights') }
+  content {
     show( 'rights', 'group' );
-};
+  };
+
+template 'select_custom_fields' =>
+  page { title => _('Select Global Custom Fields') } content {
+    my $self   = shift;
+    my $action = new_action(
+        class   => 'SelectCustomFields',
+        moniker => 'select_cfs',
+    );
+
+    # set it to RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction
+    # to select transaction cfs
+    my $lookup_type = get('lookup_type');
+    if ($lookup_type) {
+        if ( $lookup_type =~ /(Queue|Group|User)/ ) {
+            my $class = 'RT::Model::' . $1;
+            $action->object( $class->new );
+        }
+
+        $action->lookup_type($lookup_type);
+
+        with( name => 'select_cfs' ), form {
+            input {
+                type is 'hidden';
+                name is 'lookup_type';
+                value is $lookup_type;
+            };
+            render_action($action);
+            form_submit( label => _('Save') );
+        };
+    }
+    else {
+        my $tabs = {
+            'RT::Model::User' => {
+                title => _('Users'),
+                text  => _('Select custom fields for all users'),
+            },
+            'RT::Model::Group' => {
+                title => _('Groups'),
+                text  => _('Select custom fields for all user groups'),
+            },
+            'RT::Model::Queue' => {
+                title => _('Queues'),
+                text  => _('Select custom fields for all queues'),
+            },
+
+            'RT::Model::Queue-RT::Model::Ticket' => {
+                title => _('Tickets'),
+                text  => _('Select custom fields for tickets in all queues'),
+            },
+
+            'RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction' => {
+                title => _('Ticket Transactions'),
+                text  => _(
+'Select custom fields for transactions on tickets in all queues'
+                ),
+            },
+        };
+        ul {
+            for my $key ( sort keys %$tabs ) {
+                li {
+                    span {
+                        a {
+                            attr {  href => Jifty->web->request->path
+                                  . '?lookup_type='
+                                  . $key } $tabs->{$key}{title};
+                        }
+                    }
+                    $tabs->{$key}{text};
+                }
+            }
+        }
+    }
+  };
 
 1;
 
