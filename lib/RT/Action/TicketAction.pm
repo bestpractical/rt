@@ -165,13 +165,7 @@ sub _add_parameter_type {
 
     if (my $canonicalizer = $args{canonicalizer}) {
         unless ($class->can("canonicalize_$name")) {
-            *{$class."::canonicalize_$name"} = sub {
-                use strict 'refs';
-                my $self  = shift;
-                my $value = shift;
-
-                return $self->$canonicalizer($value, @_);
-            };
+            *{$class."::canonicalize_$name"} = $canonicalizer;
         }
     }
 }
