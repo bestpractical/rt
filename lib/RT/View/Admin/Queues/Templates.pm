@@ -56,8 +56,8 @@ use constant page_title      => 'Queue Templates Management';
 use constant object_type     => 'Template';
 
 use constant display_columns => qw(id name description type);
-use constant edit_columns => qw(name description type content);
-use constant create_columns => qw(name description type content);
+use constant edit_columns => qw(name description type content queue);
+use constant create_columns => qw(name description type content queue);
 
 private template view_item_controls => sub {
     my $self   = shift;
@@ -82,41 +82,34 @@ sub _current_collection {
     return $collection;    
 }
 
-# overwrote this because we need to set queue info
-private template 'new_item_controls' => sub {
-    my $self          = shift;
-    my $create        = shift;
-    my ($object_type) = ( $self->object_type );
-
-    outs(
-        Jifty->web->form->submit(
-            label   => _('Create'),
-            onclick => [
-                {
-                    submit => {
-                        action    => $create,
-                        arguments => { queue => get('queue') }
-                    }
-                },
-                { refresh_self => 1 },
-                {
-                    delete =>
-                      Jifty->web->qualified_parent_region('no_items_found')
-                },
-                {
-                    element => Jifty->web->current_region->parent->get_element(
-                        'div.crud-list'),
-                    append => $self->fragment_for('view'),
-                    args   => {
-                        object_type => $object_type,
-                        id          => { result_of => $create, name => 'id' },
-                    },
-                },
-            ]
-        )
+sub create_field_queue {
+    my $self   = shift;
+    my %args   = @_;
+    my $action = $args{action};
+    render_param(
+        $action, 'queue',
+        render_as     => 'hidden',
+        default_value => get('queue'),
     );
-};
+}
 
+# overwrote this to set queue info
+private template 'new_item_region' => sub {
+    my $self                  = shift;
+    my $fragment_for_new_item = get('fragment_for_new_item')
+      || $self->fragment_for('new_item');
+    my $object_type = $self->object_type;
+
+    return unless $self->record_class->new->current_user_can('create');
+
+    if ($fragment_for_new_item) {
+        render_region(
+            name     => 'new_item',
+            path     => $fragment_for_new_item,
+            defaults => { object_type => $object_type, queue => get('queue') },
+        );
+    }
+};
 
 1;
 
