@@ -66,5 +66,8 @@ alias RT::View::Admin::CustomFields under 'custom_fields/';
 require RT::View::Admin::Rules;
 alias RT::View::Admin::Rules under 'rules/';
 
+require RT::View::Admin::Global;
+alias RT::View::Admin::Global under 'global/';
+
 1;
 
