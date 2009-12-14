@@ -226,5 +226,21 @@ template 'select_custom_fields' =>
     }
   };
 
+template 'my_rt' => page { title => _('Configure My RT') } content {
+    my $self = shift;
+    my $moniker = 'config_my_rt';
+    my $action = new_action(
+        class   => 'ConfigMyRT',
+        moniker => $moniker,
+    );
+
+    $action->object( RT->system );
+
+    with( name => $moniker ), form {
+        render_action($action);
+        form_submit( label => _('Save') );
+    };
+};
+
 1;
 
