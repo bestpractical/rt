@@ -238,6 +238,35 @@ sub validate_sign_using {
     return $self->validation_ok('sign');
 }
 
+sub validate_encrypt {
+    my $self  = shift;
+    my $crypt = shift;
+
+    return if !$crypt;
+
+    # XXX: this is ugly and broken for multiple recipients
+    my @recipients = map { $self->argument_value($_) }
+                     $self->role_group_parameters;
+
+    my %seen;
+    @recipients = grep !$seen{ lc $_ }++, @recipients;
+
+    RT::Crypt::GnuPG::use_key_for_encryption(
+        map { (/^UseKey-(.*)$/)[0] => $self->argument_value($_) }
+        grep $self->argument_value($_) && /^UseKey-/,
+        keys %{ $self->arguments },
+    );
+
+    my ($ok, @issues) = RT::Crypt::GnuPG::check_recipients( @recipients );
+    push @{ $self->{'GnuPGRecipientsKeyIssues'} ||= [] }, @issues;
+    if ($ok) {
+        return $self->validation_ok('encrypt');
+    }
+    else {
+        return $self->validation_error(encrypt => 'xxx');
+    }
+}
+
 sub select_key_for_encryption {
     my $self    = shift;
     my $email   = shift;
