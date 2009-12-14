@@ -69,6 +69,9 @@ alias RT::View::Admin::Rules under 'rules/';
 require RT::View::Admin::Global;
 alias RT::View::Admin::Global under 'global/';
 
+require RT::View::Admin::Tools;
+alias RT::View::Admin::Tools under 'tools/';
+
 template 'index.html' => page { title => _('RT Administration') } content {
     my $items = {
         A => {
