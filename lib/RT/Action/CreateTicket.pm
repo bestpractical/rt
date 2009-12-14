@@ -6,6 +6,8 @@ use base 'RT::Action::QueueBased', 'RT::Action::WithCustomFields', 'Jifty::Actio
 use constant record_class => 'RT::Model::Ticket';
 use constant report_detailed_messages => 1;
 
+use RT::Crypt::GnuPG;
+
 use Jifty::Param::Schema;
 use Jifty::Action schema {
     param status =>
@@ -241,7 +243,6 @@ sub select_key_for_encryption {
     my $email   = shift;
     my $default = shift;
 
-    require RT::Crypt::GnuPG;
     my %res = RT::Crypt::GnuPG::get_keys_for_encryption($email);
 
     # move the preferred key to the top of the list
