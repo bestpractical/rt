@@ -59,11 +59,9 @@ template 'modify' => page { title => _('Modify a ticket') } content {
     $ticket->load($id);
 
     my $update = new_action(
-        class     => 'UpdateTicket',
-        moniker   => 'modify_ticket',
-        arguments => {
-            record => $ticket,
-        },
+        class   => 'UpdateTicket',
+        moniker => 'modify_ticket',
+        record  => $ticket,
     );
 
     with ( name => 'ticket_modify' ), form {
