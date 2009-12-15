@@ -4,6 +4,7 @@ use warnings;
 package RT::Action::EditWorkflowInterface;
 use base qw/RT::Action Jifty::Action/;
 use RT::Workflow;
+use Scalar::Defer;
 
 __PACKAGE__->mk_accessors('name');
 
@@ -24,7 +25,9 @@ sub arguments {
         my @next = $schema->transitions($from);
         for my $to (@next) {
             $args->{ $from . '___label___' . $to } = {
-                default_value => $schema->transition_label( $from => $to ),
+                default_value => defer {
+                    $schema->transition_label( $from => $to );
+                },
                 label => '',
             };
         }
@@ -34,7 +37,9 @@ sub arguments {
         my @next = $schema->transitions($from);
         for my $to (@next) {
             $args->{ $from . '___action___' . $to } = {
-                default_value    => $schema->transition_action( $from => $to ),
+                default_value => defer {
+                    $schema->transition_action( $from => $to );
+                },
                 render_as        => 'Select',
                 available_values => [
                     {
