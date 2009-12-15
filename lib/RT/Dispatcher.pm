@@ -754,9 +754,7 @@ on '/ticket/modify' => run {
         die "no ticket selected";
     }
     else {
-        my $ticket = RT::Model::Ticket->new;
-        $ticket->load($id);
-        set(ticket => $ticket);
+        set(id => $id);
         show '/ticket/modify';
     }
 };

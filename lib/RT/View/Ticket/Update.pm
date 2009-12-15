@@ -54,7 +54,9 @@ use Jifty::View::Declare -base;
 __PACKAGE__->use_mason_wrapper;
 
 template 'modify' => page { title => _('Modify a ticket') } content {
-    my $ticket = get('ticket');
+    my $id = get('id');
+    my $ticket = RT::Model::Ticket->new;
+    $ticket->load($id);
 
     my $update = new_action(
         class     => 'UpdateTicket',
