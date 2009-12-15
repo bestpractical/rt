@@ -1889,7 +1889,11 @@ sub check_recipients {
     my ( $status, @issues ) = ( 1, () );
 
     my %seen;
-    foreach my $address ( grep !$seen{ lc $_ }++, map $_->address, @recipients ) {
+    my @addresses = grep { !$seen{ lc $_ }++ }
+                    map { ref($_) ? $_->address : $_ }
+                    @recipients;
+
+    foreach my $address (@addresses) {
         my %res = get_keys_for_encryption($address);
         if (   $res{'info'}
             && @{ $res{'info'} } == 1
