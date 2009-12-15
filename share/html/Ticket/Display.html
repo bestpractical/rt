@@ -95,7 +95,8 @@ $collapsed => undef
 
 <%INIT>
 
-$id ||= Jifty->web->response->result('create_ticket')->content('id');
+$id ||= Jifty->web->response->result('create_ticket')->content('id')
+    ||  Jifty->web->response->result('modify_ticket')->content('id');
 
 $m->callback( ticket_obj => $ticket_obj, args_ref => \%ARGS, callback_name => 'Initial' );
 
