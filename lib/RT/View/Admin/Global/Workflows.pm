@@ -64,7 +64,7 @@ template 'localization' => page {
 }
 
 template 'interface' => page {
-    title => _('Transitions Interface'),
+    title => _('Modify Transitions Interface'),
 } content {
     my $self    = shift;
     my $name = get('name');
@@ -150,7 +150,7 @@ template 'interface' => page {
 }
 
 template 'statuses' => page {
-    title => _('Workflow Statuses'),
+    title => _('Modify Workflow Statuses'),
 } content {
     my $self    = shift;
     my $name = get('name');
@@ -164,6 +164,45 @@ template 'statuses' => page {
     with( name => $moniker ), form {
         input { type is 'hidden'; name is 'name'; value is $name };
         render_action($action);
+        form_submit( label => _('Update') );
+    };
+}
+
+template 'transitions' => page {
+    title => _('Modify Transitions'),
+} content {
+    my $self    = shift;
+    my $name = get('name');
+    my $moniker = 'modify_workflow_transitions';
+    my $action = new_action(
+        class   => 'EditWorkflowTransitions',
+        moniker => $moniker,
+    );
+    $action->name( $name );
+    my $schema = RT::Workflow->new->load( $name );
+    my $args = $action->arguments;
+    with( name => $moniker ), form {
+        table {
+            row {
+                th { _('From') };
+                th {
+                    attr { rowspan => scalar $schema->valid + 1 }
+                      outs_raw('&rarr;');
+                };
+                th { _('To (check valid transitions)') };
+            };
+            for my $from ( keys %$args ) {
+                next if $from eq 'name';
+                row {
+                    th { _($from) };
+                    cell {
+                        outs_raw( $action->form_field($from) );
+                    };
+                }
+            }
+        };
+        input { type is 'hidden'; name is 'name'; value is $name };
+        outs_raw( $action->form_field('name') );
         form_submit( label => _('Update') );
     };
 }
