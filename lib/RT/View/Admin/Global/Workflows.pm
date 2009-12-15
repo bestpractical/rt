@@ -149,5 +149,24 @@ template 'interface' => page {
     };
 }
 
+template 'statuses' => page {
+    title => _('Workflow Statuses'),
+} content {
+    my $self    = shift;
+    my $name = get('name');
+    my $moniker = 'modify_workflow_statuses';
+    my $action = new_action(
+        class   => 'EditWorkflowStatuses',
+        moniker => $moniker,
+    );
+    $action->name( $name );
+    my $args = $action->arguments;
+    with( name => $moniker ), form {
+        input { type is 'hidden'; name is 'name'; value is $name };
+        render_action($action);
+        form_submit( label => _('Update') );
+    };
+}
+
 1;
 
