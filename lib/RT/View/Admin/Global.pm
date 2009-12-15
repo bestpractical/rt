@@ -54,6 +54,9 @@ use Jifty::View::Declare -base;
 require RT::View::Admin::Global::Templates;
 alias RT::View::Admin::Global::Templates under 'templates/';
 
+require RT::View::Admin::Global::Workflows;
+alias RT::View::Admin::Global::Workflows under 'workflows/';
+
 template 'system' => page { title => _('Configure RT') } content {
     my $self    = shift;
     my $section = get('section');
