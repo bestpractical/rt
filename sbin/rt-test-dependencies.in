@@ -60,7 +60,7 @@ GetOptions(
     \%args,                               'v|verbose',
     'install',                            'with-MYSQL',
     'with-POSTGRESQL|with-pg|with-pgsql', 'with-SQLITE',
-    'with-ORACLE',                        'with-FASTCGI',
+    'with-ORACLE',                        'with-FASTCGI', 'with-FASTCGI-SERVER',
     'with-SPEEDYCGI',                     'with-MODPERL1',
     'with-MODPERL2',                      'with-DEV',
     'with-STANDALONE',
@@ -172,11 +172,12 @@ The following switches will tell the tool to check for specific dependencies
     --with-oracle       Database interface for Oracle
     --with-sqlite       Database interface and driver for SQLite (unsupported)
 
-    --with-standalone   Libraries needed to support the standalone simple pure perl server
-    --with-fastcgi      Libraries needed to support the fastcgi handler
-    --with-speedycgi    Libraries needed to support the speedycgi handler
-    --with-modperl1     Libraries needed to support the modperl 1 handler
-    --with-modperl2     Libraries needed to support the modperl 2 handler
+    --with-standalone     Libraries needed to support the standalone simple pure perl server
+    --with-fastcgi-server Libraries needed to support the external fastcgi server
+    --with-fastcgi        Libraries needed to support the fastcgi handler
+    --with-speedycgi      Libraries needed to support the speedycgi handler
+    --with-modperl1       Libraries needed to support the modperl 1 handler
+    --with-modperl2       Libraries needed to support the modperl 2 handler
 
     --with-dev          Tools needed for RT development
 
@@ -301,6 +302,16 @@ $deps{'FASTCGI'} = [ text_to_hash( << '.') ];
 CGI 3.38
 FCGI
 CGI::Fast 
+.
+
+$deps{'FASTCGI-SERVER'} = [ text_to_hash( << '.') ];
+CGI 3.38
+CGI::Fast
+FCGI::ProcManager
+File::Basename
+File::Spec
+Getopt::Long
+Pod::Usage
 .
 
 $deps{'SPEEDYCGI'} = [ text_to_hash( << '.') ];

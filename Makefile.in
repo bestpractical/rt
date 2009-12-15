@@ -134,6 +134,8 @@ RT_STANDALONE_SERVER	=	standalone_httpd
 RT_SPEEDYCGI_HANDLER	=	mason_handler.scgi
 # RT_FASTCGI_HANDLER is the mason handler script for FastCGI
 RT_FASTCGI_HANDLER	=	mason_handler.fcgi
+# RT_FASTCGI_SERVER is the FastCGI server
+RT_FASTCGI_SERVER	=	fastcgi_server
 # RT_WIN32_FASTCGI_HANDLER is the mason handler script for FastCGI
 RT_WIN32_FASTCGI_HANDLER	=	mason_handler.svc
 # RT's CLI
@@ -153,6 +155,7 @@ BINARIES		=	$(RT_MODPERL_HANDLER) \
 				$(RT_STANDALONE_SERVER) \
 				$(RT_SPEEDYCGI_HANDLER) \
 				$(RT_FASTCGI_HANDLER) \
+				$(RT_FASTCGI_SERVER) \
 				$(RT_WIN32_FASTCGI_HANDLER)
 
 

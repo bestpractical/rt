@@ -35,14 +35,15 @@ dnl WEB_HANDLER
 AC_ARG_WITH(web-handler,
     AC_HELP_STRING([--with-web-handler=LIST],
 	[comma separated list of web-handlers RT will be able to use.
-         Default is fastcgi when modperl1, modperl2, fastcgi, standalone
-         and speedycgi are valid. To succefuly run RT you need only one.
+         Default is fastcgi when modperl1, modperl2, fastcgi, fastcgi-server,
+         standalone and speedycgi are valid. To succefuly run RT you need
+         only one.
         ]),
     WEB_HANDLER=$withval,
     WEB_HANDLER=fastcgi)
-my_web_handler_test=$($PERL -e 'print "ok" unless grep $_ !~ /^(modperl[12]|fastcgi|speedycgi|standalone)$/i, grep defined && length, split /\s*,\s*/, "$WEB_HANDLER"')
+my_web_handler_test=$($PERL -e "print 'ok' unless grep \$_ !~ /^(modperl[12]|fastcgi(?:-server)?|speedycgi|standalone)\$/i, grep defined && length, split /\s*,\s*/, '$WEB_HANDLER'")
 if test "$my_web_handler_test" != "ok"; then
-	AC_MSG_ERROR([Only modperl1, modperl2, fastcgi, speedycgi and standalone are valid web-handlers])
+	AC_MSG_ERROR([Only modperl1, modperl2, fastcgi, fastcgi-server, speedycgi and standalone are valid web-handlers])
 fi
 AC_SUBST(WEB_HANDLER)
 
@@ -404,6 +405,7 @@ AC_CONFIG_FILES([
                  sbin/rt-validator
                  sbin/rt-email-group-admin
                  sbin/rt-server
+                 bin/fastcgi_server
                  bin/mason_handler.fcgi
                  bin/mason_handler.scgi
                  bin/standalone_httpd
