@@ -3,6 +3,11 @@
 Each template is split into two sections. A block of headers and a body. These
 sections are separated by a blank line.
 
+Templates are processed by the L<Text::Template> module. This module
+allows you to embed arbitrary Perl code into your templates. Text wrapped
+in curly braces, C<{...}> is interpreted as Perl. See L<Text::Template>
+for more information.
+
 =head2 Headers
 
 Your template may specify arbitrary email headers. Each header is a name, a
