@@ -5,6 +5,10 @@ use base 'RT::Action::TicketAction', 'Jifty::Action::Record::Update';
 
 use Jifty::Param::Schema;
 use Jifty::Action schema {
+    param id =>
+        render as 'hidden',
+        is constructor;
+
     param status =>
         render as 'select',
         label is _('Status');
