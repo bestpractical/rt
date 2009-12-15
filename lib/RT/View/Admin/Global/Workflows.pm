@@ -63,6 +63,91 @@ template 'localization' => page {
     };
 }
 
+template 'interface' => page {
+    title => _('Transitions Interface'),
+} content {
+    my $self    = shift;
+    my $name = get('name');
+    my $moniker = 'modify_workflow_interface';
+    my $action = new_action(
+        class   => 'EditWorkflowInterface',
+        moniker => $moniker,
+    );
+    $action->name( $name );
+    my $args = $action->arguments;
+    with( name => $moniker ), form {
+        my (%info);
+
+        for my $arg ( keys %$args ) {
+            next unless $arg =~ /(.*)___(label|action)___(.*)/;
+            $info{$2}{$1} ||= [];
+            push @{ $info{$2}{$1} }, $3;
+        }
+
+        for my $type (qw/label action/) {
+
+            h2 {
+                _(
+                    $type eq 'label'
+                    ? 'Transition Labels'
+                    : 'Ticket Actions on Transitions'
+                );
+            };
+
+            table {
+                row {
+                    th { _('From') };
+                    th { ' ' };
+                    th { _('To') };
+                    th { _( ucfirst $type ) };
+                };
+                for my $from ( sort keys %{ $info{$type} } ) {
+                    row {
+                        cell {
+                            attr { rowspan => scalar @{ $info{$type}{$from} } }
+                              _($from);
+                        };
+                        cell {
+                            attr { rowspan => scalar @{ $info{$type}{$from} } }
+                              outs_raw('&rarr;');
+                        };
+                        for my $to ( @{ $info{$type}{$from} } ) {
+                            if ( $to eq $info{$type}{$from}->[0] ) {
+                                cell { _($to) };
+                                cell {
+                                    outs_raw(
+                                        $action->form_field(
+                                            $from . "___${type}___" . $to
+                                        )
+                                    );
+                                };
+                            }
+                            else {
+                                row {
+                                    cell { _($to) };
+                                    cell {
+                                        outs_raw(
+                                            $action->form_field(
+                                                $from . "___${type}___" . $to
+                                            )
+                                        );
+                                    };
+                                };
+                            }
+                        }
+                    };
+                    row {
+                        cell { attr { colspan => 4 } ' ' };
+                    };
+                }
+            };
+        }
+
+        input { type is 'hidden'; name is 'name'; value is $name };
+        outs_raw( $action->form_field('name') );
+        form_submit( label => _('Update') );
+    };
+}
 
 1;
 
