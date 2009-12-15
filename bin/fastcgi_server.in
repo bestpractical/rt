@@ -46,6 +46,55 @@
 # those contributions and any derivatives thereof.
 # 
 # END BPS TAGGED BLOCK }}}
+
+=head1 NAME
+
+fastcgi_server - external FastCGI server for RT
+
+=head1 USAGE
+
+    # get help
+    fastcgi_server -h
+
+    # start a server using defaults
+    fastcgi_server
+
+    # start server with custom option
+    fastcgi_server --socket /path/to/socket -n 5
+    fastcgi_server --port 12345 -n 5
+
+=head1 DESCRIPTION
+
+This is a forking external FastCGI server for RT, it can be used
+with apache and other servers supporting FastCGI technology.
+
+An advantage is lower memory usage because of sharing memory
+between process. It's easier to use this with nginx and other
+servers that can not maintain pool of fastcgi servers, apache
+can do this.
+
+Disadvantage is that you have to start this server yourself and
+monitor it, web servers wouldn't be able to restart it on crash.
+
+=head1 OPTIONS
+
+=over 4
+
+=item -h, --help - get help
+
+=item -n, --nprocesses - number of processes to start, by default 10
+
+=item -s, --socket - socket path, by default F<RT/var/path/fastcgi.sock>
+usually F</opt/rt3/var/fastcgi.sock>.
+
+=item -p, --port - port to use instead of socket, by default socket is
+used.
+
+=back
+
+=cut
+
+
 use strict;
 use warnings;
 no warnings qw(once);
@@ -55,14 +104,51 @@ use base qw(FCGI::ProcManager);
 
 package main;
 
+use Getopt::Long;
+
+my %opt = (
+    help       => 0,
+    socket     => '',
+    port       => 0,
+    nprocesses => 10,
+);
+
+GetOptions(
+    'h|help!'        => \$opt{'help'},
+    's|socket=s'     => \$opt{'socket'},
+    'p|port=s'       => \$opt{'port'},
+    'n|nprocesses=s' => \$opt{'nprocesses'},
+);
+
+if ( $opt{'help'} ) {
+    require Pod::Usage;
+    Pod::Usage::pod2usage(
+        -message => "",
+        -exitval => $opt{'help'}? 0 : 1,
+        -verbose => 99,
+        -sections => $opt{'help'}? 'NAME|USAGE|DESCRIPTION|OPTIONS' : 'NAME|USAGE',
+    );
+}
+
 use File::Basename;
 require (dirname(__FILE__) .'/webmux.pl');
+
+unless ( $opt{'socket'} && $opt{'port'} ) {
+    require File::Spec;
+    $opt{'socket'} = File::Spec->catfile($RT::VarPath, 'fastcgi.sock');
+}
+
+if ( $opt{'port'} ) {
+    $opt{'socket'} = ':'. $opt{'port'};
+}
+$ENV{'FCGI_SOCKET_PATH'} = $opt{'socket'};
 
 require CGI::Fast;
 
 my $proc_manager = RT::Interface::Web::FCGI::Server->new({
-    n_processes => 10,
+    n_processes => $opt{'nprocesses'} || 10,
 });
+
 $proc_manager->pm_manage();
 
 while ( my $cgi = CGI::Fast->new ) {
