@@ -8,7 +8,7 @@ no warnings 'once';
 
 use Module::Install::Base;
 use base 'Module::Install::Base';
-our $VERSION = '0.24';
+our $VERSION = '0.25';
 
 use FindBin;
 use File::Glob     ();
@@ -50,7 +50,8 @@ sub RTx {
         until ( eval { require RT; $RT::LocalPath } ) {
             warn
                 "Cannot find the location of RT.pm that defines \$RT::LocalPath in: @INC\n";
-            $_ = $self->prompt("Path to your RT.pm:") or exit;
+            $_ = $self->prompt("Path to directory containing your RT.pm:") or exit;
+            $_ =~ s/\/RT\.pm$//;
             push @INC, $_, "$_/rt3/lib", "$_/lib/rt3", "$_/lib";
         }
     }
@@ -188,4 +189,4 @@ sub RTxInit {
 
 __END__
 
-#line 302
+#line 303
