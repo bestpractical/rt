@@ -207,5 +207,45 @@ template 'transitions' => page {
     };
 }
 
+
+template 'index.html' => page {
+    title => _('Modify System Workflows'),
+} content {
+    my @list = RT::Workflow->new->list;
+    table {
+        row { th { _('Schema') };
+            th { _('Statuses') };
+            th { _('Queues') };
+        };
+
+        for my $schema ( @list ) {
+            my $obj = RT::Workflow->load( $schema );
+            row {
+                cell {
+                    a {
+                        attr {  href => RT->config->get('web_path')
+                              . '/admin/global/workflows/summary?name='
+                              . $schema } $schema;
+                    }
+                };
+                cell { join ', ', map _($_), $obj->valid };
+                cell { join ', ', map $_->name,
+                    @{$obj->queues->items_array_ref } };
+            }
+        };
+    };
+
+    my $moniker = 'create_workflow';
+    my $action = new_action(
+        class   => 'CreateWorkflow',
+        moniker => $moniker,
+    );
+    my $args = $action->arguments;
+    with( name => $moniker ), form {
+        render_action($action);
+        form_submit( label => _('Create') );
+    };
+}
+
 1;
 
