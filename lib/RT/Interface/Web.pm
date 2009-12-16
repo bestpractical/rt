@@ -1124,6 +1124,20 @@ sub ProcessUpdateMessage {
         TimeTaken    => $args{ARGSRef}->{'UpdateTimeWorked'}
     );
 
+    my @temp_squelch;
+    foreach my $type (qw(Requestor Cc AdminCc)) {
+        if (grep $_ eq $type || $_ eq ( $type . 's' ), @{ $args{ARGSRef}->{'SkipNotification'} || [] }) {
+            push @temp_squelch, map $_->address, Email::Address->parse( $message_args{$type} );
+            my $watcher_method = $type eq 'Requestor' ? 'Requestors' : $type; # method consistency fail
+            push @temp_squelch, $args{TicketObj}->$watcher_method->MemberEmailAddresses;
+        }
+    }
+
+    if (@temp_squelch) {
+        require RT::Action::SendEmail;
+        RT::Action::SendEmail->SquelchMailTo( RT::Action::SendEmail->SquelchMailTo, @temp_squelch );
+    }
+
     unless ( $args{'ARGSRef'}->{'UpdateIgnoreAddressCheckboxes'} ) {
         foreach my $key ( keys %{ $args{ARGSRef} } ) {
             next unless $key =~ /^Update(Cc|Bcc)-(.*)$/;
