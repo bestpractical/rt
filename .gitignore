@@ -3,3 +3,4 @@ Makefile.old
 MANIFEST.bak
 blib
 pm_to_blib
+t/tmp
