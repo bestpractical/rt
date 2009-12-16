@@ -180,6 +180,7 @@ template 'transitions' => page {
     );
     $action->name( $name );
     my $schema = RT::Workflow->new->load( $name );
+    return unless $schema;
     my $args = $action->arguments;
     with( name => $moniker ), form {
         table {
@@ -253,6 +254,7 @@ template 'summary' => page {
     my $name = get('name');
     return unless $name;
     my $schema = RT::Workflow->new->load( $name );
+    return unless $schema;
     h2 { _('Statuses') };
     unless ( $schema->valid ) {
         p{ _('This schema has no statuses defined, quite useless.') };
@@ -332,18 +334,78 @@ template 'summary' => page {
     show( 'missing_maps', $name );
 }
 
+template 'mappings' => page {
+    title => _('Modify Mapping between Workflows'),
+} content {
+    my @list = RT::Workflow->list;
+    my $from = get('from');
+    my $to   = get('to');
+    p {
+        _(
+'Mapping between schemas is required when you want to move tickets between queues with different schemas.'
+        )
+    };
+
+    unless ( @list > 1 ) {
+        p {
+            _('You need more than one workflow to be able to define mappings.');
+        };
+    }
+    else {
+        show('missing_maps');
+        if ( !$from || !$to ) {
+            my $moniker = 'select_workflow_mappings';
+            my $action  = new_action(
+                class   => 'SelectWorkflowMappings',
+                moniker => $moniker,
+            );
+            with( name => $moniker ), form {
+                render_action($action);
+                form_submit( label => _('Select') );
+            };
+        }
+        else {
+            my $moniker = 'modify_workflow_mappings';
+            my $action  = new_action(
+                class   => 'EditWorkflowMappings',
+                moniker => $moniker,
+            );
+            $action->from( $from );
+            $action->to( $to );
+            my $args = $action->arguments;
+            with( name => $moniker ), form {
+                my @from = grep { /^from_/ } sort keys %$args;
+                my @to = grep { /^to_/ } sort keys %$args;
+                h3 { $from . ' -> ' . $to };
+                outs_raw( $action->form_field($_)) for @from;
+
+                h3 { $to . ' -> ' . $from };
+                outs_raw( $action->form_field($_)) for @to;
+
+                outs_raw( $action->form_field($_)) for qw/from to/;
+                input { type is 'hidden'; name is 'from'; value is $from };
+                input { type is 'hidden'; name is 'to'; value is $to };
+                form_submit( label => _('Update') );
+            };
+        }
+    }
+}
+
 private template 'missing_maps' => sub {
     my $self = shift;
     my $name = shift;
-    my $schema = RT::Workflow->new->load($name);
+    my $schema;
     my @maps = RT::Workflow->no_maps;
-    if ($schema) {
-        my @tmp;
-        while ( my ( $f, $t ) = splice @maps, 0, 2 ) {
-            next unless $f eq $name || $t eq $name;
-            push @tmp, $f, $t;
+    if ($name) {
+        $schema = RT::Workflow->new->load($name);
+        if ($schema) {
+            my @tmp;
+            while ( my ( $f, $t ) = splice @maps, 0, 2 ) {
+                next unless $f eq $name || $t eq $name;
+                push @tmp, $f, $t;
+            }
+            @maps = @tmp;
         }
-        @maps = @tmp;
     }
     return unless @maps;
  
@@ -353,7 +415,7 @@ private template 'missing_maps' => sub {
             li {
                 a {
                     attr { href => RT->config->get('web_path')
-                          . "/admin/global/workflows/mappings?name=$name&from=$f&to=$t"
+                          . "/admin/global/workflows/mappings?from=$f&to=$t&"
                     }
                     outs_raw( $f . '&rarr;' . $t );
                 };
