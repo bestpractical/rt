@@ -195,8 +195,9 @@ __PACKAGE__->_add_parameter_type(
         my $self  = shift;
         my $value = shift;
 
-        if (defined $value) {
-            $value = parse_duration($value);
+        if ($value) {
+            # parse_duration gives seconds, we want minutes
+            $value = int(parse_duration($value) / 60);
         }
 
         return $value;
