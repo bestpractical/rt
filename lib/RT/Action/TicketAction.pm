@@ -151,6 +151,8 @@ sub _add_parameter_type {
         return @{ $self->{$key} || [] };
     };
 
+    my $canonicalizer = $args{canonicalizer};
+
     *{$class."::$add_method"} = sub {
         use strict 'refs';
         my $self = shift;
@@ -164,13 +166,14 @@ sub _add_parameter_type {
             %defaults,
             %args,
         ));
-    };
 
-    if (my $canonicalizer = $args{canonicalizer}) {
-        unless ($class->can("canonicalize_$name")) {
-            *{$class."::canonicalize_$name"} = $canonicalizer;
+        if ($canonicalizer) {
+            unless ($class->can("canonicalize_$parameter")) {
+                no strict 'refs';
+                *{$class."::canonicalize_$parameter"} = $canonicalizer;
+            }
         }
-    }
+    };
 }
 
 __PACKAGE__->_add_parameter_type(
