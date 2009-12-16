@@ -1514,7 +1514,7 @@ sub RecentMessage {
     my $txns = $messages->Join(
         ALIAS1 => 'main',
         FIELD1 => 'transactionid',
-        TABLE2 => 'transactions',
+        TABLE2 => 'Transactions',
         FIELD2 => 'id',
     );
     $messages->Limit(
@@ -1526,7 +1526,7 @@ sub RecentMessage {
         my $tickets = $messages->Join(
             ALIAS1 => $txns,
             FIELD1 => 'objectid',
-            TABLE2 => 'tickets',
+            TABLE2 => 'Tickets',
             FIELD2 => 'id',
         );
         $messages->Limit(
