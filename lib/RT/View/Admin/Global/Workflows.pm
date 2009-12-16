@@ -247,5 +247,120 @@ template 'index.html' => page {
     };
 }
 
+template 'summary' => page {
+    title => _('Workflow Summary'),
+} content {
+    my $name = get('name');
+    return unless $name;
+    my $schema = RT::Workflow->new->load( $name );
+    h2 { _('Statuses') };
+    unless ( $schema->valid ) {
+        p{ _('This schema has no statuses defined, quite useless.') };
+    }
+    else {
+        ul {
+            for my $set( qw(initial active inactive) ) {
+                li { outs(_($set));
+                    ul { 
+                        for my $status( $schema->$set() ) {
+                            li { _($status) };
+                        }
+                    }
+                }
+            }
+        };
+    }
+    my $url_base = RT->config->get('web_path') ."/admin/global/workflows";
+    br {};
+    a {
+        attr { href => $url_base . '/statuses?name=' . $name }
+          _('Modify Statuses');
+    };
+
+    h2 { _('Queues') };
+    my $queues = $schema->queues;
+    ul {
+        while ( my $queue = $queues->next ) {
+            li { $queue->name };
+        }
+    };
+
+    return unless $schema->valid;
+
+    h2 { _('Transitions') };
+    my %transitions = $schema->transitions;
+    ul {
+        for my $from ( $schema->valid ) {
+            li {
+                outs_raw(_($from) . '&rarr');
+                ul {
+                    for my $to ( @{ $transitions{ $from } || [] } ) {
+                        li {
+                            outs( _($to) );
+                            my $label =
+                              $schema->transition_label( $from => $to );
+                            outs( '- ' . _( "labeled '%1'", _($label) ) );
+                            my $action =
+                              $schema->transition_action( $from => $to );
+                            if ( $action eq 'hide' ) {
+                                outs( _("and hidden from UI") );
+                            }
+                            elsif ( $action eq 'comment' ) {
+                                outs( _("and comment page is shown") );
+                            }
+                            elsif ( $action eq 'respond' ) {
+                                outs( _("and correspond page is shown") );
+                            }
+                            else {
+                                outs(
+                                    _("and no additional interface is shown") );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    br {};
+    a { attr { href => $url_base . '/transitions?name=' . $name }
+        _('Modify Transitions') };
+    br {};
+    a { attr { href => $url_base . '/interface?name=' . $name }
+        _('Modify Actions and Labels') };
+
+    show( 'missing_maps', $name );
+}
+
+private template 'missing_maps' => sub {
+    my $self = shift;
+    my $name = shift;
+    my $schema = RT::Workflow->new->load($name);
+    my @maps = RT::Workflow->no_maps;
+    if ($schema) {
+        my @tmp;
+        while ( my ( $f, $t ) = splice @maps, 0, 2 ) {
+            next unless $f eq $name || $t eq $name;
+            push @tmp, $f, $t;
+        }
+        @maps = @tmp;
+    }
+    return unless @maps;
+ 
+    h2 { _("No mappings between following schemas") };
+    ul {
+        while ( my ( $f, $t ) = splice @maps, 0, 2 ) {
+            li {
+                a {
+                    attr { href => RT->config->get('web_path')
+                          . "/admin/global/workflows/mappings?name=$name&from=$f&to=$t"
+                    }
+                    outs_raw( $f . '&rarr;' . $t );
+                };
+            };
+        }
+    };
+};
+
 1;
 
