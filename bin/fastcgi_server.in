@@ -92,6 +92,43 @@ used.
 
 =back
 
+=head1 SERVER CONFIGURATION
+
+=head2 nginx
+
+Below you can find example of minimal config for nginx to run RT
+with this FastCGI server. It's not ideal, but a good enough start.
+
+    worker_processes  1;
+    events { worker_connections  1024; }
+
+    pid         /opt/rt3/var/nginx/server.pid;
+    error_log   /opt/rt3/var/nginx/error.log debug;
+
+    http {
+        access_log  /opt/rt3/var/nginx/access.log;
+
+        server {
+            listen       8080;
+            server_name  localhost;
+
+            location / {
+                root           /opt/rt3/share/html;
+                fastcgi_pass   unix:/opt/rt3/var/fastcgi.sock;
+
+                fastcgi_param  QUERY_STRING       $query_string;
+                fastcgi_param  REQUEST_METHOD     $request_method;
+                fastcgi_param  CONTENT_TYPE       $content_type;
+                fastcgi_param  CONTENT_LENGTH     $content_length;
+                fastcgi_param  PATH_INFO          $fastcgi_script_name;
+            }
+
+            location /NoAuth/images/ {
+                alias   /opt/rt3/share/html/NoAuth/images/;
+            }
+        }
+    }
+
 =cut
 
 
