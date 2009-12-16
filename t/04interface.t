@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use lib 't/lib';
-use RT::FM::Test tests => 55;
+use RT::FM::Test tests => 56;
 
 use RT::CustomField;
 use RT::EmailParser;

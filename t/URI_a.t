@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use lib 't/lib';
-use RT::FM::Test tests => 9;
+use RT::FM::Test tests => 10;
 
 use_ok("RT::URI::a");
 my $uri = RT::URI::a->new($RT::SystemUser);

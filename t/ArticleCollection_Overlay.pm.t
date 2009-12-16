@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use lib 't/lib';
-use RT::FM::Test tests => 32;
+use RT::FM::Test tests => 33;
 
 use_ok 'RT::FM::ArticleCollection';
 use_ok 'RT::FM::ClassCollection';
