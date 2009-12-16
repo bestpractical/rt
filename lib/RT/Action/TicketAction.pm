@@ -21,7 +21,8 @@ sub record {
     $self->set_queue($record->queue)
         if $record->queue->id;
 
-    $self->fill_parameter(id => default => $record->id);
+    $self->fill_parameter(id => default => $record->id)
+        if $record->id;
 
     return $ret;
 }
