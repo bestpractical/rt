@@ -138,6 +138,24 @@ while ( my $link = $depends_on->Next ) {
 </ul>
     </td>
   </tr>
+
+% my $attribs = $Ticket->Attributes;
+% my @internal = map {$_->Content} map {$attribs->Named($_)} grep {/^InternalLinks-/} $attribs->Names;
+% if (@internal) {
+  <tr>
+    <td class="labeltop"><&|/l&>Internal link</&>:</td>
+    <td class="value">
+    <ul>
+% for my $id (@internal) {
+% my $uri = RT::URI->new( $session{'CurrentUser'} );
+% $uri->FromURI($id);
+<li><& ShowLink, URI => $uri &></li>
+% }
+</ul>
+    </td>
+  </tr>
+% }
+
 % # Allow people to add more rows to the table
 % $m->callback( %ARGS );
 </table>
