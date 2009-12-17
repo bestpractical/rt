@@ -1761,11 +1761,11 @@ sub LinkSelfLoops {
         }
         # Regardless, link them now.
         $args{Ticket}->AddAttribute(
-            Name    => "InternalLinks-" . $other->Queue,
+            Name    => "InternalLinks-" . $other->__Value('Queue'),
             Content => $other->Id,
         );
         $other->AddAttribute(
-            Name    => "InternalLinks-" . $args{Ticket}->Queue,
+            Name    => "InternalLinks-" . $args{Ticket}->__Value('Queue'),
             Content => $args{Ticket}->Id,
         );
         # ..and drop the message on the floor.
