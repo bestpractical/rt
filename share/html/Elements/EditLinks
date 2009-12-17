@@ -52,7 +52,7 @@
 
 <table>
   <tr>
-    <td class="labeltop"><&|/l&>Depends on</&>:</td>
+    <td class="labeltop"><& ShowRelationLabel, id => $id, Label => loc('Depends on'), Relation => 'DependsOn' &>:</td>
     <td class="value">
 % while (my $link = $Object->DependsOn->Next) {
       <input type="checkbox" class="checkbox" name="DeleteLink--<%$link->Type%>-<%$link->Target%>" value="1" />
@@ -61,7 +61,7 @@
     </td>
   </tr>
   <tr>
-    <td class="labeltop"><&|/l&>Depended on by</&>:</td>
+    <td class="labeltop"><& ShowRelationLabel, id => $id, Label => loc('Depended on by'), Relation => 'DependedOnBy' &>:</td>
     <td class="value">
 % while (my $link = $Object->DependedOnBy->Next) {
       <input type="checkbox" class="checkbox" name="DeleteLink-<%$link->Base%>-<%$link->Type%>-" value="1" />
@@ -70,7 +70,7 @@
     </td>
   </tr>
   <tr>
-    <td class="labeltop"><&|/l&>Parents</&>:</td>
+    <td class="labeltop"><& ShowRelationLabel, id => $id, Label => loc('Parents'), Relation => 'Parents' &>:</td>
     <td class="value">
 % while (my $link = $Object->MemberOf->Next) {
       <input type="checkbox" class="checkbox" name="DeleteLink--<%$link->Type%>-<%$link->Target%>" value="1" />
@@ -79,7 +79,7 @@
     </td>
   </tr>
   <tr>
-    <td class="labeltop"><&|/l&>Children</&>:</td>
+    <td class="labeltop"><& ShowRelationLabel, id => $id, Label => loc('Children'), Relation => 'Children' &>:</td>
     <td class="value">
 % while (my $link = $Object->Members->Next) {
       <input type="checkbox" class="checkbox" name="DeleteLink-<%$link->Base%>-<%$link->Type%>-" value="1" />
@@ -88,7 +88,7 @@
     </td>
   </tr>
   <tr>
-    <td class="labeltop"><&|/l&>Refers to</&>:</td>
+    <td class="labeltop"><& ShowRelationLabel, id => $id, Label => loc('Refers to'), Relation => 'RefersTo' &>:</td>
     <td class="value">
 % while (my $link = $Object->RefersTo->Next) {
       <input type="checkbox" class="checkbox" name="DeleteLink--<%$link->Type%>-<%$link->Target%>" value="1" />
@@ -97,7 +97,7 @@
     </td>
   </tr>
   <tr>
-    <td class="labeltop"><&|/l&>Referred to by</&>:</td>
+    <td class="labeltop"><& ShowRelationLabel, id => $id, Label => loc('Referred to by'), Relation => 'ReferredToBy' &>:</td>
     <td class="value">
 % while (my $link = $Object->ReferredToBy->Next) {
 % # Skip reminders
@@ -134,27 +134,27 @@
   </tr>
 % }
   <tr>
-    <td class="label"><&|/l&>Depends on</&>:</td>
+    <td class="label"><& ShowRelationLabel, id => $id, Label => loc('Depends on'), Relation => 'DependsOn' &>:</td>
     <td class="entry"><input name="<%$id%>-DependsOn" /></td>
   </tr>
   <tr>
-    <td class="label"><&|/l&>Depended on by</&>:</td>
+    <td class="label"><& ShowRelationLabel, id => $id, Label => loc('Depended on by'), Relation => 'DependedOnBy' &>:</td>
     <td class="entry"><input name="DependsOn-<%$id%>" /></td>
   </tr>
   <tr>
-    <td class="label"><&|/l&>Parents</&>:</td>
+    <td class="label"><& ShowRelationLabel, id => $id, Label => loc('Parents'), Relation => 'Parents' &>:</td>
     <td class="entry"><input name="<%$id%>-MemberOf" /></td>
   </tr>
   <tr>
-    <td class="label"><&|/l&>Children</&>:</td>
+    <td class="label"><& ShowRelationLabel, id => $id, Label => loc('Children'), Relation => 'Children' &>:</td>
     <td class="entry"> <input name="MemberOf-<%$id%>" /></td>
   </tr>
   <tr>
-    <td class="label"><&|/l&>Refers to</&>:</td>
+    <td class="label"><& ShowRelationLabel, id => $id, Label => loc('Refers to'), Relation => 'RefersTo' &>:</td>
     <td class="entry"><input name="<%$id%>-RefersTo" /></td>
   </tr>
   <tr>
-    <td class="label"><&|/l&>Referred to by</&>:</td>
+    <td class="label"><& ShowRelationLabel, id => $id, Label => loc('Referred to by'), Relation => 'ReferredToBy' &>:</td>
     <td class="entry"> <input name="RefersTo-<%$id%>" /></td>
   </tr>
 % $m->callback( CallbackName => 'NewLink' );
