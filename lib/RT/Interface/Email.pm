@@ -1579,7 +1579,7 @@ sub LinkSelfLoops {
 
     my $orig = $txn->Attachments->First->ContentAsMIME;
     $args{Message}->head->set($_, $orig->head->get($_))
-        for qr/Subject Content-Type Content-Transfer-Encoding Content-Length MIME-Version/;
+        for qw/Subject Content-Type Content-Transfer-Encoding Content-Length MIME-Version/;
     $args{Message}->bodyhandle( $orig->bodyhandle );
     $args{Message}->parts( [$orig->parts] );
 
