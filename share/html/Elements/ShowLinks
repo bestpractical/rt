@@ -47,7 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 <table>
   <tr>
-    <td class="labeltop"><% $relation_label->(loc('Depends on'), 'DependsOn') |n %>: (<a href="<%$clone->{'DependsOn-new'}%>"><% loc('Create') %></a>)</td>
+    <td class="labeltop"><& ShowRelationLabel, id => $id, Label => loc('Depends on'), Relation => 'DependsOn' &>: (<a href="<%$clone->{'DependsOn-new'}%>"><% loc('Create') %></a>)</td>
     <td class="value">
 
 <%PERL>
@@ -77,7 +77,7 @@ for my $link ( @{ $Ticket->DependsOn->ItemsArrayRef } ) {
     </td>
   </tr>
   <tr>
-    <td class="labeltop"><% $relation_label->(loc('Depended on by'), 'DependedOnBy') |n %>: (<a href="<%$clone->{'new-DependsOn'}%>"><% loc('Create') %></a>)</td>
+    <td class="labeltop"><& ShowRelationLabel, id => $id, Label => loc('Depended on by'), Relation => 'DependedOnBy' &>: (<a href="<%$clone->{'new-DependsOn'}%>"><% loc('Create') %></a>)</td>
     <td class="value">
 <ul>
 % while (my $Link = $Ticket->DependedOnBy->Next) {
@@ -87,15 +87,15 @@ for my $link ( @{ $Ticket->DependsOn->ItemsArrayRef } ) {
     </td>
   </tr>
   <tr>
-    <td class="labeltop"><% $relation_label->(loc('Parents'), 'Parents') |n %>: (<a href="<%$clone->{'MemberOf-new'}%>"><% loc('Create') %></a>)</td>
+    <td class="labeltop"><& ShowRelationLabel, id => $id, Label => loc('Parents'), Relation => 'Parents' &>: (<a href="<%$clone->{'MemberOf-new'}%>"><% loc('Create') %></a>)</td>
     <td class="value"><& /Ticket/Elements/ShowParents, Ticket => $Ticket &></td>
   </tr>
   <tr>
-    <td class="labeltop"><% $relation_label->(loc('Children'), 'Children') |n %>: (<a href="<%$clone->{'new-MemberOf'}%>"><% loc('Create') %></a>)</td>
+    <td class="labeltop"><& ShowRelationLabel, id => $id, Label => loc('Children'), Relation => 'Children' &>: (<a href="<%$clone->{'new-MemberOf'}%>"><% loc('Create') %></a>)</td>
     <td class="value"><& /Ticket/Elements/ShowMembers, Ticket => $Ticket &></td>
   </tr>
   <tr>
-    <td class="labeltop"><% $relation_label->(loc('Refers to'), 'RefersTo') |n %>: (<a href="<%$clone->{'RefersTo-new'}%>"><% loc('Create') %></a>)</td>
+    <td class="labeltop"><& ShowRelationLabel, id => $id, Label => loc('Refers to'), Relation => 'RefersTo' &>: (<a href="<%$clone->{'RefersTo-new'}%>"><% loc('Create') %></a>)</td>
     <td class="value">
 <ul>
 % while (my $Link = $Ticket->RefersTo->Next) {
@@ -105,7 +105,7 @@ for my $link ( @{ $Ticket->DependsOn->ItemsArrayRef } ) {
     </td>
   </tr>
   <tr>
-    <td class="labeltop"><% $relation_label->(loc('Referred to by'), 'ReferredToBy') |n %>: (<a href="<%$clone->{'new-RefersTo'}%>"><% loc('Create') %></a>)</td>
+    <td class="labeltop"><& ShowRelationLabel, id => $id, Label => loc('Referred to by'), Relation => 'ReferredToBy' &>: (<a href="<%$clone->{'new-RefersTo'}%>"><% loc('Create') %></a>)</td>
     <td class="value">
     <ul>
 % while (my $Link = $Ticket->ReferredToBy->Next) {
@@ -124,14 +124,15 @@ for my $link ( @{ $Ticket->DependsOn->ItemsArrayRef } ) {
 
 <%INIT>
 
+my $id = $Ticket->id;
+
 my $clone = {};
 my $path
     = RT->Config->Get('WebPath')
     . '/Ticket/Create.html?Queue='
     . $Ticket->Queue
     . '&CloneTicket='
-    . $Ticket->id;
-
+    . $id;
 
 for my $relation (
     qw(RefersTo ReferredToBy)) {
@@ -142,31 +143,15 @@ for my $relation (
     $clone->{$field} 
         = $path . "&$field="
         . join( '%20',
-        ( map { $_->$other() } @{ $Ticket->$relation->ItemsArrayRef } ),
-        $Ticket->id );
+        ( map { $_->$other() } @{ $Ticket->$relation->ItemsArrayRef } ), $id );
 }
 
 for my $relation ( qw(MemberOf Members DependsOn DependedOnBy)) {
     my $mode  = $RT::Ticket::LINKTYPEMAP{$relation}->{Mode};
     my $type  = $RT::Ticket::LINKTYPEMAP{$relation}->{Type};
     my $field = $mode eq 'Base' ? 'new-' . $type : $type . '-new';
-    $clone->{$field} = $path . "&$field=". $Ticket->id ;
+    $clone->{$field} = $path . "&$field=$id";
 }
-
-my $relation_label = sub {
-    my $name     = shift;
-    my $relation = shift;
-
-    my $typemap = RT::Ticket->LINKTYPEMAP->{$relation};
-    my $search_mode = $typemap->{Mode};
-    my $search_type = $typemap->{Type};
-    my $search_relation = RT::Ticket->LINKDIRMAP->{$search_type}{$search_mode};
-
-    my $Query = $search_relation . ' = ' . $Ticket->id;
-    my $SearchURL = RT->Config->Get('WebPath') . '/Search/Results.html?' . $m->comp('/Elements/QueryString', Query => $Query);
-
-    return '<a href="' . $SearchURL . '">' . $name . '</a>';
-};
 
 </%INIT>
 
