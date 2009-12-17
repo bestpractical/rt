@@ -36,6 +36,7 @@ config.pld
 *~
 *.swp
 *.swo
+.prove
 
 # RT4 junk
 META.yml
