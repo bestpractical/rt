@@ -353,18 +353,19 @@ template 'mappings' => page {
     }
     else {
         show('missing_maps');
-        if ( !$from || !$to ) {
-            my $moniker = 'select_workflow_mappings';
-            my $action  = new_action(
-                class   => 'SelectWorkflowMappings',
-                moniker => $moniker,
-            );
-            with( name => $moniker ), form {
-                render_action($action);
-                form_submit( label => _('Select') );
+        form {
+            outs(_('From: '));
+            select { attr { name => 'from' };
+                option { attr { value => $_ } _($_) } for @list;
             };
-        }
-        else {
+            outs( _('To: '));
+            select { attr { name => 'to' };
+                option { attr { value => $_ } _($_) } for @list;
+            };
+            form_submit( label => _('Select') );
+        };
+
+        if ( $from && $to ) {
             my $moniker = 'modify_workflow_mappings';
             my $action  = new_action(
                 class   => 'EditWorkflowMappings',
