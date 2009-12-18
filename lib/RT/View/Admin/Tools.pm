@@ -51,7 +51,7 @@ use strict;
 package RT::View::Admin::Tools;
 use Jifty::View::Declare -base;
 
-template 'index.html' => page { title => _('Global Configuration') } content {
+template 'index.html' => page { title => _('System Tools') } content {
     my $items = {
         A => {
             title => _('System Configuration'),
