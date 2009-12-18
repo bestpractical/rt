@@ -57,6 +57,72 @@ alias RT::View::Admin::Global::Templates under 'templates/';
 require RT::View::Admin::Global::Workflows;
 alias RT::View::Admin::Global::Workflows under 'workflows/';
 
+template 'index.html' => page { title => _('Global Configuration') } content {
+    my $items = {
+        B => {
+            title => _('Templates'),
+            text  => _('Edit system templates'),
+            path  => '/admin/global/templates',
+        },
+        C => {
+            title => _('Workflows'),
+            text  => _('Modify system workflows'),
+            path  => '/admin/global/workflows/',
+        },
+        F => {
+            title => _('Custom Fields'),
+            text  => _('Modify global custom fields'),
+            path  => '/admin/global/select_custom_fields',
+        },
+        G => {
+            title => _('Group Rights'),
+            text  => _('Modify global group rights'),
+            path  => '/admin/global/group_rights',
+        },
+        H => {
+            title => _('User Rights'),
+            text  => _('Modify global user rights'),
+            path  => '/admin/global/user_rights',
+        },
+        I => {
+            title => _('RT at a glance'),
+            text  => _('Modify the default "RT at a glance" view'),
+            path  => '/admin/global/my_rt',
+        },
+        Y => {
+            title => _('Jifty'),
+            text  => _('Configure Jifty'),
+            path  => '/admin/global/jifty',
+        },
+        Z => {
+            title => _('System'),
+            text  => _('Modify System'),
+            path  => '/admin/global/system',
+        },
+    };
+
+    ul {
+        attr { class => 'list-menu' };
+        foreach my $key ( sort keys %$items ) {
+            li {
+                span {
+                    attr { class => 'menu-item' };
+                    a {
+                        attr { href => RT->config->get('web_path')
+                              . $items->{$key}->{'path'} };
+                        $items->{$key}->{'title'};
+                    }
+                }
+                span {
+                    attr { class => 'description' }
+                      $items->{$key}->{text}
+                }
+
+            }
+        }
+    };
+}
+
 template 'system' => page { title => _('Configure RT') } content {
     my $self    = shift;
     my $section = get('section');
