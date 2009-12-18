@@ -51,6 +51,42 @@ use strict;
 package RT::View::Admin::Tools;
 use Jifty::View::Declare -base;
 
+template 'index.html' => page { title => _('Global Configuration') } content {
+    my $items = {
+        A => {
+            title => _('System Configuration'),
+            text  => _('View system configuration'),
+            path  => '/admin/tools/configuration',
+        },
+        B => {
+            title => _('Shredder'),
+            text  => _('Shredder plugin'),
+            path  => '/admin/tools/shredder',
+        },
+    };
+
+    ul {
+        attr { class => 'list-menu' };
+        foreach my $key ( sort keys %$items ) {
+            li {
+                span {
+                    attr { class => 'menu-item' };
+                    a {
+                        attr { href => RT->config->get('web_path')
+                              . $items->{$key}->{'path'} };
+                        $items->{$key}->{'title'};
+                    }
+                }
+                span {
+                    attr { class => 'description' }
+                      $items->{$key}->{text}
+                }
+
+            }
+        }
+    };
+}
+
 template 'configuration' => page { title => _('System Configuration') }
   content {
     h2 { _('loaded perl modules') };
