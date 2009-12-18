@@ -139,11 +139,11 @@ rt-clean-sessions - clean old and duplicate RT sessions
 
     rt-clean-sessions [--debug] [--older <NUM>[H|D|M|Y]]
 
-    rt-clean sessions
-    rt-clean sessions --debug
-    rt-clean sessions --older 10D
-    rt-clean sessions --debug --older 1M
-    rt-clean sessions --older 10D --skip-user
+    rt-clean-sessions
+    rt-clean-sessions --debug
+    rt-clean-sessions --older 10D
+    rt-clean-sessions --debug --older 1M
+    rt-clean-sessions --older 10D --skip-user
 
 =head1 DESCRIPTION
 
@@ -162,7 +162,7 @@ Script is safe because data in the sessions is temporary and can be deleted.
 Date interval in the C<< <NUM>[<unit>] >> format. Default unit is D(ays),
 H(our), M(onth) and Y(ear) are also supported.
 
-For exmaple: C<rt-clean sessions --older 1M> would delete all sessions that are
+For example: C<rt-clean-sessions --older 1M> would delete all sessions that are
 older than 1 month.
 
 =item skip-user
