@@ -565,7 +565,7 @@ sub SendEmailUsingTemplate {
         return -1;
     }
 
-    $mail->head->set( $_ => $args{ $_ } )
+    $mail->head->set( $_ => Encode::encode_utf8( $args{ $_ } ) )
         foreach grep defined $args{$_}, qw(To Cc Bcc From);
 
     SetInReplyTo( Message => $mail, InReplyTo => $args{'InReplyTo'} );
