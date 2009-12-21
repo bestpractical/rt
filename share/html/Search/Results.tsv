@@ -107,7 +107,7 @@ $r->content_type('application/vnd.ms-excel');
 
     $_ += @header - 1 foreach values %cf_name_to_pos;
 
-    foreach my $name ( sort { $cf_name_to_pos{$a} <=> $cf_name_to_pos{$a} } keys %cf_name_to_pos ) {
+    foreach my $name ( sort { $cf_name_to_pos{$a} <=> $cf_name_to_pos{$b} } keys %cf_name_to_pos ) {
         push @header, "CF-". $name;
     }
     $m->out(join("\t", @header));
