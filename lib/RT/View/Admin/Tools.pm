@@ -156,5 +156,135 @@ template 'configuration' => page { title => _('System Configuration') }
     };
 };
 
+template 'shredder' => page { title => _('Shredder') } content {
+    unless (
+        Jifty->web->current_user->has_right(
+            right  => 'SuperUser',
+            object => RT->system
+        )
+      )
+    {
+        div {
+            attr { class => 'error' };
+            _( "You don't have %1 right.", 'SuperUser' );
+        };
+        return;
+    }
+
+
+    use RT::Shredder ();
+    my $path = RT::Shredder->storage_path;
+    unless ( -d $path && -w _ ) {
+        div {
+            attr { class => 'error' };
+            _(
+'Shredder needs a directory to write dumps to. Please check that the following directory exists and is writable by your web server.'
+            );
+        };
+        span { attr { class => 'file-path' }; $path };
+        return;
+    }
+
+    show( 'shredder_help', 'Base' );
+
+    my $plugin_obj = RT::Shredder::Plugin->new;
+    my %plugins    = $plugin_obj->list('Search');
+    my $plugin = get('plugin');
+
+    form {
+        outs( _('Select plugin: ') );
+        my @plugins = keys %plugins;
+        select {
+            attr { name => 'plugin' }
+              option { attr { value => $_ } _($_) } for @plugins;
+        };
+        form_submit( label => _('Go') );
+    };
+
+    if ($plugin) {
+        show( 'shredder_help', $plugin );
+
+        use RT::Shredder::Plugin;
+        my $plugin_obj = RT::Shredder::Plugin->new;
+        my ( $status, $msg ) = $plugin_obj->load_by_name($plugin);
+        unless ($status) {
+            Jifty->log->error(
+                'failed to load plugin: ' . $plugin . ': ' . $msg );
+            return;
+        }
+
+        my $search_args;
+
+        form {
+            outs( _('Select plugin: ') );
+            my @plugins = keys %plugins;
+            input { type is 'hidden', name is 'search', value is 'search' };
+            input { type is 'hidden', name is 'plugin', value is $plugin };
+            span { _('Fill arguments') . ': ' };
+            br {};
+            for my $a ( $plugin_obj->support_args ) {
+                span { _($a) . ': ' };
+                $search_args->{$a} = get("$plugin:$a");
+                input {
+                    type is 'text', name is "$plugin:$a",
+                      value is $search_args->{$a};
+                };
+                br {};
+            }
+            form_submit( label => _('Search') );
+        };
+
+        if ( get('search') ) {
+            my $moniker = 'shredder_wipeout_objects';
+            my $action  = new_action(
+                class   => 'ShredderWipeoutObjects',
+                moniker => $moniker,
+            );
+            $action->plugin($plugin);
+            $action->search_args($search_args);
+            with( name => $moniker ), form {
+                input { type is 'hidden', value is $plugin, name is 'plugin' };
+                input { type is 'hidden', value is 'search', name is 'search' };
+                for ( keys %$search_args ) {
+                    input {
+                        type is 'hidden', value is $search_args->{$_},
+                          name is "$plugin:$_";
+                    };
+                }
+
+                render_action($action);
+                form_submit( label => _('Wipeout') );
+            }
+        }
+    }
+};
+
+private template 'shredder_help' => sub {
+    my $self       = shift;
+    my $plugin     = shift;
+    require RT::Shredder::Plugin;
+    my $plugin_obj = RT::Shredder::Plugin->new;
+    my %plugins    = $plugin_obj->list;
+
+    my $file = $plugins{$plugin};
+    if ($file) {
+        use RT::Shredder::POD qw();
+        my $text = '';
+        open my $io_handle, ">:scalar", \$text
+          or die "Can't open scalar for write: $!";
+        RT::Shredder::POD::plugin_html( $file, $io_handle );
+        if ( $plugin eq 'Base' ) {
+            $file =~ s/\.pm$/\/Search.pm/;
+            RT::Shredder::POD::plugin_html( $file, $io_handle );
+        }
+        close $io_handle;
+        outs_raw($text);
+    }
+    else {
+        Jifty->log->error("Couldn't find plugin '$plugin'");
+    }
+};
+
+
 1;
 
