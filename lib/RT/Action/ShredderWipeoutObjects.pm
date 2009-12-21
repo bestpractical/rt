@@ -63,11 +63,59 @@ sub arguments {
         }
     }
 
-    # TODO need more spec to the display values
+
     $args->{'wipeout_objects'} = {
-        available_values => [
-            map { { display => $_->_as_string, value => $_->_as_string } } @objs
-        ],
+        available_values => defer {
+            my @values;
+            for my $object (@objs) {
+                my $display;
+                if ( ref $object eq 'RT::Model::Ticket' ) {
+                    $display =
+                        '<a href="'
+                      . Jifty->web->url
+                      . '/ticket/display.html?id='
+                      . $object->id . '">'
+                      . 'Ticket(id:'
+                      . $object->id
+                      . ', Subject: '
+                      . substr( $object->subject, 0, 30 )
+                      . '...)</a>';
+                }
+                elsif ( ref eq 'RT::Model::Attachment' ) {
+                    $display =
+                        '<a href="'
+                      . Jifty->web->url
+                      . '/ticket/attachment/'
+                      . $object->transaction_id . '/'
+                      . $object->id . '">'
+                      . 'Attachment(id:'
+                      . $object->id
+                      . ', Filename: '
+                      . $object->filename
+                      || '(no value)' . ')</a>';
+                }
+                elsif ( ref $object eq 'RT::Model::Ticket' ) {
+                    $display =
+                        '<a href="'
+                      . Jifty->web->url
+                      . '/admin/users/modify?id='
+                      . $object->id . '">'
+                      . 'User(id:'
+                      . $object->id
+                      . ', name: '
+                      . $object->name . ')</a>';
+                }
+                else {
+                    $display = $object->_as_string;
+                }
+                push @values,
+                  {
+                    display => $display,
+                    value   => $object->_as_string
+                  };
+            }
+            return \@values;
+        },
         render_as => 'Checkboxes',
         label => _('Check objects to be wiped out'),
     };
