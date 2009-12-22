@@ -51,6 +51,9 @@ use warnings;
 package RT::Model::User;
 
 use base qw/RT::IsPrincipal::HasNoMembers RT::Record/;
+# Tell RT::Model::ACE that this sort of object can get acls granted
+$RT::Model::ACE::OBJECT_TYPES{'RT::Model::User'} = 1;
+
 
 =head1 NAME
 
