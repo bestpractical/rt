@@ -95,9 +95,27 @@ sub _current_collection {
 # XXX TODO 
 # the following pages don't valid $id, we should/can check that in Dispatcher
 
-template 'custom_fields' => page { title => _('User Custom Fields') } content {
+template 'select_custom_fields' => page { title => _('Select Custom Fields for User') } content {
     my $self = shift;
+    my $user = RT::Model::User->new;
+    $user->load( get('id') );
+    my $action = new_action(
+        class   => 'SelectCustomFields',
+        moniker => 'select_cfs',
+    );
 
+    $action->object($user);
+    $action->lookup_type($user->custom_field_lookup_type);
+
+    with( name => 'select_cfs' ), form {
+        input {
+            type is 'hidden';
+            name is 'id';
+            value is get('id');
+        };
+        render_action($action);
+        form_submit( label => _('Save') );
+    };
 };
 
 template 'memberships' => page { title => _('User Memberships') } content {

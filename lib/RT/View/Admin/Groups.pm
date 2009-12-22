@@ -81,9 +81,29 @@ private template view_item_controls  => sub {
     }
 };
 
-template 'custom_fields' => page { title => _('Group Custom Fields') } content {
-    my $self = shift;
 
+template 'select_custom_fields' =>
+page { title => _('Select Custom Fields for Group') } content {
+    my $self  = shift;
+    my $group = RT::Model::Group->new;
+    $group->load( get('id') );
+    my $action = new_action(
+        class   => 'SelectCustomFields',
+        moniker => 'select_cfs',
+    );
+
+    $action->object($group);
+    $action->lookup_type( $group->custom_field_lookup_type );
+
+    with( name => 'select_cfs' ), form {
+        input {
+            type is 'hidden';
+            name is 'id';
+            value is get('id');
+        };
+        render_action($action);
+        form_submit( label => _('Save') );
+    };
 };
 
 template 'members' => page { title => _('Group Members') } content {
