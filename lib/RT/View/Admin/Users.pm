@@ -92,5 +92,30 @@ sub _current_collection {
     return $collection;
 }
 
+template 'custom_fields' => page { title => _('User Custom Fields') } content {
+    my $self = shift;
+
+};
+
+template 'memberships' => page { title => _('User Memberships') } content {
+    my $self = shift;
+
+};
+
+template 'gnupg' => page { title => _('User GnuPG') } content {
+    my $self = shift;
+
+};
+
+template 'history' => page { title => _('User History') } content {
+    my $self = shift;
+
+};
+
+template 'my_rt' => page { title => _('MyRT for User') } content {
+    my $self = shift;
+
+};
+
 1;
 

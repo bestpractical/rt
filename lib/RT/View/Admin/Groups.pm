@@ -81,5 +81,32 @@ private template view_item_controls  => sub {
     }
 };
 
+template 'custom_fields' => page { title => _('Group Custom Fields') } content {
+    my $self = shift;
+
+};
+
+template 'members' => page { title => _('Group Members') } content {
+    my $self = shift;
+
+};
+
+template 'history' => page { title => _('Group History') } content {
+    my $self = shift;
+
+};
+
+template 'group_rights' => page { title => _('Group Rights for Group') }
+  content {
+    my $self = shift;
+
+};
+
+template 'user_rights' => page { title => _('User Rights for Group') } content {
+    my $self = shift;
+
+};
+
+
 1;
 
