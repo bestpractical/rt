@@ -229,7 +229,7 @@ sub PossibleCustomFields {
             sub { $_[0]->{'key'} =~ /^Queue(?:\z|\.)/ },
         );
     }
-    if ( $tree ) {
+    if ( $tree && @$tree ) {
         my $clause = 'QUEUES';
         my $queue_alias = $cfs->Join(
             TYPE   => 'LEFT',
