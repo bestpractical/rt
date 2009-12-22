@@ -92,6 +92,9 @@ sub _current_collection {
     return $collection;
 }
 
+# XXX TODO 
+# the following pages don't valid $id, we should/can check that in Dispatcher
+
 template 'custom_fields' => page { title => _('User Custom Fields') } content {
     my $self = shift;
 
@@ -109,44 +112,38 @@ template 'gnupg' => page { title => _('User GnuPG') } content {
 
 template 'history' => page { title => _('User History') } content {
     my $self = shift;
-    my $id = get('id') or return;
-    my $user = RT::Model::User->new( current_user => Jifty->web->current_user );
-    my ( $status, $msg ) = $user->load($id);
-    if ( $status ) {
-        my $txns = $user->transactions;
-        $txns->order_by(
-            {
-                column => 'Created',
-                order  => 'ASC', 
-            },
-            {
-                column => 'id',
-                order  => 'ASC',
-            },
-        );
-        my $row_num = 1;
-        div {
-            attr { id => 'ticket-history' };
-            while ( my $txn = $txns->next ) {
+    my $user = RT::Model::User->new;
+    $user->load(get('id'));
+    my $txns = $user->transactions;
+    $txns->order_by(
+        {
+            column => 'Created',
+            order  => 'ASC',
+        },
+        {
+            column => 'id',
+            order  => 'ASC',
+        },
+    );
+    my $row_num = 1;
+    div {
+        attr { id => 'ticket-history' };
+        while ( my $txn = $txns->next ) {
+            div {
+                attr { class => $row_num++ % 2 ? 'odd' : 'even' };
                 div {
-                    attr { class => $row_num++ % 2 ? 'odd' : 'even' };
-                    div {
-                        attr { class => 'metadata' }
-                          span { attr { class => 'date' }; $txn->created };
-                        span {
-                            attr { class => 'description' };
-                            $txn->creator->name . ' - '
-                              . $txn->brief_description;
-                        };
+                    attr { class => 'metadata' }
+                      span { attr { class => 'date' }; $txn->created };
+                    span {
+                        attr { class => 'description' };
+                        $txn->creator->name . ' - ' . $txn->brief_description;
                     };
                 };
-            }
-        };
-        # removed txn attachments and txn cfs that were here in mason pages
-    }
-    else {
-        Jifty->log->error( "failed to load user with id $id: $msg" );
-    }
+            };
+        }
+    };
+
+    # removed txn attachments and txn cfs that were here in mason pages
 
 };
 
