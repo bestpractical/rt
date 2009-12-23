@@ -167,6 +167,25 @@ template 'history' => page { title => _('User History') } content {
 
 template 'my_rt' => page { title => _('MyRT for User') } content {
     my $self = shift;
+    my $moniker = 'config_my_rt';
+    my $action = new_action(
+        class   => 'ConfigMyRT',
+        moniker => $moniker,
+    );
+
+    my $user = RT::Model::User->new;
+    $user->load(get('id'));
+    $action->object( $user );
+
+    with( name => $moniker ), form {
+        input {
+            type is 'hidden';
+            name is 'id';
+            value is get('id');
+        };
+        render_action($action);
+        form_submit( label => _('Save') );
+    };
 
 };
 
