@@ -149,16 +149,39 @@ template 'history' => page { title => _('Group History') } content {
 };
 
 template 'group_rights' => page { title => _('Group Rights for Group') }
-  content {
+content {
     my $self = shift;
+    show( 'rights', 'group' );
 
 };
 
 template 'user_rights' => page { title => _('User Rights for Group') } content {
     my $self = shift;
+    show( 'rights', 'user' );
 
 };
 
+private template 'rights' => sub {
+    my $self = shift;
+    my $type = shift || 'user';
+
+    my $class   = 'Edit' . ucfirst($type) . 'Rights';
+    my $moniker = 'modify_' . $type . '_rights';
+
+    my $rights = new_action(
+        class   => $class,
+        moniker => $moniker,
+    );
+
+    my $group = RT::Model::Group->new;
+    $group->load(get('id'));
+    $rights->object( $group );
+
+    with( name => $moniker ), form {
+        render_action($rights);
+        form_submit( label => _('Save') );
+    };
+};
 
 1;
 
