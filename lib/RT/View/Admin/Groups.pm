@@ -113,6 +113,38 @@ template 'members' => page { title => _('Group Members') } content {
 
 template 'history' => page { title => _('Group History') } content {
     my $self = shift;
+    my $group = RT::Model::Group->new;
+    $group->load(get('id'));
+    my $txns = $group->transactions;
+    $txns->order_by(
+        {
+            column => 'Created',
+            order  => 'ASC',
+        },
+        {
+            column => 'id',
+            order  => 'ASC',
+        },
+    );
+    my $row_num = 1;
+    div {
+        attr { id => 'ticket-history' };
+        while ( my $txn = $txns->next ) {
+            div {
+                attr { class => $row_num++ % 2 ? 'odd' : 'even' };
+                div {
+                    attr { class => 'metadata' }
+                      span { attr { class => 'date' }; $txn->created };
+                    span {
+                        attr { class => 'description' };
+                        $txn->creator->name . ' - ' . $txn->brief_description;
+                    };
+                };
+            };
+        }
+    };
+
+    # removed txn attachments and txn cfs that were here in mason pages
 
 };
 
