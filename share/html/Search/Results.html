@@ -165,7 +165,10 @@ my $QueryString = "?".$m->comp('/Elements/QueryString',
                                Page => $Page);
 my $ShortQueryString = "?".$m->comp('/Elements/QueryString', Query => $Query);
 my $RSSQueryString = "?".$m->comp('/Elements/QueryString', Query => $Query, Order => $Order, OrderBy => $OrderBy);
-my $RSSFeedURL = RT->Config->Get('WebPath')."/Search/Results.rdf$RSSQueryString";
+my $RSSPath  = join '/', map $m->interp->apply_escapes($_, 'u'),
+    $session{'CurrentUser'}->UserObj->Name,
+    $session{'CurrentUser'}->UserObj->GenerateAuthString( $Query.$Order.$OrderBy );
+my $RSSFeedURL = RT->Config->Get('WebPath')."/NoAuth/rdf/$RSSPath/$RSSQueryString";
 
 if ($ARGS{'TicketsRefreshInterval'}) {
 	$session{'tickets_refresh_interval'} = $ARGS{'TicketsRefreshInterval'};
