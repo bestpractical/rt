@@ -23,6 +23,14 @@ sub arguments {
         default_value => ref $self->object,
     };
 
+    if ( ref $self->object ne 'RT::System' ) {
+        $args->{'reset'} = {
+            render_as     => 'InlineButton',
+            default_value => 1,
+            label => 'Reset',
+        };
+    }
+
     for my $type ( qw/body summary/ ) {
         $args->{$type} = {
             available_values => defer { $self->available_values },
@@ -60,31 +68,38 @@ sub take_action {
         return;
     }
 
-    my $content = $self->default_value || {};
-    for my $arg ( $self->argument_names ) {
-        next unless ( $arg =~ /^body|summary$/ );
-        my $value = $self->argument_value($arg);
-
-        my @panes;
-        if ( UNIVERSAL::isa( $self->argument_value($arg), 'ARRAY' ) ) {
-            @panes = @$value;
-        }
-        else {
-            @panes = $value;
-        }
-
-        @panes =
-          map { /(\w+)-(.*)/ ? { type => $1, name => $2 } : () }
-          grep { $_ } @panes;
-        $content->{$arg} = \@panes;
-    }
-
-    if ( ref $self->object eq 'RT::System' ) {
-        my ($settings) = $self->object->attributes->named('HomepageSettings');
-        $settings->set_content($content);
+    if ( $self->argument_value('reset') && $object_type ne 'RT::System' ) {
+        $self->object->set_preferences('HomepageSettings', {});
     }
     else {
-        $self->object->set_preferences( 'HomepageSettings' => $content );
+
+        my $content = $self->default_value || {};
+        for my $arg ( $self->argument_names ) {
+            next unless ( $arg =~ /^body|summary$/ );
+            my $value = $self->argument_value($arg);
+
+            my @panes;
+            if ( UNIVERSAL::isa( $self->argument_value($arg), 'ARRAY' ) ) {
+                @panes = @$value;
+            }
+            else {
+                @panes = $value;
+            }
+
+            @panes =
+              map { /(\w+)-(.*)/ ? { type => $1, name => $2 } : () }
+              grep { $_ } @panes;
+            $content->{$arg} = \@panes;
+        }
+
+        if ( ref $self->object eq 'RT::System' ) {
+            my ($settings) =
+              $self->object->attributes->named('HomepageSettings');
+            $settings->set_content($content);
+        }
+        else {
+            $self->object->set_preferences( 'HomepageSettings' => $content );
+        }
     }
     $self->report_success;
     return 1;
