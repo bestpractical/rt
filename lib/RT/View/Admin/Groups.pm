@@ -107,7 +107,26 @@ page { title => _('Select Custom Fields for Group') } content {
 };
 
 template 'members' => page { title => _('Group Members') } content {
-    my $self = shift;
+    my $self  = shift;
+    my $group = RT::Model::Group->new;
+    $group->load( get('id') );
+    my $moniker = 'modify_group_members';
+    my $action = new_action(
+        class   => 'EditGroupMembers',
+        moniker => $moniker,
+    );
+
+    $action->object($group);
+
+    with( name => $moniker ), form {
+        input {
+            type is 'hidden';
+            name is 'id';
+            value is get('id');
+        };
+        render_action($action);
+        form_submit( label => _('Save') );
+    };
 
 };
 
