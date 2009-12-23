@@ -79,10 +79,16 @@ sub take_action {
         $content->{$arg} = \@panes;
     }
 
-    my ( $settings ) = $self->object->attributes->named('HomepageSettings');
-	$settings->set_content( $content );
+    if ( ref $self->object eq 'RT::System' ) {
+        my ($settings) = $self->object->attributes->named('HomepageSettings');
+        $settings->set_content($content);
+    }
+    else {
+        $self->object->set_preferences( 'HomepageSettings' => $content );
+    }
     $self->report_success;
     return 1;
+
 }
 
 sub available_values {
@@ -112,8 +118,13 @@ sub available_values {
 sub default_value {
     my $self     = shift;
     my $type     = shift;
-    my ( $settings ) = $self->object->attributes->named('HomepageSettings');
-    my $content  = $settings->content;
+    my ( $settings ) = RT->system->attributes->named('HomepageSettings');
+    my $content  = $settings ? $settings->content : {};
+
+    if ( ref $self->object ne 'RT::System' ) {
+        $content = $self->object->preferences( 'HomepageSettings', $content );
+    }
+
     return $content unless $type;
 
     return unless $content && $content->{$type};
