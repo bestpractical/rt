@@ -144,6 +144,91 @@ template 'memberships' => page { title => _('User Memberships') } content {
 template 'gnupg' => page { title => _('User GnuPG') } content {
     my $self = shift;
 
+    # TODO move the following line to Dispatcher
+    return unless RT->config->get('gnupg')->{'enable'};
+
+    require RT::Crypt::GnuPG;
+
+    my $user = RT::Model::User->new;
+    $user->load(get('id'));
+
+    unless ( $user->email ) {
+        h2 { _("User has empty email address") };
+        return;
+    }
+
+    my %res = RT::Crypt::GnuPG::get_key_info( $user->email, 'public' );
+
+    if ( $res{'exit_code'} || !keys %{ $res{'info'} } ) {
+        outs( _('No keys for this address') );
+    }
+    else {
+        h3 { _('GnuPG public key for %1', $user->email) };
+        table {
+            row {
+                th { _( 'Trust' . ':' ) };
+                cell {
+                    _( $res{'info'}{'trust'} );
+                };
+            };
+            row {
+                th { _( 'Created' . ':' ) };
+                cell {
+                    $res{'info'}{'created'}
+                      ? $res{'info'}{'created'}->date
+                      : _('never');
+                };
+            };
+
+            row {
+                th { _('Expire') . ':' };
+                cell {
+                    $res{'info'}{'expire'}
+                      ? $res{'info'}{'expire'}->date
+                      : _('never');
+                };
+            };
+
+            for my $uinfo ( @{ $res{'info'}{'user'} } ) {
+                row {
+                    th { _('User (Created - expire)') . ':' };
+                    cell {
+                        $uinfo->{'string'}
+                          . '(' . (
+                            $uinfo->{'created'} ? $uinfo->{'created'}->date
+                            : _('never') . ' - ' 
+                          )
+                          . (
+                            $uinfo->{'expire'} ? $uinfo->{'expire'}->date
+                            : _('never')
+                          ) . ')';
+                    };
+                };
+            }
+        };
+    }
+
+    my %keys_meta =
+      RT::Crypt::GnuPG::get_keys_for_signing( $user->email, 'force' );
+
+    my $moniker = 'select_private_key';
+    my $action = new_action(
+        class   => 'SelectPrivateKey',
+        moniker => $moniker,
+    );
+
+    $action->object($user);
+
+    with( name => $moniker ), form {
+        input {
+            type is 'hidden';
+            name is 'id';
+            value is get('id');
+        };
+        render_action($action);
+        form_submit( label => _('Save') );
+    };
+
 };
 
 template 'history' => page { title => _('User History') } content {
