@@ -120,7 +120,25 @@ template 'select_custom_fields' => page { title => _('Select Custom Fields for U
 
 template 'memberships' => page { title => _('User Memberships') } content {
     my $self = shift;
+    my $user = RT::Model::User->new;
+    $user->load( get('id') );
+    my $moniker = 'modify_user_memberships';
+    my $action = new_action(
+        class   => 'EditUserMemberships',
+        moniker => $moniker,
+    );
 
+    $action->object($user);
+
+    with( name => $moniker ), form {
+        input {
+            type is 'hidden';
+            name is 'id';
+            value is get('id');
+        };
+        render_action($action);
+        form_submit( label => _('Save') );
+    };
 };
 
 template 'gnupg' => page { title => _('User GnuPG') } content {
