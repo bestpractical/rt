@@ -436,8 +436,8 @@ before 'admin/queues' => run {
 
 #        my $queue = page_nav->child( $queue_obj->name => url => "/admin/queues/Modify.html?id=" . $id );
 #        $queue->child( _('Basics'),    url => "/admin/queues/Modify.html?id=" . $id );
-        my $queue =
-          page_nav->child( $queue_obj->name => url => '/admin/queues' );
+        my $queue = page_nav->child(
+            $queue_obj->name => url => '/admin/queues?id=' . $id );
         $queue->child( _('Watchers'),  url => "/admin/queues/people?id=" . $id );
 
         # because Templates have their own ids, let's use queue parameter here
@@ -468,7 +468,7 @@ before '/admin/users' => run {
 #        $tabs->child( _('Basics'),         url => "/admin/users/Modify.html?id=" . $id );
         my $tabs = page_nav->child(
             'current' => label => $obj->name,
-            url       => '/admin/users',
+            url       => '/admin/users?id=' . $id,
         );
 
         $tabs->child( _('Memberships'),    url => "/admin/users/memberships?id=" . $id );
@@ -490,7 +490,8 @@ before 'admin/groups' => run {
         $obj->load($id);
 #        my $tabs = page_nav->child( $obj->name, url => "/admin/custom_fields/Modify.html?id=" . $id );
 #        $tabs->child( _('Basics')       => url => "/admin/groups/Modify.html?id=" . $obj->id );
-        my $tabs = page_nav->child( $obj->name, url => '/admin/groups' );
+        my $tabs =
+          page_nav->child( $obj->name, url => '/admin/groups?id=' . $id );
         $tabs->child( _('Members')      => url => "/admin/groups/members?id=" . $obj->id );
         $tabs->child( _('Group rights') => url => "/admin/groups/group_rights?id=" . $obj->id );
         $tabs->child( _('User rights')  => url => "/admin/groups/user_rights?id=" . $obj->id );
@@ -509,7 +510,9 @@ before 'admin/custom_fields/' => run {
         $obj->load($id);
 #        my $tabs = page_nav->child( $obj->name, url => "/admin/custom_fields/Modify.html?id=" . $id );
 #        $tabs->child( _('Basics')       => url => "/admin/custom_fields/Modify.html?id=" . $id );
-        my $tabs = page_nav->child( $obj->name, url => '/admin/custom_fields' );
+        my $tabs =
+          page_nav->child( $obj->name,
+            url => '/admin/custom_fields?id=' . $id );
         $tabs->child( _('Group rights') => url => "/admin/custom_fields/group_rights?id=" . $id );
         $tabs->child( _('User rights')  => url => "/admin/custom_fields/user_rights?id=" . $id );
 
