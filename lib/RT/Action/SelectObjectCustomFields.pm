@@ -16,10 +16,12 @@ sub arguments {
         default_value => $self->object->id,
     };
 
+    my ( $object_name ) = $self->object->lookup_type =~ /RT::Model::(\w+)-/;
     $args->{objects} = {
         render_as        => 'Checkboxes',
         default_value    => defer { $self->default_value },
         available_values => defer { $self->available_values },
+        label            => _($object_name),
     };
 
     return $args;
