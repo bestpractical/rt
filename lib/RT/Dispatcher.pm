@@ -224,61 +224,63 @@ before qr{.*} => run {
 
     if ( Jifty->web->current_user->has_right( right => 'ShowConfigTab', object => RT->system ) )
     {
-        my $admin = $tools->child( Config => label => _('Configuration'), url => '/Admin/' );
-        $admin->child( _('Users'),         url => '/Admin/Users/', );
-        $admin->child( _('Groups'),        url => '/Admin/Groups/', );
-        $admin->child( _('Queues'),        url => '/Admin/Queues/', );
-        $admin->child( _('Custom Fields'), url => '/Admin/CustomFields/', );
+        my $admin = $tools->child( Config => label => _('Configuration'), url => '/admin/' );
+        $admin->child( _('Users'),         url => '/admin/users/', );
+        $admin->child( _('Groups'),        url => '/admin/groups/', );
+        $admin->child( _('Queues'),        url => '/admin/queues/', );
+        $admin->child( _('Custom Fields'), url => '/admin/custom_fields/', );
         $admin->child( _('Rules'),         url => '/admin/rules/', );
 
-        my $admin_global = $admin->child( _('Global'), url => '/Admin/Global/', );
+        my $admin_global = $admin->child( _('Global'), url => '/admin/global/', );
 
-        $admin_global->child( _('Templates'), url => '/Admin/Global/Templates.html', );
-        my $workflows = $admin_global->child( _('Workflows'), url => '/Admin/Global/Workflows/index.html', );
+        $admin_global->child( _('Templates'), url => '/admin/global/templates', );
+        my $workflows = $admin_global->child( _('Workflows'), url => '/admin/global/workflows/index.html', );
         {
-            $workflows->child( _('Overview')     => url => "/Admin/Global/Workflows/index.html" );
-            $workflows->child( _('Localization') => url => "/Admin/Global/Workflows/Localization.html" );
-            $workflows->child( _('Mappings')     => url => "/Admin/Global/Workflows/Mappings.html" );
+            $workflows->child( _('Overview')     => url => "/admin/global/workflows/index.html" );
+            $workflows->child( _('Localization') => url => "/admin/global/workflows/localization" );
+            $workflows->child( _('Mappings')     => url => "/admin/global/workflows/mappings" );
         }
 
-        my $cfadmin = $admin_global->child( _('Custom Fields'), url => '/Admin/Global/CustomFields/index.html', );
+        my $cfadmin =
+          $admin_global->child( _('Custom Fields'),
+            url => '/admin/global/custom_fields/index.html', );
         {
             $cfadmin->child(
                 _('Users') => text => _('Select custom fields for all users'),
-                url        => '/Admin/Global/CustomFields/Users.html'
+                url        => '/admin/global/custom_fields?lookup_type=RT::Model::User'
             );
 
             $cfadmin->child(
                 _('Groups') => text => _('Select custom fields for all user groups'),
-                url         => '/Admin/Global/CustomFields/Groups.html'
+                url         => '/admin/global/custom_fields?lookup_type=RT::Model::Group'
             );
 
             $cfadmin->child(
                 _('Queues') => text => _('Select custom fields for all queues'),
-                url         => '/Admin/Global/CustomFields/Queues.html'
+                url         => '/admin/global/custom_fields?lookup_type=RT::Model::Queue'
             );
 
             $cfadmin->child(
                 _('Tickets') => text => _('Select custom fields for tickets in all queues'),
-                url => '/Admin/Global/CustomFields/Queue-Tickets.html'
+                url => '/admin/global/custom_fields?RT::Model::Queue-RT::Model::Ticket'
             );
 
             $cfadmin->child(
                 _('Ticket Transactions') => text => _('Select custom fields for transactions on tickets in all queues'),
-                url => 'Admin/Global/CustomFields/Queue-Transactions.html'
+                url => 'admin/global/CustomFields?lookup_type=RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction'
             );
 
         }
 
-        $admin_global->child( _('Group rights'),   url => '/Admin/Global/GroupRights.html', );
-        $admin_global->child( _('User rights'),    url => '/Admin/Global/UserRights.html', );
-        $admin_global->child( _('RT at a glance'), url => '/Admin/Global/MyRT.html', );
-        $admin_global->child( _('Jifty'),          url => '/Admin/Global/Jifty.html', );
-        $admin_global->child( _('System'),         url => '/Admin/Global/System.html', );
+        $admin_global->child( _('Group rights'),   url => '/admin/global/group_rights', );
+        $admin_global->child( _('User rights'),    url => '/admin/global/user_rights', );
+        $admin_global->child( _('RT at a glance'), url => '/admin/global/my_rt', );
+        $admin_global->child( _('Jifty'),          url => '/admin/global/jifty', );
+        $admin_global->child( _('System'),         url => '/admin/global/system', );
 
-        my $admin_tools = $admin->child( _('Tools'), url => '/Admin/Tools/', );
-        $admin_tools->child( _('System Configuration'), url => '/Admin/Tools/Configuration.html', );
-        $admin_tools->child( _('Shredder'),             url => '/Admin/Tools/Shredder', );
+        my $admin_tools = $admin->child( _('Tools'), url => '/admin/tools/', );
+        $admin_tools->child( _('System Configuration'), url => '/admin/tools/configuration', );
+        $admin_tools->child( _('Shredder'),             url => '/admin/tools/shredder', );
     }
     if (Jifty->web->current_user->user_object
         && Jifty->web->current_user->has_right(
@@ -421,111 +423,125 @@ before '/SelfService' => run {
     #main_nav->child( B =>  html => $m->scomp('GotoTicket'))
 };
 
-before 'Admin/Queues' => run {
+before 'admin/queues' => run {
     if ( Jifty->web->current_user->has_right( object => RT->system, right => 'AdminQueue' ) ) {
-        page_nav->child( _('Select'), url => "/Admin/Queues/" );
-        page_nav->child( _('Create'), url => "/Admin/Queues/Modify.html?create=1" );
+        page_nav->child( _('Select'), url => "/admin/queues/" );
+#        page_nav->child( _('Create'), url => "/admin/queues/Modify.html?create=1" );
     }
-    if ( my $id = Jifty->web->request->argument('id') ) {
+    if ( my $id = Jifty->web->request->argument('queue')
+        || Jifty->web->request->argument('id') )
+    {
         my $queue_obj = RT::Model::Queue->new();
         $queue_obj->load($id);
 
-        my $queue = page_nav->child( $queue_obj->name => url => "/Admin/Queues/Modify.html?id=" . $id );
-        $queue->child( _('Basics'),    url => "/Admin/Queues/Modify.html?id=" . $id );
-        $queue->child( _('Watchers'),  url => "/Admin/Queues/People.html?id=" . $id );
-        $queue->child( _('Templates'), url => "/Admin/Queues/Templates.html?id=" . $id );
+#        my $queue = page_nav->child( $queue_obj->name => url => "/admin/queues/Modify.html?id=" . $id );
+#        $queue->child( _('Basics'),    url => "/admin/queues/Modify.html?id=" . $id );
+        my $queue =
+          page_nav->child( $queue_obj->name => url => '/admin/queues' );
+        $queue->child( _('Watchers'),  url => "/admin/queues/people?id=" . $id );
+
+        # because Templates have their own ids, let's use queue parameter here
+        $queue->child( _('Templates'), url => "/admin/queues/templates?queue=" . $id );
 
         $queue->child( _('Ticket Custom Fields'),
-            url => '/Admin/Queues/CustomFields.html?sub_type=RT::Model::Ticket&id=' . $id );
+            url =>
+            '/admin/queues/select_custom_fields?lookup_type=RT::Model::Queue-RT::Model::Ticket&id=' . $id );
 
         $queue->child( _('Transaction Custom Fields'),
-            url => '/Admin/Queues/CustomFields.html?sub_type=RT::Model::Ticket-RT::Model::Transaction&id=' . $id );
+            url =>
+            '/admin/queues/select_custom_fields?lookup_type=RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction&id=' . $id );
 
-        $queue->child( _('Group rights'), url => "/Admin/Queues/GroupRights.html?id=" . $id );
-        $queue->child( _('User rights'),  url => "/Admin/Queues/UserRights.html?id=" . $id );
+        $queue->child( _('Group rights'), url => "/admin/queues/group_rights?id=" . $id );
+        $queue->child( _('User rights'),  url => "/admin/queues/user_rights?id=" . $id );
     }
 };
 
-before '/Admin/Users' => run {
+before '/admin/users' => run {
     if ( Jifty->web->current_user->has_right( object => RT->system, right => 'AdminUsers' ) ) {
-        page_nav->child( _('Select'), url => "/Admin/Users/" );
-        page_nav->child( _('Create'), url => "/Admin/Users/Modify.html?create=1", separator => 1 );
+        page_nav->child( _('Select'), url => "/admin/users/" );
+#        page_nav->child( _('Create'), url => "/admin/users/Modify.html?create=1", separator => 1 );
     }
     if ( my $id = Jifty->web->request->argument('id') ) {
         my $obj = RT::Model::User->new();
         $obj->load($id);
-        my $tabs = page_nav->child( 'current' => label => $obj->name, url => "/Admin/Users/Modify.html?id=" . $id, );
-        $tabs->child( _('Basics'),         url => "/Admin/Users/Modify.html?id=" . $id );
-        $tabs->child( _('Memberships'),    url => "/Admin/Users/Memberships.html?id=" . $id );
-        $tabs->child( _('History'),        url => "/Admin/Users/History.html?id=" . $id );
-        $tabs->child( _('RT at a glance'), url => "/Admin/Users/MyRT.html?id=" . $id );
+#        my $tabs = page_nav->child( 'current' => label => $obj->name, url => "/admin/users/Modify.html?id=" . $id, );
+#        $tabs->child( _('Basics'),         url => "/admin/users/Modify.html?id=" . $id );
+        my $tabs = page_nav->child(
+            'current' => label => $obj->name,
+            url       => '/admin/users',
+        );
+
+        $tabs->child( _('Memberships'),    url => "/admin/users/memberships?id=" . $id );
+        $tabs->child( _('History'),        url => "/admin/users/history?id=" . $id );
+        $tabs->child( _('RT at a glance'), url => "/admin/users/my_rt?id=" . $id );
         if ( RT->config->get('gnupg')->{'enable'} ) {
-            $tabs->child( _('GnuPG'), url => "/Admin/Users/GnuPG.html?id=" . $id );
+            $tabs->child( _('GnuPG'), url => "/admin/users/gnupg?id=" . $id );
         }
     }
 
 };
 
-before 'Admin/Groups' => run {
+before 'admin/groups' => run {
 
-    page_nav->child( _('Select') => url => "/Admin/Groups/" );
-    page_nav->child( _('Create') => url => "/Admin/Groups/Modify.html?create=1", separator => 1 );
+    page_nav->child( _('Select') => url => "/admin/groups/" );
+#    page_nav->child( _('Create') => url => "/admin/groups/Modify.html?create=1", separator => 1 );
     if ( my $id = Jifty->web->request->argument('id') ) {
         my $obj = RT::Model::User->new();
         $obj->load($id);
-        my $tabs = page_nav->child( $obj->name, url => "/Admin/CustomFields/Modify.html?id=" . $id );
-        $tabs->child( _('Basics')       => url => "/Admin/Groups/Modify.html?id=" . $obj->id );
-        $tabs->child( _('Members')      => url => "/Admin/Groups/Members.html?id=" . $obj->id );
-        $tabs->child( _('Group rights') => url => "/Admin/Groups/GroupRights.html?id=" . $obj->id );
-        $tabs->child( _('User rights')  => url => "/Admin/Groups/UserRights.html?id=" . $obj->id );
-        $tabs->child( _('History')      => url => "/Admin/Groups/History.html?id=" . $obj->id );
+#        my $tabs = page_nav->child( $obj->name, url => "/admin/custom_fields/Modify.html?id=" . $id );
+#        $tabs->child( _('Basics')       => url => "/admin/groups/Modify.html?id=" . $obj->id );
+        my $tabs = page_nav->child( $obj->name, url => '/admin/groups' );
+        $tabs->child( _('Members')      => url => "/admin/groups/members?id=" . $obj->id );
+        $tabs->child( _('Group rights') => url => "/admin/groups/group_rights?id=" . $obj->id );
+        $tabs->child( _('User rights')  => url => "/admin/groups/user_rights?id=" . $obj->id );
+        $tabs->child( _('History')      => url => "/admin/groups/history?id=" . $obj->id );
     }
 };
 
-before 'Admin/CustomFields/' => run {
+before 'admin/custom_fields/' => run {
     if ( Jifty->web->current_user->has_right( object => RT->system, right => 'AdminCustomField' ) ) {
-        page_nav->child( _('Select'), url => "/Admin/CustomFields/" );
-        page_nav->child( _('Create') => url => "/Admin/CustomFields/Modify.html?create=1", );
+        page_nav->child( _('Select'), url => "/admin/custom_fields" );
+#        page_nav->child( _('Create') => url => "/admin/custom_fields/Modify.html?create=1", );
 
     }
     if ( my $id = Jifty->web->request->argument('id') ) {
         my $obj = RT::Model::CustomField->new();
         $obj->load($id);
-        my $tabs = page_nav->child( $obj->name, url => "/Admin/CustomFields/Modify.html?id=" . $id );
-
-        $tabs->child( _('Basics')       => url => "/Admin/CustomFields/Modify.html?id=" . $id );
-        $tabs->child( _('Group rights') => url => "/Admin/CustomFields/GroupRights.html?id=" . $id );
-        $tabs->child( _('User rights')  => url => "/Admin/CustomFields/UserRights.html?id=" . $id );
+#        my $tabs = page_nav->child( $obj->name, url => "/admin/custom_fields/Modify.html?id=" . $id );
+#        $tabs->child( _('Basics')       => url => "/admin/custom_fields/Modify.html?id=" . $id );
+        my $tabs = page_nav->child( $obj->name, url => '/admin/custom_fields' );
+        $tabs->child( _('Group rights') => url => "/admin/custom_fields/group_rights?id=" . $id );
+        $tabs->child( _('User rights')  => url => "/admin/custom_fields/user_rights?id=" . $id );
 
         if ( $obj->lookup_type =~ /^RT::Model::Queue-/io ) {
-            $tabs->child( _('Applies to'), url => "/Admin/CustomFields/Objects.html?id=" . $id );
+            $tabs->child( _('Applies to'), url => "/admin/custom_fields/objects?id=" . $id );
         }
 
     }
 
 };
 
-before 'Admin/Global/Workflows' => run {
+before 'admin/global/workflows' => run {
     if ( my $id = Jifty->web->request->argument('name') ) {
 
-        my $base = '/Admin/Global/Workflows';
+        my $base = '/admin/global/workflows';
 
         my $schema = RT::Workflow->new->load($id);
 
         if ($schema) {
             my $qs_name = query_string( name => $schema->name );
-            my $workflow = page_nav->child( $schema->name, url => "$base/Summary.html?$qs_name" );
-            $workflow->child( _("Summary")     => url => "$base/Summary.html?$qs_name" );
-            $workflow->child( _("Statuses")    => url => "$base/Statuses.html?$qs_name" );
-            $workflow->child( _("Transitions") => url => "$base/Transitions.html?$qs_name" );
-            $workflow->child( _("Interface")   => url => "$base/Interface.html?$qs_name" );
+            my $workflow = page_nav->child( $schema->name, url => "$base/summary?$qs_name" );
+            $workflow->child( _("Summary")     => url => "$base/summary?$qs_name" );
+            $workflow->child( _("Statuses")    => url => "$base/statuses?$qs_name" );
+            $workflow->child( _("Transitions") => url => "$base/transitions?$qs_name" );
+            $workflow->child( _("Interface")   => url => "$base/interface?$qs_name" );
         }
     }
 };
 
-before 'Admin/Rules' => run {
-    page_nav->child( _('Select'), url => "/Admin/Rules/" );
-    page_nav->child( _('Create'), url => "/Admin/Rules/Modify.html?create=1" );
+before 'admin/rules' => run {
+    page_nav->child( _('Select'), url => "/admin/rules/" );
+#    page_nav->child( _('Create'), url => "/admin/rules/Modify.html?create=1" );
 };
 
 before qr'(?:Ticket|Search)/' => run {
@@ -668,7 +684,7 @@ before qr'(?:Ticket|Search)/' => run {
                 'Tickets:limit' => $query_args{'rows_per_page'}
             );
 
-            page_nav->child( 'shredder' => label => _('Shredder'), url => 'Admin/Tools/Shredder/?' . $shred_args );
+            page_nav->child( 'shredder' => label => _('Shredder'), url => 'admin/tools/shredder?' . $shred_args );
         }
 
         page_nav->child( _('Show Results') => url => "/Search/Results.html$args" );
