@@ -197,6 +197,11 @@ private template 'rights' => sub {
     $rights->object( $group );
 
     with( name => $moniker ), form {
+        input {
+            type is 'hidden';
+            name is 'id';
+            value is get('id');
+        };
         render_action($rights);
         form_submit( label => _('Save') );
     };
