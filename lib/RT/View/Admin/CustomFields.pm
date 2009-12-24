@@ -75,6 +75,31 @@ private template view_item_controls  => sub {
     }
 };
 
+template 'objects' => page { title => _('Applied Objects for Custom Field') }
+content {
+    my $self = shift;
+    my $cf = RT::Model::CustomField->new;
+    $cf->load( get('id') );
+    my $moniker = 'select_object_custom_fields';
+    my $action = new_action(
+        class   => 'SelectObjectCustomFields',
+        moniker => $moniker,
+    );
+
+    $action->object($cf);
+
+    with( name => $moniker ), form {
+        input {
+            type is 'hidden';
+            name is 'id';
+            value is get('id');
+        };
+        render_action($action);
+        form_submit( label => _('Save') );
+    };
+
+};
+
 template 'group_rights' => page { title => _('Group Rights for Custom Field') }
 content {
     my $self = shift;
