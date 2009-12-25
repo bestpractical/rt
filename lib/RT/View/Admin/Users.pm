@@ -67,23 +67,6 @@ use constant edit_columns => qw(name email real_name nickname gecos lang
 #  contact_info_system external_auth_id auth_system 
 #  time_zone
 
-private template view_item_controls  => sub {
-
-    my $self = shift;
-    my $record = shift;
-
-    if ( $record->current_user_can('update') ) {
-        hyperlink(
-            label   => _("Edit"),
-            class   => "editlink",
-            onclick => {
-                popout => $self->fragment_for('update'),
-                args   => { id => $record->id },
-            },
-        );
-    }
-};
-
 # limit to privileged users
 sub _current_collection {
     my $self = shift;

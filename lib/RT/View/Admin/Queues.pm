@@ -69,22 +69,6 @@ sub view_field_status_schema {
     return $action->record->status_schema->name;
 }
 
-private template view_item_controls  => sub {
-    my $self = shift;
-    my $record = shift;
-
-    if ( $record->current_user_can('update') ) {
-        hyperlink(
-            label   => _("Edit"),
-            class   => "editlink",
-            onclick => {
-                popout => $self->fragment_for('update'),
-                args   => { id => $record->id },
-            },
-        );
-    }
-};
-
 template 'index.html' => page {
     title => shift->page_title,
 } content {

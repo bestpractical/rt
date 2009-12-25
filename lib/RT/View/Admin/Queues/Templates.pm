@@ -59,22 +59,6 @@ use constant display_columns => qw(id name description type);
 use constant edit_columns => qw(name description type content queue);
 use constant create_columns => qw(name description type content queue);
 
-private template view_item_controls => sub {
-    my $self   = shift;
-    my $record = shift;
-
-    if ( $record->current_user_can('update') ) {
-        hyperlink(
-            label   => _("Edit"),
-            class   => "editlink",
-            onclick => {
-                popout => $self->fragment_for('update'),
-                args   => { id => $record->id },
-            },
-        );
-    }
-};
-
 sub _current_collection {
     my $self = shift; 
     my $collection = $self->SUPER::_current_collection( @_ );

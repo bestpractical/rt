@@ -70,9 +70,6 @@ template 'index.html' => page {
     }
 };
 
-# no inline edit
-private template view_item_controls  => sub { };
-
 sub view_via_callback {
     my $self = shift;
     my %args = @_;
@@ -96,5 +93,6 @@ sub view_via_callback {
 
     return;
 }
+
 
 1;
