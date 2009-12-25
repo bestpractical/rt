@@ -486,7 +486,7 @@ before 'admin/groups' => run {
     page_nav->child( _('Select') => url => "/admin/groups/" );
 #    page_nav->child( _('Create') => url => "/admin/groups/Modify.html?create=1", separator => 1 );
     if ( my $id = Jifty->web->request->argument('id') ) {
-        my $obj = RT::Model::User->new();
+        my $obj = RT::Model::Group->new();
         $obj->load($id);
 #        my $tabs = page_nav->child( $obj->name, url => "/admin/custom_fields/Modify.html?id=" . $id );
 #        $tabs->child( _('Basics')       => url => "/admin/groups/Modify.html?id=" . $obj->id );
