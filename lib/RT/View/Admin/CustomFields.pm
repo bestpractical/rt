@@ -123,26 +123,5 @@ private template 'rights' => sub {
     };
 };
 
-sub view_field {
-    my $self = shift;
-    my %args = @_;
-    if ( $args{field} =~ /^(id|name)$/ ) {
-        $self->view_via_callback(
-            %args,
-            callback => sub {
-                my %args = @_;
-                hyperlink(
-                    label => $args{current_value},
-                    url   => "?id=" . $args{id},
-                );
-            }
-        );
-
-    }
-    else {
-        $self->SUPER::view_field(@_);
-    }
-}
-
 1;
 
