@@ -111,8 +111,8 @@ new session objects.
 =cut
 
 sub Attributes {
-
-    return $_[0]->Backends->{RT->Config->Get('DatabaseType')} ? {
+    my $class = $_[0]->Class;
+    return !$class->isa('Apache::Session::File') ? {
             Handle      => $RT::Handle->dbh,
             LockHandle  => $RT::Handle->dbh,
             Transaction => 1,
