@@ -53,8 +53,7 @@ use Jifty::View::Declare -base;
 
 use base qw/Exporter/;
 our @EXPORT    = ();
-our @EXPORT_OK = qw(render_user render_user_concise render_user_verbose
-        show_key_info );
+our @EXPORT_OK = qw(render_user render_user_concise render_user_verbose);
 
 sub render_user {
     my $user = shift;
@@ -117,60 +116,6 @@ sub render_user_verbose {
     return $address->format;
 }
 
-sub show_key_info {
-    my $email = shift;
-    my $type = shift || 'public';
-    my %res = RT::Crypt::GnuPG::get_key_info( $email, $type );
-
-    if ( $res{'exit_code'} || !keys %{ $res{'info'} } ) {
-        outs( _('No keys for this address') );
-    }
-    else {
-        h3 { _('GnuPG public key for %1', $email) };
-        table {
-            row {
-                th { _( 'Trust' . ':' ) };
-                cell {
-                    _( $res{'info'}{'trust'} );
-                };
-            };
-            row {
-                th { _( 'Created' . ':' ) };
-                cell {
-                    $res{'info'}{'created'}
-                      ? $res{'info'}{'created'}->date
-                      : _('never');
-                };
-            };
-
-            row {
-                th { _('Expire') . ':' };
-                cell {
-                    $res{'info'}{'expire'}
-                      ? $res{'info'}{'expire'}->date
-                      : _('never');
-                };
-            };
-
-            for my $uinfo ( @{ $res{'info'}{'user'} } ) {
-                row {
-                    th { _('User (Created - expire)') . ':' };
-                    cell {
-                        $uinfo->{'string'}
-                          . '(' . (
-                            $uinfo->{'created'} ? $uinfo->{'created'}->date
-                            : _('never') . ' - ' 
-                          )
-                          . (
-                            $uinfo->{'expire'} ? $uinfo->{'expire'}->date
-                            : _('never')
-                          ) . ')';
-                    };
-                };
-            }
-        };
-    }
-}
 
 1;
 

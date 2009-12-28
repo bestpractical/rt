@@ -50,7 +50,6 @@ use strict;
 
 package RT::View::Admin::Queues;
 use Jifty::View::Declare -base;
-use RT::View::Helpers qw/show_key_info/;
 use base 'RT::View::CRUD';
 
 require RT::View::Admin::Queues::Templates;
@@ -223,16 +222,71 @@ template 'gnupg' => page { title => _('Queue GnuPG') } content {
     };
 
     if ( $queue->correspond_address ) {
-        show_key_info( $queue->correspond_address, 'private' );
+        show( 'key_info', $queue->correspond_address, 'private' );
     }
 
     if ( $queue->comment_address ) {
-        show_key_info( $queue->comment_address, 'private' );
+        show( 'key_info', $queue->comment_address, 'private' );
     }
 
 
 };
 
+private template 'key_info' => sub {
+    my $self  = shift;
+    my $email = shift;
+    my $type  = shift;
+    my %res   = RT::Crypt::GnuPG::get_key_info( $email, $type );
+
+    if ( $res{'exit_code'} || !keys %{ $res{'info'} } ) {
+        outs( _('No keys for this address') );
+    }
+    else {
+        h3 { _( 'GnuPG public key for %1', $email ) };
+        table {
+            row {
+                th { _('Trust') . ':' };
+                cell {
+                    _( $res{'info'}{'trust'} );
+                };
+            };
+            row {
+                th { _('Created') . ':' };
+                cell {
+                    $res{'info'}{'created'}
+                      ? $res{'info'}{'created'}->date
+                      : _('never');
+                };
+            };
+
+            row {
+                th { _('Expire') . ':' };
+                cell {
+                    $res{'info'}{'expire'}
+                      ? $res{'info'}{'expire'}->date
+                      : _('never');
+                };
+            };
+
+            for my $uinfo ( @{ $res{'info'}{'user'} } ) {
+                row {
+                    th { _('User (Created - expire)') . ':' };
+                    cell {
+                        $uinfo->{'string'} . '('
+                          . (
+                            $uinfo->{'created'} ? $uinfo->{'created'}->date
+                            : _('never') . ' - '
+                          )
+                          . (
+                            $uinfo->{'expire'} ? $uinfo->{'expire'}->date
+                            : _('never')
+                          ) . ')';
+                    };
+                };
+            }
+        };
+    }
+};
 
 1;
 
