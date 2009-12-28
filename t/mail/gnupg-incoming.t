@@ -10,7 +10,7 @@ plan skip_all => 'GnuPG required.'
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
 
-plan tests => 46;
+plan tests => 43;
 
 use Cwd 'getcwd';
 use String::ShellQuote 'shell_quote';
@@ -43,14 +43,9 @@ RT->config->set( 'mail_plugins' => ['Auth::MailFrom', 'Auth::GnuPG'] );
 
 my ($baseurl, $m) = RT::Test->started_ok;
 
-# configure key for General queue
-$m->login();
-$m->content_like(qr/Logout/, 'we did log in');
-$m->get( $baseurl.'/Admin/Queues/');
-$m->follow_link_ok( text => 'General', url_regex => qr!/Admin/Queues! );
-$m->submit_form( form_name => 'queue_modify',
-		 fields      => { correspond_address => 'general@example.com' } );
-$m->content_like(qr/general\@example.com.* - never/, 'has key info.');
+my $queue = RT::Model::Queue->new( current_user => RT->system_user );
+$queue->load('General');
+$queue->set_correspond_address( 'rt@example.com' );
 
 ok(my $user = RT::Model::User->new(current_user => RT->system_user));
 ok($user->load('root'), "Loaded user 'root'");
