@@ -453,6 +453,7 @@ before 'admin/queues' => run {
 
         $queue->child( _('Group rights'), url => "/admin/queues/group_rights?id=" . $id );
         $queue->child( _('User rights'),  url => "/admin/queues/user_rights?id=" . $id );
+        $queue->child( _('GnuPG'),  url => "/admin/queues/gnupg?id=" . $id );
     }
 };
 

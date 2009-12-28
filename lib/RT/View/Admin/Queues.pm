@@ -50,6 +50,7 @@ use strict;
 
 package RT::View::Admin::Queues;
 use Jifty::View::Declare -base;
+use RT::View::Helpers qw/show_key_info/;
 use base 'RT::View::CRUD';
 
 require RT::View::Admin::Queues::Templates;
@@ -192,6 +193,45 @@ sub queue {
     }
     return $queue;
 }
+
+template 'gnupg' => page { title => _('Queue GnuPG') } content {
+    my $self = shift;
+
+    # TODO move the following line to Dispatcher
+    return unless RT->config->get('gnupg')->{'enable'};
+
+    require RT::Crypt::GnuPG;
+
+    my $queue = RT::Model::Queue->new;
+    $queue->load(get('id'));
+
+    my $moniker = 'modify_queue_gnupg';
+    my $action = new_action(
+        class   => 'EditQueueGnuPG',
+        moniker => $moniker,
+    );
+    $action->queue($queue);
+
+    with( name => $moniker ), form {
+        input {
+            type is 'hidden';
+            name is 'id';
+            value is get('id');
+        };
+        render_action($action);
+        form_submit( label => _('Save') );
+    };
+
+    if ( $queue->correspond_address ) {
+        show_key_info( $queue->correspond_address, 'private' );
+    }
+
+    if ( $queue->comment_address ) {
+        show_key_info( $queue->comment_address, 'private' );
+    }
+
+
+};
 
 
 1;
