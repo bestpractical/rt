@@ -62,6 +62,10 @@ use constant display_columns => qw(id name description correspond_address
         comment_address status_schema 
         initial_priority final_priority default_due_in disabled);
 
+use constant edit_columns => qw(name description correspond_address
+  comment_address status_schema
+  initial_priority final_priority default_due_in disabled sign encrypt);
+
 sub view_field_status_schema {
     my $self = shift;
     my %args = @_;
@@ -196,18 +200,6 @@ template 'gnupg' => page { title => _('Queue GnuPG') } content {
 
     my $queue = RT::Model::Queue->new;
     $queue->load(get('id'));
-
-    my $moniker = 'queue_edit_gnupg';
-    my $action = new_action(
-        class   => 'EditQueueGnuPG',
-        moniker => $moniker,
-    );
-    $action->record($queue);
-
-    with( name => $moniker ), form {
-        render_action($action);
-        form_submit( label => _('Save') );
-    };
 
     if ( $queue->correspond_address ) {
         show( 'key_info', $queue->correspond_address, 'private' );

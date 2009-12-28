@@ -491,8 +491,7 @@ before 'admin/' => run {
 
       group_edit_user_rights group_edit_group_rights group_select_cfs group_edit_members
 
-      queue_edit_user_rights queue_edit_group_rights queue_edit_gnupg queue_select_cfs
-      queue_edit_watchers
+      queue_edit_user_rights queue_edit_group_rights queue_select_cfs queue_edit_watchers
 
       cf_select_ocfs cf_edit_user_rights cf_edit_group_rights
       /;
