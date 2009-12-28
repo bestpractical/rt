@@ -126,9 +126,10 @@ template 'index.html' => page { title => _('Global Configuration') } content {
 template 'system' => page { title => _('Configure RT') } content {
     my $self    = shift;
     my $section = get('section');
+    my $moniker = 'global_config_system';
     my $config  = new_action(
         class   => 'ConfigSystem',
-        moniker => 'config_system',
+        moniker => $moniker,
     );
     $config->order(1);
     my $restart = new_action(
@@ -140,7 +141,7 @@ template 'system' => page { title => _('Configure RT') } content {
     my $meta = $config->meta;
 
     if ($section) {
-        with( name => 'config_system' ), form {
+        with( name => $moniker ), form {
             for my $field ( sort keys %{ $args->{$section} } ) {
                 div {
                     attr { class => 'hints' };
@@ -197,14 +198,14 @@ private template 'rights' => sub {
     my $type = shift || 'user';
 
     my $class   = 'Edit' . ucfirst($type) . 'Rights';
-    my $moniker = 'modify_' . $type . '_rights';
+    my $moniker = 'global_edit_' . $type . '_rights';
 
     my $rights = new_action(
         class   => $class,
         moniker => $moniker,
     );
 
-    $rights->object( RT->system );
+    $rights->record( RT->system );
 
     with( name => $moniker ), form {
         render_action($rights);
@@ -225,9 +226,10 @@ template 'group_rights' => page { title => _('Modify Global Group Rights') }
 template 'select_custom_fields' =>
   page { title => _('Select Global Custom Fields') } content {
     my $self   = shift;
+    my $moniker = 'global_select_cfs';
     my $action = new_action(
         class   => 'SelectCustomFields',
-        moniker => 'select_cfs',
+        moniker => $moniker,
     );
 
     # set it to RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction
@@ -236,17 +238,12 @@ template 'select_custom_fields' =>
     if ($lookup_type) {
         if ( $lookup_type =~ /(Queue|Group|User)/ ) {
             my $class = 'RT::Model::' . $1;
-            $action->object( $class->new );
+            $action->record( $class->new );
         }
 
         $action->lookup_type($lookup_type);
 
-        with( name => 'select_cfs' ), form {
-            input {
-                type is 'hidden';
-                name is 'lookup_type';
-                value is $lookup_type;
-            };
+        with( name => $moniker ), form {
             render_action($action);
             form_submit( label => _('Save') );
         };
@@ -297,13 +294,13 @@ template 'select_custom_fields' =>
 
 template 'my_rt' => page { title => _('Configure My RT') } content {
     my $self = shift;
-    my $moniker = 'config_my_rt';
+    my $moniker = 'global_config_my_rt';
     my $action = new_action(
         class   => 'ConfigMyRT',
         moniker => $moniker,
     );
 
-    $action->object( RT->system );
+    $action->record( RT->system );
 
     with( name => $moniker ), form {
         render_action($action);

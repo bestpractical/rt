@@ -8,7 +8,7 @@ use Scalar::Defer;
 
 sub arguments {
     my $self = shift;
-    return {} unless $self->object;
+    return {} unless $self->record;
     my $args = $self->SUPER::arguments( @_ );
 
     my @groups;
@@ -32,7 +32,7 @@ sub arguments {
     {
         my $groups =
           RT::Model::GroupCollection->new;
-        $groups->limit_to_roles( object => $self->object );
+        $groups->limit_to_roles( object => $self->record );
         while ( my $group = $groups->next ) {
             push @groups, $group;
         }

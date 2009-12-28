@@ -5,18 +5,18 @@ package RT::Action::SelectObjectCustomFields;
 use base qw/RT::Action Jifty::Action/;
 use Scalar::Defer;
 
-__PACKAGE__->mk_accessors('object');
+__PACKAGE__->mk_accessors('record');
 
 sub arguments {
     my $self = shift;
-    return {} unless $self->object;
+    return {} unless $self->record;
     my $args = {};
-    $args->{object_id} = {
+    $args->{record_id} = {
         render_as     => 'hidden',
-        default_value => $self->object->id,
+        default_value => $self->record->id,
     };
 
-    my ( $object_name ) = $self->object->lookup_type =~ /RT::Model::(\w+)-/;
+    my ( $object_name ) = $self->record->lookup_type =~ /RT::Model::(\w+)-/;
     $args->{objects} = {
         render_as        => 'Checkboxes',
         default_value    => defer { $self->default_value },
@@ -35,15 +35,15 @@ sub take_action {
     my $self = shift;
 
     my $object    = RT::Model::CustomField->new;
-    my $object_id = $self->argument_value('object_id');
-    if ($object_id) {
-        $object->load($object_id);
+    my $record_id = $self->argument_value('record_id');
+    if ($record_id) {
+        $object->load($record_id);
         unless ( $object->id ) {
-            Jifty->log->error("couldn't load cf #$object_id");
+            Jifty->log->error("couldn't load cf #$record_id");
             return;
         }
     }
-    $self->object($object);
+    $self->record($object);
 
     my @ids;
     my $value = $self->argument_value('objects');
@@ -65,12 +65,12 @@ sub take_action {
         my $id = $object->id;
         if ( $ids{$id} ) {
             next if $current{$id};
-            my ($val, $msg) = $self->object->add_to_object($object);
+            my ($val, $msg) = $self->record->add_to_object($object);
             Jifty->log->error($msg) unless $val;
         }
         else {
             next unless $current{$id};
-            my ($val, $msg) = $self->object->remove_from_object($object);
+            my ($val, $msg) = $self->record->remove_from_object($object);
             Jifty->log->error($msg) unless $val;
         }
     }
@@ -81,7 +81,7 @@ sub take_action {
 
 sub available_objects {
     my $self = shift;
-    if ( $self->object->lookup_type =~ /^(.*?)-/ ) {
+    if ( $self->record->lookup_type =~ /^(.*?)-/ ) {
         my $class = $1;
         my $collection_class;
         if ( UNIVERSAL::can( $class . 'Collection', 'new' ) ) {
@@ -111,7 +111,7 @@ sub available_objects {
         Jifty->log->error(
             _(
                 "object of type %1 cannot take custom fields",
-                $self->object->lookup_type
+                $self->record->lookup_type
             )
         );
         return;
@@ -135,7 +135,7 @@ sub default_value {
     my $object_cfs;
     $object_cfs = RT::Model::ObjectCustomFieldCollection->new;
     $object_cfs->find_all_rows;
-    $object_cfs->limit_to_custom_field($self->object->id);
+    $object_cfs->limit_to_custom_field($self->record->id);
     return [ map { $_->object_id } @{ $object_cfs->items_array_ref } ];
 }
 

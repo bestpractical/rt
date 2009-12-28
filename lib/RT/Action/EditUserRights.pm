@@ -9,7 +9,7 @@ use Scalar::Defer;
 
 sub arguments {
     my $self = shift;
-    return {} unless $self->object;
+    return {} unless $self->record;
     my $args = $self->SUPER::arguments( @_ );
 
     my $privileged = RT::Model::Group->new;

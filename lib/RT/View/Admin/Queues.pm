@@ -100,17 +100,16 @@ private template 'rights' => sub {
 
     my $queue = $self->queue;
     my $class   = 'Edit' . ucfirst($type) . 'Rights';
-    my $moniker = 'modify_' . $type . '_rights';
+    my $moniker = 'queue_edit_' . $type . '_rights';
 
     my $rights = new_action(
         class   => $class,
         moniker => $moniker,
     );
 
-    $rights->object($queue);
+    $rights->record($queue);
 
     with ( name => $moniker ), form {
-        input { type is 'hidden'; name is 'id'; value is $queue->id };
         render_action($rights);
         form_submit( label => _('Save') );
     };
@@ -129,15 +128,15 @@ template 'people' => page { title => _('Modify People') } content {
     my $queue = $self->queue;
     return unless $queue;
 
+    my $moniker = 'queue_edit_watchers';
     my $action = new_action(
         class   => 'EditWatchers',
-        moniker => 'modify_people',
+        moniker => $moniker,
     );
 
-    $action->object($queue);
+    $action->record($queue);
 
-    with ( name => 'modify_people' ), form {
-        input { type is 'hidden'; name is 'id'; value is $queue->id };
+    with ( name => $moniker ), form {
         render_action($action);
         form_submit( label => _('Save') );
     };
@@ -148,22 +147,16 @@ template 'select_custom_fields' => page { title => _('Select CustomFields') } co
     my $queue = $self->queue;
     return unless $queue;
 
+    my $moniker = 'queue_select_cfs';
     my $action = new_action(
         class   => 'SelectCustomFields',
-        moniker => 'select_cfs',
+        moniker => $moniker,
     );
 
-    $action->object($queue);
-    # set it to RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction
-    # to select transaction cfs
+    $action->record($queue);
+    $action->lookup_type(get('lookup_type'));
 
-    my $lookup_type = get('lookup_type')
-      || 'RT::Model::Queue-RT::Model::Ticket';
-    $action->lookup_type($lookup_type);
-
-    with( name => 'select_cfs' ), form {
-        input { type is 'hidden'; name is 'id'; value is $queue->id };
-        input { type is 'hidden'; name is 'lookup_type'; value is $lookup_type };
+    with( name => $moniker ), form {
         render_action($action);
         form_submit( label => _('Save') );
     };
@@ -204,19 +197,14 @@ template 'gnupg' => page { title => _('Queue GnuPG') } content {
     my $queue = RT::Model::Queue->new;
     $queue->load(get('id'));
 
-    my $moniker = 'modify_queue_gnupg';
+    my $moniker = 'queue_edit_gnupg';
     my $action = new_action(
         class   => 'EditQueueGnuPG',
         moniker => $moniker,
     );
-    $action->queue($queue);
+    $action->record($queue);
 
     with( name => $moniker ), form {
-        input {
-            type is 'hidden';
-            name is 'id';
-            value is get('id');
-        };
         render_action($action);
         form_submit( label => _('Save') );
     };

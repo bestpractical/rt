@@ -6,19 +6,19 @@ use base qw/RT::Action Jifty::Action/;
 use RT::View::Helpers qw/render_user/;
 use Scalar::Defer;
 
-__PACKAGE__->mk_accessors('object');
+__PACKAGE__->mk_accessors('record');
 
 sub arguments {
     my $self = shift;
-    return {} unless $self->object;
+    return {} unless $self->record;
     my $args = {};
-    $args->{object_id} = {
+    $args->{record_id} = {
         render_as     => 'hidden',
-        default_value => $self->object->id,
+        default_value => $self->record->id,
     };
-    $args->{object_type} = {
+    $args->{record_class} = {
         render_as     => 'hidden',
-        default_value => ref $self->object,
+        default_value => ref $self->record,
     };
 
     for my $type (qw/cc admin_cc/) {
@@ -46,24 +46,24 @@ sub arguments {
 sub take_action {
     my $self = shift;
 
-    my $object_type = $self->argument_value('object_type');
-    return unless $object_type;
-    if ( $object_type eq 'RT::System' ) {
-        $self->object( RT->system );
+    my $record_class = $self->argument_value('record_class');
+    return unless $record_class;
+    if ( $record_class eq 'RT::System' ) {
+        $self->record( RT->system );
     }
-    elsif ( $RT::Model::ACE::OBJECT_TYPES{$object_type} ) {
-        my $object = $object_type->new;
-        my $object_id = $self->argument_value('object_id');
-        $object->load($object_id);
+    elsif ( $RT::Model::ACE::OBJECT_TYPES{$record_class} ) {
+        my $object = $record_class->new;
+        my $record_id = $self->argument_value('record_id');
+        $object->load($record_id);
         unless ( $object->id ) {
-            Jifty->log->error("couldn't load $object_type #$object_id");
+            Jifty->log->error("couldn't load $record_class #$record_id");
             return;
         }
 
-        $self->object($object);
+        $self->record($object);
     }
     else {
-        Jifty->log->error("object type '$object_type' is incorrect");
+        Jifty->log->error("record class '$record_class' is incorrect");
         return;
     }
 
@@ -92,7 +92,7 @@ sub take_action {
 
         for my $id ( keys %current ) {
             next if $ids{$id};
-            my ( $val, $msg ) = $self->object->delete_watcher(
+            my ( $val, $msg ) = $self->record->delete_watcher(
                 type      => $type,
                 principal => $id,
             );
@@ -101,7 +101,7 @@ sub take_action {
 
         for my $id ( keys %ids ) {
             next if $current{$id};
-            my ( $val, $msg ) = $self->object->add_watcher(
+            my ( $val, $msg ) = $self->record->add_watcher(
                 type      => $type,
                 principal => $id,
             );
@@ -160,7 +160,7 @@ sub default_value {
     my $self     = shift;
     my $type     = shift;
     my $sub_type = shift;
-    my $group    = $self->object->role_group($type);
+    my $group    = $self->record->role_group($type);
     return [] unless $group->id;
     my $current =
         $sub_type eq 'users'

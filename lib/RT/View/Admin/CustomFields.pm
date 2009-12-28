@@ -63,20 +63,15 @@ content {
     my $self = shift;
     my $cf = RT::Model::CustomField->new;
     $cf->load( get('id') );
-    my $moniker = 'select_object_custom_fields';
+    my $moniker = 'cf_select_ocfs';
     my $action = new_action(
         class   => 'SelectObjectCustomFields',
         moniker => $moniker,
     );
 
-    $action->object($cf);
+    $action->record($cf);
 
     with( name => $moniker ), form {
-        input {
-            type is 'hidden';
-            name is 'id';
-            value is get('id');
-        };
         render_action($action);
         form_submit( label => _('Save') );
     };
@@ -101,7 +96,7 @@ private template 'rights' => sub {
     my $type = shift || 'user';
 
     my $class   = 'Edit' . ucfirst($type) . 'Rights';
-    my $moniker = 'modify_' . $type . '_rights';
+    my $moniker = 'cf_edit_' . $type . '_rights';
 
     my $rights = new_action(
         class   => $class,
@@ -110,14 +105,9 @@ private template 'rights' => sub {
 
     my $cf = RT::Model::CustomField->new;
     $cf->load(get('id'));
-    $rights->object( $cf );
+    $rights->record( $cf );
 
     with( name => $moniker ), form {
-        input {
-            type is 'hidden';
-            name is 'id';
-            value is get('id');
-        };
         render_action($rights);
         form_submit( label => _('Save') );
     };

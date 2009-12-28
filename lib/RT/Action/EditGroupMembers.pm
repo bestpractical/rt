@@ -6,20 +6,20 @@ package RT::Action::EditGroupMembers;
 use base qw/RT::Action Jifty::Action/;
 use Scalar::Defer;
 
-__PACKAGE__->mk_accessors('object');
+__PACKAGE__->mk_accessors('record');
 
 sub arguments {
     my $self = shift;
-    return {} unless $self->object;
+    return {} unless $self->record;
 
     my $args = {};
-    $args->{object_id} = {
+    $args->{record_id} = {
         render_as     => 'hidden',
-        default_value => $self->object->id,
+        default_value => $self->record->id,
     };
-    $args->{object_type} = {
+    $args->{record_class} = {
         render_as     => 'hidden',
-        default_value => ref $self->object,
+        default_value => ref $self->record,
     };
 
     $args->{users} = {
@@ -42,21 +42,21 @@ sub arguments {
 sub take_action {
     my $self = shift;
 
-    my $object_type = $self->argument_value('object_type');
-    return unless $object_type;
-    if ( $RT::Model::ACE::OBJECT_TYPES{$object_type} ) {
-        my $object    = $object_type->new;
-        my $object_id = $self->argument_value('object_id');
-        $object->load($object_id);
+    my $record_class = $self->argument_value('record_class');
+    return unless $record_class;
+    if ( $RT::Model::ACE::OBJECT_TYPES{$record_class} ) {
+        my $object    = $record_class->new;
+        my $record_id = $self->argument_value('record_id');
+        $object->load($record_id);
         unless ( $object->id ) {
-            Jifty->log->error("couldn't load $object_type #$object_id");
+            Jifty->log->error("couldn't load $record_class #$record_id");
             return;
         }
 
-        $self->object($object);
+        $self->record($object);
     }
     else {
-        Jifty->log->error("object type '$object_type' is incorrect");
+        Jifty->log->error("record class '$record_class' is incorrect");
         return;
     }
 
@@ -79,14 +79,14 @@ sub take_action {
             next if $members{$member};
 
             my ( $val, $msg ) =
-              $self->object->delete_member( $member );
+              $self->record->delete_member( $member );
             Jifty->log->error($msg) unless $val;
         }
 
         for my $member ( keys %members ) {
             next if $current_members{$member};
             my ( $val, $msg ) =
-              $self->object->add_member( $member );
+              $self->record->add_member( $member );
             Jifty->log->error($msg) unless $val;
         }
     }
@@ -133,7 +133,7 @@ sub available_values {
         # self-recursive group membership considered harmful!
         $collection->limit(
             column   => 'id',
-            value    => $self->object->id,
+            value    => $self->record->id,
             operator => '!='
         );
         $collection->limit(
@@ -151,14 +151,14 @@ sub default_value {
     my $type = shift || 'user';
     my @values;
     if ( $type eq 'user' ) {
-        my $users = $self->object->user_members( recursively => 0 );
+        my $users = $self->record->user_members( recursively => 0 );
         $users->order_by( column => 'name', order => 'ASC'  );
         while ( my $user = $users->next ) {
             push @values, $user->id;
         }
     }
     else {
-        my $group_members = $self->object->members;
+        my $group_members = $self->record->members;
         $group_members->limit_to_groups();
         while ( my $member = $group_members->next ) {
             push @values, $member->member_id;

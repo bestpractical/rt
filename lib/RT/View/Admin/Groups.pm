@@ -69,20 +69,15 @@ page { title => _('Select Custom Fields for Group') } content {
     my $self  = shift;
     my $group = RT::Model::Group->new;
     $group->load( get('id') );
+    my $moniker = 'group_select_cfs',
     my $action = new_action(
         class   => 'SelectCustomFields',
-        moniker => 'select_cfs',
     );
 
-    $action->object($group);
+    $action->record($group);
     $action->lookup_type( $group->custom_field_lookup_type );
 
-    with( name => 'select_cfs' ), form {
-        input {
-            type is 'hidden';
-            name is 'id';
-            value is get('id');
-        };
+    with( name => $moniker ), form {
         render_action($action);
         form_submit( label => _('Save') );
     };
@@ -92,20 +87,15 @@ template 'members' => page { title => _('Group Members') } content {
     my $self  = shift;
     my $group = RT::Model::Group->new;
     $group->load( get('id') );
-    my $moniker = 'modify_group_members';
+    my $moniker = 'group_edit_members';
     my $action = new_action(
         class   => 'EditGroupMembers',
         moniker => $moniker,
     );
 
-    $action->object($group);
+    $action->record($group);
 
     with( name => $moniker ), form {
-        input {
-            type is 'hidden';
-            name is 'id';
-            value is get('id');
-        };
         render_action($action);
         form_submit( label => _('Save') );
     };
@@ -167,7 +157,7 @@ private template 'rights' => sub {
     my $type = shift || 'user';
 
     my $class   = 'Edit' . ucfirst($type) . 'Rights';
-    my $moniker = 'modify_' . $type . '_rights';
+    my $moniker = 'group_edit_' . $type . '_rights';
 
     my $rights = new_action(
         class   => $class,
@@ -176,14 +166,9 @@ private template 'rights' => sub {
 
     my $group = RT::Model::Group->new;
     $group->load(get('id'));
-    $rights->object( $group );
+    $rights->record( $group );
 
     with( name => $moniker ), form {
-        input {
-            type is 'hidden';
-            name is 'id';
-            value is get('id');
-        };
         render_action($rights);
         form_submit( label => _('Save') );
     };

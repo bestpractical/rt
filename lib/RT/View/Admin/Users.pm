@@ -82,20 +82,16 @@ template 'select_custom_fields' => page { title => _('Select Custom Fields for U
     my $self = shift;
     my $user = RT::Model::User->new;
     $user->load( get('id') );
+    my $moniker = 'user_select_cfs';
     my $action = new_action(
         class   => 'SelectCustomFields',
-        moniker => 'select_cfs',
+        moniker => $moniker,
     );
 
-    $action->object($user);
+    $action->record($user);
     $action->lookup_type($user->custom_field_lookup_type);
 
-    with( name => 'select_cfs' ), form {
-        input {
-            type is 'hidden';
-            name is 'id';
-            value is get('id');
-        };
+    with( name => $moniker ), form {
         render_action($action);
         form_submit( label => _('Save') );
     };
@@ -105,20 +101,15 @@ template 'memberships' => page { title => _('User Memberships') } content {
     my $self = shift;
     my $user = RT::Model::User->new;
     $user->load( get('id') );
-    my $moniker = 'modify_user_memberships';
+    my $moniker = 'user_edit_memberships';
     my $action = new_action(
         class   => 'EditUserMemberships',
         moniker => $moniker,
     );
 
-    $action->object($user);
+    $action->record($user);
 
     with( name => $moniker ), form {
-        input {
-            type is 'hidden';
-            name is 'id';
-            value is get('id');
-        };
         render_action($action);
         form_submit( label => _('Save') );
     };
@@ -127,13 +118,21 @@ template 'memberships' => page { title => _('User Memberships') } content {
 template 'gnupg' => page { title => _('User GnuPG') } content {
     my $self = shift;
 
+
     # TODO move the following line to Dispatcher
     return unless RT->config->get('gnupg')->{'enable'};
 
-    require RT::Crypt::GnuPG;
-
     my $user = RT::Model::User->new;
-    $user->load(get('id'));
+    $user->load( get('id') );
+
+    my $moniker = 'user_select_private_key';
+    my $action = new_action(
+        class   => 'SelectPrivateKey',
+        moniker => $moniker,
+    );
+    $action->record( $user );
+
+    require RT::Crypt::GnuPG;
 
     unless ( $user->email ) {
         h2 { _("User has empty email address") };
@@ -142,20 +141,7 @@ template 'gnupg' => page { title => _('User GnuPG') } content {
 
     show( 'key_info', $user->email, 'public' );
 
-    my $moniker = 'select_private_key';
-    my $action = new_action(
-        class   => 'SelectPrivateKey',
-        moniker => $moniker,
-    );
-
-    $action->object($user);
-
     with( name => $moniker ), form {
-        input {
-            type is 'hidden';
-            name is 'id';
-            value is get('id');
-        };
         render_action($action);
         form_submit( label => _('Save') );
     };
@@ -169,7 +155,7 @@ template 'history' => page { title => _('User History') } content {
     my $txns = $user->transactions;
     $txns->order_by(
         {
-            column => 'Created',
+            column => 'created',
             order  => 'ASC',
         },
         {
@@ -201,7 +187,7 @@ template 'history' => page { title => _('User History') } content {
 
 template 'my_rt' => page { title => _('MyRT for User') } content {
     my $self = shift;
-    my $moniker = 'config_my_rt';
+    my $moniker = 'user_config_my_rt';
     my $action = new_action(
         class   => 'ConfigMyRT',
         moniker => $moniker,
@@ -209,14 +195,9 @@ template 'my_rt' => page { title => _('MyRT for User') } content {
 
     my $user = RT::Model::User->new;
     $user->load(get('id'));
-    $action->object( $user );
+    $action->record( $user );
 
     with( name => $moniker ), form {
-        input {
-            type is 'hidden';
-            name is 'id';
-            value is get('id');
-        };
         render_action($action);
         form_submit( label => _('Save') );
     };
