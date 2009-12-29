@@ -60,11 +60,10 @@ use constant object_type     => 'Queue';
 
 use constant display_columns => qw(id name description correspond_address
         comment_address status_schema 
-        initial_priority final_priority default_due_in disabled);
-
-use constant edit_columns => qw(name description correspond_address
-  comment_address status_schema
-  initial_priority final_priority default_due_in disabled sign encrypt);
+        initial_priority final_priority default_due_in disabled sign encrypt);
+use constant create_columns => qw(name description correspond_address
+        comment_address status_schema 
+        initial_priority final_priority default_due_in disabled sign encrypt);
 
 sub view_field_status_schema {
     my $self = shift;
