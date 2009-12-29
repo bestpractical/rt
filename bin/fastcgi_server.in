@@ -90,6 +90,8 @@ usually F</opt/rt3/var/fastcgi.sock>.
 =item -p, --port - port to use instead of socket, by default socket is
 used.
 
+=item --pidfile - pid file path, by default F<RT/var/path/fastcgi.pid>.
+
 =back
 
 =head1 SERVER CONFIGURATION
@@ -155,6 +157,7 @@ GetOptions(
     's|socket=s'     => \$opt{'socket'},
     'p|port=s'       => \$opt{'port'},
     'n|nprocesses=s' => \$opt{'nprocesses'},
+    'pidfile=s'      => \$opt{'pidfile'},
 );
 
 if ( $opt{'help'} ) {
@@ -174,16 +177,18 @@ unless ( $opt{'socket'} && $opt{'port'} ) {
     require File::Spec;
     $opt{'socket'} = File::Spec->catfile($RT::VarPath, 'fastcgi.sock');
 }
-
 if ( $opt{'port'} ) {
     $opt{'socket'} = ':'. $opt{'port'};
 }
 $ENV{'FCGI_SOCKET_PATH'} = $opt{'socket'};
 
+$opt{'pidfile'} ||= File::Spec->catfile($RT::VarPath, 'fastcgi.pid');
+
 require CGI::Fast;
 
 my $proc_manager = RT::Interface::Web::FCGI::Server->new({
     n_processes => $opt{'nprocesses'} || 10,
+    pid_fname   => $opt{'pidfile'},
 });
 
 $proc_manager->pm_manage();
