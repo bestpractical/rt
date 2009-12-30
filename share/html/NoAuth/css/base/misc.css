@@ -43,3 +43,7 @@ html[xmlns] .clearfix { /* O */
     visibility: hidden;
 }
 
+.titlebox .titlebox-content hr.clear {
+    visibility: hidden;
+}
+

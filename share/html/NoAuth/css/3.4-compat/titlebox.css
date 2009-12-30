@@ -77,10 +77,6 @@
     color: black;
 }
 
-.titlebox .titlebox-content hr.clear {
-    visibility: hidden;
-}
-
 %# TRS: I wish there was a more elegant way to do this... I essentially need to
 %# select all elements X that do NOT have element Y as a descendant... which I can
 %# fake with the child selector of CSS2, but IE is stupid and does not support that.
