@@ -27,8 +27,17 @@ sub arguments {
         $args->{'reset'} = {
             render_as     => 'InlineButton',
             default_value => 1,
-            label => 'Reset',
+            label => _('Reset'),
         };
+
+        $args->{'summary_rows'} = {
+            default_value => defer {
+                $self->record->preferences( 'SummaryRows',
+                    RT->config->get('default_summary_rows') );
+            },
+            label => _('Rows per box'),
+        };
+
     }
 
     for my $type ( qw/body summary/ ) {
@@ -70,6 +79,13 @@ sub take_action {
 
     if ( $self->argument_value('reset') && $record_class ne 'RT::System' ) {
         $self->record->set_preferences('HomepageSettings', {});
+    }
+    elsif ($self->argument_value('summary_rows')
+        && $record_class ne 'RT::System' )
+    {
+        my $value = int $self->argument_value('summary_rows');
+        $value = 0 if $value < 0;
+        $self->record->set_preferences( 'SummaryRows', $value );
     }
     else {
 
