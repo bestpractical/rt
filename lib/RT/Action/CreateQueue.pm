@@ -2,7 +2,7 @@ package RT::Action::CreateQueue;
 use strict;
 use warnings;
 
-use base qw/Jifty::Action::Record::Create /;
+use base qw/Jifty::Action::Record::Create RT::Action::WithCustomFields/;
 
 sub record_class { 'RT::Model::Queue' }
 
@@ -15,5 +15,23 @@ use Jifty::Action schema {
     param encrypt =>
         render as 'Checkbox',
 };
+
+sub arguments {
+    my $self = shift;
+    if ( !$self->{_cached_arguments} ) {
+
+        # The blank slate is the parameters provided using Jifty::Param::Schema
+        $self->{_cached_arguments} = \%{ $self->PARAMS };
+        my $queue = RT::Model::Queue->new;
+        my @args = $self->_setup_custom_fields( cfs => $queue->custom_fields );
+        for my $args (@args) {
+            my $name = delete $args->{name};
+            $self->{_cached_arguments}{$name} = $args;
+
+        }
+    }
+
+    return $self->{_cached_arguments};
+}
 
 1;
