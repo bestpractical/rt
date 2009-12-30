@@ -10,7 +10,7 @@ plan skip_all => 'GnuPG required.'
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
 
-plan tests => 492;
+plan tests => 381;
 
 use RT::ScripAction::SendEmail;
 use File::Temp qw(tempdir);
@@ -358,15 +358,10 @@ sub cleanup_headers {
 
 sub set_queue_crypt_options {
     my %args = @_;
-    $m->get_ok("/Admin/Queues/Modify.html?id=". $queue->id);
-    $m->form_with_fields('sign', 'encrypt');
     foreach my $opt ('sign', 'encrypt') {
-        if ( $args{$opt} ) {
-            $m->tick($opt => 1);
-        } else {
-            $m->untick($opt => 1);
-        }
+        my $method = "set_$opt";
+        my ( $status, $msg ) = $queue->$method( $args{$opt} );
+        ok( $status, $msg );
     }
-    $m->submit;
 }
 

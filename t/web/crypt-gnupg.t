@@ -9,7 +9,7 @@ plan skip_all => 'GnuPG required.'
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
 
-plan tests => 93;
+plan tests => 61;
 
 use RT::ScripAction::SendEmail;
 
@@ -80,12 +80,8 @@ my ($baseurl, $m) = RT::Test->started_ok;
 diag($baseurl) if $ENV{TEST_VERBOSE};
 ok $m->login, 'logged in';
 
-$m->get_ok("/Admin/Queues/Modify.html?id=$qid");
-$m->form_with_fields('sign', 'encrypt');
-$m->field(encrypt => 1);
-$m->submit;
-
-RT::Test->clean_caught_mails;
+my ( $status, $msg ) = $queue->set_encrypt(1);
+ok( $status, $msg );
 
 $m->goto_create_ticket( $queue );
 $m->fill_in_action_ok(create_ticket => (
@@ -152,13 +148,10 @@ MAIL
     like($attachments[0]->content, qr/$rtname/, "RT's mail includes this instance's name");
 }
 
-$m->get("$baseurl/Admin/Queues/Modify.html?id=$qid");
-$m->form_with_fields('sign', 'encrypt');
-$m->field(encrypt => undef);
-$m->field(sign => 1);
-$m->submit;
-
-RT::Test->clean_caught_mails;
+( $status, $msg ) = $queue->set_encrypt(undef);
+ok( $status, $msg );
+( $status, $msg ) = $queue->set_sign(1);
+ok( $status, $msg );
 
 $m->goto_create_ticket( $queue );
 $m->fill_in_action_ok(create_ticket => (
@@ -228,13 +221,10 @@ MAIL
     like($attachments[0]->content, qr/$rtname/, "RT's mail includes this instance's name");
 }
 
-$m->get("$baseurl/Admin/Queues/Modify.html?id=$qid");
-$m->form_with_fields('sign', 'encrypt');
-$m->field(encrypt => 1);
-$m->field(sign => 1);
-$m->submit;
-
-RT::Test->clean_caught_mails;
+( $status, $msg ) = $queue->set_encrypt(1);
+ok( $status, $msg );
+( $status, $msg ) = $queue->set_sign(1);
+ok( $status, $msg );
 
 $user->set_email('recipient@example.com');
 $m->goto_create_ticket( $queue );
