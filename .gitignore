@@ -1,3 +1,4 @@
+bin/fastcgi_server
 bin/mason_handler.fcgi
 bin/mason_handler.scgi
 bin/mason_handler.svc
