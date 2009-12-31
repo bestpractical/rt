@@ -202,4 +202,12 @@ sub render_custom_field_binary {
     );
 }
 
+sub custom_field_columns {
+    my $self   = shift;
+    my $object = shift;
+    my $cfs    = $object->custom_fields;
+    return map { 'cf_' . $_->id } @{ $cfs->items_array_ref };
+}
+
+
 1;
