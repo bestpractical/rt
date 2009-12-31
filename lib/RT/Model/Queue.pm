@@ -256,10 +256,11 @@ sub create {
 
     my $sign = delete $args{'sign'};
     my $encrypt = delete $args{'encrypt'};
+    my %args_without_cfs = map { $_ => $args{$_} } grep { ! /^cf_/ } keys %args;
 
     #TODO better input validation
     Jifty->handle->begin_transaction();
-    my $id = $self->SUPER::create( %args );
+    my $id = $self->SUPER::create( %args_without_cfs );
     unless ($id) {
         Jifty->handle->rollback();
         return ( 0, _('Queue could not be created') );
