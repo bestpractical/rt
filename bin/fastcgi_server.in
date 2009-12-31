@@ -150,6 +150,7 @@ my %opt = (
     socket     => '',
     port       => 0,
     nprocesses => 10,
+    pidfile    => '',
 );
 
 GetOptions(
