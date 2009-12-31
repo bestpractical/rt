@@ -34,4 +34,11 @@ sub arguments {
     return $self->{_cached_arguments};
 }
 
+sub take_action {
+    my $self = shift;
+    $self->SUPER::take_action;
+    $self->_add_custom_field_values;
+    return 1;
+}
+
 1;
