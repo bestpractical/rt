@@ -64,6 +64,7 @@
 % $m->abort();
 
 <%INIT>
+my $URL = RT->Config->Get('WebPath')."/"
 $m->callback( %ARGS, CallbackName => 'BeforeSessionDelete' );
 
 if (defined %session) {
@@ -73,7 +74,3 @@ if (defined %session) {
 
 $m->callback( %ARGS, CallbackName => 'AfterSessionDelete' );
 </%INIT>
-
-<%ARGS>
-$URL => RT->Config->Get('WebPath')."/"
-</%ARGS>
