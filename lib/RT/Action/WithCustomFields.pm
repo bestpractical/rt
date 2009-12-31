@@ -21,39 +21,49 @@ sub _setup_custom_fields {
     my %args = @_;
     my $cfs = $args{cfs};
 
-    my @args;
+    my @cf_args;
+
     while ( my $cf = $cfs->next ) {
-        my $render_as = $cf->type_for_rendering;
-        my $name      = 'cf_' . $cf->id;
-
-        my %args = (
-            name      => $name,
-            label     => $cf->name,
-            render_as => $render_as,
-        );
-
-        if ( $render_as =~ /Select/i ) {
-            $args{valid_values} = [
-                {
-                    collection   => $cf->values,
-                    display_from => 'name',
-                    value_from   => 'name',
-                }
-            ];
-        }
-        elsif ( $render_as =~ /Combobox/i ) {
-            $args{available_values} = [
-                {
-                    collection   => $cf->values,
-                    display_from => 'name',
-                    value_from   => 'name',
-                }
-            ];
-        }
-
-        push @args, \%args;
+        my $cf_args = $self->setup_custom_field($cf);
+        push @cf_args, $cf_args;
     }
-    return @args;
+
+    return @cf_args;
+}
+
+sub _setup_custom_field {
+    my $self = shift;
+    my $cf = shift;
+
+    my $render_as = $cf->type_for_rendering;
+    my $name      = 'cf_' . $cf->id;
+
+    my %args = (
+        name      => $name,
+        label     => $cf->name,
+        render_as => $render_as,
+    );
+
+    if ( $render_as =~ /Select/i ) {
+        $args{valid_values} = [
+            {
+                collection   => $cf->values,
+                display_from => 'name',
+                value_from   => 'name',
+            }
+        ];
+    }
+    elsif ( $render_as =~ /Combobox/i ) {
+        $args{available_values} = [
+            {
+                collection   => $cf->values,
+                display_from => 'name',
+                value_from   => 'name',
+            }
+        ];
+    }
+
+    return \%args;
 }
 
 1;
