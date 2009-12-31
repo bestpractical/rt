@@ -66,5 +66,45 @@ sub _setup_custom_field {
     return \%args;
 }
 
+sub _add_custom_field_values {
+    my $self = shift;
+
+    my @args = grep { /^cf_\d+$/ } $self->argument_names;
+    for my $arg (@args) {
+        my $id;
+        $id = $1 if $arg =~ /^cf_(\d+)$/;    # this always happens
+        $self->_add_custom_field_value(
+            field => $1,
+            value => $self->argument_value($arg)
+        );
+
+    }
+}
+
+sub _add_custom_field_value {
+    my $self  = shift;
+    my %args  = @_;
+    my $field = $args{field};
+    my $value = $args{value};
+
+    my @values = ref $value eq 'ARRAY' ? @$value : $value;
+    for my $value (@values) {
+        if ( UNIVERSAL::isa( $value, 'Jifty::Web::FileUpload' ) ) {
+            $self->record->add_custom_field_value(
+                field         => $field,
+                value         => $value->filename,
+                large_content => $value->content,
+                content_type  => $value->content_type,
+            );
+        }
+        else {
+            $self->record->add_custom_field_value(
+                field => $field,
+                value => $value,
+            );
+        }
+    }
+}
+
 1;
 
