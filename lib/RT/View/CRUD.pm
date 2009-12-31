@@ -115,10 +115,91 @@ sub view_field {
             }
         );
     }
+    elsif ( $args{field} =~ /^cf_(\d+)$/ ) {
+        my $ocfvs = $args{action}->record->custom_field_values( $1 );
+        $self->render_custom_field_values( $ocfvs );
+    }
     else {
         $self->SUPER::view_field(@_);
     }
 }
 
+sub render_custom_field_values {
+    my $self  = shift;
+    my $ocfvs = shift;
+    return '' unless $ocfvs->count;
+    my $cf = $ocfvs->first->custom_field;
+
+    my $method = $self->can( 'render_custom_field_' . lc $cf->type );
+
+    $ocfvs->goto_first_item;
+    while ( my $ocfv = $ocfvs->next ) {
+        if ( $method ) {
+            $method->( $self, $ocfv );
+        }
+        else {
+            outs( $ocfv->content );
+        }
+    }
+}
+
+sub render_custom_field_text {
+    my $self    = shift;
+    my $object  = shift;
+    my $content = $object->large_content || $object->content;
+    $content = RT::Interface::Web->scrub_html($content);
+    $content =~ s!\n!<br />!g;
+    outs_raw($content);
+}
+
+sub render_custom_field_wikitext {
+    my $self   = shift;
+    my $object = shift;
+    require Text::WikiFormat;
+    my $content = $object->large_content || $object->content;
+    $content = RT::Interface::Web->scrub_html($content);
+    my $base         = $object->object->wiki_base;
+    my $wiki_content = Text::WikiFormat::format(
+        $content . "\n",
+        {},
+        {
+            extended       => 1,
+            absolute_links => 1,
+            implicit_links => RT->config->get('wiki_implicit_links'),
+            prefix         => $base
+        }
+    );
+    outs_raw($wiki_content);
+}
+
+sub render_custom_field_image {
+    my $self   = shift;
+    my $object = shift;
+    my $url =
+      '/Download/CustomFieldValue/' . $object->id . '/' . $object->content;
+    hyperlink(
+        label => $object->content,
+        url   => $url,
+    );
+    img {
+        attr {
+            type   => $object->content_type,
+            height => 64,
+            src    => $url,
+            align  => 'middle'
+        };
+    };
+}
+
+sub render_custom_field_binary {
+    my $self = shift;
+    my $object = shift;
+    hyperlink(
+        label => $object->content,
+        url   => '/Download/CustomFieldValue/'
+          . $object->id . '/'
+          . $object->content,
+    );
+}
 
 1;
