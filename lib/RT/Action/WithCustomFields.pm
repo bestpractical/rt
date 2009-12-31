@@ -24,7 +24,7 @@ sub _setup_custom_fields {
     my @cf_args;
 
     while ( my $cf = $cfs->next ) {
-        my $cf_args = $self->setup_custom_field($cf);
+        my $cf_args = $self->_setup_custom_field($cf);
         push @cf_args, $cf_args;
     }
 
