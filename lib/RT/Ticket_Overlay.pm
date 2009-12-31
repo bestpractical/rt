@@ -1620,8 +1620,9 @@ sub IsOwner {
 
 =head2 TransactionAddresses
 
-Returns a composite hashref of the results of L<RT::Transaction/Addresses> for all this ticket's Create, Comment or Correspond transactions.
-The keys are C<To>, C<Cc> and C<Bcc>. The values are lists of C<Email::Address> objects.
+Returns a composite hashref of the results of L<RT::Transaction/Addresses> for
+all this ticket's Create, Comment or Correspond transactions. The keys are
+stringified email addresses. Each value is an L<Email::Address> object.
 
 NOTE: For performance reasons, this method might want to skip transactions and go straight for attachments. But to make that work right, we're going to need to go and walk around the access control in Attachment.pm's sub _Value.
 
