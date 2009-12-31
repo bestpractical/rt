@@ -58,12 +58,23 @@ alias RT::View::Admin::Queues::Templates under 'templates/';
 use constant page_title      => 'Queue Management';
 use constant object_type     => 'Queue';
 
-use constant display_columns => qw(id name description correspond_address
-        comment_address status_schema 
-        initial_priority final_priority default_due_in disabled sign encrypt);
-use constant create_columns => qw(name description correspond_address
-        comment_address status_schema 
-        initial_priority final_priority default_due_in disabled sign encrypt);
+sub display_columns {
+    my $self = shift;
+    my @columns = qw(id name description correspond_address
+      comment_address status_schema
+      initial_priority final_priority default_due_in disabled sign encrypt);
+    push @columns, $self->custom_field_columns( RT::Model::Queue->new );
+    return @columns;
+}
+
+sub create_columns {
+    my $self    = shift;
+    my @columns = qw(name description correspond_address
+      comment_address status_schema
+      initial_priority final_priority default_due_in disabled sign encrypt);
+    push @columns, $self->custom_field_columns( RT::Model::Queue->new );
+    return @columns;
+}
 
 sub view_field_status_schema {
     my $self = shift;
