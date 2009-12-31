@@ -31,7 +31,7 @@ no warnings 'once';
 # get the top page
 $agent->login($user_obj->name => 'customer');
 # Test for absence of Configure and Preferences tabs.
-ok(!$agent->find_link( url => RT->config->get('web_path') . "/Admin/",
+ok(!$agent->find_link( url => RT->config->get('web_path') . "/admin/",
 		       text => 'Configuration'), "No config tab" );
 ok(!$agent->find_link( url => RT->config->get('web_path') . "/User/Prefs.html",
 		       text => 'Preferences'), "No prefs pane" );
@@ -46,7 +46,7 @@ ok($grantid,$grantmsg);
 $agent->get( $agent->uri ); 
 
 like($agent->{'content'} , qr/Logout/i, "Reloaded page successfully");
-ok($agent->find_link( url => RT->config->get('web_path') . "/Admin/",
+ok($agent->find_link( url => RT->config->get('web_path') . "/admin/",
 		       text => 'Configuration'), "Found config tab" );
 my ($revokeid,$revokemsg) =$user_obj->principal->revoke_right(right => 'ShowConfigTab');
 ok ($revokeid,$revokemsg);
