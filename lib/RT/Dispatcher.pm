@@ -486,7 +486,7 @@ before 'admin/' => run {
 
     my ( $id, $lookup_type );
     my @monikers = qw/
-        global_select_cfs
+        global_select_cfs 
       user_edit_memberships user_select_cfs user_config_my_rt user_select_private_key
 
       group_edit_user_rights group_edit_group_rights group_select_cfs group_edit_members
@@ -494,6 +494,8 @@ before 'admin/' => run {
       queue_edit_user_rights queue_edit_group_rights queue_select_cfs queue_edit_watchers
 
       cf_select_ocfs cf_edit_user_rights cf_edit_group_rights
+
+      update_queue update_group update_user update_custom_field update_template
       /;
 
     for my $action ( Jifty->web->request->actions ) {
@@ -501,6 +503,10 @@ before 'admin/' => run {
             if ( $action->argument('record_id') ) {
                 $id = $action->argument('record_id');
             }
+            elsif ( $action->argument('id') ) {
+                $id = $action->argument('id');
+            }
+
             if ( $action->moniker =~ qr/select_cfs/ ) {
                 $lookup_type = $action->argument('lookup_type');
             }
