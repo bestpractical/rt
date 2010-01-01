@@ -110,6 +110,8 @@ sub setup {
     $self->SUPER::setup($args);
 
     $self->_setup_config(@$args);
+    eval { require Jifty::Plugin::Compat; 1 };
+
     RT->init();
 }
 
