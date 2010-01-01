@@ -70,6 +70,9 @@ template 'index.html' => page {
     }
 };
 
+# no popup update link
+private template view_item_controls  => sub { };
+
 sub view_via_callback {
     my $self = shift;
     my %args = @_;
@@ -209,5 +212,21 @@ sub custom_field_columns {
     return map { 'cf_' . $_->id } @{ $cfs->items_array_ref };
 }
 
+# we can't use jifty's default update is because that's a json one
+# which is not capable since we may have file cf
+template 'edit' => page { title => _( 'Update ' . shift->object_type ), }
+content {
+    my $self   = shift;
+    my $class  = 'RT::Model::' . $self->object_type;
+    my $object = $class->new;
+    $object->load( get('id') );
+
+    my $moniker = 'update_' . lc $self->object_type;
+    my $action = $object->as_update_action( moniker => $moniker, );
+    with( name => $moniker ), form {
+        render_action($action);
+        form_submit( label => _('Save') );
+    };
+};
 
 1;
