@@ -189,12 +189,12 @@ This routine could really use _accurate_ heuristics. (XXX TODO)
 
 sub static_file_headers {
     # make cache public
-    $HTML::Mason::Commands::r->headers_out->{'Cache-Control'} = 'max-age=259200, public';
+    $HTML::Mason::Commands::r->header_out( 'Cache-Control' => 'max-age=259200, public' );
 
     # Expire things in a month.
     my $date = RT::DateTime->now;
     $date->add(months => 1);
-    $HTML::Mason::Commands::r->headers_out->{'Expires'} = $date->rfc2616;
+    $HTML::Mason::Commands::r->header_out( 'Expires' => $date->rfc2616);
 
     # if we set 'Last-Modified' then browser request a comp using 'If-Modified-Since'
     # request, but we don't handle it and generate full reply again
