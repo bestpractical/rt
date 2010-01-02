@@ -47,27 +47,27 @@
 # END BPS TAGGED BLOCK }}}
 
 package RT::Action::NotifyAsComment;
-require RT::Action::Notify;
 
 use strict;
 use warnings;
+
 use base qw(RT::Action::Notify);
 
 =head2 SetReturnAddress
 
-Tell SendEmail that this message should come out as a comment. 
+Tell SendEmail that this message should come out as a comment.
 Calls SUPER::SetReturnAddress.
 
 =cut
 
 sub SetReturnAddress {
-	my $self = shift;
-	
-	# Tell RT::Action::SendEmail that this should come 
-	# from the relevant comment email address.
-	$self->{'comment'} = 1;
-	
-	return($self->SUPER::SetReturnAddress(is_comment => 1));
+    my $self = shift;
+
+    # Tell RT::Action::SendEmail that this should come
+    # from the relevant comment email address.
+    $self->{'comment'} = 1;
+
+    return $self->SUPER::SetReturnAddress( @_, is_comment => 1 );
 }
 
 eval "require RT::Action::NotifyAsComment_Vendor";
@@ -76,4 +76,3 @@ eval "require RT::Action::NotifyAsComment_Local";
 die $@ if ($@ && $@ !~ qr{^Can't locate RT/Action/NotifyAsComment_Local.pm});
 
 1;
-
