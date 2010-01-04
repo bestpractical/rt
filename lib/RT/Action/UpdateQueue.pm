@@ -13,7 +13,7 @@ use Jifty::Action schema {
     param sign =>
         render as 'Checkbox';
     param encrypt =>
-        render as 'Checkbox',
+        render as 'Checkbox';
 };
 
 sub arguments {
