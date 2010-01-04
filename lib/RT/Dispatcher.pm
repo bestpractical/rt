@@ -541,7 +541,9 @@ before 'admin/custom_fields/' => run {
 #        page_nav->child( _('Create') => url => "/admin/custom_fields/Modify.html?create=1", );
 
     }
-    if ( my $id = Jifty->web->request->argument('id') ) {
+    if ( my $id = Jifty->web->request->argument('custom_field')
+        || Jifty->web->request->argument('id') )
+    {
         my $obj = RT::Model::CustomField->new();
         $obj->load($id);
 #        my $tabs = page_nav->child( $obj->name, url => "/admin/custom_fields/Modify.html?id=" . $id );
@@ -551,6 +553,11 @@ before 'admin/custom_fields/' => run {
             url => '/admin/custom_fields?id=' . $id );
         $tabs->child( _('Group rights') => url => "/admin/custom_fields/group_rights?id=" . $id );
         $tabs->child( _('User rights')  => url => "/admin/custom_fields/user_rights?id=" . $id );
+
+        if ( $obj->is_selection_type && !$obj->is_external_values ) {
+            $tabs->child( _('Values'),
+                url => "/admin/custom_fields/values?custom_field=" . $id );
+        }
 
         if ( $obj->lookup_type =~ /^RT::Model::Queue-/io ) {
             $tabs->child( _('Applies to'), url => "/admin/custom_fields/objects?id=" . $id );

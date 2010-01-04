@@ -52,6 +52,9 @@ package RT::View::Admin::CustomFields;
 use Jifty::View::Declare -base;
 use base 'RT::View::CRUD';
 
+require RT::View::Admin::CustomFields::Values;
+alias RT::View::Admin::CustomFields::Values under 'values/';
+
 use constant page_title      => 'Custom Field Management';
 use constant object_type     => 'CustomField';
 use constant display_columns =>
