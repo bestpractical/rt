@@ -59,7 +59,11 @@ use constant page_title      => 'Custom Field Management';
 use constant object_type     => 'CustomField';
 use constant display_columns =>
   qw(id name description type lookup_type max_values pattern
-  sort_order repeated disabled );
+  sort_order repeated link_value_to include_content_for_value values_class disabled );
+
+use constant create_columns =>
+  qw(name description type lookup_type max_values pattern
+  sort_order repeated link_value_to include_content_for_value disabled );
 
 template 'objects' => page { title => _('Applied Objects for Custom Field') }
 content {
