@@ -294,8 +294,6 @@ sub create {
         disabled    => $args{'disabled'},
         lookup_type => $args{'lookup_type'},
         repeated    => $args{'repeated'},
-        link_value_to => $args{'link_value_to'},
-        include_content_for_value => $args{include_content_for_value},
     );
 
     if ( exists $args{'link_value_to'} ) {
