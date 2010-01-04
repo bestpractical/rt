@@ -63,6 +63,11 @@ sub arguments {
             },
         };
     }
+    else {
+        $args->{values_class} = {
+            render => 'hidden',
+        };
+    }
     return $args;
 }
 
@@ -76,6 +81,10 @@ sub take_action {
     for my $attr (@attrs) {
         if ( $self->has_argument($attr) ) {
             my $method = "set_$attr";
+            # for non select cfs, we supply an empty and hidden input
+            # and we don't want to set_... for that.
+            next if $attr eq 'values_class' && !$self->argument_value($attr);
+
             my ( $status, $msg ) =
               $self->record->$method( $self->argument_value($attr) );
             Jifty->log->error($msg) unless $status;
