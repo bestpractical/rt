@@ -17,7 +17,7 @@ msgstr ""
 msgid "Homepage"
 msgstr "Home"
 
-#: share/html/Ticket/Elements/Tabs:196
+#: share/html/Ticket/Elements/Tabs:200
 msgid "Open it"
 msgstr "Open"
 
