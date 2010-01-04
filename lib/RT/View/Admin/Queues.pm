@@ -83,31 +83,6 @@ sub view_field_status_schema {
     return $action->record->status_schema->name;
 }
 
-template 'index.html' => page {
-    title => shift->page_title,
-} content {
-    my $self = shift;
-
-    form {
-        render_region(
-            name     => $self->object_type.'-list',
-            path     => $self->fragment_base_path.'/list',
-        );
-    }
-
-    my $include_disabled = get('include_disabled');
-    hyperlink(
-        label => _(
-            ( $include_disabled ? 'Exclude' : 'Include' )
-            . ' disabled queues in listing.'
-        ),
-        url => '/admin/queues',
-        $include_disabled
-        ? ()
-        : ( parameters => { include_disabled => 1, } ),
-    );
-};
-
 private template 'rights' => sub {
     my $self = shift;
     my $type = shift || 'user';

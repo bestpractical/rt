@@ -66,6 +66,20 @@ template 'index.html' => page {
             name     => $self->object_type.'-list',
             path     => $self->fragment_base_path.'/list',
         );
+    };
+
+    if ( grep { $_ eq 'disabled' } $self->display_columns ) {
+        my $include_disabled = get('include_disabled');
+        hyperlink(
+            label => _(
+                  ( $include_disabled ? 'Exclude' : 'Include' )
+                . ' disabled '
+                  . lc( $self->object_type )
+                  . 'in listing.'
+            ),
+            url => '',
+            parameters => { include_disabled => $include_disabled ? 0 : 1 },
+        );
     }
 };
 
