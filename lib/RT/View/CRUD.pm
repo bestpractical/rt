@@ -55,8 +55,6 @@ use base 'Jifty::View::Declare::CRUD';
 __PACKAGE__->use_mason_wrapper;
 
 use constant per_page => 50;
-use Text::Naming::Convention qw/renaming/;
-
 
 template 'index.html' => page {
     title => shift->page_title,
@@ -222,7 +220,7 @@ content {
     my $object = $class->new;
     $object->load( get('id') );
 
-    my $moniker = 'update_' . renaming( $self->object_type );
+    my $moniker = 'update_' . lc $self->object_type;
     my $action = $object->as_update_action( moniker => $moniker, );
     with( name => $moniker ), form {
         render_action($action);

@@ -495,7 +495,7 @@ before 'admin/' => run {
 
       cf_select_ocfs cf_edit_user_rights cf_edit_group_rights
 
-      update_queue update_group update_user update_custom_field update_template
+      update_queue update_group update_user update_customfield update_template
       /;
 
     for my $action ( Jifty->web->request->actions ) {
