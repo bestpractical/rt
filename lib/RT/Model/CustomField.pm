@@ -306,18 +306,8 @@ sub create {
         $self->set_include_content_for_value( $args{'include_content_for_value'} );
     }
 
-    
-
     if ( exists $args{'values_class'} ) {
         $self->set_values_class( $args{'values_class'} );
-    if ( exists $args{'link_value_to'} ) {
-        $self->set_link_value_to( $args{'link_value_to'} );
-    }
-
-    if ( exists $args{'include_content_for_value'} ) {
-        $self->set_include_content_for_value( $args{'include_content_for_value'} );
-    }
-
     }
 
     return ( $rv, $msg ) unless exists $args{'queue'};
@@ -1204,9 +1194,9 @@ sub link_value_to {
 
 }
 
-=head2 _urltemplate  name [value]
+=head2 url_template  name [value]
 
-With one argument, returns the _URLTemplate named C<name>, but only if
+With one argument, returns the url_template named C<name>, but only if
 the current user has the right to see this custom field.
 
 With two arguments, attemptes to set the relevant template value.
