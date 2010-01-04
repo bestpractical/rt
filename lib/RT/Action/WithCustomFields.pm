@@ -33,7 +33,7 @@ sub _setup_custom_fields {
 
 sub _setup_custom_field {
     my $self = shift;
-    my $cf = shift;
+    my $cf   = shift;
 
     my $render_as = $cf->type_for_rendering;
     my $name      = 'cf_' . $cf->id;
@@ -43,6 +43,30 @@ sub _setup_custom_field {
         label     => $cf->name,
         render_as => $render_as,
     );
+
+    if ( $self->record ) {
+
+        # so we can find out default value
+        my $ocfvs = $self->record->custom_field_values( $cf->id );
+
+        if ( $ocfvs->count ) {
+
+            if ( $render_as eq 'Upload' ) {
+                # TODO handle file type input
+            }
+            else {
+                if ( $cf->max_values == 1 ) {
+                    $args{default_value} = $ocfvs->first->content;
+                }
+                else {
+                    $args{default_value} =
+                      [ map { $_->content } @{ $ocfvs->items_array_ref } ];
+                }
+
+            }
+        }
+    }
+
 
     if ( $render_as =~ /Select/i ) {
         $args{valid_values} = [
@@ -75,7 +99,7 @@ sub _add_custom_field_values {
         $id = $1 if $arg =~ /^cf_(\d+)$/;    # this always happens
         $self->_add_custom_field_value(
             field => $1,
-            value => $self->argument_value($arg)
+            value => $self->argument_value($arg),
         );
 
     }
