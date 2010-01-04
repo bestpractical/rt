@@ -51,12 +51,7 @@ sub arguments {
                     my %res = ( value => $class );
                     $res{'display'} = $class->source_description
                       if $class->can('source_description');
-                    if ( $class eq 'RT::Model::CustomFieldValueCollection' ) {
-                        $res{'display'} = 'Provide list of values below';
-                    }
-                    else {
-                        $res{'display'} ||= $class;
-                    }
+                    $res{'display'} ||= $class;
                     push @values, \%res;
                 }
                 return \@values;
