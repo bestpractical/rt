@@ -1,10 +1,10 @@
-package RT::Action::CreateGroup;
+package RT::Action::CreateUser;
 use strict;
 use warnings;
 
 use base qw/Jifty::Action::Record::Create RT::Action::WithCustomFields/;
 
-sub record_class { 'RT::Model::Group' }
+sub record_class { 'RT::Model::User' }
 
 use constant report_detailed_messages => 1;
 
@@ -19,8 +19,8 @@ sub arguments {
     if ( !$self->{_cached_arguments} ) {
 
         $self->{_cached_arguments} = $self->SUPER::arguments;
-        my $group = RT::Model::Group->new;
-        my @args = $self->_setup_custom_fields( cfs => $group->custom_fields );
+        my $user = RT::Model::User->new;
+        my @args = $self->_setup_custom_fields( cfs => $user->custom_fields );
         for my $args (@args) {
             my $name = delete $args->{name};
             $self->{_cached_arguments}{$name} = $args;
@@ -40,20 +40,6 @@ sub take_action {
         Jifty->log->error( $msg ) unless $status;
     }
     return 1;
-}
-
-=head2 create_record
-
-This uses L<RT::Model::Group/create_user_defined> for creating user-defined
-groups.
-
-=cut
-
-sub create_record {
-    my $self  = shift;
-    my $group = $self->record;
-
-    return $group->create_user_defined(@_);
 }
 
 1;

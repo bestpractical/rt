@@ -1,8 +1,8 @@
-package RT::Action::CreateGroup;
+package RT::Action::UpdateGroup;
 use strict;
 use warnings;
 
-use base qw/Jifty::Action::Record::Create RT::Action::WithCustomFields/;
+use base qw/Jifty::Action::Record::Update RT::Action::WithCustomFields/;
 
 sub record_class { 'RT::Model::Group' }
 
@@ -40,20 +40,6 @@ sub take_action {
         Jifty->log->error( $msg ) unless $status;
     }
     return 1;
-}
-
-=head2 create_record
-
-This uses L<RT::Model::Group/create_user_defined> for creating user-defined
-groups.
-
-=cut
-
-sub create_record {
-    my $self  = shift;
-    my $group = $self->record;
-
-    return $group->create_user_defined(@_);
 }
 
 1;
