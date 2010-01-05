@@ -742,8 +742,9 @@ to that string.
 =cut
 
 sub before_set_password {
-    my $self     = shift;
-    my $password = shift;
+    my $self = shift;
+    my $args = shift;
+    my $password = $args->{value};
 
     unless ( $self->current_user_can_modify('password') ) {
         return ( 0, _('password: Permission Denied') );
