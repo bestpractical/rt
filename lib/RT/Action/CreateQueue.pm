@@ -19,9 +19,7 @@ use Jifty::Action schema {
 sub arguments {
     my $self = shift;
     if ( !$self->{_cached_arguments} ) {
-
-        # The blank slate is the parameters provided using Jifty::Param::Schema
-        $self->{_cached_arguments} = \%{ $self->PARAMS };
+        $self->{_cached_arguments} = $self->SUPER::arguments;
         my $queue = RT::Model::Queue->new;
         my @args = $self->_setup_custom_fields( cfs => $queue->custom_fields );
         for my $args (@args) {
