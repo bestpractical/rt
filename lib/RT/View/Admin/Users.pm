@@ -60,7 +60,7 @@ use constant edit_columns => qw(name email real_name nickname gecos lang
   freeform_contact_info
   organization address1 address2 city state zip country
   home_phone work_phone mobile_phone pager_phone
-  password comments signature );
+  password password_confirm comments signature );
 
 # unused columns:
 #  email_encoding web_encoding external_contact_info_id
