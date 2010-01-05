@@ -54,7 +54,7 @@ use base 'RT::View::CRUD';
 
 use constant page_title      => 'User Management';
 use constant object_type     => 'User';
-use constant display_columns => qw(id name real_name email);
+use constant display_columns => qw(id name real_name email disabled);
 
 use constant edit_columns => qw(name email real_name nickname gecos lang
   freeform_contact_info
@@ -72,6 +72,8 @@ sub _current_collection {
     my $self = shift;
     my $collection = $self->SUPER::_current_collection(@_);
     $collection->limit_to_privileged;
+
+    $collection->{'find_disabled_rows'} = get('include_disabled');
     return $collection;
 }
 

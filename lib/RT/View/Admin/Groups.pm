@@ -55,12 +55,13 @@ use base 'RT::View::CRUD';
 use constant page_title     => 'Group Management';
 use constant object_type    => 'Group';
 
-use constant display_columns => qw(id name description);
+use constant display_columns => qw(id name description disabled);
 
 sub _current_collection {
     my $self = shift;
     my $c    = $self->SUPER::_current_collection();
     $c->limit_to_user_defined_groups();
+    $c->{'find_disabled_rows'} = get('include_disabled');
     return $c;
 }
 
@@ -173,7 +174,6 @@ private template 'rights' => sub {
         form_submit( label => _('Save') );
     };
 };
-
 
 1;
 
