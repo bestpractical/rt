@@ -69,7 +69,7 @@ This is a forking external FastCGI server for RT, it can be used
 with apache and other servers supporting FastCGI technology.
 
 An advantage is lower memory usage because of sharing memory
-between process. It's easier to use this with nginx and other
+between process. It's easier to setup this with nginx and other
 servers that can not maintain pool of fastcgi servers, apache
 can do this.
 
@@ -130,6 +130,30 @@ with this FastCGI server. It's not ideal, but a good enough start.
             }
         }
     }
+
+=head1 lighttpd
+
+Server config:
+
+    server.name = "localhost"
+    server.port = 80
+
+    server.username  = "rt_web_user"
+    server.groupname = "rt_web_group"
+
+    server.pid-file = "/opt/rt3/var/lighthttpd/server.pid"
+    server.errorlog = "/opt/rt3/var/lighthttpd/error.log"
+
+    server.document-root = "/opt/rt3/share/html"
+
+    server.modules = ( "mod_fastcgi" )
+    fastcgi.server = (
+        "/" => ((
+            "socket" => "/opt/rt3/var/fastcgi.sock",
+            "check-local" => "disable",
+            "fix-root-scriptname" => "enable",
+        ))
+    )
 
 =cut
 
