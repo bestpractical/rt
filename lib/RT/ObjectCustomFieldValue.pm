@@ -163,20 +163,6 @@ Returns (1, 'Status message') on success and (0, 'Error Message') on failure.
 =cut
 
 
-=head2 CustomFieldObj
-
-Returns the CustomField Object which has the id returned by CustomField
-
-
-=cut
-
-sub CustomFieldObj {
-	my $self = shift;
-	my $CustomField =  RT::CustomField->new($self->CurrentUser);
-	$CustomField->Load($self->__Value('CustomField'));
-	return($CustomField);
-}
-
 =head2 ObjectType
 
 Returns the current value of ObjectType. 

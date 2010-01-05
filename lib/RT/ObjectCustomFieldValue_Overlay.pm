@@ -150,6 +150,20 @@ sub LoadByObjectContentAndCustomField {
     );
 }
 
+=head2 CustomFieldObj
+
+Returns the CustomField Object which has the id returned by CustomField
+
+=cut
+
+sub CustomFieldObj {
+    my $self = shift;
+    my $CustomField = RT::CustomField->new( $self->CurrentUser );
+    $CustomField->SetContextObject( $self->Object );
+    $CustomField->Load( $self->__Value('CustomField') );
+    return $CustomField;
+}
+
 
 =head2 Content
 
