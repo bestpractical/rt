@@ -119,6 +119,13 @@ private template 'rights' => sub {
         form_submit( label => _('Save') );
     };
 };
+sub _current_collection {
+    my $self = shift; 
+    my $collection = $self->SUPER::_current_collection( @_ );
+    $collection->{'find_disabled_rows'} = get('include_disabled');
+    return $collection;    
+}
+
 
 1;
 
