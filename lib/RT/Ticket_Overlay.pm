@@ -2155,13 +2155,13 @@ sub _RecordNote {
             my $addresses = join ', ', (
                 map { RT::User->CanonicalizeEmailAddress( $_->address ) }
                     Email::Address->parse( $args{ $type . 'MessageTo' } ) );
-            $args{'MIMEObj'}->head->add( 'RT-Send-' . $type, $addresses );
+            $args{'MIMEObj'}->head->add( 'RT-Send-' . $type, Encode::encode_utf8( $addresses ) );
         }
     }
 
     foreach my $argument (qw(Encrypt Sign)) {
         $args{'MIMEObj'}->head->add(
-            "X-RT-$argument" => $args{ $argument }
+            "X-RT-$argument" => Encode::encode_utf8( $args{ $argument } )
         ) if defined $args{ $argument };
     }
 

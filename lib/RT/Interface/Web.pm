@@ -874,7 +874,9 @@ sub CreateTicket {
     }
 
     foreach my $argument (qw(Encrypt Sign)) {
-        $MIMEObj->head->add( "X-RT-$argument" => $ARGS{$argument} ) if defined $ARGS{$argument};
+        $MIMEObj->head->add(
+            "X-RT-$argument" => Encode::encode_utf8( $ARGS{$argument} )
+        ) if defined $ARGS{$argument};
     }
 
     my %create_args = (
@@ -1084,7 +1086,9 @@ sub ProcessUpdateMessage {
         Type    => $args{ARGSRef}->{'UpdateContentType'},
     );
 
-    $Message->head->add( 'Message-ID' => RT::Interface::Email::GenMessageId( Ticket => $args{'TicketObj'}, ) );
+    $Message->head->add( 'Message-ID' => Encode::encode_utf8(
+        RT::Interface::Email::GenMessageId( Ticket => $args{'TicketObj'} )
+    ) );
     my $old_txn = RT::Transaction->new( $session{'CurrentUser'} );
     if ( $args{ARGSRef}->{'QuoteTransaction'} ) {
         $old_txn->Load( $args{ARGSRef}->{'QuoteTransaction'} );
@@ -1182,9 +1186,8 @@ sub MakeMIMEEntity {
     );
     my $Message = MIME::Entity->build(
         Type    => 'multipart/mixed',
-        Subject => $args{'Subject'} || "",
-        From    => $args{'From'},
-        Cc      => $args{'Cc'},
+        map { $_ => Encode::encode_utf8( $args{ $_} ) }
+            grep defined $args{$_}, qw(Subject From Cc)
     );
 
     if ( defined $args{'Body'} && length $args{'Body'} ) {
@@ -1192,12 +1195,8 @@ sub MakeMIMEEntity {
         # Make the update content have no 'weird' newlines in it
         $args{'Body'} =~ s/\r\n/\n/gs;
 
-        # MIME::Head is not happy in utf-8 domain.  This only happens
-        # when processing an incoming email (so far observed).
-        no utf8;
-        use bytes;
         $Message->attach(
-            Type => $args{'Type'} || 'text/plain',
+            Type    => $args{'Type'} || 'text/plain',
             Charset => 'UTF-8',
             Data    => $args{'Body'},
         );
@@ -1218,8 +1217,8 @@ sub MakeMIMEEntity {
 
             # Prefer the cached name first over CGI.pm stringification.
             my $filename = $RT::Mason::CGI::Filename;
-            $filename = "$filehandle" unless defined($filename);
-            $filename = Encode::decode_utf8($filename);
+            $filename = "$filehandle" unless defined $filename;
+            $filename = Encode::encode_utf8( $filename );
             $filename =~ s{^.*[\\/]}{};
 
             $Message->attach(
@@ -1234,6 +1233,7 @@ sub MakeMIMEEntity {
     }
 
     $Message->make_singlepart;
+
     RT::I18N::SetMIMEEntityToUTF8($Message);    # convert text parts into utf-8
 
     return ($Message);

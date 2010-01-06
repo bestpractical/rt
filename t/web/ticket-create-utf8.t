@@ -3,15 +3,20 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 14;
+use RT::Test tests => 41;
 
 $RT::Test::SKIP_REQUEST_WORK_AROUND = 1;
 
 use Encode;
 
 my $ru_test = "\x{442}\x{435}\x{441}\x{442}";
-my $ru_autoreply = "\x{410}\x{432}\x{442}\x{43e}\x{43e}\x{442}\x{432}\x{435}\x{442}";
 my $ru_support = "\x{43f}\x{43e}\x{434}\x{434}\x{435}\x{440}\x{436}\x{43a}\x{430}";
+
+# latin-1 is very special in perl, we should test everything with latin-1 umlauts
+# and not-ascii+not-latin1, for example cyrillic
+my $l1_test = Encode::decode('latin-1', "t\xE9st");
+my $l1_support = Encode::decode('latin-1', "supp\xF6rt");
+
 
 my $q = RT::Test->load_or_create_queue( Name => 'Regression' );
 ok $q && $q->id, 'loaded or created queue';
@@ -25,59 +30,64 @@ my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in';
 
 # create a ticket with a subject only
-{
+foreach my $test_str ( $ru_test, $l1_test ) {
     ok $m->goto_create_ticket( $q ), "go to create ticket";
     $m->form_number(3);
-    $m->field( Subject => $ru_test );
+    $m->field( Subject => $test_str );
     $m->submit;
 
     $m->content_like( 
-        qr{<td\s+class="message-header-value"[^>]*>\s*\Q$ru_test\E\s*</td>}i,
+        qr{<td\s+class="message-header-value"[^>]*>\s*\Q$test_str\E\s*</td>}i,
         'header on the page'
     );
 
     my $ticket = RT::Test->last_ticket;
-    is $ticket->Subject, $ru_test, "correct subject";
+    is $ticket->Subject, $test_str, "correct subject";
 }
 
 # create a ticket with a subject and content
-{
-    ok $m->goto_create_ticket( $q ), "go to create ticket";
-    $m->form_number(3);
-    $m->field( Subject => $ru_test );
-    $m->field( Content => $ru_support );
-    $m->submit;
+foreach my $test_str ( $ru_test, $l1_test ) {
+    foreach my $support_str ( $ru_support, $l1_support ) {
+        ok $m->goto_create_ticket( $q ), "go to create ticket";
+        $m->form_number(3);
+        $m->field( Subject => $test_str );
+        $m->field( Content => $support_str );
+        $m->submit;
 
-    $m->content_like( 
-        qr{<td\s+class="message-header-value"[^>]*>\s*\Q$ru_test\E\s*</td>}i,
-        'header on the page'
-    );
-    $m->content_like( 
-        qr{\Q$ru_support\E}i,
-        'content on the page'
-    );
+        $m->content_like( 
+            qr{<td\s+class="message-header-value"[^>]*>\s*\Q$test_str\E\s*</td>}i,
+            'header on the page'
+        );
+        $m->content_like( 
+            qr{\Q$support_str\E}i,
+            'content on the page'
+        );
 
-    my $ticket = RT::Test->last_ticket;
-    is $ticket->Subject, $ru_test, "correct subject";
+        my $ticket = RT::Test->last_ticket;
+        is $ticket->Subject, $test_str, "correct subject";
+    }
 }
 
 # create a ticket with a subject and content
-{
-    ok $m->goto_create_ticket( $q ), "go to create ticket";
-    $m->form_number(3);
-    $m->field( Subject => $ru_test );
-    $m->field( Content => $ru_support );
-    $m->submit;
+foreach my $test_str ( $ru_test, $l1_test ) {
+    foreach my $support_str ( $ru_support, $l1_support ) {
+        ok $m->goto_create_ticket( $q ), "go to create ticket";
+        $m->form_number(3);
+        $m->field( Subject => $test_str );
+        $m->field( Content => $support_str );
+        $m->submit;
 
-    $m->content_like( 
-        qr{<td\s+class="message-header-value"[^>]*>\s*\Q$ru_test\E\s*</td>}i,
-        'header on the page'
-    );
-    $m->content_like( 
-        qr{\Q$ru_support\E}i,
-        'content on the page'
-    );
+        $m->content_like( 
+            qr{<td\s+class="message-header-value"[^>]*>\s*\Q$test_str\E\s*</td>}i,
+            'header on the page'
+        );
+        $m->content_like( 
+            qr{\Q$support_str\E}i,
+            'content on the page'
+        );
 
-    my $ticket = RT::Test->last_ticket;
-    is $ticket->Subject, $ru_test, "correct subject";
+        my $ticket = RT::Test->last_ticket;
+        is $ticket->Subject, $test_str, "correct subject";
+    }
 }
+
