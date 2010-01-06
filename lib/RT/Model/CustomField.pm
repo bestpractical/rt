@@ -105,6 +105,11 @@ use Jifty::DBI::Record schema {
         },
       ],
       default is 'RT::Model::Queue-RT::Model::Ticket';
+    # TODO do we want to set URI filter for the following 2?
+    column link_value_to => type is 'text', display_length is 60, default is '';
+    column
+      include_content_for_value => type is 'text',
+      display_length is 60, default is '';
     column disabled        => max_length is 6, type is 'smallint', render as
         'Checkbox', default is '0';
 };
@@ -294,15 +299,9 @@ sub create {
         disabled    => $args{'disabled'},
         lookup_type => $args{'lookup_type'},
         repeated    => $args{'repeated'},
+        link_value_to => $args{'link_value_to'},
+        include_content_for_value => $args{include_content_for_value},
     );
-
-    if ( exists $args{'link_value_to'} ) {
-        $self->set_link_value_to( $args{'link_value_to'} );
-    }
-
-    if ( exists $args{'include_content_for_value'} ) {
-        $self->set_include_content_for_value( $args{'include_content_for_value'} );
-    }
 
     if ( exists $args{'values_class'} ) {
         $self->set_values_class( $args{'values_class'} );
@@ -1155,76 +1154,6 @@ sub _for_object_type {
 
     $FRIENDLY_OBJECT_TYPES{$path} = $friendly_name;
 
-}
-
-=head2 include_content_for_value [value] (and Setinclude_content_for_value)
-
-Gets or sets the  C<include_content_for_value> for this custom field. RT
-uses this field to automatically include content into the user's browser
-as they display records with custom fields in RT.
-
-=cut
-
-sub set_include_content_for_value {
-    shift->include_content_for_value(@_);
-}
-
-sub include_content_for_value {
-    my $self = shift;
-    $self->url_template( 'include_content_for_value', @_ );
-}
-
-=head2 link_value_to [value] (and Setlink_value_to)
-
-Gets or sets the  C<link_value_to> for this custom field. RT
-uses this field to make custom field values into hyperlinks in the user's
-browser as they display records with custom fields in RT.
-
-=cut
-
-sub set_link_value_to {
-    shift->link_value_to(@_);
-}
-
-sub link_value_to {
-    my $self = shift;
-    $self->url_template( 'link_value_to', @_ );
-
-}
-
-=head2 url_template  name [value]
-
-With one argument, returns the url_template named C<name>, but only if
-the current user has the right to see this custom field.
-
-With two arguments, attemptes to set the relevant template value.
-
-=cut
-
-sub url_template {
-    my $self          = shift;
-    my $template_name = shift;
-    if (@_) {
-
-        my $value = shift;
-        unless ( $self->current_user_has_right('AdminCustomField') ) {
-            return ( 0, _('Permission Denied') );
-        }
-        $self->set_attribute( name => $template_name, content => $value );
-        return ( 1, _('Updated') );
-    } else {
-        unless ( $self->id
-            && $self->current_user_has_right('SeeCustomField') )
-        {
-            return (undef);
-        }
-
-        my @attr = $self->attributes->named($template_name);
-        my $attr = shift @attr;
-
-        if ($attr) { return $attr->content }
-
-    }
 }
 
 =head2 type_for_rendering
