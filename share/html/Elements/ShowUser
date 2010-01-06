@@ -49,18 +49,20 @@
 <%INIT>
 # $User is an RT::User object
 # $Address is Email::Address object
-if ( !$User && $Address ) {
-    $User = RT::User->new( $session{'CurrentUser'} );
-    $User->LoadByEmail( $Address->address );
-    unless ( $User->Id ) {
-        $m->comp( '/Elements/ShowUserVerbose', Address => $Address );
-        return;
-    }
+
+my $comp = '/Elements/ShowUser'. ucfirst lc $style;
+unless ( $m->comp_exists( $comp ) ) {
+    $RT::Logger->error(
+        'Either system config or user #'
+        . $session{'CurrentUser'}->id
+        . ' picked UsernameFormat '. $style
+        . ', but '. $comp . "doesn't exist"
+    );
+    return $m->comp('/Elements/ShowUserConcise',
+        User => $User, Address => $Address,
+    );
 }
-if ( $style eq 'concise' ) {
-    $m->comp( '/Elements/ShowUserConcise', User => $User );
-}
-else { $m->comp( '/Elements/ShowUserVerbose', User => $User ); }
+return $m->comp( $comp, User => $User, Address => $Address );
 </%INIT>
 <%ARGS>
 $User => undef
