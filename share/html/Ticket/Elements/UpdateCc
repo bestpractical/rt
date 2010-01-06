@@ -55,7 +55,9 @@
 id="UpdateCc-<%$addr%>" 
 name="UpdateCc-<%$addr%>" 
     type="checkbox" 
-    onClick="checkboxToInput('UpdateCc', 'UpdateCc-<%$addr%>','<%$txn_addresses{$addr}->format%>' ); $(UpdateIgnoreAddressCheckboxes).value=1"  
+% my $clean_addr = $txn_addresses{$addr}->format;
+% $clean_addr =~ s/'/\\'/g;
+    onClick="checkboxToInput('UpdateCc', 'UpdateCc-<%$addr%>','<%$clean_addr%>' ); $(UpdateIgnoreAddressCheckboxes).value=1"
     <% $ARGS{'UpdateCc-'.$addr} ? 'checked="checked"' : ''%> > <& /Elements/ShowUser, Address => $txn_addresses{$addr}&>
 %}
 </td></tr>
@@ -66,7 +68,9 @@ name="UpdateCc-<%$addr%>"
     id="UpdateBcc-<%$addr%>"
     name="UpdateBcc-<%$addr%>"
     type="checkbox" 
-    onClick="checkboxToInput('UpdateBcc', 'UpdateBcc-<%$addr%>','<%$txn_addresses{$addr}->format%>' ); $(UpdateIgnoreAddressCheckboxes).value=1" 
+% my $clean_addr = $txn_addresses{$addr}->format;
+% $clean_addr =~ s/'/\\'/g;
+    onClick="checkboxToInput('UpdateBcc', 'UpdateBcc-<%$addr%>','<%$clean_addr%>' ); $(UpdateIgnoreAddressCheckboxes).value=1"
         <% $ARGS{'UpdateBcc-'.$addr} ? 'checked="checked"' : ''%>> 
 <& /Elements/ShowUser, Address => $txn_addresses{$addr}&>
 %}
