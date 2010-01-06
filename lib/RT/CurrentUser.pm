@@ -104,7 +104,7 @@ and log an error.
 
 sub new {
     my $class = shift;
-    if ($#_ == 0 && ref $_[0] && ref $_[0] eq 'RT::Model::User') {
+    if (@_ == 1 && ref $_[0] && ref $_[0] eq 'RT::Model::User') {
         unshift @_, 'user_object';
     }
     $class->SUPER::new(@_);

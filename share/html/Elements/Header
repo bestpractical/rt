@@ -139,8 +139,8 @@ $page_nav->render_children_inline(1);
 
 <%INIT>
 $r->content_type('text/html; charset=utf-8');
-$r->headers_out->{'Pragma'} = 'no-cache';
-$r->headers_out->{'Cache-control'} = 'no-cache';
+$r->header_out('Pragma' => 'no-cache');
+$r->header_out('Cache-control' => 'no-cache');
 
 my $id = $m->request_comp->path;
 $id =~ s|^/||g;
