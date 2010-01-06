@@ -202,7 +202,7 @@ unless ( $opt{'socket'} && $opt{'port'} ) {
     require File::Spec;
     $opt{'socket'} = File::Spec->catfile($RT::VarPath, 'fastcgi.sock');
 }
-if ( $opt{'port'} ) {
+elsif ( $opt{'port'} ) {
     $opt{'socket'} = ':'. $opt{'port'};
 }
 $ENV{'FCGI_SOCKET_PATH'} = $opt{'socket'};
