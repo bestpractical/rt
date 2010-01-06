@@ -36,7 +36,7 @@ AC_ARG_WITH(web-handler,
     AC_HELP_STRING([--with-web-handler=LIST],
 	[comma separated list of web-handlers RT will be able to use.
          Default is fastcgi when modperl1, modperl2, fastcgi, fastcgi-server,
-         and speedycgi are valid. To succefuly run RT you need only one.
+         and speedycgi are valid. To successfuly run RT you need only one.
          only one.
         ]),
     WEB_HANDLER=$withval,
