@@ -7,6 +7,7 @@ use base qw/Jifty::Action::Record::Update/;
 sub record_class { 'RT::Model::CustomField' }
 
 use constant report_detailed_messages => 1;
+use Scalar::Defer 'defer';
 
 sub arguments {
     my $self = shift;
@@ -16,7 +17,7 @@ sub arguments {
         $args->{values_class} = {
             render_as     => 'Select',
             default_value => defer {
-                return $self->record->values_class;
+                $self->record->values_class;
             },
             available_values => defer {
                 my @values;
