@@ -237,7 +237,16 @@ content {
     my $moniker = 'update_' . lc $self->object_type;
     my $action = $object->as_update_action( moniker => $moniker, );
     with( name => $moniker ), form {
-        render_action($action);
+        for my $field ( $self->edit_columns($action) ) {
+            div {
+                { class is 'update-argument-' . $field };
+                $self->render_field(
+                    mode   => 'edit',
+                    action => $action,
+                    field  => $field,
+                );
+            }
+        }
         form_submit( label => _('Save') );
     };
 };
