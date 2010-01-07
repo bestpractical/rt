@@ -83,6 +83,102 @@ template 'index.html' => page {
     }
 };
 
+template 'sort_header' => sub {
+    my $self = shift;
+    my $item_path = shift;
+    my $sort_by = shift;
+    my $order = shift;
+    my $record_class = $self->record_class;
+    my $update = $record_class->as_update_action();
+
+    div {
+        { class is "crud-column-headers" };
+        for my $argument ($self->display_columns($update)) {
+            my $column = $record_class->column($argument);
+            unless ($column) {
+                # in case we want to show a field but it's not a real column
+                div {
+                    { class is 'crud-column-header' };
+                    if ( $argument =~ /^cf_(\d+)/ ) {
+                        my $id = $1;
+                        my $cf = RT::Model::CustomField->new;
+                        $cf->load($id);
+                        'cf( ' . $cf->name . ' )';
+                    }
+                    else {
+                        $argument;
+                    }
+                };
+                next;
+            }
+
+            div {
+                { class is 'crud-column-header' };
+                ul { attr { class => 'crud-sort-menu', style => 'display:none;' };
+                    li {
+                        my $imgdown ="<img height='16' width='16' src='/images/silk/bullet_arrow_down.png' alt='down' name='down'>";
+                        hyperlink(
+                            label => $imgdown,
+                            escape_label => 0,
+                            onclick =>
+                                { args => { sort_by => $argument, order => undef } },
+                        );
+                    } if (!($sort_by && !$order && $argument eq $sort_by));
+                    li {
+                        my $imgup ="<img height='16' width='16' src='/images/silk/bullet_arrow_up.png' alt='up' name='up'>";
+                        hyperlink(
+                            label => $imgup,
+                            escape_label => 0,
+                            onclick =>
+                                { args => { sort_by => $argument, order => 'D' } },
+                        );
+                    } if (!($sort_by && $order && $argument eq $sort_by));
+                    li {
+                        my $imgup ="<img height='16' width='16' rc='/images/silk/cancel_grey.png' alt='del' name='del'>";
+                        hyperlink(
+                            label => $imgup,
+                            escape_label => 0,
+                            onclick =>
+                                { args => { sort_by =>'', order => '' } },
+                        );
+                    } if ($sort_by && $argument eq $sort_by);
+                };
+                span{
+                    {class is "field"};
+                    my $label = $record_class->column($argument)->label || $argument;
+                    if ( $sort_by && $argument eq $sort_by ) {
+                        div { class is 'crud-sort-selected';
+                        hyperlink ( label =>$label );
+                        my $img = ($order eq 'D')?'up':'down';
+                        img { attr {
+                            height => 16,
+                            width  => 16,
+                            src    => '/images/silk/bullet_arrow_'.$img.'.png' }; };
+                        };
+                    }
+                    else {
+                        hyperlink(label => $label);
+                    };
+                };
+            }
+        }
+    };
+    outs_raw("<script type=\"text/javascript\">
+    jQuery(document).ready(function() {
+      jQuery('.crud-sort-menu').each(function(){
+        jQuery(this).parent().hover(
+        function(){
+        jQuery(this).children('.crud-sort-menu').show();
+        },
+        function(){
+            jQuery(this).children('.crud-sort-menu').hide();
+        });
+      });
+    });
+    </script>");
+
+};
+
 # no popup update link
 private template view_item_controls  => sub { };
 
