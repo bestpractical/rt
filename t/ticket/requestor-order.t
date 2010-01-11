@@ -59,11 +59,7 @@ sub check_emails_order
         if( $_ ) { unshift @mails, $_ }
         else { push @mails, $_ }
     }
-    TODO: {
-        local $TODO = "requires Jifty::DBI improvements supposedly :)"
-            if $todo;
-        is_deeply( \@mails, \@required_order, "Addresses are sorted");
-    }
+    is_deeply( \@mails, \@required_order, "Addresses are sorted");
 }
 
 {
@@ -131,10 +127,7 @@ sub check_emails_order
     my @mails;
     while (my $t = $tix->next) { push @mails, $t->role_group("requestor")->member_emails_as_string; }
     is(@mails, 30, "found thirty tickets");
-    TODO: {
-        local $TODO = "requires Jifty::DBI improvements supposedly :)";
-        is_deeply( [grep {$_} @mails], [ sort grep {$_} @mails ], "Paging works (exclude nulls, which are db-dependant)");
-    }
+    is_deeply( [grep {$_} @mails], [ sort grep {$_} @mails ], "Paging works (exclude nulls, which are db-dependant)");
 }
 
 {
@@ -145,10 +138,7 @@ sub check_emails_order
     my @mails;
     while (my $t = $tix->next) { push @mails, $t->role_group("requestor")->member_emails_as_string; }
     is(@mails, 30, "found thirty tickets");
-    TODO: {
-        local $TODO = "requires Jifty::DBI improvements supposedly :)";
-        is_deeply( [grep {$_} @mails], [ sort grep {$_} @mails ], "Paging works (exclude nulls, which are db-dependant)");
-    };
+    is_deeply( [grep {$_} @mails], [ sort grep {$_} @mails ], "Paging works (exclude nulls, which are db-dependant)");
 }
 RT::Test->mailsent_ok(25);
 
