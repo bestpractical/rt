@@ -471,10 +471,10 @@ before 'admin/queues' => run {
         $queue_obj->load($id);
 
 #        my $queue = page_nav->child( $queue_obj->name => url => "/admin/queues/Modify.html?id=" . $id );
-#        $queue->child( _('Basics'),    url => "/admin/queues/Modify.html?id=" . $id );
         my $queue = page_nav->child(
             $queue_obj->name => url => '/admin/queues?id=' . $id );
         $queue->child( _('Watchers'),  url => "/admin/queues/people?id=" . $id );
+        $queue->child( _('Basics'),    url => "/admin/queues/edit?id=" . $id );
 
         # because Templates have their own ids, let's use queue parameter here
         $queue->child( _('Templates'), url => "/admin/queues/templates?queue=" . $id );
@@ -501,12 +501,11 @@ before '/admin/users' => run {
     if ( my $id = Jifty->web->request->argument('id') ) {
         my $obj = RT::Model::User->new();
         $obj->load($id);
-#        my $tabs = page_nav->child( 'current' => label => $obj->name, url => "/admin/users/Modify.html?id=" . $id, );
-#        $tabs->child( _('Basics'),         url => "/admin/users/Modify.html?id=" . $id );
         my $tabs = page_nav->child(
             'current' => label => $obj->name,
             url       => '/admin/users?id=' . $id,
         );
+        $tabs->child( _('Basics'), url => "/admin/users/edit?id=" . $id );
 
         $tabs->child( _('Memberships'),    url => "/admin/users/memberships?id=" . $id );
         $tabs->child( _('History'),        url => "/admin/users/history?id=" . $id );
@@ -521,14 +520,13 @@ before '/admin/users' => run {
 before 'admin/groups' => run {
 
     page_nav->child( _('Select') => url => "/admin/groups/" );
-#    page_nav->child( _('Create') => url => "/admin/groups/Modify.html?create=1", separator => 1 );
     if ( my $id = Jifty->web->request->argument('id') ) {
         my $obj = RT::Model::Group->new();
         $obj->load($id);
-#        my $tabs = page_nav->child( $obj->name, url => "/admin/custom_fields/Modify.html?id=" . $id );
-#        $tabs->child( _('Basics')       => url => "/admin/groups/Modify.html?id=" . $obj->id );
         my $tabs =
           page_nav->child( $obj->name, url => '/admin/groups?id=' . $id );
+        $tabs->child(
+            _('Basics') => url => "/admin/groups/edit?id=" . $obj->id );
         $tabs->child( _('Members')      => url => "/admin/groups/members?id=" . $obj->id );
         $tabs->child( _('Group rights') => url => "/admin/groups/group_rights?id=" . $obj->id );
         $tabs->child( _('User rights')  => url => "/admin/groups/user_rights?id=" . $obj->id );
@@ -539,7 +537,6 @@ before 'admin/groups' => run {
 before 'admin/custom_fields/' => run {
     if ( Jifty->web->current_user->has_right( object => RT->system, right => 'AdminCustomField' ) ) {
         page_nav->child( _('Select'), url => "/admin/custom_fields" );
-#        page_nav->child( _('Create') => url => "/admin/custom_fields/Modify.html?create=1", );
 
     }
     if ( my $id = Jifty->web->request->argument('custom_field')
@@ -547,11 +544,11 @@ before 'admin/custom_fields/' => run {
     {
         my $obj = RT::Model::CustomField->new();
         $obj->load($id);
-#        my $tabs = page_nav->child( $obj->name, url => "/admin/custom_fields/Modify.html?id=" . $id );
-#        $tabs->child( _('Basics')       => url => "/admin/custom_fields/Modify.html?id=" . $id );
         my $tabs =
           page_nav->child( $obj->name,
             url => '/admin/custom_fields?id=' . $id );
+        $tabs->child(
+            _('Basics') => url => "/admin/custom_fields/edit?id=" . $id );
         $tabs->child( _('Group rights') => url => "/admin/custom_fields/group_rights?id=" . $id );
         $tabs->child( _('User rights')  => url => "/admin/custom_fields/user_rights?id=" . $id );
 
@@ -588,7 +585,6 @@ before 'admin/global/workflows' => run {
 
 before 'admin/rules' => run {
     page_nav->child( _('Select'), url => "/admin/rules/" );
-#    page_nav->child( _('Create'), url => "/admin/rules/Modify.html?create=1" );
 };
 
 before qr'(?:Ticket|Search)/' => run {
