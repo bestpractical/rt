@@ -57,14 +57,14 @@
 <li>
 <input type="checkbox" class="checkbox" name="Ticket-DeleteWatcher-Type-<% $watchers->type %>-Principal-<% $watcher->member_id %>" value="1" unchecked />
 % if ( $member->isa( 'RT::Model::User' ) ) { 
-<a href="<% RT->config->get('web_path') %>/Admin/Users/Modify.html?id=<% $watcher->member_id %>">
+<a href="<% RT->config->get('web_path') %>/admin/users/edit?id=<% $watcher->member_id %>">
 <& /Elements/ShowUser, user => $member &></a>
 % if ($ticket_obj and grep { $_->content eq $member->email } $ticket_obj->squelch_mail_to)  {
 <b><&|/l&>(Will not be sent email)</&></b>
 % }
 
 % } else {
-<a href="<% RT->config->get('web_path') %>/Admin/Groups/Modify.html?id=<% $watcher->member_id %>">
+<a href="<% RT->config->get('web_path') %>/admin/groups/edit?id=<% $watcher->member_id %>">
 <% $member->name %></a>
 % }
 </li>
