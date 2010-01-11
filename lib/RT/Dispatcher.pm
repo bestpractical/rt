@@ -423,6 +423,42 @@ before '/SelfService' => run {
     #main_nav->child( B =>  html => $m->scomp('GotoTicket'))
 };
 
+before 'admin/' => run {
+
+    my ( $id, $lookup_type );
+    my @monikers = qw/
+        global_select_cfs 
+      user_edit_memberships user_select_cfs user_config_my_rt user_select_private_key
+
+      group_edit_user_rights group_edit_group_rights group_select_cfs group_edit_members
+
+      queue_edit_user_rights queue_edit_group_rights queue_select_cfs queue_edit_watchers
+
+      cf_select_ocfs cf_edit_user_rights cf_edit_group_rights
+
+      update_queue update_group update_user update_customfield update_template
+      /;
+
+    for my $action ( Jifty->web->request->actions ) {
+        if ( grep { $action->moniker eq $_ } @monikers ) {
+            if ( $action->argument('record_id') ) {
+                $id = $action->argument('record_id');
+            }
+            elsif ( $action->argument('id') ) {
+                $id = $action->argument('id');
+            }
+
+            if ( $action->moniker =~ qr/select_cfs/ ) {
+                $lookup_type = $action->argument('lookup_type');
+            }
+        }
+    }
+
+    Jifty->web->request->argument( id => $id ) if $id;
+    Jifty->web->request->argument( lookup_type => $lookup_type ) if $lookup_type;
+};
+
+
 before 'admin/queues' => run {
     if ( Jifty->web->current_user->has_right( object => RT->system, right => 'AdminQueue' ) ) {
         page_nav->child( _('Select'), url => "/admin/queues/" );
@@ -480,41 +516,6 @@ before '/admin/users' => run {
         }
     }
 
-};
-
-before 'admin/' => run {
-
-    my ( $id, $lookup_type );
-    my @monikers = qw/
-        global_select_cfs 
-      user_edit_memberships user_select_cfs user_config_my_rt user_select_private_key
-
-      group_edit_user_rights group_edit_group_rights group_select_cfs group_edit_members
-
-      queue_edit_user_rights queue_edit_group_rights queue_select_cfs queue_edit_watchers
-
-      cf_select_ocfs cf_edit_user_rights cf_edit_group_rights
-
-      update_queue update_group update_user update_customfield update_template
-      /;
-
-    for my $action ( Jifty->web->request->actions ) {
-        if ( grep { $action->moniker eq $_ } @monikers ) {
-            if ( $action->argument('record_id') ) {
-                $id = $action->argument('record_id');
-            }
-            elsif ( $action->argument('id') ) {
-                $id = $action->argument('id');
-            }
-
-            if ( $action->moniker =~ qr/select_cfs/ ) {
-                $lookup_type = $action->argument('lookup_type');
-            }
-        }
-    }
-
-    set id => $id if $id;
-    set lookup_type => $lookup_type if $lookup_type;
 };
 
 before 'admin/groups' => run {
