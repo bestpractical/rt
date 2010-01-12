@@ -203,14 +203,14 @@ sub post_update_all_tables {
         print "updated table $table\n";
     }
 
-    # LinkValueTo and IncludeContentForValue are real columns in rt4
-    # this involves 2 tables, let's put it here for now.
+    # ValuesClass LinkValueTo and IncludeContentForValue are real columns
+    # in rt4. this involves 2 tables, let's put it here for now.
     require RT::Model::CustomFieldCollection;
     my $cfs =
       RT::Model::CustomFieldCollection->new( current_user => RT->system_user );
     $cfs->unlimit;
     while ( my $cf = $cfs->next ) {
-        for my $column ( qw/LinkValueTo IncludeContentForValue/ ) {
+        for my $column ( qw/LinkValueTo IncludeContentForValue ValuesClass/ ) {
             my ( $attr ) = $cf->attributes->named($column);
             if ( $attr ) {
                 my $set_method = "set_" . renaming $column;

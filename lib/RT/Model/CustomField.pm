@@ -110,6 +110,8 @@ use Jifty::DBI::Record schema {
     column
       include_content_for_value => type is 'text',
       display_length is 60, default is '';
+    column values_class => type is 'text',
+      display_length is 60, default is 'RT::Model::CustomFieldValueCollection';
     column disabled        => max_length is 6, type is 'smallint', render as
         'Checkbox', default is '0';
 };
@@ -232,6 +234,7 @@ sub create {
         repeated    => 0,
         link_value_to => '',
         include_content_for_value => '',
+        values_class => '',
         @_,
     );
 
@@ -300,12 +303,9 @@ sub create {
         lookup_type => $args{'lookup_type'},
         repeated    => $args{'repeated'},
         link_value_to => $args{'link_value_to'},
-        include_content_for_value => $args{include_content_for_value},
+        include_content_for_value => $args{'include_content_for_value'},
+        values_class => $args{'values_class'},
     );
-
-    if ( exists $args{'values_class'} ) {
-        $self->set_values_class( $args{'values_class'} );
-    }
 
     return ( $rv, $msg ) unless exists $args{'queue'};
 
@@ -556,27 +556,8 @@ sub is_external_values {
     return $selectable unless $selectable;
 
     my $class = $self->values_class;
-    return 0 if $class eq 'RT::Model::CustomFieldValueCollection';
+    return 0 if !$class || $class eq 'RT::Model::CustomFieldValueCollection';
     return 1;
-}
-
-sub values_class {
-    my $self = shift;
-    return '' unless $self->is_selection_type;
-
-    my $class = $self->first_attribute('ValuesClass');
-    $class = $class->content if $class;
-    return $class || 'RT::Model::CustomFieldValueCollection';
-}
-
-sub set_values_class {
-    my $self = shift;
-    my $class = shift || 'RT::Model::CustomFieldValueCollection';
-
-    if ( $class eq 'RT::Model::CustomFieldValueCollection' ) {
-        return $self->delete_attribute('ValuesClass');
-    }
-    return $self->set_attribute( name => 'ValuesClass', content => $class );
 }
 
 =head2 friendly_type [TYPE, MAX_valueS]
