@@ -72,12 +72,10 @@ template 'index.html' => page {
         my $include_disabled = get('include_disabled');
         hyperlink(
             label => _(
-                  ( $include_disabled ? 'Exclude' : 'Include' )
-                . ' disabled '
-                  . lc( $self->object_type )
-                  . 'in listing.'
+                ( $include_disabled ? 'Exclude' : 'Include' )
+                . ' disabled ones in listing'
             ),
-            url => '',
+            url        => '',
             parameters => { include_disabled => $include_disabled ? 0 : 1 },
         );
     }
