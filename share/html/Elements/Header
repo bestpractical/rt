@@ -77,6 +77,7 @@
 % $m->callback( %ARGS, callback_name => 'Head' );
 
 </head>
+<% Jifty->web->render_messages %>
 % Jifty->handler->stash->{'in_body'} = 1;
   <body<% $id && qq[ id="comp-$id"] |n %>>
 
