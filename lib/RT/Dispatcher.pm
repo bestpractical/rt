@@ -472,7 +472,7 @@ before 'admin/queues' => run {
 
 #        my $queue = page_nav->child( $queue_obj->name => url => "/admin/queues/Modify.html?id=" . $id );
         my $queue = page_nav->child(
-            $queue_obj->name => url => '/admin/queues?id=' . $id );
+            $queue_obj->name => url => '/admin/queues/?id=' . $id );
         $queue->child( _('Watchers'),  url => "/admin/queues/people?id=" . $id );
         $queue->child( _('Basics'),    url => "/admin/queues/edit?id=" . $id );
 
@@ -503,7 +503,7 @@ before '/admin/users' => run {
         $obj->load($id);
         my $tabs = page_nav->child(
             'current' => label => $obj->name,
-            url       => '/admin/users?id=' . $id,
+            url       => '/admin/users/?id=' . $id,
         );
         $tabs->child( _('Basics'), url => "/admin/users/edit?id=" . $id );
 
@@ -524,7 +524,7 @@ before 'admin/groups' => run {
         my $obj = RT::Model::Group->new();
         $obj->load($id);
         my $tabs =
-          page_nav->child( $obj->name, url => '/admin/groups?id=' . $id );
+          page_nav->child( $obj->name, url => '/admin/groups/?id=' . $id );
         $tabs->child(
             _('Basics') => url => "/admin/groups/edit?id=" . $obj->id );
         $tabs->child( _('Members')      => url => "/admin/groups/members?id=" . $obj->id );
@@ -546,7 +546,7 @@ before 'admin/custom_fields/' => run {
         $obj->load($id);
         my $tabs =
           page_nav->child( $obj->name,
-            url => '/admin/custom_fields?id=' . $id );
+            url => '/admin/custom_fields/?id=' . $id );
         $tabs->child(
             _('Basics') => url => "/admin/custom_fields/edit?id=" . $id );
         $tabs->child( _('Group rights') => url => "/admin/custom_fields/group_rights?id=" . $id );
