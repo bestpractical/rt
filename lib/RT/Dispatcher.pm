@@ -487,8 +487,8 @@ before 'admin/queues' => run {
             url =>
             '/admin/queues/select_custom_fields?lookup_type=RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction&id=' . $id );
 
-        $queue->child( _('Group rights'), url => "/admin/queues/group_rights?id=" . $id );
-        $queue->child( _('User rights'),  url => "/admin/queues/user_rights?id=" . $id );
+        $queue->child( _('Group Rights'), url => "/admin/queues/group_rights?id=" . $id );
+        $queue->child( _('User Rights'),  url => "/admin/queues/user_rights?id=" . $id );
         $queue->child( _('GnuPG'),  url => "/admin/queues/gnupg?id=" . $id );
     }
 };
@@ -528,8 +528,8 @@ before 'admin/groups' => run {
         $tabs->child(
             _('Basics') => url => "/admin/groups/edit?id=" . $obj->id );
         $tabs->child( _('Members')      => url => "/admin/groups/members?id=" . $obj->id );
-        $tabs->child( _('Group rights') => url => "/admin/groups/group_rights?id=" . $obj->id );
-        $tabs->child( _('User rights')  => url => "/admin/groups/user_rights?id=" . $obj->id );
+        $tabs->child( _('Group Rights') => url => "/admin/groups/group_rights?id=" . $obj->id );
+        $tabs->child( _('User Rights')  => url => "/admin/groups/user_rights?id=" . $obj->id );
         $tabs->child( _('History')      => url => "/admin/groups/history?id=" . $obj->id );
     }
 };
@@ -549,8 +549,8 @@ before 'admin/custom_fields/' => run {
             url => '/admin/custom_fields/?id=' . $id );
         $tabs->child(
             _('Basics') => url => "/admin/custom_fields/edit?id=" . $id );
-        $tabs->child( _('Group rights') => url => "/admin/custom_fields/group_rights?id=" . $id );
-        $tabs->child( _('User rights')  => url => "/admin/custom_fields/user_rights?id=" . $id );
+        $tabs->child( _('Group Rights') => url => "/admin/custom_fields/group_rights?id=" . $id );
+        $tabs->child( _('User Rights')  => url => "/admin/custom_fields/user_rights?id=" . $id );
 
         if ( $obj->is_selection_type && !$obj->is_external_values ) {
             $tabs->child( _('Values'),
@@ -558,7 +558,7 @@ before 'admin/custom_fields/' => run {
         }
 
         if ( $obj->lookup_type =~ /^RT::Model::Queue-/io ) {
-            $tabs->child( _('Applies to'), url => "/admin/custom_fields/objects?id=" . $id );
+            $tabs->child( _('Applies To'), url => "/admin/custom_fields/objects?id=" . $id );
         }
 
     }
