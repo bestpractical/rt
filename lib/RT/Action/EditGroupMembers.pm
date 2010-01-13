@@ -103,7 +103,7 @@ sub report_success {
     my $self = shift;
 
     # Your success message here
-    $self->result->message('Success');
+    $self->result->message(_('Updated group members'));
 }
 
 sub available_values {

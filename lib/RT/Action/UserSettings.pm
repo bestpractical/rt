@@ -213,7 +213,7 @@ sub report_success {
     my $self = shift;
 
     # Your success message here
-    $self->result->message('Success');
+    $self->result->message(_('Updated user settings'));
 }
 
 sub default_value {
