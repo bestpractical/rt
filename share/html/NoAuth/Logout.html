@@ -64,7 +64,7 @@
 % $m->abort();
 
 <%INIT>
-my $URL = RT->Config->Get('WebPath')."/"
+my $URL = RT->Config->Get('WebPath')."/";
 $m->callback( %ARGS, CallbackName => 'BeforeSessionDelete' );
 
 if (defined %session) {
