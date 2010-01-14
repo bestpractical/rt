@@ -425,7 +425,7 @@ before '/SelfService' => run {
 
 before 'admin/' => run {
 
-    my ( $id, $lookup_type, $queue );
+    my ( $id, $lookup_type, $queue, $custom_field );
     my @monikers = qw/
         global_select_cfs 
       user_edit_memberships user_select_cfs user_config_my_rt user_select_private_key
@@ -448,8 +448,15 @@ before 'admin/' => run {
                 $id = $action->argument('id');
             }
         }
-
-        if ( grep { $action->moniker eq $_ } @monikers ) {
+        elsif ( Jifty->web->request->path =~ m{^/admin/custom_fields/values} ) {
+            if ( $action->argument('custom_field') ) {
+                $custom_field = $action->argument('custom_field');
+            }
+            if ( $action->argument('id') ) {
+                $id = $action->argument('id');
+            }
+        }
+        elsif ( grep { $action->moniker eq $_ } @monikers ) {
             if ( $action->argument('record_id') ) {
                 $id = $action->argument('record_id');
             }
@@ -467,8 +474,9 @@ before 'admin/' => run {
     Jifty->web->request->argument( id => $id ) if $id;
     Jifty->web->request->argument( lookup_type => $lookup_type ) if $lookup_type;
     Jifty->web->request->argument( queue => $queue ) if $queue;
+    Jifty->web->request->argument( custom_field => $custom_field )
+      if $custom_field;
 };
-
 
 before 'admin/queues' => run {
     if ( Jifty->web->current_user->has_right( object => RT->system, right => 'AdminQueue' ) ) {
@@ -565,7 +573,7 @@ before 'admin/custom_fields/' => run {
 
         if ( $obj->is_selection_type && !$obj->is_external_values ) {
             $tabs->child( _('Values'),
-                url => "/admin/custom_fields/values?custom_field=" . $id );
+                url => "/admin/custom_fields/values/?custom_field=" . $id );
         }
 
         if ( $obj->lookup_type =~ /^RT::Model::Queue-/io ) {
