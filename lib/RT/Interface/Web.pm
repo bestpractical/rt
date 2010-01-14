@@ -1129,12 +1129,16 @@ sub ProcessUpdateMessage {
     );
 
     my @temp_squelch;
-    foreach my $type (qw(Requestor Cc AdminCc)) {
+    foreach my $type (qw(Cc AdminCc)) {
         if (grep $_ eq $type || $_ eq ( $type . 's' ), @{ $args{ARGSRef}->{'SkipNotification'} || [] }) {
             push @temp_squelch, map $_->address, Email::Address->parse( $message_args{$type} );
-            my $watcher_method = $type eq 'Requestor' ? 'Requestors' : $type; # method consistency fail
-            push @temp_squelch, $args{TicketObj}->$watcher_method->MemberEmailAddresses;
+            push @temp_squelch, $args{TicketObj}->$type->MemberEmailAddresses;
+            push @temp_squelch, $args{TicketObj}->QueueObj->$type->MemberEmailAddresses;
         }
+    }
+    if (grep $_ eq 'Requestor' || $_ eq 'Requestors', @{ $args{ARGSRef}->{'SkipNotification'} || [] }) {
+            push @temp_squelch, map $_->address, Email::Address->parse( $message_args{Requestor} );
+            push @temp_squelch, $args{TicketObj}->Requestors->MemberEmailAddresses;
     }
 
     if (@temp_squelch) {
