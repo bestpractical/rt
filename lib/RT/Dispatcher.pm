@@ -425,7 +425,7 @@ before '/SelfService' => run {
 
 before 'admin/' => run {
 
-    my ( $id, $lookup_type );
+    my ( $id, $lookup_type, $queue );
     my @monikers = qw/
         global_select_cfs 
       user_edit_memberships user_select_cfs user_config_my_rt user_select_private_key
@@ -451,11 +451,16 @@ before 'admin/' => run {
             if ( $action->moniker =~ qr/select_cfs/ ) {
                 $lookup_type = $action->argument('lookup_type');
             }
+
+            if ( Jifty->web->request->path =~ m{admin/queues/templates} ) {
+                $queue = $action->argument('queue');
+            }
         }
     }
 
     Jifty->web->request->argument( id => $id ) if $id;
     Jifty->web->request->argument( lookup_type => $lookup_type ) if $lookup_type;
+    Jifty->web->request->argument( queue => $queue ) if $queue;
 };
 
 
