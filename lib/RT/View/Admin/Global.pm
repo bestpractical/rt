@@ -62,7 +62,7 @@ template 'index.html' => page { title => _('Global Configuration') } content {
         B => {
             title => _('Templates'),
             text  => _('Edit system templates'),
-            path  => '/admin/global/templates',
+            path  => '/admin/global/templates/',
         },
         C => {
             title => _('Workflows'),

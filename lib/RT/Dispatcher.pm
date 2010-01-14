@@ -233,7 +233,7 @@ before qr{.*} => run {
 
         my $admin_global = $admin->child( _('Global'), url => '/admin/global/', );
 
-        $admin_global->child( _('Templates'), url => '/admin/global/templates', );
+        $admin_global->child( _('Templates'), url => '/admin/global/templates/', );
         my $workflows = $admin_global->child( _('Workflows'), url => '/admin/global/workflows/index.html', );
         {
             $workflows->child( _('Overview')     => url => "/admin/global/workflows/index.html" );
@@ -488,7 +488,7 @@ before 'admin/queues' => run {
         $queue->child( _('Basics'),    url => "/admin/queues/edit?id=" . $id );
 
         # because Templates have their own ids, let's use queue parameter here
-        $queue->child( _('Templates'), url => "/admin/queues/templates?queue=" . $id );
+        $queue->child( _('Templates'), url => "/admin/queues/templates/?queue=" . $id );
 
         $queue->child( _('Ticket Custom Fields'),
             url =>
