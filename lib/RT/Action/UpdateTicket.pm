@@ -26,6 +26,23 @@ use Jifty::Action schema {
         label is _('Subject');
 };
 
+sub arguments {
+    my $self = shift;
+    return $self->Jifty::Action::Record::Update::arguments(@_);
+
+    if (!$self->{_cached_arguments}) {
+        my $ticket_args = $self->RT::Action::TicketAction::arguments(@_);
+        my $update_args = $self->Jifty::Action::Record::Update::arguments(@_);
+
+        $self->{_cached_arguments} = Jifty::Param::Schema::merge_params(
+            $update_args,
+            $ticket_args,
+        );
+    }
+
+    return $self->{_cached_arguments};
+}
+
 sub _valid_statuses {
     my $self = shift;
 
