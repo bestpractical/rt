@@ -440,6 +440,15 @@ before 'admin/' => run {
       /;
 
     for my $action ( Jifty->web->request->actions ) {
+        if ( Jifty->web->request->path =~ m{^/admin/queues/templates} ) {
+            if ( $action->argument('queue') ) {
+                $queue = $action->argument('queue');
+            }
+            if ( $action->argument('id') ) {
+                $id = $action->argument('id');
+            }
+        }
+
         if ( grep { $action->moniker eq $_ } @monikers ) {
             if ( $action->argument('record_id') ) {
                 $id = $action->argument('record_id');
@@ -452,9 +461,6 @@ before 'admin/' => run {
                 $lookup_type = $action->argument('lookup_type');
             }
 
-            if ( Jifty->web->request->path =~ m{admin/queues/templates} ) {
-                $queue = $action->argument('queue');
-            }
         }
     }
 
