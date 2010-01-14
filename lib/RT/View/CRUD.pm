@@ -210,7 +210,7 @@ sub view_field {
 
 # we just want to do this hyperlink thing for those specfic views
     if (
-        $self =~ /(Users|Groups|Queues|CustomFields)$/
+        $self =~ /(Users|Groups|Queues|CustomFields|Templates)$/
         && $args{field} =~ /^(id|name)$/
       )
     {
@@ -218,9 +218,21 @@ sub view_field {
             %args,
             callback => sub {
                 my %args = @_;
+                my $url;
+
+                if ( $self eq 'RT::View::Admin::Queues::Templates' ) {
+                    $url .= 'edit?id=' . $args{id} . '&queue=' . get('queue');
+                }
+                elsif ( $self eq 'RT::View::Admin::Global::Templates' ) {
+                    $url .= 'edit?id=' . $args{id};
+                }
+                else {
+                    $url = "?id=" . $args{id};
+                }
+
                 hyperlink(
                     label => $args{current_value},
-                    url   => "?id=" . $args{id},
+                    url   => $url,
                 );
             }
         );
