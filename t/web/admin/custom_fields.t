@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 use strict;
-use RT::Test strict => 0, tests => 37, l10n => 1;
+use RT::Test strict => 0, tests => 50, l10n => 1;
 
 my ( $baseurl, $agent ) = RT::Test->started_ok;
 ok( $agent->login, 'logged in' );
@@ -20,8 +20,9 @@ ok(
 my $moniker = $agent->moniker_for('RT::Action::CreateCustomField');
 $agent->fill_in_action_ok(
     $moniker,
-    'name'      => 'cf_foo',
+    name        => 'cf_foo',
     lookup_type => 'RT::Model::Queue-RT::Model::Ticket',
+    type        => 'Freeform',
 );
 
 $agent->submit;
@@ -56,14 +57,17 @@ $agent->get_ok('/admin/custom_fields/');
 $agent->follow_link_ok( { text => 'cf_foo' },
     'follow cf_foo link' );
 
+ok( !$agent->find_link( text => 'Values' ), 'no Values link since not Select' );
+
 # Basics
 $agent->follow_link_ok( { text => 'Basics' }, 'follow Basic link' );
 $moniker = 'update_customfield';
-$agent->fill_in_action_ok( $moniker, max_values => 1 );
+$agent->fill_in_action_ok( $moniker, max_values => 1, type => 'Select' );
 $agent->submit;
-$agent->content_contains( 'Updated', 'updated max_vaues' );
+$agent->content_contains( 'Updated', 'updated max_vaues and type' );
 ok( $cf_foo->load( 'cf_foo'), 'reload cf_foo' );
 is( $cf_foo->max_values, 1, 'did change max_values to 1' );
+is( $cf_foo->type, 'Select', 'did change type to Select' );
 
 # Group Rights
 $agent->follow_link_ok( { text => 'Group Rights' },
@@ -116,4 +120,30 @@ $object_cfs->limit_to_custom_field($cf_foo->id);
 is( $object_cfs->count, 1, 'we select only 1 queue' );
 is( $object_cfs->first->object_id, 1, 'the only 1 queue is General' );
 
+# Values
+$agent->follow_link_ok( { text => 'Values' }, 'Values' );
+$moniker = $agent->moniker_for('RT::Action::CreateCustomFieldValue');
+$agent->fill_in_action_ok(
+    $moniker,
+    name        => 'cfv_foo',
+);
+$agent->submit;
+$agent->content_contains( 'Created', 'created cfv_foo' );
+my $cfv = RT::Model::CustomFieldValue->new( current_user => RT->system_user );
+ok( $cfv->load_by_cols( name => 'cfv_foo' ), 'load cfv_foo' );
+is( $cfv->name, 'cfv_foo', 'did created cfv_foo' );
 
+$agent->follow_link_ok( { text => 'cfv_foo' }, 'follow cfv_foo link' );
+
+my $moniker = $agent->moniker_for('RT::Action::UpdateCustomFieldValue');
+$agent->fill_in_action_ok(
+    $moniker,
+    description => 'foo description',
+);
+
+$agent->submit;
+$agent->content_contains( 'Updated', 'created cfv_foo' );
+$agent->follow_link_ok( { text => 'Values' }, 'Values' );
+ok( $cfv->load_by_cols( description => 'foo description' ),
+    'load cfv by description' );
+is( $cfv->description, 'foo description', 'did update description of cfv_foo' );
