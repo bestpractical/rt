@@ -16,7 +16,7 @@ use Jifty::Action schema {
     param owner =>
         render as 'RT::View::Form::Field::SelectUser',
         # valid_values are queue-specific
-        valid_values are lazy { RT->nobody->id },
+        valid_values are lazy { [ RT->nobody->id ] },
         label is _('Owner');
 
     param subject =>
