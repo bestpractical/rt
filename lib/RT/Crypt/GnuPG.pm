@@ -582,6 +582,7 @@ sub SignEncryptRFC3156 {
 }
 
 sub SignEncryptInline {
+    my $self = shift;
     my %args = ( @_ );
 
     my $entity = $args{'Entity'};
@@ -590,19 +591,20 @@ sub SignEncryptInline {
     $entity->make_singlepart;
     if ( $entity->is_multipart ) {
         foreach ( $entity->parts ) {
-            %res = SignEncryptInline( @_, Entity => $_ );
+            %res = $self->SignEncryptInline( @_, Entity => $_ );
             return %res if $res{'exit_code'};
         }
         return %res;
     }
 
-    return _SignEncryptTextInline( @_ )
+    return $self->_SignEncryptTextInline( @_ )
         if $entity->effective_type =~ /^text\//i;
 
-    return _SignEncryptAttachmentInline( @_ );
+    return $self->_SignEncryptAttachmentInline( @_ );
 }
 
 sub _SignEncryptTextInline {
+    my $self = shift;
     my %args = (
         Entity => undef,
 
@@ -691,6 +693,7 @@ sub _SignEncryptTextInline {
 }
 
 sub _SignEncryptAttachmentInline {
+    my $self = shift;
     my %args = (
         Entity => undef,
 
@@ -793,6 +796,7 @@ sub _SignEncryptAttachmentInline {
 }
 
 sub SignEncryptContent {
+    my $self = shift;
     my %args = (
         Content => undef,
 
@@ -1057,6 +1061,7 @@ sub FindProtectedParts {
 =cut
 
 sub VerifyDecrypt {
+    my $self = shift;
     my %args = (
         Entity    => undef,
         Detach    => 1,
@@ -1080,7 +1085,7 @@ sub VerifyDecrypt {
             push @res, { VerifyInline( %$item ) };
             $status_on = $item->{'Data'};
         } elsif ( $item->{'Format'} eq 'Attachment' ) {
-            push @res, { VerifyAttachment( %$item ) };
+            %res = $self->VerifyAttachment( %$item );
             if ( $args{'Detach'} ) {
                 $item->{'Top'}->parts( [
                     grep "$_" ne $item->{'Signature'}, $item->{'Top'}->parts
@@ -1126,9 +1131,10 @@ sub VerifyDecrypt {
     return @res;
 }
 
-sub VerifyInline { return DecryptInline( @_ ) }
+sub VerifyInline { return (shift)->DecryptInline( @_ ) }
 
 sub VerifyAttachment {
+    my $self = shift;
     my %args = ( Data => undef, Signature => undef, Top => undef, @_ );
 
     my $gnupg = GnuPG::Interface->new();
@@ -1183,6 +1189,7 @@ sub VerifyAttachment {
 }
 
 sub VerifyRFC3156 {
+    my $self = shift;
     my %args = ( Data => undef, Signature => undef, Top => undef, @_ );
 
     my $gnupg = GnuPG::Interface->new();
@@ -1230,6 +1237,7 @@ sub VerifyRFC3156 {
 }
 
 sub DecryptRFC3156 {
+    my $self = shift;
     my %args = (
         Data => undef,
         Info => undef,
@@ -1310,6 +1318,7 @@ sub DecryptRFC3156 {
 }
 
 sub DecryptInline {
+    my $self = shift;
     my %args = (
         Data => undef,
         Passphrase => undef,
@@ -1360,7 +1369,7 @@ sub DecryptInline {
             seek $block_fh, 0, 0;
 
             my ($res_fh, $res_fn);
-            ($res_fh, $res_fn, %res) = _DecryptInlineBlock(
+            ($res_fh, $res_fn, %res) = $self->_DecryptInlineBlock(
                 %args,
                 GnuPG => $gnupg,
                 BlockHandle => $block_fh,
@@ -1418,6 +1427,7 @@ sub DecryptInline {
 }
 
 sub _DecryptInlineBlock {
+    my $self = shift;
     my %args = (
         GnuPG => undef,
         BlockHandle => undef,
@@ -1468,6 +1478,7 @@ sub _DecryptInlineBlock {
 }
 
 sub DecryptAttachment {
+    my $self = shift;
     my %args = (
         Top  => undef,
         Data => undef,
@@ -1501,7 +1512,7 @@ sub DecryptAttachment {
     $args{'Data'}->bodyhandle->print( $tmp_fh );
     seek $tmp_fh, 0, 0;
 
-    my ($res_fh, $res_fn, %res) = _DecryptInlineBlock(
+    my ($res_fh, $res_fn, %res) = $self->_DecryptInlineBlock(
         %args,
         GnuPG => $gnupg,
         BlockHandle => $tmp_fh,
@@ -1527,6 +1538,7 @@ sub DecryptAttachment {
 }
 
 sub DecryptContent {
+    my $self = shift;
     my %args = (
         Content => undef,
         Passphrase => undef,
@@ -2430,7 +2442,7 @@ sub DrySign {
         Data    => ['t'],
     );
 
-    my %res = SignEncrypt(
+    my %res = $self->SignEncrypt(
         Sign    => 1,
         Encrypt => 0,
         Entity  => $mime,
