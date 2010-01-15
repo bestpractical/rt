@@ -80,14 +80,14 @@ sub take_action {
     if ( $self->argument_value('reset') && $record_class ne 'RT::System' ) {
         $self->record->set_preferences('HomepageSettings', {});
     }
-    elsif ($self->argument_value('summary_rows')
-        && $record_class ne 'RT::System' )
-    {
-        my $value = int $self->argument_value('summary_rows');
-        $value = 0 if $value < 0;
-        $self->record->set_preferences( 'SummaryRows', $value );
-    }
     else {
+        if (   $self->argument_value('summary_rows')
+            && $record_class ne 'RT::System' )
+        {
+            my $value = int $self->argument_value('summary_rows');
+            $value = 0 if $value < 0;
+            $self->record->set_preferences( 'SummaryRows', $value );
+        }
 
         my $content = $self->default_value || {};
         for my $arg ( $self->argument_names ) {
