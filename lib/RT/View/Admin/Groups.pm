@@ -70,9 +70,10 @@ page { title => _('Select Custom Fields for Group') } content {
     my $self  = shift;
     my $group = RT::Model::Group->new;
     $group->load( get('id') );
-    my $moniker = 'group_select_cfs',
+    my $moniker = 'group_select_cfs';
     my $action = new_action(
         class   => 'SelectCustomFields',
+        moniker => $moniker,
     );
 
     $action->record($group);
