@@ -95,8 +95,15 @@ $collapsed => undef
 
 <%INIT>
 
-$id ||= Jifty->web->response->result('create_ticket')->content('id')
-    ||  Jifty->web->response->result('modify_ticket')->content('id');
+# if the user didn't pass in an id, guess it based on action results
+if (!$id) {
+    if (my $create_result = Jifty->web->response->result('create_ticket')) {
+        $id = $create_result->content('id')
+    }
+    elsif (my $modify_result = Jifty->web->response->result('modify_ticket')) {
+        $id = $modify_result->content('id')
+    }
+}
 
 $m->callback( ticket_obj => $ticket_obj, args_ref => \%ARGS, callback_name => 'Initial' );
 
