@@ -748,7 +748,7 @@ on '/ticket/create' => run {
 };
 
 on '/ticket/modify' => run {
-    my $action = Jifty->web->request->action('update_ticket');
+    my $action = Jifty->web->request->action('modify_ticket');
     my $id = $action ? $action->argument('id') : get('id');
     if (!defined($id)) {
         die "no ticket selected";
