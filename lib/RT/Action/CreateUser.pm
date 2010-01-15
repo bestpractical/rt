@@ -12,6 +12,8 @@ use Jifty::Param::Schema;
 use Jifty::Action schema {
     param disabled =>
         render as 'Checkbox';
+    param privileged =>
+        render as 'Checkbox';
 };
 
 sub arguments {
@@ -34,11 +36,20 @@ sub take_action {
     my $self = shift;
     $self->SUPER::take_action;
     $self->_add_custom_field_values;
-    if ( $self->has_argument('disabled') ) {
-        my ( $status, $msg ) =
-          $self->record->set_disabled( $self->argument_value('disabled') );
-        Jifty->log->error( $msg ) unless $status;
+
+    for my $field (qw/disabled privileged/) {
+        next
+          if ( $self->record->$field && $self->argument_value($field) )
+          || ( !$self->record->$field && !$self->argument_value($field) );
+
+        my $set_method = "set_$field";
+        if ( $self->has_argument($field) ) {
+            my ( $status, $msg ) =
+              $self->record->$set_method( $self->argument_value($field) );
+            Jifty->log->error($msg) unless $status;
+        }
     }
+
     return 1;
 }
 
