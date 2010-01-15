@@ -42,6 +42,10 @@ sub arguments {
             $queue = $queue->[0] if ref $queue eq 'ARRAY';
             $self->set_queue($queue);
         }
+
+        if (!$queue) {
+            warn "No queue found for $self";
+        }
     }
 
     return $self->{_cached_arguments};
