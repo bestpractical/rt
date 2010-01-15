@@ -10,7 +10,7 @@ requires(
     'Digest::MD5'                => '2.27',
     'DBI'                        => '1.37',
     'Class::ReturnValue'         => '0.40',
-    'Jifty::DBI'                 => '0.59',
+    'Jifty::DBI'                 => '0.61',
     'Jifty::Plugin::Wikitext'    => '0.01',
     'Jifty::Plugin::WyzzEditor'  => '0.01',
     'Text::Template'             => 0,
