@@ -525,7 +525,8 @@ before '/admin/users' => run {
             url       => '/admin/users/?id=' . $id,
         );
         $tabs->child( _('Basics'), url => "/admin/users/edit?id=" . $id );
-
+        $tabs->child( _('Custom Fields') => url =>
+              "/admin/users/select_custom_fields?id=" . $obj->id );
         $tabs->child( _('Memberships'),    url => "/admin/users/memberships?id=" . $id );
         $tabs->child( _('History'),        url => "/admin/users/history?id=" . $id );
         $tabs->child( _('RT at a glance'), url => "/admin/users/my_rt?id=" . $id );
@@ -546,6 +547,8 @@ before 'admin/groups' => run {
           page_nav->child( $obj->name, url => '/admin/groups/?id=' . $id );
         $tabs->child(
             _('Basics') => url => "/admin/groups/edit?id=" . $obj->id );
+        $tabs->child( _('Custom Fields') => url =>
+              "/admin/groups/select_custom_fields?id=" . $obj->id );
         $tabs->child( _('Members')      => url => "/admin/groups/members?id=" . $obj->id );
         $tabs->child( _('Group Rights') => url => "/admin/groups/group_rights?id=" . $obj->id );
         $tabs->child( _('User Rights')  => url => "/admin/groups/user_rights?id=" . $obj->id );
