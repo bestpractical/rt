@@ -35,16 +35,24 @@ sub arguments {
         # after_set_queue to be called twice, and that leads to a lot of
         # duplicate work and possibly duplicate data.
         my $already_setting_queue = (caller(1))[3] eq __PACKAGE__.'::set_queue';
+
+        # if we have a queue argument, use it
         my $action = Jifty->web->request->action($self->moniker);
         my $queue = $action ? $action->argument('queue') : 0;
 
-        if (!$already_setting_queue && $queue) {
-            $queue = $queue->[0] if ref $queue eq 'ARRAY';
-            $self->set_queue($queue);
+        # otherwise, try to pluck the queue from the record if we have one
+        if (!$queue && $self->can('record')) {
+            $queue = $self->record->queue_id;
         }
 
         if (!$queue) {
             warn "No queue found for $self";
+        }
+
+        # run set_queue logic
+        if (!$already_setting_queue && $queue) {
+            $queue = $queue->[0] if ref $queue eq 'ARRAY';
+            $self->set_queue($queue);
         }
     }
 
