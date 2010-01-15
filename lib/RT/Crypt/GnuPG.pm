@@ -397,27 +397,13 @@ Returns a hash with the following keys:
 =cut
 
 sub SignEncrypt {
-    my %args = (@_);
+    my $self = shift;
 
-    my $entity = $args{'Entity'};
-    if ( $args{'Sign'} && !defined $args{'Signer'} ) {
-        $args{'Signer'} = UseKeyForSigning()
-            || (Email::Address->parse( $entity->head->get( 'From' ) ))[0]->address;
-    }
-    if ( $args{'Encrypt'} && !$args{'Recipients'} ) {
-        my %seen;
-        $args{'Recipients'} = [
-            grep $_ && !$seen{ $_ }++, map $_->address,
-            map Email::Address->parse( $entity->head->get( $_ ) ),
-            qw(To Cc Bcc)
-        ];
-    }
-    
     my $format = lc RT->Config->Get('GnuPG')->{'OutgoingMessagesFormat'} || 'RFC';
     if ( $format eq 'inline' ) {
-        return SignEncryptInline( %args );
+        return $self->SignEncryptInline( @_ );
     } else {
-        return SignEncryptRFC3156( %args );
+        return $self->SignEncryptRFC3156( @_ );
     }
 }
 
