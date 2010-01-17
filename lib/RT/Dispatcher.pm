@@ -588,9 +588,11 @@ before 'admin/custom_fields/' => run {
 };
 
 before 'admin/global/workflows' => run {
+    my $base = '/admin/global/workflows';
+    page_nav->child( _('Select'), url => $base );
+    page_nav->child( _('Mappings'), url => "$base/mappings" );
     if ( my $id = Jifty->web->request->argument('name') ) {
 
-        my $base = '/admin/global/workflows';
 
         my $schema = RT::Workflow->new->load($id);
 
