@@ -68,7 +68,7 @@ template 'interface' => page {
 } content {
     my $self    = shift;
     my $name = get('name');
-    my $moniker = 'modify_workflow_interface';
+    my $moniker = 'workflow_edit_interface';
     my $action = new_action(
         class   => 'EditWorkflowInterface',
         moniker => $moniker,
@@ -154,7 +154,7 @@ template 'statuses' => page {
 } content {
     my $self    = shift;
     my $name = get('name');
-    my $moniker = 'modify_workflow_statuses';
+    my $moniker = 'workflow_edit_statuses';
     my $action = new_action(
         class   => 'EditWorkflowStatuses',
         moniker => $moniker,
@@ -173,7 +173,7 @@ template 'transitions' => page {
 } content {
     my $self    = shift;
     my $name = get('name');
-    my $moniker = 'modify_workflow_transitions';
+    my $moniker = 'workflow_edit_transitions';
     my $action = new_action(
         class   => 'EditWorkflowTransitions',
         moniker => $moniker,
@@ -366,7 +366,7 @@ template 'mappings' => page {
         };
 
         if ( $from && $to ) {
-            my $moniker = 'modify_workflow_mappings';
+            my $moniker = 'workflow_edit_mappings';
             my $action  = new_action(
                 class   => 'EditWorkflowMappings',
                 moniker => $moniker,
