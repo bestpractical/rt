@@ -29,7 +29,7 @@ sub take_action {
         return;
     }
 
-    $self->report_success;
+    $self->report_success( $schema );
     return 1;
 }
 
@@ -39,9 +39,10 @@ sub take_action {
 
 sub report_success {
     my $self = shift;
+    my $schema = shift;
 
     # Your success message here
-    $self->result->message(_('Created workflow %1', $self->record->name));
+    $self->result->message(_('Created workflow %1', $schema->name));
 }
 
 1;
