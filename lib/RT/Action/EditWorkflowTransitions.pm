@@ -75,7 +75,7 @@ sub report_success {
     my $self = shift;
 
     # Your success message here
-    $self->result->message(_('Updated workflow transactions'));
+    $self->result->message(_('Updated workflow transitions'));
 }
 
 1;
