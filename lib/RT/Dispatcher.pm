@@ -275,7 +275,7 @@ before qr{.*} => run {
         $admin_global->child( _('Group rights'),   url => '/admin/global/group_rights', );
         $admin_global->child( _('User rights'),    url => '/admin/global/user_rights', );
         $admin_global->child( _('RT at a glance'), url => '/admin/global/my_rt', );
-        $admin_global->child( _('Jifty'),          url => '/admin/global/jifty', );
+        $admin_global->child( _('Jifty'), url => '/admin/global/config_jifty', );
         $admin_global->child( _('System'),         url => '/admin/global/system', );
 
         my $admin_tools = $admin->child( _('Tools'), url => '/admin/tools/', );
