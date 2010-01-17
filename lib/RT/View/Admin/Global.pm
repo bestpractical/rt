@@ -92,7 +92,7 @@ template 'index.html' => page { title => _('Global Configuration') } content {
         Y => {
             title => _('Jifty'),
             text  => _('Configure Jifty'),
-            path  => '/admin/global/jifty',
+            path  => '/admin/global/config_jifty',
         },
         Z => {
             title => _('System'),
