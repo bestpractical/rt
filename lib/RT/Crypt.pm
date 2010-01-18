@@ -121,4 +121,15 @@ sub VerifyDecrypt {
     return @res;
 }
 
+sub ParseStatus {
+    my $self = shift;
+    my %args = (
+        Protocol => undef,
+        Status   => '',
+        @_
+    );
+    my $class = 'RT::Crypt::'. $args{'Protocol'};
+    return $class->ParseStatus( $args{'Status'} );
+}
+
 1;
