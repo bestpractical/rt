@@ -62,10 +62,12 @@ $Reverify     => 1
 my @runs;
 my $needs_unsigned_warning = $WarnUnsigned;
 
+my @protocols = RT::Crypt->Protocols;
+my $re_protocols = join '|', map "\Q$_\E", @protocols;
+
 foreach ( $Attachment->SplitHeaders ) {
-    if ( s/^X-RT-GnuPG-Status:\s*//i ) {
-        require RT::Crypt;
-        push @runs, [ RT::Crypt::GnuPG->ParseStatus( $_ ) ];
+    if ( s/^X-RT-($re_protocols)-Status:\s*//io ) {
+        push @runs, [ RT::Crypt->ParseStatus( Protocol => "$1", Status => $_ ) ];
     }
 
     $needs_unsigned_warning = 0 if /^X-RT-Incoming-Signature:/;
@@ -117,7 +119,10 @@ my $reverify_cb = sub {
         $top->SetHeader('X-RT-Privacy' => 'PGP' );
         $top->DelHeader('X-RT-Incoming-Signature');
 
-        my @status = RT::Crypt::GnuPG->ParseStatus( $res[0]->{'status'} );
+        my @status = RT::Crypt->ParseStatus(
+            Protocol => $res[0]{'Protocol'},
+            Status => $res[0]{'status'},
+        );
         for ( @status ) {
             if ( $_->{'Operation'} eq 'Verify' && $_->{'Status'} eq 'DONE' ) {
                 $top->AddHeader( 'X-RT-Incoming-Signature' => $_->{'UserString'} );

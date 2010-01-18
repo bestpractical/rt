@@ -104,6 +104,16 @@ An un-localized error message desribing the problem.
 
 requires 'VerifyDecrypt';
 
+=head2 ParseStatus STRING
+
+Takes a string describing the status of verification/decryption, usually
+as stored in a MIME header.  Parses and returns it as described in
+L<RT::Crypt/ParseStatus>.
+
+=cut
+
+requires 'ParseStatus';
+
 =head2 FindScatteredParts Parts => ARRAYREF, Parents => HASHREF, Skip => HASHREF
 
 Passed the list of unclaimed L<MIME::Entity> objects in C<Parts>, this

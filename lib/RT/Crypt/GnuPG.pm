@@ -1320,37 +1320,6 @@ sub DecryptContent {
     return %res;
 }
 
-=head2 ParseStatus
-
-Takes a string containing output of gnupg status stream. Parses it and returns
-array of hashes. Each element of array is a hash ref and represents line or
-group of lines in the status message.
-
-All hashes have Operation, Status and Message elements.
-
-=over
-
-=item Operation
-
-Classification of operations gnupg performs. Now we have support
-for Sign, Encrypt, Decrypt, Verify, PassphraseCheck, RecipientsCheck and Data
-values.
-
-=item Status
-
-Informs about success. Value is 'DONE' on success, other values means that
-an operation failed, for example 'ERROR', 'BAD', 'MISSING' and may be other.
-
-=item Message
-
-User friendly message.
-
-=back
-
-This parser is based on information from GnuPG distribution.
-
-=cut
-
 my %REASON_CODE_TO_TEXT = (
     NODATA => {
         1 => "No armored data",

@@ -300,6 +300,44 @@ sub VerifyDecrypt {
     return @res;
 }
 
+=head2 ParseStatus Protocol => NAME, Status => STRING
+
+Takes a C<String> describing the status of verification/decryption,
+usually as stored in a MIME header.  Parses it and returns array of hash
+references, one for each operation.  Each hashref contains at least
+three keys:
+
+=over
+
+=item Operation
+
+The classification of the process whose status is being reported upon.
+Valid values include C<Sign>, C<Encrypt>, C<Decrypt>, C<Verify>,
+C<PassphraseCheck>, C<RecipientsCheck> and C<Data>.
+
+=item Status
+
+Whether the operation was successful; contains C<DONE> on success.
+Other possible values include C<ERROR>, C<BAD>, or C<MISSING>.
+
+=item Message
+
+An un-localized user friendly message.
+
+=back
+
+=cut
+
+sub ParseStatus {
+    my $self = shift;
+    my %args = (
+        Protocol => undef,
+        Status   => '',
+        @_
+    );
+    return $self->LoadImplementation( $args{'Protocol'} )->ParseStatus( $args{'Status'} );
+}
+
 =head2 UseKeyForSigning [KEY]
 
 Returns or sets the identifier of the key that should be used for
