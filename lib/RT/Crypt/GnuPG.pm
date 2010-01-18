@@ -1756,6 +1756,7 @@ my %ignore_keyword = map { $_ => 1 } qw(
 );
 
 sub ParseStatus {
+    my $self = shift;
     my $status = shift;
     return () unless $status;
 
