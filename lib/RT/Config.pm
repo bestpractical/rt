@@ -614,7 +614,29 @@ our %META = (
             $self->Set( MailCommand => 'sendmailpipe' );
         },
     },
-    MailPlugins  => { Type => 'ARRAY' },
+    MailPlugins  => {
+        Type => 'ARRAY',
+        PostLoadCheck => sub {
+            my $self = shift;
+            my @plugins = $self->Get('MailPlugins');
+            if ( grep $_ eq 'Auth::GnuPG' || $_ eq 'Auth::SMIME', @plugins ) {
+                $RT::Logger->warning(
+                    'Auth::GnuPG and Auth::SMIME (from an extension) have been'
+                    .' replaced with Auth::Crypt.  @MailPlugins has been adjusted,'
+                    .' but should be updated to replace both with Auth::Crypt to'
+                    .' silence this warning.'
+                );
+                my %seen;
+                @plugins =
+                    grep !$seen{$_}++,
+                    grep {
+                        $_ eq 'Auth::GnuPG' || $_ eq 'Auth::SMIME'
+                        ? 'Auth::Crypt' : $_
+                    } @plugins;
+                $self->Set( MailPlugins => @plugins );
+            }
+        },
+    },
     GnuPG        => { Type => 'HASH' },
     GnuPGOptions => { Type => 'HASH',
         PostLoadCheck => sub {
