@@ -576,7 +576,29 @@ our %META = (
             $self->Set( DisableGD => 1 );
         },
     },
-    MailPlugins  => { Type => 'ARRAY' },
+    MailPlugins  => {
+        Type => 'ARRAY',
+        PostLoadCheck => sub {
+            my $self = shift;
+            my @plugins = $self->Get('MailPlugins');
+            if ( grep $_ eq 'Auth::GnuPG' || $_ eq 'Auth::SMIME', @plugins ) {
+                $RT::Logger->warning(
+                    'Auth::GnuPG and Auth::SMIME (from an extension) has been'
+                    .' replaced with Auth::Crypt as generic mail plugin for'
+                    .' processing encrypted/signed emails using GnuPG, SMIME'
+                    .' and other security providing solutions.'
+                );
+                my %seen;
+                @plugins =
+                    grep !$seen{$_}++,
+                    grep {
+                        $_ eq 'Auth::GnuPG' || $_ eq 'Auth::SMIME'
+                        ? 'Auth::Crypt' : $_
+                    } @plugins;
+                $self->Set( MailPlugins => @plugins );
+            }
+        },
+    },
     Plugins      => {
         Type => 'ARRAY',
         PostLoadCheck => sub {
