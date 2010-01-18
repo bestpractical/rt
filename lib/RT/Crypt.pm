@@ -7,6 +7,12 @@ package RT::Crypt;
 require RT::Crypt::GnuPG;
 require RT::Crypt::SMIME;
 
+our @PROTOCOLS = ('GnuPG', 'SMIME');
+
+sub Protocols {
+    return @PROTOCOLS;
+}
+
 sub EnabledOnIncoming {
     return 'GnuPG', 'SMIME';
 }
@@ -17,8 +23,9 @@ sub EnabledOnIncoming {
 sub FindProtectedParts {
     my $self = shift;
     my %args = (
-        Entity => undef,
-        Skip => {},
+        Entity    => undef,
+        Protocols => undef,
+        Skip      => {},
         Scattered => 1,
         @_
     );
@@ -26,7 +33,9 @@ sub FindProtectedParts {
     my $entity = $args{'Entity'};
     return () if $args{'Skip'}{ $entity };
 
-    my @protocols = $self->EnabledOnIncoming;
+    my @protocols = $args{'Protocols'}
+        ? @{ $args{'Protocols'} } 
+        : $self->EnabledOnIncoming;
 
     foreach my $protocol ( @protocols ) {
         my $class = 'RT::Crypt::'. $protocol;
@@ -83,7 +92,7 @@ sub SignEncrypt {
         ];
     }
 
-    my $using = delete $args{'Using'} || 'GnuPG';
+    my $using = delete $args{'Protocol'} || 'GnuPG';
     my $class = 'RT::Crypt::'. $using;
 
     return $class->SignEncrypt( %args );
@@ -106,6 +115,7 @@ sub VerifyDecrypt {
         my $protocol = $protected->{'Protocol'};
         my $class = 'RT::Crypt::'. $protocol;
         my %res = $class->VerifyDecrypt( %args, %$protected );
+        $res{'Protocol'} = $protocol;
         push @res, \%res;
     }
     return @res;
