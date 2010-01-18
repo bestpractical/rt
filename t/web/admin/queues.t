@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 use strict;
-use RT::Test strict => 0, tests => 42, l10n => 1;
+use RT::Test strict => 0, tests => 45, l10n => 1;
 
 my ( $baseurl, $agent ) = RT::Test->started_ok;
 ok( $agent->login, 'logged in' );
@@ -53,36 +53,68 @@ my $cc_group = $queue->role_group('cc');
 ok( $cc_group->has_member( principal => $root ),
     'cc role contains current user' );
 
+# Group Rights
 $agent->follow_link_ok( { text => 'Group Rights' },
     'follow Group Rights link' );
 my $privileged = RT::Model::Group->new( current_user => RT->system_user );
 ok( $privileged->load_system_internal('privileged'), 'load group privileged' );
+
+ok(
+    !$privileged->principal->has_right(
+        right  => 'CreateTicket',
+        object => $queue
+    ),
+    'no CreateTicket right for privileged'
+);
+
 $moniker = 'queue_edit_group_rights';
 $agent->fill_in_action_ok( $moniker,
     'rights_' . $privileged->id => 'CreateTicket' );
 $agent->submit;
 $agent->content_contains( 'Updated rights', 'updated group rights' );
-my $acl_obj = RT::Model::ACECollection->new( current_user => RT->system_user );
-$acl_obj->limit_to_object($queue);
-$acl_obj->limit_to_principal( id => $privileged->id );
-is( $acl_obj->first->right_name,
-    'CreateTicket', 'privileged can create ticket in General' );
 
+RT::Model::Principal->invalidate_acl_cache();
+ok(
+    $privileged->principal->has_right(
+        right  => 'CreateTicket',
+        object => $queue
+    ),
+    'CreateTicket right for privileged'
+);
+
+# User Rights
 $agent->follow_link_ok( { text => 'User Rights' }, 'follow User Rights link' );
+ok(
+    $root->has_right(
+        right  => 'CreateTicket',
+        object => $queue
+    ),
+    'CreateTicket right for root'
+);
 
 my $root_group = RT::Model::Group->new( current_user => RT->system_user );
 $root_group->load_acl_equivalence($root);
+ok(
+    $root->has_right(
+        right  => 'CreateTicket',
+        object => $queue
+    ),
+    'CreateTicket right for root'
+);
 $moniker = 'queue_edit_user_rights';
 $agent->fill_in_action_ok( $moniker,
     'rights_' . $root_group->principal_id => 'CreateTicket' );
 $agent->submit;
 $agent->content_contains( 'Updated rights', 'updated user rights' );
 
-$acl_obj = RT::Model::ACECollection->new( current_user => RT->system_user );
-$acl_obj->limit_to_object($queue);
-$acl_obj->limit_to_principal( id => $root->id );
-is( $acl_obj->first->right_name,
-    'CreateTicket', 'current user can create ticket in General' );
+RT::Model::Principal->invalidate_acl_cache();
+ok(
+    $root->has_right(
+        right  => 'CreateTicket',
+        object => $queue
+    ),
+    'CreateTicket right for root'
+);
 
 my $cf = RT::Model::CustomField->new( current_user => RT->system_user );
 
