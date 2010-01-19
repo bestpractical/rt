@@ -394,5 +394,36 @@ content {
     };
 };
 
+private template 'new_item_controls' => sub {
+    my $self          = shift;
+    my $create        = shift;
+    my ($object_type) = ( $self->object_type );
+
+    outs(
+        Jifty->web->form->submit(
+            label   => _('Create'),
+            onclick => [
+                { submit       => $create },
+                { refresh_self => 1 },
+                {
+                    delete =>
+                      Jifty->web->qualified_parent_region('no_items_found')
+                },
+                {
+                    element => Jifty->web->current_region->parent->get_element(
+                        'div.crud-list'),
+                    append => $self->fragment_for('view'),
+                    args => {
+                        object_type  => $object_type,
+                        id           => { result_of => $create, name => 'id' },
+                        custom_field => get('custom_field'),
+                        queue        => get('queue'),
+                    },
+                },
+            ]
+        )
+    );
+};
+
 
 1;
