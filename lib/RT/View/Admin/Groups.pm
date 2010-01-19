@@ -121,7 +121,7 @@ template 'history' => page { title => _('Group History') } content {
     );
     my $row_num = 1;
     div {
-        attr { id => 'ticket-history' };
+        attr { class => 'history' };
         while ( my $txn = $txns->next ) {
             div {
                 attr { class => $row_num++ % 2 ? 'odd' : 'even' };
