@@ -120,7 +120,6 @@ sub default_value {
 
     my $object = $self->record;
     my $acl_obj = RT::Model::ACECollection->new;
-    my $ACE = RT::Model::ACE->new;
     $acl_obj->limit_to_object($object);
     $acl_obj->limit_to_principal( id => $principal_id );
     $acl_obj->order_by( column => 'right_name' );
