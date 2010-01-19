@@ -177,8 +177,38 @@ template 'sort_header' => sub {
 
 };
 
-# no popup update link
-private template view_item_controls  => sub { };
+private template view_item_controls => sub {
+    my $self   = shift;
+    my $record = shift;
+
+    my @can_delete = qw/RT::View::Admin::CustomFields::Values
+      RT::View::Admin::Queues::Templates
+      RT::View::Admin::Global::Templates
+      /;
+    return unless grep { $self eq $_ } @can_delete;
+
+    my $delete = $record->as_delete_action(
+        moniker => 'delete-' . Jifty->web->serial,
+    );
+    my $view_region = Jifty->web->qualified_region;
+
+    if ( $record->current_user_can('delete') ) {
+        $delete->button(
+            label   => _('Delete'),
+            onclick => [
+                {
+                    submit  => $delete,
+                    confirm => _('Really delete?'),
+                },
+                {
+                    region       => $view_region,
+                    replace_with => '/__jifty/empty',
+                },
+            ],
+            class => 'delete',
+        );
+    }
+};
 
 sub view_via_callback {
     my $self = shift;
@@ -363,5 +393,6 @@ content {
         form_submit( label => _('Save') );
     };
 };
+
 
 1;
