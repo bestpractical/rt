@@ -1,15 +1,27 @@
 #!/usr/bin/env perl
 
 use strict;
-use RT::Test strict => 0, tests => 51, l10n => 1;
+use RT::Test strict => 0, tests => 55, l10n => 1;
 
 my ( $baseurl, $agent ) = RT::Test->started_ok;
 ok( $agent->login, 'logged in' );
 
 my $root = RT::Model::User->new( current_user => RT->system_user );
 ok( $root->load('root'), 'load user root' );
+my $queue_cf = RT::Model::CustomField->new( current_user => RT->system_user );
+ok(
+    $queue_cf->create(
+        name        => 'queue_cf',
+        type        => 'Freeform',
+        lookup_type => 'RT::Model::Queue',
+    ),
+    'created queue_cf'
+);
+$queue_cf->add_to_object(
+    RT::Model::Queue->new( current_user => RT->system_user ) );
 
 $agent->get_ok('/admin/queues/');
+$agent->content_contains('queue_cf', 'has queue_cf info');
 
 ok( $agent->find_link( text => 'General', url_regex => qr{\?id=\d+$}, ),
     "General link" );
@@ -34,14 +46,21 @@ $agent->follow_link_ok( { text => 'General', url_regex => qr{\?id=1} },
     'follow General link' );
 
 # Basics
-$agent->follow_link_ok( { text => 'Basics' }, 'follow Basic link' );
+$agent->follow_link_ok( { text => 'Basics', }, 'follow Basic link' );
 my $moniker = 'update_queue';
-$agent->fill_in_action_ok( $moniker, initial_priority => 30 );
+$agent->fill_in_action_ok(
+    $moniker,
+    initial_priority      => 30,
+    'cf_' . $queue_cf->id => 'queue_cf_foo',
+);
 $agent->submit;
 $agent->content_contains( 'Updated', 'updated queue' );
 my $queue = RT::Model::Queue->new( current_user => RT->system_user );
-ok( $queue->load('General'), 'load queue Generall' );
+ok( $queue->load('General'), 'load queue General' );
 is( $queue->initial_priority, 30, 'initial_priority is indeed updated' );
+$agent->follow_link_ok( { text => 'General', url_regex => qr{\?id=1} },
+    'follow General link' );
+$agent->content_contains('queue_cf_foo', 'has queue_cf_foo value');
 
 # Watchers
 $agent->follow_link_ok( { text => 'Watchers' }, 'follow Watchers link' );
