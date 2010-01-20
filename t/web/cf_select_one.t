@@ -10,7 +10,6 @@ my ($baseurl, $m) = RT::Test->started_ok;
 ok $m->login, 'logged in as root';
 
 my $cf_name = 'test select one value';
-my $cf_moniker = 'edit-ticket-cfs';
 
 my $cfid;
 diag "Create a CF" if $ENV{'TEST_VERBOSE'};
@@ -119,9 +118,10 @@ diag "check that 0 is ok value of the CF"
     $m->title_like(qr/Modify ticket/i, 'modify ticket');
     $m->content_like(qr/\Q$cf_name/, 'CF on the page');
 
-    my $value = $m->action_field_value('modify_ticket', "cf_$cfid");
+    my $field = $m->action_field_input('modify_ticket', "cf_$cfid");
+    my $value = $field->value;
     is lc $value, 'asd', 'correct value is selected';
-    $m->select("J:A:F-$cfid-$cf_moniker" => 0 );
+    $field->value(0);
     $m->submit;
     $m->content_like(qr/\Q$cf_name\E.*?changed/mi, 'field is changed');
     $m->content_unlike(qr/0 is no longer a value for custom field/mi, 'no bad message in results');
@@ -144,9 +144,10 @@ diag "check that we can set empty value when the current is 0"
     $m->title_like(qr/Modify ticket/i, 'modify ticket');
     $m->content_like(qr/\Q$cf_name/, 'CF on the page');
 
-    my $value = $m->action_field_value('modify_ticket', "cf_$cfid");
+    my $field = $m->action_field_input('modify_ticket', "cf_$cfid");
+    my $value = $field->value;
     is lc $value, '0', 'correct value is selected';
-    $m->select("J:A:F-$cfid-$cf_moniker" => '' );
+    $field->value('');
     $m->submit;
     $m->content_like(qr/0 is no longer a value for custom field/mi, '0 is no longer a value');
 
