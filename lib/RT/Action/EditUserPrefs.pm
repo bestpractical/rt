@@ -60,4 +60,9 @@ sub default_value {
     }
 }
 
+sub user {
+    return Jifty->web->current_user->user_object; 
+}
+
+
 1;
