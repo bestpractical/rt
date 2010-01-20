@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 use strict;
-use RT::Test strict => 0, tests => 50, l10n => 1;
+use RT::Test strict => 0, tests => 51, l10n => 1;
 
 my ( $baseurl, $agent ) = RT::Test->started_ok;
 ok( $agent->login, 'logged in' );
@@ -129,6 +129,7 @@ $agent->fill_in_action_ok(
 );
 $agent->submit;
 $agent->content_contains( 'Created', 'created cfv_foo' );
+$agent->content_contains( 'Delete', 'we got Delete button' );
 my $cfv = RT::Model::CustomFieldValue->new( current_user => RT->system_user );
 ok( $cfv->load_by_cols( name => 'cfv_foo' ), 'load cfv_foo' );
 is( $cfv->name, 'cfv_foo', 'did created cfv_foo' );
@@ -147,3 +148,5 @@ $agent->follow_link_ok( { text => 'Values' }, 'Values' );
 ok( $cfv->load_by_cols( description => 'foo description' ),
     'load cfv by description' );
 is( $cfv->description, 'foo description', 'did update description of cfv_foo' );
+
+

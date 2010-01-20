@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 use strict;
-use RT::Test strict => 0, tests => 14, l10n => 1;
+use RT::Test strict => 0, tests => 15, l10n => 1;
 
 my ( $baseurl, $agent ) = RT::Test->started_ok;
 ok( $agent->login, 'logged in' );
@@ -18,6 +18,7 @@ $agent->fill_in_action_ok(
 );
 $agent->submit;
 $agent->content_contains( 'Created', 'created template_foo' );
+$agent->content_contains( 'Delete', 'we got Delete button' );
 my $template_foo = RT::Model::Template->new( current_user => RT->system_user );
 ok( $template_foo->load('template_foo'), 'load template_foo' );
 is( $template_foo->name,    'template_foo', 'did create template_foo' );

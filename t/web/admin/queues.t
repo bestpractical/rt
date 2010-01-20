@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 
 use strict;
-use RT::Test strict => 0, tests => 45, l10n => 1;
+use RT::Test strict => 0, tests => 51, l10n => 1;
 
 my ( $baseurl, $agent ) = RT::Test->started_ok;
 ok( $agent->login, 'logged in' );
@@ -149,7 +149,25 @@ $agent->follow_link_ok(
     'follow Transaction Custom Fields link'
 );
 $agent->follow_link_ok( { text => 'GnuPG' },     'follow GnuPG link' );
-$agent->follow_link_ok( { text => 'Templates' }, 'follow Templates link' );
+$agent->follow_link_ok(
+    {
+        text      => 'Templates',
+        url_regex => qr{/admin/queues/templates},
+    },
+    'follow Templates link'
+);
+my $moniker = $agent->moniker_for('RT::Action::CreateTemplate');
+$agent->fill_in_action_ok(
+    $moniker,
+    'name'  => 'template_foo',
+);
+$agent->submit;
+$agent->content_contains( 'Created', 'created template_foo' );
+$agent->content_contains( 'Delete', 'we got Delete button' );
+my $template_foo = RT::Model::Template->new( current_user => RT->system_user );
+ok( $template_foo->load('template_foo'), 'load template_foo' );
+is( $template_foo->name,      'template_foo', 'did create template_foo' );
+is( $template_foo->queue->id, $queue->id,     'queue of template_foo' );
 
 # let's create a queue
 $agent->get_ok('/admin/queues/');
