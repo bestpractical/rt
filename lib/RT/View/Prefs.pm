@@ -107,5 +107,28 @@ template 'index.html' => page { title => _('RT Preferences') } content {
     };
 }
 
+template 'other' => page { title => _('Customize Others') } content {
+    my $self        = shift;
+
+    my $moniker = 'prefs_edit_other';
+
+    my $action = new_action(
+        class   => 'EditUserPrefsOther',
+        moniker => $moniker,
+    );
+
+    my %fields      = RT::Action::EditUserPrefsOther->fields;
+
+    with( name => $moniker ), form {
+        for my $section ( keys %fields ) {
+            h2 { _($section) };
+            for my $field ( @{ $fields{$section} } ) {
+                outs_raw( $action->form_field($field) );
+            }
+        }
+        form_submit( label => _('Save') );
+    };
+}
+
 1;
 
