@@ -1,17 +1,12 @@
 use strict;
 use warnings;
 
-package RT::Action::UserSettings;
-use base qw/RT::Action Jifty::Action/;
-use UNIVERSAL::require;
-use Scalar::Util qw/looks_like_number/;
-use Regexp::Common qw/Email::Address/;
+package RT::Action::EditUserPrefsOther;
+use base qw/RT::Action::EditUserPrefs/;
 
-# XXX system default's option is
-#            {
-#                display => _('use system default'),
-#                value   => 'use_system_default'
-#            }
+sub name {
+    return RT->system;
+}
 
 use Jifty::Param::Schema;
 use Jifty::Action schema {
@@ -38,7 +33,7 @@ use Jifty::Action schema {
         return $ret;
       },
       default is defer {
-        RT::Action::UserSettings->default_value('default_queue');
+        __PACKAGE__->default_value('default_queue');
       };
     param 'username_format' =>
       label is 'username format',
@@ -49,7 +44,7 @@ use Jifty::Action schema {
         { display => _('Name and email address'), value => 'verbose' },
       ],
       default is defer {
-        RT::Action::UserSettings->default_value('username_format');
+        __PACKAGE__->default_value('username_format');
       };
     param 'web_default_stylesheet' =>
       label is 'theme',
@@ -59,7 +54,7 @@ use Jifty::Action schema {
         map {{ display => _($_), value => $_ }} qw/web2/
       ],
       default is defer {
-        RT::Action::UserSettings->default_value('web_default_stylesheet');
+        __PACKAGE__->default_value('web_default_stylesheet');
       };
     param 'message_box_rich_text' =>
       label is 'WYSIWYG message composer',
@@ -69,22 +64,22 @@ use Jifty::Action schema {
         map { { display => _($_), value => $_ } } 'yes', 'no',
       ],
       default is defer {
-        RT::Action::UserSettings->default_value('message_box_rich_text');
+        __PACKAGE__->default_value('message_box_rich_text');
       };
     param 'message_box_rich_text_height' =>
       label is 'WYSIWYG composer height',
       default is defer {
-        RT::Action::UserSettings->default_value('message_box_rich_text_height');
+        __PACKAGE__->default_value('message_box_rich_text_height');
       };
     param 'message_box_width' =>
       label is 'message box width',
       default is defer {
-        RT::Action::UserSettings->default_value('message_box_width');
+        __PACKAGE__->default_value('message_box_width');
       };
     param 'message_box_height' =>
       label is 'message box height',
       default is defer {
-        RT::Action::UserSettings->default_value('message_box_height');
+        __PACKAGE__->default_value('message_box_height');
       };
 
     # locale
@@ -109,7 +104,7 @@ use Jifty::Action schema {
         return $ret;
       },
       default is defer {
-        RT::Action::UserSettings->default_value('date_time_format');
+        __PACKAGE__->default_value('date_time_format');
       };
 
     #mail
@@ -130,21 +125,21 @@ use Jifty::Action schema {
         ];
       },
       default is defer {
-        RT::Action::UserSettings->default_value('email_frequency');
+        __PACKAGE__->default_value('email_frequency');
       };
 
     # rt at a glance
     param 'default_summary_rows' =>
       label is 'number of search results',
       default is defer {
-        RT::Action::UserSettings->default_value('default_summary_rows');
+        __PACKAGE__->default_value('default_summary_rows');
       };
 
     # ticket display
     param 'max_inline_body' =>
       label is 'Maximum inline message length',
       default is defer {
-        RT::Action::UserSettings->default_value('max_inline_body');
+        __PACKAGE__->default_value('max_inline_body');
       };
     param 'oldest_transactions_first' =>
       label is 'Show oldest transactions first',
@@ -154,7 +149,7 @@ use Jifty::Action schema {
         map { { display => _($_), value => $_ } } 'yes', 'no',
       ],
       default is defer {
-        RT::Action::UserSettings->default_value('oldest_transactions_first');
+        __PACKAGE__->default_value('oldest_transactions_first');
       };
     param 'show_unread_message_notifications' =>
       label is 'Notify me of unread messages',
@@ -164,7 +159,7 @@ use Jifty::Action schema {
         map { { display => _($_), value => $_ } } 'yes', 'no',
       ],
       default is defer {
-        RT::Action::UserSettings->default_value(
+        __PACKAGE__->default_value(
             'show_unread_message_notifications');
       };
     param 'plain_text_pre' =>
@@ -176,45 +171,9 @@ use Jifty::Action schema {
         map { { display => _($_), value => $_ } } 'yes', 'no',
       ],
       default is defer {
-        RT::Action::UserSettings->default_value('plain_text_pre');
+        __PACKAGE__->default_value('plain_text_pre');
       };
 };
-
-=head2 take_action
-
-=cut
-
-sub take_action {
-    my $self = shift;
-
-    my $user = Jifty->web->current_user->user_object;
-    my $pref = $user->preferences( RT->system ) || {};
-    for my $arg ( $self->argument_names ) {
-        if ( $self->has_argument($arg) ) {
-            if ( $self->argument_value($arg) eq 'use_system_default' ) {
-                delete $pref->{$arg};
-            }
-            else {
-                $pref->{$arg} = $self->argument_value($arg);
-            }
-        }
-    }
-    $user->set_preferences( RT->system, $pref );
-    $self->report_success if not $self->result->failure;
-
-    return 1;
-}
-
-=head2 report_success
-
-=cut
-
-sub report_success {
-    my $self = shift;
-
-    # Your success message here
-    $self->result->message(_('Updated user settings'));
-}
 
 sub default_value {
     my $self = shift;
