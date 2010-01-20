@@ -63,6 +63,9 @@ alias RT::View::SelfService under 'selfservice/';
 require RT::View::RuleBuilder;
 alias RT::View::RuleBuilder under 'rulebuilder/';
 
+require RT::View::Prefs;
+alias RT::View::Prefs under 'prefs/';
+
 __PACKAGE__->use_mason_wrapper;
 
 template login_widget => sub {
