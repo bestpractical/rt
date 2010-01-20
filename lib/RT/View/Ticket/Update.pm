@@ -53,7 +53,7 @@ use Jifty::View::Declare -base;
 
 __PACKAGE__->use_mason_wrapper;
 
-template 'modify' => page { title => _('Modify a ticket') } content {
+template 'modify' => page { title => _('Modify ticket #%1', get('id')) } content {
     my $id = get('id');
     my $ticket = RT::Model::Ticket->new;
     $ticket->load($id);
