@@ -534,7 +534,7 @@ before qr'(?:Ticket|Search)/' => run {
         page_nav->child( _('Display') => url => "/Ticket/Display.html?id=" . $id );
 
         page_nav->child( _('History') => url => "/Ticket/History.html?id=" . $id );
-        page_nav->child( _('Basics')  => url => "/Ticket/Modify.html?id=" . $id );
+        page_nav->child( _('Basics')  => url => "/ticket/modify?id=" . $id );
 
         page_nav->child( _('Dates') => url => "/Ticket/ModifyDates.html?id=" . $id );
         page_nav->child( _('People'), url => "/Ticket/ModifyPeople.html?id=" . $id );

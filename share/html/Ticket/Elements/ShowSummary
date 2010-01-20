@@ -49,14 +49,14 @@
       <tr>
 	<td valign="top" class="boxcontainer">
 	  <&| /Widgets/TitleBox, title => _('The Basics'), 
-		title_href => RT->config->get('web_path')."/Ticket/Modify.html?id=".$ticket->id, 
+		title_href => RT->config->get('web_path')."/ticket/modify?id=".$ticket->id, 
 		class => 'ticket-info-basics' &>
 	        <& /Ticket/Elements/ShowBasics, ticket => $ticket &>
 	  </&>
 
 % if ($ticket->queue->ticket_custom_fields->first) {
 	  <&| /Widgets/TitleBox, title => _('Custom Fields'), 
-		title_href => RT->config->get('web_path')."/Ticket/Modify.html?id=".$ticket->id, 
+		title_href => RT->config->get('web_path')."/ticket/modify?id=".$ticket->id, 
 		class => 'ticket-info-cfs'  &> 
 	        <& /Ticket/Elements/ShowCustomFields, ticket => $ticket &>
 	  </&>
