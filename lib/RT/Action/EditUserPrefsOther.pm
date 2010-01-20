@@ -173,12 +173,56 @@ use Jifty::Action schema {
       default is defer {
         __PACKAGE__->default_value('plain_text_pre');
       };
+    param 'preferred_key' =>
+      label is _('Preferred key'),
+      render as 'Select',
+    available are defer {
+        require RT::Crypt::GnuPG;
+        my $d;
+        my %res = RT::Crypt::GnuPG::get_keys_for_encryption(
+            __PACKAGE__->user->email );
+        # move the preferred key to the top of the list
+        my @keys = map {
+            $_->{'fingerprint'} eq ( __PACKAGE__->user->preferred_key || '' )
+              ? do { $d = $_; () }
+              : $_
+        } @{ $res{'info'} };
+
+        @keys = sort { $b->{'trust_level'} <=> $a->{'trust_level'} } @keys;
+
+        unshift @keys, $d if defined $d;
+        [
+            map {
+                {
+                    display => $_->{'fingerprint'},
+                    value   => $_->{'fingerprint'} . ' '
+                      . _( 'trust: %1', $_->{'trust_terse'} )
+                }
+              } @keys
+        ];
+    },
+    default is defer {
+        __PACKAGE__->user->preferred_key;
+    };
 };
+
+sub take_action {
+    my $self = shift;
+    $self->SUPER::take_action(@_);
+    if ( $self->has_argument('preferred_key') ) {
+        my ( $status, $msg ) = $self->user->set_attribute(
+            name    => 'preferred_key',
+            content => $self->argument_value( 'preferred_key' ),
+        );
+        Jifty->log->error($msg) unless $status;
+    }
+    return 1;
+}
 
 sub default_value {
     my $self = shift;
     my $name = shift;
-    my $pref = Jifty->web->current_user->user_object->preferences( RT->system );
+    my $pref = __PACKAGE__->user->preferences( RT->system );
     if ( $pref && exists $pref->{$name} ) {
         return $pref->{$name};
     }
@@ -187,22 +231,25 @@ sub default_value {
     }
 }
 
-my %fields = (
-    'General' => [
-        qw/default_queue username_format web_default_stylesheet
-          message_box_rich_text message_box_rich_text_height message_box_width
-          message_box_height/
-    ],
-    'Locale'         => [qw/date_time_format/],
-    Mail             => [qw/email_frequency/],
-    'RT at a glance' => [
-        qw/default_summary_rows max_inline_body oldest_transactions_first
-          show_unread_message_notifications plain_text_pre/
-    ],
-);
-
 sub fields {
+    my %fields = (
+        'General' => [
+            qw/default_queue username_format web_default_stylesheet
+              message_box_rich_text message_box_rich_text_height message_box_width
+              message_box_height/
+        ],
+        'Locale'         => [qw/date_time_format/],
+        Mail             => [qw/email_frequency/],
+        'RT at a glance' => [
+            qw/default_summary_rows max_inline_body oldest_transactions_first
+              show_unread_message_notifications plain_text_pre/
+        ],
+    );
+    if ( RT->config->get('gnupg')->{'enable'} ) {
+        $fields{'Cryptography'} = [qw/preferred_key/];
+    }
     return %fields;
 }
+
 
 1;
