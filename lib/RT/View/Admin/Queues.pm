@@ -207,14 +207,22 @@ private template 'key_info' => sub {
         outs( _('No keys for this address') );
     }
     else {
-        h3 { _( 'GnuPG public key for %1', $email ) };
+        if ( $type eq 'private' ) {
+            h3 { _( 'GnuPG private key(s) for %1', $email ) };
+        }
+        else {
+            h3 { _( 'GnuPG public key(s) for %1', $email ) };
+        }
+
         table {
-            row {
-                th { _('Trust') . ':' };
-                cell {
-                    _( $res{'info'}{'trust'} );
+            if ( $type eq 'public' ) {
+                row {
+                    th { _('Trust') . ':' };
+                    cell {
+                        _( $res{'info'}{'trust'} );
+                    };
                 };
-            };
+            }
             row {
                 th { _('Created') . ':' };
                 cell {
