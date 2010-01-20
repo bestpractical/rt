@@ -14,9 +14,10 @@ sub _add_custom_fields {
         my $name = 'cf_' . $cf->id;
 
         my %args = (
-            name      => $name,
-            label     => $cf->name,
-            render_as => $render_as,
+            name          => $name,
+            label         => $cf->name,
+            render_as     => $render_as,
+            default_value => $self->record->first_custom_field_value($cf->name),
         );
 
         if ($render_as =~ /Select/i) {
