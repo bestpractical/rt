@@ -851,7 +851,9 @@ sub SignEncrypt {
     my %res = RT::Crypt->SignEncrypt( %args );
     return 1 unless $res{'exit_code'};
 
-    my @status = RT::Crypt::GnuPG::ParseStatus( $res{'status'} );
+    my @status = RT::Crypt->ParseStatus(
+        Protocol => $res{'Protocol'}, Status => $res{'status'},
+    );
 
     my @bad_recipients;
     foreach my $line ( @status ) {

@@ -1204,7 +1204,7 @@ sub import_gnupg_key {
     die "can't find the dir where gnupg keys are stored"
       unless $abs_path;
 
-    return RT::Crypt::GnuPG::ImportKey(
+    return RT::Crypt::GnuPG->ImportKey(
         RT::Test->file_content( [ $abs_path, $key ] ) );
 }
 
