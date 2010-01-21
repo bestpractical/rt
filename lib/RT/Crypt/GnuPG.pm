@@ -440,7 +440,7 @@ sub SignEncryptRFC3156 {
     my $entity = $args{'Entity'};
 
     if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
+        $args{'Passphrase'} = $self->GetPassphrase( Address => $args{'Signer'} );
     }
 
     my %res;
@@ -622,7 +622,7 @@ sub _SignEncryptTextInline {
     );
 
     if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
+        $args{'Passphrase'} = $self->GetPassphrase( Address => $args{'Signer'} );
     }
 
     if ( $args{'Encrypt'} ) {
@@ -711,7 +711,7 @@ sub _SignEncryptAttachmentInline {
     );
 
     if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
+        $args{'Passphrase'} = $self->GetPassphrase( Address => $args{'Signer'} );
     }
 
     my $entity = $args{'Entity'};
@@ -814,7 +814,7 @@ sub SignEncryptContent {
     );
 
     if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = GetPassphrase( Address => $args{'Signer'} );
+        $args{'Passphrase'} = $self->GetPassphrase( Address => $args{'Signer'} );
     }
 
     if ( $args{'Encrypt'} ) {
@@ -915,7 +915,7 @@ sub CheckIfProtected {
 
     # RFC3156, multipart/{signed,encrypted}
     my $type = $entity->effective_type;
-    return () unless $type = =~ /^multipart\/(?:encrypted|signed)$/;
+    return () unless $type =~ /^multipart\/(?:encrypted|signed)$/;
 
     unless ( $entity->parts == 2 ) {
         $RT::Logger->error( "Encrypted or signed entity must has two subparts. Skipped" );
@@ -1286,7 +1286,7 @@ sub DecryptRFC3156 {
         RT::EmailParser->_DecodeBody($args{'Data'});
     }
 
-    $args{'Passphrase'} = GetPassphrase()
+    $args{'Passphrase'} = $self->GetPassphrase()
         unless defined $args{'Passphrase'};
 
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
@@ -1365,7 +1365,7 @@ sub DecryptInline {
         RT::EmailParser->_DecodeBody($args{'Data'});
     }
 
-    $args{'Passphrase'} = GetPassphrase()
+    $args{'Passphrase'} = $self->GetPassphrase()
         unless defined $args{'Passphrase'};
 
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
@@ -1526,7 +1526,7 @@ sub DecryptAttachment {
         RT::EmailParser->_DecodeBody($args{'Data'});
     }
 
-    $args{'Passphrase'} = GetPassphrase()
+    $args{'Passphrase'} = $self->GetPassphrase()
         unless defined $args{'Passphrase'};
 
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
@@ -1580,7 +1580,7 @@ sub DecryptContent {
         meta_interactive => 0,
     );
 
-    $args{'Passphrase'} = GetPassphrase()
+    $args{'Passphrase'} = $self->GetPassphrase()
         unless defined $args{'Passphrase'};
 
     my ($tmp_fh, $tmp_fn) = File::Temp::tempfile( UNLINK => 1 );
@@ -1646,6 +1646,7 @@ Returns passphrase, called whenever it's required with Address as a named argume
 =cut
 
 sub GetPassphrase {
+    my $self = shift;
     my %args = ( Address => undef, @_ );
     return 'test';
 }
@@ -2045,7 +2046,7 @@ also listed.
 
 sub GetKeysForEncryption {
     my $key_id = shift;
-    my %res = GetKeysInfo( $key_id, 'public', @_ );
+    my %res = $self->GetKeysInfo( $key_id, 'public', @_ );
     return %res if $res{'exit_code'};
     return %res unless $res{'info'};
 
@@ -2066,7 +2067,7 @@ sub GetKeysForEncryption {
 
 sub GetKeysForSigning {
     my $key_id = shift;
-    return GetKeysInfo( $key_id, 'private', @_ );
+    return $self->GetKeysInfo( $key_id, 'private', @_ );
 }
 
 sub CheckRecipients {
@@ -2143,12 +2144,13 @@ sub GetPrivateKeyInfo {
 }
 
 sub GetKeyInfo {
-    my %res = GetKeysInfo(@_);
+    my %res = $self->GetKeysInfo(@_);
     $res{'info'} = $res{'info'}->[0];
     return %res;
 }
 
 sub GetKeysInfo {
+    my $self = shift;
     my $email = shift;
     my $type = shift || 'public';
     my $force = shift;
@@ -2356,6 +2358,7 @@ sub _ParseDate {
 }
 
 sub DeleteKey {
+    my $self = shift;
     my $key = shift;
 
     my $gnupg = GnuPG::Interface->new();
@@ -2403,6 +2406,7 @@ sub DeleteKey {
 }
 
 sub ImportKey {
+    my $self = shift;
     my $key = shift;
 
     my $gnupg = GnuPG::Interface->new();
@@ -2455,6 +2459,7 @@ Returns a true value if all went well.
 =cut
 
 sub DrySign {
+    my $self = shift;
     my $from = shift;
 
     my $mime = MIME::Entity->build(
@@ -2487,6 +2492,7 @@ properly (and false otherwise).
 
 
 sub Probe {
+    my $self = shift;
     my $gnupg = GnuPG::Interface->new();
     my %opt = RT->Config->Get('GnuPGOptions');
     $gnupg->options->hash_init(
