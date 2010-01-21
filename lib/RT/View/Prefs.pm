@@ -130,5 +130,22 @@ template 'other' => page { title => _('Customize Others') } content {
     };
 }
 
+template 'my_rt' => page { title => _('Customize my RT') } content {
+    my $self = shift;
+    my $moniker = 'prefs_config_my_rt';
+    my $action = new_action(
+        class   => 'ConfigMyRT',
+        moniker => $moniker,
+    );
+
+    $action->record( Jifty->web->current_user->user_object );
+
+    with( name => $moniker ), form {
+        render_action($action);
+        form_submit( label => _('Save') );
+    };
+
+};
+
 1;
 
