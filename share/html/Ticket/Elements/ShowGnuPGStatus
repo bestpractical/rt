@@ -119,7 +119,10 @@ my $reverify_cb = sub {
         $top->SetHeader('X-RT-Privacy' => 'PGP' );
         $top->DelHeader('X-RT-Incoming-Signature');
 
-        my @status = RT::Crypt::GnuPG::ParseStatus( $res[0]->{'status'} );
+        my @status = RT::Crypt->ParseStatus(
+            Protocol => $res[0]{'Protocol'},
+            Status => $res[0]{'status'},
+        );
         for ( @status ) {
             if ( $_->{'Operation'} eq 'Verify' && $_->{'Status'} eq 'DONE' ) {
                 $top->AddHeader( 'X-RT-Incoming-Signature' => $_->{'UserString'} );
