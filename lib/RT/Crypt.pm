@@ -17,6 +17,15 @@ sub EnabledOnIncoming {
     return 'GnuPG', 'SMIME';
 }
 
+{ my %cache;
+sub LoadImplementation {
+    my $class = 'RT::Crypt::'. $_[1];
+    return $class if $cache{ $class }++;
+
+    eval "require $class; 1" or do { require Carp; Carp::confess( $@ ) };
+    return $class;
+} }
+
 # encryption and signatures can be nested one over another, for example:
 # GPG inline signed text can be signed with SMIME
 
@@ -38,7 +47,7 @@ sub FindProtectedParts {
         : $self->EnabledOnIncoming;
 
     foreach my $protocol ( @protocols ) {
-        my $class = 'RT::Crypt::'. $protocol;
+        my $class = $self->LoadImplementation( $protocol );
         my %info = $class->CheckIfProtected( Entity => $entity );
         next unless keys %info;
 
@@ -93,7 +102,7 @@ sub SignEncrypt {
     }
 
     my $protocol = delete $args{'Protocol'} || 'GnuPG';
-    my $class = 'RT::Crypt::'. $protocol;
+    my $class = $self->LoadImplementation( $protocol );
 
     my %res = $class->SignEncrypt( %args );
     $res{'Protocol'} = $protocol;
@@ -115,8 +124,8 @@ sub VerifyDecrypt {
     my @protected = $self->FindProtectedParts( Entity => $args{'Entity'} );
     foreach my $protected ( @protected ) {
         my $protocol = $protected->{'Protocol'};
-        my $class = 'RT::Crypt::'. $protocol;
-        my %res = $class->VerifyDecrypt( %args, %$protected );
+        my $class = $self->LoadImplementation( $protocol );
+        my %res = $class->VerifyDecrypt( %args, Info => $protected );
         $res{'Protocol'} = $protocol;
         push @res, \%res;
     }
@@ -130,8 +139,7 @@ sub ParseStatus {
         Status   => '',
         @_
     );
-    my $class = 'RT::Crypt::'. $args{'Protocol'};
-    return $class->ParseStatus( $args{'Status'} );
+    return $self->LoadImplementation( $args{'Protocol'} )->ParseStatus( $args{'Status'} );
 }
 
 1;
