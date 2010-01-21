@@ -69,16 +69,11 @@ template 'index.html' => page { title => _('RT Preferences') } content {
             description => _('Customize Search Options'),
         },
         D => {
-            title       => _('Search'),
-            path        => '/prefs/search',
-            description => _('Customize Search'),
-        },
-        E => {
             title       => _('Other'),
             path        => '/prefs/other',
             description => _('Customize Others'),
         },
-        F => {
+        E => {
             title       => _('Me'),
             path        => '/prefs/me',
             description => _('Customize Self'),
@@ -86,22 +81,21 @@ template 'index.html' => page { title => _('RT Preferences') } content {
     };
 
     ul {
-        attr { class => 'list-menu' };
+        class is 'list-menu';
         foreach my $key ( sort keys %$items ) {
             li {
                 span {
-                    attr { class => 'menu-item' };
-                    a {
-                        attr { href => RT->config->get('web_path')
-                              . $items->{$key}->{'path'} };
-                        $items->{$key}->{'title'};
-                    }
+                    class is 'menu-item';
+                    hyperlink(
+                        url => RT->config->get('web_path')
+                              . $items->{$key}->{'path'},
+                        label => $items->{$key}->{'title'},
+                    );
                 }
                 span {
-                    attr { class => 'description' }
+                    class is 'description';
                       $items->{$key}->{description}
                 }
-
             }
         }
     };
@@ -180,6 +174,186 @@ template 'me' => page { title => _('Customize Myself') } content {
         }
         form_submit( label => _('Save') );
     };
+};
+
+
+template 'search_options' => page { title => _('Customize Search Options') } content {
+    my $self    = shift;
+    show( '_search_options', 'SearchDisplay' );
+}
+
+template 'search' => page { title => _('Customize Search') }
+  content {
+    my $self = shift;
+    my $name = get('name');
+    if ( $name =~ /RT::Model::Attribute-(\d+)/ ) {
+        my $id = $1;
+        my $search = RT::Model::Attribute->new;
+        my ( $status, $msg ) = $search->load_by_id($id);
+        if ( $status ) {
+            if (
+                Jifty->web->current_user->has_right(
+                    object => RT->system,
+                    right  => 'SuperUser'
+                )
+              )
+            {
+                p {
+                    outs( _('You can also edit the predefined search itself')
+                          . ': ' );
+
+                    hyperlink(
+                        url => RT->config->get('web_path')
+                          . '/Search/Build.html?'
+                          . Jifty->web->query_string(
+                            saved_search_load => 'RT::System-1-SavedSearch-'
+                              . $id
+                          ),
+                        label => $search->name,
+                    );
+                };
+            }
+            show( '_search_options', $search );
+        }
+        else {
+            outs( _( 'faild to load search: %1', $name ) );
+        }
+    }
+    else {
+        outs(_('No search specified'));
+    }
+}
+
+private template '_search_options' => sub {
+    my $self = shift;
+    my $name = shift;
+    return unless $name;
+
+    my $moniker = 'prefs_edit_search_options';
+    my $action  = new_action(
+        class   => 'EditUserPrefsSearchOptions',
+        moniker => $moniker,
+    );
+    $action->name($name);
+
+    my ( $format, $available_columns, $current_format ) =
+      RT::Interface::Web::QueryBuilder->build_format_string(
+        %{Jifty->web->request->arguments},
+        format =>
+          $action->default_value('format')
+      );
+    $action->available_columns( $available_columns );
+    $action->format( $format );
+
+    with( name => $moniker ), form {
+        for my $n ( 1 .. 4 ) {
+            outs_raw( $action->form_field("order_by_$n") );
+            outs_raw( $action->form_field("order_$n") );
+        }
+        for my $field (qw/rows_per_page format name/) {
+            outs_raw( $action->form_field($field) );
+        }
+        show( 'edit_format', $current_format, $available_columns );
+        div { class is 'submit_button';
+            outs_raw( $action->form_field("save") );
+        };
+    };
+};
+
+private template 'edit_format' => sub {
+    my $self              = shift;
+    my $current_format            = shift;
+    my $available_columns = shift;
+    table {
+        row {
+            th { _('add Columns') . ':' };
+            th { _('format') . ':' };
+            th {};
+            th { _('Show Columns') . ':' };
+        };
+        row {
+            cell {
+                valign is 'top';
+                select {
+                    size is 6;
+                    name     is 'select_display_columns';
+                    multiple is 'multiple';
+                      for my $field (@$available_columns) {
+                        option {
+                            value is $field;
+                            _($field);
+                        };
+                    }
+                };
+            };
+
+            cell {
+                _('Link');
+                select {
+                    name is 'link';
+                      option { value is 'None';    '-' };
+                      option { value is 'Display'; _('Display') };
+                      option { value is 'Take';    _('Take') };
+                };
+                br {};
+                outs( _('Title') . ':' );
+                input {
+                    name is 'title';
+                    size is 10;
+                };
+                br {};
+                outs( _('Size') );
+                select {
+                    name is 'size';
+                      option { value is '';      '-' };
+                      option { value is 'Small'; _('Small') };
+                      option { value is 'Large'; _('Large') };
+                };
+                br {};
+                outs( _('Style') );
+                select {
+                    name is 'face';
+                      option { value is '';       '-' };
+                      option { value is 'Bold';   _('Bold') };
+                      option { value is 'Italic'; _('Italic') };
+                };
+            };
+            cell {
+                outs_raw(
+'<input type="submit" class="button" name="add_col" value=" &rarr;"'
+                );
+            };
+            cell {
+                valign is 'top';
+                select {
+                    size is 4;
+                    name is 'current_display_columns';
+                    my $i = 0;
+                    for my $field (@$current_format) {
+                        option {
+                            value is $i++;
+                            _( $field->{Column} );
+                        };
+                    }
+                };
+                br {};
+                center {
+                    outs_raw(
+'<input type="submit" class="button" name="col_up" value=" &uarr;"'
+                    );
+                    outs_raw(
+'<input type="submit" class="button" name="col_down" value=" &darr;"'
+                    );
+                    input {
+                        type is 'submit';
+                        class is 'button';
+                        name is 'remove_col';
+                        value is _('Delete');
+                    };
+                };
+            };
+        };
+    }
 };
 
 1;
