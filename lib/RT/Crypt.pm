@@ -92,10 +92,12 @@ sub SignEncrypt {
         ];
     }
 
-    my $using = delete $args{'Protocol'} || 'GnuPG';
-    my $class = 'RT::Crypt::'. $using;
+    my $protocol = delete $args{'Protocol'} || 'GnuPG';
+    my $class = 'RT::Crypt::'. $protocol;
 
-    return $class->SignEncrypt( %args );
+    my %res = $class->SignEncrypt( %args );
+    $res{'Protocol'} = $protocol;
+    return %res;
 }
 
 sub VerifyDecrypt {
