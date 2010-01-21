@@ -213,8 +213,7 @@ use Jifty::Action schema {
 sub take_action {
     my $self = shift;
 
-    my $user = Jifty->web->current_user->user_object;
-    my $pref = $user->preferences( $self->name ) || {};
+    my $pref = $self->user->preferences( $self->name ) || {};
     for my $arg ( $self->argument_names ) {
         if ( $self->has_argument($arg) ) {
             if ( $arg eq 'preferred_key' ) {
@@ -232,7 +231,7 @@ sub take_action {
             }
         }
     }
-    my ( $status, $msg ) = $user->set_preferences( $self->name, $pref );
+    my ( $status, $msg ) = $self->user->set_preferences( $self->name, $pref );
     Jifty->log->error($msg) unless $status;
     $self->report_success;
 
