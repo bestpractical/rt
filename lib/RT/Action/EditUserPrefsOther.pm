@@ -251,24 +251,40 @@ sub default_value {
     }
 }
 
-sub fields {
-    my %fields = (
-        'General' => [
-            qw/default_queue username_format web_default_stylesheet
-              message_box_rich_text message_box_rich_text_height message_box_width
-              message_box_height/
-        ],
-        'Locale'         => [qw/date_time_format/],
-        Mail             => [qw/email_frequency/],
-        'RT at a glance' => [
-            qw/default_summary_rows max_inline_body oldest_transactions_first
-              show_unread_message_notifications plain_text_pre/
-        ],
+sub sections {
+    my @sections = (
+        {
+            title  => 'General',
+            fields => [
+                qw/default_queue username_format web_default_stylesheet
+                  message_box_rich_text message_box_rich_text_height message_box_width
+                  message_box_height/
+            ]
+        },
+        {
+            title  => 'Locale',
+            fields => [qw/date_time_format/]
+        },
+        {
+            title  => 'Mail',
+            fields => => [qw/email_frequency/]
+        },
+        {
+            title  => 'RT at a glance',
+            fields => [
+                qw/default_summary_rows max_inline_body oldest_transactions_first
+                  show_unread_message_notifications plain_text_pre/
+            ]
+        },
     );
     if ( RT->config->get('gnupg')->{'enable'} ) {
-        $fields{'Cryptography'} = [qw/preferred_key/];
+        push @sections,
+          {
+            title  => 'Cryptography',
+            values => [qw/preferred_key/]
+          };
     }
-    return %fields;
+    return @sections;
 }
 
 

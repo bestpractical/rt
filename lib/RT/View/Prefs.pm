@@ -117,12 +117,12 @@ template 'other' => page { title => _('Customize Others') } content {
         moniker => $moniker,
     );
 
-    my %fields      = RT::Action::EditUserPrefsOther->fields;
+    my @sections      = RT::Action::EditUserPrefsOther->sections;
 
     with( name => $moniker ), form {
-        for my $section ( keys %fields ) {
-            h2 { _($section) };
-            for my $field ( @{ $fields{$section} } ) {
+        for my $section ( @sections ) {
+            h2 { _($section->{title}) };
+            for my $field ( @{ $section->{fields} } ) {
                 outs_raw( $action->form_field($field) );
             }
         }
