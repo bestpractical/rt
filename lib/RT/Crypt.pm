@@ -71,16 +71,23 @@ sub FindProtectedParts {
     ) foreach grep !$args{'Skip'}{$_}, $entity->parts;
 
     if ( $args{'Scattered'} ) {
+        my %parent;
         my $filter; $filter = sub {
-            return grep !$args{'Skip'}{$_},
-                $_[0]->is_multipart ? () : $_[0],
-                map $filter->($_), grep !$args{'Skip'}{$_},
+            $parent{$_[0]} = $_[1];
+            return
+                grep !$args{'Skip'}{$_},
+                $_[0]->is_multipart ? () : $_,
+                map $filter->($_, $_[0]), grep !$args{'Skip'}{$_},
                     $_[0]->parts;
         };
         my @parts = $filter->($entity);
         foreach my $protocol ( @protocols ) {
-            my $class = 'RT::Crypt::'. $protocol;
-            my @list = $class->FindScatteredParts( Parts => \@parts, Skip => $args{'Skip'} );
+            my $class = $self->LoadImplementation( $protocol );
+            my @list = $class->FindScatteredParts(
+                Parts   => \@parts,
+                Parents => \%parent,
+                Skip    => $args{'Skip'}
+            );
             next unless @list;
 
             push @res, @list;
