@@ -776,11 +776,32 @@ sub CheckIfProtected {
 
     my $protocol = $entity->head->mime_attr( 'Content-Type.protocol' );
     unless ( $protocol ) {
-        $RT::Logger->error( "Entity is '$type', but has no protocol defined. Skipped" );
-        return ();
-    }
+        # if protocol is not set then we can check second part for PGP message
+        $RT::Logger->error( "Entity is '$type', but has no protocol defined. Checking for PGP part" );
+        my $protected = $self->_CheckIfProtectedInline( $entity->parts(1), 1 );
+        return () unless $protected;
 
-    if ( $type eq 'multipart/encrypted' ) {
+        if ( $protected eq 'signature' ) {
+            $RT::Logger->debug("Found part signed according to RFC3156");
+            return (
+                Type      => 'signed',
+                Format    => 'RFC3156',
+                Top       => $entity,
+                Data      => $entity->parts(0),
+                Signature => $entity->parts(1),
+            );
+        } else {
+            $RT::Logger->debug("Found part encrypted according to RFC3156");
+            return (
+                Type   => 'encrypted',
+                Format => 'RFC3156',
+                Top    => $entity,
+                Data   => $entity->parts(1),
+                Info   => $entity->parts(0),
+            );
+        }
+    }
+    elsif ( $type eq 'multipart/encrypted' ) {
         unless ( $protocol eq 'application/pgp-encrypted' ) {
             $RT::Logger->info( "Skipping protocol '$protocol', only 'application/pgp-encrypted' is supported" );
             return ();
@@ -911,6 +932,7 @@ sub FindScatteredParts {
 sub _CheckIfProtectedInline {
     my $self = shift;
     my $entity = shift;
+    my $check_for_signature = shift || 0;
 
     my $io = $entity->open('r');
     unless ( $io ) {
@@ -945,8 +967,12 @@ sub _CheckIfProtectedInline {
     }
 
     while ( defined($_ = $io->getline) ) {
-        next unless /^-----BEGIN PGP (SIGNED )?MESSAGE-----/;
-        return $1? 'signed': 'encrypted';
+        if ( /^-----BEGIN PGP (SIGNED )?MESSAGE-----/ ) {
+            return $1? 'signed': 'encrypted';
+        }
+        elsif ( $check_for_signature && !/^-----BEGIN PGP SIGNATURE-----/ ) {
+            return 'signature';
+        }
     }
     $io->close;
     return '';

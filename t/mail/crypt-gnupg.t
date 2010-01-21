@@ -10,9 +10,10 @@ BEGIN {
         qw/data gnupg keyrings/ );
 }
 
-use RT::Test::GnuPG tests => 96, gnupg_options => { homedir => $homedir };
+use RT::Test::GnuPG tests => 100, gnupg_options => { homedir => $homedir };
 use Test::Warn;
 
+use_ok('RT::Crypt');
 use_ok('MIME::Entity');
 
 diag 'only signing. correct passphrase';
@@ -245,11 +246,12 @@ diag 'wrong signed/encrypted parts: no protocol';
     $entity->head->mime_attr( 'Content-Type.protocol' => undef );
 
     my @parts;
-    warning_like {
-        @parts = RT::Crypt->FindProtectedParts( Entity => $entity );
-    } qr{Entity is 'multipart/encrypted', but has no protocol defined. Skipped};
-
-    is( scalar @parts, 0, 'no protected parts' );
+    warning_like { @parts = RT::Crypt->FindProtectedParts( Entity => $entity ) }
+        qr{Entity is 'multipart/encrypted', but has no protocol defined. Checking for PGP part};
+    is( scalar @parts, 1, 'one protected part' );
+    is( $parts[0]->{'Type'}, 'encrypted', "have encrypted part" );
+    is( $parts[0]->{'Format'}, 'RFC3156', "RFC3156 format" );
+    is( $parts[0]->{'Top'}, $entity, "it's the same entity" );
 }
 
 diag 'wrong signed/encrypted parts: not enought parts';
