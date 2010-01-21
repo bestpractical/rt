@@ -184,11 +184,12 @@ on qr{^/Ticket/Graphs/(\d+)} => run {
 };
 
 
-my $PREFS_NAV = Jifty::Web::Menu->new( { label => _('Preferences'), url => '/Prefs/Other.html' } );
-$PREFS_NAV->child( _('Settings'),       url => '/Prefs/Other.html', );
-$PREFS_NAV->child( _('About me'),       url => '/User/Prefs.html', );
-$PREFS_NAV->child( _('Search options'), url => '/Prefs/SearchOptions.html', );
-$PREFS_NAV->child( _('RT at a glance'), url => '/Prefs/MyRT.html', );
+my $PREFS_NAV = Jifty::Web::Menu->new( { label => _('Preferences'), url =>
+        '/prefs/other' } );
+$PREFS_NAV->child( _('Settings'),       url => '/prefs/other', );
+$PREFS_NAV->child( _('About me'),       url => '/prefs/me', );
+$PREFS_NAV->child( _('Search options'), url => '/prefs/search_options', );
+$PREFS_NAV->child( _('RT at a glance'), url => '/prefs/my_rt', );
 
 
 before qr{.*} => run {
@@ -789,14 +790,14 @@ before 'User/Group' => run {
 
 };
 
-before 'Prefs' => run {
+before 'prefs' => run {
     my @searches = RT::System->new->saved_searches();
 
-    page_nav->child( 'Quick search' => label => _('Quick search'), url => '/Prefs/Quicksearch.html' );
+    page_nav->child( 'Quick search' => label => _('Quick search'), url => '/prefs/quick_search' );
 
     for my $search (@searches) {
         page_nav->child( $search->[0],
-            url => "/Prefs/Search.html?" . query_string( name => ref( $search->[1] ) . '-' . $search->[1]->id ) );
+            url => "/prefs/search?" . query_string( name => ref( $search->[1] ) . '-' . $search->[1]->id ) );
     }
 };
 

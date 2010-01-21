@@ -136,7 +136,7 @@ $id =~ s|-$||g;
 </%INIT>
 
 <%ARGS>
-$prefs => '/Prefs/Other.html'
+$prefs => '/prefs/other'
 #$focus => 'focus'
 $focus => ''
 $title =>  'RT'
