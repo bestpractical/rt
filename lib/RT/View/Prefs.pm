@@ -147,5 +147,19 @@ template 'my_rt' => page { title => _('Customize my RT') } content {
 
 };
 
+template 'quick_search' => page { title => _('Customize Quick Search') } content {
+    my $self = shift;
+    my $moniker = 'prefs_edit_quick_search';
+    my $action = new_action(
+        class   => 'EditUserPrefsQuickSearch',
+        moniker => $moniker,
+    );
+
+    with( name => $moniker ), form {
+        render_action($action);
+        form_submit( label => _('Save') );
+    };
+};
+
 1;
 
