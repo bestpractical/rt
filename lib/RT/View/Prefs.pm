@@ -161,5 +161,26 @@ template 'quick_search' => page { title => _('Customize Quick Search') } content
     };
 };
 
+template 'me' => page { title => _('Customize Myself') } content {
+    my $self    = shift;
+    my $moniker = 'prefs_edit_me';
+    my $action  = new_action(
+        class   => 'EditUserPrefsMe',
+        moniker => $moniker,
+    );
+    $action->record( Jifty->web->current_user->user_object );
+    my @sections      = RT::Action::EditUserPrefsMe->sections;
+
+    with( name => $moniker ), form {
+        for my $section ( @sections ) {
+            h2 { _($section->{title}) };
+            for my $field ( @{ $section->{fields} } ) {
+                outs_raw( $action->form_field($field) );
+            }
+        }
+        form_submit( label => _('Save') );
+    };
+};
+
 1;
 
