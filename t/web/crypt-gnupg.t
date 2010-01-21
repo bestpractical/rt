@@ -415,23 +415,21 @@ $user->set_email('general@example.com');
 ok($user = RT::Model::User->new(current_user => RT->system_user));
 ok($user->load('root'), "Loaded user 'root'");
 is($user->preferred_key, $key1, "preferred key is set correctly");
-$m->get("$baseurl/Prefs/Other.html");
+$m->get("$baseurl/prefs/other");
 $m->content_like( qr/Preferred key/, "preferred key option shows up in preference");
 
 # XXX: mech doesn't let us see the current value of the select, apparently
 $m->content_like( qr/$key1/, "first key shows up in preferences");
 $m->content_like( qr/$key2/, "second key shows up in preferences");
 $m->content_like( qr/$key1.*?$key2/s, "first key shows up before the second");
-
-$m->form_with_fields('preferred_key');
-$m->select("preferred_key" => $key2);
+$m->fill_in_action_ok( 'prefs_edit_other', preferred_key => $key2 );
 $m->submit;
 
 ok($user = RT::Model::User->new(current_user => RT->system_user));
 ok($user->load('root'), "Loaded user 'root'");
 is($user->preferred_key, $key2, "preferred key is set correctly to the new value");
 
-$m->get("$baseurl/Prefs/Other.html");
+$m->get("$baseurl/prefs/other");
 $m->content_like( qr/Preferred key/, "preferred key option shows up in preference");
 
 # XXX: mech doesn't let us see the current value of the select, apparently
