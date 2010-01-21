@@ -157,6 +157,13 @@ sub FindProtectedParts {
         return \%info;
     }
 
+    if ( $entity->effective_type =~ /^multipart\/(?:signed|encrypted)/ ) {
+        # if no module claimed that it supports these types then
+        # we don't dive in and check sub-parts
+        $args{'Skip'}{ $entity } = 1;
+        return ();
+    }
+
     my @res;
 
     # not protected itself, look inside
