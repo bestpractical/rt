@@ -62,10 +62,12 @@ $Reverify     => 1
 my @runs;
 my $needs_unsigned_warning = $WarnUnsigned;
 
+my @protocols = RT::Crypt->Protocols;
+my $re_protocols = join '|', map "\Q$_\E", @protocols;
+
 foreach ( $Attachment->SplitHeaders ) {
-    if ( s/^X-RT-GnuPG-Status:\s*//i ) {
-        require RT::Crypt::GnuPG;
-        push @runs, [ RT::Crypt::GnuPG::ParseStatus( $_ ) ];
+    if ( s/^X-RT-($re_protocols)-Status:\s*//io ) {
+        push @runs, [ RT::Crypt->ParseStatus( Protocol => "$1", Status => $_ ) ];
     }
 
     $needs_unsigned_warning = 0 if /^X-RT-Incoming-Signature:/;
@@ -103,14 +105,14 @@ my $reverify_cb = sub {
         return (0, "Couldn't parse content of attachment #". $original->id);
     }
 
-    use RT::Interface::Email::Auth::GnuPG;
-    my ($status, @res) = RT::Interface::Email::Auth::GnuPG::VerifyDecrypt( Entity => $entity );
+    use RT::Interface::Email::Auth::Crypt;
+    my ($status, @res) = RT::Interface::Email::Auth::Crypt::VerifyDecrypt( Entity => $entity );
     if ( $status && !@res ) {
         # imposible in this situation
         return (0, "Content of attachment #". $original->id ." is not signed and/or encrypted");
     }
     elsif ( @res ) {
-        require RT::Crypt::GnuPG;
+        require RT::Crypt;
 
         $top->DelHeader('X-RT-GnuPG-Status');
         $top->AddHeader(map { ('X-RT-GnuPG-Status' => $_->{'status'} ) } @res);
