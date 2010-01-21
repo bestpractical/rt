@@ -65,6 +65,27 @@ messages, as well as the decryption and verification of incoming email.
 
 =head1 METHODS
 
+=head2 LoadImplementation CLASS
+
+Given the name of an encryption implementation (e.g. "GnuPG"), loads the
+L<RT::Crypt> class associated with it; return the classname on success,
+and undef on failure.
+
+=cut
+
+sub LoadImplementation {
+    state %cache;
+    my $class = 'RT::Crypt::'. $_[1];
+    return $cache{ $class } if exists $cache{ $class };
+
+    if (eval "require $class; 1") {
+        return $cache{ $class } = $class;
+    } else {
+        RT->Logger->warn( "Could not load $class: $@" );
+        return $cache{ $class } = undef;
+    }
+}
+
 =head2 UseKeyForSigning [KEY]
 
 Returns or sets the identifier of the key that should be used for
