@@ -408,6 +408,7 @@ sub SignEncrypt {
 }
 
 sub SignEncryptRFC3156 {
+    my $self = shift;
     my %args = (
         Entity => undef,
 
@@ -1039,7 +1040,7 @@ sub FindScatteredParts {
     foreach my $part ( @parts ) {
         next if $args{'Skip'}{$part};
 
-        my $type = $self->_CheckIfProtectedInline( $entity );
+        my $type = $self->_CheckIfProtectedInline( $part );
         next unless $type;
 
         my $file = ($entity->head->recommended_filename||'') =~ /\.${RE_FILE_EXTENSIONS}$/;
@@ -1048,7 +1049,7 @@ sub FindScatteredParts {
         push @res, {
             Type      => $type,
             Format    => !$file || $type eq 'signed'? 'Inline' : 'Attachment',
-            Data      => $entity,
+            Data      => $part,
         };
     }
 
@@ -1119,7 +1120,7 @@ sub VerifyDecrypt {
             my $modify = $status_on->head->modify;
             $status_on->head->modify(1);
             $status_on->head->$method(
-                'X-RT-GnuPG-Status' => $res[-1]->{'status'}
+                'X-RT-GnuPG-Status' => $res{'status'}
             );
             $status_on->head->modify($modify);
         }
@@ -1143,14 +1144,14 @@ sub VerifyDecrypt {
             my $modify = $status_on->head->modify;
             $status_on->head->modify(1);
             $status_on->head->$method(
-                'X-RT-GnuPG-Status' => $res[-1]->{'status'}
+                'X-RT-GnuPG-Status' => $res{'status'}
             );
             $status_on->head->modify($modify);
         }
     } else {
         die "Unknow type '". $item->{'Type'} ."' of protected item";
     }
-    return @res;
+    return %res;
 }
 
 sub VerifyInline { return (shift)->DecryptInline( @_ ) }
@@ -2045,6 +2046,7 @@ also listed.
 =cut
 
 sub GetKeysForEncryption {
+    my $self = shift;
     my $key_id = shift;
     my %res = $self->GetKeysInfo( $key_id, 'public', @_ );
     return %res if $res{'exit_code'};
@@ -2066,18 +2068,20 @@ sub GetKeysForEncryption {
 }
 
 sub GetKeysForSigning {
+    my $self = shift;
     my $key_id = shift;
     return $self->GetKeysInfo( $key_id, 'private', @_ );
 }
 
 sub CheckRecipients {
+    my $self = shift;
     my @recipients = (@_);
 
     my ($status, @issues) = (1, ());
 
     my %seen;
     foreach my $address ( grep !$seen{ lc $_ }++, map $_->address, @recipients ) {
-        my %res = GetKeysForEncryption( $address );
+        my %res = $self->GetKeysForEncryption( $address );
         if ( $res{'info'} && @{ $res{'info'} } == 1 && $res{'info'}[0]{'TrustLevel'} > 0 ) {
             # good, one suitable and trusted key 
             next;
@@ -2136,14 +2140,15 @@ sub CheckRecipients {
 }
 
 sub GetPublicKeyInfo {
-    return GetKeyInfo( shift, 'public', @_ );
+    return (shift)->GetKeyInfo( shift, 'public', @_ );
 }
 
 sub GetPrivateKeyInfo {
-    return GetKeyInfo( shift, 'private', @_ );
+    return (shift)->GetKeyInfo( shift, 'private', @_ );
 }
 
 sub GetKeyInfo {
+    my $self = shift;
     my %res = $self->GetKeysInfo(@_);
     $res{'info'} = $res{'info'}->[0];
     return %res;
