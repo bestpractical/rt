@@ -423,6 +423,20 @@ before '/SelfService' => run {
     #main_nav->child( B =>  html => $m->scomp('GotoTicket'))
 };
 
+before 'prefs/search' => run {
+    my $name;
+
+    my @monikers = 'prefs_edit_search_options';
+    for my $action ( Jifty->web->request->actions ) {
+        if ( grep { $action->moniker eq $_ } @monikers ) {
+            if ( $action->argument('name') ) {
+                $name = $action->argument('name');
+            }
+        }
+    }
+    Jifty->web->request->argument( name => $name ) if $name;
+};
+
 before 'admin/' => run {
 
     my ( $id, $lookup_type, $queue, $custom_field );
