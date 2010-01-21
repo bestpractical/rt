@@ -176,7 +176,7 @@ use Jifty::Action schema {
     param 'preferred_key' =>
       label is _('Preferred key'),
       render as 'Select',
-    available are defer {
+      available are defer {
         require RT::Crypt::GnuPG;
         my $d;
         my %res = RT::Crypt::GnuPG::get_keys_for_encryption(
@@ -194,8 +194,8 @@ use Jifty::Action schema {
         [
             map {
                 {
-                    display => $_->{'fingerprint'},
-                    value   => $_->{'fingerprint'} . ' '
+                    value => $_->{'fingerprint'},
+                    display   => $_->{'fingerprint'} . ' '
                       . _( 'trust: %1', $_->{'trust_terse'} )
                 }
               } @keys
@@ -280,7 +280,7 @@ sub sections {
         push @sections,
           {
             title  => 'Cryptography',
-            values => [qw/preferred_key/]
+            fields => [qw/preferred_key/]
           };
     }
     return @sections;
