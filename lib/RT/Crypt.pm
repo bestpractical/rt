@@ -90,6 +90,7 @@ sub FindProtectedParts {
             );
             next unless @list;
 
+            $_->{'Protocol'} = $protocol foreach @list;
             push @res, @list;
             @parts = grep !$args{'Skip'}{$_}, @parts;
         }
