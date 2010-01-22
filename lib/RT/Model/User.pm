@@ -124,7 +124,10 @@ use Jifty::DBI::Record schema {
     column zip      => max_length is 16,  type is 'varchar(16)',  default is '';
     column country  => type is 'varchar(50)', max_length is 50,
            display_length is 20, default is '';
-    column time_zone => type is 'varchar(50)', max_length is 50, default is '';
+    column time_zone => type is 'varchar(50)', max_length is 50, default is
+        '',
+        render as 'Select',
+        valid_values are lazy { formatted_timezones() };
     column pgp_key   => type is 'text';
 
 };
@@ -1341,6 +1344,34 @@ sub set_private_key {
 
 sub basic_columns {
     ( [ name => 'User Id' ], [ email => 'Email' ], [ real_name => 'name' ], [ organization => 'organization' ], );
+
+}
+
+sub formatted_timezones {
+    my @positive;
+    my @negative;
+    for my $tz ( DateTime::TimeZone->all_names ) {
+        my $now = DateTime->now( time_zone => $tz );
+        my $offset = $now->strftime("%z");
+        my $zone_data = { offset => $offset, name => $tz };
+        if ($offset =~ /^-/) {
+            push @negative, $zone_data;
+        } else {
+            push @positive, $zone_data;
+        }
+    }
+
+
+    @negative = sort { $b->{offset} cmp $a->{offset} ||
+                       $a->{name} cmp $b->{name} } @negative;
+    @positive = sort { $a->{offset} cmp $b->{offset} ||
+                       $a->{name} cmp $b->{name} } @positive;;
+
+    return [
+        { display => _('system_default'), value => '' },
+        map { { display => "$_->{offset} $_->{name}", value => $_->{name} } }
+          ( @negative, @positive )
+    ];
 
 }
 
