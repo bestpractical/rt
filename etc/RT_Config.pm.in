@@ -2072,8 +2072,59 @@ Set($DefaultTimeUnitsToHours, 0);
 
 
 
+=head1 Cryptography
 
-=head1 GnuPG integration
+Description of cryptography capabilities can be found by running the command
+`perldoc L<RT::Crypt>` (or `perldoc lib/RT/Crypt.pm` from RT install
+directory). At this momement support for GnuPG (PGP) and SMIME security
+protocols are supported.
+
+=over 4
+
+=item C<%Crypt>
+
+Options generic for all cryptography protocols.
+
+Set C<ProcessIncomming> to list of security protocols that should be
+analyzed in incomming emails. Note that C<Auth::Crypt> mail plugin
+should be added anyway to the C<@MailPlugins> option.
+
+Set C<RejectOnMissingPrivateKey> to false if you don't want to reject
+emails encrypted for key RT doesn't have and can not decrypt.
+
+Set C<RejectOnBadData> to false if you don't want to reject letters
+with incorrect data.
+
+=back
+
+=cut
+
+Set( %Crypt,
+    ProcessIncomming          => undef, # ['GnuPG', 'SMIME']
+
+    RejectOnMissingPrivateKey => 1,
+    RejectOnBadData           => 1,
+);
+
+=head2 SMIME configuration
+
+A full description of the SMIME integration can be found 
+by running the command `perldoc L<RT::Crypt::SMIME>`  (or `perldoc
+lib/RT/Crypt/SMIME.pm` from your RT install directory).
+
+=over 4
+
+=item C<%SMIME>
+
+=back
+
+=cut
+
+Set( %SMIME,
+    Enable => @RT_SMIME@,
+);
+
+=head2 GnuPG configuration
 
 A full description of the (somewhat extensive) GnuPG integration can
 be found by running the command `perldoc L<RT::Crypt::GnuPG>` (or
@@ -2083,27 +2134,21 @@ be found by running the command `perldoc L<RT::Crypt::GnuPG>` (or
 
 =item C<%GnuPG>
 
+Set C<Enable> to false or true value to disable or enable GnuPG interfaces
+for encryptng and signing outgoing messages.
+
 Set C<OutgoingMessagesFormat> to 'inline' to use inline encryption and
 signatures instead of 'RFC' (GPG/MIME: RFC3156 and RFC1847) format.
 
 If you want to allow people to encrypt attachments inside the DB then
 set C<AllowEncryptDataInDB> to 1.
 
-Set C<RejectOnMissingPrivateKey> to false if you don't want to reject
-emails encrypted for key RT doesn't have and can not decrypt.
-
-Set C<RejectOnBadData> to false if you don't want to reject letters
-with incorrect GnuPG data.
-
 =cut
 
 Set(%GnuPG,
-    Enable => @RT_GPG@,
+    Enable                 => @RT_GPG@,
     OutgoingMessagesFormat => "RFC", # Inline
     AllowEncryptDataInDB   => 0,
-
-    RejectOnMissingPrivateKey => 1,
-    RejectOnBadData           => 1,
 );
 
 =item C<%GnuPGOptions>
