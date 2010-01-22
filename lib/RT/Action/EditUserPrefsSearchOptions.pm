@@ -106,7 +106,8 @@ sub take_action {
 
 sub preferences {
     my $self = shift;
-    return $self->user->preferences($self->name) || {};
+    return $self->user->preferences($self->name, ref $self->name ?
+            $self->name->content : () ) || {};
 }
 
 sub default_value {
