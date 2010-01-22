@@ -79,6 +79,8 @@ sub take_action {
 
     if ( $self->argument_value('reset') && $record_class ne 'RT::System' ) {
         $self->record->set_preferences('HomepageSettings', {});
+        Jifty->web->session->set( 'my_rt_portlets',
+            $self->record->attributes->named('HomepageSettings') );
     }
     else {
         if (   $self->argument_value('summary_rows')
@@ -115,6 +117,7 @@ sub take_action {
         }
         else {
             $self->record->set_preferences( 'HomepageSettings' => $content );
+            Jifty->web->session->set( 'my_rt_portlets', $content );
         }
     }
     $self->report_success;
@@ -128,19 +131,29 @@ sub available_values {
     my @items =
       map { { value => "component-$_", display => $_ } }
       sort @{ RT->config->get('homepage_components') };
-    my $sys = RT->system;
-    for ( $sys->saved_searches ) {
-        my ( $desc, $search ) = @$_;
-        my $SearchType = $search->content->{'SearchType'} || 'Ticket';
-        if ( $SearchType eq 'Ticket' ) {
-            push @items, { value => "system-$desc", display => $desc };
-        }
-        else {
-            my $oid =
-              ref($sys) . '-' . $sys->id . '-SavedSearch-' . $search->id;
-            my $type =
-              ( $SearchType eq 'Ticket' ) ? _('Saved Search') : $SearchType;
-            push @items, { value => "saved-$oid", display => _($type) . ": $desc" };
+
+    my @objs = RT->system;
+    push @objs, RT::SavedSearches->new()->_privacy_objects
+      if ref $self->record ne 'RT::System' && Jifty->web->current_user->has_right(
+        right  => 'LoadSavedSearch',
+        object => RT->system
+      );
+      
+    for my $obj (@objs) {
+        for ( $obj->saved_searches ) {
+            my ( $desc, $search ) = @$_;
+            my $SearchType = $search->content->{'SearchType'} || 'Ticket';
+            if ( ref $obj eq 'RT::System' && $SearchType eq 'Ticket' ) {
+                push @items, { value => "system-$desc", display => $desc };
+            }
+            else {
+                my $oid =
+                  ref($obj) . '-' . $obj->id . '-SavedSearch-' . $search->id;
+                my $type =
+                  ( $SearchType eq 'Ticket' ) ? _('Saved Search') : $SearchType;
+                push @items,
+                  { value => "saved-$oid", display => _($type) . ": $desc" };
+            }
         }
     }
     return \@items;
