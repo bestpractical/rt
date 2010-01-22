@@ -11,7 +11,7 @@ sub name {
 use Jifty::Param::Schema;
 use Jifty::Action schema {
     param 'default_queue' =>
-      label is _('default queue'),
+      label is 'default queue',
       render as 'Select',
       available are defer {
         my $qs = RT::Model::QueueCollection->new;
@@ -36,7 +36,7 @@ use Jifty::Action schema {
         __PACKAGE__->default_value('default_queue');
       };
     param 'username_format' =>
-      label is _('username format'),
+      label is 'username format',
       render as 'Select',
       available are [
         { display => _('use system default'),  value => 'use_system_default' },
@@ -47,7 +47,7 @@ use Jifty::Action schema {
         __PACKAGE__->default_value('username_format');
       };
     param 'web_default_stylesheet' =>
-      label is _('theme'),
+      label is 'theme',
       render as 'Select',
       available are [
         { display => _('use system default'), value => 'use_system_default' },
@@ -57,7 +57,7 @@ use Jifty::Action schema {
         __PACKAGE__->default_value('web_default_stylesheet');
       };
     param 'message_box_rich_text' =>
-      label is _('WYSIWYG message composer'),
+      label is 'WYSIWYG message composer',
       render as 'Radio',
       available are [
         { display => _('use system default'), value => 'use_system_default' },
@@ -67,24 +67,24 @@ use Jifty::Action schema {
         __PACKAGE__->default_value('message_box_rich_text');
       };
     param 'message_box_rich_text_height' =>
-      label is _('WYSIWYG composer height'),
+      label is 'WYSIWYG composer height',
       default is defer {
         __PACKAGE__->default_value('message_box_rich_text_height');
       };
     param 'message_box_width' =>
-      label is _('message box width'),
+      label is 'message box width',
       default is defer {
         __PACKAGE__->default_value('message_box_width');
       };
     param 'message_box_height' =>
-      label is _('message box height'),
+      label is 'message box height',
       default is defer {
         __PACKAGE__->default_value('message_box_height');
       };
 
     # locale
     param 'date_time_format' =>
-      label is _('date format'),
+      label is 'date format',
       render as 'Select',
       available are defer {
         my $now = RT::DateTime->now;
@@ -109,7 +109,7 @@ use Jifty::Action schema {
 
     #mail
     param email_frequency =>
-      label is _('email delivery'),
+      label is 'email delivery',
       render as 'Select',
       available are defer {
         [
@@ -130,19 +130,19 @@ use Jifty::Action schema {
 
     # rt at a glance
     param 'default_summary_rows' =>
-      label is _('number of search results'),
+      label is 'number of search results',
       default is defer {
         __PACKAGE__->default_value('default_summary_rows');
       };
 
     # ticket display
     param 'max_inline_body' =>
-      label is _('Maximum inline message length'),
+      label is 'Maximum inline message length',
       default is defer {
         __PACKAGE__->default_value('max_inline_body');
       };
     param 'oldest_transactions_first' =>
-      label is _('Show oldest transactions first'),
+      label is 'Show oldest transactions first',
       render as 'Radio',
       available are [
         { display => _('use system default'), value => 'use_system_default' },
@@ -152,7 +152,7 @@ use Jifty::Action schema {
         __PACKAGE__->default_value('oldest_transactions_first');
       };
     param 'show_unread_message_notifications' =>
-      label is _('Notify me of unread messages'),
+      label is 'Notify me of unread messages',
       render as 'Radio',
       available are [
         { display => _('use system default'), value => 'use_system_default' },
@@ -163,7 +163,7 @@ use Jifty::Action schema {
             'show_unread_message_notifications');
       };
     param 'plain_text_pre' =>
-      label is _('Use monospace font'),
+      label is 'Use monospace font',
       hints is 'Use fixed-width font to display plaintext messages',
       render as 'Radio',
       available are [
@@ -174,7 +174,7 @@ use Jifty::Action schema {
         __PACKAGE__->default_value('plain_text_pre');
       };
     param 'preferred_key' =>
-      label is _('Preferred key'),
+      label is 'Preferred key',
       render as 'Select',
       available are defer {
         require RT::Crypt::GnuPG;
