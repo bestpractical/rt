@@ -57,7 +57,7 @@ use constant object_type     => 'User';
 use constant display_columns => qw(id name real_name email privileged disabled);
 
 use constant edit_columns => qw(name email real_name nickname gecos lang
-  freeform_contact_info
+  time_zone freeform_contact_info
   organization address1 address2 city state zip country
   home_phone work_phone mobile_phone pager_phone
   password password_confirm comments signature privileged disabled);
@@ -65,7 +65,6 @@ use constant edit_columns => qw(name email real_name nickname gecos lang
 # unused columns:
 #  email_encoding web_encoding external_contact_info_id
 #  contact_info_system external_auth_id auth_system 
-#  time_zone
 
 # limit to privileged users
 sub _current_collection {
