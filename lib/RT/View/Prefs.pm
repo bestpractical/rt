@@ -135,7 +135,13 @@ template 'my_rt' => page { title => _('Customize my RT') } content {
     $action->record( Jifty->web->current_user->user_object );
 
     with( name => $moniker ), form {
-        render_action($action);
+        for my $field ( $action->argument_names ) {
+            next if $field eq 'reset';
+            outs_raw( $action->form_field($field) );
+        }
+        div { class is 'submit_button';
+            outs_raw( $action->form_field("reset") );
+        };
         form_submit( label => _('Save') );
     };
 

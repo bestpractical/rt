@@ -7,11 +7,12 @@ use Scalar::Defer qw/defer/;
 
 use Jifty::Param::Schema;
 use Jifty::Action schema {
-    param 'reset_auth_token' => render as 'InlineButton',
-      label              is _('reset auth token'),
-      hints              is _(
+    param 'reset_auth_token' => render as 'Button',
+      default            is 'reset auth token',
+      label              is '',
+      hints              is 
 'All iCal feeds embed a secret token which authorizes you.  If the URL one of your iCal feeds got exposed to the outside world, you can get a new secret, <b>breaking all existing iCal feeds</b> below.'
-      );
+      ;
     param 'id' => render as 'hidden',
           default is defer { __PACKAGE__->user->id };
 };

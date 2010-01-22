@@ -25,9 +25,9 @@ sub arguments {
 
     if ( ref $self->record ne 'RT::System' ) {
         $args->{'reset'} = {
-            render_as     => 'InlineButton',
-            default_value => 1,
-            label => _('Reset'),
+            render_as     => 'Button',
+            default_value => ('Reset'),
+            label => '',
         };
 
         $args->{'summary_rows'} = {
@@ -35,7 +35,7 @@ sub arguments {
                 $self->record->preferences( 'SummaryRows',
                     RT->config->get('default_summary_rows') );
             },
-            label => _('Rows per box'),
+            label => 'Rows per box',
         };
 
     }

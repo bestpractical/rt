@@ -41,8 +41,9 @@ sub arguments {
         render_as => 'hidden',
     };
     $args->{'save'} = {
-        label => _('Save'),
-        render_as => 'InlineButton',
+        label => '',
+        default_value => 'Save',
+        render_as => 'Button',
     };
     $args->{'name'} = {
         render_as     => 'hidden',
