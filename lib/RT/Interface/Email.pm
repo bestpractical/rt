@@ -252,7 +252,7 @@ sub MailError {
         Bcc                    => $args{'Bcc'},
         To                     => $args{'To'},
         Subject                => $args{'Subject'},
-        'Precedence:'             => 'bulk',
+        'Precedence:'          => RT->Config->Get('DefaultErrorMailPrecedence'),
         'X-RT-Loop-Prevention:' => RT->Config->Get('rtname'),
     );
     SetInReplyTo( Message => $entity, InReplyTo => $args{'MIMEObj'} );

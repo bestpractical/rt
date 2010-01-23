@@ -438,6 +438,22 @@ Set($DefaultMailPrecedence, 'bulk');
 
 =back
 
+=item C<$DefaultErrorMailPrecedence>
+
+C<$DefaultErrorMailPrecedence> is used to control the default
+Precedence level of outgoing mail that indicates some kind of
+error condition. By default it is C<bulk>, but if you only send
+mail to your staff, you may wish to change it.
+
+Note that you can set the precedence of individual templates
+by including an explicit Precedence header.
+
+=cut
+
+Set($DefaultErrorMailPrecedence, 'bulk');
+
+=back
+
 =head1 Sendmail Configuration
 
 These options only take effect if C<$MailCommand> is 'sendmail' or
