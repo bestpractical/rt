@@ -245,16 +245,23 @@ sub MailError {
         level   => $args{'LogLevel'},
         message => $args{'Explanation'}
     ) if $args{'LogLevel'};
+
     # the colons are necessary to make ->build include non-standard headers
-    my $entity = MIME::Entity->build(
-        Type                   => "multipart/mixed",
-        From                   => $args{'From'},
-        Bcc                    => $args{'Bcc'},
-        To                     => $args{'To'},
-        Subject                => $args{'Subject'},
-        'Precedence:'          => RT->Config->Get('DefaultErrorMailPrecedence'),
+    my %entity_args = (
+        Type                    => "multipart/mixed",
+        From                    => $args{'From'},
+        Bcc                     => $args{'Bcc'},
+        To                      => $args{'To'},
+        Subject                 => $args{'Subject'},
         'X-RT-Loop-Prevention:' => RT->Config->Get('rtname'),
     );
+
+    # only set precedence if the sysadmin wants us to
+    if (defined(RT->Config->Get('DefaultErrorMailPrecedence'))) {
+        $entity_args{'Precedence:'} = RT->Config->Get('DefaultErrorMailPrecedence');
+    }
+
+    my $entity = MIME::Entity->build(%entity_args);
     SetInReplyTo( Message => $entity, InReplyTo => $args{'MIMEObj'} );
 
     $entity->attach( Data => $args{'Explanation'} . "\n" );

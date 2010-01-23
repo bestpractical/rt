@@ -432,6 +432,10 @@ your staff, you may wish to change it.
 Note that you can set the precedence of individual templates
 by including an explicit Precedence header.
 
+If you set this value to C<undef> then we do not set a default
+Precedence header to outgoing mail. However, if there already is a
+Precedence header it will be preserved.
+
 =cut
 
 Set($DefaultMailPrecedence, 'bulk');
@@ -445,8 +449,8 @@ Precedence level of outgoing mail that indicates some kind of
 error condition. By default it is C<bulk>, but if you only send
 mail to your staff, you may wish to change it.
 
-Note that you can set the precedence of individual templates
-by including an explicit Precedence header.
+If you set this value to C<undef> then we do not add a Precedence
+header to error mail.
 
 =cut
 

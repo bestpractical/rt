@@ -608,7 +608,8 @@ sub SetRTSpecialHeaders {
     }
 
     $self->SetHeader( 'Precedence', RT->Config->Get('DefaultMailPrecedence') )
-        unless ( $self->TemplateObj->MIMEObj->head->get("Precedence") );
+        unless $self->TemplateObj->MIMEObj->head->get("Precedence")
+            && defined(RT->Config->Get('DefaultMailPrecedence'));
 
     $self->SetHeader( 'X-RT-Loop-Prevention', RT->Config->Get('rtname') );
     $self->SetHeader( 'RT-Ticket',
