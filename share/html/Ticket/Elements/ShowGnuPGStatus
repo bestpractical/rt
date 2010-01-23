@@ -67,7 +67,7 @@ my $re_protocols = join '|', map "\Q$_\E", @protocols;
 
 foreach ( $Attachment->SplitHeaders ) {
     if ( s/^X-RT-($re_protocols)-Status:\s*//io ) {
-        push @runs, [ RT::Crypt->ParseStatus( Protocol => "$1", Status => $_ ) ];
+        push @runs, [ $1, RT::Crypt->ParseStatus( Protocol => "$1", Status => $_ ) ];
     }
 
     $needs_unsigned_warning = 0 if /^X-RT-Incoming-Signature:/;
@@ -135,6 +135,7 @@ my $reverify_cb = sub {
 
 my @messages;
 foreach my $run ( @runs ) {
+    my $protocol = shift @$run;
     foreach my $line ( @$run ) {
         if ( $line->{'Operation'} eq 'KeyCheck' ) {
             next unless $Reverify;
@@ -142,7 +143,9 @@ foreach my $run ( @runs ) {
             next unless $line->{'KeyType'} eq 'public' && $line->{'Status'} eq 'MISSING';
 
             # but only if we have key
-            my %key = RT::Crypt::GnuPG::GetPublicKeyInfo( $line->{'Key'} );
+            my %key = RT::Crypt->GetPublicKeyInfo(
+                Protocol => $protocol, Key => $line->{'Key'}
+            );
             if ( $key{'info'} ) {
                 my ($status, $msg) = $reverify_cb->($Attachment);
                 unless ($status) {

@@ -259,7 +259,7 @@ $COLUMN_MAP = {
             my @requestors = $t->Requestors->MemberEmailAddresses;
             for my $email (@requestors)
             {
-                my %key = RT::Crypt::GnuPG::GetKeyInfo($email);
+                my %key = RT::Crypt->GetKeyInfo( Key => $email );
                 if (!defined $key{'info'}) {
                     $email .= ' ' . loc("(no pubkey!)");
                 }
@@ -276,7 +276,7 @@ $COLUMN_MAP = {
         value     => sub {
             my $t = shift;
             my $name = $t->OwnerObj->Name;
-            my %key = RT::Crypt::GnuPG::GetKeyInfo($t->OwnerObj->EmailAddress);
+            my %key = RT::Crypt->GetKeyInfo( Key => $t->OwnerObj->EmailAddress );
             if (!defined $key{'info'}) {
                 $name .= ' '. loc("(no pubkey!)");
             }
