@@ -90,6 +90,8 @@ sub FindProtectedParts {
                     $_[0]->parts;
         };
         my @parts = $filter->($entity);
+        return @res unless @parts;
+
         foreach my $protocol ( @protocols ) {
             my $class = $self->LoadImplementation( $protocol );
             my @list = $class->FindScatteredParts(
