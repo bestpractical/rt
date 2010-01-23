@@ -45,13 +45,22 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<&| /Widgets/TitleBox, title => $title &>
-% if ( $res{'exit_code'} || !keys %{ $res{'info'} } ) {
-<% loc('No keys for this address') %>
+<&| /Widgets/TitleBox, title => $title &><table>
+% while ( my $protocol = shift @protocols ) {
+% my %res = RT::Crypt->GetKeyInfo(
+%     Protocol => $protocol,
+%     Key      => $EmailAddress,
+%     Type     => $Type,
+% );
+% if ( $res{'exit_code'} ) {
+<tr><th colspan="2"><% loc("Couldn't get [_1] keys information", $protocol) %></th></tr>
+% } elsif ( !keys %{ $res{'info'} } ) {
+<tr><th colspan="2"><% loc('No [_1] keys for this address', $protocol) %></th></tr>
 % } else {
-<table>
 
-% unless ( $Type eq 'private' ) {
+<tr><th colspan="2"><% loc("[_1] key '[_2]'", $protocol, $res{'info'}{'id'} || $res{'info'}{'Fingerprint'} ) %></th></tr>
+
+% if ( $Type ne 'private' && $res{'info'}{'Trust'} ) {
 <tr><th class="label"><% loc('Trust') %>:</th>  <td><% loc( $res{'info'}{'Trust'} ) %></td></tr>
 % }
 
@@ -71,23 +80,26 @@
 </td></tr>
 % }
 
-</table>
 % }
-</&>
+
+% if ( @protocols ) {
+<tr><th colspan="2">&nbsp;</th></tr>
+% }
+
+% }
+</table></&>
 
 <%ARGS>
 $EmailAddress
 $Type => 'public'
 </%ARGS>
 <%INIT>
-require RT::Crypt;
-my %res = RT::Crypt::GnuPG->GetKeyInfo( $EmailAddress, $Type );
+my @protocols = RT::Crypt->Protocols;
 
 my $title;
 unless ( $Type eq 'private' ) {
-    $title = loc('GnuPG public key(s) for [_1]', $EmailAddress);
+    $title = loc('Public key(s) for [_1]', $EmailAddress);
 } else {
-    $title = loc('GnuPG private key(s) for [_1]', $EmailAddress);
+    $title = loc('Private key(s) for [_1]', $EmailAddress);
 }
-
 </%INIT>

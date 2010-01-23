@@ -761,7 +761,7 @@ sub Encrypt {
         RT->Config->Get('CorrespondAddress'),
         RT->Config->Get('CommentAddress'),
     ) {
-        my %res = RT::Crypt::GnuPG->GetKeysInfo( $address, 'private' );
+        my %res = RT::Crypt->GetKeysInfo( Key => $address, Type => 'private' );
         next if $res{'exit_code'} || !$res{'info'};
         %res = RT::Crypt::GnuPG->GetKeysForEncryption( $address );
         next if $res{'exit_code'} || !$res{'info'};

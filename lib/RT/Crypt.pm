@@ -382,4 +382,88 @@ sub UseKeyForEncryption {
     return ();
 }
 
+=head2 GetPublicKeyInfo Protocol => NAME, KEY => EMAIL
+
+As per L</GetKeyInfo>, but the C<Type> is forced to C<public>.
+
+=cut
+
+sub GetPublicKeyInfo {
+    return (shift)->GetKeyInfo( @_, Type => 'public' );
+}
+
+=head2 GetPrivateKeyInfo Protocol => NAME, KEY => EMAIL
+
+As per L</GetKeyInfo>, but the C<Type> is forced to C<private>.
+
+=cut
+
+sub GetPrivateKeyInfo {
+    return (shift)->GetKeyInfo( @_, Type => 'private' );
+}
+
+=head2 GetKeyInfo Protocol => NAME, Type => ('public'|'private'), KEY => EMAIL
+
+As per L</GetKeysInfo>, but only the first matching key is returned in
+the C<info> value of the result.
+
+=cut
+
+sub GetKeyInfo {
+    my $self = shift;
+    my %res = $self->GetKeysInfo( @_ );
+    $res{'info'} = $res{'info'}->[0];
+    return %res;
+}
+
+=head2 GetKeysInfo Protocol => NAME, Type => ('public'|'private'), Key => EMAIL
+
+Looks up information about the public or private keys (as determined by
+C<Type>) for the email address C<Key>.  As each protocol has its own key
+store, C<Protocol> is also required.  If no C<Key> is provided and a
+true value for C<Force> is given, returns all keys.
+
+The return value is a hash containing C<exit_code> and C<message> in the
+case of failure, or C<info>, which is an array reference of key
+information.  Each key is represented as a hash reference; the keys are
+protocol-dependent, but will at least contain:
+
+=over
+
+=item Protocol
+
+The name of the protocol of this key
+
+=item Created
+
+An L<RT::Date> of the date the key was created; undef if unset.
+
+=item Expire
+
+An L<RT::Date> of the date the key expires; undef if the key does not expire.
+
+=item Fingerprint
+
+A fingerprint unique to this key
+
+=item User
+
+An array reference of associated user data, each of which is a hashref
+containing at least a C<String> value, which is a C<< Alice Example
+<alice@example.com> >> style email address.  Each may also contain
+C<Created> and C<Expire> keys, which are L<RT::Date> objects.
+
+=back
+
+=cut
+
+sub GetKeysInfo {
+    my $self = shift;
+    my %args = ( Protocol => undef, @_ );
+    my $protocol = delete $args{'Protocol'} || 'GnuPG';
+    my %res = $self->LoadImplementation( $protocol )->GetKeysInfo( %args );
+    $res{'Protocol'} = $protocol;
+    return %res;
+}
+
 1;

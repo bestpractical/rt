@@ -29,7 +29,7 @@ $m->content_contains('User created', 'has User created entry');
 
 diag "test gnupg page" if $ENV{TEST_VERBOSE};
 $m->follow_link_ok( { text => 'GnuPG' } );
-$m->content_contains('GnuPG public key');
+$m->content_contains('Public key&#40;s&#41; for rt-test@example.com');
 $m->content_contains('The key is ultimately trusted');
 $m->content_contains('F0CB3B482CFA485680A4A0BDD328035D84881F1B');
 $m->content_contains('Tue Aug 07 2007');

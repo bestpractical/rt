@@ -145,4 +145,13 @@ be provided to L</VerifyDecrypt>.
 
 requires 'CheckIfProtected';
 
+=head2 GetKeysInfo Type => ('public'|'private'), Key => EMAIL
+
+Returns a list of keys matching the email C<Key>, as described in
+L<RT::Crypt/GetKeysInfo>.
+
+=cut
+
+requires 'GetKeysInfo';
+
 1;

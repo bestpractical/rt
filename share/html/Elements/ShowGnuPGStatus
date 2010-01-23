@@ -142,7 +142,7 @@ foreach my $run ( @runs ) {
             next unless $line->{'KeyType'} eq 'public' && $line->{'Status'} eq 'MISSING';
 
             # but only if we have key
-            my %key = RT::Crypt::GnuPG->GetPublicKeyInfo( $line->{'Key'} );
+            my %key = RT::Crypt->GetPublicKeyInfo( Key => $line->{'Key'} );
             if ( $key{'info'} ) {
                 my ($status, $msg) = $reverify_cb->($Attachment);
                 unless ($status) {
