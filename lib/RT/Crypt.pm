@@ -170,4 +170,29 @@ sub ParseStatus {
     return $self->LoadImplementation( $args{'Protocol'} )->ParseStatus( $args{'Status'} );
 }
 
+
+sub GetPublicKeyInfo {
+    return (shift)->GetKeyInfo( @_, Type => 'public' );
+}
+
+sub GetPrivateKeyInfo {
+    return (shift)->GetKeyInfo( @_, Type => 'private' );
+}
+
+sub GetKeyInfo {
+    my $self = shift;
+    my %res = $self->GetKeysInfo( @_ );
+    $res{'info'} = $res{'info'}->[0];
+    return %res;
+}
+
+sub GetKeysInfo {
+    my $self = shift;
+    my %args = ( Protocol => undef, @_ );
+    my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
+    my %res = $self->LoadImplementation( $protocol )->GetKeysInfo( @_ );
+    $res{'Protocol'} = $protocol;
+    return %res;
+}
+
 1;
