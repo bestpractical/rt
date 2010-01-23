@@ -50,6 +50,7 @@ use strict;
 use warnings;
 
 package RT::Crypt::GnuPG;
+use base 'RT::Crypt::Base';
 
 use IO::Handle;
 use GnuPG::Interface;
@@ -2083,7 +2084,7 @@ sub GetKeysForEncryption {
         next if $key->{'Capabilities'} =~ /D/;
         # skip keys not suitable for encryption
         next unless $key->{'Capabilities'} =~ /e/i;
-        # skip disabled, expired, revoke and keys with no trust,
+        # skip disabled, expired, revoked and keys with no trust,
         # but leave keys with unknown trust level
         next if $key->{'TrustLevel'} < 0;
 
@@ -2234,12 +2235,13 @@ sub GetKeysInfo {
         return %res;
     }
 
-    @info = ParseKeysInfo( @info );
+    @info = $self->ParseKeysInfo( @info );
     $res{'info'} = \@info;
     return %res;
 }
 
 sub ParseKeysInfo {
+    my $self = shift;
     my @lines = @_;
 
     my %gpg_opt = RT->Config->Get('GnuPGOptions');
