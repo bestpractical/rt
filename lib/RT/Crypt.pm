@@ -13,8 +13,17 @@ sub Protocols {
     return @PROTOCOLS;
 }
 
+sub EnabledProtocols {
+    my $self = shift;
+    return grep RT->Config->Get($_)->{'Enable'}, $self->Protocols;
+}
+
+sub UseForOutgoing {
+    return RT->Config->Get('Crypt')->{'Outgoing'};
+}
+
 sub EnabledOnIncoming {
-    return 'GnuPG', 'SMIME';
+    return @{ scalar RT->Config->Get('Crypt')->{'Incomming'} };
 }
 
 { my %cache;
