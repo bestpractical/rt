@@ -613,11 +613,16 @@ our %META = (
         Type => 'HASH',
         PostLoadCheck => sub {
             my $self = shift;
+            require RT::Crypt;
+
             my $opt = $self->Get('Crypt');
-            unless ( $opt->{'ProcessIncomming'} && @{ $opt->{'ProcessIncomming'} } ) {
-                require RT::Crypt;
-                my @enabled = grep $self->Get($_)->{'Enabled'}, RT::Crypt->Protocols;
-                $opt->{'ProcessIncomming'} = \@enabled;
+            my @enabled = RT::Crypt->EnabledProtocols;
+            $opt->{'Enable'} = scalar @enabled;;
+            unless ( $opt->{'Incomming'} && @{ $opt->{'Incomming'} } ) {
+                $opt->{'Incomming'} = \@enabled;
+            }
+            unless ( $opt->{'Outgoing'} ) {
+                $opt->{'Outgoing'} = $enabled[0];
             }
         },
     },
@@ -629,6 +634,7 @@ our %META = (
             my $self = shift;
             my $gpg = $self->Get('GnuPG');
             return unless $gpg->{'Enable'};
+
             my $gpgopts = $self->Get('GnuPGOptions');
             unless (-d $gpgopts->{homedir}  && -r _ ) { # no homedir, no gpg
                 $RT::Logger->debug(
