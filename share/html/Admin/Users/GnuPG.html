@@ -91,7 +91,7 @@ unless ( $UserObj->id ) {
 $id = $ARGS{'id'} = $UserObj->id;
 
 my $email = $UserObj->EmailAddress;
-my %keys_meta = RT::Crypt::GnuPG->GetKeysForSigning( $email );
+my %keys_meta = RT::Crypt->GetKeysForSigning( $email );
 my @potential_keys = map $_->{'Key'}, @{ $keys_meta{'info'} || [] };
 
 $ARGS{'PrivateKey'} = $m->comp('/Widgets/Form/Select:Process',

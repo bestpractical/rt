@@ -1733,17 +1733,17 @@ sub PreferredKey
 
     # we don't have a preferred key for this user, so now we must query GPG
     require RT::Crypt;
-    my %res = RT::Crypt::GnuPG->GetKeysForEncryption($self->EmailAddress);
+    my %res = RT::Crypt->GetKeysForEncryption($self->EmailAddress);
     return undef unless defined $res{'info'};
     my @keys = @{ $res{'info'} };
     return undef if @keys == 0;
 
     if (@keys == 1) {
-        $prefkey = $keys[0]->{'Fingerprint'};
+        $prefkey = $keys[0]->{'id'} || $keys[0]->{'Fingerprint'};
     } else {
         # prefer the maximally trusted key
         @keys = sort { $b->{'TrustLevel'} <=> $a->{'TrustLevel'} } @keys;
-        $prefkey = $keys[0]->{'Fingerprint'};
+        $prefkey = $keys[0]->{'id'} || $keys[0]->{'Fingerprint'};
     }
 
     $self->SetAttribute(Name => 'PreferredKey', Content => $prefkey);
@@ -1786,7 +1786,7 @@ sub SetPrivateKey {
 
     # check that it's really private key
     {
-        my %tmp = RT::Crypt::GnuPG->GetKeysForSigning( $key );
+        my %tmp = RT::Crypt->GetKeysForSigning( $key );
         return (0, $self->loc("No such key or it's not suitable for signing"))
             if $tmp{'exit_code'} || !$tmp{'info'};
     }

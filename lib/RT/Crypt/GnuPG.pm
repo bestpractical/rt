@@ -1639,19 +1639,10 @@ sub _PrepareGnuPGOptions {
     return %res;
 }
 
-=head2 GetKeysForEncryption
-
-Takes identifier and returns keys suitable for encryption.
-
-B<Note> that keys for which trust level is not set are
-also listed.
-
-=cut
-
 sub GetKeysForEncryption {
     my $self = shift;
-    my $key_id = shift;
-    my %res = $self->GetKeysInfo( Key => $key_id, Type => 'public', @_ );
+    my %args = (Recipient => undef, @_);
+    my %res = $self->GetKeysInfo( Key => delete $args{'Recipient'}, %args, Type => 'public' );
     return %res if $res{'exit_code'};
     return %res unless $res{'info'};
 
@@ -1672,8 +1663,8 @@ sub GetKeysForEncryption {
 
 sub GetKeysForSigning {
     my $self = shift;
-    my $key_id = shift;
-    return $self->GetKeysInfo( Key => $key_id, Type => 'private', @_ );
+    my %args = (Signer => undef, @_);
+    return $self->GetKeysInfo( Key => delete $args{'Signer'}, %args, Type => 'private' );
 }
 
 sub CheckRecipients {
@@ -1684,7 +1675,7 @@ sub CheckRecipients {
 
     my %seen;
     foreach my $address ( grep !$seen{ lc $_ }++, map $_->address, @recipients ) {
-        my %res = $self->GetKeysForEncryption( $address );
+        my %res = $self->GetKeysForEncryption( Recipient => $address );
         if ( $res{'info'} && @{ $res{'info'} } == 1 && $res{'info'}[0]{'TrustLevel'} > 0 ) {
             # good, one suitable and trusted key 
             next;

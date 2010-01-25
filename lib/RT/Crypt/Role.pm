@@ -154,4 +154,22 @@ L<RT::Crypt/GetKeysInfo>.
 
 requires 'GetKeysInfo';
 
+=head2 GetKeysForEncryption Recipient => EMAIL
+
+Returns a list of keys suitable for encryption, as described in
+L<RT::Crypt/GetKeysForEncryption>.
+
+=cut
+
+requires 'GetKeysForEncryption';
+
+=head2 GetKeysForSigning Signer => EMAIL
+
+Returns a list of keys suitable for encryption, as described in
+L<RT::Crypt/GetKeysForSigning>.
+
+=cut
+
+requires 'GetKeysForSigning';
+
 1;

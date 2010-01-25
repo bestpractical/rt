@@ -382,6 +382,42 @@ sub UseKeyForEncryption {
     return ();
 }
 
+=head2 GetKeysForEncryption Recipient => EMAIL, Protocol => NAME
+
+Returns the list of keys which are suitable for encrypting mail to the
+given C<Recipient>.  Generally this is equivalent to L</GetKeysInfo>
+with a C<Type> of <private>, but encryption protocols may further limit
+which keys can be used for encryption, as opposed to signing.
+
+=cut
+
+sub GetKeysForEncryption {
+    my $self = shift;
+    my %args = @_%2? (Recipient => @_) : (Protocol => undef, Recipient => undef, @_ );
+    my $protocol = delete $args{'Protocol'} || 'GnuPG';
+    my %res = $self->LoadImplementation( $protocol )->GetKeysForEncryption( %args );
+    $res{'Protocol'} = $protocol;
+    return %res;
+}
+
+=head2 GetKeysForSigning Signer => EMAIL, Protocol => NAME
+
+Returns the list of keys which are suitable for signing mail from the
+given C<Signer>.  Generally this is equivalent to L</GetKeysInfo>
+with a C<Type> of <private>, but encryption protocols may further limit
+which keys can be used for signing, as opposed to encryption.
+
+=cut
+
+sub GetKeysForSigning {
+    my $self = shift;
+    my %args = @_%2? (Signer => @_) : (Protocol => undef, Signer => undef, @_);
+    my $protocol = delete $args{'Protocol'} || 'GnuPG';
+    my %res = $self->LoadImplementation( $protocol )->GetKeysForSigning( %args );
+    $res{'Protocol'} = $protocol;
+    return %res;
+}
+
 =head2 GetPublicKeyInfo Protocol => NAME, KEY => EMAIL
 
 As per L</GetKeyInfo>, but the C<Type> is forced to C<public>.
@@ -459,7 +495,7 @@ C<Created> and C<Expire> keys, which are L<RT::Date> objects.
 
 sub GetKeysInfo {
     my $self = shift;
-    my %args = ( Protocol => undef, @_ );
+    my %args = @_%2 ? (Key => @_) : ( Protocol => undef, Key => undef, @_ );
     my $protocol = delete $args{'Protocol'} || 'GnuPG';
     my %res = $self->LoadImplementation( $protocol )->GetKeysInfo( %args );
     $res{'Protocol'} = $protocol;

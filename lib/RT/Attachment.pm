@@ -763,7 +763,7 @@ sub Encrypt {
     ) {
         my %res = RT::Crypt->GetKeysInfo( Key => $address, Type => 'private' );
         next if $res{'exit_code'} || !$res{'info'};
-        %res = RT::Crypt::GnuPG->GetKeysForEncryption( $address );
+        %res = RT::Crypt->GetKeysForEncryption( $address );
         next if $res{'exit_code'} || !$res{'info'};
         $encrypt_for = $address;
     }
