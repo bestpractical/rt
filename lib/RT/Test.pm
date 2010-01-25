@@ -282,10 +282,10 @@ sub set_config_wrapper {
             open my $fh, '>>', $tmp{'config'}{'RT'}
                 or die "Couldn't open config file: $!";
             require Data::Dumper;
+            my $dump = Data::Dumper::Dumper([@_[2 .. $#_]]);
+            $dump =~ s/;\s+$//;
             print $fh
-                "\nSet(${sigil}${name}, \@{"
-                    . Data::Dumper::Dumper([@_[2 .. $#_]])
-                ."}); 1;\n";
+                "\nSet(${sigil}${name}, \@{". $dump ."}); 1;\n";
             close $fh;
 
             if ( @SERVERS ) {
