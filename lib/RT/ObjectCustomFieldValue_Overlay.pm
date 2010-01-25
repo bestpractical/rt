@@ -248,6 +248,23 @@ sub _FillInTemplateURL {
     my $self = shift;
     my $url = shift;
 
+    return undef unless defined $url && length $url;
+
+    # special case, whole value should be an URL
+    if ( $url =~ /^__CustomField__/ ) {
+        my $value = $self->Content;
+        # protect from javascript: URLs
+        if ( $value =~ /^\s*javascript:/i ) {
+            my $object = $self->Object;
+            $RT::Logger->error(
+                "Dangerouse value with JavaScript in custom field '". $self->CustomFieldObj->Name ."'"
+                ." on ". ref($object) ." #". $object->id
+            );
+            return undef;
+        }
+        $url =~ s/^__CustomField__/$value/;
+    }
+
     # default value, uri-escape
     for my $key (keys %placeholders) {
         $url =~ s{__${key}__}{

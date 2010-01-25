@@ -82,9 +82,10 @@ $m->callback(
 
 my $print_value = sub {
     my ($cf, $value) = @_;
-    my $linked = $cf->LinkValueTo;
-    if ( $linked ) {
-        $m->out('<a href="'. $value->LinkValueTo .'" target="_new">');
+    my $linked = $value->LinkValueTo;
+    if ( defined $linked && length $linked ) {
+        my $linked = $m->interp->apply_escapes( $linked, 'h' );
+        $m->out('<a href="'. $linked .'" target="_new">');
     }
     my $comp = "ShowCustomField". $cf->Type;
     $m->callback(
@@ -98,7 +99,7 @@ my $print_value = sub {
     } else {
         $m->out( $m->interp->apply_escapes( $value->Content, 'h' ) );
     }
-    $m->out('</a>') if $linked;
+    $m->out('</a>') if defined $linked && length $linked;
 
     # This section automatically populates a div with the "IncludeContentForValue" for this custom
     # field if it's been defined
