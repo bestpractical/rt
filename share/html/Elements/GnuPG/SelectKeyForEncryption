@@ -50,7 +50,7 @@
 % } else {
 <select name="<% $Name %>">
 %     foreach my $key (@keys) {
-<option value="<% $key->{'Fingerprint'} %>"><% $key->{'Fingerprint'} %> <% loc("(trust: [_1])", $key->{'TrustTerse'}) %></option>
+<option value="<% $key->{'id'} || $key->{'Fingerprint'} %>"><% $key->{'id'} || $key->{'Fingerprint'} %> <% loc("(trust: [_1])", $key->{'TrustTerse'}) %></option>
 %     }
 </select>
 % }
@@ -59,10 +59,10 @@
 require RT::Crypt::GnuPG;
 my $d;
 
-my %res = RT::Crypt::GnuPG::GetKeysForEncryption($EmailAddress);
+my %res = RT::Crypt->GetKeysForEncryption($EmailAddress);
 # move the preferred key to the top of the list
 my @keys = map {
-               $_->{'Fingerprint'} eq ( $Default || '' )
+               ($_->{'id'} || $_->{'Fingerprint'}) eq ( $Default || '' )
                    ?  do { $d = $_; () }
                    : $_
            }
@@ -78,4 +78,3 @@ $Name         => 'PreferredKey'
 $EmailAddress => undef
 $Default      => undef
 </%ARGS>
-

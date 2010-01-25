@@ -506,7 +506,7 @@ sub SignEncryptRFC3156 {
     if ( $args{'Encrypt'} ) {
         my %seen;
         $gnupg->options->push_recipients( $_ ) foreach 
-            map UseKeyForEncryption($_) || $_,
+            map RT::Crypt->UseKeyForEncryption($_) || $_,
             grep !$seen{ $_ }++, map $_->address,
             map Email::Address->parse( $entity->head->get( $_ ) ),
             qw(To Cc Bcc);
@@ -629,7 +629,7 @@ sub _SignEncryptTextInline {
 
     if ( $args{'Encrypt'} ) {
         $gnupg->options->push_recipients( $_ ) foreach 
-            map UseKeyForEncryption($_) || $_,
+            map RT::Crypt->UseKeyForEncryption($_) || $_,
             @{ $args{'Recipients'} || [] };
     }
 
@@ -719,7 +719,7 @@ sub _SignEncryptAttachmentInline {
     my $entity = $args{'Entity'};
     if ( $args{'Encrypt'} ) {
         $gnupg->options->push_recipients( $_ ) foreach
-            map UseKeyForEncryption($_) || $_,
+            map RT::Crypt->UseKeyForEncryption($_) || $_,
             @{ $args{'Recipients'} || [] };
     }
 
@@ -821,7 +821,7 @@ sub SignEncryptContent {
 
     if ( $args{'Encrypt'} ) {
         $gnupg->options->push_recipients( $_ ) foreach 
-            map UseKeyForEncryption($_) || $_,
+            map RT::Crypt->UseKeyForEncryption($_) || $_,
             @{ $args{'Recipients'} || [] };
     }
 
@@ -2029,40 +2029,6 @@ sub _PrepareGnuPGOptions {
     return %res;
 }
 
-{ my %key;
-# no args -> clear
-# one arg -> return preferred key
-# many -> set
-sub UseKeyForEncryption {
-    unless ( @_ ) {
-        %key = ();
-    } elsif ( @_ > 1 ) {
-        %key = (%key, @_);
-        $key{ lc($_) } = delete $key{ $_ } foreach grep lc ne $_, keys %key;
-    } else {
-        return $key{ $_[0] };
-    }
-    return ();
-} }
-
-=head2 UseKeyForSigning
-
-Returns or sets identifier of the key that should be used for signing.
-
-Returns the current value when called without arguments.
-
-Sets new value when called with one argument and unsets if it's undef.
-
-=cut
-
-{ my $key;
-sub UseKeyForSigning {
-    if ( @_ ) {
-        $key = $_[0];
-    }
-    return $key;
-} }
-
 =head2 GetKeysForEncryption
 
 Takes identifier and returns keys suitable for encryption.
@@ -2074,8 +2040,8 @@ also listed.
 
 sub GetKeysForEncryption {
     my $self = shift;
-    my $key_id = shift;
-    my %res = $self->GetKeysInfo( Key => $key_id, Type => 'public', @_ );
+    my %args = (Recipient => undef, @_);
+    my %res = $self->GetKeysInfo( Key => delete $args{'Recipient'}, %args, Type => 'public' );
     return %res if $res{'exit_code'};
     return %res unless $res{'info'};
 
@@ -2096,8 +2062,8 @@ sub GetKeysForEncryption {
 
 sub GetKeysForSigning {
     my $self = shift;
-    my $key_id = shift;
-    return $self->GetKeysInfo( Key => $key_id, Type => 'private', @_ );
+    my %args = (Signer => undef, @_)
+    return $self->GetKeysInfo( Key => delete $args{'Signer'}, %args, Type => 'private' );
 }
 
 sub CheckRecipients {
@@ -2108,7 +2074,7 @@ sub CheckRecipients {
 
     my %seen;
     foreach my $address ( grep !$seen{ lc $_ }++, map $_->address, @recipients ) {
-        my %res = $self->GetKeysForEncryption( $address );
+        my %res = $self->GetKeysForEncryption( Recipient => $address );
         if ( $res{'info'} && @{ $res{'info'} } == 1 && $res{'info'}[0]{'TrustLevel'} > 0 ) {
             # good, one suitable and trusted key 
             next;
@@ -2118,7 +2084,7 @@ sub CheckRecipients {
         # it's possible that we have no User record with the email
         $user = undef unless $user->id;
 
-        if ( my $fpr = UseKeyForEncryption( $address ) ) {
+        if ( my $fpr = RT::Crypt->UseKeyForEncryption( $address ) ) {
             if ( $res{'info'} && @{ $res{'info'} } ) {
                 next if
                     grep lc $_->{'Fingerprint'} eq lc $fpr,
@@ -2471,10 +2437,10 @@ sub ImportKey {
     return %res;
 }
 
-=head2 KEY
+=head2 DrySign Signer => KEY
 
 Signs a small message with the key, to make sure the key exists and 
-we have a useable passphrase. The first argument MUST be a key identifier
+we have a useable passphrase. The Signer argument MUST be a key identifier
 of the signer: either email address, key id or finger print.
 
 Returns a true value if all went well.
@@ -2483,7 +2449,8 @@ Returns a true value if all went well.
 
 sub DrySign {
     my $self = shift;
-    my $from = shift;
+    my %args = ( Signer => undef, @_ );
+    my $from = $args{'Signer'};
 
     my $mime = MIME::Entity->build(
         Type    => "text/plain",
@@ -2509,7 +2476,6 @@ sub DrySign {
 
 This routine returns true if RT's GnuPG support is configured and working 
 properly (and false otherwise).
-
 
 =cut
 

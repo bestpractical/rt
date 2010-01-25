@@ -137,6 +137,13 @@ sub SignEncrypt {
     return %res;
 }
 
+sub DrySign {
+    my $self = shift;
+    my %args = ( Protocol => undef, Signer => undef, @_ );
+    my $protocol = $args{'Protocol'} || $self->UseForOutgoing;
+    return $self->LoadImplementation( $protocol )->DrySign( @_ );
+}
+
 sub VerifyDecrypt {
     my $self = shift;
     my %args = (
@@ -170,6 +177,59 @@ sub ParseStatus {
     return $self->LoadImplementation( $args{'Protocol'} )->ParseStatus( $args{'Status'} );
 }
 
+=head2 UseKeyForSigning
+
+Returns or sets identifier of the key that should be used for signing.
+
+Returns the current value when called without arguments.
+
+Sets new value when called with one argument and unsets if it's undef.
+
+=cut
+
+{ my $key;
+sub UseKeyForSigning {
+    my $self = shift;
+    if ( @_ ) {
+        $key = $_[0];
+    }
+    return $key;
+} }
+
+{ my %key;
+# no args -> clear
+# one arg -> return preferred key
+# many -> set
+sub UseKeyForEncryption {
+    my $self = shift;
+    unless ( @_ ) {
+        %key = ();
+    } elsif ( @_ > 1 ) {
+        %key = (%key, @_);
+        $key{ lc($_) } = delete $key{ $_ } foreach grep lc ne $_, keys %key;
+    } else {
+        return $key{ $_[0] };
+    }
+    return ();
+} }
+
+sub GetKeysForEncryption {
+    my $self = shift;
+    my %args = @_%2? (Recipient => @_) : (Protocol => undef, For => undef, @_ );
+    my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
+    my %res = $self->LoadImplementation( $protocol )->GetKeysForEncryption( @_ );
+    $res{'Protocol'} = $protocol;
+    return %res;
+}
+
+sub GetKeysForSigning {
+    my $self = shift;
+    my %args = @_%2? (Signer => @_) : (Protocol => undef, Signer => undef, @_);
+    my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
+    my %res = $self->LoadImplementation( $protocol )->GetKeysForSigning( @_ );
+    $res{'Protocol'} = $protocol;
+    return %res;
+}
 
 sub GetPublicKeyInfo {
     return (shift)->GetKeyInfo( @_, Type => 'public' );
@@ -188,7 +248,7 @@ sub GetKeyInfo {
 
 sub GetKeysInfo {
     my $self = shift;
-    my %args = ( Protocol => undef, @_ );
+    my %args = @_%2 ? (Key => @_) : ( Protocol => undef, Key => undef, @_ );
     my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
     my %res = $self->LoadImplementation( $protocol )->GetKeysInfo( @_ );
     $res{'Protocol'} = $protocol;

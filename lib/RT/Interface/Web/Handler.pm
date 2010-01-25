@@ -154,7 +154,7 @@ and is not recommended to change.
 
 =item Clean up state of RT::Action::SendEmail using 'CleanSlate' method
 
-=item Flush tmp GnuPG key preferences
+=item Flush tmp crypt key preferences
 
 =back
 
@@ -181,10 +181,10 @@ sub CleanupRequest {
     require RT::Action::SendEmail;
     RT::Action::SendEmail->CleanSlate;
     
-    if (RT->Config->Get('GnuPG')->{'Enable'}) {
-        require RT::Crypt::GnuPG;
-        RT::Crypt::GnuPG::UseKeyForEncryption();
-        RT::Crypt::GnuPG::UseKeyForSigning( undef );
+    if (RT->Config->Get('Crypt')->{'Enable'}) {
+        require RT::Crypt;
+        RT::Crypt->UseKeyForEncryption();
+        RT::Crypt->UseKeyForSigning( undef );
     }
 
     %RT::Ticket::MERGE_CACHE = ( effective => {}, merged => {} );
