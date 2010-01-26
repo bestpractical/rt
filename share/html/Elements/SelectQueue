@@ -51,7 +51,7 @@
 <input name="<%$Name%>" size="25" value="<%$d->Name%>" class="<%$Class%>" />
 % }
 % else {
-<select name="<%$Name%>" <% ($OnChange) ? 'onchange="'.$OnChange.'"' : '' |n %> class="<%$Class%>">
+<select name="<%$Name%>" <% ($Multiple) ? 'multiple="multiple"' : '' %> <% ($OnChange) ? 'onchange="'.$OnChange.'"' : '' |n %> class="<%$Class%>">
 %     if ($ShowNullOption) {
   <option value="">-</option>
 %     }
@@ -82,6 +82,7 @@ $NamedValues => 0
 $Default => 0
 $Lite => 0
 $OnChange => undef
+$Multiple => 0
 $Class => 'select-queue'
 </%args>
 <%init>
