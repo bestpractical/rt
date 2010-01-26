@@ -137,7 +137,9 @@
 <& /Elements/MessageBox, Name=>"UpdateContent", Default=>$ARGS{UpdateContent}, IncludeSignature => 0, %ARGS&>
 % $ARGS{'QuoteTransaction'} = $temp;
 % } else {
-<& /Elements/MessageBox, Name=>"UpdateContent", %ARGS &>
+% my $IncludeSignature = 1;
+% $IncludeSignature = 0 if $Action ne 'Respond' && !RT->Config->Get('MessageBoxIncludeSignatureOnComment');
+<& /Elements/MessageBox, Name=>"UpdateContent", IncludeSignature => $IncludeSignature, %ARGS &>
 % }
 </td></tr>
 </table>

@@ -1005,6 +1005,14 @@ Should your user's signatures (from their Preferences page) be included in Comme
 
 Set($MessageBoxIncludeSignature, 1);
 
+=item C<$MessageBoxIncludeSignatureOnComment>
+
+Should your user's signatures (from their Preferences page) be included in Comments. Setting this to false overrides C<$MessageBoxIncludeSignature>.
+
+=cut
+
+Set($MessageBoxIncludeSignatureOnComment, 1);
+
 =item C<$WikiImplicitLinks>
 
 Support implicit links in WikiText custom fields?  A true value
