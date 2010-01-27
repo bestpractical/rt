@@ -52,41 +52,43 @@
     Title => $Title &>
 
 <%INIT>
-  my $tabs = {
-  
-	       a => { title => loc('Settings'),
-			   path => 'Prefs/Other.html',
-			 },
-  
-             b => { title => loc('About me'),
-			  path => 'User/Prefs.html',
-			},
-	       g => { title => loc('Personal Groups'),
-			   path => 'User/Groups/',
-			 },
-	       h => { title => loc('Delegation'),
-			   path => 'User/Delegation.html',
-			 },
-	       f => { title => loc('Search options'),
-			   path => 'Prefs/SearchOptions.html',
-			 },
-	       r => { title => loc('RT at a glance'),
-			   path => 'Prefs/MyRT.html',
-			 },
-	     };
+my $tabs = {
+    a => {
+        title => loc('Settings'),
+        path => 'Prefs/Other.html',
+    },
+    b => {
+        title => loc('About me'),
+        path => 'User/Prefs.html',
+    },
+    g => {
+        title => loc('Personal Groups'),
+        path => 'User/Groups/',
+    },
+    h => {
+        title => loc('Delegation'),
+        path => 'User/Delegation.html',
+    },
+    f => {
+        title => loc('Search options'),
+        path => 'Prefs/SearchOptions.html',
+    },
+    r => {
+        title => loc('RT at a glance'),
+        path => 'Prefs/MyRT.html',
+    },
+};
 
-  # Now let callbacks add their extra tabs
-  $m->callback( %ARGS, tabs => $tabs );
+# Now let callbacks add their extra tabs
+$m->callback( %ARGS, tabs => $tabs );
 
-  foreach my $tab (sort keys %{$tabs}) {
-    if ($tabs->{$tab}->{'path'} eq $current_tab) {
-      $tabs->{$tab}->{"subtabs"} = $subtabs;
-      $tabs->{$tab}->{"current_subtab"} = $current_subtab;
-    }
-  }
+foreach my $tab (values %$tabs) {
+    next unless $tab->{'path'} eq $current_tab;
+
+    $tab->{"subtabs"} = $subtabs;
+    $tab->{"current_subtab"} = $current_subtab;
+}
 </%INIT>
-
-
 <%ARGS>
 $subtabs => undef
 $current_tab => undef
