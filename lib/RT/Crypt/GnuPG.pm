@@ -2062,7 +2062,7 @@ sub GetKeysForEncryption {
 
 sub GetKeysForSigning {
     my $self = shift;
-    my %args = (Signer => undef, @_)
+    my %args = (Signer => undef, @_);
     return $self->GetKeysInfo( Key => delete $args{'Signer'}, %args, Type => 'private' );
 }
 
