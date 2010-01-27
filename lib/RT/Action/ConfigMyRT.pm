@@ -44,7 +44,8 @@ sub arguments {
         $args->{$type} = {
             available_values => defer { $self->available_values },
             default_value => defer { $self->default_value( $type ) },
-            render_as => 'Checkboxes',
+            render_as => 'OrderedList',
+            with_select => 1,
         }
     }
     return $args;
