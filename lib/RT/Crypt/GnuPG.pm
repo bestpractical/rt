@@ -1306,11 +1306,12 @@ sub DecryptInline {
         die "Entity has no body, never should happen";
     }
 
+    my %res;
+
     my ($had_literal, $in_block) = ('', 0);
     my ($block_fh, $block_fn) = File::Temp::tempfile( UNLINK => 1 );
     binmode $block_fh, ':raw';
 
-    my %res;
     while ( defined(my $str = $io->getline) ) {
         if ( $in_block && $str =~ /^-----END PGP (?:MESSAGE|SIGNATURE)-----/ ) {
             print $block_fh $str;
@@ -1350,6 +1351,26 @@ sub DecryptInline {
         }
     }
     $io->close;
+
+    if ( $in_block ) {
+        # we're still in a block, this not bad not good. let's try to
+        # decrypt what we have, it can be just missing -----END PGP...
+        seek $block_fh, 0, 0;
+
+        my ($res_fh, $res_fn);
+        ($res_fh, $res_fn, %res) = _DecryptInlineBlock(
+            %args,
+            GnuPG => $gnupg,
+            BlockHandle => $block_fh,
+        );
+        return %res unless $res_fh;
+
+        print $tmp_fh "-----BEGIN OF PGP PROTECTED PART-----\n" if $had_literal;
+        while (my $buf = <$res_fh> ) {
+            print $tmp_fh $buf;
+        }
+        print $tmp_fh "-----END OF PART-----\n" if $had_literal;
+    }
 
     seek $tmp_fh, 0, 0;
     $args{'Data'}->bodyhandle( new MIME::Body::File $tmp_fn );
