@@ -33,20 +33,17 @@ use Jifty::Action schema {
 
 sub take_action {
     my $self = shift;
-    if ( $self->has_argument('queues') ) {
-        my $wants = $self->argument_value('queues');
-        $wants = [$wants] unless ref $wants eq 'ARRAY';
-        my %wants = map { $_ => 1 } ref $wants eq 'ARRAY' ? @$wants : $wants;
-        my %unwanted =
-          map { $_ => 1 } grep { !$wants{$_} } map { $_->name } $self->queues;
-        my ( $status, $msg ) =
-          $self->user->set_preferences( $self->name, \%unwanted );
-        Jifty->log->error($msg) unless $status;
+    my $wants = $self->argument_value('queues') || [];
+    my %wants = map { $_ => 1 } ref $wants eq 'ARRAY' ? @$wants : $wants;
+    my %unwanted =
+      map { $_ => 1 } grep { !$wants{$_} } map { $_->name } $self->queues;
+    my ( $status, $msg ) =
+      $self->user->set_preferences( $self->name, \%unwanted );
+    Jifty->log->error($msg) unless $status;
 
-        # Let QueueSummary rebuild the cache
-        Jifty->web->session->remove('quick_search_queues');
-        $self->report_success;
-    }
+    # Let QueueSummary rebuild the cache
+    Jifty->web->session->remove('quick_search_queues');
+    $self->report_success;
     return 1;
 }
 
