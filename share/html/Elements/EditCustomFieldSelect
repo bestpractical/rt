@@ -52,7 +52,7 @@
 % my @category;
 % my $id = $NamePrefix . $CustomField->Id;
 % my $out = $m->scomp('SELF:options', %ARGS, SelectedRef => \$selected, CategoryRef => \@category);
-% if (@category and not $CustomField->BasedOnObj->id) {
+% if (!$HideCategory and @category and not $CustomField->BasedOnObj->id) {
   <script type="text/javascript" src="<%RT->Config->Get('WebPath')%>/NoAuth/js/cascaded.js"></script>
 %# XXX - Hide this select from w3m?
   <select onchange="filter_cascade('<% $id %>-Values', this.value)" name="<% $id %>-Category" class="CF-<%$CustomField->id%>-Edit">
@@ -108,6 +108,7 @@ $Default => undef
 $Values => undef
 $Multiple => 0
 $Rows => undef
+$HideCategory => 0
 </%ARGS>
 
 <%METHOD options>
