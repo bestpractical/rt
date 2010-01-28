@@ -931,6 +931,23 @@ C<$LogoURL> points to the URL of the RT logo displayed in the web UI
 
 Set($LogoURL, RT->Config->Get('WebImagesURL') . "bplogo.gif");
 
+=item C<$LogoLinkURL>
+
+C<$LogoLinkURL> is the URL that the RT logo hyperlinks to.
+
+=cut
+
+Set($LogoLinkURL, "http://bestpractical.com");
+
+=item C<$LogoAltText>
+
+C<$LogoAltText> is a string of text for the alt-text of the logo. It
+will be passed through C<loc> for localization.
+
+=cut
+
+Set($LogoAltText, "Best Practical Solutions, LLC corporate logo");
+
 =item C<$WebNoAuthRegex>
 
 What portion of RT's URL space should not require authentication.
