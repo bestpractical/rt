@@ -48,6 +48,8 @@ $m->content_lacks( 'highest priority tickets',
     'remove everything from body pane' );
 
 $m->get( $url . '/prefs/my_rt' );
-$m->fill_in_action_ok( $moniker, body => 'system-Unowned Tickets', );
+$m->fill_in_action_ok( $moniker, body => 'system-My Tickets', );
+$m->submit;
 $m->get($url);
 $m->content_like( qr'highest priority tickets', 'adds them back' );
+
