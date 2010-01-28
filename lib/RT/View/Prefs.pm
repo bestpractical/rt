@@ -345,10 +345,10 @@ private template 'edit_format' => sub {
                 br {};
                 center {
                     outs_raw(
-'<input type="submit" class="button" name="col_up" value=" &uarr;"'
+'<input type="submit" class="button" name="col_up" value=" &uarr;" />'
                     );
                     outs_raw(
-'<input type="submit" class="button" name="col_down" value=" &darr;"'
+'<input type="submit" class="button" name="col_down" value=" &darr;" />'
                     );
                     input {
                         type is 'submit';
