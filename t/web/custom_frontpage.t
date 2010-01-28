@@ -2,7 +2,7 @@
 use strict;
 
 use RT::Test strict  => 1;
-use Test::More tests => 7;
+use Test::More tests => 9;
 
 my ( $baseurl, $m ) = RT::Test->started_ok;
 
