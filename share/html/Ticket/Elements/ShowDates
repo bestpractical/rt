@@ -84,6 +84,7 @@
     <td class="value date updated"><% $UpdatedString | h %></td>
 % }
   </tr>
+% $m->callback( %ARGS, CallbackName => 'EndOfList', TicketObj => $Ticket );
 </table>
 <%ARGS>
 $Ticket => undef

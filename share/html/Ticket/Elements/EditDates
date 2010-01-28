@@ -70,6 +70,7 @@
       <& /Elements/SelectDate, menu_prefix => 'Due', current => 0 &> (<% $TicketObj->DueObj->AsString %>)
     </td>
   </tr>
+% $m->callback( %ARGS, CallbackName => 'EndOfList', Ticket => $TicketObj );
 </table>
 <%ARGS>
 $TicketObj => undef
