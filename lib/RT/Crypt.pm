@@ -83,11 +83,11 @@ sub FindProtectedParts {
         my %parent;
         my $filter; $filter = sub {
             $parent{$_[0]} = $_[1];
-            return
-                grep !$args{'Skip'}{$_},
-                $_[0]->is_multipart ? () : $_,
-                map $filter->($_, $_[0]), grep !$args{'Skip'}{$_},
-                    $_[0]->parts;
+            unless ( $_[0]->is_multipart ) {
+                return () if $args{'Skip'}{$_[0]};
+                return $_[0];
+            }
+            return map $filter->($_, $_[0]), grep !$args{'Skip'}{$_}, $_[0]->parts;
         };
         my @parts = $filter->($entity);
         return @res unless @parts;
