@@ -111,7 +111,7 @@ $onload => undef
                 typeField.setAttribute('value', 'text/html');
                 textArea.parentNode.appendChild(typeField);
 
-                var oFCKeditor = new FCKeditor( textArea.name, '100%', <% RT->Config->Get('MessageBoxRichTextHeight') %> );
+                var oFCKeditor = new FCKeditor( textArea.name, '100%', <% RT->Config->Get('MessageBoxRichTextHeight', $session{CurrentUser} ) %> );
                 oFCKeditor.BasePath = "<%RT->Config->Get('WebPath')%>/NoAuth/RichText/";
                 oFCKeditor.ReplaceTextarea();
             }
