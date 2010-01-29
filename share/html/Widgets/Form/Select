@@ -117,7 +117,10 @@ if ( $ValuesCallback ) {
     }
 }
 unless (defined $DefaultLabel ) {
-    $DefaultLabel = loc('Use system default ([_1])', join ', ', map{ loc($ValuesLabel{$_} || $_) } @DefaultValue);
+    $DefaultLabel = loc('Use system default ([_1])',
+        join ', ', map loc($ValuesLabel{$_} || $_), grep defined,
+            @DefaultValue
+    );
 }
 </%INIT>
 </%METHOD>
