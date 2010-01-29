@@ -58,6 +58,8 @@ use base qw(RT::Action);
 use RT::EmailParser;
 use RT::Interface::Email;
 use Email::Address;
+use Class::Trigger;
+
 our @EMAIL_RECIPIENT_HEADERS = qw(To Cc Bcc);
 
 
@@ -167,6 +169,8 @@ sub Prepare {
     $self->SetRTSpecialHeaders();
 
     $self->RemoveInappropriateRecipients();
+
+    $self->call_trigger('RecipientProcessing');
 
     my %seen;
     foreach my $type (@EMAIL_RECIPIENT_HEADERS) {
