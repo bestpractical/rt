@@ -268,7 +268,11 @@ sub ParseSQL {
         }
 
         $value =~ s/'/\\'/g;
-        $value = "'$value'" if $value =~ /[^0-9]/;
+        if ( lc $op eq 'is' || lc $op eq 'is not' ) {
+            $value = 'NULL'; # just fix possible mistakes here
+        } elsif ( $value !~ /^[+-]?[0-9]+$/ ) {
+            $value = "'$value'";
+        }
         $key = "'$key'" if $key =~ /^CF./;
 
         my $clause = { Key => $key, Op => $op, Value => $value };
