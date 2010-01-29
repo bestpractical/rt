@@ -55,7 +55,15 @@ use base 'RT::View::CRUD';
 use constant page_title     => 'Group Management';
 use constant object_type    => 'Group';
 
-use constant display_columns => qw(id name description disabled);
+sub display_columns {
+    my $self = shift;
+    return qw(id name description disabled), $self->custom_field_columns( RT::Model::Group->new );
+}
+
+sub edit_columns {
+    my $self = shift;
+    return qw(id name description disabled), $self->custom_field_columns( RT::Model::Group->new );
+}
 
 sub _current_collection {
     my $self = shift;

@@ -54,13 +54,22 @@ use base 'RT::View::CRUD';
 
 use constant page_title      => 'User Management';
 use constant object_type     => 'User';
-use constant display_columns => qw(id name real_name email privileged disabled);
 
-use constant edit_columns => qw(name email real_name nickname gecos lang
-  time_zone freeform_contact_info
-  organization address1 address2 city state zip country
-  home_phone work_phone mobile_phone pager_phone
-  password password_confirm comments signature privileged disabled);
+sub display_columns {
+    my $self = shift;
+    return qw(id name real_name email privileged disabled),
+      $self->custom_field_columns( RT::Model::User->new );
+}
+
+sub edit_columns {
+    my $self    = shift;
+    return qw(name email real_name nickname gecos lang
+      time_zone freeform_contact_info
+      organization address1 address2 city state zip country
+      home_phone work_phone mobile_phone pager_phone
+      password password_confirm comments signature privileged disabled),
+      $self->custom_field_columns( RT::Model::User->new );
+}
 
 # unused columns:
 #  email_encoding web_encoding external_contact_info_id
