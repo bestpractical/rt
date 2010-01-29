@@ -333,7 +333,7 @@ RuleBuilder.prototype.filter_expression_type = function (type) {
 
 Module("RuleBuilder2", function(m) {
     Class("SelfEvalContext", {
-        has: { context: { is: "rw" },
+        has: { context: { is: "rw" }
              },
         after: {
             initialize: function() {
@@ -344,7 +344,7 @@ Module("RuleBuilder2", function(m) {
                     } )
                     .appendTo(this.context.element)
                     .trigger('focus');
-            },
+            }
         },
         methods: {
             set_value: function(val) {
@@ -371,7 +371,7 @@ Module("RuleBuilder2", function(m) {
     Class("ArrayContext", {
         has: { context: { is: "rw" },
                builder: { is: "rw" },
-               inner_type: { is: "rw" },
+               inner_type: { is: "rw" }
              },
         after: {
             initialize: function() {
