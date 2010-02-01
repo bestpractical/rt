@@ -63,7 +63,10 @@ unless ($OCFV->id) {
 
 my $content_type = $OCFV->ContentType || 'text/plain';
     
-unless (RT->Config->Get('TrustHTMLAttachments')) {
+if (RT->Config->Get('AlwaysDownloadAttachments')) {
+    $r->headers_out->{'Content-Disposition'} = "attachment; filename=" . $OCFV->Content;
+}
+elsif (!RT->Config->Get('TrustHTMLAttachments')) {
     $content_type = 'text/plain' if ($content_type =~ /^text\/html/i);
 }
 
