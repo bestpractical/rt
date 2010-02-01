@@ -57,7 +57,7 @@ RT::Interface::Email::Auth::Crypt - decrypting and verifying protected emails
 
 =head2 DESCRIPTION
 
-This mail plugin decrypts and verifies incomming emails. Supported
+This mail plugin decrypts and verifies incoming emails. Supported
 encryption protocols are GnuPG and SMIME.
 
 This code is independant from code that encrypts/sign outgoing emails, so
@@ -92,6 +92,8 @@ sub GetCurrentUser {
     my %args = (
         Message       => undef,
         RawMessageRef => undef,
+        Queue         => undef,
+        Actions       => undef,
         @_
     );
 
@@ -112,7 +114,9 @@ sub GetCurrentUser {
     my $msg = $args{'Message'}->dup;
 
     my ($status, @res) = VerifyDecrypt(
-        Entity => $args{'Message'}, AddStatus => 1,
+        %args,
+        Entity => $args{'Message'},
+        AddStatus => 1,
     );
     if ( $status && !@res ) {
         $args{'Message'}->head->replace(
