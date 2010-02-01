@@ -1413,6 +1413,10 @@ sub Gateway {
     push @mail_plugins, "Auth::MailFrom" unless @mail_plugins;
     @mail_plugins = _LoadPlugins( @mail_plugins );
 
+    #Set up a queue object
+    my $SystemQueueObj = RT::Queue->new( RT->SystemUser );
+    $SystemQueueObj->Load( $args{'queue'} );
+
     my %skip_plugin;
     foreach my $class( grep !ref, @mail_plugins ) {
         # check if we should apply filter before decoding
@@ -1424,6 +1428,8 @@ sub Gateway {
         next unless $check_cb->(
             Message       => $Message,
             RawMessageRef => \$args{'message'},
+            Queue         => $SystemQueueObj,
+            Actions       => \@actions,
         );
 
         $skip_plugin{ $class }++;
@@ -1435,6 +1441,8 @@ sub Gateway {
         my ($status, $msg) = $Code->(
             Message       => $Message,
             RawMessageRef => \$args{'message'},
+            Queue         => $SystemQueueObj,
+            Actions       => \@actions,
         );
         next if $status > 0;
 
@@ -1489,10 +1497,6 @@ sub Gateway {
     } else {
         $Right = 'CreateTicket';
     }
-
-    #Set up a queue object
-    my $SystemQueueObj = RT::Queue->new( RT->SystemUser );
-    $SystemQueueObj->Load( $args{'queue'} );
 
     # We can safely have no queue of we have a known-good ticket
     unless ( $SystemTicket->id || $SystemQueueObj->id ) {
