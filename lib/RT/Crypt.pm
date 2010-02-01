@@ -23,7 +23,7 @@ sub UseForOutgoing {
 }
 
 sub EnabledOnIncoming {
-    return @{ scalar RT->Config->Get('Crypt')->{'Incomming'} };
+    return @{ scalar RT->Config->Get('Crypt')->{'Incoming'} };
 }
 
 { my %cache;
@@ -54,7 +54,7 @@ sub FindProtectedParts {
     my @protocols = $args{'Protocols'}
         ? @{ $args{'Protocols'} } 
         : $self->EnabledOnIncoming;
-
+        
     foreach my $protocol ( @protocols ) {
         my $class = $self->LoadImplementation( $protocol );
         my %info = $class->CheckIfProtected( Entity => $entity );
