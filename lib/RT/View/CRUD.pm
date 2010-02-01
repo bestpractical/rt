@@ -298,6 +298,7 @@ sub render_custom_field_values {
         }
         else {
             outs( $ocfv->content );
+            outs_raw( '<br />' );
         }
     }
 }
