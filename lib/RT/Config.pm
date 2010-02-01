@@ -613,13 +613,14 @@ our %META = (
         Type => 'HASH',
         PostLoadCheck => sub {
             my $self = shift;
+
             require RT::Crypt;
+            my @enabled = RT::Crypt->EnabledProtocols;
 
             my $opt = $self->Get('Crypt');
-            my @enabled = RT::Crypt->EnabledProtocols;
             $opt->{'Enable'} = scalar @enabled;;
-            unless ( $opt->{'Incomming'} && @{ $opt->{'Incomming'} } ) {
-                $opt->{'Incomming'} = \@enabled;
+            unless ( $opt->{'Incoming'} && @{ $opt->{'Incoming'} } ) {
+                $opt->{'Incoming'} = \@enabled;
             }
             unless ( $opt->{'Outgoing'} ) {
                 $opt->{'Outgoing'} = $enabled[0];
