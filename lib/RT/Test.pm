@@ -271,6 +271,50 @@ sub bootstrap_tempdir {
     );
 }
 
+sub new_temp_file {
+    my $self = shift;
+    my @keys = @_;
+    my $name = pop @keys;
+
+    my $path = File::Spec->catfile( "$tmp{'directory'}", $name );
+
+    my $last_key = pop @keys;
+    my $tmp = \%tmp;
+    while ( my $key = shift @keys ) {
+        $tmp = ($tmp->{$key} ||= {});
+    }
+    return $tmp->{$last_key} = $path;
+}
+
+sub new_temp_dir {
+    my $self = shift;
+    my @keys = @_;
+    my $name = pop @keys;
+
+    my $path = File::Spec->catdir( "$tmp{'directory'}", $name );
+    mkpath( $path );
+
+    my $last_key = pop @keys;
+    my $tmp = \%tmp;
+    while ( my $key = shift @keys ) {
+        $tmp = ($tmp->{$key} ||= {});
+    }
+    return $tmp->{$last_key} = $path;
+}
+
+sub temp {
+    my $self = shift;
+    my @keys = @_;
+
+    my $last_key = pop @keys;
+    my $tmp = \%tmp;
+    while ( my $key = shift @keys ) {
+        return undef unless $tmp->{$key};
+        $tmp = $tmp->{$key};
+    }
+    return $tmp->{$last_key};
+}
+
 sub bootstrap_config {
     my $self = shift;
     my %args = @_;
@@ -278,11 +322,12 @@ sub bootstrap_config {
     $tmp{'config'}{'RT'} = File::Spec->catfile(
         "$tmp{'directory'}", 'RT_SiteConfig.pm'
     );
-    open( my $config, '>', $tmp{'config'}{'RT'} )
-        or die "Couldn't open $tmp{'config'}{'RT'}: $!";
+    my $config = $self->new_temp_file( config => RT => 'RT_SiteConfig.pm' );
+    open( my $config_fh, '>', $config )
+        or die "Couldn't open $config: $!";
 
     my $dbname = $ENV{RT_TEST_PARALLEL}? "rt4test_$port" : "rt4test";
-    print $config qq{
+    print $config_fh qq{
 Set( \$WebDomain, "localhost");
 Set( \$WebPort,   $port);
 Set( \$WebPath,   "");
@@ -290,37 +335,37 @@ Set( \@LexiconLanguages, qw(en zh_TW fr ja));
 Set( \$RTAddressRegexp , qr/^bad_re_that_doesnt_match\$/i);
 };
     if ( $ENV{'RT_TEST_DB_SID'} ) { # oracle case
-        print $config "Set( \$DatabaseName , '$ENV{'RT_TEST_DB_SID'}' );\n";
-        print $config "Set( \$DatabaseUser , '$dbname');\n";
+        print $config_fh "Set( \$DatabaseName , '$ENV{'RT_TEST_DB_SID'}' );\n";
+        print $config_fh "Set( \$DatabaseUser , '$dbname');\n";
     } else {
-        print $config "Set( \$DatabaseName , '$dbname');\n";
-        print $config "Set( \$DatabaseUser , 'u${dbname}');\n";
+        print $config_fh "Set( \$DatabaseName , '$dbname');\n";
+        print $config_fh "Set( \$DatabaseUser , 'u${dbname}');\n";
     }
 
     if ( $args{'plugins'} ) {
-        print $config "Set( \@Plugins, qw(". join( ' ', @{ $args{'plugins'} } ) .") );\n";
+        print $config_fh "Set( \@Plugins, qw(". join( ' ', @{ $args{'plugins'} } ) .") );\n";
 
         my $plugin_data = File::Spec->rel2abs("t/data/plugins");
         print $config qq[\$RT::PluginPath = "$plugin_data";\n];
     }
 
     if ( $INC{'Devel/Cover.pm'} ) {
-        print $config "Set( \$DevelMode, 0 );\n";
+        print $config_fh "Set( \$DevelMode, 0 );\n";
     }
     elsif ( $ENV{RT_TEST_DEVEL} ) {
-        print $config "Set( \$DevelMode, 1 );\n";
+        print $config_fh "Set( \$DevelMode, 1 );\n";
     }
     else {
-        print $config "Set( \$DevelMode, 0 );\n";
+        print $config_fh "Set( \$DevelMode, 0 );\n";
     }
 
-    $self->bootstrap_logging( $config );
+    $self->bootstrap_logging( $config_fh );
 
     # set mail catcher
     my $mail_catcher = $tmp{'mailbox'} = File::Spec->catfile(
         $tmp{'directory'}->dirname, 'mailbox.eml'
     );
-    print $config <<END;
+    print $config_fh <<END;
 Set( \$MailCommand, sub {
     my \$MIME = shift;
 
@@ -333,13 +378,13 @@ Set( \$MailCommand, sub {
 } );
 END
 
-    $self->bootstrap_more_config($config, \%args);
+    $self->bootstrap_more_config($config_fh, \%args);
 
-    print $config $args{'config'} if $args{'config'};
+    print $config_fh $args{'config'} if $args{'config'};
 
-    print $config "\n1;\n";
-    $ENV{'RT_SITE_CONFIG'} = $tmp{'config'}{'RT'};
-    close $config;
+    print $config_fh "\n1;\n";
+    $ENV{'RT_SITE_CONFIG'} = $config;
+    close $config_fh;
 
     return $config;
 }
@@ -1159,6 +1204,21 @@ sub get_relocatable_file {
     return File::Spec->catfile(get_relocatable_dir(@_), $file);
 }
 
+sub find_relocatable_path {
+    my @path = @_;
+
+    # simple strategy find data/gnupg/keys, from the dir where test file lives
+    # to updirs, try 3 times in total
+    my $path = File::Spec->catfile( @path );
+    for my $up ( 0 .. 2 ) {
+        my $p = get_relocatable_dir($path);
+        return $p if -e $p;
+
+        $path = File::Spec->catfile( File::Spec->updir(), $path );
+    }
+    return undef;
+}
+
 sub get_abs_relocatable_dir {
     (my $volume, my $directories, my $file) = File::Spec->splitpath($0);
     if (File::Spec->file_name_is_absolute($directories)) {
@@ -1181,33 +1241,18 @@ sub import_gnupg_key {
     my $key  = shift;
     my $type = shift || 'secret';
 
+    my $path = find_relocatable_path( 'data', 'gnupg', 'keys' );
+
     $key =~ s/\@/-at-/g;
     $key .= ".$type.key";
 
-    require RT::Crypt::GnuPG;
-
-    # simple strategy find data/gnupg/keys, from the dir where test file lives
-    # to updirs, try 3 times in total
-    my $path = File::Spec->catfile( 'data', 'gnupg', 'keys' );
-    my $abs_path;
-    for my $up ( 0 .. 2 ) {
-        my $p = get_relocatable_dir($path);
-        if ( -e $p ) {
-            $abs_path = $p;
-            last;
-        }
-        else {
-            $path = File::Spec->catfile( File::Spec->updir(), $path );
-        }
-    }
-
     die "can't find the dir where gnupg keys are stored"
-      unless $abs_path;
+      unless $path;
 
+    require RT::Crypt::GnuPG;
     return RT::Crypt::GnuPG->ImportKey(
-        RT::Test->file_content( [ $abs_path, $key ] ) );
+        RT::Test->file_content( [ $path, $key ] ) );
 }
-
 
 sub lsign_gnupg_key {
     my $self = shift;
@@ -1332,6 +1377,29 @@ sub trust_gnupg_key {
         $res{'message'} = $err? $err : "gpg exitted with error code ". ($res{'exit_code'} >> 8);
     }
     return %res;
+}
+
+sub import_smime_key {
+    my $self = shift;
+    my $key  = shift;
+
+    my $path = find_relocatable_path( 'data', 'smime', 'keys' );
+    die "can't find the dir where smime keys are stored"
+        unless $path;
+
+    my $keyring = RT->Config->Get('SMIME')->{'Keyring'};
+    die "SMIME keyring '$keyring' doesn't exist"
+        unless $keyring && -e $keyring;
+
+    $key .= ".pem";
+
+    my $content = RT::Test->file_content( [ $path, $key ] );
+    open my $fh, '>:raw', File::Spec->catfile($keyring, $key)
+        or die "can't open file: $!";
+    print $fh $content;
+    close $fh;
+
+    return;
 }
 
 sub started_ok {
