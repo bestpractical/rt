@@ -1,0 +1,60 @@
+To decrypt signed and encrypted messages 
+openssl smime -in MailEncrypted.txt -decrypt  -recip recipient.crt \
+-inkey recipient.key > MailDecrypted.txt
+
+To verify signature
+openssl smime -in MailDecrypted.txt  -verify -out Mail.txt \
+-signer sender.crt -CAfile ca.crt 
+
+Password on all certificates: 123456
+
+###################################################################
+
+If you gonna to run your own CA and/or create your own certificates 
+here is some help. DONT ASK ME ANY SINGLE STUPID QUESTION please. 10x.
+DONT ASK ME ANY BUNCH OF STUPID QUESTIONS EITHER. Thanks.
+
+1. Run CA.pl -newca   it will create directory structure
+Look at misc directory which comes with openssl
+
+2. You may hack defaults in openssl config file, or create your own
+config file. If so run export OPENSSL_CONFIG=`pwd`/openssl.cnf to 
+force openssl to use YOUR config
+
+3. ROOT CA KEY 4096 bits long
+openssl genrsa -des3 -out ca.key 4096 
+
+4. ROOT Self signed certificate for 4 years
+openssl req -new -x509 -days 1460 -key ca.key -out ca.crt
+
+5. Key for user 4096 keys long
+openssl genrsa -des3 -out user.key 4096
+
+6. Certificate signing request for user for 4 years
+openssl req -new -days 1460 -key user.key -out user.csr
+
+7. Sign it with ROOT CA CERT
+openssl ca -in user.csr -out user.crt -cert ca.crt -keyfile ca.key -days 1460
+
+8. To load into Outlook or Mozilla you will need PKCS12 file format.
+NOTE !!!!! NOTE !!!!!
+**** This format joins private key and certificate leaving private key unprotected.
+**** Make sure you provide export password and don't send this file
+**** via open link if you are really paranoid
+****
+openssl pkcs12 -export -in user.crt -out user.p12 -inkey user.key -name "Dear User Personal Certificate" 
+
+
+9. To sign message
+
+openssl smime -sign -in /etc/passwd -signer user.crt -text -inkey user.key > signed.txt
+
+10. To encrypt
+
+openssl smime -encrypt -out encrypted.txt -from user@test.com -to user@test.com -subject "puzzle" -des3 user.crt
+
+11. Hope that helps to prevent III World War and to improve your brain ability.
+So finally it makes our life on this planet more peacefull and enjoyable.
+
+Dmitry Dorofeev.
+dima@yasp.com

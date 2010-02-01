@@ -1,0 +1,16 @@
+Files with MIME entities generated and encryted with testkeys/sender.crt
+in real MUA(look into files for User-Agent)
+
+* simple-txt-enc.eml
+    simple plain/text message with 'test' content
+
+* with-text-attachment.eml
+    multipart message with a text part and a text attachment.
+    Content of the text is 'test'. Name of the attachment
+    is 'attachment.txt' and content is 'text attachment'.
+
+* with-bin-attachment.eml
+    multipart message with a text part and a binary attachment.
+    Content of the text is 'test'. Name of the attachment
+    is 'attachment.bin' and content is 32 random bytes.
+
