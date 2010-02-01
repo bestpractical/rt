@@ -59,8 +59,14 @@ sub _setup_custom_field {
                     $args{default_value} = $ocfvs->first->content;
                 }
                 else {
-                    $args{default_value} =
-                      [ map { $_->content } @{ $ocfvs->items_array_ref } ];
+                    if ( $cf->type eq 'Freeform' ) {
+                        $args{default_value} = join "\n",
+                          map { $_->content } @{ $ocfvs->items_array_ref };
+                    }
+                    else {
+                        $args{default_value} =
+                          [ map { $_->content } @{ $ocfvs->items_array_ref } ];
+                    }
                 }
 
             }
@@ -111,7 +117,30 @@ sub _add_custom_field_value {
     my $field = $args{field};
     my $value = $args{value};
 
+    my $cf = RT::Model::CustomField->new;
+    my ( $status, $msg ) = $cf->load($field);
+    unless ( $status ) {
+        Jifty->log->error( $msg );
+        return;
+    }
+
     my @values = ref $value eq 'ARRAY' ? @$value : $value;
+    if ( $cf->type eq 'Freeform' ) {
+
+        @values = map { s!^\s+!!; s!\s+$!!; $_ } grep { /\S/ } split "\n",
+          join "\n",
+          @values;
+    }
+
+    my $ocfvs = $self->record->custom_field_values($field);
+    while ( my $v = $ocfvs->next ) {
+        my ( $status, $msg ) = $self->record->delete_custom_field_value(
+            field    => $field,
+            value_id => $v->id,
+        );
+        Jifty->log->error( $msg ) unless $status;
+    }
+
     for my $value (@values) {
         if ( UNIVERSAL::isa( $value, 'Jifty::Web::FileUpload' ) ) {
             $self->record->add_custom_field_value(
