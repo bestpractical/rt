@@ -627,7 +627,33 @@ our %META = (
             }
         },
     },
-    SMIME        => { Type => 'HASH' },
+    SMIME        => {
+        Type => 'HASH',
+        PostLoadCheck => sub {
+            my $self = shift;
+            my $opt = $self->Get('SMIME');
+            return unless $opt->{'Enable'};
+
+            my $path = $opt->{'OpenSSL'};
+            if ( defined $path ) {
+                unless ( -e $path && -x _) {
+                    $RT::Logger->debug(
+                        "'$path' doesn't exist or is not an executable."
+                        ." Please change SMIME->OpenSSL option."
+                        ." SMIME support has been disabled"
+                    );
+                    $opt->{'Enable'} = 0;
+                    return;
+                }
+            } else {
+                $opt->{'OpenSSL'} = 'openssl';
+            }
+
+            unless ( ref $opt->{'Passphrase'} eq 'HASH' ) {
+                $opt->{'Passphrase'} = { '' => $opt->{'Passphrase'} };
+            }
+        },
+    },
     GnuPG        => { Type => 'HASH' },
     GnuPGOptions => {
         Type => 'HASH',
