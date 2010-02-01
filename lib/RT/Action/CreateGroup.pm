@@ -33,7 +33,7 @@ sub arguments {
 sub take_action {
     my $self = shift;
     $self->SUPER::take_action;
-    $self->_add_custom_field_values;
+    $self->_update_custom_field_values;
     if ( $self->has_argument('disabled') ) {
         my ( $status, $msg ) =
           $self->record->set_disabled( $self->argument_value('disabled') );

@@ -96,14 +96,14 @@ sub _setup_custom_field {
     return \%args;
 }
 
-sub _add_custom_field_values {
+sub _update_custom_field_values {
     my $self = shift;
 
     my @args = grep { /^cf_\d+$/ } $self->argument_names;
     for my $arg (@args) {
         my $id;
         $id = $1 if $arg =~ /^cf_(\d+)$/;    # this always happens
-        $self->_add_custom_field_value(
+        $self->_update_custom_field_value(
             field => $1,
             value => $self->argument_value($arg),
         );
@@ -111,7 +111,7 @@ sub _add_custom_field_values {
     }
 }
 
-sub _add_custom_field_value {
+sub _update_custom_field_value {
     my $self  = shift;
     my %args  = @_;
     my $field = $args{field};

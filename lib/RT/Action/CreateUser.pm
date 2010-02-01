@@ -35,7 +35,7 @@ sub arguments {
 sub take_action {
     my $self = shift;
     $self->SUPER::take_action;
-    $self->_add_custom_field_values;
+    $self->_update_custom_field_values;
 
     for my $field (qw/disabled privileged/) {
         next
