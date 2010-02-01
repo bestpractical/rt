@@ -108,6 +108,8 @@ sub GetCurrentUser {
     my %args = (
         Message       => undef,
         RawMessageRef => undef,
+        Queue         => undef,
+        Actions       => undef,
         @_
     );
 
@@ -124,6 +126,7 @@ sub GetCurrentUser {
     }
 
     my (@res) = RT::Crypt->VerifyDecrypt(
+        %args,
         Entity => $args{'Message'},
     );
     if ( !@res ) {
