@@ -1152,13 +1152,21 @@ sub type_for_rendering {
 
     my %type_map = (
         Select       => 'Select',
-        Freeform     => 'Text',
         Text         => 'Textarea',
         Wikitext     => '',
-        Image        => '',
-        Binary       => 'Upload',
         Combobox     => '',
         Autocomplete => '',
+        $self->max_values && $self->max_values == 1
+          ? (
+            Image    => 'Upload',
+            Binary   => 'Upload',
+            Freeform => 'Text',
+          )
+          : (
+            Image    => 'Uploads',
+            Binary   => 'Uploads',
+            Freeform => 'Textarea',
+          ),
     );
 
     return $type_map{$type};
