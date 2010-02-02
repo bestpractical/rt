@@ -1034,7 +1034,7 @@ sub IsPassword {
     }
 
     #  if it's a historical password we say ok.
-    if ($self->__Value('Password') eq crypt($value, $self->__Value('Password'))
+    if ($self->__Value('Password') eq crypt(encode_utf8($value), $self->__Value('Password'))
         or $self->_GeneratePasswordBase64($value) eq $self->__Value('Password'))
     {
         # ...but upgrade the legacy password inplace.
