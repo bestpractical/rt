@@ -158,6 +158,7 @@
 % } else {
 <& /Elements/MessageBox, QuoteTransaction => $QuoteTransaction &>
 %}
+% $m->callback( %ARGS, QueueObj => $QueueObj, CallbackName => 'AfterMessageBox' );
 
 <br />
 </td>
