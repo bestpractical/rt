@@ -1370,7 +1370,8 @@ sub _CustomFieldLimit {
 # we explicitly don't include the "IS NULL" case, since we would
 # otherwise end up with a redundant clause.
 
-    my ($negative_op, $null_op, $inv_op, $range_op) = $self->ClassifySQLOperation( $op );
+    my ($negative_op, $null_op, $inv_op, $range_op)
+        = $self->ClassifySQLOperation( $op );
 
     my $fix_op = sub {
         my $op = shift;
@@ -1426,6 +1427,41 @@ sub _CustomFieldLimit {
                 VALUE      => $value,
                 %rest
             );
+        }
+        elsif ( $op eq '=' || $op eq '!=' || $op eq '<>' ) {
+            unless ( length( Encode::encode_utf8($value) ) > 255 ) {
+                $self->_SQLLimit(
+                    ALIAS      => $TicketCFs,
+                    FIELD      => 'Content',
+                    OPERATOR   => $op,
+                    VALUE      => $value,
+                    %rest
+                );
+            } else {
+                $self->_OpenParen;
+                $self->_SQLLimit(
+                    ALIAS      => $TicketCFs,
+                    FIELD      => 'Content',
+                    OPERATOR   => '=',
+                    VALUE      => '',
+                    ENTRYAGGREGATOR => 'OR'
+                );
+                $self->_SQLLimit(
+                    ALIAS      => $TicketCFs,
+                    FIELD      => 'Content',
+                    OPERATOR   => 'IS',
+                    VALUE      => 'NULL',
+                    ENTRYAGGREGATOR => 'OR'
+                );
+                $self->_CloseParen;
+                $self->_SQLLimit(
+                    ALIAS => $TicketCFs,
+                    FIELD => 'LargeContent',
+                    OPERATOR => $fix_op->($op),
+                    VALUE => $value,
+                    ENTRYAGGREGATOR => 'AND',
+                );
+            }
         }
         else {
             $self->_SQLLimit(
