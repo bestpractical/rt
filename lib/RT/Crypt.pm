@@ -217,7 +217,7 @@ sub GetKeysForEncryption {
     my $self = shift;
     my %args = @_%2? (Recipient => @_) : (Protocol => undef, For => undef, @_ );
     my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
-    my %res = $self->LoadImplementation( $protocol )->GetKeysForEncryption( @_ );
+    my %res = $self->LoadImplementation( $protocol )->GetKeysForEncryption( %args );
     $res{'Protocol'} = $protocol;
     return %res;
 }
@@ -226,7 +226,7 @@ sub GetKeysForSigning {
     my $self = shift;
     my %args = @_%2? (Signer => @_) : (Protocol => undef, Signer => undef, @_);
     my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
-    my %res = $self->LoadImplementation( $protocol )->GetKeysForSigning( @_ );
+    my %res = $self->LoadImplementation( $protocol )->GetKeysForSigning( %args );
     $res{'Protocol'} = $protocol;
     return %res;
 }
@@ -250,7 +250,7 @@ sub GetKeysInfo {
     my $self = shift;
     my %args = @_%2 ? (Key => @_) : ( Protocol => undef, Key => undef, @_ );
     my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
-    my %res = $self->LoadImplementation( $protocol )->GetKeysInfo( @_ );
+    my %res = $self->LoadImplementation( $protocol )->GetKeysInfo( %args );
     $res{'Protocol'} = $protocol;
     return %res;
 }
