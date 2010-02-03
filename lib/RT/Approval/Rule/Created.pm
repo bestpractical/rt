@@ -53,7 +53,7 @@ use base 'RT::Approval::Rule';
 
 use constant _Stage => 'TransactionBatch';
 
-use constant Description => "Notify Owner of their ticket has been approved by some or all approvers"; # loc
+use constant Description => 'Change Approval ticket to open status'; #loc
 
 sub Prepare {
     my $self = shift;
