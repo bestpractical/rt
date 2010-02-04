@@ -64,6 +64,14 @@ my $form_action = defined $goto             ? $goto
                 : defined $req_uri          ? $req_uri
                 :                             RT->Config->Get('WebPath')
                 ;
+
+# sanitize $form_action
+my $uri = URI->new($form_action);
+
+# You get undef scheme with a relative uri like "/Search/Build.html"
+unless (!defined($uri->scheme) || $uri->scheme eq 'http' || $uri->scheme eq 'https') {
+    $form_action = RT->Config->Get('WebPath');
+}
 </%INIT>
 
 % $m->callback( %ARGS, CallbackName => 'Header' );
