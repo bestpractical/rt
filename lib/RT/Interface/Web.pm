@@ -595,6 +595,11 @@ sub SendStaticFile {
     my $file = $args{File};
     my $type = $args{Type};
 
+    if (!$self->FileExistsInCompRoots(File => $file)) {
+        $HTML::Mason::Commands::r->status(400);
+        $HTML::Mason::Commands::m->abort;
+    }
+
     $self->StaticFileHeaders();
 
     unless ($type) {
