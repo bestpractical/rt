@@ -554,6 +554,29 @@ sub StaticFileHeaders {
     # $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = $date->RFC2616;
 }
 
+=head2 FileExistsInCompRoots
+
+Takes a C<< File => path >> and returns the path of first Mason comp root
+that the file lives under, or C<undef> if none exist.
+
+=cut
+
+sub FileExistsInCompRoots {
+    my $self = shift;
+    my %args = @_;
+    my $file = $args{File};
+
+    require Cwd;
+    my $realpath = Cwd::realpath($file);
+
+    for my $comp_root ($HTML::Mason::Commands::m->interp->comp_root_array) {
+        my ($name, $rootdir) = @$comp_root;
+        return $rootdir if $realpath =~ /^\Q$rootdir\E(?=\/|$)/;
+    }
+
+    return undef;
+}
+
 =head2 SendStaticFile 
 
 Takes a File => path and a Type => Content-type
