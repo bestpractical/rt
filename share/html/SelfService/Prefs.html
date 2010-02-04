@@ -52,8 +52,34 @@
 
 % unless (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth')) {
 <&| /Widgets/TitleBox, title => loc('Change password')  &>
-<&|/l&>New password</&>: <input type="password" name="NewPass1" size="16" autocomplete="off" />
-<&|/l&>Confirm</&>: <input type="password" name="NewPass2" size="16" autocomplete="off" />
+<table>
+<tr>
+<td>
+<&|/l&>Your current password</&>:
+</td>
+<td>
+<input type="password" name="CurrentPass" size="16" autocomplete="off" />
+</td>
+</tr>
+
+<tr>
+<td>
+<&|/l&>New password</&>:
+</td>
+<td>
+<input type="password" name="NewPass1" size="16" autocomplete="off" />
+</td>
+</tr>
+
+<tr>
+<td>
+<&|/l&>Confirm</&>:
+</td>
+<td>
+<input type="password" name="NewPass2" size="16" autocomplete="off" />
+</td>
+</tr>
+</table>
 </&>
 <br />
 % }
@@ -65,12 +91,18 @@
 my @results;
 
 if ($NewPass1) {
-    if ($NewPass1 ne $NewPass2) {
-	push (@results, "Passwords did not match.");
+    if (!$CurrentPass) {
+        push @results, loc("Please specify your current password.");
+    }
+    elsif (!$session{'CurrentUser'}->UserObj->IsPassword($CurrentPass)) {
+        push @results, loc("Please specify your current password correctly.");
+    }
+    elsif ($NewPass1 ne $NewPass2) {
+        push (@results, "Passwords did not match.");
     }	
     else {
-	my ($val, $msg)=$session{'CurrentUser'}->UserObj->SetPassword($NewPass1);
-	push (@results, "Password: ".$msg);
+        my ($val, $msg)=$session{'CurrentUser'}->UserObj->SetPassword($NewPass1);
+        push (@results, "Password: ".$msg);
     }	
 }
 if ($Signature) {
@@ -87,6 +119,7 @@ $session{'i'}++;
 
 <%ARGS>
 $Signature => undef
+$CurrentPass => undef
 $NewPass1 => undef
 $NewPass2 => undef
 </%ARGS>
