@@ -58,6 +58,10 @@ else {
     return $m->decline;
 }
 
+if (!RT::Interface::Web->FileExistsInCompRoots(File => $path)) {
+    return $m->decline;
+}
+
 $squisher = new RT::CSS::Squish unless $squisher;
 $squisher->{'mason'} = $m;
 
