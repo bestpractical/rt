@@ -118,7 +118,7 @@
 <table>
 <tr>
 <td align="right">
-<&|/l&>Your Current Password</&>:
+<&|/l&>Your current password</&>:
 </td>
 <td align="left">
 <input type="password" name="CurrentPass" autocomplete="off" />
@@ -379,10 +379,10 @@ if ( $UserObj->Id ) {
         $password_not_set = 1;
     } elsif (!$CurrentPass) {
         $password_not_set = 1;
-        push @results, loc("Please specify your current password.");
+        push @results, loc("Please enter your current password.");
     } elsif (!$session{'CurrentUser'}->IsPassword($CurrentPass)) {
         $password_not_set = 1;
-        push @results, loc("Please specify your current password correctly.");
+        push @results, loc("Please enter your current password correctly.");
     } elsif ( $Pass1 ne $Pass2 ) {
         $password_not_set = 1;
         push @results, loc("Passwords do not match.");

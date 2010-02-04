@@ -112,7 +112,7 @@
 <table>
 <tr>
 <td class="label">
-<&|/l&>Your Current Password</&>:
+<&|/l&>Your current password</&>:
 </td>
 <td class="value">
 <input type="password" name="CurrentPass" autocomplete="off"/>
@@ -270,10 +270,10 @@ if  ( $SetPrivileged and $Privileged != $UserObj->Privileged ) {
 #TODO: make this report errors properly
 if (defined($Pass1) && length($Pass1) && !$UserObj->IsPassword($CurrentPass)) {
     if (length($CurrentPass)) {
-        push @results, loc("Please specify your current password correctly. Your password has not been changed.");
+        push @results, loc("Please enter your current password correctly. Your password has not been changed.");
     }
     else {
-        push @results, loc("Please specify your current password. Your password has not been changed.");
+        push @results, loc("Please enter your current password. Your password has not been changed.");
     }
 }
 elsif ( defined $Pass1 and length $Pass1 and $Pass1 eq $Pass2 and !$UserObj->IsPassword($Pass1) ) {
