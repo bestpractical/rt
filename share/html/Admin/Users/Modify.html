@@ -118,6 +118,14 @@
 <table>
 <tr>
 <td align="right">
+<&|/l&>Your Current Password</&>:
+</td>
+<td align="left">
+<input type="password" name="CurrentPass" autocomplete="off" />
+</td>
+</tr>
+<tr>
+<td align="right">
 <&|/l&>New Password</&>:
 </td>
 <td align="left">
@@ -368,17 +376,23 @@ if ( $UserObj->Id ) {
     my $password_not_set;
     # Deal with Password field
     if ( !$Pass1 and !$Pass2 ) {
-	$password_not_set = 1;
+        $password_not_set = 1;
+    } elsif (!$CurrentPass) {
+        $password_not_set = 1;
+        push @results, loc("Please specify your current password.");
+    } elsif (!$session{'CurrentUser'}->IsPassword($CurrentPass)) {
+        $password_not_set = 1;
+        push @results, loc("Please specify your current password correctly.");
     } elsif ( $Pass1 ne $Pass2 ) {
-	$password_not_set = 1;
+        $password_not_set = 1;
         push @results, loc("Passwords do not match.");
     } elsif ( $Pass1 eq $Pass2 and !$UserObj->IsPassword($Pass1) ) {
         my ($code, $msg) = $UserObj->SetPassword($Pass1);
         push @results, loc_fuzzy($msg);
-	$password_not_set = 1 unless $code;
+        $password_not_set = 1 unless $code;
     }
     if ($id eq 'new' and $password_not_set) {
-	push @results, loc("A password was not set, so user won't be able to login.");
+        push @results, loc("A password was not set, so user won't be able to login.");
     } 
 }
 
@@ -431,7 +445,8 @@ $City  => undef
 $State  => undef
 $Zip  => undef
 $Country => undef
+$CurrentPass => undef
 $Pass1 => undef
-$Pass2=> undef
+$Pass2 => undef
 $Create=> undef
 </%ARGS>
