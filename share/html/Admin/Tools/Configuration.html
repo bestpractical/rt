@@ -128,6 +128,13 @@ foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
 % }
 </table>
 
+<h3><&|/l&>Plugin Mason Component Path Order</&></h3>
+<table>
+% foreach my $path ( map { $_->[1] } $m->interp->comp_root_array ) {
+<tr><td><% $path %></td></tr>
+% }
+</table>
+
 <h2><&|/l&>RT Size</&></h2>
 <table>
 <%PERL>
