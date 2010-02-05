@@ -133,14 +133,14 @@ $ticket->Create(
 );
 
 $m->follow_link_ok({text => 'different dashboard'});
-$m->content_contains("20 highest priority tickets I own");
-$m->content_contains("20 newest unowned tickets");
+$m->content_contains("50 highest priority tickets I own");
+$m->content_contains("50 newest unowned tickets");
 $m->content_lacks("Bookmarked Tickets");
 $m->content_contains("dashboard test", "ticket subject");
 
 $m->get_ok("/Dashboards/$id/This fragment left intentionally blank");
-$m->content_contains("20 highest priority tickets I own");
-$m->content_contains("20 newest unowned tickets");
+$m->content_contains("50 highest priority tickets I own");
+$m->content_contains("50 newest unowned tickets");
 $m->content_lacks("Bookmarked Tickets");
 $m->content_contains("dashboard test", "ticket subject");
 
