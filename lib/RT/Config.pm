@@ -333,40 +333,6 @@ our %META = (
         },
     },
 
-    RTAddressRegexp => {
-        Type    => 'SCALAR',
-        PostLoadCheck => sub {
-            my $self = shift;
-            my $value = $self->Get('RTAddressRegexp');
-            return if $value;
-
-            $RT::Logger->error(
-                'RTAddressRegexp option is not set in the config.'
-                .' Not setting this option may result in big mail loops.'
-                .' Going to generate value for you, but generating value takes'
-                .' time and only a few queues are accounted. So this slow downs'
-                .' server restarts and command line utilities, as well dont'
-                .' protect you from loops if you have many queues'
-            );
-
-            my @emails = (
-                $self->Get('CorrespondAddress'),
-                $self->Get('CommentAddress'),
-            );
-            my $queues = RT::Queues->new( $RT::SystemUser );
-            $queues->UnLimit;
-            $queues->RowsPerPage(100);
-            while ( my $queue = $queues->Next ) {
-                push @emails, $queue->CorrespondAddress, $queue->CommentAddress;
-            }
-
-            my %seen;
-            my $re = join '|', map "\Q$_\E",
-                grep defined && length && !$seen{ lc $_ }++,
-                @emails;
-            $self->Set( qr/$re/ );
-        },
-    },
     # User overridable mail options
     EmailFrequency => {
         Section         => 'Mail',                                     #loc
