@@ -160,7 +160,7 @@ sub callback {
 
         my %seen;
         @$callbacks = (
-            sort grep defined && length,
+            grep defined && length,
             # Skip backup files, files without a leading package name,
             # and files we've already seen
             grep !$seen{$_}++ && !m{/\.} && !m{~$} && m{^/Callbacks/[^/]+\Q$page/$name\E$},
