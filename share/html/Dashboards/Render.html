@@ -112,7 +112,7 @@ for my $sub ($session{'CurrentUser'}->UserObj->Attributes->Named('Subscription')
 
 # otherwise honor their search preferences.. otherwise 50 rows
 # $rows == 0 means unlimited, which we don't want to ignore from above
-if (!$rows and ($rows != 0)) {
+unless (defined($rows)) {
     my $prefs = $session{'CurrentUser'}->UserObj->Preferences("SearchDisplay") || {};
     $rows = defined($prefs->{'RowsPerPage'}) ? $prefs->{'RowsPerPage'} : 50;
 }
