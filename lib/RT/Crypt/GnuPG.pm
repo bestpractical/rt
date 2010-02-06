@@ -1802,7 +1802,7 @@ sub ParseKeysInfo {
 
             @info{qw(OwnerTrust OwnerTrustTerse OwnerTrustLevel)} = 
                 _ConvertTrustChar( $info{'OwnerTrustChar'} );
-            $info{ $_ } = _ParseDate( $info{ $_ } )
+            $info{ $_ } = $self->ParseDate( $info{ $_ } )
                 foreach qw(Created Expire);
             push @res, \%info;
         }
@@ -1815,7 +1815,7 @@ sub ParseKeysInfo {
             ) } = split /:/, $line, 12;
             @info{qw(OwnerTrust OwnerTrustTerse OwnerTrustLevel)} = 
                 _ConvertTrustChar( $info{'OwnerTrustChar'} );
-            $info{ $_ } = _ParseDate( $info{ $_ } )
+            $info{ $_ } = $self->ParseDate( $info{ $_ } )
                 foreach qw(Created Expire);
             push @res, \%info;
         }
@@ -1823,7 +1823,7 @@ sub ParseKeysInfo {
             my %info;
             @info{ qw(Trust Created Expire String) }
                 = (split /:/, $line)[0,4,5,8];
-            $info{ $_ } = _ParseDate( $info{ $_ } )
+            $info{ $_ } = $self->ParseDate( $info{ $_ } )
                 foreach qw(Created Expire);
             push @{ $res[-1]{'User'} ||= [] }, \%info;
         }
@@ -1899,22 +1899,6 @@ sub ParseKeysInfo {
         $value = substr $value, 0, 1;
         return @{ $verbose{ $value } || $verbose{'o'} };
     }
-}
-
-sub _ParseDate {
-    my $value = shift;
-    # never
-    return $value unless $value;
-
-    require RT::Date;
-    my $obj = RT::Date->new( RT->SystemUser );
-    # unix time
-    if ( $value =~ /^\d+$/ ) {
-        $obj->Set( Value => $value );
-    } else {
-        $obj->Set( Format => 'unknown', Value => $value, Timezone => 'utc' );
-    }
-    return $obj;
 }
 
 sub DeleteKey {

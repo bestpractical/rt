@@ -172,4 +172,30 @@ L<RT::Crypt/GetKeysForSigning>.
 
 requires 'GetKeysForSigning';
 
+=head2 ParseDate STRING
+
+Takes a string, and parses and returns a L<RT::Date>; if the string is
+purely numeric, assumes is a epoch timestamp.
+
+=cut
+
+sub ParseDate {
+    my $self = shift;
+    my $value = shift;
+
+    # never
+    return $value unless $value;
+
+    require RT::Date;
+    my $obj = RT::Date->new( RT->SystemUser );
+    # unix time
+    if ( $value =~ /^\d+$/ ) {
+        $obj->Set( Value => $value );
+    } else {
+        $obj->Set( Format => 'unknown', Value => $value, Timezone => 'utc' );
+    }
+    return $obj;
+}
+
+
 1;
