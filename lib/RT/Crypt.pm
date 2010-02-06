@@ -172,7 +172,8 @@ sub ParseStatus {
         Status   => '',
         @_
     );
-    return $self->LoadImplementation( $args{'Protocol'} )->ParseStatus( $args{'Status'} );
+    return $self->LoadImplementation( $args{'Protocol'} )
+        ->ParseStatus( $args{'Status'} );
 }
 
 =head2 UseKeyForSigning
