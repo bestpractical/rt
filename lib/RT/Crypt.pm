@@ -129,10 +129,8 @@ sub SignEncrypt {
         ];
     }
 
-    my $protocol = delete $args{'Protocol'} || 'GnuPG';
-    my $class = $self->LoadImplementation( $protocol );
-
-    my %res = $class->SignEncrypt( %args );
+    my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
+    my %res = $self->LoadImplementation( $protocol )->SignEncrypt( %args );
     $res{'Protocol'} = $protocol;
     return %res;
 }
