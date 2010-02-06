@@ -397,7 +397,7 @@ sub SendEmail {
         $TicketObj = $TransactionObj->Object;
     }
 
-    if ( RT->Config->Get('GnuPG')->{'Enable'} ) {
+    if ( RT->Config->Get('Crypt')->{'Enable'} ) {
         %args = WillSignEncrypt(
             %args,
             Attachment => $TransactionObj ? $TransactionObj->Attachments->First : undef,
