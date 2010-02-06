@@ -324,10 +324,8 @@ sub SignEncrypt {
         ];
     }
 
-    my $protocol = delete $args{'Protocol'} || 'GnuPG';
-    my $class = $self->LoadImplementation( $protocol );
-
-    my %res = $class->SignEncrypt( %args );
+    my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
+    my %res = $self->LoadImplementation( $protocol )->SignEncrypt( %args );
     $res{'Protocol'} = $protocol;
     return %res;
 }
@@ -354,7 +352,7 @@ sub SignEncryptContent {
         $args{'Recipients'} = [ RT->Config->Get('CorrespondAddress') ];
     }
 
-    my $protocol = delete $args{'Protocol'} || 'GnuPG';
+    my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
     my $class = $self->LoadImplementation( $protocol );
 
     my %res = $class->SignEncryptContent( %args );
@@ -618,7 +616,7 @@ sub CheckRecipients {
 sub GetKeysForEncryption {
     my $self = shift;
     my %args = @_%2? (Recipient => @_) : (Protocol => undef, Recipient => undef, @_ );
-    my $protocol = delete $args{'Protocol'} || 'GnuPG';
+    my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
     my %res = $self->LoadImplementation( $protocol )->GetKeysForEncryption( %args );
     $res{'Protocol'} = $protocol;
     return %res;
@@ -636,7 +634,7 @@ which keys can be used for signing, as opposed to encryption.
 sub GetKeysForSigning {
     my $self = shift;
     my %args = @_%2? (Signer => @_) : (Protocol => undef, Signer => undef, @_);
-    my $protocol = delete $args{'Protocol'} || 'GnuPG';
+    my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
     my %res = $self->LoadImplementation( $protocol )->GetKeysForSigning( %args );
     $res{'Protocol'} = $protocol;
     return %res;
@@ -720,7 +718,7 @@ C<Created> and C<Expire> keys, which are L<RT::Date> objects.
 sub GetKeysInfo {
     my $self = shift;
     my %args = @_%2 ? (Key => @_) : ( Protocol => undef, Key => undef, @_ );
-    my $protocol = delete $args{'Protocol'} || 'GnuPG';
+    my $protocol = delete $args{'Protocol'} || $self->UseForOutgoing;
     my %res = $self->LoadImplementation( $protocol )->GetKeysInfo( %args );
     $res{'Protocol'} = $protocol;
     return %res;
