@@ -62,7 +62,7 @@ sub email_ok {
     my ($msg, @attachments) = @{$txn->Attachments->ItemsArrayRef};
 
     is( $msg->GetHeader('X-RT-Privacy'),
-        'PGP',
+        'GnuPG',
         "$eid: recorded incoming mail that is encrypted"
     );
 

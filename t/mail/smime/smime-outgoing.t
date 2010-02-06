@@ -2,73 +2,135 @@
 use strict;
 use warnings;
 
-use Test::More;
-eval 'use RT::Test; 1'
-    or plan skip_all => 'requires 3.7 to run tests.';
+use RT::Test tests => 14;
 
-plan tests => 10;
+my $openssl = RT::Test->find_executable('openssl');
+plan skip_all => 'openssl executable is required.'
+    unless $openssl;
+
 
 use IPC::Run3 'run3';
-use Cwd 'abs_path';
 use RT::Interface::Email;
 
-use_ok('RT::Crypt::SMIME');
+# catch any outgoing emails
+RT::Test->set_mail_catcher;
 
-RT::Config->Set( 'MailCommand' => 'sendmail'); # we intercept MIME::Entity::send
+my $keys = RT::Test::get_abs_relocatable_dir(
+    (File::Spec->updir()) x 2,
+    qw(data smime keys),
+);
 
-RT->Config->Set( 'OpenSSLPath', '/usr/bin/openssl' );
-RT->Config->Set( 'SMIMEKeys', abs_path('testkeys') );
-RT->Config->Set( 'SMIMEPasswords', {'sender@example.com' => '123456'} );
-RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::SMIME' );
+my $keyring = RT::Test->new_temp_dir(
+    crypt => smime => 'smime_keyring'
+);
 
-RT::Handle->InsertData('etc/initialdata');
+RT->Config->Set( Crypt =>
+    Enable   => 1,
+    Incoming => ['SMIME'],
+    Outgoing => 'SMIME',
+);
+RT->Config->Set( GnuPG => Enable => 0 );
+RT->Config->Set( SMIME =>
+    Enable => 1,
+    OutgoingMessagesFormat => 'RFC',
+    Passphrase => {
+        'sender@example.com' => '123456',
+    },
+    OpenSSL => $openssl,
+    Keyring => $keyring,
+);
+
+RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::Crypt' );
 
 my ($url, $m) = RT::Test->started_ok;
-# configure key for General queue
-$m->get( $url."?user=root;pass=password" );
-$m->content_like(qr/Logout/, 'we did log in');
-$m->get( $url.'/Admin/Queues/');
-$m->follow_link_ok( {text => 'General'} );
-$m->submit_form( form_number => 3,
-		 fields      => { CorrespondAddress => 'sender@example.com' } );
+ok $m->login, "logged in";
 
-my $user = RT::User->new($RT::SystemUser);
-ok($user->LoadByEmail('root@localhost'), "Loaded user 'root'");
-diag $user->Id;
-ok($user->Load('root'), "Loaded user 'root'");
-is( $user->EmailAddress, 'root@localhost' );
-my $val = $user->FirstCustomFieldValue('PublicKey');
-# XXX: delete if it's already there
-unless (defined $val) {
-    local $/;
-    open my $fh, 'testkeys/recipient.crt' or die $!;
-    $user->AddCustomFieldValue( Field => 'PublicKey', Value => <$fh> );
-    $val = $user->FirstCustomFieldValue('PublicKey');
+my $queue = RT::Test->load_or_create_queue(
+    Name              => 'General',
+    CorrespondAddress => 'sender@example.com',
+    CommentAddress    => 'sender@example.com',
+);
+ok $queue && $queue->id, 'loaded or created queue';
+
+{
+    my ($status, $msg) = $queue->SetEncrypt(1);
+    ok $status, "turn on encyption by default"
+        or diag "error: $msg";
 }
 
-no warnings 'once';
-local *MIME::Entity::send = sub {
-    my $mime_obj = shift;
-    my ($buf, $err);
-    ok(eval { run3([qw(openssl smime -decrypt -passin pass:123456 -inkey testkeys/recipient.key -recip testkeys/recipient.crt)],
-	 \$mime_obj->as_string, \$buf, \$err) }, 'can decrypt');
-    diag $err if $err;
-    diag "Error code: $?" if $?;
-    like($buf, qr'This message has been automatically generated in response');
-    # XXX: check signature as wel
-};
+{
+    my $cf = RT::CustomField->new( $RT::SystemUser );
+    my ($ret, $msg) = $cf->Create(
+        Name       => 'SMIME Key',
+        LookupType => RT::User->new( $RT::SystemUser )->CustomFieldLookupType,
+        Type       => 'TextSingle',
+    );
+    ok($ret, "Custom Field created");
 
+    my $OCF = RT::ObjectCustomField->new( $RT::SystemUser );
+    $OCF->Create(
+        CustomField => $cf->id,
+        ObjectId    => 0,
+    );
+}
 
-RT::Interface::Email::Gateway( {queue => 1, action => 'correspond',
-			       message => 'From: root@localhost
-To: rt@example.com
+my $user;
+{
+    $user = RT::User->new($RT::SystemUser);
+    ok($user->LoadByEmail('root@localhost'), "Loaded user 'root'");
+    ok($user->Load('root'), "Loaded user 'root'");
+    is($user->EmailAddress, 'root@localhost');
+
+    open my $fh, '<:raw', File::Spec->catfile($keys, 'recipient.crt')
+        or die $!;
+    my ($status, $msg) = $user->AddCustomFieldValue(
+        Field => 'SMIME Key',
+        Value => do { local $/; <$fh> },
+    );
+    ok $status, "added user's key" or diag "error: $msg";
+}
+
+RT::Test->clean_caught_mails;
+
+{
+    my $mail = <<END;
+From: root\@localhost
+To: rt\@example.com
 Subject: This is a test of new ticket creation as an unknown user
 
 Blah!
-Foob!'});
+Foob!
 
-my $tickets = RT::Tickets->new($RT::SystemUser);
-$tickets->OrderBy(FIELD => 'id', ORDER => 'DESC');
-$tickets->Limit(FIELD => 'id' ,OPERATOR => '>', VALUE => '0');
-my $tick = $tickets->First();
-ok ($tick->Id, "found ticket ".$tick->Id);
+END
+
+    my ($status, $id) = RT::Test->send_via_mailgate(
+        $mail, queue => $queue->Name,
+    );
+    is $status, 0, "successfuly executed mailgate";
+
+    my $ticket = RT::Ticket->new($RT::SystemUser);
+    $ticket->Load( $id );
+    ok ($ticket->id, "found ticket ". $ticket->id);
+}
+
+{
+    my @mails = RT::Test->fetch_caught_mails;
+    is scalar @mails, 1, "autoreply";
+
+    my ($buf, $err);
+    local $@;
+    ok(eval {
+        run3([
+            $openssl, qw(smime -decrypt -passin pass:123456),
+            '-inkey', File::Spec->catfile($keys, 'recipient.key'),
+            '-recip', File::Spec->catfile($keys, 'recipient.crt')
+        ], \$mails[0], \$buf, \$err )
+        }, 'can decrypt'
+    );
+    diag $@ if $@;
+    diag $err if $err;
+    diag "Error code: $?" if $?;
+    like($buf, qr'This message has been automatically generated in response');
+}
+
+

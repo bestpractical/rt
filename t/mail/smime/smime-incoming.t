@@ -8,12 +8,9 @@ my $openssl = RT::Test->find_executable('openssl');
 plan skip_all => 'openssl executable is required.'
     unless $openssl;
 
-use File::Temp;
 use IPC::Run3 'run3';
 use String::ShellQuote 'shell_quote';
 use RT::Tickets;
-use FindBin;
-use Cwd 'abs_path';
 
 # catch any outgoing emails
 RT::Test->set_mail_catcher;
@@ -31,6 +28,7 @@ RT->Config->Set( Crypt =>
     Incoming => ['SMIME'],
     Outgoing => 'SMIME',
 );
+RT->Config->Set( GnuPG => Enable => 0 );
 RT->Config->Set( SMIME =>
     Enable => 1,
     OutgoingMessagesFormat => 'RFC',
@@ -40,22 +38,22 @@ RT->Config->Set( SMIME =>
     OpenSSL => $openssl,
     Keyring => $keyring,
 );
-RT->Config->Set( GnuPG => Enable => 0 );
 
 RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::Crypt' );
-
-RT::Test->import_smime_key('sender@example.com');
 
 my $mails = RT::Test::find_relocatable_path( 'data', 'smime', 'mails' );
 
 my ($url, $m) = RT::Test->started_ok;
+ok $m->login, "logged in";
+
 # configure key for General queue
-$m->get( $url."?user=root;pass=password" );
-$m->content_like(qr/Logout/, 'we did log in');
-$m->get( $url.'/Admin/Queues/');
-$m->follow_link_ok( {text => 'General'} );
-$m->submit_form( form_number => 3,
-		 fields      => { CorrespondAddress => 'sender@example.com' } );
+RT::Test->import_smime_key('sender@example.com');
+my $queue = RT::Test->load_or_create_queue(
+    Name              => 'General',
+    CorrespondAddress => 'sender@example.com',
+    CommentAddress    => 'sender@example.com',
+);
+ok $queue && $queue->id, 'loaded or created queue';
 
 my $mail = RT::Test->open_mailgate_ok($url);
 print $mail <<EOF;
