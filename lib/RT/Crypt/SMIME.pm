@@ -5,6 +5,7 @@ use warnings;
 package RT::Crypt::SMIME;
 use base 'RT::Crypt::Base';
 
+use RT::Crypt;
 use IPC::Run3 0.036 'run3';
 use String::ShellQuote 'shell_quote';
 use RT::Util 'safe_run_child';
@@ -35,11 +36,11 @@ sub SignEncrypt {
         $args{'Passphrase'} = $self->GetPassphrase( Address => $args{'Signer'} );
     }
 
-    my %res = (exit_code => 0, status => []);
+    my %res = (exit_code => 0, status => '');
 
     my @addresses =
         map $_->address,
-        Email::Address->parse($_),
+        map Email::Address->parse($_),
         grep defined && length,
         map $entity->head->get($_),
         qw(To Cc Bcc);
@@ -47,26 +48,21 @@ sub SignEncrypt {
     my @keys;
     foreach my $address ( @addresses ) {
         $RT::Logger->debug( "Considering encrypting message to " . $address );
-        my $user = RT::User->new( $RT::SystemUser );
-        $user->LoadByEmail( $address );
 
-        my $key;
-        $key = $user->FirstCustomFieldValue('PublicKey') if $user->id;
-        unless ( $key ) {
+        my %key_info = $self->GetKeysInfo( Key => $address );
+        unless ( %key_info ) {
             $res{'exit_code'} = 1;
             my $reason = 'Key not found';
-            push @{ $res{'status'} }, {
-                Operation  => 'RecipientsCheck',
-                Status     => 'ERROR',
-                Message    => "Recipient '$address' is unusable, the reason is '$reason'",
-                Recipient  => $address,
-                Reason     => $reason,
-            };
+            $res{'status'} .=
+                "Operation: RecipientsCheck\nStatus: ERROR\n"
+                ."Message: Recipient '$address' is unusable, the reason is '$reason'\n"
+                ."Recipient: $address\n"
+                ."Reason: $reason\n\n",
+            ;
             next;
         }
 
-        my $expire = $self->GetKeyExpiration( $user );
-        unless ( $expire ) {
+        unless ( $key_info{'info'}[0]{'Expire'} ) {
             # we continue here as it's most probably a problem with the key,
             # so later during encryption we'll get verbose errors
             $RT::Logger->error(
@@ -74,19 +70,18 @@ sub SignEncrypt {
                 .", but we couldn't get expiration date of the key."
             );
         }
-        elsif ( $expire->Diff( time ) < 0 ) {
+        elsif ( $key_info{'info'}[0]{'Expire'}->Diff( time ) < 0 ) {
             $res{'exit_code'} = 1;
             my $reason = 'Key expired';
-            push @{ $res{'status'} }, {
-                Operation  => 'RecipientsCheck',
-                Status     => 'ERROR',
-                Message    => "Recipient '$address' is unusable, the reason is '$reason'",
-                Recipient  => $address,
-                Reason     => $reason,
-            };
+            $res{'status'} .=
+                "Operation: RecipientsCheck\nStatus: ERROR\n"
+                ."Message: Recipient '$address' is unusable, the reason is '$reason'\n"
+                ."Recipient: $address\n"
+                ."Reason: $reason\n\n",
+            ;
             next;
         }
-        push @keys, $key;
+        push @keys, $key_info{'info'}[0]{'Content'};
     }
     return %res if $res{'exit_code'};
 
@@ -284,7 +279,7 @@ sub ParseStatus {
     return () unless $status;
 
     my @status = split /\n\n/, $status;
-    foreach my $block ( @status ) {
+    foreach my $block ( grep length, @status ) {
         chomp $block;
         $block = { map { s/^\s+//; s/\s+$//; $_ } map split(/:/, $_, 2), split /\n+/, $block };
     }
@@ -412,59 +407,185 @@ sub CheckIfProtected {
     return ();
 }
 
-sub KeyExpirationDate {
-    my $self = shift;
-    my %args = (@_);
-
-    my $user = $args{'User'};
-
-    my $key_obj = $user->CustomFieldValues('PublicKey')->First;
-    unless ( $key_obj ) {
-        $RT::Logger->warn('User #'. $user->id .' has no SMIME key');
-        return;
-    }
-
-    my $attr = $user->FirstAttribute('SMIMEKeyNotAfter');
-    if ( $attr and my $date_str = $attr->Content
-         and $key_obj->LastUpdatedObj->Unix < $attr->LastUpdatedObj->Unix )
-    {
-        my $date = RT::Date->new( $RT::SystemUser );
-        $date->Set( Format => 'unknown', Value => $attr->Content );
-        return $date;
-    }
-    $RT::Logger->debug('Expiration date of SMIME key is not up to date');
-
-    my $key = $key_obj->Content;
-
-    my ($buf, $err) = ('', '');
-    {
-        local $ENV{SMIME_PASS} = '123456';
-        safe_run3(
-            join( ' ', shell_quote( $self->OpenSSLPath, qw(x509 -noout -dates) ) ),
-            \$key, \$buf, \$err
-        );
-    }
-    $RT::Logger->debug( "openssl stderr: " . $err ) if length $err;
-
-    my ($date_str) = ($buf =~ /^notAfter=(.*)$/m);
-    return unless $date_str;
-
-    $RT::Logger->debug( "smime key expiration date is $date_str" );
-    $user->SetAttribute(
-        Name => 'SMIMEKeyNotAfter',
-        Description => 'SMIME key expiration date',
-        Content => $date_str,
-    );
-    my $date = RT::Date->new( $RT::SystemUser );
-    $date->Set( Format => 'unknown', Value => $date_str );
-    return $date;
-}
-
 sub GetPassphrase {
     my $self = shift;
     my %args = (Address => undef, @_);
     $args{'Address'} = '' unless defined $args{'Address'};
     return RT->Config->Get('SMIME')->{'Passphrase'}->{ $args{'Address'} };
 }
+
+sub GetKeysInfo {
+    my $self = shift;
+    my %args = (
+        Key   => undef,
+        Type  => 'public',
+        Force => 0,
+        @_
+    );
+
+    my $email = $args{'Key'};
+    unless ( $email ) {
+        return (exit_code => 0); # unless $args{'Force'};
+    }
+
+    my $key = $self->GetKeyContent( %args );
+    return (exit_code => 0) unless $key;
+
+    return $self->GetCertificateInfo( Certificate => $key );
+}
+
+sub GetKeyContent {
+    my $self = shift;
+    my %args = ( Key => undef, @_ );
+
+    my $key;
+    if ( my $file = $self->CheckKeyring( %args ) ) {
+        open my $fh, '<:raw', $file
+            or die "Couldn't open file '$file': $!";
+        $key = do { local $/; readline $fh };
+        close $fh;
+    }
+    else {
+        # XXX: should we use different user??
+        my $user = RT::User->new( $RT::SystemUser );
+        $user->LoadByEmail( $args{'Key'} );
+        unless ( $user->id ) {
+            return (exit_code => 0);
+        }
+
+        $key = $user->FirstCustomFieldValue('SMIME Key');
+    }
+    return $key;
+}
+
+sub CheckKeyring {
+    my $self = shift;
+    my %args = (
+        Key => undef,
+        @_,
+    );
+    my $keyring = RT->Config->Get('SMIME')->{'Keyring'};
+    return undef unless $keyring;
+
+    my $file = File::Spec->catfile( $keyring, $args{'Key'} .'.pem' );
+    return undef unless -f $file;
+
+    return $file;
+}
+
+sub GetCertificateInfo {
+    my $self = shift;
+    my %args = (
+        Certificate => undef,
+        @_,
+    );
+
+    my %res;
+    my $buf;
+    {
+        local $SIG{CHLD} = 'DEFAULT';
+        my $cmd = join ' ', shell_quote(
+            $self->OpenSSLPath, 'x509',
+            # everything
+            '-text',
+            # plus fingerprint
+            '-fingerprint',
+            # don't print cert itself
+            '-noout',
+            # don't dump signature and pubkey info, header is useless too
+            '-certopt', 'no_pubkey,no_sigdump,no_extensions',
+            # subject and issuer are multiline, long prop names, utf8
+            '-nameopt', 'sep_multiline,lname,utf8',
+        );
+        safe_run_child { run3( $cmd, \$args{'Certificate'}, \$buf, \$res{'stderr'} ) };
+        $res{'exit_code'} = $?;
+    }
+    if ( $res{'exit_code'} ) {
+        $res{'message'} = "openssl exitted with error code ". ($? >> 8)
+            ." and error: $res{stderr}";
+        return %res;
+    }
+
+    my %info = $self->CanonicalizeInfo( $self->ParseCertificateInfo( $buf ) );
+    $info{'Content'} = $args{'Certificate'};
+    $res{'info'} = [\%info];
+    return %res;
+}
+
+sub CanonicalizeInfo {
+    my $self = shift;
+    my %info = @_;
+
+    my %res = (
+        # XXX: trust is not implmented for SMIME
+        TrustLevel => 1,
+    );
+    {
+        my $subject = delete $info{'Certificate'}{'Data'}{'Subject'};
+        $res{'User'} = [{
+            Country => $subject->{'countryName'},
+            StateOrProvince  => $subject->{'stateOrProvinceName'},
+            Organization     => $subject->{'organizationName'},
+            OrganizationUnit => $subject->{'organizationalUnitName'},
+        }];
+        my $email = Email::Address->new( @{$subject}{'commonName', 'emailAddress'} );
+        $res{'User'}[-1]{'String'} = $email->format;
+    }
+    {
+        my $validity = delete $info{'Certificate'}{'Data'}{'Validity'};
+        $res{'Created'} = $self->ParseDate( $validity->{'Not Before'} );
+        $res{'Expire'} = $self->ParseDate( $validity->{'Not After'} );
+    }
+    {
+        $res{'Fingerprint'} = delete $info{'SHA1 Fingerprint'};
+    }
+    %res = (%{$info{'Certificate'}{'Data'}}, %res);
+    return %res;
+}
+
+sub ParseCertificateInfo {
+    my $self = shift;
+    my $info = shift;
+
+    my @lines = split /\n/, $info;
+
+    my %res;
+    my %prefix = ();
+    my $first_line = 1;
+    my $prev_prefix = '';
+    my $prev_key = '';
+
+    foreach my $line ( @lines ) {
+        # some examples:
+        # Validity # no trailing ':'
+        # Not After : XXXXXX # space before ':'
+        # countryName=RU # '=' as separator
+        my ($prefix, $key, $value) = ($line =~ /^(\s*)(.*?)\s*(?:[:=]\s*(.*?)|)\s*$/);
+        if ( $first_line ) {
+            $prefix{$prefix} = \%res;
+            $first_line = 0;
+        }
+
+        my $put_into = ($prefix{$prefix} ||= $prefix{$prev_prefix}{$prev_key});
+        unless ( $put_into ) {
+            die "Couldn't parse key info: $info";
+        }
+
+        if ( defined $value && length $value ) {
+            $put_into->{$key} = $value;
+        }
+        else {
+            $put_into->{$key} = {};
+        }
+        delete $prefix{$_} foreach
+            grep length($_) > length($prefix),
+            keys %prefix;
+
+        ($prev_prefix, $prev_key) = ($prefix, $key);
+    }
+
+    return %res;
+}
+
 
 1;
