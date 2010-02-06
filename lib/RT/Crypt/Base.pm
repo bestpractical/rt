@@ -15,6 +15,16 @@ sub CheckIfProtected { return () }
 
 sub FindScatteredParts { return () }
 
+sub GetKeysForEncryption {
+    my $self = shift;
+    my %args = (Recipient => undef, @_);
+    return $self->GetKeysInfo(
+        Key => delete $args{'Recipient'},
+        %args,
+        Type => 'public'
+    );
+}
+
 sub GetKeysInfo {
     return (
         exit_code => 1,

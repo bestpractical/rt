@@ -2040,8 +2040,7 @@ also listed.
 
 sub GetKeysForEncryption {
     my $self = shift;
-    my %args = (Recipient => undef, @_);
-    my %res = $self->GetKeysInfo( Key => delete $args{'Recipient'}, %args, Type => 'public' );
+    my %res = $self->SUPER::GetKeysForEncryption( @_ );
     return %res if $res{'exit_code'};
     return %res unless $res{'info'};
 
