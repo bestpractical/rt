@@ -32,4 +32,22 @@ sub GetKeysInfo {
     );
 }
 
+sub ParseDate {
+    my $self = shift;
+    my $value = shift;
+
+    # never
+    return $value unless $value;
+
+    require RT::Date;
+    my $obj = RT::Date->new( RT->SystemUser );
+    # unix time
+    if ( $value =~ /^\d+$/ ) {
+        $obj->Set( Value => $value );
+    } else {
+        $obj->Set( Format => 'unknown', Value => $value, Timezone => 'utc' );
+    }
+    return $obj;
+}
+
 1;
