@@ -11,6 +11,29 @@ sub VerifyDecrypt {
     return (exit_code => 1, status => []);
 }
 
+sub DrySign {
+    my $self = shift;
+    my %args = ( Signer => undef, @_ );
+    my $from = $args{'Signer'};
+
+    my $mime = MIME::Entity->build(
+        Type    => "text/plain",
+        From    => 'nobody@localhost',
+        To      => 'nobody@localhost',
+        Subject => "dry sign",
+        Data    => ['t'],
+    );
+
+    my %res = $self->SignEncrypt(
+        Sign    => 1,
+        Encrypt => 0,
+        Entity  => $mime,
+        Signer  => $from,
+    );
+
+    return $res{exit_code} == 0;
+}
+
 sub CheckIfProtected { return () }
 
 sub FindScatteredParts { return () }
