@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 47;
+use RT::Test tests => 42;
 
 my $openssl = RT::Test->find_executable('openssl');
 plan skip_all => 'openssl executable is required.'
@@ -199,8 +199,8 @@ RT::Test->close_mailgate_ok($mail);
             shell_quote(
                 RT->Config->Get('SMIME')->{'OpenSSL'},
                 qw( smime -sign -nodetach -passin pass:123456),
-                -signer => File::Spec->catfile( $keys, 'recipient.crt' ),
-                -inkey  => File::Spec->catfile( $keys, 'recipient.key' ),
+                -signer => File::Spec->catfile( $keys, 'root@example.com.crt' ),
+                -inkey  => File::Spec->catfile( $keys, 'root@example.com.key' ),
             ),
             '|',
             shell_quote(

@@ -81,7 +81,7 @@ my $user;
     ok($user->Load('root'), "Loaded user 'root'");
     is($user->EmailAddress, 'root@localhost');
 
-    open my $fh, '<:raw', File::Spec->catfile($keys, 'recipient.crt')
+    open my $fh, '<:raw', File::Spec->catfile($keys, 'root@example.com.crt')
         or die $!;
     my ($status, $msg) = $user->AddCustomFieldValue(
         Field => 'SMIME Key',
