@@ -184,6 +184,12 @@ sub VerifyDecrypt {
     return %res;
 }
 
+sub VerifyRFC3156 {
+    my $self = shift;
+    my %args = ( Top => undef, Data => undef, Signature => undef, @_);
+    return $self->VerifyRFC3851( %args, Data => $args{'Top'} );
+}
+
 sub VerifyRFC3851 {
     my $self = shift;
     my %args = (Data => undef, Queue => undef, @_ );
