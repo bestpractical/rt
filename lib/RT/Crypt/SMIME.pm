@@ -32,88 +32,88 @@ sub SignEncrypt {
 
     my $entity = $args{'Entity'};
 
-    if ( $args{'Sign'} && !defined $args{'Passphrase'} ) {
-        $args{'Passphrase'} = $self->GetPassphrase( Address => $args{'Signer'} );
-    }
 
     my %res = (exit_code => 0, status => '');
 
-    my @addresses =
-        map $_->address,
-        map Email::Address->parse($_),
-        grep defined && length,
-        map $entity->head->get($_),
-        qw(To Cc Bcc);
-
     my @keys;
-    foreach my $address ( @addresses ) {
-        $RT::Logger->debug( "Considering encrypting message to " . $address );
+    if ( $args{'Encrypt'} ) {
+        my @addresses =
+            map $_->address,
+            map Email::Address->parse($_),
+            grep defined && length,
+            map $entity->head->get($_),
+            qw(To Cc Bcc);
 
-        my %key_info = $self->GetKeysInfo( Key => $address );
-        unless ( %key_info ) {
-            $res{'exit_code'} = 1;
-            my $reason = 'Key not found';
-            $res{'status'} .=
-                "Operation: RecipientsCheck\nStatus: ERROR\n"
-                ."Message: Recipient '$address' is unusable, the reason is '$reason'\n"
-                ."Recipient: $address\n"
-                ."Reason: $reason\n\n",
-            ;
-            next;
-        }
+        foreach my $address ( @addresses ) {
+            $RT::Logger->debug( "Considering encrypting message to " . $address );
 
-        unless ( $key_info{'info'}[0]{'Expire'} ) {
-            # we continue here as it's most probably a problem with the key,
-            # so later during encryption we'll get verbose errors
-            $RT::Logger->error(
-                "Trying to send an encrypted message to ". $address
-                .", but we couldn't get expiration date of the key."
-            );
+            my %key_info = $self->GetKeysInfo( Key => $address );
+            unless ( %key_info ) {
+                $res{'exit_code'} = 1;
+                my $reason = 'Key not found';
+                $res{'status'} .=
+                    "Operation: RecipientsCheck\nStatus: ERROR\n"
+                    ."Message: Recipient '$address' is unusable, the reason is '$reason'\n"
+                    ."Recipient: $address\n"
+                    ."Reason: $reason\n\n",
+                ;
+                next;
+            }
+
+            unless ( $key_info{'info'}[0]{'Expire'} ) {
+                # we continue here as it's most probably a problem with the key,
+                # so later during encryption we'll get verbose errors
+                $RT::Logger->error(
+                    "Trying to send an encrypted message to ". $address
+                    .", but we couldn't get expiration date of the key."
+                );
+            }
+            elsif ( $key_info{'info'}[0]{'Expire'}->Diff( time ) < 0 ) {
+                $res{'exit_code'} = 1;
+                my $reason = 'Key expired';
+                $res{'status'} .=
+                    "Operation: RecipientsCheck\nStatus: ERROR\n"
+                    ."Message: Recipient '$address' is unusable, the reason is '$reason'\n"
+                    ."Recipient: $address\n"
+                    ."Reason: $reason\n\n",
+                ;
+                next;
+            }
+            push @keys, $key_info{'info'}[0]{'Content'};
         }
-        elsif ( $key_info{'info'}[0]{'Expire'}->Diff( time ) < 0 ) {
-            $res{'exit_code'} = 1;
-            my $reason = 'Key expired';
-            $res{'status'} .=
-                "Operation: RecipientsCheck\nStatus: ERROR\n"
-                ."Message: Recipient '$address' is unusable, the reason is '$reason'\n"
-                ."Recipient: $address\n"
-                ."Reason: $reason\n\n",
-            ;
-            next;
-        }
-        push @keys, $key_info{'info'}[0]{'Content'};
     }
     return %res if $res{'exit_code'};
 
-    foreach my $key ( @keys ) {
-        my $key_file = File::Temp->new;
-        print $key_file $key;
-        $key = $key_file;
-    }
-
     my $opts = RT->Config->Get('SMIME');
+
+    my @command;
+    if ( $args{'Sign'} ) {
+        # XXX: implement support for -nodetach
+        $args{'Passphrase'} = $self->GetPassphrase( Address => $args{'Signer'} )
+            unless defined $args{'Passphrase'};
+
+        push @command, join ' ', shell_quote(
+            $self->OpenSSLPath, qw(smime -sign -passin env:SMIME_PASS),
+            -signer => $opts->{'Keyring'} .'/'. $args{'Signer'} .'.pem',
+            -inkey  => $opts->{'Keyring'} .'/'. $args{'Signer'} .'.pem',
+        );
+    }
+    if ( $args{'Encrypt'} ) {
+        foreach my $key ( @keys ) {
+            my $key_file = File::Temp->new;
+            print $key_file $key;
+            $key = $key_file;
+        }
+        push @command, join ' ', shell_quote(
+            $self->OpenSSLPath, qw(smime -encrypt -des3),
+            map { $_->filename } @keys
+        );
+    }
 
     $entity->make_multipart('mixed', Force => 1);
     my ($buf, $err) = ('', '');
     {
-        local $ENV{'SMIME_PASS'};
-        
-        my @command;
-        if ( $args{'Sign'} ) {
-            $ENV{'SMIME_PASS'} = $args{'Passphrase'};
-            push @command, join ' ', shell_quote(
-                $self->OpenSSLPath, qw(smime -sign -passin env:SMIME_PASS),
-                -signer => $opts->{'Keyring'} .'/'. $args{'Signer'} .'.pem',
-                -inkey  => $opts->{'Keyring'} .'/'. $args{'Signer'} .'.pem',
-            );
-        }
-        if ( $args{'Encrypt'} ) {
-            push @command, join ' ', shell_quote(
-                $self->OpenSSLPath, qw(smime -encrypt -des3),
-                map { $_->filename } @keys
-            );
-        }
-
+        local $ENV{'SMIME_PASS'} = $args{'Passphrase'};
         local $SIG{'CHLD'} = 'DEFAULT';
         safe_run_child { run3(
             join( ' | ', @command ),
