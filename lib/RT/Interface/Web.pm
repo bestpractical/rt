@@ -586,7 +586,7 @@ sub PathIsSafe {
         if ($component eq '..') {
             $score--;
             if ($score < 0) {
-                $RT::Logger->info("Rejecting unsafe path: $file");
+                $RT::Logger->info("Rejecting unsafe path: $path");
                 return 0;
             }
         }
