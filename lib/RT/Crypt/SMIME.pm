@@ -195,6 +195,7 @@ sub VerifyRFC3851 {
     my %args = (Data => undef, Queue => undef, @_ );
 
     my $msg = $args{'Data'}->as_string;
+    $msg =~ s/\r*\n/\x0D\x0A/g;
 
     my %res;
     my $buf;
