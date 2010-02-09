@@ -554,27 +554,51 @@ sub StaticFileHeaders {
     # $HTML::Mason::Commands::r->headers_out->{'Last-Modified'} = $date->RFC2616;
 }
 
-=head2 FileExistsInCompRoots
+=head2 PathIsSafe
 
-Takes a C<< File => path >> and returns the path of first Mason comp root
-that the file lives under, or C<undef> if none exist.
+Takes a C<< Path => path >> and returns a boolean indicating that
+the path is safely within RT's control or not. The path I<must> be
+relative.
+
+This function does not consult the filesystem at all; it is merely
+a logical sanity checking of the path. This explicitly does not handle
+symlinks; if you have symlinks in RT's webroot pointing outside of it,
+then we assume you know what you are doing.
 
 =cut
 
-sub FileExistsInCompRoots {
+sub PathIsSafe {
     my $self = shift;
     my %args = @_;
-    my $file = $args{File};
+    my $path = $args{Path};
 
-    require Cwd;
-    my $realpath = Cwd::realpath($file);
+    # Get File::Spec to clean up extra /s, ./, etc
+    my $cleaned_up = File::Spec->canonpath($path);
 
-    for my $comp_root ($HTML::Mason::Commands::m->interp->comp_root_array) {
-        my ($name, $rootdir) = @$comp_root;
-        return $rootdir if $realpath =~ /^\Q$rootdir\E(?=\/|$)/;
+    # Forbid too many ..s. We can't just sum then check because
+    # "../foo/bar/baz" should be illegal even though it has more
+    # downdirs than updirs. So as soon as we get a negative score
+    # (which means "breaking out" of the top level) we reject the path.
+
+    my @components = split '/', $cleaned_up;
+    my $score = 0;
+    for my $component (@components) {
+        if ($component eq '..') {
+            $score--;
+            if ($score < 0) {
+                $RT::Logger->info("Rejecting unsafe path: $file");
+                return 0;
+            }
+        }
+        elsif ($component eq '.' || $component eq '') {
+            # these two have no effect on $score
+        }
+        else {
+            $score++;
+        }
     }
 
-    return undef;
+    return 1;
 }
 
 =head2 SendStaticFile 
@@ -594,8 +618,9 @@ sub SendStaticFile {
     my %args = @_;
     my $file = $args{File};
     my $type = $args{Type};
+    my $relfile = $args{RelativeFile};
 
-    if (!$self->FileExistsInCompRoots(File => $file)) {
+    if (defined($relfile) && !$self->PathIsSafe(Path => $relfile)) {
         $HTML::Mason::Commands::r->status(400);
         $HTML::Mason::Commands::m->abort;
     }
