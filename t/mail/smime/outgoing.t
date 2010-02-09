@@ -122,8 +122,8 @@ END
     ok(eval {
         run3([
             $openssl, qw(smime -decrypt -passin pass:123456),
-            '-inkey', File::Spec->catfile($keys, 'recipient.key'),
-            '-recip', File::Spec->catfile($keys, 'recipient.crt')
+            '-inkey', File::Spec->catfile($keys, 'root@example.com.key'),
+            '-recip', File::Spec->catfile($keys, 'root@example.com.crt')
         ], \$mails[0], \$buf, \$err )
         }, 'can decrypt'
     );

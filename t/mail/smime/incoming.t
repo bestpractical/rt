@@ -25,6 +25,7 @@ my $keyring = RT::Test->new_temp_dir(
 );
 
 RT->Config->Set( Crypt =>
+    Enable   => 1,
     Incoming => ['SMIME'],
     Outgoing => 'SMIME',
 );
