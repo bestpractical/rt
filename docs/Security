@@ -1,25 +1,12 @@
-RT2 runs setgid to some group (it defaults to 'rt').
+Security tips for running RT3
 
-rt's configuration file, 'config.pm', is not world readable because it 
-contains rt's database password. If  a user gets access to this file, he
-can arbitrarily manipulate the RT database. This is bad. You don't want
-this to happen.  config.pm is mode 550. No users should be members of 
-the 'rt' group unless you want them to be able to obtain your rt password.
+0   Protect your RT installation by making it only accessible via SSL
 
-If you're running the web interface, you'll need to make sure your webserver
-has access to config.pm.  You could do this by letting your webserver's user
-be a member of the 'rt' group. This has the disadvantage of letting 
-any mod_perl code on your web server have access to your RT password.
+1   Be sure to change the password for the root user of RT.  The default password is "password".  This can be changed via the RT web interface at: Preferences > About me
 
-Alternatively, you can run RT2 on its own apache instance bound to a high
-port on 127.0.0.1
-which runs as a non-priviledged user which is a member of the group 'rt'.  
+2   Be sure to protect your RT_SiteConfig.pm file if it contains database credentials or other sensitive information.  This file only needs to be readable by RT and your web server.  One way to accomplish this is to make the file readable only by root and the group that RT runs as, and then make sure your web server is a member of that group.  Advanced configuration may be required if other users have the ability to run CGIs or access the server where RT is running.  Otherwise, those users may have access to become RT superusers.
 
-Configure your webserver to proxy requests to RT's 
-virtual directory to the apache instance you just set up.
+3   Be sure to protect your database.  If it does not need to talk to the world, then don't allow it to listen for remote connections.  With MySQL this can be accomplished via "skip-networking".  If you use your database for other things and must allow remote connections, be sure to use a strong, hard to guess  password for RT.
 
-TODO: doc the apache configs needed to do this.
-
-The same technique can be used to run multiple RT2 instances on the same host.
-
+4   Apache, lighttpd, and most other web servers support name based virtual hosts.  When possible, configure RT as a name based virtual host to raise the bar against DNS rebinding attacks.  Note:  If when you visit http://your.servers.ipaddress.here you see RT, it means you are not likely getting this additional protection.
 
