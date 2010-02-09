@@ -1,0 +1,42 @@
+X-Mozilla-Status: 0801
+X-Mozilla-Status2: 00000000
+X-Mozilla-Keys:                                                                                 
+FCC: imap://sender@localhost/Sent
+X-Identity-Key: id1
+X-Account-Key: account1
+Message-ID: <4B709D8E.1000001@example.com>
+Date: Tue, 09 Feb 2010 02:26:06 +0300
+From: tester <sender@example.com>
+X-Mozilla-Draft-Info: internal/draft; vcard=0; receipt=0; DSN=0; uuencode=0
+User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.5; ru; rv:1.9.1.7) Gecko/20100111 Thunderbird/3.0.1
+MIME-Version: 1.0
+To: root@example.com
+Subject: Test Email ID:5
+Content-Type: application/pkcs7-mime; name="smime.p7m"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7m"
+Content-Description: S/MIME Encrypted Message
+
+MIAGCSqGSIb3DQEHA6CAMIACAQAxggHIMIHhAgEAMIGKMH0xCzAJBgNVBAYTAkFVMRMwEQYD
+VQQIEwpTb21lLVN0YXRlMSEwHwYDVQQKExhJbnRlcm5ldCBXaWRnaXRzIFB0eSBMdGQxETAP
+BgNVBAMTCENBIE93bmVyMSMwIQYJKoZIhvcNAQkBFhRjYS5vd25lckBleGFtcGxlLmNvbQIJ
+AIpqzVG+lKAVMA0GCSqGSIb3DQEBAQUABEALN6in6tg2C0yVmkb0XWJr6qRLrwrJLiqcoamd
+a3VAyQeHcqIB14UYuHiN6zZA2lABUI1DsjFlDiCEg8TSyJuAMIHhAgEAMIGKMH0xCzAJBgNV
+BAYTAkFVMRMwEQYDVQQIEwpTb21lLVN0YXRlMSEwHwYDVQQKExhJbnRlcm5ldCBXaWRnaXRz
+IFB0eSBMdGQxETAPBgNVBAMTCENBIE93bmVyMSMwIQYJKoZIhvcNAQkBFhRjYS5vd25lckBl
+eGFtcGxlLmNvbQIJAIpqzVG+lKAWMA0GCSqGSIb3DQEBAQUABEBDqZbltMcqBRxIshfZ+jSa
+49l6RJAX6HVIBVZRu77rmlyVs2ft18qP0YVgwDPgD5Iok4c1Taemo3Rg7M2bHLwlMIAGCSqG
+SIb3DQEHATAaBggqhkiG9w0DAjAOAgIAoAQIWcv/5Jc8r/uggASCAqjneNECFsRSAPgwjW7G
+Hi+zLy+vPBLNfWgyuEAlKGeM347PdUciZNLhiz3D49lfHmVypGOxYTNU0kfeJVTW5bfwYHdS
+ZmPRx49tNJt08GR0eqbePKZtH0/0BW7LF1//lcNeJchsSdyRvkMB8zvTBhnNVhUSQWumrbda
+OUqvVpSdqx4SeqbyiyQKI+7AiZ2ChcZX9fA+YoiWT85NVtmgBNMMne0uHgmdBMaQHF4bTXvY
+/Mg8ew7Vg3TkVjg9QlaAe7JGrgyvSx/H4f+sn6mb68NaF5jGjiwen4a6ThRJO8lIJ30rTlb+
+WMqszV6OZK2ieWNn5BQlXOI/ew92UIuoyd5PtDkrLbkYio20KfCLpLbt1tvT8ZG0csgg9PO3
+iM3S0PWpjg4axknCYonphwSczsPcvUYZ+y4cIMdXvk5A3byMAQjLPYh0N6F9Q9tETc3HhDhA
+rSdVRot6JILv/tUs2ISPxJcMlLh8TcHZNchnRUcDg0wojULs49rONZIw8UGzbZi1H6IoGebk
+1HBsskw21pPDUjG7LpV0bKFKan0wxE5kJP1Xk5EN2Yw+2EHDE19QHs/ru2FdTjfbtcQFGlT1
+yiNUI7UwAPpCPyLoOpfvwYL2u4nSnbnKHCdjDHl4VAre8bngCMTzdRM91w/nydjpHfBbv+l5
+/EOKbYPC/SNG3IJZy70iExcXU+WydHdYCW0NhR7K1sCdwDsUpziQMvzlkJKclPC894Yljqnn
+83S8G2z3pTJ+SEAabdXY1GmYdfFeLGwnRmegzmWe0wCZKz0m4CabkDX4h0u8xu/C/5gbfU5Y
+JO1s3iVxzGa1TgyvD4aPvqh9pIQ/wSFt43HtZ5/ReG2ul7PTzOK92xC1c3xpMnXdtLEeRmNx
+2KU0Kfk1Si0lBJHf3R/JhwhHvwQI0IeGb5Ho55oAAAAAAAAAAAAA
