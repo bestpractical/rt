@@ -398,7 +398,10 @@ sub CheckIfProtected {
             return ();
         }
 
-        unless ( $protocol eq 'application/pgp-signature' ) {
+        unless (
+            $protocol eq 'application/x-pkcs7-signature'
+            || $protocol eq 'application/pkcs7-signature'
+        ) {
             $RT::Logger->info( "Skipping protocol '$protocol', only 'application/pgp-signature' is supported" );
             return ();
         }
