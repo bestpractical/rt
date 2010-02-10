@@ -144,12 +144,13 @@ sub GetCurrentUser {
         my $decrypted;
 
         foreach my $protocol ( @check_protocols ) {
-            my $status = $part->head->get( "X-RT-$protocol-Status" );
-            next unless $status;
+            my @status = grep defined && length,
+                $part->head->get( "X-RT-$protocol-Status" );
+            next unless @status;
 
             push @found, $protocol;
 
-            for ( RT::Crypt->ParseStatus( Protocol => $protocol, Status => $status ) ) {
+            for ( map RT::Crypt->ParseStatus( Protocol => $protocol, Status => "$_" ), @status ) {
                 if ( $_->{Operation} eq 'Decrypt' && $_->{Status} eq 'DONE' ) {
                     $decrypted = 1;
                 }
