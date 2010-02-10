@@ -237,6 +237,8 @@ sub DecryptRFC3851 {
     my $self = shift;
     my %args = (Data => undef, Queue => undef, @_ );
 
+    my %res;
+
     my $msg = $args{'Data'}->as_string;
 
     my $action = 'correspond';
@@ -245,8 +247,25 @@ sub DecryptRFC3851 {
     my $address = $action eq 'correspond'
         ? $args{'Queue'}->CorrespondAddress || RT->Config->Get('CorrespondAddress')
         : $args{'Queue'}->CommentAddress    || RT->Config->Get('CommentAddress');
+    my $key_file = File::Spec->catfile( 
+        RT->Config->Get('SMIME')->{'Keyring'}, $address .'.pem'
+    );
+    unless ( -e $key_file && -r _ ) {
+        $res{'exit_code'} = 1;
+        $res{'status'} = $self->FormatStatus({
+            Operation => 'KeyCheck',
+            Status    => 'MISSING',
+            Message   => "Secret key for '$address' is not available",
+            Key       => $address,
+            KeyType   => 'secret',
+        });
+        $res{'User'} = {
+            String => $address,
+            SecretKeyMissing => 1,
+        };
+        return %res;
+    }
 
-    my %res;
     my $buf;
     {
         local $ENV{SMIME_PASS} = $self->GetPassphrase( Address => $address );
@@ -254,7 +273,7 @@ sub DecryptRFC3851 {
         my $cmd = join( ' ', shell_quote(
             $self->OpenSSLPath,
             qw(smime -decrypt -passin env:SMIME_PASS),
-            -recip => RT->Config->Get('SMIME')->{'Keyring'} .'/'. $address .'.pem',
+            -recip => $key_file,
         ) );
         safe_run_child { run3( $cmd, \$msg, \$buf, \$res{'stderr'} ) };
         $res{'exit_code'} = $?;
