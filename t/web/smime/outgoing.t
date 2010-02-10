@@ -35,6 +35,7 @@ RT->Config->Set( SMIME =>
     OutgoingMessagesFormat => 'RFC',
     Passphrase => {
         'sender@example.com' => '123456',
+        'root@example.com' => '123456',
     },
     OpenSSL => $openssl,
     Keyring => $keyring,
@@ -184,7 +185,7 @@ foreach my $queue_set ( @variants ) {
 
 # ------------------------------------------------------------------------------
 # now delete all keys from the keyring and put back secret/pub pair for rt-test@
-# and only public key for rt-recipient@ so we can verify signatures and decrypt
+# and only public key for sender@ so we can verify signatures and decrypt
 # like we are on another side recieving emails
 # ------------------------------------------------------------------------------
 
@@ -237,7 +238,7 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'signed'} } ) {
     is $msg->GetHeader('X-RT-Incoming-Encryption'), 'Not encrypted',
         "RT's outgoing mail looks not encrypted";
     like $msg->GetHeader('X-RT-Incoming-Signature'),
-        qr/<rt-recipient\@example.com>/,
+        qr/<sender\@example\.com>/,
         "RT's outgoing mail looks signed";
 
     like $attachments[0]->Content, qr/Some content/,
@@ -284,7 +285,7 @@ foreach my $mail ( map cleanup_headers($_), @{ $mail{'signed_encrypted'} } ) {
     is $msg->GetHeader('X-RT-Incoming-Encryption'), 'Success',
         "RT's outgoing mail looks encrypted";
     like $msg->GetHeader('X-RT-Incoming-Signature'),
-        qr/<rt-recipient\@example.com>/,
+        qr/<sender\@example.com>/,
         "RT's outgoing mail looks signed";
 
     like $attachments[0]->Content, qr/Some content/,
