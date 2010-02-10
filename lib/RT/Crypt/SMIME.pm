@@ -289,7 +289,7 @@ sub DecryptRFC3851 {
         return %res;
     }
 
-    my $res_entity = _extract_msg_from_buf( \$buf );
+    my $res_entity = _extract_msg_from_buf( \$buf, 1 );
     $res_entity->make_multipart( 'mixed', Force => 1 );
 
     $args{'Data'}->make_multipart( 'mixed', Force => 1 );
@@ -341,9 +341,11 @@ sub ParseStatus {
 
 sub _extract_msg_from_buf {
     my $buf = shift;
+    my $exact = shift;
     my $rtparser = RT::EmailParser->new();
     my $parser   = MIME::Parser->new();
     $rtparser->_SetupMIMEParser($parser);
+    $parser->decode_bodies(0) if $exact;
     $parser->output_to_core(1);
     unless ( $rtparser->{'entity'} = $parser->parse_data($$buf) ) {
         $RT::Logger->crit("Couldn't parse MIME stream and extract the submessages");
@@ -355,7 +357,6 @@ sub _extract_msg_from_buf {
             return (undef);
         }
     }
-    $rtparser->_PostProcessNewEntity;
     return $rtparser->Entity;
 }
 
