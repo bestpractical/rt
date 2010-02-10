@@ -32,7 +32,6 @@ sub SignEncrypt {
 
     my $entity = $args{'Entity'};
 
-
     my %res = (exit_code => 0, status => '');
 
     my @keys;
@@ -210,15 +209,33 @@ sub VerifyRFC3851 {
     if ( $res{'exit_code'} ) {
         $res{'message'} = "openssl exitted with error code ". ($? >> 8)
             ." and error: $res{stderr}";
+        $RT::Logger->error($res{'message'});
         return %res;
     }
 
-    my $res_entity = _extract_msg_from_buf( \$buf );
+    my @signers;
+    {
+        my $pkcs7_info;
+        local $SIG{CHLD} = 'DEFAULT';
+        my $cmd = join( ' ', shell_quote(
+            $self->OpenSSLPath, qw(smime -pk7out),
+        ) );
+        $cmd .= ' | '. join( ' ', shell_quote(
+            $self->OpenSSLPath, qw(pkcs7 -print_certs),
+        ) );
+        safe_run_child { run3( $cmd, \$msg, \$pkcs7_info, \$res{'stderr'} ) };
+        unless ( $? ) {
+            @signers = $self->ParsePKCS7Info( $pkcs7_info );
+        }
+    }
+
+    my $res_entity = _extract_msg_from_buf( \$buf, 1 );
     unless ( $res_entity ) {
         $res{'exit_code'} = 1;
         $res{'message'} = "verified message, but couldn't parse result";
         return %res;
     }
+
     $res_entity->make_multipart( 'mixed', Force => 1 );
 
     $args{'Data'}->make_multipart( 'mixed', Force => 1 );
@@ -228,6 +245,7 @@ sub VerifyRFC3851 {
     $res{'status'} =
         "Operation: Verify\nStatus: DONE\n"
         ."Message: The signature is good\n"
+        ."UserString: ". $signers[0]{'User'}{'String'} ."\n"
     ;
 
     return %res;
