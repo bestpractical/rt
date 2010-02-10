@@ -262,6 +262,11 @@ sub DecryptRFC3851 {
     if ( $res{'exit_code'} ) {
         $res{'message'} = "openssl exitted with error code ". ($? >> 8)
             ." and error: $res{stderr}";
+        $res{'status'} = $self->FormatStatus({
+            Operation => 'Decrypt', Status => 'ERROR',
+            Message => 'Decryption failed',
+            EncryptedTo => $address,
+        });
         return %res;
     }
 
@@ -272,12 +277,28 @@ sub DecryptRFC3851 {
     $args{'Data'}->parts([ $res_entity->parts ]);
     $args{'Data'}->make_singlepart;
 
-    $res{'status'} =
-        "Operation: Decrypt\nStatus: DONE\n"
-        ."Message: Decryption process succeeded\n"
-        ."EncryptedTo: $address\n";
+    $res{'status'} = $self->FormatStatus({
+        Operation => 'Decrypt', Status => 'DONE',
+        Message => 'Decryption process succeeded',
+        EncryptedTo => $address,
+    });
 
     return %res;
+}
+
+sub FormatStatus {
+    my $self = shift;
+    my @status = @_;
+
+    my $res = '';
+    foreach ( @status ) {
+        $res .= "\n" if $res;
+        while ( my ($k, $v) = each %$_ ) {
+            $res .= $k .": ". $v ."\n";
+        }
+    }
+
+    return $res;
 }
 
 sub ParseStatus {
