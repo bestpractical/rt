@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 197;
+use RT::Test tests => 89;
 
 my $openssl = RT::Test->find_executable('openssl');
 plan skip_all => 'openssl executable is required.'
@@ -116,7 +116,7 @@ sub email_ok {
 
     if ($usage =~ /signed/) {
         is( $msg->GetHeader('X-RT-Incoming-Signature'),
-            'RT Test <sender@example.com>',
+            '"sender" <sender@example.com>',
             "$eid: recorded incoming mail that is signed"
         );
     }
