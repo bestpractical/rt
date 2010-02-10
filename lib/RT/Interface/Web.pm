@@ -575,6 +575,11 @@ sub PathIsSafe {
     # Get File::Spec to clean up extra /s, ./, etc
     my $cleaned_up = File::Spec->canonpath($path);
 
+    if (!defined($cleaned_up)) {
+        $RT::Logger->info("Rejecting path that canonpath doesn't understand: $path");
+        return 0;
+    }
+
     # Forbid too many ..s. We can't just sum then check because
     # "../foo/bar/baz" should be illegal even though it has more
     # downdirs than updirs. So as soon as we get a negative score
