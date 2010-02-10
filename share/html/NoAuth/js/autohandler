@@ -51,7 +51,8 @@ my $type;
 my $file = $m->base_comp->source_file;
 
 if ($file =~ /\.(gif|png|jpe?g)$/i) {
-    RT::Interface::Web->SendStaticFile( File => $file );
+    my $relfile = $m->base_comp->path;
+    RT::Interface::Web->SendStaticFile( File => $file, RelativeFile => $relfile );
 } else {
     &RT::Interface::Web::StaticFileHeaders();
     $r->content_type('application/x-javascript');
