@@ -522,6 +522,22 @@ sub GetCertificateInfo {
     return %res;
 }
 
+my %SHORT_NAMES = (
+    C => 'Country',
+    ST => 'StateOrProvince',
+    O  => 'Organization',
+    OU => 'OrganizationUnit',
+    CN => 'Name',
+);
+my %LONG_NAMES = (
+    countryName => 'Country',
+    stateOrProvinceName => 'StateOrProvince',
+    organizationName => 'Organization',
+    organizationalUnitName => 'OrganizationUnit',
+    commonName => 'Name',
+    emailAddress => 'EmailAddress',
+);
+
 sub CanonicalizeInfo {
     my $self = shift;
     my %info = @_;
@@ -530,19 +546,17 @@ sub CanonicalizeInfo {
         # XXX: trust is not implmented for SMIME
         TrustLevel => 1,
     );
-    {
-        my $subject = delete $info{'Certificate'}{'Data'}{'Subject'};
-        $res{'User'} = [{
-            Country => $subject->{'countryName'},
-            StateOrProvince  => $subject->{'stateOrProvinceName'},
-            Organization     => $subject->{'organizationName'},
-            OrganizationUnit => $subject->{'organizationalUnitName'},
-        }];
-        my $email = Email::Address->new( @{$subject}{'commonName', 'emailAddress'} );
-        $res{'User'}[-1]{'String'} = $email->format;
+    if ( my $subject = delete $info{'Certificate'}{'Data'}{'Subject'} ) {
+        $res{'User'} = [
+            { $self->CanonicalizeUserInfo( %$subject ) },
+        ];
     }
-    {
-        my $validity = delete $info{'Certificate'}{'Data'}{'Validity'};
+    if ( my $issuer = delete $info{'Certificate'}{'Data'}{'Issuer'} ) {
+        $res{'Issuer'} = [
+            { $self->CanonicalizeUserInfo( %$issuer ) },
+        ];
+    }
+    if ( my $validity = delete $info{'Certificate'}{'Data'}{'Validity'} ) {
         $res{'Created'} = $self->ParseDate( $validity->{'Not Before'} );
         $res{'Expire'} = $self->ParseDate( $validity->{'Not After'} );
     }
@@ -597,5 +611,52 @@ sub ParseCertificateInfo {
     return %res;
 }
 
+sub ParsePKCS7Info {
+    my $self = shift;
+    my $string = shift;
+
+    return () unless defined $string && length $string && $string =~ /\S/;
+
+    my @res = ({});
+    foreach my $str ( split /\r*\n/, $string ) {
+        if ( $str =~ /^\s*$/ ) {
+            push @res, {} if keys %{ $res[-1] };
+        } elsif ( my ($who, $values) = ($str =~ /^(subject|issuer)=(.*)$/i) ) {
+            my %info;
+            while ( $values =~ s{^/([a-z]+)=(.*?)(?=$|/[a-z]+=)}{}i ) {
+                $info{ $1 } = $2;
+            }
+            die "Couldn't parse PKCS7 info: $string" if $values;
+
+            $res[-1]{ ucfirst lc $who } = { $self->CanonicalizeUserInfo( %info ) };
+        }
+        else {
+            $res[-1]{'Content'} ||= '';
+            $res[-1]{'Content'} .= $str ."\n";
+        }
+    }
+
+    # oddly, but a certificate can be duplicated
+    my %seen;
+    @res = grep !$seen{ $_->{'Content'} }++, grep keys %$_, @res;
+    $_->{'User'} = delete $_->{'Subject'} foreach @res;
+    
+    return @res;
+}
+
+sub CanonicalizeUserInfo {
+    my $self = shift;
+    my %info = @_;
+
+    my %res;
+    while ( my ($k, $v) = each %info ) {
+        $res{ $SHORT_NAMES{$k} || $LONG_NAMES{$k} || $k } = $v;
+    }
+    if ( $res{'EmailAddress'} ) {
+        my $email = Email::Address->new( @res{'Name', 'EmailAddress'} );
+        $res{'String'} = $email->format;
+    }
+    return %res;
+}
 
 1;
