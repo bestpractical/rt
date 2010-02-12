@@ -104,7 +104,7 @@ $r->content_type('application/rss+xml');
         use XML::RSS;
         my $rss = new XML::RSS (version => '1.0');
         $rss->channel(
-          title        => RT->Config->Get('rtname').": Search" . $ARGS{'Query'},
+          title        => RT->Config->Get('rtname').": Search " . $ARGS{'Query'},
           link         => RT->Config->Get('WebURL'),
           description  => "",
           dc => {
