@@ -168,7 +168,7 @@ my $RSSQueryString = "?".$m->comp('/Elements/QueryString', Query => $Query, Orde
 my $RSSPath  = join '/', map $m->interp->apply_escapes($_, 'u'),
     $session{'CurrentUser'}->UserObj->Name,
     $session{'CurrentUser'}->UserObj->GenerateAuthString( $Query.$Order.$OrderBy );
-my $RSSFeedURL = RT->Config->Get('WebPath')."/NoAuth/rdf/$RSSPath/$RSSQueryString";
+my $RSSFeedURL = RT->Config->Get('WebPath')."/NoAuth/rss/$RSSPath/$RSSQueryString";
 
 if ($ARGS{'TicketsRefreshInterval'}) {
 	$session{'tickets_refresh_interval'} = $ARGS{'TicketsRefreshInterval'};
