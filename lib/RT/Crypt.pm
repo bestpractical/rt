@@ -73,6 +73,7 @@ all may be supported by this installation.
 =cut
 
 our @PROTOCOLS = ('GnuPG');
+our %PROTOCOLS = map { lc $_ => $_ } @PROTOCOLS;
 
 sub Protocols {
     return @PROTOCOLS;
@@ -88,7 +89,8 @@ and undef on failure.
 
 sub LoadImplementation {
     state %cache;
-    my $class = 'RT::Crypt::'. $_[1];
+    my $proto = $PROTOCOLS{ lc $_[1] } or die "Unknown protocol '$_[1]'";
+    my $class = 'RT::Crypt::'. $proto;
     return $cache{ $class } if exists $cache{ $class };
 
     if (eval "require $class; 1") {
