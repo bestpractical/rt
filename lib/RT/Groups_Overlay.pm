@@ -129,7 +129,7 @@ sub PrincipalsAlias {
 }
 
 
-# {{{ LimiToSystemInternalGroups
+# {{{ LimitToSystemInternalGroups
 
 =head2 LimitToSystemInternalGroups
 
@@ -148,7 +148,7 @@ sub LimitToSystemInternalGroups {
 
 # }}}
 
-# {{{ LimiToUserDefinedGroups
+# {{{ LimitToUserDefinedGroups
 
 =head2 LimitToUserDefinedGroups
 
@@ -167,7 +167,7 @@ sub LimitToUserDefinedGroups {
 
 # }}}
 
-# {{{ LimiToPersonalGroupsFor
+# {{{ LimitToPersonalGroupsFor
 
 =head2 LimitToPersonalGroupsFor PRINCIPAL_ID
 
