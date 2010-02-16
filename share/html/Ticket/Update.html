@@ -264,15 +264,12 @@ if ( $ARGS{'SubmitTicket'} ) {
 
 # check email addresses for RT's
 {
-    my $address_re = RT->Config->Get('RTAddressRegexp');
     foreach my $field ( qw(UpdateCc UpdateBcc) ) {
         my $value = $ARGS{ $field };
         next unless defined $value && length $value;
 
         my @emails = Email::Address->parse( $value );
-        foreach my $email ( @emails ) {
-            next unless $email->address =~ $address_re;
-
+        foreach my $email ( grep RT::EmailAddress->IsRTAddress($_->address), @emails ) {
             push @results, loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email->format, loc(substr($field, 6)) );
             $checks_failure = 1;
             $email = undef;
