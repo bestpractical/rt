@@ -447,24 +447,20 @@ sub Addresses {
 
     my %data = ();
     my $current_user_address = lc $self->CurrentUser->EmailAddress;
-    my $correspond = lc $self->TransactionObj->TicketObj->QueueObj->CorrespondAddress;
-    my $comment = lc $self->TransactionObj->TicketObj->QueueObj->CommentAddress;
     foreach my $hdr (qw(From To Cc Bcc RT-Send-Cc RT-Send-Bcc)) {
         my @Addresses;
-        my $line      = $self->GetHeader($hdr);
+        my $line = $self->GetHeader($hdr);
         
         foreach my $AddrObj ( Email::Address->parse( $line )) {
             my $address = $AddrObj->address;
             $address = lc RT::User->CanonicalizeEmailAddress($address);
-            next if ( $current_user_address eq $address );
-            next if ( $comment              eq $address );
-            next if ( $correspond           eq $address );
-            next if ( RT::EmailParser->IsRTAddress($address) );
+            next if $current_user_address eq $address;
+            next if RT::EmailParser->IsRTAddress($address);
             push @Addresses, $AddrObj ;
         }
-		$data{$hdr} = \@Addresses;
+        $data{$hdr} = \@Addresses;
     }
-	return \%data;
+    return \%data;
 }
 
 =head2 NiceHeaders

@@ -289,9 +289,7 @@ email address and anything that the RT->Config->Get('RTAddressRegexp') matches.
 =cut
 
 sub ParseCcAddressesFromHead {
-
     my $self = shift;
-
     my %args = (
         QueueObj    => undef,
         CurrentUser => undef,
@@ -307,17 +305,13 @@ sub ParseCcAddressesFromHead {
         my $Address = $AddrObj->address;
         my $user = RT::User->new($RT::SystemUser);
         $Address = $user->CanonicalizeEmailAddress($Address);
-        next if ( lc $args{'CurrentUser'}->EmailAddress   eq lc $Address );
-        next if ( lc $args{'QueueObj'}->CorrespondAddress eq lc $Address );
-        next if ( lc $args{'QueueObj'}->CommentAddress    eq lc $Address );
-        next if ( $self->IsRTAddress($Address) );
+        next if lc $args{'CurrentUser'}->EmailAddress eq lc $Address;
+        next if $self->IsRTAddress($Address) );
 
         push ( @Addresses, $Address );
     }
     return (@Addresses);
 }
-
-
 
 
 =head2 IsRTaddress ADDRESS
