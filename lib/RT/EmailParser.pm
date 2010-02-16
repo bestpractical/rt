@@ -306,7 +306,7 @@ sub ParseCcAddressesFromHead {
         my $user = RT::User->new($RT::SystemUser);
         $Address = $user->CanonicalizeEmailAddress($Address);
         next if lc $args{'CurrentUser'}->EmailAddress eq lc $Address;
-        next if $self->IsRTAddress($Address) );
+        next if $self->IsRTAddress($Address);
 
         push ( @Addresses, $Address );
     }
@@ -332,11 +332,11 @@ sub IsRTAddress {
     }
 
     # we don't warn here, but do in config check
-    if ( my $global_address = RT->Config->Get('CorrespondAddress') ) {
-        return 1 if lc $global_address eq lc $address;
+    if ( my $correspond_address = RT->Config->Get('CorrespondAddress') ) {
+        return 1 if lc $correspond_address eq lc $address;
     }
-    if ( my $global_address = RT->Config->Get('CommentAddress') ) {
-        return 1 if lc $global_address eq lc $address;
+    if ( my $comment_address = RT->Config->Get('CommentAddress') ) {
+        return 1 if lc $comment_address eq lc $address;
     }
 
     my $queue = RT::Queue->new( $RT::SystemUser );
