@@ -978,22 +978,14 @@ sub ParseCcAddressesFromHead {
         @_
     );
 
-    my @recipients =
-        map lc $_->address,
+    my $current_address = lc $args{'CurrentUser'}->EmailAddress;
+    my $user = $args{'CurrentUser'}->UserObj;
+
+    return
+        grep $_ ne $current_address && !RT::EmailParser->IsRTAddress( $_ ),
+        map lc $user->CanonicalizeEmailAddress( $_->address ),
         map Email::Address->parse( $args{'Head'}->get( $_ ) ),
         qw(To Cc);
-
-    my @res;
-    foreach my $address ( @recipients ) {
-        $address = $args{'CurrentUser'}->UserObj->CanonicalizeEmailAddress( $address );
-        next if lc $args{'CurrentUser'}->EmailAddress   eq $address;
-        next if lc $args{'QueueObj'}->CorrespondAddress eq $address;
-        next if lc $args{'QueueObj'}->CommentAddress    eq $address;
-        next if RT::EmailParser->IsRTAddress( $address );
-
-        push @res, $address;
-    }
-    return @res;
 }
 
 
