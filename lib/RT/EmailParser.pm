@@ -338,6 +338,13 @@ sub IsRTAddress {
     }
 
     # we don't warn here, but do in config check
+    if ( my $global_address = RT->Config->Get('CorrespondAddress') ) {
+        return 1 if lc $global_address eq lc $address;
+    }
+    if ( my $global_address = RT->Config->Get('CommentAddress') ) {
+        return 1 if lc $global_address eq lc $address;
+    }
+
     my $queue = RT::Queue->new( $RT::SystemUser );
     $queue->LoadByCols( CorrespondAddress => $address );
     return 1 if $queue->id;
@@ -347,8 +354,6 @@ sub IsRTAddress {
 
     return undef;
 }
-
-
 
 
 =head2 CullRTAddresses ARRAY
