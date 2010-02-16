@@ -1195,6 +1195,16 @@ to RT for the defined time.
 
 Set($AutoLogoff, 0);
 
+=item C<$LogoutRefresh>
+
+The number of seconds to wait after logout before sending the user to the
+login page. By default, 1 second, though you may want to increase this if
+you display additional information on the logout page.
+
+=cut
+
+Set($LogoutRefresh, 1);
+
 =item C<$WebSecureCookies>
 
 By default, RT's session cookie isn't marked as "secure" Some web browsers 
