@@ -51,13 +51,18 @@ sub FindProtectedParts {
     my $entity = $args{'Entity'};
     return () if $args{'Skip'}{ $entity };
 
+    $args{'TopEntity'} ||= $entity;
+
     my @protocols = $args{'Protocols'}
         ? @{ $args{'Protocols'} } 
         : $self->EnabledOnIncoming;
         
     foreach my $protocol ( @protocols ) {
         my $class = $self->LoadImplementation( $protocol );
-        my %info = $class->CheckIfProtected( Entity => $entity );
+        my %info = $class->CheckIfProtected(
+            TopEntity => $args{'TopEntity'},
+            Entity    => $entity,
+        );
         next unless keys %info;
 
         $args{'Skip'}{ $entity } = 1;
@@ -95,6 +100,7 @@ sub FindProtectedParts {
         foreach my $protocol ( @protocols ) {
             my $class = $self->LoadImplementation( $protocol );
             my @list = $class->FindScatteredParts(
+                Entity  => $args{'TopEntity'},
                 Parts   => \@parts,
                 Parents => \%parent,
                 Skip    => $args{'Skip'}
