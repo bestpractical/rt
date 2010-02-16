@@ -333,6 +333,21 @@ our %META = (
         },
     },
 
+    RTAddressRegexp => {
+        Type    => 'SCALAR',
+        PostLoadCheck => sub {
+            my $self = shift;
+            my $value = $self->Get('RTAddressRegexp');
+            return if $value;
+
+            $RT::Logger->error(
+                'RTAddressRegexp option is not set in the config.'
+                .' Not setting this option result in additional SQL queries to check'
+                .' every address if it belongs to RT or not. These checks are'
+                .' required to avoid mail loops and other consequences.'
+            );
+        },
+    },
     # User overridable mail options
     EmailFrequency => {
         Section         => 'Mail',                                     #loc
@@ -829,9 +844,9 @@ sub SetFromConfig {
 
             # get entry for type we are looking for
             # XXX skip references to scalars or other references.
-            # Otherwise 5.10 goes boom. maybe we should skip any
+            # Otherwie 5.10 goes boom. may be we should skip any
             # reference
-            next if ref($entry) eq 'SCALAR' || ref($entry) eq 'REF';
+            return if ref($entry) eq 'SCALAR' || ref($entry) eq 'REF';
             my $entry_ref = *{$entry}{ ref($ref) };
             next unless $entry_ref;
 
