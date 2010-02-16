@@ -259,33 +259,38 @@ sub DecryptRFC3851 {
 
     my $msg = $args{'Data'}->as_string;
 
+    my %addresses;
+    $addresses{lc $_}++ foreach
+        map $_->address,
+        map Email::Address->parse($_),
+        @{$args{'Recipients'}};
+
     my $action = 'correspond';
     $action = 'comment' if grep defined && $_ eq 'comment', @{ $args{'Actions'}||[] };
-
-    my $address = $action eq 'correspond'
-        ? $args{'Queue'}->CorrespondAddress || RT->Config->Get('CorrespondAddress')
-        : $args{'Queue'}->CommentAddress    || RT->Config->Get('CommentAddress');
-    my $key_file = File::Spec->catfile( 
-        RT->Config->Get('SMIME')->{'Keyring'}, $address .'.pem'
-    );
-    unless ( -e $key_file && -r _ ) {
-        $res{'exit_code'} = 1;
-        $res{'status'} = $self->FormatStatus({
-            Operation => 'KeyCheck',
-            Status    => 'MISSING',
-            Message   => "Secret key for '$address' is not available",
-            Key       => $address,
-            KeyType   => 'secret',
-        });
-        $res{'User'} = {
-            String => $address,
-            SecretKeyMissing => 1,
-        };
-        return %res;
+    if ( $action eq 'correspond' ) {
+        my $i = 1;
+        $addresses{lc $_} += $i++ foreach (
+            $args{'Queue'}->CorrespondAddress, RT->Config->Get('CorrespondAddress'),
+            $args{'Queue'}->CommentAddress, RT->Config->Get('CommentAddress')
+        );
+    } else {
+        my $i = 1;
+        $addresses{lc $_} += $i++ foreach (
+            $args{'Queue'}->CorrespondAddress, RT->Config->Get('CorrespondAddress'),
+            $args{'Queue'}->CommentAddress, RT->Config->Get('CommentAddress'),
+        );
     }
+    my $keyring = RT->Config->Get('SMIME')->{'Keyring'};
 
     my $buf;
-    {
+    my $found_key = 0;
+    my $encrypted_to;
+    foreach my $address ( sort { $addresses{$b} <=> $addresses{$a} } grep length, keys %addresses ) {
+        my $key_file = File::Spec->catfile( $keyring, $address .'.pem' );
+        next unless -e $key_file && -r _;
+
+        $found_key = 1;
+
         local $ENV{SMIME_PASS} = $self->GetPassphrase( Address => $address );
         local $SIG{CHLD} = 'DEFAULT';
         my $cmd = join( ' ', shell_quote(
@@ -294,15 +299,31 @@ sub DecryptRFC3851 {
             -recip => $key_file,
         ) );
         safe_run_child { run3( $cmd, \$msg, \$buf, \$res{'stderr'} ) };
+        unless ( $? ) {
+            $encrypted_to = $address;
+            last;
+        }
+
+        next if index($res{'stderr'}, 'no recipient matches key') >= 0;
+
         $res{'exit_code'} = $?;
-    }
-    if ( $res{'exit_code'} ) {
         $res{'message'} = "openssl exitted with error code ". ($? >> 8)
             ." and error: $res{stderr}";
+        $RT::Logger->error( $res{'message'} );
         $res{'status'} = $self->FormatStatus({
             Operation => 'Decrypt', Status => 'ERROR',
             Message => 'Decryption failed',
             EncryptedTo => $address,
+        });
+        return %res;
+    }
+    unless ( $found_key ) {
+        $res{'exit_code'} = 1;
+        $res{'status'} = $self->FormatStatus({
+            Operation => 'KeyCheck',
+            Status    => 'MISSING',
+            Message   => "Secret key is not available",
+            KeyType   => 'secret',
         });
         return %res;
     }
@@ -317,7 +338,7 @@ sub DecryptRFC3851 {
     $res{'status'} = $self->FormatStatus({
         Operation => 'Decrypt', Status => 'DONE',
         Message => 'Decryption process succeeded',
-        EncryptedTo => $address,
+        EncryptedTo => $encrypted_to,
     });
 
     return %res;
@@ -434,13 +455,20 @@ sub CheckIfProtected {
                 }
             }
         }
-        return () if !$security_type && $type eq 'application/octet-stream';
+        return () unless $security_type;
 
-        return (
+        my %res = (
             Type   => $security_type,
             Format => 'RFC3851',
             Data   => $entity,
         );
+
+        if ( $security_type eq 'encrypted' ) {
+            my $top = $args{'TopEntity'}->head;
+            $res{'Recipients'} = [grep defined && length, map $top->get($_), 'To', 'Cc'];
+        }
+
+        return %res;
     }
     elsif ( $type eq 'multipart/signed' ) {
         # RFC3156, multipart/signed
