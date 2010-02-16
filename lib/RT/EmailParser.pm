@@ -333,12 +333,18 @@ sub IsRTAddress {
     my $self = shift;
     my $address = shift;
 
-    # Example: the following rule would tell RT not to Cc 
-    #   "tickets@noc.example.com"
-    my $address_re = RT->Config->Get('RTAddressRegexp');
-    if ( defined $address_re && $address =~ /$address_re/i ) {
-        return 1;
+    if ( my $address_re = RT->Config->Get('RTAddressRegexp') ) {
+        return $address =~ /$address_re/i ? 1 : undef;
     }
+
+    # we don't warn here, but do in config check
+    my $queue = RT::Queue->new( $RT::SystemUser );
+    $queue->LoadByCols( CorrespondAddress => $address );
+    return 1 if $queue->id;
+
+    $queue->LoadByCols( CommentAddress => $address );
+    return 1 if $queue->id;
+
     return undef;
 }
 
