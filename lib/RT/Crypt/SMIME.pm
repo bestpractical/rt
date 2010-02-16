@@ -447,28 +447,23 @@ sub Decrypt {
 
     my $msg = $args{'Data'}->as_string;
 
-    my $action = 'correspond';
-    $action = 'comment' if grep defined && $_ eq 'comment', @{ $args{'Actions'}||[] };
+    push @{ $args{'Recipients'} ||= [] },
+        $args{'Queue'}->CorrespondAddress, RT->Config->Get('CorrespondAddress'),
+        $args{'Queue'}->CommentAddress, RT->Config->Get('CommentAddress')
+    ;
 
-    my $address = $action eq 'correspond'
-        ? $args{'Queue'}->CorrespondAddress || RT->Config->Get('CorrespondAddress')
-        : $args{'Queue'}->CommentAddress    || RT->Config->Get('CommentAddress');
 
-    my %res;
-    my $file = $self->CheckKeyring( Key => $address );
-    unless ($file) {
-        $res{'status'} .= $self->FormatStatus({
-            Operation => "KeyCheck", Status => "MISSING",
-            Message   => "Secret key for $address is not available",
-            Key       => $address,
-            KeyType   => "secret",
-        });
-        $res{exit_code} = 1;
-        return %res;
-    }
+    my %seen;
+    my @addresses =
+        grep !$seen{lc $_}++, map $_->address, map Email::Address->parse($_),
+        grep length && defined, @{$args{'Recipients'}};
 
-    my $buf;
-    {
+    my ($buf, $encrypted_to, %res);
+
+    foreach my $address ( @addresses ) {
+        my $file = $self->CheckKeyring( Key => $address );
+        next unless $file;
+
         local $ENV{SMIME_PASS} = $self->GetPassphrase( Address => $address );
         local $SIG{CHLD} = 'DEFAULT';
         my $cmd = [
@@ -480,15 +475,31 @@ sub Decrypt {
                 : (),
         ];
         safe_run_child { run3( $cmd, \$msg, \$buf, \$res{'stderr'} ) };
+        unless ( $? ) {
+            $encrypted_to = $address;
+            last;
+        }
+
+        next if index($res{'stderr'}, 'no recipient matches key') >= 0;
+
         $res{'exit_code'} = $?;
-    }
-    if ( $res{'exit_code'} ) {
         $res{'message'} = "openssl exited with error code ". ($? >> 8)
             ." and error: $res{stderr}";
+        $RT::Logger->error( $res{'message'} );
         $res{'status'} = $self->FormatStatus({
             Operation => 'Decrypt', Status => 'ERROR',
             Message => 'Decryption failed',
             EncryptedTo => $address,
+        });
+        return %res;
+    }
+    unless ( $encrypted_to ) {
+        $res{'exit_code'} = 1;
+        $res{'status'} = $self->FormatStatus({
+            Operation => 'KeyCheck',
+            Status    => 'MISSING',
+            Message   => "Secret key is not available",
+            KeyType   => 'secret',
         });
         return %res;
     }
@@ -509,7 +520,7 @@ sub Decrypt {
     $res{'status'} = $self->FormatStatus({
         Operation => 'Decrypt', Status => 'DONE',
         Message => 'Decryption process succeeded',
-        EncryptedTo => $address,
+        EncryptedTo => $encrypted_to,
     });
 
     return %res;
@@ -633,11 +644,18 @@ sub CheckIfProtected {
         }
         return () unless $security_type;
 
-        return (
+        my %res = (
             Type   => $security_type,
             Format => 'RFC3851',
             Data   => $entity,
         );
+
+        if ( $security_type eq 'encrypted' ) {
+            my $top = $args{'TopEntity'}->head;
+            $res{'Recipients'} = [grep defined && length, map $top->get($_), 'To', 'Cc'];
+        }
+
+        return %res;
     }
     elsif ( $type eq 'multipart/signed' ) {
         # RFC3156, multipart/signed
