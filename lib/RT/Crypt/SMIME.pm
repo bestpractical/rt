@@ -47,7 +47,7 @@ sub SignEncrypt {
             $RT::Logger->debug( "Considering encrypting message to " . $address );
 
             my %key_info = $self->GetKeysInfo( Key => $address );
-            unless ( %key_info ) {
+            unless ( defined $key_info{'info'} ) {
                 $res{'exit_code'} = 1;
                 my $reason = 'Key not found';
                 $res{'status'} .=
