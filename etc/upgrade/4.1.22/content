@@ -24,4 +24,50 @@ our @Initial = (
         RT->Logger->error( "Couldn't update 'Error: bad encrypted data' template content: $msg")
             unless $ok;
     },
+    sub {
+        my $type = RT::User->new( $RT::SystemUser )->CustomFieldLookupType;
+        my $cf = RT::CustomField->new( $RT::SystemUser );
+        $cf->LoadByCols( Name => 'SMIME Key', LookupType => $type );
+        $cf->LoadByCols( Name => 'PublicKey', LookupType => $type ) unless $cf->id;
+        unless ( $cf->id ) {
+            $RT::Logger->debug("You don't have an 'SMIME Key' or 'PublicKey' user CF -- nothing to do.");
+            return;
+        }
+
+        my $users = RT::Users->new( RT->SystemUser );
+        $users->LimitCustomField(
+            CUSTOMFIELD => $cf->id,
+            OPERATOR    => "IS NOT",
+            VALUE       => "NULL",
+        );
+        while (my $u = $users->Next) {
+            $u->SetSMIMECertificate(
+                $u->FirstCustomFieldValue( $cf->id ),
+            );
+        }
+
+        my $ocfs = $cf->AddedTo;
+        while (my $ocf = $ocfs->Next) {
+            my ($ok, $msg) = $ocf->Delete;
+            RT->Logger->error( "Couldn't delete OCF ".$ocf->id." while deleting ".$cf->Name." CF: $msg")
+                unless $ok;
+        }
+
+        my ($ok, $msg) = $cf->Delete;
+        RT->Logger->error( "Couldn't delete ".$cf->Name." CF: $msg")
+            unless $ok;
+    },
+    sub {
+        $RT::Logger->info("Going to delete all SMIMEKeyNotAfter attributes");
+        my $attrs = RT::Attributes->new( $RT::SystemUser );
+        $attrs->Limit( FIELD => 'ObjectType', VALUE => 'RT::User' );
+        $attrs->Limit( FIELD => 'Name', VALUE => 'SMIMEKeyNotAfter' );
+        while ( my $attr = $attrs->Next ) {
+            my ($status, $msg) = $attr->Delete;
+            unless ( $status ) {
+                $RT::Logger->error("Couldn't delete attribute: $msg");
+            }
+        }
+        return 1;
+    },
 );
