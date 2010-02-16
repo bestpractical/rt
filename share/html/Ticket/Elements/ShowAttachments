@@ -61,11 +61,22 @@
 my $size = $rev->ContentLength;
 
 if ($size) {
-    if ($size > 1024) {
-        $size = int($size/102.4)/10 . "k";
+    my $kb = int($size/102.4) / 10;
+    my $units = RT->Config->Get('AttachmentUnits');
+
+    if (!defined($units)) {
+        if ($size > 1024) {
+            $size = $kb . "k";
+        }
+        else {
+            $size = $size . "b";
+        }
+    }
+    elsif ($units eq 'k') {
+        $size = $kb . "k";
     }
     else {
-        $size = $size ."b";
+        $size = $size . "b";
     }
 
 </%PERL>
