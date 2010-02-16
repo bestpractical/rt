@@ -68,14 +68,13 @@ sub Groupings {
         );
     }
 
-    push @fields, map {$_, $_} qw(
-        DueDaily DueMonthly DueAnnually
-        ResolvedDaily ResolvedMonthly ResolvedAnnually
-        CreatedDaily CreatedMonthly CreatedAnnually
-        LastUpdatedDaily LastUpdatedMonthly LastUpdatedAnnually
-        StartedDaily StartedMonthly StartedAnnually
-        StartsDaily StartsMonthly StartsAnnually
-    );
+
+    for my $field (qw(Due Resolved Created LastUpdated Started Starts)) {
+        for my $frequency (qw(Hourly Daily Monthly Annually)) {
+            my $item = $field.$frequency;
+            push @fields,  $item,  $item;
+        }
+    }
 
     my $queues = $args{'Queues'};
     if ( !$queues && $args{'Query'} ) {
@@ -183,11 +182,14 @@ sub _FieldToFunction {
 
     my $field = $args{'FIELD'};
 
-    if ($field =~ /^(.*)(Daily|Monthly|Annually)$/) {
+    if ($field =~ /^(.*)(Hourly|Daily|Monthly|Annually)$/) {
         my ($field, $grouping) = ($1, $2);
         my $alias = $args{'ALIAS'} || 'main';
         # Pg 8.3 requires explicit casting
         $field .= '::text' if RT->Config->Get('DatabaseType') eq 'Pg';
+        if ( $grouping =~ /Hourly/ ) {
+            $args{'FUNCTION'} = "SUBSTR($alias.$field,1,13)";
+        }
         if ( $grouping =~ /Daily/ ) {
             $args{'FUNCTION'} = "SUBSTR($alias.$field,1,10)";
         }
