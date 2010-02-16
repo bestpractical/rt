@@ -8,6 +8,7 @@ require RT::Crypt::GnuPG;
 require RT::Crypt::SMIME;
 
 our @PROTOCOLS = ('GnuPG', 'SMIME');
+our %PROTOCOLS = map { lc $_ => $_ } @PROTOCOLS;
 
 sub Protocols {
     return @PROTOCOLS;
@@ -28,7 +29,8 @@ sub EnabledOnIncoming {
 
 { my %cache;
 sub LoadImplementation {
-    my $class = 'RT::Crypt::'. $_[1];
+    my $proto = $PROTOCOLS{ lc $_[1] } or die "Unknown protocol '$_[1]'";
+    my $class = 'RT::Crypt::'. $proto;
     return $class if $cache{ $class }++;
 
     eval "require $class; 1" or do { require Carp; Carp::confess( $@ ) };
