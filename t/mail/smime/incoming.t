@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 42;
+use RT::Test tests => 19;
 
 my $openssl = RT::Test->find_executable('openssl');
 plan skip_all => 'openssl executable is required.'
@@ -42,7 +42,21 @@ RT->Config->Set( SMIME =>
 
 RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::Crypt' );
 
-my $mails = RT::Test::find_relocatable_path( 'data', 'smime', 'mails' );
+{
+    my $cf = RT::CustomField->new( $RT::SystemUser );
+    my ($ret, $msg) = $cf->Create(
+        Name       => 'SMIME Key',
+        LookupType => RT::User->new( $RT::SystemUser )->CustomFieldLookupType,
+        Type       => 'TextSingle',
+    );
+    ok($ret, "Custom Field created");
+
+    my $OCF = RT::ObjectCustomField->new( $RT::SystemUser );
+    $OCF->Create(
+        CustomField => $cf->id,
+        ObjectId    => 0,
+    );
+}
 
 my ($url, $m) = RT::Test->started_ok;
 ok $m->login, "logged in";
@@ -120,75 +134,6 @@ RT::Test->close_mailgate_ok($mail);
     like( $attach->Content, qr'orz');
 
     is( $orig->GetHeader('Content-Type'), 'application/x-rt-original-message');
-}
-
-{
-    my $message = RT::Test->file_content([$mails, 'simple-txt-enc.eml']);
-    my ($status, $tid) = RT::Test->send_via_mailgate( $message );
-    ok !$status, "executed gate";
-
-    my $tick = RT::Ticket->new( $RT::SystemUser );
-    $tick->Load( $tid );
-    ok( $tick->Id, "found ticket " . $tick->Id );
-    is( $tick->Subject, 'test', 'Created the ticket' );
-
-    my $txn = $tick->Transactions->First;
-    my ($msg, $attach, $orig) = @{$txn->Attachments->ItemsArrayRef};
-    is( $msg->GetHeader('X-RT-Incoming-Encryption'),
-        'Success',
-        'recorded incoming mail that is encrypted'
-    );
-    is( $msg->GetHeader('X-RT-Privacy'),
-        'SMIME',
-        'recorded incoming mail that is encrypted'
-    );
-    ok( $msg->GetHeader('User-Agent'), 'header is there');
-    like( $attach->Content, qr'test');
-}
-
-{
-    my $message = RT::Test->file_content([$mails, 'with-text-attachment.eml']);
-    my ($status, $tid) = RT::Test->send_via_mailgate( $message );
-    ok !$status, "executed gate";
-
-    my $tick = RT::Ticket->new( $RT::SystemUser );
-    $tick->Load( $tid );
-    ok( $tick->Id, "found ticket " . $tick->Id );
-    is( $tick->Subject, 'test', 'Created the ticket' );
-    my $txn = $tick->Transactions->First;
-    my @attachments = @{ $txn->Attachments->ItemsArrayRef };
-    is( @attachments, 4, '4 attachments: top, two parts and orig' );
-
-    is( $attachments[0]->GetHeader('X-RT-Incoming-Encryption'),
-        'Success',
-        'recorded incoming mail that is encrypted'
-    );
-    ok( $attachments[0]->GetHeader('User-Agent'), 'header is there' );
-    like( $attachments[1]->Content, qr'test' );
-    like( $attachments[2]->Content, qr'text attachment' );
-    is( $attachments[2]->Filename, 'attachment.txt' );
-}
-
-{
-    my $message = RT::Test->file_content([$mails, 'with-bin-attachment.eml']);
-    my ($status, $tid) = RT::Test->send_via_mailgate( $message );
-    ok !$status, "executed gate";
-
-    my $tick = RT::Ticket->new( $RT::SystemUser );
-    $tick->Load( $tid );
-    ok( $tick->Id, "found ticket " . $tick->Id );
-    is( $tick->Subject, 'test', 'Created the ticket' );
-    my $txn = $tick->Transactions->First;
-    my @attachments = @{ $txn->Attachments->ItemsArrayRef };
-    is( @attachments, 4, '4 attachments: top, two parts and orig' );
-
-    is( $attachments[0]->GetHeader('X-RT-Incoming-Encryption'),
-        'Success',
-        'recorded incoming mail that is encrypted'
-    );
-    ok( $attachments[0]->GetHeader('User-Agent'), 'header is there');
-    like( $attachments[1]->Content, qr'test');
-    is( $attachments[2]->Filename, 'attachment.bin' );
 }
 
 {
