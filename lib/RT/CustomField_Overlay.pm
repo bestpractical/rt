@@ -342,7 +342,7 @@ sub LoadByName {
 
     # When loading by name, we _can_ load disabled fields, but prefer
     # non-disabled fields.
-    $CFs->{'find_disabled_rows'}=1;
+    $CFs->FindAllRows;
     $CFs->OrderByCols(
         { FIELD => "Disabled", ORDER => 'ASC' },
     );

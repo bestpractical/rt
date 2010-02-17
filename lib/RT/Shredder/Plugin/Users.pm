@@ -166,15 +166,9 @@ sub Run
     #                   Creator Created LastUpdated LastUpdatedBy));
     if( my $s = $self->{'opt'}{'status'} ) {
         if( $s eq 'any' ) {
-            $objs->{'find_disabled_rows'} = 1;
+            $objs->FindAllRows;
         } elsif( $s eq 'disabled' ) {
-            $objs->{'find_disabled_rows'} = 1;
-            $objs->Limit(
-                ALIAS => $objs->PrincipalsAlias,
-                FIELD    => 'Disabled',
-                OPERATOR => '!=',
-                VALUE    => '0',
-            );
+            $objs->LimitToDeleted;
         } else {
             $objs->LimitToEnabled;
         }
