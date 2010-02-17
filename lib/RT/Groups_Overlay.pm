@@ -88,6 +88,7 @@ sub _Init {
   my $self = shift;
   $self->{'table'} = "Groups";
   $self->{'primary_key'} = "id";
+  $self->{'with_disabled_column'} = 1;
 
   my @result = $self->SUPER::_Init(@_);
 
@@ -376,12 +377,13 @@ Only find items that haven\'t been disabled
 
 sub LimitToEnabled {
     my $self = shift;
-    
-    $self->Limit( ALIAS => $self->PrincipalsAlias,
-		          FIELD => 'Disabled',
-		          VALUE => '0',
-		          OPERATOR => '=',
-                );
+
+    $self->{'handled_disabled_column'} = 1;
+    $self->Limit(
+        ALIAS => $self->PrincipalsAlias,
+        FIELD => 'Disabled',
+        VALUE => '0',
+    );
 }
 # }}}
 
@@ -396,13 +398,14 @@ Only find items that have been deleted.
 sub LimitToDeleted {
     my $self = shift;
     
-    $self->{'find_disabled_rows'} = 1;
-    $self->Limit( ALIAS => $self->PrincipalsAlias,
-                  FIELD => 'Disabled',
-                  OPERATOR => '=',
-                  VALUE => 1,
-                );
+    $self->{'handled_disabled_column'} = $self->{'find_disabled_rows'} = 1;
+    $self->Limit(
+        ALIAS => $self->PrincipalsAlias,
+        FIELD => 'Disabled',
+        VALUE => 1,
+    );
 }
+
 # }}}
 
 # {{{ sub Next

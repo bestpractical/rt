@@ -73,11 +73,10 @@ no warnings qw(redefine);
 sub _Init {
     my $self = shift;
     $self->{'table'} = 'Users';
-        $self->{'primary_key'} = 'id';
+    $self->{'primary_key'} = 'id';
+    $self->{'with_disabled_column'} = 1;
 
-
-
-    my @result =          $self->SUPER::_Init(@_);
+    my @result = $self->SUPER::_Init(@_);
     # By default, order by name
     $self->OrderBy( ALIAS => 'main',
                     FIELD => 'Name',
@@ -114,29 +113,6 @@ sub PrincipalsAlias {
 }
 
 
-# {{{ sub _DoSearch 
-
-=head2 _DoSearch
-
-  A subclass of DBIx::SearchBuilder::_DoSearch that makes sure that _Disabled rows never get seen unless
-we're explicitly trying to see them.
-
-=cut
-
-sub _DoSearch {
-    my $self = shift;
-
-    #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
-    unless ( $self->{'find_disabled_rows'} ) {
-        $self->LimitToEnabled();
-    }
-    return ( $self->SUPER::_DoSearch(@_) );
-
-}
-
-# }}}
-# {{{ sub LimitToEnabled
-
 =head2 LimitToEnabled
 
 Only find items that haven\'t been disabled
@@ -147,13 +123,31 @@ Only find items that haven\'t been disabled
 sub LimitToEnabled {
     my $self = shift;
 
-    $self->Limit( ALIAS    => $self->PrincipalsAlias,
-                  FIELD    => 'Disabled',
-                  VALUE    => '0',
-                  OPERATOR => '=' );
+    $self->{'handled_disabled_column'} = 1;
+    $self->Limit(
+        ALIAS    => $self->PrincipalsAlias,
+        FIELD    => 'Disabled',
+        VALUE    => '0',
+    );
 }
 
-# }}}
+=head2 LimitToDeleted
+
+Only find items that have been deleted.
+
+=cut
+
+sub LimitToDeleted {
+    my $self = shift;
+    
+    $self->{'handled_disabled_column'} = $self->{'find_disabled_rows'} = 1;
+    $self->Limit(
+        ALIAS => $self->PrincipalsAlias,
+        FIELD => 'Disabled',
+        VALUE => 1,
+    );
+}
+
 
 # {{{ LimitToEmail
 
