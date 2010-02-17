@@ -115,6 +115,16 @@ sub LimitToDeleted {
 		);
 }
 
+=head2 FindAllRows
+
+Find all matching rows, regardless of whether they are disabled or not
+
+=cut
+
+sub FindAllRows {
+    shift->{'find_disabled_rows'} = 1;
+}
+
 =head2 LimitAttribute PARAMHASH
 
 Takes NAME, OPERATOR and VALUE to find records that has the
@@ -260,16 +270,6 @@ sub LimitCustomField {
 	OPERATOR   => $args{'OPERATOR'},
 	VALUE      => $args{'VALUE'},
     );
-}
-
-=head2 FindAllRows
-
-Find all matching rows, regardless of whether they are disabled or not
-
-=cut
-
-sub FindAllRows {
-    shift->{'find_disabled_rows'} = 1;
 }
 
 =head2 Limit PARAMHASH
