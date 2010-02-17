@@ -74,6 +74,7 @@ sub _Init {
   my $self = shift;
   $self->{'table'} = "Queues";
   $self->{'primary_key'} = "id";
+  $self->{'with_disabled_column'} = 1;
 
   # By default, order by name
   $self->OrderBy( ALIAS => 'main',
@@ -83,30 +84,6 @@ sub _Init {
   return ($self->SUPER::_Init(@_));
 }
 # }}}
-
-# {{{ sub _DoSearch 
-
-=head2 _DoSearch
-
-  A subclass of DBIx::SearchBuilder::_DoSearch that makes sure that _Disabled rows never get seen unless
-we're explicitly trying to see them.
-
-=cut
-
-sub _DoSearch {
-    my $self = shift;
-    
-    #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
-    unless($self->{'find_disabled_rows'}) {
-	$self->LimitToEnabled();
-    }
-    
-    return($self->SUPER::_DoSearch(@_));
-    
-}
-
-# }}}
-  
 
 # {{{ sub Limit 
 sub Limit  {
