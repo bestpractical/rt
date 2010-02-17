@@ -808,24 +808,6 @@ sub SetTypeComposite {
     );
 }
 
-=head2 SetLookupType
-
-Autrijus: care to doc how LookupTypes work?
-
-=cut
-
-sub SetLookupType {
-    my $self = shift;
-    my $lookup = shift;
-    if ( $lookup ne $self->LookupType ) {
-        # Okay... We need to invalidate our existing relationships
-        my $ObjectCustomFields = RT::ObjectCustomFields->new($self->CurrentUser);
-        $ObjectCustomFields->LimitToCustomField($self->Id);
-        $_->Delete foreach @{$ObjectCustomFields->ItemsArrayRef};
-    }
-    return $self->SUPER::SetLookupType($lookup);
-}
-
 =head2 TypeComposite
 
 Returns a composite value composed of this object's type and maximum values
@@ -847,6 +829,24 @@ Returns an array of all possible composite values for custom fields.
 sub TypeComposites {
     my $self = shift;
     return grep !/(?:[Tt]ext|Combobox)-0/, map { ("$_-1", "$_-0") } $self->Types;
+}
+
+=head2 SetLookupType
+
+Autrijus: care to doc how LookupTypes work?
+
+=cut
+
+sub SetLookupType {
+    my $self = shift;
+    my $lookup = shift;
+    if ( $lookup ne $self->LookupType ) {
+        # Okay... We need to invalidate our existing relationships
+        my $ObjectCustomFields = RT::ObjectCustomFields->new($self->CurrentUser);
+        $ObjectCustomFields->LimitToCustomField($self->Id);
+        $_->Delete foreach @{$ObjectCustomFields->ItemsArrayRef};
+    }
+    return $self->SUPER::SetLookupType($lookup);
 }
 
 =head2 LookupTypes
