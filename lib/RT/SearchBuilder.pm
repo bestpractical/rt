@@ -93,10 +93,9 @@ Only find items that haven't been disabled
 
 sub LimitToEnabled {
     my $self = shift;
-    
-    $self->Limit( FIELD => 'Disabled',
-		  VALUE => '0',
-		  OPERATOR => '=' );
+
+    $self->{'handled_disabled_column'} = 1;
+    $self->Limit( FIELD => 'Disabled', VALUE => '0' );
 }
 
 =head2 LimitToDeleted
@@ -107,12 +106,9 @@ Only find items that have been deleted.
 
 sub LimitToDeleted {
     my $self = shift;
-    
-    $self->{'find_disabled_rows'} = 1;
-    $self->Limit( FIELD => 'Disabled',
-		  OPERATOR => '=',
-		  VALUE => '1'
-		);
+
+    $self->{'handled_disabled_column'} = $self->{'find_disabled_rows'} = 1;
+    $self->Limit( FIELD => 'Disabled', VALUE => '1' );
 }
 
 =head2 FindAllRows
@@ -321,6 +317,32 @@ it.
 sub ItemsArrayRef {
     my $self = shift;
     return $self->ItemsOrderBy($self->SUPER::ItemsArrayRef());
+}
+
+# make sure that Disabled rows never get seen unless
+# we're explicitly trying to see them.
+
+sub _DoSearch {
+    my $self = shift;
+
+    if ( $self->{'with_disabled_column'}
+        && !$self->{'handled_disabled_column'}
+        && !$self->{'find_disabled_rows'}
+    ) {
+        $self->LimitToEnabled;
+    }
+    return $self->SUPER::_DoSearch(@_);
+}
+sub _DoCount {
+    my $self = shift;
+
+    if ( $self->{'with_disabled_column'}
+        && !$self->{'handled_disabled_column'}
+        && !$self->{'find_disabled_rows'}
+    ) {
+        $self->LimitToEnabled;
+    }
+    return $self->SUPER::_DoCount(@_);
 }
 
 eval "require RT::SearchBuilder_Vendor";
