@@ -194,6 +194,13 @@ if ( $QueueObj->Id ) {
     );
     push @results, @linkresults;
     push @results, ProcessObjectCustomFieldUpdates( ARGSRef => \%ARGS, Object => $QueueObj );
+    if ( RT->Config->Get('RTAddressRegexp') ) {
+        foreach my $address ( $QueueObj->CorrespondAddress, $QueueObj->CommentAddress ) {
+            next unless defined $address && length $address;
+            next if RT::EmailParser->IsRTAddress( $address );
+            push @results, loc("RTAddressRegexp option in the config doesn't match [_1]", $address );
+        }
+    }
 }
 </%INIT>
 
