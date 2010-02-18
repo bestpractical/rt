@@ -789,8 +789,15 @@ sub _AddWatcher {
     my $principal = RT::Principal->new( $self->CurrentUser );
     if ( $args{'PrincipalId'} ) {
         $principal->Load( $args{'PrincipalId'} );
+        if ( $principal->id and $principal->IsUser and my $email = $principal->Object->EmailAddress ) {
+            return (0, $self->loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $email, $self->loc($args{'Type'})))
+                if RT::EmailParser->IsRTAddress( $email );
+        }
     }
     elsif ( $args{'Email'} ) {
+        if ( RT::EmailParser->IsRTAddress( $args{'Email'} ) ) {
+            return (0, $self->loc("[_1] is an address RT receives mail at. Adding it as a '[_2]' would create a mail loop", $args{'Email'}, $self->loc($args{'Type'})));
+        }
         my $user = RT::User->new($self->CurrentUser);
         $user->LoadByEmail( $args{'Email'} );
         $user->Load( $args{'Email'} )
