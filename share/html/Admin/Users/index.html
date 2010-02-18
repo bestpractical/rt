@@ -117,9 +117,7 @@ else {
     $users->LimitToPrivileged;
 }
 
-$Format ||= q{'<a href="__WebPath__/Admin/Users/Modify.html?id=__id__">__id__</a>/TITLE:#'}
-    .q{,'<a href="__WebPath__/Admin/Users/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
-    .q{,__RealName__, __EmailAddress__};
+$Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Users'};
 
 </%INIT>
 <%ARGS>
