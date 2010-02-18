@@ -156,6 +156,8 @@ my $COLUMN_MAP = {
         $_ => { value => sub { return \$value } };
     
     } qw(WebPath WebBaseURL WebURL)),
+    WebRequestPath    => { value => sub { substr( $m->request_path, 1 ) } },
+    WebRequestPathDir => { value => sub { substr( $m->request_comp->dir_path, 1 ) } },
 };
 
 $COLUMN_MAP->{'CF'} = $COLUMN_MAP->{'CustomField'};
