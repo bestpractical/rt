@@ -867,7 +867,7 @@ my @FriendlyObjectTypes = (
     "[_1]'s [_2]'s [_3] objects",   # loc
 );
 
-=head2 FriendlyTypeLookup
+=head2 FriendlyLookupType
 
 Returns a localized description of the type of this custom field
 
@@ -887,6 +887,100 @@ sub FriendlyLookupType {
     return ( $self->loc( $FriendlyObjectTypes[$#types], @types ) );
 }
 
+sub RecordClassFromLookupType {
+    my $self = shift;
+    my ($class) = ($self->LookupType =~ /^([^-]+)/);
+    unless ( $class ) {
+        $RT::Logger->error(
+            "Custom Field #". $self->id 
+            ." has incorrect LookupType '". $self->LookupType ."'"
+        );
+        return undef;
+    }
+    return $class;
+}
+
+sub CollectionClassFromLookupType {
+    my $self = shift;
+
+    my $record_class = $self->RecordClassFromLookupType;
+    return undef unless $record_class;
+
+    my $collection_class;
+    if ( UNIVERSAL::can($record_class.'Collection', 'new') ) {
+        $collection_class = $record_class.'Collection';
+    } elsif ( UNIVERSAL::can($record_class.'es', 'new') ) {
+        $collection_class = $record_class.'es';
+    } elsif ( UNIVERSAL::can($record_class.'s', 'new') ) {
+        $collection_class = $record_class.'s';
+    } else {
+        $RT::Logger->error("Can not find a collection class for record class '$record_class'");
+        return undef;
+    }
+    return $collection_class;
+}
+
+sub AppliedTo {
+    my $self = shift;
+
+    my ($res, $ocfs_alias) = $self->_AppliedTo;
+    return $res unless $res;
+
+    $res->Limit(
+        ALIAS     => $ocfs_alias,
+        FIELD     => 'id',
+        OPERATOR  => 'IS NOT',
+        VALUE     => 'NULL',
+    );
+
+    return $res;
+}
+
+sub NotAppliedTo {
+    my $self = shift;
+
+    my ($res, $ocfs_alias) = $self->_AppliedTo;
+    return $res unless $res;
+
+    $res->Limit(
+        ALIAS     => $ocfs_alias,
+        FIELD     => 'id',
+        OPERATOR  => 'IS',
+        VALUE     => 'NULL',
+    );
+
+    return $res;
+}
+
+sub _AppliedTo {
+    my $self = shift;
+
+    my ($class) = $self->CollectionClassFromLookupType;
+    return undef unless $class;
+
+    my $res = $class->new( $self->CurrentUser );
+
+    # If CF is a Group CF, only display user-defined groups
+    if ( $class eq 'RT::Groups' ) {
+        $res->LimitToUserDefinedGroups;
+    }
+
+    $res->OrderBy( FIELD => 'Name' );
+    my $ocfs_alias = $res->Join(
+        TYPE   => 'LEFT',
+        ALIAS1 => 'main',
+        FIELD1 => 'id',
+        TABLE2 => 'ObjectCustomFields',
+        FIELD2 => 'ObjectId',
+    );
+    $res->Limit(
+        LEFTJOIN => $ocfs_alias,
+        ALIAS    => $ocfs_alias,
+        FIELD    => 'CustomField',
+        VALUE    => $self->id,
+    );
+    return ($res, $ocfs_alias);
+}
 
 =head2 AddToObject OBJECT
 
