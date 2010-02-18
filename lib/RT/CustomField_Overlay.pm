@@ -920,6 +920,16 @@ sub CollectionClassFromLookupType {
     return $collection_class;
 }
 
+=head1 AppliedTo
+
+Returns collection with objects this custom field is applied to.
+Class of the collection depends on L</LookupType>.
+See all L</NotAppliedTo> .
+
+Doesn't takes into account if object is applied globally.
+
+=cut
+
 sub AppliedTo {
     my $self = shift;
 
@@ -935,6 +945,16 @@ sub AppliedTo {
 
     return $res;
 }
+
+=head1 NotAppliedTo
+
+Returns collection with objects this custom field is not applied to.
+Class of the collection depends on L</LookupType>.
+See all L</AppliedTo> .
+
+Doesn't takes into account if object is applied globally.
+
+=cut
 
 sub NotAppliedTo {
     my $self = shift;
