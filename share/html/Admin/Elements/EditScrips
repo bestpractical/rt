@@ -109,10 +109,7 @@ foreach my $id ( grep $_, @DeleteScrip, map /^DeleteScrip-(\d+)/, keys %ARGS ) {
 }
 # }}}
 
-my $dir_path = $m->request_comp->dir_path;
-$Format ||= qq{'<a href="__WebPath__$dir_path/Scrip.html?id=__id__&Queue=$id">__id__</a>/TITLE:#'}
-    .qq{,'<a href="__WebPath__$dir_path/Scrip.html?id=__id__&Queue=$id">__Description__</a>/TITLE:Description'}
-    .q{,__Stage__, __Condition__, __Action__, __Template__};
+$Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Scrips'};
 
 </%init>
 

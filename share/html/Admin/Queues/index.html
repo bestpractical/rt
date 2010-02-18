@@ -111,9 +111,7 @@ if ( defined $QueueString && length $QueueString ) {
         : loc("Enabled Queues");
 }
 
-$Format ||= q{'<a href="__WebPath__/Admin/Queues/Modify.html?id=__id__">__id__</a>/TITLE:#'}
-    .q{,'<a href="__WebPath__/Admin/Queues/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
-    .q{,__Description__,__Address__,__Priority__,__DefaultDueIn__,__Disabled__};
+$Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Queues'};
 
 </%INIT>
 <%ARGS>

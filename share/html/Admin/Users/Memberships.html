@@ -128,9 +128,7 @@ my $is_not_member = RT::Groups->new( $session{'CurrentUser'} );
 $is_not_member->LimitToUserDefinedGroups;
 $is_not_member->WithoutMember( PrincipalId => $UserObj->Id );
 
-$Format ||= q{'<a href="__WebPath__/Admin/Groups/Modify.html?id=__id__">__id__</a>/TITLE:#'}
-    .q{,'<a href="__WebPath__/Admin/Groups/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
-    .q{,'__Description__'};
+$Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Groups'};
 </%INIT>
 <%ARGS>
 $id     => undef
