@@ -67,6 +67,17 @@ my $COLUMN_MAP = {
 	attribute => 'Description',
 	value     => sub { return $_[0]->Description() },
     },
+    Queue => {
+        title     => 'Queue', # loc
+        value     => sub {
+            return $_[0]->QueueObj->Name if $_[0]->Queue;
+            return $_[0]->loc('Global');
+        },
+    },
+    QueueId => {
+        title     => 'Queue', # loc
+        value     => sub { $_[0]->Queue },
+    },
 };
 
 </%ONCE>

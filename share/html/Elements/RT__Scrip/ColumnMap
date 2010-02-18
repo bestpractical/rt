@@ -64,6 +64,10 @@ my $COLUMN_MAP = {
             return $_[0]->loc('Global');
         },
     },
+    QueueId => {
+        title     => 'Queue', # loc
+        value     => sub { $_[0]->Queue },
+    },
     Condition => {
         title     => 'Condition', # loc
         value     => sub { return $_[0]->loc( $_[0]->ScripConditionObj->Name ) },
