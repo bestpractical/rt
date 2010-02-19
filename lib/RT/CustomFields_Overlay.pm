@@ -66,172 +66,61 @@
 package RT::CustomFields;
 
 use strict;
+use warnings;
 no warnings qw(redefine);
 use DBIx::SearchBuilder::Unique;
 
+=head2 LimitToLookupType
 
-sub _OCFAlias {
-    my $self = shift;
-    unless ($self->{_sql_ocfalias}) {
-
-        $self->{'_sql_ocfalias'} = $self->NewAlias('ObjectCustomFields');
-    $self->Join( ALIAS1 => 'main',
-                FIELD1 => 'id',
-                ALIAS2 => $self->_OCFAlias,
-                FIELD2 => 'CustomField' );
-    }
-    return($self->{_sql_ocfalias});
-}
-
-
-# {{{ sub LimitToGlobalOrQueue 
-
-=head2 LimitToGlobalOrQueue QUEUEID
-
-Limits the set of custom fields found to global custom fields or those tied to the queue with ID QUEUEID 
+Takes LookupType and limits collection.
 
 =cut
-
-sub LimitToGlobalOrQueue {
-    my $self = shift;
-    my $queue = shift;
-    $self->LimitToGlobalOrObjectId( $queue );
-    $self->LimitToLookupType( 'RT::Queue-RT::Ticket' );
-}
-
-# }}}
-
-# {{{ sub LimitToQueue 
-
-=head2 LimitToQueue QUEUEID
-
-Takes a queue id (numerical) as its only argument. Makes sure that 
-Scopes it pulls out apply to this queue (or another that you've selected with
-another call to this method
-
-=cut
-
-sub LimitToQueue  {
-   my $self = shift;
-  my $queue = shift;
- 
-  $self->Limit (ALIAS => $self->_OCFAlias,
-                ENTRYAGGREGATOR => 'OR',
-		FIELD => 'ObjectId',
-		VALUE => "$queue")
-      if defined $queue;
-  $self->LimitToLookupType( 'RT::Queue-RT::Ticket' );
-}
-# }}}
-
-# {{{ sub LimitToGlobal
-
-=head2 LimitToGlobal
-
-Makes sure that 
-Scopes it pulls out apply to all queues (or another that you've selected with
-another call to this method or LimitToQueue
-
-=cut
-
-
-sub LimitToGlobal  {
-   my $self = shift;
- 
-  $self->Limit (ALIAS => $self->_OCFAlias,
-                ENTRYAGGREGATOR => 'OR',
-		FIELD => 'ObjectId',
-		VALUE => 0);
-  $self->LimitToLookupType( 'RT::Queue-RT::Ticket' );
-}
-# }}}
-
-
-# {{{ sub _DoSearch 
-
-=head2 _DoSearch
-
-A subclass of DBIx::SearchBuilder::_DoSearch that makes sure that 
- _Disabled rows never get seen unless we're explicitly trying to see 
-them.
-
-=cut
-
-sub _DoSearch {
-    my $self = shift;
-    
-    #unless we really want to find disabled rows, make sure we\'re only finding enabled ones.
-    unless($self->{'find_disabled_rows'}) {
-        $self->LimitToEnabled();
-    }
-    
-    return($self->SUPER::_DoSearch(@_));
-    
-}
-
-# }}}
-
-# {{{ sub Next 
-
-=head2 Next
-
-Returns the next custom field that this user can see.
-
-=cut
-  
-sub Next {
-    my $self = shift;
-    
-    my $CF = $self->SUPER::Next();
-    return $CF unless $CF;
-
-    $CF->SetContextOject( $self->ContextObject );
-
-    return $self->Next unless $CF->CurrentUserHasRight('SeeCustomField');
-    return $CF;
-}
-
-sub SetContextObject {
-    my $self = shift;
-    return $self->{'context_object'} = shift;
-}
-  
-sub ContextObject {
-    my $self = shift;
-    return $self->{'context_object'};
-}
-
-sub NewItem {
-    my $self = shift;
-    my $res = RT::CustomField->new($self->CurrentUser);
-    $res->SetContextObject($self->ContextObject);
-    return $res;
-}
-
-# }}}
 
 sub LimitToLookupType  {
     my $self = shift;
     my $lookup = shift;
- 
+
     $self->Limit( FIELD => 'LookupType', VALUE => "$lookup" );
 }
+
+=head2 LimitToChildType
+
+Takes partial LookupType and limits collection to records
+where LookupType is equal or ends with the value.
+
+=cut
 
 sub LimitToChildType  {
     my $self = shift;
     my $lookup = shift;
- 
+
     $self->Limit( FIELD => 'LookupType', VALUE => "$lookup" );
     $self->Limit( FIELD => 'LookupType', ENDSWITH => "$lookup" );
 }
 
+
+=head2 LimitToParentType
+
+Takes partial LookupType and limits collection to records
+where LookupType is equal or starts with the value.
+
+=cut
+
 sub LimitToParentType  {
     my $self = shift;
     my $lookup = shift;
- 
+
     $self->Limit( FIELD => 'LookupType', VALUE => "$lookup" );
     $self->Limit( FIELD => 'LookupType', STARTSWITH => "$lookup" );
 }
+
+
+=head2 LimitToGlobalOrObjectId
+
+Takes list of object IDs and limits collection to custom
+fields that are applied to these objects or globally.
+
+=cut
 
 sub LimitToGlobalOrObjectId {
     my $self = shift;
@@ -257,11 +146,162 @@ sub LimitToGlobalOrObjectId {
 	{ ALIAS => $self->_OCFAlias, FIELD => 'ObjectId', ORDER => 'DESC' },
 	{ ALIAS => $self->_OCFAlias, FIELD => 'SortOrder' },
     );
-    
-    # This doesn't work on postgres. 
+
+    # This doesn't work on postgres.
     #$self->OrderBy( ALIAS => $class_cfs , FIELD => "SortOrder", ORDER => 'ASC');
 
 }
 
-1;
 
+=head2 LimitToGlobalOrQueue QUEUEID
+
+DEPRECATED since CFs are applicable not only to tickets these days.
+
+Limits the set of custom fields found to global custom fields or those tied to the queue with ID QUEUEID
+
+=cut
+
+sub LimitToGlobalOrQueue {
+    my $self = shift;
+    my $queue = shift;
+    $self->LimitToGlobalOrObjectId( $queue );
+    $self->LimitToLookupType( 'RT::Queue-RT::Ticket' );
+}
+
+
+=head2 LimitToQueue QUEUEID
+
+DEPRECATED since CFs are applicable not only to tickets these days.
+
+Takes a queue id (numerical) as its only argument. Makes sure that
+Scopes it pulls out apply to this queue (or another that you've selected with
+another call to this method
+
+=cut
+
+sub LimitToQueue  {
+   my $self = shift;
+  my $queue = shift;
+
+  $self->Limit (ALIAS => $self->_OCFAlias,
+                ENTRYAGGREGATOR => 'OR',
+		FIELD => 'ObjectId',
+		VALUE => "$queue")
+      if defined $queue;
+  $self->LimitToLookupType( 'RT::Queue-RT::Ticket' );
+}
+
+
+=head2 LimitToGlobal
+
+DEPRECATED since CFs are applicable not only to tickets these days.
+
+Makes sure that Scopes it pulls out apply to all queues
+(or another that you've selected with
+another call to this method or LimitToQueue)
+
+=cut
+
+sub LimitToGlobal  {
+   my $self = shift;
+
+  $self->Limit (ALIAS => $self->_OCFAlias,
+                ENTRYAGGREGATOR => 'OR',
+		FIELD => 'ObjectId',
+		VALUE => 0);
+  $self->LimitToLookupType( 'RT::Queue-RT::Ticket' );
+}
+
+
+=head2 ContextObject
+
+Returns context object for this collection of custom fields,
+but only if it's defined.
+
+=cut
+
+sub ContextObject {
+    my $self = shift;
+    return $self->{'context_object'};
+}
+
+
+=head2 SetContextObject
+
+Sets context object for this collection of custom fields.
+
+=cut
+
+sub SetContextObject {
+    my $self = shift;
+    return $self->{'context_object'} = shift;
+}
+
+
+sub _OCFAlias {
+    my $self = shift;
+    unless ($self->{_sql_ocfalias}) {
+
+        $self->{'_sql_ocfalias'} = $self->NewAlias('ObjectCustomFields');
+    $self->Join( ALIAS1 => 'main',
+                FIELD1 => 'id',
+                ALIAS2 => $self->_OCFAlias,
+                FIELD2 => 'CustomField' );
+    }
+    return($self->{_sql_ocfalias});
+}
+
+
+=head2 Next
+
+Returns the next custom field that this user can see.
+
+=cut
+
+sub Next {
+    my $self = shift;
+
+    my $CF = $self->SUPER::Next();
+    return $CF unless $CF;
+
+    $CF->SetContextOject( $self->ContextObject );
+
+    return $self->Next unless $CF->CurrentUserHasRight('SeeCustomField');
+    return $CF;
+}
+
+=head2 Next
+
+Overrides <RT::SearchBuilder/Next> to make sure </ContextObject>
+is inherited.
+
+=cut
+
+sub NewItem {
+    my $self = shift;
+    my $res = RT::CustomField->new($self->CurrentUser);
+    $res->SetContextObject($self->ContextObject);
+    return $res;
+}
+
+=head2 _DoSearch
+
+A subclass of DBIx::SearchBuilder::_DoSearch that makes sure that
+ _Disabled rows never get seen unless we're explicitly trying to see
+them.
+
+=cut
+
+sub _DoSearch {
+    my $self = shift;
+
+    # unless we really want to find disabled rows,
+    # make sure we're only finding enabled ones.
+    unless($self->{'find_disabled_rows'}) {
+        $self->LimitToEnabled();
+    }
+
+    return($self->SUPER::_DoSearch(@_));
+}
+
+1;
