@@ -45,6 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+% $m->callback( CallbackName => 'BeforeCustomFields' );
 % if ($Table) {
 <table>
 % }
@@ -73,6 +74,7 @@
 % if ($Table) {
 </table>
 % }
+% $m->callback( CallbackName => 'AfterCustomFields', Object => $Object );
 <%INIT>
 $m->callback(
     CallbackName => 'MassageCustomFields',
