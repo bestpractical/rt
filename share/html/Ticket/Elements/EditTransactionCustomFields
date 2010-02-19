@@ -45,6 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+% $m->callback( CallbackName => 'BeforeTransactionCustomFields', TicketObj => $TicketObj, QueueObj => $QueueObj, NamePrefix => $NamePrefix );
 % if ($CustomFields->Count) {
 % while (my $CF = $CustomFields->Next()) {
 % next unless $CF->CurrentUserHasRight('ModifyCustomField');
@@ -60,6 +61,7 @@
 </td></tr>
 % }
 % }
+% $m->callback( CallbackName => 'AfterTransactionCustomFields', TicketObj => $TicketObj, QueueObj => $QueueObj, NamePrefix => $NamePrefix );
 
 <%INIT>
 my $CustomFields;
