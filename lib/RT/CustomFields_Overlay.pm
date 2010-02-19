@@ -240,15 +240,19 @@ sub SetContextObject {
 
 sub _OCFAlias {
     my $self = shift;
-    unless ($self->{_sql_ocfalias}) {
+    my %args = ( New => 0, Left => 0, @_ );
 
-        $self->{'_sql_ocfalias'} = $self->NewAlias('ObjectCustomFields');
-    $self->Join( ALIAS1 => 'main',
-                FIELD1 => 'id',
-                ALIAS2 => $self->_OCFAlias,
-                FIELD2 => 'CustomField' );
-    }
-    return($self->{_sql_ocfalias});
+    return $self->{'_sql_ocfalias'} if $self->{'_sql_ocfalias'} && !$args{'New'};
+
+    my $alias = $self->Join(
+        $args{'Left'} ? (TYPE => 'LEFT') : (),
+        ALIAS1 => 'main',
+        FIELD1 => 'id',
+        TABLE2 => 'ObjectCustomFields',
+        FIELD2 => 'CustomField'
+    );
+    return $alias if $args{'New'};
+    return $self->{'_sql_ocfalias'} = $alias;
 }
 
 
