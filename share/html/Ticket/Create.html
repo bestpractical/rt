@@ -112,6 +112,7 @@
 </td>
 <td class="value" colspan="5">
 <input name="Subject" size="60" maxsize="200" value="<%$ARGS{Subject} || ''%>" />
+% $m->callback( %ARGS, CallbackName => 'AfterSubject' );
 </td>
 </tr>
 <tr>
