@@ -71,6 +71,8 @@ my @non_recipients = @{ $squelch{'EmailAddresses'} };
 %foreach my $addr (@addresses) {
 <li>
     <b><%loc($type)%></b>: <input type="checkbox" class="checkbox" name="Ticket-<%$TicketObj->id%>-SquelchMailTo" value="<%$addr->address%>" /> <%$addr->address%>
+
+% $m->callback(CallbackName => 'AfterAddress', Ticket => $TicketObj, Address => $addr, Type => $type);
 </li>
 % }
 </ul>
