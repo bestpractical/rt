@@ -1405,6 +1405,11 @@ Set(%AdminSearchResultFormat,
         .q{,'<a href="__WebPath__/Admin/Users/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
         .q{,__RealName__, __EmailAddress__},
 
+    CustomFields =>
+        q{'<a href="__WebPath__/Admin/CustomFields/Modify.html?id=__id__">__id__</a>/TITLE:#'}
+        .q{,'<a href="__WebPath__/Admin/CustomFields/Modify.html?id=__id__">__Name__</a>/TITLE:Name'}
+        .q{,__FriendlyType__, __FriendlyPattern__},
+
     Scrips => 
         q{'<a href="__WebPath__/__WebRequestPathDir__/Scrip.html?id=__id__&Queue=__QueueId__">__id__</a>/TITLE:#'}
         .q{,'<a href="__WebPath__/__WebRequestPathDir__/Scrip.html?id=__id__&Queue=__QueueId__">__Description__</a>/TITLE:Description'}
