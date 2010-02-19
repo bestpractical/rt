@@ -45,6 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
+% $m->callback( %ARGS, CallbackName => 'BeforeCustomFields' );
 <table>
 % my $i = 0;
 % while ( my $CustomField = $CustomFields->Next ) {
@@ -85,6 +86,7 @@
 % }
 
 </table>
+% $m->callback( %ARGS, CallbackName => 'AfterCustomFields', TicketObj => $TicketObj, QueueObj => $QueueObj );
 <%INIT>
 my $CustomFields;
 
