@@ -54,9 +54,10 @@ $Depth => undef
 $Warning => undef
 $ColumnMap => {}
 $Class     => 'RT__Ticket'
+$classes => ''
 </%ARGS>
 <%init>
-$m->out(  '<tr class="'
+$m->out(  '<tr class="' . $classes . ' '
         . ( $Warning ? 'warnline' : $i % 2 ? 'oddline' : 'evenline' ) . '" >'
         . "\n" );
 use HTML::Entities;
