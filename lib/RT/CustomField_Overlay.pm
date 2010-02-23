@@ -52,6 +52,7 @@ use strict;
 no warnings qw(redefine);
 
 use RT::CustomFieldValues;
+use RT::ObjectCustomFields;
 use RT::ObjectCustomFieldValues;
 
 
@@ -1000,6 +1001,19 @@ sub _AppliedTo {
         VALUE    => $self->id,
     );
     return ($res, $ocfs_alias);
+}
+
+=head2 IsGlobal
+
+Return true if this custom field is applied globally.
+
+=cut
+
+sub IsGlobal {
+    my $self = shift;
+    my $ocf = RT::ObjectCustomField->new( $self->CurrentUser );
+    $ocf->LoadByCols( CustomField => $self->id, ObjectId => 0 );
+    return $ocf->id;
 }
 
 =head2 AddToObject OBJECT
