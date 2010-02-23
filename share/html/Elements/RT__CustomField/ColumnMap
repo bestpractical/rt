@@ -64,11 +64,19 @@ my $COLUMN_MAP = {
     },
 
     map(
-        { $_ => {
-            title     => $_, attribute => $_,
-	    value     => sub { return $_[0]->$_() },
+        { my $c = $_; $c => {
+            title     => $c, attribute => $c,
+	    value     => sub { return $_[0]->$c() },
         } }
-        qw(Name Description FriendlyType Type FriendlyPattern Pattern)
+        qw(Name Description Type Pattern)
+    ),
+    map(
+        { my $c = $_; my $short = $c; $short =~ s/^Friendly//;
+          $c => {
+            title     => $short, attribute => $c,
+	    value     => sub { return $_[0]->$c() },
+        } }
+        qw(FriendlyType FriendlyPattern)
     ),
     MaxValues => {
         title     => 'MaxValues', # loc
@@ -76,6 +84,55 @@ my $COLUMN_MAP = {
 	value     => sub {
             my $v = $_[0]->MaxValues;
             return !$v ? $_[0]->loc('unlimited') : $v == 0 ? $_[0]->loc('one') : $v;
+        },
+    },
+    AppliedTo => {
+        title     => 'Applied', # loc
+	value     => sub {
+            if ( $_[0]->IsGlobal ) {
+                return $_[0]->loc('Global');
+            }
+
+            my $collection = $_[0]->AppliedTo;
+            $collection->RowsPerPage(10);
+            my $found = 0;
+            my $res = '';
+            while ( my $record = $collection->Next ) {
+                my $id = '';
+                $id = $record->Name if $record->can('Name');
+                $id ||= "#". $record->id;
+                $res .= ', ' if $res;
+                $res .= $id;
+                $found++;
+            }
+            $res .= ', ...' if $found >= 10;
+            return $res;
+        },
+
+    },
+    RemoveCheckBox => {
+        title => sub {
+            my $name = $_[1] || 'RemoveCustomField';
+            my $checked = $m->request_args->{ $name .'All' }? 'checked="checked"': '';
+
+            return \qq{<input type="checkbox" name="${name}All" value="1" $checked
+                              onclick="setCheckbox(this.form, '$name', this.checked)" />};
+        },
+        value => sub {
+            my $id = $_[0]->id;
+            return '' if $_[0]->IsGlobal;
+
+            my $name = $_[2] || 'RemoveCustomField';
+            my $arg = $m->request_args->{ $name };
+
+            my $checked = '';
+            if ( $arg && ref $arg ) {
+                $checked = 'checked="checked"' if grep $_ == $id, @$arg;
+            }
+            elsif ( $arg ) {
+                $checked = 'checked="checked"' if $arg == $id;
+            }
+            return \qq{<input type="checkbox" name="$name" value="$id" $checked />}
         },
     },
 };
