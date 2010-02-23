@@ -122,13 +122,27 @@ my ($i, $column_map) = (0, {});
 while ( my $record = $Collection->Next ) {
     # Every ten rows, flush the buffer and put something on the page.
     $m->flush_buffer unless ++$i % 10;
+
+    my $warning = 0;
+    my $classes = '';
+
+    $m->callback(
+        CallbackName => 'EachRow',
+        Record       => $record,
+        Warning      => \$warning,
+        classes      => \$classes,
+        Format       => \@Format,
+    );
+
     $m->comp('/Elements/CollectionAsTable/Row',
-        i => $i,
-        Format => \@Format,
-        record => $record,
-        maxitems => $maxitems,
+        i         => $i,
+        Format    => \@Format,
+        record    => $record,
+        maxitems  => $maxitems,
         ColumnMap => $column_map,
         Class     => $Class,
+        Warning   => $warning,
+        classes   => $classes,
     );
 }
 
