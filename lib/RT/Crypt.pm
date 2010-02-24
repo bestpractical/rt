@@ -7,6 +7,66 @@ package RT::Crypt;
 require RT::Crypt::GnuPG;
 require RT::Crypt::SMIME;
 
+=head1 NAME
+
+RT::Crypt - encrypt/decrypt and sign/verify subsystem for RT
+
+=head1 DESCRIPTION
+
+This module provides support for encryption and signing of outgoing messages, 
+as well as the decryption and verification of incoming emails using variouse
+encryption standards. At this moment L<GnuPG|RT::Crypt::GnuPG> and
+L<SMIME|RT::Crypt::SMIME> protocols are supported.
+
+=head1 CONFIGURATION
+
+You can control the configuration of this subsystem from RT's configuration file.
+Some options are available via the web interface, but to enable this functionality,
+you MUST start in the configuration file.
+
+For each protocol there is a hash with the same name in the configuration file.
+This hash controls RT specific options regarding the protocol. It allows you to
+enable/disable facility or change the format of messages, for example GnuPG use
+the following config:
+
+    Set( %GnuPG,
+        Enable => 1,
+        ... other options ...
+    );
+
+Enable the only key that generic for all protocols. A protocol may have
+additional options to tune behaviour.
+
+However, note that you B<must> add the
+L<Auth::Crypt|RT::Interface::Email::Auth::Crypt> email filter to enable
+the handling of incoming encrypted/signed messages.
+
+=head2 %Crypt
+
+Config option hash to choose protocols decrypted and verified
+in incoming messages, pick protocol for outgoing emails, behaviour on
+errors during decryptions and signatures.
+
+By default all these options are generated. Every enabled protocol
+is checked on incomming messages, but you can change that:
+
+    Set( %Crypt,
+        ...
+        Incoming => ['SMIME'],
+        ...
+    );
+
+Protocol for outgoing emails can be only one and by default it's
+first one value from above list.
+
+    Set( %Crypt,
+        ...
+        Outgoing => 'GnuPG',
+        ...
+    );
+
+=cut
+
 our @PROTOCOLS = ('GnuPG', 'SMIME');
 our %PROTOCOLS = map { lc $_ => $_ } @PROTOCOLS;
 

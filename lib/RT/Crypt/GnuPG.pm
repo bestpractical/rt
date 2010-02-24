@@ -64,7 +64,7 @@ RT::Crypt::GnuPG - encrypt/decrypt and sign/verify email messages with the GNU P
 =head1 DESCRIPTION
 
 This module provides support for encryption and signing of outgoing messages, 
-as well as the decryption and verification of incoming email.
+as well as the decryption and verification of incoming emails.
 
 =head1 CONFIGURATION
 
