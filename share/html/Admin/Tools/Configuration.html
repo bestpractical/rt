@@ -58,8 +58,11 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
     current_subtab => 'Admin/Tools/Configuration.html', 
     Title => $title &>
 
-<h2><&|/l&>RT Config</&></h2>
-<table border="0" cellspacing="0" cellpadding="1" width="100%" class="collection">
+<table>
+    <tr>
+        <td valign="top" width="60%" class="boxcontainer">
+<&|/Widgets/TitleBox, title => loc("RT Configuration") &>
+<table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
 <tr class="collection-as-table">
 <th class="collection-as-table"><&|/l&>Option</&></th>
 <th class="collection-as-table"><&|/l&>Value</&></th>
@@ -112,9 +115,11 @@ foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
 </tr>
 % }
 </table>
-
-<h2><&|/l&>RT Variables</&></h2>
-<table border="0" cellspacing="0" cellpadding="1" class="collection">
+</&>
+</td>
+<td valign="top" class="boxcontainer">
+<&|/Widgets/TitleBox, title=> loc("RT core variables") &>
+<table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
 <tr class="collection-as-table">
 <th class="collection-as-table"><&|/l&>Variable</&></th>
 <th class="collection-as-table"><&|/l&>Value</&></th>
@@ -127,7 +132,7 @@ foreach my $key ( sort keys %{*RT::} ) {
     next if !${'RT::'.$key} || ref ${'RT::'.$key} || $config_opt{ $key };
     $index_var++;
 </%PERL>
-<tr class="<% $index_var%2 ? 'oddline' : 'evenline'%>">
+<tr class="collection-as-table <% $index_var%2 ? 'oddline' : 'evenline'%>">
 <td class="collection-as-table">RT::<% $key %></td>
 <td class="collection-as-table">
 % if ( $key =~ /Password(?!Length)/i ) { 
@@ -140,16 +145,10 @@ foreach my $key ( sort keys %{*RT::} ) {
 % }
 % }
 </table>
+</&>
 
-<h3><&|/l&>Plugin Mason Component Path Order</&></h3>
-<ol>
-% foreach my $path ( map { $_->[1] } $m->interp->comp_root_array ) {
-<li><% $path %></li>
-% }
-</ol>
-
-<h2><&|/l&>RT Size</&></h2>
-<table border="0" cellspacing="0" cellpadding="1" class="collection">
+<&|/Widgets/TitleBox, title => loc("RT Size") &>
+<table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
 <tr class="collection-as-table">
 <th class="collection-as-table"><&|/l&>Object</&></th>
 <th class="collection-as-table"><&|/l&>Size</&></th>
@@ -179,23 +178,65 @@ for my $type (qw/Tickets Queues Transactions Groups PrivilegedUsers Unprivileged
 </tr>
 % }
 </table>
+</&>
 
-<h2><&|/l&>Loaded perl modules</&></h2>
-% my $report = Module::Versions::Report::report();
-% my @report = grep /v\d/, split("\n",$report);
-<pre>
-<% join('<br />', @report) |n %>
-</pre>
+<&|/Widgets/TitleBox, title => loc("Mason template search order") &>
+<ol>
+% foreach my $path ( map { $_->[1] } $m->interp->comp_root_array ) {
+<li><% $path %></li>
+% }
+</ol>
+</&>
 
-<h2><&|/l&>Perl configuration</&></h2>
+<&|/Widgets/TitleBox, title => loc("Perl library search order") &>
+<ol>
+% foreach my $inc (@INC) {
+<li><% $inc %></li>
+% }
+</ol>
+</&>
+
+</td>
+</table>
+
+<&|/Widgets/TitleBox, title => loc("Loaded perl modules")&>
+<table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
+<tr class="collection-as-table">
+<th class="collection-as-table"><&|/l&>Module</&></th>
+<th class="collection-as-table"><&|/l&>Version</&></th>
+<th class="collection-as-table"><&|/l&>Source</&></th>
+
+
+<%perl>
+my $i = 0;
+my $report = Module::Versions::Report::report();
+my @report = grep /v\d/, split("\n",$report);
+shift @report; # throw away the perl version
+my ($ver, $source, $distfile);
+foreach my $item (@report) {
+if ($item =~ /^\s*(.*?)\s*v(\S+);/) {
+    $item = $1;
+    $ver = $2;
+    $distfile = $item.".pm";
+    $distfile =~ s|::|/|g;
+}
+</%perl>
+<tr class="<% $i++ %2 ? 'oddline' : 'evenline'%>">
+<td class="collection-as-table"><% $item %></td>
+    <td class="collection-as-table">
+        <%$ver%>
+    </td>
+    <td class="collection-as-table">
+        <% $INC{$distfile} %>
+    </td>
+</tr>
+% }
+</table>
+</&>
+
+<&|/Widgets/TitleBox, title => loc("Perl configuration") &>
 % require Config;
 <pre>
 <% Config::myconfig() %>
 </pre>
-
-<h2><&|/l&>Perl Include Paths (@INC)</&></h2>
-<pre>
-% foreach my $inc (@INC) {
-<% $inc %>
-% }
-</pre>
+</&>
