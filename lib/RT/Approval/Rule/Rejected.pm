@@ -77,6 +77,7 @@ sub Commit {    # XXX: from custom prepare code
         my $template = $self->GetTemplate('Approval Rejected',
                                           TicketObj => $rejected,
                                           Approval  => $self->TicketObj,
+                                          Approver  => $self->TransactionObj->CreatorObj,
                                           Notes     => $note);
 
         $rejected->Correspond( MIMEObj => $template->MIMEObj );

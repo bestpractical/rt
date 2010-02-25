@@ -94,6 +94,7 @@ sub Commit {
         $passed ? 'All Approvals Passed' : 'Approval Passed',
         TicketObj => $top,
         Approval => $self->TicketObj,
+        Approver => $self->TransactionObj->CreatorObj,
         Notes => $note,
     ) or die;
 
