@@ -1003,17 +1003,21 @@ sub _AppliedTo {
     return ($res, $ocfs_alias);
 }
 
-=head2 IsGlobal
+=head2 IsApplied
 
-Return true if this custom field is applied globally.
+Takes object id and returns corresponding L<RT::ObjectCustomField>
+record if this custom field is applied to the object. Use 0 to check
+if custom field is applied globally.
 
 =cut
 
-sub IsGlobal {
+sub IsApplied {
     my $self = shift;
+    my $id = shift;
     my $ocf = RT::ObjectCustomField->new( $self->CurrentUser );
-    $ocf->LoadByCols( CustomField => $self->id, ObjectId => 0 );
-    return $ocf->id;
+    $ocf->LoadByCols( CustomField => $self->id, ObjectId => $id || 0 );
+    return undef unless $ocf->id;
+    return $ocf;
 }
 
 =head2 AddToObject OBJECT
