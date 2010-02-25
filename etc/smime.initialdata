@@ -1,0 +1,8 @@
+@CustomFields = (
+    {
+        Name        => 'SMIME Key',
+        Type        => 'TextSingle',
+        Disabled    => 0,
+        LookupType  => 'RT::User',
+    },
+);
