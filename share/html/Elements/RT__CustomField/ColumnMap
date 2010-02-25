@@ -68,15 +68,15 @@ my $COLUMN_MAP = {
             title     => $c, attribute => $c,
 	    value     => sub { return $_[0]->$c() },
         } }
-        qw(Name Description Type Pattern)
+        qw(Name Description Type LookupType Pattern)
     ),
     map(
         { my $c = $_; my $short = $c; $short =~ s/^Friendly//;
           $c => {
-            title     => $short, attribute => $c,
+            title     => $short, attribute => $short,
 	    value     => sub { return $_[0]->$c() },
         } }
-        qw(FriendlyType FriendlyPattern)
+        qw(FriendlyLookupType FriendlyType FriendlyPattern)
     ),
     MaxValues => {
         title     => 'MaxValues', # loc
@@ -89,7 +89,7 @@ my $COLUMN_MAP = {
     AppliedTo => {
         title     => 'Applied', # loc
 	value     => sub {
-            if ( $_[0]->IsGlobal ) {
+            if ( $_[0]->IsApplied ) {
                 return $_[0]->loc('Global');
             }
 
@@ -98,11 +98,13 @@ my $COLUMN_MAP = {
             my $found = 0;
             my $res = '';
             while ( my $record = $collection->Next ) {
+                $res .= ', ' if $res;
+
                 my $id = '';
                 $id = $record->Name if $record->can('Name');
                 $id ||= "#". $record->id;
-                $res .= ', ' if $res;
                 $res .= $id;
+
                 $found++;
             }
             $res .= ', ...' if $found >= 10;
@@ -120,7 +122,7 @@ my $COLUMN_MAP = {
         },
         value => sub {
             my $id = $_[0]->id;
-            return '' if $_[0]->IsGlobal;
+            return '' if $_[0]->IsApplied;
 
             my $name = $_[2] || 'RemoveCustomField';
             my $arg = $m->request_args->{ $name };
