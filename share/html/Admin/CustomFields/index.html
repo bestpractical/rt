@@ -45,40 +45,38 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<& /Admin/Elements/Header, Title => loc('Select a Custom Field') &>
+<& /Admin/Elements/Header, Title => $title &>
 <& /Admin/Elements/CustomFieldTabs,
     current_tab => 'Admin/CustomFields/', 
-    Title => loc('Select a Custom Field') &>
+    Title => $title,
+&>
 
-% my @types;
-% my $prev_lookup = '';
-% while (my $CustomFieldObj = $CustomFields->Next) {
-%    next unless $CustomFieldObj->CurrentUserHasRight('AdminCustomField');
-%    my $lookup = $CustomFieldObj->FriendlyLookupType;
-%    if ($lookup ne $prev_lookup) {
-%        if ($prev_lookup) {
-</ul>
-%        }
-<h2><% loc("Custom Fields for [_1]", $lookup) %></h2>
-<ul>
-%        $prev_lookup = $lookup;
-%        push @types, [$lookup, $CustomFieldObj->LookupType];
-%    }
-%    
-<li>
-<a href="Modify.html?id=<% $CustomFieldObj->id %>"><% $CustomFieldObj->Name %>: <% $CustomFieldObj->Description %></a>
-</li>
+% my $tmp = RT::CustomField->new( $session{'CurrentUser'} );
+% if ( $Type ) {
+<h2><% loc("Custom Fields for [_1]", $tmp->FriendlyLookupType( $Type )) %></h2>
 % }
-% if ($prev_lookup) {
-</ul>
-% }
+
+<& /Elements/CollectionList,
+    OrderBy       => 'LookupType|Name',
+    Order         => 'ASC|ASC',
+    Rows          => 50,
+    %ARGS,
+    Collection    => $CustomFields,
+    Format        => $Format,
+    DisplayFormat => ($Type? '' : '__FriendlyLookupType__,'). $Format,
+    AllowSorting  => 1,
+    PassArguments => [
+        qw(Format Rows Page Order OrderBy),
+        qw(Type ShowDisabled)
+    ],
+&>
 
 <form action="<%RT->Config->Get('WebPath')%>/Admin/CustomFields/index.html" method="get">
 <&|/l&>Only show custom fields for:</&>
 <select name="Type">
 <option value="" <% !$Type && 'selected="selected"'%> ><% loc('(any)') %></option>
-% for (@types) {
-<option value="<% $_->[1] %>" <% $_->[1] eq $Type && 'selected="selected"'%> ><% $_->[0] %></option>
+% for my $type ( $tmp->LookupTypes ) {
+<option value="<% $type %>" <% $type eq $Type && 'selected="selected"'%> ><% $tmp->FriendlyLookupType( $type ) %></option>
 % }
 </select>
 <br />
@@ -92,8 +90,12 @@
 <%args>
 $Type => ''
 $ShowDisabled => 0
+
+$Format => undef
 </%args>
 <%INIT>
+my $title = loc('Select a Custom Field');
+
 $Type ||= $ARGS{'type'} || '';
 if ( !$Type && $ARGS{'type'} ) {
     $Type ||= $ARGS{'type'};
@@ -104,5 +106,7 @@ my $CustomFields = RT::CustomFields->new($session{'CurrentUser'});
 $CustomFields->UnLimit;
 $CustomFields->{'find_disabled_rows'} = 1 if $ShowDisabled;
 $CustomFields->LimitToLookupType( $Type ) if $Type;
-$CustomFields->OrderByCols( { FIELD => 'LookupType' }, { FIELD => 'Name' } );
+
+$Format ||= RT->Config->Get('AdminSearchResultFormat')->{'CustomFields'};
+
 </%INIT>
