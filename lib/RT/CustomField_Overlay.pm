@@ -1077,7 +1077,6 @@ Takes an object
 
 =cut
 
-
 sub RemoveFromObject {
     my $self = shift;
     my $object = shift;
@@ -1091,14 +1090,13 @@ sub RemoveFromObject {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    my $ObjectCF = RT::ObjectCustomField->new( $self->CurrentUser );
-    $ObjectCF->LoadByCols( ObjectId => $id, CustomField => $self->Id );
-    unless ( $ObjectCF->Id ) {
+    my $ocf = $self->IsApplied( $id );
+    unless ( $ocf ) {
         return ( 0, $self->loc("This custom field does not apply to that object") );
     }
-    # XXX: Delete doesn't return anything
-    my ( $oid, $msg ) = $ObjectCF->Delete;
 
+    # XXX: Delete doesn't return anything
+    my ( $oid, $msg ) = $ocf->Delete;
     return ( $oid, $msg );
 }
 
