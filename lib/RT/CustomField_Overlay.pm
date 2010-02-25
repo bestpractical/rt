@@ -1042,14 +1042,29 @@ sub AddToObject {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    my $ObjectCF = RT::ObjectCustomField->new( $self->CurrentUser );
-    $ObjectCF->LoadByCols( ObjectId => $id, CustomField => $self->Id );
-    if ( $ObjectCF->Id ) {
-        return ( 0, $self->loc("That is already the current value") );
+    if ( $self->IsApplied( $id ) ) {
+        return ( 0, $self->loc("Custom field is already applied to the object") );
     }
-    my ( $oid, $msg ) =
-      $ObjectCF->Create( ObjectId => $id, CustomField => $self->Id );
 
+    if ( $id ) {
+        # applying locally
+        return (0, $self->loc("Couldn't apply custom field to an object as it's global already") )
+            if $self->IsApplied( 0 );
+    }
+    else {
+        my $applied = RT::ObjectCustomFields->new( $self->CurrentUser );
+        $applied->LimitToCustomField( $self->id );
+        while ( my $record = $applied->Next ) {
+            my ($status, $msg) = $record->Delete;
+            $RT::Logger->error($msg);
+            return (0, $self->loc("Couldn't remove custom field from an object"));
+        }
+    }
+
+    my $ocf = RT::ObjectCustomField->new( $self->CurrentUser );
+    my ( $oid, $msg ) = $ocf->Create(
+        ObjectId => $id, CustomField => $self->id,
+    );
     return ( $oid, $msg );
 }
 
