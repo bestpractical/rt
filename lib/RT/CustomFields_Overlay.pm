@@ -141,15 +141,6 @@ sub LimitToGlobalOrObjectId {
                  OPERATOR        => '=',
                  VALUE           => 0,
                  ENTRYAGGREGATOR => 'OR' ) unless $global_only;
-
-    $self->OrderByCols(
-	{ ALIAS => $self->_OCFAlias, FIELD => 'ObjectId', ORDER => 'DESC' },
-	{ ALIAS => $self->_OCFAlias, FIELD => 'SortOrder' },
-    );
-
-    # This doesn't work on postgres.
-    #$self->OrderBy( ALIAS => $class_cfs , FIELD => "SortOrder", ORDER => 'ASC');
-
 }
 
 =head2 LimitToNotApplied
@@ -245,6 +236,26 @@ sub LimitToGlobal  {
 		FIELD => 'ObjectId',
 		VALUE => 0);
   $self->LimitToLookupType( 'RT::Queue-RT::Ticket' );
+}
+
+
+=head2 ApplySortOrder
+
+Sort custom fields according to thier order application to objects. It's
+expected that collection contains only records of one
+L<RT::CustomField/LookupType> and applied to one object or globally
+(L</LimitToGlobalOrObjectId>), otherwise sorting makes no sense.
+
+=cut
+
+sub ApplySortOrder {
+    my $self = shift;
+    my $order = shift || 'ASC';
+    $self->OrderByCols( {
+        ALIAS => $self->_OCFAlias,
+        FIELD => 'SortOrder',
+        ORDER => $order,
+    } );
 }
 
 
