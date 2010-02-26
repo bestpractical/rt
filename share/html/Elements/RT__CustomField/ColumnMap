@@ -140,6 +140,35 @@ my $COLUMN_MAP = {
             return \qq{<input type="checkbox" name="$name" value="$id" $checked />}
         },
     },
+    MoveCF => {
+        title => 'Move',
+        value => sub {
+            my $id = $_[0]->id;
+            
+            my $context = $_[2] || 0;
+            return '' unless $_[0]->IsApplied( $context );
+
+            my $name = 'MoveCustomField';
+            my $args = $m->caller_args( 1 );
+            my @pass = ref $args->{'PassArguments'}
+                ? @{$args->{'PassArguments'}}
+                : ($args->{'PassArguments'});
+            my %pass = map { $_ => $args->{$_} } grep exists $args->{$_}, @pass;
+
+            my $uri = RT->Config->Get('WebPath') . $m->request_path;
+
+            my @res = (
+                \'<a href="',
+                $uri .'?'. $m->comp("/Elements/QueryString", %pass, MoveCustomFieldUp => $id ),
+                \'">', loc('[Up]'), \'</a>',
+                \' <a href="',
+                $uri .'?'. $m->comp("/Elements/QueryString", %pass, MoveCustomFieldDown => $id ),
+                \'">', loc('[Down]'), \'</a>'
+            );
+
+            return @res;
+        },
+    },
 };
 
 </%ONCE>
