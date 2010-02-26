@@ -458,6 +458,18 @@ Set($DefaultErrorMailPrecedence, 'bulk');
 
 =back
 
+=item C<$UseOriginatorHeader>
+
+C<$UseOriginatorHeader> is used to control the insert of an 
+RT-Originator Header in every outgoing mail, containing the 
+mail address of the transaction creator.
+
+=cut
+
+Set($UseOriginatorHeader, 1);
+
+=back
+
 =head1 Sendmail Configuration
 
 These options only take effect if C<$MailCommand> is 'sendmail' or
