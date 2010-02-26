@@ -1055,9 +1055,7 @@ sub AddToObject {
         my $applied = RT::ObjectCustomFields->new( $self->CurrentUser );
         $applied->LimitToCustomField( $self->id );
         while ( my $record = $applied->Next ) {
-            my ($status, $msg) = $record->Delete;
-            $RT::Logger->error($msg);
-            return (0, $self->loc("Couldn't remove custom field from an object"));
+            $record->Delete;
         }
     }
 
