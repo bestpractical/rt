@@ -47,6 +47,7 @@
 %# END BPS TAGGED BLOCK }}}
 %# DEPRECATED
 <&|/Widgets/TitleBox,
+    class => 'reminders',
     title => loc("Reminders") &>
 <table width="100%">
 % my $i =0;
