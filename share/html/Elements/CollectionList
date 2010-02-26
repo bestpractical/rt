@@ -54,7 +54,7 @@ if (!$Collection && $Class eq 'RT::Tickets') {
 my $TotalFound = $Collection->CountAll();
 return '' if !$TotalFound && !$ShowEmpty;
 
-if ( @OrderBy ) {
+if ( @OrderBy && $AllowSorting ) {
     if ( $OrderBy[0] =~ /\|/ ) {
         @OrderBy = split /\|/, $OrderBy[0];
         @Order = split /\|/,$Order[0];
