@@ -94,7 +94,10 @@ my $COLUMN_MAP = {
             }
 
             my $collection = $_[0]->AppliedTo;
+            return '' unless $collection;
+
             $collection->RowsPerPage(10);
+
             my $found = 0;
             my $res = '';
             while ( my $record = $collection->Next ) {
