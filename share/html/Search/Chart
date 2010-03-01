@@ -86,11 +86,11 @@ while ( my $entry = $tix->Next ) {
     my $key;
     if ( $class ) {
         my $q = $class->new( $session{'CurrentUser'} );
-        $q->Load( $entry->__Value( $value_name ) );
+        $q->Load( $entry->LabelValue( $value_name ) );
         $key = $q->Name;
     }
     else {
-        $key = $entry->__Value($value_name);
+        $key = $entry->LabelValue($value_name);
     }
     $key ||= '(no value)';
     
@@ -103,20 +103,6 @@ while ( my $entry = $tix->Next ) {
     $data{ $key } = $value;
     $max_value = $value if $max_value < $value;
     $max_key_length = length $key if $max_key_length < length $key;
-}
-
-# XXX: Convert 1970-01-01 date to the 'Not Set'
-# this code should be generalized!!!
-if ( $PrimaryGroupBy =~ /(Daily|Monthly|Annually)$/ ) {
-    my $re;
-    $re = qr{1970-01-01} if $PrimaryGroupBy =~ /Daily$/;
-    $re = qr{1970-01} if $PrimaryGroupBy =~ /Monthly$/;
-    $re = qr{1970} if $PrimaryGroupBy =~ /Annually$/;
-    foreach my $k (keys %data) {
-        my $tmp = $k;
-        $tmp =~ s/^$re/loc('Not Set')/e or next;
-        $data{$tmp} = delete $data{$k};
-    }
 }
 
 unless (keys %data) {

@@ -52,6 +52,32 @@ use base qw/RT::Record/;
 # XXX TODO: how the heck do we acl a report?
 sub CurrentUserHasRight {1}
 
+=head2 LabelValue
+
+If you're pulling a value out of this collection and using it as a label,
+you may want the "cleaned up" version.  This includes scrubbing 1970 dates
+and ensuring that dates are in local not DB timezones.
+
+=cut
+
+sub LabelValue {
+    my $self  = shift;
+    my $field = shift;
+    my $value = $self->__Value( $field );
+
+    if ( $field =~ /(Daily|Monthly|Annually|Hourly)$/ ) {
+        my $re;
+        $re = qr{1970-01-01 00} if $field =~ /Hourly$/;
+        $re = qr{1970-01-01} if $field =~ /Daily$/;
+        $re = qr{1970-01} if $field =~ /Monthly$/;
+        $re = qr{1970} if $field =~ /Annually$/;
+        $value =~ s/^$re/Not Set/;
+    }
+
+    return $value;
+
+}
+
 eval "require RT::Report::Tickets::Entry_Vendor";
 if ($@ && $@ !~ qr{^Can't locate RT/Report/Tickets/Entry_Vendor.pm}) {
     die $@;
