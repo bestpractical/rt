@@ -57,6 +57,16 @@
 <form action="Objects.html" method="post">
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
 
+% if ( $is_global ) {
+<h2><&|/l&>Applies to all objects</&></h2>
+<input type="checkbox" name="RemoveCustomField-<% $CF->id %>" value="0" />
+<&|/l&>check this box to remove this Custom Field from all objects and be able to choose specific objects.</&>
+% } else {
+<h2><&|/l&>Apply globally</&></h2>
+
+<input type="checkbox" name="AddCustomField-<% $CF->id %>" value="0" />
+<&|/l&>check this box to apply this Custom Field to all objects.</&>
+
 <h2><&|/l&>Selected objects</&></h2>
 <& /Elements/CollectionList,
     OrderBy => 'id',
@@ -90,6 +100,8 @@
     ],
 &>
 
+% }
+
 <& /Elements/Submit, Name => 'UpdateObjs' &>
 </form>
 
@@ -104,31 +116,33 @@ Abort(loc("Something wrong. Contact system administrator"))
 my (@results);
 
 if ( $UpdateObjs ) {
-    if ( my $add = $ARGS{'AddCustomField-'.$CF->id} ) {
-        foreach my $id ( ref $add? (@$add) : ($add) ) {
-            my $object = $class->new( $session{'CurrentUser'} );
-            $object->Load( $id );
-            unless ( $object->id ) {
-                next;
-            }
-
-            my ($status, $msg) = $CF->AddToObject( $object );
-            push @results, $msg;
-        }
-    }
-    if ( my $del = $ARGS{'RemoveCustomField-'.$CF->id} ) {
+    if ( defined (my $del = $ARGS{'RemoveCustomField-'.$CF->id}) ) {
         foreach my $id ( ref $del? (@$del) : ($del) ) {
             my $object = $class->new( $session{'CurrentUser'} );
-            $object->Load( $id );
-            unless ( $object->id ) {
-                next;
+            if ( $id ) {
+                $object->Load( $id );
+                next unless $object->id;
             }
 
             my ($status, $msg) = $CF->RemoveFromObject( $object );
             push @results, $msg;
         }
     }
+    if ( defined (my $add = $ARGS{'AddCustomField-'.$CF->id}) ) {
+        foreach my $id ( ref $add? (@$add) : ($add) ) {
+            my $object = $class->new( $session{'CurrentUser'} );
+            if ( $id ) {
+                $object->Load( $id );
+                next unless $object->id;
+            }
+
+            my ($status, $msg) = $CF->AddToObject( $object );
+            push @results, $msg;
+        }
+    }
 }
+
+my $is_global = $CF->IsApplied(0);
 
 my $applied = $CF->AppliedTo;
 my $not_applied = $CF->NotAppliedTo;
