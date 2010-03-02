@@ -1,0 +1,38 @@
+@Initial = (
+    sub {
+        # make sure global CFs are not applied to local objects
+        my $ocfs = RT::ObjectCustomFields->new( $RT::SystemUser );
+        $ocfs->Limit( FIELD => 'ObjectId', OPERATOR => '!=', VALUE => 0 );
+        my $alias = $ocfs->Join(
+            FIELD1 => 'CustomField',
+            TABLE2 => 'ObjectCustomFields',
+            FIELD2 => 'CustomField',
+        );
+        $ocfs->Limit( ALIAS => $alias, FIELD => 'ObjectId', VALUE => 0 );
+        while ( my $ocf = $ocfs->Next ) {
+            $ocf->Delete;
+        }
+    },
+    sub {
+        # sort SortOrder
+        my $sth = $RT::Handle->dbh->prepare(
+            "SELECT cfs.LookupType, ocfs.id"
+            ." FROM ObjectCustomFields ocfs, CustomFields cfs"
+            ." WHERE cfs.id = ocfs.CustomField"
+            ." ORDER BY cfs.LookupType, ocfs.SortOrder, cfs.Name"
+        );
+        $sth->execute;
+
+        my ($i, $prev_type) = (0, '');
+        while ( my ($lt, $id) = $sth->fetchrow_array ) {
+            $i = 0 if $prev_type ne $lt;
+            my $ocf = RT::ObjectCustomField->new( $RT::SystemUser );
+            $ocf->Load( $id );
+            my ($status, $msg) = $ocf->SetSortOrder( $i++ );
+            $RT::Logger->warning("Couldn't set SortOrder: $msg")
+                unless $status;
+            $prev_type = $lt;
+        }
+    },
+);
+
