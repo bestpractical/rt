@@ -279,11 +279,13 @@ sub VerifyRFC3851 {
 
     my %res;
     my $buf;
+    my $keyfh = File::Temp->new;
     {
         local $SIG{CHLD} = 'DEFAULT';
-        my $cmd = join( ' ', shell_quote(
+        my $cmd = join ' ', shell_quote(
             $self->OpenSSLPath, qw(smime -verify -noverify),
-        ) );
+            '-signer', $keyfh->filename,
+        );
         safe_run_child { run3( $cmd, \$msg, \$buf, \$res{'stderr'} ) };
         $res{'exit_code'} = $?;
     }
@@ -295,7 +297,27 @@ sub VerifyRFC3851 {
     }
 
     my @signers;
-    {
+    if ( my $key = do { $keyfh->seek(0, 0); local $/; readline $keyfh } ) {{
+        my %info = $self->GetCertificateInfo( Certificate => $key );
+        last if $info{'exit_code'};
+
+        push @signers, @{ $info{'info'} };
+
+        my $user = RT::User->new( $RT::SystemUser );
+        # if we're not going to create a user here then
+        # later it will be created without key
+        $user->LoadOrCreateByEmail( $signers[0]{'User'}[0]{'String'} );
+        my $current_key = $user->FirstCustomFieldValue('SMIME Key');
+        last if $current_key && $current_key eq $key;
+
+        my ($status, $msg) = $user->AddCustomFieldValue(
+            Field => 'SMIME Key', Value => $key,
+        );
+        $RT::Logger->error("Couldn't set 'SMIME Key' for user #". $user->id .": $msg")
+            unless $status;
+    }}
+
+    if ( !@signers ) {
         my $pkcs7_info;
         local $SIG{CHLD} = 'DEFAULT';
         my $cmd = join( ' ', shell_quote(
@@ -326,7 +348,7 @@ sub VerifyRFC3851 {
     $res{'status'} =
         "Operation: Verify\nStatus: DONE\n"
         ."Message: The signature is good\n"
-        ."UserString: ". $signers[0]{'User'}{'String'} ."\n"
+        ."UserString: ". $signers[0]{'User'}[0]{'String'} ."\n"
     ;
 
     return %res;
@@ -807,8 +829,8 @@ sub ParsePKCS7Info {
     # oddly, but a certificate can be duplicated
     my %seen;
     @res = grep !$seen{ $_->{'Content'} }++, grep keys %$_, @res;
-    $_->{'User'} = delete $_->{'Subject'} foreach @res;
-    
+    $_->{'User'} = [delete $_->{'Subject'}] foreach @res;
+
     return @res;
 }
 
