@@ -501,8 +501,10 @@ sub _HasRoleRight
 sub RolesWithRight {
     my $self = shift;
     my %args = (
-        Right        => undef,
-        EquivObjects => [],
+        Right               => undef,
+        IncludeSystemRights => 1,
+        IncludeSuperusers   => 1,
+        EquivObjects        => [],
         @_
     );
     my $right = $args{'Right'};
@@ -510,10 +512,18 @@ sub RolesWithRight {
     my $query =
         "SELECT DISTINCT PrincipalType FROM ACL"
         # Only find superuser or rights with the name $right
-        ." WHERE (RightName = 'SuperUser' OR RightName = '$right')"
+        ." WHERE ( RightName = '$right' "
+        # Check SuperUser if we were asked to
+        . ($args{'IncludeSuperusers'}? "OR RightName = 'SuperUser' " : '' )
+        .")"
         # we need only roles
         ." AND PrincipalType != 'Group'"
     ;
+
+    # skip rights granted on system level if we were asked to
+    unless ( $args{'IncludeSystemRights'} ) {
+        $query .= " AND ObjectType != 'RT::System'";
+    }
 
     my (@object_clauses);
     foreach my $obj ( @{ $args{'EquivObjects'} } ) {
@@ -526,9 +536,10 @@ sub RolesWithRight {
         push @object_clauses, "($object_clause)";
     }
     # find ACLs that are related to our objects only
-    $query .= " AND (". join( ' OR ', @object_clauses ) .")";
+    $query .= " AND (". join( ' OR ', @object_clauses ) .")"
+        if @object_clauses;
 
-    my $dbh = $self->_Handle->dbh;
+    my $dbh = $RT::Handle->dbh;
     my $roles = $dbh->selectcol_arrayref($query);
     unless ( $roles ) {
         $RT::Logger->warning( $dbh->errstr );
