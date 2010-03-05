@@ -498,6 +498,21 @@ sub _HasRoleRight
     return 0;
 }
 
+=head2 RolesWithRight
+
+Returns list with names of roles that have right on
+set of objects. Takes Right, EquiveObjects,
+IncludeSystemRights and IncludeSuperusers arguments.
+
+IncludeSystemRights is true by default, rights
+granted on system level are not accouned when option
+is set to false value.
+
+IncludeSuperusers is true by default, SuperUser right
+is not checked if it's set to false value.
+
+=cut
+
 sub RolesWithRight {
     my $self = shift;
     my %args = (
