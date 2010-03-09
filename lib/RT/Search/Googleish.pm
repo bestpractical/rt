@@ -262,6 +262,7 @@ sub ProcessExtraStatus {
     if ( RT::Config->Get('OnlySearchActiveTicketsInSimpleSearch',$self->TicketsObj->CurrentUser) ) {
           return join( " OR ", map "Status = '$_'", RT::Queue->ActiveStatusArray() );
     }
+    return;
 }
 
 sub TranslateCustom {
