@@ -163,7 +163,9 @@
     <input type="submit" class="button" name="AddMoreAttach" value="<&|/l&>Add More Files</&>" />
     <input type="hidden" class="hidden" name="UpdateAttach" value="1" /></td></tr>
  <tr><td class="labeltop"><&|/l&>Message</&>:</td><td>
- <& /Elements/MessageBox, Name=>"UpdateContent"&>
+%# Currently, bulk update always starts with Comment not Reply selected, so we check this unconditionally
+% my $IncludeSignature = RT->Config->Get('MessageBoxIncludeSignatureOnComment');
+<& /Elements/MessageBox, Name => "UpdateContent", IncludeSignature => $IncludeSignature &>
  </td></tr>
  </table>
 
