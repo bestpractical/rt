@@ -49,8 +49,10 @@
 <input type="hidden" id="UpdateIgnoreAddressCheckboxes" name="UpdateIgnoreAddressCheckboxes" value="0">
         <br />
 
-%foreach my $addr ( keys %txn_addresses) {
-%    next if ( grep {$addr eq $_} @req_addresses );
+%if (scalar @one_time_Ccs) {
+<i class="label">(check to add)</i>
+%}
+%foreach my $addr ( @one_time_Ccs ) {
 <input 
 id="UpdateCc-<%$addr%>" 
 name="UpdateCc-<%$addr%>" 
@@ -62,8 +64,10 @@ name="UpdateCc-<%$addr%>"
 %}
 </td></tr>
 <tr><td class="label"><&|/l&>One-time Bcc</&>:</td><td><& /Elements/EmailInput, Name => 'UpdateBcc', Size => '60', Default => $ARGS{UpdateBcc} &><br />
-%foreach my $addr ( keys %txn_addresses) {
-%    next if ( grep {$addr eq $_} @req_addresses );
+%if (scalar @one_time_Ccs) {
+<i class="label">(check to add)</i>
+%}
+%foreach my $addr ( @one_time_Ccs ) {
 <input
     id="UpdateBcc-<%$addr%>"
     name="UpdateBcc-<%$addr%>"
@@ -81,4 +85,10 @@ $TicketObj
 <%init>
 my %txn_addresses = %{$TicketObj->TransactionAddresses};
 my @req_addresses = split /,/, $TicketObj->RequestorAddresses;
+my @one_time_Ccs;
+
+foreach my $addr ( keys %txn_addresses) {
+  next if ( grep {$addr eq $_} @req_addresses );
+  push @one_time_Ccs,$addr;
+}
 </%init>
