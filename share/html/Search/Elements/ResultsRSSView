@@ -1,0 +1,143 @@
+%# BEGIN BPS TAGGED BLOCK {{{
+%# 
+%# COPYRIGHT:
+%# 
+%# This software is Copyright (c) 1996-2009 Best Practical Solutions, LLC
+%#                                          <jesse@bestpractical.com>
+%# 
+%# (Except where explicitly superseded by other copyright notices)
+%# 
+%# 
+%# LICENSE:
+%# 
+%# This work is made available to you under the terms of Version 2 of
+%# the GNU General Public License. A copy of that license should have
+%# been provided with this software, but in any event can be snarfed
+%# from www.gnu.org.
+%# 
+%# This work is distributed in the hope that it will be useful, but
+%# WITHOUT ANY WARRANTY; without even the implied warranty of
+%# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%# General Public License for more details.
+%# 
+%# You should have received a copy of the GNU General Public License
+%# along with this program; if not, write to the Free Software
+%# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+%# 02110-1301 or visit their web page on the internet at
+%# http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+%# 
+%# 
+%# CONTRIBUTION SUBMISSION POLICY:
+%# 
+%# (The following paragraph is not intended to limit the rights granted
+%# to you to modify and distribute this software under the terms of
+%# the GNU General Public License and is only of importance to you if
+%# you choose to contribute your changes and enhancements to the
+%# community by submitting them to Best Practical Solutions, LLC.)
+%# 
+%# By intentionally submitting any modifications, corrections or
+%# derivatives to this work, or any other work intended for use with
+%# Request Tracker, to Best Practical Solutions, LLC, you confirm that
+%# you are the copyright holder for those contributions and you grant
+%# Best Practical Solutions,  LLC a nonexclusive, worldwide, irrevocable,
+%# royalty-free, perpetual, license to use, copy, create derivative
+%# works based on those contributions, and sublicense and distribute
+%# those contributions and any derivatives thereof.
+%# 
+%# END BPS TAGGED BLOCK }}}
+<%INIT>
+use Encode ();
+
+my $old_current_user;
+
+if ( $m->request_comp->path =~ RT->Config->Get('WebNoAuthRegex') ) {
+    my $path = $m->dhandler_arg;
+
+    my $notfound = sub {
+        my $mesg = shift;
+        $r->headers_out->{'Status'} = '404 Not Found';
+        $RT::Logger->info("Error encountered in rss generation: $mesg");
+        $m->clear_and_abort;
+    };
+
+    $notfound->("Invalid path: $path") unless $path =~ m!^([^/]+)/([^/]+)/?!;
+
+    my ( $name, $auth ) = ( $1, $2 );
+
+    # Unescape parts
+    $name =~ s/\%([0-9a-z]{2})/chr(hex($1))/gei;
+
+    # convert to perl strings
+    $name = Encode::decode_utf8($name);
+
+    my $user = RT::User->new($RT::SystemUser);
+    $user->Load($name);
+    $notfound->("Invalid user: $user") unless $user->id;
+
+    $notfound->("Invalid authstring")
+      unless $user->ValidateAuthString( $auth,
+              $ARGS{Query} . $ARGS{Order} . $ARGS{OrderBy} );
+
+    $old_current_user = $session{'CurrentUser'};
+    my $cu               = RT::CurrentUser->new;
+    $cu->Load($user);
+    $session{'CurrentUser'} = $cu;
+}
+
+my $Tickets = RT::Tickets->new($session{'CurrentUser'});
+$Tickets->FromSQL($ARGS{'Query'});
+if ($OrderBy =~ /\|/) {
+    # Multiple Sorts
+    my @OrderBy = split /\|/,$OrderBy;
+    my @Order = split /\|/,$Order;
+    $Tickets->OrderByCols(
+        map { { FIELD => $OrderBy[$_], ORDER => $Order[$_] } } ( 0
+        .. $#OrderBy ) );;
+} else {
+    $Tickets->OrderBy(FIELD => $OrderBy, ORDER => $Order);
+}
+$r->content_type('application/rss+xml');
+
+
+
+        # create an RSS 1.0 file (http://purl.org/rss/1.0/)
+        use XML::RSS;
+        my $rss = new XML::RSS (version => '1.0');
+        $rss->channel(
+          title        => RT->Config->Get('rtname').": Search " . $ARGS{'Query'},
+          link         => RT->Config->Get('WebURL'),
+          description  => "",
+          dc => {
+          },
+          generator    => "RT v" . $RT::VERSION,
+          syn => {
+            updatePeriod     => "hourly",
+            updateFrequency  => "1",
+            updateBase       => "1901-01-01T00:00+00:00",
+          },
+        );
+
+
+    while ( my $Ticket = $Tickets->Next()) {
+        my $creator_str = $m->scomp('/Elements/ShowUser', User => $Ticket->CreatorObj);
+        $creator_str =~ s/[\r\n]//g;
+        $rss->add_item(
+          title       =>  $Ticket->Subject || loc('No Subject'),
+          link        => RT->Config->Get('WebURL')."Ticket/Display.html?id=".$Ticket->id,
+          description => $Ticket->Transactions->First->Content,
+          dc          => { creator => $creator_str,
+                           date => $Ticket->CreatedObj->RFC2822,
+                         },
+          guid        => $Ticket->Queue . '_' . $Ticket->id,
+        );
+    }
+
+$m->out($rss->as_string);
+$session{'CurrentUser'} = $old_current_user if $old_current_user;
+$m->abort();
+</%INIT>
+<%ARGS>
+$OrderBy => 'Created'
+$Order => 'ASC'
+</%ARGS>
+
