@@ -460,8 +460,8 @@ Set($DefaultErrorMailPrecedence, 'bulk');
 
 =item C<$UseOriginatorHeader>
 
-C<$UseOriginatorHeader> is used to control the insert of an 
-RT-Originator Header in every outgoing mail, containing the 
+C<$UseOriginatorHeader> is used to control the insertion of an
+RT-Originator Header in every outgoing mail, containing the
 mail address of the transaction creator.
 
 =cut
