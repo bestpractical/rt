@@ -50,7 +50,7 @@
         <br />
 
 %if (scalar @one_time_Ccs) {
-<i class="label">(check to add)</i>
+<i class="label">(<&|/l&>check to add)</&></i>
 %}
 %foreach my $addr ( @one_time_Ccs ) {
 <input 
@@ -65,7 +65,7 @@ name="UpdateCc-<%$addr%>"
 </td></tr>
 <tr><td class="label"><&|/l&>One-time Bcc</&>:</td><td><& /Elements/EmailInput, Name => 'UpdateBcc', Size => '60', Default => $ARGS{UpdateBcc} &><br />
 %if (scalar @one_time_Ccs) {
-<i class="label">(check to add)</i>
+<i class="label">(<&|/l&>check to add)</&></i>
 %}
 %foreach my $addr ( @one_time_Ccs ) {
 <input
