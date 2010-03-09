@@ -2488,7 +2488,7 @@ sub MergeInto {
     }
 
     # Load up the new ticket.
-    my $MergeInto = RT::Ticket->new($RT::SystemUser);
+    my $MergeInto = RT::Ticket->new($self->CurrentUser);
     $MergeInto->Load($ticket_id);
 
     # make sure it exists.
