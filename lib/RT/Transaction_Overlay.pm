@@ -1028,7 +1028,6 @@ sub CurrentUserCanSee {
         my $cf = RT::CustomField->new( $self->CurrentUser );
         $cf->SetContextObject( $self->Object );
         $cf->Load( $cf_id );
-        return 0 if $cf->Disabled;
         return 0 unless $cf->CurrentUserHasRight('SeeCustomField');
     }
     #if they ain't got rights to see, don't let em
