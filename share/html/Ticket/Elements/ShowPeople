@@ -50,7 +50,9 @@
     <td class="label"><&|/l&>Owner</&>:</td>
 % my $owner = $Ticket->OwnerObj;
     <td class="value"><& /Elements/ShowUser, User => $owner, Ticket => $Ticket &>
-    <& /Elements/ShowUserEmailFrequency, User => $owner, Ticket => $Ticket &></td>
+    <& /Elements/ShowUserEmailFrequency, User => $owner, Ticket => $Ticket &>
+% $m->callback( User => $owner, Ticket => $Ticket, %ARGS, CallbackName => 'AboutThisUser' );
+    </td>
   </tr>
   <tr>
     <td class="labeltop"><&|/l&>Requestors</&>:</td>

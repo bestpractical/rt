@@ -50,7 +50,9 @@
 % my $Users = $Group->UserMembersObj( Recursively => $Recursively );
 % while ( my $user = $Users->Next ) {
 <& /Elements/ShowUser, User => $user, Ticket => $Ticket &>
-<& /Elements/ShowUserEmailFrequency, User => $user, Ticket => $Ticket &><br />
+<& /Elements/ShowUserEmailFrequency, User => $user, Ticket => $Ticket &>
+% $m->callback( User => $user, Ticket => $Ticket, %ARGS, CallbackName => 'AboutThisUser' );
+<br />
 % }
 % my $Groups = $Group->GroupMembersObj( Recursively => $Recursively );
 % $Groups->LimitToUserDefinedGroups;
