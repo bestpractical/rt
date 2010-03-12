@@ -142,7 +142,8 @@ sub QueryToSQL {
 
         # Is there a queue named $key?
         elsif ( $Queue = RT::Queue->new( $self->TicketsObj->CurrentUser )
-            and $Queue->Load($key) )
+            and $Queue->Load($key)
+            and $Queue->id )
         {
             my $quoted_queue = $Queue->Name;
             $quoted_queue =~ s/'/\\'/g;
@@ -152,6 +153,7 @@ sub QueryToSQL {
         # Is there a owner named $key?
         elsif ( $User = RT::User->new( $self->TicketsObj->CurrentUser )
             and $User->Load($key)
+            and $User->id
             and $User->Privileged )
         {
             push @owner_clauses, "Owner = '" . $User->Name . "'";
