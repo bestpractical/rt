@@ -223,34 +223,33 @@ sub SetMIMEEntityToEncoding {
 
     my $body = $entity->bodyhandle;
 
-    if ( $enc ne $charset && $body) {
-	my @lines = $body->as_lines or return;
+    if ( $enc ne $charset && $body ) {
+        my $string = $body->as_string or return;
 
-	# {{{ Convert the body
-	eval {
-	    $RT::Logger->debug("Converting '$charset' to '$enc' for ". $head->mime_type . " - ". ($head->get('subject') || 'Subjectless message'));
+        # {{{ Convert the body
+        eval {
+            $RT::Logger->debug( "Converting '$charset' to '$enc' for " . $head->mime_type . " - " . ( $head->get('subject') || 'Subjectless message' ) );
 
-	    # NOTE:: see the comments at the end of the sub.
-	    Encode::_utf8_off( $lines[$_] ) foreach ( 0 .. $#lines );
-	    Encode::from_to( $lines[$_], $charset => $enc ) for ( 0 .. $#lines );
-	};
+            # NOTE:: see the comments at the end of the sub.
+            Encode::_utf8_off( $string);
+            Encode::from_to( $string, $charset => $enc );
+        };
 
-	if ($@) {
-	    $RT::Logger->error( "Encoding error: " . $@ . " defaulting to ISO-8859-1 -> UTF-8" );
-	    eval {
-		Encode::from_to( $lines[$_], 'iso-8859-1' => $enc ) foreach ( 0 .. $#lines );
-	    };
-	    if ($@) {
-		$RT::Logger->crit( "Totally failed to convert to utf-8: " . $@ . " I give up" );
-	    }
-	}
-	# }}}
+        if ($@) {
+            $RT::Logger->error( "Encoding error: " . $@ . " defaulting to ISO-8859-1 -> UTF-8" );
+            eval { Encode::from_to( $string, 'iso-8859-1' => $enc ) };
+            if ($@) {
+                $RT::Logger->crit( "Totally failed to convert to utf-8: " . $@ . " I give up" );
+            }
+        }
 
-        my $new_body = MIME::Body::InCore->new( \@lines );
+        # }}}
+
+        my $new_body = MIME::Body::InCore->new( $string);
 
         # set up the new entity
         $head->mime_attr( "content-type" => 'text/plain' )
-          unless ( $head->mime_attr("content-type") );
+            unless ( $head->mime_attr("content-type") );
         $head->mime_attr( "content-type.charset" => $enc );
         $entity->bodyhandle($new_body);
     }
