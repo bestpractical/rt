@@ -1751,10 +1751,7 @@ Title: intro
 Title: introduction
 Text:
 
-     ** THIS IS AN UNSUPPORTED PREVIEW RELEASE **
-     ** PLEASE REPORT BUGS TO rt-bugs@bestpractical.com **
-
-    This is a command-line interface to RT 3.0 or newer
+    This is a command-line interface to RT 3.0 or newer.
 
     It allows you to interact with an RT server over HTTP, and offers an
     interface to RT's functionality that is better-suited to automation
