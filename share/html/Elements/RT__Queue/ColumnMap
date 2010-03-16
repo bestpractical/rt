@@ -70,42 +70,32 @@ my $COLUMN_MAP = {
         title     => 'Address', # loc
         value     => sub { return ($_[0]->CorrespondAddress||'-') .'/'. ($_[0]->CommentAddress||'-') },
     },
-    Name => {
-        title     => 'Name', # loc
-	attribute => 'Name',
-	value     => sub { return $_[0]->Name() },
+
+    # SubjectTag is special as we can not sort
+    SubjectTag  => {
+        title     => 'SubjectTag', # loc
+        value     => sub { return $_[0]->SubjectTag },
     },
-    Description => {
-        title     => 'Description', # loc
-	attribute => 'Description',
-	value     => sub { return $_[0]->Description() },
+    Sign => {
+        title => 'Sign', # loc
+        value => sub { return $_[0]->Sign? $_[0]->loc('yes') : $_[0]->loc('no') },
     },
-    CorrespondAddress => {
-        title     => 'CorrespondAddress', # loc
-	attribute => 'CorrespondAddress',
-	value     => sub { return $_[0]->CorrespondAddress() },
-    },
-    CommentAddress => {
-        title     => 'CommentAddress', # loc
-	attribute => 'CommentAddress',
-	value     => sub { return $_[0]->CommentAddress() },
-    },
-    InitialPriority => {
-        title     => 'InitialPriority', # loc
-	attribute => 'InitialPriority',
-	value     => sub { return $_[0]->InitialPriority() },
-    },
-    FinalPriority => {
-        title     => 'FinalPriority', # loc
-	attribute => 'FinalPriority',
-	value     => sub { return $_[0]->FinalPriority() },
-    },
-    DefaultDueIn => {
-        title     => 'DefaultDueIn', # loc
-	attribute => 'DefaultDueIn',
-	value     => sub { return $_[0]->DefaultDueIn() },
+    Encrypt => {
+        title => 'Encrypt', # loc
+        value => sub { return $_[0]->Encrypt? $_[0]->loc('yes') : $_[0]->loc('no') },
     },
 };
+
+foreach my $field (qw(
+    Name Description CorrespondAddress CommentAddress
+    InitialPriority FinalPriority DefaultDueIn
+)) {
+    $COLUMN_MAP->{$field} = {
+        title => $field,
+        attribute => $field,
+        value => sub { return $_[0]->$field() },
+    },
+}
 
 </%ONCE>
 <%INIT>

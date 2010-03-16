@@ -73,10 +73,7 @@
 </form>
 
 <%INIT>
-my $dir_path = $m->request_comp->dir_path;
-$Format ||= qq{'<a href="__WebPath__$dir_path/Template.html?Queue=$id&Template=__id__">__id__</a>/TITLE:#'}
-    .qq{,'<a href="__WebPath__$dir_path/Template.html?Queue=$id&Template=__id__">__Name__</a>/TITLE:Name'}
-    .qq{,'__Description__'};
+$Format ||= RT->Config->Get('AdminSearchResultFormat')->{'Templates'};
 
 my $QueueObj = RT::Queue->new( $session{'CurrentUser'} );
 $QueueObj->Load( $id ) if $id;
