@@ -56,94 +56,104 @@
 
 <form action="Objects.html" method="post">
 <input type="hidden" class="hidden" name="id" value="<% $id %>" />
-<input type="hidden" class="hidden" name="UpdateObjs" value="1" />
+
+% if ( $is_global ) {
+<h2><&|/l&>Applies to all objects</&></h2>
+<input type="checkbox" name="RemoveCustomField-<% $CF->id %>" value="0" />
+<&|/l&>check this box to remove this Custom Field from all objects and be able to choose specific objects.</&>
+% } else {
+<h2><&|/l&>Apply globally</&></h2>
+
+<input type="checkbox" name="AddCustomField-<% $CF->id %>" value="0" />
+<&|/l&>check this box to apply this Custom Field to all objects.</&>
 
 <h2><&|/l&>Selected objects</&></h2>
-<& /Admin/Elements/PickObjects, Objects => \@AssignedObjs, id => $id, Checked => 1 &>
-<h2><&|/l&>Unselected objects</&></h2>
-<& /Admin/Elements/PickObjects, Objects => \@UnassignedObjs, id => $id &>
+<& /Elements/CollectionList,
+    OrderBy => 'id',
+    Order => 'ASC',
+    %ARGS,
+    Collection => $applied,
+    Rows => 0,
+    Page => 1,
+    Format        => $format,
+    DisplayFormat => "'__CheckBox.{RemoveCustomField-". $CF->id ."}__',". $format,
+    AllowSorting => 0,
+    ShowEmpty    => 0,
+    PassArguments => [
+        qw(id Format Rows Page Order OrderBy),
+    ],
+&>
 
-<& /Elements/Submit, CheckAll => 1, ClearAll => 1 &>
+<h2><&|/l&>Unselected objects</&></h2>
+<& /Elements/CollectionList,
+    OrderBy => 'id',
+    Order => 'ASC',
+    %ARGS,
+    Collection => $not_applied,
+    Rows => 50,
+    Format        => $format,
+    DisplayFormat => "'__CheckBox.{AddCustomField-". $CF->id ."}__',". $format,
+    AllowSorting  => 1,
+    ShowEmpty     => 0,
+    PassArguments => [
+        qw(id Format Rows Page Order OrderBy),
+    ],
+&>
+
+% }
+
+<& /Elements/Submit, Name => 'UpdateObjs' &>
 </form>
 
 <%INIT>
 my $CF = RT::CustomField->new($session{'CurrentUser'});
 $CF->Load($id) or Abort(loc("Could not load CustomField [_1]"), $id);
-my $LookupType = $CF->LookupType || '';
-$LookupType =~ /^([^-]+)/ ||
-     Abort(loc("Object of type [_1] cannot take custom fields", $LookupType));
 
-my $Class = $1;
-my $CollectionClass;
-if (UNIVERSAL::can($Class.'Collection', 'new') ) {
-$CollectionClass = $Class.'Collection';
-
-} elsif (UNIVERSAL::can($Class.'es', 'new') ) {
-    $CollectionClass = $Class.'es';
-
-} elsif (UNIVERSAL::can($Class.'s', 'new') ) {
-    $CollectionClass = $Class.'s';
-
-} else {
-    Abort(loc("Can't find a collection class for '[_1]'", $Class));
-}
-
-
-my $title = loc('Modify associated objects for [_1]', $CF->Name);
-
-my $Objects = $CollectionClass->new($session{'CurrentUser'});
-
-# If CF is a Group CF, only display user-defined groups
-if ($Class eq 'RT::Group') {
-    $Objects->LimitToUserDefinedGroups;
-}
+my $class = $CF->RecordClassFromLookupType;
+Abort(loc("Something wrong. Contact system administrator"))
+    unless $class;
 
 my (@results);
-my (@AssignedObjs, @UnassignedObjs);
 
-$Objects->UnLimit;
-$Objects->OrderBy( FIELD => 'Name' );
+if ( $UpdateObjs ) {
+    if ( defined (my $del = $ARGS{'RemoveCustomField-'.$CF->id}) ) {
+        foreach my $id ( ref $del? (@$del) : ($del) ) {
+            my $object = $class->new( $session{'CurrentUser'} );
+            if ( $id ) {
+                $object->Load( $id );
+                next unless $object->id;
+            }
 
+            my ($status, $msg) = $CF->RemoveFromObject( $object );
+            push @results, $msg;
+        }
+    }
+    if ( defined (my $add = $ARGS{'AddCustomField-'.$CF->id}) ) {
+        foreach my $id ( ref $add? (@$add) : ($add) ) {
+            my $object = $class->new( $session{'CurrentUser'} );
+            if ( $id ) {
+                $object->Load( $id );
+                next unless $object->id;
+            }
 
-my $ObjectCFs;
-$ObjectCFs = RT::ObjectCustomFields->new($session{'CurrentUser'});
-$ObjectCFs->UnLimit;
-$ObjectCFs->LimitToCustomField($id);
-
-my %seen;
-while (my $OCF = $ObjectCFs->Next) {
-    $seen{$OCF->ObjectId}++;
+            my ($status, $msg) = $CF->AddToObject( $object );
+            push @results, $msg;
+        }
+    }
 }
 
-while (my $obj = $Objects->Next) { 
-    my $obj_id = $obj->Id;
+my $is_global = $CF->IsApplied(0);
 
-    if ($UpdateObjs) {
-	# Go through and delete all the custom field relationships that this object
-	# no longer has
-	my $key = "Object-$obj_id-CF-$id";
-	if ($ARGS{$key}) {
-	    if (!$seen{$obj_id}) {
-		my ($val, $msg) = $CF->AddToObject($obj);
-		push (@results, $msg);
-		push @UnassignedObjs, $obj if !$val;
-	    }
-	}
-	else {
-	    push @UnassignedObjs, $obj;
-	    if ($seen{$obj_id}) {
-		my ($val, $msg) = $CF->RemoveFromObject($obj);
-		push (@results, $msg);
-		pop @UnassignedObjs if !$val;
-	    }
-	}
-    }
-    elsif (!$seen{$obj_id}) {
-	push @UnassignedObjs, $obj;
-    }
-    next if @UnassignedObjs and $UnassignedObjs[-1] == $obj;
-    push @AssignedObjs, $obj;
-}
+my $applied = $CF->AppliedTo;
+my $not_applied = $CF->NotAppliedTo;
+
+my $collection_class = ref($applied);
+$collection_class =~ s/^RT:://;
+
+my $format = RT->Config->Get('AdminSearchResultFormat')->{$collection_class}
+    || '__id__,__Name__';
+
+my $title = loc('Modify associated objects for [_1]', $CF->Name);
 
 </%INIT>
 <%ARGS>

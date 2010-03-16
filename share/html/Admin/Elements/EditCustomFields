@@ -51,155 +51,126 @@
 <input type="hidden" class="hidden" name="id" value="<% $Object->Id || ''%>" />
 <input type="hidden" class="hidden" name="ObjectType" value="<% $ObjectType %>" />
 <input type="hidden" class="hidden" name="SubType" value="<% $SubType %>" />
-<input type="hidden" class="hidden" name="UpdateCFs" value="1" />
 
-% if ($Object->Id) {
-<h2><&|/l&>Global Custom Fields</&></h2>
-<& PickCustomFields, CustomFields => \@GlobalCFs, ReadOnly => 1, id => $id, SubType => $SubType &>
-% }
 <h2><&|/l&>Selected Custom Fields</&></h2>
-<& PickCustomFields, CustomFields => [$ObjectCFs->CustomFields], id => $id, Checked => 1, SubType => $SubType &>
-<h2><&|/l&>Unselected Custom Fields</&></h2>
-<& PickCustomFields, CustomFields => \@UnassignedCFs, id => $id, SubType => $SubType &>
+<& /Elements/CollectionList,
+    %ARGS,
+    Collection    => $applied_cfs,
+    Rows          => 0,
+    Page          => 1,
+    Format        => $format,
+    DisplayFormat =>
+        $id
+            ? ("'__RemoveCheckBox.{$id}__',". $format .", '__MoveCF.{$id}__'")
+            : ("'__CheckBox.{RemoveCustomField}__',". $format .", '__MoveCF.{$id}__'"),
+    AllowSorting  => 0,
+    ShowEmpty     => 0,
+    PassArguments => [
+        qw(Page Order OrderBy),
+        qw(id ObjectType SubType),
+    ],
+&>
 
-<& /Elements/Submit, CheckAll => 1, ClearAll => 1 &>
+<h2><&|/l&>Unselected Custom Fields</&></h2>
+<& /Elements/CollectionList,
+    OrderBy       => 'Name',
+    Order         => 'ASC',
+    %ARGS,
+    Collection    => $not_applied_cfs,
+    Rows          => 50,
+    Format        => $format,
+    DisplayFormat => "'__CheckBox.{AddCustomField}__',". $format,
+    AllowSorting  => 1,
+    ShowEmpty     => 0,
+    PassArguments => [
+        qw(Page Order OrderBy),
+        qw(id ObjectType SubType),
+    ],
+&>
+
+<& /Elements/Submit, Name => 'UpdateCFs' &>
 </form>
 
 
 <%INIT>
-my $CustomFields = RT::CustomFields->new($session{'CurrentUser'});
-my @results;
-my (@GlobalCFs, @UnassignedCFs);
-
-my $id = $Object->Id;
+my $id = $Object->Id || 0;
 if ($id and !$Object->CurrentUserHasRight('AssignCustomFields')) {
     $m->out('<p><i>', loc('(No custom fields)'), '</i></p>');
     return;
 }
 
+my @results;
+
 my $lookup = $ObjectType;
 $lookup .= "-$SubType" if $SubType;
 
-$CustomFields->LimitToLookupType($lookup);
-$CustomFields->OrderBy( FIELD => 'Name' );
-
-
-my ($GlobalCFs, $ObjectCFs);
-$ObjectCFs = RT::ObjectCustomFields->new($session{'CurrentUser'});
-$ObjectCFs->UnLimit;
-$ObjectCFs->LimitToObjectId($id);
-$ObjectCFs->LimitToLookupType($lookup);
-
-# Check sanity of SortOrders
-my %SortOrders;
-$SortOrders{ $_->SortOrder }++
-  while ($_ = $ObjectCFs->Next);
-
-# If there are duplicates, run though and squash them
-if (grep $_ > 1, values %SortOrders) {
-    my $i = 1;
-    while ( my $ObjectCF = $ObjectCFs->Next ) {
-        $ObjectCF->SetSortOrder( $i++ );
-    }
-    $ObjectCFs->GotoFirstItem;
-}
-
-# {{{ deal with moving sortorder of custom fields
-if ($CustomField and $Move) {
-    my $SourceObj = RT::ObjectCustomField->new($session{'CurrentUser'});
-    $SourceObj->LoadByCols( ObjectId => $id, CustomField => $CustomField );
-
-    my $TargetObj;
-    my $target_order = $SourceObj->SortOrder + $Move;
-    while (my $ObjectCF = $ObjectCFs->Next) { 
-	my $this_order = $ObjectCF->SortOrder;
-
-	# if we have an exact match, finish the loop now
-	($TargetObj = $ObjectCF, last) if $this_order == $target_order;
-
-	# otherwise, we need to apropos toward the general direction
-	# ... first, check the sign is correct
-	next unless ($this_order - $SourceObj->SortOrder) * $Move > 0;
-
-	# ... next, see if we already have a candidate
-	if ($TargetObj) {
-	    # ... if yes, compare the delta and choose the smaller one
-	    my $orig_delta = abs($TargetObj->SortOrder - $target_order);
-	    my $this_delta = abs($this_order - $target_order);
-	    next if $orig_delta < $this_delta;
-	}
-
-	$TargetObj = $ObjectCF;
+## deal with moving sortorder of custom fields
+if ( $MoveCustomFieldUp ) { {
+    my $record = RT::ObjectCustomField->new( $session{'CurrentUser'} );
+    $record->LoadByCols( ObjectId => $id, CustomField => $MoveCustomFieldUp );
+    unless ( $record->id ) {
+        push @results, loc("Custom field #[_1] is not applied to this object", $MoveCustomFieldUp);
+        last;
     }
 
-    if ($TargetObj) {
-	# swap their sort order
-	my ($s, $t) = ($SourceObj->SortOrder, $TargetObj->SortOrder);
-	$TargetObj->SetSortOrder($s);
-	$SourceObj->SetSortOrder($t);
-	# because order changed, we must redo search for subsequent uses
+    my ($status, $msg) = $record->MoveUp;
+    push @results, $msg;
+} }
+if ( $MoveCustomFieldDown ) { {
+    my $record = RT::ObjectCustomField->new( $session{'CurrentUser'} );
+    $record->LoadByCols( ObjectId => $id, CustomField => $MoveCustomFieldDown );
+    unless ( $record->id ) {
+        push @results, loc("Custom field #[_1] is not applied to this object", $MoveCustomFieldDown);
+        last;
     }
 
-    $ObjectCFs->GotoFirstItem;
-}
-# }}}
+    my ($status, $msg) = $record->MoveDown;
+    push @results, $msg;
+} }
 
-if ($id) {
-    $GlobalCFs = RT::ObjectCustomFields->new($session{'CurrentUser'});
-    $GlobalCFs->LimitToObjectId(0);
-    $GlobalCFs->LimitToLookupType($lookup);
-}
-
-while (my $cf = $CustomFields->Next) { 
-    my $cf_id = $cf->Id;
-
-    if ($GlobalCFs and $GlobalCFs->HasEntryForCustomField($cf_id)) {
-	push @GlobalCFs, $cf;
-	next;
-    }
-
-    if ($UpdateCFs) {
-	# Go through and delete all the custom field relationships that this object
-	# no longer has
-	my $key = "Object-$id-CF-$cf_id";
-	if ($ARGS{$key}) {
-	    if (!$ObjectCFs->HasEntryForCustomField($cf_id)) {
-		my ($val, $msg) = $cf->AddToObject($Object);
-		push (@results, $msg);
-		push @UnassignedCFs, $cf if !$val;
-	    }
-	}
-	else {
-	    push @UnassignedCFs, $cf;
-	    if ($ObjectCFs->HasEntryForCustomField($cf_id)) {
-		my ($val, $msg) = $cf->RemoveFromObject($Object);
-		push (@results, $msg);
-		pop @UnassignedCFs if !$val;
-	    }
-	}
-    }
-    elsif (!$ObjectCFs->HasEntryForCustomField($cf_id)) {
-	push @UnassignedCFs, $cf;
-    }
-        else {
+if ( $UpdateCFs ) {
+    foreach my $cf_id ( @AddCustomField ) {
+        my $CF = RT::CustomField->new( $session{'CurrentUser'} );
+        $CF->Load( $cf_id );
+        unless ( $CF->id ) {
+            push @results, loc("Couldn't load CustomField #[_1]", $cf_id);
+            next;
         }
+        my ($status, $msg) = $CF->AddToObject( $Object );
+        push @results, $msg;
+    }
+    foreach my $cf_id ( @RemoveCustomField ) {
+        my $CF = RT::CustomField->new( $session{'CurrentUser'} );
+        $CF->Load( $cf_id );
+        unless ( $CF->id ) {
+            push @results, loc("Couldn't load CustomField #[_1]", $cf_id);
+            next;
+        }
+        my ($status, $msg) = $CF->RemoveFromObject( $Object );
+        push @results, $msg;
+    }
 }
 
-# redo search...
-$ObjectCFs = RT::ObjectCustomFields->new($session{'CurrentUser'});
-$ObjectCFs->UnLimit;
-$ObjectCFs->LimitToObjectId($id);
-$ObjectCFs->LimitToLookupType($lookup);
+my $applied_cfs = RT::CustomFields->new( $session{'CurrentUser'} );
+$applied_cfs->LimitToLookupType($lookup);
+$applied_cfs->LimitToGlobalOrObjectId($id);
+$applied_cfs->ApplySortOrder;
+
+my $not_applied_cfs = RT::CustomFields->new( $session{'CurrentUser'} );
+$not_applied_cfs->LimitToLookupType($lookup);
+$not_applied_cfs->LimitToNotApplied( $id ? ($id, 0) : (0) );
+
+my $format = RT->Config->Get('AdminSearchResultFormat')->{'CustomFields'};
 
 </%INIT>
 <%ARGS>
-$title => undef
-$Move => undef
-$Source => undef
-$CustomField => undef
-$FindDisabledCustomFields => undef
-$UpdateCFs => 0
 $Object
 $ObjectType
 $SubType => ''
+
+$UpdateCFs           => undef
+@RemoveCustomField   => ()
+@AddCustomField      => ()
+$MoveCustomFieldUp   => undef
+$MoveCustomFieldDown => undef
 </%ARGS>

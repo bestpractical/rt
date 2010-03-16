@@ -81,6 +81,7 @@ sub Create {
     unless ( defined $args{'SortOrder'} ) {
         my $ObjectCFs = RT::ObjectCustomFields->new( $RT::SystemUser );
         $ObjectCFs->LimitToObjectId( $args{'ObjectId'} );
+        $ObjectCFs->LimitToObjectId( 0 ) if $args{'ObjectId'};
         $ObjectCFs->LimitToLookupType( $cf->LookupType );
         $ObjectCFs->OrderBy( FIELD => 'SortOrder', ORDER => 'DESC' );
         if ( my $first = $ObjectCFs->First ) {
@@ -121,6 +122,147 @@ sub CustomFieldObj {
     my $CF = RT::CustomField->new( $self->CurrentUser );
     $CF->Load( $id );
     return $CF;
+}
+
+=head2 Sorting custom fields applications
+
+Custom fields sorted on multiple layers. First of all custom
+fields with different lookup type are sorted indepedantly. All
+global custom fields have fixed order for all objects, but you
+can insert object specific custom fields between them. Object
+specific custom fields can be applied to several objects and
+be on different place. For example you have GCF1, GCF2, LCF1,
+LCF2 and LCF3 that applies to tickets. You can place GCF2
+above GCF1, but they will be in the same order in all queues.
+However, LCF1 and other local can be placed at any place
+for particular queue: above global, between them or below.
+
+=head3 MoveDown
+
+Moves custom field up. See </Sorting custom fields applications>.
+
+=cut
+
+sub MoveUp {
+    my $self = shift;
+
+    my $ocfs = RT::ObjectCustomFields->new( $self->CurrentUser );
+
+    my $oid = $self->ObjectId;
+    $ocfs->LimitToObjectId( $oid );
+    if ( $oid ) {
+        $ocfs->LimitToObjectId( 0 );
+    }
+
+    my $cf = $self->CustomFieldObj;
+    $ocfs->LimitToLookupType( $cf->LookupType );
+
+    $ocfs->Limit( FIELD => 'SortOrder', OPERATOR => '<', VALUE => $self->SortOrder );
+    $ocfs->OrderByCols( { FIELD => 'SortOrder', ORDER => 'DESC' } );
+
+    my @above = ($ocfs->Next, $ocfs->Next);
+    unless ($above[0]) {
+        return (0, "Can not move up. It's already at the top");
+    }
+
+    my $new_sort_order;
+    if ( $above[0]->ObjectId == $self->ObjectId ) {
+        $new_sort_order = $above[0]->SortOrder;
+        my ($status, $msg) = $above[0]->SetSortOrder( $self->SortOrder );
+        unless ( $status ) {
+            return (0, "Couldn't move custom field");
+        }
+    }
+    elsif ( $above[1] && $above[0]->SortOrder == $above[1]->SortOrder + 1 ) {
+        my $move_ocfs = RT::ObjectCustomFields->new( $RT::SystemUser );
+        $move_ocfs->LimitToLookupType( $cf->LookupType );
+        $move_ocfs->Limit(
+            FIELD => 'SortOrder',
+            OPERATOR => '>=',
+            VALUE => $above[0]->SortOrder,
+        );
+        $move_ocfs->OrderByCols( { FIELD => 'SortOrder', ORDER => 'DESC' } );
+        while ( my $record = $move_ocfs->Next ) {
+            my ($status, $msg) = $record->SetSortOrder( $record->SortOrder + 1 );
+            unless ( $status ) {
+                return (0, "Couldn't move custom field");
+            }
+        }
+        $new_sort_order = $above[0]->SortOrder;
+    } else {
+        $new_sort_order = $above[0]->SortOrder - 1;
+    }
+
+    my ($status, $msg) = $self->SetSortOrder( $new_sort_order );
+    unless ( $status ) {
+        return (0, "Couldn't move custom field");
+    }
+
+    return (1,"Moved custom field up");
+}
+
+=head3 MoveDown
+
+Moves custom field down. See </Sorting custom fields applications>.
+
+=cut
+
+sub MoveDown {
+    my $self = shift;
+
+    my $ocfs = RT::ObjectCustomFields->new( $self->CurrentUser );
+
+    my $oid = $self->ObjectId;
+    $ocfs->LimitToObjectId( $oid );
+    if ( $oid ) {
+        $ocfs->LimitToObjectId( 0 );
+    }
+
+    my $cf = $self->CustomFieldObj;
+    $ocfs->LimitToLookupType( $cf->LookupType );
+
+    $ocfs->Limit( FIELD => 'SortOrder', OPERATOR => '>', VALUE => $self->SortOrder );
+    $ocfs->OrderByCols( { FIELD => 'SortOrder', ORDER => 'ASC' } );
+
+    my @below = ($ocfs->Next, $ocfs->Next);
+    unless ($below[0]) {
+        return (0, "Can not move down. It's already at the bottom");
+    }
+
+    my $new_sort_order;
+    if ( $below[0]->ObjectId == $self->ObjectId ) {
+        $new_sort_order = $below[0]->SortOrder;
+        my ($status, $msg) = $below[0]->SetSortOrder( $self->SortOrder );
+        unless ( $status ) {
+            return (0, "Couldn't move custom field");
+        }
+    }
+    elsif ( $below[1] && $below[0]->SortOrder + 1 == $below[1]->SortOrder ) {
+        my $move_ocfs = RT::ObjectCustomFields->new( $RT::SystemUser );
+        $move_ocfs->LimitToLookupType( $cf->LookupType );
+        $move_ocfs->Limit(
+            FIELD => 'SortOrder',
+            OPERATOR => '<=',
+            VALUE => $below[0]->SortOrder,
+        );
+        $move_ocfs->OrderByCols( { FIELD => 'SortOrder', ORDER => 'ASC' } );
+        while ( my $record = $move_ocfs->Next ) {
+            my ($status, $msg) = $record->SetSortOrder( $record->SortOrder - 1 );
+            unless ( $status ) {
+                return (0, "Couldn't move custom field");
+            }
+        }
+        $new_sort_order = $below[0]->SortOrder;
+    } else {
+        $new_sort_order = $below[0]->SortOrder + 1;
+    }
+
+    my ($status, $msg) = $self->SetSortOrder( $new_sort_order );
+    unless ( $status ) {
+        return (0, "Couldn't move custom field");
+    }
+
+    return (1,"Moved custom field down");
 }
 
 1;

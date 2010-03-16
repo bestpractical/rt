@@ -52,6 +52,7 @@ use strict;
 no warnings qw(redefine);
 
 use RT::CustomFieldValues;
+use RT::ObjectCustomFields;
 use RT::ObjectCustomFieldValues;
 
 
@@ -808,24 +809,6 @@ sub SetTypeComposite {
     );
 }
 
-=head2 SetLookupType
-
-Autrijus: care to doc how LookupTypes work?
-
-=cut
-
-sub SetLookupType {
-    my $self = shift;
-    my $lookup = shift;
-    if ( $lookup ne $self->LookupType ) {
-        # Okay... We need to invalidate our existing relationships
-        my $ObjectCustomFields = RT::ObjectCustomFields->new($self->CurrentUser);
-        $ObjectCustomFields->LimitToCustomField($self->Id);
-        $_->Delete foreach @{$ObjectCustomFields->ItemsArrayRef};
-    }
-    return $self->SUPER::SetLookupType($lookup);
-}
-
 =head2 TypeComposite
 
 Returns a composite value composed of this object's type and maximum values
@@ -849,6 +832,24 @@ sub TypeComposites {
     return grep !/(?:[Tt]ext|Combobox)-0/, map { ("$_-1", "$_-0") } $self->Types;
 }
 
+=head2 SetLookupType
+
+Autrijus: care to doc how LookupTypes work?
+
+=cut
+
+sub SetLookupType {
+    my $self = shift;
+    my $lookup = shift;
+    if ( $lookup ne $self->LookupType ) {
+        # Okay... We need to invalidate our existing relationships
+        my $ObjectCustomFields = RT::ObjectCustomFields->new($self->CurrentUser);
+        $ObjectCustomFields->LimitToCustomField($self->Id);
+        $_->Delete foreach @{$ObjectCustomFields->ItemsArrayRef};
+    }
+    return $self->SUPER::SetLookupType($lookup);
+}
+
 =head2 LookupTypes
 
 Returns an array of LookupTypes available
@@ -867,7 +868,7 @@ my @FriendlyObjectTypes = (
     "[_1]'s [_2]'s [_3] objects",   # loc
 );
 
-=head2 FriendlyTypeLookup
+=head2 FriendlyLookupType
 
 Returns a localized description of the type of this custom field
 
@@ -887,6 +888,137 @@ sub FriendlyLookupType {
     return ( $self->loc( $FriendlyObjectTypes[$#types], @types ) );
 }
 
+sub RecordClassFromLookupType {
+    my $self = shift;
+    my ($class) = ($self->LookupType =~ /^([^-]+)/);
+    unless ( $class ) {
+        $RT::Logger->error(
+            "Custom Field #". $self->id 
+            ." has incorrect LookupType '". $self->LookupType ."'"
+        );
+        return undef;
+    }
+    return $class;
+}
+
+sub CollectionClassFromLookupType {
+    my $self = shift;
+
+    my $record_class = $self->RecordClassFromLookupType;
+    return undef unless $record_class;
+
+    my $collection_class;
+    if ( UNIVERSAL::can($record_class.'Collection', 'new') ) {
+        $collection_class = $record_class.'Collection';
+    } elsif ( UNIVERSAL::can($record_class.'es', 'new') ) {
+        $collection_class = $record_class.'es';
+    } elsif ( UNIVERSAL::can($record_class.'s', 'new') ) {
+        $collection_class = $record_class.'s';
+    } else {
+        $RT::Logger->error("Can not find a collection class for record class '$record_class'");
+        return undef;
+    }
+    return $collection_class;
+}
+
+=head1 AppliedTo
+
+Returns collection with objects this custom field is applied to.
+Class of the collection depends on L</LookupType>.
+See all L</NotAppliedTo> .
+
+Doesn't takes into account if object is applied globally.
+
+=cut
+
+sub AppliedTo {
+    my $self = shift;
+
+    my ($res, $ocfs_alias) = $self->_AppliedTo;
+    return $res unless $res;
+
+    $res->Limit(
+        ALIAS     => $ocfs_alias,
+        FIELD     => 'id',
+        OPERATOR  => 'IS NOT',
+        VALUE     => 'NULL',
+    );
+
+    return $res;
+}
+
+=head1 NotAppliedTo
+
+Returns collection with objects this custom field is not applied to.
+Class of the collection depends on L</LookupType>.
+See all L</AppliedTo> .
+
+Doesn't takes into account if object is applied globally.
+
+=cut
+
+sub NotAppliedTo {
+    my $self = shift;
+
+    my ($res, $ocfs_alias) = $self->_AppliedTo;
+    return $res unless $res;
+
+    $res->Limit(
+        ALIAS     => $ocfs_alias,
+        FIELD     => 'id',
+        OPERATOR  => 'IS',
+        VALUE     => 'NULL',
+    );
+
+    return $res;
+}
+
+sub _AppliedTo {
+    my $self = shift;
+
+    my ($class) = $self->CollectionClassFromLookupType;
+    return undef unless $class;
+
+    my $res = $class->new( $self->CurrentUser );
+
+    # If CF is a Group CF, only display user-defined groups
+    if ( $class eq 'RT::Groups' ) {
+        $res->LimitToUserDefinedGroups;
+    }
+
+    $res->OrderBy( FIELD => 'Name' );
+    my $ocfs_alias = $res->Join(
+        TYPE   => 'LEFT',
+        ALIAS1 => 'main',
+        FIELD1 => 'id',
+        TABLE2 => 'ObjectCustomFields',
+        FIELD2 => 'ObjectId',
+    );
+    $res->Limit(
+        LEFTJOIN => $ocfs_alias,
+        ALIAS    => $ocfs_alias,
+        FIELD    => 'CustomField',
+        VALUE    => $self->id,
+    );
+    return ($res, $ocfs_alias);
+}
+
+=head2 IsApplied
+
+Takes object id and returns corresponding L<RT::ObjectCustomField>
+record if this custom field is applied to the object. Use 0 to check
+if custom field is applied globally.
+
+=cut
+
+sub IsApplied {
+    my $self = shift;
+    my $id = shift;
+    my $ocf = RT::ObjectCustomField->new( $self->CurrentUser );
+    $ocf->LoadByCols( CustomField => $self->id, ObjectId => $id || 0 );
+    return undef unless $ocf->id;
+    return $ocf;
+}
 
 =head2 AddToObject OBJECT
 
@@ -910,14 +1042,27 @@ sub AddToObject {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    my $ObjectCF = RT::ObjectCustomField->new( $self->CurrentUser );
-    $ObjectCF->LoadByCols( ObjectId => $id, CustomField => $self->Id );
-    if ( $ObjectCF->Id ) {
-        return ( 0, $self->loc("That is already the current value") );
+    if ( $self->IsApplied( $id ) ) {
+        return ( 0, $self->loc("Custom field is already applied to the object") );
     }
-    my ( $oid, $msg ) =
-      $ObjectCF->Create( ObjectId => $id, CustomField => $self->Id );
 
+    if ( $id ) {
+        # applying locally
+        return (0, $self->loc("Couldn't apply custom field to an object as it's global already") )
+            if $self->IsApplied( 0 );
+    }
+    else {
+        my $applied = RT::ObjectCustomFields->new( $self->CurrentUser );
+        $applied->LimitToCustomField( $self->id );
+        while ( my $record = $applied->Next ) {
+            $record->Delete;
+        }
+    }
+
+    my $ocf = RT::ObjectCustomField->new( $self->CurrentUser );
+    my ( $oid, $msg ) = $ocf->Create(
+        ObjectId => $id, CustomField => $self->id,
+    );
     return ( $oid, $msg );
 }
 
@@ -929,7 +1074,6 @@ Remove this custom field  for a single object, such as a queue or group.
 Takes an object 
 
 =cut
-
 
 sub RemoveFromObject {
     my $self = shift;
@@ -944,14 +1088,13 @@ sub RemoveFromObject {
         return ( 0, $self->loc('Permission Denied') );
     }
 
-    my $ObjectCF = RT::ObjectCustomField->new( $self->CurrentUser );
-    $ObjectCF->LoadByCols( ObjectId => $id, CustomField => $self->Id );
-    unless ( $ObjectCF->Id ) {
+    my $ocf = $self->IsApplied( $id );
+    unless ( $ocf ) {
         return ( 0, $self->loc("This custom field does not apply to that object") );
     }
-    # XXX: Delete doesn't return anything
-    my ( $oid, $msg ) = $ObjectCF->Delete;
 
+    # XXX: Delete doesn't return anything
+    my ( $oid, $msg ) = $ocf->Delete;
     return ( $oid, $msg );
 }
 

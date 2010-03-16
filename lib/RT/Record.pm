@@ -1531,6 +1531,7 @@ sub CustomFields {
     $cfs->LimitToGlobalOrObjectId(
         $self->_LookupId( $self->CustomFieldLookupType )
     );
+    $cfs->ApplySortOrder;
 
     return $cfs;
 }
