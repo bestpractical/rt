@@ -92,7 +92,7 @@
 
 <%INIT>
 my $queues = new RT::Queues($session{'CurrentUser'});
-$queues->{'find_disabled_rows'} = 1 if $FindDisabledQueues;
+$queues->FindAllRows if $FindDisabledQueues;
 
 my ($caption);
 if ( defined $QueueString && length $QueueString ) {

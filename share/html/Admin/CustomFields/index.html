@@ -102,7 +102,7 @@ if ( !$Type && $ARGS{'type'} ) {
 
 my $CustomFields = RT::CustomFields->new($session{'CurrentUser'});
 $CustomFields->UnLimit;
-$CustomFields->{'find_disabled_rows'} = 1 if $ShowDisabled;
+$CustomFields->FindAllRows if $ShowDisabled;
 $CustomFields->LimitToLookupType( $Type ) if $Type;
 $CustomFields->OrderByCols( { FIELD => 'LookupType' }, { FIELD => 'Name' } );
 </%INIT>
