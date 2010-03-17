@@ -636,6 +636,7 @@ sub TicketCustomFields {
         $cfs->SetContextObject( $self );
 	$cfs->LimitToGlobalOrObjectId( $self->Id );
 	$cfs->LimitToLookupType( 'RT::Queue-RT::Ticket' );
+        $cfs->ApplySortOrder;
     }
     return ($cfs);
 }
@@ -658,6 +659,7 @@ sub TicketTransactionCustomFields {
     if ( $self->CurrentUserHasRight('SeeQueue') ) {
 	$cfs->LimitToGlobalOrObjectId( $self->Id );
 	$cfs->LimitToLookupType( 'RT::Queue-RT::Ticket-RT::Transaction' );
+        $cfs->ApplySortOrder;
     }
     return ($cfs);
 }
