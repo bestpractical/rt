@@ -56,9 +56,9 @@ diag "reorder CFs: C, A and B" if $ENV{TEST_VERBOSE};
     my @tmp = ($m->content =~ /(CF [ABC])/g);
     is_deeply(\@tmp, ['CF B', 'CF A', 'CF C']);
 
-    $m->follow_link_ok( {text => 'Move up', n => 2} );
-    $m->follow_link_ok( {text => 'Move up', n => 1} );
-    $m->follow_link_ok( {text => 'Move up', n => 2} );
+    $m->follow_link_ok( {text => '[Up]', n => 3} );
+    $m->follow_link_ok( {text => '[Up]', n => 2} );
+    $m->follow_link_ok( {text => '[Up]', n => 3} );
 
     @tmp = ($m->content =~ /(CF [ABC])/g);
     is_deeply(\@tmp, ['CF C', 'CF A', 'CF B']);
