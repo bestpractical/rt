@@ -34,12 +34,11 @@ diag "Apply the new CF globally" if $ENV{'TEST_VERBOSE'};
     $m->follow_link( url => 'Queues.html' );
     $m->title_is(q/Edit Custom Fields for all queues/, 'global custom field for all queues configuration screen');
     $m->content_like( qr/QueueCFTest/, 'CF QueueCFTest displayed on page' );
-    $m->submit_form(
-        form_name => "EditCustomFields",
-        fields => {
-            'Object--CF-1' => '1',
-        },
-    );
+
+    $m->form_name('EditCustomFields');
+    $m->tick( AddCustomField => 1 );
+    $m->click('UpdateCFs');
+
     $m->content_like( qr/Object created/, 'CF QueueCFTest enabled globally' );
 }
 

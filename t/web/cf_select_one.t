@@ -58,8 +58,8 @@ diag "apply the CF to General queue" if $ENV{'TEST_VERBOSE'};
     $m->title_is(q/Edit Custom Fields for General/, 'admin-queue: general cfid');
 
     $m->form_name('EditCustomFields');
-    $m->field( "Object-". $queue->id ."-CF-$cfid" => 1 );
-    $m->submit;
+    $m->tick( "AddCustomField" => $cfid );
+    $m->click('UpdateCFs');
 
     $m->content_like( qr/Object created/, 'TCF added to the queue' );
 }

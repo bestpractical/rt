@@ -43,16 +43,14 @@ my ( $cf, $cfid, $tid );
     $m->form_name('EditCustomFields');
 
     # Sort by numeric IDs in names
-    my @names = map  { $_->[1] }
-                sort { $a->[0] <=> $b->[0] }
-                map  { /Object-1-CF-(\d+)/ ? [ $1 => $_ ] : () }
-                grep defined, map $_->name, $m->current_form->inputs;
+    my @names = sort grep defined,
+        $m->current_form->find_input('AddCustomField')->possible_values;
     $cf = pop(@names);
     $cf =~ /(\d+)$/ or die "Hey this is impossible dude";
     $cfid = $1;
-    $m->field( $cf => 1 );         # Associate the new CF with this queue
-    $m->field( $_ => undef ) for @names;    # ...and not any other. ;-)
-    $m->submit;
+    $m->tick( AddCustomField => $cf => 1 ); # Associate the new CF with this queue
+    $m->tick( AddCustomField => $_  => 0 ) for @names; # ...and not any other. ;-)
+    $m->click('UpdateCFs');
 
     $m->content_like( qr/Object created/, 'TCF added to the queue' );
 }
