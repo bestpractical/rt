@@ -80,7 +80,16 @@ div#header h1 {
 #header #page-menu,
 #header #actions-menu,
 #header #page-navigation,
-.titlebox .title .widget,
+.titlebox .titlebox-title .widget,
+.ticket-info-links .titlebox-title .right,
+.ticket-info-links .titlebox-content .labeltop .create,
+.history .titlebox .titlebox-title .right,
+.ticket-transaction .metadata .actions,
+.ticket-transaction .content .downloadattachment,
+#comp-Search-Results #body .refresh,
+.search-result-actions,
+#comp-Search-Chart #body div,
+#comp-Search-Chart #body form,
 #footer
 {
 display: none;
