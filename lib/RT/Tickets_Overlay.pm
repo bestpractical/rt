@@ -3033,16 +3033,18 @@ sub CurrentUserCanSee {
 
             return unless @queues;
             if ( @queues == 1 ) {
-                $self->_SQLLimit(
+                $self->SUPER::Limit(
+                    SUBCLAUSE => 'ACL',
                     ALIAS => 'main',
                     FIELD => 'Queue',
                     VALUE => $_[0],
                     ENTRYAGGREGATOR => $ea,
                 );
             } else {
-                $self->_OpenParen;
+                $self->SUPER::_OpenParen('ACL');
                 foreach my $q ( @queues ) {
-                    $self->_SQLLimit(
+                    $self->SUPER::Limit(
+                        SUBCLAUSE => 'ACL',
                         ALIAS => 'main',
                         FIELD => 'Queue',
                         VALUE => $q,
@@ -3050,25 +3052,27 @@ sub CurrentUserCanSee {
                     );
                     $ea = 'OR';
                 }
-                $self->_CloseParen;
+                $self->SUPER::_CloseParen('ACL');
             }
             return 1;
         };
 
-        $self->_OpenParen;
+        $self->SUPER::_OpenParen('ACL');
         my $ea = 'AND';
         $ea = 'OR' if $limit_queues->( $ea, @direct_queues );
         while ( my ($role, $queues) = each %roles ) {
-            $self->_OpenParen;
+            $self->SUPER::_OpenParen('ACL');
             if ( $role eq 'Owner' ) {
-                $self->_SQLLimit(
+                $self->SUPER::Limit(
+                    SUBCLAUSE => 'ACL',
                     FIELD           => 'Owner',
                     VALUE           => $id,
                     ENTRYAGGREGATOR => $ea,
                 );
             }
             else {
-                $self->_SQLLimit(
+                $self->SUPER::Limit(
+                    SUBCLAUSE       => 'ACL',
                     ALIAS           => $cgm_alias,
                     FIELD           => 'MemberId',
                     OPERATOR        => 'IS NOT',
@@ -3076,7 +3080,8 @@ sub CurrentUserCanSee {
                     QUOTEVALUE      => 0,
                     ENTRYAGGREGATOR => $ea,
                 );
-                $self->_SQLLimit(
+                $self->SUPER::Limit(
+                    SUBCLAUSE       => 'ACL',
                     ALIAS           => $role_group_alias,
                     FIELD           => 'Type',
                     VALUE           => $role,
@@ -3085,9 +3090,9 @@ sub CurrentUserCanSee {
             }
             $limit_queues->( 'AND', @$queues ) if ref $queues;
             $ea = 'OR' if $ea eq 'AND';
-            $self->_CloseParen;
+            $self->SUPER::_CloseParen('ACL');
         }
-        $self->_CloseParen;
+        $self->SUPER::_CloseParen('ACL');
     }
     return $self->{'_sql_current_user_can_see_applied'} = 1;
 }
