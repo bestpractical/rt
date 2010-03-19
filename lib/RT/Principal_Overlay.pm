@@ -448,17 +448,18 @@ sub _HasRoleRight
         EquivObjects => [],
         @_
     );
+
+    my @roles = $self->RolesWithRight( %args );
+    return 0 unless @roles;
+
     my $right = $args{'Right'};
 
     my $query =
-      "SELECT ACL.id " .
-      "FROM ACL, Groups, Principals, CachedGroupMembers WHERE " .
-
-      # Only find superuser or rights with the name $right
-      "(ACL.RightName = 'SuperUser' OR ACL.RightName = '$right') "
+      "SELECT Groups.id "
+      . "FROM Groups, Principals, CachedGroupMembers WHERE "
 
       # Never find disabled things
-      . "AND Principals.Disabled = 0 "
+      . "Principals.Disabled = 0 "
       . "AND CachedGroupMembers.Disabled = 0 "
 
       # We always grant rights to Groups
@@ -471,7 +472,9 @@ sub _HasRoleRight
       #  as is the case when we want to look up group rights
       . "AND Principals.id = CachedGroupMembers.GroupId "
       . "AND CachedGroupMembers.MemberId = ". $self->Id ." "
-      . "AND ACL.PrincipalType = Groups.Type ";
+
+      . "AND (". join(' OR ', map "Groups.Type = '$_'", @roles ) .")"
+    ;
 
     my (@object_clauses);
     foreach my $obj ( @{ $args{'EquivObjects'} } ) {
@@ -479,33 +482,85 @@ sub _HasRoleRight
         my $id;
         $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
 
-        my $object_clause = "ACL.ObjectType = '$type'";
-        $object_clause   .= " AND ACL.ObjectId = $id" if $id;
-        push @object_clauses, "($object_clause)";
+        my $clause = "Groups.Domain = '$type-Role'";
+        # XXX: Groups.Instance is VARCHAR in DB, we should quote value
+        # if we want mysql 4.0 use indexes here. we MUST convert that
+        # field to integer and drop this quotes.
+        $clause .= " AND Groups.Instance = '$id'" if $id;
+        push @object_clauses, "($clause)";
     }
-    # find ACLs that are related to our objects only
     $query .= " AND (". join( ' OR ', @object_clauses ) .")";
 
-    # because of mysql bug in versions up to 5.0.45 we do one query per object
-    # each query should be faster on any DB as it uses indexes more effective
+    $self->_Handle->ApplyLimits( \$query, 1 );
+    my ($hit) = $self->_Handle->FetchResult( $query );
+    return (1) if $hit;
+
+    return 0;
+}
+
+=head2 RolesWithRight
+
+Returns list with names of roles that have right on
+set of objects. Takes Right, EquiveObjects,
+IncludeSystemRights and IncludeSuperusers arguments.
+
+IncludeSystemRights is true by default, rights
+granted on system level are not accouned when option
+is set to false value.
+
+IncludeSuperusers is true by default, SuperUser right
+is not checked if it's set to false value.
+
+=cut
+
+sub RolesWithRight {
+    my $self = shift;
+    my %args = (
+        Right               => undef,
+        IncludeSystemRights => 1,
+        IncludeSuperusers   => 1,
+        EquivObjects        => [],
+        @_
+    );
+    my $right = $args{'Right'};
+
+    my $query =
+        "SELECT DISTINCT PrincipalType FROM ACL"
+        # Only find superuser or rights with the name $right
+        ." WHERE ( RightName = '$right' "
+        # Check SuperUser if we were asked to
+        . ($args{'IncludeSuperusers'}? "OR RightName = 'SuperUser' " : '' )
+        .")"
+        # we need only roles
+        ." AND PrincipalType != 'Group'"
+    ;
+
+    # skip rights granted on system level if we were asked to
+    unless ( $args{'IncludeSystemRights'} ) {
+        $query .= " AND ObjectType != 'RT::System'";
+    }
+
+    my (@object_clauses);
     foreach my $obj ( @{ $args{'EquivObjects'} } ) {
         my $type = ref($obj)? ref($obj): $obj;
         my $id;
         $id = $obj->id if ref($obj) && UNIVERSAL::can($obj, 'id') && $obj->id;
 
-        my $tmp = $query;
-        $tmp .= " AND Groups.Domain = '$type-Role'";
-        # XXX: Groups.Instance is VARCHAR in DB, we should quote value
-        # if we want mysql 4.0 use indexes here. we MUST convert that
-        # field to integer and drop this quotes.
-        $tmp .= " AND Groups.Instance = '$id'" if $id;
-
-        $self->_Handle->ApplyLimits( \$tmp, 1 );
-        my ($hit) = $self->_Handle->FetchResult( $tmp );
-        return (1) if $hit;
+        my $object_clause = "ObjectType = '$type'";
+        $object_clause   .= " AND ObjectId = $id" if $id;
+        push @object_clauses, "($object_clause)";
     }
+    # find ACLs that are related to our objects only
+    $query .= " AND (". join( ' OR ', @object_clauses ) .")"
+        if @object_clauses;
 
-    return 0;
+    my $dbh = $RT::Handle->dbh;
+    my $roles = $dbh->selectcol_arrayref($query);
+    unless ( $roles ) {
+        $RT::Logger->warning( $dbh->errstr );
+        return ();
+    }
+    return @$roles;
 }
 
 # }}}
