@@ -630,6 +630,13 @@ sub add_rights {
             if ( $principal =~ /^(everyone|(?:un)?privileged)$/i ) {
                 $principal = RT::Group->new( $RT::SystemUser );
                 $principal->LoadSystemInternalGroup($1);
+            } elsif ( $principal =~ /^(Owner|Requestor|(?:Admin)?Cc)$/i ) {
+                $principal = RT::Group->new( $RT::SystemUser );
+                $principal->LoadByCols(
+                    Domain => (ref($e->{'Object'})||'RT::System').'-Role',
+                    Type => $1,
+                    ref($e->{'Object'})? (Instance => $e->{'Object'}->id): (),
+                );
             } else {
                 die "principal is not an object, but also is not name of a system group";
             }
