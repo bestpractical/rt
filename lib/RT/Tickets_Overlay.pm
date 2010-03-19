@@ -3013,6 +3013,17 @@ sub CurrentUserCanSee {
         }
     }
 
+    unless ( @direct_queues || keys %roles ) {
+        $self->SUPER::Limit(
+            SUBCLAUSE => 'ACL',
+            ALIAS => 'main',
+            FIELD => 'id',
+            VALUE => 0,
+            ENTRYAGGREGATOR => 'AND',
+        );
+        return $self->{'_sql_current_user_can_see_applied'} = 1;
+    }
+
     {
         my $join_roles = keys %roles;
         $join_roles = 0 if $join_roles == 1 && $roles{'Owner'};
