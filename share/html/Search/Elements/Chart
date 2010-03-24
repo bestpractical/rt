@@ -84,8 +84,9 @@ while ( my $entry = $tix->Next ) {
 
 # XXX: Convert 1970-01-01 date to the 'Not Set'
 # this code should be generalized!!!
-if ( $PrimaryGroupBy =~ /(Daily|Monthly|Annually)$/ ) {
+if ( $PrimaryGroupBy =~ /(Hourly|Daily|Monthly|Annually)$/ ) {
     my $re;
+    $re = qr{1970-01-01 00} if $PrimaryGroupBy =~ /Hourly$/;
     $re = qr{1970-01-01} if $PrimaryGroupBy =~ /Daily$/;
     $re = qr{1970-01} if $PrimaryGroupBy =~ /Monthly$/;
     $re = qr{1970} if $PrimaryGroupBy =~ /Annually$/;
@@ -128,7 +129,7 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 <td class="label collection-as-table">
 %# TODO sadly we don't have "creator.city is null" or alike support yet
 %# so no link if the key is undef for now
-% if ( $PrimaryGroupBy !~ /(Daily|Monthly|Annually)$/
+% if ( $PrimaryGroupBy !~ /(Hourly|Daily|Monthly|Annually)$/
 %        && $key ne loc('(no value)') ) {
 % my $group = $PrimaryGroupBy; $group =~ s! !.!;
 % my $QueryString = $m->comp('/Elements/QueryString',
