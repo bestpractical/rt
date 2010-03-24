@@ -126,7 +126,22 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 % $total += $value;
 <tr class="<%$i%2 ? 'evenline' : 'oddline' %>">
 <td class="label collection-as-table">
-<%$key%>
+%# TODO sadly we don't have "creator.city is null" or alike support yet
+%# so no link if the key is undef for now
+% if ( $PrimaryGroupBy !~ /(Daily|Monthly|Annually)$/
+%        && $key ne loc('(no value)') ) {
+% my $group = $PrimaryGroupBy; $group =~ s! !.!;
+% my $QueryString = $m->comp('/Elements/QueryString',
+%                           Query   => "$Query and $group = '$key'",
+%                           Format  => $ARGS{Format},
+%                           RowsPerPage    => $ARGS{Rows},
+%                           OrderBy => $ARGS{OrderBy},
+%                           Order   => $ARGS{Order},
+%                          );
+<a href=<% RT->Config->Get('WebURL') %>Search/Results.html?<%$QueryString%>><%$key%></a>
+% } else {
+<% $key %>
+% }
 </td>
 <td class="value collection-as-table">
 <%$value%>
