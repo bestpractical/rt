@@ -66,51 +66,10 @@ if ($ChartStyle eq 'pie') {
 
 use RT::Report::Tickets;
 my $tix = RT::Report::Tickets->new( $session{'CurrentUser'} );
+
 my ($count_name, $value_name) = $tix->SetupGroupings(
     Query => $Query, GroupBy => $PrimaryGroupBy,
 );
-
-my $chart = $chart_class->new( 600 => 400 );
-
-my $font = RT->Config->Get('ChartFont') || ['verdana', 'arial', gdMediumBoldFont];
-$chart->set_title_font( $font, 12 ) if $chart->can('set_title_font');
-$chart->set_legend_font( $font, 12 ) if $chart->can('set_legend_font');
-$chart->set_x_label_font( $font, 10 ) if $chart->can('set_x_label_font');
-$chart->set_y_label_font( $font, 10 ) if $chart->can('set_y_label_font');
-$chart->set_label_font( $font, 10 ) if $chart->can('set_label_font');
-$chart->set_x_axis_font( $font, 9 ) if $chart->can('set_x_axis_font');
-$chart->set_y_axis_font( $font, 9 ) if $chart->can('set_y_axis_font');
-$chart->set_values_font( $font, 9 ) if $chart->can('set_values_font');
-$chart->set_value_font( $font, 9 ) if $chart->can('set_value_font');
-
-# Pie charts don't like having no input, so we show a special image
-# that indicates an error message. Because this is used in an <img>
-# context, it can't be a simple error message. Without this check,
-# the chart will just be a non-loading image.
-if ($tix->Count == 0) {
-    my $plot = GD::Image->new(600 => 400);
-    $plot->colorAllocate(255, 255, 255); # background
-    my $black = $plot->colorAllocate(0, 0, 0);
-
-    require GD::Text::Wrap;
-    my $error = GD::Text::Wrap->new($plot,
-        color => $black,
-        text  => loc("No tickets found."),
-    );
-    $error->set_font( $font, 12 );
-    $error->draw(0, 0);
-
-    $m->comp( 'SELF:Plot', plot => $plot, %ARGS );
-}
-
-if ($chart_class eq "GD::Graph::bars") {
-    $chart->set(
-        x_label => $tix->Label( $PrimaryGroupBy ),
-        x_labels_vertical => 1,
-        y_label => loc('Tickets'),
-        show_values => 1
-    );
-}
 
 my %class = (
     Queue => 'RT::Queue',
@@ -121,6 +80,7 @@ my %class = (
 my $class = $class{ $PrimaryGroupBy };
 
 my %data;
+my $max_value = 0;
 while ( my $entry = $tix->Next ) {
     my $key;
     if ( $class ) {
@@ -140,6 +100,7 @@ while ( my $entry = $tix->Next ) {
         $key = loc($key);
     }
     $data{ $key } = $value;
+    $max_value = $value if $max_value < $value;
 }
 
 # XXX: Convert 1970-01-01 date to the 'Not Set'
@@ -160,6 +121,72 @@ unless (keys %data) {
     $data{''} = 0;
 }
 
+
+my $chart = $chart_class->new( 600 => 400 );
+$chart->set( pie_height => 60 ) if $chart_class eq 'GD::Graph::pie';
+my $font = RT->Config->Get('ChartFont');
+$chart->set_title_font( $font, 16 ) if $chart->can('set_title_font');
+$chart->set_legend_font( $font, 16 ) if $chart->can('set_legend_font');
+$chart->set_x_label_font( $font, 14 ) if $chart->can('set_x_label_font');
+$chart->set_y_label_font( $font, 14 ) if $chart->can('set_y_label_font');
+$chart->set_label_font( $font, 14 ) if $chart->can('set_label_font');
+$chart->set_x_axis_font( $font, 12 ) if $chart->can('set_x_axis_font');
+$chart->set_y_axis_font( $font, 12 ) if $chart->can('set_y_axis_font');
+$chart->set_values_font( $font, 12 ) if $chart->can('set_values_font');
+$chart->set_value_font( $font, 12 ) if $chart->can('set_value_font');
+
+# Pie charts don't like having no input, so we show a special image
+# that indicates an error message. Because this is used in an <img>
+# context, it can't be a simple error message. Without this check,
+# the chart will just be a non-loading image.
+if ($tix->Count == 0) {
+    my $plot = GD::Image->new(600 => 400);
+    $plot->colorAllocate(255, 255, 255); # background
+    my $black = $plot->colorAllocate(0, 0, 0);
+
+    require GD::Text::Wrap;
+    my $error = GD::Text::Wrap->new($plot,
+        color => $black,
+        text  => loc("No tickets found."),
+    );
+    $error->set_font( $font, 16 );
+    $error->draw(0, 0);
+
+    $m->comp( 'SELF:Plot', plot => $plot, %ARGS );
+}
+
+if ($chart_class eq "GD::Graph::bars") {
+    $chart->set(
+        x_label => $tix->Label( $PrimaryGroupBy ),
+        y_label => loc('Tickets'),
+        show_values => 1,
+        bar_spacing => 5,
+        bargroup_spacing => 10,
+        x_label_position => 0.6,
+        y_label_position => 0.6,
+        values_space => -1,
+# the following line to make sure there's enough space for values to show
+        y_max_value => 5*(int($max_value/5) + 1),
+    );
+}
+
+# refine values' colors, with both Color::Scheme's help and my own tweak
+$chart->{dclrs} = [
+    '66cc66', 'ff6666', 'ffcc66', '663399',
+    '3333cc', 
+    '339933', '993333', '996633', '663399',
+    '33cc33', 'cc3333', 'cc9933', '6633cc'
+];
+
+{
+    no warnings 'redefine';
+    *GD::Graph::pick_data_clr = sub {
+        my $self      = shift;
+        my $color_hex = $self->{dclrs}[ $_[0] % @{ $self->{dclrs} } - 1 ];
+        return map { hex } ( $color_hex =~ /(..)(..)(..)/ );
+    };
+}
+
 my $plot = $chart->plot( [ [sort keys %data], [map $data{$_}, sort keys %data] ] ) or die $chart->error;
 $m->comp( 'SELF:Plot', plot => $plot, %ARGS );
 </%init>
@@ -170,7 +197,6 @@ $plot => undef
 </%ARGS>
 <%INIT>
 my @types = ('png', 'gif');
-
 for my $type (@types) {
     $plot->can($type)
         or next;
