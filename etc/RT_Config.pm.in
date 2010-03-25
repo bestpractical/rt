@@ -1462,7 +1462,7 @@ support for TrueType fonts to use this option.
 
 =cut
 
-Set($ChartFont, './share/fonts/DroidSansFallback.ttf');
+Set($ChartFont, "$RT::BasePath/share/fonts/DroidSansFallback.ttf");
 
 =item C<@Active_MakeClicky>
 
