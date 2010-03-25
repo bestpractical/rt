@@ -487,6 +487,9 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
 }
 },
 # HTML version of the templates
+# needs the approval templates to be converted
+# possibly the error templates
+# probably not the Forward templates
     {
      Name        => 'Correspondence in HTML',                            # loc
      Description => 'HTML correspondence template',         # loc
