@@ -135,7 +135,7 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 % my $QueryString = $m->comp('/Elements/QueryString',
 %                           Query   => "$Query and $group = '$key'",
 %                           Format  => $ARGS{Format},
-%                           RowsPerPage    => $ARGS{Rows},
+%                           Rows    => $ARGS{Rows},
 %                           OrderBy => $ARGS{OrderBy},
 %                           Order   => $ARGS{Order},
 %                          );
