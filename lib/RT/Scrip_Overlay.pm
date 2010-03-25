@@ -257,6 +257,19 @@ sub ConditionObj {
 
 # }}}
 
+=head2 LoadModules
+
+Loads scrip's condition and action modules.
+
+=cut
+
+sub LoadModules {
+    my $self = shift;
+
+    $self->ConditionObj->LoadCondition;
+    $self->ActionObj->LoadAction;
+}
+
 # {{{ sub TemplateObj
 
 =head2 TemplateObj
