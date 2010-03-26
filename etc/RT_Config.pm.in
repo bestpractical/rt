@@ -286,7 +286,7 @@ avoid sending mail to itself.  It will also hide RT addresses from the list of
 
 =cut
 
-Set($RTAddressRegexp , '^rt\@example.com$');
+Set($RTAddressRegexp , undef);
 
 =item C<$CanonicalizeEmailAddressMatch>, C<$CanonicalizeEmailAddressReplace>
 
