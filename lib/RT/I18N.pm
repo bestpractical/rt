@@ -139,8 +139,10 @@ sub LoadLexicons {
         my $lex = *{ ${'RT::I18N::'. $k }{'Lexicon'} }{HASH};
         # run fetch to force load
         my $tmp = $lex->{'foo'};
-        # untie that has to lower fetch impact
-        untie %$lex if tied %$lex;
+        # XXX: untie may fail with "untie attempted
+        # while 1 inner references still exist"
+        # TODO: untie that has to lower fetch impact
+        # untie %$lex if tied %$lex;
     }
 }
 

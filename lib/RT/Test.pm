@@ -225,6 +225,7 @@ Set( \$WebPort , $port);
 Set( \$WebBaseURL , "http://localhost:\$WebPort");
 Set( \$LogToSyslog , undef);
 Set( \$LogToScreen , "warning");
+Set( \$RTAddressRegexp , qr/^bad_re_that_doesnt_match\$/);
 Set( \$MailCommand, 'testfile');
 };
     if ( $ENV{'RT_TEST_DB_SID'} ) { # oracle case
