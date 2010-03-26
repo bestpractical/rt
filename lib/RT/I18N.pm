@@ -128,6 +128,22 @@ sub Init {
     return 1;
 }
 
+sub LoadLexicons {
+
+    no strict 'refs';
+    foreach my $k (keys %{RT::I18N::} ) {
+        next if $k eq 'main::';
+        next unless index($k, '::', -2) >= 0;
+        next unless exists ${ 'RT::I18N::'. $k }{'Lexicon'};
+
+        my $lex = *{ ${'RT::I18N::'. $k }{'Lexicon'} }{HASH};
+        # run fetch to force load
+        my $tmp = $lex->{'foo'};
+        # untie that has to lower fetch impact
+        untie %$lex if tied %$lex;
+    }
+}
+
 =head2 encoding
 
 Returns the encoding of the current lexicon, as yanked out of __ContentType's "charset" field.
