@@ -723,7 +723,7 @@ sub _TransLimit {
     # them all into the same subclause when you have (A op B op C) - the
     # way they get parsed in the tree they're in different subclauses.
 
-    my ( $self, $field, $op, $value, @rest ) = @_;
+    my ( $self, $field, $op, $value, %rest ) = @_;
 
     unless ( $self->{_sql_transalias} ) {
         $self->{_sql_transalias} = $self->Join(
@@ -749,41 +749,36 @@ sub _TransLimit {
         );
     }
 
-    $self->_OpenParen;
-
     #Search for the right field
     if ( $field eq 'Content' and RT->Config->Get('DontSearchFileAttachments') ) {
-       $self->_SQLLimit(
-			ALIAS         => $self->{_sql_trattachalias},
-			FIELD         => 'Filename',
-			OPERATOR      => 'IS',
-			VALUE         => 'NULL',
-			SUBCLAUSE     => 'contentquery',
-			ENTRYAGGREGATOR => 'AND',
-		       );
-       $self->_SQLLimit(
+        $self->_OpenParen;
+        $self->_SQLLimit(
+			%rest,
 			ALIAS         => $self->{_sql_trattachalias},
 			FIELD         => $field,
 			OPERATOR      => $op,
 			VALUE         => $value,
 			CASESENSITIVE => 0,
-			@rest,
-			ENTRYAGGREGATOR => 'AND',
-			SUBCLAUSE     => 'contentquery',
 		       );
+        $self->_SQLLimit(
+			ENTRYAGGREGATOR => 'AND',
+			ALIAS           => $self->{_sql_trattachalias},
+			FIELD           => 'Filename',
+			OPERATOR        => 'IS',
+			VALUE           => 'NULL',
+		       );
+        $self->_CloseParen;
     } else {
         $self->_SQLLimit(
+			%rest,
 			ALIAS         => $self->{_sql_trattachalias},
 			FIELD         => $field,
 			OPERATOR      => $op,
 			VALUE         => $value,
 			CASESENSITIVE => 0,
-			ENTRYAGGREGATOR => 'AND',
-			@rest
         );
     }
 
-    $self->_CloseParen;
 
 }
 
