@@ -120,7 +120,7 @@ EOF
 } else {
     RT->ConnectToDatabase();
     RT->InitSystemObjects();
-    RT->InitClasses();
+    RT->InitClasses( Heavy => 1 );
     RT->InitPlugins();
     RT->Config->PostLoadCheck();
 

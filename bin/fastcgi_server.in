@@ -195,6 +195,7 @@ if ( $opt{'help'} ) {
     );
 }
 
+$ENV{'RT_WEBMUX_HEAVY_LOAD'} = 1;
 use File::Basename;
 require (dirname(__FILE__) .'/webmux.pl');
 
