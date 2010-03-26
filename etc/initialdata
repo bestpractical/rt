@@ -487,6 +487,7 @@ Hour:         { $SubscriptionObj->SubValue('Hour') }
 }
 },
 # HTML version of the templates
+# TODO
 # needs the approval templates to be converted
 # possibly the error templates
 # probably not the Forward templates
