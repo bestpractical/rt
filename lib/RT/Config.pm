@@ -341,11 +341,11 @@ our %META = (
             return if $value;
 
             $RT::Logger->error(
-                'RTAddressRegexp option is not set in the config.'
-                .' Not setting this option result in additional SQL queries to check'
-                .' every address if it belongs to RT or not.'
-                .' Especially important to set this option if RT recieves'
-                .' emails on addresses that are not in DB or config.'
+                'The RTAddressRegexp option is not set in the config.'
+                .' Not setting this option results in additional SQL queries to'
+                .' check whether each address belongs to RT or not.'
+                .' It is especially important to set this option if RT recieves'
+                .' emails on addresses that are not in the database or config.'
             );
         },
     },
