@@ -10,7 +10,7 @@
 ##
 ##  The following variables must _all_ be set:
 ##	prefix exec_prefix bindir sbindir sysconfdir mandir libdir
-##	datadir htmldir localstatedir logfiledir masonstatedir
+##	datadir htmldir localstatedir logfiledir masonstatedir fontdir
 ##	sessionstatedir customdir customhtmldir customlexdir
 ##  (This can be seen in m4/rt_layout.m4.)
 ##
@@ -27,6 +27,7 @@
   libdir:		${prefix}/lib
   datadir:		${prefix}/share
   htmldir:		${datadir}/html
+  fontdir:		${datadir}/fonts
   manualdir:		${datadir}/doc
   localstatedir:	${prefix}/var
   logfiledir:		${localstatedir}/log
@@ -49,6 +50,7 @@
   libdir:		${prefix}/lib
   datadir:		${prefix}/share
   htmldir:		${datadir}/html
+  fontdir:		${datadir}/fonts
   manualdir:		${datadir}/doc
   localstatedir:	${prefix}/var
   logfiledir:		${localstatedir}/log
@@ -74,6 +76,7 @@
 # FIXME: no such directory in FHS; shouldn't go to somewhere in "${datadir}/rt/"?
   plugindir:		${datadir}/plugins
   htmldir:		${datadir}/html
+  fontdir:		${datadir}/fonts
   manualdir:		${datadir}/doc
   localstatedir:	/var
   logfiledir:		${localstatedir}/log
@@ -98,6 +101,7 @@
   libdir:		${prefix}/lib+
   datadir:		${prefix}/share+
   htmldir:		${datadir}/html
+  fontdir:		${datadir}/fonts
   manualdir:		${prefix}/share/doc+
   logfiledir:		/var/log
   localstatedir:	/var/run+
@@ -121,6 +125,7 @@
   libdir:		${prefix}/lib
   datadir:		${prefix}
   htmldir:		${datadir}/html
+  fontdir:		${datadir}/fonts
   manualdir:		${datadir}/doc
   localstatedir:	${prefix}/var
   logfiledir:		${localstatedir}/log
@@ -144,6 +149,7 @@
   libdir:		${prefix}/lib/rt
   datadir:		/var/rt
   htmldir:		${datadir}/html
+  fontdir:		${datadir}/fonts
   manualdir:		${datadir}/doc
   plugindir:		${datadir}/plugins
   localstatedir:	/var
@@ -168,6 +174,7 @@
   libdir:		lib
   datadir:		share
   htmldir:		${datadir}/html
+  fontdir:		${datadir}/fonts
   manualdir:	${datadir}/doc
   localstatedir:	var
   logfiledir:		${localstatedir}/log

@@ -106,6 +106,7 @@ RT_LIB_PATH		=	@RT_LIB_PATH_R@
 RT_MAN_PATH		=	@RT_MAN_PATH_R@
 RT_VAR_PATH		=	@RT_VAR_PATH_R@
 RT_DOC_PATH		=	@RT_DOC_PATH_R@
+RT_FONT_PATH		=	@RT_FONT_PATH_R@
 RT_LOCAL_PATH		=	@RT_LOCAL_PATH_R@
 LOCAL_PLUGIN_PATH	=	@RT_LOCAL_PATH_R@/plugins
 LOCAL_ETC_PATH		=	@LOCAL_ETC_PATH_R@
@@ -287,7 +288,7 @@ upgrade-instruct:
 
 upgrade: testdeps config-install dirs files-install fixperms upgrade-instruct
 
-upgrade-noclobber: config-install dirs libs-install html-install bin-install local-install doc-install fixperms
+upgrade-noclobber: config-install dirs libs-install html-install bin-install local-install doc-install font-install fixperms
 
 
 # {{{ dependencies
@@ -352,6 +353,7 @@ fixperms:
 # {{{ dirs
 dirs:
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_LOG_PATH)
+	$(INSTALL) -m 0755 -d $(DESTDIR)$(RT_FONT_PATH)
 	$(INSTALL) -m 0770 -d $(DESTDIR)$(MASON_DATA_PATH)
 	$(INSTALL) -m 0770 -d $(DESTDIR)$(MASON_DATA_PATH)/cache
 	$(INSTALL) -m 0770 -d $(DESTDIR)$(MASON_DATA_PATH)/etc
@@ -367,7 +369,7 @@ dirs:
 
 install: testdeps config-install dirs files-install fixperms instruct
 
-files-install: libs-install etc-install config-install bin-install sbin-install html-install local-install doc-install
+files-install: libs-install etc-install config-install bin-install sbin-install html-install local-install doc-install font-install
 
 config-install:
 @COMMENT_INPLACE_LAYOUT@	$(INSTALL) -m 0755 -o $(BIN_OWNER) -g $(RTGROUP) -d $(DESTDIR)$(CONFIG_FILE_PATH)
@@ -423,6 +425,14 @@ html-install:
 @COMMENT_INPLACE_LAYOUT@	done
 @COMMENT_INPLACE_LAYOUT@	-( cd share/html && find . -type f -print ) | while read file ; do \
 @COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0644 "share/html/$$file" "$(DESTDIR)$(MASON_HTML_PATH)/$$file" ; \
+@COMMENT_INPLACE_LAYOUT@	done
+# }}}
+
+# {{{ font-install
+font-install:
+@COMMENT_INPLACE_LAYOUT@	[ -d $(DESTDIR)$(RT_FONT_PATH) ] || $(INSTALL) -m 0755 -d $(DESTDIR)$(RT_FONT_PATH)
+@COMMENT_INPLACE_LAYOUT@	-( cd share/fonts && find . -type f -print ) | while read file ; do \
+@COMMENT_INPLACE_LAYOUT@	    $(INSTALL) -m 0644 "share/fonts/$$file" "$(DESTDIR)$(RT_FONT_PATH)/$$file" ; \
 @COMMENT_INPLACE_LAYOUT@	done
 # }}}
 

@@ -37,7 +37,7 @@ AC_DEFUN([RT_LAYOUT],[
 			. $pldconf
 			changequote({,})
 			for var in prefix exec_prefix bindir sbindir \
-				 sysconfdir mandir libdir datadir htmldir \
+				 sysconfdir mandir libdir datadir htmldir fontdir \
 				 localstatedir logfiledir masonstatedir plugindir \
 				 sessionstatedir customdir custometcdir customhtmldir \
 				 customlexdir customlibdir manualdir; do
@@ -62,6 +62,7 @@ AC_DEFUN([RT_LAYOUT],[
 	RT_SUBST_EXPANDED_ARG(libdir)
 	RT_SUBST_EXPANDED_ARG(datadir)
 	RT_SUBST_EXPANDED_ARG(htmldir)
+	RT_SUBST_EXPANDED_ARG(fontdir)
 	RT_SUBST_EXPANDED_ARG(manualdir)
 	RT_SUBST_EXPANDED_ARG(plugindir)
 	RT_SUBST_EXPANDED_ARG(localstatedir)
