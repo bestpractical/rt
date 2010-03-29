@@ -1453,7 +1453,7 @@ ticket searches.
 
 Set($DontSearchFileAttachments, undef);
 
-=item C<$ChartFont>
+=item C<%ChartFont>
 
 The L<GD> module (which RT uses for graphs) uses a builtin font that doesn't
 have full Unicode support. You can use a particular TrueType font by setting
@@ -1462,7 +1462,13 @@ support for TrueType fonts to use this option.
 
 =cut
 
-Set($ChartFont, "$RT::BasePath/share/fonts/DroidSansFallback.ttf");
+Set(
+    %ChartFont,
+    'zh-cn'  => "$RT::BasePath/share/fonts/DroidSansFallback.ttf",
+    'zh-tw'  => "$RT::BasePath/share/fonts/DroidSansFallback.ttf",
+    'ja'     => "$RT::BasePath/share/fonts/DroidSansFallback.ttf",
+    'others' => "$RT::BasePath/share/fonts/DroidSans.ttf",
+);
 
 =item C<@Active_MakeClicky>
 
