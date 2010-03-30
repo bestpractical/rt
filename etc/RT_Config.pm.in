@@ -1470,6 +1470,18 @@ Set(
     'others' => "$RT::BasePath/share/fonts/DroidSans.ttf",
 );
 
+=item C<$ChartsTimezonesInDB>
+
+Dates are stored using UTC timezone in the DB, so charts groupped
+by dates and time are not representative. Set C<$ChartsTimezonesInDB>
+to a true value to enable timezones conversions using DB's
+capabilities. You may need to do some work on DB side to use this
+feature, read more in F<docs/timezones_in_charts.pod>.
+
+=cut
+
+Set( $ChartsTimezonesInDB, 0 );
+
 =item C<@Active_MakeClicky>
 
 MakeClicky detects various formats of data in headers and email
