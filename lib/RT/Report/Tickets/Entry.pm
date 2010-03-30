@@ -65,17 +65,20 @@ sub LabelValue {
     my $field = shift;
     my $value = $self->__Value( $field );
 
+    $RT::Logger->error("boo: $value");
+
     if ( $field =~ /(Daily|Monthly|Annually|Hourly)$/ ) {
         my $re;
-        $re = qr{1970-01-01 00} if $field =~ /Hourly$/;
-        $re = qr{1970-01-01} if $field =~ /Daily$/;
-        $re = qr{1970-01} if $field =~ /Monthly$/;
-        $re = qr{1970} if $field =~ /Annually$/;
+        # it's not just 1970-01-01 00:00:00 because of timezone shifts
+        # and conversion from UTC to user's TZ
+        $re = qr{19(?:70-01-01|69-12-31) [0-9]{2}} if $field =~ /Hourly$/;
+        $re = qr{19(?:70-01-01|69-12-31)} if $field =~ /Daily$/;
+        $re = qr{19(?:70-01|69-12)} if $field =~ /Monthly$/;
+        $re = qr{19(?:70|69)} if $field =~ /Annually$/;
         $value =~ s/^$re/Not Set/;
     }
 
     return $value;
-
 }
 
 eval "require RT::Report::Tickets::Entry_Vendor";
