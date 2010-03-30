@@ -124,13 +124,13 @@ while ( my $record = $Collection->Next ) {
     $m->flush_buffer unless ++$i % 10;
 
     my $warning = 0;
-    my $classes = '';
+    my $Classes = '';
 
     $m->callback(
         CallbackName => 'EachRow',
         Record       => $record,
         Warning      => \$warning,
-        classes      => \$classes,
+        Classes      => \$Classes,
         Format       => \@Format,
     );
 
@@ -142,7 +142,7 @@ while ( my $record = $Collection->Next ) {
         ColumnMap => $column_map,
         Class     => $Class,
         Warning   => $warning,
-        classes   => $classes,
+        Classes   => $Classes,
     );
 }
 
