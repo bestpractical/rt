@@ -1,8 +1,8 @@
 =head1 INTRO
 
 Every date in RT's DB is stored in UTC format. This affects charts
-groupped by time periods (Annually, Monthly, etc.). To produce
-charts that are in a specific timezone we have to use DB's specific
+grouped by time periods (Annually, Monthly, etc.). To produce
+charts that are in a specific timezone we have to use database specific
 functions to convert time. Each DB has very different requirements.
 
 =head1 CONFIGURATION
@@ -15,7 +15,7 @@ boolean option $ChartsTimezonesInDB in the RT config.
 =head2 mysql
 
 Time can not just be converted using numeric time shift as this
-shift value depends on day saving time properties of the time zone.
+shift value depends on daylight saving time properties of the time zone.
 
 mysql since 4.1.3 supports named timezones, but you have to fill
 special tables with up to date data. On modern systems it's Usually
@@ -27,19 +27,20 @@ mysql's doc recommends to restart server. Read more about timezones
 in mysql in the following document
 http://dev.mysql.com/doc/refman/5.0/en/time-zone-support.html .
 
-=head2 Postgres
+=head2 PostgreSQL
 
-Postgres database uses system's functions to deal with timezones.
-You shouldn't do anything particular except making sure that
-data in F</usr/share/zoneinfo> is up to date. On some systems
-this means upgrading a system package.
+PostgreSQL database uses your operating system's functions to convert
+timezones.  You don't need to do anything in particular except making
+sure that the data in F</usr/share/zoneinfo> is up to date. On some
+systems this means upgrading a system package.
 
 =head3 Note for users of Pg 7.2 and older or users upgraded from those
 
 You should be sure that timestamps in RT DB have no TZ set. TIMESTAMP
-column type in Postgres prior to Pg 7.3 has timezone info by default.
-In newer versions it's not the case anymore. If you have such system
-then you should alter columns.
+column type in PostgreSQL prior to Pg 7.3 has timezone info by default.
+In newer versions it's not the case anymore. If your RT database has
+this embedded timezone info, you need to alter the columns before
+enabling this feature.
 
 =head2 Other databases
 
@@ -47,7 +48,7 @@ There is no implementation for other DBs, yet.
 
 =head1 FOR DEVELOPERS
 
-=head2 Postgres
+=head2 PostgreSQL
 
 We use timestamp type for all datetime fields. It either has timezone
 info or not, by default since Pg 7.3 it has no timezone. Conversion is
@@ -65,8 +66,8 @@ http://www.postgresql.org/docs/7.4/static/datatype-datetime.html#DATATYPE-TIMEZO
 
 =head2 mysql
 
-Once there is a timezone info loaded in tables on the server
-we have all the same set of named timezones like in system
+Once timezone information is loaded into tables on the server,
+we have all the same set of named timezones in the system
 and DateTime (DateTime project has copy of the TZ data in a module).
 
 CONVERT_TZ(TS, from, to) exists since mysql 4.1.3. Note that it
@@ -81,4 +82,3 @@ Look at FROM_TZ function.
 As far as I can see has no support.
 
 =cut
-
