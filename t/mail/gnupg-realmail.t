@@ -10,7 +10,7 @@ plan skip_all => 'GnuPG required.'
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
 
-plan tests => 192;
+plan tests => 189;
 
 
 use Digest::MD5 qw(md5_hex);
@@ -41,13 +41,13 @@ RT::Test->import_gnupg_key('rt-recipient@example.com');
 RT::Test->import_gnupg_key('rt-test@example.com', 'public');
 RT::Test->trust_gnupg_key('rt-test@example.com');
 
+my $queue = RT::Model::Queue->new( current_user => RT->system_user );
+$queue->load('General');
+$queue->set_correspond_address( 'rt-recipient@example.com' );
+
 my ($baseurl, $m) = RT::Test->started_ok;
+
 ok $m->login, 'we did log in';
-$m->get_ok( '/Admin/Queues/');
-$m->follow_link_ok( text => 'General', url_regex => qr!/Admin/Queues! );
-$m->submit_form( form_name => 'queue_modify',
-         fields      => { correspond_address => 'rt-recipient@example.com' } );
-$m->content_like(qr/rt-recipient\@example.com.* - never/, 'has key info.');
 
 diag "load Everyone group" if $ENV{'TEST_VERBOSE'};
 my $everyone;

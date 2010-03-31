@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test strict => 1, tests => 26, l10n => 1;
+use RT::Test strict => 1, tests => 21, l10n => 1;
 
 $RT::Test::SKIP_REQUEST_WORK_AROUND = 1;
 
@@ -10,58 +10,25 @@ my ($baseurl, $m) = RT::Test->started_ok;
 use constant ImageFile => RT->static_path .'/images/bplogo.gif';
 use constant ImageFileContent => RT::Test->file_content(ImageFile);
 
-ok $m->login, 'logged in';
-
-my $cf_moniker = 'edit-ticket-cfs';
-
 diag "Create a CF" if $ENV{'TEST_VERBOSE'};
-{
-    $m->follow_link( text => 'Configuration' );
-    $m->title_is(q/RT Administration/, 'admin screen');
-    $m->follow_link( text => 'Custom Fields', url_regex =>
-            qr!Admin/CustomFields! );
-    $m->title_is(q/Select a Custom Field/, 'admin-cf screen');
-    $m->follow_link( text => 'Create', url_regex => qr|CustomFields/Modify.html|);
-    $m->submit_form(
-        form_name => "modify_custom_field",
-        fields => {
-            type_composite =>   'Image-0',
-            lookup_type => 'RT::Model::Queue-RT::Model::Ticket',
-            name => 'img',
-            description => 'img',
-        },
-    );
-}
+my $cf = RT::Model::CustomField->new( current_user => RT->system_user );
+my ( $status, $msg ) = $cf->create(
+    name        => 'img',
+    description => 'img',
+    type        => 'Image',
+    lookup_type => 'RT::Model::Queue-RT::Model::Ticket',
+);
+ok( $status, $msg );
+my $cfid = $cf->id;
 
 diag "apply the CF to General queue" if $ENV{'TEST_VERBOSE'};
-my ( $cf, $cfid, $tid );
-{
-    $m->title_is(q/Created CustomField img/, 'admin-cf Created');
-    $m->follow_link( text => 'Queues', url_regex => qr!/Admin/Queues! );
-    $m->title_is(q/Admin queues/, 'admin-queues screen');
-    $m->follow_link( text => 'General', url_regex => qr!/Admin/Queues! );
-    $m->title_is(q/Editing Configuration for queue General/, 'admin-queue: general');
-    $m->follow_link( text => 'Ticket Custom Fields' );
+my $queue = RT::Model::Queue->new( current_user => RT->system_user );
+( $status, $msg ) = $queue->load( 'General' );
+ok( $status, $msg );
+( $status, $msg ) = $cf->add_to_object( $queue );
+ok( $status, $msg );
 
-    $m->title_is(q/Edit Custom Fields for General/, 'admin-queue: general cfid');
-    $m->form_name('edit_custom_fields');
-
-    # Sort by numeric IDs in names
-    my @names = map  { $_->[1] }
-                sort { $a->[0] <=> $b->[0] }
-                map  { /object-1-CF-(\d+)/ ? [ $1 => $_ ] : () }
-                grep defined, map $_->name, $m->current_form->inputs;
-    $cf = pop(@names);
-    $cf =~ /(\d+)$/ or die "Hey this is impossible dude";
-    $cfid = $1;
-    $m->field( $cf => 1 );         # Associate the new CF with this queue
-    $m->field( $_ => undef ) for @names;    # ...and not any other. ;-)
-    $m->submit;
-
-    $m->content_like( qr/created/, 'TCF added to the queue' );
-
-}
-
+my ( $tid );
 my $tester = RT::Test->load_or_create_user( name => 'tester', password => '123456' );
 RT::Test->set_rights(
     { principal => $tester->principal,
@@ -69,6 +36,8 @@ RT::Test->set_rights(
     },
 );
 ok $m->login( $tester->name, 123456), 'logged in';
+
+my $cf_moniker = 'edit-ticket-cfs';
 
 diag "check that we have no the CF on the create"
     ." ticket page when user has no SeeCustomField right"

@@ -73,25 +73,35 @@ sub table {'Queues'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
 
-    column name => max_length is 200, type is 'varchar(200)', is mandatory, is distinct;
+    column name => max_length is 200,
+           type is 'varchar(200)',
+           is mandatory,
+           display_length is '20',
+           is distinct;
     column
         description => max_length is 255,
-        type is 'varchar(255)', default is '';
+        type is 'varchar(255)',
+        display_length is '60',
+        default is '';
     column
         correspond_address => max_length is 120,
+        display_length is '60',
         type is 'varchar(120)';
     column
         comment_address => max_length is 120,
+        display_length is '60',
         type is 'varchar(120)';
     column
         status_schema => max_length is 120,
         type is 'varchar(120)',
         default is 'default',
+        render as 'RT::View::Form::Field::SelectStatusSchema',
         is mandatory;
     column initial_priority => max_length is 11, type is 'int',      default is '0';
     column final_priority   => max_length is 11, type is 'int',      default is '0';
     column default_due_in   => max_length is 11, type is 'int',      default is '0';
-    column disabled         => max_length is 6, type is 'smallint', is mandatory, default is '0';
+    column disabled         => max_length is 6, type is 'smallint', is
+        mandatory, default is '0', render as 'Checkbox';
 };
 use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata 
 no_user_refs => 1,
@@ -246,10 +256,11 @@ sub create {
 
     my $sign = delete $args{'sign'};
     my $encrypt = delete $args{'encrypt'};
+    my %args_without_cfs = map { $_ => $args{$_} } grep { ! /^cf_/ } keys %args;
 
     #TODO better input validation
     Jifty->handle->begin_transaction();
-    my $id = $self->SUPER::create( %args );
+    my $id = $self->SUPER::create( %args_without_cfs );
     unless ($id) {
         Jifty->handle->rollback();
         return ( 0, _('Queue could not be created') );

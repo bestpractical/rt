@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test strict => 1, tests => 41, l10n => 1;
+use RT::Test strict => 1, tests => 34, l10n => 1;
 
 
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -12,39 +12,24 @@ ok $m->login, 'logged in as root';
 my $cf_name = 'test select one value';
 my $cf_moniker = 'edit-ticket-cfs';
 
-my $cfid;
 diag "Create a CF" if $ENV{'TEST_VERBOSE'};
-{
-    $m->follow_link( text => 'Configuration' );
-    $m->title_is(q/RT Administration/, 'admin screen');
-    $m->follow_link( text => 'Custom Fields', url_regex =>
-            qr!Admin/CustomFields! );
-    $m->title_is(q/Select a Custom Field/, 'admin-cf screen');
-    $m->follow_link( text => 'Create', url_regex => qr|CustomFields/Modify.html| );
-    $m->submit_form(
-        form_name => "modify_custom_field",
-        fields => {
-            name          => $cf_name,
-            type_composite =>   'Select-1',
-            lookup_type    => 'RT::Model::Queue-RT::Model::Ticket',
-        },
-    );
-    $m->content_like( qr/created/, 'Created CF sucessfully' );
-    $cfid = $m->form_name('modify_custom_field')->value('id');
-    ok $cfid, "found id of the CF in the form, it's #$cfid";
-}
+
+my $cf = RT::Model::CustomField->new( current_user => RT->system_user );
+my ( $status, $msg ) = $cf->create(
+    name        => $cf_name,
+    type        => 'Select',
+    lookup_type => 'RT::Model::Queue-RT::Model::Ticket',
+    max_values  => 1,
+);
+ok( $status, $msg );
+my $cfid = $cf->id;
+
 
 diag "add 'qwe', 'ASD' and '0' as values to the CF" if $ENV{'TEST_VERBOSE'};
 {
     foreach my $value(qw(qwe ASD 0)) {
-        $m->submit_form(
-            form_name => "modify_custom_field",
-            fields => {
-                "CustomField-". $cfid ."-value-new-name" => $value,
-            },
-            button => 'update',
-        );
-        $m->content_like( qr/created/, 'added a value to the CF' ); # or diag $m->content;
+        my ( $status, $msg ) = $cf->add_value( name => $value );
+        ok( $status, $msg );
     }
 }
 
@@ -52,20 +37,8 @@ my $queue = RT::Test->load_or_create_queue( name => 'General' );
 ok $queue && $queue->id, 'loaded or Created queue';
 
 diag "apply the CF to General queue" if $ENV{'TEST_VERBOSE'};
-{
-    $m->follow_link( text => 'Queues', url_regex => qr!/Admin/Queues! );
-    $m->title_is(q/Admin queues/, 'admin-queues screen');
-    $m->follow_link( text => 'General', url_regex => qr!/Admin/Queues! );
-    $m->title_is(q/Editing Configuration for queue General/, 'admin-queue: general');
-    $m->follow_link( text => 'Ticket Custom Fields' );
-    $m->title_is(q/Edit Custom Fields for General/, 'admin-queue: general cfid');
+$cf->add_to_object( $queue );
 
-    $m->form_name('edit_custom_fields');
-    $m->field( "object-". $queue->id ."-CF-$cfid" => 1 );
-    $m->submit;
-
-    $m->content_like( qr/created/, 'TCF added to the queue' );
-}
 
 my $tid;
 diag "create a ticket using API with 'asd'(not 'ASD') as value of the CF"

@@ -52,10 +52,214 @@ package RT::View::Admin::Queues;
 use Jifty::View::Declare -base;
 use base 'RT::View::CRUD';
 
+require RT::View::Admin::Queues::Templates;
+alias RT::View::Admin::Queues::Templates under 'templates/';
+
 use constant page_title      => 'Queue Management';
 use constant object_type     => 'Queue';
-use constant display_columns => qw(id name description correspond_address initial_priority default_due_in);
 
+sub display_columns {
+    my $self = shift;
+    my @columns = qw(id name description correspond_address
+      comment_address status_schema
+      initial_priority final_priority default_due_in disabled sign encrypt);
+    push @columns, $self->custom_field_columns( RT::Model::Queue->new );
+    return @columns;
+}
+
+sub create_columns {
+    my $self    = shift;
+    my @columns = qw(name description correspond_address
+      comment_address status_schema
+      initial_priority final_priority default_due_in disabled sign encrypt);
+    push @columns, $self->custom_field_columns( RT::Model::Queue->new );
+    return @columns;
+}
+
+sub view_field_status_schema {
+    my $self = shift;
+    my %args = @_;
+    my $action = $args{action};
+    return $action->record->status_schema->name;
+}
+
+private template 'rights' => sub {
+    my $self = shift;
+    my $type = shift || 'user';
+
+    my $queue = $self->queue;
+    my $class   = 'Edit' . ucfirst($type) . 'Rights';
+    my $moniker = 'queue_edit_' . $type . '_rights';
+
+    my $rights = new_action(
+        class   => $class,
+        moniker => $moniker,
+    );
+
+    $rights->record($queue);
+
+    with ( name => $moniker ), form {
+        render_action($rights);
+        form_submit( label => _('Save') );
+    };
+};
+
+template 'user_rights' => page { title => _('Modify User Rights') } content {
+    show( 'rights', 'user' );
+};
+
+template 'group_rights' => page { title => _('Modify Group Rights') } content {
+    show( 'rights', 'group' );
+};
+
+template 'people' => page { title => _('Modify People') } content {
+    my $self = shift;
+    my $queue = $self->queue;
+    return unless $queue;
+
+    my $moniker = 'queue_edit_watchers';
+    my $action = new_action(
+        class   => 'EditWatchers',
+        moniker => $moniker,
+    );
+
+    $action->record($queue);
+
+    with ( name => $moniker ), form {
+        render_action($action);
+        form_submit( label => _('Save') );
+    };
+};
+
+template 'select_custom_fields' => page { title => _('Select CustomFields') } content {
+    my $self  = shift;
+    my $queue = $self->queue;
+    return unless $queue;
+
+    my $moniker = 'queue_select_cfs';
+    my $action = new_action(
+        class   => 'SelectCustomFields',
+        moniker => $moniker,
+    );
+
+    $action->record($queue);
+    $action->lookup_type(get('lookup_type'));
+
+    with( name => $moniker ), form {
+        render_action($action);
+        form_submit( label => _('Save') );
+    };
+};
+
+sub _current_collection {
+    my $self = shift; 
+    my $collection = $self->SUPER::_current_collection( @_ );
+    $collection->{'find_disabled_rows'} = get('include_disabled');
+    return $collection;    
+}
+
+sub queue {
+    my $self = shift;
+    my $id = get('id');
+    unless ( $id ) {
+        Jifty->log->fatal( "need queue id parameter" );
+        return;
+    }
+
+    my $queue = RT::Model::Queue->new;
+    my ( $ret, $msg ) = $queue->load( $id );
+    unless ( $ret ) {
+        Jifty->log->fatal( "failed to load queue $id: $msg" );
+        return;
+    }
+    return $queue;
+}
+
+template 'gnupg' => page { title => _('Queue GnuPG') } content {
+    my $self = shift;
+
+    # TODO move the following line to Dispatcher
+    return unless RT->config->get('gnupg')->{'enable'};
+
+    require RT::Crypt::GnuPG;
+
+    my $queue = RT::Model::Queue->new;
+    $queue->load(get('id'));
+
+    if ( $queue->correspond_address ) {
+        show( 'key_info', $queue->correspond_address, 'private' );
+    }
+
+    if ( $queue->comment_address ) {
+        show( 'key_info', $queue->comment_address, 'private' );
+    }
+
+
+};
+
+private template 'key_info' => sub {
+    my $self  = shift;
+    my $email = shift;
+    my $type  = shift;
+    my %res   = RT::Crypt::GnuPG::get_key_info( $email, $type );
+
+    if ( $res{'exit_code'} || !keys %{ $res{'info'} } ) {
+        outs( _('No keys for this address') );
+    }
+    else {
+        if ( $type eq 'private' ) {
+            h3 { _( 'GnuPG private key(s) for %1', $email ) };
+        }
+        else {
+            h3 { _( 'GnuPG public key(s) for %1', $email ) };
+        }
+
+        table {
+            if ( $type eq 'public' ) {
+                row {
+                    th { _('Trust') . ':' };
+                    cell {
+                        _( $res{'info'}{'trust'} );
+                    };
+                };
+            }
+            row {
+                th { _('Created') . ':' };
+                cell {
+                    $res{'info'}{'created'}
+                      ? $res{'info'}{'created'}->date
+                      : _('never');
+                };
+            };
+
+            row {
+                th { _('Expire') . ':' };
+                cell {
+                    $res{'info'}{'expire'}
+                      ? $res{'info'}{'expire'}->date
+                      : _('never');
+                };
+            };
+
+            for my $uinfo ( @{ $res{'info'}{'user'} } ) {
+                row {
+                    th { _('User (Created - expire)') . ':' };
+                    cell {
+                        $uinfo->{'string'} . '('
+                          . (
+                            $uinfo->{'created'} ? $uinfo->{'created'}->date
+                            : _('never') . ' - '
+                          )
+                          . (
+                            $uinfo->{'expire'} ? $uinfo->{'expire'}->date
+                            : _('never')
+                          ) . ')';
+                    };
+                };
+            }
+        };
+    }
+};
 
 1;
 

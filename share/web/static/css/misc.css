@@ -48,3 +48,12 @@ div.autocomplete ul li {
  color: #999;
 
 }
+
+div.history div.even {
+ background-color: #efefef;
+}
+
+div.history div.odd {
+ background-color: #fff;
+}
+

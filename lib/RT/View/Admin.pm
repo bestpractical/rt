@@ -66,5 +66,69 @@ alias RT::View::Admin::CustomFields under 'custom_fields/';
 require RT::View::Admin::Rules;
 alias RT::View::Admin::Rules under 'rules/';
 
+require RT::View::Admin::Global;
+alias RT::View::Admin::Global under 'global/';
+
+require RT::View::Admin::Tools;
+alias RT::View::Admin::Tools under 'tools/';
+
+template 'index.html' => page { title => _('RT Administration') } content {
+    my $items = {
+        A => {
+            title       => _('Users'),
+            path        => '/admin/users',
+            description => _('Manage users and passwords'),
+        },
+        B => {
+            title       => _('Groups'),
+            path        => '/admin/groups',
+            description => _('Manage groups and group membership'),
+        },
+        C => {
+            title       => _('Queues'),
+            path        => '/admin/queues',
+            description => _('Manage queues and queue-specific properties'),
+        },
+        D => {
+            'title'     => _('Custom Fields'),
+            description => _('Manage custom fields and custom field values'),
+            path        => '/admin/custom_fields',
+        },
+        E => {
+            'title'     => _('Global'),
+            path        => '/admin/global',
+            description => _(
+                'Manage properties and configuration which apply to all queues'
+            ),
+        },
+        F => {
+            'title'     => _('Tools'),
+            path        => '/admin/tools',
+            description => _('Use other RT administrative tools')
+        },
+    };
+
+    ul {
+        attr { class => 'list-menu' };
+        foreach my $key ( sort keys %$items ) {
+            li {
+                span {
+                    attr { class => 'menu-item' };
+                    a {
+                        attr { href => RT->config->get('web_path')
+                              . $items->{$key}->{'path'} };
+                        $items->{$key}->{'title'};
+                    }
+                }
+                span {
+                    attr { class => 'description' }
+                      $items->{$key}->{description}
+                }
+
+            }
+        }
+    };
+}
+
 1;
 

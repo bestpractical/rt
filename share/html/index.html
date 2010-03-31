@@ -133,7 +133,7 @@ my $actions;
 if (Jifty->web->current_user->has_right(right => 'ModifySelf', object => RT->system)) {
     $actions = {
         A => { title => _('Edit'),
-               path  => 'Prefs/MyRT.html',
+               path  => 'prefs/my_rt',
              },
     };
 }

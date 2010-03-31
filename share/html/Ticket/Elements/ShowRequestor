@@ -60,7 +60,7 @@ while ( my $requestor = $people->next ) {
 </%PERL>
 
 <&| /Widgets/TitleBox,
-    title_href => $has_right_adminusers? RT->config->get('web_path')."/Admin/Users/Modify.html?id=".$requestor->id: undef,
+    title_href => $has_right_adminusers?  RT->config->get('web_path')."/admin/users/edit?id=".$requestor->id: undef,
     title_raw => _("More about %1", $name),
     class => 'ticket-info-requestor'
 &>

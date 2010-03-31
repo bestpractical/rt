@@ -55,9 +55,10 @@ use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
     column sort_order      => type is 'int', max_length is 11, default is '0';
     column custom_field    => type is 'int', max_length is 11, default is '0';
-    column name            => type is 'varchar(200)', max_length is 200, default is '';
+    column name            => type is 'varchar(200)', max_length is 200,
+           display_length is 20, default is '';
     column
-        description => type is 'varchar(255)',
+        description => type is 'varchar(255)', display_length is 60,
         max_length is 255, default is '';
 
 };

@@ -9,7 +9,7 @@ plan skip_all => 'GnuPG required.'
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
 
-plan tests => 97;
+plan tests => 61;
 
 use RT::ScripAction::SendEmail;
 
@@ -80,12 +80,8 @@ my ($baseurl, $m) = RT::Test->started_ok;
 diag($baseurl) if $ENV{TEST_VERBOSE};
 ok $m->login, 'logged in';
 
-$m->get_ok("/Admin/Queues/Modify.html?id=$qid");
-$m->form_with_fields('sign', 'encrypt');
-$m->field(encrypt => 1);
-$m->submit;
-
-RT::Test->clean_caught_mails;
+my ( $status, $msg ) = $queue->set_encrypt(1);
+ok( $status, $msg );
 
 $m->goto_create_ticket( $queue );
 $m->fill_in_action_ok(create_ticket => (
@@ -152,13 +148,10 @@ MAIL
     like($attachments[0]->content, qr/$rtname/, "RT's mail includes this instance's name");
 }
 
-$m->get("$baseurl/Admin/Queues/Modify.html?id=$qid");
-$m->form_with_fields('sign', 'encrypt');
-$m->field(encrypt => undef);
-$m->field(sign => 1);
-$m->submit;
-
-RT::Test->clean_caught_mails;
+( $status, $msg ) = $queue->set_encrypt(undef);
+ok( $status, $msg );
+( $status, $msg ) = $queue->set_sign(1);
+ok( $status, $msg );
 
 $m->goto_create_ticket( $queue );
 $m->fill_in_action_ok(create_ticket => (
@@ -228,13 +221,10 @@ MAIL
     like($attachments[0]->content, qr/$rtname/, "RT's mail includes this instance's name");
 }
 
-$m->get("$baseurl/Admin/Queues/Modify.html?id=$qid");
-$m->form_with_fields('sign', 'encrypt');
-$m->field(encrypt => 1);
-$m->field(sign => 1);
-$m->submit;
-
-RT::Test->clean_caught_mails;
+( $status, $msg ) = $queue->set_encrypt(1);
+ok( $status, $msg );
+( $status, $msg ) = $queue->set_sign(1);
+ok( $status, $msg );
 
 $user->set_email('recipient@example.com');
 $m->goto_create_ticket( $queue );
@@ -427,23 +417,21 @@ $user->set_email('general@example.com');
 ok($user = RT::Model::User->new(current_user => RT->system_user));
 ok($user->load('root'), "Loaded user 'root'");
 is($user->preferred_key, $key1, "preferred key is set correctly");
-$m->get("$baseurl/Prefs/Other.html");
+$m->get("$baseurl/prefs/other");
 $m->content_like( qr/Preferred key/, "preferred key option shows up in preference");
 
 # XXX: mech doesn't let us see the current value of the select, apparently
 $m->content_like( qr/$key1/, "first key shows up in preferences");
 $m->content_like( qr/$key2/, "second key shows up in preferences");
 $m->content_like( qr/$key1.*?$key2/s, "first key shows up before the second");
-
-$m->form_with_fields('preferred_key');
-$m->select("preferred_key" => $key2);
+$m->fill_in_action_ok( 'prefs_edit_other', preferred_key => $key2 );
 $m->submit;
 
 ok($user = RT::Model::User->new(current_user => RT->system_user));
 ok($user->load('root'), "Loaded user 'root'");
 is($user->preferred_key, $key2, "preferred key is set correctly to the new value");
 
-$m->get("$baseurl/Prefs/Other.html");
+$m->get("$baseurl/prefs/other");
 $m->content_like( qr/Preferred key/, "preferred key option shows up in preference");
 
 # XXX: mech doesn't let us see the current value of the select, apparently

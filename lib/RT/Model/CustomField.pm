@@ -61,19 +61,59 @@ sub table {'CustomFields'}
 use Jifty::DBI::Schema;
 use Jifty::DBI::Record schema {
 
-    column name       => max_length is 200, type is 'varchar(200)', default is '';
-    column type       => max_length is 200, type is 'varchar(200)', default is '';
-    column max_values => max_length is 11,  type is 'int',          default is 0;
+    column name       => max_length is 200, type is 'varchar(200)',
+           display_length is 15, default is '';
+    column type => max_length is 200, type is 'varchar(200)',
+      render as 'Select', valid_values are [
+        { value => 'Wikitext', display => _('Fill in wikitext area') },
+        { value => 'Image',    display => _('Upload image(s)') },
+        { value => 'Binary',   display => _('Upload file(s)') },
+        { value => 'Text',     display => _('Fill in text area') },
+        { value => 'Freeform', display => _('Enter value(s)') },
+        {
+            value   => 'Combobox',
+            display => _('Combobox: Select or enter value(s)')
+        },
+        { value => 'Select', display => _('Select value(s)') },
+        {
+            value   => 'Autocomplete',
+            display => _('Enter value(s) with autocompletion')
+        },
+      ],
+      default is 'Freeform';
+    column max_values => max_length is 11, type is 'int', display_length is 5,
+           default is 0;
     column pattern    => type is 'text',    default is '';
-    column repeated   => max_length is 6,   type is 'smallint',     default is '0';
+    column repeated   => max_length is 6,   type is 'smallint', render as 'Checkbox', default is '0';
     column
-        description => max_length is 255,
+        description => max_length is 255, display_length is 60,
         type is 'varchar(255)', default is '';
-    column sort_order => max_length is 11, type is 'int', default is '0';
+    column sort_order => max_length is 11, type is 'int', display_length is 5,
+           default is '0';
+    column lookup_type => max_length is 255,
+      type is 'varchar(255)', render as 'Select', valid_values are [
+        { display => _('Groups'), value => 'RT::Model::Group' },
+        { display => _('Queues'), value => 'RT::Model::Queue' },
+        { display => _('Users'),  value => 'RT::Model::User' },
+        {
+            display => _('Tickets'),
+            value   => 'RT::Model::Queue-RT::Model::Ticket'
+        },
+        {
+            display => _('Ticket Transactions'),
+            value => 'RT::Model::Queue-RT::Model::Ticket-RT::Model::Transaction'
+        },
+      ],
+      default is 'RT::Model::Queue-RT::Model::Ticket';
+    # TODO do we want to set URI filter for the following 2?
+    column link_value_to => type is 'text', display_length is 60, default is '';
     column
-        lookup_type => max_length is 255,
-        type is 'varchar(255)', default is '';
-    column disabled        => max_length is 6, type is 'smallint', default is '0';
+      include_content_for_value => type is 'text',
+      display_length is 60, default is '';
+    column values_class => type is 'text',
+      display_length is 60, default is 'RT::Model::CustomFieldValueCollection';
+    column disabled        => max_length is 6, type is 'smallint', render as
+        'Checkbox', default is '0';
 };
 
 use Jifty::Plugin::ActorMetadata::Mixin::Model::ActorMetadata map => {
@@ -194,6 +234,7 @@ sub create {
         repeated    => 0,
         link_value_to => '',
         include_content_for_value => '',
+        values_class => '',
         @_,
     );
 
@@ -261,30 +302,9 @@ sub create {
         lookup_type => $args{'lookup_type'},
         repeated    => $args{'repeated'},
         link_value_to => $args{'link_value_to'},
-        include_content_for_value => $args{include_content_for_value},
+        include_content_for_value => $args{'include_content_for_value'},
+        values_class => $args{'values_class'},
     );
-
-    if ( exists $args{'link_value_to'} ) {
-        $self->set_link_value_to( $args{'link_value_to'} );
-    }
-
-    if ( exists $args{'include_content_for_value'} ) {
-        $self->set_include_content_for_value( $args{'include_content_for_value'} );
-    }
-
-    
-
-    if ( exists $args{'values_class'} ) {
-        $self->set_values_class( $args{'values_class'} );
-    if ( exists $args{'link_value_to'} ) {
-        $self->set_link_value_to( $args{'link_value_to'} );
-    }
-
-    if ( exists $args{'include_content_for_value'} ) {
-        $self->set_include_content_for_value( $args{'include_content_for_value'} );
-    }
-
-    }
 
     return ( $rv, $msg ) unless exists $args{'queue'};
 
@@ -534,27 +554,8 @@ sub is_external_values {
     return $selectable unless $selectable;
 
     my $class = $self->values_class;
-    return 0 if $class eq 'RT::Model::CustomFieldValueCollection';
+    return 0 if !$class || $class eq 'RT::Model::CustomFieldValueCollection';
     return 1;
-}
-
-sub values_class {
-    my $self = shift;
-    return '' unless $self->is_selection_type;
-
-    my $class = $self->first_attribute('ValuesClass');
-    $class = $class->content if $class;
-    return $class || 'RT::Model::CustomFieldValueCollection';
-}
-
-sub set_values_class {
-    my $self = shift;
-    my $class = shift || 'RT::Model::CustomFieldValueCollection';
-
-    if ( $class eq 'RT::Model::CustomFieldValueCollection' ) {
-        return $self->delete_attribute('ValuesClass');
-    }
-    return $self->set_attribute( name => 'ValuesClass', content => $class );
 }
 
 =head2 friendly_type [TYPE, MAX_valueS]
@@ -1134,76 +1135,6 @@ sub _for_object_type {
 
 }
 
-=head2 include_content_for_value [value] (and Setinclude_content_for_value)
-
-Gets or sets the  C<include_content_for_value> for this custom field. RT
-uses this field to automatically include content into the user's browser
-as they display records with custom fields in RT.
-
-=cut
-
-sub set_include_content_for_value {
-    shift->include_content_for_value(@_);
-}
-
-sub include_content_for_value {
-    my $self = shift;
-    $self->url_template( 'include_content_for_value', @_ );
-}
-
-=head2 link_value_to [value] (and Setlink_value_to)
-
-Gets or sets the  C<link_value_to> for this custom field. RT
-uses this field to make custom field values into hyperlinks in the user's
-browser as they display records with custom fields in RT.
-
-=cut
-
-sub set_link_value_to {
-    shift->link_value_to(@_);
-}
-
-sub link_value_to {
-    my $self = shift;
-    $self->url_template( 'link_value_to', @_ );
-
-}
-
-=head2 _urltemplate  name [value]
-
-With one argument, returns the _URLTemplate named C<name>, but only if
-the current user has the right to see this custom field.
-
-With two arguments, attemptes to set the relevant template value.
-
-=cut
-
-sub url_template {
-    my $self          = shift;
-    my $template_name = shift;
-    if (@_) {
-
-        my $value = shift;
-        unless ( $self->current_user_has_right('AdminCustomField') ) {
-            return ( 0, _('Permission Denied') );
-        }
-        $self->set_attribute( name => $template_name, content => $value );
-        return ( 1, _('Updated') );
-    } else {
-        unless ( $self->id
-            && $self->current_user_has_right('SeeCustomField') )
-        {
-            return (undef);
-        }
-
-        my @attr = $self->attributes->named($template_name);
-        my $attr = shift @attr;
-
-        if ($attr) { return $attr->content }
-
-    }
-}
-
 =head2 type_for_rendering
 
 This returns an appropriate C<render as> value based on the custom field's
@@ -1219,13 +1150,21 @@ sub type_for_rendering {
 
     my %type_map = (
         Select       => 'Select',
-        Freeform     => 'Text',
         Text         => 'Textarea',
         Wikitext     => '',
-        Image        => '',
-        Binary       => 'Upload',
         Combobox     => '',
         Autocomplete => '',
+        $self->max_values && $self->max_values == 1
+          ? (
+            Image    => 'Upload',
+            Binary   => 'Upload',
+            Freeform => 'Text',
+          )
+          : (
+            Image    => 'Uploads',
+            Binary   => 'Uploads',
+            Freeform => 'Textarea',
+          ),
     );
 
     return $type_map{$type};

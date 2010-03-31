@@ -55,33 +55,134 @@ use base 'RT::View::CRUD';
 use constant page_title     => 'Group Management';
 use constant object_type    => 'Group';
 
-use constant display_columns => qw(id name description);
+sub display_columns {
+    my $self = shift;
+    return qw(id name description disabled), $self->custom_field_columns( RT::Model::Group->new );
+}
+
+sub edit_columns {
+    my $self = shift;
+    return qw(id name description disabled), $self->custom_field_columns( RT::Model::Group->new );
+}
 
 sub _current_collection {
     my $self = shift;
     my $c    = $self->SUPER::_current_collection();
     $c->limit_to_user_defined_groups();
+    $c->{'find_disabled_rows'} = get('include_disabled');
     return $c;
 }
 
-=head2 view_field_name
+template 'select_custom_fields' =>
+page { title => _('Select Custom Fields for Group') } content {
+    my $self  = shift;
+    my $group = RT::Model::Group->new;
+    $group->load( get('id') );
+    my $moniker = 'group_select_cfs';
+    my $action = new_action(
+        class   => 'SelectCustomFields',
+        moniker => $moniker,
+    );
 
-Display each group's name as a hyperlink to the modify page
+    $action->record($group);
+    $action->lookup_type( $group->custom_field_lookup_type );
 
-=cut
+    with( name => $moniker ), form {
+        render_action($action);
+        form_submit( label => _('Save') );
+    };
+};
 
-sub view_field_name {
+template 'members' => page { title => _('Group Members') } content {
+    my $self  = shift;
+    my $group = RT::Model::Group->new;
+    $group->load( get('id') );
+    my $moniker = 'group_edit_members';
+    my $action = new_action(
+        class   => 'EditGroupMembers',
+        moniker => $moniker,
+    );
+
+    $action->record($group);
+
+    with( name => $moniker ), form {
+        render_action($action);
+        form_submit( label => _('Save') );
+    };
+
+};
+
+template 'history' => page { title => _('Group History') } content {
     my $self = shift;
-    my %args = @_;
+    my $group = RT::Model::Group->new;
+    $group->load(get('id'));
+    my $txns = $group->transactions;
+    $txns->order_by(
+        {
+            column => 'Created',
+            order  => 'ASC',
+        },
+        {
+            column => 'id',
+            order  => 'ASC',
+        },
+    );
+    my $row_num = 1;
+    div {
+        attr { class => 'history' };
+        while ( my $txn = $txns->next ) {
+            div {
+                attr { class => $row_num++ % 2 ? 'odd' : 'even' };
+                div {
+                    attr { class => 'metadata' }
+                      span { attr { class => 'date' }; $txn->created };
+                    span {
+                        attr { class => 'description' };
+                        $txn->creator->name . ' - ' . $txn->brief_description;
+                    };
+                };
+            };
+        }
+    };
 
-    $self->view_via_callback(%args, callback => sub {
-        my %args = @_;
-        hyperlink(
-            label => $args{current_value},
-            url   => "/Admin/Groups/Modify.html?id=$args{id}",
-        );
-    });
-}
+    # removed txn attachments and txn cfs that were here in mason pages
+
+};
+
+template 'group_rights' => page { title => _('Group Rights for Group') }
+content {
+    my $self = shift;
+    show( 'rights', 'group' );
+
+};
+
+template 'user_rights' => page { title => _('User Rights for Group') } content {
+    my $self = shift;
+    show( 'rights', 'user' );
+
+};
+
+private template 'rights' => sub {
+    my $self = shift;
+    my $type = shift || 'user';
+
+    my $class   = 'Edit' . ucfirst($type) . 'Rights';
+    my $moniker = 'group_edit_' . $type . '_rights';
+
+    my $rights = new_action(
+        class   => $class,
+        moniker => $moniker,
+    );
+
+    my $group = RT::Model::Group->new;
+    $group->load(get('id'));
+    $rights->record( $group );
+
+    with( name => $moniker ), form {
+        render_action($rights);
+        form_submit( label => _('Save') );
+    };
+};
 
 1;
 

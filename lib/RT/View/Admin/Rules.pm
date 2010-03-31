@@ -65,47 +65,5 @@ sub _current_collection {
     return $c;
 }
 
-=head2 view_field_name
-
-Display each group's name as a hyperlink to the modify page
-
-=cut
-
-sub view_field_name {
-    my $self = shift;
-    my %args = @_;
-
-    $self->view_via_callback(%args, callback => sub {
-        my %args = @_;
-        hyperlink(
-            label => $args{current_value},
-            url   => "/Admin/Rules/Modify.html?id=$args{id}",
-        );
-    });
-}
-
-template 'edit' => page {
-    show('./update');
-
-    div { { id is 'expressionbuilder' } };
-if (0) {outs_raw(q{<script type="text/javascript">
-jQuery(function() {
-  jQuery._span_({'class': 'edit-with-rulebuilder'}).text("...")
-    .insertAfter("textarea.argument-condition_code")
-    .click(function(e) { RuleBuilder.load_and_edit_lambda([
-    { expression: 'ticket',
-      type: 'RT::Model::Ticket'
-    },
-    { expression: 'transaction',
-      type: 'RT::Model::Transaction'
-    }
-], 'Bool', this) });
-
-});
-</script>
-});
-}
-};
-
 1;
 

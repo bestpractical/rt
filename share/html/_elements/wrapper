@@ -52,7 +52,7 @@
 
 <& /Elements/Footer, %{Jifty->web->request->arguments}, %ARGS &>
 <%args>
-$prefs => '/Prefs/Other.html'
+$prefs => '/prefs/other'
 $focus => ''
 $title => 'RT'
 $code => undef

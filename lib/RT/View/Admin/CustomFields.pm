@@ -52,9 +52,79 @@ package RT::View::Admin::CustomFields;
 use Jifty::View::Declare -base;
 use base 'RT::View::CRUD';
 
+require RT::View::Admin::CustomFields::Values;
+alias RT::View::Admin::CustomFields::Values under 'values/';
+
 use constant page_title      => 'Custom Field Management';
 use constant object_type     => 'CustomField';
-use constant display_columns => qw(name type);
+use constant display_columns =>
+  qw(id name description type lookup_type max_values pattern
+  sort_order repeated link_value_to include_content_for_value values_class disabled );
+
+use constant create_columns =>
+  qw(name description type lookup_type max_values pattern
+  sort_order repeated link_value_to include_content_for_value disabled );
+
+template 'objects' => page { title => _('Applied Objects for Custom Field') }
+content {
+    my $self = shift;
+    my $cf = RT::Model::CustomField->new;
+    $cf->load( get('id') );
+    my $moniker = 'cf_select_ocfs';
+    my $action = new_action(
+        class   => 'SelectObjectCustomFields',
+        moniker => $moniker,
+    );
+
+    $action->record($cf);
+
+    with( name => $moniker ), form {
+        render_action($action);
+        form_submit( label => _('Save') );
+    };
+
+};
+
+template 'group_rights' => page { title => _('Group Rights for Custom Field') }
+content {
+    my $self = shift;
+    show( 'rights', 'group' );
+
+};
+
+template 'user_rights' => page { title => _('User Rights for Custom Field') } content {
+    my $self = shift;
+    show( 'rights', 'user' );
+
+};
+
+private template 'rights' => sub {
+    my $self = shift;
+    my $type = shift || 'user';
+
+    my $class   = 'Edit' . ucfirst($type) . 'Rights';
+    my $moniker = 'cf_edit_' . $type . '_rights';
+
+    my $rights = new_action(
+        class   => $class,
+        moniker => $moniker,
+    );
+
+    my $cf = RT::Model::CustomField->new;
+    $cf->load(get('id'));
+    $rights->record( $cf );
+
+    with( name => $moniker ), form {
+        render_action($rights);
+        form_submit( label => _('Save') );
+    };
+};
+sub _current_collection {
+    my $self = shift; 
+    my $collection = $self->SUPER::_current_collection( @_ );
+    $collection->{'find_disabled_rows'} = get('include_disabled');
+    return $collection;    
+}
 
 
 1;

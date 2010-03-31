@@ -51,6 +51,9 @@ use warnings;
 package RT::Model::User;
 
 use base qw/RT::IsPrincipal::HasNoMembers RT::Record/;
+# Tell RT::Model::ACE that this sort of object can get acls granted
+$RT::Model::ACE::OBJECT_TYPES{'RT::Model::User'} = 1;
+
 
 =head1 NAME
 
@@ -69,60 +72,62 @@ use Jifty::DBI::Schema;
 sub table {'Users'}
 
 use Jifty::DBI::Record schema {
-    column comments              => type is 'blob', default is '';
-    column signature             => type is 'blob', default is '';
-    column freeform_contact_info => type is 'blob', default is '';
-    column
-        organization =>,
-        max_length is 200, type is 'varchar(200)', default is '';
-    column
-        real_name => max_length is 120,
-        type is 'varchar(120)', default is '';
+    column comments => type is 'blob', render as 'Textarea', default is '';
+    column signature => type is 'blob', render as 'Textarea', default is '';
+    column freeform_contact_info => type is 'blob',
+      render as 'Textarea', default is '';
+    column organization => type is 'varchar(200)',
+        max_length is 200, display_length is 60, default is '';
+    column real_name => type is 'varchar(120)',
+      max_length is 120, display_length is 30,, default is '';
     column nickname => max_length is 16, type is 'varchar(16)', default is '';
-    column lang     => max_length is 16, type is 'varchar(16)', default is '';
+    column
+      lang => max_length is 16,
+      type is 'varchar(16)', label is _('Language'), default is '';
     column
         email_encoding => max_length is 16,
         type is 'varchar(16)', default is '';
     column
         web_encoding => max_length is 16,
         type is 'varchar(16)', default is '';
+    column external_contact_info_id => type is 'varchar(100)',
+      display_length is 60, max_length is 100, default is '';
     column
-
-        external_contact_info_id => max_length is 100,
-        type is 'varchar(100)', default is '';
+      contact_info_system => type is 'varchar(30)',
+      max_length is 30, default is '';
+    column external_auth_id => type is 'varchar(100)',
+      max_length is 100, display_length is 60, default is '';
     column
-        contact_info_system => max_length is 30,
-        type is 'varchar(30)', default is '';
+        auth_system => type is 'varchar(30)', max_length is 30,
+        default is '';
     column
-        external_auth_id => max_length is 100,
-        type is 'varchar(100)', default is '';
+      gecos => type is 'varchar(16)',
+      max_length is 16, label is _('unix login'), default is '';
     column
-        auth_system => max_length is 30,
-        type is 'varchar(30)', default is '';
-    column gecos => max_length is 16, type is 'varchar(16)', default is '';
+        home_phone => type is 'varchar(30)', max_length is 30, default is '';
     column
-        home_phone => max_length is 30,
-        type is 'varchar(30)', default is '';
+        work_phone => type is 'varchar(30)', max_length is 30, default is '';
     column
-        work_phone => max_length is 30,
-        type is 'varchar(30)', default is '';
+        mobile_phone => type is 'varchar(30)', max_length is 30, default is '';
     column
-        mobile_phone => max_length is 30,
-        type is 'varchar(30)', default is '';
+        pager_phone => type is 'varchar(30)', max_length is 30, default is '';
     column
-        pager_phone => max_length is 30,
-        type is 'varchar(30)', default is '';
+      address1 => type is 'varchar(200)',
+        max_length is 200, display_length is 60, default is '';
     column
-        address1 => max_length is 200,
-        type is 'varchar(200)', default is '';
-    column
-        address2 => max_length is 200,
-        type is 'varchar(200)', default is '';
-    column city     => max_length is 100, type is 'varchar(100)', default is '';
-    column state    => max_length is 100, type is 'varchar(100)', default is '';
+      address2 => type is 'varchar(200)',
+      max_length is 200, display_length is 60, default is '';
+    column city     => type is 'varchar(100)', max_length is 100,
+           display_length is 30, default is '';
+    column state    => type is 'varchar(100)', max_length is 100,
+           display_length is 10, default is '';
     column zip      => max_length is 16,  type is 'varchar(16)',  default is '';
-    column country  => max_length is 50,  type is 'varchar(50)',  default is '';
-    column time_zone => max_length is 50,  type is 'varchar(50)',  default is '';
+    column country  => type is 'varchar(50)', max_length is 50,
+           display_length is 20, default is '';
+    column time_zone => type is 'varchar(50)', max_length is 50, default is
+        '',
+        render as 'Select',
+        valid_values are lazy { formatted_timezones() };
     column pgp_key   => type is 'text';
 
 };
@@ -740,8 +745,9 @@ to that string.
 =cut
 
 sub before_set_password {
-    my $self     = shift;
-    my $password = shift;
+    my $self = shift;
+    my $args = shift;
+    my $password = $args->{value};
 
     unless ( $self->current_user_can_modify('password') ) {
         return ( 0, _('password: Permission Denied') );
@@ -1338,6 +1344,34 @@ sub set_private_key {
 
 sub basic_columns {
     ( [ name => 'User Id' ], [ email => 'Email' ], [ real_name => 'name' ], [ organization => 'organization' ], );
+
+}
+
+sub formatted_timezones {
+    my @positive;
+    my @negative;
+    for my $tz ( DateTime::TimeZone->all_names ) {
+        my $now = DateTime->now( time_zone => $tz );
+        my $offset = $now->strftime("%z");
+        my $zone_data = { offset => $offset, name => $tz };
+        if ($offset =~ /^-/) {
+            push @negative, $zone_data;
+        } else {
+            push @positive, $zone_data;
+        }
+    }
+
+
+    @negative = sort { $b->{offset} cmp $a->{offset} ||
+                       $a->{name} cmp $b->{name} } @negative;
+    @positive = sort { $a->{offset} cmp $b->{offset} ||
+                       $a->{name} cmp $b->{name} } @positive;;
+
+    return [
+        { display => _('system_default'), value => '' },
+        map { { display => "$_->{offset} $_->{name}", value => $_->{name} } }
+          ( @negative, @positive )
+    ];
 
 }
 
