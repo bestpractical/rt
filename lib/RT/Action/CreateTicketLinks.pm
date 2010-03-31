@@ -3,7 +3,6 @@ use strict;
 use warnings;
 
 use constant report_detailed_messages => 1;
-use Text::Naming::Convention qw/renaming/;
 
 use Jifty::Param::Schema;
 use Jifty::Action schema {
@@ -41,13 +40,11 @@ sub take_action {
           RT::Model::Ticket->new( current_user => Jifty->web->current_user );
         $ticket->load($self->argument_value('id'));
         for my $field ( keys %map ) {
-            my $type = renaming( $field, { convention => 'UpperCamelCase' } );
-
             for my $value ( split /\s+/, $self->argument_value($field) ) {
                 next unless $value;
                 my ( $val, $msg ) = $ticket->add_link(
                     target => $value,
-                    type   => $type,
+                    type   => $field,
                 );
                 push @{ $self->result->content('detailed_messages')->{$field} },
                   $msg;
@@ -57,7 +54,7 @@ sub take_action {
                 next unless $value;
                 my ( $val, $msg ) = $ticket->add_link(
                     base => $value,
-                    type => $type,
+                    type => $field,
                 );
                 push @{ $self->result->content('detailed_messages')->{ $map{$field} } }, $msg;
             }

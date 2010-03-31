@@ -932,7 +932,7 @@ sub format_type {
         type => '',
         @_
     );
-    $args{type} =~ s/([A-Z])/" " . lc $1/ge;
+    $args{type} =~ s/_/ /g;
     return $args{type};
 }
 
