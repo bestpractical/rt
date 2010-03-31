@@ -58,9 +58,6 @@ unless ($session{'CurrentUser'}->HasRight( Object=> $RT::System, Right => 'Super
     current_subtab => 'Admin/Tools/Configuration.html', 
     Title => $title &>
 
-<table>
-    <tr>
-        <td valign="top" width="60%" class="boxcontainer">
 <&|/Widgets/TitleBox, title => loc("RT Configuration") &>
 <table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
 <tr class="collection-as-table">
@@ -116,8 +113,9 @@ foreach my $key ( RT->Config->Options( Overridable => undef, Sorted => 0 ) ) {
 % }
 </table>
 </&>
-</td>
-<td valign="top" class="boxcontainer">
+<table width="100%">
+    <tr>
+        <td valign="top" width="60%" class="boxcontainer">
 <&|/Widgets/TitleBox, title=> loc("RT core variables") &>
 <table border="0" cellspacing="0" cellpadding="5" width="100%" class="collection">
 <tr class="collection-as-table">
@@ -179,6 +177,8 @@ for my $type (qw/Tickets Queues Transactions Groups PrivilegedUsers Unprivileged
 % }
 </table>
 </&>
+</td>
+<td valign="top" class="boxcontainer">
 
 <&|/Widgets/TitleBox, title => loc("Mason template search order") &>
 <ol>
