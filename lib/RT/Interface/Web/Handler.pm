@@ -219,6 +219,10 @@ sub CleanupRequest {
     }
 
     %RT::Ticket::MERGE_CACHE = ( effective => {}, merged => {} );
+
+    # Explicitly remove any tmpfiles that GPG opened, and close their
+    # filehandles.
+    File::Temp::cleanup;
 }
 # }}}
 
