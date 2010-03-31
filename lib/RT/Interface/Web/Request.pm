@@ -164,7 +164,7 @@ sub callback {
             # Skip backup files, files without a leading package name,
             # and files we've already seen
             grep !$seen{$_}++ && !m{/\.} && !m{~$} && m{^/Callbacks/[^/]+\Q$page/$name\E$},
-            map sort $self->interp->resolver->glob_path($path, $_),
+            map { sort $self->interp->resolver->glob_path($path, $_) }
             @roots
         );
         foreach my $comp (keys %seen) {
