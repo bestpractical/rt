@@ -61,21 +61,12 @@ $scrubber->default(
         target => 1,
         style  => qr{^(?:(?:color:\s*rgb\(\d+,\s*\d+,\s*\d+\))|
                          (?:text-align:\s*))}ix,
-        colspan => qr{^[0-9]+$},
-        rowspan => qr{^[0-9]+$},
-        align   => qr{^(?i:left|center|right|justify|char)$},
-        valign  => qr{^(?i:top|middle|bottom|baseline)$},
     }
 );
 $scrubber->deny(qw[*]);
-$scrubber->allow(qw(
-    A EM P DIV SPAN PRE
-    HR BR
-    B U I SMALL FONT STRONG SUB SUP STRIKE
-    H1 H2 H3 H4 H5 H6
-    UL OL LI DL DT DD
-    TABLE TR TD TH
-) );
+$scrubber->allow(
+    qw[A B U P BR I HR BR SMALL EM FONT SPAN STRONG SUB SUP STRIKE H1 H2 H3 H4 H5 H6 DIV UL OL LI DL DT DD PRE]
+);
 $scrubber->comment(0);
 </%ONCE>
 <%init>
