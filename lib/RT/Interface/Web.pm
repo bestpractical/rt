@@ -582,26 +582,18 @@ sub make_mime_entity {
 
     if ( $args{'attachment_field_name'} ) {
 
-        my $cgi_object = Jifty->handler->cgi;
-
-        if ( my $filehandle = $cgi_object->upload( $args{'attachment_field_name'} ) ) {
-
+        if ( my $upload = Jifty->web->request->uploads->{
+                $args{'attachment_field_name'} } ) {
             my ( @content, $buffer );
-            while ( my $bytesread = read( $filehandle, $buffer, 4096 ) ) {
+            open my $fh, '<', $upload->path;
+            binmode $fh;
+            while ( my $bytesread = read( $fh, $buffer, 4096 ) ) {
                 push @content, $buffer;
             }
 
-            my $uploadinfo = $cgi_object->uploadInfo($filehandle);
-
-            # Prefer the cached name first over CGI.pm stringification.
-            my $filename = $RT::Mason::CGI::Filename;
-            $filename = "$filehandle" unless defined($filename);
-            $filename = Encode::decode_utf8($filename);
-            $filename =~ s{^.*[\\/]}{};
-            
-
+            my $filename = Encode::decode_utf8( $upload->basename );
             $Message->attach(
-                Type     => $uploadinfo->{'Content-Type'},
+                Type     => $upload->content_type,
                 Filename => $filename,
                 Data     => \@content,
             );
@@ -1272,18 +1264,14 @@ Returns C<undef> if no files were uploaded in the C<$arg> field.
 
 sub _uploaded_file {
     my $arg         = shift;
-    my $cgi_object  = Jifty->handler->cgi;
-    my $fh          = $cgi_object->upload($arg) or return undef;
-    my $upload_info = $cgi_object->uploadInfo($fh);
-
-    my $filename = "$fh";
-    $filename =~ s#^.*[\\/]##;
+    my $upload = Jifty->web->request->uploads->{$arg} or return;
+    open my $fh, '<', $upload->path or return;
     binmode($fh);
 
     return {
-        value         => $filename,
+        value         => $upload->basename,
         large_content => do { local $/; scalar <$fh> },
-        content_type  => $upload_info->{'Content-Type'},
+        content_type  => $upload->content_type,
     };
 }
 

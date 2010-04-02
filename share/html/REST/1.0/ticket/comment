@@ -57,7 +57,7 @@ use RT::Interface::REST;
 use File::Temp qw(tempfile);
 
 my $ticket = RT::Model::Ticket->new( current_user => Jifty->web->current_user );
-my $object = $r->path_info;
+my $object = Jifty->web->request->path_info;
 my $status = "200 Ok";
 my $output;
 my $action;
@@ -105,7 +105,6 @@ if (!$k->{Text} && @atts == 0) {
         goto OUTPUT;
 }
 
-my $cgi = Jifty->handler->cgi;
 my $ent = MIME::Entity->build(Type => "multipart/mixed");
 $ent->attach(Data => $k->{Text}) if $k->{Text};
 
@@ -115,20 +114,12 @@ foreach my $att (@atts) {
     my $file = $att;
     $file =~ s#^.*[\\/]##;
 
-    my $fh = $cgi->upload("attachment_$i");
-    if ($fh) {
-        my $buf;
-        my ($w, $tmp) = tempfile();
-        my $info = $cgi->uploadInfo();
-
-        while (sysread($fh, $buf, 8192)) {
-            syswrite($w, $buf);
-        }
-
+    my $upload = Jifty->web->request->uploads->{"attachment_$i"};
+    if ($upload) {
         $ent->attach(
-            Path => $tmp,
-            type => $info->{'Content-Type'} || guess_media_type($tmp),
-            Filename => $file,
+            Path => $upload->path,
+            Type => $upload->content_type || guess_media_type($upload->path),
+            Filename => $upload->basename,
             Disposition => "attachment"
         );
     }

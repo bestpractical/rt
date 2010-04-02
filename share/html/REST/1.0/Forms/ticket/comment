@@ -89,7 +89,6 @@ if (!$changes{Text} && @atts == 0) {
     goto OUTPUT;
 }
 
-my $cgi = Jifty->handler->cgi;
 my $ent = MIME::Entity->build(Type => "multipart/mixed");
 $ent->attach(Data => $changes{Text}) if $changes{Text};
 
@@ -99,20 +98,12 @@ foreach my $att (@atts) {
     my $file = $att;
     $file =~ s#^.*[\\/]##;
 
-    my $fh = $cgi->upload("attachment_$i");
-    if ($fh) {
-        my $buf;
-        my ($w, $tmp) = tempfile();
-        my $info = $cgi->uploadInfo($fh);
-
-        while (sysread($fh, $buf, 8192)) {
-            syswrite($w, $buf);
-        }
-
+    my $upload = Jifty->web->request->uploads->{"attachment_$i"};
+    if ($upload) {
         $ent->attach(
-            Path => $tmp,
-            type => $info->{'Content-Type'} || guess_media_type($tmp),
-            Filename => $file,
+            Path => $upload->path,
+            Type => $upload->content_type || guess_media_type($upload->path),
+            Filename => $upload->basename,
             Disposition => "attachment"
         );
     }

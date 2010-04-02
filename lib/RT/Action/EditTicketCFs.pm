@@ -78,21 +78,22 @@ sub take_action {
 
             if ( $cf->type eq 'Binary' || $cf->type eq 'Image' ) {
                 next unless $new_values;
-                my $cgi_object  = Jifty->handler->cgi;
-                my $upload_info = $cgi_object->uploadInfo($new_values);
-                my $filename    = "$new_values";
-                $filename =~ s#^.*[\\/]##;
-                binmode($new_values);
-
-                my ( $val, $msg ) = $ticket->add_custom_field_value(
-                    field         => $cfid,
-                    value         => $filename,
-                    large_content => do { local $/; scalar <$new_values> },
-                    content_type  => $upload_info->{'Content-Type'},
-                );
-                Jifty->log->error($msg) unless $val;
-                push @{ $self->result->content('detailed_messages')
-                      ->{ $cf->name } }, $msg;
+                for my $upload (
+                    ref $new_values eq 'ARRAY'
+                    ? @$new_values
+                    : $new_values
+                  )
+                {
+                    my ( $val, $msg ) = $ticket->add_custom_field_value(
+                        field         => $cfid,
+                        value         => $upload->filename,
+                        large_content => $upload->filehandle,
+                        content_type  => $upload->content_type,
+                    );
+                    Jifty->log->error($msg) unless $val;
+                    push @{ $self->result->content('detailed_messages')
+                          ->{ $cf->name } }, $msg;
+                }
             }
             else {
 

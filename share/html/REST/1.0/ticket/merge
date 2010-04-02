@@ -57,7 +57,7 @@ use RT::Interface::REST;
 my $output;
 my $status = "200 Ok";
 my $ticket = RT::Model::Ticket->new( current_user => Jifty->web->current_user );
-my $object = $r->path_info;
+my $object = Jifty->web->request->path_info;
 
 # http://.../REST/1.0/ticket/merge/1
 
@@ -70,7 +70,7 @@ if ($id && $object && $id != $object) {
 $id ||= $object;
 unless ($id =~ /^\d+$/ && $into =~ /^\d+$/) {
     my $bad = ($id !~ /^\d+$/) ? $id : $into;
-    $output = $r->path_info. "\n";
+    $output = Jifty->web->request->path_info. "\n";
     $output .= "Invalid ticket id: `$bad'.\n";
     $status = "400 Bad Request";
     goto OUTPUT;
