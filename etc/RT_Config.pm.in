@@ -1522,6 +1522,28 @@ Set($DefaultTimeUnitsToHours, 0);
 
 =back
 
+=item C<$SearchResultsAutoRedirect>
+
+when only one ticket is found in search, use this to redirect to the ticket
+display page automatically.
+
+=cut
+
+Set($SearchResultsAutoRedirect, 0);
+
+=back
+
+=item C<$OnlySearchActiveTicketsInSimpleSearch>
+
+When query in simple search doesn't have status info,
+use this to only search active ones.
+
+=cut
+
+Set($OnlySearchActiveTicketsInSimpleSearch, 1);
+
+=back
+
 =head1 L<Net::Server> (rt-server) Configuration
 
 =over 4
