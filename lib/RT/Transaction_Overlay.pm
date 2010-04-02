@@ -80,8 +80,7 @@ use RT::Attachments;
 use RT::Scrips;
 use RT::Ruleset;
 
-use HTML::FormatText;
-use HTML::TreeBuilder;
+use HTML::FormatText::WithLinks::AndTables;
 
 
 =head2 Create
@@ -328,12 +327,7 @@ sub Content {
             $content =~ s/<p>--\s+<br \/>.*?$//s if $args{'Quote'};
 
             if ($args{Type} ne 'text/html') {
-                my $tree = HTML::TreeBuilder->new_from_content( $content );
-                $content = HTML::FormatText->new(
-                    leftmargin  => 0,
-                    rightmargin => 78,
-                )->format( $tree);
-                $tree->delete;
+                $content = HTML::FormatText::WithLinks::AndTables->convert($content, { no_rowspacing => 1 });
             }
         }
         else {

@@ -564,20 +564,15 @@ sub _DowngradeFromHTML {
     $orig_entity->head->mime_attr( "Content-Type.charset" => 'utf-8' );
     $orig_entity->make_multipart('alternative', Force => 1);
 
-    require HTML::FormatText;
-    require HTML::TreeBuilder;
+    require HTML::FormatText::WithLinks::AndTables;
     require Encode;
-    # need to decode_utf8, see the doc of MIMEObj method
-    my $tree = HTML::TreeBuilder->new_from_content(
-        Encode::decode_utf8($new_entity->bodyhandle->as_string)
-    );
     $new_entity->bodyhandle(MIME::Body::InCore->new(
-        \(scalar HTML::FormatText->new(
-            leftmargin  => 0,
-            rightmargin => 78,
-        )->format( $tree ))
+        \( HTML::FormatText::WithLinks::AndTables->convert(
+                # need to decode_utf8, see the doc of MIMEObj method
+                Encode::decode_utf8($new_entity->bodyhandle->as_string),
+                { no_rowspacing => 1 }
+         ))
     ));
-    $tree->delete;
 
     $orig_entity->add_part($new_entity, 0); # plain comes before html
     $self->{MIMEObj} = $orig_entity;
