@@ -201,6 +201,8 @@ File::Spec 0.8
 File::Temp 0.19
 HTML::Entities
 HTML::FormatText
+HTML::FormatText::WithLinks 0.14
+HTML::FormatText::WithLinks::AndTables
 HTML::Mason 1.43
 HTML::Mason::PSGIHandler 0.52
 HTML::Quoted
