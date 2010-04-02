@@ -185,20 +185,50 @@ sub _FieldToFunction {
     if ($field =~ /^(.*)(Hourly|Daily|Monthly|Annually)$/) {
         my ($field, $grouping) = ($1, $2);
         my $alias = $args{'ALIAS'} || 'main';
+
+        my $func = "$alias.$field";
+
+        my $db_type = RT->Config->Get('DatabaseType');
+        if ( RT->Config->Get('ChartsTimezonesInDB') ) {
+            my $tz = $self->CurrentUser->UserObj->Timezone
+                || RT->Config->Get('Timezone')
+                || 'UTC';
+            if ( lc $tz eq 'utc' ) {
+                # do nothing
+            }
+            elsif ( $db_type eq 'Pg' ) {
+                $func = "timezone('UTC', $func)";
+                $func = "timezone(". $self->_Handle->dbh->quote($tz) .", $func)";
+            }
+            elsif ( $db_type eq 'mysql' ) {
+                $func = "CONVERT_TZ($func, 'UTC', "
+                    . $self->_Handle->dbh->quote($tz)
+                    .")";
+            }
+            else {
+                $RT::Logger->warning(
+                    "ChartsTimezonesInDB config option"
+                    ." is not supported on $db_type."
+                );
+            }
+        }
+
         # Pg 8.3 requires explicit casting
-        $field .= '::text' if RT->Config->Get('DatabaseType') eq 'Pg';
-        if ( $grouping =~ /Hourly/ ) {
-            $args{'FUNCTION'} = "SUBSTR($alias.$field,1,13)";
+        $func .= '::text' if $db_type eq 'Pg';
+
+        if ( $grouping eq 'Hourly' ) {
+            $func = "SUBSTR($func,1,13)";
         }
-        if ( $grouping =~ /Daily/ ) {
-            $args{'FUNCTION'} = "SUBSTR($alias.$field,1,10)";
+        if ( $grouping eq 'Daily' ) {
+            $func = "SUBSTR($func,1,10)";
         }
-        elsif ( $grouping =~ /Monthly/ ) {
-            $args{'FUNCTION'} = "SUBSTR($alias.$field,1,7)";
+        elsif ( $grouping eq 'Monthly' ) {
+            $func = "SUBSTR($func,1,7)";
         }
-        elsif ( $grouping =~ /Annually/ ) {
-            $args{'FUNCTION'} = "SUBSTR($alias.$field,1,4)";
+        elsif ( $grouping eq 'Annually' ) {
+            $func = "SUBSTR($func,1,4)";
         }
+        $args{'FUNCTION'} = $func;
     } elsif ( $field =~ /^(?:CF|CustomField)\.{(.*)}$/ ) { #XXX: use CFDecipher method
         my $cf_name = $1;
         my $cf = RT::CustomField->new( $self->CurrentUser );

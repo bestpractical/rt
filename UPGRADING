@@ -18,6 +18,10 @@ If you are using MySQL, please read the instructions in UPGRADING.mysql as
 well.
 
 *******
+UPGRADING FROM 3.8.7 and earlier - Changes:
+
+New option ChartsTimezonesInDB in the config.
+
 UPGRADING FROM 3.8.6 and earlier - Changes:
 
 For MySQL and Oracle users:
