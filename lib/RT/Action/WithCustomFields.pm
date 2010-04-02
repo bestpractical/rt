@@ -12,7 +12,7 @@ sub _add_custom_fields {
     my @args = $self->_setup_custom_fields( cfs => $cfs );
 
     for my $args ( @args ) {
-        $self->$method( $args );
+        $self->$method( %$args );
     }
 }
 
