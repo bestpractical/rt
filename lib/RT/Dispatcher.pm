@@ -796,7 +796,6 @@ before 'prefs' => run {
 };
 
 before qr{^/Search/Build.html} => run {
-    my $querystring = '';
     my $selected_clauses = Jifty->web->request->argument('clauses') || 0;
     my ( $saved_search, $current_search, $results ) = RT::Interface::Web::QueryBuilder->setup_query();
 
@@ -829,14 +828,20 @@ before qr{^/Search/Build.html} => run {
     #  Push the updates into the session so we don't lose 'em
     Jifty->web->session->set( 'CurrentSearchHash', { %$saved_search, %$current_search, } );
 
+    my $query;
     if ( Jifty->web->request->argument('new_query') ) {
-        $querystring = 'new_query=1';
+        $query = { new_query => 1 };
     } elsif ( $current_search->{'query'} ) {
-        $querystring = RT::Interface::Web->format_query_params(%$current_search);
+        $query = $current_search;
     }
+    my $querystring = RT::Interface::Web->format_query_params(%$query);
 
-    Jifty->web->redirect( Jifty->web->url . "Search/Results.html?" . $querystring )
-        if ( Jifty->web->request->argument('do_search') );
+    my $clickable = Jifty::Web::Form::Clickable->new(
+        url => Jifty->web->url . 'Search/Results.html',
+        parameters => $query,
+    );
+    Jifty->web->redirect($clickable)
+      if ( Jifty->web->request->argument('do_search') );
 
     set current_search    => $current_search;
     set current_format    => $current_format;
