@@ -609,7 +609,7 @@ Content-Type: text/html
 <tr><td align="right"><b>Owner:</b></td><td>{$Ticket->OwnerObj->Name}</td></tr>
 <tr><td align="right"><b>Requestors:</b></td><td>{$Ticket->RequestorAddresses}</td></tr>
 <tr><td align="right"><b>Status:</b></td><td>{$Ticket->Status}</td></tr>
-<tr><td align="right"><b>Ticket URL:</b></td><td>{$RT::WebURL}?q={$Ticket->id}</td></tr>
+<tr><td align="right"><b>Ticket URL:</b></td><td>{$RT::WebURL}Ticket/Display.html?id={$Ticket->id}</td></tr>
 </table>
 
 <br/>
