@@ -20,15 +20,24 @@ well.
 *******
 UPGRADING FROM 3.8.7 and earlier - Changes:
 
-ChartFont option has been changed from scalar to hash and fonts are
-shipped with RT. Either drop your customization or use new format.
+RT's ChartFont option has been changed from a string to a hash which
+lets you specify per-language fonts. RT now comes with a better default
+font for charts, too.
 
-You can now order custom fields more precisly, but this requires unification
-in the current order values. After cleanup you should make sure that is order
-of custom fields is what you want and reorder them if needed. Cleanup will
-be done when you run:
+You should either update your 'ChartFont' option to match the new format
+or consider trying the new default
 
-/opt/rt3/sbin/rt-setup-database --dba root --prompt-for-dba-password --action upgrade
+RT now gives you more precise control over the order in which custom fields
+are displated.  This change requires some small changes to your currently saved
+custom field orders.
+
+RT will automatically clean up your existing custom fields when you run:
+
+
+  /opt/rt3/sbin/rt-setup-database --dba root --prompt-for-dba-password --action upgrade
+
+After that cleanup, you should make sure that custom field's are ordered in
+a way that you and your users find pleasing.
 
 UPGRADING FROM 3.8.6 and earlier - Changes:
 
