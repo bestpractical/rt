@@ -1070,7 +1070,7 @@ sub validate_queue {
 
     my $queue_obj = RT::Model::Queue->load($value);
 
-    if ($meta->{for} eq 'create') {
+    if ( $meta && $meta->{for} eq 'create') {
         if ( $queue_obj->disabled ) {
             Jifty->log->debug( "$self Disabled queue '"
                 . $queue_obj->name
