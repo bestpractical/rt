@@ -114,87 +114,50 @@ unless ($id || $ticket_obj) {
     abort('No ticket specified');
 }
 
-if ($ARGS{'id'} eq 'new') {
-    # {{{ Create a new ticket
+$ticket_obj ||= load_ticket($id);
 
-    my $queue = RT::Model::Queue->new( current_user => Jifty->web->current_user );
-    $queue->load($ARGS{'queue'});
-    unless ( $queue->id ) {
-        abort('Queue not found');
+$m->callback( callback_name => 'BeforeProcessArguments',
+    ticket_obj => $ticket_obj, tickets => $Tickets,
+    ActionsRef => \@Actions, args_ref => \%ARGS );
+if ( defined $ARGS{'action'} ) {
+    if ($ARGS{'action'} =~ /^(steal|kill|take|set_told)$/) {
+        my $action = $1;
+        my ($res, $msg) = $ticket_obj->$action();
+        push(@Actions, $msg);
     }
+}
 
-    unless ( $queue->current_user_has_right('CreateTicket') ) {
-        abort('You have no permission to create tickets in that queue.');
-    }
+$m->callback(callback_name => 'ProcessArguments', 
+        ticket => $ticket_obj, 
+        args_ref => \%ARGS, 
+        actions => \@Actions);
 
-    ($ticket_obj, @Actions) = create_ticket(
-        Attachments => Jifty->web->session->get('Attachments'),
-        %ARGS,
+$ARGS{update_attachments} = Jifty->web->session->get('Attachments');
+push @Actions,
+    process_update_message(
+    args_ref   => \%ARGS,
+    actions   => \@Actions,
+    ticket_obj => $ticket_obj,
     );
-    Jifty->web->session->remove('Attachments');
+Jifty->web->session->remove('Attachments');
 
-#XXX bloody hack, should have a better way
-    my %cf_args;
-    for my $arg ( keys %ARGS ) {
-        if ( $arg =~ /J:A:F-(\d+)-edit-ticket-cfs/ ) {
-            $cf_args{$1} = $ARGS{$arg};
-        }
-    }
-    my $cf_action = RT::Action::EditTicketCFs->new( arguments => { id =>
-            $ticket_obj->id, %cf_args } );
-    $cf_action->take_action;
-
-    unless ( $ticket_obj->current_user_has_right('ShowTicket') ) {
-        abort("No permission to view newly Created ticket #".$ticket_obj->id.".");
-    }
-    # }}}
-} else { 
-    $ticket_obj ||= load_ticket($id);
-
-    $m->callback( callback_name => 'BeforeProcessArguments',
-        ticket_obj => $ticket_obj, tickets => $Tickets,
-        ActionsRef => \@Actions, args_ref => \%ARGS );
-    if ( defined $ARGS{'action'} ) {
-        if ($ARGS{'action'} =~ /^(steal|kill|take|set_told)$/) {
-            my $action = $1;
-            my ($res, $msg) = $ticket_obj->$action();
-            push(@Actions, $msg);
-        }
-    }
-
-    $m->callback(callback_name => 'ProcessArguments', 
-            ticket => $ticket_obj, 
-            args_ref => \%ARGS, 
-            actions => \@Actions);
-    
-    $ARGS{update_attachments} = Jifty->web->session->get('Attachments');
-    push @Actions,
-        process_update_message(
-        args_ref   => \%ARGS,
-        actions   => \@Actions,
-        ticket_obj => $ticket_obj,
-        );
-    Jifty->web->session->remove('Attachments');
-
-    #Process status updates
-    push @Actions, process_ticket_watchers(args_ref => \%ARGS, ticket_obj => $ticket_obj);
-    push @Actions, process_ticket_basics(args_ref => \%ARGS, ticket_obj => $ticket_obj);
-    push @Actions, process_ticket_links(args_ref => \%ARGS, ticket_obj => $ticket_obj);
-    push @Actions, process_ticket_dates(args_ref => \%ARGS, ticket_obj => $ticket_obj);
-    push @Actions, process_object_custom_field_updates(args_ref => \%ARGS, ticket_obj => $ticket_obj);
-
-    # XXX: we shouldn't block actions here if user has no right to see the ticket,
-    # but we should allow him to see actions he has done
-    unless ($ticket_obj->current_user_has_right('ShowTicket')) {
-        abort("No permission to view ticket");
-    }
-    if ( $ARGS{'mark_as_seen'} ) {
-        $ticket_obj->set_attribute(
-            name => 'User-'. $ticket_obj->current_user->id .'-SeenUpTo',
-            content => $ticket_obj->last_updated,
-        );
-        push @Actions, _('Marked all messages as seen');
-    }
+#Process status updates
+push @Actions, process_ticket_watchers(args_ref => \%ARGS, ticket_obj => $ticket_obj);
+push @Actions, process_ticket_basics(args_ref => \%ARGS, ticket_obj => $ticket_obj);
+push @Actions, process_ticket_links(args_ref => \%ARGS, ticket_obj => $ticket_obj);
+push @Actions, process_ticket_dates(args_ref => \%ARGS, ticket_obj => $ticket_obj);
+push @Actions, process_object_custom_field_updates(args_ref => \%ARGS, ticket_obj => $ticket_obj);
+# XXX: we shouldn't block actions here if user has no right to see the ticket,
+# but we should allow him to see actions he has done
+unless ($ticket_obj->current_user_has_right('ShowTicket')) {
+    abort("No permission to view ticket");
+}
+if ( $ARGS{'mark_as_seen'} ) {
+    $ticket_obj->set_attribute(
+        name => 'User-'. $ticket_obj->current_user->id .'-SeenUpTo',
+        content => $ticket_obj->last_updated,
+    );
+    push @Actions, _('Marked all messages as seen');
 }
 
 $m->callback(
