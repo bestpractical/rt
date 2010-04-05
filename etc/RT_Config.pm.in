@@ -1456,9 +1456,13 @@ Set($DontSearchFileAttachments, undef);
 =item C<%ChartFont>
 
 The L<GD> module (which RT uses for graphs) uses a builtin font that doesn't
-have full Unicode support. You can use a particular TrueType font by setting
-$ChartFont to the absolute path of that font. Your GD library must have
-support for TrueType fonts to use this option.
+have full Unicode support. You can use a particular TrueType font per
+language by setting %ChartFont to (language =E<gt> the absolute path of a
+font) pairs. Your GD library must have support for TrueType fonts to use
+this option. If there is no entry for a language in the hash then font
+with 'others' key is used.
+
+RT is shipped with two TrueType fonts covering most available localizations.
 
 =cut
 
