@@ -1308,7 +1308,7 @@ sub get_jifty_messages {
 sub _detailed_messages {
     my $result = shift;
     my $msg = $result->content('detailed_messages')
-        or return $result->message;
+        or return $result->message || ();
 
     return map { ref $msg->{$_} eq 'ARRAY' ? (@{$msg->{$_}}) : $msg->{$_} } sort keys %$msg;
 }
