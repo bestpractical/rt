@@ -3,7 +3,7 @@
 use strict;
 use Test::Expect;
 use File::Spec ();
-use RT::Test strict => 1, tests => 244, l10n => 1;
+use RT::Test strict => 1, tests => 243, l10n => 1;
 
 my ($baseurl, $m) = RT::Test->started_ok;
 ok( $m->login, 'login' );
@@ -117,8 +117,6 @@ ok($val,$msg);
     check_attachment($test_email);
     # binary attachment
     check_attachment(RT->static_path.'/images/bplogo.gif');
-    #XXX TODO this is not so right warning
-    $m->warnings_like( qr/Encode::Guess failed/ );
 
 # change a ticket's Owner
 expect_send("edit ticket/$ticket_id set owner=root", 'Changing owner...');
@@ -476,7 +474,6 @@ sub check_attachment {
     close $fh;
     $attachment_content =~ s/^\n*//;
     $attachment_content =~ s/\n*$//;
-    $attachment_content = encode( 'utf8', $attachment_content ); # jifty output is utf8 encoded
     expect_is($attachment_content,"Attachment contains original text");
 }
 
