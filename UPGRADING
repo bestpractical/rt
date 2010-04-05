@@ -20,7 +20,15 @@ well.
 *******
 UPGRADING FROM 3.8.7 and earlier - Changes:
 
-New option ChartsTimezonesInDB in the config.
+ChartFont option has been changed from scalar to hash and fonts are
+shipped with RT. Either drop your customization or use new format.
+
+You can now order custom fields more precisly, but this requires unification
+in the current order values. After cleanup you should make sure that is order
+of custom fields is what you want and reorder them if needed. Cleanup will
+be done when you run:
+
+/opt/rt3/sbin/rt-setup-database --dba root --prompt-for-dba-password --action upgrade
 
 UPGRADING FROM 3.8.6 and earlier - Changes:
 
