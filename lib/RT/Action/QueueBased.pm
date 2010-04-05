@@ -45,8 +45,8 @@ sub arguments {
             $queue = $self->record->queue_id;
         }
 
-        if (!$queue) {
-            warn "No queue found for $self";
+        if (!$queue && !$already_setting_queue) {
+            Jifty->log->warn( "No queue found for $self" );
         }
 
         # run set_queue logic
