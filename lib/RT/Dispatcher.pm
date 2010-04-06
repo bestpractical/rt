@@ -323,8 +323,13 @@ before 'Dashboards/Modify.html' => run {
 
     if ( $id =~ /^\d+$/ ) {
         my ( $ok, $msg ) = $Dashboard->load_by_id($id);
-        push @$results, $msg unless ($ok);
-        set title => _( "Modify the dashboard %1", $Dashboard->name );
+        if ( $ok ) {
+            set title => _( "Modify the dashboard %1", $Dashboard->name );
+        }
+        else {
+            set title => _('Error occurs');
+            push @$results, $msg;
+        }
     } else {
         set title => _("Create a new dashboard");
     }
