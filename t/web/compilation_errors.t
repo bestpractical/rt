@@ -9,8 +9,8 @@ sub wanted {
 
 my $tests;
 BEGIN {
-$tests = 2;
-find ( sub { wanted() and $tests += 4 } , 'share/html/');
+$tests = 4;
+find ( sub { wanted() and $tests += 3 } , 'share/html/');
 }
 
 use RT::Test tests => $tests, strict => 1;
@@ -30,7 +30,7 @@ $agent->cookie_jar($cookie_jar);
 # get the top page
 my $url = $agent->rt_base_url;
 diag "base URL is '$url'" if $ENV{TEST_VERBOSE};
-$agent->get($url);
+$agent->get_ok($url);
 
 # {{{ test a login
 $agent->login(root => 'password');
@@ -44,8 +44,7 @@ sub test_get {
 
         $file =~ s#^share/html/##;
         diag( "testing $url/$file" ) if $ENV{TEST_VERBOSE};
-        ok ($agent->get("$url/$file", "GET $url/$file"), "Can Get $url/$file");
-        is ($agent->{'status'}, 200, "Loaded $file");
+        $agent->get_ok("$url/$file", "GET $url/$file");
 #        ok( $agent->{'content'} =~ /Logout/i, "Found a logout link on $file ");
         ok( $agent->{'content'} !~ /Not logged in/i, "Still logged in for  $file");
         ok( $agent->{'content'} !~ /raw error/i, "Didn't get a Mason compilation error on $file");
@@ -55,6 +54,6 @@ sub test_get {
 
 # it's predictable that we will get a lot of warnings because some pages need 
 # mandatory arguments, let's not show the warnings 
-$agent->get( '/__jifty/test_warnings' );
+$agent->get_ok( '/__jifty/test_warnings' );
 
 1;

@@ -2,7 +2,7 @@
 use strict;
 use HTTP::Cookies;
 
-use RT::Test strict => 0, tests => 31;
+use RT::Test strict => 0, tests => 32;
 
 my ($baseurl, $agent) = RT::Test->started_ok;
 
@@ -43,7 +43,7 @@ my ($grantid,$grantmsg) =$user_obj->principal->grant_right(right => 'ShowConfigT
 ok($grantid,$grantmsg);
 
 # instead of $agent->reload so $agent won't try to login again
-$agent->get( $agent->uri ); 
+$agent->get_ok( $agent->uri ); 
 
 like($agent->{'content'} , qr/Logout/i, "Reloaded page successfully");
 ok($agent->find_link( url => RT->config->get('web_path') . "/admin/",

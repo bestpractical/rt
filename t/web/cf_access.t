@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-use RT::Test strict => 1, tests => 21, l10n => 1;
+use RT::Test strict => 1, tests => 22, l10n => 1;
 
 $RT::Test::SKIP_REQUEST_WORK_AROUND = 1;
 
@@ -128,7 +128,7 @@ diag "create a ticket with an image" if $ENV{'TEST_VERBOSE'};
     }
 }
 
-$m->get( $m->rt_base_url );
+$m->get_ok( $m->rt_base_url );
 $m->follow_link( text => 'Tickets' );
 $m->follow_link( text => 'New Query' );
 

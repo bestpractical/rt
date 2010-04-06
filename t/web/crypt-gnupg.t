@@ -9,7 +9,7 @@ plan skip_all => 'GnuPG required.'
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
 
-plan tests => 61;
+plan tests => 100;
 
 use RT::ScripAction::SendEmail;
 
@@ -97,7 +97,7 @@ ok(!$sign->value, "sign tick box is unchecked");
 $m->submit;
 is($m->status, 200, "request successful");
 
-$m->get($baseurl); # ensure that the mail has been processed
+$m->get_ok($baseurl); # ensure that the mail has been processed
 
 my @mail = RT::Test->fetch_caught_mails;
 ok(@mail, "got some mail");
@@ -166,7 +166,7 @@ ok($sign->value, "sign tick box is checked");
 $m->submit;
 is($m->status, 200, "request successful");
 
-$m->get($baseurl); # ensure that the mail has been processed
+$m->get_ok($baseurl); # ensure that the mail has been processed
 
 @mail = RT::Test->fetch_caught_mails;
 ok(@mail, "got some mail");
@@ -239,7 +239,7 @@ ok($encrypt->value, "encrypt tick box is checked");
 ok($sign->value, "sign tick box is checked");
 $m->submit;
 is($m->status, 200, "request successful");
-$m->get($baseurl); # ensure that the mail has been processed
+$m->get_ok($baseurl); # ensure that the mail has been processed
 
 @mail = RT::Test->fetch_caught_mails;
 ok(@mail, "got some mail");
@@ -311,7 +311,7 @@ ok($sign->value, "sign tick box is still checked");
 $m->submit;
 is($m->status, 200, "request successful");
 
-$m->get($baseurl); # ensure that the mail has been processed
+$m->get_ok($baseurl); # ensure that the mail has been processed
 @mail = RT::Test->fetch_caught_mails;
 ok(@mail, "got some mail");
 for my $mail (@mail) {
@@ -417,7 +417,7 @@ $user->set_email('general@example.com');
 ok($user = RT::Model::User->new(current_user => RT->system_user));
 ok($user->load('root'), "Loaded user 'root'");
 is($user->preferred_key, $key1, "preferred key is set correctly");
-$m->get("$baseurl/prefs/other");
+$m->get_ok("$baseurl/prefs/other");
 $m->content_like( qr/Preferred key/, "preferred key option shows up in preference");
 
 # XXX: mech doesn't let us see the current value of the select, apparently
@@ -431,7 +431,7 @@ ok($user = RT::Model::User->new(current_user => RT->system_user));
 ok($user->load('root'), "Loaded user 'root'");
 is($user->preferred_key, $key2, "preferred key is set correctly to the new value");
 
-$m->get("$baseurl/prefs/other");
+$m->get_ok("$baseurl/prefs/other");
 $m->content_like( qr/Preferred key/, "preferred key option shows up in preference");
 
 # XXX: mech doesn't let us see the current value of the select, apparently
@@ -440,7 +440,7 @@ $m->content_like( qr/$key1/, "first key shows up in preferences");
 $m->content_like( qr/$key2.*?$key1/s, "second key (now preferred) shows up before the first");
 
 # test that the new fields work
-$m->get("$baseurl/Search/Simple.html?q=General");
+$m->get_ok("$baseurl/Search/Simple.html?q=General");
 my $content = $m->content;
 $content =~ s/&#40;/(/g;
 $content =~ s/&#41;/)/g;

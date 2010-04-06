@@ -2,7 +2,7 @@
 use strict;
 
 use RT::Test strict => 1, l10n => 1;
-plan tests => 97;
+plan tests => 98;
 use RT::Dashboard;
 my ($baseurl, $m) = RT::Test->started_ok;
 
@@ -192,7 +192,7 @@ $m->form_name( 'modify_dashboard' );
 $m->click_button(name => 'delete');
 $m->content_contains("Deleted dashboard $id");
 
-$m->get("/Dashboards/Modify.html?id=$id");
+$m->get_ok("/Dashboards/Modify.html?id=$id");
 $m->content_lacks("different dashboard", "dashboard was deleted");
 $m->content_contains("Failed to load dashboard $id");
 $m->no_warnings_ok;
