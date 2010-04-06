@@ -10,7 +10,7 @@ plan skip_all => 'GnuPG required.'
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
 
-plan tests => 453;
+plan tests => 525;
 
 use RT::ScripAction::SendEmail;
 use File::Temp qw(tempdir);
