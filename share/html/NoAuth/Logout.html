@@ -70,7 +70,7 @@
 my $URL = RT->Config->Get('WebPath')."/";
 $m->callback( %ARGS, CallbackName => 'BeforeSessionDelete' );
 
-if (defined %session) {
+if (keys %session) {
     tied(%session)->delete;
     $session{'CurrentUser'} = RT::CurrentUser->new;
 }
