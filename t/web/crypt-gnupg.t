@@ -9,7 +9,7 @@ plan skip_all => 'GnuPG required.'
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
 
-plan tests => 100;
+plan tests => 108;
 
 use RT::ScripAction::SendEmail;
 
@@ -83,6 +83,7 @@ ok $m->login, 'logged in';
 my ( $status, $msg ) = $queue->set_encrypt(1);
 ok( $status, $msg );
 
+RT::Test->clean_caught_mails;
 $m->goto_create_ticket( $queue );
 $m->fill_in_action_ok(create_ticket => (
     subject => 'Encryption test',
@@ -153,6 +154,7 @@ ok( $status, $msg );
 ( $status, $msg ) = $queue->set_sign(1);
 ok( $status, $msg );
 
+RT::Test->clean_caught_mails;
 $m->goto_create_ticket( $queue );
 $m->fill_in_action_ok(create_ticket => (
     subject => 'Signing test',
@@ -165,11 +167,11 @@ ok(!$encrypt->value, "encrypt tick box is unchecked");
 ok($sign->value, "sign tick box is checked");
 $m->submit;
 is($m->status, 200, "request successful");
-
 $m->get_ok($baseurl); # ensure that the mail has been processed
 
 @mail = RT::Test->fetch_caught_mails;
 ok(@mail, "got some mail");
+write_file('/tmp/x', @mail);
 for my $mail (@mail) {
     like $mail, qr/Some other content/, "outgoing mail was not encrypted";
     like $mail, qr/-----BEGIN PGP SIGNATURE-----[\s\S]+-----END PGP SIGNATURE-----/, "data has some kind of signature";
@@ -220,6 +222,7 @@ MAIL
     like($attachments[0]->content, qr/Some other content/, "RT's mail includes copy of ticket text");
     like($attachments[0]->content, qr/$rtname/, "RT's mail includes this instance's name");
 }
+RT::Test->clean_caught_mails;
 
 ( $status, $msg ) = $queue->set_encrypt(1);
 ok( $status, $msg );
@@ -227,6 +230,7 @@ ok( $status, $msg );
 ok( $status, $msg );
 
 $user->set_email('recipient@example.com');
+RT::Test->clean_caught_mails;
 $m->goto_create_ticket( $queue );
 $m->fill_in_action_ok(create_ticket => (
     subject => 'Crypt+Sign test',
@@ -295,8 +299,7 @@ MAIL
     like($attachments[0]->content, qr/$rtname/, "RT's mail includes this instance's name");
 }
 
-RT::Test->fetch_caught_mails;
-
+RT::Test->clean_caught_mails;
 $m->goto_create_ticket( $queue );
 $m->fill_in_action_ok(create_ticket => (
     subject => 'Test crypt-off on encrypted queue',
@@ -395,8 +398,7 @@ To: general\@example.com
 hello
 MAIL
 
-((my $status), $id) = RT::Test->send_via_mailgate($mail);
-$m->warnings_like( qr/Recipient 'nokey\@example.com' is unusable/ );
+($status, $id) = RT::Test->send_via_mailgate($mail);
 
 is ($status >> 8, 0, "The mail gateway exited normally");
 ok ($id, "got id of a newly created ticket - $id");
