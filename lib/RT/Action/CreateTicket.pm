@@ -178,7 +178,7 @@ sub validate_encrypt {
     return if !$crypt;
 
     # XXX: this is ugly and broken for multiple recipients
-    my @recipients = map { $self->argument_value($_) }
+    my @recipients = grep { length } map { $self->argument_value($_) }
                      $self->role_group_parameters;
 
     my %seen;
