@@ -94,7 +94,7 @@ sub take_action {
 
         my $content = $self->default_value || {};
         for my $arg ( $self->argument_names ) {
-            next unless ( $arg =~ /^body|summary$/ );
+            next unless $arg =~ /^(?:body|summary)$/;
             my $value = $self->argument_value($arg);
 
             my @panes;
