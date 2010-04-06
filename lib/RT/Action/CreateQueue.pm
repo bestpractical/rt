@@ -36,6 +36,12 @@ sub take_action {
     my $self = shift;
     $self->SUPER::take_action;
     $self->_update_custom_field_values;
+    for my $type ( qw/sign encrypt/ ) {
+        my $value = $self->argument_value($type); 
+        my $method = "set_$type";
+        my ( $status, $msg ) = $self->record->$method($value);
+        Jifty->log->error( $msg ) unless $status;
+    }
     return 1;
 }
 
