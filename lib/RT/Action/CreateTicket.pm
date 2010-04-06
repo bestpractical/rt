@@ -124,10 +124,12 @@ sub setup_gnupg {
 
     if (my $user_key = $self->current_user->user_object->private_key) {
         $self->fill_parameter(sign_using => (
+            render_as => 'select',
             valid_values => [
-                { name => '', display => _("Queue's key") },
+                { value => '', display => _("Queue's key") },
                 "$user_key",
             ],
+            default_value => $user_key,
         ));
     }
     else {
@@ -196,7 +198,10 @@ sub validate_encrypt {
         return $self->validation_ok('encrypt');
     }
     else {
-        return $self->validation_error(encrypt => 'xxx');
+        return $self->validation_error(
+            encrypt => join ',',
+            map { $_->{message} } @issues
+        );
     }
 }
 
