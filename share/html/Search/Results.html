@@ -88,13 +88,13 @@
 <%INIT>
 # Read from user preferences
 
-
 my $prefs = Jifty->web->current_user->user_object->preferences("SearchDisplay") || {};
 # These variables are what define a search_hash; this is also
 # where we give sane defaults.
 $format      ||= $prefs->{'format'} || RT->config->get('default_search_result_format');
 $order       ||= $prefs->{'order'} || 'ASC';
 $order_by     ||= $prefs->{'order_by'} || 'id';
+$page ||= 1;
 
 # Some forms pass in "rows_per_page" rather than "rows"
 # We call it rows_per_page everywhere else.
