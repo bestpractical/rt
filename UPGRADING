@@ -28,7 +28,7 @@ You should either update your 'ChartFont' option to match the new format
 or consider trying the new default
 
 RT now gives you more precise control over the order in which custom fields
-are displated.  This change requires some small changes to your currently saved
+are displayed.  This change requires some small changes to your currently saved
 custom field orders.
 
 RT will automatically clean up your existing custom fields when you run:
@@ -36,7 +36,7 @@ RT will automatically clean up your existing custom fields when you run:
 
   /opt/rt3/sbin/rt-setup-database --dba root --prompt-for-dba-password --action upgrade
 
-After that cleanup, you should make sure that custom field's are ordered in
+After that cleanup, you should make sure that custom fields are ordered in
 a way that you and your users find pleasing.
 
 UPGRADING FROM 3.8.6 and earlier - Changes:
