@@ -171,7 +171,6 @@ $m->get_ok($baseurl); # ensure that the mail has been processed
 
 @mail = RT::Test->fetch_caught_mails;
 ok(@mail, "got some mail");
-write_file('/tmp/x', @mail);
 for my $mail (@mail) {
     like $mail, qr/Some other content/, "outgoing mail was not encrypted";
     like $mail, qr/-----BEGIN PGP SIGNATURE-----[\s\S]+-----END PGP SIGNATURE-----/, "data has some kind of signature";
