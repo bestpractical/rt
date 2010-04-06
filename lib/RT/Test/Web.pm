@@ -76,16 +76,10 @@ sub login {
     my $self = shift;
     my $user = shift || 'root';
     my $pass = shift || 'password';
+    
+    $self->logout;
 
     my $url = $self->rt_base_url;
-
-    $self->get($url);
-    Test::More::diag( "error: status is ". $self->status )
-        unless $self->status == 200;
-    if ( $self->content =~ qr/Logout/i ) {
-        $self->follow_link( text => 'Logout' );
-    }
-
     $self->get($url . "?user=$user;pass=$pass");
     unless ( $self->status == 200 ) {
         Test::More::diag( "error: status is ". $self->status );
@@ -93,6 +87,35 @@ sub login {
     }
     unless ( $self->content =~ qr/Logout/i ) {
         Test::More::diag("error: page has no Logout");
+        return 0;
+    }
+    unless ( $self->content =~ m{<span>\Q$user\E</span>}i ) {
+        Test::More::diag("Page has no user name");
+        return 0;
+    }
+    return 1;
+}
+
+sub logout {
+    my $self = shift;
+
+    my $url = $self->rt_base_url;
+    $self->get($url);
+    Test::More::diag( "error: status is ". $self->status )
+        unless $self->status == 200;
+
+    if ( $self->content =~ qr/Logout/i ) {
+        $self->follow_link( text => 'Logout' );
+        Test::More::diag( "error: status is ". $self->status ." when tried to logout" )
+            unless $self->status == 200;
+    }
+    else {
+        return 1;
+    }
+
+    $self->get($url);
+    if ( $self->content =~ qr/Logout/i ) {
+        Test::More::diag( "error: couldn't logout" );
         return 0;
     }
     return 1;
