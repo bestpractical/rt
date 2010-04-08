@@ -916,6 +916,42 @@ sub _GenerateRandomNextChar {
     return ($i);
 }
 
+sub SafeSetPassword {
+    my $self = shift;
+    my %args = (
+        Current      => undef,
+        New          => undef,
+        Confirmation => undef,
+        @_,
+    );
+    return (1) unless defined $args{'New'} && length $args{'New'};
+
+    my %cond = $self->CurrentUserRequireToSetPassword;
+
+    unless ( $cond{'CanSet'} ) {
+        return (0, $self->loc('You can not set password.') .' '. $cond{'Reason'} );
+    }
+
+    my $error = '';    
+    if ( $cond{'RequireCurrent'} && !$self->CurrentUser->IsPassword($args{'Current'}) ) {
+        if ( defined $args{'Current'} && length $args{'Current'} ) {
+            $error = $self->loc("Please enter your current password correctly.");
+        }
+        else {
+            $error = $self->loc("Please enter your current password.");
+        }
+    } elsif ( $args{'New'} ne $args{'Confirmation'} ) {
+        $error = $self->loc("Passwords do not match.");
+    }
+
+    if ( $error ) {
+        $error .= ' '. $self->loc('Password has not been set.');
+        return (0, $error);
+    }
+
+    return $self->SetPassword( $args{'New'} );
+}
+
 =head3 SetPassword
 
 Takes a string. Checks the string's length and sets this user's password 
