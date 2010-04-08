@@ -1047,6 +1047,35 @@ sub IsPassword {
     return (undef);
 }
 
+sub CurrentUserRequireToSetPassword {
+    my $self = shift;
+
+    my %res = (
+        CanSet => 1,
+        Reason => '',
+        RequireCurrent => 1,
+    );
+
+    if ( RT->Config->Get('WebExternalAuth')
+        && !RT->Config->Get('WebFallbackToInternalAuth')
+    ) {
+        $res{'CanSet'} = 0;
+        $res{'Reason'} = $self->loc("External authentication enabled.");
+    }
+    elsif ( !$self->CurrentUser->HasPassword ) {
+        if ( $self->CurrentUser->id == ($self->id||0) ) {
+            # don't require current password if user has no
+            $res{'RequireCurrent'} = 0;
+        }
+        else {
+            $res{'CanSet'} = 0;
+            $res{'Reason'} = $self->loc("Your password is not set.");
+        }
+    }
+
+    return %res;
+}
+
 =head3 AuthToken
 
 Returns an authentication string associated with the user. This
