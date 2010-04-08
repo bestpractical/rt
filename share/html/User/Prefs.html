@@ -107,35 +107,13 @@
 % $m->callback( %ARGS, UserObj => $UserObj, CallbackName => 'FormLeftColumn' );
 </td>
 <td valign="top" class="boxcontainer">
-% unless (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth')) {
+
 <&| /Widgets/TitleBox, title => loc('Password'), id => "user-prefs-password" &>
-<table>
-<tr>
-<td class="label">
-<&|/l&>Your current password</&>:
-</td>
-<td class="value">
-<input type="password" name="CurrentPass" autocomplete="off"/>
-</td>
-</tr>
-<tr>
-<td class="label">
-<&|/l&>New Password</&>:
-</td>
-<td class="value">
-<input type="password" name="Pass1" autocomplete="off"/>
-</td>
-</tr>
-<tr><td class="label">
-<&|/l&>Retype Password</&>:
-</td>
-<td class="value">
-<input type="password" name="Pass2" autocomplete="off" />
-</td>
-</tr>
-</table>
+<& /Elements/EditPassword,
+    User => $UserObj,
+    Name => [qw(CurrentPass Pass1 Pass2)],
+&>
 </&>
-% }
 
 <&| /Widgets/TitleBox, title => loc('Location'), id => "user-prefs-location" &>
 <table cellspacing="0" cellpadding="0">
@@ -229,6 +207,7 @@ unless ( $UserObj->id ) {
         if $Name;
     Abort(loc("Couldn't load user"));
 }
+$id = $UserObj->id;
 
 my @results;
 
@@ -267,21 +246,14 @@ if  ( $SetPrivileged and $Privileged != $UserObj->Privileged ) {
     push @results, loc('Privileged status: [_1]', loc_fuzzy($msg));
 }
 
-#TODO: make this report errors properly
-if (defined($Pass1) && length($Pass1) && !$UserObj->IsPassword($CurrentPass)) {
-    if (length($CurrentPass)) {
-        push @results, loc("Please enter your current password correctly. Your password has not been changed.");
-    }
-    else {
-        push @results, loc("Please enter your current password. Your password has not been changed.");
-    }
-}
-elsif ( defined $Pass1 and length $Pass1 and $Pass1 eq $Pass2 and !$UserObj->IsPassword($Pass1) ) {
-    my ($code, $msg);
-    ($code, $msg) = $UserObj->SetPassword($Pass1);
-    push @results, loc('Password: [_1]', loc_fuzzy($msg));
-} elsif ( defined $Pass1 && length $Pass1 && $Pass1 ne $Pass2 ) {
-    push @results, loc("Passwords do not match. Your password has not been changed");
+my %password_cond = $UserObj->CurrentUserRequireToSetPassword;
+if (defined $Pass1 && length $Pass1 ) {
+    my ($status, $msg) = $UserObj->SafeSetPassword(
+        Current      => $CurrentPass,
+        New          => $Pass1,
+        Confirmation => $Pass2,
+    );
+    push @results, loc("Password: [_1]", $msg);
 }
 
 if ( $ARGS{'ResetAuthToken'} ) {
