@@ -10,7 +10,7 @@ plan skip_all => 'GnuPG required.'
 plan skip_all => 'gpg executable is required.'
     unless RT::Test->find_executable('gpg');
 
-plan tests => 61;
+plan tests => 49;
 
 use RT::ScripAction::SendEmail;
 use File::Temp qw(tempdir);
@@ -91,20 +91,9 @@ diag "check that things don't work if there is no key" if $ENV{TEST_VERBOSE};
     ));
     $m->submit;
     $m->content_like(
-        qr/You are going to encrypt outgoing email messages/i,
-        'problems with keys'
-    );
-    $m->content_like(
         qr/There is no key suitable for encryption/i,
         'problems with keys'
     );
-
-    if (my $form = $m->form_name('create_ticket')) {
-        ok !$form->find_input( 'UseKey-rt-test@example.com' ), 'no key selector';
-    }
-    else {
-        fail("there should have been a validation error");
-    }
 
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';
@@ -131,30 +120,7 @@ diag "check that things still doesn't work if key is not trusted" if $ENV{TEST_V
     ));
     $m->submit;
     $m->content_like(
-        qr/You are going to encrypt outgoing email messages/i,
-        'problems with keys'
-    );
-    $m->content_like(
         qr/There is one suitable key, but trust level is not set/i,
-        'problems with keys'
-    );
-
-    if (my $form = $m->form_name('create_ticket')) {
-        ok my $input = $form->find_input( 'UseKey-rt-test@example.com' ), 'found key selector';
-        is scalar $input->possible_values, 1, 'one option';
-    }
-    else {
-        fail("could not find create_ticket form");
-    }
-
-    $m->select( 'UseKey-rt-test@example.com' => $fpr1 );
-    $m->submit;
-    $m->content_like(
-        qr/You are going to encrypt outgoing email messages/i,
-        'problems with keys'
-    );
-    $m->content_like(
-        qr/Selected key either is not trusted/i,
         'problems with keys'
     );
 
@@ -183,30 +149,7 @@ diag "check that things still doesn't work if two keys are not trusted" if $ENV{
     ));
     $m->submit;
     $m->content_like(
-        qr/You are going to encrypt outgoing email messages/i,
-        'problems with keys'
-    );
-    $m->content_like(
         qr/There are several keys suitable for encryption/i,
-        'problems with keys'
-    );
-
-    if (my $form = $m->form_name('create_ticket')) {
-        ok my $input = $form->find_input( 'UseKey-rt-test@example.com' ), 'found key selector';
-        is scalar $input->possible_values, 2, 'two options';
-    }
-    else {
-        fail("there should have been a validation error");
-    }
-
-    $m->select( 'UseKey-rt-test@example.com' => $fpr1 );
-    $m->submit;
-    $m->content_like(
-        qr/You are going to encrypt outgoing email messages/i,
-        'problems with keys'
-    );
-    $m->content_like(
-        qr/Selected key either is not trusted/i,
         'problems with keys'
     );
 
@@ -234,21 +177,9 @@ diag "check that we see key selector even if only one key is trusted but there a
     ));
     $m->submit;
     $m->content_like(
-        qr/You are going to encrypt outgoing email messages/i,
-        'problems with keys'
-    );
-    $m->content_like(
         qr/There are several keys suitable for encryption/i,
         'problems with keys'
     );
-
-    if (my $form = $m->form_name('create_ticket')) {
-        ok my $input = $form->find_input( 'UseKey-rt-test@example.com' ), 'found key selector';
-        is scalar $input->possible_values, 2, 'two options';
-    }
-    else {
-        fail("there should have been a validation error");
-    }
 
     my @mail = RT::Test->fetch_caught_mails;
     ok !@mail, 'there are no outgoing emails';
@@ -267,25 +198,21 @@ diag "check that key selector works and we can select trusted key"
     ));
     $m->submit;
     $m->content_like(
-        qr/You are going to encrypt outgoing email messages/i,
-        'problems with keys'
-    );
-    $m->content_like(
         qr/There are several keys suitable for encryption/i,
         'problems with keys'
     );
 
-    if (my $form = $m->form_name('create_ticket')) {
-        ok my $input = $form->find_input( 'UseKey-rt-test@example.com' ), 'found key selector';
-        is scalar $input->possible_values, 2, 'two options';
-    }
-    else {
-        fail("there should have been a validation error");
-    }
-
-    $m->select( 'UseKey-rt-test@example.com' => $fpr1 );
+    $m->fill_in_action_ok(
+        create_ticket => (
+            encrypt       => 1,
+            encrypt_using => "rt-test\@example.com:$fpr1",
+            requestors    => 'rt-test@example.com',
+            content       => 'Some content',
+        )
+    );
     $m->submit;
-    $m->content_like( qr/Ticket \d+ created in queue/i, 'ticket created' );
+
+    $m->content_like( qr/Created ticket #\d+ in queue/i, 'ticket created' );
 
     my @mail = RT::Test->fetch_caught_mails;
     ok @mail, 'there are some emails';
@@ -301,29 +228,21 @@ diag "check encrypting of attachments" if $ENV{TEST_VERBOSE};
         encrypt => 1,
         requestors => 'rt-test@example.com',
         content => 'Some content',
-        attach => $0,
     ));
     $m->submit;
-    $m->content_like(
-        qr/You are going to encrypt outgoing email messages/i,
-        'problems with keys'
-    );
     $m->content_like(
         qr/There are several keys suitable for encryption/i,
         'problems with keys'
     );
 
-    if (my $form = $m->form_name('create_ticket')) {
-        ok my $input = $form->find_input( 'UseKey-rt-test@example.com' ), 'found key selector';
-        is scalar $input->possible_values, 2, 'two options';
-    }
-    else {
-        fail("there should have been a validation error");
-    }
-
-    $m->select( 'UseKey-rt-test@example.com' => $fpr1 );
+    $m->fill_in_action_ok(create_ticket => (
+        encrypt => 1,
+        encrypt_using => "rt-test\@example.com:$fpr1",
+        requestors => 'rt-test@example.com',
+        content => 'Some content',
+    ));
     $m->submit;
-    $m->content_like( qr/Ticket \d+ created in queue/i, 'ticket created' );
+    $m->content_like( qr/Created ticket #\d+ in queue/i, 'ticket created' );
 
     my @mail = RT::Test->fetch_caught_mails;
     ok @mail, 'there are some emails';

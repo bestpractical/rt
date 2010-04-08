@@ -60,6 +60,7 @@ template 'create' => page { title => _('Create a new ticket') } content {
         class   => 'CreateTicket',
         moniker => 'create_ticket',
     );
+    $create->watchers(get('watchers'));
     $create->set_queue($queue);
 
     with ( name => 'ticket_create' ), form {

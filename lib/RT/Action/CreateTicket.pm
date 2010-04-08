@@ -2,6 +2,7 @@ package RT::Action::CreateTicket;
 use strict;
 use warnings;
 use base 'RT::Action::TicketAction', 'Jifty::Action::Record::Create';
+__PACKAGE__->mk_accessors('watchers');
 
 use RT::Crypt::GnuPG;
 
@@ -144,6 +145,39 @@ sub setup_gnupg {
         render_as     => 'checkbox',
         default_value => $queue->encrypt,
     ));
+
+    my $encrypt_values = $self->encrypt_values;
+    if ( @$encrypt_values > 1 ) {
+
+     # not call $user->preferred_key is because it will set preferred_key if not
+     # defined before
+        my $preferred_key =
+          $self->current_user->user_object->first_attribute('preferred_key');
+        my $default =
+            $preferred_key
+          ? $self->current_user->email . ':' . $preferred_key->content
+          : '';
+        $self->fill_parameter(
+            encrypt_using => (
+                render_as        => 'select',
+                available_values => $encrypt_values,
+                $default && ( grep { $_->{value} eq $default }
+                  @$encrypt_values )
+                ? ( default_value => $default )
+                : (),
+            )
+        );
+    }
+    else {
+        $self->fill_parameter(
+            encrypt_using => (
+                render_as     => 'hidden',
+                default_value => $encrypt_values->[0]
+                ? $encrypt_values->[0]->{value}
+                : '',
+            )
+        );
+    }
 }
 
 sub canonicalize_sign_using {
@@ -173,26 +207,43 @@ sub validate_sign_using {
     return $self->validation_ok('sign');
 }
 
+sub encrypt_values {
+    my $self = shift;
+    my $watchers = $self->watchers;
+    my @keys;
+    for my $watcher (@$watchers) {
+        my %res = RT::Crypt::GnuPG::get_keys_for_encryption($watcher);
+        next unless $res{'info'};
+        push @keys, map {
+            {
+                value   => $watcher . ':' . $_->{'fingerprint'},
+                display => $watcher . ':' . $_->{'fingerprint'}
+                  . _( "(trust: %1)", $_->{'trust_terse'} )
+            }
+          }
+          sort { $b->{'trust_level'} <=> $a->{'trust_level'} }
+          @{ $res{'info'} };
+    }
+    return \@keys;
+}
+
 sub validate_encrypt {
     my $self  = shift;
-    my $crypt = shift;
+    my $value = shift;
+    return $self->validation_ok('encrypt') unless $value;
 
-    return if !$crypt;
+    my $encrypt_using = $self->argument_value('encrypt_using');
+    if ( $encrypt_using && $encrypt_using =~ /(.+):(.+)/ ) {
+        my ( $email, $key ) = ( $1, $2 );
+        RT::Crypt::GnuPG::use_key_for_encryption( $email => $key );
+    }
 
-    # XXX: this is ugly and broken for multiple recipients
-    my @recipients = grep { length } map { $self->argument_value($_) }
-                     $self->role_group_parameters;
-
+    my @watchers =
+      grep { length }
+      map  { $self->argument_value($_) } $self->role_group_parameters;
     my %seen;
-    @recipients = grep !$seen{ lc $_ }++, @recipients;
-
-    RT::Crypt::GnuPG::use_key_for_encryption(
-        map { (/^UseKey-(.*)$/)[0] => $self->argument_value($_) }
-        grep $self->argument_value($_) && /^UseKey-/,
-        keys %{ $self->arguments },
-    );
-
-    my ($ok, @issues) = RT::Crypt::GnuPG::check_recipients( @recipients );
+    @watchers = grep !$seen{ lc $_ }++, @watchers;
+    my ( $ok, @issues ) = RT::Crypt::GnuPG::check_recipients(@watchers);
     push @{ $self->{'GnuPGRecipientsKeyIssues'} ||= [] }, @issues;
     if ($ok) {
         return $self->validation_ok('encrypt');
@@ -200,39 +251,9 @@ sub validate_encrypt {
     else {
         return $self->validation_error(
             encrypt => join ',',
-            map { $_->{message} } @issues
+            map { _( $_->{message} ) } @issues
         );
     }
-}
-
-sub select_key_for_encryption {
-    my $self    = shift;
-    my $email   = shift;
-    my $default = shift;
-
-    my %res = RT::Crypt::GnuPG::get_keys_for_encryption($email);
-
-    # move the preferred key to the top of the list
-    my $d;
-    my @keys = map {
-                   $_->{'fingerprint'} eq ( $default || '' )
-                       ?  do { $d = $_; () }
-                       : $_
-               }
-               @{ $res{'info'} };
-
-    @keys = sort { $b->{'trust_level'} <=> $a->{'trust_level'} } @keys;
-
-    unshift @keys, $d if defined $d;
-
-    return map {
-        my $display = _("%1 (trust: %2)", $_->{fingerprint}, $_->{trust_terse});
-
-        {
-            value   => $_->{fingerprint},
-            display => $display,
-        }
-    } @keys;
 }
 
 sub set_initial_priority {

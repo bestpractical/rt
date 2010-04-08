@@ -867,6 +867,14 @@ on '/ticket/create' => run {
     }
     else {
         set(queue => $queue);
+        if ($action) {
+            # this is for gpg encryption
+            my @watchers;
+            for my $w (qw/requestors cc admin_cc/) {
+                push @watchers, $action->argument($w) || ();
+            }
+            set( watchers => \@watchers );
+        }
         show '/ticket/create';
     }
 };
