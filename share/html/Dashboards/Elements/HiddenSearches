@@ -50,6 +50,9 @@
 $Dashboard
 </%args>
 <%init>
+# eliminate deleted searches (id=0) because they confuse this logic
+@searches = grep { $_->Id } @searches;
+
 return if @searches == 0;
 
 my @display;
