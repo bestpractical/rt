@@ -54,7 +54,9 @@ if (!$Collection && $Class eq 'RT::Tickets') {
 my $TotalFound = $Collection->CountAll();
 return '' if !$TotalFound && !$ShowEmpty;
 
-if ( @OrderBy && $AllowSorting ) {
+# XXX: ->{'order_by'} is hacky, but there is no way to check if
+# collection is ordered or not
+if ( @OrderBy && ($AllowSorting || !$Collection->{'order_by'}) ) {
     if ( $OrderBy[0] =~ /\|/ ) {
         @OrderBy = split /\|/, $OrderBy[0];
         @Order = split /\|/,$Order[0];
