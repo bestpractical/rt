@@ -138,7 +138,7 @@ Jifty.Calendar = {
 Behaviour.register({
     'input.datetime': function(e) {
         if ( !jQuery(e).hasClass('has_calendar_link') ) {
-            createCalendarLink(e);
+            Jifty.Utils.createCalendarLink(e);
             jQuery(e).addClass('has_calendar_link');
         }
     } } );
