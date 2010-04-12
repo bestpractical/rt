@@ -52,15 +52,29 @@ package RT::View::SetupWizard;
 use Jifty::View::Declare -base;
 
 template 'basics' => sub {
-    p { _("You may change basic information about your RT install.") };
-
     p { _("It is very important that you change the password to RT's root user. Leaving it as the default of 'password' is a serious security risk.") };
 
     my $user = RT::Model::User->new;
     $user->load_by_cols(name => 'root');
 
-    my $action = $user->as_update_action;
-    render_action($action, ['password']);
+    my $password = $user->as_update_action;
+    outs_raw( $password->form_field('password') );
+
+    p { _("You may change basic information about your RT install.") };
+
+    my $config = new_action( class => 'RT::Action::ConfigSystem' );
+    my $meta = $config->meta;
+    for my $field (
+        qw/rtname time_zone comment_address correspond_address sendmail_path
+        owner_email/
+      )
+    {
+        div {
+            attr { class => 'hints' };
+            outs_raw( $meta->{$field} && $meta->{$field}{doc} );
+        };
+        outs_raw( $config->form_field($field) );
+    }
 };
 
 1;
