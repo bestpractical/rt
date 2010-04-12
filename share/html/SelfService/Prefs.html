@@ -50,39 +50,14 @@
 <& /Elements/ListActions, actions => \@results &>
 <form method="post">
 
-% unless (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth')) {
 <&| /Widgets/TitleBox, title => loc('Change password')  &>
-<table>
-<tr>
-<td>
-<&|/l&>Your current password</&>:
-</td>
-<td>
-<input type="password" name="CurrentPass" size="16" autocomplete="off" />
-</td>
-</tr>
-
-<tr>
-<td>
-<&|/l&>New password</&>:
-</td>
-<td>
-<input type="password" name="NewPass1" size="16" autocomplete="off" />
-</td>
-</tr>
-
-<tr>
-<td>
-<&|/l&>Confirm</&>:
-</td>
-<td>
-<input type="password" name="NewPass2" size="16" autocomplete="off" />
-</td>
-</tr>
-</table>
+<& /Elements/EditPassword,
+    User => $user,
+    Name => [qw(CurrentPass NewPass1 NewPass2)],
+&>
 </&>
+
 <br />
-% }
 <& /Elements/Submit, Label => loc('Save Changes') &>
 	  </form>
 
@@ -90,30 +65,26 @@
 <%INIT>
 my @results;
 
-if ($NewPass1) {
-    if (!$CurrentPass) {
-        push @results, loc("Please specify your current password.");
-    }
-    elsif (!$session{'CurrentUser'}->UserObj->IsPassword($CurrentPass)) {
-        push @results, loc("Please specify your current password correctly.");
-    }
-    elsif ($NewPass1 ne $NewPass2) {
-        push (@results, "Passwords did not match.");
-    }	
-    else {
-        my ($val, $msg)=$session{'CurrentUser'}->UserObj->SetPassword($NewPass1);
-        push (@results, "Password: ".$msg);
-    }	
+my $user = $session{'CurrentUser'}->UserObj;
+
+if (defined $NewPass1 && length $NewPass1 ) {
+    my ($status, $msg) = $user->SafeSetPassword(
+        Current      => $CurrentPass,
+        New          => $NewPass1,
+        Confirmation => $NewPass2,
+    );
+    push @results, loc("Password: [_1]", $msg);
 }
+
 if ($Signature) {
     $Signature =~ s/(\r\n|\r)/\n/g;
-    if ($Signature ne $session{'CurrentUser'}->UserObj->Signature) {
-	my ($val, $msg)=$session{'CurrentUser'}->UserObj->SetSignature($Signature);
+    if ($Signature ne $user->Signature) {
+	my ($val, $msg) = $user->SetSignature($Signature);
 	push (@results, "Signature: ".$msg);
     }
 }
-#A hack to make sure that session gets rewritten.
 
+#A hack to make sure that session gets rewritten.
 $session{'i'}++;
 </%INIT>
 

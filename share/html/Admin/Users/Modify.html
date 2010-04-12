@@ -113,34 +113,11 @@
 
 <input type="hidden" class="hidden" name="SetPrivileged" value="1" />
 <input type="checkbox" class="checkbox" name="Privileged" value="1" <%$PrivilegedChecked||''%> /> <&|/l&>Let this user be granted rights</&><br />
-		    
-% unless (RT->Config->Get('WebExternalAuth') and !RT->Config->Get('WebFallbackToInternalAuth')) {
-<table>
-<tr>
-<td align="right">
-<&|/l&>Your current password</&>:
-</td>
-<td align="left">
-<input type="password" name="CurrentPass" autocomplete="off" />
-</td>
-</tr>
-<tr>
-<td align="right">
-<&|/l&>New Password</&>:
-</td>
-<td align="left">
-<input type="password" name="Pass1" autocomplete="off" />
-</td>
-</tr>
-<tr><td align="right">
-<&|/l&>Retype Password</&>:
-</td>
-<td>
-<input type="password" name="Pass2" autocomplete="off" />
-</td>
-</tr>
-</table>
-% }
+
+<& /Elements/EditPassword,
+    User => $UserObj,
+    Name => [qw(CurrentPass Pass1 Pass2)],
+&>
 </&>
 % $m->callback( %ARGS, CallbackName => 'LeftColumnBottom', UserObj => $UserObj );
 </td>
@@ -372,28 +349,20 @@ if ($UserObj->Id && $id ne 'new') {
     # }}}
 }
 
+
+my %password_cond = $UserObj->CurrentUserRequireToSetPassword;
 if ( $UserObj->Id ) {
-    my $password_not_set;
     # Deal with Password field
-    if ( !$Pass1 and !$Pass2 ) {
-        $password_not_set = 1;
-    } elsif (!$CurrentPass) {
-        $password_not_set = 1;
-        push @results, loc("Please enter your current password.");
-    } elsif (!$session{'CurrentUser'}->IsPassword($CurrentPass)) {
-        $password_not_set = 1;
-        push @results, loc("Please enter your current password correctly.");
-    } elsif ( $Pass1 ne $Pass2 ) {
-        $password_not_set = 1;
-        push @results, loc("Passwords do not match.");
-    } elsif ( $Pass1 eq $Pass2 and !$UserObj->IsPassword($Pass1) ) {
-        my ($code, $msg) = $UserObj->SetPassword($Pass1);
-        push @results, loc_fuzzy($msg);
-        $password_not_set = 1 unless $code;
-    }
-    if ($id eq 'new' and $password_not_set) {
+    my ($status, $msg) = $UserObj->SafeSetPassword(
+        Current      => $CurrentPass,
+        New          => $Pass1,
+        Confirmation => $Pass2,
+    );
+    push @results, $msg;
+
+    if ( $id eq 'new' && !$status ) {
         push @results, loc("A password was not set, so user won't be able to login.");
-    } 
+    }
 }
 
 
