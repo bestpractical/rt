@@ -1,4 +1,4 @@
-package RT::Action::RenewTicket;
+package RT::Action::ReplyToTicket;
 use strict;
 use warnings;
 use base 'RT::Action::TicketAction', 'Jifty::Action::Record';
@@ -76,7 +76,7 @@ sub take_action {
         )
         || ( $type eq 'comment'
             && Jifty->web->current_user->has_right( right =>
-                'CommentOoTicket', object => $record->queue )
+                'CommentOnTicket', object => $record->queue )
         )
       )
     {
@@ -93,6 +93,7 @@ sub take_action {
     }
 
     # XXX reply/comment
+
 
     return 1;
 }
