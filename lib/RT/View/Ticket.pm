@@ -62,5 +62,8 @@ alias RT::View::Ticket::Create under '/';
 require RT::View::Ticket::Update;
 alias RT::View::Ticket::Update under '/';
 
+require RT::View::Ticket::Renew;
+alias RT::View::Ticket::Renew under '/';
+
 1;
 

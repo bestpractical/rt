@@ -497,6 +497,18 @@ before 'admin/' => run {
       if $custom_field;
 };
 
+before 'Ticket/Display.html' => run {
+    my @monikers = qw/update_ticket/;
+    for my $action ( Jifty->web->request->actions ) {
+        if ( grep { $action->moniker eq $_ } @monikers ) {
+            if ( $action->argument('id') ) {
+                set( id => $action->argument('id') );
+                last;
+            }
+        }
+    }
+};
+
 before 'admin/queues' => run {
     if ( Jifty->web->current_user->has_right( object => RT->system, right => 'AdminQueue' ) ) {
         page_nav->child( _('Select'), url => "/admin/queues/" );
@@ -888,6 +900,18 @@ on '/ticket/modify' => run {
     else {
         set(id => $id);
         show '/ticket/modify';
+    }
+};
+
+on '/ticket/update' => run {
+    my $action = Jifty->web->request->action('update_ticket');
+    my $id = $action ? $action->argument('id') : get('id');
+    if (!defined($id)) {
+        die "no ticket selected";
+    }
+    else {
+        set(id => $id);
+        show '/ticket/update';
     }
 };
 
