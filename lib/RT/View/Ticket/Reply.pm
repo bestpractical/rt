@@ -48,22 +48,57 @@
 use warnings;
 use strict;
 
-package RT::View::Ticket;
+package RT::View::Ticket::Reply;
 use Jifty::View::Declare -base;
 
 __PACKAGE__->use_mason_wrapper;
 
-require RT::View::Ticket::Links;
-alias RT::View::Ticket::Links under '/';
+template 'reply' => page { title => _('Reply to ticket') } content {
+    my $id     = get('id');
+    my $ticket = RT::Model::Ticket->new;
+    $ticket->load($id);
 
-require RT::View::Ticket::Create;
-alias RT::View::Ticket::Create under '/';
+    my $action = new_action(
+        class   => 'ReplyToTicket',
+        moniker => 'reply_to_ticket',
+        record  => $ticket,
+    );
 
-require RT::View::Ticket::Update;
-alias RT::View::Ticket::Update under '/';
+    with( name => 'ticket_reply' ), form {
+        form_next_page url => '/Ticket/Display.html';
 
-require RT::View::Ticket::Reply;
-alias RT::View::Ticket::Reply under '/';
+        render_action(
+            $action,
+            [
+                qw/id status owner time_worked subject cc bcc
+                  attachments content/
+            ]
+        );
+        form_submit( label => _('Reply To Ticket') );
+    };
+};
 
-1;
+template 'comment' => page { title => _('Comment on ticket') } content {
+    my $id = get('id');
+    my $ticket = RT::Model::Ticket->new;
+    $ticket->load($id);
+
+    my $action = new_action(
+        class   => 'CommentOnTicket',
+        moniker => 'comment_on_ticket',
+        record  => $ticket,
+    );
+
+    with ( name => 'ticket_comment' ), form {
+        form_next_page url => '/Ticket/Display.html';
+        render_action(
+            $action,
+            [
+                qw/id status owner time_worked subject cc bcc
+                  attachments content/
+            ]
+        );
+        form_submit( label => _('Comment On Ticket') );
+    };
+};
 
