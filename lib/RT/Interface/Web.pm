@@ -417,11 +417,10 @@ is true.
 =cut
 
 sub process_update_message {
-
     my %args = (
         args_ref          => undef,
         ticket_obj        => undef,
-        SkipSignatureOnly => 1,
+        skip_signature_only => 1,
         @_
     );
 
@@ -504,10 +503,10 @@ sub process_update_message {
         time_taken     => $args{args_ref}->{'update_time_worked'}
     );
 
-    unless ( $args{'args_ref'}->{'UpdateIgnoreAddressCheckboxes'} ) {
+    unless ( $args{'args_ref'}->{'update_ignore_address_checkboxes'} ) {
         
         foreach my $key ( keys %{ $args{args_ref} } ) {
-            next unless $key =~ /^Update(cc|Bcc)-(.*)$/;
+            next unless $key =~ /^update_(cc|bcc)-(.*)$/;
 
             my $var   = ucfirst($1) . 'MessageTo';
             my $value = $2;
@@ -520,7 +519,7 @@ sub process_update_message {
     }
 
     my @results;
-    if ( $args{args_ref}->{'update_type'} =~ /^(private|public)$/ ) {
+    if ( $args{args_ref}->{'update_type'} =~ /^(private|public|comment)$/ ) {
         my ( $Transaction, $description, $object ) = $args{ticket_obj}->comment(%message_args);
         push( @results, $description );
         $object->update_custom_fields( %{ $args{args_ref} } ) if $object;
