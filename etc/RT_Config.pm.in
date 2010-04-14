@@ -2109,8 +2109,8 @@ with incorrect data.
 =cut
 
 Set( %Crypt,
-    Incomming                 => undef, # ['GnuPG', 'SMIME']
-    Outgoing                  => 'GnuPG', # 'SMIME'
+    Incoming                  => undef, # ['GnuPG', 'SMIME']
+    Outgoing                  => undef, # 'SMIME' or 'GnuPG'
 
     RejectOnMissingPrivateKey => 1,
     RejectOnBadData           => 1,
