@@ -498,7 +498,7 @@ before 'admin/' => run {
 };
 
 before 'Ticket/Display.html' => run {
-    my @monikers = qw/update_ticket/;
+    my @monikers = qw/reply_to_ticket comment_on_ticket/;
     for my $action ( Jifty->web->request->actions ) {
         if ( grep { $action->moniker eq $_ } @monikers ) {
             if ( $action->argument('id') ) {
@@ -903,15 +903,27 @@ on '/ticket/modify' => run {
     }
 };
 
-on '/ticket/update' => run {
-    my $action = Jifty->web->request->action('update_ticket');
+on '/ticket/reply' => run {
+    my $action = Jifty->web->request->action('reply_to_ticket');
     my $id = $action ? $action->argument('id') : get('id');
     if (!defined($id)) {
         die "no ticket selected";
     }
     else {
         set(id => $id);
-        show '/ticket/update';
+        show '/ticket/reply';
+    }
+};
+
+on '/ticket/comment' => run {
+    my $action = Jifty->web->request->action('comment_on_ticket');
+    my $id = $action ? $action->argument('id') : get('id');
+    if (!defined($id)) {
+        die "no ticket selected";
+    }
+    else {
+        set(id => $id);
+        show '/ticket/comment';
     }
 };
 

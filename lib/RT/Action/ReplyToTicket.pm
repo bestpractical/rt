@@ -2,19 +2,12 @@ package RT::Action::ReplyToTicket;
 use strict;
 use warnings;
 use base 'RT::Action::TicketAction', 'Jifty::Action::Record';
-
 use Jifty::Param::Schema;
 use Jifty::Action schema {
     param id =>
         render as 'hidden',
         is constructor;
 
-    param type =>
-        render as 'select',
-        available are [
-            map { { display => _($_), value => $_ } }
-                qw/correspond comment/ ],
-        label is _('Type');
     param status =>
         render as 'select',
         label is _('Status');
@@ -25,7 +18,7 @@ use Jifty::Action schema {
         valid_values are lazy { [ RT->nobody->id ] },
         label is _('Owner');
 
-    param worked =>
+    param time_worked =>
         render as 'text',
         label is _('Worked(in minutes)');
 
@@ -59,43 +52,72 @@ sub _valid_statuses {
     );
 }
 
+# XXX TODO 
+# sign, encrypt, content_type, transaction, signature, quote_transaction
+# attach_tickets, update_ignore_address_checkboxes, cf
 sub take_action {
     my $self = shift;
 
     my $record = $self->record;
     return unless $record && $record->id;
 
-    my $type = $self->argument_value('type');
-    return unless $type;
-
-    if (
-        (
-            $type eq 'correspond'
-            && Jifty->web->current_user->has_right( right => 'ReplyToTicket',
-                object => $record->queue )
-        )
-        || ( $type eq 'comment'
-            && Jifty->web->current_user->has_right( right =>
-                'CommentOnTicket', object => $record->queue )
-        )
-      )
-    {
-
-        # update basics
-        for my $field (qw/status owner/) {
-            my $method = "set_$field";
-            my $value  = $self->argument_value($field);
-            if ( $record->$field ne $value ) {
-                my ( $ret, $msg ) = $record->$method($value);
-                Jifty->log->error($msg) unless $ret;
-            }
+    # update basics
+    for my $field (qw/status owner/) {
+        my $method = "set_$field";
+        my $value  = $self->argument_value($field);
+        if (  $value ne ( ref $record->$field
+            ? $record->$field->id
+            : $record->$field ) )
+        {
+            my ( $ret, $msg ) = $record->$method($value);
+            Jifty->log->error($msg) unless $ret;
         }
     }
 
-    # XXX reply/comment
+    if ( my $worked = $self->argument_value('time_worked') ) {
+        my ( $ret, $msg ) =
+          $record->set_time_worked( $record->time_worked + $worked );
+        Jifty->log->error($msg) unless $ret;
+    }
 
+    my $attachments = $self->argument_value('attachments');
+    my %mime_atts;
 
+    if ($attachments) {
+        for my $att (
+            ref $attachments eq 'ARRAY'
+            ? @$attachments
+            : $attachments
+          )
+        {
+            my $filename = Encode::decode_utf8( $att->filename );
+            my $mime     = MIME::Entity->build(
+                Type    => 'multipart/mixed',
+                Subject => $filename,
+            );
+            $mime->attach(
+                Type     => $att->content_type,
+                Filename => $filename,
+                Data     => [ $att->content ],
+            );
+            $mime_atts{$filename} = $mime;
+        }
+    }
+
+    my @results = HTML::Mason::Commands::process_update_message(
+        ticket_obj => $record,
+        args_ref   => {
+            update_attachments => \%mime_atts,
+            update_type        => $self->type,
+            map { 'update_' . $_ => $self->argument_value($_) || '' }
+              qw/subject cc bcc content/,
+        },
+    );
+    $self->result->message(join ', ', @results);
     return 1;
 }
+
+sub type { 'response' }
+
 
 1;
