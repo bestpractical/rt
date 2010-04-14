@@ -2085,9 +2085,18 @@ protocols are supported.
 
 Options generic for all cryptography protocols.
 
-Set C<ProcessIncomming> to list of security protocols that should be
-analyzed in incomming emails. Note that C<Auth::Crypt> mail plugin
-should be added anyway to the C<@MailPlugins> option.
+Every enabled security protocol analyzed in incoming emails. Set
+C<Incoming> to list of only those security protocols that should be
+analyzed in incoming emails. Usually you don't need to change this.
+Note that C<Auth::Crypt> mail plugin should be added anyway to
+the C<@MailPlugins> option.
+
+For outgoing emails first security protocol from the above list is
+used. Use C<Outgoing> option to set a security protocol that should
+be used in outgoing emails. This helpful when SMIME and GnuPG are
+analyzed in incoming and you want make sure the correct one is used
+for outogin. At this moment only one protocol can be used to protect
+outgoing emails.
 
 Set C<RejectOnMissingPrivateKey> to false if you don't want to reject
 emails encrypted for key RT doesn't have and can not decrypt.
