@@ -120,7 +120,7 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 %        && $key ne loc('(no value)') ) {
 % my $group = $PrimaryGroupBy; $group =~ s! !.!;
 % my $QueryString = $m->comp('/Elements/QueryString',
-%                           Query   => "$Query and $group = '$key'",
+%           Query => "$Query and $group = '${{ reverse %loc_keys }}{$key}'",
 %                           Format  => $ARGS{Format},
 %                           Rows    => $ARGS{Rows},
 %                           OrderBy => $ARGS{OrderBy},
