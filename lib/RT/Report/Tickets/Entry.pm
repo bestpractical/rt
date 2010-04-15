@@ -65,8 +65,6 @@ sub LabelValue {
     my $field = shift;
     my $value = $self->__Value( $field );
 
-    $RT::Logger->error("boo: $value");
-
     if ( $field =~ /(Daily|Monthly|Annually|Hourly)$/ ) {
         my $re;
         # it's not just 1970-01-01 00:00:00 because of timezone shifts
