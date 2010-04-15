@@ -119,8 +119,9 @@ my $query_string = $m->comp('/Elements/QueryString', %ARGS);
 % if ( $PrimaryGroupBy !~ /(Hourly|Daily|Monthly|Annually)$/
 %        && $key ne loc('(no value)') ) {
 % my $group = $PrimaryGroupBy; $group =~ s! !.!;
+% my %orig_keys = reverse %loc_keys;
 % my $QueryString = $m->comp('/Elements/QueryString',
-%           Query => "$Query and $group = '${{ reverse %loc_keys }}{$key}'",
+%           Query => "$Query and $group = '$orig_keys{$key}'",
 %                           Format  => $ARGS{Format},
 %                           Rows    => $ARGS{Rows},
 %                           OrderBy => $ARGS{OrderBy},
