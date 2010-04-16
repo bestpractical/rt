@@ -173,9 +173,12 @@ sub SignEncrypt {
             unless defined $args{'Passphrase'};
 
         push @command, join ' ', shell_quote(
-            $self->OpenSSLPath, qw(smime -sign -passin env:SMIME_PASS),
+            $self->OpenSSLPath, qw(smime -sign),
             -signer => $opts->{'Keyring'} .'/'. $args{'Signer'} .'.pem',
             -inkey  => $opts->{'Keyring'} .'/'. $args{'Signer'} .'.pem',
+            (defined $args{'Passphrase'} && length $args{'Passphrase'})
+                ? (qw(-passin env:SMIME_PASS))
+                : (),
         );
     }
     if ( $args{'Encrypt'} ) {
@@ -398,8 +401,10 @@ sub DecryptRFC3851 {
         local $SIG{CHLD} = 'DEFAULT';
         my $cmd = join( ' ', shell_quote(
             $self->OpenSSLPath,
-            qw(smime -decrypt -passin env:SMIME_PASS),
-            -recip => $key_file,
+            qw(smime -decrypt), '-recip' => $key_file,
+            (defined $ENV{'SMIME_PASS'} && length $ENV{'SMIME_PASS'})
+                ? (qw(-passin env:SMIME_PASS))
+                : (),
         ) );
         safe_run_child { run3( $cmd, \$msg, \$buf, \$res{'stderr'} ) };
         unless ( $? ) {
