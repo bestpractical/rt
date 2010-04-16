@@ -259,9 +259,12 @@ sub SignEncrypt {
             unless defined $args{'Passphrase'};
 
         push @command, join ' ', shell_quote(
-            $self->OpenSSLPath, qw(smime -sign -passin env:SMIME_PASS),
+            $self->OpenSSLPath, qw(smime -sign),
             -signer => $file,
             -inkey  => $file,
+            (defined $args{'Passphrase'} && length $args{'Passphrase'})
+                ? (qw(-passin env:SMIME_PASS))
+                : (),
         );
     }
     if ( $args{'Encrypt'} ) {
@@ -470,8 +473,11 @@ sub Decrypt {
         local $SIG{CHLD} = 'DEFAULT';
         my $cmd = [
             $self->OpenSSLPath,
-            qw(smime -decrypt -passin env:SMIME_PASS),
+            qw(smime -decrypt),
             -recip => $file,
+            (defined $ENV{'SMIME_PASS'} && length $ENV{'SMIME_PASS'})
+                ? (qw(-passin env:SMIME_PASS))
+                : (),
         ];
         safe_run_child { run3( $cmd, \$msg, \$buf, \$res{'stderr'} ) };
         $res{'exit_code'} = $?;
