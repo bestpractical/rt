@@ -58,7 +58,10 @@ $Name => 'SignUsing',
 $User => undef,
 </%ARGS>
 <%INIT>
-return unless RT->Config->Get('GnuPG')->{'Enable'};
+return unless RT->Config->Get('Crypt')->{'Enable'};
 
-my $user_key = $User->PrivateKey;
+# XXX: Only GnuPG at this moment supports user's private keys
+my $user_key;
+$user_key = $User->PrivateKey
+    if RT->Config->Get('Crypt')->{'Outgoing'} eq 'GnuPG';;
 </%INIT>
