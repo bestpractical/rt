@@ -56,7 +56,7 @@
 <h2><% loc("User has empty email address") %></h2>
 % }
 
-
+% if (RT::Crypt->UseForOutgoing eq 'GnuPG') {
 <form action="<%RT->Config->Get('WebPath')%>/Admin/Users/GnuPG.html" method="post" enctype="multipart/form-data">
 <input type="hidden" class="hidden" name="id" value="<% $UserObj->Id %>" />
 
@@ -72,6 +72,8 @@
 
 <& /Elements/Submit, Name => 'Update', Label => loc('Save Changes') &>
 </form>
+% }
+
 <%ARGS>
 $id         => undef
 $Update     => undef
@@ -88,24 +90,28 @@ unless ( $UserObj->id ) {
 }
 $id = $ARGS{'id'} = $UserObj->id;
 
+my @potential_keys;
 my $email = $UserObj->EmailAddress;
-my %keys_meta = RT::Crypt->GetKeysForSigning( $email );
-my @potential_keys = map $_->{'Key'}, @{ $keys_meta{'info'} || [] };
 
-$ARGS{'PrivateKey'} = $m->comp('/Widgets/Form/Select:Process',
-    Name      => 'PrivateKey',
-    Arguments => \%ARGS,
-    Default   => 1,
-);
+if (RT::Crypt->UseForOutgoing eq 'GnuPG') {
+    my %keys_meta = RT::Crypt->GetKeysForSigning( Signer => $email, Protocol => 'GnuPG' );
+    @potential_keys = map $_->{'Key'}, @{ $keys_meta{'info'} || [] };
 
-if ( $Update ) {
-    if (not $ARGS{'PrivateKey'} or grep {$_ eq $ARGS{'PrivateKey'}} @potential_keys) {
-        if (($ARGS{'PrivateKey'}||'') ne ($UserObj->PrivateKey||'')) {
-            my ($status, $msg) = $UserObj->SetPrivateKey( $ARGS{'PrivateKey'} );
-            push @results, $msg;
+    $ARGS{'PrivateKey'} = $m->comp('/Widgets/Form/Select:Process',
+        Name      => 'PrivateKey',
+        Arguments => \%ARGS,
+        Default   => 1,
+    );
+
+    if ( $Update ) {
+        if (not $ARGS{'PrivateKey'} or grep {$_ eq $ARGS{'PrivateKey'}} @potential_keys) {
+            if (($ARGS{'PrivateKey'}||'') ne ($UserObj->PrivateKey||'')) {
+                my ($status, $msg) = $UserObj->SetPrivateKey( $ARGS{'PrivateKey'} );
+                push @results, $msg;
+            }
+        } else {
+            push @results, loc("Invalid key [_1] for address '[_2]'", $ARGS{'PrivateKey'}, $email);
         }
-    } else {
-        push @results, loc("Invalid key [_1] for address '[_2]'", $ARGS{'PrivateKey'}, $email);
     }
 }
 

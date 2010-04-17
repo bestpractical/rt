@@ -1786,7 +1786,7 @@ sub SetPrivateKey {
 
     # check that it's really private key
     {
-        my %tmp = RT::Crypt->GetKeysForSigning( $key );
+        my %tmp = RT::Crypt->GetKeysForSigning( Signer => $key, Protocol => 'GnuPG' );
         return (0, $self->loc("No such key or it's not suitable for signing"))
             if $tmp{'exit_code'} || !$tmp{'info'};
     }
