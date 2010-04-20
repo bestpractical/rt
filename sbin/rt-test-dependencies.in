@@ -147,7 +147,8 @@ sub conclude {
             for my $name ( keys %$missing ) {
                 my $module  = $missing->{$name};
                 my $version = $module->{version};
-                print_found( $name . ( $version ? " >= $version" : "" ),
+                my $error = $module->{error};
+                print_found( $name . ( $version && !$error ? " >= $version" : "" ),
                     0, $module->{error} );
             }
         }
