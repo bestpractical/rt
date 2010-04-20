@@ -439,8 +439,9 @@ sub test_dep {
     }
     else {
         eval "use $module $version ()";
-        if ($@) {
-            my $error = $@;
+        if ( my $error = $@ ) {
+            return 0 unless wantarray;
+
             $error =~ s/\n(.*)$//s;
             $error =~ s/at \(eval \d+\) line \d+\.$//;
             undef $error unless $error =~ /this is only/;
