@@ -801,7 +801,8 @@ sub RemoveInappropriateRecipients {
     # system blacklist
 
     # Trim leading and trailing spaces. 
-    @blacklist = map { RT::User->CanonicalizeEmailAddress( $_->address ) } Email::Address->parse(join(', ', grep {defined} @blacklist));
+    @blacklist = map { RT::User->CanonicalizeEmailAddress( $_->address ) }
+        Email::Address->parse( join ', ', grep defined, @blacklist );
 
     foreach my $type (@EMAIL_RECIPIENT_HEADERS) {
         my @addrs;
