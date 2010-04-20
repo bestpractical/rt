@@ -819,6 +819,14 @@ sub RemoveInappropriateRecipients {
             }
             push @addrs, $addr;
         }
+        foreach my $addr ( @{ $self->{'NoSquelch'}{$type} || [] } ) {
+            # never send email to itself
+            if ( !RT::EmailParser->CullRTAddresses($addr) ) {
+                $RT::Logger->info( $msgid . "$addr appears to point to this RT instance. Skipping" );
+                next;
+            }
+            push @addrs, $addr;
+        }
         @{ $self->{$type} } = @addrs;
     }
 }
