@@ -434,6 +434,7 @@ sub test_deps {
 sub test_dep {
     my $module = shift;
     my $version = shift;
+    my $avoid = shift;
 
     if ( $args{'list-deps'} ) {
         print $module, ': ', $version || 0, "\n"; 
@@ -449,9 +450,16 @@ sub test_dep {
 
             return ( 0, $error );
         }
-        else {
-            return 1;
+        
+        if ( $avoid ) {
+            my $version = $module->VERSION;
+            if ( grep $version eq $_, @$avoid ) {
+                return 0 unless wantarray;
+                return (0, "It's known that there are problems with RT and version '$version' of '$module' module. If it's the latest available version of the module then you have to downgrade manually.");
+            }
         }
+
+        return 1;
     }
 }
 
