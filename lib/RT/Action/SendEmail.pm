@@ -813,7 +813,7 @@ sub RemoveInappropriateRecipients {
                 $RT::Logger->info( $msgid . "$addr appears to point to this RT instance. Skipping" );
                 next;
             }
-            if ( grep /^\Q$addr\E$/, @blacklist ) {
+            if ( grep $addr eq $_, @blacklist ) {
                 $RT::Logger->info( $msgid . "$addr was blacklisted for outbound mail on this transaction. Skipping");
                 next;
             }
