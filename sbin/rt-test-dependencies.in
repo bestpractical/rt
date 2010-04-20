@@ -380,8 +380,11 @@ GD::Graph
 GD::Text
 .
 
-if ($args{'download'}) {
+my %AVOID = (
+    'DBD::Oracle' => [qw(1.22)],
+);
 
+if ($args{'download'}) {
     download_mods();
 }
 
@@ -405,7 +408,8 @@ foreach my $type (sort grep $args{$_}, keys %args) {
     if ( $args{'install'} ) {
         for my $module (keys %missing) {
             resolve_dep($module, $missing{$module}{version});
-            delete $missing{$module} if test_dep($module, $missing{$module}{version});
+            delete $missing{$module}
+                if test_dep($module, $missing{$module}{version}, $AVOID{$module});
         }
     }
 
@@ -421,8 +425,8 @@ sub test_deps {
     while(@deps) {
         my $module = shift @deps;
         my $version = shift @deps;
-        my($test, $error) = test_dep($module, $version);
-        my $msg = $module . ($version ? " >= $version" : '');
+        my($test, $error) = test_dep($module, $version, $AVOID{$module});
+        my $msg = $module . ($version && !$error ? " >= $version" : '');
         print_found($msg, $test, $error);
 
         $missing{$module} = { version => $version, error => $error } unless $test;
