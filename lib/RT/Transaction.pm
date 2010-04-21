@@ -509,7 +509,7 @@ sub ContentObj {
     return undef unless ($Attachment);
 
     # If it's a textual part, just return the body.
-    if ( RT::I18N::IsTextualContentType($Attachment->ContentType) ) {
+    if ( _IsDisplayableTextualContentType($Attachment->ContentType) ) {
         return ($Attachment);
     }
 
@@ -538,7 +538,7 @@ sub ContentObj {
         # If that fails, return the first textual part which has some content.
         my $all_parts = $self->Attachments;
         while ( my $part = $all_parts->Next ) {
-            next unless RT::I18N::IsTextualContentType($part->ContentType)
+            next unless _IsDisplayableTextualContentType($part->ContentType)
                         && $part->Content;
             return $part;
         }
@@ -548,6 +548,18 @@ sub ContentObj {
     return (undef);
 }
 
+=head2 _IsDisplayableTextualContentType
+
+We may need to pull this out to another module later, but for now, this
+is better than RT::I18N::IsTextualContentType because that believes that
+a message/rfc822 email is displayable, despite it having no content
+
+=cut
+
+sub _IsDisplayableTextualContentType {
+    my $type = shift;
+    ($type =~ m{^text/(?:plain|html)\b}i) ? 1 : 0;
+}
 
 
 =head2 Subject
