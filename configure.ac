@@ -41,7 +41,7 @@ AC_ARG_WITH(web-handler,
         ]),
     WEB_HANDLER=$withval,
     WEB_HANDLER=fastcgi)
-my_web_handler_test=$($PERL -e "print 'ok' unless grep \$_ !~ /^(modperl[12]|fastcgi(?:-server)?|speedycgi|standalone)\$/i, grep defined && length, split /\s*,\s*/, '$WEB_HANDLER'")
+my_web_handler_test=$($PERL -e 'print "ok" unless grep $_ !~ /^(modperl1|modperl2|fastcgi(?:-server)?|speedycgi|standalone)$/i, grep defined && length, split /\s*,\s*/, $ARGV[0]' $WEB_HANDLER)
 if test "$my_web_handler_test" != "ok"; then
 	AC_MSG_ERROR([Only modperl1, modperl2, fastcgi, fastcgi-server, speedycgi and standalone are valid web-handlers])
 fi
