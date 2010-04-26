@@ -8,8 +8,9 @@ use Getopt::Long;
 
 my %commands = (
     stats   => { },
-    shrink  => { 'update!' => 1 },
-    rosetta => { },
+    shrink  => { 'update!' => 1, 'keep=s@' => [] },
+    clean   => { 'update!' => 1 },
+    rosetta => { 'boundary=i' => 20 },
     extract => { },
 );
 
