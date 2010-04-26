@@ -370,9 +370,9 @@ sub check_text_emails {
         }
 
         if ( $args{'Encrypt'} ) {
-            like $mail, qr/application\/x-pkcs7-mime/, 'outgoing email was processed';
+            like $mail, qr/application\/(?:x-)?pkcs7-mime/, 'outgoing email was processed';
         } elsif ( $args{'Sign'} ) {
-            like $mail, qr/x-pkcs7-signature/, 'outgoing email was processed';
+            like $mail, qr/(?:x-)?pkcs7-signature/, 'outgoing email was processed';
         } else {
             unlike $mail, qr/smime/, 'outgoing email was not processed';
         }
