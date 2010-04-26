@@ -44,17 +44,19 @@ sub stats {
 
     foreach my $po_file (<$dir/*.po>) {
         my $array = Locale::PO->load_file_asarray( $po_file );
-        my $size = @$array;
-        $max = $size if $max < $size;
 
         $res{$po_file} = [0, 0];
 
+        my $size = 0;
         foreach my $entry ( splice @$array, 1 ) {
+            next if $entry->reference && $entry->reference =~ /NOT FOUND IN SOURCE/;
+            $size++;
             next unless $entry->dequote( $entry->msgstr );
             $res{$po_file}[TRANSLATED]++;
             next if $entry->msgstr eq $entry->msgid;
             $res{$po_file}[DISTINCT]++;
         }
+        $max = $size if $max < $size;
     }
 
     my $legend = "<file>: <translated>[(<distinct>)]/<size> (<%>)";
