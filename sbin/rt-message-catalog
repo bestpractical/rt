@@ -1,0 +1,179 @@
+#!/usr/bin/env perl 
+
+use strict;
+use warnings;
+
+use Locale::PO;
+use Getopt::Long;
+
+my %commands = (
+    stats   => { },
+    shrink  => { 'update!' => 1 },
+    rosetta => { },
+    extract => { },
+);
+
+my $command = shift;
+usage() unless $command;
+usage("Unknown command '$command'")
+    unless $commands{ $command };
+
+my $opt = $commands{ $command };
+my %opt = ();
+if ( $opt && keys %$opt ) {
+    while ( my ($k, $v) = each %$opt ) {
+        my ($target) = ($k =~ /^(.*?)(?:[:!+=|]|$)/);
+        $opt{$target} = $v;
+    }
+    GetOptions( \%opt, keys %$opt );
+}
+
+{ no strict 'refs'; &$command( \%opt, @ARGV ); }
+
+exit;
+
+sub stats {
+    my %opt = %{ shift() };
+    my $dir = shift || 'lib/RT/I18N';
+
+    my $max = 0;
+    my %res = ();
+
+    use constant TRANSLATED => 0;
+    use constant DISTINCT => 1;
+
+    foreach my $po_file (<$dir/*.po>) {
+        my $array = Locale::PO->load_file_asarray( $po_file );
+        my $size = @$array;
+        $max = $size if $max < $size;
+
+        $res{$po_file} = [0, 0];
+
+        foreach my $entry ( splice @$array, 1 ) {
+            next unless $entry->dequote( $entry->msgstr );
+            $res{$po_file}[TRANSLATED]++;
+            next if $entry->msgstr eq $entry->msgid;
+            $res{$po_file}[DISTINCT]++;
+        }
+    }
+
+    my $legend = "<file>: <translated>[(<distinct>)]/<size> (<%>)";
+
+    print "\n$legend\n\n";
+
+    foreach my $po_file ( sort { $res{$b}[TRANSLATED] <=> $res{$a}[TRANSLATED] } keys %res ) {
+        my ($tr, $dist) = @{ $res{$po_file} };
+        my $perc = int($tr*1000/$max)/10;
+        if ( $tr == $dist ) {
+            printf "%s:\t%d/%d\t(%.1f%%)\n", $po_file, $tr, $max, $perc;
+        } else {
+            printf "%s:\t%d(%d)/%d\t(%.1f%%)\n", $po_file, $tr, $dist, $max, $perc;
+        }
+    }
+
+    print "\n$legend\n";
+}
+
+sub shrink {
+    my %opt = %{ shift() };
+    my $dir = shift || 'lib/RT/I18N';
+
+    my %stats = ();
+
+    foreach my $po_file (<$dir/*.po>) {
+        my $array = Locale::PO->load_file_asarray( $po_file );
+        $stats{ $po_file } = {empty => 0, same => 0 };
+        foreach my $entry ( splice @$array, 1 ) {
+            unless ( $entry->dequote( $entry->msgstr ) ) {
+                $stats{ $po_file }{'empty'}++;
+                next;
+            }
+            if ( $entry->msgstr eq $entry->msgid ) {
+                $stats{ $po_file }{'same'}++;
+                next;
+            }
+            push @$array, $entry;
+        }
+        $stats{ $po_file }{'total'} = $stats{ $po_file }{'empty'} + $stats{ $po_file }{'same'};
+        Locale::PO->save_file_fromarray($po_file, $array) if $opt{'update'};
+    }
+
+    my $legend = "<file>: <no translation> + <same> = <total>";
+    print "\n$legend\n\n";
+
+    foreach my $po_file ( sort { $stats{$a}{'total'} <=> $stats{$b}{'total'} } keys %stats ) {
+        printf "%s:\t%d\t+\t%d\t=\t%d\n", $po_file, @{ $stats{ $po_file } }{qw(empty same total)};
+    }
+
+    print "\n$legend\n";
+}
+
+sub rosetta {
+    my %opt = %{ shift() };
+    my $url = shift or die 'must provide rosseta download url or directory with new po files';
+
+    my $dir;
+    if ( $url =~ m/^[a-z+]:\/\// ) {
+        $dir = File::Temp::tempdir();
+        my ($fname) = $url =~ m{([^/]+)$};
+
+        print "Downloading $url\n";
+        require LWP::Simple;
+        LWP::Simple::getstore($url => "$dir/$fname");
+
+        print "Extracting $dir/$fname\n";
+        require Archive::Extract;
+        my $ae = Archive::Extract->new(archive => "$dir/$fname");
+        my $ok = $ae->extract( to => $dir );
+    }
+    elsif ( -e $url && -d _ ) {
+        $dir = $url;
+    }
+    else {
+        die "Is not URL or directory: '$url'";
+    }
+
+    my @files = <$dir/rt/*.po>, <$dir/*.po>;
+    unless ( @files ) {
+        print STDERR "No files in $dir/rt/*.po and $dir/*.po\n";
+        exit;
+    }
+
+    require Locale::Maketext::Extract;
+    Locale::Maketext::Lexicon::set_option('use_fuzzy', 1);
+    Locale::Maketext::Lexicon::set_option('allow_empty', 1);
+
+    require Locale::PO;
+
+    for ( @files ) {
+        my ($lang) = m/([\w_]+)\.po/;
+        my $fn_orig = "lib/RT/I18N/$lang.po";
+
+        print "$_ -> $fn_orig\n";
+
+        # retain the "NOT FOUND IN SOURCE" entries
+        require File::Temp;
+        my $tmp = File::Temp->new;
+        system("sed -e 's/^#~ //' $_ > $tmp");
+        my $ext = Locale::Maketext::Extract->new;
+        $ext->read_po($tmp);
+
+        my $po_orig = Locale::PO->load_file_ashash( -e $fn_orig? $fn_orig : 'lib/RT/I18N/rt.pot' );
+        # don't want empty vales to override ours.
+        # don't want fuzzy flag as when uploading to rosetta again it's not accepted by rosetta.
+        foreach my $msgid ($ext->msgids) {
+            my $entry = $po_orig->{Locale::PO->quote($msgid)} or next;
+            my $msgstr = $entry->dequote($entry->{msgstr}) or next;
+            $ext->set_msgstr($msgid, $msgstr)
+                if $ext->msgstr($msgid) eq '' && $msgstr;
+        }
+        $ext->write_po($fn_orig);
+    }
+    extract({});
+}
+
+sub extract {
+    shift;
+    system($^X, 'sbin/extract-message-catalog', @_);
+}
+
