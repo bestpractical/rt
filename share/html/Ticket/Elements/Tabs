@@ -189,7 +189,9 @@ if ($Ticket) {
         if ( $Ticket->Status ne 'resolved' ) {
             $actions->{'G'} = {
                 path =>
-                    "Ticket/Update.html?Action=Comment&DefaultStatus=resolved&id="
+                    "Ticket/Update.html?Action="
+                    . RT->Config->Get('ResolveDefaultUpdateType', $session{'CurrentUser'})
+                    . "&DefaultStatus=resolved&id="
                     . $id,
                 title => loc('Resolve')
             };
