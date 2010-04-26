@@ -128,6 +128,12 @@ sub shrink {
     print "\n$legend\n";
 }
 
+sub clean {
+    my %opt = %{ shift() };
+    $opt{'keep'} = [qw(not-translated equal)];
+    return shrink( \%opt, @_ );
+}
+
 sub rosetta {
     my %opt = %{ shift() };
     my $url = shift or die 'must provide rosseta download url or directory with new po files';
