@@ -193,6 +193,22 @@ sub rosetta {
             $ext->set_msgstr($msgid, $msgstr)
                 if $ext->msgstr($msgid) eq '' && $msgstr;
         }
+        if ( $opt{'boundary'} && $lang !~ /^en(_[A-Z]{2})?$/ ) { # en[_**] are exceptional
+            my @ids = $ext->msgids;
+            my $translated = 0;
+            foreach my $id ( @ids ) {
+                next unless $ext->msgstr( $id );
+                next if $ext->msgstr( $id ) eq $id;
+                $translated++;
+            }
+            my $perc = int($translated/@ids * 100 + 0.5);
+            if ( $perc < $opt{'boundary'} ) {
+                print "Only $perc% translated for '$lang' when $opt{'boundary'}% required.\n";
+                print "Deleting '$fn_orig'...\n";
+                unlink $fn_orig;
+                next;
+            }
+        }
         $ext->write_po($fn_orig);
     }
     extract({});
