@@ -80,31 +80,49 @@ sub shrink {
     my %opt = %{ shift() };
     my $dir = shift || 'lib/RT/I18N';
 
+    my %keep = map { $_ => 1 } @{ $opt{'keep'} };
+
     my %stats = ();
 
     foreach my $po_file (<$dir/*.po>) {
         my $array = Locale::PO->load_file_asarray( $po_file );
-        $stats{ $po_file } = {empty => 0, same => 0 };
+        $stats{ $po_file } = { };
         foreach my $entry ( splice @$array, 1 ) {
-            unless ( $entry->dequote( $entry->msgstr ) ) {
-                $stats{ $po_file }{'empty'}++;
+            if ( !$keep{'not-referenced'} && $entry->reference && $entry->reference =~ /NOT FOUND IN SOURCE/ ) {
+                $stats{ $po_file }{'not-referenced'}++;
                 next;
             }
-            if ( $entry->msgstr eq $entry->msgid ) {
-                $stats{ $po_file }{'same'}++;
+            elsif ( !$keep{'not-translated'} && !$entry->dequote( $entry->msgstr ) ) {
+                $stats{ $po_file }{'not-translated'}++;
+                next;
+            }
+            elsif ( !$keep{'equal'} && $entry->msgstr eq $entry->msgid ) {
+                $stats{ $po_file }{'equal'}++;
                 next;
             }
             push @$array, $entry;
         }
-        $stats{ $po_file }{'total'} = $stats{ $po_file }{'empty'} + $stats{ $po_file }{'same'};
+        $stats{ $po_file }{'total'} += $_ for values %{ $stats{ $po_file } };
         Locale::PO->save_file_fromarray($po_file, $array) if $opt{'update'};
     }
 
-    my $legend = "<file>: <no translation> + <same> = <total>";
+    my $legend = "<file>: <total> (<details>)";
     print "\n$legend\n\n";
 
     foreach my $po_file ( sort { $stats{$a}{'total'} <=> $stats{$b}{'total'} } keys %stats ) {
-        printf "%s:\t%d\t+\t%d\t=\t%d\n", $po_file, @{ $stats{ $po_file } }{qw(empty same total)};
+        my $res = sprintf "%s:\t%d ", $po_file, $stats{ $po_file }{'total'};
+        my @tmp;
+        foreach ( qw(not-referenced not-translated equal) ) {
+            next unless my $v = $stats{ $po_file }{ $_ };
+            push @tmp, "$_: $v";
+        }
+        if ( @tmp > 1 ) {
+            $res .= " (". join( ', ', @tmp ) .")";
+        }
+        elsif ( @tmp == 1 ) {
+            $res .= " (". (split /:/, $tmp[0])[0] .")";
+        }
+        print $res, "\n";
     }
 
     print "\n$legend\n";
