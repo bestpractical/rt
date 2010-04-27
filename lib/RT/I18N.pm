@@ -340,7 +340,8 @@ sub DecodeMIMEWordsToEncoding {
 
 	# now we have got a decoded subject, try to convert into the encoding
 	unless ($charset eq $enc) {
-	    eval { Encode::from_to($enc_str, $charset,  $enc) };
+            local $@;
+	    eval { Encode::from_to($enc_str, $charset, $enc) };
 	    if ($@) {
 		$charset = _GuessCharset( $enc_str );
 		Encode::from_to($enc_str, $charset, $enc);
