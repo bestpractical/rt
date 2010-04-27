@@ -309,7 +309,7 @@ sub DecodeMIMEWordsToUTF8 {
 
 sub DecodeMIMEWordsToEncoding {
     my $str = shift;
-    my $enc = shift;
+    my $to_charset = shift;
 
     my @list = $str =~ m/(.*?)=\?([^?]+)\?([QqBb])\?([^?]+)\?=([^=]*)/gcs;
     return ($str) unless (@list);
@@ -339,12 +339,12 @@ sub DecodeMIMEWordsToEncoding {
 	}
 
 	# now we have got a decoded subject, try to convert into the encoding
-	unless ($charset eq $enc) {
+	unless ($charset eq $to_charset) {
             local $@;
-	    eval { Encode::from_to($enc_str, $charset, $enc) };
+	    eval { Encode::from_to($enc_str, $charset, $to_charset) };
 	    if ($@) {
 		$charset = _GuessCharset( $enc_str );
-		Encode::from_to($enc_str, $charset, $enc);
+		Encode::from_to($enc_str, $charset, $to_charset);
 	    }
 	}
 
