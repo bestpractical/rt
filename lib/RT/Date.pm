@@ -858,7 +858,7 @@ sub RFC2616 {
                  Seconds => 1, DayOfWeek => 1,
                );
 
-    my $res = $self->RFC2822( @_ );
+    my $res = $self->RFC2822( %args );
     $res =~ s/\s*[+-]\d\d\d\d$/ GMT/ if $args{'Time'};
     return $res;
 }
