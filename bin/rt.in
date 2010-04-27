@@ -1347,7 +1347,7 @@ sub Form::compose {
                         $line .= ",\n$sp$v";
                     }
                     else {
-                        $line = $line ? "$line, $v" : "$key: $v";
+                        $line = $line ? "$line,$v" : "$key: $v";
                     }
                 }
 
