@@ -304,7 +304,7 @@ tried.  Maybe it's ok now.
 
 sub DecodeMIMEWordsToUTF8 {
     my $str = shift;
-    DecodeMIMEWordsToEncoding($str, 'utf-8');
+    return DecodeMIMEWordsToEncoding($str, 'utf-8', @_);
 }
 
 sub DecodeMIMEWordsToEncoding {
