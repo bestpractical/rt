@@ -311,17 +311,18 @@ sub DecodeMIMEWordsToEncoding {
     my $str = shift;
     my $enc = shift;
 
-    @_ = $str =~ m/(.*?)=\?([^?]+)\?([QqBb])\?([^?]+)\?=([^=]*)/gcs;
-    return ($str) unless (@_);
+    my @list = $str =~ m/(.*?)=\?([^?]+)\?([QqBb])\?([^?]+)\?=([^=]*)/gcs;
+    return ($str) unless (@list);
 
     # add everything that hasn't matched to the end of the latest
     # string in array this happen when we have 'key="=?encoded?="; key="plain"'
-    $_[-1] .= substr($str, pos $str);
+    $list[-1] .= substr($str, pos $str);
 
     $str = "";
-    while (@_) {
+    while (@list) {
 	my ($prefix, $charset, $encoding, $enc_str, $trailing) =
-	    (shift, shift, lc shift, shift, shift);
+            splice @list, 0, 5;
+        $encoding = lc $encoding;
 
         $trailing =~ s/\s?\t?$//;               # Observed from Outlook Express
 
