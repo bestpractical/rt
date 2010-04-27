@@ -69,7 +69,7 @@ if ($fields) {
         $output = "Invalid field specification: $fields";
         goto OUTPUT;
     }
-    @fields = map lc, split /,/, $fields;
+    @fields = map lc, split /\s*,\s*/, $fields;
     @fields{@fields} = ();
     unless (exists $fields{id}) {
         unshift @fields, "id";

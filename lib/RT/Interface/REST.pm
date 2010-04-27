@@ -94,7 +94,7 @@ sub expand_list {
     my ($list) = @_;
 
     my @elts;
-    foreach (split /,/, $list) {
+    foreach (split /\s*,\s*/, $list) {
         push @elts, /^(\d+)-(\d+)$/? ($1..$2): $_;
     }
 

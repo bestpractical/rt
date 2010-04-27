@@ -368,14 +368,14 @@ else {
                 }
                 else {
                     my @new;
-                    my ( $a, $b ) = split /,/, $val, 2;
+                    my ( $a, $b ) = split /\s*,\s*/, $val, 2;
                     while ($a) {
                         no warnings 'uninitialized';
                         if ( $a =~ /^'/ ) {
                             my $s = $a;
                             while ( $a !~ /'$/ || ( $a !~ /(\\\\)+'$/
                                             && $a =~ /(\\)+'$/ ) ) {
-                                ( $a, $b ) = split /,/, $b, 2;
+                                ( $a, $b ) = split /\s*,\s*/, $b, 2;
                                 $s .= ',' . $a;
                             }
                             $s =~ s/^'//;
@@ -386,7 +386,7 @@ else {
                         elsif ( $a =~ /^q{/ ) {
                             my $s = $a;
                             while ( $a !~ /}$/ ) {
-                                ( $a, $b ) = split /,/, $b, 2;
+                                ( $a, $b ) = split /\s*,\s*/, $b, 2;
                                 $s .= ',' . $a;
                             }
                             $s =~ s/^q{//;
@@ -396,7 +396,7 @@ else {
                         else {
                             push @new, $a;
                         }
-                        ( $a, $b ) = split /,/, $b, 2;
+                        ( $a, $b ) = split /\s*,\s*/, $b, 2;
                     }
 
                     my %new;
