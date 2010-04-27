@@ -389,6 +389,12 @@ sub bootstrap_plugins {
     RT->Config->Set( Plugins => @plugins );
     RT->InitPluginPaths;
 
+    my $dba_dbh;
+    $dba_dbh = _get_dbh(
+        RT::Handle->DSN,
+        $ENV{RT_DBA_USER}, $ENV{RT_DBA_PASSWORD},
+    ) if @plugins;
+
     require File::Spec;
     foreach my $name ( @plugins ) {
         my $plugin = RT::Plugin->new( name => $name );
@@ -400,10 +406,10 @@ sub bootstrap_plugins {
             if $ENV{'TEST_VERBOSE'};
 
         if ( -e $etc_path ) {
-            my ($ret, $msg) = $RT::Handle->InsertSchema( undef, $etc_path );
+            my ($ret, $msg) = $RT::Handle->InsertSchema( $dba_dbh, $etc_path );
             Test::More::ok($ret || $msg =~ /^Couldn't find schema/, "Created schema: ".($msg||''));
 
-            ($ret, $msg) = $RT::Handle->InsertACL( undef, $etc_path );
+            ($ret, $msg) = $RT::Handle->InsertACL( $dba_dbh, $etc_path );
             Test::More::ok($ret || $msg =~ /^Couldn't find ACLs/, "Created ACL: ".($msg||''));
 
             my $data_file = File::Spec->catfile( $etc_path, 'initialdata' );
@@ -423,6 +429,7 @@ sub bootstrap_plugins {
 
         $RT::Handle->Connect; # XXX: strange but mysql can loose connection
     }
+    $dba_dbh->disconnect if $dba_dbh;
 }
 
 sub _get_dbh {
