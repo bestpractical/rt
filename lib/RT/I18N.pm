@@ -310,6 +310,7 @@ sub DecodeMIMEWordsToUTF8 {
 sub DecodeMIMEWordsToEncoding {
     my $str = shift;
     my $to_charset = shift;
+    my $field = shift || '';
 
     my @list = $str =~ m/(.*?)=\?([^?]+)\?([QqBb])\?([^?]+)\?=([^=]*)/gcs;
     return ($str) unless (@list);
@@ -364,7 +365,10 @@ sub DecodeMIMEWordsToEncoding {
         # Some _other_ MUAs encode quotes _already_, and double quotes
         # confuse us a lot, so only quote it if it isn't quoted
         # already.
-        $enc_str = qq{"$enc_str"} if $enc_str =~ /[,;]/ and $enc_str !~ /^".*"$/;
+        $enc_str = qq{"$enc_str"}
+            if $enc_str =~ /[,;]/
+            and $enc_str !~ /^".*"$/
+            and (!$field || $field =~ /^(?:To$|From$|B?Cc$|Content-)/i);
 
 	$str .= $prefix . $enc_str . $trailing;
     }
