@@ -508,7 +508,8 @@ sub SetMIMEHeadToEncoding {
                     }
                 }
             }
-            $value = DecodeMIMEWordsToEncoding( $value, $enc ) unless $preserve_words;
+            $value = DecodeMIMEWordsToEncoding( $value, $enc, $tag )
+                unless $preserve_words;
             $head->add( $tag, $value );
         }
     }
