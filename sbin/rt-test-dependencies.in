@@ -381,7 +381,7 @@ GD::Text
 .
 
 my %AVOID = (
-    'DBD::Oracle' => [qw(1.22)],
+    'DBD::Oracle' => [qw(1.23)],
 );
 
 if ($args{'download'}) {
