@@ -15,7 +15,8 @@ instructions below even if your old RT was installed on MySQL 4.1 or newer.
 
 === Upgrading RT from versions prior to 3.8.0 ===
 
-1) Backup RT's database. Test that you can restore from this backup.
+1) Backup RT's database. Use --default-character-set=binary if mysql
+server is 4.1 or newer. Test that you can restore from this backup.
 
 2) Follow instructions in the README file to step 7.
 
@@ -79,7 +80,7 @@ do the following:
 4) Configure MySQL 4.1 and newer to use Latin1 as default character set
    everywhere.
 5) Import the dump into the new MySQL server, replacing your empty database you
-   created at step 1.
+   created at step 1, use --default-character-set=binary on restore.
 6) At this point you have RT 3.8.x code base using an old database. You can
    upgrade RT using the instructions above.
 
