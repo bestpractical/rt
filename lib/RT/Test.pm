@@ -694,6 +694,8 @@ sub run_and_capture {
     my $self = shift;
     my %args = @_;
 
+    my $after_open = delete $args{after_open};
+
     my $cmd = delete $args{'command'};
     die "Couldn't find command ($cmd)" unless -f $cmd;
 
@@ -711,7 +713,7 @@ sub run_and_capture {
     my ($child_out, $child_in);
     my $pid = IPC::Open2::open2($child_out, $child_in, $cmd);
 
-    $args{after_open}->($child_in, $child_out) if $args{after_open};
+    $after_open->($child_in, $child_out) if $after_open;
 
     close $child_in;
 
