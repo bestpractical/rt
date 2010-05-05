@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test config => 'Set( $LinkSelfLoops, 1 );', 'no_plan' => 1;
+use RT::Test config => 'Set( $LinkSelfLoops, 1 ); Set ($ParseNewMessageForTicketCcs, 1 );', 'no_plan' => 1;
 
 RT::Test->set_mail_catcher;
 my ($baseurl, $m) = RT::Test->started_ok;
@@ -64,11 +64,12 @@ sub parse_mail {
 sub reinsert {
     my $text = shift;
     my $mime = parse_mail($text);
-    return (0, 0) unless ($mime->head->get("To")||"") =~ /(helpdesk|systems)(?:-(comment))?\@example\.com/
-        or ($mime->head->get("Cc")||"") =~ /(helpdesk|systems)(?:-(comment))?\@example\.com/
-        or ($mime->head->get("Bcc")||"") =~ /(helpdesk|systems)(?:-(comment))?\@example\.com/;
+    return (0, 0) unless ($mime->head->get("To")||"") =~ /(helpdesk|systems|alias)(?:-(comment))?\@example\.com/
+        or ($mime->head->get("Cc")||"") =~ /(helpdesk|systems|alias)(?:-(comment))?\@example\.com/
+        or ($mime->head->get("Bcc")||"") =~ /(helpdesk|systems|alias)(?:-(comment))?\@example\.com/;
 
     my ($queue, $action) = (ucfirst($1), $2 || "correspond");
+    $queue = "Helpdesk" if $queue eq "Alias";
     return RT::Test->send_via_mailgate( $text, queue => $queue, action => $action );
 }
 
@@ -122,6 +123,7 @@ sub record_ok {
     );
     ok($id, "Added $method on @{[$ticket->Id]} as @{[$args{as}->EmailAddress]})");
 }
+
 
 # =====> SITUATION 1:  Helpdesk queue adds systems@ as a one-time cc on a
 # comment (helpdesk gets all correspondence from systems, as a comment;  
@@ -541,11 +543,18 @@ EOF
         },
     );
 
-    #   which notifies Sven and AdminCCs on #302
+    #   which notifies Sven and AdminCCs on #302 -- as well as Joe,
+    #   since he was added as a Cc on creation because of
+    #   ParseNewMessageForTicketCcs.  This is unwanted but unavoidable
+    #   in this configuration.
     got_mail_ok(
         {   from => qr/systems\@/,
             bcc  => qr/sven\@/,
         },
+        {
+            from => qr/systems\@/,
+            cc   => qr/joe\@/,
+        }
     );
 
 }
@@ -746,4 +755,52 @@ EOF
     #   which adds a comment on #502,
     #   which notifies Sven and AdminCCs on #502
     # (see above note about looping)
+}
+
+# ======> SITUATION 6: Mail is sent to alias@, which contains
+# helpdesk@; $ParseNewMessageForTicketCcs is enabled, so alias@ is
+# added as a CC: Further correspondence on the ticket should not loop
+# back to itself.
+
+{
+    # Joe sends mail to helpdesk@
+    my $text = <<EOF;
+From: joe\@example.com
+To: alias\@example.com
+Subject: This is a test of aliases
+Message-Id: sixth\@example.com
+
+A helpdesk ticket to an alias
+EOF
+
+    my ($status, $id) = RT::Test->send_via_mailgate($text, queue => 'Helpdesk');
+    is ($status >> 8, 0, "The mail gateway exited normally");
+    ok ($id, "Created ticket");
+    my ($helpticket) = ($id);
+
+    # Sends mail back to Joe, and to Bjoern
+    got_mail_ok(
+        { to => qr/joe\@/, },
+        { bcc => qr/bjoern\@/, },
+    );
+
+    # Ticket #601 is created in the helpdesk queue with joe as the requestor
+    my $ticket = RT::Test->last_ticket( $bjoern );
+    isa_ok ($ticket, 'RT::Ticket');
+    is ($ticket->Id, $id, "correct ticket id");
+    is ($ticket->Subject , 'This is a test of aliases', "Created the ticket");
+
+    # Bjoern adds a correspondence on #601
+    record_ok( mode => 'correspond', on => $helpticket, as => $bjoern );
+
+    # Should generate mail to Joe, and alias@
+    got_mail_ok(
+        {   to => qr/joe\@/,
+            cc => qr/alias\@/,
+        },
+    );
+
+    # The last got_mail to alias@ should have reinserted a mail, but
+    # that shouldn't have generated anything
+    got_mail_ok();
 }

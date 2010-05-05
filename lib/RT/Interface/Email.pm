@@ -1456,9 +1456,12 @@ sub Gateway {
         if ( $action =~ /^(?:comment|correspond)$/i ) {
 
             # Check if this is an internal self-loop
-            if (    $Ticket->QueueObj->Id != $SystemQueueObj->Id
-                and $IsALoop < 0 )
-            {
+            if ( $IsALoop < 0 ) {
+                # If mail from ourselves somehow ended back in the
+                # _same_ queue, then it's a true loop -- drop it on
+                # the floor
+                next if $Ticket->QueueObj->Id == $SystemQueueObj->Id;
+
                 my @ret = LinkSelfLoops(
                     Ticket      => $Ticket,
                     QueueObj    => $SystemQueueObj,
