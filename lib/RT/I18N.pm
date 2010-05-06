@@ -359,8 +359,10 @@ sub DecodeMIMEWordsToEncoding {
 
 	# now we have got a decoded subject, try to convert into the encoding
     unless ( $charset eq $enc ) {
+        my $orig_str = $enc_str;
         eval { Encode::from_to( $enc_str, $charset, $enc, Encode::FB_CROAK ) };
         if ($@) {
+            $enc_str = $orig_str;
             $charset = _GuessCharset($enc_str);
             Encode::from_to( $enc_str, $charset, $enc );
         }
