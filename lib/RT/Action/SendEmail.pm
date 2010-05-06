@@ -182,11 +182,11 @@ sub Prepare {
 
     for my $header (@EMAIL_RECIPIENT_HEADERS) {
 
-    $self->SetHeader( $header, join( ', ', @{ $self->{$header} } ) )
-        if ( !$MIMEObj->head->get($header)
-        && $self->{$header}
-        && @{ $self->{$header} } );
-}
+        $self->SetHeader( $header, join( ', ', @{ $self->{$header} } ) )
+          if (!$MIMEObj->head->get($header)
+            && $self->{$header}
+            && @{ $self->{$header} } );
+    }
     # PseudoTo (fake to headers) shouldn't get matched for message recipients.
     # If we don't have any 'To' header (but do have other recipients), drop in
     # the pseudo-to header.
@@ -206,8 +206,9 @@ sub Prepare {
     foreach my $part ( grep !$_->is_multipart, $MIMEObj->parts_DFS ) {
         my $type = $part->mime_type || 'text/plain';
         $type = 'text/plain' unless RT::I18N::IsTextualContentType($type);
-        $part->head->mime_attr( "Content-Type"         => $type );
-        $part->head->mime_attr( "Content-Type.charset" => 'utf-8' );
+        $part->head->mime_attr( "Content-Type" => $type );
+        $part->head->mime_attr(
+            "Content-Type.charset" => RT->Config->Get('EmailOutputEncoding') );
     }
 
     RT::I18N::SetMIMEEntityToEncoding( $MIMEObj,
