@@ -203,6 +203,11 @@ charset encoding (encoded as octets, *not* unicode-strings).  It will
 iterate all the entities in $entity, and try to convert each one into
 specified charset if whose Content-Type is 'text/plain'.
 
+the methods are tries in order:
+1) to convert the entity to $encoding, 
+2) to interpret the entity as iso-8859-1 and then convert it to $encoding,
+3) forcibly convert it to $encoding.
+
 This function doesn't return anything meaningful.
 
 =cut
@@ -243,31 +248,46 @@ sub SetMIMEEntityToEncoding {
 
     if ( $enc ne $charset && $body ) {
         my $string = $body->as_string or return;
+        # NOTE:: see the comments at the end of the sub.
+        Encode::_utf8_off($string);
+        my $orig_string = $string;
 
         # {{{ Convert the body
         eval {
-            $RT::Logger->debug( "Converting '$charset' to '$enc' for " . $head->mime_type . " - " . ( $head->get('subject') || 'Subjectless message' ) );
-
-            # NOTE:: see the comments at the end of the sub.
-            Encode::_utf8_off( $string);
-            Encode::from_to( $string, $charset => $enc );
+            $RT::Logger->debug( "Converting '$charset' to '$enc' for "
+                  . $head->mime_type . " - "
+                  . ( $head->get('subject') || 'Subjectless message' ) );
+            Encode::from_to( $string, $charset => $enc, Encode::FB_CROAK );
         };
 
         if ($@) {
-            $RT::Logger->error( "Encoding error: " . $@ . " defaulting to ISO-8859-1 -> UTF-8" );
-            eval { Encode::from_to( $string, 'iso-8859-1' => $enc ) };
+            $RT::Logger->error( "Encoding error: " 
+                  . $@
+                  . " falling back to iso-8859-1 => $enc" );
+            $string = $orig_string;
+            eval {
+                Encode::from_to(
+                    $string,
+                    'iso-8859-1' => $enc,
+                    Encode::FB_CROAK
+                );
+            };
             if ($@) {
-                $RT::Logger->crit( "Totally failed to convert to utf-8: " . $@ . " I give up" );
+                $RT::Logger->error( "Encoding error: " 
+                      . $@
+                      . " forcing conversion to $charset => $enc" );
+                $string = $orig_string;
+                Encode::from_to( $string, $charset => $enc );
             }
         }
 
         # }}}
 
-        my $new_body = MIME::Body::InCore->new( $string);
+        my $new_body = MIME::Body::InCore->new($string);
 
         # set up the new entity
         $head->mime_attr( "content-type" => 'text/plain' )
-            unless ( $head->mime_attr("content-type") );
+          unless ( $head->mime_attr("content-type") );
         $head->mime_attr( "content-type.charset" => $enc );
         $entity->bodyhandle($new_body);
     }
@@ -338,13 +358,13 @@ sub DecodeMIMEWordsToEncoding {
 	}
 
 	# now we have got a decoded subject, try to convert into the encoding
-	unless ($charset eq $enc) {
-	    eval { Encode::from_to($enc_str, $charset,  $enc) };
-	    if ($@) {
-		$charset = _GuessCharset( $enc_str );
-		Encode::from_to($enc_str, $charset, $enc);
-	    }
-	}
+    unless ( $charset eq $enc ) {
+        eval { Encode::from_to( $enc_str, $charset, $enc, Encode::FB_CROAK ) };
+        if ($@) {
+            $charset = _GuessCharset($enc_str);
+            Encode::from_to( $enc_str, $charset, $enc );
+        }
+    }
 
         # XXX TODO: RT doesn't currently do the right thing with mime-encoded headers
         # We _should_ be preserving them encoded until after parsing is completed and
@@ -487,18 +507,30 @@ sub SetMIMEHeadToEncoding {
         my @values = $head->get_all($tag);
         $head->delete($tag);
         foreach my $value (@values) {
+            Encode::_utf8_off($value);
+            my $orig_value = $value;
             if ( $charset ne $enc ) {
-
                 eval {
-                    Encode::_utf8_off($value);
-                    Encode::from_to( $value, $charset => $enc );
+                    Encode::from_to( $value, $charset => $enc, Encode::FB_CROAK );
                 };
                 if ($@) {
-                    $RT::Logger->error( "Encoding error: " . $@
-                                       . " defaulting to ISO-8859-1 -> UTF-8" );
-                    eval { Encode::from_to( $value, 'iso-8859-1' => $enc ) };
+                    $RT::Logger->error( "Encoding error: " 
+                          . $@
+                          . " falling back to iso-8859-1 => $enc" );
+                    $value = $orig_value;
+                    eval {
+                        Encode::from_to(
+                            $value,
+                            'iso-8859-1' => $enc,
+                            Encode::FB_CROAK
+                        );
+                    };
                     if ($@) {
-                        $RT::Logger->crit( "Totally failed to convert to utf-8: " . $@ . " I give up" );
+                        $RT::Logger->error( "Encoding error: " 
+                              . $@
+                              . " forcing conversion to $charset => $enc" );
+                        $value = $orig_value;
+                        Encode::from_to( $value, $charset => $enc );
                     }
                 }
             }
