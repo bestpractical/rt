@@ -141,23 +141,20 @@ div#page-navigation {
 }
 
 
-div#page-navigation ul {
-
-}
-
 div#page-navigation ul#page-menu {
  display: block;
  position: absolute;
  left: 8em;
  font-size: 0.9em;
  top: 2.3em;
- min-height: 1em;
+ /* if bigger than 0.87em, firefox/opera will show the 2nd line a bit, ugly */
+ height: 0.87em;
  background-color: white;
  right: 0em;
  padding-top:0.3em;
  padding-bottom:0.5em;
  border-top: 1px solid #aaa;
-
+ overflow: auto;
 }
 
 /* ie hack */
