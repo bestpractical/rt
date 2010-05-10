@@ -122,7 +122,14 @@ if ($GroupString) {
 
 my @extras;
 for my $addr ( values %{$Ticket->TransactionAddresses} ) {
-    push @extras, $addr unless ($Ticket->IsWatcher( Email => $addr->address));
+    my $is_watcher;
+    for my $type ( qw/Owner Requestor Cc AdminCc/ ) {
+         if ($Ticket->IsWatcher( Email => $addr->address, Type => $type )) {
+             $is_watcher = 1;
+             last;
+         }
+    }
+    push @extras, $addr unless $is_watcher;
 }
 
 
