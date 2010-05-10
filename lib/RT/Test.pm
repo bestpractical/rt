@@ -223,8 +223,6 @@ sub bootstrap_config {
     print $config qq{
 Set( \$WebPort , $port);
 Set( \$WebBaseURL , "http://localhost:\$WebPort");
-Set( \$LogToSyslog , undef);
-Set( \$LogToScreen , "warning");
 Set( \$RTAddressRegexp , qr/^bad_re_that_doesnt_match\$/);
 Set( \$MailCommand, 'testfile');
 };
@@ -237,6 +235,8 @@ Set( \$MailCommand, 'testfile');
     }
     print $config "Set( \$DevelMode, 0 );\n"
         if $INC{'Devel/Cover.pm'};
+
+    $self->bootstrap_logging( $config );
 
     # set mail catcher
     my $mail_catcher = $tmp{'mailbox'} = File::Spec->catfile(
@@ -254,7 +254,7 @@ Set( \$MailCommand, sub {
     close \$handle;
 } );
 END
-
+    
     print $config $args{'config'} if $args{'config'};
 
     print $config "\n1;\n";
@@ -262,6 +262,29 @@ END
     close $config;
 
     return $config;
+}
+
+sub bootstrap_logging {
+    my $self = shift;
+    my $config = shift;
+
+    # prepare file for logging
+    $tmp{'log'}{'RT'} = File::Spec->catfile(
+        "$tmp{'directory'}", 'rt.debug.log'
+    );
+    open my $fh, '>', $tmp{'log'}{'RT'}
+        or die "Couldn't open $tmp{'config'}{'RT'}: $!";
+    # make world writable so apache under different user
+    # can write into it
+    chmod 0666, $tmp{'log'}{'RT'};
+
+    print $config <<END;
+Set( \$LogToSyslog , undef);
+Set( \$LogToScreen , "warning");
+Set( \$LogToFile, 'debug' );
+Set( \$LogDir, q{$tmp{'directory'}} );
+Set( \$LogToFileNamed, 'rt.debug.log' );
+END
 }
 
 sub set_config_wrapper {
