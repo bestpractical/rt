@@ -4,7 +4,7 @@ use warnings;
 use strict;
 
 use lib 't/lib';
-use RT::FM::Test tests => 42;
+use RT::FM::Test tests => 43;
 
 use_ok 'RT::FM::System';
 my $sys = new RT::FM::System;

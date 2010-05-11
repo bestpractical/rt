@@ -36,6 +36,9 @@ NOTE that upgrade steps are described in UPGRADING
 
    Set(@Plugins,qw(RT::FM));
 
+   If you already have a @Plugins line, you must add RT::FM to your
+   existing plugin list.
+
 7) Clear your mason cache.  This is most often accomplished with
    rm -rf /opt/rt3/var/mason_data/*
 

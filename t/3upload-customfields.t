@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use lib 't/lib';
-use RT::FM::Test tests => 21;
+use RT::FM::Test tests => 22;
 $RT::Test::SKIP_REQUEST_WORK_AROUND = 1;
 
 use RT;
