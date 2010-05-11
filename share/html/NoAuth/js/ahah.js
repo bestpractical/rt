@@ -1,9 +1,12 @@
 /*
 % $r->content_type('application/x-javascript');
 */
-// Fetched from http://www.opendarwin.org/~drernie/src/ahah.js - No Copyright - Public Domain
+// originally Fetched from http://www.opendarwin.org/~drernie/src/ahah.js - No Copyright - Public Domain
+// a patch fetched from http://www.xfront.com/microformats/examples/ahah/example01/ahah.js - see http://issues.bestpractical.com/Ticket/Display.html?id=14296
+
 function ahah(url, target, delay) {
   // document.getElementById(target).innerHTML = 'Loading <a href="'+url+'">'+url +'</a>...';
+  var req;
   if (window.XMLHttpRequest) {
     req = new XMLHttpRequest();
   } else if (window.ActiveXObject) {
@@ -20,7 +23,7 @@ function ahah(url, target, delay) {
   }
 
   if (req != undefined) {
-    req.onreadystatechange = function() {ahahDone(url, target, delay);};
+    req.onreadystatechange = function() {ahahDone(req, url, target, delay);};
     if ( use_get == 1 ) {
         req.open("GET", url, true);
     }
@@ -31,7 +34,7 @@ function ahah(url, target, delay) {
   }
 }  
 
-function ahahDone(url, target, delay) {
+function ahahDone(req, url, target, delay) {
   if (req.readyState == 4) { // only if req is "loaded"
     if (req.status == 200) { // only if "OK"
       document.getElementById(target).innerHTML = req.responseText;
