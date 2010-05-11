@@ -374,13 +374,13 @@ sub help {
     print loc("Example:");
     print "\n";
     print " "
-      . loc( "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they haven't been touched in 4 hours:"
+      . loc( "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they are overdue:"
       )
       . "\n\n";
 
     print " bin/rt-crontool \\\n";
     print "  --search RT::Search::ActiveTicketsInQueue  --search-arg general \\\n";
-    print "  --condition RT::Condition::UntouchedInHours --condition-arg 4 \\\n";
+    print "  --condition RT::Condition::Overdue \\\n";
     print "  --action RT::Action::SetPriority --action-arg 99 \\\n";
     print "  --verbose\n";
 
