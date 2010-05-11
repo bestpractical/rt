@@ -221,8 +221,9 @@ sub bootstrap_config {
         or die "Couldn't open $tmp{'config'}{'RT'}: $!";
 
     print $config qq{
-Set( \$WebPort , $port);
-Set( \$WebBaseURL , "http://localhost:\$WebPort");
+Set( \$WebDomain, "localhost");
+Set( \$WebPort,   $port);
+Set( \$WebPath,   "");
 Set( \$RTAddressRegexp , qr/^bad_re_that_doesnt_match\$/);
 };
     if ( $ENV{'RT_TEST_DB_SID'} ) { # oracle case
