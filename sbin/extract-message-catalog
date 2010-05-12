@@ -126,10 +126,10 @@ sub extract_strings_from_code {
     }
 
     my $re_space_wo_nl = qr{(?!\n)\s};
-    my $re_loc_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc $re_space_wo_nl* $}x;
-    my $re_loc_qw_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_qw $re_space_wo_nl* $}x;
-    my $re_loc_pair_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_pair $re_space_wo_nl* $}x;
-    my $re_loc_left_pair_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_left_pair $re_space_wo_nl* $}x;
+    my $re_loc_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc $re_space_wo_nl* $}mx;
+    my $re_loc_qw_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_qw $re_space_wo_nl* $}mx;
+    my $re_loc_pair_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_pair $re_space_wo_nl* $}mx;
+    my $re_loc_left_pair_suffix = qr{$re_space_wo_nl* \# $re_space_wo_nl* loc_left_pair $re_space_wo_nl* $}mx;
     my $re_delim = $RE{delimited}{-delim=>q{'"}}{-keep};
 
     $_ = <_>;
