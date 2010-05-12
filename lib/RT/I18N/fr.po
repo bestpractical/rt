@@ -664,7 +664,7 @@ msgstr "L'argument 'Action' est obligatoire"
 msgid "Action prepared..."
 msgstr "Action préparée..."
 
-#: share/html/Search/Bulk.html:101
+#: share/html/Search/Bulk.html:103
 msgid "Add AdminCc"
 msgstr "Ajouter AdminCC"
 
@@ -672,7 +672,7 @@ msgstr "Ajouter AdminCC"
 msgid "Add Bookmark"
 msgstr "Ajouter un signet"
 
-#: share/html/Search/Bulk.html:97
+#: share/html/Search/Bulk.html:99
 msgid "Add Cc"
 msgstr "Ajouter CC"
 
@@ -684,11 +684,11 @@ msgstr "Ajouter des colonnes"
 msgid "Add Criteria"
 msgstr "Ajouter un critère"
 
-#: share/html/Search/Bulk.html:163 share/html/Ticket/Create.html:143 share/html/Ticket/ModifyAll.html:132 share/html/Ticket/Update.html:121
+#: share/html/Search/Bulk.html:168 share/html/Ticket/Create.html:143 share/html/Ticket/ModifyAll.html:132 share/html/Ticket/Update.html:121
 msgid "Add More Files"
 msgstr "Ajouter d'autres fichiers"
 
-#: share/html/Search/Bulk.html:93
+#: share/html/Search/Bulk.html:95
 msgid "Add Requestor"
 msgstr "Ajouter Demandeur"
 
@@ -700,7 +700,7 @@ msgstr "Ajouter une valeur"
 msgid "Add a scrip which will apply to all queues"
 msgstr "Ajouter un scrip qui s'applique à toutes les files"
 
-#: share/html/Search/Bulk.html:133
+#: share/html/Search/Bulk.html:135
 msgid "Add comments or replies to selected tickets"
 msgstr "Ajouter des commentaires ou des réponses aux tickets sélectionnés"
 
@@ -720,7 +720,7 @@ msgstr "Ajouter ces termes"
 msgid "Add these terms and Search"
 msgstr "Ajouter ces termes et rechercher"
 
-#: share/html/Search/Bulk.html:185
+#: share/html/Search/Bulk.html:193
 msgid "Add values"
 msgstr "Ajouter les valeurs"
 
@@ -818,7 +818,7 @@ msgstr "Cc Administratif"
 msgid "Administrative password"
 msgstr "Mot de passe administrateur"
 
-#: share/html/Ticket/Elements/Tabs:282
+#: share/html/Ticket/Elements/Tabs:284
 msgid "Advanced"
 msgstr "Avancé"
 
@@ -935,7 +935,7 @@ msgstr "Fixer et supprimer les champs personnalisés"
 msgid "AssignCustomFields"
 msgstr "FixerChampsPersonnalisés"
 
-#: share/html/Search/Bulk.html:162 share/html/SelfService/Update.html:90 share/html/Ticket/ModifyAll.html:130 share/html/Ticket/Update.html:121
+#: share/html/Search/Bulk.html:167 share/html/SelfService/Update.html:90 share/html/Ticket/ModifyAll.html:130 share/html/Ticket/Update.html:121
 msgid "Attach"
 msgstr "Attaché"
 
@@ -943,7 +943,7 @@ msgstr "Attaché"
 msgid "Attach file"
 msgstr "Attacher un fichier"
 
-#: share/html/Search/Bulk.html:152 share/html/SelfService/Update.html:78 share/html/Ticket/Create.html:127 share/html/Ticket/ModifyAll.html:119 share/html/Ticket/Update.html:111
+#: share/html/Search/Bulk.html:157 share/html/SelfService/Update.html:78 share/html/Ticket/Create.html:127 share/html/Ticket/ModifyAll.html:119 share/html/Ticket/Update.html:111
 msgid "Attached file"
 msgstr "Fichier attaché"
 
@@ -1073,7 +1073,7 @@ msgstr "Tickets favoris"
 msgid "Brief headers"
 msgstr "En-têtes courts"
 
-#: share/html/Ticket/Elements/Tabs:319
+#: share/html/Ticket/Elements/Tabs:321
 msgid "Bulk Update"
 msgstr "Màj en masse"
 
@@ -1192,7 +1192,7 @@ msgstr "Contrôler la connection à la base de données"
 msgid "Check Database Credentials"
 msgstr "Vérifie les Identifiants sur la Base"
 
-#: share/html/Search/Bulk.html:154 share/html/SelfService/Update.html:81 share/html/Ticket/Create.html:130 share/html/Ticket/ModifyAll.html:121 share/html/Ticket/Update.html:113
+#: share/html/Search/Bulk.html:159 share/html/SelfService/Update.html:81 share/html/Ticket/Create.html:130 share/html/Ticket/ModifyAll.html:121 share/html/Ticket/Update.html:113
 msgid "Check box to delete"
 msgstr "Cocher la case pour supprimer"
 
@@ -1264,7 +1264,7 @@ msgstr "Boîte combo : Sélectionnez ou saisissez une valeur"
 msgid "Combobox: Select or enter up to %1 values"
 msgstr "Boîte combo : Sélectionner ou saisir au plus %1 valeurs"
 
-#: share/html/Search/Elements/EditFormat:72 share/html/Ticket/Elements/ShowTransaction:197 share/html/Ticket/Elements/Tabs:227
+#: share/html/Search/Elements/EditFormat:72 share/html/Ticket/Elements/ShowTransaction:197 share/html/Ticket/Elements/Tabs:229
 msgid "Comment"
 msgstr "Commenter"
 
@@ -1292,11 +1292,11 @@ msgstr "CommenterTicket"
 msgid "Comments"
 msgstr "Commentaires"
 
-#: share/html/Ticket/ModifyAll.html:94 share/html/Ticket/Update.html:94
+#: lib/RT/Config.pm:243 share/html/Ticket/ModifyAll.html:94 share/html/Ticket/Update.html:94
 msgid "Comments (Not sent to requestors)"
 msgstr "Commentaires (non envoyés aux demandeurs)"
 
-#: share/html/Search/Bulk.html:137
+#: share/html/Search/Bulk.html:139
 msgid "Comments (not sent to requestors)"
 msgstr "Commentaires (non envoyés aux demandeurs)"
 
@@ -2009,7 +2009,7 @@ msgstr "Mot de passe de l'administrateur"
 msgid "DBA username"
 msgstr "Identifiant DBA"
 
-#: lib/RT/Config.pm:362
+#: lib/RT/Config.pm:376
 msgid "Daily digest"
 msgstr "Compilation quotidienne"
 
@@ -2067,7 +2067,7 @@ msgstr "Type de base de données"
 msgid "Database username for RT"
 msgstr "Nom d'utilisateur de la base de données pour RT"
 
-#: lib/RT/Config.pm:323
+#: lib/RT/Config.pm:337
 msgid "Date format"
 msgstr "Format de date"
 
@@ -2114,6 +2114,10 @@ msgstr "File par défaut"
 #: share/html/Tools/Offline.html:71
 msgid "Default Requestor"
 msgstr "Demandeur par défaut"
+
+#: lib/RT/Config.pm:240
+msgid "Default Update Type when Resolving"
+msgstr ""
 
 #: etc/initialdata:271
 msgid "Default admin comment template"
@@ -2202,7 +2206,7 @@ msgstr "Supprimer les tableaux de bord systèmes"
 msgid "Delete tickets"
 msgstr "Supprimer les tickets"
 
-#: share/html/Search/Bulk.html:186
+#: share/html/Search/Bulk.html:194
 msgid "Delete values"
 msgstr "Supprimer les valeurs"
 
@@ -2356,7 +2360,7 @@ msgstr "Nom de domaine"
 msgid "Don't include http://, just something like 'localhost', 'rt.example.com'"
 msgstr "Ne pas inclure http://, juste quelquechose comme 'localhost', 'rt.example.com'"
 
-#: lib/RT/Config.pm:254
+#: lib/RT/Config.pm:268
 msgid "Don't refresh home page."
 msgstr "Ne pas actualiser le page d'accueil."
 
@@ -2405,7 +2409,7 @@ msgstr "Mise à jour facile de vos tickets ouverts"
 msgid "Edit"
 msgstr "Modifier"
 
-#: share/html/Search/Bulk.html:181
+#: share/html/Search/Bulk.html:189
 msgid "Edit Custom Fields"
 msgstr "Modifier les champs personnalisés"
 
@@ -2430,7 +2434,7 @@ msgstr "Modifier les champs personnalisés pour tous les utilisateurs"
 msgid "Edit Custom Fields for tickets in all queues"
 msgstr "Modifier les champs personnalisés pour les tickets de toutes les files"
 
-#: share/html/Search/Bulk.html:216 share/html/Ticket/ModifyLinks.html:62
+#: share/html/Search/Bulk.html:229 share/html/Ticket/ModifyLinks.html:62
 msgid "Edit Links"
 msgstr "Modifier les liens"
 
@@ -2438,7 +2442,7 @@ msgstr "Modifier les liens"
 msgid "Edit Query"
 msgstr "Modifier la requête"
 
-#: share/html/Ticket/Elements/Tabs:278
+#: share/html/Ticket/Elements/Tabs:280
 msgid "Edit Search"
 msgstr "Mod. recherche"
 
@@ -2513,7 +2517,7 @@ msgstr "Compilation de courriels"
 msgid "Email address in use"
 msgstr "Adresse de courriel utilisée"
 
-#: lib/RT/Config.pm:359
+#: lib/RT/Config.pm:373
 msgid "Email delivery"
 msgstr "Distribution des courriels"
 
@@ -2603,7 +2607,7 @@ msgstr "Saisir une valeur avec complétion automatique"
 msgid "Enter queues or URIs to link queues to. Separate multiple entries with spaces."
 msgstr "Saisir des noms de files ou des URI pour lier aux files. Séparer les saisies avec des espaces."
 
-#: share/html/Elements/EditLinks:120 share/html/Search/Bulk.html:217 share/html/Ticket/Elements/BulkLinks:123
+#: share/html/Elements/EditLinks:120 share/html/Search/Bulk.html:230 share/html/Ticket/Elements/BulkLinks:123
 msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
 msgstr "Saisir des n° de tickets ou des URI pour lier aux tickets. Séparer les saisies par des espaces."
 
@@ -2853,7 +2857,7 @@ msgstr "Foo Bar Baz"
 msgid "Foo!"
 msgstr "Foo !"
 
-#: share/html/Search/Bulk.html:92
+#: share/html/Search/Bulk.html:94
 msgid "Force change"
 msgstr "Forcer la modification"
 
@@ -2924,7 +2928,7 @@ msgstr "Vendredi"
 msgid "Full headers"
 msgstr "En-têtes complets"
 
-#: lib/RT/Config.pm:169 lib/RT/Config.pm:216
+#: lib/RT/Config.pm:169 lib/RT/Config.pm:216 lib/RT/Config.pm:235
 msgid "General"
 msgstr "Général"
 
@@ -2953,7 +2957,7 @@ msgstr "Champs personnalisés globaux"
 msgid "Global custom field configuration"
 msgstr "Configuration globale des champs personnalisés"
 
-#: share/html/Admin/Global/MyRT.html:102
+#: share/html/Admin/Global/MyRT.html:105
 #. ($pane)
 msgid "Global portlet %1 saved."
 msgstr "Portlet global %1 sauvé."
@@ -3001,7 +3005,7 @@ msgstr "Go !"
 msgid "Goto ticket"
 msgstr "Aller au ticket"
 
-#: share/html/Ticket/Elements/ShowSummary:109 share/html/Ticket/Elements/Tabs:324 share/html/Ticket/ModifyLinks.html:61
+#: share/html/Ticket/Elements/ShowSummary:109 share/html/Ticket/Elements/Tabs:326 share/html/Ticket/ModifyLinks.html:61
 msgid "Graph"
 msgstr "Graphique"
 
@@ -3127,7 +3131,7 @@ msgstr "Historique de l'utilisateur %1"
 msgid "Home"
 msgstr "Accueil"
 
-#: lib/RT/Config.pm:251
+#: lib/RT/Config.pm:265
 msgid "Home page refresh interval"
 msgstr "Intervalle d'actualisation de la page d'accueil"
 
@@ -3225,7 +3229,7 @@ msgstr "Inclure les utilisateurs désactivés dans le résultat."
 msgid "Include page"
 msgstr "Inclure la page"
 
-#: lib/RT/Config.pm:361
+#: lib/RT/Config.pm:375
 msgid "Individual messages"
 msgstr "Messages individuels"
 
@@ -3491,7 +3495,7 @@ msgstr "Restant"
 msgid "Legends"
 msgstr "Légendes"
 
-#: lib/RT/Config.pm:274
+#: lib/RT/Config.pm:288
 msgid "Length in characters; Use '0' to show all messages inline, regardless of length"
 msgstr "Longueur en caractères; Utiliser '0' pour voir tous les messages dans la page, quelle que soit leur longueur"
 
@@ -3591,7 +3595,7 @@ msgstr "Modules perl chargés"
 msgid "Loaded saved search \"%1\""
 msgstr "Recherche sauvée \"%1\" chargée"
 
-#: lib/RT/Config.pm:319
+#: lib/RT/Config.pm:333
 msgid "Locale"
 msgstr "Langage"
 
@@ -3629,7 +3633,7 @@ msgstr "Déconnexion"
 msgid "Lookup type mismatch"
 msgstr "Faire attention aux types différents"
 
-#: lib/RT/Config.pm:354 lib/RT/Config.pm:369
+#: lib/RT/Config.pm:368 lib/RT/Config.pm:383
 msgid "Mail"
 msgstr "Courriel"
 
@@ -3641,39 +3645,39 @@ msgstr "Type de liens principal"
 msgid "Make Owner"
 msgstr "Attribuer"
 
-#: share/html/Search/Bulk.html:115
+#: share/html/Search/Bulk.html:117
 msgid "Make Status"
 msgstr "Appliquer Statut"
 
-#: share/html/Search/Bulk.html:123
+#: share/html/Search/Bulk.html:125
 msgid "Make date Due"
 msgstr "Appliquer date d'échéance"
 
-#: share/html/Search/Bulk.html:125
+#: share/html/Search/Bulk.html:127
 msgid "Make date Resolved"
 msgstr "Appliquer date de résolution"
 
-#: share/html/Search/Bulk.html:119
+#: share/html/Search/Bulk.html:121
 msgid "Make date Started"
 msgstr "Appliquer date d'ouverture"
 
-#: share/html/Search/Bulk.html:117
+#: share/html/Search/Bulk.html:119
 msgid "Make date Starts"
 msgstr "Appliquer date de début"
 
-#: share/html/Search/Bulk.html:121
+#: share/html/Search/Bulk.html:123
 msgid "Make date Told"
 msgstr "Appliquer Âge"
 
-#: share/html/Search/Bulk.html:111
+#: share/html/Search/Bulk.html:113
 msgid "Make priority"
 msgstr "Appliquer priorité"
 
-#: share/html/Search/Bulk.html:113
+#: share/html/Search/Bulk.html:115
 msgid "Make queue"
 msgstr "Appliquer file"
 
-#: share/html/Search/Bulk.html:109
+#: share/html/Search/Bulk.html:111
 msgid "Make subject"
 msgstr "Changer le sujet"
 
@@ -3729,7 +3733,7 @@ msgstr "Taille maximum pour les pièces jointes (en bytes)"
 msgid "MaxValues"
 msgstr ""
 
-#: lib/RT/Config.pm:272
+#: lib/RT/Config.pm:286
 msgid "Maximum inline message length"
 msgstr "Longueur maximum pour les messages en-ligne"
 
@@ -3816,7 +3820,7 @@ msgstr "Fusionner dans"
 msgid "Merged into %1"
 msgstr "Fusionné avec %1"
 
-#: share/html/Search/Bulk.html:165 share/html/Ticket/Update.html:134
+#: share/html/Search/Bulk.html:170 share/html/Ticket/Update.html:134
 msgid "Message"
 msgstr "Message"
 
@@ -4215,7 +4219,7 @@ msgstr "MySQL"
 msgid "NEWLINE"
 msgstr "LIGNEVIDE"
 
-#: share/html/Admin/CustomFields/Modify.html:61 share/html/Admin/Elements/AddCustomFieldValue:54 share/html/Admin/Elements/EditCustomField:57 share/html/Admin/Elements/EditCustomFieldValues:58 share/html/Admin/Elements/ModifyTemplate:51 share/html/Admin/Groups/Modify.html:67 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Dashboards/Elements/ShowDashboards:79 share/html/Dashboards/Modify.html:65 share/html/Elements/RT__Group/ColumnMap:77 share/html/Elements/RT__Template/ColumnMap:61 share/html/Elements/RT__User/ColumnMap:61 share/html/Search/Bulk.html:184 share/html/User/Groups/Modify.html:67
+#: share/html/Admin/CustomFields/Modify.html:61 share/html/Admin/Elements/AddCustomFieldValue:54 share/html/Admin/Elements/EditCustomField:57 share/html/Admin/Elements/EditCustomFieldValues:58 share/html/Admin/Elements/ModifyTemplate:51 share/html/Admin/Groups/Modify.html:67 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Dashboards/Elements/ShowDashboards:79 share/html/Dashboards/Modify.html:65 share/html/Elements/RT__Group/ColumnMap:77 share/html/Elements/RT__Template/ColumnMap:61 share/html/Elements/RT__User/ColumnMap:61 share/html/Search/Bulk.html:192 share/html/User/Groups/Modify.html:67
 msgid "Name"
 msgstr "Nom"
 
@@ -4247,7 +4251,7 @@ msgstr "Nouveau mot de passe"
 msgid "New Pending Approval"
 msgstr "Nouvelle approbation en attente"
 
-#: share/html/Ticket/Elements/Tabs:274
+#: share/html/Ticket/Elements/Tabs:276
 msgid "New Search"
 msgstr "Nouv. recherche"
 
@@ -4515,7 +4519,7 @@ msgstr "Aucun droit trouvé"
 msgid "No rights granted."
 msgstr "Aucun droit accordé."
 
-#: share/html/Search/Bulk.html:293
+#: share/html/Search/Bulk.html:306
 msgid "No search to operate on."
 msgstr "Pas de critère de recherche."
 
@@ -4679,7 +4683,7 @@ msgstr "Avertir les demandeurs, CCs et AdminCCs"
 msgid "Notify Requestors, Ccs and AdminCcs as Comment"
 msgstr "Avertir les demandeurs, CCs et AdminCCs par un commentaire"
 
-#: lib/RT/Config.pm:292
+#: lib/RT/Config.pm:306
 msgid "Notify me of unread messages"
 msgstr "Me notifier les messages non-lus"
 
@@ -4691,7 +4695,7 @@ msgstr "Nov"
 msgid "November"
 msgstr "Novembre"
 
-#: lib/RT/Config.pm:242
+#: lib/RT/Config.pm:256
 msgid "Number of search results"
 msgstr "Nombre de résultats de recherche"
 
@@ -4835,7 +4839,7 @@ msgstr "Tickets ouverts"
 msgid "Open URL"
 msgstr "Ouvrir l'URL"
 
-#: share/html/Ticket/Elements/Tabs:200
+#: share/html/Ticket/Elements/Tabs:202
 msgid "Open it"
 msgstr "Ouvrir"
 
@@ -4880,7 +4884,7 @@ msgstr "Courriel sortant suite à l'enregistrement d'un commentaire"
 msgid "Outgoing email recorded"
 msgstr "Courriel sortant enregistré"
 
-#: lib/RT/Config.pm:374
+#: lib/RT/Config.pm:388
 msgid "Outgoing mail"
 msgstr ""
 
@@ -5025,7 +5029,7 @@ msgstr ""
 msgid "Permission Denied"
 msgstr "Accès refusé"
 
-#: lib/RT/SharedSetting.pm:110 lib/RT/SharedSetting.pm:187 lib/RT/SharedSetting.pm:228 lib/RT/SharedSetting.pm:261 share/html/Admin/Global/MyRT.html:98 share/html/Dashboards/Modify.html:98
+#: lib/RT/SharedSetting.pm:110 lib/RT/SharedSetting.pm:187 lib/RT/SharedSetting.pm:228 lib/RT/SharedSetting.pm:261 share/html/Admin/Global/MyRT.html:101 share/html/Dashboards/Modify.html:98
 msgid "Permission denied"
 msgstr "Accès refusé"
 
@@ -5340,7 +5344,7 @@ msgstr "Taille de RT"
 msgid "RT Variables"
 msgstr "Variables de RT"
 
-#: lib/RT/Config.pm:237 lib/RT/Config.pm:246 share/html/Admin/Elements/SystemTabs:73 share/html/Admin/Elements/UserTabs:69 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:51 share/html/Admin/Global/MyRT.html:59 share/html/Admin/Global/index.html:78 share/html/Admin/Users/MyRT.html:68 share/html/Prefs/MyRT.html:67 share/html/Prefs/MyRT.html:84 share/html/User/Elements/Tabs:77 share/html/index.html:6 share/html/index.html:79
+#: lib/RT/Config.pm:251 lib/RT/Config.pm:260 share/html/Admin/Elements/SystemTabs:73 share/html/Admin/Elements/UserTabs:69 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:51 share/html/Admin/Global/MyRT.html:59 share/html/Admin/Global/index.html:78 share/html/Admin/Users/MyRT.html:68 share/html/Prefs/MyRT.html:67 share/html/Prefs/MyRT.html:84 share/html/User/Elements/Tabs:77 share/html/index.html:6 share/html/index.html:79
 msgid "RT at a glance"
 msgstr "RT en un coup d'œil"
 
@@ -5476,27 +5480,27 @@ msgstr "SeRapporteÀ"
 msgid "Refresh"
 msgstr "Actualiser"
 
-#: lib/RT/Config.pm:257
+#: lib/RT/Config.pm:271
 msgid "Refresh home page every 10 minutes."
 msgstr "Actualiser la page d'acceuil toutes les 10 minutes."
 
-#: lib/RT/Config.pm:260
+#: lib/RT/Config.pm:274
 msgid "Refresh home page every 120 minutes."
 msgstr "Actualiser la page d'acceuil toutes les 120 minutes."
 
-#: lib/RT/Config.pm:255
+#: lib/RT/Config.pm:269
 msgid "Refresh home page every 2 minutes."
 msgstr "Actualiser la page d'accueil toutes les 2 minutes."
 
-#: lib/RT/Config.pm:258
+#: lib/RT/Config.pm:272
 msgid "Refresh home page every 20 minutes."
 msgstr "Actualiser la page principale toutes les 20 minutes."
 
-#: lib/RT/Config.pm:256
+#: lib/RT/Config.pm:270
 msgid "Refresh home page every 5 minutes."
 msgstr "Actualiser la page principale toutes les 5 minutes."
 
-#: lib/RT/Config.pm:259
+#: lib/RT/Config.pm:273
 msgid "Refresh home page every 60 minutes."
 msgstr "Actualiser la page principale toutes les 60 minutes."
 
@@ -5558,7 +5562,7 @@ msgstr "Rappels"
 msgid "Reminders for ticket #%1"
 msgstr "Rappels pour le ticket n°%1"
 
-#: share/html/Search/Bulk.html:103
+#: share/html/Search/Bulk.html:105
 msgid "Remove AdminCc"
 msgstr "Enlever AdminCc"
 
@@ -5566,11 +5570,11 @@ msgstr "Enlever AdminCc"
 msgid "Remove Bookmark"
 msgstr "Supprimer le favori"
 
-#: share/html/Search/Bulk.html:99
+#: share/html/Search/Bulk.html:101
 msgid "Remove Cc"
 msgstr "Enlever Cc"
 
-#: share/html/Search/Bulk.html:95
+#: share/html/Search/Bulk.html:97
 msgid "Remove Requestor"
 msgstr "Enlever Demandeur"
 
@@ -5582,7 +5586,7 @@ msgstr "Répondre"
 msgid "Reply Address"
 msgstr "Adresse de réponse"
 
-#: share/html/Search/Bulk.html:138 share/html/Ticket/ModifyAll.html:97 share/html/Ticket/Update.html:97
+#: lib/RT/Config.pm:244 share/html/Search/Bulk.html:140 share/html/Ticket/ModifyAll.html:97 share/html/Ticket/Update.html:97
 msgid "Reply to requestors"
 msgstr "Répondre aux demandeurs"
 
@@ -5635,7 +5639,7 @@ msgstr "Réinitialiser avec les valeurs par défaut"
 msgid "Residence"
 msgstr "Domicile"
 
-#: share/html/Search/Elements/EditFormat:73 share/html/Ticket/Elements/Tabs:194
+#: share/html/Search/Elements/EditFormat:73 share/html/Ticket/Elements/Tabs:196
 msgid "Resolve"
 msgstr "Résoudre"
 
@@ -6086,7 +6090,7 @@ msgstr "Septembre"
 msgid "Settings"
 msgstr "Réglages"
 
-#: lib/RT/Config.pm:375
+#: lib/RT/Config.pm:389
 msgid "Should RT send you mail for ticket updates you make?"
 msgstr ""
 
@@ -6098,7 +6102,7 @@ msgstr "Afficher"
 msgid "Show Columns"
 msgstr "Afficher les colonnes"
 
-#: share/html/Ticket/Elements/Tabs:314
+#: share/html/Ticket/Elements/Tabs:316
 msgid "Show Results"
 msgstr "Aff. résultats"
 
@@ -6131,7 +6135,7 @@ msgstr "Affichage long"
 msgid "Show link descriptions"
 msgstr "Afficher la description des liens"
 
-#: lib/RT/Config.pm:283
+#: lib/RT/Config.pm:297
 msgid "Show oldest history first"
 msgstr "Afficher le message le plus ancien en premier"
 
@@ -6179,7 +6183,7 @@ msgstr "AfficherTicket"
 msgid "ShowTicketComments"
 msgstr "AfficherCommentairesTickets"
 
-#: share/html/Admin/Elements/ToolTabs:60 share/html/Admin/Tools/Shredder/index.html:78 share/html/Ticket/Elements/Tabs:303
+#: share/html/Admin/Elements/ToolTabs:60 share/html/Admin/Tools/Shredder/index.html:78 share/html/Ticket/Elements/Tabs:305
 msgid "Shredder"
 msgstr "Shredder"
 
@@ -6313,7 +6317,7 @@ msgstr "Changement de statut"
 msgid "Status changed from %1 to %2"
 msgstr "Statut changé de %1 à %2"
 
-#: share/html/Ticket/Elements/Tabs:216
+#: share/html/Ticket/Elements/Tabs:218
 msgid "Steal"
 msgstr "Voler"
 
@@ -6349,7 +6353,7 @@ msgstr "Volé à %1"
 msgid "Style"
 msgstr "Style"
 
-#: lib/RT/Graph/Tickets.pm:157 lib/RT/Ticket_Overlay.pm:910 lib/RT/Tickets_Overlay.pm:125 lib/RT/Tickets_Overlay.pm:2007 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/QuickCreate:53 share/html/Elements/RT__Ticket/ColumnMap:99 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:141 share/html/Search/Elements/BuildFormatString:99 share/html/SelfService/Create.html:83 share/html/SelfService/Update.html:68 share/html/Ticket/Create.html:111 share/html/Ticket/Elements/EditBasics:50 share/html/Ticket/Elements/Reminders:131 share/html/Ticket/Forward.html:64 share/html/Ticket/ModifyAll.html:104 share/html/Ticket/Update.html:102
+#: lib/RT/Graph/Tickets.pm:157 lib/RT/Ticket_Overlay.pm:910 lib/RT/Tickets_Overlay.pm:125 lib/RT/Tickets_Overlay.pm:2007 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/QuickCreate:53 share/html/Elements/RT__Ticket/ColumnMap:99 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:143 share/html/Search/Elements/BuildFormatString:99 share/html/SelfService/Create.html:83 share/html/SelfService/Update.html:68 share/html/Ticket/Create.html:111 share/html/Ticket/Elements/EditBasics:50 share/html/Ticket/Elements/Reminders:131 share/html/Ticket/Forward.html:64 share/html/Ticket/ModifyAll.html:104 share/html/Ticket/Update.html:102
 msgid "Subject"
 msgstr "Sujet"
 
@@ -6426,7 +6430,7 @@ msgstr "Dimanche"
 msgid "SuperUser"
 msgstr "SuperUtilisateur"
 
-#: lib/RT/Config.pm:364
+#: lib/RT/Config.pm:378
 msgid "Suspended"
 msgstr "Suspendu"
 
@@ -6483,7 +6487,7 @@ msgstr "SystemRolegroup à usage interne"
 msgid "TEST_STRING"
 msgstr "Chaîne_de_test"
 
-#: etc/initialdata:566 share/html/Search/Elements/EditFormat:70 share/html/Ticket/Elements/Tabs:209
+#: etc/initialdata:566 share/html/Search/Elements/EditFormat:70 share/html/Ticket/Elements/Tabs:211
 msgid "Take"
 msgstr "Prendre"
 
@@ -6647,6 +6651,10 @@ msgid "The domain name of your database server (like 'db.int.example.com')"
 msgstr "Nom d'hôte du serveur de base de données (exemple 'bd.int.exemple.fr')"
 
 #: bin/rt-crontool:378
+msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they are overdue:"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they haven't been touched in 4 hours:"
 msgstr "Cette commande trouve tous les tickets actifs de la file 'general' et positionne leur priorité à 99 s'ils n'ont pas été touchés depuis quatre heures :"
 
@@ -6814,7 +6822,7 @@ msgstr "Ticket %1"
 msgid "Ticket %1 created in queue '%2'"
 msgstr "Ticket %1 créé dans la file '%2'"
 
-#: share/html/Search/Bulk.html:424 share/html/Tools/MyDay.html:100 share/html/Tools/MyDay.html:91 share/html/Tools/MyDay.html:94
+#: share/html/Search/Bulk.html:437 share/html/Tools/MyDay.html:100 share/html/Tools/MyDay.html:91 share/html/Tools/MyDay.html:94
 #. ($id, $msg)
 #. ($Ticket->Id, $_)
 msgid "Ticket %1: %2"
@@ -6833,7 +6841,7 @@ msgstr "Historique du ticket n°%1 %2"
 msgid "Ticket Resolved"
 msgstr "Ticket résolu"
 
-#: share/html/Elements/CollectionList:180 share/html/Elements/TicketList:64
+#: share/html/Elements/CollectionList:182 share/html/Elements/TicketList:64
 msgid "Ticket Search"
 msgstr "Recherche de ticket"
 
@@ -6857,7 +6865,7 @@ msgstr "Une erreur interne a empêché l'ajout du ticket"
 msgid "Ticket could not be loaded"
 msgstr "Le ticket n'a pas pu être chargé"
 
-#: lib/RT/Config.pm:267
+#: lib/RT/Config.pm:281
 msgid "Ticket display"
 msgstr "Affichage des tickets"
 
@@ -7111,7 +7119,7 @@ msgstr "Se désabonner du tableau de bord %1"
 msgid "Untaken"
 msgstr "Non pris"
 
-#: share/html/Admin/Users/Memberships.html:88 share/html/Elements/RT__Ticket/ColumnMap:301 share/html/Search/Bulk.html:221 share/html/Search/Bulk.html:84 share/html/Search/Elements/EditSearches:70 share/html/Widgets/SelectionBox:224
+#: share/html/Admin/Users/Memberships.html:88 share/html/Elements/RT__Ticket/ColumnMap:301 share/html/Search/Bulk.html:234 share/html/Search/Bulk.html:84 share/html/Search/Elements/EditSearches:70 share/html/Widgets/SelectionBox:224
 msgid "Update"
 msgstr "Mettre à jour"
 
@@ -7123,7 +7131,7 @@ msgstr "Mettre à jour le graphique"
 msgid "Update Ticket"
 msgstr "Mettre à jour le ticket"
 
-#: share/html/Search/Bulk.html:135 share/html/Ticket/ModifyAll.html:90 share/html/Ticket/Update.html:91
+#: share/html/Search/Bulk.html:137 share/html/Ticket/ModifyAll.html:90 share/html/Ticket/Update.html:91
 msgid "Update Type"
 msgstr "Mettre à jour le type"
 
@@ -7131,7 +7139,7 @@ msgstr "Mettre à jour le type"
 msgid "Update format and Search"
 msgstr "Mettre à jour le format et rechercher"
 
-#: share/html/Search/Bulk.html:232
+#: share/html/Search/Bulk.html:245
 msgid "Update multiple tickets"
 msgstr "Mettre à jour plusieurs tickets"
 
@@ -7210,7 +7218,7 @@ msgstr "Utilisation: "
 msgid "Use SSL?"
 msgstr "Utiliser SSL?"
 
-#: lib/RT/Config.pm:313
+#: lib/RT/Config.pm:327
 msgid "Use css rules to display text monospaced and with formatting preserved, but wrap as needed.  This does not work well with IE6 and you should use the previous option"
 msgstr ""
 
@@ -7236,7 +7244,7 @@ msgstr "Utiliser les autres outils d'administration de RT"
 msgid "Use system default (%1)"
 msgstr "Utiliser la valeur système par défaut (%1)"
 
-#: lib/RT/Config.pm:303
+#: lib/RT/Config.pm:317
 msgid "Use this to protect the format of plain text"
 msgstr ""
 
@@ -7432,7 +7440,7 @@ msgstr "Mer"
 msgid "Wednesday"
 msgstr "Mercredi"
 
-#: lib/RT/Config.pm:363
+#: lib/RT/Config.pm:377
 msgid "Weekly digest"
 msgstr "Compilation hebdomadaire"
 
@@ -7666,7 +7674,7 @@ msgstr ""
 msgid "[none]"
 msgstr "[aucun]"
 
-#: lib/RT/Config.pm:302
+#: lib/RT/Config.pm:316
 msgid "add <pre> tag around plain text attachments"
 msgstr ""
 
@@ -7694,6 +7702,10 @@ msgstr "barres"
 #: share/html/Elements/SelectDateRelation:57
 msgid "before"
 msgstr "avant"
+
+#: share/html/Admin/Global/MyRT.html:91
+msgid "body"
+msgstr ""
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:54
 msgid "bottom to top"
@@ -7750,7 +7762,7 @@ msgstr "jours"
 msgid "deleted"
 msgstr "effacé"
 
-#: lib/RT/Config.pm:312
+#: lib/RT/Config.pm:326
 msgid "display wrapped and formatted plain text attachments"
 msgstr ""
 
@@ -8001,6 +8013,10 @@ msgstr ""
 #: lib/RT/Queue_Overlay.pm:80
 msgid "stalled"
 msgstr "stagnant"
+
+#: share/html/Admin/Global/MyRT.html:92
+msgid "summary"
+msgstr ""
 
 #: share/html/Prefs/MyRT.html:89
 msgid "summary rows"

@@ -904,7 +904,7 @@ msgstr "申请激活时间"
 msgid "Add"
 msgstr "新增"
 
-#: share/html/Search/Bulk.html:101
+#: share/html/Search/Bulk.html:103
 msgid "Add AdminCc"
 msgstr "新增管理员副本收件人"
 
@@ -912,7 +912,7 @@ msgstr "新增管理员副本收件人"
 msgid "Add Bookmark"
 msgstr "添加到收藏夹"
 
-#: share/html/Search/Bulk.html:97
+#: share/html/Search/Bulk.html:99
 msgid "Add Cc"
 msgstr "新增副本收件人"
 
@@ -928,7 +928,7 @@ msgstr "新增条件"
 msgid "Add Entry"
 msgstr "新增列"
 
-#: share/html/Search/Bulk.html:163 share/html/Ticket/Create.html:143 share/html/Ticket/ModifyAll.html:132 share/html/Ticket/Update.html:121
+#: share/html/Search/Bulk.html:168 share/html/Ticket/Create.html:143 share/html/Ticket/ModifyAll.html:132 share/html/Ticket/Update.html:121
 msgid "Add More Files"
 msgstr "新增更多附件"
 
@@ -936,7 +936,7 @@ msgstr "新增更多附件"
 msgid "Add Next State"
 msgstr "新增下一项关卡"
 
-#: share/html/Search/Bulk.html:93
+#: share/html/Search/Bulk.html:95
 msgid "Add Requestor"
 msgstr "新增申请人"
 
@@ -976,7 +976,7 @@ msgstr "新增查询条件"
 msgid "Add and Search"
 msgstr "新增并开始查询"
 
-#: share/html/Search/Bulk.html:133
+#: share/html/Search/Bulk.html:135
 msgid "Add comments or replies to selected tickets"
 msgstr "新增评论或回复到指定的申请单"
 
@@ -1000,7 +1000,7 @@ msgstr "加入这些条件和搜索"
 msgid "Add these terms to your search"
 msgstr "将这些条件加进查询内"
 
-#: share/html/Search/Bulk.html:185
+#: share/html/Search/Bulk.html:193
 msgid "Add values"
 msgstr "新增值"
 
@@ -1174,7 +1174,7 @@ msgstr "管理员密码"
 msgid "Admins"
 msgstr "主管"
 
-#: share/html/Ticket/Elements/Tabs:282
+#: share/html/Ticket/Elements/Tabs:284
 msgid "Advanced"
 msgstr "高级"
 
@@ -1399,7 +1399,7 @@ msgstr "指派及移除自订字段"
 msgid "AssignCustomFields"
 msgstr "指派自订字段"
 
-#: share/html/Search/Bulk.html:162 share/html/SelfService/Update.html:90 share/html/Ticket/ModifyAll.html:130 share/html/Ticket/Update.html:121
+#: share/html/Search/Bulk.html:167 share/html/SelfService/Update.html:90 share/html/Ticket/ModifyAll.html:130 share/html/Ticket/Update.html:121
 msgid "Attach"
 msgstr "附件"
 
@@ -1407,7 +1407,7 @@ msgstr "附件"
 msgid "Attach file"
 msgstr "附加档案"
 
-#: share/html/Search/Bulk.html:152 share/html/SelfService/Update.html:78 share/html/Ticket/Create.html:127 share/html/Ticket/ModifyAll.html:119 share/html/Ticket/Update.html:111
+#: share/html/Search/Bulk.html:157 share/html/SelfService/Update.html:78 share/html/Ticket/Create.html:127 share/html/Ticket/ModifyAll.html:119 share/html/Ticket/Update.html:111
 msgid "Attached file"
 msgstr "现有附件"
 
@@ -1597,7 +1597,7 @@ msgstr "收藏的标签"
 msgid "Brief headers"
 msgstr "精简标头档"
 
-#: share/html/Ticket/Elements/Tabs:319
+#: share/html/Ticket/Elements/Tabs:321
 msgid "Bulk Update"
 msgstr "整批更新"
 
@@ -1764,7 +1764,7 @@ msgstr "检查数据库可连接性"
 msgid "Check Database Credentials"
 msgstr "检查数据库证书"
 
-#: share/html/Search/Bulk.html:154 share/html/SelfService/Update.html:81 share/html/Ticket/Create.html:130 share/html/Ticket/ModifyAll.html:121 share/html/Ticket/Update.html:113
+#: share/html/Search/Bulk.html:159 share/html/SelfService/Update.html:81 share/html/Ticket/Create.html:130 share/html/Ticket/ModifyAll.html:121 share/html/Ticket/Update.html:113
 msgid "Check box to delete"
 msgstr "选择欲删除的项目"
 
@@ -1856,7 +1856,7 @@ msgstr "下拉文字框：选择或键入最多 %1 个项目"
 msgid "Command not understood!\\n"
 msgstr "指令无法辨识！\\n"
 
-#: share/html/Search/Elements/EditFormat:72 share/html/Ticket/Elements/ShowTransaction:197 share/html/Ticket/Elements/Tabs:227
+#: share/html/Search/Elements/EditFormat:72 share/html/Ticket/Elements/ShowTransaction:197 share/html/Ticket/Elements/Tabs:229
 msgid "Comment"
 msgstr "评论"
 
@@ -1888,11 +1888,11 @@ msgstr "评论申请单"
 msgid "Comments"
 msgstr "评论"
 
-#: share/html/Ticket/ModifyAll.html:94 share/html/Ticket/Update.html:94
+#: lib/RT/Config.pm:243 share/html/Ticket/ModifyAll.html:94 share/html/Ticket/Update.html:94
 msgid "Comments (Not sent to requestors)"
 msgstr "评论(不送给申请人)"
 
-#: share/html/Search/Bulk.html:137
+#: share/html/Search/Bulk.html:139
 msgid "Comments (not sent to requestors)"
 msgstr "评论(不送给申请人)"
 
@@ -2869,7 +2869,7 @@ msgstr "DBA 密码"
 msgid "DBA username"
 msgstr "DBA 用户名"
 
-#: lib/RT/Config.pm:362
+#: lib/RT/Config.pm:376
 msgid "Daily digest"
 msgstr "每日摘要"
 
@@ -2931,7 +2931,7 @@ msgstr "容许外部联机"
 msgid "DatabaseName"
 msgstr "MySQL数据库"
 
-#: lib/RT/Config.pm:323
+#: lib/RT/Config.pm:337
 msgid "Date format"
 msgstr "日期格式"
 
@@ -2994,6 +2994,10 @@ msgstr "预设表单"
 #: share/html/Tools/Offline.html:71
 msgid "Default Requestor"
 msgstr "预设申请人"
+
+#: lib/RT/Config.pm:240
+msgid "Default Update Type when Resolving"
+msgstr ""
 
 #: NOT FOUND IN SOURCE
 msgid "Default Value"
@@ -3146,7 +3150,7 @@ msgstr "删除系统仪表盘"
 msgid "Delete tickets"
 msgstr "删除申请单"
 
-#: share/html/Search/Bulk.html:186
+#: share/html/Search/Bulk.html:194
 msgid "Delete values"
 msgstr "删除值"
 
@@ -3384,7 +3388,7 @@ msgstr "域名"
 msgid "Don't include http://, just something like 'localhost', 'rt.example.com'"
 msgstr "不要包括“http://”，类似 'localhost', 'rt.example.com' 就好了"
 
-#: lib/RT/Config.pm:254
+#: lib/RT/Config.pm:268
 msgid "Don't refresh home page."
 msgstr "不要刷新主页。"
 
@@ -3465,7 +3469,7 @@ msgstr "编辑"
 msgid "Edit Conditions"
 msgstr "编辑前置条件"
 
-#: share/html/Search/Bulk.html:181
+#: share/html/Search/Bulk.html:189
 msgid "Edit Custom Fields"
 msgstr "编辑自订字段"
 
@@ -3494,7 +3498,7 @@ msgstr "编辑表单 %1 的自订字段"
 msgid "Edit Custom Fields for tickets in all queues"
 msgstr "编辑适用于所有表单内申请单的自订字段"
 
-#: share/html/Search/Bulk.html:216 share/html/Ticket/ModifyLinks.html:62
+#: share/html/Search/Bulk.html:229 share/html/Ticket/ModifyLinks.html:62
 msgid "Edit Links"
 msgstr "编辑申请单关系"
 
@@ -3502,7 +3506,7 @@ msgstr "编辑申请单关系"
 msgid "Edit Query"
 msgstr "编辑查询"
 
-#: share/html/Ticket/Elements/Tabs:278
+#: share/html/Ticket/Elements/Tabs:280
 msgid "Edit Search"
 msgstr "编辑查询"
 
@@ -3621,7 +3625,7 @@ msgstr "Email 摘要"
 msgid "Email address in use"
 msgstr "此电子邮件信箱已被使用"
 
-#: lib/RT/Config.pm:359
+#: lib/RT/Config.pm:373
 msgid "Email delivery"
 msgstr "Email 投递"
 
@@ -3763,7 +3767,7 @@ msgstr ""
 msgid "Enter queues or URIs to link queues to. Separate multiple entries with spaces."
 msgstr "键入欲将表单连结至的对象或 URI。项目之间请以空白隔开。"
 
-#: share/html/Elements/EditLinks:120 share/html/Search/Bulk.html:217 share/html/Ticket/Elements/BulkLinks:123
+#: share/html/Elements/EditLinks:120 share/html/Search/Bulk.html:230 share/html/Ticket/Elements/BulkLinks:123
 msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
 msgstr "键入申请单可链接到的申请单编号或网址。项目之间请以空白隔开。"
 
@@ -4165,7 +4169,7 @@ msgstr "甲 乙 丙"
 msgid "Foo!"
 msgstr "甲！"
 
-#: share/html/Search/Bulk.html:92
+#: share/html/Search/Bulk.html:94
 msgid "Force change"
 msgstr "强制更换"
 
@@ -4288,7 +4292,7 @@ msgstr "登入帐号"
 msgid "Gender"
 msgstr "性别"
 
-#: lib/RT/Config.pm:169 lib/RT/Config.pm:216
+#: lib/RT/Config.pm:169 lib/RT/Config.pm:216 lib/RT/Config.pm:235
 msgid "General"
 msgstr ""
 
@@ -4341,7 +4345,7 @@ msgstr "全域设定"
 msgid "Global custom field configuration"
 msgstr "全域自订字段设定"
 
-#: share/html/Admin/Global/MyRT.html:102
+#: share/html/Admin/Global/MyRT.html:105
 #. ($pane)
 msgid "Global portlet %1 saved."
 msgstr "成功储存全域入口组件 %1。"
@@ -4405,7 +4409,7 @@ msgstr "跳到申请单"
 msgid "Grand"
 msgstr "上"
 
-#: share/html/Ticket/Elements/ShowSummary:109 share/html/Ticket/Elements/Tabs:324 share/html/Ticket/ModifyLinks.html:61
+#: share/html/Ticket/Elements/ShowSummary:109 share/html/Ticket/Elements/Tabs:326 share/html/Ticket/ModifyLinks.html:61
 msgid "Graph"
 msgstr ""
 
@@ -4635,7 +4639,7 @@ msgstr "使用者 %1 的纪录"
 msgid "Home"
 msgstr ""
 
-#: lib/RT/Config.pm:251
+#: lib/RT/Config.pm:265
 msgid "Home page refresh interval"
 msgstr ""
 
@@ -4769,7 +4773,7 @@ msgstr "不完整的查询"
 msgid "Indirect Employee"
 msgstr "直接/间接员工"
 
-#: lib/RT/Config.pm:361
+#: lib/RT/Config.pm:375
 msgid "Individual messages"
 msgstr ""
 
@@ -5091,7 +5095,7 @@ msgstr "剩馀时间"
 msgid "Legends"
 msgstr ""
 
-#: lib/RT/Config.pm:274
+#: lib/RT/Config.pm:288
 msgid "Length in characters; Use '0' to show all messages inline, regardless of length"
 msgstr ""
 
@@ -5215,7 +5219,7 @@ msgstr ""
 msgid "Loaded search %1"
 msgstr "已加载查询 %1"
 
-#: lib/RT/Config.pm:319
+#: lib/RT/Config.pm:333
 msgid "Locale"
 msgstr ""
 
@@ -5269,7 +5273,7 @@ msgstr "长期契约员工"
 msgid "Lookup type mismatch"
 msgstr "对应的类别不符"
 
-#: lib/RT/Config.pm:354 lib/RT/Config.pm:369
+#: lib/RT/Config.pm:368 lib/RT/Config.pm:383
 msgid "Mail"
 msgstr ""
 
@@ -5281,39 +5285,39 @@ msgstr ""
 msgid "Make Owner"
 msgstr "新增承办人"
 
-#: share/html/Search/Bulk.html:115
+#: share/html/Search/Bulk.html:117
 msgid "Make Status"
 msgstr "新增现况"
 
-#: share/html/Search/Bulk.html:123
+#: share/html/Search/Bulk.html:125
 msgid "Make date Due"
 msgstr "新增到期日"
 
-#: share/html/Search/Bulk.html:125
+#: share/html/Search/Bulk.html:127
 msgid "Make date Resolved"
 msgstr "新增解决日期"
 
-#: share/html/Search/Bulk.html:119
+#: share/html/Search/Bulk.html:121
 msgid "Make date Started"
 msgstr "新增实际起始日期"
 
-#: share/html/Search/Bulk.html:117
+#: share/html/Search/Bulk.html:119
 msgid "Make date Starts"
 msgstr "新增应起始日期"
 
-#: share/html/Search/Bulk.html:121
+#: share/html/Search/Bulk.html:123
 msgid "Make date Told"
 msgstr "新增报告日期"
 
-#: share/html/Search/Bulk.html:111
+#: share/html/Search/Bulk.html:113
 msgid "Make priority"
 msgstr "新增优先顺位"
 
-#: share/html/Search/Bulk.html:113
+#: share/html/Search/Bulk.html:115
 msgid "Make queue"
 msgstr "新增表单"
 
-#: share/html/Search/Bulk.html:109
+#: share/html/Search/Bulk.html:111
 msgid "Make subject"
 msgstr "新增主题"
 
@@ -5385,7 +5389,7 @@ msgstr "符合样式"
 msgid "MaxValues"
 msgstr ""
 
-#: lib/RT/Config.pm:272
+#: lib/RT/Config.pm:286
 msgid "Maximum inline message length"
 msgstr ""
 
@@ -5480,7 +5484,7 @@ msgstr "整合进"
 msgid "Merged into %1"
 msgstr "已整合进 %1"
 
-#: share/html/Search/Bulk.html:165 share/html/Ticket/Update.html:134
+#: share/html/Search/Bulk.html:170 share/html/Ticket/Update.html:134
 msgid "Message"
 msgstr "讯息"
 
@@ -5967,7 +5971,7 @@ msgstr ""
 msgid "NEWLINE"
 msgstr "(换列)"
 
-#: share/html/Admin/CustomFields/Modify.html:61 share/html/Admin/Elements/AddCustomFieldValue:54 share/html/Admin/Elements/EditCustomField:57 share/html/Admin/Elements/EditCustomFieldValues:58 share/html/Admin/Elements/ModifyTemplate:51 share/html/Admin/Groups/Modify.html:67 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Dashboards/Elements/ShowDashboards:79 share/html/Dashboards/Modify.html:65 share/html/Elements/RT__Group/ColumnMap:77 share/html/Elements/RT__Template/ColumnMap:61 share/html/Elements/RT__User/ColumnMap:61 share/html/Search/Bulk.html:184 share/html/User/Groups/Modify.html:67
+#: share/html/Admin/CustomFields/Modify.html:61 share/html/Admin/Elements/AddCustomFieldValue:54 share/html/Admin/Elements/EditCustomField:57 share/html/Admin/Elements/EditCustomFieldValues:58 share/html/Admin/Elements/ModifyTemplate:51 share/html/Admin/Groups/Modify.html:67 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Dashboards/Elements/ShowDashboards:79 share/html/Dashboards/Modify.html:65 share/html/Elements/RT__Group/ColumnMap:77 share/html/Elements/RT__Template/ColumnMap:61 share/html/Elements/RT__User/ColumnMap:61 share/html/Search/Bulk.html:192 share/html/User/Groups/Modify.html:67
 msgid "Name"
 msgstr "名称"
 
@@ -6015,7 +6019,7 @@ msgstr "新增查询"
 msgid "New Request"
 msgstr "表单申请"
 
-#: share/html/Ticket/Elements/Tabs:274
+#: share/html/Ticket/Elements/Tabs:276
 msgid "New Search"
 msgstr "新增查询"
 
@@ -6315,7 +6319,7 @@ msgstr "没有选定权限"
 msgid "No search loaded"
 msgstr "尚未加载查询"
 
-#: share/html/Search/Bulk.html:293
+#: share/html/Search/Bulk.html:306
 msgid "No search to operate on."
 msgstr "没有要进行的查询"
 
@@ -6511,7 +6515,7 @@ msgstr "通知申请人、副本及管理员副本收件人"
 msgid "Notify Requestors, Ccs and AdminCcs as Comment"
 msgstr "以评论方式通知申请人、副本及管理员副本收件人"
 
-#: lib/RT/Config.pm:292
+#: lib/RT/Config.pm:306
 msgid "Notify me of unread messages"
 msgstr ""
 
@@ -6531,7 +6535,7 @@ msgstr "11"
 msgid "November"
 msgstr "十一月"
 
-#: lib/RT/Config.pm:242
+#: lib/RT/Config.pm:256
 msgid "Number of search results"
 msgstr ""
 
@@ -6703,7 +6707,7 @@ msgstr "开启申请单"
 msgid "Open URL"
 msgstr ""
 
-#: share/html/Ticket/Elements/Tabs:200
+#: share/html/Ticket/Elements/Tabs:202
 msgid "Open it"
 msgstr "开启"
 
@@ -6788,7 +6792,7 @@ msgstr "已纪录发送的评论邮件"
 msgid "Outgoing email recorded"
 msgstr "已纪录发送的邮件"
 
-#: lib/RT/Config.pm:374
+#: lib/RT/Config.pm:388
 msgid "Outgoing mail"
 msgstr ""
 
@@ -6985,7 +6989,7 @@ msgstr "权限不足"
 msgid "Permission Settings"
 msgstr "权限设定"
 
-#: lib/RT/SharedSetting.pm:110 lib/RT/SharedSetting.pm:187 lib/RT/SharedSetting.pm:228 lib/RT/SharedSetting.pm:261 share/html/Admin/Global/MyRT.html:98 share/html/Dashboards/Modify.html:98
+#: lib/RT/SharedSetting.pm:110 lib/RT/SharedSetting.pm:187 lib/RT/SharedSetting.pm:228 lib/RT/SharedSetting.pm:261 share/html/Admin/Global/MyRT.html:101 share/html/Dashboards/Modify.html:98
 msgid "Permission denied"
 msgstr "权限不足"
 
@@ -7528,7 +7532,7 @@ msgstr ""
 msgid "RT Variables"
 msgstr "RT 的变数"
 
-#: lib/RT/Config.pm:237 lib/RT/Config.pm:246 share/html/Admin/Elements/SystemTabs:73 share/html/Admin/Elements/UserTabs:69 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:51 share/html/Admin/Global/MyRT.html:59 share/html/Admin/Global/index.html:78 share/html/Admin/Users/MyRT.html:68 share/html/Prefs/MyRT.html:67 share/html/Prefs/MyRT.html:84 share/html/User/Elements/Tabs:77 share/html/index.html:6 share/html/index.html:79
+#: lib/RT/Config.pm:251 lib/RT/Config.pm:260 share/html/Admin/Elements/SystemTabs:73 share/html/Admin/Elements/UserTabs:69 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:51 share/html/Admin/Global/MyRT.html:59 share/html/Admin/Global/index.html:78 share/html/Admin/Users/MyRT.html:68 share/html/Prefs/MyRT.html:67 share/html/Prefs/MyRT.html:84 share/html/User/Elements/Tabs:77 share/html/index.html:6 share/html/index.html:79
 msgid "RT at a glance"
 msgstr "RT 一览"
 
@@ -7736,27 +7740,27 @@ msgstr "调整查询条件"
 msgid "Refresh"
 msgstr "更新"
 
-#: lib/RT/Config.pm:257
+#: lib/RT/Config.pm:271
 msgid "Refresh home page every 10 minutes."
 msgstr ""
 
-#: lib/RT/Config.pm:260
+#: lib/RT/Config.pm:274
 msgid "Refresh home page every 120 minutes."
 msgstr ""
 
-#: lib/RT/Config.pm:255
+#: lib/RT/Config.pm:269
 msgid "Refresh home page every 2 minutes."
 msgstr ""
 
-#: lib/RT/Config.pm:258
+#: lib/RT/Config.pm:272
 msgid "Refresh home page every 20 minutes."
 msgstr ""
 
-#: lib/RT/Config.pm:256
+#: lib/RT/Config.pm:270
 msgid "Refresh home page every 5 minutes."
 msgstr ""
 
-#: lib/RT/Config.pm:259
+#: lib/RT/Config.pm:273
 msgid "Refresh home page every 60 minutes."
 msgstr ""
 
@@ -7822,7 +7826,7 @@ msgstr "申请单 #%1 的提醒项目"
 msgid "Remove"
 msgstr "移除"
 
-#: share/html/Search/Bulk.html:103
+#: share/html/Search/Bulk.html:105
 msgid "Remove AdminCc"
 msgstr "移除管理员副本"
 
@@ -7830,11 +7834,11 @@ msgstr "移除管理员副本"
 msgid "Remove Bookmark"
 msgstr ""
 
-#: share/html/Search/Bulk.html:99
+#: share/html/Search/Bulk.html:101
 msgid "Remove Cc"
 msgstr "移除副本"
 
-#: share/html/Search/Bulk.html:95
+#: share/html/Search/Bulk.html:97
 msgid "Remove Requestor"
 msgstr "移除申请人"
 
@@ -7846,7 +7850,7 @@ msgstr "回复"
 msgid "Reply Address"
 msgstr "回复地址"
 
-#: share/html/Search/Bulk.html:138 share/html/Ticket/ModifyAll.html:97 share/html/Ticket/Update.html:97
+#: lib/RT/Config.pm:244 share/html/Search/Bulk.html:140 share/html/Ticket/ModifyAll.html:97 share/html/Ticket/Update.html:97
 msgid "Reply to requestors"
 msgstr "回复申请人"
 
@@ -7939,7 +7943,7 @@ msgstr "住处"
 msgid "Resolution"
 msgstr "解决状态"
 
-#: share/html/Search/Elements/EditFormat:73 share/html/Ticket/Elements/Tabs:194
+#: share/html/Search/Elements/EditFormat:73 share/html/Ticket/Elements/Tabs:196
 msgid "Resolve"
 msgstr "解决"
 
@@ -8546,7 +8550,7 @@ msgstr ""
 msgid "Shift Type"
 msgstr "班别属性"
 
-#: lib/RT/Config.pm:375
+#: lib/RT/Config.pm:389
 msgid "Should RT send you mail for ticket updates you make?"
 msgstr ""
 
@@ -8562,7 +8566,7 @@ msgstr "显示待签核申请单"
 msgid "Show Columns"
 msgstr "显示字段"
 
-#: share/html/Ticket/Elements/Tabs:314
+#: share/html/Ticket/Elements/Tabs:316
 msgid "Show Results"
 msgstr "显示结果"
 
@@ -8595,7 +8599,7 @@ msgstr "显示细节"
 msgid "Show link descriptions"
 msgstr ""
 
-#: lib/RT/Config.pm:283
+#: lib/RT/Config.pm:297
 msgid "Show oldest history first"
 msgstr ""
 
@@ -8651,7 +8655,7 @@ msgstr "显示申请单"
 msgid "ShowTicketComments"
 msgstr "显示申请单的评论"
 
-#: share/html/Admin/Elements/ToolTabs:60 share/html/Admin/Tools/Shredder/index.html:78 share/html/Ticket/Elements/Tabs:303
+#: share/html/Admin/Elements/ToolTabs:60 share/html/Admin/Tools/Shredder/index.html:78 share/html/Ticket/Elements/Tabs:305
 msgid "Shredder"
 msgstr ""
 
@@ -8833,7 +8837,7 @@ msgstr "状态从 %1 改为 %2"
 msgid "StatusChange"
 msgstr "现况改变时"
 
-#: share/html/Ticket/Elements/Tabs:216
+#: share/html/Ticket/Elements/Tabs:218
 msgid "Steal"
 msgstr "强制更换承办人"
 
@@ -8873,7 +8877,7 @@ msgstr "样式"
 msgid "Subgroup"
 msgstr "子群组"
 
-#: lib/RT/Graph/Tickets.pm:157 lib/RT/Ticket_Overlay.pm:910 lib/RT/Tickets_Overlay.pm:125 lib/RT/Tickets_Overlay.pm:2007 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/QuickCreate:53 share/html/Elements/RT__Ticket/ColumnMap:99 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:141 share/html/Search/Elements/BuildFormatString:99 share/html/SelfService/Create.html:83 share/html/SelfService/Update.html:68 share/html/Ticket/Create.html:111 share/html/Ticket/Elements/EditBasics:50 share/html/Ticket/Elements/Reminders:131 share/html/Ticket/Forward.html:64 share/html/Ticket/ModifyAll.html:104 share/html/Ticket/Update.html:102
+#: lib/RT/Graph/Tickets.pm:157 lib/RT/Ticket_Overlay.pm:910 lib/RT/Tickets_Overlay.pm:125 lib/RT/Tickets_Overlay.pm:2007 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/QuickCreate:53 share/html/Elements/RT__Ticket/ColumnMap:99 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:143 share/html/Search/Elements/BuildFormatString:99 share/html/SelfService/Create.html:83 share/html/SelfService/Update.html:68 share/html/Ticket/Create.html:111 share/html/Ticket/Elements/EditBasics:50 share/html/Ticket/Elements/Reminders:131 share/html/Ticket/Forward.html:64 share/html/Ticket/ModifyAll.html:104 share/html/Ticket/Update.html:102
 msgid "Subject"
 msgstr "主题"
 
@@ -8962,7 +8966,7 @@ msgstr ""
 msgid "SuperUser"
 msgstr "系统管理员"
 
-#: lib/RT/Config.pm:364
+#: lib/RT/Config.pm:378
 msgid "Suspended"
 msgstr ""
 
@@ -9059,7 +9063,7 @@ msgstr "TEST_STRING"
 msgid "TabbedUI"
 msgstr "页签接口"
 
-#: etc/initialdata:566 share/html/Search/Elements/EditFormat:70 share/html/Ticket/Elements/Tabs:209
+#: etc/initialdata:566 share/html/Search/Elements/EditFormat:70 share/html/Ticket/Elements/Tabs:211
 msgid "Take"
 msgstr "受理"
 
@@ -9271,6 +9275,10 @@ msgid "The domain name of your database server (like 'db.example.com')."
 msgstr ""
 
 #: bin/rt-crontool:378
+msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they are overdue:"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they haven't been touched in 4 hours:"
 msgstr "下列命令会找到 'general' 表单内所有运作中的申请单，并将其中 4 小时内未处理的申请单优先程度设为 99："
 
@@ -9466,7 +9474,7 @@ msgstr "申请单 #%1 成功新增于 '%2' 表单"
 msgid "Ticket %1 loaded\\n"
 msgstr "加载申请单 %1\\n"
 
-#: share/html/Search/Bulk.html:424 share/html/Tools/MyDay.html:100 share/html/Tools/MyDay.html:91 share/html/Tools/MyDay.html:94
+#: share/html/Search/Bulk.html:437 share/html/Tools/MyDay.html:100 share/html/Tools/MyDay.html:91 share/html/Tools/MyDay.html:94
 #. ($id, $msg)
 #. ($Ticket->Id, $_)
 msgid "Ticket %1: %2"
@@ -9501,7 +9509,7 @@ msgstr "表单运行期限"
 msgid "Ticket Resolved"
 msgstr "申请单已解决"
 
-#: share/html/Elements/CollectionList:180 share/html/Elements/TicketList:64
+#: share/html/Elements/CollectionList:182 share/html/Elements/TicketList:64
 msgid "Ticket Search"
 msgstr ""
 
@@ -9545,7 +9553,7 @@ msgstr "申请单新增失败"
 msgid "Ticket deleted"
 msgstr "申请单删除完毕"
 
-#: lib/RT/Config.pm:267
+#: lib/RT/Config.pm:281
 msgid "Ticket display"
 msgstr ""
 
@@ -9859,7 +9867,7 @@ msgstr "未命名的查询"
 msgid "Up"
 msgstr "上一页"
 
-#: share/html/Admin/Users/Memberships.html:88 share/html/Elements/RT__Ticket/ColumnMap:301 share/html/Search/Bulk.html:221 share/html/Search/Bulk.html:84 share/html/Search/Elements/EditSearches:70 share/html/Widgets/SelectionBox:224
+#: share/html/Admin/Users/Memberships.html:88 share/html/Elements/RT__Ticket/ColumnMap:301 share/html/Search/Bulk.html:234 share/html/Search/Bulk.html:84 share/html/Search/Elements/EditSearches:70 share/html/Widgets/SelectionBox:224
 msgid "Update"
 msgstr "处理"
 
@@ -9879,7 +9887,7 @@ msgstr "更新编号"
 msgid "Update Ticket"
 msgstr "更新申请单"
 
-#: share/html/Search/Bulk.html:135 share/html/Ticket/ModifyAll.html:90 share/html/Ticket/Update.html:91
+#: share/html/Search/Bulk.html:137 share/html/Ticket/ModifyAll.html:90 share/html/Ticket/Update.html:91
 msgid "Update Type"
 msgstr "更新类别"
 
@@ -9895,7 +9903,7 @@ msgstr "更新电子邮件信箱"
 msgid "Update format and Search"
 msgstr ""
 
-#: share/html/Search/Bulk.html:232
+#: share/html/Search/Bulk.html:245
 msgid "Update multiple tickets"
 msgstr "批次更新申请单"
 
@@ -9990,7 +9998,7 @@ msgstr ""
 msgid "Use SSL?"
 msgstr ""
 
-#: lib/RT/Config.pm:313
+#: lib/RT/Config.pm:327
 msgid "Use css rules to display text monospaced and with formatting preserved, but wrap as needed.  This does not work well with IE6 and you should use the previous option"
 msgstr ""
 
@@ -10008,7 +10016,7 @@ msgstr "使用其它的 RT 管理工具"
 msgid "Use system default (%1)"
 msgstr ""
 
-#: lib/RT/Config.pm:303
+#: lib/RT/Config.pm:317
 msgid "Use this to protect the format of plain text"
 msgstr ""
 
@@ -10280,7 +10288,7 @@ msgstr "星期三"
 msgid "Wednesday"
 msgstr ""
 
-#: lib/RT/Config.pm:363
+#: lib/RT/Config.pm:377
 msgid "Weekly digest"
 msgstr ""
 
@@ -10578,7 +10586,7 @@ msgstr "[没有标题]"
 msgid "[none]"
 msgstr "[无]"
 
-#: lib/RT/Config.pm:302
+#: lib/RT/Config.pm:316
 msgid "add <pre> tag around plain text attachments"
 msgstr ""
 
@@ -10618,6 +10626,10 @@ msgstr ""
 #: share/html/Elements/SelectDateRelation:57
 msgid "before"
 msgstr "早于"
+
+#: share/html/Admin/Global/MyRT.html:91
+msgid "body"
+msgstr ""
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:54
 msgid "bottom to top"
@@ -10714,7 +10726,7 @@ msgstr "删除"
 msgid "deleted"
 msgstr "已删除"
 
-#: lib/RT/Config.pm:312
+#: lib/RT/Config.pm:326
 msgid "display wrapped and formatted plain text attachments"
 msgstr ""
 
@@ -11033,6 +11045,10 @@ msgstr "延宕"
 #: NOT FOUND IN SOURCE
 msgid "style: %1"
 msgstr "样式：%1"
+
+#: share/html/Admin/Global/MyRT.html:92
+msgid "summary"
+msgstr ""
 
 #: share/html/Prefs/MyRT.html:89
 msgid "summary rows"

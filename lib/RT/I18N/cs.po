@@ -600,7 +600,7 @@ msgstr "Akce je povinným parametrem"
 msgid "Action prepared..."
 msgstr "Akce připravena..."
 
-#: share/html/Search/Bulk.html:101
+#: share/html/Search/Bulk.html:103
 msgid "Add AdminCc"
 msgstr "Přidat AdminCc"
 
@@ -608,7 +608,7 @@ msgstr "Přidat AdminCc"
 msgid "Add Bookmark"
 msgstr "Přidat záložku"
 
-#: share/html/Search/Bulk.html:97
+#: share/html/Search/Bulk.html:99
 msgid "Add Cc"
 msgstr "Přidat Cc"
 
@@ -620,11 +620,11 @@ msgstr "Přidat sloupce"
 msgid "Add Criteria"
 msgstr "Přidat podmínku"
 
-#: share/html/Search/Bulk.html:163 share/html/Ticket/Create.html:143 share/html/Ticket/ModifyAll.html:132 share/html/Ticket/Update.html:121
+#: share/html/Search/Bulk.html:168 share/html/Ticket/Create.html:143 share/html/Ticket/ModifyAll.html:132 share/html/Ticket/Update.html:121
 msgid "Add More Files"
 msgstr "Přidat další soubory"
 
-#: share/html/Search/Bulk.html:93
+#: share/html/Search/Bulk.html:95
 msgid "Add Requestor"
 msgstr "Přidat žadatele"
 
@@ -636,7 +636,7 @@ msgstr "Přidat hodnotu"
 msgid "Add a scrip which will apply to all queues"
 msgstr "Přidat scrip platný ve všech frontách"
 
-#: share/html/Search/Bulk.html:133
+#: share/html/Search/Bulk.html:135
 msgid "Add comments or replies to selected tickets"
 msgstr "Přidat komentáře či odpovědi k vybraným požadavkům"
 
@@ -656,7 +656,7 @@ msgstr "Přidat tyto podmínky"
 msgid "Add these terms and Search"
 msgstr "Přidat tyto podmínky a hledat"
 
-#: share/html/Search/Bulk.html:185
+#: share/html/Search/Bulk.html:193
 msgid "Add values"
 msgstr "Přidat hodnoty"
 
@@ -754,7 +754,7 @@ msgstr "Administrativní Cc"
 msgid "Administrative password"
 msgstr "Administrativní heslo"
 
-#: share/html/Ticket/Elements/Tabs:282
+#: share/html/Ticket/Elements/Tabs:284
 msgid "Advanced"
 msgstr "Pokročilé"
 
@@ -867,7 +867,7 @@ msgstr "Přidělit a odebrat uživatelské položky"
 msgid "AssignCustomFields"
 msgstr "Přidělit uživatelské položky"
 
-#: share/html/Search/Bulk.html:162 share/html/SelfService/Update.html:90 share/html/Ticket/ModifyAll.html:130 share/html/Ticket/Update.html:121
+#: share/html/Search/Bulk.html:167 share/html/SelfService/Update.html:90 share/html/Ticket/ModifyAll.html:130 share/html/Ticket/Update.html:121
 msgid "Attach"
 msgstr "Přiložit"
 
@@ -875,7 +875,7 @@ msgstr "Přiložit"
 msgid "Attach file"
 msgstr "Připojit soubor"
 
-#: share/html/Search/Bulk.html:152 share/html/SelfService/Update.html:78 share/html/Ticket/Create.html:127 share/html/Ticket/ModifyAll.html:119 share/html/Ticket/Update.html:111
+#: share/html/Search/Bulk.html:157 share/html/SelfService/Update.html:78 share/html/Ticket/Create.html:127 share/html/Ticket/ModifyAll.html:119 share/html/Ticket/Update.html:111
 msgid "Attached file"
 msgstr "Připojený soubor"
 
@@ -977,7 +977,7 @@ msgstr "Záložky"
 msgid "Brief headers"
 msgstr "Zkrácené hlavičky"
 
-#: share/html/Ticket/Elements/Tabs:319
+#: share/html/Ticket/Elements/Tabs:321
 msgid "Bulk Update"
 msgstr "Hromadná úprava"
 
@@ -1092,7 +1092,7 @@ msgstr "Kontrola připojení k databázi"
 msgid "Check Database Credentials"
 msgstr ""
 
-#: share/html/Search/Bulk.html:154 share/html/SelfService/Update.html:81 share/html/Ticket/Create.html:130 share/html/Ticket/ModifyAll.html:121 share/html/Ticket/Update.html:113
+#: share/html/Search/Bulk.html:159 share/html/SelfService/Update.html:81 share/html/Ticket/Create.html:130 share/html/Ticket/ModifyAll.html:121 share/html/Ticket/Update.html:113
 msgid "Check box to delete"
 msgstr "Zašrtnutím odstraníte"
 
@@ -1160,7 +1160,7 @@ msgstr "Combobox: Vybrat nebo zadat jednu hodnotu"
 msgid "Combobox: Select or enter up to %1 values"
 msgstr "Combobox: Vybrat nebo zadat nejvýše %1 %quant(%1,hodnotu,hodnoty,hodnot)"
 
-#: share/html/Search/Elements/EditFormat:72 share/html/Ticket/Elements/ShowTransaction:197 share/html/Ticket/Elements/Tabs:227
+#: share/html/Search/Elements/EditFormat:72 share/html/Ticket/Elements/ShowTransaction:197 share/html/Ticket/Elements/Tabs:229
 msgid "Comment"
 msgstr "Komentovat"
 
@@ -1188,11 +1188,11 @@ msgstr "Komentovat požadavky"
 msgid "Comments"
 msgstr "Poznámky"
 
-#: share/html/Ticket/ModifyAll.html:94 share/html/Ticket/Update.html:94
+#: lib/RT/Config.pm:243 share/html/Ticket/ModifyAll.html:94 share/html/Ticket/Update.html:94
 msgid "Comments (Not sent to requestors)"
 msgstr "Komentář (Neposílá se žadatelům)"
 
-#: share/html/Search/Bulk.html:137
+#: share/html/Search/Bulk.html:139
 msgid "Comments (not sent to requestors)"
 msgstr "Komentář (nepošle se žadatelům)"
 
@@ -1893,7 +1893,7 @@ msgstr "Heslo DBA"
 msgid "DBA username"
 msgstr "Uživatelské jméno DBA"
 
-#: lib/RT/Config.pm:362
+#: lib/RT/Config.pm:376
 msgid "Daily digest"
 msgstr "Denní přehled"
 
@@ -1943,7 +1943,7 @@ msgstr "Typ databáze"
 msgid "Database username for RT"
 msgstr "Databázové uživatelské jméno pro RT"
 
-#: lib/RT/Config.pm:323
+#: lib/RT/Config.pm:337
 msgid "Date format"
 msgstr "Formát datumu"
 
@@ -1990,6 +1990,10 @@ msgstr "Implicitní fronta"
 #: share/html/Tools/Offline.html:71
 msgid "Default Requestor"
 msgstr "Implicitní žadatel"
+
+#: lib/RT/Config.pm:240
+msgid "Default Update Type when Resolving"
+msgstr ""
 
 #: etc/initialdata:271
 msgid "Default admin comment template"
@@ -2074,7 +2078,7 @@ msgstr "Smazat systémové řídící panely"
 msgid "Delete tickets"
 msgstr "Smazat požadavky"
 
-#: share/html/Search/Bulk.html:186
+#: share/html/Search/Bulk.html:194
 msgid "Delete values"
 msgstr "Smazat hodnoty"
 
@@ -2228,7 +2232,7 @@ msgstr "Doménové jméno"
 msgid "Don't include http://, just something like 'localhost', 'rt.example.com'"
 msgstr "Nesmí obsahovat http://, ale pouze něco jako 'localhost', 'rt.example.com'"
 
-#: lib/RT/Config.pm:254
+#: lib/RT/Config.pm:268
 msgid "Don't refresh home page."
 msgstr ""
 
@@ -2277,7 +2281,7 @@ msgstr "Jednoduchá úprava vašich otevřených požadavků"
 msgid "Edit"
 msgstr "Upravit"
 
-#: share/html/Search/Bulk.html:181
+#: share/html/Search/Bulk.html:189
 msgid "Edit Custom Fields"
 msgstr "Upravit uživatelské položky"
 
@@ -2302,7 +2306,7 @@ msgstr "Upravit uživatelské položky pro všechny uživatele"
 msgid "Edit Custom Fields for tickets in all queues"
 msgstr "Upravit uživatelské položky pro požadavky ve všech frontách"
 
-#: share/html/Search/Bulk.html:216 share/html/Ticket/ModifyLinks.html:62
+#: share/html/Search/Bulk.html:229 share/html/Ticket/ModifyLinks.html:62
 msgid "Edit Links"
 msgstr "Upravit vazby"
 
@@ -2310,7 +2314,7 @@ msgstr "Upravit vazby"
 msgid "Edit Query"
 msgstr "Upravit dotaz"
 
-#: share/html/Ticket/Elements/Tabs:278
+#: share/html/Ticket/Elements/Tabs:280
 msgid "Edit Search"
 msgstr "Úprava dotazu"
 
@@ -2385,7 +2389,7 @@ msgstr "Emailový přehled"
 msgid "Email address in use"
 msgstr "Emailová adresa je použita"
 
-#: lib/RT/Config.pm:359
+#: lib/RT/Config.pm:373
 msgid "Email delivery"
 msgstr "Doručování zpráv"
 
@@ -2475,7 +2479,7 @@ msgstr "Vyplnit jednu hodnotu s automatických doplňováním"
 msgid "Enter queues or URIs to link queues to. Separate multiple entries with spaces."
 msgstr "Zadejte fronty či URI k provázání. Více položek oddělujte mezerami."
 
-#: share/html/Elements/EditLinks:120 share/html/Search/Bulk.html:217 share/html/Ticket/Elements/BulkLinks:123
+#: share/html/Elements/EditLinks:120 share/html/Search/Bulk.html:230 share/html/Ticket/Elements/BulkLinks:123
 msgid "Enter tickets or URIs to link tickets to. Separate multiple entries with spaces."
 msgstr "Zadejte požadavky či URI k provázání. Více položek oddělujte mezerami."
 
@@ -2721,7 +2725,7 @@ msgstr "Foo Bar Baz"
 msgid "Foo!"
 msgstr "Foo!"
 
-#: share/html/Search/Bulk.html:92
+#: share/html/Search/Bulk.html:94
 msgid "Force change"
 msgstr "Vynutit změnu"
 
@@ -2792,7 +2796,7 @@ msgstr "Pátek"
 msgid "Full headers"
 msgstr "Celé hlavičky"
 
-#: lib/RT/Config.pm:169 lib/RT/Config.pm:216
+#: lib/RT/Config.pm:169 lib/RT/Config.pm:216 lib/RT/Config.pm:235
 msgid "General"
 msgstr "Obecné"
 
@@ -2821,7 +2825,7 @@ msgstr "Globální uživatelské položky"
 msgid "Global custom field configuration"
 msgstr "Globální konfigurace uživatelských položek"
 
-#: share/html/Admin/Global/MyRT.html:102
+#: share/html/Admin/Global/MyRT.html:105
 #. ($pane)
 msgid "Global portlet %1 saved."
 msgstr "Globální portlet %1 uložen."
@@ -2869,7 +2873,7 @@ msgstr "Spusť!"
 msgid "Goto ticket"
 msgstr "Přejít na požadavek"
 
-#: share/html/Ticket/Elements/ShowSummary:109 share/html/Ticket/Elements/Tabs:324 share/html/Ticket/ModifyLinks.html:61
+#: share/html/Ticket/Elements/ShowSummary:109 share/html/Ticket/Elements/Tabs:326 share/html/Ticket/ModifyLinks.html:61
 msgid "Graph"
 msgstr "Diagram"
 
@@ -2995,7 +2999,7 @@ msgstr "Historie uživatele %1"
 msgid "Home"
 msgstr ""
 
-#: lib/RT/Config.pm:251
+#: lib/RT/Config.pm:265
 msgid "Home page refresh interval"
 msgstr ""
 
@@ -3093,7 +3097,7 @@ msgstr "Zahrnout blokované uživatele do vyhledávání."
 msgid "Include page"
 msgstr "Zahrnout stránku"
 
-#: lib/RT/Config.pm:361
+#: lib/RT/Config.pm:375
 msgid "Individual messages"
 msgstr "Jednotlivé zprávy"
 
@@ -3351,7 +3355,7 @@ msgstr "Zbývá"
 msgid "Legends"
 msgstr "Vysvětlivky"
 
-#: lib/RT/Config.pm:274
+#: lib/RT/Config.pm:288
 msgid "Length in characters; Use '0' to show all messages inline, regardless of length"
 msgstr "Délka ve znacích; Použijte '0' pro zobrazení celé vložené zprávy bez ohledu na její délku"
 
@@ -3443,7 +3447,7 @@ msgstr "Načtené perlovské moduly"
 msgid "Loaded saved search \"%1\""
 msgstr "Načten uložený dotaz \"%1\""
 
-#: lib/RT/Config.pm:319
+#: lib/RT/Config.pm:333
 msgid "Locale"
 msgstr "Místní"
 
@@ -3481,7 +3485,7 @@ msgstr "Odhlásit se"
 msgid "Lookup type mismatch"
 msgstr "Nevhodný typ vyhledávání"
 
-#: lib/RT/Config.pm:354 lib/RT/Config.pm:369
+#: lib/RT/Config.pm:368 lib/RT/Config.pm:383
 msgid "Mail"
 msgstr "Email"
 
@@ -3493,39 +3497,39 @@ msgstr ""
 msgid "Make Owner"
 msgstr "Nastavit vlastníka"
 
-#: share/html/Search/Bulk.html:115
+#: share/html/Search/Bulk.html:117
 msgid "Make Status"
 msgstr "Nastavit stav"
 
-#: share/html/Search/Bulk.html:123
+#: share/html/Search/Bulk.html:125
 msgid "Make date Due"
 msgstr "Nastavit datum termínu dokončení"
 
-#: share/html/Search/Bulk.html:125
+#: share/html/Search/Bulk.html:127
 msgid "Make date Resolved"
 msgstr "Nastavit datum vyřešení"
 
-#: share/html/Search/Bulk.html:119
+#: share/html/Search/Bulk.html:121
 msgid "Make date Started"
 msgstr "Nastavit datum, kdy začal"
 
-#: share/html/Search/Bulk.html:117
+#: share/html/Search/Bulk.html:119
 msgid "Make date Starts"
 msgstr "Nastavit datum, kdy začne"
 
-#: share/html/Search/Bulk.html:121
+#: share/html/Search/Bulk.html:123
 msgid "Make date Told"
 msgstr "Nastavit datum posledního kontaktu"
 
-#: share/html/Search/Bulk.html:111
+#: share/html/Search/Bulk.html:113
 msgid "Make priority"
 msgstr "Nastavit prioritu"
 
-#: share/html/Search/Bulk.html:113
+#: share/html/Search/Bulk.html:115
 msgid "Make queue"
 msgstr "Nastavit frontu"
 
-#: share/html/Search/Bulk.html:109
+#: share/html/Search/Bulk.html:111
 msgid "Make subject"
 msgstr "Nastavit předmět"
 
@@ -3577,7 +3581,7 @@ msgstr ""
 msgid "MaxValues"
 msgstr ""
 
-#: lib/RT/Config.pm:272
+#: lib/RT/Config.pm:286
 msgid "Maximum inline message length"
 msgstr "Maximální délka vložené zprávy"
 
@@ -3664,7 +3668,7 @@ msgstr "Sloučit do"
 msgid "Merged into %1"
 msgstr "Sloučen do %1"
 
-#: share/html/Search/Bulk.html:165 share/html/Ticket/Update.html:134
+#: share/html/Search/Bulk.html:170 share/html/Ticket/Update.html:134
 msgid "Message"
 msgstr "Zpráva"
 
@@ -4063,7 +4067,7 @@ msgstr "MySQL"
 msgid "NEWLINE"
 msgstr "NOVÝ ŘÁDEK"
 
-#: share/html/Admin/CustomFields/Modify.html:61 share/html/Admin/Elements/AddCustomFieldValue:54 share/html/Admin/Elements/EditCustomField:57 share/html/Admin/Elements/EditCustomFieldValues:58 share/html/Admin/Elements/ModifyTemplate:51 share/html/Admin/Groups/Modify.html:67 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Dashboards/Elements/ShowDashboards:79 share/html/Dashboards/Modify.html:65 share/html/Elements/RT__Group/ColumnMap:77 share/html/Elements/RT__Template/ColumnMap:61 share/html/Elements/RT__User/ColumnMap:61 share/html/Search/Bulk.html:184 share/html/User/Groups/Modify.html:67
+#: share/html/Admin/CustomFields/Modify.html:61 share/html/Admin/Elements/AddCustomFieldValue:54 share/html/Admin/Elements/EditCustomField:57 share/html/Admin/Elements/EditCustomFieldValues:58 share/html/Admin/Elements/ModifyTemplate:51 share/html/Admin/Groups/Modify.html:67 share/html/Admin/Tools/Shredder/Elements/Object/RT--User:52 share/html/Dashboards/Elements/ShowDashboards:79 share/html/Dashboards/Modify.html:65 share/html/Elements/RT__Group/ColumnMap:77 share/html/Elements/RT__Template/ColumnMap:61 share/html/Elements/RT__User/ColumnMap:61 share/html/Search/Bulk.html:192 share/html/User/Groups/Modify.html:67
 msgid "Name"
 msgstr "Jméno"
 
@@ -4095,7 +4099,7 @@ msgstr "Nové heslo"
 msgid "New Pending Approval"
 msgstr "Nová probíhající schválení"
 
-#: share/html/Ticket/Elements/Tabs:274
+#: share/html/Ticket/Elements/Tabs:276
 msgid "New Search"
 msgstr "Nové vyhledávání"
 
@@ -4327,7 +4331,7 @@ msgstr "Práva nenalezena"
 msgid "No rights granted."
 msgstr "Nepřidělena žádná práva."
 
-#: share/html/Search/Bulk.html:293
+#: share/html/Search/Bulk.html:306
 msgid "No search to operate on."
 msgstr "Bez vyhledání nelze pracovat."
 
@@ -4483,7 +4487,7 @@ msgstr "Zaslat žadatelům, všem Cc a všem AdminCc"
 msgid "Notify Requestors, Ccs and AdminCcs as Comment"
 msgstr "Zaslat žadatelům, včem Cc a včem AdminCc jako komentář"
 
-#: lib/RT/Config.pm:292
+#: lib/RT/Config.pm:306
 msgid "Notify me of unread messages"
 msgstr "Informuj mne o nepřečtených zprávách"
 
@@ -4495,7 +4499,7 @@ msgstr "lis"
 msgid "November"
 msgstr "Listopad"
 
-#: lib/RT/Config.pm:242
+#: lib/RT/Config.pm:256
 msgid "Number of search results"
 msgstr "Počet výsledků hledání"
 
@@ -4639,7 +4643,7 @@ msgstr "Otevřené požadavky"
 msgid "Open URL"
 msgstr "Otevřít URL"
 
-#: share/html/Ticket/Elements/Tabs:200
+#: share/html/Ticket/Elements/Tabs:202
 msgid "Open it"
 msgstr "Otevřít"
 
@@ -4684,7 +4688,7 @@ msgstr "Odchozí zpráva o komentáři zaznamenána"
 msgid "Outgoing email recorded"
 msgstr "Odchozí zpráva zaznamenána"
 
-#: lib/RT/Config.pm:374
+#: lib/RT/Config.pm:388
 msgid "Outgoing mail"
 msgstr ""
 
@@ -4825,7 +4829,7 @@ msgstr ""
 msgid "Permission Denied"
 msgstr "Přístup nepovolen"
 
-#: lib/RT/SharedSetting.pm:110 lib/RT/SharedSetting.pm:187 lib/RT/SharedSetting.pm:228 lib/RT/SharedSetting.pm:261 share/html/Admin/Global/MyRT.html:98 share/html/Dashboards/Modify.html:98
+#: lib/RT/SharedSetting.pm:110 lib/RT/SharedSetting.pm:187 lib/RT/SharedSetting.pm:228 lib/RT/SharedSetting.pm:261 share/html/Admin/Global/MyRT.html:101 share/html/Dashboards/Modify.html:98
 msgid "Permission denied"
 msgstr "Přístup nepovolen"
 
@@ -5128,7 +5132,7 @@ msgstr ""
 msgid "RT Variables"
 msgstr "Proměnné RT"
 
-#: lib/RT/Config.pm:237 lib/RT/Config.pm:246 share/html/Admin/Elements/SystemTabs:73 share/html/Admin/Elements/UserTabs:69 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:51 share/html/Admin/Global/MyRT.html:59 share/html/Admin/Global/index.html:78 share/html/Admin/Users/MyRT.html:68 share/html/Prefs/MyRT.html:67 share/html/Prefs/MyRT.html:84 share/html/User/Elements/Tabs:77 share/html/index.html:6 share/html/index.html:79
+#: lib/RT/Config.pm:251 lib/RT/Config.pm:260 share/html/Admin/Elements/SystemTabs:73 share/html/Admin/Elements/UserTabs:69 share/html/Admin/Global/MyRT.html:48 share/html/Admin/Global/MyRT.html:51 share/html/Admin/Global/MyRT.html:59 share/html/Admin/Global/index.html:78 share/html/Admin/Users/MyRT.html:68 share/html/Prefs/MyRT.html:67 share/html/Prefs/MyRT.html:84 share/html/User/Elements/Tabs:77 share/html/index.html:6 share/html/index.html:79
 msgid "RT at a glance"
 msgstr "Přehled RT"
 
@@ -5264,27 +5268,27 @@ msgstr ""
 msgid "Refresh"
 msgstr "Obnova"
 
-#: lib/RT/Config.pm:257
+#: lib/RT/Config.pm:271
 msgid "Refresh home page every 10 minutes."
 msgstr ""
 
-#: lib/RT/Config.pm:260
+#: lib/RT/Config.pm:274
 msgid "Refresh home page every 120 minutes."
 msgstr ""
 
-#: lib/RT/Config.pm:255
+#: lib/RT/Config.pm:269
 msgid "Refresh home page every 2 minutes."
 msgstr ""
 
-#: lib/RT/Config.pm:258
+#: lib/RT/Config.pm:272
 msgid "Refresh home page every 20 minutes."
 msgstr ""
 
-#: lib/RT/Config.pm:256
+#: lib/RT/Config.pm:270
 msgid "Refresh home page every 5 minutes."
 msgstr ""
 
-#: lib/RT/Config.pm:259
+#: lib/RT/Config.pm:273
 msgid "Refresh home page every 60 minutes."
 msgstr ""
 
@@ -5346,7 +5350,7 @@ msgstr "Upomínky"
 msgid "Reminders for ticket #%1"
 msgstr "Upomínky pro požadavek #%1"
 
-#: share/html/Search/Bulk.html:103
+#: share/html/Search/Bulk.html:105
 msgid "Remove AdminCc"
 msgstr "Odstranit AdminCc"
 
@@ -5354,11 +5358,11 @@ msgstr "Odstranit AdminCc"
 msgid "Remove Bookmark"
 msgstr "Odstranit záložku"
 
-#: share/html/Search/Bulk.html:99
+#: share/html/Search/Bulk.html:101
 msgid "Remove Cc"
 msgstr "Odstranit Cc"
 
-#: share/html/Search/Bulk.html:95
+#: share/html/Search/Bulk.html:97
 msgid "Remove Requestor"
 msgstr "Odstranit žadatele"
 
@@ -5370,7 +5374,7 @@ msgstr "Odpovědět"
 msgid "Reply Address"
 msgstr "Adresa pro odpověďi"
 
-#: share/html/Search/Bulk.html:138 share/html/Ticket/ModifyAll.html:97 share/html/Ticket/Update.html:97
+#: lib/RT/Config.pm:244 share/html/Search/Bulk.html:140 share/html/Ticket/ModifyAll.html:97 share/html/Ticket/Update.html:97
 msgid "Reply to requestors"
 msgstr "Odpověď žadatelům"
 
@@ -5423,7 +5427,7 @@ msgstr "Obnovit výchozí"
 msgid "Residence"
 msgstr "Bydliště"
 
-#: share/html/Search/Elements/EditFormat:73 share/html/Ticket/Elements/Tabs:194
+#: share/html/Search/Elements/EditFormat:73 share/html/Ticket/Elements/Tabs:196
 msgid "Resolve"
 msgstr "Vyřešit"
 
@@ -5866,7 +5870,7 @@ msgstr "Září"
 msgid "Settings"
 msgstr "Nastavení"
 
-#: lib/RT/Config.pm:375
+#: lib/RT/Config.pm:389
 msgid "Should RT send you mail for ticket updates you make?"
 msgstr ""
 
@@ -5878,7 +5882,7 @@ msgstr "Zobrazit"
 msgid "Show Columns"
 msgstr "Zobrazit sloupce"
 
-#: share/html/Ticket/Elements/Tabs:314
+#: share/html/Ticket/Elements/Tabs:316
 msgid "Show Results"
 msgstr "Zobrazit výsledky"
 
@@ -5911,7 +5915,7 @@ msgstr "Zobrazit podrobnosti"
 msgid "Show link descriptions"
 msgstr ""
 
-#: lib/RT/Config.pm:283
+#: lib/RT/Config.pm:297
 msgid "Show oldest history first"
 msgstr "Zobrazit historii vzestupně"
 
@@ -5959,7 +5963,7 @@ msgstr "Zobrazit požadavek"
 msgid "ShowTicketComments"
 msgstr "Zobrazit komentáře požadavku"
 
-#: share/html/Admin/Elements/ToolTabs:60 share/html/Admin/Tools/Shredder/index.html:78 share/html/Ticket/Elements/Tabs:303
+#: share/html/Admin/Elements/ToolTabs:60 share/html/Admin/Tools/Shredder/index.html:78 share/html/Ticket/Elements/Tabs:305
 msgid "Shredder"
 msgstr ""
 
@@ -6093,7 +6097,7 @@ msgstr "Změna stavu"
 msgid "Status changed from %1 to %2"
 msgstr "Stav změněn z %1 na %2"
 
-#: share/html/Ticket/Elements/Tabs:216
+#: share/html/Ticket/Elements/Tabs:218
 msgid "Steal"
 msgstr "Převzít"
 
@@ -6125,7 +6129,7 @@ msgstr "Převzato od %1"
 msgid "Style"
 msgstr "Styl"
 
-#: lib/RT/Graph/Tickets.pm:157 lib/RT/Ticket_Overlay.pm:910 lib/RT/Tickets_Overlay.pm:125 lib/RT/Tickets_Overlay.pm:2007 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/QuickCreate:53 share/html/Elements/RT__Ticket/ColumnMap:99 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:141 share/html/Search/Elements/BuildFormatString:99 share/html/SelfService/Create.html:83 share/html/SelfService/Update.html:68 share/html/Ticket/Create.html:111 share/html/Ticket/Elements/EditBasics:50 share/html/Ticket/Elements/Reminders:131 share/html/Ticket/Forward.html:64 share/html/Ticket/ModifyAll.html:104 share/html/Ticket/Update.html:102
+#: lib/RT/Graph/Tickets.pm:157 lib/RT/Ticket_Overlay.pm:910 lib/RT/Tickets_Overlay.pm:125 lib/RT/Tickets_Overlay.pm:2007 share/html/Admin/Tools/Shredder/Elements/Object/RT--Ticket:52 share/html/Elements/QuickCreate:53 share/html/Elements/RT__Ticket/ColumnMap:99 share/html/Elements/SelectAttachmentField:49 share/html/Search/Bulk.html:143 share/html/Search/Elements/BuildFormatString:99 share/html/SelfService/Create.html:83 share/html/SelfService/Update.html:68 share/html/Ticket/Create.html:111 share/html/Ticket/Elements/EditBasics:50 share/html/Ticket/Elements/Reminders:131 share/html/Ticket/Forward.html:64 share/html/Ticket/ModifyAll.html:104 share/html/Ticket/Update.html:102
 msgid "Subject"
 msgstr "Předmět"
 
@@ -6202,7 +6206,7 @@ msgstr "Neděle"
 msgid "SuperUser"
 msgstr "Super uživatel"
 
-#: lib/RT/Config.pm:364
+#: lib/RT/Config.pm:378
 msgid "Suspended"
 msgstr "Pozastaveno"
 
@@ -6251,7 +6255,7 @@ msgstr "Práva systému"
 msgid "SystemRolegroup for internal use"
 msgstr "Skupina systémovýh pravidel pro vnitřní použití"
 
-#: etc/initialdata:566 share/html/Search/Elements/EditFormat:70 share/html/Ticket/Elements/Tabs:209
+#: etc/initialdata:566 share/html/Search/Elements/EditFormat:70 share/html/Ticket/Elements/Tabs:211
 msgid "Take"
 msgstr "Vzít"
 
@@ -6411,6 +6415,10 @@ msgid "The domain name of your database server (like 'db.example.com')."
 msgstr "Doménové jméno vašeho databázového serveru (např. 'db.example.com')."
 
 #: bin/rt-crontool:378
+msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they are overdue:"
+msgstr ""
+
+#: NOT FOUND IN SOURCE
 msgid "The following command will find all active tickets in the queue 'general' and set their priority to 99 if they haven't been touched in 4 hours:"
 msgstr "Následující příkaz najde všechny aktivní požadavky ve frontě 'general' a nastaví jejich prioritu na 99, pokud nebyly tknuty poslední 4 hodiny:"
 
@@ -6574,7 +6582,7 @@ msgstr "Požadavek %1"
 msgid "Ticket %1 created in queue '%2'"
 msgstr "Požadavek %1 vytvořen ve frontě '%2'"
 
-#: share/html/Search/Bulk.html:424 share/html/Tools/MyDay.html:100 share/html/Tools/MyDay.html:91 share/html/Tools/MyDay.html:94
+#: share/html/Search/Bulk.html:437 share/html/Tools/MyDay.html:100 share/html/Tools/MyDay.html:91 share/html/Tools/MyDay.html:94
 #. ($id, $msg)
 #. ($Ticket->Id, $_)
 msgid "Ticket %1: %2"
@@ -6593,7 +6601,7 @@ msgstr "Historie požadavku # %1 %2"
 msgid "Ticket Resolved"
 msgstr "Požadavek vyřešen"
 
-#: share/html/Elements/CollectionList:180 share/html/Elements/TicketList:64
+#: share/html/Elements/CollectionList:182 share/html/Elements/TicketList:64
 msgid "Ticket Search"
 msgstr "Hledání požadavku"
 
@@ -6617,7 +6625,7 @@ msgstr "Požadaven nemůže být vytvořen pro vnitřní chybu"
 msgid "Ticket could not be loaded"
 msgstr "Požadavek nemůže být nahrán"
 
-#: lib/RT/Config.pm:267
+#: lib/RT/Config.pm:281
 msgid "Ticket display"
 msgstr "Zobrazení požadavku"
 
@@ -6847,7 +6855,7 @@ msgstr ""
 msgid "Untaken"
 msgstr "Vrácen"
 
-#: share/html/Admin/Users/Memberships.html:88 share/html/Elements/RT__Ticket/ColumnMap:301 share/html/Search/Bulk.html:221 share/html/Search/Bulk.html:84 share/html/Search/Elements/EditSearches:70 share/html/Widgets/SelectionBox:224
+#: share/html/Admin/Users/Memberships.html:88 share/html/Elements/RT__Ticket/ColumnMap:301 share/html/Search/Bulk.html:234 share/html/Search/Bulk.html:84 share/html/Search/Elements/EditSearches:70 share/html/Widgets/SelectionBox:224
 msgid "Update"
 msgstr "Aktualizace"
 
@@ -6859,7 +6867,7 @@ msgstr "Aktualizovat diagram"
 msgid "Update Ticket"
 msgstr "Aktualizovat požadavek"
 
-#: share/html/Search/Bulk.html:135 share/html/Ticket/ModifyAll.html:90 share/html/Ticket/Update.html:91
+#: share/html/Search/Bulk.html:137 share/html/Ticket/ModifyAll.html:90 share/html/Ticket/Update.html:91
 msgid "Update Type"
 msgstr "Typ aktualizace"
 
@@ -6867,7 +6875,7 @@ msgstr "Typ aktualizace"
 msgid "Update format and Search"
 msgstr "Aktualizovat formátování a hledat"
 
-#: share/html/Search/Bulk.html:232
+#: share/html/Search/Bulk.html:245
 msgid "Update multiple tickets"
 msgstr "Aktualizovat hromadně požadavky"
 
@@ -6946,7 +6954,7 @@ msgstr "Použití: "
 msgid "Use SSL?"
 msgstr "Použít SSL?"
 
-#: lib/RT/Config.pm:313
+#: lib/RT/Config.pm:327
 msgid "Use css rules to display text monospaced and with formatting preserved, but wrap as needed.  This does not work well with IE6 and you should use the previous option"
 msgstr ""
 
@@ -6972,7 +6980,7 @@ msgstr "Další administrativní nástroje RT"
 msgid "Use system default (%1)"
 msgstr "Použít nastavení systému (%1)"
 
-#: lib/RT/Config.pm:303
+#: lib/RT/Config.pm:317
 msgid "Use this to protect the format of plain text"
 msgstr ""
 
@@ -7164,7 +7172,7 @@ msgstr "St"
 msgid "Wednesday"
 msgstr "Středa"
 
-#: lib/RT/Config.pm:363
+#: lib/RT/Config.pm:377
 msgid "Weekly digest"
 msgstr "Týdenní přehled"
 
@@ -7378,7 +7386,7 @@ msgstr ""
 msgid "[none]"
 msgstr "[nezadáno]"
 
-#: lib/RT/Config.pm:302
+#: lib/RT/Config.pm:316
 msgid "add <pre> tag around plain text attachments"
 msgstr ""
 
@@ -7406,6 +7414,10 @@ msgstr "sloupcový"
 #: share/html/Elements/SelectDateRelation:57
 msgid "before"
 msgstr "před"
+
+#: share/html/Admin/Global/MyRT.html:91
+msgid "body"
+msgstr ""
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:54
 msgid "bottom to top"
@@ -7462,7 +7474,7 @@ msgstr "dnů"
 msgid "deleted"
 msgstr "smazán"
 
-#: lib/RT/Config.pm:312
+#: lib/RT/Config.pm:326
 msgid "display wrapped and formatted plain text attachments"
 msgstr ""
 
@@ -7705,6 +7717,10 @@ msgstr ""
 #: lib/RT/Queue_Overlay.pm:80
 msgid "stalled"
 msgstr "odložený"
+
+#: share/html/Admin/Global/MyRT.html:92
+msgid "summary"
+msgstr ""
 
 #: share/html/Prefs/MyRT.html:89
 msgid "summary rows"
