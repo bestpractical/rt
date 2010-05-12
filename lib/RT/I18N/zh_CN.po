@@ -10629,7 +10629,7 @@ msgstr "早于"
 
 #: share/html/Admin/Global/MyRT.html:91
 msgid "body"
-msgstr ""
+msgstr "主体"
 
 #: share/html/Ticket/Graphs/Elements/EditGraphProperties:54
 msgid "bottom to top"
@@ -11048,11 +11048,11 @@ msgstr "样式：%1"
 
 #: share/html/Admin/Global/MyRT.html:92
 msgid "summary"
-msgstr ""
+msgstr "摘要"
 
 #: share/html/Prefs/MyRT.html:89
 msgid "summary rows"
-msgstr "加总列"
+msgstr "摘要行数"
 
 #: lib/RT/Group_Overlay.pm:167
 #. ($self->Type)
