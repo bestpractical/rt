@@ -87,7 +87,10 @@ my $has_right = $session{'CurrentUser'}->HasRight( Object=> $RT::System, Right =
 
 my @panes = $m->comp(
     '/Admin/Elements/ConfigureMyRT',
-    panes  => ['body', 'summary'],
+    panes  => [
+        'body', #loc
+        'summary', #loc
+    ],
     Action => 'MyRT.html',
     items => \@items,
     ReadOnly => !$has_right,
