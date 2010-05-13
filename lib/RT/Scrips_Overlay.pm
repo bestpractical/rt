@@ -283,7 +283,10 @@ sub _SetupSourceObjects {
             TransactionObj => undef,
             @_ );
 
-    if ( ( $self->{'TicketObj'} = $args{'TicketObj'} ) ) {
+
+    if ( $args{'TicketObj'} ) {
+        # clone the ticket here as we need to change CurrentUser
+        $self->{'TicketObj'} = bless { %{$args{'TicketObj'} } }, 'RT::Ticket';
         $self->{'TicketObj'}->CurrentUser( $self->CurrentUser );
     }
     else {
