@@ -525,7 +525,8 @@ sub _CreateACLEquivalenceGroup {
                            Name => 'User '. $princ->Object->Id,
                            Description => 'ACL equiv. for user '.$princ->Object->Id,
                            Instance => $princ->Id,
-                           InsideTransaction => 1);
+                           InsideTransaction => 1,
+                           _RecordTransaction => 0 );
       unless ($id) {
         $RT::Logger->crit("Couldn't create ACL equivalence group");
         return undef;
