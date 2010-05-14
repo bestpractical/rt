@@ -143,7 +143,8 @@ sub QueryToSQL {
         # Is there a queue named $key?
         elsif ( $Queue = RT::Queue->new( $self->TicketsObj->CurrentUser )
             and $Queue->Load($key)
-            and $Queue->id )
+            and $Queue->id
+            and not $Queue->Disabled )
         {
             my $quoted_queue = $Queue->Name;
             $quoted_queue =~ s/'/\\'/g;
