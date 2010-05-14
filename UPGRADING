@@ -18,6 +18,14 @@ If you are using MySQL, please read the instructions in UPGRADING.mysql as
 well.
 
 *******
+UPGRADING FROM 3.8.8 and earlier - Changes:
+
+We've proved that it's possible to delete set of records
+from Transactions table without losing functionality. To delete
+record run the following script:
+
+    perl -I /opt/rt3/local/lib -I /opt/rt3/lib etc/upgrade/shrink_transactions_table.pl
+
 UPGRADING FROM 3.8.7 and earlier - Changes:
 
 RT's ChartFont option has been changed from a string to a hash which
