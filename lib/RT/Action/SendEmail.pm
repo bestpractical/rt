@@ -207,9 +207,9 @@ sub Prepare {
         my $type = $part->mime_type || 'text/plain';
         $type = 'text/plain' unless RT::I18N::IsTextualContentType($type);
         $part->head->mime_attr( "Content-Type" => $type );
-        # utf8 here is for _FindOrGuessCharset in I18N.pm
+        # utf-8 here is for _FindOrGuessCharset in I18N.pm
         # it's not the final charset/encoding sent
-        $part->head->mime_attr( "Content-Type.charset" => 'utf8' );
+        $part->head->mime_attr( "Content-Type.charset" => 'utf-8' );
     }
 
     RT::I18N::SetMIMEEntityToEncoding( $MIMEObj,
