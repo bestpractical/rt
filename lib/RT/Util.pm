@@ -101,7 +101,6 @@ sub _safe_run_child {
     $stdin->fdopen( 0, 'r' );
     local *STDIN = $stdin;
 
-    my $old_stdout = select;
     my $stdout = IO::Handle->new;
     $stdout->fdopen( 1, 'w' );
     local *STDOUT = $stdout;
@@ -110,14 +109,7 @@ sub _safe_run_child {
     $stderr->fdopen( 2, 'w' );
     local *STDERR = $stderr;
 
-    my @return = shift->();
-
-    # no idea why
-    # but if we don't restore $old_stdout, t/web/command_line.t will cry
-    # you can run t/web/command_line.t with GnuPG enabled to reproduce this.
-    select $old_stdout;
-
-    return @return;
+    return shift->();
 }
 
 eval "require RT::Util_Vendor";
