@@ -397,6 +397,7 @@ AC_CONFIG_FILES([
                  etc/upgrade/3.8-branded-queues-extension
                  etc/upgrade/3.8-ical-extension
                  etc/upgrade/split-out-cf-categories
+                 etc/upgrade/generate-rtaddressregexp
                  sbin/rt-attributes-viewer
                  sbin/rt-dump-database
                  sbin/rt-setup-database

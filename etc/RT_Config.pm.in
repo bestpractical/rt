@@ -284,6 +284,11 @@ regular expression that matches all addresses used by your RT.  This lets RT
 avoid sending mail to itself.  It will also hide RT addresses from the list of 
 "One-time Cc" and Bcc lists on ticket reply.
 
+If you have a number of addresses configured in your RT database already, you
+can generate a naive first pass regexp by using
+
+    perl etc/upgrade/generate-rtaddressregexp
+
 =cut
 
 Set($RTAddressRegexp , undef);
