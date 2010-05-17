@@ -178,15 +178,6 @@ else {
     if ( $Attachments->[0] && $ShowTitleBarCommands ) {
         my $ticket = $Transaction->TicketObj;
         my $can_modify = $ticket->CurrentUserHasRight('ModifyTicket');
-        if ( $can_modify || $ticket->CurrentUserHasRight('ReplyToTicket') ) {
-            $titlebar_commands .=
-                "[<a href=\"".$UpdatePath
-              . "?id=" . $Transaction->Ticket
-              . "&QuoteTransaction=" . $Transaction->Id
-              . "&Action=Respond\">"
-              . loc('Reply')
-              . "</a>]&nbsp;";
-        }
         if ( $can_modify || $ticket->CurrentUserHasRight('CommentOnTicket') ) {
             $titlebar_commands .=
                 "[<a href=\"".$UpdatePath."?id="
@@ -195,6 +186,15 @@ else {
               . $Transaction->Id
               . "&Action=Comment\">"
               . loc('Comment') . "</a>]";
+        }
+        if ( $can_modify || $ticket->CurrentUserHasRight('ReplyToTicket') ) {
+            $titlebar_commands .=
+                "[<a href=\"".$UpdatePath
+              . "?id=" . $Transaction->Ticket
+              . "&QuoteTransaction=" . $Transaction->Id
+              . "&Action=Respond\">"
+              . loc('Reply')
+              . "</a>]&nbsp;";
         }
         if ( $ticket->CurrentUserHasRight('ForwardMessage') ) {
             $titlebar_commands .=
