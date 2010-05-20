@@ -155,6 +155,8 @@ if ($chart_class eq "GD::Graph::bars") {
         x_label_position => 0.6,
         y_label_position => 0.6,
         values_space => -1,
+# use a top margin enough to display values over the top line if needed
+        t_margin => 18,
 # the following line to make sure there's enough space for values to show
         y_max_value => 5*(int($max_value/5) + 2),
 # if there're too many bars or at least one key is too long, use vertical
