@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 16;
+use RT::Test tests => 21;
 
 my $queue = RT::Test->load_or_create_queue( Name => 'Regression' );
 ok $queue && $queue->id, 'loaded or created queue';
@@ -52,6 +52,14 @@ diag "user B adds a message, we check that user A see notification and can clear
 
     my ($status, $msg) = $ticket->Correspond( Content => 'bla-bla' );
     ok $status, 'added reply' or diag "error: $msg";
+    my $txns = $ticket->Transactions;
+    $txns->Limit(
+        FIELD           => 'Type',
+        VALUE           => "Correspond",
+    );
+    my $txn = $txns->Last;
+    my $reply_id = $txn->id;
+    ok( $reply_id, 'got correspond txn id' );
 
     $agent_a->goto_ticket($tid);
     $agent_a->content_like(qr/bla-bla/ims, 'the message on the page');
@@ -61,7 +69,19 @@ diag "user B adds a message, we check that user A see notification and can clear
         'we have not seen something'
     );
 
+    $agent_a->follow_link_ok(
+        { text => 'jump to the first unread message' },
+        'try to jump to first unread message'
+    );
+    like( $agent_a->base, qr/#txn-$reply_id$/, 'contains anchor' );
+
     $agent_a->follow_link_ok({text => 'jump to the first unread message and mark all messages as seen'}, 'try to mark all as seen');
+    $agent_a->content_like(
+        qr/Marked all messages as seen/ims,
+        'see success message'
+    );
+    like( $agent_a->base, qr/#txn-$reply_id$/, 'contains anchor' );
+
     $agent_a->content_like(
         qr/Marked all messages as seen/ims,
         'see success message'
@@ -73,8 +93,4 @@ diag "user B adds a message, we check that user A see notification and can clear
         'we have seen everything, so no messages'
     );
 }
-
-
-
-
 
