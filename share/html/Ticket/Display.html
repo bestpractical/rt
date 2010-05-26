@@ -189,8 +189,9 @@ if (@Actions) {
     my $key = Digest::MD5::md5_hex( rand(1024) );
     push @{ $session{"Actions"}->{$key} ||= [] }, @Actions;
     $session{'i'}++;
-    RT::Interface::Web::Redirect( RT->Config->Get('WebURL') . "Ticket/Display.html?id=" . $TicketObj->id . "&results=" . $key );
-
+    my $url = RT->Config->Get('WebURL') . "Ticket/Display.html?id=" . $TicketObj->id . "&results=" . $key;
+    $url .= '#' . $ARGS{Anchor} if $ARGS{Anchor};
+    RT::Interface::Web::Redirect($url);
 }
 
 my $attachments = $m->comp('Elements/FindAttachments', Ticket => $TicketObj, Tickets => $Tickets);

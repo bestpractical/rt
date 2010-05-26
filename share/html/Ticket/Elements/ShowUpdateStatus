@@ -50,8 +50,7 @@
 <&|/l, &>There are unread messages on this ticket.</&>
 <&|/l, 
  RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id. "#txn-".$txn->id,
- RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id ."&MarkAsSeen=1".  "#txn-".$txn->id
- 
+ RT->Config->Get('WebPath') ."/Ticket/Display.html?id=". $Ticket->id ."&MarkAsSeen=1&Anchor=txn-" . $txn->id
  &>You can <a href="[_1]">jump to the first unread message</a> or <a href="[_2]">jump to the first unread message and mark all messages as seen</a>.</&>
 </&>
 </div>
