@@ -15,11 +15,11 @@
         push (@admins, $admin->Name); 
     }
  }
- Queue: Approvals
- Type: Approval
+ Queue: ___Approvals
+ Type: approval
  AdminCcs: {join (", ",@admins) }
- Depended-On-By: {$tickets{'TOP'}->Id}
- Refers-To: {$tickets{'TOP'}->Id}
+ Depended-On-By: TOP
+ Refers-To: TOP
  Due: {time + 86400}
  Content-Type: text/plain
- Content: Your approval is requested for the ticket {%$tickets{'TOP'}->Id}: {$tickets{'TOP'}->Subject}
+ Content: Your approval is requested for the ticket {$Tickets{'TOP'}->Id}: {$Tickets{'TOP'}->Subject}
