@@ -292,21 +292,23 @@ If $args{'Type'} is set to C<text/html>, this will return an HTML
 part of the message, if available.  Otherwise it looks for a text/plain
 part. If $args{'Type'} is missing, it defaults to the value of 
 C<$RT::Transaction::PreferredContentType>, if that's missing too, 
-defaults to 'text/plain'.
+defaults to textual.
 
 =cut
 
 sub Content {
     my $self = shift;
     my %args = (
-        Type  => $PreferredContentType || 'text/plain',
+        Type => '',
         Quote => 0,
         Wrap  => 70,
         @_
     );
 
     my $content;
-    if ( my $content_obj = $self->ContentObj( Type => $args{Type} ) ) {
+    if ( my $content_obj =
+        $self->ContentObj( $args{Type} ? ( Type => $args{Type} ) : () ) )
+    {
         $content = $content_obj->Content ||'';
 
         if ( lc $content_obj->ContentType eq 'text/html' ) {
@@ -397,8 +399,7 @@ Returns the RT::Attachment object which contains the content for this Transactio
 
 sub ContentObj {
     my $self = shift;
-    my %args = ( Type => $PreferredContentType || 'text/plain',
-                 @_ );
+    my %args = ( Type => $PreferredContentType, @_ );
 
     # If we don't have any content, return undef now.
     # Get the set of toplevel attachments to this transaction.
@@ -413,13 +414,15 @@ sub ContentObj {
     # MIME type ('text/plain' by default).
 
     elsif ( $Attachment->ContentType =~ '^multipart/' ) {
-        my $plain_parts = $Attachment->Children;
-        $plain_parts->ContentType( VALUE => $args{Type} );
-        $plain_parts->LimitNotEmpty;
+        if ( $args{Type} ) {
+            my $plain_parts = $Attachment->Children;
+            $plain_parts->ContentType( VALUE => $args{Type} );
+            $plain_parts->LimitNotEmpty;
 
-        # If we actully found a part, return its content
-        if ( my $first = $plain_parts->First ) {
-            return $first;
+            # If we actully found a part, return its content
+            if ( my $first = $plain_parts->First ) {
+                return $first;
+            }
         }
 
         # If that fails, return the first textual part which has some content.
