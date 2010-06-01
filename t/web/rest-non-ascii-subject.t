@@ -49,7 +49,4 @@ is($ticket->Subject, $subject, "ticket subject successfully set");
 
 my $attach = $ticket->Transactions->First->Attachments->First;
 is($attach->Subject, $subject, "attachement subject successfully set");
-TODO: {
-    local $TODO = "Not fixed yet, but not a regression";
-    is($attach->GetHeader('Subject'), $subject, "attachement header subject successfully set");
-}
+is($attach->GetHeader('Subject'), $subject, "attachement header subject successfully set");
