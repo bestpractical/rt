@@ -352,6 +352,7 @@ sub CreateByTemplate {
     local $T::TOP     = $T::TOP;
     local $T::ID      = $T::ID;
     $T::Tickets{'TOP'} = $T::TOP = $top if $top;
+    local $T::TransactionObj = $self->TransactionObj;
 
     my $ticketargs;
     my ( @links, @postponed );
