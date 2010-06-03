@@ -75,9 +75,6 @@ BEGIN {
 }
 
 use RT;
-use RT::Interface::Web;
-use RT::Interface::Web::Handler;
-use RT::Dashboard;
 use RT::Interface::CLI qw{ CleanEnv loc };
 
 use Getopt::Long;
@@ -97,6 +94,9 @@ RT::LoadConfig();
 # Connect to the database and get RT::SystemUser and RT::Nobody loaded
 RT::Init();
 
+require RT::Interface::Web;
+require RT::Interface::Web::Handler;
+require RT::Dashboard;
 $HTML::Mason::Commands::r = RT::Dashboard::FakeRequest->new;
 
 no warnings 'once';

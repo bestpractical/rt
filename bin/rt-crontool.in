@@ -79,8 +79,6 @@ use RT;
 use Getopt::Long;
 
 use RT::Interface::CLI qw(CleanEnv GetCurrentUser GetMessageContent loc);
-use RT::Tickets;
-use RT::Template;
 
 #Clean out all the nasties from the environment
 CleanEnv();
@@ -111,6 +109,9 @@ RT->Config->Set( LogToScreen => $log ) if $log;
 
 #Connect to the database and get RT::SystemUser and RT::Nobody loaded
 RT::Init();
+
+require RT::Tickets;
+require RT::Template;
 
 #Get the current user all loaded
 my $CurrentUser = GetCurrentUser();
