@@ -132,6 +132,8 @@ sub Create {
 
     #Get the filename
     my $Filename = $Attachment->head->recommended_filename;
+    # remove path part. 
+    $Filename =~ s!.*/!! if $Filename;
 
     # MIME::Head doesn't support perl strings well and can return
     # octets which later will be double encoded in low-level code
