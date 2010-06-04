@@ -84,7 +84,7 @@ my @users = sort { lc($a->[0]) cmp lc($b->[0]) }
 % my ($rendered, $user) = @$_;
 % $UsersSeen{ $user->id } = 1 if $SkipSeenUsers;
 <li><input type="checkbox" class="checkbox" name="DeleteMember-<% $user->PrincipalObj->Id %>" value="1" />
-<% $rendered |n%></li>
+<a href="<% RT->Config->Get('WebPath') %>/Admin/Users/Modify.html?id=<% $user->id %>"><% $rendered |n%></a></li>
 % }
 </ul>
 <&|/l&>Groups</&>
@@ -94,7 +94,7 @@ my @users = sort { lc($a->[0]) cmp lc($b->[0]) }
 % while ( my $member = $GroupMembers->Next ) {
 % $GroupsSeen{ $member->MemberId } = 1 if $SkipSeenGroups;
 <li><input type="checkbox" class="checkbox" name="DeleteMember-<% $member->MemberId %>" value="1" />
-<% $member->MemberObj->Object->Name %>
+<a href="<% RT->Config->Get('WebPath') %>/Admin/Groups/Modify.html?id=<% $member->MemberObj->Object->id %>"><% $member->MemberObj->Object->Name %></a>
 % }
 </ul>
 % }
