@@ -130,6 +130,8 @@ sub SmartParseMIMEEntityFromScalar {
         }
     };
 
+    $self->RescueOutlook;
+
     #If for some reason we weren't able to parse the message using a temp file
     # try it with a scalar
     if ( $@ || !$self->Entity ) {
@@ -556,6 +558,65 @@ sub ParseEmailAddress {
 
     return @addresses;
 
+}
+
+=head2 RescueOutlook 
+
+Outlook 2007 has a bug when you write an email with the html format.
+it will send a 'multipart/alternative' with both 'text/plain' and 'text/html'
+in it.  it's cool to have a 'text/plain' part, but the problem is the part is
+not so right: all the "\n" in your main message will become "\n\n" :/
+
+this method will fix this bug, i.e. replaces "\n\n" to "\n".
+return 1 if it does find the problem in the entity and get it fixed.
+
+=cut
+
+
+sub RescueOutlook {
+    my $self = shift;
+    my $mime = $self->Entity();
+    return unless $mime;
+
+    my $mailer = $mime->head->get('X-Mailer');
+    if ( $mailer && $mailer =~ /Microsoft Office Outlook 12\./ ) {
+        my $text_part;
+        if ( $mime->head->get('Content-Type') =~ m{multipart/mixed} ) {
+            my $first = $mime->parts(0);
+            if ( $first->head->get('Content-Type') =~ m{multipart/alternative} )
+            {
+                my $inner_first = $first->parts(0);
+                if ( $inner_first->head->get('Content-Type') =~ m{text/plain} )
+                {
+                    $text_part = $inner_first;
+                }
+            }
+        }
+        elsif ( $mime->head->get('Content-Type') =~ m{multipart/alternative} ) {
+            my $first = $mime->parts(0);
+            if ( $first->head->get('Content-Type') =~ m{text/plain} ) {
+                $text_part = $first;
+            }
+        }
+
+        if ($text_part) {
+
+            # use the unencoded string
+            my $content = $text_part->bodyhandle->as_string;
+            if ( $content =~ s/\n\n/\n/g ) {
+                # only write only if we did change the content
+                if ( my $io = $text_part->open("w") ) {
+                    $io->print($content);
+                    $io->close;
+                    return 1;
+                }
+                else {
+                    $RT::Logger->error("can't write to body");
+                }
+            }
+        }
+    }
+    return;
 }
 
 
