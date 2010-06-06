@@ -562,7 +562,7 @@ sub ParseEmailAddress {
 
 =head2 RescueOutlook 
 
-Outlook 2007 has a bug when you write an email with the html format.
+Outlook 2007/2010 have a bug when you write an email with the html format.
 it will send a 'multipart/alternative' with both 'text/plain' and 'text/html'
 in it.  it's cool to have a 'text/plain' part, but the problem is the part is
 not so right: all the "\n" in your main message will become "\n\n" :/
@@ -579,7 +579,8 @@ sub RescueOutlook {
     return unless $mime;
 
     my $mailer = $mime->head->get('X-Mailer');
-    if ( $mailer && $mailer =~ /Microsoft Office Outlook 12\./ ) {
+    # 12.0 is outlook 2007, 14.0 is 2010
+    if ( $mailer && $mailer =~ /Microsoft(?:.*?)Outlook 1[2-4]\./ ) {
         my $text_part;
         if ( $mime->head->get('Content-Type') =~ m{multipart/mixed} ) {
             my $first = $mime->parts(0);

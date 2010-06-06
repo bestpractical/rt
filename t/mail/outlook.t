@@ -56,13 +56,15 @@ rt-mailgate - Mail interface to RT3.
 use strict;
 use warnings;
 
-use RT::Test tests => 25;
+use RT::Test tests => 43;
 my ($baseurl, $m) = RT::Test->started_ok;
-diag "Test mail with multipart/alternative" if $ENV{'TEST_VERBOSE'};
-{
-    my $text = <<EOF;
+# 12.0 is outlook 2007, 14.0 is 2010
+for my $mailer ( 'Microsoft Office Outlook 12.0', 'Microsoft Outlook 14.0' ) {
+    diag "Test mail with multipart/alternative" if $ENV{'TEST_VERBOSE'};
+    {
+        my $text = <<EOF;
 From: root\@localhost
-X-Mailer: Microsoft Office Outlook 12.0
+X-Mailer: $mailer
 To: rt\@@{[RT->Config->Get('rtname')]}
 Subject: outlook basic test
 Content-Type: multipart/alternative;
@@ -94,27 +96,26 @@ Content-Transfer-Encoding: quoted-printable
 
 EOF
 
-    my $content = <<EOF;
+        my $content = <<EOF;
 here is the content
 
 blahmm
 another line
 EOF
-    test_email( $text, $content,
-        'outlook with multipart/alternative, \n\n will not be replaced' );
-}
+        test_email( $text, $content,
+            $mailer . ' with multipart/alternative, \n\n are replaced' );
+    }
 
-diag "Test mail with multipart/mixed, with multipart/alternative in it"
-  if $ENV{'TEST_VERBOSE'};
-{
-    my $text = <<EOF;
+    diag "Test mail with multipart/mixed, with multipart/alternative in it"
+      if $ENV{'TEST_VERBOSE'};
+    {
+        my $text = <<EOF;
 From: root\@localhost
-X-Mailer: Microsoft Office Outlook 12.0
+X-Mailer: $mailer
 To: rt\@@{[RT->Config->Get('rtname')]}
 Subject: outlook basic test
 Content-Type: multipart/mixed;
 	boundary="----=_NextPart_000_000F_01CB045E.5222CB40"
-X-Mailer: Microsoft Office Outlook 12.0
 
 ------=_NextPart_000_000F_01CB045E.5222CB40
 Content-Type: multipart/alternative;
@@ -156,22 +157,22 @@ this is the attachment! :)=0A=
 ------=_NextPart_000_000F_01CB045E.5222CB40--
 EOF
 
-    my $content = <<EOF;
+        my $content = <<EOF;
 foo
 
 bar
 baz
 EOF
-    test_email( $text, $content,
-        'outlook with multipart/multipart, \n\n will not be replaced' );
-}
+        test_email( $text, $content,
+            $mailer . ' with multipart/multipart, \n\n are replaced' );
+    }
 
-diag "Test mail with with outlook, but the content type is text/plain"
-  if $ENV{'TEST_VERBOSE'};
-{
-    my $text = <<EOF;
+    diag "Test mail with with outlook, but the content type is text/plain"
+      if $ENV{'TEST_VERBOSE'};
+    {
+        my $text = <<EOF;
 From: root\@localhost
-X-Mailer: Mutt
+X-Mailer: $mailer
 To: rt\@@{[RT->Config->Get('rtname')]}
 Subject: outlook basic test
 Content-Type: text/plain; charset="us-ascii"
@@ -187,7 +188,7 @@ baz
 
 EOF
 
-    my $content = <<EOF;
+        my $content = <<EOF;
 foo
 
 
@@ -197,8 +198,9 @@ bar
 baz
 
 EOF
-    test_email( $text, $content,
-        'outlook with only text/plain, \n\n will not be replaced' );
+        test_email( $text, $content,
+            $mailer . ' with only text/plain, \n\n are not replaced' );
+    }
 }
 
 diag "Test mail with with multipart/alternative but x-mailer is not outlook "
@@ -248,7 +250,7 @@ bar
 baz
 
 EOF
-    test_email( $text, $content, 'without outlook, \n\n will not be replaced' );
+    test_email( $text, $content, 'without outlook, \n\n are not replaced' );
 }
 
 sub test_email {
