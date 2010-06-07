@@ -34,8 +34,7 @@ RT->Config->Set( 'MailPlugins' => 'Auth::MailFrom', 'Auth::GnuPG' );
 my ($baseurl, $m) = RT::Test->started_ok;
 
 # configure key for General queue
-$m->get( $baseurl."?user=root;pass=password" );
-$m->content_like(qr/Logout/, 'we did log in');
+ok( $m->login, 'we did log in' );
 $m->get( $baseurl.'/Admin/Queues/');
 $m->follow_link_ok( {text => 'General'} );
 $m->submit_form( form_number => 3,

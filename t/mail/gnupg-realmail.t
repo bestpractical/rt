@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use RT::Test tests => 197;
+use RT::Test tests => 196;
 
 plan skip_all => 'GnuPG required.'
     unless eval 'use GnuPG::Interface; 1';
@@ -37,19 +37,10 @@ $m->submit_form( form_number => 3,
          fields      => { CorrespondAddress => 'rt-recipient@example.com' } );
 $m->content_like(qr/rt-recipient\@example.com.* - never/, 'has key info.');
 
-diag "load Everyone group" if $ENV{'TEST_VERBOSE'};
-my $everyone;
-{
-    $everyone = RT::Group->new( $RT::SystemUser );
-    $everyone->LoadSystemInternalGroup('Everyone');
-    ok $everyone->id, "loaded 'everyone' group";
-}
-
 RT::Test->set_rights(
-    Principal => $everyone,
+    Principal => 'Everyone',
     Right => ['CreateTicket'],
 );
-
 
 my $eid = 0;
 for my $usage (qw/signed encrypted signed&encrypted/) {
