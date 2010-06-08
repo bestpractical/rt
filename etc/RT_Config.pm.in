@@ -320,24 +320,6 @@ F<RT/User_Local.pm>
 
 Set($CanonicalizeOnCreate, 0);
 
-=item C<$SenderMustExistInExternalDatabase>
-
-If C<$SenderMustExistInExternalDatabase> is true, RT will refuse to
-create non-privileged accounts for unknown users if you are using
-the C<$LookupSenderInExternalDatabase> option.
-Instead, an error message will be mailed and RT will forward the
-message to C<$RTOwner>.
-
-If you are not using C<$LookupSenderInExternalDatabase>, this option
-has no effect.
-
-If you define an AutoRejectRequest template, RT will use this
-template for the rejection message.
-
-=cut
-
-Set($SenderMustExistInExternalDatabase , undef);
-
 =item C<$ValidateUserEmailAddresses>
 
 If C<$ValidateUserEmailAddresses> is true, RT will refuse to create users with
