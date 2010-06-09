@@ -43,8 +43,14 @@ $cgms->Limit(
     ENTRYAGGREGATOR => 'AND',
 );
 
+$| = 1;
+my $total = $cgms->Count;
+my $i = 0;
+
 FetchNext( $cgms, 'init' );
 while ( my $rec = FetchNext( $cgms ) ) {
+    $i++;
+    printf("\r%0.2f %%", 100 * $i / $total);
     $RT::Handle->BeginTransaction;
     my ($status) = $rec->Delete;
     unless ($status) {

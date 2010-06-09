@@ -43,8 +43,14 @@ $txns->Limit(
     ENTRYAGGREGATOR => 'AND',
 );
 
+$| = 1;
+my $total = $txns->Count;
+my $i = 0;
+
 FetchNext( $txns, 'init' );
 while ( my $rec = FetchNext( $txns ) ) {
+    $i++;
+    printf("\r%0.2f %%", 100 * $i / $total);
     $RT::Handle->BeginTransaction;
     my ($status) = $rec->Delete;
     unless ($status) {
