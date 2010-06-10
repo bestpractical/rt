@@ -72,7 +72,16 @@ no warnings qw(redefine);
 sub _DoSearch {
     my $self = shift;
     $self->SUPER::_DoSearch();
-    $self->_BuildAccessTable();
+# if _DoSearch doesn't fully succeed, 'must_redo_search' will be true
+# and call _BuildAccessTable then will result in a deep recursion
+    if ( $self->{'must_redo_search'} ) {
+        $RT::Logger->crit(
+"_DoSearch is not so successful as it still needs redo search, won't call _BuildAccessTable"
+        );
+    }
+    else {
+        $self->_BuildAccessTable();
+    }
 }
 
 

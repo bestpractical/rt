@@ -166,7 +166,14 @@ columns if it makes sense
 sub _DoSearch {
     my $self = shift;
     $self->SUPER::_DoSearch( @_ );
-    $self->AddEmptyRows;
+    if ( $self->{'must_redo_search'} ) {
+        $RT::Logger->crit(
+"_DoSearch is not so successful as it still needs redo search, won't call AddEmptyRows"
+        );
+    }
+    else {
+        $self->AddEmptyRows;
+    }
 }
 
 =head2 _FieldToFunction FIELD

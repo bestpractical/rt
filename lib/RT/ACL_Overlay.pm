@@ -315,7 +315,14 @@ sub _DoSearch {
    # $RT::Logger->debug("Now in ".$self."->_DoSearch");
     my $return = $self->SUPER::_DoSearch(@_);
   #  $RT::Logger->debug("In $self ->_DoSearch. return from SUPER::_DoSearch was $return");
-    $self->_BuildHash();
+    if ( $self->{'must_redo_search'} ) {
+        $RT::Logger->crit(
+"_DoSearch is not so successful as it still needs redo search, won't call _BuildHash"
+        );
+    }
+    else {
+        $self->_BuildHash();
+    }
     return ($return);
 }
 
