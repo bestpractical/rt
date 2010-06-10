@@ -229,7 +229,7 @@ Ticket links can be set up during create by passing the link type as a hask key 
 the ticket id to be linked to as a value (or a URI when linking to other objects).
 Multiple links of the same type can be created by passing an array ref. For example:
 
-  Parent => 45,
+  Parents => 45,
   DependsOn => [ 15, 22 ],
   RefersTo => 'http://www.bestpractical.com',
 
