@@ -1,10 +1,10 @@
 @Initial = (
     sub {
         $RT::Logger->warning(
-            "Going to add [OLD] prefix to all temlates in approvals queue."
+            "Going to add [OLD] prefix to all templates in approvals queue."
             ." If you never used approvals then you can delete all these"
-            ." templates with [OLD] prefix. Leave new there may be you will"
-            ." want to use approvals some time."
+            ." templates with [OLD] prefix. Leave the new ones there because"
+            ." maybe you will eventually want to use start using approvals."
         );
 
         my $approvals_q = RT::Queue->new( $RT::SystemUser );
