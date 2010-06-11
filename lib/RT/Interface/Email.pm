@@ -457,6 +457,7 @@ sub SendEmail {
                 my $msg = "$msgid: `$path $args` exitted with code ". ($?>>8);
                 $msg = ", interrupted by signal ". ($?&127) if $?&127;
                 $RT::Logger->error( $msg );
+                die $msg;
             }
         };
         if ( $@ ) {
