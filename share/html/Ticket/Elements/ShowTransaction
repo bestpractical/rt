@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %# 
 %# END BPS TAGGED BLOCK }}}
-<div class="ticket-transaction <% $type_class %> <% $RowNum % 2 ? 'odd' : 'even' %>">
+<div class="ticket-transaction <% $type_classes %> <% $RowNum % 2 ? 'odd' : 'even' %>">
 % $m->callback( titlebar_cmd => \$titlebar_commands, Transaction => $Transaction, %ARGS, CallbackName => 'ModifyDisplay' );
 
 <div class="ticket-transaction">
@@ -123,24 +123,27 @@ my $transdate = $Transaction->CreatedAsString();
 $transdate =~ s/\s/&nbsp;/g;
 
 my ($type, $field) = ($Transaction->Type, $Transaction->Field || '');
-my $type_class = $class{ $type };
+my $type_classes = $class{ $type };
 
-unless ( $type_class ) {
+unless ( $type_classes ) {
     if ( $field eq 'Owner' ) {
-        $type_class = 'people';
+        $type_classes = 'people';
     }
     elsif ( $type =~ /^(Status|Set|Told)$/ ) {
         if ( $field =~ /^(Told|Starts|Started|Due)$/ ) {
-            $type_class = 'dates';
+            $type_classes = 'dates';
         }
         else {
-            $type_class = 'basics';
+            $type_classes = 'basics';
         }
     }
     else {
-        $type_class = 'other';
+        $type_classes = 'other';
     }
 }
+
+my $filter_type = RT::Transaction->TypeMetadata($type, 'FilterType');
+$type_classes .= ' Type-' . ($filter_type || $type);
 
 my $TicketString = '';
 if ( $Ticket->Id != $Transaction->Ticket ) {
