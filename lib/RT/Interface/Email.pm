@@ -462,6 +462,9 @@ sub SendEmail {
         };
         if ( $@ ) {
             $RT::Logger->crit( "$msgid: Could not send mail with command `$path $args`: " . $@ );
+            if ( $TicketObj ) {
+                _RecordSendEmailFailure( $TicketObj );
+            }
             return 0;
         }
     }
@@ -473,6 +476,9 @@ sub SendEmail {
         ) } };
         unless ( $smtp ) {
             $RT::Logger->crit( "Could not connect to SMTP server.");
+            if ($TicketObj) {
+                _RecordSendEmailFailure( $TicketObj );
+            }
             return 0;
         }
 
@@ -501,6 +507,9 @@ sub SendEmail {
 
         unless ( $status ) {
             $RT::Logger->crit( "$msgid: Could not send mail via SMTP." );
+            if ( $TicketObj ) {
+                _RecordSendEmailFailure( $TicketObj );
+            }
             return 0;
         }
     }
@@ -518,6 +527,9 @@ sub SendEmail {
 
         unless ( $args{'Entity'}->send( @mailer_args ) ) {
             $RT::Logger->crit( "$msgid: Could not send mail." );
+            if ( $TicketObj ) {
+                _RecordSendEmailFailure( $TicketObj );
+            }
             return 0;
         }
     }
@@ -1778,6 +1790,21 @@ sub IsCorrectAction {
         return ( 0, $_ ) unless /^(?:comment|correspond|take|resolve)$/;
     }
     return ( 1, @actions );
+}
+
+sub _RecordSendEmailFailure {
+    my $ticket = shift;
+    if ($ticket) {
+        $ticket->_RecordNote(
+            NoteType => 'SystemError',
+            Content => "Sending the previous mail has failed.  Please contact your admin, they can find more details in the logs.",
+        );
+        return 1;
+    }
+    else {
+        $RT::Logger->error( "Can't record send email failure as ticket is missing" );
+        return;
+    }
 }
 
 eval "require RT::Interface::Email_Vendor";

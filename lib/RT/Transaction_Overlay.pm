@@ -658,6 +658,9 @@ sub BriefDescription {
             )
         );
     }
+    elsif ( $type =~ /SystemError/ ) {
+        return $self->loc("System error");
+    }
 
     if ( my $code = $_BriefDescriptions{$type} ) {
         return $code->($self);
