@@ -377,6 +377,25 @@ use HTML::TreeBuilder;
             return ( $self->loc( "[_1] disabled", $args{obj_type} ) );
         },
     },
+    Status => {
+        BriefDescription => sub {
+            my $self = shift;
+            my %args = @_;
+
+            if ( $self->NewValue eq 'deleted' ) {
+                return ( $self->loc( "[_1] deleted", $args{obj_type} ) );
+            }
+            else {
+                return (
+                    $self->loc(
+                        "Status changed from [_1] to [_2]",
+                        "'" . $self->loc( $self->OldValue ) . "'",
+                        "'" . $self->loc( $self->NewValue ) . "'"
+                    )
+                );
+            }
+        },
+    },
 );
 # }}}
 
@@ -916,28 +935,12 @@ sub BriefDescription {
         return $self->loc("No transaction type specified");
     }
 
-    my $obj_type = $self->FriendlyObjectType;
-
-    if ( $type =~ /Status/ ) {
-        if ( $self->Field eq 'Status' ) {
-            if ( $self->NewValue eq 'deleted' ) {
-                return ( $self->loc( "[_1] deleted", $obj_type ) );
-            }
-            else {
-                return (
-                    $self->loc(
-                        "Status changed from [_1] to [_2]",
-                        "'" . $self->loc( $self->OldValue ) . "'",
-                        "'" . $self->loc( $self->NewValue ) . "'"
-                    )
-                );
-
-            }
-        }
-    }
-
     if ( my $code = $self->TypeMetadata(Type => $type, Field => 'BriefDescription') ) {
-        my $description = $code->($self, obj_type => $obj_type);
+        my %args = (
+            obj_type => $self->FriendlyObjectType,
+        );
+
+        my $description = $code->($self, %args);
         return $description if defined $description;
     }
 
