@@ -74,7 +74,7 @@ package RT::Transaction;
 use strict;
 no warnings qw(redefine);
 
-use vars qw( %_BriefDescriptions $PreferredContentType );
+use vars qw( %_BriefDescriptions $PreferredContentType @AllTypes );
 
 use RT::Attachments;
 use RT::Scrips;
@@ -82,6 +82,37 @@ use RT::Ruleset;
 
 use HTML::FormatText;
 use HTML::TreeBuilder;
+
+# {{{ AllTypes
+@AllTypes = qw/
+    AddLink
+    AddReminder
+    AddWatcher
+    Comment
+    CommentEmailRecord
+    Correspond
+    Create
+    CustomField
+    DelWatcher
+    DeleteLink
+    Disabled
+    EmailRecord
+    Enabled
+    Force
+    Give
+    OpenReminder
+    PurgeTransaction
+    ResolveReminder
+    Set
+    Status
+    Steal
+    Subject
+    SystemError
+    Take
+    Told
+    Untake
+/;
+# }}}
 
 # {{{ sub Create 
 
@@ -1273,6 +1304,18 @@ sub ACLEquivalenceObjects {
     my $object = $self->Object;
     return $object,$object->QueueObj;
 
+}
+
+=head2 AllTypes
+
+Returns a list of the values used for the Type field. Because Type is a string
+(as opposed to an enumeration) set by scrips, extensions, etc, this is probably
+not going to be exhaustive.
+
+=cut
+
+sub AllTypes {
+    return @AllTypes;
 }
 
 1;
