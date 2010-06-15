@@ -86,14 +86,14 @@ use HTML::TreeBuilder;
 # {{{ TypeMetadata
 %TypeMetadata = (
     CommentEmailRecord => {
-        FilterType => 'Outgoing email record',
+        FilterType => 'EmailRecord',
         BriefDescription => sub {
             my $self = shift;
             return $self->loc("Outgoing email about a comment recorded");
         },
     },
     EmailRecord => {
-        FilterType => 'Outgoing email record',
+        FilterType => 'EmailRecord',
         BriefDescription => sub {
             my $self = shift;
             return $self->loc("Outgoing email recorded");
@@ -135,21 +135,21 @@ use HTML::TreeBuilder;
         },
     },
     Untake => {
-        FilterType => 'Owner change',
+        FilterType => 'Owner',
         BriefDescription => sub {
             my $self = shift;
             return $self->loc("Untaken");
         },
     },
     Take => {
-        FilterType => 'Owner change',
+        FilterType => 'Owner',
         BriefDescription => sub {
             my $self = shift;
             return $self->loc("Taken");
         },
     },
     Force => {
-        FilterType => 'Owner change',
+        FilterType => 'Owner',
         BriefDescription => sub {
             my $self = shift;
             my $Old = RT::User->new( $self->CurrentUser );
@@ -161,7 +161,7 @@ use HTML::TreeBuilder;
         },
     },
     Steal => {
-        FilterType => 'Owner change',
+        FilterType => 'Owner',
         BriefDescription => sub {
             my $self = shift;
             my $Old = RT::User->new( $self->CurrentUser );
@@ -170,7 +170,7 @@ use HTML::TreeBuilder;
         },
     },
     Give => {
-        FilterType => 'Owner change',
+        FilterType => 'Owner',
         BriefDescription => sub {
             my $self = shift;
             my $New = RT::User->new( $self->CurrentUser );
@@ -179,7 +179,7 @@ use HTML::TreeBuilder;
         },
     },
     AddWatcher => {
-        FilterType => 'Watcher change',
+        FilterType => 'Watcher',
         BriefDescription => sub {
             my $self = shift;
             my $principal = RT::Principal->new($self->CurrentUser);
@@ -188,7 +188,7 @@ use HTML::TreeBuilder;
         },
     },
     DelWatcher => {
-        FilterType => 'Watcher change',
+        FilterType => 'Watcher',
         BriefDescription => sub {
             my $self = shift;
             my $principal = RT::Principal->new($self->CurrentUser);
@@ -203,7 +203,7 @@ use HTML::TreeBuilder;
         },
     },
     AddLink => {
-        FilterType => 'Link change',
+        FilterType => 'Link',
         BriefDescription => sub {
             my $self = shift;
             my $value;
@@ -245,7 +245,7 @@ use HTML::TreeBuilder;
         },
     },
     DeleteLink => {
-        FilterType => 'Link change',
+        FilterType => 'Link',
         BriefDescription => sub {
             my $self = shift;
             my $value;
@@ -338,7 +338,7 @@ use HTML::TreeBuilder;
         },
     },
     AddReminder => {
-        FilterType => 'Reminder change',
+        FilterType => 'Reminder',
         BriefDescription => sub {
             my $self = shift;
             my $ticket = RT::Ticket->new($self->CurrentUser);
@@ -347,7 +347,7 @@ use HTML::TreeBuilder;
         },
     },
     OpenReminder => {
-        FilterType => 'Reminder change',
+        FilterType => 'Reminder',
         BriefDescription => sub {
             my $self = shift;
             my $ticket = RT::Ticket->new($self->CurrentUser);
@@ -356,7 +356,7 @@ use HTML::TreeBuilder;
         },
     },
     ResolveReminder => {
-        FilterType => 'Reminder change',
+        FilterType => 'Reminder',
         BriefDescription => sub {
             my $self = shift;
             my $ticket = RT::Ticket->new($self->CurrentUser);
