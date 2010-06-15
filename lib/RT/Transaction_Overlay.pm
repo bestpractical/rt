@@ -350,6 +350,12 @@ use HTML::TreeBuilder;
             return $self->loc("Reminder '[_1]' completed", $ticket->Subject);
         },
     },
+    SystemError => {
+        BriefDescription => sub {
+            my $self = shift;
+            return $self->loc("System error");
+        },
+    },
 );
 # }}}
 
@@ -927,9 +933,6 @@ sub BriefDescription {
                 "'" . $self->NewValue . "'"
             )
         );
-    }
-    elsif ( $type =~ /SystemError/ ) {
-        return $self->loc("System error");
     }
 
     if ( my $code = $self->TypeMetadata(Type => $type, Field => 'BriefDescription') ) {
