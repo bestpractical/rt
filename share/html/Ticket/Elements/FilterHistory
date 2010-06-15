@@ -56,7 +56,8 @@
 %   $label ||= $filter_type;
 
     <li>
-        <input type="checkbox" class="checkbox" name="FilterHistory-<%$filter_type%>" value="1" checked="checked" /><%$label%><br />
+        <input type="checkbox" class="checkbox" name="FilterHistory-<%$filter_type%>" value="1" checked="checked" onclick="if (this.checked) { $$('.Type-<%$filter_type%>').each(Element.show); } else { $$('.Type-<%$filter_type%>').each(Element.hide); }" /><%$label%><br />
+%# onclick="if (this.checked) { jQuery('.Type-<%$filter_type%>').show(); } else { jQuery('.Type-<%$filter_type%>').hide(); }"
     </li>
 % }
 </ul>
