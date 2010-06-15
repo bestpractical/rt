@@ -934,21 +934,11 @@ sub BriefDescription {
 
             }
         }
-
-        # Generic:
-        my $no_value = $self->loc("(no value)");
-        return (
-            $self->loc(
-                "[_1] changed from [_2] to [_3]",
-                $self->Field,
-                ( $self->OldValue ? "'" . $self->OldValue . "'" : $no_value ),
-                "'" . $self->NewValue . "'"
-            )
-        );
     }
 
     if ( my $code = $self->TypeMetadata(Type => $type, Field => 'BriefDescription') ) {
-        return $code->($self, obj_type => $obj_type);
+        my $description = $code->($self, obj_type => $obj_type);
+        return $description if defined $description;
     }
 
     return $self->loc(
