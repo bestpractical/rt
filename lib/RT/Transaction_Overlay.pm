@@ -74,7 +74,7 @@ package RT::Transaction;
 use strict;
 no warnings qw(redefine);
 
-use vars qw( %TypeMetadata $PreferredContentType );
+use vars qw( %TypeMetadata %_BriefDescription $PreferredContentType );
 
 use RT::Attachments;
 use RT::Scrips;
@@ -932,7 +932,7 @@ sub BriefDescription {
         return $self->loc("System error");
     }
 
-    if ( my $code = $TypeMetadata{$type}{BriefDescription} ) {
+    if ( my $code = $self->TypeMetadata(Type => $type, Field => 'BriefDescription') ) {
         return $code->($self);
     }
 
@@ -1314,6 +1314,35 @@ sub ACLEquivalenceObjects {
     my $object = $self->Object;
     return $object,$object->QueueObj;
 
+}
+
+=head2 TypeMetadata Type, Field
+
+Takes a param-hash and returns the value of C<Field> for C<Type>.
+
+For back-compat, this will look up C<BriefDescription> in the old
+C<%_BriefDescription> hash. This takes back-compat takes precedence because
+it's certainly possible that extensions override a particular brief
+description.
+
+=cut
+
+sub TypeMetadata {
+    my $self = shift;
+    my %args = (
+        Type => undef,
+        Field => undef,
+        @_,
+    );
+
+    my $type  = $args{Type};
+    my $field = $args{Field};
+
+    if ($field eq 'BriefDescription') {
+        return $_BriefDescription{$type} if $_BriefDescription{$type};
+    }
+
+    return $TypeMetadata{$type}{$field};
 }
 
 1;
