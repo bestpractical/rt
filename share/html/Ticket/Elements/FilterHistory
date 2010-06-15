@@ -52,8 +52,11 @@
 %   $filter_type ||= $type;
 %   next if $seen{$filter_type}++;
 
+%   my $label = RT::Transaction->TypeMetadata(Type => $type, Field => 'FilterLabel');
+%   $label ||= $filter_type;
+
     <li>
-        <input type="checkbox" class="checkbox" name="FilterHistory-<%$filter_type%>" value="1" checked="checked" /><&|/l&><%$filter_type%></&><br />
+        <input type="checkbox" class="checkbox" name="FilterHistory-<%$filter_type%>" value="1" checked="checked" /><%$label%><br />
     </li>
 % }
 </ul>
