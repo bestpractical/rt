@@ -410,24 +410,6 @@ use HTML::TreeBuilder;
             }
         },
     },
-    '(fallback)' => {
-        BriefDescription => sub {
-            my $self = shift;
-            my %args = @_;
-
-            return $self->loc(
-                "Default: [_1]/[_2] changed from [_3] to [_4]",
-                $args{type},
-                $self->Field,
-                (
-                    $self->OldValue
-                    ? "'" . $self->OldValue . "'"
-                    : $self->loc("(no value)")
-                ),
-                "'" . $self->NewValue . "'"
-            );
-        },
-    },
 );
 # }}}
 
@@ -967,20 +949,26 @@ sub BriefDescription {
         return $self->loc("No transaction type specified");
     }
 
-    for my $lookup_type ($type, '(fallback)') {
-        if ( my $code = $self->TypeMetadata(Type => $lookup_type, Field => 'BriefDescription') ) {
-            my %args = (
-                type     => $type,
-                obj_type => $self->FriendlyObjectType,
-            );
+    if ( my $code = $self->TypeMetadata(Type => $type, Field => 'BriefDescription') ) {
+        my %args = (
+            obj_type => $self->FriendlyObjectType,
+        );
 
-            my $description = $code->($self, %args);
-            return $description if defined $description;
-        }
+        my $description = $code->($self, %args);
+        return $description if defined $description;
     }
 
-    # this should never happen!
-    return $self->loc("No transaction formatter found");
+    return $self->loc(
+        "Default: [_1]/[_2] changed from [_3] to [_4]",
+        $type,
+        $self->Field,
+        (
+            $self->OldValue
+            ? "'" . $self->OldValue . "'"
+            : $self->loc("(no value)")
+        ),
+        "'" . $self->NewValue . "'"
+    );
 }
 
 # }}}
