@@ -351,8 +351,6 @@ use HTML::TreeBuilder;
         },
     },
 );
-
-);
 # }}}
 
 # {{{ sub Create 
