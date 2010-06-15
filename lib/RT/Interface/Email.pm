@@ -394,8 +394,9 @@ sub SendEmail {
 
     my $mail_command = RT->Config->Get('MailCommand');
 
-    if ($mail_command eq 'testfile') {
+    if ($mail_command eq 'testfile' and not $Mail::Mailer::testfile::config{outfile}) {
         $Mail::Mailer::testfile::config{outfile} = File::Temp->new;
+        $RT::Logger->info("Storing outgoing emails in $Mail::Mailer::testfile::config{outfile}");
     }
 
     # if it is a sub routine, we just return it;
