@@ -356,6 +356,27 @@ use HTML::TreeBuilder;
             return $self->loc("System error");
         },
     },
+    Create => {
+        BriefDescription => sub {
+            my $self = shift;
+            my %args = @_;
+            return ( $self->loc( "[_1] created", $args{obj_type} ) );
+        },
+    },
+    Enabled => {
+        BriefDescription => sub {
+            my $self = shift;
+            my %args = @_;
+            return ( $self->loc( "[_1] enabled", $args{obj_type} ) );
+        },
+    },
+    Disabled => {
+        BriefDescription => sub {
+            my $self = shift;
+            my %args = @_;
+            return ( $self->loc( "[_1] disabled", $args{obj_type} ) );
+        },
+    },
 );
 # }}}
 
@@ -897,16 +918,7 @@ sub BriefDescription {
 
     my $obj_type = $self->FriendlyObjectType;
 
-    if ( $type eq 'Create' ) {
-        return ( $self->loc( "[_1] created", $obj_type ) );
-    }
-    elsif ( $type eq 'Enabled' ) {
-        return ( $self->loc( "[_1] enabled", $obj_type ) );
-    }
-    elsif ( $type eq 'Disabled' ) {
-        return ( $self->loc( "[_1] disabled", $obj_type ) );
-    }
-    elsif ( $type =~ /Status/ ) {
+    if ( $type =~ /Status/ ) {
         if ( $self->Field eq 'Status' ) {
             if ( $self->NewValue eq 'deleted' ) {
                 return ( $self->loc( "[_1] deleted", $obj_type ) );
@@ -936,7 +948,7 @@ sub BriefDescription {
     }
 
     if ( my $code = $self->TypeMetadata(Type => $type, Field => 'BriefDescription') ) {
-        return $code->($self);
+        return $code->($self, obj_type => $obj_type);
     }
 
     return $self->loc(
