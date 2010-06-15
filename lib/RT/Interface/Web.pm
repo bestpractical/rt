@@ -192,6 +192,9 @@ sub HandleRequest {
     SendSessionCookie();
     $HTML::Mason::Commands::session{'CurrentUser'} = RT::CurrentUser->new() unless _UserLoggedIn();
 
+    # Process session-related callbacks before any auth attempts
+    $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Session', CallbackPage => '/autohandler' );
+
     MaybeShowNoAuthPage($ARGS);
 
     AttemptExternalAuth($ARGS) if RT->Config->Get('WebExternalAuthContinuous') or not _UserLoggedIn();
@@ -223,6 +226,9 @@ sub HandleRequest {
 
     ShowRequestedPage($ARGS);
     LogRecordedSQLStatements();
+
+    # Process per-page final cleanup callbacks
+    $HTML::Mason::Commands::m->callback( %$ARGS, CallbackName => 'Final', CallbackPage => '/autohandler' );
 }
 
 sub _ForceLogout {
