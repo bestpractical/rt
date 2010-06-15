@@ -1367,4 +1367,16 @@ sub TypeMetadata {
     return $TypeMetadata{$type}{$field};
 }
 
+=head2 AllTypes
+
+Returns the names of all the known transaction types used in RT. This is
+probably not exhaustive since C<Type> is a string not an enumeration, but it's
+an acceptable first pass.
+
+=cut
+
+sub AllTypes {
+    return keys %TypeMetadata;
+}
+
 1;
