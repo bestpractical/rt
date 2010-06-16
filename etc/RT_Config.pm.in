@@ -375,6 +375,11 @@ or 'qmail'.
 Note that you should remove the '-t' from C<$SendmailArguments>
 if you use 'sendmail' rather than 'sendmailpipe'
 
+For testing purposes, or to simply disable sending mail out into the world, you
+can set C<$MailCommand> to 'testfile' which writes all mail to a temporary
+file.  RT will log the location of the temporary file so you can extract mail
+from it afterwards.
+
 =cut
 
 Set($MailCommand , 'sendmailpipe');
