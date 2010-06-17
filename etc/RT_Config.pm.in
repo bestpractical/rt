@@ -1521,6 +1521,15 @@ queue selection boxes on the web interface.
 
 #Set($DefaultQueue, 'General');
 
+=item C<$RememberDefaultQueue>
+
+When a queue is selected in the new ticket dropdown, make it the new default
+for the new ticket dropdown.
+
+=cut
+
+#Set($RememberDefaultQueue, 1);
+
 =item C<$DefaultTimeUnitsToHours>
 
 Use this to set the default units for time entry to hours instead of minutes.

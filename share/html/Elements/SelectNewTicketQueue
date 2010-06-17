@@ -50,5 +50,12 @@
 </label>
 <%INIT>
 my $queue = RT->Config->Get("DefaultQueue", $session{'CurrentUser'});
+
+if (RT->Config->Get("RememberDefaultQueue", $session{'CurrentUser'})) {
+    if (my $session_default = $session{'DefaultQueue'}) {
+        $queue = $session_default;
+    }
+}
+
 $m->callback(Queue => \$queue, CallbackName => 'DefaultQueue');
 </%INIT>

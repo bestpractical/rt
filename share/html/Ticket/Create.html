@@ -250,6 +250,7 @@
 <%INIT>
 $m->callback( CallbackName => "Init", ARGSRef => \%ARGS );
 my $Queue = $ARGS{Queue};
+$session{DefaultQueue} = $Queue;
 
 my $CloneTicketObj;
 if ($CloneTicket) {
