@@ -1,0 +1,29 @@
+<&|/Widgets/TitleBox, title => loc('Saved Searches') &>
+% foreach my $Object (@Objects) {
+%   my $SavedSearches = RT::SavedSearches->new($session{CurrentUser});
+%   $SavedSearches->LimitToPrivacy(join('-',ref($Object),$Object->Id),'Ticket');
+%   my $title;
+%   if (ref $Object eq 'RT::User' && $Object->Id == $session{CurrentUser}->Id) {
+%       $title = loc("My saved searches");
+%   } else {
+%       $title = loc("[_1]'s saved searches",$Object->Name);
+%   }
+%   $title = $m->interp->apply_escapes($title, 'h');
+<& /Elements/CollectionList,
+    %ARGS,
+    Class => 'RT::SavedSearch',
+    Format => qq{'<a href="__WebPath__/Search/Results.html?__ResultsURL__">__Name__</a>/TITLE:$title'},
+    Collection => $SavedSearches,
+    PassArguments => [qw(Format Name id)],
+&>
+% }
+</&>
+<%init>
+my @Objects = RT::SavedSearches->new($session{CurrentUser})->_PrivacyObjects;
+push @Objects, RT::System->new( $session{'CurrentUser'} )
+    if $session{'CurrentUser'}->HasRight( Object=> $RT::System,
+                                          Right => 'SuperUser' );
+</%init>
+<%ARGS>
+$user_attrs => undef
+</%ARGS>
