@@ -46,23 +46,15 @@
 # 
 # END BPS TAGGED BLOCK }}}
 
-package RT::URI::fsck_com_rt;
-
-use RT::Ticket;
-
-use base 'RT::URI::base';
-
 use strict;
+use warnings;
 
-
-
+package RT::URI::fsck_com_rt;
+use base 'RT::URI::base';
 
 =head2 LocalURIPrefix  
 
 Returns the prefix for a local URI. 
-
-
-
 
 =cut
 
@@ -84,19 +76,16 @@ sub ObjectType {
 
     my $type = 'ticket';
     if (ref($object) && (ref($object) ne 'RT::Ticket')) {
-            $type = ref($object);
+        $type = ref($object);
     }
 
     return ($type);
 }
 
 
-
-
 =head2 URIForObject RT::Record
 
 Returns the RT URI for a local RT::Record object
-
 
 =cut
 
@@ -119,6 +108,7 @@ sub ParseURI {
     my $uri  = shift;
 
     if ( $uri =~ /^\d+$/ ) {
+        use RT::Ticket;
         my $ticket = RT::Ticket->new( $self->CurrentUser );
         $ticket->Load( $uri );
         $self->{'uri'} = $ticket->URI;
@@ -160,21 +150,18 @@ sub ParseURI {
 Returns true if this URI is for a local ticket.
 Returns undef otherwise.
 
-
-
 =cut
 
 sub IsLocal {
-	my $self = shift;
+    my $self = shift;
     my $local_uri_prefix = $self->LocalURIPrefix;
     if ( $self->{'uri'} =~ /^\Q$local_uri_prefix/i ) {
         return 1;
     }
-	else {
-		return undef;
-	}
+    else {
+        return undef;
+    }
 }
-
 
 
 =head2 Object
@@ -186,7 +173,6 @@ Returns the object for this URI, if it's local. Otherwise returns undef.
 sub Object {
     my $self = shift;
     return ($self->{'object'});
-
 }
 
 =head2 Scheme
@@ -198,7 +184,7 @@ Return the URI scheme for RT records
 
 sub Scheme {
     my $self = shift;
-	return "fsck.com-rt";
+    return "fsck.com-rt";
 }
 
 =head2 HREF
@@ -211,12 +197,14 @@ Otherwise, return its URI
 
 sub HREF {
     my $self = shift;
-    if ($self->IsLocal && $self->Object && ($self->ObjectType eq 'ticket')) {
-        return ( RT->Config->Get('WebURL') . "Ticket/Display.html?id=".$self->Object->Id);
-    }   
-    else {
-        return ($self->URI);
+    return $self->URI unless $self->IsLocal;
+
+    my $obj = $self->Object;
+    if ( $obj && $self->ObjectType eq 'ticket' ) {
+        return RT->Config->Get('WebURL') ."Ticket/Display.html?id=". $obj->id;
     }
+
+    return $self->URI;
 }
 
 =head2 AsString
@@ -228,10 +216,10 @@ Returns either a localized string 'ticket #23' or the full URI if the object is 
 sub AsString {
     my $self = shift;
     if ($self->IsLocal && $self->Object) {
-	    return $self->loc("[_1] #[_2]", $self->ObjectType, $self->Object->Id);
+        return $self->loc("[_1] #[_2]", $self->ObjectType, $self->Object->Id);
     }
     else {
-	    return $self->URI;
+        return $self->URI;
     }
 }
 
