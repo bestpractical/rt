@@ -146,6 +146,29 @@ sub Count {
     return scalar @{$self->{'objects'}};
 }
 
+=head2 CountAll
+
+Returns the number of search objects found
+
+=cut
+
+sub CountAll {
+    my $self = shift;
+    return $self->Count;
+}
+
+=head2 GotoPage
+
+Act more like a normal L<DBIx::SearchBuilder> collection.
+Moves the internal index around
+
+=cut
+
+sub GotoPage {
+    my $self = shift;
+    $self->{idx} = shift;
+}
+
 ### Internal methods
 
 # _GetObject: helper routine to load the correct object whose parameters
