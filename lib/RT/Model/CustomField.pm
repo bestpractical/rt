@@ -110,7 +110,7 @@ use Jifty::DBI::Record schema {
     column
       include_content_for_value => type is 'text',
       display_length is 60, default is '';
-    column values_class => type is 'text',
+    column values_class => type is 'varchar(255)',
       display_length is 60, default is 'RT::Model::CustomFieldValueCollection';
     column disabled        => max_length is 6, type is 'smallint', render as
         'Checkbox', default is '0';
